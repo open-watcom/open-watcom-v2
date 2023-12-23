@@ -7,7 +7,7 @@
 # included this one.
 # NB: PROJNAME must be the tool's base name.
 
-cdsay <PROJDIR>
+cdsay "<PROJDIR>"
 
 [ BLOCK .<PROJNAME> . ]
     error PROJNAME must be set!
@@ -29,15 +29,15 @@ cdsay <PROJDIR>
     cdsay <OWOBJDIR>
     wmake -h -f ../binmake bootstrap=1
     cdsay ..
-    <CPCMD> <OWOBJDIR>/<PROJNAME>.exe <OWBINDIR>/<OWOBJDIR>/<PROJNAME><CMDEXT>
+    <CPCMD> <OWOBJDIR>/<PROJNAME>.exe "<OWROOT>/build/<OWOBJDIR>/<PROJNAME><CMDEXT>"
     set BINTOOL=build
 
 [ BLOCK <BLDRULE> bootclean ]
 #============================
     echo rm -rf <OWOBJDIR>
     rm -rf <OWOBJDIR>
-    echo rm -f <OWBINDIR>/<OWOBJDIR>/<PROJNAME><CMDEXT>
-    rm -f <OWBINDIR>/<OWOBJDIR>/<PROJNAME><CMDEXT>
+    echo rm -f "<OWROOT>/build/<OWOBJDIR>/<PROJNAME><CMDEXT>"
+    rm -f "<OWROOT>/build/<OWOBJDIR>/<PROJNAME><CMDEXT>"
     set BINTOOL=clean
 
 [ BLOCK . . ]

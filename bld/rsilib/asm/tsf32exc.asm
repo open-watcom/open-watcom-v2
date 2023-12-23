@@ -1,16 +1,16 @@
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;
-;                         Open Watcom Project
-;
-; Copyright (c) 2002-2013 The Open Watcom Contributors. All Rights Reserved.
-; Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
-; Copyright (c) 1987-1992 Rational Systems, Incorporated. All Rights Reserved.
-;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;
-;   tsf32exc.asm -- support for debugger interface library
-;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;*****************************************************************************
+;*
+;*                         Open Watcom Project
+;*
+;* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+;* Copyright (c) 1987-1992 Rational Systems, Incorporated. All Rights Reserved.
+;*
+;*****************************************************************************
+;*
+;*  tsf32exc.asm -- support for debugger interface library
+;*
+;*****************************************************************************
 
         name    tsf32exc
 
@@ -36,6 +36,8 @@ ts32_cs         dw      ?
 ts32_proc       dw      ?
 ts32_eflags     dd      ?
 TSF32           ends
+
+INTR_IF equ     200h    ; interrupts enabled
 
         .CODE
         .386p
@@ -108,7 +110,7 @@ tsf32_load:
         push    eax
         push    es:[di].ts32_eflags
         pop     eax
-        and     eax, 200H
+        and     eax, INTR_IF
         jnz short setit
         cli
         jmp short popax

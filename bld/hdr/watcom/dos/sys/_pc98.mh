@@ -1,0 +1,31 @@
+/*
+ *  _pc98.h    PC98 (NEC) support definition.
+ *
+:include crwatcnt.sp
+ */
+#ifndef _SYS__PC98_H_INCLUDED
+#define _SYS__PC98_H_INCLUDED
+
+:include readonly.sp
+
+#if defined(__WATCOM_PC98__)
+ #ifdef _M_I86
+  #ifdef __MEDIUM__
+   #pragma library ( "pc98m" )
+  #elif defined(__COMPACT__)
+   #pragma library ( "pc98c" )
+  #elif defined(__LARGE__)
+   #pragma library ( "pc98l" )
+  #elif defined(__HUGE__)
+   #pragma library ( "pc98h" )
+  #else
+   #pragma library ( "pc98s" )
+  #endif
+ #elif defined(__SW_3S)
+  #pragma library ( "pc983s" )
+ #else
+  #pragma library ( "pc983r" )
+ #endif
+#endif
+
+#endif

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,6 +39,7 @@
 #include "elfcore.h"
 #include "core_nto.h"
 #include "core_fbsd.h"
+#include "digcpu.h"
 
 
 typedef struct {
@@ -229,6 +231,8 @@ static size_t neutrino_regs( void *_ctx, mad_registers *r, int tid )
     X86_CPU_REGISTERS   regs;
     char                *note_name;
 
+    /* unused parameters */ (void)tid;
+
     note.n_type = QNT_CORE_GREG;
     note_name = find_note( ctx->fd, ctx->e_hdr, ctx->p_hdr, ctx->swap, &note );
     if( note_name ) {
@@ -271,6 +275,8 @@ static size_t neutrino_regs( void *_ctx, mad_registers *r, int tid )
  */
 static size_t neutrino_freg( void *ctx, mad_registers *r, int tid )
 {
+    /* unused parameters */ (void)ctx; (void)r; (void)tid;
+
     return( 0 );
 }
 

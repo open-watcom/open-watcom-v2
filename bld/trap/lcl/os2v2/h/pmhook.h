@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,8 +30,8 @@
 ****************************************************************************/
 
 
-typedef VOID EXPENTRY HOOKPROC( HAB hab, PSMHSTRUCT smh, BOOL interthread );
-typedef VOID EXPENTRY SETHMQPROC( HMQ hmq, HWND hwnd );
+typedef void EXPENTRY HOOKPROC( HAB hab, PSMHSTRUCT smh, BOOL interthread );
+typedef void EXPENTRY SETHMQPROC( HMQ hmq, HWND hwnd );
 
 HOOKPROC   SendMsgHookProc;
 SETHMQPROC SetHmqDebugee;

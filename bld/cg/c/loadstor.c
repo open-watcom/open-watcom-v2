@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -82,7 +82,7 @@ static  void    CheckRefs( conflict_node *conf, block *blk )
         _MarkBlkMarked( blk );
         return;
     }
-    for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+    for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
         for( i = ins->num_operands; i-- > 0; ) {
             if( SameConf( ins->operands[i], ins, conf ) ) {
                 _MarkBlkMarked( blk );
@@ -245,10 +245,10 @@ static  void    CalculateLoadStore( conflict_node *conf )
         } else {
             _GBitTurnOff( flow->need_store, id );
         }
-        if( blk->ins.hd.prev != (instruction *)&blk->ins ) {
-            _INS_NOT_BLOCK( blk->ins.hd.prev );
+        if( blk->ins.head.prev != (instruction *)&blk->ins ) {
+            _INS_NOT_BLOCK( blk->ins.head.prev );
             _INS_NOT_BLOCK( conf->ins_range.last );
-            if( blk->ins.hd.prev->id >= conf->ins_range.last->id) {
+            if( blk->ins.head.prev->id >= conf->ins_range.last->id) {
                 break;
             }
         }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,6 +36,7 @@
 #include "wdebug.h"
 #include "stdwin.h"
 #include "dbgrmsg.h"
+#include "initfini.h"
 
 
 #ifdef DEBUG
@@ -67,15 +68,15 @@ static HTASK    TaskAtNotify;
  * If we get a segment load, then we make sure that
  * any breakpoints we may have set in the segment are re-planted
  */
-static BOOL doLoadSeg( DWORD data )
+static bool doLoadSeg( DWORD data )
 {
     NFYLOADSEG  *ls;
 
-    ls = (NFYLOADSEG *) data;
+    ls = (NFYLOADSEG *)data;
     if( DebuggerState != LOADING_DEBUGEE ) {
         ResetBreakpoints( ls->wSelector );
     }
-    return( FALSE );
+    return( false );
 
 } /* doLoadSeg */
 
@@ -92,9 +93,8 @@ static BOOL doLoadSeg( DWORD data )
  * Otherwise, we simply record it so that we can notify the debugger
  * about a loaded module later.
  */
-static BOOL doStartTask( DWORD data )
+static bool doStartTask( DWORD data )
 {
-    char        val;
     TASKENTRY   te;
 
     te.dwSize = sizeof( te );
@@ -103,23 +103,17 @@ static BOOL doStartTask( DWORD data )
     if( DebuggerState == LOADING_DEBUGEE ) {
         DebugeeModule = te.hModule;
         DebugeeTask = TaskAtNotify;
-        StopNewTask.loc.segment = HIWORD( data );
-        ReadMem( StopNewTask.loc.segment, StopNewTask.loc.offset,
-                &StopNewTask.value, 1 );
-        val = '\xcc';
-        WriteMem( StopNewTask.loc.segment, StopNewTask.loc.offset,
-                    &val, 1 );
-        ReadMem( StopNewTask.loc.segment, StopNewTask.loc.offset,
-                &val, 1 );
+        StopNewTask.addr.segment = HIWORD( data );
+//        StopNewTask.addr.offset = LOWORD( data );
+        StopNewTask.old_opcode = place_breakpoint( &StopNewTask.addr );
         Out((OUT_RUN,"           wrote breakpoint at %04x:%04lx, oldbyte=%02x(is now %02x)",
-                    StopNewTask.loc.segment, StopNewTask.loc.offset,
-                    StopNewTask.value, val ));
+                    StopNewTask.addr.segment, StopNewTask.addr.offset, StopNewTask.old_opcode, BreakOpcode ));
         Out((OUT_RUN,"   StartTask: cs:ip = %Fp", data ));
         ToDebugger( TASK_LOADED );
     } else {
-        AddModuleLoaded( te.hModule, FALSE );
+        AddModuleLoaded( te.hModule, false );
     }
-    return( FALSE );
+    return( false );
 
 } /* doStartTask */
 
@@ -130,22 +124,19 @@ static BOOL doStartTask( DWORD data )
  *
  * Record the module to notify the debugger of it later.
  */
-static BOOL doStartDLL( DWORD data )
+static bool doStartDLL( DWORD data )
 {
     NFYSTARTDLL *sd;
-    char        val;
 
-    sd = (NFYSTARTDLL *) data;
-    AddModuleLoaded( sd->hModule, TRUE );
+    sd = (NFYSTARTDLL *)data;
+    AddModuleLoaded( sd->hModule, true );
     if( DebuggerState == RUNNING_DEBUGEE ) {
-        ReadMem( sd->wCS, sd->wIP, &DLLLoadSaveByte, 1 );
-        DLLLoadCS = sd->wCS;
-        DLLLoadIP = sd->wIP;
-        val = '\xcc';
-        WriteMem( sd->wCS, sd->wIP, &val, 1 );
+        DLLLoad.addr.segment = sd->wCS;
+        DLLLoad.addr.offset = sd->wIP;
+        DLLLoad.old_opcode = place_breakpoint( &DLLLoad.addr );
     }
     Out((OUT_ERR,"DLL Loaded '%4.4x:%4.4x'",sd->wCS,sd->wIP));
-    return( FALSE );
+    return( false );
 
 } /* doStartDLL */
 
@@ -158,28 +149,27 @@ static BOOL doStartDLL( DWORD data )
  * We return to the debugger so that it can display the string for the
  * user to see.
  */
-static BOOL doOutStr( DWORD data )
+static bool doOutStr( DWORD data )
 {
     char        *src;
 
     if( DebuggerState != RUNNING_DEBUGEE ) {
         Out((OUT_ERR,"Debugger was bad! '%s'",OutBuff));
-        return( 0 );
+        return( false );
     }
-    src = (LPSTR) data;
-    while( *src ) {
+    for( src = (LPSTR)data; *src != '\0'; src++ ) {
         if( *src == '\r' || OutPos == (MAX_STR-1) ) {
-            OutBuff[ OutPos++ ] = '\0';
+            OutBuff[OutPos++] = '\0';
             Out((OUT_RUN,"Going to debugger for OUT_STR '%s'",OutBuff));
-            if( DebugeeTask == NULL ) return( 0 );
+            if( DebugeeTask == NULL )
+                return( false );
             ToDebugger( OUT_STR );
         }
         if( *src != '\n' && *src != '\t' ) {
-            OutBuff[ OutPos++ ] = *src;
+            OutBuff[OutPos++] = *src;
         }
-        src++;
     }
-    return( 0 );
+    return( false );
 } /* doOutStr */
 
 /*
@@ -190,10 +180,11 @@ static BOOL doOutStr( DWORD data )
  * the kernel wants a character (typically after a fatal exit), so
  * we flip back to the debugger to get a character from the user.
  */
-static BOOL doInChar( void )
+static char doInChar( void )
 {
 
-    if( DebuggerState != RUNNING_DEBUGEE ) return( 'i' ); // cover our ass!
+    if( DebuggerState != RUNNING_DEBUGEE )
+        return( 'i' ); // cover our ass!
     Out((OUT_RUN,"Going to debugger for GET_CHAR"));
     return( 'b' );
 //  ToDebugger( GET_CHAR );
@@ -209,7 +200,7 @@ static BOOL doInChar( void )
  * If the task was the debuggee, we notify the debugger that the
  * debuggee has terminated.
  */
-static BOOL doExitTask( DWORD data )
+static bool doExitTask( DWORD data )
 {
     data = data;
 
@@ -217,7 +208,7 @@ static BOOL doExitTask( DWORD data )
         TerminateCSIP = TaskGetCSIP( DebugeeTask );
         PostAppMessage( DebuggerTask, WM_NULL, TASK_ENDED, MAGIC_COOKIE );
     }
-    return( FALSE );
+    return( false );
 
 } /* doExitTask */
 
@@ -226,12 +217,12 @@ static BOOL doExitTask( DWORD data )
  */
 BOOL FAR PASCAL NotifyHandler( WORD id, DWORD data )
 {
-    BOOL        rc;
+    bool        rc;
 
     TaskAtNotify = GetCurrentTask();
     if( id == NFY_LOADSEG || id == NFY_LOGERROR || id == NFY_FREESEG ||
                 id == NFY_LOGPARAMERROR ) {
-        return( FALSE );
+        return( false );
     }
     if( id == NFY_OUTSTR ) {
         Out((OUT_RUN,"%s(%d): Task=%04x, data=%08lx",
@@ -247,8 +238,7 @@ BOOL FAR PASCAL NotifyHandler( WORD id, DWORD data )
         rc = doOutStr( data );
         break;
     case NFY_INCHAR:
-        rc = doInChar();
-        break;
+        return( doInChar() );   // return character
     case NFY_STARTTASK:
         rc = doStartTask( data );
         break;
@@ -262,10 +252,9 @@ BOOL FAR PASCAL NotifyHandler( WORD id, DWORD data )
         rc = doLoadSeg( data );
         break;
     default:
-        rc = FALSE;
+        rc = false;
         break;
     }
-
     return( rc );
 
 } /* NotifyHandler */

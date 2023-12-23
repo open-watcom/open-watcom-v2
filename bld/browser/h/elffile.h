@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,17 +38,17 @@
 #ifndef __ELFFILE_H__
 
 // disable "integral value may be truncated" warning
-#pragma disable_message( 389 )
+#pragma disable_message( P389 )
 
 #include <time.h>
-#include <wstd.h>
+#include "watcom.h"
 
 #ifndef _WATCOM_H_INCLUDED_     // otherwise <exeelf.h> will try to haul it in
 #  define _WATCOM_H_INCLUDED_
 #endif
 
-#include <exeelf.h>
-#include <dr.h>     // needed for dr_section
+#include "exeelf.h"
+#include "dr.h"     // needed for dr_section
 
 template <class Type> class WCValOrderedVector;
 template <class Type> class WCPtrOrderedVector;

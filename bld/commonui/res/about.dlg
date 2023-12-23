@@ -1,3 +1,5 @@
+/* UTF-8 encoding, Â¥ */
+
 #if !defined( JAPANESE )
 
 About DIALOG 19, 17, 316, 122
@@ -20,8 +22,8 @@ END
 
 About DIALOG 19, 17, 222, 102
 STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
-CAPTION "ƒo[ƒWƒ‡ƒ“î•ñ"
-FONT 9, "‚l‚r –¾’©"
+CAPTION "ãƒãƒ¼ã‚¸ãƒ§ãƒ³æƒ…å ±"
+FONT 9, "ï¼­ï¼³ æ˜Žæœ"
 BEGIN
     PUSHBUTTON      "OK", IDOK, 174, 68, 40, 14
     ICON            "APPLICON", -1, 10, 10, 18, 20

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -125,9 +125,9 @@ char *WREGetStrFromEdit( HWND edit, bool *mod )
     if( mod != NULL ) {
         /* find out if the edit field has changed */
         if( SendMessage( edit, EM_GETMODIFY, 0, 0 ) ) {
-            *mod = TRUE;
+            *mod = true;
         } else {
-            *mod = FALSE;
+            *mod = false;
         }
     }
 

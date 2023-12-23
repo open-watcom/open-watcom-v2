@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -144,10 +145,15 @@ static WWindow * topLevelWindow;
 mainline::mainline()
 //------------------
 {
-    char buf[512];
+    int cmd_len;
+    char *cmd_line;
     try {
         WBRInit();
-        topLevelWindow = new Browse( getcmd( buf ) );
+        cmd_len = _bgetcmd( NULL, 0 ) + 1;
+        cmd_line = new char[cmd_len];
+        _bgetcmd( cmd_line, cmd_len );
+        topLevelWindow = new Browse( cmd_line );
+        delete[] cmd_line;
     } catch( CauseOfDeath cause ) {
         IdentifyAssassin( cause );
     }

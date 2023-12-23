@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,10 +42,10 @@
 extern address GetRealSeg( address );
 
 /*
- * StrCopy -- copy string
+ * StrCopyDst -- copy string
  */
 
-char *StrCopy( char const *src, char *dest )
+char *StrCopyDst( char const *src, char *dest )
 {
 
     if( src == NULL || dest == NULL )
@@ -101,7 +102,7 @@ char *FmtStr( char *buff, const char *fmt, va_list args )
                 break;
             case 's':
                 ptr = va_arg( args, char * );
-                buff = StrCopy( ptr, buff );
+                buff = StrCopyDst( ptr, buff );
                 break;
             case 't':
                 ptr = va_arg( args, char * );
@@ -115,7 +116,7 @@ char *FmtStr( char *buff, const char *fmt, va_list args )
                 res = LineAddr( &addr, save_buff, sizeof( save_buff ) );
                 if( res != NULL ) {
                     *buff++ = '(';
-                    buff = StrCopy( save_buff, buff );
+                    buff = StrCopyDst( save_buff, buff );
                     *buff++ = ')';
                 }
                 break;

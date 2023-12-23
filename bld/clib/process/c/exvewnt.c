@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,10 +46,10 @@ _WCRTLINK int __F_NAME(execve,_wexecve)( const CHAR_TYPE *path, const CHAR_TYPE 
     int         rc;
 
     rc = __F_NAME(spawnve,_wspawnve)( P_NOWAIT, path, argv, envp );
-    if( _RWD_errno != 0 )
-        return( -1 );
-    __int23_exit();
-    ExitProcess( rc );
-    // never return
-    return( 0 );
+    if( _RWD_errno == 0 ) {
+        __int23_exit();
+        ExitProcess( rc );
+        // never return
+    }
+    return( -1 );
 }

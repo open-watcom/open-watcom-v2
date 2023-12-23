@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,8 +33,6 @@
 #ifndef DWCLIUTI_H_INCLUDED
 #define DWCLIUTI_H_INCLUDED
 
-#include "dwcnf.h"
-
 #ifndef __BIG_ENDIAN__
 #define WriteU16( __p, __v )    ( *(uint_16 *)(__p) = (__v) )
 #define WriteU32( __p, __v )    ( *(uint_32 *)(__p) = (__v) )
@@ -55,7 +53,7 @@
 #define InfoSkip(c,l)               CLISectionSkip( c, DW_DEBUG_INFO, l )
 #define InfoSectionOffset(c)        CLISectionOffset( c, DW_DEBUG_INFO )
 
-extern void     CLIWriteLEB128( dw_client cli, dw_sectnum sect, dw_sconst value );
+extern void     CLIWriteSLEB128( dw_client cli, dw_sectnum sect, dw_sconst value );
 extern void     CLIWriteULEB128( dw_client cli, dw_sectnum sect, dw_uconst value );
 extern void     CLIWriteU8( dw_client cli, dw_sectnum sect, uint_8 data );
 extern void     CLIWriteU16( dw_client cli, dw_sectnum sect, uint_16 data );

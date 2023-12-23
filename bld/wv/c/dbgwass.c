@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,14 +30,12 @@
 ****************************************************************************/
 
 
-#include "_srcmgt.h"
+#include "srcmgt.h"
 #include "dbgdata.h"
 #include "dbgwind.h"
 #include "dbgadget.h"
 #include "dbgerr.h"
-#include "dbgmem.h"
 #include "dbgitem.h"
-#include "srcmgt.h"
 #include "strutil.h"
 #include "dbgscan.h"
 #include "madinter.h"
@@ -279,12 +277,12 @@ static void AsmSetTitle( a_window wnd )
     asm_window  *asw;
 
     asw = WndAsm( wnd );
-    p = StrCopy( ": ", StrCopy( LIT_DUI( WindowAssembly ), TxtBuff ) );
+    p = StrCopyDst( ": ", StrCopyDst( LIT_DUI( WindowAssembly ), TxtBuff ) );
     p += DIPModName( asw->mod, p, TXT_LEN );
     image_name = ModImageName( asw->mod );
     if( image_name[0] != NULLCHAR ) {
-        p = StrCopy( "(", StrCopy( " ", p ) );
-        p = StrCopy( ")", StrCopy( SkipPathInfo( image_name, OP_REMOTE ), p ) );
+        p = StrCopyDst( "(", StrCopyDst( " ", p ) );
+        p = StrCopyDst( ")", StrCopyDst( SkipPathInfo( image_name, OP_REMOTE ), p ) );
     }
     WndSetTitle( wnd, TxtBuff );
 }
@@ -495,7 +493,7 @@ static void     AsmMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece
         WndZapped( wnd );
         break;
     case MENU_ASM_INSPECT:
-        StrCopy( WndPopItem( wnd ), buff );
+        StrCopyDst( WndPopItem( wnd ), buff );
         if( asw->ins[row].line != 0 ) {
             if( WndEvalInspectExpr( buff, false ) ) { // eval in asm window's radix
                 NewCurrRadix( old_radix );
@@ -519,7 +517,7 @@ static void     AsmMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece
         WndZapped( wnd );
         break;
     case MENU_ASM_BREAK:
-        StrCopy( WndPopItem( wnd ), buff );
+        StrCopyDst( WndPopItem( wnd ), buff );
         if( asw->ins[row].line != 0 ) {
             BreakOnSelected( buff );
         } else {
@@ -530,7 +528,7 @@ static void     AsmMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece
         }
         break;
     case MENU_ASM_STEP_INTO:
-        StrCopy( WndPopItem( wnd ), buff );
+        StrCopyDst( WndPopItem( wnd ), buff );
         if( asw->ins[row].line != 0 ) {
             StepIntoFunction( buff );
         } else {
@@ -690,7 +688,7 @@ static  bool    AsmGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line
             line->indent = MaxGadgetLength;
             switch( piece ) {
             case 0:
-                StrCopy( buff, TxtBuff );
+                StrCopyDst( buff, TxtBuff );
                 rc = true;
                 break;
             case 1:
@@ -720,7 +718,7 @@ static  bool    AsmGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line
     addr = asw->ins[row].addr;
     src_line = asw->ins[row].line;
     line->text = TxtBuff;
-    StrCopy( " ", TxtBuff );
+    StrCopyDst( " ", TxtBuff );
     curr = !IS_NIL_ADDR(addr) && AddrComp(addr, asw->active) == 0 && src_line == 0;
     line->tabstop = true;
     if( curr )

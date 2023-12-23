@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,16 +31,19 @@
 
 
 #include "global.h"
+#include <errno.h>
 #include "rcerrors.h"
 #include "rcrtns.h"
-#include "rccore.h"
+#include "rccore_2.h"
 #include "exeutil.h"
 #include "exeseg.h"
+#include "exeres.h"
 
 #include "clibext.h"
 
 
 static RcStatus allocSegTable( SegTable *seg, int *err_code )
+/***********************************************************/
 {
     int     tablesize;
 
@@ -53,120 +57,115 @@ static RcStatus allocSegTable( SegTable *seg, int *err_code )
     }
 } /* allocSegTable */
 
-/*
- * readSegTable
+static RcStatus readSegTable( FILE *fp, uint_32 offset, segment_record *segments, size_t size )
+/**********************************************************************************************
  * NB when an error occurs this function must return without altering errno
  */
-static RcStatus readSegTable( FILE *fp, uint_32 offset, SegTable * seg )
 {
-    size_t          tablesize;
     size_t          numread;
-
-    tablesize = seg->NumSegs * sizeof( segment_record );
 
     if( RESSEEK( fp, offset, SEEK_SET ) )
         return( RS_READ_ERROR );
-    numread = RESREAD( fp, seg->Segments, tablesize );
-    if( numread != tablesize ) {
+    size *= sizeof( *segments );
+    numread = RESREAD( fp, segments, size );
+    if( numread != size ) {
         return( RESIOERR( fp, numread ) ? RS_READ_ERROR : RS_READ_INCMPLT );
     }
     return( RS_OK );
 
 } /* readSegTable */
 
-RcStatus AllocAndReadWINSegTables( int *err_code )
-/************************************************/
+RcStatus AllocAndReadWINSegTables( ExeFileInfo *src, ExeFileInfo *dst, int *err_code )
+/************************************************************************************/
 {
     RcStatus            ret;
-    FILE                *old_fp;
-    uint_32             head_offset;
-    SegTable            *oldseg;
-    SegTable            *tmpseg;
-    os2_exe_header      *head;
+    uint_32             segments_off;
+    SegTable            *src_seg;
+    SegTable            *dst_seg;
+    size_t              num_segs;
 
-    oldseg = &(Pass2Info.OldFile.u.NEInfo.Seg);
-    old_fp = Pass2Info.OldFile.fp;
-    tmpseg = &(Pass2Info.TmpFile.u.NEInfo.Seg);
+    src_seg = &(src->u.NEInfo.Seg);
+    dst_seg = &(dst->u.NEInfo.Seg);
 
-    head = &(Pass2Info.OldFile.u.NEInfo.WinHead);
-    head_offset = Pass2Info.OldFile.WinHeadOffset;
+    segments_off = src->WinHeadOffset + src->u.NEInfo.WinHead.segment_off;
 
-    oldseg->NumSegs = head->segments;
-    tmpseg->NumSegs = head->segments;
-    ret = allocSegTable( oldseg, err_code );
+    num_segs = src->u.NEInfo.WinHead.segments;
+    src_seg->NumSegs = num_segs;
+    dst_seg->NumSegs = num_segs;
+    ret = allocSegTable( src_seg, err_code );
     if( ret != RS_OK )
         return( ret );
-    ret = allocSegTable( tmpseg, err_code );
+    ret = allocSegTable( dst_seg, err_code );
     if( ret != RS_OK )
         return( ret );
 
-    ret = readSegTable( old_fp, head_offset + head->segment_off, oldseg );
+    ret = readSegTable( src->fp, segments_off, src_seg->Segments, num_segs );
     if( ret != RS_OK ) {
         *err_code = errno;
         return( ret );
     }
-    ret = readSegTable( old_fp, head_offset + head->segment_off, tmpseg );
+    ret = readSegTable( src->fp, segments_off, dst_seg->Segments, num_segs );
     *err_code = errno;
     return( ret );
 
 } /* AllocAndReadWINSegTables */
 
-
-RcStatus AllocAndReadOS2SegTables( int *err_code )
-/************************************************/
+RcStatus AllocAndReadOS2SegTables( ExeFileInfo *src, ExeFileInfo *dst, ResFileInfo *res, int *err_code )
+/******************************************************************************************************/
 {
     RcStatus            ret;
-    FILE                *old_fp;
-    int                 oldres;
-    int                 newres;
-    uint_32             head_offset;
-    SegTable            *oldseg;
-    SegTable            *tmpseg;
-    os2_exe_header      *head;
+    int                 src_res;
+    int                 dst_res;
+    uint_32             segments_off;
+    SegTable            *src_seg;
+    SegTable            *dst_seg;
+    size_t              num_segs;
 
-    oldres = Pass2Info.OldFile.u.NEInfo.WinHead.resource;
-    oldseg = &(Pass2Info.OldFile.u.NEInfo.Seg);
-    old_fp = Pass2Info.OldFile.fp;
-    tmpseg = &(Pass2Info.TmpFile.u.NEInfo.Seg);
-    newres = ComputeOS2ResSegCount( Pass2Info.ResFile->Dir );
+    src_res = src->u.NEInfo.WinHead.resource;
+    src_seg = &(src->u.NEInfo.Seg);
+    dst_seg = &(dst->u.NEInfo.Seg);
+    dst_res = ComputeOS2ResSegCount( res->Dir );
 
-    head = &(Pass2Info.OldFile.u.NEInfo.WinHead);
-    head_offset = Pass2Info.OldFile.WinHeadOffset;
+    segments_off = src->WinHeadOffset + src->u.NEInfo.WinHead.segment_off;
 
-    if( (int_32)head->segments - oldres < 0 )
+    num_segs = src->u.NEInfo.WinHead.segments;
+    if( num_segs < src_res )
         return( RS_BAD_FILE_FMT );
 
-    oldseg->NumSegs = head->segments;
-    tmpseg->NumSegs = oldseg->NumSegs - oldres + newres;
-    oldseg->NumOS2ResSegs = oldres;
-    tmpseg->NumOS2ResSegs = newres;
+    src_seg->NumSegs = num_segs;
+    dst_seg->NumSegs = num_segs - src_res + dst_res;
+    src_seg->NumOS2ResSegs = src_res;
+    dst_seg->NumOS2ResSegs = dst_res;
 
-    ret = allocSegTable( oldseg, err_code );
+    ret = allocSegTable( src_seg, err_code );
     if( ret != RS_OK )
         return( ret );
 
-    ret = allocSegTable( tmpseg, err_code );
+    ret = allocSegTable( dst_seg, err_code );
     if( ret != RS_OK )
         return( ret );
 
-    ret = readSegTable( old_fp, head_offset + head->segment_off, oldseg );
+    ret = readSegTable( src->fp, segments_off, src_seg->Segments, num_segs );
     if( ret != RS_OK ) {
         *err_code = errno;
         return( ret );
     }
-    ret = readSegTable( old_fp, head_offset + head->segment_off, tmpseg );
+    if( num_segs > dst_seg->NumSegs )
+        num_segs = dst_seg->NumSegs;
+    ret = readSegTable( src->fp, segments_off, dst_seg->Segments, num_segs );
     *err_code = errno;
     return( ret );
 } /* AllocAndReadOS2SegTables */
 
 
-/********* WARNING *********/
-/* Hard coded constant. The value of sizeof( os2_reloc_item ) is to hard */
-/* to get from  wl  because of the other files that would have to be included */
-/* in order to get that structure */
+/********* WARNING *********************
+ * Hard coded constant. The value of sizeof( os2_reloc_item ) is to hard
+ * to get from  wl  because of the other files that would have to be included
+ * in order to get that structure
+ */
 #define OS_RELOC_ITEM_SIZE      8
 
-uint_32 ComputeSegmentSize( FILE *fp, SegTable * segs, int shift_count )
+uint_32 ComputeSegmentSize( FILE *fp, SegTable *segs, int shift_count )
 /**********************************************************************/
 {
     segment_record  *currseg;
@@ -190,20 +189,20 @@ uint_32 ComputeSegmentSize( FILE *fp, SegTable * segs, int shift_count )
 
 } /* ComputeSegmentSize */
 
-static bool myCopyExeData( ExeFileInfo *inexe, ExeFileInfo *outexe, uint_32 length )
+static bool myCopyExeData( ExeFileInfo *src, ExeFileInfo *dst, uint_32 length )
 {
-    switch( CopyExeData( inexe->fp, outexe->fp, length ) ) {
+    switch( CopyExeData( src->fp, dst->fp, length ) ) {
     case RS_OK:
     case RS_PARAM_ERROR:
         return( false );
     case RS_READ_ERROR:
-        RcError( ERR_READING_EXE, inexe->name, strerror( errno ) );
+        RcError( ERR_READING_EXE, src->name, strerror( errno ) );
         break;
     case RS_READ_INCMPLT:
-        RcError( ERR_UNEXPECTED_EOF, inexe->name );
+        RcError( ERR_UNEXPECTED_EOF, src->name );
         break;
     case RS_WRITE_ERROR:
-        RcError( ERR_WRITTING_FILE, outexe->name, strerror( errno ) );
+        RcError( ERR_WRITTING_FILE, dst->name, strerror( errno ) );
         break;
     default:
         RcError( ERR_INTERNAL, INTERR_UNKNOWN_RCSTATUS );
@@ -213,15 +212,15 @@ static bool myCopyExeData( ExeFileInfo *inexe, ExeFileInfo *outexe, uint_32 leng
 }
 
 
-static CpSegRc copyOneSegment( const segment_record * inseg,
-            segment_record * outseg, ExeFileInfo *inexe, ExeFileInfo *outexe,
-            int old_shift_count, int new_shift_count, bool pad_end )
+static CpSegRc copyOneSegment( const segment_record *src_seg,
+            segment_record *dst_seg, ExeFileInfo *src, ExeFileInfo *dst,
+            int src_shift_count, int dst_shift_count, bool pad_end )
 {
     CpSegRc         ret;
     bool            error;
     size_t          numread;
     uint_16         numrelocs;
-    long            out_offset;
+    long            dst_offset;
     long            align_amount;
     uint_32         seg_len = 0L;
     char            zero;
@@ -229,61 +228,71 @@ static CpSegRc copyOneSegment( const segment_record * inseg,
     zero = 0;
     error = false;
     ret = CPSEG_OK;
-
-    /* check if this is a segment that has no image in the exe file */
-    if( inseg->address != 0 ) {
-        /* align in the out file so that shift_count will be valid */
-        out_offset = RESTELL( outexe->fp );
-        if( out_offset == -1 ) {
+    /*
+     * check if this is a segment that has no image in the exe file
+     */
+    if( src_seg->address != 0 ) {
+        /*
+         * align in the dst file so that shift_count will be valid
+         */
+        dst_offset = RESTELL( dst->fp );
+        if( dst_offset == -1 ) {
             error = true;
-            RcError( ERR_WRITTING_FILE, outexe->name, strerror( errno ) );
+            RcError( ERR_WRITTING_FILE, dst->name, strerror( errno ) );
         }
         if( !error ) {
-            align_amount = AlignAmount( out_offset, new_shift_count );
-            if( RESSEEK( outexe->fp, align_amount, SEEK_CUR ) ) {
+            align_amount = AlignAmount( dst_offset, dst_shift_count );
+            if( RESSEEK( dst->fp, align_amount, SEEK_CUR ) ) {
                 error = true;
-                RcError( ERR_WRITTING_FILE, outexe->name, strerror( errno ) );
+                RcError( ERR_WRITTING_FILE, dst->name, strerror( errno ) );
             }
-            out_offset += align_amount;
+            dst_offset += align_amount;
+        }
+        /*
+         * move in the in file to the start of the segment
+         */
+        if( !error ) {
+            /*
+             * convert the address to a long before shifting it
+             */
+            if( RESSEEK( src->fp, (long)src_seg->address << src_shift_count, SEEK_SET ) ) {
+                error = true;
+                RcError( ERR_READING_EXE, src->name, strerror( errno ) );
+            }
         }
 
-        /* move in the in file to the start of the segment */
         if( !error ) {
-            /* convert the address to a long before shifting it */
-            if( RESSEEK( inexe->fp, (long)inseg->address << old_shift_count, SEEK_SET ) ) {
-                error = true;
-                RcError( ERR_READING_EXE, inexe->name, strerror( errno ) );
-            }
-        }
-
-        if( !error ) {
-            if( inseg->size == 0 ) {
+            if( src_seg->size == 0 ) {
                 seg_len = 0x10000L;
             } else {
-                seg_len = inseg->size;
+                seg_len = src_seg->size;
             }
-            error = myCopyExeData( inexe, outexe, seg_len );
+            error = myCopyExeData( src, dst, seg_len );
         }
 
-        if( (inseg->info & SEG_RELOC) && !error ) {
-            /* read the number of relocation items */
-            numread = RESREAD( inexe->fp, &numrelocs, sizeof( numrelocs ) );
+        if( (src_seg->info & SEG_RELOC) && !error ) {
+            /*
+             * read the number of relocation items
+             */
+            numread = RESREAD( src->fp, &numrelocs, sizeof( numrelocs ) );
             if( numread != sizeof( numrelocs ) ) {
                 error = true;
-                if( RESIOERR( inexe->fp, numread ) ) {
-                    RcError( ERR_READING_EXE, inexe->name, strerror( errno ) );
+                if( RESIOERR( src->fp, numread ) ) {
+                    RcError( ERR_READING_EXE, src->name, strerror( errno ) );
                 } else {
-                    RcError( ERR_UNEXPECTED_EOF, inexe->name );
+                    RcError( ERR_UNEXPECTED_EOF, src->name );
                 }
             } else {
-                if( RESWRITE( outexe->fp, &numrelocs, sizeof( numrelocs ) ) != sizeof( numrelocs ) ) {
+                if( RESWRITE( dst->fp, &numrelocs, sizeof( numrelocs ) ) != sizeof( numrelocs ) ) {
                     error = true;
-                    RcError( ERR_WRITTING_FILE, outexe->name, strerror( errno ) );
+                    RcError( ERR_WRITTING_FILE, dst->name, strerror( errno ) );
                 }
             }
-            /* copy the relocation information */
+            /*
+             * copy the relocation information
+             */
             if( !error ) {
-                error = myCopyExeData( inexe, outexe, numrelocs * OS_RELOC_ITEM_SIZE );
+                error = myCopyExeData( src, dst, numrelocs * OS_RELOC_ITEM_SIZE );
             }
             if( numrelocs * OS_RELOC_ITEM_SIZE + seg_len > 0x10000L ) {
                 ret = CPSEG_SEG_TOO_BIG;
@@ -291,34 +300,39 @@ static CpSegRc copyOneSegment( const segment_record * inseg,
         }
 
         if( pad_end && ret != CPSEG_SEG_TOO_BIG && !error ) {
-            align_amount = AlignAmount( RESTELL( outexe->fp ), new_shift_count );
-            /* make sure there is room for the memory arena header */
+            align_amount = AlignAmount( RESTELL( dst->fp ), dst_shift_count );
+            /*
+             * make sure there is room for the memory arena header
+             */
             if( align_amount < 16 ) {
                 align_amount += 16;
             }
-            if( RESSEEK( outexe->fp, align_amount - 1, SEEK_CUR ) ) {
+            if( RESSEEK( dst->fp, align_amount - 1, SEEK_CUR ) ) {
                 error = true;
-                RcError( ERR_WRITTING_FILE, outexe->name );
+                RcError( ERR_WRITTING_FILE, dst->name );
             } else {
-                /* write something out so if we have just seeked past the
+                /*
+                 * write something out so if we have just seeked past the
                  * end of the file the file's size will be adjusted
-                 * appropriately */
-                if( RESWRITE( outexe->fp, &zero, 1 ) != 1 ) {
+                 * appropriately
+                 */
+                if( RESWRITE( dst->fp, &zero, 1 ) != 1 ) {
                     error = true;
-                    RcError( ERR_WRITTING_FILE, outexe->name );
+                    RcError( ERR_WRITTING_FILE, dst->name );
                 }
             }
         }
     } else {
-        out_offset = 0;
+        dst_offset = 0;
     }
-
-    /* copy the segment record to outseg */
+    /*
+     * copy the segment record to dst_seg
+     */
     if( !error ) {
-        outseg->size = inseg->size;
-        outseg->info = inseg->info;
-        outseg->min = inseg->min;
-        outseg->address = out_offset >> new_shift_count;
+        dst_seg->size = src_seg->size;
+        dst_seg->info = src_seg->info;
+        dst_seg->min = src_seg->min;
+        dst_seg->address = dst_offset >> dst_shift_count;
     }
 
     if( error ) {
@@ -329,140 +343,135 @@ static CpSegRc copyOneSegment( const segment_record * inseg,
 } /* copyOneSegment */
 
 
-CpSegRc CopyWINSegments( uint_16 sect2mask, uint_16 sect2bits, bool sect2 )
-/*************************************************************************/
-/* Note: sect2 must be either 1 (do section 2) or 0 (do section 1) */
-/* CopyWINSegments should be called twice, once with sect2 false, and once with */
-/* it true. The values of sect2mask and sect2bits should be the same for both */
-/* calls. The segment table for the temporary file will not be properly */
-/* filled in until after the second call */
+CpSegRc CopyWINSegments( ExeFileInfo *src, ExeFileInfo *dst, uint_16 sect2mask, uint_16 sect2bits, bool sect2 )
+/**************************************************************************************************************
+ * Note: sect2 must be either 1 (do section 2) or 0 (do section 1)
+ * CopyWINSegments should be called twice, once with sect2 false, and once with
+ * it true. The values of sect2mask and sect2bits should be the same for both
+ * calls. The segment table for the temporary file will not be properly
+ * filled in until after the second call
+ */
 {
-    segment_record *    oldseg;
-    segment_record *    tmpseg;
+    segment_record      *src_seg;
+    segment_record      *dst_seg;
     bool                padend;
     int                 num_segs;
-    ExeFileInfo         *old_exe_info;
-    ExeFileInfo         *tmp_exe_info;
-    int                 old_shift_count;
-    int                 new_shift_count;
+    int                 src_shift_count;
+    int                 dst_shift_count;
     int                 currseg;
     CpSegRc             cponeret;
     CpSegRc             ret;
 
-    oldseg = Pass2Info.OldFile.u.NEInfo.Seg.Segments;
-    tmpseg = Pass2Info.TmpFile.u.NEInfo.Seg.Segments;
-    num_segs = Pass2Info.OldFile.u.NEInfo.Seg.NumSegs;
-    old_exe_info = &Pass2Info.OldFile;
-    tmp_exe_info = &Pass2Info.TmpFile;
-    old_shift_count = Pass2Info.OldFile.u.NEInfo.WinHead.align;
-    new_shift_count = Pass2Info.TmpFile.u.NEInfo.WinHead.align;
+    src_seg = src->u.NEInfo.Seg.Segments;
+    dst_seg = dst->u.NEInfo.Seg.Segments;
+    num_segs = src->u.NEInfo.Seg.NumSegs;
+    src_shift_count = src->u.NEInfo.WinHead.align;
+    dst_shift_count = dst->u.NEInfo.WinHead.align;
 
     ret = CPSEG_OK;
     cponeret = CPSEG_OK;
     padend = !sect2;
 
     for( currseg = 0; currseg < num_segs; ++currseg ) {
-        /* if the bits are unequal and this is section 1 --> copy segment */
-        /* if the bits are equal and this is section 2   --> copy segment */
-        /* otherwise                                     --> do nothing */
-        if( ARE_BITS_EQUAL( sect2mask, sect2bits, oldseg->info ) == sect2 ) {
-            cponeret = copyOneSegment( oldseg, tmpseg, old_exe_info,
-                                        tmp_exe_info, old_shift_count,
-                                        new_shift_count, padend );
+        /*
+         * if the bits are unequal and this is section 1 --> copy segment
+         * if the bits are equal and this is section 2   --> copy segment
+         * otherwise                                     --> do nothing
+         */
+        if( ARE_BITS_EQUAL( sect2mask, sect2bits, src_seg->info ) == sect2 ) {
+            cponeret = copyOneSegment( src_seg, dst_seg, src, dst,
+                                src_shift_count, dst_shift_count, padend );
             if( cponeret == CPSEG_SEG_TOO_BIG ) {
                 padend = false;
                 ret = CPSEG_SEG_TOO_BIG;
             }
-            CheckDebugOffset( &(Pass2Info.OldFile) );
-            CheckDebugOffset( &(Pass2Info.TmpFile) );
+            CheckDebugOffset( src );
+            CheckDebugOffset( dst );
         }
         if( cponeret == CPSEG_ERROR )
             break;
-        /* mark section 1 segments as preload */
+        /*
+         * mark section 1 segments as preload
+         */
         if( !sect2 ) {
-            tmpseg->info |= SEG_PRELOAD;
+            dst_seg->info |= SEG_PRELOAD;
         }
-        oldseg++;
-        tmpseg++;
+        src_seg++;
+        dst_seg++;
     }
 
     if( cponeret == CPSEG_ERROR ) {
         ret = CPSEG_ERROR;
-        Pass2Info.TmpFile.u.NEInfo.Seg.NumSegs = 0;
+        dst->u.NEInfo.Seg.NumSegs = 0;
     } else {
-        Pass2Info.TmpFile.u.NEInfo.Seg.NumSegs = Pass2Info.OldFile.u.NEInfo.Seg.NumSegs;
+        dst->u.NEInfo.Seg.NumSegs = src->u.NEInfo.Seg.NumSegs;
     }
 
     return( ret );
 
 } /* CopyWINSegments */
 
-CpSegRc CopyOS2Segments( void )
-/******************************
+CpSegRc CopyOS2Segments( ExeFileInfo *src, ExeFileInfo *dst )
+/************************************************************
  * Akin to CopyWINSegments() only much, much simpler - just copies all segments
  * without messing with them in any way. Only called once. Won't copy
  * resource segments.
  */
 {
-    segment_record      *oldseg;
-    segment_record      *tmpseg;
-    int                 num_segs;
-    SegTable            *old_seg_tbl;
-    ExeFileInfo         *old_exe_info;
-    ExeFileInfo         *tmp_exe_info;
-    int                 old_shift_count;
-    int                 new_shift_count;
+    segment_record      *src_seg;
+    segment_record      *dst_seg;
+    int                 num_exesegs;
+    int                 src_shift_count;
+    int                 dst_shift_count;
     int                 currseg;
     CpSegRc             cponeret;
     CpSegRc             ret;
 
-    old_seg_tbl = &Pass2Info.TmpFile.u.NEInfo.Seg;
-    oldseg = old_seg_tbl->Segments;
-    tmpseg = Pass2Info.TmpFile.u.NEInfo.Seg.Segments;
-    num_segs = old_seg_tbl->NumSegs - old_seg_tbl->NumOS2ResSegs;
-    old_exe_info = &Pass2Info.OldFile;
-    tmp_exe_info = &Pass2Info.TmpFile;
-    old_shift_count = Pass2Info.OldFile.u.NEInfo.WinHead.align;
-    new_shift_count = Pass2Info.TmpFile.u.NEInfo.WinHead.align;
+    src_seg = src->u.NEInfo.Seg.Segments;
+    dst_seg = dst->u.NEInfo.Seg.Segments;
+    num_exesegs = src->u.NEInfo.Seg.NumSegs - src->u.NEInfo.Seg.NumOS2ResSegs;
+    src_shift_count = src->u.NEInfo.WinHead.align;
+    dst_shift_count = dst->u.NEInfo.WinHead.align;
 
     ret = CPSEG_OK;
     cponeret = CPSEG_OK;
 
-    for( currseg = 0; currseg < num_segs; ++currseg ) {
-        cponeret = copyOneSegment( oldseg, tmpseg, old_exe_info,
-                                    tmp_exe_info, old_shift_count,
-                                    new_shift_count, false );
+    for( currseg = 0; currseg < num_exesegs; ++currseg ) {
+        cponeret = copyOneSegment( src_seg, dst_seg, src, dst,
+                                src_shift_count, dst_shift_count, false );
         if( cponeret == CPSEG_SEG_TOO_BIG ) {
             ret = CPSEG_SEG_TOO_BIG;
         }
-        CheckDebugOffset( &(Pass2Info.OldFile) );
-        CheckDebugOffset( &(Pass2Info.TmpFile) );
+        CheckDebugOffset( src );
+        CheckDebugOffset( dst );
         if( cponeret == CPSEG_ERROR ) {
             break;
         }
-        oldseg++;
-        tmpseg++;
+        src_seg++;
+        dst_seg++;
     }
 
     if( cponeret == CPSEG_ERROR ) {
         ret = CPSEG_ERROR;
-        Pass2Info.TmpFile.u.NEInfo.Seg.NumSegs = 0;
-    } else if( old_seg_tbl->NumOS2ResSegs ) {
+        dst->u.NEInfo.Seg.NumSegs = 0;
+    } else if( src->u.NEInfo.Seg.NumOS2ResSegs ) {
         uint_32     end_offset;
 
-        /* Must seek past the last segment in old file */
-        oldseg += old_seg_tbl->NumOS2ResSegs - 1;
-        end_offset = (uint_32)oldseg->address << old_shift_count;
-        if( oldseg->size == 0 ) {
+        /*
+         * Must seek past the last segment in src file
+         */
+        src_seg += src->u.NEInfo.Seg.NumOS2ResSegs - 1;
+        end_offset = (uint_32)src_seg->address << src_shift_count;
+        if( src_seg->size == 0 ) {
             end_offset += 0x10000;
         } else {
-            end_offset += oldseg->size;
+            end_offset += src_seg->size;
         }
-        if( RESSEEK( old_exe_info->fp, end_offset, SEEK_SET ) ) {
+        if( RESSEEK( src->fp, end_offset, SEEK_SET ) ) {
             ret = CPSEG_ERROR;
-            RcError( ERR_READING_EXE, old_exe_info->name, strerror( errno ) );
+            RcError( ERR_READING_EXE, src->name, strerror( errno ) );
         }
-        CheckDebugOffset( &(Pass2Info.OldFile) );
+        CheckDebugOffset( src );
     }
 
     return( ret );

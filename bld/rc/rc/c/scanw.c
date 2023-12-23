@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,7 +45,8 @@
 
 #ifdef SCANDEBUG
 
-#define DEBUGPUTS(s) PutScanString(s);
+#define DEBUGPUTS(s)        PutScanString(s)
+#define DEBUGPUTS_NEWINT    sprintf(debugstring,"%ld",newint);PutScanString(debugstring)
 
 static void PutScanString( const char *string )
 {
@@ -54,11 +56,15 @@ static void PutScanString( const char *string )
 } /* PutScanString */
 
 #else
-    #define DEBUGPUTS(s)
+
+#define DEBUGPUTS(s)
+#define DEBUGPUTS_NEWINT
+
 #endif
 
-/*** Macros to implement the parts of a finite state machine ***/
-/* change_state changes states without reading a character */
+/*** Macros to implement the parts of a finite state machine ***
+ * change_state changes states without reading a character
+ */
 
 static int      _next;
 static int      LookAhead;
@@ -108,11 +114,12 @@ static void AddDigitToInt( long *value, int base, int newchar )
 } /* AddDigitToInt */
 
 static YYTOKENTYPE ScanCPPDirective( ScanValue *value )
-/*****************************************************/
-/* This function takes the correct action for the #line directive and returns */
-/* the token following the preprocessor stuff. It uses Scan to do it's */
-/* scanning. DON'T call this function from within Scan or the functions it */
-/* calls unless you are very careful about recurtion. */
+/******************************************************
+ * This function takes the correct action for the #line directive and returns
+ * the token following the preprocessor stuff. It uses Scan to do it's
+ * scanning. DON'T call this function from within Scan or the functions it
+ * calls unless you are very careful about recurtion.
+ */
 {
     YYTOKENTYPE token;
     unsigned    lineno;
@@ -120,7 +127,9 @@ static YYTOKENTYPE ScanCPPDirective( ScanValue *value )
     if( StopInvoked ) {
         RcFatalError( ERR_STOP_REQUESTED );
     }
-    /* get the "line" or "pragma" directive */
+    /*
+     * get the "line" or "pragma" directive
+     */
     token = ScanDFA( value );
     if( token != Y_NAME ) {
         RcFatalError( ERR_INVALID_CPP );
@@ -128,8 +137,9 @@ static YYTOKENTYPE ScanCPPDirective( ScanValue *value )
 
     if( stricmp( value->string.string, "line" ) == 0 ) {
         RESFREE( value->string.string );
-
-        /* get the line number */
+        /*
+         * get the line number
+         */
         token = ScanDFA( value );
         if( token != Y_INTEGER ) {
             RcFatalError( ERR_INVALID_CPP_LINE );
@@ -137,8 +147,9 @@ static YYTOKENTYPE ScanCPPDirective( ScanValue *value )
         RESFREE( value->intinfo.str );
         value->intinfo.str = NULL;
         lineno = value->intinfo.val;
-
-        /* get the filename if there is one */
+        /*
+         * get the filename if there is one
+         */
         token = ScanDFA( value );
         if( token == Y_STRING ) {
             RcIoSetCurrentFileInfo( lineno, value->string.string );
@@ -178,8 +189,8 @@ void ScanInitWIN( void )
     enter_start_state();
 }
 
-static YYTOKENTYPE ScanDFA( ScanValue * value )
-/*********************************************/
+static YYTOKENTYPE ScanDFA( ScanValue *value )
+/********************************************/
 {
     long                newint;     /* these are used to accumulate parts of */
     VarString           *newstring; /* a new value */
@@ -223,7 +234,7 @@ static YYTOKENTYPE ScanDFA( ScanValue * value )
                 VarStringAddChar( newstring, LookAhead );
                 do_transition( S_DOS_FILENAME );
             case EOF:
-                DEBUGPUTS("EOF")
+                DEBUGPUTS("EOF");
                 return( 0 );                /* yacc wants 0 on EOF */
             case '#':           do_transition( S_POUND_SIGN );
             case '(':           do_transition( S_LPAREN );
@@ -277,63 +288,63 @@ static YYTOKENTYPE ScanDFA( ScanValue * value )
         }
 
     state( S_POUND_SIGN ):
-        DEBUGPUTS( "#" )
+        DEBUGPUTS( "#" );
         return( Y_POUND_SIGN );
 
     state( S_LPAREN ):
-        DEBUGPUTS( "(" )
+        DEBUGPUTS( "(" );
         return( Y_LPAREN );
 
     state( S_RPAREN ):
-        DEBUGPUTS( ")" )
+        DEBUGPUTS( ")" );
         return( Y_RPAREN );
 
     state( S_LSQ_BRACKET ):
-        DEBUGPUTS( "[" )
+        DEBUGPUTS( "[" );
         return( Y_LSQ_BRACKET );
 
     state( S_RSQ_BRACKET ):
-        DEBUGPUTS( "]" )
+        DEBUGPUTS( "]" );
         return( Y_RSQ_BRACKET );
 
     state( S_LBRACE ):
-        DEBUGPUTS( "{" )
+        DEBUGPUTS( "{" );
         return( Y_LBRACE );
 
     state( S_RBRACE ):
-        DEBUGPUTS( "}" )
+        DEBUGPUTS( "}" );
         return( Y_RBRACE );
 
     state( S_PLUS ):
-        DEBUGPUTS( "+" )
+        DEBUGPUTS( "+" );
         return( Y_PLUS );
 
     state( S_MINUS ):
-        DEBUGPUTS( "-" )
+        DEBUGPUTS( "-" );
         return( Y_MINUS );
 
     state( S_BITNOT ):
-        DEBUGPUTS( "~" )
+        DEBUGPUTS( "~" );
         return( Y_BITNOT );
 
     state( S_NOT ):
         if( LookAhead == '=' ) {
             do_transition( S_NE );
         } else {
-            DEBUGPUTS( "!" )
+            DEBUGPUTS( "!" );
             return( Y_NOT );
         }
 
     state( S_TIMES ):
-        DEBUGPUTS( "*" )
+        DEBUGPUTS( "*" );
         return( Y_TIMES );
 
     state( S_DIVIDE ):
-        DEBUGPUTS( "/" )
+        DEBUGPUTS( "/" );
         return( Y_DIVIDE );
 
     state( S_MOD ):
-        DEBUGPUTS( "%" )
+        DEBUGPUTS( "%" );
         return( Y_MOD );
 
     state( S_GT ):
@@ -341,7 +352,7 @@ static YYTOKENTYPE ScanDFA( ScanValue * value )
         case '>':       do_transition( S_SHIFTR );
         case '=':       do_transition( S_GE );
         default:
-            DEBUGPUTS( ">" )
+            DEBUGPUTS( ">" );
             return( Y_GT );
         }
 
@@ -350,7 +361,7 @@ static YYTOKENTYPE ScanDFA( ScanValue * value )
         case '<':       do_transition( S_SHIFTL );
         case '=':       do_transition( S_LE );
         default:
-            DEBUGPUTS( "<" )
+            DEBUGPUTS( "<" );
             return( Y_LT );
         }
 
@@ -358,7 +369,7 @@ static YYTOKENTYPE ScanDFA( ScanValue * value )
         if( LookAhead == '=' ) {
             do_transition( S_ENDEQ );
         } else {
-            DEBUGPUTS( "=" )
+            DEBUGPUTS( "=" );
             return( Y_SINGLE_EQ );
         }
 
@@ -366,68 +377,70 @@ static YYTOKENTYPE ScanDFA( ScanValue * value )
         if( LookAhead == '&' ) {
             do_transition( S_AND );
         } else {
-            DEBUGPUTS( "&" )
+            DEBUGPUTS( "&" );
             return( Y_BITAND );
         }
 
     state( S_BITXOR ):
-        DEBUGPUTS( "^" )
+        DEBUGPUTS( "^" );
         return( Y_BITXOR );
 
     state( S_BITOR ):
         if( LookAhead == '|' ) {
             do_transition( S_OR );
         } else {
-            DEBUGPUTS( "|" )
+            DEBUGPUTS( "|" );
             return( Y_BITOR );
         }
 
     state( S_QUESTION ):
-        DEBUGPUTS( "?" )
+        DEBUGPUTS( "?" );
         return( Y_QUESTION );
 
     state( S_COLON ):
-        DEBUGPUTS( ":" )
+        DEBUGPUTS( ":" );
         return( Y_COLON );
 
     state( S_COMMA ):
-        DEBUGPUTS( "," )
+        DEBUGPUTS( "," );
         return( Y_COMMA );
 
     state( S_NE ):
-        DEBUGPUTS( "!=" )
+        DEBUGPUTS( "!=" );
         return( Y_NE );
 
     state( S_SHIFTR ):
-        DEBUGPUTS( ">>" )
+        DEBUGPUTS( ">>" );
         return( Y_SHIFTR );
 
     state( S_GE ):
-        DEBUGPUTS( ">=" )
+        DEBUGPUTS( ">=" );
         return( Y_GE );
 
     state( S_SHIFTL ):
-        DEBUGPUTS( "<<" )
+        DEBUGPUTS( "<<" );
         return( Y_SHIFTL );
 
     state( S_LE ):
-        DEBUGPUTS( "<=" )
+        DEBUGPUTS( "<=" );
         return( Y_LE );
 
     state( S_ENDEQ ):
-        DEBUGPUTS( "==" )
+        DEBUGPUTS( "==" );
         return( Y_EQ );
 
     state( S_AND ):
-        DEBUGPUTS( "&&" )
+        DEBUGPUTS( "&&" );
         return( Y_AND );
 
     state( S_OR ):
-        DEBUGPUTS( "||" )
+        DEBUGPUTS( "||" );
         return( Y_OR );
 
     state( S_STRING ):
-        /* handle multi-byte characters */
+        /*
+         * handle multi-byte characters
+         */
         i = CharSetLen[LookAhead];
         if( i ) {
             VarStringAddChar( newstring, LookAhead );
@@ -437,14 +450,17 @@ static YYTOKENTYPE ScanDFA( ScanValue * value )
             }
             do_transition( S_STRING );
         }
-
-        // if newline in string was detected, remove all whitespace from
-        // begining of the next line
+        /*
+         * if newline in string was detected, remove all whitespace from
+         * begining of the next line
+         */
         if( newLineInString ) {
             if( isspace( LookAhead ) ) {
                 do_transition( S_STRING );
             } else {
-                // non whitespace was detected, reset newline flag, so whitespaces are treated normally
+                /*
+                 * non whitespace was detected, reset newline flag, so whitespaces are treated normally
+                 */
                 newLineInString = 0;
             }
         }
@@ -455,7 +471,7 @@ static YYTOKENTYPE ScanDFA( ScanValue * value )
         case '\n':
             if( RcIoIsCOrHFile() ) {
                 value->string.string = VarStringEnd( newstring, &(value->string.length) );
-                DEBUGPUTS( "STRING" )
+                DEBUGPUTS( "STRING" );
                 return( Y_STRING );
             } else {
                 // MSVC's RC uses this obscure way of handling newline in strings and we follow.
@@ -481,7 +497,9 @@ static YYTOKENTYPE ScanDFA( ScanValue * value )
             do_transition( S_HEX_ESCAPE_1 );
             break;
         case 'a':
-            /* this is what Microsoft's RC adds for a \a */
+            /*
+             * this is what Microsoft's RC adds for a \a
+             */
             VarStringAddChar( newstring, '\x8' );
             do_transition( S_STRING );
             break;
@@ -563,16 +581,20 @@ static YYTOKENTYPE ScanDFA( ScanValue * value )
             stringFromFile = VarStringEnd( newstring, &(value->string.length) );
             value->string.string = stringFromFile;
 #if 0
-            //DRW - this code truncates trailing null chars in resources
-            //          like user data.  It is commented until I fix it.
+            /*
+             * DRW - this code truncates trailing null chars in resources
+             *          like user data.  It is commented until I fix it.
+             */
             if( CmdLineParms.FindAndReplace ) {
                 char            *temp;
                 temp = FindAndReplace( stringFromFile,
                                        CmdLineParms.FindReplaceStrings );
-                // PrependToString prepends a string if that option
-                // is specified. As a string from the rc file is only scanned
-                // once and the string might have been changed by find and
-                // replace, this is needed here
+                /*
+                 * PrependToString prepends a string if that option
+                 * is specified. As a string from the rc file is only scanned
+                 * once and the string might have been changed by find and
+                 * replace, this is needed here
+                 */
                 prependToString( value, temp );
             } else if( CmdLineParms.Prepend ) {
                 prependToString( value, stringFromFile );
@@ -583,7 +605,7 @@ static YYTOKENTYPE ScanDFA( ScanValue * value )
                 RcWarning( ERR_LSTRING_IGNORED_FOR_WINDOWS );
                 value->string.lstring = false;
             }
-            DEBUGPUTS( value->string.string )
+            DEBUGPUTS( value->string.string );
             return( Y_STRING );
         }
 
@@ -602,7 +624,7 @@ static YYTOKENTYPE ScanDFA( ScanValue * value )
         } else {
             value->intinfo.val = newint;
             value->intinfo.str = VarStringEnd( newstring, NULL );
-            DEBUGPUTS( ltoa( newint, debugstring, 10 ) )
+            DEBUGPUTS_NEWINT;
             return( Y_INTEGER );
         }
 
@@ -618,7 +640,7 @@ static YYTOKENTYPE ScanDFA( ScanValue * value )
         } else {
             value->intinfo.val = newint;
             value->intinfo.str = VarStringEnd( newstring, NULL );
-            DEBUGPUTS( ltoa( newint, debugstring, 10 ) )
+            DEBUGPUTS_NEWINT;
             return( Y_INTEGER );
         }
 
@@ -634,7 +656,7 @@ static YYTOKENTYPE ScanDFA( ScanValue * value )
         } else {
             value->intinfo.val = newint;
             value->intinfo.str = VarStringEnd( newstring, NULL );
-            DEBUGPUTS( ltoa( newint, debugstring, 10 ) )
+            DEBUGPUTS_NEWINT;
             return( Y_INTEGER );
         }
 
@@ -646,7 +668,7 @@ static YYTOKENTYPE ScanDFA( ScanValue * value )
         } else {
             value->intinfo.val = newint;
             value->intinfo.str = VarStringEnd( newstring, NULL );
-            DEBUGPUTS( ltoa( newint, debugstring, 10 ) )
+            DEBUGPUTS_NEWINT;
             return( Y_INTEGER );
         }
 
@@ -670,7 +692,7 @@ static YYTOKENTYPE ScanDFA( ScanValue * value )
             do_transition( S_DOS_FILENAME );
         } else {
             value->intinfo.val = newint;
-            DEBUGPUTS( ltoa( newint, debugstring, 10 ) )
+            DEBUGPUTS_NEWINT;
             value->intinfo.str = VarStringEnd( newstring, NULL );
             return( Y_INTEGER );
         }
@@ -694,7 +716,7 @@ static YYTOKENTYPE ScanDFA( ScanValue * value )
         } else {
             value->intinfo.val = newint;
             value->intinfo.str = VarStringEnd( newstring, NULL );
-            DEBUGPUTS( ltoa( newint, debugstring, 10 ) )
+            DEBUGPUTS_NEWINT;
             return( Y_INTEGER );
         }
 
@@ -713,7 +735,7 @@ static YYTOKENTYPE ScanDFA( ScanValue * value )
         } else {
             value->intinfo.val = newint;
             value->intinfo.str = VarStringEnd( newstring, NULL );
-            DEBUGPUTS( ltoa( newint, debugstring, 10 ) )
+            DEBUGPUTS_NEWINT;
             return( Y_INTEGER );
         }
 
@@ -726,15 +748,19 @@ static YYTOKENTYPE ScanDFA( ScanValue * value )
             do_transition( S_DOS_FILENAME );
         } else {
             value->string.string = VarStringEnd( newstring, &(value->string.length) );
-            DEBUGPUTS( value->string.string )
+            DEBUGPUTS( value->string.string );
             token = LookupKeywordWIN( value->string );
             if( token != Y_NAME ) {
-                /* release the string if it is a keyword */
+                /*
+                 * release the string if it is a keyword
+                 */
                 RESFREE( value->string.string );
             }
             if( token == Y_RCINCLUDE ) {
-                /* when inline preprocessing is in place take steps here */
-                /* to make  rcinclude's  look line  #include's  */
+                /*
+                 * when inline preprocessing is in place take steps here
+                 * to make  rcinclude's  look line  #include's
+                 */
                 RcFatalError( ERR_NO_RCINCLUDES );
             }
             return( token );
@@ -747,7 +773,7 @@ static YYTOKENTYPE ScanDFA( ScanValue * value )
             do_transition( S_DOS_FILENAME );
         } else {
             value->string.string = VarStringEnd( newstring, &(value->string.length) );
-            DEBUGPUTS( value->string.string )
+            DEBUGPUTS( value->string.string );
             return( Y_DOS_FILENAME );
         }
 } /* ScanDFA */

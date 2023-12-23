@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,11 +30,11 @@
 ****************************************************************************/
 
 
-unsigned_16 TargetShort( unsigned_16 value )
+uint_16 TargetShort( uint_16 value )
 {
     union {
         char        b[2];
-        unsigned_16 val;
+        uint_16     val;
     } in, out;
 
     in.val = value;
@@ -47,11 +48,11 @@ int TargetOffset( int value )
     return( value );
 }
 
-unsigned_32 TargetBigInt( unsigned_32 value )
+uint_32 TargetBigInt( uint_32 value )
 {
     union {
         char        b[4];
-        unsigned_32 val;
+        uint_32     val;
     } in, out;
 
     in.val = value;
@@ -62,17 +63,17 @@ unsigned_32 TargetBigInt( unsigned_32 value )
     return( out.val );
 }
 
-void TargAddL( unsigned_32 *targetw, unsigned_32 value )
+void TargAddL( uint_32 *targetw, uint_32 value )
 {
-    unsigned_32 out;
+    uint_32 out;
 
     out = TargetBigInt( *targetw ) + value;
     *targetw = TargetBigInt( out );
 }
 
-void TargAddW( unsigned_16 *targetw, unsigned_16 value )
+void TargAddW( uint_16 *targetw, uint_16 value )
 {
-    unsigned_16 out;
+    uint_16 out;
 
     out = TargetShort( *targetw ) + value;
     *targetw = TargetShort( out );

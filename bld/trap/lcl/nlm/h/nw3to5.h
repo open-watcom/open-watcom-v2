@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,7 +31,7 @@
 ****************************************************************************/
 
 
-#if defined ( __NW50__ )
+#if defined( __NETWARE_LIBC__ )
     #include "mmu.h"
     #include "process.h"
 
@@ -52,7 +53,7 @@
     extern void CYieldWithDelay(void);
     #define CRescheduleLast CYieldWithDelay
 
-#elif defined ( __NW40__ )
+#elif defined( __NW40__ )
 
     #include "mmu.h"
     #include "process.h"
@@ -75,7 +76,7 @@
     #define FileServerMajorVersionNumber GetFileServerMajorVersionNumber()
     #define FileServerMinorVersionNumber GetFileServerMinorVersionNumber()
 
-#elif defined ( __NW30__ )
+#elif defined( __NW30__ )
     #define T_ProcessID                 T_ThreadControlStruct
 
     #define _RunningProcess             (T_ProcessID *)RunningProcess
@@ -88,7 +89,7 @@
 #endif
 
 
-#if defined ( __NW50__ )
+#if defined( __NETWARE_LIBC__ )
     #define StackFrame T_TSS_StackFrame
     #define FieldGS( x )                        ( (x)->ExceptionGS[0] )
     #define FieldFS( x )                        ( (x)->ExceptionFS[0] )
@@ -109,7 +110,7 @@
     #define FieldEIP( x )                       ( (x)->ExceptionEIP )
     #define FieldCS( x )                        ( (x)->ExceptionCS[0] )
     #define FieldEFLAGS( x )                    ( (x)->ExceptionSystemFlags )
-#elif defined ( __NW40__ )
+#elif defined( __NW40__ )
     #define StackFrame T_TSS_StackFrame
     #define FieldGS( x )                        ( (x)->ExceptionGS[0] )
     #define FieldFS( x )                        ( (x)->ExceptionFS[0] )
@@ -130,7 +131,7 @@
     #define FieldEIP( x )                       ( (x)->ExceptionEIP )
     #define FieldCS( x )                        ( (x)->ExceptionCS[0] )
     #define FieldEFLAGS( x )                    ( (x)->ExceptionSystemFlags )
-#elif defined ( __NW30__ )
+#elif defined( __NW30__ )
     #define StackFrame T_StackFrame
     #define FieldGS( x )                        ( (x)->GS[0] )
     #define FieldFS( x )                        ( (x)->FS[0] )
@@ -158,10 +159,10 @@
 extern struct ResourceTagStructure      *BreakTag;
 extern struct ResourceTagStructure      *DebugTag;
 
-#if defined ( __NW50__ )
+#if defined( __NETWARE_LIBC__ )
     #define DoReserveBreakpoint() ReserveABreakpointRTag( (LONG)(BreakTag) );
-#elif defined ( __NW40__ )
+#elif defined( __NW40__ )
     #define DoReserveBreakpoint() ReserveABreakpointRTag( (LONG)(BreakTag) );
-#elif defined ( __NW30__ )
+#elif defined( __NW30__ )
     #define DoReserveBreakpoint() ReserveABreakpointRTag( BreakTag );
 #endif

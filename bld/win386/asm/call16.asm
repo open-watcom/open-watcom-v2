@@ -2,6 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
+;* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -58,7 +59,7 @@ _DATA ends
 
 _TEXT segment use16
         assume cs:_TEXT
-        assume ds:dgroup
+        assume ds:DGROUP
 
 ;
 ; DWORD __Call16( FARPROC lpFunc, char *fmt, ... );

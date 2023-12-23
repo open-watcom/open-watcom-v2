@@ -1,3 +1,5 @@
+tree_depth = 5
+
 !ifneq host_os nt
 !   error Unknown OS.
 !endif

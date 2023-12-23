@@ -1,247 +1,251 @@
+/* UTF-8 encoding, Â¥ */
+
+#define PRODUCT_NAME    banner1t( "DDE Spy" )
+
 pick(   STR_ACK,
         "ack",
-        "’Ê’m" )
+        "é€šçŸ¥" )
 pick(   STR_ADVISE,
         "advise",
-        "ƒAƒhƒoƒCƒX" )
+        "ã‚¢ãƒ‰ãƒã‚¤ã‚¹" )
 pick(   STR_DATA,
         "data",
-        "ƒf|ƒ^" )
+        "ãƒ‡ï¼ã‚¿" )
 pick(   STR_EXECUTE,
         "execute",
-        "Às" )
+        "å®Ÿè¡Œ" )
 pick(   STR_INITIATE,
         "initiate",
-        "‰Šú‰»" )
+        "åˆæœŸåŒ–" )
 pick(   STR_POKE,
         "poke",
-        "’T¸" )
+        "æ¢æŸ»" )
 pick(   STR_REQUEST,
         "request",
-        "—v‹" )
+        "è¦æ±‚" )
 pick(   STR_TERMINATE,
         "terminate",
-        "I—¹" )
+        "çµ‚äº†" )
 pick(   STR_UNADVISE,
         "unadvise",
-        "ƒAƒ“ƒAƒhƒoƒCƒX" )
+        "ã‚¢ãƒ³ã‚¢ãƒ‰ãƒã‚¤ã‚¹" )
 
 pick(   STR_UNKNOWN_FMT_ID,
         "0x%s (unknown)",
-        "0x%s (–¢’m)" )
+        "0x%s (æœªçŸ¥)" )
 pick(   STR_UNKNOWN,
         "unknown",
-        "–¢’m" )
+        "æœªçŸ¥" )
 
 
 // Formatting strings for the various types of events
 pick(   STR_ADVSTART_FMT_STR,
         "time: %lu %s CALLBACK: %s\n         returned: 0x%08lX %s fmt: %s\n         Topic: 0x%08lX (%s) Item: 0x%08lX (%s)",
-        "ŠÔ: %lu %s ƒR|ƒ‹ƒoƒbƒN: %s\n         –ß‚è’l: 0x%08lX %s Œ`®: %s\n         ƒgƒsƒbƒN: 0x%08lX (%s) ƒAƒCƒeƒ€: 0x%08lX (%s)" )
+        "æ™‚é–“: %lu %s ã‚³ï¼ãƒ«ãƒãƒƒã‚¯: %s\n         æˆ»ã‚Šå€¤: 0x%08lX %s å½¢å¼: %s\n         ãƒˆãƒ”ãƒƒã‚¯: 0x%08lX (%s) ã‚¢ã‚¤ãƒ†ãƒ : 0x%08lX (%s)" )
 pick(   STR_CONNECT_FMT_STR,
         "time: %lu %s CALLBACK: %s\n         returned: 0x%08lX %s fmt: %s\n         Topic: 0x%08lX (%s) Service: 0x%08lX (%s)\n         data1: 0x%08lX data2: 0x%08lX",
-        "ŠÔ: %lu %s ƒR|ƒ‹ƒoƒbƒN: %s\n         –ß‚è’l: 0x%08lX %s Œ`®: %s\n         ƒgƒsƒbƒN: 0x%08lX (%s) ƒT|ƒrƒX: 0x%08lX (%s)\n         data1: 0x%08lX data2: 0x%08lX" )
+        "æ™‚é–“: %lu %s ã‚³ï¼ãƒ«ãƒãƒƒã‚¯: %s\n         æˆ»ã‚Šå€¤: 0x%08lX %s å½¢å¼: %s\n         ãƒˆãƒ”ãƒƒã‚¯: 0x%08lX (%s) ã‚µï¼ãƒ“ã‚¹: 0x%08lX (%s)\n         data1: 0x%08lX data2: 0x%08lX" )
 pick(   STR_ADVREQ_FMT_STR,
         "time: %lu %s CALLBACK: %s\n         returned: 0x%08lX %s fmt: %s\n         Topic: 0x%08lX (%s) Item: 0x%08lX (%s)\n         data1: 0x%08lX",
-        "ŠÔ: %lu %s ƒR|ƒ‹ƒoƒbƒN: %s\n         –ß‚è’l: 0x%08lX %s Œ`®: %s\n         ƒgƒsƒbƒN: 0x%08lX (%s) ƒAƒCƒeƒ€: 0x%08lX (%s)\n         data1: 0x%08lX" )
+        "æ™‚é–“: %lu %s ã‚³ï¼ãƒ«ãƒãƒƒã‚¯: %s\n         æˆ»ã‚Šå€¤: 0x%08lX %s å½¢å¼: %s\n         ãƒˆãƒ”ãƒƒã‚¯: 0x%08lX (%s) ã‚¢ã‚¤ãƒ†ãƒ : 0x%08lX (%s)\n         data1: 0x%08lX" )
 pick(   STR_ADVDATA_FMT_STR,
         "time: %lu %s CALLBACK: %s\n         returned: 0x%08lX %s fmt: %s\n         Topic: 0x%08lX (%s) Item: 0x%08lX (%s)\n         HData: 0x%08lX",
-        "ŠÔ: %lu %s ƒR|ƒ‹ƒoƒbƒN: %s\n         –ß‚è’l: 0x%08lX %s Œ`®: %s\n         ƒgƒsƒbƒN: 0x%08lX (%s) ƒAƒCƒeƒ€: 0x%08lX (%s)\n         HData: 0x%08lX" )
+        "æ™‚é–“: %lu %s ã‚³ï¼ãƒ«ãƒãƒƒã‚¯: %s\n         æˆ»ã‚Šå€¤: 0x%08lX %s å½¢å¼: %s\n         ãƒˆãƒ”ãƒƒã‚¯: 0x%08lX (%s) ã‚¢ã‚¤ãƒ†ãƒ : 0x%08lX (%s)\n         HData: 0x%08lX" )
 pick(   STR_EXECUTE_FMT_STR,
         "time: %lu %s CALLBACK: %s\n         returned: 0x%08lX %s fmt: %s\n         Topic: 0x%08lX (%s) Command (HData): 0x%08lX\n",
-        "ŠÔ: %lu %s ƒR|ƒ‹ƒoƒbƒN: %s\n         –ß‚è’l: 0x%08lX %s Œ`®: %s\n         ƒgƒsƒbƒN: 0x%08lX (%s) ƒRƒ}ƒ“ƒh (HData): 0x%08lX\n" )
+        "æ™‚é–“: %lu %s ã‚³ï¼ãƒ«ãƒãƒƒã‚¯: %s\n         æˆ»ã‚Šå€¤: 0x%08lX %s å½¢å¼: %s\n         ãƒˆãƒ”ãƒƒã‚¯: 0x%08lX (%s) ã‚³ãƒãƒ³ãƒ‰ (HData): 0x%08lX\n" )
 pick(   STR_CONFIRM_FRM_STR,
         "time: %lu %s CALLBACK: %s\n         returned: 0x%08lX %s fmt: %s\n         Topic: 0x%08lX (%s) Service: 0x%08lX (%s)\n         data2: 0x%08lX",
-        "ŠÔ: %lu %s ƒR|ƒ‹ƒoƒbƒN: %s\n         –ß‚è’l: 0x%08lX %s Œ`®: %s\n         ƒgƒsƒbƒN: 0x%08lX (%s) ƒT|ƒrƒX: 0x%08lX (%s)\n         data2: 0x%08lX" )
+        "æ™‚é–“: %lu %s ã‚³ï¼ãƒ«ãƒãƒƒã‚¯: %s\n         æˆ»ã‚Šå€¤: 0x%08lX %s å½¢å¼: %s\n         ãƒˆãƒ”ãƒƒã‚¯: 0x%08lX (%s) ã‚µï¼ãƒ“ã‚¹: 0x%08lX (%s)\n         data2: 0x%08lX" )
 pick(   STR_DISCONNECT_FMT_STR,
         "time: %lu %s CALLBACK: %s\n         returned: 0x%08lX %s fmt: %s\n         data2: 0x%08lX",
-        "ŠÔ: %lu %s ƒR|ƒ‹ƒoƒbƒN: %s\n         –ß‚è’l: 0x%08lX %s Œ`®: %s\n         data2: 0x%08lX" )
+        "æ™‚é–“: %lu %s ã‚³ï¼ãƒ«ãƒãƒƒã‚¯: %s\n         æˆ»ã‚Šå€¤: 0x%08lX %s å½¢å¼: %s\n         data2: 0x%08lX" )
 pick(   STR_ERROR_FMT_STR,
         "time: %lu %s CALLBACK: %s\n         returned: 0x%08lX %s fmt: %s\n         data1: 0x%08lX",
-        "ŠÔ: %lu %s ƒR|ƒ‹ƒoƒbƒN: %s\n         –ß‚è’l: 0x%08lX %s Œ`®: %s\n         data1: 0x%08lX" )
+        "æ™‚é–“: %lu %s ã‚³ï¼ãƒ«ãƒãƒƒã‚¯: %s\n         æˆ»ã‚Šå€¤: 0x%08lX %s å½¢å¼: %s\n         data1: 0x%08lX" )
 pick(   STR_XACT_CPLT_FMT_STR,
         "time: %lu %s CALLBACK: %s\n         type: %s returned: 0x%08lX %s fmt: %s\n         Topic: 0x%08lX (%s) Item: 0x%08lX (%s)\n         hdata: 0x%08lX data1: 0x%08lX data2: 0x%08lX",
-        "ŠÔ: %lu %s ƒR|ƒ‹ƒoƒbƒN: %s\n         ƒ^ƒCƒv: %s –ß‚è’l: 0x%08lX %s Œ`®: %s\n         ƒgƒsƒbƒN: 0x%08lX (%s) ƒAƒCƒeƒ€: 0x%08lX (%s)\n         hdata: 0x%08lX data1: 0x%08lX data2: 0x%08lX" )
+        "æ™‚é–“: %lu %s ã‚³ï¼ãƒ«ãƒãƒƒã‚¯: %s\n         ã‚¿ã‚¤ãƒ—: %s æˆ»ã‚Šå€¤: 0x%08lX %s å½¢å¼: %s\n         ãƒˆãƒ”ãƒƒã‚¯: 0x%08lX (%s) ã‚¢ã‚¤ãƒ†ãƒ : 0x%08lX (%s)\n         hdata: 0x%08lX data1: 0x%08lX data2: 0x%08lX" )
 pick(   STR_UNREGISTER_FMT_STR,
         "time: %lu %s CALLBACK: %s\n         hsz1: 0x%08lX (%s) hsz2: 0x%08lX (%s)",
-        "ŠÔ: %lu %s ƒR|ƒ‹ƒoƒbƒN: %s\n         hsz1: 0x%08lX (%s) hsz2: 0x%08lX (%s)" )
+        "æ™‚é–“: %lu %s ã‚³ï¼ãƒ«ãƒãƒƒã‚¯: %s\n         hsz1: 0x%08lX (%s) hsz2: 0x%08lX (%s)" )
 pick(   STR_REGISTER_FMT_STR,
         "time: %lu %s CALLBACK: %s\n         hsz1: 0x%08lX (%s) hsz2: 0x%08lX (%s)",
-        "ŠÔ: %lu %s ƒR|ƒ‹ƒoƒbƒN: %s\n         hsz1: 0x%08lX (%s) hsz2: 0x%08lX (%s)" )
+        "æ™‚é–“: %lu %s ã‚³ï¼ãƒ«ãƒãƒƒã‚¯: %s\n         hsz1: 0x%08lX (%s) hsz2: 0x%08lX (%s)" )
 pick(   STR_DEFAULT_FMT_STR,
         "time: %lu %s CALLBACK: %s\n         returned: 0x%08lX %s fmt: %s\n         hsz1: 0x%08lX (%s) hsz2: 0x%08lX (%s)\n         hdata: 0x%08lX data1: 0x%08lX data2: 0x%08lX",
-        "ŠÔ: %lu %s ƒR|ƒ‹ƒoƒbƒN: %s\n         –ß‚è’l: 0x%08lX %s Œ`®: %s\n         hsz1: 0x%08lX (%s) hsz2: 0x%08lX (%s)\n         hdata: 0x%08lX data1: 0x%08lX data2: 0x%08lX" )
+        "æ™‚é–“: %lu %s ã‚³ï¼ãƒ«ãƒãƒƒã‚¯: %s\n         æˆ»ã‚Šå€¤: 0x%08lX %s å½¢å¼: %s\n         hsz1: 0x%08lX (%s) hsz2: 0x%08lX (%s)\n         hdata: 0x%08lX data1: 0x%08lX data2: 0x%08lX" )
 
 pick(   STR_CONV_EST_FMT_STR,
         "time: %lu %s CONVERSATION ESTABLISHED\n         service: 0x%08lX (%s) topic: 0x%08lX (%s)\n         %s %s",
-        "ŠÔ: %lu %s ‘Î˜bŠm—§\n         ƒT|ƒrƒX: 0x%08lX (%s) ƒgƒsƒbƒN: 0x%08lX (%s)\n         %s %s" )
+        "æ™‚é–“: %lu %s å¯¾è©±ç¢ºç«‹\n         ã‚µï¼ãƒ“ã‚¹: 0x%08lX (%s) ãƒˆãƒ”ãƒƒã‚¯: 0x%08lX (%s)\n         %s %s" )
 pick(   STR_CONV_TERM_FMT_STR,
         "time: %lu %s CONVERSATION TERMINATED\n         service: 0x%08lX (%s) topic: 0x%08lX (%s)\n         %s %s",
-        "ŠÔ: %lu %s ‘Î˜bI—¹\n         ƒT|ƒrƒX: 0x%08lX (%s) ƒgƒsƒbƒN: 0x%08lX (%s)\n         %s %s" )
+        "æ™‚é–“: %lu %s å¯¾è©±çµ‚äº†\n         ã‚µï¼ãƒ“ã‚¹: 0x%08lX (%s) ãƒˆãƒ”ãƒƒã‚¯: 0x%08lX (%s)\n         %s %s" )
 
 pick(   STR_ERR_STRUCT_FMT_STR,
         "time: %lu %s ERROR: %s",
-        "ŠÔ: %lu %s ƒGƒ‰|: %s" )
+        "æ™‚é–“: %lu %s ã‚¨ãƒ©ï¼: %s" )
 pick(   STR_HSZ_STRUCT_DEL,
         "time: %lu %s STRING DELETED 0x%s (%s) ",
-        "ŠÔ: %lu %s íœ•¶š—ñ 0x%s (%s) " )
+        "æ™‚é–“: %lu %s å‰Šé™¤æ–‡å­—åˆ— 0x%s (%s) " )
 pick(   STR_HSZ_STRUCT_CREATE,
         "time: %lu %s STRING CREATED 0x%s (%s) ",
-        "ŠÔ: %lu %s ì¬•¶š—ñ 0x%s (%s) " )
+        "æ™‚é–“: %lu %s ä½œæˆæ–‡å­—åˆ— 0x%s (%s) " )
 pick(   STR_HSZ_STRUCT_KEPT,
         "time: %lu %s STRING KEPT 0x%s (%s) ",
-        "ŠÔ: %lu %s •Û•¶š—ñ 0x%s (%s) " )
+        "æ™‚é–“: %lu %s ä¿æŒæ–‡å­—åˆ— 0x%s (%s) " )
 
 // THESE MESSAGES have changed
 pick(   STR_LNK_STRUCT_FMT_STR_1,
         "time: %lu %s WARM LINK ESTABLISHED\n         service: 0x%08lX (%s) topic: 0x%08lX (%s)\n         item: 0x%08lX (%s)\n         fmt: %s %s %s",
-        "ŠÔ: %lu %s ƒEƒH|ƒ€ƒŠƒ“ƒNŠm—§\n         ƒT|ƒrƒX: 0x%08lX (%s) ƒgƒsƒbƒN: 0x%08lX (%s)\n         ƒAƒCƒeƒ€: 0x%08lX (%s)\n         Œ`®: %s %s %s" )
+        "æ™‚é–“: %lu %s ã‚¦ã‚©ï¼ãƒ ãƒªãƒ³ã‚¯ç¢ºç«‹\n         ã‚µï¼ãƒ“ã‚¹: 0x%08lX (%s) ãƒˆãƒ”ãƒƒã‚¯: 0x%08lX (%s)\n         ã‚¢ã‚¤ãƒ†ãƒ : 0x%08lX (%s)\n         å½¢å¼: %s %s %s" )
 pick(   STR_LNK_STRUCT_FMT_STR_2,
         "time: %lu %s HOT LINK ESTABLISHED\n         service: 0x%08lX (%s) topic: 0x%08lX (%s)\n         item: 0x%08lX (%s)\n         fmt: %s %s %s",
-        "ŠÔ: %lu %s ƒzƒbƒgƒŠƒ“ƒNŠm—§\n         ƒT|ƒrƒX: 0x%08lX (%s) ƒgƒsƒbƒN: 0x%08lX (%s)\n         ƒAƒCƒeƒ€: 0x%08lX (%s)\n         Œ`®: %s %s %s" )
+        "æ™‚é–“: %lu %s ãƒ›ãƒƒãƒˆãƒªãƒ³ã‚¯ç¢ºç«‹\n         ã‚µï¼ãƒ“ã‚¹: 0x%08lX (%s) ãƒˆãƒ”ãƒƒã‚¯: 0x%08lX (%s)\n         ã‚¢ã‚¤ãƒ†ãƒ : 0x%08lX (%s)\n         å½¢å¼: %s %s %s" )
 pick(   STR_LNK_STRUCT_FMT_STR_3,
         "time: %lu %s LINK TERMINATED\n         service: 0x%08lX (%s) topic: 0x%08lX (%s)\n         item: 0x%08lX (%s)\n         fmt: %s %s %s",
-        "ŠÔ: %lu %s ƒŠƒ“ƒNI—¹\n         ƒT|ƒrƒX: 0x%08lX (%s) ƒgƒsƒbƒN: 0x%08lX (%s)\n         ƒAƒCƒeƒ€: 0x%08lX (%s)\n         Œ`®: %s %s %s" )
+        "æ™‚é–“: %lu %s ãƒªãƒ³ã‚¯çµ‚äº†\n         ã‚µï¼ãƒ“ã‚¹: 0x%08lX (%s) ãƒˆãƒ”ãƒƒã‚¯: 0x%08lX (%s)\n         ã‚¢ã‚¤ãƒ†ãƒ : 0x%08lX (%s)\n         å½¢å¼: %s %s %s" )
 pick(   STR_LNK_STRUCT_FMT_STR_4,
         "time: %lu %s HOT LINK TERMINATED\n         service: 0x%08lX (%s) topic: 0x%08lX (%s)\n         item: 0x%08lX (%s)\n         fmt: %s %s %s",
-        "ŠÔ: %lu %s ƒzƒbƒgƒŠƒ“ƒNI—¹\n         ƒT|ƒrƒX: 0x%08lX (%s) ƒgƒsƒbƒN: 0x%08lX (%s)\n         ƒAƒCƒeƒ€: 0x%08lX (%s)\n         Œ`®: %s %s %s" )
+        "æ™‚é–“: %lu %s ãƒ›ãƒƒãƒˆãƒªãƒ³ã‚¯çµ‚äº†\n         ã‚µï¼ãƒ“ã‚¹: 0x%08lX (%s) ãƒˆãƒ”ãƒƒã‚¯: 0x%08lX (%s)\n         ã‚¢ã‚¤ãƒ†ãƒ : 0x%08lX (%s)\n         å½¢å¼: %s %s %s" )
 pick(   STR_MSG_STRUC_FMT_STR_1,
         "time: %lu %s MESSAGE SENT: %s\n         %s wparam: 0x%0*X lparam: 0x%08lX",
-        "ŠÔ: %lu %s ‘—MƒƒbƒZ|ƒW: %s\n         %s wparam: 0x%0*X lparam: 0x%08lX" )
+        "æ™‚é–“: %lu %s é€ä¿¡ãƒ¡ãƒƒã‚»ï¼ã‚¸: %s\n         %s wparam: 0x%0*X lparam: 0x%08lX" )
 pick(   STR_MSG_STRUC_FMT_STR_2,
         "time: %lu %s MESSAGE POSTED: %s\n         %s wparam: 0x%0*X lparam: 0x%08lX",
-        "ŠÔ: %lu %s ƒ|ƒXƒgƒƒbƒZ|ƒW: %s\n         %s wparam: 0x%0*X lparam: 0x%08lX" )
+        "æ™‚é–“: %lu %s ãƒã‚¹ãƒˆãƒ¡ãƒƒã‚»ï¼ã‚¸: %s\n         %s wparam: 0x%0*X lparam: 0x%08lX" )
 
 pick(   STR_TASK_PREFIX,
         "task: ",
-        "ƒ^ƒXƒN: " )
+        "ã‚¿ã‚¹ã‚¯: " )
 pick(   STR_CONV_PREFIX,
         "conversation: ",
-        "‘Î˜b: " )
+        "å¯¾è©±: " )
 pick(   STR_CLICONV_PREFIX,
         "client conv: ",
-        "ƒNƒ‰ƒCƒAƒ“ƒg‘Î˜b: " )
+        "ã‚¯ãƒ©ã‚¤ã‚¢ãƒ³ãƒˆå¯¾è©±: " )
 pick(   STR_SERVCONV_PREFIX,
         "server conv: ",
-        "ƒT|ƒo|‘Î˜b: " )
+        "ã‚µï¼ãƒï¼å¯¾è©±: " )
 pick(   STR_HWND_PREFIX,
         "to hwnd: ",
-        "óMhwnd: " )
+        "å—ä¿¡hwnd: " )
 
 pick(   STR_HANDLE,
         "Handle",
-        "ƒnƒ“ƒhƒ‹" )
+        "ãƒãƒ³ãƒ‰ãƒ«" )
 pick(   STR_COUNT,
         "Count",
-        "ƒJƒEƒ“ƒg" )
+        "ã‚«ã‚¦ãƒ³ãƒˆ" )
 pick(   STR_STRING,
         "String",
-        "•¶š—ñ" )
+        "æ–‡å­—åˆ—" )
 pick(   STR_CLIENT,
         "Client",
-        "ƒNƒ‰ƒCƒAƒ“ƒg" )
+        "ã‚¯ãƒ©ã‚¤ã‚¢ãƒ³ãƒˆ" )
 pick(   STR_SERVER,
         "Server",
-        "ƒT|ƒo|" )
+        "ã‚µï¼ãƒï¼" )
 pick(   STR_SERVER_NAME,
         "Server Name",
-        "ƒT|ƒo|–¼" )
+        "ã‚µï¼ãƒï¼å" )
 pick(   STR_SERVICE,
         "Service",
-        "ƒT|ƒrƒX" )
+        "ã‚µï¼ãƒ“ã‚¹" )
 pick(   STR_TOPIC,
         "Topic",
-        "ƒgƒsƒbƒN" )
+        "ãƒˆãƒ”ãƒƒã‚¯" )
 pick(   STR_TYPE,
         "Type",
-        "ƒ^ƒCƒv" )
+        "ã‚¿ã‚¤ãƒ—" )
 pick(   STR_ITEM,
         "Item",
-        "ƒAƒCƒeƒ€" )
+        "ã‚¢ã‚¤ãƒ†ãƒ " )
 pick(   STR_FORMAT,
         "Format",
-        "Œ`®" )
+        "å½¢å¼" )
 pick(   STR_INSTANCE,
         "Instance Name",
-        "ƒCƒ“ƒXƒ^ƒ“ƒX–¼" )
+        "ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹å" )
 
 pick(   STR_WARM,
         "WARM",
-        "ƒEƒH|ƒ€" )
+        "ã‚¦ã‚©ï¼ãƒ " )
 pick(   STR_HOT,
         "HOT",
-        "ƒzƒbƒg" )
+        "ãƒ›ãƒƒãƒˆ" )
 pick(   STR_CONVERSATIONS,
         "Conversations",
-        "‘Î˜b" )
+        "å¯¾è©±" )
 pick(   STR_STRINGS,
         "Strings",
-        "•¶š—ñ" )
+        "æ–‡å­—åˆ—" )
 pick(   STR_LINKS,
         "Links",
-        "ƒŠƒ“ƒN" )
+        "ãƒªãƒ³ã‚¯" )
 pick(   STR_REG_SERVERS,
         "Registered Servers",
-        "“o˜^ƒT|ƒo|" )
+        "ç™»éŒ²ã‚µï¼ãƒï¼" )
 
 pick(   STR_LOG_HEADER,
-        "Open Watcom DDE SPY LOG started at: %s",
-        "Open Watcom DDE SPY LOG ƒƒOŠJn: %s" )
+        PRODUCT_NAME " LOG started at: %s",
+        PRODUCT_NAME " LOG ãƒ­ã‚°é–‹å§‹: %s" )
 pick(   STR_EVENT_LIST_LINE,
         "--------------------------------------------------------------------------------\n\n",
         "--------------------------------------------------------------------------------\n\n" )
 pick(   STR_EVENT_LIST_HEADER,
-        "Open Watcom DDE SPY event listing made: %s\n\n",
-        "Open Watcom DDE SPY ƒCƒxƒ“ƒgƒŠƒXƒgì¬: %s\n\n" )
+        PRODUCT_NAME " event listing made: %s\n\n",
+        PRODUCT_NAME " ã‚¤ãƒ™ãƒ³ãƒˆãƒªã‚¹ãƒˆä½œæˆ: %s\n\n" )
 
 pick(   STR_ABOUT_TITLE,
-        "About Open Watcom DDE Spy",
-        "Open Watcom DDE Spyƒo|ƒWƒ‡ƒ“î•ñ" )
+        "About " PRODUCT_NAME,
+        PRODUCT_NAME "ãƒï¼ã‚¸ãƒ§ãƒ³æƒ…å ±" )
 pick(   STR_ADD_HWND_ALIAS,
         "Add HWND Alias",
-        "HWND•Ê–¼‚Ì’Ç‰Á" )
+        "HWNDåˆ¥åã®è¿½åŠ " )
 pick(   STR_ADD_TASK_ALIAS,
         "Add Task Alias",
-        "ƒ^ƒXƒN•Ê–¼‚Ì’Ç‰Á" )
+        "ã‚¿ã‚¹ã‚¯åˆ¥åã®è¿½åŠ " )
 pick(   STR_ADD_CONV_ALIAS,
         "Add Conversation Alias",
-        "‘Î˜b•Ê–¼‚Ì’Ç‰Á" )
+        "å¯¾è©±åˆ¥åã®è¿½åŠ " )
 pick(   STR_APP_NAME,
-        "Open Watcom DDE Spy",
-        "Open Watcom DDE Spy" )
+        PRODUCT_NAME,
+        PRODUCT_NAME )
 pick(   STR_ABOUT_NAME,
-        "Open Watcom DDE Spy for Windows" STR_BITNESS,
-        "Open Watcom DDE Spy Windows”Å" STR_BITNESS )
+        PRODUCT_NAME " for Windows",
+        PRODUCT_NAME " Windowsç‰ˆ" )
 pick(   STR_ABOUT_VERSION,
         banner1v( _DDESPY_VERSION_ ),
         banner1v( _DDESPY_VERSION_ ) )
 pick(   STR_HINT_SAVE,
         "Save information in the event list to a file.",
-        "ƒCƒxƒ“ƒgƒŠƒXƒg‚Ìî•ñ‚Ìƒtƒ@ƒCƒ‹‚Ö‚Ì•Û‘¶." )
+        "ã‚¤ãƒ™ãƒ³ãƒˆãƒªã‚¹ãƒˆã®æƒ…å ±ã®ãƒ•ã‚¡ã‚¤ãƒ«ã¸ã®ä¿å­˜." )
 
 pick(   STR_HINT_SAVE_AS,
         "Save information in the event list to a file.",
-        "ƒCƒxƒ“ƒgƒŠƒXƒg‚Ìî•ñ‚ğ–¼‘O‚ğ•t‚¯‚Äƒtƒ@ƒCƒ‹‚É•Û‘¶." )
+        "ã‚¤ãƒ™ãƒ³ãƒˆãƒªã‚¹ãƒˆã®æƒ…å ±ã‚’åå‰ã‚’ä»˜ã‘ã¦ãƒ•ã‚¡ã‚¤ãƒ«ã«ä¿å­˜." )
 
 pick(   STR_HINT_LOG_FILE,
         "Start/stop logging monitored events to a file.",
-        "ƒ‚ƒjƒ^|‚·‚éƒCƒxƒ“ƒg‚Ìƒtƒ@ƒCƒ‹‚Ö‚ÌƒƒO‚ÌŠJn/I—¹." )
+        "ãƒ¢ãƒ‹ã‚¿ï¼ã™ã‚‹ã‚¤ãƒ™ãƒ³ãƒˆã®ãƒ•ã‚¡ã‚¤ãƒ«ã¸ã®ãƒ­ã‚°ã®é–‹å§‹/çµ‚äº†." )
 
 pick(   STR_HINT_LOG_PAUSE,
         "Pause/resume logging monitored events to a file.",
-        "ƒ‚ƒjƒ^|‚·‚éƒCƒxƒ“ƒg‚Ìƒtƒ@ƒCƒ‹‚Ö‚ÌƒƒO‚Ì’â~/‘±s." )
+        "ãƒ¢ãƒ‹ã‚¿ï¼ã™ã‚‹ã‚¤ãƒ™ãƒ³ãƒˆã®ãƒ•ã‚¡ã‚¤ãƒ«ã¸ã®ãƒ­ã‚°ã®åœæ­¢/ç¶šè¡Œ." )
 
 pick(   STR_HINT_LOG_CONFIG,
         "Configure the behavior of the logging function.",
-        "ƒƒO‹@”\‚Ìİ’è." )
+        "ãƒ­ã‚°æ©Ÿèƒ½ã®è¨­å®š." )
 
 pick(   STR_HINT_FONT,
         "Set the font for the DDE Spy windows.",
-        "DDE SpyƒEƒBƒ“ƒhƒE‚ÌƒtƒHƒ“ƒg‚Ìİ’è." )
+        "DDE Spyã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®ãƒ•ã‚©ãƒ³ãƒˆã®è¨­å®š." )
 
 pick(   STR_HINT_TOOLBAR,
         "Display/hide the toolbar.",
-        "ƒc|ƒ‹ƒo|‚Ì•\¦." )
+        "ãƒ„ï¼ãƒ«ãƒï¼ã®è¡¨ç¤º." )
 
 pick(   STR_HINT_TOP,
         "Ensure DDE Spy is never covered by other windows.",
@@ -249,115 +253,115 @@ pick(   STR_HINT_TOP,
 
 pick(   STR_HINT_EXIT,
         "Exit DDE Spy.",
-        "DDE Spy‚ÌI—¹." )
+        "DDE Spyã®çµ‚äº†." )
 
 pick(   STR_HINT_CLEAR,
         "Erase the information in the event list.",
-        "ƒCƒxƒ“ƒgƒŠƒXƒg‚Ìî•ñ‚ğÁ‹‚µ‚Ü‚·." )
+        "ã‚¤ãƒ™ãƒ³ãƒˆãƒªã‚¹ãƒˆã®æƒ…å ±ã‚’æ¶ˆå»ã—ã¾ã™." )
 
 pick(   STR_HINT_MARK,
         "Put text in the event list.",
-        "ƒCƒxƒ“ƒgƒŠƒXƒg‚ÉƒeƒLƒXƒg‚ğ“ü‚ê‚Ü‚·." )
+        "ã‚¤ãƒ™ãƒ³ãƒˆãƒªã‚¹ãƒˆã«ãƒ†ã‚­ã‚¹ãƒˆã‚’å…¥ã‚Œã¾ã™." )
 
 pick(   STR_HINT_SCREEN_OUT,
         "Enable/disable writing output to the screen.",
-        "ƒXƒNƒŠ|ƒ“‚Ö‚Ìo—Í‘‚«‚İ‚Ì‹–‰ÂƒƒbƒZ|ƒWî•ñ‚Ìƒ‚ƒjƒ^|‚Ì‹–‰Â/‹Ö~." )
+        "ã‚¹ã‚¯ãƒªï¼ãƒ³ã¸ã®å‡ºåŠ›æ›¸ãè¾¼ã¿ã®è¨±å¯ãƒ¡ãƒƒã‚»ï¼ã‚¸æƒ…å ±ã®ãƒ¢ãƒ‹ã‚¿ï¼ã®è¨±å¯/ç¦æ­¢." )
 
 pick(   STR_HINT_SCROLL,
         "Scroll the display to show the newest events.",
-        "ÅVƒCƒxƒ“ƒg‚Ì•\¦‚Ì‚½‚ß‚ÌƒXƒNƒ|ƒ‹." )
+        "æœ€æ–°ã‚¤ãƒ™ãƒ³ãƒˆã®è¡¨ç¤ºã®ãŸã‚ã®ã‚¹ã‚¯ãƒ­ï¼ãƒ«." )
 
 pick(   STR_HINT_MON_POST,
         "Enable/disable monitoring of posted message information.",
-        "ƒ|ƒXƒgƒƒbƒZ|ƒWî•ñ‚Ìƒ‚ƒjƒ^|‚Ì‹–‰Â/‹Ö~." )
+        "ãƒã‚¹ãƒˆãƒ¡ãƒƒã‚»ï¼ã‚¸æƒ…å ±ã®ãƒ¢ãƒ‹ã‚¿ï¼ã®è¨±å¯/ç¦æ­¢." )
 
 pick(   STR_HINT_MON_SENT,
         "Enable/disable monitoring of sent message information.",
-        "‘—MƒƒbƒZ|ƒWî•ñ‚Ìƒ‚ƒjƒ^|‚Ì‹–‰Â/‹Ö~." )
+        "é€ä¿¡ãƒ¡ãƒƒã‚»ï¼ã‚¸æƒ…å ±ã®ãƒ¢ãƒ‹ã‚¿ï¼ã®è¨±å¯/ç¦æ­¢." )
 
 pick(   STR_HINT_MON_STR,
         "Enable/disable monitoring of string management events.",
-        "•¶š—ñŠÇ—ƒCƒxƒ“ƒg‚Ìƒ‚ƒjƒ^|‚Ì‹–‰Â/‹Ö~." )
+        "æ–‡å­—åˆ—ç®¡ç†ã‚¤ãƒ™ãƒ³ãƒˆã®ãƒ¢ãƒ‹ã‚¿ï¼ã®è¨±å¯/ç¦æ­¢." )
 
 pick(   STR_HINT_MON_CB,
         "Enable/disable monitoring of callback events.",
-        "ƒR|ƒ‹ƒoƒbƒNƒCƒxƒ“ƒg‚Ìƒ‚ƒjƒ^|‚Ì‹–‰Â/‹Ö~." )
+        "ã‚³ï¼ãƒ«ãƒãƒƒã‚¯ã‚¤ãƒ™ãƒ³ãƒˆã®ãƒ¢ãƒ‹ã‚¿ï¼ã®è¨±å¯/ç¦æ­¢." )
 
 pick(   STR_HINT_MON_ERR,
         "Enable/disable monitoring of error events.",
-        "ƒGƒ‰|ƒCƒxƒ“ƒg‚Ìƒ‚ƒjƒ^|‚Ì‹–‰Â/‹Ö~." )
+        "ã‚¨ãƒ©ï¼ã‚¤ãƒ™ãƒ³ãƒˆã®ãƒ¢ãƒ‹ã‚¿ï¼ã®è¨±å¯/ç¦æ­¢." )
 
 pick(   STR_HINT_MON_CONV,
         "Enable/disable monitoring of conversation management events.",
-        "‘Î˜bŠÇ—ƒCƒxƒ“ƒg‚Ìƒ‚ƒjƒ^|‚Ì‹–‰Â/‹Ö~." )
+        "å¯¾è©±ç®¡ç†ã‚¤ãƒ™ãƒ³ãƒˆã®ãƒ¢ãƒ‹ã‚¿ï¼ã®è¨±å¯/ç¦æ­¢." )
 
 pick(   STR_HINT_MON_LNK,
         "Enable/disable monitoring of link management events.",
-        "ƒŠƒ“ƒNŠÇ—ƒCƒxƒ“ƒg‚Ìƒ‚ƒjƒ^|‚Ì‹–‰Â/‹Ö~." )
+        "ãƒªãƒ³ã‚¯ç®¡ç†ã‚¤ãƒ™ãƒ³ãƒˆã®ãƒ¢ãƒ‹ã‚¿ï¼ã®è¨±å¯/ç¦æ­¢." )
 
 pick(   STR_HINT_MSG_FILTER,
         "Select sent/posted messages on which to report.",
-        "•ñ‚·‚é‘—M/ƒ|ƒXƒgƒƒbƒZ|ƒW‚Ì‘I‘ğ." )
+        "å ±å‘Šã™ã‚‹é€ä¿¡/ãƒã‚¹ãƒˆãƒ¡ãƒƒã‚»ï¼ã‚¸ã®é¸æŠ." )
 
 pick(   STR_HINT_CB_FILTER,
         "Select callback events on which to report.",
-        "•ñ‚·‚éƒR|ƒ‹ƒoƒbƒNƒCƒxƒ“ƒg‚Ì‘I‘ğ." )
+        "å ±å‘Šã™ã‚‹ã‚³ï¼ãƒ«ãƒãƒƒã‚¯ã‚¤ãƒ™ãƒ³ãƒˆã®é¸æŠ." )
 
 pick(   STR_HINT_TRK_STR,
         "Display currently registered strings.",
-        "Œ»İ“o˜^‚³‚ê‚Ä‚¢‚é•¶š—ñ‚Ì•\¦." )
+        "ç¾åœ¨ç™»éŒ²ã•ã‚Œã¦ã„ã‚‹æ–‡å­—åˆ—ã®è¡¨ç¤º." )
 
 pick(   STR_HINT_TRK_CONV,
         "Display currently active conversations.",
-        "Œ»İƒAƒNƒeƒBƒu‚È‘Î˜b‚Ì•\¦." )
+        "ç¾åœ¨ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãªå¯¾è©±ã®è¡¨ç¤º." )
 
 pick(   STR_HINT_TRK_LINK,
         "Display currently active links.",
-        "Œ»İ‚ÌƒAƒNƒeƒBƒuƒŠƒ“ƒN‚Ì•\¦." )
+        "ç¾åœ¨ã®ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒªãƒ³ã‚¯ã®è¡¨ç¤º." )
 
 pick(   STR_HINT_TRK_SERVER,
         "Display currently registered servers.",
-        "Œ»İ“o˜^‚³‚ê‚Ä‚¢‚éƒT|ƒo‚Ì•\¦." )
+        "ç¾åœ¨ç™»éŒ²ã•ã‚Œã¦ã„ã‚‹ã‚µï¼ãƒã®è¡¨ç¤º." )
 
 pick(   STR_HINT_NO_ALIAS,
         "Disable/Enable replacement of aliases.",
-        "•Ê–¼‚Ì‘‚«Š·‚¦‚Ì‹Ö~/‹–‰Â." )
+        "åˆ¥åã®æ›¸ãæ›ãˆã®ç¦æ­¢/è¨±å¯." )
 
 pick(   STR_HINT_ALIAS_PURGE,
         "Delete all currently defined aliases.",
-        "Œ»İ’è‹`‚³‚ê‚Ä‚¢‚é•Ê–¼‚ğ‚·‚×‚Äíœ‚µ‚Ü‚·." )
+        "ç¾åœ¨å®šç¾©ã•ã‚Œã¦ã„ã‚‹åˆ¥åã‚’ã™ã¹ã¦å‰Šé™¤ã—ã¾ã™." )
 
 pick(   STR_HINT_HWND_ALIAS,
         "Replace HWND values with meaningful text.",
-        "HWND‚Ì’l‚ğˆÓ–¡‚Ì‚ ‚éƒeƒLƒXƒg‚É’u‚«Š·‚¦‚Ü‚·." )
+        "HWNDã®å€¤ã‚’æ„å‘³ã®ã‚ã‚‹ãƒ†ã‚­ã‚¹ãƒˆã«ç½®ãæ›ãˆã¾ã™." )
 
 pick(   STR_HINT_TASK_ALIAS,
         "Replace task identifiers with meaningful text.",
-        "ƒ^ƒXƒNid‚ğˆÓ–¡‚Ì‚ ‚éƒeƒLƒXƒg‚É’u‚«Š·‚¦‚Ü‚·." )
+        "ã‚¿ã‚¹ã‚¯idã‚’æ„å‘³ã®ã‚ã‚‹ãƒ†ã‚­ã‚¹ãƒˆã«ç½®ãæ›ãˆã¾ã™." )
 
 pick(   STR_HINT_CONV_ALIAS,
         "Replace conversation identifiers with meaningful text.",
-        "‘Î˜bid‚ğˆÓ–¡‚Ì‚ ‚éƒeƒLƒXƒg‚É’u‚«Š·‚¦‚Ü‚·." )
+        "å¯¾è©±idã‚’æ„å‘³ã®ã‚ã‚‹ãƒ†ã‚­ã‚¹ãƒˆã«ç½®ãæ›ãˆã¾ã™." )
 
 pick(   STR_HINT_ABOUT,
         "Display program information.",
-        "ƒvƒƒOƒ‰ƒ€î•ñ‚Ì•\¦" )
+        "ãƒ—ãƒ­ã‚°ãƒ©ãƒ æƒ…å ±ã®è¡¨ç¤º" )
 
 pick(   STR_HINT_HINTBAR,
         "Show/hide the hint bar.",
-        "ƒqƒ“ƒgƒo|‚Ì•\¦/”ñ•\¦" )
+        "ãƒ’ãƒ³ãƒˆãƒï¼ã®è¡¨ç¤º/éè¡¨ç¤º" )
 
 pick(   STR_HINT_HELP_CONTENTS,
-        "List Open Watcom DDE Spy help topics.",
-        "ƒwƒ‹ƒv‚Ì•\¦" )
+        "List " PRODUCT_NAME " help topics.",
+        PRODUCT_NAME " ã®ãƒ˜ãƒ«ãƒ— ãƒˆãƒ”ãƒƒã‚¯ã®ä¸€è¦§è¡¨ç¤º" )
 
 pick(   STR_HINT_HELP_SRCH,
         "Search for help on a specific topic.",
-        "“Á’è‚ÌƒgƒsƒbƒN‚ÉŠÖ‚·‚éƒwƒ‹ƒv‚ÌŒŸõ" )
+        "ç‰¹å®šã®ãƒˆãƒ”ãƒƒã‚¯ã«é–¢ã™ã‚‹ãƒ˜ãƒ«ãƒ—ã®æ¤œç´¢" )
 
 pick(   STR_HINT_HELP_ON_HELP,
         "Display information on how to use help.",
-        "ƒwƒ‹ƒv‚Ìg—p•û–@‚ÉŠÖ‚·‚éî•ñ‚Ì•\¦" )
+        "ãƒ˜ãƒ«ãƒ—ã®ä½¿ç”¨æ–¹æ³•ã«é–¢ã™ã‚‹æƒ…å ±ã®è¡¨ç¤º" )
 
 pick(   STR_TIP_TRK_STR,
         "Track Strings",

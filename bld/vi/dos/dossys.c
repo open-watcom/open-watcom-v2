@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -296,7 +296,7 @@ void ScreenPage( int page )
     } else {
         EditFlags.NoSetCursor = false;
     }
-#elif defined( __4G__ )
+#elif defined( DOS4G ) || defined( CAUSEWAY )
     unsigned long       a;
     unsigned long       b;
 
@@ -317,7 +317,7 @@ void ScreenPage( int page )
     } else {
         EditFlags.NoSetCursor = false;
     }
-#else
+#elif defined( PHARLAP )
     unsigned long       a;
     unsigned long       b;
     unsigned long       c;
@@ -346,9 +346,9 @@ void ScreenPage( int page )
 
 #if defined( _M_I86 )
     #define KEY_PTR (char _FAR *)0x00400017;
-#elif defined( __4G__ )
+#elif defined( DOS4G ) || defined( CAUSEWAY )
     #define KEY_PTR (char _FAR *)0x00000417;
-#else
+#elif defined( PHARLAP )
     #define KEY_PTR _MK_FP( PHAR_SCRN_SEL, 0x417 );
 #endif
 
@@ -428,7 +428,8 @@ bool KeyboardHit( void )
 
     rc = _BIOSKeyboardHit( ( EditFlags.ExtendedKeyboard ) ? KEYB_EXT : KEYB_STD );
     if( !rc ) {
-#if !( defined( _M_I86 ) || defined( __4G__ ) )
+#if defined( _M_I86 ) || defined( DOS4G ) || defined( CAUSEWAY )
+#else   /* defined( PHARLAP ) */
         UpdateDOSClock();
 #endif
         ReleaseVMTimeSlice();

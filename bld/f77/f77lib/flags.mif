@@ -1,7 +1,3 @@
-!ifdef debug
-release = 0
-!endif
-
 #######################
 # C PREPROCESSOR SETINGS
 ######
@@ -26,8 +22,8 @@ f77lib_cpp_flags += $(f77lib_cpp_$(system)) $(f77lib_cpp_$(system)_$(processor))
 ##########################
 # C COMPILER SETINGS
 ######
-sw_c_common = $(watcom_common_cflags)-j-za99-we-zl-x-xx-zam-wpx
-!ifeq release 0
+sw_c_common = $(watcom_common_cflags)-j-zastd=c99-we-zl-x-xx-zam-wpx
+!ifneq debug 0
 !else
 sw_c_common += -s
 !endif
@@ -146,7 +142,7 @@ sw_a_axp_   =
 sw_a_ppc_   =
 
 # sw_a_(processor)
-sw_a_intel    = -w8-e
+sw_a_intel    = -w8-cx-ee
 sw_a_register = -5r
 sw_a_stack    = -5s
 
@@ -199,7 +195,7 @@ flib_a_flags =$(sw_a_common) $(sw_a_$(linkage)) $(sw_a_$(flib_$(processor))_$(mo
     $(sw_a_$(processor)) $(sw_a_$(system)_$(flib_$(processor))) $(sw_a_$(system)) $(extra_flib_a_flags)
 
 # debug flags need to be last to override optimization flags
-!ifeq release 0
+!ifneq debug 0
 c_dbg_flags = -d2
 a_dbg_flags = -d1
 !else
@@ -223,10 +219,10 @@ libname_386 = $(flib_suffix_$(convention))
 libname_387 = 7$(flib_suffix_$(convention))
 libname = flib$(libname_$(processor))
 
-!ifeq release 0
+!ifneq debug 0
 flib_lib_flags = -b-c-n-pa
 !else
 flib_lib_flags = -b-c-n-pa-s-t-zld
 !endif
 
-!include ../../include.mif
+!include $(f77lib_dir)/include.mif

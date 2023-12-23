@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,8 +43,6 @@
 #include "argvrx.h"
 #include "argvenv.h"
 
-
-char *OptEnvVar="env";
 
 static const char *usageMsg[] = {
     "Usage: env [-] [-?] [@var] [variable=value ...] [command arguments ...]",
@@ -124,47 +122,45 @@ static void printEnv( char **env )
 
 int main( int argc, char **argv )
 {
-    char       **envptr, **cmdptr;
-    char         alloc;
+    char        **envptr;
+    char        **cmdptr;
+    char        alloc;
+    int         i;
 
-    argv = ExpandEnv( &argc, argv );
+    argv = ExpandEnv( &argc, argv, "ENV" );
+
     GetOpt( &argc, argv, "", usageMsg );
 
-    if( argc == 1 ) {
+    if( argc < 2 ) {
         printEnv( environ );
+        MemFree( argv );
         return( 0 );
     } else if( !strcmp( argv[1], "-" ) ) {
-        envptr  = (char **) malloc( argc * sizeof( char * ) );
+        envptr  = (char **)MemAlloc( argc * sizeof( char * ) );
         *envptr = NULL;
         alloc   = 1;
-
-        argv  += 2;
-
-        while( *argv != NULL ) {
-            if( isVarAssgn( *argv ) ) {
-                insertVar( envptr, *argv );
-                argv++;
+        for( i = 2; i < argc; i++ ) {
+            if( isVarAssgn( argv[i] ) ) {
+                insertVar( envptr, argv[i] );
             } else {
                 break;
             }
         }
-        cmdptr = argv;
+        cmdptr = argv + i;
     } else {
         alloc = 0;
-        argv++;
-
-        while( *argv != NULL ) {
-            if( isVarAssgn( *argv ) ) {
-                if( putenv( *argv ) ) {
+        for( i = 1; i < argc; i++ ) {
+            if( isVarAssgn( argv[i] ) ) {
+                if( putenv( argv[i] ) ) {
+                    MemFree( argv );
                     Die( "env: out of environment space\n" );
                 }
-                argv++;
             } else {
                 break;
             }
         }
         envptr = environ;
-        cmdptr = argv;
+        cmdptr = argv + i;
     }
 
     if( *cmdptr == NULL ) {
@@ -186,7 +182,9 @@ int main( int argc, char **argv )
         }
     }
     if( alloc ) {
-        free( envptr );
+        MemFree( envptr );
     }
+    MemFree( argv );
+
     return( 0 );
 }

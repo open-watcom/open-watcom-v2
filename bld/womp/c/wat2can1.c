@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,7 +45,7 @@
 #include "cansymb.h"
 #include "canmisc.h"
 #include "array.h"
-#ifndef NDEBUG
+#ifdef DEVBUILD
     #include <io.h>
     #include <fcntl.h>
 #endif
@@ -122,7 +122,7 @@ STATIC uint_16 get16( void ) {
 
     uint_16 word;
 
-    word = ReadU16( wat->ptr );
+    word = MGET_LE_16( wat->ptr );
     wat->ptr += 2;
     return( word );
 }
@@ -131,7 +131,7 @@ STATIC uint_32 get32( void ) {
 
     uint_32 dword;
 
-    dword = ReadU32( wat->ptr );
+    dword = MGET_LE_32( wat->ptr );
     wat->ptr += 4;
     return( dword );
 }
@@ -1332,7 +1332,7 @@ void Wat2CanTandS( seghdr *dd_types, seghdr *dd_symbols ) {
         wat->rec_len = 0;
         finish = ddTypes->data + ddTypes->alloc;
         wat->finish = finish;
-#ifndef NDEBUG
+#ifdef DEVBUILD
         {
             int fh;
             fh = open( "debug.seg", O_WRONLY|O_CREAT|O_TRUNC|O_BINARY, S_IWRITE|S_IREAD );
@@ -1361,7 +1361,7 @@ void Wat2CanTandS( seghdr *dd_types, seghdr *dd_symbols ) {
         wat->rec_len = 0;
         finish = ddSymbols->data + ddSymbols->alloc;
         wat->finish = finish;
-#ifndef NDEBUG
+#ifdef DEVBUILD
         {
             int fh;
             fh = open( "symbols.seg", O_WRONLY|O_CREAT|O_TRUNC|O_BINARY, S_IWRITE|S_IREAD );

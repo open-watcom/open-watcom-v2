@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -86,7 +86,7 @@ static void DoWndDump( a_window wnd, WRITERTN *rtn, file_handle fh )
     }
     *p++ = '|';
     *p++ = ' ';
-    p = StrCopy( buff, p );
+    p = StrCopyDst( buff, p );
     *p++ = ' ';
     *p++ = '|';
     for( i = 0; i < 7; ++i ) {
@@ -102,14 +102,14 @@ static void DoWndDump( a_window wnd, WRITERTN *rtn, file_handle fh )
                 break;
             indent_pos = line.indent / indent_per_char;
             while( indent_pos > chars_written ) {
-                p = StrCopy( " ", p );
+                p = StrCopyDst( " ", p );
                 ++chars_written;
             }
             if( line.bitmap ) {
                 line.text = WndGadgetArray[(int)line.text[0]].chars;
                 line.length = strlen( line.text );
             }
-            p = StrCopy( line.text, p );
+            p = StrCopyDst( line.text, p );
             chars_written += line.length;
         }
         if( piece == 0 )

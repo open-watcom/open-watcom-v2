@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,6 +31,8 @@
 ****************************************************************************/
 
 
+extern char         PackBuff[0x400];
+
 #if defined( SERVER )
 extern trap_retval  PutBuffPacket( void *, trap_elen );
 extern void         *GetPacketBuffPtr( void );
@@ -42,6 +45,10 @@ extern void         RemovePacket( void *, trap_elen );
 extern trap_retval  GetPacket( void );
 extern trap_elen    MaxPacketSize( void );
 
+extern const char   *RemoteLinkSet( const char * );
+#if defined( SERVER )
+extern const char   *RemoteLinkGet( char *, size_t len );
+#endif
 extern const char   *RemoteLink( const char *, bool );
 extern bool         RemoteConnect( void );
 extern void         RemoteDisco( void );

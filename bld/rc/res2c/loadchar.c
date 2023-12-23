@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,7 +41,7 @@
 //                              fixed small bug
 
 
-#include <io.h>
+#include <stdio.h>
 #include "loadchar.h"
 
 // =================================================================
@@ -50,12 +51,12 @@
 //      char                    *buff           Poitner to the buffer to use;
 //      long                    size            maximum buffer size;
 //      FILE                    *fp             file handle to use
-//      struct read_file        *fdata          ptr to where this data is to be kept
+//      read_file               *fdata          ptr to where this data is to be kept
 // The function returns : int, the character ot -1 if an error occurs.
 
-extern int GetFirstChar( char *buff, long size, FILE *fp, struct read_file *fdata ) {
-//===================================================================================
-
+extern int GetFirstChar( char *buff, long size, FILE *fp, read_file *fdata )
+//==========================================================================
+{
     fdata->buffer = buff;
     fdata->cur_pos = buff;
     fdata->fp = fp;
@@ -67,9 +68,9 @@ extern int GetFirstChar( char *buff, long size, FILE *fp, struct read_file *fdat
 }
 
 
-extern int PeekFirstChar( char *buff, long size, FILE *fp, struct read_file *fdata ) {
-//===================================================================================
-
+extern int PeekFirstChar( char *buff, long size, FILE *fp, read_file *fdata )
+//===========================================================================
+{
     fdata->buffer = buff;
     fdata->cur_pos = buff - 1;
     fdata->fp = fp;
@@ -81,9 +82,9 @@ extern int PeekFirstChar( char *buff, long size, FILE *fp, struct read_file *fda
 }
 
 
-extern int GetNextChar( struct read_file *fdata ) {
-//=================================================
-
+extern int GetNextChar( read_file *fdata )
+//========================================
+{
     if ( ( fdata->cur_pos + 1 ) == fdata->end_pos ) {
         fdata->size = fread( fdata->buffer, 1, fdata->size, fdata->fp );
         if ( fdata->size < 1 ) return( -1 );
@@ -97,9 +98,9 @@ extern int GetNextChar( struct read_file *fdata ) {
 }
 
 
-extern int PeekNextChar( struct read_file *fdata ) {
-//=================================================
-
+extern int PeekNextChar( read_file *fdata )
+//=========================================
+{
     if ( ( fdata->cur_pos + 1 ) == fdata->end_pos ) {
         fdata->size = fread( fdata->buffer, 1, fdata->size, fdata->fp );
         if ( fdata->size < 1 )

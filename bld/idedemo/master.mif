@@ -1,4 +1,8 @@
+tree_depth = 4
+
 projname = src_idedemo
+
+ide2make = bide2mak
 
 !include cproj.mif
 
@@ -6,24 +10,26 @@ ide_cfg_dir_nt  = $(idecfg_dir)/nt386/
 ide_cfg_dir_os2 = $(idecfg_dir)/os2386/
 ide_cfg_dir_win = $(idecfg_dir)/wini86/
 
-src_objs = $(idedemo_dir)/src/$(targ_dir)/box.obj &
-    $(idedemo_dir)/src/$(targ_dir)/drawroom.obj &
-    $(idedemo_dir)/src/$(targ_dir)/furnitu.obj
+idedemo_abs_path = $(%OWROOT)/bld/idedemo/src/$(targ_dir)
+
+src_objs = "$(idedemo_abs_path)/box.obj" &
+    "$(idedemo_abs_path)/drawroom.obj" &
+    "$(idedemo_abs_path)/furnitu.obj"
 
 !ifdef targ_file
 $(src_objs) : .SYMBOLIC
     @SET WATCOM=
     $(ide2make) -l -r $(targ_file).tgt -i $(ide_cfg_dir_$(host_os))
-    sed -f "../../convtool.sed" -f "../../conv$(host_os).sed" $(targ_file).mk1 >temp.mk1
-    $(noecho)!$(nested_wmake) -i -h -f temp.mk1 $@
+    sed -f "$(idedemo_dir)/convtool.sed" -f "$(idedemo_dir)/conv$(host_os).sed" $(targ_file).mk1 >temp.mk1
+    $(noecho)!$(nested_wmake) -i -h -f temp.mk1 tree_depth=$(tree_depth) "$@"
 !else
 $(host_os)_3d.dll: $(host_os)_3d.mk1
-    $(noecho)!$(nested_wmake) -i -h -f project.mk
+    $(noecho)!$(nested_wmake) -i -h -f project.mk tree_depth=$(tree_depth)
 
 $(host_os)_3d.mk1: $(host_os)_3d.tgt
     @SET WATCOM=
     $(ide2make) -l -r $< -i $(ide_cfg_dir_$(host_os))
-    sed -f "../../convtool.sed" -f "../../conv$(host_os).sed" $(host_os)_3d.mk1 >temp.mk1
+    sed -f "$(idedemo_dir)/convtool.sed" -f "$(idedemo_dir)/conv$(host_os).sed" $(host_os)_3d.mk1 >temp.mk1
     copy temp.mk1 $(host_os)_3d.mk1
 !endif
 

@@ -1,7 +1,5 @@
 proj_name = graph
 
-subdir_v2 = v2objs
-
 crwatpro_gsp = crwatpro.gsp
 
 additional_clean = $(crwatpro_gsp)
@@ -16,6 +14,13 @@ suppress_zc = 1
 
 supervga_support = -D_SUPERVGA
 
+!ifeq system windows
+default_windowing = 1
+!endif
+!ifeq default_windowing 1
+def_windowing = -DDEFWIN
+!endif
+
 memory_model_i86 = s
 !ifeq host_os dos
 memory_model_386 = s
@@ -28,12 +33,17 @@ suffix_stack = s
 
 !include cproj.mif
 !include defrule.mif
+defrule_key = v2
+subdir_v2 = v2objs
+extra_cpp_v2_flags = -DVERSION2
+extra_a_v2_flags = -DVERSION2
+!include defrule.mif
 !include deftarg.mif
 
 #
 # cflags
 #
-.c: ../c
+.c: $(graphlib_dir)/c
 
 inc_dirs = -I. -I"$(graphlib_dir)/h" -I"$(mathlib_dir)/h"
 inc_dirs_dos = -I"$(clib_dir)/mbyte/h"
@@ -47,6 +57,9 @@ extra_cpp_flags_386 = -D_CGRAPH=
 !ifeq convention stack
 extra_cpp_flags_386 += -D__STACK
 !endif
+
+extra_cpp_flags_win = $(def_windowing)
+extra_cpp_flags_os2 = $(def_windowing)
 
 extra_c_flags = -os -zl -nm=$[&$(suffix_$(convention)) $(extra_c_flags_$(machine)) -fo=$@
 
@@ -65,7 +78,7 @@ extra_c_flags_386 = $(extra_c_flags_386_$(convention)) $(extra_c_flags_386_m$(me
 !endif
 .asm: $(graphlib_dir)/asm
 
-extra_a_flags = $(supervga_support) -ms -i"../inc" $(extra_a_flags_$(machine)) -fo=$@
+extra_a_flags = $(supervga_support) -ms -i"$(graphlib_dir)/inc" $(extra_a_flags_$(machine)) -fo=$@
 
 extra_a_flags_i86 = -D_TEXT=GRAPH_TEXT
 extra_a_flags_386_register = -3r
@@ -196,6 +209,11 @@ win_objs = &
     $(_subdir_)gphmain.obj &
     $(_subdir_)winutil.obj
 
+os2_objs = &
+    $(_subdir_)gphmain.obj &
+    $(_subdir_)winutil.obj &
+    $(_subdir_)seginit.obj
+
 special_objs = &
     fsmath.obj &
     dummy.obj
@@ -209,6 +227,8 @@ svga_english_objs = &
 
 !ifeq host_os win
 grlib_template = $(common_objs) $(win_objs)
+!else ifeq host_os os2
+grlib_template = $(common_objs) $(os2_objs)
 !else
 grlib_template = $(common_objs) $(eng_nonwin_objs) $(english_objs) $(svga_english_objs)
 !endif
@@ -234,7 +254,7 @@ libtarg_name          = graphi2
 #
 # rc and others
 #
-!ifeq release 1
+!ifeq debug 0
 wsplice_extra_opts =
 !else
 wsplice_extra_opts = -d"depends.dep"
@@ -248,9 +268,3 @@ wsplice_opts_win = -kDOS
 wsplice_opts = $(wsplice_extra_opts) $(wsplice_opts_$(host_os))
 
 !include $(graphlib_dir)/headers.mif
-
-extra_cpp_v2_flags = -DVERSION2
-extra_a_v2_flags = -DVERSION2
-
-defrule_key = v2
-!include defrule.mif

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -59,8 +59,9 @@ static lib_load_info *FindLib( addr_off dynsection )
     unsigned    i;
 
     for( i = 0; i < ModuleTop; ++i ) {
-        if( moduleInfo[i].dbg_dyn_sect == dynsection )
+        if( moduleInfo[i].dbg_dyn_sect == dynsection ) {
             return( &moduleInfo[i] );
+        }
     }
     return( NULL );
 }
@@ -72,7 +73,8 @@ static struct link_map *FindLibInLinkMap( struct link_map *first_lmap, addr_off 
 
     dbg_lmap = first_lmap;
     while( dbg_lmap != NULL ) {
-        if( !GetLinkMap( pid, dbg_lmap, &lmap ) ) break;
+        if( !GetLinkMap( pid, dbg_lmap, &lmap ) )
+            break;
         if( (addr_off)lmap.l_ld == dyn_base )
             return( dbg_lmap );
         dbg_lmap = lmap.l_next;
@@ -171,7 +173,8 @@ int AddInitialLibs( struct link_map *first_lmap )
 
     dbg_lmap = first_lmap;
     while( dbg_lmap != NULL ) {
-        if( !GetLinkMap( pid, dbg_lmap, &lmap ) ) break;
+        if( !GetLinkMap( pid, dbg_lmap, &lmap ) )
+            break;
         AddLib( &lmap );
         ++count;
         dbg_lmap = lmap.l_next;
@@ -193,7 +196,8 @@ int AddOneLib( struct link_map *first_lmap )
 
     dbg_lmap = first_lmap;
     while( dbg_lmap != NULL ) {
-        if( !GetLinkMap( pid, dbg_lmap, &lmap ) ) break;
+        if( !GetLinkMap( pid, dbg_lmap, &lmap ) )
+            break;
         lli = FindLib( (addr_off)lmap.l_ld );
         if( lli == NULL ) {
             AddLib( &lmap );
@@ -311,7 +315,7 @@ trap_retval TRAP_CORE( Get_lib_name )( void )
     char                *name;
     unsigned            i;
     trap_elen           ret_len;
-    size_t              max_len;
+    size_t              name_maxlen;
 
     acc = GetInPtr( 0 );
     CONV_LE_32( acc->mod_handle );
@@ -330,9 +334,9 @@ trap_retval TRAP_CORE( Get_lib_name )( void )
         } else if( moduleInfo[i].newly_loaded ) {
             Out( "(newly loaded) " );
             ret->mod_handle = i;
-            max_len = GetTotalSizeOut() - 1 - sizeof( *ret );
-            strncpy( name, moduleInfo[i].filename, max_len );
-            name[max_len] = '\0';
+            name_maxlen = GetTotalSizeOut() - sizeof( *ret ) - 1;
+            strncpy( name, moduleInfo[i].filename, name_maxlen );
+            name[name_maxlen] = '\0';
             moduleInfo[i].newly_loaded = false;
             ret_len += strlen( name ) + 1;
             break;

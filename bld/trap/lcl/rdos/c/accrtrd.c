@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -112,7 +112,7 @@ trap_retval TRAP_RUN_THREAD( get_runtime )( void )
     run_thread_get_runtime_ret *ret;
     int                        ok;
     int                        i;
-    struct ThreadState         state;
+    struct RdosThreadState     state;
     char                       *time_txt;
     char                       tempstr[10];
     int                        day;
@@ -236,7 +236,7 @@ trap_retval TRAP_RUN_THREAD( poll )( void )
     run_thread_poll_ret     *ret;
 
     ret = GetOutPtr( 0 );
-    ret->conditions = 0;
+    ret->conditions = COND_NONE;
 
     obj = GetCurrentDebug();
 
@@ -271,9 +271,8 @@ trap_retval TRAP_RUN_THREAD( set )( void )
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-
-    ret->old_thread = 0;
     ret->err = 0;
+    ret->old_thread = 0;
 
     obj = GetCurrentDebug();
     if (obj )

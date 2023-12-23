@@ -64,11 +64,11 @@ static const char * const usageMsg[] = {
     "    -i<path>       include path",
     "    -l             generate #line directives",
     "    -o<file>       output file",
-    "    -zk{0,1,2,u8}  source file character encoding",
+    "    -zk{0,1,2,u0,u8} source file character encoding",
     "       0           Japanese (Kanji, CP 932) double-byte encoding",
     "       1           Chinese (Traditional, CP 950) double-byte encoding",
     "       2           Korean (Wansung, CP 949) double-byte encoding",
-    "       u8          Unicode UTF-8 encoding",
+    "       u0,u8       Unicode UTF-8 encoding",
     "    -h or ?        display usage",
     "",
     "    input files    list of input source file names",
@@ -193,6 +193,10 @@ static bool ScanOptionsArg( const char * arg, pp_flags *ppflags )
                 break;
             } else if( tolower( arg[1] ) == 'u' ) {
                 if( arg[2] == '8' && arg[3] == '\0' ) {
+                    mbcp = MBCP_UTF8;
+                    break;
+                }
+                if( arg[2] == '0' && arg[3] == '\0' ) {
                     mbcp = MBCP_UTF8;
                     break;
                 }

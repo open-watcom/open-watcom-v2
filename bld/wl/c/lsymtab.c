@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -611,7 +611,7 @@ void InitSym( void )
     _ChkAlloc( StaticSymPtrs, STATIC_TABALLOC );
 }
 
-#ifdef _INT_DEBUG
+#ifdef DEVBUILD
 
 static void DumpTable( symbol **table, unsigned tabsize )
 /*******************************************************/
@@ -694,7 +694,7 @@ void CleanSym( void )
     symbol *    sym;
     symbol *    next;
 
-#ifdef _INT_DEBUG
+#ifdef DEVBUILD
     DumpHashTable();
 #endif
     if( (LinkFlags & LF_INC_LINK_FLAG) == 0 ) {
@@ -987,7 +987,7 @@ static symbol *DoSymOp( sym_flags symop, const char *symname, size_t length )
     unsigned    hash;
     symbol      *sym;
     size_t      searchlen;
-#ifdef _INT_DEBUG
+#ifdef DEVBUILD
     char        *symname_dbg;
 
     DUPSTR_STACK( symname_dbg, symname, length );
@@ -1123,7 +1123,7 @@ static void WriteSym( symbol * sym, char star )
     if( sym->info & SYM_STATIC ) {
         star = 's';
     }
-    if( (FmtData.type & MK_16BIT) && ( sym->p.seg != NULL ) && sym->p.seg->is32bit ) {
+    if( (FmtData.type & MK_16BIT) && ( sym->p.seg != NULL ) && ( sym->p.seg->bits == BITS_32 ) ) {
         WriteFormat( 0, "%A%c", &sym->addr, star );
     } else {
         WriteFormat( 0, "%a%c", &sym->addr, star );

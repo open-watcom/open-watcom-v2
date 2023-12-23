@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -185,8 +185,6 @@ bool FarFNameEq( const char FAR *a, const char FAR *b )
 #endif
 
 
-#define IS_WILDCARD_CHAR( x ) ((*x == '*') || (*x == '?'))
-
 static bool __fnmatch( const char *pattern, const char *string )
 /***************************************************************
  * OS specific compare function FNameChrEq
@@ -202,7 +200,7 @@ static bool __fnmatch( const char *pattern, const char *string )
      * check pattern section with wildcard characters
      */
     star_char = false;
-    while( IS_WILDCARD_CHAR( pattern ) ) {
+    while( ciswildc( *pattern ) ) {
         if( *pattern == '?' ) {
             if( *string == NULLCHAR ) {
                 return( false );
@@ -239,7 +237,7 @@ static bool __fnmatch( const char *pattern, const char *string )
             string++;
         }
         pattern++;
-    } while( *pattern != NULLCHAR && !IS_WILDCARD_CHAR( pattern ) );
+    } while( *pattern != NULLCHAR && !ciswildc( *pattern ) );
     if( !star_char ) {
         /*
          * match is OK, try next pattern section

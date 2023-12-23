@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,7 +31,7 @@
 
 extern  an      BGVarargsBasePtr( type_def *tipe );
 extern  an      BGStackValue( type_def *tipe );
-extern  an      BGInteger( signed_32 value, type_def *tipe );
+extern  an      BGInteger( int_32 value, type_def *tipe );
 extern  an      BGInt64( signed_64 value, type_def *tipe );
 extern  an      BGFloat( const char *value, type_def *tipe );
 extern  an      BGName( cg_class cl, pointer sym, type_def *tipe );
@@ -49,7 +50,7 @@ extern  void    BGControl( cg_op op, an expr, label_handle lbl );
 extern  void    BGGenCtrl( cg_op op, an expr, label_handle lbl, bool gen );
 extern  void    BGBigLabel( back_handle bck );
 extern  void    BGBigGoto( label_handle lbl, level_depth level );
-extern  unsigned_32 BGUnrollCount( unsigned_32 unroll_count );
+extern  uint_32 BGUnrollCount( uint_32 unroll_count );
 extern  an      BGUnary( cg_op op, an left, type_def *tipe );
 extern  an      BGBinary( cg_op op, an left, an rite, type_def *tipe, bool fold_addr );
 extern  an      BGOpGets( cg_op op, an left, an rite, type_def *tipe, type_def *optipe );

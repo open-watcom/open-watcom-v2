@@ -102,6 +102,7 @@ PATCH_RET_CODE OpenOld( foff len, int prompt, foff new_size, foff new_sum )
     FILE            *fd;
     int             fh;
     unsigned long   actual_len;
+    PATCH_RET_CODE  rc;
 
     prompt=prompt;
     _splitpath2( oldName, pgold.buffer, &pgold.drive, &pgold.dir, &pgold.fname, &pgold.ext );
@@ -127,6 +128,7 @@ PATCH_RET_CODE OpenOld( foff len, int prompt, foff new_size, foff new_sum )
                 fgets( temp, sizeof( temp ), stdin );
                 if( tolower( temp[0] ) == 'n' ) {
                     PatchError( ERR_PATCH_ABORTED );
+                    return( PATCH_BAD_PATCH );
                 }
                 if( tolower( temp[0] ) == 'y' ) {
                     break;
@@ -136,25 +138,33 @@ PATCH_RET_CODE OpenOld( foff len, int prompt, foff new_size, foff new_sum )
     }
 #endif
     fd = fopen( oldName, "rb" );
-    FileCheck( fd, oldName );
-    MyOpen( &OldFile, fd, oldName );
-    SeekCheck( fseek( fd, 0, SEEK_END ), oldName );
-    actual_len = ftell( fd );
-    if( actual_len != len
-      && (actual_len + sizeof( PATCH_LEVEL )) != len
-      && (actual_len - sizeof( PATCH_LEVEL )) != len ) {
-        if( actual_len >= new_size ) {
-            if( CheckSumOld( new_size ) == new_sum ) {
-                MyClose( &OldFile );
-                return( PATCH_ALREADY_PATCHED );
+    if( FileCheck( fd, oldName ) ) {
+        MyOpen( &OldFile, fd, oldName );
+        if( SeekCheck( fseek( fd, 0, SEEK_END ), oldName ) ) {
+            actual_len = ftell( fd );
+            if( actual_len == len
+              || (actual_len + sizeof( PATCH_LEVEL )) == len
+              || (actual_len - sizeof( PATCH_LEVEL )) == len ) {
+                if( SeekCheck( fseek( fd, 0, SEEK_SET ), oldName ) ) {
+                    return( PATCH_RET_OKAY );
+                }
+                rc = PATCH_IO_ERROR;
+            } else {
+                if( actual_len >= new_size && CheckSumOld( new_size ) == new_sum ) {
+                    rc = PATCH_ALREADY_PATCHED;
+                } else {
+                    PatchError( ERR_WRONG_SIZE, oldName, actual_len, len );
+                    rc = PATCH_BAD_LENGTH;
+                }
             }
+        } else {
+            rc = PATCH_IO_ERROR;
         }
-        PatchError( ERR_WRONG_SIZE, oldName, actual_len, len );
         MyClose( &OldFile );
-        return( PATCH_BAD_LENGTH );
+    } else {
+        rc = PATCH_CANT_OPEN_FILE;
     }
-    SeekCheck( fseek( fd, 0, SEEK_SET ), oldName );
-    return( PATCH_RET_OKAY );
+    return( rc );
 }
 
 byte InOld( foff offset )

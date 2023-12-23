@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,8 +36,7 @@
 #include "pdefn2.h"
 #include "asmstmt.h"
 
-static  hw_reg_set      AsmRegsSaved = HW_D( HW_FULL );
-static  int             AsmFuncNum;
+
 static  aux_info        AuxInfo;
 
 #if _CPU == 386
@@ -57,29 +56,28 @@ static struct {
 static void pragmaAuxInfoInit( void )
 /***********************************/
 {
-#if _CPU == 386
-    HW_CTurnOff( AsmRegsSaved, HW_EAX );
-    HW_CTurnOff( AsmRegsSaved, HW_EBX );
-    HW_CTurnOff( AsmRegsSaved, HW_ECX );
-    HW_CTurnOff( AsmRegsSaved, HW_EDX );
-    HW_CTurnOff( AsmRegsSaved, HW_ESI );
-    HW_CTurnOff( AsmRegsSaved, HW_EDI );
-#else
-    HW_CTurnOff( AsmRegsSaved, HW_ABCD );
-    HW_CTurnOff( AsmRegsSaved, HW_SI );
-    HW_CTurnOff( AsmRegsSaved, HW_DI );
+    HW_CTurnOff( AsmRegsSaved, HW_xAX );
+    HW_CTurnOff( AsmRegsSaved, HW_xBX );
+    HW_CTurnOff( AsmRegsSaved, HW_xCX );
+    HW_CTurnOff( AsmRegsSaved, HW_xDX );
+    HW_CTurnOff( AsmRegsSaved, HW_xSI );
+    HW_CTurnOff( AsmRegsSaved, HW_xDI );
+#if _CPU == 8086
     HW_CTurnOff( AsmRegsSaved, HW_ES );
 #endif
 
 #if _CPU == 386
-    /* these are internal, and will never be pointed to by
-       an aux_entry, so we don't have to worry about them
-       or their fields being freed */
-
+    /*
+     * these are internal, and will never be pointed to by
+     * an aux_entry, so we don't have to worry about them
+     * or their fields being freed
+     */
     STOSBInfo = WatcallInfo;
-    STOSBInfo.cclass = NO_FLOAT_REG_RETURNS |
-                       NO_STRUCT_REG_RETURNS |
-                       SPECIAL_STRUCT_RETURN;
+    STOSBInfo.cclass        = FECALL_GEN_NONE;
+    STOSBInfo.cclass_target = FECALL_X86_NO_FLOAT_REG_RETURNS |
+                              FECALL_X86_NO_STRUCT_REG_RETURNS |
+                              FECALL_X86_SPECIAL_STRUCT_RETURN |
+                              FECALL_X86_NONE;
     STOSBInfo.parms = STOSBParms;
     STOSBInfo.objname = "*";
 #endif
@@ -93,7 +91,6 @@ void PragmaInit( void )
 
     pragmaAuxInfoInit();
 
-    AsmFuncNum = 0;
     switch( GET_CPU( ProcRevision ) ) {
     case CPU_86:    cpu = 0; break;
     case CPU_186:   cpu = 1; break;
@@ -123,9 +120,9 @@ void PragmaInit( void )
     }
 
 #if _CPU == 8086
-    AsmInit( 0, cpu, fpu, GET_FPU_EMU( ProcRevision ) );
+    AsmEnvInit( 0, cpu, fpu, GET_FPU_EMU( ProcRevision ) );
 #else
-    AsmInit( 1, cpu, fpu, false );
+    AsmEnvInit( 1, cpu, fpu, false );
 #endif
 }
 
@@ -157,7 +154,9 @@ static void PragmaAuxEnd( void )
     hw_reg_set      flt_n_seg;
 
     if( CurrEntry == NULL ) {
-        // Redefining a built-in calling convention
+        /*
+         * Redefining a built-in calling convention
+         */
     } else {
         CurrInfo = (aux_info *)CMemAlloc( sizeof( aux_info ) );
         *CurrInfo = *CurrAlias;
@@ -166,31 +165,33 @@ static void PragmaAuxEnd( void )
         CurrInfo->code = AuxInfo.code;
     }
     if( AuxInfoFlg.f_near ) {
-        CurrInfo->cclass &= ~FAR_CALL;
+        CurrInfo->cclass_target &= ~FECALL_X86_FAR_CALL;
     }
     if( AuxInfoFlg.f_routine_pops ) {
-        CurrInfo->cclass &= ~CALLER_POPS;
+        CurrInfo->cclass &= ~FECALL_GEN_CALLER_POPS;
     }
     if( AuxInfoFlg.f_caller_return ) {
-        CurrInfo->cclass &= ~ROUTINE_RETURN;
+        CurrInfo->cclass_target &= ~FECALL_X86_ROUTINE_RETURN;
     }
     if( AuxInfoFlg.f_8087_returns ) {
-        CurrInfo->cclass &= ~NO_8087_RETURNS;
+        CurrInfo->cclass_target &= ~FECALL_X86_NO_8087_RETURNS;
     }
-    CurrInfo->cclass |= AuxInfo.cclass;
+    CurrInfo->cclass        |= AuxInfo.cclass;
+    CurrInfo->cclass_target |= AuxInfo.cclass_target;
+
     CurrInfo->flags |= AuxInfo.flags;
     if( AuxInfo.objname != NULL )
         CurrInfo->objname = AuxInfo.objname;
-    if( AuxInfo.cclass & SPECIAL_RETURN )
+    if( AuxInfo.cclass_target & FECALL_X86_SPECIAL_RETURN )
         CurrInfo->returns = AuxInfo.returns;
-    if( AuxInfo.cclass & SPECIAL_STRUCT_RETURN )
+    if( AuxInfo.cclass_target & FECALL_X86_SPECIAL_STRUCT_RETURN )
         CurrInfo->streturn = AuxInfo.streturn;
     if( AuxInfo.parms != NULL )
         CurrInfo->parms = AuxInfo.parms;
 
     if( !HW_CEqual( AuxInfo.save, HW_EMPTY ) ) {
         HW_CTurnOn( CurrInfo->save, HW_FULL );
-        if( (AuxInfo.cclass & MODIFY_EXACT) == 0 && !CompFlags.save_restore_segregs ) {
+        if( (AuxInfo.cclass_target & FECALL_X86_MODIFY_EXACT) == 0 && !CompFlags.save_restore_segregs ) {
             HW_Asgn( default_flt_n_seg, WatcallInfo.save );
             HW_CAsgn( flt_n_seg, HW_FLTS );
             HW_CTurnOn( flt_n_seg, HW_SEGS );
@@ -269,7 +270,7 @@ static int AsmCodePtrType( type_modifiers flags )
         return( SYM_FFAR );
     } else if( flags & FLAG_NEAR ) {
         return( SYM_FNEAR );
-    } else if( TargetSwitches & BIG_CODE ) {
+    } else if( TargetSwitches & CGSW_X86_BIG_CODE ) {
         return( SYM_FFAR );
     } else {
         return( SYM_FNEAR );
@@ -284,18 +285,20 @@ static int AsmPtrType( TYPEPTR typ, type_modifiers flags )
     SKIP_TYPEDEFS( typ );
     if( typ->decl_type == TYP_FUNCTION ) {
         return( AsmCodePtrType( flags ) );
-    } else if( flags & (FLAG_FAR|FLAG_HUGE) ) {
+    } else if( flags & (FLAG_FAR | FLAG_HUGE) ) {
         return( SYM_DFAR );
     } else if( flags & FLAG_NEAR ) {
         return( SYM_DNEAR );
-    } else if( TargetSwitches & BIG_DATA ) {
+    } else if( TargetSwitches & CGSW_X86_BIG_DATA ) {
         return( SYM_DFAR );
     } else {
         return( SYM_DNEAR );
     }
 }
 
-/* matches enum DataType in ctypes.h */
+/*
+ * matches enum DataType in ctypes.h
+ */
 static enum sym_type AsmDataType[] = {
     #define pick1(enum,cgtype,x86asmtype,name,size) x86asmtype,
     #include "cdatatyp.h"
@@ -339,9 +342,17 @@ enum sym_type AsmQueryType( void *handle )
     return( AsmType( sym.sym_type, sym.mods ) );
 }
 
-static bool InsertFixups( unsigned char *buff, byte_seq_len len, byte_seq **code )
-/********************************************************************************/
+void AsmUsesAuto( aux_info *info )
+/********************************/
 {
+    info->cclass_target |= FECALL_X86_NEEDS_BP_CHAIN;
+}
+
+bool AsmInsertFixups( aux_info *info )
+/************************************/
+{
+    byte_seq            *seq;
+    byte_seq_len        len;
                         /* additional slop in buffer to simplify the code */
     unsigned char       temp[MAXIMUM_BYTESEQ + 1 + 2 + sizeof( BYTE_SEQ_SYM ) + sizeof( BYTE_SEQ_OFF )];
     struct asmfixup     *fix;
@@ -352,7 +363,6 @@ static bool InsertFixups( unsigned char *buff, byte_seq_len len, byte_seq **code
     unsigned char       *dst;
     unsigned char       *src;
     unsigned char       *end;
-    byte_seq            *seq;
     bool                perform_fixups;
     unsigned char       cg_fix;
     SYM_HANDLE          sym_handle;
@@ -365,13 +375,17 @@ static bool InsertFixups( unsigned char *buff, byte_seq_len len, byte_seq **code
     bool                fixup_padding;
 #endif
 
+    src = AsmCodeBuffer;
+    len = AsmCodeAddress;
     sym_handle = SYM_NULL;
     uses_auto = false;
     perform_fixups = false;
     head = FixupHead;
     if( head != NULL ) {
         FixupHead = NULL;
-        /* sort the fixup list in increasing fixup_loc's */
+        /*
+         * sort the fixup list in increasing fixup_loc's
+         */
         for( fix = head; fix != NULL; fix = next ) {
             for( owner = &FixupHead; (chk = *owner) != NULL; owner = &chk->next ) {
                 if( chk->fixup_loc > fix->fixup_loc ) {
@@ -383,16 +397,17 @@ static bool InsertFixups( unsigned char *buff, byte_seq_len len, byte_seq **code
             *owner = fix;
         }
         dst = temp;
-        src = buff;
         end = src + len;
         fix = FixupHead;
         owner = &FixupHead;
-        /* insert fixup escape sequences */
+        /*
+         * insert fixup escape sequences
+         */
         while( src < end ) {
-            if( fix != NULL && fix->fixup_loc == (src - buff) ) {
+            if( fix != NULL && fix->fixup_loc == (src - AsmCodeBuffer) ) {
                 name = fix->name;
                 if( name != NULL ) {
-                    sym_handle = SymLook( CalcHash( name, strlen( name ) ), name );
+                    sym_handle = SymLook( CalcHashID( name ), name );
                     if( sym_handle == SYM_NULL ) {
                         CErr2p( ERR_UNDECLARED_SYM, name );
                         return( false );
@@ -409,7 +424,9 @@ static bool InsertFixups( unsigned char *buff, byte_seq_len len, byte_seq **code
                     }
                     SymReplace( &sym, sym_handle );
                 }
-                /* insert fixup information */
+                /*
+                 * insert fixup information
+                 */
                 skip = 0;
                 *dst++ = FLOATING_FIXUP_BYTE;
                 mutate_to_segment = false;
@@ -423,16 +440,24 @@ static bool InsertFixups( unsigned char *buff, byte_seq_len len, byte_seq **code
                     break;
                 case FIX_SEG:
                     if( name == NULL ) {
-                        // special case for floating point fixup
+                        /*
+                         * special case for floating point fixup
+                         */
                         if( ( src[0] == 0x90 ) && ( src[1] == 0x9B ) ) {
-                           // inline assembler FWAIT instruction 0x90, 0x9b
+                            /*
+                             * inline assembler FWAIT instruction 0x90, 0x9b
+                             */
                             *dst++ = FIX_FPP_WAIT;
                         } else if( src[0] == 0x9b && (src[1] & 0xd8) == 0xd8 ) {
-                           // FWAIT as first byte and FPU instruction opcode as second byte
+                            /*
+                             * FWAIT as first byte and FPU instruction opcode as second byte
+                             */
                             *dst++ = FIX_FPP_NORMAL;
                         } else if( src[0] == 0x9b && (src[2] & 0xd8) == 0xd8 ) {
-                           // FWAIT as first byte and FPU instruction opcode as third byte
-                           // second byte should be segment override prefix
+                            /*
+                             * FWAIT as first byte and FPU instruction opcode as third byte
+                             * second byte should be segment override prefix
+                             */
                             switch( src[1] ) {
                             case PREFIX_ES: *dst++ = FIX_FPP_ES;    break;
                             case PREFIX_CS: *dst++ = FIX_FPP_CS;    break;
@@ -443,7 +468,9 @@ static bool InsertFixups( unsigned char *buff, byte_seq_len len, byte_seq **code
                             default: --dst; break;  // skip FP patch
                             }
                         } else {
-                            // skip FP patch
+                            /*
+                             * skip FP patch
+                             */
                             --dst;
                         }
                     } else {
@@ -493,8 +520,10 @@ static bool InsertFixups( unsigned char *buff, byte_seq_len len, byte_seq **code
                 }
 #if _CPU == 8086
                 if( fixup_padding ) {
-                    // add offset fixup padding to 32-bit
-                    // cg create only 16-bit offset fixup
+                    /*
+                     * add offset fixup padding to 32-bit
+                     * cg create only 16-bit offset fixup
+                     */
                     *dst++ = 0;
                     *dst++ = 0;
                     //
@@ -502,12 +531,12 @@ static bool InsertFixups( unsigned char *buff, byte_seq_len len, byte_seq **code
 #endif
                 if( mutate_to_segment ) {
                     /*
-                        Since the CG escape sequences don't allow for
-                        FAR pointer fixups, we have to split them into two.
-                        This is done by doing the offset fixup first, then
-                        mutating the fixup structure to look like a segment
-                        fixup one near pointer size later.
-                    */
+                     * Since the CG escape sequences don't allow for
+                     * FAR pointer fixups, we have to split them into two.
+                     * This is done by doing the offset fixup first, then
+                     * mutating the fixup structure to look like a segment
+                     * fixup one near pointer size later.
+                     */
                     fix->fixup_type = FIX_SEG;
                     fix->fixup_loc += skip;
                     fix->u_offset = 0;
@@ -535,18 +564,17 @@ static bool InsertFixups( unsigned char *buff, byte_seq_len len, byte_seq **code
                 return( false );
             }
         }
-        buff = temp;
+        src = temp;
         len = (byte_seq_len)( dst - temp );
         perform_fixups = true;
     }
     seq = (byte_seq *)CMemAlloc( offsetof( byte_seq, data ) + len );
     seq->relocs = perform_fixups;
     seq->length = len;
-    memcpy( &seq->data[0], buff, len );
-    *code = seq;
+    memcpy( &seq->data[0], src, len );
+    info->code = seq;
     return( uses_auto );
 }
-
 
 static void AddAFix( unsigned loc, char *name, unsigned type, unsigned off )
 /**************************************************************************/
@@ -563,18 +591,6 @@ static void AddAFix( unsigned loc, char *name, unsigned type, unsigned off )
     FixupHead = fix;
 }
 
-static void FreeAsmFixups( void )
-/******************************/
-{
-    struct asmfixup     *fix;
-
-    for( ; (fix = FixupHead) != NULL; ) {
-        FixupHead = fix->next;
-        CMemFree( fix );
-    }
-}
-
-
 void AsmSysLine( const char *buff )
 /*********************************/
 {
@@ -585,15 +601,37 @@ void AsmSysLine( const char *buff )
 #endif
 }
 
-static bool GetByteSeq( byte_seq **code )
+static bool checkEnum( int *value )
+/*********************************/
+{
+    id_hash_idx hash;
+    SYM_HANDLE  sym_handle;
+    ENUMPTR     ep;
+
+    if( CurToken == T_ID ) {
+        hash = CalcHashID( Buffer );
+        sym_handle = SymLook( hash, Buffer );
+        if( sym_handle == NULL ) {
+            ep = EnumLookup( hash, Buffer );
+            if( ep != NULL ) {
+                *value = ep->value.u._64[0];
+                return( true );
+            }
+        }
+    }
+    return( false );
+}
+
+static bool GetByteSeq( aux_info *info )
 /**************************************/
 {
-    unsigned char       buff[MAXIMUM_BYTESEQ + 32];
+    unsigned char       buff[MAXIMUM_BYTESEQ + ASM_BLOCK];
     char                *name;
     unsigned            offset;
     fix_words           fixword;
     bool                uses_auto;
     bool                too_many_bytes;
+    int                 value;
 #if _CPU == 8086
     bool                use_fpu_emu = false;
 #endif
@@ -601,7 +639,6 @@ static bool GetByteSeq( byte_seq **code )
     AsmSysInit( buff );
     PPNextToken();
     too_many_bytes = false;
-    uses_auto = false;
     offset = 0;
     name = NULL;
     for( ;; ) {
@@ -625,6 +662,9 @@ static bool GetByteSeq( byte_seq **code )
 #endif
             AsmCodeBuffer[AsmCodeAddress++] = (unsigned char)Constant;
             PPNextToken();
+        } else if( checkEnum( &value ) ) {
+            AsmCodeBuffer[AsmCodeAddress++] = (unsigned char)value;
+            PPNextToken();
         } else {
 #if _CPU == 8086
             use_fpu_emu = false;
@@ -642,7 +682,7 @@ static bool GetByteSeq( byte_seq **code )
                 if( !IS_ID_OR_KEYWORD( CurToken ) ) {
                     CErr1( ERR_EXPECTING_ID );
                 } else {
-                    name = CStrSave( Buffer );
+                    name = CMemStrDup( Buffer );
                     PPNextToken();
                     if( CurToken == T_PLUS ) {
                         PPNextToken();
@@ -695,43 +735,58 @@ static bool GetByteSeq( byte_seq **code )
     if( too_many_bytes ) {
         uses_auto = false;
     } else {
-        uses_auto = InsertFixups( buff, AsmCodeAddress, code );
+        uses_auto = AsmInsertFixups( info );
     }
-    FreeAsmFixups();
     AsmSysFini();
     return( uses_auto );
 }
 
 
-hw_reg_set PragRegName( const char *regname, size_t regnamelen )
-/**************************************************************/
+hw_reg_set PragRegName( const char *regname )
+/*******************************************/
 {
     int             index;
-    const char      *str;
     hw_reg_set      name;
-    size_t          len;
 
-    if( regnamelen > 0 ) {
-        len = regnamelen;
-        str = SkipUnderscorePrefix( regname, &len, true );
-        // search register or alias name
-        index = PragRegIndex( Registers, str, len, true );
+    if( *regname != '\0' ) {
+        /*
+         * search register or alias name
+         */
+        index = PragRegIndex( Registers, regname, true );
         if( index != -1 ) {
             return( RegBits[RegMap[index]] );
         }
-        if( len == 4 && memcmp( str, "8087", 4 ) == 0 ) {
+        if( strcmp( regname, "8087" ) == 0 ) {
             HW_CAsgn( name, HW_FLTS );
             return( name );
         }
-        PragRegNameErr( regname, regnamelen );
+        PragRegNameErr( regname );
     }
     HW_CAsgn( name, HW_EMPTY );
     return( name );
 }
 
 hw_reg_set PragReg( void )
+/************************/
 {
-    return( PragRegName( Buffer, TokenLen ) );
+    char            buffer[REG_BUFF_SIZE];
+    size_t          len;
+    const char      *p;
+
+    p = SkipUnderscorePrefix( Buffer );
+    if( p == NULL ) {
+        /*
+         * error, missing undercore prefix
+         */
+        PragRegNameErr( Buffer );
+        p = Buffer;
+    }
+    len = 0;
+    while( *p != '\0' && len < ( sizeof( buffer ) - 1 ) ) {
+        buffer[len++] = *p++;
+    }
+    buffer[len] = '\0';
+    return( PragRegName( buffer ) );
 }
 
 static void GetParmInfo( void )
@@ -752,20 +807,20 @@ static void GetParmInfo( void )
     have.f_list = false;
     for( ;; ) {
         if( !have.f_pop && PragRecogId( "caller" ) ) {
-            AuxInfo.cclass |= CALLER_POPS;
+            AuxInfo.cclass |= FECALL_GEN_CALLER_POPS;
             have.f_pop = true;
         } else if( !have.f_pop && PragRecogId( "routine" ) ) {
-            AuxInfo.cclass &= ~ CALLER_POPS;
+            AuxInfo.cclass &= ~ FECALL_GEN_CALLER_POPS;
             AuxInfoFlg.f_routine_pops = true;
             have.f_pop = true;
         } else if( !have.f_reverse && PragRecogId( "reverse" ) ) {
-            AuxInfo.cclass |= REVERSE_PARMS;
+            AuxInfo.cclass |= FECALL_GEN_REVERSE_PARMS;
             have.f_reverse = true;
         } else if( !have.f_nomemory && PragRecogId( "nomemory" ) ) {
-            AuxInfo.cclass |= NO_MEMORY_READ;
+            AuxInfo.cclass |= FECALL_GEN_NO_MEMORY_READ;
             have.f_nomemory = true;
         } else if( !have.f_loadds && PragRecogId( "loadds" ) ) {
-            AuxInfo.cclass |= LOAD_DS_ON_CALL;
+            AuxInfo.cclass_target |= FECALL_X86_LOAD_DS_ON_CALL;
             have.f_loadds = true;
         } else if( !have.f_list && PragRegSet() != T_NULL ) {
             AuxInfo.parms = PragManyRegSets();
@@ -794,20 +849,20 @@ static void GetSTRetInfo( void )
     for( ;; ) {
         if( !have.f_float && PragRecogId( "float" ) ) {
             have.f_float = true;
-            AuxInfo.cclass |= NO_FLOAT_REG_RETURNS;
+            AuxInfo.cclass_target |= FECALL_X86_NO_FLOAT_REG_RETURNS;
         } else if( !have.f_struct && PragRecogId( "struct" ) ) {
             have.f_struct = true;
-            AuxInfo.cclass |= NO_STRUCT_REG_RETURNS;
+            AuxInfo.cclass_target |= FECALL_X86_NO_STRUCT_REG_RETURNS;
         } else if( !have.f_allocs && PragRecogId( "routine" ) ) {
             have.f_allocs = true;
-            AuxInfo.cclass |= ROUTINE_RETURN;
+            AuxInfo.cclass_target |= FECALL_X86_ROUTINE_RETURN;
         } else if( !have.f_allocs && PragRecogId( "caller" ) ) {
             have.f_allocs = true;
-            AuxInfo.cclass &= ~ROUTINE_RETURN;
+            AuxInfo.cclass_target &= ~FECALL_X86_ROUTINE_RETURN;
             AuxInfoFlg.f_caller_return = true;
         } else if( !have.f_list && PragRegSet() != T_NULL ) {
             have.f_list = true;
-            AuxInfo.cclass |= SPECIAL_STRUCT_RETURN;
+            AuxInfo.cclass_target |= FECALL_X86_SPECIAL_STRUCT_RETURN;
             AuxInfo.streturn = PragRegList();
         } else {
             break;
@@ -828,16 +883,16 @@ static void GetRetInfo( void )
     have.f_no8087 = false;
     have.f_list = false;
     have.f_struct = false;
-    AuxInfo.cclass &= ~ NO_8087_RETURNS;
+    AuxInfo.cclass_target &= ~ FECALL_X86_NO_8087_RETURNS;
     AuxInfoFlg.f_8087_returns = true;
     for( ;; ) {
         if( !have.f_no8087 && PragRecogId( "no8087" ) ) {
             have.f_no8087 = true;
             HW_CTurnOff( AuxInfo.returns, HW_FLTS );
-            AuxInfo.cclass |= NO_8087_RETURNS;
+            AuxInfo.cclass_target |= FECALL_X86_NO_8087_RETURNS;
         } else if( !have.f_list && PragRegSet() != T_NULL ) {
             have.f_list = true;
-            AuxInfo.cclass |= SPECIAL_RETURN;
+            AuxInfo.cclass_target |= FECALL_X86_SPECIAL_RETURN;
             AuxInfo.returns = PragRegList();
         } else if( !have.f_struct && PragRecogId( "struct" ) ) {
             have.f_struct = true;
@@ -863,10 +918,10 @@ static void GetSaveInfo( void )
     have.f_list = false;
     for( ;; ) {
         if( !have.f_exact && PragRecogId( "exact" ) ) {
-            AuxInfo.cclass |= MODIFY_EXACT;
+            AuxInfo.cclass_target |= FECALL_X86_MODIFY_EXACT;
             have.f_exact = true;
         } else if( !have.f_nomemory && PragRecogId( "nomemory" ) ) {
-            AuxInfo.cclass |= NO_MEMORY_CHANGED;
+            AuxInfo.cclass |= FECALL_GEN_NO_MEMORY_CHANGED;
             have.f_nomemory = true;
         } else if( !have.f_list && PragRegSet() != T_NULL ) {
             HW_TurnOn( AuxInfo.save, PragRegList() );
@@ -910,23 +965,23 @@ void PragAux( void )
         have.uses_auto = false;
         for( ;; ) {
             if( !have.f_call && CurToken == T_EQUAL ) {
-                have.uses_auto = GetByteSeq( &AuxInfo.code );
+                have.uses_auto = GetByteSeq( &AuxInfo );
                 have.f_call = true;
             } else if( !have.f_call && PragRecogId( "far" ) ) {
-                AuxInfo.cclass |= FAR_CALL;
+                AuxInfo.cclass_target |= FECALL_X86_FAR_CALL;
                 have.f_call = true;
             } else if( !have.f_call && PragRecogId( "near" ) ) {
-                AuxInfo.cclass &= ~FAR_CALL;
+                AuxInfo.cclass_target &= ~FECALL_X86_FAR_CALL;
                 AuxInfoFlg.f_near = true;
                 have.f_call = true;
             } else if( !have.f_loadds && PragRecogId( "loadds" ) ) {
-                AuxInfo.cclass |= LOAD_DS_ON_ENTRY;
+                AuxInfo.cclass_target |= FECALL_X86_LOAD_DS_ON_ENTRY;
                 have.f_loadds = true;
             } else if( !have.f_rdosdev && PragRecogId( "rdosdev" ) ) {
-                AuxInfo.cclass |= LOAD_RDOSDEV_ON_ENTRY;
+                AuxInfo.cclass_target |= FECALL_X86_LOAD_RDOSDEV_ON_ENTRY;
                 have.f_rdosdev = true;
             } else if( !have.f_export && PragRecogId( "export" ) ) {
-                AuxInfo.cclass |= DLL_EXPORT;
+                AuxInfo.cclass |= FECALL_GEN_DLL_EXPORT;
                 have.f_export = true;
             } else if( !have.f_parm && PragRecogId( "parm" ) ) {
                 GetParmInfo();
@@ -935,26 +990,20 @@ void PragAux( void )
                 GetRetInfo();
                 have.f_value = true;
             } else if( !have.f_value && PragRecogId( "aborts" ) ) {
-                AuxInfo.cclass |= SUICIDAL;
+                AuxInfo.cclass |= FECALL_GEN_ABORTS;
                 have.f_value = true;
             } else if( !have.f_modify && PragRecogId( "modify" ) ) {
                 GetSaveInfo();
                 have.f_modify = true;
             } else if( !have.f_frame && PragRecogId( "frame" ) ) {
-                AuxInfo.cclass |= GENERATE_STACK_FRAME;
+                AuxInfo.cclass_target |= FECALL_X86_GENERATE_STACK_FRAME;
                 have.f_frame = true;
             } else {
                 break;
             }
         }
         if( have.uses_auto ) {
-            /*
-               We want to force the calling routine to set up a [E]BP frame
-               for the use of this pragma. This is done by saying the pragma
-               modifies the [E]SP register. A kludge, but it works.
-            */
-//            AuxInfo.cclass |= GENERATE_STACK_FRAME;
-            HW_CTurnOff( AuxInfo.save, HW_xSP );
+            AsmUsesAuto( &AuxInfo );
         }
         PragmaAuxEnd();
     }
@@ -964,60 +1013,17 @@ void PragAux( void )
 void AsmSysInit( unsigned char *buf )
 /***********************************/
 {
+    AsmInit();
     AsmCodeBuffer = buf;
     AsmCodeLimit = MAXIMUM_BYTESEQ;
     AsmCodeAddress = 0;
-    AsmSaveCPUInfo();
 }
 
 void AsmSysFini( void )
 /*********************/
 {
-    AsmSymFini();
-    AsmRestoreCPUInfo();
-}
-
-void AsmSysMakeInlineAsmFunc( bool too_many_bytes )
-/*************************************************/
-{
-    int                 code_length;
-    SYM_HANDLE          sym_handle;
-    TREEPTR             tree;
-    bool                uses_auto;
-    char                name[8];
-
-    /* unused parameters */ (void)too_many_bytes;
-
-    code_length = AsmCodeAddress;
-    if( code_length != 0 ) {
-        sprintf( name, "F.%d", AsmFuncNum );
-        ++AsmFuncNum;
-        CreateAux( name );
-        CurrInfo = (aux_info *)CMemAlloc( sizeof( aux_info ) );
-        *CurrInfo = WatcallInfo;
-        CurrInfo->use = 1;
-        CurrInfo->save = AsmRegsSaved;  // indicate no registers saved
-        uses_auto = InsertFixups( AsmCodeBuffer, code_length, &CurrInfo->code );
-        if( uses_auto ) {
-            /*
-               We want to force the calling routine to set up a [E]BP frame
-               for the use of this pragma. This is done by saying the pragma
-               modifies the [E]SP register. A kludge, but it works.
-            */
-//            CurrInfo->cclass |= GENERATE_STACK_FRAME;
-            HW_CTurnOff( CurrInfo->save, HW_xSP );
-        }
-        CurrEntry->info = CurrInfo;
-        CurrEntry->next = AuxList;
-        AuxList = CurrEntry;
-        CurrEntry = NULL;
-        sym_handle = MakeFunction( name, FuncNode( GetType( TYP_VOID ), FLAG_NONE, NULL ) );
-        tree = LeafNode( OPR_FUNCNAME );
-        tree->op.u2.sym_handle = sym_handle;
-        tree = ExprNode( tree, OPR_CALL, NULL );
-        tree->u.expr_type = GetType( TYP_VOID );
-        AddStmt( tree );
-    }
+    AsmFiniRelocs();
+    AsmFini();
 }
 
 char const *AsmSysDefineByte( void )

@@ -40,7 +40,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #ifdef __WINDOWS__
-    #include "commonui.h"
+    #include <wwindows.h>
 #endif
 #include "sample.h"
 #include "wmsg.h"
@@ -50,7 +50,7 @@
     #include "sampwin.h"
 #endif
 
-#include "clibext.h"
+#include "clibint.h"
 
 
 static samp_header          Header = {
@@ -70,9 +70,9 @@ static int              stackSize = 0;
 
 
 #if defined( __DOS__ ) && !defined( __PHARLAP__ ) && !defined( __DOS4G__ )
-void __near WriteMark( const char FAR_PTR *str, seg_offset where )
+void __near WriteMark( const char FAR_PTR *str, far_address where )
 #else
-void WriteMark( const char FAR_PTR *str, seg_offset where )
+void WriteMark( const char FAR_PTR *str, far_address where )
 #endif
 {
     struct {
@@ -103,7 +103,7 @@ void WriteMark( const char FAR_PTR *str, seg_offset where )
     SamplerOff--;
 }
 
-void WriteCodeLoad( seg_offset ovl_tbl, const char *name, samp_block_kinds kind )
+void WriteCodeLoad( far_address ovl_tbl, const char *name, samp_block_kinds kind )
 {
     struct {
         struct samp_block_prefix    pref;
@@ -156,11 +156,14 @@ void WriteAddrMap( seg map_start,  seg load_start, off load_offset )
 
 
 void StopAndSave( void )
-/* called from int08_handler, int21_handler, and int28_handler */
+/*
+ * called from int08_handler, int21_handler, and int28_handler
+ */
 {
-    /*  We don't want our int08_handler to interfere at this time;
-        We are running here on a stolen time.
-    */
+    /*
+     * We don't want our int08_handler to interfere at this time;
+     * We are running here on a stolen time.
+     */
     SamplerOff++;
     SaveSamples();
     SamplerOff--;
@@ -168,7 +171,9 @@ void StopAndSave( void )
 
 
 void SaveSamples( void )
-/* called from StopAndSave, and report */
+/*
+ * called from StopAndSave, and report
+ */
 {
     unsigned size;
     unsigned tid;
@@ -177,7 +182,10 @@ void SaveSamples( void )
 
     tid = 0;
     while( (tid = NextThread( tid )) != 0 ) {
-        if( !CallGraphMode ) {         /* record actual sample only */
+        if( !CallGraphMode ) {
+            /*
+             * record actual sample only
+             */
             if( SampleIndex > 0 ) {
                 size = sizeof( samp_block_prefix ) + sizeof( struct samp_samples )
                             + (SampleIndex - 1) * sizeof( samp_address );
@@ -188,10 +196,15 @@ void SaveSamples( void )
                 }
                 ResetThread( tid );
             }
-        } else {        /* record sample and callgraph information */
+        } else {
+            /*
+             * record sample and callgraph information
+             */
             for( i = 0; i < SampleIndex; i++ ) {
                 if( SampleCount > 0 ) {
-                    /* write sample record */
+                    /*
+                     * write sample record
+                     */
                     size = SIZE_PREFIX + SIZE_SAMPLE + SampleCount * SIZE_SAMP_ADDR;
                     Samples->pref.length = size;
                     Info.d.count[SAMP_SAMPLES].size += size;
@@ -201,7 +214,9 @@ void SaveSamples( void )
                         SampWrite( &Samples->d.sample.sample[j], SIZE_SAMP_ADDR );
                         j += ( Samples->d.sample.sample[j+1].offset >> 16 ) + 2;
                     }
-                    /* write callgraph record */
+                    /*
+                     * write callgraph record
+                     */
                     size = SIZE_PREFIX + SIZE_CALLGRAPH +      /* prefix stuff */
                            SampleCount * SIZE_CGRAPH_SAMPLE +  /* push/pop info */
                            (SampleIndex - 2*SampleCount) *     /* cgraph samples */
@@ -225,8 +240,8 @@ void SaveSamples( void )
                                                     xfer.push_n * SIZE_SAMP_ADDR );
                             j += xfer.push_n + 2;
                         } else {    /* the callgraph info was not available */
-                            xfer.pop_n = -1;        /* flag this condition for */
-                            xfer.push_n = -1;       /* the profiler. */
+                            xfer.pop_n = CGRAPH_NO_ENTRY;   /* flag this condition for */
+                            xfer.push_n = CGRAPH_NO_ENTRY;  /* the profiler. */
                             SampWrite( &xfer, SIZE_CGRAPH_SAMPLE );
                             j += 2;
                         }
@@ -255,8 +270,9 @@ void RecordCGraph( void )
         SampleCount--;          /* forget about this sample */
         return;                 /* and quit */
     }
-
-/* first, we record the push/pop values */
+    /*
+     * first, we record the push/pop values
+     */
     if( FirstSample ) {
         FirstSample = false;
         Comm.push_no++;
@@ -269,23 +285,26 @@ void RecordCGraph( void )
     Samples->d.sample.sample[SampleIndex].offset <<= 16;
     Samples->d.sample.sample[SampleIndex].offset += Comm.pop_no;
     SampleIndex++;
-
-/* then we write the cs:ip of the last known routine */
+    /*
+     * then we write the cs:ip of the last known routine
+     */
     if( Comm.push_no ) {
         Samples->d.sample.sample[SampleIndex].offset  = (off)Comm.top_ip;
         Samples->d.sample.sample[SampleIndex].segment = (seg)Comm.top_cs;
         SampleIndex++;
     }
-
-/* finally, record the necessary callgraph information */
+    /*
+     * finally, record the necessary callgraph information
+     */
     for( i = 0; i < (int)Comm.push_no - 1; i++ ) {
         GetNextAddr();
         Samples->d.sample.sample[SampleIndex].offset = CGraphOff;
         Samples->d.sample.sample[SampleIndex].segment = CGraphSeg;
         SampleIndex++;
     }
-
-/* and reset the communication area to prepare for next sample */
+    /*
+     * and reset the communication area to prepare for next sample
+     */
     ResetCommArea();
 }
 
@@ -302,8 +321,9 @@ void REPORT_TYPE report( void )
 {
     StopProg();
     SaveSamples();
-
-    /* write the header on the sample file */
+    /*
+     * write the header on the sample file
+     */
     Info.d.count[SAMP_LAST].number++;
     if( SampWrite( &Last, sizeof( Last ) ) != 0 )
         AllFull();
@@ -340,7 +360,9 @@ static const char *skip( const char *ptr )
 
 
 unsigned GetNumber( unsigned min, unsigned max, const char **atstr, unsigned base )
-/* handles command line items of the sort "b=23" (up to base 16) */
+/*
+ * handles command line items of the sort "b=23" (up to base 16)
+ */
 {
     const char  *scan;
     int         c;
@@ -384,10 +406,10 @@ static const char *skip_command( const char *str )
     for( ;; ) {
         switch( *str ) {
         case ' ':
-    #ifdef __DOS__
+#ifdef __DOS__
         case '/':
         case '-':
-    #endif
+#endif
         case '\t':
         case '\0':
         case '<':
@@ -406,9 +428,8 @@ static const char *skip_command( const char *str )
         / sizeof( samp_address ))
 
 
-static const char *Parse( const char *line, char arg[], const char **eoc )
+static const char *Parse( const char *cmd, char arg[], const char **eoc )
 {
-    const char  *cmd;
     char        *p;
     const char  *ptr;
     int         c, len;
@@ -416,7 +437,6 @@ static const char *Parse( const char *line, char arg[], const char **eoc )
     InitTimerRate();
     SysDefaultOptions();
     Ceiling = CNV_CEIL( DEF_CEIL );
-    cmd = line;
     SampName[0] = '\0';
     for( ;; ) {
         cmd = skip( cmd );
@@ -462,10 +482,12 @@ static const char *Parse( const char *line, char arg[], const char **eoc )
     }
 
     Margin = SafeMargin();
-
-    /* scan over command name */
+    /*
+     * scan over command name
+     */
     ptr = skip_command( cmd );
-    /* collect program arguments - arg will contain DOS-style command tail,
+    /*
+     * collect program arguments - arg will contain DOS-style command tail,
      * possibly truncated (max 126 usable chars).
      */
     *eoc = ptr;
@@ -557,11 +579,7 @@ int sample_main( char *cmd_line )
     Info.pref.kind = SAMP_INFO;
     Info.d.timer_rate = TimerRate();
     /* could do a better job filling in this information */
-    Info.d.config.cpu           = 0;
-    Info.d.config.fpu           = 0;
-    Info.d.config.osmajor       = 0;
-    Info.d.config.osminor       = 0;
-    Info.d.config.os            = DIG_OS_IDUNNO;
+    memset( &Info.d.config, 0, sizeof( Info.d.config ) );
     Info.d.config.huge_shift    = 12;
 #if defined( _M_IX86 )
     Info.d.config.arch          = DIG_ARCH_X86;
@@ -572,10 +590,13 @@ int sample_main( char *cmd_line )
 #else
     #error Machine type not configured
 #endif
-    /* record get re-written with other information filled in later */
+    /*
+     * record get re-written with other information filled in later
+     */
     SampWrite( &Info, sizeof( Info ) );
     CurrTick = 0L;
-    /* Some systems need a simple null-terminated string, others need
+    /*
+     * Some systems need a simple null-terminated string, others need
      * a DOS-style 128-byte array with length in the first byte and CR
      * at the end. We pass both and let the callee pick & choose.
      */
@@ -587,6 +608,7 @@ int sample_main( char *cmd_line )
 #if !defined( __WINDOWS__ )
 int main( int argc, char **argv )
 {
+    int         cmd_len;
     char        *cmd_line;
     int         rc;
 
@@ -601,18 +623,13 @@ int main( int argc, char **argv )
     if( !MsgInit() )
         fatal();
 
-    /* Command line may be several KB large on most OSes */
-    cmd_line = malloc( _bgetcmd( NULL, 0 ) + 1 );
-    if( cmd_line != NULL ) {
-        getcmd( cmd_line );
-    }
-
+    cmd_len = _bgetcmd( NULL, 0 ) + 1;
+    cmd_line = malloc( cmd_len );
+    if( cmd_line == NULL )
+        fatal();
+    _bgetcmd( cmd_line, cmd_len );
     rc = sample_main( cmd_line );
-
-    if( cmd_line != NULL ) {
-        free( cmd_line );
-    }
-
+    free( cmd_line );
     MsgFini();
     return( rc );
 }

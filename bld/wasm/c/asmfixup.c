@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -63,8 +63,9 @@ static const char * const FPPatchAltName[] = {
 };
 
 void add_frame( void )
-/********************/
-/* determine the frame and frame datum for the fixup */
+/*********************
+ * determine the frame and frame datum for the fixup
+ */
 {
     struct asmfixup     *fixup;
 
@@ -79,11 +80,10 @@ void add_frame( void )
 #endif
 
 struct asmfixup *AddFixup( struct asm_sym *sym, enum fixup_types fixup_type, enum fixup_options fixup_option )
-/************************************************************************************************************/
-/*
-  put the correct target offset into the link list when forward reference of
-  relocatable is resolved;
-*/
+/*************************************************************************************************************
+ * put the correct target offset into the link list when forward reference of
+ * relocatable is resolved;
+ */
 {
     struct asmfixup     *fixup;
 
@@ -164,24 +164,33 @@ static bool DoPatch( struct asm_sym *sym, struct asmfixup *fixup )
 #if defined( _STANDALONE_ )
     dir_node            *seg;
 
-    // all relative fixups should occure only at first pass and they signal forward references
-    // they must be removed after patching or skiped ( next processed as normal fixup )
+    /*
+     * all relative fixups should occure only at first pass and they signal
+     * forward references they must be removed after patching or
+     * skiped ( next processed as normal fixup )
+     */
     seg = GetSeg( sym );
     if( seg == NULL || fixup->fixup_seg != seg ) {
-        /* can't backpatch if fixup location is in diff seg than symbol */
+        /*
+         * can't backpatch if fixup location is in diff seg than symbol
+         */
         SkipFixup();
         return( RC_OK );
     }
     if( Parse_Pass == PASS_1 ) {
         if( sym->mem_type == MT_FAR && fixup->fixup_option == OPTJ_CALL ) {
-            // convert far call to near, only at first pass
+            /*
+             * convert far call to near, only at first pass
+             */
             PhaseError = true;
             sym->offset++;
             AsmByte( 0 );
             AsmFree( fixup );
             return( RC_OK );
         } else if( sym->mem_type == MT_NEAR ) {
-            // near forward reference, only at first pass
+            /*
+             * near forward reference, only at first pass
+             */
             switch( fixup->fixup_type ) {
             case FIX_RELOFF32:
             case FIX_RELOFF16:
@@ -206,7 +215,9 @@ static bool DoPatch( struct asm_sym *sym, struct asmfixup *fixup )
         /* fall through */
     case FIX_RELOFF8:
         size++;
-        // calculate the displacement
+        /*
+         * calculate the displacement
+         */
         disp = fixup->u_offset + AsmCodeAddress - fixup->fixup_loc - size;
         max_disp = (1UL << ((size * 8)-1)) - 1;
         if( disp > max_disp || disp < -(max_disp + 1) ) {
@@ -261,11 +272,10 @@ static bool DoPatch( struct asm_sym *sym, struct asmfixup *fixup )
 }
 
 bool BackPatch( struct asm_sym *sym )
-/**********************************/
-/*
-- patching for forward reference labels in Jmp/Call instructions;
-- call only when a new label appears;
-*/
+/************************************
+ * patching for forward reference labels in Jmp/Call instructions;
+ * call only when a new label appears;
+ */
 {
     struct asmfixup     *fixup;
     struct asmfixup     *next;
@@ -287,11 +297,10 @@ bool BackPatch( struct asm_sym *sym )
 }
 
 void mark_fixupp( OPNDTYPE determinant, operand_idx index )
-/*********************************************************/
-/*
-  this routine marks the correct target offset and data record address for
-  FIXUPP record;
-*/
+/**********************************************************
+ * this routine marks the correct target offset and data record address for
+ * FIXUPP record;
+ */
 {
     struct asmfixup     *fixup;
 
@@ -305,9 +314,8 @@ void mark_fixupp( OPNDTYPE determinant, operand_idx index )
             Code->data[index] += fixup->u_offset;
         }
         /*
-        20-Aug-92: put the offset in the location instead of attaching it
-        to the fixup
-        */
+         * put the offset in the location instead of attaching it to the fixup
+         */
 #else
         fixup->u_offset = Code->data[index];
         Code->data[index] = 0;
@@ -343,8 +351,9 @@ void mark_fixupp( OPNDTYPE determinant, operand_idx index )
 #if defined( _STANDALONE_ )
 
 bool store_fixup( operand_idx index )
-/***********************************/
-/* Store the fixup information in a OMF output fixup record */
+/************************************
+ * Store the fixup information in a OMF output fixup record
+ */
 {
     struct asmfixup     *fixnode;
 
@@ -454,3 +463,16 @@ bool AddFPPatchAndFixups( fp_patches patch )
 #endif
     return( RC_OK );
 }
+
+#if !defined( _STANDALONE_ )
+void AsmFiniRelocs( void )
+/************************/
+{
+    struct asmfixup *fixup;
+
+    while( (fixup = FixupHead) != NULL ) {
+        FixupHead = fixup->next;
+        AsmFree( fixup );
+    }
+}
+#endif

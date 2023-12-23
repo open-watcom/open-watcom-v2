@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,13 +38,13 @@
 #include "cg.h"
 
 #define SEG_NULL        0       // NULL segment id
-#if _CPU == 8086 || _CPU == 386
+#if _INTEL_CPU
   #define SEG_LDATA     1       // local data segment for initialized data
   #define SEG_UDATA     2       // local data segment for uninitialized data
   #define SEG_CDATA     3       // constant and literal data segment
                                 // (also BACK segment)
   #define SEG_FREE      4       // first free segment id
-#else
+#else /* _RISC_CPU */
   #define SEG_TDATA     1       // Text (code) segment
   #define SEG_LDATA     2       // local data segment for initialized data
   #define SEG_UDATA     3       // local data segment for uninitialized data

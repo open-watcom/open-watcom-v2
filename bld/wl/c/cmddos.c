@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -59,7 +59,7 @@ static byte         OvlLevel;
 void SetDosFmt( void )
 /********************/
 {
-    Extension = E_LOAD;
+    FmtData.def_ext = E_LOAD;
 }
 
 void FreeDosFmt( void )
@@ -74,7 +74,7 @@ overlay_ref GetOvlRef( void )
     return( ( OvlLevel == 0 ) ? 0 : OvlSectNum - 1 );
 }
 
-#ifdef _INT_DEBUG
+#ifdef DEVBUILD
 static void PrintAreas( OVL_AREA *ovlarea );
 
 static void PrintSect( section *sect )
@@ -182,7 +182,7 @@ void CmdOvlFini( void )
     }
     SetOvlClasses();
     MakeNonArea();
-#ifdef _INT_DEBUG
+#ifdef DEVBUILD
     PrintOvl();
 #endif
 }
@@ -346,7 +346,7 @@ static bool ProcInto( void )
  * Process the INTO keyword.
  */
 {
-    if( GetToken( SEP_NO, TOK_INCLUDE_DOT | TOK_IS_FILENAME ) ) {
+    if( GetToken( SEP_NO, TOK_IS_FILENAME ) ) {
         CurrSect->outfile = NewOutFile( FileName( Token.this, Token.len, E_OVL, false ) );
         return( true );
     }
@@ -519,7 +519,7 @@ bool ProcForceVector( void )
 static bool ProcCom( void )
 /*************************/
 {
-    Extension = E_COM;
+    FmtData.def_ext = E_COM;
     return( true );
 }
 

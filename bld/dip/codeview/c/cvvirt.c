@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -146,10 +147,14 @@ void *VMBlock( imp_image_handle *iih, virt_mem start, size_t len )
     pg_start = start & ~(virt_mem)(VM_PAGE_SIZE - 1);
     pg = iih->virt[dir_idx][pg_idx];
     if( pg == NULL || ( pg->block->len - pg->offset ) < len ) {
-        /* unloaded previously loaded block */
+        /*
+         * unloaded previously loaded block
+         */
         if( pg != NULL ) {
             tmp_idx = dir_idx;
-            /* find first page of the block */
+            /*
+             * find first page of the block
+             */
             i = pg_idx;
             for( ;; ) {
                 iih->virt[tmp_idx][i] = NULL;
@@ -170,7 +175,9 @@ void *VMBlock( imp_image_handle *iih, virt_mem start, size_t len )
             DCStatus( DS_ERR | DS_NO_MEM );
             return( NULL );
         }
-        /* set up new page table entries */
+        /*
+         * set up new page table entries
+         */
         block = (loaded_block *)&pg[num_pages];
         tmp_idx = dir_idx;
         for( j = pg_idx, i = 0; i < num_pages; ++j, ++i ) {
@@ -182,7 +189,9 @@ void *VMBlock( imp_image_handle *iih, virt_mem start, size_t len )
             }
             if( iih->virt[tmp_idx] == NULL ) {
                 if( !InitPageDir( iih, tmp_idx ) ) {
-                    /* unwind the setup already done */
+                    /*
+                     * unwind the setup already done
+                     */
                     num_pages = i;
                     for( i = 0; i < num_pages; ++i, ++pg_idx ) {
                         if( pg_idx >= DIR_SIZE ) {
@@ -197,24 +206,28 @@ void *VMBlock( imp_image_handle *iih, virt_mem start, size_t len )
             }
             if( iih->virt[tmp_idx][j] != NULL ) {
                 /*
-                    We just ran into another allocated block, so we have
-                    to kill all the pages mapped in by it. We know that
-                    if the page pointer is non-NULL, it will be offset==0
-                    since KillPages will clean out the others.
-                */
+                 * We just ran into another allocated block, so we have
+                 * to kill all the pages mapped in by it. We know that
+                 * if the page pointer is non-NULL, it will be offset==0
+                 * since KillPages will clean out the others.
+                 */
                 KillPages( iih, tmp_idx, j );
             }
             iih->virt[tmp_idx][j] = &pg[i];
         }
-        /* read in new block */
+        /*
+         * read in new block
+         */
         len = num_pages * VM_PAGE_SIZE;
         block->len = len;
         pg_start += iih->bias;
-        if( DCSeek( iih->sym_fp, pg_start, DIG_ORG ) ) {
+        if( DCSeek( iih->sym_fp, pg_start, DIG_SEEK_ORG ) ) {
             DCStatus( DS_ERR | DS_FSEEK_FAILED );
             return( NULL );
         }
-        /* last block might be a short read */
+        /*
+         * last block might be a short read
+         */
         if( DCRead( iih->sym_fp, pg->block->data, len ) == DIG_RW_ERROR ) {
             DCStatus( DS_ERR | DS_FREAD_FAILED );
             return( NULL );
@@ -223,7 +236,9 @@ void *VMBlock( imp_image_handle *iih, virt_mem start, size_t len )
     }
     ++TimeStamp;
     if( TimeStamp == 0 ) {
-        /* deal with wrap-around */
+        /*
+         * deal with wrap-around
+         */
         for( iih = ImageList; iih != NULL; iih = iih->next_image ) {
             if( iih->virt != NULL ) {
                 for( i = iih->vm_dir_num; i-- > 0; ) {
@@ -270,7 +285,9 @@ unsigned VMShrink( void )
     kill_i = 0;
     kill_j = 0;
     kill_iih = NULL;
-    /* search oldest page by time_stamp */
+    /*
+     * search oldest page by time_stamp
+     */
     for( iih = ImageList; iih != NULL; iih = iih->next_image ) {
         if( iih->virt != NULL ) {
             for( i = iih->vm_dir_num-1; i >= 0; --i ) {

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,7 +43,7 @@
 #include "ring.h"
 #include "initdefs.h"
 #include "rtfuns.h"
-#ifndef NDEBUG
+#ifdef DEVBUILD
     #include "dbg.h"
     #include "togglesd.h"
     #include "pragdefn.h"
@@ -54,7 +54,7 @@ static STAB_CTL fstab;          // function state table instance
 static STAB_DEFN fStabDefn;     // function state table definition
 static target_offset_t rw_offset_fun; // offset of R/W var. in function
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 
 void FstabDump()                // DEBUG ONLY: DUMP FUNCTION STATE TABLE
 {
@@ -173,7 +173,7 @@ bool FstabSetup(                // SETUP FUNCTION STATE TABLE
         fstab.marked_posn = NULL;
         flag_bytes = ( file_ctl->cond_flags + 7 ) / 8;
         if( file_ctl->u.s.state_table && file_ctl->u.s.stab_gen ) {
-#ifndef NDEBUG
+#ifdef DEVBUILD
             if( TOGGLEDBG( dump_stab ) ) {
                 printf( "State Table for Function: %p\n"
                       , &fStabDefn.state_table );
@@ -214,7 +214,7 @@ static target_offset_t offsetStateVar( // GET OFFSET OF STATE VAR. IN R/W BLOCK
 static cg_name assignStateVar(  // EMIT CODE TO ASSIGN STATE VARIABLE
     SE* se )                    // - NULL or state entry to be set
 {
-#ifndef NDEBUG
+#ifdef DEVBUILD
     DbgSetState( "direct", se );
 #endif
     return( CgAssignStateVar( fstab.rw, se, offsetStateVar() ) );
@@ -394,7 +394,7 @@ SE* FstabMarkedPosn(            // GET MARKED POSITION
 SE* FstabMarkedPosnSet(         // SET MARKED POSITION
     SE* se )                    // - new position
 {
-#ifndef NDEBUG
+#ifdef DEVBUILD
     if( TOGGLEDBG( dump_stab ) ) {
         printf( "--- update marked position = %p\n", se );
     }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,6 +31,9 @@
 ****************************************************************************/
 
 
+#include "x86regn.h"
+
+
 extern void             ReFormat( oc_class class );
 extern void             AddByte( byte b );
 extern void             AddToTemp( byte b );
@@ -51,9 +54,9 @@ extern void             QuickSave( hw_reg_set reg, opcode_defs op );
 extern void             GenRegXor( hw_reg_set src, hw_reg_set dst );
 extern void             GenRegNeg( hw_reg_set src );
 extern void             GenRegMove( hw_reg_set src, hw_reg_set dst );
-extern void             AddWData( signed_32 value, type_class_def type_class );
+extern void             AddWData( int_32 value, type_class_def type_class );
 extern void             AddWCons( name *op, type_class_def type_class );
-extern void             AddSData( signed_32 value, type_class_def type_class );
+extern void             AddSData( int_32 value, type_class_def type_class );
 extern void             GenRegAdd( hw_reg_set dst, type_length value );
 extern void             GenRegSub( hw_reg_set dst, type_length value );
 extern void             GenRegAnd( hw_reg_set dst, type_length value );
@@ -90,7 +93,7 @@ extern void             LayLeaRegOp( instruction *ins );
 extern void             DoMAddr( name *op );
 extern byte             DoMDisp( name *op, bool alt_encoding );
 extern void             LayModRM( name *op );
-extern byte             Displacement( signed_32 val, hw_reg_set regs );
+extern byte             Displacement( int_32 val, hw_reg_set regs );
 extern byte             DoIndex( hw_reg_set regs );
 extern void             DoRelocConst( name *op, type_class_def type_class );
 extern void             Do4Shift( instruction *ins );
@@ -107,8 +110,8 @@ extern void             Pow2Div286(instruction*);
 #else
 extern type_length      TmpLoc( name *base, name *op );
 extern void             GenUnkPush( pointer value );
-extern void             GenPushC( signed_32 value );
-extern pointer          GenFar16Thunk( pointer label, unsigned_16 parms_size, bool remove_parms );
+extern void             GenPushC( int_32 value );
+extern pointer          GenFar16Thunk( pointer label, uint_16 parms_size, bool remove_parms );
 extern void             GenP5ProfilingProlog( label_handle label );
 extern void             GenP5ProfilingEpilog( label_handle label );
 #if 0

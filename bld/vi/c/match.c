@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,6 +33,8 @@
 
 #include "vi.h"
 #include "rxsupp.h"
+#include "myprintf.h"
+#include "parse.h"
 
 
 /*
@@ -170,10 +172,10 @@ vi_rc AddMatchString( const char *data )
 
 void MatchInit( void )
 {
-    MatchData[0] = MemStrDup( "{" );
-    MatchData[1] = MemStrDup( "}" );
-    MatchData[2] = MemStrDup( "\\(" );
-    MatchData[3] = MemStrDup( "\\)" );
+    MatchData[0] = DupString( "{" );
+    MatchData[1] = DupString( "}" );
+    MatchData[2] = DupString( "\\(" );
+    MatchData[3] = DupString( "\\)" );
 }
 
 void MatchFini( void )
@@ -181,6 +183,6 @@ void MatchFini( void )
     int i;
 
     for( i = 0; i < MatchCount; i++ ) {
-        MemFree( MatchData[i] );
+        _MemFreeArray( MatchData[i] );
     }
 }

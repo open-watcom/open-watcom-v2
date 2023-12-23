@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,8 +41,8 @@
 #define WHOLE_SIZE      ArraySize( AboutMessage )
 
 static const char * const AboutMessage[] = {
-    "Open Watcom Debugger" STR_BITNESS,
-    banner1v( _WD_VERSION_ ) ".",
+    banner1t( "Debugger" ),
+    banner1v( _WD_VERSION_ ),
     banner2,
     banner2a( 1987 ),
     banner3,
@@ -57,7 +58,6 @@ static const char * const AboutMessage[] = {
 #ifdef INTERNAL
     "",
     "** For internal WATCOM use only **",
-    "Created " __DATE__ ", " __TIME__,
 #endif
 #if !defined( GUI_IS_GUI )
 #define BOLT_SIZE 11
@@ -81,10 +81,10 @@ static const char * const AboutMessage[] = {
 #if 0
 #ifdef __DOS__
 const char DOS4GOPTIONS[] =
-        "[dos4g-global]\n"
-        "Include=WDOPTS.INI\n"
-        "[dos4g-kernel]\n"
-        "StartupBanner=FALSE\n"
+    "[dos4g-global]\n"
+    "Include=WDOPTS.INI\n"
+    "[dos4g-kernel]\n"
+    "StartupBanner=FALSE\n"
 ;
 #endif
 #endif

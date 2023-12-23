@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,6 +38,8 @@
 #include "ex.h"
 #include "fts.h"
 #include "pathgrp2.h"
+#include "myprintf.h"
+#include "parse.h"
 
 #include "clibext.h"
 
@@ -51,13 +53,13 @@ static void     finiSourceErrFile( const char * );
 
 static void freeSource( sfile *sf )
 {
-    sfile   *curr, *next;
+    sfile   *curr;
 
-    for( curr = sf; curr != NULL; curr = next ) {
-        next = curr->next;
-        MemFree( curr->data );
-        MemFree( curr->arg1 );
-        MemFree( curr->arg2 );
+    while( (curr = sf) != NULL ) {
+        sf = curr->next;
+        _MemFreeArray( curr->data );
+        _MemFreeArray( curr->arg1 );
+        _MemFreeArray( curr->arg2 );
         MemFree( curr );
     }
 }
@@ -347,8 +349,8 @@ static void finiSource( labels *lab, vars_list *vl, sfile *sf, undo_stack *atomi
     info        *cinfo;
 
     if( lab != NULL ) {
-        MemFreeList( lab->cnt, lab->name );
-        MemFree( lab->pos );
+        _MemFreePtrArray( lab->name, lab->cnt, MemFree );
+        _MemFreePtrArray( lab->pos, 0, NULL );
     }
 
     VarListDelete( vl );
@@ -563,7 +565,7 @@ static vi_rc barfScript( const char *fn, sfile *sf, vars_list *vl, srcline *slin
             if( curr->token == PCL_T_MAP_DMT + SRC_T_NULL + 1 ) {
                 rc = MapKey( MAPFLAG_DAMMIT, tmp );
             } else {
-                rc = MapKey( 0, tmp );
+                rc = MapKey( MAPFLAG_NONE, tmp );
             }
             if( rc != ERR_NO_ERR ) {
                 fclose( foo );
@@ -615,14 +617,14 @@ static void addResidentScript( const char *fn, sfile *sf, labels *lab )
  */
 void DeleteResidentScripts( void )
 {
-    resident    *tmp, *tmp_next;
+    resident    *tmp;
 
-    for( tmp = resHead; tmp != NULL; tmp = tmp_next ) {
-        tmp_next = tmp->next;
+    while( (tmp = resHead) != NULL ) {
+        resHead = tmp->next;
         freeSource( tmp->sf );
-        MemFreeList( tmp->lab.cnt, tmp->lab.name );
-        MemFree( tmp->lab.pos );
-        MemFree( tmp->fn );
+        _MemFreePtrArray( tmp->lab.name, tmp->lab.cnt, MemFree );
+        _MemFreePtrArray( tmp->lab.pos, 0, NULL );
+        _MemFreeArray( tmp->fn );
         MemFree( tmp );
     }
 
@@ -637,7 +639,7 @@ static resident *residentScript( const char *fn )
     resident    *tmp;
 
     for( tmp = resHead; tmp != NULL; tmp = tmp->next ) {
-        if( stricmp( fn, tmp->fn ) == 0 ) {
+        if( FILE_CMP( fn, tmp->fn ) == 0 ) {
             break;
         }
     }

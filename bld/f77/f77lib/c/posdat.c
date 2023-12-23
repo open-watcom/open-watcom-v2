@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,30 +45,38 @@
 #define STDERR  2
 #endif
 
-static  b_file          _FStdIn = { RDONLY | REC_TEXT,
-                                    STDIN,
-                                    POSIO_OK,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    MIN_BUFFER };
-static  b_file          _FStdOut = { WRONLY | REC_TEXT,
-                                     STDOUT,
-                                     POSIO_OK,
-                                     0,
-                                     0,
-                                     0,
-                                     0,
-                                     MIN_BUFFER };
-static  b_file          _FStdErr = { WRONLY | REC_TEXT,
-                                     STDERR,
-                                     POSIO_OK,
-                                     0,
-                                     0,
-                                     0,
-                                     0,
-                                     MIN_BUFFER };
+static b_file   _FStdIn = {
+    RDONLY | REC_TEXT,
+    STDIN,
+    POSIO_OK,
+    0,
+    0,
+    0,
+    0,
+    MIN_BUFFER
+};
+
+static b_file   _FStdOut = {
+    WRONLY | REC_TEXT,
+    STDOUT,
+    POSIO_OK,
+    0,
+    0,
+    0,
+    0,
+    MIN_BUFFER
+};
+
+static b_file   _FStdErr = {
+    WRONLY | REC_TEXT,
+    STDERR,
+    POSIO_OK,
+    0,
+    0,
+    0,
+    0,
+    MIN_BUFFER
+};
 
 file_handle     FStdIn = { &_FStdIn };
 file_handle     FStdOut = { &_FStdOut };

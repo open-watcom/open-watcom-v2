@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,8 +31,9 @@
 
 
 #include "plusplus.h"
-#include "compcfg.h"
 #include <ctype.h>
+#include <errno.h>
+#include "compcfg.h"
 #include "wio.h"
 #include "memmgr.h"
 #include "preproc.h"
@@ -58,7 +59,7 @@
 #include "cmdlnsys.h"
 #include "compinfo.h"
 #include "toggles.h"
-#ifndef NDEBUG
+#ifdef DEVBUILD
     #include "togglesd.h"
 #endif
 
@@ -82,7 +83,7 @@ static void checkWarnLevel( unsigned *p )
 
 static void checkPPWidth( unsigned *p )
 {
-    *p = PpVerifyWidth( *p );
+    *p = VerifyPPWidth( *p );
 }
 
 static void checkTabWidth( unsigned *p )
@@ -110,6 +111,34 @@ static void checkPrologSize( unsigned *p )
 static void checkErrorLimit( unsigned *p )
 {
     /* unused parameters */ (void)p;
+}
+
+static bool checkSTD( unsigned *value )
+{
+    cxxstd_ver  cxxstd;
+    bool        fail;
+
+    fail = true;
+    cxxstd = STD_NONE;
+    CmdRecogEquals();
+    while( !CmdScanSwEnd() ) {
+        if( CmdRecogChar( 'c' )
+          && CmdRecogChar( '+' )
+          && CmdRecogChar( '+' ) ) {
+            if( CmdRecogChar( '9' ) && CmdRecogChar( '8' ) ) {
+                cxxstd = STD_CXX98;
+                fail = false;
+            } else if( CmdRecogChar( '0' ) && CmdRecogChar( 'x' ) ) {
+                cxxstd = STD_CXX0X;
+                fail = false;
+            }
+        }
+    }
+    if( cxxstd != STD_NONE ) {
+        *value = cxxstd;
+        return( true );
+    }
+    return( false );
 }
 
 static bool scanDefine( OPT_STRING **p )
@@ -176,7 +205,7 @@ static bool scanFBIopts         // SCAN FBI/FBX OPTIONS
     CmdRecogEquals();
     for( ; ; ) {
         if( CmdScanSwEnd()
-         || CmdPeekChar() == '-' ) {
+          || CmdPeekChar() == '-' ) {
             if( 0 == kind ) {
                 kind = def_kind;
             }
@@ -301,45 +330,20 @@ static void reverseList( OPT_STRING **h )
     }
 }
 
-static char *reduceToOneString( OPT_STRING **h )
+char *SetStringOption( char **o, OPT_STRING **h )
+/***********************************************/
 {
     OPT_STRING *s;
     char *p;
 
     s = *h;
+    p = NULL;
     if( s != NULL ) {
         if( s->data[0] != '\0' ) {
-            *h = s->next;
-            OPT_CLEAN_STRING( h );
-            /* HACK: Whoever wrote this assumed that strcpy() did a byte-by-byte copy.
-             *       GCC's version however may use DWORD-sized copies instead.
-             *       If source and dest overlap there is NO guarantee of data integrity.
-             *       To avoid corrupting the string, use memmove() instead.
-             *
-             *  NTS: So why can't we just go and return s->data instead of strcpy'ing
-             *       over the struct with it's own string data? Why this bizarre code
-             *       in the first place? --J.C. */
-            {
-                int l = strlen(s->data)+1; /* string + NUL */
-                p = (char *)s;
-                memmove(p,s->data,l);
-            }
-        } else {
-            OPT_CLEAN_STRING( h );
-            p = NULL;
+            p = CMemStrDup( s->data );
         }
-    } else {
-        p = NULL;
+        OPT_CLEAN_STRING( h );
     }
-    return( p );
-}
-
-char *SetStringOption( char **o, OPT_STRING **h )
-/***********************************************/
-{
-    char *p;
-
-    p = reduceToOneString( h );
     if( o != NULL ) {
         CMemFree( *o );
         *o = p;
@@ -347,8 +351,8 @@ char *SetStringOption( char **o, OPT_STRING **h )
     return( p );
 }
 
-bool MergeIncludeFromEnv( char *env )
-/***********************************/
+bool MergeIncludeFromEnv( const char *env )
+/*****************************************/
 {
     const char  *env_value;
 
@@ -363,8 +367,8 @@ bool MergeIncludeFromEnv( char *env )
     return( false );
 }
 
-void DefSwitchMacro( char *n )
-/****************************/
+void DefSwitchMacro( const char *n )
+/**********************************/
 {
     char *p;
     char buff[64];
@@ -382,25 +386,16 @@ void ConcatBase10( char *buff, unsigned num )
 
     len = strlen( buff );
     dest = &buff[len];
-    ultoa( num, dest, 10 );
+    sprintf( dest, "%u", num );
 }
 
-static void setTarget( char **n, char *t )
+void SetTargetLiteral( char **n, const char *t )
+/**********************************************/
 {
-    if( *n ) {
+    if( *n != NULL ) {
         CMemFree( *n );
     }
-    *n = strupr( t );
-}
-
-void SetTargetLiteral( char **n, char *t )
-/****************************************/
-{
-    if( t != NULL ) {
-        setTarget( n, strsave( t ) );
-    } else {
-        *n = t;
-    }
+    *n = CMemStrDup( t );
 }
 
 static void procOptions(        // PROCESS AN OPTIONS LINE
@@ -545,18 +540,18 @@ static void procOptions(        // PROCESS AN OPTIONS LINE
         CtxSetSwitchAddr( str );
         CmdScanInit( str );
         for(;;) {
-            c = CmdScanWhiteSpace();
+            CmdScanSkipWhiteSpace();
+            c = CmdScanChar();
             if( c == '\0' )
                 break;
             CmdScanSwitchBegin();
             CmdLnCtxSwitch( CmdScanAddr() - 1 );
-            if( c == '-'  ||  c == SwitchChar ) {
+            if( _IS_SWITCH_CHAR( c ) ) {
                 if( OPT_PROCESS( data ) ) {
                     BadCmdLine( ERR_INVALID_OPTION );
                 }
             } else if( c == '@' ) {
-                CmdScanWhiteSpace();
-                CmdScanUngetChar();
+                CmdScanSkipWhiteSpace();
                 len = CmdScanFilename( &fnm );
                 env = get_env( fnm, len );
                 if( NULL == env ) {
@@ -636,30 +631,48 @@ static bool debugOptionAfterOptOption( OPT_STORAGE *data )
     return( false );
 }
 
+static void setMessageStatus( OPT_STRING *s, bool state )
+{
+    MSG_NUM     msgnum;
+
+    while( s != NULL ) {
+        if( GetMsgNum( s->data, &msgnum ) ) {
+            WarnEnableDisable( state, msgnum );
+        } else {
+            CErr2( ERR_PRAG_WARNING_BAD_MESSAGE, 0 );
+        }
+        s = s->next;
+    }
+}
+
 static void analyseAnyTargetOptions( OPT_STORAGE *data )
 {
     // quickly do the quiet option so the banner can be printed
-    if( data->q || data->zq ) {
+    if( data->q
+      || data->zq ) {
         CompFlags.quiet_mode = true;
     }
     switch( data->char_set ) {
     case OPT_ENUM_char_set_zku:
-        CompFlags.use_unicode = true;
         loadUnicodeTable( data->zku_value );
         break;
     case OPT_ENUM_char_set_zk0u:
         CompFlags.jis_to_unicode = true;
         /* fall through */
     case OPT_ENUM_char_set_zk0:
+        CompFlags.use_double_byte = true;
         SetDBChar( 0 );
         break;
     case OPT_ENUM_char_set_zk1:
+        CompFlags.use_double_byte = true;
         SetDBChar( 1 );
         break;
     case OPT_ENUM_char_set_zk2:
+        CompFlags.use_double_byte = true;
         SetDBChar( 2 );
         break;
     case OPT_ENUM_char_set_zkl:
+        CompFlags.use_double_byte = true;
         SetDBChar( -1 );
         break;
     }
@@ -709,10 +722,10 @@ static void analyseAnyTargetOptions( OPT_STORAGE *data )
     }
     switch( data->opt_level ) {
     case OPT_ENUM_opt_level_ox:  /* -ox => -obmiler -s */
-        GenSwitches &= ~ NO_OPTIMIZATION;
-        GenSwitches |= BRANCH_PREDICTION;       // -ob
-        GenSwitches |= LOOP_OPTIMIZATION;       // -ol
-        GenSwitches |= INS_SCHEDULING;          // -or
+        GenSwitches &= ~ CGSW_GEN_NO_OPTIMIZATION;
+        GenSwitches |= CGSW_GEN_BRANCH_PREDICTION;       // -ob
+        GenSwitches |= CGSW_GEN_LOOP_OPTIMIZATION;       // -ol
+        GenSwitches |= CGSW_GEN_INS_SCHEDULING;          // -or
         CmdSysSetMaxOptimization();             // -om
         CompFlags.inline_intrinsics = true;     // -oi
 #if 0   // Disabled - introduces too many problems which no one is ready to fix
@@ -725,17 +738,17 @@ static void analyseAnyTargetOptions( OPT_STORAGE *data )
         TOGGLE( check_stack ) = false;         // -s
         break;
     case OPT_ENUM_opt_level_od:
-        GenSwitches |= NO_OPTIMIZATION;
+        GenSwitches |= CGSW_GEN_NO_OPTIMIZATION;
         break;
     }
     switch( data->opt_size_time ) {
     case OPT_ENUM_opt_size_time_ot:
         OptSize = 0;
-        GenSwitches &= ~ NO_OPTIMIZATION;
+        GenSwitches &= ~ CGSW_GEN_NO_OPTIMIZATION;
         break;
     case OPT_ENUM_opt_size_time_os:
         OptSize = 100;
-        GenSwitches &= ~ NO_OPTIMIZATION;
+        GenSwitches &= ~ CGSW_GEN_NO_OPTIMIZATION;
         break;
     default:
         OptSize = 50;
@@ -769,9 +782,9 @@ static void analyseAnyTargetOptions( OPT_STORAGE *data )
         // optimizing the writing of the debugging info by referring back
         // to the info in another module
         CompFlags.all_debug_type_names = true;
-        GenSwitches |= DBG_NUMBERS | DBG_TYPES | DBG_LOCALS;
+        GenSwitches |= CGSW_GEN_DBG_NUMBERS | CGSW_GEN_DBG_TYPES | CGSW_GEN_DBG_LOCALS;
         if( debugOptionAfterOptOption( data ) ) {
-            GenSwitches |= NO_OPTIMIZATION;
+            GenSwitches |= CGSW_GEN_NO_OPTIMIZATION;
         }
         data->oe = 0;
         break;
@@ -782,22 +795,22 @@ static void analyseAnyTargetOptions( OPT_STORAGE *data )
         CompFlags.inline_functions = false;
         /* fall through */
     case OPT_ENUM_debug_info_d2:
-        GenSwitches |= DBG_NUMBERS | DBG_TYPES | DBG_LOCALS;
+        GenSwitches |= CGSW_GEN_DBG_NUMBERS | CGSW_GEN_DBG_TYPES | CGSW_GEN_DBG_LOCALS;
         if( debugOptionAfterOptOption( data ) ) {
-            GenSwitches |= NO_OPTIMIZATION;
+            GenSwitches |= CGSW_GEN_NO_OPTIMIZATION;
         }
         data->oe = 0;
         break;
     case OPT_ENUM_debug_info_d2t:
         CompFlags.no_debug_type_names = true;
-        GenSwitches |= DBG_NUMBERS | DBG_TYPES | DBG_LOCALS;
+        GenSwitches |= CGSW_GEN_DBG_NUMBERS | CGSW_GEN_DBG_TYPES | CGSW_GEN_DBG_LOCALS;
         if( debugOptionAfterOptOption( data ) ) {
-            GenSwitches |= NO_OPTIMIZATION;
+            GenSwitches |= CGSW_GEN_NO_OPTIMIZATION;
         }
         data->oe = 0;
         break;
     case OPT_ENUM_debug_info_d1:
-        GenSwitches |= DBG_NUMBERS;
+        GenSwitches |= CGSW_GEN_DBG_NUMBERS;
         break;
     case OPT_ENUM_debug_info_d0:
         break;
@@ -815,7 +828,7 @@ static void analyseAnyTargetOptions( OPT_STORAGE *data )
     }
     if( data->bd ) {
         CompFlags.bd_switch_used = true;
-        GenSwitches |= DLL_RESIDENT_CODE;
+        GenSwitches |= CGSW_GEN_DLL_RESIDENT_CODE;
     }
     if( data->bm ) {
         CompFlags.bm_switch_used = true;
@@ -881,30 +894,18 @@ static void analyseAnyTargetOptions( OPT_STORAGE *data )
         CompFlags.fhwe_switch_used = true;
     }
     if( data->fh || data->fhq ) {
-        char *fh_name;
-        char *fhq_name;
-        char *p;
         if( data->fhq ) {
             CompFlags.no_pch_warnings = true;
         }
         CompFlags.use_pcheaders = true;
-        fh_name = reduceToOneString( &(data->fh_value) );
-        fhq_name = reduceToOneString( &(data->fhq_value) );
-        if( fh_name != NULL ) {
-            p = fh_name;
-            if( fhq_name != NULL ) {
-                /* use the latest file-name specified */
-                if( data->fh_timestamp > data->fhq_timestamp ) {
-                    CMemFree( fhq_name );
-                } else {
-                    CMemFree( fh_name );
-                    p = fhq_name;
-                }
-            }
-        } else {
-            p = fhq_name;
+
+        if( data->fh && ( !data->fhq || data->fh_timestamp > data->fhq_timestamp ) ) {
+            SetStringOption( PCHFileNamePtr(), &(data->fh_value) );
+            OPT_CLEAN_STRING( &(data->fhq_value) );
+        } else if( data->fhq && ( !data->fh || data->fhq_timestamp > data->fh_timestamp ) ) {
+            SetStringOption( PCHFileNamePtr(), &(data->fhq_value) );
+            OPT_CLEAN_STRING( &(data->fh_value) );
         }
-        PCHSetFileName( p );
     }
     if( data->fi ) {
         SetStringOption( &ForceInclude, &(data->fi_value) );
@@ -960,17 +961,17 @@ static void analyseAnyTargetOptions( OPT_STORAGE *data )
         CompFlags.batch_file_continue = true;
     }
     if( data->oa ) {
-        GenSwitches |= RELAX_ALIAS;
+        GenSwitches |= CGSW_GEN_RELAX_ALIAS;
     }
     if( data->ob ) {
-        GenSwitches |= BRANCH_PREDICTION;
+        GenSwitches |= CGSW_GEN_BRANCH_PREDICTION;
     }
     // following must follow processing of debug options
     if( data->oe ) {
         CgBackSetOeSize( data->oe_value );
     }
     if( data->oh ) {
-        GenSwitches |= SUPER_OPTIMAL;
+        GenSwitches |= CGSW_GEN_SUPER_OPTIMAL;
     }
     if( data->oi ) {
         CompFlags.inline_intrinsics = true;
@@ -984,31 +985,31 @@ static void analyseAnyTargetOptions( OPT_STORAGE *data )
 #endif
     }
     if( data->ok ) {
-        GenSwitches |= FLOW_REG_SAVES;
+        GenSwitches |= CGSW_GEN_FLOW_REG_SAVES;
     }
     if( data->ol ) {
-        GenSwitches |= LOOP_OPTIMIZATION;
+        GenSwitches |= CGSW_GEN_LOOP_OPTIMIZATION;
     }
     if( data->ol_plus ) {
-        GenSwitches |= LOOP_UNROLLING;
+        GenSwitches |= CGSW_GEN_LOOP_UNROLLING;
     }
     if( data->on ) {
-        GenSwitches |= FP_UNSTABLE_OPTIMIZATION;
+        GenSwitches |= CGSW_GEN_FP_UNSTABLE_OPTIMIZATION;
     }
     if( data->oo ) {
-        GenSwitches &= ~ MEMORY_LOW_FAILS;
+        GenSwitches &= ~ CGSW_GEN_MEMORY_LOW_FAILS;
     }
     if( data->op ) {
         CompFlags.op_switch_used = true;
     }
     if( data->or ) {
-        GenSwitches |= INS_SCHEDULING;
+        GenSwitches |= CGSW_GEN_INS_SCHEDULING;
     }
     if( data->ou ) {
         CompFlags.unique_functions = true;
     }
     if( data->oz ) {
-        GenSwitches |= NULL_DEREF_OK;
+        GenSwitches |= CGSW_GEN_NULL_DEREF_OK;
     }
     if( data->pil ) {
         CompFlags.cpp_ignore_line = true;
@@ -1034,12 +1035,12 @@ static void analyseAnyTargetOptions( OPT_STORAGE *data )
     }
     if( data->pw ) {
         CompFlags.cpp_mode = true;
-        PpSetWidth( data->pw_value );
+        SetPPWidth( data->pw_value );
     } else {
         // #line directives get screwed by wrapped lines but we don't want
         // to interfere with a user's setting of the width
         if( data->pl ) {
-            PpSetWidth( 0 );
+            SetPPWidth( 0 );
         }
     }
     if( CompFlags.cpp_mode ) {
@@ -1065,16 +1066,10 @@ static void analyseAnyTargetOptions( OPT_STORAGE *data )
         CompFlags.dump_prototypes = true;
     }
     if( data->wcd ) {
-        OPT_NUMBER *n;
-        for( n = data->wcd_value; n != NULL; n = n->next ) {
-            WarnEnableDisable( false, n->number );
-        }
+        setMessageStatus( data->wcd_value, false );
     }
     if( data->wce ) {
-        OPT_NUMBER *n;
-        for( n = data->wce_value; n != NULL; n = n->next ) {
-            WarnEnableDisable( true, n->number );
-        }
+        setMessageStatus( data->wce_value, true );
     }
     if( data->we ) {
         CompFlags.warnings_cause_bad_exit = true;
@@ -1109,8 +1104,14 @@ static void analyseAnyTargetOptions( OPT_STORAGE *data )
     if( data->zat ) {
         CompFlags.no_alternative_tokens = true;
     }
-    if( data->za0x ) {
-        CompFlags.enable_std0x = true;
+    switch( data->cxxstd ) {
+    case OPT_ENUM_cxxstd_za0x:
+        SET_STD( CXX0X );
+        break;
+    case OPT_ENUM_cxxstd_zastd:
+        if( data->zastd_value != STD_NONE )
+            CompVars.cxxstd = data->zastd_value;
+        break;
     }
     if( data->zf ) {
         CompFlags.use_old_for_scope = true;
@@ -1153,7 +1154,7 @@ static void analyseAnyTargetOptions( OPT_STORAGE *data )
         CompFlags.virtual_stripping = true;
 #endif
     }
-#ifndef NDEBUG
+#ifdef DEVBUILD
     if( data->tp ) {
         OPT_STRING *str;
         while( (str = data->tp_value) != NULL ) {

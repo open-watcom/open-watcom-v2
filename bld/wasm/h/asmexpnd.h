@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,17 +33,17 @@
 
 #if defined( _STANDALONE_ )
 
-extern bool ExpandAllConsts( token_idx start_pos, bool early_only );
-extern bool ExpandProcString( token_idx index, bool *expanded );
-extern bool ExpandSymbol( token_idx i, bool early_only, bool *expanded );
-extern void AddTokens( asm_tok *buffer, token_idx start, token_idx count );
-extern bool DefineConstant( token_idx i, bool redefine, bool expand_early );
+extern bool ExpandAllConsts( token_buffer *tokbuf, token_idx start_pos, bool early_only );
+extern bool ExpandProcString( token_buffer *tokbuf, token_idx index, bool *expanded );
+extern bool ExpandSymbol( token_buffer *tokbuf, token_idx i, bool early_only, bool *expanded );
+extern void AddTokens( token_buffer *tokbuf, token_idx start, token_idx count );
+extern bool DefineConstant( token_buffer *tokbuf, token_idx i, bool redefine, bool expand_early );
 extern bool StoreConstant( const char *name, const char *value, bool redefine );
 extern bool StoreConstantNumber( const char *name, long value, bool redefine );
 extern void MakeConstantUnderscored( const char * );
 
-extern bool ExpandTheConstant( token_idx start_pos, bool early_only, bool flag_msg );
+extern bool ExpandTheConstant( token_buffer *tokbuf, token_idx start_pos, bool early_only, bool flag_msg );
 
 #endif
 
-extern bool ExpandTheWorld( token_idx start_pos, bool early_only, bool flag_msg );
+extern bool ExpandTheWorld( token_buffer *tokbuf, token_idx start_pos, bool early_only, bool flag_msg );

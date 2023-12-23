@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,6 +33,8 @@
 
 #include "wrglbl.h"
 #include "wresall.h"
+#include "wrutili.h"
+
 
 /****************************************************************************/
 /* macro definitions                                                        */
@@ -53,7 +56,7 @@
 /* static variables                                                         */
 /****************************************************************************/
 
-static WResID *WR16Mem2WResID( void *data )
+static WResID *WRWResIDFromData16( void *data )
 {
     WResID      *new;
     WResID      *tmpName;
@@ -93,7 +96,7 @@ static WResID *WR16Mem2WResID( void *data )
     return( new );
 }
 
-static WResID *WR32Mem2WResID( void *data )
+static WResID *WRWResIDFromData32( void *data )
 {
     WResID      *new;
     WResID      *tmpName;
@@ -156,7 +159,7 @@ static WResID *WR32Mem2WResID( void *data )
     return( new );
 }
 
-static bool WRWResID2Mem16( WResID *name, void **data, size_t *size )
+static bool WRDataFromWResID16( WResID *name, char **data, size_t *size )
 {
     size_t      len;
 
@@ -183,7 +186,7 @@ static bool WRWResID2Mem16( WResID *name, void **data, size_t *size )
     return( true );
 }
 
-static bool WRWResID2Mem32( WResID *name, void **data, size_t *size )
+static bool WRDataFromWResID32( WResID *name, char **data, size_t *size )
 {
     WResID      *tmpName;
     char        *str;
@@ -238,23 +241,23 @@ static bool WRWResID2Mem32( WResID *name, void **data, size_t *size )
     return( true );
 }
 
-bool WRAPI WRWResID2Mem( WResID *name, void **data, size_t *size, bool is32bit )
+bool WRAPI WRDataFromWResID( WResID *name, char **data, size_t *size, bool is32bit )
 {
     if( is32bit ) {
-        return( WRWResID2Mem32( name, data, size ) );
+        return( WRDataFromWResID32( name, data, size ) );
     } else {
-        return( WRWResID2Mem16( name, data, size ) );
+        return( WRDataFromWResID16( name, data, size ) );
     }
 }
 
-WResID * WRAPI WRMem2WResID( void *data, bool is32bit )
+WResID * WRAPI WRWResIDFromData( char *data, bool is32bit )
 {
     WResID      *r_id;
 
     if( is32bit ) {
-        r_id = WR32Mem2WResID( data );
+        r_id = WRWResIDFromData32( data );
     } else {
-        r_id = WR16Mem2WResID( data );
+        r_id = WRWResIDFromData16( data );
     }
 
     return( r_id );

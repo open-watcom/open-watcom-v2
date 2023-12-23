@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -70,7 +70,9 @@ size_t DIPIMPENTRY( CueFile )( imp_image_handle *iih,
     size_t      len;
     size_t      class_len = 0;
 
-    /* Stick the package name on the front of the source file name */
+    /*
+     * Stick the package name on the front of the source file name
+     */
     name = GetPointer( icueh->cc + offsetof( ClassClass, name ) );
     class_len = GetString( name, NameBuff, sizeof( NameBuff ) );
     for( ;; ) {
@@ -138,7 +140,9 @@ dip_status DIPIMPENTRY( CueAdjust )( imp_image_handle *iih,
                     dst_icueh->ln_idx += adj;
                     return( ds );
                 }
-                /* have to back up to previous method */
+                /*
+                 * have to back up to previous method
+                 */
                 adj += backup;
                 mb_idx = dst_icueh->mb_idx;
                 if( mb_idx == 0 )
@@ -146,7 +150,9 @@ dip_status DIPIMPENTRY( CueAdjust )( imp_image_handle *iih,
                 FillInLastIC( dst_icueh, mb_idx - 1 );
                 backup = dst_icueh->ln_idx + 1;
             }
-            /* have to wrap around to last method */
+            /*
+             * have to wrap around to last method
+             */
             ds = DS_WRAPPED;
             FillInLastIC( dst_icueh, GetNumMethods( dst_icueh ) - 1 );
             backup = dst_icueh->ln_idx + 1;
@@ -162,13 +168,17 @@ dip_status DIPIMPENTRY( CueAdjust )( imp_image_handle *iih,
                     return( ds );
                 }
                 adj -= mb.line_number_table_length - dst_icueh->ln_idx;
-                /* advance to next method */
+                /*
+                 * advance to next method
+                 */
                 mb_idx = dst_icueh->mb_idx;
                 if( mb_idx >= GetNumMethods( dst_icueh ) )
                     break;
                 FillInFirstIC( dst_icueh, mb_idx + 1 );
             }
-            /* have to wrap around to first method */
+            /*
+             * have to wrap around to first method
+             */
             ds = DS_WRAPPED;
             FillInFirstIC( dst_icueh, 0 );
         }

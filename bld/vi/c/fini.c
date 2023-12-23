@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,7 +43,7 @@
 #include "fts.h"
 #include "rxsupp.h"
 #include "rcs.h"
-#include "myprtf.h"
+#include "myprintf.h"
 
 
 #ifdef __WIN__
@@ -85,8 +85,6 @@ char * UsageMsg[] = {
     T2 " -P <x y w h> : set initial window position and size"
 #endif
 };
-
-char *OptEnvVar = "VI";
 
 /*
  * Quit - print usage messages
@@ -132,7 +130,11 @@ void Quit( const char **usage_msg, const char *str, ... )
     // can't do an ExitEditor because we will not have initialized anything
     // yet (this is always called from checkFlags)
     // ExitEditor( 0 );
-    ChangeDirectory( HomeDirectory );
+    ChangeDirectory( StartDirectory );
+    _MemFreeArray( StartDirectory );
+    StartDirectory = NULL;
+    _MemFreeArray( CurrentDirectory );
+    CurrentDirectory = NULL;
     FiniMem();
     exit( 0 );
 
@@ -142,24 +144,24 @@ void Quit( const char **usage_msg, const char *str, ... )
 static void miscGlobalsFini( void )
 {
     MemFree( WorkLine );
-    MemFree( DotBuffer );
-    MemFree( AltDotBuffer );
-    MemFree( DotCmd );
-    MemFree( ReadBuffer );
-    MemFree( WriteBuffer );
-    MemFree( EditVars.TileColors );
-    MemFree( EditVars.GrepDefault );
-    MemFree( EditVars.FileEndString );
-    MemFree( EditVars.Majick );
-    MemFree( EditVars.GadgetString );
-    MemFree( EditVars.WordDefn );
-    MemFree( EditVars.WordAltDefn );
-    MemFree( EditVars.TagFileName );
-    MemFree( EditVars.StatusString );
-    MemFree( EditVars.StatusSections );
-    MemFree( EditVars.TmpDir );
-    MemFree( EditVars.SpawnPrompt );
-    MemFree( CurrentRegularExpression );
+    _MemFreeArray( DotBuffer );
+    _MemFreeArray( AltDotBuffer );
+    _MemFreeArray( DotCmd );
+    _MemFreeArray( ReadBuffer );
+    _MemFreeArray( WriteBuffer );
+    _MemFreeArray( EditVars.TileColors );
+    _MemFreeArray( EditVars.GrepDefault );
+    _MemFreeArray( EditVars.FileEndString );
+    _MemFreeArray( EditVars.Majick );
+    _MemFreeArray( EditVars.GadgetString );
+    _MemFreeArray( EditVars.WordDefn );
+    _MemFreeArray( EditVars.WordAltDefn );
+    _MemFreeArray( EditVars.TagFileName );
+    _MemFreeArray( EditVars.StatusString );
+    _MemFreeArray( EditVars.StatusSections );
+    _MemFreeArray( EditVars.TmpDir );
+    _MemFreeArray( EditVars.SpawnPrompt );
+    _MemFreeArray( CurrentRegularExpression );
 }
 
 /*
@@ -214,14 +216,16 @@ void ExitEditor( int rc )
     AutoSaveFini();
     FiniConfigFileName();
     miscGlobalsFini();
-    ChangeDirectory( HomeDirectory );
+    ChangeDirectory( StartDirectory );
 #if defined( __NT__ ) && !defined( __WIN__ )
     {
         SetConsoleActiveScreenBuffer( GetStdHandle( STD_OUTPUT_HANDLE ) );
     }
 #endif
-    MemFree( HomeDirectory );
-    MemFree( CurrentDirectory );
+    _MemFreeArray( StartDirectory );
+    StartDirectory = NULL;
+    _MemFreeArray( CurrentDirectory );
+    CurrentDirectory = NULL;
 #if defined( VI_RCS )
     ViRCSFini();
 #endif

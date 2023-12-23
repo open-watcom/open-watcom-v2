@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -59,7 +59,8 @@ size_t readbytes( b_file *io, char *buff, size_t len )
         if( bytes_read == READ_ERROR ) {
             FSetSysErr( io );
             return( READ_ERROR );
-        } else if( bytes_read == 0 ) {
+        }
+        if( bytes_read == 0 ) {
             if( total != 0 )
                 break;
             FSetEof( io );
@@ -154,9 +155,11 @@ size_t SysRead( b_file *io, char *b, size_t len )
             }
         }
         return( offs_in_b );
-    } else {
-        return( readbytes( io, b, len ) );
     }
+    bytes_read = readbytes( io, b, len );
+    if( bytes_read == READ_ERROR )
+        return( READ_ERROR );
+    return( bytes_read );
 }
 
 
@@ -175,21 +178,22 @@ static size_t GetTextRec( b_file *io, char *b, size_t len )
             return( 0 );
         if( rs[0] == CHAR_LF )
             return( len );
-#if ! defined( __UNIX__ )
+#if !defined( __UNIX__ )
         if( rs[0] == CHAR_CR ) {
             if( SysRead( io, &rs[1], sizeof( char ) ) == READ_ERROR ) {
                 return( 0 );
             }
             if( rs[1] == CHAR_LF )
                 return( len );
-            if( ( io->attrs & CARRIAGE_CONTROL ) && ( rs[1] == CHAR_FF ) ) {
+            if( (io->attrs & CARRIAGE_CONTROL) && ( rs[1] == CHAR_FF ) ) {
                 return( len );
             }
         }
 #endif
         FSetErr( POSIO_BAD_RECORD, io );
         return( 0 );
-    } else if( io->attrs & BUFFERED ) {
+    }
+    if( io->attrs & BUFFERED ) {
         char            *ptr;
         char            *stop;
         bool            seen_cr;
@@ -258,36 +262,38 @@ static size_t GetTextRec( b_file *io, char *b, size_t len )
             FSetTrunc( io );
         }
         return( read );
-    } else {    // device (CON)
-        read = 0;
-        len = readbytes( io, b, len );
-        if( len == READ_ERROR )
-            return( 0 );
-        for( ;; ) {
-            if( read == len )
-                break;
+    }
+    /*
+     * device (CON)
+     */
+    read = 0;
+    len = readbytes( io, b, len );
+    if( len == READ_ERROR )
+        return( 0 );
+    for( ;; ) {
+        if( read == len )
+            break;
 #if defined( __UNIX__ ) || defined( __NETWARE__ )
+        if( *b == CHAR_LF )
+            return( read );
+#else
+        if( *b == CHAR_CR ) {
+            ++b;
+            if( read == len - 1 )
+                break;
             if( *b == CHAR_LF )
                 return( read );
-#else
-            if( *b == CHAR_CR ) {
-                ++b;
-                if( read == len - 1 )
-                    break;
-                if( *b == CHAR_LF )
-                    return( read );
-                --b;
-            } else if( *b == CHAR_CTRL_Z ) {
-                FSetEof( io );
-                return( read );
-            }
-#endif
-            ++b;
-            ++read;
+            --b;
+        } else if( *b == CHAR_CTRL_Z ) {
+            FSetEof( io );
+            return( read );
         }
-        FSetTrunc( io );
-        return( read );
+#endif
+        ++b;
+        ++read;
     }
+    FSetTrunc( io );
+    return( read );
 }
 
 
@@ -295,31 +301,32 @@ static size_t GetVariableRec( b_file *io, char *b, size_t len )
 //=============================================================
 // Get a record from a file with "variable" records.
 {
-    size_t      tag_len;
-    unsigned_32 tag;
-    unsigned_32 save_tag;
+    variable_rec_tag    rec_tag;
+    variable_rec_tag    save_rec_tag;
+    variable_rec_tag    rec_len;
 
-    if( SysRead( io, (char *)(&tag), sizeof( tag ) ) == READ_ERROR ) {
+    if( SysRead( io, (char *)&rec_tag, sizeof( rec_tag ) ) == READ_ERROR ) {
         return( 0 );
     }
-    save_tag = tag;
-    tag_len = tag & 0x7fffffff;
-    if( tag_len > len ) {
+    rec_len = rec_tag & VARIABLE_REC_LEN_MASK;
+    if( rec_len > len ) {
         FSetTrunc( io );
         if( SysRead( io, b, len ) == READ_ERROR )
             return( 0 );
-        if( SysSeek( io, (long)tag_len - (long)len, SEEK_CUR ) < 0 ) {
+        if( SysSeek( io, (long)( rec_len - len ), SEEK_CUR ) < 0 ) {
             FSetSysErr( io );
             return( 0 );
         }
     } else {
-        if( SysRead( io, b, tag_len ) == READ_ERROR )
+        len = rec_len;
+        if( SysRead( io, b, len ) == READ_ERROR ) {
             return( 0 );
-        len = tag_len;
+        }
     }
-    if( SysRead( io, (char *)(&tag), sizeof( tag ) ) == READ_ERROR )
+    save_rec_tag = rec_tag;
+    if( SysRead( io, (char *)&rec_tag, sizeof( rec_tag ) ) == READ_ERROR )
         return( 0 );
-    if( tag != save_tag ) {
+    if( rec_tag != save_rec_tag ) {
         FSetErr( POSIO_BAD_RECORD, io );
         return( 0 );
     }
@@ -386,59 +393,52 @@ char    GetStdChar( void )
 
 int     FCheckLogical( b_file *io )
 //=================================
+// return -1 if any error
+//         0 if no logical record
+//         1 if logical record
 {
-    unsigned_32 tag;
-    size_t      rc;
+    variable_rec_tag    rec_tag;
 
-    rc = SysRead( io, (char *)(&tag), sizeof( tag ) );
-    if( rc == READ_ERROR ) {
+    if( SysRead( io, (char *)&rec_tag, sizeof( rec_tag ) ) == READ_ERROR ) {
         if( io->stat != POSIO_EOF )
             return( -1 );
         // if an EOF occurs we've skipped the record
         FSetIOOk( io );
         return( 0 );
     }
-    rc = 0;
-    if( tag & 0x80000000 ) {
-        rc = 1;
-    }
-    if( SysSeek( io, -(long)sizeof( unsigned_32 ), SEEK_CUR ) < 0 )
+    if( SysSeek( io, -(long)sizeof( rec_tag ), SEEK_CUR ) < 0 )
         return( -1 );
-    return( rc );
+    return( (rec_tag & VARIABLE_REC_LOGICAL) != 0 );
 }
 
 
 int     FSkipLogical( b_file *io )
 //================================
 {
-    unsigned_32 tag;
-    unsigned_32 save_tag;
-    size_t      rc;
+    variable_rec_tag    rec_tag;
+    variable_rec_tag    save_rec_tag;
 
-    for(;;) {
-        rc = SysRead( io, (char *)(&tag), sizeof( tag ) );
-        if( rc == READ_ERROR ) {
+    for( ;; ) {
+        if( SysRead( io, (char *)&rec_tag, sizeof( rec_tag ) ) == READ_ERROR ) {
             if( io->stat != POSIO_EOF )
                 return( -1 );
             // if an EOF occurs we've skipped the record
             FSetIOOk( io );
             return( 0 );
         }
-        if( (tag & 0x80000000) == 0 )
+        if( (rec_tag & VARIABLE_REC_LOGICAL) == 0 )
             break;
-        save_tag = tag;
-        tag &= 0x7fffffff;
-        if( SysSeek( io, tag, SEEK_CUR ) < 0 )
+        if( SysSeek( io, (long)(rec_tag & VARIABLE_REC_LEN_MASK), SEEK_CUR ) < 0 )
             return( -1 );
-        rc = SysRead( io, (char *)(&tag), sizeof( tag ) );
-        if( rc == READ_ERROR )
+        save_rec_tag = rec_tag;
+        if( SysRead( io, (char *)&rec_tag, sizeof( rec_tag ) ) == READ_ERROR )
             return( -1 );
-        if( tag != save_tag ) {
+        if( rec_tag != save_rec_tag ) {
             FSetErr( POSIO_BAD_RECORD, io );
             return( -1 );
         }
     }
-    if( SysSeek( io, -(long)sizeof( unsigned_32 ), SEEK_CUR ) < 0 )
+    if( SysSeek( io, -(long)sizeof( rec_tag ), SEEK_CUR ) < 0 )
         return( -1 );
     return( 0 );
 }
@@ -447,42 +447,38 @@ int     FSkipLogical( b_file *io )
 signed_32       FGetVarRecLen( b_file *io )
 //=========================================
 {
-    unsigned_32 tag;
-    unsigned_32 save_tag;
-    int         rc;
-    long        pos;
-    unsigned_32 size = 0;
+    variable_rec_tag    rec_tag;
+    variable_rec_tag    save_rec_tag;
+    long                pos;
+    unsigned_32         size;
 
     pos = FGetFilePos( io );
+    size = 0;
     for( ;; ) {
-        rc = SysRead( io, (char *)(&tag), sizeof( tag ) );
-        if( rc == READ_ERROR ) {
+        if( SysRead( io, (char *)&rec_tag, sizeof( rec_tag ) ) == READ_ERROR ) {
             if( io->stat != POSIO_EOF )
                 return( -1 );
             // if an EOF occurs we've skipped the record
             FSetIOOk( io );
             break;
         }
-        save_tag = tag;
-        if( !size ) {
-            if( tag & 0x80000000 ) {
+        if( rec_tag & VARIABLE_REC_LOGICAL ) {
+            if( size == 0 ) {
                 FSetErr( POSIO_BAD_RECORD, io );
                 return( -1 );
             }
         } else {
-            if( tag & 0x80000000 ) {
-                tag &= 0x7fffffff;
-            } else {
+            if( size != 0 ) {
                 break;
             }
         }
-        size += tag;
-        if( SysSeek( io, tag, SEEK_CUR ) < 0 )
+        size += (rec_tag & VARIABLE_REC_LEN_MASK);
+        if( SysSeek( io, (long)(rec_tag & VARIABLE_REC_LEN_MASK), SEEK_CUR ) < 0 )
             return( -1 );
-        rc = SysRead( io, (char *)(&tag), sizeof( tag ) );
-        if( rc == READ_ERROR )
+        save_rec_tag = rec_tag;
+        if( SysRead( io, (char *)&rec_tag, sizeof( rec_tag ) ) == READ_ERROR )
             return( -1 );
-        if( tag != save_tag ) {
+        if( rec_tag != save_rec_tag ) {
             FSetErr( POSIO_BAD_RECORD, io );
             return( -1 );
         }

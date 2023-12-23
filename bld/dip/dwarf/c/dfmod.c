@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,15 +38,17 @@
 #include "dfaddr.h"
 #include "dfaddsym.h"
 
-//NYI: should be OS && location sensitive
+/*
+ * NYI: should be OS && location sensitive
+ */
 #define IS_PATH_CHAR( c ) ((c)=='\\'||(c)=='/'||(c)==':')
 #define EXT_CHAR        '.'
 #define MAX_PATH        256
 
 static void GetModName( const char *path, char *buff )
-/****************************************************/
-/* find the module name from the path         */
-/**********************************************/
+/*****************************************************
+ * find the module name from the path
+ */
 {
     const char  *start;
     const char  *end;
@@ -80,9 +83,10 @@ do_copy:
 }
 
 static bool ModFill( void *_mod, drmem_hdl mod_handle )
-/*****************************************************/
-// fill in mod_handle for dip to dwarf mod map
-// pick up general info about mod while here for later calls
+/******************************************************
+ * fill in mod_handle for dip to dwarf mod map
+ * pick up general info about mod while here for later calls
+ */
 {
     mod_list    *mod = _mod;
     char        fname[MAX_PATH];
@@ -151,8 +155,9 @@ static bool ModFill( void *_mod, drmem_hdl mod_handle )
 }
 
 dip_status     InitModMap( imp_image_handle *iih )
-/************************************************/
-// Make the imp_mod_handle  to  drmem_hdl map
+/*************************************************
+ * Make the imp_mod_handle  to  drmem_hdl map
+ */
 {
     mod_list    list;
     dip_status  ds;
@@ -179,8 +184,9 @@ dip_status     InitModMap( imp_image_handle *iih )
 }
 
 bool    ClearMods( imp_image_handle *iih )
-/****************************************/
-// free any cached mem for modules
+/*****************************************
+ * free any cached mem for modules
+ */
 {
     im_idx      i;
     bool        ret;
@@ -199,8 +205,9 @@ bool    ClearMods( imp_image_handle *iih )
 }
 
 void    FiniModMap( imp_image_handle *iih )
-/*****************************************/
-// Make the imp_mod_handle to drmem_hdl map
+/******************************************
+ * Make the imp_mod_handle to drmem_hdl map
+ */
 {
     im_idx      i;
     mod_info    *modinfo;
@@ -220,8 +227,9 @@ void    FiniModMap( imp_image_handle *iih )
 }
 
 imp_mod_handle   Dwarf2Mod( imp_image_handle *iih, drmem_hdl mod_handle )
-/***********************************************************************/
-// Look up mod_handle in mod_map
+/************************************************************************
+ * Look up mod_handle in mod_map
+ */
 {
     im_idx      i;
     mod_info    *modinfo;
@@ -237,8 +245,9 @@ imp_mod_handle   Dwarf2Mod( imp_image_handle *iih, drmem_hdl mod_handle )
 }
 
 imp_mod_handle   DwarfMod( imp_image_handle *iih, drmem_hdl dr_sym )
-/******************************************************************/
-// find the imp_mod_handle where a dwarf dbginfo comes from
+/*******************************************************************
+ * find the imp_mod_handle where a dwarf dbginfo comes from
+ */
 {
     im_idx      i;
     im_idx      last;
@@ -258,8 +267,9 @@ imp_mod_handle   DwarfMod( imp_image_handle *iih, drmem_hdl dr_sym )
 }
 
 imp_mod_handle   CuTag2Mod( imp_image_handle *iih, drmem_hdl cu_tag )
-/*******************************************************************/
-// Look up cu_tag in mod_map
+/********************************************************************
+ * Look up cu_tag in mod_map
+ */
 {
     im_idx      i;
     mod_info    *modinfo;
@@ -483,11 +493,11 @@ address DIPIMPENTRY( ModAddr )( imp_image_handle *iih, imp_mod_handle imh )
 }
 
 dip_status DIPIMPENTRY( ModInfo )( imp_image_handle *iih, imp_mod_handle imh, handle_kind hk )
+/*********************************************************************************************
+ * Return DS_OK if the module has the kind of information indicated
+ * by 'hk', DS_FAIL if it does not.
+ */
 {
-    /*
-        Return DS_OK if the module has the kind of information indicated
-        by 'hk', DS_FAIL if it does not.
-    */
     dip_status  ds;
     drmem_hdl   stmts;
     mod_info    *modinfo;
@@ -532,18 +542,21 @@ dip_status DIPIMPENTRY( ModInfo )( imp_image_handle *iih, imp_mod_handle imh, ha
     return( ds );
 }
 
-dip_status DIPIMPENTRY( ModDefault )( imp_image_handle *iih, imp_mod_handle imh, default_kind dk, dig_type_info *ti )
+dip_status DIPIMPENTRY( ModDefault )( imp_image_handle *iih, imp_mod_handle imh,
+                                        default_kind dk, dig_type_info *ti )
+/*******************************************************************************
+ * Return the default type information for indicated type. The
+ * client uses this to figure out how big a default 'int', code pointer,
+ * and data pointer should be. The information depends on whether
+ * the 16 or 32-bit compiler was used, and what memory model the
+ * source file was compiled with.
+ */
 {
-    /*
-        Return the default type information for indicated type. The
-        client uses this to figure out how big a default 'int', code pointer,
-        and data pointer should be. The information depends on whether
-        the 16 or 32-bit compiler was used, and what memory model the
-        source file was compiled with.
-     */
     mod_info    *modinfo;
 
-//TODO: finish
+    /*
+     * TODO: finish
+     */
     modinfo = IMH2MODI( iih, imh );
     ti->size = modinfo->addr_size;
     ti->deref = false;

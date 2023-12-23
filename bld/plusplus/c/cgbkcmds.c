@@ -42,7 +42,7 @@
 #include "carve.h"
 #include "ring.h"
 #include "initdefs.h"
-#ifndef NDEBUG
+#ifdef DEVBUILD
     #include "dbg.h"
     #include "togglesd.h"
     #include "pragdefn.h"
@@ -70,19 +70,19 @@ enum                                    // INDICES FOR STATE-TABLE COMMANDS
 // see the AlignPad... macros in RTEXCEPT.H and CPPLIB.H
 //
 #if ( _CPU == 8086 )
-    #define DG_ALIGN 2
+    #define DATA_ALIGN 2
 #else
-    #define DG_ALIGN 4
+    #define DATA_ALIGN 4
 #endif
 
-#define CMD_SIZE DG_ALIGN
+#define CMD_SIZE DATA_ALIGN
 
 static void DgAlignPad(         // INSERT PADDING IN A STRUCTURE
     unsigned total )            // - number of bytes emitted so far
 {
     unsigned left;
 
-    left = _RoundUp( total, DG_ALIGN ) - total;
+    left = _RoundUp( total, DATA_ALIGN ) - total;
     if( left > 0 ) {
         DgUninitBytes( left );
     }
@@ -371,7 +371,7 @@ static bool cgGenerateCmdBase(      // EMIT BASE FOR COMMAND
     if( base->emitted ) {
         genning = false;
     } else {
-#ifndef NDEBUG
+#ifdef DEVBUILD
         if( TOGGLEDBG( dump_stab ) ) {
             printf( "CMD[%p]: ", base->sym );
         }
@@ -401,7 +401,7 @@ static void cgGenerateCmdsSetSv(// EMIT SET_SV COMMANDS
 
     RingIterBegSafe( ringCmdsSetSv, curr ) {
         if( cgGenerateCmdBase( &curr->base, DTC_SET_SV ) ) {
-#ifndef NDEBUG
+#ifdef DEVBUILD
             if( TOGGLEDBG( dump_stab ) ) {
                 printf( "DTC_SET_SV state=%d\n", curr->state_var );
             }
@@ -420,7 +420,7 @@ static void cgGenerateCmdsTestFlag(// EMIT TEST_FLAG COMMANDS
 
     RingIterBegSafe( ringCmdsTestFlag, curr ) {
         if( cgGenerateCmdBase( &curr->base, DTC_TEST_FLAG ) ) {
-#ifndef NDEBUG
+#ifdef DEVBUILD
             if( TOGGLEDBG( dump_stab ) ) {
                 printf( "DTC_TEST_FLAG index=%d true=%d false=%d\n"
                       , curr->index
@@ -444,7 +444,7 @@ static void cgGenerateCmdsTry(  // EMIT TRY COMMANDS
 
     RingIterBegSafe( ringCmdsTry, curr ) {
         if( cgGenerateCmdBase( &curr->base, DTC_TRY ) ) {
-#ifndef NDEBUG
+#ifdef DEVBUILD
             if( TOGGLEDBG( dump_stab ) ) {
                 printf( "DTC_CATCH %x state=%x buf=%x var=%x count="
                       , DTC_TRY
@@ -471,7 +471,7 @@ static void cgGenerateCmdsFnExc(// EMIT FN_EXC CMDS
 
     RingIterBegSafe( ringCmdsFnExc, curr ) {
         if( cgGenerateCmdBase( &curr->base, DTC_FN_EXC ) ) {
-#ifndef NDEBUG
+#ifdef DEVBUILD
             if( TOGGLEDBG( dump_stab ) ) {
                 printf( "DTC_FN_EXC count=" );
             }
@@ -490,7 +490,7 @@ static void cgGenerateCmdsComponent(// EMIT COMPONENT CMDS
 
     RingIterBegSafe( ringCmdsComponent, curr ) {
         if( cgGenerateCmdBase( &curr->base, curr->cmd_type ) ) {
-#ifndef NDEBUG
+#ifdef DEVBUILD
             if( TOGGLEDBG( dump_stab ) ) {
                 const char* code;
                 VBUF vbuf;
@@ -526,7 +526,7 @@ static void cgGenerateCmdsArrayInit( // EMIT ARRAY-INIT CMDS
 
     RingIterBegSafe( ringCmdsArrayInit, curr ) {
         if( cgGenerateCmdBase( &curr->base, DTC_ARRAY_INIT ) ) {
-#ifndef NDEBUG
+#ifdef DEVBUILD
             if( TOGGLEDBG( dump_stab ) ) {
                 printf( "DTC_ARRAY_INIT offset=%x\n", curr->reg->offset );
             }
@@ -545,7 +545,7 @@ static void cgGenerateCmdsDlt1( // EMIT DELETE-1 CMDS
 
     RingIterBegSafe( ringCmdsDlt1, curr ) {
         if( cgGenerateCmdBase( &curr->base, DTC_DLT_1 ) ) {
-#ifndef NDEBUG
+#ifdef DEVBUILD
             if( TOGGLEDBG( dump_stab ) ) {
                 VBUF vbuf;
                 printf( "DTC_DLT_1 offset=%x %s\n"
@@ -569,7 +569,7 @@ static void cgGenerateCmdsDlt1Array( // EMIT DELETE-1-ARRAY CMDS
 
     RingIterBegSafe( ringCmdsDlt1Array, curr ) {
         if( cgGenerateCmdBase( &curr->base, DTC_DLT_1_ARRAY ) ) {
-#ifndef NDEBUG
+#ifdef DEVBUILD
             if( TOGGLEDBG( dump_stab ) ) {
                 VBUF vbuf;
                 printf( "DTC_DLT_1_ARRAY offset=%x %s\n"
@@ -593,7 +593,7 @@ static void cgGenerateCmdsDlt2( // EMIT DELETE-2 CMDS
 
     RingIterBegSafe( ringCmdsDlt2, curr ) {
         if( cgGenerateCmdBase( &curr->base, DTC_DLT_2 ) ) {
-#ifndef NDEBUG
+#ifdef DEVBUILD
             if( TOGGLEDBG( dump_stab ) ) {
                 VBUF vbuf;
                 printf( "DTC_DLT_2 offset=%x size=%x %s\n"
@@ -619,7 +619,7 @@ static void cgGenerateCmdsDlt2Array( // EMIT DELETE-2-ARRAY CMDS
 
     RingIterBegSafe( ringCmdsDlt2Array, curr ) {
         if( cgGenerateCmdBase( &curr->base, DTC_DLT_2_ARRAY ) ) {
-#ifndef NDEBUG
+#ifdef DEVBUILD
             if( TOGGLEDBG( dump_stab ) ) {
                 VBUF vbuf;
                 printf( "DTC_DLT_2_ARRAY offset=%x size=%x %s\n"
@@ -645,7 +645,7 @@ static void cgGenerateCmdsCtorTest( // EMIT CTOR_TEST CMDS
 
     RingIterBegSafe( ringCmdsCtorTest, curr ) {
         if( cgGenerateCmdBase( &curr->base, DTC_CTOR_TEST ) ) {
-#ifndef NDEBUG
+#ifdef DEVBUILD
             if( TOGGLEDBG( dump_stab ) ) {
                 printf( "DTC_CTOR_TEST %d\n", curr->flag_no );
             }

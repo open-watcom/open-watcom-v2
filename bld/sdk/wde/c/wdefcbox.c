@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -127,7 +128,7 @@ OBJPTR WdeMakeCBox( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
 
     style |= WS_VISIBLE | WS_TABSTOP | WS_CHILD;
     SETCTL_STYLE( WdeDefaultCBox, style );
-    SETCTL_TEXT( WdeDefaultCBox, ResStrToNameOrOrd( text ) );
+    SETCTL_TEXT( WdeDefaultCBox, ResStrToNameOrOrdinal( text ) );
     SETCTL_ID( WdeDefaultCBox, WdeGetNextControlID() );
 
     WdeChangeSizeToDefIfSmallRect( parent, id, obj_rect );
@@ -265,8 +266,7 @@ void WdeCBoxFini( void )
 
 bool WdeCBoxDestroy( WdeCBoxObject *obj, bool *flag, bool *p2 )
 {
-    /* touch unused vars to get rid of warning */
-    _wde_touch( p2 );
+    /* unused parameters */ (void)p2;
 
     if( !Forward( obj->control, DESTROY, flag, NULL ) ) {
         WdeWriteTrail( "WdeCBoxDestroy: Control DESTROY failed" );
@@ -325,8 +325,7 @@ bool WdeCBoxCopyObject( WdeCBoxObject *obj, WdeCBoxObject **new, OBJPTR handle )
 
 bool WdeCBoxIdentify( WdeCBoxObject *obj, OBJ_ID *id, void *p2 )
 {
-    /* touch unused vars to get rid of warning */
-    _wde_touch( p2 );
+    /* unused parameters */ (void)p2;
 
     *id = obj->object_id;
 
@@ -335,9 +334,7 @@ bool WdeCBoxIdentify( WdeCBoxObject *obj, OBJ_ID *id, void *p2 )
 
 bool WdeCBoxGetWndProc( WdeCBoxObject *obj, WNDPROC *proc, void *p2 )
 {
-    /* touch unused vars to get rid of warning */
-    _wde_touch( obj );
-    _wde_touch( p2 );
+    /* unused parameters */ (void)obj; (void)p2;
 
     *proc = WdeCBoxSuperClassProc;
 
@@ -346,9 +343,7 @@ bool WdeCBoxGetWndProc( WdeCBoxObject *obj, WNDPROC *proc, void *p2 )
 
 bool WdeCBoxGetWindowClass( WdeCBoxObject *obj, char **class, void *p2 )
 {
-    /* touch unused vars to get rid of warning */
-    _wde_touch( obj );
-    _wde_touch( p2 );
+    /* unused parameters */ (void)obj; (void)p2;
 
     *class = "combobox";
 
@@ -359,9 +354,7 @@ bool WdeCBoxDefine( WdeCBoxObject *obj, POINT *pnt, void *p2 )
 {
     WdeDefineObjectInfo  o_info;
 
-    /* touch unused vars to get rid of warning */
-    _wde_touch( pnt );
-    _wde_touch( p2 );
+    /* unused parameters */ (void)pnt; (void)p2;
 
     o_info.obj = obj->object_handle;
     o_info.obj_id = obj->object_id;
@@ -577,9 +570,7 @@ bool WdeCBoxDefineHook ( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam, 
     bool processed;
     WORD wp;
 
-    /* touch unused vars to get rid of warning */
-    _wde_touch( mask );
-    _wde_touch( lParam );
+    /* unused parameters */ (void)mask; (void)lParam;
 
     processed = false;
 

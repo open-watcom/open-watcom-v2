@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,6 +36,10 @@
 #include "fts.h"
 #include <assert.h>
 #include "parsecl.h"
+#include "myprintf.h"
+#include "parse.h"
+#include "utilstok.h"
+
 
 static  ft_src  *ftsHead;
 static  ft_src  *ftsTail;
@@ -70,6 +74,26 @@ vi_rc FTSStart( const char *data )
 
 } /* FTSStart */
 
+static char *expandTokenSet( char *token_no, char *buff )
+{
+    bool        val;
+    int         tok;
+    char        settokstr[TOK_MAX_LEN + 1];
+
+    tok = atoi( token_no );
+    val = true;
+    if( tok < 0 ) {
+        tok *= -1;
+        val = false;
+    }
+    if( tok >= SETVAR_T_ ) {
+        sprintf( buff, "%s%s", GET_BOOL_PREFIX( val ), GetTokenStringCVT( SetFlagTokens, tok - SETVAR_T_, settokstr, true ) );
+    } else {
+        sprintf( buff, "%s" CFG_SET_SEPARATOR, GetTokenStringCVT( SetVarTokens, tok, settokstr, true ) );
+    }
+    return( buff );
+}
+
 /*
  * FTSAddCmd - add a 1-line command to the current (tail) fts
  */
@@ -86,7 +110,7 @@ vi_rc FTSAddCmd( const char *data, int tok )
         strcpy( cmd_data, "set " );
         if( EditFlags.ScriptIsCompiled ) {
             data = GetNextWord1( data, cmd_data + 4 );
-            ExpandTokenSet( cmd_data + 4, cmd_data + 4 );
+            expandTokenSet( cmd_data + 4, cmd_data + 4 );
             if( cmd_data[4] == '\0' ) {
                 return( ERR_NO_ERR );
             }

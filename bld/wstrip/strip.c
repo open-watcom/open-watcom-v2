@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -52,6 +52,7 @@
 #include "wressetr.h"
 #include "pathgrp2.h"
 
+#include "clibint.h"
 #include "clibext.h"
 
 
@@ -113,8 +114,9 @@ static const char *ExtLst[] = {
 
 static const char SymExt[] = { ".sym" };
 static const char ResExt[] = { ".res" };
+static const char BakExt[] = { ".bak" };
 
-static fdata   finfo, fin, fout, ftmp;
+static fdata   finfo, fin, fout, ftmp, fbak;
 
 static bool quiet = false;
 static bool nodebug_ok = false;
@@ -283,6 +285,12 @@ static void AddInfo( void )
     info_info           info;
     master_dbg_header   header;
 
+    /* initialize input file */
+    fin.fp = fopen( fin.name, "rb" );
+    if( fin.fp == NULL ) {
+        Fatal( MSG_CANT_OPEN, fin.name );
+    }
+
     if( finfo.name[0] == '\0' ) {
         Fatal( ( res ) ? MSG_NO_SPECIFIED_1 : MSG_NO_SPECIFIED_0, NULL );
     }
@@ -302,6 +310,7 @@ static void AddInfo( void )
     /* transfer input file to output file */
     fseek( fin.fp, 0, SEEK_SET );
     CopyData( &fin, &ftmp );
+    fclose( fin.fp );
     /* transfer info file to output file */
     fseek( finfo.fp, 0, SEEK_SET );
     CopyData( &finfo, &ftmp );
@@ -327,6 +336,12 @@ static void AddInfo( void )
 static void StripInfo( void )
 {
     info_info           info;
+
+    /* initialize input file */
+    fin.fp = fopen( fin.name, "rb" );
+    if( fin.fp == NULL ) {
+        Fatal( MSG_CANT_OPEN, fin.name );
+    }
 
     FindInfoInfo( fin.fp, &info, res );
     if( info.type == WRAP_NONE ) {
@@ -357,6 +372,7 @@ static void StripInfo( void )
 
     /* transfer remaining data */
     CopyData( &fin, &ftmp );
+    fclose( fin.fp );
 }
 
 int main( int argc, char *argv[] )
@@ -371,8 +387,10 @@ int main( int argc, char *argv[] )
     int                 add_file;
     struct stat         statx;
     struct utimbuf      uptime;
-    time_t              mtime;
+    time_t              old_mtime;
+    mode_t              old_mode;
     const char          *in_ext;
+    int                 backup_file;
 
 #define IS_DIR(x,st)    (stat(x, &(st)) == 0 && S_ISDIR( (st).st_mode ))
 
@@ -385,6 +403,7 @@ int main( int argc, char *argv[] )
         return( EXIT_FAILURE );
     }
     add_file = 0;
+    backup_file = 0;
     j = argc - 1;
     while( j > 0 ) {
 #ifdef __UNIX__
@@ -403,6 +422,7 @@ int main( int argc, char *argv[] )
                 case 'n': nodebug_ok = true; break;
                 case 'a': add_file = true; break;
                 case 'r': res = true; break;
+                case 'b': backup_file = true; break;
                 default: Fatal( MSG_INV_OPT, argv[j] );
                 }
             }
@@ -435,23 +455,25 @@ int main( int argc, char *argv[] )
     }
     _splitpath2( argv[1], pg->buffer, &pg->drive, &pg->dir, &pg->fname, &pg->ext );
     in_ext = pg->ext;
-    mtime = 0;
+    old_mtime = 0;
     if( in_ext[0] == '\0' ) {
         for( i = 0; i < ARRAYSIZE( ExtLst ); ++i ) {
             in_ext = ExtLst[i];
             _makepath( fin.name, pg->drive, pg->dir, pg->fname, in_ext );
             if( stat( fin.name, &statx ) == 0 ) {
-                mtime = statx.st_mtime;
+                old_mtime = statx.st_mtime;
+                old_mode = statx.st_mode;
                 break;
             }
         }
     } else {
         _makepath( fin.name, pg->drive, pg->dir, pg->fname, in_ext );
         if( stat( fin.name, &statx ) == 0 ) {
-            mtime = statx.st_mtime;
+            old_mtime = statx.st_mtime;
+            old_mode = statx.st_mode;
         }
     }
-    if( mtime == 0 ) {
+    if( old_mtime == 0 ) {
         free( pg );
         Fatal( MSG_CANT_FIND, argv[1] );
     }
@@ -468,6 +490,7 @@ int main( int argc, char *argv[] )
         }
     }
     _makepath( fout.name, pg->drive, pg->dir, pg->fname, in_ext );
+    _makepath( fbak.name, pg->drive, pg->dir, pg->fname, BakExt );
     finfo.name[0] = '\0';
     if( argc >= 4 ) {
         _splitpath2( argv[3], pg_tmp->buffer, &pg_tmp->drive, &pg_tmp->dir, &pg_tmp->fname, &pg_tmp->ext );
@@ -486,18 +509,23 @@ int main( int argc, char *argv[] )
     if( ftmp.fp == NULL ) {
         Fatal( MSG_CANT_OPEN, ftmp.name );
     }
-
-    /* initialize input file */
-    fin.fp = fopen( fin.name, "rb" );
-    if( fin.fp == NULL ) {
-        Fatal( MSG_CANT_OPEN, fin.name );
-    }
     if( add_file ) {
         AddInfo();
     } else {
         StripInfo();
     }
-    fclose( fin.fp );
+    if( backup_file ) {
+        if( access( fbak.name, F_OK ) == 0 && remove( fbak.name ) != 0 ) {
+            Fatal( MSG_CANT_ERASE, fbak.name );
+        }
+        if( access( fout.name, F_OK ) == 0 && rename( fout.name, fbak.name ) != 0 ) {
+            Fatal( MSG_CANT_RENAME, fout.name );
+        }
+    } else {
+        if( access( fout.name, F_OK ) == 0 && remove( fout.name ) != 0 ) {
+            Fatal( MSG_CANT_ERASE, fout.name );
+        }
+    }
     /* initialize output file, overwrite if exists */
     fout.fp = fopen( fout.name, "wb" );
     if( fout.fp == NULL ) {
@@ -510,8 +538,9 @@ int main( int argc, char *argv[] )
     fclose( ftmp.fp );
 
     uptime.actime = time( NULL );
-    uptime.modtime = mtime;
+    uptime.modtime = old_mtime;
     utime( fout.name, &uptime );
+    chmod( fout.name, old_mode );
 
     Msg_Fini();
     return( EXIT_SUCCESS );

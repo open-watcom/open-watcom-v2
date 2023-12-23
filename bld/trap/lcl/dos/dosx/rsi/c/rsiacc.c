@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -55,25 +55,39 @@
 #include "exeos2.h"
 #include "exeflat.h"
 
+#include "digcpu.h"
 #include "x86cpu.h"
 #include "miscx87.h"
 #include "dosredir.h"
 #include "doscomm.h"
-#include "cpuglob.h"
+#include "brkptcpu.h"
+
 
 #define INT_PRT_SCRN_KEY    0x05
-
-#define IsDPMI          (_d16info.swmode == 0)
+#define MAX_WATCHES         32
+#define IsDPMI              (_d16info.swmode == 0)
+#define MAX_DREGS           3
 
 typedef struct watch_point {
-    addr48_ptr          addr;
-    dword               value;
+    uint_64             value;
     dword               linear;
+    addr48_ptr          addr;
+    word                size;
     word                dregs;
-    word                len;
-    long                handle;
-    long                handle2;
+    short               handle[MAX_DREGS];
 } watch_point;
+
+extern bool IsSel32bit( unsigned_16 );
+#pragma aux IsSel32bit = \
+        ".386"              \
+        "movzx eax,ax"      \
+        "lar   eax,eax"     \
+        "and   eax,400000h" \
+        "jz short L1"       \
+        "mov   ax,1"        \
+    "L1:"                   \
+    __parm  [__ax] \
+    __value [__al]
 
 static struct {
     unsigned_32         size;
@@ -81,7 +95,7 @@ static struct {
 } *ObjInfo;
 
 static TSF32            Proc;
-static opcode_type      Break;
+static opcode_type      BreakOpcode;
 static bool             FakeBreak;
 static bool             AtEnd;
 static unsigned         NumObjects;
@@ -89,8 +103,7 @@ static unsigned_8       RealNPXType;
 
 static char             UtilBuff[BUFF_SIZE];
 
-#define MAX_WP 32
-static watch_point      WatchPoints[MAX_WP];
+static watch_point      WatchPoints[MAX_WATCHES];
 static int              WatchCount;
 
 static void EMURestore( _word seg, const void __far *data )
@@ -112,9 +125,9 @@ void SetDbgTask( void )
 {
 }
 
-static unsigned short ReadMemory( addr48_ptr *addr, void FarPtr data, unsigned short req_len )
+static size_t ReadWrite( bool (*r)(addr48_ptr FarPtr, bool, void FarPtr, size_t), addr48_ptr *addr, void FarPtr data, size_t req_len )
 {
-    unsigned short  len;
+    size_t  len;
 
     _DBG_Write( "checking " );
     _DBG_Write16( addr->segment );
@@ -123,61 +136,20 @@ static unsigned short ReadMemory( addr48_ptr *addr, void FarPtr data, unsigned s
     _DBG_Write( " for 0x" );
     _DBG_Write16( req_len );
     _DBG_Write( " bytes -- " );
-    if( rsi_addr32_check( addr->offset, addr->segment, req_len, NULL ) == MEMBLK_VALID ) {
-        if( D32DebugRead( addr->offset, addr->segment, 0, data, req_len ) == 0 ) {
-            _DBG_Writeln( "OK" );
-            addr->offset += req_len;
-            return( req_len );
-        }
+    if( !r( addr, false, data, req_len ) ) {
+        _DBG_Writeln( "OK" );
+        addr->offset += req_len;
+        return( req_len );
     }
     _DBG_Writeln(( "Bad" ));
-    len = 0;
-    while( req_len > 0 ) {
-        if( rsi_addr32_check( addr->offset, addr->segment, 1, NULL ) != MEMBLK_VALID )
+    for( len = req_len; len > 0; len-- ) {
+        if( r( addr, false, data, 1 ) )
             break;
-        if( D32DebugRead( addr->offset, addr->segment, 0, data, 1 ) != 0 )
-            break;
-        ++addr->offset;
+        addr->offset++;
         data = (char FarPtr)data + 1;
-        ++len;
-        --req_len;
     }
-    return( len );
+    return( req_len - len );
 }
-
-static unsigned short WriteMemory( addr48_ptr *addr, const void FarPtr data, unsigned short req_len )
-{
-    unsigned short  len;
-
-    _DBG_Write( "checking " );
-    _DBG_Write16( addr->segment );
-    _DBG_Write( ":" );
-    _DBG_Write32( addr->offset );
-    _DBG_Write( " for 0x" );
-    _DBG_Write16( req_len );
-    _DBG_Write( " bytes -- " );
-    if( rsi_addr32_check( addr->offset, addr->segment, req_len, NULL ) == MEMBLK_VALID ) {
-        if( D32DebugWrite( addr->offset, addr->segment, 0, data, req_len ) == 0 ) {
-            _DBG_Writeln( "OK" );
-            addr->offset += req_len;
-            return( req_len );
-        }
-    }
-    _DBG_Writeln(( "Bad" ));
-    len = 0;
-    while( req_len > 0 ) {
-        if( rsi_addr32_check( addr->offset, addr->segment, 1, NULL ) != MEMBLK_VALID )
-            break;
-        if( D32DebugWrite( addr->offset, addr->segment, 0, data, 1 ) != 0 )
-            break;
-        ++addr->offset;
-        data = (char FarPtr)data + 1;
-        ++len;
-        --req_len;
-    }
-    return( len );
-}
-
 
 trap_retval TRAP_CORE( Get_sys_config )( void )
 {
@@ -185,46 +157,46 @@ trap_retval TRAP_CORE( Get_sys_config )( void )
 
     _DBG_Writeln( "AccGetConfig" );
 
-    ret = GetOutPtr(0);
-    ret->sys.os = DIG_OS_RATIONAL;
-    ret->sys.osmajor = _osmajor;
-    ret->sys.osminor = _osminor;
-    ret->sys.cpu = X86CPUType();
-    ret->sys.huge_shift = 12;
+    ret = GetOutPtr( 0 );
+    ret->os = DIG_OS_RATIONAL;
+    ret->osmajor = _osmajor;
+    ret->osminor = _osminor;
+    ret->cpu = X86CPUType();
+    ret->huge_shift = 12;
     if( !AtEnd && HAVE_EMU ) {
-        ret->sys.fpu = X86_EMU;
+        ret->fpu = X86_EMU;
     } else {
-        ret->sys.fpu = RealNPXType;
+        ret->fpu = RealNPXType;
     }
-    ret->sys.arch = DIG_ARCH_X86;
+    ret->arch = DIG_ARCH_X86;
     return( sizeof( *ret ) );
 }
 
 
 trap_retval TRAP_CORE( Map_addr )( void )
 {
-    Fptr32              fp;
+    addr48_ptr          fp;
     map_addr_req        *acc;
     map_addr_ret        *ret;
     unsigned            i;
 
     _DBG_Writeln( "AccMapAddr" );
 
-    acc = GetInPtr(0);
-    ret = GetOutPtr(0);
+    acc = GetInPtr( 0 );
+    ret = GetOutPtr( 0 );
     ret->lo_bound = 0;
     ret->hi_bound = ~(addr48_off)0;
-    fp.off = acc->in_addr.offset;
-    fp.sel = acc->in_addr.segment;
-    switch( fp.sel ) {
+    fp.offset = acc->in_addr.offset;
+    fp.segment = acc->in_addr.segment;
+    switch( fp.segment ) {
     case MAP_FLAT_CODE_SELECTOR:
     case MAP_FLAT_DATA_SELECTOR:
-        fp.sel = 1;
-        fp.off += ObjInfo[0].start;
+        fp.segment = 1;
+        fp.offset += ObjInfo[0].start;
         for( i = 0; i < NumObjects; ++i ) {
-            if( ObjInfo[i].start <= fp.off && ( ObjInfo[i].start + ObjInfo[i].size ) > fp.off ) {
-                fp.sel = i + 1;
-                fp.off -= ObjInfo[i].start;
+            if( ObjInfo[i].start <= fp.offset && ( ObjInfo[i].start + ObjInfo[i].size ) > fp.offset ) {
+                fp.segment = i + 1;
+                fp.offset -= ObjInfo[i].start;
                 ret->lo_bound = ObjInfo[i].start - ObjInfo[0].start;
                 ret->hi_bound = ret->lo_bound + ObjInfo[i].size - 1;
                 break;
@@ -232,70 +204,64 @@ trap_retval TRAP_CORE( Map_addr )( void )
         }
         break;
     }
-    D32Relocate(&fp);
-    ret->out_addr.segment = fp.sel;
-    ret->out_addr.offset = fp.off;
+    D32Relocate( &fp );
+    ret->out_addr.segment = fp.segment;
+    ret->out_addr.offset = fp.offset;
     return( sizeof( *ret ) );
 }
-
-extern unsigned long GetLAR( unsigned );
-#pragma aux GetLAR = \
-        ".386p"         \
-        "xor  edx,edx"  \
-        "mov  dx,ax"    \
-        "lar  eax,edx"  \
-        "mov  edx,eax"  \
-        "shr  edx,16"   \
-    __parm __caller [__ax] \
-    __value         [__dx __ax]
 
 trap_retval TRAP_CORE( Machine_data )( void )
 {
     machine_data_req    *acc;
     machine_data_ret    *ret;
-    unsigned_8          *data;
+    machine_data_spec   *data;
+    addr48_ptr          addr;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    data = GetOutPtr( sizeof( *ret ) );
     ret->cache_start = 0;
     ret->cache_end = ~(addr_off)0;
-    *data = 0;
-    if( rsi_addr32_check( 0, acc->addr.segment, 1, NULL ) == MEMBLK_VALID ) {
-        if( GetLAR( acc->addr.segment ) & 0x400000 ) {
-            *data = X86AC_BIG;
+    if( acc->info_type == X86MD_ADDR_CHARACTERISTICS ) {
+        data = GetOutPtr( sizeof( *ret ) );
+        data->x86_addr_flags = 0;
+        addr.segment = acc->addr.segment;
+        addr.offset = 0;
+        if( IsSel32bit( acc->addr.segment ) ) {
+            data->x86_addr_flags = X86AC_BIG;
         }
+        return( sizeof( *ret ) + sizeof( data->x86_addr_flags ) );
     }
-    return( sizeof( *ret ) + sizeof( *data ) );
+    return( sizeof( *ret ) );
 }
 
 trap_retval TRAP_CORE( Checksum_mem )( void )
 {
-    unsigned short      len;
-    int                 i;
-    unsigned short      read;
+    size_t              len;
+    size_t              i;
+    size_t              got;
     checksum_mem_req    *acc;
     checksum_mem_ret    *ret;
-    unsigned short      buff_len;
+    size_t              want;
+    unsigned long       sum;
 
     _DBG_Writeln( "AccChkSum" );
 
     acc = GetInPtr( 0 );
-    ret = GetOutPtr( 0 );
-
-    ret->result = 0;
-    buff_len = BUFF_SIZE;
-    for( len = acc->len; len > 0; len -= buff_len ) {
-        if( buff_len > len )
-            buff_len = len;
-        read = ReadMemory( (addr48_ptr *)&acc->in_addr, &UtilBuff, buff_len );
-        for( i = 0; i < read; ++i ) {
-            ret->result += UtilBuff[i];
+    want = sizeof( UtilBuff );
+    sum = 0;
+    for( len = acc->len; len > 0; len -= want ) {
+        if( want > len )
+            want = len;
+        got = ReadWrite( D32DebugRead, &acc->in_addr, UtilBuff, want );
+        for( i = 0; i < got; ++i ) {
+            sum += ((unsigned char *)UtilBuff)[i];
         }
-        if( read != buff_len ) {
+        if( got != want ) {
             break;
         }
     }
+    ret = GetOutPtr( 0 );
+    ret->result = sum;
     return( sizeof( ret ) );
 }
 
@@ -303,12 +269,10 @@ trap_retval TRAP_CORE( Checksum_mem )( void )
 trap_retval TRAP_CORE( Read_mem )( void )
 {
     read_mem_req        *acc;
-    void                FarPtr buff;
 
     _DBG_Writeln( "ReadMem" );
     acc = GetInPtr( 0 );
-    buff = GetOutPtr( 0 );
-    return( ReadMemory( (addr48_ptr *)&acc->mem_addr, buff, acc->len ) );
+    return( ReadWrite( D32DebugRead, &acc->mem_addr, GetOutPtr( 0 ), acc->len ) );
 }
 
 trap_retval TRAP_CORE( Write_mem )( void )
@@ -319,7 +283,8 @@ trap_retval TRAP_CORE( Write_mem )( void )
     _DBG_Writeln( "WriteMem" );
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    ret->len = WriteMemory( (addr48_ptr *)&acc->mem_addr, GetInPtr( sizeof( *acc ) ), GetTotalSizeIn() - sizeof( *acc ) );
+    ret->len = ReadWrite( D32DebugWrite, &acc->mem_addr, GetInPtr( sizeof( *acc ) ),
+                            GetTotalSizeIn() - sizeof( *acc ) );
     return( sizeof( *ret ) );
 }
 
@@ -328,36 +293,49 @@ trap_retval TRAP_CORE( Read_io )( void )
     read_io_req         *acc;
     void                *data;
 
-    acc = GetInPtr(0);
-    data = GetOutPtr(0);
-    if( acc->len == 1 ) {
+    acc = GetInPtr( 0 );
+    data = GetOutPtr( 0 );
+    switch( acc->len ) {
+    case 1:
         *(byte *)data = In_b( acc->IO_offset );
-    } else if( acc->len == 2 ) {
+        break;
+    case 2:
         *(word *)data = In_w( acc->IO_offset );
-    } else {
+        break;
+    case 4:
         *(dword *)data = In_d( acc->IO_offset );
+        break;
+    default:
+        return( 0 );
     }
     return( acc->len );
 }
 
 trap_retval TRAP_CORE( Write_io )( void )
 {
-    trap_elen           len;
+    size_t              len;
     write_io_req        *acc;
     write_io_ret        *ret;
     void                *data;
 
-    acc = GetInPtr(0);
+    acc = GetInPtr( 0 );
     data = GetInPtr( sizeof( *acc ) );
     len = GetTotalSizeIn() - sizeof( *acc );
-    ret = GetOutPtr(0);
-    if( len == 1 ) {
+    switch( len ) {
+    case 1:
         Out_b( acc->IO_offset, *(byte *)data );
-    } else if( len == 2 ) {
+        break;
+    case 2:
         Out_w( acc->IO_offset, *(word *)data );
-    } else {
+        break;
+    case 4:
         Out_d( acc->IO_offset, *(dword *)data );
+        break;
+    default:
+        len = 0;
+        break;
     }
+    ret = GetOutPtr( 0 );
     ret->len = len;
     return( sizeof( *ret ) );
 }
@@ -410,7 +388,7 @@ static void ReadFPU( struct x86_fpu *r )
         } else {
             Read387( r );
         }
-    } else if( RealNPXType != X86_NO ) {
+    } else if( RealNPXType != X86_NOFPU ) {
         if( _d16info.cpumod >= 3 ) {
             Read387( r );
         } else {
@@ -427,7 +405,7 @@ static void WriteFPU( const struct x86_fpu *r )
         } else {
             Write387( r );
         }
-    } else if( RealNPXType != X86_NO ) {
+    } else if( RealNPXType != X86_NOFPU ) {
         if( _d16info.cpumod >= 3 ) {
             Write387( r );
         } else {
@@ -441,7 +419,7 @@ trap_retval TRAP_CORE( Read_regs )( void )
 {
     mad_registers       *mr;
 
-    mr = GetOutPtr(0);
+    mr = GetOutPtr( 0 );
     ReadCPU( &mr->x86.cpu );
     ReadFPU( &mr->x86.u.fpu );
     return( sizeof( mr->x86 ) );
@@ -460,7 +438,7 @@ trap_retval TRAP_CORE( Write_regs )( void )
 static void GetObjectInfo( char *name )
 {
     int                 handle;
-    unsigned_32         off;
+    unsigned_32         ne_header_off;
     unsigned            i;
     object_record       obj;
     union {
@@ -469,20 +447,21 @@ static void GetObjectInfo( char *name )
     }   head;
 
     handle = open( name, O_BINARY | O_RDONLY, 0 );
-    if( handle == -1 ) return;
+    if( handle == -1 )
+        return;
     read( handle, &head.dos, sizeof( head.dos ) );
-    if( head.dos.signature != DOS_SIGNATURE ) {
+    if( head.dos.signature != EXESIGN_DOS ) {
         close( handle );
         return;
     }
-    lseek( handle, OS2_NE_OFFSET, SEEK_SET );
-    read( handle, &off, sizeof( off ) );
-    lseek( handle, off, SEEK_SET );
+    lseek( handle, NE_HEADER_OFFSET, SEEK_SET );
+    read( handle, &ne_header_off, sizeof( ne_header_off ) );
+    lseek( handle, ne_header_off, SEEK_SET );
     read( handle, &head.os2, sizeof( head.os2 ) );
     switch( head.os2.signature ) {
-    case OSF_FLAT_SIGNATURE:
-    case OSF_FLAT_LX_SIGNATURE:
-        lseek( handle, head.os2.objtab_off + off, SEEK_SET );
+    case EXESIGN_LE:
+    case EXESIGN_LX:
+        lseek( handle, head.os2.objtab_off + ne_header_off, SEEK_SET );
         NumObjects = head.os2.num_objects;
         ObjInfo = realloc( ObjInfo, NumObjects * sizeof( *ObjInfo ) );
         for( i = 0; i < head.os2.num_objects; ++i ) {
@@ -498,34 +477,42 @@ static void GetObjectInfo( char *name )
     close( handle );
 }
 
-trap_retval TRAP_CORE( Prog_load )( void )
+static size_t MergeArgvArray( const char *src, char *dst, size_t len )
+/********************************************************************/
 {
-    char            *src;
-    char            *dst;
-    char            *name;
-    char            ch;
-    prog_load_ret   *ret;
-    unsigned        len;
+    char    ch;
+    char    *start = dst;
 
-    _DBG_Writeln( "AccLoadProg" );
-    AtEnd = false;
-    dst = UtilBuff;
-    src = name = GetInPtr( sizeof( prog_load_req ) );
-    ret = GetOutPtr( 0 );
-    while( *src++ != '\0' ) {};
-    len = GetTotalSizeIn() - (src - name) - sizeof( prog_load_req );
-    if( len > 126 )
-        len = 126;
-    for( ; len > 0; --len ) {
+    while( len-- > 0 ) {
         ch = *src++;
         if( ch == '\0' ) {
-            if( len == 1 )
+            if( len == 0 )
                 break;
             ch = ' ';
         }
         *dst++ = ch;
     }
     *dst = '\0';
+    return( dst - start );
+}
+
+trap_retval TRAP_CORE( Prog_load )( void )
+{
+    char            *src;
+    char            *name;
+    prog_load_ret   *ret;
+    size_t          len;
+
+    _DBG_Writeln( "AccLoadProg" );
+    AtEnd = false;
+    src = name = GetInPtr( sizeof( prog_load_req ) );
+    ret = GetOutPtr( 0 );
+    while( *src++ != '\0' )
+        {}
+    len = GetTotalSizeIn() - sizeof( prog_load_req ) - ( src - name );
+    if( len > 126 )
+        len = 126;
+    MergeArgvArray( src, UtilBuff, len );
     _DBG_Writeln( "about to debugload" );
     _DBG_Write( "Name : " );
     _DBG_Writeln( name );
@@ -553,44 +540,75 @@ trap_retval TRAP_CORE( Prog_kill )( void )
     prog_kill_ret       *ret;
 
     _DBG_Writeln( "AccKillProg" );
-    ret = GetOutPtr( 0 );
     RedirectFini();
     AtEnd = true;
+    ret = GetOutPtr( 0 );
     ret->err = 0;
     return( sizeof( *ret ) );
 }
 
+static int DRegsCount( void )
+{
+    int     needed;
+    int     i;
+
+    needed = 0;
+    for( i = 0; i < WatchCount; i++ ) {
+        needed += WatchPoints[i].dregs;
+    }
+    return( needed );
+}
+
+static word GetDRInfo( word segment, dword offset, word size, dword *plinear )
+{
+    word    dregs;
+    dword   linear;
+
+    linear = DPMIGetSegmentBaseAddress( segment ) + offset;
+    dregs = 1;
+    if( size == 8 ) {
+        size = 4;
+        dregs++;
+    }
+    if( linear & ( size - 1 ) )
+        dregs++;
+    if( plinear != NULL )
+        *plinear = linear & ~( size - 1 );
+    return( dregs );
+}
 
 trap_retval TRAP_CORE( Set_watch )( void )
 {
-    watch_point     *curr;
     set_watch_req   *acc;
     set_watch_ret   *ret;
+    watch_point     *wp;
     int             i;
-    int             needed;
 
     _DBG_Writeln( "AccSetWatch" );
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
     ret->multiplier = 5000;
-    ret->err = 0;
-    curr = WatchPoints + WatchCount;
-    curr->addr.segment = acc->watch_addr.segment;
-    curr->addr.offset = acc->watch_addr.offset;
-    curr->linear = DPMIGetSegmentBaseAddress( curr->addr.segment ) + curr->addr.offset;
-    curr->len = acc->size;
-    curr->dregs = ( curr->linear & ( curr->len - 1 ) ) ? 2 : 1;
-    curr->handle = -1;
-    curr->handle2 = -1;
-    curr->value = 0;
-    ReadMemory( (addr48_ptr *)&acc->watch_addr, &curr->value, curr->len );
-    ++WatchCount;
-    needed = 0;
-    for( i = 0; i < WatchCount; ++i ) {
-        needed += WatchPoints[i].dregs;
+    ret->err = 1;       // failure
+    if( WatchCount < MAX_WATCHES ) {
+        ret->err = 0;   // OK
+        wp = WatchPoints + WatchCount;
+        wp->addr.segment = acc->watch_addr.segment;
+        wp->addr.offset = acc->watch_addr.offset;
+        wp->size = acc->size;
+        wp->value = 0;
+        D32DebugRead( &wp->addr, false, &wp->value, wp->size );
+
+        wp->dregs = GetDRInfo( wp->addr.segment, wp->addr.offset, wp->size, &wp->linear );
+        for( i = 0; i < MAX_DREGS; i++ ) {
+            wp->handle[i] = -1;
+        }
+
+        WatchCount++;
+        if( DRegsCount() <= 4 ) {
+            ret->multiplier |= USING_DEBUG_REG;
+        }
     }
-    if( needed <= 4 ) ret->multiplier |= USING_DEBUG_REG;
     return( sizeof( *ret ) );
 }
 
@@ -607,14 +625,14 @@ trap_retval TRAP_CORE( Set_break )( void )
 {
     set_break_req       *acc;
     set_break_ret       *ret;
-    opcode_type         brk_opcode;
+    opcode_type         old_opcode;
 
     _DBG_Writeln( "AccSetBreak" );
 
     acc = GetInPtr( 0 );
+    D32DebugSetBreak( &acc->break_addr, false, &BreakOpcode, &old_opcode );
     ret = GetOutPtr( 0 );
-    brk_opcode = ret->old;
-    D32DebugSetBreak( acc->break_addr.offset, acc->break_addr.segment, false, &Break, &brk_opcode );
+    ret->old = old_opcode;
     return( sizeof( *ret ) );
 }
 
@@ -622,53 +640,37 @@ trap_retval TRAP_CORE( Set_break )( void )
 trap_retval TRAP_CORE( Clear_break )( void )
 {
     clear_break_req     *acc;
-    opcode_type         dummy;
-    opcode_type         brk_opcode;
+    opcode_type         old_opcode;
 
     acc = GetInPtr( 0 );
     _DBG_Writeln( "AccRestoreBreak" );
     /* assume all breaks removed at same time */
-    brk_opcode = acc->old;
-    D32DebugSetBreak( acc->break_addr.offset, acc->break_addr.segment, false, &brk_opcode, &dummy );
+    old_opcode = acc->old;
+    D32DebugSetBreak( &acc->break_addr, false, &old_opcode, &old_opcode );
     return( 0 );
 }
 
-static unsigned long SetDRn( int i, unsigned long linear, long type )
+static dword SetDRn( int dr, dword linear, word type )
 {
-    switch( i ) {
-    case 0:
-        SetDR0( linear );
-        break;
-    case 1:
-        SetDR1( linear );
-        break;
-    case 2:
-        SetDR2( linear );
-        break;
-    case 3:
-        SetDR3( linear );
-        break;
-    }
-    return( ( type << DR7_RWLSHIFT(i) )
-//          | ( DR7_GEMASK << DR7_GLSHIFT(i) ) | DR7_GE
-          | ( DR7_LEMASK << DR7_GLSHIFT(i) ) | DR7_LE );
+    SetDRx( dr, linear );
+    return( ( (dword)type << DR7_RWLSHIFT( dr ) )
+//          | ( DR7_GEMASK << DR7_GLSHIFT( dr ) )
+          | ( DR7_LEMASK << DR7_GLSHIFT( dr ) ) );
 }
-
 
 static void ClearDebugRegs( void )
 {
     int         i;
+    int         j;
     watch_point *wp;
 
     if( IsDPMI ) {
-        for( i = WatchCount, wp = WatchPoints; i != 0; --i, ++wp ) {
-            if( wp->handle >= 0 ) {
-                DPMIClearWatch( wp->handle );
-                wp->handle = -1;
-            }
-            if( wp->handle2 >= 0 ) {
-                DPMIClearWatch( wp->handle2 );
-                wp->handle2 = -1;
+        for( wp = WatchPoints, i = WatchCount; i-- > 0; wp++ ) {
+            for( j = 0; j < MAX_DREGS; j++ ) {
+                if( wp->handle[j] >= 0 ) {
+                    DPMIClearWatch( wp->handle[j] );
+                    wp->handle[j] = -1;
+                }
             }
         }
     } else {
@@ -680,68 +682,66 @@ static void ClearDebugRegs( void )
 
 static bool SetDebugRegs( void )
 {
-    int                 needed;
     int                 i;
-    watch_point         *wp;
-    bool                success;
+    int                 j;
     long                rc;
+    watch_point         *wp;
+    dword               linear;
+    word                size;
 
-    needed = 0;
-    for( i = WatchCount, wp = WatchPoints; i != 0; --i, ++wp ) {
-        needed += wp->dregs;
-    }
-    if( needed > 4 )
+    if( DRegsCount() > 4 )
         return( false );
     if( IsDPMI ) {
-        success = true;
-        for( i = WatchCount, wp = WatchPoints; i != 0; --i, ++wp ) {
-            wp->handle = -1;
-            wp->handle2 = -1;
+        for( i = 0; i < WatchCount; ++i ) {
+            for( j = 0; j < MAX_DREGS; j++ ) {
+                WatchPoints[i].handle[j] = -1;
+            }
         }
-        for( i = WatchCount, wp = WatchPoints; i != 0; --i, ++wp ) {
+        for( wp = WatchPoints, i = WatchCount; i-- > 0; wp++ ) {
+            linear = wp->linear;
+            size = wp->size;
+            if( size == 8 )
+                size = 4;
             _DBG_Write( "Setting Watch On " );
-            _DBG_Write32( wp->linear );
+            _DBG_Write32( linear );
             _DBG_NewLine();
-            success = false;
-            rc = DPMISetWatch( wp->linear, wp->len, DPMI_WATCH_WRITE );
-            _DBG_Write( "OK 1 = " );
-            _DBG_Write16( rc >= 0 );
-            _DBG_NewLine();
-            if( rc < 0 )
-                break;
-            wp->handle = rc;
-            if( wp->dregs == 2 ) {
-                rc = DPMISetWatch( wp->linear + 4, wp->len, DPMI_WATCH_WRITE );
-                _DBG_Write( "OK 2 = " );
+            for( j = 0; j < wp->dregs; j++ ) {
+                rc = DPMISetWatch( linear, size, DPMI_WATCH_WRITE );
+                _DBG_Write( "OK " );
+                _DBG_Write16( j );
+                _DBG_Write( " = " );
                 _DBG_Write16( rc >= 0 );
                 _DBG_NewLine();
-                if( rc < 0 )
-                    break;
-                wp->handle2 = rc;
+                if( rc < 0 ) {
+                    ClearDebugRegs();
+                    return( false );
+                }
+                wp->handle[j] = rc;
+                linear += size;
             }
-            success = true;
         }
-        if( !success ) {
-            ClearDebugRegs();
-        }
-        return( success );
     } else {
-        int             dr;
-        unsigned long   dr7;
+        int         dr;
+        dword       dr7;
+        word        type;
 
         dr = 0;
-        dr7 = 0;
-        for( i = WatchCount, wp = WatchPoints; i != 0; --i, ++wp ) {
-            dr7 |= SetDRn( dr, wp->linear, DRLen( wp->len ) | DR7_BWR );
-            ++dr;
-            if( wp->dregs == 2 ) {
-                dr7 |= SetDRn( dr, wp->linear + 4, DRLen( wp->len ) | DR7_BWR );
+        dr7 = /* DR7_GE | */ DR7_LE;
+        for( wp = WatchPoints, i = WatchCount; i-- > 0; wp++ ) {
+            linear = wp->linear;
+            size = wp->size;
+            if( size == 8 )
+                size = 4;
+            type = DRLen( size ) | DR7_BWR;
+            for( j = 0; j < wp->dregs; j++ ) {
+                dr7 |= SetDRn( dr, linear, type );
                 ++dr;
+                linear += size;
             }
         }
         SetDR7( dr7 );
-        return( true );
     }
+    return( true );
 }
 
 static trap_conditions DoRun( void )
@@ -756,7 +756,7 @@ static trap_conditions DoRun( void )
         return( COND_USER );
     case 6:
     case 7:
-    case 0xd:
+    case 0x0d:
         return( COND_EXCEPTION );
     case 0x21:
         return( COND_TERMINATE );
@@ -769,18 +769,14 @@ static trap_conditions DoRun( void )
 
 static bool CheckWatchPoints( void )
 {
-    addr48_ptr  addr;
-    dword       val;
     watch_point *wp;
+    int         i;
+    uint_64     value;
 
-    for( wp = WatchPoints; wp < WatchPoints + WatchCount; ++wp ) {
-        addr.segment = wp->addr.segment;
-        addr.offset = wp->addr.offset;
-        val = 0;
-        if( ReadMemory( &addr, &val, wp->len ) != wp->len ) {
-            return( true );
-        }
-        if( val != wp->value ) {
+    for( wp = WatchPoints, i = WatchCount; i-- > 0; wp++ ) {
+        value = 0;
+        D32DebugRead( &wp->addr, false, &value, wp->size );
+        if( wp->value != value ) {
             return( true );
         }
     }
@@ -790,20 +786,19 @@ static bool CheckWatchPoints( void )
 static unsigned ProgRun( bool step )
 {
     prog_go_ret *ret;
-    byte        int_buff[2];
-    addr48_ptr  addr;
-    opcode_type brk_opcode;
-    opcode_type saved_opcode;
+    byte        int_buff[2 + sizeof( opcode_type )];
+    addr48_ptr  start_addr;
+    opcode_type old_opcode;
 
     _DBG_Writeln( "AccRunProg" );
 
     ret = GetOutPtr( 0 );
 
     if( step ) {
-        Proc.eflags |= TRACE_BIT;
+        Proc.eflags |= INTR_TF;
         ret->conditions = DoRun();
-        Proc.eflags &= ~TRACE_BIT;
-    } else if( WatchCount != 0 ) {
+        Proc.eflags &= ~INTR_TF;
+    } else if( WatchCount > 0 ) {
         if( SetDebugRegs() ) {
             ret->conditions = DoRun();
             ClearDebugRegs();
@@ -813,26 +808,22 @@ static unsigned ProgRun( bool step )
             }
         } else {
             for( ;; ) {
-                addr.segment = Proc.cs;
-                addr.offset = Proc.eip;
-
-                /* have to breakpoint across software interrupts because Intel
-                    doesn't know how to design chips */
-                if( ReadMemory( &addr, int_buff, 2 ) == 2 && int_buff[0] == 0xcd ) {
-                    addr.offset += 2;
-                } else {
-                    int_buff[0] = 0;
-                }
-                if( int_buff[0] != 0 && ReadMemory( &addr, &saved_opcode, sizeof( saved_opcode ) ) == sizeof( saved_opcode ) ) {
-                    brk_opcode = BRKPOINT;
-                    WriteMemory( &addr, &brk_opcode, sizeof( brk_opcode ) );
+                start_addr.segment = Proc.cs;
+                start_addr.offset = Proc.eip;
+                /*
+                 * have to breakpoint across software interrupts because Intel
+                 * doesn't know how to design chips
+                 */
+                if( !D32DebugRead( &start_addr, false, int_buff, 2 + sizeof( opcode_type ) ) && int_buff[0] == 0xcd ) {
+                    start_addr.offset += 2;
+                    D32DebugSetBreak( &start_addr, false, &BreakOpcode, &old_opcode );
                     ret->conditions = DoRun();
-                    addr.offset = Proc.eip;
-                    WriteMemory( &addr, &saved_opcode, sizeof( saved_opcode ) );
+                    start_addr.offset = Proc.eip;
+                    D32DebugSetBreak( &start_addr, false, &old_opcode, &old_opcode );
                 } else {
-                    Proc.eflags |= TRACE_BIT;
+                    Proc.eflags |= INTR_TF;
                     ret->conditions = DoRun();
-                    Proc.eflags &= ~TRACE_BIT;
+                    Proc.eflags &= ~INTR_TF;
                 }
                 if( (ret->conditions & (COND_TRACE | COND_BREAK)) == 0 )
                     break;
@@ -939,25 +930,24 @@ trap_retval TRAP_CORE( Get_message_text )( void )
 trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
 {
     trap_version        ver;
-    int                 error_num;
+
+    /* unused parameters */ (void)remote; (void)parms;
 
     _DBG_Writeln( "TrapInit" );
-    remote = remote; parms = parms;
     err[0] = '\0'; /* all ok */
-    ver.major = TRAP_MAJOR_VERSION;
-    ver.minor = TRAP_MINOR_VERSION;
+    ver.major = TRAP_VERSION_MAJOR;
+    ver.minor = TRAP_VERSION_MINOR;
     ver.remote = false;
     RedirectInit();
     RealNPXType = NPXType();
     WatchCount = 0;
     FakeBreak = false;
-    error_num = D32DebugInit( &Proc, INT_PRT_SCRN_KEY );
-    if( error_num ) {
+    if( D32DebugInit( &Proc, INT_PRT_SCRN_KEY ) ) {
         _DBG_Writeln( "D32DebugInit() failed:" );
         exit(1);
     }
     Proc.int_id = -1;
-    D32DebugBreakOp( &Break );  /* Get the 1 byte break op */
+    D32DebugBreakOp( &BreakOpcode );  /* Get the break opcode */
     return( ver );
 }
 

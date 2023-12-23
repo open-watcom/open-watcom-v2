@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -50,7 +50,6 @@
 #include "wde_wres.h"
 #include "wdesdup.h"
 #include "wdefdiag.h"
-#include "wdetfile.h"
 #include "wdectool.h"
 #include "wdeselft.h"
 #include "wdefmenu.h"
@@ -466,7 +465,7 @@ bool WdeOpenResource( char *fn )
     got_name = FALSE;
 
     if( fn != NULL ) {
-        if( WdeFileExists( fn ) ) {
+        if( WRFileExists( fn ) ) {
             name = WdeStrDup( fn );
             gf.fn_offset = WRFindFnOffset( name );
         } else {
@@ -559,7 +558,7 @@ static void WdeActivateResourceWindow( WdeResInfo *res_info, WPARAM wParam, LPAR
     HWND        hwndDeact;
     int         id;
 
-    _wde_touch( wParam );
+    /* unused parameters */ (void)wParam;
 
     if( res_info == NULL ) {
         return;
@@ -664,7 +663,7 @@ bool WdeQuerySaveResOnDeleteRes( WdeResInfo *res_info, bool fatal_exit )
             if( WdeIsDDE() ) {
                 return( WdeUpdateDDEEditSession() );
             } else {
-                return( WdeSaveResource( res_info, FALSE ) );
+                return( WdeSaveResource( res_info, false ) );
             }
         } else if( ret == IDCANCEL ) {
             return( false );
@@ -689,7 +688,7 @@ bool WdeQuerySaveSymOnDeleteRes( WdeResInfo *res_info, bool fatal_exit )
     }
 
     if( res_info != NULL && res_info->hash_table != NULL &&
-        WdeIsHashTableDirty( res_info->hash_table ) ) {
+        WRIsHashTableDirty( res_info->hash_table ) ) {
         WdeCheckIfActiveWindow();
         file = WdeGetQueryName( res_info );
         frame = WdeGetMDIWindowHandle();
@@ -706,7 +705,7 @@ bool WdeQuerySaveSymOnDeleteRes( WdeResInfo *res_info, bool fatal_exit )
             if( res_info->sym_name == NULL ) {
                 res_info->sym_name = WdeCreateSymName( file );
             }
-            if( !WdeWriteSymbols( res_info->hash_table, &res_info->sym_name, FALSE ) ) {
+            if( !WdeSaveSymbols( res_info->hash_table, &res_info->sym_name, false ) ) {
                 return( false );
             }
         } else if( ret == IDCANCEL ) {
@@ -748,9 +747,9 @@ bool WdeCreateResourceWindow( WdeResInfo *res_info, size_t fn_offset, char *titl
     RECT                r;
     HMENU               hsysmenu;
     char                *win_title;
-    int                 win_title_len;
+    size_t              win_title_len;
 
-    _wde_touch( fn_offset );
+    /* unused parameters */ (void)fn_offset;
 
     WdeIncNumRes();
 
@@ -868,7 +867,7 @@ char *WdeSelectSaveFilter( WRFileType ftype )
     return( filter );
 }
 
-bool WdeSaveResource( WdeResInfo *res_info, bool get_name )
+bool WdeSaveResource( WdeResInfo *res_info, bool prompt_name )
 {
     WdeGetFileStruct    gf;
     char                *filter;
@@ -892,7 +891,7 @@ bool WdeSaveResource( WdeResInfo *res_info, bool get_name )
             got_name = TRUE;
         }
 
-        if( get_name || fn == NULL || *fn == '\0' ) {
+        if( prompt_name || fn == NULL || *fn == '\0' ) {
             filter = WdeSelectSaveFilter( res_info->info->file_type );
             gf.file_name = fn;
             gf.title = WdeResSaveTitle;
@@ -917,7 +916,7 @@ bool WdeSaveResource( WdeResInfo *res_info, bool get_name )
     }
 
     if( ok ) {
-        if( WdeIsHashTableDirty( res_info->hash_table ) &&
+        if( WRIsHashTableDirty( res_info->hash_table ) &&
             !WdeIsHashSaveRejectedSet( res_info->hash_table ) ) {
             if( res_info->sym_name == NULL ) {
                 res_info->sym_name = WdeCreateSymName( fn );
@@ -926,7 +925,7 @@ bool WdeSaveResource( WdeResInfo *res_info, bool get_name )
     }
 
     if( ok ) {
-        if( WdeIsHashTableDirty( res_info->hash_table ) ) {
+        if( WRIsHashTableDirty( res_info->hash_table ) ) {
             if( (main_obj = GetMainObject()) != NULL ) {
                 Forward( main_obj, RESOLVE_HELPSYMBOL, &ok, NULL ); /* JPK */
                 Forward( main_obj, RESOLVE_SYMBOL, &ok, NULL );
@@ -940,9 +939,9 @@ bool WdeSaveResource( WdeResInfo *res_info, bool get_name )
     }
 
     if( ok ) {
-        if( WdeIsHashTableDirty( res_info->hash_table ) &&
+        if( WRIsHashTableDirty( res_info->hash_table ) &&
             !WdeIsHashSaveRejectedSet( res_info->hash_table ) ) {
-            WdeWriteSymbols( res_info->hash_table, &res_info->sym_name, get_name );
+            WdeSaveSymbols( res_info->hash_table, &res_info->sym_name, prompt_name );
         }
     }
 

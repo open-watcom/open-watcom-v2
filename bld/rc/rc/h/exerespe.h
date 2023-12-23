@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,50 +31,12 @@
 ****************************************************************************/
 
 
-#ifndef EXERESPE_H_INCLUDED
-#define EXERESPE_H_INCLUDED
+#ifndef EXERESPE_INCLUDED
+#define EXERESPE_INCLUDED
 
-#include "exepe.h"
-#include "wresall.h"
-#include "rcstrblk.h"
-
-typedef struct PEResDirEntry {
-    resource_dir_header Head;
-    int                 NumUnused;
-    struct PEResEntry * Children;
-} PEResDirEntry;
-
-typedef struct PEResDataEntry {
-    resource_entry      Entry;
-    WResDirWindow       Wind;           /* window into the current WResDir */
-} PEResDataEntry;
-
-typedef struct PEResEntry {
-    resource_dir_entry  Entry;
-    void *              Name;
-    bool                IsDirEntry;
-    union {
-        PEResDataEntry  Data;
-        PEResDirEntry   Dir;
-    } u;
-} PEResEntry;
-
-typedef struct PEResDir {
-    PEResDirEntry   Root;
-    uint_32         DirSize;
-    pe_va           ResRVA;
-    uint_32         ResOffset;
-    uint_32         ResSize;
-    StringsBlock    String;
-} PEResDir;
-
-struct ResFileInfo;     // ANSI/gcc
-struct ExeFileInfo;
-
-extern bool BuildPEResourceObject( struct ExeFileInfo *exeinfo,
-                         struct ResFileInfo *resinfo,
+extern bool BuildPEResourceObject( ExeFileInfo *dst, ResFileInfo *resfiles,
                          pe_object *res_obj, unsigned_32 rva,
                          unsigned_32 offset, bool writebyfile );
-extern bool RcBuildPEResourceObject( void );
+extern bool RcBuildPEResourceObject( ExeFileInfo *dst, ResFileInfo *resfiles );
 
 #endif

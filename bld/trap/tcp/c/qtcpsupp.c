@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,11 +31,12 @@
 ****************************************************************************/
 
 
-#include <unistd.h>
-#include <string.h>
-#include <fcntl.h>
+#include <stdlib.h>
 #include <stdio.h>
 #include <stdarg.h>
+#include <string.h>
+#include <unistd.h>
+#include <fcntl.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 
@@ -44,10 +45,13 @@ FILE    __near __iob[2];
 
 static int File2Hdl( FILE *f )
 {
-    if( f == &__iob[0] ) return( 0 );
-    if( f == &__iob[1] ) return( 1 );
-    if( f == &__iob[2] ) return( 2 );
-    return( (int) f );
+    if( f == &__iob[0] )
+        return( 0 );
+    if( f == &__iob[1] )
+        return( 1 );
+    if( f == &__iob[2] )
+        return( 2 );
+    return( (int)f );
 }
 
 unsigned stackavail( void )
@@ -71,7 +75,8 @@ int fputs( const char *b, FILE *fp )
     int         len;
 
     len = strlen( b );
-    if( write( File2Hdl( fp ), b, len ) != len ) return( EOF );
+    if( write( File2Hdl( fp ), b, len ) != len )
+        return( EOF );
     return( len );
 }
 
@@ -84,12 +89,15 @@ char *fgets( char *b, int n, FILE *fp )
     h = File2Hdl( fp );
     --n;
     for( ;; ) {
-        if( n == 0 ) break;
+        if( n == 0 )
+            break;
         if( read( h, b, 1 ) != 1 ) {
             *b = '\0';
             return( NULL );
         }
-        if( *b++ == '\n' ) break;
+        if( *b++ == '\n' ) {
+            break;
+        }
     }
     *b = '\0';
     return( start );
@@ -150,6 +158,7 @@ FILE *fopen( const char *name, const char *mode )
 
     }
     h = open( name, op_mode, 0666 );
-    if( h == -1 ) return( NULL );
+    if( h == -1 )
+        return( NULL );
     return( (FILE *)h );
 }

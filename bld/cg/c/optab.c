@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -52,7 +52,7 @@ const opcode_entry  *CodeTable( instruction *ins )
     if( opcode_idx == BAD ) {
         _Zoiks( ZOIKS_052 );
     }
-#if _TARGET & _TARG_RISC
+#if _TARGET_RISC
     if( opcode_idx == NYI ) {
         _Zoiks( ZOIKS_091 );
     }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -52,9 +52,11 @@ PATCH_RET_CODE OpenNew( foff len )
         return( PATCH_CANT_GET_ATTRIBUTES );
     }
     fd = fopen( NewName, "wb" );
-    FileCheck( fd, NewName );
-    MyOpen( &NewFile, fd, NewName );
-    return( PATCH_RET_OKAY );
+    if( FileCheck( fd, NewName ) ) {
+        MyOpen( &NewFile, fd, NewName );
+        return( PATCH_RET_OKAY );
+    }
+    return( PATCH_CANT_OPEN_FILE );
 }
 
 PATCH_RET_CODE CloseNew( foff len, foff actual_sum, bool *havenew )
@@ -63,38 +65,51 @@ PATCH_RET_CODE CloseNew( foff len, foff actual_sum, bool *havenew )
     unsigned long   actual_len;
     foff            off;
     byte            ch;
+    PATCH_RET_CODE  rc;
 
+    rc = PATCH_RET_OKAY;
     *havenew = true;
     if( NewFile.dirty ) {
-        SeekCheck( fseek( NewFile.fd, NewFile.start, SEEK_SET ), NewName );
-        if( fwrite( NewFile.buff, 1, NewFile.len, NewFile.fd ) != NewFile.len ) {
-            MyClose( &NewFile );
-            FilePatchError( ERR_CANT_WRITE, NewName );
-            return( PATCH_CANT_WRITE );
+        if( SeekCheck( fseek( NewFile.fd, NewFile.start, SEEK_SET ), NewName ) ) {
+            if( fwrite( NewFile.buff, 1, NewFile.len, NewFile.fd ) != NewFile.len ) {
+                FilePatchError( ERR_CANT_WRITE, NewName );
+                rc = PATCH_CANT_WRITE;
+            }
+        } else {
+            rc = PATCH_IO_ERROR;
         }
     }
-    SeekCheck( fseek( NewFile.fd, 0, SEEK_END ), NewName );
-    actual_len = ftell( NewFile.fd );
-    if( actual_len != len ) {
-        MyClose( &NewFile );
-        PatchError( ERR_WRONG_SIZE, NewName, actual_len, len );
-        return( PATCH_BAD_LENGTH );
-    }
-    sum = 0;
-    for( off = 0; off < len; ++off ) {
-        Input( &NewFile, &ch, off, 1 );
-        sum += ch;
+    if( rc == PATCH_RET_OKAY ) {
+        if( SeekCheck( fseek( NewFile.fd, 0, SEEK_END ), NewName ) ) {
+            actual_len = ftell( NewFile.fd );
+            if( actual_len != len ) {
+                PatchError( ERR_WRONG_SIZE, NewName, actual_len, len );
+                rc = PATCH_BAD_LENGTH;
+            } else {
+                sum = 0;
+                for( off = 0; off < len; ++off ) {
+                    Input( &NewFile, &ch, off, 1 );
+                    sum += ch;
+                }
+                if( sum == actual_sum ) {
+                    MyClose( &NewFile );
+                    SameDate( NewName, PatchName );
+                    return( PATCH_RET_OKAY );
+                }
+                if( CheckSumOld( len ) == actual_sum ) {
+                    MyClose( &NewFile );
+                    remove( NewName );
+                    *havenew = false;
+                    SameDate( NewName, PatchName );
+                    return( PATCH_RET_OKAY );
+                }
+                PatchError( ERR_WRONG_CHECKSUM, sum, actual_sum );
+                rc = PATCH_BAD_CHECKSUM;
+            }
+        } else {
+            rc = PATCH_IO_ERROR;
+        }
     }
     MyClose( &NewFile );
-    if( sum != actual_sum ) {
-        if( CheckSumOld( len ) == actual_sum ) {
-            remove( NewName );
-            *havenew = false;
-        } else {
-            PatchError( ERR_WRONG_CHECKSUM, sum, actual_sum );
-            return( PATCH_BAD_CHECKSUM );
-        }
-    }
-    SameDate( NewName, PatchName );
-    return( PATCH_RET_OKAY );
+    return( rc );
 }

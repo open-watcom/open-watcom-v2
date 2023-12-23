@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -130,6 +130,8 @@
         #define __NT_AXP__
     #elif defined(__PPC__)
         #define __NT_PPC__
+    #elif defined(__MIPS__)
+        #define __NT_MIPS__
     #else
         #error unrecognized processor for NT
     #endif
@@ -154,7 +156,6 @@
     #endif
 #elif defined(__QNX__)
     #define __PROTECT_MODE__
-    #define __UNIX__
     #if defined( _M_I86 )
         #define __QNX_286__
     #elif defined( _M_IX86 )
@@ -164,7 +165,6 @@
     #endif
 #elif defined(__LINUX__)
     #define __PROTECT_MODE__
-    #define __UNIX__
     #if defined( _M_IX86 ) && !defined( _M_I86 )
         #define __LINUX_386__
     #elif defined(__PPC__)
@@ -176,7 +176,6 @@
     #endif
 #elif defined(__HAIKU__)
     #define __PROTECT_MODE__
-    #define __UNIX__
     #if defined( _M_IX86 ) && !defined( _M_I86 )
         #define __HAIKU_386__
     #elif defined(__PPC__)
@@ -186,11 +185,6 @@
     #endif
 #elif defined(__NETWARE__)
     #define __PROTECT_MODE__
-    #if defined( _M_IX86 ) && !defined( _M_I86 )
-        #define __NETWARE_386__
-    #else
-        #error unrecognized processor for NETWARE
-    #endif
 #elif defined(__RDOS__)
     #define __PROTECT_MODE__
 #elif defined(__RDOSDEV__)
@@ -334,33 +328,6 @@
 #define __ptr_check( p, a )
 #define __null_check( p, a )
 #define __stream_check( s, a )
-
-#define __ROUND_UP_SIZE_64K( __x )          __ROUND_UP_SIZE(__x,65536)
-#define __ROUND_UP_SIZE_4K( __x )           __ROUND_UP_SIZE(__x,4096)
-#define __ROUND_UP_SIZE_PARA( __x )         __ROUND_UP_SIZE(__x,16)
-
-#define __ROUND_DOWN_SIZE_TO_4K( __x )      ((__x)/4096)
-#define __ROUND_UP_SIZE_TO_4K( __x )        (((__x)+4095)/4096)
-
-#define __ROUND_DOWN_SIZE_TO_PARA( __x )    ((__x)>>4)
-#define __ROUND_UP_SIZE_TO_PARA( __x )      (((__x)+15)>>4)
-
-#define __ROUND_DOWN_SIZE( __x, __amt )     ((__x)&(~((__amt)-1)))
-#define __ROUND_UP_SIZE( __x, __amt )       (((__x)+((__amt)-1))&(~((__amt)-1)))
-///
-/// This doesn't work for far pointer's
-///
-///#define __ROUND_UP_PTR( __x, __amt )  ((void *)__ROUND_UP_SIZE((unsigned)(__x),__amt))
-#if defined( _M_I86 )
-    #define __ALIGN_SIZE( __x ) __ROUND_UP_SIZE( __x, 2 )
-//    #define __ALIGN_PTR( __x )  __ROUND_UP_PTR( __x, 2 )
-#elif defined( _M_IX86 )
-    #define __ALIGN_SIZE( __x ) __ROUND_UP_SIZE( __x, 4 )
-///    #define __ALIGN_PTR( __x )  __ROUND_UP_PTR( __x, 4 )
-#else
-    #define __ALIGN_SIZE( __x ) __ROUND_UP_SIZE( __x, 8 )
-//    #define __ALIGN_PTR( __x )  __ROUND_UP_PTR( __x, 8 )
-#endif
 
 #endif
 

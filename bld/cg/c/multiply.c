@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -57,15 +57,15 @@ typedef struct op {
 static  op      Ops[MAXOPS];
 
 
-static  int     Factor( unsigned_32 num, int *cost )
-/**************************************************/
+static  int     Factor( uint_32 num, int *cost )
+/**********************************************/
 {
     int         shlcnt;
     int         i;
     int         j;
     unsigned    num_oprs;
-    unsigned_32 test;
-    unsigned_32 pow2;
+    uint_32     test;
+    uint_32     pow2;
 
     *cost = 0;
     i = MAXOPS;
@@ -142,8 +142,9 @@ static  int     Factor( unsigned_32 num, int *cost )
             ++num;
         }
     }
-
-    /* Now estimate the cost of the alternate instruction sequence. */
+    /*
+     * Now estimate the cost of the alternate instruction sequence.
+     */
     for( j = i; j < MAXOPS; ++j ) {
         switch( Ops[j].op ) {
         case DO_SHL:
@@ -162,9 +163,9 @@ static  int     Factor( unsigned_32 num, int *cost )
     }
 
     /*
-        Bump up cost estimate to allow for the fact that we're going to have
-        [a lot] more instructions with the shift and add method.
-    */
+     * Bump up cost estimate to allow for the fact that we're going to have
+     * [a lot] more instructions with the shift and add method.
+     */
     num_oprs = MAXOPS - i + 1;
     *cost += num_oprs;
     return( i );
@@ -173,7 +174,7 @@ static  int     Factor( unsigned_32 num, int *cost )
 static  instruction     *CheckMul( instruction *ins )
 /***************************************************/
 {
-    signed_32           rhs;
+    int_32              rhs;
     int                 i;
     bool                neg;
     instruction         *new_ins;
@@ -237,7 +238,7 @@ void    MulToShiftAdd( void )
     name        *op;
 
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+        for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             if( ins->head.opcode != OP_MUL )
                 continue;
             if( ins->operands[0]->n.class == N_CONSTANT ) {

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,29 +48,6 @@ void SetSects( int handle );
 bool TestIntegrity( int handle );
 
 struct section_data Sections[DR_DEBUG_NUM_SECTS];
-
-int main( int argc, char * argv[] ) {
-    int handle;
-
-    if( argc != 2 ) {
-        fprintf( stderr, "Usage: main <filename>" );
-        exit( 1 );
-    }
-
-    handle = open( argv[1], O_RDONLY | O_BINARY );
-    assert( handle > 0 );
-
-    if( !TestIntegrity( handle ) ) {
-        fprintf( stderr, "%s is not a valid browser file.", argv[1] );
-    }
-
-    SetSects( handle );
-    close( handle );
-
-    DumpSections();
-
-    return 0;
-}
 
 void SetSects( int handle )
 /*************************/
@@ -137,4 +114,27 @@ bool TestIntegrity( int handle ) {
         return( false );
     }
     return( true );
+}
+
+int main( int argc, char * argv[] ) {
+    int handle;
+
+    if( argc != 2 ) {
+        fprintf( stderr, "Usage: main <filename>" );
+        exit( 1 );
+    }
+
+    handle = open( argv[1], O_RDONLY | O_BINARY );
+    assert( handle > 0 );
+
+    if( !TestIntegrity( handle ) ) {
+        fprintf( stderr, "%s is not a valid browser file.", argv[1] );
+    }
+
+    SetSects( handle );
+    close( handle );
+
+    DumpSections();
+
+    return 0;
 }

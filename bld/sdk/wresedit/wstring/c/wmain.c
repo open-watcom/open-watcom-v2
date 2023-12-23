@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -175,7 +175,7 @@ void WRESEAPI WStringInit( void )
     }
     if( ref_count == 0 ) {
         WRInit();
-        SetInstance( inst );
+        SetRCInstance( inst );
         WInit( inst );
     }
     ref_count++;
@@ -190,7 +190,7 @@ void WRESEAPI WStringFini( void )
     }
 }
 
-WStringHandle WRESEAPI WRStringStartEdit( WStringInfo *info )
+WStringHandle WRESEAPI WStringStartEdit( WStringInfo *info )
 {
     bool            ok;
     WStringEditInfo *einfo;
@@ -203,7 +203,7 @@ WStringHandle WRESEAPI WRStringStartEdit( WStringInfo *info )
         if( appWidth == -1 ) {
             WInitEditDlg( WGetEditInstance(), info->parent );
         }
-        ok = ((einfo = WAllocStringEInfo()) != NULL);
+        ok = ((einfo = WAllocStringEditInfo()) != NULL);
     }
 
     if( ok ) {
@@ -238,7 +238,7 @@ WStringHandle WRESEAPI WRStringStartEdit( WStringInfo *info )
 
     if( !ok ) {
         if( einfo != NULL ) {
-            WFreeStringEInfo( einfo );
+            WFreeStringEditInfo( einfo );
         }
         return( 0 );
     }
@@ -336,7 +336,7 @@ WStringInfo *WStringGetEInfo( WStringHandle hndl, bool keep )
         }
         if( !keep ) {
             WUnRegisterEditSession( hndl );
-            WFreeStringEInfo( einfo );
+            WFreeStringEditInfo( einfo );
         }
     }
 
@@ -423,7 +423,7 @@ char *WCreateEditTitle( WStringEditInfo *einfo )
     char        *title;
     char        *fname;
     char        *text;
-    int         offset;
+    size_t      offset;
     size_t      len;
 
     title = NULL;
@@ -620,9 +620,7 @@ static void handleLoadSymbols( WStringEditInfo *einfo )
     char        *file;
     LRESULT     pos;
 
-    file = WLoadSymbols( &einfo->info->symbol_table,
-                         einfo->info->symbol_file,
-                         einfo->win, TRUE );
+    file = WLoadSymbols( &einfo->info->symbol_table, einfo->info->symbol_file, einfo->win, true );
     if( file == NULL ) {
         return;
     }
@@ -757,8 +755,7 @@ WINEXPORT LRESULT CALLBACK WMainWndProc( HWND hWnd, UINT message, WPARAM wParam,
             break;
 
         case IDM_STR_UPDATE:
-            SendMessage( einfo->info->parent, STRING_PLEASE_SAVEME, 0,
-                         (LPARAM)einfo->hndl );
+            SendMessage( einfo->info->parent, STRING_PLEASE_SAVEME, 0, (LPARAM)einfo->hndl );
             pass_to_def = false;
             break;
 
@@ -770,23 +767,22 @@ WINEXPORT LRESULT CALLBACK WMainWndProc( HWND hWnd, UINT message, WPARAM wParam,
                     break;
                 }
             }
-            ret = SendMessage( einfo->info->parent, STRING_PLEASE_OPENME, 0,
-                               (LPARAM)einfo->hndl );
+            ret = SendMessage( einfo->info->parent, STRING_PLEASE_OPENME, 0, (LPARAM)einfo->hndl );
             ret = FALSE;
             break;
 
         case IDM_STR_SAVE:
-            WSaveObject( einfo, FALSE, FALSE );
+            WSaveObject( einfo, false, false );
             pass_to_def = false;
             break;
 
         case IDM_STR_SAVEAS:
-            WSaveObject( einfo, TRUE, FALSE );
+            WSaveObject( einfo, true, false );
             pass_to_def = false;
             break;
 
         case IDM_STR_SAVEINTO:
-            WSaveObject( einfo, TRUE, TRUE );
+            WSaveObject( einfo, true, true );
             pass_to_def = false;
             break;
 
@@ -858,10 +854,7 @@ WINEXPORT LRESULT CALLBACK WMainWndProc( HWND hWnd, UINT message, WPARAM wParam,
             ai.name = AllocRCString( W_ABOUT_NAME );
             ai.version = AllocRCString( W_ABOUT_VERSION );
             ai.title = AllocRCString( W_ABOUT_TITLE );
-            DoAbout( &ai );
-            FreeRCString( ai.name );
-            FreeRCString( ai.version );
-            FreeRCString( ai.title );
+            DoAbout( &ai, FreeRCString );
             pass_to_def = false;
             break;
         }
@@ -922,10 +915,9 @@ bool WQuerySaveRes( WStringEditInfo *einfo, bool force_exit )
         }
         if( msg_ret == IDYES ) {
             if( einfo->info->stand_alone ) {
-                ok = WSaveObject( einfo, FALSE, FALSE );
+                ok = WSaveObject( einfo, false, false );
             } else {
-                SendMessage( einfo->info->parent, STRING_PLEASE_SAVEME, 0,
-                             (LPARAM)einfo->hndl );
+                SendMessage( einfo->info->parent, STRING_PLEASE_SAVEME, 0, (LPARAM)einfo->hndl );
             }
         } else if( msg_ret == IDCANCEL ) {
             ok = false;
@@ -976,8 +968,7 @@ bool WQuerySaveSym( WStringEditInfo *einfo, bool force_exit )
             }
             einfo->info->symbol_file = WCreateSymFileName( fname );
         }
-        return( WSaveSymbols( einfo, einfo->info->symbol_table,
-                              &einfo->info->symbol_file, FALSE ) );
+        return( WSaveSymbols( einfo->win, einfo->info->symbol_table, &einfo->info->symbol_file, false ) );
     } else if( ret == IDCANCEL ) {
         return( false );
     }
@@ -1125,7 +1116,7 @@ bool WCleanup( WStringEditInfo *einfo )
             owner = GetWindow( einfo->win, GW_OWNER );
         }
         einfo->win = (HWND)NULL;
-        WFreeStringEInfo( einfo );
+        WFreeStringEditInfo( einfo );
         if( owner != (HWND)NULL ) {
             BringWindowToTop( owner );
         }

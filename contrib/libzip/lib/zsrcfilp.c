@@ -19,7 +19,7 @@
   3. The names of the authors may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -81,7 +81,7 @@ zip_source_filep(struct zip *za, const char *file, off_t start, off_t len)
     f->fname = strdup(file);
     f->off = start;
     f->len = (len ? len : -1);
-    
+
     if ((zs=zip_source_function(za, read_file, f)) == NULL) {
         free(f);
         return NULL;
@@ -106,7 +106,7 @@ read_file(void *state, void *data, size_t len, enum zip_source_cmd cmd)
     case ZIP_SOURCE_OPEN:
         if( z->f == NULL )
             z->f = fopen( z->fname, "rb" );
-#if defined( __WATCOMC__ )
+#if defined( __WATCOMC__ ) || defined( _MSC_VER )
         if (fseek(z->f, z->off, SEEK_SET) < 0) {
 #else
         if (fseeko(z->f, z->off, SEEK_SET) < 0) {
@@ -117,13 +117,13 @@ read_file(void *state, void *data, size_t len, enum zip_source_cmd cmd)
         }
         z->remain = z->len;
         return 0;
-        
+
     case ZIP_SOURCE_READ:
         if (z->remain != -1)
             n = len > z->remain ? z->remain : len;
         else
             n = len;
-        
+
         if ((i=fread(buf, 1, n, z->f)) < 0) {
             z->e[0] = ZIP_ER_READ;
             z->e[1] = errno;
@@ -134,7 +134,7 @@ read_file(void *state, void *data, size_t len, enum zip_source_cmd cmd)
             z->remain -= i;
 
         return i;
-        
+
     case ZIP_SOURCE_CLOSE:
         if( z->f != NULL ) {
             fclose(z->f);
@@ -147,7 +147,7 @@ read_file(void *state, void *data, size_t len, enum zip_source_cmd cmd)
             struct zip_stat *st;
             struct stat fst;
             FILE *f;
-            
+
             if (len < sizeof(*st))
                 return -1;
 

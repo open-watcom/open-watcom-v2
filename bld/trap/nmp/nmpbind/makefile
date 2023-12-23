@@ -1,5 +1,7 @@
 #pmake: build remote support nmp os_os2 cpu_i86 cpu_386
 
+tree_depth = 4
+
 host_os  = os2
 host_cpu = i86
 
@@ -32,10 +34,10 @@ extra_l_flags = op stack=8k
 # explicit rules
 #################
 
-!ifeq release 0
-default_targ    = d
-!else
+!ifeq debug 0
 default_targ    = w
+!else
+default_targ    = d
 !endif
 
 first : $(default_targ)

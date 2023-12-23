@@ -5,4 +5,4 @@ model     =
 system    = linux
 linkage   = static
 
-!include $(mathlib_dir)/mklib.mif
+!include ../../../../mklib.mif

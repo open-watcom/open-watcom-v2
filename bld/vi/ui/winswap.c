@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -83,7 +83,8 @@ static size_t buffSize( void )
  */
 void static windowSwap( window *w )
 {
-    int         i, size;
+    size_t      i;
+    size_t      size;
     long        pos;
 
     pos = (long)w->id * buffSize();
@@ -101,9 +102,12 @@ void static windowSwap( window *w )
     if( i != size * sizeof( char_info ) ) {
         return;
     }
-    MemFreePtr( (void **)&w->text );
-    MemFreePtr( (void **)&w->whooverlapping );
-    MemFreePtr( (void **)&w->overlap );
+    _MemFreeArray( w->text );
+    w->text = NULL;
+    _MemFreeArray( w->whooverlapping );
+    w->whooverlapping = NULL;
+    _MemFreeArray( w->overlap );
+    w->overlap = NULL;
     w->isswapped = true;
 
 } /* windowSwap */

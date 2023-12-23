@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,16 +32,14 @@
 
 #include <stdio.h>
 #include <limits.h>
-#include "_srcmgt.h"
+#include "srcmgt.h"
 #include "dbgdata.h"
 #include "wspawn.h"
 #include "dbglit.h"
 #include "dbgerr.h"
-#include "dbgmem.h"
 #include "dbghook.h"
 #include "mad.h"
 #include "dui.h"
-#include "srcmgt.h"
 #include "tistrail.h"
 #include "strutil.h"
 #include "dbgscan.h"
@@ -183,14 +181,15 @@ bool InitCmd( void )
             *ptr = ' ';
         }
     }
-    memmove( ptr + 1, parm, last - parm + 1 );
-    *ptr = NULLCHAR;
-    ptr = TaskCmd;
     // If the program name was quoted, strip off the quotes
-    if( *ptr == '"' ) {
-        memmove( ptr, ptr + 1, end - ptr );
-        memmove( end - 2, end, last - end + 1 );
+    if( TaskCmd != end && *TaskCmd == '"' ) {
+        memmove( TaskCmd, TaskCmd + 1, end - TaskCmd - 1 );
+        ptr -= 2;
     }
+    // copy all parameters, including debugger terminate character
+    memmove( ptr + 1, parm, last - parm + 1 );
+    // terminate program name
+    *ptr = NULLCHAR;
     return( true );
 }
 
@@ -225,7 +224,8 @@ static void DoDownLoadCode( void )
         return;
     fh = FullPathOpen( TaskCmd, strlen( TaskCmd ), "exe", TxtBuff, TXT_LEN );
     if( fh == NIL_HANDLE ) {
-        Error( ERR_NONE, LIT_ENG( ERR_FILE_NOT_OPEN ), TaskCmd );
+        ErrorRet( ERR_NONE, LIT_ENG( ERR_FILE_NOT_OPEN ), TaskCmd );
+        return;
     }
     FileClose( fh );
     FindLocalDebugInfo( TxtBuff );
@@ -548,7 +548,7 @@ static bool CheckLoadDebugInfo( image_entry *image, file_handle fh, dip_priority
                 symfile = image->image_name;
             endstr = Format( buff, LIT_ENG( Sym_Info_Load_Failed ), symfile );
             *endstr++ = ' ';
-            StrCopy( DIPMsgText( DIPStatus ), endstr );
+            StrCopyDst( DIPMsgText( DIPStatus ), endstr );
             Warn( buff );
             break;
         }
@@ -927,7 +927,7 @@ static int DoLoadProg( const char *task, const char *symfile, error_handle *errh
             FileClose( fh );
         }
     } else {
-        len = RemoteStringToFullName( true, name, fullname, sizeof( fullname ) );
+        len = RemoteFileToFullName( DIG_FILETYPE_EXE, name, fullname, sizeof( fullname ) );
         fullname[len] = NULLCHAR;
     }
     image = CreateImage( fullname, symfile );
@@ -1040,7 +1040,7 @@ size_t GetProgName( char *where, size_t len )
     /*
         Before, we did a:
 
-            RemoteStringToFullName( true, TaskCmd, where, len );
+            RemoteFileToFullName( DIG_FILETYPE_EXE, TaskCmd, where, len );
 
         but that screws up when the user specified something other than
         just an executable on the command line. E.g. a PID to connect
@@ -1228,7 +1228,7 @@ static bool CopyToRemote( const char *local, const char *remote, bool strip, voi
     delete_file = false;
     copied = 0;
     while( (read_len = ReadStream( fh_lcl, buff, bsize )) != 0 ) {
-        if( read_len == ERR_RETURN )
+        if( read_len == ERR_READ )
             break;
         WriteStream( fh_rem, buff, read_len );
         DUICopyCopied( cookie, copied );
@@ -1478,7 +1478,8 @@ static void SymFileNew( void )
     image->mapper = MapAddrUser;
     if( !ProcImgSymInfo( image ) ) {
         FreeImage( image );
-        Error( ERR_NONE, LIT_ENG( ERR_FILE_NOT_OPEN ), TxtBuff );
+        ErrorRet( ERR_NONE, LIT_ENG( ERR_FILE_NOT_OPEN ), TxtBuff );
+        return;
     }
     owner = &image->map_list;
     while( !ScanEOC() ) {
@@ -1562,7 +1563,7 @@ bool SymUserModLoad( const char *fname, address *loadaddr )
     map_entry   **owner;
     map_entry   *curr;
 
-    if( *fname == '\0' )
+    if( *fname == NULLCHAR )
         return( true );
 
     image = DoCreateImage( fname, fname );
@@ -1572,7 +1573,8 @@ bool SymUserModLoad( const char *fname, address *loadaddr )
     image->mapper = MapAddrUsrMod;
     if( !ProcImgSymInfo( image ) ) {
         FreeImage( image );
-        Error( ERR_NONE, LIT_ENG( ERR_FILE_NOT_OPEN ), fname );
+        ErrorRet( ERR_NONE, LIT_ENG( ERR_FILE_NOT_OPEN ), fname );
+        return( true );
     }
     owner = &image->map_list;
 

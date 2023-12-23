@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,6 +34,14 @@
 #include "offset.h"
 #include "owl.h"
 
+
+#define STRUCT_BYTE_SEQ( x ) \
+{ \
+    byte_seq_len    length; \
+    byte_seq_reloc  *relocs; \
+    byte            data[x]; \
+}
+
 typedef unsigned        byte_seq_len;
 
 typedef struct byte_seq_reloc {
@@ -41,12 +50,5 @@ typedef struct byte_seq_reloc {
     void                    *sym;
     owl_reloc_type          type;
 } byte_seq_reloc;
-
-#define STRUCT_BYTE_SEQ( x ) \
-{ \
-    byte_seq_len    length; \
-    byte_seq_reloc  *relocs; \
-    byte            data[x]; \
-}
 
 typedef struct byte_seq STRUCT_BYTE_SEQ( 1 ) byte_seq;

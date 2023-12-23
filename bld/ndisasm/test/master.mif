@@ -1,3 +1,5 @@
+tree_depth = 4
+
 proj_name = wdistest
 
 host_cpu = $(bld_cpu)
@@ -7,13 +9,14 @@ host_os  = $(bld_os)
 !include defrule.mif
 !include deftarg.mif
 
-!include ../../dis.mif
+!include $(dig_dir)/digcli.mif
+!include ../../discli.mif
 
-extra_cpp_flags = -DNDIS_$(target_cpu)
+extra_cpp_flags = $(dig_arch_cpp_flags)
 
 .c: $(dis_srcs);../c
 
-inc_dirs = $(dis_includes)
+inc_dirs = -I. $(dis_includes)
 
 exetarg_prebuild_objs = $(dis_prereq)
 exetarg_objs          = main.obj $(dis_objs)
@@ -26,4 +29,4 @@ distbls.gh : ./disbuild.exe
 
 ./disbuild.exe : $(disasm_dir)/core/c/disbuild.c $(disbuild_headers)
     @%make echo_bldcl
-    $(bld_cl) $[@ -DNDIS_$(target_cpu) -I"../h" $(dis_includes) $(bld_clflags) $(bld_ldflags)
+    $(bld_cl) $[@ $(dig_arch_cpp_flags) -I"../h" $(dis_includes) $(bld_clflags) $(bld_ldflags)

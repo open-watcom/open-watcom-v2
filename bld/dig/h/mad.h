@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,7 +40,7 @@
  */
 
 mad_status      MADInit( void );
-mad_status      MADRegister( dig_arch, const char *file, const char *desc );
+mad_status      MADRegister( dig_arch, const char *base_name, const char *desc );
 mad_status      MADLoad( dig_arch );
 void            MADUnload( dig_arch );
 mad_status      MADLoaded( dig_arch );
@@ -53,8 +54,8 @@ void            MADFini( void );
 typedef         walk_result (MAD_WALKER)( dig_arch, void * );
 walk_result     MADWalk( MAD_WALKER *, void * );
 
-size_t          MADNameFile( dig_arch, char *buff, size_t buff_size );
-size_t          MADNameDescription( dig_arch, char *buff, size_t buff_size );
+size_t          MADBaseName( dig_arch, char *buff, size_t buff_size );
+size_t          MADDescription( dig_arch, char *buff, size_t buff_size );
 
 /*
  *      Address Arithmetic

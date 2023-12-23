@@ -5,18 +5,18 @@ set PROJNAME=ui
 
 set PROJDIR=<CWD>
 
-[ INCLUDE <OWROOT>/build/prolog.ctl ]
+[ INCLUDE "<OWROOT>/build/prolog.ctl" ]
 
-[ INCLUDE <OWROOT>/build/deflib.ctl ]
+[ INCLUDE "<OWROOT>/build/deflib.ctl" ]
 
 [ BLOCK <BLDRULE> rel ]
 #======================
-    cdsay <PROJDIR>
+    cdsay "<PROJDIR>"
 
 [ BLOCK <BLDRULE> rel cprel ]
 #============================
-#    <CCCMD> qnx/tix/*.tix <OWRELROOT>/qnx/tix/
+#    <CCCMD> qnx/tix/*.tix "<OWRELROOT>/qnx/tix/"
 
 [ BLOCK . . ]
 
-[ INCLUDE <OWROOT>/build/epilog.ctl ]
+[ INCLUDE "<OWROOT>/build/epilog.ctl" ]

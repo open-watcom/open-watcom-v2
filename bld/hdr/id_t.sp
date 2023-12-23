@@ -8,10 +8,14 @@
  typedef int            id_t;   /* Generic ID, may be uid, gid, pid */
 :elsesegment ARCHMIPS
  typedef long           id_t;   /* Generic ID, may be uid, gid, pid */
+:elsesegment ARCHPPC
+ typedef long           id_t;   /* Generic ID, may be uid, gid, pid */
 :elsesegment
  #ifdef __386__
   typedef int            id_t;   /* Generic ID, may be uid, gid, pid */
  #elif defined(__MIPS__)
+  typedef long           id_t;   /* Generic ID, may be uid, gid, pid */
+ #elif defined(__PPC__)
   typedef long           id_t;   /* Generic ID, may be uid, gid, pid */
  #endif
 :endsegment

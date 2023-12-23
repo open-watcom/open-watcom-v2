@@ -44,6 +44,7 @@ PATCH_RET_CODE OpenPatch( void )
         return( PATCH_CANT_OPEN_FILE );
     }
     if( setvbuf( PatchFile, NULL, _IOFBF, BUFFER_SIZE ) != 0 ) {
+        ClosePatch();
         FilePatchError( ERR_IO_ERROR, PatchName );
         return( PATCH_IO_ERROR );
     }
@@ -52,7 +53,10 @@ PATCH_RET_CODE OpenPatch( void )
 
 void ClosePatch( void )
 {
-    fclose( PatchFile );
+    if( PatchFile != NULL ) {
+        fclose( PatchFile );
+        PatchFile = NULL;
+    }
 }
 
 PATCH_RET_CODE InputPatch( byte *tmp, size_t len )

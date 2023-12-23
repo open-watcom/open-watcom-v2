@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2019-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2019-2023 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -38,13 +38,15 @@
 
 #define PROJECT_TITLE   "Open Watcom Project"
 #define SYBASE_CPYRIGHT "-2002 Sybase, Inc. All Rights Reserved."
-#define CPYRIGHT1   	"* Copyright (c) 2002-"
-#define CPYRIGHT2   	"xxxx"
-#define CPYRIGHT3   	" The Open Watcom Contributors. All Rights Reserved."
+#define CPYRIGHT1       "* Copyright (c) "
+#define CPYRIGHT2       "xxxx"
+#define CPYRIGHT3       "     "
+#define CPYRIGHT4       " The Open Watcom Contributors. All Rights Reserved."
 
 #define CPYRIGHT1_LEN   (sizeof( CPYRIGHT1 ) - 1)
 #define CPYRIGHT2_LEN   (sizeof( CPYRIGHT2 ) - 1)
 #define CPYRIGHT3_LEN   (sizeof( CPYRIGHT3 ) - 1)
+#define CPYRIGHT4_LEN   (sizeof( CPYRIGHT4 ) - 1)
 
 #define GML2        ":cmt"
 
@@ -52,7 +54,7 @@
 #define IS_GML1(p)  (p[0] == '.' && p[1] == '*')
 #define IS_GML2(p)  (p[0] == GML2[0] && p[1] == GML2[1] && p[2] == GML2[2] && p[3] == GML2[3])
 
-static char     cpyright[] = CPYRIGHT1 CPYRIGHT2 CPYRIGHT3 "\n";
+static char     cpyright[] = CPYRIGHT1 CPYRIGHT2 CPYRIGHT3 CPYRIGHT4 "\n";
 static size_t   line = 1;
 static size_t   start_line = 0;
 static size_t   size = 0;
@@ -76,7 +78,7 @@ static void output_buffer( void )
         }
     } else if( line == start_line + 4 ) {
         if( status == 2 ) {
-            if( strstr( buffer, SYBASE_CPYRIGHT ) != NULL ) {
+            if( strstr( buffer, SYBASE_CPYRIGHT ) != NULL || buffer[0] == '*' && buffer[1] == '\n' ) {
                 if( IS_ASM( buffer ) ) {
                     fputc( ';', fo );
                 } else if( IS_GML1( buffer ) ) {
@@ -88,7 +90,7 @@ static void output_buffer( void )
                 }
                 fputs( cpyright, fo );
                 status = 3;
-            } else if( strstr( buffer, CPYRIGHT3 ) != NULL ) {
+            } else if( strstr( buffer, CPYRIGHT4 ) != NULL ) {
                 if( IS_ASM( buffer ) || IS_GML1( buffer ) ) {
                     start = buffer + 1;
                 } else if( IS_GML1( buffer ) ) {
@@ -98,7 +100,10 @@ static void output_buffer( void )
                 } else {
                     start = buffer;
                 }
-                memcpy( start + CPYRIGHT1_LEN, cpyright + CPYRIGHT1_LEN, 4 );
+                if( strncmp( start + CPYRIGHT1_LEN, cpyright + CPYRIGHT1_LEN, 4 ) != 0 ) {
+                    start[CPYRIGHT1_LEN + CPYRIGHT2_LEN] = '-';
+                    memcpy( start + CPYRIGHT1_LEN + CPYRIGHT2_LEN + 1, cpyright + CPYRIGHT1_LEN, 4 );
+                }
                 status = 3;
             }
         }
@@ -128,18 +133,31 @@ static bool filecopy( void )
     return( ok );
 }
 
+static void formatYear( char *buf, int value )
+{
+    div_t res;
+
+    buf += 3;
+    res = div( value, 10 );
+    *buf-- = res.rem + '0';
+    res = div( res.quot, 10 );
+    *buf-- = res.rem + '0';
+    res = div( res.quot, 10 );
+    *buf-- = res.rem + '0';
+    res = div( res.quot, 10 );
+    *buf = res.rem + '0';
+}
+
 int main( int argc, char *argv[] )
 {
     size_t          len;
-    char            cyear[6];
     time_t          ltime;
     const struct tm *t;
     int             c;
 
     time( &ltime );
     t = localtime( &ltime );
-    sprintf( cyear, "%4.4d", 1900 + t->tm_year );
-    memcpy( cpyright + CPYRIGHT1_LEN, cyear, 4 );
+    formatYear( cpyright + CPYRIGHT1_LEN, 1900 + t->tm_year );
     if( argc > 1 ) {
         fi = fopen( argv[1], "rt" );
     } else {

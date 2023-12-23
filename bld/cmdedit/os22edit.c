@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,11 +44,11 @@ typedef struct {
 void main( void )
 {
 //    LENGTH l;
-    static char     buff[LINE_WIDTH];
+    static char     cmd_line[LINE_WIDTH];
 //    int row,col;
 //    int written;
 
     KbdRegister( "OS2EDIT", "OS2EDIT_", KR_KBDSTRINGIN );
-    getcmd( buff );
-    system( buff );
+    _bgetcmd( cmd_line, sizeof( cmd_line ) );
+    system( cmd_line );
 }

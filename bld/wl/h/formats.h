@@ -270,6 +270,7 @@ struct fmt_data {
     char            *resource;
     char            *description;
     int             cpu_type;       /* '0' => 86, '1' => 186, etc */
+    file_defext     def_ext;
     exe_format      type;
     unsigned        major;
     unsigned        minor;

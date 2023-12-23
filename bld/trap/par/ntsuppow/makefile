@@ -1,4 +1,7 @@
 #pmake: nobuild remote os_nt cpu_386 par
+
+tree_depth = 4
+
 host_os  = nt
 host_cpu = 386
 
@@ -16,9 +19,9 @@ suppress_zc = 1
 
 extra_cpp_flags = -D_X86_=1 -Di386=1 -DWIN32_LEAN_AND_MEAN=1
 extra_c_flags = -zp8
-inc_dirs = -I. -I"../h" -I"$(w32api_dir)/nt/ddk"
+inc_dirs = -I. -I"../h" -I"$(w32api_dir)/nt/h/ddk"
 
-ddk_dir = $(w32api_dir)/nt386/ddk
+ddk_lib_dir = $(w32api_dir)/nt386/lib/ddk
 
 .c : ../c
 
@@ -36,8 +39,8 @@ dbgport.sys : dbgport.obj $(__MAKEFILES__)
     @%append dbgport.lnk segment class CODE nonpageable
     @%append dbgport.lnk segment class DATA nonpageable
     @%append dbgport.lnk file dbgport.obj
-    @%append dbgport.lnk lib $(ddk_dir)/ntoskrnl.lib
-    @%append dbgport.lnk lib $(ddk_dir)/hal.lib
+    @%append dbgport.lnk lib $(ddk_lib_dir)/ntoskrnl.lib
+    @%append dbgport.lnk lib $(ddk_lib_dir)/hal.lib
     @%append dbgport.lnk lib clib3r.lib
     @%make echo_link
     $(linker) name dbgport.sys @dbgport.lnk

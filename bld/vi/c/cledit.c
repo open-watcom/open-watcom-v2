@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,6 +35,8 @@
 #include "posix.h"
 #include "win.h"
 #include "pathgrp2.h"
+#include "myprintf.h"
+#include "parse.h"
 #ifdef __WIN__
     #include "utils.h"
 #endif
@@ -117,7 +119,7 @@ vi_rc EditFile( const char *name, bool dammit )
 #endif
     vi_rc           rc;
 
-    fn = MemAlloc( FILENAME_MAX );
+    fn = _MemAllocArray( char, FILENAME_MAX );
 
     /*
      * get file name
@@ -147,7 +149,7 @@ vi_rc EditFile( const char *name, bool dammit )
     }
     if( usedir ) {
         if( EditFlags.ExMode ) {
-            MemFree( fn );
+            _MemFreeArray( fn );
             return( ERR_INVALID_IN_EX_MODE );
         }
         len = strlen( fn );
@@ -167,7 +169,7 @@ vi_rc EditFile( const char *name, bool dammit )
         } else {
 #ifdef __WIN__
             if( name[0] == '\0' ) {
-                altname = MemAlloc( 1000 );
+                altname = _MemAllocArray( char, 1000 );
                 rc = SelectFileOpen( CurrentDirectory, &altname, mask, true );
                 name = GetNextFileName( altname, fn );
                 // if multiple, skip first item ( path )
@@ -182,7 +184,7 @@ vi_rc EditFile( const char *name, bool dammit )
 #endif
         }
         if( rc != ERR_NO_ERR || fn[0] == '\0' ) {
-            MemFree( fn );
+            _MemFreeArray( fn );
             SetCWD( cdir );
             return( rc );
         }
@@ -303,7 +305,7 @@ vi_rc EditFile( const char *name, bool dammit )
                 }
             }
         }
-        MemFreeList( ocnt, list );
+        _MemFreePtrArray( list, ocnt, MemFree );
 
         if( EditFlags.BreakPressed ) {
             ClearBreak();
@@ -314,10 +316,10 @@ vi_rc EditFile( const char *name, bool dammit )
 
 #ifdef __WIN__
     if( altname != NULL ) {
-        MemFree( altname );
+        _MemFreeArray( altname );
     }
 #endif
-    MemFree( fn );
+    _MemFreeArray( fn );
 
 #ifdef __WIN__
     ToggleHourglass( false );
@@ -382,10 +384,10 @@ vi_rc EditFileFromList( void )
              * allocate a buffer for strings, add strings
              */
             fcnt = GimmeFileCount();
-            list = _MemAllocList( fcnt );
+            list = _MemAllocPtrArray( char, fcnt );
             cinfo = InfoHead;
             for( i = 0; i < fcnt; i++ ) {
-                list[i] = MemAlloc( strlen( cinfo->CurrentFile->name ) + 3 );
+                list[i] = _MemAllocArray( char, strlen( cinfo->CurrentFile->name ) + 3 );
                 MySprintf( list[i], "  %s", cinfo->CurrentFile->name );
                 if( cinfo->CurrentFile->modified ) {
                     list[i][0] = '*';
@@ -445,7 +447,7 @@ vi_rc EditFileFromList( void )
                 }
             }
             filelistw_info.area.y2 = tmp;
-            MemFreeList( fcnt, list );
+            _MemFreePtrArray( list, fcnt, MemFree );
         }
         /*
          * get rid of option stuff

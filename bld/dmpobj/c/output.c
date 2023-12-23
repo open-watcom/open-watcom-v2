@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,6 +38,7 @@
 #include <errno.h>
 
 #include "dmpobj.h"
+
 
 #define OUT_BUFF_SIZE   1024
 #define OUT_BUFF_WRITE  512     /* write outBuff when this full */
@@ -128,7 +130,7 @@ static char *toDec16( char *dest, unsigned_16 num )
     do {
         ++dest;
         res = div( res.quot, 10 );
-        *--str = '0' + res.rem;
+        *--str = (char)( '0' + res.rem );
     } while( res.quot != 0 );
 
     while( dest >= orig ) {
@@ -154,7 +156,7 @@ static char *to5Dec16( char *dest, unsigned_16 num )
     dest += 5;
     do {
         res = div( res.quot, 10 );
-        *--dest = '0' + res.rem;
+        *--dest = (char)( '0' + res.rem );
     } while( res.quot != 0 );
 
     while( dest > orig ) {
@@ -184,27 +186,15 @@ static char *to5Dec16( char *dest, unsigned_16 num )
     Output makes the assumption that % is not followed by the null-
     terminator.
 */
-size_t  Output( const char *fmt, ... )
+static size_t FmtOutput( const char *fmt, va_list args )
 {
-    va_list     args;
     char        *p;
     const char  *probe;
     const char  *str;
     size_t      len;
-    char        *pcrlf;
 
-    if( no_disp )
-        return( 0 );
-    va_start( args, fmt );
     p = outBuffPtr;
-    for(;;) {
-        probe = strchr( fmt, '%' );
-        if( probe == NULL ) {
-            len = strlen( fmt );
-            memcpy( p, fmt, len );
-            p += len;
-            break;
-        }
+    while( (probe = strchr( fmt, '%' )) != NULL ) {
         len = probe - fmt;
         if( len > 0 ) {
             memcpy( p, fmt, len );
@@ -213,7 +203,7 @@ size_t  Output( const char *fmt, ... )
         fmt = probe + 1;
         switch( *fmt ) {
         case 'c':
-            *p++ = va_arg( args, int );
+            *p++ = (char)va_arg( args, int );
             break;
         case 's':
             str = va_arg( args, const char * );
@@ -236,14 +226,14 @@ size_t  Output( const char *fmt, ... )
             *p++ = '\'';
             break;
         case 'b':
-            p = toHex2( p, va_arg( args, unsigned ) );
+            p = toHex2( p, (byte)va_arg( args, unsigned ) );
             *p++ = 'h';
             break;
         case '2':
-            p = toHex2( p, va_arg( args, unsigned ) );
+            p = toHex2( p, (byte)va_arg( args, unsigned ) );
             break;
         case 'x':
-            p = toHex4( p, va_arg( args, unsigned ) );
+            p = toHex4( p, (unsigned short)va_arg( args, unsigned ) );
             *p++ = 'h';
             break;
         case 'X':
@@ -254,10 +244,10 @@ size_t  Output( const char *fmt, ... )
             p = toHex8( p, va_arg( args, unsigned_32 ) );
             break;
         case 'u':
-            p = toDec16( p, va_arg( args, unsigned ) );
+            p = toDec16( p, (unsigned short)va_arg( args, unsigned ) );
             break;
         case '5':
-            p = to5Dec16( p, va_arg( args, unsigned ) );
+            p = to5Dec16( p, (unsigned short)va_arg( args, unsigned ) );
             break;
         case '<':
             len = va_arg( args, unsigned );
@@ -279,17 +269,52 @@ size_t  Output( const char *fmt, ... )
         }
         ++fmt;
     }
-    va_end( args );
+    len = strlen( fmt );
+    if( len > 0 ) {
+        memcpy( p, fmt, len );
+        p += len;
+    }
     outBuffPtr = p;
-    len = p - outBuff;
-    *p = '\0';                        /* for following str.. function */
-    pcrlf = strrchr( outBuff, '\n' ); /* need CRLF as char not string */
-    if( pcrlf != NULL ) {
-        col = p - pcrlf;
+    *outBuffPtr = '\0';
+    return( outBuffPtr - outBuff );
+}
+
+size_t Output( const char *fmt, ... )
+/***********************************/
+{
+    va_list     args;
+    size_t      len;
+    char        *peol;
+
+    if( no_disp )
+        return( 0 );
+    va_start( args, fmt );
+    len = FmtOutput( fmt, args );
+    va_end( args );
+    peol = strrchr( outBuff, '\n' );
+    if( peol != NULL ) {
+        col = outBuffPtr - peol;
     } else {
         col += len;
     }
-    if( len > OUT_BUFF_WRITE ) flush();
+    if( len > OUT_BUFF_WRITE )
+        flush();
+    return( col );
+}
+
+size_t OutputNL( void )
+/*********************/
+{
+    size_t      len;
+
+    if( no_disp )
+        return( 0 );
+    *outBuffPtr++ = '\n';
+    *outBuffPtr = '\0';
+    col = 0;
+    len = outBuffPtr - outBuff;
+    if( len > OUT_BUFF_WRITE )
+        flush();
     return( col );
 }
 
@@ -334,22 +359,19 @@ void OutputData( unsigned_32 offset, unsigned_32 len )
     offset += 16;
     i = 0;
     j = ascbuf;
-    for(;;) {
-        if( len == 0 )
-            break;
+    while( len-- > 0 ) {
         if( i > 0xf ) {
             *j = 0;
-            Output( " <%s>" CRLF INDENT "%8", ascbuf, offset );
+            Output( " <%s>\n" INDENT "%8", ascbuf, offset );
             offset += 16;
             i = 0;
             j = ascbuf;
         }
         ch = GetByte();
-        --len;
         *j++ = isprint( ch ) ? ch : '.';
         Output( "%c%2", ( i & 1 ) ? '|' : ' ', ch );
         i++;
     }
     *j = 0;
-    Output( "%> <%s>" CRLF, 3 * ( 0x10 - i ), ascbuf );
+    Output( "%> <%s>\n", 3 * ( 0x10 - i ), ascbuf );
 }

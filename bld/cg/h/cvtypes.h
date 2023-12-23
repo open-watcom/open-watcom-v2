@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,15 +36,15 @@ extern  dbg_type        CVScalar( const char *name, cg_type tipe );
 extern  dbg_type        CVScope( const char *name );
 extern  void            CVDumpName( dbg_name name, dbg_type tipe );
 extern  void            CVBackRefType( dbg_name name, dbg_type tipe );
-extern  dbg_type        CVCharBlock( unsigned_32 len );
+extern  dbg_type        CVCharBlock( uint_32 len );
 extern  dbg_type        CVIndCharBlock( back_handle len, cg_type len_type, int off );
 extern  dbg_type        CVLocCharBlock( dbg_loc loc, cg_type len_type );
 extern  dbg_type        CVFtnArray( back_handle dims, cg_type lo_bound_tipe, cg_type num_elts_tipe, int off, dbg_type base );
 extern  dbg_type        CVArray( dbg_type idx, dbg_type base );
-extern  dbg_type        CVIntArray( unsigned_32 hi, dbg_type base );
+extern  dbg_type        CVIntArray( uint_32 hi, dbg_type base );
 extern  dbg_type        CVEndArray( dbg_array ar );
-extern  dbg_type        CVArraySize( offset size, unsigned_32 hi, dbg_type base );
-extern  dbg_type        CVSubRange( signed_32 lo, signed_32 hi, dbg_type base );
+extern  dbg_type        CVArraySize( offset size, uint_32 hi, dbg_type base );
+extern  dbg_type        CVSubRange( int_32 lo, int_32 hi, dbg_type base );
 extern  dbg_type        CVDereference( cg_type ptr_type, dbg_type base );
 extern  dbg_type        CVPtr( cg_type ptr_type, dbg_type base );
 extern  dbg_type        CVBasedPtr( cg_type ptr_type, dbg_type base, dbg_loc loc_segment );
@@ -53,7 +53,7 @@ extern  dbg_type        CVEndEnum( dbg_enum en );
 extern  dbg_type        CVEndProc( dbg_proc pr );
 
 extern  void            CVPutStr( cv_out *, const char * );
-extern  void            CVPutINum( cv_out *out, signed_32 num );
+extern  void            CVPutINum( cv_out *out, int_32 num );
 extern  void            CVPutINum64( cv_out *out, signed_64 num );
 extern  void            CVPutNullStr( cv_out * );
 extern  void            CVEndType( cv_out *out );

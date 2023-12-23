@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,11 +44,11 @@ static void PutPalette( short pixval, WPI_COLOUR colour )
 {
     short               red, green, blue;
 
-    red = ( colour & 0x000000ff );
+    red = COLOR_RED( colour );
     red = red * 4.0625f;
-    green = ( colour & 0x0000ff00 ) >> 8;
+    green = COLOR_GREEN( colour );
     green = green * 4.0625f;
-    blue = ( colour & 0x00ff0000 ) >> 16;
+    blue = COLOR_BLUE( colour );
     blue = blue * 4.0625f;
     _Set_RGB_COLOR( pixval, _wpi_getrgb( red, green, blue ) );
 }
@@ -131,14 +131,14 @@ static void PutPalette( short pixval, long colour )
     short               cnvcol;
     short               mode;
 
-    blue = ( (unsigned long)colour & 0x00ff0000 ) >> 16;
-    green = (unsigned short)( colour & 0x0000ff00 ) >> 8;
-    red = colour & 0x000000ff;
+    blue = COLOR_BLUE( colour );
+    green = COLOR_GREEN( colour );
+    red = COLOR_RED( colour );
     switch( _CurrState->vc.adapter ) {
     case _MCGA :
     case _VGA :
     case _SVGA :
-        VideoInt( _BIOS_SET_PALETTE + 0x10, pixval, ( green << 8 ) + blue, red << 8 );
+        VideoInt( VIDEOINT_SET_PALETTE + 0x10, pixval, ( green << 8 ) + blue, red << 8 );
         break;
     case _EGA :
         mode = _CurrState->vc.mode;
@@ -154,7 +154,7 @@ static void PutPalette( short pixval, long colour )
             cnvcol = EGA_Intensity[blue] + ( EGA_Intensity[green] << 1 )
                                            + ( EGA_Intensity[red] << 2 );
         }
-        VideoInt( _BIOS_SET_PALETTE, ( cnvcol << 8 ) + pixval, 0, 0 );
+        VideoInt( VIDEOINT_SET_PALETTE, ( cnvcol << 8 ) + pixval, 0, 0 );
     }
 }
 
@@ -169,7 +169,7 @@ static long GetPalette( short pixval )
     case _MCGA :
     case _VGA :
     case _SVGA :
-        prev = GetVGAPalette( _BIOS_SET_PALETTE + 0x15, pixval );
+        prev = GetVGAPalette( VIDEOINT_SET_PALETTE + 0x15, pixval );
         break;
     case _EGA :
         prev = 0;

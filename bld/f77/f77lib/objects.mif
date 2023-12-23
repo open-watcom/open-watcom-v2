@@ -522,6 +522,6 @@ ufns += &
 
 #===============================================================================
 
-!include ../../objlist.mif
+!include $(f77lib_dir)/objlist.mif
 
 files = $(rt) $(both) $(dep_rt) $(dep_both) $(ifns) $(xfns) $(math) $(ufns) $(objs)

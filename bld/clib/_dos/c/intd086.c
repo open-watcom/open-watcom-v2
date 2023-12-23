@@ -34,15 +34,15 @@
 #include "variety.h"
 #include <dos.h>
 #include "dodoscal.h"
-#include "dosret.h"
+#include "seterrno.h"
 
 
 _WCRTLINK int intdos( union REGS *inregs, union REGS *outregs )
 {
-    register short          status;
+    int reg_ax;
 
-    status = DoDosCall( inregs, outregs );
-    outregs->x.cflag = (status & 1);
-    _dosretax( outregs->x.ax, status );
-    return( outregs->x.ax );
+    reg_ax = DoDosCall( inregs, outregs );
+    if( outregs->x.cflag )
+        return( __set_errno_dos_reterr( reg_ax ) );
+    return( reg_ax );
 }

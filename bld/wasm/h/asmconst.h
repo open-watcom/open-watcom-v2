@@ -56,3 +56,6 @@
 #define NULLC                   '\0'
 #define NULLS                   "\0"
 
+#define INVALID_IDX             (MAX_TOKEN + 1)
+#define ISVALID_IDX(x)          ((x)<INVALID_IDX)
+#define ISINVALID_IDX(x)        ((x)>=INVALID_IDX)

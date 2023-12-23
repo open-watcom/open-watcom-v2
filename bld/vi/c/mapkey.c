@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,11 +33,15 @@
 
 #include "vi.h"
 #include "win.h"
+#include "myprintf.h"
+#include "tokenize.h"
+#include "parse.h"
+#include "utilstok.h"
+
 
 static bool     keysRead = false;
 static char     *CharTokens;
 static vi_key   *keyVals;
-
 
 static bool key_alloc( int cnt )
 {
@@ -75,7 +79,7 @@ static vi_rc readKeyData( void )
 /*
  * MapKey - set up a key mapping
  */
-vi_rc MapKey( int flag, const char *data )
+vi_rc MapKey( map_flags mflags, const char *data )
 {
     char        keystr[MAX_STR];
 #ifndef VICOMP
@@ -86,7 +90,7 @@ vi_rc MapKey( int flag, const char *data )
     vi_rc       rc;
 
 #ifndef VICOMP
-    if( !EditFlags.ScriptIsCompiled || (flag & MAPFLAG_UNMAP) ) {
+    if( !EditFlags.ScriptIsCompiled || (mflags & MAPFLAG_UNMAP) ) {
 #endif
         rc = readKeyData();
         if( rc != ERR_NO_ERR ) {
@@ -98,7 +102,7 @@ vi_rc MapKey( int flag, const char *data )
     /*
      * get if it is an input/regular key mapping
      */
-    if( flag & MAPFLAG_DAMMIT ) {
+    if( mflags & MAPFLAG_DAMMIT ) {
         maps = InputKeyMaps;
     } else {
         maps = KeyMaps;
@@ -113,7 +117,7 @@ vi_rc MapKey( int flag, const char *data )
      * get key we are using
      */
 #ifndef VICOMP
-    if( !EditFlags.ScriptIsCompiled || (flag & MAPFLAG_UNMAP) ) {
+    if( !EditFlags.ScriptIsCompiled || (mflags & MAPFLAG_UNMAP) ) {
 #endif
         j = Tokenize( CharTokens, keystr, true );
         if( j == TOK_INVALID ) {
@@ -139,7 +143,7 @@ vi_rc MapKey( int flag, const char *data )
 #ifndef VICOMP
     if( EditFlags.CompileScript ) {
 #endif
-        if( (flag & MAPFLAG_UNMAP) == 0 ) {
+        if( (mflags & MAPFLAG_UNMAP) == 0 ) {
             key_map     scr;
 
             rc = AddKeyMap( &scr, data );
@@ -150,7 +154,7 @@ vi_rc MapKey( int flag, const char *data )
                     MySprintf( WorkLine->data, "%d %s", key, scr.data );
                 }
             }
-            MemFree( scr.data );
+            _MemFreeArray( scr.data );
             return( rc );
 
         } else {
@@ -162,10 +166,10 @@ vi_rc MapKey( int flag, const char *data )
 
     maps[key].inuse = false;
     maps[key].is_base = false;
-    MemFree( maps[key].data );
+    _MemFreeArray( maps[key].data );
     maps[key].data = NULL;
-    if( (flag & MAPFLAG_UNMAP) == 0 ) {
-        if( flag & MAPFLAG_BASE ) {
+    if( (mflags & MAPFLAG_UNMAP) == 0 ) {
+        if( mflags & MAPFLAG_BASE ) {
             maps[key].is_base = true;
         }
         return( AddKeyMap( &maps[key], data ) );
@@ -447,21 +451,21 @@ void FiniKeyMaps( void )
 {
     int i;
 
-    MemFree( keyVals );
-    MemFree( CharTokens );
+    _MemFreeArray( keyVals );
+    _MemFreeArray( CharTokens );
 
     // assuming Keymaps and InputKeymaps are inited to 0
     // this should be OK
     for( i = 0; i < MAX_EVENTS; i++ ) {
         if( KeyMaps[i].data != NULL ) {
-            MemFree( KeyMaps[i].data );
+            _MemFreeArray( KeyMaps[i].data );
         }
         if( InputKeyMaps[i].data != NULL ) {
-            MemFree( InputKeyMaps[i].data );
+            _MemFreeArray( InputKeyMaps[i].data );
         }
     }
-    MemFree( KeyMaps );
-    MemFree( InputKeyMaps );
+    _MemFreeArray( KeyMaps );
+    _MemFreeArray( InputKeyMaps );
 
 } /* InitKeyMaps */
 
@@ -481,11 +485,11 @@ vi_rc ExecuteBuffer( void )
     rc = GetSavebufString( &data );
     if( rc == ERR_NO_ERR ) {
         rc = AddKeyMap( &scr, data );
-        MemFree( data );
+        _MemFreeArray( data );
         if( rc == ERR_NO_ERR ) {
             rc = RunKeyMap( &scr, 1L );
         }
-        MemFree( scr.data );
+        _MemFreeArray( scr.data );
     }
     return( rc );
 

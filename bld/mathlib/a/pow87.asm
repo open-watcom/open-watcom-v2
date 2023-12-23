@@ -2,6 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
+;* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -33,11 +34,7 @@
 ;
 ;   double pow( double x, double y )
 ;
-ifdef __386__
- .387
-else
- .8087
-endif
+
 include mdef.inc
 include struct.inc
 include math87.inc
@@ -52,26 +49,23 @@ include math87.inc
 
         xdefp   "C",pow ; calc pow(x,y)
 
-ifndef __386__
-        if _MODEL and _BIG_CODE
-         argx    equ     6
-        else
-         argx    equ     4
-        endif
-endif
-
-
         public  IF@DPOW
         public  IF@POW
         defp    IF@DPOW
         defp    IF@POW
-ifndef __386__
-        local   tmp:QWORD,func:WORD,datay:QWORD,datax:QWORD
-elseifdef __STACK__
-        local   tmp:QWORD,sedx:DWORD,secx:DWORD,func:DWORD,datay:QWORD,datax:QWORD
-else
-        local   tmp:QWORD,func:DWORD,datay:QWORD,datax:QWORD
+
+        local   tmp:QWORD
+ifdef __386__
+ ifdef __STACK__
+        local   sedx:DWORD,secx:DWORD
+ endif
 endif
+ifdef __386__
+        local   func:DWORD,datay:QWORD,datax:QWORD
+else
+        local   func:WORD,datay:QWORD,datax:QWORD
+endif
+
         ftst                            ; test sign of x
         fstsw   word ptr func           ; get status word
         fst     qword ptr datax         ; save x
@@ -246,8 +240,8 @@ pow_ri  proc    near
 
         defp    pow
 ifdef __386__
-        fld     qword ptr 4+8[ESP]      ; load y
-        fld     qword ptr 4[ESP]        ; load x
+        fld     qword ptr argx+8[ESP]   ; load y
+        fld     qword ptr argx[ESP]     ; load x
         call    IF@DPOW                 ; calculate pow(x,y)
         loadres                         ; load result
 else

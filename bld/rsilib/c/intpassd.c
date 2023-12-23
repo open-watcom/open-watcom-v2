@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2011-2013 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2011-2022 The Open Watcom Contributors. All Rights Reserved.
 *
 * =========================================================================
 *
@@ -13,7 +13,8 @@
 
 #include "rsi1632.h"
 
-int rsi_int_passdown( int int_no )
+
+bool rsi_int_passdown( int int_no )
 {
     if( USESDPMI() ) {
         union _REGS     r;
@@ -31,6 +32,6 @@ int rsi_int_passdown( int int_no )
         idt[int_no].idtsel = kernelx_sel;
         idt[int_no].idtoffset = _d16info.passdn0 + ( ( _d16info.passdn255 - _d16info.passdn0 ) / 255 ) * int_no;
         set_intflag( old_intf );
-        return( 1 );
+        return( true );
     }
 }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -64,7 +64,7 @@ dtid_t RemoteGetNextThread( dtid_t tid, unsigned *state )
         return( tid == 0 ? DEFAULT_TID : 0 );
     SUPP_THREAD_SERVICE( acc, REQ_THREAD_GET_NEXT );
     acc.thread = tid;
-    TrapSimpAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
+    TrapSimpleAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
     if( state != NULL )
         *state = ret.state;
     return( ret.thread );
@@ -79,7 +79,7 @@ dtid_t RemoteSetThreadWithErr( dtid_t tid, error_handle *errh )
         return( DEFAULT_TID );
     SUPP_THREAD_SERVICE( acc, REQ_THREAD_SET );
     acc.thread = tid;
-    TrapSimpAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
+    TrapSimpleAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
     if( ret.err != 0 ) {
         *errh = StashErrCode( ret.err, OP_REMOTE );
         return( 0 );
@@ -96,7 +96,7 @@ long RemoteFreezeThread( dtid_t tid )
         return( 0 );
     SUPP_THREAD_SERVICE( acc, REQ_THREAD_FREEZE );
     acc.thread = tid;
-    TrapSimpAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
+    TrapSimpleAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
     return( ret.err );
 }
 
@@ -109,7 +109,7 @@ long RemoteThawThread( dtid_t tid )
         return( 0 );
     SUPP_THREAD_SERVICE( acc, REQ_THREAD_THAW );
     acc.thread = tid;
-    TrapSimpAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
+    TrapSimpleAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
     return( ret.err );
 }
 
@@ -126,5 +126,5 @@ void RemoteThdName( dtid_t tid, char *name )
     }
     SUPP_THREAD_SERVICE( acc, REQ_THREAD_GET_EXTRA );
     acc.thread = tid;
-    TrapSimpAccess( sizeof( acc ), &acc, MAX_THD_EXTRA_LEN, name );
+    TrapSimpleAccess( sizeof( acc ), &acc, MAX_THD_EXTRA_LEN, name );
 }

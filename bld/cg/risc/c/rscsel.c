@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -73,8 +74,8 @@ cost_val IfCost( sel_handle s_node, int entries )
 }
 
 
-tbl_control *MakeScanTab( select_list *list, signed_32 hi, label_handle other, cg_type tipe, cg_type real_tipe )
-/**************************************************************************************************************/
+tbl_control *MakeScanTab( select_list *list, int_32 hi, label_handle other, cg_type tipe, cg_type real_tipe )
+/***********************************************************************************************************/
 {
     /* unused parameters */ (void)list; (void)hi; (void)tipe; (void)other; (void)real_tipe;
 
@@ -82,8 +83,8 @@ tbl_control *MakeScanTab( select_list *list, signed_32 hi, label_handle other, c
 }
 
 
-tbl_control *MakeJmpTab( select_list *list, signed_32 lo, signed_32 hi, label_handle other )
-/******************************************************************************************/
+tbl_control *MakeJmpTab( select_list *list, int_32 lo, int_32 hi, label_handle other )
+/************************************************************************************/
 {
     /* unused parameters */ (void)list; (void)lo; (void)hi; (void)other;
 

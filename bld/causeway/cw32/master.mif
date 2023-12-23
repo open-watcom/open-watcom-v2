@@ -4,6 +4,8 @@ causeway_autodepends = .AUTODEPEND
 
 causeway_distrib_lib = 1
 
+cwc = bcwc
+
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif

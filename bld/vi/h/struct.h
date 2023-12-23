@@ -169,7 +169,7 @@ typedef struct {
         typedef const void      _NEAR *window_id;
         #define NO_WINDOW       ((window_id)NULL)
     #endif
-    #ifndef NDEBUG
+    #ifdef DEVBUILD
         #define BAD_ID(id)      ((id) == NO_WINDOW || !IsWindow( id ))
     #else
         #define BAD_ID(id)      ((id) == NO_WINDOW)

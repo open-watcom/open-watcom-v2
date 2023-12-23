@@ -35,20 +35,22 @@
 #include "walloca.h"
 #include "symtab.h"
 
+
 symbol_table SymInit( int (*cmp)( void *key1, void *key2 ) )
 /**********************************************************/
 {
     symbol_table new;
 
     new = malloc( sizeof( * new ) );
-    new->head.left = NULL;
-    new->head.right = NULL;
-    new->head.equal_subtrees = 0;
-    new->head.left_heavy = 0;
-    new->head.key = NULL;
-    new->height = 0;
-    new->cmp = cmp;
-
+    if( new != NULL ) {
+        new->head.left = NULL;
+        new->head.right = NULL;
+        new->head.equal_subtrees = 0;
+        new->head.left_heavy = 0;
+        new->head.key = NULL;
+        new->height = 0;
+        new->cmp = cmp;
+    }
     return( new );
 }
 
@@ -112,7 +114,7 @@ void *SymFind( symbol_table symtab, void *key )
     }
 }
 
-void SymAdd( symbol_table symtab, void *key )
+bool SymAdd( symbol_table symtab, void *key )
 /*******************************************/
 {
     avl_node *curr_search;      /* P */
@@ -131,21 +133,25 @@ void SymAdd( symbol_table symtab, void *key )
     curr_search = symtab->head.right;
     if( curr_search == NULL ) {
         new = malloc( sizeof( avl_node ) );
+        if( new == NULL )
+            return( false );
         new->left = NULL;
         new->right = NULL;
         new->key = key;
         new->equal_subtrees = 1;
         symtab->head.right = new;
-        return;
+        return( true );
     }
     for(;;) {
         comp = symtab->cmp( key, curr_search->key );
         if( comp == 0 ) {
-            return;
+            return( true );
         } else if( comp > 0 ) {
             next = curr_search->right;
             if( next == NULL ) {
                 new = malloc( sizeof( avl_node ) );
+                if( new == NULL )
+                    return( false );
                 curr_search->right = new;
                 break;
             }
@@ -153,6 +159,8 @@ void SymAdd( symbol_table symtab, void *key )
             next = curr_search->left;
             if( next == NULL ) {
                 new = malloc( sizeof( avl_node ) );
+                if( new == NULL )
+                    return( false );
                 curr_search->left = new;
                 break;
             }
@@ -188,7 +196,7 @@ void SymAdd( symbol_table symtab, void *key )
             balance->equal_subtrees = 0;
             balance->left_heavy = 1;
             symtab->height++;
-            return;
+            return( true );
         }
         if( balance->left_heavy ) {
             if( under_balance->left_heavy ) {
@@ -221,14 +229,14 @@ void SymAdd( symbol_table symtab, void *key )
             }
         } else {
             balance->equal_subtrees = 1;
-            return;
+            return( true );
         }
     } else {
         if( balance->equal_subtrees ) {
             balance->equal_subtrees = 0;
             balance->left_heavy = 0;
             symtab->height++;
-            return;
+            return( true );
         }
         if( ! balance->left_heavy ) {
             if( ! under_balance->left_heavy ) {
@@ -261,7 +269,7 @@ void SymAdd( symbol_table symtab, void *key )
             }
         } else {
             balance->equal_subtrees = 1;
-            return;
+            return( true );
         }
     }
     if( balance == father->right ) {
@@ -269,12 +277,11 @@ void SymAdd( symbol_table symtab, void *key )
     } else {
         father->left = curr_balance;
     }
-    return;
+    return( true );
 }
 
-int SymWalk( symbol_table symtab, void *parm,
-    int (*process)( void *key1, void *parm ) )
-/********************************************/
+int SymWalk( symbol_table symtab, void *parm, int (*process)( void *key1, void *parm ) )
+/**************************************************************************************/
 {
     avl_node *p;
     avl_node **stack;

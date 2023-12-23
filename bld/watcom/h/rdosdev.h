@@ -117,7 +117,7 @@ typedef void __far (__rdos_handle_delete_callback)(int handle);
                     __value __struct __routine [__eax] \
                     __modify [__eax __ebx __ecx __edx __esi __edi]
 
-typedef void __far (__rdos_net_prot_callback)(int size, short packet_type, void *ads, int selector);
+typedef void __far (__rdos_net_prot_callback)(int size, short int packet_type, void *ads, int selector);
 
 #pragma aux __rdos_net_prot_callback "*" \
                     __parm __caller [__ecx] [__dx] [__ds __esi] [__es] \
@@ -152,7 +152,7 @@ typedef char* __far (__rdos_net_get_buf_callback)(int size);
                     __value __struct __routine [__es __edi] \
                     __modify [__eax __ebx __ecx __edx __esi __edi]
 
-typedef void __far (__rdos_net_send_callback)(int size, short packet_type, void *dest_ads, int buf_sel);
+typedef void __far (__rdos_net_send_callback)(int size, short int packet_type, void *dest_ads, int buf_sel);
 
 #pragma aux __rdos_net_send_callback "*" \
                     __parm __caller [__ecx] [__dx] [__ds __esi] [__es] \
@@ -180,7 +180,7 @@ typedef void __far (__rdos_net_broadcast_callback)(int class_sel, int driver_han
                     __value __struct __routine [__eax] \
                     __modify [__eax __ebx __ecx __edx __esi __edi]
 
-typedef void __far (__rdos_ip_callback)(short opt_size, int data_size, long source_ip, char *opt_data, char *ip_data);
+typedef void __far (__rdos_ip_callback)(short int opt_size, int data_size, long source_ip, char *opt_data, char *ip_data);
 
 #pragma aux __rdos_ip_callback "*" \
                     __parm __caller [__ax] [__ecx] [__edx] [__ds __esi] [__es __edi] \
@@ -408,14 +408,14 @@ typedef void __far (__rdos_usb_state_callback)(int controller, char device);
 
 struct TSpinlock
 {
-    short value;
+    short int value;
 };
 
 struct TKernelSection
 {
-    short value;
-    short list;
-    short lock;
+    short int value;
+    short int list;
+    short int lock;
 };
 
 struct TWaitHeader
@@ -428,8 +428,8 @@ struct TWaitHeader
 
 struct THandleHeader
 {
-    short sign;
-    short handle;
+    short int sign;
+    short int handle;
 };
 
 struct TNetDriverTable
@@ -607,8 +607,8 @@ int RdosAddWait(int space_needed, int wait_handle, struct TWaitHeader *wait_tabl
 void RdosSignalWait(int wait_obj);
 
 void RdosInitSpinlock(struct TSpinlock *spinlock);
-short RdosRequestSpinlock(struct TSpinlock *spinlock);
-void RdosReleaseSpinlock(struct TSpinlock *spinlock, short flags);
+short int RdosRequestSpinlock(struct TSpinlock *spinlock);
+void RdosReleaseSpinlock(struct TSpinlock *spinlock, short int flags);
 
 void RdosInitKernelSection(struct TKernelSection *section);
 void RdosEnterKernelSection(struct TKernelSection *section);
@@ -653,10 +653,10 @@ void RdosForceLevelIrq(int irq);
 void RdosSetupIrqDetect();
 int RdosPollIrqDetect();
 
-struct THandleHeader *RdosAllocateHandle(short signature, int size);
+struct THandleHeader *RdosAllocateHandle(short int signature, int size);
 void RdosFreeHandle(struct THandleHeader *handle_data);
-struct THandleHeader *RdosDerefHandle(short signature, int handle);
-void RdosRegisterHandle(short signature, __rdos_handle_delete_callback *delete_proc);
+struct THandleHeader *RdosDerefHandle(short int signature, int handle);
+void RdosRegisterHandle(short int signature, __rdos_handle_delete_callback *delete_proc);
 
 int RdosLockSysEnv(void);
 void RdosUnlockSysEnv(void);
@@ -666,7 +666,7 @@ void RdosUnlockProcEnv(void);
 int RdosGetFocusThread(void);
 
 void RdosRegisterNetClass(char class_id, int ads_size, void *broadcast_ads);
-int RdosRegisterNetProtocol(int ads_size, short packet_type, void *my_ads, __rdos_net_prot_callback *packet_callb);
+int RdosRegisterNetProtocol(int ads_size, short int packet_type, void *my_ads, __rdos_net_prot_callback *packet_callb);
 int RdosRegisterNetDriver(char class_id, int max_size, struct TNetDriverTable *table, const char *name);
 
 void RdosNetBroadcast(__rdos_net_broadcast_callback *callb_proc);
@@ -686,12 +686,10 @@ char *RdosGetIpCacheHostName(long ip);
 long RdosGetHostTimeout(int cache_sel);
 void RdosUpdateRoundTripTime(int cache_sel, long time);
 
-int RdosQueryUdp(long timeout_ms, short dest_port, long ip, char *buf, int size, char **answer_buf);
-void RdosBroadcastDriverUdp(short source, short dest, int driver_sel, char *buf, int size);
-void RdosSendDriverUdp(short source, short dest, long ip, int driver_sel, void *driver_dest, char *buf, int size);
+int RdosQueryUdp(long timeout_ms, short int dest_port, long ip, char *buf, int size, char **answer_buf);
+void RdosBroadcastDriverUdp(short int source, short int dest, int driver_sel, char *buf, int size);
+void RdosSendDriverUdp(short int source, short int dest, long ip, int driver_sel, void *driver_dest, char *buf, int size);
 
-void RdosHookInitDisc(struct TDiscSystemHeader *disc_table);
-int RdosInstallDisc(int disc_handle, int read_ahead, int *disc_nr);
 void RdosRegisterDiscChange(__rdos_disc_change_callback *callb_proc);
 void RdosStartDisc(int disc_sel);
 void RdosStopDisc(int disc_sel);
@@ -752,11 +750,11 @@ int RdosGetFileInfo(int handle, char *access, char *drive, int *file_sel);
 int RdosDuplFileInfo(char access, char drive, int file_sel);
 
 int RdosOpenKernelFile(const char *FileName, int Mode);
-void RdosCloseCFile(int Handle);
+void RdosCloseKernelFile(int Handle);
+int RdosReadKernelFile(int Handle, void *Buf, int Size, long Pos);
+int RdosWriteKernelFile(int Handle, const void *Buf, int Size, long Pos);
 long RdosGetCFileSize(int Handle);
 void RdosSetCFileSize(int Handle, long Size);
-int RdosReadCFile(int Handle, void *Buf, int Size, long Pos);
-int RdosWriteCFile(int Handle, const void *Buf, int Size, long Pos);
 void RdosGetCFileTime(int Handle, unsigned long *MsbTime, unsigned long *LsbTime);
 void RdosSetCFileTime(int Handle, unsigned long MsbTime, unsigned long LsbTime);
 
@@ -764,11 +762,11 @@ void RdosLockFile(int file_sel);
 void RdosUnlockFile(int file_sel);
 
 char RdosReadPciByte(char bus, char dev, char func, char reg);
-short RdosReadPciWord(char bus, char dev, char func, char reg);
+short int RdosReadPciWord(char bus, char dev, char func, char reg);
 long RdosReadPciDword(char bus, char dev, char func, char reg);
 
 void RdosWritePciByte(char bus, char dev, char func, char reg, char val);
-void RdosWritePciWord(char bus, char dev, char func, char reg, short val);
+void RdosWritePciWord(char bus, char dev, char func, char reg, short int val);
 void RdosWritePciDword(char bus, char dev, char func, char reg, long val);
 
 void RdosInitMouse();
@@ -785,34 +783,19 @@ char RdosWaitForLineStateChange(char port);
 char RdosGetLineState(char port);
 
 void RdosInitUsbDevice(int usb_dev_sel);
-void RdosNotifyUsbAttach(int usb_dev_sel, char port, char speed);
-void RdosNotifyUsbDetach(int usb_dev_sel, char port);
 
 void RdosHookUsbAttach(__rdos_usb_state_callback *callb_proc);
 void RdosHookUsbDetach(__rdos_usb_state_callback *callb_proc);
 
-int RdosCreateUsbReq(int pipe_handle);
-void RdosAddWriteUsbControlReq(int req_handle, int size, int sel);
-void RdosAddWriteUsbDataReq(int req_handle, int size, int sel);
-void RdosAddReadUsbDataReq(int req_handle, int size, int sel);
-void RdosAddUsbStatusInReq(int req_handle);
-void RdosAddUsbStatusOutReq(int req_handle);
-void RdosStartUsbReq(int req_handle, int signal_thread_sel, int out_buf_size);
-void RdosStopUsbReq(int req_handle);
-int RdosIsUsbReqStarted(int req_handle);
-int RdosIsUsbReqReady(int req_handle);
-int RdosGetUsbReqData(int req_handle);
-void RdosCloseUsbReq(int req_handle);
+short int RdosReadCodec(int reg);
+void RdosWriteCodec(int reg, short int val);
 
-short RdosReadCodec(int reg);
-void RdosWriteCodec(int reg, short val);
+short int RdosGetAudioDacRate();
+void RdosSetAudioDacRate(short int rate);
+short int RdosGetAudioAdcRate();
+void RdosSetAudioAdcRate(short int rate);
 
-short RdosGetAudioDacRate();
-void RdosSetAudioDacRate(short rate);
-short RdosGetAudioAdcRate();
-void RdosSetAudioAdcRate(short rate);
-
-void RdosOpenAudioOut(short rate);
+void RdosOpenAudioOut(short int rate);
 void RdosCloseAudioOut();
 void RdosSendAudioOut(int left_sel, int right_sel, int samples);
 
@@ -1721,18 +1704,6 @@ int RdosGetSignedHidOutput(int Sel, int Usage);
     __value [__ecx] \
     __modify [__es __esi]
 
-#pragma aux RdosHookInitDisc = \
-    OsGate_hook_init_disc \
-    __parm [__es __edi]
-
-#pragma aux RdosInstallDisc = \
-    OsGate_install_disc \
-    "movzx eax,al" \
-    "mov es:[edi],eax" \
-    "movzx ebx,bx" \
-    __parm [__ebx] [__ecx] [__es __edi] \
-    __value [__ebx] \
-    __modify [__eax]
 
 #pragma aux RdosRegisterDiscChange = \
     OsGate_register_disc_change \
@@ -1880,10 +1851,6 @@ int RdosGetSignedHidOutput(int Sel, int Usage);
     OsGate_reset_drive \
     __parm [__eax]
 
-#pragma aux RdosHookInitFileSystem = \
-    OsGate_hook_init_file_system \
-    __parm [__es __edi]
-
 #pragma aux RdosRegisterFileSystem = \
     "push ds" \
     "mov ds,edx" \
@@ -1975,9 +1942,23 @@ int RdosGetSignedHidOutput(int Sel, int Usage);
     __parm [__es __edi] [__cx] \
     __value [__ebx]
 
-#pragma aux RdosCloseCFile = \
-    OsGate_close_c_file  \
+#pragma aux RdosCloseKernelFile = \
+    OsGate_close_kernel_handle  \
     __parm [__ebx]
+
+#pragma aux RdosReadKernelFile = \
+    OsGate_read_kernel_handle  \
+    ValidateEax \
+    __parm [__ebx] [__es __edi] [__ecx] [__edx]  \
+    __value [__eax] \
+    __modify [__edx]
+
+#pragma aux RdosWriteKernelFile = \
+    OsGate_write_kernel_handle  \
+    ValidateEax \
+    __parm [__ebx] [__es __edi] [__ecx] [__edx]  \
+    __value [__eax] \
+    __modify [__edx]
 
 #pragma aux RdosGetCFileSize = \
     OsGate_get_c_file_size  \
@@ -1988,20 +1969,6 @@ int RdosGetSignedHidOutput(int Sel, int Usage);
 #pragma aux RdosSetCFileSize = \
     OsGate_set_c_file_size  \
     __parm [__ebx] [__eax]
-
-#pragma aux RdosReadCFile = \
-    OsGate_read_c_file  \
-    ValidateEax \
-    __parm [__ebx] [__es __edi] [__ecx] [__edx]  \
-    __value [__eax] \
-    __modify [__edx]
-
-#pragma aux RdosWriteCFile = \
-    OsGate_write_c_file  \
-    ValidateEax \
-    __parm [__ebx] [__es __edi] [__ecx] [__edx]  \
-    __value [__eax] \
-    __modify [__edx]
 
 #pragma aux RdosGetCFileTime = \
     OsGate_get_c_file_time  \
@@ -2089,20 +2056,6 @@ int RdosGetSignedHidOutput(int Sel, int Usage);
     __parm [__al] \
     __value [__al]
 
-#pragma aux RdosInitUsbDevice = \
-    "push ds" \
-    "mov ds,edx" \
-    OsGate_init_usb_device \
-    "pop ds" \
-    __parm [__edx]
-
-#pragma aux RdosNotifyUsbDetach = \
-    "push ds" \
-    "mov ds,edx" \
-    OsGate_notify_usb_detach \
-    "pop ds" \
-    __parm [__edx] [__al]
-
 #pragma aux RdosHookUsbAttach = \
     OsGate_hook_usb_attach \
     __parm [__es __edi]
@@ -2110,61 +2063,6 @@ int RdosGetSignedHidOutput(int Sel, int Usage);
 #pragma aux RdosHookUsbDetach = \
     OsGate_hook_usb_detach \
     __parm [__es __edi]
-
-#pragma aux RdosCreateUsbReq = \
-    OsGate_create_usb_req \
-    __parm [__ebx] \
-    __value [__ebx]
-
-#pragma aux RdosAddWriteUsbControlReq = \
-    OsGate_add_write_usb_control_req \
-    __parm [__ebx] [__ecx] [__es]
-
-#pragma aux RdosAddWriteUsbDataReq = \
-    OsGate_add_write_usb_data_req \
-    __parm [__ebx] [__ecx] [__es]
-
-#pragma aux RdosAddReadUsbDataReq = \
-    OsGate_add_read_usb_data_req \
-    __parm [__ebx] [__ecx] [__es]
-
-#pragma aux RdosAddUsbStatusInReq = \
-    OsGate_add_usb_status_in_req \
-    __parm [__ebx]
-
-#pragma aux RdosAddUsbStatusOutReq = \
-    OsGate_add_usb_status_out_req \
-    __parm [__ebx]
-
-#pragma aux RdosStartUsbReq = \
-    OsGate_start_usb_req \
-    __parm [__ebx] [__eax] [__ecx]
-
-#pragma aux RdosStopUsbReq = \
-    OsGate_stop_usb_req \
-    __parm [__ebx]
-
-#pragma aux RdosIsUsbReqStarted = \
-    OsGate_is_usb_req_started \
-    CarryToBool \
-    __parm [__ebx] \
-    __value [__eax]
-
-#pragma aux RdosIsUsbReqReady = \
-    OsGate_is_usb_req_ready \
-    CarryToBool \
-    __parm [__ebx] \
-    __value [__eax]
-
-#pragma aux RdosGetUsbReqData = \
-    OsGate_get_usb_req_data \
-    "movzx ecx,cx" \
-    __parm [__ebx] \
-    __value [__ecx]
-
-#pragma aux RdosCloseUsbReq = \
-    OsGate_close_usb_req \
-    __parm [__ebx]
 
 #pragma aux RdosReadCodec = \
     OsGate_read_codec \

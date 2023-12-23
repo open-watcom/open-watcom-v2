@@ -7,4 +7,4 @@ convention = register
 profile    = 1
 mthreaded=1
 
-!include $(rtdll_dir)/master.mif
+!include ../../../rtdll.mif

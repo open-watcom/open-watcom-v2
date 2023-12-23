@@ -5,4 +5,4 @@ system=windows
 linkage=static
 convention=register
 
-!include $(clib_dir)/mklib.mif
+!include ../../../../mklib.mif

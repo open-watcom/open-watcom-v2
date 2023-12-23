@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -99,8 +99,7 @@ void SetupMenuAfterOpen( void )
 /*
  * doReadInBitmapFile
  */
-static bool doReadInBitmapFile( HBITMAP hbitmap, bitmap_info *bmi, const char *fullname,
-                                WRInfo *info, WResLangNode *lnode )
+static bool doReadInBitmapFile( HBITMAP hbitmap, bitmap_info *bmi, const char *fullname, WRInfo *info, WResLangNode *lnode )
 {
     HBITMAP             old_hbitmap1;
     HBITMAP             old_hbitmap2;
@@ -451,8 +450,7 @@ bool ReadIconFromData( void *data, const char *fname, WRInfo *info, WResLangNode
 /*
  * doReadCursor
  */
-static bool doReadCursor( const char *fname, an_img_file *cursorfile, an_img *cursor,
-                   WRInfo *info, WResLangNode *lnode )
+static bool doReadCursor( const char *fname, an_img_file *cursorfile, an_img *cursor, WRInfo *info, WResLangNode *lnode )
 {
     img_node            node;
     HDC                 hdc;
@@ -528,8 +526,7 @@ static bool readInCursorFile( const char *fname )
 /*
  * ReadCursorFromData - read the cursor data and set up structures
  */
-bool ReadCursorFromData( void *data, const char *fname, WRInfo *info,
-                         WResLangNode *lnode )
+bool ReadCursorFromData( void *data, const char *fname, WRInfo *info, WResLangNode *lnode )
 {
     unsigned            pos;
     an_img_file         *cursorfile;
@@ -664,15 +661,15 @@ static bool getOpenFName( char *fname )
  */
 static bool readInResourceFile( const char *fullname )
 {
-    BYTE                *data;
+    char                *data;
     size_t              dsize;
     WRInfo              *info;
-    WRSelectImageInfo   *sii;
+    WRSelectImageInfo   *siinfo;
     HELPFUNC            hcb;
     bool                ok;
 
     info = NULL;
-    sii = NULL;
+    siinfo = NULL;
     data = NULL;
     ok = (fullname != NULL);
 
@@ -683,26 +680,27 @@ static bool readInResourceFile( const char *fullname )
 
     if( ok ) {
         hcb = MakeProcInstance_HELP( IEHelpCallBack, Instance );
-        sii = WRSelectImage( HMainWindow, info, hcb );
+        siinfo = WRSelectImage( HMainWindow, info, hcb );
         FreeProcInstance_HELP( hcb );
-        ok = (sii != NULL && sii->lnode != NULL);
+        ok = (siinfo != NULL && siinfo->lnode != NULL);
     }
 
     if( ok ) {
-        if( sii->type == RESOURCE2INT( RT_BITMAP ) ) {
+        if( siinfo->type == RESOURCE2INT( RT_BITMAP ) ) {
             imgType = BITMAP_IMG;
-            data = WRCopyResData( info, sii->lnode );
-            dsize = sii->lnode->Info.Length;
-            ok = (data != NULL);
-            if( ok ) {
+            data = WRAllocCopyResData( info, siinfo->lnode );
+            dsize = siinfo->lnode->Info.Length;
+            if( data == NULL ) {
+                ok = false;
+            } else {
                 ok = WRAddBitmapFileHeader( &data, &dsize );
             }
-        } else if( sii->type == RESOURCE2INT( RT_GROUP_CURSOR ) ) {
+        } else if( siinfo->type == RESOURCE2INT( RT_GROUP_CURSOR ) ) {
             imgType = CURSOR_IMG;
-            ok = WRCreateCursorData( info, sii->lnode, &data, &dsize );
-        } else if( sii->type == RESOURCE2INT( RT_GROUP_ICON ) ) {
+            ok = WRCreateCursorData( info, siinfo->lnode, &data, &dsize );
+        } else if( siinfo->type == RESOURCE2INT( RT_GROUP_ICON ) ) {
             imgType = ICON_IMG;
-            ok = WRCreateIconData( info, sii->lnode, &data, &dsize );
+            ok = WRCreateIconData( info, siinfo->lnode, &data, &dsize );
         } else {
             imgType = UNDEF_IMG;
             ok = false;
@@ -710,17 +708,17 @@ static bool readInResourceFile( const char *fullname )
     }
 
     if( ok ) {
-        if( sii->type == RESOURCE2INT( RT_BITMAP ) ) {
-            ok = ReadBitmapFromData( data, fullname, info, sii->lnode );
-        } else if( sii->type == RESOURCE2INT( RT_GROUP_CURSOR ) ) {
-            ok = ReadCursorFromData( data, fullname, info, sii->lnode );
-        } else if( sii->type == RESOURCE2INT( RT_GROUP_ICON ) ) {
-            ok = ReadIconFromData( data, fullname, info, sii->lnode );
+        if( siinfo->type == RESOURCE2INT( RT_BITMAP ) ) {
+            ok = ReadBitmapFromData( data, fullname, info, siinfo->lnode );
+        } else if( siinfo->type == RESOURCE2INT( RT_GROUP_CURSOR ) ) {
+            ok = ReadCursorFromData( data, fullname, info, siinfo->lnode );
+        } else if( siinfo->type == RESOURCE2INT( RT_GROUP_ICON ) ) {
+            ok = ReadIconFromData( data, fullname, info, siinfo->lnode );
         }
     }
 
-    if( sii != NULL ) {
-        WRFreeSelectImageInfo( sii );
+    if( siinfo != NULL ) {
+        WRFreeSelectImageInfo( siinfo );
     }
 
     if( data != NULL ) {

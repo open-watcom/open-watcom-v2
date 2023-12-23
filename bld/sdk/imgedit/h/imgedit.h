@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -276,8 +276,8 @@ bool    ReadCursorFromData( void *data, const char *fname, WRInfo *info, WResLan
 void    WriteIconLoadedText( char *filename, int num );
 
 /* iesave.c */
-bool    SaveBitmapToData( img_node *node, BYTE **data, size_t *size );
-bool    SaveImgToData( img_node *node, BYTE **data, size_t *size );
+bool    SaveBitmapToData( img_node *node, char **data, size_t *size );
+bool    SaveImgToData( img_node *node, char **data, size_t *size );
 bool    SaveFile( int how );
 bool    SaveFileFromNode( img_node *node, int how );
 bool    SaveColorPalette( void );

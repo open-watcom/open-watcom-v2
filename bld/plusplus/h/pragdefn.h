@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,7 +41,7 @@
 
 
 #define MAX_POSSIBLE_REG        8
-
+#define REG_BUFF_SIZE           20
 #define MAXIMUM_PARMSETS        32
 
 typedef struct aux_entry AUX_ENTRY;
@@ -164,24 +164,23 @@ bool PragRecogName(             // RECOGNIZE PRAGMA NAME
 int PragRegIndex(               // GET PRAGMA REGISTER INDEX
     const char *registers,
     const char *name,
-    size_t len,
     bool ignorecase )
 ;
 int PragRegNumIndex(            // GET PRAGMA REGISTER NUMBER INDEX (RISC CPU)
     const char *str,
-    size_t len,
     int max_reg )
 ;
 void PragRegNameErr(
-    const char *regname,
-    size_t regnamelen )
+    const char *regname )
 ;
 hw_reg_set PragRegList(         // GET PRAGMA REGISTER SET
     void )
 ;
 hw_reg_set PragRegName(         // GET REGISTER NAME
-    const char *regname,        // - register name
-    size_t regnamelen )         // - register name len
+    const char *regname )       // - register name
+;
+hw_reg_set PragReg(             // GET REGISTER
+    void )
 ;
 bool ReverseParms(              // ASK IF PRAGMA REQUIRES REVERSED PARMS
     AUX_INFO * pragma )         // - pragma
@@ -196,10 +195,12 @@ void AsmSysPCHWriteCode(        // write code sequence to PCH
 void AsmSysPCHReadCode(         // read code sequence from PCH
     AUX_INFO *info )            // - code sequence
 ;
+bool GetMsgNum(                 // decode C++ message number from string
+    const char *str,            // - input string
+    unsigned *val )             // - output message number
+;
 const char *SkipUnderscorePrefix(
-    const char *str,
-    size_t *len,
-    bool iso_compliant_names )
+    const char *str )
 ;
 bool GetPragmaAuxAliasInfo(
     void )

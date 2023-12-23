@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,6 +45,8 @@
 #else
 #define ORLUNALIGNED
 #endif
+
+#define SEEK_POSBACK(x)                 (-(long)(x))
 
 #define ORL_CLI_READ(x,a,b)             (x)->cli_read(a,b)
 #define ORL_CLI_SEEK(x,a,b,c)           (x)->cli_seek(a,b,c)

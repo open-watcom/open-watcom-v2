@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,142 +33,118 @@
 #include "owlpriv.h"
 #include "owreloc.h"
 
+#define PPC_RELOCS                          /* coff                         elf                 mask */ \
+/* OWL_RELOC_ABSOLUTE */        PPC_RELOC( COFF_IMAGE_REL_PPC_ABSOLUTE, R_PPC_NONE,         0xffffffff ) \
+/* OWL_RELOC_WORD */            PPC_RELOC( COFF_IMAGE_REL_PPC_ADDR32,   R_PPC_ADDR32,       0xffffffff ) \
+/* OWL_RELOC_HALF_HI */         PPC_RELOC( COFF_IMAGE_REL_PPC_ADDR16,   R_PPC_ADDR16_HI,    0x0000ffff ) \
+/* OWL_RELOC_HALF_HA */         PPC_RELOC( COFF_IMAGE_REL_PPC_ADDR16,   R_PPC_ADDR16_HA,    0x0000ffff ) \
+/* OWL_RELOC_PAIR */            PPC_RELOC( COFF_IMAGE_REL_PPC_ADDR16,   R_PPC_NONE,         0x00000000 ) \
+/* OWL_RELOC_HALF_LO */         PPC_RELOC( COFF_IMAGE_REL_PPC_ADDR16,   R_PPC_ADDR16_LO,    0x0000ffff ) \
+/* OWL_RELOC_BRANCH_REL */      PPC_RELOC( COFF_IMAGE_REL_PPC_REL14,    R_PPC_REL14,        0x0000fffc ) \
+/* OWL_RELOC_BRANCH_ABS */      PPC_RELOC( COFF_IMAGE_REL_PPC_ADDR14,   R_PPC_ADDR14,       0x0000fffc ) \
+/* OWL_RELOC_JUMP_REL */        PPC_RELOC( COFF_IMAGE_REL_PPC_REL24,    R_PPC_REL24,        0x03fffffc ) \
+/* OWL_RELOC_JUMP_ABS */        PPC_RELOC( COFF_IMAGE_REL_PPC_ADDR24,   R_PPC_ADDR24,       0x03fffffc ) \
+/* OWL_RELOC_SECTION_INDEX */   PPC_RELOC( COFF_IMAGE_REL_PPC_SECTION,  R_PPC_NONE,         0x0000ffff ) \
+/* OWL_RELOC_SECTION_OFFSET */  PPC_RELOC( COFF_IMAGE_REL_PPC_SECREL,   R_PPC_NONE,         0xffffffff ) \
+/* OWL_RELOC_TOC_OFFSET */      PPC_RELOC( COFF_IMAGE_REL_PPC_TOCREL16, R_PPC_GOT16,        0x0000ffff ) \
+/* OWL_RELOC_GLUE */            PPC_RELOC( COFF_IMAGE_REL_PPC_IFGLUE,   R_PPC_NONE,         0xffffffff )
+
+#define MIPS_RELOCS                         /* coff                         elf                 mask */ \
+/* OWL_RELOC_ABSOLUTE */        MIPS_RELOC( COFF_IMAGE_REL_MIPS_ABSOLUTE,   R_MIPS_NONE,    0xffffffff ) \
+/* OWL_RELOC_WORD */            MIPS_RELOC( COFF_IMAGE_REL_MIPS_REFWORD,    R_MIPS_32,      0xffffffff ) \
+/* OWL_RELOC_HALF_HI */         MIPS_RELOC( COFF_IMAGE_REL_MIPS_REFHI,      R_MIPS_HI16,    0x0000ffff ) \
+/* OWL_RELOC_HALF_HA */         MIPS_RELOC( 0,                              R_MIPS_NONE,    0x0000ffff ) \
+/* OWL_RELOC_PAIR */            MIPS_RELOC( COFF_IMAGE_REL_MIPS_PAIR,       R_MIPS_NONE,    0x00000000 ) \
+/* OWL_RELOC_HALF_LO */         MIPS_RELOC( COFF_IMAGE_REL_MIPS_REFLO,      R_MIPS_LO16,    0x0000ffff ) \
+/* OWL_RELOC_BRANCH_REL */      MIPS_RELOC( COFF_IMAGE_REL_MIPS_REFLO,      R_MIPS_PC16,    0x0000ffff ) \
+/* OWL_RELOC_BRANCH_ABS */      MIPS_RELOC( 0,                              R_MIPS_NONE,    0x0000ffff ) \
+/* OWL_RELOC_JUMP_REL */        MIPS_RELOC( 0,                              R_MIPS_NONE,    0x03ffffff ) \
+/* OWL_RELOC_JUMP_ABS */        MIPS_RELOC( COFF_IMAGE_REL_MIPS_JMPADDR,    R_MIPS_26,      0x03ffffff ) \
+/* OWL_RELOC_SECTION_INDEX */   MIPS_RELOC( COFF_IMAGE_REL_MIPS_SECTION,    R_MIPS_NONE,    0x0000ffff ) \
+/* OWL_RELOC_SECTION_OFFSET */  MIPS_RELOC( COFF_IMAGE_REL_MIPS_SECREL,     R_MIPS_NONE,    0xffffffff ) \
+/* OWL_RELOC_TOC_OFFSET */      MIPS_RELOC( COFF_IMAGE_REL_MIPS_GPREL,      R_MIPS_GOT16,   0x0000ffff ) \
+/* OWL_RELOC_GLUE */            MIPS_RELOC( 0,                              R_MIPS_NONE,    0xffffffff )
+
+#define ALPHA_RELOCS                        /* coff                         elf                 mask */ \
+/* OWL_RELOC_ABSOLUTE */        ALPHA_RELOC( COFF_IMAGE_REL_ALPHA_ABSOLUTE, R_ALPHA_NONE,       0xffffffff ) \
+/* OWL_RELOC_WORD */            ALPHA_RELOC( COFF_IMAGE_REL_ALPHA_REFLONG,  R_ALPHA_REFLONG,    0xffffffff ) \
+/* OWL_RELOC_HALF_HI */         ALPHA_RELOC( COFF_IMAGE_REL_ALPHA_REFHI,    R_ALPHA_GPRELHIGH,  0x0000ffff ) \
+/* OWL_RELOC_HALF_HA */         ALPHA_RELOC( 0,                             R_ALPHA_NONE,       0x0000ffff ) \
+/* OWL_RELOC_PAIR */            ALPHA_RELOC( COFF_IMAGE_REL_ALPHA_PAIR,     R_ALPHA_NONE,       0x00000000 ) \
+/* OWL_RELOC_HALF_LO */         ALPHA_RELOC( COFF_IMAGE_REL_ALPHA_REFLO,    R_ALPHA_GPRELLOW,   0x0000ffff ) \
+/* OWL_RELOC_BRANCH_REL */      ALPHA_RELOC( COFF_IMAGE_REL_ALPHA_BRADDR,   R_ALPHA_BRADDR,     0x001fffff ) \
+/* OWL_RELOC_BRANCH_ABS */      ALPHA_RELOC( 0,                             R_ALPHA_NONE,       0x001fffff ) \
+/* OWL_RELOC_JUMP_REL */        ALPHA_RELOC( COFF_IMAGE_REL_ALPHA_HINT,     R_ALPHA_SREL16,     0x00003fff ) \
+/* OWL_RELOC_JUMP_ABS */        ALPHA_RELOC( 0,                             R_ALPHA_NONE,       0x00003fff ) \
+/* OWL_RELOC_SECTION_INDEX */   ALPHA_RELOC( COFF_IMAGE_REL_ALPHA_SECTION,  R_ALPHA_NONE,       0x0000ffff ) \
+/* OWL_RELOC_SECTION_OFFSET */  ALPHA_RELOC( COFF_IMAGE_REL_ALPHA_SECREL,   R_ALPHA_NONE,       0xffffffff ) \
+/* OWL_RELOC_TOC_OFFSET */      ALPHA_RELOC( 0,                             R_ALPHA_GPREL16,    0x0000ffff ) \
+/* OWL_RELOC_GLUE */            ALPHA_RELOC( 0,                             R_ALPHA_NONE,       0xffffffff )
+
+#define I386_RELOCS                         /* coff                         elf */ \
+/* OWL_RELOC_ABSOLUTE */        I386_RELOC( COFF_IMAGE_REL_I386_ABSOLUTE,   R_386_NONE ) \
+/* OWL_RELOC_WORD */            I386_RELOC( COFF_IMAGE_REL_I386_DIR32,      R_386_32 ) \
+/* OWL_RELOC_HALF_HI */         I386_RELOC( 0,                              R_386_NONE ) \
+/* OWL_RELOC_HALF_HA */         I386_RELOC( 0,                              R_386_NONE ) \
+/* OWL_RELOC_PAIR */            I386_RELOC( 0,                              R_386_NONE ) \
+/* OWL_RELOC_HALF_LO */         I386_RELOC( 0,                              R_386_NONE ) \
+/* OWL_RELOC_BRANCH_REL */      I386_RELOC( COFF_IMAGE_REL_I386_REL32,      R_386_PC32 ) \
+/* OWL_RELOC_BRANCH_ABS */      I386_RELOC( 0,                              R_386_NONE ) \
+/* OWL_RELOC_JUMP_REL */        I386_RELOC( 0,                              R_386_NONE ) \
+/* OWL_RELOC_JUMP_ABS */        I386_RELOC( 0,                              R_386_NONE ) \
+/* OWL_RELOC_SECTION_INDEX */   I386_RELOC( COFF_IMAGE_REL_I386_SECTION,    R_386_32 ) \
+/* OWL_RELOC_SECTION_OFFSET */  I386_RELOC( COFF_IMAGE_REL_I386_SECREL,     R_386_32 ) \
+/* OWL_RELOC_TOC_OFFSET */      I386_RELOC( 0,                              R_386_GOT32 ) \
+/* OWL_RELOC_GLUE */            I386_RELOC( 0,                              R_386_NONE )
+
 // These correspond to owl_reloc_type
 static uint_32 coffRelocTypesPPC[] = {
-    COFF_IMAGE_REL_PPC_ABSOLUTE,     /* OWL_RELOC_ABSOLUTE */
-    COFF_IMAGE_REL_PPC_ADDR32,       /* OWL_RELOC_WORD */
-    COFF_IMAGE_REL_PPC_ADDR16,       /* OWL_RELOC_HALF_HI */            // Hi: correct?
-    COFF_IMAGE_REL_PPC_ADDR16,       /* OWL_RELOC_HALF_HA */
-    COFF_IMAGE_REL_PPC_ADDR16,       /* OWL_RELOC_PAIR */               // Pair: needed?
-    COFF_IMAGE_REL_PPC_ADDR16,       /* OWL_RELOC_HALF_LO */            // Lo: correct?
-    COFF_IMAGE_REL_PPC_REL14,        /* OWL_RELOC_BRANCH_REL */
-    COFF_IMAGE_REL_PPC_ADDR14,       /* OWL_RELOC_BRANCH_ABS, unused */
-    COFF_IMAGE_REL_PPC_REL24,        /* OWL_RELOC_JUMP_REL */
-    COFF_IMAGE_REL_PPC_ADDR24,       /* OWL_RELOC_JUMP_ABS, unused */
-    COFF_IMAGE_REL_PPC_SECTION,      /* OWL_RELOC_SECTION_INDEX */
-    COFF_IMAGE_REL_PPC_SECREL,       /* OWL_RELOC_SECTION_OFFSET */
-    COFF_IMAGE_REL_PPC_TOCREL16,     /* OWL_RELOC_TOC_OFFSET */
-    COFF_IMAGE_REL_PPC_IFGLUE,       /* OWL_RELOC_GLUE */
+    #define PPC_RELOC(coff,elf,mask)    coff,
+    PPC_RELOCS
+    #undef PPC_RELOC
 };
 
 static uint_32 coffRelocTypesMIPS[] = {
-    COFF_IMAGE_REL_MIPS_ABSOLUTE,    /* OWL_RELOC_ABSOLUTE */
-    COFF_IMAGE_REL_MIPS_REFWORD,     /* OWL_RELOC_WORD */
-    COFF_IMAGE_REL_MIPS_REFHI,       /* OWL_RELOC_HALF_HI */
-    0,                               /* OWL_RELOC_HALF_HA, unused */
-    COFF_IMAGE_REL_MIPS_PAIR,        /* OWL_RELOC_PAIR */
-    COFF_IMAGE_REL_MIPS_REFLO,       /* OWL_RELOC_HALF_LO */
-    COFF_IMAGE_REL_MIPS_REFLO,       /* OWL_RELOC_BRANCH_REL */  // Is this right??
-    0,                               /* OWL_RELOC_BRANCH_ABS, unused */
-    0,                               /* OWL_RELOC_JUMP_REL, unused */
-    COFF_IMAGE_REL_MIPS_JMPADDR,     /* OWL_RELOC_JUMP_ABS */
-    COFF_IMAGE_REL_MIPS_SECTION,     /* OWL_RELOC_SECTION_INDEX */
-    COFF_IMAGE_REL_MIPS_SECREL,      /* OWL_RELOC_SECTION_OFFSET */
-    COFF_IMAGE_REL_MIPS_GPREL,       /* OWL_RELOC_TOC_OFFSET */
-    0,                               /* OWL_RELOC_GLUE, unused */
+    #define MIPS_RELOC(coff,elf,mask)   coff,
+    MIPS_RELOCS
+    #undef MIPS_RELOC
 };
 
 static uint_32 coffRelocTypesAlpha[] = {
-    COFF_IMAGE_REL_ALPHA_ABSOLUTE,   /* OWL_RELOC_ABSOLUTE */
-    COFF_IMAGE_REL_ALPHA_REFLONG,    /* OWL_RELOC_WORD */
-    COFF_IMAGE_REL_ALPHA_REFHI,      /* OWL_RELOC_HALF_HI */
-    0,                               /* OWL_RELOC_HALF_HA */
-    COFF_IMAGE_REL_ALPHA_PAIR,       /* OWL_RELOC_PAIR */
-    COFF_IMAGE_REL_ALPHA_REFLO,      /* OWL_RELOC_HALF_LO */
-    COFF_IMAGE_REL_ALPHA_BRADDR,     /* OWL_RELOC_BRANCH_REL */
-    0,                               /* OWL_RELOC_BRANCH_ABS */
-    COFF_IMAGE_REL_ALPHA_HINT,       /* OWL_RELOC_JUMP_REL */
-    0,                               /* OWL_RELOC_JUMP_ABS */
-    COFF_IMAGE_REL_ALPHA_SECTION,    /* OWL_RELOC_SECTION_INDEX */
-    COFF_IMAGE_REL_ALPHA_SECREL,     /* OWL_RELOC_SECTION_OFFSET */
-    0,                               /* OWL_RELOC_TOC_OFFSET */
-    0,                               /* OWL_RELOC_GLUE */
+    #define ALPHA_RELOC(coff,elf,mask)  coff,
+    ALPHA_RELOCS
+    #undef ALPHA_RELOC
 };
 
 static uint_32 coffRelocTypes386[] = {
-    COFF_IMAGE_REL_I386_ABSOLUTE,    /* OWL_RELOC_ABSOLUTE */
-    COFF_IMAGE_REL_I386_DIR32,       /* OWL_RELOC_WORD */
-    0,                               /* OWL_RELOC_HALF_HI */
-    0,                               /* OWL_RELOC_HALF_HA */
-    0,                               /* OWL_RELOC_PAIR */
-    0,                               /* OWL_RELOC_HALF_LO */
-    COFF_IMAGE_REL_I386_REL32,       /* OWL_RELOC_BRANCH_REL */
-    0,                               /* OWL_RELOC_BRANCH_ABS */
-    0,                               /* OWL_RELOC_JUMP_REL */
-    0,                               /* OWL_RELOC_JUMP_ABS */
-    COFF_IMAGE_REL_I386_SECTION,     /* OWL_RELOC_SECTION_INDEX */
-    COFF_IMAGE_REL_I386_SECREL,      /* OWL_RELOC_SECTION_OFFSET */
-    0,                               /* OWL_RELOC_TOC_OFFSET */
-    0                                /* OWL_RELOC_GLUE */
+    #define I386_RELOC(coff,elf)        coff,
+    I386_RELOCS
+    #undef I386_RELOC
 };
 
 static Elf32_Word elfRelocTypesPPC[] = {
-    R_PPC_NONE,                 /* OWL_RELOC_ABSOLUTE */
-    R_PPC_ADDR32,               /* OWL_RELOC_WORD */
-    R_PPC_ADDR16_HI,            /* OWL_RELOC_HALF_HI */
-    R_PPC_ADDR16_HA,            /* OWL_RELOC_HALF_HA */
-    R_PPC_NONE,                 /* OWL_RELOC_PAIR */
-    R_PPC_ADDR16_LO,            /* OWL_RELOC_HALF_LO */
-    R_PPC_REL14,                /* OWL_RELOC_BRANCH_REL */
-    R_PPC_ADDR14,               /* OWL_RELOC_BRANCH_ABS */
-    R_PPC_REL24,                /* OWL_RELOC_JUMP_REL */
-    R_PPC_ADDR24,               /* OWL_RELOC_JUMP_ABS */
-    R_PPC_NONE,                 /* OWL_RELOC_SECTION_INDEX */
-    R_PPC_NONE,                 /* OWL_RELOC_SECTION_OFFSET */
-    R_PPC_GOT16,                /* OWL_RELOC_TOC_OFFSET */
-    R_PPC_NONE,                 /* OWL_RELOC_GLUE */
+    #define PPC_RELOC(coff,elf,mask)    elf,
+    PPC_RELOCS
+    #undef PPC_RELOC
 };
 
 static Elf32_Word elfRelocTypesMIPS[] = {
-    R_MIPS_NONE,                /* OWL_RELOC_ABSOLUTE */
-    R_MIPS_32,                  /* OWL_RELOC_WORD */
-    R_MIPS_HI16,                /* OWL_RELOC_HALF_HI */
-    R_MIPS_NONE,                /* OWL_RELOC_HALF_HA */
-    R_MIPS_NONE,                /* OWL_RELOC_PAIR */
-    R_MIPS_LO16,                /* OWL_RELOC_HALF_LO */
-    R_MIPS_PC16,                /* OWL_RELOC_BRANCH_REL */
-    R_MIPS_NONE,                /* OWL_RELOC_BRANCH_ABS */
-    R_MIPS_NONE,                /* OWL_RELOC_JUMP_REL */
-    R_MIPS_26,                  /* OWL_RELOC_JUMP_ABS */
-    R_MIPS_NONE,                /* OWL_RELOC_SECTION_INDEX */
-    R_MIPS_NONE,                /* OWL_RELOC_SECTION_OFFSET */
-    R_MIPS_GOT16,               /* OWL_RELOC_TOC_OFFSET */
-    R_MIPS_NONE,                /* OWL_RELOC_GLUE */
+    #define MIPS_RELOC(coff,elf,mask)    elf,
+    MIPS_RELOCS
+    #undef MIPS_RELOC
 };
 
 // Someone should really make these up...
 static Elf32_Word elfRelocTypesAlpha[] = {
-    R_ALPHA_NONE,               /* OWL_RELOC_ABSOLUTE */
-    R_ALPHA_REFLONG,            /* OWL_RELOC_WORD */
-    R_ALPHA_GPRELHIGH,          /* OWL_RELOC_HALF_HI */
-    R_ALPHA_NONE,               /* OWL_RELOC_HALF_HA */
-    R_ALPHA_NONE,               /* OWL_RELOC_PAIR */
-    R_ALPHA_GPRELLOW,           /* OWL_RELOC_HALF_LO */
-    R_ALPHA_BRADDR,             /* OWL_RELOC_BRANCH_REL */
-    R_ALPHA_NONE,               /* OWL_RELOC_BRANCH_ABS */
-    R_ALPHA_SREL16,             /* OWL_RELOC_JUMP_REL */
-    R_ALPHA_NONE,               /* OWL_RELOC_JUMP_ABS */
-    R_ALPHA_NONE,               /* OWL_RELOC_SECTION_INDEX */
-    R_ALPHA_NONE,               /* OWL_RELOC_SECTION_OFFSET */
-    R_ALPHA_GPREL16,            /* OWL_RELOC_TOC_OFFSET */
-    R_ALPHA_NONE,               /* OWL_RELOC_GLUE */
+    #define ALPHA_RELOC(coff,elf,mask)  elf,
+    ALPHA_RELOCS
+    #undef ALPHA_RELOC
 };
 
 static Elf32_Word elfRelocTypes386[] = {
-    R_386_NONE,                 /* OWL_RELOC_ABSOLUTE */
-    R_386_32,                   /* OWL_RELOC_WORD */
-    R_386_NONE,                 /* OWL_RELOC_HALF_HI */
-    R_386_NONE,                 /* OWL_RELOC_HALF_HA */
-    R_386_NONE,                 /* OWL_RELOC_PAIR */
-    R_386_NONE,                 /* OWL_RELOC_HALF_LO */
-    R_386_PC32,                 /* OWL_RELOC_BRANCH_REL */
-    R_386_NONE,                 /* OWL_RELOC_BRANCH_ABS, unused */
-    R_386_NONE,                 /* OWL_RELOC_JUMP_REL */
-    R_386_NONE,                 /* OWL_RELOC_JUMP_ABS, unused */
-    R_386_32,                   /* OWL_RELOC_SECTION_INDEX */
-    R_386_32,                   /* OWL_RELOC_SECTION_OFFSET */
-    R_386_GOT32,                /* OWL_RELOC_TOC_OFFSET */
-    R_386_NONE,                 /* OWL_RELOC_GLUE */
+    #define I386_RELOC(coff,elf)        elf,
+    I386_RELOCS
+    #undef I386_RELOC
 };
 
 Elf32_Word OWLENTRY ElfRelocType( owl_reloc_type reloc_type, owl_cpu cpu ) {
@@ -185,7 +162,7 @@ Elf32_Word OWLENTRY ElfRelocType( owl_reloc_type reloc_type, owl_cpu cpu ) {
     case OWL_CPU_ALPHA:
         elf_relocs = elfRelocTypesAlpha;
         break;
-    case OWL_CPU_INTEL:
+    case OWL_CPU_X86:
         elf_relocs = elfRelocTypes386;
         break;
     default:
@@ -209,7 +186,7 @@ uint_32 OWLENTRY CoffRelocType( owl_reloc_type reloc_type, owl_cpu cpu ) {
     case OWL_CPU_ALPHA:
         coff_relocs = coffRelocTypesAlpha;
         break;
-    case OWL_CPU_INTEL:
+    case OWL_CPU_X86:
         coff_relocs = coffRelocTypes386;
         break;
     default:
@@ -219,54 +196,21 @@ uint_32 OWLENTRY CoffRelocType( owl_reloc_type reloc_type, owl_cpu cpu ) {
 }
 
 static unsigned ppcMasks[] = {
-    0xffffffff,         /* OWL_RELOC_ABSOLUTE */
-    0xffffffff,         /* OWL_RELOC_WORD */
-    0x0000ffff,         /* OWL_RELOC_HALF_HI */
-    0x0000ffff,         /* OWL_RELOC_HALF_HA */
-    0x00000000,         /* OWL_RELOC_PAIR */
-    0x0000ffff,         /* OWL_RELOC_HALF_LO */
-    0x0000fffc,         /* OWL_RELOC_BRANCH_REL */
-    0x0000fffc,         /* OWL_RELOC_BRANCH_ABS */
-    0x03fffffc,         /* OWL_RELOC_JUMP_REL */
-    0x03fffffc,         /* OWL_RELOC_JUMP_ABS */
-    0x0000ffff,         /* OWL_RELOC_SECTION_INDEX */
-    0xffffffff,         /* OWL_RELOC_SECTION_OFFSET */
-    0x0000ffff,         /* OWL_RELOC_TOC_OFFSET */
-    0xffffffff,         /* OWL_RELOC_GLUE */
+    #define PPC_RELOC(coff,elf,mask)    mask,
+    PPC_RELOCS
+    #undef PPC_RELOC
 };
 
 static unsigned mipsMasks[] = {
-    0xffffffff,         /* OWL_RELOC_ABSOLUTE */
-    0xffffffff,         /* OWL_RELOC_WORD */
-    0x0000ffff,         /* OWL_RELOC_HALF_HI */
-    0x0000ffff,         /* OWL_RELOC_HALF_HA */
-    0x00000000,         /* OWL_RELOC_PAIR */
-    0x0000ffff,         /* OWL_RELOC_HALF_LO */
-    0x0000ffff,         /* OWL_RELOC_BRANCH_REL */
-    0x0000ffff,         /* OWL_RELOC_BRANCH_ABS */
-    0x03ffffff,         /* OWL_RELOC_JUMP_REL */
-    0x03ffffff,         /* OWL_RELOC_JUMP_ABS */
-    0x0000ffff,         /* OWL_RELOC_SECTION_INDEX */
-    0xffffffff,         /* OWL_RELOC_SECTION_OFFSET */
-    0x0000ffff,         /* OWL_RELOC_TOC_OFFSET */
-    0xffffffff,         /* OWL_RELOC_GLUE */
+    #define MIPS_RELOC(coff,elf,mask)    mask,
+    MIPS_RELOCS
+    #undef MIPS_RELOC
 };
 
 static unsigned alphaMasks[] = {
-    0xffffffff,         /* OWL_RELOC_ABSOLUTE */
-    0xffffffff,         /* OWL_RELOC_WORD */
-    0x0000ffff,         /* OWL_RELOC_HALF_HI */
-    0x0000ffff,         /* OWL_RELOC_HALF_HA */
-    0x00000000,         /* OWL_RELOC_PAIR */
-    0x0000ffff,         /* OWL_RELOC_HALF_LO */
-    0x001fffff,         /* OWL_RELOC_BRANCH_REL */
-    0x001fffff,         /* OWL_RELOC_BRANCH_ABS, unused */
-    0x00003fff,         /* OWL_RELOC_JUMP_REL */
-    0x00003fff,         /* OWL_RELOC_JUMP_ABS, unused */
-    0x0000ffff,         /* OWL_RELOC_SECTION_INDEX */
-    0xffffffff,         /* OWL_RELOC_SECTION_OFFSET */
-    0x0000ffff,         /* OWL_RELOC_TOC_OFFSET */
-    0xffffffff,         /* OWL_RELOC_GLUE */
+    #define ALPHA_RELOC(coff,elf,mask)  mask,
+    ALPHA_RELOCS
+    #undef ALPHA_RELOC
 };
 
 unsigned OWLENTRY OWLRelocBitMask( owl_file_handle file, owl_reloc_info *reloc ) {
@@ -282,8 +226,8 @@ unsigned OWLENTRY OWLRelocBitMask( owl_file_handle file, owl_reloc_info *reloc )
     case OWL_CPU_ALPHA:
         mask_array = alphaMasks;
         break;
-    case OWL_CPU_INTEL:
-        return 0xffffffff;
+    case OWL_CPU_X86:
+        return( 0xffffffff );
     case OWL_CPU_MIPS:
         mask_array = mipsMasks;
         break;
@@ -300,15 +244,15 @@ owl_offset OWLENTRY OWLRelocTargetDisp( owl_section_handle section, owl_offset f
     owl_cpu     cpu;
 
     cpu = section->file->info->cpu;
-    if( cpu == OWL_CPU_ALPHA || cpu == OWL_CPU_INTEL || cpu == OWL_CPU_MIPS ) {
+    if( cpu == OWL_CPU_ALPHA || cpu == OWL_CPU_X86 || cpu == OWL_CPU_MIPS ) {
         from += 4;  // Intel, Alpha and MIPS use updated PC
     } // PowerPC uses current PC
-    if( cpu != OWL_CPU_INTEL ) {    // no alignment restrictions for Intel
+    if( cpu != OWL_CPU_X86 ) {    // no alignment restrictions for Intel
         assert( ( to % 4 ) == 0 );
         assert( ( from % 4 ) == 0 );
     }
     ret = to - from;
-    if( cpu == OWL_CPU_PPC || cpu == OWL_CPU_INTEL ) {
+    if( cpu == OWL_CPU_PPC || cpu == OWL_CPU_X86 ) {
         return( ret );
     }
     return( ret >> 2 ); // Alpha and MIPS chop off the low two bits

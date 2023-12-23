@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,8 +44,8 @@ and symbols however are fixed and suffice for import libraries  */
 
 typedef struct {
     coff_file_header    header;
-    coff_section_header section[MAX_NUM_COFF_LIB_SECTIONS];
-    coff_symbol         symbol[MAX_NUM_COFF_LIB_SYMBOLS];
+    coff_section_header sections[MAX_NUM_COFF_LIB_SECTIONS];
+    coff_symbol         symbols[MAX_NUM_COFF_LIB_SYMBOLS];
     size_t              string_table_size;
     size_t              max_string_table_size;
     char                *string_table;

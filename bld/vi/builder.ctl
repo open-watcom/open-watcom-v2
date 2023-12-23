@@ -5,73 +5,83 @@ set PROJNAME=vi
 
 set PROJDIR=<CWD>
 
-[ INCLUDE <OWROOT>/build/prolog.ctl ]
+[ INCLUDE "<OWROOT>/build/prolog.ctl" ]
 
-[ INCLUDE <OWROOT>/build/defrule.ctl ]
+[ INCLUDE "<OWROOT>/build/defrule.ctl" ]
 
 [ BLOCK <BLDRULE> rel ]
 #======================
-    cdsay <PROJDIR>
+    cdsay "<PROJDIR>"
 
 [ BLOCK <BLDRULE> rel cprel ]
 #============================
 # Common stuff
-    <CPCMD> dat/v*.cmd                <OWRELROOT>/binp/
-    <CPCMD> dat/v*.bat                <OWRELROOT>/binw/
-    <CPCMD> dat/*.vi                  <OWRELROOT>/eddat/
-    <CPCMD> dat/*.cfg                 <OWRELROOT>/eddat/
-    <CPCMD> dat/*.dat                 <OWRELROOT>/eddat/
-    <CPCMD> dat/*.ini                 <OWRELROOT>/eddat/
-    <CPCMD> dat/bindvi.*              <OWRELROOT>/eddat/
-    <CPCMD> doc/*.hlp                 <OWRELROOT>/eddat/
+    <CPCMD> dat/v*.cmd                   "<OWRELROOT>/binp/"
+    <CPCMD> dat/v*.bat                   "<OWRELROOT>/binw/"
+    <CPCMD> dat/*.vi                     "<OWRELROOT>/eddat/"
+    <CPCMD> dat/*.cfg                    "<OWRELROOT>/eddat/"
+    <CPCMD> dat/*.dat                    "<OWRELROOT>/eddat/"
+    <CPCMD> dat/*.ini                    "<OWRELROOT>/eddat/"
+    <CPCMD> dat/bindvi.*                 "<OWRELROOT>/eddat/"
+    <CPCMD> doc/*.hlp                    "<OWRELROOT>/eddat/"
 
-#    <CCCMD> obj286/vi.exe            <OWRELROOT>/binw/vi286.exe
-    <CCCMD> dos386/vi.exe             <OWRELROOT>/binw/vi.exe
-    <CCCMD> dos386/vi.sym             <OWRELROOT>/binw/vi.sym
-    <CCCMD> ctags/dos386/ctags.exe    <OWRELROOT>/binw/ctags.exe
-    <CCCMD> bind/dosi86/edbind.exe    <OWRELROOT>/binw/edbind.exe
-    <CCCMD> wini86/vi.exe             <OWRELROOT>/binw/viw.exe
-    <CCCMD> wini86/vi.sym             <OWRELROOT>/binw/viw.sym
-    <CCCMD> win386/vi.exe             <OWRELROOT>/binw/viw32.exe
-    <CCCMD> win386/vi.sym             <OWRELROOT>/binw/viw32.sym
-    <CCCMD> nt386/vi.exe              <OWRELROOT>/binnt/vi.exe
-    <CCCMD> nt386/vi.sym              <OWRELROOT>/binnt/vi.sym
-    <CCCMD> nt386.win/vi.exe          <OWRELROOT>/binnt/viw.exe
-    <CCCMD> nt386.win/vi.sym          <OWRELROOT>/binnt/viw.sym
-    <CCCMD> ctags/nt386/ctags.exe     <OWRELROOT>/binnt/ctags.exe
-    <CCCMD> bind/nt386/edbind.exe     <OWRELROOT>/binnt/edbind.exe
-    <CCCMD> os2386/vi.exe             <OWRELROOT>/binp/vi.exe
-    <CCCMD> os2386/vi.sym             <OWRELROOT>/binp/vi.sym
-    <CCCMD> ctags/os2386/ctags.exe    <OWRELROOT>/binp/ctags.exe
-    <CCCMD> bind/os2386/edbind.exe    <OWRELROOT>/binp/edbind.exe
-    <CCCMD> linux386/vi.exe           <OWRELROOT>/binl/vi
-    <CCCMD> linux386/vi.sym           <OWRELROOT>/binl/vi.sym
-    <CCCMD> ctags/linux386/ctags.exe  <OWRELROOT>/binl/ctags
-    <CCCMD> bind/linux386/edbind.exe  <OWRELROOT>/binl/edbind
+#    <CCCMD> obj286/<OWOBJDIR>/vi.exe    "<OWRELROOT>/binw/vi286.exe"
+    <CCCMD> dos386/<OWOBJDIR>/vi.exe     "<OWRELROOT>/binw/"
+    <CCCMD> dos386/vi.sym                "<OWRELROOT>/binw/"
+    <CCCMD> ctags/dos386/ctags.exe       "<OWRELROOT>/binw/"
+    <CCCMD> bind/dosi86/edbind.exe       "<OWRELROOT>/binw/"
+    <CCCMD> wini86/<OWOBJDIR>/viw.exe    "<OWRELROOT>/binw/"
+    <CCCMD> wini86/viw.sym               "<OWRELROOT>/binw/"
+    <CCCMD> win386/<OWOBJDIR>/viw32.exe  "<OWRELROOT>/binw/"
+    <CCCMD> win386/viw32.sym             "<OWRELROOT>/binw/"
+    <CCCMD> nt386/<OWOBJDIR>/vi.exe      "<OWRELROOT>/binnt/"
+    <CCCMD> nt386/vi.sym                 "<OWRELROOT>/binnt/"
+    <CCCMD> nt386.win/<OWOBJDIR>/viw.exe "<OWRELROOT>/binnt/"
+    <CCCMD> nt386.win/viw.sym            "<OWRELROOT>/binnt/"
+    <CCCMD> ctags/nt386/ctags.exe        "<OWRELROOT>/binnt/"
+    <CCCMD> bind/nt386/edbind.exe        "<OWRELROOT>/binnt/"
+    <CCCMD> os2386/<OWOBJDIR>/vi.exe     "<OWRELROOT>/binp/"
+    <CCCMD> os2386/vi.sym                "<OWRELROOT>/binp/"
+    <CCCMD> ctags/os2386/ctags.exe       "<OWRELROOT>/binp/"
+    <CCCMD> bind/os2386/edbind.exe       "<OWRELROOT>/binp/"
+    <CCCMD> linux386/<OWOBJDIR>/vi.exe   "<OWRELROOT>/binl/vi"
+    <CCCMD> linux386/vi.sym              "<OWRELROOT>/binl/"
+    <CCCMD> ctags/linux386/ctags.exe     "<OWRELROOT>/binl/ctags"
+    <CCCMD> bind/linux386/edbind.exe     "<OWRELROOT>/binl/edbind"
 
-    <CCCMD> ntaxp/vi.exe              <OWRELROOT>/axpnt/vi.exe
-    <CCCMD> ntaxp/vi.sym              <OWRELROOT>/axpnt/vi.sym
-    <CCCMD> ntaxp.win/vi.exe          <OWRELROOT>/axpnt/viw.exe
-    <CCCMD> ntaxp.win/vi.sym          <OWRELROOT>/axpnt/viw.sym
-    <CCCMD> ctags/ntaxp/ctags.exe     <OWRELROOT>/axpnt/ctags.exe
-    <CCCMD> bind/ntaxp/edbind.exe     <OWRELROOT>/axpnt/edbind.exe
+    <CCCMD> ntaxp/<OWOBJDIR>/vi.exe      "<OWRELROOT>/axpnt/"
+    <CCCMD> ntaxp/vi.sym                 "<OWRELROOT>/axpnt/"
+    <CCCMD> ntaxp.win/<OWOBJDIR>/viw.exe "<OWRELROOT>/axpnt/"
+    <CCCMD> ntaxp.win/viw.sym            "<OWRELROOT>/axpnt/"
+    <CCCMD> ctags/ntaxp/ctags.exe        "<OWRELROOT>/axpnt/"
+    <CCCMD> bind/ntaxp/edbind.exe        "<OWRELROOT>/axpnt/"
 
-    <CCCMD> qnxi86/vi.exe             <OWRELROOT>/qnx/binq/vi
+    <CCCMD> qnxi86/<OWOBJDIR>/vi.exe     "<OWRELROOT>/qnx/binq/vi"
 
-    <CCCMD> ntx64/vi.exe              <OWRELROOT>/binnt64/vi.exe
-    <CCCMD> ntx64.win/vi.exe          <OWRELROOT>/binnt64/viw.exe
-    <CCCMD> ctags/ntx64/ctags.exe     <OWRELROOT>/binnt64/ctags.exe
-    <CCCMD> bind/ntx64/edbind.exe     <OWRELROOT>/binnt64/edbind.exe
-    <CCCMD> linuxx64/vi.exe           <OWRELROOT>/binl64/vi
-    <CCCMD> ctags/linuxx64/ctags.exe  <OWRELROOT>/binl64/ctags
-    <CCCMD> bind/linuxx64/edbind.exe  <OWRELROOT>/binl64/edbind
-    <CCCMD> linuxarm/vi.exe           <OWRELROOT>/arml/vi
-    <CCCMD> ctags/linuxarm/ctags.exe  <OWRELROOT>/arml/ctags
-    <CCCMD> bind/linuxarm/edbind.exe  <OWRELROOT>/arml/edbind
-    <CCCMD> osxx64/vi.exe             <OWRELROOT>/osx64/vi
-    <CCCMD> ctags/osxx64/ctags.exe    <OWRELROOT>/osx64/ctags
-    <CCCMD> bind/osxx64/edbind.exe    <OWRELROOT>/osx64/edbind
+    <CCCMD> ntx64/<OWOBJDIR>/vi.exe      "<OWRELROOT>/binnt64/"
+    <CCCMD> ntx64.win/<OWOBJDIR>/viw.exe "<OWRELROOT>/binnt64/"
+    <CCCMD> ctags/ntx64/ctags.exe        "<OWRELROOT>/binnt64/"
+    <CCCMD> bind/ntx64/edbind.exe        "<OWRELROOT>/binnt64/"
+    <CCCMD> linuxx64/<OWOBJDIR>/vi.exe   "<OWRELROOT>/binl64/vi"
+    <CCCMD> linuxx64/vi.sym              "<OWRELROOT>/binl64/"
+    <CCCMD> ctags/linuxx64/ctags.exe     "<OWRELROOT>/binl64/ctags"
+    <CCCMD> bind/linuxx64/edbind.exe     "<OWRELROOT>/binl64/edbind"
+    <CCCMD> linuxarm/<OWOBJDIR>/vi.exe   "<OWRELROOT>/arml/vi"
+    <CCCMD> linuxa64/<OWOBJDIR>/vi.exe   "<OWRELROOT>/arml64/vi"
+    <CCCMD> ctags/linuxarm/ctags.exe     "<OWRELROOT>/arml/ctags"
+    <CCCMD> bind/linuxarm/edbind.exe     "<OWRELROOT>/arml/edbind"
+    <CCCMD> ctags/linuxa64/ctags.exe     "<OWRELROOT>/arml64/ctags"
+    <CCCMD> bind/linuxa64/edbind.exe     "<OWRELROOT>/arml64/edbind"
+    <CCCMD> osxx64/<OWOBJDIR>/vi.exe     "<OWRELROOT>/bino64/vi"
+    <CCCMD> ctags/osxx64/ctags.exe       "<OWRELROOT>/bino64/ctags"
+    <CCCMD> bind/osxx64/edbind.exe       "<OWRELROOT>/bino64/edbind"
+    <CCCMD> osxarm/<OWOBJDIR>/vi.exe     "<OWRELROOT>/armo/vi"
+    <CCCMD> osxa64/<OWOBJDIR>/vi.exe     "<OWRELROOT>/armo64/vi"
+    <CCCMD> ctags/osxarm/ctags.exe       "<OWRELROOT>/armo/ctags"
+    <CCCMD> bind/osxarm/edbind.exe       "<OWRELROOT>/armo/edbind"
+    <CCCMD> ctags/osxa64/ctags.exe       "<OWRELROOT>/armo64/ctags"
+    <CCCMD> bind/osxa64/edbind.exe       "<OWRELROOT>/armo64/edbind"
 
 [ BLOCK . . ]
 
-[ INCLUDE <OWROOT>/build/epilog.ctl ]
+[ INCLUDE "<OWROOT>/build/epilog.ctl" ]

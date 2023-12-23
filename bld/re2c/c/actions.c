@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -72,7 +73,7 @@ Symbol *Symbol_find( SubStr str )
     return( Symbol_new( &str ) );
 }
 
-static Range *Range_new( uint l, uint u )
+static Range *Range_new( Char l, Char u )
 {
     Range   *r;
 
@@ -111,7 +112,7 @@ static Range *doUnion( Range *r1, Range *r2 )
                     s->ub = r1->ub;
                 r1 = r1->next;
                 if( r1 == NULL ) {
-                    uint ub = 0;
+                    Char ub = 0;
                     for( ; r2 != NULL && r2->lb <= s->ub; r2 = r2->next )
                         ub = r2->ub;
                     if( ub > s->ub )
@@ -126,7 +127,7 @@ static Range *doUnion( Range *r1, Range *r2 )
                     s->ub = r2->ub;
                 r2 = r2->next;
                 if( r2 == NULL ) {
-                    uint ub = 0;
+                    Char ub = 0;
                     for( ; r1 != NULL && r1->lb <= s->ub; r1 = r1->next )
                         ub = r1->ub;
                     if( ub > s->ub )
@@ -147,8 +148,9 @@ static Range *doDiff( Range *r1, Range *r2 )
 
     rP = &r;
     for( ; r1 != NULL ; r1 = r1->next ) {
-        uint lb = r1->lb;
-        for( ; r2 != NULL && r2->ub <= r1->lb; r2 = r2->next ) ;
+        Char lb = r1->lb;
+        for( ; r2 != NULL && r2->ub <= r1->lb; r2 = r2->next )
+            ;
         for( ; r2 != NULL && r2->lb <  r1->ub; r2 = r2->next ) {
             if( lb < r2->lb ) {
                 *rP = s = Range_new( lb, r2->lb );
@@ -167,10 +169,10 @@ noMore: ;
     return r;
 }
 
-static uchar unescape( SubStr *s )
+static Char unescape( SubStr *s )
 {
-    uchar   c;
-    uchar   v;
+    Char    c;
+    Char    v;
 
     s->len--;
     if( (c = *s->str++) != '\\' || s->len == 0 )
@@ -191,31 +193,40 @@ static uchar unescape( SubStr *s )
         return( '\f' );
     case 'a':
         return( '\a' );
-    case '0': case '1': case '2': case '3':
-    case '4': case '5': case '6': case '7': {
+    case '0':
+    case '1':
+    case '2':
+    case '3':
+    case '4':
+    case '5':
+    case '6':
+    case '7':
         v = c - '0';
         for( ; s->len != 0 && '0' <= (c = *s->str) && c <= '7'; s->len--, s->str++ )
             v = v * 8 + ( c - '0' );
         return( v );
-    } default:
+    default:
         return( c );
     }
 }
 
 static Range *getRange( SubStr *s )
 {
-    uchar lb;
-    uchar ub;
+    Char    lb;
+    Char    ub;
 
     lb = unescape( s );
     if( s->len < 2 || *s->str != '-' ) {
         ub = lb;
     } else {
-        s->len--; s->str++;
+        s->len--;
+        s->str++;
         ub = unescape( s );
         if( ub < lb ) {
-            uchar tmp;
-            tmp = lb; lb = ub; ub = tmp;
+            Char tmp;
+            tmp = lb;
+            lb = ub;
+            ub = tmp;
         }
     }
     return( Range_new( lb, ub + 1 ) );
@@ -284,7 +295,7 @@ uint RegExp_fixedLength( RegExp *r )
 static void RegExp_calcSize( RegExp *re, Char *rep )
 {
     Range   *r;
-    uint    c;
+    Char    c;
 
     switch( re->type ) {
     case NULLOP:
@@ -337,7 +348,7 @@ static void MatchOp_compile( RegExp *re, Char *rep, Ins *i )
     Ins     *j;
     uint    bump;
     Range   *r;
-    uint    c;
+    Char    c;
 
     i->i.tag = CHAR;
     i->i.link = &i[re->size];
@@ -356,7 +367,7 @@ static void MatchOp_compile( RegExp *re, Char *rep, Ins *i )
 static void MatchOp_split( RegExp *re, CharSet *s )
 {
     Range   *r;
-    uint    c;
+    Char    c;
 
     for( r = re->u.MatchOp.match; r != NULL; r = r->next ) {
         for( c = r->lb; c < r->ub; ++c ) {
@@ -517,6 +528,18 @@ RegExp *RegExp_new_CloseOp( RegExp *e )
     return( r );
 }
 
+RegExp *RegExp_new_CloseVOp( RegExp *e, int lb, int ub )
+{
+    RegExp  *r;
+
+    r = malloc( sizeof( RegExp ) );
+    r->type = CLOSEVOP;
+    r->u.CloseVOp.exp = e;
+    r->u.CloseVOp.min = lb;
+    r->u.CloseVOp.max = ub;
+    return( r );
+}
+
 static RegExp *merge( RegExp *m1, RegExp *m2 )
 {
     if( m1 == NULL )
@@ -578,7 +601,7 @@ RegExp *mkAlt( RegExp *e1, RegExp *e2 )
     }
     return( doAlt( merge( m1, m2 ), doAlt( e1, e2 ) ) );
 }
-static RegExp *matchChar( uint c )
+static RegExp *matchChar( Char c )
 {
     return( RegExp_new_MatchOp( Range_new( c, c + 1 ) ) );
 }
@@ -587,7 +610,8 @@ RegExp *strToRE( SubStr s )
 {
     RegExp  *re;
 
-    s.len -= 2; s.str += 1;
+    s.len -= 2;
+    s.str += 1;
     if( s.len == 0 )
         return( RegExp_new_NullOp() );
     re = matchChar( unescape( &s ) );
@@ -600,7 +624,8 @@ RegExp *ranToRE( SubStr s )
 {
     Range   *r;
 
-    s.len -= 2; s.str += 1;
+    s.len -= 2;
+    s.str += 1;
     if( s.len == 0 )
         return( RegExp_new_NullOp() );
     r = getRange( &s );
@@ -743,7 +768,7 @@ void genCode( FILE *o, RegExp *re )
 
     RegExp_calcSize( re, rep );
     ins = malloc( ( re->size + 1 ) * sizeof( Ins ) );
-    memset(ins, 0, ( re->size + 1 ) * sizeof( Ins ) );
+    memset( ins, 0, ( re->size + 1 ) * sizeof( Ins ) );
     RegExp_compile( re, rep, ins );
     eoi = &ins[re->size];
     eoi->i.tag = GOTO;
@@ -753,7 +778,7 @@ void genCode( FILE *o, RegExp *re )
     for( j = 0; j < re->size; ) {
         ins[j].i.marked = false;
         if( ins[j].i.tag == CHAR ) {
-            j = (Ins *)ins[j].i.link - ins;
+            j = (uint)( (Ins *)ins[j].i.link - ins );
         } else {
             j++;
         }

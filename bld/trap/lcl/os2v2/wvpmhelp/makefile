@@ -1,5 +1,7 @@
 #pmake: build os_os2 cpu_386 lcl support
 
+tree_depth = 5
+
 host_os  = os2
 host_cpu = 386
 
@@ -12,14 +14,17 @@ proj_name = wdpmhelp
 wdpmhelp_autodepends = .AUTODEPEND
 !endif
 
+wdpmhelp_nocheckstack_dll = 1
+
 !include cproj.mif
 !include defrule.mif
+!include dllrule.mif
 !include deftarg.mif
 
 #
 # cflags
 #
-.c: ../c
+.c: ../c;$(trap_dir)/common
 
 inc_dirs = -I. -I"../h" -I"$(trap_dir)/h"
 
@@ -46,7 +51,8 @@ w d : wdpmhook.dll wdpmhelp.exe .SYMBOLIC
 #
 # DLL
 #
-dlltarg_objs = pmhook.obj
+dlltarg_prebuild_objs = $(dll_subdir)
+dlltarg_objs = $(dll_subdir)/pmhook.obj
 dlltarg_name = wdpmhook
 !include dlltarg.mif
 

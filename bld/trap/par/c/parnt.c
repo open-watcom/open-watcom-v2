@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -55,8 +56,8 @@ void FiniSys( void );
 
 bool Terminate( void )
 {
-        FiniSys();
-        return( true );
+    FiniSys();
+    return( true );
 }
 #endif
 
@@ -67,7 +68,7 @@ int NumPrinters( void )
 
 unsigned PrnAddress( int printer )
 {
-    return( PortAddress[ printer ] );
+    return( PortAddress[printer] );
 }
 
 unsigned AccessPorts( unsigned first, unsigned last )
@@ -88,36 +89,37 @@ static int CheckForPort( int i, unsigned char value )
 {
     int         j;
 
-    outp( PortTest[ i ], value );
-    for( j = 100; j != 0; j-- )
-        ;
-    return( inp( PortTest[ i ] ) == value );
+    outp( PortTest[i], value );
+    for( j = 100; j > 0; j-- )
+        {}
+    return( inp( PortTest[i] ) == value );
 }
 
 char *InitSys( void )
 {
-        static char name[] = "\\\\.\\DBGPORT1";
-        int         i;
+    static char name[] = "\\\\.\\DBGPORT1";
+    int         i;
 
-        if( !(GetVersion() & 0x80000000) ) {
-                PortHdl = CreateFile( name,
-                                        GENERIC_READ | GENERIC_WRITE,
-                                        FILE_SHARE_READ,
-                                        NULL,
-                                        OPEN_EXISTING,
-                                        0,
-                                        NULL
-                                        );
-                if ( PortHdl == INVALID_HANDLE_VALUE )
-                        return( TRP_ERR_cannot_access_parallel_ports );
+    if( !(GetVersion() & 0x80000000) ) {
+        PortHdl = CreateFile( name,
+                                GENERIC_READ | GENERIC_WRITE,
+                                FILE_SHARE_READ,
+                                NULL,
+                                OPEN_EXISTING,
+                                0,
+                                NULL
+                                );
+        if ( PortHdl == INVALID_HANDLE_VALUE ) {
+            return( TRP_ERR_cannot_access_parallel_ports );
         }
-        PortsFound = 0;
-        for( i = 0; i < NUM_ELTS( PortTest ); ++i ) {
-                if( CheckForPort( i, 0x55 ) && CheckForPort( i, 0xaa ) ) {
-                        PortAddress[ PortsFound++ ] = PortTest[ i ];
-                }
+    }
+    PortsFound = 0;
+    for( i = 0; i < NUM_ELTS( PortTest ); ++i ) {
+        if( CheckForPort( i, 0x55 ) && CheckForPort( i, 0xaa ) ) {
+            PortAddress[PortsFound++] = PortTest[i];
         }
-        return( NULL );
+    }
+    return( NULL );
 }
 
 void FiniSys( void )

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,16 +32,15 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include "tinyio.h"
 #include "wdebug.h"
 #include "stdwin.h"
 #include "winctrl.h"
 #include "trperr.h"
-#include "dosenv.h"
+#include "winpath.h"
 #include "winerr.h"
 
 
-extern void set_carry(void);
+extern void set_carry( void );
 #pragma aux set_carry = 0xf9;
 
 volatile bool HaveKey;
@@ -60,7 +59,7 @@ static event_hook_fn    DebuggerHookRtn;
 static void __far __loadds DebuggerHookRtn( unsigned event, unsigned info )
 {
     if( event == WM_KEYDOWN ) {
-        HaveKey = TRUE;
+        HaveKey = true;
         _info = info;
     }
     set_carry();
@@ -75,12 +74,15 @@ trap_retval TRAP_CORE( Read_user_keyboard )( void )
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
     ret->key = 0;
-    HaveKey = FALSE;
+    HaveKey = false;
     SetEventHook( DebuggerHookRtn );
     end_time = GetTickCount() + acc->wait*1000L;
     for( ;; ) {
-        if( HaveKey ) break;
-        if( (acc->wait > 0) && (GetTickCount() > end_time) ) break;
+        if( HaveKey )
+            break;
+        if( (acc->wait > 0) && (GetTickCount() > end_time) ) {
+            break;
+        }
     }
     ret->key = _info;
     SetEventHook( NULL );
@@ -116,29 +118,10 @@ trap_retval TRAP_CORE( Get_err_text )( void )
     err_txt = GetOutPtr( 0 );
 
     if( acc->err < ERR_LAST ) {
-        strcpy( err_txt, doswinErrMsgs[ acc->err ] );
+        StrCopyDst( doswinErrMsgs[acc->err], err_txt );
     } else {
-        strcpy( err_txt, TRP_ERR_unknown_system_error );
+        StrCopyDst( TRP_ERR_unknown_system_error, err_txt );
         ultoa( acc->err, err_txt + strlen( err_txt ), 16 );
     }
     return( strlen( err_txt ) + 1 );
-}
-
-const char *DOSEnvFind( const char *src )
-{
-    const char  *p;
-    const char  *env;
-
-    env = GetDOSEnvironment();
-    do {
-        p = src;
-        do {
-            if( *p == '\0' && *env == '=' ) {
-                return( env + 1 );
-            }
-        } while( *env++ == *p++ );
-        while( *env++ != '\0' )
-            ;
-    } while( *env != '\0' );
-    return( NULL );
 }

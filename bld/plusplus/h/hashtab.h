@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -49,7 +50,7 @@ extern void HashWalkData( HASHTAB, void (*)( SYMBOL_NAME, void * ), void * );
 HASHTAB HashGetIndex( HASHTAB );
 HASHTAB HashMapIndex( HASHTAB );
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 void StatsHASHTAB( HASHTAB hash );
 #endif
 

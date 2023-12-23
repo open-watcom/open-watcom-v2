@@ -2,7 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
-;* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+;* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -221,7 +221,7 @@ RaiseException Endp
 
 CPUExceptionHandler:
         push offset Erec.ExceptionInfo
-        push Erec.Numparams
+        push Erec.NumParams
         push NOT_CONTINUABLE
         push Erec.ExceptionCode
         call RaiseException
@@ -268,7 +268,7 @@ TestDebugger:
 
 ChainDebugger:
         mov eax,[ebp].ueCode
-        mov eax,[4*eax].ECodeTab
+        mov eax,[4*eax].ExcCodeTab
         UserGate notify_pe_exception_nr
         pop eax
         pop ds
@@ -309,7 +309,7 @@ NoDebugger:
         mov eax,[ebp].ueCs
         mov Cntx.CntSegCs, eax
         mov eax,[ebp].ueFlags
-        mov Cntx.CntEflags, eax
+        mov Cntx.CntEFlags, eax
         mov eax,[ebp].ueEsp
         mov Cntx.CntEsp, eax
         mov eax,[ebp].ueSs
@@ -321,7 +321,7 @@ NoDebugger:
 
 ; translate into Win32 exception code
 
-        mov eax, ECodeTab[eax*4]
+        mov eax, ExcCodeTab[eax*4]
         mov Erec.ExceptionCode, eax
 
         mov Erec.NumParams, 1
@@ -337,7 +337,7 @@ ExcNocode:
         retf
 
 
-EcodeTab label dword
+ExcCodeTab label dword
 
         dd STATUS_INTEGER_DIVIDE_BY_ZERO
         dd STATUS_SINGLE_STEP

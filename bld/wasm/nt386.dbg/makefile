@@ -3,7 +3,6 @@
 host_os  = nt
 host_cpu = 386
 
-wasm_release = 0
+wasm_debug = 1
 
-proj_path = ..
-!include $(proj_path)/master.mif
+!include ../master.mif

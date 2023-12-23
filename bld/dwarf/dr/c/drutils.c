@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,11 +30,11 @@
 ****************************************************************************/
 
 
-#include <string.h>
 #include "bool.h"
 #include "demangle.h"
 #include "drpriv.h"
 #include "drutils.h"
+
 
 const dw_tagnum FunctionTags[] = {
     DW_TAG_subprogram, 0
@@ -678,12 +679,13 @@ void DWRGetCompileUnitHdr( drmem_hdl mod, DWRCUWLK fn, void *data )
     DWRFreeContextStack( &ctxt.stack );
 }
 
-drmem_hdl DRGetCompileUnitTag( drmem_hdl comp_unit )
-/**************************************************/
-{ // given the start of the compilation unit header
-  // return the start of the DW_TAG_compile_unit
-  // assume it starts after header
-
+drmem_hdl DRENTRY DRGetCompileUnitTag( drmem_hdl comp_unit )
+/***********************************************************
+ * given the start of the compilation unit header
+ * return the start of the DW_TAG_compile_unit
+ * assume it starts after header
+ */
+{
     comp_unit += sizeof( compuhdr_prologue );
     return( comp_unit );
 }
@@ -711,8 +713,8 @@ char * DWRGetName( drmem_hdl abbrev, drmem_hdl entry )
     return( name );
 }
 
-void DRIterateCompileUnits( void *data, DRITERCUCB callback )
-/***********************************************************/
+void DRENTRY DRIterateCompileUnits( void *data, DRITERCUCB callback )
+/*******************************************************************/
 {
     compunit_info   *compunit;
 
@@ -725,9 +727,9 @@ void DRIterateCompileUnits( void *data, DRITERCUCB callback )
     } while( compunit != NULL );
 }
 
-bool DWRScanAllCompileUnits( dr_search_context * startingCtxt, DWRCUWLK fn,
+bool DWRScanAllCompileUnits( dr_search_context *startingCtxt, DWRCUWLK fn,
                         const dw_tagnum *tagarray, dr_depth depth, void *data )
-/*******************************************************************************/
+/*****************************************************************************/
 {
     bool                cont;
     dr_search_context   ctxt;
@@ -1087,7 +1089,7 @@ drmem_hdl DWRContext( dr_context_stack *stack, int up )
 }
 
 void DWRFreeContextStack( dr_context_stack *stack )
-/********************************************************/
+/*************************************************/
 {
     DWRFREE( stack->stack );
     stack->free = 0;

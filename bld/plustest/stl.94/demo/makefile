@@ -1,5 +1,7 @@
 plustest_name = stl94
 
+tree_depth = 4
+
 !ifdef test1
 test_flags = -oxa-d1-hd
 alt_error=01

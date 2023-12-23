@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -85,7 +85,7 @@ static vi_rc displayLineInWindowGeneric( window_id wid, int c_line_no,
     if( EditFlags.RealTabs ) {
         len = strlen( text );
         otmp = StaticAlloc();
-        ExpandTabsInABuffer( text, len, otmp, EditVars.MaxLine + 1 );
+        ExpandTabsInABuffer( text, len, otmp, EditVars.MaxLineLen + 1 );
         tmp = otmp;
     } else {
         tmp = text;
@@ -251,7 +251,7 @@ vi_rc DisplayLineInWindowWithSyntaxStyle( window_id wid, int c_line_no, line *li
     if( EditFlags.RealTabs ) {
         len = strlen( text );
         tmp = StaticAlloc();
-        ExpandTabsInABuffer( text, len, tmp, EditVars.MaxLine + 1 );
+        ExpandTabsInABuffer( text, len, tmp, EditVars.MaxLineLen + 1 );
     } else {
         tmp = text;
     }

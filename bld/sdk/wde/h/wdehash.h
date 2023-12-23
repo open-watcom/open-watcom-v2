@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,37 +43,22 @@
 /****************************************************************************/
 /* type definitions                                                         */
 /****************************************************************************/
-typedef WRHashValue WdeHashValue;
-
-typedef WRHashEntry WdeHashEntry;
-
-typedef WRHashTable WdeHashTable;
 
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern bool WdeIsHashSaveRejectedSet( WdeHashTable *table );
-extern void WdeHashClearSaveRejected( WdeHashTable *table );
-extern void WdeHashSaveRejected( WdeHashTable *table );
-extern bool WdeIsHashTableTouched( WdeHashTable *table );
-extern void WdeUntouchHashTable( WdeHashTable *table );
-extern void WdeTouchHashTable( WdeHashTable *table );
-extern bool WdeIsValidSymbol( const char *symbol );
+extern bool WdeIsHashSaveRejectedSet( WRHashTable *table );
+extern void WdeHashClearSaveRejected( WRHashTable *table );
+extern void WdeHashSaveRejected( WRHashTable *table );
+extern bool WdeIsHashTableTouched( WRHashTable *table );
+extern void WdeUntouchHashTable( WRHashTable *table );
+extern void WdeTouchHashTable( WRHashTable *table );
 
-extern uint_32      WdeNumInHashTable( WdeHashTable * );
-extern void         WdeMakeHashTableClean( WdeHashTable * );
-extern bool         WdeIsHashTableDirty( WdeHashTable * );
-extern WdeHashTable *WdeInitHashTable( void );
-extern void         WdeFreeHashTable( WdeHashTable * );
-extern bool         WdeRemoveName( WdeHashTable *, const char * );
-extern WdeHashEntry *WdeDefAddHashEntry( WdeHashTable *table, const char *name, bool *dup );
-extern WdeHashEntry *WdeAddHashEntry( WdeHashTable *, const char *, WdeHashValue, bool * );
-extern WdeHashValue WdeLookupName( WdeHashTable *, const char *, bool * );
-extern char         *WdeResolveValue( WdeHashTable *, WdeHashValue );
-extern void         WdeAddSymbolsToListBox( WdeHashTable *, HWND, int );
-extern void         WdeAddSymbolsToComboBox( WdeHashTable *, HWND, int );
-extern bool         WdeWriteSymbolsToFile( WdeHashTable *, const char * );
-extern bool         WdeMergeHashTable( WdeHashTable **, WdeHashTable * );
-extern bool         WdeCopyHashTable( WdeHashTable **, WdeHashTable * );
+extern bool         WdeRemoveName( WRHashTable *, const char * );
+extern WRHashEntry  *WdeDefAddHashEntry( WRHashTable *table, const char *name, bool *dup );
+extern WRHashEntry  *WdeAddHashEntry( WRHashTable *, const char *, WRHashValue, bool * );
+extern WRHashValue  WdeLookupName( WRHashTable *, const char *, bool * );
+extern bool         WdeMergeHashTable( WRHashTable **, WRHashTable * );
+extern bool         WdeCopyHashTable( WRHashTable **, WRHashTable * );
 
 #endif

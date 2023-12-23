@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -69,7 +69,7 @@ bool SaveMultObjects( bool save_into )
     WRSaveIntoData      *idata;
     bool                ok;
 
-    WRESetWaitCursor( TRUE );
+    WRESetWaitCursor( true );
 
     curr.info = NULL;
     curr.type = NULL;
@@ -99,7 +99,7 @@ bool SaveMultObjects( bool save_into )
         WREFreeSaveIntoData( idata );
     }
 
-    WRESetWaitCursor( FALSE );
+    WRESetWaitCursor( false );
 
     return( ok );
 }
@@ -119,7 +119,7 @@ bool SaveObjectsAs( WRECurrentResInfo *curr, WRSaveIntoData *idata )
         gf.file_name = NULL;
         gf.title = WREResSaveAsTitle;
         gf.filter = WREResSaveMltFilter;
-        gf.save_ext = TRUE;
+        gf.save_ext = true;
         fname = WREGetSaveFileName( &gf );
         ok = (fname != NULL && *fname != '\0');
     }
@@ -156,7 +156,7 @@ bool SaveObjectsInto( WRECurrentResInfo *curr, WRSaveIntoData *idata )
         gf.file_name = NULL;
         gf.title = WREResSaveIntoTitle;
         gf.filter = WREResSaveMltFilter;
-        gf.save_ext = TRUE;
+        gf.save_ext = true;
         fname = WREGetOpenFileName( &gf );
         ok = (fname != NULL && *fname != '\0');
     }
@@ -181,39 +181,39 @@ WRSaveIntoData *WRECreateSaveData( WRECurrentResInfo *curr )
     WRECurrentResInfo   tcurr;
     WResResNode         *rnode;
     WResLangNode        *lnode;
-    WRSaveIntoData      *nodes;
-    WRSaveIntoData      *new;
+    WRSaveIntoData      *idata;
+    WRSaveIntoData      *idata2;
 
     if( curr == NULL ) {
         return( NULL );
     }
 
-    nodes = NULL;
+    idata = NULL;
     tcurr = *curr;
     for( rnode = curr->type->Head; rnode != NULL; rnode = rnode->Next ) {
         for( lnode = rnode->Head; lnode != NULL; lnode = lnode->Next ) {
             tcurr.res = rnode;
             tcurr.lang = lnode;
-            new = WREMakeSaveIntoNode( &tcurr );
-            if( new == NULL ) {
-                WREFreeSaveIntoData( nodes );
+            idata2 = WREMakeSaveIntoNode( &tcurr );
+            if( idata2 == NULL ) {
+                WREFreeSaveIntoData( idata );
                 return( NULL );
             }
-            if( nodes ) {
-                new->next = nodes;
-                nodes = new;
+            if( idata != NULL ) {
+                idata2->next = idata;
+                idata = idata2;
             } else {
-                nodes = new;
+                idata = idata2;
             }
         }
     }
 
-    return( nodes );
+    return( idata );
 }
 
 WRSaveIntoData *WREMakeSaveIntoNode( WRECurrentResInfo *curr )
 {
-    WRSaveIntoData      *node;
+    WRSaveIntoData      *idata;
 
     if( curr == NULL ) {
         return( NULL );
@@ -224,30 +224,30 @@ WRSaveIntoData *WREMakeSaveIntoNode( WRECurrentResInfo *curr )
         return( NULL );
     }
 
-    node = WREAllocSaveIntoData();
+    idata = WREAllocSaveIntoData();
 
-    node->info = curr->info->info;
-    node->type = &curr->type->Info.TypeName;
-    node->name = &curr->res->Info.ResName;
-    node->lang = curr->lang->Info.lang;
-    node->size = curr->lang->Info.Length;
-    node->MemFlags = curr->lang->Info.MemoryFlags;
-    node->data = WREGetCurrentResData( curr );
+    idata->info = curr->info->info;
+    idata->type = &curr->type->Info.TypeName;
+    idata->name = &curr->res->Info.ResName;
+    idata->lang = curr->lang->Info.lang;
+    idata->size = curr->lang->Info.Length;
+    idata->MemFlags = curr->lang->Info.MemoryFlags;
+    idata->data = WREGetCopyResData( curr );
 
-    if( node->data == NULL ) {
-        WRMemFree( node );
-        node = NULL;
+    if( idata->data == NULL ) {
+        WRMemFree( idata );
+        idata = NULL;
     }
 
-    return( node );
+    return( idata );
 }
 
 void WREFreeSaveIntoData( WRSaveIntoData *idata )
 {
-    WRSaveIntoData *next;
+    WRSaveIntoData *idata2;
 
-    for( ; idata != NULL; idata = next ) {
-        next = idata->next;
+    for( ; idata != NULL; idata = idata2 ) {
+        idata2 = idata->next;
         if( idata->data != NULL ) {
             WRMemFree( idata->data );
         }

@@ -1,14 +1,8 @@
 !ifeq which SERVER
 extra_cppflags += -DDOSXHELP
-extra_objs     += $(dosx_serv_objs)
 !else
 extra_cppflags += -DDOSXTRAP
-extra_objs     += $(dosx_trap_objs)
 !endif
-
-inc_dirs += -I"$(trap_dir)/lcl/dos/dosx/h"
-
-!include $(trap_dir)/lcl/dos/dos.mif
 
 dosx_serv_objs_i86 = misc7086.obj
 dosx_serv_objs_386 = misc7386.obj
@@ -16,14 +10,11 @@ dosx_serv_objs_386 = misc7386.obj
 dosx_link_objs = dosxlink.obj packet.obj
 
 dosx_trap_objs = &
-        $(dos_objs) &
-        $(dosx_link_objs) &
         dosxremo.obj &
         dosxfork.obj &
-        dosxjump.obj &
+        dosxjump.obj
 
 dosx_serv_objs = &
-        $(dosx_link_objs) &
         dosxserv.obj &
         dosxtrio.obj &
         dosxstub.obj &
@@ -31,7 +22,16 @@ dosx_serv_objs = &
         core.obj &
         supp.obj &
         dosredir.obj &
-        x86cpu.obj &
-        $(dosx_serv_objs_$(host_cpu))
+        x86cpu.obj
 
-!include tools.mif
+extra_incs += -I"$(trap_dir)/lcl/dos/dosx/h"
+extra_srcs +=;$(trap_dir)/lcl/dos/dosx/c
+
+!include $(trap_dir)/lcl/dos/dos.mif
+!include $(trap_dir)/lcl/lcl.mif
+
+!ifeq which SERVER
+extra_objs += $(dosx_serv_objs) $(dosx_link_objs) $(dosx_serv_objs_$(host_cpu))
+!else
+extra_objs += $(dosx_trap_objs) $(dosx_link_objs) $(dos_trap_core_objs)
+!endif

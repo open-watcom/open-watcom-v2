@@ -56,8 +56,8 @@ dlltarg_objs          = $(sys_object) &
     wmem.obj wctl3d.obj wgetfn.obj wlist.obj &
     winst.obj wsetedit.obj wmsg.obj wopts.obj wstrdup.obj &
     wselft.obj wrename.obj wwait.obj wmemf.obj wcopystr.obj &
-    widn2str.obj wclip.obj wisedit.obj weditsym.obj &
-    preproc.obj ppexpr.obj ppmacro.obj ppenv.obj pathlist.obj
+    wclip.obj wisedit.obj weditsym.obj &
+    $(cpp_objs) ppenv.obj
 dlltarg_libs = $(wres_lib) $(wr_lib) $(wpi_lib) $(commonui_lib)
 dlltarg_res_version_nt_386 = version.res
 dlltarg_res_version_nt_x64 = version.res
@@ -73,7 +73,7 @@ rc_inc_dirs = -I"../res" -I"../../res" -I"../../h" $(commonui_inc_dirs)
 
 $(proj_name).res: ../res/$(proj_name).rc $(__MAKEFILES__) .AUTODEPEND
     @%make echo_rc
-    $(rc) $(rc_flags) -ad -zk0 $(rc_inc_path) $[@ -fo=$@
+    $(rc) $(rc_ui8_flags) $(rc_flags) -ad $(rc_inc_path) $[@ -fo=$@
 
 rcstr.grh: rcstrmsg.gh $(__MAKEFILES__)
     @%make echo_awk
@@ -81,4 +81,4 @@ rcstr.grh: rcstrmsg.gh $(__MAKEFILES__)
 
 rcstrmsg.gh: ../res/$(proj_name).msg $(__MAKEFILES__)
     @%make echo_cpp
-    $(cpp) $(rc_ui_flags) -I"../../res" -o$@ $[@
+    $(cpp) $(rc_ui8_flags) -I"../../res" -o$@ $[@

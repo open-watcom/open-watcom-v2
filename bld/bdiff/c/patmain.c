@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -132,8 +132,9 @@ int main( int argc, char **argv )
         } else if( printusage ) {
             Usage();
         } else {
-            DoPatch( patchname, doprompt, dobackup, printlevel, NULL );
-            rc = EXIT_SUCCESS;
+            if( DoPatch( patchname, doprompt, dobackup, printlevel, NULL ) == PATCH_RET_OKAY ) {
+                rc = EXIT_SUCCESS;
+            }
         }
         MsgFini();
     }

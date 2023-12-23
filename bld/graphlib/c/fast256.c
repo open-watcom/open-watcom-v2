@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -71,7 +71,7 @@ short _FastMap( long _WCI86FAR *colours, short num )
 
 {
     short               i;
-    long                colour;
+    unsigned long       colour;
     struct rgb          *rgb;
 
     i = _RoundUp( sizeof( struct rgb ) * num );
@@ -82,12 +82,12 @@ short _FastMap( long _WCI86FAR *colours, short num )
     }
     for( i = 0; i < num; ++i ) {
         colour = *colours;
-        rgb[i].blue = ( (unsigned long)colour & 0x00ff0000 ) >> 16;
-        rgb[i].green = (unsigned short)( colour & 0x0000ff00 ) >> 8;
-        rgb[i].red = colour & 0x000000ff;
+        rgb[i].blue = COLOR_BLUE( colour );
+        rgb[i].green = COLOR_GREEN( colour );
+        rgb[i].red = COLOR_RED( colour );
         ++colours;
     }
-    VideoIntDAC( _BIOS_SET_PALETTE + 0x12, 0, num, rgb );
+    VideoIntDAC( VIDEOINT_SET_PALETTE + 0x12, 0, num, rgb );
     return( TRUE );
 }
 
@@ -104,7 +104,7 @@ short _FastMap( long _WCI86FAR *colours, short num )
 
 {
     short               i;
-    long                colour;
+    unsigned long       colour;
     struct rgb __far    *rgb;
     RM_ALLOC            mem;
 
@@ -112,12 +112,12 @@ short _FastMap( long _WCI86FAR *colours, short num )
         rgb = mem.pm_ptr;
         for( i = 0; i < num; ++i ) {
             colour = *colours;
-            rgb[i].blue = ( (unsigned long)colour & 0x00ff0000 ) >> 16;
-            rgb[i].green = (unsigned short)( colour & 0x0000ff00 ) >> 8;
-            rgb[i].red = colour & 0x000000ff;
+            rgb[i].blue = COLOR_BLUE( colour );
+            rgb[i].green = COLOR_GREEN( colour );
+            rgb[i].red = COLOR_RED( colour );
             ++colours;
         }
-        _RMInterrupt( 0x10, _BIOS_SET_PALETTE + 0x12, 0, num, 0, mem.rm_seg, 0 );
+        _RMInterrupt( 0x10, VIDEOINT_SET_PALETTE + 0x12, 0, num, 0, mem.rm_seg, 0 );
         _RMFree( &mem );
         return( TRUE );
     } else {

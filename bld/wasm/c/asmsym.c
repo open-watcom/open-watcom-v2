@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -152,27 +152,30 @@ static struct asm_sym *AllocASym( const char *name )
 }
 
 static struct asm_sym **AsmFind( const char *name )
-/*************************************************/
-/* find a symbol in the symbol table, return NULL if not found */
+/**************************************************
+ * find a symbol in the symbol table, return NULL if not found
+ */
 {
     struct asm_sym      **sym;
-    size_t              len;
 
 #if defined( _STANDALONE_ )
-    sym = &sym_table[ hashpjw( name ) ];
+    sym = &sym_table[hashpjw( name )];
 #else
     sym = &AsmSymHead;
 #endif
-    len = strlen( name ) + 1;
     for( ; *sym != NULL; sym = &((*sym)->next) ) {
 #if defined( _STANDALONE_ )
         if( Options.mode & MODE_IDEAL ) {
-            if( memcmp( name, (*sym)->name, len ) == 0 ) {
+            if( strcmp( name, (*sym)->name ) == 0 ) {
+                break;
+            }
+        } else if( Options.symbols_nocasesensitive ) {
+            if( stricmp( name, (*sym)->name ) == 0 ) {
                 break;
             }
         } else {
 #endif
-            if( strnicmp( name, (*sym)->name, len ) == 0 ) {
+            if( strcmp( name, (*sym)->name ) == 0 ) {
                 break;
             }
 #if defined( _STANDALONE_ )
@@ -187,11 +190,9 @@ static struct asm_sym *FindLocalLabel( const char *name )
 /*******************************************************/
 {
     label_list  *curr;
-    size_t      len;
 
-    len = strlen( name ) + 1;
     for( curr = CurrProc->e.procinfo->labellist; curr != NULL; curr = curr->next ) {
-        if( memcmp( curr->sym->name, name, len ) == 0 ) {
+        if( strcmp( curr->sym->name, name ) == 0 ) {
             return( curr->sym );
         }
     }
@@ -250,7 +251,7 @@ struct asm_sym *AsmLookup( const char *name )
 #if defined( _STANDALONE_ )
     if( Options.mode & MODE_TASM ) {
         if( Options.locals_len ) {
-            if( memcmp( name, Options.locals_prefix, Options.locals_len ) == 0
+            if( strncmp( name, Options.locals_prefix, Options.locals_len ) == 0
                 && name[Options.locals_len] != '\0' ) {
                 if( CurrProc == NULL ) {
                     AsmError( LOCAL_LABEL_OUTSIDE_PROC );
@@ -439,13 +440,14 @@ struct asm_sym *AsmGetSymbol( const char *name )
 }
 #endif
 
-#if defined( _STANDALONE_ )
 void AsmSymInit( void )
 /*********************/
 {
+#if defined( _STANDALONE_ )
     AsmLookup( "$" );    // create "$" symbol for current segment counter
-}
+#else
 #endif
+}
 
 void AsmSymFini( void )
 /*********************/
@@ -478,21 +480,12 @@ void AsmSymFini( void )
     myassert( AsmSymCount == 0 );
 
 #else
-    struct asmfixup     *fixup;
-
     for( ;; ) {
         sym = AsmSymHead;
         if( sym == NULL )
             break;
         AsmSymHead = sym->next;
         FreeASym( sym );
-    }
-    for( ;; ) {
-        fixup = FixupHead;
-        if( fixup == NULL )
-            break;
-        FixupHead = fixup->next;
-        AsmFree( fixup );
     }
 #endif
 }
@@ -684,10 +677,10 @@ static void log_symbol( struct asm_sym *sym )
         const_info  *cst = dir->e.constinfo;
 
         LstMsg( "%s %s        ", sym->name, dots + strlen( sym->name ) + 1 );
-        if( cst->count && cst->data[0].class != TC_NUM ) {
-            LstMsg( "Text     %s\n", cst->data[0].string_ptr );
+        if( cst->count && cst->tokens[0].class != TC_NUM ) {
+            LstMsg( "Text     %s\n", cst->tokens[0].string_ptr );
         } else {
-            LstMsg( "Number   %04Xh\n", ( cst->count ) ? cst->data[0].u.value : 0 );
+            LstMsg( "Number   %04Xh\n", ( cst->count ) ? cst->tokens[0].u.value : 0 );
         }
     } else if( sym->state == SYM_INTERNAL && !IS_SYM_COUNTER( sym->name ) ) {
         LstMsg( "%s %s        ", sym->name, dots + strlen( sym->name ) + 1 );
@@ -820,7 +813,7 @@ static void DumpSymbol( struct asm_sym *sym )
     case SYM_CONST:
         type = "CONSTANT";
 //        dir->e.constinfo = AsmAlloc( sizeof( const_info ) );
-//        dir->e.constinfo->data = NULL;
+//        dir->e.constinfo->tokens = NULL;
 //        dir->e.constinfo->count = 0;
         break;
     case SYM_PROC:
@@ -834,6 +827,7 @@ static void DumpSymbol( struct asm_sym *sym )
         type = "MACRO";
 //        dir->e.macroinfo = AsmAlloc( sizeof( macro_info ) );
 //        dir->e.macroinfo->parmlist = NULL;
+//        dir->e.macroinfo->locallist = NULL;
 //        dir->e.macroinfo->data = NULL;
 //        dir->e.macroinfo->filename = NULL;
         break;

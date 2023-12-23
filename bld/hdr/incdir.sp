@@ -6,8 +6,8 @@
 :: Uncomment/add any additional platforms here
 :: #elif defined(__AXP__)
 ::  #define _ARCH_DIR alpha
-:: #elif defined(__PPC__)
-::  #define _ARCH_DIR ppc
+ #elif defined(__PPC__)
+  #define _ARCH_DIR ppc
  #else
   #error unknown platform
   #define _ARCH_DIR

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -394,10 +394,16 @@ static  fixup  *FixField( omf_fix_loc fix_loc, int is_valid_loc, char M )
     if( !IsPharLap && is_valid_loc ) {
         /* we want PharLap OMF fixup LOC's... so we'll just translate here */
         switch( fix_loc ) {
-        case LOC_OFFSET_LOADER:         fix_loc = LOC_OFFSET;                   break;
-        case LOC_OFFSET_32:             /* fall through */
-        case LOC_OFFSET_32_LOADER:      fix_loc = LOC_PHARLAP_OFFSET_32;        break;
-        case LOC_BASE_OFFSET_32:        fix_loc = LOC_PHARLAP_BASE_OFFSET_32;   break;
+        case LOC_OFFSET_LOADER:
+            fix_loc = LOC_OFFSET;
+            break;
+        case LOC_OFFSET_32:
+        case LOC_OFFSET_LOADER_32:
+            fix_loc = LOC_PHARLAP_OFFSET_32;
+            break;
+        case LOC_BASE_OFFSET_32:
+            fix_loc = LOC_PHARLAP_BASE_OFFSET_32;
+            break;
         }
     }
     fix_dat = GetByte();

@@ -187,11 +187,11 @@ static void TestEnum( void )
     DWDeclPos( Client, 1, 5 );
     EnumColours = DWBeginEnumeration( Client, 1, "colours", 0, 0 );
     value = 2;
-    DWAddConstant( Client, value, "BLUE" );
+    DWAddEnumerationConstant( Client, value, "BLUE" );
     value = 1;
-    DWAddConstant( Client, value, "GREEN" );
+    DWAddEnumerationConstant( Client, value, "GREEN" );
     value = 0;
-    DWAddConstant( Client, value, "RED" );
+    DWAddEnumerationConstant( Client, value, "RED" );
     DWEndEnumeration( Client );
 }
 

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,6 +33,7 @@
 #include "_cgstd.h"
 #include "coderep.h"
 #include "cgaux.h"
+#include "cgauxcc.h"
 #include "cgmem.h"
 #include "data.h"
 #include "utils.h"
@@ -41,6 +42,7 @@
 #include "makeblk.h"
 #include "bldcall.h"
 #include "ppcparm.h"
+#include "ppcenc.h"
 #include "feprotos.h"
 
 
@@ -112,7 +114,7 @@ type_class_def  CallState( aux_handle aux, type_def *tipe, call_state *state )
         if( HW_CEqual( *parm_dst, HW_EMPTY ) )
             break;
         if( HW_Ovlap( *parm_dst, state->unalterable ) ) {
-            FEMessage( MSG_BAD_SAVE, aux );
+            FEMessage( FEMSG_BAD_SAVE, aux );
         }
         HW_CTurnOff( *parm_dst, HW_UNUSED );
         parm_dst++;
@@ -127,7 +129,7 @@ type_class_def  CallState( aux_handle aux, type_def *tipe, call_state *state )
     state->parm.offset  = 0;
     InitPPCParmState( state );
     type_class = ReturnTypeClass( tipe, state->attr );
-    if( *(call_class *)FEAuxInfo( aux, CALL_CLASS ) & HAS_VARARGS ) {
+    if( (call_class)(pointer_uint)FEAuxInfo( aux, FEINF_CALL_CLASS ) & FECALL_GEN_HAS_VARARGS ) {
         state->attr |= ROUTINE_HAS_VARARGS;
     }
     UpdateReturn( state, tipe, type_class, aux );
@@ -214,7 +216,7 @@ bool            IsStackReg( name *n )
         return( false );
     if( n->n.class != N_REGISTER )
         return( false );
-    if( !HW_CEqual( n->r.reg, HW_R1 ) && !HW_CEqual( n->r.reg, HW_D1 ) )
+    if( !HW_CEqual( n->r.reg, HW_SP_REG ) && !HW_CEqual( n->r.reg, HW_SP_REG32 ) )
         return( false );
     return( true );
 }

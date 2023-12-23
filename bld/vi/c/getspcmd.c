@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,11 +34,12 @@
 #include "vi.h"
 #include "posix.h"
 #include "pathgrp2.h"
+#include "parse.h"
 
 #include "clibext.h"
 
 
-#define CMPFEXT(e,c)    (e[0] == '.' && stricmp(e + 1, c) == 0)
+#define CMPFEXT(e,c)    (e[0] == '.' && FILE_CMP(e + 1, c) == 0)
 
 #define STR(x)  #x
 

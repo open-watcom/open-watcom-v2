@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,6 +34,8 @@
 #include "vi.h"
 #include <setjmp.h>
 #include "expr.h"
+#include "tokenize.h"
+
 
 static long _NEAR   cExpr1( void );
 static long _NEAR   cExpr2( void );
@@ -684,4 +687,30 @@ static long _NEAR cExpr12( void )
         break;
     }
     return( value );
+}
+
+char *EvalRadix( char *buffer, long value )
+{
+    char            *p;
+    char            *q;
+    char            buf[34];    // only holds ASCII so 'char' is OK
+    unsigned long   uvalue;
+
+    p = buffer;
+    uvalue = value;
+    if( EditVars.Radix == 10 ) {
+        if( value < 0 ) {
+            *p++ = '-';
+            uvalue = - value;
+        }
+    }
+    q = buf;
+    *q++ = '\0';
+    do {
+        *q++ = Encode36Table[(unsigned char)( uvalue % EditVars.Radix )];
+        uvalue /= EditVars.Radix;
+    } while( uvalue != 0 );
+    while( (*p++ = (char)*--q) != '\0' )
+        ;
+    return( buffer );
 }

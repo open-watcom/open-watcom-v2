@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,6 +38,31 @@
 #include "watcom.h"
 #include <stdio.h>
 
+#define OWL_CPUS \
+    OWL_CPU( OWL_CPU_PPC,   EM_PPC,    COFF_IMAGE_FILE_MACHINE_POWERPC ) \
+    OWL_CPU( OWL_CPU_ALPHA, EM_ALPHA,  COFF_IMAGE_FILE_MACHINE_ALPHA ) \
+    OWL_CPU( OWL_CPU_MIPS,  EM_MIPS,   COFF_IMAGE_FILE_MACHINE_R4000 ) \
+    OWL_CPU( OWL_CPU_X86,   EM_386,    COFF_IMAGE_FILE_MACHINE_I386 ) \
+    OWL_CPU( OWL_CPU_X64,   EM_X86_64, COFF_IMAGE_FILE_MACHINE_AMD64 )
+
+#define OWL_RELOCS \
+    OWL_RELOC( OWL_RELOC_ABSOLUTE )         /* ref to a 32-bit absolute address */ \
+    OWL_RELOC( OWL_RELOC_WORD )             /* a direct ref to a 32-bit address */ \
+    OWL_RELOC( OWL_RELOC_HALF_HI )          /* ref to high half of 32-bit address */ \
+    OWL_RELOC( OWL_RELOC_HALF_HA )          /* ditto adjusted for signed low 16 bits */ \
+    OWL_RELOC( OWL_RELOC_PAIR )             /* pair - used to indicate prev hi and next lo linked */ \
+    OWL_RELOC( OWL_RELOC_HALF_LO )          /* ref to low half of 32-bit address */ \
+    OWL_RELOC( OWL_RELOC_BRANCH_REL )       /* relative branch (Alpha: 21-bit; PPC: 14-bit) */ \
+    OWL_RELOC( OWL_RELOC_BRANCH_ABS )       /* absolute branch (Alpha: not used; PPC: 14-bit) */ \
+    OWL_RELOC( OWL_RELOC_JUMP_REL )         /* relative jump (Alpha: 14-bit hint; PPC: 24-bit) */ \
+    OWL_RELOC( OWL_RELOC_JUMP_ABS )         /* absolute jump (Alpha: not used; PPC: 24-bit) */ \
+    OWL_RELOC( OWL_RELOC_SECTION_OFFSET )   /* offset of item within it's section */ \
+    /* meta reloc */ \
+    OWL_RELOC( OWL_RELOC_SECTION_INDEX )    /* index of section within COFF file */ \
+    OWL_RELOC( OWL_RELOC_TOC_OFFSET )       /* 16-bit offset within TOC (PPC) */ \
+    OWL_RELOC( OWL_RELOC_GLUE )             /* location of NOP for GLUE code */ \
+    OWL_RELOC( OWL_RELOC_FP_OFFSET )        /* cheesy hack for inline assembler */
+
 typedef enum {
     OWL_SYM_UNDEFINED,
     OWL_SYM_FUNCTION,
@@ -63,31 +88,15 @@ typedef enum {
 } owl_format;
 
 typedef enum {
-    OWL_CPU_PPC,
-    OWL_CPU_ALPHA,
-    OWL_CPU_MIPS,
-    OWL_CPU_INTEL
+    #define OWL_CPU(c,e,o) c,
+    OWL_CPUS
+    #undef OWL_CPU
 } owl_cpu;
 
 typedef enum {
-    OWL_RELOC_ABSOLUTE,                 // ref to a 32-bit absolute address
-    OWL_RELOC_WORD,                     // a direct ref to a 32-bit address
-    OWL_RELOC_HALF_HI,                  // ref to high half of 32-bit address
-    OWL_RELOC_HALF_HA,                  // ditto adjusted for signed low 16 bits
-    OWL_RELOC_PAIR,                     // pair - used to indicate prev hi and next lo linked
-    OWL_RELOC_HALF_LO,                  // ref to low half of 32-bit address
-    OWL_RELOC_BRANCH_REL,               // relative branch (Alpha: 21-bit; PPC: 14-bit)
-    OWL_RELOC_BRANCH_ABS,               // absolute branch (Alpha: not used; PPC: 14-bit)
-    OWL_RELOC_JUMP_REL,                 // relative jump (Alpha: 14-bit hint; PPC: 24-bit)
-    OWL_RELOC_JUMP_ABS,                 // absolute jump (Alpha: not used; PPC: 24-bit)
-    OWL_RELOC_SECTION_OFFSET,           // offset of item within it's section
-
-    // meta reloc
-    OWL_RELOC_SECTION_INDEX,            // index of section within COFF file
-
-    OWL_RELOC_TOC_OFFSET,               // 16-bit offset within TOC (PPC)
-    OWL_RELOC_GLUE,                     // location of NOP for GLUE code
-    OWL_RELOC_FP_OFFSET,                // cheesy hack for inline assembler
+    #define OWL_RELOC(e) e,
+    OWL_RELOCS
+    #undef OWL_RELOC
 } owl_reloc_type;
 
 typedef enum {

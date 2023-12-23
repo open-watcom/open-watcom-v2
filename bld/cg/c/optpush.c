@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,11 +47,9 @@ void    RetAftrCall( ins_entry *ret_instr )
 /*****************************************/
 {
     ins_entry   *call_instr;
-    oc_class    call_attr;
-    oc_class    ret_attr;
 
   optbegin
-    if( _IsTargetModel( NO_CALL_RET_TRANSFORM ) )
+    if( _IsModel( CGSW_GEN_NO_CALL_RET_TRANSFORM ) )
         optreturnvoid;
     for( call_instr = ret_instr; PrevClass( call_instr ) == OC_LABEL; ) {
         call_instr = PrevIns( call_instr );
@@ -58,14 +57,12 @@ void    RetAftrCall( ins_entry *ret_instr )
     if( PrevClass( call_instr ) != OC_CALL )
         optreturnvoid;
     call_instr = PrevIns( call_instr );
-    call_attr = _Attr( call_instr );
-    if( (call_attr & ATTR_POP) != 0 )
+    if( _ChkAttr( call_instr, OC_ATTR_POP ) )
         optreturnvoid;
-    ret_attr = _Attr( ret_instr );
-    if( (ret_attr & ATTR_POP) != 0 )
+    if( _ChkAttr( ret_instr, OC_ATTR_POP ) )
         optreturnvoid;
 #if( OPTIONS & SEGMENTED )
-    if( ( (call_attr & ATTR_FAR) ^ (ret_attr & ATTR_FAR) ) != 0 )
+    if( ( _ChkAttr( call_instr, OC_ATTR_FAR ) ^ _ChkAttr( ret_instr, OC_ATTR_FAR ) ) != 0 )
         optreturnvoid;
 #endif
     InsDelete = true;
@@ -73,7 +70,7 @@ void    RetAftrCall( ins_entry *ret_instr )
     /* NB! this code assumes that we aren't making the instruction longer */
     if( _ObjLen( call_instr ) == OptInsSize( OC_CALL, OC_DEST_CHEAP ) ) {
         _ObjLen( call_instr ) = OptInsSize( OC_JMP, OC_DEST_NEAR );
-        _ClassInfo( call_instr ) &= ~ATTR_FAR;
+        _ClassInfo( call_instr ) &= ~OC_ATTR_FAR;
     } else if( _ObjLen( call_instr ) == OptInsSize( OC_CALL, OC_DEST_FAR ) ) {
         _ObjLen( call_instr ) = OptInsSize( OC_JMP, OC_DEST_FAR );
     } else {
@@ -116,7 +113,7 @@ bool    RetAftrLbl( ins_entry *ret )
                 JmpToRet( ref, ret );
                 change = true;
             } else if( _Class( ref ) == OC_CALL ) {
-                if( (_Attr( ret ) & ATTR_POP) == 0 ) {
+                if( !_ChkAttr( ret, OC_ATTR_POP ) ) {
                     _Savings( OPT_CALLTORET, _ObjLen( ref ) );
                     DelInstr( ref );
                     change = true;
@@ -144,7 +141,7 @@ void    MultiLineNums( ins_entry *ins )
             if( _ClassInfo( prev ) == OC_LINENUM ) {
                 ins = prev->ins.next;
                 UnLinkInstr( prev );
-                _SetClass( prev, OC_DEAD );
+                _ResetClass( prev, OC_DEAD );
                 prev = ins->ins.prev;
             } else {
                 prev = prev->ins.prev;

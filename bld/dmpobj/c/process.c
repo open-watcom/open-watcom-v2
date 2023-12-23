@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,10 +44,6 @@ enum {
     DBG_HLL
 };
 
-int  DbgStyle = DBG_CODEVIEW;
-
-typedef unsigned short  DOSDATE_T;
-
 enum {
     TIME_SEC_B  = 0,
     TIME_SEC_F  = 0x001f,
@@ -65,6 +61,10 @@ enum {
     DATE_YEAR_B = 9,
     DATE_YEAR_F = 0xfe00
 };
+
+typedef unsigned short  DOSDATE_T;
+
+int  DbgStyle = DBG_CODEVIEW;
 
 static time_t d2t( DOSDATE_T date, DOSDATE_T time )
 /*************************************************/
@@ -91,11 +91,12 @@ void ProcEndRec( void )
 
     typ = GetByte();
     switch( typ & 0x3 ) {
-    case 0: Output( INDENT "end of overlay" CRLF );     break;
-    case 1: Output( INDENT "end of block" CRLF );       break;
+    case 0: Output( INDENT "end of overlay\n" );     break;
+    case 1: Output( INDENT "end of block\n" );       break;
     default:
-        Output( BAILOUT "Unknown ENDREC type (%b)" CRLF, typ );
+        Output( BAILOUT "Unknown ENDREC type (%b)\n", typ );
         longjmp( BailOutJmp, 1 );
+        /* never return */
     }
 }
 
@@ -110,21 +111,21 @@ void ProcTHeadr( int first )
         Libindex    = 0;
     }
     GetName();
-    Output( INDENT "%N" CRLF );
+    Output( INDENT "%N\n" );
 }
 
 void ProcLHeadr( void )
 /*********************/
 {
     GetName();
-    Output( INDENT "%N" CRLF );
+    Output( INDENT "%N\n" );
 }
 
 void ProcRHeadr( void )
 /*********************/
 {
     GetName();
-    Output( INDENT "%N" CRLF );
+    Output( INDENT "%N\n" );
     OutputData( (unsigned_32)RecOffset(), 0L );
 }
 
@@ -139,48 +140,46 @@ static void doProcModel( void )
     if( tmp != '0' ) {
         Output( "%c", tmp );
     }
-    Output( "86" CRLF );
+    Output( "86\n" );
     if( EndRec() )
         return;
     Output( INDENT "Memory Model  : " );
     tmp = GetByte();
     switch( tolower( tmp ) ) {
-    case 's':   Output( "Small" CRLF );     break;
-    case 'm':   Output( "Medium" CRLF );    break;
-    case 'c':   Output( "Compact" CRLF );   break;
-    case 'l':   Output( "Large" CRLF );     break;
-    case 'h':   Output( "Huge" CRLF );      break;
-    case 'f':   Output( "Flat" CRLF );      break;
+    case 's':   Output( "Small\n" );     break;
+    case 'm':   Output( "Medium\n" );    break;
+    case 'c':   Output( "Compact\n" );   break;
+    case 'l':   Output( "Large\n" );     break;
+    case 'h':   Output( "Huge\n" );      break;
+    case 'f':   Output( "Flat\n" );      break;
     default:
-        Output( "Unknown(%c)" CRLF, tmp );
+        Output( "Unknown(%c)\n", tmp );
         break;
     }
     if( EndRec() )
         return;
     tmp = GetByte();
-    Output( INDENT "Optimized     : %s" CRLF, ( tmp == 'O' ) ? "Yes" : "No" );
+    Output( INDENT "Optimized     : %s\n", ( tmp == 'O' ) ? "Yes" : "No" );
     if( EndRec() )
         return;
     Output( INDENT "Floating point: " );
     tmp = GetByte();
     switch( tmp ) {
-    case 'e':   Output( "Emulated inline" CRLF );   break;
-    case 'c':   Output( "Emulator calls" CRLF );    break;
-    case 'p':   Output( "80x87 inline code" CRLF ); break;
+    case 'e':   Output( "Emulated inline\n" );   break;
+    case 'c':   Output( "Emulator calls\n" );    break;
+    case 'p':   Output( "80x87 inline code\n" ); break;
     default:
-        Output( "Unknown(%c)" CRLF, tmp );
+        Output( "Unknown(%c)\n", tmp );
         break;
     }
 }
 
 static void doWeakLazyExtern( void )
 {
-    byte default_resolution;
-    byte extern_idx;
+    unsigned default_resolution;
+    unsigned extern_idx;
 
-    for(;;) {
-        if( EndRec() )
-            break;
+    while( !EndRec() ) {
         extern_idx = GetIndex();
         default_resolution = GetIndex();
         Output( INDENT INDENT "EI(%u) default: EI(%u)\n", extern_idx, default_resolution );
@@ -199,7 +198,7 @@ static void doDependency( void )
     char        buff[80];
 
     if( EndRec() ) {
-        Output( INDENT "Last Dependency Record" CRLF );
+        Output( INDENT "Last Dependency Record\n" );
         return;
     }
     dos_time = GetByte();
@@ -213,8 +212,7 @@ static void doDependency( void )
         buff[0] = GetByte();
         Output( buff );
     }
-    Output( CRLF );
-    Output( INDENT "Time Stamp: " );
+    Output( "\n" INDENT "Time Stamp: " );
     Output( ctime( &t ) );      // has embedded '\n'
 }
 
@@ -223,8 +221,8 @@ static int doDisasmDirective( void )
     byte        ddir;
     unsigned_32 off1;
     unsigned_32 off2;
-    unsigned_16 idx;
-    unsigned_16 nidx;
+    unsigned    idx;
+    unsigned    nidx;
     Segdeflist  *sd;
 
     ddir = GetByte();
@@ -251,13 +249,13 @@ static int doDisasmDirective( void )
             if( TranslateIndex ) {
                 sd = GetSegdef( idx );
                 if( sd != NULL ) {
-                    Output( " - '%s'", GetLname( sd->segind ) );
+                    Output( " - '%s'", GetLname( sd->segidx ) );
                 }
             }
         } else {
             Output( "COMDAT(%u)", nidx );
         }
-        Output( "  begin=%X  end+1=%X" CRLF, off1, off2 );
+        Output( "  begin=%X  end+1=%X\n", off1, off2 );
         return( 1 );
     }
     BackupByte();
@@ -297,35 +295,35 @@ static int doLinkerDirective( void )
     case LDIR_SOURCE_LANGUAGE:
         major = GetByte();
         minor = GetByte();
-        Output( INDENT "WATCOM DBI: Version %u.%u  Language %R" CRLF, major, minor );
+        Output( INDENT "WATCOM DBI: Version %u.%u  Language %R\n", major, minor );
         return( 1 );
     case LDIR_DEFAULT_LIBRARY:
         major = GetByte();
-        Output( INDENT "Default Library: Priority %u \"%R\"" CRLF, major );
+        Output( INDENT "Default Library: Priority %u \"%R\"\n", major );
         return( 1 );
     case LDIR_OPT_FAR_CALLS:
         s1 = GetIndex();
         if( TranslateIndex ) {
             sd = GetSegdef( s1 );
             if( sd != NULL ) {
-                segname = GetLname( sd->segind );
+                segname = GetLname( sd->segidx );
             } else {
                 segname = "";
             }
-            Output( INDENT "Optimize Far Calls: SI(%u) - '%s'" CRLF, s1, segname );
+            Output( INDENT "Optimize Far Calls: SI(%u) - '%s'\n", s1, segname );
         } else {
-            Output( INDENT "Optimize Far Calls: SI(%u)" CRLF, s1 );
+            Output( INDENT "Optimize Far Calls: SI(%u)\n", s1 );
         }
         return( 1 );
     case LDIR_OPT_UNSAFE:
-        Output( INDENT "Far Call Optimization Unsafe (Last FIXUPP)" CRLF );
+        Output( INDENT "Far Call Optimization Unsafe (Last FIXUPP)\n" );
         return( 1 );
     case LDIR_VF_TABLE_DEF:
-        Output( INDENT "Virtual Function Conditional" CRLF );
+        Output( INDENT "Virtual Function Conditional\n" );
         doVirtualConditional();
         return( 1 );
     case LDIR_VF_PURE_DEF:
-        Output( INDENT "Pure Virtual Function Conditional" CRLF );
+        Output( INDENT "Pure Virtual Function Conditional\n" );
         doVirtualConditional();
         return( 1 );
     case LDIR_VF_REFERENCE:
@@ -333,14 +331,14 @@ static int doLinkerDirective( void )
         s1 = GetIndex();
         if( s1 == 0 ) {
             s1 = GetIndex();
-            Output( INDENT "Virtual Function Reference EI(%u) CI(%u)" CRLF, e1, s1 );
+            Output( INDENT "Virtual Function Reference EI(%u) CI(%u)\n", e1, s1 );
         } else {
-            Output( INDENT "Virtual Function Reference EI(%u) SI(%u)" CRLF, e1, s1 );
+            Output( INDENT "Virtual Function Reference EI(%u) SI(%u)\n", e1, s1 );
         }
         return( 1 );
     case LDIR_OBJ_TIMESTAMP:
         tstamp = GetLInt();
-        Output( INDENT "Library Timestamp: %s" CRLF, ctime( &tstamp ) );
+        Output( INDENT "Library Timestamp: %s\n", ctime( &tstamp ) );
         return( 1 );
     }
     BackupByte();
@@ -350,7 +348,7 @@ static int doLinkerDirective( void )
 static int doEasyOmf( byte c_bits )
 {
     if( c_bits == 0x80 && memcmp( RecPtr, EASY_OMF_SIGNATURE, 5 ) == 0 ) {
-        Output( INDENT "---- PharLap 80386 object deck ----" CRLF );
+        Output( INDENT "---- PharLap 80386 object deck ----\n" );
         IsPharLap = true;
         IsIntel = false;
         return( 1 );
@@ -361,7 +359,7 @@ static int doEasyOmf( byte c_bits )
 static int doMSOmf( void )
 {
     if( RecLen < 5 ) {
-        Output( INDENT "Assuming CodeView style debugging information" CRLF );
+        Output( INDENT "Assuming CodeView style debugging information\n" );
         DbgStyle = DBG_CODEVIEW;
     } else {
         byte    version;
@@ -369,17 +367,17 @@ static int doMSOmf( void )
         version = GetByte();
         IsIntel = false;
         NamePtr = RecPtr;
-        NameLen = RecLen - 3;
+        NameLen = (byte)( RecLen - 3 );
         RecPtr += NameLen;
-        Output( INDENT "---- \"New OMF\" extensions present ----" CRLF );
+        Output( INDENT "---- \"New OMF\" extensions present ----\n" );
         if( strncmp( (char *)NamePtr, "CV", 2 ) == 0 ) {
-            Output( INDENT "Microsoft CodeView style debugging information version %b" CRLF, version );
+            Output( INDENT "Microsoft CodeView style debugging information version %b\n", version );
             DbgStyle = DBG_CODEVIEW;
         } else if( strncmp( (char *)NamePtr, "HL", 2 ) == 0 ) {
-            Output( INDENT "IBM HLL style debugging information version %b" CRLF, version );
+            Output( INDENT "IBM HLL style debugging information version %b\n", version );
             DbgStyle = DBG_HLL;
         } else {
-            Output( INDENT "Unknown debugging information style" CRLF );
+            Output( INDENT "Unknown debugging information style\n" );
             DbgStyle = DBG_UNKNOWN;
         }
     }
@@ -394,9 +392,9 @@ static void doDLLImport( void )
 
     ord_flag = GetByte();
     if( ord_flag ) {
-        Output( INDENT "DLL Import by Ordinal" CRLF );
+        Output( INDENT "DLL Import by Ordinal\n" );
     } else {
-        Output( INDENT "DLL Import by Name" CRLF );
+        Output( INDENT "DLL Import by Name\n" );
     }
     GetName();
     Output( INDENT "%N." );
@@ -407,10 +405,10 @@ static void doDLLImport( void )
         Output( "@%u", ordinal );
     } else {
         if( GetName() > 0 ) {
-            Output( "Imported Name: %N" CRLF );
+            Output( "Imported Name: %N" );
         }
     }
-    Output( CRLF );
+    OutputNL();
 }
 
 static void doDLLExport( void )
@@ -420,9 +418,9 @@ static void doDLLExport( void )
 
     exp_flag = GetByte();
     if( exp_flag & 0x80 ) {
-        Output( INDENT "DLL Export by Ordinal" CRLF );
+        Output( INDENT "DLL Export by Ordinal\n" );
     } else {
-        Output( INDENT "DLL Export by Name" CRLF );
+        Output( INDENT "DLL Export by Name\n" );
     }
     GetName();
     Output( INDENT "Exported Name: %N " );
@@ -432,7 +430,7 @@ static void doDLLExport( void )
         ordinal = GetUInt();
         Output( "@%u", ordinal );
     }
-    Output( CRLF );
+    OutputNL();
 }
 
 static int doOMFExt( void )
@@ -448,7 +446,7 @@ static int doOMFExt( void )
         doDLLExport();
         return( 1 );
     default:
-        Output( INDENT "Unknown OMF extension (subtype %x)" CRLF, subtype );
+        Output( INDENT "Unknown OMF extension (subtype %x)\n", subtype );
     }
     return( 0 );
 }
@@ -462,54 +460,54 @@ void ProcComent( void )
 
     c_bits = GetByte();
     c_class = GetByte();
-    Output( INDENT "bits %b, class %b" CRLF, c_bits, c_class );
+    Output( INDENT "bits %b, class %b\n", c_bits, c_class );
     dont_print = 0;
     if( InterpretComent ) {
         switch( c_class ) {
         case CMT_LZEXT:
-            Output( INDENT "Lazy extern (will search libs):" CRLF );
+            Output( INDENT "Lazy extern (will search libs):\n" );
             doWeakLazyExtern();
             dont_print = 1;
             break;
         case CMT_WKEXT:
-            Output( INDENT "Weak extern (won't search libs):" CRLF );
+            Output( INDENT "Weak extern (won't search libs):\n" );
             doWeakLazyExtern();
             dont_print = 1;
             break;
         case CMT_DEPENDENCY:
-            Output( INDENT "Borland Dependency:" CRLF );
+            Output( INDENT "Borland Dependency:\n" );
             doDependency();
             dont_print = 1;
             break;
         case CMT_LANGUAGE_TRANS:
-            Output( INDENT "Language Translator:" CRLF );
+            Output( INDENT "Language Translator:\n" );
             break;
         case CMT_WAT_PROC_MODEL:
-            Output( INDENT "WATCOM Compile parameters:" CRLF );
+            Output( INDENT "WATCOM Compile parameters:\n" );
             doProcModel();
             dont_print = 1;
             break;
         case CMT_MS_PROC_MODEL:
-            Output( INDENT "Microsoft Compile parameters:" CRLF );
+            Output( INDENT "Microsoft Compile parameters:\n" );
             doProcModel();
             dont_print = 1;
             break;
         case CMT_DOSSEG:
-            Output( INDENT "DOSSEG Segment Ordering" CRLF );
+            Output( INDENT "DOSSEG Segment Ordering\n" );
             break;
         case CMT_DEFAULT_LIBRARY:
-            Output( INDENT "Default Library: \"%R\"" CRLF );
+            Output( INDENT "Default Library: \"%R\"\n" );
             dont_print = 1;
             break;
         case CMT_DLL_ENTRY:
-            Output( INDENT "OMF Extension" CRLF );
+            Output( INDENT "OMF Extension\n" );
             dont_print = doOMFExt();
             break;
         case CMT_MS_OMF:
             dont_print = doMSOmf();
             break;
         case CMT_MS_END_PASS_1:
-            Output( INDENT "End of Linker Pass 1" CRLF );
+            Output( INDENT "End of Linker Pass 1\n" );
             break;
         case CMT_EASY_OMF:
             dont_print = doEasyOmf( c_bits );
@@ -538,22 +536,22 @@ void ProcComent( void )
     }
 }
 
-void ProcLNames( unsigned_16 *index )
-/***********************************/
+void ProcLNames( unsigned *index )
+/********************************/
 {
     while( !EndRec() ) {
        GetName();
        AddLname();
-       Output( INDENT "%u - %N" CRLF, ++(*index) );
+       Output( INDENT "%u - %N\n", ++(*index) );
     }
 }
 
-void ProcNames( unsigned_16 *index )
-/**********************************/
+void ProcNames( unsigned *index )
+/*******************************/
 {
     while( !EndRec() ) {
        GetName();
-       Output( INDENT "%u - %N" CRLF, ++(*index) );
+       Output( INDENT "%u - %N\n", ++(*index) );
     }
 }
 
@@ -565,7 +563,7 @@ void ProcExtNames( void )
        if( TranslateIndex ) {
            AddXname();
        }
-       Output( INDENT "%u - %N Type:%u" CRLF, ++Importindex, GetIndex() );
+       Output( INDENT "%u - %N Type:%u\n", ++Importindex, GetIndex() );
     }
 }
 
@@ -578,7 +576,7 @@ void ProcComExtDef( void )
     while( !EndRec() ) {
         name = GetIndex();
         typ = GetIndex();
-        Output(INDENT "%u - LNAME:%u Type:%u" CRLF, ++Importindex, name, typ);
+        Output(INDENT "%u - LNAME:%u Type:%u\n", ++Importindex, name, typ);
         if( TranslateIndex ) {
             Output( INDENT "           - '%s'\n", GetXname( name ) );
         }
@@ -630,9 +628,9 @@ void ProcSegDefs( void )
     byte        ltl_dat;
     unsigned_16 ltl_len;
     unsigned_16 ltl_offset;
-    unsigned_16 seg;
-    unsigned_16 class;
-    unsigned_16 ovl;
+    unsigned    seg;
+    unsigned    class;
+    unsigned    ovl;
     int         use32;
 
     ++Segindex;
@@ -640,10 +638,11 @@ void ProcSegDefs( void )
     align = acbp >> 5;
     /* gcc is too stupid to see the following aren't necessary */
     ltl_offset = ltl_len = ltl_dat = 0;
-    abs_offset = abs_frame = ovl = seg = class = 0;
+    abs_offset = ovl = seg = class = abs_frame = 0;
     if( align >= ALIGN_4KPAGE ) {
-        Output( BAILOUT "Unknown align, acbp=%b" CRLF, acbp );
+        Output( BAILOUT "Unknown align, acbp=%b\n", acbp );
         longjmp( BailOutJmp, 1 );
+        /* never return */
     }
     comb = ( acbp >> 2 ) & 7;
     switch( align ) {
@@ -689,7 +688,7 @@ void ProcSegDefs( void )
         use32 = 0;
     }
     if( !IsIntel || align != ALIGN_UNABS ) {
-        Output( INDENT "%u: Seg:%u Class:%u Ovl:%u %s %s %s%s Length %X" CRLF,
+        Output( INDENT "%u: Seg:%u Class:%u Ovl:%u %s %s %s%s Length %X\n",
             Segindex, seg, class, ovl,
             ( IsIntel ) ? oldAlign[align] : newAlign[align],
             segComb[ comb ],
@@ -698,25 +697,25 @@ void ProcSegDefs( void )
             length
         );
         if( TranslateIndex ) {
-            Output( INDENT "   Seg: '%s'  Class: '%s'" CRLF, GetLname( seg ), GetLname( class ) );
+            Output( INDENT "   Seg: '%s'  Class: '%s'\n", GetLname( seg ), GetLname( class ) );
             AddSegdef( seg );
         }
     } else {
-        Output( INDENT "%u: Unnamed Absolute %s %s USE16 Length %X" CRLF,
+        Output( INDENT "%u: Unnamed Absolute %s %s USE16 Length %X\n",
             Segindex, oldAlign[ ALIGN_UNABS ], segComb[ comb ], length );
     }
     if( align == ALIGN_ABS || ( IsIntel && align == ALIGN_UNABS ) ) {
-        Output( INDENT "Frame: %x Offset: %X" CRLF, abs_frame, abs_offset );
+        Output( INDENT "Frame: %x Offset: %X\n", abs_frame, abs_offset );
     }
     if( IsIntel && align == ALIGN_LTRELOC ) {
-        Output( INDENT "LTL Data:%b Len:%x Offset:%x" CRLF, ltl_dat, ltl_len, ltl_offset );
+        Output( INDENT "LTL Data:%b Len:%x Offset:%x\n", ltl_dat, ltl_len, ltl_offset );
     }
 }
 
 static void getBase( int indent )
 {
-    unsigned_16 group;
-    unsigned_16 seg;
+    unsigned    group;
+    unsigned    seg;
     Grpdeflist  *gd;
     Segdeflist  *sd;
     char        *grpname;
@@ -732,13 +731,13 @@ static void getBase( int indent )
         if( TranslateIndex ) {
             gd = GetGrpdef( group );
             if( gd != NULL ) {
-                grpname = GetLname( gd->grpind );
+                grpname = GetLname( gd->grpidx );
             } else {
                 grpname = "";
             }
             sd = GetSegdef( seg );
             if( sd != NULL ) {
-                segname = GetLname( sd->segind );
+                segname = GetLname( sd->segidx );
             } else {
                 segname = "";
             }
@@ -748,7 +747,7 @@ static void getBase( int indent )
         }
     }
     if( indent ) {
-        Output( CRLF );
+        OutputNL();
     }
 }
 
@@ -767,14 +766,14 @@ void ProcPubDefs( void )
     while( !EndRec() ) {
         GetName();
         puboff = GetEither();
-        Output( INDENT "%X - %N Type:%u" CRLF, puboff, GetIndex() );
+        Output( INDENT "%X - %N Type:%u\n", puboff, GetIndex() );
     }
 }
 
 void ProcComDef( void )
 /*********************/
 {
-    unsigned_16 type;
+    unsigned    type;
     byte        seg;
     unsigned_32 num;
     unsigned_32 size;
@@ -782,24 +781,25 @@ void ProcComDef( void )
     while( !EndRec() ) {
         GetName();
         type = GetIndex();  /* type index */
-        seg = GetByte();   /* data seg type */
+        seg = GetByte();    /* data seg type */
         if( seg == COMDEF_FAR ) {
             num = GetVariable();
             size = GetVariable();
-            Output( INDENT "%u - %N Type %u, FAR, Num:%X, Size:%X" CRLF,
+            Output( INDENT "%u - %N Type %u, FAR, Num:%X, Size:%X\n",
                 ++Importindex, type, num, size );
         } else if( seg == COMDEF_NEAR ) {
             size = GetVariable();
-            Output( INDENT "%u - %N Type %u, NEAR, Size:%X" CRLF,
+            Output( INDENT "%u - %N Type %u, NEAR, Size:%X\n",
                 ++Importindex, type, size );
         } else if( seg < 0x60 ) {   // Borland style COMDEF
             size = GetVariable();
-            Output( INDENT "%u - %N Type %u, Seg: %u, Size:%X" CRLF,
+            Output( INDENT "%u - %N Type %u, Seg: %u, Size:%X\n",
                 ++Importindex, type, seg, size );
         } else {
-            Output( INDENT "%u - %N Type %u" BAILOUT "Unknown seg(%b)" CRLF,
+            Output( INDENT "%u - %N Type %u" BAILOUT "Unknown seg(%b)\n",
                 ++Importindex, type, seg );
             longjmp( BailOutJmp, 1 );
+            /* never return */
         }
     }
 }
@@ -813,7 +813,7 @@ static void DoLinNumsMS( void )
     unsigned    count;
 
     if( Descriptions ) {
-        Output( INDENT "Number pairs are \"line#:offset\"" CRLF );
+        Output( INDENT "Number pairs are \"line#:offset\"\n" );
     }
     if( !EndRec() ) {
         count = 0;
@@ -825,7 +825,7 @@ static void DoLinNumsMS( void )
                 Output( INDENT "%5:%X", line_num, offset );
                 break;
             case 3:
-                Output( "  %5:%X" CRLF, line_num, offset );
+                Output( "  %5:%X\n", line_num, offset );
                 break;
             default:
                 Output( "  %5:%X", line_num, offset );
@@ -833,8 +833,8 @@ static void DoLinNumsMS( void )
             }
             ++count;
         } while( !EndRec() );
-        if( count % 4 != 0 ) {  /* if count % 4 == 0 then CRLF already output */
-            Output( CRLF );
+        if( count % 4 != 0 ) {  /* if count % 4 == 0 then "\n" already output */
+            OutputNL();
         }
     }
 }
@@ -848,7 +848,7 @@ static void DoLinNumsHLL( void )
     static unsigned_16  type = 0x100;   // indicate no current type
 //    unsigned_16         seg;
 //    unsigned_16         base_grp;
-    unsigned_16         base_seg;
+    unsigned            base_seg;
 //    unsigned_32         count;
     static unsigned_32  entry_num;
     static unsigned_16  num_entries;
@@ -873,57 +873,57 @@ static void DoLinNumsHLL( void )
         }
         switch( type ) {
         case 0:     // Source line numbers table
-            Output( INDENT "Source line numbers" CRLF );
+            Output( INDENT "Source line numbers\n" );
 //            size = GetLInt();   // Address of logical segment - filled out by
             GetLInt();   // Address of logical segment - filled out by
                                 // linker, zero in object file
             break;
         case 1:     // Listing line numbers table
-            Output( INDENT "Listing line numbers (not formatting data)" CRLF );
+            Output( INDENT "Listing line numbers (not formatting data)\n" );
             break;
         case 2:     // Listing and line numbers combined
-            Output( INDENT "Source/listing line numbers (not formatting data)" CRLF );
+            Output( INDENT "Source/listing line numbers (not formatting data)\n" );
             break;
         case 3:     // File names table
-            Output( INDENT "File names table" CRLF );
+            Output( INDENT "File names table\n" );
             // Note - the descriptions are taken from LINK386 and are not
             // necessarily correct, as IBM tools don't appear to use the
             // 'start' and 'number of records' entries
 //            size = GetLInt();
             GetLInt();
             i = GetLInt();
-            Output( INDENT "Record Number of Start of Source: %5" CRLF, i );
+            Output( INDENT "Record Number of Start of Source: %5\n", i );
             i = GetLInt();
-            Output( INDENT "Number of Primary Source Records: %5" CRLF, i );
+            Output( INDENT "Number of Primary Source Records: %5\n", i );
 //            count = GetLInt();
             GetLInt();
             break;
         case 4:
-            Output( INDENT "Path table (not formatting data)" CRLF );
+            Output( INDENT "Path table (not formatting data)\n" );
             break;
         }
     } else {
-        Output( INDENT "Continuing previous LINNUM record" CRLF );
+        Output( INDENT "Continuing previous LINNUM record\n" );
     }
     // Process entries in a table that may be a continuation from previous
     // LINNUM record
     switch( type ) {
     case 0:             // line/offset info
         if( Descriptions )
-            Output( INDENT "Src line   Src file  segment:offset" CRLF );
+            Output( INDENT "Src line   Src file  segment:offset\n" );
 
         while( (entry_num < num_entries) && ((RecPtr - RecBuff) < RecLen) ) {
             line_num = GetUInt();
             file_num = GetUInt();
             offset   = GetLInt();
-            Output( INDENT "  %5  %5  %5:%X" CRLF, line_num, file_num, base_seg, offset );
+            Output( INDENT "  %5  %5  %5:%X\n", line_num, file_num, base_seg, offset );
             ++entry_num;
         }
         break;
     case 3:             // file names table
         while( (entry_num < num_entries) && ((RecPtr - RecBuff) < RecLen) ) {
             GetName();
-            Output( INDENT "  Source file %5: %N" CRLF, entry_num + 1 );
+            Output( INDENT "  Source file %5: %N\n", entry_num + 1 );
             ++entry_num;
         }
         break;
@@ -946,8 +946,7 @@ void ProcLinNums( void )
         DoLinNumsHLL();
         break;
     default:
-        Output( INDENT "Unknown debugging style - not interpreting LINNUM"
-                " records" CRLF);
+        Output( INDENT "Unknown debugging style - not interpreting LINNUM records\n" );
     }
 }
 
@@ -964,7 +963,7 @@ void ProcLineSym( void )
     if( flag & 1 ) {
         Output( " - continued" );
     }
-    Output( CRLF );
+    OutputNL();
     DoLinNumsMS();
 }
 
@@ -977,7 +976,7 @@ static void idBlock( unsigned indent, unsigned_16 first_block_offset )
     data_ptr    next_block;
 
     rpt_count = IsMS386 ? GetLInt() : GetUInt();
-    Output( "%>Repeated %X times" CRLF, indent, rpt_count );
+    Output( "%>Repeated %X times\n", indent, rpt_count );
     blk_count = GetUInt();
     if( blk_count == 0 ) {
         data_count = GetByte();
@@ -989,11 +988,11 @@ static void idBlock( unsigned indent, unsigned_16 first_block_offset )
         for( num = 0; num < data_count; ++num ) {
             Output( "%b ", GetByte() );
             if( ( num & 0x7 ) == 7 ) {
-                Output( CRLF "%>", indent );
+                Output( "\n%>", indent );
             }
         }
         if( ( data_count & 0x7 ) != 7 ) {
-            Output( CRLF );
+            OutputNL();
         }
 #endif
         RecPtr = next_block;
@@ -1007,7 +1006,7 @@ static void idBlock( unsigned indent, unsigned_16 first_block_offset )
 
 static unsigned_32 begData( void )
 {
-    unsigned_16 seg;
+    unsigned    seg;
     unsigned_32 offset;
     Segdeflist  *sd;
     char        *segname;
@@ -1017,13 +1016,13 @@ static unsigned_32 begData( void )
     if( TranslateIndex ) {
         sd = GetSegdef( seg );
         if( sd != NULL ) {
-           segname = GetLname( sd->segind );
+           segname = GetLname( sd->segidx );
         } else {
            segname = "";
         }
-        Output( INDENT "Seg index:%u - '%s' offset:%X" CRLF, seg, segname, offset );
+        Output( INDENT "Seg index:%u - '%s' offset:%X\n", seg, segname, offset );
     } else {
-        Output( INDENT "Seg index:%u offset:%X" CRLF, seg, offset );
+        Output( INDENT "Seg index:%u offset:%X\n", seg, offset );
     }
     return( offset );
 }
@@ -1068,8 +1067,9 @@ static void doFrame( byte frame )
     case FRAME_TARG:    Output( "TARGET  " );                   break;
     case FRAME_NONE:    Output( "NONE    " );                   break;
     default:
-        Output( BAILOUT "Unknown frame(%b)" CRLF, frame );
+        Output( BAILOUT "Unknown frame(%b)\n", frame );
         longjmp( BailOutJmp, 1 );
+        /* never return */
     }
 }
 
@@ -1087,8 +1087,8 @@ static bool doFrameTranslateIndex( byte frame, size_t *printpos )
 {
     Segdeflist  *sd;
     Grpdeflist  *gd;
-    unsigned_16 idx;
-    bool        needcrlf = false;
+    unsigned    idx;
+    bool        needeol = false;
     size_t      deltacol;
 
 #define         FRAMECOL     39u
@@ -1103,16 +1103,16 @@ static bool doFrameTranslateIndex( byte frame, size_t *printpos )
         idx = GetIndex();
         sd = GetSegdef( idx );
         if( sd != NULL ) {
-            *printpos = Output( "%<- '%s'", deltacol, GetLname( sd->segind ) );
-            needcrlf = true;
+            *printpos = Output( "%<- '%s'", deltacol, GetLname( sd->segidx ) );
+            needeol = true;
         }
         break;
     case FRAME_GRP:
         idx = GetIndex();
         gd = GetGrpdef( idx );
         if( gd != NULL ) {
-            *printpos = Output( "%<- '%s'", deltacol, GetLname( gd->grpind ) );
-            needcrlf = true;
+            *printpos = Output( "%<- '%s'", deltacol, GetLname( gd->grpidx ) );
+            needeol = true;
         }
         break;
 
@@ -1120,7 +1120,7 @@ static bool doFrameTranslateIndex( byte frame, size_t *printpos )
         idx = GetIndex();
         if( TranslateIndex ) {
             *printpos = Output( "%<- '%s'", deltacol, GetXname( idx ) );
-            needcrlf = true;
+            needeol = true;
         }
         break;
     case FRAME_ABS:
@@ -1133,20 +1133,20 @@ static bool doFrameTranslateIndex( byte frame, size_t *printpos )
     case FRAME_TARG:    Output( "TARGET  " );                    break;
     case FRAME_NONE:    Output( "NONE    " );                    break;
     default:
-        Output( BAILOUT "Unknown frame(%b)" CRLF, frame );
+        Output( BAILOUT "Unknown frame(%b)\n", frame );
         longjmp( BailOutJmp, 1 );
+        /* never return */
 #endif
-
     }
-    return( needcrlf );
+    return( needeol );
 }
 
 static bool doTargetTranslateIndex( byte target, size_t *printpos )
 {
     Segdeflist  *sd;
     Grpdeflist  *gd;
-    unsigned_16 idx;
-    bool        needcrlf = false;
+    unsigned    idx;
+    bool        needeol = false;
     size_t      deltacol;
 
 #define         TARGETCOL     58u
@@ -1161,23 +1161,23 @@ static bool doTargetTranslateIndex( byte target, size_t *printpos )
         idx = GetIndex();
         sd = GetSegdef( idx );
         if( sd != NULL ) {
-            *printpos = Output( "%<- '%s'", deltacol, GetLname( sd->segind ) );
-            needcrlf = true;
+            *printpos = Output( "%<- '%s'", deltacol, GetLname( sd->segidx ) );
+            needeol = true;
         }
         break;
     case TARGET_GRP:
         idx = GetIndex();
         gd = GetGrpdef( idx );
         if( gd != NULL ) {
-            *printpos = Output( "%<- '%s'", deltacol, GetLname( gd->grpind ) );
-            needcrlf = true;
+            *printpos = Output( "%<- '%s'", deltacol, GetLname( gd->grpidx ) );
+            needeol = true;
         }
         break;
     case TARGET_EXT:
         idx = GetIndex();
         if( TranslateIndex ) {
             *printpos = Output( "%<- '%s'", deltacol, GetXname( idx ) );
-            needcrlf = true;
+            needeol = true;
         }
         break;
     case TARGET_ABS:
@@ -1185,7 +1185,7 @@ static bool doTargetTranslateIndex( byte target, size_t *printpos )
 //        Output( "%x", GetUInt() );
         break;
     }
-    return( needcrlf );
+    return( needeol );
 }
 
 static void threadFixup( byte typ )
@@ -1202,7 +1202,7 @@ static void threadFixup( byte typ )
         Output( INDENT "Thread: TARGET %u: ", num );
         doTarget( frame );
     }
-    Output( CRLF );
+    OutputNL();
 }
 
 static void OutputFixup( byte typ, bool indent )
@@ -1227,11 +1227,10 @@ static void OutputFixup( byte typ, bool indent )
     } else {
         doTarget( num );
     }
-    if( typ & FIXDAT_PBIT ) {
-        Output( CRLF );
-    } else {
-        Output( ",%X" CRLF, GetEither() );
+    if( (typ & FIXDAT_PBIT) == 0 ) {
+        Output( ",%X", GetEither() );
     }
+    OutputNL();
 }
 
 static void explicitFixup( byte typ )
@@ -1240,7 +1239,7 @@ static void explicitFixup( byte typ )
     unsigned_16     offset;
     data_ptr        RecPtrsave;
     data_ptr        RecPtrsave1;
-    bool            needcrlf = false;
+    bool            needeol = false;
     size_t          printpos;
 
     offset = ( ( typ & 0x03 ) << 8 ) + GetByte();
@@ -1248,14 +1247,16 @@ static void explicitFixup( byte typ )
     fix_loc = ( typ >> 2 ) & 0x0f;
     if( IsPharLap ) {
         if( fix_loc > LOC_PHARLAP_BASE_OFFSET_32 ) {
-            Output( BAILOUT "Unknown loc, type = %b" CRLF, typ );
+            Output( BAILOUT "Unknown loc, type = %b\n", typ );
             longjmp( BailOutJmp, 1 );
+            /* never return */
         } else if( fix_loc == LOC_PHARLAP_OFFSET_32 ) {
             fix_loc = LOC_OFFSET_32;
         }
     } else if( fix_loc == LOC_PHARLAP_BASE_OFFSET_32 ) {
-        Output( BAILOUT "Unknown loc, type = %b" CRLF, typ );
+        Output( BAILOUT "Unknown loc, type = %b\n", typ );
         longjmp( BailOutJmp, 1 );
+        /* never return */
     }
     switch( fix_loc ) {
     case LOC_OFFSET_LO:         Output( "  LOBYTE     " );   break;
@@ -1267,10 +1268,11 @@ static void explicitFixup( byte typ )
     case LOC_PHARLAP_BASE_OFFSET_32:    /* fall through */
     case LOC_BASE_OFFSET_32:    Output( "  POINTER386 " );   break;
     case LOC_OFFSET_32:         Output( "  OFFSET386  " );   break;
-    case LOC_OFFSET_32_LOADER:  Output( "  LROFFSET386" );   break;
+    case LOC_OFFSET_LOADER_32:  Output( "  LROFFSET386" );   break;
     default:
-        Output( BAILOUT "Unknown loc, type = %b" CRLF, typ );
+        Output( BAILOUT "Unknown loc, type = %b\n", typ );
         longjmp( BailOutJmp, 1 );
+        /* never return */
     }
     typ = GetByte();
     if( TranslateIndex ) {
@@ -1283,14 +1285,14 @@ static void explicitFixup( byte typ )
         RecPtrsave1 = RecPtr;
         RecPtr = RecPtrsave;
         printpos = 0;
-        if( ! (typ & FIXDAT_FTHREAD) ) {
-            needcrlf |= doFrameTranslateIndex( ( typ >> 4 ) & 0x07, &printpos );
+        if( (typ & FIXDAT_FTHREAD) == 0 && doFrameTranslateIndex( ( typ >> 4 ) & 0x07, &printpos ) ) {
+            needeol = true;
         }
-        if( ! (typ & FIXDAT_TTHREAD) ) {
-            needcrlf |= doTargetTranslateIndex( typ & 0x03, &printpos );
+        if( (typ & FIXDAT_TTHREAD) == 0 && doTargetTranslateIndex( typ & 0x03, &printpos ) ) {
+            needeol = true;
         }
-        if( needcrlf ) {
-            Output( CRLF );
+        if( needeol ) {
+            OutputNL();
         }
         RecPtr = RecPtrsave1;
     }
@@ -1302,10 +1304,8 @@ void ProcFixup( void )
     byte    typ;
 
     if( Descriptions ) {
-        Output( INDENT "Locat Mode    Method     "
-            "  Fixup Frame    Fixup Target(,displacement)" CRLF );
-        Output( INDENT "----- ----  -----------  "
-            "---------------  ---------------------------" CRLF );
+        Output( INDENT "Locat Mode    Method       Fixup Frame    Fixup Target(,displacement)\n" );
+        Output( INDENT "----- ----  -----------  ---------------  ---------------------------\n" );
     }
     while( !EndRec() ) {
         typ = GetByte();
@@ -1324,7 +1324,7 @@ void ProcModEnd( void )
     byte        typ;
 
     mod_type = GetByte();
-    Output( INDENT "mod type:%smain module %s" CRLF,
+    Output( INDENT "mod type:%smain module %s\n",
         ( mod_type & 0x80 ) ? "":"non-",
         ( mod_type & 0x40 ) ? "with start address" : ""
     );
@@ -1348,9 +1348,9 @@ void ProcGrpDef( void )
     char        *grpname;
     char        *segname;
     char        *classname;
-    unsigned_16 grpidx;
-    unsigned_16 idx;
-    unsigned_16 idxidx;
+    unsigned    grpidx;
+    unsigned    idx;
+    unsigned    idxidx;
 
     ++Grpindex;
     grpidx = GetIndex();
@@ -1358,9 +1358,9 @@ void ProcGrpDef( void )
     if( TranslateIndex ) {
         grpname = GetLname( grpidx );
         AddGrpdef( grpidx, 0 ); /* start new grpdef */
-        Output( INDENT "%u: name: %u - '%s'" CRLF, Grpindex, grpidx, grpname );
+        Output( INDENT "%u: name: %u - '%s'\n", Grpindex, grpidx, grpname );
     } else {
-        Output( INDENT "%u: name: %u" CRLF, Grpindex, grpidx );
+        Output( INDENT "%u: name: %u\n", Grpindex, grpidx );
     }
     while( !EndRec() ) {
         grptype = GetByte();
@@ -1389,9 +1389,9 @@ void ProcGrpDef( void )
                 break;
             case GRP_FULLNAME:
                 {
-                    unsigned_16 seg;
-                    unsigned_16 class;
-                    unsigned_16 ovl;
+                    unsigned    seg;
+                    unsigned    class;
+                    unsigned    ovl;
 
                     seg = GetIndex();
                     class = GetIndex();
@@ -1417,11 +1417,11 @@ void ProcGrpDef( void )
                 dmpBytes( 4 );
                 break;
             default:
-                Output( BAILOUT "Unknown group type(%b)" CRLF, grptype );
+                Output( BAILOUT "Unknown group type(%b)\n", grptype );
                 longjmp( BailOutJmp, 1 );
-                break;
+                /* never return */
         }
-        Output( CRLF );
+        OutputNL();
     }
 }
 
@@ -1432,14 +1432,13 @@ void ProcLibHeader( void )
 {
     byte                flags;
 
-    Output( INDENT "Page size        : %u" CRLF, RecLen + 4 );
+    Output( INDENT "Page size        : %u\n", RecLen + 4 );
     libDictOffs = GetLInt();
     libDictSize = GetUInt();
     flags = GetByte();
-    Output( INDENT "Dictionary Offset: %X" CRLF, libDictOffs );
-    Output( INDENT "Dictionary Size  : %x" CRLF, libDictSize );
-    Output( INDENT "Case-Sensitive   : %s" CRLF,
-        ( flags & 1 ) ? "Yes" : "No" );
+    Output( INDENT "Dictionary Offset: %X\n", libDictOffs );
+    Output( INDENT "Dictionary Size  : %x\n", libDictSize );
+    Output( INDENT "Case-Sensitive   : %s\n", ( flags & 1 ) ? "Yes" : "No" );
     OutputData( 0, 0 );
 }
 
@@ -1471,22 +1470,22 @@ void ProcLibTrailer( FILE *fp )
         }
         RecPtr = RecBuff;
         RecLen = BUFLEN;
-        Output( CRLF "Dictionary Block %x:" CRLF INDENT "Buckets:" CRLF INDENT, dict_block );
+        Output( "\nDictionary Block %x:\n" INDENT "Buckets:\n" INDENT, dict_block );
         for( i = 0; i < 36; i += 6 ) {
             doBucket( i ); Output( "  " );
             doBucket( i + 1 ); Output( "  " );
             doBucket( i + 2 ); Output( "  " );
             doBucket( i + 3 ); Output( "  " );
             doBucket( i + 4 ); Output( "  " );
-            doBucket( i + 5 ); Output( CRLF INDENT );
+            doBucket( i + 5 ); Output( "\n" INDENT );
         }
         doBucket( 36 );
         free = GetByte() * 2;
-        Output( CRLF INDENT "Free Byte: %x" CRLF INDENT "Entries:" CRLF, free );
+        Output( "\n" INDENT "Free Byte: %x\n" INDENT "Entries:\n", free );
         while( RecOffset() < free ) {
             i = RecOffset();
             GetName();
-            Output( INDENT "%x: %N Page %x" CRLF, i, GetUInt() );
+            Output( INDENT "%x: %N Page %x\n", i, GetUInt() );
             if( RecOffset() & 1 ) {
                 GetByte();
             }
@@ -1519,7 +1518,7 @@ static void DoBackPat( void )
     while( !EndRec() ) {
         off = GetEither();
         val = GetEither();
-        Output( INDENT "    offset:%X - value:%X" CRLF, off, val );
+        Output( INDENT "    offset:%X - value:%X\n", off, val );
     }
 }
 
@@ -1532,7 +1531,7 @@ void ProcBackPat( void )
 
     seg = GetIndex();
     fix = PatchType();
-    Output( INDENT "Segment:%u - %s" CRLF, seg, fix );
+    Output( INDENT "Segment:%u - %s\n", seg, fix );
     DoBackPat();
 }
 
@@ -1545,7 +1544,7 @@ void ProcNameBackPat( void )
 
     fix = PatchType();
     sym = GetIndex();
-    Output( INDENT "Symbol:%u - %s" CRLF, sym, fix );
+    Output( INDENT "Symbol:%u - %s\n", sym, fix );
     DoBackPat();
 }
 
@@ -1576,13 +1575,15 @@ void ProcComDat( void )
     sel = (attr >> 4) & 0xf;
     alloc = attr & 0xf;
     if( sel > 3 || alloc > 4 ) {
-        Output( BAILOUT "Unknown attr => %b" CRLF, attr );
+        Output( BAILOUT "Unknown attr => %b\n", attr );
         longjmp( BailOutJmp, 1 );
+        /* never return */
     }
     align = GetByte();
     if( align > 5 ) {
-        Output( BAILOUT "Unknown align => %b" CRLF, align );
+        Output( BAILOUT "Unknown align => %b\n", align );
         longjmp( BailOutJmp, 1 );
+        /* never return */
     }
     offset = GetEither();
     typ = GetIndex();
@@ -1592,14 +1593,14 @@ void ProcComDat( void )
         Output( " ==> " );
         getBase( false );
     }
-    Output( CRLF );
+    OutputNL();
     sym = GetIndex();
     Output( INDENT "sym:%u, typ:%u, offset:%X", sym, typ, offset );
     if( flag & 0x1 ) Output( " continued" );
     if( flag & 0x4 ) Output( " local" );
     if( flag & 0x2 ) Output( " iterated" );
     else             Output( " enumerated" );
-    Output( CRLF );
+    OutputNL();
     if( flag & 0x2 ) {
         DoLidata();
     } else {
@@ -1614,7 +1615,7 @@ void ProcAlias( void )
     GetName();
     Output( INDENT "alias = <%N> "  );
     GetName();
-    Output( "substitue = <%N>" CRLF );
+    Output( "substitue = <%N>\n" );
 }
 
 
@@ -1622,8 +1623,8 @@ void ProcVerNum( void )
 /*********************/
 {
     GetName();
-    Output( INDENT "***** TIS compliant OMF *****" CRLF );
-    Output( INDENT INDENT "Version <%N>" CRLF );
+    Output( INDENT "***** TIS compliant OMF *****\n" );
+    Output( INDENT INDENT "Version <%N>\n" );
 }
 
 

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -65,9 +65,9 @@ static  bool    FlushSomeOpt( pointer_uint size )
         old_segid = SetOP( AskCodeSeg() );
         freed = ShrinkQueue( size );
         SetOP( old_segid );
-        if( _IsntModel( NO_OPTIMIZATION ) && !IckyWicky ) {
+        if( _IsntModel( CGSW_GEN_NO_OPTIMIZATION ) && !IckyWicky ) {
             IckyWicky = true;
-            FEMessage( MSG_PEEPHOLE_FLUSHED, NULL );
+            FEMessage( FEMSG_PEEPHOLE_FLUSHED, NULL );
         }
     } else {
         freed = false;
@@ -79,7 +79,7 @@ static  bool    FlushSomeOpt( pointer_uint size )
 static  bool    ChkMemLimit( pointer_uint limit )
 /***********************************************/
 {
-    if( _IsModel( MEMORY_LOW_FAILS ) )
+    if( _IsModel( CGSW_GEN_MEMORY_LOW_FAILS ) )
         return( false );
     if( MemInUse() - FrlSize <= limit )
         return( false );

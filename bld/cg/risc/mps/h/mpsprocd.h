@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,9 +35,10 @@ typedef enum {
         ROUTINE_MODIFIES_NO_MEMORY      = 0x0002,
         ROUTINE_READS_NO_MEMORY         = 0x0004,
         ROUTINE_REMOVES_PARMS           = 0x0008,
-        ROUTINE_NEVER_RETURNS           = 0x0010,
-        ROUTINE_WANTS_DEBUGGING         = 0x0020,
-        ROUTINE_IS_SETJMP               = 0x0040,
+        ROUTINE_NEVER_RETURNS_ABORTS    = 0x0010,
+        ROUTINE_NEVER_RETURNS_NORETURN  = 0x0020,
+        ROUTINE_WANTS_DEBUGGING         = 0x0040,
+        ROUTINE_IS_SETJMP               = 0x0080,
 } call_attributes;
 
 typedef byte    reg_num;

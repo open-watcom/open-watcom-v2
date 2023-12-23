@@ -874,7 +874,7 @@ an invalid argument to a math library function.
       print *, 'Math error will be attempted'
       x = -12.0
       ! an exception will not be generated since the intrinsic function
-      ! will validate the argument - if you compile with /om, the "fsqrt"
+      ! will validate the argument - if you compile with -om, the "fsqrt"
       ! 80x87 instruction will be generated in-line and an exception
       ! will occur
       y = SQRT( x )
@@ -1392,8 +1392,8 @@ If the linker reports an unresolved reference for "_cstart_", this
 indicates that the linker could not find the &lang run-time libraries.
 .*
 In 16-bit applications, the &lang run-time libraries for the medium
-memory model (/mm) and the floating-point calls floating-point model
-(/fpc) would be
+memory model (-mm) and the floating-point calls floating-point model
+(-fpc) would be
 .fi flibm.lib.
 In 32-bit applications, the &lang run-time libraries for the flat
 memory model would be

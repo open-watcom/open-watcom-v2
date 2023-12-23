@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -290,14 +290,11 @@ OBJPTR WdeMakeCustom( OBJPTR parent, RECT *obj_rect, OBJPTR handle, int which )
 
         if( cust_info->ms_lib ) {
             style = cust_info->control_info.ms.Type[cust_type].dwStyle;
-            SETCTL_TEXT( WdeDefaultCustom,
-                         ResStrToNameOrOrd( cust_info->control_info.ms.szTitle ) );
-            SETCTL_CLASSID( WdeDefaultCustom,
-                            WdeStrToControlClass( cust_info->control_info.ms.szClass ) );
+            SETCTL_TEXT( WdeDefaultCustom, ResStrToNameOrOrdinal( cust_info->control_info.ms.szTitle ) );
+            SETCTL_CLASSID( WdeDefaultCustom, WdeStrToControlClass( cust_info->control_info.ms.szClass ) );
         } else {
             style = cust_info->control_info.bor.Type[cust_type].dwStyle;
-            SETCTL_TEXT( WdeDefaultCustom,
-                         ResStrToNameOrOrd( cust_info->control_info.bor.szTitle ) );
+            SETCTL_TEXT( WdeDefaultCustom, ResStrToNameOrOrdinal( cust_info->control_info.bor.szTitle ) );
             SETCTL_CLASSID( WdeDefaultCustom,
                             WdeStrToControlClass( cust_info->control_info.bor.szClass ) );
         }
@@ -579,7 +576,8 @@ bool CALLBACK WdeCustomDispatcher( ACTION_ID act, OBJPTR obj, void *p1, void *p2
 
 bool WdeCustomInit( bool first )
 {
-    _wde_touch( first );
+    /* unused parameters */ (void)first;
+
     WdeApplicationInstance = WdeGetAppInstance();
 
     WdeDefaultCustom = WdeAllocDialogBoxControl();
@@ -618,8 +616,7 @@ void WdeCustomFini( void )
 
 bool WdeCustomDestroy( WdeCustomObject *obj, bool *flag, bool *p2 )
 {
-    /* touch unused vars to get rid of warning */
-    _wde_touch( p2 );
+    /* unused parameters */ (void)p2;
 
     if( !Forward( obj->control, DESTROY, flag, NULL ) ) {
         WdeWriteTrail( "WdeCustomDestroy: Control DESTROY failed" );
@@ -693,8 +690,7 @@ bool WdeCustomCopyObject( WdeCustomObject *obj, WdeCustomObject **new, OBJPTR ha
 
 bool WdeCustomIdentify( WdeCustomObject *obj, OBJ_ID *id, void *p2 )
 {
-    /* touch unused vars to get rid of warning */
-    _wde_touch( p2 );
+    /* unused parameters */ (void)p2;
 
     *id = obj->object_id;
 
@@ -703,9 +699,7 @@ bool WdeCustomIdentify( WdeCustomObject *obj, OBJ_ID *id, void *p2 )
 
 bool WdeCustomGetWndProc( WdeCustomObject *obj, WNDPROC *proc, void *p2 )
 {
-    /* touch unused vars to get rid of warning */
-    _wde_touch( obj );
-    _wde_touch( p2 );
+    /* unused parameters */ (void)obj; (void)p2;
 
     *proc = WdeCustomSuperClassProc;
 
@@ -714,9 +708,7 @@ bool WdeCustomGetWndProc( WdeCustomObject *obj, WNDPROC *proc, void *p2 )
 
 bool WdeCustomGetWindowClass( WdeCustomObject *obj, char **class, void *p2 )
 {
-    /* touch unused vars to get rid of warning */
-    _wde_touch( obj );
-    _wde_touch( p2 );
+    /* unused parameters */ (void)obj; (void)p2;
 
     *class = obj->win_class;
 
@@ -736,9 +728,7 @@ bool WdeCustomDefine( WdeCustomObject *obj, POINT *pnt, void *p2 )
     int                         tlen;
     WdeDefineObjectInfo         o_info;
 
-    /* touch unused vars to get rid of warning */
-    _wde_touch( pnt );
-    _wde_touch( p2 );
+    /* unused parameters */ (void)pnt; (void)p2;
 
     if( !Forward( (OBJPTR)obj, GET_WINDOW_HANDLE, &o_info.win, NULL ) ) {
         WdeWriteTrail( "WdeControlDefine: GET_WINDOW_HANDLE failed!" );
@@ -839,7 +829,7 @@ bool WdeCustomDefine( WdeCustomObject *obj, POINT *pnt, void *p2 )
 
         WRMemFree( GETCTL_TEXT( info ) );
         WRMemFree( GETCTL_CLASSID( info ) );
-        SETCTL_TEXT( info, ResStrToNameOrOrd( ctl_data->szTitle ) );
+        SETCTL_TEXT( info, ResStrToNameOrOrdinal( ctl_data->szTitle ) );
         SETCTL_CLASSID( info, WdeStrToControlClass( ctl_data->szClass ) );
 
         GlobalUnlock( ctl_style );

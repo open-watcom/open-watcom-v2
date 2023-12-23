@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,14 +32,16 @@
 
 #include "vi.h"
 #include "win.h"
-#include "myprtf.h"
+#include "myprintf.h"
+#include "tokenize.h"
+
 
 #define ERROR_COUNT (sizeof( errorList ) / sizeof( errorList[0] ))
 
-static char     *errorTokens = NULL;
-static int      *errorValues = NULL;
-static bool     errorTokensLoaded = false;
-static char     strBuff[25];
+static char         *errorTokens = NULL;
+static int          *errorValues = NULL;
+static bool         errorTokensLoaded = false;
+static char         strBuff[25];
 static const char   *errorList[] = {
     #define pick(n,t,i) t,
     #include "_errs.h"
@@ -236,8 +238,8 @@ vi_rc GetErrorTokenValue( int *value, const char *str )
 
 void ErrorFini( void )
 {
-    MemFree( errorTokens );
-    MemFree( errorValues );
+    _MemFreeArray( errorTokens );
+    _MemFreeArray( errorValues );
     errorTokensLoaded = false;
 
 } /* ErrorFini */

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,28 +43,29 @@
 
 static  pointer         *InsFrl;
 
-void    InitIns( void ) {
+void    InitIns( void )
 /********************************
-    Initialize the free list of "instruction"
-*/
-
+ * Initialize the free list of "instruction"
+ */
+{
     InitFrl( &InsFrl );
 }
 
 
-bool    InsFrlFree( void ) {
+bool    InsFrlFree( void )
 /******************************
-    Free up the "instruction" free list.
-*/
-
+ * Free up the "instruction" free list.
+ */
+{
     return( FrlFreeAll( &InsFrl, INS_SIZE ) );
 }
 
 
-void    FreeIns( instruction *ins ) {
+void    FreeIns( instruction *ins )
 /********************************************
-    Free an instruction "ins"
-*/
+ * Free an instruction "ins"
+ */
+{
     instruction         *next;
 
 #if 0  /* Debugging code for integrity of conflict edges */
@@ -90,9 +91,9 @@ void    FreeIns( instruction *ins ) {
 
 instruction     *NewIns( opcnt num )
 /***********************************
-    Allocate a new instruction (with "num" operands) and initialize its
-    fields to sensible defaults.
-*/
+ * Allocate a new instruction (with "num" operands) and initialize its
+ * fields to sensible defaults.
+ */
 {
     instruction *new;
 
@@ -122,11 +123,11 @@ instruction     *NewIns( opcnt num )
 }
 
 
-instruction     *MakeNop( void ) {
+instruction     *MakeNop( void )
 /*****************************************
-    Return an initialized "NOP" instruction
-*/
-
+ * Return an initialized "NOP" instruction
+ */
+{
     instruction *ins;
 
     ins = NewIns( 0 );
@@ -144,8 +145,8 @@ instruction     *MakeNary( opcode_defs opcode, name *left,
                                      type_class_def base_type_class,
                                      opcnt num_operands )
 /************************************************************
-    Make a N-ary instruction (OPCODE left, right => result)
-*/
+ * Make a N-ary instruction (OPCODE left, right => result)
+ */
 {
     instruction *ins;
 
@@ -163,8 +164,8 @@ instruction     *MakeNary( opcode_defs opcode, name *left,
 instruction     *MakeMove( name *src, name *dst,
                                    type_class_def type_class )
 /**********************************************************
-    Make a move instruction (MOV src => dst)
-*/
+ * Make a move instruction (MOV src => dst)
+ */
 {
     instruction *move;
 
@@ -175,55 +176,54 @@ instruction     *MakeMove( name *src, name *dst,
 
 instruction     *MakeUnary( opcode_defs op, name *src,
                                     name *dst, type_class_def type_class )
-{
 /**********************************************************************
-    Make a unary instruction (op  src => dst)
-*/
-
+ * Make a unary instruction (op  src => dst)
+ */
+{
     return( MakeNary( op, src, NULL, dst, type_class, XX, 1 ) );
 }
 
 
 instruction     *MakeConvert( name *src, name *dst, type_class_def type_class,
-                                      type_class_def base_type_class ) {
+                                      type_class_def base_type_class )
 /**********************************************************************
-    Make a conversion instruction.  Convert "src" (type = "base_class") to
-    "dst" (type = "class")
-*/
-
+ * Make a conversion instruction.  Convert "src" (type = "base_class") to
+ * "dst" (type = "class")
+ */
+{
     return( MakeNary( OP_CONVERT, src, NULL, dst, type_class, base_type_class, 1 ) );
 }
 
 
 instruction     *MakeRound( name *src, name *dst, type_class_def type_class,
-                                      type_class_def base_type_class ) {
+                                      type_class_def base_type_class )
 /**********************************************************************
-    Make a round instruction.  Convert "src" (type = "base_class") to
-    "dst" (type = "class")
-*/
-
+ * Make a round instruction.  Convert "src" (type = "base_class") to
+ * "dst" (type = "class")
+ */
+{
     return( MakeNary( OP_ROUND, src, NULL, dst, type_class, base_type_class, 1 ) );
 }
 
 
 instruction     *MakeBinary( opcode_defs opcode, name *left,
                                      name *right, name *result,
-                                     type_class_def type_class ) {
+                                     type_class_def type_class )
 /************************************************************
-    Make a binary instruction (OPCODE left, right => result)
-*/
-
+ * Make a binary instruction (OPCODE left, right => result)
+ */
+{
     return( MakeNary( opcode, left, right, result, type_class, XX, 2 ) );
 }
 
 
 instruction     *MakeCondition( opcode_defs opcode, name *left,
                                         name *right, byte t, byte f,
-                                        type_class_def type_class ) {
+                                        type_class_def type_class )
 /***************************************************************
-    Make a conditional (IF ( left opcode right ) goto "t" else goto "f")
-*/
-
+ * Make a conditional (IF ( left opcode right ) goto "t" else goto "f")
+ */
+{
     instruction *cond;
 
     cond = MakeNary( opcode, left, right, NULL, type_class, XX, 2 );

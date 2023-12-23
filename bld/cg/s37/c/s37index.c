@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -215,7 +216,7 @@ static void BacktoConst( struct idx_list *what ){
 
     blk = HeadBlock;
     while( blk != NULL ) {
-        ins = blk->ins.hd.next;
+        ins = blk->ins.head.next;
         while( ins->head.opcode != OP_BLOCK ) {
             SettoACon( ins, what  );
             ins = ins->head.next;
@@ -258,14 +259,14 @@ extern void MemtoBaseTemp( void ){
     SetDataOffsets( 0 ); /* set offsets for fixed data */
     BaseTempInit();
     while( blk != NULL ) {
-        ins = blk->ins.hd.next;
+        ins = blk->ins.head.next;
         while( ins->head.opcode != OP_BLOCK ) {
             ins = NoMemRefs( ins )->head.next;
         }
         blk = blk->next_block;
     }
     blk = HeadBlock;
-    BaseTempFini( blk->ins.hd.next );
+    BaseTempFini( blk->ins.head.next );
 }
 
 
@@ -601,7 +602,7 @@ extern  void    FixMemRefs() {
 
     blk = HeadBlock;
     while( blk != NULL ) {
-        ins = blk->ins.hd.next;
+        ins = blk->ins.head.next;
         while( ins->head.opcode != OP_BLOCK ) {
             NoMemIndex( ins );
             ins = ins->head.next;
@@ -610,7 +611,7 @@ extern  void    FixMemRefs() {
     }
     blk = HeadBlock;
     while( blk != NULL ) {
-        ins = blk->ins.hd.next;
+        ins = blk->ins.head.next;
         while( ins->head.opcode != OP_BLOCK ) {
             NoMemBase( ins );
             ins = ins->head.next;
@@ -619,7 +620,7 @@ extern  void    FixMemRefs() {
     }
     blk = HeadBlock;
     while( blk != NULL ) {
-        ins = blk->ins.hd.next;
+        ins = blk->ins.head.next;
         while( ins->head.opcode != OP_BLOCK ) {
             FixCallIns( ins );
             ins = ins->head.next;

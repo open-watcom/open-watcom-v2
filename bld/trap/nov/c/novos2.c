@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,6 +47,7 @@
 #include "trptypes.h"
 #include "trperr.h"
 #include "packet.h"
+#include "nov.h"
 
 
 #define FOREVER                 0x7FFFFFFF
@@ -66,7 +68,7 @@ void putstring( char *str )
 {
     unsigned bytes;
 
-    while( *str ) {
+    while( *str != '\0' ) {
         DosWrite( 1, str, 1, &bytes );
         ++str;
     }
@@ -85,7 +87,7 @@ char * hex( unsigned long num )
       return( p );
     }
     while( num != 0 ) {
-        *--p = "0123456789abcdef"[ num & 15 ];
+        *--p = "0123456789abcdef"[num & 15];
         num >>= 4;
     }
     return( p );
@@ -99,7 +101,8 @@ void puthex( unsigned long x )
 
 void putrc( char *func, WORD rc )
 {
-    if( rc == 0 ) return;
+    if( rc == 0 )
+        return;
     putstring( func );
     putstring( " returned " );
     puthex( rc );
@@ -185,12 +188,12 @@ void putconnstatus( WORD conn )
 #define NUM_REC_BUFFS   5
 
 SPX_HEADER       SendHead;
-SPX_HEADER       RecHead[ NUM_REC_BUFFS ];
+SPX_HEADER       RecHead[NUM_REC_BUFFS];
 SPX_HEADER       ConnHead;
 
 SPX_ECB          SendECB;
 SPX_ECB          ConnECB;
-SPX_ECB          RecECB[ NUM_REC_BUFFS ];
+SPX_ECB          RecECB[NUM_REC_BUFFS];
 
 char            Buffer[NUM_REC_BUFFS][MAX_DATA_SIZE];
 
@@ -249,7 +252,8 @@ putconnstatus( Connection );
         p = -1;
         for( ;; ) {
             if( i < 0 ) {
-                if( p != -1 ) break;
+                if( p != -1 )
+                    break;
                 DosSemWait( &RecvSem, 1000 );
                 i = NUM_REC_BUFFS-1;
             }
@@ -265,7 +269,8 @@ putconnstatus( Connection );
         _fmemcpy( data, Buffer[p], got );
         recvd += got;
         PostAListen( p );
-        if( got != MAX_DATA_SIZE ) break;
+        if( got != MAX_DATA_SIZE )
+            break;
         data = (char *)data + got;
     }
 
@@ -404,7 +409,9 @@ void RemoteDisco( void )
     Listening = 0;
     _INITSPXECB( Conn, 1, 0, 0 );
     if( SpxTerminateConnection( Connection, &ConnECB ) == 0 ) {
-        while( InUse( ConnECB ) ) IPXRelinquishControl();
+        while( InUse( ConnECB ) ) {
+            IPXRelinquishControl();
+        }
     }
     for( i = NUM_REC_BUFFS-1; i >= 0; --i ) {
         if( InUse( RecECB[i] ) ) {
@@ -434,7 +441,7 @@ volatile enum {
 
 #define STACKSIZE 2048
 
-char    RespondStack[ STACKSIZE ];
+char    RespondStack[STACKSIZE];
 
 static void __far Respond( void )
 {
@@ -460,7 +467,7 @@ static void __far Respond( void )
 }
 
 
-char    BroadcastStack[ STACKSIZE ];
+char    BroadcastStack[STACKSIZE];
 ULONG   BroadCastStop = 0;
 ULONG   BroadCastStart = 0;
 
@@ -532,17 +539,17 @@ const char *RemoteLink( const char *parms, bool server )
 {
     unsigned    i;
 
-    server = server;
-putstring( "RemoteLink\r\n" );
+    /* unused parameters */ (void)server;
 
+putstring( "RemoteLink\r\n" );
     if( *parms == '\0' )
-        parms = "NovLink";
+        parms = DEFAULT_LINK_NAME;
     for( i = 0; i < 47 && *parms != '\0'; ++parms ) {
         if( strchr( "/\\:;,*?+-", *parms ) == NULL ) {
-            SAPHead.name[ i++ ] = toupper( *parms );
+            SAPHead.name[i++] = toupper( *parms );
         }
     }
-    SAPHead.name[ i ] = '\0';
+    SAPHead.name[i] = '\0';
     if( SpxOpenSocket( &SPXSocket ) != 0 || IpxOpenSocket( &IPXSocket ) != 0 ) {
         return( TRP_ERR_can_not_obtain_socket );
     }

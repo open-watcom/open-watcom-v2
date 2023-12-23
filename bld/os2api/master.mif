@@ -24,7 +24,7 @@ lib_dir_386 = ../lib386
 
 mh_dir = $(incl_dir_$(targ_cpu))
 
-!ifeq release 1
+!ifeq debug 0
 wsplice_extra_opts =
 !else
 wsplice_extra_opts = -d"depends.dep"

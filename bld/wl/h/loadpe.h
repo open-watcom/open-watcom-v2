@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,14 +38,14 @@
 #define DEF_VALUE               CONSTU32( 0xFFFFFFFF )
 
 #define PE_DEFAULT_BASE         CONSTU32( 0x400000 )
-#define PE_DEF_STACK_SIZE       _1MB
-#define PE_DEF_STACK_COMMIT     _64KB
-#define PE_DEF_HEAP_SIZE        _8KB
-#define PE_DEF_HEAP_COMMIT      _4KB
+#define PE_DEF_STACK_SIZE       _1M
+#define PE_DEF_STACK_COMMIT     _64K
+#define PE_DEF_HEAP_SIZE        _8K
+#define PE_DEF_HEAP_COMMIT      _4K
 
 extern void             DoAddResource( char * );
 extern void             FiniPELoadFile( void );
-extern void             ReadPEExportTable( f_handle, pe_hdr_table_entry * );
+extern void             ReadPEExportTable( f_handle, pe_dir_entry * );
 extern void             AllocPETransferTable( void );
 extern void             GenPEToc( void );
 extern void             ChkPEData( void );

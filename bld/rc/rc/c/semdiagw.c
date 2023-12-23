@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,46 +31,45 @@
 
 
 /*
-    The data structure for DIALOGEX's is as follows:
-
-struct DialogSettings {
-    WORD       wVersion;      // Always 00 01
-    WORD       wAlwaysFF;     // Always FF FF
-    DWORD      HelpId;
-    DWORD      ExStyle;
-    DWORD      Style;
-    WORD       NumberOfItems;
-    WORD       x;
-    WORD       y;
-    WORD       cx;
-    WORD       cy;
-    [Name/Ord] MenuName;
-    [Name/Ord] ClassName;
-    WCHAR      szCaption[]
-    WORD       fontHeight;
-    WORD       fontWeight;
-    WORD       italic;
-    WCHAR      szFontName[];
-}
-
-struct ControlData {
-    DWORD      HelpId;
-    DWORD      ExStyle;
-    DWORD      Style;
-    WORD       x;
-    WORD       y;
-    WORD       cx;
-    WORD       cy;
-    DWORD      id;
-    [Name/Ord] classId;
-    [Name/Ord] text;
-    WORD       numBytes;  // Number of bytes of data elements that follow.
-}
-
-
-
-*/
-
+ * The data structure for DIALOGEX's is as follows:
+ *
+ * struct DialogSettings {
+ *     WORD       wVersion;      // Always 00 01
+ *     WORD       wAlwaysFF;     // Always FF FF
+ *     DWORD      HelpId;
+ *     DWORD      ExStyle;
+ *     DWORD      Style;
+ *     WORD       NumberOfItems;
+ *     WORD       x;
+ *     WORD       y;
+ *     WORD       cx;
+ *     WORD       cy;
+ *     [Name/Ord] MenuName;
+ *     [Name/Ord] ClassName;
+ *     WCHAR      szCaption[]
+ *     WORD       fontHeight;
+ *     WORD       fontWeight;
+ *     WORD       italic;
+ *     WCHAR      szFontName[];
+ * }
+ *
+ * struct ControlData {
+ *     DWORD      HelpId;
+ *     DWORD      ExStyle;
+ *     DWORD      Style;
+ *     WORD       x;
+ *     WORD       y;
+ *     WORD       cx;
+ *     WORD       cy;
+ *     DWORD      id;
+ *     [Name/Ord] classId;
+ *     [Name/Ord] text;
+ *     WORD       numBytes;  // Number of bytes of data elements that follow.
+ * }
+ *
+ *
+ *
+ */
 
 #include "global.h"
 #include "rcerrors.h"
@@ -289,10 +289,12 @@ static FullDialogBoxControl *semInitDiagCtrl( void )
     return( newctrl );
 } /* semInitDiagCtrl */
 
-/* These are the default styles used for all dialog box control statmens */
-/* except the control statement (see rc.y for it).  The HI style contains */
-/* all the WS_ styles that are applicable (the high word) and the LO style */
-/* contains the styles that are particular to the class of the control */
+/*
+ * These are the default styles used for all dialog box control statmens
+ * except the control statement (see rc.y for it).  The HI style contains
+ * all the WS_ styles that are applicable (the high word) and the LO style
+ * contains the styles that are particular to the class of the control
+ */
 
 #define DEF_LTEXT_HI            (WS_CHILD|WS_VISIBLE|WS_GROUP)
 #define DEF_LTEXT_LO            (SS_LEFT)
@@ -479,9 +481,10 @@ FullDialogBoxControl *SemWINNewDiagCtrl( YYTOKENTYPE token, FullDiagCtrlOptions 
         style_lo = (tmp_mask & style_value) | (~tmp_mask & defstyle_lo);
         break;
     }
-
-    /* for the high word use the bits that were mentioned from style_value */
-    /* and all the other bits from defstyle_hi */
+    /*
+     * for the high word use the bits that were mentioned from style_value
+     * and all the other bits from defstyle_hi
+     */
     style_hi = (style_mask & style_value) | (~style_mask & defstyle_hi);
 
     if( newctrl->Win32 ) {
@@ -490,8 +493,10 @@ FullDialogBoxControl *SemWINNewDiagCtrl( YYTOKENTYPE token, FullDiagCtrlOptions 
         newctrl->u.ctrl32.Text = opts.Text;
         newctrl->u.ctrl32.ClassID = cont_class;
         newctrl->u.ctrl32.Style = (style_lo & LO_WORD) | (style_hi & HI_WORD);
-        /* ExtraBytes and ExtendStyle are 0 for all controls */
-        /* that RC understands */
+        /*
+         * ExtraBytes and ExtendStyle are 0 for all controls
+         * that RC understands
+         */
         newctrl->u.ctrl32.ExtraBytes = 0;
 
         newctrl->u.ctrl32.ExtendedStyle = opts.ExtendedStyle;
@@ -503,7 +508,9 @@ FullDialogBoxControl *SemWINNewDiagCtrl( YYTOKENTYPE token, FullDiagCtrlOptions 
         newctrl->u.ctrl.Text = opts.Text;
         newctrl->u.ctrl.ClassID = cont_class;
         newctrl->u.ctrl.Style = (style_lo & LO_WORD) | (style_hi & HI_WORD);
-        /* ExtraBytes is 0 for all controls that RC understands */
+        /*
+         * ExtraBytes is 0 for all controls that RC understands
+         */
         newctrl->u.ctrl.ExtraBytes = 0;
     }
 
@@ -519,7 +526,9 @@ static void SemFreeDiagCtrlList( FullDiagCtrlList *list )
 
     for( ctrl = list->head; ctrl != NULL; ctrl = next ) {
         next = ctrl->next;
-        /* free the contents of pointers within the structure */
+        /*
+         * free the contents of pointers within the structure
+         */
         if( ctrl->Win32 ) {
             if( ctrl->u.ctrl32.ClassID != NULL ) {
                 RESFREE( ctrl->u.ctrl32.ClassID );
@@ -702,8 +711,10 @@ void SemWINWriteDialogBox( WResID *name, ResMemFlags flags,
 
         head->u.Head32.Head.NumOfItems = ctrls->numctrls;
         head->u.Head32.Head.SizeInfo = sizeinfo;
-        /* pad the start of the resource so that padding within the resource */
-        /* is easier */
+        /*
+         * pad the start of the resource so that padding within the resource
+         * is easier
+         */
         if( ResWritePadDWord( CurrResFile.fp ) ) {
             error = 1;
         }
@@ -711,8 +722,10 @@ void SemWINWriteDialogBox( WResID *name, ResMemFlags flags,
         if( !head->StyleGiven ) {
             head->u.Head.Style |= (WS_POPUP | WS_BORDER | WS_SYSMENU);
         }
-        /* Win16 resources stores resource count in one byte thus
-           limiting number of controls to 255. */
+        /*
+         * Win16 resources stores resource count in one byte thus
+         * limiting number of controls to 255.
+         */
         if( ctrls->numctrls > 255 ) {
             error = 2;
         } else {
@@ -780,14 +793,14 @@ FullDialogBoxControl *SemWINSetControlData( IntMask ctrlstyle,
     if( control->Win32 ) {
         control->u.ctrl32.ID = cntlid;
         control->u.ctrl32.SizeInfo = sizeinfo;
-        control->u.ctrl32.Text = WResIDToNameOrOrd( cntltext );
+        control->u.ctrl32.Text = WResIDToNameOrOrdinal( cntltext );
         RESFREE( cntltext );
-        control->u.ctrl32.ClassID = ResNameOrOrdToControlClass( ctlclassname );
+        control->u.ctrl32.ClassID = ResNameOrOrdinalToControlClass( ctlclassname );
         control->u.ctrl32.Style = style;
-
-        /* ExtraBytes and ExtendStyle are 0 for all controls */
-        /* that RC understands */
-
+        /*
+         * ExtraBytes and ExtendStyle are 0 for all controls
+         * that RC understands
+         */
         control->u.ctrl32.ExtraBytes = 0;
         control->u.ctrl32.ExtendedStyle = exstyle;
 
@@ -802,11 +815,13 @@ FullDialogBoxControl *SemWINSetControlData( IntMask ctrlstyle,
     } else {
         control->u.ctrl.ID = cntlid;
         control->u.ctrl.SizeInfo = sizeinfo;
-        control->u.ctrl.Text = WResIDToNameOrOrd( cntltext );
+        control->u.ctrl.Text = WResIDToNameOrOrdinal( cntltext );
         RESFREE( cntltext );
-        control->u.ctrl.ClassID = ResNameOrOrdToControlClass( ctlclassname );
+        control->u.ctrl.ClassID = ResNameOrOrdinalToControlClass( ctlclassname );
         control->u.ctrl.Style = style;
-        /* ExtraBytes is 0 for all controls that RC understands */
+        /*
+         * ExtraBytes is 0 for all controls that RC understands
+         */
         control->u.ctrl.ExtraBytes = 0;
         RESFREE( ctlclassname );
     }

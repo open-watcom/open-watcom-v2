@@ -40,7 +40,7 @@ struct ring                     // model of a ring
 {   RING *next;                 // - points to next
 };
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 static void verifyNotInRing( RING *ring, RING *elt )
 {
     RING *curr;
@@ -151,7 +151,7 @@ void RingInsert(                // INSERT ELEMENT INTO RING
 }
 
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 void RingWalk(                  // TRAVERSE RING
     void *hdr,                  // - ring header
     void (*rtn)                 // - traversal routine

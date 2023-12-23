@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,6 +32,8 @@
 
 #include "x86.h"
 #include "madregs.h"
+#include "brkptcpu.h"
+
 
 unsigned MADIMPENTRY( TraceSize )( void )
 {
@@ -86,7 +89,7 @@ static void BreakRet( mad_trace_data *td, mad_disasm_data *dd, const mad_registe
         sp.mach.offset += sizeof( td->brk.mach.segment );
         break;
     default:
-        if( dd->characteristics & X86AC_BIG ) {
+        if( dd->addr_characteristics & X86AC_BIG ) {
             MCReadMem( sp, sizeof( off.off48 ), &off.off48 );
             sp.mach.offset += sizeof( off.off48 );
             td->brk.mach.offset = off.off48;
@@ -205,9 +208,9 @@ static mad_trace_how CheckSpecial( mad_trace_data *td, mad_disasm_data *dd, cons
             break;
         /* fall through */
     case DI_X86_into:
-        if( (dd->characteristics & X86AC_REAL) == 0 )
-            break;
-        return( MTRH_SIMULATE );
+        if( dd->addr_characteristics & X86AC_REAL )
+            return( MTRH_SIMULATE );
+        break;
     case DI_X86_iret:
     case DI_X86_iretd:
        BreakRet( td, dd, mr );
@@ -231,7 +234,7 @@ static mad_trace_how CheckSpecial( mad_trace_data *td, mad_disasm_data *dd, cons
         switch( dd->ins.op[0].base ) {
         case DR_X86_es:
         case DR_X86_ds:
-            if( ( MCSystemConfig()->cpu & X86_CPU_MASK ) < X86_386 )
+            if( ( MCSystemConfig()->cpu.x86 & X86_CPU_MASK ) < X86_386 )
                 break;
             /* fall through */
         default:
@@ -244,14 +247,14 @@ static mad_trace_how CheckSpecial( mad_trace_data *td, mad_disasm_data *dd, cons
     case DI_X86_popfd:
         break;
     case DI_X86_fwait:
-        if( MCSystemConfig()->fpu != X86_EMU )
+        if( MCSystemConfig()->fpu.x86 != X86_EMU )
             return( MTRH_STEP );
         break;
     default:
         if( dd->ins.flags.u.x86 & DIF_X86_EMU_INT )
             break;
         if( ( dd->ins.flags.u.x86 & DIF_X86_FPU_INS )
-            && ( ( dd->ins.flags.u.x86 & DIF_X86_FWAIT ) || ( MCSystemConfig()->fpu == X86_EMU ) ) )
+            && ( ( dd->ins.flags.u.x86 & DIF_X86_FWAIT ) || ( MCSystemConfig()->fpu.x86 == X86_EMU ) ) )
             break;
         return( MTRH_STEP );
     }
@@ -348,20 +351,21 @@ mad_status MADIMPENTRY( TraceSimulate )( mad_trace_data *td, mad_disasm_data *dd
         /* fall through */
     case DI_X86_int:
         /* only in real mode */
-        if( (dd->characteristics & X86AC_REAL) == 0 )
-            break;
-        out->x86 = in->x86;
-        sp = GetRegSP( out );
-        sp.mach.offset -= sizeof( word );
-        value = (word)out->x86.cpu.efl;
-        MCWriteMem( sp, sizeof( value ), &value );
-        out->x86.cpu.efl &= ~FLG_I;
-        value = out->x86.cpu.cs;
-        MCWriteMem( sp, sizeof( value ), &value );
-        value = (word)out->x86.cpu.eip;
-        MCWriteMem( sp, sizeof( value ), &value );
-        out->x86.cpu.esp = sp.mach.offset;
-        return( MS_OK );
+        if( dd->addr_characteristics & X86AC_REAL ) {
+            out->x86 = in->x86;
+            sp = GetRegSP( out );
+            sp.mach.offset -= sizeof( word );
+            value = (word)out->x86.cpu.efl;
+            MCWriteMem( sp, sizeof( value ), &value );
+            out->x86.cpu.efl &= ~FLG_I;
+            value = out->x86.cpu.cs;
+            MCWriteMem( sp, sizeof( value ), &value );
+            value = (word)out->x86.cpu.eip;
+            MCWriteMem( sp, sizeof( value ), &value );
+            out->x86.cpu.esp = sp.mach.offset;
+            return( MS_OK );
+        }
+        break;
     default:
         break;
     }
@@ -373,8 +377,7 @@ void MADIMPENTRY( TraceFini )( mad_trace_data *td )
     /* unused parameters */ (void)td;
 }
 
-#define JMP_SHORT        ((unsigned char)0XEB)
-#define BRK_POINT        ((unsigned char)0XCC)
+#define JMP_SHORT        ((unsigned char)0xEB)
 
 mad_status MADIMPENTRY( UnexpectedBreak )( mad_registers *mr, char *buff, size_t *buff_size_p )
 {
@@ -394,7 +397,7 @@ mad_status MADIMPENTRY( UnexpectedBreak )( mad_registers *mr, char *buff, size_t
     a = GetRegIP( mr );
     memset( &data, 0, sizeof( data ) );
     MCReadMem( a, sizeof( data.b ), data.b );
-    if( data.b[0] != BRK_POINT )
+    if( data.b[0] != BRKPOINT )
         return( MS_FAIL );
     mr->x86.cpu.eip += 1;
     if( data.b[1] != JMP_SHORT )

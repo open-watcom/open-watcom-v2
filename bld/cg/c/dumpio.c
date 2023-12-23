@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -140,8 +140,8 @@ void    DumpByte( byte n )
     DumpChar( c );
 }
 
-void    Dump8h( unsigned_32 n )
-/*****************************/
+void    Dump8h( uint_32 n )
+/*************************/
 {
     DumpByte( n >> 24 );
     DumpByte( n >> 16 );
@@ -150,8 +150,8 @@ void    Dump8h( unsigned_32 n )
 }
 
 
-static void _DumpLongLen( unsigned_32 n, int len, bool sign )
-/***********************************************************/
+static void _DumpLongLen( uint_32 n, int len, bool sign )
+/*******************************************************/
 {
     char        b[30];
     char        *bp;
@@ -160,9 +160,9 @@ static void _DumpLongLen( unsigned_32 n, int len, bool sign )
     bp = b;
     bp += 20;
     *--bp = NULLCHAR;
-    if( sign && (signed_32)n < 0 ) {
+    if( sign && (int_32)n < 0 ) {
         neg = true;
-        n = -(signed_32)n;
+        n = -(int_32)n;
     } else {
         neg = false;
     }
@@ -189,14 +189,14 @@ static void _DumpLongLen( unsigned_32 n, int len, bool sign )
     DumpXString( bp );
 }
 
-void    DumpLongLen( signed_32 n, int len )
-/*****************************************/
+void    DumpLongLen( int_32 n, int len )
+/**************************************/
 {
     _DumpLongLen( n, len, true );
 }
 
-void    DumpLong( signed_32 n )
-/*****************************/
+void    DumpLong( int_32 n )
+/**************************/
 {
     _DumpLongLen( n, 0, true );
 }
@@ -207,14 +207,14 @@ void    DumpInt( int n )
     DumpLong( n );
 }
 
-void    DumpULongLen( unsigned_32 n, int len )
-/********************************************/
+void    DumpULongLen( uint_32 n, int len )
+/****************************************/
 {
     _DumpLongLen( n, len, false );
 }
 
-void    DumpULong( unsigned_32 n )
-/********************************/
+void    DumpULong( uint_32 n )
+/****************************/
 {
     _DumpLongLen( n, 0, false );
 }
@@ -236,5 +236,5 @@ void    DumpId( unsigned id )
 void    DumpPtr( void *ptr )
 /**************************/
 {
-    Dump8h( (unsigned_32)(pointer_uint)ptr );
+    Dump8h( (uint_32)(pointer_uint)ptr );
 }

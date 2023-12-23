@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,7 +37,7 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-WRDLLENTRY extern ResNameOrOrdinal *   WRAPI WRMem2NameOrOrdinal( const void *data, bool is32bit );
-WRDLLENTRY extern int                  WRAPI WRNameOrOrd2Mem( ResNameOrOrdinal *name, bool is32bit, void **data, size_t *size );
+WRDLLENTRY extern ResNameOrOrdinal *   WRAPI WRNameOrOrdinalFromData( const void *data, bool is32bit );
+WRDLLENTRY extern int                  WRAPI WRDataFromNameOrOrdinal( ResNameOrOrdinal *name, bool is32bit, void **data, size_t *size );
 
 #endif

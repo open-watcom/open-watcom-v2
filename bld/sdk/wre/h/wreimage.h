@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,13 +48,11 @@
 /* function prototypes                                                      */
 /****************************************************************************/
 extern bool WREDeleteGroupImages( WRECurrentResInfo *group, uint_16 type );
-extern bool WREAddBitmapFileHeader( BYTE **data, size_t *size );
-extern bool WREStripBitmapFileHeader( BYTE **data, size_t *size );
-extern bool WRECalcAndAddIconDirectory( BYTE **data, size_t *size, WORD type );
-extern bool WREStripIconDirectory( BYTE **data, uint_32 *size );
-extern bool WRECreateCursorDataFromGroup( WRECurrentResInfo *group, BYTE **data, size_t *size );
-extern bool WRECreateIconDataFromGroup( WRECurrentResInfo *group, BYTE **data, size_t *size );
-extern bool WRECreateCursorEntries( WRECurrentResInfo *curr, void *data, size_t size );
-extern bool WRECreateIconEntries( WRECurrentResInfo *curr, void *data, size_t size );
+extern bool WRECalcAndAddIconDirectory( char **data, size_t *size, WORD type );
+extern bool WREStripIconDirectory( char **data, size_t *size );
+extern bool WRECreateCursorDataFromGroup( WRECurrentResInfo *group, char **data, size_t *size );
+extern bool WRECreateIconDataFromGroup( WRECurrentResInfo *group, char **data, size_t *size );
+extern bool WRECreateCursorEntries( WRECurrentResInfo *curr, char *data, size_t size );
+extern bool WRECreateIconEntries( WRECurrentResInfo *curr, char *data, size_t size );
 
 #endif

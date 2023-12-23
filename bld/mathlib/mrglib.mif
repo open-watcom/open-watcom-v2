@@ -1,10 +1,12 @@
+tree_depth = 5
+
 !include $(mathlib_dir)/master.mif
 
-!include ../../../objects.mif
+!include $(mathlib_dir)/objects.mif
 !include $(mathlib_dir)/libs.mif
 
-.c   : ../../../c
-.asm : ../../../a;$(fpuemu_dir)/i86/asm;$(fpuemu_dir)/386/asm
+.c   : $(mathlib_dir)/c
+.asm : $(mathlib_dir)/a;$(fpuemu_dir)/i86/asm;$(fpuemu_dir)/386/asm
 
 all : $(objfiles) $(libname).lib .symbolic
     @%null
@@ -18,6 +20,6 @@ $(libname).lib : $(objs) $(libs) $(__MAKEFILES__)
     $(sed) -f $(lib_misc_dir)/sed/export.sed export.tmp > export.gdf
 !endif
 
-!include ../../../deps.mif
+!include $(mathlib_dir)/deps.mif
 
 !include $(mathlib_dir)/clean.mif

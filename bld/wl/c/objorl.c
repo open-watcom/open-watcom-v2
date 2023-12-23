@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -227,7 +227,7 @@ static bool CheckFlags( orl_file_handle filehdl )
     machtype = ORLFileGetMachineType( filehdl );
     switch( machtype ) {
     case ORL_MACHINE_TYPE_I386:
-        typemask = LS_HAVE_I86_CODE;
+        typemask = LS_HAVE_X86_CODE;
         break;
     case ORL_MACHINE_TYPE_AMD64:
         typemask = LS_HAVE_X64_CODE;
@@ -239,6 +239,7 @@ static bool CheckFlags( orl_file_handle filehdl )
         typemask = LS_HAVE_PPC_CODE;
         break;
     case ORL_MACHINE_TYPE_R3000:
+    case ORL_MACHINE_TYPE_R4000: // TODO
         typemask = LS_HAVE_MIPS_CODE;
         break;
     case ORL_MACHINE_TYPE_NONE:
@@ -306,7 +307,7 @@ static orl_return EntryCallback( const char *name, void *dummy )
     /* unused parameters */ (void)dummy;
 
     if( !StartInfo.user_specd ) {
-        if( (ObjFormat & FMT_COFF) && (LinkState & LS_HAVE_I86_CODE) ) {
+        if( (ObjFormat & FMT_COFF) && (LinkState & LS_HAVE_X86_CODE) ) {
             /* simple hack for 32-bit MS COFF module to get real startup symbol name
              * entry directive contains unmangled symbol name
              * prepend undrescore should be OK
@@ -341,6 +342,7 @@ static orl_return P1Note( orl_sec_handle sec )
     cb.export_fn = ExportCallback;
     cb.deflib_fn = DeflibCallback;
     cb.entry_fn = EntryCallback;
+    cb.scantab_fn = NULL;
     ORLNoteSecScan( sec, &cb, NULL );
     return( ORL_OKAY );
 }
@@ -479,10 +481,16 @@ static orl_return DeclareSegment( orl_sec_handle sec )
     if( strnicmp( CoffIDataSegName, name, len ) == 0 ) {
         SeenDLLRecord();
         CurrMod->modinfo |= MOD_IMPORT_LIB;
-        if( name[len + 1] == '6' ) {    // it is the segment containg the name
+        if( name[len] == '$' && name[len + 1] == '6' ) {
+            /*
+             * .idata$6 it is the segment containg the name
+             */
             ORLSecGetContents( sec, (unsigned_8 **)&ImpExternalName );
             ImpExternalName += 2;
-        } else if( name[len + 1] == '4' ) {     // it is an import by ordinal
+        } else if( name[len] == '$' && name[len + 1] == '4' ) {
+            /*
+             * .idata$4 it is an import by ordinal
+             */
             ORLSecGetContents( sec, (void *)&contents );
             ImpOrdinal = *contents;
         }
@@ -490,19 +498,15 @@ static orl_return DeclareSegment( orl_sec_handle sec )
         sdata->isidata = true;
     }
     sdata->combine = COMBINE_ADD;
-    if( flags & ORL_SEC_FLAG_NO_PADDING ) {
-        sdata->align = 0;
-    } else {
-        sdata->align = ORLSecGetAlignment( sec );
-    }
-    sdata->is32bit = true;
+    sdata->align = ( flags & ORL_SEC_FLAG_NO_PADDING ) ? 0 : ORLSecGetAlignment( sec );
+    sdata->bits = ( flags & ORL_FILE_FLAG_64BIT_MACHINE ) ? BITS_64 : BITS_32;
     sdata->length = ORLSecGetSize( sec );
     sdata->u.name.u.ptr = (char *)name;
     if( flags & ORL_SEC_FLAG_EXEC ) {
         sdata->iscode = true;
     } else if( flags & ORL_SEC_FLAG_UNINITIALIZED_DATA ) {
         sdata->isuninit = true;
-#ifdef _DEVELOPMENT
+#ifdef DEVBUILD
     } else {
         unsigned namelen;
 
@@ -603,11 +607,6 @@ static orl_return ProcSymbol( orl_symbol_handle symhdl )
     type = ORLSymbolGetType( symhdl );
     name = ORLSymbolGetName( symhdl );
     if( type & ORL_SYM_TYPE_FILE ) {
-        if( (CurrMod->modinfo & MOD_GOT_NAME) == 0 ) {
-            CurrMod->modinfo |= MOD_GOT_NAME;
-            _LnkFree( CurrMod->name.u.ptr );
-            CurrMod->name.u.ptr = AddStringStringTable( &PermStrings, name );
-        }
         return( ORL_OKAY );
     }
     if( type & ORL_SYM_TYPE_DEBUG )
@@ -638,7 +637,7 @@ static orl_return ProcSymbol( orl_symbol_handle symhdl )
         CheckIfTocSym( sym );
         if( type & ORL_SYM_TYPE_COMMON ) {
             ORLSymbolGetValue( symhdl, &val64 );
-            sym = MakeCommunalSym( sym, val64.u._32[I64LO32], false, true );
+            sym = MakeCommunalSym( sym, val64.u._32[I64LO32], false, BITS_32 );
         } else if( type & ORL_SYM_TYPE_UNDEFINED ) {
             DefineReference( sym );
             isweak = false;
@@ -663,7 +662,7 @@ static orl_return ProcSymbol( orl_symbol_handle symhdl )
             newnode->isdefd = true;
             ORLSymbolGetValue( symhdl, &val64 );
             if( (type & ORL_SYM_TYPE_COMMON) && (type & ORL_SYM_TYPE_OBJECT) && sechdl == ORL_NULL_HANDLE ) {
-                sym = MakeCommunalSym( sym, val64.u._32[I64LO32], false, true );
+                sym = MakeCommunalSym( sym, val64.u._32[I64LO32], false, BITS_32 );
             } else if( snode != NULL && snode->entry != NULL && snode->entry->iscdat ) {
                 DefineComdatSym( snode, sym, val64.u._32[I64LO32] );
             } else {

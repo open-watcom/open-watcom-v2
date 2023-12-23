@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -189,7 +190,9 @@ static bool xlat_char( bool special, int c )
         addbuf( c );
         return( false );
     }
-    /* NYI: add %translate 'c' XXXX in case user doesn't like our name */
+    /*
+     * NYI: add %translate 'c' XXXX in case user doesn't like our name
+     */
     addbuf( '_' );
     for( t = xlat; t->x != NULL; ++t ) {
         if( t->c == c ) {
@@ -197,7 +200,7 @@ static bool xlat_char( bool special, int c )
             return( true );
         }
     }
-    warn( "'x' token contains unknown character '%c' (\\x%x)\n", c, c );
+    srcinfo_warn( "'x' token contains unknown character '%c' (\\x%x)\n", c, c );
     addbuf( 'X' );
     sprintf( buff, "%x", c );
     addstr( buff );
@@ -213,7 +216,7 @@ static void xlat_token( void )
     for( ;; ) {
         nextc();
         if( ch == EOF || ch == '\n' ) {
-            msg( "invalid 'x' token" );
+            srcinfo_msg( "invalid 'x' token" );
             break;
         }
         if( ch == '\'' )
@@ -265,7 +268,7 @@ static void need( char *pat )
 {
     while( *pat != '\0' ) {
         if( nextc() != *(unsigned char *)pat++ ) {
-            msg( "Expected '%c'\n", pat[-1] );
+            srcinfo_msg( "Expected '%c'\n", pat[-1] );
         }
     }
 }
@@ -288,7 +291,9 @@ static void copybal( void )
         nextc();
         if( lastc() == '/' ) {
             if( ch == '*' ) {
-                /* copy a C style comment */
+                /*
+                 * copy a C style comment
+                 */
                 for( ;; ) {
                     addbuf( ch );
                     nextc();
@@ -301,7 +306,9 @@ static void copybal( void )
                     }
                 }
             } else if( ch == '/' ) {
-                /* copy a C++ style comment */
+                /*
+                 * copy a C++ style comment
+                 */
                 for( ;; ) {
                     addbuf( ch );
                     nextc();
@@ -316,14 +323,16 @@ static void copybal( void )
             }
         }
         if( ch == '"' ) {
-            /* copy a string */
+            /*
+             * copy a string
+             */
             addbuf( ch );
             for( ;; ) {
                 nextc();
                 if( ch == EOF )
                     break;
                 if( ch == '\n' ) {
-                    msg( "string literal was not terminated by \" before end of line\n" );
+                    srcinfo_msg( "string literal was not terminated by \" before end of line\n" );
                     break;
                 }
                 if( ch == '\\' ) {
@@ -338,14 +347,16 @@ static void copybal( void )
             }
         }
         if( ch == '\'' ) {
-            /* copy a character constant */
+            /*
+             * copy a character constant
+             */
             addbuf( ch );
             for( ;; ) {
                 nextc();
                 if( ch == EOF )
                     break;
                 if( ch == '\n' ) {
-                    msg( "character literal was not terminated by \" before end of line\n" );
+                    srcinfo_msg( "character literal was not terminated by \" before end of line\n" );
                     break;
                 }
                 if( ch == '\\' ) {
@@ -407,7 +418,7 @@ static a_token scan( unsigned used )
         switch( ch ) {
         case '\'':
             if( denseflag && !translateflag ) {
-                msg( "cannot use '+' style of tokens with the dense option\n" );
+                srcinfo_msg( "cannot use '+' style of tokens with the dense option\n" );
             }
             if( !translateflag ) {
                 addbuf( '\'' );
@@ -495,7 +506,7 @@ static a_token scan( unsigned used )
                     need( "pe" );
                     token = T_TYPE;
                 } else {
-                    msg( "Expecting %%token or %%type.\n" );
+                    srcinfo_msg( "Expecting %%token or %%type.\n" );
                 }
                 break;
             case 'u':
@@ -503,11 +514,11 @@ static a_token scan( unsigned used )
                 token = T_UNION;
                 break;
             default:
-                msg( "Unrecognized %% token.\n" );
+                srcinfo_msg( "Unrecognized %% token.\n" );
             }
             break;
         default:
-            msg( "Bad token.\n" );
+            srcinfo_msg( "Bad token.\n" );
         }
         addbuf( '\0' );
         nextc();
@@ -559,7 +570,7 @@ static a_SR_conflict *make_unique_ambiguity( a_sym *sym, conflict_id id )
     for( ambig = ambiguousstates; ambig != NULL; ambig = ambig->next ) {
         if( ambig->id == id ) {
             if( ambig->sym != sym ) {
-                msg( "ambiguity %u deals with %s, not %s.\n", id, ambig->sym->name, sym->name );
+                srcinfo_msg( "ambiguity %u deals with %s, not %s.\n", id, ambig->sym->name, sym->name );
                 break;
             }
             return( ambig );
@@ -570,7 +581,7 @@ static a_SR_conflict *make_unique_ambiguity( a_sym *sym, conflict_id id )
     ambig->sym = sym;
     ambig->id = id;
     ambig->state = NULL;
-    ambig->shift = NULL;
+    ambig->shift_state = NULL;
     ambig->thread = NULL;
     ambig->reduce = 0;
     ambiguousstates = ambig;
@@ -634,24 +645,26 @@ static bool scanambig( unsigned used, a_SR_conflict_list **list )
 
     absorbed_something = false;
     for( ; token == T_AMBIG; ) {
-        /* syntax is "%ambig <number> <token>" */
-        /* token has already been scanned by scanprec() */
+        /*
+         * syntax is "%ambig <number> <token>"
+         * token has already been scanned by scanprec()
+         */
         if( scan( used ) != T_NUMBER || value.number < 0 ) {
-            msg( "Expecting a non-negative number after %ambig.\n" );
+            srcinfo_msg( "Expecting a non-negative number after %ambig.\n" );
             break;
         }
         id = value.number;
         if( scan( used ) != T_IDENTIFIER ) {
-            msg( "Expecting a token name after %ambig <number>.\n" );
+            srcinfo_msg( "Expecting a token name after %ambig <number>.\n" );
             break;
         }
         sym = findsym( buf );
         if( sym == NULL ) {
-            msg( "Unknown token specified in %ambig directive.\n" );
+            srcinfo_msg( "Unknown token specified in %ambig directive.\n" );
             break;
         }
         if( sym->token == 0 ) {
-            msg( "Non-terminal specified in %ambig directive.\n" );
+            srcinfo_msg( "Non-terminal specified in %ambig directive.\n" );
             break;
         }
         scan( used );
@@ -673,7 +686,7 @@ static bool scanprec( unsigned used, a_sym **precsym )
     if( token != T_PREC )
         return( false );
     if( scan( used ) != T_IDENTIFIER || (*precsym = findsym( buf )) == NULL || (*precsym)->token == 0 ) {
-        msg( "Expecting a token after %prec.\n" );
+        srcinfo_msg( "Expecting a token after %prec.\n" );
     }
     scan( used );
     return( true );
@@ -725,7 +738,7 @@ static char *checkAttrib( char *s, char **ptype, char *buff, int *errs,
         s = get_typename( p );
         if( p == s || *s != '>' )  {
             ++err_count;
-            msg( "Bad type specifier.\n" );
+            srcinfo_msg( "Bad type specifier.\n" );
         }
         save = *s;
         *s = '\0';
@@ -748,7 +761,7 @@ static char *checkAttrib( char *s, char **ptype, char *buff, int *errs,
         }
         if( il > (long)n ) {
             ++err_count;
-            msg( "Invalid $ parameter (%ld).\n", il );
+            srcinfo_msg( "Invalid $ parameter (%ld).\n", il );
         }
         il -= base + 1;
         sprintf( buff, "yyvp[%ld]", il );
@@ -827,7 +840,9 @@ static void insertUniqueAction( rule_n pnum, char *action, a_sym *lhs )
         if( strcmp( c->action, action ) == 0 ) {
             ++actionsCombined;
             addRuleToUniqueCase( c, pnum, lhs );
-            /* promote to front */
+            /*
+             * promote to front
+             */
             *p = c->next;
             c->next = caseActions;
             caseActions = c;
@@ -855,7 +870,7 @@ static char *strpcpy( char *d, char *s )
 static void lineinfo( FILE *fp )
 {
     if( lineflag ) {
-        fprintf( fp, "\n#line %d \"%s\"\n", lineno, srcname );
+        fprintf( fp, "\n#line %d \"%s\"\n", lineno, srcname_norm );
     }
 }
 
@@ -872,7 +887,9 @@ static void copyact( FILE *fp, rule_n pnum, a_sym *lhs, a_sym **rhs, unsigned ba
     char        buff[80];
 
     if( ! lineflag ) {
-        /* we don't need line numbers to correspond to the grammar */
+        /*
+         * we don't need line numbers to correspond to the grammar
+         */
         total_errs = 0;
         total_len = strlen( buf ) + 1;
         for( s = buf; *s != '\0'; ) {
@@ -946,10 +963,8 @@ void dump_header( FILE *fp )
     const char  *fmt;
     const char  *ttype;
     y_token     *t;
-    y_token     *tmp;
 
     fprintf( fp, "#ifndef YYTOKENTYPE\n" );
-    fprintf( fp, "#define YYTOKENTYPE yytokentype\n" );
     if( fastflag || bigflag || compactflag ) {
         ttype = "unsigned short";
     } else {
@@ -961,12 +976,8 @@ void dump_header( FILE *fp )
     } else {
         fmt = "#define %-20s 0x%02x\n";
     }
-    t = tokens_head;
-    while( t != NULL ) {
+    for( t = tokens_head; t != NULL; t = t->next ) {
         fprintf( fp, fmt, t->name, t->value );
-        tmp = t;
-        t = t->next;
-        FREE( tmp );
     }
     if( enumflag ) {
         fprintf( fp, "\tYTOKEN_ENUMSIZE_SETUP = (%s)-1\n", ttype );
@@ -974,6 +985,7 @@ void dump_header( FILE *fp )
     } else {
         fprintf( fp, "typedef %s yytokentype;\n", ttype );
     }
+    fprintf( fp, "#define YYTOKENTYPE yytokentype\n" );
     fprintf( fp, "#endif\n" );
     fflush( fp );
 }
@@ -981,11 +993,27 @@ void dump_header( FILE *fp )
 void close_header( FILE *fp )
 {
     if( union_name != NULL ) {
-        fprintf( fp, "typedef union %s YYSTYPE;\n", union_name );
-        fprintf( fp, "extern YYSTYPE yylval;\n" );
-        FREE( union_name );
+        fprintf( fp, "#ifndef YYSTYPE\n" );
+        fprintf( fp, "typedef union %s yystype;\n", union_name );
+        fprintf( fp, "#define YYSTYPE yystype\n" );
+        fprintf( fp, "#endif\n" );
+        fflush( fp );
     }
-    fclose( fp );
+}
+
+void free_header_data( void )
+{
+    y_token     *tmp;
+
+    if( union_name != NULL ) {
+        FREE( union_name );
+        union_name = NULL;
+    }
+    while( tokens_head != NULL ) {
+        tmp = tokens_head;
+        tokens_head = tokens_head->next;
+        FREE( tmp );
+    }
 }
 
 void defs( FILE *fp )
@@ -1010,23 +1038,27 @@ void defs( FILE *fp )
     for( ; token != T_MARK; ) {
         switch( token ) {
         case T_START:
-            if( scan( 0 ) != T_IDENTIFIER )
-                msg( "Identifier needed after %%start.\n" );
+            if( scan( 0 ) != T_IDENTIFIER ) {
+                srcinfo_msg( "Identifier needed after %%start.\n" );
+            }
             startsym = addsym( buf );
             scan( 0 );
             break;
         case T_UNION:
             if( scan( 0 ) != '{' ) {
-                msg( "Need '{' after %%union.\n" );
+                srcinfo_msg( "Need '{' after %%union.\n" );
             }
+            fprintf( fp, "#ifndef YYSTYPE\n" );
             fprintf( fp, "typedef union " );
             lineinfo( fp );
-            fprintf( fp, "%s YYSTYPE;\n", buf );
+            fprintf( fp, "%s yystype;\n", buf );
+            fprintf( fp, "#define YYSTYPE yystype\n" );
+            fprintf( fp, "#endif\n" );
             if( union_name == NULL ) {
                 union_name = MALLOC( strlen( buf ) + 1, char );
                 strcpy( union_name, buf );
             } else {
-                msg( "%union already defined\n" );
+                srcinfo_msg( "%union already defined\n" );
             }
             scan( 0 );
             break;
@@ -1040,28 +1072,28 @@ void defs( FILE *fp )
             case T_IDENTIFIER:
                 sym = addsym( buf );
                 if( sym->token == 0 ) {
-                    msg( "Token must be assigned number before %keyword_id\n" );
+                    srcinfo_msg( "Token must be assigned number before %keyword_id\n" );
                 }
                 value.id = sym->token;
                 break;
             case T_NUMBER:
                 break;
             default:
-                msg( "Expecting identifier or number.\n" );
+                srcinfo_msg( "Expecting identifier or number.\n" );
             }
             keyword_id_low = value.id;
             switch( scan( 0 ) ) {
             case T_IDENTIFIER:
                 sym = addsym( buf );
                 if( sym->token == 0 ) {
-                    msg( "Token must be assigned number before %keyword_id\n" );
+                    srcinfo_msg( "Token must be assigned number before %keyword_id\n" );
                 }
                 value.id = sym->token;
                 break;
             case T_NUMBER:
                 break;
             default:
-                msg( "Expecting identifier or number.\n" );
+                srcinfo_msg( "Expecting identifier or number.\n" );
             }
             keyword_id_high = value.id;
             scan( 0 );
@@ -1077,11 +1109,11 @@ void defs( FILE *fp )
             ctype = token;
             if( scan( 0 ) == '<' ) {
                 if( scan_typename( 0 ) != T_TYPENAME ) {
-                    msg( "Expecting type specifier.\n" );
+                    srcinfo_msg( "Expecting type specifier.\n" );
                 }
                 type = dupbuf();
                 if( scan( 0 ) != '>' ) {
-                    msg( "Expecting '>'.\n" );
+                    srcinfo_msg( "Expecting '>'.\n" );
                 }
                 scan( 0 );
             } else {
@@ -1092,7 +1124,7 @@ void defs( FILE *fp )
                 if( type != NULL ) {
                     if( sym->type != NULL ) {
                         if( strcmp( sym->type, type ) != 0 ) {
-                            msg( "'%s' type redeclared from '%s' to '%s'\n", buf, sym->type, type );
+                            srcinfo_msg( "'%s' type redeclared from '%s' to '%s'\n", buf, sym->type, type );
                             FREE( sym->type );
                             sym->type = strdup( type );
                         }
@@ -1133,7 +1165,7 @@ void defs( FILE *fp )
                 FREE( type );
             break;
         default:
-            msg( "Incorrect syntax.\n" );
+            srcinfo_msg( "Incorrect syntax.\n" );
         }
     }
     scan( 0 );
@@ -1161,8 +1193,9 @@ void rules( FILE *fp )
     while( token == T_CIDENTIFIER ) {
         int sym_lineno = lineno;
         lhs = addsym( buf );
-        if( lhs->token != 0 )
-            msg( "%s used on lhs.\n", lhs->name );
+        if( lhs->token != 0 ) {
+            srcinfo_msg( "%s used on lhs.\n", lhs->name );
+        }
         if( startsym == NULL )
             startsym = lhs;
         numacts = 0;
@@ -1207,12 +1240,14 @@ void rules( FILE *fp )
             unit_production = false;
             if( !action_defined ) {
                 if( nrhs > 0 ) {
-                    /* { $$ = $1; } is default action */
+                    /*
+                     * { $$ = $1; } is default action
+                     */
                     if( defaultwarnflag ) {
                         char *type_lhs = type_name( lhs->type );
                         char *type_rhs = type_name( rhs[0]->type );
                         if( strcmp( type_rhs, type_lhs ) != 0 ) {
-                            warn("default action would copy '%s <%s>' to '%s <%s>'\n",
+                            srcinfo_warn("default action would copy '%s <%s>' to '%s <%s>'\n",
                                 rhs[0]->name, type_rhs, lhs->name, type_lhs );
                         }
                     }
@@ -1221,7 +1256,7 @@ void rules( FILE *fp )
                     }
                 } else {
                     if( sym_lineno == lineno && token == '|' ) {
-                        warn( "unexpected epsilon reduction for '%s'?\n", lhs->name );
+                        srcinfo_warn( "unexpected epsilon reduction for '%s'?\n", lhs->name );
                     }
                 }
             }
@@ -1244,9 +1279,9 @@ void rules( FILE *fp )
                 } while( token == ';' );
             } else if( token != '|' ) {
                 if( token == T_CIDENTIFIER ) {
-                    msg( "Missing ';'\n" );
+                    srcinfo_msg( "Missing ';'\n" );
                 } else {
-                    msg( "Incorrect syntax.\n" );
+                    srcinfo_msg( "Incorrect syntax.\n" );
                 }
             }
         } while( token == '|' );
@@ -1255,7 +1290,9 @@ void rules( FILE *fp )
 
     not_token = false;
     for( sym = symlist; sym != NULL; sym = sym->next ) {
-        /* check for special symbols */
+        /*
+         * check for special symbols
+         */
         if( sym == eofsym )
             continue;
         if( denseflag ) {
@@ -1269,11 +1306,11 @@ void rules( FILE *fp )
         }
         if( sym->pro != NULL && sym->token != 0 ) {
             not_token = true;
-            warn( "%s not defined as '%%token'.\n", sym->name );
+            srcinfo_warn( "%s not defined as '%%token'.\n", sym->name );
         }
     }
     if( not_token ) {
-        msg( "cannot continue (because of %%token problems)\n" );
+        srcinfo_msg( "cannot continue (because of %%token problems)\n" );
     }
     copyUniqueActions( fp );
 }
@@ -1290,7 +1327,7 @@ void tail( FILE *fp )
     if( token == T_MARK ) {
         copyfile( fp );
     } else if( token != T_EOF ) {
-        msg( "Expected end of file.\n" );
+        srcinfo_msg( "Expected end of file.\n" );
     }
 }
 

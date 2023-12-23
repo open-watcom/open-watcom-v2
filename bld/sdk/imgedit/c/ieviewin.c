@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -378,7 +378,7 @@ WPI_MRESULT CALLBACK ViewWindowProc( HWND hwnd, WPI_MSG msg,
  */
 void CheckViewItem( HMENU hmenu )
 {
-    WPI_ENUMPROC        enumproc;
+    WPI_ENUMPROC        wndenumproc;
 
     if( _wpi_isitemchecked( hmenu, IMGED_VIEW ) ) {
         _wpi_checkmenuitem( hmenu, IMGED_VIEW, MF_UNCHECKED, FALSE );
@@ -396,9 +396,9 @@ void CheckViewItem( HMENU hmenu )
 
     ShowWindow( _wpi_getframe( hViewWindow ), showState );
     if( _wpi_iswindow( Instance, ClientWindow ) ) {
-        enumproc = _wpi_makeenumprocinstance( ViewEnumProc, Instance );
-        _wpi_enumchildwindows( ClientWindow, enumproc, 0L );
-        _wpi_freeenumprocinstance( enumproc );
+        wndenumproc = _wpi_makeenumprocinstance( ViewEnumProc, Instance );
+        _wpi_enumchildwindows( ClientWindow, wndenumproc, 0L );
+        _wpi_freeenumprocinstance( wndenumproc );
     }
 
 } /* CheckViewItem */
@@ -446,7 +446,7 @@ BOOL CALLBACK BkColorEnumProc( HWND hwnd, LONG lparam )
  */
 void SetViewBkColor( COLORREF color )
 {
-    WPI_ENUMPROC        enumproc;
+    WPI_ENUMPROC        wndenumproc;
 
     if( color == bkgroundColor ) {
         return;
@@ -458,9 +458,9 @@ void SetViewBkColor( COLORREF color )
     }
     InvalidateRect( hViewWindow, NULL, TRUE );
 
-    enumproc = _wpi_makeenumprocinstance( BkColorEnumProc, Instance );
-    _wpi_enumchildwindows( ClientWindow, enumproc, 0L );
-    _wpi_freeenumprocinstance( enumproc );
+    wndenumproc = _wpi_makeenumprocinstance( BkColorEnumProc, Instance );
+    _wpi_enumchildwindows( ClientWindow, wndenumproc, 0L );
+    _wpi_freeenumprocinstance( wndenumproc );
 
 } /* SetViewBkColor */
 
@@ -573,24 +573,24 @@ void RePositionViewWnd( img_node *node )
  */
 void SetViewWindow( bool justone )
 {
-    WPI_ENUMPROC        enumproc;
+    WPI_ENUMPROC        wndenumproc;
     int                 prev_show_state;
 
     fOneViewWindow = justone;
 
     if( !justone ) {
         if( _wpi_iswindow( Instance, ClientWindow ) ) {
-            enumproc = _wpi_makeenumprocinstance( ViewEnumProc, Instance );
-            _wpi_enumchildwindows( ClientWindow, enumproc, 0L );
-            _wpi_freeenumprocinstance( enumproc );
+            wndenumproc = _wpi_makeenumprocinstance( ViewEnumProc, Instance );
+            _wpi_enumchildwindows( ClientWindow, wndenumproc, 0L );
+            _wpi_freeenumprocinstance( wndenumproc );
         }
     } else {
         prev_show_state = showState;
         showState = SW_HIDE;
         if( _wpi_iswindow( Instance, ClientWindow ) ) {
-            enumproc = _wpi_makeenumprocinstance( ViewEnumProc, Instance );
-            _wpi_enumchildwindows( ClientWindow, enumproc, 0L );
-            _wpi_freeenumprocinstance( enumproc );
+            wndenumproc = _wpi_makeenumprocinstance( ViewEnumProc, Instance );
+            _wpi_enumchildwindows( ClientWindow, wndenumproc, 0L );
+            _wpi_freeenumprocinstance( wndenumproc );
         }
         showState = prev_show_state;
         if( _wpi_iswindow( Instance, hViewWindow ) ) {

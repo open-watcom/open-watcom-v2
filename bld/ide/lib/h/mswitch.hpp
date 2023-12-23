@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,8 +34,10 @@
 #ifndef mswitch_class
 #define mswitch_class
 
+#include "idecfg.h"
 #include "wtokfile.hpp"
 #include "wvlist.hpp"
+#include "wobjfile.hpp"
 
 typedef unsigned char SwMode;
 #define SWMODE_RELEASE  0
@@ -42,34 +45,42 @@ typedef unsigned char SwMode;
 #define SWMODE_COUNT    2
 
 WCLASS MState;
+WCLASS MTool;
 WCLASS MSwitch : public WObject
 {
     Declare( MSwitch )
     public:
-        MSwitch ( const char* name=NULL ) : _text( name ) {}
+        MSwitch( const char* id=NULL ) { _id = id; fixup(); }
         MSwitch( WTokenFile& fil, WString& tok );
         ~MSwitch() {}
-        int panel() { return( _panel ); }
-        void name( WString& name ) { name = _text; }
-        WString& text() { return( _text ); }
-        void getTag( WString& tag );
-        virtual void displayText( WString& s );
-        bool hasText() { return( _text.size() > 0 ); }
-        bool isSetable() { return( _text.size() > 0 && *_text != ' ' ); }
-        bool isTagEqual( WString& tag, int kludge=0 );
-#if CUR_CFG_VERSION > 4
-        bool isTagEqual( MTool *tool, WString& mask, int kludge=0 );
-#endif
+        int panel() const { return( _panel ); }
+        const char* id() const { return( _id ); }
+        void getId( WString& id ) { id = _id; }
+        void getTag( WString& tag ) { tag = _mask; tag.concat( _id ); }
+        bool isSetable() const { return( _panel >= 0 ); }
+        bool isTagEqual( const char* tag, int kludge=0 ) const;
         MSwitch* addSwitch( WVList& list, const char* mask );
+        virtual void addOptText( WString& s );
         virtual void getText( WString& str, WVList* states, SwMode mode ) = 0;
         virtual void getText( WString& str, MState* state ) = 0;
-        virtual WString& on() =0;
+        WString& on() { return( _on ); }
+        bool state( SwMode m ) { return( _state[m] ); }
+        void state( SwMode m, bool state ) { _state[m] = state; }
+#ifndef NOPERSIST
+        void WEXPORT readState( WObjectFile& p, SwMode m ) { p.readObject( &_state[m] ); }
+        void WEXPORT writeState( WObjectFile& p, SwMode m ) { p.writeObject( _state[m] ); }
+        void WEXPORT copyState( SwMode md, SwMode ms ) { _state[md] = _state[ms]; }
+#endif
     protected:
         void findStates( WVList* states, WVList& found );
+        void fixup() { _idlen = _id.size(); }
     private:
         int             _panel;
         WString         _mask;
-        WString         _text;
+        WString         _id;
+        WString         _on;
+        int             _idlen;
+        bool            _state[SWMODE_COUNT];
 };
 
 #endif

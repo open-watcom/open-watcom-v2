@@ -241,7 +241,7 @@ static void _outputCurrAsmLine(int fnum, int continueToNextLine) {
     FILE *output = CURR_OUTPUT(fnum);
     int len = CURR_LINE_LEN(fnum);
     int flags = CURR_LINE_FLAGS(fnum);
-    #ifndef NDEBUG
+    #ifdef DEVBUILD
         if (g_opt.debug) {
             output = stdout;
         }
@@ -285,7 +285,7 @@ static void _outputCurrFortLine(int fnum, int continueToNextLine) {
     int leftOverLen = 0;
 
     assert(fileStackLevel >= 0);
-    #ifndef NDEBUG
+    #ifdef DEVBUILD
         if (g_opt.debug) {
             output = stdout;
         }

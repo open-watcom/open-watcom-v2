@@ -3,6 +3,6 @@
 host_os  = nt
 host_cpu = 386
 
-wlink_release = 0
+wlink_debug = 1
 
 !include ../master.mif

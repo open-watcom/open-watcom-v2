@@ -4,15 +4,11 @@
 bld_ver       = $+$(%OWBLDVER)$-
 bld_ver_str   = $+$(%OWBLDVERSTR)$-
 bld_ver_tool  = $+$(%OWBLDVERTOOL)$-
-curr_year     = $+$(%OWCYEAR)$-
-!if $(__VERSION__) > 1290
+curr_year     = xxxx
+!if $(__VERSION__) >= 1300
 curr_year     = $+$(%__CYEAR__)$-
 !endif
 patch_level   = 0
-contrib_dir   = $+$(%OWROOT)$-/contrib
-build_dir     = $+$(%OWROOT)$-/build
-src_dir       = $+$(%OWSRCDIR)$-
-docs_dir      = $+$(%OWDOCSDIR)$-
 !if $(__VERSION__) < 1300
 !ifdef __MSDOS__
 __DOS__=
@@ -34,14 +30,22 @@ verbose       = 0
 !endif
 !endif
 
+!ifndef nowgml
+!ifdef %OWNOWGML
+nowgml        = $+$(%OWNOWGML)$-
+!else
+nowgml        = 0
+!endif
+!endif
+
 noecho = @
 !ifneq verbose 0
 noecho =
 !endif
 
-mif_path      = $(build_dir)/mif
+mif_path      = $(%OWROOT)/build/mif
 
-.mif: $(mif_path)
+.mif: "$(mif_path)"
 
 # setup non-WATCOM tools macros
 !ifeq %OWTOOLS VISUALC
@@ -57,15 +61,13 @@ __INTEL_TOOLS__ = $+$(%OWTOOLSVER)$-
 __WATCOM_TOOLS__ = 0
 !endif
 
-# setup WATCOM tools version
-bld_watcom_ver = 0
+# setup run-time WATCOM tools version
 !ifndef bootstrap
 # if it is not bootstrap then use current build version
 __WATCOM_TOOLS__ = $(bld_ver_tool)
 !else ifeq %OWTOOLS WATCOM
 # if bootstrap and WATCOM tools then use tools version
-bld_watcom_ver = $+$(%OWTOOLSVER)$-
-__WATCOM_TOOLS__ = $(bld_watcom_ver)
+__WATCOM_TOOLS__ = $+$(%OWTOOLSVER)$-
 !endif
 
 !ifdef %BOOTSTRAP_CPU
@@ -83,9 +85,12 @@ bld_os = nt
 !else ifdef __NTX64__
 bld_cpu = x64
 bld_os = nt
-bld64host_nt = 1
+bldonly_nt = 1
 !else ifdef __NTAXP__
 bld_cpu = axp
+bld_os = nt
+!else ifdef __NTMIPS__
+bld_cpu = mps
 bld_os = nt
 !else ifdef __LINUX386__
 bld_cpu = 386
@@ -93,7 +98,7 @@ bld_os = linux
 !else ifdef __LINUXX64__
 bld_cpu = x64
 bld_os = linux
-bld64host_linux = 1
+bldonly_linux = 1
 !else ifdef __LINUXMIPS__
 bld_cpu = mps
 bld_os = linux
@@ -103,13 +108,18 @@ bld_os = linux
 !else ifdef __LINUXARM__
 bld_cpu = arm
 bld_os = linux
+bldonly_linux = 1
+!else ifdef __LINUXARM64__
+bld_cpu = a64
+bld_os = linux
+bldonly_linux = 1
 !else ifdef __BSD386__
 bld_cpu = 386
 bld_os = bsd
 !else ifdef __BSDX64__
 bld_cpu = x64
 bld_os = bsd
-bld64host_bsd = 1
+bldonly_bsd = 1
 !else ifdef __BSDPPC__
 bld_cpu = ppc
 bld_os = bsd
@@ -119,7 +129,7 @@ bld_os = haiku
 !else ifdef __HAIKUX64__
 bld_cpu = x64
 bld_os = haiku
-bld64host_haiku = 1
+bldonly_haiku = 1
 !else ifdef __HAIKUPPC__
 bld_cpu = ppc
 bld_os = haiku
@@ -129,21 +139,32 @@ bld_os = osx
 !else ifdef __OSXX64__
 bld_cpu = x64
 bld_os = osx
-bld64host_osx = 1
+bldonly_osx = 1
 !else ifdef __OSXPPC__
 bld_cpu = ppc
 bld_os = osx
 !else ifdef __OSXARM__
 bld_cpu = arm
 bld_os = osx
+bldonly_osx = 1
+!else ifdef __OSXARM64__
+bld_cpu = a64
+bld_os = osx
+bldonly_osx = 1
 !endif
 
 nested_wmake = wmake
 
+!ifdef __WATCOM_TOOLS__
+!ifndef bootstrap
+watcom_common_cflags   =-wx-wce=C310
+watcom_common_cxxflags =-w8-wce=P579
+!else
 watcom_common_cflags   =-wx-wce=310
 watcom_common_cxxflags =-w8-wce=579
+!endif
+!endif
 
-bld_dft_oflags = -ox
 dft_oflags     = -oaxt
 
 !ifdef nulldevice_$(bld_os)

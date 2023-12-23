@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -234,7 +235,7 @@ static dep_handle AutoORLNextDep( dep_handle hndl )
     orl_info    *hdl = hndl;
 
     p = hdl->curr;
-    p = (void *)((char *)p + sizeof( DepInfo ) + p->len - 1);
+    p = (void *)( (char *)p + offsetof( DepInfo, name ) + p->len );
     if( p->len == 0 ) {
         hdl->curr = NULL;
         return( NULL );

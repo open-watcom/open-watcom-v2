@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -110,7 +111,7 @@ mad_status MADIMPENTRY( CallUpStackLevel )( mad_call_up_data *cud,
                                 address *stack,
                                 mad_registers **out )
 {
-    axp_pdata           pdata;
+    axp_pdata_struct    axp_pdata;
     mad_disasm_data     dd;
     mad_status          ms;
     address             curr;
@@ -125,7 +126,7 @@ mad_status MADIMPENTRY( CallUpStackLevel )( mad_call_up_data *cud,
     *out = NULL;
     if( cud->ra == 0 ) return( MS_FAIL );
     if( cud->sp == 0 ) return( MS_FAIL );
-    ms = GetPData( execution->mach.offset, &pdata );
+    ms = GetPData( execution->mach.offset, &axp_pdata );
     if( ms != MS_OK ) return( ms );
 
     frame_size = 0;
@@ -134,14 +135,14 @@ mad_status MADIMPENTRY( CallUpStackLevel )( mad_call_up_data *cud,
     prev_sp_off = NO_OFF;
     prev_fp_off = NO_OFF;
     curr = *execution;
-    curr.mach.offset = pdata.beg_addr.u._32[0];
+    curr.mach.offset = axp_pdata.beg_addr.u._32[0];
     if( curr.mach.offset == 0 ) return( MS_FAIL );
     for( ;; ) {
         if( curr.mach.offset >= execution->mach.offset ) break;
-        if( curr.mach.offset >= pdata.pro_end_addr.u._32[0] ) break;
+        if( curr.mach.offset >= axp_pdata.pro_end_addr.u._32[0] ) break;
         ms = DisasmOne( &dd, &curr, 0 );
         if( ms != MS_OK ) return( ms );
-        if( curr.mach.offset == (pdata.beg_addr.u._32[0] + sizeof( unsigned_32 )) ) {
+        if( curr.mach.offset == (axp_pdata.beg_addr.u._32[0] + sizeof( unsigned_32 )) ) {
             if( dd.ins.type != DI_AXP_LDA ) return( MS_FAIL );
             frame_size = -dd.ins.op[1].value.s._32[I64LO32];
         }

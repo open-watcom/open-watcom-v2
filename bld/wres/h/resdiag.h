@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2016-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2016-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -148,7 +148,7 @@ extern bool         ResWriteDialogBoxControl( DialogBoxControl *, FILE *fp );
 extern bool         ResWriteDialogBoxControl32( DialogBoxControl32 *control, FILE *fp );
 extern bool         ResWriteDialogBoxExHeader32( DialogBoxHeader32 *head, DialogBoxExHeader32short *exhead, FILE *fp );
 extern bool         ResWriteDialogBoxExControl32( DialogBoxExControl32 *control, FILE *fp );
-extern ControlClass *ResNameOrOrdToControlClass( const ResNameOrOrdinal * );
+extern ControlClass *ResNameOrOrdinalToControlClass( const ResNameOrOrdinal * );
 extern ControlClass *ResNumToControlClass( uint_16 classnum );
 
 /* resrdiag.c */

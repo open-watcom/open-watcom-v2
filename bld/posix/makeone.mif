@@ -5,8 +5,6 @@
 #
 #       The following macros must be defined:
 #
-#       posix_dir       the root of the posix project (no trailing \)
-#
 #       name            the name of the command to be built
 #
 
@@ -14,30 +12,26 @@ proj_name = posix
 
 posix_autodepends = .AUTODEPEND
 
-!include $(posix_dir)/model.mif
+!include ../common.mif
 
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
-
-!include $(posix_dir)/common.mif
 
 !include tools.mif
 
 #
 # cflags
 #
-.c: $(posix_dir)/src/$(name)
+.c: ../src/$(name)
 
-inc_dirs = -I"$(posix_dir)/src/$(name)" -I"$(posix_dir)/h"
+inc_dirs = -I"../src/$(name)" -I"../h"
 
 #
 # lflags
 #
 extra_l_flags = debug all option quiet,map
-!ifeq host_cpu i86
-extra_l_flags_os2 = option heapsize=17k, newfiles, stack=8k
-!endif
+extra_l_flags_os2_i86 = option heapsize=17k, newfiles, stack=8k
 
 #
 #       define the main target

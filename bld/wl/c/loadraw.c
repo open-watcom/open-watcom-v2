@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -324,7 +324,7 @@ void HexOutput( void )
     outfilelist         *fnode;
     group_entry         *group;
     section             *sect;
-#ifdef _INT_DEBUG
+#ifdef DEVBUILD
     outfilelist         *finfo;
 #endif
 #if defined( _OS2 ) || defined( _QNX ) || defined( _ELF )
@@ -360,7 +360,7 @@ void HexOutput( void )
                 info.offs = (group->grp_addr.off + group->linear - FmtData.output_offset);
                 sect = wrkgrp->section;
                 CurrSect = sect;
-    #ifdef _INT_DEBUG
+    #ifdef DEVBUILD
                 finfo = sect->outfile;
                 DEBUG((DBG_LOADDOS, "group %a section %d to %l in %s",
                     &group->grp_addr, sect->ovlref, info.offs, finfo->fname ));
@@ -387,7 +387,7 @@ void HexOutput( void )
                 sect = group->section;
                 CurrSect = sect;
                 info.offs = GROUP_SECTION_DELTA( group );
-#ifdef _INT_DEBUG
+#ifdef DEVBUILD
                 finfo = sect->outfile;
                 DEBUG((DBG_LOADDOS, "group %a section %d to %l in %s",
                     &group->grp_addr, sect->ovlref, info.offs, finfo->fname ));
@@ -399,7 +399,7 @@ void HexOutput( void )
                     sect = group->section;
                     CurrSect = sect;
                     info.offs = GROUP_SECTION_DELTA( group );
-#ifdef _INT_DEBUG
+#ifdef DEVBUILD
                     finfo = sect->outfile;
                     DEBUG((DBG_LOADDOS, "group %a section %d to %l in %s",
                         &group->grp_addr, sect->ovlref, info.offs, finfo->fname ));
@@ -485,9 +485,7 @@ void FiniRawLoadFile( void )
             }
         }
     }
-    if( SymFileName != NULL ) {
-        DBIWrite();
-    }
+    DBIWrite();
 }
 
 #endif

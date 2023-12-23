@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,8 +47,6 @@
 #include "clibext.h"
 
 
-char *OptEnvVar="dirname";
-
 static const char *usageMsg[] = {
     "Usage: dirname [-?] [@env] pathname",
     "\tenv                : environment variable to expand",
@@ -61,7 +59,8 @@ int main( int argc, char **argv )
 {
     pgroup2     pg;
 
-    argv = ExpandEnv( &argc, argv );
+    argv = ExpandEnv( &argc, argv, "DIRNAME" );
+
     GetOpt( &argc, argv, "", usageMsg );
 
     if( argc != 2 ) {
@@ -75,5 +74,7 @@ int main( int argc, char **argv )
             fprintf( stdout, "%s%s\n", pg.drive, pg.dir );
         }
     }
+    MemFree( argv );
+
     return( 0 );
 }

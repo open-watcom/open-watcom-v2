@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,6 +41,7 @@
 #include "color.h"
 #include "ldstr.h"
 
+#include "clibint.h"
 #include "clibext.h"
 
 
@@ -60,7 +61,7 @@ static bool initApplication( void )
     // RegisterContainerWindow( InstanceHandle );
 
     // Init ldstr.c
-    SetInstance( InstanceHandle );
+    SetRCInstance( InstanceHandle );
     return( true );
 }
 
@@ -92,7 +93,9 @@ void FiniInstance( void )
     // OLE2Fini();
 }
 
-#if defined( __WINDOWS__ ) && defined( __WATCOMC__ ) && !defined( NDEBUG ) && 0
+#if 0
+#if defined( __WINDOWS__ ) && defined( __WATCOMC__ )
+#ifdef DEVBUILD
 void _WCFAR *HeapWalker( void )
 {
     struct _heapinfo    info;
@@ -112,6 +115,8 @@ void _WCFAR *HeapWalker( void )
     }
     return( NULL );
 }
+#endif
+#endif
 #endif
 
 int PASCAL WinMain( HINSTANCE inst, HINSTANCE prev, LPSTR cmdline, int show )

@@ -134,9 +134,9 @@ set BLDRULE=
     set LOGFNAME=docclean
     echo **** DOCCLEAN rule
 
-[ BLOCK .<PROJDIR> . ]
+[ BLOCK "<PROJDIR>" "" ]
     error PROJDIR must be set!
 
 [ BLOCK . . ]
 
-[ LOG <PROJDIR>/<LOGFNAME>.<LOGEXT> ]
+[ LOG "<PROJDIR>/<LOGFNAME>.<LOGEXT>" ]

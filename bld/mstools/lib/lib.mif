@@ -1,3 +1,5 @@
+tree_depth = 5
+
 .c :  $(lib_misc_dir)/c
 
 extra_inc_dirs = -I"$(lib_misc_dir)/h" -I"$(orl_dir)/h"

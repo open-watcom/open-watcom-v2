@@ -35,4 +35,4 @@ extern void     FMemFini( void );
 extern void     FMemErrors( void );
 extern void     *FMemAlloc( size_t size );
 extern void     FMemFree( void *p );
-extern char     *FStrDup( const char *buf );
+extern char     *FMemStrDup( const char *str );

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -70,7 +70,7 @@ void SetGadgetString( char *str )
             i = GADGET_SIZE;
         }
         if( EditVars.GadgetString == NULL ) {
-            EditVars.GadgetString = MemAlloc( GADGET_SIZE + 1 );
+            EditVars.GadgetString = _MemAllocArray( char, GADGET_SIZE + 1 );
             EditVars.GadgetString[GADGET_SIZE] = '\0';
         }
         memset( EditVars.GadgetString, ' ', GADGET_SIZE );

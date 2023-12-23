@@ -143,7 +143,7 @@ The following are some examples of using &product to compile &lang
 source programs.
 .*
 .exam begin 5 ~b1
-C>&ccmd32 report /d1 /stack
+C>&ccmd32 report -d1 -stack
 .exam end
 .pc
 The 32-bit &cmpname compiler processes
@@ -153,7 +153,7 @@ information.
 Stack overflow checking code is included in the object code.
 .*
 .exam begin 5 ~b2
-C>&ccmd16 kwikdraw /2 /fpi87
+C>&ccmd16 kwikdraw -2 -fpi87
 .exam end
 .pc
 The 16-bit &cmpname compiler processes
@@ -166,7 +166,7 @@ systems where this code will execute, the resulting code will be
 highly optimized for this type of system.
 .*
 .exam begin 5 ~b3
-C>&ccmd16 ..\source\modabs /d2
+C>&ccmd16 ..\source\modabs -d2
 .exam end
 .pc
 The 16-bit &cmpname compiler processes
@@ -180,7 +180,7 @@ readily debugged with &dbgname..
 .*
 .ix 'memory model'
 .exam begin 5 ~b4
-C>&ccmd32 /mf calc
+C>&ccmd32 -mf calc
 .exam end
 .pc
 The 32-bit &cmpname compiler compiles
@@ -192,7 +192,7 @@ chapter entitled :HDREF refid='mdl386'..
 chapter entitled :HDREF refid='cal386'..
 .*
 .exam begin 5 ~b5
-C>&ccmd32 kwikdraw /fpi87
+C>&ccmd32 kwikdraw -fpi87
 .exam end
 .pc
 The 32-bit &cmpname compiler processes
@@ -201,16 +201,16 @@ producing object code for an Intel 386 system equipped with an Intel
 80x87 numeric data processor.
 .*
 .exam begin 5 ~b6
-C>set &cvar16=/short /d2 /fo#*.dbj
+C>set &cvar16=-short -d2 -fo#*.dbj
 C>&ccmd16 ..\source\modabs
 .exam end
 .pc
 The options
-.id /short
+.id -short
 .ct ,
-.id /d2
+.id -d2
 and
-.id /fo=*.dbj
+.id -fo=*.dbj
 are established as defaults using the
 .ev &cvarup16
 environment variable.
@@ -277,7 +277,7 @@ compile the following program called "DEMO1".
 If we compile this program with the "extensions" option, the following
 output appears on the screen.
 .code begin
-C>&ccmd16 demo1 /exten
+C>&ccmd16 demo1 -exten
 WATCOM FORTRAN 77/16 Optimizing Compiler Version &verrev &cdate
 .cpyrit 1984
 .trdmrk
@@ -301,9 +301,9 @@ Diagnostic messages are also included in the listing file if the
 If we recompile our program and include the "list" option, a listing
 file will be created.
 .millust begin
-C>&ccmd16 demo1 /exten/list
+C>&ccmd16 demo1 -exten-list
   or
-C>&ccmd32 demo1 /exten/list
+C>&ccmd32 demo1 -exten-list
 .millust end
 .np
 The contents of the listing file are:

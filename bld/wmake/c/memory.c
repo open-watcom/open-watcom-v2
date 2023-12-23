@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,6 +42,8 @@
 #include "trmem.h"
 #endif
 #include "wresmem.h"
+
+#include "clibext.h"
 
 
 #ifdef USE_FAR
@@ -465,12 +467,12 @@ char *CharToStrSafe( char c )
         // never return
     }
     p[0] = c;
-    p[1] = '\0';
+    p[1] = NULLCHAR;
 #else
     p = MallocSafe( 2 );
     if( p != NULL ) {
         p[0] = c;
-        p[1] = '\0';
+        p[1] = NULLCHAR;
     }
 #endif
     return( p );

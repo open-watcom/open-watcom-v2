@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,169 +34,183 @@
 #include "skel.h"
 
 /*
-        Stuff for source line cues
-*/
+ * Stuff for source line cues
+ */
 
 walk_result DIPIMPENTRY( WalkFileList )( imp_image_handle *iih, imp_mod_handle imh,
                           DIP_IMP_CUE_WALKER *wk, imp_cue_handle *icueh, void *d )
+/**********************************************************************************
+ * TODO:
+ *
+ *  PSEUDO-CODE:
+ *
+ *  for( each source file in the given module ) {
+ *      *icueh = fill in cue handle information for the first
+ *                  source cue for the file;
+ *      wr = wk( iih, icueh, d );
+ *      if( wr != WR_CONTINUE ) {
+ *          return( wr );
+ *      }
+ *  }
+ */
 {
-    //TODO:
-    /*
-        PSEUDO-CODE:
-
-        for( each source file in the given module ) {
-            *icueh = fill in cue handle information for the first
-                        source cue for the file;
-            wr = wk( iih, icueh, d );
-            if( wr != WR_CONTINUE ) {
-                return( wr );
-            }
-        }
-    */
     return( WR_CONTINUE );
 }
 
 imp_mod_handle DIPIMPENTRY( CueMod )( imp_image_handle *iih, imp_cue_handle *icueh )
+/***********************************************************************************
+ * TODO:
+ *
+ * Return the module the source cue comes from.
+ */
 {
-    //TODO:
-    /*
-        Return the module the source cue comes from.
-     */
-     return( IMH_NOMOD );
+    return( IMH_NOMOD );
 }
 
 size_t DIPIMPENTRY( CueFile )( imp_image_handle *iih, imp_cue_handle *icueh, char *buff, size_t buff_size )
+/**********************************************************************************************************
+ * TODO:
+ *
+ * Given the imp_cue_handle, copy the name of the source file into 'buff'.
+ * Do not copy more than 'buff_size' - 1 characters into the buffer and
+ * append a trailing '\0' character. Return the real length
+ * of the file name (not including the trailing '\0' character) even
+ * if you had to truncate it to fit it into the buffer. If something
+ * went wrong and you can't get the module name, call DCStatus and
+ * return zero.
+ *
+ * NOTE: the client might pass in zero for 'buff_size'. In that
+ * case, just return the length of the file name and do not attempt
+ * to put anything into the buffer.
+ */
 {
-    /*
-        Given the imp_cue_handle, copy the name of the source file into 'buff'.
-        Do not copy more than 'buff_size' - 1 characters into the buffer and
-        append a trailing '\0' character. Return the real length
-        of the file name (not including the trailing '\0' character) even
-        if you had to truncate it to fit it into the buffer. If something
-        went wrong and you can't get the module name, call DCStatus and
-        return zero. NOTE: the client might pass in zero for 'buff_size'. In that
-        case, just return the length of the file name and do not attempt
-        to put anything into the buffer.
-    */
     return( 0 );
 }
 
 cue_fileid DIPIMPENTRY( CueFileId )( imp_image_handle *iih, imp_cue_handle *icueh )
+/**********************************************************************************
+ * TODO:
+ *
+ * Given a imp_cue_handle, return a cue_fileid. The cue_fileid is
+ * an unsigned_32 magic cookie as far as the client is concerned,
+ * except that the value zero is reserved to indicate "no file".
+ * The client might pass the cue_fileid back to the LineCue
+ * function, or use it as a quick test to see if the source file
+ * has changed by comparing it against a previously returned value.
+ */
 {
-    //TODO:
-    /*
-        Given a imp_cue_handle, return a cue_fileid. The cue_fileid is
-        an unsigned_32 magic cookie as far as the client is concerned,
-        except that the value zero is reserved to indicate "no file".
-        The client might pass the cue_fileid back to the LineCue
-        function, or use it as a quick test to see if the source file
-        has changed by comparing it against a previously returned value.
-    */
     return( 0 );
 }
 
 dip_status DIPIMPENTRY( CueAdjust )( imp_image_handle *iih,
                 imp_cue_handle *src_icueh, int adj, imp_cue_handle *dst_icueh )
+/******************************************************************************
+ * TODO:
+ *
+ * Adjust the 'src' cue by 'adj' amount and return the result in 'dst'.
+ * That is, If you get called with "DIPImpCueAdjust( iih, src, 1, dst )",
+ * the 'dst' handle should be filled in with implementation cue handle
+ * representing the source cue immediately following the 'src' cue.
+ * Passing in an 'adj' of -1 will get the immediately preceeding source
+ * cue. The list of source cues for each file are considered a ring,
+ * so if 'src' is the first cue in a file, an 'adj' of -1 will return
+ * the last source cue FOR THAT FILE. The cue adjust never crosses a
+ * file boundry. Also, if 'src' is the last cue in a file, and 'adj' of
+ * 1 will get the first source cue FOR THAT FILE. If an adjustment
+ * causes a wrap from begining to end or vis-versa, you should return
+ * DS_WRAPPED status (NOTE: DS_ERR should *not* be or'd in, nor should
+ * DCStatus be called in this case). Otherwise DS_OK should be returned
+ * unless an error occurred.
+ */
 {
-    //TODO:
-    /*
-        Adjust the 'src' cue by 'adj' amount and return the result in 'dst'.
-        That is, If you get called with "DIPImpCueAdjust( iih, src, 1, dst )",
-        the 'dst' handle should be filled in with implementation cue handle
-        representing the source cue immediately following the 'src' cue.
-        Passing in an 'adj' of -1 will get the immediately preceeding source
-        cue. The list of source cues for each file are considered a ring,
-        so if 'src' is the first cue in a file, an 'adj' of -1 will return
-        the last source cue FOR THAT FILE. The cue adjust never crosses a
-        file boundry. Also, if 'src' is the last cue in a file, and 'adj' of
-        1 will get the first source cue FOR THAT FILE. If an adjustment
-        causes a wrap from begining to end or vis-versa, you should return
-        DS_WRAPPED status (NOTE: DS_ERR should *not* be or'd in, nor should
-        DCStatus be called in this case). Otherwise DS_OK should be returned
-        unless an error occurred.
-    */
     return( DS_ERR | DS_FAIL );
 }
 
 unsigned long DIPIMPENTRY( CueLine )( imp_image_handle *iih, imp_cue_handle *icueh )
+/***********************************************************************************
+ * TODO:
+ *
+ * Return the line number of source cue. Return zero if there
+ * is no line number associated with the cue, or an error occurs in
+ * getting the information.
+ */
 {
-    //TODO:
-    /*
-        Return the line number of source cue. Return zero if there
-        is no line number associated with the cue, or an error occurs in
-        getting the information.
-    */
     return( 0 );
 }
 
 unsigned DIPIMPENTRY( CueColumn )( imp_image_handle *iih, imp_cue_handle *icueh )
+/********************************************************************************
+ * TODO:
+ *
+ * Return the column number of source cue. Return zero if there
+ * is no column number associated with the cue, or an error occurs in
+ * getting the information.
+ */
 {
-    //TODO:
-    /*
-        Return the column number of source cue. Return zero if there
-        is no column number associated with the cue, or an error occurs in
-        getting the information.
-    */
     return( 0 );
 }
 
 address DIPIMPENTRY( CueAddr )( imp_image_handle *iih, imp_cue_handle *icueh )
+/*****************************************************************************
+ * TODO:
+ *
+ * Return the address of source cue. Return NilAddr if there
+ * is no address associated with the cue, or an error occurs in
+ * getting the information.
+ */
 {
-    //TODO:
-    /*
-        Return the address of source cue. Return NilAddr if there
-        is no address associated with the cue, or an error occurs in
-        getting the information.
-    */
     return( NilAddr );
 }
 
 search_result DIPIMPENTRY( LineCue )( imp_image_handle *iih,
                 imp_mod_handle imh, cue_fileid file, unsigned long line,
                 unsigned column, imp_cue_handle *icueh )
+/***********************************************************************
+ * TODO:
+ *
+ * Search for a source cue in the given module. If 'file' is zero,
+ * use the main source file of the module. If 'line' is zero, use the
+ * first line with a source cue in the given file. If 'column' is
+ * zero, use the first column with a source cue in the given line.
+ * Fill in the '*icueh' handle with the result. If there was a cue at
+ * exactly the file/line/column specified return SR_EXACT. If there
+ * are cues with in the file with a line/column less than the given
+ * values, return the largest cue possible that is less then the
+ * passed in values and return SR_CLOSEST. If there are no cues with
+ * the proper characteristics, return SR_NONE
+ */
 {
-    //TODO:
-    /*
-        Search for a source cue in the given module. If 'file' is zero,
-        use the main source file of the module. If 'line' is zero, use the
-        first line with a source cue in the given file. If 'column' is
-        zero, use the first column with a source cue in the given line.
-        Fill in the '*icueh' handle with the result. If there was a cue at
-        exactly the file/line/column specified return SR_EXACT. If there
-        are cues with in the file with a line/column less than the given
-        values, return the largest cue possible that is less then the
-        passed in values and return SR_CLOSEST. If there are no cues with
-        the proper characteristics, return SR_NONE
-    */
     return( SR_NONE );
 }
 
 search_result DIPIMPENTRY( AddrCue )( imp_image_handle *iih,
                 imp_mod_handle imh, address addr, imp_cue_handle *icueh )
+/***********************************************************************
+ * TODO:
+ *
+ * Search for the closest cue in the given module that has an address
+ * less then or equal to the given address. If there is no such cue
+ * return SR_NONE. If there is one exactly at the address return
+ * SR_EXACT. Otherwise, return SR_CLOSEST.
+ */
 {
-    //TODO:
-    /*
-        Search for the closest cue in the given module that has an address
-        less then or equal to the given address. If there is no such cue
-        return SR_NONE. If there is one exactly at the address return
-        SR_EXACT. Otherwise, return SR_CLOSEST.
-    */
     return( SR_NONE );
 }
 
 int DIPIMPENTRY( CueCmp )( imp_image_handle *iih, imp_cue_handle *icueh1, imp_cue_handle *icueh2 )
+/*************************************************************************************************
+ * TODO:
+ *
+ * Compare two cue handles and return 0 if they refer to the same
+ * information. If they refer to differnt things return either a
+ * positive or negative value to impose an 'order' on the information.
+ * The value should obey the following constraints.
+ * Given three handles H1, H2, H3:
+ *         - if H1 < H2 then H1 is always < H2
+ *         - if H1 < H2 and H2 < H3 then H1 is < H3
+ * The reason for the constraints is so that a client can sort a
+ * list of handles and binary search them.
+ */
 {
-    //TODO:
-    /*
-        Compare two cue handles and return 0 if they refer to the same
-        information. If they refer to differnt things return either a
-        positive or negative value to impose an 'order' on the information.
-        The value should obey the following constraints.
-        Given three handles H1, H2, H3:
-                - if H1 < H2 then H1 is always < H2
-                - if H1 < H2 and H2 < H3 then H1 is < H3
-        The reason for the constraints is so that a client can sort a
-        list of handles and binary search them.
-    */
     return( 0 );
 }

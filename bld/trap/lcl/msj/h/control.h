@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -54,7 +54,7 @@ extern unsigned_32      GetNextThread( unsigned_32, unsigned_8 * );
 extern unsigned_32      SetThread( unsigned_32 );
 extern unsigned         GetLibName( unsigned, char *, size_t );
 extern HANDLE           FakeOpen( char* );
-extern bool             FakeRead( HANDLE, void*, unsigned, unsigned* );
+extern bool             FakeRead( HANDLE, void *, unsigned, DWORD * );
 extern void             *GetMethodPointer( addr48_off * );
 extern addr48_off       MakeMethodOffset( void *, void *, addr48_off );
 extern unsigned         DipCue( int i, void *buff );

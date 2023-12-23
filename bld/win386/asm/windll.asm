@@ -1,4 +1,4 @@
-﻿;*****************************************************************************
+;*****************************************************************************
 ;*
 ;*                            Open Watcom Project
 ;*
@@ -86,7 +86,7 @@ _DATA segment word public 'DATA' use16
 
 assume es:nothing
 assume ss:nothing
-assume ds:dgroup
+assume ds:DGROUP
 assume cs:_TEXT
 
 ;*

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,7 +33,7 @@
 
 #include "drpriv.h"
 #include "drgettab.h"
-#include <string.h>
+
 
 struct dr_dbg_info  *DWRCurrNode = NULL;
 
@@ -139,8 +140,8 @@ static dr_dbg_handle  InitDbgHandle( void *file, unsigned long *sizes, bool byte
     return( dbg );
 }
 
-bool  DRDbgClear( dr_dbg_handle dbg )
-/***********************************/
+bool  DRENTRY DRDbgClear( dr_dbg_handle dbg )
+/*******************************************/
 {
     bool                ret;
     int                 i;
@@ -154,8 +155,8 @@ bool  DRDbgClear( dr_dbg_handle dbg )
     return( ret );
 }
 
-void DRDbgDone( dr_dbg_handle dbg )
-/*********************************/
+void DRENTRY DRDbgDone( dr_dbg_handle dbg )
+/*****************************************/
 {
     int                 i;
 
@@ -166,8 +167,8 @@ void DRDbgDone( dr_dbg_handle dbg )
     }
 }
 
-void DRDbgWatProducerVer( dr_dbg_handle dbg, df_ver wat_producer_ver )
-/********************************************************************/
+void DRENTRY DRDbgWatProducerVer( dr_dbg_handle dbg, df_ver wat_producer_ver )
+/****************************************************************************/
 {
     dbg->wat_producer_ver = wat_producer_ver;
 }
@@ -217,8 +218,8 @@ static void ReadCompUnits( struct dr_dbg_info *dbg, int read_ftab )
     DWRCurrNode->addr_size = addr_size;
 }
 
-dr_dbg_handle DRDbgInitNFT( void * file, unsigned long * sizes, bool byteswap )
-/*****************************************************************************/
+dr_dbg_handle DRENTRY DRDbgInitNFT( void * file, unsigned long * sizes, bool byteswap )
+/*************************************************************************************/
 {
     dr_dbg_handle       dbg;
 
@@ -229,8 +230,8 @@ dr_dbg_handle DRDbgInitNFT( void * file, unsigned long * sizes, bool byteswap )
     return( dbg );
 }
 
-dr_dbg_handle DRDbgInit( void * file, unsigned long * sizes, bool byteswap )
-/**************************************************************************/
+dr_dbg_handle DRENTRY DRDbgInit( void * file, unsigned long * sizes, bool byteswap )
+/**********************************************************************************/
 {
     dr_dbg_handle       dbg;
 
@@ -241,11 +242,11 @@ dr_dbg_handle DRDbgInit( void * file, unsigned long * sizes, bool byteswap )
     return( dbg );
 }
 
-void DRDbgFini( dr_dbg_handle dbg )
-/**********************************/
-/* don't have a way of deallocating virtual memory space.  Assume that any
+void DRENTRY DRDbgFini( dr_dbg_handle dbg )
+/******************************************
+ * don't have a way of deallocating virtual memory space.  Assume that any
  * pages that are allocated to this module will eventually be swapped out
-*/
+ */
 {
     compunit_info       *compunit;
     compunit_info       *next;
@@ -270,8 +271,8 @@ void DRDbgFini( dr_dbg_handle dbg )
     DWRFREE( dbg );
 }
 
-dr_dbg_handle  DRSetDebug( dr_dbg_handle dbg )
-/********************************************/
+dr_dbg_handle DRENTRY DRSetDebug( dr_dbg_handle dbg )
+/***************************************************/
 {
     dr_dbg_handle  old;
     old = DWRCurrNode;
@@ -279,22 +280,22 @@ dr_dbg_handle  DRSetDebug( dr_dbg_handle dbg )
     return( old );
 }
 
-dr_dbg_handle  DRGetDebug( void )
-/*******************************/
+dr_dbg_handle DRENTRY DRGetDebug( void )
+/**************************************/
 {
     return( DWRCurrNode );
 }
 
-void DRInit( void )
-/*****************/
+void DRENTRY DRInit( void )
+/*************************/
 {
     DWRVMInit();
     DWRInitFileTable( &FileNameTable.fnametab );
     DWRInitFileTable( &FileNameTable.pathtab );
 }
 
-void DRFini( void )
-/*****************/
+void DRENTRY DRFini( void )
+/*************************/
 {
     DWRVMDestroy();
     DWRFiniFileTable( &FileNameTable.fnametab, true );

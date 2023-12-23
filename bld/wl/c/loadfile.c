@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -74,7 +74,7 @@
 #include "clibext.h"
 
 
-#define IMPLIB_BUFSIZE  _4KB
+#define IMPLIB_BUFSIZE  _4K
 
 typedef struct {
     f_handle    handle;
@@ -867,14 +867,25 @@ static void ExecWlib( void )
     _ChkAlloc( cmdline, namelen + impnamelen +19 +2 +1 +4 +1 );
     memcpy( cmdline, "-c -b -n -q -pa -ii \"", 19 + 2 );
     temp = cmdline + 19 - 1;
-    if( LinkState & LS_HAVE_ALPHA_CODE ) {
+    switch( LinkState & LS_HAVE_MACHTYPE_MASK ) {
+    case LS_HAVE_ALPHA_CODE:
         *temp = 'a';
-    } else if( LinkState & LS_HAVE_PPC_CODE ) {
-        *temp = 'p';
-    } else if( LinkState & LS_HAVE_MIPS_CODE ) {
+        break;
+    case LS_HAVE_MIPS_CODE:
         *temp = 'm';
-    } else if( LinkState & LS_HAVE_X64_CODE ) {
+        break;
+    case LS_HAVE_PPC_CODE:
+        *temp = 'p';
+        break;
+    case LS_HAVE_X64_CODE:
         *temp = '6';
+        break;
+    case LS_HAVE_X86_CODE:
+        *temp = 'i';
+        break;
+    default:
+        *temp = 'i';
+        break;
     }
     temp += 3;
     memcpy( temp, FmtData.implibname, impnamelen );
@@ -901,16 +912,25 @@ static void ExecWlib( void )
     _ChkAlloc( atfname, namelen + 1 );  // +1 for the @
     *atfname = '@';
     memcpy( atfname + 1, ImpLib.fname, namelen );
-    if( LinkState & LS_HAVE_ALPHA_CODE ) {
+    switch( LinkState & LS_HAVE_MACHTYPE_MASK ) {
+    case LS_HAVE_ALPHA_CODE:
         libtype = "-ia";
-    } else if( LinkState & LS_HAVE_PPC_CODE ) {
-        libtype = "-ip";
-    } else if( LinkState & LS_HAVE_MIPS_CODE ) {
+        break;
+    case LS_HAVE_MIPS_CODE:
         libtype = "-im";
-    } else if( LinkState & LS_HAVE_X64_CODE ) {
+        break;
+    case LS_HAVE_PPC_CODE:
+        libtype = "-ip";
+        break;
+    case LS_HAVE_X64_CODE:
         libtype = "-i6";
-    } else {
+        break;
+    case LS_HAVE_X86_CODE:
         libtype = "-ii";
+        break;
+    default:
+        libtype = "-ii";
+        break;
     }
     retval = (int)spawnlp( P_WAIT, WLIB_EXE, WLIB_EXE, "-c", "-b", "-n", "-q", "-pa",
                   libtype, FmtData.implibname, atfname, NULL );
@@ -968,8 +988,8 @@ static void BufImpWrite( const char *buffer, size_t len )
     }
 }
 
-void AddImpLibEntry( const char *intname, const char *extname, ordinal_t ordinal )
-/********************************************************************************/
+void AddImpLibEntry( const char *intname, const char *extname, ordinal_t ordinal, bool by_name )
+/**********************************************************************************************/
 {
     size_t      intlen;
     size_t      otherlen;
@@ -980,7 +1000,7 @@ void AddImpLibEntry( const char *intname, const char *extname, ordinal_t ordinal
         return;
     ImpLib.didone = true;
     intlen = strlen( intname );
-    if( ordinal == NOT_IMP_BY_ORDINAL ) {
+    if( by_name ) {
         otherlen = strlen( extname );
     } else {
         otherlen = 10;          // max length of a 32-bit int.
@@ -999,14 +1019,14 @@ void AddImpLibEntry( const char *intname, const char *extname, ordinal_t ordinal
     currpos += ImpLib.module_name_len;
     *currpos++ = '\'';
     *currpos++ = '.';
-    if( ordinal == NOT_IMP_BY_ORDINAL ) {
+    if( by_name ) {
         *currpos++ = '.';
         *currpos++ = '\'';
         memcpy( currpos, extname, otherlen );
         currpos += otherlen;
         *currpos++ = '\'';
     } else {
-        ultoa( ordinal, currpos, 10 );
+        sprintf( currpos, "%ld", (long)ordinal );
         currpos += strlen( currpos );
     }
 #if !defined( __UNIX__ )
@@ -1049,7 +1069,7 @@ unsigned long NullAlign( unsigned align )
     size_t          pad;
 
     off = PosLoad();
-    pad = ROUND_UP( off, align ) - off;
+    pad = __ROUND_UP_SIZE( off, align ) - off;
     PadLoad( pad );
     return( off + pad );
 }
@@ -1060,7 +1080,7 @@ unsigned long OffsetAlign( unsigned long off, unsigned long align )
 {
     size_t          pad;
 
-    pad = ROUND_UP( off, align ) - off;
+    pad = __ROUND_UP_SIZE( off, align ) - off;
     PadLoad( pad );
     return( off + pad );
 }
@@ -1199,7 +1219,7 @@ static void *SetToFillChar( void *dest, const void *dummy, size_t size )
     return( (void *)dummy );
 }
 
-#define BUFF_BLOCK_SIZE _16KB
+#define BUFF_BLOCK_SIZE _16K
 
 static void WriteBuffer( const char *data, size_t len, outfilelist *outfile, writebuffer_fn *rtn )
 /************************************************************************************************/

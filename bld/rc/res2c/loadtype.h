@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,7 +34,8 @@
 #ifndef INCLUDE_LOAD_TYPE_HEADER
 #define INCLUDE_LOAD_TYPE_HEADER
 
-  extern unsigned short GetNextShort( read_file *ch_info );
-  extern unsigned long  GetNextLong( read_file *ch_info );
-  extern char           *GetNextString( read_file *ch_info );
+extern unsigned short   GetNextShort( read_file *ch_info );
+extern unsigned long    GetNextLong( read_file *ch_info );
+extern char             *GetNextString( read_file *ch_info );
+
 #endif

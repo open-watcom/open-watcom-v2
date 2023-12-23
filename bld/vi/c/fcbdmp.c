@@ -33,15 +33,18 @@
 #include "vi.h"
 #include "win.h"
 
-#if !defined( NDEBUG ) && !defined( __WIN__ )
+#ifdef DEVBUILD
+#if !defined( __WIN__ )
 
 void CheckFcb( fcb *cfcb, int *bcnt, linenum *lnecnt );
 
 static type_style errStyle = DEF_TEXT_STYLE;
 
 #endif
+#endif
 
-#if defined( __WATCOMC__ ) && !defined( NDEBUG )
+#if defined( __WATCOMC__ )
+#ifdef DEVBUILD
 #include <malloc.h>
 
 static void HeapMsg( int msg )
@@ -68,10 +71,12 @@ static void HeapMsg( int msg )
     }
 } /* HeapMsg */
 #endif
+#endif
 
 vi_rc HeapCheck( void )
 {
-#if defined( __WATCOMC__ ) && !defined( NDEBUG )
+#if defined( __WATCOMC__ )
+#ifdef DEVBUILD
     int                 i;
     struct _heapinfo    hinfo;
 
@@ -97,13 +102,15 @@ vi_rc HeapCheck( void )
         }
     }
 #endif
+#endif
     return( ERR_NO_ERR );
 
 } /* HeapCheck */
 
 vi_rc FcbDump( void )
 {
-#if !defined( NDEBUG ) && !defined( __WIN__ )
+#ifdef DEVBUILD
+#if !defined( __WIN__ )
     int         lc, fcbcnt = 0;
     window_id   wid;
     fcb         *cfcb;
@@ -146,13 +153,15 @@ vi_rc FcbDump( void )
 
     CloseAWindow( wid );
 #endif
+#endif
     return( ERR_NO_ERR );
 
 }
 
 vi_rc FcbThreadDump( void )
 {
-#if !defined( NDEBUG ) && !defined( __WIN__ )
+#ifdef DEVBUILD
+#if !defined( __WIN__ )
     int         lc, fcbcnt = 0;
     window_id   wid;
     char        msg[80];
@@ -193,12 +202,14 @@ vi_rc FcbThreadDump( void )
 
     CloseAWindow( wid );
 #endif
+#endif
     return( ERR_NO_ERR );
 }
 
 vi_rc SanityCheck( void )
 {
-#if !defined( NDEBUG ) && !defined( __WIN__ )
+#ifdef DEVBUILD
+#if !defined( __WIN__ )
     int         lc, tfcbcnt = 0, fcbcnt, sum;
     window_id   wid;
     fcb         *cfcb;
@@ -274,12 +285,14 @@ vi_rc SanityCheck( void )
 
     CloseAWindow( wid );
 #endif
+#endif
     return( ERR_NO_ERR );
 }
 
 vi_rc LineInfo( void )
 {
-#if !defined( NDEBUG ) && !defined( __WIN__ )
+#ifdef DEVBUILD
+#if !defined( __WIN__ )
     fcb         *cfcb;
     int         fcbcnt = 1;
     int         bcnt;
@@ -294,6 +307,7 @@ vi_rc LineInfo( void )
     Message2( "Fcb %d: ptr=%W,bcnt=%d,lcnt=%l  Fcb->prev=%W, Fcb->next=%W", fcbcnt,
         CurrentFcb, bcnt, lcnt, CurrentFcb->prev, CurrentFcb->next );
 #endif
+#endif
     return( ERR_NO_ERR );
 }
 
@@ -302,7 +316,8 @@ vi_rc LineInfo( void )
  */
 vi_rc WalkUndo( void )
 {
-#if !defined( NDEBUG ) && !defined( __WIN__ )
+#ifdef DEVBUILD
+#if !defined( __WIN__ )
     int         ln, col, fcbcnt, depth;
     window_id   wid;
     linenum     lne, lcnt;
@@ -370,11 +385,13 @@ vi_rc WalkUndo( void )
     }
     CloseAWindow( wid );
 #endif
+#endif
     return( ERR_NO_ERR );
 
 } /* WalkUndo */
 
-#if !defined( NDEBUG ) && !defined( __WIN__ )
+#ifdef DEVBUILD
+#if !defined( __WIN__ )
 void CheckFcb( fcb *cfcb, int *bcnt, linenum *lnecnt )
 {
     line        *cline;
@@ -387,4 +404,5 @@ void CheckFcb( fcb *cfcb, int *bcnt, linenum *lnecnt )
     }
 
 } /* CheckFcb */
+#endif
 #endif

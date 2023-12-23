@@ -43,7 +43,7 @@
 #include "ring.h"
 #include "pstk.h"
 #include "initdefs.h"
-#ifndef NDEBUG
+#ifdef DEVBUILD
     #include "dbg.h"
     #include "togglesd.h"
     #include "pragdefn.h"
@@ -66,7 +66,7 @@ typedef struct {                // INFO FOR A CONDITION
     SE* posn_false;             // - position when flag clr
 } COND_STK;
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
     static void _Dump( COND_STK* cond, const char* msg )
     {
         if( TOGGLEDBG( dump_stab ) ) {
@@ -225,7 +225,7 @@ void CondInfoPush(              // PUSH COND_INFO STACK
 void CondInfoPop(               // POP COND_INFO STACK
     void )
 {
-#ifndef NDEBUG
+#ifdef DEVBUILD
     COND_STK* stk = PstkPopElement( &stack_cond_blks );
     _Dump( stk, "POP" );
 #else
@@ -386,7 +386,7 @@ void CondInfoNewCtorEnd(        // CTOR OF NEW'ED OBJECT: END
 
 const char *CallbackName( void *f )
 {
-#ifndef NDEBUG
+#ifdef DEVBUILD
     cg_callback rtn;
 
     rtn = *(cg_callback *)f;

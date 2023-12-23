@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -68,6 +68,7 @@ static  bool    CanReach( label_handle lbl, ins_entry **add_ptr,
     ins_entry   *instr;
     ins_entry   *lbl_ins;
     offset      obj_len;
+    oc_class    cl;
 
     add = NULL;
     jmp = NULL;
@@ -84,8 +85,11 @@ static  bool    CanReach( label_handle lbl, ins_entry **add_ptr,
                 break;
             if( Jmp_to_lbl( instr ) ) {
                 jmp = instr;
-            } else if( _TransferClass( _Class( instr ) ) ) {
-                add = instr;
+            } else {
+                cl = _Class( instr );
+                if( _TransferClass( cl ) ) {
+                    add = instr;
+                }
             }
             if( instr == lbl_ins ) {
                 return( true );
@@ -128,7 +132,7 @@ static  bool    InRange( void )
     label_handle    jmp_lbl;
 
   optbegin
-    if( _IsModel( NO_OPTIMIZATION ) )
+    if( _IsModel( CGSW_GEN_NO_OPTIMIZATION ) )
         optreturn( false );
     jmp_lbl = Handle->redirect;
     /* we don't have a redirection for this label*/
@@ -155,14 +159,14 @@ static  void    BigBranch( ins_entry *add, ins_entry *jmp )
 */
 {
   optbegin
-    if( jmp != NULL && _IsntModel( NO_OPTIMIZATION ) ) {
+    if( jmp != NULL && _IsntModel( CGSW_GEN_NO_OPTIMIZATION ) ) {
         /* jump to a jump that's going where we want*/
         HndlRedirect( AddNewLabel( PrevIns( jmp ), 0 ) );
         ChgLblRef( FirstIns, Handle->redirect );
     } else if( InRange() ) {
         /* use old redirection label*/
         ChgLblRef( FirstIns, Handle->redirect );
-    } else if( add != NULL && _IsntModel( NO_OPTIMIZATION ) ) {
+    } else if( add != NULL && _IsntModel( CGSW_GEN_NO_OPTIMIZATION ) ) {
         /* add a jump that's in range*/
         AddNewJump( add, Handle );
         _Savings( OPT_JUMPS, -_ObjLen( NextIns( add ) ) );
@@ -188,28 +192,28 @@ static  void    SetShort( void )
 
   optbegin
     floating = false;
-    if( _Attr( FirstIns ) & ATTR_FLOAT ) {
+    if( _ChkAttr( FirstIns, OC_ATTR_FLOAT ) ) {
         floating = true;
     }
     size = OptInsSize( _Class( FirstIns ), OC_DEST_SHORT );
     if( _Class( FirstIns ) == OC_JMP ) {
         _Savings( OPT_JUMPS, _ObjLen( FirstIns ) - size );
         _ObjLen( FirstIns ) = size;
-        _SetClass( FirstIns, OC_JMP );
+        _ResetClass( FirstIns, OC_JMP );
         if( floating ) {
-            _SetAttr( FirstIns, ATTR_FLOAT );
+            _SetAttr( FirstIns, OC_ATTR_FLOAT );
         }
     } else {
         _Savings( OPT_JCONDS, _ObjLen( FirstIns ) - size );
         _ObjLen( FirstIns ) = size;
-        _SetClass( FirstIns, OC_JCOND );
+        _ResetClass( FirstIns, OC_JCOND );
         if( floating ) {
-            _SetAttr( FirstIns, ATTR_FLOAT );
+            _SetAttr( FirstIns, OC_ATTR_FLOAT );
         }
     }
     l_ins = _Label( FirstIns )->ins;
     if( l_ins != NULL ) {
-        _SetAttr( l_ins, ATTR_SHORT );
+        _SetAttr( l_ins, OC_ATTR_SHORT );
     }
   optend
 }
@@ -231,7 +235,7 @@ void    SetBranches( void )
         HndlRedirect( NULL );
         SetShort();
     } else {
-        if( _Attr( FirstIns ) & ATTR_SHORT ) {
+        if( _ChkAttr( FirstIns, OC_ATTR_SHORT ) ) {
             /* HAS to be a short branch */
             next = NextIns( FirstIns );
             if( _Class(next) == OC_JMP && CanReach(_Label(next), NULL, NULL) ) {

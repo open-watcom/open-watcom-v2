@@ -1,9 +1,11 @@
 #pmake: build trap remote os_dos cpu_i86 cpu_386 par x86
+
+tree_depth = 4
+
 host_cpu = i86
 host_os  = dos
 
 target_cpu = x86
-target_os  = dos
 
 srv = par
 which = TRAP

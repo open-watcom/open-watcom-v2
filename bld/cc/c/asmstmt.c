@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,7 +40,9 @@ static bool EndOfAsmStmt( void )
 /******************************/
 {
     if( CurToken == T_SEMI_COLON ) {
-        // ; .ASM comment
+        /*
+         * ; .ASM comment
+         */
         for( ;; ) {
             NextToken();
             if( ( CurToken == T_EOF ) || ( CurToken == T_NULL ) ) {
@@ -70,7 +72,7 @@ static void GetAsmLine( void )
     PPCTL_ENABLE_EOL();
     AsmErrLine = TokenLoc.line;
     *buf = '\0';
-    if( CMPLIT( Buffer, "_emit" ) == 0 ) {
+    if( strcmp( Buffer, "_emit" ) == 0 ) {
         strcpy( buf, AsmSysDefineByte() );
         NextToken();
     }
@@ -96,13 +98,16 @@ void AsmStmt( void )
 /******************/
 {
     bool            too_many_bytes;
-    unsigned char   buff[MAXIMUM_BYTESEQ + 32];
+    unsigned char   buff[MAXIMUM_BYTESEQ + ASM_BLOCK];
     TOKEN           skip_token;
     ppctl_t         old_ppctl;
+    TREEPTR         tree;
 
     old_ppctl = PPControl;
-    // indicate that we are inside an __asm statement so scanner will
-    // allow tokens unique to the assembler. e.g. 21h
+    /*
+     * indicate that we are inside an __asm statement so scanner will
+     * allow tokens unique to the assembler. e.g. 21h
+     */
     PPCTL_ENABLE_ASM();
 
     NextToken();
@@ -117,7 +122,9 @@ void AsmStmt( void )
                     CErr1( ERR_TOO_MANY_BYTES_IN_PRAGMA );
                     too_many_bytes = true;
                 }
-                // reset index to we don't overrun buffer
+                /*
+                 * reset index to we don't overrun buffer
+                 */
                 AsmCodeAddress = 0;
             }
             if( CurToken == T_RIGHT_BRACE )
@@ -132,7 +139,17 @@ void AsmStmt( void )
         skip_token = T_NULL;
     }
     PPControl = old_ppctl;
-    AsmSysMakeInlineAsmFunc( too_many_bytes );
+    if( AsmCodeAddress > 0 ) {
+        CreateAuxInlineFunc( too_many_bytes );
+        CurrEntry = NULL;
+        tree = LeafNode( OPR_FUNCNAME );
+        tree->op.u2.sym_handle = MakeFunction( AuxList->name, FuncNode( GetType( TYP_VOID ), FLAG_NONE, NULL ) );
+        tree = ExprNode( tree, OPR_CALL, NULL );
+        tree->u.expr_type = GetType( TYP_VOID );
+        AddStmt( tree );
+    } else {
+//        expr = NULL;
+    }
     AsmSysFini();
     if( CurToken == skip_token ) {
         NextToken();

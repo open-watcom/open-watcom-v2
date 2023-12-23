@@ -1,8 +1,0 @@
-!include $(cg_dir)/intel/386/mif/386.mif
-!include $(cg_dir)/intel/mif/intel.mif
-!include $(cg_dir)/mif/master.mif
-
-target_objs     = $(386_objs) $(intel_objs) $(cg_objs) encode.obj
-target_cpu      = 386
-
-!include $(cg_dir)/mif/target.mif

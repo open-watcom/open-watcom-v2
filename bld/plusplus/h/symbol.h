@@ -79,7 +79,7 @@ typedef enum {
 } scf_mask;
 
 // Protoypes:
-#ifndef NDEBUG
+#ifdef DEVBUILD
 SYMBOL SymDeAlias(              // REDUCE TO NON-ALIASED SYMBOL
     SYMBOL sym )                // - the symbol
 ;

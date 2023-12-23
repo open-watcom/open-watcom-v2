@@ -2,12 +2,30 @@ proj_name = bdiff
 
 bdiff_autodepend = .AUTODEPENDS
 
-#debug_bdiff = 1
+subdir_wcpatch  = wcpatch
+subdir_wpatch   = wpatch
+subdir_bpatch   = bpatch
+subdir_bdump    = bdump
+subdir_bdiff    = bdiff
 
 !include cproj.mif
 !include defrule.mif
+defrule_key = wcpatch
+extra_cpp_wcpatch_flags = -DBDIFF -D_WPATCH
+!include defrule.mif
+defrule_key = wpatch
+extra_cpp_wpatch_flags = -D_WPATCH -DBPATCH
+!include defrule.mif
+defrule_key = bpatch
+extra_cpp_bpatch_flags = -D_WPATCH -DBPATCH
+!include defrule.mif
+defrule_key = bdump
+extra_cpp_bdump_flags = -DBDUMP
+!include defrule.mif
+defrule_key = bdiff
+extra_cpp_bdiff_flags = -DBDIFF
+!include defrule.mif
 !include deftarg.mif
-
 !include wres.mif
 
 #
@@ -19,12 +37,6 @@ inc_dirs = -I. -I"../h" -I"$(dip_dir)/watcom/h"
 
 # explicit rules
 #################
-
-subdir_wcpatch  = wcpatch
-subdir_wpatch   = wpatch
-subdir_bpatch   = bpatch
-subdir_bdump    = bdump
-subdir_bdiff    = bdiff
 
 all : bpatch.exe bdiff.exe bpcmt.exe bplevel.exe bdump.exe wpatch.exe wcpatch.exe .SYMBOLIC
 
@@ -53,16 +65,12 @@ exetarg_libs        = $(wres_lib)
 # WCPATCH. Create patch.
 #
 exetarg_prebuild_objs = $(subdir_wcpatch)
-!ifdef debug_bdiff
-exetarg_objs_debug    = $(subdir_wcpatch)/symtab.obj
-!endif
 exetarg_objs = &
     $(subdir_wcpatch)/dopatch.obj &
     $(subdir_wcpatch)/msg.obj &
     $(subdir_wcpatch)/wcptchio.obj &
     $(subdir_wcpatch)/wcpatch.obj &
-    $(subdir_wcpatch)/wbdiff.obj &
-    $(subdir_wcpatch)/diff.obj $(exetarg_objs_debug)
+    $(subdir_wcpatch)/diff.obj
 exetarg_res_wresui  = wcpatch.res
 exetarg_name        = wcpatch
 !include exetarg.mif
@@ -118,15 +126,11 @@ exetarg_name        = bdump
 # BDIFF.
 #
 exetarg_prebuild_objs = $(subdir_bdiff) dusage.gh
-!ifdef debug_bdiff
-exetarg_objs_debug    = $(subdir_bdiff)/symtab.obj
-!endif
 exetarg_objs = &
     $(subdir_bdiff)/bdiff.obj &
     $(subdir_bdiff)/diff.obj &
     $(subdir_bdiff)/dopatch.obj &
-    $(subdir_bdiff)/wbdiff.obj &
-    $(subdir_bdiff)/msg.obj $(exetarg_objs_debug)
+    $(subdir_bdiff)/msg.obj
 exetarg_res_wresui  = bdiff.res
 exetarg_name        = bdiff
 !include exetarg.mif
@@ -169,30 +173,3 @@ $(exetarg_$(host_os)_manif_$(host_cpu)) : ../ntmanif.rc .EXPLICIT
     @%make echo_rc
     $(rc) $(rc_flags) -I.. $(inc_dirs_sys_nt) -I"$(watcom_dir)/h" $< -fo=$@
 !endif
-
-# implicit rules
-#################
-
-!ifdef debug_bdiff
-extra_cpp_debug_flags = -DUSE_DBGINFO
-!endif
-
-extra_cpp_wcpatch_flags = -DBDIFF -D_WPATCH $(extra_cpp_debug_flags)
-defrule_key = wcpatch
-!include defrule.mif
-
-extra_cpp_wpatch_flags = -D_WPATCH -DBPATCH
-defrule_key = wpatch
-!include defrule.mif
-
-extra_cpp_bpatch_flags = -D_WPATCH -DBPATCH
-defrule_key = bpatch
-!include defrule.mif
-
-extra_cpp_bdump_flags = -DBDUMP
-defrule_key = bdump
-!include defrule.mif
-
-extra_cpp_bdiff_flags = -DBDIFF $(extra_cpp_debug_flags)
-defrule_key = bdiff
-!include defrule.mif

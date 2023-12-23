@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -165,9 +165,12 @@ static void FAR JoinPipeThread( void FAR * _thread )
                      0, ((LINFOSEG FAR *)_MK_FP( sel_local, 0 ))->tidCurrent );
     while( me->connected && him->connected ) {
         rc = DosRead( me->write_hdl, buff, BUFF_LEN, &bytes_read );
-        if( rc != 0 || bytes_read == 0 ) break;
+        if( rc != 0 || bytes_read == 0 )
+            break;
         rc = DosWrite( him->read_hdl, buff, bytes_read, &bytes_written );
-        if( rc != 0 || bytes_written == 0 ) break;
+        if( rc != 0 || bytes_written == 0 ) {
+            break;
+        }
     }
     DoClose( me->write_hdl );
     DoClose( him->read_hdl );
@@ -181,7 +184,8 @@ static void FreeLink( a_link *junk )
 {
     a_link      **owner;
 
-    for( owner = &Links; *owner != junk; owner = &(*owner)->next ) ;
+    for( owner = &Links; *owner != junk; owner = &(*owner)->next )
+        {}
     *owner = junk->next;
     free( junk->name );
     free( junk );
@@ -209,7 +213,8 @@ static void FAR ConnectThread( void FAR * _thread )
     while( me->present ) {
         DosSleep( 100 );
         rc = DosRead( hdl, buff, BUFF_LEN, &bytes_read );
-        if( rc != 0 || bytes_read == 0 ) break;
+        if( rc != 0 || bytes_read == 0 )
+            break;
         switch( buff[0] ) {
         case END_CONNECT_SERV:
         case END_CONNECT_TRAP:
@@ -338,10 +343,11 @@ static void CheckForTraffic( HPIPE hdl )
 
     rc = DosConnectNmPipe( hdl );
     DosSleep( 500 );
-    if( rc != 0 ) return;
-    rc = DosRead( hdl, buff, BUFF_LEN-1, &bytes_read );
+    if( rc != 0 )
+        return;
+    rc = DosRead( hdl, buff, BUFF_LEN - 1, &bytes_read );
     if( rc == 0 && bytes_read != 0 ) {
-        buff[ bytes_read ] = '\0';
+        buff[bytes_read] = '\0';
     }
     if( bytes_read >= 1 ) {
         ProcessRequest( hdl, buff );
@@ -374,7 +380,8 @@ int main( int argc, char *argv[] )
     }
     rc = PipeOpen( BINDERY, &BindHdl );
     if( rc != 0 ) {
-        if( rc == PIPE_ALREADY_OPEN ) Error( TRP_NMPBIND_running );
+        if( rc == PIPE_ALREADY_OPEN )
+            Error( TRP_NMPBIND_running );
         Error( TRP_OS2_no_pipe );
     }
     for( ;; ) {

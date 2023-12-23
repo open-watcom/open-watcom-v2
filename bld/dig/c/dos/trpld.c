@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -25,8 +25,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Trap module loader for DOS.
 *
 ****************************************************************************/
 
@@ -37,10 +36,8 @@
 #include <stdlib.h>
 #include "tinyio.h"
 #include "exedos.h"
-#include "trptypes.h"
 #include "trpld.h"
-#include "tcerr.h"
-#include "digld.h"
+#include "roundmac.h"
 
 
 #define TRAP_SIGNATURE          0xDEAF
@@ -57,10 +54,10 @@ typedef struct {
 static trap_header      __far *TrapCode = NULL;
 static trap_fini_func   *FiniFunc = NULL;
 
-static char *ReadInTrap( FILE *fp )
+static digld_error ReadInTrap( FILE *fp )
 {
     dos_exe_header      hdr;
-    unsigned            size;
+    unsigned            image_size;
     unsigned            hdr_size;
     struct {
         unsigned_16     off;
@@ -73,27 +70,27 @@ static char *ReadInTrap( FILE *fp )
 
     hdr.signature = 0;
     if( DIGLoader( Read )( fp, &hdr, sizeof( hdr ) ) ) {
-        return( TC_ERR_BAD_TRAP_FILE );
+        return( DIGS_ERR_CANT_LOAD_MODULE );
     }
-    if( hdr.signature != DOS_SIGNATURE ) {
-        return( TC_ERR_BAD_TRAP_FILE );
+    if( hdr.signature != EXESIGN_DOS ) {
+        return( DIGS_ERR_BAD_MODULE_FILE );
     }
     hdr_size = hdr.hdr_size * 16;
-    size = (hdr.file_size * 0x200) - (-hdr.mod_size & 0x1ff) - hdr_size;
-    ret = TinyAllocBlock( (size + 15) >> 4 );
+    image_size = (hdr.file_size * 0x200) - (-hdr.mod_size & 0x1ff) - hdr_size;
+    ret = TinyAllocBlock( __ROUND_UP_SIZE_TO_PARA( image_size ) );
     if( TINY_ERROR( ret ) ) {
-        return( TC_ERR_OUT_OF_DOS_MEMORY );
+        return( DIGS_ERR_OUT_OF_DOS_MEMORY );
     }
     start_seg = TINY_INFO( ret );
     TrapCode = _MK_FP( start_seg, 0 );
-    DIGLoader( Seek )( fp, hdr_size, DIG_ORG );
-    DIGLoader( Read )( fp, TrapCode, size );
-    DIGLoader( Seek )( fp, hdr.reloc_offset, DIG_ORG );
+    DIGLoader( Seek )( fp, hdr_size, DIG_SEEK_ORG );
+    DIGLoader( Read )( fp, TrapCode, image_size );
+    DIGLoader( Seek )( fp, hdr.reloc_offset, DIG_SEEK_ORG );
     p = &buff[NUM_BUFF_RELOCS];
     for( relocs = hdr.num_relocs; relocs != 0; --relocs ) {
         if( p >= &buff[ NUM_BUFF_RELOCS ] ) {
             if( DIGLoader( Read )( fp, buff, sizeof( buff ) ) ) {
-                return( TC_ERR_BAD_TRAP_FILE );
+                return( DIGS_ERR_BAD_MODULE_FILE );
             }
             p = buff;
         }
@@ -101,10 +98,10 @@ static char *ReadInTrap( FILE *fp )
         *fixup += start_seg;
         ++p;
     }
-    return( NULL );
+    return( DIGS_OK );
 }
 
-void KillTrap( void )
+void UnLoadTrap( void )
 {
     ReqFunc = NULL;
     if( FiniFunc != NULL ) {
@@ -117,54 +114,53 @@ void KillTrap( void )
     }
 }
 
-char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
+digld_error LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
 {
     FILE            *fp;
     trap_init_func  *init_func;
-    char            filename[256];
-    char            *p;
-    char            chr;
+    char            filename[_MAX_PATH];
+    const char      *base_name;
+    digld_error     err;
+    size_t          len;
 
     if( parms == NULL || *parms == '\0' )
         parms = DEFAULT_TRP_NAME;
-    p = filename;
-    for( ; (chr = *parms) != '\0'; parms++ ) {
-        if( chr == TRAP_PARM_SEPARATOR ) {
+    base_name = parms;
+    len = 0;
+    for( ; *parms != '\0'; parms++ ) {
+        if( *parms == TRAP_PARM_SEPARATOR ) {
             parms++;
             break;
         }
-        *p++ = chr;
+        len++;
     }
-#ifdef USE_FILENAME_VERSION
-    *p++ = ( USE_FILENAME_VERSION / 10 ) + '0';
-    *p++ = ( USE_FILENAME_VERSION % 10 ) + '0';
-#endif
-    *p = '\0';
-    fp = DIGLoader( Open )( filename, p - filename, "trp", NULL, 0 );
+    if( DIGLoader( Find )( DIG_FILETYPE_EXE, base_name, len, ".trp", filename, sizeof( filename ) ) == 0 ) {
+        return( DIGS_ERR_CANT_FIND_MODULE );
+    }
+    fp = DIGLoader( Open )( filename );
     if( fp == NULL ) {
-        sprintf( buff, "%s '%s'", TC_ERR_CANT_LOAD_TRAP, filename );
-        return( buff );
+        return( DIGS_ERR_CANT_LOAD_MODULE );
     }
-    p = ReadInTrap( fp );
+    err = ReadInTrap( fp );
     DIGLoader( Close )( fp );
-    if( p != NULL ) {
-        strcpy( buff, p );
-    } else {
-        strcpy( buff, TC_ERR_WRONG_TRAP_VERSION );
-        if( TrapCode->signature == TRAP_SIGNATURE ) {
-            init_func = _MK_FP( _FP_SEG( TrapCode ), TrapCode->init_off );
-            FiniFunc = _MK_FP( _FP_SEG( TrapCode ), TrapCode->fini_off );
-            ReqFunc = _MK_FP( _FP_SEG( TrapCode ), TrapCode->req_off );
-            *trap_ver = init_func( parms, buff, trap_ver->remote );
-            if( buff[0] == '\0' ) {
-                if( TrapVersionOK( *trap_ver ) ) {
-                    TrapVer = *trap_ver;
-                    return( NULL );
-                }
-                strcpy( buff, TC_ERR_WRONG_TRAP_VERSION );
+    if( err != DIGS_OK ) {
+        return( err );
+    }
+    err = DIGS_ERR_BAD_MODULE_FILE;
+    if( TrapCode->signature == TRAP_SIGNATURE ) {
+        init_func = _MK_FP( _FP_SEG( TrapCode ), TrapCode->init_off );
+        FiniFunc = _MK_FP( _FP_SEG( TrapCode ), TrapCode->fini_off );
+        ReqFunc = _MK_FP( _FP_SEG( TrapCode ), TrapCode->req_off );
+        *trap_ver = init_func( parms, buff, trap_ver->remote );
+        err = DIGS_ERR_BUF;
+        if( buff[0] == '\0' ) {
+            if( TrapVersionOK( *trap_ver ) ) {
+                TrapVer = *trap_ver;
+                return( DIGS_OK );
             }
+            err = DIGS_ERR_WRONG_MODULE_VERSION;
         }
     }
-    KillTrap();
-    return( buff );
+    UnLoadTrap();
+    return( err );
 }

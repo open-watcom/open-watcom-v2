@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -87,7 +87,7 @@ static HBRUSH       btnFaceBrush;
 static COLORREF     btnColor;
 static WPI_INST     appInst;
 #ifdef __OS2_PM__
-static WPI_PROC     oldFrameProc;
+static WPI_WNDPROC  oldFrameProc;
 #endif
 
 static tool     *currTool;
@@ -826,7 +826,7 @@ void ToolBarDisplay( toolbar *bar, TOOLDISPLAYINFO *disp )
     frame = WinCreateStdWindow( parent, 0L, &disp->style, NULL, "", 0L, (HMODULE)0, 0, NULL );
 
     WinSetOwner( frame, bar->owner );
-    oldFrameProc = _wpi_subclasswindow( frame, (WPI_PROC)FrameProc );
+    oldFrameProc = _wpi_subclasswindow( frame, FrameProc );
 
     WinSetPresParam( frame, PP_BACKGROUNDCOLORINDEX, (ULONG)sizeof( LONG ) + 1, (PVOID)&btnColor );
     WinCreateWindow( frame, className, "", WS_VISIBLE, 0, 0, 0, 0, frame, HWND_TOP, FID_CLIENT, (PVOID)bar, NULL );

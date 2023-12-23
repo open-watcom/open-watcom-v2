@@ -7,7 +7,7 @@
 # included this one.
 # NB: PROJNAME must be the library's base name.
 
-cdsay <PROJDIR>
+cdsay "<PROJDIR>"
 
 [ BLOCK .<PROJNAME> . ]
     error PROJNAME must be set!
@@ -29,14 +29,14 @@ cdsay <PROJDIR>
     cdsay <OWOBJDIR>
     wmake -h -f ../binmake bootstrap=1
     cdsay ..
-    <CPCMD> <OWOBJDIR>/<PROJNAME><DYEXT> <OWBINDIR>/<OWOBJDIR>/<PROJNAME><DYEXT>
+    <CPCMD> <OWOBJDIR>/<PROJNAME><DYEXT> "<OWROOT>/build/<OWOBJDIR>/<PROJNAME><DYEXT>"
 
 [ BLOCK <BLDRULE> bootclean ]
 #============================
     echo rm -rf <OWOBJDIR>
     rm -rf <OWOBJDIR>
-    echo rm -f <OWBINDIR>/<OWOBJDIR>/<PROJNAME><DYEXT>
-    rm -f <OWBINDIR>/<OWOBJDIR>/<PROJNAME><DYEXT>
+    echo rm -f "<OWROOT>/build/<OWOBJDIR>/<PROJNAME><DYEXT>"
+    rm -f "<OWROOT>/build/<OWOBJDIR>/<PROJNAME><DYEXT>"
 
 [ BLOCK . . ]
     set PROJPMAKE=

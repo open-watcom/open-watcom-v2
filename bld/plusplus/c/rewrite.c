@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,7 +44,7 @@
 #include "initdefs.h"
 #include "pcheader.h"
 #include "context.h"
-#ifndef NDEBUG
+#ifdef DEVBUILD
     #include "dbg.h"
 #endif
 
@@ -721,7 +721,7 @@ REWRITE *RewritePackageTemplateArgument( void )
             break;
         case T_RSHIFT:
             // see Right Angle Brackets (N1757/05-0017)
-            if( CompFlags.enable_std0x
+            if( CHECK_STD( >= , CXX0X )
              && ( brace_depth == 0 ) && ( bracket_depth == 0 )
              && ( paren_depth == 0 ) ) {
                 if( angle_depth == 1 ) {
@@ -1116,7 +1116,7 @@ void RewriteToken( void )
     default:
         break;
     }
-#ifndef NDEBUG
+#ifdef DEVBUILD
     CtxScanToken();
     DumpToken();
 #endif

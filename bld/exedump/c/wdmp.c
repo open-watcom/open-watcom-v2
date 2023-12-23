@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,6 +35,7 @@
 #include <string.h>
 #include <ctype.h>
 #include <setjmp.h>
+#include <errno.h>
 #include "wio.h"
 #include "wdglb.h"
 #include "wdfunc.h"
@@ -183,11 +184,15 @@ static int open_files( void )
 static void wbanner( void )
 /*************************/
 {
-    Wdputs( banner1w( "Executable Image Dump Utility", BAN_VER_STR ) "\n" );
-    Wdputs( banner2 "\n" );
-    Wdputs( banner2a( 1984 ) "\n" );
-    Wdputs( banner3 "\n" );
-    Wdputs( banner3a "\n\n" );
+    Wdputs(
+        banner1t( "Executable Image Dump Utility" ) "\n"
+        banner1v( BAN_VER_STR ) "\n"
+        banner2 "\n"
+        banner2a( 1984 ) "\n"
+        banner3 "\n"
+        banner3a "\n"
+        "\n"
+    );
 }
 
 /*
@@ -196,34 +201,35 @@ static void wbanner( void )
 static void usage( void )
 /***********************/
 {
-    Wdputs( "Usage: wdump [-?abdefipqrsx] [-A<num>] [-B<off>] [-D<opt>] [-S<num>] <file>\n" );
-    Wdputs( "  <file> is a DOS EXE file, a Windows or OS/2 executable or DLL,\n" );
-    Wdputs( "            a PharLap executable, NLM, a QNX executable,\n" );
-    Wdputs( "            an ELF executable, shared library or object file,\n" );
-    Wdputs( "            or a COFF object.\n" );
-    Wdputs( "  options:\n" );
-    Wdputs( "        -a causes all segment, resource and fixup info to be dumped\n" );
-    Wdputs( "        -A<segnum> like -a but only applies to segment <segnum>\n" );
-    Wdputs( "        -b causes binary dump of the entire file\n" );
-    Wdputs( "        -B<hexoff> causes binary dump beginning at offset in hex\n" );
-    Wdputs( "        -d causes debugging information to be dumped\n" );
-    Wdputs( "        -D<opts> controls debugging information to be dumped\n" );
-    Wdputs( "           a : show addr infomation\n" );
-    Wdputs( "           g : show global infomation\n" );
-    Wdputs( "           l : show locals (only if m specified)\n" );
-    Wdputs( "           m : show module informatiom\n" );
-    Wdputs( "           n : show line numbers (only if m specified)\n" );
-    Wdputs( "           t : show types (only if m specified)\n" );
-    Wdputs( "           x : show all information\n" );
-    Wdputs( "        -e causes executable information to be dumped as well\n" );
-    Wdputs( "        -f causes fixup information to be dumped\n" );
-    Wdputs( "        -i dump export information for PE DLLs\n" );
-    Wdputs( "        -p causes LE/LX page map to be dumped\n" );
-    Wdputs( "        -q quiet dump - don't write banner\n" );
-    Wdputs( "        -r causes more resource information to be dumped\n" );
-    Wdputs( "        -s causes segments' data to be dumped\n" );
-    Wdputs( "        -S<segnum> like -s but only applies to segment <segnum>\n" );
-    Wdputs( "        -x dump export information for NE/LX DLLs in .DEF format\n" );
+    Wdputs(
+        "Usage: wdump [-?abdefipqrsx] [-A<num>] [-B<off>] [-D<opt>] [-S<num>] <file>" "\n"
+        "  <file> is a DOS EXE file, a Windows or OS/2 executable or DLL," "\n"
+        "     a PharLap executable, NLM, a QNX executable, an ELF executable," "\n"
+        "     shared library or object file, or a COFF object." "\n"
+        "  options:" "\n"
+        "    -a causes all segment, resource and fixup info to be dumped" "\n"
+        "    -A<segnum> like -a but only applies to segment <segnum>" "\n"
+        "    -b causes binary dump of the entire file" "\n"
+        "    -B<hexoff> causes binary dump beginning at offset in hex" "\n"
+        "    -d causes debugging information to be dumped" "\n"
+        "    -D<opts> controls debugging information to be dumped" "\n"
+        "       a : show addr infomation" "\n"
+        "       g : show global infomation" "\n"
+        "       l : show locals (only if m specified)" "\n"
+        "       m : show module informatiom" "\n"
+        "       n : show line numbers (only if m specified)" "\n"
+        "       t : show types (only if m specified)" "\n"
+        "       x : show all information" "\n"
+        "    -e causes executable information to be dumped as well" "\n"
+        "    -f causes fixup information to be dumped" "\n"
+        "    -i dump export information for PE DLLs" "\n"
+        "    -p causes LE/LX page map to be dumped" "\n"
+        "    -q quiet dump - don't write banner" "\n"
+        "    -r causes more resource information to be dumped" "\n"
+        "    -s causes segments' data to be dumped" "\n"
+        "    -S<segnum> like -s but only applies to segment <segnum>" "\n"
+        "    -x dump export information for NE/LX DLLs in .DEF format" "\n"
+    );
 }
 
 /*

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,43 +37,6 @@
 #include "i64.h"
 #include "dumpapi.h"
 
-void EnumInit( void )
-{
-    id_hash_idx   h;
-
-    for( h = 0; h < ID_HASH_SIZE; h++ ) {
-        EnumTable[h] = NULL;
-    }
-    EnumRecSize = 0;
-}
-
-
-static ENUMPTR EnumLkAdd( TAGPTR tag )
-{
-    ENUMPTR     esym;
-    size_t      len;
-
-    VfyNewSym( HashValue, Buffer );
-    len = sizeof( ENUMDEFN ) + TokenLen;
-    if( len > EnumRecSize )
-        EnumRecSize = len;
-    esym = (ENUMPTR)CPermAlloc( len );
-    memcpy( esym->name, Buffer, TokenLen + 1 );
-    esym->parent = tag;
-    esym->hash = HashValue;
-    esym->src_loc = TokenLoc;
-    esym->next_enum = EnumTable[esym->hash];
-    ++EnumCount;
-    if( tag->u.enum_list == NULL ) {
-        tag->u.enum_list = esym;
-    }
-#if 0
-    if( CompFlags.emit_browser_info ) {
-        esym->xref = NewXref( NULL );
-    }
-#endif
-    return( esym );
-}
 
 #if defined( WATCOM_BIG_ENDIAN )
 #   define i64val(h,l) { h, l }
@@ -81,28 +44,30 @@ static ENUMPTR EnumLkAdd( TAGPTR tag )
 #   define i64val(h,l) { l, h }
 #endif
 
+#if _CPU == 8086
+#define ENUM_INT    ENUM_S16
+#else
+#define ENUM_INT    ENUM_S32
+#endif
+
 enum enum_rng {
     ENUM_UNDEF = -1,
     ENUM_S8,
     ENUM_U8,
     ENUM_S16,
-#if TARGET_INT == 2
-    ENUM_INT = ENUM_S16,
-#endif
     ENUM_U16,
     ENUM_S32,
-#if TARGET_INT == 4
-    ENUM_INT = ENUM_S32,
-#endif
     ENUM_U32,
     ENUM_S64,
     ENUM_U64,
     ENUM_SIZE,
 };
+
 enum low_high {
     LOW  =  0,
     HIGH =  1,
 };
+
 static uint64 const RangeTable[ENUM_SIZE][2] =
 { //  low                              high
     { i64val( 0xFFFFFFFF, 0xFFFFFF80 ),i64val( 0x00000000, 0x0000007F ) },//s8
@@ -115,27 +80,66 @@ static uint64 const RangeTable[ENUM_SIZE][2] =
     { i64val( 0x00000000, 0x00000000 ),i64val( 0xFFFFFFFF, 0xFFFFFFFF ) },//u64
 };
 
-struct { DATA_TYPE decl_type; target_size size; } ItypeTable[ENUM_SIZE] =
-{
-    { TYP_CHAR, TARGET_CHAR  },    //S8
-    { TYP_UCHAR,TARGET_CHAR  },    //U8
-#if TARGET_INT == 2
-    { TYP_INT,  TARGET_INT  },     //S16
-    { TYP_UINT, TARGET_INT  },     //U16
+struct {
+    DATA_TYPE decl_type;
+    target_size size;
+} ItypeTable[ENUM_SIZE] = {
+    { TYP_CHAR,     TARGET_CHAR },      //S8
+    { TYP_UCHAR,    TARGET_CHAR },      //U8
+#if _CPU == 8086
+    { TYP_INT,      TARGET_INT },       //S16
+    { TYP_UINT,     TARGET_INT },       //U16
+    { TYP_LONG,     TARGET_LONG },      //S32
+    { TYP_ULONG,    TARGET_LONG },      //U32
 #else
-    { TYP_SHORT, TARGET_SHORT },   //S16
-    { TYP_USHORT,TARGET_SHORT },   //U16
+    { TYP_SHORT,    TARGET_SHORT },     //S16
+    { TYP_USHORT,   TARGET_SHORT },     //U16
+    { TYP_INT,      TARGET_INT },       //S32
+    { TYP_UINT,     TARGET_INT },       //U32
 #endif
-#if TARGET_INT == 4
-    { TYP_INT,   TARGET_INT  },    //S32
-    { TYP_UINT,  TARGET_INT  },    //U32
-#else
-    { TYP_LONG,  TARGET_LONG },    //S32
-    { TYP_ULONG, TARGET_LONG },    //U32
-#endif
-    { TYP_LONG64, TARGET_LONG64  },//S64
-    { TYP_ULONG64, TARGET_LONG64 },//U64
+    { TYP_LONG64,   TARGET_LONG64 },    //S64
+    { TYP_ULONG64,  TARGET_LONG64 },    //U64
 };
+
+void EnumInit( void )
+{
+    id_hash_idx   hash;
+
+    for( hash = 0; hash < ID_HASH_SIZE; hash++ ) {
+        EnumTable[hash] = NULL;
+    }
+    EnumRecSize = 0;
+}
+
+
+static ENUMPTR EnumLkAdd( TAGPTR tag )
+{
+    ENUMPTR     esym;
+    size_t      len;
+    id_hash_idx hash;
+
+    hash = CalcHashID( Buffer );
+    VfyNewSym( hash, Buffer );
+    len = sizeof( ENUMDEFN ) + TokenLen;
+    if( EnumRecSize < len )
+        EnumRecSize = len;
+    esym = (ENUMPTR)CPermAlloc( len );
+    strcpy( esym->name, Buffer );
+    esym->parent = tag;
+    esym->hash = hash;
+    esym->src_loc = TokenLoc;
+    esym->next_enum = EnumTable[hash];
+    ++EnumCount;
+    if( tag->u.enum_list == NULL ) {
+        tag->u.enum_list = esym;
+    }
+#if 0
+    if( CompFlags.emit_browser_info ) {
+        esym->xref = NewXref( NULL );
+    }
+#endif
+    return( esym );
+}
 
 static void get_msg_range( char *buff, enum enum_rng index )
 {
@@ -155,11 +159,12 @@ TYPEPTR EnumDecl( type_modifiers flags )
 
     NextToken();
     if( CurToken == T_ID ) {
-        /* could be: (1) "enum" <id> ";"
-                     (2) "enum" <id> <variable_name> ";"
-                     (3) "enum" <id> "{" <enum_const_decl> ... "}"
-        */
-        tag = TagLookup();
+        /*
+         * could be: (1) "enum" <id> ";"
+         *           (2) "enum" <id> <variable_name> ";"
+         *           (3) "enum" <id> "{" <enum_const_decl> ... "}"
+         */
+        tag = TagLookup( Buffer );
         NextToken();
         if( CurToken != T_LEFT_BRACE ) {
             typ = tag->sym_type;
@@ -261,16 +266,22 @@ TYPEPTR EnumDecl( type_modifiers flags )
                 }
             }
             error = ENUM_UNDEF;
-            if( !CompFlags.extensions_enabled && ( index > ENUM_INT )) {
-                error = ENUM_INT;
+            if( index > ENUM_INT ) {
+                if( !CompFlags.extensions_enabled ) {
+                    error = ENUM_INT;
+                }
             }
             if( index >= ENUM_SIZE ) {
-                // overflow signed maximum range
+                /*
+                 * overflow signed maximum range
+                 */
                 if( error == ENUM_UNDEF ) {
                     error = const_index;
                 }
             } else if(( const_index == ENUM_SIZE - 1 ) && minus ) {
-                // overflow unsigned maximum range by any negative signed value
+                /*
+                 * overflow unsigned maximum range by any negative signed value
+                 */
                 if( error == ENUM_UNDEF )
                     error = const_index;
                 step = 1;
@@ -278,7 +289,9 @@ TYPEPTR EnumDecl( type_modifiers flags )
                 if( !has_sign && minus ) {
                     has_sign = true;
                     if( index < const_index ) {
-                        // round up to signed
+                        /*
+                         * round up to signed
+                         */
                         index = ( const_index + 1 ) & ~1;
                     }
                 }
@@ -301,7 +314,7 @@ TYPEPTR EnumDecl( type_modifiers flags )
             U64Add( &n, &Inc, &n );
             MustRecog( T_COMMA );
             if( !CompFlags.extensions_enabled
-              && !CompFlags.c99_extensions
+              && CHECK_STD( < , C99 )
               && ( CurToken == T_RIGHT_BRACE )) {
                 ExpectIdentifier();
             }
@@ -312,14 +325,12 @@ TYPEPTR EnumDecl( type_modifiers flags )
 }
 
 
-ENUMPTR EnumLookup( id_hash_idx h, const char *name )
+ENUMPTR EnumLookup( id_hash_idx hash, const char *name )
 {
     ENUMPTR     esym;
-    size_t      len;
 
-    len = strlen( name ) + 1;
-    for( esym = EnumTable[h]; esym != NULL; esym = esym->next_enum ) {
-        if( memcmp( esym->name, name, len ) == 0 ) {
+    for( esym = EnumTable[hash]; esym != NULL; esym = esym->next_enum ) {
+        if( strcmp( esym->name, name ) == 0 ) {
             break;
         }
     }
@@ -330,10 +341,10 @@ ENUMPTR EnumLookup( id_hash_idx h, const char *name )
 void FreeEnums( void )
 {
     ENUMPTR         esym;
-    id_hash_idx     h;
+    id_hash_idx     hash;
 
-    for( h = 0; h < ID_HASH_SIZE; h++ ) {
-        for( ; (esym = EnumTable[h]) != NULL; EnumTable[h] = esym->next_enum ) {
+    for( hash = 0; hash < ID_HASH_SIZE; hash++ ) {
+        for( ; (esym = EnumTable[hash]) != NULL; EnumTable[hash] = esym->next_enum ) {
             if( !ChkEqSymLevel( esym->parent ) ) {
                 break;
             }
@@ -341,21 +352,21 @@ void FreeEnums( void )
     }
 }
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 
 void DumpEnumTable( void )
 {
     ENUMPTR         esym;
-    id_hash_idx     h;
+    id_hash_idx     hash;
 
     puts( "ENUM TABLE DUMP" );
-    for( h = 0; h < ID_HASH_SIZE; h++ ) {
-        for( esym = EnumTable[h]; esym != NULL; esym = esym->next_enum ) {
+    for( hash = 0; hash < ID_HASH_SIZE; hash++ ) {
+        for( esym = EnumTable[hash]; esym != NULL; esym = esym->next_enum ) {
             if( ChkEqSymLevel( esym->parent ) ) {
                 printf( "%s = %lld\n", esym->name, esym->value.u._64[0] );
             }
         }
-        printf( "---------%d----------\n", h );
+        printf( "---------%d----------\n", hash );
     }
 }
 

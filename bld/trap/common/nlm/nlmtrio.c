@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,28 +40,27 @@
 #undef ConsolePrintf
 #include "nw3to5.h"
 #include "servio.h"
-
-#include <ecb.h>
-#if defined ( __NW50__ )
-void  NXVmExit( int status ) ;
+#include "nlmlibc.h"
+#if !defined( __NETWARE_LIBC__ )
+    #include <ecb.h>
 #endif
+
 
 extern struct ScreenStruct                     *screenID;
 extern struct LoadDefinitionStruct             *MyNLMHandle;
 
-void Output( const char *str )
+void OutputLine( const char *str )
 {
     ActivateScreen( screenID );
-    OutputToScreen( screenID, "%s", str );
+    OutputToScreen( screenID, "%s\n", str );
     SetInputToOutputCursorPosition( screenID );
 }
 
-
-void SayGNiteGracey( int return_code )
+void ServTerminate( int return_code )
 {
     return_code = return_code;
     KillMe( MyNLMHandle );
-#if defined ( __NW50__ )
+#if defined( __NETWARE_LIBC__ )
     NXVmExit(return_code);
     // never return
 #else
@@ -72,8 +72,6 @@ void SayGNiteGracey( int return_code )
 void StartupErr( const char *err )
 {
     OutputToScreen( systemConsoleScreen, "%s\r\n", err );
-    SayGNiteGracey( 1 );
-    // never return
 }
 
 int KeyPress( void )
@@ -86,7 +84,7 @@ int KeyGet( void )
    BYTE value, scanCode, type;
 
    SetInputToOutputCursorPosition( screenID );
-   GetKey( screenID, &type, &value, NULL, &scanCode, 0); /* RELINQUISH ? */
+   GetKey( screenID, &type, &value, NULL, &scanCode, 0 ); /* RELINQUISH ? */
    return( value );
 }
 

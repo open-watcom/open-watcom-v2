@@ -30,7 +30,7 @@ libname = clibdl$(libname_$(processor))
 libname = clib$(libname_$(processor))
 !endif
 
-!ifeq release 0
+!ifneq debug 0
 clib_lib_flags  = -b-c-n-pa$(extra_clib_lib_flags)
 !else
 clib_lib_flags  = -b-c-n-pa-s-t-zld$(extra_clib_lib_flags)
@@ -42,4 +42,10 @@ clib_linkage_flags_286_static=-z
 clib_linkage_flags_286_dynamic=-z=export.tmp
 clib_linkage_flags_386_static=-z
 clib_linkage_flags_386_dynamic=-z=export.tmp
+clib_linkage_flags_axp_static=-z
+clib_linkage_flags_axp_dynamic=-z=export.tmp
+clib_linkage_flags_ppc_static=-z
+clib_linkage_flags_ppc_dynamic=-z=export.tmp
+clib_linkage_flags_mps_static=-z
+clib_linkage_flags_mps_dynamic=-z=export.tmp
 clib_linkage_flags=$(clib_linkage_flags_$(processor)_$(linkage))

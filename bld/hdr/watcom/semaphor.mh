@@ -18,8 +18,6 @@
 
 :include sem_t.sp
 
-/* We only support this currently on Intel chips */
-#ifdef __386__
 _WCRTLINK extern int sem_init( sem_t *__sem, int __pshared, unsigned int __value );
 _WCRTLINK extern int sem_destroy( sem_t *__sem );
 _WCRTLINK extern int sem_getvalue( sem_t *__sem, int *__value );
@@ -27,7 +25,6 @@ _WCRTLINK extern int sem_post( sem_t *__sem );
 _WCRTLINK extern int sem_trywait( sem_t *__sem );
 _WCRTLINK extern int sem_wait( sem_t *__sem );
 _WCRTLINK extern int sem_timedwait( sem_t *__sem, const struct timespec *__abstime );
-#endif
 
 :include cplusepi.sp
 

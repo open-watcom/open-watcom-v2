@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -214,7 +214,7 @@ void ConfigFlip( void )
     char *p;
 
     ReqEOC();
-    p = StrCopy( GetCmdName( CMD_FLIP ), TxtBuff );
+    p = StrCopyDst( GetCmdName( CMD_FLIP ), TxtBuff );
     *p++ = ' ';
     GetSwitchOnly( _IsOff( SW_FLIP ), p );
     DUIDlgTxt( TxtBuff );
@@ -557,10 +557,10 @@ static void FormThdState( thread_state *thd, char *buff, unsigned buff_len )
     case THD_DEAD:  p1 = LIT_ENG( Dead );     break;
     default:        p1 = "";              break;
     }
-    p1 = StrCopy( p1, p );
+    p1 = StrCopyDst( p1, p );
     while( (p1 - p) < 10 )
         *p1++ = ' ';
-    StrCopy( thd->name, p1 );
+    StrCopyDst( thd->name, p1 );
 }
 
 

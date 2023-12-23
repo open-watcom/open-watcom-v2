@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -160,11 +160,11 @@ typedef enum {
 } flip_types;
 
 typedef enum {
-    MD_DEFAULT,
-    MD_MONO,
-    MD_COLOUR,
-    MD_EGA,
-    MD_HERC
+    VMODE_DEFAULT,
+    VMODE_MONO,
+    VMODE_COLOUR,
+    VMODE_EGA,
+    VMODE_HERC
 } mode_types;
 
 typedef enum {

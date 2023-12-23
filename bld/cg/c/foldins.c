@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -59,7 +59,7 @@ bool     IsTrickyPointerConv( instruction *ins )
     to be carefully converted with taking segments into account?
 */
 {
-#if _TARGET & ( _TARG_80386 | _TARG_8086 )
+#if _TARGET_INTEL
     if( (ins->head.opcode == OP_CONVERT) && _IsPointer( ins->type_class ) ) {
         if( ins->base_type_class == U2 && TypeClassSize[ins->type_class] > WORD_SIZE ) {
             return( true );
@@ -427,7 +427,7 @@ bool    ConstFold( block *root ) {
     change = false;
     blk = root;
     for( ;; ) {
-        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = next ) {
+        for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = next ) {
             next = ins->head.next;
             if( FoldIns( ins ) != NULL ) {
                 change = true;

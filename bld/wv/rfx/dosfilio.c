@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -102,7 +102,7 @@ size_t LocalRead( sys_handle sh, void *ptr, size_t len )
         ret = TinyRead( SYSH2LH( sh ), ptr, piece_len );
         if( TINY_ERROR( ret ) ) {
             StashErrCode( TINY_INFO( ret ), OP_LOCAL );
-            return( ERR_RETURN );
+            return( ERR_READ );
         }
         read_len = TINY_INFO( ret );
         total += read_len;
@@ -129,7 +129,7 @@ size_t LocalWrite( sys_handle sh, const void *ptr, size_t len )
         ret = TinyWrite( SYSH2LH( sh ), ptr, piece_len );
         if( TINY_ERROR( ret ) ) {
             StashErrCode( TINY_INFO( ret ), OP_LOCAL );
-            return( ERR_RETURN );
+            return( ERR_WRITE );
         }
         write_len = TINY_INFO( ret );
         total += write_len;

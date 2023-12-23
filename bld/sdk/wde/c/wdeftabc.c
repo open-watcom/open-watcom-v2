@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -126,7 +127,7 @@ OBJPTR WdeMakeTabC( OBJPTR parent, RECT *obj_rect, OBJPTR handle, DialogStyle st
     style |= WS_BORDER | WS_VISIBLE | WS_TABSTOP | WS_CHILD;
 
     SETCTL_STYLE( WdeDefaultTabC, style );
-    SETCTL_TEXT( WdeDefaultTabC, ResStrToNameOrOrd( text ) );
+    SETCTL_TEXT( WdeDefaultTabC, ResStrToNameOrOrdinal( text ) );
     SETCTL_ID( WdeDefaultTabC, WdeGetNextControlID() );
 
     WdeChangeSizeToDefIfSmallRect( parent, id, obj_rect );
@@ -262,8 +263,7 @@ void WdeTabCFini( void )
 
 bool WdeTabCDestroy( WdeTabCObject *obj, bool *flag, bool *p2 )
 {
-    /* touch unused vars to get rid of warning */
-    _wde_touch( p2 );
+    /* unused parameters */ (void)p2;
 
     if( !Forward( obj->control, DESTROY, flag, NULL ) ) {
         WdeWriteTrail( "WdeTabCDestroy: Control DESTROY failed" );
@@ -279,8 +279,7 @@ bool WdeTabCValidateAction( WdeTabCObject *obj, ACTION_ID *act, void *p2 )
 {
     int     i;
 
-    /* touch unused vars to get rid of warning */
-    _wde_touch( p2 );
+    /* unused parameters */ (void)p2;
 
     for( i = 0; i < MAX_ACTIONS; i++ ) {
         if( WdeTabCActions[i].id == *act ) {
@@ -325,8 +324,7 @@ bool WdeTabCCopyObject( WdeTabCObject *obj, WdeTabCObject **new, OBJPTR handle )
 
 bool WdeTabCIdentify( WdeTabCObject *obj, OBJ_ID *id, void *p2 )
 {
-    /* touch unused vars to get rid of warning */
-    _wde_touch( p2 );
+    /* unused parameters */ (void)p2;
 
     *id = obj->object_id;
 
@@ -335,9 +333,7 @@ bool WdeTabCIdentify( WdeTabCObject *obj, OBJ_ID *id, void *p2 )
 
 bool WdeTabCGetWndProc( WdeTabCObject *obj, WNDPROC *proc, void *p2 )
 {
-    /* touch unused vars to get rid of warning */
-    _wde_touch( obj );
-    _wde_touch( p2 );
+    /* unused parameters */ (void)obj; (void)p2;
 
     *proc = WdeTabCSuperClassProc;
 
@@ -346,9 +342,7 @@ bool WdeTabCGetWndProc( WdeTabCObject *obj, WNDPROC *proc, void *p2 )
 
 bool WdeTabCGetWindowClass( WdeTabCObject *obj, char **class, void *p2 )
 {
-    /* touch unused vars to get rid of warning */
-    _wde_touch( obj );
-    _wde_touch( p2 );
+    /* unused parameters */ (void)obj; (void)p2;
 
     *class = WWC_TABCONTROL;
 
@@ -359,9 +353,7 @@ bool WdeTabCDefine( WdeTabCObject *obj, POINT *pnt, void *p2 )
 {
     WdeDefineObjectInfo  o_info;
 
-    /* touch unused vars to get rid of warning */
-    _wde_touch( pnt );
-    _wde_touch( p2 );
+    /* unused parameters */ (void)pnt; (void)p2;
 
     o_info.obj = obj->object_handle;
     o_info.obj_id = obj->object_id;
@@ -441,8 +433,9 @@ void WdeTabCSetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
     // set the extended style controls only
     WdeEXSetDefineInfo( o_info, hDlg );
 #else
-    _wde_touch( o_info );
-    _wde_touch( hDlg );
+
+    /* unused parameters */ (void)o_info; (void)hDlg;
+
 #endif
 }
 
@@ -489,8 +482,9 @@ void WdeTabCGetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
     // get the extended control settings
     WdeEXGetDefineInfo( o_info, hDlg );
 #else
-    _wde_touch( o_info );
-    _wde_touch( hDlg );
+
+    /* unused parameters */ (void)o_info; (void)hDlg;
+
 #endif
 }
 
@@ -500,9 +494,7 @@ bool WdeTabCDefineHook( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam, D
     bool processed;
     WORD wp;
 
-    /* touch unused vars to get rid of warning */
-    _wde_touch( mask );
-    _wde_touch( lParam );
+    /* unused parameters */ (void)mask; (void)lParam;
 
     processed = false;
 
@@ -566,11 +558,9 @@ bool WdeTabCDefineHook( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam, D
 
     return( processed );
 #else
-    _wde_touch( hDlg );
-    _wde_touch( message );
-    _wde_touch( wParam );
-    _wde_touch( lParam );
-    _wde_touch( mask );
+
+    /* unused parameters */ (void)hDlg; (void)message; (void)wParam; (void)lParam; (void)mask;
+
     return( false );
 #endif
 }

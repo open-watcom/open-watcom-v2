@@ -10,6 +10,7 @@ rtdll_host_cpu_287=i86
 rtdll_host_cpu_386=386
 rtdll_host_cpu_387=386
 rtdll_host_cpu_axp=axp
+rtdll_host_cpu_mps=mps
 rtdll_host_cpu_ppc=ppc
 host_cpu = $(rtdll_host_cpu_$(processor))
 
@@ -25,7 +26,7 @@ host_os=$(rtdll_host_os_$(system))
 
 !ifdef profile
 rtdll_nosymfile = 1
-!else ifeq release 0
+!else ifdef lib_debug
 rtdll_nosymfile = 1
 !endif
 
@@ -55,7 +56,7 @@ patch_level=0
 # lflags
 #
 extra_l_flags_dll = option impfile=$(dllname).ilb reference __DLLstart_ disable 121 $(rtdll_dllbase_$(system)_$(host_cpu)_$(component))
-!ifeq release 0
+!ifneq debug 0
 extra_l_flags_dll += option mangle,artificial,verbose
 !endif
 
@@ -65,7 +66,7 @@ extra_l_flags_dll_nt = initinstance terminstance
 #
 # libflags
 #
-!ifeq release 0
+!ifneq debug 0
 extra_lib_flags = -irn
 !else
 extra_lib_flags = -irn -s-t-zld
@@ -100,6 +101,8 @@ dlltarg_libs          = $(dll_libs)
 dlltarg_res_version_nt_386 = version.res
 dlltarg_res_version_nt_x64 = version.res
 dlltarg_res_version_nt_axp = version.res
+dlltarg_res_version_nt_mps = version.res
+dlltarg_res_version_nt_ppc = version.res
 dlltarg_export        = $(dll_def)
 !ifeq component wlib
 !ifeq convention register

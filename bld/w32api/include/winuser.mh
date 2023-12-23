@@ -6159,8 +6159,8 @@ WINUSERAPI VOID WINAPI          keybd_event( BYTE, BYTE, DWORD, ULONG_PTR );
 WINUSERAPI VOID WINAPI          mouse_event( DWORD, DWORD, DWORD, DWORD, ULONG_PTR );
 WINUSERAPI int WINAPIV          wsprintfA( LPSTR, LPCSTR, ... );
 WINUSERAPI int WINAPIV          wsprintfW( LPWSTR, LPCWSTR, ... );
-WINUSERAPI int WINAPI           wvsprintfA( LPSTR, LPCSTR, __va_list );
-WINUSERAPI int WINAPI           wvsprintfW( LPWSTR, LPCWSTR, __va_list );
+WINUSERAPI int WINAPI           wvsprintfA( LPSTR, LPCSTR, va_list );
+WINUSERAPI int WINAPI           wvsprintfW( LPWSTR, LPCWSTR, va_list );
 #ifdef _WINGDI_
 WINUSERAPI LONG WINAPI          ChangeDisplaySettingsA( DEVMODEA *, DWORD );
 WINUSERAPI LONG WINAPI          ChangeDisplaySettingsExA( LPCSTR, DEVMODEA *, HWND, DWORD, LPVOID );

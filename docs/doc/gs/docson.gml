@@ -186,7 +186,7 @@ as separate help files)
 .book &product Programmer's Guide
 .note FTOOLS
 .book &product Tools User's Guide
-.note FUGUIDE
+.note FGUIDE
 .book &product User's Guide
 (excludes Diagnostic Messages appendix which is available
 as a separate help file)
@@ -198,7 +198,7 @@ as a separate help file)
 .note LGUIDE
 .book &lnkname User's Guide
 .if '&lang' eq 'C/C++' .do begin
-.note PGUIDE
+.note CPGUIDE
 .book &product Programmer's Guide
 .do end
 .if '&lang' eq 'C/C++' .do begin

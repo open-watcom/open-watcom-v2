@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,29 +34,34 @@
 #include <wwindows.h>
 #include <stdlib.h>
 #include "servio.h"
+#include "trptypes.h"
+#include "packet.h"
 #include "options.h"
 
 
-extern int              NumPrinters(void);
-extern unsigned         PrnAddress(int);
+extern int              NumPrinters( void );
+extern unsigned         PrnAddress( int );
 
 WINEXPORT INT_PTR CALLBACK OptionsDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
-    HWND edit;
-    int num = NumPrinters();
-    char buff[20];
+    char    parms[PARMS_MAXLEN];
+    HWND    edit;
+    int     num = NumPrinters();
+    char    buff[20];
 
-    lparam = lparam;                    /* turn off warning */
+    /* unused parameters */ (void)lparam;
+
     edit = GetDlgItem( hwnd, IDDI_PORT_EDIT );
     switch( msg ) {
     case WM_INITDIALOG:
+        RemoteLinkGet( parms, sizeof( parms ) );
         EnableWindow( edit, FALSE );
-        if( ServParms[0] >= '1' && ServParms[0] <= '3' ) {
-            if( ServParms[0] > num + '0' ) {
-                ServParms[0] = num + '0';
+        if( parms[0] >= '1' && parms[0] <= '3' ) {
+            if( parms[0] > num + '0' ) {
+                parms[0] = num + '0';
             }
         }
-        switch( ServParms[0] ) {
+        switch( parms[0] ) {
         case '1':
         default:
             if( num >= 1 ) {
@@ -77,31 +83,35 @@ WINEXPORT INT_PTR CALLBACK OptionsDlgProc( HWND hwnd, UINT msg, WPARAM wparam, L
             break;
         case 'p':
         case 'P':
-            SendDlgItemMessage( hwnd, IDDI_PORT, BM_SETCHECK, 1, 0 );
-            SetDlgItemText( hwnd, IDDI_PORT_EDIT, ServParms + 1 );
+            SendDlgItemMessage( hwnd, IDDI_PORT_ADDR, BM_SETCHECK, 1, 0 );
+            SetDlgItemText( hwnd, IDDI_PORT_EDIT, parms + 1 );
             EnableWindow( edit, TRUE );
         }
-        if( num < 3 ) EnableWindow( GetDlgItem( hwnd, IDDI_LPT3 ), FALSE );
-        if( num < 2 ) EnableWindow( GetDlgItem( hwnd, IDDI_LPT2 ), FALSE );
-        if( num < 1 ) EnableWindow( GetDlgItem( hwnd, IDDI_LPT1 ), FALSE );
+        if( num < 3 )
+            EnableWindow( GetDlgItem( hwnd, IDDI_LPT3 ), FALSE );
+        if( num < 2 )
+            EnableWindow( GetDlgItem( hwnd, IDDI_LPT2 ), FALSE );
+        if( num < 1 )
+            EnableWindow( GetDlgItem( hwnd, IDDI_LPT1 ), FALSE );
         return( TRUE );
 
     case WM_COMMAND:
         switch( LOWORD( wparam ) ) {
         case IDOK:
-            ServParms[1] = '\0';
+            parms[1] = '\0';
             if( SendDlgItemMessage( hwnd, IDDI_LPT1, BM_GETCHECK, 0, 0 ) == BST_CHECKED ) {
-                ServParms[0] = '1';
+                parms[0] = '1';
             } else if( SendDlgItemMessage( hwnd, IDDI_LPT2, BM_GETCHECK, 0, 0 ) == BST_CHECKED ) {
-                ServParms[0] = '2';
+                parms[0] = '2';
             } else if( SendDlgItemMessage( hwnd, IDDI_LPT3, BM_GETCHECK, 0, 0 ) == BST_CHECKED ) {
-                ServParms[0] = '3';
-            } else if( SendDlgItemMessage( hwnd, IDDI_PORT, BM_GETCHECK, 0, 0 ) == BST_CHECKED ) {
-                ServParms[0] = 'p';
-                GetDlgItemText( hwnd, IDDI_PORT_EDIT, ServParms + 1, PARMS_MAXLEN - 1 );
+                parms[0] = '3';
+            } else if( SendDlgItemMessage( hwnd, IDDI_PORT_ADDR, BM_GETCHECK, 0, 0 ) == BST_CHECKED ) {
+                parms[0] = 'p';
+                GetDlgItemText( hwnd, IDDI_PORT_EDIT, parms + 1, sizeof( parms ) - 1 );
             } else {
-                ServParms[0] = '1';
+                parms[0] = '1';
             }
+            RemoteLinkSet( parms );
         case IDCANCEL:
             EndDialog( hwnd, TRUE );
             return( TRUE );
@@ -117,8 +127,8 @@ WINEXPORT INT_PTR CALLBACK OptionsDlgProc( HWND hwnd, UINT msg, WPARAM wparam, L
             SetDlgItemText( hwnd, IDDI_PORT_EDIT, utoa( PrnAddress( 2 ), buff, 16 ) );
             EnableWindow( edit, FALSE );
             break;
-        case IDDI_PORT:
-            SetDlgItemText( hwnd, IDDI_PORT_EDIT, ServParms[0] == '\0' ? "" : ServParms + 1 );
+        case IDDI_PORT_ADDR:
+            SetDlgItemText( hwnd, IDDI_PORT_EDIT, parms[0] == '\0' ? "" : parms + 1 );
             EnableWindow( edit, TRUE );
             break;
         }

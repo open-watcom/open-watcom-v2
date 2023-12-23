@@ -8,10 +8,14 @@
  typedef unsigned long  ino_t;  /* Used for file serial numbers     */
 :elsesegment ARCHMIPS
  typedef unsigned long  ino_t;  /* Used for file serial numbers     */
+:elsesegment ARCHPPC
+ typedef unsigned long  ino_t;  /* Used for file serial numbers     */
 :elsesegment
  #ifdef __386__
   typedef unsigned long  ino_t;  /* Used for file serial numbers     */
  #elif defined(__MIPS__)
+  typedef unsigned long  ino_t;  /* Used for file serial numbers     */
+ #elif defined(__PPC__)
   typedef unsigned long  ino_t;  /* Used for file serial numbers     */
  #endif
 :endsegment

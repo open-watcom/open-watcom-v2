@@ -2,6 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
+;* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -30,11 +31,6 @@
 ;*****************************************************************************
 
 
-ifdef __386__
- .387
-else
- .8087
-endif
 include mdef.inc
 include struct.inc
 include math87.inc
@@ -54,15 +50,10 @@ include math87.inc
 ;
         defp    _cosl
 ifdef __386__
-        fld     tbyte ptr 4[ESP]; load argument x
+        fld     tbyte ptr argx[ESP]; load argument x
         call    IF@DCOS         ; calculate cos(x)
         loadres                 ; load result
 else
- if _MODEL and _BIG_CODE
-  argx  equ     6
- else
-  argx  equ     4
- endif
         prolog
         fld     tbyte ptr argx[BP]; load argument x
         call    IF@DCOS         ; calculate cos(x)
@@ -76,7 +67,7 @@ endif
 ;
         defp    _sinl
 ifdef __386__
-        fld     tbyte ptr 4[ESP]; load argument x
+        fld     tbyte ptr argx[ESP]; load argument x
         call    IF@DSIN         ; calculate sin(x)
         loadres                 ; load result
 else
@@ -93,7 +84,7 @@ endif
 ;
         defp    _tanl
 ifdef __386__
-        fld     tbyte ptr 4[ESP]; load argument x
+        fld     tbyte ptr argx[ESP]; load argument x
         call    IF@DTAN         ; calculate tan(x)
         loadres                 ; load result
 else

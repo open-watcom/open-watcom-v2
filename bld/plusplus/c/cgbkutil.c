@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,7 +41,7 @@
 #include "cgbackut.h"
 #include "objmodel.h"
 #include "cgio.h"
-#ifndef NDEBUG
+#ifdef DEVBUILD
     #include "pragdefn.h"
     #include "togglesd.h"
 #endif
@@ -253,9 +253,7 @@ back_handle DgStringConst(          // STORE STRING CONSTANT WITH NULL
         if( str->cg_handle == NULL ) {
             str->cg_handle = BENewBack( 0 );
             str_align = StringAlign( str );
-#if _CPU == _AXP
-            str->segid = SEG_CONST;
-#else
+#if _INTEL_CPU
             if( CompFlags.strings_in_code_segment && ( control & DSC_CODE_OK ) != 0 ) {
                 if( IsBigData() ) {
                     str->segid = SegmentAddStringCodeFar( str->len, str_align );
@@ -273,6 +271,8 @@ back_handle DgStringConst(          // STORE STRING CONSTANT WITH NULL
                     str->segid = SEG_CONST;
                 }
             }
+#else
+            str->segid = SEG_CONST;
 #endif
             old_segid = BESetSeg( str->segid );
             DGAlign( str_align );
@@ -910,7 +910,7 @@ cg_name CgDtorStatic(           // DTOR STATIC OBJECT
 
     StabCtlInit( &sctl, &dctl );
     StabDefnInit( &dctl, DTRG_STATIC_INITLS );
-#ifndef NDEBUG
+#ifdef DEVBUILD
     if( TOGGLEDBG( dump_stab ) ) {
         printf( "State Table for static object: %p\n", &dctl.state_table );
     }

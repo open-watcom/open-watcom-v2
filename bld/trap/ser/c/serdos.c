@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,17 +44,18 @@
 #include "serlink.h"
 #include "tinyio.h"
 
-#define I8259  0x20 /* 8259 control register address */
-#define I8259M  0x21 /* 8259 mask register */
-#define EOI  0x20 /* 8259 end of interrupt command */
-#define EOI_COM  (0x60+IntVector) /* specific level EOI */
 
-#define IER  (IOBase+1) /* interrupt enable register address */
-#define IIR  (IOBase+2) /* interrupt identification register address */
-#define LCR  (IOBase+3) /* line control register address */
-#define MCR  (IOBase+4) /* modem control register address */
-#define LSR  (IOBase+5) /* line status register address */
-#define MSR  (IOBase+6) /* modem status register address */
+#define I8259       0x20 /* 8259 control register address */
+#define I8259M      0x21 /* 8259 mask register */
+#define EOI         0x20 /* 8259 end of interrupt command */
+#define EOI_COM     (0x60 + IntVector) /* specific level EOI */
+
+#define IER         (IOBase + 1) /* interrupt enable register address */
+#define IIR         (IOBase + 2) /* interrupt identification register address */
+#define LCR         (IOBase + 3) /* line control register address */
+#define MCR         (IOBase + 4) /* modem control register address */
+#define LSR         (IOBase + 5) /* line status register address */
+#define MSR         (IOBase + 6) /* modem status register address */
 
 #define LCR_SETUP   0x03 /* set 8 bits, no parity, 1 stop */
 #define LCR_BREAK   0x40 /* break enable */
@@ -64,39 +65,46 @@
 #define MCR_OUT2    0x08 /* out2 control bit */
 #define MCR_SETUP   ( MCR_OUT2 | MCR_RTS | MCR_DTR )
 
-#define LSR_DRDY  0x01 /* data ready */
-#define LSR_ORUN  0x02 /* overrun error */
-#define LSR_PRTY  0x04 /* parity error */
-#define LSR_FRM   0x08 /* framing error */
-#define LSR_BRK   0x10 /* break interrupt */
-#define LSR_THRE  0x20 /* transmit holding register empty */
-#define LSR_TSRE  0x40 /* transmit shift register empty */
-#define LSR_ERR   (LSR_FRM+LSR_PRTY+LSR_ORUN) /* error conditions */
+#define LSR_DRDY    0x01 /* data ready */
+#define LSR_ORUN    0x02 /* overrun error */
+#define LSR_PRTY    0x04 /* parity error */
+#define LSR_FRM     0x08 /* framing error */
+#define LSR_BRK     0x10 /* break interrupt */
+#define LSR_THRE    0x20 /* transmit holding register empty */
+#define LSR_TSRE    0x40 /* transmit shift register empty */
+#define LSR_ERR     (LSR_FRM+LSR_PRTY+LSR_ORUN) /* error conditions */
 
-#define MSR_CTS         0x10 /* Clear To Send */
-#define MSR_DSR         0x20 /* Data Set Ready */
+#define MSR_CTS     0x10 /* Clear To Send */
+#define MSR_DSR     0x20 /* Data Set Ready */
 
 
 /*
  * code and data shared with assembly code in serint.asm
  */
+extern void __near ClearBuffer( void );
+extern int  __near GetBufferByte( void );
+extern void __near InitInts( void );
+extern void __near FiniInts( void );
+
 int         __near IOBase;         /* base com port address */
 int         __near IntVector;      /* com interrupt vector to use */
 unsigned    __near TimerTicks;
 int         __near ErrorFlag;
 int         __near BreakFlag;
-
-extern void __near ClearBuffer( void );
-extern int  __near GetBufferByte( void );
-extern void __near InitInts( void );
-extern void __near FiniInts( void );
 /*
  * end of assembly code/data declaration
  */
 
-static int I8259mBit;
-static int CurrentBaud;
-static char Modem;
+static int          I8259mBit;
+static baud_index   CurrentBaud;
+static bool         Modem;
+
+static int Divisor[] = {
+    #define BAUD_ENTRY(x,v,d)   d,
+    BAUD_ENTRIES
+    #undef BAUD_ENTRY
+    0
+};
 
 void ResetTimerTicks( void )
 {
@@ -135,8 +143,8 @@ char *InitSys( void )
     --i8259_val;
     i8259_val |= 0xc0;
     outp( I8259, i8259_val );
-    CurrentBaud = -1;
-    Modem = 0;
+    CurrentBaud = UNDEF_BAUD;
+    Modem = false;
     return( NULL );
 }
 
@@ -160,14 +168,13 @@ void ResetSys( void )
 
 void SendByte( int value )
 {
-    do {
-        ;
-    } while( (inp( LSR ) & LSR_THRE) == 0 );
+    while( (inp( LSR ) & LSR_THRE) == 0 )
+        {}
     if( Modem ) {
         /* talking over a modem - check the data set ready line */
-        do {
-            ;
-        } while( (inp( MSR ) & MSR_CTS) == 0 );
+        while( (inp( MSR ) & MSR_CTS) == 0 ) {
+            {}
+        }
     }
     outp( IOBase, value );
 }
@@ -180,9 +187,9 @@ void StopBlockTrans( void )
 {
     if( Modem ) {
         /* talking over a modem - check the data set ready line */
-        do {
-            ;
-        } while( (inp( MSR ) & MSR_CTS) == 0 );
+        while( (inp( MSR ) & MSR_CTS) == 0 ) {
+            {}
+        }
     }
 }
 
@@ -224,24 +231,23 @@ bool TestForBreak( void )
 #endif
 
 
-static int Divisor[] = { 1, 2, 3, 6, 12, 24, 48, 96, 0 };
-
-bool Baud( int index )
+bool Baud( baud_index index )
 {
     int lcr_value;
 
     ErrorFlag = 0;
     BreakFlag = 0;
-    if( index == MIN_BAUD ) {
-        Modem = 1;
+    if( index == MODEM_BAUD ) {
+        Modem = true;
         return( true );
     }
-    Modem = 0;
+    Modem = false;
     if( index == CurrentBaud )
         return( true );
 
     /* don't change baud rate while a character is still being sent */
-    do {} while( (inp( LSR ) & LSR_TSRE) == 0 );
+    while( (inp( LSR ) & LSR_TSRE) == 0 )
+        {}
     lcr_value = inp( LCR );              /* get LCR value */
     _disable();                          /* disable interrupt */
     outp( LCR, lcr_value | LCR_DLAB );   /* set Divisor Latch Access Bit(DLAB)*/
@@ -311,7 +317,7 @@ bool CheckPendingError( void )
 void ClearLastChar( void )
 {
     /* wait for last character to be sent */
-    do {
-        ;
-    } while( (inp( LSR ) & LSR_TSRE) == 0 );
+    while( (inp( LSR ) & LSR_TSRE) == 0 ) {
+        {}
+    }
 }

@@ -97,6 +97,8 @@ from the server libraries.
 32-bit x86 OS/2 Presentation Manager executable
 .note pharlap
 32-bit x86 Phar Lap executable
+.note pmodew
+32-bit x86 PMODE/W executable
 .note tnt
 32-bit x86 Phar Lap TNT executable
 .note rdos
@@ -345,6 +347,17 @@ system   dos4g
 .np
 For more information,
 see the chapter entitled :HDREF refid='os2chap'..
+.*
+.section Linking 32-bit x86 PMODE/W Executable Files
+.*
+.np
+.ix '32-bit PMODE/W executables'
+To create this type of file, use the following structure.
+.millust begin
+system   pmodew
+.im tutsteps
+.millust end
+.np
 .*
 .section Linking 32-bit x86 FlashTek Executable Files
 .*

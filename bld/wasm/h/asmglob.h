@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -54,23 +54,13 @@
 #define SCRAP_INSTRUCTION       3
 #define INDIRECT_JUMP           4
 
-#define CMPLIT(s,c)     memcmp( s, c, sizeof( c ) )
-#define CMPLITBEG(s,c)  memcmp( s, c, sizeof( c ) - 1 )
-#define CMPLITEND(s,c)  memcmp( s - ( sizeof( c ) - 1 ), c, sizeof( c ) - 1 )
+#define CMPLIT(s,c)     strcmp( s, c )
+#define CMPLITBEG(sb,c) strncmp( sb, c, sizeof( c ) - 1 )
+#define CMPLITEND(se,c) strcmp( se - ( sizeof( c ) - 1 ), c )
 
 #define CPYLIT(s,c)     memcpy( s, c, sizeof( c ) )
 #define CATLIT(s,c)     (char *)memcpy( s, c, sizeof( c ) - 1 ) + sizeof( c ) - 1
 #define CATSTR(s,c,l)   (char *)memcpy( s, c, l ) + l
-
-#define ReadU16(p)      GET_LE_16(*(uint_16*)(p))
-#define ReadU32(p)      GET_LE_32(*(uint_32*)(p))
-#define ReadS16(p)      GET_LE_16(*(int_16*)(p))
-#define ReadS32(p)      GET_LE_32(*(int_32*)(p))
-
-#define WriteU16(p,n)   (*(uint_16*)(p) = GET_LE_16((uint_16)(n)))
-#define WriteU32(p,n)   (*(uint_32*)(p) = GET_LE_32((uint_32)(n)))
-#define WriteS16(p,n)   (*(int_16*)(p) = GET_LE_16((int_16)(n)))
-#define WriteS32(p,n)   (*(int_32*)(p) = GET_LE_32((int_32)(n)))
 
 #define BIT_012                 0x07
 #define BIT_345                 0x38
@@ -87,13 +77,26 @@
 #define BYTE_10                 10
 #define BYTE_16                 16
 
+#define IS_VALID_ID_CHAR_FIRST(ch)  (isalpha(ch) || ch=='_' || ch=='@' || ch=='$' || ch=='?')
+#define IS_VALID_ID_CHAR(ch)        (isalnum(ch) || ch=='_' || ch=='@' || ch=='$' || ch=='?')
+
 enum fpe {
     DO_FP_EMULATION,
     NO_FP_EMULATION,
     NO_FP_ALLOWED
 };
 
-extern enum fpe floating_point;
+typedef struct sw_data {
+#if defined( _STANDALONE_ )
+    bool    protect_mode;
+    int     cpu;
+    int     fpu;
+    int     mem_model;
+#endif
+    int     fpt;
+} sw_data;
+
+extern sw_data  SWData;
 
 #if defined( _STANDALONE_ )
 
@@ -146,6 +149,7 @@ typedef struct global_options {
     bool        banner_printed;
     bool        debug_info;
     bool        output_comment_data_in_code_records;
+    bool        symbols_nocasesensitive;
 
     /* error handling stuff */
     int         error_count;
@@ -153,8 +157,6 @@ typedef struct global_options {
     int         error_limit;
     char        warning_level;
     bool        warning_error;
-
-    char        *build_target;
 
     char        *code_class;
     char        *data_seg;

@@ -1,0 +1,24 @@
+tree_depth = 5
+
+target_cpu      = 386
+target_cls	= intel
+
+386_objs = 386conv.obj &
+    386ilen.obj &
+    386opseg.obj &
+    386optab.obj &
+    386ptype.obj &
+    386rgtbl.obj &
+    386rtrtn.obj &
+    386score.obj &
+    386sib.obj &
+    386splt2.obj &
+    386table.obj &
+    386tls.obj  &
+    386type.obj &
+    386enc.obj &
+    rtcall.obj &
+    sib.obj &
+    encode.obj
+
+!include $(cg_dir)/$(target_cls)/master.mif

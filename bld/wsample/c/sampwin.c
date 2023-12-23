@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,8 +42,8 @@
 #include <fcntl.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#define INCLUDE_TOOL_H
-#include "commonui.h"
+#define INCLUDE_TOOLHELP_H
+#include <wwindows.h>
 #include "sample.h"
 #include "smpstuff.h"
 #include "wmsg.h"
@@ -52,19 +52,23 @@
 #include "exedos.h"
 #include "wclbtool.h"
 #include "di386cli.h"
+#include "segmem.h"
 
 
 #define BUFF_SIZE 512
 
+static void PushAll( void );
+#pragma aux PushAll = ".386" "pusha"
+
+static void PopAll( void );
+#pragma aux PopAll = ".386" "popa" __modify [__ax __bx __cx __dx __sp __bp __di __si]
+
 /* commonui/asm/inth.asm */
 void FAR PASCAL IntHandler( void );
 
-unsigned short win386sig[] = { 0xDEAD,0xBEEF };
-unsigned short win386sig2[] = { 0xBEEF,0xDEAD };
-
 volatile WORD           __near WaitForFirst=0;
 volatile WORD           __near IsSecondOK=0;
-seg_offset              CommonAddr = { 0, 0 };
+far_address             CommonAddr = { 0, 0 };
 bool                    WDebug386 = false;
 samp_save               __far * __near SampSave;
 
@@ -99,6 +103,41 @@ bool VersionCheck( void )
 {
     return( true );
 }
+
+/*
+ * ReadMem - read some memory, using toolhelp or wdebug.386
+ */
+DWORD ReadMem( WORD sel, DWORD off, LPVOID buff, DWORD size )
+{
+    DWORD       rc;
+
+    if( WDebug386 ) {
+        return( CopyMemory386( _FP_SEG( buff ), _FP_OFF( buff ), sel, off, size  ) );
+    } else {
+        PushAll();
+        rc = MemoryRead( sel, off, buff, size );
+        PopAll();
+        return( rc );
+    }
+
+} /* ReadMem */
+
+/*
+ * WriteMem - write some memory, using toolhelp or wdebug.386
+ */
+DWORD WriteMem( WORD sel, DWORD off, LPVOID buff, DWORD size )
+{
+    DWORD       rc;
+    if( WDebug386 ) {
+        return( CopyMemory386( sel, off, _FP_SEG( buff ), _FP_OFF( buff ), size ) );
+    } else {
+        PushAll();
+        rc = MemoryWrite( sel, off, buff, size );
+        PopAll();
+        return( rc );
+    }
+
+} /* WriteMem */
 
 void GetCommArea( void )
 {

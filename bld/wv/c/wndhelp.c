@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -73,7 +74,7 @@ static void LocateHelpFile( void )
     if( DUIEnvLkup( "WWINHELP", buff, sizeof( buff ) ) == 0 ) {
         Error( ERR_NONE, LIT_ENG( ERR_FILE_NOT_OPEN ), TxtBuff );
     }
-    StrCopy( ".ihp", StrCopy( HELPNAME, StrCopy( "\\", StrCopy( buff, TxtBuff ) ) ) );
+    StrCopyDst( ".ihp", StrCopyDst( HELPNAME, StrCopyDst( "\\", StrCopyDst( buff, TxtBuff ) ) ) );
     fh = FileOpen( TxtBuff, OP_READ );
     if( fh != NIL_HANDLE ) {
         FileClose( fh );
@@ -88,7 +89,7 @@ static void LocateHelpFile( void )
 void DoProcHelp( gui_help_actions action )
 {
 #if defined( GUI_IS_GUI )
-    StrCopy( HELPNAME ".hlp", TxtBuff );
+    StrCopyDst( HELPNAME ".hlp", TxtBuff );
 #else
     LocateHelpFile();
 #endif

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,96 +34,62 @@
 #include "plusplus.h"
 #include <limits.h>
 #ifdef __WATCOMC__
-#include <process.h>
+    #include <process.h>
 #endif
 #include "memmgr.h"
 #include "idedrv.h"
 
+#include "clibint.h"
 #include "clibext.h"
 
 
-#ifdef wpp_drv
-#   ifndef DLL_NAME
-#      error DLL_NAME must be given with -d switch when DLL Driver
-#      define NO_MO_COMPILING
-#   else
-#      define quoted( name ) # name
-#      define _str(x) quoted(x)
-#      define DLL_NAME_STR _str(DLL_NAME)
-#   endif
-#else
-#   define DLL_NAME_STR "WPP"
+#ifndef DLL_NAME
+    #error      DLL_NAME must be given with -d switch when DLL Driver
 #endif
 
-#ifndef NO_MO_COMPILING
+#define quoted(name)    # name
+#define _str(x)         quoted(x)
+#define DLL_NAME_STR    _str(DLL_NAME)
 
-#if defined(__DOS__) || defined(__OS2__) || defined(__NT__) || defined(__RDOS__)
-#if ! defined(wpp_drv)
-#define RAW_CMDLINE
-#endif
-#endif
 
-#if defined(__UNIX__)
-#define USE_ARGV
-#endif
-
-static IDEDRV info =
-{   DLL_NAME_STR
-};
-
-#ifndef USE_ARGV
-static char cmd_line[1024 * 8]; // - a buffer
-#endif
-
-int main(                       // MAIN-LINE FOR DLL DRIVER
-#if !defined(RAW_CMDLINE)
-    int argc,                   // - arg count
-    char **argv                 // - arg.s
-#endif
-    )
+int main( int argc, char *argv[] )
+/********************************/
 {
-    int retcode;                // - return code
+    int         retcode;
+    IDEDRV      info;
+#ifndef __UNIX__
+    int         cmd_len;
+    char        *cmd_line;
+#endif
 
-#if defined(USE_ARGV)
+#if !defined( __WATCOMC__ )
+    _argc = argc;
+    _argv = argv;
+#elif !defined( __UNIX__ )
+    /* unused parameters */ (void)argc; (void)argv;
+#endif
+
+    IdeDrvInit( &info, DLL_NAME_STR, NULL );
+#ifdef __UNIX__
     retcode = IdeDrvExecDLLArgv( &info, argc, argv );
-#elif defined(wpp_drv)
-    argc = argc;
-    argv = argv;
-    getcmd( cmd_line );
-    retcode = IdeDrvExecDLL( &info, cmd_line );
-#elif defined(RAW_CMDLINE)
-    size_t  len;
-    char    *lcl_argv[2];
-
-    len = _bgetcmd( NULL, INT_MAX );
-    lcl_argv[1] = NULL;
-    if( len >= sizeof( cmd_line ) ) {
-        lcl_argv[0] = CMemAlloc( len + 1 );
-    } else {
-        lcl_argv[0] = cmd_line;
-    }
-    _bgetcmd( lcl_argv[0], len + 1 );
-    retcode = IdeDrvExecDLL( &info, cmd_line );
-    if( len >= sizeof( cmd_line ) ) {
-        CMemFree( lcl_argv[0] );
-    }
 #else
-    argc = argc;
-    cmd_line[0] = cmd_line[0];
-    retcode = IdeDrvExecDLL( &info, &argv[1] );
+    cmd_len = _bgetcmd( NULL, 0 ) + 1;
+    cmd_line = malloc( cmd_len );
+    if( cmd_line != NULL )
+        _bgetcmd( cmd_line, cmd_len );
+    retcode = IdeDrvExecDLL( &info, cmd_line );
+    free( cmd_line );
 #endif
     switch( retcode ) {
-    case IDEDRV_SUCCESS :
-    case IDEDRV_ERR_RUN :
-    case IDEDRV_ERR_RUN_EXEC :
-    case IDEDRV_ERR_RUN_FATAL :
+    case IDEDRV_SUCCESS:
+    case IDEDRV_ERR_RUN:
+    case IDEDRV_ERR_RUN_EXEC:
+    case IDEDRV_ERR_RUN_FATAL:
         break;
-    default :
-        retcode = IdeDrvPrintError( &info );
+    default:
+        IdeDrvPrintError( &info );
         break;
     }
-    return( retcode );
+    IdeDrvUnloadDLL( &info );
+    return( retcode == IDEDRV_SUCCESS ? EXIT_SUCCESS : EXIT_FAILURE );
 }
-
-
-#endif  // NO_MO_COMPILING

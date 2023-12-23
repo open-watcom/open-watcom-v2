@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,7 +41,7 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern bool WGetClipData( HWND main, UINT fmt, void *data, uint_32 *dsize );
-extern bool WCopyClipData( HWND main, UINT fmt, void *data, uint_32 dsize );
+extern bool WGetClipData( HWND hwnd, UINT fmt, char **data, size_t *dsize );
+extern bool WCopyClipData( HWND hwnd, UINT fmt, char *data, size_t dsize );
 
 #endif

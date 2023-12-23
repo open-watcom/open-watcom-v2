@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -102,13 +102,14 @@ typedef short               segment_id;
 
 typedef int                 level_depth;
 
-typedef unsigned_32         cg_linenum;
+typedef uint_32             cg_linenum;
 
-typedef unsigned            objhandle;
+typedef size_t              objoffset;
+typedef size_t              objhandle;
 #define INVALID_OBJHANDLE   0
 
 /* symbolic debugging type handles */
-typedef unsigned_32         dbg_type;
+typedef uint_32             dbg_type;
 typedef struct struct_list  *dbg_struct;
 typedef struct array_list   *dbg_array;
 typedef struct enum_list    *dbg_enum;
@@ -177,28 +178,28 @@ typedef enum {
 
 
 typedef enum {
-    MSG_INFO_FILE,              /* informational message about file (string) */
-    MSG_CODE_SIZE,              /* code size message (int) */
-    MSG_DATA_SIZE,              /* data size message (int) */
-    MSG_ERROR,                  /* cg error message (string) */
-    MSG_FATAL,                  /* fatal error  (string) */
-    MSG_INFO_PROC,              /* info message about current proc (string) */
-    MSG_BAD_PARM_REGISTER,      /* bad "aux" parm      (parm num) */
-    MSG_BAD_RETURN_REGISTER,    /* bad "aux" value     (sym) */
-    MSG_REGALLOC_DIED,          /* register alloc ran out of mem (sym) */
-    MSG_SCOREBOARD_DIED,        /* scoreboard ran out of mem   (sym) */
-    MSG_PEEPHOLE_FLUSHED,       /* peep hole optimizer flushed (none) */
-    MSG_BACK_END_ERROR,         /* back end error (int) */
-    MSG_BAD_SAVE,               /* bad "aux" modify (sym) */
-    MSG_WANT_MORE_DATA,         /* back end wants more data space (int) */
-    MSG_BLIP,                   /* blip */
-    MSG_BAD_LINKAGE,            /* cannot resolve linkage conventions (sym) */
-    MSG_SCHEDULER_DIED,         /* ins scheduler ran out of mem (sym) */
-    MSG_NO_SEG_REGS,            /* accessing far memory with no seg regs */
-    MSG_BAD_PEG_REG,            /* bad register pegged to a segment */
-    MSG_SYMBOL_TOO_LONG,        /* symbol too long, truncated (sym) */
-    MSG_INFO                    /* general informational message (string) */
-} msg_class;
+    FEMSG_INFO_FILE,                /* informational message about file (string) */
+    FEMSG_CODE_SIZE,                /* code size message (int) */
+    FEMSG_DATA_SIZE,                /* data size message (int) */
+    FEMSG_ERROR,                    /* cg error message (string) */
+    FEMSG_FATAL,                    /* fatal error  (string) */
+    FEMSG_INFO_PROC,                /* info message about current proc (string) */
+    FEMSG_BAD_PARM_REGISTER,        /* bad "aux" parm      (parm num) */
+    FEMSG_BAD_RETURN_REGISTER,      /* bad "aux" value     (sym) */
+    FEMSG_REGALLOC_DIED,            /* register alloc ran out of mem (sym) */
+    FEMSG_SCOREBOARD_DIED,          /* scoreboard ran out of mem   (sym) */
+    FEMSG_PEEPHOLE_FLUSHED,         /* peep hole optimizer flushed (none) */
+    FEMSG_BACK_END_ERROR,           /* back end error (int) */
+    FEMSG_BAD_SAVE,                 /* bad "aux" modify (sym) */
+    FEMSG_WANT_MORE_DATA,           /* back end wants more data space (int) */
+    FEMSG_BLIP,                     /* blip */
+    FEMSG_BAD_LINKAGE,              /* cannot resolve linkage conventions (sym) */
+    FEMSG_SCHEDULER_DIED,           /* ins scheduler ran out of mem (sym) */
+    FEMSG_NO_SEG_REGS,              /* accessing far memory with no seg regs */
+    FEMSG_BAD_PEG_REG,              /* bad register pegged to a segment */
+    FEMSG_SYMBOL_TOO_LONG,          /* symbol too long, truncated (sym) */
+    FEMSG_INFO                      /* general informational message (string) */
+} fe_msg;
 
 #define DBG_NIL_TYPE    ((dbg_type)0)
 #define DBG_FWD_TYPE    ((dbg_type)-1)

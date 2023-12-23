@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -177,6 +177,7 @@ _WCRTLINK int raise( int sig )
     case SIGABRT:
         if( func == SIG_DFL ) {
             __terminate();
+            /* never return */
         }
         /* fall down */
     case SIGILL:

@@ -30,6 +30,9 @@
 ****************************************************************************/
 
 
+#include "bool.h"
+
+
 typedef struct avl_node {
     struct avl_node     *left;
     struct avl_node     *right;
@@ -44,21 +47,19 @@ typedef struct symbol_table {
     avl_node            head;
 } *symbol_table;
 
-symbol_table SymInit( int (*cmp)( void *key1, void *key2 ) );
-void SymAdd( symbol_table symtab, void *key );
-void *SymFind( symbol_table symtab, void *key );
+extern symbol_table SymInit( int (*cmp)( void *key1, void *key2 ) );
+extern bool         SymAdd( symbol_table symtab, void *key );
+extern void         *SymFind( symbol_table symtab, void *key );
 /*
     SymFini destroys the symbol_table and all the avl_nodes in the tree.
     If you want to free the key's then you must do it by SymWalking before
     SymFini.
 */
-void SymFini( symbol_table symtab );
+extern void         SymFini( symbol_table symtab );
 /*
     For SymWalk: If process returns -1 then abort the walking.
                  If process returns  0 then continue walking.
     SymWalk returns -1 if walking aborted, 0 otherwise.
     SymWalk does an in-order walk of the symbol table.
 */
-int SymWalk( symbol_table symtab, void *parm,
-    int (*process)( void *key, void *parm ) );
-
+extern int          SymWalk( symbol_table symtab, void *parm, int (*process)( void *key, void *parm ) );

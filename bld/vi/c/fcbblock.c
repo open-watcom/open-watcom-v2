@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -131,7 +131,7 @@ size_t MakeWriteBlock( fcb *fb )
         *(linedata_t *)buff = cline->u.ld_word;
         buff += sizeof( linedata_t );
         tline = cline->next;
-        MemFree( cline );
+        LineFree( cline );
         len += LINE_EXTRA; /* 2 for these and 2 for CR,LF */
     }
 

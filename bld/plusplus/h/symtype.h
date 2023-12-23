@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -227,16 +227,22 @@ PCH_struct decl_info {
 // types dealing with representing types
 
 typedef enum {
-    #define pick(id,promo,promo_asm,type_text)  __PASTE( TYP_, id ),
+    #define pick(id,promo,promo_asm,type_text)  id,
     #include "_typdefs.h"
     #undef pick
-    TYP_MAX,
+    TYP_NONE,
+    TYP_MAX
 } type_id;
-
-#define TYP_NONE                TYP_MAX
 
 #define TYP_FIRST_FUNDAMENTAL   TYP_BOOL
 #define TYP_LAST_FUNDAMENTAL    TYP_LONG_DOUBLE
+
+#ifdef XTRA_RPT
+#define RPT_TYP_TOTAL   TYP_MAX
+#define RPT_TYP_MAX     (TYP_MAX + 1)
+#else
+#define RPT_TYP_MAX     TYP_MAX
+#endif
 
 typedef enum {
     TF1_FIRST           = 0x00000001,               // TYP_ERROR
@@ -1764,6 +1770,10 @@ typedef enum typc_index {
 } typc_index;
 
 extern TYPE TypeCache[];
+#if defined( DEVBUILD ) || defined( XTRA_RPT )
+extern char const * const TypeIdNames[];
+#endif
+
 #define TypeGetCache( tci )     ( TypeCache[(tci)] )
 #define TypeSetCache( tci, ty ) ( TypeCache[(tci)] = ( ty ) )
 

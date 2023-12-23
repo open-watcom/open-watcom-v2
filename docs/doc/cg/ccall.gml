@@ -1,6 +1,5 @@
 .if '&machine' eq '8086' .do begin
 :set symbol="calref" value="cal86".
-:set symbol="calttl" value="16-bit Assembly Language Considerations".
 :set symbol="machint" value="short int".
 :set symbol="intsize" value="2".
 :set symbol="maxint" value="32767".
@@ -36,7 +35,6 @@
 .do end
 .el .do begin
 :set symbol="calref" value="cal386".
-:set symbol="calttl" value="32-bit Assembly Language Considerations".
 :set symbol="machint" value="long int".
 :set symbol="intsize" value="4".
 :set symbol="maxint" value="2147483647".
@@ -71,7 +69,7 @@
 :set symbol="fargsz" value="8".
 .do end
 .*
-.chap *refid=&calref. &calttl.
+.chap *refid=&calref. Assembly Language Considerations
 .*
 .ix 'calling conventions'
 .*
@@ -79,14 +77,6 @@
 .*
 .section Introduction
 .*
-.do end
-.el .do begin
-.   .if '&machine' eq '8086' .do begin
-.   .   .helppref 16-bit:
-.   .do end
-.   .el .do begin
-.   .   .helppref 32-bit:
-.   .do end
 .do end
 .*
 .np
@@ -386,8 +376,6 @@ non-zero then the quantity is a special value called a "denormal"
 or nonnormal number.
 .endnote
 .endlevel
-.*
-.im wmemlay
 .*
 .section Calling Conventions for Non-80x87 Applications
 .*
@@ -1764,12 +1752,3 @@ When using the register-based calling conventions with "fpi" or
 All other values are returned in the manner described earlier in this
 chapter.
 .endlevel
-.*
-.if &e'&dohelp ne 0 .do begin
-.   .if '&machine' eq '8086' .do begin
-.   .   .helppref
-.   .do end
-.   .el .do begin
-.   .   .helppref
-.   .do end
-.do end

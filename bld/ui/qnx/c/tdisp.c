@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -602,9 +602,9 @@ static void TI_SETCOLOUR( int f, int b )
         // simulate colour using reverse (this assumes background is
         // darker than foreground).
         if( colorpri[f % 8] < colorpri[b % 8] ) {
-QNXDebugPrintf0( "[<enter_reverse_mode-vvvvvvvvvvvv>]" );
-QNXDebugPrintf1( "\n%s\n", enter_reverse_mode );
-QNXDebugPrintf0( "[<enter_reverse_mode-^^^^^^^^^^^^>]" );
+UIDebugPrintf0( "[<enter_reverse_mode-vvvvvvvvvvvv>]" );
+UIDebugPrintf1( "\n%s\n", enter_reverse_mode );
+UIDebugPrintf0( "[<enter_reverse_mode-^^^^^^^^^^^^>]" );
             TIARev = 1;
             TI_FillColourSet = false;
         } else {
@@ -645,10 +645,10 @@ static void TI_SETATTR( void )
                 0,              // invisible
                 0,              // protected
                 TIAACS ) );     // alt. char set
-QNXDebugPrintf0("\n[******]");
-QNXDebugPrintf1("%s", set_attributes);
-QNXDebugPrintf1("%s",x);
-QNXDebugPrintf0("[~~~~~~]\n");
+UIDebugPrintf0("\n[******]");
+UIDebugPrintf1("%s", set_attributes);
+UIDebugPrintf1("%s",x);
+UIDebugPrintf0("[~~~~~~]\n");
     } else {
         // Believe it or not, some terminals don't have the set_attributes
         // code in the database, so we have to simulate it occasionally
@@ -905,7 +905,7 @@ static bool td_initconsole( void )
     TI_NOWRAP();
     // if we can't then we just won't use the bottom right corner
     TI_ignore_bottom_right = !TCAP_NOSCROLL;
-QNXDebugPrintf1( "IgnoreLowerRight=%d", TI_ignore_bottom_right );
+UIDebugPrintf1( "IgnoreLowerRight=%d", TI_ignore_bottom_right );
 
     TI_NOBOLD();
     TI_NOBLINK();
@@ -1058,14 +1058,14 @@ static struct {
 static int td_update( SAREA *area )
 {
     if( !area ) {
-QNXDebugPrintf0("td_update: no arg");
+UIDebugPrintf0("td_update: no arg");
         dirty_area.row0 = 0;
         dirty_area.col0 = 0;
         dirty_area.row1 = UIData->height;
         dirty_area.col1 = UIData->width;
         return( 0 );
     }
-QNXDebugPrintf4("td_update(%d,%d,%d,%d)", area->row, area->col, area->height, area->width);
+UIDebugPrintf4("td_update(%d,%d,%d,%d)", area->row, area->col, area->height, area->width);
     if( area->row < dirty_area.row0 ) {
         dirty_area.row0 = area->row;
     }
@@ -1144,7 +1144,7 @@ static int td_refresh( bool must )
         return( 0 );
     }
 
-QNXDebugPrintf4("td_refresh (%d,%d)->(%d,%d)", dirty_area.row0, dirty_area.col0, dirty_area.row1, dirty_area.col1);
+UIDebugPrintf4("td_refresh (%d,%d)->(%d,%d)", dirty_area.row0, dirty_area.col0, dirty_area.row1, dirty_area.col1);
 
     if( UIData->cursor_type != C_OFF )
         QNX_CURSOR_OFF();
@@ -1171,7 +1171,7 @@ QNXDebugPrintf4("td_refresh (%d,%d)->(%d,%d)", dirty_area.row0, dirty_area.col0,
             }
 
             if( !ca_valid ) {
-QNXDebugPrintf2("cursor address %d,%d\n",j,i);
+UIDebugPrintf2("cursor address %d,%d\n",j,i);
                 QNX_CURSOR_MOVE( j, i );
                 ca_valid = true;
             }
@@ -1204,9 +1204,8 @@ QNXDebugPrintf2("cursor address %d,%d\n",j,i);
 
 // Slurps a char to be output. Will dump existing chars if new char is
 // different.
-#define TI_SLURPCHAR( __ch )  \
+#define TI_SLURPCHAR( __c )  \
 {                             \
-    unsigned char __c = __ch; \
     if( rcount != 0 && ( rchar != ti_char_map[__c][0] || ralt != ti_alt_map_chk( __c ) ) ) \
         TI_DUMPCHARS();       \
     rcol = (rcount == 0) ? j : rcol; \
@@ -1276,7 +1275,7 @@ static int ti_refresh( bool must )
         return( 0 );
     }
 
-QNXDebugPrintf4( "ti_refresh( %d, %d )->( %d, %d )", dirty_area.row0, dirty_area.col0, dirty_area.row1, dirty_area.col1 );
+UIDebugPrintf4( "ti_refresh( %d, %d )->( %d, %d )", dirty_area.row0, dirty_area.col0, dirty_area.row1, dirty_area.col1 );
 
     // Disable cursor during draw if we can
     if( UIData->cursor_type != C_OFF ) {
@@ -1457,7 +1456,7 @@ QNXDebugPrintf4( "ti_refresh( %d, %d )->( %d, %d )", dirty_area.row0, dirty_area
                 }
 
                 if( !ca_valid ) {
-QNXDebugPrintf2( "cursor address %d, %d\n", j, i );
+UIDebugPrintf2( "cursor address %d, %d\n", j, i );
 
                     // gotta dump chars before we move
                     TI_DUMPCHARS();
@@ -1535,7 +1534,7 @@ static int new_attr( int nattr, int oattr )
             }
         }
         if( _attr_fore( nval ) != _attr_fore( oval ) || _attr_back( nval ) != _attr_back( oval ) ) {
-QNXDebugPrintf2( "colour[%d, %d]\n", _attr_fore( nval ), _attr_back( nval ) );
+UIDebugPrintf2( "colour[%d, %d]\n", _attr_fore( nval ), _attr_back( nval ) );
             QNX_SETCOLOUR( _attr_fore( nval ), _attr_back( nval ) );
         }
     } else {

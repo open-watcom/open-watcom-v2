@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -51,7 +51,7 @@
 #include "vstk.h"
 #include "vbuf.h"
 #include "toggles.h"
-#ifndef NDEBUG
+#ifdef DEVBUILD
     #include "togglesd.h"
 #endif
 
@@ -65,37 +65,47 @@ static  RINGNAMECTL undef_names =       // #UNDEF NAMES LIST
 };
 
 
-static void nextSwitch(         // POSITION FOR NEXT SWITCH
-    void )
+static void nextSwitch( void )
+/*****************************
+ * POSITION FOR NEXT SWITCH
+ */
 {
     for( CmdScanChar(); ! CmdScanSwEnd(); CmdScanChar() );
 }
 
 
-void BadCmdLine(                // SIGNAL CMD-LINE ERROR
-    MSG_NUM error_code )        // - error code
+void BadCmdLine( MSG_NUM error_code )
+/************************************
+ * SIGNAL CMD-LINE ERROR
+ */
 {
     CErr1( error_code );
     nextSwitch();
     CmdLnCtxInfo();
 }
 
-void CmdLnWarn(                 // ISSUE WARNING FOR A SWITCH
-    MSG_NUM message )           // - message code
+void CmdLnWarn( MSG_NUM message )
+/********************************
+ * ISSUE WARNING FOR A SWITCH
+ */
 {
     CErr1( message );
     nextSwitch();
     CmdLnCtxInfo();
 }
 
-void CmdLnSwNotImplemented(     // ISSUE WARNING FOR UN-IMPLEMENTED SWITCH
-    void )
+void CmdLnSwNotImplemented( void )
+/*********************************
+ * ISSUE WARNING FOR UN-IMPLEMENTED SWITCH
+ */
 {
     CmdLnWarn( WARN_SWITCH_NOT_IMPL );
 }
 
-static MEPTR defineStringMacro( // DEFINE A MACRO NAME
-    const char *name )          // - name of macro
+static MEPTR defineStringMacro( const char *name )
+/*************************************************
+ * DEFINE A MACRO NAME
+ */
 {
     MEPTR mentry;
     char const *save = CmdScanAddr();
@@ -107,9 +117,12 @@ static MEPTR defineStringMacro( // DEFINE A MACRO NAME
 }
 
 
-MEPTR DefineCmdLineMacro(       // DEFINE A MACRO FROM THE COMMAND LINE
-                                // (assumes position is one char after "-D")
-    bool many_tokes )           // - true ==> scan multiple tokens
+MEPTR DefineCmdLineMacro( bool many_tokes )
+/******************************************
+ * DEFINE A MACRO FROM THE COMMAND LINE
+ * (assumes position is one char after "-D")
+ * many_tokes == true ==> scan multiple tokens
+ */
 {
     MEPTR mentry;
     int (*old_scanner)( void );
@@ -134,8 +147,10 @@ MEPTR DefineCmdLineMacro(       // DEFINE A MACRO FROM THE COMMAND LINE
 }
 
 
-void PreDefineStringMacro(      // PREDEFINE A MACRO
-    const char *str )           // - macro definition
+void PreDefineStringMacro( const char *str )
+/*******************************************
+ * PREDEFINE A MACRO, str - macro definition
+ */
 {
     char buffer[32];            // - buffer for name
     char *bptr;                 // - points into buffer
@@ -168,13 +183,15 @@ void PreDefineStringMacro(      // PREDEFINE A MACRO
 }
 
 
-void AddUndefName()             // SAVE A #UNDEF NAME
+void AddUndefName( void )
+/************************
+ * SAVE A #UNDEF NAME
+ */
 {
     int len;                    // - length of option
     char const *opt;            // - option
     char *mac_name;             // - macro name
 
-    CmdScanChar();
     len = CmdScanId( &opt );
     if( len == 0 ) {
         CompFlags.undefine_all_macros = true;
@@ -185,8 +202,10 @@ void AddUndefName()             // SAVE A #UNDEF NAME
 }
 
 
-static void defineKeywordMacros(   // PREDEFINE KEYWORD MACROS
-    void )
+static void defineKeywordMacros( void )
+/**************************************
+ * PREDEFINE KEYWORD MACROS
+ */
 {
     static const char *mac_table[] = { // - predefined macros
       "near=__near"
@@ -255,18 +274,22 @@ static void defineFeatureMacros( void )
 }
 
 
-void MiscMacroDefs(             // PREDEFINE MISCELLANEOUS MACROS
-    void )
+void MiscMacroDefs( void )
+/*************************
+ * PREDEFINE MISCELLANEOUS MACROS
+ */
 {
     if( CompFlags.inline_intrinsics ) {
-        // this is the only place 'inline_intrinsics' is checked
-        // the mechanism works as follows:
-        // (1) user sets -ox or -oi
-        // (2) macro __INLINE_FUNCTIONS__ is defined
-        // (3) user includes <header.h>
-        // (4) various prototypes are marked as "intrinsic"
-        // (5) fns marked 'intrinsic' will be looked up in code burst tables
-        // (6) code for fn will be generated inline
+        /*
+         * this is the only place 'inline_intrinsics' is checked
+         * the mechanism works as follows:
+         * (1) user sets -ox or -oi
+         * (2) macro __INLINE_FUNCTIONS__ is defined
+         * (3) user includes <header.h>
+         * (4) various prototypes are marked as "intrinsic"
+         * (5) fns marked 'intrinsic' will be looked up in code burst tables
+         * (6) code for fn will be generated inline
+         */
         defineStringMacro( "__INLINE_FUNCTIONS__" );
     }
     if( !CompFlags.extensions_enabled ) {
@@ -281,7 +304,7 @@ void MiscMacroDefs(             // PREDEFINE MISCELLANEOUS MACROS
     defineStringMacro( "_WCHAR_T_DEFINED" );
     defineStringMacro( "_STDWCHAR_T_DEFINED" );
     if( CompFlags.signed_char ) {
-        defineStringMacro( "__CHAR_SIGNED__" );              /* 20-apr-90 */
+        defineStringMacro( "__CHAR_SIGNED__" );
     }
     if( CompFlags.excs_enabled ) {
         defineStringMacro( "_CPPUNWIND" );
@@ -303,22 +326,29 @@ void MiscMacroDefs(             // PREDEFINE MISCELLANEOUS MACROS
     RingNameFree( &undef_names );
 }
 
-void InitModInfo(               // INITIALIZE MODULE INFORMATION
-    void )
+void InitModInfo( void )
+/***********************
+ * INITIALIZE MODULE INFORMATION
+ */
 {
+    memset( &CompVars, 0, sizeof( CompVars ) );
+
+    SET_STD( CXX98 );
     PackAmount = TARGET_PACKING;
     GblPackAmount = PackAmount;
     SrcFileSetTab( DEF_TAB_WIDTH );
     RingNameInit( &undef_names );
-    DataThreshold = 32767;
+    DataThreshold = TARGET_INT_MAX;
     OptSize = 50;
     WholeFName = NULL;
     ObjectFileName = NULL;
     ModuleName = NULL;
-    ErrorFileName = strsave( "*" );
+    ErrorFileName = CMemStrDup( "*" );
     ErrLimit = 20;
     WngLevel = WLEVEL_DEFAULT;
-    /* set CompFlags defaults */
+    /*
+     * set CompFlags defaults
+     */
     CompFlags.extensions_enabled = true;
     CompFlags.non_iso_compliant_names_enabled = true;
     CompFlags.emit_library_names = true;
@@ -328,7 +358,7 @@ void InitModInfo(               // INITIALIZE MODULE INFORMATION
     CompFlags.inline_functions = true;
 
     memset( &PragmaToggles, 0, sizeof( PragmaToggles ) );
-#ifndef NDEBUG
+#ifdef DEVBUILD
     memset( &PragmaDbgToggles, 0, sizeof( PragmaDbgToggles ) );
 #endif
     TOGGLE( check_stack ) = true;

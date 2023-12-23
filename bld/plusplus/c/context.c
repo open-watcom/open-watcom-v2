@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,7 +36,7 @@
 #include "ring.h"
 #include "context.h"
 #include "initdefs.h"
-#ifndef NDEBUG
+#ifdef DEVBUILD
     #include "dbg.h"
 #endif
 
@@ -57,12 +57,12 @@ static char const *switch_addr; // - - address of switch
 
                                 // - FORCED_INCS, SOURCE, FUNC_GEN, CG_FUNC
 static SYMBOL func;             // - - function being generated
-#ifndef NDEBUG
+#ifdef DEVBUILD
 static LINE_NO line;            // - - current line
 #endif
 
                                 // - FORCED_INCS, SOURCE
-#ifndef NDEBUG
+#ifdef DEVBUILD
 static TOKEN_LOCN location;     // - - location being analysed
 #endif
 
@@ -90,7 +90,7 @@ void CtxSetCurrContext(         // SET THE CURRENT CONTEXT
     context = curr;
     CtxSetSwitchAddr( NULL );
     func = NULL;
-#ifndef NDEBUG
+#ifdef DEVBUILD
     line = 0;
     location.src_file = NULL;
 #endif
@@ -111,7 +111,7 @@ char const *CtxGetSwitchAddr(   // GET CURRENT SWITCH CONTEXT
 }
 
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 void CtxTokenLocn(              // SET TOKEN LOCATION
     TOKEN_LOCN *locn )          // - token location
 {
@@ -127,7 +127,7 @@ void CtxFunction(               // SET FUNCTION BEING PROCESSED
 }
 
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 void CtxLine(                   // SET LINE BEING PROCESSED
     LINE_NO curr )              // - current line no.
 {
@@ -136,7 +136,7 @@ void CtxLine(                   // SET LINE BEING PROCESSED
 #endif
 
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 void CtxScanToken(              // SET TOKEN LOCATION FOR SCANNED TOKEN
     void )
 {
@@ -185,7 +185,7 @@ bool CtxCurrent(                // GET CURRENT CONTEXT
 }
 
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 static char CompilerContext[80]; // - buffer for debugging
 
 void *CtxWhereAreYou(           // SET DEBUGGING BUFFER

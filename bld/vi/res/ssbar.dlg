@@ -1,3 +1,5 @@
+/* UTF-8 encoding, ¥ */
+
 #include "ssbar.rh"
 #if defined (__NT__)
 #define SSB_ATTRS   SS_SUNKEN | SS_WHITEFRAME

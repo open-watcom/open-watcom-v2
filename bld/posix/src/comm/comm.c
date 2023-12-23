@@ -49,8 +49,6 @@
 #define  S_SECOND       0x02
 #define  S_BOTH         0x04
 
-char *OptEnvVar="comm";
-
 static const char *usageMsg[] = {
     "Usage: comm [-?123] [@env] file1 file2",
     "\tenv                : environment variable to expand",
@@ -76,13 +74,13 @@ static int getNextLine( FILE *fp, line *l )
 
     if( l->size == 0 ) {
         l->size = MIN_LINE_LEN * sizeof( char );
-        l->buff = (char *) malloc( l->size );
+        l->buff = (char *)MemAlloc( l->size );
     }
 
     for( ;; ) {
         if( os >= l->size - 1 ) {                   // Buffer getting small.
             l->size += MIN_LINE_LEN * sizeof( char );
-            l->buff  = (char *) realloc( l->buff, l->size );
+            l->buff  = (char *)MemRealloc( l->buff, l->size );
         }
         ch = fgetc( fp );
 
@@ -143,8 +141,8 @@ static void compareFiles( FILE *fp1, FILE *fp2, char mask )
         }
     }
 
-    free( l1.buff );
-    free( l2.buff );
+    MemFree( l1.buff );
+    MemFree( l2.buff );
 }
 
 int main( int argc, char **argv )
@@ -153,7 +151,7 @@ int main( int argc, char **argv )
     int         ch;
     char        mask = 0;
 
-    argv = ExpandEnv( &argc, argv );
+    argv = ExpandEnv( &argc, argv, "COMM" );
 
     for( ;; ) {
         ch = GetOpt( &argc, argv, "123", usageMsg );
@@ -186,5 +184,7 @@ int main( int argc, char **argv )
         fclose( fp1 );
         fclose( fp2 );
     }
+    MemFree( argv );
+
     return( 0 );
 }

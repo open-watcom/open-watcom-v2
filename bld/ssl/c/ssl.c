@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,7 +39,7 @@
 #include "sslint.h"
 #if defined( __UNIX__ ) && defined( __WATCOMC__ )
   #if ( __WATCOMC__ < 1300 )
-    // fix for OW 1.9
+    /* fix for OW 1.9 */
     #include <limits.h>
   #endif
 #endif

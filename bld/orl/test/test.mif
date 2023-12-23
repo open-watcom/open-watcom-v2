@@ -1,3 +1,5 @@
+tree_depth = 4
+
 proj_name = objread
 
 objread_autodepends = .autodepend
@@ -11,7 +13,7 @@ objread_trmem = 1
 
 !include $(orl_dir)/client.mif
 
-.c: $(orl_dir)/test/c;$(trmem_dir)
+.c: ../c;$(trmem_dir)
 
 inc_dirs = -I"$(orl_dir)/h" -I"$(orl_dir)/elf/h" -I"$(orl_dir)/coff/h" -I"$(watcom_dir)/h"
 

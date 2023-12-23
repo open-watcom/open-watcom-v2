@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -58,8 +58,6 @@ typedef enum {
 } drive_type;
 
 static char     includeNetwork;
-
-char            *OptEnvVar = "df";
 
 static const char *usageMsg[] = {
     "Usage: df [-?n] [@env] [drive list]",
@@ -252,7 +250,7 @@ int main( int argc, char *argv[] )
     int         ch;
     int         i;
 
-    argv = ExpandEnv( &argc, argv );
+    argv = ExpandEnv( &argc, argv, "DF" );
 
     for( ;; ) {
         ch = GetOpt( &argc, argv, "n", usageMsg );
@@ -277,6 +275,7 @@ int main( int argc, char *argv[] )
             doDF( i );
         }
     }
+    MemFree( argv );
 
     return( 0 );
 

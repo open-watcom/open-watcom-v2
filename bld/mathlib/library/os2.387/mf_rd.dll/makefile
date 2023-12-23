@@ -8,4 +8,4 @@ linkage         = dynamic
 
 lib_debug = 1
 
-!include $(mathlib_dir)/mrglib.mif
+!include ../../../mrglib.mif

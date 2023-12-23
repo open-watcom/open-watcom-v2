@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -78,7 +78,7 @@ typedef struct  macro_entry {
     mac_parm_count      parm_count;     /* special macro indicator if defn == 0 */
     macro_flags         macro_flags;    /* flags */
     source_loc          src_loc;        /* where macro defined, for diagnostic */
-    char                macro_name[1];  /* name,parms, and macro definition */
+    char                macro_name[1];  /* name, parms, and macro definition */
 } MEDEFN, *MEPTR;
 
 #if 0

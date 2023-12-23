@@ -1,3 +1,5 @@
+/* UTF-8 encoding, ¥ */
+
 pick(   SLB_DATA_SAVED_TO,
         "Data saved to %s",
         "Data saved to %s" )

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -381,10 +381,11 @@ static int check_directory( void )
 
 void print_banner( void )
 {
-    puts( banner1w( "Device Function Research Program", _RESEARCH_VERSION_ ) );
-    puts( banner2 );
-    puts( banner3 );
-    puts( banner3a );
+    puts( banner1t( "Device Function Research Program" ) "\n"
+          banner1v( _RESEARCH_VERSION_ ) "\n"
+          banner2 "\n"
+          banner3 "\n"
+          banner3a );
 }
 
 /*  Function print_usage().
@@ -416,34 +417,30 @@ int main()
 {
     /* Declare automatic variables. */
 
-    size_t  cmdlen  = 0;
-    char *  cmdline = NULL;
+    int     cmd_len;
+    char *  cmd_line;
     int     retval;
 
     /* Display the banner. */
 
     print_banner();
 
+    /* Get the command line. */
+
+    cmd_len = _bgetcmd( NULL, 0 ) + 1;
+    cmd_line = malloc( cmd_len );
+    if( cmd_line == NULL ) {
+        return( EXIT_FAILURE );
+    }
+    _bgetcmd( cmd_line, cmd_len );
+
     /* Display the usage information if the command line is empty. */
 
-    cmdlen = _bgetcmd( NULL, 0 );
-    if( cmdlen == 0 ) {
+    if( *cmd_line == '\0' ) {
+        free( cmd_line );
         print_usage();
         return( EXIT_FAILURE );
     }
-
-    /* Include space for the terminating null character. */
-
-    cmdlen++;
-
-    /* Get the command line. */
-
-    cmdline = malloc( cmdlen );
-    if( cmdline == NULL ) {
-        return( EXIT_FAILURE );
-    }
-
-    cmdlen = _bgetcmd( cmdline, cmdlen );
 
     /* Initialize the globals. */
 
@@ -462,16 +459,16 @@ int main()
 
     /* Parse the command line: allocates and sets tgt_path. */
 
-    retval = parse_cmdline( cmdline );
-    if( retval == FAILURE ) {
-        free( cmdline );
-        return( EXIT_FAILURE );
-    }
+    retval = parse_cmdline( cmd_line );
 
     /* Free the memory held by cmdline and reset it. */
 
-    free( cmdline );
-    cmdline = NULL;
+    free( cmd_line );
+    cmd_line = NULL;
+
+    if( retval == FAILURE ) {
+        return( EXIT_FAILURE );
+    }
 
     /* Check all files in current directory. */
 

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -204,7 +204,7 @@ bool DoGlobalEntryHandle( GLOBALENTRY *ge, HANDLE hmem );
 void Death( msg_id msgid, ... );
 
 /* winproc.c */
-extern LONG __export FAR PASCAL WindowProc( HWND, UINT, WPARAM, LPARAM );
+extern LONG __export FAR PASCAL MainWindowProc( HWND, UINT, WPARAM, LPARAM );
 
 /* drwatcom.c */
 void Alert( void );

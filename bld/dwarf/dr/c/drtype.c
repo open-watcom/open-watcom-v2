@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,6 +33,7 @@
 #include "drpriv.h"
 #include "drutils.h"
 
+
 static bool   DWRGetConstAT( drmem_hdl abbrev, drmem_hdl info,
                                                dw_atnum at,
                                                unsigned_32  *where )
@@ -59,6 +61,7 @@ static bool   DWRGetConstAT( drmem_hdl abbrev, drmem_hdl info,
     }
     return( ret );
 }
+
 static int DWRGetAT( drmem_hdl abbrev, drmem_hdl  info,
                      dr_val32  *vals, const dw_atnum *at )
 /********************************************************/
@@ -114,8 +117,8 @@ static const dw_atnum SubATList[] = {
 };
 
 
-void DRGetSubrangeInfo( drmem_hdl sub, dr_subinfo *info )
-/*******************************************************/
+void DRENTRY DRGetSubrangeInfo( drmem_hdl sub, dr_subinfo *info )
+/***************************************************************/
 {
     drmem_hdl       abbrev;
     dr_val32        vals[3];
@@ -134,8 +137,8 @@ static const dw_atnum BitATList[] = {
     0,
 };
 
-int DRGetBitFieldInfo( drmem_hdl mem, dr_bitfield *info )
-/*******************************************************/
+int DRENTRY DRGetBitFieldInfo( drmem_hdl mem, dr_bitfield *info )
+/***************************************************************/
 {
     drmem_hdl       abbrev;
     dr_val32        vals[3];
@@ -150,8 +153,8 @@ int DRGetBitFieldInfo( drmem_hdl mem, dr_bitfield *info )
 }
 
 
-bool DRGetTypeInfo( drmem_hdl entry, dr_typeinfo *info )
-/******************************************************/
+bool DRENTRY DRGetTypeInfo( drmem_hdl entry, dr_typeinfo *info )
+/**************************************************************/
 // Assume entry is pointing at start of a type
 {
     drmem_hdl       curr_ab;
@@ -338,8 +341,8 @@ error:
     return( false );
 }
 
-dr_ptr DRGetAddrClass( drmem_hdl entry )
-/**************************************/
+dr_ptr DRENTRY DRGetAddrClass( drmem_hdl entry )
+/**********************************************/
 {
     drmem_hdl   abbrev;
     dr_ptr      ret;
@@ -377,8 +380,8 @@ dr_ptr DRGetAddrClass( drmem_hdl entry )
     return( ret );
 }
 
-drmem_hdl DRGetTypeAT( drmem_hdl entry )
-/**************************************/
+drmem_hdl DRENTRY DRGetTypeAT( drmem_hdl entry )
+/**********************************************/
 {
     drmem_hdl   abbrev;
     drmem_hdl   type;
@@ -391,8 +394,8 @@ drmem_hdl DRGetTypeAT( drmem_hdl entry )
     return( type );
 }
 
-dr_array_stat DRGetArrayInfo( drmem_hdl entry, dr_array_info *info )
-/******************************************************************/
+dr_array_stat DRENTRY DRGetArrayInfo( drmem_hdl entry, dr_array_info *info )
+/**************************************************************************/
 {
     drmem_hdl       abbrev;
     dr_array_stat   stat;
@@ -428,9 +431,10 @@ dr_array_stat DRGetArrayInfo( drmem_hdl entry, dr_array_info *info )
     return( stat );
 }
 
-drmem_hdl DRSkipTypeChain( drmem_hdl tref )
-/*****************************************/
-// skip modifiers and typedefs
+drmem_hdl DRENTRY DRSkipTypeChain( drmem_hdl tref )
+/**************************************************
+ * skip modifiers and typedefs
+ */
 {
     drmem_hdl       abbrev;
     drmem_hdl       entry;
@@ -464,9 +468,10 @@ static const dw_tagnum MemTag[DR_WLKBLK_STRUCT] = {
     DW_TAG_member, DW_TAG_inheritance, DW_TAG_variable, DW_TAG_subprogram, 0
 };
 
-bool DRWalkStruct( drmem_hdl mod, const DRWLKBLK *wlks, void *d )
-/***************************************************************/
-// wlks[0] == member func, wlks[1] inherit func, wlks[2] default
+bool DRENTRY DRWalkStruct( drmem_hdl mod, const DRWLKBLK *wlks, void *d )
+/************************************************************************
+ * wlks[0] == member func, wlks[1] inherit func, wlks[2] default
+ */
 {
     return( DWRWalkChildren( mod, MemTag, wlks, d ) );
 }
@@ -475,9 +480,10 @@ static const dw_tagnum ArrayTag[DR_WLKBLK_ARRSIB] = {
     DW_TAG_subrange_type, DW_TAG_enumerator, 0
 };
 
-bool DRWalkArraySibs( drmem_hdl mod, const DRWLKBLK *wlks, void *d )
-/******************************************************************/
-// wlks[0] == subrange [1] = enumerator , 0 = Null
+bool DRENTRY DRWalkArraySibs( drmem_hdl mod, const DRWLKBLK *wlks, void *d )
+/***************************************************************************
+ * wlks[0] == subrange [1] = enumerator , 0 = Null
+ */
 {
     return( DWRWalkSiblings( mod, ArrayTag, wlks, d ) );
 }
@@ -486,9 +492,10 @@ static const dw_tagnum EnumTag[DR_WLKBLK_ENUMS] = {
     DW_TAG_enumerator, 0
 };
 
-bool DRWalkEnum( drmem_hdl mod,  DRWLKBLK wlk, void *d )
-/******************************************************/
-// wlks[0] == Enum  func, [1] Null
+bool DRENTRY DRWalkEnum( drmem_hdl mod,  DRWLKBLK wlk, void *d )
+/***************************************************************
+ * wlks[0] == Enum  func, [1] Null
+ */
 {
     DRWLKBLK    wlks[2];
 
@@ -497,8 +504,8 @@ bool DRWalkEnum( drmem_hdl mod,  DRWLKBLK wlk, void *d )
     return( DWRWalkChildren( mod, EnumTag, wlks, d ) );
 }
 
-bool DRConstValAT( drmem_hdl var, uint_32 *ret )
-/**********************************************/
+bool DRENTRY DRConstValAT( drmem_hdl var, uint_32 *ret )
+/******************************************************/
 {
     drmem_hdl   abbrev;
     dw_formnum  form;

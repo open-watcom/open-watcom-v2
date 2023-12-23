@@ -1177,13 +1177,13 @@ DbgNtfModUnload equ     0fff8h
 
 ;-------------------------------------------------------------------------------
 ;
-;Get CauseWay identifier, PageDIRLinear and Page1stLinear info.
+;Get CauseWay identifier, PageDirLinear and Page1stLinear info.
 ;
 ;On Exit:
 ;
 ;ECX:EDX - CauseWay identifier.
 ;
-;ESI     - Linear address (PageDIRLinear)
+;ESI     - Linear address (PageDirLinear)
 ;
 ;EDI     - Linear address (Page1stLinear)
 ;

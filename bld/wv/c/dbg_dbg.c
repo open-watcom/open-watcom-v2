@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -53,7 +53,7 @@
 #define WV_SYM_DEF(size) struct { fixed_wv_sym_entry s; unsigned char len, name[size]; }
 
 #define WV_SYM( prfx, tk, tm, ts, sc, intrnl, vn, np ) \
-    static const WV_SYM_DEF( sizeof( np #vn ) - 1 ) wv ## prfx ## _ ## vn = {  \
+    static const WV_SYM_DEF( sizeof( np #vn ) ) wv ## prfx ## _ ## vn = {  \
         {                                       \
             { ts, tk, tm }, sc, { intrnl }      \
         },                                      \
@@ -247,7 +247,7 @@ bool CreateSym( lookup_item *li, dig_type_info *ti )
 static void GetNPXType( void )
 {
     if( _IsOff( SW_KNOW_EMULATOR ) ) {
-        GetSysConfig(); /* might be emulator */
+        RemoteGetSysConfig(); /* might be emulator */
         _SwitchOn( SW_KNOW_EMULATOR );
     }
 }
@@ -288,11 +288,11 @@ void InternalValue( internal_idx index, void *d )
         *(unsigned_16 *)d = SysConfig.arch;
         break;
     case INTERNAL_cpu:
-        *(unsigned_16 *)d = SysConfig.cpu;
+        *(unsigned_16 *)d = SysConfig.cpu.byte;
         break;
     case INTERNAL_fpu:
         GetNPXType();
-        *(signed_16 *)d = SysConfig.fpu;
+        *(signed_16 *)d = SysConfig.fpu.byte;
         break;
     case INTERNAL_os:
         *(unsigned_16 *)d = SysConfig.os;

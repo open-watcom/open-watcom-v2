@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -59,103 +59,40 @@
 #include "qnxcomm.h"
 
 
-char *StrCopy( const char *src, char *dst )
+const char *CollectNid( const char *name, size_t len, nid_t *nidp )
 {
-    while( *dst = *src ) {
-        ++src;
-        ++dst;
-    }
-    return( dst );
-}
-
-char *CollectNid( char *ptr, unsigned len, nid_t *nidp )
-{
-    char        *start;
+    const char  *ptr;
     nid_t       nid;
     char        ch;
 
-    *nidp = 0;
-    start = ptr;
-    if( ptr[0] != '/' || ptr[1] != '/' ) return( ptr );
-    len -= 2;
-    ptr += 2;
     nid = 0;
-    //NYI: will need beefing up when NID's can be symbolic
-    for( ;; ) {
-        if( len == 0 ) break;
-        ch = *ptr;
-        if( ch < '0' || ch > '9' ) break;
-        nid = (nid * 10) + ( ch - '0' );
-        ++ptr;
-        --len;
+    ptr = name;
+    if( ptr[0] == '/' && ptr[1] == '/' ) {
+        len -= 2;
+        ptr += 2;
+        //NYI: will need beefing up when NID's can be symbolic
+        while( len > 0 ) {
+            ch = *ptr;
+            if( ch < '0' || ch > '9' )
+                break;
+            nid = ( nid * 10 ) + ( ch - '0' );
+            ++ptr;
+            --len;
+        }
+        //NYI: how do I check to see if NID is valid?
+        if( len > 0 ) {
+            switch( ptr[0] ) {
+            CASE_SEPS
+                break;
+            default:
+                nid = 0;
+                ptr = name;
+                break;
+            }
+        }
     }
     *nidp = nid;
-    //NYI: how do I check to see if NID is valid?
-    if( len == 0 ) return( ptr );
-    switch( ptr[0] ) {
-    case ' ':
-    case '\t':
-    case '\0':
-        break;
-    default:
-        *nidp = 0;
-        return( start );
-    }
     return( ptr );
-}
-
-unsigned TryOnePath( const char *path, struct stat *tmp, const char *name, char *result )
-{
-    char        *end;
-    char        *ptr;
-
-    if( path == NULL )
-        return( 0 );
-    ptr = result;
-    for( ;; ) {
-        switch( *path ) {
-        case ':':
-        case '\0':
-            if( ptr != result && ptr[-1] != '/' )
-                *ptr++ = '/';
-            end = StrCopy( name, ptr );
-            //NYI: really should check permission bits
-            if( stat( result, tmp ) == 0 )
-                return( end - result );
-            if( *path == '\0' )
-                return( 0 );
-            ptr = result;
-            break;
-        case ' ':
-        case '\t':
-            break;
-        default:
-            *ptr++ = *path;
-            break;
-        }
-        ++path;
-    }
-}
-
-unsigned FindFilePath( bool exe, const char *name, char *result )
-{
-    struct stat tmp;
-    unsigned    len;
-    char        *end;
-
-    if( stat( (char *)name, &tmp ) == 0 ) {
-        end = StrCopy( name, result );
-        return( end - result );
-    }
-    if( exe ) {
-        return( TryOnePath( getenv( "PATH" ), &tmp, name, result ) );
-    } else {
-        len = TryOnePath( getenv( "WD_PATH" ), &tmp, name, result );
-        if( len != 0 ) return( len );
-        len = TryOnePath( getenv( "HOME" ), &tmp, name, result );
-        if( len != 0 ) return( len );
-        return( TryOnePath( "/usr/watcom/wd", &tmp, name, result ) );
-    }
 }
 
 
@@ -177,7 +114,8 @@ trap_retval TRAP_CORE( Read_user_keyboard )( void )
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
     timeout = acc->wait * 10;
-    if( timeout == 0 ) timeout = -1;
+    if( timeout == 0 )
+        timeout = -1;
     ret->key = '\0';
     con = console_open( 2, O_WRONLY );
     if( con == NULL ) {
@@ -185,12 +123,13 @@ trap_retval TRAP_CORE( Read_user_keyboard )( void )
     }
     con_num = console_active( con, -1 );
     console_close( con );
-    con_name[ FIRST_DIGIT + 0 ] = (con_num / 10) + '0';
-    con_name[ FIRST_DIGIT + 1 ] = (con_num % 10) + '0';
+    con_name[FIRST_DIGIT + 0] = (con_num / 10) + '0';
+    con_name[FIRST_DIGIT + 1] = (con_num % 10) + '0';
 
     con_hdl = open( con_name, O_RDONLY );
     if( con_hdl < 0 ) {
-        if( timeout == -1 ) timeout = 50;
+        if( timeout == -1 )
+            timeout = 50;
         sleep( timeout / 10 );
         return( sizeof( *ret ) );
     }
@@ -222,36 +161,36 @@ trap_retval TRAP_CORE( Get_err_text )( void )
 
 trap_retval TRAP_CORE( Split_cmd )( void )
 {
-    char                ch;
-    char                *cmd;
-    char                *start;
+    const char          *cmd;
+    const char          *start;
     split_cmd_ret       *ret;
-    unsigned            len;
+    size_t              len;
     nid_t               nid;
 
-    cmd = GetInPtr( sizeof( split_cmd_req ) );
+    start = GetInPtr( sizeof( split_cmd_req ) );
     len = GetTotalSizeIn() - sizeof( split_cmd_req );
-    start = cmd;
     ret = GetOutPtr( 0 );
     ret->parm_start = 0;
-    cmd = CollectNid( cmd, len, &nid );
+    cmd = CollectNid( start, len, &nid );
     len -= cmd - start;
-    while( len != 0 ) {
-        ch = *cmd;
-        if( !( ch == '\0' || ch == ' ' || ch == '\t' ) ) break;
-        ++cmd;
-        --len;
-    }
-    while( len != 0 ) {
+    while( len > 0 ) {
         switch( *cmd ) {
-        case '\0':
-        case ' ':
-        case '\t':
-            ret->parm_start = 1;
-            len = 0;
+        CASE_SEPS
+            break;
+        default:
+            while( len > 0 ) {
+                switch( *cmd ) {
+                CASE_SEPS
+                    ret->parm_start = 1;
+                    len = 0;
+                    continue;
+                }
+                ++cmd;
+            }
             continue;
         }
         ++cmd;
+        --len;
     }
     ret->parm_start += cmd - start;
     ret->cmd_end = cmd - start;

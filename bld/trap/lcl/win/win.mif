@@ -1,4 +1,2 @@
-inc_dirs += -I"$(trap_dir)/lcl/win/h"
-
-!include $(trap_dir)/lcl/dos/dos.mif
-!include $(trap_dir)/master.mif
+extra_incs += -I"$(trap_dir)/lcl/win/h"
+extra_srcs +=;$(trap_dir)/lcl/win/c

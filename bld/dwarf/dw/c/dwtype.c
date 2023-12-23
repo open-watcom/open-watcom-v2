@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,7 +31,6 @@
 
 
 #include "dwpriv.h"
-#include "dwutils.h"
 #include "dwinfo.h"
 #include "dwhandle.h"
 #include "dwloc.h"
@@ -495,7 +494,7 @@ dw_handle DWENTRY DWBeginEnumeration( dw_client cli, dw_size_t byte_size, const 
 }
 
 
-void DWENTRY DWAddConstant( dw_client cli, dw_uconst value, const char *name )
+void DWENTRY DWAddEnumerationConstant( dw_client cli, dw_uconst value, const char *name )
 {
     StartDIE( cli, AB_ENUMERATOR );
     InfoULEB128( cli, value );

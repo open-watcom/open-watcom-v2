@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -65,7 +65,7 @@
 #include "clibext.h"
 
 
-#define GET36( x )          strtol( x, NULL, 36 )
+#define decode36( x )       strtol( x, NULL, 36 )
 
 #define IS_EMPTY(p)         ((p)[0] == '\0' || (p)[0] == '.' && (p)[1] == '\0')
 
@@ -1805,7 +1805,7 @@ static bool ProcLine( char *line, pass_type pass )
                 Multiple files in archive. First number is number of files,
                 followed by a list of file sizes in 512 byte blocks.
             */
-            num_files = GET36( line );
+            num_files = decode36( line );
             if( num_files == 0 ) {
                 FileInfo[num].files = NULL;
             } else {
@@ -1828,9 +1828,9 @@ static bool ProcLine( char *line, pass_type pass )
                 file->is_nlm = VbufCompExt( &buff, "nlm", true ) == 0;
                 file->is_dll = VbufCompExt( &buff, "dll", true ) == 0;
                 line = p; p = NextToken( line, '!' );
-                file->size = GET36( line ) * 512UL;
+                file->size = decode36( line ) * 512UL;
                 if( p != NULL && *p != '\0' && *p != '!' ) {
-                    file->date = GET36( p );
+                    file->date = decode36( p );
                 } else {
                     file->date = SetupInfo.stamp;
                 }
@@ -1859,9 +1859,9 @@ static bool ProcLine( char *line, pass_type pass )
             }
             VbufFree( &buff );
             line = next; next = NextToken( line, ',' );
-            FileInfo[num].dir_index = GET36( line ) - 1;
+            FileInfo[num].dir_index = decode36( line ) - 1;
             line = next; next = NextToken( line, ',' );
-            FileInfo[num].old_dir_index = GET36( line );
+            FileInfo[num].old_dir_index = decode36( line );
             if( FileInfo[num].old_dir_index != -1 ) {
                 FileInfo[num].old_dir_index--;
             }
@@ -3786,10 +3786,8 @@ static char *CompileCondition( const char *str )
             strcat( buff, " " );
             break;
         default:
-            strcat( buff, "#" );
             var_handle = AddVariable( token );
-            itoa( var_handle, buff + strlen( buff ), 10 );
-            strcat( buff, " " );
+            sprintf( buff + strlen( buff ), "#%d ", (int)var_handle );
         }
     }
     GUIMemFree( str2 );

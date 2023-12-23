@@ -2,6 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
+;* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -37,8 +38,6 @@ include math87.inc
         extern_chipbug
 
         modstart        atan087
-
-.8087
 
         xdefp   __atan87        ; calc atan(fac1)
 

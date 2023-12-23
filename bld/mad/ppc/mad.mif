@@ -1,4 +1,6 @@
-target_cpu = ppc
+tree_depth = 4
+
+dig_arch = ppc
 
 imp_objs = &
         ppcaddr.obj &

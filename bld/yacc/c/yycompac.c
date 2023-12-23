@@ -1,7 +1,8 @@
 
-
-// For now, omit error checking
-// define OMIT_ERROR_RECOVERY
+/*
+ * For now, omit error checking
+ * define OMIT_ERROR_RECOVERY
+ */
 
 #ifndef YYPRINT
 #define YYPRINT         printf
@@ -70,8 +71,10 @@ static YYACTTYPE find_action( YYACTTYPE base, YYTOKENTYPE yytoken )
     packed_action YYFAR *probe;
     YYCHKTYPE           check;
 
-    // yychktab[base] is parent + YYPARENT
-    // yyacttab[base] is default reduction
+    /*
+     * yychktab[base] is parent + YYPARENT
+     * yyacttab[base] is default reduction
+     */
     for( ;; ) {     // Chase up through parent productions
         pack = yyacttab + base;
 #if !defined(OMIT_ERROR_RECOVER)
@@ -88,8 +91,10 @@ static YYACTTYPE find_action( YYACTTYPE base, YYTOKENTYPE yytoken )
                 return( _action( *probe ) );
             }
         }
-        // Found next base in table -- lookup is not in list
-        // See if there is a parent production for original production
+        /*
+         * Found next base in table -- lookup is not in list
+         * See if there is a parent production for original production
+         */
         base = _check( *pack ) - YYPARENT;
         if( base == YYUSED ) {
             return( YYNOACTION );
@@ -109,10 +114,14 @@ static YYACTTYPE find_default( YYACTTYPE base )
             break;                              // Found a reduction
         if( yyaction == YYNOACTION )
             break;                              // Default is error
-        // Check parent production for default
+        /*
+         * Check parent production for default
+         */
         base = _check( *pack ) - YYPARENT;
         if( base == YYUSED ) {
-            // No parent
+            /*
+             * No parent
+             */
             return( YYNOACTION );
         }
     }
@@ -143,14 +152,18 @@ int yyparse( void )
         }
         yyaction = find_action( *yysp, yytoken );
         if( yyaction == YYNOACTION ) {
-            // No action -- look for default action
+            /*
+             * No action -- look for default action
+             */
             yyaction = find_default( *yysp );
             if( yyaction == YYNOACTION ) {
 #if defined(OMIT_ERROR_RECOVERY)
                 yyerror( "syntax error" );
                 YYABORT;
 #else
-                // No default action either -- error!
+                /*
+                 * No default action either -- error!
+                 */
                 switch( yyerrflag ) {
                 case 0:
                     yyerror( "syntax error" );
@@ -160,7 +173,9 @@ yyerrlab:
                 case 2:
                     yyerrflag = 3;
                     for( ;; ) {
-                        // Look for a shift rule for YYERRTOKEN
+                        /*
+                         * Look for a shift rule for YYERRTOKEN
+                         */
                         yyaction = find_action( *yysp, YYERRTOKEN );
                         if( yyaction != YYNOACTION && action < YYUSED ) {
                             break;      // found error rule
@@ -185,7 +200,9 @@ yyerrlab:
             }
         }
         if( yyaction < YYUSED ) {
-            // Shift to new state 'action'
+            /*
+             * Shift to new state 'action'
+             */
             if( yyaction == YYSTOP ) {
                 YYACCEPT;
             }
@@ -197,14 +214,18 @@ yyerrlab:
 #endif
             yytoken = yylex();
         } else {
-            // Reduce to production indicated by action
-            // Production is
-            //  target : token_or_target1 ...
-            //
-            // yyvp[] are the lexical values ($1, $2, etc.)
+            /*
+             * Reduce to production indicated by action
+             * Production is
+             *  target : token_or_target1 ...
+             *
+             * yyvp[] are the lexical values ($1, $2, etc.)
+             */
             production = yyaction - YYUSED;
             lhs = yyprodtab[production];
-            // Mask out length & lhs
+            /*
+             * Mask out length & lhs
+             */
             plen = lhs >> YYPRODSIZE;
             lhs &= (1 << YYPRODSIZE) - 1;
             yysp -= plen;
@@ -236,7 +257,9 @@ static void actions( unsigned short production, YYSTYPE * yyvp )
     switch( production ) {
 
     default:
-        // No action required
+        /*
+         * No action required
+         */
         return;
     }
     yyvp[0] = yyval;

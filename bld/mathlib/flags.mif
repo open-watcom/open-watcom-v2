@@ -1,11 +1,7 @@
-!ifdef lib_debug
-release = 0
-!endif
-
-!ifeq release 0
-sw_c_common = $(watcom_common_cflags)-j-za99-we-x-xx-zam-oax-zl-wpx
+!ifneq debug 0
+sw_c_common = $(watcom_common_cflags)-j-zastd=c99-we-x-xx-zam-oax-zl-wpx
 !else
-sw_c_common = $(watcom_common_cflags)-j-za99-we-x-xx-zam-s-oax-zl-wpx
+sw_c_common = $(watcom_common_cflags)-j-zastd=c99-we-x-xx-zam-s-oax-zl-wpx
 !endif
 !ifdef __UNIX__
 sw_c_common += -fo=.obj
@@ -35,8 +31,8 @@ sw_c_286_mh = -mh$(sw_c_bigdata)$(sw_c_bigcode)
 sw_c_386_ms = -ms$(sw_c_386_ms_$(system))
 sw_c_386_mf = -mf
 sw_c_axp_   =
-sw_c_ppc_   =
 sw_c_mps_   =
+sw_c_ppc_   =
 
 # sw_c_(processor)
 sw_c_intel    = -of
@@ -51,8 +47,8 @@ sw_c_287 =$(sw_c_intel)-fpi
 sw_c_386 =$(sw_c_intel)$(sw_c_$(convention))-fpc-zc-fpd$(sw_c_profile)
 sw_c_387 =$(sw_c_intel)$(sw_c_$(convention))-fpi87-zc-fpd$(sw_c_profile)
 sw_c_axp =
-sw_c_ppc =
 sw_c_mps =
+sw_c_ppc =
 
 # sw_c_(system)
 sw_c_msdos    = -bt=dos
@@ -86,11 +82,11 @@ sw_a_286_mh = -mh$(sw_a_bigcode)
 sw_a_386_ms = -ms
 sw_a_386_mf = -mf
 sw_a_axp_   =
-sw_a_ppc_   =
 sw_a_mps_   =
+sw_a_ppc_   =
 
 # sw_a_(processor)
-sw_a_intel    = -w8-e-DPDIV
+sw_a_intel    = -w8-cx-DPDIV -ee
 sw_a_16bit    = -0
 sw_a_register = -5r
 sw_a_stack    = -5s
@@ -100,8 +96,8 @@ sw_a_287 = $(sw_a_intel)$(sw_a_16bit) -fpi -fp0
 sw_a_386 = $(sw_a_intel)$(sw_a_$(convention)) -fpc -D_BUILDING_MATHLIB
 sw_a_387 = $(sw_a_intel)$(sw_a_$(convention)) -fpi87 -fp5
 sw_a_axp =
-sw_a_ppc =
 sw_a_mps =
+sw_a_ppc =
 
 # sw_a_(system)
 sw_a_msdos    = -bt=dos
@@ -118,7 +114,7 @@ mlib_a_flags = $(sw_a_common) $(sw_a_$(linkage)) $(sw_a_$(mlib_$(processor))_$(m
     $(sw_a_$(processor)) $(sw_a_$(system)) $(extra_mlib_a_flags)
 
 # debug flags need to be last to override optimization flags
-!ifeq release 0
+!ifneq debug 0
 c_dbg_flags = -d2
 a_dbg_flags = -d1
 !else

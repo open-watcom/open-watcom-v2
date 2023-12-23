@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -254,10 +254,11 @@ int main( int argc, char *argv[] )
     pubdef_tab = SymbolInit();
     extdef_tab = SymbolInit();
     for( i = 1; i < argc; ++i ) {
-        if( argv[i][0] == '-' ) {
-            c = tolower( (unsigned char)argv[i][1] );
-            if( c == 'e' && argv[i][2] == '=' ) {
-                process_except_file( argv[i] + 3 );
+        fn = argv[i];
+        if( fn[0] == '-' ) {
+            c = tolower( (unsigned char)fn[1] );
+            if( c == 'e' && fn[2] == '=' ) {
+                process_except_file( fn + 3 );
             } else {
                 ok = false;
                 break;

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,7 +44,7 @@
 #include "symmem.h"
 
 
-#define SYM_BLOCK_SIZE      _16KB
+#define SYM_BLOCK_SIZE      _16K
 #define SYM_BLOCK_MIN       32
 
 typedef struct sym_block {
@@ -89,7 +89,7 @@ static bool ShrinkBlock( block_data *block )
     _LnkRealloc( new, block->list, block->currbrk + ALLOC_SIZE );
     new->size = block->currbrk;
     /* assuming that a shrinkage will not move the block */
-  #ifdef _DEVELOPMENT
+  #ifdef DEVBUILD
     if( new != block->list ) {
         LnkMsg( FTL+MSG_INTERNAL, "s", "realloc moved shrinked block!" );
     }
@@ -148,7 +148,7 @@ static void *AllocBlock( size_t size, block_data *block )
     void            *ptr;
     size_t          newbrk;
 
-    size = ROUND_UP( size, sizeof( int ) );
+    size = __ROUND_UP_SIZE( size, sizeof( int ) );
     newbrk = block->currbrk + size;
     if( block->list == NULL ) {
         GetNewBlock( block, size );

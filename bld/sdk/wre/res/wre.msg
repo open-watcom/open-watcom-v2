@@ -1,3 +1,9 @@
+/* UTF-8 encoding, ¥ */
+
+#define PRODUCT_NAME    banner1t( "Resource Editor" )
+#define PRODUCT_NAME1   banner1t( "Dialog Editor" )
+#define PRODUCT_NAME2   banner1t( "Image Editor" )
+
 // the following is the font used in the status bar of the window
 pick(   WRE_STATUSFONT,
         "Helv.8",
@@ -5,8 +11,8 @@ pick(   WRE_STATUSFONT,
 
 // WREMSG.C
 pick(   WRE_MSGBOXTITLE,
-        "Open Watcom Resource Editor",
-        "Open Watcom Resource Editor" )
+        PRODUCT_NAME,
+        PRODUCT_NAME )
 
 // WRESTAT.C
 pick(   WRE_NOCREATESTATUS,
@@ -30,8 +36,8 @@ pick(   WRE_HINT_SAVEAS,
         "Save this file as a different file.",
         "Save this file as a different file." )
 pick(   WRE_HINT_EXIT,
-        "Exit the Open Watcom Resource Editor.",
-        "Exit the Open Watcom Resource Editor." )
+        "Exit the " PRODUCT_NAME ".",
+        "Exit the " PRODUCT_NAME "." )
 pick(   WRE_HINT_OPTIONS,
         "Set program options.",
         "Set program options." )
@@ -96,8 +102,8 @@ pick(   WRE_HINT_ABOUT,
         "Display program information.",
         "Display program information." )
 pick(   WRE_HINT_HELP,
-        "List Open Watcom Resource Editor help topics.",
-        "List Open Watcom Resource Editor help topics." )
+        "List " PRODUCT_NAME " help topics.",
+        "List " PRODUCT_NAME " help topics." )
 pick(   WRE_HINT_HELP_SEARCH,
         "Search for help on a specific topic.",
         "Search for help on a specific topic." )
@@ -182,11 +188,11 @@ pick(   WRE_DEFDIALOGNAME,
         "DIALOG_%d",
         "DIALOG_%d" )
 pick(   WRE_DLGSESSIONKILLED,
-        "The Open Watcom Dialog Editor terminated the edit session.",
-        "The Open Watcom Dialog Editor terminated the edit session." )
+        "The " PRODUCT_NAME1 " terminated the edit session.",
+        "The " PRODUCT_NAME1 " terminated the edit session." )
 pick(   WRE_DLGEDITNOTSPAWNED,
-        "Failed to spawn the Open Watcom Dialog Editor.",
-        "Failed to spawn the Open Watcom Dialog Editor." )
+        "Failed to spawn the " PRODUCT_NAME1 ".",
+        "Failed to spawn the " PRODUCT_NAME1 "." )
 
 // WREIMG.C
 pick(   WRE_DEFBITMAPNAME,
@@ -199,11 +205,11 @@ pick(   WRE_DEFICONNAME,
         "ICON_%d",
         "ICON_%d" )
 pick(   WRE_IMGSESSIONKILLED,
-        "The Open Watcom Image Editor terminated the edit session.",
-        "The Open Watcom Image Editor terminated the edit session." )
+        "The " PRODUCT_NAME2 " terminated the edit session.",
+        "The " PRODUCT_NAME2 " terminated the edit session." )
 pick(   WRE_IMGEDITNOTSPAWNED,
-        "Failed to spawn the Open Watcom Image Editor.",
-        "Failed to spawn the Open Watcom Image Editor." )
+        "Failed to spawn the " PRODUCT_NAME2 ".",
+        "Failed to spawn the " PRODUCT_NAME2 "." )
 
 // WREACCEL.C
 pick(   WRE_DEFACCELNAME,
@@ -313,8 +319,8 @@ pick(   WRE_TOTALTEXT,
 
 // WREMAIN.C
 pick(   WRE_APPNAME,
-        "Open Watcom Resource Editor",
-        "Open Watcom Resource Editor" )
+        PRODUCT_NAME,
+        PRODUCT_NAME )
 pick(   WRE_INITFAILED,
         "Initialization Failed!",
         "Initialization Failed!" )
@@ -352,14 +358,14 @@ pick(   WRE_INVALIDINPUTFILE,
         "Invalid input file.",
         "Invalid input file." )
 pick(   WRE_ABOUT_NAME,
-        "Open Watcom Resource Editor for Windows" STR_BITNESS,
-        "Open Watcom Resource Editor for Windows" STR_BITNESS )
+        PRODUCT_NAME " for Windows",
+        PRODUCT_NAME " for Windows" )
 pick(   WRE_ABOUT_VERSION,
         banner1v( _RESEDIT_VERSION_ ),
         banner1v( _RESEDIT_VERSION_ ) )
 pick(   WRE_ABOUT_TITLE,
-        "About Open Watcom Resource Editor",
-        "About Open Watcom Resource Editor" )
+        "About " PRODUCT_NAME,
+        "About " PRODUCT_NAME )
 
 // WRERES.C
 pick(   WRE_UNTITLED,

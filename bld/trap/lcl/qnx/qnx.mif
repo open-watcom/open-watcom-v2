@@ -1,0 +1,2 @@
+extra_incs += -I"$(trap_dir)/lcl/qnx/h"
+extra_srcs +=;$(trap_dir)/lcl/qnx/c

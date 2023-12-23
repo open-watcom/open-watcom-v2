@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,12 +43,12 @@
 #include "rfxdata.h"
 #endif
 #include "dbgio.h"
+#include "trpld.h"
 #include "trpfile.h"
 #include "filermt.h"
 #include "filelcl.h"
 #include "trapglbl.h"
 #include "remfile.h"
-#include "trpld.h"
 
 
 #define CACHED_HANDLES    16
@@ -62,7 +62,9 @@
 
 typedef int             loc_handle;
 
-/* Remote file "cache" - correlates remote and local file handles */
+/*
+ * Remote file "cache" - correlates remote and local file handles
+ */
 typedef struct _fcache_t {
     loc_handle  lochandle;
     sys_handle  remhandle;
@@ -78,10 +80,12 @@ static FILE             *logf;
 static trap_shandle     SuppFileId = 0;
 static fcache_t         fcache[CACHED_HANDLES];
 static const int        local_seek_method[] = { SEEK_SET, SEEK_CUR, SEEK_END };
-static const unsigned_8 remote_seek_method[] = { TF_SEEK_ORG, TF_SEEK_CUR, TF_SEEK_END };
+static const unsigned_8 remote_seek_method[] = { DIG_SEEK_ORG, DIG_SEEK_CUR, DIG_SEEK_END };
 
-/* Return local handle of remote file equivalent */
 static loc_handle GetCachedHandle( sys_handle remote )
+/*****************************************************
+ * Return local handle of remote file equivalent
+ */
 {
     int i;
 
@@ -93,8 +97,10 @@ static loc_handle GetCachedHandle( sys_handle remote )
     return( LOC_NIL_HANDLE );
 }
 
-/* Initialize local/remote handle cache */
 static void InitHandleCache( void )
+/**********************************
+ * Initialize local/remote handle cache
+ */
 {
     int     i;
 
@@ -109,8 +115,10 @@ static void InitHandleCache( void )
     }
 }
 
-/* Add entry for local/remote "cached" file */
 static int AddCachedHandle( loc_handle local, sys_handle remote )
+/****************************************************************
+ * Add entry for local/remote "cached" file
+ */
 {
     int     i;
 
@@ -124,8 +132,10 @@ static int AddCachedHandle( loc_handle local, sys_handle remote )
     return( -1 );
 }
 
-/* Remove cached file entry from the list */
 static int DelCachedHandle( loc_handle local )
+/*********************************************
+ * Remove cached file entry from the list
+ */
 {
     int     i;
 
@@ -149,7 +159,7 @@ bool InitFileSupp( void )
     if( SuppFileId == 0 )
         return( false );
     SUPP_FILE_SERVICE( acc, REQ_FILE_GET_CONFIG );
-    TrapSimpAccess( sizeof( acc ), &acc, sizeof( RemFile ), &RemFile );
+    TrapSimpleAccess( sizeof( acc ), &acc, sizeof( RemFile ), &RemFile );
     return( true );
 }
 
@@ -158,9 +168,11 @@ bool HaveRemoteFiles( void )
     return( SuppFileId != 0 );
 }
 
-//NYI: The 'bool executable' should be changed to allow different file types
-size_t RemoteStringToFullName( bool executable, const char *name, char *res,
+size_t RemoteFileToFullName( dig_filetype file_type, const char *name, char *res,
                                  trap_elen res_len )
+/********************************************************************************
+ * NYI: The 'bool executable' should be changed to allow different file types
+ */
 {
     in_mx_entry         in[2];
     mx_entry            out[2];
@@ -172,26 +184,30 @@ size_t RemoteStringToFullName( bool executable, const char *name, char *res,
 #endif
 
     if( SuppFileId == 0 ) {
-        fh = LclStringToFullName( name, strlen( name ), res );
+        fh = LclFileToFullName( name, strlen( name ), res );
         if( fh == NIL_HANDLE )
             return( 0 );
         FileClose( fh );
         return( strlen( res ) );
     }
     SUPP_FILE_SERVICE( acc, REQ_FILE_STRING_TO_FULLPATH );
-    acc.file_type = ( executable ? TF_TYPE_EXE : TF_TYPE_PRS );
+    acc.file_type = file_type;
     in[0].ptr = &acc;
     in[0].len = sizeof( acc );
     in[1].ptr = (void *)name;
 #ifdef __NT__
-    // check whether short filename is necessary
+    /*
+     * check whether short filename is necessary
+     */
     switch( SysConfig.os ) {
     case DIG_OS_AUTOCAD:
     case DIG_OS_DOS:
     case DIG_OS_RATIONAL:
     case DIG_OS_PHARLAP:
     case DIG_OS_WINDOWS:
-        // convert long file name to short "DOS" compatible form
+        /*
+         * convert long file name to short "DOS" compatible form
+         */
         {
             GetShortPathNameA( name, short_filename, MAX_PATH );
             if( *short_filename != NULLCHAR ) {
@@ -211,9 +227,8 @@ size_t RemoteStringToFullName( bool executable, const char *name, char *res,
     if( ret.err != 0 ) {
         *res = NULLCHAR;
         return( 0 );
-    } else {
-        return( strlen( res ) );
     }
+    return( strlen( res ) );
 }
 
 sys_handle RemoteOpen( const char *name, obj_attrs oattrs )
@@ -233,13 +248,13 @@ sys_handle RemoteOpen( const char *name, obj_attrs oattrs )
     SUPP_FILE_SERVICE( acc, REQ_FILE_OPEN );
     acc.mode = 0;
     if( oattrs & OP_READ )
-        acc.mode |= TF_READ;
+        acc.mode |= DIG_OPEN_READ;
     if( oattrs & OP_WRITE )
-        acc.mode |= TF_WRITE;
+        acc.mode |= DIG_OPEN_WRITE;
     if( oattrs & OP_CREATE ) {
-        acc.mode |= TF_CREATE;
+        acc.mode |= DIG_OPEN_CREATE;
         if( oattrs & OP_EXEC ) {
-            acc.mode |= TF_EXEC;
+            acc.mode |= DIG_OPEN_TRUNC;
         }
     }
     in[0].ptr = &acc;
@@ -250,31 +265,31 @@ sys_handle RemoteOpen( const char *name, obj_attrs oattrs )
     out[0].len = sizeof( ret );
     TrapAccess( 2, in, 1, out );
     CONV_LE_32( ret.err );
-    CONV_LE_64( ret.handle );
     if( ret.err != 0 ) {
         StashErrCode( ret.err, OP_REMOTE );
         SET_SYSHANDLE_NULL( sh );
         return( sh );
-    } else {
-        /* See if the file is available locally. If so, open it here as
-         * well as on the remote machine.
-         */
-        // TODO: check if remote file is the same!
-
-#ifdef LOGGING
-        fprintf( logf, "Trying to open local copy of remote file (remote handle %d)\n", ret.handle );
-        fprintf( logf, "%s\n", name );
-#endif
-
-        if( (lochandle = open( name, O_RDONLY | O_BINARY, 0 )) != LOC_NIL_HANDLE ) {
-            if( AddCachedHandle( lochandle, ret.handle ) != 0 )
-                close( lochandle );
-#ifdef LOGGING
-            fprintf( logf, "Success\n", name );
-#endif
-        }
-        return( ret.handle );
     }
+    CONV_LE_64( ret.handle );
+    /*
+     * See if the file is available locally. If so, open it here as
+     * well as on the remote machine.
+     *
+     * TODO: check if remote file is the same!
+     */
+#ifdef LOGGING
+    fprintf( logf, "Trying to open local copy of remote file (remote handle %d)\n", ret.handle );
+    fprintf( logf, "%s\n", name );
+#endif
+
+    if( (lochandle = open( name, O_RDONLY | O_BINARY, 0 )) != LOC_NIL_HANDLE ) {
+        if( AddCachedHandle( lochandle, ret.handle ) != 0 )
+            close( lochandle );
+#ifdef LOGGING
+        fprintf( logf, "Success\n", name );
+#endif
+    }
+    return( ret.handle );
 }
 
 static size_t doWrite( sys_handle sh, const void *buff, size_t len )
@@ -303,11 +318,11 @@ static size_t doWrite( sys_handle sh, const void *buff, size_t len )
         in[1].len = piece_len;
         TrapAccess( 2, in, 1, out );
         CONV_LE_32( ret.err );
-        CONV_LE_16( ret.len );
         if( ret.err != 0 ) {
             StashErrCode( ret.err, OP_REMOTE );
-            return( ERR_RETURN );
+            return( ERR_WRITE );
         }
+        CONV_LE_16( ret.len );
         total += ret.len;
         if( ret.len != piece_len )
             break;
@@ -349,11 +364,11 @@ static size_t doWriteConsole( const void *buff, size_t len )
         in[1].len = piece_len;
         TrapAccess( 2, in, 1, out );
         CONV_LE_32( ret.err );
-        CONV_LE_16( ret.len );
         if( ret.err != 0 ) {
             StashErrCode( ret.err, OP_REMOTE );
-            return( ERR_RETURN );
+            return( ERR_WRITE );
         }
+        CONV_LE_16( ret.len );
         total += ret.len;
         if( ret.len != piece_len )
             break;
@@ -410,8 +425,9 @@ static size_t doRead( sys_handle sh, void *buff, size_t len )
         CONV_LE_32( ret.err );
         if( ret.err != 0 ) {
             StashErrCode( ret.err, OP_REMOTE );
-            return( ERR_RETURN );
+            return( ERR_READ );
         }
+        CONV_LE_16( ret.len );
         total += read_len;
         if( read_len != piece_len )
             break;
@@ -427,8 +443,9 @@ size_t RemoteRead( sys_handle sh, void *buff, size_t len )
 
     if( SuppFileId == 0 )
         return( 0 );
-
-    /* Try reading from local copy first */
+    /*
+     * Try reading from local copy first
+     */
     lochandle = GetCachedHandle( sh );
     if( lochandle != LOC_NIL_HANDLE )
         return( read( lochandle, buff, len ) );
@@ -444,8 +461,9 @@ unsigned long RemoteSeek( sys_handle sh, unsigned long pos, seek_method method )
 
     if( SuppFileId == 0 )
         return( 0 );
-
-    /* Seek on local copy too (if available) */
+    /*
+     * Seek on local copy too (if available)
+     */
     lochandle = GetCachedHandle( sh );
     if( lochandle != LOC_NIL_HANDLE ) {
         lseek( lochandle, pos, local_seek_method[method] );
@@ -453,20 +471,21 @@ unsigned long RemoteSeek( sys_handle sh, unsigned long pos, seek_method method )
 
     SUPP_FILE_SERVICE( acc, REQ_FILE_SEEK );
     acc.handle = sh;
-    /* Magic again! The seek mode mapped exactly to our definition! */
+    /*
+     * Magic again! The seek mode mapped exactly to our definition!
+     */
     acc.mode = remote_seek_method[method];
     acc.pos = pos;
     CONV_LE_64( acc.handle );
     CONV_LE_32( acc.pos );
-    TrapSimpAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
-    CONV_LE_32( ret.pos );
+    TrapSimpleAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
     CONV_LE_32( ret.err );
     if( ret.err != 0 ) {
         StashErrCode( ret.err, OP_REMOTE );
         return( ERR_SEEK );
-    } else {
-        return( ret.pos );
     }
+    CONV_LE_32( ret.pos );
+    return( ret.pos );
 }
 
 error_handle RemoteClose( sys_handle sh )
@@ -490,7 +509,7 @@ error_handle RemoteClose( sys_handle sh )
     SUPP_FILE_SERVICE( acc, REQ_FILE_CLOSE );
     acc.handle = sh;
     CONV_LE_64( acc.handle );
-    TrapSimpAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
+    TrapSimpleAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
     CONV_LE_32( ret.err );
     return( StashErrCode( ret.err, OP_REMOTE ) );
 }

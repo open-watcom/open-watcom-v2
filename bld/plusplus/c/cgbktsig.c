@@ -44,7 +44,7 @@
 #include "ring.h"
 #include "rtti.h"
 #include "initdefs.h"
-#ifndef NDEBUG
+#ifdef DEVBUILD
     #include "dbg.h"
     #include "togglesd.h"
     #include "pragdefn.h"
@@ -83,7 +83,7 @@ void BeGenTsRef(                // GENERATE REFERENCE TO TYPE-SIGNATURE
     target_offset_t offset;     // - offset for reference
 
     TypeSigSymOffset( ts, &sym, &offset );
-#ifndef NDEBUG
+#ifdef DEVBUILD
     if( TOGGLEDBG( dump_stab ) ) {
         VBUF vbuf;
         printf( " typsig=%s+%x"
@@ -130,7 +130,7 @@ static void genBaseHdr(         // GENERATE BASE HEADER FOR TYPE-SIGNATURE
     DgByte( THROBJ_PTR_CLASS );
     DgByte( THROBJ_REFERENCE );
     DgByte( flags );
-#ifndef NDEBUG
+#ifdef DEVBUILD
     if( TOGGLEDBG( dump_stab ) ) {
         printf( " base=%d,%d,%d,%d"
               , thr
@@ -149,7 +149,7 @@ static void genScalarHdr(       // GENERATE SCALAR HDR
 
     size = CgMemorySize( ts->type );
     DgOffset( size );
-#ifndef NDEBUG
+#ifdef DEVBUILD
     if( TOGGLEDBG( dump_stab ) ) {
         printf( " size=%d\n", size );
     }
@@ -165,7 +165,7 @@ static void genTsPtr(           // GENERATE PTR TO TYPE SIGNATURE
 
     ts = BeTypeSignature( type );
     DgPtrSymData( ts->sym );
-#ifndef NDEBUG
+#ifdef DEVBUILD
     if( TOGGLEDBG( dump_stab ) ) {
         printf( " sig=%x\n", ts );
     }
@@ -189,7 +189,7 @@ static void genTypeSig(         // GENERATE A TYPE_SIG
     thr = ThrowCategory( ts->type );
     if( thr == THROBJ_ANYTHING )
         return;
-#ifndef NDEBUG
+#ifdef DEVBUILD
     if( TOGGLEDBG( dump_stab ) ) {
         const char* code;
         switch( thr ) {
@@ -217,7 +217,7 @@ static void genTypeSig(         // GENERATE A TYPE_SIG
     case THROBJ_PTR_CLASS :
         genBaseHdr( thr, TSIG_FLAGS_INDIRECT );
         BeGenTsRef( ts );
-#ifndef NDEBUG
+#ifdef DEVBUILD
         if( TOGGLEDBG( dump_stab ) ) {
             printf( "\n" );
         }
@@ -243,7 +243,7 @@ static void genTypeSig(         // GENERATE A TYPE_SIG
         size = CgMemorySize( ts->type );
         DgOffset( size );
         genName( thr, ts->type );
-#ifndef NDEBUG
+#ifdef DEVBUILD
         if( TOGGLEDBG( dump_stab ) ) {
             VBUF vbuf1;
             VBUF vbuf2;
@@ -317,7 +317,7 @@ void BeGenTypeSigEnts(          // EMIT TYPE_SIG_ENT RING
     unsigned count;             // - # entries
 
     count = RingCount( ring );
-#ifndef NDEBUG
+#ifdef DEVBUILD
     if( TOGGLEDBG( dump_stab ) ) {
         printf( "%d\n", count );
     }
@@ -325,7 +325,7 @@ void BeGenTypeSigEnts(          // EMIT TYPE_SIG_ENT RING
     DgOffset( count );
     RingIterBegSafe( ring, curr ) {
        BeGenTsRef( curr->sig );
-#ifndef NDEBUG
+#ifdef DEVBUILD
         if( TOGGLEDBG( dump_stab ) ) {
             printf( "\n" );
         }

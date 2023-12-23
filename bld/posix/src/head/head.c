@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,8 +43,6 @@
 #include "argvenv.h"
 
 
-char *OptEnvVar="head";
-
 static const char *usageMsg[] = {
     "Usage: head [-?X] [-<number>] [@env] [files...]",
     "\tenv                : environment variable to expand",
@@ -83,13 +81,15 @@ int main( int argc, char **argv )
     FILE        *fp;
     int         ch;
     bool        rxflag;
+    int         i;
+    char        **argv1;
 
-    argv = ExpandEnv( &argc, argv );
+    argv1 = ExpandEnv( &argc, argv, "HEAD" );
 
     head = 10;
     rxflag = false;
     for( ;; ) {
-        ch = GetOpt( &argc, argv, "#X", usageMsg );
+        ch = GetOpt( &argc, argv1, "#X", usageMsg );
         if( ch == -1 ) {
             break;
         }
@@ -103,23 +103,23 @@ int main( int argc, char **argv )
         }
     }
 
-    argv = ExpandArgv( &argc, argv, rxflag );
-
-    argv++;
-    if( argv[0] == NULL ) {
+    argv = ExpandArgv( &argc, argv1, rxflag );
+    if( argc < 2 ) {
         DumpHead( stdin );
     } else {
-        while( *argv != NULL ) {
-            fp = fopen( *argv, "r" );
+        for( i = 1; i < argc; i++ ) {
+            fp = fopen( argv[i], "r" );
             if( fp == NULL ) {
-                Die( "%s: could not open\n", *argv );
+                Die( "%s: could not open\n", argv[i] );
             }
             if( argc > 2 ) {
-                printf( "%s:\n", *argv );
+                printf( "%s:\n", argv[i] );
             }
             DumpHead( fp );
-            argv++;
         }
     }
+    MemFree( argv );
+    MemFree( argv1 );
+
     return( 0 );
 }

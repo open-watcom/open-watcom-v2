@@ -1,6 +1,9 @@
 #
 # Open Watcom DIP Dumper makefile.
 #
+
+tree_depth = 4
+
 proj_name = dipdump
 
 !ifndef dipdump_autodepends
@@ -17,9 +20,11 @@ dipdump_autodepends = .AUTODEPEND
 #
 # cflags
 #
-.c: ../c;$(dig_srcs);$(mad_srcs)
+.c: ../c;$(dig_srcs);$(mad_srcs);$(watcom_dir)/c
 
 inc_dirs = -I"../h" -I"$(dig_dir)/h"
+
+extra_cpp_flags = -DBLDVER=$(bld_ver)
 
 # explicit rules
 #################

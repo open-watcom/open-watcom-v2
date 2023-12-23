@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -538,8 +538,7 @@ INT_PTR CALLBACK WdeOptionsDlgProc( HWND hDlg, UINT message, WPARAM wParam, LPAR
 {
     bool ret;
 
-    /* touch unused vars to get rid of warning */
-    _wde_touch( lParam );
+    /* unused parameters */ (void)lParam;
 
     ret = false;
 

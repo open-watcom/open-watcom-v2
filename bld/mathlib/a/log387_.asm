@@ -2,6 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
+;* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -32,10 +33,10 @@
 
 include mdef.inc
 
-.287
-        modstart        log387
-        xdefp   __log87         ; calc log(fac1)
 
+        modstart        log387
+
+        xdefp   __log87         ; calc log(fac1)
 
         defp    __log87
         fldln2                  ; load ln(2)

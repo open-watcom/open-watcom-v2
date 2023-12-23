@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,15 +37,15 @@
 #include <unistd.h>
 #include <ctype.h>
 #ifdef __WINDOWS__
-#include <dos.h>
-#include "commonui.h"
+    #include <dos.h>
+    #include <wwindows.h>
 #endif
 #include "sample.h"
 #include "smpstuff.h"
 #include "wmsg.h"
 #include "pathgrp2.h"
 #ifdef __WINDOWS__
-#include "sampwin.h"
+    #include "sampwin.h"
 #endif
 
 #include "clibext.h"

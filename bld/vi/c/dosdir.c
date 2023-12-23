@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,6 +33,7 @@
 #include "vi.h"
 #include <direct.h>
 #include "wio.h"
+#include "myprintf.h"
 
 #include "clibext.h"
 
@@ -42,15 +43,21 @@
  */
 vi_rc MyGetFileSize( const char *name, long *size )
 {
-    DIR         *d;
+    DIR             *dirp;
+    struct dirent   *dire;
+    vi_rc           rc;
 
-    d = opendir( name );
-    if( d == NULL ) {
-        return( ERR_FILE_NOT_FOUND );
+    rc = ERR_FILE_NOT_FOUND;
+    dirp = opendir( name );
+    if( dirp != NULL ) {
+        dire = readdir( dirp );
+        if( dire != NULL ) {
+            *size = dire->d_size;
+            rc = ERR_NO_ERR;
+        }
+        closedir( dirp );
     }
-    *size = d->d_size;
-    closedir( d );
-    return( ERR_NO_ERR );
+    return( rc );
 
 } /* MyGetFileSize */
 

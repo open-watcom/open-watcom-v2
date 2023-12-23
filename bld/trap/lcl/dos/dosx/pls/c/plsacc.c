@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,6 +34,7 @@
 #include <string.h>
 #include <conio.h>
 #include <io.h>
+#include <i86.h>
 #include <fcntl.h>
 #include "pltypes.h"
 #include "hw386.h"
@@ -46,22 +47,90 @@
 #include "exeos2.h"
 #include "exepe.h"
 #include "madregs.h"
-#include "cpuglob.h"
+#include "brkptcpu.h"
+#include "digcpu.h"
 #include "x86cpu.h"
 #include "miscx87.h"
 #include "dosredir.h"
 #include "doscomm.h"
-#include "clibint.h"
 #include "trperr.h"
 #include "doserr.h"
 #include "plsintr.h"
+#include "segmcpu.h"
 
+#include "clibint.h"
+
+
+#define MAX_OBJECTS     128
+
+#define DBE_BASE        1000
+
+#define MAX_WATCHES     32
 
 #ifdef DEBUG_TRAP
 #define _DBG( x )  cputs x
 #else
 #define _DBG( x )
 #endif
+
+typedef struct watch_point {
+    uint_64     value;
+    dword       linear;
+    addr48_ptr  addr;
+    word        size;
+    word        dregs;
+} watch_point;
+
+typedef struct {
+    long    have_vmm;
+    long    nconvpg;
+    long    nbimpg;
+    long    nextpg;
+    long    extlim;
+    long    aphyseg;
+    long    alockpg;
+    long    sysphyspg;
+    long    nfreepg;
+    long    beglinaddr;
+    long    endlinaddr;
+    long    secsincelastvmstat;
+    long    pgfaults;
+    long    pgswritten;
+    long    pgsreclaimed;
+    long    vmpages;
+    long    pgfilesize;
+    long    emspages;
+    long    mincomvmem;
+    long    maxpagefile;
+    long    vmflags;
+    long    reserved[4];
+} memory_stats;
+
+#pragma aux (metaware)  _dil_global;
+#pragma aux (metaware)  _dx_config_inf;
+
+
+extern  long            _STACKTOP;
+
+opcode_type             OldFakeOpcode;
+bool                    FakeBreak;
+bool                    AtEnd;
+bool                    ReportedAlias;
+short                   InitialSS;
+short                   InitialCS;
+
+static unsigned         SaveMSW;
+static unsigned_8       RealNPXType;
+static char             UtilBuff[BUFF_SIZE];
+static MSB              Mach;
+static SEL_REMAP        SelBlk;
+static bool             HavePSP;
+static unsigned long    ObjOffReloc[MAX_OBJECTS];
+
+static watch_point      WatchPoints[MAX_WATCHES];
+static int              WatchCount = 0;
+
+static opcode_type      BreakOpcode;
 
 #define DBG_ERROR "System error: "
 static char *DBErrors[] = {
@@ -100,67 +169,6 @@ static char *DBErrors[] = {
         "Incorrect DILIB loadable portion version"
 };
 
-extern  long            _STACKTOP;
-
-#pragma aux (metaware)  _dil_global;
-#pragma aux (metaware)  _dx_config_inf;
-
-
-bool                    FakeBreak;
-bool                    AtEnd;
-bool                    ReportedAlias;
-char                    SavedByte;
-short                   InitialSS;
-short                   InitialCS;
-
-static unsigned         SaveMSW;
-static unsigned_8       RealNPXType;
-char                    UtilBuff[BUFF_SIZE];
-static MSB              Mach;
-static SEL_REMAP        SelBlk;
-static bool             HavePSP;
-#define MAX_OBJECTS     128
-static unsigned long    ObjOffReloc[MAX_OBJECTS];
-
-#define DBE_BASE        1000
-
-typedef struct watch_point {
-    addr48_ptr  addr;
-    dword       value;
-    dword       linear;
-    word        dregs;
-    word        len;
-} watch_point;
-
-#define MAX_WP  32
-watch_point WatchPoints[MAX_WP];
-int         WatchCount;
-
-typedef struct {
-        long    have_vmm;
-        long    nconvpg;
-        long    nbimpg;
-        long    nextpg;
-        long    extlim;
-        long    aphyseg;
-        long    alockpg;
-        long    sysphyspg;
-        long    nfreepg;
-        long    beglinaddr;
-        long    endlinaddr;
-        long    secsincelastvmstat;
-        long    pgfaults;
-        long    pgswritten;
-        long    pgsreclaimed;
-        long    vmpages;
-        long    pgfilesize;
-        long    emspages;
-        long    mincomvmem;
-        long    maxpagefile;
-        long    vmflags;
-        long    reserved[4];
-} memory_stats;
-
 int SetUsrTask( void )
 {
     if( HavePSP ) {
@@ -180,22 +188,22 @@ trap_retval TRAP_CORE( Get_sys_config )( void )
     get_sys_config_ret  *ret;
 
     _DBG(("AccGetConfig\r\n"));
-    ret = GetOutPtr(0);
-    ret->sys.os = DIG_OS_PHARLAP;
-    ret->sys.osmajor = _osmajor;
-    ret->sys.osminor = _osminor;
-    ret->sys.cpu = X86CPUType();
-    ret->sys.huge_shift = 12;
+    ret = GetOutPtr( 0 );
+    ret->os = DIG_OS_PHARLAP;
+    ret->osmajor = _osmajor;
+    ret->osminor = _osminor;
+    ret->cpu = X86CPUType();
+    ret->huge_shift = 12;
     if( HavePSP && !AtEnd ) {
         if( Mach.msb_cr0 & MSW_EM ) {
-            ret->sys.fpu = X86_EMU;
+            ret->fpu = X86_EMU;
         } else {
-            ret->sys.fpu = RealNPXType;
+            ret->fpu = RealNPXType;
         }
     } else {
-        ret->sys.fpu = RealNPXType;
+        ret->fpu = RealNPXType;
     }
-    ret->sys.arch = DIG_ARCH_X86;
+    ret->arch = DIG_ARCH_X86;
     return( sizeof( *ret ) );
 }
 
@@ -207,8 +215,8 @@ trap_retval TRAP_CORE( Map_addr )( void )
     unsigned            object;
 
     _DBG(("AccMapAddr\r\n"));
-    acc = GetInPtr(0);
-    ret = GetOutPtr(0);
+    acc = GetInPtr( 0 );
+    ret = GetOutPtr( 0 );
     object = acc->in_addr.segment;
     switch( object ) {
     case MAP_FLAT_DATA_SELECTOR:
@@ -222,7 +230,7 @@ trap_retval TRAP_CORE( Map_addr )( void )
         ret->out_addr.segment = Mach.msb_cs;
         break;
     }
-    ret->out_addr.offset = acc->in_addr.offset + ObjOffReloc[object-1];
+    ret->out_addr.offset = acc->in_addr.offset + ObjOffReloc[object - 1];
     ret->lo_bound = 0;
     ret->hi_bound = ~(addr48_off)0;
     return( sizeof( *ret ) );
@@ -233,36 +241,39 @@ static bool IsProtSeg( USHORT seg )
     CD_DES      desc;
 
     if( dbg_rdsdes( seg, 1, &desc ) != 0 )
-        return( FALSE );
+        return( false );
     if( ( desc.arights & AR_CODE ) == AR_CODE )
-        return( TRUE );
+        return( true );
     if( ( desc.arights & AR_DATA ) == AR_DATA )
-        return( TRUE );
-    return( FALSE );
+        return( true );
+    return( false );
 }
 
 trap_retval TRAP_CORE( Machine_data )( void )
 {
     machine_data_req    *acc;
     machine_data_ret    *ret;
-    unsigned_8          *data;
+    machine_data_spec   *data;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    data = GetOutPtr( sizeof( *ret ) );
     ret->cache_start = 0;
     ret->cache_end = ~(addr_off)0;
-    *data = IsProtSeg( acc->addr.segment ) ? X86AC_BIG : 0;
-    return( sizeof( *ret ) + sizeof( *data ) );
+    if( acc->info_type == X86MD_ADDR_CHARACTERISTICS ) {
+        data = GetOutPtr( sizeof( *ret ) );
+        data->x86_addr_flags = ( IsProtSeg( acc->addr.segment ) ) ? X86AC_BIG : 0;
+        return( sizeof( *ret ) + sizeof( data->x86_addr_flags ) );
+    }
+    return( sizeof( *ret ) );
 }
 
-static ULONG RealAddr( PTR386 *addr )
+static ULONG RealAddr( addr48_ptr *addr )
 {
-    return( ( (long)addr->selector << 16 ) + ( addr->offset & 0xFFFF ) );
+    return( ( (ULONG)addr->segment << 16 ) + ( addr->offset & 0xFFFF ) );
 }
 
 
-static int RunProgram()
+static int RunProgram( void )
 {
     MSB         temp;
     int         rc;
@@ -294,127 +305,99 @@ static int RunProgram()
 }
 
 
-static int _ReadMemory( PTR386 *addr, unsigned long req, void *buf )
+static size_t ReadWrite( bool (*r)(addr48_ptr *, void *, size_t), addr48_ptr *addr, void *data, size_t req_len )
 {
-    if( IsProtSeg( addr->selector ) ) {
-        return( dbg_pread( addr, req, buf ) );
-    } else {
-        return( dbg_rread( RealAddr( addr ), req, buf ) );
-    }
-}
+    size_t      len;
 
-static unsigned short ReadMemory( PTR386 *addr, char *buff, unsigned short requested )
-{
-    int                 err;
-    unsigned short      len;
-
-    err = _ReadMemory( addr, (unsigned long)requested, buff );
-    if( err == 0 ) {
-        addr->offset += requested;
-        return( requested );
+    if( !r( addr, data, req_len ) ) {
+        addr->offset += req_len;
+        return( req_len );
     }
-    for( len = requested; len != 0; --len ) {
-        if( _ReadMemory( addr, 1UL, buff++ ) != 0 )
+    for( len = req_len; len > 0; --len ) {
+        if( r( addr, data, 1 ) )
             break;
+        data = (char *)data + 1;
         addr->offset++;
     }
-    return( requested - len );
+    return( req_len - len );
 }
 
-
-static int _WriteMemory( PTR386 *addr, unsigned long req, void *buf )
+static bool ReadMemory( addr48_ptr *addr, void *data, size_t len )
 {
-    if( IsProtSeg( addr->selector ) ) {
-        return( dbg_pwrite( addr, req, buf ) );
+    if( IsProtSeg( addr->segment ) ) {
+        PTR386  paddr;
+
+        paddr.selector = addr->segment;
+        paddr.offset = addr->offset;
+        return( dbg_pread( &paddr, len, data ) != 0 );
     } else {
-        return( dbg_rwrite( RealAddr( addr ), req, buf ) );
+        return( dbg_rread( RealAddr( addr ), len, data ) != 0 );
     }
 }
 
-static unsigned short WriteMemory( PTR386 *addr, char *buff, unsigned short requested )
+static bool WriteMemory( addr48_ptr *addr, void *data, size_t len )
 {
-    int                 err;
-    unsigned short      len;
+    if( IsProtSeg( addr->segment ) ) {
+        PTR386  paddr;
 
-    err = _WriteMemory( addr, (unsigned long)requested, buff );
-    if( err == 0 ) {
-        addr->offset += requested;
-        return( requested );
+        paddr.selector = addr->segment;
+        paddr.offset = addr->offset;
+        return( dbg_pwrite( &paddr, len, data ) != 0 );
+    } else {
+        return( dbg_rwrite( RealAddr( addr ), len, data ) != 0 );
     }
-    for( len = requested; len != 0; --len ) {
-        if( _WriteMemory( addr, 1UL, buff++ ) != 0 )
-            break;
-        addr->offset++;
-    }
-    return( requested - len );
 }
-
 
 trap_retval TRAP_CORE( Checksum_mem )( void )
 {
-    unsigned short      len;
-    unsigned short      read;
-    PTR386              addr;
-    int                 i;
+    size_t              len;
+    size_t              got;
+    size_t              i;
+    size_t              want;
     checksum_mem_req    *acc;
     checksum_mem_ret    *ret;
+    unsigned long       sum;
 
     _DBG(("AccChkSum\r\n"));
     acc = GetInPtr( 0 );
+    want = sizeof( UtilBuff );
+    sum = 0;
+    for( len = acc->len; len > 0; len -= got ) {
+        if( want > len )
+            want = len;
+        got = ReadWrite( ReadMemory, &acc->in_addr, UtilBuff, want );
+        for( i = 0; i < got; ++i ) {
+            sum += ((unsigned char *)UtilBuff)[i];
+        }
+        if( got != want ) {
+            break;
+        }
+    }
     ret = GetOutPtr( 0 );
-    len = acc->len;
-    addr.offset = acc->in_addr.offset;
-    addr.selector = acc->in_addr.segment;
-    ret->result = 0;
-    while( len >= BUFF_SIZE ) {
-        read = ReadMemory( &addr, UtilBuff, BUFF_SIZE );
-        for( i = 0; i < read; ++i ) {
-            ret->result += UtilBuff[i];
-        }
-        if( read != BUFF_SIZE )
-            return( sizeof( *ret ) );
-        len -= BUFF_SIZE;
-    }
-    if( len != 0 ) {
-        read = ReadMemory( &addr, UtilBuff, len );
-        if( read == len ) {
-            for( i = 0; i < len; ++i ) {
-                ret->result += UtilBuff[i];
-            }
-        }
-    }
+    ret->result = sum;
     return( sizeof( *ret ) );
 }
 
 
 trap_retval TRAP_CORE( Read_mem )( void )
 {
-    PTR386            addr;
-    read_mem_req        *acc;
-    void                *ret;
-    unsigned            len;
+    read_mem_req    *acc;
 
     _DBG(("ReadMem\r\n"));
     acc = GetInPtr( 0 );
-    ret = GetOutPtr( 0 );
-    addr.offset = acc->mem_addr.offset;
-    addr.selector = acc->mem_addr.segment;
-    len = ReadMemory( &addr, ret, acc->len );
-    return( len );
+    return( ReadWrite( ReadMemory, &acc->mem_addr, GetOutPtr( 0 ), acc->len ) );
 }
 
 trap_retval TRAP_CORE( Write_mem )( void )
 {
-    PTR386              addr;
     write_mem_req       *acc;
     write_mem_ret       *ret;
 
     _DBG(("WriteMem\r\n"));
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    addr.offset = acc->mem_addr.offset;
-    addr.selector = acc->mem_addr.segment;
-    ret->len = WriteMemory( &addr, GetInPtr( sizeof( *acc ) ), GetTotalSizeIn() - sizeof( *acc ) );
+    ret->len = ReadWrite( WriteMemory, &acc->mem_addr, GetInPtr( sizeof( *acc ) ),
+                            GetTotalSizeIn() - sizeof( *acc ) );
     return( sizeof( *ret ) );
 }
 
@@ -423,11 +406,10 @@ trap_retval TRAP_CORE( Read_io )( void )
     int                 err;
     read_io_req         *acc;
     void                *ret;
-    unsigned            len;
 
     _DBG(("ReadPort\r\n"));
-    acc = GetInPtr(0);
-    ret = GetOutPtr(0);
+    acc = GetInPtr( 0 );
+    ret = GetOutPtr( 0 );
     switch( acc->len ) {
     case 1:
         err = dbg_iport( acc->IO_offset, ret, 1 );
@@ -442,27 +424,24 @@ trap_retval TRAP_CORE( Read_io )( void )
         err = DBE_INVWID;
     }
     if( err != 0 ) {
-        len = 0;
-    } else {
-        len = acc->len;
+        return( 0 );
     }
-    return( len );
+    return( acc->len );
 }
 
 
 trap_retval TRAP_CORE( Write_io )( void )
 {
     int             err;
-    int             len;
+    size_t          len;
     write_io_req    *acc;
     write_io_ret    *ret;
     void            *data;
 
     _DBG(("WritePort\r\n"));
-    acc = GetInPtr(0);
+    acc = GetInPtr( 0 );
     data = GetInPtr( sizeof( *acc ) );
     len = GetTotalSizeIn() - sizeof( *acc );
-    ret = GetOutPtr(0);
     switch( len ) {
     case 1:
         err = dbg_oport( acc->IO_offset, *(byte *)data, 1 );
@@ -476,10 +455,10 @@ trap_retval TRAP_CORE( Write_io )( void )
     default:
         err = DBE_INVWID;
     }
+    ret = GetOutPtr( 0 );
+    ret->len = len;
     if( err != 0 ) {
         ret->len = 0;
-    } else {
-        ret->len = len;
     }
     return( sizeof( *ret ) );
 }
@@ -552,7 +531,7 @@ trap_retval TRAP_CORE( Read_regs )( void )
 {
     mad_registers       *mr;
 
-    mr = GetOutPtr(0);
+    mr = GetOutPtr( 0 );
     ReadCPU( &mr->x86.cpu );
     TaskFPExec( (ULONG)&Read387, &mr->x86.u.fpu );
     return( sizeof( mr->x86 ) );
@@ -578,74 +557,80 @@ static int map_dbe( int err )
 static void CheckForPE( char *name )
 {
     int                 handle;
-    unsigned_32         off;
+    unsigned_32         ne_header_off;
     unsigned            i;
     pe_object           obj;
     union {
         dos_exe_header  dos;
-        pe_header       pe;
+        pe_exe_header   pe;
     }   head;
 
     handle = open( name, O_BINARY | O_RDONLY, 0 );
     if( handle == -1 )
         return;
     read( handle, &head.dos, sizeof( head.dos ) );
-    if( head.dos.signature != DOS_SIGNATURE ) {
+    if( head.dos.signature != EXESIGN_DOS ) {
         close( handle );
         return;
     }
-    lseek( handle, OS2_NE_OFFSET, SEEK_SET );
-    read( handle, &off, sizeof( off ) );
-    lseek( handle, off, SEEK_SET );
-    read( handle, &head.pe, sizeof( head.pe ) );
+    lseek( handle, NE_HEADER_OFFSET, SEEK_SET );
+    read( handle, &ne_header_off, sizeof( ne_header_off ) );
+    lseek( handle, ne_header_off, SEEK_SET );
+    read( handle, &head.pe, PE_HDR_SIZE );
+    read( handle, (char *)&head.pe + PE_HDR_SIZE, PE_OPT_SIZE( head.pe ) );
     switch( head.pe.signature ) {
-    case PE_SIGNATURE:
-    case PL_SIGNATURE:
-        for( i = 0; i < head.pe.num_objects; ++i ) {
+    case EXESIGN_PE:
+    case EXESIGN_PL:
+        for( i = 0; i < head.pe.fheader.num_objects; ++i ) {
             read( handle, &obj, sizeof( obj ) );
-            ObjOffReloc[i] = Mach.msb_eip - head.pe.entry_rva + obj.rva;
+            ObjOffReloc[i] = Mach.msb_eip - PE( head.pe, entry_rva ) + obj.rva;
         }
         break;
     }
     close( handle );
 }
 
-
-trap_retval TRAP_CORE( Prog_load )( void )
+static size_t MergeArgvArray( const char *src, char *dst, size_t len )
+/********************************************************************/
 {
-    char            ch;
-    char            *src;
-    char            *dst;
-    char            *name;
-    prog_load_ret   *ret;
-    unsigned        len;
+    char    ch;
+    char    *start = dst;
 
-    _DBG(("AccLoadProg\r\n"));
-    memset( ObjOffReloc, 0, sizeof( ObjOffReloc ) );
-    AtEnd = FALSE;
-    ReportedAlias = FALSE;
-    dst = UtilBuff + 1;
-    src = name = GetInPtr( sizeof( prog_load_req ) );
-    ret = GetOutPtr( 0 );
-    while( *src++ != '\0' )
-        {}
-    len = GetTotalSizeIn() - ( src - name ) - sizeof( prog_load_req );
-    if( len > 126 )
-        len = 126;
-    for( ; len > 0; -- len ) {
+    while( len-- > 0 ) {
         ch = *src++;
         if( ch == '\0' ) {
-            if( len == 1 )
+            if( len == 0 )
                 break;
             ch = ' ';
         }
         *dst++ = ch;
     }
     *dst = '\r';
-    UtilBuff[0] = dst - (UtilBuff + 1);
+    return( dst - start );
+}
+
+trap_retval TRAP_CORE( Prog_load )( void )
+{
+    char            *src;
+    char            *name;
+    prog_load_ret   *ret;
+    size_t          len;
+
+    _DBG(("AccLoadProg\r\n"));
+    memset( ObjOffReloc, 0, sizeof( ObjOffReloc ) );
+    AtEnd = false;
+    ReportedAlias = false;
+    ret = GetOutPtr( 0 );
+    src = name = GetInPtr( sizeof( prog_load_req ) );
+    while( *src++ != '\0' )
+        {}
+    len = GetTotalSizeIn() - sizeof( prog_load_req ) - ( src - name );
+    if( len > 126 )
+        len = 126;
+    UtilBuff[0] = MergeArgvArray( src, UtilBuff + 1, len );
     ret->err = map_dbe( dbg_load( (unsigned char *)name, NULL, (unsigned char *)UtilBuff ) );
     if( ret->err == 0 ) {
-        HavePSP = TRUE;
+        HavePSP = true;
     }
     FakeBreak = 1;
 //  _dil_global._action_flags |= ACT_DIS387;
@@ -665,7 +650,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
     ret->mod_handle = 0;
     InitialSS = Mach.msb_ss;
     InitialCS = Mach.msb_cs;
-    Mach.msb_event = -1;
+    Mach.msb_event = (USHORT)-1;
     return( sizeof( *ret ) );
 }
 
@@ -683,10 +668,9 @@ trap_retval TRAP_CORE( Prog_kill )( void )
     prog_kill_ret       *ret;
 
     _DBG(("AccKillProg\r\n"));
-    ret = GetOutPtr( 0 );
     RedirectFini();
-    AtEnd = TRUE;
-    if( RealNPXType != X86_NO ) {
+    AtEnd = true;
+    if( RealNPXType != X86_NOFPU ) {
         /* mask ALL floating point exception bits */
         finit();
         Mach.msb_87ctrl = 0x37f;
@@ -694,12 +678,29 @@ trap_retval TRAP_CORE( Prog_kill )( void )
     }
     SetMSW( SaveMSW );
     dbg_kill();
-    HavePSP = FALSE;
+    HavePSP = false;
+    Mach.msb_event = (USHORT)-1;
+    ret = GetOutPtr( 0 );
     ret->err = 0;
-    Mach.msb_event = -1;
     return( sizeof( *ret ) );
 }
 
+
+static opcode_type place_breakpoint( addr48_ptr *addr )
+{
+    opcode_type old_opcode;
+
+    if( !ReadMemory( addr, &old_opcode, sizeof( old_opcode ) ) ) {
+        WriteMemory( addr, &BreakOpcode, sizeof( BreakOpcode ) );
+        return( old_opcode );
+    }
+    return( 0 );
+}
+
+static int remove_breakpoint( addr48_ptr *addr, opcode_type old_opcode )
+{
+    return( WriteMemory( addr, &old_opcode, sizeof( old_opcode ) ) );
+}
 
 static trap_conditions MapReturn( void )
 {
@@ -718,10 +719,10 @@ static trap_conditions MapReturn( void )
         return( COND_BREAK );
     case 32:
     case 33:
-        AtEnd = TRUE;
+        AtEnd = true;
         return( COND_TERMINATE );
     case 34: /* new linear base address */
-        return( 0 );
+        return( COND_NONE );
     default:
         return( COND_EXCEPTION );
     }
@@ -730,11 +731,11 @@ static trap_conditions MapReturn( void )
 
 static void FixFakeBreak( void )
 {
-    PTR386      addr;
+    addr48_ptr  addr;
 
-    addr.selector = Mach.msb_cs;
+    addr.segment = Mach.msb_cs;
     addr.offset = Mach.msb_eip;
-    WriteMemory( &addr, (char *)&SavedByte, 1 );
+    remove_breakpoint( &addr, OldFakeOpcode );
 }
 
 
@@ -747,18 +748,18 @@ static trap_conditions Execute( void )
         return( COND_EXCEPTION );
     err = RunProgram();
     if( err != 0 ) {
-        AtEnd = TRUE;
+        AtEnd = true;
         return( COND_EXCEPTION );
     }
     if( dbg_rdmsb( &Mach ) != 0 ) {
-        AtEnd = TRUE;
+        AtEnd = true;
         return( COND_EXCEPTION );
     }
     ReleVects();
     conditions = MapReturn();
     if( FakeBreak ) {
         FixFakeBreak();
-        FakeBreak = FALSE;
+        FakeBreak = false;
         if( !AtEnd ) {
             conditions = COND_USER;
         }
@@ -768,42 +769,64 @@ static trap_conditions Execute( void )
     return( conditions );
 }
 
+static int DRegsCount( void )
+{
+    int     needed;
+    int     i;
+
+    needed = 0;
+    for( i = 0; i < WatchCount; i++ ) {
+        needed += WatchPoints[i].dregs;
+    }
+    return( needed );
+}
+
+static word GetDRInfo( word segment, dword offset, word size, dword *plinear )
+{
+    word    dregs;
+    ULONG   linear;
+    PTR386  addr;
+
+    addr.offset = offset;
+    addr.selector = segment;
+    linear = 0;
+    dbg_ptolin( &addr, &linear );
+    dregs = 1;
+    if( size == 8 ) {
+        size = 4;
+        dregs++;
+    }
+    if( linear & ( size - 1 ) )
+        dregs++;
+    if( plinear != NULL )
+        *plinear = linear & ~( size - 1 );
+    return( dregs );
+}
 
 trap_retval TRAP_CORE( Set_watch )( void )
 {
-    dword           l;
-    watch_point     *curr;
     set_watch_req   *acc;
     set_watch_ret   *ret;
-    int             i, needed;
-    ULONG           linear;
-    PTR386          addr;
+    watch_point     *wp;
 
     _DBG(("AccSetWatch\r\n"));
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    ret->err = 1;
     ret->multiplier = 10000;
-    if( WatchCount < MAX_WP ) {
-        ret->err = 0;
-        addr.offset = acc->watch_addr.offset;
-        addr.selector = acc->watch_addr.segment;
-        _ReadMemory( &addr, 4UL, &l );
-        curr = WatchPoints + WatchCount;
-        curr->addr.segment = acc->watch_addr.segment;
-        curr->addr.offset = acc->watch_addr.offset;
-        curr->value = l;
-        dbg_ptolin( &addr, &linear );
-        curr->linear = linear;
-        curr->len = acc->size;
-        curr->linear &= ~( curr->len - 1 );
-        curr->dregs = ( linear & ( curr->len - 1 ) ) ? 2 : 1;
-        ++WatchCount;
-        needed = 0;
-        for( i = 0; i < WatchCount; ++i ) {
-            needed += WatchPoints[i].dregs;
-        }
-        if( needed <= 4 ) {
+    ret->err = 1;       // failure
+    if( WatchCount < MAX_WATCHES ) {
+        ret->err = 0;   // OK
+        wp = WatchPoints + WatchCount;
+        wp->addr.segment = acc->watch_addr.segment;
+        wp->addr.offset = acc->watch_addr.offset;
+        wp->size = acc->size;
+        wp->value = 0;
+        ReadMemory( &wp->addr, &wp->value, wp->size );
+
+        wp->dregs = GetDRInfo( wp->addr.segment, wp->addr.offset, wp->size, &wp->linear );
+
+        WatchCount++;
+        if( DRegsCount() <= 4 ) {
             ret->multiplier |= USING_DEBUG_REG;
         }
     }
@@ -812,87 +835,90 @@ trap_retval TRAP_CORE( Set_watch )( void )
 
 trap_retval TRAP_CORE( Clear_watch )( void )
 {
+    /* assume all watches removed at same time */
     WatchCount = 0;
     return( 0 );
 }
 
 trap_retval TRAP_CORE( Set_break )( void )
 {
-    opcode_type         brk_opcode;
     set_break_req       *acc;
     set_break_ret       *ret;
-    PTR386              addr;
 
     _DBG(("AccSetBreak\r\n"));
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    addr.offset = acc->break_addr.offset;
-    addr.selector = acc->break_addr.segment;
-    _ReadMemory( &addr, sizeof( brk_opcode ), &brk_opcode );
-    ret->old = brk_opcode;
-    brk_opcode = BRKPOINT;
-    _WriteMemory( &addr, sizeof( brk_opcode ), &brk_opcode );
+    ret->old = place_breakpoint( &acc->break_addr );
     return( sizeof( *ret ) );
 }
 
 
 trap_retval TRAP_CORE( Clear_break )( void )
 {
-    opcode_type         brk_opcode;
     clear_break_req     *acc;
-    PTR386              addr;
 
     _DBG(("AccRestoreBreak\r\n"));
     acc = GetInPtr( 0 );
-    addr.offset = acc->break_addr.offset;
-    addr.selector = acc->break_addr.segment;
-    brk_opcode = acc->old;
-    _WriteMemory( &addr, sizeof( brk_opcode ), &brk_opcode );
+    remove_breakpoint( &acc->break_addr, acc->old );
     return( 0 );
 }
 
-static void SetDRnBW( int dr, ULONG linear, int len ) /* Set DRn for break on write */
+static void SetDRn( int dr, dword linear, word type )
 {
     Mach.msb_dreg[dr] = linear;
-    Mach.msb_dreg[7] |= ( (DRLen( len )+DR7_BWR) << DR7_RWLSHIFT( dr ) )
-                       |  ( DR7_GEMASK << DR7_GLSHIFT( dr ) );
+    Mach.msb_dreg[7] |= ( (dword)type << DR7_RWLSHIFT( dr ) )
+                       | ( DR7_GEMASK << DR7_GLSHIFT( dr ) );
 }
 
 
-static bool SetDebugRegs()
+static bool SetDebugRegs( void )
 {
-    int         needed;
     int         i;
+    int         j;
     int         dr;
     watch_point *wp;
+    dword       linear;
+    word        size;
+    word        type;
 
-    needed = 0;
-    for( i = WatchCount, wp = WatchPoints; i != 0; --i, ++wp ) {
-        needed += wp->dregs;
-    }
-    if( needed > 4 )
-        return( FALSE );
+    if( DRegsCount() > 4 )
+        return( false );
     dr = 0;
     Mach.msb_dreg[7] = DR7_GE;
-    for( i = WatchCount, wp = WatchPoints; i != 0; --i, ++wp ) {
-        SetDRnBW( dr, wp->linear, wp->len );
-        ++dr;
-        if( wp->dregs == 2 ) {
-            SetDRnBW( dr, wp->linear + wp->len, wp->len );
+    for( wp = WatchPoints, i = WatchCount; i-- > 0; ++wp ) {
+        linear = wp->linear;
+        size = wp->size;
+        if( size == 8 )
+            size = 4;
+        type = DRLen( size ) | DR7_BWR;
+        for( j = 0; j < wp->dregs; j++ ) {
+            SetDRn( dr, linear, type );
             ++dr;
+            linear += size;
         }
     }
-    return( TRUE );
+    return( true );
 }
 
+static bool CheckWatchPoints( void )
+{
+    watch_point *wp;
+    int         i;
+    uint_64     value;
+
+    for( wp = WatchPoints, i = WatchCount; i-- > 0; wp++ ) {
+        value = 0;
+        ReadMemory( &wp->addr, &value, wp->size );
+        if( wp->value != value ) {
+            return( true );
+        }
+    }
+    return( false );
+}
 
 static unsigned ProgRun( bool step )
 {
-    watch_point *wp;
-    int         i;
-    dword       value;
     prog_go_ret *ret;
-    PTR386      addr;
 
     ret = GetOutPtr( 0 );
     Mach.msb_dreg[6] = 0;
@@ -900,17 +926,17 @@ static unsigned ProgRun( bool step )
     if( AtEnd ) {
         ret->conditions = COND_TERMINATE;
     } else if( step ) {
-        Mach.msb_eflags |= EF_TF;
+        Mach.msb_eflags |= INTR_TF;
         ret->conditions = Execute();
-        Mach.msb_eflags &= ~EF_TF;
-    } else if( WatchCount != 0 ) {
+        Mach.msb_eflags &= ~INTR_TF;
+    } else if( WatchCount > 0 ) {
         if( SetDebugRegs() ) {
             ret->conditions = Execute();
             Mach.msb_dreg[6] = 0;
             Mach.msb_dreg[7] = 0;
         } else {
             for( ;; ) {
-                Mach.msb_eflags |= EF_TF;
+                Mach.msb_eflags |= INTR_TF;
                 ret->conditions = Execute();
                 if( ret->conditions & COND_TERMINATE )
                     break;
@@ -918,22 +944,16 @@ static unsigned ProgRun( bool step )
                     break;
                 if( ( Mach.msb_dreg[6] & DR6_BS ) == 0 )
                     break;
-                for( wp = WatchPoints, i = WatchCount; i > 0; ++wp, --i ) {
-                    addr.offset = wp->addr.offset;
-                    addr.selector = wp->addr.segment;
-                    _ReadMemory( &addr, 4UL, &value );
-                    if( value != wp->value ) {
-                        ret->conditions = COND_WATCH;
-                        Mach.msb_eflags &= ~EF_TF;
-                        goto leave;
-                    }
+                if( CheckWatchPoints() ) {
+                    ret->conditions = COND_WATCH;
+                    Mach.msb_eflags &= ~INTR_TF;
+                    break;
                 }
             }
         }
     } else {
         ret->conditions = Execute();
     }
-leave:
     ret->conditions |= COND_CONFIG;
     ret->program_counter.offset = Mach.msb_eip;
     ret->program_counter.segment = Mach.msb_cs;
@@ -946,13 +966,13 @@ leave:
 trap_retval TRAP_CORE( Prog_go )( void )
 {
     _DBG(("AccProgGo\r\n"));
-    return( ProgRun( FALSE ) );
+    return( ProgRun( false ) );
 }
 
 trap_retval TRAP_CORE( Prog_step )( void )
 {
     _DBG(("AccProgStep\r\n"));
-    return( ProgRun( TRUE ) );
+    return( ProgRun( true ) );
 }
 
 trap_retval TRAP_CORE( Get_next_alias )( void )
@@ -965,7 +985,7 @@ trap_retval TRAP_CORE( Get_next_alias )( void )
         _DBG(("acc->seg == 0\r\n"));
         ret->seg = Mach.msb_cs;
         ret->alias = Mach.msb_ds;
-        ReportedAlias = TRUE;
+        ReportedAlias = true;
     } else {
         _DBG(("acc->seg == other\r\n"));
         ret->seg = 0;
@@ -1024,7 +1044,7 @@ trap_retval TRAP_CORE( Get_message_text )( void )
         } else {
             strcpy( err_txt, TRP_EXC_unknown );
         }
-        Mach.msb_event = -1;
+        Mach.msb_event = (USHORT)-1;
     }
     ret->flags = MSG_NEWLINE | MSG_ERROR;
     return( sizeof( *ret ) + strlen( err_txt ) + 1 );
@@ -1045,20 +1065,22 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
     trap_version        ver;
     int                 error_num;
 
+    /* unused parameters */ (void)remote; (void)parms;
+
     _DBG(( "in TrapInit\r\n" ));
-    remote = remote; parms = parms;
     err[0] = '\0'; /* all ok */
-    ver.major = TRAP_MAJOR_VERSION;
-    ver.minor = TRAP_MINOR_VERSION;
-    ver.remote = FALSE;
-    //ver.is_32 = TRUE;
+    ver.major = TRAP_VERSION_MAJOR;
+    ver.minor = TRAP_VERSION_MINOR;
+    ver.remote = false;
+    //ver.is_32 = true;
     RedirectInit();
     SaveMSW = GetMSW();
     RealNPXType = NPXType();
     _8087 = 0;
-    HavePSP = FALSE;
+    HavePSP = false;
     WatchCount = 0;
-    FakeBreak = FALSE;
+    FakeBreak = false;
+    BreakOpcode = BRKPOINT;
     if( getenv( "DBDB" ) ) {
         _DBG(( "Calling dbg_edebug()\r\n" ));
         dbg_edebug();
@@ -1071,7 +1093,7 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
         strcpy( err, DBG_ERROR );
         strcpy( err + sizeof( DBG_ERROR )-1, DBErrors[-error_num] );
     }
-    Mach.msb_event = -1;
+    Mach.msb_event = (USHORT)-1;
     _DBG(( "outof TrapInit\r\n" ));
     return( ver );
 }

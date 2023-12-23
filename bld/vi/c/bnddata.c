@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,6 +36,7 @@
 #include "bnddata.h"
 #include "specio.h"
 #include "myio.h"
+#include "tokenize.h"
 
 #include "clibext.h"
 
@@ -80,7 +81,7 @@ void BoundDataInit( void )
     /*
      * get everything
      */
-    BndMemory = MemAlloc( size );
+    BndMemory = _MemAllocArray( char, size );
     read( h, BndMemory, size );
     close( h );
 
@@ -97,7 +98,7 @@ void BoundDataInit( void )
     tmp = BndMemory + sizeof( bind_size );
     size = *(bind_size *)tmp;
     tmp += sizeof( bind_size );
-    DataFnameTokens = MemAlloc( size );
+    DataFnameTokens = _MemAllocArray( char, size );
     memcpy( DataFnameTokens, tmp, size );
     tmp += size;
 
@@ -118,10 +119,10 @@ void BoundDataInit( void )
  */
 void BoundDataFini( void )
 {
-    MemFree( BndMemory );
-    MemFree( dataOffsets );
-    MemFree( entryCounts );
-    MemFree( DataFnameTokens );
+    _MemFreeArray( BndMemory );
+    _MemFreeArray( dataOffsets );
+    _MemFreeArray( entryCounts );
+    _MemFreeArray( DataFnameTokens );
 
 } /* BoundDataFini */
 

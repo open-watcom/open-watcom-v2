@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -313,11 +313,11 @@ static char *AddOn( char *buff, key_desc desc )
 {
     switch( desc & DBG_KEY_STATE ) {
     case DBG_KEY_CTRL:
-        return( StrCopy( STR_DBG_KEY_CTRL, buff ) );
+        return( StrCopyDst( STR_DBG_KEY_CTRL, buff ) );
     case DBG_KEY_SHIFT:
-        return( StrCopy( STR_DBG_KEY_SHIFT, buff ) );
+        return( StrCopyDst( STR_DBG_KEY_SHIFT, buff ) );
     case DBG_KEY_ALT:
-        return( StrCopy( STR_DBG_KEY_ALT, buff ) );
+        return( StrCopyDst( STR_DBG_KEY_ALT, buff ) );
     default:
         return( buff );
     }
@@ -334,7 +334,7 @@ char *KeyName( gui_key key )
     for( k = KeyNames; k->key != 0; ++k ) {
         if( k->key == key ) {
             p = AddOn( buff, k->desc );
-            StrCopy( KeyNamePieces[k->desc & ~DBG_KEY_STATE], p );
+            StrCopyDst( KeyNamePieces[k->desc & ~DBG_KEY_STATE], p );
             return( buff );
         }
     }
@@ -649,8 +649,8 @@ void SearchConf( void )
     ptr = GetCmdEntry( SearchSettings, WndGetSrchIgnoreCase() ? SEARCH_IGNORE : SEARCH_RESPECT, ptr );
     *ptr++ = '/';
     ptr = GetCmdEntry( SearchSettings, WndGetSrchRX() ? SEARCH_RX : SEARCH_NORX, ptr );
-    ptr = StrCopy( " {", ptr );
-    ptr = StrCopy( WndGetSrchMagicChars(), ptr );
-    ptr = StrCopy( "}", ptr );
+    ptr = StrCopyDst( " {", ptr );
+    ptr = StrCopyDst( WndGetSrchMagicChars(), ptr );
+    ptr = StrCopyDst( "}", ptr );
     ConfigLine( TxtBuff );
 }

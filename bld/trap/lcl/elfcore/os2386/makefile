@@ -2,22 +2,28 @@
 #
 # Create the generic ELF core trap file
 #
+
+tree_depth = 5
+
 host_cpu = 386
 host_os  = os2
 
 target_cpu = x86
-target_os  = os2v2
+
+srv     = lcl
+name    = elf
+which   = TRAP
+core_entries = 1
 
 extra_cflags = -bd
 
 extra_objs = &
-        elfcore.obj &
-        core_fbsd.obj &
-        core_nto.obj &
-        coremisc.obj &
-        supp.obj &
-        core.obj
+    $(elfcore_objs) &
+    os22path.obj &
+    supp.obj &
+    core.obj
 
-!include ../core.mif
+!include ../elfcore.mif
+!include $(trap_dir)/lcl/os2v2/os2v2.mif
 !include $(trap_dir)/lcl/lcl.mif
 !include $(trap_dir)/master.mif

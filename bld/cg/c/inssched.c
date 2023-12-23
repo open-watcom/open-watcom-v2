@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -75,16 +75,16 @@ static block            *SBlock;
 
 bool    SchedFrlFree( void )
 /***********************************
-    Free the instruction schedulers dependancy link lists.
-*/
+ * Free the instruction schedulers dependancy link lists.
+ */
 {
     return( FrlFreeAll( &DepFrl, sizeof( dep_list_block ) ) );
 }
 
 static dep_list_entry *AllocDep( void )
 /**************************************
-    Allocate one dependancy link structure.
-*/
+ * Allocate one dependancy link structure.
+ */
 {
     dep_list_block  *new;
 
@@ -100,12 +100,12 @@ static dep_list_entry *AllocDep( void )
 
 static unsigned InsStallable( instruction *ins )
 /***********************************************
-    Determine how stallable is an instruction is. The more stallable resources
-    an instruction uses, and the earlier in the instruction pipeline those
-    resources are used, the more likely the instruction is going to have to
-    wait due to a dependancy. This is used for breaking ties when we actually
-    schedule the instructions in a block.
-*/
+ * Determine how stallable is an instruction is. The more stallable resources
+ * an instruction uses, and the earlier in the instruction pipeline those
+ * resources are used, the more likely the instruction is going to have to
+ * wait due to a dependancy. This is used for breaking ties when we actually
+ * schedule the instructions in a block.
+ */
 {
     unsigned    stallable;
     opcnt       i;
@@ -132,16 +132,16 @@ static unsigned InsStallable( instruction *ins )
 
 static void InitDag( void )
 /**************************
-    Allocate the data dependancy dag list, and initialize the fields
-    in it.
-*/
+ * Allocate the data dependancy dag list, and initialize the fields
+ * in it.
+ */
 {
     data_dag    *dag;
     data_dag    *head;
     instruction *ins;
 
     head = NULL;
-    for( ins = SBlock->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+    for( ins = SBlock->ins.head.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
         ins->ins_flags &= ~INS_INDEX_ADJUST;
         switch( ins->head.opcode ) {
         case OP_ADD:
@@ -152,13 +152,13 @@ static void InitDag( void )
                 && ins->operands[1]->c.const_type == CONS_ABSOLUTE
                 && (ins->type_class == WD || ins->type_class == SW) ) {
                 /*
-                    We have an instruction of the form:
-                        ADD REG, CONST => REG
-                    These can slide past instructions who just use REG
-                    as an index register, as long as we adjust the
-                    index offset by CONST. This gives the scheduler a
-                    little more freedom to move things around.
-                */
+                 * We have an instruction of the form:
+                 *     ADD REG, CONST => REG
+                 * These can slide past instructions who just use REG
+                 * as an index register, as long as we adjust the
+                 * index offset by CONST. This gives the scheduler a
+                 * little more freedom to move things around.
+                 */
                 ins->ins_flags |= INS_INDEX_ADJUST;
             }
             break;
@@ -178,9 +178,9 @@ static void InitDag( void )
 
 static bool StackOp( instruction *ins )
 /**************************************
-    Does this instruction explicitly or implicitly use the machine's stack
-    pointer.
-*/
+ * Does this instruction explicitly or implicitly use the machine's stack
+ * pointer.
+ */
 {
     opcnt       i;
     hw_reg_set  sp;
@@ -225,7 +225,7 @@ static  bool    ReallyDefinedBy( instruction *ins_i, instruction *ins_j,
         return( false );
     if( redefd == MB_TRUE )
         return( true );
-    // redef == MB_MAYBE
+//    redef == MB_MAYBE
     if( !ins_linked )
         return( true );
     _INS_NOT_BLOCK( ins_i );
@@ -245,10 +245,10 @@ static  bool    ReallyDefinedBy( instruction *ins_i, instruction *ins_j,
 
 static bool OkToSlide( instruction *ins, name *op )
 /**************************************************
-    Is it OK to slide an INDEX_ADJUST instruction past an index name?
-*/
+ * Is it OK to slide an INDEX_ADJUST instruction past an index name?
+ */
 {
-#if  _TARGET & (_TARG_80386 | _TARG_8086 )
+#if  _TARGET_INTEL
     opcnt           i;
 #endif
 
@@ -260,9 +260,11 @@ static bool OkToSlide( instruction *ins, name *op )
         return( true );
     if( OptForSize >= 50 )
         return( false );
-#if  _TARGET & (_TARG_80386 | _TARG_8086 )
-    /* bad news to add a displacement on an instruction that also
-       has a constant operand (takes an extra clock) */
+#if  _TARGET_INTEL
+    /*
+     * bad news to add a displacement on an instruction that also
+     * has a constant operand (takes an extra clock)
+     */
     for( i = ins->num_operands; i-- > 0; ) {
         if( ins->operands[i]->n.class == N_CONSTANT ) {
             return( false );
@@ -274,10 +276,10 @@ static bool OkToSlide( instruction *ins, name *op )
 
 static bool HiddenDependancy( instruction *ins, name *op )
 /*********************************************************
-    Look out for cheesy hidden dependencies. These can come
-    about, for instance, when two instructions modify
-    AL and AH - these cause a stall.
-*/
+ * Look out for cheesy hidden dependencies. These can come
+ * about, for instance, when two instructions modify
+ * AL and AH - these cause a stall.
+ */
 {
     opcnt       i;
     hw_reg_set  full;
@@ -303,8 +305,8 @@ static bool HiddenDependancy( instruction *ins, name *op )
 static dep_type CheckOneOp( instruction *ins_i, instruction *ins_j,
                         name *op, bool ins_linked )
 /******************************************************************
-    Check one op for redefinition
-*/
+ * Check one op for redefinition
+ */
 {
     if( op->n.class == N_INDEXED && op->i.index != NULL ) {
         if( ins_linked
@@ -334,16 +336,18 @@ static dep_type CheckOneOp( instruction *ins_i, instruction *ins_j,
 static dep_type DataDependant( instruction *ins_i,
                                instruction *ins_j, bool ins_linked )
 /************************************************************************
-    Does instruction i redefine any of the operands or result of
-    instruction j? And if so, how?
-*/
+ * Does instruction i redefine any of the operands or result of
+ * instruction j? And if so, how?
+ */
 {
     opcnt           k;
     dep_type        ret;
 
     ret = DEP_NONE;
     for( k = ins_j->num_operands; k-- > 0; ) {
-        /* first operand of OP_LA can't be dependant unless N_INDEXED */
+        /*
+         * first operand of OP_LA can't be dependant unless N_INDEXED
+         */
         if( k == 0 && ins_j->head.opcode == OP_LA && ins_j->operands[0]->n.class != N_INDEXED )
             continue;
         ret = CheckOneOp( ins_i, ins_j, ins_j->operands[k], ins_linked );
@@ -357,14 +361,14 @@ static dep_type DataDependant( instruction *ins_i,
             return( ret );
         }
     }
-    if( _IsModel( FORTRAN_ALIASING ) && _OpIsCall( ins_j->head.opcode ) ) {
+    if( _IsModel( CGSW_GEN_FORTRAN_ALIASING ) && _OpIsCall( ins_j->head.opcode ) ) {
         if( !ins_linked )
             return( DEP_OP );
         /*
-            All NOP's following a call instruction with a result indicate
-            variables which might have been modified by the call (for FORTRAN).
-            Therefore, they must be made dependant on the call.
-        */
+         * All NOP's following a call instruction with a result indicate
+         * variables which might have been modified by the call (for FORTRAN).
+         * Therefore, they must be made dependant on the call.
+         */
         for( ins_j = ins_j->head.next; ins_j->head.opcode != OP_BLOCK; ins_j = ins_j->head.next ) {
             if( _OpIsCall( ins_j->head.opcode ) )
                 break;
@@ -381,18 +385,17 @@ static dep_type DataDependant( instruction *ins_i,
 
 static bool ImplicitDependancy( instruction *imp, instruction *ins )
 /*******************************************************************
-
-    Does instruction 'imp' modify a implicitly used (segment) register
-    and, if so, does 'ins' use it?
-
-    Also, does 'imp' modify a register which may be used by ins
-    in a non-obvious manner (ie modify BL and ins uses BH).
-
-    NOTE: This routine could be a little bit smarter than it is. The
-        only segment registers that are a problem are DS and SS and only
-        then if the memory operand is not being overriden.
-        P.S. ES might be a problem in FLAT model.
-*/
+ * Does instruction 'imp' modify a implicitly used (segment) register
+ * and, if so, does 'ins' use it?
+ *
+ * Also, does 'imp' modify a register which may be used by ins
+ * in a non-obvious manner (ie modify BL and ins uses BH).
+ *
+ * NOTE: This routine could be a little bit smarter than it is. The
+ *     only segment registers that are a problem are DS and SS and only
+ *     then if the memory operand is not being overriden.
+ *     P.S. ES might be a problem in FLAT model.
+ */
 {
     name        *op;
     opcnt       i;
@@ -472,8 +475,8 @@ bool InsOrderDependant( instruction *ins_i, instruction *ins_j )
 
 static  bool    MultiIns( instruction *ins )
 /*******************************************
-    Is ins part of a two instruction sequence, like SUB, SBB?
-*/
+ * Is ins part of a two instruction sequence, like SUB, SBB?
+ */
 {
     switch( ins->head.opcode ) {
     case OP_ADD:
@@ -489,8 +492,8 @@ static  bool    MultiIns( instruction *ins )
 
 static  bool    InsUsesCC( instruction *ins )
 /********************************************
-    Does 'ins' uses the condition codes set from a previous instruction?
-*/
+ * Does 'ins' uses the condition codes set from a previous instruction?
+ */
 {
     switch( ins->head.opcode ) {
     case OP_EXT_ADD:
@@ -501,10 +504,10 @@ static  bool    InsUsesCC( instruction *ins )
     if( _OpIsCondition( ins->head.opcode ) ) {
         if( G( ins ) == G_NO ) {
             /*
-                Any conditional whose gen table entry is pointing at a G_NO
-                is not going to generate a comparision operation, and is
-                depending on a previous instruction to set the flags.
-            */
+             * Any conditional whose gen table entry is pointing at a G_NO
+             * is not going to generate a comparision operation, and is
+             * depending on a previous instruction to set the flags.
+             */
             return( true );
         }
     }
@@ -513,8 +516,8 @@ static  bool    InsUsesCC( instruction *ins )
 
 static void BuildLink( data_dag *i, data_dag *j )
 /************************************************
-    Added a data dependancy link between instructions i and j.
-*/
+ * Added a data dependancy link between instructions i and j.
+ */
 {
     dep_list_entry  *dep;
 
@@ -526,9 +529,9 @@ static void BuildLink( data_dag *i, data_dag *j )
 
 static void BuildDag( void )
 /***************************
-    Build the data dependancy DAG. Note that this sucker is an N**2 algorithm
-    on the size of the basic block, so blocks had better not be too big.
-*/
+ * Build the data dependancy DAG. Note that this sucker is an N**2 algorithm
+ * on the size of the basic block, so blocks had better not be too big.
+ */
 {
     data_dag    *dag_i;
     data_dag    *dag_j;
@@ -545,21 +548,22 @@ static void BuildDag( void )
         case OP_EXT_SUB:
         case OP_EXT_MUL:
             /*
-                ADC's can't get scheduled before the instruction that's setting
-                the carry bit for them.
-            */
+             * ADC's can't get scheduled before the instruction that's setting
+             * the carry bit for them.
+             */
             link_multi = true;
             break;
         case OP_STORE_UNALIGNED:
         case OP_LOAD_UNALIGNED:
             /*
-                Fixme: don't really want these to be WALLS, but they cause
-                many problems because of their grenade like behaviour
-            */
+             * Fixme: don't really want these to be WALLS, but they cause
+             * many problems because of their grenade like behaviour
+             */
+            /* fall through */
         case OP_NOP:
             /*
-                Do not want any instructions moving across a NOP boundry.
-            */
+             * Do not want any instructions moving across a NOP boundry.
+             */
             link_all = true;
         }
         for( dag_j = dag_i->prev; dag_j != NULL; dag_j = dag_j->prev ) {
@@ -573,30 +577,30 @@ static void BuildDag( void )
             } else if( used_cc &&
                     (dag_j->ins->u.gen_table->op_type&MASK_CC) != PRESERVE ) {
                 /*
-                    Consider this:
-
-                    XOR         AX,AX   <-- j points here
-                    SUB         BX,CX   <-- i points here
-                    SBB         DX,SI
-
-                    If 'i' is an instruction where the flags are used later
-                    we can not allow any instruction that modifies the flags
-                    to be scheduled after it.
-                */
+                 * Consider this:
+                 *
+                 * XOR         AX,AX   <-- j points here
+                 * SUB         BX,CX   <-- i points here
+                 * SBB         DX,SI
+                 *
+                 * If 'i' is an instruction where the flags are used later
+                 * we can not allow any instruction that modifies the flags
+                 * to be scheduled after it.
+                 */
                 BuildLink( dag_i, dag_j );
             } else if( (dag_i->ins->u.gen_table->op_type&MASK_CC) != PRESERVE
                     && InsUsesCC( dag_j->ins ) ) {
                 /*
-                    consider:
-
-                        ADD AX,SI => AX
-                        ADC BX,DX => BX     <---- j points here
-                        ??? CX,?? => CX     <---- i points here
-
-                    we have to create a dependency between instruction 3 and
-                    2 so that 3 never gets scheduled between 1 and 2 as it
-                    will affect the flags
-                */
+                 * consider:
+                 *
+                 *     ADD AX,SI => AX
+                 *     ADC BX,DX => BX     <---- j points here
+                 *     ??? CX,?? => CX     <---- i points here
+                 *
+                 * we have to create a dependency between instruction 3 and
+                 * 2 so that 3 never gets scheduled between 1 and 2 as it
+                 * will affect the flags
+                 */
                 BuildLink( dag_i, dag_j );
             }
         }
@@ -605,10 +609,10 @@ static void BuildDag( void )
 
 static void *AnnointADag( data_dag *dag )
 /****************************************
-    Find out how many ancestors an instruction has, and what the longest
-    amount of time it will take to execute all the instructions this one
-    depends on (height).
-*/
+ * Find out how many ancestors an instruction has, and what the longest
+ * amount of time it will take to execute all the instructions this one
+ * depends on (height).
+ */
 {
     unsigned        max_cycle_count;
     data_dag        *pred;
@@ -626,14 +630,16 @@ static void *AnnointADag( data_dag *dag )
         }
     }
     dag->height = max_cycle_count + FUEntry( dag->ins )->opnd_stall;
-    /* return a pointer to satisfy SafeRecurseCG */
+    /*
+     * return a pointer to satisfy SafeRecurseCG
+     */
     return( NULL );
 }
 
 static void AnnointDag( void )
 /*****************************
-    Add additional information to data dependancy DAG.
-*/
+ * Add additional information to data dependancy DAG.
+ */
 {
     data_dag    *dag;
 
@@ -646,10 +652,10 @@ static void AnnointDag( void )
 
 static int StallCost( instruction *ins, instruction *top )
 /*********************************************************
-    If instruction 'ins' were placed before instruction 'top', how long
-    would instructions following 'ins' have to wait before they could
-    complete?
-*/
+ * If instruction 'ins' were placed before instruction 'top', how long
+ * would instructions following 'ins' have to wait before they could
+ * complete?
+ */
 {
     unsigned        avail_fu;
     unsigned        fu_overlap;
@@ -661,12 +667,14 @@ static int StallCost( instruction *ins, instruction *top )
     bool            ins_stack;
 
     /*
-        NOP's always get a stall cost of -1 so that they are scheduled
-        as soon as they become ready.
-    */
+     * NOP's always get a stall cost of -1 so that they are scheduled
+     * as soon as they become ready.
+     */
     if( ins->head.opcode == OP_NOP )
         return( -1 );
-    /* or instructions whose condition code results are used */
+    /*
+     * or instructions whose condition code results are used
+     */
     if( ins->ins_flags & INS_CC_USED )
         return( -1 );
     if( top == NULL )
@@ -689,10 +697,14 @@ static int StallCost( instruction *ins, instruction *top )
             case DEP_OP:
                 return( opnd_stall * 2 );
             case DEP_INDEX:
-                /* make stalls due to index usage slightly worse */
+                /*
+                 * make stalls due to index usage slightly worse
+                 */
                 return( opnd_stall * 2 + 1 );
             }
-            /* two stack ops will stall on the implicit use of SP */
+            /*
+             * two stack ops will stall on the implicit use of SP
+             */
             if( ins_stack && StackOp( curr ) ) {
                 return( opnd_stall * 2 + 1 );
             }
@@ -702,7 +714,9 @@ static int StallCost( instruction *ins, instruction *top )
             entry = FUEntry( curr );
             fu_overlap = avail_fu & entry->good_fu;
             if( fu_overlap != 0 ) {
-                /* turn off one of the fu bits */
+                /*
+                 * turn off one of the fu bits
+                 */
                 fu_overlap &= fu_overlap - 1;
                 avail_fu &= fu_overlap;
                 if( avail_fu == 0 ) {
@@ -721,9 +735,9 @@ static int StallCost( instruction *ins, instruction *top )
 
 static bool ScaleAdjust( name *op, hw_reg_set reg, scale_typ *scale_adj )
 /************************************************************************
-    Figure out if we have to adjust this operand, and what the
-    scale factor is.
-*/
+ * Figure out if we have to adjust this operand, and what the
+ * scale factor is.
+ */
 {
     hw_reg_set  idx_reg;
 
@@ -743,17 +757,16 @@ static bool ScaleAdjust( name *op, hw_reg_set reg, scale_typ *scale_adj )
 
 static void FixIndexAdjust( instruction *adj, bool forward )
 /***********************************************************
-
-    'adj' is an index adjust instruction. We must run forward/backward
-    through the block looking for uses of the register as an index and
-    adjust the offset by the correct amount. We can stop when we run
-    into the 'adj' instruction, or an OP_BLOCK instruction, or an instruction
-    that redefined the register used by 'adj' that isn't also an
-    INS_INDEX_ADJUST. We know that we have to modify an index offset
-    if the instruction id of the 'adj' is greater than the id of the
-    instruction that we're checking when going forward, or the reverse
-    when going backward.
-*/
+ * 'adj' is an index adjust instruction. We must run forward/backward
+ * through the block looking for uses of the register as an index and
+ * adjust the offset by the correct amount. We can stop when we run
+ * into the 'adj' instruction, or an OP_BLOCK instruction, or an instruction
+ * that redefined the register used by 'adj' that isn't also an
+ * INS_INDEX_ADJUST. We know that we have to modify an index offset
+ * if the instruction id of the 'adj' is greater than the id of the
+ * instruction that we're checking when going forward, or the reverse
+ * when going backward.
+ */
 {
     instruction *chk;
     name        *op;
@@ -815,22 +828,22 @@ static void FixIndexAdjust( instruction *adj, bool forward )
 
 static void ScheduleIns( void )
 /******************************
-    Rearrange the instructions in a block according to the data dependancy
-    DAG for maximum overlap of the instruction pipeline. The block is built
-    from bottom to the top. At each point we have an list of instructions
-    that are ready to execute. We run down this list and pick the instruction
-    with the minimum stall cost. If two instructions on the ready list have
-    the same stall cost, pick the one that has the longest execution time
-    of instructions that depend on the one we're trying to schedule (height).
-    If two instructions are equal in stall cost and height pick the one
-    with the most likelyhood of being stalled by an instruction preceeding
-    it (more indexes, register usage, etc). Otherwise, choose the one
-    that came last in the source order.
-
-    NOTE: This routine does not maintain the live information when it
-          rebuilds the block. Don't expect anything that depends on live
-          analysis to work after this routine is done.
-*/
+ * Rearrange the instructions in a block according to the data dependancy
+ * DAG for maximum overlap of the instruction pipeline. The block is built
+ * from bottom to the top. At each point we have an list of instructions
+ * that are ready to execute. We run down this list and pick the instruction
+ * with the minimum stall cost. If two instructions on the ready list have
+ * the same stall cost, pick the one that has the longest execution time
+ * of instructions that depend on the one we're trying to schedule (height).
+ * If two instructions are equal in stall cost and height pick the one
+ * with the most likelyhood of being stalled by an instruction preceeding
+ * it (more indexes, register usage, etc). Otherwise, choose the one
+ * that came last in the source order.
+ *
+ * NOTE: This routine does not maintain the live information when it
+ *       rebuilds the block. Don't expect anything that depends on live
+ *       analysis to work after this routine is done.
+ */
 {
     data_dag        *ready;
     data_dag        *curr;
@@ -842,19 +855,19 @@ static void ScheduleIns( void )
     int             curr_cost;
     int             stk_depth;
     int             stk_over;
-    unsigned_16     last_seq;
-
+    uint_16         last_seq;
 
     /*
-        What the hell is he doing with the visited bit here!?...
-        Here's what's I'm doing. Since the ready list is only singly linked,
-        it's tough to delete things efficiently. The visited bit is
-        used to indicate that the instruction has been scheduled, and the
-        dag has been 'virtually' deleted from the list. All the virtually
-        deleted dags at the front of the ready list are really deleted just
-        before any newly ready dags are added.
-    */
-    /* get initial 'ready' list */
+     * What the hell is he doing with the visited bit here!?...
+     * Here's what's I'm doing. Since the ready list is only singly linked,
+     * it's tough to delete things efficiently. The visited bit is
+     * used to indicate that the instruction has been scheduled, and the
+     * dag has been 'virtually' deleted from the list. All the virtually
+     * deleted dags at the front of the ready list are really deleted just
+     * before any newly ready dags are added.
+     *
+     * get initial 'ready' list
+     */
     ready = NULL;
     for( curr = DataDag; curr != NULL; curr = curr->prev ) {
         curr->visited = false;
@@ -866,10 +879,15 @@ static void ScheduleIns( void )
     last_seq = 0;
     top = NULL;
     stk_depth = FPStackExit( SBlock );
-    SBlock->ins.hd.next = (instruction *)&SBlock->ins; // so we can dump!
-    SBlock->ins.hd.prev = (instruction *)&SBlock->ins;
+    /*
+     * so we can dump!
+     */
+    SBlock->ins.head.next = (instruction *)&SBlock->ins;
+    SBlock->ins.head.prev = (instruction *)&SBlock->ins;
     while( ready != NULL ) {
-        /* find best instruction to schedule */
+        /*
+         * find best instruction to schedule
+         */
         best_cost = INT_MAX;
         best = NULL;
         fp_stack_just_squeeks_by = NULL;
@@ -894,16 +912,18 @@ static void ScheduleIns( void )
                     if( (curr->ins->ins_flags & INS_INDEX_ADJUST)
                         && DataDependant( curr->ins, best->ins, false ) ) {
                         /*
-                           drop in a INDEX_ADJUST as soon as it doesn't
-                           hurt, otherwise we end up putting it too close
-                           to its use.
-                        */
+                         * drop in a INDEX_ADJUST as soon as it doesn't
+                         * hurt, otherwise we end up putting it too close
+                         * to its use.
+                         */
                         MARK_BEST;
                     } else if( curr->stallable > best->stallable ) {
                         MARK_BEST;
                     } else if( curr->stallable == best->stallable ) {
                         if( curr->ins->sequence == last_seq && best->ins->sequence != last_seq ) {
-                            // try to avoid fxch instructions
+                            /*
+                             * try to avoid fxch instructions
+                             */
                             MARK_BEST;
                         } else {
                             _INS_NOT_BLOCK( curr->ins );
@@ -918,17 +938,19 @@ static void ScheduleIns( void )
         }
         if( best == NULL ) {
             /*
-               for pow( x, y ) we need 4 entries. This may be all we have.
-               so our usual rules won't let us schedule anything. This is
-               an escape hatch.
-            */
+             * for pow( x, y ) we need 4 entries. This may be all we have.
+             * so our usual rules won't let us schedule anything. This is
+             * an escape hatch.
+             */
             best = fp_stack_just_squeeks_by;
         }
         if( best == NULL ) {
             _Zoiks( ZOIKS_081 );
             best = ready;
         }
-        /* insert instruction in ring before the 'top' instruction */
+        /*
+         * insert instruction in ring before the 'top' instruction
+         */
         if( top == NULL ) {
             top = best->ins;
             top->head.prev = top;
@@ -948,7 +970,9 @@ static void ScheduleIns( void )
         }
         FPCalcStk( best->ins, &stk_depth );
         best->scheduled = true;
-        /* really delete any virtually deleted dags */
+        /*
+         * really delete any virtually deleted dags
+         */
         best->visited = true;
         for( ;; ) {
             if( ready == NULL )
@@ -957,7 +981,9 @@ static void ScheduleIns( void )
                 break;
             ready = ready->ready;
         }
-        /* find out who becomes ready now that this instruction is scheduled */
+        /*
+         * find out who becomes ready now that this instruction is scheduled
+         */
         for( dep = best->deps; dep != NULL; dep = dep->next ) {
             curr = dep->dep;
             if( --(curr->anc_count) == 0 ) {
@@ -966,18 +992,18 @@ static void ScheduleIns( void )
             }
         }
     }
-    SBlock->ins.hd.next = top;
-    SBlock->ins.hd.prev = top->head.prev;
+    SBlock->ins.head.next = top;
+    SBlock->ins.head.prev = top->head.prev;
     top->head.prev->head.next = (instruction *)&SBlock->ins;
     top->head.prev = (instruction *)&SBlock->ins;
     /*
-       We have to run backwards through the block, adjusting all
-       the index offsets that were scheduled before their corresponding
-       index adjustment instructions. The opposite case of an index
-       adjustment being moved before the use of the index register was
-       handled when we scheduled the INS_INDEX_ADJUST instruction.
-    */
-    for( top = SBlock->ins.hd.prev; top->head.opcode != OP_BLOCK; top = top->head.prev ) {
+     * We have to run backwards through the block, adjusting all
+     * the index offsets that were scheduled before their corresponding
+     * index adjustment instructions. The opposite case of an index
+     * adjustment being moved before the use of the index register was
+     * handled when we scheduled the INS_INDEX_ADJUST instruction.
+     */
+    for( top = SBlock->ins.head.prev; top->head.opcode != OP_BLOCK; top = top->head.prev ) {
         if( top->ins_flags & INS_INDEX_ADJUST ) {
             FixIndexAdjust( top, false );
         }
@@ -986,8 +1012,8 @@ static void ScheduleIns( void )
 
 static  void    FreeDataDag( void )
 /**********************************
-    Free all the memory allocated for the data dependancy DAG.
-*/
+ * Free all the memory allocated for the data dependancy DAG.
+ */
 {
     dep_list_block      *dep;
     dep_list_block      *next;
@@ -1008,8 +1034,8 @@ static  void    FreeDataDag( void )
 
 static  void    SchedBlock( void )
 /*********************************
-    Reorder one block for maximum parallelism.
-*/
+ * Reorder one block for maximum parallelism.
+ */
 {
     unsigned    num_instrs;
 
@@ -1020,15 +1046,15 @@ static  void    SchedBlock( void )
         BuildDag();
         AnnointDag();
         /*
-           We're well and truly screwed if we run out of memory during
-           ScheduleIns or FPPostSched
-        */
+         * We're well and truly screwed if we run out of memory during
+         * ScheduleIns or FPPostSched
+         */
         SetMemOut( MO_FATAL );
         ScheduleIns();
         /*
-           We don't need the DAG anymore, so free it here to make it less
-           likely that we'll run out of memory when doing the FPPostSched
-        */
+         * We don't need the DAG anymore, so free it here to make it less
+         * likely that we'll run out of memory when doing the FPPostSched
+         */
         FreeDataDag();
         FPPostSched( SBlock );
         SetMemOut( MO_SUICIDE );
@@ -1037,9 +1063,9 @@ static  void    SchedBlock( void )
 
 void    Schedule( void )
 /***********************
-    Reorder the instructions in a routine for maximum overlap of the
-    instruction pipeline.
-*/
+ * Reorder the instructions in a routine for maximum overlap of the
+ * instruction pipeline.
+ */
 {
     mem_out_action      old_memout;
     bool                first_time;
@@ -1050,7 +1076,7 @@ void    Schedule( void )
     for( SBlock = HeadBlock; SBlock != NULL; SBlock = SBlock->next_block ) {
         if( Spawn( &SchedBlock ) != 0 ) {
             if( first_time ) {
-                ProcMessage( MSG_SCHEDULER_DIED );
+                FEMessageCurrProc( FEMSG_SCHEDULER_DIED );
                 first_time = false;
             }
             FreeDataDag();

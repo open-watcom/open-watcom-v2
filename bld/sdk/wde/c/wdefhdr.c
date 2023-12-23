@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -126,7 +127,7 @@ OBJPTR WdeMakeHdr( OBJPTR parent, RECT *obj_rect, OBJPTR handle, DialogStyle sty
     style |= WS_BORDER | WS_VISIBLE | WS_TABSTOP | WS_CHILD;
 
     SETCTL_STYLE( WdeDefaultHdr, style );
-    SETCTL_TEXT( WdeDefaultHdr, ResStrToNameOrOrd( text ) );
+    SETCTL_TEXT( WdeDefaultHdr, ResStrToNameOrOrdinal( text ) );
     SETCTL_ID( WdeDefaultHdr, WdeGetNextControlID() );
 
     WdeChangeSizeToDefIfSmallRect( parent, id, obj_rect );
@@ -264,8 +265,7 @@ void WdeHdrFini( void )
 
 bool WdeHdrDestroy( WdeHdrObject *obj, bool *flag, bool *p2 )
 {
-    /* touch unused vars to get rid of warning */
-    _wde_touch( p2 );
+    /* unused parameters */ (void)p2;
 
     if( !Forward( obj->control, DESTROY, flag, NULL ) ) {
         WdeWriteTrail( "WdeHdrDestroy: Control DESTROY failed" );
@@ -281,8 +281,7 @@ bool WdeHdrValidateAction( WdeHdrObject *obj, ACTION_ID *act, void *p2 )
 {
     int     i;
 
-    /* touch unused vars to get rid of warning */
-    _wde_touch( p2 );
+    /* unused parameters */ (void)p2;
 
     for( i = 0; i < MAX_ACTIONS; i++ ) {
         if( WdeHdrActions[i].id == *act ) {
@@ -327,8 +326,7 @@ bool WdeHdrCopyObject( WdeHdrObject *obj, WdeHdrObject **new, OBJPTR handle )
 
 bool WdeHdrIdentify( WdeHdrObject *obj, OBJ_ID *id, void *p2 )
 {
-    /* touch unused vars to get rid of warning */
-    _wde_touch( p2 );
+    /* unused parameters */ (void)p2;
 
     *id = obj->object_id;
 
@@ -337,9 +335,7 @@ bool WdeHdrIdentify( WdeHdrObject *obj, OBJ_ID *id, void *p2 )
 
 bool WdeHdrGetWndProc( WdeHdrObject *obj, WNDPROC *proc, void *p2 )
 {
-    /* touch unused vars to get rid of warning */
-    _wde_touch( obj );
-    _wde_touch( p2 );
+    /* unused parameters */ (void)obj; (void)p2;
 
     *proc = WdeHdrSuperClassProc;
 
@@ -348,9 +344,7 @@ bool WdeHdrGetWndProc( WdeHdrObject *obj, WNDPROC *proc, void *p2 )
 
 bool WdeHdrGetWindowClass( WdeHdrObject *obj, char **class, void *p2 )
 {
-    /* touch unused vars to get rid of warning */
-    _wde_touch( obj );
-    _wde_touch( p2 );
+    /* unused parameters */ (void)obj; (void)p2;
 
     *class = WWC_HEADER;
 
@@ -361,9 +355,7 @@ bool WdeHdrDefine( WdeHdrObject *obj, POINT *pnt, void *p2 )
 {
     WdeDefineObjectInfo  o_info;
 
-    /* touch unused vars to get rid of warning */
-    _wde_touch( pnt );
-    _wde_touch( p2 );
+    /* unused parameters */ (void)pnt; (void)p2;
 
     o_info.obj = obj->object_handle;
     o_info.obj_id = obj->object_id;
@@ -390,8 +382,9 @@ void WdeHdrSetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
     // set the extended style controls only
     WdeEXSetDefineInfo( o_info, hDlg );
 #else
-    _wde_touch( o_info );
-    _wde_touch( hDlg );
+
+    /* unused parameters */ (void)o_info; (void)hDlg;
+
 #endif
 }
 
@@ -410,8 +403,9 @@ void WdeHdrGetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
     // get the extended control settings
     WdeEXGetDefineInfo( o_info, hDlg );
 #else
-    _wde_touch( o_info );
-    _wde_touch( hDlg );
+
+    /* unused parameters */ (void)o_info; (void)hDlg;
+
 #endif
 }
 
@@ -419,12 +413,7 @@ bool WdeHdrDefineHook( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam, Di
 {
     bool processed;
 
-    /* touch unused vars to get rid of warning */
-    _wde_touch( hDlg );
-    _wde_touch( message );
-    _wde_touch( wParam );
-    _wde_touch( lParam );
-    _wde_touch( mask );
+    /* unused parameters */ (void)hDlg; (void)message; (void)wParam; (void)lParam; (void)mask;
 
     processed = false;
 

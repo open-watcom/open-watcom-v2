@@ -5,4 +5,4 @@ system=os2
 linkage=dynamic
 convention=stack
 
-!include $(clib_dir)/mklib.mif
+!include ../../../../mklib.mif

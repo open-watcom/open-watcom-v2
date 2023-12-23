@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,10 +42,11 @@ typedef NODE            PATHNODE;
 typedef PATHNODE        *PATHRING;
 
 /*
- * The suffix name (without '.') is stored in node.name.  PATHRING is a closed
- * linked-list containing the paths on which you can find this suffix.  'id'
- * is the ordering of the suffixes.  The first suffix on the .EXTENSIONS line
- * is given id 0, from there the id's increment by one.
+ * The suffix name (without leading dot) is stored in node.name.
+ * PATHRING is a closed linked-list containing the paths on which
+ * you can find this suffix.  'id' is the ordering of the suffixes.
+ * The first suffix on the .EXTENSIONS line is given id 0, from
+ * there the id's increment by one.
  */
 struct Suffix {
     /* node.name has been FixName'd() before being hashed */
@@ -74,13 +76,13 @@ extern void     SuffixInit( void );
 extern void     SuffixFini( void );
 
 extern void     ClearSuffixes( void );
-extern bool     SufExists( const char *suf );
+extern bool     SufExists( const char *sufname );
 extern bool     SufBothExist( const char *sufsuf );
-extern void     AddSuffix( const char *name );
-extern void     SetSufPath( const char *name, const char *path );
+extern void     AddSuffix( const char *sufname );
+extern void     SetSufPath( const char *sufname, const char *path );
 extern char     *AddCreator( const char *sufsuf );
 extern void     PrintSuffixes( void );
-extern SUFFIX   *FindSuffix( const char *name );
+extern CREATOR  *FindSuffixCreator( const char *sufname );
 extern bool     TrySufPath( char *buffer, const char *filename, TARGET **chktarg, bool tryenv );
 
 #endif

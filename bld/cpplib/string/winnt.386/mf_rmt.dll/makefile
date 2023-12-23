@@ -10,4 +10,4 @@ linkage    = dynamic
 mthreaded  = 1
 fs_registration = yes
 
-!include $(cpplib_dir)/string/string.mif
+!include ../../string.mif

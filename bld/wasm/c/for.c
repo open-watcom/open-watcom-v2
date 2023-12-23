@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,8 +39,8 @@
 
 #define IRP_MACRONAME   "__STATIC_IRP_MACRO_"
 
-bool ForDirective( token_idx i, irp_type type )
-/*********************************************/
+bool ForDirective( token_buffer *tokbuf, token_idx i, irp_type type )
+/*******************************************************************/
 {
     token_idx start = i - 1; /* location of "directive name .. after any labels" */
     token_idx arg_loc;
@@ -49,58 +50,60 @@ bool ForDirective( token_idx i, irp_type type )
     size_t len;
 
     if( type == IRP_REPEAT ) {
-        ExpandTheWorld( i, false, true );
+        ExpandTheWorld( tokbuf, i, false, true );
         /* make a temporary macro, then call it */
-        if( AsmBuffer[i].class != TC_NUM ) {
+        if( tokbuf->tokens[i].class != TC_NUM ) {
             AsmError( OPERAND_EXPECTED );
             return( RC_ERROR );
         }
         arg_loc = i;
-        len = AsmBuffer[i].u.value;
+        len = tokbuf->tokens[i].u.value;
         i++;
-        if( AsmBuffer[i].class != TC_FINAL ) {
+        if( tokbuf->tokens[i].class != TC_FINAL ) {
             AsmError( OPERAND_EXPECTED );
             return( RC_ERROR );
         }
     } else {
         /* save the parm list, make a temporary macro, then call it with each parm */
-        if( AsmBuffer[i].class != TC_ID ) {
+        if( tokbuf->tokens[i].class != TC_ID ) {
             AsmError( OPERAND_EXPECTED );
             return( RC_ERROR );
         }
         arg_loc = i;
-        for( ; AsmBuffer[i].class != TC_COMMA; i++ ) {
-            if( AsmBuffer[i].class == TC_FINAL ) {
+        for( ; tokbuf->tokens[i].class != TC_COMMA; i++ ) {
+            if( tokbuf->tokens[i].class == TC_FINAL ) {
                 AsmError( EXPECTING_COMMA );
                 return( RC_ERROR );
             }
         }
         i++;
-        if( AsmBuffer[i].class != TC_STRING ) {
+        if( tokbuf->tokens[i].class != TC_STRING ) {
             AsmError( PARM_REQUIRED );
             return( RC_ERROR );
         }
-        len = strlen( AsmBuffer[i].string_ptr ) + 1;
+        len = strlen( tokbuf->tokens[i].string_ptr ) + 1;
         parmstring = AsmTmpAlloc( len );
-        memcpy( parmstring, AsmBuffer[i].string_ptr, len );
-        AsmBuffer[i].class = TC_FINAL;
-
-        AddTokens( AsmBuffer, arg_loc, 1 );
+        memcpy( parmstring, tokbuf->tokens[i].string_ptr, len );
+        tokbuf->tokens[i].class = TC_FINAL;
+        tokbuf->tokens[i].string_ptr = tokbuf->stringbuf;
+        tokbuf->count = i;
+        AddTokens( tokbuf, arg_loc, 1 );
     }
     /* now make a macro */
     i = start;
     sprintf( buffer, IRP_MACRONAME "%d", Globals.for_counter );
     if( Options.mode & MODE_IDEAL ) {
-        AsmBuffer[i+1].string_ptr = buffer;
-        AsmBuffer[i+1].class = TC_ID;
+        tokbuf->tokens[i+1].string_ptr = buffer;
+        tokbuf->tokens[i+1].class = TC_ID;
     } else {
-        AsmBuffer[i].string_ptr = buffer;
-        AsmBuffer[i++].class = TC_ID;
+        tokbuf->tokens[i].string_ptr = buffer;
+        tokbuf->tokens[i].class = TC_ID;
+        i++;
     }
-    AsmBuffer[i].class = TC_DIRECTIVE;
-    AsmBuffer[i].u.token = T_MACRO;
+    tokbuf->tokens[i].class = TC_DIRECTIVE;
+    tokbuf->tokens[i].u.token = T_MACRO;
 
-    if( MacroDef( i, true ) )
+    if( MacroDef( tokbuf, i, true ) )
         return( RC_ERROR );
 
     /* now call the above macro with each of the given parms */

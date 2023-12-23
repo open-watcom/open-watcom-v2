@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,7 +35,9 @@
 #endif
 
 #if _CPU != 8086
-    /* enable Structured Exception Handling for all 32-bit targets */
+    /*
+     * enable Structured Exception Handling for all 32-bit targets
+     */
     #define __SEH__
 #endif
 
@@ -62,16 +64,16 @@
 
 #define BUF_SIZE                    512
 
-#define CMPLIT(s,c) memcmp( s, c, sizeof( c ) )
-#define CPYLIT(s,c) memcpy( s, c, sizeof( c ) )
-#define LENLIT(c)   (sizeof( c ) - 1)
+#define LENLIT(c)                   (sizeof( c ) - 1)
 
 #define PPOPERATOR_DEFINED          "defined"
 #define PPOPERATOR_PRAGMA           "_Pragma"
 
-#define IS_PPOPERATOR_DEFINED(s)    (CMPLIT(s, PPOPERATOR_DEFINED) == 0)
-#define IS_PPOPERATOR_PRAGMA(s,l)   ((CompFlags.extensions_enabled || CompFlags.c99_extensions) \
+#define IS_PPOPERATOR_DEFINED(s)    (strcmp(s, PPOPERATOR_DEFINED) == 0)
+#define IS_PPOPERATOR_PRAGMA(s,l)   ((CompFlags.extensions_enabled || CHECK_STD( > , C89 )) \
                                     && l == LENLIT(PPOPERATOR_PRAGMA) \
-                                    && CMPLIT(s, PPOPERATOR_PRAGMA) == 0)
+                                    && strcmp(s, PPOPERATOR_PRAGMA) == 0)
 
 #define ARRAY_SIZE(x)               (sizeof( x ) / sizeof( *x ))
+
+#define IsHugeData()                ((TargetSwitches & (CGSW_X86_BIG_DATA | CGSW_X86_CHEAP_POINTER)) == CGSW_X86_BIG_DATA)

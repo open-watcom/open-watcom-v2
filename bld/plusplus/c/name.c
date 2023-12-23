@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,7 +40,7 @@
 #include "initdefs.h"
 #include "stats.h"
 #include "pcheader.h"
-#ifndef NDEBUG
+#ifdef DEVBUILD
     #include "pragdefn.h"
     #include "togglesd.h"
 #endif
@@ -268,7 +268,7 @@ NAME NameDummy( void )
     buff[1] = NAME_DUMMY_PREFIX2;
     // the contents of the name don't have to be different just the address
     // but for debugging it is handy to have unique contents
-#ifndef NDEBUG
+#ifdef DEVBUILD
     len = sprintf( buff + 2, "%u", ni ) + 2;
 #else
     buff[2] = '0';
@@ -316,7 +316,7 @@ pch_status PCHInitNames( bool writing )
         }
     }
     qsort( nameTranslateTable, nameCount, sizeof( idname * ), cmpName );
-#ifndef NDEBUG
+#ifdef DEVBUILD
     {
         for( i = 1; i < nameCount; ++i ) {
             if( nameTranslateTable[i - 1] == nameTranslateTable[i] ) {
@@ -388,7 +388,7 @@ NAME NameMapIndex( NAME index )
     if( PCHGetUInt( index ) < PCH_FIRST_INDEX ) {
         return( NULL );
     }
-#ifndef NDEBUG
+#ifdef DEVBUILD
     if( PCHGetUInt( index ) >= nameCount + PCH_FIRST_INDEX ) {
         CFatal( "invalid name index" );
     }
@@ -422,7 +422,7 @@ NAME NameGetIndex( NAME name )
     pname = NAME_PTR( name );
     found = bsearch( &pname, nameTranslateTable, nameCount, sizeof( idname * ), cmpFindName );
     if( found == NULL ) {
-#ifndef NDEBUG
+#ifdef DEVBUILD
         CFatal( "invalid name passed to NameGetIndex" );
 #endif
         return( PCHSetUInt( PCH_ERROR_INDEX ) );
@@ -460,7 +460,7 @@ static void init(               // INITIALIZATION
     ExtraRptRegisterMax( &ctr_max_length, "maximum name chain" );
 }
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 static void dumpNames( void )
 {
     unsigned sum;
@@ -548,7 +548,7 @@ static void fini(               // INITIALIZATION
 {
     /* unused parameters */ (void)defn;
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
     if( TOGGLEDBG( dump_names ) ) {
         dumpNames();
         puts( "created name.lst" );

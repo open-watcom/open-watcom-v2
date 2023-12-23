@@ -26,6 +26,14 @@ type="l"    usr="doslfnm.lib"   conda="mm"
 type="l"    usr="doslfnom.lib"  conda="mm"
 type="l"    usr="doslfns.lib"   conda="ms"  where="c jc"
 
+type="l"    usr="pc98c.lib"     conda="mc"  where="c jc"
+type="l"    usr="pc98h.lib"     conda="mh"  where="c jc"
+type="l"    usr="pc98l.lib"     conda="ml"
+type="l"    usr="pc98ol.lib"    conda="ml"
+type="l"    usr="pc98m.lib"     conda="mm"
+type="l"    usr="pc98om.lib"    conda="mm"
+type="l"    usr="pc98s.lib"     conda="ms"  where="c jc"
+
 [ DEFAULT dir="lib286/os2" cond="os2targ tools16" where="c f77 jc jf77" ]
 type="l"    usr="dospmc.lib"    conda="mc"  where="c jc"
 type="l"    usr="dospmh.lib"    conda="mh"  where="c jc"
@@ -46,11 +54,16 @@ type="s"    usr="commode.obj"
 [ DEFAULT dir="lib286/win" cond="wintarg tools16" where="c f77 jc jf77" ]
 type="l"    usr="clibc.lib"     conda="mc"  where="c jc"
 type="l"    usr="clibl.lib"     conda="ml"
-type="s"    usr="libentry.obj"
 type="l"    usr="clibm.lib"     conda="mm"
 type="l"    usr="clibs.lib"     conda="ms"  where="c jc"
+type="s"    usr="libentry.obj"
 type="s"    usr="binmode.obj"
 type="s"    usr="commode.obj"
+
+type="l"    usr="pc98c.lib"     conda="mc"  where="c jc"
+type="l"    usr="pc98l.lib"     conda="ml"
+type="l"    usr="pc98m.lib"     conda="mm"
+type="l"    usr="pc98s.lib"     conda="ms"  where="c jc"
 
 ###################
 # 32-bit Libraries
@@ -67,6 +80,9 @@ type="s"    usr="commode.obj"   conda="3r 3s |"
 
 type="l"    usr="doslfn3r.lib"  conda="3r"
 type="l"    usr="doslfn3s.lib"  conda="3s"
+
+type="l"    usr="pc983r.lib"    conda="3r"
+type="l"    usr="pc983s.lib"    conda="3s"
 
 [ DEFAULT dir="lib386/netware" cond="nlmtarg" where="c f77 jc jf77" ]
 type="l"    usr="clib3s.lib"
@@ -87,6 +103,9 @@ type="l"    usr="clib3s.lib"    conda="3s"
 type="s"    usr="binmode.obj"   conda="3r 3s |"
 type="s"    usr="commode.obj"   conda="3r 3s |"
 
+type="l"    usr="pc983r.lib"    conda="3r"
+type="l"    usr="pc983s.lib"    conda="3s"
+
 [ DEFAULT dir="lib386/nt" cond="wnttarg" where="c f77 jc jf77 ac" ]
 type="l"    usr="clib3r.lib"    conda="3r"
 type="l"    usr="clib3s.lib"    conda="3s"
@@ -94,6 +113,11 @@ type="s"    usr="binmode.obj"
 type="s"    usr="commode.obj"
 
 [ DEFAULT dir="libaxp/nt" cond="alphatarg" where="ac" ]
+type="l"    usr="clib.lib"
+type="s"    usr="binmode.obj"
+type="s"    usr="commode.obj"
+
+[ DEFAULT dir="libmps/nt" cond="mipstarg" where="ac" ]
 type="l"    usr="clib.lib"
 type="s"    usr="binmode.obj"
 type="s"    usr="commode.obj"

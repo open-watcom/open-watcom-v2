@@ -41,14 +41,26 @@ equivalenced variables in large data memory models
 .if '&lang' eq 'C' or '&lang' eq 'C/C++' .do begin
 .note (a)
 data objects whose size exceeds the data threshold in large data
-memory models (the data threshold is 32K unless changed using the "zt"
-compiler option)
+memory models (the data threshold is 
+.if '&machine' eq '8086' .do begin
+32K
+.do end
+.el .do begin
+2G
+.do end
+unless changed using the "zt" compiler option)
 .note (b)
 data objects defined using the "FAR" or "HUGE" keyword,
 .note (c)
 literals whose size exceeds the data threshold in large data memory
-models (the data threshold is 32K unless changed using the "zt"
-compiler option)
+models (the data threshold is
+.if '&machine' eq '8086' .do begin
+32K
+.do end
+.el .do begin
+2G
+.do end
+unless changed using the "zt" compiler option)
 .note (d)
 literals defined using the "FAR" or "HUGE" keyword.
 .do end

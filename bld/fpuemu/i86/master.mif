@@ -2,6 +2,8 @@
 # EMUI86 makefile
 #
 
+tree_depth = 4
+
 proj_name = emui86
 
 emui86_autodepends = .AUTODEPEND
@@ -23,7 +25,7 @@ fpu_flags_qnx_386 = -fpc
 #
 # cflags
 #
-.c : ../c;../../c
+.c : ../c;$(fpuemu_dir)/c
 
 extra_cpp_flags_qnx = -DQNX$(cpu_size)
 
@@ -51,7 +53,7 @@ extra_a_flags_dosinit  = -fpi
 extra_a_flags_initemu  = -fpi87 -i"$(comp_cfg_dir)/h"
 extra_a_flags_initemu2 = -fpc -i"$(comp_cfg_dir)/h"
 extra_a_flags_initemuw = -fpc -i"$(comp_cfg_dir)/h"
-extra_a_flags_emu8087  = -fpc -i"../inc" -i"../../inc" -i"$(mathlib_dir)/h"
+extra_a_flags_emu8087  = -fpc -i"../inc" -i"$(fpuemu_dir)/inc" -i"$(mathlib_dir)/h"
 extra_a_flags_emustub =
 
 # explicit rules
@@ -78,7 +80,7 @@ exetarg_opts    = opt priv=0, long
 exetarg_name    = emu87_$(cpu_size)
 !include exetarg.mif
 
-usage.u : ../../usage.sp
+usage.u : $(fpuemu_dir)/usage.sp
     @%make echo_wsplice
     $(wsplice) -u $< $@
 

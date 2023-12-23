@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -71,5 +72,10 @@ extern orl_file_handle      ObjFileHnd;
 extern orl_sec_handle       DebugHnd;
 extern dis_handle           DHnd;
 extern FILE                 *OutputDest;
+
+extern orl_machine_type     MachineType;
+extern orl_file_format      FileFormat;
+extern bool                 IsIntelx86;
+extern bool                 IsMasmOutput;
 
 #endif

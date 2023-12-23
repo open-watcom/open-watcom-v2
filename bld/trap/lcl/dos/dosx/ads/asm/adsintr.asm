@@ -2,6 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
+;* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -99,21 +100,21 @@ allexceptions   macro   macname
                 &macname gpfault,13
                 endm
 
-_data segment word public 'data'
+_DATA segment word public 'DATA'
 dbgregs         reg_group       <>
                 allexceptions   intvars
 dataseg         dw              0
 FirstTime       db              1
 extrn           IntNum          : dword
 extrn           Regs            : byte
-_data ends
+_DATA ends
 
 
-dgroup group _data
+DGROUP group _DATA
 
-assume  ds:dgroup,cs:_text
+assume  ds:DGROUP,cs:_TEXT
 
-_text segment byte public 'code'
+_TEXT segment byte public 'CODE'
 
 saveregs        macro   regs,retoff,retseg
                 push    ds                      ; ...
@@ -283,111 +284,6 @@ oldvect         macro   name,num
                 ret                             ; return to caller
 ReleVects      endp
 
-public          GetFL
-GetFL           proc    near
-                pushfd
-                pop     eax
-                ret
-GetFL           endp
-
-public          GetLinear
-GetLinear       proc    near
-                push    ebx             ; save regs
-                push    ecx             ; ...
-                mov     ebx,12[esp]     ; load selector
-                mov     ax,2508H        ; get segment linear base address
-                int     21h             ; ...
-                add     ecx,16[esp]     ; add offset to base address
-                mov     eax,ecx         ; return it
-                pop     ecx
-                pop     ebx
-                ret
-GetLinear       endp
-
-
-public          SegLimit
-SegLimit        proc    near
-                lsl     eax,word ptr 4[esp]; get segment limit of selector
-                jne     nogood          ; if good selector
-                ret                     ; - return segment limit
-nogood:         xor     eax,eax         ; else
-                ret                     ; - return( 0 )
-SegLimit        endp
-
-public          DoReadMem
-DoReadMem       proc    near
-                mov     ax,4[esp]       ; load segment
-                verr    ax              ; if not ok for read
-                je      readok          ; - then
-                xor     eax,eax         ; - return( 0 )
-                ret                     ; - ...
-readok:         push    ebx             ; save regs
-                push    edx             ; ...
-                push    ds              ; ...
-                mov     ds,16[esp]      ; load seg
-                mov     edx,20[esp]     ; load offset
-                mov     ebx,24[esp]     ; address of buffer
-                mov     al,[edx]        ; get byte at seg:offset
-                pop     ds              ; restore reg
-                mov     [ebx],al        ; save byte in buffer
-                pop     edx             ; restore regs
-                pop     ebx             ; ...
-                mov     eax,1           ; return( 1 )
-                ret                     ; ...
-DoReadMem       endp
-
-public          WriteOk
-WriteOk         proc    near
-                mov     ax,4[esp]       ; load segment
-                verw    ax              ; if ok for write
-                sete    al              ; return TRUE
-                movzx   eax,al          ; ...
-                ret                     ; ...
-WriteOk         endp
-
-
-public          DoWriteMem
-DoWriteMem      proc    near
-                mov     ax,4[esp]       ; load segment
-                verw    ax              ; if not ok for read
-                je      writeisok       ; - then
-                xor     eax,eax         ; - return( 0 )
-                ret                     ; - ...
-writeisok:      push    edx             ; save regs
-                push    ds              ; ...
-                mov     edx,20[esp]     ; get address of buffer
-                mov     al,[edx]        ; load byte from buffer
-                mov     ds,12[esp]      ; get seg
-                mov     edx,16[esp]     ; load offset
-                mov     [edx],al        ; store byte at seg:offset
-                pop     ds              ; restore regs
-                pop     edx             ; ...
-                mov     eax,1           ; return( 1 )
-                ret                     ; ...
-DoWriteMem      endp
-
-sysregs         macro   write
-                push    ebx                     ; save regs
-                push    edx                     ; ...
-                mov     edx,12[esp]             ; get buffer address
-                mov     ax,02535h               ; system call
-                mov     ebx,&write              ; read/write
-                int     21h                     ; ...
-                pop     edx                     ; restore regs
-                pop     ebx                     ; ...
-                ret                             ; return to caller
-                endm
-
-public          GetSysRegs
-GetSysRegs      proc near
-                sysregs 0
-GetSysRegs      endp
-
-public          SetSysRegs
-SetSysRegs      proc near
-                sysregs 1
-SetSysRegs      endp
-
-_text           ends
+_TEXT           ends
 
                 end

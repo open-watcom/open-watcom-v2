@@ -142,7 +142,6 @@ cg_client_objs = &
 
 pre_obj_deps    = $(bit_sets) cgprotos.gh feprotos.gh
 
-src_path        = $+$(src_path)$-;$(cg_dir)/c;$(watcom_dir)/c
+src_path        +=;$(cg_dir)/c
 
-asm_include     = $+$(asm_include)$-;$(cg_dir)/a
-asm_path        = $+$(asm_path)$-;$(cg_dir)/a
+asm_path        = $(cg_dir)/a

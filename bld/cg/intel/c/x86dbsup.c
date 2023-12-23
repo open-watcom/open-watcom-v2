@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -134,8 +134,8 @@ void    BuffWord( uint w )
 }
 
 
-void    BuffDWord( unsigned_32 w )
-/********************************/
+void    BuffDWord( uint_32 w )
+/****************************/
 {
     BuffWord( w & 0xffff );
     BuffWord( w >> 16 );
@@ -153,8 +153,8 @@ void    BuffOffset( offset w )
 }
 
 
-void    BuffValue( unsigned_32 val, uint class )
-/**********************************************/
+void    BuffValue( uint_32 val, uint class )
+/******************************************/
 {
     switch( class ) {
     case 0:

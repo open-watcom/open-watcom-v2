@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,22 +31,22 @@
 ****************************************************************************/
 
 
-#if _CPU == 8086 || _CPU == 386
-mathfunc( "__LOG",   1, O_LOG ),
-mathfunc( "__COS",   1, O_COS ),
-mathfunc( "__SIN",   1, O_SIN ),
-mathfunc( "__TAN",   1, O_TAN ),
-mathfunc( "__SQRT",  1, O_SQRT ),
-mathfunc( "__FABS",  1, O_FABS ),
-mathfunc( "__POW",   2, O_POW ),
-mathfunc( "__ATAN2", 2, O_ATAN2 ),
-mathfunc( "__FMOD",  2, O_FMOD ),
-mathfunc( "__ACOS",  1, O_ACOS ),
-mathfunc( "__ASIN",  1, O_ASIN ),
-mathfunc( "__ATAN",  1, O_ATAN ),
-mathfunc( "__COSH",  1, O_COSH ),
-mathfunc( "__EXP",   1, O_EXP ),
-mathfunc( "__LOG10", 1, O_LOG10 ),
-mathfunc( "__SINH",  1, O_SINH ),
-mathfunc( "__TANH",  1, O_TANH ),
+#if _INTEL_CPU
+mathfunc( "__LOG",   "log",     1, O_LOG ),
+mathfunc( "__COS",   "cos",     1, O_COS ),
+mathfunc( "__SIN",   "sin",     1, O_SIN ),
+mathfunc( "__TAN",   "tan",     1, O_TAN ),
+mathfunc( "__SQRT",  "sqrt",    1, O_SQRT ),
+mathfunc( "__FABS",  "fabs",    1, O_FABS ),
+mathfunc( "__POW",   "pow",     2, O_POW ),
+mathfunc( "__ATAN2", "atan2",   2, O_ATAN2 ),
+mathfunc( "__FMOD",  "fmod",    2, O_FMOD ),
+mathfunc( "__ACOS",  "acos",    1, O_ACOS ),
+mathfunc( "__ASIN",  "asin",    1, O_ASIN ),
+mathfunc( "__ATAN",  "atan",    1, O_ATAN ),
+mathfunc( "__COSH",  "cosh",    1, O_COSH ),
+mathfunc( "__EXP",   "exp",     1, O_EXP ),
+mathfunc( "__LOG10", "log10",   1, O_LOG10 ),
+mathfunc( "__SINH",  "sinh",    1, O_SINH ),
+mathfunc( "__TANH",  "tanh",    1, O_TANH ),
 #endif

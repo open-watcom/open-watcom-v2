@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,15 +38,16 @@
 #include <stdlib.h>
 #include "basics.h"
 
+
 typedef struct SubStr {
-    char    *str;
-    uint    len;
+    uchar   *str;
+    size_t  len;
 } SubStr;
 
 typedef struct SubStr Str;
 
 extern int      SubStr_eq( const SubStr *, const SubStr * );
-extern void     SubStr_init( SubStr *, char *, uint );
+extern void     SubStr_init( SubStr *, uchar *, size_t );
 extern void     SubStr_out( const SubStr *, FILE * );
 
 extern void     Str_init( Str *, const SubStr * );

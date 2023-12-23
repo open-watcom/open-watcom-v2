@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -99,9 +100,9 @@ typedef struct WMenuEditInfo {
 /****************************************************************************/
 extern void             WInitDummyMenuEntry( void );
 extern void             WFiniDummyMenuEntry( void );
-extern WMenuEditInfo    *WAllocMenuEInfo( void );
-extern void             WFreeMenuEInfo( WMenuEditInfo * );
-extern void             WMakeDataFromMenu( WMenu *, void **, size_t * );
+extern WMenuEditInfo    *WAllocMenuEditInfo( void );
+extern void             WFreeMenuEditInfo( WMenuEditInfo * );
+extern void             WMakeDataFromMenu( WMenu *, char **, size_t * );
 extern void             WFreeMenu( WMenu *menu );
 extern void             WFreeMenuEntries( WMenuEntry *entry );
 extern void             WFreeMenuEntry( WMenuEntry *entry );
@@ -117,8 +118,8 @@ extern WMenuEntry       *WFindEntryFromPreviewPopup( WMenuEntry *, HMENU );
 extern bool             WFindEntryLBPos( WMenuEntry *, WMenuEntry *, LRESULT * );
 extern bool             WModifyEntryInPreview( WMenuEditInfo *, WMenuEntry * );
 
-extern bool             WMakeClipDataFromMenuEntry( WMenuEntry *entry, void **data, uint_32 *dsize );
-extern WMenuEntry       *WMakeMenuEntryFromClipData( void *data, uint_32 dsize );
+extern bool             WMakeClipDataFromMenuEntry( WMenuEntry *entry, char **data, size_t *dsize );
+extern WMenuEntry       *WMakeMenuEntryFromClipData( const char *data, size_t dsize );
 
 extern bool WResolveEntrySymbol( WMenuEntry *entry, WRHashTable *symbol_table );
 extern bool WResolveMenuEntries( WMenuEditInfo *einfo );

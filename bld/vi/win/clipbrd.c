@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -336,7 +336,7 @@ int GetClipboardSavebuf( savebuf *clip )
         if( !is_flushed && !has_lf ) {
             clip->type = SAVEBUF_LINE;
             ReadBuffer[i] = '\0';
-            clip->u.data = MemAlloc( i + 1 );
+            clip->u.data = _MemAllocArray( char, i + 1 );
             strcpy( clip->u.data, ReadBuffer );
             record_done = true;
         } else {

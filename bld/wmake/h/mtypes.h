@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -67,7 +68,7 @@ enum {
     IS_WS       =   0x01,
     IS_PRINT    =   0x02,
     IS_ALPHA    =   0x04,
-    IS_EXTC     =   0x08,
+    IS_WILDC    =   0x08,
     IS_DIRC     =   0x10,
     IS_FILEC    =   0x20,
     IS_MACC     =   0x40,
@@ -81,11 +82,13 @@ extern const UINT8 IsArray[256 + 4];
 #define sisws(__s)          (IsArray[(__s)+4] & IS_WS)
 #define sisprint(__s)       (IsArray[(__s)+4] & IS_PRINT)
 #define sisalpha(__s)       (IsArray[(__s)+4] & IS_ALPHA)
-#define sisextc(__s)        (IsArray[(__s)+4] & IS_EXTC)
+#define sisextc(__s)        (IsArray[(__s)+4] & IS_FILEC)
 #define sisdirc(__s)        (IsArray[(__s)+4] & IS_DIRC)
 #define sisfilec(__s)       (IsArray[(__s)+4] & IS_FILEC)
 #define sismacc(__s)        (IsArray[(__s)+4] & IS_MACC)
 #define sisbarf(__s)        (IsArray[(__s)+4] & IS_BARF)
+#define siswildc(__s)       (IsArray[(__s)+4] & IS_WILDC)
+#define sisdotc(__s)        ((__s) == '.')
 
 #define cisws(__c)          sisws((byte)(__c))
 #define cisprint(__c)       sisprint((byte)(__c))
@@ -95,6 +98,8 @@ extern const UINT8 IsArray[256 + 4];
 #define cisfilec(__c)       sisfilec((byte)(__c))
 #define cismacc(__c)        sismacc((byte)(__c))
 #define cisbarf(__c)        sisbarf((byte)(__c))
+#define ciswildc(__c)       siswildc((byte)(__c))
+#define cisdotc(__s)        sisdotc((byte)(__c))
 
 #define ctolower(__c)       (byte)tolower((byte)(__c))
 #define ctoupper(__c)       (byte)toupper((byte)(__c))

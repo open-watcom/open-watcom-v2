@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,7 +41,7 @@
 
 /* NB: This code assumes ASCII character encoding. Probably not unreasonable. */
 
-FLTSUPPFUNC FAR_STRING _EFG_Format( char *buffer, va_list *pargs, PTR_NEAROW_SPECS specs )
+FLTSUPPFUNC FAR_STRING _EFG_Format( char *buffer, va_list *pargs, PTR_MBCS_PRTF_SPECS specs )
 {
     int         digits;
     int         fmt;

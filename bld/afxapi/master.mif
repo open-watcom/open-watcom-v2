@@ -5,7 +5,7 @@ proj_name = afxapi
 afxapi_autodepends  = .autodepend
 
 !ifeq lib_debug 1
-release = 0
+afxapi_debug = 1
 !endif
 
 !ifeq unicode 1

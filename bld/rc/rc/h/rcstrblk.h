@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,7 +47,7 @@ typedef struct StringItem16 {
 typedef struct StringsBlock {
     bool        UseUnicode;
     uint_16     StringBlockSize;
-    void *      StringBlock;
+    void        *StringBlock;
     uint_16     StringListLen;  /* number of entries in the string list */
     void        **StringList;   /* sorted array of pointers to strings in the StringBlock */
 } StringsBlock;

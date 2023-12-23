@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -227,8 +228,6 @@ typedef unsigned long long      syscall_res;
 #define SYS_sched_setparam          4158
 #define SYS_sched_getparam          4159
 #define SYS_sched_setscheduler      4160
-#define SYS_sched_getscheduler      4161
-#define SYS_sched_yield             4162
 #define SYS_sched_getscheduler      4161
 #define SYS_sched_yield             4162
 #define SYS_sched_get_priority_max  4163

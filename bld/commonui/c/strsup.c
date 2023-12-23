@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -105,10 +106,10 @@ void FreeRCString( char *str )
 }
 
 /*
- * SetInstance - set the instance handle used to load resource strings
+ * SetRCInstance - set the instance handle used to load resource strings
  */
-void SetInstance( HINSTANCE inst )
+void SetRCInstance( HINSTANCE inst )
 {
     curInst = inst;
 
-} /* SetInstance */
+} /* SetRCInstance */

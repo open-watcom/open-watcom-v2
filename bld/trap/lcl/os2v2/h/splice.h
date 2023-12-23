@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,7 +32,7 @@
 extern void __export DoReadWord( void );
 extern void __export DoWriteWord( void );
 
-extern void __export DoOpen( char *name, int mode, int flags );
+extern void __export DoOpen( PCHAR name, int mode, int flags );
 #pragma aux DoOpen __parm [__eax] [__edx] [__ecx]
 
 extern void __export DoClose( HFILE hdl );
@@ -40,7 +41,7 @@ extern void __export DoClose( HFILE hdl );
 extern void __export DoDupFile( HFILE old, HFILE new );
 #pragma aux DoDupFile __parm [__eax] [__edx]
 
-extern void __export DoWritePgmScrn( char *buff, ULONG len );
+extern void __export DoWritePgmScrn( PCHAR buff, ULONG len );
 #pragma aux DoWritePgmScrn __parm [__eax] [__edx]
 
 extern void __export DoReadXMMRegs( struct x86_xmm *xmm_regs );

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -52,12 +53,12 @@ extern bool WREDumpPendingDialogSession( void );
 extern bool WREEndAllDialogSessions( bool fatal_exit );
 extern void WREEndLangDialogSession( WResLangNode *lnode );
 extern void WREEndResDialogSessions( WREResInfo *rinfo );
-extern bool WREGetDlgSessionFileName( HCONV server, void **data, size_t *size );
-extern bool WREGetDlgSessionResName( HCONV server, void **data, size_t *size );
-extern bool WREGetDlgSessionData( HCONV server, void **data, size_t *size );
-extern bool WREGetDlgSessionIs32Bit( HCONV server, void **data, size_t *size );
-extern bool WRESetDlgSessionResName( HCONV server, HDDEDATA hdata );
-extern bool WRESetDlgSessionResData( HCONV server, HDDEDATA hdata );
+extern bool WREGetDlgSessionFileName( HCONV server, char **data, size_t *size );
+extern bool WREGetDlgSessionResName( HCONV server, char **data, size_t *size );
+extern bool WREGetDlgSessionData( HCONV server, char **data, size_t *size );
+extern bool WREGetDlgSessionIs32Bit( HCONV server, char **data, size_t *size );
+extern bool WRESetDlgSessionResName( HCONV server, HDDEDATA hData );
+extern bool WRESetDlgSessionResData( HCONV server, HDDEDATA hData );
 extern void WREShowAllDialogSessions( bool show );
 
 #endif

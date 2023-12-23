@@ -33,7 +33,7 @@
 #ifndef _TOKENBUF_H
 #define _TOKENBUF_H
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 #define BUF_SZ  (sizeof( TOKEN ) + 2)
 #else
 #define BUF_SZ  (sizeof( TOKEN ) + 31)

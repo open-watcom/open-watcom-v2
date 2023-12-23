@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,20 +37,30 @@
 #include <ctype.h>
 #include <dos.h>
 #include "stdwin.h"
-#include "ismod32.h"
 #include "dbgrmsg.h"
 
 
 #define MAX_MODULE      256
+
+typedef struct {
+    WORD        sig[2];
+    WORD        dataseg_off;
+    WORD        codeinfo_off;
+    WORD        stacksize_off;
+    BYTE        call_cleanup[3];
+    BYTE        mov_ax_4c00[3];
+    BYTE        int_21[2];
+    WORD        new_sig[2];
+} winext_data;
 
 int        ModuleTop=0;
 int        CurrentModule = 0;
 
 static int      mod32Top;
 
-static HMODULE moduleIDs[ MAX_MODULE ];
-static HMODULE modules32[ MAX_MODULE ];
-static BOOL moduleIsDLL[ MAX_MODULE ];
+static HMODULE moduleIDs[MAX_MODULE];
+static HMODULE modules32[MAX_MODULE];
+static bool moduleIsDLL[MAX_MODULE];
 
 /*
  * AddAllCurrentModules - add all currently running modules to
@@ -61,15 +71,56 @@ void AddAllCurrentModules( void )
     MODULEENTRY me;
 
     me.dwSize = sizeof( MODULEENTRY );
-    if( !ModuleFirst( &me ) ) return;
+    if( !ModuleFirst( &me ) )
+        return;
     do {
         if( me.hModule != DebugeeModule ) {
-            AddModuleLoaded( me.hModule, FALSE );
+            AddModuleLoaded( me.hModule, false );
         }
         me.dwSize = sizeof( MODULEENTRY );
     } while( ModuleNext( &me ) );
 
 } /* AddAllCurrentModules */
+
+/*
+ * CheckIsModuleWin32App - check if a given module handle is a win32 app
+ */
+static bool CheckIsModuleWin32App( HMODULE hmod, WORD *win32ds, WORD *win32cs, DWORD *win32initialeip )
+{
+    GLOBALENTRY ge;
+    winext_data wedata;
+    int         segnum;
+    addr48_ptr  addr;
+
+    *win32cs = *win32ds = 0;
+    ge.dwSize = sizeof( GLOBALENTRY );
+    if( !GlobalEntryModule( &ge, hmod, 1 ) ) {
+        return( false );
+    }
+    addr.segment = (WORD)ge.hBlock;
+    addr.offset = 0;
+    ReadMemory( &addr, &wedata, sizeof( wedata ) );
+    if( memcmp( wedata.sig, win386sig, SIG_SIZE ) == 0 || memcmp( wedata.sig, win386sig2, SIG_SIZE ) == 0 ) {
+        if( memcmp( wedata.new_sig, win386sig2, SIG_SIZE ) == 0 ) {
+            segnum = 2;
+        } else {
+            segnum = 3;
+        }
+        if( !GlobalEntryModule( &ge, hmod, segnum ) ) {
+            return( false );
+        }
+        addr.segment = (WORD)ge.hBlock;
+        addr.offset = wedata.dataseg_off;
+        ReadMemory( &addr, win32ds, sizeof( WORD ) );
+        addr.offset = wedata.stacksize_off;
+        ReadMemory( &addr, win32initialeip, sizeof( DWORD ) );
+        addr.offset = wedata.codeinfo_off + 4;
+        ReadMemory( &addr, win32cs, sizeof( WORD ) );
+        return( true );
+    }
+    return( false );
+
+} /* CheckIsModuleWin32App */
 
 /*
  * try32:
@@ -84,7 +135,7 @@ static void try32( HANDLE mod )
     WORD        cs;
 
     if( CheckIsModuleWin32App( mod, &ds, &cs, &off ) ) {
-        modules32[ mod32Top ] = mod;
+        modules32[mod32Top] = mod;
         mod32Top++;
     }
 
@@ -93,7 +144,7 @@ static void try32( HANDLE mod )
 /*
  * HasSegAliases - report if any modules are Win386 maps
  */
-BOOL HasSegAliases( void )
+bool HasSegAliases( void )
 {
     return( (mod32Top > 0) );
 
@@ -107,12 +158,12 @@ void AddDebugeeModule( void )
 {
     int i;
     for( i = ModuleTop; i > 0; i-- ) {
-        moduleIDs[i] = moduleIDs[i-1];
+        moduleIDs[i] = moduleIDs[i - 1];
     }
     ModuleTop++;
     Out((OUT_MAP,"AddDebugeeModule - ModuleTop=%d",ModuleTop));
     moduleIDs[0] = DebugeeModule;
-    moduleIsDLL[0] = FALSE;
+    moduleIsDLL[0] = false;
     try32( DebugeeModule );
 
 } /* AddDebugeeModule */
@@ -120,7 +171,7 @@ void AddDebugeeModule( void )
 /*
  * AddModuleLoaded - add a loaded module (dll or task) to the list
  */
-void AddModuleLoaded( HANDLE mod, BOOL is_dll )
+void AddModuleLoaded( HANDLE mod, bool is_dll )
 {
     int         i;
 
@@ -131,7 +182,7 @@ void AddModuleLoaded( HANDLE mod, BOOL is_dll )
     if( ModuleTop == 0 ) {
         Out((OUT_MAP,"AddModuleLoaded ModuleTop=%d mod=%d dll=%d",ModuleTop,mod,is_dll));
     }
-    for( i=0;i<ModuleTop;i++ ) {
+    for( i = 0; i < ModuleTop; i++ ) {
         if( moduleIDs[i] == mod ) {
             Out((OUT_MAP,"Already there"));
             return;
@@ -140,8 +191,8 @@ void AddModuleLoaded( HANDLE mod, BOOL is_dll )
 
     try32( mod );
 
-    moduleIsDLL[ ModuleTop ] = is_dll;
-    moduleIDs[ ModuleTop ] = mod;
+    moduleIsDLL[ModuleTop] = is_dll;
+    moduleIDs[ModuleTop] = mod;
     ModuleTop++;
 
 } /* AddModuleLoaded */
@@ -155,10 +206,10 @@ trap_retval TRAP_CORE( Get_lib_name )( void )
     get_lib_name_req    *acc;
     get_lib_name_ret    *ret;
     char                *name;
-    size_t              max_len;
+    size_t              name_maxlen;
 
-    acc = GetInPtr(0);
-    ret = GetOutPtr(0);
+    acc = GetInPtr( 0 );
+    ret = GetOutPtr( 0 );
 
     if( acc->mod_handle != 0 ) {
         CurrentModule = acc->mod_handle + 1;
@@ -169,14 +220,14 @@ trap_retval TRAP_CORE( Get_lib_name )( void )
         Out(( OUT_MAP,"Past end of list" ));
         return( sizeof( *ret ) );
     }
-    Out(( OUT_MAP,"ModuleTop=%d CurrentModule=%d id=%d", ModuleTop, CurrentModule, moduleIDs[ CurrentModule ] ));
+    Out(( OUT_MAP,"ModuleTop=%d CurrentModule=%d id=%d", ModuleTop, CurrentModule, moduleIDs[CurrentModule] ));
     name = GetOutPtr( sizeof( *ret ) );
     *name = '\0';
     me.dwSize = sizeof( me );
-    if( ModuleFindHandle( &me, moduleIDs[ CurrentModule ] ) ) {
-        max_len = GetTotalSizeOut() - 1 - sizeof( *ret );
-        strncpy( name, me.szExePath, max_len );
-        name[max_len] = '\0';
+    if( ModuleFindHandle( &me, moduleIDs[CurrentModule] ) ) {
+        name_maxlen = GetTotalSizeOut() - sizeof( *ret ) - 1;
+        strncpy( name, me.szExePath, name_maxlen );
+        name[name_maxlen] = '\0';
     }
     ret->mod_handle = CurrentModule;
     Out(( OUT_MAP,"handle=%ld, name=\"%s\"", ret->mod_handle, name ));
@@ -197,13 +248,15 @@ static void accessSegment( GLOBALHANDLE gh, WORD segment )
     WORD                i;
     WORD                sel;
     WORD                offset;
+    addr48_ptr          addr;
 
-    ReadMem( (WORD)gh, 0x22, &offset, sizeof( offset ) );
-    i = 0;
-    while( i < segment ) {
-        ReadMem( (WORD)gh, offset+8, &sel, sizeof( sel ) );
+    addr.segment = (WORD)gh;
+    addr.offset = 0x22;
+    ReadMemory( &addr, &offset, sizeof( offset ) );
+    for( i = 0; i < segment; i++ ) {
+        addr.offset = offset + 8;
+        ReadMemory( &addr, &sel, sizeof( sel ) );
         offset += 10;
-        i++;
     }
     SegmentToAccess = sel;
     DebuggerWaitForMessage( RUNNING_DEBUGEE, TaskAtFault, ACCESS_SEGMENT );
@@ -232,36 +285,36 @@ static void accessSegment( GLOBALHANDLE gh, WORD segment )
  * other task. Why DLL's work at all (since they are not a "task") is beyond
  * me.
  */
-static BOOL horkyFindSegment( int module, WORD segment )
+static bool horkyFindSegment( int module, WORD segment )
 {
     static GLOBALENTRY  ge;
     static HMODULE      lastmodid;
     HMODULE             modid;
 
-    modid = moduleIDs[ module ];
-    if( !moduleIsDLL[ module ] ) {
-        return( FALSE );
+    modid = moduleIDs[module];
+    if( !moduleIsDLL[module] ) {
+        return( false );
     }
 
     if( lastmodid == modid ) {
         accessSegment( ge.hBlock, segment );
-        return( TRUE );
+        return( true );
     }
     lastmodid = modid;
     ge.dwSize = sizeof( ge );
     if( !GlobalFirst( &ge, GLOBAL_ALL ) ) {
         lastmodid = NULL;
-        return( FALSE );
+        return( false );
     }
     do {
         if( ge.hOwner == modid && ge.wType == GT_MODULE ) {
             accessSegment( ge.hBlock, segment );
-            return( TRUE );
+            return( true );
         }
         ge.dwSize = sizeof( ge );
     } while( GlobalNext( &ge, GLOBAL_ALL ) );
     lastmodid = NULL;
-    return( FALSE );
+    return( false );
 
 } /* horkyFindSegment */
 
@@ -300,7 +353,7 @@ trap_retval TRAP_CORE( Map_addr )( void )
     ret->hi_bound = ~(addr48_off)0;
     module = acc->mod_handle;
     in_seg = acc->in_addr.segment;
-    if( CheckIsModuleWin32App( moduleIDs[ module ], &ds, &cs, &off ) ) {
+    if( CheckIsModuleWin32App( moduleIDs[module], &ds, &cs, &off ) ) {
         Out((OUT_MAP,"is 32 bit module"));
         if( in_seg == MAP_FLAT_DATA_SELECTOR ) {
             ret->out_addr.segment = ds;
@@ -316,9 +369,9 @@ trap_retval TRAP_CORE( Map_addr )( void )
             break;
         }
         ge.dwSize = sizeof( ge );
-        if( !GlobalEntryModule( &ge, moduleIDs[ module ], in_seg ) ) {
+        if( !GlobalEntryModule( &ge, moduleIDs[module], in_seg ) ) {
             if( horkyFindSegment( module, in_seg ) ) {
-                if( !GlobalEntryModule( &ge, moduleIDs[ module ], in_seg ) ) {
+                if( !GlobalEntryModule( &ge, moduleIDs[module], in_seg ) ) {
                     Out((OUT_MAP,"GlobalEntry 2nd time failed" ));
                     return( sizeof( *ret ) );
                 }
@@ -363,7 +416,7 @@ trap_retval TRAP_CORE( Get_next_alias )( void )
     ret->alias = 0;
     if( mod32Top > 0 ) {
         mod32Top--;
-        CheckIsModuleWin32App( modules32[ mod32Top ], &ds, &cs, &off );
+        CheckIsModuleWin32App( modules32[mod32Top], &ds, &cs, &off );
         ret->seg = cs;
         ret->alias = ds;
     }

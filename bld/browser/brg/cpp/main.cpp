@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,7 +34,7 @@
 #include <stdio.h>
 #include <direct.h>
 #include <wclist.h>
-#include <process.h>    // getcmd
+#include <process.h>
 #include <string.hpp>
 
 #include "banner.h"
@@ -44,28 +45,31 @@
 #include "mrfile.h"
 #include "util.h"
 
+
+#define ERROR_RETURN_VAL 7
+
 const char * ExeName = "wbrg";
 const char * ModuleExt = ".mbr";
 const char * MergedExt = ".dbr";
 
-#define ERROR_RETURN_VAL 7
-
 static void printHeader();
 static void printUsage();
-
-#define COMMANDBUF (512)    /* size of buffer to hold command line */
 
 int main()
 //--------
 {
-    char cmdLine[ COMMANDBUF ];
+    int     cmd_len;
+    char    *cmd_line;
 
     printHeader();
 
-    getcmd( cmdLine );
+    cmd_len = _bgetcmd( NULL, 0 ) + 1;
+    cmd_line = new char[cmd_len];
+    _bgetcmd( cmd_line, cmd_len );
 
     try {
-        CommandParser prs( cmdLine, false );
+        CommandParser prs( cmd_line, false );
+        delete[] cmd_line;
 
         if( prs.database() == NULL || prs.files()->entries() == 0 ) {
             printUsage();
@@ -89,25 +93,29 @@ int main()
 static void printHeader()
 //-----------------------
 {
-    puts( banner1w( "Browsing Information Merger ", _WBRG_VERSION_ ) );
-    puts( banner2 );
-    puts( banner2a( 1994 ) );
-    puts( banner3 );
-    puts( banner3a );
-    puts( "" );
+    puts(
+        banner1t( "Browsing Information Merger" ) "\n"
+        banner1v( _WBRG_VERSION_ ) "\n"
+        banner2 "\n"
+        banner2a( 1994 ) "\n"
+        banner3 "\n"
+        banner3a "\n"
+    );
 }
 
 static void printUsage()
 //----------------------
 {
-    puts( "" );
-    puts( "Usage:    wbrg <merger_cmd> ... <merger_cmd>" );
-    puts( "" );
-    puts( "          <merger_cmd> ::= database <dbr_file>" );
-    puts( "                         | file <mbr_file>, <mbr_file>, ..." );
-    puts( "                         | file { <mbr_file> ... <mbr_file> }" );
-    puts( "                         | @ <cbr_file>" );
-    puts( "          <dbr_file> is the file name of the browser database file" );
-    puts( "          <mbr_file> is the file name of a browser module file" );
-    puts( "          <cbr_file> is the file name of a browser command file" );
+    puts(
+        "\n"
+        "Usage:    wbrg <merger_cmd> ... <merger_cmd>" "\n"
+        "\n"
+        "    <merger_cmd> ::= database <dbr_file>" "\n"
+        "                   | file <mbr_file>, <mbr_file>, ..." "\n"
+        "                   | file { <mbr_file> ... <mbr_file> }" "\n"
+        "                   | @ <cbr_file>" "\n"
+        "    <dbr_file> is the file name of the browser database file" "\n"
+        "    <mbr_file> is the file name of a browser module file" "\n"
+        "    <cbr_file> is the file name of a browser command file"
+    );
 }

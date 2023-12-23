@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,16 +42,20 @@
 
 #include "qnxload.h"
 
-int PILLSysLoad( const char *path, const pill_client_routines *cli,
+int PILLSysLoad( const char *base_name, const pill_client_routines *cli,
                 link_handle *lh, link_message *msg )
 {
     FILE                *fp;
     supp_header         *pill;
     pill_init_func      *init_func;
+    char                filename[_MAX_PATH];
 
     msg->source = NULL;
     msg->id = LM_SYSTEM_ERROR;
-    fp = DIGLoader( Open )( path, strlen( path ), "pil", NULL, 0 );
+    if( DIGLoader( Find )( DIG_FILETYPE_EXE, base_name, 0, ".pil", filename, sizeof( filename ) ) == 0 ) {
+        return( 0 );
+    }
+    fp = DIGLoader( Open )( filename );
     if( fp == NULL ) {
         msg->data.code = errno;
         return( 0 );
@@ -60,7 +65,7 @@ int PILLSysLoad( const char *path, const pill_client_routines *cli,
     DIGLoader( Close )( fp );
     lh->sys = SuppSegs;
 #ifdef __WATCOMC__
-    if( pill == NULL || pill->sig != PILLSIG ) {
+    if( pill == NULL || memcmp( pill->signature, PILLSIGN, 4 ) != 0 ) {
 #else
     if( pill == NULL ) {
 #endif
@@ -71,7 +76,9 @@ int PILLSysLoad( const char *path, const pill_client_routines *cli,
     init_func = (pill_init_func *)pill->init_rtn;
     lh->rtns = init_func( cli, msg );
     if( lh->rtns == NULL ) {
-        /* don't free DLL yet, we need the message processor */
+        /*
+         * don't free DLL yet, we need the message processor
+         */
         msg->source = lh;
         return( 0 );
     }

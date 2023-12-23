@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -65,11 +65,11 @@ section_info *FindInfo( imp_image_handle *iih, imp_mod_handle imh )
     return( inf );
 }
 
-/*
- * ModPointer - given a mod_handle, return the module information pointer
- */
 
 mod_dbg_info *ModPointer( imp_image_handle *iih, imp_mod_handle imh )
+/********************************************************************
+ * given a mod_handle, return the module information pointer
+ */
 {
     info_block          *blk;
     mod_table           *tbl;
@@ -90,11 +90,10 @@ mod_dbg_info *ModPointer( imp_image_handle *iih, imp_mod_handle imh )
     return( NULL );
 }
 
-/*
- * AllocLinkTable - allocate the demand load link table
- *
- */
 static dip_status AllocLinkTable( imp_image_handle *iih, section_info *inf, dword num_links, dword first_link )
+/**************************************************************************************************************
+ * allocate the demand load link table
+ */
 {
     pointer_uint        **lnk_tbl;
     pointer_uint        *lnk;
@@ -184,12 +183,12 @@ static dip_status AllocLinkTable( imp_image_handle *iih, section_info *inf, dwor
 }
 
 
-/*
+dip_status AdjustMods( imp_image_handle *iih, section_info *inf, unsigned long adjust )
+/**************************************************************************************
  * AdjustMods - adjust the demand info offsets in all the modules
  *            - allocate module index table
  *            - allocate demand load link table
  */
-dip_status AdjustMods( imp_image_handle *iih, section_info *inf, unsigned long adjust )
 {
     info_block          *blk;
     unsigned            count;
@@ -248,7 +247,7 @@ dip_status AdjustMods( imp_image_handle *iih, section_info *inf, unsigned long a
     }
     if( !iih->v2 ) {
         off = first_link + adjust;
-        if( DCSeek( iih->sym_fp, off, DIG_ORG ) ) {
+        if( DCSeek( iih->sym_fp, off, DIG_SEEK_ORG ) ) {
             DCStatus( DS_ERR | DS_FSEEK_FAILED );
             return( DS_ERR | DS_FSEEK_FAILED );
         }
@@ -297,11 +296,10 @@ void SetModBase( imp_image_handle *iih )
 }
 
 
-/*
- * ModInfoFini - free module index table
- */
-
 void ModInfoFini( section_info *inf )
+/************************************
+ * free module index table
+ */
 {
     info_block      *blk;
     pointer_uint    **lnk_tbl;
@@ -321,11 +319,10 @@ void ModInfoFini( section_info *inf )
     }
 }
 
-/*
- * ModInfoSplit - find a good place to split module information
- */
-
 unsigned ModInfoSplit( imp_image_handle *iih, info_block *blk, section_info *inf )
+/*********************************************************************************
+ * find a good place to split module information
+ */
 {
     unsigned    off;
     unsigned    prev;
@@ -356,11 +353,14 @@ word ModOff2Idx( section_info *inf, word off )
     return( count );
 }
 
-/*
- * DIPImpWalkModList - walk the module list
- */
 
+/*
+ * DIPImpWalkModList
+ */
 walk_result DIPIMPENTRY( WalkModList )( imp_image_handle *iih, DIP_IMP_MOD_WALKER *wk, void *d )
+/***********************************************************************************************
+ * walk the module list
+ */
 {
     info_block          *blk;
     mod_table           *tbl;
@@ -416,26 +416,29 @@ walk_result MyWalkModList( imp_image_handle *iih, DIP_INT_MOD_WALKER *wk, void *
 
 
 /*
- * ModSrcLang -- return pointer to name of source language of the module
+ * DIPImpModSrcLang
  */
-
 char *DIPIMPENTRY( ModSrcLang )( imp_image_handle *iih, imp_mod_handle imh )
+/************************************************************************
+ * return pointer to name of source language of the module
+ */
 {
     return( iih->lang + ModPointer( iih, imh )->language );
 }
 
 /*
- * DIPImpModInfo - does a module have a particular brand of info
+ * DIPImpModInfo
  */
-
 dip_status DIPIMPENTRY( ModInfo )( imp_image_handle *iih, imp_mod_handle imh, handle_kind hk )
+/*********************************************************************************************
+ * does a module have a particular brand of info
+ */
 {
     mod_dbg_info    *mod;
-    static unsigned DmndType[MAX_HK] = {
-        0,
-        DMND_TYPES,
-        DMND_LINES,
-        DMND_LOCALS
+    static unsigned DmndType[] = {
+        #define pick(enum,hsize,ihsize,wvihsize,cvdmndtype,wdmndtype)   wdmndtype,
+        #include "diphndls.h"
+        #undef pick
     };
 
     if( hk == HK_IMAGE )
@@ -444,17 +447,20 @@ dip_status DIPIMPENTRY( ModInfo )( imp_image_handle *iih, imp_mod_handle imh, ha
     return( mod->di[DmndType[hk]].u.entries != 0 ? DS_OK : DS_FAIL );
 }
 
-//NYI: should be OS && location sensitive
+/*
+ * NYI: should be OS && location sensitive
+ */
 #define IS_PATH_CHAR( c ) ((c)=='\\'||(c)=='/'||(c)==':')
 #define EXT_CHAR        '.'
 
 
 /*
- * DIPImpModName -- return the module name
+ * DIPImpModName
  */
-
-size_t DIPIMPENTRY( ModName )( imp_image_handle *iih, imp_mod_handle imh,
-                                char *buff, size_t buff_size )
+size_t DIPIMPENTRY( ModName )( imp_image_handle *iih, imp_mod_handle imh, char *buff, size_t buff_size )
+/*******************************************************************************************************
+ * return the module name
+ */
 {
     char        *name;
     char        *start;
@@ -471,7 +477,9 @@ size_t DIPIMPENTRY( ModName )( imp_image_handle *iih, imp_mod_handle imh,
     ++name;
     end = start + 1;
     if( *start == ')' ) {
-        /* library member */
+        /*
+         * library member
+         */
         --end;
         for( ;; ) {
             --start;
@@ -481,7 +489,9 @@ size_t DIPIMPENTRY( ModName )( imp_image_handle *iih, imp_mod_handle imh,
         }
         ++start;
     } else {
-        /* file name */
+        /*
+         * file name
+         */
         start = name;
         for( ; len > 0; --len ) {
             if( IS_PATH_CHAR( *name ) ) {
@@ -504,12 +514,11 @@ size_t DIPIMPENTRY( ModName )( imp_image_handle *iih, imp_mod_handle imh,
     return( len );
 }
 
-/*
- * PrimaryCueFile -- return the module source file
- */
-
 size_t PrimaryCueFile( imp_image_handle *iih, imp_cue_handle *icueh,
                         char *buff, size_t buff_size )
+/*******************************************************************
+ * return the module source file
+ */
 {
     size_t      len;
     char        *name;

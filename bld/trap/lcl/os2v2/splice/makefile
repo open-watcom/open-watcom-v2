@@ -3,6 +3,8 @@
 # Builds wdsplice.dll
 #
 
+tree_depth = 5
+
 host_os  = os2
 host_cpu = 386
 
@@ -16,7 +18,12 @@ sys_dll  = 1
 
 !include cproj.mif
 !include defrule.mif
+!include dllrule.mif
 !include deftarg.mif
+
+dig_arch = $(host_cpu)
+
+!include $(dig_dir)/digcli.mif
 
 #
 # cflags
@@ -25,7 +32,7 @@ sys_dll  = 1
 
 inc_dirs = -I"../h" -I"$(trap_dir)/h" -I"$(dig_dir)/h"
 
-extra_cpp_flags = -DMD_x86
+extra_cpp_flags = $(dig_arch_cpp_flags) -DBLDVER=$(bld_ver)
 
 #
 # lflags
@@ -38,5 +45,6 @@ extra_l_flags_dll = op oneautodata
 #
 # DLL
 #
-dlltarg_objs = splice.obj
+dlltarg_prebuild_objs = $(dll_subdir)
+dlltarg_objs = $(dll_subdir)/splice.obj
 !include dlltarg.mif

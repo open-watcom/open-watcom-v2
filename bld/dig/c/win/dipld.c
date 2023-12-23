@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -25,7 +25,7 @@
 *
 *  ========================================================================
 *
-* Description:  Windows 3.x DIP loader.
+* Description:  DIP module loader for Windows 3.x.
 *
 ****************************************************************************/
 
@@ -36,9 +36,9 @@
 #include <i86.h>
 #include <windows.h>
 #include "watcom.h"
+#include "digld.h"
 #include "dip.h"
 #include "dipimp.h"
-#include "dipcli.h"
 #include "dipsys.h"
 #include "diplasth.h"
 
@@ -62,11 +62,11 @@ void DIPSysUnload( dip_sys_handle *sys_hdl )
     }
 }
 
-dip_status DIPSysLoad( const char *path, dip_client_routines *cli, dip_imp_routines **imp, dip_sys_handle *sys_hdl )
+dip_status DIPSysLoad( const char *base_name, dip_client_routines *cli, dip_imp_routines **imp, dip_sys_handle *sys_hdl )
 {
-    HINSTANCE           dip_dll;
-    char                newpath[256];
-    dip_status          ds;
+    HINSTANCE           mod_hdl;
+    char                filename[_MAX_PATH];
+    dip_status          status;
     char                parm[10];
     struct {
         WORD            mb2;
@@ -83,8 +83,9 @@ dip_status DIPSysLoad( const char *path, dip_client_routines *cli, dip_imp_routi
     UINT                prev;
 
     *sys_hdl = NULL_SYSHDL;
-    strcpy( newpath, path );
-    strcat( newpath, ".dll" );
+    if( DIGLoader( Find )( DIG_FILETYPE_EXE, base_name, 0, ".dll", filename, sizeof( filename ) ) == 0 ) {
+        return( DS_ERR | DS_FOPEN_FAILED );
+    }
     p = parm;
     *p++ = ' ';
     utoa( _FP_SEG( &transfer_block ), p, 16 );
@@ -100,17 +101,17 @@ dip_status DIPSysLoad( const char *path, dip_client_routines *cli, dip_imp_routi
     parm_block.show = &show_block;
     parm_block.reserved = 0;
     prev = SetErrorMode( SEM_NOOPENFILEERRORBOX );
-    dip_dll = LoadModule( newpath, &parm_block );
-    DIPLastHandle = dip_dll;
+    mod_hdl = LoadModule( filename, &parm_block );
+    DIPLastHandle = mod_hdl;
     SetErrorMode( prev );
-    if( dip_dll < HINSTANCE_ERROR ) {
+    if( mod_hdl < HINSTANCE_ERROR ) {
         return( DS_ERR | DS_FOPEN_FAILED );
     }
-    ds = DS_ERR | DS_INVALID_DIP;
-    if( transfer_block.load != NULL && (*imp = transfer_block.load( &ds, cli )) != NULL ) {
+    status = DS_ERR | DS_INVALID_DIP;
+    if( transfer_block.load != NULL && (*imp = transfer_block.load( &status, cli )) != NULL ) {
         *sys_hdl = transfer_block.unload;
         return( DS_OK );
     }
     DIPSysUnload( &transfer_block.unload );
-    return( ds );
+    return( status );
 }

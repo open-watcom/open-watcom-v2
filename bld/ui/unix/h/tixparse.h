@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,15 +31,11 @@
 ****************************************************************************/
 
 
+#include <limits.h>
 #include "tixstatu.h"
 
-#ifdef __QNX__
-#define MB_MAP_MAX  1
-#else
-#define MB_MAP_MAX  4
-#endif
+extern char         ti_char_map[256][MB_LEN_MAX];
 
-// array of char mappings (up to 3 UTF-8 characters followed by a 0)
-extern char         ti_char_map[256][MB_MAP_MAX];
-
+extern void         tix_error( const char *str );
 extern tix_status   ti_read_tix( const char *termname );
+extern void         ti_map_display_code( char c, bool alt_map );

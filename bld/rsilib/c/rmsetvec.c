@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2011-2013 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2011-2022 The Open Watcom Contributors. All Rights Reserved.
 *
 * =========================================================================
 *
@@ -13,7 +13,7 @@
 
 #include "rsi1632.h"
 
-int rsi_rm_set_vector( int int_no, void FarPtr v )
+bool rsi_rm_set_vector( int int_no, void FarPtr v )
 {
     int             old_intf;
     void FarPtr     FarPtr vect;
@@ -25,7 +25,7 @@ int rsi_rm_set_vector( int int_no, void FarPtr v )
         old_intf = reset_intflag();
         vect[int_no] = v;
         set_intflag( old_intf );
-        return( 1 );
+        return( true );
     }
 }
 

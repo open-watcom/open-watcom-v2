@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -87,7 +88,7 @@ fsig_func   fsignal( intstar4 sig_num, fsig_func handler )
 #endif
     case SIGFPE:
         if( handler == (fsig_func) SIG_IGN ) {
-            _control87( ~0, MCW_EM );
+            _control87( MCW_ALL, MCW_EM );
         } else if( handler == (fsig_func) SIG_DFL ) {
             __MaskDefaultFPE();
         }

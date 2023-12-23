@@ -1,6 +1,6 @@
-:segment C_FOR_PB & FOR_NT
+:segment FOR_NT & C_FOR_PB
 IncludeFile idepbnt.cfg
-:elsesegment C_FOR_PB
+:elsesegment FOR_WIN & C_FOR_PB
 IncludeFile idepb.cfg
 :elsesegment
 :segment FOR_WIN
@@ -88,11 +88,15 @@ MsgLog
   Help .c, wccerrs.hlp, 20000
   Help .cpp, wpperrs.hlp, 20000
   Help .for, wfcerrs.hlp, 20000
+:elsesegment FOR_WIN
+  Help .c, wccerrs.hlp, 1
+  Help .cpp, wpperrs.hlp, 1
+  Help .for, wfcerrs.hlp, 0
 :elsesegment FOR_NT & FOR_AXP
   Help .c, wccerrs.hlp, 0
   Help .cpp, wpperrs.hlp, 1
   Help .for, wfcerrs.hlp, 0
-:elsesegment C_FOR_PB | FOR_NT | FOR_WIN
+:elsesegment C_FOR_PB | FOR_NT
   Help .c, wccerrs.hlp, 1
   Help .cpp, wpperrs.hlp, 1
   Help .for, wfcerrs.hlp, 0

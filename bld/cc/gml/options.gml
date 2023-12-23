@@ -2,7 +2,7 @@
 :cmt.*
 :cmt.*                            Open Watcom Project
 :cmt.*
-:cmt.* Copyright (c) 2022-2022 The Open Watcom Contributors. All Rights Reserved.
+:cmt.* Copyright (c) 2022-2023 The Open Watcom Contributors. All Rights Reserved.
 :cmt.*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 :cmt.*
 :cmt.*  ========================================================================
@@ -306,7 +306,7 @@
 :jusage. 構築ターゲットはマルチスレッド環境です
 
 :option. br
-:target. 386 axp ppc
+:target. 386 axp ppc mps
 :usage. build target uses DLL version of C/C++ run-time library
 :jusage. 構築ターゲットはDLL版のC/C++実行時ライブラリを使用します
 
@@ -502,6 +502,7 @@
 :jusage.
 
 :option. eoo
+:target. i86 386
 :internal.
 :usage. emit OMF object files
 :jusage.
@@ -523,6 +524,23 @@
 :usage. emit Pentium profiling code
 :jusage. Pentiumプロファイリング･コードを生成します
 
+:option. et0
+:target. 386
+:usage.  emit Pentium-CTR0 profiling code
+:jusage. Pentium-CTR0プロファイリング･コードを生成します
+
+:option. etp
+:target. 386
+:internal.
+:usage.  emit Timing for Profiler
+:jusage. プロファイラのタイミングを出力します
+
+:option. esp
+:target. 386
+:internal.
+:usage.  emit Statement counting for Profiler
+:jusage. プロファイラ用ステートメント･カウンティングを出力します
+
 :option. ez
 :target. 386
 :usage. generate PharLap EZ-OMF object files
@@ -530,7 +548,7 @@
 
 :option. e
 :target. any
-:number. checkErrorLimit
+:number. checkErrorLimit 20
 :usage. set limit on number of error messages
 :jusage. エラーメッセージ数の制限を設定します
 
@@ -579,6 +597,7 @@
 
 :option. ft
 :target. any
+:enumerate. file_83
 :usage. check for truncated versions of file names
 :jusage. 切り詰めたファイル名をチェックします
 
@@ -589,6 +608,7 @@
 
 :option. fx
 :target. any
+:enumerate. file_83
 :usage. do not check for truncated versions of file names
 :jusage. 切り詰めたファイル名をチェックしません
 
@@ -651,6 +671,13 @@
 :usage. enable Pentium FDIV bug check
 :jusage. Pentium FDIVチェックをします
 
+:option. fld
+:target. i86 386
+:nochain.
+:internal.
+:usage. enable 10-byte long double
+:jusage. enable 10-byte long double
+
 :option. g
 :target. i86 386
 :id. . <name>
@@ -671,6 +698,20 @@
 :usage. generate DWARF debugging information
 :jusage. DWARFデバッグ情報を生成します
 
+:option. hda
+:target. any
+:enumerate. dbg_output
+:internal.
+:usage. generate DWARF debugging information
+:jusage. DWARFデバッグ情報を生成します
+
+:option. hdg
+:target. any
+:enumerate. dbg_output
+:internal.
+:usage. generate DWARF debugging information
+:jusage. DWARFデバッグ情報を生成します
+
 :option. hc
 :target. any
 :enumerate. dbg_output
@@ -680,6 +721,7 @@
 :option. i
 :target. any
 :path.
+:optional.
 :usage. add directory to list of include directories
 :jusage. インクルード・ディレクトリのリストを追加します
 
@@ -687,6 +729,23 @@
 :target. any
 :usage. change char default from unsigned to signed
 :jusage. char型のデフォルトをunsignedからsignedに変更します
+
+:option. lc
+:target. dbg
+:usage. enable API logging
+:jusage. enable API logging
+
+:option. la
+:target. dbg
+:ntarget. i86 386
+:usage. enable Asm listing
+:jusage. enable Asm listing
+
+:option. lo
+:target. dbg
+:ntarget. i86 386
+:usage. enable OWL logging
+:jusage. enable OWL logging
 
 :usageogrp. m Memory model
 :jusage. メモリ・モデル
@@ -775,7 +834,7 @@
 
 :option. oe
 :target. any
-:number. checkOENumber 100
+:number. checkOENumber 20
 :usage. expand user functions inline (<num> controls max size)
 :jusage. ユーザ関数をインライン展開します(<num>は最大ｻｲｽﾞを制御します)
 
@@ -921,10 +980,23 @@
 :usage. save/restore segment registers across calls
 :jusage. 関数呼び出しの前後でセグメントレジスタを退避/リストアします
 
+:option. re
+:target. 386
+:internal.
+:usage.  special Neutrino R/W data access code generation
+:jusage.
+
 :option. ri
 :target. i86 386
 :usage. return chars and shorts as ints
 :jusage. 全ての関数の引数と戻り値をint型に変換します
+
+:option. rod
+:target. any
+:path.
+:internal.
+:usage.  specified <path> contains read-only files
+:jusage. 指定された<path>には読み込み専用ファイルが含まれています
 
 :option. s
 :target. any
@@ -947,7 +1019,7 @@
 :jusage. まず最初にSSを通してスタック・タッチします
 
 :option. tp
-:target. any
+:target. dbg
 :id. . <name>
 :usage. set #pragma on( <name> )
 :jusage. #pragma on( <name> )を設定します
@@ -977,19 +1049,23 @@
 :usage. set warning level number
 :jusage. 警告レベル番号を設定します
 
+:cmt.
+:cmt. wcd  and wce uses list of values which are 'C' prefix and a C compiler
+:cmt. message number without any prefix
+:cmt.
 :option. wcd
 :target. any
-:number.
+:id.
 :multiple.
-:usage. disable warning message <num>
-:jusage. 警告制御: 警告メッセージ<num>を禁止します
+:usage. disable warning message <id>
+:jusage. 警告制御: 警告メッセージ<id>を禁止します
 
 :option. wce
 :target. any
-:number.
+:id.
 :multiple.
-:usage. enable warning message <num>
-:jusage. 警告制御: 警告メッセージ <num> の表示をします
+:usage. enable warning message <id>
+:jusage. 警告制御: 警告メッセージ <id> の表示をします
 
 :option. we
 :target. any
@@ -1059,17 +1135,25 @@
 :usage. disable all extensions (strict ISO/ANSI C)
 :jusage. 拡張機能を使用不可にします(つまり, ISO/ANSI Cのみ受け付けます)
 
-:option. za99
+:option. z\a99 z\A99
 :target. any
+:enumerate. cstd
 :internal.
-:enumerate. iso
-:usage. disable extensions (i.e., accept only ISO/ANSI C99)
-:jusage. 拡張機能を使用不可にします(つまり, ISO/ANSI C99のみ受け付けます)
+:usage. use ISO/ANSI C99 standard
+:jusage. use ISO/ANSI C99 standard
 
-:option. zam
+:option. z\am z\Am
 :target. any
-:usage. disable all compiler non-ISO compliant names (macros, symbols)
-:jusage. disable all compiler non-ISO compliant names (macros, symbols)
+:usage. disable old non-ISO compliant names (macros, symbols)
+:jusage. disable old non-ISO compliant names (macros, symbols)
+
+:option. z\astd z\Astd
+:target. any
+:special. checkSTD =<std>
+:number. . 0
+:enumerate. cstd
+:usage. use specified ISO/ANSI C language standard (c89,c99)
+:jusage. use specified ISO/ANSI C language standard (c89,c99)
 
 :option. zc
 :target. i86 386
@@ -1101,7 +1185,6 @@
 
 :option. zev
 :target. any
-:enumerate. iso
 :usage. enable arithmetic on void derived types
 :jusage.
 
@@ -1149,20 +1232,26 @@
 :option. zk0 zk
 :target. any
 :enumerate. char_set
-:usage. Kanji
-:jusage. 2バイト文字サポート: 日本語
+:usage. Japanese (Kanji, CP 932)
+:jusage.
 
 :option. zk1
 :target. any
 :enumerate. char_set
-:usage. Chinese/Taiwanese
-:jusage. 2バイト文字サポート: 中国語/台湾語
+:usage. Chinese/Taiwanese (Traditional, CP 950)
+:jusage.
 
 :option. zk2
 :target. any
 :enumerate. char_set
-:usage. Korean
-:jusage. 2バイト文字サポート: 韓国語
+:usage. Korean (Wansung, CP 949)
+:jusage.
+
+:option. zk3
+:target. any
+:enumerate. char_set
+:usage. Chinese (Simplified, CP 936)
+:jusage.
 
 :option. zk0u
 :target. any
@@ -1209,6 +1298,11 @@
 :usage. remove automatically inserted symbols
 :jusage.
 
+:option. zi
+:target. dbg
+:usage. dump informational statistics to stdout
+:jusage. 情報として統計値をstdoutに出力します
+
 :option. zm
 :target. any
 :usage. emit functions in separate segments
@@ -1236,12 +1330,14 @@
 :jusage. 無メッセージモードで動作します(エラーメッセージのみ表示されます)
 
 :option. zro
-:target. any
+:target. i86 386
+:enumerate. fp_rounding
 :usage. omit floating point rounding calls (non ANSI)
 :jusage.
 
 :option. zri
 :target. i86 386
+:enumerate. fp_rounding
 :usage. inline floating point rounding calls
 :jusage.
 
@@ -1252,7 +1348,7 @@
 
 :option. zt
 :target. i86 386
-:number. CmdX86CheckThreshold 256
+:number. checkDataThreshold 256
 :usage. far data threshold (i.e., larger objects go in far memory)
 :jusage. farデータ敷居値(つまり, 敷居値より大きいオブジェクトをfarメモリに置きます)
 
@@ -1293,5 +1389,5 @@
 
 :option. zz
 :target. 386
-:usage. remove "@size" from __stdcall function names (10.0 compatible)
-:jusage. "@size"を__stdcall関数名から削除します(10.0との互換性)
+:usage. remove "@size" from __stdcall names (10.0 compatible)
+:jusage. remove "@size" from __stdcall names (10.0 compatible)

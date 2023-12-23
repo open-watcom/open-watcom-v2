@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,8 +44,9 @@ void  InitSegList( seg_list *ctl, unsigned_16 item_size )
 }
 
 void FiniSegList( seg_list *ctl )
-/*******************************/
-// Free segment blocks
+/********************************
+ * Free segment blocks
+ */
 {
     seg_blk_head *blk, *next;
 
@@ -182,8 +184,9 @@ static  int  BlkSegSearch( seg_cmp *cmp )
 
 
 seg_entry *FindRealSeg( seg_list *ctl, addr_seg seg )
-/***************************************************/
-// Find real seg seg_entry
+/****************************************************
+ * Find real seg seg_entry
+ */
 {
     seg_entry      *info;
     seg_blk_head   *blk;
@@ -211,8 +214,9 @@ seg_entry *FindRealSeg( seg_list *ctl, addr_seg seg )
 
 
 bool SegWalk( seg_list *ctl, SEGWLK wlk, void *d )
-/************************************************/
-// Walk all the segments with wlk( d, info )
+/*************************************************
+ * Walk all the segments with wlk( d, info )
+ */
 {
     seg_blk_head    *blk;
     seg_entry       *info;
@@ -240,8 +244,9 @@ end_wlk:
 }
 
 static int  SegCmp( void const *_seg1, void const *_seg2 )
-/********************************************************/
-//Compare segments
+/*********************************************************
+ * Compare segments
+ */
 {
     seg_entry const *seg1 = _seg1;
     seg_entry const *seg2 = _seg2;
@@ -254,8 +259,9 @@ static int  SegCmp( void const *_seg1, void const *_seg2 )
 }
 
 void    SortSegReal( seg_list *ctl )
-/**********************************/
-//Sort a seg's real address
+/***********************************
+ * Sort a seg's real address
+ */
 {
     seg_blk_head   *blk;
     unsigned_16     blk_count;

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -52,7 +52,7 @@ typedef struct array_control {
 } array_control;
 
 typedef struct obj_patch {
-        int                     where;
+        objoffset               where;
         objhandle               ref;
         patch_attr              attr;
 } obj_patch;
@@ -71,8 +71,8 @@ typedef struct object {
         struct array_control    *lines;
         long_offset             start;
         objhandle               segfix;
-        unsigned_16             index;
-        unsigned_16             sofar;
+        uint_16                 index;
+        uint_16                 sofar;
         unsigned                gen_static_exports      : 1;
         unsigned                lines_generated         : 1;
         unsigned                pending_label_line      : 1;

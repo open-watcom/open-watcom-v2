@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,7 +46,7 @@ const char DIPImp( Name )[] = "WATCOM";
 unsigned DIPIMPENTRY( HandleSize )( handle_kind hk )
 {
     static unsigned_8 Sizes[] = {
-        #define pick(e,hdl,imphdl,wvimphdl) imphdl,
+        #define pick(enum,hsize,ihsize,wvihsize,cvdmndtype,wdmndtype)   ihsize,
         #include "diphndls.h"
         #undef pick
     };
@@ -207,9 +207,12 @@ static void CollectSymHdl( const char *ep, imp_sym_handle *ish )
     sp = (byte *)ish;
     ++ish;
     while( sp < (byte *)ish ) {
-        curr = GETU8( ep++ );
-        if( curr == SH_ESCAPE )
-            curr = escapes[GETU8( ep++ ) - 1];
+        curr = MGET_U8( ep );
+        ep++;
+        if( curr == SH_ESCAPE ) {
+            curr = escapes[MGET_U8( ep ) - 1];
+            ep++;
+        }
         *sp++ = curr;
     }
 }
@@ -250,7 +253,7 @@ static search_result DoLookupSym( imp_image_handle *iih, symbol_source ss,
 
     /* unused parameters */ (void)lc;
 
-    if( GETU8( li->name.start ) == SH_ESCAPE ) {
+    if( MGET_U8( li->name.start ) == SH_ESCAPE ) {
         CollectSymHdl( li->name.start, DCSymCreate( iih, d ) );
         return( SR_EXACT );
     }

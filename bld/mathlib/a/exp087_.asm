@@ -2,6 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
+;* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -34,8 +35,6 @@ include mdef.inc
 include struct.inc
 
         modstart        exp087
-
-.8087
 
         xdefp   __exp87         ; calc exp(fac1)
 

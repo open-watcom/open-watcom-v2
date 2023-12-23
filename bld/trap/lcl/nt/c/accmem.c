@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,50 +33,42 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "stdnt.h"
+#include "globals.h"
 
-/*
- * getRealBase - get real base address, based on segment/offset
+
+static ULONG_PTR getRealBase( addr48_ptr *addr, ULONG_PTR *pend )
+/****************************************************************
+ * get real base address, based on segment/offset
  */
-static ULONG_PTR getRealBase( WORD seg, ULONG_PTR base, ULONG_PTR *limit )
 {
-#if defined( MD_axp ) || defined( MD_ppc )
+#if MADARCH & (MADARCH_AXP | MADARCH_PPC)
 
-    *limit = (ULONG_PTR)-1L;
-    return( base );
+    *pend = (ULONG_PTR)-1L;
+    return( addr->offset );
 
-#elif defined( MD_x86 ) || defined( MD_x64 )
+#elif MADARCH & (MADARCH_X86 | MADARCH_X64)
 
-    ULONG_PTR   realbase;
     LDT_ENTRY   ldt;
-    thread_info *ti;
-    ULONG_PTR   lim;
+    ULONG_PTR   limit;
     ULONG_PTR   selbase;
+    WORD        sel;
 
-    if( seg != FlatDS && seg != FlatCS ) {
-        ti = FindThread( DebugeeTid );
-        if( GetThreadSelectorEntry( ti->thread_handle, seg, &ldt ) ) {
-            lim = 1 + (ULONG_PTR)ldt.LimitLow +
-                ( (ULONG_PTR)ldt.HighWord.Bits.LimitHi << 16L );
-            if( ldt.HighWord.Bits.Granularity ) {
-                lim *= 0x1000L;
-            }
-            if( !ldt.HighWord.Bits.Default_Big ) {
-                base = (ULONG_PTR)(WORD)base;
-            }
-            selbase = (ULONG_PTR)ldt.BaseLow +
-                ( (ULONG_PTR)ldt.HighWord.Bytes.BaseMid << 16L ) +
-                ( (ULONG_PTR)ldt.HighWord.Bytes.BaseHi << 24L );
-            realbase = base + selbase;
-            *limit = lim + selbase;
-        } else {
-            realbase = 0;
-            *limit = 0;
-        }
-    } else {
-        *limit = (ULONG_PTR)-1L;
-        realbase = base;
+    sel = addr->segment;
+    if( sel == FlatDS || sel == FlatCS ) {
+        *pend = (ULONG_PTR)-1L;
+        return( addr->offset );
     }
-    return( realbase );
+    if( !GetSelectorLDTEntry( sel, &ldt ) ) {
+        *pend = 0;
+        return( 0 );
+    }
+    limit = GET_LDT_LIMIT( ldt );
+    selbase = GET_LDT_BASE( ldt );
+    *pend = selbase + limit;
+    if( ldt.HighWord.Bits.Default_Big ) {
+        return( selbase + addr->offset );
+    }
+    return( selbase + (ULONG_PTR)(WORD)addr->offset );
 
 #else
 
@@ -85,37 +77,34 @@ static ULONG_PTR getRealBase( WORD seg, ULONG_PTR base, ULONG_PTR *limit )
 #endif
 }
 
-/*
- * ReadMem - read some memory
+DWORD ReadMemory( addr48_ptr *addr, LPVOID buff, DWORD size )
+/************************************************************
+ * read some memory
  */
-DWORD ReadMem( WORD seg, ULONG_PTR base, LPVOID buff, DWORD size )
 {
     SIZE_T      bytes;
-    ULONG_PTR   limit;
+    ULONG_PTR   end;
+    ULONG_PTR   base;
 #ifdef DEBUGGING_THIS_DAMN_WIN95_PROBLEM
-    static bool first = TRUE;
-    DWORD       oldbase;
+    static bool first = true;
 #endif
 
     if( DebugeePid == 0 ) {
         return( 0 );
     }
-#ifdef DEBUGGING_THIS_DAMN_WIN95_PROBLEM
-    oldbase = base;
-#endif
-    base = getRealBase( seg, base, &limit );
-    if( base > limit ) {
-        limit = base;
+    base = getRealBase( addr, &end );
+    if( end < base ) {
+        end = base;
     }
     if( base + size < base ) { // wants to wrap segment
         size = ( ~(ULONG_PTR)0 ) - base;
     }
-    if( limit != (ULONG_PTR)-1L ) {
-        if( base + size > limit ) {
-            if( limit < base ) {
+    if( end != (ULONG_PTR)-1L ) {
+        if( base + size > end ) {
+            if( end < base ) {
                 size = 0;
             } else {
-                size = limit - base;
+                size = end - base;
             }
         }
     }
@@ -125,7 +114,7 @@ DWORD ReadMem( WORD seg, ULONG_PTR base, LPVOID buff, DWORD size )
     FILE        *io;
     io = fopen( "t.t", "a+" );
     fprintf( io, "%4.4x:%8.8x, base=%8.8x, limit=%8.8x, size=%d\n",
-                seg, oldbase, base, limit, size );
+                addr->segment, addr->offset, base, end, size );
     fclose( io );
 #endif
     bytes = 0;
@@ -133,35 +122,36 @@ DWORD ReadMem( WORD seg, ULONG_PTR base, LPVOID buff, DWORD size )
 #ifdef DEBUGGING_THIS_DAMN_WIN95_PROBLEM
     if( first ) {
         remove( "t.t" );
-        first = FALSE;
+        first = false;
     }
     if( bytes != size ) {
         io = fopen( "t.t", "a+" );
-        fprintf( io, "got=%d\n", bytes );
+        fprintf( io, "got=%d\n", (int)bytes );
         fclose( io );
     }
 #endif
     return( bytes );
 }
 
-/*
- * WriteMem - write some memory
+DWORD WriteMemory( addr48_ptr *addr, LPVOID buff, DWORD size )
+/*************************************************************
+ * write some memory
  */
-DWORD WriteMem( WORD seg, ULONG_PTR base, LPVOID buff, DWORD size )
 {
     SIZE_T      bytes;
-    ULONG_PTR   limit;
+    ULONG_PTR   end;
+    ULONG_PTR   base;
 
     if( DebugeePid == 0 ) {
         return( 0 );
     }
-    base = getRealBase( seg, base, &limit );
-    if( limit != (ULONG_PTR)-1L ) {
-        if( base + size > limit ) {
-            if( limit < base ) {
+    base = getRealBase( addr, &end );
+    if( end != (ULONG_PTR)-1L ) {
+        if( base + size > end ) {
+            if( end < base ) {
                 size = 0;
             } else {
-                size = limit - base;
+                size = end - base;
             }
         }
     }
@@ -174,83 +164,56 @@ DWORD WriteMem( WORD seg, ULONG_PTR base, LPVOID buff, DWORD size )
 
 trap_retval TRAP_CORE( Read_mem )( void )
 {
-    WORD            seg;
-    ULONG_PTR       offset;
-    DWORD           length;
-    LPSTR           data;
     read_mem_req    *acc;
 
     acc = GetInPtr( 0 );
-
-    if( DebugeePid == 0 ) {
-        return( 0 );
-    }
-
-    seg = acc->mem_addr.segment;
-    offset = acc->mem_addr.offset;
-    length = acc->len;
-    data = ( LPSTR ) GetOutPtr( 0 );
-
-    length = ReadMem( seg, offset, data, length );
-    return( length );
+    if( DebugeePid != 0 )
+        return( ReadMemory( &acc->mem_addr, GetOutPtr( 0 ), acc->len ) );
+    return( 0 );
 }
 
 trap_retval TRAP_CORE( Write_mem )( void )
 {
-    WORD            seg;
-    ULONG_PTR       offset;
-    DWORD           length;
-    LPSTR           data;
     write_mem_req   *acc;
     write_mem_ret   *ret;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-
     ret->len = 0;
-    if( DebugeePid == 0 ) {
-        return( sizeof( *ret ) );
+    if( DebugeePid != 0 ) {
+        ret->len = WriteMemory( &acc->mem_addr, GetInPtr( sizeof( *acc ) ),
+                                GetTotalSizeIn() - sizeof( *acc ) );
     }
-
-    seg = acc->mem_addr.segment;
-    offset = acc->mem_addr.offset;
-    length = GetTotalSizeIn() - sizeof( *acc );
-    data = ( LPSTR ) GetInPtr( sizeof( *acc ) );
-
-    ret->len = WriteMem( seg, offset, data, length );
     return( sizeof( *ret ) );
 }
 
 trap_retval TRAP_CORE( Checksum_mem )( void )
 {
-    ULONG_PTR           offset;
-    WORD                length;
+    addr48_ptr          addr;
+    size_t              len;
     WORD                value;
-    WORD                segment;
     DWORD               sum;
     checksum_mem_req    *acc;
     checksum_mem_ret    *ret;
 
-    acc = GetInPtr( 0 );
-    ret = GetOutPtr( 0 );
-
-    length = acc->len;
     sum = 0;
     if( DebugeePid ) {
-        offset = acc->in_addr.offset;
-        segment = acc->in_addr.segment;
-        while( length != 0 ) {
-            ReadMem( segment, offset, &value, sizeof( value ) );
+        acc = GetInPtr( 0 );
+        addr.offset = acc->in_addr.offset;
+        addr.segment = acc->in_addr.segment;
+        for( len = acc->len; len > 0; ) {
+            ReadMemory( &addr, &value, sizeof( value ) );
             sum += value & 0xff;
-            offset++;
-            length--;
-            if( length != 0 ) {
+            addr.offset++;
+            len--;
+            if( len > 0 ) {
                 sum += value >> 8;
-                offset++;
-                length--;
+                addr.offset++;
+                len--;
             }
         }
     }
+    ret = GetOutPtr( 0 );
     ret->result = sum;
     return( sizeof( *ret ) );
 }

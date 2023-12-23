@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,10 +35,11 @@
 #include <string.h>
 #include <direct.h>
 #include <windows.h>
-#include "madregs.h"
-#include "trptypes.h"
-#include "trpld.h"
+#include <i86.h>
 #include "stdnt.h"
+#include "globals.h"
+#include "madregs.h"
+#include "trpld.h"
 
 
 typedef enum {
@@ -47,66 +48,86 @@ typedef enum {
     T_ON_NEXT
 }   set_t;
 
-/*
- * setATBit - control if we are tracing
- */
+opcode_type place_breakpoint_lin( HANDLE process, FARPROC base )
+{
+    opcode_type old_opcode;
+    DWORD       bytes;
+
+    ReadProcessMemory( process, (LPVOID)base, (LPVOID)&old_opcode, sizeof( old_opcode ), &bytes );
+    if( bytes == sizeof( old_opcode ) && old_opcode != BreakOpcode ) {
+        WriteProcessMemory( process, (LPVOID)base, (LPVOID)&BreakOpcode, sizeof( BreakOpcode ), &bytes );
+        return( old_opcode );
+    }
+    return( 0 );
+}
+
+int remove_breakpoint_lin( HANDLE process, FARPROC base, opcode_type old_opcode )
+{
+    DWORD       bytes;
+
+    WriteProcessMemory( process, (LPVOID)base, (LPVOID)&old_opcode, sizeof( old_opcode ), &bytes );
+    return( bytes != sizeof( old_opcode ) );
+}
+
+#if MADARCH & (MADARCH_X86 | MADARCH_X64 | MADARCH_PPC)
+static void set_tbit( MYCONTEXT *con, bool on )
+{
+#if MADARCH & (MADARCH_X86 | MADARCH_X64)
+    if( on ) {
+        con->EFlags |= INTR_TF;
+    } else {
+        con->EFlags &= ~INTR_TF;
+    }
+#elif MADARCH & MADARCH_PPC
+    if( on ) {
+        con->Msr |= INTR_TF;
+    } else {
+        con->Msr &= ~INTR_TF;
+    }
+#endif
+}
+#endif
+
 static void setATBit( thread_info *ti, set_t set )
+/*************************************************
+ * control if we are tracing
+ */
 {
     MYCONTEXT con;
 
-    con.ContextFlags = MYCONTEXT_CONTROL;
     MyGetThreadContext( ti, &con );
-#if defined( MD_x86 ) || defined( MD_x64 )
-    if( set != T_OFF ) {
-        con.EFlags |= TRACE_BIT;
-    } else {
-        con.EFlags &= ~TRACE_BIT;
-    }
-    con.ContextFlags = MYCONTEXT_CONTROL;
+#if MADARCH & MADARCH_X86
+    set_tbit( &con, set != T_OFF );
     MySetThreadContext( ti, &con );
-#elif defined( MD_axp )
-    {
-        DWORD           bytes;
-
-        if( set != T_OFF ) {
-            ti->brk_addr = AdjustIP( &con, 0 );
-            if( set == T_ON_NEXT )
-                ti->brk_addr += 4;
-                ReadProcessMemory( ProcessInfo.process_handle,
-                    (LPVOID)ti->brk_addr, (LPVOID)&ti->brk_opcode,
-                    sizeof( ti->brk_opcode ), (LPDWORD)&bytes );
-            if( ti->brk_opcode != BRKPOINT ) {
-                opcode_type brk_opcode = BRKPOINT;
-                WriteProcessMemory( ProcessInfo.process_handle,
-                    (LPVOID)ti->brk_addr, (LPVOID)&brk_opcode, sizeof( brk_opcode ),
-                    (LPDWORD)&bytes );
-            } else {
-                ti->brk_addr = 0;
-            }
-        } else if( ti->brk_addr != 0 ) {
-            WriteProcessMemory( ProcessInfo.process_handle,
-                (LPVOID)ti->brk_addr, (LPVOID)&ti->brk_opcode,
-                sizeof( ti->brk_opcode ), (LPDWORD)&bytes );
+#elif MADARCH & MADARCH_X64
+    set_tbit( &con, set != T_OFF );
+    MySetThreadContext( ti, &con );
+#elif MADARCH & MADARCH_AXP
+    if( set != T_OFF ) {
+        ti->brk_addr = GetIP( &con );
+        if( set == T_ON_NEXT ) {
+            ti->brk_addr += 4;
+        }
+        ti->old_opcode = place_breakpoint_lin( ProcessInfo.process_handle, ti->brk_addr );
+        if( ti->old_opcode == 0 ) {
             ti->brk_addr = 0;
         }
+    } else if( ti->brk_addr != 0 ) {
+        remove_breakpoint_lin( ProcessInfo.process_handle, ti->brk_addr, ti->old_opcode );
+        ti->brk_addr = 0;
     }
-#elif defined( MD_ppc )
-    if( set != T_OFF ) {
-        con.Msr |= TRACE_BIT;
-    } else {
-        con.Msr &= ~TRACE_BIT;
-    }
-    con.ContextFlags = MYCONTEXT_CONTROL;
+#elif MADARCH & MADARCH_PPC
+    set_tbit( &con, set != T_OFF );
     MySetThreadContext( ti, &con );
 #else
     #error setATBit not configured
 #endif
 }
 
-/*
- * setTBitsetTBitInAllThreads - turn the t-bit on or off in all threads.
- */
 static void setTBitInAllThreads( set_t set )
+/*******************************************
+ * turn the t-bit on or off in all threads.
+ */
 {
     thread_info *ti;
 
@@ -130,9 +151,11 @@ static void setTBitInAllThreads( set_t set )
 void InterruptProgram( void )
 {
     setTBitInAllThreads( T_ON_CURR );
-    // a trick to make app execute long enough to hit a breakpoint
+    /*
+     * a trick to make app execute long enough to hit a breakpoint
+     */
     PostMessage( HWND_TOPMOST, WM_NULL, 0, 0 );
-    PendingProgramInterrupt = TRUE;
+    PendingProgramInterrupt = true;
 }
 
 bool Terminate( void )
@@ -143,16 +166,16 @@ bool Terminate( void )
     if( hp != NULL ) {
         TerminateProcess( hp, 0 );
         CloseHandle( hp );
-        return( TRUE );
+        return( true );
     } else {
-        return( FALSE );
+        return( false );
     }
 }
 
-/*
- * consoleHandler - handle console ctrl c
- */
 static BOOL WINAPI consoleHandler( DWORD type )
+/**********************************************
+ * handle console ctrl c
+ */
 {
     if( type == CTRL_C_EVENT || type == CTRL_BREAK_EVENT ) {
         /*
@@ -173,10 +196,10 @@ static BOOL WINAPI consoleHandler( DWORD type )
 }
 
 
-/*
- * setTBit - control if we are tracing
- */
 static void setTBit( set_t set )
+/*******************************
+ * control if we are tracing
+ */
 {
     thread_info *ti;
 
@@ -184,76 +207,95 @@ static void setTBit( set_t set )
     setATBit( ti, set );
 }
 
-/*
- * handleInt3 - process an encountered break point
- */
-#if defined( MD_x86 ) || defined( MD_x64 )
-static DWORD    BreakFixed;
-#endif
+#if MADARCH & (MADARCH_X86 | MADARCH_X64)
+static FARPROC  BreakFixed;
 
-static trap_conditions handleInt3( DWORD state )
+static void decIP( MYCONTEXT *con )
 {
-#if defined( MD_x86 ) || defined( MD_x64 )
-    thread_info *ti;
-    MYCONTEXT   con;
-
-    state=state; // Unused
-    ti = FindThread( DebugeeTid );
-    if( ti == NULL ) {
-        HANDLE  th;
-
-        if( pOpenThread == NULL ) {
-            return( 0 );
-        }
-        th = pOpenThread( DebugeeTid );
-        AddThread( DebugeeTid, th, NULL );
-        ti = FindThread( DebugeeTid );
-        ti->is_foreign = TRUE;
-    }
-    if( ti->is_foreign ) {
-        HANDLE  proc;
-        SIZE_T  written;
-        BYTE    ch;
-
-        MyGetThreadContext( ti, &con );
-        con.Eip--;
-        if( !FindBreak( (WORD)con.SegCs, (DWORD)con.Eip, &ch ) ) {
-            MySetThreadContext( ti, &con );
-            return( COND_BREAK );
-        }
-        BreakFixed = con.Eip;
-        proc = OpenProcess( PROCESS_ALL_ACCESS, FALSE, DebugeePid );
-        WriteProcessMemory( proc, (LPVOID)con.Eip, &ch, 1, &written );
-        con.EFlags |= TRACE_BIT;
-        MySetThreadContext( ti, &con );
-        CloseHandle( proc );
-        return( 0 );
-    } else {
-        MyGetThreadContext( ti, &con );
-        con.Eip--;
-        MySetThreadContext( ti, &con );
-    }
-#elif defined( MD_axp )
-    thread_info *ti;
-    MYCONTEXT   con;
-
-    ti = FindThread( DebugeeTid );
-    MyGetThreadContext( ti, &con );
-    if( ti->brk_addr != 0 && AdjustIP( &con, 0 ) == ti->brk_addr ) {
-        return( handleInt1( state ) );
-    }
-#elif defined( MD_ppc )
-    /* nothing special to do */
-#else
-    #error handleInt3 not configured
-#endif
-    return( COND_BREAK );
+    con->Eip--;
 }
 
-/*
- * handleInt1 - process a trace or watch point
+static void remove_bp( HANDLE proc, MYCONTEXT *con, opcode_type old_opcode )
+{
+    BreakFixed = (FARPROC)con->Eip;
+    remove_breakpoint_lin( proc, BreakFixed, old_opcode );
+}
+#endif
+
+static trap_conditions handleBreakpointEvent( state_type state )
+/***************************************************************
+ * process an encountered break point
  */
-static trap_conditions handleInt1( DWORD state )
+{
+    trap_conditions conditions;
+#if MADARCH & (MADARCH_X86 | MADARCH_X64)
+    thread_info     *ti;
+    MYCONTEXT       con;
+
+    /* unused parameters */ (void)state;
+
+    ti = FindThread( DebugeeTid );
+    if( ti == NULL ) {
+        if( pOpenThread != NULL ) {
+            HANDLE  th;
+
+            #define FOREIGN_THREAD_ACCESS   STANDARD_RIGHTS_REQUIRED | SYNCHRONIZE \
+                                            | THREAD_GET_CONTEXT \
+                                            | THREAD_SET_CONTEXT \
+                                            | THREAD_SUSPEND_RESUME
+            th = pOpenThread( FOREIGN_THREAD_ACCESS, FALSE, DebugeeTid );
+            AddThread( DebugeeTid, th, NULL );
+            ti = FindThread( DebugeeTid );
+            ti->is_foreign = true;
+        }
+    }
+    conditions = COND_NONE;
+    if( ti != NULL ) {
+        conditions = COND_BREAK;
+        MyGetThreadContext( ti, &con );
+        decIP( &con );
+        if( ti->is_foreign ) {
+            opcode_type old_opcode;
+
+            if( FindBreak( &con, &old_opcode ) ) {
+                HANDLE  proc;
+
+                proc = OpenProcess( PROCESS_ALL_ACCESS, FALSE, DebugeePid );
+                remove_bp( proc, &con, old_opcode );
+                CloseHandle( proc );
+                set_tbit( &con, true );
+                conditions = COND_NONE;
+            }
+        }
+        MySetThreadContext( ti, &con );
+    }
+#elif MADARCH & MADARCH_AXP
+    thread_info *ti;
+    MYCONTEXT   con;
+
+    conditions = COND_BREAK;
+    ti = FindThread( DebugeeTid );
+    MyGetThreadContext( ti, &con );
+    if( ti->brk_addr != 0 && GetIP( &con ) == ti->brk_addr ) {
+        conditions = handleSinglestepEvent( state );
+    }
+#elif MADARCH & MADARCH_PPC
+    /* unused parameters */ (void)state;
+
+    /*
+     * nothing special to do
+     */
+    conditions = COND_BREAK;
+#else
+    #error handleBreakpointEvent not configured
+#endif
+    return( conditions );
+}
+
+static trap_conditions handleSinglestepEvent( state_type state )
+/***************************************************************
+ * process a trace or watch point
+ */
 {
     if( PendingProgramInterrupt ) {
         /*
@@ -261,13 +303,13 @@ static trap_conditions handleInt1( DWORD state )
          * off in all the threads
          */
         setTBitInAllThreads( T_OFF );
-        PendingProgramInterrupt = FALSE;
+        PendingProgramInterrupt = false;
         return( COND_USER );
     }
 
-#if defined( MD_x86 )
+#if MADARCH & MADARCH_X86
     if( state & STATE_WATCH_386 ) {
-        if( GetDR6() & 0xf ) {
+        if( CheckBreakPoints() ) {
             return( COND_WATCH );
         }
     }
@@ -277,69 +319,63 @@ static trap_conditions handleInt1( DWORD state )
             return( COND_WATCH );
         }
     } else {
-#if defined( MD_x86 ) || defined( MD_x64 )
-        HANDLE      proc;
-        DWORD       written;
-        opcode_type brk_opcode;
-        thread_info *ti;
+#if MADARCH & (MADARCH_X86 | MADARCH_X64)
+        if( BreakFixed != 0 ) {
+            thread_info *ti;
 
-        if( BreakFixed == 0 ) {
-            return( COND_TRACE );
+            ti = FindThread( DebugeeTid );
+            if( ti == NULL || ti->is_foreign ) {
+                HANDLE  proc;
+
+                proc = OpenProcess( PROCESS_ALL_ACCESS, FALSE, DebugeePid );
+                place_breakpoint_lin( proc, BreakFixed );
+                CloseHandle( proc );
+                BreakFixed = 0;
+                return( COND_NONE );
+            }
         }
-        ti = FindThread( DebugeeTid );
-        if( ti && !ti->is_foreign ) {
-            return( COND_TRACE );
-        }
-        brk_opcode = BRKPOINT;
-        proc = OpenProcess( PROCESS_ALL_ACCESS, FALSE, DebugeePid );
-        WriteProcessMemory( proc, (LPVOID)BreakFixed, &brk_opcode, sizeof( brk_opcode ), &written );
-        CloseHandle( proc );
-        BreakFixed = 0;
-        return( 0 );
-#else
-        return( COND_TRACE );
 #endif
+        return( COND_TRACE );
     }
-    return( 0 );
+    return( COND_NONE );
 }
 
 #ifdef WOW
-#if !defined( MD_x64 )
-/*
- * getImageNote - get current image note structure (WOW)
- */
 static void getImageNote( IMAGE_NOTE *pin )
+/******************************************
+ * get current image note structure (WOW)
+ */
 {
-    ReadMem( FlatDS, (DWORD)DW3( DebugEvent.u.Exception.ExceptionRecord ), pin, sizeof( IMAGE_NOTE ) );
+    addr48_ptr  addr;
+
+    addr.segment = FlatDS;
+    addr.offset = (DWORD)DW3( DebugEvent.u.Exception.ExceptionRecord );
+    ReadMemory( &addr, pin, sizeof( *pin ) );
 }
 #endif
-#endif
 
-/*
- * DebugExecute - execute program under debug control
+trap_conditions DebugExecute( state_type state, bool *retflag, bool stop_on_module_load )
+/****************************************************************************************
+ * execute program under debug control
  */
-myconditions DebugExecute( DWORD state, int *tsc, bool stop_on_module_load )
 {
     DWORD           continue_how;
     DWORD           code;
     DWORD           len;
     msg_list        **owner;
     msg_list        *new;
-    trap_conditions cond;
     char            *p;
     char            *q;
-    BOOL            rc;
+    bool            rc;
 #ifdef WOW
-#if !defined( MD_x64 )
     thread_info     *ti;
     DWORD           subcode;
     IMAGE_NOTE      imgnote;
 #endif
-#endif
-    myconditions    returnCode;
+    trap_conditions conditions;
 
-    if( tsc != NULL ) {
-        *tsc = FALSE;
+    if( retflag != NULL ) {
+        *retflag = false;
     }
     /*
      * "Slaying" gets set by AccKillProg.  Because a dead WOW app
@@ -348,7 +384,7 @@ myconditions DebugExecute( DWORD state, int *tsc, bool stop_on_module_load )
      */
     if( !Slaying ) {
         if( DebugeeEnded || DebugeePid == 0 ) {
-            returnCode = COND_TERMINATE;
+            conditions = COND_TERMINATE;
             goto done;
         }
     }
@@ -356,31 +392,30 @@ myconditions DebugExecute( DWORD state, int *tsc, bool stop_on_module_load )
     continue_how = DBG_CONTINUE;
 
     for( ;; ) {
-        PendingProgramInterrupt = FALSE;
+        PendingProgramInterrupt = false;
         if( (state & STATE_WATCH) && (state & STATE_WATCH_386) == 0 ) {
             setTBit( T_OFF ); /* turn off previous T-bit */
-#if defined( MD_axp )
+#if MADARCH & MADARCH_AXP
             /*
-               We're doing watch points on an Alpha. If we run into a
-               control transfer instruction, return a spurious watchpoint
-               indication. The debugger will simulate the instruction for
-               us. This keeps the trap file from having to figure out
-               if a conditional branch is going to happen or not.
-            */
+             * We're doing watch points on an Alpha. If we run into a
+             * control transfer instruction, return a spurious watchpoint
+             * indication. The debugger will simulate the instruction for
+             * us. This keeps the trap file from having to figure out
+             * if a conditional branch is going to happen or not.
+             */
             {
                 DWORD       bytes;
                 DWORD       addr;
                 DWORD       opcode;
                 MYCONTEXT   con;
 
-                con.ContextFlags = MYCONTEXT_CONTROL;
                 MyGetThreadContext( FindThread( DebugeeTid ), &con );
-                addr = AdjustIP( &con, 0 );
+                addr = GetIP( &con );
                 ReadProcessMemory( ProcessInfo.process_handle, (LPVOID)addr,
-                    (LPVOID)&opcode, sizeof( opcode ), (LPDWORD)&bytes );
+                    (LPVOID)&opcode, sizeof( opcode ), &bytes );
                 opcode &= 0xfc000000;
                 if( opcode == ( 0x1a << 26 ) || opcode >= ( 0x30 << 26 ) ) {
-                    returnCode = COND_WATCH;
+                    conditions = COND_WATCH;
                     goto done;
                 }
             }
@@ -391,9 +426,10 @@ myconditions DebugExecute( DWORD state, int *tsc, bool stop_on_module_load )
         continue_how = DBG_CONTINUE;
         rc = MyWaitForDebugEvent();
         LastDebugEventTid = DebugEvent.dwThreadId;
-#if !defined( MD_x64 )
+#if MADARCH & MADARCH_X64
+#else
         if( IsWin32s && !rc ) {
-            returnCode = COND_LIBRARIES;
+            conditions = COND_LIBRARIES;
             goto done;
         }
 #endif
@@ -402,7 +438,6 @@ myconditions DebugExecute( DWORD state, int *tsc, bool stop_on_module_load )
             code = DebugEvent.u.Exception.ExceptionRecord.ExceptionCode;
             switch( code ) {
 #ifdef WOW
-#if !defined( MD_x64 )
             case STATUS_VDM_EVENT:
                 subcode = W1( DebugEvent.u.Exception.ExceptionRecord );
                 switch( subcode ) {
@@ -411,8 +446,8 @@ myconditions DebugExecute( DWORD state, int *tsc, bool stop_on_module_load )
                     getImageNote( &imgnote );
                     RemoveModuleFromLibList( imgnote.Module, imgnote.FileName );
                     if( !stricmp( imgnote.FileName, CurrEXEName ) ) {
-                        DebugeeEnded = TRUE;
-                        returnCode = COND_TERMINATE;
+                        DebugeeEnded = true;
+                        conditions = COND_TERMINATE;
                         goto done;
                     }
                     break;
@@ -422,16 +457,16 @@ myconditions DebugExecute( DWORD state, int *tsc, bool stop_on_module_load )
                     break;
                 case DBG_DLLSTART:
                     getImageNote( &imgnote );
-                    AddLib( TRUE, &imgnote );
+                    AddLib16( &imgnote );
                     if( !IsWOW && stop_on_module_load ) {
-                        returnCode = 0;
+                        conditions = COND_NONE;
                         goto done;
                     }
                     break;
                 case DBG_TASKSTART:
                     DebugeeTid = DebugEvent.dwThreadId;
                     ti = FindThread( DebugeeTid );
-                    ti->is_wow = TRUE;
+                    ti->is_wow = true;
                     getImageNote( &imgnote );
                     /*
                      * check and see if we have the 16-bit app that we
@@ -442,47 +477,51 @@ myconditions DebugExecute( DWORD state, int *tsc, bool stop_on_module_load )
                         WOWAppInfo.htask = imgnote.hTask;
                         WOWAppInfo.hmodule = imgnote.hModule;
                         strcpy( WOWAppInfo.modname, imgnote.Module );
-                        returnCode = COND_VDM_START;
+                        if( retflag != NULL ) {
+                            *retflag = true;
+                        }
+                        conditions = COND_NONE;
                         goto done;
                     } else {
-                        AddLib( TRUE, &imgnote );
+                        AddLib16( &imgnote );
                     }
                     break;
                 case DBG_SINGLESTEP:
                     DebugeeTid = DebugEvent.dwThreadId;
-                    returnCode = handleInt1( state );
+                    conditions = handleSinglestepEvent( state );
                     goto done;
                 case DBG_BREAK:
                     DebugeeTid = DebugEvent.dwThreadId;
-                    returnCode = handleInt3( state );
+                    conditions = handleBreakpointEvent( state );
                     goto done;
                 case DBG_GPFAULT:
                     DebugeeTid = DebugEvent.dwThreadId;
                     LastExceptionCode = STATUS_ACCESS_VIOLATION;
-                    returnCode = COND_EXCEPTION;
+                    conditions = COND_EXCEPTION;
                     goto done;
                 case DBG_ATTACH:
-                    /* Sent to let debugger know 16-bit environment is set up.
+                    /*
+                     * Sent to let debugger know 16-bit environment is set up.
                      * Only a notification, provides no further data. Must be
                      * handled so that debugger doesn't get confused.
                      */
                     DebugeeTid = DebugEvent.dwThreadId;
                     ti = FindThread( DebugeeTid );
-                    ti->is_dos = TRUE;
+                    ti->is_dos = true;
                     break;
                 case DBG_INIT:
-                    // I have no idea how to handle this!
+                    /*
+                     * I have no idea how to handle this!
+                     */
                     break;
                 default:
                     DebugeeTid = DebugEvent.dwThreadId;
                     LastExceptionCode = STATUS_ACCESS_VIOLATION;
-                    returnCode = COND_EXCEPTION;
+                    conditions = COND_EXCEPTION;
                     goto done;
                 }
                 break;
-#else
-#endif
-#endif
+#endif  /* WOW */
             case DBG_CONTROL_C:
                 /*
                  * this never seems to happen ever never ever never
@@ -492,20 +531,16 @@ myconditions DebugExecute( DWORD state, int *tsc, bool stop_on_module_load )
                 break;
             case STATUS_SINGLE_STEP:
                 DebugeeTid = DebugEvent.dwThreadId;
-                cond = handleInt1( state );
-                if( cond != 0 ) {
-                    returnCode = cond;
+                conditions = handleSinglestepEvent( state );
+                if( conditions != COND_NONE )
                     goto done;
-                }
                 break;
             case STATUS_BREAKPOINT:
                 DebugeeTid = DebugEvent.dwThreadId;
-                if( state & STATE_WAIT_FOR_VDM_START ) {
+                if( state & STATE_WAIT_FOR_VDM_START )
                     break;
-                }
-                cond = handleInt3( state );
-                if( cond != 0 ) {
-                    returnCode = cond;
+                conditions = handleBreakpointEvent( state );
+                if( conditions != COND_NONE ) {
                     goto done;
                 }
                 break;
@@ -515,7 +550,12 @@ myconditions DebugExecute( DWORD state, int *tsc, bool stop_on_module_load )
                  * give the user's exception handlers a chance to run
                  */
                 DebugeeTid = DebugEvent.dwThreadId;
-                if( DebugEvent.u.Exception.dwFirstChance && (state & STATE_EXPECTING_FAULT) == 0 ) {
+                if( DebugEvent.u.Exception.dwFirstChance == 0 || (state & STATE_EXPECTING_FAULT) != 0 ) {
+                    LastExceptionCode = code;
+                    conditions = COND_EXCEPTION;
+                    goto done;
+                }
+                {
                     char    buff[20];
                     void    *a;
 
@@ -527,7 +567,7 @@ myconditions DebugExecute( DWORD state, int *tsc, bool stop_on_module_load )
                     strcat( new->msg, " at 0x" );
                     a = DebugEvent.u.Exception.ExceptionRecord.ExceptionAddress;
 #if 0
-#if defined( MD_x64 )
+#if MADARCH & MADARCH_X64
                     ultoa( (unsigned long)((pointer_uint)a >> 32), buff, 16 );
                     strcat( new->msg, buff );
                     strcat( new->msg, ":0x" );
@@ -535,7 +575,8 @@ myconditions DebugExecute( DWORD state, int *tsc, bool stop_on_module_load )
 #endif
                     ultoa( (unsigned long)(pointer_uint)a, buff, 16 );
                     strcat( new->msg, buff );
-                    for( owner = &DebugString; *owner != NULL; owner = &(*owner)->next ) {}
+                    for( owner = &DebugString; *owner != NULL; owner = &(*owner)->next )
+                        {}
                     *owner = new;
                     continue_how = DBG_EXCEPTION_NOT_HANDLED;
                     /*
@@ -544,51 +585,59 @@ myconditions DebugExecute( DWORD state, int *tsc, bool stop_on_module_load )
                      *  the exception handler...
                      */
                     setTBit( T_OFF );
-                } else {
-                    LastExceptionCode = code;
-                    returnCode = COND_EXCEPTION;
-                    goto done;
                 }
                 break;
             }
             break;
         case CREATE_THREAD_DEBUG_EVENT:
             DebugeeTid = DebugEvent.dwThreadId;
-            if( tsc != NULL ) {
-                *tsc = TRUE;
-            }
-            AddThread( DebugEvent.dwThreadId, DebugEvent.u.CreateThread.hThread, DebugEvent.u.CreateThread.lpStartAddress );
+            AddThread( DebugEvent.dwThreadId, DebugEvent.u.CreateThread.hThread, (FARPROC)DebugEvent.u.CreateThread.lpStartAddress );
+            if( retflag == NULL || (state & STATE_WAIT_FOR_VDM_START) )
+                break;
+            *retflag = true;
             break;
         case EXIT_THREAD_DEBUG_EVENT:
             DebugeeTid = DebugEvent.dwThreadId;
             ClearDebugRegs();
-            if( tsc != NULL ) {
-                *tsc = TRUE;
-            }
             DeadThread( DebugEvent.dwThreadId );
+            if( retflag == NULL || (state & STATE_WAIT_FOR_VDM_START) )
+                break;
+            *retflag = true;
             break;
-        case CREATE_PROCESS_DEBUG_EVENT:        // shouldn't ever get
+        case CREATE_PROCESS_DEBUG_EVENT:        /* shouldn't ever get */
             DebugeeTid = DebugEvent.dwThreadId;
             break;
         case EXIT_PROCESS_DEBUG_EVENT:
             DebugeeTid = DebugEvent.dwThreadId;
             ClearDebugRegs();
-            DebugeeEnded = TRUE;
-            DelProcess( FALSE );
+            DebugeeEnded = true;
+            DelProcess( false );
             MyContinueDebugEvent( DBG_CONTINUE );
-            returnCode = COND_TERMINATE;
+            conditions = COND_TERMINATE;
             goto done;
         case LOAD_DLL_DEBUG_EVENT:
-            AddLib( FALSE, NULL );
+            AddLib();
+#if MADARCH & MADARCH_X64
+            if( !IsWOW64 && stop_on_module_load ) {
+#elif defined( WOW )
             if( !IsWOW && stop_on_module_load ) {
-                returnCode = COND_LIBRARIES;
+#else
+            if( stop_on_module_load ) {
+#endif
+                conditions = COND_LIBRARIES;
                 goto done;
             }
             break;
         case UNLOAD_DLL_DEBUG_EVENT:
             DelLib();
+#if MADARCH & MADARCH_X64
+            if( !IsWOW64 && stop_on_module_load ) {
+#elif defined( WOW )
             if( !IsWOW && stop_on_module_load ) {
-                returnCode = COND_LIBRARIES;
+#else
+            if( stop_on_module_load ) {
+#endif
+                conditions = COND_LIBRARIES;
                 goto done;
             }
             break;
@@ -598,7 +647,13 @@ myconditions DebugExecute( DWORD state, int *tsc, bool stop_on_module_load )
             }
             len = DebugEvent.u.DebugString.nDebugStringLength;
             p = LocalAlloc( LMEM_FIXED, len + 1 );
-            ReadMem( FlatDS, (ULONG_PTR)DebugEvent.u.DebugString.lpDebugStringData, p, len );
+            {
+                addr48_ptr  addr;
+
+                addr.segment = FlatDS;
+                addr.offset = (ULONG_PTR)DebugEvent.u.DebugString.lpDebugStringData;
+                ReadMemory( &addr, p, len );
+            }
             p[len] = '\0';
             #define GOOFY_NT_MESSAGE "LDR: LdrpMapDll Relocating:"
             if( strncmp( p, GOOFY_NT_MESSAGE, sizeof( GOOFY_NT_MESSAGE ) - 1 ) == 0 ) {
@@ -612,7 +667,8 @@ myconditions DebugExecute( DWORD state, int *tsc, bool stop_on_module_load )
                     new->next = NULL;
                     memcpy( new->msg, p, q - p );
                     new->msg[q - p] = '\0';
-                    for( owner = &DebugString; *owner != NULL; owner = &(*owner)->next ) {}
+                    for( owner = &DebugString; *owner != NULL; owner = &(*owner)->next )
+                        {}
                     *owner = new;
                     if( q[0] == '\0' ) {
                         break;
@@ -627,7 +683,7 @@ myconditions DebugExecute( DWORD state, int *tsc, bool stop_on_module_load )
                 }
             }
             LocalFree( p );
-            returnCode = 0;
+            conditions = COND_NONE;
             goto done;
         default:
             break;
@@ -635,19 +691,19 @@ myconditions DebugExecute( DWORD state, int *tsc, bool stop_on_module_load )
     }
 done:
     if( DebugString != NULL ) {
-        returnCode += COND_MESSAGE + ( BreakOnKernelMessage ? COND_STOP : 0 );
+        conditions = conditions | COND_MESSAGE | ( BreakOnKernelMessage ? COND_STOP : COND_NONE );
     }
-    return( returnCode );
+    return( conditions );
 }
 
-/*
- * runProg - run threads
- */
 static trap_elen runProg( bool single_step )
+/*******************************************
+ * run threads
+ */
 {
-    DWORD       state;
+    state_type  state;
     MYCONTEXT   con;
-    BOOL        thread_state_changed;
+    bool        thread_state_changed;
     thread_info *ti;
     prog_go_ret *ret;
 
@@ -658,20 +714,20 @@ static trap_elen runProg( bool single_step )
         return( sizeof( *ret ) );
     }
 
-    state = 0;
+    state = STATE_NONE;
 
     if( single_step ) {
         /*
-           This works on an Alpha (and other machines without a t-bit
-           because the MAD will simulate all control transfer instructions.
-           We only need to deal with straight line code.
-        */
+         * This works on an Alpha (and other machines without a t-bit
+         * because the MAD will simulate all control transfer instructions.
+         * We only need to deal with straight line code.
+         */
         setTBit( T_ON_NEXT );
     } else {
         setTBit( T_OFF );
-        if( WPCount != 0 ) {
+        if( IsWatch() ) {
             state |= STATE_WATCH;
-#if defined( MD_x86 )
+#if MADARCH & MADARCH_X86
             if( SetDebugRegs() ) {
                 state |= STATE_WATCH_386;
             }
@@ -680,7 +736,7 @@ static trap_elen runProg( bool single_step )
     }
 
     SetConsoleCtrlHandler( consoleHandler, TRUE );
-    ret->conditions = DebugExecute( state, &thread_state_changed, TRUE );
+    ret->conditions = DebugExecute( state, &thread_state_changed, true );
     SetConsoleCtrlHandler( consoleHandler, FALSE );
 
     if( state & STATE_WATCH_386 ) {
@@ -694,17 +750,22 @@ static trap_elen runProg( bool single_step )
 
     ti = FindThread( DebugeeTid );
     MyGetThreadContext( ti, &con );
-#if defined( MD_x86 ) || defined( MD_x64 )
+#if MADARCH & MADARCH_X86
     ret->program_counter.offset = con.Eip;
     ret->stack_pointer.offset = con.Esp;
     ret->program_counter.segment = con.SegCs;
     ret->stack_pointer.segment = con.SegSs;
-#elif defined( MD_axp )
+#elif MADARCH & MADARCH_X64
+    ret->program_counter.offset = con.Eip;
+    ret->stack_pointer.offset = con.Esp;
+    ret->program_counter.segment = con.SegCs;
+    ret->stack_pointer.segment = con.SegSs;
+#elif MADARCH & MADARCH_AXP
     ret->program_counter.offset = ( (unsigned_64 *)&con.Fir )->u._32[0];
     ret->stack_pointer.offset = ( (unsigned_64 *)&con.IntSp )->u._32[0];
     ret->program_counter.segment = 0;
     ret->stack_pointer.segment = 0;
-#elif defined( MD_ppc )
+#elif MADARCH & MADARCH_PPC
     ret->program_counter.offset = con.Iar;
     ret->stack_pointer.offset = con.Gpr2;
     ret->program_counter.segment = 0;
@@ -721,10 +782,10 @@ static trap_elen runProg( bool single_step )
 
 trap_retval TRAP_CORE( Prog_go )( void )
 {
-    return( runProg( FALSE ) );
+    return( runProg( false ) );
 }
 
 trap_retval TRAP_CORE( Prog_step )( void )
 {
-    return( runProg( TRUE ) );
+    return( runProg( true ) );
 }

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -126,7 +127,7 @@ OBJPTR WdeMakeHtKy( OBJPTR parent, RECT *obj_rect, OBJPTR handle, DialogStyle st
     style |= WS_BORDER | WS_VISIBLE | WS_TABSTOP | WS_CHILD;
 
     SETCTL_STYLE( WdeDefaultHtKy, style );
-    SETCTL_TEXT( WdeDefaultHtKy, ResStrToNameOrOrd( text ) );
+    SETCTL_TEXT( WdeDefaultHtKy, ResStrToNameOrOrdinal( text ) );
     SETCTL_ID( WdeDefaultHtKy, WdeGetNextControlID() );
 
     WdeChangeSizeToDefIfSmallRect( parent, id, obj_rect );
@@ -264,8 +265,7 @@ void WdeHtKyFini( void )
 
 bool WdeHtKyDestroy( WdeHtKyObject *obj, bool *flag, bool *p2 )
 {
-    /* touch unused vars to get rid of warning */
-    _wde_touch( p2 );
+    /* unused parameters */ (void)p2;
 
     if( !Forward( obj->control, DESTROY, flag, NULL ) ) {
         WdeWriteTrail( "WdeHtKyDestroy: Control DESTROY failed" );
@@ -281,8 +281,7 @@ bool WdeHtKyValidateAction( WdeHtKyObject *obj, ACTION_ID *act, void *p2 )
 {
     int     i;
 
-    /* touch unused vars to get rid of warning */
-    _wde_touch( p2 );
+    /* unused parameters */ (void)p2;
 
     for( i = 0; i < MAX_ACTIONS; i++ ) {
         if( WdeHtKyActions[i].id == *act ) {
@@ -327,8 +326,7 @@ bool WdeHtKyCopyObject( WdeHtKyObject *obj, WdeHtKyObject **new, OBJPTR handle )
 
 bool WdeHtKyIdentify( WdeHtKyObject *obj, OBJ_ID *id, void *p2 )
 {
-    /* touch unused vars to get rid of warning */
-    _wde_touch( p2 );
+    /* unused parameters */ (void)p2;
 
     *id = obj->object_id;
 
@@ -337,9 +335,7 @@ bool WdeHtKyIdentify( WdeHtKyObject *obj, OBJ_ID *id, void *p2 )
 
 bool WdeHtKyGetWndProc( WdeHtKyObject *obj, WNDPROC *proc, void *p2 )
 {
-    /* touch unused vars to get rid of warning */
-    _wde_touch( obj );
-    _wde_touch( p2 );
+    /* unused parameters */ (void)obj; (void)p2;
 
     *proc = WdeHtKySuperClassProc;
 
@@ -348,9 +344,7 @@ bool WdeHtKyGetWndProc( WdeHtKyObject *obj, WNDPROC *proc, void *p2 )
 
 bool WdeHtKyGetWindowClass( WdeHtKyObject *obj, char **class, void *p2 )
 {
-    /* touch unused vars to get rid of warning */
-    _wde_touch( obj );
-    _wde_touch( p2 );
+    /* unused parameters */ (void)obj; (void)p2;
 
     *class = WHOTKEY_CLASS;
 
@@ -361,9 +355,7 @@ bool WdeHtKyDefine( WdeHtKyObject *obj, POINT *pnt, void *p2 )
 {
     WdeDefineObjectInfo  o_info;
 
-    /* touch unused vars to get rid of warning */
-    _wde_touch( pnt );
-    _wde_touch( p2 );
+    /* unused parameters */ (void)pnt; (void)p2;
 
     o_info.obj = obj->object_handle;
     o_info.obj_id = obj->object_id;
@@ -394,12 +386,7 @@ void WdeHtKyGetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
 
 bool WdeHtKyDefineHook( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam, DialogStyle mask )
 {
-    /* touch unused vars to get rid of warning */
-    _wde_touch( hDlg );
-    _wde_touch( message );
-    _wde_touch( wParam );
-    _wde_touch( lParam );
-    _wde_touch( mask );
+    /* unused parameters */ (void)hDlg; (void)message; (void)wParam; (void)lParam; (void)mask;
 
     return( false );
 }

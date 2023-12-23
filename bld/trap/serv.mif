@@ -10,9 +10,9 @@ sys_x86_os2v2   = sys os2v2 op modname=$^&, desc $(description)
 sys_x86_qnx     = sys qnx386 flat op st=16k, offset=20k, res=$(extra_link_res_qnx)
 sys_x86_linux   = sys linux
 sys_x86_win     = sys windows op st=20k, modname=$^&, desc $(description)
-sys_x86_dos     = sys dos op st=4k lib doslfn$(memory_model_i86).lib
-sys_x86_rsi     = sys dos16m opt expname=rsihelp lib doslfn$(memory_model_i86).lib
-sys_x86_cw      = sys causeway_dll lib doslfn3r.lib
+sys_x86_dos     = sys dos op st=4k $(lflags_doslfn_i86)
+sys_x86_rsi     = sys dos16m opt expname=rsihelp $(lflags_doslfn_i86)
+sys_x86_cw      = sys causeway_dll $(lflags_doslfn_386)
 sys_x86_ads     = sys ads op nocaseexact, st=8k lib $(adsdir)/wcads.lib
 sys_x86_rdos    = sys rdos
 sys_x86_pls     = sys pharlap op st=8k
@@ -33,44 +33,53 @@ sys_x86_nt      = sys nt op modname=$^&, desc $(description)
 #   NW 4 and 3 are CLIB, 5 and later is LIBC
 #   it looks for math3s.lib but doesn't need it. should I remove deflib info?
 #
-sys_x86_nlm_libc = form novell nlm $(description) &
-                        op st=8k &
-                        import @$(trap_dir)/common/nlm/traplibc.imp &
-                        op nodef &
-                        op pseudopreemption &
-                        op start = _PreludeHook &
-                        op exit = _LibCPostlude &
-                        op screenname 'none' &
-                        @nversion.tmp &
-                        import _cstart_, _argc &
-                        file $(%NOVELLNDK)/../libc/imports/libcpre.obj
-sys_x86_nlm     = sys novell $(description) &
-                        op st=8k &
-                        @nversion.tmp &
-                        import @$(nwoss_dir)/common/imp/ownwos.imp &
-                        import _cstart_, _argc &
-                        op nodef
+sys_x86_nlm3 = sys novell $(description) &
+		op st=8k &
+		@nversion.tmp &
+		import @$(nwoss_dir)/common/imp/ownwos.imp &
+		import _cstart_, _argc &
+		op nodef
+sys_x86_nlm4 = sys novell $(description) &
+		op st=8k &
+		@nversion.tmp &
+		import @$(nwoss_dir)/common/imp/ownwos.imp &
+		import _cstart_, _argc &
+		op nodef
+sys_x86_nlm5 = form novell nlm $(description) &
+		op st=8k &
+		import @$(trap_dir)/common/nlm/traplibc.imp &
+		op nodef &
+		op pseudopreemption &
+		op start = _PreludeHook &
+		op exit = _LibCPostlude &
+		op screenname 'none' &
+		@nversion.tmp &
+		import _cstart_, _argc &
+		file $(%NOVELLNDK)/../libc/imports/libcpre.obj
 
 sys_axp_nt      = sys ntaxp op st=16k, modname=$^&, desc $(description)
 
 sys_ppc_nt      = sys ntppc op st=16k, modname=$^&, desc $(description)
 
 server_suf_os2_os2   = 1
+server_suf_nov_nlm3  = 3
+server_suf_nov_nlm4  = 4
+server_suf_nov_nlm5  = 5
 
 server_ext_os2_os2   = .exe
+server_ext_os2_os2v2 = .exe
 server_ext_dos_rsi   = .exp
 server_ext_dos_ads   = .exp
 server_ext_dos_pls   = .exp
+server_ext_dos_tnt   = .exp
 server_ext_nov       = .nlm
 
 !ifeq srv jvm
 serv_basename = jvmhlp_g
 !else ifeq srv msj
 serv_basename = msjhlp
-!else ifdef server_ext_$(host_os)_$(target_os)
-serv_basename = $(xname)$(server_suf_$(host_os)_$(target_os))
-!else ifdef server_ext_$(host_os)
-serv_basename = $(xname)
+!else ifdef server_suf_$(host_os)_$(target_sys)
+serv_basename = $(xname)$(server_suf_$(host_os)_$(target_sys))
 !else
 serv_basename = $(xname)
 !endif
@@ -79,13 +88,15 @@ serv_basename = $(xname)
 target          = $(serv_basename).dll
 !else ifeq srv msj
 target          = $(serv_basename).dll
-!else ifdef server_ext_$(host_os)_$(target_os)
-target          = $(serv_basename)$(server_ext_$(host_os)_$(target_os))
+!else ifdef server_ext_$(host_os)_$(target_sys)
+target          = $(serv_basename)$(server_ext_$(host_os)_$(target_sys))
 !else ifdef server_ext_$(host_os)
 target          = $(serv_basename)$(server_ext_$(host_os))
 !else
 target          = $(serv_basename).exe
 !endif
+
+dig_arch = $(target_cpu)
 
 !include $(dig_dir)/digcli.mif
 !include $(dig_dir)/trpcli.mif
@@ -100,12 +111,12 @@ SERVER_common_objs = $(os_prefix)strt.obj
 SERVER_remote_objs = testserv.obj servname.obj
 !else
 !ifdef gui
-SERVER_remote_objs = wserver.obj options.obj
+SERVER_remote_objs = servw.obj options.obj
 resource_file = $(serv_basename).res
 !else
 SERVER_remote_objs = serv.obj $(os_prefix)trio.obj
 !endif
-SERVER_remote_objs += servacc.obj servcmd.obj servname.obj $(trp_objs) $(dig_objs)
+SERVER_remote_objs += servacc.obj servcmd.obj servname.obj $(os_prefix)digl.obj $(os_prefix)path.obj $(trp_objs) $(dig_objs)
 extra_srcs +=;$(dig_srcs)
 !endif
 SERVER_remote_objs += $(os_prefix)noth.obj

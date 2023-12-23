@@ -2,24 +2,26 @@
 #
 # Create the Linux core.trp
 #
+
+tree_depth = 5
+
 host_cpu = 386
 host_os  = linux
 
 target_cpu = x86
-target_os  = linux
 
 srv     = lcl
 name    = core
 which   = TRAP
 
 extra_objs = &
-        lnxcore.obj &
-        lnxcomm.obj &
-        lnxfile.obj &
-        supp.obj &
-        core.obj
+    lnxcore.obj &
+    lnxcomm.obj &
+    lnxfile.obj &
+    lnxpath.obj &
+    supp.obj &
+    core.obj
 
-inc_dirs   = -I"$(trap_dir)/lcl/linux/h"
-
+!include $(trap_dir)/lcl/linux/linux.mif
 !include $(trap_dir)/lcl/lcl.mif
 !include $(trap_dir)/master.mif

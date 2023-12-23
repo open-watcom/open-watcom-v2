@@ -1,0 +1,87 @@
+name: build
+description: 'Process OW build'
+inputs:
+  arch:
+    description: 'run-time platform'
+    required: false
+    default: ''
+    type: string
+  bldscript:
+    description: 'script to build action'
+    required: false
+    default: ''
+    type: string
+  tools:
+    description: 'used compiler toolchain'
+    required: false
+    default: ''
+    type: string
+  owtools:
+    description: 'OW build compiler toolchain'
+    required: false
+    default: ''
+    type: string
+  owdebug:
+    description: 'verbosed/debug output for GH Actions scripts development'
+    required: false
+    default: ''
+    type: string
+runs:
+  using: composite
+  steps:
+  - uses: "./.github/actions/dosboxin"
+    with:
+      arch:     ${{ inputs.arch }}
+  - uses: "./.github/actions/artfload"
+    with:
+      arch:     ${{ inputs.arch }}
+      gitpath:  'bld watcom binbuild'
+      artifact: "bld watcom ${{ inputs.arch }}"
+      tools:    ${{ inputs.tools }}
+      owdebug:  ${{ inputs.owdebug }}
+  - uses: "./.github/actions/artfload"
+    with:
+      arch:     ${{ inputs.arch }}
+      gitpath:  'build binbuild'
+      artifact: "build ${{ inputs.arch }}"
+      tools:    ${{ inputs.tools }}
+      owdebug:  ${{ inputs.owdebug }}
+  - if: inputs.arch == 'lnx' || inputs.arch == 'osx'
+    name: Build
+    run: ${{ inputs.bldscript }} ${{ inputs.tools }}
+    env:
+      OWBUILD_STAGE: 'build'
+      OWTOOLS:       ${{ inputs.owtools }}
+      OWROOT:        ${{ github.workspace }}
+      OWDOSBOX:      'dosbox'
+      OWDEBUG:       ${{ inputs.owdebug }}
+      OWVERBOSE:     1
+    shell: bash
+  - if: inputs.arch == 'nt'
+    name: Build
+    run: ${{ inputs.bldscript }} ${{ inputs.tools }}
+    env:
+      OWBUILD_STAGE: 'build'
+      OWTOOLS:       ${{ inputs.owtools }}
+      OWROOT:        ${{ github.workspace }}
+      OWDOSBOX:      'dosbox.exe'
+      OWDOSBOXPATH:  ${{ github.workspace }}\ci\nt386
+      OWDEBUG:       ${{ inputs.owdebug }}
+      OWVERBOSE:     1
+    shell: cmd
+  - if: inputs.arch == 'lnx' || inputs.arch == 'nt'
+    uses: "./.github/actions/artfsave"
+    with:
+      arch:     ${{ inputs.arch }}
+      gitpath:  'rel'
+      artifact: "rel ${{ inputs.arch }}"
+      tools:    ${{ inputs.tools }}
+      owdebug:  ${{ inputs.owdebug }}
+  - if: inputs.arch == 'lnx' || inputs.arch == 'nt'
+    uses: "./.github/actions/artfsave"
+    with:
+      arch:     ${{ inputs.arch }}
+      gitpath:  'bld setupgui'
+      artifact: "bld setupgui ${{ inputs.arch }}"
+      tools:    ${{ inputs.tools }}
+      owdebug:  ${{ inputs.owdebug }}

@@ -70,7 +70,7 @@ adjacent column numbers passed to
 .period
 .note dw_size_t
 Used for sizes of various things such as block constants
-(i.e. for DWAddConstant) and the
+(i.e. for DWAddEnumerationConstant) and the
 .id size
 parameter to
 .id CLIWrite
@@ -644,7 +644,7 @@ It is followed by a uint operand which is an index.
 The stack entry with the specified index (0 through 255, inclusive; 0
 means the top) is pushed on the stack.
 .note DW_LOC_PLUS_UCONST
-It is followed an dw_sconst operand.
+It is followed an dw_uconst operand.
 It pops the top stack entry, adds it to the operand and pushes the
 result.
 .note DW_LOC_SKIP
@@ -1124,7 +1124,7 @@ Begin the definition of an enumerated type.
 .id byte_size
 is the number of bytes required to hold an instance of this enumeration.
 This call must be followed by calls to
-.id DWAddConstant
+.id DWAddEnumerationConstant
 and
 .id DWEndEnumeration
 .period
@@ -1135,9 +1135,9 @@ The DWARF standard requires that the constants be defined in
 .id reverse
 order to which they appear in the source program.
 .*
-.section DWAddConstant
+.section DWAddEnumerationConstant
 .*
-.dwfunc void DWENTRY DWAddConstant( dw_client cli, dw_uconst value, const char *name )
+.dwfunc void DWENTRY DWAddEnumerationConstant( dw_client cli, dw_uconst value, const char *name )
 .np
 Add the constant
 .id value

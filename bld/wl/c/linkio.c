@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -199,7 +199,7 @@ static size_t TestWrite( f_handle file, const void *buffer, size_t len, const ch
     return( TINY_INFO(h) );
 }
 
-#define QWRITE_BLOCK_SIZE   _16KB
+#define QWRITE_BLOCK_SIZE   _16K
 
 size_t QWrite( f_handle file, const void *buffer, size_t len, const char *name )
 /******************************************************************************/
@@ -253,7 +253,7 @@ long QLSeek( f_handle file, long position, int start, const char *name )
 void QSeek( f_handle file, unsigned long position, const char *name )
 /*******************************************************************/
 {
-    QLSeek( file, position, TIO_SEEK_START, name );
+    QLSeek( file, position, TIO_SEEK_SET, name );
 }
 
 unsigned long QPos( f_handle file )
@@ -262,7 +262,7 @@ unsigned long QPos( f_handle file )
     uint_32     pos;
 
     CheckBreak();
-    if( TINY_ERROR( TinyLSeek( file, 0L, TIO_SEEK_CURR, &pos ) ) ) {
+    if( TINY_ERROR( TinyLSeek( file, 0L, TIO_SEEK_CUR, &pos ) ) ) {
         return( -1UL );
     }
     return( pos );
@@ -278,7 +278,7 @@ unsigned long QFileSize( f_handle file )
     size = 0;
     if( TINY_OK( TinyLSeek( file, 0L, TIO_SEEK_CUR, &curpos ) ) ) {
         TinyLSeek( file, 0UL, TIO_SEEK_END, &size );
-        TinySeek( file, curpos, TIO_SEEK_START );
+        TinySeek( file, curpos, TIO_SEEK_SET );
     }
     return( size );
 }

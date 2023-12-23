@@ -83,7 +83,7 @@ extern BOOL     __fixed_FindNextFileW( HANDLE hFindFile, LPWIN32_FIND_DATAW lpFi
  * its parameter list is different from CreateProcessW's.
  */
 
-#if defined(__AXP__) || defined(__PPC__)
+#if defined(__AXP__) || defined(__PPC__) || defined(__MIPS__)
     #define __lib_CreateProcessW(a,b,c,d,e)     CreateProcessW(NULL,a,NULL,NULL,b,CREATE_UNICODE_ENVIRONMENT,c,NULL,d,e)
 #else
 extern BOOL __lib_CreateProcessW( LPWSTR lpCommandLine, BOOL bInheritHandles, LPVOID lpEnvironment,
@@ -97,7 +97,7 @@ extern BOOL __lib_CreateProcessW( LPWSTR lpCommandLine, BOOL bInheritHandles, LP
     #define __lib_CreateProcess                 __lib_CreateProcessA
 #endif
 
-#if defined(__AXP__) || defined(__PPC__)
+#if defined(__AXP__) || defined(__PPC__) || defined(__MIPS__)
 
     #define __lib_CreateDirectoryW              CreateDirectoryW
     #define __lib_CreateFileW                   CreateFileW
@@ -170,7 +170,7 @@ extern BOOL     __lib_SetFileAttributesW( LPCWSTR lpFileName,
 #define __lib_CreateDirectoryA                  CreateDirectoryA
 #define __lib_CreateFileA                       CreateFileA
 #define __lib_DeleteFileA                       DeleteFileA
-#if defined(__AXP__) || defined(__PPC__)
+#if defined(__AXP__) || defined(__PPC__) || defined(__MIPS__)
 #define __lib_FindFirstFileA                    FindFirstFileA
 #define __lib_FindNextFileA                     FindNextFileA
 #else

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,10 +45,11 @@ extern void    ChkUnitId( void );
 extern void    ChkConnected( void );
 extern void    SetEOF( void );
 extern void    ClearEOF( void );
-extern void    SysEOF( void );
 extern bool    IsFixed( void );
 extern bool    IsCarriage( void );
 extern void    ChkRecordStructure( void );
 extern void    ChkSequential( int errmsg );
 extern void    ChkExist( void );
 extern uint    StrItem( string PGM *strptr, char *buff, uint buff_len );
+
+_WCNORETURN extern void     SysEOF( void );

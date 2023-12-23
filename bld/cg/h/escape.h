@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,30 +31,49 @@
 ****************************************************************************/
 
 
+/*
+ * Grammar of Escapes :
+ *
+ * Sequence                                                 Meaning
+ * ========                                                 ========
+ *
+ * ESC, ESC                                                 actual ESC byte
+ * ESC, IMP <LDOF|OFST|BASE|SELF>, cg_sym_handle <,offset>  import reference
+ * ESC, REL <LDOF|OFST|BASE>, segid                         relocate, with seg-id
+ * ESC, SYM <LDOF|OFST|SELF>, cg_sym_handle <,offset>       unknown sym ref
+ * ESC, LBL <LDOF|OFST|SELF>, segid, lbl_handle, <,offset>  ptr reference
+ * ESC, ABS objhandle, len, offset                          object patch
+ * ESC, FUN byte                                            for 87 instructions
+ *
+ *       OFST bit on means offset follows
+ *       LDOF means loader resolved offset
+ *       BASE means use F_BASE relocation
+ */
+
 /*  Beginning of any escape sequence */
 
 #define ESC     0x6b    /*  NOT the same as the 8086/8 ESCape instruction */
 
 typedef enum {
-        SYM,
-        IMP,
-        REL,
-        LBL,
-        ABS,
-        FUN,
-        NOC,
-        /*  bit flags */
-        OFST = 0x10,
-        BASE = 0x20,
-        LDOF = 0x40,
-        SELF = 0x80
+    ESC_SYM,
+    ESC_IMP,
+    ESC_REL,
+    ESC_LBL,
+    ESC_ABS,
+    ESC_FUN,
+    ESC_NOC,
+    /*  bit flags */
+    ESCA_OFST = 0x10,
+    ESCA_BASE = 0x20,
+    ESCA_LDOF = 0x40,
+    ESCA_SELF = 0x80
 } escape_class;
 
-#define MASK    (OFST|BASE|LDOF|SELF)
+#define ESCA_MASK    (ESCA_OFST|ESCA_BASE|ESCA_LDOF|ESCA_SELF)
 
 
 typedef enum {
-        FE_FIX_BASE,
-        FE_FIX_OFF,
-        FE_FIX_SELF
+    FE_FIX_BASE,
+    FE_FIX_OFF,
+    FE_FIX_SELF
 } fe_fixup_types;

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -296,7 +297,7 @@ bool Dmp_os2_head( void )
 {
     Wlseek( New_exe_off );
     Wread( &Os2_head, sizeof( struct os2_exe_header ) );
-    if( Os2_head.signature != OS2_SIGNATURE_WORD ) {
+    if( Os2_head.signature != EXESIGN_NE ) {
         return( false );
     }
     if( IS_OLD_NE( Os2_head ) || Os2_head.align == 0 ) {
@@ -490,10 +491,10 @@ bool Dmp_386_head( void )
 
     Wlseek( New_exe_off );
     Wread( &signature, sizeof( signature ) );
-    if( signature == OSF_FLAT_SIGNATURE ) {
+    if( signature == EXESIGN_LE ) {
         Form = FORM_LE;
         Banner( "Linear EXE Header (OS/2 V2.x) - LE" );
-    } else if ( signature == OSF_FLAT_LX_SIGNATURE ) {
+    } else if ( signature == EXESIGN_LX ) {
         Form = FORM_LX;
         Banner( "Linear EXE Header (OS/2 V2.x) - LX" );
     } else {

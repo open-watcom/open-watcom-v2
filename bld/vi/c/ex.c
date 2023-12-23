@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,6 +34,9 @@
 #include "vi.h"
 #include "ex.h"
 #include "win.h"
+#include "myprintf.h"
+#include "parse.h"
+
 
 static window_info  exwInfo = {
     BLACK, WHITE, DEF_HILIGHT_STYLE, DEF_TEXT_STYLE, { 0, 24, 79, 24 }, false
@@ -66,7 +69,7 @@ vi_rc EnterExMode( void )
     if( rc != ERR_NO_ERR ) {
         return( rc );
     }
-    st = MemAlloc( EditVars.MaxLine );
+    st = _MemAllocArray( char, EditVars.MaxLineLen );
 
     for( ;; ) {
         if( EditFlags.Appending ) {
@@ -74,7 +77,7 @@ vi_rc EnterExMode( void )
         } else {
             prompt = ":";
         }
-        ret = ReadStringInWindow( wid, 1, prompt, st, EditVars.MaxLine, &EditVars.Hist[HIST_CMD] );
+        ret = ReadStringInWindow( wid, 1, prompt, st, EditVars.MaxLineLen, &EditVars.Hist[HIST_CMD] );
         MyPrintf( "\n" );
         if( !ret ) {
             continue;
@@ -94,7 +97,7 @@ vi_rc EnterExMode( void )
         }
         ScreenPage( -1 );
     }
-    MemFree( st );
+    _MemFreeArray( st );
     return( ERR_NO_ERR );
 
 } /* EnterExMode */

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -59,7 +59,7 @@ ANALYSE.C -- analyse parsed tree of tokens
 #ifdef XTRA_RPT
 #   include "initdefs.h"
 #endif
-#ifndef NDEBUG
+#ifdef DEVBUILD
     #include "dbg.h"
     #include "pragdefn.h"
     #include "togglesd.h"
@@ -1927,7 +1927,7 @@ static PTREE initClass(         // INIT. A CLASS ( INIT OR RETURN )
     }
     if( NodeIsBinaryOp( right, CO_LIST ) ) {    // class c( parms )
         TYPE orig_right;        // - original type on right
-#ifndef NDEBUG
+#ifdef DEVBUILD
         if( dtor != NULL ) {
             CFatal( "initClass -- dtor with CO_LIST" );
         }
@@ -4078,13 +4078,14 @@ PTREE AnalyseOperator(          // ANALYSE AN OPERATOR
                 }
                 type = TypePointedAtModified( type );
                 if( type != NULL ) {
+#if _INTEL_CPU
                     if( TypeTruncByMemModel( type ) ) {
                         expr = throw_exp;
                         PTreeErrorExpr( expr, ERR_USE_FAR );
                         break;
-                    } else {
-// expand ?
                     }
+#endif
+                    // expand ?
                 }
                 type = NodeType( throw_exp );
                 rt_code = RTF_THROW;
@@ -4238,7 +4239,7 @@ PTREE AnalyseOperator(          // ANALYSE AN OPERATOR
         case CONV_BASIC_TYPE :
             type = TypedefModifierRemove( type );
             continue;
-#ifndef NDEBUG
+#ifdef DEVBUILD
         default :
             CFatal( "ANALYSE -- undefined action" );
 #endif
@@ -4348,7 +4349,7 @@ static PTREE clearAnalysedFlag(
 static PTREE run_traversals(    // ANALYZE EXPRESSION VIA TRAVERSALS
     PTREE expr )
 {
-#ifndef NDEBUG
+#ifdef DEVBUILD
     expr = DbgCommaInsertion( expr );
     if( TOGGLEDBG( dump_ptree ) ) {
         DumpCommentary( "Parse tree to be analyzed semantically" );

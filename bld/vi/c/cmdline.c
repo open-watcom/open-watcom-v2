@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,6 +44,8 @@
 #include "sstyle.h"
 #include "fts.h"
 #include "rcs.h"
+#include "myprintf.h"
+#include "parse.h"
 #ifdef __WIN__
 #include "ideactiv.h"
 #endif
@@ -87,7 +89,7 @@ static bool isOS2( void )
  */
 void InitCommandLine( void )
 {
-    dataBuff = MemAlloc( EditVars.MaxLine );
+    dataBuff = _MemAllocArray( char, EditVars.MaxLineLen );
 
 } /* InitCommandLine */
 
@@ -96,7 +98,7 @@ void InitCommandLine( void )
  */
 void FiniCommandLine( void )
 {
-    MemFree( dataBuff );
+    _MemFreeArray( dataBuff );
 
 } /* FiniCommandLine */
 
@@ -113,21 +115,21 @@ static vi_rc doProcessCommandLine( bool is_fancy )
     /*
      * open the window and get the string
      */
-    st = MemAllocUnsafe( EditVars.MaxLine );
+    st = MemAllocUnsafe( EditVars.MaxLineLen );
     if( st == NULL ) {
         return( ERR_NO_MEMORY );
     }
 #ifdef __WIN__
     if( is_fancy ) {
-        if( !GetCmdDialog( st, EditVars.MaxLine ) ) {
-            MemFree( st );
+        if( !GetCmdDialog( st, EditVars.MaxLineLen ) ) {
+            _MemFreeArray( st );
             return( ERR_NO_ERR );
         }
     } else {
 #endif
-        rc = PromptForString( ":", st, EditVars.MaxLine, &EditVars.Hist[HIST_CMD] );
+        rc = PromptForString( ":", st, EditVars.MaxLineLen, &EditVars.Hist[HIST_CMD] );
         if( rc != ERR_NO_ERR ) {
-            MemFree( st );
+            _MemFreeArray( st );
             if( rc == NO_VALUE_ENTERED ) {
                 return( ERR_NO_ERR );
             }
@@ -142,7 +144,7 @@ static vi_rc doProcessCommandLine( bool is_fancy )
         rc = RunCommandLine( st );
     }
     CommandBuffer = NULL;
-    MemFree( st );
+    _MemFreeArray( st );
     return( rc );
 
 } /* doProcessCommandLine */
@@ -171,25 +173,24 @@ vi_rc FancyProcessCommandLine( void )
 vi_rc TryCompileableToken( int token, const char *data, bool iscmdline )
 {
     vi_rc       rc = ERR_INVALID_COMMAND;
-    bool        mflag;
+    map_flags   mflags;
 
     switch( token ) {
     case PCL_T_MAPBASE_DMT:
     case PCL_T_MAP_DMT:
     case PCL_T_MAPBASE:
     case PCL_T_MAP:
+        mflags = MAPFLAG_NONE;
         if( iscmdline ) {
-            mflag = MAPFLAG_MESSAGE;
-        } else {
-            mflag = 0;
+            mflags |= MAPFLAG_MESSAGE;
         }
         if( token == PCL_T_MAPBASE || token == PCL_T_MAPBASE_DMT ) {
-            mflag |= MAPFLAG_BASE;
+            mflags |= MAPFLAG_BASE;
         }
         if( token == PCL_T_MAP_DMT || token == PCL_T_MAPBASE_DMT ) {
-            mflag |= MAPFLAG_DAMMIT;
+            mflags |= MAPFLAG_DAMMIT;
         }
-        rc = MapKey( mflag, data );
+        rc = MapKey( mflags, data );
         break;
     case PCL_T_MENUFILELIST:
         rc = MenuItemFileList();
@@ -276,7 +277,8 @@ vi_rc RunCommandLine( const char *cmdl )
 {
     int         i, x, y, x2, y2;
     bool        n1f, n2f;
-    int         tkn, flag;
+    int         tkn;
+    map_flags   mflags;
     bool        test1;
     linenum     n1, n2;
     char        st[FILENAME_MAX];
@@ -327,7 +329,7 @@ vi_rc RunCommandLine( const char *cmdl )
             if( rc == ERR_NO_ERR ) {
                 rc = RunKeyMap( &scr, 1L );
             }
-            MemFree( scr.data );
+            _MemFreeArray( scr.data );
         }
         break;
 
@@ -376,11 +378,11 @@ vi_rc RunCommandLine( const char *cmdl )
         break;
     case PCL_T_UNMAP:
     case PCL_T_UNMAP_DMT:
-        flag = MAPFLAG_MESSAGE + MAPFLAG_UNMAP;
+        mflags = MAPFLAG_MESSAGE | MAPFLAG_UNMAP;
         if( tkn == PCL_T_UNMAP_DMT ) {
-            flag |= MAPFLAG_DAMMIT;
+            mflags |= MAPFLAG_DAMMIT;
         }
-        rc = MapKey( flag, data );
+        rc = MapKey( mflags, data );
         break;
     case PCL_T_EVAL:
         data = Expand( buf, data, NULL );
@@ -390,7 +392,7 @@ vi_rc RunCommandLine( const char *cmdl )
         } else {
             StartExprParse( data, jmpaddr );
             val = GetConstExpr();
-            ltoa( val, st, EditVars.Radix );
+            EvalRadix( st, val );
             Message1( "%s", st );
             rc = ERR_NO_ERR;
         }
@@ -652,7 +654,7 @@ vi_rc RunCommandLine( const char *cmdl )
             rc = ERR_NO_ERR;
         }
         if( rc == ERR_NO_ERR ) {
-            Message1( "Current directory is %s",CurrentDirectory );
+            Message1( "Current directory is %s", CurrentDirectory );
         }
         break;
     case PCL_T_SHELL:

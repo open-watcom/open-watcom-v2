@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,19 +41,19 @@ typedef struct import_sym_struct import_sym;
 typedef struct elf_import_sym_struct elf_import_sym;
 
 struct sym_table_struct {
-    sym_file    *first;
-    sym_file    **add_to;
+    sym_file        *first;
+    sym_file        **add_to;
 };
 
 typedef enum {
     IMPORT_DESCRIPTOR,
     NULL_IMPORT_DESCRIPTOR,
     NULL_THUNK_DATA,
-    ORDINAL,    // ordinal and name
-    NAMED,      // name only
-    ELF,        // name only or name and ordinal
-    ELFRENAMED, // renamed entry,
-}importType;
+    ORDINAL,        // ordinal and name
+    NAMED,          // name only
+    ELF,            // name only or name and ordinal
+    ELFRENAMED,     // renamed entry,
+} importType;
 
 struct elf_import_sym_struct {
     char            *name;
@@ -61,7 +62,7 @@ struct elf_import_sym_struct {
     elf_import_sym  *next;
 };
 
-struct import_sym_struct{
+struct import_sym_struct {
     importType      type;
     processor_type  processor;
     char            *DLLName;
@@ -125,7 +126,7 @@ extern void WriteFileTable( void );
 extern void WriteFileBody( sym_file *sfile );
 extern void AddSym( const char *name, symbol_strength strength, unsigned char info );
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 extern void DumpFileTable( void );
 extern void DumpHashTable( void );
 #endif

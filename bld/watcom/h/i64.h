@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -162,9 +163,9 @@ int  U64Cnv16( unsigned_64 *res, char c );
 #define I8FetchNative( x )      ((signed_8)(x).u._8[0])
 
 #if defined( __BIG_ENDIAN__ )
-#   define I64Val( h, l ) { h, l }
+    #define Init64Val(h,l)      { h, l }
 #else
-#   define I64Val( h, l ) { l, h }
+    #define Init64Val(h,l)      { l, h }
 #endif
 
 // set U64 from low, high part

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -76,17 +77,17 @@ WResResNode *WREFindResNodeFromLangNode( WResTypeNode *tnode, WResLangNode *lnod
 
 bool WREResNodeContainsLangNode( WResResNode *rnode, WResLangNode *lnode )
 {
-    WResLangNode *ln;
+    WResLangNode *lnode2;
 
     if( rnode == NULL || lnode == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
-    for( ln = rnode->Head; ln != NULL; ln = ln->Next ) {
-        if( ln == lnode ) {
-            return( TRUE );
+    for( lnode2 = rnode->Head; lnode2 != NULL; lnode2 = lnode2->Next ) {
+        if( lnode2 == lnode ) {
+            return( true );
         }
     }
 
-    return( FALSE );
+    return( false );
 }

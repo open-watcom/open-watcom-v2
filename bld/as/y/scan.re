@@ -13,6 +13,8 @@
 #define YYMARKER        marker
 #define YYFILL( n )     {fill();}
 
+extern YYSTYPE          yylval;
+
 #ifdef _STANDALONE_
 int CurrLineno = 1;             // This pair is used by the parser and the
 char *CurrFilename = NULL;      // outside world.
@@ -273,17 +275,17 @@ ppchar"line "[0-9]*     { newlineno = atoi( yytext()+6 ); goto getfname; }
 "$v0"                   { yylval.reg = MakeReg( RC_GPR, 0 ); return( T_REGISTER ); }
 "$t"[0-7]               { yylval.reg = MakeReg( RC_GPR, atoi( yytext()+2 ) + 1 ); return( T_REGISTER ); }
 "$s"[0-6]               { yylval.reg = MakeReg( RC_GPR, atoi( yytext()+2 ) + 9 ); return( T_REGISTER ); }
-"$fp"                   { yylval.reg = MakeReg( RC_GPR, 15 ); return( T_REGISTER ); }
+"$fp"                   { yylval.reg = MakeReg( RC_GPR, FP_REG_IDX ); return( T_REGISTER ); }
 "$a"[0-5]               { yylval.reg = MakeReg( RC_GPR, atoi( yytext()+2 ) + 16 ); return( T_REGISTER ); }
 "$t"[8-9]               { yylval.reg = MakeReg( RC_GPR, atoi( yytext()+2 ) + 14 ); return( T_REGISTER ); }
 "$t"[1][0-1]            { yylval.reg = MakeReg( RC_GPR, atoi( yytext()+2 ) + 14 ); return( T_REGISTER ); }
-"$ra"                   { yylval.reg = MakeReg( RC_GPR, 26 ); return( T_REGISTER ); }
+"$ra"                   { yylval.reg = MakeReg( RC_GPR, RA_REG_IDX ); return( T_REGISTER ); }
 "$pv"                   { yylval.reg = MakeReg( RC_GPR, 27 ); return( T_REGISTER ); }
 "$t12"                  { yylval.reg = MakeReg( RC_GPR, 27 ); return( T_REGISTER ); }
-"$at"                   { yylval.reg = MakeReg( RC_GPR, 28 ); return( T_REGISTER ); }
-"$gp"                   { yylval.reg = MakeReg( RC_GPR, 29 ); return( T_REGISTER ); }
-"$sp"                   { yylval.reg = MakeReg( RC_GPR, 30 ); return( T_REGISTER ); }
-"$zero"                 { yylval.reg = MakeReg( RC_GPR, 31 ); return( T_REGISTER ); }
+"$at"                   { yylval.reg = MakeReg( RC_GPR, AT_REG_IDX ); return( T_REGISTER ); }
+"$gp"                   { yylval.reg = MakeReg( RC_GPR, GP_REG_IDX ); return( T_REGISTER ); }
+"$sp"                   { yylval.reg = MakeReg( RC_GPR, SP_REG_IDX ); return( T_REGISTER ); }
+"$zero"                 { yylval.reg = MakeReg( RC_GPR, ZERO_REG_IDX ); return( T_REGISTER ); }
 
 "$f"[0-9]               { yylval.reg = MakeReg( RC_FPR, atoi( yytext()+2 ) ); return( T_REGISTER ); }
 "$f"[1-2][0-9]          { yylval.reg = MakeReg( RC_FPR, atoi( yytext()+2 ) ); return( T_REGISTER ); }
@@ -293,19 +295,19 @@ ppchar"line "[0-9]*     { newlineno = atoi( yytext()+6 ); goto getfname; }
 "$"[1-2][0-9]           { yylval.reg = MakeReg( RC_GPR, atoi( yytext()+1 ) ); return( T_REGISTER ); }
 "$"[3][0-1]             { yylval.reg = MakeReg( RC_GPR, atoi( yytext()+1 ) ); return( T_REGISTER ); }
 
-"$zero"                 { yylval.reg = MakeReg( RC_GPR, 0 ); return( T_REGISTER ); }
-"$at"                   { yylval.reg = MakeReg( RC_GPR, 1 ); return( T_REGISTER ); }
+"$zero"                 { yylval.reg = MakeReg( RC_GPR, ZERO_REG_IDX ); return( T_REGISTER ); }
+"$at"                   { yylval.reg = MakeReg( RC_GPR, AT_REG_IDX ); return( T_REGISTER ); }
 "$v"[0-1]               { yylval.reg = MakeReg( RC_GPR, atoi( yytext()+2 ) + 2 ); return( T_REGISTER ); }
 "$a"[0-3]               { yylval.reg = MakeReg( RC_GPR, atoi( yytext()+2 ) + 4 ); return( T_REGISTER ); }
 "$t"[0-7]               { yylval.reg = MakeReg( RC_GPR, atoi( yytext()+2 ) + 8 ); return( T_REGISTER ); }
 "$s"[0-7]               { yylval.reg = MakeReg( RC_GPR, atoi( yytext()+2 ) + 16 ); return( T_REGISTER ); }
 "$t"[8-9]               { yylval.reg = MakeReg( RC_GPR, atoi( yytext()+2 ) + 16 ); return( T_REGISTER ); }
 "$k"[0-1]               { yylval.reg = MakeReg( RC_GPR, atoi( yytext()+2 ) + 26 ); return( T_REGISTER ); }
-"$gp"                   { yylval.reg = MakeReg( RC_GPR, 28 ); return( T_REGISTER ); }
-"$sp"                   { yylval.reg = MakeReg( RC_GPR, 29 ); return( T_REGISTER ); }
+"$gp"                   { yylval.reg = MakeReg( RC_GPR, GP_REG_IDX ); return( T_REGISTER ); }
+"$sp"                   { yylval.reg = MakeReg( RC_GPR, SP_REG_IDX ); return( T_REGISTER ); }
 "$s8"                   { yylval.reg = MakeReg( RC_GPR, 30 ); return( T_REGISTER ); }
-"$fp"                   { yylval.reg = MakeReg( RC_GPR, 30 ); return( T_REGISTER ); }
-"$ra"                   { yylval.reg = MakeReg( RC_GPR, 31 ); return( T_REGISTER ); }
+"$fp"                   { yylval.reg = MakeReg( RC_GPR, FP_REG_IDX ); return( T_REGISTER ); }
+"$ra"                   { yylval.reg = MakeReg( RC_GPR, RA_REG_IDX ); return( T_REGISTER ); }
 
 "$f"[0-9]               { yylval.reg = MakeReg( RC_FPR, atoi( yytext()+2 ) ); return( T_REGISTER ); }
 "$f"[1-2][0-9]          { yylval.reg = MakeReg( RC_FPR, atoi( yytext()+2 ) ); return( T_REGISTER ); }
@@ -314,8 +316,8 @@ ppchar"line "[0-9]*     { newlineno = atoi( yytext()+6 ); goto getfname; }
 [rR][0-9]               { yylval.reg = MakeReg( RC_GPR, atoi( yytext()+1 ) ); return( T_REGISTER ); }
 [rR][1-2][0-9]          { yylval.reg = MakeReg( RC_GPR, atoi( yytext()+1 ) ); return( T_REGISTER ); }
 [rR][3][0-1]            { yylval.reg = MakeReg( RC_GPR, atoi( yytext()+1 ) ); return( T_REGISTER ); }
-"sp"                    { yylval.reg = MakeReg( RC_GPR, 1 ); return( T_REGISTER ); }
-"rtoc"                  { yylval.reg = MakeReg( RC_GPR, 2 ); return( T_REGISTER ); }
+"sp"                    { yylval.reg = MakeReg( RC_GPR, SP_REG_IDX ); return( T_REGISTER ); }
+"rtoc"                  { yylval.reg = MakeReg( RC_GPR, RTOC_REG_IDX ); return( T_REGISTER ); }
 
 [fF][0-9]               { yylval.reg = MakeReg( RC_FPR, atoi( yytext()+1 ) ); return( T_REGISTER ); }
 [fF][1-2][0-9]          { yylval.reg = MakeReg( RC_FPR, atoi( yytext()+1 ) ); return( T_REGISTER ); }
@@ -331,8 +333,7 @@ ppchar"line "[0-9]*     { newlineno = atoi( yytext()+6 ); goto getfname; }
 
 [cC][rR][0-7]           { yylval.reg = MakeReg( RC_CRF, atoi( yytext()+2 ) ); return( T_REGISTER ); }
 
-/* The following symbols are defined just for the BI field of the simplified
-   branch mnemonics. */
+/* The following symbols are defined just for the BI field of the simplified branch mnemonics. */
 "lt"                    { yylval.val = BI_LT; return( T_BI_OFFSET ); }
 "gt"                    { yylval.val = BI_GT; return( T_BI_OFFSET ); }
 "eq"                    { yylval.val = BI_EQ; return( T_BI_OFFSET ); }
@@ -424,7 +425,7 @@ nl                      { ++yylineno; return( T_NEWLINE ); }
 :endsegment
 any                     {
                             if( eofPtr && ( cursor == eofPtr ) ) {
-                                return( T_EOF ); // end of input
+                                return( T_EOF ); /* end of input */
                             }
                             return( T_ERROR );
                         }

@@ -11,3 +11,4 @@ cg_autodepends = .AUTODEPEND
 !include $(cg_dir)/mif/cghost.mif
 !include $(cg_dir)/mif/cg.mif
 !include $(cg_dir)/mif/hostos.mif
+!include $(cg_dir)/mif/target.mif

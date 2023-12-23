@@ -1,12 +1,8 @@
-!ifdef %OWUSE_FILENAME_VERSION
-dllname = export$(bld_ver)
-!else
-dllname = export
-!endif
-
 #
 # Exports DIP makefile
 #
+
+dip_format = export
 
 imp_objs = &
         expmisc.obj &
@@ -16,13 +12,6 @@ imp_objs = &
         expsym.obj &
         expcue.obj
 
-# Set the extra_incs and extra_srcs to any other directories that include
-# additional includes or source files. Delete the definitions if you don't
-# have any.
-#extra_incs = $(lib_misc_dir)/h
-#extra_srcs = $(lib_misc_dir)/c
 extra_cppflags = -DDIP_PRIORITY=DIP_PRIOR_EXPORTS
-
-extra_dllbase = $(dip_dllbase_$(host_os)_$(host_cpu)_export)
 
 !include ../../master.mif

@@ -1,3 +1,5 @@
+tree_depth = 4
+
 proj_name = wimgedit
 
 !ifndef wimgedit_autodepends
@@ -30,7 +32,7 @@ target_nt  = win
 #
 .c : c;../c
 
-inc_dirs  = -I. -Ih -I"../h" $(wres_inc_dirs) $(wr_inc_dirs) $(commonui_inc_dirs) $(wpi_inc_dirs)
+inc_dirs  = -I. -Ih -I"../h" $(wres_inc_dirs) $(wr_inc_dirs) -I"$(wre_dir)/h" $(commonui_inc_dirs) $(wpi_inc_dirs)
 
 extra_cpp_flags     = -DGUI_IS_GUI
 !ifdef wpitest
@@ -55,7 +57,7 @@ extra_l_flags_os2 = option stack=12k, heapsize=2k
 # EXE
 #
 exetarg_prebuild_objs = rcstr.grh
-exetarg_objs_extras_win = wincreat.obj title.obj winutils.obj
+exetarg_objs_extras_win = wincreat.obj splash.obj winutils.obj
 exetarg_objs_os2      = pmcreate.obj pmutils.obj pmicon.obj wbitmap.obj
 exetarg_objs_win      = icon.obj snap.obj modclrs.obj pickbmp.obj iebmpdat.obj iedde.obj iectl3d.obj $(exetarg_objs_extras_win)
 exetarg_objs = &
@@ -87,20 +89,20 @@ rc_inc_dirs = -I"../res" $(commonui_inc_dirs) -Ih
 !ifeq host_os os2
 $(proj_name).res : ../res/os2/wimgedit.rc rcstr.grh $(__MAKEFILES__)
     @%make echo_rc
-    $(rc) $(rc_flags) -ad -zk0 -I"../res/os2" $(cppflags) $(rc_inc_path) $[@ -fo=$@
+    $(rc) $(rc_ui8_flags) $(rc_flags) -ad -I"../res/os2" $(cppflags) $(rc_inc_path) $[@ -fo=$@
 !else
 $(proj_name).res : ../res/wimgedit.rc rcstr.grh $(__MAKEFILES__)
     @%make echo_rc
-    $(rc) $(rc_flags) -ad -zk0 $(cppflags) $(rc_inc_path) $[@ -fo=$@
+    $(rc) $(rc_ui8_flags) $(rc_flags) -ad $(cppflags) $(rc_inc_path) $[@ -fo=$@
 !endif
 
 ntmanif.res : ../res/ntmanif.rc
     @%make echo_rc
-    $(rc) $(rc_flags) -I"../res" $(inc_dirs_sys_nt) $< -fo=$@
+    $(rc) $(rc_ui8_flags) $(rc_flags) -I"../res" $(inc_dirs_sys_nt) $< -fo=$@
 
 rcstrmsg.gh : ../res/wimgedit.msg $(__MAKEFILES__)
     @%make echo_cpp
-    $(cpp) $(rc_ui_flags) -o$@ $[@
+    $(cpp) $(rc_ui8_flags) -o$@ $[@
 
 rcstr.grh : rcstrmsg.gh $(__MAKEFILES__)
     @%make echo_awk

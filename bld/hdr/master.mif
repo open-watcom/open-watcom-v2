@@ -8,7 +8,7 @@ linux_options = -kLINUX -u
 qnx_options   = -kQNX -t8 -u
 rdos_options  = -kRDOS
 
-!ifeq release 1
+!ifeq debug 0
 wsplice_extra_opts =
 !else
 wsplice_extra_opts = -d"depends.dep"
@@ -20,13 +20,17 @@ wsplice_opts_c = $(wsplice_extra_opts) -i.. $($(system)_options) $(options_h_$^&
 
 wsplice_opts_i386 = $(wsplice_extra_opts) -i.. -kARCHI386 $($(system)_options) ../common.sp $[@ $@
 wsplice_opts_mips = $(wsplice_extra_opts) -i.. -kARCHMIPS $($(system)_options) ../common.sp $[@ $@
+wsplice_opts_ppc  = $(wsplice_extra_opts) -i.. -kARCHPPC $($(system)_options) ../common.sp $[@ $@
 
 # order of directories is important for DOS
 # multi level tree must be created from top to bottom
 # DOS can create only simple sub-directory in existing directory
 # you must create parent before child directory
 dos_dirs   = h h/sys
-linux_dirs = h h/sys h/netinet h/arpa h/arch h/arch/i386 h/arch/i386/sys h/arch/mips h/arch/mips/sys
+linux_i386_arch_dirs = h/arch/i386 h/arch/i386/sys
+linux_mips_arch_dirs = h/arch/mips h/arch/mips/sys
+linux_ppc_arch_dirs = h/arch/ppc h/arch/ppc/sys
+linux_dirs = h h/sys h/netinet h/arpa h/arch $(linux_i386_arch_dirs) $(linux_mips_arch_dirs) $(linux_ppc_arch_dirs)
 qnx_dirs   = h h/sys
 rdos_dirs  = h h/sys h/netinet h/arpa
 
@@ -108,6 +112,14 @@ all : $($(system)_dirs) $($(system)_files) .symbolic
 {linux/arch/mips/sys}.mh{h/arch/mips/sys}.h:
     @%make echo_wsplice
     $(wsplice) $(wsplice_opts_mips)
+
+{linux/arch/ppc}.mh{h/arch/ppc}.h:
+    @%make echo_wsplice
+    $(wsplice) $(wsplice_opts_ppc)
+
+{linux/arch/ppc/sys}.mh{h/arch/ppc/sys}.h:
+    @%make echo_wsplice
+    $(wsplice) $(wsplice_opts_ppc)
 
 .mh.cnv:
     @%make echo_wsplice

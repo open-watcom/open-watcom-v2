@@ -840,6 +840,14 @@ disable/enable language extensions (default is ze)
 :optref refid='SWza'.
 :optref refid='SWze'.
 .*
+.note zastd=<standard>
+use specified ISO/ANSI language standard
+:optref refid='SWzastd'.
+.*
+.note za99
+use ISO/ANSI C99 language standard; deprecated, use zastd=c99
+:optref refid='SWzastd'.
+.*
 .note zam
 :CMT. .ix 'options' 'zam'
 disable all predefined old extension macros (keyword macros, non-ISO names)
@@ -1009,7 +1017,8 @@ syntax check only
 .*
 .note zt<number>
 :CMT. .ix 'options' 'zt'
-set data threshold (default is zt32767)
+set data threshold
+(default is 32767 for 16-bit and 2147483647 for 32-bit)
 :optref refid='SWzt'.
 .*
 .note zu&optdag.

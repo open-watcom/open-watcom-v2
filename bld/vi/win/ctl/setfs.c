@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -357,7 +357,7 @@ static void dlgDataInit( void )
 
 static void dlgDataFini( void )
 {
-    MemFree( dlgDataArray );
+    _MemFreeArray( dlgDataArray );
 }
 
 static void filldlgData( dlg_data *data, const char *match, info *useInfo )
@@ -437,13 +437,13 @@ static void updateDialogSettings( HWND hwndDlg, bool title )
     if( title ) {
         totallen = SendMessage( hwndCB, CB_GETLBTEXTLEN, index, 0L );
         totallen += sizeof( FT_TITLE ) + 1;
-        template = MemAlloc( totallen );
+        template = _MemAllocArray( char, totallen );
         strcpy( template, FT_TITLE );
         SendMessage( hwndCB, CB_GETLBTEXT, index, (LPARAM)(LPSTR)( template + sizeof( FT_TITLE ) - 1 ) );
         template[totallen - 2] = ')';
         template[totallen - 1] = '\0';
         SetWindowText( hwndDlg, template );
-        MemFree( template );
+        _MemFreeArray( template );
     }
 
     ctl_dlg_init( GET_HINSTANCE( hwndDlg ), hwndDlg, dlgDataArray + index, &Ctl_setfs );
@@ -495,12 +495,12 @@ static void writeSettings( HWND hwndDlg )
     for( index = 0; index < dlgDataArray_count; index++ ) {
         // put back in order we got them
         len = SendMessage( hwndCB, CB_GETLBTEXTLEN, index, 0L );
-        template = MemAlloc( len + 1 );
+        template = _MemAllocArray( char, len + 1 );
         SendMessage( hwndCB, CB_GETLBTEXT, index, (LPARAM)(LPSTR)template );
         FTSStart( template );
         dumpCommands( dlgDataArray + index );
         FTSEnd();
-        MemFree( template );
+        _MemFreeArray( template );
     }
     if( CurrentFile != NULL ) {
         FTSRunCmds( CurrentFile->name );
@@ -526,7 +526,7 @@ static long deleteSelectedFT( HWND hwndDlg )
     }
     // get template in string form
     len = SendMessage( hwndCB, CB_GETLBTEXTLEN, index, 0L );
-    template = MemAlloc( len + 1 );
+    template = _MemAllocArray( char, len + 1 );
     SendMessage( hwndCB, CB_GETLBTEXT, index, (LPARAM)(LPSTR)template );
     // can't delete *.* entry
     rc = IDYES;
@@ -547,7 +547,7 @@ static long deleteSelectedFT( HWND hwndDlg )
         // update other dialog settings
         updateDialogSettings( GetParent( hwndCB ), true );
     }
-    MemFree( template );
+    _MemFreeArray( template );
     return( 1L );
 }
 
@@ -564,7 +564,7 @@ static long insertFT( HWND hwndDlg )
 
     // get new template
     len = GetWindowTextLength( hwndCB );
-    text = MemAlloc( len + 1 );
+    text = _MemAllocArray( char, len + 1 );
     GetWindowText( hwndCB, text, len + 1 );
 
     // attempt to insert at current position

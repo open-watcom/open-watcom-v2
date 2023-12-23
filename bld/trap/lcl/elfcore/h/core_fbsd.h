@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,9 +35,11 @@
 
 #include <stddef.h>
 #include <sys/stat.h>
+#include "madconf.h"
 #include "machtype.h"
 
-#if defined( MD_x86 )
+
+#if MADARCH & MADARCH_X86
 
 /* From FreeBSD's <machine/reg.h> */
 

@@ -12,7 +12,7 @@ libname_386 = 3$(mlib_suffix_$(convention))
 libname_387 = 387$(mlib_suffix_$(convention))
 libname = math$(libname_$(processor))
 
-!ifeq release 0
+!ifneq debug 0
 mlib_lib_flags = -b-c-n-pa
 !else
 mlib_lib_flags = -b-c-n-pa-s-t-zld

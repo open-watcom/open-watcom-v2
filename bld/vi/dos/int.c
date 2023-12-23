@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,18 +37,18 @@
 #include "win.h"
 #include "pragmas.h"
 
-#if defined( _M_I86 ) || defined( __4G__ )
+#if defined( _M_I86 ) || defined( DOS4G ) || defined( CAUSEWAY )
     #define _FAR_   __far
-#else
+#else   /* defined( PHARLAP ) */
     #define _FAR_
 #endif
 
-#if defined( _M_I86 ) || defined( __4G__ )
+#if defined( _M_I86 ) || defined( DOS4G ) || defined( CAUSEWAY )
 static void (__interrupt _FAR_ *oldInt1c)( void );
 static void (__interrupt _FAR_ *oldInt1b)( void );
 static void (__interrupt _FAR_ *oldInt23)( void );
 static void (__interrupt _FAR_ *oldInt24)( void );
-#else
+#else   /* defined( PHARLAP ) */
 typedef struct {
     void __far  *prot;
     void        *real;
@@ -147,8 +147,9 @@ static void __interrupt handleInt1c( void )
         }
     }
 
-#if defined( _M_I86 ) || defined( __4G__ )
+#if defined( _M_I86 ) || defined( DOS4G ) || defined( CAUSEWAY )
     _chain_intr( oldInt1c );
+#else   /* defined( PHARLAP ) */
 #endif
 
 } /* handleInt1c */
@@ -181,7 +182,10 @@ static void setClockTime( void )
 
 } /* setClockTime */
 
-#if !defined( _M_I86 ) && !defined( __4G__ )
+#if defined( _M_I86 ) || defined( DOS4G ) || defined( CAUSEWAY )
+
+#else   /* defined( PHARLAP ) */
+
 static bool     noTimer;
 
 /*
@@ -277,12 +281,12 @@ static void setStupid1c( void )
  */
 void SetInterrupts( void )
 {
-#if defined( _M_I86 ) || defined( __4G__ )
+#if defined( _M_I86 ) || defined( DOS4G ) || defined( CAUSEWAY )
     oldInt1c = DosGetVect( 0x1c );
     oldInt1b = DosGetVect( 0x1b );
     oldInt23 = DosGetVect( 0x23 );
     oldInt24 = DosGetVect( 0x24 );
-#else
+#else   /* defined( PHARLAP ) */
     getIntVect( 0x1b, &old1b );
     getIntVect( 0x1c, &old1c );
     getIntVect( 0x23, &old23 );
@@ -290,12 +294,12 @@ void SetInterrupts( void )
 #endif
 
     setClockTime();
-#if defined( _M_I86 ) || defined( __4G__ )
+#if defined( _M_I86 ) || defined( DOS4G ) || defined( CAUSEWAY )
     DosSetVect( 0x1b, handleInt1b_23 );
     DosSetVect( 0x1c, handleInt1c );
     DosSetVect( 0x23, handleInt1b_23 );
     DosSetVect( 0x24, HandleInt24 );
-#else
+#else   /* defined( PHARLAP ) */
     newIntVect( 0x1b, handleInt1b_23 );
     setStupid1c();
     newIntVect( 0x23, handleInt1b_23 );
@@ -310,12 +314,12 @@ void SetInterrupts( void )
 void RestoreInterrupts( void )
 {
     _disable();
-#if defined( _M_I86 ) || defined( __4G__ )
+#if defined( _M_I86 ) || defined( DOS4G ) || defined( CAUSEWAY )
     DosSetVect( 0x1c, oldInt1c );
     DosSetVect( 0x1b, oldInt1b );
     DosSetVect( 0x23, oldInt23 );
     DosSetVect( 0x24, oldInt24 );
-#else
+#else   /* defined( PHARLAP ) */
     resetIntVect( 0x1b, &old1b );
     resetIntVect( 0x1c, &old1c );
     resetIntVect( 0x23, &old23 );

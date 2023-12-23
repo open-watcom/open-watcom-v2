@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,7 +35,6 @@
 #include "dwutils.h"
 #include "dwabbrev.h"
 #include "dwdecl.h"
-
 
 #include "dwabinfo.gh"
 
@@ -116,8 +115,8 @@ unsigned MarkAbbrevAsUsed( dw_client cli, abbrev_code *abbrev )
     if( cli->compiler_options & DW_CM_ABBREV_PRE )
         return( code );
     /* emit the abbrev number, and tag */
-    end = ULEB128( buf, code );
-    end = ULEB128( end, data->tag );
+    end = WriteULEB128( buf, code );
+    end = WriteULEB128( end, data->tag );
     CLIWrite( cli, DW_DEBUG_ABBREV, buf, end - buf );
 
     /* add in the attributes that are always emitted */

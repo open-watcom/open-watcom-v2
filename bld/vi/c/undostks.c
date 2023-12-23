@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -57,9 +58,10 @@ static void shrinkUndoStack( undo_stack *stack )
 {
     stack->current--;
     if( stack->current < 0 ) {
-        MemFreePtr( (void **)&stack->stack );
+        _MemFreePtrArray( stack->stack, 0, NULL );
+        stack->stack = NULL;
     } else {
-        stack->stack = _MemReallocArray( stack->stack, undo *, stack->current + 1 );
+        stack->stack = _MemReallocPtrArray( stack->stack, undo, stack->current + 1 );
     }
 
 } /* shrinkUndoStack */
@@ -109,7 +111,7 @@ undo *UndoAlloc( undo_stack *stack, int type )
             return( NULL );
         }
     }
-    tmp->type = (char) type;
+    tmp->type = (char)type;
 
     return( tmp );
 
@@ -142,7 +144,7 @@ void PushUndoStack( undo *item, undo_stack *stack )
 {
     void        *tmp;
 
-    tmp = MemReallocUnsafe( stack->stack, (stack->current + 2) * sizeof( undo * ) );
+    tmp = _MemReallocPtrArrayUnsafe( stack->stack, undo, stack->current + 2 );
     if( tmp == NULL ) {
         dropUndoStackTop( stack );
     } else {
@@ -171,21 +173,21 @@ undo *PopUndoStack( undo_stack *stack )
 
 } /* PopUndoStack */
 
+static void undo_free( void *u )
+{
+    UndoFree( u, true );
+}
+
 /*
  * PurgeUndoStack - do just that
  */
 void PurgeUndoStack( undo_stack *stack )
 {
-    int i;
-
     if( stack == NULL ) {
         return;
     }
-
-    for( i = stack->current; i >= 0; i-- ) {
-        UndoFree( stack->stack[i], true );
-    }
-    MemFreePtr( (void **)&(stack->stack) );
+    _MemFreePtrArray( stack->stack, stack->current + 1, undo_free );
+    stack->stack = NULL;
     stack->current = -1;
 
 } /* PurgeUndoStack */
@@ -223,10 +225,12 @@ void AllocateUndoStacks( void )
 void FreeUndoStacks( void )
 {
     FreeAllUndos();
-    MemFree( UndoStack->stack );
-    MemFreePtr( (void **)&UndoStack );
-    MemFree( UndoUndoStack->stack );
-    MemFreePtr( (void **)&UndoUndoStack );
+    _MemFreePtrArray( UndoStack->stack, UndoStack->current + 1, undo_free );
+    MemFree( UndoStack );
+    UndoStack = NULL;
+    _MemFreePtrArray( UndoUndoStack->stack, UndoUndoStack->current + 1, undo_free );
+    MemFree( UndoUndoStack );
+    UndoUndoStack = NULL;
 
 } /* FreeUndoStacks */
 

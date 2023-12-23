@@ -188,9 +188,9 @@ static int InitScreen( void )
     switch( VC.adapter ) {
     case _VGA :
         mode = _VRES16COLOR;
-    break;
+        break;
     case _SVGA :
-    mode = _SVRES256COLOR;
+        mode = _SVRES256COLOR;
         break;
     case _MCGA :
         mode = _MRES256COLOR;

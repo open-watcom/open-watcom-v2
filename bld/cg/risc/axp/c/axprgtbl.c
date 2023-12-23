@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,11 +33,44 @@
 
 #include "_cgstd.h"
 #include "coderep.h"
-#include "axpregn.h"
+#include "axpenc.h"
 #include "zoiks.h"
 #include "data.h"
 #include "rgtbl.h"
 
+
+#define _Combine( a, b )    ((a) * RL_NUMBER_OF_SETS + (b))
+
+/*
+ * register, register class and range definitions
+ */
+#define pick_item(id)   ARCH_IDX_ ## id
+#define pick_start(id)  ARCH_ ## id ## _START
+#define pick_end(id)    ARCH_ ## id ## _END
+
+enum {
+    #define pick(id,idx,cls) pick_item(id),
+    #include "regindex.h"
+    #undef pick
+    pick_item( END ),
+    pick_item( START ) = 0
+};
+
+enum {
+    #define MAPREGCLASS
+    #include "regindex.h"
+    #undef MAPREGCLASS
+};
+
+#undef pick_end
+#undef pick_start
+#undef pick_item
+
+const arch_reg_info RegsTab[] = {
+    #define pick(id,idx,cls) { HW_D_1( HW_ ## id ), idx, cls ## _IDX, DW_REG_ ## id },
+    #include "regindex.h"
+    #undef pick
+};
 
 static  hw_reg_set      Empty[] = {
     EMPTY
@@ -224,9 +257,9 @@ static  hw_reg_set      FloatRegs[] = {
 };
 
 /*
-* NOTE: ordering is important here - see state->curr_entry
-* and relating code in ParmReg and CallState. BBB
-*/
+ * NOTE: ordering is important here - see state->curr_entry
+ * and relating code in ParmReg and CallState.
+ */
 
 static  hw_reg_set      AllParmRegs[] = {
     HW_D_1( HW_R16 ),
@@ -260,7 +293,7 @@ static  hw_reg_set      Parm8Regs2[] = {
 };
 
 static  hw_reg_set      Return8[] = {
-    HW_D_1( HW_R0 ),
+    HW_D_1( HW_RT_RET_REG64 ),
     HW_D_1( HW_EMPTY )
 };
 
@@ -285,7 +318,7 @@ static  hw_reg_set      Parm4Regs3[] = {
 };
 
 static  hw_reg_set      Return4[] = {
-    HW_D_1( HW_D0 ),
+    HW_D_1( HW_RT_RET_REG32 ),
     HW_D_1( HW_EMPTY )
 };
 
@@ -305,7 +338,7 @@ static  hw_reg_set      ParmFRegs2[] = {
 };
 
 static  hw_reg_set      ReturnD[] = {
-    HW_D_1( HW_F0 ),
+    HW_D_1( HW_RT_RET_REGFP ),
     HW_D_1( HW_EMPTY )
 };
 
@@ -339,15 +372,48 @@ static  reg_set_index   IsSets[] = {
     RL_                     /* XX*/
 };
 
-/*      Information for register set intersections
- *      if sets are of different classes {
- *          intersection is empty
- *      } else {
- *          intersection given in square matrix for class
- *      }
- */
+#if 0
+static int findArchRegIndex( hw_reg_set regs, reg_cls cls )
+{
+    int         i;
 
-#define _Combine( a, b )        ((a) * RL_NUMBER_OF_SETS + (b))
+    if( cls & GPR_IDX ) {
+        for( i = ARCH_GPR_START; i < ARCH_GPR_END; i++ ) {
+            if( HW_Equal( regs, RegsTab[i].hw_reg ) ) {
+                return( i );
+            }
+        }
+    }
+    if( cls & FPR_IDX ) {
+        for( i = ARCH_FPR_START; i < ARCH_FPR_END; i++ ) {
+            if( HW_Equal( regs, RegsTab[i].hw_reg ) ) {
+                return( i );
+            }
+        }
+    }
+    return( -1 );
+}
+
+hw_reg_set GetArchReg( int idx, reg_cls cls )
+{
+    if( cls & GPR_IDX ) {
+        return( RegsTab[ARCH_GPR_START + idx].hw_reg );
+    }
+    if( cls & FPR_IDX ) {
+        return( RegsTab[ARCH_FPR_START + idx].hw_reg );
+    }
+    return( HW_EMPTY );
+}
+#endif
+
+/*
+ *  Information for register set intersections
+ *  if sets are of different classes {
+ *      intersection is empty
+ *  } else {
+ *      intersection given in square matrix for class
+ *  }
+ */
 
 reg_set_index   RegIntersect( reg_set_index s1, reg_set_index s2 )
 /****************************************************************/
@@ -404,22 +470,22 @@ hw_reg_set  ReturnReg( type_class_def type_class )
     case FS:
     case FD:
     case FL:
-        return( HW_F0 );
+        return( HW_RT_RET_REGFP );
     case XX:
         return( HW_EMPTY );
     case U1:
     case I1:
-        return( HW_B0 );
+        return( HW_RT_RET_REG8 );
     case U2:
     case I2:
-        return( HW_W0 );
+        return( HW_RT_RET_REG16 );
     case U4:
     case I4:
-        return( HW_D0 );
+        return( HW_RT_RET_REG32 );
     case U8:
     case I8:
     default:
-        return( HW_R0 );
+        return( HW_RT_RET_REG64 );
     }
 }
 
@@ -697,30 +763,30 @@ hw_reg_set      FixedRegs( void )
 {
     hw_reg_set          fixed;
 
-    HW_CAsgn( fixed, HW_R30 );
-    HW_CTurnOn( fixed, HW_R31 );
-    HW_CTurnOn( fixed, HW_R15 );
-    HW_CTurnOn( fixed, HW_F30 ); // Used to generate problematic converts (I8->FD and such)
+    HW_CAsgn( fixed, HW_SP_REG );
+    HW_CTurnOn( fixed, HW_ZERO_REG );
+    HW_CTurnOn( fixed, HW_FP_REG );
+    HW_CTurnOn( fixed, HW_AT_FP_REG ); // Used to generate problematic converts (I8->FD and such)
     return( fixed );
 }
 
 hw_reg_set      VarargsHomePtr( void )
 /************************************/
 {
-    return( HW_D14 );
+    return( HW_VARARGS_REG32 );
 }
 
 hw_reg_set      StackReg( void )
 /**********************************/
 /* MJC should be up to linkage conventions */
 {
-    return( HW_D30 );
+    return( HW_SP_REG32 );
 }
 
 hw_reg_set      FrameBaseReg( void )
 /**********************************/
 {
-    return( HW_D15 );
+    return( HW_FP_REG32 );
 }
 
 hw_reg_set      FrameReg( void )
@@ -728,22 +794,22 @@ hw_reg_set      FrameReg( void )
 /* MJC should be up to linkage conventions */
 {
     if( CurrProc->targ.base_is_fp ) {
-        return( HW_D15 );
+        return( HW_FP_REG32 );
     }
-    return( HW_D30 );
+    return( HW_SP_REG32 );
 }
 
 hw_reg_set      ScratchReg( void )
 /********************************/
 {
-    return( HW_D28 );
+    return( HW_AT_REG32 );
 }
 
 hw_reg_set      ReturnAddrReg( void )
 /***********************************/
 /* BBB Like MJC said ^ */
 {
-    return( HW_D26 );
+    return( HW_RA_REG32 );
 }
 
 
@@ -790,65 +856,60 @@ void            InitRegTbl( void )
 {
 }
 
-byte            RegTrans( hw_reg_set reg )
-/****************************************/
+reg_idx RegTrans( hw_reg_set regs )
+/**********************************
+ * Translate reg to register index
+ */
 {
-    int                 i;
+    int         i;
 
-    /*
-     * This should be cached in the reg name and used instead of a stupid lookup
-     */
-    for( i = 0; i < sizeof( QWordRegs ) / sizeof( QWordRegs[0] ); i++ ) {
-        if( HW_Subset( QWordRegs[i], reg ) ) {
-            return( i );
-        }
-    }
-    for( i = 0; i < sizeof( FloatRegs ) / sizeof( FloatRegs[0] ); i++ ) {
-        if( HW_Equal( reg, FloatRegs[i] ) ) {
-            return( i );
+    for( i = ARCH_IDX_START; i < ARCH_IDX_END; i++ ) {
+        if( HW_Equal( regs, RegsTab[i].hw_reg ) ) {
+            return( RegsTab[i].idx );
         }
     }
     return( 0 );
 }
 
-void SetArchIndex( name *new_r, hw_reg_set regs )
+int GetArchIndex( hw_reg_set regs )
+/*********************************/
 {
-    new_r->r.arch_index = RegTrans( regs );
-}
+    int         i;
 
-
-axp_regn RegTransN( name *reg_name )
-/***** Translate reg name to enum name ****/
-{
-    hw_reg_set reg;
-    int       i;
-    reg = reg_name->r.reg;
-
-    for( i = 0; i < sizeof( QWordRegs ) / sizeof( QWordRegs[0] ); i++ ) {
-        if( HW_Subset( QWordRegs[i], reg ) ) {
-            return( i+AXP_REGN_r0 );
+    for( i = ARCH_IDX_START; i < ARCH_IDX_END; i++ ) {
+        if( HW_Equal( regs, RegsTab[i].hw_reg ) ) {
+            return( RegsTab[i].idx );
         }
     }
-    for( i = 0; i < sizeof( FloatRegs ) / sizeof( FloatRegs[0] ); i++ ) {
-        if( HW_Equal( reg, FloatRegs[i] ) ) {
-            return( i+AXP_REGN_f0 );
+    return( 0 );
+}
+
+dw_regs   RegTransDW( hw_reg_set reg )
+/*************************************
+ * Translate reg to Dwarf enum name
+ */
+{
+    int         i;
+
+    for( i = ARCH_IDX_START; i < ARCH_IDX_END; i++ ) {
+        if( HW_Equal( reg, RegsTab[i].hw_reg ) ) {
+            return( RegsTab[i].dw_idx );
         }
     }
     _Zoiks( ZOIKS_031 );
-    return( AXP_REGN_END );
+    return( DW_REG_END );
 }
-
 
 hw_reg_set      FirstReg( reg_set_index regs_idx )
 /*************************************************
-    The table RTInfo[] uses reg_set_indexes instead of hw_reg_sets since
-    they are only one byte long.  This retrieves the first hw_reg_set
-    from the reg_set table "index".
-
-    the tables above use RL_ consts rather that hw_reg_sets cause
-    it cheaper. This just picks off the first register from a
-    register list and returns it.
-*/
+ * The table RTInfo[] uses reg_set_indexes instead of hw_reg_sets since
+ * they are only one byte long.  This retrieves the first hw_reg_set
+ * from the reg_set table "index".
+ *
+ * the tables above use RL_ consts rather that hw_reg_sets cause
+ * it cheaper. This just picks off the first register from a
+ * register list and returns it.
+ */
 {
     return( *RegSets[regs_idx] );
 }

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,10 +41,32 @@
 #include "rccore.h"
 
 
-typedef uint_16         YYCHKTYPE;
-typedef uint_16         YYACTTYPE;
-typedef uint_16         YYPLHSTYPE;
-typedef uint_8          YYPLENTYPE;
+#define YYCHKTYPE       uint_16
+#define YYACTTYPE       uint_16
+#define YYPLHSTYPE      uint_16
+#define YYPLENTYPE      uint_8
+
+#ifdef _I86FAR
+#define YYFAR           _I86FAR
+#elif defined( _M_I86 )
+#define YYFAR           __far
+#else
+#define YYFAR
+#endif
+
+#define STACK_MAX       100
+
+typedef enum {
+    P_SHIFT,
+    P_ACCEPT,
+    P_SYNTAX,
+    P_ERROR
+} p_action;
+
+/*
+ * definitions and tables here
+ */
+
 
 typedef struct IntOpt {
     YYTOKENTYPE Option;
@@ -88,20 +111,12 @@ typedef union {
     uint_16                     residnum;
     uint_16                     ressizenum;
     uint_8                      resbyte;
-} YYSTYPE;
+} yystype;
+#define YYSTYPE         yystype
 
-#ifdef _I86FAR
-#define YYFAR           _I86FAR
-#elif defined( _M_I86 )
-#define YYFAR           __far
-#else
-#define YYFAR
-#endif
-
-#define STACK_MAX       100
-
-/* define value and state stacks for both expressions and declarations */
-
+/*
+ * define value and state stacks for both expressions and declarations
+ */
 typedef struct {
     YYSTYPE             *vsp;
     YYSTYPE             *vstack;
@@ -112,16 +127,6 @@ typedef struct {
 static YYSTYPE yylval;
 static bool    yysyntaxerror;   /* boolean variable */
 #define YYERRORTHRESHOLD    5   /* no. of tokens to accept before restarting */
-
-typedef enum {
-    P_SHIFT,
-    P_ACCEPT,
-    P_SYNTAX,
-    P_ERROR
-} p_action;
-
-/* definitions and tables here */
-
 
 #ifdef YYDEBUG
 
@@ -296,13 +301,17 @@ static void initParseStack( parse_stack *stack )
 {
     stack->vsp = stack->vstack;
     stack->ssp = stack->sstack;
-    /* initialize */
+    /*
+     * initialize
+     */
     *(stack->ssp) = YYSTART;
 }
 
 static void newParseStack( parse_stack *stack )
 {
-    /* get new stack */
+    /*
+     * get new stack
+     */
     stack->vstack = RcMemMalloc( STACK_MAX * sizeof( YYSTYPE ) );
     stack->sstack = RcMemMalloc( STACK_MAX * sizeof( YYACTTYPE ) );
     initParseStack( stack );

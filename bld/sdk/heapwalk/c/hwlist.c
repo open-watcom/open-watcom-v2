@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -102,6 +102,8 @@ int SortByGlobType( heap_list **p1, heap_list **p2 )
     WORD        t2;
     WORD        tmp;
     int         ret;
+    bool        nonsystem;
+    bool        execute;
 
     if( !ListingDPMI ) {
         t1 = (*p1)->info.ge.wType;
@@ -129,11 +131,14 @@ int SortByGlobType( heap_list **p1, heap_list **p2 )
         }
         return( ret );
     } else {
-        t1 = (*p1)->info.mem.desc.type;
-        t2 = (*p2)->info.mem.desc.type;
-        if( t1 == t2 )
-            return( 0 );
-        if( t1 == 2 )
+        nonsystem = (*p1)->info.mem.desc.u1.flags.nonsystem;
+        execute = (*p1)->info.mem.desc.u1.flags.execute;
+        if( nonsystem == (*p2)->info.mem.desc.u1.flags.nonsystem ) {
+            if( execute == (*p2)->info.mem.desc.u1.flags.execute ) {
+                return( 0 );
+            }
+        }
+        if( nonsystem && !execute )
             return( 1 );
         return( -1 );
     }
@@ -207,29 +212,29 @@ static void FormatSel( char *which, WORD sel, char *buff )
     base = GET_DESC_BASE( desc );
     limit = GET_DESC_LIMIT( desc );
     AddToBuff( "%08lx  %08lx  ", base, limit );
-    if( desc.granularity ) {
+    if( desc.u2.flags.page_granular ) {
         AddToBuff( "page  " );
     } else {
         AddToBuff( "byte  " );
     }
-    if( desc.type == 2 ) {
+    if( desc.u1.flags.nonsystem && !desc.u1.flags.execute ) {
         AddToBuff( "data  " );
     } else {
         AddToBuff( "code  " );
     }
-    AddToBuff( "%1d   ", (WORD) desc.dpl );
-    if( desc.type == 2 )  {
+    AddToBuff( "%1d   ", (WORD)desc.u1.flags.dpl );
+    if( desc.u1.flags.nonsystem && !desc.u1.flags.execute ) {
         AddToBuff( "R" );
-        if( desc.writeable_or_readable ) AddToBuff( "/W" );
+        if( desc.u1.flags_data.writeable ) AddToBuff( "/W" );
         else AddToBuff( "  " );
         AddToBuff( "    " );
     } else {
         AddToBuff( "Ex" );
-        if( desc.writeable_or_readable ) AddToBuff( "/R" );
+        if( desc.u1.flags_exec.readable ) AddToBuff( "/R" );
         else AddToBuff( "  " );
         AddToBuff( "   " );
     }
-    if( desc.big_or_default ) {
+    if( desc.u2.flags.use32 ) {
         AddToBuff( "Y" );
     } else {
         AddToBuff( " " );

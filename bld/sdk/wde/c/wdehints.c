@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -106,6 +106,7 @@ static WdeHintItem WdeHints[] = {
     { IDM_OPTIONS,              WDE_HINT_OPTIONS            },
     { IDM_SELECT_DIALOG,        WDE_HINT_SELECT_DIALOG      },
     { IDM_REMOVE_DIALOG,        WDE_HINT_REMOVE_DIALOG      },
+    { IDM_HIDE_DIALOG,          WDE_HINT_HIDE_DIALOG        },
     { IDM_DIALOG_RESTORE,       WDE_HINT_DIALOG_RESTORE     },
     { IDM_DIALOG_NEW,           WDE_HINT_DIALOG_NEW         },
     { IDM_DIALOG_SAVE,          WDE_HINT_DIALOG_SAVE        },

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -611,7 +611,11 @@ void MComponent::writeTargetCD( ContFile& mak )
     drive = path.drive();
     if( drive[0] != '\0' && drive[1] == ':' )
         mak.printf( " @%s\n", drive );
-    mak.printf( " cd %s\n", (const char*)path );
+    if( path.needQuotes() ) {
+        mak.printf( " cd \"%s\"\n", (const char*)path );
+    } else {
+        mak.printf( " cd %s\n", (const char*)path );
+    }
 }
 
 void MComponent::writeRule( ContFile& mak )

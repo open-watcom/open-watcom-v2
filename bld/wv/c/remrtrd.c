@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -107,7 +107,7 @@ dtid_t RemoteGetNextRunThread( dtid_t tid )
     acc.supp.id = SuppRunThreadId;
     acc.req = REQ_RUN_THREAD_GET_NEXT;
     acc.thread = tid;
-    TrapSimpAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
+    TrapSimpleAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
     return( ret.thread );
 }
 
@@ -123,11 +123,11 @@ void RemotePollRunThread( void )
     acc.supp.id = SuppRunThreadId;
     acc.req = REQ_RUN_THREAD_POLL;
 
-    OnAnotherThreadSimpAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
+    OnAnotherThreadSimpleAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
     CONV_LE_16( ret.conditions );
 
     if( ret.conditions & COND_CONFIG ) {
-        GetSysConfig();
+        RemoteGetSysConfig();
         CheckMADChange();
     }
     if( ret.conditions & COND_THREAD ) {
@@ -179,7 +179,7 @@ void RemoteRunThdName( dtid_t tid, char *name )
     acc.supp.id = SuppRunThreadId;
     acc.req = REQ_RUN_THREAD_GET_NAME;
     acc.thread = tid;
-    TrapSimpAccess( sizeof( acc ), &acc, MAX_THD_NAME_LEN, name );
+    TrapSimpleAccess( sizeof( acc ), &acc, MAX_THD_NAME_LEN, name );
 }
 
 dtid_t RemoteSetRunThreadWithErr( dtid_t tid, error_handle *errh )
@@ -193,7 +193,7 @@ dtid_t RemoteSetRunThreadWithErr( dtid_t tid, error_handle *errh )
     acc.supp.id = SuppRunThreadId;
     acc.req = REQ_RUN_THREAD_SET;
     acc.thread = tid;
-    TrapSimpAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
+    TrapSimpleAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
     if( ret.err != 0 ) {
         *errh = StashErrCode( ret.err, OP_REMOTE );
         return( 0 );
@@ -220,7 +220,7 @@ void RemoteStopThread( thread_state *thd )
     acc.req = REQ_RUN_THREAD_STOP;
     acc.thread = thd->tid;
 
-    OnAnotherThreadSimpAccess( sizeof( acc ), &acc, 0, NULL );
+    OnAnotherThreadSimpleAccess( sizeof( acc ), &acc, 0, NULL );
 }
 
 void RemoteSignalStopThread( thread_state *thd )
@@ -235,5 +235,5 @@ void RemoteSignalStopThread( thread_state *thd )
     acc.req = REQ_RUN_THREAD_SIGNAL_STOP;
     acc.thread = thd->tid;
 
-    OnAnotherThreadSimpAccess( sizeof( acc ), &acc, 0, NULL );
+    OnAnotherThreadSimpleAccess( sizeof( acc ), &acc, 0, NULL );
 }

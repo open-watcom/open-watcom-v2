@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,6 +35,7 @@
 #include <time.h>
 #include "wio.h"
 #include "stat2.h"
+#include "myprintf.h"
 
 #include "clibext.h"
 
@@ -103,7 +104,7 @@ void FormatFileEntry( direct_ent *file, char *res )
     size1 = strlen( file->name ) + 4;
     if( size1 < NAMEWIDTH + 1 )
         size1 = NAMEWIDTH + 1;
-    tmp = MemAlloc( size1 );
+    tmp = _MemAllocArray( char, size1 );
 
     size = file->fsize;
     MySprintf( tmp, "  %S", file->name );
@@ -173,5 +174,5 @@ void FormatFileEntry( direct_ent *file, char *res )
                (int)tm->tm_hour,
                (int)tm->tm_min );
 
-    MemFree( tmp );
+    _MemFreeArray( tmp );
 } /* FormatFileEntry */

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,7 +34,6 @@
 #include "dwcliuti.h"
 #include "dwabbrev.h"
 #include "dwmem.h"
-#include "dwcnf.h"
 #include "dwloc.h"
 #include "dwinfo.h"
 
@@ -63,9 +62,9 @@ void Info32( dw_client cli, uint_32 value )
 }
 
 
-void InfoLEB128( dw_client cli, dw_sconst value )
+void InfoSLEB128( dw_client cli, dw_sconst value )
 {
-    CLIWriteLEB128( cli, DW_DEBUG_INFO, value );
+    CLIWriteSLEB128( cli, DW_DEBUG_INFO, value );
 }
 
 

@@ -1,6 +1,15 @@
 proj_name = vi
 
-name = vix
+!ifeq sys_windowed 1
+name = viw
+!else
+name = vi
+!endif
+!ifeq host_os win
+!ifeq host_cpu 386
+name = viw32
+!endif
+!endif
 
 !ifndef vi_autodepends
 vi_autodepends = .AUTODEPEND
@@ -10,11 +19,14 @@ vi_trmem = 1
 
 vi_dos_extender = causeway
 
+edbind = bedbind
+
 .EXTENSIONS: .vi .dat
 
 error_dat = ../dat/error.dat
 
 additional_clean = *.rex *.gdh *.gch $(bind_compiled) $(error_dat)
+additional_clean_subdirs = $(bin_subdir)
 
 !include cproj.mif
 !include defrule.mif
@@ -34,18 +46,17 @@ additional_clean = *.rex *.gdh *.gch $(bind_compiled) $(error_dat)
 !include ../mif/link.mif
 !include ../mif/bind.mif
 
+$(bin_subdir) : .EXPLICIT
+    mkdir $@
+
 .dat : $(vi_dir)/dat
 
 #
 # bind vi scripts to final vi executable
 #
-vi.exe: $(error_dat) $(bind_files) $(name).exe $(__MAKEFILES__)
+$(bin_subdir)/$(name).exe: $(bin_subdir) $(error_dat) $(bind_files) $(name).exe $(__MAKEFILES__)
     @set edpath=../dat
     @%make edbind_data
-    copy $(name).exe vi.exe
-!ifdef __WATCOM_TOOLS__
-    copy $(name).sym vi.sym
-!endif
 
 #
 # compile vi scripts to bind to final vi executable
@@ -76,11 +87,11 @@ exetarg_name          = $(name)
 
 $(name).res : $(vi_dir)/res/viw.rc $(__MAKEFILES__) $(vi_autodepends)
     @%make echo_rc
-    $(rc) $(rc_flags) -ad -zk0 $(rc_inc_path) $[@ -fo=$@
+    $(rc) $(rc_ui8_flags) $(rc_flags) -ad $(rc_inc_path) $[@ -fo=$@
 
 ntmanif.res : ../res/ntmanif.rc
     @%make echo_rc
-    $(rc) $(rc_flags) -I"../res" $(inc_dirs_sys_nt) $< -fo=$@
+    $(rc) $(rc_ui8_flags) $(rc_flags) -I"../res" $(inc_dirs_sys_nt) $< -fo=$@
 
 rcstr.grh : rcstrmsg.gh $(__MAKEFILES__)
     @%make echo_awk
@@ -88,7 +99,7 @@ rcstr.grh : rcstrmsg.gh $(__MAKEFILES__)
 
 rcstrmsg.gh : $(vi_dir)/res/vi.msg $(vi_dir)/res/tooltips.msg ../h/langdef.h $(msgfiles) $(__MAKEFILES__)
     @%make echo_cpp
-    $(cpp) $(rc_ui_flags) -o$@ $[@
+    $(cpp) $(rc_ui8_flags) -o$@ $[@
 
 setfs.obj : setfs.c setfs.gch setfs.gdh
 setgen.obj : setgen.c setgen.gch setgen.gdh
@@ -115,6 +126,6 @@ edbind_data : .PROCEDURE .EXPLICIT
     $(noecho)%create edbind.tmp
     @for %i in ($(bind_files:./=)) do @%append edbind.tmp %i
 !ifeq verbose 0
-    @echo edbind edbind.tmp $(name).exe
+    @echo edbind edbind.tmp $(name).exe $@
 !endif
-    $(edbind) -dedbind.tmp -q $(name).exe
+    $(noecho)$(edbind) -dedbind.tmp -q $(name).exe $@

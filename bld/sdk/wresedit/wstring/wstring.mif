@@ -1,3 +1,5 @@
+tree_depth = 5
+
 proj_name = wstring
 
 !ifndef wstring_autodepends

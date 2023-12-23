@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -62,25 +62,34 @@
 #include "feprotos.h"
 
 
-#define WINDOWS_CHEAP  ( ( _IsModel( DLL_RESIDENT_CODE ) &&         \
-               ( CurrProc->state.attr & ROUTINE_LOADS_DS ) )        \
-            || ( _IsTargetModel( CHEAP_WINDOWS )                    \
-               && (CurrProc->prolog_state & (GENERATE_EXPORT | GENERATE_FAT_PROLOG)) == 0 ) )
+#define WORDS_COUNT(size)   (((size) + WORD_SIZE - 1) / WORD_SIZE)
 
-#define DO_WINDOWS_CRAP ( _IsTargetModel( WINDOWS )                 \
+#define WINDOWS_CHEAP  ( \
+    ( _IsModel( CGSW_GEN_DLL_RESIDENT_CODE ) \
+      && (CurrProc->state.attr & ROUTINE_LOADS_DS) ) \
+    || ( _IsTargetModel( CGSW_X86_CHEAP_WINDOWS ) \
+      && (CurrProc->prolog_state & PST_EXPORT) == 0 ) \
+    || ( _IsTargetModel( CGSW_X86_WINDOWS ) \
+      && (CurrProc->prolog_state & (PST_EXPORT | PST_PROLOG_FAT)) == 0 ) )
+
+#define DO_WINDOWS_CRAP ( _IsTargetModel( CGSW_X86_WINDOWS ) \
                && ( !WINDOWS_CHEAP || CurrProc->contains_call ) )
 
-#define DO_BP_CHAIN ( ( (_IsTargetModel( NEED_STACK_FRAME ) || _IsModel( DBG_CV ) ) \
-               && CurrProc->contains_call )                                         \
-             || (CurrProc->prolog_state & GENERATE_FAT_PROLOG) )
+#define DO_BP_CHAIN ( ( ( _IsTargetModel( CGSW_X86_NEED_STACK_FRAME ) \
+                          || (CurrProc->state.attr & ROUTINE_NEEDS_BP_CHAIN) \
+                          || _IsModel( CGSW_GEN_DBG_CV ) ) \
+                        && CurrProc->contains_call ) \
+                      || (CurrProc->prolog_state & PST_PROLOG_FAT) )
 
 #define CHAIN_FRAME ( DO_WINDOWS_CRAP || DO_BP_CHAIN )
 
-#define CHEAP_FRAME ( _IsTargetModel( NEED_STACK_FRAME ) || \
-              _IsntTargetModel( WINDOWS ) || WINDOWS_CHEAP )
+#define CHEAP_FRAME ( _IsTargetModel( CGSW_X86_NEED_STACK_FRAME ) \
+                      || _IsntTargetModel( CGSW_X86_WINDOWS ) \
+                      || WINDOWS_CHEAP )
 
-#define FAR_RET_ON_STACK ( (_RoutineIsLong( CurrProc->state.attr ) ) \
-             && (CurrProc->state.attr & ROUTINE_NEVER_RETURNS) == 0 )
+#define FAR_RET_ON_STACK ( _RoutineIsLong( CurrProc->state.attr ) \
+             && (CurrProc->state.attr & ROUTINE_NEVER_RETURNS_ABORTS) == 0 )
+
 
 #define HW_STACK_CHECK HW_xAX
 #define HW_LOAD_DS     HW_xAX
@@ -105,10 +114,10 @@ hw_reg_set   PushRegs[] = {
 
 
 static  bool    ScanInstructions( void )
-/**********************************/
+/**************************************/
 {
     block       *blk;
-    instruction     *ins;
+    instruction *ins;
     name        *addr;
     bool        sp_constant;
 
@@ -118,20 +127,24 @@ static  bool    ScanInstructions( void )
     CurrProc->contains_call = false;
     sp_constant = true;
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+        for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             if( _OpIsCall( ins->head.opcode ) ) {
                 if( ins->head.opcode == OP_CALL_INDIRECT ) {
                     CurrProc->contains_call = true;
                 } else {
                     addr = ins->operands[CALL_OP_ADDR];
-                    if( addr->n.class != N_MEMORY || addr->m.memory_type != CG_LBL ||
-                      !AskIfRTLabel( addr->v.symbol ) ) {
+                    if( addr->n.class != N_MEMORY
+                      || addr->m.memory_type != CG_LBL
+                      || !AskIfRTLabel( addr->v.symbol ) ) {
                         CurrProc->contains_call = true;
                     }
                 }
                 if( HW_COvlap( ins->zap->reg, HW_xSP ) ) {
                     CurrProc->state.attr |= ROUTINE_NEEDS_PROLOG;
                     sp_constant = false;
+                }
+                if( ins->flags.call_flags & CALL_NEEDS_BP_CHAIN ) {
+                    CurrProc->state.attr |= ROUTINE_NEEDS_BP_CHAIN;
                 }
             }
         }
@@ -179,8 +192,9 @@ static  void    ScanForFDOps( void )
         return;
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         depth = blk->depth;
-        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
-            if( ins->type_class == FD || ins->type_class == FL ) {
+        for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+            if( ins->type_class == FD
+              || ins->type_class == FL ) {
                 for( i = ins->num_operands; i-- > 0; ) {
                     ChkFDOp( ins->operands[i], depth );
                 }
@@ -195,9 +209,9 @@ static  void    ScanForFDOps( void )
 
 
 #if _TARGET & _TARG_80386
-static  block *ScanForLabelReturn( block *blk ) {
-/***********************************************/
-
+static  block *ScanForLabelReturn( block *blk )
+/*********************************************/
+{
     block       *son;
     block_num   i;
 
@@ -220,15 +234,14 @@ static  block *ScanForLabelReturn( block *blk ) {
 
 
 #if _TARGET & _TARG_80386
-static  bool    ScanLabelCalls( void ) {
-/*********************************
-
-    Make sure that all blocks that are called are only called
-    one level deep. Mark output edges of all such blocks as
-    DOWN_ONE_CALL. This is so we can adjust our x[esp] offsets
-    accordingly.
-*/
-
+static  bool    ScanLabelCalls( void )
+/*************************************
+ * Make sure that all blocks that are called are only called
+ * one level deep. Mark output edges of all such blocks as
+ * DOWN_ONE_CALL. This is so we can adjust our x[esp] offsets
+ * accordingly.
+ */
+{
     block   *blk;
 
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
@@ -243,24 +256,25 @@ static  bool    ScanLabelCalls( void ) {
 #endif
 
 
-static  void    AdjustPushLocals( void ) {
-/**********************************/
-
+static  void    AdjustPushLocals( void )
+/**************************************/
+{
     instruction *ins;
 
-    for( ins = HeadBlock->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+    for( ins = HeadBlock->ins.head.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
         if( DoesSomething( ins ) )
             break;
-        if( ins->head.opcode == OP_MOV && ins->head.state == OPERANDS_NEED_WORK ) {
+        if( ins->head.opcode == OP_MOV
+          && ins->head.state == OPERANDS_NEED_WORK ) {
             QuickSave( ins->operands[0]->r.reg, OP_PUSH );
             AdjustPushLocal( ins->result );
         }
     }
 }
 
-static  bool    NeedBPProlog( void ) {
-/******************************/
-
+static  bool    NeedBPProlog( void )
+/**********************************/
+{
     if( CurrProc->parms.size != 0 )
         return( true );
     if( CurrProc->locals.size != 0 )
@@ -284,35 +298,36 @@ static  bool    NeedBPProlog( void ) {
 }
 
 
-static void FindIfExported( void ) {
-/****************************/
-
+static void FindIfExported( void )
+/********************************/
+{
     cg_sym_handle sym;
 
     sym = AskForLblSym( CurrProc->label );
     if( sym == NULL )
         return;
     if( SymIsExported( sym ) ) {
-        CurrProc->prolog_state |= GENERATE_EXPORT;
+        CurrProc->prolog_state |= PST_EXPORT;
     }
 }
 
 
 static  bool    NeedStackCheck( void )
-/******************************/
+/************************************/
 {
     return( FEStackChk( AskForLblSym( CurrProc->label ) ) != 0 );
 }
 
 
-static void DoStackCheck( void ) {
-/**************************/
-
-    if( CurrProc->prolog_state & ( GENERATE_THUNK_PROLOG | GENERATE_RDOSDEV_PROLOG ) )
+static void DoStackCheck( void )
+/******************************/
+{
+    if( CurrProc->prolog_state & (PST_PROLOG_THUNK | PST_PROLOG_RDOSDEV) )
         return;
 #if _TARGET & _TARG_80386
-    if( CurrProc->prolog_state & GENERATE_GROW_STACK ) {
-        if( BlockByBlock || CurrProc->locals.size >= 4 * 1024 ) {
+    if( CurrProc->prolog_state & PST_GROW_STACK ) {
+        if( BlockByBlock
+          || CurrProc->locals.size >= 4096 ) {
             GenUnkPush( &CurrProc->targ.stack_check );
             DoRTCall( RT_GROW, true );
         }
@@ -361,7 +376,7 @@ static  void    EmitNameInCode( void )
 static  int ProEpiDataSize( void )
 /********************************/
 {
-    return( _RoundUp( (int)(pointer_uint)FEAuxInfo( NULL, PROEPI_DATA_SIZE ), WORD_SIZE ) );
+    return( _RoundUp( (int)(pointer_uint)FEAuxInfo( NULL, FEINF_PROEPI_DATA_SIZE ), WORD_SIZE ) );
 }
 
 
@@ -370,7 +385,7 @@ static  void    PrologHook( void )
 {
     int      size;
 
-    if( (CurrProc->prolog_state & GENERATE_PROLOG_HOOKS) == 0 )
+    if( (CurrProc->prolog_state & PST_PROLOG_HOOKS) == 0 )
         return;
     size = ProEpiDataSize();
     if( size != 0 ) {
@@ -391,7 +406,7 @@ static  void    EpilogHook( void )
 {
     int      size;
 
-    if( CurrProc->prolog_state & GENERATE_EPILOG_HOOKS ) {
+    if( CurrProc->prolog_state & PST_EPILOG_HOOKS ) {
         DoRTCall( RT_EPIHOOK, false );
     }
     size = ProEpiDataSize();
@@ -402,14 +417,13 @@ static  void    EpilogHook( void )
 
 
 static  void    DoLoadDS( void )
+/******************************/
 {
-#if _TARGET & _TARG_8086
-    if( _IsntTargetModel( BIG_CODE ) && _RoutineIsInterrupt( CurrProc->state.attr ) ) {
-#else
-    if( _IsntTargetModel( LOAD_DS_DIRECTLY ) ) {
-#endif
+#if _TARGET & _TARG_80386
+    if( _IsntTargetModel( CGSW_X86_LOAD_DS_DIRECTLY ) ) {
         DoRTCall( RT_GETDS, false );
     } else {
+#endif
         if( HW_COvlap( CurrProc->state.parm.used, HW_LOAD_DS ) ) {
             QuickSave( HW_LOAD_DS, OP_PUSH );
         }
@@ -417,7 +431,9 @@ static  void    DoLoadDS( void )
         if( HW_COvlap( CurrProc->state.parm.used, HW_LOAD_DS ) ) {
             QuickSave( HW_LOAD_DS, OP_POP );
         }
+#if _TARGET & _TARG_80386
     }
+#endif
 }
 
 
@@ -465,35 +481,38 @@ static  void    AllocStack( void )
 {
     type_length     size;
 
-    /* keep stack aligned */
+    /*
+     * keep stack aligned
+     */
     size = _RoundUp( CurrProc->locals.size, WORD_SIZE );
     CurrProc->locals.size = size;
     if( BlockByBlock ) {
         GenUnkSub( HW_xSP, &CurrProc->targ.prolog_loc );
-        if( CurrProc->prolog_state & GENERATE_TOUCH_STACK ) {
+        if( CurrProc->prolog_state & PST_TOUCH_STACK ) {
             GenTouchStack( true );
         }
-    } else if( size <= 2 * WORD_SIZE && OptForSize > 50 ) {
+    } else if( size <= 2 * WORD_SIZE
+      && OptForSize > 50 ) {
         while( size > 0 ) {
             QuickSave( HW_xAX, OP_PUSH );
             size -= WORD_SIZE;
         }
     } else if( size != 0 ) {
         GenRegSub( HW_xSP, size );
-        if( CurrProc->prolog_state & GENERATE_TOUCH_STACK ) {
+        if( CurrProc->prolog_state & PST_TOUCH_STACK ) {
             GenTouchStack( false );
         }
     }
     if( CurrProc->targ.sp_align ) {
         GenRegAnd( HW_xSP, -( 2 * WORD_SIZE ) );
-        CurrProc->prolog_state |= GENERATE_RESET_SP;
+        CurrProc->prolog_state |= PST_RESET_SP;
     }
 }
 
 
 static  int PushAll( void )
-/*************************/
-/* Save all registers and establish somewhat sane environment.
+/**************************
+ * Save all registers and establish somewhat sane environment.
  * Used for __interrupt routines only.
  */
 {
@@ -523,21 +542,25 @@ static  int PushAll( void )
     Gcld();
     if( HW_COvlap( CurrProc->state.unalterable, HW_DS ) ) {
         DoLoadDS();
-        // If ES is also unalterable, copy DS to ES; else things
-        // like memcpy() are likely to blow up
+        /*
+         * If ES is also unalterable, copy DS to ES; else things
+         * like memcpy() are likely to blow up
+         */
         if( HW_COvlap( CurrProc->state.unalterable, HW_ES ) ) {
             QuickSave( HW_DS, OP_PUSH );
             QuickSave( HW_ES, OP_POP );
         }
     }
-    /* 8 general purpose registers + 4 segment registers */
+    /*
+     * 8 general purpose registers + 4 segment registers
+     */
     return( 12 * WORD_SIZE );
 }
 
 
-static  void    PopAll( void ) {
-/************************/
-
+static  void    PopAll( void )
+/****************************/
+{
     if( CurrProc->locals.size != 0 ) {
         GenRegMove( HW_xBP, HW_xSP );
     }
@@ -570,37 +593,43 @@ static  void    DoEnter( level_depth level )
 {
     type_length size;
 
-    /* keep stack aligned */
+    /*
+     * keep stack aligned
+     */
     size = _RoundUp( CurrProc->locals.size, WORD_SIZE );
     CurrProc->locals.size = size;
 
     CurrProc->parms.base += WORD_SIZE;
     if( BlockByBlock ) {
         GenUnkEnter( &CurrProc->targ.prolog_loc, level );
-        if( CurrProc->prolog_state & GENERATE_TOUCH_STACK ) {
+        if( CurrProc->prolog_state & PST_TOUCH_STACK ) {
             GenTouchStack( true );
         }
     } else {
         GenEnter( size, level );
-        if( size != 0 && ( CurrProc->prolog_state & GENERATE_TOUCH_STACK ) ) {
+        if( size != 0
+          && (CurrProc->prolog_state & PST_TOUCH_STACK) ) {
             GenTouchStack( false );
         }
     }
 }
 
 
-static  void    Enter( void ) {
-/***********************/
-
+static  void    Enter( void )
+/***************************/
+{
     level_depth lex_level;
     int         i;
 
     lex_level = CurrProc->lex_level;
 #if _TARGET & _TARG_80386
-    if( !CurrProc->targ.sp_frame && _CPULevel( CPU_186 ) && CurrProc->locals.size < 65536
+    if( !CurrProc->targ.sp_frame
+      && _CPULevel( CPU_186 )
+      && CurrProc->locals.size < 65536
       && ( lex_level > 0 || ( CurrProc->locals.size != 0 && OptForSize > 50 ) ) ) {
 #else
-    if( !CurrProc->targ.sp_frame && _CPULevel( CPU_186 )
+    if( !CurrProc->targ.sp_frame
+      && _CPULevel( CPU_186 )
       && ( lex_level > 0 || ( CurrProc->locals.size != 0 && OptForSize > 50 ) ) ) {
 #endif
         DoEnter( lex_level );
@@ -608,7 +637,8 @@ static  void    Enter( void ) {
         CurrProc->state.attr |= ROUTINE_NEEDS_PROLOG;
     } else {
         if( NeedBPProlog() ) {
-            if( !CurrProc->targ.sp_frame || CurrProc->targ.sp_align ) {
+            if( !CurrProc->targ.sp_frame
+              || CurrProc->targ.sp_align ) {
                 HW_CTurnOn( CurrProc->state.used, HW_xBP );
                 CurrProc->parms.base += WORD_SIZE;
                 QuickSave( HW_xBP, OP_PUSH );
@@ -632,9 +662,9 @@ static  void    Enter( void ) {
 }
 
 
-static  void    CalcUsedRegs( void ) {
-/******************************/
-
+static  void    CalcUsedRegs( void )
+/**********************************/
+{
     block   *blk;
     instruction *ins;
     name    *result;
@@ -642,21 +672,25 @@ static  void    CalcUsedRegs( void ) {
 
     HW_CAsgn( used, HW_EMPTY );
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+        for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             result = ins->result;
-            if( result != NULL && result->n.class == N_REGISTER ) {
+            if( result != NULL
+              && result->n.class == N_REGISTER ) {
                 HW_TurnOn( used, result->r.reg );
             }
-            /* place holder for big label doesn't really zap anything */
+            /*
+             * place holder for big label doesn't really zap anything
+             */
             if( ins->head.opcode != OP_NOP ) {
                 HW_TurnOn( used, ins->zap->reg );
                 if( HW_COvlap( ins->zap->reg, HW_xSP ) ) {
-                    CurrProc->prolog_state |= GENERATE_RESET_SP;
+                    CurrProc->prolog_state |= PST_RESET_SP;
                 }
             }
         }
     }
-    if( !CurrProc->targ.sp_frame || CurrProc->targ.sp_align ) {
+    if( !CurrProc->targ.sp_frame
+      || CurrProc->targ.sp_align ) {
         HW_CTurnOff( used, HW_xBP );
     }
     HW_TurnOn( CurrProc->state.used, used );
@@ -670,7 +704,9 @@ static  int Push( hw_reg_set to_push )
     int         i;
 
     size = 0;
-    if( _IsntModel( NO_OPTIMIZATION ) && CurrProc->targ.sp_frame && !CurrProc->targ.sp_align ) {
+    if( _IsntModel( CGSW_GEN_NO_OPTIMIZATION )
+      && CurrProc->targ.sp_frame
+      && !CurrProc->targ.sp_align ) {
         FlowSave( &to_push );
     }
     for( i = 0; i < sizeof( PushRegs ) / sizeof( PushRegs[0] ) - 1; i++ ) {
@@ -690,7 +726,9 @@ static  void        Pop( hw_reg_set to_pop )
 {
     int         i;
 
-    if( _IsntModel( NO_OPTIMIZATION ) && CurrProc->targ.sp_frame && !CurrProc->targ.sp_align ) {
+    if( _IsntModel( CGSW_GEN_NO_OPTIMIZATION )
+      && CurrProc->targ.sp_frame
+      && !CurrProc->targ.sp_align ) {
         FlowRestore( &to_pop );
     }
     for( i = sizeof( PushRegs ) / sizeof( PushRegs[0] ) - 1; i-- > 0 ; ) {
@@ -705,8 +743,8 @@ static  void        Pop( hw_reg_set to_pop )
 
 static void    GenLeaSP( int offset )
 /************************************
-    LEA         [e]sp,[[e]bp+offset]
-*/
+ * LEA         [e]sp,[[e]bp+offset]
+ */
 {
     _Code;
     LayOpword( M_LEA );
@@ -731,7 +769,7 @@ static  void    DoEpilog( void )
         HW_CTurnOff( to_pop, HW_FLTS );
         if( CHAIN_FRAME ) {
             if( (CurrProc->state.attr & ROUTINE_NEEDS_PROLOG)
-             || CurrProc->locals.size+CurrProc->targ.push_local_size != 0 ) {
+              || ( CurrProc->locals.size + CurrProc->targ.push_local_size ) != 0 ) {
                 if( CurrProc->targ.base_adjust == 0 ) {
                     GenRegMove( HW_xBP, HW_xSP );
                 } else {
@@ -742,8 +780,11 @@ static  void    DoEpilog( void )
         } else {
             if( CurrProc->state.attr & ROUTINE_NEEDS_PROLOG ) {
                 size = CurrProc->locals.size + CurrProc->targ.push_local_size;
-                if( (CurrProc->prolog_state & GENERATE_RESET_SP) || size != 0 ) {
-                    /* sp is not pointing at saved registers already */
+                if( (CurrProc->prolog_state & PST_RESET_SP)
+                  || size != 0 ) {
+                    /*
+                     * sp is not pointing at saved registers already
+                     */
                     if( CurrProc->targ.sp_frame ) {
                         if( CurrProc->targ.sp_align ) {
                             GenRegMove( HW_xBP, HW_xSP );
@@ -753,7 +794,8 @@ static  void    DoEpilog( void )
                         }
                     } else if( CurrProc->targ.base_adjust != 0 ) {
                         GenLeaSP( -CurrProc->targ.base_adjust );
-                    } else if( _CPULevel( CPU_186 ) && (!_CPULevel( CPU_486 ) || OptForSize > 50) ) {
+                    } else if( _CPULevel( CPU_186 )
+                      && (!_CPULevel( CPU_486 ) || OptForSize > 50) ) {
                         GenLeave();
                         HW_CTurnOff( to_pop, HW_xBP );
                     } else {
@@ -778,28 +820,29 @@ static  void    DoEpilog( void )
                 }
             }
         }
-        if( CurrProc->prolog_state & GENERATE_RDOSDEV_PROLOG ) {
+        if( CurrProc->prolog_state & PST_PROLOG_RDOSDEV ) {
             GenRdosdevEpilog();
         }
     }
 
-    is_long = _RoutineIsLong( CurrProc->state.attr ) ||
-        _RoutineIsFar16( CurrProc->state.attr );
+    is_long = ( _RoutineIsLong( CurrProc->state.attr )
+                || _RoutineIsFar16( CurrProc->state.attr ) );
 #if _TARGET & _TARG_80386
-    if( CurrProc->prolog_state & GENERATE_THUNK_PROLOG ) {
+    if( CurrProc->prolog_state & PST_PROLOG_THUNK ) {
         QuickSave( HW_xSP, OP_POP );
     }
-    if( _IsTargetModel( NEW_P5_PROFILING | P5_PROFILING ) ) {
+    if( _IsTargetModel( CGSW_X86_NEW_P5_PROFILING )
+      || _IsTargetModel( CGSW_X86_P5_PROFILING ) ) {
         GenP5ProfilingEpilog( CurrProc->label );
     }
 #endif
 
     if( _RoutineIsInterrupt( CurrProc->state.attr ) ) {
-        GenReturn( 0, false, true );
+        GenIRET();
     } else if( CurrProc->state.attr & ROUTINE_REMOVES_PARMS ) {
-        GenReturn( CurrProc->parms.size, is_long, false );
+        GenReturn( CurrProc->parms.size, is_long );
     } else {
-        GenReturn( 0, is_long, false );
+        GenReturn( 0, is_long );
     }
 }
 
@@ -816,11 +859,12 @@ void    AddCacheRegs( void )
 #if _TARGET & _TARG_80386
     if( CurrProc->targ.never_sp_frame )
         return;
-    if( _IsntModel( MEMORY_LOW_FAILS ) )
+    if( _IsntModel( CGSW_GEN_MEMORY_LOW_FAILS ) )
         return;
     if( OptForSize > 50 )
         return;
-    if( _IsTargetModel( FLOATING_DS | FLOATING_SS ) )
+    if( _IsTargetModel( CGSW_X86_FLOATING_DS )
+      || _IsTargetModel( CGSW_X86_FLOATING_SS ) )
         return;
     if( !ScanInstructions() )
         return;
@@ -838,8 +882,9 @@ void    AddCacheRegs( void )
     if( CurrProc->targ.has_fd_temps ) {
         CurrProc->targ.sp_frame = true;
         CurrProc->targ.sp_align = true;
-    } else if( !DO_BP_CHAIN && _IsntTargetModel( WINDOWS ) &&
-            !_RoutineIsInterrupt( CurrProc->state.attr ) ) {
+    } else if( !DO_BP_CHAIN
+      && _IsntTargetModel( CGSW_X86_WINDOWS )
+      && !_RoutineIsInterrupt( CurrProc->state.attr ) ) {
         /*
          * We cannot make EBP available under Windows because the SS
          * selector might not cover the data segment and so we cannot use
@@ -855,7 +900,26 @@ void    AddCacheRegs( void )
 void DoRTCall( rt_class rtindex, bool pop )
 /*****************************************/
 {
-    DoCall( RTLabel( rtindex ), true, _IsTargetModel( BIG_CODE ), pop );
+    DoCall( RTLabel( rtindex ), true, _IsTargetModel( CGSW_X86_BIG_CODE ), pop );
+}
+
+static unsigned returnAddressStackSize( void )
+/********************************************/
+{
+    unsigned    size;
+
+    if( _RoutineIsInterrupt( CurrProc->state.attr ) ) {
+        size = 0;
+    } else if( CurrProc->state.attr & ROUTINE_NEVER_RETURNS_ABORTS ) {
+        size = 0;
+    } else if( _RoutineIsLong( CurrProc->state.attr ) ) {
+        size = 2 * WORD_SIZE;
+    } else if( _RoutineIsFar16( CurrProc->state.attr ) ) {
+        size = 2 * WORD_SIZE;
+    } else {
+        size = WORD_SIZE;
+    }
+    return( size );
 }
 
 void    GenProlog( void )
@@ -865,22 +929,22 @@ void    GenProlog( void )
     hw_reg_set  to_push;
     unsigned    ret_size;
     pointer     label;
-    pointer     origlabel; // Original label for generated __far16 thunks
+    pointer     origlabel;  /* Original label for generated __far16 thunks */
     fe_attr     attr;
 
-    ScanInstructions();       /* Do These 2 calls before using DO_WINDOWS_CRAP! */
+    ScanInstructions();     /* Do These 2 calls before using DO_WINDOWS_CRAP! */
     FindIfExported();
     old_segid = SetOP( AskCodeSeg() );
 
-    if( CurrProc->prolog_state & GENERATE_FUNCTION_NAME ) {
+    if( CurrProc->prolog_state & PST_FUNCTION_NAME ) {
         EmitNameInCode();
     }
 
-    if( _IsModel( DBG_NUMBERS ) ) {
-        CodeLineNumber( HeadBlock->ins.hd.line_num, false );
+    if( _IsModel( CGSW_GEN_DBG_NUMBERS ) ) {
+        CodeLineNumber( HeadBlock->ins.head.line_num, false );
     }
 
-    if( _IsModel( DBG_LOCALS ) ){  // d1+ or d2
+    if( _IsModel( CGSW_GEN_DBG_LOCALS ) ) { // d1+ or d2
         EmitRtnBeg();
     }
     if( CurrProc->state.attr & ROUTINE_WANTS_DEBUGGING ) {
@@ -896,7 +960,7 @@ void    GenProlog( void )
     if( _RoutineIsFar16( CurrProc->state.attr ) ) {
         label = GenFar16Thunk( CurrProc->label, CurrProc->parms.size,
                     CurrProc->state.attr & ROUTINE_REMOVES_PARMS );
-        // CurrProc->label = label; - ugly mess if following are combined
+//        CurrProc->label = label; /* ugly mess if following are combined */
     }
 #endif
 
@@ -904,16 +968,17 @@ void    GenProlog( void )
 
     attr = FEAttr( AskForLblSym( origlabel ) );
 
-    if( CurrProc->prolog_state & GENERATE_RDOSDEV_PROLOG ) {
+    if( CurrProc->prolog_state & PST_PROLOG_RDOSDEV ) {
         GenRdosdevProlog();
     }
 
 #if _TARGET & _TARG_80386
     if( (attr & FE_NAKED) == 0 ) {
-        if( _IsTargetModel( NEW_P5_PROFILING | P5_PROFILING ) ) {
+        if( _IsTargetModel( CGSW_X86_NEW_P5_PROFILING )
+          || _IsTargetModel( CGSW_X86_P5_PROFILING ) ) {
             GenP5ProfilingProlog( label );
         }
-        if( CurrProc->prolog_state & GENERATE_THUNK_PROLOG ) {
+        if( CurrProc->prolog_state & PST_PROLOG_THUNK ) {
             QuickSave( HW_xSP, OP_PUSH );
             GenPushC( CurrProc->parms.size );
             GenUnkPush( &CurrProc->targ.stack_check );
@@ -927,28 +992,21 @@ void    GenProlog( void )
     }
 #endif
 
-    if( _RoutineIsInterrupt( CurrProc->state.attr ) ||
-        (CurrProc->state.attr & ROUTINE_NEVER_RETURNS) ) {
-        ret_size = 0;
-    } else if( _RoutineIsLong( CurrProc->state.attr ) ) {
-        ret_size = 2 * WORD_SIZE;
-    } else if( _RoutineIsFar16( CurrProc->state.attr ) ) {
-        ret_size = 2 * WORD_SIZE;
-    } else {
-        ret_size = WORD_SIZE;
-    }
-
+    ret_size = returnAddressStackSize();
     CurrProc->parms.base += ret_size;
     CalcUsedRegs();
 
     to_push = SaveRegs();
     HW_CTurnOff( to_push, HW_FLTS );
-    if( !CurrProc->targ.sp_frame || CurrProc->targ.sp_align ) {
+    if( !CurrProc->targ.sp_frame
+      || CurrProc->targ.sp_align ) {
         HW_CTurnOff( to_push, HW_xBP );
     }
 
     if( attr & FE_NAKED ) {
-        // don't do anything - empty prologue
+        /*
+         * don't do anything - empty prologue
+         */
     } else if( _RoutineIsInterrupt( CurrProc->state.attr ) ) {
         ret_size = -PushAll();
         CurrProc->targ.base_adjust = 0;
@@ -964,12 +1022,14 @@ void    GenProlog( void )
                         GenCypWindowsProlog();
                     } else {
 #if _TARGET & _TARG_8086
-                        // Windows prologs zap AX, so warn idiot user if we
-                        // generate one for a routine in which AX is live
-                        // upon entry to routine, or unalterable.
-                        if( HW_COvlap( CurrProc->state.unalterable, HW_xAX ) ||
-                            HW_COvlap( CurrProc->state.parm.used, HW_xAX ) ) {
-                            FEMessage( MSG_ERROR, "exported routine with AX live on entry" );
+                        /*
+                         * Windows prologs zap AX, so warn idiot user if we
+                         * generate one for a routine in which AX is live
+                         * upon entry to routine, or unalterable.
+                         */
+                        if( HW_COvlap( CurrProc->state.unalterable, HW_xAX )
+                          || HW_COvlap( CurrProc->state.parm.used, HW_xAX ) ) {
+                            FEMessage( FEMSG_ERROR, "exported routine with AX live on entry" );
                         }
 #endif
                         GenWindowsProlog();
@@ -990,12 +1050,13 @@ void    GenProlog( void )
         } else {
             DoStackCheck();
             CurrProc->parms.base += LoadDS();
-            if( (CurrProc->state.attr & ROUTINE_NEVER_RETURNS) == 0 ) {
+            if( (CurrProc->state.attr & ROUTINE_NEVER_RETURNS_ABORTS) == 0 ) {
                 CurrProc->parms.base += Push( to_push );
             }
             Enter();
             AdjustPushLocals();
-            if( _IsModel( NO_OPTIMIZATION ) || CurrProc->targ.sp_frame ) {
+            if( _IsModel( CGSW_GEN_NO_OPTIMIZATION )
+              || CurrProc->targ.sp_frame ) {
                 CurrProc->targ.base_adjust = 0;
             } else {
                 CurrProc->targ.base_adjust = AdjustBase();
@@ -1007,16 +1068,16 @@ void    GenProlog( void )
         RelocParms();
         MoveParms();
     }
-    CurrProc->prolog_state |= GENERATED_PROLOG;
+    CurrProc->prolog_state |= PST_PROLOG_GENERATED;
 
-    if( _IsModel( DBG_LOCALS ) ){  // d1+ or d2
+    if( _IsModel( CGSW_GEN_DBG_LOCALS ) ) { // d1+ or d2
         DbgRetOffset( CurrProc->parms.base - CurrProc->targ.base_adjust - ret_size );
         EmitProEnd();
     }
     SetOP( old_segid );
 
-    if( CurrProc->prolog_state & GENERATE_EXPORT ) {
-        OutDLLExport( ( CurrProc->parms.size + WORD_SIZE - 1 ) / WORD_SIZE, AskForLblSym( CurrProc->label ) );
+    if( CurrProc->prolog_state & PST_EXPORT ) {
+        OutDLLExport( WORDS_COUNT( CurrProc->parms.size ), AskForLblSym( CurrProc->label ) );
     }
 }
 
@@ -1093,7 +1154,8 @@ bool    BaseIsSP( name *op )
 {
     if( !CurrProc->targ.sp_frame )
         return( false );
-    if( CurrProc->targ.sp_align && ( op->t.temp_flags & STACK_PARM ) ) {
+    if( CurrProc->targ.sp_align
+      && (op->t.temp_flags & STACK_PARM) ) {
         return( false );
     }
     return( true );
@@ -1131,12 +1193,12 @@ void    GenEpilog( void )
          - CurrProc->targ.push_local_size;
     PatchBigLabels( stack );
 
-    if( _IsModel( DBG_LOCALS ) ){  // d1+ or d2
+    if( _IsModel( CGSW_GEN_DBG_LOCALS ) ) { // d1+ or d2
         EmitEpiBeg();
     }
 
     if( (attr & FE_NAKED) == 0 ) {
-        if( (CurrProc->state.attr & ROUTINE_NEVER_RETURNS) == 0 ) {
+        if( (CurrProc->state.attr & ROUTINE_NEVER_RETURNS_ABORTS) == 0 ) {
             DoEpilog();
         }
 
@@ -1155,8 +1217,8 @@ void    GenEpilog( void )
     }
 
 
-    CurrProc->prolog_state |= GENERATED_EPILOG;
-    if( _IsModel( DBG_LOCALS ) ) {  // d1+ or d2
+    CurrProc->prolog_state |= PST_EPILOG_GENERATED;
+    if( _IsModel( CGSW_GEN_DBG_LOCALS ) ) {  // d1+ or d2
         EmitRtnEnd();
     }
 }
@@ -1177,22 +1239,12 @@ int ParmsAtPrologue( void )
     parms_off_sp= 0;
 
 #if _TARGET & _TARG_80386
-    if( CurrProc->prolog_state & GENERATE_THUNK_PROLOG ) {
+    if( CurrProc->prolog_state & PST_PROLOG_THUNK ) {
         parms_off_sp += WORD_SIZE;
     }
 #endif
 
-    if( _RoutineIsInterrupt( CurrProc->state.attr ) ||
-       ( CurrProc->state.attr & ROUTINE_NEVER_RETURNS ) ) {
-        ret_size = 0;
-    } else if( _RoutineIsLong( CurrProc->state.attr ) ) {
-        ret_size = 2 * WORD_SIZE;
-    } else if( _RoutineIsFar16( CurrProc->state.attr ) ) {
-        ret_size = 2 * WORD_SIZE;
-    } else {
-        ret_size = WORD_SIZE;
-    }
-
+    ret_size = returnAddressStackSize();
     parms_off_sp += ret_size;
     return( parms_off_sp );
 }

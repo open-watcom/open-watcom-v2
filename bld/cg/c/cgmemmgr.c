@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -73,11 +73,11 @@ essentially no worst case performance scenario.
     #include <sys/osinfo.h>
     #include <sys/seginfo.h>
 #endif
+#include "roundmac.h"
 #include "_cg.h"
 #include "utils.h"
 #include "onexit.h"
 #include "memsydep.h"
-#include "envvar.h"
 #include "feprotos.h"
 
 #ifdef __DOS__
@@ -87,14 +87,31 @@ extern short    __psp;
 
 #endif
 
-typedef pointer_uint    tag;
+#define ALLOCATED       1
 
-#define _1K             1024L
-#define _4K             (4 * _1K)
-#define _64K            (64 * _1K)
-#define _1M             (_1K * _1K)
-#define _4M             (4 * _1M)
-#define _16M            (16 * _1M)
+#define MAX_SIZE        14  /* 16384 (2 ^ 14) */
+#define MIN_SIZE        4   /* 16    (2 ^ 4) */
+#define MAX_CLASS       (MAX_SIZE - MIN_SIZE)
+
+#if defined( LONG_IS_64BITS ) || defined( _WIN64 )
+#define MEM_WORD_SIZE   16  /* Needed to keep alignment. */
+#define MEMPTR_SIZE     8
+#define TAG_SIZE        8
+#else
+#define MEM_WORD_SIZE   4
+#define MEMPTR_SIZE     4
+#define TAG_SIZE        4
+#endif
+
+#if (1 << MIN_SIZE) < (TAG_SIZE + MEMPTR_SIZE)
+    #error "Free list will not fit into freed chunk"
+#endif
+
+#define MIN_ALLOC       _RoundUp( sizeof( frl ), MEM_WORD_SIZE )
+#define MAX_ALLOC       (1 << MAX_SIZE)
+#define _WALKTAG( free ) ((frl *)((char *)(free) + (free)->length ))
+
+typedef pointer_uint    tag;
 
 static  pointer     MemFromSys( size_t );
 
@@ -106,17 +123,6 @@ static pointer_uint PeakAlloc    = 0;
 #endif
 
 
-#define ALLOCATED       1
-
-#define MAX_SIZE        14 /* 16384 */
-#define MIN_SIZE        4  /* 16 */
-#if defined( LONG_IS_64BITS ) || defined( _WIN64 )
-#define MEM_WORD_SIZE   8  /* Needed to keep alignment. */
-#else
-#define MEM_WORD_SIZE   4
-#endif
-#define MAX_CLASS       (MAX_SIZE - MIN_SIZE)
-
 /* Free list structure - length holds the size of memory block, which
  * is necessary for freeing memory. Note that the length field is set
  * when the block is first allocated and never changes afterwards.
@@ -127,10 +133,6 @@ typedef struct frl {
     tag         length;
     struct frl  *link;
 } frl;
-
-#if (1 << MIN_SIZE) < (2 * MEM_WORD_SIZE)
-    #error "Free list will not fit into freed chunk"
-#endif
 
 /* Memory block structure - memory is allocated from the OS in large
  * chunks (perhaps 64K, perhaps more or less than that). If there is
@@ -148,12 +150,6 @@ typedef struct blk_hdr {
     tag             size;   /* This must be the last member! */
 } blk_hdr;
 
-#define TAG_SIZE        sizeof( tag )
-
-#define MIN_ALLOC _RoundUp( sizeof( frl ), MEM_WORD_SIZE )
-#define MAX_ALLOC (1 << MAX_SIZE)
-#define _WALKTAG( free ) ((frl *)((char *)(free) + (free)->length ))
-
 static mem_blk  *_Blks;
 static frl      *_FreeList[MAX_CLASS + 1];
 static unsigned _ClassSizes[MAX_CLASS + 1];
@@ -169,8 +165,8 @@ static  void    NotEnoughMem( void )
 #endif
 
 
-static int myatoi( char *p )
-/**************************/
+static int myatoi( const char *p )
+/********************************/
 {
     int         i;
 
@@ -192,18 +188,21 @@ static  void    CalcMemSize( void )
     pointer_uint    size_requested;
     pointer_uint    memory_available;
     char            buff[80];
+    const char      *envvar;
 
     Initialized = 2;
     size_requested = 0;
     size_queried = false;
     max_size_queried = false;
-    if( GetEnvVar( "WCGMEMORY", buff, 9 ) ) {
-        if( buff[0] == '?' && buff[1] == '\0' ) {
+
+    envvar = FEGetEnv( "WCGMEMORY" );
+    if( envvar != NULL ) {
+        if( envvar[0] == '?' && envvar[1] == '\0' ) {
             max_size_queried = true;
-        } else if( buff[0] == '#' && buff[1] == '\0' ) {
+        } else if( envvar[0] == '#' && envvar[1] == '\0' ) {
             size_queried = true;
         } else {
-            size_requested = myatoi( buff ) * _1K;
+            size_requested = myatoi( envvar ) * _1K;
         }
     }
 #if defined( __DOS__ )
@@ -293,8 +292,8 @@ static  void    CalcMemSize( void )
     memory_available = _16M;
 #endif
     if( max_size_queried || size_queried ) {
-        sprintf( buff, "Maximum WCGMEMORY=%d\n", (int)(memory_available/_1K) );
-        FEMessage( MSG_INFO, buff );
+        sprintf( buff, "Maximum WCGMEMORY=%d\n", (int)( memory_available / _1K ) );
+        FEMessage( FEMSG_INFO, buff );
     }
 }
 
@@ -359,7 +358,9 @@ static pointer  GetFromFrl( size_t amount, int frl_class )
 
     free = _FreeList[frl_class];
     if( free != NULL ) {
+#ifdef DEVBUILD
         assert( (free->length & ALLOCATED) == 0 );
+#endif
         free->length |= ALLOCATED;
         _FreeList[frl_class] = free->link;
         return( free );
@@ -374,15 +375,16 @@ static pointer  GetFromBlk( size_t amount )
     mem_blk     *block;
     tag         *alloc;
 
-    for( block = _Blks; block && (block->free < amount); ) {
-        block = block->next;
-    }
-    if( block ) {
-        alloc = (tag *)((char *)block + block->size - block->free);
-        assert( *alloc == 0 );
-        *alloc = amount | ALLOCATED;
-        block->free -= amount;
-        return( ++alloc );
+    for( block = _Blks; block != NULL; block = block->next ) {
+        if( block->free >= amount ) {
+            alloc = (tag *)( (char *)block + block->size - block->free );
+#ifdef DEVBUILD
+            assert( *alloc == 0 );
+#endif
+            *alloc = amount | ALLOCATED;
+            block->free -= amount;
+            return( ++alloc );
+        }
     }
     if( MemFromSys( 0 ) == NULL)    // Grab one empty block
         return( NULL );
@@ -425,7 +427,9 @@ void     MemFree( pointer p )
     tag     length;
 
     free   = (frl *)( (char *)p - TAG_SIZE );
+#ifdef DEVBUILD
     assert( free->length & ALLOCATED );
+#endif
     free->length &= ~ALLOCATED;
     length = free->length;
     if( length > MAX_ALLOC ) {   // This was a full block
@@ -436,7 +440,7 @@ void     MemFree( pointer p )
         blk    = header->block;
         blk->free += header->size + sizeof( blk_hdr );
         blk->size += header->size + sizeof( blk_hdr );
-#ifndef NDEBUG
+#ifdef DEVBUILD
         // Must zero the memory for later checks in GetFromBlk
         memset( header, 0, length + sizeof( blk_hdr ) );
 #endif
@@ -489,10 +493,10 @@ static  pointer MemFromSys( size_t amount )
 
     // round up size to multiple of 64K
     size = _RoundUp( amount + sizeof( mem_blk ) + sizeof( blk_hdr ), _64K );
-#ifdef NDEBUG
-    ptr = malloc( size );
-#else
+#ifdef DEVBUILD
     ptr = calloc( 1, size );   // Need to clear memory for later assert() calls
+#else
+    ptr = malloc( size );
 #endif
     if( ptr != NULL ) {
         AllocSize += size;
@@ -548,7 +552,7 @@ void MemFini( void )
         char    buff[80];
 
         sprintf( buff, "Peak WCG memory usage (KB): %d\n", (int)(PeakAlloc/_1K) );
-        FEMessage( MSG_INFO, buff );
+        FEMessage( FEMSG_INFO, buff );
         PeakAlloc = 0;
     }
 #endif

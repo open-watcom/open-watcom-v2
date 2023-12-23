@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -145,11 +146,10 @@ char *DIPIMPENTRY( ModSrcLang )( imp_image_handle *iih, imp_mod_handle imh )
 
 dip_status DIPIMPENTRY( ModInfo )( imp_image_handle *iih, imp_mod_handle imh, handle_kind hk )
 {
-    static const unsigned DmndType[MAX_HK] = {
-        0,
-        0, //sstGlobalTypes,
-        sstSrcModule,
-        sstAlignSym
+    static const unsigned DmndType[] = {
+        #define pick(enum,hsize,ihsize,wvihsize,cvdmndtype,wdmndtype)   cvdmndtype,
+        #include "diphndls.h"
+        #undef pick
     };
     unsigned            type;
     cv_directory_entry  *cde;
@@ -220,11 +220,11 @@ search_result ImpAddrMod( imp_image_handle *iih, address a, imp_mod_handle *imh 
         --left;
     }
     /*
-        We know the address is in the image. If it's an executable
-        segment, we can find the module by checking all the sstModule
-        sections and look at the code section information. If it's a
-        data segment, or we can't find it, return IMH_GBL.
-    */
+     * We know the address is in the image. If it's an executable
+     * segment, we can find the module by checking all the sstModule
+     * sections and look at the code section information. If it's a
+     * data segment, or we can't find it, return IMH_GBL.
+     */
     *imh = IMH_GBL;
     if( map->u.b.fExecute ) {
         d.d = &a;
@@ -275,7 +275,9 @@ dip_status DIPIMPENTRY( ModDefault )( imp_image_handle *iih, imp_mod_handle imh,
     case DK_INT:
         ti->kind = TK_INTEGER;
         ti->modifier = TM_SIGNED;
-        /* size is OK */
+        /*
+         * size is OK
+         */
         break;
     case DK_DATA_PTR:
         if( comp_info->flags.f.AmbientData != AMBIENT_NEAR ) {

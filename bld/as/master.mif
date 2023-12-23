@@ -6,12 +6,23 @@ was_autodepends = .AUTODEPEND
 
 was_trmem = 1
 
-subdir_stand = stand
-subdir_lib = lib
-
 additional_clean = *.c *.h *.re *.y
 
 !include cproj.mif
+!include defrule.mif
+defrule_key = stand
+subdir_stand = stand
+extra_cpp_stand_flags = -D_STANDALONE_
+!ifdef __WATCOM_TOOLS__
+extra_cpp_stand_flags += -fh=stand.pch
+!endif
+!include defrule.mif
+defrule_key = lib
+subdir_lib = lib
+extra_cpp_lib_flags = -DINCL_MSGTEXT
+!ifdef __WATCOM_TOOLS__
+extra_cpp_lib_flags += -fh=lib.pch
+!endif
 !include defrule.mif
 !include deftarg.mif
 !include trmem.mif
@@ -24,23 +35,20 @@ additional_clean = *.c *.h *.re *.y
 # yacc macros
 #########################
 
-yacc_prefix     = asy
+as_yacc_prefix  = asy
 asi_yacc_prefix = asiy
 
-yacc_flags      = -b $(yacc_prefix) -d -db -dd
+as_yacc_flags   = -b $(as_yacc_prefix) -d -db -dd
 asi_yacc_flags  = -b $(asi_yacc_prefix) -d -db -dd
 
-yacc_src        = as.y
-yacc_in         = as_in
-asi_yacc_in     = asi_in
-yacc_out        = $(yacc_prefix)tab
+yacc_src        = $(as_dir)/y/as.y
+yacc_driver     = $(as_dir)/y/yydriver.c
+as_yacc_out     = $(as_yacc_prefix)tab
 asi_yacc_out    = $(asi_yacc_prefix)tab
 
 lex_flags       =
-lex_src         = scan.re
-lex_in          = scan_in
-asi_lex_in      = scani_in
-lex_out         = aslexyy
+lex_src         = $(as_dir)/y/scan.re
+as_lex_out      = aslexyy
 asi_lex_out     = asilexyy
 
 # cflags
@@ -54,7 +62,7 @@ extra_cppflags_axp = -DAS_ALPHA
 extra_cppflags_mps = -DAS_MIPS
 extra_cppflags_ppc = -DAS_PPC
 extra_cpp_flags = $(extra_cppflags_$(target_cpu))
-!ifeq release 0
+!ifeq debug 2
 extra_cpp_flags += -DAS_DEBUG_DUMP
 !endif
 extra_cpp_flags_asitest = $(trmem_cpp_flags)
@@ -112,18 +120,15 @@ as_comm_objs = &
     $(_subdir_)asmsg.obj
 
 as_stand_objs = &
-    $(_subdir_)$(yacc_out).obj &
-    $(_subdir_)$(lex_out).obj &
+    $(_subdir_)$(as_yacc_out).obj &
+    $(_subdir_)$(as_lex_out).obj &
     $(_subdir_)main.obj &
     $(_subdir_)obj.obj &
     $(_subdir_)sections.obj &
     $(_subdir_)options.obj &
-    $(_subdir_)preproc.obj &
-    $(_subdir_)ppexpr.obj &
-    $(_subdir_)ppmacro.obj &
-    $(_subdir_)ppmem.obj &
+    $(cpp_objs) &
     $(_subdir_)ppenv.obj &
-    $(_subdir_)pathlist.obj &
+    $(_subdir_)ppmem.obj &
     $(_subdir_)trmemcvr.obj &
     $(trmem_objs)
 
@@ -206,39 +211,35 @@ wsplice_opts_mps = -kAS_MIPS
 wsplice_opts_ppc = -kAS_PPC
 wsplice_opts     = $(wsplice_opts_$(target_cpu))
 
-$(yacc_in).y : $(as_dir)/y/$(yacc_src) $(as_dir)/y/yydriver.c $(__MAKEFILES__)
-    $(wsplice) $(wsplice_opts) -k_STANDALONE_ $[@ $(yacc_in).tmp
-    $(sed) -e "s/ytab.h/asytab.h/g" $(yacc_in).tmp > $@
+as_in.y : $(yacc_src) $(yacc_driver) $(__MAKEFILES__)
+    $(wsplice) $(wsplice_opts) -k_STANDALONE_ $[@ $^&.tmp
+    $(sed) -e "s/ytab.h/asytab.h/g" $^&.tmp > $@
 
-$(asi_yacc_in).y : $(as_dir)/y/$(yacc_src) $(as_dir)/y/yydriver.c $(__MAKEFILES__)
-    $(wsplice) $(wsplice_opts) $[@ $(asi_yacc_in).tmp
-    $(sed) -e "s/ytab.h/asiytab.h/g" $(asi_yacc_in).tmp > $@
+asi_in.y : $(yacc_src) $(yacc_driver) $(__MAKEFILES__)
+    $(wsplice) $(wsplice_opts) $[@ $^&.tmp
+    $(sed) -e "s/ytab.h/asiytab.h/g" $^&.tmp > $@
 
-yacc_deps = $(yacc_in).y $(as_dir)/y/yydriver.c
-
-$(yacc_out).c : $(yacc_deps) $(__MAKEFILES__)
+$(as_yacc_out).c : as_in.y $(__MAKEFILES__)
     @%make echo_yacc
-    $(yacc) $(yacc_flags) $(yacc_deps) > $(nulldevice)
+    $(yacc) $(as_yacc_flags) as_in.y $(yacc_driver) > $(nulldevice)
 
-asi_yacc_deps = $(asi_yacc_in).y $(as_dir)/y/yydriver.c
-
-$(asi_yacc_out).c : $(asi_yacc_deps) $(__MAKEFILES__)
+$(asi_yacc_out).c : asi_in.y $(__MAKEFILES__)
     @%make echo_yacc
-    $(yacc) $(asi_yacc_flags) $(asi_yacc_deps) > $(nulldevice)
+    $(yacc) $(asi_yacc_flags) asi_in.y $(yacc_driver) > $(nulldevice)
 
-$(lex_in).re : $(as_dir)/y/$(lex_src) $(__MAKEFILES__)
-    $(wsplice) $(wsplice_opts) -k_STANDALONE_ $[@ $(lex_in).tmp
-    $(sed) -e "s/ytab.h/asytab.h/g" $(lex_in).tmp > $@
+scan_in.re : $(lex_src) $(__MAKEFILES__)
+    $(wsplice) $(wsplice_opts) -k_STANDALONE_ $[@ $^&.tmp
+    $(sed) -e "s/ytab.h/asytab.h/g" $^&.tmp > $@
 
-$(asi_lex_in).re : $(as_dir)/y/$(lex_src) $(__MAKEFILES__)
-    $(wsplice) $(wsplice_opts) $[@ $(asi_lex_in).tmp
-    $(sed) -e "s/ytab.h/asiytab.h/g" $(asi_lex_in).tmp > $@
+scani_in.re : $(lex_src) $(__MAKEFILES__)
+    $(wsplice) $(wsplice_opts) $[@ $^&.tmp
+    $(sed) -e "s/ytab.h/asiytab.h/g" $^&.tmp > $@
 
-$(lex_out).c : $(lex_in).re $(__MAKEFILES__)
+$(as_lex_out).c : scan_in.re $(__MAKEFILES__)
     @%make echo_re2c
     $(re2c) $(lex_flags) $[@ > $@
 
-$(asi_lex_out).c : $(asi_lex_in).re $(__MAKEFILES__)
+$(asi_lex_out).c : scani_in.re $(__MAKEFILES__)
     @%make echo_re2c
     $(re2c) $(lex_flags) $[@ > $@
 
@@ -246,25 +247,10 @@ $(asi_lex_out).c : $(asi_lex_in).re $(__MAKEFILES__)
 optencod_opt_qnx    = -u=$(exetarg_qnx_res)
 !endif
 optencod_targets = $(target_cpu) $(host_os)
-!ifeq release 0
+!ifeq debug 2
 optencod_targets += dbg
 !endif
 
 usage.gh $(exetarg_$(host_os)_res) : ../../h/options.gml $(__MAKEFILES__)
     @%make echo_optencod
     $(optencod) -rc=MSG_USAGE_BASE -utf8 $(optencod_opt_$(host_os)) $[@ . . $@ $(optencod_targets)
-
-# implicit rules
-#################
-
-extra_cpp_stand_flags = -D_STANDALONE_
-extra_cpp_lib_flags = -DINCL_MSGTEXT
-!ifdef __WATCOM_TOOLS__
-extra_cpp_stand_flags += -fh=stand.pch
-extra_cpp_lib_flags += -fh=lib.pch
-!endif
-
-defrule_key = stand
-!include defrule.mif
-defrule_key = lib
-!include defrule.mif

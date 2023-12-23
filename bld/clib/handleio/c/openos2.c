@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -57,7 +57,7 @@
 #include "thread.h"
 
 
-static int __F_NAME(__sopen,__wsopen)( const CHAR_TYPE *name, unsigned mode, unsigned share, va_list args )
+static int __F_NAME(__sopen,__wsopen)( const CHAR_TYPE *name, unsigned mode, unsigned shflag, va_list args )
 {
     OS_UINT     error, actiontaken;
     OS_UINT     fileattr, openflag, openmode;
@@ -98,10 +98,10 @@ static int __F_NAME(__sopen,__wsopen)( const CHAR_TYPE *name, unsigned mode, uns
         rwmode = OPEN_ACCESS_READWRITE;
     }
 #endif
-    if( share == OPENMODE_DENY_COMPAT ) {
-        share = OPEN_SHARE_DENYNONE;
+    if( shflag == OPENMODE_DENY_COMPAT ) {
+        shflag = OPEN_SHARE_DENYNONE;
     }
-    openmode = share | rwmode;
+    openmode = shflag | rwmode;
 
     perm &= ~_RWD_umaskval;
 /*      if( ( perm & S_IREAD ) && !( perm & S_IWRITE ) )  */

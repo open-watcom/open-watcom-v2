@@ -1,3 +1,5 @@
+tree_depth = 4
+
 proj_name = wre
 
 !ifndef wre_autodepends
@@ -70,7 +72,7 @@ exetarg_objs = &
     wreaccel.obj wremenu.obj wrestr.obj wrenew.obj wre_wres.obj &
     wredlg.obj wreimg.obj wredde.obj wresvmlt.obj wreimage.obj &
     wreclip.obj wresym.obj &
-    preproc.obj ppexpr.obj ppmacro.obj ppenv.obj pathlist.obj &
+    $(cpp_objs) ppenv.obj &
     $(trmem_objs) $(trmemcvr_objs)
 exetarg_libs = &
     $(commonui_lib) $(wr_lib) $(wres_lib) $(wpi_lib) &
@@ -91,15 +93,15 @@ rc_inc_dirs = -I"../res" $(commonui_inc_dirs)
 
 $(proj_name).res : ../res/wre.rc $(__MAKEFILES__) .AUTODEPEND
     @%make echo_rc
-    $(rc) $(rc_flags) -ad -zk0 $(rc_inc_path) $[@ -fo=$@
+    $(rc) $(rc_ui8_flags) $(rc_flags) -ad $(rc_inc_path) $[@ -fo=$@
 
 ntmanif.res : ../res/ntmanif.rc
     @%make echo_rc
-    $(rc) $(rc_flags) -I"../res" $(inc_dirs_sys_nt) $< -fo=$@
+    $(rc) $(rc_ui8_flags) $(rc_flags) -I"../res" $(inc_dirs_sys_nt) $< -fo=$@
 
 rcstrmsg.gh : ../res/wre.msg $(__MAKEFILES__)
     @%make echo_cpp
-    $(cpp) $(rc_ui_flags) -o$@ $[@
+    $(cpp) $(rc_ui8_flags) -o$@ $[@
 
 rcstr.grh : rcstrmsg.gh $(__MAKEFILES__)
     @%make echo_awk

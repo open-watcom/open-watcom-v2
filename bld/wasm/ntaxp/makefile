@@ -3,5 +3,4 @@
 host_os  = nt
 host_cpu = axp
 
-proj_path = ..
-!include $(proj_path)/master.mif
+!include ../master.mif

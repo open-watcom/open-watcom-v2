@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -58,10 +59,10 @@ static int CheckForPort( int i, unsigned char value )
 {
     int         j;
 
-    outp( PortTest[ i ], value );
-    for( j = 100; j != 0; j-- )
-        ;
-    return( inp( PortTest[ i ] ) == value );
+    outp( PortTest[i], value );
+    for( j = 100; j > 0; j-- )
+        {}
+    return( inp( PortTest[i] ) == value );
 }
 
 
@@ -73,7 +74,7 @@ static void InitPorts( void )
     portnum = 0;
     for( i = 0; i < 3; ++i ) {
         if( CheckForPort( i, 0x55 ) && CheckForPort( i, 0xaa ) ) {
-            PortAddress[ portnum++ ] = PortTest[ i ];
+            PortAddress[portnum++] = PortTest[i];
         }
     }
 }
@@ -124,7 +125,9 @@ int NumPrinters( void )
     int         i;
 
     for( i = 0; i < 3; ++i ) {
-        if( PortAddress[ i ] == 0 ) break;
+        if( PortAddress[i] == 0 ) {
+            break;
+        }
     }
     return( i );
 }
@@ -132,7 +135,7 @@ int NumPrinters( void )
 
 unsigned PrnAddress( int n )
 {
-    return( PortAddress[ n ] );
+    return( PortAddress[n] );
 }
 
 void FreePorts( unsigned first, unsigned last )

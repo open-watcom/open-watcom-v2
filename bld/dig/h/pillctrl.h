@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,6 +32,7 @@
 
 
 #ifndef PILLCTRL_H
+#define PILLCTRL_H
 
 #include "piltypes.h"
 #include "digpck.h"
@@ -55,8 +57,6 @@ struct link_instance {
     volatile link_queue         in;
     volatile link_status        ls;
 };
-
-#define PILLCTRL_H
 
 #include "digunpck.h"
 #endif

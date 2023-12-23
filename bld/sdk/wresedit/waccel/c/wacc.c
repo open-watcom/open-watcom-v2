@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -52,18 +53,12 @@
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static void         WInitDataFromAccelTable( WAccelTable *, void * );
-static void         WInitAccelTable( WAccelInfo *, WAccelTable * );
-static size_t       WCalcAccelTableSize( WAccelTable * );
-static size_t       WCalcNumAccelEntries( WAccelInfo * );
-static WAccelTable  *WAllocAccelTable( size_t );
-static void         WFreeAccelTable( WAccelTable * );
 
 /****************************************************************************/
 /* static variables                                                         */
 /****************************************************************************/
 
-WAccelEditInfo *WAllocAccelEInfo( void )
+WAccelEditInfo *WAllocAccelEditInfo( void )
 {
     WAccelEditInfo *einfo;
 
@@ -77,7 +72,28 @@ WAccelEditInfo *WAllocAccelEInfo( void )
     return( einfo );
 }
 
-void WFreeAccelEInfo( WAccelEditInfo *einfo )
+void WFreeAccelTableEntries( WAccelEntry *entry )
+{
+    WAccelEntry *next;
+
+    for( ; entry != NULL; entry = next ) {
+        next = entry->next;
+        if( entry->symbol != NULL ) {
+            WRMemFree( entry->symbol );
+        }
+        WRMemFree( entry );
+    }
+}
+
+static void WFreeAccelTable( WAccelTable *tbl )
+{
+    if( tbl != NULL ) {
+        WFreeAccelTableEntries( tbl->first_entry );
+        WRMemFree( tbl );
+    }
+}
+
+void WFreeAccelEditInfo( WAccelEditInfo *einfo )
 {
     if( einfo != NULL ) {
         if( einfo->tbl != NULL ) {
@@ -107,12 +123,52 @@ void WFreeAccelEInfo( WAccelEditInfo *einfo )
     }
 }
 
-void WMakeDataFromAccelTable( WAccelTable *tbl, void **pdata, size_t *psize )
+static void WInitDataFromAccelTable( WAccelTable *tbl, char *data )
+{
+    WAccelEntry         *entry;
+    char                *last;
+
+    last = NULL;
+    if( tbl->is32bit ) {
+        for( entry = tbl->first_entry; entry != NULL; entry = entry->next ) {
+            last = data;
+            data = ResWriteDataAccelTableEntry32( data, &entry->u.entry32 );
+        }
+        SetAccelTableLastEntry32( last );
+    } else {
+        for( entry = tbl->first_entry; entry != NULL; entry = entry->next ) {
+            last = data;
+            data = ResWriteDataAccelTableEntry( data, &entry->u.entry );
+        }
+        SetAccelTableLastEntry( last );
+    }
+}
+
+static size_t WCalcAccelTableSize( WAccelTable *tbl )
+{
+    size_t size;
+
+    if( tbl == NULL ) {
+        return( 0 );
+    }
+
+    if( tbl->is32bit ) {
+        size = RES_SIZE_AccelTableEntry32;
+    } else {
+        size = RES_SIZE_AccelTableEntry;
+    }
+
+    size *= tbl->num;
+
+    return( size );
+}
+
+void WMakeDataFromAccelTable( WAccelTable *tbl, char **pdata, size_t *dsize )
 {
     size_t  size;
-    void    *data;
+    char    *data;
 
-    if( pdata != NULL && psize != NULL ) {
+    if( pdata != NULL && dsize != NULL ) {
         size = WCalcAccelTableSize( tbl );
         if( size != 0 ) {
             data = WRMemAlloc( size );
@@ -125,8 +181,108 @@ void WMakeDataFromAccelTable( WAccelTable *tbl, void **pdata, size_t *psize )
             data = NULL;
         }
         *pdata = data;
-        *psize = size;
+        *dsize = size;
     }
+}
+
+static WAccelTable *WAllocAccelTable( size_t num )
+{
+    WAccelTable *tbl;
+    WAccelEntry *prev;
+    WAccelEntry *entry;
+    size_t      i;
+
+    tbl = (WAccelTable *)WRMemAlloc( sizeof( WAccelTable ) );
+    if( tbl == NULL ) {
+        return( NULL );
+    }
+
+    tbl->num = num;
+    tbl->is32bit = false;
+    tbl->first_entry = NULL;
+    if( num != 0 ) {
+        prev = NULL;
+        for( i = 0; i < num; i++ ) {
+            entry = (WAccelEntry *)WRMemAlloc( sizeof( WAccelEntry ) );
+            if( prev == NULL ) {
+                tbl->first_entry = entry;
+            } else {
+                prev->next = entry;
+            }
+            if( entry == NULL ) {
+                WFreeAccelTable( tbl );
+                return( NULL );
+            }
+            entry->prev = prev;
+            entry->symbol = NULL;
+            prev = entry;
+        }
+        entry->next = NULL;
+    }
+
+    return( tbl );
+}
+
+static size_t WCalcNumAccelEntries( WAccelInfo *info )
+{
+    size_t  num;
+    size_t  size;
+
+    if( info == NULL ) {
+        return( 0 );
+    }
+
+    if( info->is32bit ) {
+        size = RES_SIZE_AccelTableEntry32;
+    } else {
+        size = RES_SIZE_AccelTableEntry;
+    }
+
+    num = info->data_size / size;
+
+    if( info->data_size % size != 0 ) {
+        num++;
+    }
+
+    return( num );
+}
+
+static void WInitAccelTable( WAccelInfo *info, WAccelTable *tbl )
+{
+    WAccelEntry         *entry;
+    const char          *data;
+    int                 i;
+    bool                last;
+
+    entry = tbl->first_entry;
+    if( entry == NULL ) {
+        return;
+    }
+
+    data = info->data;
+    i = 0;
+    last = false;
+    if( info->is32bit ) {
+        for( ; entry != NULL && !last; entry = entry->next ) {
+            entry->is32bit = true;
+            last = IsAccelTableLastEntry32( data );
+            data = ResReadDataAccelTableEntry32( data, &entry->u.entry32 );
+            i++;
+        }
+    } else {
+        for( ; entry != NULL && !last; entry = entry->next ) {
+            entry->is32bit = false;
+            last = IsAccelTableLastEntry( data );
+            data = ResReadDataAccelTableEntry( data, &entry->u.entry );
+            i++;
+        }
+    }
+    if( entry != NULL ) {
+        entry->prev->next = NULL;
+        WFreeAccelTableEntries( entry );
+    }
+
+    tbl->num = i;
 }
 
 WAccelTable *WMakeAccelTableFromInfo( WAccelInfo *info )
@@ -164,113 +320,6 @@ WAccelTable *WMakeAccelTableFromInfo( WAccelInfo *info )
     }
 
     return( tbl );
-}
-
-void WInitDataFromAccelTable( WAccelTable *tbl, void *tdata )
-{
-    WAccelEntry         *entry;
-    AccelTableEntry     *data;
-    AccelTableEntry32   *data32;
-    int                 i;
-
-    i = -1;
-    if( tbl->is32bit ) {
-        data32 = (AccelTableEntry32 *)tdata;
-        for( entry = tbl->first_entry; entry != NULL; entry = entry->next ) {
-            data32[++i] = entry->u.entry32;
-        }
-        data32[i].Flags |= ACCEL_LAST;
-    } else {
-        data = (AccelTableEntry *)tdata;
-        for( entry = tbl->first_entry; entry != NULL; entry = entry->next ) {
-            data[++i] = entry->u.entry;
-        }
-        data[i].Flags |= ACCEL_LAST;
-    }
-}
-
-void WInitAccelTable( WAccelInfo *info, WAccelTable *tbl )
-{
-    WAccelEntry         *entry;
-    AccelTableEntry     *data;
-    AccelTableEntry32   *data32;
-    int                 i;
-    int                 last;
-
-    entry = tbl->first_entry;
-    if( entry == NULL ) {
-        return;
-    }
-
-    i = 0;
-    last = 0;
-    if( info->is32bit ) {
-        data32 = (AccelTableEntry32 *)info->data;
-        for( ; entry != NULL && last == 0; entry = entry->next ) {
-            entry->is32bit = true;
-            entry->u.entry32 = data32[i];
-            entry->u.entry32.Flags &= ~ACCEL_LAST;
-            last = (data32[i].Flags & ACCEL_LAST);
-            i++;
-        }
-    } else {
-        data = (AccelTableEntry *)info->data;
-        for( ; entry != NULL && last == 0; entry = entry->next ) {
-            entry->is32bit = false;
-            entry->u.entry = data[i];
-            entry->u.entry.Flags &= ~ACCEL_LAST;
-            last = (data[i].Flags & ACCEL_LAST);
-            i++;
-        }
-    }
-    if( entry != NULL ) {
-        entry->prev->next = NULL;
-        WFreeAccelTableEntries( entry );
-    }
-
-    tbl->num = i;
-}
-
-size_t WCalcAccelTableSize( WAccelTable *tbl )
-{
-    size_t size;
-
-    if( tbl == NULL ) {
-        return( 0 );
-    }
-
-    if( tbl->is32bit ) {
-        size = sizeof( AccelTableEntry32 );
-    } else {
-        size = sizeof( AccelTableEntry );
-    }
-
-    size *= tbl->num;
-
-    return( size );
-}
-
-size_t WCalcNumAccelEntries( WAccelInfo *info )
-{
-    size_t  num, size;
-
-    if( info == NULL ) {
-        return( 0 );
-    }
-
-    if( info->is32bit ) {
-        size = sizeof( AccelTableEntry32 );
-    } else {
-        size = sizeof( AccelTableEntry );
-    }
-
-    num = info->data_size / size;
-
-    if( info->data_size % size != 0 ) {
-        num++;
-    }
-
-    return( num );
 }
 
 bool WInsertAccelTableEntry( WAccelTable *tbl, WAccelEntry *after, WAccelEntry *entry )
@@ -324,91 +373,34 @@ bool WFreeAccelTableEntry( WAccelTable *tbl, WAccelEntry *entry )
     return( ok );
 }
 
-WAccelTable *WAllocAccelTable( size_t num )
-{
-    WAccelTable *tbl;
-    WAccelEntry *prev;
-    WAccelEntry *entry;
-    size_t      i;
-
-    tbl = (WAccelTable *)WRMemAlloc( sizeof( WAccelTable ) );
-    if( tbl == NULL ) {
-        return( NULL );
-    }
-
-    tbl->num = num;
-    tbl->is32bit = false;
-    tbl->first_entry = NULL;
-    if( num != 0 ) {
-        prev = NULL;
-        for( i = 0; i < num; i++ ) {
-            entry = (WAccelEntry *)WRMemAlloc( sizeof( WAccelEntry ) );
-            if( prev == NULL ) {
-                tbl->first_entry = entry;
-            } else {
-                prev->next = entry;
-            }
-            if( entry == NULL ) {
-                WFreeAccelTable( tbl );
-                return( NULL );
-            }
-            entry->prev = prev;
-            entry->symbol = NULL;
-            prev = entry;
-        }
-        entry->next = NULL;
-    }
-
-    return( tbl );
-}
-
-void WFreeAccelTable( WAccelTable *tbl )
-{
-    if( tbl != NULL ) {
-        WFreeAccelTableEntries( tbl->first_entry );
-        WRMemFree( tbl );
-    }
-}
-
-void WFreeAccelTableEntries( WAccelEntry *entry )
-{
-    WAccelEntry *next;
-
-    for( ; entry != NULL; entry = next ) {
-        next = entry->next;
-        if( entry->symbol != NULL ) {
-            WRMemFree( entry->symbol );
-        }
-        WRMemFree( entry );
-    }
-}
-
-bool WMakeEntryClipData( WAccelEntry *entry, void **data, uint_32 *dsize )
+bool WMakeClipDataFromAccelEntry( WAccelEntry *entry, char **pdata, size_t *dsize )
 {
     bool        ok;
+    char        *data;
+    size_t      size;
 
-    ok = (entry != NULL && data != NULL && dsize != NULL);
+    ok = (entry != NULL && pdata != NULL && dsize != NULL);
 
     if( ok ) {
         if( entry->is32bit ) {
-            *dsize = sizeof( AccelTableEntry32 );
+            size = 1 + sizeof( AccelTableEntry32 );
         } else {
-            *dsize = sizeof( AccelTableEntry );
+            size = 1 + sizeof( AccelTableEntry );
         }
-        *dsize += sizeof( BYTE );
-        *data = WRMemAlloc( *dsize );
-        ok = (*data != NULL);
+        *dsize = size;
+        *pdata = data = WRMemAlloc( size );
+        ok = (data != NULL);
     }
 
     if( ok ) {
-        ((BYTE *)(*data))[0] = entry->is32bit;
-        memcpy( (BYTE *)(*data) + 1, &entry->u.entry, *dsize );
+        data[0] = entry->is32bit;
+        memcpy( data + 1, &entry->u.entry, size - 1 );
     }
 
     return( ok );
 }
 
-bool WMakeEntryFromClipData( WAccelEntry *entry, void *data, uint_32 dsize )
+bool WMakeAccelEntryFromClipData( WAccelEntry *entry, const char *data, size_t dsize )
 {
     size_t      len;
     bool        ok;
@@ -418,15 +410,16 @@ bool WMakeEntryFromClipData( WAccelEntry *entry, void *data, uint_32 dsize )
 
     if( ok ) {
         memset( entry, 0, sizeof( WAccelEntry ) );
-        entry->is32bit = ((BYTE *)data)[0];
-        len = sizeof( AccelTableEntry );
+        entry->is32bit = data[0];
         if( entry->is32bit ) {
             len = sizeof( AccelTableEntry32 );
+        } else {
+            len = sizeof( AccelTableEntry );
         }
     }
 
     if( ok ) {
-        memcpy( &entry->u.entry, (BYTE *)data + 1, len );
+        memcpy( &entry->u.entry, data + 1, len );
     }
 
     return( ok );

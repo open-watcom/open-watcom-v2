@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -59,17 +59,17 @@ extern void             DoIncGroupDefs( void );
 extern void             Set64BitMode( void );
 extern void             Set32BitMode( void );
 extern void             Set16BitMode( void );
-extern void             AllocateSegment( segnode *, char *clname );
+extern void             AllocateSegment( segnode *, const char *clname );
 extern void             AddSegment( segdata *, class_entry * );
 extern class_entry      *DuplicateClass( class_entry *class );
-extern class_entry      *FindClass( section *, const char *, bool, bool );
+extern class_entry      *FindClass( section *, const char *, byte bits, bool iscode );
 extern seg_leader       *InitLeader( const char * );
 extern void             FreeLeader( void * );
 extern void             AddToGroup( group_entry *, seg_leader * );
 extern void             SetAddPubSym( symbol *, sym_info, mod_entry *, offset, unsigned_16 );
-extern void             DefineSymbol( symbol *, segnode *, offset, unsigned_16);
+extern void             DefineSymbol( symbol *, segnode *, offset, unsigned_16 );
 extern void             AllocCommunal( symbol *, offset );
-extern symbol           *MakeCommunalSym( symbol *, offset, bool, bool );
+extern symbol           *MakeCommunalSym( symbol *, offset, bool, byte bits );
 extern void             SetComdatSym( symbol *, segdata * );
 extern void             StoreInfoData( comdat_info *info );
 extern void             InfoCDatAltDef( comdat_info * );

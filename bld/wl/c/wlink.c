@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -84,9 +84,9 @@
 #include "ideentry.h"
 
 
-#define DEF_STACK_SIZE  _4KB
+#define DEF_STACK_SIZE  _4K
 
-#if defined( _INT_DEBUG ) && defined( __WATCOMC__ )
+#if defined( DEVBUILD ) && defined( __WATCOMC__ )
 /*
  *  Following symbols are specific for Open Watcom Linker generated executables
  *  and appropriate code can be used only if this program is linked by OW Linker
@@ -277,7 +277,7 @@ static void ResetSubSystems( void )
 void InitSubSystems( void )
 /********************************/
 {
-#if defined( _INT_DEBUG ) && defined( __WATCOMC__ )
+#if defined( DEVBUILD ) && defined( __WATCOMC__ )
     memset( _edata, 0xA5, _end - _edata );      // don't rely on BSS == 0
 #endif
     LnkMemInit();

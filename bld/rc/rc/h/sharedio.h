@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,15 +31,21 @@
 ****************************************************************************/
 
 
+#ifndef SHAREDIO_INCLUDED
+#define SHAREDIO_INCLUDED
+
 typedef struct ExtraRes {
     struct ExtraRes     *next;
     char                name[1];
 } ExtraRes;
 
+extern int      RCCloseFile( FILE **fp );
 extern void     ReportDupResource( WResID *nameid, WResID *typeid, const char *file1, const char *file2, bool warn );
-extern bool     OpenResFiles( struct ExtraRes *resnames, struct ResFileInfo **resinfo, bool *allopen, ExeType type, const char *exename );
-extern void     CloseResFiles( struct ResFileInfo *resfiles );
+extern bool     OpenResFiles( ExtraRes *resnames, ResFileInfo **presfiles, bool *allopen, ExeType type, const char *exename );
+extern void     CloseResFiles( ResFileInfo *resfiles );
 extern void     SharedIOInitStatics( void );
 extern char     *LastWresErrStr( void );
 extern int      LastWresStatus( void );
 extern int      LastWresErr( void );
+
+#endif

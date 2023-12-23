@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2013 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2022 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -284,7 +284,7 @@ void    scr_dm( void )
     if( cc == omit ) {
         err_count++;
         g_err( err_missing_name );
-        ultoa( cb->s.f->lineno, linestr, 10 );
+        sprintf( linestr, "%lu", cb->s.f->lineno );
         g_info( inf_file_line, linestr, cb->s.f->filename );
         show_include_stack();
         return;
@@ -314,7 +314,7 @@ void    scr_dm( void )
         err_count++;
         // SC--048 A control word parameter is missing
         g_err( err_mac_def_fun, macname );
-        ultoa( cb->s.f->lineno, linestr, 10 );
+        sprintf( linestr, "%lu", cb->s.f->lineno );
         g_info( inf_file_line, linestr, cb->s.f->filename );
         return;
     }
@@ -337,7 +337,7 @@ void    scr_dm( void )
         if( ProcFlags.in_macro_define ) {
             err_count++;
             g_err( err_mac_def_nest, tok_start );
-            ultoa( cb->s.f->lineno, linestr, 10 );
+            sprintf( linestr, "%lu", cb->s.f->lineno );
             g_info( inf_file_line, linestr, cb->s.f->filename );
             return;
         }
@@ -375,7 +375,7 @@ void    scr_dm( void )
         err_count++;
         // SC--003: A macro is not being defined
         g_err( err_mac_def_end, macname );
-        ultoa( cb->s.f->lineno, linestr, 10 );
+        sprintf( linestr, "%lu", cb->s.f->lineno );
         g_info( inf_file_line, linestr, cb->s.f->filename );
         return;
     }
@@ -383,7 +383,7 @@ void    scr_dm( void )
         err_count++;
         // SC--002 The control word parameter '%s' is invalid
         g_err( err_mac_def_nest, macname );
-        ultoa( cb->s.f->lineno, linestr, 10 );
+        sprintf( linestr, "%lu", cb->s.f->lineno );
         g_info( inf_file_line, linestr, cb->s.f->filename );
     }
     *p  = save;
@@ -422,7 +422,7 @@ void    scr_dm( void )
                         err_count++;
                         // SC--005 Macro '%s' is not being defined
                         g_err( err_mac_def_not, tok_start );
-                        ultoa( cb->s.f->lineno, linestr, 10 );
+                        sprintf( linestr, "%lu", cb->s.f->lineno );
                         g_info( inf_file_line, linestr, cb->s.f->filename );
                         *p = save;
                         free_lines( head );
@@ -434,7 +434,7 @@ void    scr_dm( void )
                         err_count++;
                         // SC--048 A control word parameter is missing
                         g_err( err_mac_def_miss );
-                        ultoa( cb->s.f->lineno, linestr, 10 );
+                        sprintf( linestr, "%lu", cb->s.f->lineno );
                         g_info( inf_file_line, linestr, cb->s.f->filename );
                         free_lines( head );
                         return;
@@ -446,7 +446,7 @@ void    scr_dm( void )
                         err_count++;
                         // SC--002 The control word parameter '%s' is invalid
                         g_err( err_mac_def_inv, tok_start );
-                        ultoa( cb->s.f->lineno, linestr, 10 );
+                        sprintf( linestr, "%lu", cb->s.f->lineno );
                         g_info( inf_file_line, linestr, cb->s.f->filename );
                         free_lines( head );
                         return;
@@ -472,7 +472,7 @@ void    scr_dm( void )
             // error SC--004 End of file reached
             // macro '%s' is still being defined
             g_err( err_mac_def_eof, macname );
-            ultoa( cb->s.f->lineno, linestr, 10 );
+            sprintf( linestr, "%lu", cb->s.f->lineno );
             g_info( inf_file_line, linestr, cb->s.f->filename );
             free_lines( head );
             return;
@@ -500,7 +500,7 @@ void    scr_dm( void )
         add_macro_entry( &macro_dict, me );
 
         if( cb->fmflags & II_research && GlobFlags.firstpass ) {
-            utoa( macro_line_count, linestr, 10 );
+            sprintf( linestr, "%d", macro_line_count );
             g_info( inf_mac_defined, macname, linestr );
         }
     } else {

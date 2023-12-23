@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,12 +31,6 @@
 ****************************************************************************/
 
 
-#if defined( _M_IX86 )
-#define MD_x86
-#elif defined __AXP__
-#define MD_axp
-#endif
-
 #include "commonui.h"
 #include <winperf.h>
 #include <stdlib.h>
@@ -49,7 +43,7 @@
 #include "stat.rh"
 #include "dlgmod.h"
 #include "reg.h"
-#include "machtype.h"
+#include "digsyscf.h"
 #include "cguimem.h"
 #include "rcstr.grh"
 #include "ldstr.h"
@@ -181,7 +175,7 @@ extern HWND             StatHdl;
 extern system_config    SysConfig;
 extern HANDLE           ProcessHdl;
 
-/* drproc.c */
+/* winproc.c */
 extern LONG         CALLBACK MainWindowProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 extern void         ClearAlert( void );
 extern void         Alert( void );
@@ -290,10 +284,10 @@ extern void         RefreshMemList( DWORD procid, HANDLE prochdl, MemListData *p
 extern void         FreeMemList( MemListData *info );
 
 /* pefile.c */
-extern BOOL         GetSegmentList( ModuleNode *node );
+extern bool         GetSegmentList( ModuleNode *node );
 extern char         *GetModuleName( FILE *fp );
-extern BOOL         GetModuleSize( FILE *fp, DWORD *size );
-extern ObjectInfo   *GetModuleObjects( FILE *fp, DWORD *num_objects );
+extern bool         GetModuleSize( FILE *fp, DWORD *size );
+extern ObjectInfo   *GetModuleObjects( FILE *fp, unsigned *objects_num );
 
 /* disasm.c */
 extern bool         FindWatSymbol( address *addr, syminfo *si, bool getsrcinfo );

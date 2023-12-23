@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -84,7 +84,7 @@ struct free_t {
         (fl) = node; \
     }
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 static bool    restoreFromZapped( cv_t *cv )
 {
     unsigned elm_size;
@@ -236,7 +236,7 @@ void *CarveZeroAlloc( carve_t cv )
 #endif
 
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 #define TOO_MANY_TO_WALK        512
 
 static blk_t *withinABlock( carve_t cv, void *elm )
@@ -332,7 +332,7 @@ void CarveFree( carve_t cv, void *elm )
     _ADD_TO_FREE( cv->free_list, elm );
 }
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 void CarveVerifyAllGone( carve_t cv, char const *node_name )
 /**********************************************************/
 {
@@ -507,13 +507,13 @@ void CarveWalkAllFree( carve_t cv, void (*rtn)( void * ) )
 
     restoreFromZapped( cv );
     check = cv->free_list;
-#ifndef NDEBUG
+#ifdef DEVBUILD
     // transfer over to another list since these free blocks may be modified
     cv->free_list = NULL;
     cv->zapped_free_list = check;
 #endif
     for( ; check != NULL; check = check->next_free ) {
-#ifndef NDEBUG
+#ifdef DEVBUILD
         free_t *check_next = check->next_free;
         (*rtn)( check );
         if( check->next_free != check_next ) {
@@ -527,7 +527,7 @@ void CarveWalkAllFree( carve_t cv, void (*rtn)( void * ) )
     }
 }
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 void CarveVerifyFreeElement( carve_t cv, void *elm )
 /**************************************************/
 {
@@ -589,7 +589,7 @@ void CarveMapOptimize( carve_t cv, cv_index last_valid_index )
     nmaps = GET_BLOCK( last_valid_index );
     init = _MemoryAllocate( nmaps * sizeof( blk_t * ) );
     cv->blk_map = init;
-#ifndef NDEBUG
+#ifdef DEVBUILD
     if( nmaps != cv->blk_count ) {
         _FatalAbort( "incorrect block calculation" );
     }
@@ -666,7 +666,8 @@ void CarveInitStart( carve_t cv, cvinit_t *data )
 }
 
 
-#if 0 && ! defined(NDEBUG)
+#if 0
+#ifdef DEVBUILD
 carve_t carveMASTER;
 carve_t carveSLAVE1;
 carve_t carveSLAVE2;
@@ -966,6 +967,7 @@ pch_status PCHFiniTest( bool writing )
     }
     return( PCHCB_OK );
 }
-#endif // NDEBUG
+#endif // DEVBUILD
+#endif
 
 #endif // CARVEPCH

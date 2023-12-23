@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,44 +31,17 @@
 ****************************************************************************/
 
 
-#define CALLER_POPS                    ( 0x00000001LL << _TARG_AUX_SHIFT )
-#define DLL_EXPORT                     ( 0x00000002LL << _TARG_AUX_SHIFT )
-#define SPECIAL_RETURN                 ( 0x00000004LL << _TARG_AUX_SHIFT )
-#define SPECIAL_STRUCT_RETURN          ( 0x00000008LL << _TARG_AUX_SHIFT )
-#define FAR_CALL                       ( 0x00000010LL << _TARG_AUX_SHIFT )
-#define INTERRUPT                      ( 0x00000020LL << _TARG_AUX_SHIFT )
-#define LOAD_DS_ON_CALL                ( 0x00000040LL << _TARG_AUX_SHIFT )
-#define LOAD_DS_ON_ENTRY               ( 0x00000080LL << _TARG_AUX_SHIFT )
-#define MODIFY_EXACT                   ( 0x00000100LL << _TARG_AUX_SHIFT )
-#define NO_8087_RETURNS                ( 0x00000200LL << _TARG_AUX_SHIFT )
-#define NO_FLOAT_REG_RETURNS           ( 0x00000400LL << _TARG_AUX_SHIFT )
-#define NO_MEMORY_CHANGED              ( 0x00000800LL << _TARG_AUX_SHIFT )
-#define NO_MEMORY_READ                 ( 0x00001000LL << _TARG_AUX_SHIFT )
-#define NO_STRUCT_REG_RETURNS          ( 0x00002000LL << _TARG_AUX_SHIFT )
-#define ROUTINE_RETURN                 ( 0x00004000LL << _TARG_AUX_SHIFT )
-#define FAT_WINDOWS_PROLOG             ( 0x00008000LL << _TARG_AUX_SHIFT )
-#define GENERATE_STACK_FRAME           ( 0x00010000LL << _TARG_AUX_SHIFT )
-#define EMIT_FUNCTION_NAME             ( 0x00020000LL << _TARG_AUX_SHIFT )
-#define GROW_STACK                     ( 0x00040000LL << _TARG_AUX_SHIFT )
-#define PROLOG_HOOKS                   ( 0x00080000LL << _TARG_AUX_SHIFT )
-#define THUNK_PROLOG                   ( 0x00100000LL << _TARG_AUX_SHIFT )
-#define EPILOG_HOOKS                   ( 0x00200000LL << _TARG_AUX_SHIFT )
-#define FAR16_CALL                     ( 0x00400000LL << _TARG_AUX_SHIFT )
-#define TOUCH_STACK                    ( 0x00800000LL << _TARG_AUX_SHIFT )
-#define LOAD_RDOSDEV_ON_ENTRY          ( 0x01000000LL << _TARG_AUX_SHIFT )
-#define FARSS                          ( 0x02000000LL << _TARG_AUX_SHIFT )
-#define LAST_TARG_AUX_ATTRIBUTE        ( 0x02000000LL << _TARG_AUX_SHIFT )
-
-#if LAST_TARG_AUX_ATTRIBUTE == 0
-    #error Overflowed a long long
-#endif
-
-typedef unsigned long long      call_class;
-
 #define FLOATING_FIXUP_BYTE     0xFF
 
 #define BYTE_SEQ_SYM    void *
 #define BYTE_SEQ_OFF    unsigned
+
+#define STRUCT_BYTE_SEQ( x ) \
+{ \
+    byte_seq_len    length; \
+    bool            relocs; \
+    byte            data[x]; \
+}
 
 typedef enum {
     #define pick_fp(enum,name,alt_name,win,alt_win,others,alt_others) FIX_ ## enum,
@@ -80,12 +53,5 @@ typedef enum {
 } cg_fixups;
 
 typedef unsigned    byte_seq_len;
-
-#define STRUCT_BYTE_SEQ( x ) \
-{ \
-    byte_seq_len    length; \
-    bool            relocs; \
-    byte            data[x]; \
-}
 
 typedef struct byte_seq STRUCT_BYTE_SEQ( 1 ) byte_seq;

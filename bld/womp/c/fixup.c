@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -213,7 +213,7 @@ fixup *FixGetFix( fixinfo *info, obj_rec *objr ) {
             /* FIXME we assume that the file is a Microsoft object file */
             fix->loc_method = FIX_POINTER386;
             break;
-        case LOC_OFFSET_32_LOADER:
+        case LOC_OFFSET_LOADER_32:
             /* FIXME we assume that the file is a Microsoft object file */
             fix->loc_method = FIX_OFFSET386;
             fix->loader_resolved = 1;
@@ -277,13 +277,13 @@ STATIC uint_8 *putIndex( uint_8 *p, uint_16 index ) {
 
 STATIC uint_8 *put16( uint_8 *p, uint_16 word ) {
 
-    WriteU16( p, word );
+    MPUT_LE_16( p, word );
     return( p + 2 );
 }
 
 STATIC uint_8 *put32( uint_8 *p, uint_32 dword ) {
 
-    WriteU32( p, dword );
+    MPUT_LE_32( p, dword );
     return( p + 4 );
 }
 
@@ -423,7 +423,7 @@ uint_16 FixGenFix( fixup *fix, uint_8 *buf, int type )
             byte |= ( LOC_PHARLAP_OFFSET_32 ) << 2;
         } else {
             if( fix->loader_resolved ) {
-                byte |= ( LOC_OFFSET_32_LOADER << 2 );
+                byte |= ( LOC_OFFSET_LOADER_32 << 2 );
             } else {
                 byte |= ( LOC_OFFSET_32 << 2 );
             }

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,8 +36,8 @@
 
 #include "basics.h"
 
-#define NCHARS  256
-typedef uchar   Char;
+#define NCHARS          256
+typedef unsigned short  Char;
 
 typedef enum {
     CHAR,
@@ -53,8 +54,8 @@ typedef union Ins {
         void    *link;
     } i;
     struct {
-        ushort  value;
-        ushort  bump;
+        Char    value;
+        uint    bump;
         void    *link;
     } c;
 } Ins;

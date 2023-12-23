@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -69,7 +69,7 @@ extern bool         FreeObjCache( void );
 extern char         GetMemModel( void );
 extern void         ChkDbgSegSize( offset max, bool typing );
 extern bool         AskSegIsNear( segment_id segid );
-extern void         DoOutObjectName( cg_sym_handle sym, outputter_fn *outputter, outputter_data data, import_type kind );
+extern void         DoOutObjectName( cg_sym_handle sym, outputter_fn *outputter, outputter_data data, import_kind kind );
 extern bool         SymIsExported( cg_sym_handle sym );
 extern void         DoEmptyQueue( void );
 extern void         DoAlignment( int len );
@@ -82,10 +82,10 @@ extern void         FEPtr( cg_sym_handle sym, type_def *tipe, offset plus );
 extern void         FEPtrBaseOffset( cg_sym_handle sym, offset plus );
 extern void         FEPtrBase( cg_sym_handle sym );
 
-extern void         DataAlign( unsigned_32 align );
-extern void         DataBytes( unsigned_32 len, const void *src );
-extern void         DataShort( unsigned_16 val );
-extern void         DataLong( unsigned_32 val );
+extern void         DataAlign( uint_32 align );
+extern void         DataBytes( uint_32 len, const void *src );
+extern void         DataShort( uint_16 val );
+extern void         DataLong( uint_32 val );
 extern void         IterBytes( offset len, byte pat );
 extern void         DataLabel( label_handle lbl );
 extern name         *GenFloat( name *cons, type_class_def type_class );

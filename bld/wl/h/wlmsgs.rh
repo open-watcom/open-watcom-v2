@@ -113,7 +113,7 @@
 #define    MSG_BAD_REC_TYPE                      82 + MSG_BASE
 #define    MSG_FRAME_INVALID                     83 + MSG_BASE
 #define    MSG_BAD_TARG_OFF                      84 + MSG_BASE
-#define    MSG_PRESS_CTRL_Z                      85 + MSG_BASE
+/* unused                                        85 + MSG_BASE */
 #define    MSG_INV_COM_START_ADDR                86 + MSG_BASE
 #define    MSG_STACK_SEG_IGNORED                 87 + MSG_BASE
 #define    MSG_NO_VIRT_MEM                       88 + MSG_BASE

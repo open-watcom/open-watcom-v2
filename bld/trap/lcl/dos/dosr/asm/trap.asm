@@ -135,6 +135,7 @@ assume  CS:_TEXT
 
 
 WATCH_DEPTH     equ     6+2+2   ; additional stack in watch point rtn
+TRAP_BIT        equ     100h
 
 ;       Code Segment variables
 
@@ -426,7 +427,7 @@ ChkReturn:      mov     SS,CS:SaveIntSS
                 push    AX                      ; save AX
                 pushf                           ; save flags
                 mov     AX,6[BP]                ; get old flags
-                and     AX,0100H                ; isolate T-bit
+                and     AX,TRAP_BIT             ; isolate T-bit
                 or      AX,-4[BP]               ; merge with new flags
                 mov     6[BP],AX                ; save new flags
                 pop     AX                      ; get rid of extra flags
@@ -536,7 +537,7 @@ OSHandler:
                 push    BP
                 mov     BP,SP
                 mov     AX,16[BP]
-                and     AH,0FEH                         ; clear T-bit
+                and     AH,NOT (TRAP_BIT shr 8) ; clear T-bit
                 mov     6[BP],AX
                 mov     AX,offset ChkReturn
                 xchg    AX,2[BP]

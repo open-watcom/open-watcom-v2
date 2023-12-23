@@ -30,6 +30,7 @@
 
 
 #include "wlib.h"
+#include "roundmac.h"
 
 #include "clibext.h"
 
@@ -135,7 +136,7 @@ static bool InsertOmfDict( OmfLibBlock *lib_block, unsigned num_blocks, char *sy
     omflib_hash( sym, len, &h, num_blocks );
 
     /* + length byte */
-    entry_len = Round2( len + 1 ) + 2;
+    entry_len = __ROUND_UP_SIZE_EVEN( len + 1 ) + 2;
     for( i = 0; i < num_blocks; i++ ) {
         loc = lib_block[h.block].fflag * 2;
         for( j = 0; j < NUM_BUCKETS; j++ ) {
@@ -268,12 +269,12 @@ void WriteOmfFile( sym_file *sfile )
      * be word aligned
      * + '!' character and length byte
      */
-    charCount += Round2( strlen( fname ) + 1 + 1 );
+    charCount += __ROUND_UP_SIZE_EVEN( strlen( fname ) + 1 + 1 );
     WriteFileBody( sfile );
     PadOmf( false );
     for( sym = sfile->first; sym != NULL; sym = sym->next ) {
         ++symCount;
         /* + length byte and word align */
-        charCount += Round2( sym->len + 1 );
+        charCount += __ROUND_UP_SIZE_EVEN( sym->len + 1 );
     }
 }

@@ -1,3 +1,5 @@
+/* UTF-8 encoding, ¥ */
+
 #include "filelist.rh"
 
 FILELIST DIALOG 80, 16, 152, 109

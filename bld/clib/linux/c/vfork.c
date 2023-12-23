@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -31,7 +31,8 @@
 
 #include "variety.h"
 #include <unistd.h>
-#include "linuxsys.h"
+#include "thread.h"
+#include "rterrno.h"
 
 
 #if defined( __386__ )
@@ -55,20 +56,27 @@
  * in the header file.
  */
 
-_WCRTLINK pid_t __declspec( naked ) vfork( void )
+#pragma aux __set_errno __parm [__eax] __modify [__edx]
+static int __set_errno( int err )
 {
-    __asm {
-        pop    edx;         /* Get the return address off the stack */
-        mov    eax, 190;    /* SYS_vfork */
-        int    80h;
-        push   edx;
-        cmp    eax, -125;
-        jb short L1;
-        neg    eax;
-        mov    _RWD_errno,eax;
-        or     eax, -1;
-    L1: ret;
-    };
+    _RWD_errno = err;
+    return( -1 );
+}
+
+static int __vfork( void );
+#pragma aux __vfork = \
+        "pop    edx"        /* Get the return address off the stack */ \
+        "mov    eax,190"    /* SYS_vfork */ \
+        "int    80h" \
+        "push   edx" \
+        "cmp    eax,-125" \
+        "jnb    __set_errno" \
+    __value [__eax] \
+    __modify __exact [__eax __edx]
+
+_WCRTLINK pid_t vfork( void )
+{
+    return( __vfork() );
 }
 
 #endif

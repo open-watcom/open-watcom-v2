@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,14 +35,13 @@
 
 #if _INTEL_CPU
     #include "asminlin.h"
-#else
+#else /* _RISC_CPU */
     #include "asinline.h"
 #endif
 
-extern  void        AsmSysInit( unsigned char * );
-extern  void        AsmSysFini( void );
-extern  char const  *AsmSysDefineByte( void );
-extern  void        AsmSysMakeInlineAsmFunc( bool );
-extern  void        AsmSysLine( const char * );
+extern void         AsmSysInit( unsigned char * );
+extern void         AsmSysFini( void );
+extern char const   *AsmSysDefineByte( void );
+extern void         AsmSysLine( const char * );
 
 #endif

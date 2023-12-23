@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -113,7 +113,7 @@ static short SuperVGASetMode( short adapter, short mode, short *stride )
 //#if !defined( __QNX__ )
     case _SV_VESA:
 #if defined( _M_I86 ) || defined(__QNX__)
-        if( GetVESAInfo( 0x4f01, mode, &buf ) != 0x004f ) {
+        if( GetVESAInfo( 0x4f01, mode, buf ) != 0x004f ) {
             return( FALSE );
         }
     #if defined( VERSION2 )
@@ -188,7 +188,7 @@ static short SuperVGASetMode( short adapter, short mode, short *stride )
         break;
 
     case _SV_PARADISE:
-        VideoInt( _BIOS_SET_MODE + mode, 0, 0, 0 );
+        VideoInt( VIDEOINT_SET_MODE + mode, 0, 0, 0 );
         if( GetVideoMode() != mode ) {
             return( FALSE );
         }
@@ -196,7 +196,7 @@ static short SuperVGASetMode( short adapter, short mode, short *stride )
         break;
 
     case _SV_ATI:
-        VideoInt( _BIOS_SET_MODE + mode, 0, 0, 0 );
+        VideoInt( VIDEOINT_SET_MODE + mode, 0, 0, 0 );
         if( GetVideoMode() != mode ) {
             return( FALSE );
         }
@@ -211,7 +211,7 @@ static short SuperVGASetMode( short adapter, short mode, short *stride )
     case _SV_OAK:
     case _SV_GENOA:
     case _SV_VIPER:
-        VideoInt( _BIOS_SET_MODE + mode, 0, 0, 0 );
+        VideoInt( VIDEOINT_SET_MODE + mode, 0, 0, 0 );
         if( GetVideoMode() != mode ) {
             return( FALSE );
         }
@@ -233,7 +233,7 @@ static short SuperVGASetMode( short adapter, short mode, short *stride )
         break;
 
     case _SV_TRIDENT:
-        VideoInt( _BIOS_SET_MODE + mode, 0, 0, 0 );
+        VideoInt( VIDEOINT_SET_MODE + mode, 0, 0, 0 );
         if( GetVideoMode() != mode ) {
             return( FALSE );
         }
@@ -245,7 +245,7 @@ static short SuperVGASetMode( short adapter, short mode, short *stride )
         break;
 
     case _SV_CHIPS:
-        VideoInt( _BIOS_SET_MODE + mode, 0, 0, 0 );
+        VideoInt( VIDEOINT_SET_MODE + mode, 0, 0, 0 );
         if( GetVideoMode() != mode ) {
             return( FALSE );
         }
@@ -262,7 +262,7 @@ static short SuperVGASetMode( short adapter, short mode, short *stride )
         }
 
     case _SV_CIRRUS:
-        VideoInt( _BIOS_SET_MODE + mode, 0, 0, 0 );
+        VideoInt( VIDEOINT_SET_MODE + mode, 0, 0, 0 );
         if( GetVideoMode() != mode ) {
             return( FALSE );
         }

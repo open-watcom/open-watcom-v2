@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -241,7 +242,7 @@ void BIOSSetCursorPos( unsigned char page, unsigned char row, unsigned char col 
 
     _setmx( &rx, &msg.write_reply, sizeof( msg.write_reply ) );
 
-    Sendmx( QNXCon->driver, 2, 1, &sx, &rx );
+    Sendmx( QNXCon->driver, 2, 1, sx, &rx );
 
 } /* BIOSSetCursorPos */
 
@@ -479,6 +480,6 @@ void BIOSUpdateScreen( size_t offset, unsigned nchars )
 
     _setmx( &rx, &msg.write_reply, sizeof( msg.write_reply ) );
 
-    Sendmx(QNXCon->driver, 2, 1, &sx, &rx );
+    Sendmx(QNXCon->driver, 2, 1, sx, &rx );
 
 } /* BIOSUpdateScreen */

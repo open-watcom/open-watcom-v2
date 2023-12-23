@@ -1,3 +1,5 @@
+tree_depth = 4
+
 proj_name = ide
 
 sys_windowed = 1
@@ -12,7 +14,9 @@ target_win = win
 
 docs_host_dir = $(docs_dir)/$(host_os)
 
+!ifneq nowgml 1
 additional_clean = $(docs_host_dir)/ide.gh
+!endif
 
 !include cproj.mif
 !include defrule.mif
@@ -43,6 +47,9 @@ inc_dirs = -I"../h" $(wclass_inc_dirs) $(idelib_inc_dirs) $(gui_inc_dirs) $(comm
     $(wpi_inc_dirs) -I"$(docs_host_dir)" -I"$(editdll_dir)" -I"$(rcsdll_dir)" -I"$(batch_dir)/h"
 
 extra_cpp_flags     = -DGUI_IS_GUI
+!ifeq nowgml 1
+extra_cpp_flags     += -DNOWGML
+!endif
 extra_cpp_flags_os2 = -D__OS2_PM__
 
 !ifeq host_os win
@@ -70,7 +77,9 @@ extra_l_flags   = op eliminate op description 'Open Watcom IDE'
 #
 # EXE
 #
+!ifneq nowgml 1
 exetarg_prebuild_objs = $(docs_host_dir)/ide.gh
+!endif
 exetarg_objs          = $(objs)
 exetarg_libs          = $(idelib_lib) $(wclass_lib) $(gui_lib) $(wres_lib)
 exetarg_res_version_res_exe_nt_386 = exever.res
@@ -91,11 +100,11 @@ rc_inc_dirs = $(ide_rc_inc_dirs) $(gui_rc_inc_dirs)
 
 $(exetarg_res) : ../res/$(target_$(host_os))/ide.rc $(gui_dir)/h/gui.rc
     @%make echo_rc
-    $(rc) $(rc_flags) $(rc_inc_path) $[@ -fo=$@
+    $(rc) $(rc_ui8_encoding) $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
 ntmanif.res : ../res/win/ntmanif.rc
     @%make echo_rc
-    $(rc) $(rc_flags) -I"../res/win" $(inc_dirs_sys_nt) $< -fo=$@
+    $(rc) $(rc_ui8_encoding) $(rc_flags) -I"../res/win" $(inc_dirs_sys_nt) $< -fo=$@
 
 curr_dir=$+$(%__CWD__)$-
 
@@ -103,5 +112,5 @@ $(docs_host_dir) : .SYMBOLIC
     $(noecho)cd $@
 
 $(docs_host_dir)/ide.gh : $(docs_host_dir) .ALWAYS
-    $(noecho)!$(nested_wmake) -h -f ../mif/onebook.mif hbook=ide header=1 dotarget=$(host_os)
-    $(noecho)cd $(curr_dir)
+    $(noecho)!$(nested_wmake) -h -f ../mif/master.mif hbook=ide header=1 dotarget=$(host_os) tree_depth=2
+    $(noecho)cd "$(curr_dir)"

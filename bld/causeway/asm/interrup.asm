@@ -642,7 +642,7 @@ RawSetEVector   endp
 ;
 ;CX:DX  - Real mode address allocated.
 ;
-RAWGetCallBack  proc near
+RawGetCallBack  proc near
         ;
         push    eax
         push    ebx
@@ -716,7 +716,7 @@ inter12_10:
         pop     eax
         ret
         assume ds:_cwDPMIEMU
-RAWGetCallBack endp
+RawGetCallBack endp
 
 
 ;-------------------------------------------------------------------------------
@@ -727,7 +727,7 @@ RAWGetCallBack endp
 ;
 ;CX:DX  - Real mode call back address.
 ;
-RAWRelCallBack proc near
+RawRelCallBack proc near
         ;
         pushad
         push    ds
@@ -768,7 +768,7 @@ inter13_2:
         popad
         ret
         assume ds:_cwDPMIEMU
-RAWRelCallBack endp
+RawRelCallBack endp
 
 
 ;-------------------------------------------------------------------------------
@@ -1547,7 +1547,7 @@ inter18_c2:
         mov     ebx,edx
         mov     es:RealRegsStruc.Real_SP[edi],0
         mov     es:RealRegsStruc.Real_SS[edi],0
-        call    EmuRAWSimulateINT
+        call    EmuRawSimulateInt
         ;
         cmp     d[ebp+(4+4+4+4+4+4+4+4)+(10*2)+(4+4+4+4)+(4)],0
         jz      inter18_NoCall
@@ -1689,7 +1689,7 @@ inter19_Use16Bit678:
 ;
 ;Now switch to PL0 to get CR0-3 values.
 ;
-        call    EmuRawPL32PL0
+        call    EmuRawPL3toPL0
 .386P
         str     ax              ;get TR
         mov     ExceptionTR,ax
@@ -1701,7 +1701,7 @@ inter19_Use16Bit678:
         mov     ExceptionCR3,eax
         mov     cx,MainSS
         mov     edx,offset _cwStackEnd-256
-        call    EmuRawPL02PL3
+        call    EmuRawPL0toPL3
 ;
 ;Convert register values into ASCII ready for printing.
 ;
@@ -1835,7 +1835,7 @@ inter19_Use16Bit678:
         mov     RealRegsStruc.Real_SP[edi],0
         mov     RealRegsStruc.Real_SS[edi],0
         mov     bl,21h
-        call    EmuRawSimulateINT
+        call    EmuRawSimulateInt
 ;
 ;Now switch back to exit code.
 ;

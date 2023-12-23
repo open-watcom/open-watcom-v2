@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,6 +31,7 @@
 
 
 #include "global.h"
+#include <errno.h>
 #include "rcerrors.h"
 #include "semantic.h"
 #include "depend.h"
@@ -131,7 +132,7 @@ static ResLocation semCopyRawFile( const char *filename, bool onlyFile )
         }
     }
     if( !error ) {
-        fp = RcIoOpenInput( filename, false );
+        fp = RcIoOpenInputBin( filename );
         if( fp == NULL ) {
             RcError( ERR_CANT_OPEN_FILE, filename, strerror( errno ) );
             error = true;
@@ -161,9 +162,7 @@ static ResLocation semCopyRawFile( const char *filename, bool onlyFile )
     } else {
         loc.len = SemEndResource( loc.start );
     }
-    if( fp != NULL ) {
-        RESCLOSE( fp );
-    }
+    RcIoCloseInputBin( fp );
     RESFREE( buffer );
     return( loc );
 }

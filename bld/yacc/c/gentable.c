@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -177,7 +178,7 @@ void genobj( FILE *fp )
     a_sym       *sym;
     a_pro       *pro;
     an_item     *item;
-    a_state     *x;
+    a_state     *state;
     a_shift_action *tx;
     a_reduce_action *rx;
     index_n     i, j;
@@ -230,14 +231,14 @@ void genobj( FILE *fp )
     parent_base = 0;
     for( i = nstate; i > 0; ) {
         --i;
-        x = statetab[i];
+        state = statetab[i];
         q = tokens;
-        for( tx = x->trans; (sym = tx->sym) != NULL; ++tx ) {
+        for( tx = state->trans; (sym = tx->sym) != NULL; ++tx ) {
             *q++ = sym->token;
-            actions[sym->token] = tx->state->sidx;
+            actions[sym->token] = tx->state->idx;
         }
         max_savings = 0;
-        for( rx = x->redun; (pro = rx->pro) != NULL; ++rx ) {
+        for( rx = state->redun; (pro = rx->pro) != NULL; ++rx ) {
             if( (savings = (set_size)((mp = Members( rx->follow )) - setmembers)) == 0 )
                 continue;
             redun = pro->pidx + nstate;
@@ -272,17 +273,17 @@ void genobj( FILE *fp )
         parent[i] = nstate;
         for( j = nstate; --j > i; ) {
             if( abs( size[j] - size[i] ) < min_len ) {
-                x = statetab[j];
+                state = statetab[j];
                 p = test;
                 q = test + ntoken;
-                for( tx = x->trans; (sym = tx->sym) != NULL; ++tx ) {
-                    if( actions[sym->token] == tx->state->sidx ) {
+                for( tx = state->trans; (sym = tx->sym) != NULL; ++tx ) {
+                    if( actions[sym->token] == tx->state->idx ) {
                        *p++ = sym->token;
                     } else {
                        *--q = sym->token;
                     }
                 }
-                for( rx = x->redun; (pro = rx->pro) != NULL; ++rx ) {
+                for( rx = state->redun; (pro = rx->pro) != NULL; ++rx ) {
                     redun = pro->pidx + nstate;
                     if( redun == other[j] )
                         redun = error;
@@ -364,9 +365,9 @@ void genobj( FILE *fp )
         putnum( fp, "YYPARTOKEN", ptoken );
         putnum( fp, "YYDEFTOKEN", dtoken );
     }
-    putnum( fp, "YYSTART", base[startstate->sidx] );
-    putnum( fp, "YYSTOP", base[eofsym->enter->sidx] );
-    putnum( fp, "YYERR", base[errstate->sidx] );
+    putnum( fp, "YYSTART", base[startstate->idx] );
+    putnum( fp, "YYSTOP", base[eofsym->state->idx] );
+    putnum( fp, "YYERR", base[errstate->idx] );
     putnum( fp, "YYUSED", used );
 
     if( compactflag ) {
@@ -376,20 +377,30 @@ void genobj( FILE *fp )
             new_action = table[i].action;
             if( i == base[j - 1] ) {
                 --j;
-                // First element in each state is default/parent
+                /*
+                 * First element in each state is default/parent
+                 */
                 if( parent[j] == nstate ) {
-                    // No parent state
+                    /*
+                     * No parent state
+                     */
                     tokval = used + parent_base;
                 } else {
                     tokval = base[parent[j]] + parent_base;
                 }
-                // 0 indicates no default
+                /*
+                 * 0 indicates no default
+                 */
                 if( new_action != 0 ) {
                     if( new_action < nstate ) {
-                        // Shift
+                        /*
+                         * Shift
+                         */
                         new_action = base[new_action];
                     } else {
-                        // Reduce
+                        /*
+                         * Reduce
+                         */
                         new_action -= nstate;   // convert to 0 based
                         new_action += used;     // now convert to 'used' base
                     }
@@ -397,10 +408,14 @@ void genobj( FILE *fp )
             } else {
                 tokval = table[i].token;
                 if( new_action < nstate ) {
-                    // Shift
+                    /*
+                     * Shift
+                     */
                     new_action = base[new_action];
                 } else {
-                    // Reduce
+                    /*
+                     * Reduce
+                     */
                     new_action -= nstate;       // convert to 0 based
                     new_action += used;         // now convert to 'used' base
                 }
@@ -408,7 +423,9 @@ void genobj( FILE *fp )
             putcompact( fp, tokval, new_action );
         }
         endtab( fp );
-        // Combine lengths & lhs into a single table
+        /*
+         * Combine lengths & lhs into a single table
+         */
         begtab( fp, "YYPRODTYPE", "yyprodtab" );
         for( i = 0; i < npro; ++i ) {
             j = 0;

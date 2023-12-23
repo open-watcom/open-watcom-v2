@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,16 +46,15 @@
  * TZSET - sets the values of the variables 'timezone', 'daylight'
  *         and 'tzname' according to the setting of the environment
  *         variable "TZ". The "TZ" variable has the format
- *          :characters
+ *
+ * LINUX    :characters
  *              or
- *          <std><offset>[<dst>[<offset>]][,<start>[/<time>],<end>[/<time>]]]
+ * POSIX    <std><offset>[<dst>[<offset>]][,<start>[/<time>],<end>[/<time>]]]
+ *              or
+ * OS/2     <std><offset><dst>,<sm>,<sw>,<sd>,<st>,<em>,<ew>,<ed>,<et>,<shift>
  *
- * for OS/2 the alternate format is evaluated, if after scanning the previous
- *          format the next char is a ','
- *
- *          <std><offset><dst>,<sm>,<sw>,<sd>,<st>,<em>,<ew>,<ed>,<et>,<shift>
- *
- *
+ *          the alternate OS/2 format is evaluated, if after scanning
+ *          the previous format the next char is a ','
  */
 
 //#define TZNAME_MAX    128     /* defined in <limits.h> */
@@ -73,20 +72,19 @@ struct tm       __end_dst = {   /* end of daylight savings */
 };                              /* in terms of EST */
 /* i.e. 02:00 EDT == 01:00 EST*/
 
-static char     stzone[TZNAME_MAX + 1] = "EST";       /* place to store names */
-static char     dtzone[TZNAME_MAX + 1] = "EDT";       /* place to store names */
+static char     stzone[TZNAME_MAX + 1] = "EST";     /* place to store names */
+static char     dtzone[TZNAME_MAX + 1] = "EDT";     /* place to store names */
 
-_WCRTDATA char  * _WCDATA tzname[2] = { stzone, dtzone };
+_WCRTDATA char  *_WCDATA tzname[2] = { stzone, dtzone };
 
-_WCRTDATA long  _WCDATA timezone = 5L * 60L * 60L;      /* seconds from GMT */
-_WCRTDATA int   _WCDATA daylight = 1;                   /* d.s.t. indicator */
-int             __dst_adjust = 60 * 60;         /* daylight adjustment */
+_WCRTDATA long  _WCDATA timezone = 5L * 60L * 60L;  /* seconds from GMT */
+_WCRTDATA int   _WCDATA daylight = 1;               /* d.s.t. indicator */
+int             __dst_adjust = 60 * 60;             /* daylight adjustment */
 
 static struct {
     unsigned    cache_OS_TZ : 1;
     unsigned    have_OS_TZ : 1;
-    unsigned    format_TZ : 2;  /* format: 0= yet unknown, 1= OS/2, 2= OW  */
-}               tzFlag = { 1, 0, 0 };
+}               tzFlag = { 1, 0 };
 
 int __DontCacheOSTZ( void )
 /*************************/
@@ -96,7 +94,6 @@ int __DontCacheOSTZ( void )
     old_flag           = tzFlag.cache_OS_TZ;
     tzFlag.cache_OS_TZ = 0;
     tzFlag.have_OS_TZ  = 0;
-    tzFlag.format_TZ   = 0;
     return( old_flag );
 }
 
@@ -108,12 +105,27 @@ int __CacheOSTZ( void )
     old_flag           = tzFlag.cache_OS_TZ;
     tzFlag.cache_OS_TZ = 1;
     tzFlag.have_OS_TZ  = 0;
-    tzFlag.format_TZ   = 0;
     return( old_flag );
 }
 
-static char *parse_time( char *tz, int *val )
-/*******************************************/
+static char *parse_sign( char *tz, int *sign )
+/********************************************/
+{
+    int neg;
+
+    neg = 0;
+    if( *tz == '-' ) {
+        ++tz;
+        neg = 1;
+    } else if( *tz == '+' ) {
+        ++tz;
+    }
+    *sign = neg;
+    return( tz );
+}
+
+static char *parse_number( char *tz, int *val )
+/*********************************************/
 {
     int value;
 
@@ -126,63 +138,88 @@ static char *parse_time( char *tz, int *val )
     return( tz );
 }
 
-static char *parse_offset( char *tz, char *name, long *offset )
-/*************************************************************/
+static char *parse_time( char *tz, int *hours, int *minutes, int *seconds )
+/*************************************************************************/
 {
-    int         hours;
-    int         minutes;
-    int         seconds;
-    int         neg;
+    tz = parse_number( tz, hours );
+    if( *tz == ':' ) {
+        tz = parse_number( tz + 1, minutes );
+        if( *tz == ':' ) {
+            tz = parse_number( tz + 1, seconds );
+        }
+    }
+    return( tz );
+}
+
+static char *parse_name( char *tz, char *name )
+/*********************************************/
+{
     int         len;
     char        ch;
-    char const  *tzstart;
+    char        *tzstart;
+    int         quoted;
 
-    if( *tz == ':' ) {
+    /*
+     * parse time zone name (should be 3 or more characters)
+     * examples:    PST8, EDT+6, Central Standard Time+7:00:00
+     *              <-03>5
+     */
+    quoted = 0;
+    if( *tz == '<' ) {
         tz++;
-        tzFlag.format_TZ = 2;  /* OW format, can't be OS/2 format */
+        quoted = 1;
     }
-    /* remember where time zone name string begins */
     tzstart = tz;
-    /* parse time zone name (should be 3 or more characters) */
-    /* examples:    PST8, EDT+6, Central Standard Time+7:00:00 */
     for( ;; ) {
         ch = *tz;
         if( ch == '\0' )
             break;
-        if( ch == ',' )
-            break;
-        if( ch == '-' )
-            break;
-        if( ch == '+' )
-            break;
-        if( ch >= '0' && ch <= '9' )
-            break;
+        if( quoted ) {
+            if( ch == '>' ) {
+                break;
+            }
+        } else {
+            if( ch == ',' )
+                break;
+            if( ch == '-' )
+                break;
+            if( ch == '+' )
+                break;
+            if( ch >= '0' && ch <= '9' ) {
+                break;
+            }
+        }
         ++tz;
     }
     len = tz - tzstart;
     if( len > TZNAME_MAX )
         len = TZNAME_MAX;
-    memcpy( name, tzstart, ( size_t ) len );
+    memcpy( name, tzstart, (size_t)len );
     name[len] = '\0';
+    if( quoted && ch == '>' ) {
+        tz++;
+    }
+    return( tz );
+}
 
-    neg = 0;
-    if( ch == '-' ) {
-        neg = 1;
-        ++tz;
-    } else if( ch == '+' )
-        ++tz;
+static char *parse_offset( char *tz, long *offset )
+/*************************************************/
+{
+    int         hours;
+    int         minutes;
+    int         seconds;
+    int         neg;
+    char        ch;
+
+    tz = parse_sign( tz, &neg );
     ch = *tz;
     if( ch >= '0' && ch <= '9' ) {
         hours = minutes = seconds = 0;
-        tz = parse_time( tz, &hours );
-        if( *tz == ':' ) {
-            tz = parse_time( tz + 1, &minutes );
-            if( *tz == ':' )
-                tz = parse_time( tz + 1, &seconds );
-        }
+        tz = parse_time( tz, &hours, &minutes, &seconds );
         *offset = seconds + ( ( minutes + ( hours * 60 ) ) * 60L );
-        if( neg )
+        if( neg ) {
             *offset = -*offset;
+        }
     }
     return( tz );
 }
@@ -197,27 +234,43 @@ static char *parse_rule( char *tz, struct tm *timeptr )
     int         seconds;
 
     date_form = -1;                         /* n  0-365 */
-    if( *tz == 'J' ) { /* Jn 1-365 (no leap days) */
+    if( *tz == 'J' ) {
+        /*
+         * Jn 1-365 (no leap days)
+         */
         date_form = 1;
-        tzFlag.format_TZ = 2;  /* OW format, can't be OS/2 format */
         tz++;
     }
-    if( *tz == 'M' ) { /* Mm.n.d n'th day of month */
+    if( *tz == 'M' ) {
+        /*
+         * Mm.n.d n'th day of month
+         */
         date_form = 0;
-        tzFlag.format_TZ = 2;  /* OW format, can't be OS/2 format */
         tz++;
     }
     timeptr->tm_isdst = date_form;
-    tz = parse_time( tz, &days );
-    if( date_form != 0 )
+    tz = parse_number( tz, &days );
+    if( date_form != 0 ) {  /* J form */
+        /*
+         * day of year 0-365
+         */
         timeptr->tm_yday = days;
-    else {
-        timeptr->tm_mon = days - 1;             /* 1-12 for M form */
+    } else {                /* M form */
+        /*
+         * month 1-12
+         */
+        timeptr->tm_mon = days - 1;
         if( *tz == '.' ) {
-            tz = parse_time( tz + 1, &days );   /* 1-5 for M form */
+            tz = parse_number( tz + 1, &days );
+            /*
+             * week of month 1-5
+             */
             timeptr->tm_mday = days;
             if( *tz == '.' ) {
-                tz = parse_time( tz + 1, &days );/* 0-6 for M form */
+                /*
+                 * day of week 0-6
+                 */
+                tz = parse_number( tz + 1, &days );
                 timeptr->tm_wday = days;
             }
         }
@@ -227,18 +280,24 @@ static char *parse_rule( char *tz, struct tm *timeptr )
     hours = 2;
     minutes = seconds = 0;
     if( *tz == '/' ) {
-        tzFlag.format_TZ = 2;  /* OW format, can't be OS/2 format */
-        tz = parse_time( tz + 1, &hours );
-        if( *tz == ':' ) {
-            tz = parse_time( tz + 1, &minutes );
-            if( *tz == ':' )
-                tz = parse_time( tz + 1, &seconds );
-        }
+        tz = parse_time( tz, &hours, &minutes, &seconds );
     }
     timeptr->tm_sec = seconds;
     timeptr->tm_min = minutes;
     timeptr->tm_hour = hours;
     return( tz );
+}
+
+static void fix_rule( struct tm *tm, int adjust )
+/***********************************************/
+{
+    /*
+     * convert rule to be in terms of Standard Time
+     * rather than Daylight Time
+     */
+    tm->tm_hour -= adjust / 3600;
+    tm->tm_min -= ( adjust / 60 ) % 60;
+    tm->tm_sec -= adjust % 60;
 }
 
 static char *parse_rule_OS2( char *tz, struct tm *timeptr )
@@ -248,80 +307,86 @@ static char *parse_rule_OS2( char *tz, struct tm *timeptr )
     int         month;
     int         week;
     int         seconds;
-    char    *   tzptr;
+    char        *tzptr;
     int         neg;
 
+    /*
+     * month 1 - 12
+     */
     tzptr = tz;
-    tz = parse_time( tz, &month ); /* month 1 - 12 */
+    tz = parse_number( tz, &month );
     if( (tzptr == tz) || (*tz != ',') ) { /* parsing error */
         return( tzptr );
     }
-
-    if( *(tz + 1) == '-' ) {
-        neg = 1;
-        tz++;
-    } else {
-        neg = 0;
-        if( *(tz + 1) == '+' ) {
-            tz++;
-        }
-    }
-    tzptr = tz + 1;
-    tz = parse_time( tzptr, &week ); /* week -1, 0, 1, 2, 3, 4 */
+    tz++;   /* skip ',' character */
+    /*
+     * week -1, 0, 1, 2, 3, 4
+     */
+    tzptr = tz;
+    tz = parse_sign( tz, &neg );
+    tz = parse_number( tz, &week );
     if( (tzptr == tz) || (*tz != ',') || (neg && week != 1) ) {
         return( tzptr ); /* parsing error */
                          /* or unsupported: week -2, -3, -4 */
     }
-    if ( neg && (week == 1) ) {
-        week = 5; /* week -1 in OS/2 is week 5 in OW format */
+    tz++;   /* skip ',' character */
+    /*
+     * convert to POSIX week 1-5
+     */
+    if( neg && (week == 1) ) {
+        /*
+         * week -1 in OS/2 is week 5 in POSIX format
+         */
+        week = 5;
     }
 
-    tzptr = tz + 1;
-    tz = parse_time( tzptr, &days ); /* days 0-6 or 1-31 */
+    /*
+     * days 0-6 (week) or 1-31 (month)
+     */
+    tzptr = tz;
+    tz = parse_number( tz, &days );
     if( (tzptr == tz) || (*tz != ',') ) { /* parsing error */
         return( tzptr );
     }
+    tz++;   /* skip ',' character */
 
-    if( week == 0 ) { /* days is day of month */
+    if( week == 0 ) {   /* days is day of month */
         timeptr->tm_yday = days + __diyr[month - 1]; /*Julian day */
         timeptr->tm_isdst = 1;                  /* simulated Jn form */
-    } else { /* days is day of week */
+    } else {            /* days is day of week */
         timeptr->tm_isdst = 0;                  /* simulated M form */
         timeptr->tm_mon = month - 1;            /* 1-12 for M form */
         timeptr->tm_mday = week;                /* 1-5  for M form */
         timeptr->tm_wday = days;
     }
 
-    tzptr = tz + 1;
-    tz = parse_time( tzptr, &seconds ); /* seconds after midnight */
-
+    /*
+     * parse seconds after midnight
+     */
+    tzptr = tz;
+    tz = parse_number( tz, &seconds );
     if( (tzptr == tz) || (*tz != ',') ) { /* parsing error */
         return( tzptr );
     }
 
-    timeptr->tm_hour = seconds / 3600;
-    timeptr->tm_min  = ( seconds / 60 ) % 60;
-    timeptr->tm_sec  = seconds % 60;
+    fix_rule( timeptr, -seconds );
 
     return( tz );
 }
 
-/***************************************************************************/
-/*                                                                         */
-/* OS/2 format is checked if the format is not yet determined and the next */
-/* character is a ,                                                        */
-/* To be valid all fields from sm to shift must be specified               */
-/*                                                                         */
-/*      <std><offset><dst>,<sm>,<sw>,<sd>,<st>,<em>,<ew>,<ed>,<et>,<shift> */
-/*                                starting            ending       seconds */
-/*                           month                month                    */
-/*                                week     time       week     time        */
-/*                                     day                 day             */
-/*                                                                         */
-/***************************************************************************/
-static char * parse_OS2( char *tz, struct tm *time1, struct tm *time2,
-                         long *day_zone )
-/**************************************/
+static char *parse_OS2( char *tz, struct tm *time1, struct tm *time2, long *day_zone )
+/*************************************************************************************
+ * OS/2 format is checked if the format is not yet determined and the next
+ * character is a ','
+ * To be valid all fields from sm to shift must be specified
+ *
+ * <std><offset><dst>,<sm>,<sw>,<sd>,<st>,<em>,<ew>,<ed>,<et>,<shift>
+ *                      |    |    |   |     |    |    |   |
+ *                    month  |    | time  month  |    | time
+ *                         week   | seconds    week   | seconds
+ *                              day                 day
+ *                        starting            ending
+ */
 {
     struct tm       start_dst = {   /* start of daylight savings */
         0, 0, 0,                    /* no default as all fields  */
@@ -334,23 +399,34 @@ static char * parse_OS2( char *tz, struct tm *time1, struct tm *time2,
         0, 0, 0,
         0, 0, 0
     };
-    char    *   tzptr;
+    char        *tzptr;
     int         shift;
 
+    /*
+     * parse daylight starting time
+     */
     tzptr = tz;
-    tz = parse_rule_OS2( tz, &start_dst ); /* daylight starting time */
-    if( (tzptr == tz) || (*tz != ',') ) { /* parsing error */
+    tz = parse_rule_OS2( tz, &start_dst );
+    if( (tzptr == tz) || (*tz != ',') ) {   /* parsing error */
         return( tzptr );
     }
+    tz++;   /* skip ',' character */
 
-    tzptr = tz + 1;
-    tz = parse_rule_OS2( tzptr, &end_dst ); /*daylight ending time */
+    /*
+     * parse daylight ending time
+     */
+    tzptr = tz;
+    tz = parse_rule_OS2( tz, &end_dst );
     if( (tzptr == tz) || (*tz != ',') || (*(tz + 1) == '\0') ) { /* error */
         return( tzptr );
     }
+    tz++;   /* skip ',' character */
 
-    tz = parse_time( tz + 1, &shift );     /* shift value */
-    if( *tz == '\0' ) { /* format is ok */
+    /*
+     * parse daylight shift value
+     */
+    tz = parse_number( tz, &shift );
+    if( *tz == '\0' ) {                     /* format is ok */
         memcpy( time1, &start_dst, sizeof( *time1 ) );
         memcpy( time2, &end_dst, sizeof( *time2 ) );
         *day_zone = _RWD_timezone - shift;
@@ -358,60 +434,56 @@ static char * parse_OS2( char *tz, struct tm *time1, struct tm *time2,
     return( tz );
 }
 
-static void fix_dst_end( void )
-/*****************************/
-{
-    /* convert rule to be in terms of Standard Time */
-    /* rather than Daylight Time */
-    __end_dst.tm_hour -= _RWD_dst_adjust / 3600;
-    __end_dst.tm_min -= ( _RWD_dst_adjust / 60 ) % 60;
-    __end_dst.tm_sec -= _RWD_dst_adjust % 60;
-}
-
-void __parse_tz( char * tz )
-/**************************/
+void __parse_tz( char *tz )
+/*************************/
 {
     long        dayzone;
-    char    *   dststart;
 
     _RWD_daylight = 0;
-    tzFlag.format_TZ   = 0;
-    tz = parse_offset( tz, stzone, &_RWD_timezone );
+    if( *tz == ':' ) {
+        tz++;
+    }
+    tz = parse_name( tz, stzone );
+    tz = parse_offset( tz, &_RWD_timezone );
     if( *tz == '\0' ) {
         dtzone[0] = '\0';
         return;
     }
     _RWD_daylight = 1;
-    dayzone = _RWD_timezone - ( 60*60 );              /* 16-aug-91 */
+    _RWD_dst_adjust = 60 * 60;
+    dayzone = _RWD_timezone - _RWD_dst_adjust;
 
-    dststart = tz; /* remember for possible OS/2 format check */
-
-    tz = parse_offset( tz, dtzone, &dayzone );
-    _RWD_dst_adjust = _RWD_timezone - dayzone;
-
-    /* parse daylight changing rules */
-    if( *tz == ',' )
-        tz = parse_rule( tz + 1, &__start_dst );
+    tz = parse_name( tz, dtzone );
     if( *tz == ',' ) {
-        tz = parse_rule( tz + 1, &__end_dst );
-        fix_dst_end();
-    }
-
-    if( tzFlag.format_TZ < 2 && *tz != '\0' ) { /* not yet sure about tz format*/
-                                                /* try OS/2 format */
-        while( *dststart != ',' ) { /* over dst zone name */
-            if( (*dststart >= '0') && (*dststart <= '9') ) {
-                tzFlag.format_TZ = 2;  /* cannot be OS/2 format */
-                break;
-            }
-            dststart++;
+        /*
+         * parse OS/2 format
+         *
+         * parse daylight info
+         */
+        tz = parse_OS2( tz + 1, &_RWD_start_dst, &_RWD_end_dst, &dayzone );
+        if( *tz == '\0' ) {
+            _RWD_dst_adjust = _RWD_timezone - dayzone;
+            fix_rule( &_RWD_end_dst, _RWD_dst_adjust );
         }
-        if( tzFlag.format_TZ < 2 ) {
-            tz = parse_OS2( dststart + 1, &__start_dst, &__end_dst, &dayzone );
-            if( *tz == '\0' ) {
-                tzFlag.format_TZ = 1; /* correct OS/2 format */
-                _RWD_dst_adjust = _RWD_timezone - dayzone;
-                fix_dst_end();
+    } else {
+        /*
+         * parse POSIX format
+         *
+         * parse daylight ending offset
+         */
+        tz = parse_offset( tz, &dayzone );
+        _RWD_dst_adjust = _RWD_timezone - dayzone;
+        if( *tz == ',' ) {
+            /*
+             * parse daylight starting time
+             */
+            tz = parse_rule( tz + 1, &_RWD_start_dst );
+            if( *tz == ',' ) {
+                /*
+                 * parse daylight ending time
+                 */
+                tz = parse_rule( tz + 1, &_RWD_end_dst );
+                fix_rule( &_RWD_end_dst, _RWD_dst_adjust );
             }
         }
     }
@@ -421,11 +493,15 @@ static int tryOSTimeZone( const char *tz )
 /****************************************/
 {
     if( tz == NULL ) {
-        /* calling OS can be expensive; many programs don't care */
+        /*
+         * calling OS can be expensive; many programs don't care
+         */
         if( tzFlag.cache_OS_TZ && tzFlag.have_OS_TZ )
             return( 1 );
-        /* Assume that even if we end up not getting the TZ from OS,
-            we won't have any better luck if we try later. */
+        /*
+         * Assume that even if we end up not getting the TZ from OS,
+         * we won't have any better luck if we try later.
+         */
         tzFlag.have_OS_TZ = 1;
     } else {
         tzFlag.have_OS_TZ = 0;
@@ -433,34 +509,36 @@ static int tryOSTimeZone( const char *tz )
         return( 0 );
 #endif
     }
-#if defined( __NT__ )
+#if defined( __LINUX__ )
+    return( __read_tzfile( tz ) );
+#elif defined( __NT__ )
     {
         TIME_ZONE_INFORMATION   tz_info;
         LPSYSTEMTIME            st;
         size_t                  rc;
 
-        _RWD_daylight = 1;                  // assume daylight savings supported
+        _RWD_daylight = 1;              // assume daylight savings supported
         switch( GetTimeZoneInformation( &tz_info ) ) {
-        case TIME_ZONE_ID_UNKNOWN:          // returned by Windows NT/2000
-        case TIME_ZONE_ID_STANDARD:         // returned by Windows 95
+        case TIME_ZONE_ID_UNKNOWN:      // returned by Windows NT/2000
+        case TIME_ZONE_ID_STANDARD:     // returned by Windows 95
         case TIME_ZONE_ID_DAYLIGHT:
             _RWD_timezone = ( tz_info.Bias + tz_info.StandardBias ) * 60L;
             _RWD_dst_adjust = ( tz_info.DaylightBias - tz_info.StandardBias ) * -60L;
             if( tz_info.DaylightBias == 0 )
-                _RWD_daylight = 0;  // daylight savings not supported
+                _RWD_daylight = 0;      // daylight savings not supported
 
             rc = wcstombs( stzone, tz_info.StandardName, sizeof( stzone ) - 1 );
-            if( rc == (size_t)-1 )  // cannot convert string
-                stzone[ 0 ] = '\0';
-            else  // ensure null-terminated
-                stzone[ rc ] = '\0';
-
+            if( rc == (size_t)-1 ) {    // cannot convert string
+                stzone[0] = '\0';
+            } else {                    // ensure null-terminated
+                stzone[rc] = '\0';
+            }
             rc = wcstombs( dtzone, tz_info.DaylightName, sizeof( dtzone ) - 1 );
-            if( rc == (size_t)-1 )  // cannot convert string
-                dtzone[ 0 ] = '\0';
-            else  // ensure null-terminated
-                dtzone[ rc ] = '\0';
-
+            if( rc == (size_t)-1 ) {    // cannot convert string
+                dtzone[0] = '\0';
+            } else {                    // ensure null-terminated
+                dtzone[rc] = '\0';
+            }
             /*
             StandardDate for Eastern
                 wYear = 0
@@ -482,39 +560,39 @@ static int tryOSTimeZone( const char *tz )
                 wMilliseconds = 0
             */
             st = &tz_info.DaylightDate;
-            __start_dst.tm_sec  = st->wSecond;
-            __start_dst.tm_min  = st->wMinute;
-            __start_dst.tm_hour = st->wHour;
-            __start_dst.tm_mday = st->wDay;         // 1st, 2nd, 3rd, 4th week
-            __start_dst.tm_mon  = st->wMonth - 1;   // 0-11
-            __start_dst.tm_year = st->wYear;
-            __start_dst.tm_wday = st->wDayOfWeek;   // 0-6
-            __start_dst.tm_yday = 0;                // 0-365 -> 0-365
-            __start_dst.tm_isdst= 0;
+            _RWD_start_dst.tm_sec  = st->wSecond;
+            _RWD_start_dst.tm_min  = st->wMinute;
+            _RWD_start_dst.tm_hour = st->wHour;
+            _RWD_start_dst.tm_mday = st->wDay;         // 1st, 2nd, 3rd, 4th week
+            _RWD_start_dst.tm_mon  = st->wMonth - 1;   // 0-11
+            _RWD_start_dst.tm_year = st->wYear;
+            _RWD_start_dst.tm_wday = st->wDayOfWeek;   // 0-6
+            _RWD_start_dst.tm_yday = 0;                // 0-365 -> 0-365
+            _RWD_start_dst.tm_isdst= 0;
 
             st = &tz_info.StandardDate;
-            __end_dst.tm_sec  = st->wSecond;
-            __end_dst.tm_min  = st->wMinute;
-            __end_dst.tm_hour = st->wHour;
-            __end_dst.tm_mday = st->wDay;           // 1st, 2nd, 3rd, 4th week
-            __end_dst.tm_mon  = st->wMonth - 1;     // 0-11
-            __end_dst.tm_year = st->wYear;
-            __end_dst.tm_wday = st->wDayOfWeek;     // 0-6
-            __end_dst.tm_yday = 0;                  // 0-365 -> 0-365
-            __end_dst.tm_isdst= 0;
+            _RWD_end_dst.tm_sec  = st->wSecond;
+            _RWD_end_dst.tm_min  = st->wMinute;
+            _RWD_end_dst.tm_hour = st->wHour;
+            _RWD_end_dst.tm_mday = st->wDay;           // 1st, 2nd, 3rd, 4th week
+            _RWD_end_dst.tm_mon  = st->wMonth - 1;     // 0-11
+            _RWD_end_dst.tm_year = st->wYear;
+            _RWD_end_dst.tm_wday = st->wDayOfWeek;     // 0-6
+            _RWD_end_dst.tm_yday = 0;                  // 0-365 -> 0-365
+            _RWD_end_dst.tm_isdst= 0;
 
-            fix_dst_end();
+            fix_rule( &_RWD_end_dst, _RWD_dst_adjust );
             break;
 
         default:
-            // assume Eastern (North America) time zone
+            /*
+             * assume Eastern (North America) time zone
+             */
             _RWD_timezone = 5L * 60L * 60L;
             _RWD_dst_adjust = 60L * 60L;
         }
         return( 1 );
     }
-#elif defined( __LINUX__ )
-    return( __read_tzfile( tz ) );
 #else
     return( 1 );
 #endif
@@ -523,11 +601,12 @@ static int tryOSTimeZone( const char *tz )
 _WCRTLINK void tzset( void )
 /**************************/
 {
-    #ifndef __NETWARE__
+#ifndef __NETWARE__
     char        *tz;
 
     tz = getenv( "TZ" );
-    if( !tryOSTimeZone( tz ) && tz != NULL )
+    if( !tryOSTimeZone( tz ) && tz != NULL ) {
         __parse_tz( tz );
-    #endif
+    }
+#endif
 }

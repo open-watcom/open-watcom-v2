@@ -1,10 +1,11 @@
 #pmake: build lcl os_dos cpu_i86 trap x86
 
+tree_depth = 6
+
 host_os  = dos
 host_cpu = i86
 
 target_cpu = x86
-target_os  = dos
 
 srv   = lcl
 which = TRAP

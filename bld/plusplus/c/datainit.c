@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -51,7 +51,7 @@
 #include "typesig.h"
 #include "datadtor.h"
 #include "initdefs.h"
-#ifndef NDEBUG
+#ifdef DEVBUILD
     #include "dbg.h"
     #include "pragdefn.h"
     #include "togglesd.h"
@@ -79,20 +79,7 @@ static unsigned bitMask[] = {       // for bitfields
 };
 
 
-#ifdef NDEBUG
-#define _fatal( x )
-#define _dump( x )
-#define _dumpPTree( x )
-#define _dumpSymbol( x )
-#define _dumpFullType( x )
-#define _dumpInt( x, y )
-#define _dumpPtr( x, y )
-#define _dumpInitInfo( x )
-#define _dumpDtorPtr( x, y )
-#define _dumpDtorInt( x, y )
-#define _dumpDtor( x )
-#define _dumpDtorSymbol( x )
-#else
+#ifdef DEVBUILD
 #define __DUMP_INIT TOGGLEDBG( dump_init )
 #define __DUMP_DTOR ( __DUMP_INIT || TOGGLEDBG( dump_data_dtor ) )
 #define _fatal( x )             CFatal( x )
@@ -106,6 +93,19 @@ static unsigned bitMask[] = {       // for bitfields
 #define _dumpDtorInt( x, y )    if( __DUMP_DTOR ) printf( x, y )
 #define _dumpDtor( x )          if( __DUMP_DTOR ) puts( x )
 #define _dumpDtorSymbol( x )    if( __DUMP_DTOR ) DumpSymbol( x )
+#else
+#define _fatal( x )
+#define _dump( x )
+#define _dumpPTree( x )
+#define _dumpSymbol( x )
+#define _dumpFullType( x )
+#define _dumpInt( x, y )
+#define _dumpPtr( x, y )
+#define _dumpInitInfo( x )
+#define _dumpDtorPtr( x, y )
+#define _dumpDtorInt( x, y )
+#define _dumpDtor( x )
+#define _dumpDtorSymbol( x )
 #endif
 
 
@@ -1299,10 +1299,12 @@ static void dataInitRunTimeCall( target_size_t start, target_size_t size )
             refd = PointerTypeForArray( refd );
             refd = TypePointedAtModified( refd );
         }
+#if _INTEL_CPU
         if( TypeTruncByMemModel( refd ) ) {
             CErr( ERR_CTOR_OBJ_MEM_MODEL );
             currInit->state = DS_ERROR;
         } else {
+#endif
             sig = dataInitTypeSigFind( base_type, TSA_DEFAULT_CTOR | TSA_DTOR );
             node = NodeArguments( NodeTypeSig( sig )
                                 , NodeOffset( num_elem )
@@ -1322,7 +1324,9 @@ static void dataInitRunTimeCall( target_size_t start, target_size_t size )
             _dump( "-------------------------------------------------------" );
 
             dataInitEmitExpr( node );
+#if _INTEL_CPU
         }
+#endif
     }
     //DtorArrayIndex
 }

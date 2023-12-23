@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,9 +48,9 @@
 
 static  name    *FindPiece( hw_reg_set opnd, hw_reg_set frm, hw_reg_set to )
 /***************************************************************************
-    Find the right piece "to_piece" of "to" such that "x" is to "to" as "opnd"
-    is to "frm". Eg: for 386, if opnd = AH, frm = EAX, to = EDX, then x = DH
-*/
+ * Find the right piece "to_piece" of "to" such that "x" is to "to" as "opnd"
+ * is to "frm". Eg: for 386, if opnd = AH, frm = EAX, to = EDX, then x = DH
+ */
 {
     hw_reg_set  to_piece;
     hw_reg_set  frm_piece;
@@ -86,9 +86,9 @@ static  name    *FindPiece( hw_reg_set opnd, hw_reg_set frm, hw_reg_set to )
 
 
 static  bool    CanChange( instruction **pins,
-                           name *frm, name *to, instruction *new_ins ) {
-/**********************************************************************/
-
+                           name *frm, name *to, instruction *new_ins )
+/********************************************************************/
+{
     instruction         *ins;
     const opcode_entry  *try;
     opcnt               i;
@@ -111,10 +111,12 @@ static  bool    CanChange( instruction **pins,
                 new_ins->operands[i] = to;
                 opnd = to;
             } else if( opnd->n.class == N_REGISTER ) {
-                // If operand overlaps with but wasn't identical to 'from'
-                // register, leave this instruction alone! In specific cases
-                // it might be possible to do the FindPiece trick like above
-                // but not in general.
+                /*
+                 * If operand overlaps with but wasn't identical to 'from'
+                 * register, leave this instruction alone! In specific cases
+                 * it might be possible to do the FindPiece trick like above
+                 * but not in general.
+                 */
                 if( HW_Ovlap( frm->r.reg, opnd->r.reg ) ) {
                     return( false );
                 }
@@ -155,9 +157,9 @@ static  bool    CanChange( instruction **pins,
 }
 
 
-static  bool    CantChange( instruction **pins, name *frm, name *to ) {
-/*********************************************************************/
-
+static  bool    CantChange( instruction **pins, name *frm, name *to )
+/*******************************************************************/
+{
     instruction         *new_ins;
     opcnt               num_operands;
 
@@ -172,10 +174,9 @@ static  bool    CantChange( instruction **pins, name *frm, name *to ) {
     return( true );
 }
 
-static  bool    Modifies( name *Y, name *Z, name *result ) {
-/**********************************************************/
-
-
+static  bool    Modifies( name *Y, name *Z, name *result )
+/********************************************************/
+{
     if( result == NULL )
         return( false );
     if( result->n.class != N_REGISTER )
@@ -187,9 +188,9 @@ static  bool    Modifies( name *Y, name *Z, name *result ) {
     return( false );
 }
 
-static  bool    UsedIn( name *op, name *reg ) {
-/*********************************************/
-
+static  bool    UsedIn( name *op, name *reg )
+/*******************************************/
+{
     if( op->n.class == N_REGISTER ) {
         return( HW_Ovlap( op->r.reg, reg->r.reg ) );
     } else if( op->n.class == N_INDEXED ) {
@@ -198,37 +199,39 @@ static  bool    UsedIn( name *op, name *reg ) {
                 return( true );
             }
         }
-//      90-06-12 - base is never N_REGISTER!
-//      if( op->i.base != NULL && op->i.base->n.class == N_REGISTER ) {
-//          if( op->i.base->r.reg & reg->r.reg ) {
-//              return( true );
-//          }
-//      }
+        /*
+         * 90-06-12 - base is never N_REGISTER!
+         */
+//        if( op->i.base != NULL && op->i.base->n.class == N_REGISTER ) {
+//            if( op->i.base->r.reg & reg->r.reg ) {
+//                return( true );
+//            }
+//        }
     }
     return( false );
 }
 
 
-static  bool    ThrashDown( instruction *ins ) {
-/**********************************************/
-
-/* We have a move instruction of the form*/
-/*           MOV Y ==> Z*/
-/* where*/
-/* 1. Y and Z are registers,*/
-/* 2. Y dies immediately after the move.*/
-/**/
-/* Now if the instruction stream contains an instruction of the form*/
-/*           OP( ?Y, ?Y ) ==> Y*/
-/* in front of the move such that*/
-/* 1. Y is live but not used or zapped between the instructions*/
-/* 2. Z must be dead and not redefined between the instructions*/
-/* 3. Z must be dead just prior to the first instruction*/
-/**/
-/* then we can delete the move and replace the first instruction with*/
-/*           MOV Y      ==> Z*/
-/*           OP(?Z,?Z)  ==> Z*/
-
+static  bool    ThrashDown( instruction *ins )
+/*********************************************
+ * We have a move instruction of the form
+ *           MOV Y ==> Z
+ * where
+ * 1. Y and Z are registers,
+ * 2. Y dies immediately after the move.
+ *
+ * Now if the instruction stream contains an instruction of the form
+ *           OP( ?Y, ?Y ) ==> Y
+ * in front of the move such that
+ * 1. Y is live but not used or zapped between the instructions
+ * 2. Z must be dead and not redefined between the instructions
+ * 3. Z must be dead just prior to the first instruction
+ *
+ * then we can delete the move and replace the first instruction with
+ *           MOV Y      ==> Z
+ *           OP(?Z,?Z)  ==> Z
+ */
+{
     name        *Y;
     name        *Z;
     opcnt       i;
@@ -281,25 +284,25 @@ static  bool    ThrashDown( instruction *ins ) {
 }
 
 
-static  bool    ThrashUp( instruction *ins ) {
-/**********************************************/
-
-/* OK, if there is an instruction of the form*/
-/*           OP(?Z,?Z) ==> Z*/
-/* after the move such that*/
-/* 1. Z is live but not used or zapped between the instructions*/
-/* 2. Y is not modified between the instructions*/
-/**/
-/* and that is followed by a*/
-/*           MOV Z     ==> Y*/
-/* where*/
-/* 1. Z is not modified between the instructions*/
-/* 2. Y is not modified between the instructions*/
-/**/
-/* then can we delete the two moves and replace the second instr. with*/
-/*           OP(?Y,?Y)  ==> Y*/
-/*           MOV  Y     ==> Z*/
-
+static  bool    ThrashUp( instruction *ins )
+/*******************************************
+ * OK, if there is an instruction of the form
+ *           OP(?Z,?Z) ==> Z
+ * after the move such that
+ * 1. Z is live but not used or zapped between the instructions
+ * 2. Y is not modified between the instructions
+ *
+ * and that is followed by a
+ *           MOV Z     ==> Y
+ * where
+ * 1. Z is not modified between the instructions
+ * 2. Y is not modified between the instructions
+ *
+ * then can we delete the two moves and replace the second instr. with
+ *           OP(?Y,?Y)  ==> Y
+ *           MOV  Y     ==> Z
+ */
+{
     instruction *thrsh_ins;
     name        *Y;
     name        *Z;
@@ -364,7 +367,7 @@ bool    RegThrash( block *blk )
     instruction *ins;
     instruction *next;
 
-    for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = next ) {
+    for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = next ) {
         next = ins->head.next;
         if( ins->head.opcode == OP_MOV
          && !UnChangeable( ins )
@@ -372,7 +375,7 @@ bool    RegThrash( block *blk )
          && !HW_Ovlap( ins->head.next->head.live.regs, ins->operands[0]->r.reg )
          && ins->result->n.class == N_REGISTER ) {
             if( ThrashDown( ins ) || ThrashUp( ins ) ) {
-                UpdateLive( blk->ins.hd.next, blk->ins.hd.prev );
+                UpdateLive( blk->ins.head.next, blk->ins.head.prev );
                 return( true );
             }
         }

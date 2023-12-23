@@ -1,0 +1,118 @@
+name: install
+description: 'Build OW install component'
+inputs:
+  target:
+    description: 'install component to process'
+    required: false
+    default: ''
+    type: string
+  arch:
+    description: 'run-time platform'
+    required: false
+    default: ''
+    type: string
+  bldscript:
+    description: 'script to build action'
+    required: false
+    default: ''
+    type: string
+  tools_nt:
+    description: 'used compiler toolchain (for Windows)'
+    required: false
+    default: ''
+    type: string
+  tools_lnx:
+    description: 'used compiler toolchain (for Linux)'
+    required: false
+    default: ''
+    type: string
+  owtools:
+    description: 'OW build compiler toolchain'
+    required: false
+    default: ''
+    type: string
+  owdebug:
+    description: 'verbosed/debug output for GH Actions scripts development'
+    required: false
+    default: ''
+    type: string
+runs:
+  using: composite
+  steps:
+  - if: inputs.arch == 'lnx'
+    uses: "./.github/actions/artfload"
+    with:
+      arch:         'lnx'
+      gitpath:      'build binbuild'
+      artifact:     'build lnx'
+      tools:        ${{ inputs.tools_lnx }}
+      owdebug:      ${{ inputs.owdebug }}
+  - if: inputs.arch == 'nt'
+    uses: "./.github/actions/artfload"
+    with:
+      arch:         'nt'
+      gitpath:      'build binbuild'
+      artifact:     'build nt'
+      tools:        ${{ inputs.tools_nt }}
+      owdebug:      ${{ inputs.owdebug }}
+  - uses: "./.github/actions/artfload"
+    with:
+      arch:         ${{ inputs.arch }}
+      gitpath:      'bld setupgui'
+      artifact:     'bld setupgui nt'
+      tools:        ${{ inputs.tools_nt }}
+      owdebug:      ${{ inputs.owdebug }}
+  - uses: "./.github/actions/artfload"
+    with:
+      arch:         ${{ inputs.arch }}
+      gitpath:      'bld setupgui'
+      artifact:     'bld setupgui lnx'
+      tools:        ${{ inputs.tools_lnx }}
+      owdebug:      ${{ inputs.owdebug }}
+  # load all release binaries
+  - uses: "./.github/actions/relload"
+    with:
+      arch:         ${{ inputs.arch }}
+      gitpath:      'rel'
+      tools_nt:     ${{ inputs.tools_nt }}
+      tools_lnx:    ${{ inputs.tools_lnx }}
+      owdebug:      ${{ inputs.owdebug }}
+  - if: inputs.target == 'snapshot'
+    name: Create OW snapshot
+    id: owsnapshot
+    uses: "./.github/actions/snapshot"
+    with:
+      arch:         ${{ inputs.arch }}
+      gitpath:      'rel'
+      owdebug:      ${{ inputs.owdebug }}
+  # run build script
+  - if: inputs.target != 'snapshot' && ( inputs.arch == 'lnx' )
+    name: Build Installers
+    run: ${{ inputs.bldscript }} ${{ inputs.tools_lnx }}
+    env:
+      OWBUILD_STAGE: 'inst'
+      OWTOOLS:       ${{ inputs.owtools }}
+      OWROOT:        ${{ github.workspace }}
+      OWDEBUG:       ${{ inputs.owdebug }}
+      OWINSTTARGET:  ${{ inputs.target }}
+      OWVERBOSE:     1
+    shell: bash
+  - if: inputs.target != 'snapshot' && inputs.arch == 'nt'
+    name: Build Installers
+    run: ${{ inputs.bldscript }} ${{ inputs.tools_nt }}
+    env:
+      OWBUILD_STAGE: 'inst'
+      OWTOOLS:       ${{ inputs.owtools }}
+      OWROOT:        ${{ github.workspace }}
+      OWDEBUG:       ${{ inputs.owdebug }}
+      OWINSTTARGET:  ${{ inputs.target }}
+      OWVERBOSE:     1
+    shell: cmd
+  # save all artifacts for distribution
+  # full content of directory, cannot specify files
+  - uses: "./.github/actions/artfsave"
+    with:
+      arch:         ${{ inputs.arch }}
+      gitpath:      'distrib ow bin'
+      artifact:     "install ${{ inputs.target }}"
+      owdebug:      ${{ inputs.owdebug }}

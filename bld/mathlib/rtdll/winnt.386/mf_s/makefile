@@ -6,4 +6,4 @@ model      = mf
 system     = winnt
 convention = stack
 
-!include $(rtdll_dir)/master.mif
+!include ../../../rtdll.mif

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,6 +34,12 @@
 #define WDIS_TYPES_INCLUDED
 
 #include "orl.h"
+
+// special reloc value used by disassembler
+
+#define ORL_RELOC_TYPE_WDIS_ABS     (ORL_RELOC_TYPE_MAX + 1)
+#define ORL_RELOC_TYPE_WDIS_JUMP    (ORL_RELOC_TYPE_MAX + 2)
+#define ORL_RELOC_TYPE_WDIS_JUMP16  (ORL_RELOC_TYPE_MAX + 3)
 
 // label list
 

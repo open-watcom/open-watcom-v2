@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,6 +33,7 @@
 
 #include "vi.h"
 #include <stddef.h>
+#include "parse.h"
 
 #include "clibext.h"
 
@@ -129,7 +130,7 @@ void VarListDelete( vars_list *vl )
 
     for( curr = vl->head; curr != NULL; curr = next ) {
         next = curr->next;
-        MemFree( curr->value );
+        _MemFreeArray( curr->value );
         MemFree( curr );
     }
 
@@ -184,7 +185,8 @@ void GlobVarAddLong( const char *name, long val )
 {
     char ibuff[MAX_NUM_STR];
 
-    var_add( name, ltoa( val, ibuff, 10 ), &GlobVars, true );
+    sprintf( ibuff, "%ld", val );
+    var_add( name, ibuff, &GlobVars, true );
 
 } /* GlobVarAddLong */
 
@@ -195,7 +197,8 @@ void VarAddLong( const char *name, long val, vars_list *vl )
 {
     char ibuff[MAX_NUM_STR];
 
-    VarAddStr( name, ltoa( val, ibuff, 10 ), vl );
+    sprintf( ibuff, "%ld", val );
+    VarAddStr( name, ibuff, vl );
 
 } /* VarAddLong */
 

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,6 +38,7 @@
 #include "trptypes.h"
 #include "trperr.h"
 #include "packet.h"
+#include "nov.h"
 
 #include "ipxstuff.h"
 
@@ -54,7 +55,7 @@ static void putstring( char __far *str )
     unsigned bytes;
     extern unsigned _dos_write( int handle, void __far *buffer, unsigned count, unsigned *bytes );
 
-    while( *str ) {
+    while( *str != '\0' ) {
         _dos_write( 1, str, 1, &bytes );
         ++str;
     }
@@ -73,7 +74,7 @@ static char * hex( unsigned long num )
       return( p );
     }
     while( num != 0 ) {
-        *--p = "0123456789abcdef"[ num & 15 ];
+        *--p = "0123456789abcdef"[num & 15];
         num >>= 4;
     }
     return( p );
@@ -197,7 +198,7 @@ static void IpxWait( void )
     //        how clears out a condition in IPX where IPXRelinquishControl
     //        won't return.
     //*******************************************************************
-    extern void clock(void);
+    extern void clock( void );
     #pragma aux clock = \
             "mov  ah,2ch"   \
             "int 21h"       \
@@ -492,19 +493,19 @@ static char FindPartner( void )
         static char ReqBuff[80];
         unsigned    i;
 
-        ReqBuff[ 2 ] = 0x3d; /* sub-function */
-        ACC_WORD( ReqBuff[ 3 ] ) = DBG_SERVER_TYPE;
+        ReqBuff[2] = 0x3d; /* sub-function */
+        ACC_WORD( ReqBuff[3] ) = DBG_SERVER_TYPE;
         i = strlen( SAPHead.name );
         ReqBuff[5] = i;
         memcpy( &ReqBuff[6], &SAPHead.name, i );
         i += 6;
-        ReqBuff[ i++ ] = 1;
-        ReqBuff[ i++ ] = sizeof( "NET_ADDRESS" ) - 1;
-        memcpy( &ReqBuff[ i ], "NET_ADDRESS", sizeof( "NET_ADDRESS" ) - 1 );
+        ReqBuff[i++] = 1;
+        ReqBuff[i++] = sizeof( "NET_ADDRESS" ) - 1;
+        memcpy( &ReqBuff[i], "NET_ADDRESS", sizeof( "NET_ADDRESS" ) - 1 );
         ACC_WORD( ReqBuff[0] ) = i + (sizeof( "NET_ADDRESS" ) - 2);
         ACC_WORD( RepBuff[0] ) = 130;
 putstring( "read prop\r\n" );
-        if( ReadPropertyValue( &ReqBuff, &RepBuff ) != 0 )
+        if( ReadPropertyValue( ReqBuff, RepBuff ) != 0 )
             return( 0 );
 putstring( "assgn array\r\n" );
         AssignArray( ServHead.destination, RepBuff[2] );
@@ -528,14 +529,46 @@ putstring( "got one\r\n" );
     return( 1 );
 }
 
-char    DefLinkName[] = "NovLink";
+#ifdef SERVER
+#ifdef TRAPGUI
+const char *RemoteLinkGet( char *parms, size_t len )
+{
+    /* unused parameters */ (void)len;
+
+    strcpy( parms, SAPHead.name );
+    return( NULL );
+}
+#endif
+#endif
+
+const char *RemoteLinkSet( const char *parms )
+{
+    unsigned    i;
+
+    if( *parms == '\0' )
+        parms = DEFAULT_LINK_NAME;
+    for( i = 0; i < MAX_NAME_LEN && *parms != '\0'; ++parms ) {
+        if( strchr( "/\\:;,*?+-", *parms ) == NULL ) {
+            SAPHead.name[i++] = toupper( *parms );
+        }
+    }
+    SAPHead.name[i] = '\0';
+    return( NULL );
+}
 
 const char *RemoteLink( const char *parms, bool server )
 {
-    unsigned    i;
     BYTE        major_ver,minor_ver;
     WORD        max_conn,avail_conn;
 
+    /* unused parameters */ (void)server;
+
+    if( parms != NULL ) {
+        parms = RemoteLinkSet( parms );
+        if( parms != NULL ) {
+            return( parms );
+        }
+    }
 #ifdef __WINDOWS__
     {
         HINSTANCE       ipxspx;
@@ -582,15 +615,6 @@ const char *RemoteLink( const char *parms, bool server )
         }
     }
 #endif
-    server = server;
-    if( *parms == '\0' )
-        parms = DefLinkName;
-    for( i = 0; i < MAX_NAME_LEN && *parms != '\0'; ++parms ) {
-        if( strchr( "/\\:;,*?+-", *parms ) == NULL ) {
-            SAPHead.name[ i++ ] = toupper( *parms );
-        }
-    }
-    SAPHead.name[ i ] = '\0';
     if( !_SPXInitialize( 20, 576, &major_ver, &minor_ver, &max_conn, &avail_conn ) ) {
         return( TRP_ERR_SPX_not_present );
     }

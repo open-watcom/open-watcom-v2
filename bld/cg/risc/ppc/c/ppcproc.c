@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,7 +34,6 @@
 #include "coderep.h"
 #include "cgmem.h"
 #include "ppcenc.h"
-#include "ppcgen.h"
 #include "data.h"
 #include "objout.h"
 #include "dbsyms.h"
@@ -49,6 +48,12 @@
 #include "feprotos.h"
 
 
+#define STORE_DWORD     36
+#define STORE_DOUBLE    54
+#define LOAD_DWORD      32
+#define LOAD_DOUBLE     50
+#define ADDI_OPCODE     14
+
 static  void    CalcUsedRegs( void )
 /**********************************/
 {
@@ -60,7 +65,7 @@ static  void    CalcUsedRegs( void )
     CurrProc->targ.leaf = true;
     HW_CAsgn( used, HW_EMPTY );
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+        for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             result = ins->result;
             if( result != NULL && result->n.class == N_REGISTER ) {
                 HW_TurnOn( used, result->r.reg );
@@ -133,7 +138,7 @@ static  void    emitLocalEpilog( stack_record *locals )
     /* unused parameters */ (void)locals;
 }
 
-static  uint_32 registerMask( hw_reg_set rs, hw_reg_set *rl )
+static uint_32  registerMask( hw_reg_set rs, hw_reg_set *rl )
 /***********************************************************/
 {
     hw_reg_set          *curr;
@@ -174,30 +179,20 @@ static  void    initSavedRegs( stack_record *saved_regs, type_length *offset )
     *offset += saved_regs->size;
 }
 
-#define STORE_DWORD     36
-#define STORE_DOUBLE    54
-#define LOAD_DWORD      32
-#define LOAD_DOUBLE     50
-#define ADDI_OPCODE     14
-
-#define STACK_REG       1
-#define FRAME_REG       31
-#define VARARGS_PTR     14
-
-static  void    genMove( uint_32 src, uint_32 dst )
+static  void    genMove( reg_idx src, reg_idx dst )
 /*************************************************/
 {
     GenOPINS( 31, 444, dst, src, src );
 }
 
-static  void    genAdd( uint_32 src, signed_16 disp, uint_32 dst )
-/****************************************************************/
+static  void    genAdd( reg_idx src, int_16 disp, reg_idx dst )
+/*************************************************************/
 {
     GenOPIMM( ADDI_OPCODE, dst, src, disp );
 }
 
-static  void    saveReg( uint_32 index, type_length offset, bool fp )
-/*******************************************************************/
+static void saveReg( reg_idx index, type_length offset, bool fp )
+/***************************************************************/
 {
     uint_8              opcode;
 
@@ -205,27 +200,27 @@ static  void    saveReg( uint_32 index, type_length offset, bool fp )
     if( fp ) {
         opcode = STORE_DOUBLE;
     }
-    GenMEMINS( opcode, index, STACK_REG, offset );
+    GenMEMINS( opcode, index, SP_REG_IDX, offset );
 }
 
-static  void    loadReg( uint_32 index, type_length offset, bool fp )
-/*******************************************************************/
+static void loadReg( reg_idx index, type_length offset, bool fp )
+/***************************************************************/
 {
     uint_8              opcode;
-    uint_8              frame_reg;
+    reg_idx             frame_reg;
 
     opcode = LOAD_DWORD;
     if( fp ) {
         opcode = LOAD_DOUBLE;
     }
-    frame_reg = STACK_REG;
+    frame_reg = SP_REG_IDX;
     if( CurrProc->targ.base_is_fp ) {
-        frame_reg = FRAME_REG;
+        frame_reg = FP_REG_IDX;
     }
     GenMEMINS( opcode, index, frame_reg, offset + CurrProc->locals.size );
 }
 
-static  int     regSize( bool fp )
+static int      regSize( bool fp )
 /********************************/
 {
     return( fp ? 8 : 4 );
@@ -234,7 +229,7 @@ static  int     regSize( bool fp )
 static  void    saveRegSet( uint_32 reg_set, type_length offset, bool fp )
 /************************************************************************/
 {
-    uint_32     index;
+    reg_idx     index;
     uint_32     high_bit;
 
     index = sizeof( reg_set ) * 8 - 1;
@@ -252,7 +247,7 @@ static  void    saveRegSet( uint_32 reg_set, type_length offset, bool fp )
 static  void    loadRegSet( uint_32 reg_set, type_length offset, bool fp )
 /************************************************************************/
 {
-    uint_32     index;
+    reg_idx     index;
 
     index = 0;
     while( reg_set != 0 ) {
@@ -303,16 +298,16 @@ static  void    initVarargs( stack_record *varargs, type_length *offset )
 static  void    emitVarargsProlog( stack_record *varargs )
 /********************************************************/
 {
-    type_length         offset;
-    int                 i;
+    type_length     offset;
+    reg_idx         i;
 
     /* unused parameters */ (void)varargs;
 
     if( CurrProc->state.attr & ROUTINE_HAS_VARARGS ) {
         // save our registers in our caller's context - uhg!
         offset = CurrProc->targ.frame_size + STACK_HEADER_SIZE;
-        for( i = CurrProc->state.parm.gr; i <= LAST_SCALAR_PARM_REG; i++ ) {
-            saveReg( i, offset + ( i - FIRST_SCALAR_PARM_REG ) * 4, false );
+        for( i = (reg_idx)CurrProc->state.parm.gr; i <= LAST_SCALAR_PARM_REG_IDX; i++ ) {
+            saveReg( i, offset + ( i - FIRST_SCALAR_PARM_REG_IDX ) * 4, false );
         }
     }
 }
@@ -371,10 +366,10 @@ static  void    emitStackHeaderEpilog( stack_record *stk )
 }
 
 
-static  signed_32 frameSize( stack_map *map )
-/*******************************************/
+static int_32   frameSize( stack_map *map )
+/*****************************************/
 {
-    signed_32           size;
+    int_32      size;
 
     size = map->varargs.size + map->slop.size + map->saved_regs.size +
                 map->locals.size + map->parm_cache.size + map->stack_header.size;
@@ -415,7 +410,7 @@ static  void    emitProlog( stack_map *map )
     }
     if( frame_size != 0 ) {
         // stwu sp,-frame_size(sp)
-        GenMEMINS( 37, STACK_REG, STACK_REG, -frame_size );
+        GenMEMINS( 37, SP_REG_IDX, SP_REG_IDX, -(int_16)frame_size );
         emitVarargsProlog( &map->varargs );
         emitSlopProlog( &map->varargs );
         emitSavedRegsProlog( &map->saved_regs );
@@ -423,7 +418,7 @@ static  void    emitProlog( stack_map *map )
         emitParmCacheProlog( &map->parm_cache );
         emitStackHeaderProlog( &map->stack_header );
         if( CurrProc->targ.base_is_fp ) {
-            genMove( STACK_REG, FRAME_REG );
+            genMove( SP_REG_IDX, FP_REG_IDX );
         }
     }
 }
@@ -432,7 +427,7 @@ static  void    emitEpilog( stack_map *map )
 /******************************************/
 {
     type_length         frame_size;
-    uint_8              frame_reg;
+    reg_idx             frame_reg;
 
     frame_size = frameSize( map );
     if( frame_size != 0 ) {
@@ -445,11 +440,11 @@ static  void    emitEpilog( stack_map *map )
         if( !CurrProc->targ.leaf ) {
             GenMTSPR( 0, SPR_LR, false );
         }
-        frame_reg = STACK_REG;
+        frame_reg = SP_REG_IDX;
         if( CurrProc->targ.base_is_fp ) {
-            frame_reg = FRAME_REG;
+            frame_reg = FP_REG_IDX;
         }
-        genAdd( frame_reg, frame_size, STACK_REG );
+        genAdd( frame_reg, (int_16)frame_size, SP_REG_IDX );
     }
 }
 
@@ -464,15 +459,15 @@ void    GenProlog( void )
     lc = AskLocation();
     CurrProc->targ.proc_start = lc;
     label = CurrProc->label;
-    if( _IsModel( DBG_NUMBERS ) ) {
-        OutFileStart( HeadBlock->ins.hd.line_num );
+    if( _IsModel( CGSW_GEN_DBG_NUMBERS ) ) {
+        OutFileStart( HeadBlock->ins.head.line_num );
     }
     OutTOCRec( label );
     CodeLabel( label, DepthAlign( PROC_ALIGN ) );
-    if( _IsModel( DBG_NUMBERS ) ) {
-        OutFuncStart( label, lc, HeadBlock->ins.hd.line_num );
+    if( _IsModel( CGSW_GEN_DBG_NUMBERS ) ) {
+        OutFuncStart( label, lc, HeadBlock->ins.head.line_num );
     }
-    if( _IsModel( DBG_LOCALS ) ) {  // d1+ or d2
+    if( _IsModel( CGSW_GEN_DBG_LOCALS ) ) {  // d1+ or d2
         DbgRtnBeg( CurrProc->targ.debug, lc );
     }
     // keep stack aligned
@@ -485,7 +480,7 @@ void    GenProlog( void )
     emitProlog( &CurrProc->targ.stack_map );
     lc = AskLocation();
     CurrProc->targ.pro_size = lc;
-    if( _IsModel( DBG_LOCALS ) ) {  // d1+ or d2
+    if( _IsModel( CGSW_GEN_DBG_LOCALS ) ) {  // d1+ or d2
   //    DbgRetOffset( CurrProc->parms.base - CurrProc->targ.base_adjust
   //                    - ret_size );
         DbgProEnd( CurrProc->targ.debug, lc );
@@ -501,19 +496,19 @@ void    GenEpilog( void )
     offset              lc;
 
     old_segid = SetOP( AskCodeSeg() );
-    if( _IsModel( DBG_LOCALS ) ){  // d1+ or d2
+    if( _IsModel( CGSW_GEN_DBG_LOCALS ) ) { // d1+ or d2
         lc = AskLocation();
         DbgEpiBeg( CurrProc->targ.debug, lc );
     }
     // Pop();
     emitEpilog( &CurrProc->targ.stack_map );
-    GenRET();
-    CurrProc->prolog_state |= GENERATED_EPILOG;
+    GenReturn();
+    CurrProc->prolog_state |= PST_EPILOG_GENERATED;
     lc = AskLocation();
-    if( _IsModel( DBG_LOCALS ) ){  // d1+ or d2
+    if( _IsModel( CGSW_GEN_DBG_LOCALS ) ) { // d1+ or d2
         DbgRtnEnd( CurrProc->targ.debug, lc );
     }
-    if( _IsModel( DBG_NUMBERS ) ) {
+    if( _IsModel( CGSW_GEN_DBG_NUMBERS ) ) {
         OutFuncEnd( lc );
     }
     OutPDataRec( CurrProc->label, CurrProc->targ.pro_size, lc );

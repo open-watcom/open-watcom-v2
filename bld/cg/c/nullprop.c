@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -57,7 +57,7 @@ static  instruction     *CompareIns( block *blk )
     instruction         *last;
 
     if( _IsBlkAttr( blk, BLK_CONDITIONAL ) ) {
-        for( last = blk->ins.hd.prev; last->head.opcode != OP_BLOCK; last = last->head.prev ) {
+        for( last = blk->ins.head.prev; last->head.opcode != OP_BLOCK; last = last->head.prev ) {
             if( _OpIsCompare( last->head.opcode ) ) {
                 return( last );
             }
@@ -193,9 +193,9 @@ static  instruction     *FirstIns( block *blk, bool forward )
     instruction         *first;
 
     if( forward ) {
-        first = blk->ins.hd.next;
+        first = blk->ins.head.next;
     } else {
-        first = blk->ins.hd.prev;
+        first = blk->ins.head.prev;
     }
     return( first );
 }
@@ -373,7 +373,7 @@ static  bool            BlockSideEffect( block *blk )
 {
     instruction         *ins;
 
-    for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+    for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
         if( _OpIsCall( ins->head.opcode ) )
             return( true );
         if( SideEffect( ins ) ) {
@@ -489,16 +489,16 @@ void            PropNullInfo( void )
     block               *blk;
     bool                change;
 
-    if( _IsModel( NO_OPTIMIZATION ) )
+    if( _IsModel( CGSW_GEN_NO_OPTIMIZATION ) )
         return;
-    if( _IsModel( NULL_DEREF_OK ) )
+    if( _IsModel( CGSW_GEN_NULL_DEREF_OK ) )
         return;
     change = false;
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         change |= NullProp( blk );
     }
     _MarkBlkAllUnVisited();
-    if( change ){
+    if( change ) {
         BlockTrim();
     }
 }

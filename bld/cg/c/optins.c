@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -49,7 +49,7 @@ static  ins_entry       *Redirect( ins_entry *, ins_entry * );
 static  bool    LineLabel( ins_entry *label )
 /*******************************************/
 {
-#if _TARGET & _TARG_RISC
+#if _TARGET_RISC
     if( _LblLine( label ) != 0 ) {
         return( true );
     }
@@ -122,7 +122,7 @@ static  bool    UnTangle1( ins_entry *jmp, ins_entry **instr )
     if( _Class( c_jmp ) != OC_JCOND )
         return( false );
 #if( OPTIONS & SEGMENTED )
-    if( _Label( c_jmp ) == _Label( *instr ) && ( _Attr( jmp ) & ATTR_FAR ) == 0 ) {
+    if( _Label( c_jmp ) == _Label( *instr ) && !_ChkAttr( jmp, OC_ATTR_FAR ) ) {
 #else
     if( _Label( c_jmp ) == _Label( *instr ) ) {
 #endif
@@ -149,7 +149,7 @@ static  bool    UnTangle2( ins_entry *jmp, ins_entry **instr )
     oc_class    cl;
     ins_entry   *ins;
 
-    if( _IsModel( NO_OPTIMIZATION ) )
+    if( _IsModel( CGSW_GEN_NO_OPTIMIZATION ) )
         return( false );
     if( jmp == NULL )
         return( false );
@@ -161,7 +161,7 @@ static  bool    UnTangle2( ins_entry *jmp, ins_entry **instr )
     if( cl != OC_JMP )
         return( false );
 #if( OPTIONS & SEGMENTED )
-    if( _Attr( jmp ) & ATTR_FAR )
+    if( _ChkAttr( jmp, OC_ATTR_FAR ) )
         return( false );
 #endif
     if( _Label( *instr )->ins == NULL )
@@ -255,7 +255,7 @@ static  ins_entry       *Redirect( ins_entry *l_ins, ins_entry *j_ins )
     }
     if( new_ins == NULL
      || _Class( new_ins ) == OC_DEAD
-     || ( _Attr( l_ins ) & ATTR_SHORT )
+     || _ChkAttr( l_ins, OC_ATTR_SHORT )
      || _TstStatus( _Label( l_ins ), REDIRECTION ) ) {
          optreturn( NextIns( l_ins ) );
     } else {
@@ -284,7 +284,7 @@ void    OptPush( void )
             }
             break;
         case OC_CALL:
-            if( _IsntModel( NO_OPTIMIZATION ) ) {
+            if( _IsntModel( CGSW_GEN_NO_OPTIMIZATION ) ) {
                 CallRet( ins );
             }
             break;
@@ -296,16 +296,17 @@ void    OptPush( void )
             }
             break;
         case OC_RET:
-            if( _IsntModel( NO_OPTIMIZATION ) ) {
+            if( _IsntModel( CGSW_GEN_NO_OPTIMIZATION ) ) {
                 RetAftrLbl( ins );
                 RetAftrCall( ins );
             }
             if( !InsDelete ) {
-                if( _Attr( ins ) & ATTR_NORET ) {
-                    ComTail( NoRetList, ins );
-                } else {
-                    ComTail( RetList, ins );
-                }
+                ComTail( RetList, ins );
+            }
+            break;
+        case OC_NORET:
+            if( !InsDelete ) {
+                ComTail( NoRetList, ins );
             }
             break;
         }
@@ -338,17 +339,17 @@ void    OptPull( void )
         switch( ins_class ) {
         case OC_LABEL:
             Untangle( FirstIns );
-            if( _IsntModel( NO_OPTIMIZATION ) && !InsDelete ) {
+            if( _IsntModel( CGSW_GEN_NO_OPTIMIZATION ) && !InsDelete ) {
                 CloneCode( _Label( FirstIns ) );
             }
             break;
         case OC_CALL:
-            if( _IsntModel( NO_OPTIMIZATION ) ) {
+            if( _IsntModel( CGSW_GEN_NO_OPTIMIZATION ) ) {
                 CallRet( FirstIns );
             }
             break;
         case OC_JMP:
-            if( _IsntModel( NO_OPTIMIZATION ) ) {
+            if( _IsntModel( CGSW_GEN_NO_OPTIMIZATION ) ) {
                 IsolatedCode( FirstIns );
                 if( !InsDelete ) {
                     StraightenCode( FirstIns );
@@ -363,7 +364,7 @@ void    OptPull( void )
             }
             break;
         case OC_JMPI:
-            if( _IsntModel( NO_OPTIMIZATION ) ) {
+            if( _IsntModel( CGSW_GEN_NO_OPTIMIZATION ) ) {
                 IsolatedCode( FirstIns );
                 if( !InsDelete ) {
                     CheckStraightenCode( NextIns( FirstIns ) );
@@ -374,7 +375,8 @@ void    OptPull( void )
             Untangle( NextIns( FirstIns ) );
             break;
         case OC_RET:
-            if( _IsntModel( NO_OPTIMIZATION ) ) {
+        case OC_NORET:
+            if( _IsntModel( CGSW_GEN_NO_OPTIMIZATION ) ) {
                 IsolatedCode( FirstIns );
                 if( !InsDelete ) {
                     CheckStraightenCode( NextIns( FirstIns ) );
@@ -397,7 +399,7 @@ void    OptPull( void )
     case OC_JCOND:
     case OC_JMP:
 #if( OPTIONS & SHORT_JUMPS )
-        if( (_Attr( FirstIns ) & ATTR_FAR) == 0 ) {
+        if( !_ChkAttr( FirstIns, OC_ATTR_FAR ) ) {
             SetBranches();
         }
 #endif

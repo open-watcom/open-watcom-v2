@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,8 +34,10 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <errno.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include "digcpu.h"
 #include "trpimp.h"
 #include "trpcomm.h"
 #include "exeelf.h"
@@ -181,19 +183,19 @@ trap_retval TRAP_CORE( Get_sys_config )( void )
 
     ret = GetOutPtr( 0 );
     if( Core.loaded && Core.plat->qcfg( Core.ctx, &arch, &os, &cpu, &fpu ) ) {
-        ret->sys.arch = arch;
-        ret->sys.os   = os;
-        ret->sys.cpu  = cpu;
-        ret->sys.fpu  = fpu;
+        ret->arch = arch;
+        ret->os   = os;
+        ret->cpu  = cpu;
+        ret->fpu  = fpu;
     } else {
-        ret->sys.arch = DIG_ARCH_X86;
-        ret->sys.os   = DIG_OS_IDUNNO;
-        ret->sys.cpu  = X86_386;
-        ret->sys.fpu  = X86_387;
+        ret->arch = DIG_ARCH_X86;
+        ret->os   = DIG_OS_IDUNNO;
+        ret->cpu  = X86_386;
+        ret->fpu  = X86_387;
     }
-    ret->sys.osmajor = 1;
-    ret->sys.osminor = 0;
-    ret->sys.huge_shift = 3;    // Not relevant for flat model
+    ret->osmajor = 1;
+    ret->osminor = 0;
+    ret->huge_shift = 3;    // Not relevant for flat model
     return( sizeof( *ret ) );
 }
 
@@ -229,7 +231,7 @@ trap_retval TRAP_CORE( Map_addr )( void )
         }
 #if 0
         if( Core.loaded ) {
-            ret->out_addr.offset += Core.segs[ index ].mem_off;
+            ret->out_addr.offset += Core.segs[index].mem_off;
         }
 #endif
         break;
@@ -263,7 +265,8 @@ static size_t read_from_elf( int fd, Elf32_Ehdr *ehdr, Elf32_Phdr *phdr,
         int             read_len;
         Elf32_Off       rel_ofs;    // Relative offset within segment
 
-        if( phdr->p_type != PT_LOAD ) continue;
+        if( phdr->p_type != PT_LOAD )
+            continue;
         if( (va < phdr->p_vaddr) ||
             (va > phdr->p_vaddr + phdr->p_memsz - 1) ) {
             continue;
@@ -277,8 +280,9 @@ static size_t read_from_elf( int fd, Elf32_Ehdr *ehdr, Elf32_Phdr *phdr,
         /* Adjust length to read from file if p_memsz > p_filesz */
         if( (va + len) > (phdr->p_vaddr + phdr->p_filesz) ) {
             read_len = phdr->p_filesz - rel_ofs;
-            if( read_len < 0 )
+            if( read_len < 0 ) {
                 read_len = 0;
+            }
         }
         if( len != 0 ) {
             if( read_len != 0 ) {
@@ -299,9 +303,9 @@ static size_t read_from_elf( int fd, Elf32_Ehdr *ehdr, Elf32_Phdr *phdr,
 
 trap_retval TRAP_CORE( Read_mem )( void )
 {
-    read_mem_req        *acc;
-    void                *ret;
-    unsigned            len;
+    read_mem_req    *acc;
+    void            *ret;
+    size_t          len;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
@@ -409,7 +413,8 @@ char *find_note( int fd, Elf32_Ehdr *ehdr, Elf32_Phdr *phdr,
         off_t           read_len;
         off_t           skip;
 
-        if( phdr->p_type != PT_NOTE ) continue;
+        if( phdr->p_type != PT_NOTE )
+            continue;
 
         /* We found a note segment, loop over the notes */
         read_len = 0;
@@ -550,8 +555,10 @@ trap_retval TRAP_CORE( Prog_kill )( void )
             close( Core.x_fd );
             Core.x_fd = NO_FILE;
         }
-        if( Core.c_phdr ) free( Core.c_phdr );
-        if( Core.x_phdr ) free( Core.x_phdr );
+        if( Core.c_phdr )
+            free( Core.c_phdr );
+        if( Core.x_phdr )
+            free( Core.x_phdr );
         Core.fd = NO_FILE;
     }
     Core.mapping_shared = false;
@@ -579,7 +586,7 @@ trap_retval TRAP_CORE( Set_watch )( void )
     set_watch_ret       *ret;
 
     ret = GetOutPtr( 0 );
-    ret->err = 0;
+    ret->err = 0;   // OK
     ret->multiplier = USING_DEBUG_REG | 1;
     return( sizeof( *ret ) );
 }
@@ -634,7 +641,7 @@ trap_retval TRAP_CORE( Redirect_stdout )( void )
     return( TRAP_CORE( Redirect_stdin )() );
 }
 
-trap_retval TRAP_FILE( string_to_fullpath )( void )
+trap_retval TRAP_FILE( file_to_fullpath )( void )
 {
     unsigned_16                 len;
     char                        *name;
@@ -649,13 +656,12 @@ trap_retval TRAP_FILE( string_to_fullpath )( void )
     acc  = GetInPtr( 0 );
     name = GetInPtr( sizeof( *acc ) );
     ret  = GetOutPtr( 0 );
+    ret->err = 0;
     fullname = GetOutPtr( sizeof( *ret ) );
     fullname[0] = '\0';
     len = 0;
-    if( acc->file_type != TF_TYPE_EXE ) {
-        len = FindFilePath( false, name, fullname );
-    } else if( Core.mapping_shared ) {
-        len = FindFilePath( true, name, fullname );
+    if( acc->file_type != DIG_FILETYPE_EXE || Core.mapping_shared ) {
+        len = FindFilePath( acc->file_type, name, fullname );
     } else {
         fd = load_elf_header( name, &ehdr, &phdr );
         if( (fd != NO_FILE) && init_platform_driver( fd, &ehdr, phdr ) ) {
@@ -672,7 +678,7 @@ trap_retval TRAP_FILE( string_to_fullpath )( void )
                     chk.st_mtime = 0;
                 }
                 if( Core.ignore_timestamp || chk.st_mtime == Core.hdr.cmdtime ) {
-                    len = StrCopy( name, fullname ) - fullname;
+                    len = StrCopyDst( name, fullname ) - fullname;
                 } else {
                     /* Executable and core file timestaps don't match */
                     len = 0;
@@ -682,11 +688,8 @@ trap_retval TRAP_FILE( string_to_fullpath )( void )
             close( fd );
         }
     }
-    if( len == 0 ) {
+    if( len == 0 )
         ret->err = ENOENT;      /* File not found */
-    } else {
-        ret->err = 0;
-    }
     return( sizeof( *ret ) + len + 1 );
 }
 
@@ -694,15 +697,18 @@ trap_retval TRAP_CORE( Machine_data )( void )
 {
     machine_data_req    *acc;
     machine_data_ret    *ret;
-    unsigned_8          *data;
+    machine_data_spec   *data;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    data = GetOutPtr( sizeof( *ret ) );
     ret->cache_start = 0;
     ret->cache_end = ~(addr_off)0;
-    *data = X86AC_BIG;
-    return( sizeof( *ret ) + sizeof( *data ) );
+    if( acc->info_type == X86MD_ADDR_CHARACTERISTICS ) {
+        data = GetOutPtr( sizeof( *ret ) );
+        data->x86_addr_flags = X86AC_BIG;
+        return( sizeof( *ret ) + sizeof( data->x86_addr_flags ) );
+    }
+    return( sizeof( *ret ) );
 }
 
 trap_retval TRAP_CORE( Get_lib_name )( void )
@@ -711,7 +717,7 @@ trap_retval TRAP_CORE( Get_lib_name )( void )
     get_lib_name_ret    *ret;
     char                *name;
     char                *p;
-    size_t              max_len;
+    size_t              name_maxlen;
 
     // TODO: we ought to figure out what shared libs were loaded
     acc = GetInPtr( 0 );
@@ -730,10 +736,10 @@ trap_retval TRAP_CORE( Get_lib_name )( void )
         ret->mod_handle = 0;
         return( sizeof( *ret ) );
     }
-    max_len = GetTotalSizeOut() - 1 - sizeof( *ret );
+    name_maxlen = GetTotalSizeOut() - sizeof( *ret ) - 1;
     name = GetOutPtr( sizeof( *ret ) );
-    strncpy( name, p, max_len );
-    name[max_len] = '\0';
+    strncpy( name, p, name_maxlen );
+    name[name_maxlen] = '\0';
     return( sizeof( *ret ) + strlen( name ) + 1 );
 }
 
@@ -808,25 +814,26 @@ trap_retval TRAP_CORE( Get_err_text )( void )
 
 trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
 {
+    char            ch;
     trap_version    ver;
 
-    remote = remote;
+    /* unused parameters */ (void)remote;
+
     Core.fd   = NO_FILE;
     Core.x_fd = NO_FILE;
     Core.c_ehdr = malloc( sizeof( Elf32_Ehdr ) );
     Core.x_ehdr = malloc( sizeof( Elf32_Ehdr ) );
-    while( *parms != '\0' ) {
-        switch( *parms ) {
+    while( (ch = *parms++) != '\0' ) {
+        switch( ch ) {
         case 'I':
         case 'i':
             Core.ignore_timestamp = true;
             break;
         }
-        ++parms;
     }
     err[0] = '\0'; /* all ok */
-    ver.major = TRAP_MAJOR_VERSION;
-    ver.minor = TRAP_MINOR_VERSION;
+    ver.major = TRAP_VERSION_MAJOR;
+    ver.minor = TRAP_VERSION_MINOR;
     ver.remote = false;
     return( ver );
 }
@@ -834,6 +841,9 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
 
 void TRAPENTRY TrapFini( void )
 {
-    if( Core.c_ehdr ) free( Core.c_ehdr );
-    if( Core.x_ehdr ) free( Core.x_ehdr );
+    if( Core.c_ehdr )
+        free( Core.c_ehdr );
+    if( Core.x_ehdr ) {
+        free( Core.x_ehdr );
+    }
 }

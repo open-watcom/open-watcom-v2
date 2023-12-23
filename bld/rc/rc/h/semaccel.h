@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -76,7 +77,7 @@ extern const FullAccelFlags     DefaultAccelFlags;
 extern const FullAccelFlagsOS2  DefaultAccelFlagsOS2;
 
 /**** Semantic routines ****/
-extern int                  SemWINStrToAccelEvent( char * string );
+extern int                  SemWINStrToAccelEvent( char *string );
 extern FullAccelEntry       SemWINMakeAccItem( AccelEvent event, unsigned long idval, FullAccelFlags flags );
 extern void                 SemWINWriteAccelEntry( FullAccelEntry entry );
 extern void                 SemWINWriteLastAccelEntry( FullAccelEntry entry );

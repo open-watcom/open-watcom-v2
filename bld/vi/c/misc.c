@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,6 +41,7 @@
 #endif
 #include "posix.h"
 #include "win.h"
+#include "myprintf.h"
 #ifdef __WIN__
   #include "color.h"
   #include "winctl.h"
@@ -58,7 +59,7 @@ static void setPrompt( void )
     if( EditVars.SpawnPrompt != NULL && EditVars.SpawnPrompt[0] != '\0' ) {
         tmp = getenv( PROMPT_ENVIRONMENT_VARIABLE );
         if( tmp != NULL ) {
-            oldPrompt = MemAlloc( strlen( tmp ) + 1 );
+            oldPrompt = _MemAllocArray( char, strlen( tmp ) + 1 );
             strcpy( oldPrompt, tmp );
         } else {
             oldPrompt = NULL;
@@ -70,10 +71,12 @@ static void setPrompt( void )
 static void restorePrompt( void )
 {
     if( EditVars.SpawnPrompt != NULL && EditVars.SpawnPrompt[0] != '\0' ) {
-        setenv( PROMPT_ENVIRONMENT_VARIABLE, oldPrompt, 1 );
         if( oldPrompt != NULL ) {
-            MemFree( oldPrompt );
+            setenv( PROMPT_ENVIRONMENT_VARIABLE, oldPrompt, 1 );
+            _MemFreeArray( oldPrompt );
             oldPrompt = NULL;
+        } else {
+            unsetenv( PROMPT_ENVIRONMENT_VARIABLE );
         }
     }
 }
@@ -665,7 +668,7 @@ vi_rc EnterHexKey( void )
     if( rc != ERR_NO_ERR ) {
         return( rc );
     }
-    if( CurrentLine->len >= EditVars.MaxLine - 1 ) {
+    if( CurrentLine->len >= EditVars.MaxLineLen - 1 ) {
         return( ERR_LINE_FULL );
     }
 

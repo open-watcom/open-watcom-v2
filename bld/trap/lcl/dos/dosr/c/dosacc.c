@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -25,7 +25,7 @@
 *
 *  ========================================================================
 *
-* Description:  DOS real mode debugger access functions.
+* Description:  DOS real mode debugger access functions (16-bit code).
 *
 ****************************************************************************/
 
@@ -37,36 +37,38 @@
 #include <i86.h>
 #include "tinyio.h"
 #include "dbg386.h"
-#include "drset.h"
 #include "exedos.h"
 #include "exeos2.h"
 #include "exephar.h"
-#include "trperr.h"
-#include "doserr.h"
+#include "digcpu.h"
 #include "trpimp.h"
 #include "trpcomm.h"
+#include "trperr.h"
+#include "doserr.h"
 #include "ioports.h"
 #include "winchk.h"
 #include "madregs.h"
 #include "x86cpu.h"
 #include "miscx87.h"
 #include "dosredir.h"
-#include "cpuglob.h"
-#include "dosextx.h"
+#include "brkptcpu.h"
 #include "dosovl.h"
 #include "dbgpsp.h"
-#include "dosfile.h"
+#include "dospath.h"
+#include "drset.h"
 
+
+#define GET_LINEAR(s,o) (((dword)(s) << 4) + (o))
 
 typedef enum {
-    EXE_UNKNOWN,
-    EXE_DOS,                    /* DOS */
-    EXE_OS2,                    /* OS/2 */
-    EXE_PHARLAP_SIMPLE,         /* PharLap Simple */
-    EXE_PHARLAP_EXTENDED_286,   /* PharLap Extended 286 */
-    EXE_PHARLAP_EXTENDED_386,   /* PharLap Extended 386 (may be bound) */
-    EXE_RATIONAL_386,           /* Rational DOS/4G app */
-    EXE_LAST_TYPE
+    EXE_TYPE_UNKNOWN,
+    EXE_TYPE_DOS,                    /* DOS */
+    EXE_TYPE_OS2,                    /* OS/2 */
+    EXE_TYPE_PHARLAP_SIMPLE,         /* PharLap Simple */
+    EXE_TYPE_PHARLAP_EXTENDED_286,   /* PharLap Extended 286 */
+    EXE_TYPE_PHARLAP_EXTENDED_386,   /* PharLap Extended 386 (may be bound) */
+    EXE_TYPE_RATIONAL_386,           /* Rational DOS/4G app */
+    EXE_TYPE_LAST
 } EXE_TYPE;
 
 /********************************************************************
@@ -92,19 +94,19 @@ typedef struct pblock {
     addr32_ptr  startsssp;
     addr32_ptr  startcsip;
 } pblock;
+#include "poppck.h"
 
 /********************************************************************
  * NOTE: if you change this structure, you must update dbgtrap.asm
  */
 typedef struct watch_point {
-    addr32_ptr  addr;
-    dword       value;
+    uint_64     value;
     dword       linear;
+    addr32_ptr  addr;
+    word        size;
     word        dregs;
-    word        len;
 } watch_point;
 /********************************************************************/
-#include "poppck.h"
 
 #define CMD_OFFSET      0x80
 
@@ -122,15 +124,23 @@ typedef enum {
 } trap_types;
 
 /* user modifiable flags */
-#define USR_FLAGS (FLG_C | FLG_P | FLG_A | FLG_Z | FLG_S | FLG_I | FLG_D | FLG_O)
+#define USR_FLAGS (INTR_CF | INTR_PF | INTR_AF | INTR_ZF | INTR_SF | INTR_IF | INTR_DF | INTR_OF)
 
-extern void MoveBytes( short, short, short, short, short );
-/*  MoveBytes( fromseg, fromoff, toseg, tooff, len ); */
-#pragma aux MoveBytes = \
+extern void ReadMemory( unsigned, unsigned, void __far *, size_t );
+/*  ReadMemory( fromseg, fromoff, toptr, len ); */
+#pragma aux ReadMemory = \
         "rep movsb" \
-    __parm __caller [__ds] [__si] [__es] [__di] [__cx] \
+    __parm __caller [__ds] [__si] [__es __di] [__cx] \
     __value         \
-    __modify        [__si __di]
+    __modify        [__si __di __cx]
+
+extern void WriteMemory( void __far *, unsigned, unsigned, size_t );
+/*  WriteMemory( fromptr, toseg, tooff, len ); */
+#pragma aux WriteMemory = \
+        "rep movsb" \
+    __parm __caller [__ds __si] [__es] [__di] [__cx] \
+    __value         \
+    __modify        [__si __di __cx]
 
 extern unsigned short MyFlags( void );
 #pragma aux MyFlags = \
@@ -140,21 +150,21 @@ extern unsigned short MyFlags( void );
     __value         [__ax] \
     __modify        []
 
-extern tiny_ret_t       DOSLoadProg(char __far *, pblock __far *);
-extern addr_seg         DOSTaskPSP(void);
-extern void             EndUser(void);
-extern unsigned_8       RunProg(trap_cpu_regs *, trap_cpu_regs *);
+extern tiny_ret_t       DOSLoadProg( char __far *, pblock __far * );
+extern addr_seg         DOSTaskPSP( void );
+extern void             EndUser( void );
+extern byte             RunProg( trap_cpu_regs *, trap_cpu_regs * );
 extern void             SetWatch386( unsigned, watch_point __far * );
-extern void             SetWatchPnt(unsigned, watch_point __far *);
-extern void             SetSingleStep(void);
-extern void             SetSingle386(void);
-extern void             InitVectors(void);
-extern void             FiniVectors(void);
-extern void             TrapTypeInit(void);
-extern void             ClrIntVecs(void);
-extern void             SetIntVecs(void);
-extern void             DoRemInt(trap_cpu_regs *, unsigned);
-extern char             Have87Emu(void);
+extern void             SetWatchPnt( unsigned, watch_point __far * );
+extern void             SetSingleStep( void );
+extern void             SetSingle386( void );
+extern void             InitVectors( void );
+extern void             FiniVectors( void );
+extern void             TrapTypeInit( void );
+extern void             ClrIntVecs( void );
+extern void             SetIntVecs( void );
+extern void             DoRemInt( trap_cpu_regs *, unsigned );
+extern char             Have87Emu( void );
 extern void             Null87Emu( void );
 extern void             Read87EmuState( void __far * );
 extern void             Write87EmuState( void __far * );
@@ -162,6 +172,7 @@ extern unsigned         StringToFullPath( char * );
 extern int              __far NoOvlsHdlr( int, void * );
 
 extern word             __based(__segname("_CODE")) SegmentChain;
+extern opcode_type      __based(__segname("_CODE")) BreakOpcode;
 
 trap_cpu_regs           TaskRegs;
 char                    DOS_major;
@@ -170,18 +181,19 @@ bool                    BoundAppLoading;
 
 FLAGS                   Flags;
 
-#define MAX_WP          32
-static watch_point      WatchPoints[MAX_WP];
-static short            WatchCount;
+#define MAX_WATCHES     32
+
+static watch_point      WatchPoints[MAX_WATCHES];
+static int              WatchCount;
 
 static bool             IsBreak[4];
 
 static word             NumSegments;
-static addr48_ptr       BadBreak;
+static dword            BadBreak;
 static bool             GotABadBreak;
 static int              ExceptNum;
-static unsigned_8       RealNPXType;
-static unsigned_8       CPUType;
+static byte             RealNPXType;
+static byte             CPUType;
 
 #ifdef DEBUG_ME
 int out( char *str )
@@ -192,10 +204,17 @@ int out( char *str )
     while( *p != '\0' )
         ++p;
     TinyFarWrite( 1, str, p - str );
-    return 0;
+    return( 0 );
 }
 
-#define out0 out
+int outline( const char *str )
+{
+    out( str );
+    TinyFarWrite( 1, "\r\n", 2 );
+    return( 0 );
+}
+
+#define out0 outline
 
 static char hexbuff[80];
 
@@ -214,10 +233,10 @@ char *hex( unsigned long num )
         num >>= 4;
     }
     return( p );
-
 }
 #else
     #define out( s )
+    #define outline( s )
     #define out0( s ) 0
     #define hex( n )
 #endif
@@ -226,24 +245,24 @@ trap_retval TRAP_CORE( Get_sys_config )( void )
 {
     get_sys_config_ret  *ret;
 
-    ret = GetOutPtr(0);
-    ret->sys.os = DIG_OS_DOS;
-    ret->sys.osmajor = DOS_major;
-    ret->sys.osminor = DOS_minor;
-    ret->sys.cpu = CPUType;
+    ret = GetOutPtr( 0 );
+    ret->os = DIG_OS_DOS;
+    ret->osmajor = DOS_major;
+    ret->osminor = DOS_minor;
+    ret->cpu = CPUType;
     if( Have87Emu() ) {
-        ret->sys.fpu = X86_EMU;
-    } else if( RealNPXType != X86_NO ) {
+        ret->fpu = X86_EMU;
+    } else if( RealNPXType != X86_NOFPU ) {
         if( CPUType < X86_486 ) {
-            ret->sys.fpu = RealNPXType;
+            ret->fpu = RealNPXType;
         } else {
-            ret->sys.fpu = CPUType & X86_CPU_MASK;
+            ret->fpu = CPUType & X86_CPU_MASK;
         }
     } else {
-        ret->sys.fpu = X86_NO;
+        ret->fpu = X86_NOFPU;
     }
-    ret->sys.huge_shift = 12;
-    ret->sys.arch = DIG_ARCH_X86;
+    ret->huge_shift = 12;
+    ret->arch = DIG_ARCH_X86;
     return( sizeof( *ret ) );
 }
 
@@ -256,8 +275,8 @@ trap_retval TRAP_CORE( Map_addr )( void )
     map_addr_req    *acc;
     map_addr_ret    *ret;
 
-    acc = GetInPtr(0);
-    ret = GetOutPtr(0);
+    acc = GetInPtr( 0 );
+    ret = GetOutPtr( 0 );
     seg = acc->in_addr.segment;
     switch( seg ) {
     case MAP_FLAT_CODE_SELECTOR:
@@ -267,7 +286,7 @@ trap_retval TRAP_CORE( Map_addr )( void )
     }
     if( Flags & F_BoundApp ) {
         segment = _MK_FP( SegmentChain, 14 );
-        for( count = NumSegments - seg; count != 0; --count ) {
+        for( count = NumSegments - seg; count > 0; --count ) {
             segment = _MK_FP( *segment, 14 );
         }
         ret->out_addr.segment = _FP_SEG( segment ) + 1;
@@ -285,42 +304,49 @@ trap_retval TRAP_CORE( Map_addr )( void )
 
 trap_retval TRAP_CORE( Machine_data )( void )
 {
+    machine_data_req    *acc;
     machine_data_ret    *ret;
-    unsigned_8          *data;
+    machine_data_spec   *data;
 
+    acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    data = GetOutPtr( sizeof( *ret ) );
     ret->cache_start = 0;
-    ret->cache_end = ~(addr_off)0;
-    *data = 0;
-    return( sizeof( *ret ) + sizeof( *data ) );
+    ret->cache_end = ~(addr48_off)0;
+    if( acc->info_type == X86MD_ADDR_CHARACTERISTICS ) {
+        data = GetOutPtr( sizeof( *ret ) );
+        data->x86_addr_flags = X86AC_REAL;
+        return( sizeof( *ret ) + sizeof( data->x86_addr_flags ) );
+    }
+    return( sizeof( *ret ) );
 }
 
 trap_retval TRAP_CORE( Checksum_mem )( void )
 {
-    unsigned_8          __far *ptr;
-    unsigned long       sum = 0;
-    unsigned            len;
+    unsigned char       __far *ptr;
+    unsigned_32         sum;
+    size_t              len;
     checksum_mem_req    *acc;
     checksum_mem_ret    *ret;
 
-    acc = GetInPtr(0);
-    ret = GetOutPtr(0);
+    acc = GetInPtr( 0 );
     ptr = _MK_FP( acc->in_addr.segment, acc->in_addr.offset );
-    for( len = acc->len; len != 0; --len ) {
+    sum = 0;
+    for( len = acc->len; len-- > 0; ) {
         sum += *ptr++;
     }
+    ret = GetOutPtr( 0 );
     ret->result = sum;
     return( sizeof( *ret ) );
 }
 
 
-static bool IsInterrupt( addr48_ptr addr, unsigned length )
+static bool IsInterrupt( addr48_ptr *addr, size_t len )
 {
-    dword   start, end;
+    dword   start;
+    dword   end;
 
-    start = ((dword)addr.segment << 4) + addr.offset;
-    end = start + length;
+    start = GET_LINEAR( addr->segment, addr->offset );
+    end = start + len;
     return( start < 0x400 || end < 0x400 );
 }
 
@@ -329,21 +355,18 @@ trap_retval TRAP_CORE( Read_mem )( void )
 {
     bool            int_tbl;
     read_mem_req    *acc;
-    void            *data;
-    trap_elen       len;
+    size_t          len;
 
-    acc = GetInPtr(0);
-    data = GetOutPtr( 0 );
+    acc = GetInPtr( 0 );
     acc->mem_addr.offset &= 0xffff;
-    int_tbl = IsInterrupt( acc->mem_addr, acc->len );
+    len = acc->len;
+    int_tbl = IsInterrupt( &acc->mem_addr, len );
     if( int_tbl )
         SetIntVecs();
-    len = acc->len;
     if( ( acc->mem_addr.offset + len ) > 0xffff ) {
         len = 0x10000 - acc->mem_addr.offset;
     }
-    MoveBytes( acc->mem_addr.segment, acc->mem_addr.offset,
-               _FP_SEG( data ), _FP_OFF( data ), len );
+    ReadMemory( acc->mem_addr.segment, acc->mem_addr.offset, GetOutPtr( 0 ), len );
     if( int_tbl )
         ClrIntVecs();
     return( len );
@@ -355,25 +378,21 @@ trap_retval TRAP_CORE( Write_mem )( void )
     bool            int_tbl;
     write_mem_req   *acc;
     write_mem_ret   *ret;
-    trap_elen       len;
-    void            *data;
+    size_t          len;
 
     acc = GetInPtr( 0 );
-    ret = GetOutPtr( 0 );
-    data = GetInPtr( sizeof( *acc ) );
     len = GetTotalSizeIn() - sizeof( *acc );
-
     acc->mem_addr.offset &= 0xffff;
-    int_tbl = IsInterrupt( acc->mem_addr, len );
+    int_tbl = IsInterrupt( &acc->mem_addr, len );
     if( int_tbl )
         SetIntVecs();
     if( ( acc->mem_addr.offset + len ) > 0xffff ) {
         len = 0x10000 - acc->mem_addr.offset;
     }
-    MoveBytes( _FP_SEG( data ), _FP_OFF( data ),
-               acc->mem_addr.segment, acc->mem_addr.offset, len );
+    WriteMemory( GetInPtr( sizeof( *acc ) ), acc->mem_addr.segment, acc->mem_addr.offset, len );
     if( int_tbl )
         ClrIntVecs();
+    ret = GetOutPtr( 0 );
     ret->len = len;
     return( sizeof( *ret ) );
 }
@@ -383,23 +402,26 @@ trap_retval TRAP_CORE( Read_io )( void )
 {
     read_io_req     *acc;
     void            *data;
-    trap_elen       len;
 
-    acc = GetInPtr(0);
-    data = GetOutPtr(0);
-    if( acc->len == 1 ) {
-       *(byte __far *)data = In_b( acc->IO_offset );
-       len = 1;
-    } else if( acc->len == 2 ) {
-       *(word __far *)data = In_w( acc->IO_offset );
-       len = 2;
-    } else if( Flags & F_Is386 ) {
-       *(dword __far *)data = In_d( acc->IO_offset );
-       len = 4;
-    } else {
-       len = 0;
+    acc = GetInPtr( 0 );
+    data = GetOutPtr( 0 );
+    switch( acc->len ) {
+    case 1:
+        *(byte *)data = In_b( acc->IO_offset );
+        break;
+    case 2:
+        *(word *)data = In_w( acc->IO_offset );
+        break;
+    case 4:
+        if( Flags & F_Is386 ) {
+            *(dword *)data = In_d( acc->IO_offset );
+            break;
+        }
+        /* fall through */
+    default:
+        return( 0 );
     }
-    return( len );
+    return( acc->len );
 }
 
 
@@ -408,24 +430,30 @@ trap_retval TRAP_CORE( Write_io )( void )
     write_io_req        *acc;
     write_io_ret        *ret;
     void                *data;
-    trap_elen           len;
+    size_t              len;
 
-    acc = GetInPtr(0);
+    acc = GetInPtr( 0 );
     data = GetInPtr( sizeof( *acc ) );
     len = GetTotalSizeIn() - sizeof( *acc );
-    ret = GetOutPtr(0);
-    if( len == 1 ) {
-        Out_b( acc->IO_offset, *(byte __far *)data );
-        ret->len = 1;
-    } else if( len == 2 ) {
-        Out_w( acc->IO_offset, *(word __far *)data );
-        ret->len = 2;
-    } else if( Flags & F_Is386 ) {
-        Out_d( acc->IO_offset, *(dword __far *)data );
-        ret->len = 4;
-    } else {
-        ret->len = 0;
+    switch( len ) {
+    case 1:
+        Out_b( acc->IO_offset, *(byte *)data );
+        break;
+    case 2:
+        Out_w( acc->IO_offset, *(word *)data );
+        break;
+    case 4:
+        if( Flags & F_Is386 ) {
+            Out_d( acc->IO_offset, *(dword *)data );
+            break;
+        }
+        /* fall through */
+    default:
+        len = 0;
+        break;
     }
+    ret = GetOutPtr( 0 );
+    ret->len = len;
     return( sizeof( *ret ) );
 }
 
@@ -433,11 +461,11 @@ trap_retval TRAP_CORE( Read_regs )( void )
 {
     mad_registers       *mr;
 
-    mr = GetOutPtr(0);
+    mr = GetOutPtr( 0 );
     mr->x86.cpu = *(struct x86_cpu *)&TaskRegs;
     if( Have87Emu() ) {
         Read87EmuState( &mr->x86.u.fpu );
-    } else if( RealNPXType != X86_NO ) {
+    } else if( RealNPXType != X86_NOFPU ) {
         Read8087( &mr->x86.u.fpu );
     } else {
         memset( &mr->x86.u.fpu, 0, sizeof( mr->x86.u.fpu ) );
@@ -453,7 +481,7 @@ trap_retval TRAP_CORE( Write_regs )( void )
     *(struct x86_cpu *)&TaskRegs = mr->x86.cpu;
     if( Have87Emu() ) {
         Write87EmuState( &mr->x86.u.fpu );
-    } else if( RealNPXType != X86_NO ) {
+    } else if( RealNPXType != X86_NOFPU ) {
         Write8087( &mr->x86.u.fpu );
     }
     return( 0 );
@@ -466,20 +494,81 @@ static EXE_TYPE CheckEXEType( tiny_handle_t handle )
     Flags &= ~F_Com_file;
     if( TINY_OK( TinyFarRead( handle, &head, sizeof( head ) ) ) ) {
         switch( head.signature ) {
-        case SIMPLE_SIGNATURE:      // mp
-        case REX_SIGNATURE:         // mq
+        case SIMPLE_SIGNATURE:      // 'MP'
+        case EXESIGN_REX:
         case EXTENDED_SIGNATURE:    // 'P3'
-            return( EXE_PHARLAP_SIMPLE );
-        case DOS_SIGNATURE:         // 'MZ'
-            if( head.reloc_offset == OS2_EXE_HEADER_FOLLOWS )
-                return( EXE_OS2 );
-            return( EXE_DOS );
+            return( EXE_TYPE_PHARLAP_SIMPLE );
+        case EXESIGN_DOS:
+            if( NE_HEADER_FOLLOWS( head.reloc_offset ) )
+                return( EXE_TYPE_OS2 );
+            return( EXE_TYPE_DOS );
         default:
             Flags |= F_Com_file;
             break;
         }
     }
-    return( EXE_UNKNOWN );
+    return( EXE_TYPE_UNKNOWN );
+}
+
+static size_t MergeArgvArray( const char *src, char __far *dst, size_t len )
+{
+    char    ch;
+    char    __far *start = dst;
+
+    while( len-- > 0 ) {
+        ch = *src++;
+        if( ch == '\0' ) {
+            if( len == 0 )
+                break;
+            ch = ' ';
+        }
+        *dst++ = ch;
+    }
+    *dst = '\r';
+    return( dst - start );
+}
+
+static opcode_type place_breakpoint_file( tiny_handle_t handle, dword pos )
+{
+    opcode_type old_opcode;
+
+    TinySeek( handle, pos, TIO_SEEK_SET );
+    TinyFarRead( handle, &old_opcode, sizeof( old_opcode ) );
+    TinySeek( handle, pos, TIO_SEEK_SET );
+    TinyFarWrite( handle, &BreakOpcode, sizeof( BreakOpcode ) );
+    return( old_opcode );
+}
+
+static void remove_breakpoint_file( tiny_handle_t handle, dword pos, opcode_type old_opcode )
+{
+    TinySeek( handle, pos, TIO_SEEK_SET );
+    TinyFarWrite( handle, &old_opcode, sizeof( old_opcode ) );
+}
+
+static opcode_type place_breakpoint( addr48_ptr *addr )
+{
+    opcode_type __far *paddr;
+    opcode_type old_opcode;
+
+    paddr = MK_FP( addr->segment, addr->offset );
+    old_opcode = *paddr;
+    *paddr = BreakOpcode;
+    if( *paddr != BreakOpcode ) {
+        BadBreak = GET_LINEAR( addr->segment, addr->offset );
+        GotABadBreak = true;
+    }
+    return( old_opcode );
+}
+
+static void remove_breakpoint( addr48_ptr *addr, opcode_type old_opcode )
+{
+    opcode_type __far *paddr;
+
+    paddr = MK_FP( addr->segment, addr->offset );
+    if( *paddr == BreakOpcode ) {
+        *paddr = old_opcode;
+    }
+    GotABadBreak = false;
 }
 
 trap_retval TRAP_CORE( Prog_load )( void )
@@ -489,53 +578,40 @@ trap_retval TRAP_CORE( Prog_load )( void )
     tiny_ret_t      rc;
     char            *parm;
     char            *name;
-    char            __far *dst;
     char            exe_name[128];
-    char            ch;
-    EXE_TYPE        exe;
+    EXE_TYPE        exe_type;
     prog_load_ret   *ret;
-    unsigned        len;
+    size_t          len;
     union {
         tiny_ret_t        rc;
         tiny_file_stamp_t stamp;
     } exe_time;
     word            value;
-    opcode_type     brk_opcode;
+    opcode_type     old_opcode;
     os2_exe_header  os2_head;
     tiny_handle_t   handle;
-    dword           NEOffset;
+    dword           ne_header_off;
     dword           StartPos;
-    opcode_type     saved_opcode;
     dword           SegTable;
+    addr48_ptr      start_addr;
 
     ExceptNum = -1;
     ret = GetOutPtr( 0 );
+    ret->err = 0;
     memset( &TaskRegs, 0, sizeof( TaskRegs ) );
     TaskRegs.EFL = MyFlags() & ~USR_FLAGS;
     /* build a DOS command line parameter in our PSP command area */
     Flags &= ~F_BoundApp;
     psp = DbgPSP();
-    parm = name = GetInPtr( sizeof( prog_load_req ) );
-    if( TINY_ERROR( FindProgFile( name, exe_name, DosExtList ) ) ) {
-        exe_name[0] = '\0';
-    }
+    name = GetInPtr( sizeof( prog_load_req ) );
+    FindFilePath( DIG_FILETYPE_EXE, name, exe_name );
+    parm = name;
     while( *parm++ != '\0' )        // skip program name
         {}
-    len = GetTotalSizeIn() - ( parm - name ) - sizeof( prog_load_req );
+    len = GetTotalSizeIn() - sizeof( prog_load_req ) - ( parm - name );
     if( len > 126 )
         len = 126;
-    dst = _MK_FP( psp, CMD_OFFSET + 1 );
-    for( ; len > 0; --len ) {
-        ch = *parm++;
-        if( ch == '\0' ) {
-            if( len == 1 )
-                break;
-            ch = ' ';
-        }
-        *dst++ = ch;
-    }
-    *dst = '\r';
-    *(byte __far *)_MK_FP( psp, CMD_OFFSET ) = _FP_OFF( dst ) - ( CMD_OFFSET + 1 );
+    *(byte __far *)_MK_FP( psp, CMD_OFFSET ) = MergeArgvArray( parm, _MK_FP( psp, CMD_OFFSET + 1 ), len );
     parmblock.envstring = 0;
     parmblock.commandln.segment = psp;
     parmblock.commandln.offset =  CMD_OFFSET;
@@ -544,45 +620,41 @@ trap_retval TRAP_CORE( Prog_load )( void )
     parmblock.fcb01.offset  = 0x5C;
     parmblock.fcb02.offset  = 0x6C;
 
-    exe = EXE_UNKNOWN;
+    exe_type = EXE_TYPE_UNKNOWN;
     rc = TinyOpen( exe_name, TIO_READ_WRITE );
     if( TINY_OK( rc ) ) {
         handle = TINY_INFO( rc );
         exe_time.rc = TinyGetFileStamp( handle );
-        exe = CheckEXEType( handle );
-        if( exe == EXE_OS2 ) {
-            if( TINY_OK( TinySeek( handle, OS2_NE_OFFSET, TIO_SEEK_START ) )
-              && TINY_OK( TinyFarRead( handle, &NEOffset, sizeof( NEOffset ) ) )
-              && TINY_OK( TinySeek( handle, NEOffset, TIO_SEEK_START ) )
+        exe_type = CheckEXEType( handle );
+        if( exe_type == EXE_TYPE_OS2 ) {
+            if( TINY_OK( TinySeek( handle, NE_HEADER_OFFSET, TIO_SEEK_SET ) )
+              && TINY_OK( TinyFarRead( handle, &ne_header_off, sizeof( ne_header_off ) ) )
+              && TINY_OK( TinySeek( handle, ne_header_off, TIO_SEEK_SET ) )
               && TINY_OK( TinyFarRead( handle, &os2_head, sizeof( os2_head ) ) ) ) {
-                if( os2_head.signature == RAT_SIGNATURE_WORD ) {
-                    exe = EXE_RATIONAL_386;
-                } else if( os2_head.signature == OS2_SIGNATURE_WORD ) {
+                if( os2_head.signature == EXESIGN_LE ) {
+                    exe_type = EXE_TYPE_RATIONAL_386;
+                } else if( os2_head.signature == EXESIGN_NE ) {
                     NumSegments = os2_head.segments;
-                    SegTable = NEOffset + os2_head.segment_off;
+                    SegTable = ne_header_off + os2_head.segment_off;
                     if( os2_head.align == 0 )
                         os2_head.align = 9;
-                    TinySeek( handle, SegTable + ( os2_head.entrynum - 1 ) * 8, TIO_SEEK_START );
+                    TinySeek( handle, SegTable + ( os2_head.entrynum - 1 ) * 8, TIO_SEEK_SET );
                     TinyFarRead( handle, &value, sizeof( value ) );
                     StartPos = ( (dword)value << os2_head.align ) + os2_head.IP;
-                    TinySeek( handle, StartPos, TIO_SEEK_START );
-                    TinyFarRead( handle, &saved_opcode, sizeof( saved_opcode ) );
-                    TinySeek( handle, StartPos, TIO_SEEK_START );
-                    brk_opcode = BRKPOINT;
-                    rc = TinyFarWrite( handle, &brk_opcode, sizeof( brk_opcode ) );
+                    old_opcode = place_breakpoint_file( handle, StartPos );
                 } else {
-                    exe = EXE_UNKNOWN;
+                    exe_type = EXE_TYPE_UNKNOWN;
                 }
             } else {
-                exe = EXE_UNKNOWN;
+                exe_type = EXE_TYPE_UNKNOWN;
             }
         }
         TinyClose( handle );
-        switch( exe ) {
-        case EXE_RATIONAL_386:
+        switch( exe_type ) {
+        case EXE_TYPE_RATIONAL_386:
             ret->err = ERR_RATIONAL_EXE;
             return( sizeof( *ret ) );
-        case EXE_PHARLAP_SIMPLE:
+        case EXE_TYPE_PHARLAP_SIMPLE:
             ret->err = ERR_PHARLAP_EXE;
             return( sizeof( *ret ) );
         }
@@ -609,21 +681,17 @@ trap_retval TRAP_CORE( Prog_load )( void )
     TaskRegs.ES = psp;
     if( TINY_OK( rc ) ) {
         if( (Flags & F_NoOvlMgr) || !CheckOvl( parmblock.startcsip ) ) {
-            if( exe == EXE_OS2 ) {
-                opcode_type __far *loc_brk_opcode;
-
+            if( exe_type == EXE_TYPE_OS2 ) {
                 BoundAppLoading = true;
                 RunProg( &TaskRegs, &TaskRegs );
-                loc_brk_opcode = _MK_FP(TaskRegs.CS, TaskRegs.EIP);
-                if( *loc_brk_opcode == BRKPOINT ) {
-                    *loc_brk_opcode = saved_opcode;
-                }
+                start_addr.segment = TaskRegs.CS;
+                start_addr.offset = TaskRegs.EIP;
+                remove_breakpoint( &start_addr, old_opcode );
                 BoundAppLoading = false;
                 rc = TinyOpen( exe_name, TIO_READ_WRITE );
                 if( TINY_OK( rc ) ) {
                     handle = TINY_INFO( rc );
-                    TinySeek( handle, StartPos, TIO_SEEK_START );
-                    TinyFarWrite( handle, &saved_opcode, sizeof( saved_opcode ) );
+                    remove_breakpoint_file( handle, StartPos, old_opcode );
                     TinySetFileStamp( handle, exe_time.stamp.time, exe_time.stamp.date );
                     TinyClose( handle );
                     Flags |= F_BoundApp;
@@ -631,7 +699,8 @@ trap_retval TRAP_CORE( Prog_load )( void )
             }
         }
     }
-    ret->err = ( TINY_ERROR( rc ) ) ? TINY_INFO( rc ) : 0;
+    if( TINY_ERROR( rc ) )
+        ret->err = TINY_INFO( rc );
     ret->task_id = psp;
     ret->flags = 0;
     ret->mod_handle = 0;
@@ -643,117 +712,118 @@ trap_retval TRAP_CORE( Prog_kill )( void )
 {
     prog_kill_ret       *ret;
 
-out( "in AccKillProg\r\n" );
-    ret = GetOutPtr( 0 );
+outline( "in AccKillProg" );
     RedirectFini();
     if( DOSTaskPSP() != NULL ) {
-out( "enduser\r\n" );
+outline( "enduser" );
         EndUser();
-out( "done enduser\r\n" );
+outline( "done enduser" );
     }
-out( "null87emu\r\n" );
+outline( "null87emu" );
     Null87Emu();
     NullOvlHdlr();
     ExceptNum = -1;
+    ret = GetOutPtr( 0 );
     ret->err = 0;
-out( "done AccKillProg\r\n" );
+outline( "done AccKillProg" );
     return( sizeof( *ret ) );
 }
 
+static int DRegsCount( void )
+{
+    int     needed;
+    int     i;
+
+    needed = 0;
+    for( i = 0; i < WatchCount; i++ ) {
+        needed += WatchPoints[i].dregs;
+    }
+    return( needed );
+}
+
+static word GetDRInfo( word segment, word offset, word size, dword *plinear )
+{
+    word    dregs;
+    dword   linear;
+
+    linear = GET_LINEAR( segment, offset );
+    dregs = 1;
+    if( size == 8 ) {
+        size = 4;
+        dregs++;
+    }
+    if( linear & ( size - 1 ) )
+        dregs++;
+    if( plinear != NULL )
+        *plinear = linear & ~( size - 1 );
+    return( dregs );
+}
 
 trap_retval TRAP_CORE( Set_watch )( void )
 {
-    watch_point         *curr;
-    set_watch_req       *wp;
-    set_watch_ret       *wr;
-    int                 i, needed;
+    set_watch_req   *acc;
+    set_watch_ret   *ret;
+    watch_point     *wp;
 
-    wp = GetInPtr( 0 );
-    wr = GetOutPtr( 0 );
-    wr->err = 1;
-    wr->multiplier = 0;
-    if( WatchCount < MAX_WP ) {
-        wr->err = 0;
-        curr = WatchPoints + WatchCount;
-        curr->addr.segment = wp->watch_addr.segment;
-        curr->addr.offset = wp->watch_addr.offset;
-        curr->value = *(dword __far *)_MK_FP( wp->watch_addr.segment, wp->watch_addr.offset );
-        curr->linear = ( (dword)wp->watch_addr.segment << 4 ) + wp->watch_addr.offset;
-        curr->len = wp->size;
-        curr->linear &= ~( curr->len - 1 );
-        curr->dregs = ( wp->watch_addr.offset & ( curr->len - 1 ) ) ? 2 : 1;
-        ++WatchCount;
+    acc = GetInPtr( 0 );
+    ret = GetOutPtr( 0 );
+    ret->multiplier = 200;
+    ret->err = 1;       // failure
+    if( WatchCount < MAX_WATCHES ) {
+        ret->err = 0;   // OK
+        wp = WatchPoints + WatchCount;
+        wp->addr.segment = acc->watch_addr.segment;
+        wp->addr.offset = acc->watch_addr.offset;
+        wp->size = acc->size;
+        wp->value = 0;
+        ReadMemory( wp->addr.segment, wp->addr.offset, &wp->value, wp->size );
+        WatchCount++;
+
         if( Flags & F_DRsOn ) {
-            needed = 0;
-            for( i = 0; i < WatchCount; ++i ) {
-                needed += WatchPoints[i].dregs;
-            }
-            if( needed <= 4 ) {
-                wr->multiplier |= USING_DEBUG_REG;
+            wp->dregs = GetDRInfo( wp->addr.segment, wp->addr.offset, wp->size, &wp->linear );
+            if( DRegsCount() <= 4 ) {
+                ret->multiplier |= USING_DEBUG_REG;
             }
         }
     }
-    wr->multiplier |= 200;
-    return( sizeof( *wr ) );
+    return( sizeof( *ret ) );
 }
 
 trap_retval TRAP_CORE( Clear_watch )( void )
 {
+    /* assume all watches removed at same time */
     WatchCount = 0;
     return( 0 );
 }
 
 trap_retval TRAP_CORE( Set_break )( void )
 {
-    opcode_type     __far *loc_brk_opcode;
     set_break_req   *acc;
     set_break_ret   *ret;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-
-    loc_brk_opcode = _MK_FP( acc->break_addr.segment, acc->break_addr.offset );
-    ret->old = *loc_brk_opcode;
-    *loc_brk_opcode = BRKPOINT;
-    if( *loc_brk_opcode != BRKPOINT ) {
-        BadBreak = acc->break_addr;
-        GotABadBreak = true;
-    }
+    ret->old = place_breakpoint( &acc->break_addr );
     return( sizeof( *ret ) );
 }
 
 
 trap_retval TRAP_CORE( Clear_break )( void )
 {
-    clear_break_req     *bp;
+    clear_break_req     *acc;
 
-    bp = GetInPtr( 0 );
-    *(opcode_type __far *)_MK_FP( bp->break_addr.segment, bp->break_addr.offset ) = bp->old;
-    GotABadBreak = false;
+    acc = GetInPtr( 0 );
+    remove_breakpoint( &acc->break_addr, acc->old );
     return( 0 );
 }
 
-static unsigned long SetDRn( int i, unsigned long linear, long type )
+static dword SetDRn( int dr, dword linear, word type )
 {
-    switch( i ) {
-    case 0:
-        SetDR0( linear );
-        break;
-    case 1:
-        SetDR1( linear );
-        break;
-    case 2:
-        SetDR2( linear );
-        break;
-    case 3:
-        SetDR3( linear );
-        break;
-    }
-    return( ( type << DR7_RWLSHIFT(i) )
-//          | ( DR7_GEMASK << DR7_GLSHIFT(i) ) | DR7_GE
-          | ( DR7_LEMASK << DR7_GLSHIFT(i) ) | DR7_LE );
+    SetDRx( dr, linear );
+    return( ( (dword)type << DR7_RWLSHIFT( dr ) )
+//          | ( DR7_GEMASK << DR7_GLSHIFT( dr ) )
+          | ( DR7_LEMASK << DR7_GLSHIFT( dr ) ) );
 }
-
 
 static int ClearDebugRegs( int trap )
 {
@@ -763,7 +833,7 @@ static int ClearDebugRegs( int trap )
     if( Flags & F_DRsOn ) {
         out( "tr=" ); out( hex( trap ) );
         out( " dr6=" ); out( hex( GetDR6() ) );
-        out( "\r\n" );
+        outline( "" );
         if( trap == TRAP_WATCH_POINT ) { /* could be a 386 break point */
             dr6 = GetDR6();
             if( ( ( dr6 & DR6_B0 ) && IsBreak[0] )
@@ -785,38 +855,40 @@ static int ClearDebugRegs( int trap )
 
 static bool SetDebugRegs( void )
 {
-    int                 needed;
     int                 i;
+    int                 j;
     int                 dr;
-    unsigned long       dr7;
-    unsigned long       linear;
-    watch_point         *wp;
+    dword               dr7;
+    dword               linear;
     bool                watch386;
+    watch_point         *wp;
+    word                size;
+    word                type;
 
     if( (Flags & F_DRsOn) == 0 )
         return( false );
-    needed = 0;
-    for( i = WatchCount, wp = WatchPoints; i != 0; --i, ++wp ) {
-        needed += wp->dregs;
-    }
+    watch386 = false;
     dr  = 0;
     dr7 = 0;
-    if( needed > 4 ) {
-        watch386 = false;
-    } else {
-        for( i = WatchCount, wp = WatchPoints; i != 0; --i, ++wp ) {
-            dr7 |= SetDRn( dr, wp->linear, DRLen( wp->len ) | DR7_BWR );
-            ++dr;
-            if( wp->dregs == 2 ) {
-                dr7 |= SetDRn( dr, wp->linear + 4, DRLen( wp->len ) | DR7_BWR );
+    if( DRegsCount() <= 4 ) {
+        dr7 |= /* DR7_GE | */ DR7_LE;
+        for( wp = WatchPoints, i = WatchCount; i-- > 0; wp++ ) {
+            linear = wp->linear;
+            size = wp->size;
+            if( size == 8 )
+                size = 4;
+            type = DRLen( size ) | DR7_BWR;
+            for( j = 0; j < wp->dregs; j++ ) {
+                dr7 |= SetDRn( dr, linear, type );
                 ++dr;
+                linear += size;
             }
             watch386 = true;
         }
     }
     if( GotABadBreak && dr < 4 ) {
-        linear = ( (unsigned long)BadBreak.segment << 4 ) + BadBreak.offset;
-        dr7 |= SetDRn( dr, linear, DR7_L1 | DR7_BINST );
+        dr7 |= /* DR7_GE | */ DR7_LE;
+        dr7 |= SetDRn( dr, BadBreak, DRLen( 1 ) | DR7_BINST );
         IsBreak[dr] = true;
         ++dr;
     }
@@ -829,35 +901,35 @@ static trap_conditions MapReturn( int trap )
     out( "cond=" );
     switch( trap ) {
     case TRAP_TRACE_POINT:
-        out( "trace point" );
+        outline( "trace point" );
         return( COND_TRACE );
     case TRAP_BREAK_POINT:
-        out( "break point" );
+        outline( "break point" );
         return( COND_BREAK );
     case TRAP_WATCH_POINT:
-        out( "watch point" );
+        outline( "watch point" );
         return( COND_WATCH );
     case TRAP_USER:
-        out( "user" );
+        outline( "user" );
         return( COND_USER );
     case TRAP_TERMINATE:
-        out( "terminate" );
+        outline( "terminate" );
         return( COND_TERMINATE );
     case TRAP_MACH_EXCEPTION:
-        out( "exception" );
+        outline( "exception" );
         ExceptNum = 0;
         return( COND_EXCEPTION );
     case TRAP_OVL_CHANGE_LOAD:
-        out( "overlay load" );
+        outline( "overlay load" );
         return( COND_SECTIONS );
     case TRAP_OVL_CHANGE_RET:
-        out( "overlay ret" );
+        outline( "overlay ret" );
         return( COND_SECTIONS );
     default:
         break;
     }
-    out( "none" );
-    return( 0 );
+    outline( "none" );
+    return( COND_NONE );
 }
 
 static trap_elen ProgRun( bool step )
@@ -872,32 +944,32 @@ static trap_elen ProgRun( bool step )
         SetSingleStep();
     }
     if( step ) {
-        TaskRegs.EFL |= FLG_T;
+        TaskRegs.EFL |= INTR_TF;
     } else  {
         watch386 = SetDebugRegs();
-        if( WatchCount != 0 && !watch386 ) {
+        if( WatchCount > 0 && !watch386 ) {
             if( Flags & F_DRsOn ) {
                 SetWatch386( WatchCount, WatchPoints );
             } else {
                 SetWatchPnt( WatchCount, WatchPoints );
             }
-            TaskRegs.EFL |= FLG_T;
+            TaskRegs.EFL |= INTR_TF;
         }
     }
-    out( "in CS:EIP=" ); out( hex( TaskRegs.CS ) ); out(":" ); out( hex( TaskRegs.EIP ) );
-    out( " SS:ESP=" ); out( hex( TaskRegs.SS ) ); out(":" ); out( hex( TaskRegs.ESP ) );
-    out( "\r\n" );
+    out( "in CS:EIP=" ); out( hex( TaskRegs.CS ) ); out( ":" ); out( hex( TaskRegs.EIP ) );
+    out( " SS:ESP=" ); out( hex( TaskRegs.SS ) ); out( ":" ); out( hex( TaskRegs.ESP ) );
+    outline( "" );
     ret->conditions = MapReturn( ClearDebugRegs( RunProg( &TaskRegs, &TaskRegs ) ) );
     ret->conditions |= COND_CONFIG;
 //    out( "cond=" ); out( hex( ret->conditions ) );
-    out( " CS:EIP=" ); out( hex( TaskRegs.CS ) ); out(":" ); out( hex( TaskRegs.EIP ) );
-    out( " SS:ESP=" ); out( hex( TaskRegs.SS ) ); out(":" ); out( hex( TaskRegs.ESP ) );
-    out( "\r\n" );
+    out( " CS:EIP=" ); out( hex( TaskRegs.CS ) ); out( ":" ); out( hex( TaskRegs.EIP ) );
+    out( " SS:ESP=" ); out( hex( TaskRegs.SS ) ); out( ":" ); out( hex( TaskRegs.ESP ) );
+    outline( "" );
     ret->stack_pointer.segment = TaskRegs.SS;
     ret->stack_pointer.offset  = TaskRegs.ESP;
     ret->program_counter.segment = TaskRegs.CS;
     ret->program_counter.offset  = TaskRegs.EIP;
-    TaskRegs.EFL &= ~FLG_T;
+    TaskRegs.EFL &= ~INTR_TF;
     WatchCount = 0;
     return( sizeof( *ret ) );
 }
@@ -933,7 +1005,7 @@ trap_retval TRAP_CORE( Get_lib_name )( void )
 
 trap_retval TRAP_CORE( Get_err_text )( void )
 {
-    static const char *const DosErrMsgs[] = {
+    static const char * const DosErrMsgs[] = {
         #define pick( a, b )    b,
         #include "dosmsgs.h"
         #undef pick
@@ -984,18 +1056,18 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
 
     /* unused parameters */ (void)remote;
 
-out( "in TrapInit\r\n" );
-out( "    checking environment:\r\n" );
+outline( "in TrapInit" );
+outline( "    checking environment:" );
     Flags = 0;
     CPUType = X86CPUType();
     if( CPUType >= X86_386 )
         Flags |= F_Is386;
     if( *parms == 'D' || *parms == 'd' ) {
         ++parms;
-    } else if( out0( "    CPU type\r\n" ) || ( CPUType < X86_386 ) ) {
-    } else if( out0( "    WinEnh\r\n" ) || ( EnhancedWinCheck() & 0x7f ) ) {
+    } else if( out0( "    CPU type" ) || ( CPUType < X86_386 ) ) {
+    } else if( out0( "    WinEnh" ) || ( EnhancedWinCheck() & 0x7f ) ) {
         /* Enhanced Windows 3.0 VM kernel messes up handling of debug regs */
-    } else if( out0( "    DOSEMU\r\n" ) || DOSEMUCheck() ) {
+    } else if( out0( "    DOSEMU" ) || DOSEMUCheck() ) {
         /* no fiddling with debug regs in Linux DOSEMU either */
     } else {
         Flags |= F_DRsOn;
@@ -1003,7 +1075,7 @@ out( "    checking environment:\r\n" );
     if( *parms == 'O' || *parms == 'o' ) {
         Flags |= F_NoOvlMgr;
     }
-out( "    done checking environment\r\n" );
+outline( "    done checking environment" );
     err[0] = '\0'; /* all ok */
 
     if( CPUType & X86_MMX )
@@ -1027,16 +1099,17 @@ out( "    done checking environment\r\n" );
     RedirectInit();
     ExceptNum = -1;
     WatchCount = 0;
-    ver.major = TRAP_MAJOR_VERSION;
-    ver.minor = TRAP_MINOR_VERSION;
+    BreakOpcode = BRKPOINT;
+    ver.major = TRAP_VERSION_MAJOR;
+    ver.minor = TRAP_VERSION_MINOR;
     ver.remote = false;
-out( "done TrapInit\r\n" );
+outline( "done TrapInit" );
     return( ver );
 }
 
 void TRAPENTRY TrapFini( void )
 {
-out( "in TrapFini\r\n" );
+outline( "in TrapFini" );
     FiniVectors();
-out( "done TrapFini\r\n" );
+outline( "done TrapFini" );
 }

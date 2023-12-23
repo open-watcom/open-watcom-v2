@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -197,10 +197,11 @@ int parse_cop_file( void )
 
 void print_banner( void )
 {
-    puts( banner1w( "Script/GML Binary File Parser Program", _RESEARCH_VERSION_ ) );
-    puts( banner2 );
-    puts( banner3 );
-    puts( banner3a );
+    puts( banner1t( "Script/GML Binary File Parser Program" ) "\n"
+          banner1v( _RESEARCH_VERSION_ ) "\n"
+          banner2 "\n"
+          banner3 "\n"
+          banner3a );
 }
 
 /*  Function print_usage().

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,6 +37,7 @@
 #include "getopt.h"
 #include "misc.h"
 
+
 char            *OptArg;
 int             OptInd = 1;
 char            OptChar;
@@ -46,22 +48,15 @@ char            AltOptChar = '+';
 #endif
 
 static int      optOff = 0;
-static int      testedOptEnvVar;
 #ifndef INSIDE_VI
 static int      testedPosixrx;
 #endif
-static char     *envVar = NULL;
 
 static void eatArg( int *argc, char *argv[], int num )
 {
     int i;
 
     optOff = 0;
-    if( envVar != NULL ) {
-        envVar = NULL;
-        return;
-    }
-
     for( i= OptInd + num; i <= *argc; i++ ) {
         argv[i - num] = argv[i];
     }
@@ -87,33 +82,18 @@ int GetOpt( int *argc, char *argv[], const char *optstr, const char *usage[] )
         }
     }
 #endif
-    if( !testedOptEnvVar ) {
-        testedOptEnvVar = 1;
-        envVar = getenv( OptEnvVar );
-    }
 
     currarg = NULL;
     ch = '\0';
-    while( envVar != NULL || argv[OptInd] != NULL ) {
-        if( envVar != NULL ) {
-            currarg = envVar;
-            while( isspace( (unsigned char)(ch = currarg[optOff]) ) ) {
-                optOff++;
-            }
-        } else {
-            currarg = argv[OptInd];
-            ch = currarg[optOff];
-        }
+    while( argv[OptInd] != NULL ) {
+        currarg = argv[OptInd];
+        ch = currarg[optOff];
         if( optOff > 1 || ch == '-' || ch == AltOptChar ) {
             break;
         }
-        if( envVar != NULL ) {
-            envVar = NULL;
-        } else {
-            OptInd++;
-        }
+        OptInd++;
     }
-    if( envVar == NULL && argv[OptInd] == NULL ) {
+    if( argv[OptInd] == NULL ) {
         return( -1 );
     }
     if( optOff > 1 ) {
@@ -130,10 +110,6 @@ int GetOpt( int *argc, char *argv[], const char *optstr, const char *usage[] )
     }
     if( ch == '\0' ) {  // option char by itself should be
         return( -1 );   // left alone
-    }
-    if( ch == '-' && currarg[optOff + 1] == '\0' ) {
-        eatArg( argc, argv, 1 );
-        return( -1 );   // "--" PoSIX end of options delimiter.
     }
     if( ch == '?' ) {
         Quit( usage, NULL );

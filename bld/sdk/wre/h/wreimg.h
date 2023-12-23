@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -53,11 +54,11 @@ extern bool     WREDumpPendingImageSession( void );
 extern bool     WREEndAllImageSessions( bool fatal_exit );
 extern void     WREEndLangImageSession( WResLangNode *lnode );
 extern void     WREEndResImageSessions( WREResInfo *rinfo );
-extern bool     WREGetImageSessionFileName( HCONV server, void **data, size_t *size );
-extern bool     WREGetImageSessionResName( HCONV server, void **data, size_t *size );
-extern bool     WREGetImageSessionData( HCONV server, void **data, size_t *size );
-extern bool     WRESetImageSessionResName( HCONV server, HDDEDATA hdata );
-extern bool     WRESetImageSessionResData( HCONV server, HDDEDATA hdata );
+extern bool     WREGetImageSessionFileName( HCONV server, char **data, size_t *size );
+extern bool     WREGetImageSessionResName( HCONV server, char **data, size_t *size );
+extern bool     WREGetImageSessionData( HCONV server, char **data, size_t *size );
+extern bool     WRESetImageSessionResName( HCONV server, HDDEDATA hData );
+extern bool     WRESetImageSessionResData( HCONV server, HDDEDATA hData );
 
 extern void     WREShowAllImageSessions( bool show );
 

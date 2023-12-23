@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -53,7 +53,7 @@ patch_handle    BGNewPatch( void )
     patch = CGAlloc( sizeof( patch_info ) );
     patch->in_tree = false;
     patch->patched = false;
-#ifndef NDEBUG
+#ifdef DEVBUILD
     patch->useinfo.hdltype = NO_HANDLE;
     patch->useinfo.used = false;
 #endif
@@ -84,7 +84,7 @@ cg_name BGPatchNode( patch_handle patch, type_def *tipe )
     return( patch->u.node );
 }
 
-void    BGPatchInteger( patch_handle patch, signed_32 value )
+void    BGPatchInteger( patch_handle patch, int_32 value )
 {
     tn                  node;
     name                *c;

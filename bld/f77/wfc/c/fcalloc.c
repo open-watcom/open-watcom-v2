@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -53,9 +53,9 @@
 #include "cgprotos.h"
 
 
-#if _CPU == 8086 || _CPU == 386
+#if _INTEL_CPU
   #define FLAG_PARM_TYPE        TY_UINT_2
-#else
+#else /* _RISC_CPU */
   #define FLAG_PARM_TYPE        TY_UINT_4
 #endif
 

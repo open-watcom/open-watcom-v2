@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -99,7 +99,7 @@ static  type_class_def  FindMaxClass( name *cons, int *prefs )
     type_class = -1;
     *prefs = 0;
     for( blk = Head; blk != NULL; blk = Next( blk ) ) {
-        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+        for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             num_operands = CountOps( ins, cons );
             for( i = 0; i < num_operands; ++i ) {
                 if( ins->operands[i] == cons ) {
@@ -141,7 +141,7 @@ static  bool    ReplaceConst( name *cons, name *temp, type_class_def tmp_class )
 
     change = false;
     for( blk = Head; blk != NULL; blk = Next( blk ) ) {
-        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+        for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             type_class = Unsigned[_OpClass( ins )];
             num_operands = CountOps( ins, cons );
             for( i = 0; i < num_operands; ++i ) {
@@ -193,7 +193,7 @@ void    ConstToTemp( block *pre, block *head, block*(*next)(block*) )
         if( !ReplaceConst( cons, temp, type_class ) )
             continue;
         temp->v.usage |= USE_IN_ANOTHER_BLOCK;
-        SuffixIns( pre->ins.hd.prev, MakeMove( cons, temp, type_class ) );
+        SuffixIns( pre->ins.head.prev, MakeMove( cons, temp, type_class ) );
     }
 }
 
@@ -216,7 +216,7 @@ void            MemConstTemp( conflict_node *conf )
     temp = conf->name;
     other = NULL;
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+        for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             for( i = 0; i < ins->num_operands; ++i ) {
                 if( ins->operands[i]->n.class != N_TEMP )
                     continue;
@@ -250,7 +250,7 @@ void            MemConstTemp( conflict_node *conf )
     if( other->v.conflict == NULL )
         return;
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+        for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             for( i = 0; i < ins->num_operands; ++i ) {
                 if( ins->operands[i]->n.class != N_TEMP )
                     continue;

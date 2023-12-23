@@ -5,4 +5,4 @@ system=os2
 linkage=dynamic
 convention=register
 
-!include $(clib_dir)/mrglib.mif
+!include ../../../mrglib.mif

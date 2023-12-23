@@ -1,4 +1,8 @@
+tree_depth = 4
+
 proj_name = ui
+
+ui_nodoslfn = 1
 
 ui_trmem = 1
 
@@ -26,7 +30,7 @@ extra_cpp_flags_nov = -D_NETWARE_CLIB
 
 extra_cpp_flags_uialloc = $(trmem_cpp_flags)
 
-!ifeq release 1
+!ifeq debug 0
 extra_c_flags = -os
 !endif
 
@@ -133,6 +137,6 @@ ctkeyb.obj : ctkeyb.c conesc.gh
 conesc.gh : ./buildesc.exe ../tix/qnx.tix
     $[@ ../tix/qnx.tix conesc.gh
 
-./buildesc.exe : ../c/buildesc.c ../../unix/c/doparse.c
+./buildesc.exe : ../c/buildesc.c ../../unix/c/_doparse.c
     @%make echo_bldcl
-    $(bld_cl) $[@ -DBUILDDESC -I"../h" -I"../../unix/c" $(bld_clflags) $(bld_ldflags)
+    $(bld_cl) $[@ -DBUILDDESC -I"../h" -I"../../unix/c" -I"../../unix/h" $(ui_inc_dirs) $(bld_clflags) $(bld_ldflags)

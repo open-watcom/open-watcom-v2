@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -55,8 +55,6 @@
 
 #include "clibext.h"
 
-
-#define _LinkerPrompt "WLINK>"
 
 #define IS_WHITESPACE(ptr) (*(ptr) == ' ' || *(ptr) =='\t' || *(ptr) == '\r')
 
@@ -580,17 +578,24 @@ static bool MakeToken( tokcontrol ctrl, sep_type separator )
             }
             break;
         case '.':
-            if( (ctrl & TOK_INCLUDE_DOT) == 0 && !forcematch ) {
+            if( ctrl & (TOK_INCLUDE_DOT | TOK_IS_FILENAME) ) {
+                break;
+            }
+            if( !forcematch ) {
                 quit = true;
             }
             break;
+        case '@':
+            if( ctrl & TOK_IS_FILENAME ) {
+                break;
+            }
+            /* fall through */
         case '{':
         case '}':
         case '(':
         case ',':
         case '=':
         case '#':
-        case '@':
             if( keepspecial ) {
                 break;
             }
@@ -602,14 +607,16 @@ static bool MakeToken( tokcontrol ctrl, sep_type separator )
             }
             break;
         case '\\':
-            if( separator == SEP_QUOTE && (ctrl & TOK_IS_FILENAME) == 0 ) {
+            if( ctrl & TOK_IS_FILENAME ) {
+                break;
+            }
+            if( separator == SEP_QUOTE ) {
                 MapEscapeChar();
             }
             break;
         case '\0':
         case '\r':
         case '\n':
-        case CTRLZ:
             quit = true;
             break;
         default:
@@ -626,14 +633,15 @@ static bool MakeToken( tokcontrol ctrl, sep_type separator )
     return( true );
 }
 
-static void ExpandEnvVariable( void )
-/***********************************/
+static void ExpandEnvVariable( tokcontrol ctrl, sep_type req )
+/******************************************************************/
 /* parse the specified environment variable & deal with it */
 {
     char        *envname;
     const char  *env;
     char        *buff;
     size_t      envlen;
+    size_t      toklen;
 
     Token.next++;
     if( !MakeToken( TOK_INCLUDE_DOT, SEP_PERCENT ) ) {
@@ -644,28 +652,19 @@ static void ExpandEnvVariable( void )
     if( env == NULL ) {
         LnkMsg( LOC+LINE+WRN+MSG_ENV_NOT_FOUND, "s", envname );
     } else {
-        if( !IS_WHITESPACE( Token.next ) ) {
-            MakeToken( TOK_INCLUDE_DOT, SEP_SPACE );
-            envlen = strlen( env );
-            _ChkAlloc( buff, envlen + Token.len + 1);
-            memcpy( buff, env, envlen );
-            memcpy( buff + envlen, Token.this, Token.len );
-            buff[Token.len + envlen] = '\0';
-            NewCommandSource( envname, buff, ENVIRONMENT );
-            _LnkFree( buff );
-        } else {
-            NewCommandSource( envname, env, ENVIRONMENT );
-        }
+        MakeToken( ctrl, req );
+        envlen = strlen( env );
+        toklen = Token.len;
+        if( req == SEP_QUOTE && Token.this[toklen] == '\'' )
+            toklen++;
+        _ChkAlloc( buff, envlen + toklen + 1);
+        memcpy( buff, env, envlen );
+        memcpy( buff + envlen, Token.this, toklen );
+        buff[toklen + envlen] = '\0';
+        NewCommandSource( envname, buff, ENVIRONMENT );
+        _LnkFree( buff );
     }
     _LnkFree( envname );
-}
-
-static void OutPutPrompt( const char *str )
-/*****************************************/
-{
-    if( QIsDevice( CmdFile->file ) ) {
-        WriteStdOut( str );
-    }
 }
 
 static void GetNewLine( void )
@@ -678,7 +677,7 @@ static void GetNewLine( void )
         Token.where = MIDST;
         //go until next line found;
         for( ; *Token.next != '\n'; Token.next++ ) {
-            if( *Token.next == '\0' || *Token.next == CTRLZ ) {
+            if( *Token.next == '\0' ) {
                 Token.where = ENDOFFILE;
                 break;
             }
@@ -695,16 +694,7 @@ static void GetNewLine( void )
         break;
     default:
     case COMMANDLINE:
-        Token.how = INTERACTIVE;
-        /* fall through */
-    case INTERACTIVE:
-        /* interactive prompt with entry */
-        OutPutPrompt( _LinkerPrompt );
-        if( QReadStr( STDIN_FILENO, Token.buff, MAX_REC, "console" ) ) {
-            Token.where = ENDOFCMD;
-        } else {
-            Token.where = MIDST;
-        }
+        Token.where = ENDOFCMD;
         Token.next = Token.buff;
         break;
     }
@@ -717,7 +707,7 @@ static void StartNewFile( void )
     const char  *envstring;
     f_handle    file;
 
-    fname = FileName( Token.this, Token.len, E_COMMAND, false );
+    fname = FileName( Token.this, Token.len, E_NONE, false );
     file = QObjOpen( fname );
     if( file == NIL_FHANDLE ) {
         _LnkFree( fname );
@@ -808,9 +798,6 @@ bool GetTokenEx( sep_type req, tokcontrol ctrl, cmdfilelist *resetpoint, bool *p
             EatWhite();
             hmm = *Token.next;
             switch( hmm ) {
-            case CTRLZ:
-                Token.where = ENDOFFILE;
-                break;
             case '\0':
                 if( Token.how == BUFFERED
                  || Token.how == ENVIRONMENT
@@ -834,7 +821,7 @@ bool GetTokenEx( sep_type req, tokcontrol ctrl, cmdfilelist *resetpoint, bool *p
             case '@':
                 if( req != SEP_SPACE ) {
                     Token.next++;
-                    GetToken( SEP_NO, TOK_INCLUDE_DOT|TOK_IS_FILENAME );
+                    GetToken( SEP_NO, TOK_IS_FILENAME );
                     StartNewFile();
                     break;
                 }
@@ -858,7 +845,7 @@ bool GetTokenEx( sep_type req, tokcontrol ctrl, cmdfilelist *resetpoint, bool *p
                 return( ret );
             case '%':
                 if( req != SEP_SPACE ) {
-                    ExpandEnvVariable();
+                    ExpandEnvVariable( ctrl, req );
                     break;
                 }
                 /* fall through */
@@ -917,6 +904,13 @@ bool GetTokenEx( sep_type req, tokcontrol ctrl, cmdfilelist *resetpoint, bool *p
                         req = SEP_QUOTE;   /* token has been quoted */
                         Token.next++;      /* don't include the quote */
                         Token.quoted = true;
+                        if( ctrl & TOK_IS_FILENAME ) {
+                            /*
+                             * re-process quoted file name for environment
+                             * variables expansion
+                             */
+                            break;
+                        }
                     }
                     ret = MakeToken( ctrl, req );
                     return( ret );
@@ -965,15 +959,15 @@ bool GetToken( sep_type req, tokcontrol ctrl )
 static char *getCmdLine( void )
 /*****************************/
 {
-    int     len;
-    char    *cmdline;
+    int     cmd_len;
+    char    *cmd_line;
 
-    len = _bgetcmd( NULL, 0 ) + 1;
-    _ChkAlloc( cmdline, len );
-    if( cmdline != NULL ) {
-        _bgetcmd( cmdline, len );
+    cmd_len = _bgetcmd( NULL, 0 ) + 1;
+    _ChkAlloc( cmd_line, cmd_len );
+    if( cmd_line != NULL ) {
+        _bgetcmd( cmd_line, cmd_len );
     }
-    return( cmdline );
+    return( cmd_line );
 }
 
 void NewCommandSource( const char *name, const char *buff, method how )
@@ -1164,8 +1158,8 @@ outfilelist *NewOutFile( char *filename )
     return( fnode );
 }
 
-char *GetFileName( char **membname, bool setname )
-/************************************************/
+char *GetFileName( char **membname )
+/**********************************/
 {
     char        *ptr;
     size_t      namelen;
@@ -1181,9 +1175,6 @@ char *GetFileName( char **membname, bool setname )
         ptr = FileName( objname, namelen, E_LIBRARY, false );
     } else {
         *membname = NULL;
-        if( setname && Name == NULL ) {
-            Name = ChkToString( objname, namelen );
-        }
         ptr = FileName( objname, namelen, E_OBJECT, false );
     }
     return( ptr );

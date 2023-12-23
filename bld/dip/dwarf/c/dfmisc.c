@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,16 +40,17 @@
 
 
 /*
-   Misc. stuff.
-*/
+ * Misc. stuff.
+ */
 
 char const  DIPImp( Name )[] = "DWARF";
 
 df_cleaner       *Cleaners;
 
 static void CallCleaners( void )
-/******************************/
-//Call all stacked resource cleanup
+/*******************************
+ * Call all stacked resource cleanup
+ */
 {
     while( Cleaners != NULL ) {
         Cleaners->rtn( Cleaners->d );
@@ -57,13 +59,13 @@ static void CallCleaners( void )
 }
 
 unsigned DIPIMPENTRY( HandleSize )( handle_kind hk )
+/***************************************************
+ * Return the sizes of the individual handle types. This version
+ * should be OK as given.
+ */
 {
-/*
-        Return the sizes of the individual handle types. This version
-        should be OK as given.
-*/
     static unsigned_8 Sizes[] = {
-        #define pick(e,hdl,imphdl,wvimphdl) imphdl,
+        #define pick(enum,hsize,ihsize,wvihsize,cvdmndtype,wdmndtype)   ihsize,
         #include "diphndls.h"
         #undef pick
     };
@@ -93,11 +95,11 @@ void DFFreeImage( imp_image_handle *iih )
 }
 
 dip_status DIPIMPENTRY( MoreMem )( size_t size )
+/***********************************************
+ * Return DS_OK if you could release some memory, DS_FAIL if you
+ * couldn't.
+ */
 {
-/*
-        Return DS_OK if you could release some memory, DS_FAIL if you
-        couldn't.
-*/
     imp_image_handle    *curr;
     dip_status          ds;
 
@@ -118,12 +120,12 @@ dip_status DIPIMPENTRY( MoreMem )( size_t size )
     return( ds );
 }
 
-dip_status DIPImp( Startup )(void)
+dip_status DIPImp( Startup )( void )
+/***********************************
+ * Return DS_OK if startup initialization went OK, or a DS_ERR | DS_?
+ * constant if something went wrong.
+ */
 {
-/*
-        Return DS_OK if startup initialization went OK, or a DS_ERR | DS_?
-        constant if something went wrong.
-*/
     Cleaners = NULL;
     Images = NULL;
     DRInit();
@@ -131,19 +133,19 @@ dip_status DIPImp( Startup )(void)
 }
 
 void DIPIMPENTRY( Shutdown )( void )
+/***********************************
+ * Shutting down and unloading. Last chance to free up stuff.
+ */
 {
-/*
-        Shutting down and unloading. Last chance to free up stuff.
-*/
     Images = NULL;
     DRFini();
 }
 
 void DIPIMPENTRY( Cancel )( void )
+/*********************************
+ * The client is about to longjmp, and may bypass
+ * returns through the DIP. All handles remain valid though.
+ */
 {
-/*
-        The client is about to longjmp, and may bypass
-        returns through the DIP. All handles remain valid though.
-*/
     CallCleaners();
 }

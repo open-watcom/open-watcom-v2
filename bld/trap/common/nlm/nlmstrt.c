@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,8 +32,8 @@
 
 #include "miniproc.h"
 #include "debugme.h"
+#include "brkptcpu.h"
 #include <string.h>
-#include "cpuglob.h"
 #undef POP_UP_SCREEN
 #define ConsolePrintf _
 #include <conio.h>
@@ -40,37 +41,66 @@
 #include "nw3to5.h"
 #include "trperr.h"
 #include "nlmstrt.h"
-
-
-#include <ecb.h>
+#if !defined( __NETWARE_LIBC__ )
+    #include <ecb.h>
+#endif
 
 
 extern int main( int arg, char **argv ); // defined by user
-extern void TrapFini(void);
+extern void TrapFini( void );
 
-static  BYTE    stack[8192];
-
-struct LoadDefinitionStruct             *MyNLMHandle;
-struct ScreenStruct                     *screenID;
-struct ScreenStruct                     *debugScreen;
-struct ResourceTagStructure             *ScreenTag;
-struct ResourceTagStructure             *AllocTag;
-struct ResourceTagStructure             *SemaphoreTag;
-struct ResourceTagStructure             *ProcessTag;
-struct ResourceTagStructure             *TimerTag;
-struct ResourceTagStructure             *InterruptTag;
-struct ResourceTagStructure             *SocketTag;
-struct ResourceTagStructure             *DebugTag;
-struct ResourceTagStructure             *BreakTag;
-int                                     DebugMode = 0;
-
-static char                             *Command;
-#ifdef DEBUG_ME
-    debug_classes                       DebugClasses = 0;
+struct LoadDefinitionStruct         *MyNLMHandle;
+struct ScreenStruct                 *screenID;
+struct ScreenStruct                 *debugScreen;
+struct ResourceTagStructure         *ScreenTag;
+struct ResourceTagStructure         *AllocTag;
+struct ResourceTagStructure         *SemaphoreTag;
+struct ResourceTagStructure         *ProcessTag;
+struct ResourceTagStructure         *TimerTag;
+struct ResourceTagStructure         *InterruptTag;
+struct ResourceTagStructure         *DebugTag;
+struct ResourceTagStructure         *BreakTag;
+int                                 DebugMode = 0;
+#if !defined( __NETWARE_LIBC__ )
+struct ResourceTagStructure         *SocketTag;
+LONG                                skwHandle;
+LONG                                skwoff;
+LONG                                skwtmp;
 #endif
 
-LONG skwHandle, skwoff, skwtmp;
+#ifdef DEBUG_ME
+/*
+ *  This HAS to be in the _DATA segment and not _BSS as the LibC prelude
+ *  code will reset it to NULL and we need it set when we get into
+ *  __init_environment
+ */
+debug_classes                       DebugClasses = 0;
+#endif
 
+/*
+ *  This HAS to be in the _DATA segment and not _BSS as the LibC prelude
+ *  code will reset it to NULL and we need it set when we get into
+ *  __init_environment
+ */
+static char                         *Command = NULL;
+
+#if !defined( __NETWARE_LIBC__ )
+static BYTE                         stack[8192];
+#endif
+#if !defined( __NETWARE_LIBC__ ) || defined( DEBUG_ME )
+static char                         *args[] = { "", 0 };
+#endif
+
+/*
+ *  Could have used -zls switch on newer OW compilers.
+ */
+void    __WATCOM_Prelude( void ) {}
+
+#if !defined( __NETWARE_LIBC__ )
+//int     _cstart_;
+void __Null_Argv( void ) {}
+void __Init_Argv( void ) {}
+#endif
 
 /* We cannot use CLIB.NLM in the debugger because the user might put
    break points in CLIB, and we just couldn't deal with having the
@@ -79,41 +109,66 @@ LONG skwHandle, skwoff, skwtmp;
 
 char *getcmd( char *buff )
 {
-    if( buff == NULL ) return( Command );
+    if( buff == NULL )
+        return( Command );
     strcpy( buff, Command );
     return( buff );
 }
 
-char upper( char ch ) {
+int _bgetcmd( char *buff, int len )
+{
+    int     cmd_len;
+    int     i;
 
+    cmd_len = strlen( Command );
+    if( buff != NULL && len > 0 ) {
+        len--;
+        if( len > cmd_len )
+            len = cmd_len;
+        for( i = 0; i < len; i++ ) {
+            buff[i] = Command[i];
+        }
+        buff[len] = '\0';
+    }
+    return( cmd_len );
+}
+
+char upper( char ch )
+{
     if ( ch >= 'a' && ch <= 'z' ) {
         ch = ch - 'a' + 'A';
     }
     return( ch );
 }
 
-
-char lower( char ch ) {
-
+char lower( char ch )
+{
     if ( ch >= 'A' && ch <= 'Z' ) {
         ch = ch - 'A' + 'a';
     }
     return( ch );
 }
 
-
-int isalpha( char ch ) {
-
+int isalpha( char ch )
+{
     return( lower( ch ) >= 'a' && lower( ch ) <= 'z' );
 }
 
-int strnicmp( const char *a, const char *b, size_t len ) {
+#if defined( __NETWARE_LIBC__ )
+int isdigit( char ch )
+{
+    return( ch >= '0' && ch <= '9' );
+}
+#endif
 
+int strnicmp( const char *a, const char *b, size_t len )
+{
     int         diff;
 
     while( len != 0 ) {
         diff = lower( *a ) - lower( *b );
-        if( diff != 0 ) return( diff );
+        if( diff != 0 )
+            return( diff );
         ++a;
         ++b;
         --len;
@@ -121,14 +176,16 @@ int strnicmp( const char *a, const char *b, size_t len ) {
     return( 0 );
 }
 
-int stricmp( const char *a, const char *b ) {
-
+int stricmp( const char *a, const char *b )
+{
     int         diff;
 
     for( ;; ) {
         diff = lower( *a ) - lower( *b );
-        if( diff != 0 ) return( diff );
-        if( *a == '\0' ) return( 0 );
+        if( diff != 0 )
+            return( diff );
+        if( *a == '\0' )
+            return( 0 );
         ++a;
         ++b;
     }
@@ -202,7 +259,8 @@ int memcmp( const void *a_in, const void *b_in, size_t len )
     const char *b = b_in;
 
     while( len != 0 ) {
-        if( *a - *b != 0 ) return( *a - *b );
+        if( *a - *b != 0 )
+            return( *a - *b );
         ++a;
         ++b;
         --len;
@@ -211,59 +269,64 @@ int memcmp( const void *a_in, const void *b_in, size_t len )
 }
 
 void *memset( void *dst, int c, size_t len )
-    {
+{
 
-        char *p;
-        for( p = dst; len; --len ) {
-            *p++ = c;
-        }
-        return( dst );
+    char *p;
+    for( p = dst; len; --len ) {
+        *p++ = c;
     }
+    return( dst );
+}
+
 char *strchr( const char *s, int c )
-    {
-        do {
-            if( *s == c ) return( (char *)s );
-        } while( *s++ != '\0' );
-        return( NULL );
-    }
+{
+    do {
+        if( *s == c ) {
+            return( (char *)s );
+        }
+    } while( *s++ != '\0' );
+    return( NULL );
+}
 
 int toupper( int c )
-    {
-        if( c >= 'a'  && c <= 'z' ) {
-            c = c - 'a' + 'A';
-        }
-        return( c );
-    }
-
-static char *args[] = { "", 0 };
-
-static void CloseAllScreens( void )
 {
-    if( screenID ) CloseScreen( screenID );
+    if( c >= 'a'  && c <= 'z' ) {
+        c = c - 'a' + 'A';
+    }
+    return( c );
+}
+
+#if defined( __NETWARE_LIBC__ )
+int     __deinit_environment( void *reserved )
+#else
+void    _Stop( void )
+#endif
+{
+    if( screenID )
+        CloseScreen( screenID );
     screenID = 0;
 #ifdef DEBUG_ME
-    if( debugScreen ) CloseScreen( debugScreen );
+    if( debugScreen )
+        CloseScreen( debugScreen );
     debugScreen = 0;
+#endif
+    TrapFini();
+#if defined( __NETWARE_LIBC__ )
+    /* unused parameters */ (void)reserved;
+    return( 0 );
 #endif
 }
 
-
-void _Stop( void )
-{
-    CloseAllScreens();
-    TrapFini();
-}
-
-
+#if !defined( __NETWARE_LIBC__ )
 int _Check( void )
 {
     OutputToScreen( systemConsoleScreen, TRP_NLM_cant_debug_os );
     OutputToScreen( systemConsoleScreen, "\r\n" );
     return( -1 );
 }
+#endif
 
-
-void    MainHelper( void )
+static int disp_WATCOM_Debugger( void )
 {
     if( OpenScreen( TRP_The_WATCOM_Debugger, ScreenTag, &screenID ) != 0 ) {
         screenID = 0;
@@ -279,37 +342,97 @@ void    MainHelper( void )
     if( screenID == 0 || ( DebugMode && ( debugScreen == 0 ) ) ) {
         OutputToScreen( systemConsoleScreen, TRP_NLM_no_screen );
         OutputToScreen( systemConsoleScreen, "\r\n" );
-    } else {
+        return( 0 );
+    }
+    return( 1 );
+}
+
+#if !defined( __NETWARE_LIBC__ )
+static void     MainHelper( void )
+{
+    if( disp_WATCOM_Debugger() ) {
         EnableInputCursor( screenID );
         main( 1, args );
     }
     _Stop();
     CDestroyProcess( CGetMyProcessID() );
 }
+#endif
 
-
-#pragma off(unreferenced);
-LONG _Prelude(
-         struct LoadDefinitionStructure  *NLMHandle,
+#if defined( __NETWARE_LIBC__ )
+LONG _PreludeHook(
+         struct LoadDefinitionStructure *NLMHandle,
          struct ScreenStruct            *initializationErrorScreenID,
-         BYTE *                           cmdLineP,
-         BYTE *                           loadDirectoryPath,
-         LONG                             uninitializedDataLength,
-         LONG                             NLMfileHandle,
+         BYTE                           *cmdLineP,
+         BYTE                           *loadDirectoryPath,
+         LONG                           uninitializedDataLength,
+         LONG                           NLMfileHandle,
          LONG                           (*readRoutineP)(),
-         LONG                             customDataOffset,
-         LONG                             customDataSize )
-#pragma on(unreferenced);
-
+         LONG                           customDataOffset,
+         LONG                           customDataSize )
 {
+    /*
+    //  We have hooked prelude primarily so we can store a copy of the command
+    //  line after LibC has memset our globals!
+    */
+    LONG status;
 
-#ifdef __NW30__
+    MyNLMHandle = NLMHandle;
+    Command = (char *)cmdLineP;
+
+    status = _LibCPrelude(
+        NLMHandle,
+        initializationErrorScreenID,
+        cmdLineP,
+        loadDirectoryPath,
+        uninitializedDataLength,
+        NLMfileHandle,
+        readRoutineP,
+        customDataOffset,
+        customDataSize
+        );
+
+    return( status );
+}
+
+int     __init_environment( void *reserved )
+{
+  #ifdef DEBUG_ME
+    char    *cmdLineP = Command;
+  #endif
+
+    /* unused parameters */ (void)reserved;
+
+#else
+
+LONG _Prelude(
+         struct LoadDefinitionStructure *NLMHandle,
+         struct ScreenStruct            *initializationErrorScreenID,
+         BYTE                           *cmdLineP,
+         BYTE                           *loadDirectoryPath,
+         LONG                           uninitializedDataLength,
+         LONG                           NLMfileHandle,
+         LONG                           (*readRoutineP)(),
+         LONG                           customDataOffset,
+         LONG                           customDataSize )
+{
+    Command = (char *)cmdLineP;
+    MyNLMHandle = NLMHandle;
+
+    /* unused parameters */ (void)NLMfileHandle; (void)uninitializedDataLength; (void)loadDirectoryPath;
+    /* unused parameters */ (void)customDataOffset; (void)customDataSize; (void)readRoutineP;
+    /* unused parameters */ (void)initializationErrorScreenID;
+
+  #ifdef __NW30__
     if( FileServerMajorVersionNumber != 3 ) {
         OutputToScreen( systemConsoleScreen, TRP_NLM_no_screen );
         OutputToScreen( systemConsoleScreen, "\r\n" );
         return( -1 );
     }
+  #endif
+
 #endif
+
 #ifdef DEBUG_ME
     if( cmdLineP[0] == '?' || ( cmdLineP[0] == '-' && cmdLineP[1] == 'h' ) ) {
         OutputToScreen( systemConsoleScreen, "Use -d[options]\r\n" );
@@ -356,7 +479,11 @@ LONG _Prelude(
                 DebugClasses |= D_IO;
                 break;
             case 'x':
+    #if defined( __NETWARE_LIBC__ )
+                DebugClasses |= D_NET;
+    #else
                 DebugClasses |= D_IPX;
+    #endif
                 break;
             case 'm':
                 DebugClasses |= D_MISC;
@@ -364,81 +491,101 @@ LONG _Prelude(
             }
             ++cmdLineP;
         }
-        while( *cmdLineP == ' ' ) ++cmdLineP;
+        while( *cmdLineP == ' ' ) {
+            ++cmdLineP;
+        }
     }
 #endif
 
+#if !defined( __NETWARE_LIBC__ )
 // SKW own debug
 //    INWDOSCreate("wvideo.dbg", &skwHandle);
 //       skwoff=0;
 
 //    OutputToScreen( systemConsoleScreen, "transport time = %8x \r\n", trtime );
+#endif
 
+    ScreenTag = AllocateResourceTag(
+        MyNLMHandle,
+        (BYTE *)"Debug server screens",
+        ScreenSignature );
+    AllocTag = AllocateResourceTag(
+        MyNLMHandle,
+        (BYTE *)"Debug server work area",
+        AllocSignature );
+    SemaphoreTag = AllocateResourceTag(
+        MyNLMHandle,
+        (BYTE *)"Debug server semaphores",
+        SemaphoreSignature );
+    ProcessTag = AllocateResourceTag(
+        MyNLMHandle,
+        (BYTE *)"Debug server processes",
+        ProcessSignature );
+    TimerTag = AllocateResourceTag(
+        MyNLMHandle,
+        (BYTE *)"Debugger time out",
+        TimerSignature );
+    InterruptTag = AllocateResourceTag(
+        MyNLMHandle,
+        (BYTE *)"Debugger interrupts",
+        InterruptSignature );
+    DebugTag = AllocateResourceTag(
+        MyNLMHandle,
+        (BYTE *)"WVIDEO Debugger",
+        DebuggerSignature );
+    BreakTag = AllocateResourceTag(
+        MyNLMHandle,
+        (BYTE *)"WVIDEO Break Points",
+        BreakpointSignature );
 
-    Command = (char *)cmdLineP;
-    MyNLMHandle = NLMHandle;
-    ScreenTag = AllocateResourceTag( MyNLMHandle, (BYTE *)"Debug server screens",
-                                     ScreenSignature );
-    AllocTag = AllocateResourceTag( MyNLMHandle, (BYTE *)"Debug server work area",
-                                    AllocSignature );
-    SemaphoreTag = AllocateResourceTag( MyNLMHandle, (BYTE *)"Debug server semaphores",
-                                  SemaphoreSignature );
-    ProcessTag = AllocateResourceTag( MyNLMHandle, (BYTE *)"Debug server processes",
-                                   ProcessSignature );
-    TimerTag = AllocateResourceTag( MyNLMHandle, (BYTE *)"Debugger time out",
-                                   TimerSignature );
-    InterruptTag = AllocateResourceTag( MyNLMHandle, (BYTE *)"Debugger interrupts",
-                                   InterruptSignature );
-    SocketTag = AllocateResourceTag( MyNLMHandle, (BYTE *)"Debugger IPX socket",
-                                   SocketSignature );
-    DebugTag = AllocateResourceTag( MyNLMHandle, (BYTE *)"WVIDEO Debugger",
-                                   DebuggerSignature );
-    BreakTag = AllocateResourceTag( MyNLMHandle, (BYTE *)"WVIDEO Break Points",
-                                   BreakpointSignature );
-    CMakeProcess( 50, &MainHelper, &stack[ sizeof( stack ) ],
+#if defined( __NETWARE_LIBC__ )
+    if( disp_WATCOM_Debugger() ) {
+        EnableInputCursor( screenID );
+    }
+#else
+    SocketTag = AllocateResourceTag(
+        MyNLMHandle,
+        (BYTE *)"Debugger IPX socket",
+        SocketSignature );
+
+    CMakeProcess( 50, &MainHelper, &stack[sizeof( stack )],
                     sizeof( stack ), "WATCOM Debugger Server", ProcessTag );
+#endif
     return( 0 );
 }
 
-void    __WATCOM_Prelude(void){};
-//int     _cstart_;
-void __Null_Argv(void){};
-void __Init_Argv(void){};
-
 #ifdef DEBUG_ME
 void ConsolePrintf( char *format, ... )
-   {
+{
 //BYTE tmp[160];
 
-// format = format;
-   if( DebugMode )
-           {
-         ActivateScreen( debugScreen );
-         OutputToScreenWithPointer( debugScreen, format,
-                                    (BYTE *)&format + sizeof( char * ) );
-         SetInputToOutputCursorPosition( screenID );
+    if( DebugMode ) {
+        ActivateScreen( debugScreen );
+        OutputToScreenWithPointer( debugScreen, format, (BYTE *)&format + sizeof( char * ) );
+        OutputToScreen( debugScreen, "\r\n" );
+        SetInputToOutputCursorPosition( screenID );
 
+#if !defined( __NETWARE_LIBC__ )
 // SKW own debug
-//         sprintfWithPointer( tmp, format,
-//                             (BYTE *)&format + sizeof( char * ) );
-//              LogBuf(tmp);
-//      INWsprintf(tmp, format);
-/*              _disable();
-      INWDOSOpen("wvideo.dbg", &skwHandle);
-                _enable();
-                _disable();
-      INWDOSWrite(skwHandle, skwoff, tmp, strlen(tmp), &skwtmp);
-                _enable();
-           skwoff += strlen(tmp);
-                _disable();
-      INWDOSClose(skwHandle);
-                _enable();            */
-
-
-      }
-   }
+//        sprintfWithPointer( tmp, format, (BYTE *)&format + sizeof( char * ) );
+//        LogBuf(tmp);
+//        INWsprintf(tmp, format);
+/*
+        _disable();
+        INWDOSOpen("wvideo.dbg", &skwHandle);
+        _enable();
+        _disable();
+        INWDOSWrite(skwHandle, skwoff, tmp, strlen(tmp), &skwtmp);
+        _enable();
+        skwoff += strlen(tmp);
+        _disable();
+        INWDOSClose(skwHandle);
+        _enable();
+*/
 #endif
-
+    }
+}
+#endif
 
 void WriteStdErr( char *str, int len )
 {
@@ -446,5 +593,20 @@ void WriteStdErr( char *str, int len )
     while( --len >= 0 ) {
         OutputToScreen( systemConsoleScreen, "%c", *str );
         ++str;
+    }
+}
+
+extern void __STK( int size );
+extern void __CHK( int size );
+#pragma off (check_stack);
+void __declspec(naked) __CHK( int size )
+{
+    /* unused parameters */ (void)size;
+    __asm {
+        push eax
+        mov eax,8[esp]
+        call __STK
+        pop eax
+        ret 4
     }
 }

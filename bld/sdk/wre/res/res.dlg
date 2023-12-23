@@ -1,3 +1,5 @@
+/* UTF-8 encoding, ¥ */
+
 WREResource DIALOG 0, 0, 141, 82
 STYLE WS_CHILD
 FONT 8, "MS Sans Serif"

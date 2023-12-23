@@ -1,12 +1,6 @@
-proj_name = wlink_lnk
+tree_depth = 4
 
-!ifeq host_cpu x64
-!ifneq bld_cpu x64
-skip_build: .symbolic
-!else ifndef bld64host_$(host_os)
-skip_build: .symbolic
-!endif
-!endif
+proj_name = wlink_lnk
 
 !include cproj.mif
 

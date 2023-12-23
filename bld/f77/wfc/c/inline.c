@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -54,98 +54,35 @@
 #include "cgprotos.h"
 
 
-#if _CPU == 386 || _CPU == 8086
+#if _INTEL_CPU
 
-#if _CPU == 386
-
-// Space optimized pragmas (take an awful beating on a pentium)
-
-// edi  - destination pointer
-// esi  - source pointer
-// ecx  - number of characters to move
-static  char    __RTIStrBlastEqOS[] =  { "aux __RTIStrBlastEq           \
-                                        parm    reverse                 \
-                                                [edi] [esi] [ecx] =     \
-                                        \"rep   movsb\"                 \
-                                " };
-
-// edi  - destination pointer
-// eax  - number of spaces to append
-// esi  - source pointer
-// ecx  - number of characters to move
-static  char    __RTIStrBlastNeOS[] =  { "aux __RTIStrBlastNe           \
-                                        parm    reverse                 \
-                                                [edi] [eax] [esi] [ecx]=\
-                                        \"rep   movsb\"                 \
-                                        \"mov   ecx, eax\"              \
-                                        \"mov   eax, 0x20202020\"       \
-                                        \"rep   stosb\"                 \
-                                " };
-
-// Time Optimized pragmas
-
-// edi  - destination pointer
-// esi  - source pointer
-// ecx  - number of 4 character tuples to move (strlen >> 2)
-// eax  - number of characters left over after initial 4-tuple move (strlen & 3)
-static  char    __RTIStrBlastEqOT[] =  { "aux __RTIStrBlastEq             \
-                                        parm    reverse                 \
-                                                [edi] [esi] [ecx] [eax] =\
-                                        \"rep   movsd\"                 \
-                                        \"mov   ecx, eax\"              \
-                                        \"rep   movsb\"                 \
-                                " };
-
-// edi  - destination pointer
-// eax  - number of spaces to append
-// esi  - source pointer
-// ecx  - number of characters to move
-static  char    __RTIStrBlastNeOT[] =  { "aux __RTIStrBlastNe             \
-                                        parm    reverse                 \
-                                                [edi] [edx] [esi] [eax] \
-                                        modify  [ecx] =                 \
-                                        \"mov   ecx, eax\"              \
-                                        \"shr   ecx, 2\"                \
-                                        \"rep   movsd\"                 \
-                                        \"mov   ecx, eax\"              \
-                                        \"and   ecx, 3\"                \
-                                        \"rep   movsb\"                 \
-                                        \"mov   ecx, edx\"              \
-                                        \"shr   ecx, 2\"                \
-                                        \"mov   eax, 0x20202020\"       \
-                                        \"rep   stosd\"                 \
-                                        \"mov   ecx, edx\"              \
-                                        \"and   ecx, 3\"                \
-                                        \"rep   stosb\"                 \
-                                " };
-
-#elif _CPU == 8086
+#if _CPU == 8086
 
 // Space Optimized pragmas
 
 // es di - destination pointer
 // ds si - source pointer
 // cx    - number of characters to move
-static  char    __RTIStrBlastEqOS[] =  { "aux __RTIStrBlastEq           \
-                                        parm    reverse                 \
-                                                [es di] [ds si] [cx]    \
-                                        modify  exact [di si cx] =      \
-                                        \"rep   movsb\"                 \
-                                " };
+static  char    __RTIStrBlastEqOS[] =  {
+    "aux __RTIStrBlastEq = "
+        "\"rep   movsb\" "
+    "parm reverse [es di] [ds si] [cx] "
+    "modify exact [di si cx]"
+};
 
 // es di - destination pointer
 // ax    - number of spaces to append
 // ds si - source pointer
 // cx    - number of characters to move
-static  char    __RTIStrBlastNeOS[] =  { "aux __RTIStrBlastNe           \
-                                        parm    reverse                 \
-                                                [es di] [ax] [ds si] [cx]\
-                                        modify  exact [di ax si cx] =   \
-                                        \"rep   movsb\"                 \
-                                        \"mov   cx, ax\"                \
-                                        \"mov   ax, 0x2020\"            \
-                                        \"rep   stosb\"                 \
-                                " };
+static  char    __RTIStrBlastNeOS[] =  {
+    "aux __RTIStrBlastNe = "
+        "\"rep   movsb\" "
+        "\"mov   cx, ax\" "
+        "\"mov   ax, 0x2020\" "
+        "\"rep   stosb\" "
+    "parm reverse [es di] [ax] [ds si] [cx] "
+    "modify exact [di ax si cx]"
+};
 
 // Time Optimized pragmas
 
@@ -153,35 +90,35 @@ static  char    __RTIStrBlastNeOS[] =  { "aux __RTIStrBlastNe           \
 // ds si - source pointer
 // cx    - number of 2 character tuples to move (strlen >> 21
 // ax    - number of characters left over after initial 2-tuple move (strlen & 1)
-static  char    __RTIStrBlastEqOT[] =  { "aux __RTIStrBlastEq             \
-                                        parm    reverse                 \
-                                                [es di] [ds si] [cx] [ax]\
-                                        modify  exact [cx si di] =      \
-                                        \"rep   movsw\"                 \
-                                        \"mov   cx, ax\"                \
-                                        \"rep   movsb\"                 \
-                                " };
+static  char    __RTIStrBlastEqOT[] =  {
+    "aux __RTIStrBlastEq = "
+        "\"rep   movsw\" "
+        "\"mov   cx, ax\" "
+        "\"rep   movsb\" "
+    "parm reverse [es di] [ds si] [cx] [ax] "
+    "modify exact [cx si di]"
+};
 
 // es di - destination pointer
 // ax    - number of spaces to append
 // ds si - source pointer
 // cx    - number of characters to move
-static  char    __RTIStrBlastNeOT[] =  { "aux __RTIStrBlastNe             \
-                                        parm    reverse                 \
-                                                [es di] [dx] [ds si] [ax]\
-                                        modify  exact [di dx si ax cx] =\
-                                        \"mov   cx,ax\"                 \
-                                        \"shr   cx,1\"                  \
-                                        \"rep   movsw\"                 \
-                                        \"adc   cx,0\"                  \
-                                        \"rep   movsb\"                 \
-                                        \"mov   cx,dx\"                 \
-                                        \"mov   ax,0x2020\"             \
-                                        \"shr   cx,1\"                  \
-                                        \"rep   stosw\"                 \
-                                        \"adc   cx,0\"                  \
-                                        \"rep   stosb\"                 \
-                                " };
+static  char    __RTIStrBlastNeOT[] =  {
+    "aux __RTIStrBlastNe = "
+        "\"mov   cx,ax\" "
+        "\"shr   cx,1\" "
+        "\"rep   movsw\" "
+        "\"adc   cx,0\" "
+        "\"rep   movsb\" "
+        "\"mov   cx,dx\" "
+        "\"mov   ax,0x2020\" "
+        "\"shr   cx,1\" "
+        "\"rep   stosw\" "
+        "\"adc   cx,0\" "
+        "\"rep   stosb\" "
+    "parm reverse [es di] [dx] [ds si] [ax] "
+    "modify exact [di dx si ax cx]"
+};
 
 // Windows pragmas (can't use DS as an argument since DS is pegged)
 
@@ -190,34 +127,34 @@ static  char    __RTIStrBlastNeOT[] =  { "aux __RTIStrBlastNe             \
 // es di - destination pointer
 // si bx - source pointer
 // cx    - number of characters to move
-static  char    __RTIStrBlastEqOSWin[] =  { "aux __RTIStrBlastEq        \
-                                        parm    reverse                 \
-                                                [es di] [si bx] [cx]    \
-                                        modify  exact [di si cx] =      \
-                                        \"push  ds\"                    \
-                                        \"mov   ds,si\"                 \
-                                        \"mov   si,bx\"                 \
-                                        \"rep   movsb\"                 \
-                                        \"pop   ds\"                    \
-                                " };
+static  char    __RTIStrBlastEqOSWin[] =  {
+    "aux __RTIStrBlastEq = "
+        "\"push  ds\" "
+        "\"mov   ds,si\" "
+        "\"mov   si,bx\" "
+        "\"rep   movsb\" "
+        "\"pop   ds\" "
+    "parm reverse [es di] [si bx] [cx] "
+    "modify exact [di si cx]"
+};
 
 // es di - destination pointer
 // ax    - number of spaces to append
 // si bx - source pointer
 // cx    - number of characters to move
-static  char    __RTIStrBlastNeOSWin[] =  { "aux __RTIStrBlastNe        \
-                                        parm    reverse                 \
-                                                [es di] [ax] [si bx] [cx]\
-                                        modify  exact [di ax si cx] =   \
-                                        \"push  ds\"                    \
-                                        \"mov   ds,si\"                 \
-                                        \"mov   si,bx\"                 \
-                                        \"rep   movsb\"                 \
-                                        \"mov   cx, ax\"                \
-                                        \"mov   ax, 0x2020\"            \
-                                        \"rep   stosb\"                 \
-                                        \"pop   ds\"                    \
-                                " };
+static  char    __RTIStrBlastNeOSWin[] =  {
+    "aux __RTIStrBlastNe = "
+        "\"push  ds\" "
+        "\"mov   ds,si\" "
+        "\"mov   si,bx\" "
+        "\"rep   movsb\" "
+        "\"mov   cx, ax\" "
+        "\"mov   ax, 0x2020\" "
+        "\"rep   stosb\" "
+        "\"pop   ds\" "
+    "parm reverse [es di] [ax] [si bx] [cx] "
+    "modify exact [di ax si cx]"
+};
 
 // Time Optimized pragmas
 
@@ -225,43 +162,43 @@ static  char    __RTIStrBlastNeOSWin[] =  { "aux __RTIStrBlastNe        \
 // si bx - source pointer
 // cx    - number of 2 character tuples to move (strlen >> 21
 // ax    - number of characters left over after initial 2-tuple move (strlen & 1)
-static  char    __RTIStrBlastEqOTWin[] =  { "aux __RTIStrBlastEq          \
-                                        parm    reverse                 \
-                                                [es di] [si bx] [cx] [ax]\
-                                        modify  exact [cx si di] =      \
-                                        \"push  ds\"                    \
-                                        \"mov   ds,si\"                 \
-                                        \"mov   si,bx\"                 \
-                                        \"rep   movsw\"                 \
-                                        \"mov   cx,ax\"                 \
-                                        \"rep   movsb\"                 \
-                                        \"pop   ds\"                    \
-                                " };
+static  char    __RTIStrBlastEqOTWin[] =  {
+    "aux __RTIStrBlastEq = "
+        "\"push  ds\" "
+        "\"mov   ds,si\" "
+        "\"mov   si,bx\" "
+        "\"rep   movsw\" "
+        "\"mov   cx,ax\" "
+        "\"rep   movsb\" "
+        "\"pop   ds\" "
+    "parm reverse [es di] [si bx] [cx] [ax] "
+    "modify exact [cx si di]"
+};
 
 // es di - destination pointer
 // ax    - number of spaces to append
 // si bx - source pointer
 // cx    - number of characters to move
-static  char    __RTIStrBlastNeOTWin[] =  { "aux __RTIStrBlastNe          \
-                                        parm    reverse                 \
-                                                [es di] [dx] [si bx] [ax]\
-                                        modify  exact [di dx si ax cx] =\
-                                        \"push  ds\"                    \
-                                        \"mov   ds,si\"                 \
-                                        \"mov   si,bx\"                 \
-                                        \"mov   cx,ax\"                 \
-                                        \"shr   cx,1\"                  \
-                                        \"rep   movsw\"                 \
-                                        \"adc   cx,0\"                  \
-                                        \"rep   movsb\"                 \
-                                        \"mov   cx,dx\"                 \
-                                        \"mov   ax,0x2020\"             \
-                                        \"shr   cx,1\"                  \
-                                        \"rep   stosw\"                 \
-                                        \"adc   cx,0\"                  \
-                                        \"rep   stosb\"                 \
-                                        \"pop   ds\"                    \
-                                " };
+static  char    __RTIStrBlastNeOTWin[] =  {
+    "aux __RTIStrBlastNe = "
+        "\"push  ds\" "
+        "\"mov   ds,si\" "
+        "\"mov   si,bx\" "
+        "\"mov   cx,ax\" "
+        "\"shr   cx,1\" "
+        "\"rep   movsw\" "
+        "\"adc   cx,0\" "
+        "\"rep   movsb\" "
+        "\"mov   cx,dx\" "
+        "\"mov   ax,0x2020\" "
+        "\"shr   cx,1\" "
+        "\"rep   stosw\" "
+        "\"adc   cx,0\" "
+        "\"rep   stosb\" "
+        "\"pop   ds\" "
+    "parm reverse [es di] [dx] [si bx] [ax] "
+    "modify exact [di dx si ax cx]"
+};
 
 // Small memory pragmas.
 
@@ -270,30 +207,30 @@ static  char    __RTIStrBlastNeOTWin[] =  { "aux __RTIStrBlastNe          \
 // di   - destination pointer
 // si   - source pointer
 // cx   - number of characters to move
-static  char    __RTIStrBlastEqOSS[] =  { "aux __RTIStrBlastEq          \
-                                        parm    reverse                 \
-                                                [di] [si] [cx]          \
-                                        modify  [es] =                  \
-                                        \"push  ds\"                    \
-                                        \"pop   es\"                    \
-                                        \"rep   movsb\"                 \
-                                " };
+static  char    __RTIStrBlastEqOSS[] =  {
+    "aux __RTIStrBlastEq = "
+        "\"push  ds\" "
+        "\"pop   es\" "
+        "\"rep   movsb\" "
+    "parm reverse [di] [si] [cx] "
+    "modify [es]"
+};
 
 // di   - destination pointer
 // ax   - number of spaces to append
 // si   - source pointer
 // cx   - number of characters to move
-static  char    __RTIStrBlastNeOSS[] =  { "aux __RTIStrBlastNe          \
-                                        parm    reverse                 \
-                                                [di] [ax] [si] [cx]     \
-                                        modify  [es] =                  \
-                                        \"push  ds\"                    \
-                                        \"pop   es\"                    \
-                                        \"rep   movsb\"                 \
-                                        \"mov   cx, ax\"                \
-                                        \"mov   ax, 0x2020\"            \
-                                        \"rep   stosb\"                 \
-                                " };
+static  char    __RTIStrBlastNeOSS[] =  {
+    "aux __RTIStrBlastNe = "
+        "\"push  ds\" "
+        "\"pop   es\" "
+        "\"rep   movsb\" "
+        "\"mov   cx, ax\" "
+        "\"mov   ax, 0x2020\" "
+        "\"rep   stosb\" "
+    "parm reverse [di] [ax] [si] [cx] "
+    "modify [es]"
+};
 
 // Time Optimized pragmas
 
@@ -301,39 +238,103 @@ static  char    __RTIStrBlastNeOSS[] =  { "aux __RTIStrBlastNe          \
 // si   - source pointer
 // cx   - number of 2 character tuples to move (strlen >> 21
 // ax   - number of characters left over after initial 2-tuple move (strlen & 1)
-static  char    __RTIStrBlastEqOTS[] =  { "aux __RTIStrBlastEq            \
-                                        parm    reverse                 \
-                                                [di] [si] [cx] [ax]     \
-                                        modify  [es] =                  \
-                                        \"push  ds\"                    \
-                                        \"pop   es\"                    \
-                                        \"rep   movsw\"                 \
-                                        \"mov   cx, ax\"                \
-                                        \"rep   movsb\"                 \
-                                " };
+static  char    __RTIStrBlastEqOTS[] =  {
+    "aux __RTIStrBlastEq = "
+        "\"push  ds\" "
+        "\"pop   es\" "
+        "\"rep   movsw\" "
+        "\"mov   cx, ax\" "
+        "\"rep   movsb\" "
+    "parm reverse [di] [si] [cx] [ax] "
+    "modify [es]"
+};
 
 // di   - destination pointer
 // ax   - number of spaces to append
 // si   - source pointer
 // cx   - number of characters to move
-static  char    __RTIStrBlastNeOTS[] =  { "aux __RTIStrBlastNe            \
-                                        parm    reverse                 \
-                                                [di] [dx] [si] [ax]     \
-                                        modify  [cx es] =               \
-                                        \"push  ds\"                    \
-                                        \"pop   es\"                    \
-                                        \"mov   cx, ax\"                \
-                                        \"shr   cx, 1\"                 \
-                                        \"rep   movsw\"                 \
-                                        \"adc   cx, 0\"                 \
-                                        \"rep   movsb\"                 \
-                                        \"mov   cx, dx\"                \
-                                        \"mov   ax, 0x2020\"            \
-                                        \"shr   cx, 1\"                 \
-                                        \"rep   stosw\"                 \
-                                        \"adc   cx, 0\"                 \
-                                        \"rep   stosb\"                 \
-                                " };
+static  char    __RTIStrBlastNeOTS[] =  {
+    "aux __RTIStrBlastNe = "
+        "\"push  ds\" "
+        "\"pop   es\" "
+        "\"mov   cx, ax\" "
+        "\"shr   cx, 1\" "
+        "\"rep   movsw\" "
+        "\"adc   cx, 0\" "
+        "\"rep   movsb\" "
+        "\"mov   cx, dx\" "
+        "\"mov   ax, 0x2020\" "
+        "\"shr   cx, 1\" "
+        "\"rep   stosw\" "
+        "\"adc   cx, 0\" "
+        "\"rep   stosb\" "
+    "parm reverse [di] [dx] [si] [ax] "
+    "modify [cx es]"
+};
+
+#else /* _CPU == 386 */
+
+// Space optimized pragmas (take an awful beating on a pentium)
+
+// edi  - destination pointer
+// esi  - source pointer
+// ecx  - number of characters to move
+static  char    __RTIStrBlastEqOS[] =  {
+    "aux __RTIStrBlastEq = "
+        "\"rep   movsb\" "
+    "parm reverse [edi] [esi] [ecx]"
+};
+
+// edi  - destination pointer
+// eax  - number of spaces to append
+// esi  - source pointer
+// ecx  - number of characters to move
+static  char    __RTIStrBlastNeOS[] =  {
+    "aux __RTIStrBlastNe = "
+        "\"rep   movsb\" "
+        "\"mov   ecx, eax\" "
+        "\"mov   eax, 0x20202020\" "
+        "\"rep   stosb\" "
+    "parm reverse [edi] [eax] [esi] [ecx]"
+};
+
+// Time Optimized pragmas
+
+// edi  - destination pointer
+// esi  - source pointer
+// ecx  - number of 4 character tuples to move (strlen >> 2)
+// eax  - number of characters left over after initial 4-tuple move (strlen & 3)
+static  char    __RTIStrBlastEqOT[] =  {
+    "aux __RTIStrBlastEq = "
+        "\"rep   movsd\" "
+        "\"mov   ecx, eax\" "
+        "\"rep   movsb\" "
+    "parm reverse [edi] [esi] [ecx] [eax]"
+};
+
+// edi  - destination pointer
+// eax  - number of spaces to append
+// esi  - source pointer
+// ecx  - number of characters to move
+static  char    __RTIStrBlastNeOT[] =  {
+    "aux __RTIStrBlastNe = "
+        "\"mov   ecx, eax\" "
+        "\"shr   ecx, 2\" "
+        "\"rep   movsd\" "
+        "\"mov   ecx, eax\" "
+        "\"and   ecx, 3\" "
+        "\"rep   movsb\" "
+        "\"mov   ecx, edx\" "
+        "\"shr   ecx, 2\" "
+        "\"mov   eax, 0x20202020\" "
+        "\"rep   stosd\" "
+        "\"mov   ecx, edx\" "
+        "\"and   ecx, 3\" "
+        "\"rep   stosb\" "
+    "parm reverse [edi] [edx] [esi] [eax] "
+    "modify [ecx]"
+};
+
 #endif
 
 typedef struct inline_rtn {
@@ -391,13 +392,13 @@ static bool     CreatedPragmas = false;
 void    InitInlinePragmas( void ) {
 //===========================
 
-#if _CPU == 386 || _CPU == 8086
+#if _INTEL_CPU
     rtn_ids     i;
 
     if( !CreatedPragmas ) {
         if( OZOpts & OZOPT_O_SPACE ) {
             InlineTab = OptSpaceInlineTab;
-#if _CPU == 8086
+    #if _CPU == 8086
             if( CGOpts & CGOPT_M_MEDIUM ) {
                 InlineTab = OptSpaceSmallModelInlineTab;
             } else {
@@ -415,7 +416,7 @@ void    InitInlinePragmas( void ) {
                     InlineTab = OptTimeWinInlineTab;
                 }
             }
-#endif
+    #endif
         }
         for( i = 0; i < INLINETAB_SIZE; i++ ) {
             DoPragma( InlineTab[i].pragma );
@@ -433,7 +434,7 @@ call_handle     InitInlineCall( rtn_ids rtn_id )
 //==============================================
 // Initialize a call to a runtime routine.
 {
-#if _CPU == 386 || _CPU == 8086
+#if _INTEL_CPU
     sym_id              sym;
     inline_rtn          *in_entry;
     size_t              name_len;
@@ -454,19 +455,18 @@ call_handle     InitInlineCall( rtn_ids rtn_id )
         in_entry->info = InfoLookup( sym );
     }
     return( CGInitCall( CGFEName( sym, in_entry->typ ), in_entry->typ, in_entry->sym_ptr ) );
-#else
+#else /* _RISC_CPU */
     /* unused parameters */ (void)rtn_id;
     return( 0 );
 #endif
 }
 
 
-void    FreeInlinePragmas( void ) {
-//===========================
-
+void    FreeInlinePragmas( void )
+//===============================
 // Free symbol table entries for run-time routines.
-
-#if _CPU == 386 || _CPU == 8086
+{
+#if _INTEL_CPU
     int         i;
     sym_id      sym;
 

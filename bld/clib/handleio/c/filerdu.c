@@ -176,7 +176,7 @@ _WCRTLINK int fstat( int handle, struct stat *buf )
         buf->st_btime = buf->st_mtime;
         buf->st_mode |= S_IFCHR;
     } else {
-        res = RdosGetHandleTime( handle, &msb, &lsb );
+        res = RdosGetHandleAccessTime( handle, &msb, &lsb );
         if( res >= 0 ) {
             RdosDecodeMsbTics( msb,
                                &tm.tm_year,

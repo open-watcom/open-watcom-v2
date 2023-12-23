@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -455,11 +455,18 @@ char CommandParser::getNextChar()
 
 void main()
 {
-    char                    buf[ 512 ];
-    CommandParser           prs( getcmd( buf ), true );
+    int                     cmd_len;
+    char                    *cmd_line;
+    CommandParser           prs;
     int                     i;
-    WCValSListIter<String>  iter( *prs.files() );
+    WCValSListIter<String>  iter;
 
+    cmd_len = _bgetcmd( NULL, 0 ) + 1;
+    cmd_line = new char[cmd_len];
+    _bgetcmd( cmd_line, cmd_len );
+    prs( cmd_line, true );
+    delete[] cmd_line;
+    iter( *prs.files() );
     printf( "    database = \"%s\"\n", prs.database() ? prs.database() : "<NULL>" );
     printf( "    options  = \"%s\"\n", prs.options()  ? prs.options()  : "<NULL>" );
     printf( "    files  = \n" );

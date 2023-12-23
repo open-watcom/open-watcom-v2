@@ -59,7 +59,7 @@ VersionMinor    db '05'
 ;Some global data.
 ;
 RealPSPSegment  dw ?            ;Real mode PSP segment.
-RealENVSegment  dw ?            ;Real mode environment segment.
+RealEnvSegment  dw ?            ;Real mode environment segment.
 ProtectedFlags  dw 0            ;Bit significant, 0-DPMI,1-VCPI,2-RAW.
 ProtectedType   dw 0            ;0-RAW,1-VCPI,2-DPMI.
 ProtectedForce  db 0
@@ -75,7 +75,7 @@ DataSegmenti    dw InitDS
 StackSegment    dw MainSS
 RealSegment     dw KernalZero
 PSPSegment      dw MainPSP
-ENVSegment      dw MainENV
+EnvSegment      dw MainEnv
 BasePSP dw 0
 BasePSPAddress  dd 0
 ;
@@ -158,7 +158,7 @@ ErrorM16        label byte
 ALIGN 4
 MainExec        db 128 dup (0)
 ;
-DtaBuffer       db 128 dup (0)
+DTABuffer       db 128 dup (0)
 ;
 TransferSize    dd 8192
 TransferReal    dw ?
@@ -281,7 +281,7 @@ cw1_KeepRaw:
         mov     es:RealRegsStruc.Real_EAX[edi],4a00h
         mov     bl,21h
         mov     ErrorNumber,1
-        sys     IntXX
+        Sys     IntXX
         test    WORD PTR es:[edi+RealRegsStruc.Real_Flags],1
         jnz     cw1_9
         mov     ErrorNumber,0           ;clear error number.
@@ -289,7 +289,7 @@ cw1_KeepRaw:
 ;Force accurate memory values.
 ;
         or      ecx,-1
-        sys     GetMemLinear32
+        Sys     GetMemLinear32
 ;
 ;Enable resource tracking and MCB allocations.
 ;
@@ -301,7 +301,7 @@ cw1_KeepRaw:
         mov     esi,80h
         mov     es,PSPSegment
         xor     cx,cx
-        sys     cwExec                  ;run the bugger.
+        Sys     cwExec                  ;run the bugger.
         jnc     cw1_8
         add     ax,10-1                 ;convert error number.
         mov     ErrorNumber,ax
@@ -774,7 +774,7 @@ iDataSegment    dw InitDS
 mDataSegment    dw MainDS
 iStackSegment   dw MainSS
 iPSPSegment     dw MainPSP
-iENVSegment     dw MainENV
+iEnvSegment     dw MainEnv
 iRealSegment    dw KernalZero
 ;
 INewHeader      NewHeaderStruc <>   ;make space for a header.
@@ -1225,11 +1225,11 @@ cw5_GotSeg:
         xor     al,al
         cld
         rep     stosb                   ;clear it.
-        movzx   eax,PageDIRReal
+        movzx   eax,PageDirReal
         shl     eax,4
-        mov     PageDIRLinear,eax
+        mov     PageDirLinear,eax
         mov     VCPI_CR3,eax
-        movzx   eax,PageALIASReal
+        movzx   eax,PageAliasReal
         shl     eax,4
         mov     PageAliasLinear,eax
         movzx   eax,Page1stReal
@@ -1344,7 +1344,7 @@ COMMENT !
 ;
 ;Set address for VMM page to disk buffer.
 ;
-        mov     ax,PageDIRReal
+        mov     ax,PageDirReal
         mov     PageBufferReal,ax
         movzx   eax,ax
         shl     eax,4
@@ -1571,7 +1571,7 @@ END COMMENT !
         mov     ax,_cwMain
         mov     ds,ax
         assume ds:_cwMain
-        movzx   esi,RealPspSegment
+        movzx   esi,RealPSPSegment
         assume ds:_cwRaw
         pop     ds
         shl     esi,4
@@ -1700,10 +1700,10 @@ END COMMENT !
 ;
         mov     ax,352fh                ;get existing vector.
         int     21h
-        mov     w[OldInt2F],bx
-        mov     w[OldInt2F+2],es
+        mov     w[OldInt2Fh],bx
+        mov     w[OldInt2Fh+2],es
         mov     ax,252fh
-        mov     dx,offset Int2FPatch
+        mov     dx,offset Int2FhPatch
         int     21h
 ;
 ;Now patch RAW specific calls.
@@ -1776,7 +1776,7 @@ cw5_RAW0:
         ;
         mov     Protected2Real,offset RawProt2Real
         mov     Real2Protected,offset RawReal2Prot
-        jmp     cw5_inProt
+        jmp     cw5_InProt
 ;
 ;Use VCPI method to switch to protected mode.
 ;
@@ -1964,8 +1964,8 @@ cw5_pl3:
         assume ds:_cwMain
         or      w[SystemFlags],32768    ;Flags us in protected mode.
         mov     RealSegment,KernalZero
-        mov     PspSegment,MainPSP
-        mov     EnvSegment,MainENV
+        mov     PSPSegment,MainPSP
+        mov     EnvSegment,MainEnv
         mov     CodeSegment,MainCS
         mov     DataSegment,MainDS
         mov     StackSegment,MainSS
@@ -2013,7 +2013,7 @@ cw5_1:  jnz     InitError
         or      edx,111b                ;present+user+write.
         or      edx,ecx                 ;set use flags.
         mov     eax,1
-        mov     esi,PageDIRLinear
+        mov     esi,PageDirLinear
         mov     DWORD PTR es:[esi+eax*4],edx    ;store this tables address.
         mov     esi,PageAliasLinear     ;get alias table address.
         mov     DWORD PTR es:[esi+eax*4],edx    ;setup in alias table as well.
@@ -2052,11 +2052,11 @@ cw5_1:  jnz     InitError
         shl     eax,12                  ;get linear address.
         mov     PageDETLinear,eax
         mov     eax,1022
-        mov     esi,PageDIRLinear
+        mov     esi,PageDirLinear
         mov     edx,LinearEntry+8       ;get physical address again.
         or      edx,111b
         mov     es:[esi+eax*4],edx      ;put new page into the map.
-        mov     esi,PageALIASLinear
+        mov     esi,PageAliasLinear
         mov     es:[esi+eax*4],edx      ;put new page into the map.
         call    d[fCR3Flush]
         inc     LinearEntry
@@ -2141,19 +2141,19 @@ cw5_1:  jnz     InitError
         cld
         rep     movs d[edi],[esi]       ;copy old to new.
         pop     ds
-        mov     eax,PageALIASLinear
-        mov     PageALIASLinear+4,eax
+        mov     eax,PageAliasLinear
+        mov     PageAliasLinear+4,eax
         mov     eax,LinearEntry
         shl     eax,12                  ;get linear address.
-        mov     PageALIASLinear,eax
-        mov     esi,PageDIRLinear
+        mov     PageAliasLinear,eax
+        mov     esi,PageDirLinear
         mov     eax,1023
         mov     edx,LinearEntry+8       ;get physical address again.
         or      edx,111b
         mov     ecx,es:[esi+eax*4]      ;get original value.
-        mov     PageALIASLinear+8,ecx
+        mov     PageAliasLinear+8,ecx
         mov     es:[esi+eax*4],edx      ;put new page into the map.
-        mov     esi,PageALIASLinear
+        mov     esi,PageAliasLinear
         mov     eax,1023
         mov     edx,LinearEntry+8       ;get physical address again.
         or      edx,111b
@@ -2208,7 +2208,7 @@ COMMENT !
         mov     edx,LinearEntry+8       ;get physical address again.
         or      edx,111b
         ;
-        mov     esi,PageDIRLinear
+        mov     esi,PageDirLinear
         mov     eax,0
         mov     ecx,es:[esi+eax*4]      ;get original value.
         mov     Page1stLinear+8,ecx
@@ -2217,7 +2217,7 @@ COMMENT !
         ;
         ;Set new address in page dir alias.
         ;
-        mov     esi,PageALIASLinear
+        mov     esi,PageAliasLinear
         mov     eax,0
         mov     es:[esi+eax*4],edx      ;put new page into the map.
         call    d[fCR3Flush]
@@ -2246,7 +2246,7 @@ END COMMENT !
         ;Copy table to new memory.
         ;
         push    ds
-        mov     esi,PageDIRLinear
+        mov     esi,PageDirLinear
         mov     edi,LinearEntry
         shl     edi,12
         mov     ecx,4096/4
@@ -2259,12 +2259,12 @@ END COMMENT !
         ;Make variables point to new memory.
         ;
         mov     eax,PageDirLinear
-        mov     PageDIRLinear+4,eax     ;store old value.
+        mov     PageDirLinear+4,eax     ;store old value.
         mov     eax,LinearEntry
         shl     eax,12                  ;get linear address.
-        mov     PageDIRLinear,eax       ;set new value.
+        mov     PageDirLinear,eax       ;set new value.
         mov     eax,VCPI_CR3
-        mov     PageDIRLinear+8,eax     ;store old physical address.
+        mov     PageDirLinear+8,eax     ;store old physical address.
         mov     eax,LinearEntry+8
         mov     VCPI_CR3,eax            ;set new physical address.
         movzx   edi,KernalTSSReal
@@ -2315,7 +2315,7 @@ cw5_3:  call    MakeDesc2
         mov     RealRegsStruc.Real_IP[edi],offset IDTFlush
         mov     RealRegsStruc.Real_SS[edi],0
         mov     RealRegsStruc.Real_SP[edi],0
-        call    d[fRawSimulateFCALL]
+        call    d[fRawSimulateFarCall]
         pop     es
 ;
 ;Get extended memory for DPMI emulator.
@@ -2628,7 +2628,7 @@ shiftloop:
         mov     RealRegsStruc.Real_SS[edi],0
         mov     RealRegsStruc.Real_SP[edi],0
         mov     bl,21h
-        call    d[fRawSimulateINT]
+        call    d[fRawSimulateInt]
         mov     al,BYTE PTR [edi].RealRegsStruc.Real_EAX
         pop     edi
         add     al,'A'                  ; convert to drive
@@ -2710,7 +2710,7 @@ medtransloop:
         mov     RealRegsStruc.Real_SS[edi],0
         mov     RealRegsStruc.Real_SP[edi],0
         mov     bl,21h
-        call    d[fRawSimulateINT]
+        call    d[fRawSimulateInt]
         test    BYTE PTR RealRegsStruc.Real_Flags[edi],1
         mov     eax,RealRegsStruc.Real_EAX[edi]
         pop     di
@@ -2731,7 +2731,7 @@ med5a:
         mov     RealRegsStruc.Real_SS[edi],0
         mov     RealRegsStruc.Real_SP[edi],0
         mov     bl,21h
-        call    d[fRawSimulateINT]
+        call    d[fRawSimulateInt]
         test    BYTE PTR RealRegsStruc.Real_Flags[edi],1
         mov     eax,RealRegsStruc.Real_EAX[edi]
         pop     di
@@ -2937,11 +2937,11 @@ cw5_DpmiInProtected:
         mov     ax,sp
         mov     esp,eax
         mov     ax,es:[2ch]
-        mov     iENVSegment,ax
+        mov     iEnvSegment,ax
 ;
 ;Create _cwMain code segment.
 ;
-        mov     iErrorNumber,8
+        mov     IErrorNumber,8
         mov     ax,0000h
         mov     cx,1
         int     31h                     ;allocate a selector.
@@ -2966,7 +2966,7 @@ cw5_DpmiInProtected:
 ;
 ;Create _cwMain data segment.
 ;
-        mov     iErrorNumber,8
+        mov     IErrorNumber,8
         mov     ax,0000h
         mov     cx,1
         int     31h                     ;allocate a selector.
@@ -2991,7 +2991,7 @@ cw5_DpmiInProtected:
 ;
 ;Create a 0-4G selector.
 ;
-        mov     iErrorNumber,8
+        mov     IErrorNumber,8
         mov     ax,0000h
         mov     cx,1
         int     31h                     ;allocate a selector.
@@ -3026,8 +3026,8 @@ cw5_DpmiInProtected:
         mov     es:StackSegment,ax
         mov     ax,iPSPSegment
         mov     es:PSPSegment,ax
-        mov     ax,iENVSegment
-        mov     es:ENVSegment,ax
+        mov     ax,iEnvSegment
+        mov     es:EnvSegment,ax
         mov     ax,iRealSegment
         mov     es:RealSegment,ax
         mov     ax,iCodeSegment
@@ -3100,7 +3100,7 @@ cw5_InProtected:
 ;
 ;Allocate code selector.
 ;
-        mov     iErrorNumber,8
+        mov     IErrorNumber,8
         mov     ax,0000h
         mov     cx,1
         int     31h                     ;allocate a selector.
@@ -3123,7 +3123,7 @@ cw5_InProtected:
 ;
 ;Allocate data selector.
 ;
-        mov     iErrorNumber,8
+        mov     IErrorNumber,8
         mov     ax,0000h
         mov     cx,1
         int     31h                     ;allocate a selector.
@@ -3276,7 +3276,7 @@ cw5_pe0:
 ;
         mov     IErrorNumber,5
         mov     ecx,size EPSP_Struc
-        sys     GetMem32
+        Sys     GetMem32
         jc      InitError
         push    ds
         mov     ds,mDataSegment
@@ -3306,7 +3306,7 @@ cw5_pe0:
         mov     es,PSPSegment
         mov     ax,EnvSegment
         mov     es:[PSP_Struc.PSP_Environment],ax           ;Setup ENV in PSP.
-        mov     ax,RealENVSegment
+        mov     ax,RealEnvSegment
         mov     WORD PTR es:[EPSP_Struc.EPSP_RealENV],ax
         mov     ax,offset Int21hExecCount
         mov     WORD PTR es:[EPSP_Struc.EPSP_ExecCount],ax
@@ -3333,17 +3333,17 @@ cw5_pe0:
         mov     BYTE PTR es:[EPSP_Struc.EPSP_FileName],dl
         mov     BasePSP,es
         mov     bx,es
-        sys     GetSelDet32
+        Sys     GetSelDet32
         mov     BasePSPAddress,edx
         ;
-        sys     GetSel
+        Sys     GetSel
         jc      InitError
         movzx   edx,WORD PTR es:[PSP_Struc.PSP_HandlePtr+2]
         shl     edx,4
         movzx   ecx,WORD PTR es:[PSP_Struc.PSP_Handles]
         movzx   eax,WORD PTR es:[PSP_Struc.PSP_HandlePtr]
         add     edx,eax
-        sys     SetSelDet32
+        Sys     SetSelDet32
         mov     dx,bx
 cw5_normal:
         mov     WORD PTR es:[PSP_Struc.PSP_HandlePtr+2],dx
@@ -3355,7 +3355,7 @@ cw5_normal:
 ;Setup transfer buffer and selector.
 ;
         mov     IErrorNumber,8
-        sys     GetSel
+        Sys     GetSel
         jc      InitError
         push    ds
         mov     ds,mDataSegment
@@ -3363,7 +3363,7 @@ cw5_normal:
         movzx   edx,TransferReal
         shl     edx,4
         mov     ecx,TransferSize
-        sys     SetSelDet32
+        Sys     SetSelDet32
         jc      InitError
         push    es
         mov     es,PSPSegment
@@ -3379,7 +3379,7 @@ cw5_normal:
 ;Setup internaly EXPORT'ed symbols.
 ;
         mov     bx,dpmiDataSel
-        sys     GetSelDet32
+        Sys     GetSelDet32
         mov     edi,edx
         add     edi,offset apiExports
         push    ds
@@ -3431,17 +3431,17 @@ cw5_e0: cmp     w[di],-1                ;end of the list?
         jz      cw5_e9
         mov     bp,[di]                 ;get pointer to details.
         movzx   ecx,WORD PTR ds:[bp+4]  ;get patch size.
-        sys     GetMemLinear32          ;get some memory.
+        Sys     GetMemLinear32          ;get some memory.
         push    ds
         mov     ds,DataSegmenti
         assume ds:_cwInit
-        mov     iErrorNumber,5
+        mov     IErrorNumber,5
         assume ds:_cwMain
         pop     ds
         jc      InitError
-        sys     LockMem32               ;lock the memory.
+        Sys     LockMem32               ;lock the memory.
         jc      InitError
-        sys     GetSel                  ;get a selector to use for
+        Sys     GetSel                  ;get a selector to use for
         push    ds
         mov     ds,DataSegmenti
         assume ds:_cwInit
@@ -3450,18 +3450,18 @@ cw5_e0: cmp     w[di],-1                ;end of the list?
         pop     ds
         jc      InitError
         mov     edx,esi
-        sys     SetSelDet32             ;set it's base and limit.
+        Sys     SetSelDet32             ;set it's base and limit.
         jc      InitError
         push    ecx
         mov     cx,ds:[bp+2]            ;Get code seg size.
-        sys     CodeSel                 ;convert to executable.
+        Sys     CodeSel                 ;convert to executable.
         pop     ecx
         mov     ds:[bp+8+4],bx          ;store it for now.
         mov     ds:[bp+16+4],bx
         mov     ds:[bp+24],bx
-        sys     GetSel                  ;get a selector to use for data.
+        Sys     GetSel                  ;get a selector to use for data.
         jc      InitError
-        sys     SetSelDet32             ;set it's base and limit.
+        Sys     SetSelDet32             ;set it's base and limit.
         jc      InitError
         mov     ds:[bp+28],bx           ;store it for now.
         push    di

@@ -26,19 +26,33 @@ static void usage( void )
         "        need this assist to generate better code.\n" );
 }
 
-int main(int argc, char *argv[])
+static char *fname_normalize( const char *name )
+{
+    char    *p;
+    char    *dst;
+
+    for( dst = p = strdup( name ); *p != '\0'; p++ ) {
+        if( *p != '\\' )
+            continue;
+        *p = '/';
+    }
+    return( dst );
+}
+
+int main( int argc, char *argv[] )
 {
     FILE    *fi;
+    char    *p;
 
     fileName = NULL;
 
-    if(argc == 1) {
+    if( argc == 1 ) {
         usage();
         return 2;
     }
 
-    while(--argc > 1){
-        char    *p = *++argv;
+    while( --argc > 1 ){
+        p = *++argv;
         while( *++p != '\0' ) {
             switch( *p ) {
             case 'b':
@@ -67,6 +81,8 @@ int main(int argc, char *argv[])
             return 1;
         }
     }
+    fileName = fname_normalize( fileName );
     parse( fi, stdout );
+    free( (void *)fileName );
     return 0;
 }

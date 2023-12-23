@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,6 +38,9 @@
 #include "sstyle.h"
 #include "banner.h"
 #include "fts.h"
+#include "myprintf.h"
+#include "utilstok.h"
+
 
 #define VBUF_SIZE       8192
 
@@ -216,12 +219,7 @@ vi_rc GenerateConfiguration( const char *fname, bool is_cmdline )
     if( buff != NULL ) {
         setvbuf( fp, buff, _IOFBF, VBUF_SIZE );
     }
-    MyFprintf( fp, "#\n# %s configuration file\n# %s\n#\n",
-#if defined( __WIN__ )
-    banner1w1( "Text Editor for Windows" ), banner1w2( _VI_VERSION_ ) );
-#else
-    banner1w1( "Vi Text Editor" ), banner1w2( _VI_VERSION_ ) );
-#endif
+    MyFprintf( fp, "#\n# %s configuration file\n# %s\n#\n", BANNER1, BANNER2 );
     if( is_cmdline ) {
         GetDateTimeString( token );
         MyFprintf( fp, "# File generated on %s\n#\n", token );
@@ -331,7 +329,7 @@ vi_rc GenerateConfiguration( const char *fname, bool is_cmdline )
         Message1( "Configuration file \"%s\" generated", fname );
     }
 
-    MemFree( buff );
+    _MemFreeArray( buff );
     return( DO_NOT_CLEAR_MESSAGE_WINDOW );
 
 } /* GenerateConfiguration */

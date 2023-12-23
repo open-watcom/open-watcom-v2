@@ -36,7 +36,7 @@
 #ifndef __DBGZAP_H__
 #define __DBGZAP_H__
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 
 // PROTOTYPES
 

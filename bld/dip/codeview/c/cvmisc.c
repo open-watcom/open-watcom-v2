@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,15 +33,15 @@
 #include "cvinfo.h"
 
 /*
-   Misc. stuff.
-*/
+ * Misc. stuff.
+ */
 
 const char      DIPImp( Name )[] = "CodeView";
 
 unsigned DIPIMPENTRY( HandleSize )( handle_kind hk )
 {
     static unsigned_8 Sizes[] = {
-        #define pick(e,hdl,imphdl,wvimphdl) imphdl,
+        #define pick(enum,hsize,ihsize,wvihsize,cvdmndtype,wdmndtype)   ihsize,
         #include "diphndls.h"
         #undef pick
     };
@@ -244,12 +245,16 @@ void NYI( void )
 {
     volatile int a = 0;
     volatile int b = 0;
-
-    a /= b; /* cause a fault */
+    /*
+     * cause a fault
+     */
+    a /= b;
 }
 
 void Confused( void )
 {
-    /* don't know what's happening */
+    /*
+     * don't know what's happening
+     */
     NYI();
 }

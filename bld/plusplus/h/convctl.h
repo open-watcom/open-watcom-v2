@@ -201,7 +201,7 @@ unsigned OldConvertExprDiagResult( // CONVERT AND DIAGNOSE RESULT
     CNV_DIAG *diagnosis )       // - diagnosis information
 ;
 #endif
-#ifndef NDEBUG
+#ifdef DEVBUILD
 void DbgConvType                // DUMP CONVTYPE INFORMATION
     ( CONVTYPE* type )          // - structure
 ;

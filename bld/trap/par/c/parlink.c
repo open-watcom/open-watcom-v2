@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -186,6 +187,8 @@
  * +-----------------------------------+
  */
 
+#include <stdio.h>
+#include <string.h>
 #if defined(__NETWARE__)
 #include <dos.h>
 #else
@@ -199,7 +202,7 @@
 #include "portio.h"
 
 
-extern void             Wait(void);
+extern void Wait( void );
 #pragma aux Wait = ;
 
 #if defined(_DBG)
@@ -605,10 +608,12 @@ static bool Synch( void )
         }
         break;
     case LAPLINK_VAL:
-        if( LL_Ctl1Lo() ) return( true );
+        if( LL_Ctl1Lo() )
+            return( true );
         break;
     case DUTCHMAN_VAL:
-        if( FD_Ctl1Lo() ) return( true );
+        if( FD_Ctl1Lo() )
+            return( true );
         break;
     }
     return( false );
@@ -714,39 +719,56 @@ static bool LineTest( void )
     dbgrtn( "\r\n-LineTest-" );
     for( send = 1; send != 256; send *= 2 ) {
         time = Ticks() + LINE_TEST_WAIT;
-        if( time == RELINQUISH ) time++;
-        if( time == KEEP ) time++;
+        if( time == RELINQUISH )
+            time++;
+        if( time == KEEP )
+            time++;
         ret = DataPut( send, time );
-        if( ret == TIMEOUT ) return( false );
+        if( ret == TIMEOUT )
+            return( false );
         time = Ticks() + LINE_TEST_WAIT;
-        if( time == RELINQUISH ) time++;
-        if( time == KEEP ) time++;
+        if( time == RELINQUISH )
+            time++;
+        if( time == KEEP )
+            time++;
         ret = DataGet( time );
-        if( ret == TIMEOUT ) return( false );
+        if( ret == TIMEOUT )
+            return( false );
         if( ret != send ) {
             return( false );
         }
     }
     time = Ticks() + LINE_TEST_WAIT;
-    if( time == RELINQUISH ) time++;
-    if( time == KEEP ) time++;
+    if( time == RELINQUISH )
+        time++;
+    if( time == KEEP )
+        time++;
     ret = DataPut( DONE_LINE_TEST, time );
-    if( ret == TIMEOUT ) return( false );
+    if( ret == TIMEOUT )
+        return( false );
 #else
     dbgrtn( "\r\n-LineTest-" );
     send = 0;
     for( ;; ) {
         time = Ticks() + LINE_TEST_WAIT;
-        if( time == RELINQUISH ) time++;
-        if( time == KEEP ) time++;
+        if( time == RELINQUISH )
+            time++;
+        if( time == KEEP )
+            time++;
         send = DataGet( time );
-        if( send == TIMEOUT ) return( false );
-        if( send == DONE_LINE_TEST ) break;
+        if( send == TIMEOUT )
+            return( false );
+        if( send == DONE_LINE_TEST )
+            break;
         time = Ticks() + LINE_TEST_WAIT;
-        if( time == RELINQUISH ) time++;
-        if( time == KEEP ) time++;
+        if( time == RELINQUISH )
+            time++;
+        if( time == KEEP )
+            time++;
         send = DataPut( send, time );
-        if( send == TIMEOUT ) return( false );
+        if( send == TIMEOUT ) {
+            return( false );
+        }
     }
 #endif
     return( true );
@@ -819,31 +841,54 @@ void RemoteDisco( void )
 
 static char InvalidPort[] = TRP_ERR_invalid_parallel_port_number;
 
-const char *RemoteLink( const char *parms, bool server )
+#ifdef SERVER
+#ifdef TRAPGUI
+const char *RemoteLinkGet( char *parms, size_t len )
+{
+    int     num;
+
+    /* unused parameters */ (void)len;
+
+    num = NumPrinters();
+    if( num == 0 )
+        return( TRP_ERR_parallel_port_not_present );
+    if( num >= 1 && PrnAddress( 0 ) == DataPort ) {
+        parms[0] = '1';
+        parms[1] = '\0';
+    } else if( num >= 2 && PrnAddress( 1 ) == DataPort ) {
+        parms[0] = '2';
+        parms[1] = '\0';
+    } else if( num >= 3 && PrnAddress( 2 ) == DataPort ) {
+        parms[0] = '3';
+        parms[1] = '\0';
+    } else {
+        sprintf( parms, "P%X", DataPort );
+    }
+    return( NULL );
+}
+#endif
+#endif
+
+const char *RemoteLinkSet( const char *parms )
 {
     unsigned    printer;
-    unsigned    ch;
-    const char  *err;
+    char        ch;
 
-    dbgrtn( "\r\n-RemoteLink-" );
-    server = server;
-
-    err = InitSys();
-    if( err != NULL ) {
-        return( err );
-    }
-    if( *parms == '\0' ) {
+    ch = *parms++;
+    if( ch == '\0' ) {
         printer = 0;
-    } else if( parms[0] >= '1' && parms[0] <= '3' && parms[1] == '\0' ) {
-        printer = parms[0] - '1';
-    } else if( parms[0] == 'p' || parms[0] == 'P' ) {
+    } else if( ch >= '1' && ch <= '3' && *parms == '\0' ) {
+        printer = ch - '1';
+    } else if( ch == 'p' || ch == 'P' ) {
         printer = 0;
         for( ;; ) {
-            ++parms;
-            ch = *parms;
-            if( ch == 0 ) break;
-            if( ch == ' ' ) break;
-            if( ch == '\t' ) break;
+            ch = *parms++;
+            if( ch == 0 )
+                break;
+            if( ch == ' ' )
+                break;
+            if( ch == '\t' )
+                break;
             if( ch >= 'A' && ch <= 'F' ) {
                 ch = ch - 'A' + 0x0a;
             } else if( ch >= 'a' && ch <= 'f' ) {
@@ -865,6 +910,27 @@ const char *RemoteLink( const char *parms, bool server )
             return( TRP_ERR_parallel_port_not_present );
         }
         DataPort = PrnAddress( printer );
+    }
+    return( NULL );
+}
+
+const char *RemoteLink( const char *parms, bool server )
+{
+    const char  *err;
+
+    /* unused parameters */ (void)server;
+
+    dbgrtn( "\r\n-RemoteLink-" );
+
+    err = InitSys();
+    if( err != NULL ) {
+        return( err );
+    }
+    if( parms != NULL ) {
+        err = RemoteLinkSet( parms );
+        if( err != NULL ) {
+            return( err );
+        }
     }
     CtlPort1 = DataPort + 1;
     CtlPort2 = CtlPort1 + 1;

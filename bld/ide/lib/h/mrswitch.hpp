@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,12 +45,8 @@ WCLASS MRSwitch : public MSwitch
         ~MRSwitch() {}
         virtual void getText( WString& str, WVList* states, SwMode mode );
         virtual void getText( WString& str, MState* state );
-        bool state( SwMode m ) { return( _state[m] ); }
-        WString& on() { return( _on ); }
         WString& group() { return( _group ); }
     private:
-        WString         _on;
-        bool            _state[SWMODE_COUNT];
         WString         _group;
         void    addone( WString& str, bool state );
 };

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -160,22 +160,27 @@ static  void    ExOpen( void ) {
         ( IOCB->set_flags & SET_SHARE ) ? IOCB->shareptr : NULL );
     if( IOCB->flags & BAD_RECL ) {
         IOErr( IO_IRECL );
+        // never return
     }
     if( IOCB->flags & BAD_BLOCKSIZE ) {
         IOErr( IO_IBLOCKSIZE );
+        // never return
     }
-    if( (status != STATUS_SCRATCH) || (IOCB->set_flags & SET_FILENAME) == 0 ) {
-        if( (status == STATUS_OLD) || (status == STATUS_NEW) ) {
-            if( (IOCB->set_flags & SET_FILENAME) == 0 ) {
-                IOErr( IO_SNAME );
-            }
+    if( IOCB->set_flags & SET_FILENAME ) {
+        if( status == STATUS_SCRATCH ) {
+            IOErr( IO_SNAME );
+            // never return
         }
     } else {
-        IOErr( IO_SNAME );
+        if( status == STATUS_OLD || status == STATUS_NEW ) {
+            IOErr( IO_SNAME );
+            // never return
+        }
     }
     if( (IOCB->set_flags & SET_RECL) == 0 ) {
         if( accmode == ACCM_DIRECT ) {
             IOErr( IO_RACCM );
+            // never return
         }
     }
     F_Connect();
@@ -208,10 +213,12 @@ static  void    ExOpen( void ) {
             temp = IOCB->fileinfo;
             IOCB->fileinfo = fcb;
             CloseFile( fcb );
-            if( (fcb->status == STATUS_SCRATCH) &&
-                (fcb->flags & FTN_FSEXIST) && !Scrtched( fcb ) ) {
+            if( (fcb->status == STATUS_SCRATCH)
+              && (fcb->flags & FTN_FSEXIST)
+              && !Scrtched( fcb ) ) {
                 DiscoFile( fcb );
                 IOErr( IO_FILE_PROBLEM );
+                // never return
             }
             DiscoFile( fcb );
             fcb = temp;
@@ -252,23 +259,40 @@ static  void    ExOpen( void ) {
                 share = fcb->share;
             }
             if( status != fcb->status ) {
-                IOErr( IO_SUBSEQUENT_OPEN, SpecId[ STAT_SPEC ] );
-            } else if( accmode != fcb->accmode ) {
-                IOErr( IO_SUBSEQUENT_OPEN, SpecId[ ACC_SPEC ] );
-            } else if( form != fcb->formatted ) {
-                IOErr( IO_SUBSEQUENT_OPEN, SpecId[ FORM_SPEC ] );
-            } else if( IOCB->recl != fcb->bufflen ) {
-                IOErr( IO_SUBSEQUENT_OPEN, SpecId[ RECL_SPEC ] );
-            } else if( IOCB->blocksize != fcb->blocksize ) {
-                IOErr( IO_SUBSEQUENT_OPEN, SpecId[ BLOCKSIZE_SPEC ] );
-            } else if( recfm != fcb->recfm ) {
-                IOErr( IO_SUBSEQUENT_OPEN, SpecId[ RECFM_SPEC ] );
-            } else if( cctrl != fcb->cctrl ) {
-                IOErr( IO_SUBSEQUENT_OPEN, SpecId[ CCTRL_SPEC ] );
-            } else if( action != fcb->action ) {
-                IOErr( IO_SUBSEQUENT_OPEN, SpecId[ ACTION_SPEC ] );
-            } else if( share != fcb->share ) {
-                IOErr( IO_SUBSEQUENT_OPEN, SpecId[ SHARE_SPEC ] );
+                IOErr( IO_SUBSEQUENT_OPEN, SpecId[STAT_SPEC] );
+                // never return
+            }
+            if( accmode != fcb->accmode ) {
+                IOErr( IO_SUBSEQUENT_OPEN, SpecId[ACC_SPEC] );
+                // never return
+            }
+            if( form != fcb->formatted ) {
+                IOErr( IO_SUBSEQUENT_OPEN, SpecId[FORM_SPEC] );
+                // never return
+            }
+            if( IOCB->recl != fcb->bufflen ) {
+                IOErr( IO_SUBSEQUENT_OPEN, SpecId[RECL_SPEC] );
+                // never return
+            }
+            if( IOCB->blocksize != fcb->blocksize ) {
+                IOErr( IO_SUBSEQUENT_OPEN, SpecId[BLOCKSIZE_SPEC] );
+                // never return
+            }
+            if( recfm != fcb->recfm ) {
+                IOErr( IO_SUBSEQUENT_OPEN, SpecId[RECFM_SPEC] );
+                // never return
+            }
+            if( cctrl != fcb->cctrl ) {
+                IOErr( IO_SUBSEQUENT_OPEN, SpecId[CCTRL_SPEC] );
+                // never return
+            }
+            if( action != fcb->action ) {
+                IOErr( IO_SUBSEQUENT_OPEN, SpecId[ACTION_SPEC] );
+                // never return
+            }
+            if( share != fcb->share ) {
+                IOErr( IO_SUBSEQUENT_OPEN, SpecId[SHARE_SPEC] );
+                // never return
             }
             fcb->blanks = blanks;
             IOCB->fileinfo = fcb;
@@ -298,11 +322,14 @@ static  void    ExOpen( void ) {
                 DiscoFile( fcb );
             }
             IOErr( IO_BLNK_FMT );
-        } else if( IOCB->set_flags & SET_CCTRLPTR ) {
+            // never return
+        }
+        if( IOCB->set_flags & SET_CCTRLPTR ) {
             if( !connected ) {
                 DiscoFile( fcb );
             }
             IOErr( IO_CC_FORM );
+            // never return
         }
     }
     if( cctrl == CC_DEFAULT ) {
@@ -325,6 +352,7 @@ static  void    ExOpen( void ) {
             DiscoFile( fcb );
         }
         IOErr( IO_SFILE );
+        // never return
     }
     // if record length was given, use it
     if( IOCB->set_flags & SET_RECL ) {

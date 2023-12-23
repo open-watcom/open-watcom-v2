@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -50,7 +50,7 @@ static  instruction     *FindOneCond( block *blk )
     instruction *cond;
 
     cond = NULL;
-    for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+    for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
         if( _OpIsCondition( ins->head.opcode ) ) {
             if( cond != NULL )
                 return( NULL );
@@ -62,8 +62,9 @@ static  instruction     *FindOneCond( block *blk )
 
 
 static  void    MarkReachableBlocks( void )
-/*****************************************/
-/* Written NON-Recursively for a very good reason. (stack blew up)*/
+/******************************************
+ * Written NON-Recursively for a very good reason. (stack blew up)
+ */
 {
     block       *blk;
     block       *son;
@@ -95,7 +96,7 @@ int     CountIns( block *blk )
     instruction *ins;
 
     num_instrs = 0;
-    for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+    for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
         num_instrs++;
     }
     return( num_instrs );
@@ -132,14 +133,16 @@ void    RemoveBlock( block *blk )
         blk->next_block->prev_block = blk->prev_block;
     }
     for( i = 0; i < blk->targets; ++i ) {
-        /* block may have already been removed by dead code removal*/
+        /*
+         * block may have already been removed by dead code removal
+         */
         if( FindBlock( blk->edge[i].destination.u.blk ) ) {
             RemoveInputEdge( &blk->edge[i] );
         }
     }
-    last_line = blk->ins.hd.line_num;
+    last_line = blk->ins.head.line_num;
     for( ;; ) {
-        next_ins = blk->ins.hd.next;
+        next_ins = blk->ins.head.next;
         if( next_ins == (instruction *)&blk->ins )
             break;
         if( next_ins->head.line_num != 0 ) {
@@ -148,12 +151,14 @@ void    RemoveBlock( block *blk )
         FreeIns( next_ins );
     }
     /*
-        Move the last line number from the block being deleted to the head
-        of the next block in source order, if that block doesn't already
-        have a line number on it.
-    */
+     * Move the last line number from the block being deleted to the head
+     * of the next block in source order, if that block doesn't already
+     * have a line number on it.
+     */
     if( blk->next_block != NULL && blk->next_block->gen_id == (blk->gen_id + 1) ) {
-        /* quick check to see if following block is next one in src order */
+        /*
+         * quick check to see if following block is next one in src order
+         */
         next = blk->next_block;
     } else {
         next = NULL;
@@ -165,8 +170,8 @@ void    RemoveBlock( block *blk )
             }
         }
     }
-    if( next != NULL && next->ins.hd.line_num == 0 ) {
-        next->ins.hd.line_num = last_line;
+    if( next != NULL && next->ins.head.line_num == 0 ) {
+        next->ins.head.line_num = last_line;
     }
     if( HeadBlock == blk ) {
         HeadBlock = blk->next_block;
@@ -209,10 +214,9 @@ void    RemoveInputEdge( block_edge *edge )
 
 void    MoveHead( block *old, block *new )
 /*****************************************
-
-    We're eliminating a loop header, so move it the the new
-    block and point all loop_head pointers to the new block.
-*/
+ * We're eliminating a loop header, so move it the the new
+ * block and point all loop_head pointers to the new block.
+ */
 {
     block       *blk;
 
@@ -276,53 +280,59 @@ static  void    JoinBlocks( block *jump, block *target )
     label_handle        label;
     instruction         *nop;
 
-    /*  To get here, 'target' is only entered from 'jump'*/
-    /*  Thus, the only input edge to 'target' is from jump, and can be tossed*/
-
-    /* keep the label from jump in case it's referenced in a SELECT block*/
-
+    /*
+     * To get here, 'target' is only entered from 'jump'
+     * Thus, the only input edge to 'target' is from jump, and can be tossed
+     *
+     * keep the label from jump in case it's referenced in a SELECT block
+     */
     label = target->label;
     target->label = jump->label;
     if( _IsBlkAttr( jump, BLK_BIG_LABEL ) )
         _MarkBlkAttr( target, BLK_BIG_LABEL );
     jump->label = label;
-    line_num = target->ins.hd.line_num;
-    target->ins.hd.line_num = jump->ins.hd.line_num;
-
-    /*  Move the inputs to 'jump' to be inputs to 'target'*/
-
+    line_num = target->ins.head.line_num;
+    target->ins.head.line_num = jump->ins.head.line_num;
+    /*
+     * Move the inputs to 'jump' to be inputs to 'target'
+     */
     target->inputs = jump->inputs;
     edge = jump->input_edges;
     target->input_edges = edge;
     for( ; edge != NULL; edge = edge->next_source ) {
         edge->destination.u.blk = target;    /* was 'jump' before*/
     }
-
-    /*  Now join the instruction streams*/
-
-    nop = jump->ins.hd.prev;
+    /*
+     * Now join the instruction streams
+     */
+    nop = jump->ins.head.prev;
     if( nop->head.opcode == OP_NOP ) {
         if( nop->flags.nop_flags & NOP_SOURCE_QUEUE ) {
-            /* this nop is only here to hold source info so we just
+            /*
+             * this nop is only here to hold source info so we just
              * attach the source info to the next instruction and
-             * nuke this nop so that it can't inhibit optimization */
-            if( target->ins.hd.next->head.line_num == 0 ) {
-                target->ins.hd.next->head.line_num = nop->head.line_num;
+             * nuke this nop so that it can't inhibit optimization
+             */
+            if( target->ins.head.next->head.line_num == 0 ) {
+                target->ins.head.next->head.line_num = nop->head.line_num;
             }
             FreeIns( nop );
         }
     }
 
-    if( jump->ins.hd.next != (instruction *)&jump->ins ) {
+    if( jump->ins.head.next != (instruction *)&jump->ins ) {
         if( line_num != 0 ) {
-            jump->ins.hd.prev->head.line_num = line_num;
+            jump->ins.head.prev->head.line_num = line_num;
         }
-        jump->ins.hd.prev->head.next = target->ins.hd.next;
-        target->ins.hd.next->head.prev = jump->ins.hd.prev;
-        target->ins.hd.next = jump->ins.hd.next;
-        target->ins.hd.next->head.prev = (instruction *)&target->ins;
-        jump->ins.hd.next = (instruction *)&jump->ins;/* so RemoveBlock won't*/
-        jump->ins.hd.prev = (instruction *)&jump->ins;/* free the instr list*/
+        jump->ins.head.prev->head.next = target->ins.head.next;
+        target->ins.head.next->head.prev = jump->ins.head.prev;
+        target->ins.head.next = jump->ins.head.next;
+        target->ins.head.next->head.prev = (instruction *)&target->ins;
+        /*
+         * so RemoveBlock won't free the instr list
+         */
+        jump->ins.head.next = (instruction *)&jump->ins;
+        jump->ins.head.prev = (instruction *)&jump->ins;
     }
 
     jump->inputs = 0;
@@ -347,7 +357,7 @@ static  bool    SameTarget( block *blk )
     _MarkBlkAttrNot( blk, BLK_CONDITIONAL );
     _MarkBlkAttr( blk, BLK_JUMP );
     RemoveEdge( &blk->edge[1] );
-    ins = blk->ins.hd.prev;
+    ins = blk->ins.head.prev;
     while( !_OpIsCondition( ins->head.opcode ) ) {
         ins = ins->head.prev;
     }
@@ -385,7 +395,7 @@ static  bool    DoBlockTrim( void )
             } else if( _IsBlkAttr( blk, BLK_JUMP ) ) {
                 target = blk->edge[0].destination.u.blk;
                 if( target != blk && !_IsBlkAttr( target, BLK_UNKNOWN_DESTINATION ) ) {
-                    for( ins = blk->ins.hd.next; ins->head.opcode == OP_NOP; ins = ins->head.next ) {
+                    for( ins = blk->ins.head.next; ins->head.opcode == OP_NOP; ins = ins->head.next ) {
                         if( ins->flags.nop_flags & (NOP_DBGINFO | NOP_DBGINFO_START) ) {
                             break;
                         }
@@ -418,10 +428,11 @@ static  bool    DoBlockTrim( void )
 }
 
 void KillCondBlk( block *blk, instruction *ins, byte dest_idx )
-/*************************************************************/
-// Assume blk is a conditional with compare ins
-// Make dest the destination and delete the unused edge
-// Change blk to a JMP to dest edge
+/**************************************************************
+ * Assume blk is a conditional with compare ins
+ * Make dest the destination and delete the unused edge
+ * Change blk to a JMP to dest edge
+ */
 {
     block_edge  *edge;
     block       *dest_blk;

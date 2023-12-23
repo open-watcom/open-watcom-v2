@@ -5,4 +5,4 @@ system=msdos
 linkage=static
 convention=stack
 
-!include $(mathlib_dir)/mklib.mif
+!include ../../../../mklib.mif

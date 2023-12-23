@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -211,14 +211,18 @@ typedef enum DATA_TYPE {
     #define pick1(enum,cgtype,asmtype,name,size)    TYP_##enum,
     #include "cdatatyp.h"
     #undef pick1
-    TYP_LAST_ENTRY,         /* make sure this is always last */
+    TYP_ERROR,          /* make sure this is always last */
 } DATA_TYPE;
+
+#define DATA_TYPE_SIZE                  (TYP_ERROR - TYP_BOOL)
+#define DATA_TYPE_BOOL_TO_VOID          (TYP_VOID - TYP_BOOL + 1)
+#define DATA_TYPE_BOOL_TO_LONG_DOUBLE   (TYP_LONG_DOUBLE - TYP_BOOL + 1)
 
 // values for type->type_flags
 enum type_state {
-    TF2_DWARF_DEF =  0x01,            // dwarf type has been defined
-    TF2_DWARF_FWD =  0x02,            // dwarf forward reference
-    TF2_DWARF     =  (TF2_DWARF_DEF|TF2_DWARF_FWD),  // dwarf is active
+    TF2_DWARF_DEF   = 0x01,         // dwarf type has been defined
+    TF2_DWARF_FWD   = 0x02,         // dwarf forward reference
+    TF2_DWARF       = (TF2_DWARF_DEF | TF2_DWARF_FWD), // dwarf is active
 //  If the following flag is on, then it indicates a dummy typedef
 //  It is used to record modifiers such as const, volatile
 //  e.g.
@@ -541,60 +545,59 @@ typedef struct comp_flags {
     boolbit in_finally_block                    : 1;    /* in _finally { ... } */
     boolbit unix_ext                            : 1;    /* like sizeof( void ) == 1 */
     boolbit slack_byte_warning                  : 1;
-
     boolbit ef_switch_used                      : 1;
     boolbit in_pragma                           : 1;
     boolbit br_switch_used                      : 1;    /* -br: use DLL C runtime */
+
     boolbit extensions_enabled                  : 1;
     boolbit inline_functions                    : 1;
     boolbit auto_agg_inits                      : 1;
     boolbit use_full_codegen_od                 : 1;
     boolbit has_wchar_entry                     : 1;
-
     boolbit bc_switch_used                      : 1;    /* build charater mode */
     boolbit bg_switch_used                      : 1;    /* build gui      mode */
     boolbit emit_all_default_libs               : 1;
+
     boolbit emit_targimp_symbols                : 1;    /* emit per target auto symbols */
     boolbit low_on_memory_printed               : 1;
     boolbit extra_stats_wanted                  : 1;
     boolbit external_defn_found                 : 1;
     boolbit scanning_comment                    : 1;
-
     boolbit initializing_data                   : 1;
     boolbit dump_prototypes                     : 1;    /* keep typedefs in prototypes*/
     boolbit non_zero_data                       : 1;
+
     boolbit quiet_mode                          : 1;
     boolbit useful_side_effect                  : 1;
     boolbit cpp_keep_comments                   : 1;    /* wcpp - output comments */
     boolbit cpp_line_wanted                     : 1;    /* wcpp - emit #line    */
     boolbit cpp_ignore_line                     : 1;    /* wcpp - ignore #line */
-
     boolbit generate_prototypes                 : 1;    /* generate prototypes  */
     boolbit eq_switch_used                      : 1;    /* don't write wng &err to console */
     boolbit bss_segment_used                    : 1;
+
     boolbit zu_switch_used                      : 1;
     boolbit extended_defines                    : 1;
     boolbit errfile_written                     : 1;
     boolbit main_has_parms                      : 1;    /* on if "main" has parm(s) */
     boolbit register_conventions                : 1;    /* on for -3r, off for -3s */
-
     boolbit pgm_used_8087                       : 1;    /* on => 8087 ins. generated */
     boolbit emit_library_names                  : 1;    /* on => put LIB name in obj */
     boolbit strings_in_code_segment             : 1;    /* on => put strings in CODE */
+
     boolbit ok_to_use_precompiled_hdr           : 1;    /* on => ok to use PCH */
     boolbit strict_ANSI                         : 1;    /* on => strict ANSI C (-zA)*/
     boolbit expand_macros                       : 1;    /* on => expand macros in WCPP*/
     boolbit exception_filter_expr               : 1;    /* on => parsing _except(expr)*/
     boolbit exception_handler                   : 1;    /* on => inside _except block*/
-
     boolbit wide_char_string                    : 1;    /* on => T_STRING is L"xxx"  */
     boolbit banner_printed                      : 1;    /* on => banner printed      */
     boolbit undefine_all_macros                 : 1;    /* on => -u all macros       */
+
     boolbit emit_browser_info                   : 1;    /* -db emit broswer info     */
     boolbit rescan_buffer_done                  : 1;    /* ## re-scan buffer used up */
     boolbit cpp_output                          : 1;    /* compiler doing CPP output */
     boolbit cpp_output_to_file                  : 1;    /* compiler doing CPP output to file (default extension .i) */
-
 /*  /d1+
     generate info on BP-chains if possible
     generate sym info on the following items:
@@ -604,59 +607,57 @@ typedef struct comp_flags {
             - parms with /3s
 */
     boolbit debug_info_some                     : 1;    /* d1 + some typing info     */
-    boolbit register_conv_set                   : 1;    /* has call conv been set    */
     boolbit emit_names                          : 1;    /* /en switch used           */
     boolbit cpp_mode                            : 1;    /* compiler CPP mode         */
     boolbit warnings_cause_bad_exit             : 1;    /* warnings=>non-zero exit   */
+
     boolbit save_restore_segregs                : 1;    /* save/restore segregs      */
     boolbit has_winmain                         : 1;    /* WinMain defined           */
     boolbit make_enums_an_int                   : 1;    /* force all enums to be int */
-
     boolbit original_enum_setting               : 1;    /* reset value if pragma used*/
     boolbit zc_switch_used                      : 1;    /* -zc switch specified   */
-    boolbit use_unicode                         : 1;    /* use unicode for L"abc" */
+    boolbit use_double_byte                     : 1;    /* use double-byte encoding for L"abc" */
     boolbit op_switch_used                      : 1;    /* -op force floats to mem */
     boolbit no_debug_type_names                 : 1;    /* -d2~ switch specified  */
+
     boolbit asciiout_used                       : 1;    /* (asciiout specified  */
     boolbit addr_of_auto_taken                  : 1;    /*=>can't opt tail recursion*/
     boolbit sg_switch_used                      : 1;    /* /sg switch used */
-
     boolbit bm_switch_used                      : 1;    /* /bm switch used */
     boolbit bd_switch_used                      : 1;    /* /bd switch used */
     boolbit bw_switch_used                      : 1;    /* /bw switch used */
     boolbit zm_switch_used                      : 1;    /* /zm switch used */
     boolbit has_libmain                         : 1;    /* LibMain defined */
+
     boolbit ep_switch_used                      : 1;    /* emit prolog hooks */
     boolbit ee_switch_used                      : 1;    /* emit epilog hooks */
     boolbit dump_types_with_names               : 1;    /* -d3 information */
-
     boolbit ec_switch_used                      : 1;    /* emit coverage hooks */
     boolbit jis_to_unicode                      : 1;    /* convert JIS to UNICODE */
     boolbit using_overlays                      : 1;    /* user doing overlays */
     boolbit unique_functions                    : 1;    /* func addrs are unique */
     boolbit st_switch_used                      : 1;    /* touch stack through esp */
+
     boolbit make_precompiled_header             : 1;    /* make precompiled header */
     boolbit emit_dependencies                   : 1;    /* include file dependencies*/
     boolbit multiple_code_segments              : 1;    /* more than 1 code seg */
-
     boolbit returns_promoted                    : 1;    /* return char/short as int */
     boolbit pending_dead_code                   : 1;    /* aborts func in an expr */
     boolbit use_precompiled_header              : 1;    /* use precompiled header */
     boolbit doing_macro_expansion               : 1;    /* doing macro expansion */
     boolbit no_pch_warnings                     : 1;    /* disable PCH warnings */
+
     boolbit align_structs_on_qwords             : 1;    /* for Alpha */
     boolbit no_check_inits                      : 1;    /* ease init  type checking */
     boolbit no_check_qualifiers                 : 1;    /* ease qualifier mismatch */
-
     boolbit use_stdcall_at_number               : 1;    /* add @nn thing */
     boolbit rent                                : 1;    /* make re-entrant r/w split thind  */
     boolbit unaligned_segs                      : 1;    /* don't align segments */
     boolbit trigraph_alert                      : 1;    /* trigraph char alert */
     boolbit generate_auto_depend                : 1;    /* Generate make auto depend file */
-    boolbit c99_extensions                      : 1;    /* C99 extensions enabled */
+
     boolbit use_long_double                     : 1;    /* Make CC send long double types to code gen */
     boolbit track_includes                      : 1;    /* report opens of include files */
-
     boolbit cpp_ignore_env                      : 1;    /* ignore *INCLUDE env var(s) */
     boolbit ignore_default_dirs                 : 1;    /* ignore default directories for file search .,../h,../c, etc. */
     boolbit pragma_library                      : 1;    /* pragma library simulate -zlf option */
@@ -675,6 +676,20 @@ typedef struct global_comp_flags {  // things that live across compiles
 //    boolbit dll_active                          : 1;
 } global_comp_flags;
 
+typedef enum {
+    STD_NONE,
+    STD_C89,
+    STD_C99,
+    STD_C23
+} cstd_ver;
+
+typedef struct comp_vars {
+    cstd_ver    cstd;
+} comp_vars;
+
+#define CHECK_STD(o,v)  (CompVars.cstd o STD_ ## v)
+#define SET_STD(v)      CompVars.cstd = STD_ ## v
+
 /* Target System types */
 enum {
     TS_OTHER,
@@ -687,7 +702,8 @@ enum {
     TS_QNX,
     TS_NETWARE5,
     TS_LINUX,
-    TS_RDOS
+    TS_RDOS,
+    TS_UNIX
 };
 
 typedef struct call_list {

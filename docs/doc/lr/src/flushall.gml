@@ -1,8 +1,13 @@
-.func flushall
+.func _flushall flushall
+.ansiname _flushall
 .synop begin
 #include <stdio.h>
+int _flushall( void );
+.ixfunc2 '&StrIo' _flushall
+
+.deprec
 int flushall( void );
-.ixfunc2 '&StrIo' &funcb
+.ixfunc2 '&StrIo' flushall
 .synop end
 .desc begin
 The
@@ -17,6 +22,7 @@ Calling the
 function is equivalent to calling the
 .reffunc fflush
 for all open stream files.
+.deprfunc flushall _flushall
 .desc end
 .return begin
 The
@@ -27,7 +33,7 @@ When an output error occurs while writing to a file, the
 global variable will be set.
 .return end
 .see begin
-.seelist flushall fopen fflush
+.seelist fopen fflush
 .see end
 .exmp begin
 #include <stdio.h>
@@ -35,7 +41,7 @@ global variable will be set.
 void main()
   {
     printf( "The number of open files is %d\n",
-            flushall() );
+            _flushall() );
   }
 .exmp output
 The number of open files is 4

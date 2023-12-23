@@ -1,18 +1,23 @@
+/* UTF-8 encoding, ¥ */
+
+#define PRODUCT_NAME    banner1t( "Dr. Watcom" )
+#define PRODUCT_NAME1   banner1t( "DIP" )
+
 #ifdef CHICAGO
 pick( STR_APP_NAME,
-    "Dr. Watcom for Windows 9x",
-    "Dr. Watcom for Windows 9x" )
+    PRODUCT_NAME " for Windows 9x",
+    PRODUCT_NAME " for Windows 9x" )
 #else
 pick( STR_APP_NAME,
-    "Dr. Watcom",
-    "Dr. Watcom" )
+    PRODUCT_NAME,
+    PRODUCT_NAME )
 #endif
 pick( STR_CANT_LOAD_DIP,
-    "Unable to load debugging interface",
-    "Unable to load debugging interface" )
+    "Unable to load " PRODUCT_NAME1,
+    "Unable to load " PRODUCT_NAME1 )
 pick( STR_CANT_LOAD_WATCOM_DIP,
-    "Unable to load Watcom DIP",
-    "Unable to load Watcom DIP" )
+    "Unable to load " PRODUCT_NAME1,
+    "Unable to load " PRODUCT_NAME1 )
 
 // THREAD WAIT REASONS
 pick( STR_WAIT_4_EXECUTIVE,
@@ -378,29 +383,29 @@ pick( STR_PROCESS_X_NAME,
 pick( STR_PROCESS_X,
     "Process %08lX",
     "Process %08lX" )
-pick( STR_DRNT_STARTED,
+pick( STR_STARTED,
     "%s started",
     "%s started" )
 #if defined( CHICAGO )
 pick( STR_ABOUT_NAME,
-    "Dr. Watcom for Windows 9x" STR_BITNESS,
-    "Dr. Watcom for Windows 9x" STR_BITNESS )
+    PRODUCT_NAME " for Windows 9x",
+    PRODUCT_NAME " for Windows 9x" )
 #else
 pick( STR_ABOUT_NAME,
-    "Dr. Watcom for Windows" STR_BITNESS,
-    "Dr. Watcom for Windows" STR_BITNESS )
+    PRODUCT_NAME " for Windows",
+    PRODUCT_NAME " for Windows" )
 #endif
 pick( STR_ABOUT_VERSION,
     banner1v( _DRNT_VERSION_ ),
     banner1v( _DRNT_VERSION_ ) )
 #ifdef CHICAGO
 pick( STR_ABOUT_TITLE,
-    "About Dr. Watcom for Windows 9x",
-    "About Dr. Watcom for Windows 9x" )
+    "About " PRODUCT_NAME " for Windows 9x",
+    "About " PRODUCT_NAME " for Windows 9x" )
 #else
 pick( STR_ABOUT_TITLE,
-    "About Dr. Watcom for Windows",
-    "About Dr. Watcom for Windows" )
+    "About " PRODUCT_NAME " for Windows",
+    "About " PRODUCT_NAME " for Windows" )
 #endif
 pick( STR_FAULT_PASSED_ON,
     "Fault was passed to the next handler.",
@@ -595,8 +600,8 @@ pick( STR_PICK_LOG_VIEWER,
     "Pick log viewer",
     "Pick log viewer" )
 pick( STR_CANT_INIT_DIP,
-    "Unable to initialize the debugging information processor",
-    "Unable to initialize the debugging information processor" )
+    "Unable to initialize the " PRODUCT_NAME1,
+    "Unable to initialize the " PRODUCT_NAME1 )
 pick( STR_DIP_NOT_FOUND,
     "not loaded - File not found.",
     "not loaded - File not found." )
@@ -616,8 +621,8 @@ pick( STR_DIP_LOADED,
     "loaded",
     "loaded" )
 pick( STR_NO_DIPS_LOADED,
-    "No debugging information processors were found.",
-    "No debugging information processors were found." )
+    "No " PRODUCT_NAME1 " were found.",
+    "No " PRODUCT_NAME1 " were found." )
 
 pick( STR_MEM_INFO_FOR_PROC,
     "Memory Information for Process %08X (%s)",

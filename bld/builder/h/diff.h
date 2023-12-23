@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,9 +35,5 @@ typedef enum {
     DIFF_HAVE_DIFFS,
     DIFF_NOT_COMPARED,
     DIFF_NO_MEMORY,
-    DIFF_RETURN_ADD = 100,
-    DIFFX_NO_DIFFS = DIFF_RETURN_ADD,
-    DIFFX_HAVE_DIFFS,
-    DIFFX_NOT_COMPARED,
-    DIFFX_NO_MEMORY,
+    DIFF_X_RETURN_ADD = 100,
 }       diff_returns;

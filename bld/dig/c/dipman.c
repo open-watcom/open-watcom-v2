@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,7 +42,6 @@
 #include "walloca.h"
 #include "dip.h"
 #include "dipimp.h"
-#include "dipcli.h"
 #include "dipsys.h"
 
 
@@ -122,31 +121,23 @@ static struct {
 }                       LoadedDIPs[MAX_DIPS];
 
 static unsigned         MaxHdlSize[] = {
-    #define pick(e,hdl,imphdl,wvimphdl) 0,
+    #define pick(enum,hsize,ihsize,wvihsize,cvdmndtype,wdmndtype)   0,
     #include "diphndls.h"
     #undef pick
 };
 
 static const unsigned_8 MgrHdlSize[] = {
-    #define pick(e,hdl,imphdl,wvimphdl) hdl,
+    #define pick(enum,hsize,ihsize,wvihsize,cvdmndtype,wdmndtype)   hsize,
     #include "diphndls.h"
     #undef pick
 };
 
 char DIPDefaults[] = {
-#ifdef USE_FILENAME_VERSION
-    "dwarf"  QUOTED( USE_FILENAME_VERSION ) "\0"
-    "watcom" QUOTED( USE_FILENAME_VERSION ) "\0"
-    "codevi" QUOTED( USE_FILENAME_VERSION ) "\0"
-    "mapsym" QUOTED( USE_FILENAME_VERSION ) "\0"
-    "export" QUOTED( USE_FILENAME_VERSION ) "\0"
-#else
     "dwarf\0"
     "watcom\0"
     "codeview\0"
     "mapsym\0"
     "export\0"
-#endif
     "\0"
 };
 
@@ -157,8 +148,8 @@ const address    NilAddr = { 0 };
  */
 
 static dip_client_routines DIPClientInterface = {
-    DIP_MAJOR,
-    DIP_MINOR,
+    DIP_VERSION_MAJOR,
+    DIP_VERSION_MINOR,
     sizeof( dip_client_routines ),
     DIGCli( Alloc ),
     DIGCli( Realloc ),
@@ -177,8 +168,7 @@ static dip_client_routines DIPClientInterface = {
     DIGCli( Close ),
     DIGCli( Remove ),
     DIPCli( Status ),
-    DIPCli( CurrArch ),
-    DIGCli( MachineData )
+    DIPCli( CurrArch )
 };
 
 
@@ -195,7 +185,7 @@ static void SetHdlSizes( dip_imp_routines *rtns )
     handle_kind hk;
     unsigned    size;
 
-    for( hk = 0; hk < MAX_HK; ++hk ) {
+    for( hk = 0; hk < HK_MAX; ++hk ) {
         size = rtns->HandleSize( hk ) + MgrHdlSize[hk];
         if( MaxHdlSize[hk] < size ) {
             MaxHdlSize[hk] = size;
@@ -203,7 +193,7 @@ static void SetHdlSizes( dip_imp_routines *rtns )
     }
 }
 
-dip_status DIPLoad( const char *path )
+dip_status DIPLoad( const char *base_name )
 {
     int         i;
     dip_status  ds;
@@ -213,7 +203,7 @@ dip_status DIPLoad( const char *path )
             return( DS_ERR | DS_TOO_MANY_DIPS );
         }
     }
-    ds = DIPSysLoad( path, &DIPClientInterface, &LoadedDIPs[i].rtns, &LoadedDIPs[i].sys_hdl );
+    ds = DIPSysLoad( base_name, &DIPClientInterface, &LoadedDIPs[i].rtns, &LoadedDIPs[i].sys_hdl );
     if( ds != DS_OK )
         return( ds );
     if( DIPClientInterface.major != LoadedDIPs[i].rtns->major
@@ -717,7 +707,7 @@ static walk_result DoWalkSymList( symbol_source ss, void *start, walk_glue *wd )
     ih = II2IH( ii );
     if( ih != NULL ) {
         sh->ii = ii;
-        if( ih->dip->minor == DIP_MINOR ) {
+        if( ih->dip->minor == DIP_VERSION_MINOR ) {
             wr = ih->dip->WalkSymListEx( IH2IIH( ih ), ss, start, SymGlue, SH2ISH( sh ), wd->lc, wd );
         } else {
             wr = ih->dip->WalkSymList( IH2IIH( ih ), ss, start, SymGlue, SH2ISH( sh ), wd );
@@ -924,7 +914,7 @@ dip_status DIPTypeBase( type_handle *th, type_handle *base_th, location_context 
         return( DS_ERR | DS_NO_PROCESS );
     base_th->ii = th->ii;
     base_th->ap = 0;
-    if( ih->dip->minor == DIP_MINOR ) {
+    if( ih->dip->minor == DIP_VERSION_MINOR ) {
         return( ih->dip->TypeBase( IH2IIH( ih ), TH2ITH( th ), TH2ITH( base_th ), lc, ll ) );
     } else {
         return( ih->dip->OldTypeBase( IH2IIH( ih ), TH2ITH( th ), TH2ITH( base_th ) ) );
@@ -939,7 +929,7 @@ dip_status DIPTypeAddRef( type_handle *th )
     ih = II2IH( th->ii );
     if( ih == NULL )
         return( DS_ERR | DS_NO_PROCESS );
-    if( ih->dip->minor == DIP_MINOR ) {
+    if( ih->dip->minor == DIP_VERSION_MINOR ) {
         return( ih->dip->TypeAddRef( IH2IIH( ih ), TH2ITH( th ) ) );
     } else {
         return( DS_OK );
@@ -954,7 +944,7 @@ dip_status DIPTypeRelease( type_handle *th )
     ih = II2IH( th->ii );
     if( ih == NULL )
         return( DS_ERR | DS_NO_PROCESS );
-    if( ih->dip->minor == DIP_MINOR ) {
+    if( ih->dip->minor == DIP_VERSION_MINOR ) {
         return( ih->dip->TypeRelease( IH2IIH( ih ), TH2ITH( th ) ) );
     } else {
         return( DS_OK );
@@ -969,7 +959,7 @@ dip_status DIPTypeFreeAll( void )
     if( ActProc == NULL )
         return( DS_OK );
     for( ih = ActProc->list_ih; ih != NULL; ih = ih->next ) {
-        if( ih->dip->minor == DIP_MINOR ) {
+        if( ih->dip->minor == DIP_VERSION_MINOR ) {
             ih->dip->TypeFreeAll( IH2IIH( ih ) );
         }
     }
@@ -1188,7 +1178,7 @@ dip_status DIPSymAddRef( sym_handle *sh )
     ih = II2IH( sh->ii );
     if( ih == NULL )
         return( DS_ERR | DS_NO_PROCESS );
-    if( ih->dip->minor == DIP_MINOR ) {
+    if( ih->dip->minor == DIP_VERSION_MINOR ) {
         return( ih->dip->SymAddRef( IH2IIH( ih ), SH2ISH( sh ) ) );
     } else {
         return( DS_OK );
@@ -1203,7 +1193,7 @@ dip_status DIPSymRelease( sym_handle *sh )
     ih = II2IH( sh->ii );
     if( ih == NULL )
         return( DS_ERR | DS_NO_PROCESS );
-    if( ih->dip->minor == DIP_MINOR ) {
+    if( ih->dip->minor == DIP_VERSION_MINOR ) {
         return( ih->dip->SymRelease( IH2IIH( ih ), SH2ISH( sh ) ) );
     } else {
         return( DS_OK );
@@ -1218,7 +1208,7 @@ dip_status DIPSymFreeAll( void )
     if( ActProc == NULL )
         return( DS_OK );
     for( ih = ActProc->list_ih; ih != NULL; ih = ih->next ) {
-        if( ih->dip->minor == DIP_MINOR ) {
+        if( ih->dip->minor == DIP_VERSION_MINOR ) {
             ih->dip->SymFreeAll( IH2IIH( ih ) );
         }
     }
@@ -1445,7 +1435,7 @@ search_result DIPLookupSymEx( symbol_source ss, void *source, lookup_item *li, l
     ih = (li->mod == NO_MOD) ? curr_ih : MH2IH( li->mod );
     li->mod = IMH2MH( MH2IMH( li->mod ) );
     if( ih != NULL ) {
-        if( ih->dip->minor == DIP_MINOR ) {
+        if( ih->dip->minor == DIP_VERSION_MINOR ) {
             sr = ih->dip->LookupSymEx( IH2IIH( ih ), ss, source, li, lc, d );
         } else {
             sr = ih->dip->LookupSym( IH2IIH( ih ), ss, source, li, d );
@@ -1457,7 +1447,7 @@ search_result DIPLookupSymEx( symbol_source ss, void *source, lookup_item *li, l
         curr_ih = ih;
         for( ih = ActProc->list_ih; ih != NULL; ih = ih->next ) {
             if( ih != curr_ih ) {
-                if( ih->dip->minor == DIP_MINOR ) {
+                if( ih->dip->minor == DIP_VERSION_MINOR ) {
                     sr = ih->dip->LookupSymEx( IH2IIH( ih ), ss, source, li, lc, d );
                 } else {
                     sr = ih->dip->LookupSym( IH2IIH( ih ), ss, source, li, d );

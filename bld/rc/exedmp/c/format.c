@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,95 +36,122 @@
 #include "read.h"
 #include "main.h"
 #include "watcom.h"
+#include "exepe.h"
+#include "formatsd.h"
 
 
-extern const char *resTypes[];
-extern const char *cpu_flags_labels[];
-extern const char *ss_flags_labels[];
-extern const char *dll_flags_labels[];
-extern const char *obj_flags_labels[];
-extern const char *hdr_flags_labels[];
-
-const unsigned_32 cpu_masks_table[] = {
-    7,          /* number of masks in table */
-    PE_CPU_UNKNOWN,
-    PE_CPU_386,
-    PE_CPU_I860,
-    PE_CPU_MIPS_R3000,
-    PE_CPU_MIPS_R4000,
-    PE_CPU_ALPHA,
-    PE_CPU_POWERPC
+enum {
+    ED_PE_RES_COUNT = 0
+    #define ED_PE_RES(e,t)  + 1
+    ED_PE_RESS
+    #undef ED_PE_RES
 };
 
-const unsigned_32 hdr_masks_table[] = {
-    15,         /* number of masks in table */
-    PE_FLG_PROGRAM,
-    PE_FLG_RELOCS_STRIPPED,
-    PE_FLG_IS_EXECUTABLE,
-    PE_FLG_LINNUM_STRIPPED,
-    PE_FLG_LOCALS_STRIPPED,
-    PE_FLG_MINIMAL_OBJ,
-    PE_FLG_UPDATE_OBJ,
-    PE_FLG_16BIT_MACHINE,
-    PE_FLG_REVERSE_BYTE_LO,
-    PE_FLG_32BIT_MACHINE,
-    PE_FLG_FIXED,
-    PE_FLG_FILE_PATCH,
-    PE_FLG_FILE_SYSTEM,
-    PE_FLG_LIBRARY,
-    PE_FLG_REVERSE_BYTE_HI
+enum {
+    ED_PE_CPU_COUNT = 0
+    #define ED_PE_CPU(e,t)  + 1
+    ED_PE_CPUS
+    #undef ED_PE_CPU
 };
 
-const unsigned_32 ss_masks_table[] = {
-    7,          /* number of masks in table */
-    PE_SS_UNKNOWN,
-    PE_SS_NATIVE,
-    PE_SS_WINDOWS_GUI,
-    PE_SS_WINDOWS_CHAR,
-    PE_SS_OS2_CHAR,
-    PE_SS_POSIX_CHAR,
-    PE_SS_PL_DOSSTYLE
+enum {
+    ED_PE_FLG_COUNT = 0
+    #define ED_PE_FLG(e,t)  + 1
+    ED_PE_FLGS
+    #undef ED_PE_FLG
 };
 
-const unsigned_32 dll_masks_table[] = {
-    4,          /* number of masks in table */
-    PE_DLL_PERPROC_INIT,
-    PE_DLL_PERPROC_TERM,
-    PE_DLL_PERTHRD_INIT,
-    PE_DLL_PERTHRD_TERM
+enum {
+    ED_PE_SS_COUNT = 0
+    #define ED_PE_SS(e,t)   + 1
+    ED_PE_SSS
+    #undef ED_PE_SS
 };
 
-const unsigned_32 obj_masks_table[] = {
-    29,         /* number of masks in table */
-    PE_OBJ_DUMMY,
-    PE_OBJ_NOLOAD,
-    PE_OBJ_GROUPED,
-    PE_OBJ_NOPAD,
-    PE_OBJ_TYPE_COPY,
-    PE_OBJ_CODE,
-    PE_OBJ_INIT_DATA,
-    PE_OBJ_UNINIT_DATA,
-    PE_OBJ_OTHER,
-    PE_OBJ_LINK_INFO,
-    PE_OBJ_OVERLAY,
-    PE_OBJ_REMOVE,
-    PE_OBJ_COMDAT,
-    PE_OBJ_ALIGN_1,
-    PE_OBJ_ALIGN_2,
-    PE_OBJ_ALIGN_4,
-    PE_OBJ_ALIGN_8,
-    PE_OBJ_ALIGN_16,
-    PE_OBJ_ALIGN_32,
-    PE_OBJ_ALIGN_64,
-    PE_OBJ_DISCARDABLE,
-    PE_OBJ_NOT_CACHED,
-    PE_OBJ_NOT_PAGABLE,
-    PE_OBJ_SHARED,
-    PE_OBJ_EXECUTABLE,
-    PE_OBJ_READABLE,
-    PE_OBJ_WRITABLE,
-    PE_OBJ_ALIGN_MASK,
-    PE_OBJ_ALIGN_SHIFT
+enum {
+    ED_PE_DLL_COUNT = 0
+    #define ED_PE_DLL(e,t)  + 1
+    ED_PE_DLLS
+    #undef ED_PE_DLL
+};
+
+enum {
+    ED_PE_OBJ_COUNT = 0
+    #define ED_PE_OBJ(e,t)  + 1
+    ED_PE_OBJS
+    #undef ED_PE_OBJ
+};
+
+const char *resTypes[] = {
+    #define ED_PE_RES(e,t)  t,
+    ED_PE_RESS
+    #undef ED_PE_RES
+    NULL
+};
+
+static const unsigned_32 cpu_masks_table[] = {
+    #define ED_PE_CPU(e,t)  e,
+    ED_PE_CPUS
+    #undef ED_PE_CPU
+};
+
+static const unsigned_32 hdr_masks_table[] = {
+    #define ED_PE_FLG(e,t)  e,
+    ED_PE_FLGS
+    #undef ED_PE_FLG
+};
+
+static const unsigned_32 ss_masks_table[] = {
+    #define ED_PE_SS(e,t)   e,
+    ED_PE_SSS
+    #undef ED_PE_SS
+};
+
+static const unsigned_32 dll_masks_table[] = {
+    #define ED_PE_DLL(e,t)  e,
+    ED_PE_DLLS
+    #undef ED_PE_DLL
+};
+
+static const unsigned_32 obj_masks_table[] = {
+    #define ED_PE_OBJ(e,t)  e,
+    ED_PE_OBJS
+    #undef ED_PE_OBJ
+};
+
+static const char *cpu_flags_labels[] = {
+    #define ED_PE_CPU(e,t)  t,
+    ED_PE_CPUS
+    #undef ED_PE_CPU
+    NULL
+};
+
+static const char *hdr_flags_labels[] = {
+    #define ED_PE_FLG(e,t)  t,
+    ED_PE_FLGS
+    #undef ED_PE_FLG
+    NULL
+};
+
+static const char *ss_flags_labels[] = {
+    #define ED_PE_SS(e,t)   t,
+    ED_PE_SSS
+    #undef ED_PE_SS
+    NULL
+};
+
+static const char *dll_flags_labels[] = {
+    #define ED_PE_DLL(e,t)  t,
+    ED_PE_DLLS
+    #undef ED_PE_DLL
+    NULL
+};
+
+static const char *obj_flags_labels[] = {
+    #define ED_PE_OBJ(e,t)  t,
+    ED_PE_OBJS
+    #undef ED_PE_OBJ
+    NULL
 };
 
 #define printYes( x )   printf( "%s= %s\n", x, LBL_YES )
@@ -219,7 +246,14 @@ void printDefaultParameters( void )
 void printBanner( void )
 /***********************/
 {
-    printf( MSG_BANNER );
+    puts(
+        banner1t( "PE ExeDmp Utility" ) "\n"
+        banner1v( "1.0" ) "\n"
+        banner2 "\n"
+        banner2a( 1997 ) "\n"
+        banner3 "\n"
+        banner3a "\n"
+    );
 }
 
 void printHelp( void )
@@ -227,10 +261,30 @@ void printHelp( void )
 {
     int i;
 
-    printf( MSG_HELP );
-    for( i = 0; resTypes[ i ] != NULL; i++ ) {
-        if( *resTypes[ i ] != '\0' ) {
-            printf( "       %s\n", resTypes[ i ] );
+    puts(
+        " Usage:\n"
+        "       exedmp [options] <filename> [options]\n"
+        "\n"
+        " Toggle Options:\n"
+        " -o    dump offset of each dir header, dir entry, and data entry\n"
+        " -h    dump hex header of each dir header, dir entry, and data entry\n"
+        " -d    dump hex contents of each data entry\n"
+        " -i    print interpretation of each dir header, dir entry, and data entry\n"
+        " -x    dump Exe headers\n"
+        " -r    dump information about resource object\n"
+        " -l    print ruler\n"
+        "\n"
+        " Other Options:\n"
+        " -tX   dump only resource of type X (e.g. -tgroupicon)\n"
+        " -sX   indent each level of dir by X spaces\n"
+        " -nX   indent hex contents of data entries by X spaces\n"
+        "       (use -1 to align hex contents with their data entries)\n"
+        "\n"
+        " Available Resource Types:\n"
+    );
+    for( i = 0; resTypes[i] != NULL; i++ ) {
+        if( *resTypes[i] != '\0' ) {
+            printf( "       %s\n", resTypes[i] );
         }
     }
     printf( "\n" );
@@ -262,12 +316,12 @@ void printDosHeader( ExeFile *exeFile, Parameters *param )
 }
 
 static void printFlags( unsigned_32 value,
-                 const unsigned_32 masks[], const char *labels[],
+                 const unsigned_32 masks[], int count,
+                 const char *labels[],
                  const char *indentString )
-/****************************************************************/
+/****************************************************/
 {
     int i;
-    int count;
     size_t indentLen;
     size_t labelLen;
     size_t cursor;
@@ -277,8 +331,7 @@ static void printFlags( unsigned_32 value,
     indentLen = strlen( indentString );
     cursor = indentLen;
     printf( indentString );
-    count = masks[0];
-    for( i = 1; i <= count; i++ ) {
+    for( i = 0; i < count; i++ ) {
         if( value & masks[i] ) {
             if( first ) {
                 first = false;
@@ -307,72 +360,83 @@ void printPeHeader( ExeFile *exeFile, Parameters *param )
         printf( MSG_PE_HEADER );
         printRuler( false, false, param );
         printf( MSG_PE_SIGNATURE ,              exeFile->pexHdr.signature );
-        printf( MSG_PE_CPUTYPE ,                exeFile->pexHdr.cpu_type );
-        count = cpu_masks_table[0];
-        for( i = 1; i <= count; i++ ) {
-            if( exeFile->pexHdr.cpu_type == cpu_masks_table[i] ) {
+        printf( MSG_PE_CPUTYPE ,                exeFile->pexHdr.fheader.cpu_type );
+        count = ED_PE_CPU_COUNT;
+        for( i = 0; i < count; i++ ) {
+            if( exeFile->pexHdr.fheader.cpu_type == cpu_masks_table[i] ) {
                 printf( MSG_PE_CPUTYPETEXT, cpu_flags_labels[i] );
                 break;
             }
         }
-        if( i > count ) {
+        if( i >= count ) {
             printf( MSG_PE_CPUTYPENOTRECOGNIZED );
         }
-        printf( MSG_PE_NUMOBJECTS ,             exeFile->pexHdr.num_objects );
-        printf( MSG_PE_TIMESTAMP ,              exeFile->pexHdr.time_stamp );
-        printf( MSG_PE_SYMTABLE ,               exeFile->pexHdr.sym_table );
-        printf( MSG_PE_NUMSYMS ,                exeFile->pexHdr.num_syms );
-        printf( MSG_PE_NTHDRSIZE ,              exeFile->pexHdr.nt_hdr_size );
-        printf( MSG_PE_FLAGS ,                  exeFile->pexHdr.flags );
-        printFlags( exeFile->pexHdr.flags,
-                    hdr_masks_table, hdr_flags_labels,
+        printf( MSG_PE_NUMOBJECTS ,             exeFile->pexHdr.fheader.num_objects );
+        printf( MSG_PE_TIMESTAMP ,              exeFile->pexHdr.fheader.time_stamp );
+        printf( MSG_PE_SYMTABLE ,               exeFile->pexHdr.fheader.sym_table );
+        printf( MSG_PE_NUMSYMS ,                exeFile->pexHdr.fheader.num_symbols );
+        printf( MSG_PE_NTHDRSIZE ,              exeFile->pexHdr.fheader.opt_hdr_size );
+        printf( MSG_PE_FLAGS ,                  exeFile->pexHdr.fheader.flags );
+        printFlags( exeFile->pexHdr.fheader.flags,
+                    hdr_masks_table, ED_PE_FLG_COUNT, hdr_flags_labels,
                     MSG_PE_FLAGSINDENT );
-        printf( MSG_PE_MAGIC ,                  exeFile->pexHdr.magic );
-        printf( MSG_PE_LNKMAJOR ,               exeFile->pexHdr.lnk_major );
-        printf( MSG_PE_LNKMINOR ,               exeFile->pexHdr.lnk_minor );
-        printf( MSG_PE_CODESIZE ,               exeFile->pexHdr.code_size,
-                                                exeFile->pexHdr.code_size );
-        printf( MSG_PE_INITDATASIZE ,           exeFile->pexHdr.init_data_size,
-                                                exeFile->pexHdr.init_data_size );
-        printf( MSG_PE_UNINITDATASIZE ,         exeFile->pexHdr.uninit_data_size,
-                                                exeFile->pexHdr.uninit_data_size );
-        printf( MSG_PE_ENTRYRVA ,               exeFile->pexHdr.entry_rva );
-        printf( MSG_PE_CODEBASE ,               exeFile->pexHdr.code_base );
-        printf( MSG_PE_DATABASE ,               exeFile->pexHdr.data_base );
-        printf( MSG_PE_IMAGEBASE ,              exeFile->pexHdr.image_base );
-        printf( MSG_PE_OBJECTALIGN ,            exeFile->pexHdr.object_align );
-        printf( MSG_PE_FILEALIGN ,              exeFile->pexHdr.file_align );
-        printf( MSG_PE_OSMAJOR ,                exeFile->pexHdr.os_major );
-        printf( MSG_PE_OSMINOR ,                exeFile->pexHdr.os_minor );
-        printf( MSG_PE_USERMAJOR ,              exeFile->pexHdr.user_major );
-        printf( MSG_PE_USERMINOR ,              exeFile->pexHdr.user_minor );
-        printf( MSG_PE_SUBSYSMAJOR ,            exeFile->pexHdr.subsys_major );
-        printf( MSG_PE_SUBSYSMINOR ,            exeFile->pexHdr.subsys_minor );
-        printf( MSG_PE_RSVD1 ,                  exeFile->pexHdr.rsvd1 );
-        printf( MSG_PE_IMAGESIZE ,              exeFile->pexHdr.image_size );
-        printf( MSG_PE_HEADERSIZE ,             exeFile->pexHdr.header_size );
-        printf( MSG_PE_FILECHECKSUM ,           exeFile->pexHdr.file_checksum );
-        printf( MSG_PE_SUBSYSTEM ,              exeFile->pexHdr.subsystem );
-        count = ss_masks_table[0];
-        for( i = 1; i <= count; i++ ) {
-            if( exeFile->pexHdr.subsystem == ss_masks_table[i] ) {
+        printf( MSG_PE_MAGIC ,                  PE( exeFile->pexHdr, magic ) );
+        printf( MSG_PE_LNKMAJOR ,               PE( exeFile->pexHdr, lnk_major ) );
+        printf( MSG_PE_LNKMINOR ,               PE( exeFile->pexHdr, lnk_minor ) );
+        printf( MSG_PE_CODESIZE ,               PE( exeFile->pexHdr, code_size ),
+                                                PE( exeFile->pexHdr, code_size ) );
+        printf( MSG_PE_INITDATASIZE ,           PE( exeFile->pexHdr, init_data_size ),
+                                                PE( exeFile->pexHdr, init_data_size ) );
+        printf( MSG_PE_UNINITDATASIZE ,         PE( exeFile->pexHdr, uninit_data_size ),
+                                                PE( exeFile->pexHdr, uninit_data_size ) );
+        printf( MSG_PE_ENTRYRVA ,               PE( exeFile->pexHdr, entry_rva ) );
+        printf( MSG_PE_CODEBASE ,               PE( exeFile->pexHdr, code_base ) );
+        if( IS_PE64( exeFile->pexHdr ) ) {
+            printf( MSG_PE64_IMAGEBASE ,        PE64( exeFile->pexHdr ).image_base );
+        } else {
+            printf( MSG_PE32_DATABASE ,         PE32( exeFile->pexHdr ).data_base );
+            printf( MSG_PE32_IMAGEBASE ,        PE32( exeFile->pexHdr ).image_base );
+        }
+        printf( MSG_PE_OBJECTALIGN ,            PE( exeFile->pexHdr, object_align ) );
+        printf( MSG_PE_FILEALIGN ,              PE( exeFile->pexHdr, file_align ) );
+        printf( MSG_PE_OSMAJOR ,                PE( exeFile->pexHdr, os_major ) );
+        printf( MSG_PE_OSMINOR ,                PE( exeFile->pexHdr, os_minor ) );
+        printf( MSG_PE_USERMAJOR ,              PE( exeFile->pexHdr, user_major ) );
+        printf( MSG_PE_USERMINOR ,              PE( exeFile->pexHdr, user_minor ) );
+        printf( MSG_PE_SUBSYSMAJOR ,            PE( exeFile->pexHdr, subsys_major ) );
+        printf( MSG_PE_SUBSYSMINOR ,            PE( exeFile->pexHdr, subsys_minor ) );
+        printf( MSG_PE_RSVD1 ,                  PE( exeFile->pexHdr, rsvd1 ) );
+        printf( MSG_PE_IMAGESIZE ,              PE( exeFile->pexHdr, image_size ) );
+        printf( MSG_PE_HEADERSIZE ,             PE( exeFile->pexHdr, headers_size ) );
+        printf( MSG_PE_FILECHECKSUM ,           PE( exeFile->pexHdr, file_checksum ) );
+        printf( MSG_PE_SUBSYSTEM ,              PE( exeFile->pexHdr, subsystem ) );
+        count = ED_PE_SS_COUNT;
+        for( i = 0; i < count; i++ ) {
+            if( PE( exeFile->pexHdr, subsystem ) == ss_masks_table[i] ) {
                 printf( MSG_PE_SUBSYSTEMTEXT, ss_flags_labels[i] );
                 break;
             }
         }
-        if( i > count ) {
+        if( i >= count ) {
             printf( MSG_PE_SUBSYSTEMNOTRECOGNIZED );
         }
-        printf( MSG_PE_DLLFLAGS ,               exeFile->pexHdr.dll_flags );
-        printFlags( exeFile->pexHdr.dll_flags,
-                    dll_masks_table, dll_flags_labels,
+        printf( MSG_PE_DLLFLAGS ,               PE( exeFile->pexHdr, dll_flags ) );
+        printFlags( PE( exeFile->pexHdr, dll_flags ),
+                    dll_masks_table, ED_PE_DLL_COUNT, dll_flags_labels,
                     MSG_PE_DLLFLAGSINDENT );
-        printf( MSG_PE_STACKRESERVESIZE ,       exeFile->pexHdr.stack_reserve_size );
-        printf( MSG_PE_STACKCOMMITSIZE ,        exeFile->pexHdr.stack_commit_size );
-        printf( MSG_PE_HEAPRESERVESIZE ,        exeFile->pexHdr.heap_reserve_size );
-        printf( MSG_PE_HEAPCOMMITSIZE ,         exeFile->pexHdr.heap_commit_size );
-        printf( MSG_PE_TLSIDXADDR ,             exeFile->pexHdr.tls_idx_addr );
-        printf( MSG_PE_NUMTABLES ,              exeFile->pexHdr.num_tables );
+        if( IS_PE64( exeFile->pexHdr ) ) {
+            printf( MSG_PE64_STACKRESERVESIZE , PE64( exeFile->pexHdr ).stack_reserve_size );
+            printf( MSG_PE64_STACKCOMMITSIZE ,  PE64( exeFile->pexHdr ).stack_commit_size );
+            printf( MSG_PE64_HEAPRESERVESIZE ,  PE64( exeFile->pexHdr ).heap_reserve_size );
+            printf( MSG_PE64_HEAPCOMMITSIZE ,   PE64( exeFile->pexHdr ).heap_commit_size );
+        } else {
+            printf( MSG_PE32_STACKRESERVESIZE , PE32( exeFile->pexHdr ).stack_reserve_size );
+            printf( MSG_PE32_STACKCOMMITSIZE ,  PE32( exeFile->pexHdr ).stack_commit_size );
+            printf( MSG_PE32_HEAPRESERVESIZE ,  PE32( exeFile->pexHdr ).heap_reserve_size );
+            printf( MSG_PE32_HEAPCOMMITSIZE ,   PE32( exeFile->pexHdr ).heap_commit_size );
+        }
+        printf( MSG_PE_TLSIDXADDR ,             PE( exeFile->pexHdr, tls_idx_addr ) );
+        printf( MSG_PE_NUMTABLES ,              PE( exeFile->pexHdr, num_tables ) );
         printf( "\n\n" );
     }
 }
@@ -393,7 +457,7 @@ void printResObject( ExeFile *exeFile, Parameters *param )
         printf( MSG_RESOBJ_NUMLINNUMS,          exeFile->resObj.num_linnums );
         printf( MSG_RESOBJ_FLAGS,               exeFile->resObj.flags );
         printFlags( exeFile->resObj.flags,
-                    obj_masks_table, obj_flags_labels,
+                    obj_masks_table, ED_PE_OBJ_COUNT, obj_flags_labels,
                     MSG_RESOBJ_FLAGSINDENT );
         printf( "\n" );
         printHexDump( exeFile->resObjAddr, sizeof( pe_object ),
@@ -487,7 +551,7 @@ void printDirContents( ResDirEntry *dir, ExeFile *exeFile,
             printf( MSG_DIR_NAMESIZE, dir->nameSize );
         } else {
             printf( MSG_DIR_ID, dir->dir.id_name );
-            if( depth == 1 && dir->dir.id_name < RT_COUNT ) {
+            if( depth == 1 && dir->dir.id_name < ED_PE_RES_COUNT ) {
                 printIndent( false, param );
                 printf( MSG_DIR_IDTYPE, resTypes[ dir->dir.id_name ] );
             }

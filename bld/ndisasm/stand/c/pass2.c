@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -244,7 +244,9 @@ size_t HandleAReference( dis_value value, int ins_size, ref_flags flags,
             nvalue = 0;
         }
         switch( r_entry->type ) {
-        case ORL_RELOC_TYPE_MAX + 1:
+        case ORL_RELOC_TYPE_WDIS_ABS:
+        case ORL_RELOC_TYPE_WDIS_JUMP:
+        case ORL_RELOC_TYPE_WDIS_JUMP16:
         case ORL_RELOC_TYPE_JUMP:
         case ORL_RELOC_TYPE_REL_21_SH:
         case ORL_RELOC_TYPE_WORD_26:
@@ -287,17 +289,17 @@ size_t HandleAReference( dis_value value, int ins_size, ref_flags flags,
         case ORL_RELOC_TYPE_WORD_32:
         case ORL_RELOC_TYPE_WORD_32_NB:
         case ORL_RELOC_TYPE_WORD_64:
-            if( ( r_entry->label->type != LTYP_GROUP ) && (flags & RFLAG_IS_IMMED) && IsMasmOutput() ) {
+            if( ( r_entry->label->type != LTYP_GROUP ) && (flags & RFLAG_IS_IMMED) && IsMasmOutput ) {
                 referenceString( r_entry, sec_size, "offset ", "offset ", "", buff, flags );
             } else {
                 referenceString( r_entry, sec_size, "", "", "", buff, flags );
             }
             break;
         case ORL_RELOC_TYPE_REL_16:
-            if( IsIntelx86() && r_entry->has_val ) {
+            if( IsIntelx86 && r_entry->has_val ) {
                 nvalue -= ins_size;
             }
-            if( ( r_entry->label->type != LTYP_GROUP ) && (flags & RFLAG_IS_IMMED) && IsMasmOutput() ) {
+            if( ( r_entry->label->type != LTYP_GROUP ) && (flags & RFLAG_IS_IMMED) && IsMasmOutput ) {
                 referenceString( r_entry, sec_size, "offset ", "offset ", "", buff, flags );
             } else {
                 referenceString( r_entry, sec_size, "", "", "", buff, flags  );
@@ -314,7 +316,7 @@ size_t HandleAReference( dis_value value, int ins_size, ref_flags flags,
             if( ( r_entry->label->type != LTYP_GROUP )
                 && ( r_entry->label->type != LTYP_SECTION )
                 && (flags & RFLAG_IS_IMMED)
-                && IsMasmOutput() ) {
+                && IsMasmOutput ) {
                 referenceString( r_entry, sec_size, "seg ", "seg ", "", buff, flags );
             } else {
                 referenceString( r_entry, sec_size, "", "", "", buff, flags );
@@ -345,7 +347,7 @@ size_t HandleAReference( dis_value value, int ins_size, ref_flags flags,
             // relative addresses without relocate
             //
             // in amd64 code the instruction size will be added in pass1.c!
-            if( r_entry->has_val && !( GetMachineType() == ORL_MACHINE_TYPE_AMD64 ) ) {
+            if( r_entry->has_val && !( MachineType == ORL_MACHINE_TYPE_AMD64 ) ) {
                 nvalue -= ins_size;
             }
             referenceString( r_entry, sec_size, "", "", "", buff, flags );
@@ -519,7 +521,7 @@ size_t DisCliValueString( void *d, dis_dec_ins *ins, unsigned op_num, char *buff
         if( pd->r_entry != NULL ) {
             /* if there is an override we must avoid the frame
              */
-            if( (ins->flags.u.x86 & DIS_X86_SEG_OR) && IsIntelx86() ) {
+            if( (ins->flags.u.x86 & DIS_X86_SEG_OR) && IsIntelx86 ) {
                 rf |= RFLAG_NO_FRAME;
             }
             len = HandleAReference( op->value, ins->size, rf,
@@ -591,7 +593,6 @@ num_errors DoPass2( section_ptr section, unsigned_8 *contents, dis_sec_size size
     char                ops[ MAX_OBJ_NAME + 24 ];       // at most 1 label/relocation per instruction, plus room for registers, brackets and other crap
     dis_inst_flags      flags;
     scantab_ptr         st;
-    bool                is_intel;
     sa_disasm_struct    sds;
     const char          *FPU_fixup;
     int                 pos_tabs;
@@ -628,17 +629,12 @@ num_errors DoPass2( section_ptr section, unsigned_8 *contents, dis_sec_size size
     if( size && sec_label_list )
         PrintAssumeHeader( section );
     flags.u.all = DIF_NONE;
-    if( GetMachineType() == ORL_MACHINE_TYPE_I386 ) {
-        if( ( GetFormat() != ORL_OMF ) || (ORLSecGetFlags( section->shnd ) & ORL_SEC_FLAG_USE_32) ) {
+    if( MachineType == ORL_MACHINE_TYPE_I386 ) {
+        if( ( FileFormat != ORL_OMF ) || (ORLSecGetFlags( section->shnd ) & ORL_SEC_FLAG_USE_32) ) {
             flags.u.x86 = DIF_X86_USE32_FLAGS;
         }
-        is_intel = true;
-    } else if( GetMachineType() == ORL_MACHINE_TYPE_AMD64 ) {
-        is_intel = true;
-    } else {
-        is_intel = IsIntelx86();
     }
-    if( is_intel ) {
+    if( IsIntelx86 ) {
         flags.u.x86 |= DIF_X86_FPU_EMU;
     }
     is32bit = ( size >= 0x10000 );
@@ -665,7 +661,7 @@ num_errors DoPass2( section_ptr section, unsigned_8 *contents, dis_sec_size size
         }
         data.r_entry = ProcessFpuEmulatorFixup( data.r_entry, data.loop, &FPU_fixup );
         if( data.r_entry != NULL && ( data.r_entry->offset == data.loop ) ) {
-            if( is_intel || IsDataReloc( data.r_entry ) ) {
+            if( IsIntelx86 || IsDataReloc( data.r_entry ) ) {
                 // we just skip the data
                 decoded.size = 0;
                 processDataInCode( section, contents, &data, RelocSize( data.r_entry ), &l_entry );

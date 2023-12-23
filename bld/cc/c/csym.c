@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -66,7 +66,8 @@ static seg_info     SymBufSegs[MAX_SYM_SEGS];   /* segments for symbols */
 
 static SEGADDR_T AllocSegment( seg_info *si )
 {
-    /* FEmalloc never returns NULL - it either allocates the memory
+    /*
+     * FEmalloc never returns NULL - it either allocates the memory
      * or kills the compiler.
      */
     si->index = (SEGADDR_T)FEmalloc( 0x04000 );
@@ -93,7 +94,7 @@ static void NewSym( void )
 
 void SymInit( void )
 {
-    id_hash_idx     h;
+    id_hash_idx     hash;
     unsigned        seg_num;
 
     NextSymHandle = 0;
@@ -102,8 +103,8 @@ void SymInit( void )
     GblSymCount = 0;
     LclSymCount = 0;
     HashTab = PermMemAlloc( ID_HASH_SIZE * sizeof( SYM_HASHPTR ) );
-    for( h = 0; h < ID_HASH_SIZE; h++ ) {
-        HashTab[h] = NULL;
+    for( hash = 0; hash < ID_HASH_SIZE; hash++ ) {
+        HashTab[hash] = NULL;
     }
     TagHead = NULL;
     DeadTags = NULL;
@@ -203,13 +204,10 @@ SYM_HANDLE SegSymbol( const char *name, segment_id segid )
 SYM_HANDLE SpcSymbol( const char *name, TYPEPTR typ, stg_classes stg_class )
 {
     SYM_ENTRY       sym;
-    size_t          len;
 
     NewSym();
-    len = strlen( name ) + 1;
     memset( &sym, 0, sizeof( SYM_ENTRY ) );
-    sym.name = CMemAlloc( len );
-    memcpy( sym.name, name, len );
+    sym.name = CMemStrDup( name );
     sym.sym_type = typ;
     sym.attribs.stg_class = stg_class;
     SymReplace( &sym, CURR_SYM_HANDLE() );
@@ -222,36 +220,49 @@ void SpcSymInit( void )
     TYPEPTR     typ;
     SYM_ENTRY   sym;
 
-    /* first entry into SpecialSyms */
+    /*
+     * first entry into SpecialSyms
+     */
     memset( &sym, 0, sizeof( SYM_ENTRY ) );
     sym.sym_type = GetType( TYP_VOID );
     SymReplace( &sym, 0 );
 #ifdef __SEH__
-    /* create special _try sym */
+    /*
+     * create special _try sym
+     */
     TrySymHandle = SpcSymbol( ".try", GetType( TYP_VOID ), SC_AUTO );
 #endif
-    /* create special symbol for "extern unsigned int __near __chipbug" */
+    /*
+     * create special symbol for "extern unsigned int __near __chipbug"
+     */
     SymChipBug = SpcSymbol( "__chipbug", GetType( TYP_UINT ), SC_EXTERN );
-
-    /* create special symbol table entry for __segname("_CODE") */
+    /*
+     * create special symbol table entry for __segname("_CODE")
+     */
     Sym_CS = SegSymbol( "CS", SEG_CODE );
-    /* create special symbol table entry for __segname("_STACK") */
+    /*
+     * create special symbol table entry for __segname("_STACK")
+     */
     Sym_SS = SegSymbol( "SS", SEG_STACK );
-    /* create special symbol table entry for __segname("_CONST") */
+    /*
+     * create special symbol table entry for __segname("_CONST")
+     */
     SegSymbol( "CONST", SEG_CONST );
-    /* create special symbol table entry for __segname("_DATA") */
+    /*
+     * create special symbol table entry for __segname("_DATA")
+     */
     SegSymbol( "DS", SEG_DATA );
 
     SpecialSyms = CURR_SYM_HANDLE();
-
-    /* Create special symbol table entries for use by stosw, stosb pragmas
+    /*
+     * Create special symbol table entries for use by stosw, stosb pragmas
      * This should be a TYP_FUNCTION returning pointer to char
      */
     ptr2char = PtrNode( GetType( TYP_CHAR ), FLAG_NONE, SEG_DATA );
     typ = TypeNode( TYP_FUNCTION, ptr2char );
-
-    /* The ".stosw" functions are done through internal AUX entries */
-
+    /*
+     * The ".stosw" functions are done through internal AUX entries
+     */
     SymSTOW  = MakeFunction( "_inline_.stosw", GetType( TYP_VOID ) );
     SymSTOWB = MakeFunction( "_inline_.stoswb", GetType( TYP_VOID ) );
     SymMIN   = MakeFunction( "_inline_.min", GetType( TYP_UINT ) );
@@ -281,12 +292,9 @@ void SpcSymInit( void )
 SYM_HANDLE MakeFunction( const char *id, TYPEPTR typ )
 {
     SYM_ENTRY   sym;
-    size_t      len;
 
-    len = strlen( id ) + 1;
     memset( &sym, 0, sizeof( SYM_ENTRY ) );
-    sym.name = CMemAlloc( len );
-    memcpy( sym.name, id, len );
+    sym.name = CMemStrDup( id );
     sym.attribs.stg_class = SC_EXTERN;
     sym.flags = SYM_FUNCTION;
     sym.handle = SpecialSyms;
@@ -300,12 +308,8 @@ SYM_HANDLE MakeFunction( const char *id, TYPEPTR typ )
 
 void SymCreate( SYMPTR sym, const char *id )
 {
-    size_t  len;
-
-    len = strlen( id ) + 1;
     memset( sym, 0, sizeof( SYM_ENTRY ) );
-    sym->name = CMemAlloc( len );
-    memcpy( sym->name, id, len );
+    sym->name = CMemStrDup( id );
     sym->src_loc = TokenLoc;
 }
 
@@ -401,10 +405,8 @@ static SYM_HASHPTR SymHash( SYMPTR sym, SYM_HANDLE sym_handle )
 {
     SYM_HASHPTR     hsym;
     TYPEPTR         typ;
-    size_t          sym_len;
 
-    sym_len = strlen( sym->name ) + 1;
-    hsym = PermMemAlloc( offsetof( id_hash_entry, name ) + sym_len );
+    hsym = PermMemAlloc( offsetof( id_hash_entry, name ) + strlen( sym->name ) + 1 );
     hsym->sym_type = NULL;
     if( sym->attribs.stg_class == SC_TYPEDEF ) {
         typ = sym->sym_type;
@@ -414,7 +416,7 @@ static SYM_HASHPTR SymHash( SYMPTR sym, SYM_HANDLE sym_handle )
         hsym->sym_type = typ;
     }
     hsym->level = sym->level;
-    memcpy( hsym->name, sym->name, sym_len );
+    strcpy( hsym->name, sym->name );
     CMemFree( sym->name );
     sym->name = NULL;
     hsym->handle = sym_handle;
@@ -422,7 +424,7 @@ static SYM_HASHPTR SymHash( SYMPTR sym, SYM_HANDLE sym_handle )
 }
 
 
-SYM_HANDLE SymAdd( id_hash_idx h, SYMPTR sym )
+SYM_HANDLE SymAdd( id_hash_idx hash, SYMPTR sym )
 {
     SYM_HASHPTR     hsym;
     SYM_HASHPTR     *head;
@@ -437,9 +439,11 @@ SYM_HANDLE SymAdd( id_hash_idx h, SYMPTR sym )
     NewSym();
     sym->level = (id_level_type)SymLevel;
     hsym = SymHash( sym, CURR_SYM_HANDLE() );
-    sym->info.hash = h;
-    /* add name to head of list */
-    for( head = &HashTab[h]; *head != NULL; head = &(*head)->next_sym ) {
+    sym->info.hash = hash;
+    /*
+     * add name to head of list
+     */
+    for( head = &HashTab[hash]; *head != NULL; head = &(*head)->next_sym ) {
         if( ChkLtSymLevel( *head ) || ChkEqSymLevel( *head ) ) {
             break;
         }
@@ -450,8 +454,10 @@ SYM_HANDLE SymAdd( id_hash_idx h, SYMPTR sym )
 }
 
 
-SYM_HANDLE SymAddL0( id_hash_idx h, SYMPTR new_sym )
-/* add symbol to level 0 */
+SYM_HANDLE SymAddL0( id_hash_idx hash, SYMPTR new_sym )
+/******************************************************
+ * add symbol to level 0
+ */
 {
     SYM_HASHPTR     hsym;
     SYM_HASHPTR     new_hsym;
@@ -463,10 +469,10 @@ SYM_HANDLE SymAddL0( id_hash_idx h, SYMPTR new_sym )
     new_sym->level = 0;
     new_hsym = SymHash( new_sym, CURR_SYM_HANDLE() );
     new_hsym->next_sym = NULL;
-    new_sym->info.hash = h;
-    hsym = HashTab[h];
+    new_sym->info.hash = hash;
+    hsym = HashTab[hash];
     if( hsym == NULL ) {
-        HashTab[h] = new_hsym;
+        HashTab[hash] = new_hsym;
     } else {
         while( hsym->next_sym != NULL ) {
             hsym = hsym->next_sym;
@@ -508,14 +514,12 @@ SYM_HANDLE MakeNewSym( SYMPTR sym, char id, TYPEPTR typ, stg_classes stg_class )
 }
 
 
-SYM_HANDLE SymLook( id_hash_idx h, const char *id )
+SYM_HANDLE SymLook( id_hash_idx hash, const char *id )
 {
-    size_t          len;
     SYM_HASHPTR     hsym;
 
-    len = strlen( id ) + 1;
-    for( hsym = HashTab[h]; hsym != NULL; hsym = hsym->next_sym ) {
-        if( memcmp( hsym->name, id, len ) == 0 ) {
+    for( hsym = HashTab[hash]; hsym != NULL; hsym = hsym->next_sym ) {
+        if( strcmp( hsym->name, id ) == 0 ) {
             return( hsym->handle );
         }
     }
@@ -523,14 +527,12 @@ SYM_HANDLE SymLook( id_hash_idx h, const char *id )
 }
 
 
-SYM_HANDLE SymLookTypedef( id_hash_idx h, const char *id, SYMPTR sym )
+SYM_HANDLE SymLookTypedef( id_hash_idx hash, const char *id, SYMPTR sym )
 {
-    size_t          len;
     SYM_HASHPTR     hsym;
 
-    len = strlen( id ) + 1;
-    for( hsym = HashTab[h]; hsym != NULL; hsym = hsym->next_sym ) {
-        if( memcmp( hsym->name, id, len ) == 0 ) {
+    for( hsym = HashTab[hash]; hsym != NULL; hsym = hsym->next_sym ) {
+        if( strcmp( hsym->name, id ) == 0 ) {
             if( hsym->sym_type == NULL )
                 break;
             sym->sym_type = hsym->sym_type;
@@ -543,15 +545,15 @@ SYM_HANDLE SymLookTypedef( id_hash_idx h, const char *id, SYMPTR sym )
 }
 
 
-SYM_HANDLE Sym0Look( id_hash_idx h, const char *id )
-/* look for symbol on level 0 */
+SYM_HANDLE Sym0Look( id_hash_idx hash, const char *id )
+/******************************************************
+ * look for symbol on level 0
+ */
 {
-    size_t          len;
     SYM_HASHPTR     hsym;
 
-    len = strlen( id ) + 1;
-    for( hsym = HashTab[h]; hsym != NULL; hsym = hsym->next_sym ) {
-        if( memcmp( hsym->name, id, len ) == 0 ) {  /* name matches */
+    for( hsym = HashTab[hash]; hsym != NULL; hsym = hsym->next_sym ) {
+        if( strcmp( hsym->name, id ) == 0 ) {  /* name matches */
             if( hsym->level == 0 ) {
                 return( hsym->handle );
             }
@@ -570,16 +572,16 @@ static void ChkReference( SYMPTR sym, SYM_NAMEPTR name )
             if( (sym->flags & SYM_REFERENCED) == 0 ) {
                 if( (sym->flags & SYM_IGNORE_UNREFERENCE) == 0 ) {
                     if( sym->attribs.is_parm ) {
-                        CWarn2p( WARN_PARM_NOT_REFERENCED, ERR_PARM_NOT_REFERENCED, name );
+                        CWarn2p( ERR_PARM_NOT_REFERENCED, name );
                     } else {
-                        CWarn2p( WARN_SYM_NOT_REFERENCED, ERR_SYM_NOT_REFERENCED, name );
+                        CWarn2p( ERR_SYM_NOT_REFERENCED, name );
                     }
                 }
             } else if( (sym->flags & SYM_ASSIGNED) == 0 ) {
                 typ = sym->sym_type;
                 SKIP_TYPEDEFS( typ );
                 if( sym->attribs.stg_class != SC_STATIC && typ->decl_type != TYP_ARRAY ) {
-                    CWarn2p( WARN_SYM_NOT_ASSIGNED, ERR_SYM_NOT_ASSIGNED, name );
+                    CWarn2p( ERR_SYM_NOT_ASSIGNED, name );
                 }
             }
         }
@@ -594,7 +596,9 @@ static void ChkIncomplete( SYMPTR sym, SYM_NAMEPTR name )
     if( sym->attribs.stg_class != SC_TYPEDEF ) {
         if( (sym->flags & (SYM_FUNCTION | SYM_TEMP)) == 0 ) {
             if( (sym->flags & SYM_REFERENCED) == 0 ) {
-                /* if it wasn't referenced, don't worry */
+                /*
+                 * if it wasn't referenced, don't worry
+                 */
                 if( sym->attribs.stg_class == SC_EXTERN ) {
                     return;
                 }
@@ -618,7 +622,7 @@ static void ChkDefined( SYMPTR sym, SYM_NAMEPTR name )
         if( sym->attribs.stg_class == SC_STATIC ) {
             if( (sym->flags & SYM_REFERENCED) == 0 ) {
                 if( (sym->flags & SYM_IGNORE_UNREFERENCE) == 0 ) {
-                    CWarn2p( WARN_SYM_NOT_REFERENCED, ERR_SYM_NOT_REFERENCED, name );
+                    CWarn2p( ERR_SYM_NOT_REFERENCED, name );
                 }
             }
         }
@@ -626,7 +630,9 @@ static void ChkDefined( SYMPTR sym, SYM_NAMEPTR name )
         if( sym->flags & SYM_REFERENCED ) {
             if( sym->attribs.stg_class == SC_STATIC ) {
                 if( sym->flags & SYM_FUNCTION ) {
-                    /* Check to see if we have a matching aux entry with code attached */
+                    /*
+                     * Check to see if we have a matching aux entry with code attached
+                     */
                     aux_entry   *paux = AuxLookup( name );
                     if( !paux || !paux->info || !paux->info->code ) {
                         CErr2p( ERR_FUNCTION_NOT_DEFINED, name );
@@ -641,22 +647,24 @@ static void ChkDefined( SYMPTR sym, SYM_NAMEPTR name )
 
 static void ChkFunction( SYMPTR sym, SYM_NAMEPTR name )
 {
-#if _CPU == 8086 || _CPU == 386
+#if _INTEL_CPU
     if( sym->attribs.stg_class == SC_STATIC ) {
         if( sym->flags & SYM_ADDR_TAKEN ) {
             if( CompFlags.using_overlays ) {
-                CWarn2p( WARN_ADDR_OF_STATIC_FUNC_TAKEN, ERR_ADDR_OF_STATIC_FUNC_TAKEN, name );
+                CWarn2p( ERR_ADDR_OF_STATIC_FUNC_TAKEN, name );
             }
         } else {
             if( (sym->mods & (FLAG_FAR | FLAG_NEAR)) == 0
-              && (TargetSwitches & BIG_CODE)
+              && (TargetSwitches & CGSW_X86_BIG_CODE)
               && !CompFlags.multiple_code_segments ) {
                 sym->mods |= FLAG_NEAR;
             }
         }
     }
-#else
+#else /* _RISC_CPU */
+
     /* unused parameters */ (void)sym; (void)name;
+
 #endif
 }
 
@@ -677,15 +685,14 @@ static void ChkExtName( struct xlist **link, SYMPTR sym, SYM_NAMEPTR name  )
 /***Restricted extern names i.e 8 char upper check *****/
 {
     struct xlist    *new, *curr;
-    size_t          len;
 
     new =  CMemAlloc( sizeof ( struct xlist ) );
     Copy8( name, new->xname );
     strupr( new->xname );
-    len = strlen( new->xname ) + 1;
     for( ; (curr = *link) != NULL; link = &curr->next ) {
         int cmp;
-        cmp = memcmp( new->xname, curr->xname, len );
+
+        cmp = strcmp( new->xname, curr->xname );
         if( cmp == 0 ) {
             SetErrLoc( &sym->src_loc );
             CErr3p( ERR_DUPLICATE_ID, name, new->xname );
@@ -726,19 +733,21 @@ static  void    Copy8( char const *nstr, char *name )
 }
 #endif /* IBM370 names */
 
-/* divide all the global symbols into buckets based on size of the item
-   0 - functions
-   1 - 1-byte items
-   2 - odd-length items
-   3 - 2-byte items
-   4 - even-length items (that are not a multiple of 4 in size)
-   5 - 4-byte items (or multiple of 4, but not a multiple of 8)
-   6 - 8-byte items (or multiple of 8)
-*/
-
 #define BUCKETS 7
 
-static int SymBucket( SYMPTR sym )   /* determine bucket # for symbol */
+static int SymBucket( SYMPTR sym )
+/*********************************
+ * determine bucket # for symbol
+ *
+ * divide all the global symbols into buckets based on size of the item
+ * 0 - functions
+ * 1 - 1-byte items
+ * 2 - odd-length items
+ * 3 - 2-byte items
+ * 4 - even-length items (that are not a multiple of 4 in size)
+ * 5 - 4-byte items (or multiple of 4, but not a multiple of 8)
+ * 6 - 8-byte items (or multiple of 8)
+ */
 {
     int             bucket;
     unsigned        size;
@@ -778,7 +787,7 @@ static SYM_HASHPTR GetSymList( void )
     SYM_HASHPTR     next_hsymptr;
     SYM_HASHPTR     sym_list;
     SYM_HASHPTR     sym_tail;
-    id_hash_idx     h;
+    id_hash_idx     hash;
     unsigned        i;
     unsigned        j;
     SYM_HASHPTR     sym_seglist[MAX_SYM_SEGS];
@@ -786,15 +795,15 @@ static SYM_HASHPTR GetSymList( void )
     SYM_HASHPTR     sym_buftail[SYMBUFS_PER_SEG];
 
     sym_list = NULL;
-    for( h = 0; h < ID_HASH_SIZE; h++ ) {
-        for( hsym = HashTab[h]; hsym != NULL; hsym = next_hsymptr ) {
+    for( hash = 0; hash < ID_HASH_SIZE; hash++ ) {
+        for( hsym = HashTab[hash]; hsym != NULL; hsym = next_hsymptr ) {
             if( !ChkEqSymLevel( hsym ) )
                 break;
             next_hsymptr = hsym->next_sym;
             hsym->next_sym = sym_list;
             sym_list = hsym;
         }
-        HashTab[h] = hsym;
+        HashTab[hash] = hsym;
     }
     // if SymLevel == 0 then should sort the sym_list so that we don't do
     // a lot of page thrashing.
@@ -844,7 +853,6 @@ static SYM_HASHPTR FreeSym( void )
     SYM_HASHPTR     hsym;
     SYM_HASHPTR     next_hsymptr;
     SYM_HASHPTR     sym_list;
-    size_t          sym_len;
     int             bucket;
     SYM_HANDLE      prev_tail;
     SYM_ENTRY       sym;
@@ -873,7 +881,9 @@ static SYM_HASHPTR FreeSym( void )
                 bucket = SymBucket( &sym );
                 sym.handle = head[bucket];
                 if( ( sym.flags & SYM_FUNCTION ) == 0 ) {
-                    /* VARIABLE */
+                    /*
+                     * VARIABLE
+                     */
                     if( sym.attribs.stg_class == SC_NONE ) {
                         typ = sym.sym_type;
                         SKIP_TYPEDEFS( typ );
@@ -885,7 +895,9 @@ static SYM_HASHPTR FreeSym( void )
                     }
                     AssignSeg( &sym );
                 } else {
-                    /* FUNCTION */
+                    /*
+                     * FUNCTION
+                     */
                     ChkFunction( &sym, hsym->name );
                 }
                 if( tail[bucket] == SYM_NULL ) {
@@ -893,11 +905,12 @@ static SYM_HASHPTR FreeSym( void )
                 }
                 head[bucket] = hsym->handle;
             }
-/* keep static names so that we can output static pubdefs and get nicer
-   -d1 debugging */
-            sym_len = strlen( hsym->name ) + 1;
-            sym.name = CPermAlloc( sym_len );
-            memcpy( sym.name, hsym->name, sym_len );
+            /*
+             * keep static names so that we can output static pubdefs and get nicer
+             * -d1 debugging
+             */
+            sym.name = CPermAlloc( strlen( hsym->name ) + 1 );
+            strcpy( sym.name, hsym->name );
             sym.info.backinfo = NULL;
             SymReplace( &sym, hsym->handle );
         }
@@ -957,10 +970,10 @@ void EndBlock( void )
     FreeTags();
     FreeSym();  /* sym_list = FreeSym(); */
     if( SymLevel != 0 ) {
-/*      CurFunc->u.func.locals = FreeVars( sym_list );  */
+//        CurFunc->u.func.locals = FreeVars( sym_list );
         if( SymLevel == 1 ) {
             AsgnSegs( CurFunc->u.func.locals );
-/*          DumpWeights( CurFunc->u.func.locals ); */
+//            DumpWeights( CurFunc->u.func.locals );
         } else {
             AsgnSegs( GetBlockSymList() );
         }
@@ -985,19 +998,17 @@ static void DumpWeights( SYMPTR sym )
 LABELPTR LkLabel( const char *name )
 {
     LABELPTR    label;
-    size_t      len;
 
-    len = strlen( name ) + 1;
     for( label = LabelHead; label != NULL; label = label->next_label ) {
-        if( memcmp( name, label->name, len ) == 0 ) {
+        if( strcmp( name, label->name ) == 0 ) {
             return( label );
         }
     }
-    label = (LABELPTR)CMemAlloc( sizeof( LABELDEFN ) - 1 + len );
+    label = (LABELPTR)CMemAlloc( sizeof( LABELDEFN ) + strlen( name ) );
     if( label != NULL ) {
         label->next_label = LabelHead;
         LabelHead = label;
-        memcpy( label->name, name, len );
+        strcpy( label->name, name );
         label->defined = false;
         label->referenced = false;
         label->ref_list = NextLabel();
@@ -1015,7 +1026,7 @@ void FreeLabels( void )
         if( !label->defined ) {
             CErr2p( ERR_UNDEFINED_LABEL, label->name );
         } else if( !label->referenced ) {
-            CWarn2p( WARN_UNREFERENCED_LABEL, ERR_UNREFERENCED_LABEL, label->name );
+            CWarn2p( ERR_UNREFERENCED_LABEL, label->name );
         }
         CMemFree( label );
     }
@@ -1063,12 +1074,12 @@ void SymsPurge( void )
 
 #if 0
     {
-        id_hash_idx     h;
+        id_hash_idx     hash;
         SYMPTR          tmp_sym, sym;
 
-        for( h = 0; h < ID_HASH_SIZE; h++ ) {
-            sym = HashTab[h];
-            HashTab[h] = NULL;
+        for( hash = 0; hash < ID_HASH_SIZE; hash++ ) {
+            sym = HashTab[hash];
+            HashTab[hash] = NULL;
             while( sym != NULL ) {
                 tmp_sym = sym->next_sym;
                 DoSymPurge( sym );

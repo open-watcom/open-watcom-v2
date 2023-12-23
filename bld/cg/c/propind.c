@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -78,8 +78,9 @@ static  byte    NumRefs( instruction *ins, name *op ) {
     return( refs );
 }
 
-static  bool    Adjusted( name **pop, name *res, signed_32 c ) {
-/*************************************************************/
+static  bool    Adjusted( name **pop, name *res, int_32 c )
+/*********************************************************/
+{
     name        *op;
 
     op = *pop;
@@ -94,11 +95,12 @@ static  bool    Adjusted( name **pop, name *res, signed_32 c ) {
 }
 
 
-static  bool    AdjustIndex( instruction *ins, name *res, signed_32 c ) {
-/************************************************************************
+static  bool    AdjustIndex( instruction *ins, name *res, int_32 c )
+/*******************************************************************
     If any operands or results of ins refer to res in an index, adjust the
     constant by the given amount and return true.
 */
+{
     opcnt       i;
 
     if( NumRefs( ins, res ) != 1 )
@@ -126,7 +128,7 @@ static  bool    DoProp( block *blk ) {
     instruction *next;
     name        *op;
 
-    for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+    for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
         if( ins->head.opcode == OP_ADD || ins->head.opcode == OP_SUB ) {
             op = ins->operands[1];
 

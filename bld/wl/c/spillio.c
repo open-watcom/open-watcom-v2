@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,6 +33,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <errno.h>
 
 #include "linkstd.h"
 #include "msg.h"
@@ -75,7 +76,7 @@ virt_mem_size SpillAlloc( virt_mem_size amt )
         LnkMsg( INF+MSG_USING_SPILL, NULL );
     }
     /* round up storage start to a disk sector boundry -- assumed power of 2 */
-    tmp_filesize = ROUND_UP( tmp_filesize, SECTOR_SIZE );
+    tmp_filesize = __ROUND_UP_SIZE( tmp_filesize, SECTOR_SIZE );
     stg = tmp_filesize;
     tmp_filesize += amt;
     return( stg );

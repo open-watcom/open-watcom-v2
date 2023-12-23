@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,45 +33,43 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "stdnt.h"
+#include "globals.h"
 #undef GetThreadContext
 #undef SetThreadContext
 
-#if defined( MD_x86 )
-#define VDMCONTEXT_TO_USE (VDMCONTEXT_CONTROL | VDMCONTEXT_INTEGER | \
-                    VDMCONTEXT_SEGMENTS | VDMCONTEXT_DEBUG_REGISTERS | \
-                    VDMCONTEXT_FLOATING_POINT | VDMCONTEXT_EXTENDED_REGISTERS)
-#elif defined( MD_x64 )
+
+#if MADARCH & MADARCH_X86
+#define VDMCONTEXT_TO_USE (VDMCONTEXT_CONTROL | VDMCONTEXT_INTEGER \
+                    | VDMCONTEXT_SEGMENTS | VDMCONTEXT_DEBUG_REGISTERS \
+                    | VDMCONTEXT_FLOATING_POINT | VDMCONTEXT_EXTENDED_REGISTERS)
+#elif MADARCH & (MADARCH_AXP | MADARCH_PPC)
+#define VDMCONTEXT_TO_USE (VDMCONTEXT_CONTROL | VDMCONTEXT_INTEGER \
+                    | VDMCONTEXT_SEGMENTS | VDMCONTEXT_DEBUG_REGISTERS \
+                    | VDMCONTEXT_FLOATING_POINT)
+#elif MADARCH & MADARCH_X64
 #define VDMCONTEXT_TO_USE
-#elif defined( MD_axp ) | defined( MD_ppc )
-#define VDMCONTEXT_TO_USE (VDMCONTEXT_CONTROL | VDMCONTEXT_INTEGER | \
-                    VDMCONTEXT_SEGMENTS | VDMCONTEXT_DEBUG_REGISTERS | \
-                    VDMCONTEXT_FLOATING_POINT)
 #else
     #error VDMCONTEXT_TO_USE not configured
 #endif
 
-#if defined( MD_x64 )
-#define WOWCONTEXT_TO_USE
-#elif defined( MD_x86 ) || defined( MD_axp ) | defined( MD_ppc )
-#define WOWCONTEXT_TO_USE
-#else
-    #error WOWCONTEXT_TO_USE not configured
-#endif
-
-/*
- * MyGetThreadContext - get the context for a specific thread
+bool MyGetThreadContext( thread_info *ti, MYCONTEXT *pc )
+/********************************************************
+ * get the context for a specific thread
  */
-BOOL MyGetThreadContext( thread_info *ti, MYCONTEXT *pc )
 {
-#ifdef WOW
-    BOOL    rc;
-
+#if MADARCH & MADARCH_X64
+    if( ti->is_wow ) {
+        pc->ContextFlags = WOW64CONTEXT_TO_USE;
+        return( Wow64GetThreadContext( ti->thread_handle, pc ) != 0 );
+    }
+#elif defined( WOW )
     if( ( ti->is_wow || ti->is_dos ) && UseVDMStuff ) {
-#if defined( MD_x86 )
-        VDMCONTEXT      vc;
+  #if MADARCH & MADARCH_X86
+        bool        rc;
+        VDMCONTEXT  vc;
 
         vc.ContextFlags = VDMCONTEXT_TO_USE;
-        rc = pVDMGetThreadContext( &DebugEvent, &vc );
+        rc = ( pVDMGetThreadContext( &DebugEvent, &vc ) != 0 );
         /*
          * VDMCONTEXT and CONTEXT are the same on an x86 machine.
          * If we were ever to try to port this to NT running on a RISC,
@@ -89,45 +88,31 @@ BOOL MyGetThreadContext( thread_info *ti, MYCONTEXT *pc )
             pc->Esp = (DWORD)(WORD)pc->Esp;
             pc->Ebp = (DWORD)(WORD)pc->Ebp;
         }
-#elif defined( MD_axp ) | defined( MD_ppc )
-        rc = 0;
-#else
-        #error MyGetThreadContext not configured
-#endif
         return( rc );
-    } else {
-        pc->ContextFlags = MYCONTEXT_TO_USE;
-        return( GetThreadContext( ti->thread_handle, pc ) );
-    }
-#else
-#if 1
-    pc->ContextFlags = MYCONTEXT_TO_USE;
-#if defined( MD_x64 )
-    return( Wow64GetThreadContext( ti->thread_handle, pc ) );
-#else
-    return( GetThreadContext( ti->thread_handle, pc ) );
-#endif
-#else
-#if defined( MD_x64 )
-    if( ti->is_wow ) {
-        pc->ContextFlags = WOW64CONTEXT_TO_USE;
-        return( Wow64GetThreadContext( ti->thread_handle, pc ) );
+  #elif MADARCH & (MADARCH_AXP | MADARCH_PPC)
+        return( false );
+  #else
+        #error MyGetThreadContext not configured
+  #endif
     }
 #endif
     pc->ContextFlags = MYCONTEXT_TO_USE;
-    return( GetThreadContext( ti->thread_handle, pc ) );
-#endif
-#endif
+    return( GetThreadContext( ti->thread_handle, pc ) != 0 );
 }
 
-/*
- * MySetThreadContext - set the context for a specific thread
+bool MySetThreadContext( thread_info *ti, MYCONTEXT *pc )
+/********************************************************
+ * set the context for a specific thread
  */
-BOOL MySetThreadContext( thread_info *ti, MYCONTEXT *pc )
 {
-#ifdef WOW
+#if MADARCH & MADARCH_X64
+    if( ti->is_wow ) {
+        pc->ContextFlags = WOW64CONTEXT_TO_USE;
+        return( Wow64SetThreadContext( ti->thread_handle, pc ) != 0 );
+    }
+#elif defined( WOW )
     if( ( ti->is_wow || ti->is_dos ) && UseVDMStuff ) {
-#if defined( MD_x86 )
+  #if MADARCH & MADARCH_X86
         VDMCONTEXT      vc;
         /*
          * VDMCONTEXT and CONTEXT are the same on an x86 machine.
@@ -136,33 +121,14 @@ BOOL MySetThreadContext( thread_info *ti, MYCONTEXT *pc )
          */
         memcpy( &vc, pc, sizeof( MYCONTEXT ) );
         vc.ContextFlags = VDMCONTEXT_TO_USE;
-        return( pVDMSetThreadContext( &DebugEvent, &vc ) );
-#elif defined( MD_axp ) | defined( MD_ppc )
-        return( FALSE );
-#else
+        return( pVDMSetThreadContext( &DebugEvent, &vc ) != 0 );
+  #elif MADARCH & (MADARCH_AXP | MADARCH_PPC)
+        return( false );
+  #else
         #error MySetThreadContext not configured
-#endif
-    } else {
-        pc->ContextFlags = MYCONTEXT_TO_USE;
-        return( SetThreadContext( ti->thread_handle, pc ) );
-    }
-#else
-#if 1
-    pc->ContextFlags = MYCONTEXT_TO_USE;
-#if defined( MD_x64 )
-    return( Wow64SetThreadContext( ti->thread_handle, pc ) );
-#else
-    return( SetThreadContext( ti->thread_handle, pc ) );
-#endif
-#else
-#if defined( MD_x64 )
-    if( ti->is_wow ) {
-        pc->ContextFlags = WOW64CONTEXT_TO_USE;
-        return( Wow64SetThreadContext( ti->thread_handle, pc ) );
+  #endif
     }
 #endif
     pc->ContextFlags = MYCONTEXT_TO_USE;
-    return( SetThreadContext( ti->thread_handle, pc ) );
-#endif
-#endif
+    return( SetThreadContext( ti->thread_handle, pc ) != 0 );
 }

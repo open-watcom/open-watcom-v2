@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -89,14 +89,18 @@ typedef enum {
     ASCIZ
 } string_type;
 
-bool IsMasmOutput( void )
+static const char	*getDataTypeStr( unsigned size )
 {
-    return( (DFormat & DFF_UNIX) == 0 );
+    if( IsMasmOutput ) {
+        return( masmTypes[size] );
+    } else {
+        return( unixTypes[size] );
+    }
 }
 
 static void printRawAndAddress( const char *raw_data, dis_sec_offset address )
 {
-    int     len;
+    size_t  len;
 
     len = strlen( raw_data );
     switch( len ) {
@@ -252,28 +256,24 @@ static void printRest( unsigned_8 *bytes, size_t size )
 {
     size_t      i;
     size_t      d;
-    const char  *btype;
-    bool        is_masm;
+    const char	*datatype;
     dis_value   value;
 
-    is_masm = IsMasmOutput();
-    if( is_masm ) {
-        btype = "    DB\t";
-    } else {
-        btype = "    .byte\t";
-    }
-    BufferConcat( btype );
+    datatype = getDataTypeStr( 1 );
+    BufferConcat( "    " );
+    BufferConcat( datatype );
     value.u._32[I64HI32] = 0;
     for( i = 0; i < size; ) {
         // see if we can replace large chunks of homogenous
         // segment space by using the DUP macro
-        if( is_masm && (i % 8) == 0 ) {
+        if( IsMasmOutput && (i % 8) == 0 ) {
             d = tryDUP( bytes, i, size );
             if( d > 0 ) {
                 i += d;
                 if( i < size ) {
                     BufferConcatNL();
-                    BufferConcat( btype );
+                    BufferConcat( "    " );
+                    BufferConcat( datatype );
                     BufferPrint();
                 }
                 continue;
@@ -285,7 +285,8 @@ static void printRest( unsigned_8 *bytes, size_t size )
         if( i < size - 1 ) {
             if( (i % 8) == 7 ) {
                 BufferConcatNL();
-                BufferConcat( btype );
+                BufferConcat( "    " );
+                BufferConcat( datatype );
                 BufferPrint();
             } else {
                 BufferConcat( ", " );
@@ -414,6 +415,7 @@ unsigned RelocSize( ref_entry r_entry )
     case ORL_RELOC_TYPE_WORD_16_SEG:
     case ORL_RELOC_TYPE_REL_16_SEG:
         return( 4 );
+    case ORL_RELOC_TYPE_WDIS_JUMP16:
     case ORL_RELOC_TYPE_WORD_16:
     case ORL_RELOC_TYPE_HALF_HI:
     case ORL_RELOC_TYPE_HALF_LO:
@@ -452,15 +454,10 @@ unsigned RelocSize( ref_entry r_entry )
 unsigned HandleRefInData( ref_entry r_entry, void *data, bool asmLabels )
 {
     unsigned            rv;
-    const char          * const *types;
+    const char          *datatype;
     char                buff[MAX_SYM_LEN];      // fixme: should be TS_MAX_OBJNAME or something
     dis_value           value;
 
-    if( IsMasmOutput() ) {
-        types = masmTypes;
-    } else {
-        types = unixTypes;
-    }
     rv = RelocSize( r_entry );
     value.u._32[I64HI32] = 0;
     switch( rv ) {
@@ -483,8 +480,11 @@ unsigned HandleRefInData( ref_entry r_entry, void *data, bool asmLabels )
         value.u._32[I64LO32] = 0;
         break;
     }
-    if( asmLabels && types[rv] != NULL ) {
-        BufferConcat( types[rv] );
+    if( asmLabels ) {
+        datatype = getDataTypeStr( rv );
+        if( datatype != NULL ) {
+            BufferConcat( datatype );
+        }
     }
     HandleAReference( value, 0, RFLAG_DEFAULT | RFLAG_IS_IMMED, r_entry->offset, r_entry->offset + rv, &r_entry, buff );
     BufferConcat( buff );
@@ -510,15 +510,13 @@ static void printOut( const char *string, size_t offset, size_t size )
 {
     const char          *string_left;
     size_t              item_size;
-    bool                ascii;
 
     /* unused parameters */ (void)offset;
 
-    ascii = !IsMasmOutput();
     item_size = 0;
     string_left = string;
     for( ; string_left < ( string + size ); ) {
-        if( !ascii || !printableString( string_left ) || strlen( string_left ) == 0 ) {
+        if( IsMasmOutput || !printableString( string_left ) || strlen( string_left ) == 0 ) {
             printRest( (unsigned_8 *)string_left, size - (size_t)( string_left - string ) );
             break;
         }
@@ -540,13 +538,10 @@ static label_entry dumpAsmLabel( label_entry l_entry, section_ptr section,
                                  unsigned_8 *contents, char *buffer )
 {
     bool        raw;
-    bool        is_masm;
 
     /* unused parameters */ (void)end;
 
     raw = ( buffer != NULL && contents != NULL );
-
-    is_masm = IsMasmOutput();
 
     for( ; l_entry != NULL && ( l_entry->type == LTYP_ABSOLUTE || l_entry->offset <= curr_pos ); l_entry = l_entry->next ) {
         switch( l_entry->type ) {
@@ -554,7 +549,7 @@ static label_entry dumpAsmLabel( label_entry l_entry, section_ptr section,
             // no print any absolute label here
             break;
         case LTYP_SECTION:
-            if( is_masm )
+            if( IsMasmOutput )
                 break;
             /* fall through */
         case LTYP_NAMED:
@@ -694,7 +689,7 @@ return_val DumpASMSection( section_ptr section, unsigned_8 *contents, dis_sec_si
     }
 
     if( size == 0 ) {
-        if( IsMasmOutput() ) {
+        if( IsMasmOutput ) {
             PrintHeader( section );
             dumpAsmLabel( l_entry, section, 0, 0, NULL, NULL );
             PrintTail( section );
@@ -879,7 +874,7 @@ return_val BssASMSection( section_ptr section, dis_sec_size size, unsigned pass 
     }
     sec_label_list = h_data->u.sec_label_list;
 
-    if( IsMasmOutput() ) {
+    if( IsMasmOutput ) {
         return( bssMasmASMSection( section, size, sec_label_list->first ) );
     } else {
         return( bssUnixASMSection( section, size, sec_label_list->first ) );

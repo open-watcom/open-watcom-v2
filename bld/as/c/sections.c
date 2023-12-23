@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -109,7 +110,7 @@ void SectionInit( void )
 {
     // make sure these names are in asdrectv.c (in table asm_directives[])
     #define PICK( a,b,c,d ) SymSetSection( SymLookup( b ) );
-    #include "sections.inc"
+    #include "_section.h"
     #undef PICK
 }
 

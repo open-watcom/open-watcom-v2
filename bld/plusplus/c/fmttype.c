@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,7 +44,7 @@
 #include "initdefs.h"
 #include "ringfns.h"
 #include "template.h"
-#ifndef NDEBUG
+#ifdef DEVBUILD
     #include "dbg.h"
 #endif
 
@@ -65,8 +65,8 @@ typedef struct {
     type_flag   mask;
 } FMT_FLAG_INFO;
 
-static const char *typeName[] = {
-    #define pick(id,promo,promo_asm,type_text)  type_text,
+static const char *typeText[] = {
+    #define pick(id,promo,promo_asm,text)   text,
     #include "_typdefs.h"
     #undef pick
 };
@@ -333,7 +333,7 @@ static void fmtTypeFunction( arg_list *alist, VBUF *pvbuf, unsigned num_def, FMT
     num_def = num_args - num_def;
     if( num_args == 0 ) {
         if( control & FF_USE_VOID ) {
-            VbufConcStr( &working, typeName[TYP_VOID] );
+            VbufConcStr( &working, typeText[TYP_VOID] );
         } else {
             VbufTruncWhite( &working );
         }
@@ -479,7 +479,7 @@ const char *FormatErrorType( TYPE err_type )
     if( err_type->flag & TF1_SPECIAL_FMT ) {
         return( errFormats[err_type->u.e.fmt] );
     }
-    return( typeName[TYP_ERROR] );
+    return( typeText[TYP_ERROR] );
 }
 
 void FormatFunctionType( TYPE type, VBUF *pprefix, VBUF *psuffix, unsigned num_def, FMT_CONTROL control )
@@ -495,6 +495,7 @@ void FormatFunctionType( TYPE type, VBUF *pprefix, VBUF *psuffix, unsigned num_d
     AUX_INFO    *pragma;
     unsigned    use_def;
     FMT_CONTROL fn_control;
+    const char  *type_text;
 
     VbufInit( pprefix );
     VbufInit( psuffix );
@@ -506,6 +507,7 @@ void FormatFunctionType( TYPE type, VBUF *pprefix, VBUF *psuffix, unsigned num_d
         fmtTypePush( &StackFMT, type, control );
         while( (top = StackPop( &StackFMT )) != NULL ) {
             top_type = top->type;
+            type_text = typeText[top_type->id];
             switch( top_type->id ) {
             case TYP_ERROR:
                 VbufConcStr( pprefix, FormatErrorType( top_type ) );
@@ -527,36 +529,34 @@ void FormatFunctionType( TYPE type, VBUF *pprefix, VBUF *psuffix, unsigned num_d
             case TYP_LONG_DOUBLE:
             case TYP_DOT_DOT_DOT:
             case TYP_VOID:
-                VbufConcStr( pprefix, typeName[top->type->id] );
-                break;
             case TYP_NULLPTR:
-                VbufConcStr( pprefix, "decltype(nullptr) " );
+                VbufConcStr( pprefix, type_text );
                 break;
             case TYP_GENERIC:
                 VbufConcChr( pprefix, '?' );
-                VbufConcDecimal( pprefix, top->type->u.g.index );
+                VbufConcDecimal( pprefix, top_type->u.g.index );
                 VbufConcChr( pprefix, ' ' );
                 break;
             case TYP_USHORT:
-                flags = top->type->flag;
+                flags = top_type->flag;
                 if( flags != TF1_NULL ) {
                     fmtTypeFlag( flags, pprefix, ushortFlags );
                 } else {
-                    VbufConcStr( pprefix, typeName[top->type->id] );
+                    VbufConcStr( pprefix, type_text );
                 }
                 break;
             case TYP_POINTER:
                 fmtTypeChangeState( &lr_state, RIGHT, pprefix, psuffix );
-                flags = top->type->flag;
+                flags = top_type->flag;
                 if( flags != TF1_NULL ) {
                     fmtTypeFlag( flags, pprefix, pointerFlags );
                 } else {
-                    VbufConcStr( pprefix, typeName[top->type->id] );
+                    VbufConcStr( pprefix, type_text );
                 }
                 break;
             case TYP_MEMBER_POINTER:
                 fmtTypeChangeState( &lr_state, RIGHT, pprefix, psuffix );
-                class_type = MemberPtrClass( top->type );
+                class_type = MemberPtrClass( top_type );
                 if( class_type != NULL ) {
                     fmtTypeScope( class_type->u.c.scope->enclosing, pprefix );
                     name = SimpleTypeName( class_type );
@@ -568,50 +568,50 @@ void FormatFunctionType( TYPE type, VBUF *pprefix, VBUF *psuffix, unsigned num_d
                 } else {
                     VbufConcStr( pprefix, memberPointer );
                 }
-                VbufConcStr( pprefix, typeName[top->type->id] );
+                VbufConcStr( pprefix, type_text );
                 break;
             case TYP_TYPEDEF:
                 if( (control & FF_TYPEDEF_STOP) == 0 )
                     break;
                 // fall through
             case TYP_ENUM:
-                fmtTypeScope( top->type->u.t.scope, pprefix );
-                name = SimpleTypeName( top->type );
+                fmtTypeScope( top_type->u.t.scope, pprefix );
+                name = SimpleTypeName( top_type );
                 if( name == NULL ) {
-                    VbufConcStr( pprefix, typeName[top->type->id] );
+                    VbufConcStr( pprefix, type_text );
                 } else {
                     VbufConcStr( pprefix, NameStr( name ) );
                     VbufConcStr( pprefix, whiteSpace );
                 }
                 break;
             case TYP_CLASS:
-                fmtTypeScope( top->type->u.c.scope->enclosing, pprefix );
-                flags = top->type->flag;
-                name = SimpleTypeName( top->type );
+                fmtTypeScope( top_type->u.c.scope->enclosing, pprefix );
+                flags = top_type->flag;
+                name = SimpleTypeName( top_type );
                 if( name == NULL ) {
                     if( flags != TF1_NULL ) {
                         fmtTypeFlag( flags, pprefix, classFlags );
                     } else {
-                        VbufConcStr( pprefix, typeName[top->type->id] );
+                        VbufConcStr( pprefix, type_text );
                     }
                 } else {
                     VbufConcStr( pprefix, NameStr( name ) );
                     if( flags & TF1_INSTANTIATION ) {
-                        fmtTemplateParms( top->type, pprefix );
+                        fmtTemplateParms( top_type, pprefix );
                     } else if( flags & TF1_UNBOUND ) {
-                        fmtUnboundTemplateParms( pprefix, top->type );
+                        fmtUnboundTemplateParms( pprefix, top_type );
                     }
                     VbufConcStr( pprefix, whiteSpace );
                 }
                 break;
             case TYP_BITFIELD:
-                fmtTypeBitfield( top->type, psuffix );
+                fmtTypeBitfield( top_type, psuffix );
                 break;
             case TYP_FUNCTION:
                 fmtTypeChangeState( &lr_state, LEFT, pprefix, psuffix );
-                flags = top->type->flag;
+                flags = top_type->flag;
                 fmtTypeFlag( flags, pprefix, functionFlags );
-                fmtTypePragma( top->type, pprefix );
+                fmtTypePragma( top_type, pprefix );
                 fn_control = control;
                 if( top->main_function ) {
                     use_def = num_def;
@@ -619,18 +619,18 @@ void FormatFunctionType( TYPE type, VBUF *pprefix, VBUF *psuffix, unsigned num_d
                     fn_control &= ~FF_ARG_NAMES;
                     use_def = 0;
                 }
-                fmtTypeFunction( TypeArgList( top->type )
+                fmtTypeFunction( TypeArgList( top_type )
                                , psuffix
                                , use_def
                                , fn_control );
                 break;
             case TYP_ARRAY:
                 fmtTypeChangeState( &lr_state, LEFT, pprefix, psuffix );
-                fmtTypeArray( top->type, psuffix );
+                fmtTypeArray( top_type, psuffix );
                 break;
             case TYP_MODIFIER:
-                flags = top->type->flag;
-                pragma = top->type->u.m.pragma;
+                flags = top_type->flag;
+                pragma = top_type->u.m.pragma;
                 if( (flags & TF1_DISPLAY) == 0 && pragma == NULL ) {
                     lr_state = RIGHT;
                 } else {
@@ -638,11 +638,11 @@ void FormatFunctionType( TYPE type, VBUF *pprefix, VBUF *psuffix, unsigned num_d
                         willPrintBased( flags ) ) {
                         fmtTypeChangeState( &lr_state, RIGHT, pprefix, psuffix );
                         fmtModifierTypeFlag( type, flags, pprefix );
-                        fmtTypeBased( top->type, pprefix );
+                        fmtTypeBased( top_type, pprefix );
                     } else {
                         lr_state = RIGHT;
                     }
-                    fmtTypePragma( top->type, pprefix );
+                    fmtTypePragma( top_type, pprefix );
                 }
                 break;
             }

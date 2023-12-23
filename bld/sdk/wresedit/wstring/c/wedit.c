@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,7 +43,6 @@
 #include "wmsg.h"
 #include "ldstr.h"
 #include "wstrdup.h"
-#include "widn2str.h"
 #include "wclip.h"
 #include "sysall.rh"
 #include "jdlg.h"
@@ -183,7 +182,7 @@ bool WSetEditWindowStringData( WStringEditInfo *einfo, WStringBlock *block,
     ok = (einfo != NULL && einfo->edit_dlg != NULL && block != NULL);
 
     if( ok ) {
-        text = WResIDNameToStr( block->block.String[string_id & 0xf] );
+        text = WRStringFromWResIDName( block->block.String[string_id & 0xf] );
         ok = (text != NULL);
     }
 
@@ -271,7 +270,7 @@ bool WGetEditWindowStringEntry( WStringEditInfo *einfo, WStringBlock *block,
     if( ok ) {
         ok = true;
         if( block == new_block && id == string_id ) {
-            oldtext = WResIDNameToStr( block->block.String[string_id & 0xf] );
+            oldtext = WRStringFromWResIDName( block->block.String[string_id & 0xf] );
             if( text != NULL && oldtext != NULL ) {
                 ok = ( strcmp( text, oldtext ) != 0 );
             }
@@ -506,8 +505,7 @@ bool WIsCurrentModified( WStringEditInfo *einfo, char *text, uint_16 id, char *s
     mod = ( einfo != NULL && einfo->current_block != NULL && text != NULL );
 
     if( mod ) {
-        current_text = WResIDNameToStr(
-            einfo->current_block->block.String[einfo->current_string & 0xf] );
+        current_text = WRStringFromWResIDName( einfo->current_block->block.String[einfo->current_string & 0xf] );
     }
 
     if( mod ) {
@@ -543,7 +541,7 @@ bool WPasteStringItem( WStringEditInfo *einfo )
     char                *text;
     char                *symbol;
     WRHashValueList     *vlist;
-    uint_32             len;
+    size_t              len;
     uint_16             id;
     bool                ok;
 
@@ -621,13 +619,13 @@ bool WClipStringItem( WStringEditInfo *einfo, bool cut )
     }
 
     if( ok ) {
-        text = WResIDNameToStr( block->block.String[id & 0xf] );
+        text = WRStringFromWResIDName( block->block.String[id & 0xf] );
         ok = ( text != NULL );
     }
 
     if( ok ) {
         len = strlen( text ) + 1;
-        ok = WCopyClipData( einfo->win, CF_TEXT, text, (uint_32)len );
+        ok = WCopyClipData( einfo->win, CF_TEXT, text, len );
     }
 
     if( ok ) {
@@ -787,8 +785,7 @@ WINEXPORT INT_PTR CALLBACK WStringEditDlgProc( HWND hDlg, UINT message, WPARAM w
         einfo = (WStringEditInfo *)lParam;
         einfo->edit_dlg = hDlg;
         SET_DLGDATA( hDlg, einfo );
-        WRAddSymbolsToComboBox( einfo->info->symbol_table, hDlg,
-                                IDM_STREDCMDID, WR_HASHENTRY_ALL );
+        WRAddSymbolsToComboBox( einfo->info->symbol_table, hDlg, IDM_STREDCMDID, WR_HASHENTRY_ALL );
         ret = TRUE;
         break;
 

@@ -401,6 +401,16 @@ disable/enable language extensions
 :optref refid='SWza'.
 :optref refid='SWze'.
 .do end
+.if &e'&$SWzastd ne 0 .do begin
+.note zastd=<standard>
+use specified ISO/ANSI language standard
+:optref refid='SWzastd'.
+.do end
+.if &e'&$SWza99 ne 0 .do begin
+.note za99
+use ISO/ANSI C99 language standard; deprecated, use zastd=c99
+:optref refid='SWzastd'.
+.do end
 .if &e'&$SWzq ne 0 .do begin
 .note zq
 operate quietly
@@ -1395,14 +1405,14 @@ when the host operating system is DOS,
 .note OS2
 when the host operating system is OS/2,
 .note NT
-when the host operating system is Windows NT (including Windows 95),
+when the host operating system is Windows NT/Windows 95,
 .note QNX
 when the host operating system is QNX, or
 .note LINUX
 when the host operating system is Linux.
 .endnote
 .np
-It also prevents the compiler from defining the default target macro.
+It also prevents the compiler from defining the default "build" target macro.
 Instead the compiler defines a macro consisting of the string "<os>"
 converted to uppercase and prefixed and suffixed with two underscores.
 The default target macros are described in the
@@ -1419,24 +1429,32 @@ __FOO__
 .millust end
 .pc
 and prevent it from defining
+.pc
 .kwm MSDOS
 .ct ,
 .kwm _DOS
 and
 .kwm __DOS__
-if the compiler was being run under DOS,
+if using the DOS hosted compiler,
+.pc
 .kwm __OS2__
 if using the OS/2 hosted compiler,
+.pc
 .kwm __NT__
-if using the Windows NT or Windows 95 hosted compiler,
+and
+.kwm _WIN32
+if using the Windows NT/Windows 95 hosted compiler,
+.pc
 .kwm __QNX__
 and
 .kwm __UNIX__
 if using the QNX hosted version, or
+.pc
 .kwm __LINUX__
 and
 .kwm __UNIX__
 if using the Linux hosted version.
+.pc
 Any string consisting of letters, digits, and the underscore character
 may be used for the target name.
 .np
@@ -1481,6 +1499,10 @@ and
 Causes the compiler to use stack-based calling conventions.
 Also defines the macro
 .kwm __NETWARE_386__
+.period
+.note NT
+Defines the macro
+.kwm _WIN32
 .period
 .note QNX
 Defines the macro
@@ -2567,6 +2589,41 @@ See also the description of the "ze" option.
 When using the C compiler, there is an exception to the enforcement of
 the ISO C standard programming language specification.
 The use of C++ style comments (// comment) are not diagnosed.
+.do end
+.*
+.if &e'&$SWzastd ne 0 .do begin
+:OPT refid='SWzastd' name='zastd'.=<standard>
+.ix 'options' 'zastd'
+.ix 'ISO/ANSI language standard compatibility'
+This option helps to ensure that the module to be compiled conforms to
+the selected ISO/ANSI C programming language standard.
+.np
+.np
+.begnote $compact
+.notehd1 C compiler value
+.notehd2 Description
+.note c89
+C 1989 standard (default)
+.note c99
+C 1999 standard
+.endnote
+.np
+.begnote $compact
+.notehd1 C++ compiler value
+.notehd2 Description
+.note c++98
+C++ 1998 standard (default)
+.note c++0x
+experimental, some features of new C++ standards
+.endnote
+.do end
+.*
+.if &e'&$SWza99 ne 0 .do begin
+:OPT refid='SWza99' name='za99'.
+.ix 'options' 'za99'
+.ix 'ISO/ANSI C99 language standard compatibility'
+This option is deprecated, use zastd=c99
+:optref refid='SWzastd'.
 .do end
 .*
 .if &e'&$SWze ne 0 .do begin
@@ -3714,15 +3771,17 @@ For example, the option "zt100" causes all data objects larger than
 .kwm far
 and grouped in other data segments.
 .np
-The default data threshold value is 32767.
-Thus, by default, all objects greater than 32767 bytes in size are
+The default data threshold value is 32767 for 16-bit target and 
+2147483647 for 32-bit target.
+Thus, by default, all objects greater than default size are 
 implicitly declared as
 .kwm far
 and will be placed in other data segments.
 If the "zt" option is specified without a size, the data threshold
 value is 256.
-The largest value that can be specified is 32767 (a larger value will
-result in 256 being selected).
+The largest value that can be specified is 32767 for 16-bit target 
+and 2147483647 for 32-bit target (a larger value will result in 256
+being selected).
 .np
 If the "zt" option is used to compile any module in a program, then
 you must compile all the other modules in the program with the same
@@ -3754,7 +3813,8 @@ The extra code required to reference the object in another data
 segment would not be generated.
 .np
 Note that this problem can also occur even when the "zt" option
-is not used (i.e., for objects greater than 32767 bytes in size).
+is not used (i.e., for objects greater than 32767 bytes for 16-bit 
+target and 2147483647 bytes for 32-bit target in size).
 There are two solutions to this problem: (1) be consistent when
 declaring an object's size, or, (2) do not specify the size in data
 reference declarations.
@@ -5548,6 +5608,12 @@ execution time.
 .np
 This group of options deals with compile-time aspects of character
 sets used in the source code.
+.np
+By default, the compiler uses output Unicode encoding and source code page 437
+(US-ASCII) to output wide characters. 
+.if &e'&$SWzku ne 0 .do begin
+This setting is equivalent to using the -zku=437 option.
+.do end
 .*
 :OPTLIST.
 .*

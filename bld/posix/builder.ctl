@@ -7,52 +7,52 @@ set BINTOOL=0
 
 set PROJDIR=<CWD>
 
-[ INCLUDE <OWROOT>/build/prolog.ctl ]
+[ INCLUDE "<OWROOT>/build/prolog.ctl" ]
 
-[ INCLUDE <OWROOT>/build/defrule.ctl ]
+[ INCLUDE "<OWROOT>/build/defrule.ctl" ]
 
 [ BLOCK <BINTOOL> build ]
 #========================
-    cdsay <PROJDIR>
-    <CPCMD> <OWOBJDIR>/cat.exe   <OWBINDIR>/<OWOBJDIR>/cat<CMDEXT>
-    <CPCMD> <OWOBJDIR>/egrep.exe <OWBINDIR>/<OWOBJDIR>/egrep<CMDEXT>
-    <CPCMD> <OWOBJDIR>/head.exe  <OWBINDIR>/<OWOBJDIR>/head<CMDEXT>
-    <CPCMD> <OWOBJDIR>/chmod.exe <OWBINDIR>/<OWOBJDIR>/chmod<CMDEXT>
-    <CPCMD> <OWOBJDIR>/sed.exe   <OWBINDIR>/<OWOBJDIR>/sed<CMDEXT>
-    <CPCMD> <OWOBJDIR>/sleep.exe <OWBINDIR>/<OWOBJDIR>/sleep<CMDEXT>
-    <CPCMD> <OWOBJDIR>/sort.exe  <OWBINDIR>/<OWOBJDIR>/sort<CMDEXT>
-    <CPCMD> <OWOBJDIR>/tee.exe   <OWBINDIR>/<OWOBJDIR>/tee<CMDEXT>
-    <CPCMD> <OWOBJDIR>/tr.exe    <OWBINDIR>/<OWOBJDIR>/tr<CMDEXT>
-    <CPCMD> <OWOBJDIR>/uniq.exe  <OWBINDIR>/<OWOBJDIR>/uniq<CMDEXT>
-    <CPCMD> <OWOBJDIR>/wc.exe    <OWBINDIR>/<OWOBJDIR>/wc<CMDEXT>
-    <CPCMD> <OWOBJDIR>/which.exe <OWBINDIR>/<OWOBJDIR>/which<CMDEXT>
+    cdsay "<PROJDIR>"
+    <CPCMD> <OWOBJDIR>/cat.exe   "<OWROOT>/build/<OWOBJDIR>/cat<CMDEXT>"
+    <CPCMD> <OWOBJDIR>/egrep.exe "<OWROOT>/build/<OWOBJDIR>/egrep<CMDEXT>"
+    <CPCMD> <OWOBJDIR>/head.exe  "<OWROOT>/build/<OWOBJDIR>/head<CMDEXT>"
+    <CPCMD> <OWOBJDIR>/chmod.exe "<OWROOT>/build/<OWOBJDIR>/chmod<CMDEXT>"
+    <CPCMD> <OWOBJDIR>/sed.exe   "<OWROOT>/build/<OWOBJDIR>/sed<CMDEXT>"
+    <CPCMD> <OWOBJDIR>/sleep.exe "<OWROOT>/build/<OWOBJDIR>/sleep<CMDEXT>"
+    <CPCMD> <OWOBJDIR>/sort.exe  "<OWROOT>/build/<OWOBJDIR>/sort<CMDEXT>"
+    <CPCMD> <OWOBJDIR>/tee.exe   "<OWROOT>/build/<OWOBJDIR>/tee<CMDEXT>"
+    <CPCMD> <OWOBJDIR>/tr.exe    "<OWROOT>/build/<OWOBJDIR>/tr<CMDEXT>"
+    <CPCMD> <OWOBJDIR>/uniq.exe  "<OWROOT>/build/<OWOBJDIR>/uniq<CMDEXT>"
+    <CPCMD> <OWOBJDIR>/wc.exe    "<OWROOT>/build/<OWOBJDIR>/wc<CMDEXT>"
+    <CPCMD> <OWOBJDIR>/which.exe "<OWROOT>/build/<OWOBJDIR>/which<CMDEXT>"
 
 [ BLOCK <BINTOOL> clean ]
 #========================
-    echo rm -f <OWBINDIR>/<OWOBJDIR>/cat<CMDEXT>
-    rm -f <OWBINDIR>/<OWOBJDIR>/cat<CMDEXT>
-    echo rm -f <OWBINDIR>/<OWOBJDIR>/egrep<CMDEXT>
-    rm -f <OWBINDIR>/<OWOBJDIR>/egrep<CMDEXT>
-    echo rm -f <OWBINDIR>/<OWOBJDIR>/head<CMDEXT>
-    rm -f <OWBINDIR>/<OWOBJDIR>/head<CMDEXT>
-    echo rm -f <OWBINDIR>/<OWOBJDIR>/chmod<CMDEXT>
-    rm -f <OWBINDIR>/<OWOBJDIR>/chmod<CMDEXT>
-    echo rm -f <OWBINDIR>/<OWOBJDIR>/sed<CMDEXT>
-    rm -f <OWBINDIR>/<OWOBJDIR>/sed<CMDEXT>
-    echo rm -f <OWBINDIR>/<OWOBJDIR>/sleep<CMDEXT>
-    rm -f <OWBINDIR>/<OWOBJDIR>/sleep<CMDEXT>
-    echo rm -f <OWBINDIR>/<OWOBJDIR>/sort<CMDEXT>
-    rm -f <OWBINDIR>/<OWOBJDIR>/sort<CMDEXT>
-    echo rm -f <OWBINDIR>/<OWOBJDIR>/tee<CMDEXT>
-    rm -f <OWBINDIR>/<OWOBJDIR>/tee<CMDEXT>
-    echo rm -f <OWBINDIR>/<OWOBJDIR>/tr<CMDEXT>
-    rm -f <OWBINDIR>/<OWOBJDIR>/tr<CMDEXT>
-    echo rm -f <OWBINDIR>/<OWOBJDIR>/uniq<CMDEXT>
-    rm -f <OWBINDIR>/<OWOBJDIR>/uniq<CMDEXT>
-    echo rm -f <OWBINDIR>/<OWOBJDIR>/wc<CMDEXT>
-    rm -f <OWBINDIR>/<OWOBJDIR>/wc<CMDEXT>
-    echo rm -f <OWBINDIR>/<OWOBJDIR>/which<CMDEXT>
-    rm -f <OWBINDIR>/<OWOBJDIR>/which<CMDEXT>
+    echo rm -f "<OWROOT>/build/<OWOBJDIR>/cat<CMDEXT>"
+    rm -f "<OWROOT>/build/<OWOBJDIR>/cat<CMDEXT>"
+    echo rm -f "<OWROOT>/build/<OWOBJDIR>/egrep<CMDEXT>"
+    rm -f "<OWROOT>/build/<OWOBJDIR>/egrep<CMDEXT>"
+    echo rm -f "<OWROOT>/build/<OWOBJDIR>/head<CMDEXT>"
+    rm -f "<OWROOT>/build/<OWOBJDIR>/head<CMDEXT>"
+    echo rm -f "<OWROOT>/build/<OWOBJDIR>/chmod<CMDEXT>"
+    rm -f "<OWROOT>/build/<OWOBJDIR>/chmod<CMDEXT>"
+    echo rm -f "<OWROOT>/build/<OWOBJDIR>/sed<CMDEXT>"
+    rm -f "<OWROOT>/build/<OWOBJDIR>/sed<CMDEXT>"
+    echo rm -f "<OWROOT>/build/<OWOBJDIR>/sleep<CMDEXT>"
+    rm -f "<OWROOT>/build/<OWOBJDIR>/sleep<CMDEXT>"
+    echo rm -f "<OWROOT>/build/<OWOBJDIR>/sort<CMDEXT>"
+    rm -f "<OWROOT>/build/<OWOBJDIR>/sort<CMDEXT>"
+    echo rm -f "<OWROOT>/build/<OWOBJDIR>/tee<CMDEXT>"
+    rm -f "<OWROOT>/build/<OWOBJDIR>/tee<CMDEXT>"
+    echo rm -f "<OWROOT>/build/<OWOBJDIR>/tr<CMDEXT>"
+    rm -f "<OWROOT>/build/<OWOBJDIR>/tr<CMDEXT>"
+    echo rm -f "<OWROOT>/build/<OWOBJDIR>/uniq<CMDEXT>"
+    rm -f "<OWROOT>/build/<OWOBJDIR>/uniq<CMDEXT>"
+    echo rm -f "<OWROOT>/build/<OWOBJDIR>/wc<CMDEXT>"
+    rm -f "<OWROOT>/build/<OWOBJDIR>/wc<CMDEXT>"
+    echo rm -f "<OWROOT>/build/<OWOBJDIR>/which<CMDEXT>"
+    rm -f "<OWROOT>/build/<OWOBJDIR>/which<CMDEXT>"
 
 [ BLOCK <BLDRULE> rel cprel ]
 #============================
@@ -60,4 +60,4 @@ set PROJDIR=<CWD>
 
 [ BLOCK . . ]
 
-[ INCLUDE <OWROOT>/build/epilog.ctl ]
+[ INCLUDE "<OWROOT>/build/epilog.ctl" ]

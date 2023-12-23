@@ -29,6 +29,7 @@
 ****************************************************************************/
 
 
+#include <string.h>
 #include "dr.h"
 #include "virtmem.h"
 #include "drrtns.h"
@@ -41,8 +42,6 @@ enum {
     TAB_IDX_PATH
 };
 
-typedef unsigned_16     filetab_idx;
-
 typedef struct {
     filetab_idx         fnameidx;
     filetab_idx         pathidx;
@@ -54,8 +53,6 @@ typedef struct {
         char            *name;
     } u;
 } filetab_entry;
-
-typedef unsigned_16     file_tab_idx;
 
 typedef struct {
     filetab_idx         len;
@@ -100,13 +97,3 @@ extern struct dr_dbg_info * DWRCurrNode;
 
 #define ABBREV_TABLE_GUESS 500
 #define ABBREV_TABLE_INCREMENT 100
-
-#ifdef __BIG_ENDIAN__
-    #define SWAP_16     CONV_LE_16
-    #define SWAP_32     CONV_LE_32
-    #define SWAP_64     CONV_LE_64
-#else
-    #define SWAP_16     CONV_BE_16
-    #define SWAP_32     CONV_BE_32
-    #define SWAP_64     CONV_BE_64
-#endif

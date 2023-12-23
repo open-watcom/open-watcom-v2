@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -57,8 +57,11 @@ static unsigned numSymbols( owl_file_handle file ) {
                 file->symbol_table->num_local_symbols );
 }
 
-// must correspond to owl_cpu in owl.h
-static Elf32_Half machineTypes[] = { EM_PPC, EM_ALPHA, EM_MIPS, EM_386 };
+static Elf32_Half machineTypes[] = {
+    #define OWL_CPU(c,e,o) e,
+    OWL_CPUS
+    #undef OWL_CPU
+};
 
 static void writeFileHeader( owl_file_handle file ) {
 //***************************************************
@@ -444,7 +447,7 @@ static void prepareRelocSections( owl_file_handle file ) {
     char                buffer[ MAX_SECTION_NAME + 5 ];
 
     switch( file->info->cpu ) {
-    case OWL_CPU_INTEL:
+    case OWL_CPU_X86:
     case OWL_CPU_MIPS:    // MIPS SysV ABI supplement says so
         useRela = false;
         break;

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,7 +48,7 @@ tiny_ret_t __near __OvlOpen__( const char __far *fname )
 tiny_ret_t __near __OvlSeek__( tiny_handle_t hdl, unsigned long pos )
 /*******************************************************************/
 {
-    return( TinySeek( hdl, pos, TIO_SEEK_START ) );
+    return( TinySeek( hdl, pos, TIO_SEEK_SET ) );
 }
 
 tiny_ret_t __near __OvlRead__( tiny_handle_t hdl, void __far *buff, unsigned len )

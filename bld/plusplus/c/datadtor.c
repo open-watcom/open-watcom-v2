@@ -36,7 +36,7 @@
 #include "datadtor.h"
 #include "fnbody.h"
 #include "cdopt.h"
-#ifndef NDEBUG
+#ifdef DEVBUILD
     #include "dbg.h"
     #include "togglesd.h"
     #include "pragdefn.h"
@@ -85,7 +85,7 @@ PTREE DataDtorObjPush(          // START OF DTORABLE OBJECT
 {
     TYPE dtor_type;             // - type for dtor
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
     if( TOGGLEDBG( dump_data_dtor ) ) {
         VBUF vbuf;
         printf( "DataDtorObjPush -- symbol %s\n"
@@ -110,7 +110,7 @@ PTREE DataDtorObjPush(          // START OF DTORABLE OBJECT
 PTREE DataDtorObjPop(           // COMPLETE DTORABLE OBJECT
     PTREE expr )                // - expression to be decorated
 {
-#ifndef NDEBUG
+#ifdef DEVBUILD
     if( TOGGLEDBG( dump_data_dtor ) ) {
         printf( "DataDtorObjPop\n" );
     }
@@ -124,7 +124,7 @@ PTREE DataDtorCompClass(        // MARK CLASS OBJECT AS DTORABLE COMPONENT
     target_offset_t offset,     // - offset of component
     DTC_KIND kind )             // - kind of component
 {
-#ifndef NDEBUG
+#ifdef DEVBUILD
     if( TOGGLEDBG( dump_data_dtor ) ) {
         printf( "DataDtorCompClass -- offset %x\n", offset );
     }
@@ -138,7 +138,7 @@ PTREE DataDtorCompArrEl(        // MARK ARRAY ELEMENT AS DTORABLE COMPONENT
     PTREE expr,                 // - expression to be decorated
     target_offset_t index )     // - array index
 {
-#ifndef NDEBUG
+#ifdef DEVBUILD
     if( TOGGLEDBG( dump_data_dtor ) ) {
         printf( "DataDtorCompArrEl -- index(%x)\n", index );
     }

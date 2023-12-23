@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -24,7 +25,7 @@
 *
 *  ========================================================================
 *
-* Description:  Win386 debugging interface.
+* Description:  Win386 debugging interface (DLL).
 *
 ****************************************************************************/
 
@@ -32,13 +33,12 @@
 #ifndef _DI386DLL_H_INCLUDED
 #define _DI386DLL_H_INCLUDED
 
-#include "di386typ.h"
+#define pick(c,d,r,a) typedef r FAR PASCAL c ## _func a;
+#include "_di386.h"
+#undef pick
 
-extern __declspec(dllexport) IsDebuggerExecuting_func     IsDebuggerExecuting;
-extern __declspec(dllexport) DoneWithInterrupt_func       DoneWithInterrupt;
-extern __declspec(dllexport) GetDebugInterruptData_func   GetDebugInterruptData;
-extern __declspec(dllexport) ResetDebugInterrupts32_func  ResetDebugInterrupts32;
-extern __declspec(dllexport) SetDebugInterrupts32_func    SetDebugInterrupts32;
-extern __declspec(dllexport) DebuggerIsExecuting_func     DebuggerIsExecuting;
+#define pick(c,d,r,a) extern __declspec(dllexport) c ## _func c;
+#include "_di386.h"
+#undef pick
 
 #endif /* _DI386DLL_H_INCLUDED */

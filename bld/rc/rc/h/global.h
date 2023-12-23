@@ -43,9 +43,10 @@
 #include "wresall.h"
 
 
-/****** constants describing global data ******/
-/* this is the size of the text input buffer for pass 1 and the data trasfer */
-/* buffer for pass 2 */
+/****** constants describing global data ******
+ * this is the size of the text input buffer for pass 1 and the data trasfer
+ * buffer for pass 2
+ */
 #if defined( _STANDALONE_ ) || defined( __NT__ )
 #define IO_BUFFER_SIZE  0x8000      /* 32k */
 #else

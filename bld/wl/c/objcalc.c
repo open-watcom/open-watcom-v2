@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -499,9 +499,9 @@ static void CalcGrpAddr( group_entry *currgrp )
         } else {
             Ring2Lookup( seg, FindEndAddr, &info );
             if( (FmtData.type & MK_REAL_MODE) && (seg->info & USE_32) == 0
-                && (info.end_addr - info.grp_addr > _64KB) ) {
+                && (info.end_addr - info.grp_addr > _64K) ) {
                 LnkMsg( ERR+MSG_GROUP_TOO_BIG, "sl", currgrp->sym->name,
-                        info.end_addr - info.grp_addr - _64KB );
+                        info.end_addr - info.grp_addr - _64K );
             }
             currgrp->totalsize = info.end_addr - info.grp_addr;
         }
@@ -831,21 +831,30 @@ static void setDefBase( void )
 #endif
 #ifdef _QNX
     if( FmtData.type & MK_QNX_FLAT ) {
-        FmtData.base = ROUND_UP( StackSize + QNX_DEFAULT_BASE, _4KB );
+        FmtData.base = __ROUND_UP_SIZE( StackSize + QNX_DEFAULT_BASE, _4K );
         return;
     }
 #endif
 #ifdef _ELF
     if( FmtData.type & MK_ELF ) {
-        if( LinkState & LS_HAVE_PPC_CODE ) {
-            FmtData.base = 0x10000000;
-        } else if( LinkState & LS_HAVE_MIPS_CODE ) {
+        switch( LinkState & LS_HAVE_MACHTYPE_MASK ) {
+        case LS_HAVE_ALPHA_CODE:
+            break;
+        case LS_HAVE_MIPS_CODE:
             FmtData.base = 0x00400000;
-        } else if( LinkState & LS_HAVE_X64_CODE ) {
+            break;
+        case LS_HAVE_PPC_CODE:
+            FmtData.base = 0x10000000;
+            break;
+        case LS_HAVE_X64_CODE:
             // TODO
             FmtData.base = 0x08048000;
-        } else {
+            break;
+        case LS_HAVE_X86_CODE:
             FmtData.base = 0x08048000;
+            break;
+        default:
+            break;
         }
         return;
     }
@@ -858,23 +867,32 @@ static void setDefObjAlign( void )
 {
 #ifdef _OS2
     if( FmtData.type & MK_PE ) {
-        if( (LinkState & LS_HAVE_I86_CODE) ) {
-            FmtData.objalign = _4KB;
-        } else if( (LinkState & LS_HAVE_X64_CODE) ) {
+        switch( LinkState & LS_HAVE_MACHTYPE_MASK ) {
+        case LS_HAVE_ALPHA_CODE:
+        case LS_HAVE_MIPS_CODE: // TODO
+        case LS_HAVE_PPC_CODE:
+            FmtData.objalign = _64K;
+            break;
+        case LS_HAVE_X86_CODE:
+            FmtData.objalign = _4K;
+            break;
+        case LS_HAVE_X64_CODE:
             // TODO
-            FmtData.objalign = _64KB;
-        } else {
-            FmtData.objalign = _64KB;
+            FmtData.objalign = _64K;
+            break;
+        default:
+            FmtData.objalign = _64K;
+            break;
         }
         return;
     } else if( FmtData.type & MK_WIN_VXD ) {
-        FmtData.objalign = _4KB;
+        FmtData.objalign = _4K;
         return;
     } else if( FmtData.type & MK_OS2 ) {
 #if 0
         if( (LinkState & LS_HAVE_PPC_CODE) ) {
             // Development temporarly on hold:
-            FmtData.objalign = _1KB;
+            FmtData.objalign = _1K;
             return;
         }
 #endif
@@ -890,11 +908,11 @@ static void setDefObjAlign( void )
 #endif
 #ifdef _ELF
     if( FmtData.type & MK_ELF ) {
-        FmtData.objalign = _4KB;
+        FmtData.objalign = _4K;
         return;
     }
 #endif
-    FmtData.objalign = _64KB;
+    FmtData.objalign = _64K;
 }
 
 static offset getFlatOffset( void )
@@ -975,7 +993,7 @@ void CalcAddresses( void )
                     size -= StackSize;
                 }
             }
-            flat = ROUND_UP( flat + size, FmtData.objalign );
+            flat = __ROUND_UP_SIZE( flat + size, FmtData.objalign );
         }
         ReallocFileSegs();
     } else if( FmtData.type & (MK_QNX_16 | MK_OS2_16BIT) ) {
@@ -1129,7 +1147,7 @@ static void ReOrderClasses( section *sec )
         class->next_class = NULL;
         CheckClassUninitialized( class );
         if( (FmtData.type & (MK_NOVELL | MK_PHAR_LAP | MK_OS2_LX))
-            && (class->flags & CLASS_32BIT) == 0 ) {
+          && ( class->bits == BITS_16 ) ) {
             ord = ORD_REALMODE;
         } else {
             name = class->name.u.ptr;

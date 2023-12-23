@@ -53,13 +53,6 @@ using std::wcstoumax;
 :endsegment
 /* Format macros */
 
-:: According to C99 these are only visible in C++ programs
-:: if __STDC_FORMAT_MACROS is defined. */
-::
-:segment CNAME
-#ifdef __STDC_FORMAT_MACROS
-
-:endsegment
 #define PRId8   "hhd"
 #define PRId16  "hd"
 #define PRId32  "ld"
@@ -294,10 +287,6 @@ using std::wcstoumax;
 #endif
 :endsegment
 
-:segment CNAME
-#endif  /* __STDC_FORMAT_MACROS */
-
-:endsegment
 :segment CNAME
 :: Only need extern "C" in cinttype
 :include cpluspro.sp

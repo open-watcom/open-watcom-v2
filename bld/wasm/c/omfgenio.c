@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -160,12 +160,12 @@ void ObjWEndRec( void )
         objWFlushBuffer();
     }
     pobjState->length++;                  /* add 1 for checksum byte */
-    WriteU16( buf, pobjState->length );
+    MPUT_LE_16( buf, pobjState->length );
     checksum = pobjState->checksum + buf[0] + buf[1];
     checksum = -checksum;
     safeWrite( &checksum, 1 );
         /* back up to length */
-    safeSeek( -(long)pobjState->length - 2, SEEK_CUR );
+    safeSeek( -(long)( pobjState->length + 2 ), SEEK_CUR );
     safeWrite( buf, 2 );                   /* write the length */
     safeSeek( 0L, SEEK_END );       /* move to end of file again */
     pobjState->in_rec = false;
@@ -190,7 +190,7 @@ void ObjWrite16( uint_16 word )
     if( pobjState->in_buf >= OBJ_BUFFER_SIZE - 1 ) {
         objWFlushBuffer();
     }
-    WriteU16( pobjState->buffer + pobjState->in_buf, word );
+    MPUT_LE_16( pobjState->buffer + pobjState->in_buf, word );
     pobjState->in_buf += 2;
 }
 
@@ -202,7 +202,7 @@ void ObjWrite32( uint_32 dword )
     if( pobjState->in_buf >= OBJ_BUFFER_SIZE - 3 ) {
         objWFlushBuffer();
     }
-    WriteU32( pobjState->buffer + pobjState->in_buf, dword );
+    MPUT_LE_32( pobjState->buffer + pobjState->in_buf, dword );
     pobjState->in_buf += 4;
 }
 

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,64 +31,73 @@
 
 
 #ifndef _CG_AUX_INCLUDED
+#define _CG_AUX_INCLUDED
 
 #include "hwreg.h"
 #include "cgauxa.h"
-
-typedef enum {
-        AUX_LOOKUP,
-        CALL_BYTES,
-        CALL_CLASS,
-        FREE_SEGMENT,
-        OBJECT_FILE_NAME,
-        PARM_REGS,
-        RETURN_REG,
-        REVISION_NUMBER,
-        SAVE_REGS,
-        SHADOW_SYMBOL,
-        SOURCE_NAME,
-        TEMP_LOC_NAME,
-        TEMP_LOC_TELL,
-        NEXT_DEPENDENCY,
-        DEPENDENCY_TIMESTAMP,
-        DEPENDENCY_NAME,
-        SOURCE_LANGUAGE,
-        DEFAULT_IMPORT_RESOLVE,
-        UNROLL_COUNT,
-        DBG_PREDEF_SYM,
-        DBG_PCH_SYM,
-        DBG_SYM_ACCESS,
-        DBG_DWARF_PRODUCER,
-        #include "cgauxc.h"
-        __LAST_AUX_CLASS
-} aux_class;
-
-typedef enum  {
-    SYM_ACC_PUBLIC,
-    SYM_ACC_PROTECTED,
-    SYM_ACC_PRIVATE,
-}sym_access;
 
 #define TEMP_LOC_QUIT   0
 #define TEMP_LOC_NO     1
 #define TEMP_LOC_YES    2
 
-#define REVERSE_PARMS           0x00000001L
-#define SUICIDAL                0x00000002L
-#define NORETURN                0x00000004L
-#define PARMS_BY_ADDRESS        0x00000008L
-#define MAKE_CALL_INLINE        0x00000010L
-#define HAS_VARARGS             0x00000020L
-#define PARMS_STACK_RESERVE     0x00000040L
-#define SETJMP_KLUGE            0x00000080L
-#define PARMS_PREFER_REGS       0x00000100L
-#define LAST_AUX_ATTRIBUTE      0x00000100L
+typedef enum {
+    FEINF_AUX_LOOKUP,
+    FEINF_CALL_BYTES,
+    FEINF_CALL_CLASS,
+    FEINF_CALL_CLASS_TARGET,
+    FEINF_FREE_SEGMENT,
+    FEINF_OBJECT_FILE_NAME,
+    FEINF_PARM_REGS,
+    FEINF_RETURN_REG,
+    FEINF_REVISION_NUMBER,
+    FEINF_SAVE_REGS,
+    FEINF_SHADOW_SYMBOL,
+    FEINF_SOURCE_NAME,
+    FEINF_TEMP_LOC_NAME,
+    FEINF_TEMP_LOC_TELL,
+    FEINF_NEXT_DEPENDENCY,
+    FEINF_DEPENDENCY_TIMESTAMP,
+    FEINF_DEPENDENCY_NAME,
+    FEINF_SOURCE_LANGUAGE,
+    FEINF_DEFAULT_IMPORT_RESOLVE,
+    FEINF_UNROLL_COUNT,
+    FEINF_DBG_PREDEF_SYM,
+    FEINF_DBG_PCH_SYM,
+    FEINF_DBG_SYM_ACCESS,
+    FEINF_DBG_DWARF_PRODUCER,
+    FEINF_LIBRARY_NAME,
+    FEINF_NEXT_LIBRARY,
+    FEINF_IMPORT_NAME,
+    FEINF_NEXT_IMPORT,
+    FEINF_IMPORT_NAME_S,
+    FEINF_NEXT_IMPORT_S,
+    FEINF_NEXT_ALIAS,
+    FEINF_ALIAS_NAME,
+    FEINF_ALIAS_SYMBOL,
+    FEINF_ALIAS_SUBST_NAME,
+    FEINF_ALIAS_SUBST_SYMBOL,
+    FEINF_IMPORT_TYPE,
+    FEINF_CONDITIONAL_IMPORT,
+    FEINF_NEXT_CONDITIONAL,
+    FEINF_CONDITIONAL_SYMBOL,
+    FEINF_CLASS_APPENDED_NAME,
+    FEINF_VIRT_FUNC_REFERENCE,
+    FEINF_VIRT_FUNC_SYM,
+    FEINF_VIRT_FUNC_NEXT_REFERENCE,
+    #include "cgauxc.h"
+} aux_class;
 
-#define _TARG_AUX_SHIFT         9
+typedef enum {
+    IMPORT_IS_WEAK,
+    IMPORT_IS_LAZY,
+    IMPORT_IS_CONDITIONAL,
+    IMPORT_IS_CONDITIONAL_PURE,
+} import_type;
 
-#if ( LAST_AUX_ATTRIBUTE >> _TARG_AUX_SHIFT ) != 0
-    #error too many attributes
-#endif
+typedef enum  {
+    SYM_ACC_PUBLIC,
+    SYM_ACC_PROTECTED,
+    SYM_ACC_PRIVATE,
+} sym_access;
 
-#define _CG_AUX_INCLUDED
 #endif

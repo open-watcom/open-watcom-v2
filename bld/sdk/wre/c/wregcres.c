@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -63,13 +63,13 @@
 /* static variables                                                         */
 /****************************************************************************/
 
-void *WREGetCurrentResData( WRECurrentResInfo *curr )
+char *WREGetCopyResData( WRECurrentResInfo *curr )
 {
-    void       *rdata;
+    char       *rdata;
 
     rdata = NULL;
     if( curr != NULL && curr->info != NULL && curr->lang != NULL ) {
-        rdata = WRCopyResData( curr->info->info, curr->lang );
+        rdata = WRAllocCopyResData( curr->info->info, curr->lang );
     }
 
     return( rdata );

@@ -192,7 +192,7 @@ void FnovFreeDiag(              // FREE MEMORY IN DIAGNOSIS LISTS
     FNOV_DIAG *                 // - pointer to struct containing list pointers
 );
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 void PrintFnovList( FNOV_LIST *root );
 void PrintFnovResolution(       // PRETTY DISPLAY OF OVERLOAD RESOLUTION
     FNOV_RESULT result,         // - resolution result

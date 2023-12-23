@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -65,16 +65,26 @@ typedef struct process_info     process_info;
 typedef struct dip_imp_routines dip_imp_routines;
 typedef struct location_context location_context;
 
+struct imp_image_handle;
+struct imp_type_handle;
+struct imp_cue_handle;
+struct imp_sym_handle;
+
+typedef struct imp_image_handle imp_image_handle;
+typedef struct imp_type_handle  imp_type_handle;
+typedef struct imp_cue_handle   imp_cue_handle;
+typedef struct imp_sym_handle   imp_sym_handle;
+
 typedef signed_16               dip_priority;
 
 typedef unsigned_32             mod_handle;
 typedef unsigned_32             cue_fileid;
 
 typedef enum {
-    #define pick(e,hdl,imphdl,wvimphdl) e,
+    #define pick(enum,hsize,ihsize,wvihsize,cvdmndtype,wdmndtype)   enum,
     #include "diphndls.h"
     #undef pick
-    MAX_HK
+    HK_MAX
 } handle_kind;
 
 typedef enum {

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -58,7 +58,7 @@
 void SetNovFmt( void )
 /********************/
 {
-    Extension = E_NLM;
+    FmtData.def_ext = E_NLM;
 }
 
 void FreeNovFmt( void )
@@ -259,8 +259,8 @@ void SetNovImportSymbol( symbol *sym )
     sym->p.import = DUMMY_IMPORT_PTR;
 }
 
-static bool GetSymbolImportExport( bool import )
-/**********************************************/
+static bool GetNovSymbolImportExport( bool import )
+/*************************************************/
 {
     symbol      *sym;
     const char  *name;
@@ -283,7 +283,7 @@ static bool GetSymbolImportExport( bool import )
         result = SetCurrentPrefix( Token.this, Token.len );
         if( result ) {
             Token.skipToNext = DoWeNeedToSkipASeparator( false );
-#ifndef NDEBUG
+#ifdef DEVBUILD
             printf( "Set new prefix. Skip = %d\n", Token.skipToNext );
 #endif
         }
@@ -303,7 +303,7 @@ static bool GetSymbolImportExport( bool import )
         if( sym == NULL || sym->p.import != NULL ) {
             return( true );
         }
-#ifndef NDEBUG
+#ifdef DEVBUILD
         printf( "imported %s from %s\n", sym->name.u.ptr, ( sym->prefix != NULL ) ? sym->prefix : "(NONE)" );
 #endif
         SET_SYM_TYPE( sym, SYM_IMPORTED );
@@ -401,7 +401,7 @@ static bool ProcNLMFlags( void )
 static bool ProcCustom( void )
 /****************************/
 {
-    if( !GetToken( SEP_EQUALS, TOK_INCLUDE_DOT | TOK_IS_FILENAME ) ) {
+    if( !GetToken( SEP_EQUALS, TOK_IS_FILENAME ) ) {
         return( false );
     }
     FmtData.u.nov.customdata = tostring();         // no default extension.
@@ -411,7 +411,7 @@ static bool ProcCustom( void )
 static bool ProcMessages( void )
 /******************************/
 {
-    if( !GetToken( SEP_EQUALS, TOK_INCLUDE_DOT | TOK_IS_FILENAME ) ) {
+    if( !GetToken( SEP_EQUALS, TOK_IS_FILENAME ) ) {
         return( false );
     }
     FmtData.u.nov.messages = tostring();           // no default extension.
@@ -421,7 +421,7 @@ static bool ProcMessages( void )
 static bool ProcHelp( void )
 /**************************/
 {
-    if( !GetToken( SEP_EQUALS, TOK_INCLUDE_DOT | TOK_IS_FILENAME ) ) {
+    if( !GetToken( SEP_EQUALS, TOK_IS_FILENAME ) ) {
         return( false );
     }
     FmtData.u.nov.help = tostring();       // no default extension.
@@ -431,7 +431,7 @@ static bool ProcHelp( void )
 static bool ProcXDCData( void )
 /*****************************/
 {
-    if( !GetToken( SEP_EQUALS, TOK_INCLUDE_DOT | TOK_IS_FILENAME ) ) {
+    if( !GetToken( SEP_EQUALS, TOK_IS_FILENAME ) ) {
         return( false );
     }
     FmtData.u.nov.rpcdata = tostring();    // no default extension.
@@ -441,7 +441,7 @@ static bool ProcXDCData( void )
 static bool ProcSharelib( void )
 /******************************/
 {
-    if( !GetToken( SEP_EQUALS, TOK_INCLUDE_DOT | TOK_IS_FILENAME ) ) {
+    if( !GetToken( SEP_EQUALS, TOK_IS_FILENAME ) ) {
         return( false );
     }
     FmtData.u.nov.sharednlm = FileName( Token.this, Token.len, E_NLM, false );
@@ -552,7 +552,7 @@ bool ProcNovOptions( void )
 static bool GetNovImport( void )
 /******************************/
 {
-    return( GetSymbolImportExport( true ) );
+    return( GetNovSymbolImportExport( true ) );
 }
 
 bool ProcNovImport( void )
@@ -570,7 +570,7 @@ bool ProcNovImport( void )
 static bool GetNovExport( void )
 /******************************/
 {
-    return( GetSymbolImportExport( false ) );
+    return( GetNovSymbolImportExport( false ) );
 }
 
 bool ProcNovExport( void )
@@ -651,7 +651,7 @@ bool ProcNovDBI( void )
 static bool ProcModuleTypeN( int n )
 /**********************************/
 {
-    Extension = E_NLM;
+    FmtData.def_ext = E_NLM;
     FmtData.u.nov.moduletype = n;
     return( true );
 }
@@ -659,7 +659,7 @@ static bool ProcModuleTypeN( int n )
 static bool ProcNLM( void )
 /*************************/
 {
-    Extension = E_NLM;
+    FmtData.def_ext = E_NLM;
     FmtData.u.nov.moduletype = 0;
     return( true );
 }
@@ -667,7 +667,7 @@ static bool ProcNLM( void )
 static bool ProcLAN( void )
 /*************************/
 {
-    Extension = E_LAN;
+    FmtData.def_ext = E_LAN;
     FmtData.u.nov.moduletype = 1;
     return( true );
 }
@@ -675,7 +675,7 @@ static bool ProcLAN( void )
 static bool ProcDSK( void )
 /*************************/
 {
-    Extension = E_DSK;
+    FmtData.def_ext = E_DSK;
     FmtData.u.nov.moduletype = 2;
     return( true );
 }
@@ -683,7 +683,7 @@ static bool ProcDSK( void )
 static bool ProcNAM( void )
 /*************************/
 {
-    Extension = E_NAM;
+    FmtData.def_ext = E_NAM;
     FmtData.u.nov.moduletype = 3;
     return( true );
 }
@@ -691,7 +691,7 @@ static bool ProcNAM( void )
 static bool ProcModuleType4( void )
 /*********************************/
 {
-    Extension = E_NLM;
+    FmtData.def_ext = E_NLM;
     FmtData.u.nov.moduletype = 4;
     return( true );
 }
@@ -699,7 +699,7 @@ static bool ProcModuleType4( void )
 static bool ProcModuleType5( void )
 /*********************************/
 {
-    Extension = E_NOV_MSL;
+    FmtData.def_ext = E_NOV_MSL;
     FmtData.u.nov.moduletype = 5;
     return( true );
 }
@@ -707,7 +707,7 @@ static bool ProcModuleType5( void )
 static bool ProcModuleType6( void )
 /*********************************/
 {
-    Extension = E_NLM;
+    FmtData.def_ext = E_NLM;
     FmtData.u.nov.moduletype = 6;
     return( true );
 }
@@ -715,7 +715,7 @@ static bool ProcModuleType6( void )
 static bool ProcModuleType7( void )
 /*********************************/
 {
-    Extension = E_NLM;
+    FmtData.def_ext = E_NLM;
     FmtData.u.nov.moduletype = 7;
     return( true );
 }
@@ -723,7 +723,7 @@ static bool ProcModuleType7( void )
 static bool ProcModuleType8( void )
 /*********************************/
 {
-    Extension = E_NOV_HAM;
+    FmtData.def_ext = E_NOV_HAM;
     FmtData.u.nov.moduletype = 8;
     return( true );
 }
@@ -731,7 +731,7 @@ static bool ProcModuleType8( void )
 static bool ProcModuleType9( void )
 /*********************************/
 {
-    Extension = E_NOV_CDM;
+    FmtData.def_ext = E_NOV_CDM;
     FmtData.u.nov.moduletype = 9;
     return( true );
 }
@@ -742,7 +742,7 @@ static bool ProcModuleType9( void )
 static bool ProcModuleType10( void )
 /**********************************/
 {
-    Extension = ;
+    FmtData.def_ext = ;
     FmtData.u.nov.moduletype = 10;
     return( true );
 }
@@ -750,7 +750,7 @@ static bool ProcModuleType10( void )
 static bool ProcModuleType11( void )
 /**********************************/
 {
-    Extension = ;
+    FmtData.def_ext = ;
     FmtData.u.nov.moduletype = 11;
     return( true );
 }
@@ -758,7 +758,7 @@ static bool ProcModuleType11( void )
 static bool ProcModuleType12( void )
 /**********************************/
 {
-    Extension = ;
+    FmtData.def_ext = ;
     FmtData.u.nov.moduletype = 12;
     return( true );
 }

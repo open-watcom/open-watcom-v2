@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,7 +42,7 @@
 #define SHARED_MEM_NAME         MunchName( "WJVMSharedMem" )
 #define SHARED_MEM_NAME_2       MunchName( "WJVMTerminated" )
 
-#define REMOTE_LINK_MEM_NAME    "WJVMRemoteLink"
+#define DEFAULT_LINK_NAME    "WJVMLink"
 
 #define MAX_TRANS       1024
 
@@ -61,7 +62,7 @@ DWORD                   *UniquePid;
     #define CHECK_DONE()
 #endif
 
-char *MunchName( char *name )
+static char *MunchName( char *name )
 {
     static char buff[80];
     char pid[80];
@@ -113,7 +114,7 @@ void RemoteDisco( void )
 const char *RemoteLink( const char *parms, bool server )
 {
 #ifdef SERVER
-    MemHdlLink = OpenFileMapping( FILE_MAP_WRITE, FALSE, REMOTE_LINK_MEM_NAME );
+    MemHdlLink = OpenFileMapping( FILE_MAP_WRITE, FALSE, DEFAULT_LINK_NAME );
     if( MemHdlLink == NULL ) {
         return( "can not connect to debugger" );
     }
@@ -131,7 +132,9 @@ const char *RemoteLink( const char *parms, bool server )
         SharedMem == NULL || Terminated == NULL || UniquePid == NULL ) {
         return( "can not connect to debugger" );
     }
-    parms = parms;
+
+    /* unused parameters */ (void)parms;
+
 #else
     STARTUPINFO             sinfo;
     PROCESS_INFORMATION     pinfo;
@@ -179,7 +182,7 @@ const char *RemoteLink( const char *parms, bool server )
         return( "unable to start " JAVA_NAME );
     }
 
-    MemHdlLink = CreateFileMapping( (HANDLE)0xFFFFFFFF, NULL, PAGE_READWRITE, 0, sizeof( HANDLE ), REMOTE_LINK_MEM_NAME );
+    MemHdlLink = CreateFileMapping( (HANDLE)0xFFFFFFFF, NULL, PAGE_READWRITE, 0, sizeof( HANDLE ), DEFAULT_LINK_NAME );
     if( MemHdlLink == NULL ) {
         return( "can not communicate with class sun.tools.debug.jvmhelp" );
     }

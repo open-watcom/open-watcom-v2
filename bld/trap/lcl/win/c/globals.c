@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,11 +37,11 @@
 #include "dbgrmsg.h"
 
 
-BYTE                    DLLLoadSaveByte;
-WORD                    DLLLoadIP;
-WORD                    DLLLoadCS;
-BOOL                    DLLLoadExpectingInt1;
-BOOL                    TraceOn;
+const unsigned short    __based(__segname("_CONST")) win386sig[SIG_SIZE / sizeof( short )] = { 0xDEAD,0xBEEF };
+const unsigned short    __based(__segname("_CONST")) win386sig2[SIG_SIZE / sizeof( short )] = { 0xBEEF,0xDEAD };
+
+dll_info                DLLLoad;
+bool                    TraceOn;
 HTASK                   DebuggerTask;
 HTASK                   DebugeeTask;
 HINSTANCE               DebugeeInstance;
@@ -58,18 +58,18 @@ int                     SaveStdIn = NIL_HANDLE;
 int                     SaveStdOut = NIL_HANDLE;
 bool                    WDebug386 = false;
 HMODULE                 DebugeeModule;
-BOOL                    DebugDebugeeOnly;
+bool                    DebugDebugeeOnly;
 HTASK                   TaskAtFault;
 bool                    InSoftMode;
 WORD                    CSAlias;
 WORD                    SegmentToAccess;
-BOOL                    PendingTrap;
+bool                    PendingTrap;
 event_hook_fn           *HookRtn;
 bool                    HardModeRequired;
 bool                    ForceHardMode;
 bool                    InputLocked = false;
 char                    OutBuff[MAX_STR];
 int                     OutPos;
-BOOL                    StopOnExtender;
-BOOL                    LoadingDebugee;
-BOOL                    Debugging32BitApp;
+bool                    StopOnExtender;
+bool                    LoadingDebugee;
+bool                    Debugging32BitApp;

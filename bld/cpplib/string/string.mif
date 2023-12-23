@@ -1,3 +1,5 @@
+tree_depth = 5
+
 prefix   = strg
 prefix_x = strx
 

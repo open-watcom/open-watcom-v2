@@ -1,0 +1,57 @@
+__cifx__ =$(system).mps/$(libsubdir)
+__mifx__ =$(system).mps/$(libsubdir).wdl
+__pifx__ =$(system).mps/_smt
+
+!ifdef profile
+dll_libs = $+ &
+    $(clib_dir)/library/$(system).$(processor)/$(model)_rp/clib$(dllname_$(convention)).lib &
+    $(mathlib_dir)/library/$(__mifx__)/math.lib &
+    $(cpplib_dir)/library/$(__pifx__).wdl/plbxmt.lib &
+    $(cpplib_dir)/library/$(__pifx__)/plbxmt.lib &
+    $-
+!else
+dll_libs = $+ &
+    $(clib_dir)/library/$(__cifx__)/clib.lib &
+    $(mathlib_dir)/library/$(__mifx__)/math.lib &
+    $(cpplib_dir)/library/$(__pifx__).wdl/plbxmt.lib &
+    $(cpplib_dir)/library/$(__pifx__)/plbxmt.lib &
+    $-
+!endif
+
+dll_def = $+ &
+#    $(clib_dir)/library/$(__cifx__)/export.gdf &
+#    $(clib_dir)/intel/export.def &
+#    $(clib_dir)/startup/export.def &
+#    $(clib_dir)/startup/$(convention).def &
+#    $(clib_dir)/startup/library/$(system).mps/$(convention).def &
+#    $(mathlib_dir)/library/$(__mifx__)/export.gdf &
+#    $(mathlib_dir)/export.mps &
+#    $(cpplib_dir)/runtime/ntmps.def &
+#    $(cpplib_dir)/library/$(__pifx__).wdl/exportx.gdf &
+    $-
+
+!ifdef profile
+dll_objs = $+ &
+    $(clib_dir)/startup/library/$(__cifx__)/clibdwnt.obj &
+    $(clib_dir)/startup/library/$(__cifx__)/segdefns.obj &
+    $-
+!else
+dll_objs = $+ &
+    $(clib_dir)/startup/library/$(__cifx__)/clibdwnt.obj &
+    $-
+!endif
+
+targdir = $(cpplib_dir)/runtime/$(__pifx__).wdl/
+!include $(cpplib_dir)/runtime/static.mif
+objs_tmp = $+ $(static_objs) $-
+targdir = $(cpplib_dir)/iostream/$(__pifx__).wdl/
+!include $(cpplib_dir)/iostream/static.mif
+objs_tmp += $+ $(static_objs) $-
+targdir =
+!include $(clib_dir)/rtdll/static.mif
+objs_tmp += $+ $(static_objs) $-
+static_objs = $+ $(objs_tmp) $-
+
+__cifx__ =
+__mifx__ =
+__pifx__ =

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -123,7 +124,7 @@ mad_status MADIMPENTRY( Disasm )( mad_disasm_data *dd, address *a, int adj )
 {
     mad_status  ms;
 
-    dd->characteristics = AddrCharacteristics( *a );
+    dd->addr_characteristics = AddrCharacteristics( *a );
     while( adj < 0 ) {
         ms = GetDisasmPrev( a );
         if( ms != MS_OK )
@@ -131,7 +132,7 @@ mad_status MADIMPENTRY( Disasm )( mad_disasm_data *dd, address *a, int adj )
         ++adj;
     }
     while( adj >= 0 ) {
-        DecodeIns( a, dd, dd->characteristics & X86AC_BIG );
+        DecodeIns( a, dd, dd->addr_characteristics & X86AC_BIG );
         --adj;
     }
     return( MS_OK );
@@ -396,12 +397,12 @@ mad_status MADIMPENTRY( DisasmInsNext )( mad_disasm_data *dd, const mad_register
             if( dd->ins.flags.u.x86 & DIF_X86_OPND_LONG ) {
                 next->mach.offset = GetDataLong();
                 if( dd->ins.op[OP_1].ref_type == DRT_X86_FARPTR48 ) {
-                    next->mach.segment = (unsigned_16)GetDataWord();
+                    next->mach.segment = GetDataWord();
                 }
             } else {
                 next->mach.offset = (unsigned_16)GetDataWord();
                 if( dd->ins.op[OP_1].ref_type == DRT_X86_FARPTR32 ) {
-                    next->mach.segment = (unsigned_16)GetDataWord();
+                    next->mach.segment = GetDataWord();
                 }
             }
             break;
@@ -418,7 +419,7 @@ mad_status MADIMPENTRY( DisasmInsNext )( mad_disasm_data *dd, const mad_register
         switch( dd->ins.type ) {
         case DI_X86_retf:
         case DI_X86_retf2:
-            next->mach.segment = (unsigned_16)GetDataWord();
+            next->mach.segment = GetDataWord();
             break;
         default:
             break;
@@ -712,13 +713,12 @@ static int RegAt( const char *from, const char *reg, unsigned len )
     return( 1 );
 }
 
-static char *StrCopy( const char *s, char *d )
+static char *StrCopyDst( const char *src, char *dst )
 {
-    while( ( *d = *s ) != '\0' ) {
-        ++s;
-        ++d;
+    while( ( *dst = *src++ ) != '\0' ) {
+        dst++;
     }
-    return( d );
+    return( dst );
 }
 
 mad_status MADIMPENTRY( DisasmInspectAddr )( const char *start, unsigned len, mad_radix radix, const mad_registers *mr, address *a )
@@ -738,17 +738,17 @@ mad_status MADIMPENTRY( DisasmInspectAddr )( const char *start, unsigned len, ma
             *to++ = '+';
             *to++ = '(';
             if( RegAt( start, "bp", 2 ) || RegAt( start, "sp", 2 ) ) {
-                to = StrCopy( "ss", to );
+                to = StrCopyDst( "ss", to );
             } else {
-                to = StrCopy( "ds", to );
+                to = StrCopyDst( "ds", to );
             }
-            to = StrCopy( ":(", to );
+            to = StrCopyDst( ":(", to );
             break;
         case ']':
-            to = StrCopy( "))", to );
+            to = StrCopyDst( "))", to );
             break;
         case ':':
-            to = StrCopy( "):(", to );
+            to = StrCopyDst( "):(", to );
             ++parens;
             break;
         default:
@@ -980,7 +980,7 @@ size_t DisCliValueString( void *d, dis_dec_ins *ins, unsigned opnd, char *buff, 
 
 mad_status DisasmInit( void )
 {
-    if( DisInit( DISCPU_x86, &DH, false ) != DR_OK ) {
+    if( DisInit( DISCPU_X86, &DH, false ) != DR_OK ) {
         return( MS_ERR | MS_FAIL );
     }
     return( MS_OK );

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -24,45 +25,48 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Trap module loader for Novell Netware.
 *
 ****************************************************************************/
 
 
 #include <string.h>
-#include "trptypes.h"
 #include "trpld.h"
 #include "trpcomm.h"
-#include "tcerr.h"
 
 
-void KillTrap( void )
+void UnLoadTrap( void )
 {
     TrapFini();
 }
 
-char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
+digld_error LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
 {
-    char    chr;
+    const char  *trpname;
+    size_t      len;
+    digld_error err;
 
     if( parms == NULL || *parms == '\0' )
         parms = DEFAULT_TRP_NAME;
-    for( ; (chr = *parms) != '\0'; parms++ ) {
-        if( chr == TRAP_PARM_SEPARATOR ) {
+    trpname = parms;
+    len = 0;
+    for( ; *parms != '\0'; parms++ ) {
+        if( *parms == TRAP_PARM_SEPARATOR ) {
             parms++;
             break;
         }
+        len++;
     }
     *trap_ver = TrapInit( parms, buff, trap_ver->remote );
+    err = DIGS_ERR_BUF;
     if( buff[0] == '\0' ) {
         if( TrapVersionOK( *trap_ver ) ) {
             TrapVer = *trap_ver;
             ReqFunc = TrapRequest;
-            return( NULL );
+            return( DIGS_OK );
         }
-        strcpy( buff, TC_ERR_WRONG_TRAP_VERSION );
+        err = DIGS_ERR_WRONG_MODULE_VERSION;
     }
-    KillTrap();
-    return( buff );
+    UnLoadTrap();
+    return( err );
 }

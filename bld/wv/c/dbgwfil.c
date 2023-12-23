@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,15 +31,13 @@
 
 
 #include <limits.h>
-#include "_srcmgt.h"
+#include "srcmgt.h"
 #include "dbgdata.h"
 #include "dbgwind.h"
 #include "dbgadget.h"
 #include "dbgerr.h"
-#include "dbgmem.h"
 #include "dbgitem.h"
 #include "dbgstk.h"
-#include "srcmgt.h"
 #include "strutil.h"
 #include "dbgscan.h"
 #include "dbgutil.h"
@@ -482,7 +480,7 @@ static  bool    FileGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_lin
             /* TxtBuff has length TXT_LEN which is significantly bigger
              * then MAX_LINE_LEN + 4, there is enough space to add overflow mark
              */
-            StrCopy( " ...", TxtBuff + MAX_LINE_LEN );
+            StrCopyDst( " ...", TxtBuff + MAX_LINE_LEN );
         } else {
             TxtBuff[len] = NULLCHAR;
         }
@@ -540,19 +538,19 @@ static void FileSetTitle( a_window wnd, mod_handle mod )
     file_window *file = WndFile( wnd );
 
     if( file->track ) {
-        p = StrCopy( ": ", StrCopy( LIT_DUI( WindowSource ), TxtBuff ) );
+        p = StrCopyDst( ": ", StrCopyDst( LIT_DUI( WindowSource ), TxtBuff ) );
     } else {
         p = TxtBuff;
     }
     if( file->viewhndl != NULL ) {
-        p = StrCopy( SkipPathInfo( FGetName( file->viewhndl ), 0 ), p );
+        p = StrCopyDst( SkipPathInfo( FGetName( file->viewhndl ), 0 ), p );
     } else if( file->mod != NO_MOD ) {
         p += DIPModName( file->mod, p, TXT_LEN );
     }
     image_name = ModImageName( mod );
     if( image_name[0] != NULLCHAR ) {
-        p = StrCopy( "(", StrCopy( " ", p ) );
-        p = StrCopy( ")", StrCopy( SkipPathInfo( image_name, OP_REMOTE ), p ) );
+        p = StrCopyDst( "(", StrCopyDst( " ", p ) );
+        p = StrCopyDst( ")", StrCopyDst( SkipPathInfo( image_name, OP_REMOTE ), p ) );
     }
     WndSetTitle( wnd, TxtBuff );
 }

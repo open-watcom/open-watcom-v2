@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,11 +37,24 @@
 #include "ex.h"
 #include "specio.h"
 #include "source.h"
+#include "myprintf.h"
+#include "tokenize.h"
+#include "parse.h"
+
 
 static sfile        *tmpTail;
 static bool         hasVar;
 static labels       *cLab;
 static jmp_buf      genExit;
+
+/*
+ * language tokens
+ */
+static const char _NEAR SourceTokens[] = {
+    #define PICK(a,b) a "\0"
+    #include "srckeys.h"
+    #undef PICK
+};
 
 void AbortGen( vi_rc rc )
 {
@@ -114,7 +127,7 @@ void GenJmpIf( branch_cond when, const char *where )
 } /* GenJmpIf */
 
 /*
- * GenJmp - stick a jump before current statment
+ * GenJmp - stick a jump before current statement
  */
 void GenJmp( const char *where )
 {
@@ -125,7 +138,7 @@ void GenJmp( const char *where )
 } /* GenJmp */
 
 /*
- * GenLabel1 - stick a label before current statment
+ * GenLabel1 - stick a label before current statement
  */
 static const char *GenLabel1( const char *where )
 {
@@ -141,7 +154,7 @@ static const char *GenLabel1( const char *where )
 } /* GenLabel */
 
 /*
- * GenLabel - stick a label before current statment
+ * GenLabel - stick a label before current statement
  */
 void GenLabel( char *where )
 {

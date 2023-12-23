@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,123 +33,20 @@
 
 #ifndef MADX64_H
 #define MADX64_H
-#include "digpck.h"
-enum x64_cputypes {
-        X64_CPU1 = 0x01,
-};
 
-enum x64_fputypes {
-        X64_FPU1 = 0x01,
-};
-
-enum x64_machine_data {
+typedef enum {
     X64MD_ADDR_CHARACTERISTICS
-};
+} x64_machine_data;
 
-enum x64_addr_characteristics {
-    X64AC_BIG   = 0x01
-};
+typedef enum {
+    X64AC_BIG       = 0x01
+} x64_addr_characteristics;
 
-typedef struct {
-    union {
-        unsigned_64     q[2];
-        unsigned_32     d[4];
-        unsigned_16     w[8];
-        unsigned_8      b[16];
-    } u;
-} xmm_reg;
-
-struct x64_cpu {
-    unsigned_16 cs;
-    unsigned_16 ds;
-    unsigned_16 es;
-    unsigned_16 fs;
-    unsigned_16 gs;
-    unsigned_16 ss;
-    unsigned_32 eflags;
-
-    unsigned_64 dr0;
-    unsigned_64 dr1;
-    unsigned_64 dr2;
-    unsigned_64 dr3;
-    unsigned_64 dr6;
-    unsigned_64 dr7;
-
-    unsigned_64 rax;
-    unsigned_64 rcx;
-    unsigned_64 rdx;
-    unsigned_64 rbx;
-    unsigned_64 rsp;
-    unsigned_64 rbp;
-    unsigned_64 rsi;
-    unsigned_64 rdi;
-    unsigned_64 r8;
-    unsigned_64 r9;
-    unsigned_64 r10;
-    unsigned_64 r11;
-    unsigned_64 r12;
-    unsigned_64 r13;
-    unsigned_64 r14;
-    unsigned_64 r15;
-
-    unsigned_64 rip;
-
-};
-
-typedef struct {
-        unsigned_16     low    : 16;
-        unsigned_16     __fill1: 16;
-        unsigned_16     opcode : 11;    /* not really there for data ptr */
-        unsigned_16     __fill2: 1;
-        unsigned_16     hi     : 4;     /* really should be 16 bits */
-} fpu_ptr_rm;
-
-typedef struct {
-        unsigned_32     offset;
-        unsigned_32     segment;
-} fpu_ptr_pm;
-
-typedef union {
-        fpu_ptr_pm      p;
-        fpu_ptr_rm      r;
-} fpu_ptr;
-
-struct x64_fpu {
-    unsigned_32         cw;
-    unsigned_32         sw;
-    unsigned_32         tag;
-    fpu_ptr             ip_err;
-    fpu_ptr             op_err;
-    xreal               reg[8];
-};
-
-typedef struct {
-    union {
-        unsigned_64     q[1];
-        unsigned_32     d[2];
-        unsigned_16     w[4];
-        unsigned_8      b[8];
-    } u;
-    unsigned_16         _spacer;
-} mmx_reg;
-
-struct x64_mmx {
-    unsigned_32         _spacer[7];
-    mmx_reg             mm[8];
-};
-
-struct x64_xmm {
-    xmm_reg             xmm[8];
-    unsigned_32         mxcsr;
-};
-
-struct x64_mad_registers {
-    struct x64_cpu      cpu;
-    union {
-        struct x64_fpu  fpu;
-        struct x64_mmx  mmx;
-    } u;
-    struct x64_xmm      xmm;
+enum {
+    TAG_VALID       = 0x0,
+    TAG_ZERO        = 0x1,
+    TAG_INVALID     = 0x2,
+    TAG_EMPTY       = 0x3
 };
 
 #define BIT( name, shift, len ) SHIFT_##name = shift, LEN_##name = len
@@ -225,10 +123,109 @@ enum {
     BIT_MXCSR( fz,    15, 1 )
 };
 
-enum {  TAG_VALID       = 0x0,
-        TAG_ZERO        = 0x1,
-        TAG_INVALID     = 0x2,
-        TAG_EMPTY       = 0x3 };
+#include "digpck.h"
+typedef unsigned_8      x64_addrflags;
 
+typedef struct {
+    union {
+        unsigned_64     q[2];
+        unsigned_32     d[4];
+        unsigned_16     w[8];
+        unsigned_8      b[16];
+    } u;
+} xmm_reg;
+
+struct x64_cpu {
+    unsigned_16         cs;
+    unsigned_16         ds;
+    unsigned_16         es;
+    unsigned_16         fs;
+    unsigned_16         gs;
+    unsigned_16         ss;
+    unsigned_32         eflags;
+
+    unsigned_64         dr0;
+    unsigned_64         dr1;
+    unsigned_64         dr2;
+    unsigned_64         dr3;
+    unsigned_64         dr6;
+    unsigned_64         dr7;
+
+    unsigned_64         rax;
+    unsigned_64         rcx;
+    unsigned_64         rdx;
+    unsigned_64         rbx;
+    unsigned_64         rsp;
+    unsigned_64         rbp;
+    unsigned_64         rsi;
+    unsigned_64         rdi;
+    unsigned_64         r8;
+    unsigned_64         r9;
+    unsigned_64         r10;
+    unsigned_64         r11;
+    unsigned_64         r12;
+    unsigned_64         r13;
+    unsigned_64         r14;
+    unsigned_64         r15;
+
+    unsigned_64         rip;
+};
+
+typedef struct {
+        unsigned_16     low    : 16;
+        unsigned_16     __fill1: 16;
+        unsigned_16     opcode : 11;    /* not really there for data ptr */
+        unsigned_16     __fill2: 1;
+        unsigned_16     hi     : 4;     /* really should be 16 bits */
+} fpu_ptr_rm;
+
+typedef struct {
+        unsigned_32     offset;
+        unsigned_32     segment;
+} fpu_ptr_pm;
+
+typedef union {
+        fpu_ptr_pm      p;
+        fpu_ptr_rm      r;
+} fpu_ptr;
+
+struct x64_fpu {
+    unsigned_32         cw;
+    unsigned_32         sw;
+    unsigned_32         tag;
+    fpu_ptr             ip_err;
+    fpu_ptr             op_err;
+    xreal               reg[8];
+};
+
+typedef struct {
+    union {
+        unsigned_64     q[1];
+        unsigned_32     d[2];
+        unsigned_16     w[4];
+        unsigned_8      b[8];
+    } u;
+    unsigned_16         _spacer;
+} mmx_reg;
+
+struct x64_mmx {
+    unsigned_32         _spacer[7];
+    mmx_reg             mm[8];
+};
+
+struct x64_xmm {
+    xmm_reg             xmm[8];
+    unsigned_32         mxcsr;
+};
+
+struct x64_mad_registers {
+    struct x64_cpu      cpu;
+    union {
+        struct x64_fpu  fpu;
+        struct x64_mmx  mmx;
+    } u;
+    struct x64_xmm      xmm;
+};
 #include "digunpck.h"
+
 #endif

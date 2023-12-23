@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,9 +30,15 @@
 ****************************************************************************/
 
 
+#include "digld.h"
+#include "trptypes.h"
+
+
 #define TRAP_PARM_SEPARATOR ';'
 
 #define DEFAULT_TRP_NAME    "std"
+
+#define TRAPSIGN        "TRAP"
 
 extern trap_version     TrapVer;
 extern trap_req_func    *ReqFunc;
@@ -46,11 +53,11 @@ extern int              CloseTrapTraceFile( void );
 
 /* Client interface routines */
 extern char             *LoadDumbTrap( trap_version * );
-extern char             *LoadTrap( const char *, char *, trap_version * );
+extern digld_error      LoadTrap( const char *, char *, trap_version * );
+extern void             UnLoadTrap( void );
 extern void             TrapSetFailCallBack( void (*func)(void) );
 extern unsigned         TrapAccess( trap_elen, in_mx_entry_p, trap_elen, mx_entry_p );
-extern unsigned         TrapSimpAccess( trap_elen, in_data_p, trap_elen, out_data_p );
-extern void             KillTrap( void );
+extern unsigned         TrapSimpleAccess( trap_elen, in_data_p, trap_elen, out_data_p );
 extern trap_load_func   TrapLoad;
 
 /* Client support routines */

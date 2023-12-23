@@ -12,7 +12,7 @@
 #define __SMALL__ 0            // To avoid warnings in MKS yacc
 #endif
 
-#pragma disable_message(118)
+#pragma disable_message(C118)
 %}
 
 /* Tokens for used by parsers.  NOTE: If any values are modified or added,

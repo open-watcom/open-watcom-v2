@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -70,7 +71,7 @@ typedef struct Action {
 } Action;
 
 typedef struct Span {
-    uint            ub;
+    Char            ub;
     struct State    *to;
 } Span;
 
@@ -94,14 +95,15 @@ typedef struct State {
 } State;
 
 typedef struct DFA {
-    uint            lbChar;
-    uint            ubChar;
+    Char            lbChar;
+    Char            ubChar;
     uint            nStates;
-    State           *head, **tail;
+    State           *head;
+    State           **tail;
     State           *toDo;
 } DFA;
 
-extern DFA      *DFA_new( Ins *, uint, uint, uint, Char *, uint );
+extern DFA      *DFA_new( Ins *, uint, Char, Char, Char *, uint );
 extern void     DFA_delete( DFA * );
 extern void     DFA_addState( DFA *, State **, State * );
 extern void     DFA_emit( DFA *, FILE * );

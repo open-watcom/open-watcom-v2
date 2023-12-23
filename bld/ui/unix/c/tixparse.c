@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -61,118 +61,158 @@
 #include "tixparse.h"
 #include "tixsupp.h"
 #include "trie.h"
+#include "uiintern.h"
+#include "uiextrn.h"
 #include "doparse.h"
 
 
-char            ti_char_map[256][MB_MAP_MAX];
+// macros for getting/setting bits in alt-char map
+#define ti_alt_map_set( x ) ( _ti_alt_map[( x ) / 8] |= ( 1 << ( ( x ) % 8 ) ) )
 
-static tix_status init_tix_scanner( const char *termname )
-/********************************************************/
+struct charmap {
+    char            vt100;
+    unsigned short  unicode;
+};
+
+
+unsigned char   _ti_alt_map[32];
+char            ti_char_map[256][MB_LEN_MAX];
+
+static const struct charmap default_tix[] = {
+    /* keep zero to handle casestrings */
+    {0,     0},
+
+    /* single line box drawing */
+    {'m',   0x2514}, /* UI_LLCORNER  */
+    {'j',   0x2518}, /* UI_LRCORNER  */
+    {'l',   0x250c}, /* UI_ULCORNER  */
+    {'k',   0x2510}, /* UI_URCORNER  */
+    {'q',   0x2500}, /* UI_HLINE     */
+    {'x',   0x2502}, /* UI_VLINE     */
+    {'w',   0x252c}, /* UI_TTEE      */
+    {'u',   0x2524}, /* UI_RTEE      */
+    {'t',   0x251c}, /* UI_LTEE      */
+
+    /* double line box drawing */
+    {'m',   0x255a}, /* UI_DLLCORNER */
+    {'j',   0x255d}, /* UI_DLRCORNER */
+    {'l',   0x2554}, /* UI_DULCORNER */
+    {'k',   0x2557}, /* UI_DURCORNER */
+    {'q',   0x2550}, /* UI_DHLINE    */
+    {'x',   0x2551}, /* UI_DVLINE    */
+
+    /* triangles */
+    {'.',   0x25bc}, /* UI_DPOINT    */ // 0x2193
+    {',',   0x25c4}, /* UI_LPOINT    */ // 0x2190
+    {'+',   0x25ba}, /* UI_RPOINT    */ // 0x2192
+    {'-',   0x25b2}, /* UI_UPOINT    */ // 0x2191
+
+    /* arrows */
+    {'.',   0x2193}, /* UI_DARROW    */
+    {'/',   0x2195}, /* UI_UDARROW   */
+
+    /* boxes */
+    {'\xa0',0x2584}, /* UI_DBLOCK    */
+    {'0',   0x258c}, /* UI_LBLOCK    */
+    {'\xa0',0x2590}, /* UI_RBLOCK    */
+    {'0',   0x2580}, /* UI_UBLOCK    */
+    {'a',   0x2591}, /* UI_CKBOARD   */
+    {'h',   0x2592}, /* UI_BOARD     */
+    {'0',   0x2588}, /* UI_BLOCK     */
+
+    /* misc */
+    {'h',   0x25a0}, /* UI_SQUARE    */
+    {'*',   0x221a}, /* UI_ROOT      */
+    {'=',   0x2261}, /* UI_EQUIVALENT*/
+};
+
+static const char acs_default[] = "q-x|l+m+k+j+n+w+v+t+u+~o+>,<-^.v0#f\\g#a:h#";
+static const char alt_keys[] = "QWERTYUIOP[]\r\0ASDFGHJKL;'`\0\\ZXCVBNM,./";
+static const char alt_num_keys[] = "1234567890-=";
+
+static char find_acs_map( char c, const char *acs )
+{
+    char    ch;
+
+    while( (ch = *acs++) != '\0' ) {
+        if( ch == c )
+            return( *acs );
+        if( *acs++ == '\0' ) {
+            break;
+        }
+    }
+    return( '\0' );
+}
+
+static char set_ti_alt_map( unsigned i, char c )
+{
+    char    cmap;
+
+    cmap = find_acs_map( c, acs_chars );
+    if( cmap != '\0' ) {
+        ti_alt_map_set( i );
+    } else {
+        cmap = find_acs_map( c, acs_default );
+        if( cmap == '\0' ) {
+            cmap = c;
+            ti_alt_map_set( i );
+        }
+    }
+    return( cmap );
+}
+
+static tix_status init_tix_scanner( const char *termname, FILE **in_file )
+/************************************************************************/
 {
     char        *tix_name;
     size_t      len;
     tix_status  rc;
+    FILE        *fp;
 
-    in_file = NULL;
+    fp = NULL;
     rc = TIX_OK;
     if( *termname != '\0' ) {
         len = strlen( termname ) + 5;
         tix_name = uimalloc( len );
         strcpy( tix_name, termname );
         strcat( tix_name, ".tix" );
-        in_file = ti_fopen( tix_name );
+        fp = ti_fopen( tix_name );
         uifree( tix_name );
-        if( in_file == NULL ) {
+        if( fp == NULL ) {
             if( strstr( termname, "ansi" ) != 0 ) {
-                in_file = ti_fopen( "ansi.tix" );
+                fp = ti_fopen( "ansi.tix" );
             } else if( strstr( termname, "xterm" ) != 0 ) {
-                in_file = ti_fopen( "xterm.tix" );
-                if( in_file == NULL ) {
-                    in_file = ti_fopen( "ansi.tix" );
+                fp = ti_fopen( "xterm.tix" );
+                if( fp == NULL ) {
+                    fp = ti_fopen( "ansi.tix" );
                 }
             }
         }
     }
-    if( in_file == NULL ) {
+    if( fp == NULL ) {
         rc = TIX_NOFILE;
-        in_file = ti_fopen( "default.tix" );
-        if( in_file != NULL ) {
+        fp = ti_fopen( "default.tix" );
+        if( fp != NULL ) {
             rc = TIX_DEFAULT;
         }
     }
+    *in_file = fp;
     return( rc );
 }
 
-static void close_tix_scanner( void )
-/***********************************/
+static void close_tix_scanner( FILE *in_file )
+/********************************************/
 {
     if( in_file != NULL ) {
         fclose( in_file );
-        in_file = NULL;
     }
 }
-
-struct charmap {
-    unsigned char vt100;
-    unsigned short unicode;
-};
-
-static const struct charmap default_tix[] = {
-    /* keep zero to handle casestrings */
-    {0, 0},
-
-    /* single line box drawing */
-    {'m', 0x2514}, /* UI_LLCORNER  */
-    {'j', 0x2518}, /* UI_LRCORNER  */
-    {'l', 0x250c}, /* UI_ULCORNER  */
-    {'k', 0x2510}, /* UI_URCORNER  */
-    {'q', 0x2500}, /* UI_HLINE     */
-    {'x', 0x2502}, /* UI_VLINE     */
-    {'w', 0x252c}, /* UI_TTEE      */
-    {'u', 0x2524}, /* UI_RTEE      */
-    {'t', 0x251c}, /* UI_LTEE      */
-
-    /* double line box drawing */
-    {'m', 0x255a}, /* UI_DLLCORNER */
-    {'j', 0x255d}, /* UI_DLRCORNER */
-    {'l', 0x2554}, /* UI_DULCORNER */
-    {'k', 0x2557}, /* UI_DURCORNER */
-    {'q', 0x2550}, /* UI_DHLINE    */
-    {'x', 0x2551}, /* UI_DVLINE    */
-
-    /* triangles */
-    {'.', 0x25bc}, /* UI_DPOINT    */ // 0x2193
-    {',', 0x25c4}, /* UI_LPOINT    */ // 0x2190
-    {'+', 0x25ba}, /* UI_RPOINT    */ // 0x2192
-    {'-', 0x25b2}, /* UI_UPOINT    */ // 0x2191
-
-    /* arrows */
-    {'.', 0x2193}, /* UI_DARROW    */
-    {'/', 0x2195}, /* UI_UDARROW   */
-
-    /* boxes */
-    {0xa0,0x2584}, /* UI_DBLOCK    */
-    {'0', 0x258c}, /* UI_LBLOCK    */
-    {0xa0,0x2590}, /* UI_RBLOCK    */
-    {'0', 0x2580}, /* UI_UBLOCK    */
-    {'a', 0x2591}, /* UI_CKBOARD   */
-    {'h', 0x2592}, /* UI_BOARD     */
-    {'0', 0x2588}, /* UI_BLOCK     */
-
-    /* misc */
-    {'h', 0x25a0}, /* UI_SQUARE    */
-    {'*', 0x221a}, /* UI_ROOT      */
-    {'=', 0x2261}, /* UI_EQUIVALENT*/
-};
-
-static const char alt_keys[] = "QWERTYUIOP[]\r\0ASDFGHJKL;'`\0\\ZXCVBNM,./";
-static const char alt_num_keys[] = "1234567890-=";
 
 /* use above table if no .tix file is found */
 static int do_default( void )
 /***************************/
 {
-    unsigned char       c;
+    char                c;
     int                 i;
     char                esc_str[3];
 
@@ -184,6 +224,7 @@ static int do_default( void )
         if( (c & 0x80) == 0 )
             c = set_ti_alt_map( i, c );
         ti_char_map[i][0] = c;
+        ti_char_map[i][1] = 0;
     }
     for( i = 0; i < sizeof( alt_keys ); i++ ) {
         if( alt_keys[i] ) {
@@ -209,6 +250,25 @@ static int do_default( void )
 }
 
 
+void ti_map_display_code( char c, bool alt_map )
+{
+    if( alt_map ) {
+        ti_char_map[TT_CODE][0] = set_ti_alt_map( TT_CODE, c );
+    } else {
+        ti_char_map[TT_CODE][0] = c;
+    }
+    ti_char_map[TT_CODE][1] = 0;
+}
+
+void tix_error( const char *str )
+{
+    uiwritec( "\nError in " );
+    uiwrite( GetTermType() );
+    uiwritec( ": " );
+    uiwrite( str );
+    uiwritec( "\n" );
+}
+
 tix_status ti_read_tix( const char *termname )
 /********************************************/
 {
@@ -216,13 +276,15 @@ tix_status ti_read_tix( const char *termname )
     tix_status  ret;
     const char  *s;
     int         utf8_mode = 0;
+    FILE        *in_file;
 
     memset( _ti_alt_map, 0, sizeof( _ti_alt_map ) );
 
-    for( i = 0; i < sizeof( ti_char_map ) / sizeof( ti_char_map[0] ); i++ )
+    for( i = 0; i < sizeof( ti_char_map ) / sizeof( ti_char_map[0] ); i++ ) {
         ti_char_map[i][0] = i;
-
-    ret = init_tix_scanner( termname );
+        ti_char_map[i][1] = 0;
+    }
+    ret = init_tix_scanner( termname, &in_file );
     switch( ret ) {
     case TIX_NOFILE:
         do_default();
@@ -230,11 +292,11 @@ tix_status ti_read_tix( const char *termname )
         break;
     case TIX_OK:
     case TIX_DEFAULT:
-        if( !do_parse() )
+        if( !do_parse( in_file ) )
             ret = TIX_FAIL;
-        close_tix_scanner();
         break;
     }
+    close_tix_scanner( in_file );
 
     if( ( (s = getenv( "LC_ALL" )) != NULL && *s != '\0' ) ||
          ( (s = getenv( "LC_CTYPE" )) != NULL && *s != '\0' ) ||

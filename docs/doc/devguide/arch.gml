@@ -169,17 +169,34 @@ or pretend to be Jim Welch
 .* .fn end
 in order to get a debuggable version of the executable.
 .np
-There is more than one way to switch between development and release build.
-A
-.id OWDEBUGBUILD
-environment variable provides global control. When set to 1, debug builds
-are produced, otherwise release builds are created. When building individual
-projects with wmake, it is also possible to give the
-.us release
-macro on the wmake command line (0 means debug build, 1 means release build).
+There is more than one way to switch between development, debug and release
+build.
 .np
-Perhaps it should be noted that "releasable" build still contains debugging
-information, but only at the -d1 level and in a separate .sym file. In case
+.begbull
+.bull
+.id OWDEVBUILD
+environment variable provides global control. When set to 1, development debug
+build is produced.
+.bull
+.id OWDEBUGBUILD
+environment variable provides global control. When set to 1, debug build is
+produced.
+.bull
+Otherwise standard release build is created.
+.endbull
+When building individual projects with wmake, it is also possible to give the
+.us debug
+macro on the wmake command line.
+.begnote
+.note 0
+means release build
+.note 1
+means debug build
+.note 2
+means development debug build
+.endnote
+Perhaps it should be noted that "release" build contains minimal debugging
+information, only at the -d1 level and in a separate .sym file. In case
 of crashes or other highly unusual behaviour, release build should be enough
 to point you in the right direction but usually not sufficient to fully
 diagnose and rectify the problem.

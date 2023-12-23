@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,5 +30,5 @@
 ****************************************************************************/
 
 
-extern bool jmp( expr_list *opndx, int *flags );
+extern bool jmp( token_buffer *tokbuf, expr_list *opndx, int *flags );
 extern bool ptr_operator( memtype mem_type, bool fix_mem_type );

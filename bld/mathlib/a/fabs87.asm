@@ -2,6 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
+;* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -30,11 +31,6 @@
 ;*****************************************************************************
 
 
-ifdef __386__
- .387
-else
- .8087
-endif
 include mdef.inc
 include math87.inc
 
@@ -44,27 +40,19 @@ include math87.inc
 
         xdefp    "C",fabs       ; double fabs( double x )
 
-ifndef __386__
-if _MODEL and _BIG_CODE
-argx    equ     6
-else
-argx    equ     4
-endif
-endif
-
 ;  input:       x - on the stack
 ;  output:      absolute value of x in st(0)
 ;
         defp    fabs
 ifdef __386__
-        and     byte ptr 4+7[ESP],7Fh   ; turn off sign bit
-ifdef __STACK__
-        mov     EAX,4[ESP]              ; load value
-        mov     EDX,8[ESP]              ; ...
-else
-        fld     qword ptr 4[ESP]        ; load value
+        and     byte ptr argx+7[ESP],7Fh; turn off sign bit
+ ifdef __STACK__
+        mov     EAX,argx[ESP]           ; load value
+        mov     EDX,argx+4[ESP]         ; ...
+ else
+        fld     qword ptr argx[ESP]     ; load value
         fwait                           ; wait
-endif
+ endif
 else
         push    BP                      ; save BP
         mov     BP,SP                   ; get access to stack

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,8 +45,7 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern bool WRReadResData( FILE *fp, BYTE *data, size_t length );
-extern bool WRWriteResData( FILE *fp, BYTE *data, size_t length );
-extern void *WRCopyExistingData( WResLangNode *lnode );
+extern bool WRReadResData( FILE *fp, char *data, size_t length );
+extern bool WRWriteResData( FILE *fp, char *data, size_t length );
 
 #endif

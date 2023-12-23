@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -347,18 +347,18 @@ void GetBPAddr( brkp *bp, char *buff )
     char                *p;
 
     if( bp->status.b.unmapped ) {
-        p = StrCopy( LIT_ENG( Image_Not_Loaded ), buff );
+        p = StrCopyDst( LIT_ENG( Image_Not_Loaded ), buff );
         if( bp->image_name != NULL ) {
             *p++ = '(';
-            p = StrCopy( bp->image_name, p );
+            p = StrCopyDst( bp->image_name, p );
             *p++ = ')';
         }
     } else if( !IS_BP_EXECUTE( bp->mth ) && bp->source_line != NULL ) {
-        p = StrCopy( bp->source_line, buff );
+        p = StrCopyDst( bp->source_line, buff );
     } else {
         p = CnvNearestAddr( bp->loc.addr, buff, TXT_LEN );
     }
-    StrCopy( ":", p );
+    StrCopyDst( ":", p );
 }
 
 
@@ -367,7 +367,7 @@ void GetBPText( brkp *bp, char *buff )
     size_t      max;
 
     //MAD: might be a different mad then when break set
-    max = ~0;
+    max = TXT_LEN;
     if( IS_BP_EXECUTE( bp->mth ) ) {
         if( bp->source_line != NULL ) {
             strcpy( buff, bp->source_line );
@@ -431,9 +431,10 @@ static char *StrVal( char *which, brkp *wp, char *p )
 {
     size_t      max;
 
-    for( *p++ = ' '; *which != NULLCHAR; *p++ = *which++ ) {}
+    for( *p++ = ' '; *which != NULLCHAR; *p++ = *which++ )
+        {}
     *p++ = '=';
-    max = ~0;
+    max = TXT_LEN;
     MADTypeHandleToString( CurrRadix, wp->mth, &wp->item, p, &max );
     p += max;
     return( p );
@@ -446,9 +447,9 @@ static char     *GetBPAddrText( brkp *bp, char *p )
         p = Format( p, LIT_ENG( Break_on_execute ) );
         p = Format( p, BrkFmt(), bp->loc.addr );
     } else {
-        p = StrCopy( LIT_ENG( Break_on_write ), p );
+        p = StrCopyDst( LIT_ENG( Break_on_write ), p );
         if( bp->source_line != NULL ) {
-            p = StrCopy( bp->source_line, p );
+            p = StrCopyDst( bp->source_line, p );
         } else {
             p = Format( p, "%a", bp->loc.addr );
         }
@@ -481,7 +482,7 @@ bool DispBPMsg( bool stack_cmds )
         if( !bp->status.b.silent ) {
             p = GetBPAddrText( bp, TxtBuff );
             if( !IS_BP_EXECUTE( bp->mth ) ) {
-                p = StrCopy( " - ", p );
+                p = StrCopyDst( " - ", p );
                 p = StrVal( LIT_ENG( OldVal ), bp, p );
                 GetWPVal( bp );
                 p = StrVal( LIT_ENG( NewVal ), bp, p );
@@ -560,7 +561,7 @@ static char *GetBPCmd( brkp *bp, brk_event event, char *buff, unsigned buff_len 
             *p++ = '/';
             p = GetCmdEntry( PointNameTab, B_MAPADDRESS, p );
             *p++ = ' ';
-            p = StrCopy( bp->loc.image_name, p );
+            p = StrCopyDst( bp->loc.image_name, p );
             *p++ = ' ';
             p = AddHexSpec( p );
             p = CnvULongHex( bp->loc.addr.mach.segment, p, end - p );
@@ -575,11 +576,11 @@ static char *GetBPCmd( brkp *bp, brk_event event, char *buff, unsigned buff_len 
             *p++ = '/';
             p = GetCmdEntry( PointNameTab, B_SYMADDRESS, p );
             *p++ = ' ';
-            p = StrCopy( bp->image_name, p );
+            p = StrCopyDst( bp->image_name, p );
             *p++ = ' ';
-            p = StrCopy( bp->mod_name, p );
+            p = StrCopyDst( bp->mod_name, p );
             *p++ = ' ';
-            p = StrCopy( bp->sym_name, p );
+            p = StrCopyDst( bp->sym_name, p );
             *p++ = ' ';
             p = AddHexSpec( p );
             p = CnvULongHex( bp->cue_diff, p, end - p );
@@ -593,7 +594,7 @@ static char *GetBPCmd( brkp *bp, brk_event event, char *buff, unsigned buff_len 
         }
         p = Format( p, " {%s} {%s}", cmds, cond );
         if( bp->initial_countdown != 0 ) {
-            p = StrCopy( " ", p );
+            p = StrCopyDst( " ", p );
             p = AddHexSpec( p );
             p = CnvULongHex( bp->initial_countdown, p, end - p );
         }
@@ -782,7 +783,7 @@ void GetBreakOnImageCmd( const char *name, char *buff, bool clear )
         p = GetCmdEntry( PointNameTab, B_CLEAR, p );
     }
     *p++ = ' ';
-    p = StrCopy( name, p );
+    p = StrCopyDst( name, p );
 }
 
 
@@ -1042,7 +1043,8 @@ char *CopySourceLine( cue_handle *cueh )
 
     if( !DUIGetSourceLine( cueh, TxtBuff, TXT_LEN ) )
         return( NULL );
-    for( p = TxtBuff; *p == ' '; ++p ) ;
+    for( p = TxtBuff; *p == ' '; ++p )
+        {}
     source_line = DupStr( p );
     return( source_line );
 }
@@ -1055,12 +1057,12 @@ bool GetBPSymAddr( brkp *bp, address *addr )
 
     p = buff;
     if( bp->image_name != NULL ) {
-        p = StrCopy( bp->image_name, p );
-        p = StrCopy( "@", p );
+        p = StrCopyDst( bp->image_name, p );
+        p = StrCopyDst( "@", p );
     }
-    p = StrCopy( bp->mod_name, p );
-    p = StrCopy( "@", p );
-    p = StrCopy( bp->sym_name, p );
+    p = StrCopyDst( bp->mod_name, p );
+    p = StrCopyDst( "@", p );
+    p = StrCopyDst( bp->sym_name, p );
     _SwitchOn( SW_AMBIGUITY_FATAL );
     rc = DlgScanCodeAddr( buff, addr );
     _SwitchOff( SW_AMBIGUITY_FATAL );
@@ -1217,7 +1219,7 @@ static brkp *AddPoint( address loc, mad_type_handle mth, bool unmapped )
     bp->status.b.use_condition = false;
     bp->error = NULL;
     for( owner = &BrkList; *owner != NULL; owner = &((*owner)->next) )
-        ;
+        {}
     bp->next = NULL;
     *owner = bp;
     if( HaveRemoteAsync() && IS_BP_EXECUTE( bp->mth ) ) {
@@ -1339,7 +1341,7 @@ void SetBPPatch( brkp *bp, char *patch )
 {
     char        *end;
 
-    end = StrCopy( patch, StrCopy( " ", StrCopy( GetCmdName( CMD_DO ), TxtBuff ) ) );
+    end = StrCopyDst( patch, StrCopyDst( " ", StrCopyDst( GetCmdName( CMD_DO ), TxtBuff ) ) );
     if( bp->cmds != NULL ) {
         FreeCmdList( bp->cmds );
     }
@@ -1501,11 +1503,8 @@ static brkp *SetPoint( memory_expr def_seg, mad_type_handle mth )
         case 1:
         case 2:
         case 4:
-            break;
         case 8:
-            if( Is8ByteBreakpointsSupported() )
-                break;
-            /* fall through */
+            break;
         default:
             Error( ERR_NONE, LIT_ENG( ERR_NOT_WATCH_SIZE ) );
             break;
@@ -1555,14 +1554,10 @@ bool BreakWrite( address addr, mad_type_handle mth, const char *comment )
         return( false );
     MADTypeInfo( mth, &mti );
     switch( BITS2BYTES( mti.b.bits ) ) {
-    case 8:
-        if( !Is8ByteBreakpointsSupported() ) {
-            ok_to_try = false;
-        }
-        /* fall through */
     case 1:
     case 2:
     case 4:
+    case 8:
         if( ok_to_try ) {
             if(  FindBreak( addr ) != NULL ) {
                 Error( ERR_NONE, LIT_ENG( ERR_POINT_EXISTS ) );
@@ -1763,8 +1758,9 @@ unsigned CheckBPs( unsigned conditions, unsigned run_conditions )
                             }
                         }
 
-                        if( !drop_hit )
+                        if( !drop_hit ) {
                             hit = true;
+                        }
                     } else {
                         if( ( memcmp( &bp->item, &item, BITS2BYTES( mti.b.bits ) ) != 0 ) || !bp->status.b.has_value ) {
                             hit = true;
@@ -2008,7 +2004,7 @@ brkp *GetBPAtIndex( int index )
     brkp    *bp = NULL;
 
     for( bp = BrkList; bp != NULL; bp = bp->next ) {
-        if ( bp->index == index ) {
+        if( bp->index == index ) {
             break;
         }
     }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -51,8 +51,6 @@ static const char *usageTxt[] = {
     "\t\t -x : Display differences in hex",
     NULL
 };
-
-char *OptEnvVar = "cmp";
 
 int     flagKeepGoing;
 int     flagSayNothing;
@@ -130,15 +128,18 @@ static int cmp( int fh[2], char *names[2], long offs[2] ) {
 int main( int argc, char **argv )
 {
     int         ch;
-    long        offs[2];
     int         i;
     int         fh[2];
+    long        offs[2];
+    char        *names[2];
+    int         rc;
 
-    argv = ExpandEnv( &argc, argv );
+    argv = ExpandEnv( &argc, argv, "CMP" );
 
     for(;;) {
         ch = GetOpt( &argc, argv, "lsx", usageTxt );
-        if( ch == -1 ) break;
+        if( ch == -1 )
+            break;
         switch( ch ) {
         case 'l':
             flagKeepGoing = 1;
@@ -154,6 +155,8 @@ int main( int argc, char **argv )
     if( argc < 3 || argc > 5 ) {
         Quit( usageTxt, "invalid number of arguments\n" );
     }
+    names[0] = argv[1];
+    names[1] = argv[2];
     offs[0] = offs[1] = 0;
     if( argc > 3 ) {
         offs[0] = strtol( argv[3], NULL, 0 );
@@ -161,26 +164,27 @@ int main( int argc, char **argv )
             offs[1] = strtol( argv[4], NULL, 0 );
         }
     }
-    ++argv;             // don't care about argv[0]
     for( i = 0; i < 2; ++i ) {
-        if( argv[i][0] == '-' && argv[i][1] == 0 ) {
+        if( names[i][0] == '-' && names[i][1] == 0 ) {
             if( i == 1 && fh[0] == STDIN_FILENO ) {
                 Die( "cmp: only one argument can be stdin\n" );
             }
             fh[i] = STDIN_FILENO;
-            argv[i] = "(stdin)";
+            names[i] = "(stdin)";
         } else {
-            fh[i] = open( argv[i], O_RDONLY | O_BINARY );
+            fh[i] = open( names[i], O_RDONLY | O_BINARY );
             if( fh[i] == -1 ) {
-                Die( "unable to open %s: %s\n", argv[i], strerror( errno ) );
+                Die( "unable to open %s: %s\n", names[i], strerror( errno ) );
             }
         }
         if( offs[i] ) {
             if( lseek( fh[i], offs[i], SEEK_SET ) == -1L ) {
-                Die( "error seeking to %s in %s: %s\n", argv[i+2], argv[i],
-                            strerror( errno ) );
+                Die( "error seeking to %ld in %s: %s\n", offs[i], names[i], strerror( errno ) );
             }
         }
     }
-    return( cmp( fh, argv, offs ) );
+    rc = cmp( fh, names, offs );
+    MemFree( argv );
+
+    return( rc );
 }

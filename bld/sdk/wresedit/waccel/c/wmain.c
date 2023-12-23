@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -170,11 +170,11 @@ void WRESEAPI WAccelInit( void )
 
     inst = WGetEditInstance();
     if( AccelTable == (HACCEL)NULL ) {
-        AccelTable = LoadAccelerators( inst, "WAccelAccelTable");
+        AccelTable = LoadAccelerators( inst, "WAccelAccelTable" );
     }
     if( ref_count == 0 ) {
         WRInit();
-        SetInstance( inst );
+        SetRCInstance( inst );
         WInit( inst );
     }
     ref_count++;
@@ -202,7 +202,7 @@ WAccelHandle WRESEAPI WAccelStartEdit( WAccelInfo *info )
         if( appWidth == -1 ) {
             WInitEditDlg( WGetEditInstance(), info->parent );
         }
-        ok = ((einfo = WAllocAccelEInfo()) != NULL);
+        ok = ((einfo = WAllocAccelEditInfo()) != NULL);
     }
 
     if( ok ) {
@@ -237,7 +237,7 @@ WAccelHandle WRESEAPI WAccelStartEdit( WAccelInfo *info )
 
     if( !ok ) {
         if( einfo != NULL ) {
-            WFreeAccelEInfo( einfo );
+            WFreeAccelEditInfo( einfo );
         }
         return( 0 );
     }
@@ -330,7 +330,7 @@ WAccelInfo *WAccelGetEInfo( WAccelHandle hndl, bool keep )
         }
         if( !keep ) {
             WUnRegisterEditSession( hndl );
-            WFreeAccelEInfo( einfo );
+            WFreeAccelEditInfo( einfo );
         }
     }
 
@@ -417,7 +417,7 @@ char *WCreateEditTitle( WAccelEditInfo *einfo )
     char        *title;
     char        *fname;
     char        *text;
-    int         offset;
+    size_t      offset;
     size_t      len;
 
     title = NULL;
@@ -609,8 +609,7 @@ static void handleSymbols( WAccelEditInfo *einfo )
     WResolveAllEntrySymIDs( einfo );
 
     text = WGetStrFromEdit( GetDlgItem( einfo->edit_dlg, IDM_ACCEDCMDID ), NULL );
-    WRAddSymbolsToComboBox( einfo->info->symbol_table, einfo->edit_dlg,
-                            IDM_ACCEDCMDID, WR_HASHENTRY_ALL );
+    WRAddSymbolsToComboBox( einfo->info->symbol_table, einfo->edit_dlg, IDM_ACCEDCMDID, WR_HASHENTRY_ALL );
     if( text != NULL ) {
         WSetEditWithStr( GetDlgItem( einfo->edit_dlg, IDM_ACCEDCMDID ), text );
         WRMemFree( text );
@@ -623,8 +622,7 @@ static void handleLoadSymbols( WAccelEditInfo *einfo )
 {
     char        *file;
 
-    file = WLoadSymbols( &einfo->info->symbol_table, einfo->info->symbol_file,
-                         einfo->win, TRUE );
+    file = WLoadSymbols( &einfo->info->symbol_table, einfo->info->symbol_file, einfo->win, true );
     if( file == NULL ) {
         return;
     }
@@ -646,8 +644,7 @@ static void handleLoadSymbols( WAccelEditInfo *einfo )
         SendDlgItemMessage( einfo->edit_dlg, IDM_ACCEDLIST, LB_SETCURSEL, (WPARAM)einfo->current_pos, 0 );
     }
 
-    WRAddSymbolsToComboBox( einfo->info->symbol_table, einfo->edit_dlg,
-                            IDM_ACCEDCMDID, WR_HASHENTRY_ALL );
+    WRAddSymbolsToComboBox( einfo->info->symbol_table, einfo->edit_dlg, IDM_ACCEDCMDID, WR_HASHENTRY_ALL );
 
     einfo->info->modified = true;
 
@@ -805,23 +802,22 @@ WINEXPORT LRESULT CALLBACK WMainWndProc( HWND hWnd, UINT message, WPARAM wParam,
                     break;
                 }
             }
-            ret = SendMessage( einfo->info->parent, ACCEL_PLEASE_OPENME, 0,
-                               (LPARAM)einfo->hndl );
+            ret = SendMessage( einfo->info->parent, ACCEL_PLEASE_OPENME, 0, (LPARAM)einfo->hndl );
             ret = FALSE;
             break;
 
         case IDM_ACC_SAVE:
-            WSaveObject( einfo, FALSE, FALSE );
+            WSaveObject( einfo, false, false );
             pass_to_def = FALSE;
             break;
 
         case IDM_ACC_SAVEAS:
-            WSaveObject( einfo, TRUE, FALSE );
+            WSaveObject( einfo, true, false );
             pass_to_def = FALSE;
             break;
 
         case IDM_ACC_SAVEINTO:
-            WSaveObject( einfo, TRUE, TRUE );
+            WSaveObject( einfo, true, true );
             pass_to_def = FALSE;
             break;
 
@@ -910,10 +906,7 @@ WINEXPORT LRESULT CALLBACK WMainWndProc( HWND hWnd, UINT message, WPARAM wParam,
             ai.name = AllocRCString( W_ABOUT_NAME );
             ai.version = AllocRCString( W_ABOUT_VERSION );
             ai.title = AllocRCString( W_ABOUT_TITLE );
-            DoAbout( &ai );
-            FreeRCString( ai.name );
-            FreeRCString( ai.version );
-            FreeRCString( ai.title );
+            DoAbout( &ai, FreeRCString );
             pass_to_def = FALSE;
             break;
         }
@@ -970,10 +963,9 @@ bool WQuerySaveRes( WAccelEditInfo *einfo, bool force_exit )
         }
         if( ret == IDYES ) {
             if( einfo->info->stand_alone ) {
-                return( WSaveObject( einfo, FALSE, FALSE ) );
+                return( WSaveObject( einfo, false, false ) );
             } else {
-                SendMessage( einfo->info->parent, ACCEL_PLEASE_SAVEME, 0,
-                             (LPARAM)einfo->hndl );
+                SendMessage( einfo->info->parent, ACCEL_PLEASE_SAVEME, 0, (LPARAM)einfo->hndl );
             }
         } else if( ret == IDCANCEL ) {
             return( FALSE );
@@ -1024,8 +1016,7 @@ bool WQuerySaveSym( WAccelEditInfo *einfo, bool force_exit )
             }
             einfo->info->symbol_file = WCreateSymFileName( fname );
         }
-        return( WSaveSymbols( einfo, einfo->info->symbol_table,
-                              &einfo->info->symbol_file, FALSE ) );
+        return( WSaveSymbols( einfo->win, einfo->info->symbol_table, &einfo->info->symbol_file, false ) );
     } else if( ret == IDCANCEL ) {
         return( FALSE );
     }
@@ -1160,7 +1151,7 @@ bool WCleanup( WAccelEditInfo *einfo )
         }
         einfo->getting_key = FALSE;
         einfo->win = (HWND)NULL;
-        WFreeAccelEInfo( einfo );
+        WFreeAccelEditInfo( einfo );
         if( owner != (HWND)NULL ) {
             BringWindowToTop( owner );
         }

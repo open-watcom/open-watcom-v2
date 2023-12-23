@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,22 +35,23 @@
 #include <string.h>
 #include <process.h>
 #include "bool.h"
+#include "wio.h"
 #include "iopath.h"
-#include "digtypes.h"
 #include "digcli.h"
 #include "digld.h"
 #include "pathlist.h"
 #include "dipdump.h"
 
 
-#if defined( __UNIX__ ) || defined( __DOS__ )
+#define QQSTR(x)    # x
+#define QSTR(x)     QQSTR(x)
+
 typedef struct char_ring {
     struct char_ring    *next;
     char                name[1];
 } char_ring;
 
 static char   *FilePathList = NULL;
-#endif
 
 void *DIGCLIENTRY( Alloc )( size_t amount )
 {
@@ -71,15 +72,17 @@ FILE *DIGCLIENTRY( Open )( char const *name, dig_open mode )
 {
     const char  *fmode;
 
-    /* convert flags. */
-    switch( mode & (DIG_READ | DIG_WRITE) ) {
-    case DIG_READ:
+    /*
+     * convert flags.
+     */
+    switch( mode & (DIG_OPEN_READ | DIG_OPEN_WRITE) ) {
+    case DIG_OPEN_READ:
         fmode = "rb";
         break;
-    case DIG_WRITE:
+    case DIG_OPEN_WRITE:
         fmode = "wb";
         break;
-    case DIG_WRITE | DIG_READ:
+    case DIG_OPEN_WRITE | DIG_OPEN_READ:
         fmode = "r+b";
         break;
     default:
@@ -88,14 +91,14 @@ FILE *DIGCLIENTRY( Open )( char const *name, dig_open mode )
     return( fopen( name, fmode ) );
 }
 
-int DIGCLIENTRY( Seek )( FILE *fp, unsigned long p, dig_seek k )
+int DIGCLIENTRY( Seek )( FILE *fp, unsigned long p, dig_seek where )
 {
     int     whence;
 
-    switch( k ) {
-    case DIG_ORG:   whence = SEEK_SET; break;
-    case DIG_CUR:   whence = SEEK_CUR; break;
-    case DIG_END:   whence = SEEK_END; break;
+    switch( where ) {
+    case DIG_SEEK_ORG:  whence = SEEK_SET; break;
+    case DIG_SEEK_CUR:  whence = SEEK_CUR; break;
+    case DIG_SEEK_END:  whence = SEEK_END; break;
     default:
         return( true );
     }
@@ -107,7 +110,7 @@ unsigned long DIGCLIENTRY( Tell )( FILE *fp )
     return( ftell( fp ) );
 }
 
-size_t DIGCLIENTRY( Read )( FILE *fp, void *b , size_t s )
+size_t DIGCLIENTRY( Read )( FILE *fp, void *b, size_t s )
 {
     return( fread( b, 1, s, fp ) );
 }
@@ -129,18 +132,6 @@ void DIGCLIENTRY( Remove )( char const *name, dig_open mode )
     remove( name );
 }
 
-unsigned DIGCLIENTRY( MachineData )( address addr, dig_info_type info_type,
-                        dig_elen in_size,  const void *in,
-                        dig_elen out_size, void *out )
-{
-    /* unused parameters */ (void)addr; (void)info_type; (void)in_size; (void)in;
-    /* unused parameters */ (void)out_size; (void)out;
-
-    return( 0 ); /// @todo check this out out.
-}
-
-#if defined( __UNIX__ ) || defined( __DOS__ )
-
 static char *addPath( char *old_list, const char *path_list )
 /***********************************************************/
 {
@@ -157,7 +148,7 @@ static char *addPath( char *old_list, const char *path_list )
         } else {
             old_len = strlen( old_list );
             new_list = malloc( old_len + 1 + len + 1 );
-            memcpy( new_list, old_list, old_len );
+            strcpy( new_list, old_list );
             free( old_list );
             p = new_list + old_len;
         }
@@ -177,6 +168,9 @@ void PathInit( void )
     char        buff[_MAX_PATH];
     char        *p;
 
+#ifdef BLDVER
+    FilePathList = addPath( FilePathList, getenv( "WD_PATH" QSTR( BLDVER ) ) );
+#endif
     if( _cmdname( buff ) != NULL ) {
 #if defined( __UNIX__ )
         p = strrchr( buff, '/' );
@@ -201,54 +195,70 @@ void PathFini( void )
     free( FilePathList );
 }
 
-FILE *DIGLoader( Open )( const char *name, size_t name_len, const char *ext, char *result, size_t max_result )
-/************************************************************************************************************/
+size_t DIGLoader( Find )( dig_filetype ftype, const char *base_name, size_t base_name_len,
+                                const char *defext, char *filename, size_t filename_maxlen )
+/******************************************************************************************/
 {
     char        fullname[_MAX_PATH2];
-    char        filename[_MAX_PATH2];
-    FILE        *fp;
+    char        fname[_MAX_PATH2];
     char        *p;
     char        c;
+    size_t      len;
+    const char  *path_list;
 
-    memcpy( filename, name, name_len );
-    filename[name_len] = '\0';
-    if( ext != NULL && *ext != '\0' ) {
-        _splitpath2( filename, fullname, NULL, NULL, &p, NULL );
-        _makepath( filename, NULL, NULL, p, ext );
-    }
-    strcpy( fullname, filename );
-    fp = fopen( fullname, "rb" );
-    if( fp == NULL ) {
-        if( path_list != NULL ) {
-            while( (c = *path_list) != '\0' ) {
-                p = fullname;
-                do {
-                    ++path_list;
-                    if( IS_PATH_LIST_SEP( c ) )
-                        break;
-                    *p = c;
-                } while( (c = *path_list) != '\0' );
-                c = p[-1];
-                if( !IS_PATH_SEP( c ) ) {
-                    *p++ = DIR_SEP;
-                }
-                strcat( p, filename );
-                fp = fopen( fullname, "rb" );
-                if( fp != NULL ) {
+    /* unused parameters */ (void)ftype;
+
+    path_list = FilePathList;
+    if( base_name_len == 0 )
+        base_name_len = strlen( base_name );
+    strncpy( fname, base_name, base_name_len );
+    strcpy( fname + base_name_len, defext );
+    if( access( fname, F_OK ) == 0 ) {
+        p = fname;
+    } else if( path_list != NULL ) {
+        strcpy( fullname, fname );
+        while( (c = *path_list) != '\0' ) {
+            p = fullname;
+            do {
+                ++path_list;
+                if( IS_PATH_LIST_SEP( c ) )
                     break;
-                }
+                *p = c;
+            } while( (c = *path_list) != '\0' );
+            c = p[-1];
+            if( !IS_PATH_SEP( c ) ) {
+                *p++ = DIR_SEP;
+            }
+            strcpy( p, fname );
+            if( access( fullname, F_OK ) == 0 ) {
+                p = fullname;
+                break;
             }
         }
-    }
-    if( result != NULL && max_result > 0 ) {
-        max_result--;
-        result[0] = '\0';
-        if( fp != NULL ) {
-            strncpy( result, fullname, max_result );
-            result[max_result] = '\0';
+        if( *path_list == '\0' ) {
+            p = "";
         }
+    } else {
+        p = "";
     }
-    return( fp );
+    len = strlen( p );
+    if( filename_maxlen > 0 ) {
+        filename_maxlen--;
+        if( filename_maxlen > len )
+            filename_maxlen = len;
+        if( filename_maxlen > 0 )
+            strncpy( filename, p, filename_maxlen );
+        filename[filename_maxlen] = '\0';
+    }
+    return( len );
+}
+
+#if defined( __UNIX__ ) || defined( __DOS__ )
+
+FILE *DIGLoader( Open )( const char *filename )
+/*********************************************/
+{
+    return( fopen( filename, "rb" ) );
 }
 
 int DIGLoader( Read )( FILE *fp, void *buff, size_t len )

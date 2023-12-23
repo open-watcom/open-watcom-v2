@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,7 +38,7 @@
 // 91/11/07 -- J.W.Welch        -- placed common definitions in WCCP.H
 // 92/12/29 -- B.J. Stecher     -- QNX support
 
-#ifdef NDEBUG
+#ifndef DEVBUILD
 #define NAME_PTR_IS_NAME_MEMBER
 #endif
 
@@ -49,10 +49,8 @@
 #include "bool.h"
 #include "wcpp.h"
 #include "target.h"
-#ifndef NDEBUG
-  #if defined( __WATCOMC__ )
-    #include "wtrap.h"
-  #endif
+#ifdef DEVBUILD
+    #include "enterdb.h"
 #endif
 #include "dbgzap.h"
 
@@ -63,7 +61,7 @@
 #define OPTIMIZE_EMPTY
 #define CARVEPCH
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 //#define OPT_BR          // OPTIMA-STYLE BROWSING
 #endif
 
@@ -113,7 +111,7 @@ typedef const struct idname *NAME;      // name pointer
 
 #define FatalMsgExit(msg)   CFatal( msg )
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
     #define __location " (" __FILE__ "," __xstr(__LINE__) ")"
     #define DbgVerify( cond, msg ) if( !( cond ) ) CFatal( msg __location )
     #define DbgDefault( msg )   default: CFatal( msg __location )
@@ -183,8 +181,18 @@ enum {
     TS_NETWARE5,
     TS_LINUX,
     TS_RDOS,
+    TS_UNIX,
     TS_MAX
 };
+
+typedef enum {
+    STD_NONE,
+    STD_CXX98,
+    STD_CXX0X,
+} cxxstd_ver;
+
+#define CHECK_STD(o,v)  (CompVars.cxxstd o STD_ ## v)
+#define SET_STD(v)      CompVars.cxxstd = STD_ ## v
 
 typedef struct {
     void                *curr_offset;
@@ -260,6 +268,7 @@ typedef enum {
 global int              WngLevel;       // - warning severity level
 global unsigned         TargetSystem;   // - target system
 global COMP_FLAGS       CompFlags;      // - compiler flags
+global COMP_VARS        CompVars;       // - compiler variables
 global void             *Environment;   // - var for Suicide()
 
 global error_state_t    ErrLimit;       // - error limit

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,9 +37,9 @@
 
 // Silence the compiler warning about taking the "sizeof" a
 // class with virtual functions...
-#pragma disable_message( 549 )
+#pragma disable_message( P549 )
 static Pool UInt32Pair::_pairPool( U32PairPool, sizeof(UInt32Pair) );
-#pragma enable_message( 549 )
+#pragma enable_message( P549 )
 
 
 class PCHIndexRec : public HashTable<UInt32Pair> {

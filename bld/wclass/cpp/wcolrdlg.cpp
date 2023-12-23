@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -52,7 +52,11 @@ bool WEXPORT WColorDialog::chooseColor( Color clr, Color *newclr ) {
 
 #ifdef __WATCOMC__
 // Complain about defining trivial destructor inside class
+#if !defined( BOOTSTRAP )
+#pragma disable_message( P656 )
+#else
 #pragma disable_message( 656 )
+#endif
 #endif
 
 WEXPORT WColorDialog::~WColorDialog() {

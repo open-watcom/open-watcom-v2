@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,65 +35,95 @@
 #include <string.h>
 #include "misc.h"
 #include "argvenv.h"
+#include "argvstr.h"
 #include "fnutils.h"
 
-char **ExpandEnv( int *oargc, char *oargv[] )
+
+char **ExpandEnv( int *oargc, char *oargv[], const char *env_name )
 {
-    int         argc, i;
+    int         argc;
+    int         i;
+    int         n;
     char        *envstr;
-    char        *varptr;
     char        *p;
     char        **argv;
+    size_t      str_len;
 
-    argc = 1;
-    argv = MemAlloc( 2 * sizeof( char * ) );
-    *argv = *oargv;
-
+    argc = 0;
+    str_len = 0;
+    /*
+     * if defined extra environment variable then
+     * put it on begining of arguments list
+     */
+    if( env_name != NULL ) {
+        envstr = getenv( env_name );
+        if( envstr != NULL ) {
+            n = ParseStr( envstr, NULL, NULL );
+            str_len += strlen( envstr ) + n;
+            argc += n;
+        }
+    }
+    /*
+     * process arguments list and expand
+     * "@<env variable name>" items if it exists
+     */
+    argc++; // argv[0]
     for( i = 1; i < *oargc; i++ ) {
         if( *oargv[i] == '@' ) {
             envstr = getenv( oargv[i] + 1 );
             if( envstr != NULL ) {
-                varptr = MemAlloc( strlen( envstr ) + 1 );
-                strcpy( varptr, envstr );
-
-                // environment variables can't be null
-
-                while( *varptr != '\0' ) {
-                    if( isspace( *varptr ) ) {
-                        ++varptr;
-                        continue;
-                    }
-                    argv = MemRealloc( argv, ( argc + 2 ) * sizeof( char * ) );
-                    if( *varptr == '"' ) {
-                        p = strchr( varptr + 1, '"' );
-                        if( p != NULL ) {
-                            varptr++;
-                            *p = '\0';
-                            argv[argc] = varptr;
-                            argc++;
-                            varptr = p + 1;
-                            continue;
-                        }
-                    }
-                    p = varptr;
-                    while( *p != '\0' && !isspace( *p ) )
-                        ++p;
-                    argv[argc] = varptr;
-                    argc++;
-                    if( *p == '\0' ) {
-                        break;
-                    } else {
-                        *p = '\0';          // terminate varptr
-                        varptr = p + 1;
-                    }
-                }
+                n = ParseStr( envstr, NULL, NULL );
+                str_len += strlen( envstr ) + n;
+                argc += n;
                 continue;
             }
         }
-        argv = MemRealloc( argv, ( argc + 2 ) * sizeof( char * ) );
+        argc++;
+    }
+
+    /*
+     * allocate new arguments list
+     * after arguments list new strings are added
+     */
+    argv = MemAlloc( ( argc + 1 ) * sizeof( char * ) + str_len );
+    p = (char *)( argv + argc + 1 );
+    /*
+     * copy reference for argv[0] as first
+     */
+    argv[0] = oargv[0];
+    argc = 1;
+    /*
+     * copy extra environment variable in front of arguments list
+     * but after argv[0]
+     */
+    if( env_name != NULL ) {
+        envstr = getenv( env_name );
+        if( envstr != NULL ) {
+            n = ParseStr( envstr, &argv[argc], p );
+            p += strlen( envstr ) + n;
+            argc += n;
+        }
+    }
+    /*
+     * copy arguments list items and expand
+     * "@<env variable name>" items
+     */
+    for( i = 1; i < *oargc; i++ ) {
+        if( *oargv[i] == '@' ) {
+            envstr = getenv( oargv[i] + 1 );
+            if( envstr != NULL ) {
+                n = ParseStr( envstr, &argv[argc], p );
+                p += strlen( envstr ) + n;
+                argc += n;
+                continue;
+            }
+        }
         argv[argc] = oargv[i];
         argc++;
     }
+    /*
+     * add last NULL item
+     */
     argv[argc] = NULL;
     *oargc = argc;
     return( argv );

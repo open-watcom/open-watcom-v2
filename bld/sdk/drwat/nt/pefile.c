@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,75 +32,70 @@
 
 
 #include "drwatcom.h"
+#include "exedos.h"
 #include "exepe.h"
 #include "digcli.h"
 
 
-#define EXE_PE  0x4550
-#define EXE_NE  0x454e
-#define EXE_MZ  0x5a4d
-
 /*
  * seekRead
  */
-static BOOL seekRead( FILE *fp, DWORD offset, void *buf, DWORD size )
+static bool seekRead( FILE *fp, DWORD offset, void *buf, DWORD size )
 {
-    if( DIGCli( Seek )( fp, offset, DIG_ORG ) ) {
-        return( FALSE );
+    if( DIGCli( Seek )( fp, offset, DIG_SEEK_ORG ) ) {
+        return( false );
     }
     if( DIGCli( Read )( fp, buf, size ) != size ) {
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 }
 
 /*
  * getEXEHeader - verify that this is a PE executable and read the header
  */
-static BOOL getEXEHeader( FILE *fp, pe_header *hdr )
+static bool getEXEHeader( FILE *fp, pe_exe_header *pehdr )
 {
-    WORD        sig;
-    DWORD       nh_offset;
+    unsigned_16     data;
+    unsigned_32     ne_header_off;
 
-    if( !seekRead( fp, 0x00, &sig, sizeof( sig ) ) ) {
-        return( FALSE );
-    }
-    if( sig != EXE_MZ ) {
-        return( FALSE );
+    if( !seekRead( fp, 0, &data, sizeof( data ) )
+      || data != EXESIGN_DOS ) {
+        return( false );
     }
 
-    if( !seekRead( fp, 0x3c, &nh_offset, sizeof( DWORD ) ) ) {
-        return( FALSE );
+    if( !seekRead( fp, NE_HEADER_OFFSET, &ne_header_off, sizeof( ne_header_off ) ) ) {
+        return( false );
     }
-
-    if( !seekRead( fp, nh_offset, &sig, sizeof( sig ) ) ) {
-        return( FALSE );
+    if( DIGCli( Seek )( fp, ne_header_off, DIG_SEEK_ORG ) ) {
+        return( false );
     }
-    if( sig == EXE_PE ) {
-        if( !seekRead( fp, nh_offset, hdr, sizeof( pe_header ) ) ) {
-            return( FALSE );
-        }
-        return( TRUE );
+    if( DIGCli( Read )( fp, pehdr, PE_HDR_SIZE ) != PE_HDR_SIZE
+      || ( pehdr->signature != EXESIGN_PE )
+      || DIGCli( Read )( fp, (char *)pehdr + PE_HDR_SIZE, PE_OPT_SIZE( *pehdr ) ) != PE_OPT_SIZE( *pehdr ) ) {
+        return( false );
     }
-    return( FALSE );
+    return( true );
 }
 
 /*
  * GetSegmentList
  */
-BOOL GetSegmentList( ModuleNode *node )
+bool GetSegmentList( ModuleNode *node )
 {
-    pe_header           header;
+    pe_exe_header       pehdr;
     pe_object           obj;
-    WORD                i;
+    unsigned            i;
+    unsigned            num_objects;
 
-    if( !getEXEHeader( node->fp, &header ) )
-        return( FALSE );
-    node->syminfo = MemAlloc( sizeof( SymInfoNode ) + header.num_objects * sizeof( SegInfo ) );
-    node->syminfo->segcnt = header.num_objects;
-    for( i = 0; i < header.num_objects; i++ ) {
+    if( !getEXEHeader( node->fp, &pehdr ) )
+        return( false );
+    num_objects = pehdr.fheader.num_objects;
+    node->syminfo = MemAlloc( sizeof( SymInfoNode ) + num_objects * sizeof( SegInfo ) );
+    node->syminfo->segcnt = num_objects;
+    for( i = 0; i < num_objects; i++ ) {
         if( DIGCli( Read )( node->fp, &obj, sizeof( obj ) ) != sizeof( obj ) ) {
-            return( FALSE );
+            return( false );
         }
         node->syminfo->seginfo[i].segoff = obj.rva + node->base;
         if ( obj.flags & PE_OBJ_CODE ){
@@ -108,7 +104,7 @@ BOOL GetSegmentList( ModuleNode *node )
             node->syminfo->seginfo[i].code = FALSE;
         }
     }
-    return( TRUE );
+    return( true );
 }
 
 /*
@@ -116,18 +112,20 @@ BOOL GetSegmentList( ModuleNode *node )
  */
 char *GetModuleName( FILE *fp )
 {
-    pe_header           header;
+    pe_exe_header       pehdr;
     pe_object           obj;
     pe_export_directory expdir;
     DWORD               export_rva;
-    DWORD               i;
     char                buf[_MAX_PATH];
     char                *ret;
+    unsigned            i;
+    unsigned            num_objects;
 
-    if( !getEXEHeader( fp, &header ) )
+    if( !getEXEHeader( fp, &pehdr ) )
         return( NULL );
-    export_rva = header.table[ PE_TBL_EXPORT ].rva;
-    for( i = 0; i < header.num_objects; i++ ) {
+    export_rva = PE_DIRECTORY( pehdr, PE_TBL_EXPORT ).rva;
+    num_objects = pehdr.fheader.num_objects;
+    for( i = 0; i < num_objects; i++ ) {
         if( DIGCli( Read )( fp, &obj, sizeof( obj ) ) != sizeof( obj ) ) {
             return( NULL );
         }
@@ -135,7 +133,7 @@ char *GetModuleName( FILE *fp )
             break;
         }
     }
-    if( i == header.num_objects )
+    if( i == num_objects )
         return( NULL );
     if( !seekRead( fp, obj.physical_offset + export_rva - obj.rva , &expdir, sizeof( expdir ) ) ) {
         return( NULL );
@@ -148,32 +146,34 @@ char *GetModuleName( FILE *fp )
     return( ret );
 }
 
-BOOL GetModuleSize( FILE *fp, DWORD *size )
+bool GetModuleSize( FILE *fp, DWORD *size )
 {
-    pe_header           header;
+    pe_exe_header       pehdr;
 
-    if( !getEXEHeader( fp, &header ) )
-        return( FALSE );
-    *size = header.image_size;
-    return( TRUE );
+    if( !getEXEHeader( fp, &pehdr ) )
+        return( false );
+    *size = PE( pehdr, image_size );
+    return( true );
 }
 
-ObjectInfo *GetModuleObjects( FILE *fp, DWORD *num_objects )
+ObjectInfo *GetModuleObjects( FILE *fp, unsigned *objects_num )
 {
-    pe_header           header;
+    pe_exe_header       pehdr;
     pe_object           obj;
     ObjectInfo          *ret;
-    DWORD               i;
+    unsigned            i;
+    unsigned            num_objects;
 
-    if( !getEXEHeader( fp, &header ) )
+    if( !getEXEHeader( fp, &pehdr ) )
         return( NULL );
-    ret = MemAlloc( header.num_objects * sizeof( ObjectInfo ) );
-    for( i = 0; i < header.num_objects; i++ ) {
+    num_objects = pehdr.fheader.num_objects;
+    ret = MemAlloc( num_objects * sizeof( ObjectInfo ) );
+    for( i = 0; i < num_objects; i++ ) {
         if( DIGCli( Read )( fp, &obj, sizeof( obj ) ) != sizeof( obj ) )
             break;
         ret[i].rva = obj.rva;
         strcpy( ret[i].name, obj.name );
     }
-    *num_objects = i;
+    *objects_num = i;
     return( ret );
 }

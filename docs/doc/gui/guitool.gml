@@ -54,7 +54,7 @@
 .do end
 .if '&'lower(&book)' eq 'wprof' or &e'&allinone ne 0 .do begin
 .sepsect Profile Analysis Tools
-:INCLUDE file='wprof.gml'
+:INCLUDE file='prof.gml'
 .do end
 .if '&'lower(&book)' eq 'editor' or &e'&allinone ne 0 .do begin
 .sepsect Editor

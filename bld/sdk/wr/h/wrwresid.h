@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,7 +37,7 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-WRDLLENTRY extern WResID * WRAPI WRMem2WResID( void *data, bool is32bit );
-WRDLLENTRY extern bool     WRAPI WRWResID2Mem( WResID *name, void **data, size_t *size, bool is32bit );
+WRDLLENTRY extern WResID * WRAPI WRWResIDFromData( char *data, bool is32bit );
+WRDLLENTRY extern bool     WRAPI WRDataFromWResID( WResID *name, char **data, size_t *size, bool is32bit );
 
 #endif

@@ -56,10 +56,12 @@
 ::
 :: NAME_MAX macro
 ::
-:segment DOS | RDOS
+:segment DOS | RDOS | LINUX
 #ifndef NAME_MAX
 :segment RDOS
  #define NAME_MAX       255     /* maximum filename for RDOS          */
+:elsesegment LINUX
+ #define NAME_MAX       255     /* maximum filename for Linux         */
 :elsesegment DOS
  #if defined(__OS2__)
   #define NAME_MAX      255     /* maximum filename for HPFS          */

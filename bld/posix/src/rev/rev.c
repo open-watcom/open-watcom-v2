@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,9 +42,8 @@
 #include "argvrx.h"
 #include "argvenv.h"
 
-#define  MIN_LINE_LEN   80
 
-char *OptEnvVar="rev";
+#define  MIN_LINE_LEN   80
 
 static const char *usageMsg[] = {
     "Usage: rev [-?X] [@env] [files...]",
@@ -67,12 +66,12 @@ static void reverseFile( FILE *fp )
     char       *buff;
 
     size = MIN_LINE_LEN * sizeof( char );
-    buff = (char *) malloc( size );
+    buff = (char *)MemAlloc( size );
 
     for( ;; ) {
         if( os >= size - 1 ) {
             size += MIN_LINE_LEN * sizeof( char );
-            buff  = (char *) realloc( buff, size );
+            buff  = (char *)MemRealloc( buff, size );
         }
         ch = fgetc( fp );
 
@@ -89,35 +88,39 @@ static void reverseFile( FILE *fp )
         }
     }
 
-    free( buff );
+    MemFree( buff );
 }
 
 int main( int argc, char **argv )
 {
     FILE    *fp;
     bool    regexp;
+    int     i;
+    char    **argv1;
 
-    argv = ExpandEnv( &argc, argv );
-    regexp = ( GetOpt( &argc, argv, "X", usageMsg ) == 'X' );
+    argv1 = ExpandEnv( &argc, argv, "REV" );
 
-    argv = ExpandArgv( &argc, argv, regexp );
-    argv++;
-    if( argv[0] == NULL ) {
+    regexp = ( GetOpt( &argc, argv1, "X", usageMsg ) == 'X' );
+
+    argv = ExpandArgv( &argc, argv1, regexp );
+    if( argc < 2 ) {
         reverseFile( stdin );
     } else {
-        while( *argv != NULL ) {
-            fp = fopen( *argv, "r" );
+        for( i = 1; i < argc; i++ ) {
+            fp = fopen( argv[i], "r" );
             if( fp == NULL ) {
-                fprintf( stderr, "rev: cannot open input file \"%s\"\n", *argv );
+                fprintf( stderr, "rev: cannot open input file \"%s\"\n", argv[i] );
             } else {
                 if( argc > 2 ) {
-                    fprintf( stdout, "%s:\n", *argv );
+                    fprintf( stdout, "%s:\n", argv[i] );
                 }
                 reverseFile( fp );
                 fclose( fp );
             }
-            argv++;
         }
     }
+    MemFree( argv );
+    MemFree( argv1 );
+
     return( 0 );
 }

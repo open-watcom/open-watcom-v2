@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,35 +35,8 @@
 
 #include "watcom.h"
 #include "bool.h"
+#include "disconf.h"
 
-#define DISCPU_none     0x00
-#define DISCPU_axp      0x01
-#define DISCPU_ppc      0x02
-#define DISCPU_x86      0x04
-#define DISCPU_jvm      0x08
-#define DISCPU_sparc    0x10
-#define DISCPU_mips     0x20
-#define DISCPU_x64      0x40
-
-#if defined( NDIS_axp )
-#define DISCPU DISCPU_axp
-#elif defined( NDIS_ppc )
-#define DISCPU DISCPU_ppc
-#elif defined( NDIS_x86 )
-#define DISCPU DISCPU_x86
-#elif defined( NDIS_x64 )
-#define DISCPU DISCPU_x64
-#elif defined( NDIS_jvm )
-#define DISCPU DISCPU_jvm
-#elif defined( NDIS_sparc )
-#define DISCPU DISCPU_sparc
-#elif defined( NDIS_mps )
-#define DISCPU DISCPU_mips
-#elif defined( NDIS_test )
-#define DISCPU ( DISCPU_axp | DISCPU_ppc | DISCPU_x86 | DISCPU_jvm | DISCPU_sparc | DISCPU_mips | DISCPU_x64 )
-#else
-#define DISCPU ( DISCPU_axp | DISCPU_ppc | DISCPU_x86 | DISCPU_sparc | DISCPU_mips | DISCPU_x64 )
-#endif
 
 typedef struct dis_range        dis_range;
 
@@ -75,38 +48,34 @@ typedef union {
         unsigned_8  _8[8];
         unsigned_16 _16[4];
         unsigned_32 _32[2];
-#if _INTEGRAL_MAX_BITS >= 64
         uint_64     _64[1];
-#endif
     } u;
     union {
         signed_8    _8[8];
         signed_16   _16[4];
         signed_32   _32[2];
-#if _INTEGRAL_MAX_BITS >= 64
         int_64      _64[1];
-#endif
     } s;
 } dis_value;
 typedef unsigned                dis_cpu;
 
 typedef enum {
     DI_INVALID,
-#if DISCPU & DISCPU_axp
+#if DISCPU & DISCPU_AXP
     DI_AXP_FIRST,
     DI_AXP_SKIPBACK = DI_AXP_FIRST - 1,
     #define inspick( id, name, opcode, mask, handler ) DI_AXP_##id,
     #include "insaxp.h"
     #undef inspick
 #endif
-#if DISCPU & DISCPU_ppc
+#if DISCPU & DISCPU_PPC
     DI_PPC_FIRST,
     DI_PPC_SKIPBACK = DI_PPC_FIRST - 1,
     #define inspick( id, name, opcode, mask, handler ) DI_PPC_##id,
     #include "insppc.h"
     #undef inspick
 #endif
-#if DISCPU & DISCPU_x86
+#if DISCPU & DISCPU_X86
     DI_X86_FIRST,
     DI_X86_SKIPBACK = DI_X86_FIRST - 1,
     #define inspick( id, name, opcode, mask, handler ) DI_X86_##id,
@@ -117,28 +86,28 @@ typedef enum {
     #include "insx86e4.h"
     #undef inspick
 #endif
-#if DISCPU & DISCPU_x64
+#if DISCPU & DISCPU_X64
     DI_X64_FIRST,
     DI_X64_SKIPBACK = DI_X64_FIRST - 1,
     #define inspick( id, name, opcode, mask, handler ) DI_X64_##id,
     #include "insx64.h"
     #undef inspick
 #endif
-#if DISCPU & DISCPU_jvm
+#if DISCPU & DISCPU_JVM
     DI_JVM_FIRST,
     DI_JVM_SKIPBACK = DI_JVM_FIRST - 1,
     #define inspick( id, name, opcode, mask, handler ) DI_JVM_##id,
     #include "insjvm.h"
     #undef inspick
 #endif
-#if DISCPU & DISCPU_sparc
+#if DISCPU & DISCPU_SPARC
     DI_SPARC_FIRST,
     DI_SPARC_SKIPBACK = DI_SPARC_FIRST - 1,
     #define inspick( id, name, opcode, mask, handler ) DI_SPARC_##id,
     #include "inssparc.h"
     #undef inspick
 #endif
-#if DISCPU & DISCPU_mips
+#if DISCPU & DISCPU_MIPS
     DI_MIPS_FIRST,
     DI_MIPS_SKIPBACK = DI_MIPS_FIRST - 1,
     #define inspick( id, name, opcode, mask, handler ) DI_MIPS_##id,
@@ -152,49 +121,49 @@ typedef enum {
 
 typedef enum {
     DR_NONE,
-#if DISCPU & DISCPU_axp
+#if DISCPU & DISCPU_AXP
     DR_AXP_FIRST,
     DR_AXP_SKIPBACK = DR_AXP_FIRST - 1,
     #define regpick( id, name ) DR_AXP_##id,
     #include "regaxp.h"
     #undef regpick
 #endif
-#if DISCPU & DISCPU_ppc
+#if DISCPU & DISCPU_PPC
     DR_PPC_FIRST,
     DR_PPC_SKIPBACK = DR_PPC_FIRST - 1,
     #define regpick( id, name ) DR_PPC_##id,
     #include "regppc.h"
     #undef regpick
 #endif
-#if DISCPU & DISCPU_x86
+#if DISCPU & DISCPU_X86
     DR_X86_FIRST,
     DR_X86_SKIPBACK = DR_X86_FIRST - 1,
     #define regpick( id, name ) DR_X86_##id,
     #include "regx86.h"
     #undef regpick
 #endif
-#if DISCPU & DISCPU_x64
+#if DISCPU & DISCPU_X64
     DR_X64_FIRST,
     DR_X64_SKIPBACK = DR_X64_FIRST - 1,
     #define regpick( id, name ) DR_X64_##id,
     #include "regx64.h"
     #undef regpick
 #endif
-#if DISCPU & DISCPU_jvm
+#if DISCPU & DISCPU_JVM
     DR_JVM_FIRST,
     DR_JVM_SKIPBACK = DR_JVM_FIRST - 1,
     #define regpick( id, name ) DR_JVM_##id,
     #include "regjvm.h"
     #undef regpick
 #endif
-#if DISCPU & DISCPU_sparc
+#if DISCPU & DISCPU_SPARC
     DR_SPARC_FIRST,
     DR_SPARC_SKIPBACK = DR_SPARC_FIRST - 1,
     #define regpick( id, name ) DR_SPARC_##id,
     #include "regsparc.h"
     #undef regpick
 #endif
-#if DISCPU & DISCPU_mips
+#if DISCPU & DISCPU_MIPS
     DR_MIPS_FIRST,
     DR_MIPS_SKIPBACK = DR_MIPS_FIRST - 1,
     #define regpick( id, name ) DR_MIPS_##id,
@@ -208,49 +177,49 @@ typedef enum {
 
 typedef enum {
     DRT_NONE,
-#if DISCPU & DISCPU_axp
+#if DISCPU & DISCPU_AXP
     DRT_AXP_FIRST,
     DRT_AXP_SKIPBACK = DRT_AXP_FIRST - 1,
     #define refpick( id, name ) DRT_AXP_##id,
     #include "refaxp.h"
     #undef refpick
 #endif
-#if DISCPU & DISCPU_ppc
+#if DISCPU & DISCPU_PPC
     DRT_PPC_FIRST,
     DRT_PPC_SKIPBACK = DRT_PPC_FIRST - 1,
     #define refpick( id, name ) DRT_PPC_##id,
     #include "refppc.h"
     #undef refpick
 #endif
-#if DISCPU & DISCPU_x86
+#if DISCPU & DISCPU_X86
     DRT_X86_FIRST,
     DRT_X86_SKIPBACK = DRT_X86_FIRST - 1,
     #define refpick( id, name ) DRT_X86_##id,
     #include "refx86.h"
     #undef refpick
 #endif
-#if DISCPU & DISCPU_x64
+#if DISCPU & DISCPU_X64
     DRT_X64_FIRST,
     DRT_X64_SKIPBACK = DRT_X64_FIRST - 1,
     #define refpick( id, name ) DRT_X64_##id,
     #include "refx64.h"
     #undef refpick
 #endif
-#if DISCPU & DISCPU_jvm
+#if DISCPU & DISCPU_JVM
     DRT_JVM_FIRST,
     DRT_JVM_SKIPBACK = DRT_JVM_FIRST - 1,
     #define refpick( id, name ) DRT_JVM_##id,
     #include "refjvm.h"
     #undef refpick
 #endif
-#if DISCPU & DISCPU_sparc
+#if DISCPU & DISCPU_SPARC
     DRT_SPARC_FIRST,
     DRT_SPARC_SKIPBACK = DRT_SPARC_FIRST - 1,
     #define refpick( id, name ) DRT_SPARC_##id,
     #include "refsparc.h"
     #undef refpick
 #endif
-#if DISCPU & DISCPU_mips
+#if DISCPU & DISCPU_MIPS
     DRT_MIPS_FIRST,
     DRT_MIPS_SKIPBACK = DRT_MIPS_FIRST - 1,
     #define refpick( id, name ) DRT_MIPS_##id,
@@ -260,7 +229,7 @@ typedef enum {
     DRT_LAST
 } dis_ref_type;
 
-#if DISCPU & DISCPU_axp
+#if DISCPU & DISCPU_AXP
 typedef enum {
     DIF_AXP_NONE        = 0,
     DIF_AXP_C           = 0x01<<0,
@@ -273,7 +242,7 @@ typedef enum {
 } dis_inst_flags_axp;
 #endif
 
-#if DISCPU & DISCPU_ppc
+#if DISCPU & DISCPU_PPC
 typedef enum {
     DIF_PPC_NONE        = 0,
     DIF_PPC_OE          = 0x01<<0,
@@ -283,7 +252,7 @@ typedef enum {
 } dis_inst_flags_ppc;
 #endif
 
-#if DISCPU & DISCPU_x86
+#if DISCPU & DISCPU_X86
 typedef enum {
     DIF_X86_NONE        = 0,
     DIF_X86_CS          = 0x00000001,
@@ -311,7 +280,7 @@ typedef enum {
 } dis_inst_flags_x86;
 #endif
 
-#if DISCPU & DISCPU_x64
+#if DISCPU & DISCPU_X64
 typedef enum {
     DIF_X64_NONE        = 0,
     DIF_X64_CS          = 0x0001,
@@ -333,7 +302,7 @@ typedef enum {
 } dis_inst_flags_x64;
 #endif
 
-#if DISCPU & DISCPU_jvm
+#if DISCPU & DISCPU_JVM
 typedef enum {
     DIF_JVM_NONE        = 0,
     DIF_JVM_WIDE        = 0x01<<0,
@@ -341,14 +310,14 @@ typedef enum {
 } dis_inst_flags_jvm;
 #endif
 
-#if DISCPU & DISCPU_sparc
+#if DISCPU & DISCPU_SPARC
 typedef enum {
     DIF_SPARC_NONE      = 0,
     DIF_SPARC_ANUL      = 0x01<<0,      /* for branch instructions - next ins anul'd */
 } dis_inst_flags_sparc;
 #endif
 
-#if DISCPU & DISCPU_mips
+#if DISCPU & DISCPU_MIPS
 typedef enum {
     DIF_MIPS_NONE       = 0,
     DIF_MIPS_NULLIFD    = 0x0001,       /* for branch instructions - next ins nullified */
@@ -370,25 +339,25 @@ typedef enum {
 
 typedef struct {
     union {
-#if DISCPU & DISCPU_axp
+#if DISCPU & DISCPU_AXP
         dis_inst_flags_axp  axp;
 #endif
-#if DISCPU & DISCPU_ppc
+#if DISCPU & DISCPU_PPC
         dis_inst_flags_ppc  ppc;
 #endif
-#if DISCPU & DISCPU_x86
+#if DISCPU & DISCPU_X86
         dis_inst_flags_x86  x86;
 #endif
-#if DISCPU & DISCPU_x64
+#if DISCPU & DISCPU_X64
         dis_inst_flags_x64  x64;
 #endif
-#if DISCPU & DISCPU_jvm
+#if DISCPU & DISCPU_JVM
         dis_inst_flags_jvm  jvm;
 #endif
-#if DISCPU & DISCPU_sparc
+#if DISCPU & DISCPU_SPARC
         dis_inst_flags_sparc    sparc;
 #endif
-#if DISCPU & DISCPU_mips
+#if DISCPU & DISCPU_MIPS
         dis_inst_flags_mips mips;
 #endif
         dis_inst_flags_all  all;

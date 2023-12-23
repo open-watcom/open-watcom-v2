@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -299,10 +300,10 @@ WINEXPORT int RCSAPI Batcher( const char *cmd, void *cookie )
 
     cookie = cookie;
     len = _fstrlen( MK_FP32( (void *)cmd ) );
-    p = MemAlloc( len + 1 );
+    p = _MemAllocArray( char, len + 1 );
     _fmemcpy( p, MK_FP32( (void *)cmd ), len + 1 );
     rc = ( ExecCmd( NULL, NULL, p ) == 0 );
-    MemFree( p );
+    _MemFreeArray( p );
     return( rc );
 }
 

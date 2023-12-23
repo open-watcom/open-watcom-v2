@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,6 +32,7 @@
 
 
 #ifndef _EXEDEFS_H
+#define _EXEDEFS_H
 
 #include "exedos.h"
 #include "exeos2.h"
@@ -45,26 +47,25 @@
 #endif
 
 typedef enum {
-    EXE_NOTYPE,
-    EXE_MZ,                     /* DOS */
-    EXE_MP,                     /* PharLap Simple */
-    EXE_P2,                     /* PharLap Extended 286 */
-    EXE_P3,                     /* PharLap Extended 386 */
-    EXE_NW,                     /* NetWare 386 Loadable Module */
-    EXE_OS2,                    /* OS/2 1.x 16-bit executable */
-    EXE_OVL,                    /* overlay file (e.g., SECTION FILE=xxx) */
-    EXE_P3_BOUND,               /* PharLap Extended 386 bound executable */
-    EXE_MP_BOUND,               /* WATCOM Windows 386 bound executable */
-    EXE_OS2_FLAT,               /* OS/2 2.x FLAT executable */
-    EXE_QNX,                    /* QNX 286 executable */
-    EXE_QNX_386,                /* QNX 386 executable */
-    EXE_OS2_LX,                 /* OS/2 2.x Extended executable */
-    EXE_PE,                     /* Windows NT Executable */
-    EXE_PL,                     /* Windows NT Executable */
-    EXE_QNX_386_FLAT,           /* QNX 386 flat model executable */
-    EXE_ELF,                    /* ELF executable (QNX Neutrino) */
-    EXE_UNKNOWN
+    EXE_TYPE_NONE,
+    EXE_TYPE_MZ,                /* DOS */
+    EXE_TYPE_MP,                /* PharLap Simple */
+    EXE_TYPE_P2,                /* PharLap Extended 286 */
+    EXE_TYPE_P3,                /* PharLap Extended 386 */
+    EXE_TYPE_NW,                /* NetWare 386 Loadable Module */
+    EXE_TYPE_OS2,               /* OS/2 1.x 16-bit executable */
+    EXE_TYPE_OVL,               /* overlay file (e.g., SECTION FILE=xxx) */
+    EXE_TYPE_P3_BOUND,          /* PharLap Extended 386 bound executable */
+    EXE_TYPE_MP_BOUND,          /* WATCOM Windows 386 bound executable */
+    EXE_TYPE_OS2_FLAT,          /* OS/2 2.x FLAT executable */
+    EXE_TYPE_QNX,               /* QNX 286 executable */
+    EXE_TYPE_QNX_386,           /* QNX 386 executable */
+    EXE_TYPE_OS2_LX,            /* OS/2 2.x Extended executable */
+    EXE_TYPE_PE,                /* Windows NT Executable */
+    EXE_TYPE_PL,                /* Windows NT Executable */
+    EXE_TYPE_QNX_386_FLAT,      /* QNX 386 flat model executable */
+    EXE_TYPE_ELF,               /* ELF executable (QNX Neutrino) */
+    EXE_TYPE_UNKNOWN
 } EXE_TYPE;
 
-#define _EXEDEFS_H
 #endif

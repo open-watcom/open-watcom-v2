@@ -7,4 +7,4 @@ convention=register
 
 mathlib_relese = 0
 
-!include $(mathlib_dir)/mklib.mif
+!include ../../../../mklib.mif

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -91,8 +92,8 @@ protected:
             char *              _name;
 
 private:
-            ubit                _state   : 3;
-            ubit                _lastSib : 1;
+            uint_8              _state   : 3;
+            uint_8              _lastSib : 1;
             uint_16             _level   : 12;
 
     static  MemoryPool          _pool;

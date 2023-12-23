@@ -2,6 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
+;* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -30,11 +31,6 @@
 ;*****************************************************************************
 
 
-ifdef __386__
- .387
-else
- .8087
-endif
 include mdef.inc
 include struct.inc
 include math87.inc
@@ -62,13 +58,18 @@ endif
         public  IF@ATANH        ; double atanh( double x )
         defp    IF@DATANH
         defp    IF@ATANH
-ifndef __386__
-        local   func:WORD,data:QWORD
-elseifdef __STACK__
-        local   sedx:DWORD,secx:DWORD,func:DWORD,data:QWORD
-else
-        local   func:DWORD,data:QWORD
+
+ifdef __386__
+ ifdef __STACK__
+        local   sedx:DWORD,secx:DWORD
+ endif
 endif
+ifdef __386__
+        local   func:DWORD,data:QWORD
+else
+        local   func:WORD,data:QWORD
+endif
+
         fld1                        ; get 1.0
         fld     st(1)               ; duplicate the number
         fabs                        ; get absolute value of number
@@ -115,15 +116,10 @@ endif
 ;
         defp    atanh
 ifdef __386__
-        fld     qword ptr 4[ESP]    ; load argument x
+        fld     qword ptr argx[ESP] ; load argument x
         call    IF@DATANH           ; calculate atanh(x)
         loadres                     ; load result
 else
-if _MODEL and _BIG_CODE
-argx    equ     6
-else
-argx    equ     4
-endif
         prolog
         fld     qword ptr argx[BP]  ; load argument x
         lcall   IF@DATANH           ; calculate atanh(x)

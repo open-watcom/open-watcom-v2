@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,6 +36,7 @@
 #include "diff.h"
 #include "wdbginfo.h"
 #include "pathgrp2.h"
+#include "wpatch.h"
 
 #include "clibext.h"
 
@@ -63,34 +64,27 @@ typedef struct exe_mod {
     char                name[1];
 } exe_mod;
 
-#ifdef USE_DBGINFO
-typedef long            exe_form_t;
+byte            *PatchBuffer;
+byte            *OldFile;
 
-typedef struct {
-    fpos_t              last_offset;
-} walker_data;
+bool            AppendPatchLevel;
+bool            Verbose;
 
-typedef struct exe_info {
-    FILE                *fd;
-    symbol_table        mods_by_offset;
-    symbol_table        mods_by_name;
-    symbol_table        blks;
-    exe_form_t          form;
-    struct {
-        FILE            *fd;
-        fpos_t          start;          /* start of debugging info */
-    } sym;
-} exe_info;
+char            *OldSymName;
+char            *NewSymName;
 
-extern foff     ExeForm( FILE *, void *, exe_info * );
-extern foff     ExeTransformAddr( exe_form_t, addr_seg, addr48_off, word );
-extern fpos_t   ExeOverlayAccess( exe_form_t exe, uint_16 section, uint_16 *seg );
-#endif
+char            *CommentFile;
 
-foff         DiffSize = 0;
-foff         EndOld;
-foff         EndNew;
-foff         NumHoles = 0;
+static foff            DiffSize = 0;
+static foff            NumHoles = 0;
+
+static const char   *SyncString = NULL;
+
+static int          OldCorrection;
+static int          NewCorrection;
+static foff         EndOld;
+static foff         EndNew;
+static byte         *NewFile;
 
 static region       *SimilarRegions = NULL;
 static region       *DiffRegions = NULL;
@@ -120,11 +114,6 @@ static byte         *CurrPatch;
 
 static foff         PatchSize;
 
-#ifdef USE_DBGINFO
-static exe_info     old;
-static exe_info     new;
-#endif
-
 /*
  * Utility routines
  * ================
@@ -143,31 +132,41 @@ static void stats( const char *format, ... )
 }
 
 
-static void NotNull( void *p, char *str )
+static bool NotNull( void *p, char *str )
 {
-    if( p == NULL ) {
+    bool    ok;
+
+    ok = ( p != NULL );
+    if( !ok ) {
         PatchError( ERR_NO_MEMORY, str );
     }
+    return( ok );
 }
 
-void *ReadIn( const char *name, size_t buff_size, size_t read_size )
+static void *ReadIn( const char *name, size_t buff_size, size_t read_size )
 {
     FILE        *fd;
     void        *buff;
 
     buff = bdiff_malloc( buff_size );
-    NotNull( buff, "file buffer" );
-    fd = fopen( name, "rb" );
-    FileCheck( fd, name );
-    if( fread( buff, 1, read_size, fd ) != read_size ) {
-        FilePatchError( ERR_CANT_READ, name );
+    if( NotNull( buff, "file buffer" ) ) {
+        fd = fopen( name, "rb" );
+        if( FileCheck( fd, name ) ) {
+            if( fread( buff, 1, read_size, fd ) != read_size ) {
+                FilePatchError( ERR_CANT_READ, name );
+                bdiff_free( buff );
+                buff = NULL;
+            }
+            fclose( fd );
+            return( buff );
+        }
+        bdiff_free( buff );
     }
-    fclose( fd );
-    return( buff );
+    return( NULL );
 }
 
 
-foff FileSize( const char *name, int *correction )
+static foff FileSize( const char *name, int *correction )
 {
     unsigned long   size;
     FILE            *fd;
@@ -178,21 +177,26 @@ foff FileSize( const char *name, int *correction )
         PatchError( ERR_CANT_FIND, name );
     } else {
         fd = fopen( name, "rb" );
-        FileCheck( fd, name );
-        SeekCheck( fseek( fd, 0, SEEK_END ), name );
-        size = ftell( fd );
-        *correction = 0;
-        if( size > sizeof( PATCH_LEVEL ) ) {
-            SeekCheck( fseek( fd, -(long)sizeof( PATCH_LEVEL ), SEEK_END ), name );
-            if( fread( buff, 1, sizeof( PATCH_LEVEL ), fd ) != sizeof( PATCH_LEVEL ) ) {
-                FilePatchError( ERR_CANT_READ, name );
+        if( FileCheck( fd, name ) ) {
+            if( SeekCheck( fseek( fd, 0, SEEK_END ), name ) ) {
+                size = ftell( fd );
+                *correction = 0;
+                if( size > sizeof( PATCH_LEVEL ) ) {
+                    if( SeekCheck( fseek( fd, -(long)sizeof( PATCH_LEVEL ), SEEK_END ), name ) ) {
+                        if( fread( buff, 1, sizeof( PATCH_LEVEL ), fd ) != sizeof( PATCH_LEVEL ) ) {
+                            FilePatchError( ERR_CANT_READ, name );
+                            size = 0;
+                        } else {
+                            if( memcmp( buff, PATCH_LEVEL, PATCH_LEVEL_HEAD_SIZE ) == 0 ) {
+                                size -= sizeof( PATCH_LEVEL ); /* lie about size */
+                                *correction = sizeof( PATCH_LEVEL );
+                            }
+                        }
+                    }
+                }
             }
-            if( memcmp( buff, PATCH_LEVEL, PATCH_LEVEL_HEAD_SIZE ) == 0 ) {
-                size -= sizeof( PATCH_LEVEL ); /* lie about size */
-                *correction = sizeof( PATCH_LEVEL );
-            }
+            fclose( fd );
         }
-        fclose( fd );
     }
     return( size );
 }
@@ -207,12 +211,13 @@ static void AddRegion( region **owner, foff old_start, foff new_start, foff size
     region      *reg;
 
     reg = bdiff_malloc( sizeof( region ) );
-    NotNull( reg, "region" );
-    reg->next = *owner;
-    reg->old_start = old_start;
-    reg->new_start = new_start;
-    reg->size = size;
-    *owner = reg;
+    if( NotNull( reg, "region" ) ) {
+        reg->next = *owner;
+        reg->old_start = old_start;
+        reg->new_start = new_start;
+        reg->size = size;
+        *owner = reg;
+    }
 }
 
 static void AddSimilar( foff old_start, foff new_start, foff size )
@@ -470,7 +475,7 @@ static int TryBackingUp( int backup )
 }
 
 
-void FindRegions( void )
+static void FindRegions( void )
 {
     /*
      * classify the differences between the two files into regions;
@@ -515,471 +520,47 @@ void FindRegions( void )
     putchar( '\n' );
 }
 
-/***************************************************************
-  Routines that use debugging information to guide the analysis
- ***************************************************************/
-
 static void fatal( int p )
 {
     char msgbuf[MAX_RESOURCE_SIZE];
 
     GetMsg( msgbuf, p );
     puts( msgbuf );
-    MsgFini();
-    exit( EXIT_FAILURE );
 }
 
-#ifdef USE_DBGINFO
-static void ReadCheck( size_t rc, size_t size, const char *name )
+static int VerifyCorrect( const char *name )
+/*******************************************
+ * Try the patch file and ensure it produces new from old
+ */
 {
-    if( rc != size ) {
-        FilePatchError( ERR_IO_ERROR, name );
-    }
-}
+    char            *real_new;
+    foff            offset;
+    PATCH_RET_CODE  rc;
 
-static void printd( char *p )
-{
-    int len;
-
-    for( len = (byte)(*p++); len > 0; --len ) {
-        stats( "%c", *p++ );
-    }
-}
-
-static int cmp_blk( void *b1, void *b2 )
-{
-    if( ((exe_blk *)b1)->start == ((exe_blk *)b2)->start ) {
-        return( 0 );
-    } else if( ((exe_blk *)b1)->start < ((exe_blk *)b2)->start ) {
-        return( -1 );
-    }
-    return( 1 );
-}
-
-static int cmp_mod_offset( void *m1, void *m2 )
-{
-    if( ((exe_mod *)m1)->mod_offset == ((exe_mod *)m2)->mod_offset ) {
-        return( 0 );
-    } else if( ((exe_mod *)m1)->mod_offset < ((exe_mod *)m2)->mod_offset ) {
-        return( -1 );
-    }
-    return( 1 );
-}
-
-static int cmp_mod_name( void *m1, void *m2 )
-{
-    int comp;
-
-    if( ((exe_mod *)m1)->name[0] == ((exe_mod *)m2)->name[0] ) {
-        return( memcmp( &(((exe_mod *)m1)->name[1]), &(((exe_mod *)m2)->name[1]), (byte)((exe_mod *)m2)->name[0] ) );
-    } else if( (byte)((exe_mod *)m1)->name[0] < (byte)((exe_mod *)m2)->name[0] ) {
-        comp = memcmp( &(((exe_mod *)m1)->name[1]), &(((exe_mod *)m2)->name[1]), (byte)((exe_mod *)m1)->name[0] );
-        if( comp == 0 ) {
-            comp = -1;
-        }
-    } else {
-        comp = memcmp( &(((exe_mod *)m1)->name[1]), &(((exe_mod *)m2)->name[1]), (byte)((exe_mod *)m2)->name[0] );
-        if( comp == 0 ) {
-            comp = 1;
-        }
-    }
-    return( comp );
-}
-
-static int TestBlock( foff old_off, foff new_off, foff len )
-{
-    byte    *pold;
-    byte    *pnew;
-    byte    *o;
-    byte    *n;
-    byte    *old_stop;
-    byte    *new_stop;
-    foff    matches;
-    foff    holes;
-
-    pold = &OldFile[old_off];
-    pnew = &NewFile[new_off];
-    matches = 0;
-    holes = 0;
-    o = pold;
-    n = pnew;
-    old_stop = &pold[len];
-    new_stop = &pnew[len];
-    for( ;; ) {
-        if( o >= old_stop || n >= new_stop )
-            break;
-        if( *o == *n ) {
-            ++o;
-            ++n;
-            ++matches;
-            continue;
-        }
-        o += sizeof( hole );
-        n += sizeof( hole );
-        if( o >= old_stop || n >= new_stop )
-            break;
-        if( *o == *n ) {
-            ++holes;
-        }
-    }
-    if( matches + holes * sizeof( hole ) > len / 2 ) {
-        AddSimilar( old_off, new_off, len );
-        o = pold;
-        n = pnew;
-        for( ;; ) {
-            if( o >= old_stop || n >= new_stop )
-                break;
-            if( *o == *n ) {
-                ++o;
-                ++n;
-                continue;
-            }
-            o += sizeof( hole );
-            n += sizeof( hole );
-            if( o >= old_stop || n >= new_stop ) {
-                n -= sizeof( hole );
-                AddDiff( n - NewFile, new_stop - n );
-                break;
-            }
-            AddHole( ( o - sizeof( hole ) ) - OldFile, ( n - sizeof( hole ) ) - NewFile );
-        }
-        return( 1 );
-    }
-    return( 0 );
-}
-
-static int FindBlockInOld( foff new_off, foff len )
-{
-    byte    *pold;
-    byte    *pnew;
-    byte    *o;
-    byte    *n;
-    byte    *old_stop;
-    byte    *new_stop;
-
-    pnew = &NewFile[new_off];
-    new_stop = &pnew[len];
-    pold = &OldFile[0];
-    old_stop = &OldFile[EndOld];
-    for( ;; ) {
-        if( pold >= old_stop )
-            break;
-        o = memchr( pold, *pnew, old_stop - pold );
-        if( o == NULL )
-            break;
-        pold = o + 1;
-        n = pnew;
-        for( ;; ) {
-            if( o >= old_stop || n >= new_stop ) {
-                if( TestBlock( ( pold - 1 ) - OldFile, new_off, len ) ) {
-                    return( 1 );
-                }
-                break;
-            }
-            if( *o == *n ) {
-                ++o;
-                ++n;
-                continue;
-            }
-            o += sizeof( hole );
-            n += sizeof( hole );
-            if( o >= old_stop || n >= new_stop ) {
-                if( TestBlock( ( pold - 1 ) - OldFile, new_off, len ) ) {
-                    return( 1 );
-                }
-                break;
-            }
-            if( *o != *n ) {
-                break;
-            }
-        }
-    }
-    AddDiff( new_off, len );
-    return( 0 );
-}
-
-static int both_walker( void *_new_blk, void *parm )
-{
-    fpos_t          len;
-    walker_data     *last;
-    exe_blk         *old_blk;
-    exe_mod         *old_mod;
-    exe_mod         *new_mod;
-    exe_mod         tmp_mod;
-    exe_blk         *new_blk = _new_blk;
-
-    last = parm;
-    tmp_mod.mod_offset = new_blk->mod_offset;
-    new_mod = SymFind( new.mods_by_offset, &tmp_mod );
-    if( new_mod == NULL ) {
-        fatal( MSG_DEBUG_INFO );
-    }
-    if( last->last_offset != new_blk->start ) {
-        len = new_blk->start - last->last_offset;
-        stats( "[%lx-%lx) ???", last->last_offset, last->last_offset + len );
-        if( FindBlockInOld( last->last_offset, len ) ) {
-            stats( "\n" );
-        } else {
-            stats( " (NOT found)\n" );
-        }
-    }
-    last->last_offset = new_blk->start + new_blk->length;
-    stats( "[%lx-%lx) ", new_blk->start, last->last_offset );
-    printd( new_mod->name );
-    if( new_blk->start >= EndNew ) {
-        stats( " (BSS block ignored)\n" );
-        return( 0 );
-    }
-    old_mod = SymFind( old.mods_by_name, new_mod );
-    if( old_mod == NULL ) {
-        stats( " (NOT found)\n" );
-        AddDiff( new_blk->start, new_blk->length );
-        return( 0 );
-    }
-    /* find an exact match in length if possible */
-    for( old_blk = old_mod->blocks; old_blk != NULL; old_blk = old_blk->next ) {
-        if( old_blk->length == (uint_32)-1 ) {
-            continue;
-        }
-        if( old_blk->length == new_blk->length ) {
-            if( TestBlock( old_blk->start, new_blk->start, old_blk->length ) ) {
-                old_blk->length = (uint_32)-1;   /* don't test this one again */
-                stats( "\n" );
-                return( 0 );
-            }
-        }
-    }
-    for( old_blk = old_mod->blocks; old_blk != NULL; old_blk = old_blk->next ) {
-        if( old_blk->length == (uint_32)-1 || old_blk->length == new_blk->length ) {
-            continue;
-        }
-        if( old_blk->length > new_blk->length ) {
-            if( TestBlock( old_blk->start, new_blk->start, new_blk->length ) ) {
-                AddDiff( new_blk->start + new_blk->length,
-                         old_blk->length - new_blk->length );
-                old_blk->length = (uint_32)-1;   /* don't test this one again */
-                stats( "\n" );
-                return( 0 );
-            }
-        } else {        /* old_blk->length < new_blk->length */
-            if( TestBlock( old_blk->start, new_blk->start, old_blk->length ) ) {
-                AddDiff( new_blk->start + old_blk->length,
-                         new_blk->length - old_blk->length );
-                old_blk->length = (uint_32)-1;   /* don't test this one again */
-                stats( "\n" );
-                return( 0 );
-            }
-        }
-    }
-    AddDiff( new_blk->start, new_blk->length );
-    stats( " (changed)\n" );
-    return( 0 );
-}
-
-static int only_new_walker( void *_new_blk, void *parm )
-{
-    fpos_t          len;
-    walker_data     *last;
-    exe_mod         *new_mod;
-    exe_mod         tmp_mod;
-    exe_blk         *new_blk = _new_blk;
-
-    last = parm;
-    tmp_mod.mod_offset = new_blk->mod_offset;
-    new_mod = SymFind( new.mods_by_offset, &tmp_mod );
-    if( new_mod == NULL ) {
-        fatal( MSG_DEBUG_INFO );
-    }
-    if( last->last_offset != new_blk->start ) {
-        len = new_blk->start - last->last_offset;
-        stats( "[%lx-%lx) ???",last->last_offset, last->last_offset + len );
-        if( FindBlockInOld( last->last_offset, len ) ) {
-            stats( "\n" );
-        } else {
-            stats( " (NOT found)\n" );
-        }
-    }
-    last->last_offset = new_blk->start + new_blk->length;
-    stats( "[%lx-%lx) ", new_blk->start, last->last_offset );
-    printd( new_mod->name );
-    if( new_blk->start >= EndNew ) {
-        stats( " (BSS block ignored)\n" );
-        return( 0 );
-    }
-    if( FindBlockInOld( new_blk->start, new_blk->length ) ) {
-        stats( "\n" );
-    } else {
-        stats( " (NOT found)\n" );
-    }
-    return( 0 );
-}
-
-fpos_t ExeOverlayAccess( exe_form_t exe, uint_16 section, uint_16 *seg )
-{
-    exe = exe;
-    return( section - *seg );
-}
-
-static void ProcessExe( const char *name, char *sym_name, exe_info *exe )
-{
-    unsigned                num_blks;
-    exe_mod                 *new_mod;
-    exe_mod                 *found_mod;
-    exe_blk                 *new_blk;
-    fpos_t                  first_section;
-    fpos_t                  mod_list;
-    fpos_t                  addr_list;
-    fpos_t                  curr_offset;
-    fpos_t                  debug_header;
-    addr48_ptr              seg_addr;
-    master_dbg_header       dbg_head;
-    section_dbg_header      section_head;
-    seg_dbg_info            seg_desc;
-    mod_dbg_info            mod_name;
-    addr_dbg_info           seg_chunk;
-    exe_mod                 tmp_mod;
-    char                    file_name[_MAX_PATH];
-    pgroup2                 pg;
-
-    _splitpath2( name, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
-    if( pg.ext[0] == '\0' )
-        pg.ext = "exe";
-    _makepath( file_name, pg.drive, pg.dir, pg.fname, pg.ext );
-    exe->fd = fopen( file_name, "rb" );
-    FileCheck( exe->fd, file_name );
-    _splitpath2( sym_name, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
-    if( pg.ext[0] == '\0' )
-        pg.ext = "sym";
-    _makepath( file_name, pg.drive, pg.dir, pg.fname, pg.ext );
-    exe->sym.fd = fopen( file_name, "rb" );
-    FileCheck( exe->sym.fd, file_name );
-    SeekCheck( fseek( exe->sym.fd, -(long)sizeof( dbg_head ), SEEK_END ), file_name );
-    debug_header = ftell( exe->sym.fd );
-    ReadCheck( fread( &dbg_head, 1, sizeof( dbg_head ), exe->sym.fd ), sizeof( dbg_head ), file_name );
-    if( dbg_head.signature != WAT_DBG_SIGNATURE         ||
-        dbg_head.exe_major_ver != EXE_MAJOR_VERSION     ||
-        dbg_head.exe_minor_ver > EXE_MINOR_VERSION      ||
-        dbg_head.obj_major_ver != OBJ_MAJOR_VERSION     ||
-        dbg_head.obj_minor_ver > OBJ_MINOR_VERSION      ) {
-        fatal( MSG_DEBUG_INFO );
-    }
-    SeekCheck( fseek( exe->sym.fd, 0, SEEK_END ), file_name );
-    exe->sym.start = ftell( exe->sym.fd ) - dbg_head.debug_size;
-    /* get segment positions in executable */
-    first_section = exe->sym.start + dbg_head.lang_size + dbg_head.segment_size;
-    SeekCheck( fseek( exe->sym.fd, first_section, SEEK_SET ), file_name );
-    ReadCheck( fread( &section_head, 1, sizeof( section_head ), exe->sym.fd ), sizeof( section_head ), file_name );
-    if( section_head.mod_offset >= section_head.gbl_offset      ||
-        section_head.gbl_offset >= section_head.addr_offset     ||
-        section_head.addr_offset >= section_head.section_size ) {
-        fatal( MSG_DEBUG_INFO );
-    }
-    exe->mods_by_offset = SymInit( cmp_mod_offset );
-    exe->mods_by_name = SymInit( cmp_mod_name );
-    mod_list = first_section + section_head.mod_offset;
-    SeekCheck( fseek( exe->sym.fd, mod_list, SEEK_SET ), file_name );
-    for( curr_offset = section_head.mod_offset;
-         curr_offset != section_head.gbl_offset;
-         curr_offset += sizeof( mod_dbg_info ) + (byte)mod_name.name[0]
-        ) {
-        ReadCheck( fread( &mod_name, 1, sizeof( mod_dbg_info ), exe->sym.fd ), sizeof( mod_dbg_info ), file_name );
-        new_mod = bdiff_malloc( sizeof( exe_mod ) + (byte)mod_name.name[0] );
-        NotNull( new_mod, "new module" );
-        new_mod->blocks = NULL;
-        new_mod->mod_offset = curr_offset - section_head.mod_offset;
-        new_mod->name[0] = mod_name.name[0];
-        ReadCheck( fread( &new_mod->name[1], 1, (byte)mod_name.name[0], exe->sym.fd ), (byte)mod_name.name[0], file_name );
-        SymAdd( exe->mods_by_offset, new_mod );
-        SymAdd( exe->mods_by_name, new_mod );
-    }
-    if( exe == &new ) {
-        new.blks = SymInit( cmp_blk );
-    }
-    if( first_section + section_head.section_size != debug_header ) {
-        fatal( MSG_OVERLAYS );
-    }
-    exe->form = ExeForm( exe->fd, NULL, exe );
-    addr_list = first_section + section_head.addr_offset;
-    SeekCheck( fseek( exe->sym.fd, addr_list, SEEK_SET ), file_name );
-    for( curr_offset = section_head.addr_offset;
-         curr_offset != section_head.section_size;
-         curr_offset += sizeof( seg_dbg_info ) - sizeof( addr_dbg_info )
-        ) {
-        ReadCheck( fread( &seg_desc, 1, sizeof( seg_dbg_info ) - sizeof( addr_dbg_info ), exe->sym.fd ), sizeof( seg_dbg_info ) - sizeof( addr_dbg_info ), file_name );
-        seg_addr = seg_desc.base;
-        for( num_blks = seg_desc.num; num_blks != 0; --num_blks ) {
-            ReadCheck( fread( &seg_chunk, 1, sizeof( addr_dbg_info ), exe->sym.fd ), sizeof( addr_dbg_info ), file_name );
-            curr_offset += sizeof( addr_dbg_info );
-            tmp_mod.mod_offset = seg_chunk.mod;
-            found_mod = SymFind( exe->mods_by_offset, &tmp_mod );
-            if( found_mod == NULL ) {
-                fatal( MSG_DEBUG_INFO );
-            }
-            new_blk = bdiff_malloc( sizeof( *new_blk ) );
-            NotNull( new_blk, "new block" );
-            new_blk->next = found_mod->blocks;
-            found_mod->blocks = new_blk;
-            new_blk->start = ExeTransformAddr( exe->form,
-                                seg_addr.segment, seg_addr.offset,
-                                section_head.section_id );
-            seg_addr.offset += seg_chunk.size;
-            new_blk->length = seg_chunk.size;
-            new_blk->mod_offset = found_mod->mod_offset;
-            if( exe == &new ) {
-                SymAdd( new.blks, new_blk );
-            }
-        }
-    }
-}
-
-void SymbolicDiff( algorithm alg, char *old_exe, char *new_exe )
-{
-    walker_data     data;
-
-    data.last_offset = 0;
-    ProcessExe( new_exe, NewSymName, &new );
-    if( alg == ALG_BOTH ) {
-        ProcessExe( old_exe, OldSymName, &old );
-        SymWalk( new.blks, &data, both_walker );
-        fclose( old.fd );
-        fclose( old.sym.fd );
-    } else {
-        SymWalk( new.blks, &data, only_new_walker );
-    }
-    fclose( new.fd );
-    fclose( new.sym.fd );
-}
-#endif
-
-
-void VerifyCorrect( const char *name )
-{
-
-    /* Try the patch file and ensure it produces new from old */
-
-    char        *real_new;
-    foff        offset;
-
-    memset( NewFile, 0x00, EndNew );
-    Execute( NewFile );
+    memset( NewFile, 0, EndNew );
+    rc = Execute( NewFile );
     bdiff_free( OldFile );
-    real_new = ReadIn( name, EndNew, EndNew );
-    if( real_new != NULL ) {
-        if( memcmp( real_new, NewFile, EndNew ) != 0 ) {
-            offset = 0;
-            for( ;; ) {
-                if( *real_new != *NewFile ) {
-                    PatchError( ERR_PATCH_BUNGLED, offset, *real_new, *NewFile );
+    if( rc == PATCH_RET_OKAY ) {
+        real_new = ReadIn( name, EndNew, EndNew );
+        if( real_new != NULL ) {
+            if( memcmp( real_new, NewFile, EndNew ) != 0 ) {
+                offset = 0;
+                for( ;; ) {
+                    if( *real_new != *NewFile ) {
+                        PatchError( ERR_PATCH_BUNGLED, offset, *real_new, *NewFile );
+                        rc = PATCH_BAD_PATCH;
+                    }
+                    ++offset;
+                    if( offset >= EndNew )
+                        break;
+                    ++real_new;
+                    ++NewFile;
                 }
-                ++offset;
-                if( offset >= EndNew )
-                    break;
-                ++real_new;
-                ++NewFile;
             }
+            bdiff_free( real_new );
         }
-        bdiff_free( real_new );
     }
+    return( rc != PATCH_RET_OKAY );
 }
 
 static int HoleCompare( const void *_h1, const void *_h2 )
@@ -1007,8 +588,9 @@ static void CheckPatch( int size )
         oldpatch = PatchBuffer;
         PatchSize += 10 * 1024;
         PatchBuffer = bdiff_realloc( PatchBuffer, PatchSize );
-        NotNull( PatchBuffer, "patch file" );
-        CurrPatch = PatchBuffer + ( CurrPatch - oldpatch );
+        if( NotNull( PatchBuffer, "patch file" ) ) {
+            CurrPatch = PatchBuffer + ( CurrPatch - oldpatch );
+        }
     }
 }
 
@@ -1068,9 +650,14 @@ static int FOffCompare( const void *_h1, const void *_h2 )
     return( 0 );
 }
 
+static void SortHoleArray( void )
+{
+    qsort( HoleArray, NumHoles, sizeof( region ), HoleCompare );
+}
+
 #define RUN_SIZE 5
 
-long HolesToDiffs( void )
+static long HolesToDiffs( void )
 {
     /* Find runs of holes which would be cheaper to represent as differences */
 
@@ -1168,7 +755,7 @@ long HolesToDiffs( void )
 }
 
 
-void ProcessHoleArray( int write_holes )
+static void ProcessHoleArray( int write_holes )
 {
 
     /* write holes out to the patch file, or just calculate file size needed */
@@ -1348,67 +935,81 @@ static void CopyComment( void )
 
     if( CommentFile != NULL ) {
         fd = fopen( CommentFile, "rb" );
-        FileCheck( fd, CommentFile );
-        SeekCheck( fseek( fd, 0, SEEK_END ), CommentFile );
-        size = ftell( fd );
-        SeekCheck( fseek( fd, 0, SEEK_SET ), CommentFile );
-        comment = bdiff_malloc( size + 1 );
-        NotNull( comment, "comment file" );
-        if( fread( comment, 1, size, fd ) != size ) {
-            FilePatchError( ERR_CANT_READ, CommentFile );
+        if( FileCheck( fd, CommentFile ) ) {
+            if( SeekCheck( fseek( fd, 0, SEEK_END ), CommentFile ) ) {
+                size = ftell( fd );
+                if( SeekCheck( fseek( fd, 0, SEEK_SET ), CommentFile ) ) {
+                    comment = bdiff_malloc( size + 1 );
+                    if( NotNull( comment, "comment file" ) ) {
+                        if( fread( comment, 1, size, fd ) != size ) {
+                            FilePatchError( ERR_CANT_READ, CommentFile );
+                        } else {
+                            comment[size] = '\0';
+                            OutStr( comment );
+                        }
+                        bdiff_free( comment );
+                    }
+                }
+            }
+            fclose( fd );
         }
-        fclose( fd );
-        comment[size] = '\0';
-        OutStr( comment );
     }
 }
 
-void WritePatchFile( const char *name, const char *new_name )
+static void WritePatchFile( const char *name, const char *new_name )
 {
     foff        len;
     size_t      size;
     FILE        *fd;
 
-    PatchSize = EndNew;
-    PatchBuffer = bdiff_malloc( PatchSize );
-    NotNull( PatchBuffer, "patch file" );
-    CurrPatch = PatchBuffer;
+    PatchSize = 0;
+    CurrPatch = NULL;
+    PatchBuffer = bdiff_malloc( EndNew );
+    if( NotNull( PatchBuffer, "patch file" ) ) {
+        PatchSize = EndNew;
+        CurrPatch = PatchBuffer;
 
-    if( AppendPatchLevel )
-        AddLevel( name );
+        if( AppendPatchLevel )
+            AddLevel( name );
 
-    OutStr( PATCH_SIGNATURE );
-    CopyComment();
+        OutStr( PATCH_SIGNATURE );
+        CopyComment();
 
-    OutPatch( EOF_CHAR, byte );
-    OutStr( new_name );
-    OutPatch( '\0', char );
-    OutPatch( EndOld + OldCorrection, foff );
-    len = EndNew;
-    if( AppendPatchLevel )
-        len += sizeof( PATCH_LEVEL );
-    OutPatch( len, foff );
-    OutPatch( Sum(), foff );
+        OutPatch( EOF_CHAR, byte );
+        OutStr( new_name );
+        OutPatch( '\0', char );
+        OutPatch( EndOld + OldCorrection, foff );
+        len = EndNew;
+        if( AppendPatchLevel )
+            len += sizeof( PATCH_LEVEL );
+        OutPatch( len, foff );
+        OutPatch( Sum(), foff );
 
-    WriteSimilars();
-    WriteDiffs();
-    if( AppendPatchLevel )
-        WriteLevel();
-    ProcessHoleArray( 1 );
+        WriteSimilars();
+        WriteDiffs();
+        if( AppendPatchLevel )
+            WriteLevel();
+        ProcessHoleArray( 1 );
 
-    OutPatch( CMD_DONE, byte );
+        OutPatch( CMD_DONE, byte );
 
-    fd = fopen( name, "wb" );
-    FileCheck( fd, name );
-    size = CurrPatch - PatchBuffer;
-    if( fwrite( PatchBuffer, 1, size, fd ) != size ) {
-        FilePatchError( ERR_CANT_WRITE, name );
+        PatchSize = CurrPatch - PatchBuffer;
+        fd = fopen( name, "wb" );
+        if( FileCheck( fd, name ) ) {
+            size = fwrite( PatchBuffer, 1, PatchSize, fd );
+            if( PatchSize != size ) {
+                FilePatchError( ERR_CANT_WRITE, name );
+                PatchSize = size;
+            }
+            fclose( fd );
+        }
+        bdiff_free( PatchBuffer );
+        PatchBuffer = NULL;
     }
-    fclose( fd );
 }
 
 
-void MakeHoleArray( void )
+static void MakeHoleArray( void )
 {
     region      *new_hole;
     region      *curr;
@@ -1416,21 +1017,17 @@ void MakeHoleArray( void )
     if( NumHoles == 0 )
         return;
     HoleArray = bdiff_malloc( sizeof( region ) * NumHoles );
-    NotNull( HoleArray, "sorted holes" );
-    new_hole = HoleArray;
-    while( (curr = HoleRegions) != NULL ) {
-        HoleRegions = curr->next;
-        *new_hole++ = *curr;
-        bdiff_free( curr );
+    if( NotNull( HoleArray, "sorted holes" ) ) {
+        new_hole = HoleArray;
+        while( (curr = HoleRegions) != NULL ) {
+            HoleRegions = curr->next;
+            *new_hole++ = *curr;
+            bdiff_free( curr );
+        }
     }
 }
 
-void SortHoleArray( void )
-{
-    qsort( HoleArray, NumHoles, sizeof( region ), HoleCompare );
-}
-
-void FreeHoleArray( void )
+static void FreeHoleArray( void )
 {
     if( NumHoles != 0 ) {
         bdiff_free( HoleArray );
@@ -1454,13 +1051,14 @@ static foff FindSyncString( byte *file, foff end, const char *syncString )
     return( (foff)-1 );
 }
 
-void ScanSyncString( const char *syncString )
+static bool ScanSyncString( const char *syncString )
 {
     if( syncString != NULL ) {
         SyncOld = FindSyncString( OldFile, EndOld, syncString );
         SyncNew = FindSyncString( NewFile, EndNew, syncString );
         if( SyncOld == (foff)-1 || SyncNew == (foff)-1 ) {
             fatal( ERR_NO_SYNCSTRING );
+            return( false );
         }
         while( OldFile[SyncOld] == NewFile[SyncNew] ) {
             ++SyncOld; ++SyncNew;
@@ -1471,30 +1069,26 @@ void ScanSyncString( const char *syncString )
             }
         }
     }
+    return( true );
 }
 
-void init_diff( void )
-{
-    NumSimilarities = 0;
-}
-
-void print_stats( long savings )
+static void print_stats( long savings )
 {
     foff        best_from_new;
 
+    best_from_new = 0;
+    if( EndNew > EndOld ) {
+        best_from_new = EndNew - EndOld;
+    }
     stats( "similar regions:    %8lu bytes (%lu chunks)\n", SimilarSize, NumSimilarities);
     stats( "different regions:  %8lu bytes (%lu chunks)\n", DiffSize, NumDiffs );
     stats( "hole->diff savings: %8lu bytes\n", savings );
     stats( "number of holes:    %8lu\n", NumHoles );
     stats( "(%lu headers + %lu single + %lu double + %lu triple)\n\n", HoleHeaders, HoleCount[0], HoleCount[1], HoleCount[2] );
     stats( "old file: %8lu bytes   new file: %8lu bytes\n", EndOld, EndNew );
-    stats( "%lu%% of old executable referenced in patch file (largest amount is 100%%)\n", (SimilarSize*100) / EndOld );
-    best_from_new = 0;
-    if( EndNew > EndOld ) {
-        best_from_new = EndNew - EndOld;
-    }
-    stats( "%lu%% of new executable output to patch file (least amount is %lu%%)\n", (DiffSize*100) / EndNew, (best_from_new*100) / EndNew );
-    stats( "%lu total patch file size (%lu%%)\n", CurrPatch - PatchBuffer, ( ( CurrPatch - PatchBuffer ) * 100 ) / EndNew );
+    stats( "%lu%% of old executable referenced in patch file (largest amount is 100%%)\n", ( SimilarSize * 100 ) / EndOld );
+    stats( "%lu%% of new executable output to patch file (least amount is %lu%%)\n", ( DiffSize * 100 ) / EndNew, ( best_from_new * 100 ) / EndNew );
+    stats( "%lu total patch file size (%lu%%)\n", PatchSize, ( PatchSize * 100 ) / EndNew );
 }
 
 /*
@@ -1523,4 +1117,55 @@ void dump( void )
     for( reg = HoleRegions; reg; reg = reg->next ) {
         printf( "%8lx  %8lx  %8lx\n",reg->old_start,reg->new_start,reg->diff);
     }
+}
+
+int DoBdiff( const char *srcPath, const char *tgtPath, const char *new_name, const char *name, bool init )
+{
+    long        savings;
+    foff        buffsize;
+    int         i;
+
+    if( init ) {
+        /* initialize static variables each time */
+        SimilarRegions = NULL;
+        DiffRegions = NULL;
+        HoleRegions = NULL;
+        NumHoles = 0;
+        HoleHeaders = 0;
+        DiffSize = 0;
+        NumDiffs = 0;
+        NumSimilarities = 0;
+        SimilarSize = 0;
+        HolesInRegion = 0;
+        for( i = 0; i < 3; i += 1 ) {
+            HoleCount[i] = 0;
+        }
+    }
+
+    EndOld = FileSize( srcPath, &OldCorrection );
+    EndNew = FileSize( tgtPath, &NewCorrection );
+
+    buffsize = ( EndOld > EndNew ) ? ( EndOld ) : ( EndNew );
+    buffsize += sizeof( PATCH_LEVEL );
+    OldFile = ReadIn( srcPath, buffsize, EndOld );
+    NewFile = ReadIn( tgtPath, buffsize, EndNew );
+
+    if( ScanSyncString( SyncString ) ) {
+        FindRegions();
+
+        if( NumHoles == 0 && DiffSize == 0 && EndOld == EndNew ) {
+            puts( "Patch file not created - files are identical" );
+            return( 1 );
+        }
+        MakeHoleArray();
+        SortHoleArray();
+        ProcessHoleArray( 0 );
+        savings = HolesToDiffs();
+        WritePatchFile( name, new_name );
+        FreeHoleArray();
+        i = VerifyCorrect( tgtPath );
+        print_stats( savings );
+        return( i );
+    }
+    return( 1 );
 }

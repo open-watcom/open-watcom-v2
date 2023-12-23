@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,7 +36,7 @@
 #include "riscstr.h"
 
 
-#if USE_INT64
+#if RISCSTR_USE_INT64
 
 struct __RISC_StrData   __RISC_StringData = {
     /* unsigned_64      byteMasks[8]; */

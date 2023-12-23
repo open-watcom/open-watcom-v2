@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -86,13 +87,15 @@ extern "C" {
 
  */
 
+#define DEBUG_SYM_STR(s)    # s
+
 #define DEBUG_PRESENT_NAME __WD_Present
 #define DEBUG_BREAK_ON_CATCH_NAME __WD_Break_On_Catch
 #define DEBUG_BREAK_ON_THROW_NAME __WD_Break_On_Throw
 
-#define DEBUG_PRESENT_STR "__WD_Present"
-#define DEBUG_BREAK_ON_CATCH_STR "__WD_Break_On_Catch"
-#define DEBUG_BREAK_ON_THROW_STR "__WD_Break_On_Throw"
+#define DebuggerPresent() DEBUG_PRESENT_NAME
+#define DebuggerBreakOnCatch() DEBUG_BREAK_ON_CATCH_NAME
+#define DebuggerBreakOnThrow() DEBUG_BREAK_ON_THROW_NAME
 
 #ifndef _WCRTDATA
 # define _WCRTDATA /* nothing */
@@ -101,6 +104,11 @@ extern "C" {
 _WCRTDATA extern char volatile DEBUG_PRESENT_NAME;
 _WCRTDATA extern char volatile DEBUG_BREAK_ON_THROW_NAME;
 _WCRTDATA extern char volatile DEBUG_BREAK_ON_CATCH_NAME;
+#if defined( __WATCOMC__ ) && defined( _M_IX86 )
+    #pragma aux DEBUG_PRESENT_NAME "*"
+    #pragma aux DEBUG_BREAK_ON_THROW_NAME "*"
+    #pragma aux DEBUG_BREAK_ON_CATCH_NAME "*"
+#endif
 
 #if defined( __WATCOMC__ ) && defined( _M_IX86 )
 
@@ -165,12 +173,12 @@ _WCRTDATA extern char volatile DEBUG_BREAK_ON_CATCH_NAME;
 
 #define CheckEnterDebugger() \
     { \
-        if( DEBUG_PRESENT_NAME ) EnterDebugger(); \
+        if( DebuggerPresent() ) EnterDebugger(); \
     }
 
 #define CheckEnterDebuggerWithMessage( msg ) \
     { \
-        if( DEBUG_PRESENT_NAME ) EnterDebuggerWithMessage( msg ); \
+        if( DebuggerPresent() ) EnterDebuggerWithMessage( msg ); \
     }
 
 #ifdef __NT__
@@ -179,10 +187,6 @@ _WCRTDATA extern char volatile DEBUG_BREAK_ON_CATCH_NAME;
 #else
     #define PassDebuggerAMessage CheckEnterDebuggerWithMessage
 #endif
-
-#define DebuggerPresent() DEBUG_PRESENT_NAME
-#define DebuggerBreakOnCatch() DEBUG_BREAK_ON_CATCH_NAME
-#define DebuggerBreakOnThrow() DEBUG_BREAK_ON_THROW_NAME
 
 #define EnterDebuggerWithSignature EnterDebuggerWithMessage
 

@@ -15,6 +15,8 @@ The &stripname command line syntax is:
 The square brackets denote items which are optional.
 .note options
 .begpoint
+.point &sw.b
+(backup) Create backup (.bak) file for input executable.
 .point &sw.n
 (noerrors) Do not issue any diagnostic message.
 .point &sw.q

@@ -18,7 +18,7 @@ $(libtarg_name).lib : $+$(libtarg_prebuild_objs) $(libtarg_objs) $(libtarg_libs)
         $(__MAKEFILES__)
 !ifndef __WATCOM_TOOLS__
     @%make echo_lib
-    $(blib) $(bld_libflags) $+$(libtarg_objs) $(libtarg_libs)$-
+    $(bld_lib) $+$(libtarg_objs) $(libtarg_libs)$-
 !else if $(__WATCOM_TOOLS__) >= 1300
     @%make echo_lib
     $(librarian) $(libflags) $+$(libtarg_opts) $(libtarg_objs) $(libtarg_libs)$-

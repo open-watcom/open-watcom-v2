@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,7 +42,7 @@
 #include "banner.h"
 #include "aboutdlg.h"
 #include "win.h"
-#include "viabout.h"
+#include "utilstok.h"
 
 #include "clibext.h"
 
@@ -92,7 +92,7 @@ void SetGadgetString( char *str )
             len = GADGET_SIZE;
         }
         if( EditVars.GadgetString == NULL ) {
-            EditVars.GadgetString = MemAlloc( GADGET_SIZE + 1 );
+            EditVars.GadgetString = _MemAllocArray( char, GADGET_SIZE + 1 );
             EditVars.GadgetString[GADGET_SIZE] = '\0';
         }
         memset( EditVars.GadgetString, ' ', GADGET_SIZE );
@@ -479,10 +479,10 @@ vi_rc DoAboutBox( void )
 
     ai.owner = root_window_id;
     ai.inst = InstanceHandle;
-    ai.name = WATCOM_ABOUT_EDITOR STR_BITNESS;
-    ai.version = banner1v( _VI_VERSION_ );
-    ai.title = "About Open Watcom Text Editor";
-    DoAbout( &ai );
+    ai.name = BANNER1;
+    ai.version = BANNER2;
+    ai.title = "About " banner1t( "Text Editor" );
+    DoAbout( &ai, NULL );
     return( ERR_NO_ERR );
 
 } /* DoAboutBox */
@@ -634,7 +634,7 @@ void SetEditInt( HWND hwnd, UINT id, int value )
 {
     char        buff[16];
 
-    itoa( value, buff, 10 );
+    sprintf( buff, "%d", value );
     SetDlgItemText( hwnd, id, buff );
 
 } /* SetEditInt */

@@ -1,5 +1,5 @@
-#                       d16 d32 dpm nt  nta ntp nvc nvl o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
-#===================================================================================================
+#                       d16 d32 dpm nt  nta ntp ntm nvc nvl o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
+#=======================================================================================================
 !inject accss.obj       d16 d32 dpm
 !inject creatdos.obj    d16 d32 dpm
 !inject _creopen.obj    d16 d32 dpm
@@ -43,7 +43,6 @@
 !inject uopen.obj       d16 d32 dpm
 !inject urenm.obj       d16 d32 dpm
 !inject urmdr.obj       d16 d32 dpm
-!inject uselfn.obj      d16 d32 dpm
 !inject usplit2.obj     d16 d32 dpm
 !inject uspltpat.obj    d16 d32 dpm
 !inject usrchen.obj     d16 d32 dpm

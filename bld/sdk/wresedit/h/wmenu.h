@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -61,7 +61,7 @@ typedef struct WMenuInfo {
     WResLangType        lang;
     uint_16             MemFlags;
     size_t              data_size;
-    void                *data;
+    char                *data;
     bool                is32bit;
     bool                edit_active;
     bool                modified;
@@ -77,7 +77,7 @@ WRESEDLLENTRY void                WRESEAPI WMenuFreeMenuInfo( WMenuInfo * );
 WRESEDLLENTRY extern void         WRESEAPI WMenuInit( void );
 WRESEDLLENTRY extern void         WRESEAPI WMenuFini( void );
 WRESEDLLENTRY extern int          WRESEAPI WMenuCloseSession( WMenuHandle, int );
-WRESEDLLENTRY extern WMenuHandle  WRESEAPI WRMenuStartEdit( WMenuInfo * );
+WRESEDLLENTRY extern WMenuHandle  WRESEAPI WMenuStartEdit( WMenuInfo * );
 WRESEDLLENTRY extern WMenuInfo *  WRESEAPI WMenuEndEdit( WMenuHandle );
 WRESEDLLENTRY extern WMenuInfo *  WRESEAPI WMenuGetEditInfo( WMenuHandle );
 WRESEDLLENTRY extern bool         WRESEAPI WMenuIsModified( WMenuHandle );

@@ -1,3 +1,5 @@
+/* UTF-8 encoding, ¥ */
+
 MEMMAN_INFO DIALOG 46, 10, 212, 132
 STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
 CAPTION "Memory Management Information"

@@ -2,6 +2,9 @@ proj_name = cmdedit
 
 cmdedit_autodepends = .AUTODEPEND
 
+cmdedit_nocheckstack = 1
+cmdedit_nocheckstack_dll = 1
+
 cmdedit_nofpu = 1
 
 # ignore default compilers optimization options
@@ -23,7 +26,7 @@ memory_model_i86 = s
 
 extra_cpp_dll_flags = -zu
 
-!ifeq release 1
+!ifeq debug 0
 extra_c_flags_dos = -oas
 extra_c_flags_os2 = -oxs
 !endif

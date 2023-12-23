@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,17 +48,18 @@ typedef struct BitMap {
     State           *on;
     struct BitMap   *next;
     uint            i;
-    uchar           m;
+    byte            m;
 } BitMap;
 
 typedef struct SCC {
-    State       **top, **stk;
+    State       **top;
+    State       **stk;
 } SCC;
 
 static BitMap       *BitMap_first = NULL;
 static const uint   cInfinity = ~0U;
 
-static char *prtCh( uchar c )
+static char *prtCh( Char c )
 {
     static char b[5];
 
@@ -73,7 +75,7 @@ static char *prtCh( uchar c )
     case '\\': return( "\\\\" );
     default:
         if( isprint( c ) ) {
-            b[0] = c;
+            b[0] = (char)c;
             b[1] = '\0';
         } else {
             b[0] = '\\';
@@ -91,7 +93,7 @@ static void Go_unmap( Go *g, Go *base, State *x )
     Span *s;
     Span *b;
     Span *e;
-    uint lb;
+    Char lb;
 
     s = g->span;
     b = base->span;
@@ -117,14 +119,14 @@ static void Go_unmap( Go *g, Go *base, State *x )
     }
     s->ub = e[-1].ub;
     ++s;
-    g->nSpans = s - g->span;
+    g->nSpans = (uint)( s - g->span );
 }
 
-static void doGen( Go *g, State *s, uchar *bm, uchar m )
+static void doGen( Go *g, State *s, byte *bm, byte m )
 {
     Span *b;
     Span *e;
-    uint lb;
+    Char lb;
 
     b = g->span;
     e = &b[g->nSpans];
@@ -143,10 +145,10 @@ static bool matches( Go *g1, State *s1, Go *g2, State *s2 )
 {
     Span *b1;
     Span *e1;
-    uint lb1;
+    Char lb1;
     Span *b2;
     Span *e2;
-    uint lb2;
+    Char lb2;
 
     b1 = g1->span;
     e1 = &b1[g1->nSpans];
@@ -165,7 +167,8 @@ static bool matches( Go *g1, State *s1, Go *g2, State *s2 )
             return( false );
         if( lb1 != lb2 || b1->ub != b2->ub )
             return( false );
-        ++b1; ++b2;
+        ++b1;
+        ++b2;
     }
 }
 
@@ -205,17 +208,17 @@ static BitMap *BitMap_find( State *x )
     return( NULL );
 }
 
-static void BitMap_gen( FILE *o, uint lb, uint ub )
+static void BitMap_gen( FILE *o, Char lb, Char ub )
 {
     BitMap *b;
 
     b = BitMap_first;
     if( b != NULL ) {
         uint    n;
-        uchar   *bm;
+        byte    *bm;
         uint    i;
         uint    j;
-        uchar   m;
+        byte    m;
 
         n = ub - lb;
         bm = malloc( n );
@@ -223,7 +226,8 @@ static void BitMap_gen( FILE *o, uint lb, uint ub )
         memset( bm, 0, n );
         for( i = 0; b != NULL; i += n ) {
             for( m = 0x80; b != NULL && m; b = b->next, m >>= 1 ) {
-                b->i = i; b->m = m;
+                b->i = i;
+                b->m = m;
                 doGen( b->go, b->on, &bm[-lb], m );
             }
             for( j = 0; j < n; ++j ) {
@@ -246,7 +250,7 @@ static void genGoTo( FILE *o, State *to )
     ++oline;
 }
 
-static void genIf( FILE *o, char *cmp, uint v )
+static void genIf( FILE *o, char *cmp, Char v )
 {
     fprintf( o, "\tif(yych %s '%s')", cmp, prtCh( v ) );
 }
@@ -351,24 +355,35 @@ static void doLinear( FILE *o, uint i, Span *s, uint n, State *next )
         State *bg = s[0].to;
         while( n >= 3 && s[2].to == bg && ( s[1].ub - s[0].ub ) == 1 ) {
             if( s[1].to == next && n == 3 ) {
-                indent( o, i ); genIf( o, "!=", s[0].ub ); genGoTo( o, bg );
+                indent( o, i );
+                genIf( o, "!=", s[0].ub );
+                genGoTo( o, bg );
                 return;
             } else {
-                indent( o, i ); genIf( o, "==", s[0].ub ); genGoTo( o, s[1].to );
+                indent( o, i );
+                genIf( o, "==", s[0].ub );
+                genGoTo( o, s[1].to );
             }
-            n -= 2; s += 2;
+            n -= 2;
+            s += 2;
         }
         if( n == 1 ) {
             if( bg != next ) {
-                indent( o, i); genGoTo(o, s[0].to );
+                indent( o, i);
+                genGoTo(o, s[0].to );
             }
             return;
         } else if( n == 2 && bg == next ) {
-            indent( o, i ); genIf( o, ">=", s[0].ub ); genGoTo( o, s[1].to );
+            indent( o, i );
+            genIf( o, ">=", s[0].ub );
+            genGoTo( o, s[1].to );
             return;
         } else {
-            indent( o, i ); genIf( o, ( s[0].ub > 1 ) ? "<=" : "==", s[0].ub - 1 ); genGoTo( o, bg );
-            n -= 1; s += 1;
+            indent( o, i );
+            genIf( o, ( s[0].ub > 1 ) ? "<=" : "==", s[0].ub - 1 );
+            genGoTo( o, bg );
+            n -= 1;
+            s += 1;
         }
     }
 }
@@ -378,7 +393,7 @@ static void Go_genLinear( Go *g, FILE *o, State *next )
     doLinear( o, 0, g->span, g->nSpans, next );
 }
 
-static void genCases( FILE *o, uint lb, Span *s )
+static void genCases( FILE *o, Char lb, Span *s )
 {
     if( lb < s->ub ) {
         for( ;; ) {
@@ -445,11 +460,18 @@ static void doBinary( FILE *o, uint i, Span *s, uint n, State *next )
     } else {
         uint    h = n/2;
 
-        indent( o, i ); genIf( o, "<=", s[h-1].ub - 1 ); fputs( "{\n", o ); ++oline;
+        indent( o, i );
+        genIf( o, "<=", s[h - 1].ub - 1 );
+        fputs( "{\n", o );
+        ++oline;
         doBinary( o, i + 1, &s[0], h, next );
-        indent( o, i ); fputs( "\t} else {\n", o ); ++oline;
+        indent( o, i );
+        fputs( "\t} else {\n", o );
+        ++oline;
         doBinary( o, i + 1, &s[h], n - h, next );
-        indent( o, i ); fputs( "\t}\n", o ); ++oline;
+        indent( o, i );
+        fputs( "\t}\n", o );
+        ++oline;
     }
 }
 
@@ -549,9 +571,13 @@ static uint merge( Span *x0, State *fg, State *bg )
                 x->to = prev = to;
             }
             x->ub = f->ub;
-            ++x; ++f; --nf; ++b; --nb;
+            ++x;
+            ++f;
+            --nf;
+            ++b;
+            --nb;
             if( nf == 0 && nb == 0 ) {
-                return( x - x0 );
+                return( (uint)( x - x0 ) );
             }
         }
         while( f->ub < b->ub ) {
@@ -562,7 +588,9 @@ static uint merge( Span *x0, State *fg, State *bg )
                 x->to = prev = to;
             }
             x->ub = f->ub;
-            ++x; ++f; --nf;
+            ++x;
+            ++f;
+            --nf;
         }
         while( b->ub < f->ub ) {
             to = ( b->to == f->to ) ? bg : f->to;
@@ -572,14 +600,16 @@ static uint merge( Span *x0, State *fg, State *bg )
                 x->to = prev = to;
             }
             x->ub = b->ub;
-            ++x; ++b; --nb;
+            ++x;
+            ++b;
+            --nb;
         }
     }
 }
 
 static void SCC_init( SCC *s, uint size )
 {
-    s->top = s->stk = malloc( size * sizeof( State ) );
+    s->top = s->stk = (State **)malloc( size * sizeof( State * ) );
 }
 
 static void SCC_destroy( SCC *s )
@@ -593,15 +623,16 @@ static void SCC_traverse( SCC *s, State *x )
     uint    i;
 
     *s->top = x;
-    k = ++s->top - s->stk;
+    k = (uint)( ++s->top - s->stk );
     x->depth = k;
     for( i = 0; i < x->go.nSpans; ++i ) {
         State *y = x->go.span[i].to;
         if( y ) {
             if( y->depth == 0 )
                 SCC_traverse( s, y );
-            if( y->depth < x->depth )
+            if( x->depth > y->depth ) {
                 x->depth = y->depth;
+            }
         }
     }
     if( x->depth == k ) {

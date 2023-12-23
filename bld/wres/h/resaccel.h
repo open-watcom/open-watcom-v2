@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,7 +34,6 @@
 #ifndef RESACCEL_INCLUDED
 #define RESACCEL_INCLUDED
 
-#include "pushpck1.h"
 typedef struct AccelTableEntry32 {
     uint_16     Flags;
     uint_16     Ascii;
@@ -41,12 +41,15 @@ typedef struct AccelTableEntry32 {
     uint_16     Unknown;            /* I don't know what this field is for. */
 } AccelTableEntry32;                /* MS makes it 0. (padding?) */
 
+#define RES_SIZE_AccelTableEntry32  (4 * sizeof( uint_16 ))
+
 typedef struct AccelTableEntry {
     uint_8      Flags;
     uint_16     Ascii;
     uint_16     Id;
-} _WCUNALIGNED AccelTableEntry;
-#include "poppck.h"
+} AccelTableEntry;
+
+#define RES_SIZE_AccelTableEntry    (1 + 2 * sizeof( uint_16 ))
 
 typedef uint_8  AccelFlags;
 #define ACCEL_ASCII     0x00        /* last bit is 0 */
@@ -57,7 +60,28 @@ typedef uint_8  AccelFlags;
 #define ACCEL_ALT       0x10
 #define ACCEL_LAST      0x80
 
+/* reswaccl.c */
+
 extern bool ResWriteAccelEntry( AccelTableEntry * currentry, FILE *fp );
 extern bool ResWriteAccelEntry32( AccelTableEntry32 *, FILE *fp );
+
+/* resraccl.c */
+
+extern bool ResReadAccelEntry( AccelTableEntry * currentry, FILE *fp );
+extern bool ResReadAccelEntry32( AccelTableEntry32 *, FILE *fp );
+
+/* rmwaccl.c */
+
+extern void SetAccelTableLastEntry32( char *data );
+extern void SetAccelTableLastEntry( char *data );
+extern char *ResWriteDataAccelTableEntry32( char *data, AccelTableEntry32 *entry );
+extern char *ResWriteDataAccelTableEntry( char *data, AccelTableEntry *entry );
+
+/* rmraccl.c */
+
+extern bool IsAccelTableLastEntry32( const char *data );
+extern bool IsAccelTableLastEntry( const char *data );
+extern char *ResReadDataAccelTableEntry32( const char *data, AccelTableEntry32 *entry );
+extern char *ResReadDataAccelTableEntry( const char *data, AccelTableEntry *entry );
 
 #endif

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,38 +34,8 @@
 #include <stdlib.h>
 #include "stdnt.h"
 
-/* Do not like this! */
 
-extern BOOL                  Supporting8ByteBreakpoints;
-extern BOOL                  SupportingExactBreakpoints;
-
-trap_retval TRAP_CAPABILITIES( get_8b_bp )( void )
-{
-    capabilities_get_8b_bp_req  *req;
-    capabilities_get_8b_bp_ret  *ret;
-
-    req = GetInPtr( 0 );
-    ret = GetOutPtr( 0 );
-
-    ret->err = 0;
-    ret->status = 1;            /* This signals we support 8 byte breakpoints */
-    return( sizeof( *ret ) );
-}
-
-trap_retval TRAP_CAPABILITIES( set_8b_bp )( void )
-{
-    capabilities_set_8b_bp_req  *req;
-    capabilities_set_8b_bp_ret  *ret;
-
-    req = GetInPtr( 0 );
-    ret = GetOutPtr( 0 );
-
-    Supporting8ByteBreakpoints = req->status ? 1 : 0;
-
-    ret->err = 0;
-    ret->status = Supporting8ByteBreakpoints ? 1 : 0;   /* And are we supporting it? */
-    return( sizeof( *ret ) );
-}
+extern bool     SupportingExactBreakpoints;
 
 trap_retval TRAP_CAPABILITIES( get_exact_bp )( void )
 {
@@ -74,9 +44,8 @@ trap_retval TRAP_CAPABILITIES( get_exact_bp )( void )
 
     req = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-
     ret->err = 0;
-    ret->status = 1;            /* This signals we support exact breakpoints */
+    ret->status = true;         /* This signals we support exact breakpoints */
     return( sizeof( *ret ) );
 }
 
@@ -87,10 +56,10 @@ trap_retval TRAP_CAPABILITIES( set_exact_bp )( void )
 
     req = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-
-    SupportingExactBreakpoints = req->status ? 1 : 0;
-
     ret->err = 0;
-    ret->status = SupportingExactBreakpoints ? 1 : 0;
+
+    SupportingExactBreakpoints = ( req->status != 0 );
+
+    ret->status = SupportingExactBreakpoints;
     return( sizeof( *ret ) );
 }

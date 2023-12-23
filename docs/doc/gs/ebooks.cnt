@@ -3,8 +3,8 @@
 :Index Watcom C Diagnostic Messages Help=wccerrs.hlp
 :Index Watcom C Language Reference Help=clr.hlp
 :Index Watcom C Library Reference Help=clib.hlp
-:Index Watcom C/C++ Programmer's Guide Help=pguide.hlp
-:Index Watcom C/C++ Tools Guide Help=tools.hlp
+:Index Watcom C/C++ Programmer's Guide Help=cpguide.hlp
+:Index Watcom C/C++ Tools Guide Help=ctools.hlp
 :Index Watcom C/C++ User's Guide Help=cguide.hlp
 :Index Watcom C++ Class Library Reference Help=cpplib.hlp
 :Index Watcom C++ Diagnostic Messages Help=wpperrs.hlp
@@ -18,7 +18,7 @@
 :include cpplib.cnt
 :include clr.cnt
 :include cguide.cnt
-:include pguide.cnt
+:include cpguide.cnt
 :include wccerrs.cnt
 :include wpperrs.cnt
 

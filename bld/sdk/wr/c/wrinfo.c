@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -159,7 +159,7 @@ int WRAPI WRCountZeroLengthResources( WResDir dir )
 
 static bool WRRelinkDir( WResDir dest, WResDir src )
 {
-    WResLangType    lt;
+    WResLangType    lang;
     WResTypeNode    *dtnode;
     WResResNode     *drnode;
     WResLangNode    *dlnode;
@@ -187,8 +187,8 @@ static bool WRRelinkDir( WResDir dest, WResDir src )
         while( drnode != NULL && srnode != NULL ) {
             dlnode = drnode->Head;
             if( dlnode != NULL ) {
-                lt = dlnode->Info.lang;
-                slnode = WRFindLangNodeFromLangType( srnode, &lt );
+                lang = dlnode->Info.lang;
+                slnode = WRFindLangNodeFromLangType( srnode, &lang );
             }
             while( dlnode != NULL && slnode != NULL ) {
                 if( dlnode->data == NULL ) {
@@ -196,8 +196,8 @@ static bool WRRelinkDir( WResDir dest, WResDir src )
                 }
                 dlnode = dlnode->Next;
                 if( dlnode != NULL ) {
-                    lt = dlnode->Info.lang;
-                    slnode = WRFindLangNodeFromLangType( srnode, &lt );
+                    lang = dlnode->Info.lang;
+                    slnode = WRFindLangNodeFromLangType( srnode, &lang );
                 }
             }
             drnode = drnode->Next;

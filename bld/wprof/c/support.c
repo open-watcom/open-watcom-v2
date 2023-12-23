@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,15 +34,14 @@
 #include <limits.h>
 #include <string.h>
 #include <stdio.h>
+#include <sys/stat.h>
 #include "walloca.h"
-#include "wio.h"
 #include "common.h"
 #include "dip.h"
 #include "mad.h"
 #include "aui.h"
 #include "myassert.h"
 #include "exedefs.h"
-#include "machtype.h"
 #include "sampinfo.h"
 #include "ovltab.h"
 #include "msg.h"
@@ -177,22 +176,22 @@ void SetExeOffset( address a )
 STATIC bool isWATCOM386Windows( FILE *fp )
 /****************************************/
 {
-    uint_32     MQ_offset;
-    char        sig[2];
+    uint_32     rex_header_off;
+    uint_16     signature;
 
-    if( fseek( fp, 0x38, SEEK_SET ) ) {
+    if( fseek( fp, REX_HEADER_OFFSET, SEEK_SET ) ) {
         return( false );
     }
-    if( fread( &MQ_offset, 1, sizeof( MQ_offset ), fp ) != sizeof( MQ_offset ) ) {
+    if( fread( &rex_header_off, 1, sizeof( rex_header_off ), fp ) != sizeof( rex_header_off ) ) {
         return( false );
     }
-    if( fseek( fp, MQ_offset, SEEK_SET ) ) {
+    if( fseek( fp, rex_header_off, SEEK_SET ) ) {
         return( false );
     }
-    if( fread( &sig, 1, sizeof( sig ), fp ) != sizeof( sig ) ) {
+    if( fread( &signature, 1, sizeof( signature ), fp ) != sizeof( signature ) ) {
         return( false );
     }
-    if( sig[0] != 'M' || sig[1] != 'Q' ) {
+    if( signature != EXESIGN_REX ) {
         return( false );
     }
     return( true );
@@ -206,171 +205,151 @@ STATIC int exeHeader( FILE *fp )
     dos_exe_header      head;
     uint_32             pharlap_config;
     uint_32             pharlap_header;
-    uint_32             os2_header;
+    uint_32             ne_header_off;
     uint_16             format_level;
-    uint_16             dummy_16;
-    char                signature[2];
+    uint_16             data16;
+    uint_16             signature;
     char                copyrite[10];
-    char                *sig;
 
     exeFlags.is_32_bit = false;
     exeFlags.segment_split = false;
     if( fseek( fp, 0, SEEK_SET ) ) {
-        return( EXE_NOTYPE );
+        return( EXE_TYPE_NONE );
     }
     if( fread( &head, 1, sizeof( head ), fp ) != sizeof( head ) ) {
-        return( EXE_NOTYPE );
+        return( EXE_TYPE_NONE );
     }
-    sig = (char *)&head.signature;
-    switch( sig[0] ) {
-    case 'M':
-        if( sig[1] == 'P' || sig[1] == 'Q' ) {          /* MP & MQ */
+    switch( head.signature ) {
+    case EXESIGN_MP:
+    case EXESIGN_REX:
+        exeFlags.is_32_bit = true;
+        return( EXE_TYPE_MP );
+    case EXESIGN_DOS:
+        if( isWATCOM386Windows( fp ) ) {
+            /* C/386 for Windows bound executable */
             exeFlags.is_32_bit = true;
-            return( EXE_MP );
+            return( EXE_TYPE_MP_BOUND );
         }
-        if( sig[1] == 'Z' ) {                           /* MZ */
-            if( isWATCOM386Windows( fp ) ) {
-                /* C/386 for Windows bound executable */
+        if( NE_HEADER_FOLLOWS( head.reloc_offset ) ) {
+            if( fseek( fp, NE_HEADER_OFFSET, SEEK_SET ) ) {
+                return( EXE_TYPE_MZ );
+            }
+            if( fread( &ne_header_off, 1, sizeof( ne_header_off ), fp ) != sizeof( ne_header_off ) ) {
+                return( EXE_TYPE_MZ );
+            }
+            if( fseek( fp, ne_header_off, SEEK_SET ) ) {
+                return( EXE_TYPE_MZ );
+            }
+            if( fread( &signature, 1, sizeof( signature ), fp ) != sizeof( signature ) ) {
+                return( EXE_TYPE_MZ );
+            }
+            switch( signature ) {
+            case EXESIGN_NE:
+                return( EXE_TYPE_OS2 );
+            case EXESIGN_PE:
                 exeFlags.is_32_bit = true;
-                return( EXE_MP_BOUND );
+                return( EXE_TYPE_PE );
+            case EXESIGN_PL:
+                exeFlags.is_32_bit = true;
+                return( EXE_TYPE_PL );
+            case EXESIGN_LE:
+                exeFlags.is_32_bit = true;
+                return( EXE_TYPE_OS2_FLAT );
+            case EXESIGN_LX:
+                exeFlags.is_32_bit = true;
+                return( EXE_TYPE_OS2_LX );
             }
-            if( head.reloc_offset >= 0x40 ) {
-                if( fseek( fp, sizeof( head ) + 32, SEEK_SET ) ) {
-                    return( EXE_MZ );
+            return( EXE_TYPE_MZ );
+        }
+        /* check for bound PharLap Extended 386 executable */
+        pharlap_config = head.hdr_size * 16;
+        if( fseek( fp, pharlap_config, SEEK_SET ) ) {
+            return( EXE_TYPE_MZ );
+        }
+        if( fread( copyrite, 1, sizeof( copyrite ), fp ) != sizeof( copyrite ) ) {
+            return( EXE_TYPE_MZ );
+        }
+        if( memcmp( copyrite, "Copyright", 9 ) != 0 ) {
+            return( EXE_TYPE_MZ );
+        }
+        if( fseek( fp, pharlap_config + 0x32, SEEK_SET ) ) {
+            return( EXE_TYPE_MZ );
+        }
+        if( fread( &signature, 1, sizeof( signature ), fp ) != sizeof( signature ) ) {
+            return( EXE_TYPE_MZ );
+        }
+        if( signature != EXESIGN_C5 ) {
+            return( EXE_TYPE_MZ );
+        }
+        if( fseek( fp, pharlap_config + 0x32 + 6, SEEK_SET ) ) {
+            return( EXE_TYPE_MZ );
+        }
+        if( fread( &signature, 1, sizeof( signature ), fp ) != sizeof( signature ) ) {
+            return( EXE_TYPE_MZ );
+        }
+        if( signature != EXESIGN_P6 ) {
+            return( EXE_TYPE_MZ );
+        }
+        pharlap_header = head.file_size * 512L - (-head.mod_size & 0x1ff);
+        if( fseek( fp, pharlap_header, SEEK_SET ) ) {
+            return( EXE_TYPE_MZ );
+        }
+        if( fread( &signature, 1, sizeof( signature ), fp ) != sizeof( signature ) ) {
+            return( EXE_TYPE_MZ );
+        }
+        if( signature != EXESIGN_P3 ) {
+            return( EXE_TYPE_MZ );
+        }
+        pharlap_header += offsetof( extended_header, format_level );
+        if( fseek( fp, pharlap_header, SEEK_SET ) ) {
+            return( EXE_TYPE_MZ );
+        }
+        fread( &format_level, 1, sizeof( format_level ), fp );
+        if( format_level != 1 ) {
+            return( EXE_TYPE_MZ );
+        }
+        exeFlags.is_32_bit = true;
+        return( EXE_TYPE_P3_BOUND );
+    case EXESIGN_P3:
+        fseek( fp, offsetof( extended_header, format_level ), SEEK_SET );
+        fread( &format_level, 1, sizeof( format_level ), fp );
+        if( format_level != 1 ) {
+            break;
+        }
+        exeFlags.is_32_bit = true;
+        return( EXE_TYPE_P3 );
+    case EXESIGN_P2:
+        /* return( EXE_TYPE_P2 );        (not supported 03-may-90 AFS) */
+        break;
+    case EXESIGN_NE:
+        exeFlags.is_32_bit = true;
+        return( EXE_TYPE_NW );
+    case EXESIGN_ZERO:
+        fseek( fp, sizeof( lmf_record ) + offsetof( lmf_header, version ), SEEK_SET );
+        data16 = 0;
+        fread( &data16, 1, sizeof( data16 ), fp );
+        if( data16 >= QNX_VERSION ) {
+            exeFlags.segment_split = true;
+            fseek( fp, sizeof( lmf_record ) + offsetof( lmf_header, cflags ), SEEK_SET );
+            fread( &data16, 1, sizeof( data16 ), fp );
+            if( data16 & _TCF_32BIT ) {
+                exeFlags.is_32_bit = true;
+                if( data16 & _TCF_FLAT ) {
+                    return( EXE_TYPE_QNX_386_FLAT );
                 }
-                if( fread( &os2_header, 1, sizeof( os2_header ), fp ) != sizeof( os2_header ) ) {
-                    return( EXE_MZ );
-                }
-                if( fseek( fp, os2_header, SEEK_SET ) ) {
-                    return( EXE_MZ );
-                }
-                if( fread( signature, 1, sizeof( signature ), fp ) != sizeof(signature)) {
-                    return( EXE_MZ );
-                }
-                if( signature[0] == 'N' && signature[1] == 'E' ) {  /* NE */
-                    return( EXE_OS2 );
-                }
-                if( signature[0] == 'P' && signature[1] == 'E' ) {  /* PE */
-                    exeFlags.is_32_bit = true;
-                    return( EXE_PE );
-                }
-                if( signature[0] == 'P' && signature[1] == 'L' ) {  /* PL */
-                    exeFlags.is_32_bit = true;
-                    return( EXE_PL );
-                }
-                if( signature[0] == 'L' ) {
-                    if( signature[1] == 'E' ) {         /* LE */
-                        exeFlags.is_32_bit = true;
-                        return( EXE_OS2_FLAT );
-                    }
-                    if( signature[1] == 'X' ) {         /* LX */
-                        exeFlags.is_32_bit = true;
-                        return( EXE_OS2_LX );
-                    }
-                }
-                return( EXE_MZ );
+                return( EXE_TYPE_QNX_386 );
             }
-            /* check for bound PharLap Extended 386 executable */
-            pharlap_config = head.hdr_size * 16;
-            if( fseek( fp, pharlap_config, SEEK_SET ) ) {
-                return( EXE_MZ );
-            }
-            if( fread( copyrite, 1, sizeof( copyrite ), fp ) != sizeof(copyrite)){
-                return( EXE_MZ );
-            }
-            if( memcmp( copyrite, "Copyright", 9 ) != 0 ) {
-                return( EXE_MZ );
-            }
-            if( fseek( fp, pharlap_config + 0x32, SEEK_SET ) ) {
-                return( EXE_MZ );
-            }
-            if( fread( signature, 1, sizeof( signature ), fp ) != sizeof(signature)) {
-                return( EXE_MZ );
-            }
-            if( signature[0] != 'C' || signature[1] != '5' ) {
-                return( EXE_MZ );
-            }
-            if( fseek( fp, pharlap_config + 0x32 + 6, SEEK_SET ) ) {
-                return( EXE_MZ );
-            }
-            if( fread( signature, 1, sizeof( signature ), fp ) != sizeof(signature)) {
-                return( EXE_MZ );
-            }
-            if( signature[0] != 'P' || signature[1] != '6' ) {
-                return( EXE_MZ );
-            }
-            pharlap_header = head.file_size * 512L - (-head.mod_size & 0x1ff);
-            if( fseek( fp, pharlap_header, SEEK_SET ) ) {
-                return( EXE_MZ );
-            }
-            if( fread( signature, 1, sizeof( signature ), fp ) != sizeof(signature)) {
-                return( EXE_MZ );
-            }
-            if( signature[0] != 'P' || signature[1] != '3' ) {
-                return( EXE_MZ );
-            }
-            pharlap_header += offsetof( extended_header, format_level );
-            if( fseek( fp, pharlap_header, SEEK_SET ) ) {
-                return( EXE_MZ );
-            }
-            fread( &format_level, 1, sizeof( format_level ), fp );
-            if( format_level != 1 ) {
-                return( EXE_MZ );
-            }
+            return( EXE_TYPE_QNX );
+        }
+        break;
+    default:
+        if( memcmp( &head, ELF_SIGNATURE, ELF_SIGNATURE_LEN ) == 0 ) {
             exeFlags.is_32_bit = true;
-            return( EXE_P3_BOUND );
+            return( EXE_TYPE_ELF );
         }
         break;
-    case 'P':
-        if( sig[1] == '3' ) {                           /* P3 */
-            fseek( fp, offsetof( extended_header, format_level ), SEEK_SET );
-            fread( &format_level, 1, sizeof( format_level ), fp );
-            if( format_level != 1 ) {
-                return( EXE_UNKNOWN );
-            }
-            exeFlags.is_32_bit = true;
-            return( EXE_P3 );
-        }
-        if( sig[1] == '2' ) {                           /* P2 */
-            return( EXE_UNKNOWN );
-            /* return( EXE_P2 );        (not supported 03-may-90 AFS) */
-        }
-        break;
-    case 'N':
-        if( sig[1] == 'e' ) {                           /* Ne */
-            exeFlags.is_32_bit = true;
-            return( EXE_NW );
-        }
-        break;
-    case '\0':
-        if( sig[1] == '\0' ) {
-            fseek( fp, sizeof( lmf_record ) + offsetof( lmf_header, version ), SEEK_SET );
-            dummy_16 = 0;
-            fread( &dummy_16, 1, sizeof( dummy_16 ), fp );
-            if( dummy_16 >= QNX_VERSION ) {
-                exeFlags.segment_split = true;
-                fseek( fp, sizeof( lmf_record ) + offsetof( lmf_header, cflags ), SEEK_SET );
-                fread( &dummy_16, 1, sizeof( dummy_16 ), fp );
-                if( dummy_16 & _TCF_32BIT ) {
-                    exeFlags.is_32_bit = true;
-                    if( dummy_16 & _TCF_FLAT ) {
-                        return( EXE_QNX_386_FLAT );
-                    }
-                    return( EXE_QNX_386 );
-                }
-                return( EXE_QNX );
-            }
-        }
-        break;
-    case ELFMAG0:
-        if( memcmp( sig, ELF_SIGNATURE, ELF_SIGNATURE_LEN ) == 0 ) {
-            exeFlags.is_32_bit = true;
-            return( EXE_ELF );
-        }
-        break;
-
     }
-    return( EXE_UNKNOWN );
+    return( EXE_TYPE_UNKNOWN );
 }
 
 
@@ -387,129 +366,134 @@ bool SetExeFile( FILE *fp, bool overlay )
 /***************************************/
 {
     dos_exe_header      head;
-    unsigned long       new_header;
+    unsigned long       ne_header_off;
     unsigned long       header_base;
     unsigned long       seek_off;
-    uint_16             dummy_16;
-    uint_32             dummy_32;
+    uint_16             data16;
+    uint_32             data32;
 
     exeFP = fp;
     exeType = exeHeader( exeFP );
-    if( exeType != EXE_MZ && overlay ) {        /* 16-may-90 AFS */
-        exeType = EXE_OVL;
+    if( exeType != EXE_TYPE_MZ && overlay ) {        /* 16-may-90 AFS */
+        exeType = EXE_TYPE_OVL;
         exeFlags.is_32_bit = false;
     }
     header_base = 0;
     switch( exeType ) {
-    case EXE_MZ:
+    case EXE_TYPE_MZ:
         /* exeImageOffset is in 16-byte paragraphs  */
         fseek( exeFP, offsetof( dos_exe_header, hdr_size ), SEEK_SET );
-        fread( &dummy_16, 1, sizeof( dummy_16 ), exeFP );
-        exeImageOffset = dummy_16;
+        fread( &data16, 1, sizeof( data16 ), exeFP );
+        exeImageOffset = data16;
         break;
-    case EXE_MP_BOUND:
-        fseek( exeFP, 0x38, SEEK_SET );
-        fread( &dummy_32, 1, sizeof( dummy_32 ), exeFP );
-        header_base = dummy_32;
+    case EXE_TYPE_MP_BOUND:
+        fseek( exeFP, REX_HEADER_OFFSET, SEEK_SET );
+        fread( &data32, 1, sizeof( data32 ), exeFP );
+        header_base = data32;
         /* fall through to MP */
-    case EXE_MP:
+    case EXE_TYPE_MP:
         /* exeImageOffset is in bytes */
         seek_off = header_base + offsetof( simple_header, hdr_size );
         fseek( exeFP, seek_off, SEEK_SET );
-        fread( &dummy_16, 1, sizeof( dummy_16 ), exeFP );
-        exeImageOffset = dummy_16 * 16L;
+        fread( &data16, 1, sizeof( data16 ), exeFP );
+        exeImageOffset = data16 * 16L;
         exeImageOffset += header_base;
         break;
-    case EXE_P3_BOUND:
+    case EXE_TYPE_P3_BOUND:
         fseek( exeFP, 0, SEEK_SET );
         fread( &head, 1, sizeof( head ), exeFP );
         header_base = head.file_size * 512L - (-head.mod_size & 0x1ff);
         /* fall through to P3 */
-    case EXE_P2:
-    case EXE_P3:
+    case EXE_TYPE_P2:
+    case EXE_TYPE_P3:
         /* exeImageOffset is in bytes */
         seek_off = header_base + offsetof( extended_header, load_offset );
         fseek( exeFP, seek_off, SEEK_SET );
-        fread( &dummy_32, 1, sizeof( dummy_32 ), exeFP );
-        exeImageOffset = dummy_32;
+        fread( &data32, 1, sizeof( data32 ), exeFP );
+        exeImageOffset = data32;
         seek_off = header_base + offsetof( extended_header, offset );
         fseek( exeFP, seek_off, SEEK_SET );
-        fread( &dummy_32, 1, sizeof( dummy_32 ), exeFP );
-        exeImageOffset -= dummy_32;                     /* 09-aug-90 AFS */
+        fread( &data32, 1, sizeof( data32 ), exeFP );
+        exeImageOffset -= data32;
         exeImageOffset += header_base;
         break;
-    case EXE_NW:
+    case EXE_TYPE_NW:
         /* exeImageOffset is in bytes */
         fseek( exeFP, offsetof( nlm_header, codeImageOffset ), SEEK_SET );
-        fread( &dummy_32, 1, sizeof( dummy_32 ), exeFP );
-        exeImageOffset = dummy_32;
+        fread( &data32, 1, sizeof( data32 ), exeFP );
+        exeImageOffset = data32;
         break;
-    case EXE_OS2:
+    case EXE_TYPE_OS2:
         /* offset into "reserved for future use" portion of the DOS EXE hdr */
-        fseek( exeFP, sizeof( dos_exe_header ) + 32, SEEK_SET );
-        fread( &dummy_32, 1, sizeof( dummy_32 ), exeFP );
-        new_header = dummy_32;
-        fseek( exeFP, new_header + offsetof( os2_exe_header, segment_off ), SEEK_SET );
-        fread( &dummy_16, 1, sizeof( dummy_16 ), exeFP );
+        fseek( exeFP, NE_HEADER_OFFSET, SEEK_SET );
+        fread( &data32, 1, sizeof( data32 ), exeFP );
+        ne_header_off = data32;
+        fseek( exeFP, ne_header_off + offsetof( os2_exe_header, segment_off ), SEEK_SET );
+        fread( &data16, 1, sizeof( data16 ), exeFP );
         /* exeImageOffset is in bytes and points to the segment table */
-        exeImageOffset = new_header + dummy_16;
-        fseek( exeFP, new_header + offsetof( os2_exe_header, align ), SEEK_SET);
-        fread( &dummy_16, 1, sizeof( dummy_16 ), exeFP );
-        segmentShift = dummy_16;
+        exeImageOffset = ne_header_off + data16;
+        fseek( exeFP, ne_header_off + offsetof( os2_exe_header, align ), SEEK_SET);
+        fread( &data16, 1, sizeof( data16 ), exeFP );
+        segmentShift = data16;
         if( segmentShift == 0 ) {
             segmentShift = OS2_DEF_SEGMENT_SHIFT;
         }
         cacheSegment = 0;       /* no 0 segment in OS/2 (03-may-90 AFS) */
         break;
-    case EXE_OS2_FLAT:
-    case EXE_OS2_LX:
-        fseek( exeFP, sizeof( head ) + 32, SEEK_SET );
-        fread( &dummy_32, 1, sizeof( dummy_32 ), exeFP );
+    case EXE_TYPE_OS2_FLAT:
+    case EXE_TYPE_OS2_LX:
+        fseek( exeFP, NE_HEADER_OFFSET, SEEK_SET );
+        fread( &data32, 1, sizeof( data32 ), exeFP );
         /* exeImageOffset is in bytes and points to the OS/2 FLAT header */
-        exeImageOffset = dummy_32;
+        exeImageOffset = data32;
         cacheSegment = 0;       /* no 0 segment in OS/2 FLAT */
         break;
-    case EXE_QNX:
-    case EXE_QNX_386:
-    case EXE_QNX_386_FLAT:
+    case EXE_TYPE_QNX:
+    case EXE_TYPE_QNX_386:
+    case EXE_TYPE_QNX_386_FLAT:
         /* exeImageOffset is in bytes and points to the end of the header */
         exeImageOffset = sizeof( lmf_record ) + sizeof( lmf_header );
         cacheSegment = 0;
         break;
-    case EXE_PE:
-    case EXE_PL:
+    case EXE_TYPE_PE:
+    case EXE_TYPE_PL:
         /* offset into "reserved for future use" portion of the DOS EXE hdr */
-        fseek( exeFP, sizeof( dos_exe_header ) + 32, SEEK_SET );
-        fread( &dummy_32, 1, sizeof( dummy_32 ), exeFP );
-        new_header = dummy_32;
+        fseek( exeFP, NE_HEADER_OFFSET, SEEK_SET );
+        fread( &data32, 1, sizeof( data32 ), exeFP );
+        ne_header_off = data32;
 #if 0
-        fseek( exeFP, new_header + offsetof( pe_header, num_objects ), SEEK_SET );
-        fread( exeFP, &dummy_16, 1, sizeof( dummy_16 ), exeFP );
-        fseek( exeFP, new_header + offsetof( pe_header, header_size ), SEEK_SET );
-        fread( &dummy_32, 1, sizeof( dummy_32 ), exeFP );
+        fseek( exeFP, ne_header_off + offsetof( pe_header, num_objects ), SEEK_SET );
+        fread( exeFP, &data16, 1, sizeof( data16 ), exeFP );
+        fseek( exeFP, ne_header_off + offsetof( pe_header, headers_size ), SEEK_SET );
+        fread( &data32, 1, sizeof( data32 ), exeFP );
         /* exeImageOffset is in bytes and points to the object table */
-        exeImageOffset = dummy_32 - dummy_16 * sizeof( pe_object );
+        exeImageOffset = data32 - data16 * sizeof( pe_object );
 #else
-        fseek( exeFP, new_header + offsetof( pe_header, nt_hdr_size ), SEEK_SET );
-        fread( &dummy_16, 1, sizeof( dummy_16 ), exeFP );
-        /* exeImageOffset is in bytes and points to the object table */
-        exeImageOffset = new_header + offsetof(pe_header,magic) + dummy_16;
+        {
+            pe_exe_header   pehdr;
+
+            fseek( exeFP, ne_header_off, SEEK_SET );
+            fread( &pehdr, 1, PE_HDR_SIZE, exeFP );
+            fread( (char *)&pehdr + PE_HDR_SIZE, 1, PE_OPT_SIZE( pehdr ), exeFP );
+            /* exeImageOffset is in bytes and points to the object table */
+            exeImageOffset = ne_header_off + PE_SIZE( pehdr );
+        }
 #endif
         cacheSegment = 0;       /* no 0 segment in OS/2 (03-may-90 AFS) */
         break;
-    case EXE_OVL:
+    case EXE_TYPE_OVL:
         /* overlay file (not an exe) */
         exeImageOffset = 0;
         break;
-    case EXE_ELF:
+    case EXE_TYPE_ELF:
         fseek( exeFP, offsetof( Elf32_Ehdr, e_phoff ), SEEK_SET );
-        fread( &dummy_32, 1, sizeof( dummy_32 ), exeFP );
-        exeImageOffset = dummy_32;
+        fread( &data32, 1, sizeof( data32 ), exeFP );
+        exeImageOffset = data32;
         fseek( exeFP, offsetof( Elf32_Ehdr, e_phentsize ), SEEK_SET );
-        fread( &dummy_16, 1, sizeof( dummy_16 ), exeFP );
-        cacheLo = dummy_16;             /* entry size */
-        fread( &dummy_16, 1, sizeof( dummy_16 ), exeFP );
-        cacheSegment = dummy_16;        /* number of entries */
+        fread( &data16, 1, sizeof( data16 ), exeFP );
+        cacheLo = data16;             /* entry size */
+        fread( &data16, 1, sizeof( data16 ), exeFP );
+        cacheSegment = data16;        /* number of entries */
         break;
     default:
         return( false );
@@ -622,14 +606,14 @@ STATIC unsigned long TransformExeOffset( uint_16 seg, uint_32 off, uint_16 sect_
         return( subresult );
     }
     switch( exeType ) {
-    case EXE_NW:
-    case EXE_P3:
-    case EXE_P3_BOUND:
-    case EXE_MP:
-    case EXE_MP_BOUND:
+    case EXE_TYPE_NW:
+    case EXE_TYPE_P3:
+    case EXE_TYPE_P3_BOUND:
+    case EXE_TYPE_MP:
+    case EXE_TYPE_MP_BOUND:
         subresult = exeImageOffset + off;
         break;
-    case EXE_OS2:
+    case EXE_TYPE_OS2:
         if( seg != cacheSegment ) {
             tmp_offset = exeImageOffset + ( seg - 1 ) * sizeof(segment_record);
             fseek( exeFP, tmp_offset, SEEK_SET );
@@ -639,8 +623,8 @@ STATIC unsigned long TransformExeOffset( uint_16 seg, uint_32 off, uint_16 sect_
         }
         subresult = cacheExeOffset + off;
         break;
-    case EXE_OS2_FLAT:
-    case EXE_OS2_LX:
+    case EXE_TYPE_OS2_FLAT:
+    case EXE_TYPE_OS2_LX:
         if( seg != cacheSegment ) {
             readEntry( &page_offset_shift,
                        offsetof(os2_flat_header,l.page_shift));
@@ -652,7 +636,7 @@ STATIC unsigned long TransformExeOffset( uint_16 seg, uint_32 off, uint_16 sect_
             fread( &map_idx, 1, sizeof( map_idx ), exeFP );
             readEntry( &objmap_table, offsetof(os2_flat_header,objmap_off));
             tmp_offset = objmap_table + exeImageOffset;
-            if( exeType == EXE_OS2_LX ) {
+            if( exeType == EXE_TYPE_OS2_LX ) {
                 tmp_offset += ( map_idx - 1 ) * sizeof( lx_map_entry );
             } else {
                 tmp_offset += ( map_idx - 1 ) * sizeof( le_map_entry );
@@ -660,7 +644,7 @@ STATIC unsigned long TransformExeOffset( uint_16 seg, uint_32 off, uint_16 sect_
             fseek( exeFP, tmp_offset, SEEK_SET );
             fread( &mapping, 1, sizeof( mapping ), exeFP );
             readEntry( &page_off, offsetof( os2_flat_header, page_off ) );
-            if( exeType == EXE_OS2_LX ) {
+            if( exeType == EXE_TYPE_OS2_LX ) {
                 page_off += mapping.lx.page_offset << page_offset_shift;
             } else {
                 page_num = ( (uint_32)mapping.le.page_num[0] << 16 ) +
@@ -674,18 +658,18 @@ STATIC unsigned long TransformExeOffset( uint_16 seg, uint_32 off, uint_16 sect_
         }
         subresult = cacheExeOffset + off;
         break;
-    case EXE_QNX:
-    case EXE_QNX_386:
-    case EXE_QNX_386_FLAT:
+    case EXE_TYPE_QNX:
+    case EXE_TYPE_QNX_386:
+    case EXE_TYPE_QNX_386_FLAT:
         if( seg != cacheSegment || off < cacheLo || off > cacheHi ) {
             searchQNX( seg, off );
         }
         subresult = cacheExeOffset + ( off - cacheLo );
         break;
-    case EXE_MZ:
+    case EXE_TYPE_MZ:
         subresult = ( seg + exeImageOffset ) * 16 + off;
         break;
-    case EXE_PE:
+    case EXE_TYPE_PE:
         if( seg != cacheSegment ) {
             tmp_offset = exeImageOffset;
             tmp_offset += (seg - 1) * sizeof( pe_object );
@@ -696,7 +680,7 @@ STATIC unsigned long TransformExeOffset( uint_16 seg, uint_32 off, uint_16 sect_
         }
         subresult = cacheExeOffset + off;
         break;
-    case EXE_ELF:
+    case EXE_TYPE_ELF:
         /*
          * exeImageOffset:      start of the program header table
          * cacheLo:             size of program header entry
@@ -726,9 +710,9 @@ STATIC unsigned long TransformExeOffset( uint_16 seg, uint_32 off, uint_16 sect_
             subresult = phe.p_offset + (off - phe.p_vaddr);
         }
         break;
-    case EXE_OVL:
+    case EXE_TYPE_OVL:
 /**/    myassert( 0 );
-    case EXE_P2:    /* P2 format is not supported 03-may-90 AFS */
+    case EXE_TYPE_P2:    /* P2 format is not supported 03-may-90 AFS */
     default:
         subresult = OFFSET_ERROR;
         break;
@@ -983,6 +967,7 @@ STATIC bool LoadOverlayInfo( void )
     size_t                  len;
     pgroup2                 pg1;
     pgroup2                 pg2;
+    struct stat             file_stat;
 
     image = CurrSIOData->curr_image;
     fp = ExeOpen( image->name );
@@ -1053,7 +1038,7 @@ STATIC bool LoadOverlayInfo( void )
                 return( false );
             }
             /* find overlay file */
-            if( access( buffer1, 0 ) != 0 ) {
+            if( stat( buffer1, &file_stat ) == -1 ) {
                 strcpy( buffer2, buffer1 );
                 _searchenv( buffer2, "PATH", buffer1 );
                 if( buffer1[0] == '\0' ) {
@@ -1276,8 +1261,8 @@ bool IsX86RealAddr( address a )
     /* unused parameters */ (void)a;
 
     switch( exeType ) {
-    case EXE_MZ:
-    case EXE_OVL:
+    case EXE_TYPE_MZ:
+    case EXE_TYPE_OVL:
         return( true );
     }
     return( false );

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,11 +47,16 @@
 #include "pathgrp2.h"
 #include "ctags.h"
 #include "banner.h"
+#include "argvenv.h"
 
 #include "clibext.h"
 
 
-#define CMPFEXT(e,c)    (e[0] == '.' && stricmp(e + 1, c) == 0)
+#ifdef __UNIX__
+  #define CMPFEXT(e,c)  (e[0] == '.' && strcmp(e + 1, c) == 0)
+#else
+  #define CMPFEXT(e,c)  (e[0] == '.' && stricmp(e + 1, c) == 0)
+#endif
 
 static const char       *usageMsg[] = {
     "Usage: ctags [-?adempstqvxy] [-z[a,c,f]] [-f<fname>] [files] [@optfile]",
@@ -83,13 +88,21 @@ static const char       *usageMsg[] = {
     NULL
 };
 
-static char optStr[] = "acdempstqvxyf:z:";
-
 static bool             quietFlag;
 static bool             appendFlag;
 static char             *fileName = "tags";
 static char             tmpFileName[_MAX_PATH];
 static file_type        fileType = TYPE_NONE;
+
+void *MemAlloc( size_t size )
+{
+    return( malloc( size ) );
+}
+
+void MemFree( void *ptr )
+{
+    free( ptr );
+}
 
 #if defined( __UNIX__ )
 static int _stat2( const char *path, const char *name, struct stat *st )
@@ -126,11 +139,14 @@ static void displayBanner( void )
     if( quietFlag ) {
         return;
     }
-    printf( banner1w( "CTAGS Utility", "1.0" ) "\n" );
-    printf( banner2 "\n" );
-    printf( banner2a( 1984 ) "\n" );
-    printf( banner3 "\n" );
-    printf( banner3a "\n" );
+    puts(
+        banner1t( "CTAGS Utility" ) "\n"
+        banner1v( "1.0" ) "\n"
+        banner2 "\n"
+        banner2a( 1984 ) "\n"
+        banner3 "\n"
+        banner3a "\n"
+    );
 
 } /* displayBanner */
 
@@ -423,7 +439,8 @@ int main( int argc, char *argv[] )
 {
     int         ch, i;
 
-    while( (ch = getopt( argc, argv, optStr )) != -1 ) {
+    argv = ExpandEnv( &argc, argv, "CTAGS" );
+    while( (ch = getopt( argc, argv, "acdempstqvxyf:z:" )) != -1 ) {
         if( ch == '?' ) {
             Quit( usageMsg, NULL );
         }
@@ -431,7 +448,7 @@ int main( int argc, char *argv[] )
     }
     displayBanner();
 
-    if( argc < 2 ) {
+    if( argc - optind < 1 ) {
         Quit( usageMsg, "No files specified\n" );
     }
 
@@ -439,7 +456,7 @@ int main( int argc, char *argv[] )
         VerboseFlag = false;
     }
 
-    for( i = 1; i < argc; i++ ) {
+    for( i = optind; i < argc; i++ ) {
         if( argv[i][0] == '@' ) {
             processOptionFile( &argv[i][1] );
         } else {
@@ -453,6 +470,8 @@ int main( int argc, char *argv[] )
         ReadExtraTags( fileName );
     }
     GenerateTagsFile( fileName );
+    MemFree( argv );
+
     return( 0 );
 
 } /* main */

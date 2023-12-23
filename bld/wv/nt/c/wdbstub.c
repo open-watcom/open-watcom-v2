@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -75,15 +75,13 @@ Done:
 #include <os2.h>
 #elif defined( __LINUX__ )
 #endif
-#include "_srcmgt.h"
+#include "srcmgt.h"
 #include "dbgdata.h"
-#include "dbgmem.h"
 #include "dbglit.h"
 #include "mad.h"
 #include "dui.h"
 #include "dbgvar.h"
 #include "modlist.h"
-#include "srcmgt.h"
 #include "dbgscrn.h"
 #include "dbgscan.h"
 #include "dbgutil.h"
@@ -2115,7 +2113,7 @@ const char *CheckForPowerBuilder( const char *name )
 
 int main( int argc, char **argv )
 {
-    char        buff[256];
+    char        cmd_line[256];
     DWORD       tid;
     HANDLE      hThread;
 
@@ -2123,8 +2121,8 @@ int main( int argc, char **argv )
 
     MemInit();
     SetErrorMode( SEM_FAILCRITICALERRORS );
-    getcmd( buff );
-    CmdData = buff;
+    _bgetcmd( cmd_line, sizeof( cmd_line ) );
+    CmdData = cmd_line;
     DebugMain();
     _SwitchOff( SW_ERROR_STARTUP );
     Requestsem = CreateSemaphore( NULL, 0, 1, NULL );

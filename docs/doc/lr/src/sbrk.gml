@@ -1,7 +1,6 @@
 .func sbrk
 .synop begin
 #include <stdlib.h>
-int brk( void __near *addr );
 void __near *sbrk( int increment );
 .ixfunc2 '&Memory' &funcb
 .synop end
@@ -91,26 +90,26 @@ fails, &minus.1 is returned.
 .exmp break
 void main()
  {
-    void *brk;
+    void *brkval;
 .exmp break
 #if defined(M_I86)
-    alloc( 0x0000, brk );
+    alloc( 0x0000, brkval );
     /* calling printf will cause an allocation */
-    printf( "Original break value %p\n", brk );
+    printf( "Original break value %p\n", brkval );
     printf( "Current amblksiz value %x\n", _amblksiz );
-    alloc( 0x0000, brk );
-    printf( "New break value after printf \t\t%p\n", brk );
+    alloc( 0x0000, brkval );
+    printf( "New break value after printf \t\t%p\n", brkval );
 #endif
-    alloc( 0x3100, brk );
+    alloc( 0x3100, brkval );
     printf( "New break value after sbrk( 0x3100 ) \t%p\n",
-            brk );
-    alloc( 0x0200, brk );
+            brkval );
+    alloc( 0x0200, brkval );
     printf( "New break value after sbrk( 0x0200 ) \t%p\n",
-            brk );
+            brkval );
 #if defined(M_I86)
-    alloc( -0x0100, brk );
+    alloc( -0x0100, brkval );
     printf( "New break value after sbrk( -0x0100 ) \t%p\n",
-            brk );
+            brkval );
 #endif
  }
 .exmp end

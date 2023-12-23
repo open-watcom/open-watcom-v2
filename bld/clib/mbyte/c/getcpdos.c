@@ -71,7 +71,7 @@ unsigned short dos_get_code_page( void )
         memset( &regs, 0, sizeof( regs ) );
         regs.w.ax = 0x6601;                         /* get extended country info */
         _DoINTR( 0x21, &regs, 0 );
-        if( (regs.w.flags & 1) == 0 ) {
+        if( (regs.w.flags & INTR_CF) == 0 ) {
             codepage = regs.w.bx;                   /* return active code page */
         }
     } else if( _IsRational() ) {
@@ -80,7 +80,7 @@ unsigned short dos_get_code_page( void )
         memset( &dblock, 0, sizeof( dblock ) );
         dblock.eax = 0x6601;                        /* get extended country info */
         DPMISimulateRealModeInterrupt( 0x21, 0, 0, &dblock );
-        if( (dblock.flags & 1) == 0 ) {
+        if( (dblock.flags & INTR_CF) == 0 ) {
             codepage = (unsigned short)dblock.ebx;  /* return active code page */
         }
     }
@@ -211,7 +211,7 @@ unsigned short dos_get_code_page( void )
         dblock.edi = 0;                     /* buffer offset */
         dblock.es = dos_block.rm;           /* buffer segment */
         DPMISimulateRealModeInterrupt( 0x21, 0, 0, &dblock );
-        if( (dblock.flags & 1) == 0 ) {
+        if( (dblock.flags & INTR_CF) == 0 ) {
             codepage = *(unsigned short __far *)EXTENDER_RM2PM( dos_block.rm, 5 );
         }
         /*** Free DOS memory with DPMI ***/

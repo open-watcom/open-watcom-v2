@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,6 +33,7 @@
 
 #include "vi.h"
 #include "myio.h"
+#include "myprintf.h"
 
 
 static bool historyLoaded;
@@ -61,31 +62,29 @@ void LoadHistory( const char *cmd )
     history_data    *h;
 
     historyLoaded = true;
-    while( EditVars.HistoryFile != NULL ) {
+    if( EditVars.HistoryFile != NULL ) {
         fp = fopen( EditVars.HistoryFile, "rt" );
-        if( fp == NULL ) {
-            break;
-        }
-        cnt = 0;
-        h = EditVars.Hist - 1;
-        while( myfgets( str, sizeof( str ), fp ) != NULL ) {
-            if( cnt == 0 ) {
-                h++;
-                if( h - EditVars.Hist >= MAX_HIST ) {
-                    break;
+        if( fp != NULL ) {
+            cnt = 0;
+            h = EditVars.Hist - 1;
+            while( myfgets( str, sizeof( str ), fp ) != NULL ) {
+                if( cnt == 0 ) {
+                    h++;
+                    if( h - EditVars.Hist >= MAX_HIST ) {
+                        break;
+                    }
+                    for( j = 0; j < h->max; j++ ) {
+                        h->data[j] = NULL;
+                    }
+                    cnt = atoi( str );
+                    h->curr = 0;
+                    continue;
                 }
-                for( j = 0; j < h->max; j++ ) {
-                    h->data[j] = NULL;
-                }
-                cnt = atoi( str );
-                h->curr = 0;
-                continue;
+                updateHist( h, str );
+                cnt--;
             }
-            updateHist( h, str );
-            cnt--;
+            fclose( fp );
         }
-        fclose( fp );
-        break;
     }
     if( cmd != NULL ) {
         h = &EditVars.Hist[HIST_CMD];
@@ -98,7 +97,7 @@ void LoadHistory( const char *cmd )
 /*
  * getHistCount - get the number of items in a history
  */
-static int getHistCount( history_data *h )
+static int getHistCount( hist_type ht )
 {
     int     i;
     int     j;
@@ -107,10 +106,10 @@ static int getHistCount( history_data *h )
     /*
      * get number of items in find history
      */
-    j = h->curr;
+    j = EditVars.Hist[ht].curr;
     cnt = 0;
-    for( i = 0; i < h->max; i++ ) {
-        if( h->data[j % h->max] != NULL ) {
+    for( i = 0; i < EditVars.Hist[ht].max; i++ ) {
+        if( EditVars.Hist[ht].data[j % EditVars.Hist[ht].max] != NULL ) {
             cnt++;
         }
         j++;
@@ -122,17 +121,20 @@ static int getHistCount( history_data *h )
 /*
  * writeHistory - write out history to a file
  */
-static void writeHistory( FILE *fp, history_data *h )
+static void writeHistory( FILE *fp, hist_type ht )
 {
     int     i;
     int     j;
+    int     k;
 
-    MyFprintf( fp, "%d\n", getHistCount( h ) );
-    j = h->curr;
-    for( i = 0; i < h->max; i++ ) {
-        if( h->data[j % h->max] != NULL ) {
-            MyFprintf( fp, "%s\n", h->data[j % h->max] );
-            DeleteString( &h->data[j % h->max] );
+    MyFprintf( fp, "%d\n", getHistCount( ht ) );
+    j = EditVars.Hist[ht].curr;
+    for( i = 0; i < EditVars.Hist[ht].max; i++ ) {
+        k = j % EditVars.Hist[ht].max;
+        if( EditVars.Hist[ht].data[k] != NULL ) {
+            MyFprintf( fp, "%s\n", EditVars.Hist[ht].data[k] );
+            _MemFreeArray( EditVars.Hist[ht].data[k] );
+            EditVars.Hist[ht].data[k] = NULL;
         }
         j++;
     }
@@ -144,15 +146,15 @@ static void writeHistory( FILE *fp, history_data *h )
  */
 void SaveHistory( void )
 {
-    FILE            *fp;
-    history_data    *h;
+    FILE        *fp;
+    hist_type   ht;
 
     if( historyLoaded ) {
         if( EditVars.HistoryFile != NULL ) {
             fp = fopen( EditVars.HistoryFile, "wt" );
             if( fp != NULL ) {
-                for( h = EditVars.Hist; h - EditVars.Hist < MAX_HIST; h++ ) {
-                    writeHistory( fp, h );
+                for( ht = 0; ht < MAX_HIST; ht++ ) {
+                    writeHistory( fp, ht );
                 }
                 fclose( fp );
             }
@@ -162,23 +164,39 @@ void SaveHistory( void )
 } /* SaveHistory */
 
 /*
- * HistInit - initial bang history structure
+ * HistInitSingle - single initial bang history structure
  */
-void HistInit( history_data *h, int max )
+void HistInitSingle( hist_type ht, int max )
 {
-    h->max = max;
-    h->curr = 0;
-    h->data = _MemReallocList( h->data, max + 1 );
+    EditVars.Hist[ht].max = max;
+    EditVars.Hist[ht].curr = 0;
+    EditVars.Hist[ht].data = _MemReallocPtrArray( EditVars.Hist[ht].data, char, max + 1 );
 
-} /* HistInit */
+} /* HistInitSingle */
 
+/*
+ * HistInit - init all history structures
+ */
+void HistInit( void )
+{
+    hist_type ht;
 
+    for( ht = 0; ht < MAX_HIST; ht++ ) {
+        HistInitSingle( ht, EditVars.Hist[ht].max );
+    }
+}
+
+/*
+ * HistFini - deallocate all history structures
+ */
 void HistFini( void )
 {
-    history_data    *h;
+    hist_type ht;
 
-    for( h = EditVars.Hist; h - EditVars.Hist < MAX_HIST; h++ ) {
-        MemFree( h->data );
+    for( ht = 0; ht < MAX_HIST; ht++ ) {
+        // array elements are freed in WriteHistory/SaveHistory
+        _MemFreePtrArray( EditVars.Hist[ht].data, 0, NULL );
     }
     MemFree( EditVars.HistoryFile );
+    EditVars.HistoryFile = NULL;
 }

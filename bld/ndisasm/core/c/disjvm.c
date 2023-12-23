@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,7 +34,7 @@
 #include <ctype.h>
 #include "dis.h"
 #include "distypes.h"
-#include "distjvm.h"
+#include "disjvm.h"
 
 
 static unsigned GetUByte( void *d, unsigned off )
@@ -86,6 +87,8 @@ static int GetSShort( void *d, unsigned off )
 
 dis_handler_return JVMSByte( dis_handle *h, void *d, dis_dec_ins *ins )
 {
+    /* unused parameters */ (void)h;
+
     ins->size += 2;
     ins->num_ops = 1;
     ins->op[0].type = DO_IMMED;
@@ -95,6 +98,8 @@ dis_handler_return JVMSByte( dis_handle *h, void *d, dis_dec_ins *ins )
 
 dis_handler_return JVMSShort( dis_handle *h, void *d, dis_dec_ins *ins )
 {
+    /* unused parameters */ (void)h;
+
     ins->size += 3;
     ins->num_ops = 1;
     ins->op[0].type = DO_IMMED;
@@ -104,6 +109,8 @@ dis_handler_return JVMSShort( dis_handle *h, void *d, dis_dec_ins *ins )
 
 dis_handler_return JVMUByte( dis_handle *h, void *d, dis_dec_ins *ins )
 {
+    /* unused parameters */ (void)h;
+
     ins->num_ops = 1;
     ins->op[0].type = DO_IMMED;
     ins->op[0].value.s._32[I64LO32] = 0 | GetUByte( d, ins->size + 1 );
@@ -113,6 +120,8 @@ dis_handler_return JVMUByte( dis_handle *h, void *d, dis_dec_ins *ins )
 
 dis_handler_return JVMUShort( dis_handle *h, void *d, dis_dec_ins *ins )
 {
+    /* unused parameters */ (void)h;
+
     ins->num_ops = 1;
     ins->op[0].type = DO_IMMED;
     ins->op[0].value.s._32[I64LO32] = 0 | GetUShort( d, ins->size + 1 );
@@ -122,6 +131,8 @@ dis_handler_return JVMUShort( dis_handle *h, void *d, dis_dec_ins *ins )
 
 dis_handler_return JVMNull( dis_handle *h, void *d, dis_dec_ins *ins )
 {
+    /* unused parameters */ (void)h; (void)d;
+
     ins->size += 1;
     ins->num_ops = 0;
     return( DHR_DONE );
@@ -129,6 +140,8 @@ dis_handler_return JVMNull( dis_handle *h, void *d, dis_dec_ins *ins )
 
 dis_handler_return JVMIInc( dis_handle *h, void *d, dis_dec_ins *ins )
 {
+    /* unused parameters */ (void)h;
+
     ins->num_ops = 2;
     ins->op[0].type = DO_MEMORY_ABS;
     if( ins->flags.u.jvm & DIF_JVM_WIDE ) {
@@ -154,6 +167,8 @@ dis_handler_return JVMWIndex( dis_handle *h, void *d, dis_dec_ins *ins )
 
 dis_handler_return JVMWide( dis_handle *h, void *d, dis_dec_ins *ins )
 {
+    /* unused parameters */ (void)h;
+
     //this affects the following iload,lload,fload,dload,aload,istore,
     //lstore,fstore,dstore,astore,iinc,ret instructions.
     ins->op[0].extra = GetUByte( d, 1 );
@@ -164,6 +179,8 @@ dis_handler_return JVMWide( dis_handle *h, void *d, dis_dec_ins *ins )
 
 dis_handler_return JVMMultiANewArray( dis_handle *h, void *d, dis_dec_ins *ins )
 {
+    /* unused parameters */ (void)h;
+
     ins->size += 4;
     ins->num_ops = 2;
     ins->op[0].type = DO_MEMORY_ABS;
@@ -175,6 +192,8 @@ dis_handler_return JVMMultiANewArray( dis_handle *h, void *d, dis_dec_ins *ins )
 
 dis_handler_return JVMBrShort( dis_handle *h, void *d, dis_dec_ins *ins )
 {
+    /* unused parameters */ (void)h;
+
     ins->size += 3;
     ins->num_ops = 1;
     ins->op[0].type = DO_RELATIVE;
@@ -184,6 +203,8 @@ dis_handler_return JVMBrShort( dis_handle *h, void *d, dis_dec_ins *ins )
 
 dis_handler_return JVMBrInt( dis_handle *h, void *d, dis_dec_ins *ins )
 {
+    /* unused parameters */ (void)h;
+
     ins->size += 5;
     ins->num_ops = 1;
     ins->op[0].type = DO_RELATIVE;
@@ -194,6 +215,8 @@ dis_handler_return JVMBrInt( dis_handle *h, void *d, dis_dec_ins *ins )
 dis_handler_return JVMTableSwitch( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     unsigned    off;
+
+    /* unused parameters */ (void)h;
 
     //NYI: this instruction can get bigger than 255 bytes (max that can
     // fit in ins->size).
@@ -216,6 +239,8 @@ dis_handler_return JVMLookupSwitch( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     unsigned    off;
 
+    /* unused parameters */ (void)h;
+
     //NYI: this instruction can get bigger than 255 bytes (max that can
     // fit in ins->size).
     off = DisCliGetAlign( d, 1, 4 );
@@ -232,6 +257,8 @@ dis_handler_return JVMLookupSwitch( dis_handle *h, void *d, dis_dec_ins *ins )
 
 dis_handler_return JVMInterface( dis_handle *h, void *d, dis_dec_ins *ins )
 {
+    /* unused parameters */ (void)h;
+
     ins->size += 5;
     ins->num_ops = 2;
     ins->op[0].type = DO_MEMORY_ABS;
@@ -244,29 +271,39 @@ dis_handler_return JVMInterface( dis_handle *h, void *d, dis_dec_ins *ins )
 static size_t JVMInsHook( dis_handle *h, void *d, dis_dec_ins *ins,
         dis_format_flags flags, char *name )
 {
+    /* unused parameters */ (void)h; (void)d; (void)ins; (void)flags; (void)name;
+
     return( 0 );
 }
 
 static size_t JVMFlagHook( dis_handle *h, void *d, dis_dec_ins *ins,
         dis_format_flags flags, char *name )
 {
+    /* unused parameters */ (void)h; (void)d; (void)ins; (void)flags; (void)name;
+
     return( 0 );
 }
 
 static size_t JVMOpHook( dis_handle *h, void *d, dis_dec_ins *ins,
         dis_format_flags flags, unsigned op_num, char *op_buff, size_t buff_len )
 {
+    /* unused parameters */ (void)h; (void)d; (void)flags; (void)op_num; (void)op_buff; (void)buff_len;
+
     h = h; d = d; ins = ins; flags = flags; op_num = op_num; op_buff = op_buff; buff_len = buff_len;
     return( 0 );
 }
 
 static dis_handler_return JVMDecodeTableCheck( int page, dis_dec_ins *ins )
 {
+    /* unused parameters */ (void)page; (void)ins;
+
     return( DHR_DONE );
 }
 
 static void ByteSwap( dis_handle *h, void *d, dis_dec_ins *ins )
 {
+    /* unused parameters */ (void)h; (void)d; (void)ins;
+
     // FIXME !!!!
 }
 

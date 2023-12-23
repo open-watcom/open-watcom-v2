@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -54,14 +54,14 @@
 void SetQNXFmt( void )
 /********************/
 {
-    Extension = E_QNX;
+    FmtData.def_ext = E_QNX;
     FmtData.u.qnx.flags = 0;
     FmtData.u.qnx.priv_level = 0;
     FmtData.u.qnx.seg_flags = NULL;
-    FmtData.u.qnx.heapsize = _4KB;
+    FmtData.u.qnx.heapsize = _4K;
     FmtData.u.qnx.gen_seg_relocs = true;
     FmtData.u.qnx.gen_linear_relocs = false;
-    ChkBase( _4KB );
+    ChkBase( _4K );
 }
 
 void FreeQNXFmt( void )

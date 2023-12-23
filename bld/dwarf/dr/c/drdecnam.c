@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,9 +32,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
-#include <string.h>
 #include "watcom.h"
-#include "dwarf.h"
 #include "drpriv.h"
 #include "drutils.h"
 #include "drscope.h"
@@ -99,21 +98,6 @@ typedef struct {
     List_T func_bas;    /* base of function's parameters */
     List_T func_elg;    /* elg for function parms " )" */
 } BrokenName_T;
-
-static BrokenName_T Empty_Broken_Name = {
-    { NULL, NULL, LIST_TAIL },     /* dec_plg */
-    { NULL, NULL, LIST_HEAD },     /* type_plg */
-    { NULL, NULL, LIST_HEAD },     /* type_bas */
-    { NULL, NULL, LIST_HEAD },     /* type_ptr */
-    { NULL, NULL, LIST_TAIL },     /* type_elg */
-    { NULL, NULL, LIST_TAIL },     /* type_inh */
-    { NULL, NULL, LIST_HEAD },     /* var_plg */
-    { NULL, NULL, LIST_HEAD },     /* var_bas */
-    { NULL, NULL, LIST_HEAD },     /* var_elg */
-    { NULL, NULL, LIST_TAIL },     /* func_plg */
-    { NULL, NULL, LIST_TAIL },     /* func_bas */
-    { NULL, NULL, LIST_TAIL }      /* func_elg*/
-};
 
 /*
  * this structure holds the current location
@@ -266,6 +250,21 @@ static const char *LBLCommonBlock =         "Common Block";
 static const char *LBLVariable =            "Variable";
 static const char *LBLParameter =           "Parameter";
 
+static BrokenName_T Empty_Broken_Name = {
+    { NULL, NULL, LIST_TAIL },     /* dec_plg */
+    { NULL, NULL, LIST_HEAD },     /* type_plg */
+    { NULL, NULL, LIST_HEAD },     /* type_bas */
+    { NULL, NULL, LIST_HEAD },     /* type_ptr */
+    { NULL, NULL, LIST_TAIL },     /* type_elg */
+    { NULL, NULL, LIST_TAIL },     /* type_inh */
+    { NULL, NULL, LIST_HEAD },     /* var_plg */
+    { NULL, NULL, LIST_HEAD },     /* var_bas */
+    { NULL, NULL, LIST_HEAD },     /* var_elg */
+    { NULL, NULL, LIST_TAIL },     /* func_plg */
+    { NULL, NULL, LIST_TAIL },     /* func_bas */
+    { NULL, NULL, LIST_TAIL }      /* func_elg*/
+};
+
 void DRDecorateLabel( drmem_hdl die, char *buf )
 /**********************************************/
 {
@@ -348,8 +347,11 @@ void DRDecorateLabel( drmem_hdl die, char *buf )
     strncpy( buf, label, DRDECLABELLEN );
 }
 
-char * DRDecoratedName( drmem_hdl die, drmem_hdl parent )
-/*******************************************************/
+char * DRENTRY DRDecoratedName( drmem_hdl die, drmem_hdl parent )
+/****************************************************************
+ * given a handle to a dwarf debug-info-entry, decorate the name
+ * of the entry and return it as a char *.
+ */
 {
     BrokenName_T    decstruct;
     char            *retstr;
@@ -360,8 +362,14 @@ char * DRDecoratedName( drmem_hdl die, drmem_hdl parent )
     return( retstr );
 }
 
-void DRDecoratedNameList( void *obj, drmem_hdl die, drmem_hdl parent, DRDECORCB cb )
-/**********************************************************************************/
+void DRENTRY DRDecoratedNameList( void *obj, drmem_hdl die, drmem_hdl parent, DRDECORCB cb )
+/*******************************************************************************************
+ * given a handle to a dwarf die, decorate its name.  the string
+ * is returned via a callback function, which is called with a string,
+ * a flag telling whether it was user defined, and a handle to the die
+ * for the name if it was user defined. the last call to the callback
+ * has a NULL string. obj gets passed to the callback.
+ */
 {
     BrokenName_T    decstruct;
     List_T          list;
@@ -1346,7 +1354,11 @@ static BrokenName_T *DecorateArray( BrokenName_T *decname, Loc_T *loc )
 
         buf[0] = '\0';
         strncat( buf, ArrayLeftKwd.s, ArrayLeftKwd.l );
+#ifdef __WATCOMC__
         ltoa( upper_bd, indx, 10 );
+#else
+        sprintf( indx, "%ld", (long)upper_bd );
+#endif
         strcat( buf, indx );
         strncat( buf, ArrayRightKwd.s, ArrayRightKwd.l );
 
@@ -1575,13 +1587,25 @@ static void FORAddConstVal( BrokenName_T *decname, Loc_T *loc, Loc_T *type_loc )
             case DW_ATE_signed:
                 switch( len ) {
                 case sizeof(signed_32):
+#ifdef __WATCOMC__
                     ltoa( *(signed_32 *)buf, charBuf, 10 );
+#else
+                    sprintf( charBuf, "%ld", (long)*(signed_32 *)buf );
+#endif
                     break;
                 case sizeof(signed_16):
+#ifdef __WATCOMC__
                     ltoa( *(signed_16 *)buf, charBuf, 10 );
+#else
+                    sprintf( charBuf, "%ld", (long)*(signed_16 *)buf );
+#endif
                     break;
                 case sizeof(signed_8):
+#ifdef __WATCOMC__
                     ltoa( *(signed_8 *)buf, charBuf, 10 );
+#else
+                    sprintf( charBuf, "%ld", (long)*(signed_8 *)buf );
+#endif
                     break;
                 default:
                     DWREXCEPT( DREXCEP_BAD_DBG_INFO );
@@ -1590,13 +1614,25 @@ static void FORAddConstVal( BrokenName_T *decname, Loc_T *loc, Loc_T *type_loc )
             case DW_ATE_unsigned:
                 switch( len ) {
                 case sizeof(unsigned_32):
+#ifdef __WATCOMC__
                     ultoa( *(unsigned_32 *)buf, charBuf, 10 );
+#else
+                    sprintf( charBuf, "%lu", (unsigned long)*(signed_32 *)buf );
+#endif
                     break;
                 case sizeof(unsigned_16):
+#ifdef __WATCOMC__
                     ultoa( *(unsigned_16 *)buf, charBuf, 10 );
+#else
+                    sprintf( charBuf, "%lu", (unsigned long)*(signed_16 *)buf );
+#endif
                     break;
                 case sizeof(unsigned_8):
+#ifdef __WATCOMC__
                     ultoa( *(unsigned_8 *)buf, charBuf, 10 );
+#else
+                    sprintf( charBuf, "%lu", (unsigned long)*(signed_16 *)buf );
+#endif
                     break;
                 default:
                     DWREXCEPT( DREXCEP_BAD_DBG_INFO );
@@ -1961,13 +1997,21 @@ static bool FORAddArrayIndex( drmem_hdl abbrev, drmem_hdl entry, void *data )
         strncat( bounds->s, add->s, add->l );
     } else {
         if( lower_bd != 1 ) {
+#ifdef __WATCOMC__
             ltoa( lower_bd, buf, 10 );
+#else
+            sprintf( buf, "%ld", (long)lower_bd );
+#endif
             bounds->l += strlen( buf ) + 1;
             ReallocStr( bounds );
             strcat( bounds->s, buf );
             strcat( bounds->s, ":" );
         }
+#ifdef __WATCOMC__
         ltoa( upper_bd, buf, 10 );
+#else
+        sprintf( buf, "%ld", (long)upper_bd );
+#endif
         bounds->l += strlen( buf );
         ReallocStr( bounds );
         strcat( bounds->s, buf );
@@ -2083,27 +2127,30 @@ static void FORDecType( BrokenName_T *decname, Loc_T *loc )
 static void FORDecString( BrokenName_T *decname, Loc_T *loc )
 /***********************************************************/
 {
-    uint_32     len = 0;
+    uint_32     len;
     drmem_hdl   tmp_abbrev;
     drmem_hdl   tmp_entry;
     char        buf[64];  // "(2147483647)"
-    char        size[62]; // "2147483647"
     String      sizeExpr;
 
     tmp_abbrev = loc->abbrev_current;
     tmp_entry = loc->entry_current;
+    len = 0;
     if( DWRScanForAttrib( &tmp_abbrev, &tmp_entry, DW_AT_byte_size ) ) {
         len = DWRReadConstant( tmp_abbrev, tmp_entry );
     }
 
-    strcpy( buf, "(" );
     if( len ) {
-        ltoa( len, size, 10 );
+#ifdef __WATCOMC__
+        *buf = '(';
+        ltoa( len, buf + 1, 10 );
+        strcat( buf, ")" );
+#else
+        sprintf( buf, "(%ld)", (long)len );
+#endif
     } else {
-        strcpy( size, "*" );
+        strcpy( buf, "(*)" );
     }
-    strcat( buf, size );
-    strcat( buf, ")" );
 
     sizeExpr.s = strrev( buf );
     sizeExpr.l = strlen( buf );

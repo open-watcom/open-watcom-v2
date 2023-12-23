@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,10 +33,10 @@
 
 #if defined( __BIG_ENDIAN__ )
 
-extern unsigned_16      TargetShort(unsigned_16);
-extern unsigned_32      TargetBigInt(unsigned_32);
-extern void             TargAddL(unsigned_32 *,unsigned_32);
-extern void             TargAddW(unsigned_16 *,unsigned_16);
+extern uint_16          TargetShort( uint_16 );
+extern uint_32          TargetBigInt( uint_32 );
+extern void             TargAddL( uint_32 *, uint_32 );
+extern void             TargAddW( uint_16 *, uint_16 );
 
 #define _IntToByte( value )             ((value) & 0xff)
 #define _IntToWord( value )             ((value) & 0xffff)

@@ -47,19 +47,10 @@
 
 #define SKIP_ENTRY(e)   ((e->d_attr & _A_SUBDIR) && e->d_name[0] == '.' && (e->d_name[1] == '\0' || dire->d_name[1] == '.' && e->d_name[2] == '\0'))
 
-struct {
+static struct {
     size_t  origSrcDirLen;
     size_t  origTgtDirLen;
 } glob;
-
-static region       *SimilarRegions;
-static region       *DiffRegions;
-static region       *HoleRegions;
-static foff         SimilarSize;
-static foff         NumDiffs;
-static foff         HolesInRegion;
-static foff         HoleCount[3];
-static foff         HoleHeaders;
 
 static int DirRecurse( const char *srcDir, const char *tgtDir );
 
@@ -103,37 +94,6 @@ static void DirGetFiles( DIR *dirp, char *Files[], char *Dirs[] )
     qsort( Dirs, dir, sizeof( char * ), cmpStrings );
 }
 
-void FindRegionsAlg( algorithm alg )
-{
-    /* unused parameters */ (void)alg;
-
-    FindRegions();
-}
-
-static int _DoBdiff( const char *srcPath, const char *tgtPath, const char *new_name )
-{
-    int         i;
-
-    /* initialize static variables each time */
-    SimilarRegions = NULL;
-    DiffRegions = NULL;
-    HoleRegions = NULL;
-    SimilarSize = 0;
-    NumHoles = 0;
-    NumDiffs = 0;
-    DiffSize = 0;
-    HolesInRegion = 0;
-    HoleHeaders = 0;
-    for( i = 0; i < 3; i += 1 ) {
-        HoleCount[i] = 0;
-    }
-
-    init_diff();
-
-    return( DoBdiff( srcPath, tgtPath, new_name, "", ALG_NOTHING ) );
-}
-
-
 static int FileCmp( const char *SrcPath, const char *TgtPath, const char *name )
 {
     FILE    *srcF;
@@ -157,7 +117,7 @@ static int FileCmp( const char *SrcPath, const char *TgtPath, const char *name )
     if( different ) {
         printf( "%s is different.  Patching...\n", name );
         PatchWriteFile( PATCH_FILE_PATCHED, &TgtPath[glob.origTgtDirLen + 1] );
-        return( _DoBdiff( SrcPath, TgtPath, name ) );
+        return( DoBdiff( SrcPath, TgtPath, name, "", true ) );
     }
     return( 0 );
 }
@@ -306,34 +266,43 @@ static int DirRecurse( const char *srcDir, const char *tgtDir )
     return( DirCmpFiles( srcDir, srcDirs,  tgtDir, tgtDirs,  1 ) );
 }
 
-static void WPatchCreate( const char *SrcDirName, const char *TgtDirName, const char *patch_name )
+static int WPatchCreate( const char *SrcDirName, const char *TgtDirName, const char *patch_name )
 {
-    PatchWriteOpen( patch_name );
-    DirRecurse( SrcDirName, TgtDirName );
-    PatchWriteClose();
+    int     rc;
+
+    rc = EXIT_FAILURE;
+    if( PatchWriteOpen( patch_name ) ) {
+        rc = DirRecurse( SrcDirName, TgtDirName );
+        PatchWriteClose();
+//        rc = EXIT_SUCCESS;
+    }
+    return( rc );
 }
 
 int main( int argc, char *argv[] )
 {
-    MsgInit();
-    if( argc != 4 ) {
-        puts( "Usage: wcpatch source-dir target-dir patchfile" );
-        puts( "where" );
-        puts( "    source-dir   the directory containing the original files" );
-        puts( "    target-dir   the directory containing the modified files" );
-        puts( "    patchfile    the path to store the resulting patchfile in" );
-        puts( "" );
-        exit( -2 );
-    } else {
-        puts( "Watcom Create Patch (WCPATCH) version 11.0" );
-        puts( "Copyright (c) 1996 by Sybase, Inc., and its subsidiaries.");
-        puts( "All rights reserved.  Watcom is a trademark of Sybase, Inc.");
-        puts( "" );
-    }
+    int     rc;
 
-    glob.origSrcDirLen = strlen( argv[1] );
-    glob.origTgtDirLen = strlen( argv[2] );
-    WPatchCreate( argv[1], argv[2], argv[3] );
-    MsgFini();
-    return( EXIT_SUCCESS );
+    rc = EXIT_FAILURE;
+    if( MsgInit() ) {
+        if( argc != 4 ) {
+            puts( "Usage: wcpatch source-dir target-dir patchfile" );
+            puts( "where" );
+            puts( "    source-dir   the directory containing the original files" );
+            puts( "    target-dir   the directory containing the modified files" );
+            puts( "    patchfile    the path to store the resulting patchfile in" );
+            puts( "" );
+        } else {
+            puts( "Watcom Create Patch (WCPATCH) version 11.0" );
+            puts( "Copyright (c) 1996 by Sybase, Inc., and its subsidiaries.");
+            puts( "All rights reserved.  Watcom is a trademark of Sybase, Inc.");
+            puts( "" );
+
+            glob.origSrcDirLen = strlen( argv[1] );
+            glob.origTgtDirLen = strlen( argv[2] );
+            rc = WPatchCreate( argv[1], argv[2], argv[3] );
+        }
+        MsgFini();
+    }
+    return( rc );
 }

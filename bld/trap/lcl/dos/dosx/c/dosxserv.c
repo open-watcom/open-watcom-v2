@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,11 +43,14 @@
 #include "packet.h"
 #include "servio.h"
 #include "dosxlink.h"
+#ifdef ACAD
+    #include "adsacc.h"
+    #include "adslib.h"
+#endif
+
 
 #ifdef ACAD
 
-extern void LetACADDie(void);
-#include "adslib.h"
 #define _DBG(x) // printf x; fflush( stdout );
 
 #else
@@ -64,7 +68,7 @@ extern void LetACADDie(void);
 
 static trap_version     TrapVer;
 
-char    RWBuff[ 0x400 ];
+char    RWBuff[0x400];
 
 static in_mx_entry  In[1];
 static mx_entry     Out[1];
@@ -73,9 +77,9 @@ static mx_entry     Out[1];
 static void AccTrap( bool want_return )
 {
     if( want_return ) {
-        PutBuffPacket( RWBuff, TrapRequest( 1, &In, 1, &Out ) );
+        PutBuffPacket( RWBuff, TrapRequest( 1, In, 1, Out ) );
     } else {
-        TrapRequest( 1, &In, 0, NULL );
+        TrapRequest( 1, In, 0, NULL );
     }
 }
 
@@ -90,13 +94,13 @@ bool Session( void )
         In[0].ptr = GetPacketBuffPtr();
         _DBG(("Session got request "));
         req = TRP_REQUEST( In );
-        TRP_REQUEST( In ) &= ~0x80;
-        if( req & 0x80 ) {
-            req &= ~0x80;
+        if( req & REQ_WANT_RETURN ) {
+            req &= ~REQ_WANT_RETURN;
             want_return = false;
         } else {
             want_return = true;
         }
+        TRP_REQUEST( In ) = req;
         switch( req ) {
         case REQ_PROG_KILL:
             _DBG(("REQ_KILL_PROG\n"));
@@ -112,7 +116,7 @@ bool Session( void )
 }
 
 
-static void Initialize( void )
+static const char *ServInitialize( void )
 {
     const char  *err;
 
@@ -127,39 +131,36 @@ static void Initialize( void )
         for( ;; ) {
             ads_link( RSERR );
         }
-#else
-        StartupErr( err );
 #endif
+        return( err );
     }
     _DBG(( "No Remote link error. About to TrapInit." ));
     TrapVer = TrapInit( "", RWBuff, false );
     if( RWBuff[0] != '\0' ) {
 // NO, NO, NO!  RemoteUnLink();
-        StartupErr( RWBuff );
+        err = RWBuff;
+        return( err );
     }
     _DBG(( "No TrapInit error. Initialize complete" ));
     Out[0].len = sizeof( RWBuff );
     Out[0].ptr = RWBuff;
+    return( err );
 }
 
 
-#if defined(ACAD)
-
-int main( int argc, char **argv )
-{
-    _DBG( ( "Calling ads_init()\r\n" ) );
-    ads_init( argc, argv );
-    _DBG( ( "After ads_init()\r\n" ) );
-
-#else
-
 int main( void )
 {
+    const char  *err;
 
+#ifdef ACAD
+    ACADInit();
 #endif
-
     _DBG(("Calling Initialize\n"));
-    Initialize();
+    err = ServInitialize();
+    if( err != NULL ) {
+        StartupErr( err );
+        return( 1 );
+    }
     _DBG(("Calling RemoteConnect\n"));
     RemoteConnect();
     _DBG(("Calling Session\n"));

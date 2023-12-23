@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -53,8 +54,8 @@ extern void __export CALLBACK MyTimer( HWND wnd, UINT msg,
     timer = timer;
     time = time;
 
-    if( AsyncStop ) {
-        AsyncStop = FALSE;
+    if( AsynchStop ) {
+        AsynchStop = false;
         MessageBox( wnd, "Stop Already", "Async-stop", MB_SYSTEMMODAL|MB_OK|MB_ICONINFORMATION);
     }
 }

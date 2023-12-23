@@ -610,4 +610,4 @@ The file specified for executable-file specified must have a
 .section Warning and Error Messages
 .*
 .im wrcmacs
-.im wrcerrs
+.im wrcerrs1

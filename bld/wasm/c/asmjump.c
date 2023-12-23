@@ -88,8 +88,8 @@ static int getJumpNegation( asm_token tok, char *buffer )
     return( GetInsString( tok, buffer ) );
 }
 
-static void jumpExtend( int far_flag )
-/*************************************/
+static void jumpExtend( token_buffer *tokbuf, int far_flag )
+/**********************************************************/
 {
     token_idx   i;
     unsigned    next_ins_size;
@@ -99,15 +99,15 @@ static void jumpExtend( int far_flag )
 
     /* there MUST be a conditional jump instruction in asmbuffer */
     for( i = 0; ; i++ ) {
-        if( ( AsmBuffer[i].class == TC_INSTR )
-            && IS_JMP( AsmBuffer[i].u.token ) ) {
+        if( ( tokbuf->tokens[i].class == TC_INSTR )
+            && IS_JMP( tokbuf->tokens[i].u.token ) ) {
             break;
         }
     }
 
     AsmNote( 4, EXTENDING_JUMP );
 
-    p = buffer + getJumpNegation( AsmBuffer[i].u.token, buffer );
+    p = buffer + getJumpNegation( tokbuf->tokens[i].u.token, buffer );
     if( far_flag ) {
         next_ins_size = ( Code->use32 ) ? 7 : 5;
     } else {
@@ -121,10 +121,10 @@ static void jumpExtend( int far_flag )
     } else {
         p = CATLIT( p, "jmp " );
     }
-    for( i++; AsmBuffer[i].class != TC_FINAL; i++ ) {
-        switch( AsmBuffer[i].class ) {
+    for( i++; tokbuf->tokens[i].class != TC_FINAL; i++ ) {
+        switch( tokbuf->tokens[i].class ) {
         case TC_NUM:
-            p += sprintf( p, "%lu", AsmBuffer[i].u.value );
+            p += sprintf( p, "%lu", tokbuf->tokens[i].u.value );
             break;
         case TC_OP_SQ_BRACKET:
             *p++ = '[';
@@ -133,8 +133,8 @@ static void jumpExtend( int far_flag )
             *p++ = ']';
             break;
         default:
-            len = strlen( AsmBuffer[i].string_ptr );
-            p = CATSTR( p, AsmBuffer[i].string_ptr, len );
+            len = strlen( tokbuf->tokens[i].string_ptr );
+            p = CATSTR( p, tokbuf->tokens[i].string_ptr, len );
             break;
         }
     }
@@ -143,8 +143,8 @@ static void jumpExtend( int far_flag )
     return;
 }
 
-static void FarCallToNear( void )
-/*******************************/
+static void FarCallToNear( token_buffer *tokbuf )
+/***********************************************/
 {
     token_idx   i;
     char        buffer[MAX_LINE_LEN];
@@ -153,8 +153,8 @@ static void FarCallToNear( void )
 
     /* there MUST be a call instruction in asmbuffer */
     for( i = 0; ; i++ ) {
-        if( ( AsmBuffer[i].class == TC_INSTR )
-            && ( AsmBuffer[i].u.token == T_CALL ) ) {
+        if( ( tokbuf->tokens[i].class == TC_INSTR )
+            && ( tokbuf->tokens[i].u.token == T_CALL ) ) {
             break;
         }
     }
@@ -171,10 +171,10 @@ static void FarCallToNear( void )
 #else
     p = CATLIT( p, "CALL NEAR PTR " );
 #endif
-    for( i++; AsmBuffer[i].class != TC_FINAL; i++ ) {
-        switch( AsmBuffer[i].class ) {
+    for( i++; tokbuf->tokens[i].class != TC_FINAL; i++ ) {
+        switch( tokbuf->tokens[i].class ) {
         case TC_NUM:
-            p += sprintf( p, "%lu", AsmBuffer[i].u.value );
+            p += sprintf( p, "%lu", tokbuf->tokens[i].u.value );
             break;
         case TC_OP_SQ_BRACKET:
             *p++ = '[';
@@ -183,8 +183,8 @@ static void FarCallToNear( void )
             *p++ = ']';
             break;
         default:
-            len = strlen( AsmBuffer[i].string_ptr );
-            p = CATSTR( p, AsmBuffer[i].string_ptr, len );
+            len = strlen( tokbuf->tokens[i].string_ptr );
+            p = CATSTR( p, tokbuf->tokens[i].string_ptr, len );
             break;
         }
     }
@@ -194,7 +194,7 @@ static void FarCallToNear( void )
 }
 #endif
 
-bool jmp( expr_list *opndx, int *flags )
+bool jmp( token_buffer *tokbuf, expr_list *opndx, int *flags )
 /*
   determine the displacement of jmp;
 */
@@ -208,6 +208,11 @@ bool jmp( expr_list *opndx, int *flags )
     dir_node            *seg;
 #endif
 
+#if !defined( _STANDALONE_ )
+
+    /* unused parameters */ (void)tokbuf;
+
+#endif
     *flags = 0;
     Code->data[Opnd_Count] = opndx->value;
     sym = opndx->sym;
@@ -217,10 +222,11 @@ bool jmp( expr_list *opndx, int *flags )
         } else if( Code->info.token == T_JMP ) {
             Code->info.token = T_JMPF;
         }
-        if( Code->data[Opnd_Count] > USHRT_MAX )
+        if( Code->data[Opnd_Count] > USHRT_MAX ) {
             Code->info.opnd_type[Opnd_Count] = OP_I32;
-        else
+        } else {
             Code->info.opnd_type[Opnd_Count] = OP_I16;
+        }
         return( RC_OK );
     }
 
@@ -259,7 +265,7 @@ bool jmp( expr_list *opndx, int *flags )
             if( ( Code->info.token == T_CALL )
                 && ( Code->mem_type == MT_EMPTY )
                 && ( sym->mem_type == MT_FAR ) ) {
-                FarCallToNear();
+                FarCallToNear( tokbuf );
                 *flags = SCRAP_INSTRUCTION;
                 return( RC_OK );
             }
@@ -366,7 +372,7 @@ bool jmp( expr_list *opndx, int *flags )
                     if( Code->info.opnd_type[Opnd_Count] != OP_I8 ) {
 #if defined( _STANDALONE_ )
                         if( Code->mem_type == MT_EMPTY ) {
-                            jumpExtend( 0 );
+                            jumpExtend( tokbuf, 0 );
                             *flags = SCRAP_INSTRUCTION;
                             return( RC_OK );
                         } else if( !PhaseError ) {
@@ -629,7 +635,7 @@ bool jmp( expr_list *opndx, int *flags )
                     break;
                 case MT_FAR:
 #if defined( _STANDALONE_ )
-                    jumpExtend( 1 );
+                    jumpExtend( tokbuf, 1 );
                     *flags = SCRAP_INSTRUCTION;
                     return( RC_OK );
 #endif

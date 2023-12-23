@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -614,8 +614,8 @@ static bool WInitEditWindow( WAccelEditInfo *einfo )
 bool WPasteAccelItem( WAccelEditInfo *einfo )
 {
     WAccelEntry entry;
-    void        *data;
-    uint_32     dsize;
+    char        *data;
+    size_t      dsize;
     bool        ok;
 
     data = NULL;
@@ -628,7 +628,7 @@ bool WPasteAccelItem( WAccelEditInfo *einfo )
     }
 
     if( ok ) {
-        ok = WMakeEntryFromClipData( &entry, data, dsize );
+        ok = WMakeAccelEntryFromClipData( &entry, data, dsize );
     }
 
     if( ok ) {
@@ -656,8 +656,8 @@ bool WClipAccelItem( WAccelEditInfo *einfo, bool cut )
     HWND        lbox;
     LRESULT     pos;
     WAccelEntry *entry;
-    void        *data;
-    uint_32     dsize;
+    char        *data;
+    size_t      dsize;
     bool        ok;
 
     data = NULL;
@@ -679,7 +679,7 @@ bool WClipAccelItem( WAccelEditInfo *einfo, bool cut )
     }
 
     if( ok ) {
-        ok = WMakeEntryClipData( entry, &data, &dsize );
+        ok = WMakeClipDataFromAccelEntry( entry, &data, &dsize );
     }
 
     if( ok ) {
@@ -810,8 +810,7 @@ WINEXPORT INT_PTR CALLBACK WAcccelEditDlgProc( HWND hDlg, UINT message, WPARAM w
         einfo = (WAccelEditInfo *)lParam;
         einfo->edit_dlg = hDlg;
         SET_DLGDATA( hDlg, einfo );
-        WRAddSymbolsToComboBox( einfo->info->symbol_table, hDlg,
-                                IDM_ACCEDCMDID, WR_HASHENTRY_ALL );
+        WRAddSymbolsToComboBox( einfo->info->symbol_table, hDlg, IDM_ACCEDCMDID, WR_HASHENTRY_ALL );
         ret = TRUE;
         break;
 

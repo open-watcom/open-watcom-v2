@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,7 +38,6 @@
 #include "wstrdup.h"
 #include "wstr.h"
 #include "wcopystr.h"
-#include "widn2str.h"
 #include "wnewitem.h"
 #include "sysall.rh"
 
@@ -56,9 +56,9 @@
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static  void            WMakeDataFromStringBlock( WStringBlock *block, void **data, size_t *size );
+static  void            WMakeDataFromStringBlock( WStringBlock *block, char **data, size_t *size );
 static  bool            WInitStringTable( WStringInfo *info, WStringTable *tbl );
-static  bool            WMakeStringBlockFromData( void *data, size_t size, WStringBlock *block );
+static  bool            WMakeStringBlockFromData( char *data, size_t size, WStringBlock *block );
 static  WStringBlock    *WFindStringTableBlock( WStringTable *tbl, uint_16 blocknum );
 static  WStringBlock    *WAllocStringBlock( void );
 static  WStringTable    *WAllocStringTable( bool is32bit );
@@ -70,7 +70,7 @@ static  WStringNode     *WMakeStringNodeFromStringBlock( WStringBlock * );
 /* static variables                                                         */
 /****************************************************************************/
 
-WStringEditInfo *WAllocStringEInfo( void )
+WStringEditInfo *WAllocStringEditInfo( void )
 {
     WStringEditInfo *einfo;
 
@@ -84,7 +84,7 @@ WStringEditInfo *WAllocStringEInfo( void )
     return( einfo );
 }
 
-void WFreeStringEInfo( WStringEditInfo *einfo )
+void WFreeStringEditInfo( WStringEditInfo *einfo )
 {
     if( einfo != NULL ) {
         if( einfo->tbl != NULL ) {
@@ -177,14 +177,14 @@ WStringBlock *WFindStringTableBlock( WStringTable *tbl, uint_16 blocknum )
     return( last );
 }
 
-void WMakeDataFromStringBlock( WStringBlock *block, void **data, size_t *size )
+void WMakeDataFromStringBlock( WStringBlock *block, char **data, size_t *size )
 {
     if( block != NULL ) {
         WRMakeDataFromStringBlock( &block->block, data, size, block->is32bit );
     }
 }
 
-bool WMakeStringBlockFromData( void *data, size_t size, WStringBlock *block )
+bool WMakeStringBlockFromData( char *data, size_t size, WStringBlock *block )
 {
     bool ret;
 
@@ -560,7 +560,7 @@ static bool WResolveStringTableBlockSymIDs( WStringEditInfo *einfo, WStringBlock
             continue;
         }
 
-        text = WResIDNameToStr( block->block.String[i] );
+        text = WRStringFromWResIDName( block->block.String[i] );
         if( text == NULL ) {
             continue;
         }

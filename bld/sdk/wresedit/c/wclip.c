@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -59,9 +59,8 @@
 /* static variables                                                         */
 /****************************************************************************/
 
-bool WGetClipData( HWND main, UINT fmt, void *_data, uint_32 *dsize )
+bool WGetClipData( HWND hwnd, UINT fmt, char **data, size_t *dsize )
 {
-    void        **data = _data;
     HANDLE      hclipdata;
     void        *mem;
     bool        clipbd_open;
@@ -73,7 +72,7 @@ bool WGetClipData( HWND main, UINT fmt, void *_data, uint_32 *dsize )
     ok = (fmt != 0 && data != NULL && dsize != NULL);
 
     if( ok ) {
-        ok = OpenClipboard( main ) != 0;
+        ok = OpenClipboard( hwnd ) != 0;
     }
 
     if( ok ) {
@@ -88,14 +87,16 @@ bool WGetClipData( HWND main, UINT fmt, void *_data, uint_32 *dsize )
     }
 
     if( ok ) {
-        *dsize = (uint_32)GlobalSize( hclipdata );
-        ok = (*dsize != 0);
-    }
+        ULONG_PTR   size;
 
-    if( ok ) {
-        if( *dsize >= INT_MAX ) {
+        size = GlobalSize( hclipdata );
+        if( size == 0 ) {
+            ok = false;
+        } else if( size >= INT_MAX ) {
             WDisplayErrorMsg( W_RESTOOBIGTOPASTE );
             ok = false;
+        } else {
+            *dsize = size;
         }
     }
 
@@ -111,9 +112,9 @@ bool WGetClipData( HWND main, UINT fmt, void *_data, uint_32 *dsize )
     if( !ok ) {
         if( *data != NULL ) {
             WRMemFree( *data );
-            *data = NULL;
-            *dsize = 0;
         }
+        *data = NULL;
+        *dsize = 0;
     }
 
     if( mem != NULL ) {
@@ -127,7 +128,7 @@ bool WGetClipData( HWND main, UINT fmt, void *_data, uint_32 *dsize )
     return( ok );
 }
 
-bool WCopyClipData( HWND main, UINT fmt, void *data, uint_32 dsize )
+bool WCopyClipData( HWND hwnd, UINT fmt, char *data, size_t dsize )
 {
     HBITMAP     hdsp_bitmap;
     HGLOBAL     hmem;
@@ -150,7 +151,7 @@ bool WCopyClipData( HWND main, UINT fmt, void *data, uint_32 dsize )
     }
 
     if( ok ) {
-        ok = OpenClipboard( main ) != 0;
+        ok = OpenClipboard( hwnd ) != 0;
     }
 
     if( ok ) {

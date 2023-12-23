@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,148 +37,65 @@
 #define TRPGLOBINIT(x)
 #endif
 
-TRPGLOBAL DWORD                 DebugeePid;
-TRPGLOBAL DWORD                 DebugeeTid;
-TRPGLOBAL process_info          ProcessInfo;
-TRPGLOBAL BOOL                  DebugeeEnded;
-TRPGLOBAL WORD                  WPCount;
-TRPGLOBAL DWORD                 LastExceptionCode;
-TRPGLOBAL DWORD                 CurrentModule TRPGLOBINIT( 1 );
-TRPGLOBAL DWORD                 ModuleTop;
-TRPGLOBAL WORD                  FlatCS;
-TRPGLOBAL WORD                  FlatDS;
-TRPGLOBAL BOOL                  StopForDLLs;
-TRPGLOBAL LPSTR                 DLLPath;
-TRPGLOBAL subsystems            DebugeeSubsystem;
-TRPGLOBAL msg_list              *DebugString;
-TRPGLOBAL DEBUG_EVENT           DebugEvent;
-TRPGLOBAL BOOL                  IsWOW;
-#if !defined( MD_x64 )
-TRPGLOBAL BOOL                  IsDOS;
-TRPGLOBAL BOOL                  IsWin32s;
-TRPGLOBAL BOOL                  IsWin95;
-TRPGLOBAL BOOL                  IsWinNT;
-TRPGLOBAL BOOL                  UseVDMStuff;
+TRPGLOBAL DWORD         DebugeePid;
+TRPGLOBAL DWORD         DebugeeTid;
+TRPGLOBAL process_info  ProcessInfo;
+TRPGLOBAL bool          DebugeeEnded;
+TRPGLOBAL DWORD         LastExceptionCode;
+TRPGLOBAL DWORD         CurrentModule TRPGLOBINIT( 1 );
+TRPGLOBAL DWORD         ModuleTop;
+TRPGLOBAL WORD          FlatCS;
+TRPGLOBAL WORD          FlatDS;
+TRPGLOBAL bool          StopForDLLs;
+TRPGLOBAL LPSTR         DLLPath;
+TRPGLOBAL subsystems    DebugeeSubsystem;
+TRPGLOBAL msg_list      *DebugString;
+TRPGLOBAL DEBUG_EVENT   DebugEvent;
+#if MADARCH & MADARCH_X64
+TRPGLOBAL bool          IsWOW64;
+#else
+  #ifdef WOW
+TRPGLOBAL bool          IsWOW;
+TRPGLOBAL bool          IsDOS;
+TRPGLOBAL bool          UseVDMStuff;
+  #endif
+TRPGLOBAL bool          IsWinNT;
+TRPGLOBAL bool          IsWin32s;
+TRPGLOBAL bool          IsWin95;
 #endif
-TRPGLOBAL char                  CurrEXEName[MAX_PATH];
-TRPGLOBAL BOOL                  DidWaitForDebugEvent;
-TRPGLOBAL BOOL                  Slaying;
-TRPGLOBAL HWND                  DebuggerWindow;
-TRPGLOBAL DWORD                 LastDebugEventTid;
-TRPGLOBAL BOOL                  BreakOnKernelMessage;
-TRPGLOBAL BOOL                  PendingProgramInterrupt;
-TRPGLOBAL char                  *MsgPrefix TRPGLOBINIT( NULL );
-TRPGLOBAL BOOL                  Supporting8ByteBreakpoints TRPGLOBINIT( 0 );    /* Start disabled */
-TRPGLOBAL BOOL                  SupportingExactBreakpoints TRPGLOBINIT( 0 );    /* Start disabled */
+TRPGLOBAL char          CurrEXEName[MAX_PATH];
+TRPGLOBAL bool          DidWaitForDebugEvent;
+TRPGLOBAL bool          Slaying;
+TRPGLOBAL HWND          DebuggerWindow;
+TRPGLOBAL DWORD         LastDebugEventTid;
+TRPGLOBAL bool          BreakOnKernelMessage;
+TRPGLOBAL bool          PendingProgramInterrupt;
+TRPGLOBAL char          *MsgPrefix TRPGLOBINIT( NULL );
+TRPGLOBAL bool          Supporting8ByteBreakpoints TRPGLOBINIT( false );    /* Start disabled */
+TRPGLOBAL bool          SupportingExactBreakpoints TRPGLOBINIT( false );    /* Start disabled */
+TRPGLOBAL opcode_type   BreakOpcode;
 
-#if defined( MD_x86 ) && defined( WOW )
-TRPGLOBAL wow_info              WOWAppInfo;
-//typedef void    *LPVDMCONTEXT;
-#endif
-#if !defined( WOW )
-typedef void    *LPMODULEENTRY;
-typedef void    (WINAPI *DEBUGEVENTPROC)();
-typedef BOOL    (WINAPI *PROCESSENUMPROC)( DWORD, DWORD, LPARAM );
+#ifdef WOW
+  #if MADARCH & MADARCH_X86
+TRPGLOBAL wow_info      WOWAppInfo;
+  #endif
 #endif
 
-TRPGLOBAL HANDLE
-(WINAPI*pOpenThread)(
-    DWORD
-);
-
-TRPGLOBAL DWORD
-(WINAPI *pQueryDosDevice)(
-    LPCTSTR         lpDeviceName,
-    LPTSTR          lpTargetPath,
-    DWORD           ucchMax
-);
-
-TRPGLOBAL DWORD 
-(WINAPI *pGetMappedFileName)(
-    HANDLE          hProcess,
-    LPVOID          lpv,
-    LPTSTR          lpFilename,
-    DWORD           nSize
-);
-
-TRPGLOBAL HANDLE 
-(WINAPI *pCreateToolhelp32Snapshot)(
-    DWORD           dwFlags,
-    DWORD           th32ProcessID
-);
-
-TRPGLOBAL BOOL 
-(WINAPI *pModule32First)(
-    HANDLE          hSnapshot,
-    LPMODULEENTRY32 lpme
-);
-
-TRPGLOBAL BOOL 
-(WINAPI *pModule32Next)(
-    HANDLE          hSnapshot,
-    LPMODULEENTRY32 lpme
-);
-
-#if !defined( MD_x64 ) && defined( WOW )
-TRPGLOBAL BOOL
-(WINAPI*pVDMModuleFirst)(
-    HANDLE          hProcess,
-    HANDLE          hThread,
-    LPMODULEENTRY   lpModuleEntry,
-    DEBUGEVENTPROC  lpEventProc,
-    LPVOID          lpData
-);
-
-TRPGLOBAL BOOL
-(WINAPI*pVDMModuleNext)(
-    HANDLE          hProcess,
-    HANDLE          hThread,
-    LPMODULEENTRY   lpModuleEntry,
-    DEBUGEVENTPROC  lpEventProc,
-    LPVOID          lpData
-);
-
-TRPGLOBAL INT
-(WINAPI*pVDMEnumProcessWOW)(
-    PROCESSENUMPROC fp,
-    LPARAM          lparam
-);
-
-TRPGLOBAL BOOL
-(WINAPI*pVDMProcessException)(
-    LPDEBUG_EVENT   lpDebugEvent
-    );
-
-
-TRPGLOBAL BOOL
-(WINAPI*pVDMGetModuleSelector)(
-    HANDLE          hProcess,
-    HANDLE          hThread,
-    UINT            wSegmentNumber,
-    LPSTR           lpModuleName,
-    LPWORD          lpSelector
-);
-
-
-TRPGLOBAL BOOL
-(WINAPI*pVDMGetThreadContext)(
-    LPDEBUG_EVENT   lpDebugEvent,
-    LPVDMCONTEXT    lpVDMContext
-);
-
-TRPGLOBAL BOOL
-(WINAPI*pVDMSetThreadContext)(
-    LPDEBUG_EVENT   lpDebugEvent,
-    LPVDMCONTEXT    lpVDMContext
-);
-
-TRPGLOBAL BOOL
-(WINAPI*pVDMGetThreadSelectorEntry)(
-    HANDLE          hProcess,
-    HANDLE          hThread,
-    WORD            wSelector,
-    LPVDMLDT_ENTRY  lpSelectorEntry
-);
+TRPGLOBAL OPENTHREADPROC                 pOpenThread;
+TRPGLOBAL QUERYDOSDEVICEPROC             pQueryDosDevice;
+TRPGLOBAL GETMAPPEDFILENAMEPROC          pGetMappedFileName;
+TRPGLOBAL CREATETOOLHELP32SNAPSHOTPROC   pCreateToolhelp32Snapshot;
+TRPGLOBAL MODULE32FIRSTPROC              pModule32First;
+TRPGLOBAL MODULE32NEXTPROC               pModule32Next;
+#ifdef WOW
+TRPGLOBAL VDMMODULEFIRSTPROC             pVDMModuleFirst;
+TRPGLOBAL VDMMODULENEXTPROC              pVDMModuleNext;
+TRPGLOBAL VDMENUMPROCESSWOWPROC          pVDMEnumProcessWOW;
+TRPGLOBAL VDMPROCESSEXCEPTIONPROC        pVDMProcessException;
+TRPGLOBAL VDMGETMODULESELECTORPROC       pVDMGetModuleSelector;
+TRPGLOBAL VDMGETTHREADCONTEXTPROC        pVDMGetThreadContext;
+TRPGLOBAL VDMSETTHREADCONTEXTPROC        pVDMSetThreadContext;
+TRPGLOBAL VDMGETTHREADSELECTORENTRYPROC  pVDMGetThreadSelectorEntry;
 #endif
 
 #undef TRPGLOBAL

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -116,48 +116,47 @@ static void MacroReallocOverflow( size_t amount_needed, size_t amount_used )
     }
 }
 
-static MEPTR *MacroLkUp( const char *name, MEPTR *lnk )
+static MEPTR *MacroLkUp( mac_hash_idx hash, const char *name )
 {
-    size_t      len;
     MEPTR       mentry;
+    MEPTR       *lnk;
 
-    len = strlen( name ) + 1;
-    while( (mentry = *lnk) != NULL ) {
-        if( NameCmp( mentry->macro_name, name, len ) == 0 )
+    for( lnk = &MacHash[hash]; (mentry = *lnk) != NULL; lnk = &mentry->next_macro ) {
+        if( strcmp( mentry->macro_name, name ) == 0 ) {
             break;
-        lnk = &mentry->next_macro;
+        }
     }
     return( lnk );
 }
 
 MEPTR MacroDefine( size_t mlen, macro_flags mflags )
 {
-    MEPTR       old_mentry;
-    MEPTR       *lnk;
-    MEPTR       new_mentry;
-    macro_flags old_mflags;
-    MEPTR       mentry;
-    const char  *mname;
+    MEPTR           old_mentry;
+    MEPTR           *lnk;
+    MEPTR           new_mentry;
+    macro_flags     old_mflags;
+    MEPTR           mentry;
+    const char      *name;
+    mac_hash_idx    hash;
 
     new_mentry = NULL;
     mentry = (MEPTR)MacroOffset;
     mentry->macro_len = mlen;
-    mname = mentry->macro_name;
-    CalcHash( mname, strlen( mname ) );
-    lnk = &MacHash[MacHashValue];
-    lnk = MacroLkUp( mname, lnk );
+    name = mentry->macro_name;
+    hash = CalcHashMacro( name );
+    lnk = MacroLkUp( hash, name );
     old_mentry = *lnk;
     if( old_mentry != NULL ) {
         old_mflags = old_mentry->macro_flags;
         if( old_mflags & MFLAG_CAN_BE_REDEFINED ) {//delete old entry
             *lnk = old_mentry->next_macro;
             old_mentry = NULL;
-        } else if( MacroCompare( mentry, old_mentry ) != 0 ) {
+        } else if( MacroCompare( mentry, old_mentry ) ) {
             if( MacroIsSpecial( old_mentry ) ) {
-                CWarn2p( WARN_MACRO_DEFN_NOT_IDENTICAL, ERR_MACRO_DEFN_NOT_IDENTICAL, mname );
+                CWarn2p( ERR_MACRO_DEFN_NOT_IDENTICAL, name );
             } else {
                 SetDiagMacro( old_mentry );
-                CWarn2p( WARN_MACRO_DEFN_NOT_IDENTICAL, ERR_MACRO_DEFN_NOT_IDENTICAL, mname );
+                CWarn2p( ERR_MACRO_DEFN_NOT_IDENTICAL, name );
                 SetDiagPop();
                 *lnk = old_mentry->next_macro;
                 old_mentry = NULL;
@@ -168,8 +167,8 @@ MEPTR MacroDefine( size_t mlen, macro_flags mflags )
         ++MacroCount;
         new_mentry = MacroAllocateInSeg( mlen );
         new_mentry->macro_flags = InitialMacroFlags | mflags;
-        new_mentry->next_macro = MacHash[MacHashValue];
-        MacHash[MacHashValue] = new_mentry;
+        new_mentry->next_macro = MacHash[hash];
+        MacHash[hash] = new_mentry;
     }
     return( new_mentry );
 }
@@ -183,24 +182,19 @@ void *PermMemAlloc( size_t amount )
     return( MacroAllocateInSeg( amount ) );
 }
 
-int MacroCompare( MEPTR m1, MEPTR m2 )
+bool MacroCompare( MEPTR m1, MEPTR m2 )
 {
-    if( m1->macro_len != m2->macro_len )
-        return( -1 );
-    if( m1->macro_defn != m2->macro_defn )
-        return( -1 );
-    if( m1->parm_count != m2->parm_count )
-        return( -1 );
-    return( memcmp( m1->macro_name, m2->macro_name, m1->macro_len - offsetof(MEDEFN,macro_name) ) );
+    if( m1->macro_len == m2->macro_len
+      && m1->macro_defn == m2->macro_defn
+      && m1->parm_count == m2->parm_count
+      && memcmp( m1->macro_name, m2->macro_name, m1->macro_len - offsetof( MEDEFN, macro_name ) ) == 0 )
+        return( false );
+    return( true );
 }
 
-MEPTR MacroLookup( const char *buf )
+MEPTR MacroLookup( const char *name )
 {
-    MEPTR       mentry, *lnk;
-
-    lnk = MacroLkUp( buf, &MacHash[MacHashValue] );
-    mentry = *lnk;
-    return( mentry );
+    return( *MacroLkUp( CalcHashMacro( name ), name ) );
 }
 
 void MacroSegmentAddChar(           // MacroSegment: ADD A CHARACTER

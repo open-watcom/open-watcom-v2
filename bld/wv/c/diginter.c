@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,7 +35,6 @@
 #include "dbgdefn.h"
 #include "dbgmem.h"
 #include "dbgio.h"
-#include "digtypes.h"
 #include "digcli.h"
 #include "trptypes.h"
 #include "remcore.h"
@@ -65,28 +65,28 @@ static obj_attrs DIG2WVOpenMode( dig_open mode )
     obj_attrs   oattrs;
 
     oattrs = 0;
-    if( mode & DIG_READ ) {
+    if( mode & DIG_OPEN_READ ) {
         oattrs |= OP_READ;
     }
-    if( mode & DIG_WRITE ) {
+    if( mode & DIG_OPEN_WRITE ) {
         oattrs |= OP_WRITE;
     }
-    if( mode & DIG_CREATE ) {
+    if( mode & DIG_OPEN_CREATE ) {
         oattrs |= OP_CREATE;
     }
-    if( mode & DIG_TRUNC ) {
+    if( mode & DIG_OPEN_TRUNC ) {
         oattrs |= OP_TRUNC;
     }
-    if( mode & DIG_APPEND ) {
+    if( mode & DIG_OPEN_APPEND ) {
         oattrs |= OP_APPEND;
     }
-    if( mode & DIG_REMOTE ) {
+    if( mode & DIG_OPEN_REMOTE ) {
         oattrs |= OP_REMOTE;
     }
-    if( mode & DIG_LOCAL ) {
+    if( mode & DIG_OPEN_LOCAL ) {
         oattrs |= OP_LOCAL;
     }
-    if( mode & DIG_SEARCH ) {
+    if( mode & DIG_OPEN_SEARCH ) {
         oattrs |= OP_SEARCH;
     }
     return( oattrs );
@@ -111,9 +111,9 @@ FILE * DIGCLIENTRY( Open )( char const *name, dig_open mode )
     return( POSIX2FP( fh ) );
 }
 
-int DIGCLIENTRY( Seek )( FILE *fp, unsigned long p, dig_seek k )
+int DIGCLIENTRY( Seek )( FILE *fp, unsigned long p, dig_seek where )
 {
-    return( SeekStream( FP2POSIX( fp ), p, k ) == ERR_SEEK );
+    return( SeekStream( FP2POSIX( fp ), p, where ) == ERR_SEEK );
 }
 
 unsigned long DIGCLIENTRY( Tell )( FILE *fp )
@@ -141,9 +141,3 @@ void DIGCLIENTRY( Remove )( char const *name, dig_open mode )
     FileRemove( name, DIG2WVOpenMode( mode ) );
 }
 
-unsigned DIGCLIENTRY( MachineData )( address addr, dig_info_type info_type,
-                        dig_elen in_size,  const void *in,
-                        dig_elen out_size, void *out )
-{
-    return( RemoteMachineData( addr, (uint_8)info_type, in_size, in, out_size, out ) );
-}

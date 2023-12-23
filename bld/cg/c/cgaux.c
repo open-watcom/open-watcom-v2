@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -51,11 +51,11 @@ pointer FindAuxInfo( name *name, aux_class request )
         return( FindAuxInfoSym( name->v.symbol, request ) );
     } else if( name->m.memory_type == CG_BACK ) {
         return( FindAuxInfoSym( AskForLblSym( ((back_handle)name->v.symbol)->lbl ), request ) );
-#if _TARGET & _TARG_INTEL
+#if _TARGET_INTEL
     } else if( name->m.memory_type == CG_LBL && AskIfRTLabel( name->v.symbol ) ) {
         aux_handle  aux;
 
-        aux = BEAuxInfo( name->v.symbol, AUX_LOOKUP );
+        aux = BEAuxInfo( name->v.symbol, FEINF_AUX_LOOKUP );
         if( aux == NULL ) {
             /* return default aux info */
             return( FindAuxInfoSym( NULL, request ) );

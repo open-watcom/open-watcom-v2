@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -81,7 +82,7 @@ static const char *getFrameModifier( orl_reloc rel )
     if( rel->symbol == rel->frame ) {
         /* FRAME = TARGET
          */
-        if( GetFormat() == ORL_OMF )
+        if( FileFormat == ORL_OMF )
             return( NULL );
         typ = ORLSymbolGetType( rel->symbol );
         if( typ & ORL_SYM_TYPE_SECTION ) {
@@ -128,7 +129,7 @@ orl_return CreateNamedLabelRef( orl_reloc rel )
     ref->offset = rel->offset;
     ref->type = rel->type;
     ref->addend = rel->addend;
-    if( IsMasmOutput() && rel->frame ) {
+    if( IsMasmOutput && rel->frame ) {
         ref->frame = getFrameModifier( rel );
     }
     h_key.u.sym_handle = rel->symbol;
@@ -157,7 +158,7 @@ orl_return DealWithRelocSection( orl_sec_handle shnd )
     return( error );
 }
 
-return_val CreateUnnamedLabelRef( orl_sec_handle shnd, label_entry entry, dis_sec_offset loc )
+return_val CreateUnnamedLabelRef( orl_sec_handle shnd, label_entry entry, dis_sec_offset loc, orl_reloc_type reltype )
 {
     ref_entry           ref;
     hash_data           *h_data;
@@ -171,7 +172,7 @@ return_val CreateUnnamedLabelRef( orl_sec_handle shnd, label_entry entry, dis_se
     memset( ref, 0, sizeof( ref_entry_struct ) );
     ref->offset = loc;
     ref->label = entry;
-    ref->type = ORL_RELOC_TYPE_JUMP;
+    ref->type = reltype;
     ref->addend = 0;
     h_key.u.sec_handle = shnd;
     h_data = HashTableQuery( HandleToRefListTable, h_key );
@@ -186,7 +187,7 @@ return_val CreateUnnamedLabelRef( orl_sec_handle shnd, label_entry entry, dis_se
     return( RC_ERROR );
 }
 
-return_val CreateAbsoluteLabelRef( orl_sec_handle shnd, label_entry entry, dis_sec_offset loc )
+return_val CreateAbsoluteLabelRef( orl_sec_handle shnd, label_entry entry, dis_sec_offset loc, orl_reloc_type reltype )
 {
     ref_entry           ref;
     hash_data           *h_data;
@@ -200,7 +201,7 @@ return_val CreateAbsoluteLabelRef( orl_sec_handle shnd, label_entry entry, dis_s
     memset( ref, 0, sizeof( ref_entry_struct ) );
     ref->offset = loc;
     ref->label = entry;
-    ref->type = ORL_RELOC_TYPE_MAX + 1;
+    ref->type = reltype;
     h_key.u.sec_handle = shnd;
     h_data = HashTableQuery( HandleToRefListTable, h_key );
     if( h_data != NULL ) {

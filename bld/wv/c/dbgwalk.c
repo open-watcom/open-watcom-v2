@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,9 +44,11 @@ static ssl_value GetParm( op_code operation )
 {
     ssl_value   parm;
 
-    parm = GETU8( TblPtr++ );
+    parm = MGET_U8( TblPtr );
+    TblPtr++;
     if( operation & INS_LONG ) {
-        parm |= GETU8( TblPtr++ ) << 8;
+        parm |= MGET_U8( TblPtr ) << 8;
+        TblPtr++;
     }
     return( parm );
 }
@@ -55,10 +58,12 @@ static int GetParmInt( op_code operation )
 {
     int     parm;
 
-    parm = GETI8( TblPtr++ );
+    parm = MGET_S8( TblPtr );
+    TblPtr++;
     if( operation & INS_LONG ) {
         parm &= 0xff;
-        parm |= GETI8( TblPtr++ ) << 8;
+        parm |= MGET_S8( TblPtr ) << 8;
+        TblPtr++;
     }
     return( parm );
 }
@@ -90,7 +95,8 @@ int SSLWalk( const char *table, unsigned start, const char **stk_bot, unsigned s
     TblPtr = table + start;
     token = SSLCurrToken();
     for( ;; ) {
-        operation = (op_code)GETU8( TblPtr++ );
+        operation = (op_code)MGET_U8( TblPtr );
+        TblPtr++;
         switch( operation & INS_MASK ) {
         case INS_INPUT:
             wanted = GetParm( operation );
@@ -146,7 +152,7 @@ int SSLWalk( const char *table, unsigned start, const char **stk_bot, unsigned s
             TblPtr = *--stk_ptr;
             break;
         case INS_IN_CHOICE:
-            for( num_items = GETU8( TblPtr++ ); num_items > 0; num_items-- ) {
+            for( num_items = MGET_U8( TblPtr ), TblPtr++; num_items > 0; num_items-- ) {
                 if( token == (tokens)GetParm( operation ) ) {
                     token = SSLNextToken();
                     TblPtr = GetTablePos( table );
@@ -156,7 +162,7 @@ int SSLWalk( const char *table, unsigned start, const char **stk_bot, unsigned s
             }
             break;
         case INS_CHOICE:
-            for( num_items = GETU8( TblPtr++ ); num_items > 0; num_items-- ) {
+            for( num_items = MGET_U8( TblPtr ), TblPtr++; num_items > 0; num_items-- ) {
                 if( result == GetParm( operation ) ) {
                     TblPtr = GetTablePos( table );
                     break;

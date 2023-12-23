@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,43 +31,43 @@
 ****************************************************************************/
 
 
-#if defined( _M_IX86 )
-#define MD_x86
-#elif defined __AXP__
-#define MD_axp
-#endif
-
 #include "drwatcom.h"
 #include <io.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include "digld.h"
 #include "dip.h"
 #include "dipimp.h"
-#include "dipcli.h"
 #include "madregs.h"
+#include "pathgrp2.h"
+
+#include "clibext.h"
 
 
-/*
+#define QQSTR(x)    # x
+#define QSTR(x)     QQSTR(x)
+
+void *DIGCLIENTRY( Alloc )( size_t size )
+/****************************************
  * DIGCliAlloc
  */
-void *DIGCLIENTRY( Alloc )( size_t size )
 {
     return( MemAlloc( size ) );
 }
 
-/*
+void *DIGCLIENTRY( Realloc )( void *ptr, size_t size )
+/*****************************************************
  * DIGCliRealloc
  */
-void *DIGCLIENTRY( Realloc )( void *ptr, size_t size )
 {
     return( MemRealloc( ptr, size ) );
 }
 
-/*
+void DIGCLIENTRY( Free )( void *ptr )
+/************************************
  * DIGCliFree
  */
-void DIGCLIENTRY( Free )( void *ptr )
 {
     MemFree( ptr );
 }
@@ -77,64 +78,66 @@ void DIGCLIENTRY( Free )( void *ptr )
  * !!! ISO or POSIX functions must not be used !!!
  */
 
-/*
+FILE * DIGCLIENTRY( Open )( const char *path, dig_open mode )
+/************************************************************
  * DIGCliOpen
  */
-FILE * DIGCLIENTRY( Open )( const char *path, dig_open mode )
 {
     HFILE               ret;
     int                 flags;
     OFSTRUCT            tmp;
 
     flags = 0;
-    if( mode & DIG_READ )
+    if( mode & DIG_OPEN_READ )
         flags |= OF_READ;
-    if( mode & DIG_WRITE )
+    if( mode & DIG_OPEN_WRITE )
         flags |= OF_WRITE;
-    if( mode & DIG_TRUNC )
+    if( mode & DIG_OPEN_TRUNC )
         flags |= OF_CREATE;
-    if( mode & DIG_CREATE )
+    if( mode & DIG_OPEN_CREATE )
         flags |= OF_CREATE;
-    //NYI: should check for DIG_SEARCH
+    /*
+     * NYI: should check for DIG_OPEN_SEARCH
+     */
     ret = OpenFile( path, &tmp, flags );
     if( ret == HFILE_ERROR )
         return( NULL );
     return( WH2FP( (HANDLE)ret ) );
 }
 
-/*
+int DIGCLIENTRY( Seek )( FILE *fp, unsigned long offset, dig_seek where )
+/************************************************************************
  * DIGCliSeek
  */
-int DIGCLIENTRY( Seek )( FILE *fp, unsigned long offset, dig_seek dipmode )
 {
     int         mode;
 
-    switch( dipmode ) {
-    case DIG_ORG:
+    switch( where ) {
+    case DIG_SEEK_ORG:
         mode = FILE_BEGIN;
         break;
-    case DIG_CUR:
+    case DIG_SEEK_CUR:
         mode = FILE_CURRENT;
         break;
-    case DIG_END:
+    case DIG_SEEK_END:
         mode = FILE_END;
         break;
     }
     return( SetFilePointer( FP2WH( fp ), offset, 0, mode ) == INVALID_SET_FILE_POINTER );
 }
 
-/*
+unsigned long DIGCLIENTRY( Tell )( FILE *fp )
+/********************************************
  * DIGCliTell
  */
-unsigned long DIGCLIENTRY( Tell )( FILE *fp )
 {
     return( SetFilePointer( FP2WH( fp ), 0, 0, FILE_CURRENT ) );
 }
 
-/*
+size_t DIGCLIENTRY( Read )( FILE *fp, void *buf, size_t size )
+/*************************************************************
  * DIGCliRead
  */
-size_t DIGCLIENTRY( Read )( FILE *fp, void *buf, size_t size )
 {
     DWORD       bytesread;
 
@@ -143,10 +146,10 @@ size_t DIGCLIENTRY( Read )( FILE *fp, void *buf, size_t size )
     return( bytesread );
 }
 
-/*
+size_t DIGCLIENTRY( Write )( FILE *fp, const void *buf, size_t size )
+/********************************************************************
  * DIGCliWrite
  */
-size_t DIGCLIENTRY( Write )( FILE *fp, const void *buf, size_t size )
 {
     DWORD       byteswritten;
 
@@ -155,50 +158,50 @@ size_t DIGCLIENTRY( Write )( FILE *fp, const void *buf, size_t size )
     return( byteswritten );
 }
 
-/*
+void DIGCLIENTRY( Close )( FILE *fp )
+/************************************
  * DIGCliClose
  */
-void DIGCLIENTRY( Close )( FILE *fp )
 {
     CloseHandle( FP2WH( fp ) );
 }
 
-/*
+void DIGCLIENTRY( Remove )( const char *path, dig_open mode )
+/************************************************************
  * DIGCliRemove
  */
-void DIGCLIENTRY( Remove )( const char *path, dig_open mode )
 {
-    mode = mode;
+    /* unused params */ (void)mode;
+
     DeleteFile( path );
 }
 
-unsigned DIGCLIENTRY( MachineData )( address addr, dig_info_type info_type,
-                        dig_elen in_size,  const void *in,
-                        dig_elen out_size, void *out )
+size_t DIGLoader( Find )( dig_filetype ftype, const char *base_name, size_t base_name_len,
+                                const char *defext, char *filename, size_t filename_maxlen )
+/*******************************************************************************************
+ * DIGLoaderFind
+ */
 {
-#if defined( _M_IX86 )
-    /* unused parameters */ (void)addr; (void)info_type; (void)in_size; (void)in; (void)out_size;
-#else
-    /* unused parameters */ (void)addr; (void)info_type; (void)in_size; (void)in; (void)out_size; (void)out;
-#endif
+    char        fname[256];
+    size_t      len;
 
-#if defined( _M_IX86 )
-    enum x86_addr_characteristics   *a_char;
+    /* unused parameters */ (void)ftype;
 
-    switch( SysConfig.arch ) {
-    case DIG_ARCH_X86:
-        a_char = out;
-        *a_char = X86AC_BIG;
-        return( sizeof( *a_char ) );
-    }
-#elif defined( __AXP__ )
-  #if 0
-    switch( SysConfig.arch ) {
-    case DIG_ARCH_AXP:
-        memcpy( out, in, sizeof( axp_data ) );
-        return( sizeof( axp_data ) );
-    }
-  #endif
+    len = 0;
+    if( filename_maxlen > 0 ) {
+        filename_maxlen--;
+        if( base_name_len == 0 )
+            base_name_len = strlen( base_name );
+        strncpy( fname, base_name, base_name_len );
+        strcpy( fname + base_name_len, defext );
+#ifdef BLDVER
+        _searchenv( fname, "WD_PATH" QSTR( BLDVER ), fname );
 #endif
-    return( 0 );
+        len = strlen( fname );
+        if( len > filename_maxlen )
+            len = filename_maxlen;
+        strncpy( filename, fname, len );
+        filename[len] = '\0';
+    }
+    return( len );
 }

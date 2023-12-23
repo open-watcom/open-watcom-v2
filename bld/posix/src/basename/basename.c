@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,8 +47,6 @@
 #include "clibext.h"
 
 
-char *OptEnvVar = "basename";
-
 static const char *usageMsg[] = {
     "Usage: basename [-?] [@env] filename [suffix]",
     "\tenv                : environment variable to expand",
@@ -64,7 +62,7 @@ int main( int argc, char **argv )
     char        fname[_MAX_PATH];
     pgroup2     pg;
 
-    argv = ExpandEnv( &argc, argv );
+    argv = ExpandEnv( &argc, argv, "BASENAME" );
 
     GetOpt( &argc, argv, "", usageMsg );
 
@@ -86,5 +84,7 @@ int main( int argc, char **argv )
         }
         fprintf( stdout, "%s\n", fname );
     }
+    MemFree( argv );
+
     return( 0 );
 }

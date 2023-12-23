@@ -8,10 +8,14 @@
  typedef unsigned short nlink_t;/* Used for link counts             */
 :elsesegment ARCHMIPS
  typedef unsigned long  nlink_t;/* Used for link counts             */
+:elsesegment ARCHPPC
+ typedef unsigned long  nlink_t;/* Used for link counts             */
 :elsesegment
  #ifdef __386__
   typedef unsigned short nlink_t;/* Used for link counts             */
  #elif defined(__MIPS__)
+  typedef unsigned long  nlink_t;/* Used for link counts             */
+ #elif defined(__PPC__)
   typedef unsigned long  nlink_t;/* Used for link counts             */
  #endif
 :endsegment

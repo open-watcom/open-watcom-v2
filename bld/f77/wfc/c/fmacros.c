@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -68,10 +68,10 @@ static  char            DebugMacro[] = { "__debug__" };
 void    InitPredefinedMacros( void )
 //==================================
 {
-#if _CPU == 386
-    MacroDEFINE( "__386__", 7 );
-#elif _CPU == 8086
+#if _CPU == 8086
     MacroDEFINE( "__I86__", 7 );
+#elif _CPU == 386
+    MacroDEFINE( "__386__", 7 );
 #elif _CPU == _AXP
     MacroDEFINE( "__AXP__", 7 );
 #elif _CPU == _PPC
@@ -79,12 +79,12 @@ void    InitPredefinedMacros( void )
 #else
     #error Unknown platform/OS
 #endif
-#if _CPU == 386
+#if _INTEL_CPU
+  #if _CPU == 386
     if( CGOpts & CGOPT_STK_ARGS ) {
         MacroDEFINE( "__stack_conventions__", 21 );
     }
-#endif
-#if _CPU == 8086  || _CPU == 386
+  #endif
     if( CPUOpts & (CPUOPT_FPR | CPUOPT_FPI | CPUOPT_FPI87 |
                    CPUOPT_FP287 | CPUOPT_FP387 | CPUOPT_FP5) ) {
         MacroDEFINE( "__FPI__", 7 );

@@ -100,9 +100,9 @@ test : .symbolic start start_test test.lnk $(positive_exes) test_set_result
 check_result : .procedure
     -diff -b error.out exec.chk >$(nulldevice)
 
-test_set_result : ./chk_exec.exe .symbolic
+test_set_result : .symbolic
     -$(noecho)%write error.out OK
-    -$]@ exec.out >>error.out
+    -chk_exec exec.out >>error.out
 
 link3.exe : link3.obj link3b.obj
 link4.exe : link4.obj link4b.obj

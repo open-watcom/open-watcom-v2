@@ -45,15 +45,16 @@ static  char    * const __FAR ErrMsgs[] = {
     #undef pick
 };
 
-bool    IOOk( b_file *io ) {
+bool    IOOk( b_file *io )
+//========================
 // Check for i/o error condition.
-
+{
     io_status   err;
 
-    if( io == NULL ) {
-        err = Stat;
-    } else {
+    if( io != NULL ) {
         err = io->stat;
+    } else {
+        err = Stat;
     }
     if( err == POSIO_EOR ) {
         err = POSIO_OK;
@@ -62,28 +63,28 @@ bool    IOOk( b_file *io ) {
 }
 
 
-bool    EOFile( b_file *io ) {
+bool    EOFile( b_file *io )
+//==========================
 // Check if end-of-file.
-
-    if( io == NULL ) {
-        return( Stat == POSIO_EOF );
-    } else {
+{
+    if( io != NULL ) {
         return( io->stat == POSIO_EOF );
     }
+    return( Stat == POSIO_EOF );
 }
 
 
 void ErrorMsg( b_file *io, char *buf, size_t max_len )
-{
+//====================================================
 // Get i/o error message.
-
+{
     io_status   err;
     char        *msg;
 
-    if( io == NULL ) {
-        err = Stat;
-    } else {
+    if( io != NULL ) {
         err = io->stat;
+    } else {
+        err = Stat;
     }
     if( err == POSIO_SYS_ERROR ) {
         msg = strerror( errno );
@@ -95,17 +96,19 @@ void ErrorMsg( b_file *io, char *buf, size_t max_len )
 }
 
 
-void    FSetTrunc( b_file *io ) {
+void    FSetTrunc( b_file *io )
+//=============================
 // Set "truncated" condition.
-
+{
     Stat = POSIO_EOR;
     io->stat = POSIO_EOR;
 }
 
 
-void    FSetSysErr( b_file *io ) {
+void    FSetSysErr( b_file *io )
+//==============================
 // Set system i/o error condition.
-
+{
     if( io != NULL ) {
         io->stat = POSIO_SYS_ERROR;
     }
@@ -113,18 +116,20 @@ void    FSetSysErr( b_file *io ) {
 }
 
 
-void    FSetErr( io_status error, b_file *io ) {
+void    FSetErr( io_status error, b_file *io )
+//============================================
 // Set i/o error condition.
-
+{
     if( io != NULL ) {
         io->stat = error;
     }
     Stat = error;
 }
 
-void    FSetEof( b_file *io ) {
+void    FSetEof( b_file *io )
+//===========================
 // Set end-of-file condition.
-
+{
     if( io != NULL ) {
         io->stat = POSIO_EOF;
     }
@@ -132,9 +137,10 @@ void    FSetEof( b_file *io ) {
 }
 
 
-void    FSetIOOk( b_file *io ) {
+void    FSetIOOk( b_file *io )
+//============================
 // Clear i/o error conditions.
-
+{
     if( io != NULL ) {
         io->stat = POSIO_OK;
     }
@@ -142,9 +148,10 @@ void    FSetIOOk( b_file *io ) {
 }
 
 
-void    FSetBadOpr( b_file *io ) {
+void    FSetBadOpr( b_file *io )
+//==============================
 // Set bad operation condition.
-
+{
     if( io != NULL ) {
         io->stat = POSIO_BAD_OPERATION;
     }

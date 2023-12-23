@@ -6,8 +6,8 @@ clib_host_cpu_086=i86
 clib_host_cpu_286=i86
 clib_host_cpu_386=386
 clib_host_cpu_axp=axp
-clib_host_cpu_ppc=ppc
 clib_host_cpu_mps=mps
+clib_host_cpu_ppc=ppc
 host_cpu = $(clib_host_cpu_$(processor))
 
 clib_host_os_msdos      =dos
@@ -23,6 +23,10 @@ clib_host_os_rdos       =rdos
 clib_host_os_rdosdev    =rdosdev
 clib_host_os_linux      =linux
 host_os=$(clib_host_os_$(system))
+
+!ifdef lib_debug
+debug = 1
+!endif
 
 !include cproj.mif
 !include libsubdi.mif

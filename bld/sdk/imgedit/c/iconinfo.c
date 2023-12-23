@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -417,16 +417,14 @@ bool CreateNewIcon( short *width, short *height, short *bitcount, bool is_icon )
 {
     WPI_DLGPROC         dlgproc;
     WPI_DLGRESULT       button_type;
+    LPCSTR              restype;
 
     iconOperation = NEW_ICON_OP;
     resetIconInfo();
+    restype = ( is_icon ) ? ICONTYPE : CURSORTYPE;
 
     dlgproc = _wpi_makedlgprocinstance( SelNonExistingDlgProc, Instance );
-    if( is_icon ) {
-        button_type = _wpi_dialogbox( HMainWindow, dlgproc, Instance, ICONTYPE, 0L );
-    } else {
-        button_type = _wpi_dialogbox( HMainWindow, dlgproc, Instance, CURSORTYPE, 0L );
-    }
+    button_type = _wpi_dialogbox( HMainWindow, dlgproc, Instance, restype, 0L );
     _wpi_freedlgprocinstance( dlgproc );
 
     if( button_type == DLGID_CANCEL ) {
@@ -465,8 +463,8 @@ void AddNewIcon( void )
     }
 
     node = GetImageNode( currentnode->hwnd );
-
     iconOperation = ADD_ICON_OP;
+
     dlgproc = _wpi_makedlgprocinstance( SelNonExistingDlgProc, Instance );
     button_type = _wpi_dialogbox( HMainWindow, dlgproc, Instance, ICONTYPE, 0L );
     _wpi_freedlgprocinstance( dlgproc );

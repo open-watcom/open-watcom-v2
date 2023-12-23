@@ -332,7 +332,7 @@ the data threshold size so that all objects of the specified size or
 larger are placed into another segment.
 For example, the option:
 .millust begin
-/DT=100
+-DT=100
 .millust end
 .pc
 causes all data objects of 100 bytes or more to be placed in a far
@@ -410,17 +410,17 @@ name.
 Using the "fo" option, the default object file drive, path, file name
 and extension can be specified.
 .exam begin
-C>&ccmd32 report /fo=d:\programs\obj\
+C>&ccmd32 report -fo=d:\programs\obj\
 .exam end
 .pc
 A trailing "\" must be specified for directory names.
-If, for example, the option was specified as "/fo=d:\programs\obj"
+If, for example, the option was specified as "-fo=d:\programs\obj"
 then the object file would be called
 .fi D:\PROGRAMS\OBJ.OBJ.
 .np
 A default extension must be preceded by a period (".").
 .exam begin
-C>&ccmd32 report /fo=d:\programs\obj\.dbo
+C>&ccmd32 report -fo=d:\programs\obj\.dbo
 .exam end
 .*
 .note [NO]FORmat

@@ -1,3 +1,5 @@
+tree_depth = 4
+
 proj_name = dwarfw
 
 !ifndef dwarfw_autodepends
@@ -11,9 +13,9 @@ dwarfw_autodepends = .AUTODEPEND
 #
 # cflags
 #
-.c : $(dwarfw_dir)/c
+.c : $(dwarfw_dir)/c;$(watcom_dir)/c
 
-inc_dirs = -I. -I"../h"
+inc_dirs = -I. -I"$(dwarfw_dir)/h"
 
 # explicit rules
 #################
@@ -41,7 +43,8 @@ libtarg_objs = &
     dwrefer.obj &
     dwsym.obj &
     dwtype.obj &
-    dwutils.obj
+    dwutils.obj &
+    leb128wr.obj
 !include libtarg.mif
 
 #
@@ -49,7 +52,7 @@ libtarg_objs = &
 #
 ./dwmakeab.exe : dwmakeab.c
     @%make echo_bldcl
-    $(bld_cl) $[@ -I"../h" $(bld_clflags) $(bld_ldflags)
+    $(bld_cl) $[@ -I"$(dwarfw_dir)/h" $(bld_clflags) $(bld_ldflags)
 
 dwabenum.gh dwabinfo.gh : ./dwmakeab.exe
     @%make echo_execute

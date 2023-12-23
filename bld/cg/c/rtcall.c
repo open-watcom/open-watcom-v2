@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -115,12 +115,10 @@ instruction     *rMAKECALL( instruction *ins )
     new_ins->result = NULL;
     new_ins->num_operands = 2;         /* special case for OP_CALL*/
 #if _TARGET & _TARG_AXP
-    {
     HW_CTurnOn( all_regs, HW_FULL );
     HW_TurnOff( all_regs, SavedRegs() );
     HW_CTurnOff( all_regs, HW_UNUSED );
     HW_TurnOn( all_regs, ReturnAddrReg() );
-    }
 #endif
     new_ins->zap = (register_name *)AllocRegName( all_regs );   /* all parm regs could be zapped*/
     last_ins = new_ins;

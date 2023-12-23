@@ -38,17 +38,17 @@ suppress_zc = 1
 !include $(orl_dir)/client.mif
 !include $(dwarfw_dir)/client.mif
 
-!include ../wlobjs.mif
+!include $(wlink_dir)/wlobjs.mif
 
 #
 # cflags
 #
-.c: ../c;$(watcom_dir)/c;$(wrc_dir)/c;$(lib_misc_dir)/c;$(trmem_dir)
+.c: $(wlink_dir)/c;$(wrc_dir)/c;$(lib_misc_dir)/c;$(watcom_dir)/c;$(trmem_dir)
 
-inc_dirs = -I. -I"../h" $(dwarfw_inc_dirs) -I"$(orl_dir)/h" -I"$(wrc_dir)/h" &
+inc_dirs = -I. -I"$(wlink_dir)/h" $(dwarfw_inc_dirs) -I"$(orl_dir)/h" -I"$(wrc_dir)/h" &
     $(wres_inc_dirs) -I"$(lib_misc_dir)/h" -I"$(watcom_dir)/c"
 
-extra_cpp_flags = -DINSIDE_WLINK $(debug_cpp_flags)
+extra_cpp_flags = -DINSIDE_WLINK
 !ifdef DLLS_IMPLEMENTED
 extra_cpp_flags += -DDLLS_IMPLEMENTED
 !endif
@@ -123,9 +123,11 @@ verrc_exe = $(exetarg_name)
 verrc_dll = $(dlltarg_name)
 !include verrc.mif
 
-rcui_inc_dirs = -I. -I"$(wrc_dir)/h" -I"../h"
+rcui_inc_dirs = -I. -I"$(wlink_dir)/h" -I"$(wrc_dir)/h"
 
-wresui.res : ../h/wlink.rc rcmsg.grh ../h/wlink.msg ../h/lnkerror.rc ../h/wlnkmsg.h ../h/lnkerror.msg $(__MAKEFILES__)
+wresui.res : $(wlink_dir)/h/wlink.rc rcmsg.grh $(wlink_dir)/h/wlink.msg &
+            $(wlink_dir)/h/lnkerror.rc $(wlink_dir)/h/wlnkmsg.h &
+	    $(wlink_dir)/h/lnkerror.msg $(__MAKEFILES__)
     @%make echo_rc
     $(rcui8)
 
@@ -133,6 +135,6 @@ rcmsg.grh : $(wrc_dir)/h/rc.msg $(__MAKEFILES__)
     @%make echo_awk
     $(awk) -v base=MSG_RC_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@
 
-usage.u : ../h/usage.sp $(__MAKEFILES__)
+usage.u : $(wlink_dir)/h/usage.sp $(__MAKEFILES__)
     @%make echo_wsplice
     $(wsplice) -u $[@ $@

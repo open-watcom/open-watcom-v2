@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,6 +47,7 @@
 #include "errcod.h"
 #include "fmemmgr.h"
 
+#include "clibint.h"
 #include "clibext.h"
 
 
@@ -72,8 +73,6 @@ enum {
     #include "usage.gh"
     #undef pick
 };
-
-static char     CmdBuff[2*128];
 
 #if defined( _M_IX86 )
     unsigned char   _8087   = 0;
@@ -110,14 +109,15 @@ static void FFini( void )
     FMemFini();
 }
 
-int     main( int argc, char *argv[] ) {
+int     main( int argc, char *argv[] )
 //======================================
-
 // FORTRAN compiler main line.
-
+{
     int         ret_code;
     char        *opts[MAX_OPTIONS+1];
-    char        *p;
+    char        *wfc_env;
+    int         cmd_len;
+    char        *cmd_line;
 
 #if !defined( __WATCOMC__ )
     _argc = argc;
@@ -130,19 +130,22 @@ int     main( int argc, char *argv[] ) {
 #if defined( _M_IX86 )
     _real87 = _8087 = 0;
 #endif
-    p = getenv( WFC_ENV );
-    if( p != NULL && *p != NULLCHAR ) {
-        strcpy( CmdBuff, p );
-        p = &CmdBuff[ strlen( p ) ];
-        *p = ' ';
-        ++p;
+    cmd_len = _bgetcmd( NULL, 0 ) + 1;
+    wfc_env = getenv( WFC_ENV );
+    if( wfc_env != NULL ) {
+        size_t  len1;
+        len1 = strlen( wfc_env );
+        cmd_line = FMemAlloc( len1 + 1 + cmd_len );
+        strcpy( cmd_line, wfc_env );
+        cmd_line[len1++] = ' ';
+        _bgetcmd( cmd_line + len1, cmd_len );
     } else {
-        p = CmdBuff;
+        cmd_line = FMemAlloc( cmd_len );
+        _bgetcmd( cmd_line, cmd_len );
     }
-    getcmd( p );
     ret_code = 0;
     InitCompMain();
-    if( MainCmdLine( &SrcName, &CmdPtr, opts, CmdBuff ) ) {
+    if( MainCmdLine( &SrcName, &CmdPtr, opts, cmd_line ) ) {
         SrcExtn = SDSplitSrcExtn( SrcName );    // parse the file name in case we get
         ProcOpts( opts );                       // an error in ProcOpts() so error
         InitPredefinedMacros();                 // file can be created
@@ -151,6 +154,7 @@ int     main( int argc, char *argv[] ) {
         ShowUsage();
     }
     FiniCompMain();
+    FMemFree( cmd_line );
     FFini();
     return( ret_code );
 }

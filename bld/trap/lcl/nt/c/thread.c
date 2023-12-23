@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,11 +34,13 @@
 #include <string.h>
 #include <stdlib.h>
 #include "stdnt.h"
+#include "globals.h"
 
-/*
+
+void AddThread( DWORD tid, HANDLE th, FARPROC sa )
+/*************************************************
  * Add a new thread to a process
  */
-void AddThread( DWORD tid, HANDLE th, LPVOID sa )
 {
     thread_info *ti;
 
@@ -52,35 +54,37 @@ void AddThread( DWORD tid, HANDLE th, LPVOID sa )
     ti->brk_addr = 0;
 
     ti->next = ProcessInfo.thread_list;
-    ti->alive = TRUE;
-    ti->suspended = FALSE;
-    ti->is_wow = FALSE;
-    ti->is_dos = FALSE;
-    ti->is_foreign = FALSE;
+    ti->alive = true;
+    ti->suspended = false;
+#if MADARCH & MADARCH_X64
+    ti->is_wow64 = false;
+#elif defined( WOW )
+    ti->is_wow = false;
+    ti->is_dos = false;
+#endif
+    ti->is_foreign = false;
     ProcessInfo.thread_list = ti;
 }
 
-/*
+thread_info *FindThread( DWORD tid )
+/***********************************
  * FindThread - find a thread from a given process_info struct
  */
-thread_info *FindThread( DWORD tid )
 {
     thread_info *ti;
 
-    ti = ProcessInfo.thread_list;
-    while( ti != NULL ) {
+    for( ti = ProcessInfo.thread_list; ti != NULL; ti = ti->next ) {
         if( ti->tid == tid ) {
-            return( ti );
+            break;
         }
-        ti = ti->next;
     }
-    return( NULL );
+    return( ti );
 }
 
-/*
+void DeadThread( DWORD tid )
+/***************************
  * DeadThread - process a dead thread
  */
-void DeadThread( DWORD tid )
 {
     thread_info *ti;
 
@@ -88,25 +92,21 @@ void DeadThread( DWORD tid )
     if( ti == NULL ) {
         return;
     }
-    ti->alive = FALSE;
+    ti->alive = false;
 }
 
 
-/*
+void RemoveAllThreads( void )
+/****************************
  * RemoveAllThreads - remove all threads associated with debugee process
  */
-void RemoveAllThreads( void )
 {
     thread_info *ti;
-    thread_info *next;
 
-    ti = ProcessInfo.thread_list;
-    while( ti != NULL ) {
-        next = ti->next;
+    while( (ti = ProcessInfo.thread_list) != NULL ) {
+        ProcessInfo.thread_list = ti->next;
         LocalFree( ti );
-        ti = next;
     }
-    ProcessInfo.thread_list = NULL;
 }
 
 trap_retval TRAP_THREAD( freeze )( void )
@@ -118,7 +118,6 @@ trap_retval TRAP_THREAD( freeze )( void )
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-
     ret->err = 0;
 
     ti = FindThread( acc->thread );
@@ -133,7 +132,7 @@ trap_retval TRAP_THREAD( freeze )( void )
             if( rc == -1 ) {
                 ret->err = 1;
             } else {
-                ti->suspended = TRUE;
+                ti->suspended = true;
             }
         }
     } else {
@@ -151,7 +150,6 @@ trap_retval TRAP_THREAD( thaw )( void )
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-
     ret->err = 0;
     ti = FindThread( acc->thread );
     if( ti != NULL ) {
@@ -160,7 +158,7 @@ trap_retval TRAP_THREAD( thaw )( void )
             if( rc == -1 ) {
                 ret->err = 1;
             } else {
-                ti->suspended = FALSE;
+                ti->suspended = false;
             }
         }
     } else {
@@ -177,9 +175,9 @@ trap_retval TRAP_THREAD( set )( void )
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
+    ret->err = 0;
 
     ret->old_thread = DebugeeTid;
-    ret->err = 0;
     if( acc->thread != 0 ) {
         ti = FindThread( acc->thread );
         if( ti != NULL ) {
@@ -200,7 +198,6 @@ trap_retval TRAP_THREAD( get_next )( void )
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-
     /*
      * get next pointer
      */
@@ -209,18 +206,13 @@ trap_retval TRAP_THREAD( get_next )( void )
     } else {
         ti = ti->next;
     }
-
     /*
      * find a live one
      */
-    for( ;; ) {
-        if( ti == NULL ) {
-            break;
-        }
+    for( ; ti != NULL; ti = ti->next ) {
         if( ti->alive ) {
             break;
         }
-        ti = ti->next;
     }
 
     if( ti == NULL ) {

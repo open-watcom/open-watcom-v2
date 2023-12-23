@@ -1,3 +1,5 @@
+tree_depth = 4
+
 proj_name = ide2make
 proj_type = cxx
 

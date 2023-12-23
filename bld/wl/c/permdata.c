@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -76,10 +76,10 @@ static char             *OldSymFile;
 static void             *AltDefData;
 static char             *IncStrTab;
 
-#define SEG_CARVE_SIZE          _2KB
-#define MOD_CARVE_SIZE          _5KB
-#define SDATA_CARVE_SIZE        _16KB
-#define SYM_CARVE_SIZE          _32KB
+#define SEG_CARVE_SIZE          _2K
+#define MOD_CARVE_SIZE          _5K
+#define SDATA_CARVE_SIZE        _16K
+#define SYM_CARVE_SIZE          _32K
 
 void ResetPermData( void )
 /************************/
@@ -432,7 +432,7 @@ static void FiniStringBlock( stringtable *strtab, size_t *size, void *info,
     size_t      rawsize;
 
     rawsize = GetStringTableSize( strtab );
-    *size = ROUND_UP( rawsize, SECTOR_SIZE );
+    *size = __ROUND_UP_SIZE( rawsize, SECTOR_SIZE );
     if( *size != rawsize ) {
         ZeroStringTable( strtab, *size - rawsize );
     }
@@ -1009,7 +1009,7 @@ void FreeSavedRelocs( void )
 void CleanPermData( void )
 /*******************************/
 {
-#ifndef NDEBUG
+#ifdef DEVBUILD
     if( (LinkFlags & LF_INC_LINK_FLAG) == 0 ) {
         CarveVerifyAllGone( CarveLeader, "seg_leader" );
         CarveVerifyAllGone( CarveModEntry, "mod_entry" );

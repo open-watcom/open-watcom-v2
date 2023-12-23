@@ -42,7 +42,6 @@
 #include "memlimit.h"
 #include "onexit.h"
 #include "dumpio.h"
-#include "envvar.h"
 #include "memmgt.h"
 
 
@@ -97,9 +96,10 @@ void    CGMemFini( void )
 /***********************/
 {
 #if _MEMORY_TRACKING & _FULL_TRACKING
-    char        buff[80];
+    const char  *envvar;
 
-    if( !GetEnvVar( "TRQUIET", buff, 7 ) ) {
+    envvar = FEGetEnv( "TRQUIET" );
+    if( envvar == NULL ) {
         _trmem_prt_list( Handle );
     }
     _trmem_close( Handle );

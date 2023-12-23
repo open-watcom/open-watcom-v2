@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,14 +44,12 @@ void *GetInPtr( trap_elen pos )     /* Absolute position */
     trap_elen       entries_left;
     in_mx_entry_p   entry;
 
-    entries_left = In_Mx_Num - 1;
     entry = In_Mx_Ptr;
-    for( ;; ) {
-        if( entries_left == 0 || pos < entry->len )
+    for( entries_left = In_Mx_Num - 1; entries_left > 0; entries_left-- ) {
+        if( pos < entry->len )
             break;
         pos -= entry->len;
         ++entry;
-        --entries_left;
     }
     return( (unsigned_8 *)entry->ptr + pos );
 }
@@ -61,38 +59,36 @@ void *GetOutPtr( trap_elen pos )    /* Absolute position */
     trap_elen       entries_left;
     mx_entry_p      entry;
 
-    entries_left = Out_Mx_Num - 1;
     entry = Out_Mx_Ptr;
-    for( ;; ) {
-        if( entries_left == 0 || pos < entry->len )
+    for( entries_left = Out_Mx_Num - 1; entries_left > 0; entries_left-- ) {
+        if( pos < entry->len )
             break;
         pos -= entry->len;
         ++entry;
-        --entries_left;
     }
     return( (unsigned_8 *)entry->ptr + pos );
 }
 
-trap_elen GetTotalSizeIn( void )
+size_t GetTotalSizeIn( void )
 {
     trap_elen       i;
-    trap_elen       len;
+    size_t          len;
 
     len = 0;
     for( i = 0; i < In_Mx_Num; i++ ) {
-         len += In_Mx_Ptr[i].len;
+        len += In_Mx_Ptr[i].len;
     }
     return( len );
 }
 
-trap_elen GetTotalSizeOut( void )
+size_t GetTotalSizeOut( void )
 {
     trap_elen       i;
-    trap_elen       len;
+    size_t          len;
 
     len = 0;
     for( i = 0; i < Out_Mx_Num; i++ ) {
-         len += Out_Mx_Ptr[i].len;
+        len += Out_Mx_Ptr[i].len;
     }
     return( len );
 }

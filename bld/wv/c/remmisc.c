@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,6 +41,7 @@
 #endif
 #include "dbgmem.h"
 #include "trpld.h"
+#include "trpcore.h"
 #include "dbgio.h"
 #include "strutil.h"
 #include "trapglbl.h"
@@ -66,7 +68,7 @@ trap_elen           MaxPacketLen;
 
 static void TrapFailed( void )
 {
-    KillTrap();
+    UnLoadTrap();
     StartupErr( LIT_ENG( ERR_REMOTE_LINK_BROKEN ) );
 }
 
@@ -122,7 +124,12 @@ void InitTrap( const char *parms )
         error = LoadDumbTrap( &ver );
     } else {
 #endif
-        error = LoadTrap( parms, buff, &ver );
+        switch( LoadTrap( parms, buff, &ver ) ) {
+        #define DIGS_ERROR(e,t) case e: error = t; break;
+        DIGS_ERRORS( "TRAP Loader: ", buff )
+        #undef DIGS_ERROR
+        default: error = DIGS_ERRORS_default( "TRAP Loader: " ); break;
+        }
 #if !defined( BUILD_RFX )
     }
 #endif
@@ -133,8 +140,8 @@ void InitTrap( const char *parms )
         StartupErr( buff );
     }
     acc.req = REQ_CONNECT;
-    acc.ver.major = TRAP_MAJOR_VERSION;
-    acc.ver.minor = TRAP_MINOR_VERSION;
+    acc.ver.major = TRAP_VERSION_MAJOR;
+    acc.ver.minor = TRAP_VERSION_MINOR;
     acc.ver.remote = false;
     in[0].ptr = &acc;
     in[0].len = sizeof( acc );
@@ -146,7 +153,7 @@ void InitTrap( const char *parms )
     TrapAccess( 1, in, 2, out );
     MaxPacketLen = ret.max_msg_size;
     if( buff[0] != NULLCHAR ) {
-        KillTrap();
+        UnLoadTrap();
         InitTrapError = true;
         StartupErr( buff );
     }
@@ -188,7 +195,7 @@ void RemoteSuspend( void )
     suspend_req         acc;
 
     acc.req = REQ_SUSPEND;
-    TrapSimpAccess( sizeof( acc ), &acc, 0, NULL );
+    TrapSimpleAccess( sizeof( acc ), &acc, 0, NULL );
 }
 
 void RemoteResume( void )
@@ -196,7 +203,7 @@ void RemoteResume( void )
     resume_req          acc;
 
     acc.req = REQ_RESUME;
-    TrapSimpAccess( sizeof( acc ), &acc, 0, NULL );
+    TrapSimpleAccess( sizeof( acc ), &acc, 0, NULL );
 }
 
 void RemoteErrMsg( sys_error err, char *msg )
@@ -205,7 +212,7 @@ void RemoteErrMsg( sys_error err, char *msg )
 
     acc.req = REQ_GET_ERR_TEXT;
     acc.err = err;
-    TrapSimpAccess( sizeof( acc ), &acc, MAX_ERR_MSG_SIZE, msg );
+    TrapSimpleAccess( sizeof( acc ), &acc, MAX_ERR_MSG_SIZE, msg );
 //    TrapErrTranslate( msg, MAX_ERR_MSG_SIZE );
 }
 
@@ -214,9 +221,9 @@ void FiniTrap( void )
     disconnect_req      acc;
 
     acc.req = REQ_DISCONNECT;
-    TrapSimpAccess( sizeof( acc ), &acc, 0, NULL );
+    TrapSimpleAccess( sizeof( acc ), &acc, 0, NULL );
     RestoreHandlers();
-    KillTrap();
+    UnLoadTrap();
     GrabHandlers();
 #if !defined( BUILD_RFX )
     FiniSuppServices();

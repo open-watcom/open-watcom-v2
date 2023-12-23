@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -107,7 +107,7 @@ static bool BlockUses( block *blk, hw_reg_set reg )
     instruction *ins;
     opcnt       i;
 
-    for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+    for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
         for( i = 0; i < ins->num_operands; i++ ) {
             if( OpRefsReg( ins->operands[i], reg ) ) {
                 return( true );
@@ -303,14 +303,14 @@ void FlowSave( hw_reg_set *preg )
     type_class_def      reg_type_class;
 
     HW_CAsgn( flowedRegs, HW_EMPTY );
-    if( _IsntModel( FLOW_REG_SAVES ) )
+    if( _IsntModel( CGSW_GEN_FLOW_REG_SAVES ) )
         return;
     if( !HaveDominatorInfo )
         return;
     // we can't do this if we have push's which are 'live' at the end of a block
     // - this flag is set when we see a push being generated for a call in a different
     //   block
-#if _TARGET & _TARG_INTEL
+#if _TARGET_INTEL
     if( CurrProc->targ.never_sp_frame )
         return;
 #endif
@@ -327,7 +327,7 @@ void FlowSave( hw_reg_set *preg )
         HW_Asgn( reg_info[curr_reg].reg, *curr_push );
         reg_info[curr_reg].save = NULL;
         reg_info[curr_reg].restore = NULL;
-#if _TARGET & _TARG_INTEL
+#if _TARGET_INTEL
         if( HW_COvlap( *curr_push, HW_xBP ) )
             continue;  // don't mess with BP - it's magical
 #endif
@@ -358,18 +358,18 @@ void FlowSave( hw_reg_set *preg )
         restore = reg_info[curr_reg].restore;
         if( ( save != NULL && save != HeadBlock ) && ( restore != NULL && !_IsBlkAttr( restore, BLK_RETURN ) ) ) {
             reg_type_class = WD;
-#if _TARGET & _TARG_INTEL
+#if _TARGET_INTEL
             if( IsSegReg( reg_info[curr_reg].reg ) ) {
                 reg_type_class = U2;
             }
 #endif
             ins = MakeUnary( OP_PUSH, AllocRegName( reg_info[curr_reg].reg ), NULL, reg_type_class );
             ResetGenEntry( ins );
-            PrefixIns( save->ins.hd.next, ins );
+            PrefixIns( save->ins.head.next, ins );
             ins = MakeUnary( OP_POP, NULL, AllocRegName( reg_info[curr_reg].reg ), reg_type_class );
             ins->num_operands = 0;
             ResetGenEntry( ins );
-            SuffixIns( restore->ins.hd.prev, ins );
+            SuffixIns( restore->ins.head.prev, ins );
             HW_TurnOff( *preg, reg_info[curr_reg].reg );
             HW_TurnOn( flowedRegs, reg_info[curr_reg].reg );
             FixStackDepth( save, restore );

@@ -83,10 +83,13 @@ static int ChkExtendedKbd( void )
     r.h.ah = 0x12;
     r.h.al = 0xff;
     intr( 0x16, &r );
-    if( r.h.al == 0xff ) return( 0 ); /* too many damn keys pressed! */
+    if( r.h.al == 0xff )
+        return( 0 ); /* too many damn keys pressed! */
     x = r.x.ax;
-    if( AL( x ) != ( RAL( x ) || LAL( x ) ) ) return( 0 );
-    if( CT( x ) != ( RCT( x ) || LCT( x ) ) ) return( 0 );
+    if( AL( x ) != ( RAL( x ) || LAL( x ) ) )
+        return( 0 );
+    if( CT( x ) != ( RCT( x ) || LCT( x ) ) )
+        return( 0 );
     return( 1 );
 }
 
@@ -273,10 +276,9 @@ USHORT DDosOpen( char PASPTR *name, USHORT PASPTR *hdl )
     r.h.al = 0;
     r.h.ah = 0x3d;
     intr( 0x21, &r );
-    if( r.x.flags & INTR_CF )
-        return( -1 );
-    *hdl = r.x.ax;
-    return( 0 );
+    if( (r.x.flags & INTR_CF) == 0 )
+        *hdl = r.x.ax;
+    return( (r.x.flags & INTR_CF) != 0 );
 }
 
 
@@ -306,11 +308,10 @@ USHORT DosRead( USHORT hdl, char __far *buff, USHORT len, USHORT PASPTR *readlen
     intr( 0x21, &r );
     if( r.x.flags & INTR_CF ) {
         *readlen = 0;
-        return( -1 );
     } else {
         *readlen = r.x.ax;
-        return( 0 );
     }
+    return( (r.x.flags & INTR_CF) != 0 );
 }
 
 USHORT DosWrite( USHORT hdl, char __far *buff, USHORT len, USHORT PASPTR *writelen )
@@ -323,11 +324,10 @@ USHORT DosWrite( USHORT hdl, char __far *buff, USHORT len, USHORT PASPTR *writel
     intr( 0x21, &r );
     if( r.x.flags & INTR_CF ) {
         *writelen = 0;
-        return( -1 );
     } else {
         *writelen = r.x.ax;
-        return( 0 );
     }
+    return( (r.x.flags & INTR_CF) != 0 );
 }
 
 USHORT DDosAllocSeg( unsigned size, int PASPTR *segp )
@@ -410,7 +410,7 @@ USHORT DDosFindFirst( char PASPTR *spec, int attr, DIRINFO PASPTR *buf )
         buf->attrFile = ((WIN32_FIND_DATA*)buf)->dwFileAttributes;
         findHandle = r.x.ax;
     }
-    return( ( r.x.flags & INTR_CF ) != 0 );
+    return( (r.x.flags & INTR_CF) != 0 );
 }
 
 USHORT DDosFindNext( DIRINFO PASPTR *buf )
@@ -457,17 +457,15 @@ USHORT DosQCurDir( int drive_num, char PASPTR *buff, int PASPTR *size )
     r.x.si = _FP_OFF( buff );
     r.x.ds = _FP_SEG( buff );
     intr( 0x21, &r );
-    if( r.x.flags & INTR_CF ) {
-        return( 1 );
-    } else {
+    if( (r.x.flags & INTR_CF) == 0 ) {
         length = 0;
         while( *buff != '\0' ) {
             ++length;
             ++buff;
         }
         *size = length;
-        return( 0 );
     }
+    return( (r.x.flags & INTR_CF) != 0 );
 }
 
 USHORT DDosChDir( char PASPTR *dir )
@@ -491,7 +489,7 @@ USHORT DDosChDir( char PASPTR *dir )
         r.x.dx = _FP_OFF( dir );
         intr( 0x21, &r );
     }
-    return( ( r.x.flags & INTR_CF ) != 0 );
+    return( (r.x.flags & INTR_CF) != 0 );
 }
 
 #endif

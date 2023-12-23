@@ -33,6 +33,7 @@
 #include "wlib.h"
 #include "ar.h"
 #include "convert.h"
+#include "roundmac.h"
 
 #include "clibext.h"
 
@@ -97,7 +98,7 @@ void LibWalk( libfile io, const char *name, void (*rtn)( arch_header *, libfile 
             MemFree( arch.name );
             MemFree( arch.ffname );
         }
-        Round2var( arch.size );
+        arch.size = __ROUND_UP_SIZE_EVEN( arch.size );
         LibSeek( io, pos + arch.size, SEEK_SET );
     }
     MemFree( arch.fnametab );
@@ -139,7 +140,7 @@ void OMFLibWalk( libfile io, char *name, void (*rtn)( arch_header *arch, libfile
         LibSeek( io, offset, SEEK_SET );
         rtn( &arch, io );
         offset = LibTell( io );
-        offset = Round( offset, pagelen );
+        offset = __ROUND_UP_SIZE( offset, pagelen );
         LibSeek( io, offset, SEEK_SET );
     }
 }

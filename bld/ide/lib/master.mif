@@ -1,3 +1,5 @@
+tree_depth = 4
+
 proj_name = idelib
 name      = ide
 

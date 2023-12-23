@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,59 +30,6 @@
 *
 ****************************************************************************/
 
-
-typedef struct  {
-/*  0 */unsigned long   Pid;        /* Debuggee Process ID */
-/*  4 */unsigned long   Tid;        /* Debuggee Thread ID */
-/*  8 */long            Cmd;        /* Command or Notification */
-/*  C */long            Value;      /* Generic Data Value */
-/* 10 */unsigned long   Addr;       /* Debuggee Address */
-/* 14 */unsigned long   Buffer;     /* Debugger Buffer Address */
-/* 18 */unsigned long   Len;        /* Length of Range */
-/* 1C */unsigned long   Index;      /* Generic Identifier Index */
-/* 20 */unsigned long   MTE;        /* Module Table Entry Handle */
-/* 24 */unsigned long   EAX;        /* Register Set */
-/* 28 */unsigned long   ECX;
-/* 2C */unsigned long   EDX;
-/* 30 */unsigned long   EBX;
-/* 34 */unsigned long   ESP;
-/* 38 */unsigned long   EBP;
-/* 3C */unsigned long   ESI;
-/* 40 */unsigned long   EDI;
-/* 44 */unsigned long   EFlags;
-/* 48 */unsigned long   EIP;
-/* 4C */unsigned long   CSLim;      /* Byte Granular Limits */
-/* 50 */unsigned long   CSBase;     /* Byte Granular Base */
-/* 54 */unsigned char   CSAcc;      /* Access Bytes */
-/* 55 */unsigned char   CSAtr;      /* Attribute Bytes */
-/* 56 */unsigned short  CS;
-/* 58 */unsigned long   DSLim;
-/* 5C */unsigned long   DSBase;
-/* 60 */unsigned char   DSAcc;
-/* 61 */unsigned char   DSAtr;
-/* 62 */unsigned short  DS;
-/* 64 */unsigned long   ESLim;
-/* 68 */unsigned long   ESBase;
-/* 6C */unsigned char   ESAcc;
-/* 6D */unsigned char   ESAtr;
-/* 6E */unsigned short  ES;
-/* 70 */unsigned long   FSLim;
-/* 74 */unsigned long   FSBase;
-/* 78 */unsigned char   FSAcc;
-/* 79 */unsigned char   FSAtr;
-/* 7A */unsigned short  FS;
-/* 7C */unsigned long   GSLim;
-/* 80 */unsigned long   GSBase;
-/* 84 */unsigned char   GSAcc;
-/* 85 */unsigned char   GSAtr;
-/* 86 */unsigned short  GS;
-/* 88 */unsigned long   SSLim;
-/* 8C */unsigned long   SSBase;
-/* 90 */unsigned char   SSAcc;
-/* 91 */unsigned char   SSAtr;
-/* 92 */unsigned short  SS;
-/* 94 */unsigned short  segv;
-} dos_debug;
 
 #define DBG_C_Null              0       /* Null */
 #define DBG_C_ReadMem           1       /* Read Word */
@@ -139,33 +87,84 @@ typedef struct  {
 #define DBG_N_SStep             -101
 #define DBG_N_Signal            -102
 
-#define XCPT_DIV        1
-#define XCPT_OVERFLOW   2
-#define XCPT_BOUND      3
-#define XCPT_OP         4
-#define XCPT_GP         5
-#define XCPT_FPERR      6
-#define XCPT_GPF        7
-#define XCPT_GPAF       8
-#define XCPT_1X_PARITY  9
+#define XCPT_DIV                1
+#define XCPT_OVERFLOW           2
+#define XCPT_BOUND              3
+#define XCPT_OP                 4
+#define XCPT_GP                 5
+#define XCPT_FPERR              6
+#define XCPT_GPF                7
+#define XCPT_GPAF               8
+#define XCPT_1X_PARITY          9
 
-extern unsigned int CallDosDebug( dos_debug __far *ptr );
-extern ULONG MakeLocalPtrFlat( void __far *ptr );
-extern ULONG MakeFlatPointer( PVOID ptr );
-int IsFlatSeg( USHORT seg );
+#define DBG_L_386               1
 
-#define DBG_L_386       1
+#define DBG_W_Global            1
+#define DBG_W_Local             2
+#define DBG_W_Execute           0x00010000
+#define DBG_W_Write             0x00020000
+#define DBG_W_ReadWrite         0x00030000
 
-#define DBG_W_Global    1
-#define DBG_W_Local     2
-#define DBG_W_Execute   0x00010000
-#define DBG_W_Write     0x00020000
-#define DBG_W_ReadWrite 0x00030000
-
-#define DBG_CO_387      1
-#define DBG_CO_SIZE     108
+#define DBG_CO_387              1
+#define DBG_CO_SIZE             108
 
 #define DBG_X_PRE_FIRST_CHANCE  0
 #define DBG_X_FIRST_CHANCE      1
 #define DBG_X_LAST_CHANCE       2
 #define DBG_X_STACK_INVALID     3
+
+typedef struct  {
+/*  0 */unsigned long   Pid;        /* Debuggee Process ID */
+/*  4 */unsigned long   Tid;        /* Debuggee Thread ID */
+/*  8 */long            Cmd;        /* Command or Notification */
+/*  C */long            Value;      /* Generic Data Value */
+/* 10 */unsigned long   Addr;       /* Debuggee Address */
+/* 14 */unsigned long   Buffer;     /* Debugger Buffer Address */
+/* 18 */unsigned long   Len;        /* Length of Range */
+/* 1C */unsigned long   Index;      /* Generic Identifier Index */
+/* 20 */unsigned long   MTE;        /* Module Table Entry Handle */
+/* 24 */unsigned long   EAX;        /* Register Set */
+/* 28 */unsigned long   ECX;
+/* 2C */unsigned long   EDX;
+/* 30 */unsigned long   EBX;
+/* 34 */unsigned long   ESP;
+/* 38 */unsigned long   EBP;
+/* 3C */unsigned long   ESI;
+/* 40 */unsigned long   EDI;
+/* 44 */unsigned long   EFlags;
+/* 48 */unsigned long   EIP;
+/* 4C */unsigned long   CSLim;      /* Byte Granular Limits */
+/* 50 */unsigned long   CSBase;     /* Byte Granular Base */
+/* 54 */unsigned char   CSAcc;      /* Access Bytes */
+/* 55 */unsigned char   CSAtr;      /* Attribute Bytes */
+/* 56 */unsigned short  CS;
+/* 58 */unsigned long   DSLim;
+/* 5C */unsigned long   DSBase;
+/* 60 */unsigned char   DSAcc;
+/* 61 */unsigned char   DSAtr;
+/* 62 */unsigned short  DS;
+/* 64 */unsigned long   ESLim;
+/* 68 */unsigned long   ESBase;
+/* 6C */unsigned char   ESAcc;
+/* 6D */unsigned char   ESAtr;
+/* 6E */unsigned short  ES;
+/* 70 */unsigned long   FSLim;
+/* 74 */unsigned long   FSBase;
+/* 78 */unsigned char   FSAcc;
+/* 79 */unsigned char   FSAtr;
+/* 7A */unsigned short  FS;
+/* 7C */unsigned long   GSLim;
+/* 80 */unsigned long   GSBase;
+/* 84 */unsigned char   GSAcc;
+/* 85 */unsigned char   GSAtr;
+/* 86 */unsigned short  GS;
+/* 88 */unsigned long   SSLim;
+/* 8C */unsigned long   SSBase;
+/* 90 */unsigned char   SSAcc;
+/* 91 */unsigned char   SSAtr;
+/* 92 */unsigned short  SS;
+/* 94 */unsigned short  segv;
+} dos_debug;
+
+extern ULONG    MakeFlatPointer( PVOID ptr );
+extern int      IsFlatSeg( USHORT seg );

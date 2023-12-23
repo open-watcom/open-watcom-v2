@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -56,7 +56,7 @@
 #define SEGMENT         (0x0001)
 
 typedef struct {
-    char        live;
+    BOOL        live;
     DWORD       id;
     HANDLE      th;
     unsigned    SampleIndex;
@@ -274,57 +274,54 @@ static void internalErrorMsg( int msg )
 /*
  * seekRead - seek to a specified spot in the file, and read some data
  */
-static BOOL seekRead( HANDLE handle, DWORD newpos, void *buff, WORD size )
+static bool seekRead( HANDLE handle, DWORD newpos, void *buff, WORD size )
 {
     int         rc;
     DWORD       bytes;
 
     if( SetFilePointer( handle, newpos, 0, SEEK_SET ) == INVALID_SET_FILE_POINTER ) {
-        return( FALSE );
+        return( false );
     }
     rc = ReadFile( handle, buff, size, &bytes, NULL );
     if( !rc ) {
-        return( FALSE );
+        return( false );
     }
     if( bytes != size ) {
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 
 } /* seekRead */
 
 /*
  * getPEHeader - get the header of the .EXE
  */
-static int getPEHeader( HANDLE handle, pe_header *peh )
+static int getPEHeader( HANDLE handle, pe_exe_header *pehdr )
 {
     WORD                data;
-    WORD                sig;
-    DWORD               nh_offset;
+    DWORD               signature;
+    DWORD               ne_header_off;
 
-    if( !seekRead( handle, 0x00, &data, sizeof( data ) ) ) {
-        return( FALSE );
-    }
-    if( data != DOS_SIGNATURE ) {
+    if( !seekRead( handle, 0, &data, sizeof( data ) )
+      || data != DOS_SIGNATURE ) {
         return( FALSE );
     }
 
-    if( !seekRead( handle, 0x18, &data, sizeof( data ) ) ) {
+    if( !seekRead( handle, DOS_RELOC_OFFSET, &data, sizeof( data ) )
+      || !NE_HEADER_FOLLOWS( data ) ) {
         return( FALSE );
     }
 
-    if( !seekRead( handle, 0x3c, &nh_offset, sizeof( unsigned_32 ) ) ) {
+    if( !seekRead( handle, NE_HEADER_OFFSET, &ne_header_off, sizeof( ne_header_off ) ) ) {
         return( FALSE );
     }
 
-    if( !seekRead( handle, nh_offset, &sig, sizeof( sig ) ) ) {
-        return( FALSE );
-    }
-    if( sig != PE_SIGNATURE ) {
+    if( !seekRead( handle, ne_header_off, &signature, sizeof( signature ) )
+      || signature != PE_SIGNATURE ) {
         return( FALSE );
     }
 
-    if( !seekRead( handle, nh_offset, peh, sizeof( pe_header ) ) ) {
+    if( !seekRead( handle, ne_header_off, pehdr, sizeof( *pehdr ) ) ) {
         return( FALSE );
     }
     return( TRUE );
@@ -334,25 +331,23 @@ static int getPEHeader( HANDLE handle, pe_header *peh )
 /*
  * codeLoad - handle the loading of a new DLL/EXE
  */
-static void codeLoad( HANDLE handle, DWORD base, const char *name, samp_block_kinds kind )
+static void codeLoad( HANDLE handle, DWORD image_base, const char *name, samp_block_kinds kind )
 {
     seg_offset          ovl;
     int                 i;
     pe_object           obj;
-    DWORD               offset;
     DWORD               bytes;
-    pe_header           peh;
+    pe_exe_header       pehdr;
 
     ovl.offset = 0;
     ovl.segment = 0;
     WriteCodeLoad( ovl, name, kind );
-    if( !getPEHeader( handle, &peh ) ) {
+    if( !getPEHeader( handle, &pehdr ) ) {
         return;
     }
-    for( i = 0; i < peh.num_objects; i++ ) {
+    for( i = 0; i < pehdr.fheader.num_objects; i++ ) {
         ReadFile( handle, &obj, sizeof( obj ), &bytes, NULL );
-        offset = (DWORD)base + obj.rva;
-        WriteAddrMap( i + 1, SEGMENT, offset );
+        WriteAddrMap( i + 1, SEGMENT, (DWORD)image_base + obj.rva );
     }
 
 } /* codeLoad */
@@ -365,7 +360,7 @@ static void newThread( DWORD id, HANDLE th )
     threadInfo = realloc( threadInfo, ( threadCount + 1 ) * sizeof( thread_info ) );
     threadInfo[threadCount].id = id;
     threadInfo[threadCount].th = th;
-    threadInfo[threadCount].live = TRUE;
+    threadInfo[threadCount].live = true;
     threadInfo[threadCount].index = threadCount;
 
     AllocSamples( id );
@@ -389,7 +384,7 @@ static void deadThread( DWORD id )
 
     ti = getThreadInfo( id );
     if( ti != NULL ) {
-        ti->live = FALSE;
+        ti->live = false;
     }
 
 } /* deadThread */
@@ -479,13 +474,13 @@ static DWORD WINAPI TimerThread( LPVOID parms )
         if( doneSample ) {
             break;
         }
-        timeOut = TRUE;
+        timeOut = true;
         for( i = 0; i < threadCount; i++ ) {
             if( threadInfo[i].live ) {
                 myGetThreadContext( threadInfo[i].id, &con );
                 Fir = LODWORD( con.Fir );
                 RecordSample( Fir, SEGMENT, threadInfo[i].id );
-                timeOut = FALSE;
+                timeOut = false;
             }
         }
     }
@@ -554,7 +549,7 @@ static unsigned GetString( int unicode, LPVOID p, char *buff, unsigned max )
     return( len );
 }
 
-static int GetDllName( LOAD_DLL_DEBUG_INFO *ld, char *buff, unsigned max )
+static bool GetDllName( LOAD_DLL_DEBUG_INFO *ld, char *buff, unsigned max )
 {
     LPVOID      name;
     DWORD       len;
@@ -562,22 +557,22 @@ static int GetDllName( LOAD_DLL_DEBUG_INFO *ld, char *buff, unsigned max )
 
     //NYI: spiffy up to scrounge around in the image
     if( ld->lpImageName == 0 )
-        return( FALSE );
+        return( false );
     ReadProcessMemory( processHandle, ld->lpImageName, &name, sizeof( name ), &len );
     if( len != sizeof( name ) )
-        return( FALSE );
+        return( false );
     if( name == 0 )
-        return( FALSE );
+        return( false );
     len = GetString( ld->fUnicode, name, buff, max );
     if( len == 0 )
-        return( FALSE );
+        return( false );
     if( ld->fUnicode ) {
         for( p = (wchar_t *)buff; *p != '\0'; ++p, ++buff ) {
             *buff = *p;
         }
         *buff = '\0';
     }
-    return( TRUE );
+    return( true );
 }
 
 /*
@@ -613,7 +608,7 @@ void StartProg( const char *cmd, const char *prog, const char *full_args, char *
 
     OutputMsgParmNL( MSG_SAMPLE_1, prog );
 
-    waiting_for_first_bp = TRUE;
+    waiting_for_first_bp = true;
     continue_how = DBG_CONTINUE;
 
     for( ;; ) {
@@ -630,14 +625,14 @@ void StartProg( const char *cmd, const char *prog, const char *full_args, char *
                     myGetThreadContext( tid, &con );
                     Fir = LODWORD( con.Fir );
                     RecordSample( Fir, SEGMENT, tid );
-                    timeOut = FALSE;
+                    timeOut = false;
                 }
                 break;
             case STATUS_BREAKPOINT:
                 /* Skip past the breakpoint in the startup code */
                 if( waiting_for_first_bp ) {
                     SkipBreakpoint( tid );
-                    waiting_for_first_bp = FALSE;
+                    waiting_for_first_bp = false;
                 }
                 break;
             case STATUS_DATATYPE_MISALIGNMENT:
@@ -663,7 +658,7 @@ void StartProg( const char *cmd, const char *prog, const char *full_args, char *
                     continue_how = DBG_EXCEPTION_NOT_HANDLED;
                 } else {
                     OutputMsgNL( MSG_SAMPLE_4 );
-                    doneSample = TRUE;
+                    doneSample = true;
                     TerminateProcess( processHandle, 0 );
                     report();
                     return;
@@ -689,7 +684,7 @@ void StartProg( const char *cmd, const char *prog, const char *full_args, char *
             deadThread( debugEvent.dwThreadId );
             break;
         case EXIT_PROCESS_DEBUG_EVENT:
-            doneSample = TRUE;
+            doneSample = true;
 //          TerminateProcess( processHandle, 0 ); - already gone!!
             report();
             return;

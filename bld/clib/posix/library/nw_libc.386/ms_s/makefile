@@ -6,4 +6,4 @@ system     = nw_libc
 linkage    = static
 mthreaded=1
 
-!include $(clib_dir)/mklib.mif
+!include ../../../../mklib.mif

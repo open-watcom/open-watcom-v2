@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,8 +34,8 @@
 #ifndef WDIS_REFPROC_INCLUDED
 #define WDIS_REFPROC_INCLUDED
 
-extern return_val       CreateUnnamedLabelRef( orl_sec_handle, label_entry, dis_sec_offset );
-extern return_val       CreateAbsoluteLabelRef( orl_sec_handle, label_entry, dis_sec_offset );
+extern return_val       CreateUnnamedLabelRef( orl_sec_handle, label_entry, dis_sec_offset, orl_reloc_type reltype );
+extern return_val       CreateAbsoluteLabelRef( orl_sec_handle, label_entry, dis_sec_offset, orl_reloc_type reltype );
 extern orl_return       DealWithRelocSection( orl_sec_handle );
 extern orl_return       CreateNamedLabelRef( orl_reloc );
 

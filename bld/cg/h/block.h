@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -53,7 +54,7 @@
 /* aligned */
 #define MAX_INTERVAL_DEPTH      255U
 
-typedef unsigned_32             block_flags;
+typedef uint_32                 block_flags;
 
 typedef enum {
         BLOCK_LABEL_DIES        = 0x01,
@@ -130,7 +131,7 @@ typedef struct data_flow_def {
 } data_flow_def;
 
 typedef struct block_ins {
-        struct ins_header       hd;
+        struct ins_header       head;
         struct block            *blk;
 } block_ins;
 
@@ -169,7 +170,7 @@ typedef struct block {
         block_num               inputs;         /* number of input edges */
         block_num               targets;        /* number of target blocks */
         block_class             class;
-        signed_32               iterations;
-        unsigned_32             unroll_count;
+        int_32                  iterations;
+        uint_32                 unroll_count;
         struct block_edge       edge[1];
 } block;

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -83,7 +83,7 @@ void WriteNumeric( const char *msg, unsigned long num )
     char    buf[ 11 ];
 
     WriteMsg( msg );
-    ultoa( num, buf, 10 );
+    sprintf( buf, "%lu", num );
     WriteMsg( buf );
     write( STDOUT_FILENO, "\n", 1 );
 }

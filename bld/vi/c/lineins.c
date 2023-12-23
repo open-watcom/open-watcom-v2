@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -93,7 +94,7 @@ vi_rc InsertLinesAtCursor( fcb_list *fcblist, undo_stack *us )
     tLine = fcblist->head->lines.head;
     fcblist->head->lines.head = fcblist->head->lines.head->next;
     fcblist->head->lines.head->prev = NULL;
-    MemFree( tLine );
+    LineFree( tLine );
     fcblist->head->non_swappable = false;
 
     // add rest of lines of buffer & done

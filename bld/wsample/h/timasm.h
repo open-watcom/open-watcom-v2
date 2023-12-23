@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,13 +34,13 @@ typedef void __based( __segname( "_CODE" ) ) (*report_fn_ptr)( void );
 
 typedef struct pblock {
     seg         envstring;
-    seg_offset  commandln;
-    seg_offset  fcb01;
-    seg_offset  fcb02;
-    seg_offset  startsssp;
-    seg_offset  startcsip;
+    far_address commandln;
+    far_address fcb01;
+    far_address fcb02;
+    far_address startsssp;
+    far_address startcsip;
 } pblock;
 
 extern unsigned short   __near GetPSP( void );
 extern void             __near DOSLoadProg( const char __near *, pblock __near *, report_fn_ptr );
-extern void             __far DOSRunProg( seg_offset __near * );
+extern void             __far DOSRunProg( far_address __near * );

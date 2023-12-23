@@ -21,7 +21,7 @@ OutAddr df ?
 decode_c_handle dw ?
 ;
         align 4
-decode_c_Buffer db size v86CallStruc dup (?)
+decode_c_buffer db size v86CallStruc dup (?)
 ;
         align 4
 decode_c_head   decode_c_struc <>
@@ -160,7 +160,7 @@ DecodeCWC       proc    near
         mov     ds,cs:apiDDSeg
         assume ds:_apiCode
         mov     CWCStack,esp            ;Set for error exit.
-        mov     Decode_c_Handle,bx      ;Store the handle.
+        mov     decode_c_handle,bx      ;Store the handle.
         mov     d[OutAddr],edi  ;Store destination.
         mov     w[OutAddr+4],es ;/
 ;
@@ -491,7 +491,7 @@ dec2_FB_2:
         mov     ax,decode_c_handle
         mov     RealRegsStruc.Real_EBX[edi],eax
         mov     bl,21h
-        sys     IntXX           ;fill the buffer again.
+        Sys     IntXX           ;fill the buffer again.
         test    RealRegsStruc.Real_Flags[edi],1
         jnz     dec2_read_error
         mov     eax,RealRegsStruc.Real_EAX[edi]

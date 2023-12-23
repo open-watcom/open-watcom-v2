@@ -4,4 +4,4 @@ model     = mm
 system    = msdos
 linkage   = static
 
-!include ../../doslfn.mif
+!include ../../../../doslfn.mif

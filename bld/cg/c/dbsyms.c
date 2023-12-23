@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,10 +41,10 @@
 #include "makeins.h"
 #include "objout.h"
 #include "dbsyms.h"
-#ifndef NDEBUG
+#ifdef DEVBUILD
 #include "echoapi.h"
 #endif
-#if _TARGET & ( _TARG_8086 | _TARG_80386 )
+#if _TARGET_INTEL
 #include "wvsyms.h"
 #endif
 #include "dw.h"
@@ -92,27 +92,27 @@ uint    _CGAPI DBSrcFile( cchar_ptr fname )
     fname_lst   *curr;
     fname_lst   **lnk;
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
     EchoAPI( "DBSrcFile( %c )", fname );
 #endif
-    len = strlen( fname ) + 1;
     index = 0;
     for( lnk = &DBFiles.lst; (curr = *lnk) != NULL; lnk = &curr->next ) {
-        if( memcmp( fname, curr->fname, len ) == 0 ) {
-#ifndef NDEBUG
+        if( strcmp( fname, curr->fname ) == 0 ) {
+#ifdef DEVBUILD
             EchoAPI( " -> %i\n", index );
 #endif
             return( index );
         }
         ++index;
     }
+    len = strlen( fname ) + 1;
     curr = CGAlloc( sizeof( *curr ) - 1 + len );
     curr->len = len;
     curr->next = NULL;
-    memcpy( curr->fname, fname, len );
+    strcpy( curr->fname, fname );
     ++DBFiles.count;
     *lnk = curr;
-#ifndef NDEBUG
+#ifdef DEVBUILD
     EchoAPI( " -> %i\n", index );
 #endif
     return( index );
@@ -374,15 +374,15 @@ void    InitDbgInfo( void )
     SrcFileNoInit();
     DBNested( false ); /* set nesting */
     SourceCueInit( &LineInfo );
-    fno = DBSrcFile( FEAuxInfo( NULL, SOURCE_NAME ) );
+    fno = DBSrcFile( FEAuxInfo( NULL, FEINF_SOURCE_NAME ) );
 //    idx = CueAdd( fno, 1, 1 );
     CueAdd( fno, 1, 1 );
     SrcLine = 1;
-    if( _IsModel( DBG_DF ) ) {
+    if( _IsModel( CGSW_GEN_DBG_DF ) ) {
         DFInitDbgInfo();
-    } else if( _IsModel( DBG_CV ) ) {
+    } else if( _IsModel( CGSW_GEN_DBG_CV ) ) {
         CVInitDbgInfo();
-#if _TARGET & ( _TARG_8086 | _TARG_80386 )
+#if _TARGET_INTEL
     } else {
         WVInitDbgInfo();
 #endif
@@ -395,11 +395,11 @@ void    FiniDbgInfo( void )
 {
     DBSrcFileFini();
     SourceCueFini( &LineInfo );
-    if( _IsModel( DBG_DF ) ) {
+    if( _IsModel( CGSW_GEN_DBG_DF ) ) {
         DFFiniDbgInfo();
-    } else if( _IsModel( DBG_CV ) ) {
+    } else if( _IsModel( CGSW_GEN_DBG_CV ) ) {
         CVFiniDbgInfo();
-#if _TARGET & ( _TARG_8086 | _TARG_80386 )
+#if _TARGET_INTEL
     } else {
         WVFiniDbgInfo();
 #endif
@@ -410,7 +410,7 @@ void    FiniDbgInfo( void )
 void    _CGAPI DBLineNum( uint no )
 /*********************************/
 {
-#ifndef NDEBUG
+#ifdef DEVBUILD
     EchoAPI( "\nDBLineNum( %i )\n", no );
 #endif
     SrcLine = no;
@@ -423,12 +423,12 @@ void _CGAPI     DBSrcCue( uint fno, uint line, uint col )
     bool        hasxcue;
 //    const char  *fname;
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
     EchoAPI( "\nDBsrcCue( %i, %i, %i )\n", fno, line, col );
 #endif
 //  fname = SrcFNoFind( fno );
 //  printf( "in %s %d %d\n", fname, line, col );
-    hasxcue =  _IsntModel( DBG_TYPES ); // Just OMF line nums
+    hasxcue =  _IsntModel( CGSW_GEN_DBG_TYPES ); // Just OMF line nums
     if( hasxcue ) {
         if( fno == 0 && col == 1 ) {
             DBLineNum( line );
@@ -442,12 +442,12 @@ void _CGAPI     DBSrcCue( uint fno, uint line, uint col )
 void _CGAPI DBGenStMem( cg_sym_handle sym, dbg_loc loc )
 /******************************************************/
 {
-#ifndef NDEBUG
+#ifdef DEVBUILD
     EchoAPI( "DBGenStMem( %s,%i)\n", sym, loc );
 #endif
-    if( _IsModel( DBG_DF ) ) {
+    if( _IsModel( CGSW_GEN_DBG_DF ) ) {
         DFGenStatic( sym, loc );
-    } else if( _IsModel( DBG_CV ) ) {
+    } else if( _IsModel( CGSW_GEN_DBG_CV ) ) {
         CVGenStatic( sym, loc, true );
     } else {
     }
@@ -485,10 +485,10 @@ void _CGAPI DBGenSym( cg_sym_handle sym, dbg_loc loc, int scoped )
     fe_attr     attr;
     dbg_local   *lcl;
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
     EchoAPI( "DBGenSym( %s, %i, %i )\n", sym, loc, scoped );
 #endif
-    if( _IsModel( DBG_LOCALS ) ) {
+    if( _IsModel( CGSW_GEN_DBG_LOCALS ) ) {
         attr = FEAttr( sym );
         if( (attr & FE_IMPORT) == 0 ) {
             if( attr & FE_PROC ) {
@@ -496,7 +496,7 @@ void _CGAPI DBGenSym( cg_sym_handle sym, dbg_loc loc, int scoped )
                 CurrProc->targ.debug = CGAlloc( sizeof( dbg_rtn ) );
                 memset( CurrProc->targ.debug, 0, sizeof( dbg_rtn ) );
                 CurrProc->targ.debug->parms = NULL;
-                CurrProc->targ.debug->reeturn = LocDupl( loc );
+                CurrProc->targ.debug->return_loc = LocDupl( loc );
                 CurrProc->targ.debug->obj_type = DBG_NIL_TYPE;
                 CurrProc->targ.debug->obj_loc = NULL;
                 CurrProc->targ.debug->rtn_blk = MkBlock();
@@ -507,11 +507,11 @@ void _CGAPI DBGenSym( cg_sym_handle sym, dbg_loc loc, int scoped )
                 lcl->kind = DBG_SYM_VAR;
                 AddLocal( &CurrProc->targ.debug->blk->locals, lcl );
             } else {
-                if( _IsModel( DBG_DF ) ) {
+                if( _IsModel( CGSW_GEN_DBG_DF ) ) {
                     DFGenStatic( sym, loc );
-                } else if( _IsModel( DBG_CV ) ) {
+                } else if( _IsModel( CGSW_GEN_DBG_CV ) ) {
                     CVGenStatic( sym, loc, false );
-#if _TARGET & ( _TARG_8086 | _TARG_80386 )
+#if _TARGET_INTEL
                 } else {
                     WVGenStatic( sym , loc );
 #endif
@@ -530,10 +530,10 @@ void    _CGAPI DBModSym( cg_sym_handle sym, cg_type indirect )
 
     /* unused parameters */ (void)indirect;
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
     EchoAPI( "DBModSym( %s, %t )\n",  sym, indirect );
 #endif
-    if( _IsModel( DBG_LOCALS ) ) {
+    if( _IsModel( CGSW_GEN_DBG_LOCALS ) ) {
         attr = FEAttr( sym );
         if( (attr & FE_IMPORT) == 0 ) {
             if( attr & FE_PROC ) {
@@ -554,16 +554,16 @@ void _CGAPI DBObject( dbg_type tipe, dbg_loc loc, cg_type ptr_type )
 {
     /* unused parameters */ (void)ptr_type;
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
     EchoAPI( "DBObject( %i, %i, %t )\n", tipe, loc, ptr_type );
 #endif
     CurrProc->targ.debug->obj_type = tipe;
     CurrProc->targ.debug->obj_loc = LocDupl( loc );
-    if( _IsModel( DBG_DF ) ) {
+    if( _IsModel( CGSW_GEN_DBG_DF ) ) {
         //
-    } else if( _IsModel( DBG_CV ) ) {
+    } else if( _IsModel( CGSW_GEN_DBG_CV ) ) {
         //
-#if _TARGET & ( _TARG_8086 | _TARG_80386 )
+#if _TARGET_INTEL
     } else {
         WVObjectPtr( ptr_type );
 #endif
@@ -581,12 +581,12 @@ void    DBAllocReg( name *reg, name *temp )
 void _CGAPI DBTypeDef( cchar_ptr nm, dbg_type tipe )
 /**************************************************/
 {
-#ifndef NDEBUG
+#ifdef DEVBUILD
     EchoAPI( "DBTypeDef( %c, %t )\n", nm, tipe );
 #endif
-    if( _IsModel( DBG_DF ) ) {
+    if( _IsModel( CGSW_GEN_DBG_DF ) ) {
         DFTypedef( nm, tipe );
-    } else if( _IsModel( DBG_CV ) ) {
+    } else if( _IsModel( CGSW_GEN_DBG_CV ) ) {
         CVTypedef( nm, tipe );
     } else {
     }
@@ -600,7 +600,7 @@ void    _CGAPI DBLocalSym( cg_sym_handle sym, cg_type indirect )
 
     /* unused parameters */ (void)indirect;
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
     EchoAPI( "DBLocalSym( %s, %t )\n", sym, indirect );
 #endif
     if( CurrProc->targ.debug != NULL ) {
@@ -619,11 +619,12 @@ void    _CGAPI DBLocalType( cg_sym_handle sym, bool kind )
 {
     dbg_local   *lcl;
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
     EchoAPI( "DBLocalType( %s, %i)\n", sym, kind );
 #endif
-    if( _IsModel( DBG_LOCALS ) ) {
-        if( _IsModel( DBG_CV | DBG_DF ) ) {
+    if( _IsModel( CGSW_GEN_DBG_LOCALS ) ) {
+        if( _IsModel( CGSW_GEN_DBG_CV )
+          || _IsModel( CGSW_GEN_DBG_DF ) ) {
             lcl = CGAlloc( sizeof( dbg_local ) );
             lcl->sym = sym;
             lcl->loc = NULL;
@@ -671,7 +672,7 @@ dbg_block *DoDBBegBlock( int fast_codegen )
 void _CGAPI     DBBegBlock( void )
 /********************************/
 {
-#ifndef NDEBUG
+#ifdef DEVBUILD
     EchoAPI( "DBBegBlock()\n" );
 #endif
     DoDBBegBlock( 0 );
@@ -683,7 +684,7 @@ void    DoDBEndBlock( int fast_codegen )
 {
     dbg_block   *blk;
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
     EchoAPI( "DBEndBlock()\n" );
 #endif
     if( CurrProc->targ.debug != NULL ) {
@@ -705,11 +706,11 @@ void _CGAPI     DBEndBlock( void )
 void    DbgSetBase( void )
 /************************/
 {
-    if( _IsModel( DBG_DF ) ) {
+    if( _IsModel( CGSW_GEN_DBG_DF ) ) {
         /* nothing */
-    } else if( _IsModel( DBG_CV ) ) {
+    } else if( _IsModel( CGSW_GEN_DBG_CV ) ) {
         CVSetBase();
-#if _TARGET & ( _TARG_8086 | _TARG_80386 )
+#if _TARGET_INTEL
     } else {
         WVSetBase();
 #endif
@@ -724,7 +725,7 @@ void    DbgParmLoc( name *parm, cg_sym_handle sym )
     dbg_local       *lcl;
     dbg_loc         loc;
 
-    if( _IsntModel( DBG_DF ) ) {
+    if( _IsntModel( CGSW_GEN_DBG_DF ) ) {
         if( parm->n.class != N_REGISTER  ) {
             return;
         }
@@ -744,10 +745,10 @@ void    DbgRetLoc( void )
 {
     dbg_loc loc;
 
-    if( CurrProc->targ.debug->reeturn == NULL ) {
+    if( CurrProc->targ.debug->return_loc == NULL ) {
         loc = DBLocInit();
         loc = LocReg( loc, AllocRegName( CurrProc->state.return_reg ) );
-#if _TARGET & ( _TARG_8086 | _TARG_80386 )
+#if _TARGET_INTEL
         if( CurrProc->targ.return_points == NULL ) {
             /* nothing to do */
         } else if( CurrProc->state.attr & ROUTINE_ALLOCS_RETURN ) {
@@ -756,7 +757,7 @@ void    DbgRetLoc( void )
             loc->class = LOC_IND_REG + IND_CALLOC_NEAR;
         }
 #endif
-        CurrProc->targ.debug->reeturn = loc;
+        CurrProc->targ.debug->return_loc = loc;
     }
 }
 
@@ -789,14 +790,14 @@ static  void    EmitDbg( oc_class class, pointer ptr )
 void    EmitRtnBeg( void )
 /************************/
 {
-    EmitDbg( INFO_DBG_RTN_BEG, CurrProc->targ.debug );
+    EmitDbg( OC_INFO_DBG_RTN_BEG, CurrProc->targ.debug );
 }
 
 
 void    EmitProEnd( void )
 /************************/
 {
-    EmitDbg( INFO_DBG_PRO_END, CurrProc->targ.debug );
+    EmitDbg( OC_INFO_DBG_PRO_END, CurrProc->targ.debug );
 }
 
 
@@ -804,9 +805,9 @@ void    EmitDbgInfo( instruction *ins )
 /*************************************/
 {
     if( ins->flags.nop_flags & NOP_DBGINFO_START ) {
-        EmitDbg( INFO_DBG_BLK_BEG, ins->operands[0] );
+        EmitDbg( OC_INFO_DBG_BLK_BEG, ins->operands[0] );
     } else {
-        EmitDbg( INFO_DBG_BLK_END, ins->operands[0] );
+        EmitDbg( OC_INFO_DBG_BLK_END, ins->operands[0] );
     }
 }
 
@@ -814,7 +815,7 @@ void    EmitDbgInfo( instruction *ins )
 void    EmitEpiBeg( void )
 /************************/
 {
-    EmitDbg( INFO_DBG_EPI_BEG, CurrProc->targ.debug );
+    EmitDbg( OC_INFO_DBG_EPI_BEG, CurrProc->targ.debug );
 }
 
 
@@ -823,7 +824,7 @@ void    EmitRtnEnd( void )
 {
     segment_id      old_segid;
 
-    EmitDbg( INFO_DBG_RTN_END, CurrProc->targ.debug );
+    EmitDbg( OC_INFO_DBG_RTN_END, CurrProc->targ.debug );
     old_segid = SetOP( AskCodeSeg() );
     EmptyQueue();
     SetOP( old_segid );
@@ -839,7 +840,7 @@ void    DbgRtnBeg( dbg_rtn *rtn,  offset lc )
 /*******************************************/
 {
     rtn->rtn_blk->start = lc;
-    if( _IsModel( DBG_CV ) ) {
+    if( _IsModel( CGSW_GEN_DBG_CV ) ) {
         CVRtnBeg( rtn, lc );
     }
 }
@@ -849,9 +850,9 @@ void    DbgProEnd( dbg_rtn *rtn, offset lc )
 /******************************************/
 {
     rtn->pro_size = lc - rtn->rtn_blk->start;
-    if( _IsModel( DBG_DF ) ) {
+    if( _IsModel( CGSW_GEN_DBG_DF ) ) {
         DFProEnd( rtn, lc );
-    } else if( _IsModel( DBG_CV ) ) {
+    } else if( _IsModel( CGSW_GEN_DBG_CV ) ) {
         CVProEnd( rtn, lc );
     }
 }
@@ -861,9 +862,9 @@ void    DbgBlkBeg( dbg_block *blk, offset lc )
 /********************************************/
 {
     blk->start = lc;
-    if( _IsModel( DBG_DF ) ) {
+    if( _IsModel( CGSW_GEN_DBG_DF ) ) {
         DFBlkBeg( blk, lc );
-    } else if( _IsModel( DBG_CV ) ) {
+    } else if( _IsModel( CGSW_GEN_DBG_CV ) ) {
         CVBlkBeg( blk, lc );
     }
 }
@@ -871,11 +872,11 @@ void    DbgBlkBeg( dbg_block *blk, offset lc )
 void    DbgBlkEnd( dbg_block *blk, offset lc )
 /********************************************/
 {
-    if( _IsModel( DBG_DF ) ) {
+    if( _IsModel( CGSW_GEN_DBG_DF ) ) {
         DFBlkEnd( blk, lc );
-    } else if( _IsModel( DBG_CV ) ) {
+    } else if( _IsModel( CGSW_GEN_DBG_CV ) ) {
         CVBlkEnd( blk, lc );
-#if _TARGET & ( _TARG_8086 | _TARG_80386 )
+#if _TARGET_INTEL
     } else {
         WVBlkEnd( blk, lc );
 #endif
@@ -888,9 +889,9 @@ void    DbgEpiBeg( dbg_rtn *rtn, offset lc )
 /******************************************/
 {
     rtn->epi_start = lc;
-    if( _IsModel( DBG_DF ) ) {
+    if( _IsModel( CGSW_GEN_DBG_DF ) ) {
         DFEpiBeg( rtn, lc );
-    } else if( _IsModel( DBG_CV ) ) {
+    } else if( _IsModel( CGSW_GEN_DBG_CV ) ) {
         CVEpiBeg( rtn, lc );
     }
 }
@@ -899,11 +900,11 @@ void    DbgEpiBeg( dbg_rtn *rtn, offset lc )
 void    DbgRtnEnd( dbg_rtn *rtn, offset lc )
 /******************************************/
 {
-    if( _IsModel( DBG_DF ) ) {
+    if( _IsModel( CGSW_GEN_DBG_DF ) ) {
         DFRtnEnd( rtn, lc );
-    } else if( _IsModel( DBG_CV ) ) {
+    } else if( _IsModel( CGSW_GEN_DBG_CV ) ) {
         CVRtnEnd( rtn, lc );
-#if _TARGET & ( _TARG_8086 | _TARG_80386 )
+#if _TARGET_INTEL
     } else {
         WVRtnEnd( rtn, lc );
 #endif

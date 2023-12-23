@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -83,7 +83,7 @@ static MIMenuID BrowseMenus[] = {
 
 #define NumBrowseMenus ( sizeof( BrowseMenus ) / sizeof( MIMenuID ) )
 
-//#pragma disable_message( 438 )
+//#pragma disable_message( P438 )
 static const char *BrowseTitle = { "About Open Watcom Source Browser" };
 static const char *SplashInfo[] = {
     "",
@@ -93,7 +93,7 @@ static const char *SplashInfo[] = {
     banner3,
     banner3a,
     NULL };
-//#pragma enable_message( 438 )
+//#pragma enable_message( P438 )
 
 
 static WFlashPage *showFlashPage( int interval ) {

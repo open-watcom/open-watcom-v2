@@ -1,3 +1,5 @@
+tree_depth = 4
+
 proj_name = wbind
 
 !ifndef wbind_autodepends
@@ -15,7 +17,7 @@ memory_model_i86 = c
 #
 .c : ..
 
-inc_dirs = -I"../../h"
+inc_dirs = -I"$(win386_dir)/h"
 
 extra_l_flags_dos = op stack=8k
 extra_l_flags_os2 = op stack=12k,heap=8k,newfile

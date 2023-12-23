@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -58,11 +58,13 @@ typedef struct {
 static jmp_buf SymEnv;
 
 void PPENTRY PP_OutOfMemory( void )
+/*********************************/
 {
     longjmp( SymEnv, 1 );
 }
 
 void * PPENTRY PP_Malloc( size_t size )
+/*************************************/
 {
     void        *p;
 
@@ -74,8 +76,17 @@ void * PPENTRY PP_Malloc( size_t size )
 }
 
 void PPENTRY PP_Free( void *p )
+/*****************************/
 {
     WRMemFree( p );
+}
+
+int PP_MBCharLen( const char *p )
+/*******************************/
+{
+    /* unused parameters */ (void)p;
+
+    return( 1 );
 }
 
 static void addsym_func( const MACRO_ENTRY *me, const PREPROC_VALUE *val, void *cookie )
@@ -90,7 +101,7 @@ static void addsym_func( const MACRO_ENTRY *me, const PREPROC_VALUE *val, void *
     WRAddHashEntry( ((addsym_data *)cookie)->table, me->name, value, &(((addsym_data *)cookie)->dup), false, false );
 }
 
-static void addSymbols( WRHashTable *table )
+static void Add_PP_Symbols( WRHashTable *table )
 {
     addsym_data         data;
 
@@ -103,15 +114,7 @@ static void addSymbols( WRHashTable *table )
     PP_MacrosWalk( addsym_func, &data );
 }
 
-int PP_MBCharLen( const char *p )
-/*******************************/
-{
-    /* unused parameters */ (void)p;
-
-    return( 1 );
-}
-
-char *WLoadSymbols( WRHashTable **table, char *file_name, HWND parent, bool prompt )
+char *WLoadSymbols( WRHashTable **table, char *file_name, HWND parent, bool prompt_name )
 {
     char                *name;
     int                 c;
@@ -128,7 +131,7 @@ char *WLoadSymbols( WRHashTable **table, char *file_name, HWND parent, bool prom
     ok = (table != NULL);
 
     if( ok ) {
-        if( file_name == NULL || prompt ) {
+        if( file_name == NULL || prompt_name ) {
             gf.file_name = file_name;
             gf.title = AllocRCString( W_LOADSYMTITLE );
             gf.filter = AllocRCString( W_SYMFILTER );
@@ -173,7 +176,7 @@ char *WLoadSymbols( WRHashTable **table, char *file_name, HWND parent, bool prom
         if( *table == NULL ) {
             *table = WRInitHashTable();
         }
-        addSymbols( *table );
+        Add_PP_Symbols( *table );
         WRMakeHashTableClean( *table );
         PP_FileFini();
     }

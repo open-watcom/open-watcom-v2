@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,7 +35,9 @@
 #include "exepe.h"
 #include "exedos.h"
 
-/* WD looks for this symbol to determine module bitness */
+/*
+ * WD looks for this symbol to determine module bitness
+ */
 #if !defined( __WINDOWS__ )
 int __nullarea;
 #if defined( __WATCOMC__ )
@@ -43,8 +46,8 @@ int __nullarea;
 #endif
 
 /*
-        Loading/unloading symbolic information.
-*/
+ * Loading/unloading symbolic information.
+ */
 
 imp_image_handle        *ImageList;
 
@@ -57,12 +60,16 @@ static void Cleanup( imp_image_handle *iih )
 
     for( owner = &ImageList; (curr = *owner) != NULL; owner = &curr->next_image ) {
         if( curr == iih ) {
-            /* if found then remove it from list */
+            /*
+             * if found then remove it from list
+             */
             *owner = curr->next_image;
             break;
         }
     }
-    /* destroy entry */
+    /*
+     * destroy entry
+     */
     if( iih->directory != NULL ) {
         blocks = BLOCK_FACTOR( iih->dir_count, DIRECTORY_BLOCK_ENTRIES );
         for( i = 0; i < blocks; ++i ) {
@@ -80,59 +87,52 @@ static dip_status TryFindPE( FILE *fp, unsigned long *offp, unsigned long *sizep
 {
     union {
         dos_exe_header  dos;
-        pe_header       pe;
+        pe_exe_header   pe;
     }                   hdr;
     pe_object           obj;
-    unsigned_32         nh_off;
-    unsigned_32         section_off;
+    unsigned_32         ne_header_off;
     unsigned            i;
     unsigned_32         debug_rva;
     debug_directory     dir;
+    unsigned_32         object_align;
 
-    if( DCSeek( fp, 0, DIG_ORG ) ) {
+    if( DCSeek( fp, 0, DIG_SEEK_ORG ) ) {
         return( DS_ERR | DS_FSEEK_FAILED );
     }
     if( DCRead( fp, &hdr.dos, sizeof( hdr.dos ) ) != sizeof( hdr.dos ) ) {
         return( DS_ERR | DS_FREAD_FAILED );
     }
-    if( hdr.dos.signature != DOS_SIGNATURE ) {
+    if( hdr.dos.signature != EXESIGN_DOS
+      || !NE_HEADER_FOLLOWS( hdr.dos.reloc_offset ) ) {
         return( DS_FAIL );
     }
-    if( DCSeek( fp, NH_OFFSET, DIG_ORG ) ) {
+    if( DCSeek( fp, NE_HEADER_OFFSET, DIG_SEEK_ORG ) ) {
         return( DS_ERR | DS_FSEEK_FAILED );
     }
-    if( DCRead( fp, &nh_off, sizeof( nh_off ) ) != sizeof( nh_off ) ) {
+    if( DCRead( fp, &ne_header_off, sizeof( ne_header_off ) ) != sizeof( ne_header_off ) ) {
         return( DS_ERR | DS_FREAD_FAILED );
     }
-    if( DCSeek( fp, nh_off, DIG_ORG ) ) {
+    if( DCSeek( fp, ne_header_off, DIG_SEEK_ORG ) ) {
         return( DS_ERR | DS_FSEEK_FAILED );
     }
-    if( DCRead( fp, &hdr.pe, sizeof( hdr.pe ) ) != sizeof( hdr.pe ) ) {
+    if( DCRead( fp, &hdr.pe, PE_HDR_SIZE ) != PE_HDR_SIZE
+      || hdr.pe.signature != EXESIGN_PE
+      || DCRead( fp, (char *)&hdr.pe + PE_HDR_SIZE, PE_OPT_SIZE( hdr.pe ) ) != PE_OPT_SIZE( hdr.pe ) ) {
         return( DS_FAIL );
     }
-    if( hdr.pe.signature != PE_SIGNATURE ) {
+    if( PE_DIRECTORY( hdr.pe, PE_TBL_DEBUG ).rva == 0 ) {
         return( DS_FAIL );
     }
-    if( hdr.pe.table[PE_TBL_DEBUG].rva == 0 ) {
-        return( DS_FAIL );
-    }
-    debug_rva = (hdr.pe.table[PE_TBL_DEBUG].rva / hdr.pe.object_align)*
-                                hdr.pe.object_align;
-
-    section_off = nh_off + offsetof( pe_header, flags ) +
-                        sizeof( hdr.pe.flags ) + hdr.pe.nt_hdr_size;
-
-    if( DCSeek( fp, section_off, DIG_ORG ) ) {
-        return( DS_ERR | DS_FSEEK_FAILED );
-    }
-    for( i = 0; i < hdr.pe.num_objects; i++ ) {
+    object_align = PE( hdr.pe, object_align );
+    debug_rva = ( PE_DIRECTORY( hdr.pe, PE_TBL_DEBUG ).rva / object_align ) * object_align;
+    for( i = 0; i < hdr.pe.fheader.num_objects; i++ ) {
         if( DCRead( fp, &obj, sizeof( obj ) ) != sizeof( obj ) ) {
             return( DS_ERR | DS_FREAD_FAILED );
         }
         if( obj.rva == debug_rva ) {
             debug_rva = obj.physical_offset +
-                            hdr.pe.table[PE_TBL_DEBUG].rva - debug_rva;
-            if( DCSeek( fp, debug_rva, DIG_ORG ) ) {
+                            PE_DIRECTORY( hdr.pe, PE_TBL_DEBUG ).rva - debug_rva;
+            if( DCSeek( fp, debug_rva, DIG_SEEK_ORG ) ) {
                 return( DS_ERR | DS_FSEEK_FAILED );
             }
             if( DCRead( fp, &dir, sizeof( dir ) ) != sizeof( dir ) ) {
@@ -153,7 +153,7 @@ static dip_status TryFindTrailer( FILE *fp, unsigned long *offp, unsigned long *
     cv_trailer          sig;
     unsigned long       pos;
 
-    if( DCSeek( fp, DIG_SEEK_POSBACK( sizeof( sig ) ), DIG_END ) ) {
+    if( DCSeek( fp, DIG_SEEK_POSBACK( sizeof( sig ) ), DIG_SEEK_END ) ) {
         return( DS_ERR | DS_FSEEK_FAILED );
     }
     pos = DCTell( fp );
@@ -182,7 +182,7 @@ static dip_status FindCV( FILE *fp, unsigned long *offp, unsigned long *sizep )
             return( ds );
         }
     }
-    if( DCSeek( fp, *offp, DIG_ORG ) ) {
+    if( DCSeek( fp, *offp, DIG_SEEK_ORG ) ) {
         return( DS_ERR | DS_FSEEK_FAILED );
     }
     if( DCRead( fp, sig, sizeof( sig ) ) != sizeof( sig ) ) {
@@ -204,13 +204,13 @@ static dip_status LoadDirectory( imp_image_handle *iih, unsigned long off )
     size_t                      block_size;
     unsigned                    num;
 
-    if( DCSeek( iih->sym_fp, off, DIG_ORG ) ) {
+    if( DCSeek( iih->sym_fp, off, DIG_SEEK_ORG ) ) {
         return( DS_ERR | DS_FSEEK_FAILED );
     }
     if( DCRead( iih->sym_fp, &directory, sizeof( directory ) ) != sizeof( directory ) ) {
         return( DS_ERR | DS_FREAD_FAILED );
     }
-    if( DCSeek( iih->sym_fp, iih->bias + directory, DIG_ORG ) ) {
+    if( DCSeek( iih->sym_fp, iih->bias + directory, DIG_SEEK_ORG ) ) {
         return( DS_ERR | DS_FSEEK_FAILED );
     }
     if( DCRead( iih->sym_fp, &dir_header, sizeof( dir_header ) ) != sizeof( dir_header ) ) {

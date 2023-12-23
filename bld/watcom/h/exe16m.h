@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,6 +31,54 @@
 
 
 #ifndef _EXE16M_H
+#define _EXE16M_H
+
+#include "exesigns.h"
+
+
+#define TRANSPARENT     0x8000
+
+#define NUM_RESERVED_SELS   16      /* number of reserved selectors. */
+
+/*
+ * memory strategy constants
+ */
+#define MPreferExt      0           /* prefer, but not force, extended */
+#define MPreferLow      1           /* prefer, but not force, conventional memory */
+#define MForceExt       2           /* force extended */
+#define MForceLow       3           /* force conventional */
+#define MNoStrategy     0           /* no strategy specified */
+
+#define D16M_ACC_CODE   0x9A        /* present, DPL 0, code, read, not accessed */
+#define D16M_ACC_DATA   0x92        /* present, DPL 0, data, write, not accessed */
+
+#define D16M_USER_SEL   0x80        /* first user selector (user_gdt << 3) */
+
+/*
+ * the values for the exp_flags field.
+ */
+enum {
+    ef_auto             = 0x0001,   /* automatic selectors (=> relocatable) */
+    ef_package          = 0x0002,   /* module is a package                  */
+    ef_nobigfoot        = 0x0004,   /* don't place stack low DPMI memory    */
+    ef_sharedata        = 0x2000,   /* data is global, not per-instance     */
+    ef_shareable        = 0x4000,   /* component may be shared              */
+    ef_dos4g            = 0x8000    /* module is or requires DOS/4G         */
+};
+
+/*
+ * the values for the options field
+ */
+enum {
+    OPT_NOVCPI          = 0x0002,   /* don't test for VCPI at startup   */
+    OPT_KEYBOARD        = 0x0004,   /* don't inhibit keyboard polling   */
+    OPT_OVERLOAD        = 0x0008,   /* allow overloading                */
+    OPT_INT10           = 0x0010,
+    OPT_INIT00          = 0x0020,   /* init memory allocs to 0x00       */
+    OPT_INITFF          = 0x0040,   /* init memory allocs to 0xFF       */
+    OPT_ROTATE          = 0x0080,   /* rotate selector assignment       */
+    OPT_AUTO            = 0x1000,   /* reloc table is present           */
+};
 
 typedef struct gdt_info {
     unsigned_16     gdtlen;
@@ -77,46 +126,4 @@ typedef struct dos16m_exe_header {
     /* gdtimage[16..gdtimage_size] follows immediately, then program image follows */
 } dos16m_exe_header;
 
-/* the values for the exp_flags field. */
-enum {
-    ef_auto                 = 0x0001,   /* automatic selectors (=> relocatable) */
-    ef_package              = 0x0002,   /* module is a package                  */
-    ef_nobigfoot            = 0x0004,   /* don't place stack low DPMI memory    */
-    ef_sharedata            = 0x2000,   /* data is global, not per-instance     */
-    ef_shareable            = 0x4000,   /* component may be shared              */
-    ef_dos4g                = 0x8000    /* module is or requires DOS/4G         */
-};
-
-/* the values for the options field */
-
-enum {
-    OPT_NOVCPI          = 0x0002,   /* don't test for VCPI at startup   */
-    OPT_KEYBOARD        = 0x0004,   /* don't inhibit keyboard polling   */
-    OPT_OVERLOAD        = 0x0008,   /* allow overloading                */
-    OPT_INT10           = 0x0010,
-    OPT_INIT00          = 0x0020,   /* init memory allocs to 0x00       */
-    OPT_INITFF          = 0x0040,   /* init memory allocs to 0xFF       */
-    OPT_ROTATE          = 0x0080,   /* rotate selector assignment       */
-    OPT_AUTO            = 0x1000,   /* reloc table is present           */
-};
-
-#define TRANSPARENT 0x8000
-
-#define NUM_RESERVED_SELS    16         // number of reserved selectors.
-
-/* memory strategy constants */
-#define MPreferExt      0       /* prefer, but not force, extended */
-#define MPreferLow      1       /* prefer, but not force, conventional memory */
-#define MForceExt       2       /* force extended */
-#define MForceLow       3       /* force conventional */
-#define MNoStrategy     0       /* no strategy specified */
-
-#define D16M_ACC_CODE   0x9A    /* present, DPL 0, code, read, not accessed */
-#define D16M_ACC_DATA   0x92    /* present, DPL 0, data, write, not accessed */
-
-#define D16M_USER_SEL   0x80    /* first user selector (user_gdt << 3) */
-
-#define DOS16M_SIGNATURE    0x5742      /* 'BW' */
-
-#define _EXE16M_H
 #endif

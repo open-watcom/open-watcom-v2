@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,6 +30,8 @@
 ****************************************************************************/
 
 
+#define CASE_SEPS   case '\0': case ' ': case '\t':
+
 extern trap_init_func   TrapInit;
 extern trap_req_func    TrapRequest;
 extern trap_fini_func   TrapFini;
@@ -41,5 +43,5 @@ extern mx_entry_p       Out_Mx_Ptr;
 
 extern void             *GetInPtr( trap_elen );
 extern void             *GetOutPtr( trap_elen );
-extern trap_elen        GetTotalSizeIn( void );
-extern trap_elen        GetTotalSizeOut( void );
+extern size_t           GetTotalSizeIn( void );
+extern size_t           GetTotalSizeOut( void );

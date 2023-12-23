@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -313,7 +314,7 @@ resource
     : normal-resource
     | string-table-resource
     | error-table-resource
-    | pragma-statment
+    | pragma-statement
     | includeres-statement
     ;
 
@@ -374,7 +375,7 @@ includeres-statement
         }
     ;
 
-pragma-statment
+pragma-statement
     : Y_POUND_PRAGMA Y_CODEPAGE  Y_LPAREN constant-expression Y_RPAREN
       {}
     ;
@@ -1093,16 +1094,18 @@ menu-result
         { $$ = (uint_16)$1.Value; }
     ;
 
-/* Note: The way we accept menu options differs from what is specified */
-/* in the Windows Programmer's Reference. There they say that the Y_HELP */
-/* keyword is used only with menu entry statements but then proceed to ignore */
-/* it. The bit that is designated MF_HELP in windows.h only produces */
-/* meaningful results if it is set for top level menu items. Every where else */
-/* we issue a warnning but set the bit anyways. This is similar to what the */
-/* Whitewater Resource Toolkit does. */
-/* Note: the Y_BITMAP and Y_OWNERDRAW keywords may not be meaning full in this*/
-/* context but we accept them anyways and set the appropriate bits assuming */
-/* that the user knows what he or she is doing when they use these keyword */
+/*
+ * Note: The way we accept menu options differs from what is specified
+ * in the Windows Programmer's Reference. There they say that the Y_HELP
+ * keyword is used only with menu entry statements but then proceed to ignore
+ * it. The bit that is designated MF_HELP in windows.h only produces
+ * meaningful results if it is set for top level menu items. Every where else
+ * we issue a warnning but set the bit anyways. This is similar to what the
+ * Whitewater Resource Toolkit does.
+ * Note: the Y_BITMAP and Y_OWNERDRAW keywords may not be meaning full in this
+ * context but we accept them anyways and set the appropriate bits assuming
+ * that the user knows what he or she is doing when they use these keyword 
+ */
 
 menu-item-options
     : menu-item-option
@@ -1211,7 +1214,7 @@ dlg-resource
         {
             SemWINWriteDialogBox( $1,
                 MEMFLAG_PURE|MEMFLAG_MOVEABLE|MEMFLAG_DISCARDABLE,
-                $4, SemWINNewDiagOptions( &($3 ) ), $6, $5, $2 );
+                $4, SemWINNewDiagOptions( &($3) ), $6, $5, $2 );
         }
     | name-id dialog-or-dialogEx resource-options comma-opt size-info helpId-opt
                diag-options-section diag-control-section
@@ -1241,7 +1244,7 @@ dlg-resource
             SemWINCheckMemFlags( &($3), 0, MEMFLAG_MOVEABLE | MEMFLAG_DISCARDABLE,
                             MEMFLAG_PURE );
             SemWINWriteDialogBox( $1, $3.flags, $6,
-                               SemWINNewDiagOptions( &($5 ) ), $8, $7, $2 );
+                               SemWINNewDiagOptions( &($5) ), $8, $7, $2 );
         }
     ;
 
@@ -1339,7 +1342,7 @@ menu-stmt
     : Y_MENU name-id
         {
             $$.token = Y_MENU;
-            $$.Opt.Name = WResIDToNameOrOrd( $2 );
+            $$.Opt.Name = WResIDToNameOrOrdinal( $2 );
             RcMemFree( $2 );
         }
     ;
@@ -1351,28 +1354,28 @@ class-stmt
 
 class-name
     : string-constant
-        { $$ = ResStrToNameOrOrd( $1.string ); RcMemFree( $1.string ); }
+        { $$ = ResStrToNameOrOrdinal( $1.string ); RcMemFree( $1.string ); }
     | constant-expression
-        { $$ = ResNumToNameOrOrd( (uint_16)$1.Value ); }
+        { $$ = ResNumToNameOrOrdinal( (uint_16)$1.Value ); }
     ;
 
 ctl-class-name
     : string-constant
-        { $$ = ResStrToNameOrOrd( $1.string ); RcMemFree( $1.string ); }
+        { $$ = ResStrToNameOrOrdinal( $1.string ); RcMemFree( $1.string ); }
     | Y_BUTTON
-        { $$ = ResStrToNameOrOrd( "BUTTON" ); }
+        { $$ = ResStrToNameOrOrdinal( "BUTTON" ); }
     | Y_COMBOBOX
-        { $$ = ResStrToNameOrOrd( "COMBOBOX" ); }
+        { $$ = ResStrToNameOrOrdinal( "COMBOBOX" ); }
     | Y_EDIT
-        { $$ = ResStrToNameOrOrd( "EDIT" ); }
+        { $$ = ResStrToNameOrOrdinal( "EDIT" ); }
     | Y_LISTBOX
-        { $$ = ResStrToNameOrOrd( "LISTBOX" ); }
+        { $$ = ResStrToNameOrOrdinal( "LISTBOX" ); }
     | Y_SCROLLBAR
-        { $$ = ResStrToNameOrOrd( "SCROLLBAR" ); }
+        { $$ = ResStrToNameOrOrdinal( "SCROLLBAR" ); }
     | Y_STATIC
-        { $$ = ResStrToNameOrOrd( "STATIC" ); }
+        { $$ = ResStrToNameOrOrdinal( "STATIC" ); }
     | constant-expression
-        { $$ = ResNumToNameOrOrd( (uint_16)$1.Value ); }
+        { $$ = ResNumToNameOrOrdinal( (uint_16)$1.Value ); }
     ;
 
 font-stmt
@@ -1440,7 +1443,9 @@ fontweight
 fontitalic
     : constant-expression
       {
-          /* the value stored is boolean and must be 1 or 0 */
+          /*
+           * the value stored is boolean and must be 1 or 0 
+           */
           $$ = (uint_8)( $1.Value != 0 );
       }
     ;
@@ -1504,7 +1509,7 @@ diag-control-stmt
 cntl-text-options
     : string-constant cntl-options
         {
-            $2.Text = ResStrToNameOrOrd( $1.string );
+            $2.Text = ResStrToNameOrOrdinal( $1.string );
             RcMemFree( $1.string );
             $$ = $2;
         }
@@ -1641,7 +1646,7 @@ state3-stmt
 
 icon-name
     : name-id
-        { $$ = WResIDToNameOrOrd( $1 ); RcMemFree( $1 ); }
+        { $$ = WResIDToNameOrOrdinal( $1 ); RcMemFree( $1 ); }
     ;
 
 icon-parms

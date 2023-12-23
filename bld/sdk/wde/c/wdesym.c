@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,7 +33,6 @@
 
 #include "wdeglbl.h"
 #include "wderesin.h"
-#include "wdetfile.h"
 #include "wdegetfn.h"
 #include "wdeopts.h"
 #include "wdemain.h"
@@ -66,7 +65,7 @@
 typedef struct {
     unsigned        add_count;
     unsigned        busy_count;
-    WdeHashTable    *table;
+    WRHashTable     *table;
     bool            dup;
 } addsym_data;
 
@@ -84,8 +83,7 @@ typedef struct {
 static bool WdeResourceViewHash( WdeResInfo * );
 static bool WdeResourceLoadHash( WdeResInfo * );
 static bool WdeResourceWriteHash( WdeResInfo * );
-static void WdeAddSymbols( WdeHashTable * );
-static char *WdeLoadSymbols( WdeHashTable **, char *, bool );
+static char *WdeLoadSymbols( WRHashTable **, char *, bool prompt_name );
 
 /****************************************************************************/
 /* external variables                                                       */
@@ -103,8 +101,9 @@ static jmp_buf Env;
 
 
 void PPENTRY PP_OutOfMemory( void )
+/*********************************/
 {
-    if( WdePopEnv( &Env ) ) {
+    if( WdePopEnv( Env ) ) {
         longjmp( Env, 1 );
     } else {
         WdeWriteTrail( "Wde PreProc: Fatal error!" );
@@ -113,6 +112,7 @@ void PPENTRY PP_OutOfMemory( void )
 }
 
 void * PPENTRY PP_Malloc( size_t size )
+/*************************************/
 {
     void        *p;
 
@@ -124,11 +124,58 @@ void * PPENTRY PP_Malloc( size_t size )
 }
 
 void PPENTRY PP_Free( void *p )
+/*****************************/
 {
     WRMemFree( p );
 }
 
-static bool WdeViewSymbols( WdeHashTable **table, HWND parent )
+int PP_MBCharLen( const char *p )
+/*******************************/
+{
+    /* unused parameters */ (void)p;
+
+    return( 1 );
+}
+
+static void addsym_func( const MACRO_ENTRY *me, const PREPROC_VALUE *val, void *cookie )
+{
+    char                busy_str[2];
+    WRHashValue         value;
+    addsym_data         *data = (addsym_data *)cookie;
+
+    if( val->type == PPTYPE_SIGNED ) {
+        value = (WRHashValue)val->val.ivalue;
+    } else {
+        value = (WRHashValue)val->val.uvalue;
+    }
+    WdeAddHashEntry( data->table, me->name, value, &data->dup );
+    data->add_count++;
+    if( data->add_count == MAX_SYM_ADDS ) {
+        data->busy_count++;
+        busy_str[0] = WdeBusyChars[data->busy_count % 4];
+        busy_str[1] = '\0';
+        WdeSetStatusText( NULL, busy_str, true );
+        data->add_count = 0;
+    }
+}
+
+static void Add_PP_Symbols( WRHashTable *table )
+{
+    addsym_data         data;
+
+    if( table == NULL ) {
+        WdeWriteTrail( "WdeLoadSymbols: unexpected NULL hash table.");
+        return;
+    }
+    data.dup = true;
+    data.add_count = 0;
+    data.busy_count = 0;
+    data.table = table;
+
+    PP_MacrosWalk( addsym_func, &data );
+}
+
+static bool WdeViewSymbols( WRHashTable **table, HWND parent )
 {
     WRHashEntryFlags    flags;
     HELPFUNC            hcb;
@@ -185,13 +232,13 @@ bool WdeResourceViewHash( WdeResInfo *info )
     if( info->hash_table == NULL ) {
         InitState( info->forms_win );
         no_hash = true;
-        info->hash_table = WdeInitHashTable();
+        info->hash_table = WRInitHashTable();
     }
 
     ret = WdeViewSymbols( &info->hash_table, info->edit_win );
 
-    if( !WdeNumInHashTable( info->hash_table ) ) {
-        WdeFreeHashTable( info->hash_table );
+    if( !WRNumInHashTable( info->hash_table ) ) {
+        WRFreeHashTable( info->hash_table );
         info->hash_table = NULL;
     }
 
@@ -247,7 +294,7 @@ bool WdeResourceLoadHash( WdeResInfo *info )
 
 bool WdeResourceWriteHash( WdeResInfo *info )
 {
-    return( WdeWriteSymbols( info->hash_table, &info->sym_name, true ) );
+    return( WdeSaveSymbols( info->hash_table, &info->sym_name, true ) );
 }
 
 bool WdeCreateDLGInclude( WdeResInfo *rinfo, char *include )
@@ -256,7 +303,7 @@ bool WdeCreateDLGInclude( WdeResInfo *rinfo, char *include )
     WResID              *res;
     WResLangType        lang;
     char                *str;
-    int                 len;
+    size_t              len;
     bool                ok;
 
     type = NULL;
@@ -291,8 +338,7 @@ bool WdeCreateDLGInclude( WdeResInfo *rinfo, char *include )
         lang.lang = DEF_LANG;
         lang.sublang = DEF_SUBLANG;
         len = strlen( include ) + 1;
-        ok = !WResAddResource( type, res, MEMFLAG_DISCARDABLE,
-                               0, len, rinfo->info->dir, &lang, NULL );
+        ok = !WResAddResource( type, res, MEMFLAG_DISCARDABLE, 0, len, rinfo->info->dir, &lang, NULL );
     }
 
     if( ok ) {
@@ -380,7 +426,7 @@ static char *WdeFindDLGInclude( WdeResInfo *rinfo )
     }
 
     if( ok ) {
-        include = (char *)WRCopyResData( rinfo->info, lnode );
+        include = WRAllocCopyResData( rinfo->info, lnode );
     }
 
     return( include );
@@ -406,7 +452,7 @@ bool WdeFindAndLoadSymbols( WdeResInfo *rinfo )
     pgroup2     pg;
     char        fn_path[_MAX_PATH];
     char        *include;
-    bool        prompt;
+    bool        prompt_name;
     bool        ret;
 
     include = NULL;
@@ -416,7 +462,7 @@ bool WdeFindAndLoadSymbols( WdeResInfo *rinfo )
     }
 
     include = WdeFindDLGInclude( rinfo );
-    if( include != NULL && !WdeFileExists( include ) ) {
+    if( include != NULL && !WRFileExists( include ) ) {
         WRMemFree( include );
         include = NULL;
     }
@@ -424,18 +470,18 @@ bool WdeFindAndLoadSymbols( WdeResInfo *rinfo )
     if( include == NULL ) {
         _splitpath2( rinfo->info->file_name, pg.buffer, &pg.drive, &pg.dir, &pg.fname, NULL );
         _makepath( fn_path, pg.drive, pg.dir, pg.fname, "h" );
-        prompt = true;
+        prompt_name = true;
     } else {
         strcpy( fn_path, include );
         WRMemFree( include );
         include = NULL;
-        prompt = false;
+        prompt_name = false;
     }
 
     ret = true;
 
-    if( WdeFileExists( fn_path ) ) {
-        include = WdeLoadSymbols( &rinfo->hash_table, fn_path, prompt );
+    if( WRFileExists( fn_path ) ) {
+        include = WdeLoadSymbols( &rinfo->hash_table, fn_path, prompt_name );
         ret = (include != NULL);
         if( ret ) {
             if( rinfo->sym_name != NULL ) {
@@ -451,15 +497,7 @@ bool WdeFindAndLoadSymbols( WdeResInfo *rinfo )
 
 static jmp_buf SymEnv;
 
-int PP_MBCharLen( const char *p )
-/*******************************/
-{
-    /* unused parameters */ (void)p;
-
-    return( 1 );
-}
-
-char *WdeLoadSymbols( WdeHashTable **table, char *file_name, bool prompt )
+char *WdeLoadSymbols( WRHashTable **table, char *file_name, bool prompt_name )
 {
     char                *name;
     int                 c;
@@ -486,7 +524,7 @@ char *WdeLoadSymbols( WdeHashTable **table, char *file_name, bool prompt )
     }
 
     if( ok ) {
-        if( file_name == NULL || prompt ) {
+        if( file_name == NULL || prompt_name ) {
             gf.file_name = file_name;
             gf.title = WdeLoadHeaderTitle;
             gf.filter = WdeSymSaveFilter;
@@ -511,7 +549,7 @@ char *WdeLoadSymbols( WdeHashTable **table, char *file_name, bool prompt )
             ok = false;
             PP_FileFini();
         } else {
-            ok = pop_env = WdePushEnv( &SymEnv );
+            ok = pop_env = WdePushEnv( SymEnv );
         }
     }
 
@@ -538,16 +576,16 @@ char *WdeLoadSymbols( WdeHashTable **table, char *file_name, bool prompt )
             }
         } while( c != EOF );
         if( *table == NULL ) {
-            *table = WdeInitHashTable();
+            *table = WRInitHashTable();
         }
-        WdeAddSymbols( *table );
-        WdeMakeHashTableClean( *table );
+        Add_PP_Symbols( *table );
+        WRMakeHashTableClean( *table );
         WdeSetStatusText( NULL, " ", true );
         PP_FileFini();
     }
 
     if( pop_env ) {
-        WdePopEnv( &SymEnv );
+        WdePopEnv( SymEnv );
     }
 
     if( !ok ) {
@@ -566,7 +604,7 @@ char *WdeLoadSymbols( WdeHashTable **table, char *file_name, bool prompt )
     return( name );
 }
 
-bool WdeWriteSymbols( WdeHashTable *table, char **file_name, bool prompt )
+bool WdeSaveSymbols( WRHashTable *table, char **file_name, bool prompt_name )
 {
     char                *name;
     WdeGetFileStruct    gf;
@@ -582,7 +620,7 @@ bool WdeWriteSymbols( WdeHashTable *table, char **file_name, bool prompt )
     WdeSetStatusText( NULL, "", false );
     WdeSetStatusByID( WDE_WRITINGSYMBOLS, 0 );
 
-    if( prompt || *file_name == '\0' ) {
+    if( prompt_name || *file_name == '\0' ) {
         gf.file_name = *file_name;
         gf.title = WdeWriteHeaderTitle;
         gf.filter = WdeSymSaveFilter;
@@ -598,49 +636,11 @@ bool WdeWriteSymbols( WdeHashTable *table, char **file_name, bool prompt )
         name = *file_name;
     }
 
-    if( WdeWriteSymbolsToFile( table, name ) ) {
-        WdeMakeHashTableClean( table );
+    if( WRWriteSymbolsToFile( table, name ) ) {
+        WRMakeHashTableClean( table );
     }
 
     WdeSetStatusReadyText();
 
     return( true );
-}
-
-static void addsym_func( const MACRO_ENTRY *me, const PREPROC_VALUE *val, void *cookie )
-{
-    char                busy_str[2];
-    WdeHashValue        value;
-    addsym_data         *data = (addsym_data *)cookie;
-
-    if( val->type == PPTYPE_SIGNED ) {
-        value = (WdeHashValue)val->val.ivalue;
-    } else {
-        value = (WdeHashValue)val->val.uvalue;
-    }
-    WdeAddHashEntry( data->table, me->name, value, &data->dup );
-    data->add_count++;
-    if( data->add_count == MAX_SYM_ADDS ) {
-        data->busy_count++;
-        busy_str[0] = WdeBusyChars[data->busy_count % 4];
-        busy_str[1] = '\0';
-        WdeSetStatusText( NULL, busy_str, true );
-        data->add_count = 0;
-    }
-}
-
-void WdeAddSymbols( WdeHashTable *table )
-{
-    addsym_data         data;
-
-    if( table == NULL ) {
-        WdeWriteTrail( "WdeAddSymbols: unexpected NULL hash table.");
-        return;
-    }
-    data.dup = true;
-    data.add_count = 0;
-    data.busy_count = 0;
-    data.table = table;
-
-    PP_MacrosWalk( addsym_func, &data );
 }

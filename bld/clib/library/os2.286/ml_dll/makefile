@@ -5,4 +5,4 @@ system=os2
 linkage=static
 dll16=1
 
-!include $(clib_dir)/mrglib.mif
+!include ../../../mrglib.mif

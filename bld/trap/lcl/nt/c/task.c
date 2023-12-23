@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,84 +34,91 @@
 #include <string.h>
 #include <stdlib.h>
 #include "stdnt.h"
-#include "trptypes.h"
+#include "globals.h"
 #include "trpld.h"
 #include "trpsys.h"
-#include "globals.h"
 
 
 trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
 {
-    trap_version    trapver;
+    trap_version    ver;
     HANDLE          dll;
-    DWORD           osver;
 
-    IsWin32s = FALSE;
-    IsWin95 = FALSE;
-    IsWinNT = FALSE;
-#if defined( MD_x64 )
-    IsWinNT = TRUE;
+    /* unused parameters */ (void)remote;
+
+#if MADARCH & MADARCH_X64
+    dll = LoadLibrary( "PSAPI.DLL" );
+    if( dll != NULL ) {
+        pGetMappedFileName = (GETMAPPEDFILENAMEPROC)GetProcAddress( dll, "GetMappedFileNameA" );
+    }
 #else
-    osver = GetVersion();
-    if( osver < 0x80000000 ) {
-        IsWinNT = TRUE;
-    } else if( LOBYTE( LOWORD( osver ) ) < 4 ) {
-        IsWin32s = TRUE;
-    } else {
-        IsWin95 = TRUE;
+    IsWinNT = false;
+    IsWin32s = false;
+    IsWin95 = false;
+    {
+        DWORD   osver = GetVersion();
+        if( osver < 0x80000000 ) {
+            IsWinNT = true;
+        } else if( LOBYTE( LOWORD( osver ) ) < 4 ) {
+            IsWin32s = true;
+        } else {
+            IsWin95 = true;
+        }
     }
     if( IsWinNT ) {
+  #ifdef WOW
         dll = LoadLibrary( "VDMDBG.DLL" );
         if( dll != NULL ) {
-            pVDMSetThreadContext        = (LPVOID)GetProcAddress( dll, "VDMSetThreadContext" );
-            pVDMModuleFirst             = (LPVOID)GetProcAddress( dll, "VDMModuleFirst" );
-            pVDMModuleNext              = (LPVOID)GetProcAddress( dll, "VDMModuleNext" );
-            pVDMEnumProcessWOW          = (LPVOID)GetProcAddress( dll, "VDMEnumProcessWOW" );
-            pVDMProcessException        = (LPVOID)GetProcAddress( dll, "VDMProcessException" );
-            pVDMGetModuleSelector       = (LPVOID)GetProcAddress( dll, "VDMGetModuleSelector" );
-            pVDMGetThreadContext        = (LPVOID)GetProcAddress( dll, "VDMGetThreadContext" );
-            pVDMGetThreadSelectorEntry  = (LPVOID)GetProcAddress( dll, "VDMGetThreadSelectorEntry" );
+            pVDMModuleFirst             = (VDMMODULEFIRSTPROC)GetProcAddress( dll, "VDMModuleFirst" );
+            pVDMModuleNext              = (VDMMODULENEXTPROC)GetProcAddress( dll, "VDMModuleNext" );
+            pVDMEnumProcessWOW          = (VDMENUMPROCESSWOWPROC)GetProcAddress( dll, "VDMEnumProcessWOW" );
+            pVDMProcessException        = (VDMPROCESSEXCEPTIONPROC)GetProcAddress( dll, "VDMProcessException" );
+            pVDMGetModuleSelector       = (VDMGETMODULESELECTORPROC)GetProcAddress( dll, "VDMGetModuleSelector" );
+            pVDMGetThreadContext        = (VDMGETTHREADCONTEXTPROC)GetProcAddress( dll, "VDMGetThreadContext" );
+            pVDMSetThreadContext        = (VDMSETTHREADCONTEXTPROC)GetProcAddress( dll, "VDMSetThreadContext" );
+            pVDMGetThreadSelectorEntry  = (VDMGETTHREADSELECTORENTRYPROC)GetProcAddress( dll, "VDMGetThreadSelectorEntry" );
         }
+  #endif
         dll = LoadLibrary( "PSAPI.DLL" );
         if( dll != NULL ) {
-            pGetMappedFileName          = (LPVOID)GetProcAddress( dll, "GetMappedFileNameA" );
+            pGetMappedFileName = (GETMAPPEDFILENAMEPROC)GetProcAddress( dll, "GetMappedFileNameA" );
         }
     }
 #endif
     dll = LoadLibrary( "KERNEL32.DLL" );
     if( dll != NULL ) {
-        pOpenThread                 = (LPVOID)GetProcAddress( dll, "OpenThread" );
-        pQueryDosDevice             = (LPVOID)GetProcAddress( dll, "QueryDosDeviceA" );
-        pCreateToolhelp32Snapshot   = (LPVOID)GetProcAddress( dll, "CreateToolhelp32Snapshot" );
-        pModule32First              = (LPVOID)GetProcAddress( dll, "Module32First" );
-        pModule32Next               = (LPVOID)GetProcAddress( dll, "Module32Next" );
+        pOpenThread                 = (OPENTHREADPROC)GetProcAddress( dll, "OpenThread" );
+        pQueryDosDevice             = (QUERYDOSDEVICEPROC)GetProcAddress( dll, "QueryDosDeviceA" );
+        pCreateToolhelp32Snapshot   = (CREATETOOLHELP32SNAPSHOTPROC)GetProcAddress( dll, "CreateToolhelp32Snapshot" );
+        pModule32First              = (MODULE32FIRSTPROC)GetProcAddress( dll, "Module32First" );
+        pModule32Next               = (MODULE32NEXTPROC)GetProcAddress( dll, "Module32Next" );
     }
-    //say( "base address=%8.8x", ((char*)&GetInPtr)-0x2f );
+//    say( "base address=%8.8x", ((char*)&GetInPtr)-0x2f );
     DLLPath = LocalAlloc( LMEM_FIXED | LMEM_ZEROINIT, strlen( err ) + 1 );
     strcpy( DLLPath, err );
 
-    StopForDLLs = TRUE;
-    BreakOnKernelMessage = FALSE;
-    if( *parms == 'k' ) {
-        BreakOnKernelMessage = TRUE;
-    }
-    remote = remote;
+    BreakOpcode = BRKPOINT;
 
+    StopForDLLs = true;
+    BreakOnKernelMessage = false;
+    if( *parms == 'k' ) {
+        BreakOnKernelMessage = true;
+    }
     err[0] = 0;
-    trapver.major = TRAP_MAJOR_VERSION;
-    trapver.minor = TRAP_MINOR_VERSION;
-    trapver.remote = FALSE;
-    return( trapver );
+    ver.major = TRAP_VERSION_MAJOR;
+    ver.minor = TRAP_VERSION_MINOR;
+    ver.remote = false;
+    return( ver );
 }
 
 void TRAPENTRY TrapFini( void )
 {
 }
 
-/*
- * InfoFunction - inform trap file of gui debugger being used
- */
 void TRAPENTRY_FUNC( InfoFunction )( HWND hwnd )
+/***********************************************
+ * inform trap file of gui debugger being used
+ */
 {
     DebuggerWindow = hwnd;
 }
@@ -127,12 +134,12 @@ bool TRAPENTRY_FUNC( Terminate )( void )
 }
 
 #if 0
-/*
- * ListLibs - this is called by the debugger to dump out a list
- *                of DLL's and their associated selectors
- */
 int TRAPENTRY_FUNC( ListLibs )( char *buff, int is_first, int want_16,
                          int want_32, int verbose, int sel )
+/*********************************************************************
+ * this is called by the debugger to dump out a list
+ * of DLL's and their associated selectors
+ */
 {
     return( DoListLibs( buff, is_first, want_16, want_32, verbose, sel ) );
 }

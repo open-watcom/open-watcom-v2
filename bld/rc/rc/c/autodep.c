@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,9 +31,9 @@
 
 
 #include "wio.h"
+#include <errno.h>
 #include "global.h"
 #include "rcerrors.h"
-#include "tmpctl.h"
 #include "autodep.h"
 #include "semantic.h"
 #include "rcrtns.h"
@@ -95,7 +96,9 @@ static void writeOneNode( ResDepInfo *cur )
     item.TmpStr    = false;
     item.WriteNull = false;
 
-    /* write out time */
+    /*
+     * write out time
+     */
 #ifdef __BIG_ENDIAN__
     item.Item.Num = cur->time >> 16;
     SemWriteRawDataItem( item );
@@ -107,15 +110,16 @@ static void writeOneNode( ResDepInfo *cur )
     item.Item.Num = cur->time >> 16;
     SemWriteRawDataItem( item );
 #endif
-
-    /* write out file name including termination */
-    /* length already includes termination */
-
-    /* write out length */
+    /*
+     * write out file name including termination
+     * length already includes termination
+     * write out length
+     */
     item.Item.Num = cur->len;
     SemWriteRawDataItem( item );
-
-    /* write out file name including termination */
+    /*
+     * write out file name including termination
+     */
     item.IsString = true;
     item.Item.String = cur->name;
     item.StrLen = cur->len;

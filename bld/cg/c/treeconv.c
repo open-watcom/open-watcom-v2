@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -76,7 +76,7 @@ static  bool    DemoteTree( tn name, type_def *tipe, bool just_test ) {
             break;
         case TN_BINARY: /* go left, right*/
             switch( name->u2.t.op ) {
-#if _TARGET & ( _TARG_80386 | _TARG_8086 )
+#if _TARGET_INTEL
             case O_CONVERT:
                  /* Based pointer junk */
                  break;

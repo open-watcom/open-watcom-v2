@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -288,7 +288,7 @@ int DisplayLineInWindowWithSyntaxStyle( window_id wid, int c_line_no,
     if( !EditFlags.RealTabs ) {
         len = strlen( text );
         otmp = tmp = StaticAlloc();
-        ExpandTabsInABuffer( text, len, tmp, EditVars.MaxLine + 1 );
+        ExpandTabsInABuffer( text, len, tmp, EditVars.MaxLineLen + 1 );
     } else {
         // leave the tabs alone ...
         // let tabbedTextExtent and tabbedTextOut do the rest.
@@ -474,7 +474,7 @@ int DisplayLineInWindowWithSyntaxStyle( window_id wid, int c_line_no,
     if( EditFlags.RealTabs ) {
         len = strlen( text );
         otmp = tmp = StaticAlloc();
-        ExpandTabsInABuffer( text, len, tmp, EditVars.MaxLine + 1 );
+        ExpandTabsInABuffer( text, len, tmp, EditVars.MaxLineLen + 1 );
     } else {
         otmp = tmp = text;
     }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,22 +36,26 @@
 
 #include <stdlib.h>
 
+
+#ifdef __UNIX__
+#define _IS_SWITCH_CHAR(c)  ((c) == '-')
+#else
+#define _IS_SWITCH_CHAR(c)  ((c) == '-' || (c) == '/')
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#define _SWITCH_CHAR1   '-'
-#define _SWITCH_CHAR2   '/'
-
 // PROTOTYPES
 
-bool CmdDelimitChar(            // TEST IF SWITCH-DELIMITING CHARACTER
-    void )
-;
 bool CmdRecogLowerChar(         // RECOGNIZE A LOWER CASE CHARACTER
     int recog )                 // - character to be recognized
 ;
 bool CmdRecogChar(              // RECOGNIZE A CHARACTER
+    int recog )                 // - character to be recognized
+;
+bool CmdReRecogChar(            // RE-RECOGNIZE LAST CHARACTER
     int recog )                 // - character to be recognized
 ;
 size_t CmdScanNumber(           // SCAN A NUMBER
@@ -102,7 +106,7 @@ void CmdScanSwitchBegin(        // REMEMBER START OF SWITCH
 char const *CmdScanUngetChar(   // UNGET THE LAST CMD SCAN CHARACTER
     void )
 ;
-int CmdScanWhiteSpace(          // SCAN OVER WHITE SPACE
+void CmdScanSkipWhiteSpace(     // SKIP OVER WHITE SPACES
     void )
 ;
 

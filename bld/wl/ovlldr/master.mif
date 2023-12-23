@@ -1,3 +1,5 @@
+tree_depth = 4
+
 proj_name = ovlldr
 ovlldr_autodepends = .autodepend
 ovlldr_distrib_lib = 1

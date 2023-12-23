@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -61,7 +61,7 @@ void StatusWndSetSeparatorsWithArray( section_size *source, int num )
         list[i].width_is_percent = false;
     }
     StatusWndSetSeparators( sw, num, list );
-    MemFree( list );
+    _MemFreeArray( list );
 }
 
 bool StatusHookProc( HWND, UINT, WPARAM, LPARAM );
@@ -188,7 +188,7 @@ static void processLButtonUp( void )
         ReleaseCapture();
         capIndex = -1;
         memcpy( EditVars.StatusSections, sections + 1, EditVars.NumStatusSections * sizeof( section_size ) );
-        MemFree( sections );
+        _MemFreeArray( sections );
     }
 }
 

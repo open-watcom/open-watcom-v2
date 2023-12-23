@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -171,7 +171,7 @@ void    AsgnChar( void )
             }
             CITNode = save_cit;
         } else {
-#if ( _CPU == 386 || _CPU == 8086 )
+#if _INTEL_CPU
             if( j < i ) {
                 i = j;
             }
@@ -180,7 +180,7 @@ void    AsgnChar( void )
             EmitOp( FC_CHAR_N_MOVE );
             OutInt( i );
             OutInt( j );
-#else
+#else /* _RISC_CPU */
             CatArgs( num_args );
             CITNode = save_cit;
             PushOpn( CITNode );

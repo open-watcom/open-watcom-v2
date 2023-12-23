@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,6 +32,9 @@
 
 
 #include "wsyshelp.hpp"
+
+#ifndef NOWGML
+
 #include "wbrw.gh"
 
 #define BRH_SELECT_ROOTS        HLP_MANIPULATING_THE_TREE_VIEWS
@@ -54,3 +57,5 @@
 #define BRH_ENUMERATOR_STYLES   HLP_ENUMERATOR_STYLES
 #define BRH_MEMBER_FILTERS      HLP_MEMBER_FILTERS_FOR_CLASSES
 #define BRH_NEW_DATABASE_FILE   HLP_CREATING_A_BROWSER_DATABASE_FILE_WITHIN_THE_BROWSER
+
+#endif

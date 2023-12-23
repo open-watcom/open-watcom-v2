@@ -104,8 +104,7 @@ static void usage( void )
 static char *PutUInt( char *p, unsigned_16 data )
 /***********************************************/
 {
-    CONV_LE_16( data );
-    *((unsigned_16 *)p) = data;
+    MPUT_LE_16( p, data );
     p += sizeof( unsigned_16 );
     return( p );
 }
@@ -114,12 +113,10 @@ static char *PutOffset( char *p, unsigned_32 data )
 /*************************************************/
 {
     if( RecHdr[0] & 1 ) {
-        CONV_LE_32( data );
-        *((unsigned_32 *)p) = data;
+        MPUT_LE_32( p, data );
         p += sizeof( unsigned_32 );
     } else {
-        CONV_LE_16( data );
-        *((unsigned_16 *)p) = (unsigned_16)data;
+        MPUT_LE_16( p, data );
         p += sizeof( unsigned_16 );
     }
     return( p );

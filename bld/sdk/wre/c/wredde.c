@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -113,47 +113,21 @@ void WRESetPendingService( WRESPT s )
     PendingService = s;
 }
 
-bool WREHData2Mem( HDDEDATA hData, void **data, uint_32 *size )
-{
-    DWORD   dde_size;
-
-    if( data == NULL || size == NULL || hData == NULL ) {
-        return( FALSE );
-    }
-
-    *size = dde_size = DdeGetData( hData, NULL, 0, 0 );
-    if( dde_size == 0 ) {
-        return( FALSE );
-    }
-
-    *data = WRMemAlloc( dde_size );
-    if( *data == NULL ) {
-        return( FALSE );
-    }
-
-    if( dde_size != DdeGetData( hData, *data, dde_size, 0 ) ) {
-        WRMemFree( *data );
-        return( FALSE );
-    }
-
-    return( TRUE );
-}
-
 bool WREDDEStart( HINSTANCE inst )
 {
     UINT        ret;
     DWORD       flags;
     int         i;
 
-    _wre_touch( inst ); /* MakeProcInstance vanishes in NT */
+    /* unused parameters */ (void)inst; /* MakeProcInstance vanishes in NT */
 
     if( IdInst != 0 ) {
-        return( FALSE );
+        return( false );
     }
 
     DdeProcInst = MakeProcInstance_DDE( DdeCallBack, inst );
     if( DdeProcInst == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     flags = APPCLASS_STANDARD | APPCMD_FILTERINITS |
@@ -162,65 +136,65 @@ bool WREDDEStart( HINSTANCE inst )
 
     ret = DdeInitialize( &IdInst, DdeProcInst, flags, 0 );
     if( ret != DMLERR_NO_ERROR ) {
-        return( FALSE );
+        return( false );
     }
 
     for( i = 0; i < NUM_SERVERS; i++ ) {
         EditServers[i].htopic = DdeCreateStringHandle( IdInst, EditServers[i].topic, CP_WINANSI );
         if( EditServers[i].htopic == (HSZ)NULL ) {
-            return( FALSE );
+            return( false );
         }
         EditServers[i].hservice = DdeCreateStringHandle( IdInst, EditServers[i].service, CP_WINANSI );
         if( EditServers[i].hservice == (HSZ)NULL ) {
-            return( FALSE );
+            return( false );
         }
     }
 
     for( i = 0; i < NUM_TOPICS; i++ ) {
         Topics[i].htopic = DdeCreateStringHandle( IdInst, Topics[i].topic, CP_WINANSI );
         if( Topics[i].htopic == (HSZ)NULL ) {
-            return( FALSE );
+            return( false );
         }
     }
 
     hDialogDump = DdeCreateStringHandle( IdInst, WRE_DIALOG_DUMP, CP_WINANSI );
     if( hDialogDump == (HSZ)NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     hImageDump = DdeCreateStringHandle( IdInst, WRE_IMAGE_DUMP, CP_WINANSI );
     if( hImageDump == (HSZ)NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     hServiceName = DdeCreateStringHandle( IdInst, WRE_SERVICE_NAME, CP_WINANSI );
     if( hServiceName == (HSZ)NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     hFileItem = DdeCreateStringHandle( IdInst, WRE_FILE_ITEM, CP_WINANSI );
     if( hFileItem == (HSZ)NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     hIs32BitItem = DdeCreateStringHandle( IdInst, WRE_32BIT_ITEM, CP_WINANSI );
     if( hIs32BitItem == (HSZ)NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     hDataItem = DdeCreateStringHandle( IdInst, WRE_DATA_ITEM, CP_WINANSI );
     if( hDataItem == (HSZ)NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     hNameItem = DdeCreateStringHandle( IdInst, WRE_NAME_ITEM, CP_WINANSI );
     if( hNameItem == (HSZ)NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     DdeNameService( IdInst, hServiceName, (HSZ)NULL, DNS_REGISTER );
 
-    return( TRUE );
+    return( true );
 }
 
 void WREDDEEnd( void )
@@ -270,7 +244,7 @@ void WREDDEEnd( void )
     }
 }
 
-bool WREPokeData( HCONV conv, void *data, DWORD size, bool retry )
+bool WREPokeData( HCONV conv, char *data, DWORD size, bool retry )
 {
     DWORD       result;
     UINT        err;
@@ -279,7 +253,7 @@ bool WREPokeData( HCONV conv, void *data, DWORD size, bool retry )
     UINT        tries;
 
     if( conv == (HCONV)NULL || data == NULL || size == 0 ) {
-        return( FALSE );
+        return( false );
     }
 
     if( retry ) {
@@ -305,20 +279,18 @@ bool WREPokeData( HCONV conv, void *data, DWORD size, bool retry )
 }
 
 HDDEDATA CALLBACK DdeCallBack( UINT wType, UINT wFmt, HCONV hConv,
-                                HSZ hsz1, HSZ hsz2, HDDEDATA hdata,
+                                HSZ hsz1, HSZ hsz2, HDDEDATA hData,
                                 ULONG_PTR lData1, ULONG_PTR lData2 )
 {
     HDDEDATA    ret;
     HSZPAIR     hszpair[2];
     HSZ         htopic;
     HCONV       htconv;
-    void        *data;
+    char        *data;
     size_t      size;
     bool        ok;
 
-    _wre_touch( hdata );
-    _wre_touch( lData1 );
-    _wre_touch( lData2 );
+    /* unused parameters */ (void)lData1; (void)lData2;
 
     ret = NULL;
 
@@ -425,17 +397,17 @@ HDDEDATA CALLBACK DdeCallBack( UINT wType, UINT wFmt, HCONV hConv,
         ret = (HDDEDATA)DDE_FNOTPROCESSED;
         if( hsz1 == Topics[DialogService].htopic ) {
             if( hsz2 == hDataItem ) {
-                ok = WRESetDlgSessionResData( hConv, hdata );
+                ok = WRESetDlgSessionResData( hConv, hData );
             } else if( hsz2 == hNameItem ) {
-                ok = WRESetDlgSessionResName( hConv, hdata );
+                ok = WRESetDlgSessionResName( hConv, hData );
             }
         } else if( hsz1 == Topics[BitmapService].htopic ||
                    hsz1 == Topics[CursorService].htopic ||
                    hsz1 == Topics[IconService].htopic ) {
             if( hsz2 == hDataItem ) {
-                ok = WRESetImageSessionResData( hConv, hdata );
+                ok = WRESetImageSessionResData( hConv, hData );
             } else if( hsz2 == hNameItem ) {
-                ok = WRESetImageSessionResName( hConv, hdata );
+                ok = WRESetImageSessionResName( hConv, hData );
             }
         }
         ret = (HDDEDATA)DDE_FACK;

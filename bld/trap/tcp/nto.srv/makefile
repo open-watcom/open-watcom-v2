@@ -1,10 +1,11 @@
 #pmake: serv remote os_qnx cpu_386 tcp x86
 
+tree_depth = 4
+
 host_os  = nto
 host_cpu = 386
 
 target_cpu = x86
-target_os  = nto
 
 srv   = tcp
 which = SERVER

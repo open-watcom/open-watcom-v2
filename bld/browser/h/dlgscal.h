@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,7 +34,7 @@
 #ifndef __DLGSCAL_H__
 
 // ignore "temporary object used to initialize non-constant reference" warning
-#pragma disable_message( 665 )
+#pragma disable_message( P665 )
 
 #include <wwindow.hpp>
 

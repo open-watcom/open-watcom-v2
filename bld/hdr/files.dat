@@ -41,6 +41,7 @@ usr="crtdbg.h"
 usr="direct.h"
 usr="dos.h"
 usr="dosfunc.h"
+usr="endian.h"
 usr="env.h"
 usr="excpt.h"
 usr="fcntl.h"
@@ -81,6 +82,7 @@ usr="utime.h"
 
 [ DEFAULT type="s" dir="h/sys" where="c jc f77 jf77 ac" cond="dostarg" ]
 usr="_lfndos.h"
+usr="_pc98.h"
 
 [ DEFAULT type="s" dir="h" where="c jc f77 jf77 ac" cond="dostarg wintarg os2targ wnttarg nlmtarg | | | | cplusplus" ]
 #
@@ -249,6 +251,7 @@ usr="alloca.h"
 usr="conio.h"
 usr="crtdbg.h"
 usr="direct.h"
+usr="endian.h"
 usr="env.h"
 usr="excpt.h"
 usr="fcntl.h"
@@ -455,6 +458,7 @@ usr="alloca.h"
 usr="conio.h"
 usr="crtdbg.h"
 usr="dirent.h"
+usr="endian.h"
 usr="env.h"
 usr="excpt.h"
 usr="fcntl.h"
@@ -644,6 +648,7 @@ usr="signal.h"
 usr="sigposix.h"
 
 [ DEFAULT type="s" dir="lh/arch/i386/sys" where="c jc f77 jf77 ac" cond="lnxtarg" ]
+usr="endian.h"
 usr="ioctl.h"
 usr="resource.h"
 usr="socket.h"
@@ -663,9 +668,17 @@ usr="signal.h"
 usr="sigposix.h"
 
 [ DEFAULT type="s" dir="lh/arch/mips/sys" where="mc" cond="lnxtarg" ]
+usr="endian.h"
 usr="ioctl.h"
 usr="resource.h"
 usr="socket.h"
 usr="stat.h"
 usr="sysmacro.h"
 usr="types.h"
+
+# PowerPC headers. Not currently used.
+#[ DEFAULT type="s" dir="lh/arch/ppc" where="mc" cond="lnxtarg" ]
+#usr="err_no.h"
+
+#[ DEFAULT type="s" dir="lh/arch/ppc/sys" where="mc" cond="lnxtarg" ]
+#usr="endian.h"

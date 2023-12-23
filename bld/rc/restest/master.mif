@@ -1,3 +1,5 @@
+tree_depth = 4
+
 proj_name = restest
 
 restest_autodepends = .AUTODEPEND

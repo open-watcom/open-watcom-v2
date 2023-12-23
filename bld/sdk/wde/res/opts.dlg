@@ -1,3 +1,5 @@
+/* UTF-8 encoding, ¥ */
+
 WdeOptions DIALOG 10, 20, 186, 163
 STYLE DS_MODALFRAME | WS_POPUPWINDOW | WS_VISIBLE | WS_DLGFRAME
 CAPTION "Dialog Editor Options"

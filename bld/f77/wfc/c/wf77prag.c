@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,7 +43,6 @@
 #include "fmemmgr.h"
 #include "ferror.h"
 #include "inout.h"
-#include "cspawn.h"
 #include "asmstmt.h"
 #include "chain.h"
 #include "symtab.h"
@@ -51,9 +50,7 @@
 #include "cioconst.h"
 
 #include "clibext.h"
-
-
-#define AddDefaultLibConst(l,p) AddDefaultLib(l, sizeof( l ) - 1, p)
+#include "cspawn.h"
 
 
 default_lib             *DefaultLibs;
@@ -189,112 +186,133 @@ void AddDependencyInfo( source_t *fi )
 }
 
 
-static void AddDefaultLib( const char *lib_ptr, size_t lib_len, char priority )
-//=============================================================================
+static void AddDefaultLib( const char *libname, char priority )
+//=============================================================
 {
-    default_lib         **lib;
-    default_lib         *new_lib;
+    default_lib         **owner;
+    default_lib         *lib;
 
     if( (Options & OPT_DFLT_LIB) == 0 )
         return;
-    if( ( *lib_ptr == '"' ) && ( lib_ptr[lib_len - 1] == '"' ) ) {
-        lib_len -= 2;
-        ++lib_ptr;
-    }
-    for( lib = &DefaultLibs; *lib != NULL; lib = &(*lib)->link ) {
-        if( strlen( &(*lib)->lib[1] ) != lib_len )
-            continue;
-        if( memcmp( &(*lib)->lib[1], lib_ptr, lib_len ) == 0 ) {
+    for( owner = &DefaultLibs; (lib = *owner) != NULL; owner = &lib->link ) {
+        if( lib->priority < priority ) {
+            default_lib **tmp_owner;
+            /*
+             * search library entry with lower priority
+             */
+            for( tmp_owner = owner; (lib = *tmp_owner) != NULL; tmp_owner = &lib->link ) {
+                if( strcmp( lib->libname, libname ) == 0 ) {
+                    /*
+                     * remove library entry from linked list
+                     */
+                    *tmp_owner = lib->link;
+                    break;
+                }
+            }
+            break;
+        }
+        if( strcmp( lib->libname, libname ) == 0 ) {
+            /*
+             * library entry already exists with higher or equal priority
+             * no change required
+             */
             return;
         }
     }
-    new_lib = FMemAlloc( sizeof( default_lib ) + lib_len );
-    new_lib->link = NULL;
-    new_lib->lib[0] = priority;
-    memcpy( &new_lib->lib[1], lib_ptr, lib_len );
-    new_lib->lib[1+lib_len] = NULLCHAR;
-    *lib = new_lib;
+    /*
+     * if library entry not found then create new one
+     */
+    if( lib == NULL ) {
+        lib = FMemAlloc( sizeof( default_lib ) + strlen( libname ) );
+        strcpy( lib->libname, libname );
+    }
+    /*
+     * set priority and insert library entry to proper position
+     */
+    lib->priority = priority;
+    lib->link = *owner;
+    *owner = lib;
 }
 
 
 void DefaultLibInfo( void )
 //=========================
 {
-#if _CPU == 386
-    if( CGOpts & CGOPT_STK_ARGS ) {
-        if( CPUOpts & CPUOPT_FPC ) {
-            AddDefaultLibConst( "flibs", '1' );
-            AddDefaultLibConst( "math3s", '1' );
-        } else {
-            AddDefaultLibConst( "flib7s", '1' );
-            AddDefaultLibConst( "math387s", '1' );
-        }
-        AddDefaultLibConst( "clib3s", '1' );
-        if( Options & OPT_RESOURCES ) {
-            AddDefaultLibConst( "wresfs", '1' );
-        }
-    } else {
-        if( CPUOpts & CPUOPT_FPC ) {
-            AddDefaultLibConst( "flib", '1' );
-            AddDefaultLibConst( "math3r", '1' );
-        } else {
-            AddDefaultLibConst( "flib7", '1' );
-            AddDefaultLibConst( "math387r", '1' );
-        }
-        AddDefaultLibConst( "clib3r", '1' );
-        if( Options & OPT_RESOURCES ) {
-            AddDefaultLibConst( "wresf", '1' );
-        }
-    }
-    if( CPUOpts & CPUOPT_FPI ) {
-        AddDefaultLibConst( "emu387", '1' );
-    } else if( CPUOpts & CPUOPT_FPI87 ) {
-        AddDefaultLibConst( "noemu387", '1' );
-    }
-#elif _CPU == 8086
+#if _CPU == 8086
     if( CGOpts & CGOPT_M_MEDIUM ) {
         if( CPUOpts & CPUOPT_FPC ) {
-            AddDefaultLibConst( "flibm", '1' );
-            AddDefaultLibConst( "mathm", '1' );
+            AddDefaultLib( "flibm", '1' );
+            AddDefaultLib( "mathm", '1' );
         } else {
-            AddDefaultLibConst( "flib7m", '1' );
-            AddDefaultLibConst( "math87m", '1' );
+            AddDefaultLib( "flib7m", '1' );
+            AddDefaultLib( "math87m", '1' );
         }
-        AddDefaultLibConst( "clibm", '1' );
+        AddDefaultLib( "clibm", '1' );
         if( Options & OPT_RESOURCES ) {
-            AddDefaultLibConst( "wresm", '1' );
+            AddDefaultLib( "wresm", '1' );
         }
     } else {
         if( CPUOpts & CPUOPT_FPC ) {
-            AddDefaultLibConst( "flibl", '1' );
-            AddDefaultLibConst( "mathl", '1' );
+            AddDefaultLib( "flibl", '1' );
+            AddDefaultLib( "mathl", '1' );
         } else {
-            AddDefaultLibConst( "flib7l", '1' );
-            AddDefaultLibConst( "math87l", '1' );
+            AddDefaultLib( "flib7l", '1' );
+            AddDefaultLib( "math87l", '1' );
         }
-        AddDefaultLibConst( "clibl", '1' );
+        AddDefaultLib( "clibl", '1' );
         if( Options & OPT_RESOURCES ) {
-            AddDefaultLibConst( "wresl", '1' );
+            AddDefaultLib( "wresl", '1' );
         }
     }
     if( CPUOpts & CPUOPT_FPI ) {
-        AddDefaultLibConst( "emu87", '1' );
+        AddDefaultLib( "emu87", '1' );
     } else if( CPUOpts & CPUOPT_FPI87 ) {
-        AddDefaultLibConst( "noemu87", '1' );
+        AddDefaultLib( "noemu87", '1' );
+    }
+#elif _CPU == 386
+    if( CGOpts & CGOPT_STK_ARGS ) {
+        if( CPUOpts & CPUOPT_FPC ) {
+            AddDefaultLib( "flibs", '1' );
+            AddDefaultLib( "math3s", '1' );
+        } else {
+            AddDefaultLib( "flib7s", '1' );
+            AddDefaultLib( "math387s", '1' );
+        }
+        AddDefaultLib( "clib3s", '1' );
+        if( Options & OPT_RESOURCES ) {
+            AddDefaultLib( "wresfs", '1' );
+        }
+    } else {
+        if( CPUOpts & CPUOPT_FPC ) {
+            AddDefaultLib( "flib", '1' );
+            AddDefaultLib( "math3r", '1' );
+        } else {
+            AddDefaultLib( "flib7", '1' );
+            AddDefaultLib( "math387r", '1' );
+        }
+        AddDefaultLib( "clib3r", '1' );
+        if( Options & OPT_RESOURCES ) {
+            AddDefaultLib( "wresf", '1' );
+        }
+    }
+    if( CPUOpts & CPUOPT_FPI ) {
+        AddDefaultLib( "emu387", '1' );
+    } else if( CPUOpts & CPUOPT_FPI87 ) {
+        AddDefaultLib( "noemu387", '1' );
     }
 #elif _CPU == _AXP
-    AddDefaultLibConst( "flib", '1' );
-    AddDefaultLibConst( "math", '1' );
-    AddDefaultLibConst( "clib", '1' );
+    AddDefaultLib( "flib", '1' );
+    AddDefaultLib( "math", '1' );
+    AddDefaultLib( "clib", '1' );
     if( Options & OPT_RESOURCES ) {
-        AddDefaultLibConst( "wresaxp", '1' );
+        AddDefaultLib( "wresaxp", '1' );
     }
 #elif _CPU == _PPC
-    AddDefaultLibConst( "flib", '1' );
-    AddDefaultLibConst( "math", '1' );
-    AddDefaultLibConst( "clib", '1' );
+    AddDefaultLib( "flib", '1' );
+    AddDefaultLib( "math", '1' );
+    AddDefaultLib( "clib", '1' );
     if( Options & OPT_RESOURCES ) {
-        AddDefaultLibConst( "wresppc", '1' );
+        AddDefaultLib( "wresppc", '1' );
     }
 #endif
 }
@@ -489,7 +507,21 @@ static void     Pragma( void )
             DefaultLibInfo();
         } else {
             while( !RecFnToken( "\0" ) ) {
-                AddDefaultLib( TokStart, TokEnd - TokStart, '9' );
+                char        *p;
+                const char  *t;
+                size_t      len;
+
+                len = TokEnd - TokStart;
+                p = FMemAlloc( len + 1 );
+                t = TokStart;
+                if( *t == '"' ) {
+                    t++;
+                    len -= 2;
+                }
+                strncpy( p, t, len );
+                p[len] = NULLCHAR;
+                AddDefaultLib( p, '9' );
+                FMemFree( p );
                 ScanFnToken();
             }
         }
@@ -533,7 +565,6 @@ void DoPragma( const char *ptr )
             if( ProgSw & PS_FATAL_ERROR ) {
                 CSuicide();
             }
-            AsmSymFini();
             break;
         }
         if( RecToken( "\0" ) ) {

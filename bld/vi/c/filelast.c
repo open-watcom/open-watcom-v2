@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -76,7 +77,7 @@ void UpdateLastFilesList( char *fname )
     h = &EditVars.Hist[HIST_LASTFILES];
     for( i = 0; i < h->max; i++ ) {
         if( h->data[i] != NULL ) {
-            if( stricmp( buff, h->data[i] ) == 0 ) {
+            if( FILE_CMP( buff, h->data[i] ) == 0 ) {
                 return;
             }
         }

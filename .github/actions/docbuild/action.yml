@@ -1,0 +1,77 @@
+name: documentation-build
+description: 'Process OW single documentation type build'
+inputs:
+  target:
+    description: 'documentation type to process'
+    required: false
+    default: ''
+    type: string
+  gitpath:
+    description: 'git sub-directory where documentation is located'
+    required: false
+    default: 'rel'
+    type: string
+  owtarget:
+    description: 'OW builder additional cmd line arguments'
+    required: false
+    default: ''
+    type: string
+  arch:
+    description: 'run-time platform'
+    required: false
+    default: ''
+    type: string
+  tools:
+    description: 'used compiler toolchain'
+    required: false
+    default: ''
+    type: string
+  owtools:
+    description: 'OW build compiler toolchain'
+    required: false
+    default: ''
+    type: string
+  noarchive:
+    description: 'not use tar archive for artifacts'
+    required: false
+    default: ''
+    type: string
+  owdebug:
+    description: 'verbosed/debug output for GH Actions scripts development'
+    required: false
+    default: ''
+    type: string
+runs:
+  using: composite
+  steps:
+  - uses: "./.github/actions/dosboxin"
+    with:
+      arch:         ${{ inputs.arch }}
+  - uses: "./.github/actions/artfload"
+    with:
+      arch:         ${{ inputs.arch }}
+      gitpath:      'build binbuild'
+      artifact:     "build ${{ inputs.arch }}"
+      tools:        ${{ inputs.tools }}
+      noarchive:    ${{ inputs.noarchive }}
+      owdebug:      ${{ inputs.owdebug }}
+  - name: Documentation Build
+    run: ci/buildx.cmd ${{ inputs.tools }}
+    env:
+      OWBUILD_STAGE: 'docs'
+      OWDOCTARGET:   ${{ inputs.target }} ${{ inputs.owtarget }}
+      OWTOOLS:       ${{ inputs.owtools }}
+      OWROOT:        ${{ github.workspace }}
+      OWDOSBOX:      'dosbox.exe'
+      OWDOSBOXPATH:  ${{ github.workspace }}\ci\nt386
+      OWDEBUG:       ${{ inputs.owdebug }}
+      OWVERBOSE:     1
+    shell: cmd
+  - uses: "./.github/actions/artfsave"
+    with:
+      arch:         ${{ inputs.arch }}
+      gitpath:      ${{ inputs.gitpath }}
+      artifact:     "rel ${{ inputs.target }}"
+      tools:        ${{ inputs.tools }}
+      noarchive:    ${{ inputs.noarchive }}
+      owdebug:      ${{ inputs.owdebug }}

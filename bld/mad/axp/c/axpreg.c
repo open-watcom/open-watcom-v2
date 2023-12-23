@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -257,38 +258,38 @@ static const mad_reg_set_data RegSet[] = {
 axp_pal CurrPAL;
 
 
-mad_status GetPData( addr_off off, axp_pdata *pdata )
+mad_status GetPData( addr_off off, axp_pdata_struct *axp_pdata )
 {
     address     a;
 
     memset( &a, 0, sizeof( a ) );
     a.mach.offset = off;
-    MCMachineData( a, AXPMD_PDATA, 0, NULL, sizeof( *pdata ), pdata );
-    if( pdata->pro_end_addr.u._32[0] < pdata->beg_addr.u._32[0]
-     || pdata->pro_end_addr.u._32[0] >= pdata->end_addr.u._32[0] ) {
+    MCMachineData( a, AXPMD_PDATA, 0, NULL, sizeof( *axp_pdata ), axp_pdata );
+    if( axp_pdata->pro_end_addr.u._32[0] < axp_pdata->beg_addr.u._32[0]
+     || axp_pdata->pro_end_addr.u._32[0] >= axp_pdata->end_addr.u._32[0] ) {
         /*
            This is a procedure with different exception handlers for
            different portions - pro_end_addr is the address of the
            start of the procedure in this case.
         */
-        a.mach.offset = pdata->pro_end_addr.u._32[0];
-        MCMachineData( a, AXPMD_PDATA, 0, NULL, sizeof( *pdata ), pdata );
+        a.mach.offset = axp_pdata->pro_end_addr.u._32[0];
+        MCMachineData( a, AXPMD_PDATA, 0, NULL, sizeof( *axp_pdata ), axp_pdata );
     }
     return( MS_OK );
 }
 
 int VariableFrame( addr_off off )
 {
-    axp_pdata   pdata;
-    unsigned_32 ins;
-    address     a;
+    axp_pdata_struct    axp_pdata;
+    unsigned_32         ins;
+    address             a;
 
-    if( GetPData( off, &pdata ) != MS_OK ) return( 0 );
-    if( pdata.pro_end_addr.u._32[0] == pdata.beg_addr.u._32[0] ) {
+    if( GetPData( off, &axp_pdata ) != MS_OK ) return( 0 );
+    if( axp_pdata.pro_end_addr.u._32[0] == axp_pdata.beg_addr.u._32[0] ) {
         return( 0 );
     }
     memset( &a, 0, sizeof( a ) );
-    a.mach.offset = pdata.pro_end_addr.u._32[0] - sizeof( ins );
+    a.mach.offset = axp_pdata.pro_end_addr.u._32[0] - sizeof( ins );
     MCReadMem( a, sizeof( ins ), &ins );
     return( ins == INS_MOV_SP_FP );
 }
@@ -339,7 +340,7 @@ size_t MADIMPENTRY( RegSetLevel )( const mad_reg_set_data *rsd, char *buff, size
 
     str = "";
     if( rsd == &RegSet[CPU_REG_SET] ) {
-        switch( MCSystemConfig()->cpu ) {
+        switch( MCSystemConfig()->cpu.axp ) {
         case AXP_21064:
             str = "21064";
             break;

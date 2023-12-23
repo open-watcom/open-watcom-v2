@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -51,9 +51,9 @@ extern msglist ThreadStateMsgs[];
 extern msglist Actions[];
 extern msglist ExceptionMsgs[];
 
-static BOOL initRCStrings( void ) {
-
-    SetInstance( Instance );
+static BOOL initRCStrings( void ) 
+{
+    SetRCInstance( Instance );
     AppName = AllocRCString( STR_APP_NAME );
     if( AppName == NULL ) return( FALSE );
     if( !InitSrchTable( Instance, ThreadWaitMsgs ) ) return( FALSE );

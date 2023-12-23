@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2020-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2020-2022 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -55,25 +55,36 @@ void WriteBufferNullChar( void )
     Buffer[TokenLen] = '\0';
 }
 
-size_t WriteBufferPosEscStr( size_t pos, const char **src, bool quote )
-/*********************************************************************/
+void WriteBufferString( const char *s )
+/*************************************/
+{
+    char    c;
+
+    EnlargeBuffer( TokenLen + strlen( s ) + 1 );
+    while( (c = *s++) != '\0' ) {
+        Buffer[TokenLen++] = c;
+    }
+    Buffer[TokenLen] = '\0';
+}
+
+void WriteBufferEscStr( const char **src, bool quote )
+/****************************************************/
 {
     const char  *p;
     char        c;
 
     p = *src;
     while( (c = *p++) != '\0' ) {
-        EnlargeBuffer( pos + 1 );
+        EnlargeBuffer( TokenLen + 1 );
         if( c == '\\' || quote && c == '"' ) {
-            Buffer[pos++] = '\\';
-            EnlargeBuffer( pos + 1 );
+            Buffer[TokenLen++] = '\\';
+            EnlargeBuffer( TokenLen + 1 );
         }
-        Buffer[pos++] = c;
+        Buffer[TokenLen++] = c;
     }
     *src = p;
-    EnlargeBuffer( pos + 1 );
-    Buffer[pos] = '\0';
-    return( pos );
+    EnlargeBuffer( TokenLen + 1 );
+    Buffer[TokenLen] = '\0';
 }
 
 void InitBuffer( size_t size )

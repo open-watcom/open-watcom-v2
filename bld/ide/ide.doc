@@ -36,7 +36,7 @@ II. A Quick Tutorial
     This tutorial will take you through creating and executing a simple
     C program under MS Windows.  It will give you an understanding of the
     basic concepts of IDE and the steps involved in project development.
-    
+
     First, start the IDE environment.  Under MS Windows, this is done
     by double-clicking on the IDE icon in the program manager window.
 
@@ -70,16 +70,16 @@ II. A Quick Tutorial
         source file name, press *OK*.  The filename test.c now appears in the
         list of items, followed by the characters (n/a).  This means that 
         the file does not yet exist on the disk.
-    
+
         Next, edit/create the source file by selecting *test.c* (click with
         the left mouse button) and then choosing the menu item 
         *Sources/Edit text*. (Note: Editing can also be invoked by 
         double-clicking on the filename.)  This action invokes the WATCOM 
         Editor to edit the file. Enter the following source for test.c using 
         the editor.
-    
+
             #include <stdio.h>
-    
+
             void main()
             {
                 int i;
@@ -87,10 +87,10 @@ II. A Quick Tutorial
                     printf( "Value is %d.\n", i )
                 }
             }
-            
+
         (Note: we have intentionally left off the semi-colon that should
         appear at the end of the printf statement!)
-    
+
         Exit the editor by choosing the menu item *File/Exit*.
 
         Since IDE does not know that the editor has created the file,
@@ -118,7 +118,7 @@ II. A Quick Tutorial
         and link and the program test.exe has been created.
 
     4. Executing the target program.
-    
+
         You are now ready to execute the program you have developed.  Do this
         by choosing the *Targets/Run* menu item.  IDE will execute the 
         program test.exe.
@@ -133,7 +133,7 @@ II. A Quick Tutorial
         Since this is a simple program, you probably have no need to debug it
         using the WATCOM Debugger.  However, lets go though the steps so that
         you will know what to do on your own, more complex programs.
-    
+
         To debug a program, first it must be compiled to include debugging
         information.  IDE maintains two sets of switches for each target
         in a project.  These are known as the *Development Switches* and the
@@ -186,7 +186,7 @@ II. A Quick Tutorial
 III. Reference
 -------------
     1. Methodology.
-    
+
         IDE deals with an entity called a 'project', which consists of
         a number of 'targets'.  A project is represented on disk by a
         project descriptor file having the file extension of 'wpj', while
@@ -243,7 +243,7 @@ III. Reference
         WMAKE utility and capture its output into the log window.  Under
         OS2/PM, OS2 versions of WMAKE and all the compilers etc, are used.
         (Make sure the setup has been done as described in appendix C.)
-        
+
     2. IDE Development Environment (ide.exe):
 
         The main program in the IDE suite of programs is ide.exe.
@@ -261,7 +261,7 @@ III. Reference
             where:
 
                 [switches] is zero or more of the following:
-    
+
                         +c filename     - this defines an alternate file to
                                           be used in place of ide.cfg.
                         -b              - this disables the batch feature
@@ -279,16 +279,16 @@ III. Reference
             It can contain a number of sub-windows which resemble the
             Windows MDI interface and can be iconisized, cascaded, tiled,
             etc., using the close box and the *Window* menu items.
-    
+
             Each sub-window in the main screen represents a target in the
             project, with the name of the target program or library shown
             in the title bar, relative to the project file directory.  There
             can be only one target per directory.
-    
+
             Each target sub-window contains a list of source files that
             are required to construct the target program.  These names are
             relative to the target directory.
-    
+
             The menu lists called *Targets* and *Sources* operate on the
             current target sub-window.  They can be invoked from the menu
             bar or activated with the right mouse button. Some of the menu
@@ -296,21 +296,21 @@ III. Reference
             some exist only for certain file types.  These optional menu
             items are called *Actions* and are defined as part of the rules
             associated with the target and its source files.
-    
+
             The target sub-window can also contain buttons that represent
             certain additional actions that can be performed on the target.
             They are also called *Actions* and are defined using the
             *Button* option as part of the rule associated with the target.
-            
+
             The IDE Log windows also appears as a sub-window. It captures
             and displays output lines from the various tools described in
             the ide.cfg file.
-    
+
         c) Menu Bar and Menu items.
 
             The IDE menu bar and menu items are listed here for reference.
             Complete descriptions follow.
-            
+
             File
                 New project
                 Open project
@@ -567,7 +567,7 @@ III. Reference
                 -c cfgfile      - loads cfgfile instead of ide.cfg.
                 -d              - generate makefiles using development switch set.
                 -r              - generate makefiles using release switch set.
-    
+
                 [filename.tgt] is one or more target descriptor files to
                                 be used to create the makefiles.
         b) Example:
@@ -582,6 +582,16 @@ III. Reference
 Appendix A: IDE and Batch IDE configuration file (ide.cfg)
 ----------------------------------------------------------
 
+    Current version of configuration files is 5.
+    Version 5 fix a problem with Switch texts which were part of key value, 
+    therefore if any text were changed then cfg file was not compatible
+    with any previous version or subversions and it was not simply fixable.
+    Now text are replaced by unique key values which are necessary for background
+    processing, that they need not change anymore. 
+    For GUI IDE these keys are translated to real text to be displayed in GUI.
+    In configuration are new items for thanslation key to real text, that 
+    translation is possible etc.
+    
     This appendix describes the syntax of the commands used in the
     IDE configuration file (ide.cfg).  The example listing included
     is representative of those found in the actual ide.cfg file included
@@ -602,10 +612,10 @@ Appendix A: IDE and Batch IDE configuration file (ide.cfg)
     Next in the file are a number of *Rule* statements that describe how
     files with various file extensions are to be processed by the previously
     defined tools.
-    
+
     Next, there is one *Project* statement that defines certain
     parameters associated with the IDE session.
-    
+
     Finally, there is one *MsgLog* statement that defines the patterns
     needed to process the IDE Log window.
 
@@ -622,11 +632,13 @@ Appendix A: IDE and Batch IDE configuration file (ide.cfg)
     *Tool tooltag toolname
         *IncludeTool tooltag
         *Family [famname]
-         {CSwitch 0|1, mask, [swname], switch, [ON|OFF]*
+         {CSwitch -1|0|1, mask, [swtag], switch, [ON|OFF]*
+         {C2Switch -1|0|1, mask, [swtag], switch-on, switch-off, [ON|OFF]*
          {RGroup groupname
-        *{RSwitch 0|1, mask, [swname], switch, [ON|OFF]*
-         {VSwitch 0|1, mask, [swname], switch, connector, ONE|MULTI ,REQ [,value]*
-         {VSwitch 0|1, mask, [swname], switch, connector, ONE|MULTI [,ON|OFF, value]*
+        *{RSwitch -1|0|1, mask, [swtag], switch, [ON|OFF]*
+         {VSwitch -1|0|1, mask, [swtag], switch, connector, ONE|MULTI ,REQ [,value]*
+         {VSwitch -1|0|1, mask, [swtag], switch, connector, ONE|MULTI [,ON|OFF, value]*
+         {SwitchText swtag, swname [,swname1[,swname2]]
 
     Tool        - defines a tool
     tooltag     - a tag name for the tool
@@ -640,20 +652,33 @@ Appendix A: IDE and Batch IDE configuration file (ide.cfg)
                   as a separate screen in the *Setup* dialogs under IDE.
 
     CSwitch     - defines a checkbox switch that can be on or off
-    0|1         - controls whether the switch should be displayed on the
+    -1|0|1      - controls whether the switch should be displayed on the
                   left or right side if the screen in the *Setup* dialog.
                   all 0 switches must preceed all 1 switches in a family.
+                  -1 value means hidden switch which is not displayed and
+                  therefore cannot be changed by the user.
+                  This is used in conjunction with the mask field
+                  to specify system-dependent switches/parameters/commands.
     mask        - this is a string of letters and/or question-marks (?)
                   that are used to select the switch for use in a specific
                   context.  It is explained under description of the
                   *Project/Target* statement below.
+    swtag       - unique tag to identify switch or blank
+                  if appropriate SwitchText item is defined then it is used
+                  as switch description otherwise swtag is used
+                  if it is used as description then it must be short enough
+                  to fit on 1/2 of the *Setup* dialog.
     swname      - a description of the switch.  It must be short enough to
-                  fit on 1/2 of the *Setup* dialog.  If it is omitted, the
-                  switch cannot be reset by the user.  An omitted swname
-                  is used in conjunction with the mask field to specify
-                  system-dependent switches.
+                  fit on 1/2 of the *Setup* dialog. More description can
+                  be specified, only first one is used for display, next
+                  ones are used for translation of old project files to
+                  new format based on tag/ID
     switch      - the actual switch value to be included on the generated
                   command line.
+    switch-on   - the actual switch value to be included on the generated
+                  command line for switch status ON.
+    switch-off  - the actual switch value to be included on the generated
+                  command line for switch status OFF.
     ON|OFF      - sets the initial state of the switch.
 
     RGroup      - defines the name given to the subsequent group of radio switches
@@ -861,7 +886,7 @@ Appendix A: IDE and Batch IDE configuration file (ide.cfg)
                   the extraction of a *filename* and possible a *linenumber*,
                   *offsetnumber*, and/or *errornumber*. These are then used 
                   to invoke the session editor or help manager respectively.
-        
+
                   A match is found if *pattern1* matches the current line and
                   *pattern2*, if present, matches a previous line, giving a 
                   *filename*. The syntax of a pattern is a simple character
@@ -927,7 +952,7 @@ Appendix C: Setup
         have WDEBUG.386 installed as a device in your SYSTEM.INI file.
         If you are using a Novell network, check that you have the correct
         network drivers (>=3.26) in Windows/Setup.
-        
+
     3. Setup under OS2/PM.
         To execute IDE under OS2/PM, you simply execute it from the OS2
         command line or install it as a program on the desktop.  Make sure 

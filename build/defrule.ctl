@@ -1,7 +1,7 @@
 # Default actions Builder Control File 
 # ====================================
 
-cdsay <PROJDIR>
+cdsay "<PROJDIR>"
 
 [ BLOCK .<PROJNAME> . ]
     error PROJNAME must be set!

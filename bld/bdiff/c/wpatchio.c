@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,16 +44,18 @@ The following functions are used by the wpatch utility to
 read in patches created by wcpatch.exe.
 *************************************************************************/
 
-void PatchReadOpen( const char *patch_name ) 
+bool PatchReadOpen( const char *patch_name )
 {
     PatchName = patch_name;
     PatchF = fopen ( patch_name, "rb" );
-    if( PatchF == NULL ) {
-        FilePatchError( ERR_CANT_OPEN, patch_name );
-    }
+    if( PatchF != NULL )
+        return( true );
+    FilePatchError( ERR_CANT_OPEN, patch_name );
+    return( false );
 }
 
-void PatchReadClose( void ) {
+void PatchReadClose( void )
+{
     fclose( PatchF );
 }
 

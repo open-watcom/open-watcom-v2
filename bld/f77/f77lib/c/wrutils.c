@@ -161,6 +161,7 @@ void    SendEOR( void ) {
     if( ifile ) {
         if( fcb->flags & FTN_EOF ) {
             IOErr( IO_IFULL );
+            // never return
         }
         if( fcb->recnum >= IOCB->elmts ) {
             fcb->flags |= FTN_EOF;

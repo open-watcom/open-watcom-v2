@@ -3,4 +3,4 @@
     set NOBUILD=
 [ BLOCK . . ]
 
-cdsay <PROJDIR>
+cdsay "<PROJDIR>"

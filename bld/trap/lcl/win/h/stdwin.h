@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,6 +31,8 @@
 ****************************************************************************/
 
 
+//#define DEBUG
+
 #define INCLUDE_TOOLHELP_H
 #include <windows.h>
 #include "trpimp.h"
@@ -38,6 +40,7 @@
 #include "trperr.h"
 #include "packet.h"
 #include "winintrf.h"
+#include "brkptcpu.h"
 
 
 #define MAGIC_COOKIE    0x66600666L
@@ -69,11 +72,11 @@ typedef enum {
 #define MAX_STR 512
 
 typedef struct {
-    addr48_ptr  loc;
-    WORD                segment_number;
-    char                value;
-    char                hard_mode:1;
-    char                in_use:1;
+    addr48_ptr      addr;
+    WORD            segment_number;
+    opcode_type     old_opcode;
+    bool            hard_mode;
+    bool            in_use;
 } break_point;
 
 #define SIG_OFF         0
@@ -84,13 +87,22 @@ struct fp_state {
     unsigned char fp[108];
 };
 
+typedef struct dll_info {
+    addr48_ptr          addr;
+    opcode_type         old_opcode;
+    bool                expecting_int1;
+} dll_info;
+
+#define SIG_OFF         0
+#define SIG_SIZE        4
+
+extern const unsigned short     __based(__segname("_CONST")) win386sig[SIG_SIZE / sizeof( short )];
+extern const unsigned short     __based(__segname("_CONST")) win386sig2[SIG_SIZE / sizeof( short )];
+
 /*
  * global variables
  */
-extern BYTE                     DLLLoadSaveByte;
-extern WORD                     DLLLoadCS;
-extern WORD                     DLLLoadIP;
-extern BOOL                     DLLLoadExpectingInt1;
+extern dll_info                 DLLLoad;
 extern unsigned_8               FPUType;
 extern HWND                     DesktopWindow;
 extern HINSTANCE                Instance;
@@ -110,13 +122,10 @@ extern int                      CurrentModule;
 extern bool                     FaultHandlerEntered;
 extern int                      SaveStdIn;
 extern int                      SaveStdOut;
-extern WORD                     WPCount;
 extern HMODULE                  DebugeeModule;
 extern bool                     WasInt32;
-extern BOOL                     DebugDebugeeOnly;
+extern bool                     DebugDebugeeOnly;
 extern HTASK                    TaskAtFault;
-extern WORD                     Win386Sig[];
-extern WORD                     Win386SigRev[];
 //extern FARPROC                  SubClassProcInstance;
 extern bool                     HardModeRequired;
 extern bool                     InputLocked;
@@ -124,26 +133,28 @@ extern bool                     ForceHardMode;
 extern bool                     InSoftMode;
 extern WORD                     CSAlias;
 extern WORD                     SegmentToAccess;
-extern BOOL                     PendingTrap;
+extern bool                     PendingTrap;
 extern event_hook_fn            *HookRtn;
-extern BOOL                     IsRFX;
 extern char                     OutBuff[MAX_STR];
 extern int                      OutPos;
-extern BOOL                     StopOnExtender;
-extern BOOL                     LoadingDebugee;
-extern BOOL                     TraceOn;
-extern BOOL                     Debugging32BitApp;
+extern bool                     StopOnExtender;
+extern bool                     LoadingDebugee;
+extern bool                     TraceOn;
+extern bool                     Debugging32BitApp;
 
 /*
  * function prototypes
  */
 /* accbrwat.c */
-BOOL IsOurBreakpoint( WORD sel, DWORD off );
-void ResetBreakpoints( WORD sel );
-BOOL SetDebugRegs( void );
-void ClearDebugRegs( void );
-DWORD GetDR6( void );
-BOOL CheckWatchPoints( void );
+extern opcode_type  place_breakpoint( addr48_ptr *addr );
+extern int          remove_breakpoint( addr48_ptr *addr, opcode_type old_opcode );
+extern bool         IsOurBreakpoint( WORD sel, DWORD off );
+extern void         ResetBreakpoints( WORD sel );
+extern bool         SetDebugRegs( void );
+extern void         ClearDebugRegs( void );
+extern DWORD        GetDR6( void );
+extern bool         CheckWatchPoints( void );
+extern bool         IsWatch( void );
 
 /* asyhook.c */
 extern void InitASynchHook( void );
@@ -151,44 +162,43 @@ extern void FiniASynchHook( void );
 extern void HandleAsynch( void );
 
 /* accmap.c */
-void AddModuleLoaded( HANDLE mod, BOOL );
-void AddDebugeeModule( void );
-void AddAllCurrentModules( void );
-BOOL HasSegAliases( void );
+extern void AddModuleLoaded( HANDLE mod, bool );
+extern void AddDebugeeModule( void );
+extern void AddAllCurrentModules( void );
+extern bool HasSegAliases( void );
 
 /* accmisc.c */
-BOOL IsSegSize32( WORD seg );
+extern bool IsSegSize32( WORD seg );
 
 /* accredir.c */
-void ExecuteRedirect( void );
+extern void ExecuteRedirect( void );
 
 /* accrun.c */
-void SingleStepMode( void );
+extern void SingleStepMode( void );
 
 /* initfini.c */
-void SetInputLock( bool lock_status );
+extern void SetInputLock( bool lock_status );
 
 /* dbgeemsg.c */
-void EnterSoftMode( void );
-void ExitSoftMode( void );
-//long FAR PASCAL SubClassProc( HWND hwnd, unsigned message, WORD wparam, LONG lparam );
+extern void EnterSoftMode( void );
+extern void ExitSoftMode( void );
+//extern long FAR PASCAL SubClassProc( HWND hwnd, unsigned message, WORD wparam, LONG lparam );
 
 /* dbghook.c */
-void FiniDebugHook( void );
-void InitDebugHook( void );
+extern void FiniDebugHook( void );
+extern void InitDebugHook( void );
 
 /* int.asm */
-void FAR PASCAL IntHandler( void );
+extern void FAR PASCAL IntHandler( void );
 
 /* mem.c */
-DWORD WriteMem( WORD sel, DWORD off, LPVOID buff, DWORD size );
-DWORD ReadMem( WORD sel, DWORD off, LPVOID buff, DWORD size );
+extern DWORD WriteMemory( addr48_ptr *addr, LPVOID buff, DWORD size );
+extern DWORD ReadMemory( addr48_ptr *addr, LPVOID buff, DWORD size );
 
 /* notify.c */
-BOOL FAR PASCAL NotifyHandler( WORD id, DWORD data );
+extern BOOL FAR PASCAL NotifyHandler( WORD id, DWORD data );
 
 /* debug output */
-extern unsigned     DbgFlags;
 #ifdef DEBUG
 #define OUT_BREAK       0x0001
 #define OUT_ERR         0x0002
@@ -201,6 +211,7 @@ extern unsigned     DbgFlags;
 #define OUT_RUN         0x0100
 #define OUT_SOFT        0x0200
 #define OUT_TEMP        0x0400
+#define OUT_ALL     (OUT_BREAK | OUT_ERR | OUT_HOOK | OUT_INIT | OUT_LOAD | OUT_MAP | OUT_MSG | OUT_REQ | OUT_RUN | OUT_SOFT | OUT_TEMP)
 extern void MyOut( unsigned f, char *, ... );
 extern void MyClearScreen( void );
 #define Out( a ) MyOut a

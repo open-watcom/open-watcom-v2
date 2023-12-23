@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,12 +36,11 @@ void    AbandonHopeAllYesWhoEnterHere( vi_rc );
 /* addstr.c */
 void    ReplaceString( char **, const char * );
 char    *DupString( const char * );
-void    DeleteString( char ** );
 
 /* alias.c */
 vi_rc   SetAlias( const char * );
 alias_list *CheckAlias( const char *str );
-bool    CheckAbbrev( const char *, int * );
+bool    CheckAbbrev( char *, int * );
 vi_rc   Abbrev( const char * );
 vi_rc   UnAbbrev( const char * );
 vi_rc   UnAlias( const char * );
@@ -82,6 +81,7 @@ const char *GetASetVal( const char *token, char * );
 vi_rc   SettingSelected( const char *item, char *value, int *winflag );
 
 /* clsubs.c */
+int     ReplaceSubString( char *, int, int, int, char *, int );
 vi_rc   TwoPartSubstitute( const char *, const char *, int, int );
 vi_rc   Substitute( linenum, linenum, const char * );
 linenum SplitUpLine( linenum );
@@ -441,7 +441,8 @@ linenum GetHiddenLineBreaks( linenum s, linenum e );
 /* hist.c */
 void    LoadHistory( const char *cmd );
 void    SaveHistory( void );
-void    HistInit( history_data *, int );
+void    HistInitSingle( hist_type ht, int max );
+void    HistInit( void );
 void    HistFini( void );
 
 #ifdef __IDE__
@@ -535,6 +536,7 @@ void    AddNewLineAroundCurrent( const char *, int, insert_dir );
 void    InsertNewLine( line *, line_list *, const char *, int, insert_dir );
 void    CreateNullLine( fcb * );
 line    *LineAlloc( const char *, int );
+void    LineFree( line * );
 
 /* linenum.c */
 vi_rc   LineNumbersSetup( void );
@@ -558,7 +560,7 @@ void    ReplaceLLItem( ss **, ss **, ss *, ss * );
 bool    ValidateLL( ss *, ss * );
 
 /* mapkey.c */
-vi_rc   MapKey( int flag, const char *data );
+vi_rc   MapKey( map_flags flags, const char *data );
 vi_rc   DoKeyMap( vi_key );
 void    DoneInputKeyMap( void );
 vi_rc   StartInputKeyMap( vi_key );
@@ -593,22 +595,23 @@ void    MatchFini( void );
 void    *MemAlloc( size_t );
 void    *MemAllocUnsafe( size_t );
 void    MemFree( void * );
-void    MemFreePtr( void ** );
-void    MemFreeList( list_linenum, char ** );
+void    MemFreePtrArray( void **ptr, size_t count, void(*free_fn)(void *) );
 void    *MemRealloc( void *, size_t );
 void    *MemReallocUnsafe( void *ptr, size_t size );
 void    *StaticAlloc( void );
 void    StaticFree( char * );
 void    StaticStart( void );
 void    StaticFini( void );
-char    *MemStrDup( const char * );
 void    InitMem( void );
 void    FiniMem( void );
 
-#define _MemAllocArray(t,c)     (t *)MemAlloc( (c) * sizeof( t ) )
-#define _MemReallocArray(p,t,c) (t *)MemRealloc( p, (c) * sizeof( t ) )
-#define _MemAllocList(c)        (char **)MemAlloc( (c) * sizeof( char * ) )
-#define _MemReallocList(p,c)    (char **)MemRealloc( p, (c) * sizeof( char * ) )
+#define _MemAllocArray(t,c)         (t *)MemAlloc( (c) * sizeof( t ) )
+#define _MemReallocArray(p,t,c)     (t *)MemRealloc( p, (c) * sizeof( t ) )
+#define _MemFreeArray(p)            MemFree( p )
+#define _MemAllocPtrArray(t,c)      (t **)MemAlloc( (c) * sizeof( t * ) )
+#define _MemReallocPtrArray(p,t,c)  (t **)MemRealloc( p, (c) * sizeof( t * ) )
+#define _MemFreePtrArray(p,c,fn)     MemFreePtrArray((void **)(p), (c), fn)
+#define _MemReallocPtrArrayUnsafe(p,t,c)    (t **)MemReallocUnsafe( p, (c) * sizeof( t * ) )
 
 /* misc.c */
 long    ExecCmd( const char *, const char *, const char * );
@@ -647,36 +650,12 @@ int     ShiftTab( int, int );
 vi_rc   SetCurrentColumn( int );
 vi_rc   LocateCmd( const char * );
 
-/* parse.c */
-void    TranslateTabs( char * );
-vi_rc   GetNextWordOrString( const char **, char * );
-const char  *GetNextWord( const char *, char *, const char *);
-const char  *GetNextWord1( const char *, char * );
-const char  *GetNextWord2( const char *, char *, char );
-int     Tokenize( const char *, const char *, bool );
-size_t  GetLongestTokenLength( const char * );
-int     GetNumberOfTokens( const char * );
-char    **BuildTokenList( int, char * );
-const char  *GetTokenString( const char *, int );
-char    *GetTokenStringCVT( const char *, int, char *, bool );
-char    *ExpandTokenSet( char *token_no, char *buff );
-int     AddColorToken( char *);
-int     ReplaceSubString( char *, int, int, int, char *, int );
-void    GetSubString( char *, int, int, char * );
-void    GetEndString( char *data, char *res );
-
 /* parsecfg.c */
 void    ParseConfigFile( char * );
 
 /* parsecl.c */
 vi_rc   ParseCommandLine( const char *, linenum *, bool *, linenum *, bool *, int *, char * );
 vi_rc   GetAddress( const char **, linenum * );
-
-/* printf.c */
-void    MySprintf( char *, const char *, ... );
-void    MyPrintf( const char *, ... );
-void    MyFprintf( FILE *,const char *, ... );
-void    Lead( char c, int num, char *buff );
 
 /* readstr.c */
 bool    ReadStringInWindow( window_id, int, char *, char *, size_t, history_data * );

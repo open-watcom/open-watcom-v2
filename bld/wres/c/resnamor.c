@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,8 +37,8 @@
 #include "reserr.h"
 #include "wresrtns.h"
 
-ResNameOrOrdinal *ResStrToNameOrOrd( const char *string )
-/*******************************************************/
+ResNameOrOrdinal *ResStrToNameOrOrdinal( const char *string )
+/***********************************************************/
 {
     ResNameOrOrdinal    *newname;
     size_t              stringlen;
@@ -62,8 +63,8 @@ ResNameOrOrdinal *ResStrToNameOrOrd( const char *string )
     return( newname );
 }
 
-ResNameOrOrdinal *ResNumToNameOrOrd( uint_16 num )
-/*************************************************/
+ResNameOrOrdinal *ResNumToNameOrOrdinal( uint_16 num )
+/****************************************************/
 {
     ResNameOrOrdinal    *newname;
 

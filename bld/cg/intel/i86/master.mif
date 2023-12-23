@@ -1,0 +1,21 @@
+tree_depth = 5
+
+target_cpu      = i86
+target_cls      = intel
+
+i86_objs = i86conv.obj &
+    i86enc.obj &
+    i86ilen.obj &
+    i86opseg.obj &
+    i86optab.obj &
+    i86ptype.obj &
+    i86rgtbl.obj &
+    i86rtrtn.obj &
+    i86score.obj &
+    i86sib.obj &
+    i86splt2.obj &
+    i86table.obj &
+    i86type.obj &
+    encode.obj
+
+!include $(cg_dir)/$(target_cls)/master.mif

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -51,7 +52,8 @@ typedef enum {
     OP_EXEC         = 0x0100,
 } obj_attrs;
 
-#define ERR_RETURN      ((size_t)-1)
+#define ERR_READ        ((size_t)-1)
+#define ERR_WRITE       ((size_t)-1)
 #define ERR_SEEK        ((unsigned long)-1L)
 
 #define STD_IN          0
@@ -81,17 +83,16 @@ extern sys_error        GetSystemErrCode( error_handle );
 
 extern const char       *SkipPathInfo( char const *, obj_attrs );
 extern const char       *ExtPointer( char const *, obj_attrs );
-extern char             *AppendPathDelim( char *, obj_attrs );
-extern size_t           MakeFileName( char *result, const char *name, const char *ext, obj_attrs oattrs );
+extern char             *AppendPathDelim( char *path, obj_attrs oattrs );
+extern size_t           MakeFileName( char *filename, const char *base_name, const char *defext, obj_attrs oattrs );
 extern const char       *RealFName( char const *name, obj_attrs *oattrs );
 extern bool             IsAbsolutePath( const char *path );
-extern char             *AppendPathDelim( char *path, obj_attrs oattrs );
 extern const char       *ExtPointer( char const *path, obj_attrs oattrs );
-extern file_handle      LclStringToFullName( const char *name, size_t len, char *full );
-extern file_handle      FullPathOpen( const char *name, size_t name_len, const char *ext, char *result, size_t max_result );
-extern file_handle      LocalFullPathOpen( const char *name, size_t name_len, const char *ext, char *result, size_t max_result );
-extern file_handle      PathOpen( const char *name, size_t name_len, const char *ext );
-extern file_handle      LocalPathOpen( const char *name, size_t name_len, const char *ext );
+extern file_handle      LclFileToFullName( const char *name, size_t name_len, char *full );
+extern file_handle      FullPathOpen( const char *name, size_t name_len, const char *defext, char *filename, size_t filename_maxlen );
+extern file_handle      LocalFullPathOpen( const char *name, size_t name_len, const char *defext, char *filename, size_t filename_maxlen );
+extern file_handle      PathOpen( const char *name, size_t name_len, const char *defext );
+extern file_handle      LocalPathOpen( const char *name, size_t name_len, const char *defext );
 
 #if !defined( BUILD_RFX )
 extern bool             FindWritable( char const *src, char *dst );

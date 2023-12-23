@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,6 +43,7 @@
 #include "trpimp.h"
 #include "trperr.h"
 #include "packet.h"
+#include "nov.h"
 
 
 #ifdef SERVER
@@ -199,13 +201,14 @@ static DWORD WINAPI Responder( LPVOID parm )
 {
     int                 from_length;
     struct sockaddr_ipx from;
-    char                buffer[ 1 ];
+    char                buffer[1];
 
     parm = parm;
     for( ;; ) {
         from_length = sizeof( struct sockaddr_ipx );
 
-        if( from_length == 0 ) break;   //to keep the compiler quiet
+        if( from_length == 0 )
+            break;   //to keep the compiler quiet
         if( recvfrom( ResponderSocket,
                         buffer,
                         sizeof( buffer ),
@@ -342,24 +345,48 @@ static char FindPartner( void )
     return( 1 );
 }
 
-const char *RemoteLink( const char *parms, bool server )
+#ifdef SERVER
+#ifdef TRAPGUI
+const char *RemoteLinkGet( char *parms, size_t len )
+{
+    /* unused parameters */ (void)len;
+
+    strcpy( parms, ServerName );
+    return( NULL );
+}
+#endif
+#endif
+
+const char *RemoteLinkSet( const char *parms )
 {
     unsigned    i;
+
+    if( *parms == '\0' )
+        parms = DEFAULT_LINK_NAME;
+    for( i = 0; i < 47 && *parms != '\0'; ++parms ) {
+        if( strchr( "/\\:;,*?+-", *parms ) == NULL ) {
+            ServerName[i++] = (char)toupper( *(byte *)parms );
+        }
+    }
+    ServerName[i] = '\0';
+    return( NULL );
+}
+
+const char *RemoteLink( const char *parms, bool server )
+{
     WSADATA     data;
 #ifdef SERVER
     const char  *p;
 #endif
 
-    server = server;
+    /* unused parameters */ (void)server;
 
-    if( *parms == '\0' )
-        parms = "NovLink";
-    for( i = 0; i < 47 && *parms != '\0'; ++parms ) {
-        if( strchr( "/\\:;,*?+-", *parms ) == NULL ) {
-            ServerName[ i++ ] = (char)toupper( *(byte *)parms );
+    if( parms != NULL ) {
+        parms = RemoteLinkSet( parms );
+        if( parms != NULL ) {
+            return( parms );
         }
     }
-    ServerName[ i ] = '\0';
     if( WSAStartup( 0x101, &data ) != 0 ) {
         return( TRP_ERR_can_not_obtain_socket );
     }

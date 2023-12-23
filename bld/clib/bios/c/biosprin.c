@@ -38,6 +38,7 @@
 
 _WCRTLINK unsigned short _bios_printer( unsigned ibmCmd, unsigned port, unsigned data )
 {
+#if defined( __WATCOM_PC98__ )
     if( _RWD_isPC98 ) { /* NEC PC-98 */
         unsigned        necCmd;
         unsigned short  necRc;
@@ -66,6 +67,7 @@ _WCRTLINK unsigned short _bios_printer( unsigned ibmCmd, unsigned port, unsigned
             ret |= 0x0001;    // timeout bit
         return( ret );
     }
+#endif
     /* IBM PC */
     return( __ibm_bios_printer( ibmCmd, port, data ) );
 }

@@ -1,4 +1,4 @@
-.ix 'auto'
+.ix 'auto' 
 .ix 'storage class' 'auto'
 .pp
 The declaration of an object in a function that does not contain

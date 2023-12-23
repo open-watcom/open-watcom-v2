@@ -34,7 +34,7 @@
 #include "variety.h"
 #include <dos.h>
 #include "dodoscal.h"
-#include "dosret.h"
+#include "seterrno.h"
 #if defined( __WINDOWS_386__ )
     #include <stddef.h>
     #include "clibxw32.h"
@@ -46,11 +46,11 @@ _WCRTLINK int intdosx( union REGS *inregs, union REGS *outregs, struct SREGS *se
 #if defined( __WINDOWS_386__ )
     return( _clib_intdosx( inregs, outregs, segregs ) );
 #else
-    register int            status;
+    int reg_eax;
 
-    status = DoDosxCall( inregs, outregs, segregs );
-    outregs->x.cflag = (status & 1);
-    _dosretax( outregs->x.eax, status );
-    return( outregs->x.eax );
+    reg_eax = DoDosxCall( inregs, outregs, segregs );
+    if( outregs->x.cflag )
+        return( __set_errno_dos_reterr( reg_eax ) );
+    return( reg_eax );
 #endif
 }

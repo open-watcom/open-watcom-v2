@@ -1,4 +1,6 @@
-target_cpu = axp
+tree_depth = 4
+
+dig_arch = axp
 
 imp_objs = &
         axpaddr.obj &

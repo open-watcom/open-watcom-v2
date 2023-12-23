@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -50,12 +51,12 @@ static trap_retval DoRequest( void )
     StartPacket();
     if( Out_Mx_Num == 0 ) {
         /* Tell the server we're not expecting anything back */
-        TRP_REQUEST( In_Mx_Ptr ) |= 0x80;
+        TRP_REQUEST( In_Mx_Ptr ) |= REQ_WANT_RETURN;
     }
     for( i = 0; i < In_Mx_Num; ++i ) {
         AddPacket( In_Mx_Ptr[i].ptr, In_Mx_Ptr[i].len );
     }
-    TRP_REQUEST( In_Mx_Ptr ) &= ~0x80;
+    TRP_REQUEST( In_Mx_Ptr ) &= ~REQ_WANT_RETURN;
     result = PutPacket();
     if( result != REQUEST_FAILED ) {
         result = 0;
@@ -63,17 +64,13 @@ static trap_retval DoRequest( void )
             result = GetPacket();
             if( result != REQUEST_FAILED ) {
                 left = result;
-                i = 0;
-                for( ;; ) {
-                    if( i >= Out_Mx_Num )
-                        break;
+                for( i = 0; i < Out_Mx_Num; i++ ) {
                     if( left > Out_Mx_Ptr[i].len ) {
                         piece = Out_Mx_Ptr[i].len;
                     } else {
                         piece = left;
                     }
                     RemovePacket( Out_Mx_Ptr[i].ptr, piece );
-                    i++;
                     left -= piece;
                     if( left == 0 ) {
                         break;
@@ -96,7 +93,7 @@ static trap_retval ReqRemoteConnect( void )
 
     _DBG_EnterFunc( "ReqRemoteConnect" );
     connect = GetOutPtr( 0 );
-    data = (char *)GetOutPtr( sizeof( connect_ret ) );
+    data = GetOutPtr( sizeof( connect_ret ) );
     if( !RemoteConnect() ) {
         strcpy( data, TRP_ERR_CANT_CONNECT );
         _DBG_WriteErr( "!RemoteConnect" );
@@ -127,18 +124,19 @@ static void ReqRemoteResume( void )
 {
     _DBG_EnterFunc( "ReqResume" );
     while( !RemoteConnect() )
-        ;
+        {}
     DoRequest();
     _DBG_ExitFunc( "ReqResume" );
 }
 
-trap_version TRAPENTRY TrapInit( const char *parms, char *error, bool remote )
+trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
 {
     trap_version    ver;
-    const char      *err;
+    const char      *error;
     bool            fix_minor;
 
-    remote=remote;
+    /* unused parameters */ (void)remote;
+
     _DBG_EnterFunc( "TrapInit" );
     ver.remote = true;
     fix_minor = false;
@@ -148,14 +146,14 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *error, bool remote )
             fix_minor = true;
         }
     }
-    err = RemoteLink( parms, false );
-    if( err != NULL ) {
-        strcpy( error, err );
+    error = RemoteLink( parms, false );
+    if( error != NULL ) {
+        strcpy( err, error );
     } else {
-        error[0] = '\0';
+        err[0] = '\0';
     }
-    ver.major = TRAP_MAJOR_VERSION;
-    ver.minor = fix_minor ? OLD_TRAP_MINOR_VERSION : TRAP_MINOR_VERSION;
+    ver.major = TRAP_VERSION_MAJOR;
+    ver.minor = fix_minor ? OLD_TRAP_VERSION_MINOR : TRAP_VERSION_MINOR;
     _DBG_ExitFunc( "TrapInit" );
     return( ver );
 }

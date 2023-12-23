@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,29 +42,26 @@
 #include "cmdlnprs.gh"
 #include "cmdlnsys.h"
 
-typedef enum {                  // flags to control memory model settings
-    MMC_DS      = 0x01,         // 'ds' reg is pegged/floated by user
-    MMC_FS      = 0x02,         // 'fs' reg is pegged/floated by user
-    MMC_GS      = 0x04,         // 'gs' reg is pegged/floated by user
-    MMC_WIN     = 0x08,         // model forced by Windows
-    MMC_NETWARE = 0x10,         // model forced by NetWare
-    MMC_NULL    = 0
-} mem_model_control;
+#include "clibext.h"
+
 
 #if 0
-#define DEF_SWITCHES_ALL        ( MEMORY_LOW_FAILS | ENABLE_FP_EXCEPTIONS )
+#define DEF_CGSW_GEN_SWITCHES_ALL   (CGSW_GEN_MEMORY_LOW_FAILS | CGSW_GEN_ENABLE_FP_EXCEPTIONS)
 #else
-#define DEF_SWITCHES_ALL        ( MEMORY_LOW_FAILS )
+#define DEF_CGSW_GEN_SWITCHES_ALL   (CGSW_GEN_MEMORY_LOW_FAILS)
+#endif
+#if _CPU == 8086
+    #define DEF_CGSW_GEN_SWITCHES   0
+    #define DEF_CGSW_X86_SWITCHES   CGSW_X86_CHEAP_POINTER
+#else
+    #define DEF_CGSW_GEN_SWITCHES   0
+    #define DEF_CGSW_X86_SWITCHES   (CGSW_X86_CHEAP_POINTER | CGSW_X86_USE_32 | CGSW_X86_FLAT_MODEL)
 #endif
 
 #if _CPU == 8086
-    #define DEF_TARGET_SWITCHES CHEAP_POINTER
-    #define DEF_SWITCHES 0
     #define DEFAULT_CPU CPU_86
     #define DEFAULT_FPU FPU_87
 #else
-    #define DEF_TARGET_SWITCHES CHEAP_POINTER|USE_32|FLAT_MODEL
-    #define DEF_SWITCHES 0
     #define DEFAULT_CPU CPU_686
     #define DEFAULT_FPU FPU_387
 #endif
@@ -78,16 +75,12 @@ typedef enum {                  // flags to control memory model settings
 void CmdSysInit( void )
 /*********************/
 {
-    GenSwitches = DEF_SWITCHES | DEF_SWITCHES_ALL;
-    TargetSwitches = DEF_TARGET_SWITCHES;
-    SET_CPU( CpuSwitches, DEFAULT_CPU );
-    SET_FPU( CpuSwitches, DEFAULT_FPU );
-    SET_FPU_EMU( CpuSwitches );
-    Stack87 = 8;
+    GenSwitches = DEF_CGSW_GEN_SWITCHES | DEF_CGSW_GEN_SWITCHES_ALL;
+    TargetSwitches = DEF_CGSW_X86_SWITCHES;
     CodeClassName = NULL;
-    TextSegName = strsave( "" );
-    DataSegName = strsave( "" );
-    GenCodeGroup = strsave( "" );
+    TextSegName = CMemStrDup( "" );
+    DataSegName = CMemStrDup( "" );
+    GenCodeGroup = CMemStrDup( "" );
     CompFlags.use_stdcall_at_number = true;
     CompFlags.register_conventions = true;
 }
@@ -112,29 +105,29 @@ char *CmdSysEnvVar( void )
 }
 
 void CmdX86CheckStack87( unsigned *p )
-/************************************/
+/*************************************
+ * 0 means no change to default
+ */
 {
-    // 0 means no change to default
-    if( *p <= 8 ) {
-        return;
+    if( *p > 8 ) {
+        *p = 0;
     }
-    *p = 0;
 }
 
 void CmdX86CheckThreshold( unsigned *p )
-/**************************************/
+/***************************************
+ * 0 is allowed
+ */
 {
-    // 0 is allowed
-    if( *p <= 32767 ) {
-        return;
+    if( *p > TARGET_INT_MAX ) {
+        *p = 256;
     }
-    *p = 256;
 }
 
 void CmdSysSetMaxOptimization( void )
 /***********************************/
 {
-    TargetSwitches |= I_MATH_INLINE;
+    GenSwitches |= CGSW_GEN_I_MATH_INLINE;
 }
 
 static void defineM_IX86Macro( void )
@@ -142,60 +135,50 @@ static void defineM_IX86Macro( void )
     unsigned cpu;
     char buff[32];
 
-    strcpy( buff, "_M_IX86=" );
-#if _CPU == 8086
-    cpu = 0;
-#else
-    cpu = 3;
-#endif
     switch( GET_CPU( CpuSwitches ) ) {
     case CPU_86:        cpu = 0; break;
-    case CPU_186:       cpu = 1; break;
-    case CPU_286:       cpu = 2; break;
-    case CPU_386:       cpu = 3; break;
-    case CPU_486:       cpu = 4; break;
-    case CPU_586:       cpu = 5; break;
-    case CPU_686:       cpu = 6; break;
+    case CPU_186:       cpu = 100; break;
+    case CPU_286:       cpu = 200; break;
+    case CPU_386:       cpu = 300; break;
+    case CPU_486:       cpu = 400; break;
+    case CPU_586:       cpu = 500; break;
+    case CPU_686:       cpu = 600; break;
     }
-    ConcatBase10( buff, cpu * 100 );
+    sprintf( buff, "_M_IX86=%u", cpu );
     PreDefineStringMacro( buff );
 }
 
-static void setWindowsSystem( void )
+static char *setTargetSystem( OPT_STORAGE *data )
 {
+    char *target_name = NULL;
+
+    if( data->bt ) {
+        char *target = SetStringOption( NULL, &(data->bt_value) );
+        SetTargetLiteral( &target_name, strupr( target ) );
+        CMemFree( target );
+    }
+    /*
+     * -zw overrides a build target name and setting
+     */
+    switch( data->win ) {
+    case OPT_ENUM_win_zw:
+        SetTargetLiteral( &target_name, "WINDOWS" );
+        break;
 #if _CPU == 8086
-    PreDefineStringMacro( "_WINDOWS" );
-    TargetSwitches |= WINDOWS | CHEAP_WINDOWS;
-    TargetSwitches &= ~ FLOATING_DS;
-#else
-    PreDefineStringMacro( "__WINDOWS_386__" );
-    TargetSwitches |= FLOATING_FS;
-    SET_FPU_INLINE( CpuSwitches );
-#endif
-}
-
-
-static void setFinalTargetSystem( OPT_STORAGE *data, char *target_name )
-{
-    char buff[128];
-
-    TargetSystem = TS_OTHER;
-    if( CompFlags.non_iso_compliant_names_enabled ) {
-#if _CPU == 8086
-        PreDefineStringMacro( "M_I86" );
-#else
-        PreDefineStringMacro( "M_I386" );
+    case OPT_ENUM_win_zW:
+        SetTargetLiteral( &target_name, "CHEAP_WINDOWS" );
+        break;
+    case OPT_ENUM_win_zws:
+        SetTargetLiteral( &target_name, "WINDOWS" );
+        TargetSwitches |= CGSW_X86_SMART_WINDOWS;
+        break;
+    case OPT_ENUM_win_zWs:
+        SetTargetLiteral( &target_name, "CHEAP_WINDOWS" );
+        TargetSwitches |= CGSW_X86_SMART_WINDOWS;
+        break;
 #endif
     }
-#if _CPU == 8086
-    PreDefineStringMacro( "_M_I86" );
-    PreDefineStringMacro( "__I86__" );
-#else
-    PreDefineStringMacro( "_M_I386" );
-    PreDefineStringMacro( "__386__" );
-#endif
-    PreDefineStringMacro( "__X86__" );
-    PreDefineStringMacro( "_X86_" );
+
     if( target_name == NULL ) {
 #if defined( __QNX__ )
         SetTargetLiteral( &target_name, "QNX" );
@@ -221,100 +204,152 @@ static void setFinalTargetSystem( OPT_STORAGE *data, char *target_name )
         #error "Target System not defined"
 #endif
     }
-    if( 0 == strcmp( target_name, "DOS" ) ) {
-        TargetSystem = TS_DOS;
+
+    TargetSystem = TS_OTHER;
+    if( target_name != NULL ) {
+        if( 0 == strcmp( target_name, "DOS" ) ) {
+            TargetSystem = TS_DOS;
+        } else if( 0 == strcmp( target_name, "OS2" ) ) {
+            TargetSystem = TS_OS2;
+        } else if( 0 == strcmp( target_name, "QNX" ) ) {
+            TargetSystem = TS_QNX;
+        } else if( 0 == strcmp( target_name, "WINDOWS" ) ) {
+            TargetSystem = TS_WINDOWS;
+        } else if( 0 == strcmp( target_name, "CHEAP_WINDOWS" ) ) {
+#if _CPU == 8086
+            TargetSystem = TS_CHEAP_WINDOWS;
+#else
+            TargetSystem = TS_WINDOWS;
+#endif
+            SetTargetLiteral( &target_name, "WINDOWS" );
+#if _CPU == 386
+        } else if( 0 == strcmp( target_name, "NETWARE" ) ) {
+            TargetSystem = TS_NETWARE;
+        } else if( 0 == strcmp( target_name, "NETWARE5" ) ) {
+            TargetSystem = TS_NETWARE5;
+            SetTargetLiteral( &target_name, "NETWARE" );
+        } else if( 0 == strcmp( target_name, "NT" ) ) {
+            TargetSystem = TS_NT;
+        } else if( 0 == strcmp( target_name, "LINUX" ) ) {
+            TargetSystem = TS_LINUX;
+        } else if( 0 == strcmp( target_name, "RDOS" ) ) {
+            TargetSystem = TS_RDOS;
+        } else if( 0 == strcmp( target_name, "HAIKU" )
+              || 0 == strcmp( target_name, "OSX" )
+              || 0 == strcmp( target_name, "SOLARIS" )
+              || 0 == strcmp( target_name, "BSD" ) ) {
+            TargetSystem = TS_UNIX;
+#endif
+        }
+    }
+    return( target_name );
+}
+
+static void setFinalTargetSystem( OPT_STORAGE *data, char *target_name )
+{
+    char buff[128];
+    bool target_multi_thread;
+
+    if( CompFlags.non_iso_compliant_names_enabled ) {
+#if _CPU == 8086
+        PreDefineStringMacro( "M_I86" );
+#else
+        PreDefineStringMacro( "M_I386" );
+#endif
+    }
+#if _CPU == 8086
+    PreDefineStringMacro( "_M_I86" );
+    PreDefineStringMacro( "__I86__" );
+#else
+    PreDefineStringMacro( "_M_I386" );
+    PreDefineStringMacro( "__386__" );
+#endif
+    PreDefineStringMacro( "__X86__" );
+    PreDefineStringMacro( "_X86_" );
+    /*
+     * create macro for target system
+     */
+    if( target_name != NULL ) {
+        strcpy( buff, "__" );
+        strcat( buff, target_name );
+        strcat( buff, "__" );
+        PreDefineStringMacro( buff );
+    }
+    /*
+     * additional setup for target system
+     */
+    target_multi_thread = true;
+    switch( TargetSystem ) {
+    case TS_DOS:
         if( CompFlags.non_iso_compliant_names_enabled ) {
             PreDefineStringMacro( "MSDOS" );
         }
-        PreDefineStringMacro( "__DOS__" );
         PreDefineStringMacro( "_DOS" );
-#if _CPU == 386
-    } else if( 0 == strcmp( target_name, "NETWARE" ) ) {
-        TargetSystem = TS_NETWARE;
-        PreDefineStringMacro( "__NETWARE_386__" );
-    } else if( 0 == strcmp( target_name, "NETWARE5" ) ) {
-        TargetSystem = TS_NETWARE5;
-        PreDefineStringMacro( "__NETWARE_386__" );
-        PreDefineStringMacro( "__NETWARE__" );
-        /* can get away with this because "netware5" is longer */
-        strcpy( target_name, "NETWARE" );
-    } else if( 0 == strcmp( target_name, "NT" ) ) {
-        TargetSystem = TS_NT;
-        PreDefineStringMacro( "_WIN32" );
-    } else if( 0 == strcmp( target_name, "LINUX" ) ) {
-        TargetSystem = TS_LINUX;
-        PreDefineStringMacro( "__UNIX__" );
-    } else if( 0 == strcmp( target_name, "RDOS" ) ) {
-        TargetSystem = TS_RDOS;
-        PreDefineStringMacro( "_RDOS" );
-#endif
-    } else if( 0 == strcmp( target_name, "OS2" ) ) {
-        TargetSystem = TS_OS2;
-    } else if( 0 == strcmp( target_name, "QNX" ) ) {
-        TargetSystem = TS_QNX;
-        PreDefineStringMacro( "__UNIX__" );
-    } else if( 0 == strcmp( target_name, "WINDOWS" ) ) {
-        TargetSystem = TS_WINDOWS;
-        setWindowsSystem();
-    } else if( 0 == strcmp( target_name, "CHEAP_WINDOWS" ) ) {
+        break;
+    case TS_CHEAP_WINDOWS:
+        PreDefineStringMacro( "__CHEAP_WINDOWS__" );
+        /* fall through */
+    case TS_WINDOWS:
+        target_multi_thread = false;
 #if _CPU == 8086
-        TargetSystem = TS_CHEAP_WINDOWS;
+        PreDefineStringMacro( "_WINDOWS" );
+        TargetSwitches |= CGSW_X86_WINDOWS | CGSW_X86_CHEAP_WINDOWS;
 #else
-        TargetSystem = TS_WINDOWS;
+        PreDefineStringMacro( "__WINDOWS_386__" );
 #endif
-        /* can get away with this because "cheap_windows" is longer */
-        strcpy( target_name, "WINDOWS" );
-        setWindowsSystem();
-    } else {
-        TargetSystem = TS_OTHER;
+        break;
+    case TS_NETWARE5:
+        PreDefineStringMacro( "__NETWARE5__" );
+        /* fall through */
+    case TS_NETWARE:
+        PreDefineStringMacro( "__NETWARE_386__" );
+        break;
+    case TS_RDOS:
+        PreDefineStringMacro( "_RDOS" );
+        break;
+    case TS_NT:
+        PreDefineStringMacro( "_WIN32" );
+        break;
+    case TS_QNX:
+    case TS_LINUX:
+    case TS_UNIX:
+        PreDefineStringMacro( "__UNIX__" );
+        break;
+    default:
+        break;
     }
-    strcpy( buff, "__" );
-    strcat( buff, target_name );
-    strcat( buff, "__" );
-    PreDefineStringMacro( buff );
-
-    /*
-    //  Note the hacks for windows/cheap_windows & netware/netware5, above.
-    */
-    strcpy( buff, target_name );
-    strcat( buff, "_INCLUDE" );
-    MergeIncludeFromEnv( buff );
-
-    MergeIncludeFromEnv( "INCLUDE" );
-    CMemFree( target_name );
-    if( data->bm ) {
+    if( data->bm
+      || target_multi_thread && data->bd ) {
         CompFlags.target_multi_thread = true;
     }
-    if( data->bd ) {
-        switch( TargetSystem ) {
-        case TS_WINDOWS:
-#if _CPU == 8086
-        case TS_CHEAP_WINDOWS:
-#endif
-            break;
-        default:
-            CompFlags.target_multi_thread = true;
-        }
+
+    if( target_name != NULL ) {
+        strcpy( buff, target_name );
+        strcat( buff, "_INCLUDE" );
+        MergeIncludeFromEnv( buff );
     }
+    MergeIncludeFromEnv( "INCLUDE" );
+    CMemFree( target_name );
 }
 
-static void setMemoryModel( OPT_STORAGE *data, mem_model_control control )
+static void setMemoryModel( OPT_STORAGE *data )
 {
-    char model = '\0';
+    char lib_model = '\0';
     unsigned bit;
+    bool target_win;
 
     if( data->mem_model == OPT_ENUM_mem_model_default ) {
 #if _CPU == 8086
         data->mem_model = OPT_ENUM_mem_model_ms;
 #else
-        data->mem_model = OPT_ENUM_mem_model_mf;
+        if( TargetSystem == TS_NETWARE
+          || TargetSystem == TS_NETWARE5 ) {
+            data->mem_model = OPT_ENUM_mem_model_ms;
+        } else {
+            data->mem_model = OPT_ENUM_mem_model_mf;
+        }
 #endif
     }
-#if _CPU == 386
-    if( control & MMC_NETWARE ) {
-        data->mem_model = OPT_ENUM_mem_model_ms;
-    }
-#endif
     bit = 0;
     if( CompFlags.non_iso_compliant_names_enabled ) {
         switch( data->mem_model ) {
@@ -348,98 +383,174 @@ static void setMemoryModel( OPT_STORAGE *data, mem_model_control control )
     CodePtrSize = TARGET_POINTER;
     switch( data->mem_model ) {
     case OPT_ENUM_mem_model_ms:
-        model = 's';
+        lib_model = 's';
         PreDefineStringMacro( "_M_" MM_ARCH "SM" );
         PreDefineStringMacro( "__SMALL__" );
         CompFlags.strings_in_code_segment = false;
-        TargetSwitches &= ~CONST_IN_CODE;
-        bit |= CHEAP_POINTER;
+        TargetSwitches &= ~CGSW_X86_CONST_IN_CODE;
+        bit |= CGSW_X86_CHEAP_POINTER;
         break;
     case OPT_ENUM_mem_model_mm:
-        model = 'm';
-        WatcallInfo.cclass |= FAR_CALL;
+        lib_model = 'm';
+        WatcallInfo.cclass_target |= FECALL_X86_FAR_CALL;
         CodePtrSize = TARGET_FAR_POINTER;
         PreDefineStringMacro( "_M_" MM_ARCH "MM" );
         PreDefineStringMacro( "__MEDIUM__" );
         CompFlags.strings_in_code_segment = false;
-        TargetSwitches &= ~CONST_IN_CODE;
-        bit |= BIG_CODE | CHEAP_POINTER;
+        TargetSwitches &= ~CGSW_X86_CONST_IN_CODE;
+        bit |= CGSW_X86_BIG_CODE | CGSW_X86_CHEAP_POINTER;
         break;
     case OPT_ENUM_mem_model_mc:
-        model = 'c';
+        lib_model = 'c';
         PreDefineStringMacro( "_M_" MM_ARCH "CM" );
         PreDefineStringMacro( "__COMPACT__" );
         DataPtrSize = TARGET_FAR_POINTER;
-        bit |= BIG_DATA | CHEAP_POINTER;
+        bit |= CGSW_X86_BIG_DATA | CGSW_X86_CHEAP_POINTER;
         break;
     case OPT_ENUM_mem_model_ml:
-        model = 'l';
+        lib_model = 'l';
         PreDefineStringMacro( "_M_" MM_ARCH "LM" );
         PreDefineStringMacro( "__LARGE__" );
-        WatcallInfo.cclass |= FAR_CALL;
+        WatcallInfo.cclass_target |= FECALL_X86_FAR_CALL;
         CodePtrSize = TARGET_FAR_POINTER;
         DataPtrSize = TARGET_FAR_POINTER;
-        bit |= BIG_CODE | BIG_DATA | CHEAP_POINTER;
+        bit |= CGSW_X86_BIG_CODE | CGSW_X86_BIG_DATA | CGSW_X86_CHEAP_POINTER;
         break;
 #if _CPU == 8086
     case OPT_ENUM_mem_model_mh:
-        model = 'h';
+        lib_model = 'h';
         PreDefineStringMacro( "_M_" MM_ARCH "HM" );
         PreDefineStringMacro( "__HUGE__" );
-        WatcallInfo.cclass |= FAR_CALL;
+        WatcallInfo.cclass_target |= FECALL_X86_FAR_CALL;
         CodePtrSize = TARGET_FAR_POINTER;
         DataPtrSize = TARGET_FAR_POINTER;
-        bit |= BIG_CODE | BIG_DATA;
+        bit |= CGSW_X86_BIG_CODE | CGSW_X86_BIG_DATA;
         break;
 #else
     case OPT_ENUM_mem_model_mfi:
         CompFlags.mfi_switch_used = true;
         /* fall through */
     case OPT_ENUM_mem_model_mf:
-        model = 's';
+        lib_model = 's';
         PreDefineStringMacro( "_M_" MM_ARCH "FM" );
         PreDefineStringMacro( "__FLAT__" );
-        bit |= FLAT_MODEL | CHEAP_POINTER;
+        bit |= CGSW_X86_FLAT_MODEL | CGSW_X86_CHEAP_POINTER;
         break;
 #endif
     default:
         DbgNever();
     }
-// setup default "floating" segment registers
-#if _CPU == 8086
-    bit |= FLOATING_ES;
-#else
-    // 386 flat model needs at least one floating segment register
-    bit |= FLOATING_GS;
-    if( (bit & FLAT_MODEL) == 0 ) {
-        bit |= FLOATING_ES;
+    /*
+     * setup "floating" segment registers
+     * any memory model needs at least one floating segment register
+     * by default it is ES segment register for 16-bit code and
+     * GS segment register for 32-bit code
+     */
+
+    /*
+     * setup SS segment register floating
+     */
+    if( data->zu ) {
+        CompFlags.zu_switch_used = true;
+        bit |= CGSW_X86_FLOATING_SS;
+    }
+    /*
+     * setup ES segment register floating
+     */
+    if( (bit & CGSW_X86_FLAT_MODEL) == 0 ) {
+        bit |= CGSW_X86_FLOATING_ES;
+    }
+    /*
+     * setup DS segment register floating
+     */
+    if( bit & CGSW_X86_BIG_DATA ) {
+        bit |= CGSW_X86_FLOATING_DS;
+    }
+#if _CPU == 386
+    /*
+     * 32-bit code with zdl option has DS pegged
+     */
+    if( data->zdl ) {
+        TargetSwitches |= CGSW_X86_LOAD_DS_DIRECTLY;
+        bit &= ~CGSW_X86_FLOATING_DS;
     }
 #endif
-    if( bit & BIG_DATA ) {
-        bit |= FLOATING_DS;
-    }
-    if( control & ( MMC_DS | MMC_WIN ) ) {
-        bit &= ~FLOATING_DS;
-    } else {
-        TargetSwitches &= ~ FLOATING_DS;
-    }
-    if( control & MMC_FS ) {
-        bit &= ~FLOATING_FS;
-    } else {
-        TargetSwitches &= ~ FLOATING_FS;
-    }
-    if( control & MMC_GS ) {
-        bit &= ~FLOATING_GS;
-    } else {
-        TargetSwitches &= ~ FLOATING_GS;
-    }
-    TargetSwitches &= ~( FLAT_MODEL | BIG_CODE | BIG_DATA | CHEAP_POINTER | FLOATING_ES );
-    TargetSwitches |= bit;
 #if _CPU == 8086
-    if( data->bm ) { // .DLL
+    /*
+     * any model of 16-bit Windows has DS pegged
+     */
+    if( TargetSystem == TS_WINDOWS
+      || TargetSystem == TS_CHEAP_WINDOWS ) {
+        bit &= ~CGSW_X86_FLOATING_DS;
+    }
+#endif
+    switch( data->ds_peg ) {
+    case OPT_ENUM_ds_peg_zdp:
+        TargetSwitches &= ~CGSW_X86_FLOATING_DS;
+        bit &= ~CGSW_X86_FLOATING_DS;
+        break;
+    case OPT_ENUM_ds_peg_zdf:
+        TargetSwitches |= CGSW_X86_FLOATING_DS;
+        bit &= ~CGSW_X86_FLOATING_DS;
+        break;
+    }
+    /*
+     * setup FS segment register floating
+     *
+     * FS segment register is used by 32-bit C++ run-time libraries
+     */
+    if( GET_CPU( CpuSwitches ) >= CPU_386 ) {
+#if _CPU == 8086
+        bit |= CGSW_X86_FLOATING_FS;
+#else
+        if( TargetSystem == TS_WINDOWS ) {
+            bit |= CGSW_X86_FLOATING_FS;
+        }
+#endif
+    }
+    switch( data->fs_peg ) {
+    case OPT_ENUM_fs_peg_zfp:
+        TargetSwitches &= ~CGSW_X86_FLOATING_FS;
+        bit &= ~CGSW_X86_FLOATING_FS;
+        break;
+    case OPT_ENUM_fs_peg_zff:
+        TargetSwitches |= CGSW_X86_FLOATING_FS;
+        bit &= ~CGSW_X86_FLOATING_FS;
+        break;
+    }
+    /*
+     * setup GS segment register floating
+     */
+    if( GET_CPU( CpuSwitches ) >= CPU_386 ) {
+        bit |= CGSW_X86_FLOATING_GS;
+    }
+    switch( data->gs_peg ) {
+    case OPT_ENUM_gs_peg_zgp:
+        TargetSwitches &= ~CGSW_X86_FLOATING_GS;
+        bit &= ~CGSW_X86_FLOATING_GS;
+        break;
+    case OPT_ENUM_gs_peg_zgf:
+        TargetSwitches |= CGSW_X86_FLOATING_GS;
+        bit &= ~CGSW_X86_FLOATING_GS;
+        break;
+    }
+
+    TargetSwitches &= ~(CGSW_X86_FLAT_MODEL | CGSW_X86_BIG_CODE | CGSW_X86_BIG_DATA | CGSW_X86_CHEAP_POINTER);
+    TargetSwitches |= bit;
+
+    if( GET_CPU( CpuSwitches ) < CPU_386 ) {
+        /*
+         * issue warning message if /zf[f|p] or /zg[f|p] spec'd?
+         */
+        TargetSwitches &= ~(CGSW_X86_FLOATING_FS | CGSW_X86_FLOATING_GS);
+    }
+
+#if _CPU == 8086
+    target_win = ( TargetSystem == TS_WINDOWS || TargetSystem == TS_CHEAP_WINDOWS );
+    if( data->bm ) { /* .DLL */
         strcpy( DLL_CLIB_Name, "2clibmt?" );
     } else {
-        if( control & MMC_WIN ) {
+        if( target_win ) {
             strcpy( DLL_CLIB_Name, "2clib?" );
         } else {
             strcpy( DLL_CLIB_Name, "2clibdl?" );
@@ -448,7 +559,7 @@ static void setMemoryModel( OPT_STORAGE *data, mem_model_control control )
     if( data->bm ) {
         strcpy( CLIB_Name, "2clibmt?" );
     } else if( data->bd ) {
-        if( control & MMC_WIN ) {
+        if( target_win ) {
             strcpy( CLIB_Name, "2clib?" );
         } else {
             strcpy( CLIB_Name, "2clibdl?" );
@@ -457,10 +568,10 @@ static void setMemoryModel( OPT_STORAGE *data, mem_model_control control )
         strcpy( CLIB_Name, "2clib?" );
     }
     if( CompFlags.excs_enabled ) {
-        if( data->bm ) { // .DLL
+        if( data->bm ) { /* .DLL */
             strcpy( DLL_WCPPLIB_Name, "4plbxmt?" );
         } else {
-            if( control & MMC_WIN ) {
+            if( target_win ) {
                 strcpy( DLL_WCPPLIB_Name, "4plbx?" );
             } else {
                 strcpy( DLL_WCPPLIB_Name, "4plbxmt?" );
@@ -469,7 +580,7 @@ static void setMemoryModel( OPT_STORAGE *data, mem_model_control control )
         if( data->bm ) {
             strcpy( WCPPLIB_Name, "4plbxmt?" );
         } else if( data->bd ) {
-            if( control & MMC_WIN ) {
+            if( target_win ) {
                 strcpy( WCPPLIB_Name, "4plbx?" );
             } else {
                 strcpy( WCPPLIB_Name, "4plbxmt?" );
@@ -478,10 +589,10 @@ static void setMemoryModel( OPT_STORAGE *data, mem_model_control control )
             strcpy( WCPPLIB_Name, "4plbx?" );
         }
     } else {
-        if( data->bm ) { // .DLL
+        if( data->bm ) { /* .DLL */
             strcpy( DLL_WCPPLIB_Name, "4plibmt?" );
         } else {
-            if( control & MMC_WIN ) {
+            if( target_win ) {
                 strcpy( DLL_WCPPLIB_Name, "4plib?" );
             } else {
                 strcpy( DLL_WCPPLIB_Name, "4plibmt?" );
@@ -490,7 +601,7 @@ static void setMemoryModel( OPT_STORAGE *data, mem_model_control control )
         if( data->bm ) {
             strcpy( WCPPLIB_Name, "4plibmt?" );
         } else if( data->bd ) {
-            if( control & MMC_WIN ) {
+            if( target_win ) {
                 strcpy( WCPPLIB_Name, "4plib?" );
             } else {
                 strcpy( WCPPLIB_Name, "4plibmt?" );
@@ -499,22 +610,24 @@ static void setMemoryModel( OPT_STORAGE *data, mem_model_control control )
             strcpy( WCPPLIB_Name, "4plib?" );
         }
     }
-    if( GET_FPU_EMU( CpuSwitches ) ) {
-        strcpy( MATHLIB_Name, "7math87?" );
-        EmuLib_Name = "8emu87";
-    } else if( GET_FPU_LEVEL( CpuSwitches ) == FPU_NONE ) {
+    if( GET_FPU_FPC( CpuSwitches ) ) {
         strcpy( MATHLIB_Name, "5math?" );
         EmuLib_Name = NULL;
     } else {
         strcpy( MATHLIB_Name, "7math87?" );
-        EmuLib_Name = "8noemu87";
+        if( GET_FPU_EMU( CpuSwitches ) ) {
+            EmuLib_Name = "8emu87";
+        } else {
+            EmuLib_Name = "8noemu87";
+        }
     }
 #else
+    target_win = ( TargetSystem == TS_WINDOWS );
     if( CompFlags.register_conventions ) {
-        model = 'r';
+        lib_model = 'r';
         PreDefineStringMacro( "__3R__" );
     } else {
-        model = 's';
+        lib_model = 's';
         PreDefineStringMacro( "__3S__" );
     }
     strcpy( CDLL_Name, "1clb?dll" );
@@ -522,10 +635,10 @@ static void setMemoryModel( OPT_STORAGE *data, mem_model_control control )
     strcpy( DLL_CLIB_Name, "2clib3?" );
     if( CompFlags.excs_enabled ) {
         strcpy( WCPPDLL_Name, "3plb?dllx" );
-        if( data->bm ) { // .DLL
+        if( data->bm ) { /* .DLL */
             strcpy( DLL_WCPPLIB_Name, "4plbxmt3?" );
         } else {
-            if( control & MMC_WIN ) {
+            if( target_win ) {
                 strcpy( DLL_WCPPLIB_Name, "4plbx3?" );
             } else {
                 strcpy( DLL_WCPPLIB_Name, "4plbxmt3?" );
@@ -534,7 +647,7 @@ static void setMemoryModel( OPT_STORAGE *data, mem_model_control control )
         if( data->bm ) {
             strcpy( WCPPLIB_Name, "4plbxmt3?" );
         } else if( data->bd ) {
-            if( control & MMC_WIN ) {
+            if( target_win ) {
                 strcpy( WCPPLIB_Name, "4plbx3?" );
             } else {
                 strcpy( WCPPLIB_Name, "4plbxmt3?" );
@@ -544,10 +657,10 @@ static void setMemoryModel( OPT_STORAGE *data, mem_model_control control )
         }
     } else {
         strcpy( WCPPDLL_Name, "3plb?dll" );
-        if( data->bm ) { // .DLL
+        if( data->bm ) { /* .DLL */
             strcpy( DLL_WCPPLIB_Name, "4plibmt3?" );
         } else {
-            if( control & MMC_WIN ) {
+            if( target_win ) {
                 strcpy( DLL_WCPPLIB_Name, "4plib3?" );
             } else {
                 strcpy( DLL_WCPPLIB_Name, "4plibmt3?" );
@@ -556,7 +669,7 @@ static void setMemoryModel( OPT_STORAGE *data, mem_model_control control )
         if( data->bm ) {
             strcpy( WCPPLIB_Name, "4plibmt3?" );
         } else if( data->bd ) {
-            if( control & MMC_WIN ) {
+            if( target_win ) {
                 strcpy( WCPPLIB_Name, "4plib3?" );
             } else {
                 strcpy( WCPPLIB_Name, "4plibmt3?" );
@@ -565,14 +678,7 @@ static void setMemoryModel( OPT_STORAGE *data, mem_model_control control )
             strcpy( WCPPLIB_Name, "4plib3?" );
         }
     }
-    if( GET_FPU_EMU( CpuSwitches ) ) {
-        if( data->br ) {
-            strcpy( MATHLIB_Name, "7mt7?dll" );
-        } else {
-            strcpy( MATHLIB_Name, "7math387?" );
-        }
-        EmuLib_Name = "8emu387";
-    } else if( GET_FPU_LEVEL( CpuSwitches ) == FPU_NONE ) {
+    if( GET_FPU_FPC( CpuSwitches ) ) {
         if( data->br ) {
             strcpy( MATHLIB_Name, "5mth?dll" );
         } else {
@@ -585,24 +691,30 @@ static void setMemoryModel( OPT_STORAGE *data, mem_model_control control )
         } else {
             strcpy( MATHLIB_Name, "7math387?" );
         }
-        EmuLib_Name = "8noemu387";
+        if( GET_FPU_EMU( CpuSwitches ) ) {
+            EmuLib_Name = "8emu387";
+        } else {
+            EmuLib_Name = "8noemu387";
+        }
     }
-    *strchr( CDLL_Name, '?' ) = model;
-    *strchr( WCPPDLL_Name, '?' ) = model;
+    *strchr( CDLL_Name, '?' ) = lib_model;
+    *strchr( WCPPDLL_Name, '?' ) = lib_model;
 #endif
-    *strchr( CLIB_Name, '?' ) = model;
-    *strchr( MATHLIB_Name, '?' ) = model;
-    *strchr( WCPPLIB_Name, '?' ) = model;
-    *strchr( DLL_CLIB_Name, '?' ) = model;
-    *strchr( DLL_WCPPLIB_Name, '?' ) = model;
+    *strchr( CLIB_Name, '?' ) = lib_model;
+    *strchr( MATHLIB_Name, '?' ) = lib_model;
+    *strchr( WCPPLIB_Name, '?' ) = lib_model;
+    *strchr( DLL_CLIB_Name, '?' ) = lib_model;
+    *strchr( DLL_WCPPLIB_Name, '?' ) = lib_model;
 }
 
-static void setIntelArchitecture( OPT_STORAGE *data, mem_model_control control )
+static void setIntelArchitecture( OPT_STORAGE *data )
 {
 #if _CPU == 8086
-    /* unused parameters */ (void)control;
-
+    /*
+     * Set CPU for 16-bit architecture, default is 8086
+     */
     switch( data->arch_i86 ) {
+    case OPT_ENUM_arch_i86_default:
     case OPT_ENUM_arch_i86__0:
         SET_CPU( CpuSwitches, CPU_86 );
         break;
@@ -626,6 +738,9 @@ static void setIntelArchitecture( OPT_STORAGE *data, mem_model_control control )
         break;
     }
 #else
+    /*
+     * Set CPU for 32-bit architecture, default is 80686
+     */
     switch( data->arch_386 ) {
     case OPT_ENUM_arch_386__3s:
         CompFlags.register_conventions = false;
@@ -655,16 +770,102 @@ static void setIntelArchitecture( OPT_STORAGE *data, mem_model_control control )
         CompFlags.register_conventions = false;
         SET_CPU( CpuSwitches, CPU_686 );
         break;
+    case OPT_ENUM_arch_386_default:
     case OPT_ENUM_arch_386__6r:
         CompFlags.register_conventions = true;
         SET_CPU( CpuSwitches, CPU_686 );
         break;
     }
-    if( control & MMC_NETWARE ) {
+    /*
+     * NETWARE uses stack based calling conventions
+     * by default - silly people.
+     */
+    if( TargetSystem == TS_NETWARE
+      || TargetSystem == TS_NETWARE5 ) {
         CompFlags.register_conventions = false;
     }
 #endif
-    defineM_IX86Macro();
+
+    /*
+     * Set FPU level, default is 8087/80387
+     */
+    switch( data->intel_fpu_level ) {
+    case OPT_ENUM_intel_fpu_level_fp6:
+        SET_FPU_LEVEL( CpuSwitches, FPU_686 );
+        break;
+    case OPT_ENUM_intel_fpu_level_fp5:
+        SET_FPU_LEVEL( CpuSwitches, FPU_586 );
+        break;
+#if _CPU == 386
+    case OPT_ENUM_intel_fpu_level_default:
+#endif
+    case OPT_ENUM_intel_fpu_level_fp3:
+        SET_FPU_LEVEL( CpuSwitches, FPU_387 );
+        break;
+#if _CPU == 8086
+    case OPT_ENUM_intel_fpu_level_default:
+#endif
+    case OPT_ENUM_intel_fpu_level_fp2:
+        SET_FPU_LEVEL( CpuSwitches, FPU_87 );
+        break;
+    }
+    /*
+     * Set FPU model, default is fpi
+     */
+    switch( data->intel_fpu_model ) {
+    case OPT_ENUM_intel_fpu_model_default:
+    case OPT_ENUM_intel_fpu_model_fpi:
+#if _CPU == 386
+        if( TargetSystem != TS_WINDOWS ) {
+#endif
+            SET_FPU_EMU( CpuSwitches );
+            break;
+#if _CPU == 386
+        }
+        /* fall through */
+#endif
+    case OPT_ENUM_intel_fpu_model_fpi87:
+        SET_FPU_INLINE( CpuSwitches );
+        break;
+    case OPT_ENUM_intel_fpu_model_fpc:
+        SET_FPU_FPC( CpuSwitches );
+        CompFlags.op_switch_used = false;
+        break;
+    }
+
+    if( data->fpd ) {
+        TargetSwitches |= CGSW_X86_P5_DIVIDE_CHECK;
+    }
+    /*
+     * If using NetWare, set Stack87 unless the target
+     * is NetWare 5 or higher.
+     */
+    if( data->fpr ) {
+        Stack87 = 4;
+    } else if( TargetSystem == TS_NETWARE ) {
+        Stack87 = 4;
+    } else {
+        Stack87 = 8;
+    }
+    if( data->_87d ) {
+        if( data->_87d_value > 0 ) {
+            Stack87 = data->_87d_value;
+        }
+    }
+
+    if( data->zfw ) {
+        TargetSwitches |= CGSW_X86_GEN_FWAIT_386;
+    }
+    switch( data->fp_rounding ) {
+    case OPT_ENUM_fp_rounding_zri:
+        GenSwitches |= CGSW_GEN_FPU_ROUNDING_INLINE;
+        break;
+    case OPT_ENUM_fp_rounding_zro:
+        GenSwitches |= CGSW_GEN_FPU_ROUNDING_OMIT;
+        break;
+    default:
+        break;
+    }
 }
 
 static void defineFSRegistration( void )
@@ -674,101 +875,93 @@ static void defineFSRegistration( void )
     }
     CompFlags.rw_registration = true;
 #if _CPU == 386
-    if( TargetSystem == TS_NT || TargetSystem == TS_OS2 ) {
+    if( TargetSystem == TS_NT
+      || TargetSystem == TS_OS2 ) {
         CompFlags.fs_registration = true;
     }
 #endif
 }
 
-static void defEmu( void )
-{
-    if( GET_FPU_EMU( CpuSwitches ) ) {
-        DefSwitchMacro( "FPI" );
-    } else {
-        DefSwitchMacro( "FPI87" );
-    }
-}
-
 static void macroDefs( void )
 {
-    if( TargetSwitches & I_MATH_INLINE ) {
+    if( GenSwitches & CGSW_GEN_I_MATH_INLINE ) {
         DefSwitchMacro( "OM" );
     }
-    switch( TargetSwitches & (BIG_DATA|BIG_CODE|CHEAP_POINTER|FLAT_MODEL) ) {
-    case CHEAP_POINTER:
+    switch( TargetSwitches & (CGSW_X86_BIG_DATA | CGSW_X86_BIG_CODE | CGSW_X86_CHEAP_POINTER | CGSW_X86_FLAT_MODEL) ) {
+    case CGSW_X86_CHEAP_POINTER:
         DefSwitchMacro( "MS" );
         break;
-    case BIG_CODE|CHEAP_POINTER:
+    case CGSW_X86_BIG_CODE | CGSW_X86_CHEAP_POINTER:
         DefSwitchMacro( "MM" );
         break;
-    case BIG_DATA|CHEAP_POINTER:
+    case CGSW_X86_BIG_DATA | CGSW_X86_CHEAP_POINTER:
         DefSwitchMacro( "MC" );
         break;
-    case BIG_CODE|BIG_DATA|CHEAP_POINTER:
+    case CGSW_X86_BIG_CODE | CGSW_X86_BIG_DATA | CGSW_X86_CHEAP_POINTER:
         DefSwitchMacro( "ML" );
         break;
-    case BIG_CODE|BIG_DATA:
+    case CGSW_X86_BIG_CODE | CGSW_X86_BIG_DATA:
         DefSwitchMacro( "MH" );
         break;
-    case FLAT_MODEL|CHEAP_POINTER:
+    case CGSW_X86_FLAT_MODEL | CGSW_X86_CHEAP_POINTER:
         DefSwitchMacro( "MF" );
         break;
     }
-    if( TargetSwitches & FLOATING_FS ) {
+    if( TargetSwitches & CGSW_X86_FLOATING_FS ) {
         DefSwitchMacro( "ZFF" );
     } else {
         DefSwitchMacro( "ZFP" );
     }
-    if( TargetSwitches & FLOATING_GS ) {
+    if( TargetSwitches & CGSW_X86_FLOATING_GS ) {
         DefSwitchMacro( "ZGF" );
     } else {
         DefSwitchMacro( "ZGP" );
     }
-    if( TargetSwitches & FLOATING_DS ) {
+    if( TargetSwitches & CGSW_X86_FLOATING_DS ) {
         DefSwitchMacro( "ZDF" );
     } else {
         DefSwitchMacro( "ZDP" );
     }
-    if( TargetSwitches & FLOATING_SS ) {
+    if( TargetSwitches & CGSW_X86_FLOATING_SS ) {
         DefSwitchMacro( "ZU" );
     }
-    if( TargetSwitches & INDEXED_GLOBALS ) {
+    if( TargetSwitches & CGSW_X86_INDEXED_GLOBALS ) {
         DefSwitchMacro( "XGV" );
     }
-    if( TargetSwitches & WINDOWS ) {
+    if( TargetSwitches & CGSW_X86_WINDOWS ) {
         DefSwitchMacro( "ZW" );
     }
-    if( TargetSwitches & SMART_WINDOWS ) {
+    if( TargetSwitches & CGSW_X86_SMART_WINDOWS ) {
         DefSwitchMacro( "ZWS" );
     }
-    if( TargetSwitches & NO_CALL_RET_TRANSFORM ) {
+    if( GenSwitches & CGSW_GEN_NO_CALL_RET_TRANSFORM ) {
         DefSwitchMacro( "OC" );
     }
-    if( TargetSwitches & NEED_STACK_FRAME ) {
+    if( TargetSwitches & CGSW_X86_NEED_STACK_FRAME ) {
         DefSwitchMacro( "OF" );
     }
-    if( GenSwitches & NO_OPTIMIZATION ) {
+    if( GenSwitches & CGSW_GEN_NO_OPTIMIZATION ) {
         DefSwitchMacro( "OD" );
     }
-    if( GenSwitches & RELAX_ALIAS ) {
+    if( GenSwitches & CGSW_GEN_RELAX_ALIAS ) {
         DefSwitchMacro( "OA" );
     }
-    if( GenSwitches & BRANCH_PREDICTION ) {
+    if( GenSwitches & CGSW_GEN_BRANCH_PREDICTION ) {
         DefSwitchMacro( "OB" );
     }
-    if( GenSwitches & LOOP_OPTIMIZATION ) {
+    if( GenSwitches & CGSW_GEN_LOOP_OPTIMIZATION ) {
         DefSwitchMacro( "OL" );
     }
-    if( GenSwitches & INS_SCHEDULING ) {
+    if( GenSwitches & CGSW_GEN_INS_SCHEDULING ) {
         DefSwitchMacro( "OR" );
     }
-    if( GenSwitches & FPU_ROUNDING_INLINE ) {
+    if( GenSwitches & CGSW_GEN_FPU_ROUNDING_INLINE ) {
         DefSwitchMacro( "ZRI" );
     }
-    if( GenSwitches & FPU_ROUNDING_OMIT ) {
+    if( GenSwitches & CGSW_GEN_FPU_ROUNDING_OMIT ) {
         DefSwitchMacro( "ZRO" );
     }
-    if( TargetSwitches & GEN_FWAIT_386 ) {
+    if( TargetSwitches & CGSW_X86_GEN_FWAIT_386 ) {
         DefSwitchMacro( "ZFW" );
     }
     if( CompFlags.signed_char ) {
@@ -805,7 +998,7 @@ static void macroDefs( void )
     if( CompFlags.zc_switch_used ) {
         DefSwitchMacro( "ZC" );
     }
-    if( CompFlags.use_unicode ) {
+    if( CompFlags.use_double_byte ) {
         DefSwitchMacro( "ZK" );
     }
     if( CompFlags.sg_switch_used ) {
@@ -856,6 +1049,7 @@ static void macroDefs( void )
         break;
     DbgDefault( "macroDefs -- invalid exception switch" );
     }
+
     switch( GET_CPU( CpuSwitches ) ) {
     case CPU_86:
         DefSwitchMacro( "0" );
@@ -879,27 +1073,32 @@ static void macroDefs( void )
         DefSwitchMacro( "6" );
         break;
     }
+
+    defineM_IX86Macro();
+
     switch( GET_FPU_LEVEL( CpuSwitches ) ) {
-    case FPU_NONE:
-        CompFlags.op_switch_used = false;
-        DefSwitchMacro( "FPC" );
-        break;
     case FPU_87:
         DefSwitchMacro( "FP287" );
-        defEmu();
         break;
     case FPU_387:
         DefSwitchMacro( "FP387" );
-        defEmu();
         break;
     case FPU_586:
         DefSwitchMacro( "FP5" );
-        defEmu();
         break;
     case FPU_686:
         DefSwitchMacro( "FP6" );
-        defEmu();
         break;
+    }
+    if( GET_FPU_FPC( CpuSwitches ) ) {
+        DefSwitchMacro( "FPC" );
+    } else {
+        if( GET_FPU_EMU( CpuSwitches ) ) {
+            DefSwitchMacro( "FPI" );
+        } else {
+            DefSwitchMacro( "FPI87" );
+        }
+        PreDefineStringMacro( "__FPI__" );
     }
     if( CompFlags.op_switch_used ) {
         DefSwitchMacro( "OP" );
@@ -910,7 +1109,8 @@ static void macroDefs( void )
 #endif
     if( CompFlags.non_iso_compliant_names_enabled ) {
 #if _CPU == 8086
-        if( TargetSwitches & WINDOWS ) {
+        if( TargetSystem == TS_WINDOWS
+          || TargetSystem == TS_CHEAP_WINDOWS ) {
             PreDefineStringMacro( "SOMLINK=__cdecl" );
             PreDefineStringMacro( "SOMDLINK=__far" );
         }
@@ -924,32 +1124,26 @@ static void macroDefs( void )
 static void miscAnalysis( OPT_STORAGE *data )
 {
 #if _CPU == 8086
-    if( data->bd || data->zu ) {
-        if( TargetSwitches & SMART_WINDOWS ) {
+    if( data->bd
+      || data->zu ) {
+        if( TargetSwitches & CGSW_X86_SMART_WINDOWS ) {
             CErr1( ERR_ZWS_MUST_HAVE_SS_DS_SAME );
         }
     }
 #endif
-    if( GET_CPU( CpuSwitches ) < CPU_386 ) {
-        /* issue warning message if /zf[f|p] or /zg[f|p] spec'd? */
-        TargetSwitches &= ~( FLOATING_FS | FLOATING_GS );
-    }
     if( !CompFlags.save_restore_segregs ) {
-        if( TargetSwitches & FLOATING_DS ) {
+        if( TargetSwitches & CGSW_X86_FLOATING_DS ) {
             HW_CTurnOff( WatcallInfo.save, HW_DS );
         }
-        if( TargetSwitches & FLOATING_ES ) {
+        if( TargetSwitches & CGSW_X86_FLOATING_ES ) {
             HW_CTurnOff( WatcallInfo.save, HW_ES );
         }
-        if( TargetSwitches & FLOATING_FS ) {
+        if( TargetSwitches & CGSW_X86_FLOATING_FS ) {
             HW_CTurnOff( WatcallInfo.save, HW_FS );
         }
-        if( TargetSwitches & FLOATING_GS ) {
+        if( TargetSwitches & CGSW_X86_FLOATING_GS ) {
             HW_CTurnOff( WatcallInfo.save, HW_GS );
         }
-    }
-    if( GET_FPU( CpuSwitches ) > FPU_NONE ) {
-        PreDefineStringMacro( "__FPI__" );
     }
 #if _CPU == 386
     if( !CompFlags.register_conventions ) {
@@ -965,18 +1159,19 @@ void CmdSysAnalyse( OPT_STORAGE *data )
 /*************************************/
 {
     char *target_name = NULL;
-    mem_model_control mmc = MMC_NULL;
 
-    GenSwitches &= ~( DBG_CV | DBG_DF | DBG_PREDEF );
+    target_name = setTargetSystem( data );
+
+    GenSwitches &= ~(CGSW_GEN_DBG_CV | CGSW_GEN_DBG_DF | CGSW_GEN_DBG_PREDEF);
     switch( data->dbg_output ) {
     case OPT_ENUM_dbg_output_hc:
-        GenSwitches |= DBG_CV;
+        GenSwitches |= CGSW_GEN_DBG_CV;
         break;
     case OPT_ENUM_dbg_output_hda:
         if( data->fhd ) {
             CompFlags.pch_debug_info_opt = true;
         }
-        GenSwitches |= DBG_DF | DBG_PREDEF;
+        GenSwitches |= CGSW_GEN_DBG_DF | CGSW_GEN_DBG_PREDEF;
         break;
     case OPT_ENUM_dbg_output_hw:
         break;
@@ -985,163 +1180,17 @@ void CmdSysAnalyse( OPT_STORAGE *data )
         if( data->fhd ) {
             CompFlags.pch_debug_info_opt = true;
         }
-        GenSwitches |= DBG_DF;
-        break;
-    }
-    switch( data->ds_peg ) {
-    case OPT_ENUM_ds_peg_zdp:
-        TargetSwitches &= ~ FLOATING_DS;
-        mmc |= MMC_DS;
-        break;
-    case OPT_ENUM_ds_peg_zdf:
-        TargetSwitches |= FLOATING_DS;
-        mmc |= MMC_DS;
+        GenSwitches |= CGSW_GEN_DBG_DF;
         break;
     }
 
-    if( data->zfw ) {
-        TargetSwitches |= GEN_FWAIT_386;
-    }
-    if( data->zro && data->zri ) {
-//        DbgDefault( "invalid fp rounding flags - ignored" );
-        data->zro = data->zri = 0;
-    }
-    if( data->zri ) {
-        GenSwitches |= FPU_ROUNDING_INLINE;
-    } else if( data->zro ) {
-        GenSwitches |= FPU_ROUNDING_OMIT;
-    }
+    setIntelArchitecture( data );
 
-#if _CPU == 386
-    if( data->zdl ) {
-        TargetSwitches |= LOAD_DS_DIRECTLY;
-        mmc |= MMC_DS;
-    }
-#endif
-    switch( data->fs_peg ) {
-    case OPT_ENUM_fs_peg_zfp:
-        TargetSwitches &= ~ FLOATING_FS;
-        mmc |= MMC_FS;
-        break;
-    case OPT_ENUM_fs_peg_zff:
-        TargetSwitches |= FLOATING_FS;
-        mmc |= MMC_FS;
-        break;
-    }
-    switch( data->gs_peg ) {
-    case OPT_ENUM_gs_peg_zgp:
-        TargetSwitches &= ~ FLOATING_GS;
-        mmc |= MMC_GS;
-        break;
-    case OPT_ENUM_gs_peg_zgf:
-        TargetSwitches |= FLOATING_GS;
-        mmc |= MMC_GS;
-        break;
-    }
-    // -zw overrides a build target setting
-    if( data->bt ) {
-        char *target = SetStringOption( NULL, &(data->bt_value) );
-        SetTargetLiteral( &target_name, target );
-        if( target_name != NULL ) {
-            if( strcmp( target_name, "WINDOWS" ) == 0 ||
-                  strcmp( target_name, "CHEAP_WINDOWS" ) == 0 ) {
-                mmc |= MMC_WIN;
-            } else if( strcmp( target_name, "NETWARE" ) == 0 ) {
-                mmc |= MMC_NETWARE;
-            } else if( strcmp( target_name, "NETWARE5" ) == 0 ) {
-                mmc |= MMC_NETWARE;
-            }
-        }
-        CMemFree( target );
-    }
-#if _CPU == 8086
-    switch( data->win ) {
-    case OPT_ENUM_win_zw:
-        SetTargetLiteral( &target_name, "windows" );
-        mmc |= MMC_WIN;
-        break;
-    case OPT_ENUM_win_zW:
-        SetTargetLiteral( &target_name, "cheap_windows" );
-        mmc |= MMC_WIN;
-        break;
-    case OPT_ENUM_win_zws:
-        SetTargetLiteral( &target_name, "windows" );
-        TargetSwitches |= SMART_WINDOWS;
-        mmc |= MMC_WIN;
-        break;
-    case OPT_ENUM_win_zWs:
-        SetTargetLiteral( &target_name, "cheap_windows" );
-        TargetSwitches |= SMART_WINDOWS;
-        mmc |= MMC_WIN;
-        break;
-    }
-#else
-    switch( data->win ) {
-    case OPT_ENUM_win_zw:
-        SetTargetLiteral( &target_name, "windows" );
-        mmc |= MMC_WIN;
-        break;
-    }
-#endif
-    // depends on 'mmc' being set fully
-    setIntelArchitecture( data, mmc );
-
-    switch( data->intel_fpu_model ) {
-    case OPT_ENUM_intel_fpu_model_fpi:
-        SET_FPU_EMU( CpuSwitches );
-        break;
-#ifdef OPT_ENUM_intel_fpu_model__7
-    case OPT_ENUM_intel_fpu__7:
-        /* fall through */
-#endif
-    case OPT_ENUM_intel_fpu_model_fpi87:
-        SET_FPU_INLINE( CpuSwitches );
-        break;
-    case OPT_ENUM_intel_fpu_model_fpc:
-        SET_FPU( CpuSwitches, FPU_NONE );
-        break;
-    case OPT_ENUM_intel_fpu_model__87d:
-        if( data->_87d_value ) {
-            Stack87 = data->_87d_value;
-        }
-        break;
-    }
-
-    switch( data->intel_fpu_level ) {
-    case OPT_ENUM_intel_fpu_level_fp6:
-        SET_FPU_LEVEL( CpuSwitches, FPU_686 );
-        break;
-    case OPT_ENUM_intel_fpu_level_fp5:
-        SET_FPU_LEVEL( CpuSwitches, FPU_586 );
-        break;
-    case OPT_ENUM_intel_fpu_level_fp3:
-        SET_FPU_LEVEL( CpuSwitches, FPU_387 );
-        break;
-    case OPT_ENUM_intel_fpu_level_fp2:
-        SET_FPU_LEVEL( CpuSwitches, FPU_87 );
-        break;
-    }
-
-    // depends on architecture and fpu being set
-    setMemoryModel( data, mmc );
-    if( data->fpd ) {
-        TargetSwitches |= P5_DIVIDE_CHECK;
-    }
     /*
-    //  Changed the ordering.
-    //      Always set Stack87 if fpr switch is used.
-    //      If fpr switch is not present but are using NetWare then set Stack87
-    //      unless the target is NetWare 5 or above.
-    */
-    if( data->fpr ) {
-        Stack87 = 4;
-    } else {
-        if( mmc & MMC_NETWARE ) {
-            if(TS_NETWARE5 != TargetSystem) {
-                Stack87 = 4;    /* no fpr for netware 5 */
-            }
-        }
-    }
+     * depends on architecture and fpu being set
+     */
+    setMemoryModel( data );
+
     if( data->g ) {
         SetStringOption( &GenCodeGroup, &(data->g_value) );
     }
@@ -1158,17 +1207,17 @@ void CmdSysAnalyse( OPT_STORAGE *data )
         SetStringOption( &TextSegName, &(data->nt_value) );
     }
     if( data->oc ) {
-        TargetSwitches |= NO_CALL_RET_TRANSFORM;
+        GenSwitches |= CGSW_GEN_NO_CALL_RET_TRANSFORM;
     }
     if( data->of ) {
-        TargetSwitches |= NEED_STACK_FRAME;
+        TargetSwitches |= CGSW_X86_NEED_STACK_FRAME;
     }
     if( data->of_plus ) {
-        TargetSwitches |= NEED_STACK_FRAME;
-        WatcallInfo.cclass |= GENERATE_STACK_FRAME;
+        TargetSwitches |= CGSW_X86_NEED_STACK_FRAME;
+        WatcallInfo.cclass_target |= FECALL_X86_GENERATE_STACK_FRAME;
     }
     if( data->om ) {
-        TargetSwitches |= I_MATH_INLINE;
+        GenSwitches |= CGSW_GEN_I_MATH_INLINE;
     }
     if( data->r ) {
         CompFlags.save_restore_segregs = true;
@@ -1185,7 +1234,7 @@ void CmdSysAnalyse( OPT_STORAGE *data )
     if( data->zc ) {
         CompFlags.strings_in_code_segment = true;
         CompFlags.zc_switch_used = true;
-        TargetSwitches |= CONST_IN_CODE;
+        TargetSwitches |= CGSW_X86_CONST_IN_CODE;
     }
     if( data->zm ) {
         CompFlags.zm_switch_used = true;
@@ -1193,10 +1242,6 @@ void CmdSysAnalyse( OPT_STORAGE *data )
     if( data->zmf ) {
         CompFlags.zm_switch_used = true;
         CompFlags.zmf_switch_used = true;
-    }
-    if( data->zu ) {
-        CompFlags.zu_switch_used = true;
-        TargetSwitches |= FLOATING_SS;
     }
     if( data->zx ) {
         CompFlags.zx_switch_used = true;
@@ -1206,7 +1251,7 @@ void CmdSysAnalyse( OPT_STORAGE *data )
     }
 #if _CPU == 8086
     if( data->xgls ) {
-        TargetSwitches |= NULL_SELECTOR_BAD;
+        TargetSwitches |= CGSW_X86_NULL_SELECTOR_BAD;
     }
 #else
     if( data->vcap ) {
@@ -1216,22 +1261,22 @@ void CmdSysAnalyse( OPT_STORAGE *data )
         CompFlags.br_switch_used = true;
     }
     if( data->ez ) {
-        TargetSwitches |= EZ_OMF;
+        TargetSwitches |= CGSW_X86_EZ_OMF;
     }
     if( data->etp ) {
-        TargetSwitches |= NEW_P5_PROFILING;
+        TargetSwitches |= CGSW_X86_NEW_P5_PROFILING;
     }
     if( data->esp ) {
-        TargetSwitches |= STATEMENT_COUNTING;
+        TargetSwitches |= CGSW_X86_STATEMENT_COUNTING;
     }
     if( data->et ) {
-        TargetSwitches |= P5_PROFILING;
+        TargetSwitches |= CGSW_X86_P5_PROFILING;
     }
     if( data->et0 ) {
-        TargetSwitches |= P5_PROFILING | P5_PROFILING_CTR0;
+        TargetSwitches |= CGSW_X86_P5_PROFILING | CGSW_X86_P5_PROFILING_CTR0;
     }
     if( data->xgv ) {
-        TargetSwitches |= INDEXED_GLOBALS;
+        TargetSwitches |= CGSW_X86_INDEXED_GLOBALS;
     }
     if( data->zo ) {
         CompFlags.zo_switch_used = true;
@@ -1241,7 +1286,7 @@ void CmdSysAnalyse( OPT_STORAGE *data )
     }
 #endif
     if( data->iso == OPT_ENUM_iso_za ) {
-        TargetSwitches &= ~I_MATH_INLINE;
+        GenSwitches &= ~CGSW_GEN_I_MATH_INLINE;
     }
     switch( data->intel_call_conv ) {
     case OPT_ENUM_intel_call_conv_ecc:
@@ -1260,10 +1305,10 @@ void CmdSysAnalyse( OPT_STORAGE *data )
         DftCallConv = &PascalInfo;
         break;
     case OPT_ENUM_intel_call_conv_ecr:
-        DftCallConv = &SyscallInfo;
+        DftCallConv = &FortranInfo;
         break;
     case OPT_ENUM_intel_call_conv_ecs:
-        DftCallConv = &FortranInfo;
+        DftCallConv = &SyscallInfo;
         break;
     case OPT_ENUM_intel_call_conv_ecw:
     case OPT_ENUM_intel_call_conv_default:
@@ -1271,7 +1316,9 @@ void CmdSysAnalyse( OPT_STORAGE *data )
         DftCallConv = &WatcallInfo;
         break;
     }
-    // frees 'target_name' memory
+    /*
+     * frees 'target_name' memory
+     */
     setFinalTargetSystem( data, target_name );
     miscAnalysis( data );
     defineFSRegistration();

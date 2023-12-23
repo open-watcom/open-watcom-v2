@@ -1,8 +1,0 @@
-!include $(cg_dir)/intel/i86/mif/i86.mif
-!include $(cg_dir)/intel/mif/intel.mif
-!include $(cg_dir)/mif/master.mif
-
-target_objs     = $(i86_objs) $(intel_objs) $(cg_objs) encode.obj
-target_cpu      = i86
-
-!include $(cg_dir)/mif/target.mif

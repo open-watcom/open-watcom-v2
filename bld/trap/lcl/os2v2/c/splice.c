@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,7 +37,8 @@
 #include <os2.h>
 #include "madregs.h"
 #include "splice.h"
-#include "cpuglob.h"
+#include "brkptcpu.h"
+
 
 /* We need separate stack for executing spliced code. We really wouldn't
  * want to mess up debuggee's stack!
@@ -76,7 +77,7 @@ static long OpenFile( char *name, ULONG mode, int flags )
                  openmode,      /* deny-none, inheritance */
                  0 );           /* reserved */
     if( rc != 0 )
-        return 0xFFFF0000 | rc;
+        return( (-1L ^ 0xFFFF) | rc );
     return( hdl );
 }
 
@@ -149,7 +150,7 @@ extern void fxsave( unsigned char *addr );
 
 void __export DoReadXMMRegs( struct x86_xmm *xmm_regs )
 {
-    unsigned char   fxsave_buff[ 512 + 16 ];
+    unsigned char   fxsave_buff[512 + 16];
     unsigned char   *aligned_buf;
 
     /* The FXSAVE buffer must be 16-byte aligned! */
@@ -162,8 +163,8 @@ void __export DoReadXMMRegs( struct x86_xmm *xmm_regs )
 
 extern void fxrstor( unsigned char *addr );
 #pragma aux fxrstor = \
-        ".XMM"          \
         ".686"          \
+        ".XMM"          \
         "fxrstor [eax]" \
     __parm      [__eax] \
     __value     \
@@ -171,7 +172,7 @@ extern void fxrstor( unsigned char *addr );
 
 void __export DoWriteXMMRegs( struct x86_xmm *xmm_regs )
 {
-    unsigned char   fxrstor_buff[ 512 + 16 ];
+    unsigned char   fxrstor_buff[512 + 16];
     unsigned char   *aligned_buf;
 
     /* The FXRSTOR buffer must be 16-byte aligned! */

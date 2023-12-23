@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,7 +30,8 @@
 ****************************************************************************/
 
 
-#define _BETAVER    1
+#define _BETAVER            1
+#define _OWURL              "https://github.com/open-watcom/open-watcom-v2#readme"
 
 #define _DOSTR( p )         #p
 #define _MACROSTR( p )      _DOSTR( p )
@@ -48,15 +49,14 @@
 #ifdef _BETAVER
 #define _BANEXTRA           __DATE__ " " __TIME__ STR_BITNESS
 #else
-#define _BANEXTRA           __DATE__
+#define _BANEXTRA           __DATE__ STR_BITNESS
 #endif
 
+#define banner1t(p)         "Open Watcom " p
 #define banner1v(v)         "Version " v " " _BANEXTRA
-#define banner1(p,v)        p " " banner1v(v)
-#define banner1w(p,v)       "Open Watcom " p " " banner1v(v)
 
-#define banner1w1(p)        "Open Watcom " p
-#define banner1w2(v)        banner1v(v)
+#define banner1(p,v)        p " " banner1v(v)
+#define banner1w(p,v)       banner1t(p) " " banner1v(v)
 
 #define banner21            "Copyright (c) 2002-" _MACROSTR( _CYEAR ) " The Open Watcom Contributors."
 #define banner21a(year)     "Portions Copyright (c) " _DOSTR( year ) "-2002 Sybase, Inc."
@@ -65,7 +65,7 @@
 #define banner2a(year)      banner21a(year) " All Rights Reserved."
 
 #define banner3             "Source code is available under the Sybase Open Watcom Public License."
-#define banner3a            "See http://www.openwatcom.org/ for details."
+#define banner3a            "See " _OWURL " for details."
 
 #define banner1ps(p,v)      "Powersoft " p " " banner1v(v)
 #define banner2ps           banner21a( 1984 )
@@ -179,6 +179,8 @@
 #define _WIC_VERSION_           BAN_VER_STR
 #define _WGML_VERSION_          BAN_VER_STR
 #define _WIPFC_VERSION_         BAN_VER_STR
+
+#define _DEFWIN_VERSION_        "1.0" _BETA_
 
 /*
  * Java Tools

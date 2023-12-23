@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,48 +34,50 @@
 #include "skel.h"
 
 /*
-        Loading/unloading symbolic information.
-*/
+ * Loading/unloading symbolic information.
+ */
 
 dip_status DIPIMPENTRY( LoadInfo )( FILE *fp, imp_image_handle *iih )
+/********************************************************************
+ * TODO:
+ *
+ * See if the given file handle has our kind of symbolic information
+ * on it. If so, fill in the "*iih" structure and return DS_OK. If it
+ * isn't our type of information, return DS_FAIL. If it's our information,
+ * but something goes wrong during the load, return a DS_ERR | DS_?
+ * constant. If the load succeeds the client will not close the
+ * file handle so if you don't need to read out of the file after the
+ * load, you should close the handle at this point.
+ */
 {
-    //TODO:
-    /*
-        See if the given file handle has our kind of symbolic information
-        on it. If so, fill in the "*iih" structure and return DS_OK. If it
-        isn't our type of information, return DS_FAIL. If it's our information,
-        but something goes wrong during the load, return a DS_ERR | DS_?
-        constant. If the load succeeds the client will not close the
-        file handle so if you don't need to read out of the file after the
-        load, you should close the handle at this point.
-
-     */
      return( DS_FAIL );
 }
 
 void DIPIMPENTRY( MapInfo )( imp_image_handle *iih, void *d )
+/************************************************************
+ * TODO:
+ *
+ * After the symbolic information has been loaded, any addresses
+ * must be relocated from the map values that the linker put in to
+ * the actual load time addresses. The client is not always able to
+ * perform the relocation at the time it loads the information, so
+ * it calls this entry point when it has all the information required.
+ * The 'd' parameter is a magic cookie for the client. Just pass it
+ * on as the second parameter of the DCMapAddr function when you call
+ * it.
+ */
 {
-    //TODO:
-    /*
-        After the symbolic information has been loaded, any addresses
-        must be relocated from the map values that the linker put in to
-        the actual load time addresses. The client is not always able to
-        perform the relocation at the time it loads the information, so
-        it calls this entry point when it has all the information required.
-        The 'd' parameter is a magic cookie for the client. Just pass it
-        on as the second parameter of the DCMapAddr function when you call
-        it.
-    */
 }
 
 void DIPIMPENTRY( UnloadInfo )( imp_image_handle *iih )
+/******************************************************
+ * TODO:
+ *
+ * The indicated image is going away. Free any structures pointed to
+ * by the 'iih' parameter. Don't try and free the 'iih' pointer itself.
+ * The DIP manager will take care of that. If you hung onto the file
+ * handle passed in to the DIPImpLoadInfo function, you should close
+ * it now.
+ */
 {
-    //TODO:
-    /*
-        The indicated image is going away. Free any structures pointed to
-        by the 'iih' parameter. Don't try and free the 'iih' pointer itself.
-        The DIP manager will take care of that. If you hung onto the file
-        handle passed in to the DIPImpLoadInfo function, you should close
-        it now.
-    */
 }

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -66,18 +67,20 @@ static void putambig( FILE *fp, a_SR_conflict *ambig, base_n *base )
     index_n ambig_state, ambig_state_based;
     index_n ambig_shift, ambig_shift_based;
     static char *msg[] = {
-        "#define\tYYAMBIGS%u\t        %5d\t/* ambiguous state (%u) */\n",
-        "#define\tYYAMBIGT%u\t        %5d\t/* token causing ambiguity */\n",
-        "#define\tYYAMBIGH%u\t        %5d\t/* state to shift (%u) */\n",
-        "#define\tYYAMBIGR%u\t        %5d\t/* rule to reduce */\n",
+        "#define\tYYAMBIGS%u\t%d\t/* ambiguous state (%u) */\n",
+        "#define\tYYAMBIGT%u\t%d\t/* token causing ambiguity */\n",
+        "#define\tYYAMBIGH%u\t%d\t/* state to shift (%u) */\n",
+        "#define\tYYAMBIGR%u\t%d\t/* rule to reduce */\n",
     };
 
     if( ambig->state == NULL ) {
-        /* no S/R conflict was found */
+        /*
+         * no S/R conflict was found
+         */
         return;
     }
-    ambig_state = ambig->state->sidx;
-    ambig_shift = ambig->shift->sidx;
+    ambig_state = ambig->state->idx;
+    ambig_shift = ambig->shift_state->idx;
     if( base == NULL ) {
         ambig_state_based = ambig_state;
         ambig_shift_based = ambig_shift;

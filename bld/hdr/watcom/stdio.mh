@@ -429,6 +429,7 @@ _WCRTLINK extern int        fseeko( __w_FILE *__fp, off_t __offset, int __whence
 _WCRTLINK extern off_t      ftello( __w_FILE *__fp );
 
 :endsegment
+_WCRTLINK extern int        _flushall( void );
 _WCRTLINK extern int        flushall( void );
 :segment DOS | RDOS
 _WCRTLINK extern __w_FILE   *_fdopen( int __handle, const char *__mode );

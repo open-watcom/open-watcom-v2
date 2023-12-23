@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -75,25 +75,31 @@ trap_retval TRAP_FILE( get_config )( void )
 
 trap_retval TRAP_FILE( open )( void )
 {
-    file_open_req       *acc;
-    file_open_ret       *ret;
+    file_open_req   *acc;
+    file_open_ret   *ret;
     int             retval;
-    static int MapAcc[] = { O_RDONLY, O_WRONLY, O_RDWR };
+    int             mode;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    if( acc->mode & TF_CREATE ) {
+    ret->err = 0;
+    if( acc->mode & DIG_OPEN_CREATE ) {
         retval = IOCreat( GetInPtr( sizeof( *acc ) ) );
     } else {
-        retval = IOOpen( GetInPtr( sizeof( *acc ) ), MapAcc[acc->mode - 1] );
+        mode = O_RDONLY;
+        if( acc->mode & DIG_OPEN_WRITE ) {
+            mode = O_WRONLY;
+            if( acc->mode & DIG_OPEN_READ ) {
+                mode = O_RDWR;
+            }
+        }
+        retval = IOOpen( GetInPtr( sizeof( *acc ) ), mode );
     }
     if( retval < 0 ) {
         ret->err = retval;
-        LH2TRPH( ret, 0 );
-    } else {
-        ret->err = 0;
-        LH2TRPH( ret, retval );
+        retval = 0;
     }
+    LH2TRPH( ret, retval );
     return( sizeof( *ret ) );
 }
 
@@ -110,100 +116,95 @@ trap_retval TRAP_FILE( close )( void )
 
 trap_retval TRAP_FILE( write )( void )
 {
-    int          retval;
-    file_write_req      *acc;
-    file_write_ret      *ret;
+    int             retval;
+    file_write_req  *acc;
+    file_write_ret  *ret;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-
-    retval = IOWrite( TRPH2LH( acc ), GetInPtr( sizeof(*acc) ), ( GetTotalSizeIn() - sizeof( *acc ) ) );
+    ret->err = 0;
+    retval = IOWrite( TRPH2LH( acc ), GetInPtr( sizeof(*acc) ), GetTotalSizeIn() - sizeof( *acc ) );
     if( retval < 0 ) {
         ret->err = retval;
-        ret->len = 0;
-    } else {
-        ret->err = 0;
-        ret->len = retval;
     }
+    ret->len = retval;
     return( sizeof( *ret ) );
 }
 
 trap_retval TRAP_FILE( write_console )( void )
 {
-    int          retval;
-    file_write_console_req      *acc;
-    file_write_console_ret      *ret;
+    int                     retval;
+    file_write_console_req  *acc;
+    file_write_console_ret  *ret;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-
-    retval = IOWriteConsole( GetInPtr( sizeof(*acc) ), ( GetTotalSizeIn() - sizeof( *acc ) ) );
+    ret->err = 0;
+    retval = IOWriteConsole( GetInPtr( sizeof(*acc) ), GetTotalSizeIn() - sizeof( *acc ) );
     if( retval < 0 ) {
         ret->err = retval;
-        ret->len = 0;
-    } else {
-        ret->err = 0;
-        ret->len = retval;
     }
+    ret->len = retval;
     return( sizeof( *ret ) );
 }
 
 trap_retval TRAP_FILE( seek )( void )
 {
-    file_seek_req       *acc;
-    file_seek_ret       *ret;
+    file_seek_req   *acc;
+    file_seek_ret   *ret;
     long            retval;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
+    ret->err = 0;
     retval = IOSeek( TRPH2LH( acc ), local_seek_method[acc->mode], acc->pos );
     if( retval < 0 ) {
         ret->err = retval;
-        ret->pos = 0;
-    } else {
-        ret->err = 0;
-        ret->pos = retval;
     }
+    ret->pos = retval;
     return( sizeof( *ret ) );
 }
 
 trap_retval TRAP_FILE( read )( void )
 {
-    file_read_req       *acc;
-    file_read_ret       *ret;
-    int           retval;
+    file_read_req   *acc;
+    file_read_ret   *ret;
+    int             retval;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
+    ret->err = 0;
     retval = IORead( TRPH2LH( acc ), GetOutPtr( sizeof( *ret ) ), acc->len );
     if( retval < 0 ) {
         ret->err = retval;
-        retval = 0;
-    } else {
-        ret->err = 0;
+        return( sizeof( *ret ) );
     }
     return( sizeof( *ret ) + retval );
 }
 
-trap_retval TRAP_FILE( string_to_fullpath )( void )
+trap_retval TRAP_FILE( file_to_fullpath )( void )
 {
     char               *name;
     char               *fullname;
     file_string_to_fullpath_req *acc;
     file_string_to_fullpath_ret *ret;
-    int                len;
+    size_t             len;
 
     acc = GetInPtr( 0 );
     name = GetInPtr( sizeof( *acc ) );
     ret = GetOutPtr( 0 );
+    ret->err = 0;
     fullname = GetOutPtr( sizeof( *ret ) );
-    if( acc->file_type == TF_TYPE_EXE ) {
+    if( acc->file_type == DIG_FILETYPE_EXE ) {
         StringToNLMPath( name, fullname );
     } else {
         strcpy( fullname, name );
     }
     len = strlen( fullname );
-    ret->err = ( len == 0 ) ? 1 : 0;
+    if( len == 0 ) {
+        ret->err = 1;
+        return( sizeof( *ret ) + 1 );
+    }
     return( sizeof( *ret ) + len + 1 );
 }
 

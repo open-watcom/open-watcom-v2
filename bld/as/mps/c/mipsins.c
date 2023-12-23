@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -73,16 +73,16 @@ ins_table MIPSTable[] = {
     INS( "ldc1",    0x35,   0x00,   IT_FP_MEMORY_ALL,   ENUM_NONE,  MIPS_ISA2 ),
     INS( "swc1",    0x39,   0x00,   IT_FP_MEMORY_ALL,   ENUM_NONE,  MIPS_ISA1 ),
     INS( "sdc1",    0x3d,   0x00,   IT_FP_MEMORY_ALL,   ENUM_NONE,  MIPS_ISA2 ),
- // Memory Format Instructions with a function code
-    INS( "fetch",   0x18,   0x80,   IT_MEMORY_B,        ENUM_NONE,  MIPS_ISA1 ),
-    INS( "fetch_m", 0x18,   0xA0,   IT_MEMORY_B,        ENUM_NONE,  MIPS_ISA1 ),
-    INS( "mb",      0x18,   0x40,   IT_MEMORY_NONE,     ENUM_NONE,  MIPS_ISA1 ),
-    INS( "wmb",     0x18,   0x44,   IT_MEMORY_NONE,     ENUM_NONE,  MIPS_ISA1 ),
-    INS( "rc",      0x18,   0xE0,   IT_MEMORY_A,        ENUM_NONE,  MIPS_ISA1 ),
-    INS( "rpcc",    0x18,   0xC0,   IT_MEMORY_A,        ENUM_NONE,  MIPS_ISA1 ),
-    INS( "rs",      0x18,   0xF0,   IT_MEMORY_A,        ENUM_NONE,  MIPS_ISA1 ),
-    INS( "trapb",   0x18,   0x00,   IT_MEMORY_NONE,     ENUM_NONE,  MIPS_ISA1 ),
-    INS( "excb",    0x18,   0x04,   IT_MEMORY_NONE,     ENUM_NONE,  MIPS_ISA1 ),
+ // Memory Format Instructions with a function code ???? not exists for MIPS, probably from ALPHA
+    INS( "fetch",   0x18,   0x80,   IT_MEMORY_B,        ENUM_NONE,  MIPS_ISA1 ),    // ???
+    INS( "fetch_m", 0x18,   0xA0,   IT_MEMORY_B,        ENUM_NONE,  MIPS_ISA1 ),    // ???
+    INS( "mb",      0x18,   0x40,   IT_MEMORY_NONE,     ENUM_NONE,  MIPS_ISA1 ),    // ???
+    INS( "wmb",     0x18,   0x44,   IT_MEMORY_NONE,     ENUM_NONE,  MIPS_ISA1 ),    // ???
+    INS( "rc",      0x18,   0xE0,   IT_MEMORY_A,        ENUM_NONE,  MIPS_ISA1 ),    // ???
+    INS( "rpcc",    0x18,   0xC0,   IT_MEMORY_A,        ENUM_NONE,  MIPS_ISA1 ),    // ???
+    INS( "rs",      0x18,   0xF0,   IT_MEMORY_A,        ENUM_NONE,  MIPS_ISA1 ),    // ???
+    INS( "trapb",   0x18,   0x00,   IT_MEMORY_NONE,     ENUM_NONE,  MIPS_ISA1 ),    // ???
+    INS( "excb",    0x18,   0x04,   IT_MEMORY_NONE,     ENUM_NONE,  MIPS_ISA1 ),    // ???
  // Jump Instructions
     INS( "j",       0x02,   0x00,   IT_JUMP,            ENUM_NONE,  MIPS_ISA1 ),
     INS( "jal",     0x03,   0x00,   IT_JUMP,            ENUM_NONE,  MIPS_ISA1 ),
@@ -92,7 +92,9 @@ ins_table MIPSTable[] = {
     INS( "ret",     0x1A,   0x02,   IT_RET,             ENUM_NONE,  MIPS_ISA1 ),
  // Branch Format Instructions
     INS( "beq",     0x04,   0x00,   IT_BRANCH_TWO,      ENUM_NONE,  MIPS_ISA1 ),
+    INS( "beqz",    0x04,   0x00,   IT_BRANCH_ZERO,     ENUM_NONE,  MIPS_ISA1 ),
     INS( "bne",     0x05,   0x00,   IT_BRANCH_TWO,      ENUM_NONE,  MIPS_ISA1 ),
+    INS( "bnez",    0x05,   0x00,   IT_BRANCH_ZERO,     ENUM_NONE,  MIPS_ISA1 ),
     INS( "blez",    0x06,   0x00,   IT_BRANCH_ZERO,     ENUM_NONE,  MIPS_ISA1 ),
     INS( "bgtz",    0x07,   0x00,   IT_BRANCH_ZERO,     ENUM_NONE,  MIPS_ISA1 ),
     INS( "bltz",    0x01,   0x00,   IT_BRANCH_ZERO,     ENUM_NONE,  MIPS_ISA1 ),
@@ -110,10 +112,10 @@ ins_table MIPSTable[] = {
 
     INS( "br",      0x30,   0x00,   IT_BR,              ENUM_NONE,  MIPS_ISA1 ),
     INS( "fbeq",    0x31,   0x00,   IT_FP_BRANCH,       ENUM_NONE,  MIPS_ISA1 ),
-    INS( "blt",     0x3A,   0x00,   IT_BRANCH,          ENUM_NONE,  MIPS_ISA1 ),
-    INS( "ble",     0x3B,   0x00,   IT_BRANCH,          ENUM_NONE,  MIPS_ISA1 ),
-    INS( "bge",     0x3E,   0x00,   IT_BRANCH,          ENUM_NONE,  MIPS_ISA1 ),
-    INS( "bgt",     0x3F,   0x00,   IT_BRANCH,          ENUM_NONE,  MIPS_ISA1 ),
+//    INS( "blt",     0x3A,   0x00,   IT_BRANCH,          ENUM_NONE,  MIPS_ISA1 ),
+//    INS( "ble",     0x3B,   0x00,   IT_BRANCH,          ENUM_NONE,  MIPS_ISA1 ),
+//    INS( "bge",     0x3E,   0x00,   IT_BRANCH,          ENUM_NONE,  MIPS_ISA1 ),
+//    INS( "bgt",     0x3F,   0x00,   IT_BRANCH,          ENUM_NONE,  MIPS_ISA1 ),
  // Coprocessor branch instructions; high byte of opcode is coprocessor number
     INS( "bc0f",    0x008,  0x00,   IT_BRANCH_COP,      ENUM_NONE,  MIPS_ISA1 ),
     INS( "bc0fl",   0x008,  0x02,   IT_BRANCH_COP,      ENUM_NONE,  MIPS_ISA2 ),
@@ -255,6 +257,11 @@ ins_table MIPSTable[] = {
     // abs pseudo ins (opcode & funccode are from subl/v, subq/v)
     INS( "absl",    0x10,   0x49,   IT_PSEUDO_ABS,      ENUM_NONE,  MIPS_ISA1 ),
     INS( "absq",    0x10,   0x69,   IT_PSEUDO_ABS,      ENUM_NONE,  MIPS_ISA1 ),
+
+    INS( "blt",     0x05,   0x00,   IT_PSEUDO_BRANCH2,   ENUM_NONE,  MIPS_ISA1 ),
+    INS( "ble",     0x04,   0x01,   IT_PSEUDO_BRANCH2,   ENUM_NONE,  MIPS_ISA1 ),
+    INS( "bge",     0x04,   0x00,   IT_PSEUDO_BRANCH2,   ENUM_NONE,  MIPS_ISA1 ),
+    INS( "bgt",     0x05,   0x01,   IT_PSEUDO_BRANCH2,   ENUM_NONE,  MIPS_ISA1 ),
 };
 
 static bool insErrFlag = false;    // to tell whether we had problems or not
@@ -397,7 +404,7 @@ typedef void (*enumFunc_t)( ins_enum_method, uint_32, uint_8, void (*func)( qual
 
 static enumFunc_t enumFunc[] = {
     #define PICK( a, b )    b,
-    #include "insenum.inc"
+    #include "_insenum.h"
     #undef PICK
 };
 
@@ -424,7 +431,7 @@ static void DumpITString( ins_template template )
 
 static char *insEnumStrings[] = {
     #define PICK( a, b ) #a,
-    #include "insenum.inc"
+    #include "_insenum.h"
     #undef PICK
 };
 

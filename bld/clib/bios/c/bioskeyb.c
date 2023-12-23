@@ -31,14 +31,15 @@
 
 
 #include "variety.h"
-#include <bios.h>
 #include <stddef.h>
+#include <bios.h>
 #include "necibm.h"
 #include "rtdata.h"
 
 
 _WCRTLINK unsigned short _bios_keybrd( unsigned cmd )
 {
+#if defined( __WATCOM_PC98__ )
     if( _RWD_isPC98 ) { /* NEC PC-98 */
         unsigned short  necRc;
         unsigned short  ret;
@@ -69,6 +70,7 @@ _WCRTLINK unsigned short _bios_keybrd( unsigned cmd )
         }
         return( ret );
     }
+#endif
     /* IBM PC */
     return( __ibm_bios_keybrd( cmd ) );
 }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,6 +42,7 @@
 #elif defined( __WINDOWS__ ) && defined( _M_I86 )
     #define WIN16
     #include "winctrl.h"
+    #include "winpath.h"
 #endif
 
 static trap_retval (* const CoreRequests[])(void) = {
@@ -55,7 +56,7 @@ trap_retval TRAP_CORE( Connect )( void )
     connect_ret *ret;
     char        *err;
 
-    ret = GetOutPtr(0);
+    ret = GetOutPtr( 0 );
 #if defined( DOSX )
     ret->max_msg_size = MaxPacketSize();
     RemoteConnect();
@@ -63,9 +64,9 @@ trap_retval TRAP_CORE( Connect )( void )
     ret->max_msg_size = 0xFFFF;
 #endif
     /* version ok... already checked by initialization  */
-    err = GetOutPtr(sizeof(*ret));
+    err = GetOutPtr( sizeof( *ret ) );
 #if defined( WIN16 )
-    strcpy( err, InitDebugging() );
+    StrCopyDst( InitDebugging(), err );
 #else
     *err = '\0';
 #endif

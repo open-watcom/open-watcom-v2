@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,6 +34,7 @@
 #include "passby.h"
 #include "cg.h"
 #include "cgaux.h"
+#include "cgauxcc.h"
 #include "auxflags.h"
 #include "rtconst.h"
 
@@ -48,6 +49,9 @@
 
 typedef struct aux_info {
     call_class          cclass;
+#if _INTEL_CPU
+    call_class_target   cclass_target;
+#endif
     byte_seq            *code;
     hw_reg_set          *parms;
     hw_reg_set          returns;
@@ -57,9 +61,6 @@ typedef struct aux_info {
     unsigned            use;
     aux_flags           flags;
     pass_by             *arg_info;
-    struct aux_info     *link;
-    size_t              sym_len;
-    char                sym_name[1];
 } aux_info;
 
 extern aux_info         ProgramInfo;
@@ -73,6 +74,7 @@ extern void             PragmaLinkage( void );
 extern void             CheckFar16Call( sym_id sp );
 #endif
 extern aux_info         *InfoLookup( sym_id sym );
+extern const char       *NameLookup( sym_id sym );
 extern call_handle      InitCall( RTCODE rtn_id );
 extern void             InitRtRtns( void );
 extern void             FreeRtRtns( void );

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,20 +40,26 @@
 
 static bool     DumpAlphaSorted = false;    // dump alphabetically sorted sym tables
 
-/* Heuristics to determine whether a file is a MAPSYM .sym file */
 static bool isSymFile( FILE *f )
+/*******************************
+ * Heuristics to determine whether a file is a MAPSYM .sym file
+ */
 {
     sym_endmap          end_map;
     int                 ret;
     unsigned long       pos;
 
-    /* seek to the end, read and check end map record */
+    /*
+     * seek to the end, read and check end map record
+     */
     ret = fseek( f, -(long)sizeof( end_map ), SEEK_END );
     if( ret != 0 ) {
         return( false );
     }
     pos = ftell( f );
-    /* the endmap record must be 16-byte aligned */
+    /*
+     * the endmap record must be 16-byte aligned
+     */
     if( pos % 16 ) {
         return( false );
     }
@@ -62,18 +69,23 @@ static bool isSymFile( FILE *f )
     if( end_map.zero != 0 ) {
         return( false );
     }
-    /* Check .sym file version to make sure it's something reasonable */
+    /*
+     * Check .sym file version to make sure it's something reasonable
+     */
     if( (end_map.major_ver < 3) || (end_map.major_ver > 6)
         || (end_map.minor_ver > 12) ) {
         return( false );
     }
-
-    /* looks like the right sort of .sym file */
+    /*
+     * looks like the right sort of .sym file
+     */
     return( true );
 }
 
-// Read a Pascal style string - limited to 255 chars max length
 static int readString( FILE *f, char *buf )
+/******************************************
+ * Read a Pascal style string - limited to 255 chars max length
+ */
 {
     unsigned_8  str_len;
 
@@ -184,8 +196,8 @@ static void dumpSegments( FILE *f, int count )
             SYM_PTR_TO_OFS( seg.linnum_ptr ), seg.is_loaded, seg.curr_inst );
 
         sym_tab_offset = seg.sym_tab_ofs;
-
-        /* if alphabetically sorted symbol table is present, it'll be right after
+        /*
+         * if alphabetically sorted symbol table is present, it'll be right after
          * the first table (which is sorted by address)
          */
         if( DumpAlphaSorted && (seg.sym_type & SYM_FLAG_ALPHA) ) {

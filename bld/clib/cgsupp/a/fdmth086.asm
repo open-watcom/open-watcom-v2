@@ -2,6 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
+;* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -211,7 +212,7 @@ __FDA87:
         fadd    qword ptr -8[BP]; add operand 1
         jmp     _ret87          ; return result from 8087
 
-RetOp_2:
+retOp_2:
         sub     bx,bx           ; return op2
         _shl    cx,1            ; get sign bit into position
         mov     bp,cx           ; move it to correct reg

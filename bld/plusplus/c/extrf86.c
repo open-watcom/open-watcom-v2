@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,7 +42,7 @@
 #include "vfun.h"
 #include "initdefs.h"
 #include "stats.h"
-#ifndef NDEBUG
+#ifdef DEVBUILD
     #include "dbg.h"
 #endif
 
@@ -93,45 +93,36 @@ static void extrefPruneOvfn(    // PRUNE ANY NON-ORIGINATING VIRT FUNC.S
 }
 
 
-void *ExtrefImportType(         // GET NEXT IMPORT TYPE FOR A SYMBOL
-    EXTRF *rinfo )              // - resolution information
+void *ExtrefImportType( // GET NEXT IMPORT TYPE FOR A SYMBOL
+    EXTRF *rinfo )      // - resolution information
 {
-    void *retn = NULL;          // - return type
+    import_type retn;   // - return type
 
-    if( rinfo->type == EXTRF_DATA_WEAK ) {
-        retn = (void*)IMPORT_IS_WEAK;
-    } else if( !CompFlags.virtual_stripping ) {
-        retn = (void*)IMPORT_IS_LAZY;
-        switch( rinfo->type ) {
-        case EXTRF_FN_LAZY :
-            retn = (void*)IMPORT_IS_LAZY;
-            break;
-        case EXTRF_FN_WEAK :
-            retn = (void*)IMPORT_IS_WEAK;
-            break;
-        case EXTRF_VFN_CONDITIONAL :
-        case EXTRF_PURE_VFN_CONDITIONAL :
-            break;
-        DbgDefault( "IMPORT_TYPE: funny type" );
+    retn = IMPORT_IS_WEAK;
+    switch( rinfo->type ) {
+    case EXTRF_DATA_WEAK:
+    case EXTRF_FN_WEAK:
+        break;
+    case EXTRF_FN_LAZY :
+        retn = IMPORT_IS_LAZY;
+        break;
+    case EXTRF_VFN_CONDITIONAL :
+        if( CompFlags.virtual_stripping ) {
+            retn = IMPORT_IS_CONDITIONAL;
+        } else {
+            retn = IMPORT_IS_LAZY;
         }
-    } else {
-        switch( rinfo->type ) {
-        case EXTRF_FN_LAZY :
-            retn = (void*)IMPORT_IS_LAZY;
-            break;
-        case EXTRF_FN_WEAK :
-            retn = (void*)IMPORT_IS_WEAK;
-            break;
-        case EXTRF_VFN_CONDITIONAL :
-            retn = (void*)IMPORT_IS_CONDITIONAL;
-            break;
-        case EXTRF_PURE_VFN_CONDITIONAL :
-            retn = (void*)IMPORT_IS_CONDITIONAL_PURE;
-            break;
-        DbgDefault( "IMPORT_TYPE: funny type" );
+        break;
+    case EXTRF_PURE_VFN_CONDITIONAL :
+        if( CompFlags.virtual_stripping ) {
+            retn = IMPORT_IS_CONDITIONAL_PURE;
+        } else {
+            retn = IMPORT_IS_LAZY;
         }
+        break;
+    DbgDefault( "IMPORT_TYPE: funny type" );
     }
-    return( retn );
+    return( (void*)retn );
 }
 
 

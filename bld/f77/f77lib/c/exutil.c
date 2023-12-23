@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,36 +42,39 @@
 #define MAX_KW_LEN      15      // longest keyword in following tables
 
 char    *SpecId[] = {
-        "STATUS",
-        "ACCESS",
-        "FORM",
-        "BLANK",
-        "CARRIAGECONTROL",
-        "RECORDTYPE",
-        "ACTION",
-        "RECL",
-        "BLOCKSIZE",
-        "SHARE"
+    "STATUS",
+    "ACCESS",
+    "FORM",
+    "BLANK",
+    "CARRIAGECONTROL",
+    "RECORDTYPE",
+    "ACTION",
+    "RECL",
+    "BLOCKSIZE",
+    "SHARE"
 };
 
 
-int     FindKWord( char **table, int id, int def_id, string PGM *kw ) {
-//=====================================================================
-
+int     FindKWord( char **table, int id, int def_id, string PGM *kw )
+//===================================================================
+{
     int         index;
     int         kw_len;
-    char        kword[MAX_KW_LEN+1];
+    char        kword[MAX_KW_LEN + 1];
 
     index = def_id;
     if( kw != NULL ) {
-        index = 0;
         for( index = 0; ; index++ ) {
-            if( table[ index ] == NULL ) {
-                IOErr( IO_BAD_SPEC, SpecId[ id ] );
+            if( table[index] == NULL ) {
+                IOErr( IO_BAD_SPEC, SpecId[id] );
+                // never return
             }
             kw_len = StrItem( kw, kword, MAX_KW_LEN );
-            if( kw_len != strlen( table[ index ] ) ) continue;
-            if( memicmp( table[ index ], kword, kw_len ) == 0 ) break;
+            if( kw_len != strlen( table[index] ) )
+                continue;
+            if( memicmp( table[index], kword, kw_len ) == 0 ) {
+                break;
+            }
         }
         ++index;
     }
@@ -78,9 +82,9 @@ int     FindKWord( char **table, int id, int def_id, string PGM *kw ) {
 }
 
 
-void    ClrBuff( void ) {
-//=================
-
+void    ClrBuff( void )
+//=====================
+{
     IOCB->fileinfo->col = 0;
     IOCB->fileinfo->len = 0;
 }

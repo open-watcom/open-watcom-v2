@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -423,10 +423,14 @@ static void SetHeaderVxDInfo(os2_flat_header *exe_head)
 {
     entry_export *exp;
     vxd_ddb      ddb;
+    unsigned_32  adjust;
+    unsigned_32  vm_off;
 
     exp = FmtData.u.os2fam.exports;
     if( ( exp != NULL ) && ( exp->sym != NULL ) ) {
-        ReadInfo( (exp->sym->p.seg)->u1.vm_ptr, &ddb, sizeof( ddb ) );
+        adjust = exp->sym->p.seg->u.leader->seg_addr.off + exp->sym->p.seg->a.delta;
+        vm_off = exp->sym->addr.off - adjust;
+        ReadInfo( (exp->sym->p.seg)->u1.vm_ptr + vm_off, &ddb, sizeof( ddb ) );
         exe_head->r.vxd.device_ID = ddb.req_device_number;
         exe_head->r.vxd.DDK_version = ddb.SDK_version;
     }
@@ -499,9 +503,9 @@ void FiniOS2FlatLoadFile( void )
         exe_head.debug_len = debug_size;
     }
     if( FmtData.type & (MK_OS2_LE | MK_WIN_VXD) ) {
-        exe_head.signature = OSF_FLAT_SIGNATURE;
+        exe_head.signature = EXESIGN_LE;
     } else {
-        exe_head.signature = OSF_FLAT_LX_SIGNATURE;
+        exe_head.signature = EXESIGN_LX;
     }
     exe_head.byte_order = OSF_386_BYTE_ORDER;
     exe_head.word_order = OSF_386_WORD_ORDER;

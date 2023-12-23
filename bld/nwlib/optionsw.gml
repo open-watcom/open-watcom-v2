@@ -2,7 +2,7 @@
 :cmt.*
 :cmt.*                            Open Watcom Project
 :cmt.*
-:cmt.* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+:cmt.* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 :cmt.*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 :cmt.*
 :cmt.*  ========================================================================
@@ -346,7 +346,7 @@
 :option. i6
 :target. any
 :usage.  generate X64 import records
-:jusage. X64Cンポート･レコードを生成します
+:jusage. X64インポート･レコードを生成します
 
 :option. ia
 :target. any
@@ -357,6 +357,11 @@
 :target. any
 :usage.  generate X86 import records
 :jusage. X86インポート･レコードを生成します
+
+:option. im
+:target. any
+:usage.  generate MIPS import records
+:jusage. MIPSインポート･レコードを生成します
 
 :option. ip
 :target. any

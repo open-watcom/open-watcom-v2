@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,7 +31,7 @@
 
 
 typedef struct dbbit {
-    unsigned_16     st;
-    unsigned_16     base;
-    unsigned_32     off;
+    uint_16     st;
+    uint_16     base;
+    uint_32     off;
 } dbbit;

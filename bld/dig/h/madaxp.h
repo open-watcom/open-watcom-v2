@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,16 +33,24 @@
 
 #ifndef MADAXP_H
 #define MADAXP_H
-#include "digpck.h"
-enum axp_cputypes {
-    AXP_DUNNO,
-    AXP_21064,
-    AXP_21164
+
+typedef enum {
+    AXPMD_PDATA
+} axp_machine_data;
+
+/* axp_pal */
+enum {
+    PAL_all,
+    PAL_nt,
+    PAL_unix,
+    PAL_vms
 };
 
-enum axp_machine_data {
-    AXPMD_PDATA
-};
+#include "digpck.h"
+typedef unsigned_8      axp_pal;
+
+typedef lreal           gfloat; //NYI: dummy definition
+typedef lreal           dfloat; //NYI: dummy definition
 
 typedef struct {
     unsigned_64         beg_addr;
@@ -49,10 +58,7 @@ typedef struct {
     unsigned_64         except_handler;
     unsigned_64         handler_data;
     unsigned_64         pro_end_addr;
-} axp_pdata;
-
-typedef lreal   gfloat; //NYI: dummy definition
-typedef lreal   dfloat; //NYI: dummy definition
+} axp_pdata_struct;
 
 typedef union {
     unsigned_64         u64;
@@ -62,196 +68,189 @@ typedef union {
     dfloat              d;
 } axpreg;
 
-typedef unsigned_8 axp_pal; enum {
-    PAL_all,
-    PAL_nt,
-    PAL_unix,
-    PAL_vms
-};
-
 struct axp_mad_registers {
-    axpreg          f0;
-    axpreg          f1;
-    axpreg          f2;
-    axpreg          f3;
-    axpreg          f4;
-    axpreg          f5;
-    axpreg          f6;
-    axpreg          f7;
-    axpreg          f8;
-    axpreg          f9;
-    axpreg          f10;
-    axpreg          f11;
-    axpreg          f12;
-    axpreg          f13;
-    axpreg          f14;
-    axpreg          f15;
-    axpreg          f16;
-    axpreg          f17;
-    axpreg          f18;
-    axpreg          f19;
-    axpreg          f20;
-    axpreg          f21;
-    axpreg          f22;
-    axpreg          f23;
-    axpreg          f24;
-    axpreg          f25;
-    axpreg          f26;
-    axpreg          f27;
-    axpreg          f28;
-    axpreg          f29;
-    axpreg          f30;
-    axpreg          f31;
+    axpreg              f0;
+    axpreg              f1;
+    axpreg              f2;
+    axpreg              f3;
+    axpreg              f4;
+    axpreg              f5;
+    axpreg              f6;
+    axpreg              f7;
+    axpreg              f8;
+    axpreg              f9;
+    axpreg              f10;
+    axpreg              f11;
+    axpreg              f12;
+    axpreg              f13;
+    axpreg              f14;
+    axpreg              f15;
+    axpreg              f16;
+    axpreg              f17;
+    axpreg              f18;
+    axpreg              f19;
+    axpreg              f20;
+    axpreg              f21;
+    axpreg              f22;
+    axpreg              f23;
+    axpreg              f24;
+    axpreg              f25;
+    axpreg              f26;
+    axpreg              f27;
+    axpreg              f28;
+    axpreg              f29;
+    axpreg              f30;
+    axpreg              f31;
 
     union {
-        axpreg      r0;
-        axpreg      v0;
+        axpreg          r0;
+        axpreg          v0;
     } u0;
     union {
-        axpreg      r1;
-        axpreg      t0;
+        axpreg          r1;
+        axpreg          t0;
     } u1;
     union {
-        axpreg      r2;
-        axpreg      t1;
+        axpreg          r2;
+        axpreg          t1;
     } u2;
     union {
-        axpreg      r3;
-        axpreg      t2;
+        axpreg          r3;
+        axpreg          t2;
     } u3;
     union {
-        axpreg      r4;
-        axpreg      t3;
+        axpreg          r4;
+        axpreg          t3;
     } u4;
     union {
-        axpreg      r5;
-        axpreg      t4;
+        axpreg          r5;
+        axpreg          t4;
     } u5;
     union {
-        axpreg      r6;
-        axpreg      t5;
+        axpreg          r6;
+        axpreg          t5;
     } u6;
     union {
-        axpreg      r7;
-        axpreg      t6;
+        axpreg          r7;
+        axpreg          t6;
     } u7;
     union {
-        axpreg      r8;
-        axpreg      t7;
+        axpreg          r8;
+        axpreg          t7;
     } u8;
     union {
-        axpreg      r9;
-        axpreg      s0;
+        axpreg          r9;
+        axpreg          s0;
     } u9;
     union {
-        axpreg      r10;
-        axpreg      s1;
+        axpreg          r10;
+        axpreg          s1;
     } u10;
     union {
-        axpreg      r11;
-        axpreg      s2;
+        axpreg          r11;
+        axpreg          s2;
     } u11;
     union {
-        axpreg      r12;
-        axpreg      s3;
+        axpreg          r12;
+        axpreg          s3;
     } u12;
     union {
-        axpreg      r13;
-        axpreg      s4;
+        axpreg          r13;
+        axpreg          s4;
     } u13;
     union {
-        axpreg      r14;
-        axpreg      s5;
+        axpreg          r14;
+        axpreg          s5;
     } u14;
     union {
-        axpreg      r15;
-        axpreg      fp;
+        axpreg          r15;
+        axpreg          fp;
     } u15;
     union {
-        axpreg      r16;
-        axpreg      a0;
+        axpreg          r16;
+        axpreg          a0;
     } u16;
     union {
-        axpreg      r17;
-        axpreg      a1;
+        axpreg          r17;
+        axpreg          a1;
     } u17;
     union {
-        axpreg      r18;
-        axpreg      a2;
+        axpreg          r18;
+        axpreg          a2;
     } u18;
     union {
-        axpreg      r19;
-        axpreg      a3;
+        axpreg          r19;
+        axpreg          a3;
     } u19;
     union {
-        axpreg      r20;
-        axpreg      a4;
+        axpreg          r20;
+        axpreg          a4;
     } u20;
     union {
-        axpreg      r21;
-        axpreg      a5;
+        axpreg          r21;
+        axpreg          a5;
     } u21;
     union {
-        axpreg      r22;
-        axpreg      t8;
+        axpreg          r22;
+        axpreg          t8;
     } u22;
     union {
-        axpreg      r23;
-        axpreg      t9;
+        axpreg          r23;
+        axpreg          t9;
     } u23;
     union {
-        axpreg      r24;
-        axpreg      t10;
+        axpreg          r24;
+        axpreg          t10;
     } u24;
     union {
-        axpreg      r25;
-        axpreg      t11;
+        axpreg          r25;
+        axpreg          t11;
     } u25;
     union {
-        axpreg      r26;
-        axpreg      ra;
+        axpreg          r26;
+        axpreg          ra;
     } u26;
     union {
-        axpreg      r27;
-        axpreg      t12;
+        axpreg          r27;
+        axpreg          t12;
     } u27;
     union {
-        axpreg      r28;
-        axpreg      at;
+        axpreg          r28;
+        axpreg          at;
     } u28;
     union {
-        axpreg      r29;
-        axpreg      gp;
+        axpreg          r29;
+        axpreg          gp;
     } u29;
     union {
-        axpreg      r30;
-        axpreg      sp;
+        axpreg          r30;
+        axpreg          sp;
     } u30;
     union {
-        axpreg      r31;
-        axpreg      zero;
+        axpreg          r31;
+        axpreg          zero;
     } u31;
 
-    unsigned_64     fpcr;
+    unsigned_64         fpcr;
 
     /* the PC must be the first item in all of the PAL reg structures */
     union {
         struct {
-            unsigned_64         fir;
-            unsigned_64         softfpcr;
-            unsigned_32         psr;
+            unsigned_64 fir;
+            unsigned_64 softfpcr;
+            unsigned_32 psr;
         }       nt;
         struct {
-            unsigned_64         pc;
-            unsigned_8          ps;
+            unsigned_64 pc;
+            unsigned_8  ps;
         }       nix;
         struct {
-            unsigned_64         pc;
-            unsigned_64         psr;
+            unsigned_64 pc;
+            unsigned_64 psr;
         }       vms;
     }           pal;
-    axp_pal                     active_pal;
+    axp_pal             active_pal;
 };
-
 #include "digunpck.h"
+
 #endif

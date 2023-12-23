@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,7 +39,7 @@
 
 
 void    FSeekRec( b_file *io, unsigned_32 rec, uint recsize )
-//==========================================================
+//===========================================================
 // Seek to specified record in file.
 {
     FSetIOOk( io );
@@ -59,7 +59,8 @@ void    FSeekRec( b_file *io, unsigned_32 rec, uint recsize )
     }
 }
 
-long        CurrFileOffset( b_file *io )
+long    CurrFileOffset( b_file *io )
+//==================================
 {
     long    offs;
 
@@ -72,6 +73,7 @@ long        CurrFileOffset( b_file *io )
 
 
 int     SysSeek( b_file *io, long new_offset, int seek_mode )
+//===========================================================
 {
     long    curr_offset;
     long    new_page;
@@ -95,12 +97,12 @@ int     SysSeek( b_file *io, long new_offset, int seek_mode )
             io->phys_offset = new_offset;
         }
         return( 0 );
-    } else if( io->attrs & READ_AHEAD ) {
+    }
+    if( io->attrs & READ_AHEAD ) {
         page_offset = io->phys_offset - io->read_len;
         if( page_offset <= new_offset ) {
-            if( (new_offset < io->phys_offset) ||
-                ( (io->attrs & PAST_EOF) &&
-                  (new_offset < page_offset + io->buff_size) ) ) {
+            if( ( new_offset < io->phys_offset )
+              || (io->attrs & PAST_EOF) && ( new_offset < page_offset + io->buff_size ) ) {
                 // we have the part of file in memory still, or we know we're
                 // at the end of the file and the offset we want is on this
                 // page as well
@@ -175,18 +177,21 @@ int     SysSeek( b_file *io, long new_offset, int seek_mode )
 
 #if 0
 void    FSeekAbs( b_file *io, unsigned_32 offset )
+//================================================
 {
     SysSeek( io, offset, SEEK_SET );
 }
 #endif
 
-long        FGetFilePos( b_file *io )
+long    FGetFilePos( b_file *io )
+//===============================
 {
     return( CurrFileOffset( io ) );
 }
 
 
 void    FRewind( b_file *io )
+//===========================
 // Rewind a file.
 {
     FSetIOOk( io );

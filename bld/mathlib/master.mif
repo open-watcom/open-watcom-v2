@@ -30,6 +30,10 @@ mlib_host_os_rdos    = rdos
 mlib_host_os_rdosdev = rdosdev
 host_os = $(mlib_host_os_$(system))
 
+!ifdef lib_debug
+debug = 1
+!endif
+
 !include cproj.mif
 !include libsubdi.mif
 

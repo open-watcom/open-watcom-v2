@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,7 +37,6 @@
 #include <direct.h>
 #include <ctype.h>
 #include <dos.h>
-#include "cpuglob.h"
 #include "stdwin.h"
 #include "wdebug.h"
 #include "trpimp.h"
@@ -52,8 +51,8 @@
 void SingleStepMode( void )
 {
 
-    IntResult.EFlags |= TRACE_BIT;
-    TraceOn = TRUE;
+    IntResult.EFlags |= INTR_TF;
+    TraceOn = true;
 
 } /* SingleStepMode */
 
@@ -70,9 +69,9 @@ void SingleStepMode( void )
 static trap_elen runProg( bool single_step )
 {
     private_msg         pmsg;
-    BOOL                watch386;
-    BOOL                dowatch;
-    BOOL                ton;
+    bool                watch386;
+    bool                dowatch;
+    bool                ton;
     appl_action         appl_act;
     prog_go_ret         *ret;
 
@@ -83,20 +82,20 @@ static trap_elen runProg( bool single_step )
         return( sizeof( *ret ) );
     }
 
-    IntResult.EFlags &= ~TRACE_BIT;
-    dowatch = FALSE;
-    watch386 = FALSE;
+    IntResult.EFlags &= ~INTR_TF;
+    dowatch = false;
+    watch386 = false;
 
     SetInputLock( false );
 
     if( single_step ) {
         SingleStepMode();
-    } else if( WPCount != 0 ) {
-        dowatch = TRUE;
+    } else if( IsWatch() ) {
+        dowatch = true;
         watch386 = SetDebugRegs();
     }
 
-    ret->conditions = 0;
+    ret->conditions = COND_NONE;
     appl_act = RESTART_APP;
     while( DebugeeTask != NULL ) {
         if( dowatch && !watch386 ) {
@@ -104,7 +103,7 @@ static trap_elen runProg( bool single_step )
         }
         ton = TraceOn;
         pmsg = DebuggerWaitForMessage( RUNNING_DEBUGEE, TaskAtFault, appl_act );
-        TraceOn = FALSE;
+        TraceOn = false;
 
         if( pmsg == FAULT_HIT ) {
             switch( IntResult.InterruptNumber ) {
@@ -194,11 +193,11 @@ static trap_elen runProg( bool single_step )
 trap_retval TRAP_CORE( Prog_go )( void )
 {
     Out(( OUT_RUN, "ReqProg_go" ));
-    return( runProg( FALSE ) );
+    return( runProg( false ) );
 }
 
 trap_retval TRAP_CORE( Prog_step )( void )
 {
     Out(( OUT_RUN, "ReqProg_step" ));
-    return( runProg( TRUE ) );
+    return( runProg( true ) );
 }

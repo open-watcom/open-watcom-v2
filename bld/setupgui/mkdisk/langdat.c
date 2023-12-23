@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,6 +33,7 @@
 #include <string.h>
 #include <ctype.h>
 #include <stdlib.h>
+#include <errno.h>
 #ifndef __UNIX__
 #include <direct.h>
 #endif
@@ -48,9 +49,6 @@
 
 #define DEFCTLNAME      "files.dat"
 #define DEFCTLENV       "FILES_DAT"
-
-#define IS_WS(c)        ((c) == ' ' || (c) == '\t')
-#define SKIP_WS(p)      while(IS_WS(*(p))) (p)++
 
 typedef struct ctl_file {
     struct ctl_file     *next;
@@ -428,6 +426,39 @@ static char *NextWord( char *p )
     return( FirstWord( p + strlen( p ) + 1 ) );
 }
 
+static char *GetNextPathOrFile( char *p )
+{
+    char        c;
+    char        quotechar;
+    char        *start;
+
+    p += strlen( p ) + 1;
+    SKIP_BLANKS( p );
+    if( *p == '\0' )
+        return( NULL );
+    quotechar = ( *p == '"' ) ? *p++ : ' ';
+    start = p;
+    while( (c = *p) != '\0' ) {
+        if( c == quotechar ) {
+            *p = '\0';
+            return( start );
+        }
+#ifdef __UNIX__
+        if( c == '\\' ) {
+            *p = '/';
+        }
+#else
+        if( c == '/' ) {
+            *p = '\\';
+        }
+#endif
+        p++;
+    }
+    *p++ = '\0';
+    *p = '\0';
+    return( start );
+}
+
 bool checkWord( char *p, ctl_file *word_list )
 {
     ctl_file    *w;
@@ -506,17 +537,25 @@ static char *item_append( const char *old, const char *new )
 {
     char    *p;
 
-    if( old == NULL ) {
-        p = MStrdup( new );
+    if( *new == '\0' ) {
+        p = (char *)old;
     } else {
-        size_t  len;
+        if( old == NULL ) {
+            p = MStrdup( new );
+        } else {
+            if( *old == '\0' ) {
+                p = MStrdup( new );
+            } else {
+                size_t  len;
 
-        len = strlen( old ) + strlen( new ) + 1 + 1;
-        p = MAlloc( len );
-        strcpy( p, old );
-        MFree( (void *)old );
-        strcat( p, " " );
-        strcat( p, new );
+                len = strlen( old ) + strlen( new ) + 1 + 1;
+                p = MAlloc( len );
+                strcpy( p, old );
+                strcat( p, " " );
+                strcat( p, new );
+            }
+            MFree( (void *)old );
+        }
     }
     return( p );
 }
@@ -554,7 +593,7 @@ static void ProcessLine( const char *line )
     desc = DEFVAL( DefDesc );
     old = DEFVAL( DefOld );
     dstvar = DEFVAL( DefDstvar );
-    keys = DEFVAL( DefKeys );
+    keys = DEFVALA( DefKeys );
 
     p = line_copy = MStrdup( line );
     SKIP_BLANKS( p );
@@ -592,7 +631,9 @@ static void ProcessLine( const char *line )
         } else if( !stricmp( cmd, "dstvar" ) ) {
             dstvar = str;
         } else if( !stricmp( cmd, "keys" ) ) {
-            keys = str;
+            keys = item_redef( keys, str );
+        } else if( !stricmp( cmd, "keysa" ) ) {
+            keys = item_append( keys, str );
         } else {
             printf( "langdat warning: unknown keyword %s\n", cmd );
             printf( "(in file %s line %d)\n", IncludeStk->name, IncludeStk->lineno );
@@ -619,6 +660,7 @@ static void ProcessLine( const char *line )
     }
     FREE_ITEM( cond );
     FREE_ITEM( where );
+    FREE_ITEM( keys );
     MFree( line_copy );
 }
 
@@ -650,7 +692,7 @@ static void ProcessDefault( const char *line )
     SKIP_BLANKS( p );
     q = strtok( p, "]" );
     q += strlen( q ) - 1;
-    while( (q >= p) && IS_WS( *q ) )
+    while( (q >= p) && IS_BLANK( *q ) )
         --q;
     if( *q == '\"' )
         ++q;
@@ -659,6 +701,7 @@ static void ProcessDefault( const char *line )
     if( cmd != NULL ) {
         do {
             str = strtok( NULL, "\"" );
+            SKIP_BLANKS( str );
             if( !stricmp( cmd, "type" ) ) {
                 DefType = item_def( DefType, str, cmd );
             } else if( !stricmp( cmd, "redist" ) ) {
@@ -768,12 +811,12 @@ static void ProcessCtlFile( const char *name )
             p = FirstWord( p + 1 );
             if( stricmp( p, "INCLUDE" ) == 0 ) {
                 if( IncludeStk->skipping == 0 ) {
-                    PushInclude( NextWord( p ) );
+                    PushInclude( GetNextPathOrFile( p ) );
                 }
             }
             else if( stricmp( p, "LOG" ) == 0 ) {
                 if( IncludeStk->skipping == 0 ) {
-                    log_name = NextWord( p );
+                    log_name = GetNextPathOrFile( p );
                     p = NextWord( log_name );
                     if( LogFile == NULL ) {
                         OpenLog( log_name );

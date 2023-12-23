@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,14 +38,14 @@
 #include "bindery.h"
 #include "miniproc.h"
 #include "ecb.h"
-
+#include "nov.h"
 #include "ipxstuff.h"
-
 #include "debugme.h"
 #include "trpimp.h"
 #include "trperr.h"
 #include "packet.h"
 #include "nothing.h"
+
 
 extern struct ResourceTagStructure              *SocketTag;
 extern struct ResourceTagStructure              *TimerTag;
@@ -59,12 +60,12 @@ extern struct ResourceTagStructure              *SemaphoreTag;
 #define NUM_REC_BUFFS   5
 
 SPXHeader       SendHead;
-SPXHeader       RecHead[ NUM_REC_BUFFS ];
+SPXHeader       RecHead[NUM_REC_BUFFS];
 SPXHeader       ConnHead;
 
 ECB             SendECB;
 ECB             ConnECB;
-ECB             RecECB[ NUM_REC_BUFFS ];
+ECB             RecECB[NUM_REC_BUFFS];
 
 char            Buffer[NUM_REC_BUFFS][MAX_DATA_SIZE];
 
@@ -327,11 +328,11 @@ static int ASCIIZToLenStr( char *lstr, char *string )
 {
    int i;
 
-    for( i = 0; i < 255 && string[ i ] != 0; i++ ) {
-        lstr[i+1] = string[ i ];
+    for( i = 0; i < 255 && string[i] != 0; i++ ) {
+        lstr[i + 1] = string[i];
     }
-    lstr[ 0 ] = i;
-    return( ( i == 255 ) && ( string[ 255 ] != 0 ) );
+    lstr[0] = i;
+    return( ( i == 255 ) && ( string[255] != 0 ) );
 }
 
 static LONG ReadPropertyValue( char *objectName,
@@ -351,7 +352,8 @@ static LONG ReadPropertyValue( char *objectName,
     rc = ReadProperty( 0, objectID, (BYTE *)name_buff, (LONG)segmentNumber,
                        propertyValue, &moreSegmentsT, &propertyFlagsT,
                        CHECK );
-    if( rc != 0 ) return( rc );
+    if( rc != 0 )
+        return( rc );
     return( 0 );
 }
 
@@ -362,9 +364,9 @@ static int FindPartner( void )
 
     if( ReadPropertyValue( (char *)SAPStruct.ASServerIDpacket.serverName,
                            DBG_SERVER_TYPE, "NET_ADDRESS",
-                           1, (BYTE *)&property_value ) != 0 )
+                           1, (BYTE *)property_value ) != 0 )
         return( false );
-    AssignArray( ServHead.destination, property_value );
+    AssignFromArray( ServHead.destination, property_value );
     if( CIPXGetLocalTarget( ServHead.destination.network,
                             ServECB.immediateAddress, &transport_time ) != 0 ) {
 _DBG_IPX(( "FindPartner -- nobody home\r\n" ));
@@ -373,7 +375,8 @@ _DBG_IPX(( "FindPartner -- nobody home\r\n" ));
     RespECB.fragmentDescriptor[1].address = &PartnerSPXSocket;
     CIPXListen( &RespECB );
     CIPXSendPacket( &ServECB );
-    while( InUse( ServECB ) ) NothingToDo();
+    while( InUse( ServECB ) )
+        NothingToDo();
     if( !Completed( ServECB ) )
         return( false );
     NothingToDo();
@@ -400,13 +403,13 @@ const char *RemoteLink( const char *parms, bool server )
 _DBG_IPX(("RemoteLink\r\n"));
     server = server;
     if( *parms == '\0' )
-        parms = "NovLink";
+        parms = DEFAULT_LINK_NAME;
     for( i = 0; i < 48 && *parms != '\0'; ++parms ) {
         if( strchr( "/\\:;,*?+-", *parms ) == NULL ) {
-            SAPStruct.ASServerIDpacket.serverName[ i++ ] = toupper( *parms );
+            SAPStruct.ASServerIDpacket.serverName[i++] = toupper( *parms );
         }
     }
-    SAPStruct.ASServerIDpacket.serverName[ i ] = '\0';
+    SAPStruct.ASServerIDpacket.serverName[i] = '\0';
     if( CIPXOpenSocketRTag( &SPXSocket, SocketTag ) != 0 ||
         CIPXOpenSocketRTag( &IPXSocket, SocketTag ) != 0 ) {
         return( TRP_ERR_can_not_obtain_socket );

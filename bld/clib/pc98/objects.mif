@@ -1,0 +1,42 @@
+#                       d16 d32 dpm nt  nta ntp ntm nvc nvl o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
+#=======================================================================================================
+!inject biosdisk.obj    d16 d32                                             w16
+!inject biosequi.obj    d16 d32                                             w16
+!inject bioskeyb.obj    d16 d32                                             w16
+!inject biosmems.obj    d16 d32                                             w16
+!inject biosprin.obj    d16 d32                                             w16
+!inject biosseri.obj    d16 d32                                             w16
+!inject biostime.obj    d16 d32                                             w16
+!inject ctrlbrki.obj    d16 d32                                             w16
+!inject fpe87.obj       d16
+!inject fpedos4g.obj        d32
+!inject fpeint.obj      d16 d32                                             w16
+!inject fpephar.obj         d32
+!inject ispc98.obj      d16 d32                                             w16
+!inject n_disk.obj      d16 d32                                             w16
+!inject n_equipl.obj    d16 d32                                             w16
+!inject n_keybrd.obj    d16 d32                                             w16
+!inject n_mem.obj       d16 d32                                             w16
+!inject n_print.obj     d16 d32                                             w16
+!inject n_serial.obj    d16 d32                                             w16
+!inject n_timofd.obj    d16 d32                                             w16
+!inject sigsy.obj       d16 d32                                             w16
+
+!include ../../../../objlist.mif
+
+biosdisk_opts = -I"$(clib_dir)/bios/h"
+biosequi_opts = -I"$(clib_dir)/bios/h"
+bioskeyb_opts = -I"$(clib_dir)/bios/h"
+biosmems_opts = -I"$(clib_dir)/bios/h"
+biosprin_opts = -I"$(clib_dir)/bios/h"
+biosseri_opts = -I"$(clib_dir)/bios/h"
+biostime_opts = -I"$(clib_dir)/bios/h"
+sigsy_opts    = -I"$(clib_dir)/process/h"
+
+086_option_fpi87 =-fpi87
+286_option_fpi87 =-fpi87
+386_option_fpi87 =-fpi87
+
+fpe87_postopts    =$($(processor)_option_fpi87)
+
+extra_clib_lib_flags = -zll

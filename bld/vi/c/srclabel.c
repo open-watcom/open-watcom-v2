@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -66,8 +67,8 @@ vi_rc AddLabel( sfile *sf, labels *labs, const char *lbl )
     /*
      * reallocate buffers
      */
-    labs->name = _MemReallocList( labs->name, labs->cnt + 1 );
-    labs->pos = _MemReallocArray( labs->pos, struct sfile *, labs->cnt + 1 );
+    labs->name = _MemReallocPtrArray( labs->name, char, labs->cnt + 1 );
+    labs->pos = _MemReallocPtrArray( labs->pos, sfile, labs->cnt + 1 );
 
     /*
      * set name and position of label

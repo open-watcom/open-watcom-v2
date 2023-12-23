@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2009-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2009-2023 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -49,7 +49,7 @@ class GlobalDictionaryWord; //forward reference
 class I1 : public Element {
 public:
     I1( Document* d, Element* p, const std::wstring* f, unsigned int r, unsigned int c );
-    ~I1() { };
+    ~I1();
     Lexer::Token parse( Lexer* lexer );
     void buildIndex();
     void buildText( Cell* cell ) { (void)cell; };
@@ -68,7 +68,7 @@ private:
     I1& operator=( const I1& rhs );     //no assignment
     Lexer::Token parseAttributes( Lexer* lexer );
 
-    std::auto_ptr< IndexItem >  _primary;
+    IndexItem*                  _primary;
     std::vector< IndexItem* >   _secondary;
     typedef std::vector< IndexItem* >::iterator IndexIter;
     typedef std::vector< IndexItem* >::const_iterator ConstIndexIter;

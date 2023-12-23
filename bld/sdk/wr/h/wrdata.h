@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,8 +45,8 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-WRDLLENTRY extern void *   WRAPI WRCopyResData( WRInfo *info, WResLangNode *lnode );
-WRDLLENTRY extern void *   WRAPI WRLoadResData( const char *file, uint_32 offset, size_t length );
-WRDLLENTRY extern bool     WRAPI WRSaveResDataToFile( const char *file_name, BYTE *data, size_t length );
+WRDLLENTRY extern char   * WRAPI WRAllocCopyResData( WRInfo *info, WResLangNode *lnode );
+WRDLLENTRY extern char   * WRAPI WRAllocLoadResData( const char *file, uint_32 offset, size_t length );
+WRDLLENTRY extern bool     WRAPI WRSaveResDataToFile( const char *file_name, char *data, size_t length );
 
 #endif

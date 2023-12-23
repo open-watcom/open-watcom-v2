@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,7 +32,9 @@
 
 
 #include "wrglbl.h"
+
 #include "clibint.h"
+
 
 int PASCAL WinMain( HINSTANCE hinstCurrent, HINSTANCE hinstPrevious,
                     LPSTR lpszCmdLine, int nCmdShow )
@@ -45,7 +47,7 @@ int PASCAL WinMain( HINSTANCE hinstCurrent, HINSTANCE hinstPrevious,
     WRInfo              *info;
     WRFileType          ftype;
     uint_16             mflags;
-    WRSelectImageInfo   *sii;
+    WRSelectImageInfo   *siinfo;
 #if 0
     bool                dup;
     char                *data;
@@ -120,9 +122,9 @@ int PASCAL WinMain( HINSTANCE hinstCurrent, HINSTANCE hinstPrevious,
     }
 
     info = WRLoadResource( _argv[1], WR_DONT_KNOW );
-    sii = WRSelectImage( HWND_DESKTOP, info, NULL );
-    if( sii != NULL ) {
-        WRFreeSelectImageInfo( sii );
+    siinfo = WRSelectImage( HWND_DESKTOP, info, NULL );
+    if( siinfo != NULL ) {
+        WRFreeSelectImageInfo( siinfo );
     }
     WRFreeWRInfo( info );
 

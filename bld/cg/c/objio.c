@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -57,8 +58,6 @@
 #define IOBUFSIZE       8192
 
 typedef FILE            *handle;
-
-typedef objhandle       objoffset;
 
 typedef struct buf {
     struct buf  *nextbuf;
@@ -140,7 +139,7 @@ static  handle  CreateStream( const char *name )
 bool    CGOpenf( void )
 /*********************/
 {
-    ObjFile = CreateStream( FEAuxInfo( NULL, OBJECT_FILE_NAME ) );
+    ObjFile = CreateStream( FEAuxInfo( NULL, FEINF_OBJECT_FILE_NAME ) );
     if( ObjFile == INVALID_HANDLE )
         return( false );
     BufList = NewBuffer();              // allocate first buffer
@@ -152,29 +151,16 @@ bool    CGOpenf( void )
 void    OpenObj( void )
 /*********************/
 {
-    ObjOffset = INVALID_OBJHANDLE;
+    ObjOffset = 0;
     NeedSeek = false;
     EraseObj = false;
 }
 
 
-static  byte    DoSum( const byte *buff, uint len )
-/*************************************************/
+static  objoffset   Byte( objhandle rec )
+/***************************************/
 {
-    byte        sum;
-
-    sum = 0;
-    while( len > 0 ) {
-        sum += *buff++;
-        --len;
-    }
-    return( sum );
-}
-
-static  objoffset   Byte( objhandle i )
-/*************************************/
-{
-    return( i );
+    return( (objoffset)rec );
 }
 
 
@@ -185,7 +171,7 @@ static  objhandle   Offset( objoffset offset )
         FatalError( "Object file too large" );
         return( INVALID_OBJHANDLE );
     } else {
-        return( offset );
+        return( (objhandle)offset );
     }
 }
 
@@ -301,63 +287,8 @@ void    PutObjBytes( const void *buff, size_t len )
     ObjOffset += len;
 }
 
-void    PutObjOMFRec( byte class, const void *buff, uint len )
-/************************************************************/
-{
-    unsigned_16     blen;
-    byte            cksum;
-
-    if( NeedSeek ) {
-        SeekStream( ObjFile, ObjOffset );
-        NeedSeek = false;
-    }
-    blen = _TargetShort( len + 1 );
-    cksum = class;
-    cksum += DoSum( (const void *)&blen, sizeof( blen ) );
-    cksum += DoSum( buff, len );
-    cksum = -cksum;
-    PutStream( ObjFile, &class, 1 );
-    PutStream( ObjFile, (const byte *)&blen, sizeof( blen ) );
-    PutStream( ObjFile, buff, len );
-    PutStream( ObjFile, &cksum, 1 );
-    ObjOffset += len + 4;
-}
-
-
-void    PatchObj( objhandle rec, uint roffset, const byte *buff, uint len )
-/*************************************************************************/
-{
-    objoffset       recoffset;
-    byte            cksum;
-    unsigned_16     reclen;
-    byte            inbuff[80];
-
-    recoffset = Byte( rec );
-
-    SeekStream( ObjFile, recoffset + 1 );
-    GetStream( ObjFile, (byte *)&reclen, 2 );
-    reclen = _HostShort( reclen );
-    SeekStream( ObjFile, recoffset + roffset + 3 );
-    GetStream( ObjFile, inbuff, len );
-
-    SeekStream( ObjFile, recoffset + roffset + 3 );
-    PutStream( ObjFile, buff, len );
-
-    SeekStream( ObjFile, recoffset + 2 + reclen );
-    GetStream( ObjFile, &cksum, 1 );
-
-    cksum += DoSum( inbuff, len );
-    cksum -= DoSum( buff, len );
-
-    SeekStream( ObjFile, recoffset + 2 + reclen );
-    PutStream( ObjFile, &cksum, 1 );
-
-    NeedSeek = true;
-}
-
-
-void    GetFromObj( objhandle rec, uint roffset, byte *buff, uint len )
-/*********************************************************************/
+void    GetFromObj( objhandle rec, objoffset roffset, byte *buff, size_t len )
+/****************************************************************************/
 {
     SeekStream( ObjFile, Byte( rec ) + roffset + 3 );
     GetStream( ObjFile, buff, len );
@@ -398,7 +329,7 @@ void    CloseObj( void )
         FlushBuffers( ObjFile );
         CloseStream( ObjFile );
         if( EraseObj ) {
-            EraseStream( FEAuxInfo( NULL, OBJECT_FILE_NAME ) );
+            EraseStream( FEAuxInfo( NULL, FEINF_OBJECT_FILE_NAME ) );
         }
         ObjFile = INVALID_HANDLE;
     }
@@ -410,4 +341,24 @@ void    ScratchObj( void )
 {
     EraseObj = true;
     CloseObj();
+}
+
+void SeekGetObj( objhandle rec, objoffset roffset, byte *b, size_t len )
+/**********************************************************************/
+{
+    SeekStream( ObjFile, Byte( rec ) + roffset );
+    GetStream( ObjFile, b, len );
+}
+
+void SeekPutObj( objhandle rec, objoffset roffset, const byte *b, size_t len )
+/****************************************************************************/
+{
+    SeekStream( ObjFile, Byte( rec ) + roffset );
+    PutStream( ObjFile, b, len );
+}
+
+void NeedSeekObj( void )
+/**************************/
+{
+    NeedSeek = true;
 }

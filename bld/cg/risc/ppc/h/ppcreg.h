@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,21 +36,20 @@
 #define HW_NEED_160
 #include "cghwreg.h"
 
-/*       Target dependent set of hardware registers available */
-
 /*
-        Note: after having contemplated all sorts of horrific
-        manners in which to automate the following in terms of
-        preprocessor abuse, I have decided that brute force is good.
-*/
-
-/* Due to some strange assumptions in the code generator about register
-    names being tightly linked to the size of data contained therein, we
-    have to give each register a unique name to correspond to each of the
-    data types which can be held within it.
-*/
-
-/* Note that HW_Rxx registers are aliases for HW_Dxx on 32-bit PowerPC. */
+ * Target dependent set of hardware registers available
+ *
+ *  Note: after having contemplated all sorts of horrific
+ *  manners in which to automate the following in terms of
+ *  preprocessor abuse, I have decided that brute force is good.
+ *
+ * Due to some strange assumptions in the code generator about register
+ * names being tightly linked to the size of data contained therein, we
+ * have to give each register a unique name to correspond to each of the
+ * data types which can be held within it.
+ *
+ *  Note: HW_Rxx registers are aliases for HW_Dxx on 32-bit PowerPC.
+ */
 
 /* low bytes of the integer registers - byte 0 */
 HW_DEFINE_SIMPLE( HW_B0,     0x00000001U, 0x00000000U, 0x00000000U, 0x00000000U, 0x00000000U );

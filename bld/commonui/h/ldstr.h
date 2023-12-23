@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,9 +39,9 @@
 
 
 /************************************************************************
- * SetInstance - must be called before any other routine in this file
+ * SetRCInstance - must be called before any other routine in this file
  ***********************************************************************/
-void        SetInstance( HINSTANCE inst );
+void        SetRCInstance( HINSTANCE inst );
 char        *AllocRCString( msg_id id );
 void        FreeRCString( char *str );
 const char  *GetRCString( msg_id msgid );

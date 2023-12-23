@@ -59,7 +59,7 @@ ExtraRptCtr( ctr_defargs_complex );
 #define BLOCK_RELOC_LIST        16
 static carve_t carveRELOC_LIST;
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 
 // for debugging, keep list of defarg ptree so we can free them in our
 // fini routine
@@ -354,7 +354,7 @@ static void analyseDefaultExpr( // ANALYSE A DEFAULT ARGUMENT EXPRESSION
         expr = CastImplicit( expr, type_ret, CNV_FUNC_DARG, &diagDefarg );
     }
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
     if( expr != NULL && expr->op != PT_ERROR ) {
         int complex = 1;
         switch( expr->op ) {

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -92,11 +92,13 @@ static char WREBusyChars[] = "-\\|/";
 static jmp_buf SymEnv;
 
 void PPENTRY PP_OutOfMemory( void )
+/*********************************/
 {
     longjmp( SymEnv, 1 );
 }
 
 void * PPENTRY PP_Malloc( size_t size )
+/*************************************/
 {
     void        *p;
 
@@ -108,8 +110,54 @@ void * PPENTRY PP_Malloc( size_t size )
 }
 
 void PPENTRY PP_Free( void *p )
+/*****************************/
 {
     WRMemFree( p );
+}
+
+int PP_MBCharLen( const char *p )
+/*******************************/
+{
+    /* unused parameters */ (void)p;
+
+    return( 1 );
+}
+
+static void addsym_func( const MACRO_ENTRY *me, const PREPROC_VALUE *val, void *cookie )
+{
+    char                busy_str[2];
+    WRHashValue         value;
+    addsym_data         *data = (addsym_data *)cookie;
+
+    if( val->type == PPTYPE_SIGNED ) {
+        value = (WRHashValue)val->val.ivalue;
+    } else {
+        value = (WRHashValue)val->val.uvalue;
+    }
+    WRAddHashEntry( data->table, me->name, value, &data->dup, false, false );
+    data->add_count++;
+    if( data->add_count == MAX_SYM_ADDS ) {
+        data->busy_count++;
+        busy_str[0] = WREBusyChars[data->busy_count % 4];
+        busy_str[1] = '\0';
+        WRESetStatusText( NULL, busy_str, true );
+        data->add_count = 0;
+    }
+}
+
+static void Add_PP_Symbols( WRHashTable *table )
+{
+    addsym_data         data;
+
+    if( table == NULL ) {
+        return;
+    }
+    data.dup = true;
+    data.add_count = 0;
+    data.busy_count = 0;
+    data.table = table;
+
+    PP_MacrosWalk( addsym_func, &data );
 }
 
 static char *WREFindDLGInclude( WRInfo *info )
@@ -142,58 +190,13 @@ static char *WREFindDLGInclude( WRInfo *info )
     }
 
     if( ok ) {
-        include = (char *)WRCopyResData( info, lnode );
+        include = WRAllocCopyResData( info, lnode );
     }
 
     return( include );
 }
 
-static void addsym_func( const MACRO_ENTRY *me, const PREPROC_VALUE *val, void *cookie )
-{
-    char                busy_str[2];
-    WRHashValue         value;
-    addsym_data         *data = (addsym_data *)cookie;
-
-    if( val->type == PPTYPE_SIGNED ) {
-        value = (WRHashValue)val->val.ivalue;
-    } else {
-        value = (WRHashValue)val->val.uvalue;
-    }
-    WRAddHashEntry( data->table, me->name, value, &data->dup, false, false );
-    data->add_count++;
-    if( data->add_count == MAX_SYM_ADDS ) {
-        data->busy_count++;
-        busy_str[0] = WREBusyChars[data->busy_count % 4];
-        busy_str[1] = '\0';
-        WRESetStatusText( NULL, busy_str, true );
-        data->add_count = 0;
-    }
-}
-
-static void WREAddSymbols( WRHashTable *table )
-{
-    addsym_data         data;
-
-    if( table == NULL ) {
-        return;
-    }
-    data.dup = true;
-    data.add_count = 0;
-    data.busy_count = 0;
-    data.table = table;
-
-    PP_MacrosWalk( addsym_func, &data );
-}
-
-int PP_MBCharLen( const char *p )
-/*******************************/
-{
-    /* unused parameters */ (void)p;
-
-    return( 1 );
-}
-
-static char *WRELoadSymbols( WRHashTable **table, char *file_name, bool prompt )
+static char *WRELoadSymbols( WRHashTable **table, char *file_name, bool prompt_name )
 {
     char                *name;
     int                 c;
@@ -213,16 +216,16 @@ static char *WRELoadSymbols( WRHashTable **table, char *file_name, bool prompt )
     ok = (table != NULL);
 
     if( ok ) {
-        WRESetStatusText( NULL, "", FALSE );
+        WRESetStatusText( NULL, "", false );
         WRESetStatusByID( WRE_LOADINGSYMBOLS, 0 );
     }
 
     if( ok ) {
-        if( file_name == NULL || prompt ) {
+        if( file_name == NULL || prompt_name ) {
             gf.file_name = file_name;
             gf.title = WRESymLoadTitle;
             gf.filter = WRESymSaveFilter;
-            gf.save_ext = FALSE;
+            gf.save_ext = false;
             name = WREGetOpenFileName( &gf );
         } else {
             name = WREStrDup( file_name );
@@ -230,7 +233,7 @@ static char *WRELoadSymbols( WRHashTable **table, char *file_name, bool prompt )
         ok = (name != NULL);
     }
 
-    WRESetWaitCursor( TRUE );
+    WRESetWaitCursor( true );
 
     if( ok ) {
         ppflags = PPFLAG_IGNORE_INCLUDE | PPFLAG_EMIT_LINE | PPFLAG_TRUNCATE_FILE_NAME;
@@ -260,17 +263,17 @@ static char *WRELoadSymbols( WRHashTable **table, char *file_name, bool prompt )
             if( pp_count == MAX_PP_CHARS ) {
                 busy_count++;
                 busy_str[0] = WREBusyChars[busy_count % 4];
-                WRESetStatusText( NULL, busy_str, TRUE );
+                WRESetStatusText( NULL, busy_str, true );
                 pp_count = 0;
             }
         } while( c != EOF );
         if( *table == NULL ) {
             *table = WRInitHashTable();
         }
-        WREAddSymbols( *table );
+        Add_PP_Symbols( *table );
         WRMakeHashTableClean( *table );
         PP_FileFini();
-        WRESetStatusText( NULL, " ", TRUE );
+        WRESetStatusText( NULL, " ", true );
     }
 
     if( !ok ) {
@@ -282,14 +285,14 @@ static char *WRELoadSymbols( WRHashTable **table, char *file_name, bool prompt )
 
     PP_Fini();
 
-    WRESetWaitCursor( FALSE );
+    WRESetWaitCursor( false );
 
     WRESetStatusReadyText();
 
     return( name );
 }
 
-bool WRESaveSymbols( WRHashTable *table, char **file_name, bool prompt )
+bool WRESaveSymbols( WRHashTable *table, char **file_name, bool prompt_name )
 {
     char                *name;
     WREGetFileStruct    gf;
@@ -304,14 +307,14 @@ bool WRESaveSymbols( WRHashTable *table, char **file_name, bool prompt )
     }
 
     ok = true;
-    WRESetStatusText( NULL, "", FALSE );
+    WRESetStatusText( NULL, "", false );
     WRESetStatusByID( WRE_SAVEINGSYMBOLS, 0 );
 
-    if( prompt || *file_name == NULL ) {
+    if( prompt_name || *file_name == NULL ) {
         gf.file_name = *file_name;
         gf.title = WRESymSaveTitle;
         gf.filter = WRESymSaveFilter;
-        gf.save_ext = FALSE;
+        gf.save_ext = false;
         name = WREGetSaveFileName( &gf );
         ok = (name != NULL);
         if( ok ) {
@@ -383,7 +386,7 @@ bool WRELoadResourceSymbols( WREResInfo *info )
     }
     info->symbol_file = symbol_file;
 
-    WRESetResModified( info, TRUE );
+    WRESetResModified( info, true );
 
     // ***** call routine to update the edit sessions *****
 
@@ -429,7 +432,7 @@ bool WREFindAndLoadSymbols( WREResInfo *rinfo )
     char        fn_path[_MAX_PATH];
     pgroup2     pg;
     char        *symbol_file;
-    bool        prompt;
+    bool        prompt_name;
     bool        ret;
 
     if( rinfo == NULL || rinfo->info == NULL
@@ -447,18 +450,18 @@ bool WREFindAndLoadSymbols( WREResInfo *rinfo )
         _makepath( fn_path, pg.drive, pg.dir, pg.fname, "h" );
         _makepath( inc_path, pg.drive, pg.dir, NULL, NULL );
         WRESetInitialDir( inc_path );
-        prompt = true;
+        prompt_name = true;
     } else {
         strcpy( fn_path, symbol_file );
         WRMemFree( symbol_file );
         symbol_file = NULL;
-        prompt = false;
+        prompt_name = false;
     }
 
     ret = true;
 
     if( WRFileExists( fn_path ) ) {
-        symbol_file = WRELoadSymbols( &rinfo->symbol_table, fn_path, prompt );
+        symbol_file = WRELoadSymbols( &rinfo->symbol_table, fn_path, prompt_name );
         ret = (symbol_file != NULL);
         if( ret ) {
             if( rinfo->symbol_file != NULL ) {

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -55,10 +55,12 @@
 #include <sys/console.h>
 #include <sys/dev.h>
 #include <string.h>
+#include "digcpu.h"
 #include "trpimp.h"
-#include "trperr.h"
 #include "trpcomm.h"
+#include "trperr.h"
 #include "qnxcomm.h"
+#include "qnxpath.h"
 #include "miscx87.h"
 #include "mad.h"
 #include "madregs.h"
@@ -70,7 +72,7 @@ typedef unsigned long   ULONG;
 
 static pid_t            MID;
 static pid_t            OrigPGrp;
-static char             UtilBuff[BUFF_SIZE];
+static unsigned char    UtilBuff[BUFF_SIZE];
 static struct {
     unsigned long       in;
     unsigned long       out;
@@ -130,9 +132,10 @@ static process_info ProcInfo;
 
 #define PRIV_MASK   3
 
-#define MAX_WP  32
-struct _watch_struct    WatchPoints[ MAX_WP ];
-short   WatchCount = 0;
+#define MAX_WATCHES     32
+
+static struct _watch_struct WatchPoints[MAX_WATCHES];
+static int                  WatchCount = 0;
 
 #if 0
 void Out( char *str )
@@ -156,64 +159,66 @@ void OutNum( unsigned long i )
 #endif
 
 #define MAX_MEM_TRANS   256
-static unsigned MoveMem( int op, char *data, addr_seg segv, addr_off offv,
-                unsigned size )
+static size_t MoveMem( int op, void *data, addr_seg segv, addr_off offv, size_t req_len )
 {
-    unsigned            length;
-    unsigned            trans;
-    unsigned            amount;
+    size_t              len;
+    size_t              want;
+    size_t              got;
     struct _seginfo     info;
 
-    if( ProcInfo.pid == 0 ) return( 0 );
+    if( ProcInfo.pid == 0 )
+        return( 0 );
     if( qnx_segment_info( ProcInfo.proc, ProcInfo.pid, segv, &info ) == -1 ) {
         info.nbytes = 0;
     }
     if( offv >= info.nbytes ) {
-        size = 0;
-    } else if( offv + size > info.nbytes ) {
-        size = info.nbytes - offv;
+        req_len = 0;
+    } else if( offv + req_len > info.nbytes ) {
+        req_len = info.nbytes - offv;
     }
-    length = size;
-    for( ;; ) {
-        if( length == 0 ) break;
-        trans = (length > MAX_MEM_TRANS) ? MAX_MEM_TRANS : length;
-        if( __qnx_debug_xfer( ProcInfo.proc, ProcInfo.pid, op, data, trans, offv, segv ) != 0 ) {
+    want = MAX_MEM_TRANS;
+    len = 0;
+    for( ; req_len-- > 0; req_len -= want ) {
+        if( want > req_len )
+            want = req_len;
+        if( __qnx_debug_xfer( ProcInfo.proc, ProcInfo.pid, op, data, want, offv, segv ) != 0 ) {
             /* something went wrong. need to find out how much trans'ed */
             //NYI
-            amount = 0;
+            got = 0;
         } else {
-            amount = trans;
+            got = want;
         }
-        data += amount;
-        offv += amount;
-        length -= amount;
-        if( amount != trans ) break;
+        len += got;
+        if( got != want ) {
+            break;
+        }
+        data = (char *)data + want;
+        offv += want;
     }
-    return( size - length );
+    return( len );
 }
 
 
-static unsigned WriteBuffer( char *data, addr_seg segv, addr_off offv,
-            unsigned size )
+static size_t WriteBuffer( void *data, addr_seg segv, addr_off offv, size_t size )
 {
     return( MoveMem( _DEBUG_MEM_WR, data, segv, offv, size ) );
 }
 
 
-static unsigned ReadBuffer( char *data, addr_seg segv, addr_off offv,
-            unsigned size )
+static size_t ReadBuffer( void *data, addr_seg segv, addr_off offv, size_t size )
 {
     return( MoveMem( _DEBUG_MEM_RD, data, segv, offv, size ) );
 }
 
-static thread_info *find_thread(pid_t tid)
+static thread_info *find_thread( pid_t tid )
 {
     thread_info *thread;
     unsigned    new_count;
 
     for( thread = ProcInfo.thread; thread < &ProcInfo.thread[ProcInfo.max_threads]; thread++ ) {
         if( thread->tid == tid ) {
-            if( tid == 0 ) thread->dying = false;
+            if( tid == 0 )
+                thread->dying = false;
             return( thread );
         }
     }
@@ -235,29 +240,33 @@ static thread_info *find_thread(pid_t tid)
 #define THREAD_ALL      (-1)
 #define NO_TID          (INT_MAX)
 
-static pid_t next_thread(pid_t last, int state) {
+static pid_t next_thread( pid_t last, int state ) {
     thread_info         *thread;
     pid_t               tid = NO_TID;
     pid_t               curr;
 
     for( thread = ProcInfo.thread; thread < &ProcInfo.thread[ProcInfo.max_threads]; thread++ ) {
-        if( thread->dying ) continue;
+        if( thread->dying )
+            continue;
         curr = thread->tid;
         switch( state ) {
         case THREAD_ALL:
             break;
         case THREAD_THAWED:
-           if( thread->frozen && (ProcInfo.pid != curr) ) continue;
-           break;
+            if( thread->frozen && (ProcInfo.pid != curr) )
+                continue;
+            break;
         case THREAD_FROZEN:
-           if( !thread->frozen ) continue;
-           break;
+            if( !thread->frozen )
+                continue;
+            break;
         }
         if( curr > last && curr < tid ) {
             tid = curr;
         }
     }
-    if( tid == NO_TID ) return( 0 );
+    if( tid == NO_TID )
+        return( 0 );
     return( tid );
 }
 
@@ -267,7 +276,7 @@ trap_retval TRAP_CORE( Get_sys_config )( void )
     struct  _osinfo     info;
     get_sys_config_ret  *ret;
 
-    ret = GetOutPtr(0);
+    ret = GetOutPtr( 0 );
     if( ProcInfo.pid == 0 )  {
         qnx_osinfo( 0, &info );
     } else {
@@ -276,54 +285,54 @@ trap_retval TRAP_CORE( Get_sys_config )( void )
         info.fpu = ProcInfo.fpu;
         info.sflags = ProcInfo.sflags;
     }
-    ret->sys.os = DIG_OS_QNX;
-    ret->sys.osmajor = info.version / 100;
-    ret->sys.osminor = info.version % 100;
+    ret->os = DIG_OS_QNX;
+    ret->osmajor = info.version / 100;
+    ret->osminor = info.version % 100;
     if( info.sflags & _PSF_EMULATOR_INSTALLED ) {
-        ret->sys.fpu = X86_EMU;
+        ret->fpu = X86_EMU;
     } else if( (info.sflags & _PSF_NDP_INSTALLED) == 0 ) {
-        ret->sys.fpu = X86_NO;
+        ret->fpu = X86_NOFPU;
     } else {
         switch( info.fpu ) {
         case 87:
-            ret->sys.fpu = X86_87;
+            ret->fpu = X86_87;
             break;
         case 287:
-            ret->sys.fpu = X86_287;
+            ret->fpu = X86_287;
             break;
         case 387:
         default:
-            ret->sys.fpu = X86_387;
+            ret->fpu = X86_387;
             break;
         }
     }
     switch( info.cpu ) {
     case 8088:
-        ret->sys.cpu = X86_86;
+        ret->cpu = X86_86;
         break;
     case 186:
-        ret->sys.cpu = X86_186;
+        ret->cpu = X86_186;
         break;
     case 286:
-        ret->sys.cpu = X86_286;
+        ret->cpu = X86_286;
         break;
     case 386:
     default:
-        ret->sys.cpu = X86_386;
+        ret->cpu = X86_386;
         break;
     case 486:
-        ret->sys.cpu = X86_486;
+        ret->cpu = X86_486;
         break;
     case 586:
-        ret->sys.cpu = X86_586;
+        ret->cpu = X86_586;
         break;
     }
     if( info.sflags & _PSF_PROTECTED ) {
-        ret->sys.huge_shift = 3;
+        ret->huge_shift = 3;
     } else {
-        ret->sys.huge_shift = 12;
+        ret->huge_shift = 12;
     }
-    ret->sys.arch = DIG_ARCH_X86;
+    ret->arch = DIG_ARCH_X86;
     return( sizeof( *ret ) );
 }
 
@@ -386,8 +395,8 @@ trap_retval TRAP_CORE( Map_addr )( void )
     addr48_ptr          slib;
     unsigned            seg;
 
-    acc = GetInPtr(0);
-    ret = GetOutPtr(0);
+    acc = GetInPtr( 0 );
+    ret = GetOutPtr( 0 );
     ret->lo_bound = 0;
     ret->hi_bound = ~(addr48_off)0;
     ret->out_addr.offset = acc->in_addr.offset;
@@ -435,33 +444,35 @@ trap_retval TRAP_CORE( Map_addr )( void )
 trap_retval TRAP_CORE( Checksum_mem )( void )
 {
     addr_off            offv;
-    USHORT              length;
-    USHORT              size;
-    int                 i;
-    USHORT              amount;
+    word                segv;
+    size_t              len;
+    size_t              want;
+    size_t              i;
+    size_t              got;
     ULONG               sum;
     checksum_mem_req    *acc;
     checksum_mem_ret    *ret;
 
-    acc = GetInPtr(0);
-    ret = GetOutPtr(0);
     sum = 0;
     if( ProcInfo.pid != 0 ) {
-        length = acc->len;
+        acc = GetInPtr( 0 );
+        want = sizeof( UtilBuff );
         offv = acc->in_addr.offset;
-        for( ;; ) {
-            if( length == 0 ) break;
-            size = (length > sizeof( UtilBuff )) ? sizeof( UtilBuff ) : length;
-            amount = MoveMem( _DEBUG_MEM_RD, UtilBuff, acc->in_addr.segment,
-                                offv, size );
-            for( i = amount; i != 0; --i ) {
-                sum += UtilBuff[ i - 1 ];
+        segv = acc->in_addr.segment;
+        for( len = acc->len; len > 0; len -= want ) {
+            if( want > len )
+                want = len;
+            got = MoveMem( _DEBUG_MEM_RD, UtilBuff, segv, offv, want );
+            for( i = 0; i < got; ++i ) {
+                sum += UtilBuff[i];
             }
-            offv += amount;
-            length -= amount;
-            if( amount != size ) break;
+            if( got != want ) {
+                break;
+            }
+            offv += want;
         }
     }
+    ret = GetOutPtr( 0 );
     ret->result = sum;
     return( sizeof( *ret ) );
 }
@@ -470,12 +481,9 @@ trap_retval TRAP_CORE( Checksum_mem )( void )
 trap_retval TRAP_CORE( Read_mem )( void )
 {
     read_mem_req        *acc;
-    unsigned            len;
 
-    acc = GetInPtr(0);
-
-    len = ReadBuffer(GetOutPtr(0),acc->mem_addr.segment,acc->mem_addr.offset,acc->len);
-    return( len );
+    acc = GetInPtr( 0 );
+    return( ReadBuffer( GetOutPtr( 0 ), acc->mem_addr.segment, acc->mem_addr.offset, acc->len ) );
 }
 
 
@@ -483,15 +491,11 @@ trap_retval TRAP_CORE( Write_mem )( void )
 {
     write_mem_req       *acc;
     write_mem_ret       *ret;
-    unsigned            len;
 
-    acc = GetInPtr(0);
-    ret = GetOutPtr(0);
-
-    len = GetTotalSizeIn() - sizeof(*acc);
-
-    ret->len = WriteBuffer( GetInPtr(sizeof(*acc)),
-                            acc->mem_addr.segment, acc->mem_addr.offset, len );
+    acc = GetInPtr( 0 );
+    ret = GetOutPtr( 0 );
+    ret->len = WriteBuffer( GetInPtr( sizeof( *acc ) ), acc->mem_addr.segment,
+                        acc->mem_addr.offset, GetTotalSizeIn() - sizeof(*acc) );
     return( sizeof( *ret ) );
 }
 
@@ -500,29 +504,30 @@ trap_retval TRAP_CORE( Read_io )( void )
 {
     union _port_struct  port;
     read_io_req         *acc;
-    void                *ret;
-    unsigned            len;
+    void                *data;
+    size_t              len;
 
-    acc = GetInPtr(0);
-    ret = GetOutPtr(0);
-    if( __qnx_debug_xfer( ProcInfo.proc, ProcInfo.pid, _DEBUG_IO_RD, &port, acc->len,
-            acc->IO_offset, 0 ) == 0 ) {
-        len = acc->len;
+    acc = GetInPtr( 0 );
+    data = GetOutPtr( 0 );
+    len = acc->len;
+    if( __qnx_debug_xfer( ProcInfo.proc, ProcInfo.pid, _DEBUG_IO_RD, &port, len, acc->IO_offset, 0 ) == 0 ) {
         switch( len ) {
         case 1:
-            *( (unsigned_8 *)ret ) = port.byte;
+            *(unsigned_8 *)data = port.byte;
             break;
         case 2:
-            *( (unsigned_16 *)ret ) = port.word;
+            *(unsigned_16 *)data = port.word;
             break;
         case 4:
-            *( (unsigned_32 *)ret ) = port.dword;
+            *(unsigned_32 *)data = port.dword;
+            break;
+        default:
+            len = 0;
             break;
         }
-    } else {
-        len = 0;
+        return( len );
     }
-    return( len );
+    return( 0 );
 }
 
 
@@ -532,29 +537,32 @@ trap_retval TRAP_CORE( Write_io )( void )
     write_io_req        *acc;
     write_io_ret        *ret;
     void                *data;
-    unsigned            len;
+    size_t              len;
 
-    acc = GetInPtr(0);
+    acc = GetInPtr( 0 );
     data = GetInPtr( sizeof( *acc ) );
     len = GetTotalSizeIn() - sizeof( *acc );
-    ret = GetOutPtr(0);
     switch( len ) {
     case 1:
-        port.byte = *( (unsigned_8 *)data );
+        port.byte = *(unsigned_8 *)data;
         break;
     case 2:
-        port.word = *( (unsigned_16 *)data );
+        port.word = *(unsigned_16 *)data;
         break;
     case 4:
-        port.dword = *( (unsigned_32 *)data );
+        port.dword = *(unsigned_32 *)data;
+        break;
+    default:
+        len = 0;
         break;
     }
-    if( __qnx_debug_xfer( ProcInfo.proc, ProcInfo.pid, _DEBUG_IO_WR, &port, len,
-            acc->IO_offset, 0 ) != 0 ) {
-        ret->len = 0;
-    } else {
-        ret->len = len;
+    if( len > 0 ) {
+        if( __qnx_debug_xfer( ProcInfo.proc, ProcInfo.pid, _DEBUG_IO_WR, &port, len, acc->IO_offset, 0 ) != 0 ) {
+            len = 0;
+        }
     }
+    ret = GetOutPtr( 0 );
+    ret->len = len;
     return( sizeof( *ret ) );
 }
 
@@ -598,7 +606,9 @@ static void ReadFPU( struct x86_fpu *r )
     }
     if( ProcInfo.pid != 0 && __qnx_debug_xfer( ProcInfo.proc, ProcInfo.pid, _DEBUG_80X87_RD, r,
                         state_size, 0, 0 ) == 0 ) {
-        if( !ProcInfo.fpu32 ) FPUExpand( r );
+        if( !ProcInfo.fpu32 ) {
+            FPUExpand( r );
+        }
     }
 }
 
@@ -647,7 +657,8 @@ static void WriteFPU( struct x86_fpu *r )
     unsigned            state_size;
 
     if( ProcInfo.pid != 0 ) {
-        if( !ProcInfo.fpu32 ) FPUContract( r );
+        if( !ProcInfo.fpu32 )
+            FPUContract( r );
         if( ProcInfo.fpu32 ) {
             state_size = 108;
         } else {
@@ -667,7 +678,12 @@ trap_retval TRAP_CORE( Write_regs )( void )
     return( 0 );
 }
 
-static int SplitParms( char *p, const char **args, unsigned len )
+static int SplitParms( char *p, const char **args, size_t len )
+/**************************************************************
+ * Break up program arguments passed in as a single string into
+ * individual components. Useful for passing argv style array to
+ * exec().
+ */
 {
     int     i;
     char    endc;
@@ -699,11 +715,14 @@ static int SplitParms( char *p, const char **args, unsigned len )
         for( ;; ) {
             if( len == 0 )
                 goto done;
-            if( *p == endc
-                || *p == '\0'
-                || (endc == ' ' && *p == '\t' ) ) {
+            if( *p == endc || *p == '\0' || ( endc == ' ' && *p == '\t' ) ) {
+                /*
+                 * if output array is not specified then source string
+                 * is not changed and it calculates number of parameters only
+                 * as soon as output array is specified then source is modified
+                 */
                 if( args != NULL ) {
-                    *p = '\0';  //NYI: not a good idea, should make a copy
+                    *p = '\0';
                 }
                 ++p;
                 --len;
@@ -719,38 +738,44 @@ done:
     return( i );
 }
 
-static pid_t RunningProc( nid_t *nid, char *name, struct _psinfo *info, char **name_ret )
+static pid_t RunningProc( nid_t *nid, const char *name, struct _psinfo *info, const char **name_ret )
 {
     pid_t       pid;
     pid_t       proc;
     char        ch;
-    char        *start;
+    const char  *ptr;
 
-    start = name;
-    name = CollectNid( name, strlen( name ), nid );
-
+    ptr = CollectNid( name, strlen( name ), nid );
     for( ;; ) {
-        ch = *name;
-        if( ch != ' ' && ch != '\t' ) break;
-        ++name;
+        ch = *ptr;
+        if( ch != ' ' && ch != '\t' )
+            break;
+        ++ptr;
     }
-    if( name_ret != NULL ) *name_ret = name;
+    if( name_ret != NULL )
+        *name_ret = (char *)ptr;
     pid = 0;
     for( ;; ) {
-        if( *name < '0' || *name > '9' ) break;
-        pid = (pid*10) + (*name - '0');
-        ++name;
+        ch = *ptr;
+        if( ch < '0' || ch > '9' )
+            break;
+        pid = ( pid * 10 ) + ( ch - '0' );
+        ++ptr;
     }
-    if( *name != '\0') return( 0 );
+    if( *ptr != '\0' )
+        return( 0 );
     for( ;; ) {
         proc = qnx_vc_attach( *nid, PROC_PID,
                      sizeof( struct _proc_psinfo_reply ), 0 );
         info->pid = 0;
         qnx_psinfo( proc, pid, info, 0, 0 );
         qnx_vc_detach( proc );
-        if( info->pid != pid ) return( 0 );
-        if( info->flags & ( _PPF_MID | _PPF_VMID ) ) return( 0 );
-        if( !(info->flags & _PPF_VID) ) break;
+        if( info->pid != pid || (info->flags & (_PPF_MID | _PPF_VMID)) ) {
+            pid = 0;
+            break;
+        }
+        if( (info->flags & _PPF_VID) == 0 )
+            break;
         *nid = info->un.vproc.remote_nid;
         pid = info->un.vproc.remote_pid;
     }
@@ -782,7 +807,7 @@ static int net_kill( pid_t proc, pid_t pid, int signum )
 
 trap_retval TRAP_CORE( Prog_load )( void )
 {
-    char                        **args;
+    const char                  **args;
     char                        *parms;
     char                        *parm_start;
     int                         i;
@@ -791,12 +816,13 @@ trap_retval TRAP_CORE( Prog_load )( void )
     struct _psinfo              proc;
     struct _debug_psinfo        off_info;
     nid_t                       nid;
-    char                        *name;
+    const char                  *name;
     pid_t                       save_pgrp;
     prog_load_req               *acc;
     prog_load_ret               *ret;
     bool                        has_flat;
-    unsigned                    len;
+    size_t                      len;
+    char                        *p;
 
     lseek( 0, StdPos.in , SEEK_SET );
     lseek( 1, StdPos.out, SEEK_SET );
@@ -815,57 +841,45 @@ trap_retval TRAP_CORE( Prog_load )( void )
     ProcInfo.fpu32  = false;
     ProcInfo.fork   = false;
     memset( ProcInfo.thread, 0, sizeof( ProcInfo.thread[0] ) * ProcInfo.max_threads );
-    parms = (char *)GetInPtr( sizeof( *acc ) );
-    parm_start = parms;
+    parms = parm_start = GetInPtr( sizeof( *acc ) );
     len = GetTotalSizeIn() - sizeof( *acc );
     if( acc->true_argv ) {
         i = 1;
-        for( ;; ) {
-            if( len == 0 ) break;
-            if( *parms == '\0' ) {
+        while( len-- > 0 ) {
+            if( *parms++ == '\0' ) {
                 i++;
             }
-            ++parms;
-            --len;
         }
         args = walloca( i * sizeof( *args ) );
         parms = parm_start;
         len = GetTotalSizeIn() - sizeof( *acc );
         i = 1;
-        for( ;; ) {
-            if( len == 0 ) break;
-            if( *parms == '\0' ) {
-                args[ i++ ] = parms + 1;
+        while( len-- > 0 ) {
+            if( *parms++ == '\0' ) {
+                args[i++] = parms;
             }
-            ++parms;
-            --len;
         }
-        args[i - 1] = NULL;
     } else {
-        while( *parms != '\0' ) {
-            ++parms;
-            --len;
-        }
-        ++parms;
-        --len;
-        i = SplitParms( parms, NULL, len );
-        args = walloca( ( i + 2 ) * sizeof( *args ) );
-        args[SplitParms( parms, (const char **)&args[1], len ) + 1] = NULL;
+        while( --len, *parms++ != '\0' )
+            {}
+        i = SplitParms( parms, NULL, len ) + 2;
+        args = alloca( i * sizeof( *args ) + len );
+        p = memcpy( (void *)( args + i ), parms, len );
+        SplitParms( p, args + 1, len );
     }
     args[0] = parm_start;
+    args[i - 1] = NULL;
     ProcInfo.pid = RunningProc( &nid, args[0], &proc, &name );
     if( ProcInfo.pid != 0 ) {
         ProcInfo.loaded_proc = false;
     } else {
         args[0] = name;
-        if( FindFilePath( true, args[0], exe_name ) == 0 ) {
-            exe_name[0] = '\0';
-        }
+        FindFilePath( DIG_FILETYPE_EXE, args[0], exe_name );
         save_pgrp = getpgrp();
         setpgid( 0, OrigPGrp );
         ProcInfo.pid = qnx_spawn(0, 0, nid, -1, SCHED_OTHER,
                             _SPAWN_HOLD, //NYI: | _SPAWN_NOZOMBIE,
-                            exe_name, args, dbg_environ, 0, -1);
+                            exe_name, (char **)args, dbg_environ, 0, -1);
         setpgid( 0, save_pgrp );
         if( ProcInfo.pid != -1 ) {
             qnx_psinfo( PROC_PID, ProcInfo.pid, &proc, 0, 0 );
@@ -878,7 +892,8 @@ trap_retval TRAP_CORE( Prog_load )( void )
         ProcInfo.proc = qnx_vc_attach( nid, PROC_PID, 1000, 0 );
         ProcInfo.mid = qnx_proxy_rem_attach( nid, MID );
         //NYI: temp kludge
-        if( ProcInfo.mid == PROC_PID ) ProcInfo.mid = MID;
+        if( ProcInfo.mid == PROC_PID )
+            ProcInfo.mid = MID;
         ProcInfo.nid = nid;
         if( proc.flags & _PPF_VID ) {
             ProcInfo.pid = proc.un.vproc.remote_pid;
@@ -960,7 +975,6 @@ trap_retval TRAP_CORE( Prog_kill )( void )
     prog_kill_ret       *ret;
     pid_t               pid;
 
-    ret = GetOutPtr( 0 );
     for( pid = 0; pid = next_thread( pid, THREAD_ALL ); ) {
         if( ProcInfo.loaded_proc && !ProcInfo.at_end ) {
             net_kill( ProcInfo.proc, pid, SIGKILL );
@@ -970,7 +984,9 @@ trap_retval TRAP_CORE( Prog_kill )( void )
             }
         }
         __qnx_debug_detach( ProcInfo.proc, pid );
-        if( ProcInfo.loaded_proc ) waitpid( -1, NULL, 0 );
+        if( ProcInfo.loaded_proc ) {
+            waitpid( -1, NULL, 0 );
+        }
     }
     if( ProcInfo.pid ) {
         qnx_proxy_rem_detach( ProcInfo.nid, ProcInfo.mid );
@@ -982,6 +998,7 @@ trap_retval TRAP_CORE( Prog_kill )( void )
     ProcInfo.at_end = false;
     ProcInfo.save_in = -1;
     ProcInfo.save_out = -1;
+    ret = GetOutPtr( 0 );
     ret->err = 0;
     return( sizeof( *ret ) );
 }
@@ -1016,30 +1033,35 @@ trap_retval TRAP_CORE( Clear_break )( void )
 
 trap_retval TRAP_CORE( Set_watch )( void )
 {
-    unsigned      size;
-    set_watch_req       *acc;
-    set_watch_ret       *ret;
+    int             size;
+    set_watch_req   *acc;
+    set_watch_ret   *ret;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    for( size = acc->size; size != 0; --size ) {
-        WatchPoints[ WatchCount ].seg = acc->watch_addr.segment;
-        WatchPoints[ WatchCount ].off = acc->watch_addr.offset;
-        #if 0
-        ReadBuffer( &WatchPoints[ WatchCount ].byte,
-            WatchPoints[ WatchCount ].seg, WatchPoints[ WatchCount ].off, 1 );
-        #endif
+    ret->multiplier = 1000;
+    ret->err = 0;   // OK
+    for( size = acc->size; size-- > 0; ) {
+        if( WatchCount >= MAX_WATCHES ) {
+            ret->err = 1;   // failure
+            break;
+        }
+        WatchPoints[WatchCount].seg = acc->watch_addr.segment;
+        WatchPoints[WatchCount].off = acc->watch_addr.offset;
+#if 0
+        ReadBuffer( &WatchPoints[WatchCount].byte,
+            WatchPoints[WatchCount].seg, WatchPoints[WatchCount].off, 1 );
+#endif
         ++acc->watch_addr.offset;
         ++WatchCount;
     }
-    ret->err = 0;
-    ret->multiplier = 1000;
     return( sizeof( *ret ) );
 }
 
 trap_retval TRAP_CORE( Clear_watch )( void )
 {
-    WatchCount = 0; /* assume all are cleared at the same time */
+    /* assume all are cleared at the same time */
+    WatchCount = 0;
     return( 0 );
 }
 
@@ -1098,7 +1120,7 @@ static trap_conditions RunIt( unsigned step )
             }
             return( COND_USER );
         }
-        conditions = 0;
+        conditions = COND_NONE;
         for( i = 0; i < ProcInfo.max_threads; i++ ) {
             /*
                 Don't walk the thread array directly because it might move
@@ -1118,28 +1140,28 @@ static trap_conditions RunIt( unsigned step )
                     break;
                 case _DEBUG_STATE_HELD:
                     conditions |= COND_USER;
-                    if(pid != ProcInfo.pid) {
+                    if( pid != ProcInfo.pid ) {
                         ProcInfo.pid = pid;
                         conditions |= COND_THREAD;
                     }
                     break;
                 case _DEBUG_STATE_TRACE:
                     conditions |= COND_TRACE;
-                    if(pid != ProcInfo.pid) {
+                    if( pid != ProcInfo.pid ) {
                         ProcInfo.pid = pid;
                         conditions |= COND_THREAD;
                     }
                     break;
                 case _DEBUG_STATE_BRK:
                     conditions |= COND_BREAK;
-                    if(pid != ProcInfo.pid) {
+                    if( pid != ProcInfo.pid ) {
                         ProcInfo.pid = pid;
                         conditions |= COND_THREAD;
                     }
                     break;
                 case _DEBUG_STATE_WATCH:
                     conditions |= COND_WATCH;
-                    if(pid != ProcInfo.pid) {
+                    if( pid != ProcInfo.pid ) {
                         ProcInfo.pid = pid;
                         conditions |= COND_THREAD;
                     }
@@ -1213,18 +1235,20 @@ static unsigned ProgRun( bool step )
     } else if( step ) {
         ret->conditions = RunIt( 1 );
     } else {
-        #if 0
-        { int i;
-        for( i = 0; i < WatchCount; ++i ) {
-            Out( "watch at " );
-            OutNum( WatchPoints[i].seg );
-            Out( ":" );
-            OutNum( WatchPoints[i].off );
-            Out( "\n" );
+#if 0
+        {
+            int i;
+
+            for( i = 0; i < WatchCount; ++i ) {
+                Out( "watch at " );
+                OutNum( WatchPoints[i].seg );
+                Out( ":" );
+                OutNum( WatchPoints[i].off );
+                Out( "\n" );
+            }
         }
-        }
-        #endif
-        for( pid = 0; pid = next_thread( pid, THREAD_THAWED ) ; ) {
+#endif
+        for( pid = 0; pid = next_thread( pid, THREAD_THAWED ); ) {
             __qnx_debug_xfer( ProcInfo.proc, pid, _DEBUG_WATCH_WR, WatchPoints,
                     WatchCount * sizeof( struct _watch_struct ), 0, 0 );
         }
@@ -1232,13 +1256,13 @@ static unsigned ProgRun( bool step )
     }
     if( (ret->conditions & COND_TERMINATE) == 0 ) {
         __qnx_debug_xfer( ProcInfo.proc, ProcInfo.pid, _DEBUG_REG_RD, &regs, sizeof( regs ), 0, 0 );
-        #if 0
+#if 0
         Out( "stopped at " );
         OutNum( regs.ip );
         Out( " because of " );
         OutNum( ret->conditions );
         Out( "\n" );
-        #endif
+#endif
         ret->program_counter.offset = regs.ip;
         ret->program_counter.segment = regs.cs;
         ret->stack_pointer.offset = regs.sp;
@@ -1327,7 +1351,8 @@ static unsigned_16 Redir32( bool input )
         Receive( 0, 0, 0 );
         __qnx_debug_xfer( ProcInfo.proc, ProcInfo.pid, _DEBUG_REG_RD, &new,
             sizeof( new ), 0, 0 );
-        if( (unsigned)new.ax == -1 ) ret->err = 1;
+        if( (unsigned)new.ax == -1 )
+            ret->err = 1;
         *save_hdl = new.ax;
     }
     __qnx_debug_xfer( ProcInfo.proc, ProcInfo.pid, _DEBUG_REG_WR, &save,
@@ -1400,7 +1425,8 @@ static unsigned Redir16( bool input )
         Receive( 0, 0, 0 );
         __qnx_debug_xfer( ProcInfo.proc, ProcInfo.pid, _DEBUG_REG_RD, &new,
             sizeof( new ), 0, 0 );
-        if( (unsigned)new.ax == -1 ) ret->err = 1;
+        if( (unsigned)new.ax == -1 )
+            ret->err = 1;
         *save_hdl = new.ax;
     }
     __qnx_debug_xfer( ProcInfo.proc, ProcInfo.pid, _DEBUG_REG_WR, &save,
@@ -1426,15 +1452,14 @@ trap_retval TRAP_CORE( Redirect_stdout )( void )
     }
 }
 
-trap_retval TRAP_FILE( string_to_fullpath )( void )
+trap_retval TRAP_FILE( file_to_fullpath )( void )
 {
-    struct _psinfo     proc;
-    pid_t              pid;
-    nid_t              nid;
-    bool               exe;
-    int                len;
-    char               *name;
-    char               *fullname;
+    struct _psinfo      proc;
+    pid_t               pid;
+    nid_t               nid;
+    size_t              len;
+    const char          *name;
+    char                *fullname;
     file_string_to_fullpath_req *acc;
     file_string_to_fullpath_ret *ret;
 
@@ -1445,20 +1470,18 @@ trap_retval TRAP_FILE( string_to_fullpath )( void )
     acc = GetInPtr( 0 );
     name = GetInPtr( sizeof( *acc ) );
     ret = GetOutPtr( 0 );
+    ret->err = 0;
     fullname = GetOutPtr( sizeof( *ret ) );
-    exe = ( acc->file_type == TF_TYPE_EXE ) ? true : false;
-    if( exe ) {
+    if( acc->file_type == DIG_FILETYPE_EXE ) {
         pid = RunningProc( &nid, name, &proc, &name );
     }
     if( pid != 0 ) {
-        len = StrCopy( proc.un.proc.name, fullname ) - fullname;
+        len = StrCopyDst( proc.un.proc.name, fullname ) - fullname;
     } else {
-        len = FindFilePath( exe, name, fullname );
+        len = FindFilePath( acc->file_type, name, fullname );
     }
     if( len == 0 ) {
         ret->err = ENOENT;      /* File not found */
-    } else {
-        ret->err = 0;
     }
     return( sizeof( *ret ) + len + 1 );
 }
@@ -1509,10 +1532,10 @@ trap_retval TRAP_CORE( Get_message_text )( void )
     } else {
         if( ProcInfo.sig == -1 ) {
             err_txt[0] = '\0';
-        } else if( ProcInfo.sig > ( (sizeof(ExceptionMsgs) / sizeof(char *) - 1) ) ) {
+        } else if( ProcInfo.sig > ( ( sizeof( ExceptionMsgs ) / sizeof( char * ) - 1 ) ) ) {
             strcpy( err_txt, TRP_EXC_unknown );
         } else {
-            strcpy( err_txt, ExceptionMsgs[ ProcInfo.sig ] );
+            strcpy( err_txt, ExceptionMsgs[ProcInfo.sig] );
         }
         ProcInfo.sig = -1;
         ret->flags = MSG_NEWLINE | MSG_ERROR;
@@ -1524,23 +1547,25 @@ trap_retval TRAP_CORE( Machine_data )( void )
 {
     machine_data_req    *acc;
     machine_data_ret    *ret;
-    unsigned_8          *data;
+    machine_data_spec   *data;
     struct _seginfo     info;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    data = GetOutPtr( sizeof( *ret ) );
     ret->cache_start = 0;
     ret->cache_end = ~(addr_off)0;
-    *data = 0;
-    if( ProcInfo.proc32 ) {
-        qnx_segment_info( ProcInfo.proc, ProcInfo.pid, acc->addr.segment,
-                        &info );
-        if( info.flags & _PMF_DBBIT ) {
-            *data |= X86AC_BIG;
+    if( acc->info_type == X86MD_ADDR_CHARACTERISTICS ) {
+        data = GetOutPtr( sizeof( *ret ) );
+        data->x86_addr_flags = 0;
+        if( ProcInfo.proc32 ) {
+            qnx_segment_info( ProcInfo.proc, ProcInfo.pid, acc->addr.segment, &info );
+            if( info.flags & _PMF_DBBIT ) {
+                data->x86_addr_flags = X86AC_BIG;
+            }
         }
+        return( sizeof( *ret ) + sizeof( data->x86_addr_flags ) );
     }
-    return( sizeof( *ret ) + sizeof( *data ) );
+    return( sizeof( *ret ) );
 }
 
 trap_retval TRAP_CORE( Get_lib_name )( void )
@@ -1549,10 +1574,10 @@ trap_retval TRAP_CORE( Get_lib_name )( void )
     get_lib_name_ret    *ret;
     char                *name;
     char                *p;
-    size_t              max_len;
+    size_t              name_maxlen;
 
 #if 0
-    acc = GetInPtr(0);
+    acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
     switch( acc->mod_handle ) {
     case MH_NONE:
@@ -1576,15 +1601,15 @@ trap_retval TRAP_CORE( Get_lib_name )( void )
         ret->mod_handle = 0;
         return( sizeof( *ret ) );
     }
-    max_len = GetTotalSizeOut() - 1 - sizeof( *ret );
+    name_maxlen = GetTotalSizeOut() - sizeof( *ret ) - 1;
     name = GetOutPtr( sizeof( *ret ) );
-    strncpy( name, p, max_len );
-    name[max_len] = '\0';
+    strncpy( name, p, name_maxlen );
+    name[name_maxlen] = '\0';
 #else
     pid_t               pid, vid, proc;
     struct _psinfo      info;
 
-    acc = GetInPtr(0);
+    acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
     p = NULL;
     switch( acc->mod_handle ) {
@@ -1599,7 +1624,7 @@ trap_retval TRAP_CORE( Get_lib_name )( void )
                     proc = qnx_vc_attach( ProcInfo.nid, PROC_PID, 0, 0 );
                 }
                 if( proc != -1 ) {
-                    if( qnx_psinfo( proc, pid, &info, 0, 0 ) == pid ) {;
+                    if( qnx_psinfo( proc, pid, &info, 0, 0 ) == pid ) {
                         p = info.un.proc.name;
                         qnx_vc_detach( proc );
                     }
@@ -1632,20 +1657,20 @@ trap_retval TRAP_CORE( Get_lib_name )( void )
     name = GetOutPtr( sizeof( *ret ) );
     *name = '\0';
     if( p != NULL ) {
-        max_len = GetTotalSizeOut() - 1 - sizeof( *ret );
+        name_maxlen = GetTotalSizeOut() - sizeof( *ret ) - 1;
         if( p[0] == '/' ) {
             if( p[1] == '/' ) {
                 for( p += 2; *p >= '0' && *p <= '9'; p++ ) {
-                    ;
+                    {}
                 }
             }
-            strncpy( name, p, max_len );
+            strncpy( name, p, name_maxlen );
         } else {
-            strncpy( name, "/boot/", max_len );
-            name[max_len] = '\0';
-            strncat( name, p, max_len - strlen( name ) );
+            strncpy( name, "/boot/", name_maxlen );
+            name[name_maxlen] = '\0';
+            strncat( name, p, name_maxlen - strlen( name ) );
         }
-        name[max_len] = '\0';
+        name[name_maxlen] = '\0';
     }
 #endif
     return( sizeof( *ret ) + strlen( name ) + 1 );
@@ -1677,9 +1702,9 @@ trap_retval TRAP_THREAD( set )( void )
 
     req = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
+    ret->err = 0;
     if( pid = req->thread ) {
         if( ( thread = find_thread( pid ) ) && !thread->fork ) {
-            ret->err = 0;
             ret->old_thread = ProcInfo.pid;
             ProcInfo.pid = pid;
         } else {
@@ -1687,7 +1712,6 @@ trap_retval TRAP_THREAD( set )( void )
             ret->old_thread = ProcInfo.pid;
         }
     } else {
-        ret->err = 0;
         ret->old_thread = ProcInfo.pid;
     }
     return( sizeof( *ret ) );
@@ -1701,9 +1725,9 @@ trap_retval TRAP_THREAD( freeze )( void )
 
     req = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
+    ret->err = 0;
     if( thread = find_thread( req->thread ) ) {
         thread->frozen = true;
-        ret->err = 0;
     } else {
         ret->err = EINVAL;
     }
@@ -1718,9 +1742,9 @@ trap_retval TRAP_THREAD( thaw )( void )
 
     req = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
+    ret->err = 0;
     if( thread = find_thread( req->thread ) ) {
         thread->frozen = false;
-        ret->err = 0;
     } else {
         ret->err = EINVAL;
     }
@@ -1757,6 +1781,8 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
 {
     trap_version ver;
 
+    /* unused parameters */ (void)remote;
+
     ForceFpu32 = 0;
     switch( *parms ) {
     case 'f':
@@ -1766,7 +1792,6 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
         ForceFpu32 = 1;
         break;
     }
-    remote = remote;
     ProcInfo.save_in = -1;
     ProcInfo.save_out = -1;
     ProcInfo.thread = NULL;
@@ -1776,8 +1801,8 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
     StdPos.in  = lseek( 0, 0, SEEK_CUR );
     StdPos.out = lseek( 1, 0, SEEK_CUR );
     StdPos.err = lseek( 2, 0, SEEK_CUR );
-    ver.major = TRAP_MAJOR_VERSION;
-    ver.minor = TRAP_MINOR_VERSION;
+    ver.major = TRAP_VERSION_MAJOR;
+    ver.minor = TRAP_VERSION_MINOR;
     ver.remote = false;
     //ver.is_32 = false;
     OrigPGrp = getpgrp();

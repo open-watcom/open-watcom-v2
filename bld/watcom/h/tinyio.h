@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,6 +39,8 @@
 
 #include "dosfuncx.h"
 #include "watcom.h"
+#include "descript.h"
+
 
 #pragma pack( __push, 1 )
 
@@ -71,9 +73,7 @@ typedef enum {
 } open_attr;
 
 typedef enum {
-    TIO_SEEK_START              = 0,
     TIO_SEEK_SET                = 0,
-    TIO_SEEK_CURR               = 1,
     TIO_SEEK_CUR                = 1,
     TIO_SEEK_END                = 2,
 } seek_info;
@@ -204,12 +204,12 @@ typedef struct {
  */
 #define TIO_NAME_MAX    13  /* filename.ext\0 */
 typedef struct {
-    char                reserved[ 21 ]; /* dos uses this area */
+    char                reserved[21];   /* dos uses this area */
     uint_8              attr;           /* attribute of file */
     tiny_ftime_t        time;
     tiny_fdate_t        date;
     uint_32             size;
-    char                name[ TIO_NAME_MAX ];
+    char                name[TIO_NAME_MAX];
 } tiny_find_t;
 
 /*
@@ -377,55 +377,6 @@ typedef struct {
     };
 } rmi_struct;
 
-/* Definitions for manipulating protected mode descriptors ... used
- * with TinyDPMIGetDescriptor, TinyDPMISetDescriptor, TinyDPMISetRights, etc.
- */
-typedef enum {
-    TIO_ACCESSED        = 0x01,
-    TIO_RDWR            = 0x02,
-    TIO_EXPAND_DOWN     = 0x04,
-    TIO_EXECUTE         = 0x08,
-    TIO_MUST_BE_1       = 0x10,
-    TIO_PRESENT         = 0x80,
-    TIO_USER_AVAIL      = 0x1000,
-    TIO_MUST_BE_0       = 0x2000,
-    TIO_USE32           = 0x4000,
-    TIO_PAGE_GRANULAR   = 0x8000
-} tiny_dscp_flags;
-
-typedef struct {
-    uint_8      accessed : 1;
-    uint_8      rdwr     : 1;
-    uint_8      exp_down : 1;
-    uint_8      execute  : 1;
-    uint_8      mustbe_1 : 1;
-    uint_8      dpl      : 2;
-    uint_8      present  : 1;
-} tiny_dscp_type;
-
-typedef struct {
-    uint_8               : 4;
-    uint_8      useravail: 1;
-    uint_8      mustbe_0 : 1;
-    uint_8      use32    : 1;
-    uint_8      page_gran: 1;
-} tiny_dscp_xtype;
-
-typedef struct {
-    uint_16             lim_0_15;
-    uint_16             base_0_15;
-    uint_8              base_16_23;
-    tiny_dscp_type      type;
-    union {
-        struct {
-            uint_8      lim_16_19: 4;
-            uint_8               : 4;
-        };
-        tiny_dscp_xtype xtype;
-    };
-    uint_8              base_24_31;
-} tiny_dscp;
-
 /*
  *  DOS FCB structure definitions for TinyFCB... functions
  */
@@ -436,34 +387,34 @@ typedef union {
     /* from MSDOS Encyclopedia pg 1473 */
     struct {
         uint_8          drive_identifier;   /* != TIO_EXTFCB_FLAG */
-        char            filename[ 8 ];
-        char            file_extension[ 3 ];
+        char            filename[8];
+        char            file_extension[3];
         uint_16         current_block_num;
         uint_16         record_size;
         uint_32         file_size;
         tiny_fdate_t    date_stamp;
         tiny_ftime_t    time_stamp;
-        char            reserved[ 8 ];
+        char            reserved[8];
         uint_8          current_record_num;
-        uint_8          random_record_number[ 4 ];
+        uint_8          random_record_number[4];
     } normal;
 
     /* from MSDOS Encyclopedia pg 1476 */
     struct {
         uint_8          extended_fcb_flag;  /* == TIO_EXTFCB_FLAG */
-        char            reserved1[ 5 ];
+        char            reserved1[5];
         uint_8          file_attribute;
         uint_8          drive_identifier;
-        char            filename[ 8 ];
-        char            file_extension[ 3 ];
+        char            filename[8];
+        char            file_extension[3];
         uint_16         current_block_num;
         uint_16         record_size;
         uint_32         file_size;
         tiny_fdate_t    date_stamp;
         tiny_ftime_t    time_stamp;
-        char            reserved2[ 8 ];
+        char            reserved2[8];
         uint_8          current_record_num;
-        uint_8          random_record_number[ 4 ];
+        uint_8          random_record_number[4];
     } extended;
 } tiny_fcb_t;
 
@@ -684,8 +635,8 @@ tiny_ret_t              _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sec
 tiny_ret_t  tiny_call   _nTinyWrite( tiny_handle_t, const void __near *, uint );
 tiny_ret_t              _fTinyRead( tiny_handle_t, void __far *, uint );
 tiny_ret_t  tiny_call   _nTinyRead( tiny_handle_t, void __near *, uint );
-tiny_ret_t  tiny_call   _TinySeek( tiny_handle_t, uint_32, uint_16 __ax );
-tiny_ret_t  tiny_call   _TinyLSeek( tiny_handle_t, uint_32, uint_16 __ax, u32_stk_ptr );
+tiny_ret_t  tiny_call   _TinySeek( tiny_handle_t, uint_32, int_8 __where );
+tiny_ret_t  tiny_call   _TinyLSeek( tiny_handle_t, uint_32, int_8 __where, u32_stk_ptr );
 tiny_ret_t              _fTinyDelete( const char __far * );
 tiny_ret_t  tiny_call   _nTinyDelete( const char __near * );
 tiny_ret_t              _fTinyRename( const char __far *__o, const char __far *__n );
@@ -710,7 +661,7 @@ tiny_ret_t  tiny_call   _TinyGetDeviceInfo( tiny_handle_t __dev );
 tiny_ret_t  tiny_call   _TinySetDeviceInfo( tiny_handle_t __dev, uint_8 __info);
 uint_8      tiny_call   _TinyGetCtrlBreak( void );
 void        tiny_call   _TinySetCtrlBreak( uint_8 __new_setting );
-void        tiny_call   _TinyTerminateProcess( uint_16 __ax );
+void        tiny_call   _TinyTerminateProcess( int_8 );
 tiny_date_t tiny_call   _TinyGetDate( void );
 tiny_time_t tiny_call   _TinyGetTime( void );
 uint_8      tiny_call   _TinyGetCurrDrive( void );
@@ -1354,7 +1305,7 @@ tiny_ret_t  tiny_call   _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
         "jz short finish" \
         _TEST_CL 0x01   \
         "jz short finish" \
-        _MOV_AX_W 0x00 EACCES \
+        _MOV_AX_W 0x00 TIO_ACCESS_DENIED \
         _STC            \
     "finish:"           \
         "sbb  ecx,ecx"  \
@@ -1878,14 +1829,14 @@ tiny_ret_t  tiny_call   _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
 
 #pragma aux _nTinyAccess = \
         _SET_DS_DGROUP  \
-        _MOV_AX _GET_ DOS_CHMOD \
+        _MOV_AX_W _GET_ DOS_CHMOD \
         _INT_21         \
         "jc short finish" \
         _TEST_BL 0x02   \
         "jz short finish" \
         _TEST_CL 0x01   \
         "jz short finish" \
-        _MOV_AX 0x00 EACCES \
+        _MOV_AX_W 0x00 TIO_ACCESS_DENIED \
         _STC            \
     "finish:"           \
         _SBB_DX_DX      \
@@ -1896,14 +1847,14 @@ tiny_ret_t  tiny_call   _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
 
 #pragma aux _fTinyAccess = \
         _SET_DS_SREG    \
-        _MOV_AX _GET_ DOS_CHMOD \
+        _MOV_AX_W _GET_ DOS_CHMOD \
         _INT_21         \
         "jc short finish" \
         _TEST_BL 0x02   \
         "jz short finish" \
         _TEST_CL 0x01   \
         "jz short finish" \
-        _MOV_AX 0x00 EACCES\
+        _MOV_AX_W 0x00 TIO_ACCESS_DENIED \
         _STC            \
     "finish:"           \
         _SBB_DX_DX      \
@@ -2155,7 +2106,7 @@ tiny_ret_t  tiny_call   _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
 
 #pragma aux _nTinyGetFileAttr = \
         _SET_DS_DGROUP  \
-        _MOV_AX _GET_ DOS_CHMOD \
+        _MOV_AX_W _GET_ DOS_CHMOD \
         _INT_21         \
         _MOV_AX_CX      \
         _SBB_DX_DX      \
@@ -2166,7 +2117,7 @@ tiny_ret_t  tiny_call   _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
 
 #pragma aux _nTinySetFileAttr = \
         _SET_DS_DGROUP  \
-        _MOV_AX _SET_ DOS_CHMOD \
+        _MOV_AX_W _SET_ DOS_CHMOD \
         _INT_21         \
         _SBB_DX_DX      \
         _RST_DS_DGROUP  \
@@ -2176,7 +2127,7 @@ tiny_ret_t  tiny_call   _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
 
 #pragma aux _fTinyGetFileAttr = \
         _SET_DS_SREG    \
-        _MOV_AX _GET_ DOS_CHMOD \
+        _MOV_AX_W _GET_ DOS_CHMOD \
         _INT_21         \
         _MOV_AX_CX      \
         _SBB_DX_DX      \
@@ -2187,7 +2138,7 @@ tiny_ret_t  tiny_call   _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
 
 #pragma aux _fTinySetFileAttr = \
         _SET_DS_SREG    \
-        _MOV_AX _SET_ DOS_CHMOD \
+        _MOV_AX_W _SET_ DOS_CHMOD \
         _INT_21         \
         _SBB_DX_DX      \
         _RST_DS_SREG    \
@@ -2388,7 +2339,7 @@ tiny_ret_t  tiny_call   _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
     __modify __exact    [__ax __bx]
 
 #pragma aux _TinyGetDeviceInfo = \
-        _MOV_AX _GET_ DOS_IOCTL \
+        _MOV_AX_W _GET_ DOS_IOCTL \
         _INT_21         \
         _SBB_CX_CX      \
     __parm __caller     [__bx] \
@@ -2397,7 +2348,7 @@ tiny_ret_t  tiny_call   _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
 
 #pragma aux _TinySetDeviceInfo = \
         _XOR_DH_DH      \
-        _MOV_AX _SET_ DOS_IOCTL \
+        _MOV_AX_W _SET_ DOS_IOCTL \
         _INT_21         \
         _SBB_CX_CX      \
     __parm __caller     [__bx] [__dl] \
@@ -2405,14 +2356,14 @@ tiny_ret_t  tiny_call   _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
     __modify __exact    [__ax __cx __dx]
 
 #pragma aux _TinyGetCtrlBreak = \
-        _MOV_AX _GET_ DOS_CTRL_BREAK \
+        _MOV_AX_W _GET_ DOS_CTRL_BREAK \
         _INT_21         \
     __parm __caller     [] \
     __value             [__dl] \
     __modify __exact    [__ax __dl]
 
 #pragma aux _TinySetCtrlBreak = \
-        _MOV_AX _SET_ DOS_CTRL_BREAK \
+        _MOV_AX_W _SET_ DOS_CTRL_BREAK \
         _INT_21         \
     __parm __caller     [__dl] \
     __value             \
@@ -2526,7 +2477,7 @@ tiny_ret_t  tiny_call   _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
     __modify __exact    [__ax __dx]
 
 #pragma aux _TinyGetFileStamp = \
-        _MOV_AX _GET_ DOS_FILE_DATE \
+        _MOV_AX_W _GET_ DOS_FILE_DATE \
         _INT_21         \
         _SBB_BX_BX      \
         _OR_DX_BX       \
@@ -2536,7 +2487,7 @@ tiny_ret_t  tiny_call   _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
     __modify __exact    [__ax __bx __cx __dx]
 
 #pragma aux _TinySetFileStamp = \
-        _MOV_AX _SET_ DOS_FILE_DATE \
+        _MOV_AX_W _SET_ DOS_FILE_DATE \
         _INT_21         \
         _SBB_DX_DX      \
     __parm __caller     [__bx] [__cx] [__dx] \
@@ -2592,14 +2543,14 @@ tiny_ret_t  tiny_call   _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
     __modify __exact    [__ax]
 
 #pragma aux _TinyGetSwitchChar = \
-        _MOV_AX _GET_ DOS_SWITCH_CHAR   \
+        _MOV_AX_W _GET_ DOS_SWITCH_CHAR   \
         _INT_21             \
     __parm __caller     [] \
     __value             [__dl] \
     __modify __exact    [__ax __dl]
 
 #pragma aux _TinySetSwitchChar = \
-        _MOV_AX _SET_ DOS_SWITCH_CHAR   \
+        _MOV_AX_W _SET_ DOS_SWITCH_CHAR   \
         _INT_21             \
     __parm __caller     [__dl] \
     __value             \
@@ -2616,7 +2567,7 @@ tiny_ret_t  tiny_call   _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
 
 #pragma aux _nTinyGetCountry = \
         _SET_DS_DGROUP  \
-        _MOV_AX 0x00 DOS_COUNTRY_INFO \
+        _MOV_AX_W 0x00 DOS_COUNTRY_INFO \
         _INT_21         \
         _SBB_CX_CX      \
         _RST_DS_DGROUP  \
@@ -2626,7 +2577,7 @@ tiny_ret_t  tiny_call   _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
 
 #pragma aux _fTinyGetCountry = \
         _SET_DS_SREG    \
-        _MOV_AX 0x00 DOS_COUNTRY_INFO \
+        _MOV_AX_W 0x00 DOS_COUNTRY_INFO \
         _INT_21         \
         _SBB_CX_CX      \
         _RST_DS_SREG    \
@@ -2637,7 +2588,7 @@ tiny_ret_t  tiny_call   _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
 #pragma aux _TinySetCountry = \
         _XOR_DX_DX      \
         _DEC_DX         \
-        _MOV_AX 0xff DOS_COUNTRY_INFO \
+        _MOV_AX_W 0xff DOS_COUNTRY_INFO \
         _TEST_BH_BH     \
         "jnz short finish" \
         _MOV_AL_BL      \
@@ -2706,7 +2657,7 @@ tiny_ret_t  tiny_call   _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
 
 #pragma aux _TinyLock = \
         _XCHG_SI_DI     \
-        _MOV_AX 0 DOS_RECORD_LOCK \
+        _MOV_AX_W 0 DOS_RECORD_LOCK \
         _INT_21         \
         _SBB_DX_DX      \
     __parm __caller     [__bx] [__cx __dx] [__di __si] \
@@ -2715,7 +2666,7 @@ tiny_ret_t  tiny_call   _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
 
 #pragma aux _TinyUnlock = \
         _XCHG_SI_DI     \
-        _MOV_AX 1 DOS_RECORD_LOCK \
+        _MOV_AX_W 1 DOS_RECORD_LOCK \
         _INT_21         \
         _SBB_DX_DX      \
     __parm __caller     [__bx] [__cx __dx] [__si __di] \

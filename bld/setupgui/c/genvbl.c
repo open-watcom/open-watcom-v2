@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -369,7 +369,7 @@ void SetDefaultGlobalVarList( void )
     SetBoolVariableByName(      "IsWin2000",    true );
     SetBoolVariableByName(      "IsWin64",      true );
   #else
-    // 32-bit Windows or WOW
+    // 32-bit executable on 32-bit or 64-bit Windows
     if( version & 0x80000000 ) {
         SetBoolVariableByName(  "IsWin32s",     LOBYTE( LOWORD( version ) ) < 4 );
         SetBoolVariableByName(  "IsWin32",      LOBYTE( LOWORD( version ) ) >= 4 );
@@ -401,12 +401,12 @@ void SetDefaultGlobalVarList( void )
 #endif
 
 #if defined( __LINUX__ )
-  #if defined( _M_X64 ) && 0
+  #if defined( _M_X64 )
     // 64-bit Linux
     SetBoolVariableByName(      "IsLinux64",    true );
     SetBoolVariableByName(      "IsLinux32",    false );
   #else
-    // 32-bit Linux
+    // 32-bit executable on 32-bit or 64-bit Linux
     SetBoolVariableByName(      "IsLinux64",    false );
     SetBoolVariableByName(      "IsLinux32",    true );
   #endif

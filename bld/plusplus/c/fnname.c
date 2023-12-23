@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -100,6 +100,8 @@ typedef struct replicate_desc {
 } replicate_desc;
 static replicate_desc replicate[MAX_REPLICATE];
 static int            next_replicate;
+
+static const char encode36_table[] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
 ExtraRptCtr( ctr_lookups );
 ExtraRptCtr( ctr_lookups_slow );
@@ -203,54 +205,53 @@ static void prependStr(         // PREPEND A STRING
     }
 }
 
-
-static const char __Alphabet36[] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-
-static char *utoa_zz( unsigned value, char *buffer )
+static char *encodeLen( char *buffer, unsigned value )
 {
-    char        *p = buffer;
+    char        *p;
 #ifdef ZZ_LEN_3
     unsigned    rem;
 
     rem = value % 36;
     value = value / 36;
 #endif
-    *p++ = __Alphabet36[value / 36];
-    *p++ = __Alphabet36[value % 36];
+    p = buffer;
+    *p++ = encode36_table[( value / 36 ) % 36];
+    *p++ = encode36_table[value % 36];
 #ifdef ZZ_LEN_3
-    *p++ = __Alphabet36[rem];
+    *p++ = encode36_table[rem];
 #endif
     *p = '\0';
     return( buffer );
 }
 
-static char *xtoa( unsigned value, char *p, unsigned base )
+static char *encodeBase( char *p, unsigned value, unsigned base )
 {
     unsigned    rem;
 
     rem = value % base;
     value = value / base;
     if( value != 0 ) {
-        p = xtoa( value, p, base );
+        p = encodeBase( p, value, base );
     }
-    *p++ = __Alphabet36[rem];
+    *p++ = encode36_table[rem];
     return( p );
 }
 
-static char *my_ultoa( unsigned value, char *buffer, unsigned base )
+static char *encodeBaseUInt( char *buffer, unsigned value, unsigned base )
 {
-    char        *p = buffer;
+    char        *p;
 
+    p = buffer;
     if( value == 0 ) {
         *p++ = '0';
     } else {
-        p = xtoa( value, p, base );
+        p = encodeBase( p, value, base );
     }
     *p++ = '\0';
     return( buffer );
 }
 
-static void appendStrWithLen(   // APPEND A STRING FOR LENGTH CHARS
+static void appendStrByLen(     // APPEND A STRING FOR LENGTH CHARS
     char *str,                  // - the string
     unsigned len )              // - how many chars to concatenate
 {
@@ -267,12 +268,12 @@ static void appendInt(          // APPEND AN INTEGER
     VbufConcDecimal( &mangled_name, val );
 }
 
-static void appendBase36UInt(   // APPEND A BASE 36 INTEGER
+static void appendEncode36UInt( // APPEND A BASE 36 INTEGER
     unsigned val )              // - value
 {
     char sbuf[16];              // - buffer
 
-    my_ultoa( val, sbuf, 36 );
+    encodeBaseUInt( sbuf, val, 36 );
     appendStr( sbuf );
 }
 
@@ -298,8 +299,11 @@ static void appendNameSpaceName(// APPEND A NAMESPACE NAME
     name = ScopeNameSpaceName( scope );
     if( name != NULL ) {
         if( ScopeIsUnnamedNameSpace( scope ) != NULL ) {
-            // we don't want unnamed namespace name in replicate table
-            // (demangler never stores anything with '$' prefix in rep table)
+            /*
+             * we don't want unnamed namespace name in replicate table
+             * (demangler never stores anything with '$' prefix in
+             * replicate table)
+             */
             appendChar( IN_CLASS_DELIM );
             appendStr( NameStr( name ) );
             appendStr( IN_NAME_SUFFIX );
@@ -352,13 +356,26 @@ static void appendClassName(    // APPEND A CLASS' NAME
     appendReplName( NameStr( className( class_type ) ) );
 }
 
+static void appendBasedString(  // APPEND A BASED STRING
+    STRING_CONSTANT str )       // - the based string
+{
+    unsigned        len;
+    char            sbuf[60];
+
+    len = StringLength( str );
+    if( len >= ZZ_LEN_LIMIT ) {
+        sprintf( sbuf, "internal name length=%u is > %d (1)", len, ZZ_LEN_LIMIT );
+        CFatal( sbuf );
+    }
+    encodeLen( sbuf, len );
+    appendStr( sbuf );
+    appendStrByLen( str->string, len );
+}
+
 static void appendBasedMod(     // APPEND A BASED MODIFIER
     type_flag flags,            // - the flags
     void *base )                // - base modifier
 {
-    STRING_CONSTANT str;
-    unsigned len;
-
     appendChar( IN_BASED );
     flags &= TF1_BASED;
     switch( flags ) {
@@ -369,29 +386,16 @@ static void appendBasedMod(     // APPEND A BASED MODIFIER
         appendChar( IN_BASED_VOID );
         break;
     case TF1_BASED_STRING:
-#ifndef NDEBUG
+#ifdef DEVBUILD
         if( base == NULL ) {
             CFatal( "invalid based modifier" );
         }
 #endif
         appendChar( IN_BASED_STRING );
-        str = base;
-        len = StringLength( str );
-        if( len < ZZ_LEN_LIMIT ) {
-            char    sbuf[10];
-
-            utoa_zz( len, sbuf );
-            appendStr( sbuf );
-        } else {
-            char    sbuf[60];
-
-            sprintf( sbuf, "internal name length=%u is > %d (1)", len, ZZ_LEN_LIMIT );
-            CFatal( sbuf );
-        }
-        appendStrWithLen( str->string, len );
+        appendBasedString( base );
         break;
     case TF1_BASED_FETCH:
-#ifndef NDEBUG
+#ifdef DEVBUILD
         if( base == NULL ) {
             CFatal( "invalid based modifier" );
         }
@@ -401,7 +405,7 @@ static void appendBasedMod(     // APPEND A BASED MODIFIER
         appendScopedSymName( base );
         break;
     case TF1_BASED_ADD:
-#ifndef NDEBUG
+#ifdef DEVBUILD
         if( base == NULL ) {
             CFatal( "invalid based modifier" );
         }
@@ -410,7 +414,7 @@ static void appendBasedMod(     // APPEND A BASED MODIFIER
         appendStr( IN_NAME_PREFIX );
         appendScopedSymName( base );
         break;
-#ifndef NDEBUG
+#ifdef DEVBUILD
     default:
         CFatal( "invalid based modifier" );
 #endif
@@ -640,23 +644,32 @@ static void appendFullSymName(  // APPEND A SYMBOL's FULL MANGLED NAME
     appendType( sym->sym_type, sym->name->name, TM_NULL );
 }
 
-static void appendBase32UInt(   // CONCATENATE A BASE 32 TARGET UNSIGNED LONG
+static void appendEncode32UInt( // CONCATENATE A BASE 32 TARGET UNSIGNED LONG
     target_ulong number )       // - the number
 {
-    char buff[16];
+    char sbuf[16];
 
-    my_ultoa( number, buff, 32 );
-    appendStr( buff );
+    encodeBaseUInt( sbuf, number, 32 );
+    appendStr( sbuf );
 }
 
-static void appendDelta(        // CONCATENATE A DELTA OPERATION
+static void appendEncodeDelta(  // CONCATENATE A DELTA OPERATION
     target_offset_t offset )    // - the offset
 {
-    char buff[16];
+    char sbuf[16];
 
-    buff[0] = 'O';
-    my_ultoa( offset, buff + 1, 31 );
-    appendStr( buff );
+    sbuf[0] = 'O';
+    encodeBaseUInt( sbuf + 1, offset, 31 );
+    appendStr( sbuf );
+}
+
+static void appendEncodeScopeIndex( unsigned scope )
+{
+    char sbuf[16];
+
+    sbuf[0] = '.';
+    encodeBaseUInt( sbuf + 1, scope, 31 );
+    appendStr( sbuf );
 }
 
 static void appendTemplateParm( // APPEND A TEMPLATE PARM
@@ -673,7 +686,7 @@ static void appendTemplateParm( // APPEND A TEMPLATE PARM
             delim = IN_TEMPARG_NEGATIVE_INT;
             val = -val;
         }
-        appendBase32UInt( val );
+        appendEncode32UInt( val );
         appendChar( delim );
     } else if( SymIsTypedef( sym ) ) {
         appendChar( IN_TEMPARG_TYPE );
@@ -694,7 +707,6 @@ static void appendScopeMangling(// APPEND CLASS SCOPES
     SYMBOL curr;
     SYMBOL stop;
     SYMBOL fn_symbol;
-    char buff[1 + sizeof( unsigned ) * 2 + 1];
 
     for(;;) {
         if( scope == NULL )
@@ -715,10 +727,8 @@ static void appendScopeMangling(// APPEND CLASS SCOPES
             appendTypedSymName( fn_symbol );
             break;
         case SCOPE_BLOCK:
-            buff[0] = '.';
-            my_ultoa( ScopeIndex( scope ), buff + 1, 31 );
             appendChar( IN_CLASS_DELIM );
-            appendStr( buff );
+            appendEncodeScopeIndex( ScopeIndex( scope ) );
             appendStr( IN_NAME_SUFFIX );
             for(;;) {
                 next = scope->enclosing;
@@ -770,7 +780,7 @@ bool CppLookupOperatorName(     // FIND OPERATOR FOR NAME (false IF NOT FOUND)
     CGOP *oper )                // - index found
 {
     CGOP index;
-#ifndef NDEBUG
+#ifdef DEVBUILD
     CGOP i;
 #endif
 
@@ -780,7 +790,7 @@ bool CppLookupOperatorName(     // FIND OPERATOR FOR NAME (false IF NOT FOUND)
             // name is an operator
             ExtraRptIncrementCtr( ctr_lookups_slow );
             index = (CGOP)( NameHash( name ) - NameHash( operatorNames[0] ) );
-#ifndef NDEBUG
+#ifdef DEVBUILD
             operatorNames[MAX_OP_NAMES] = name;
             i = 0;
             for(;;) {
@@ -868,7 +878,7 @@ static char* setMangling(       // SET FOR MANGLING
     char *save;                 // - saved name
 
     setPrefix( last );
-    save = strsave( VbufString( &mangled_name ) );
+    save = CMemStrDup( VbufString( &mangled_name ) );
     VbufRewind( &mangled_name );
     return( save );
 }
@@ -877,19 +887,15 @@ static NAME retMangling(        // RETURN MANGLED NAME
     char* save )                // - saved name
 {
     unsigned    len;
+    char        sbuf[60];
 
     len = VbufLen( &mangled_name );
-    if( len < ZZ_LEN_LIMIT ) {
-        char    sbuf[10];
-
-        utoa_zz( len, sbuf );
-        prependStr( sbuf );
-    } else {
-        char    sbuf[60];
-
+    if( len >= ZZ_LEN_LIMIT ) {
         sprintf( sbuf, "internal name length=%d is > %d (2)", len, ZZ_LEN_LIMIT );
         CFatal( sbuf );
     }
+    encodeLen( sbuf, len );
+    prependStr( sbuf );
     prependStr( save );
     CMemFree( save );
     return( NameCreateLen( VbufString( &mangled_name ), VbufLen( &mangled_name ) ) );
@@ -911,7 +917,7 @@ static NAME tableName( SCOPE scope, target_offset_t delta, char *table_type )
     char *save;
 
     save = setMangling( table_type );
-    appendDelta( delta );
+    appendEncodeDelta( delta );
     appendScopeMangling( scope );
     return( retMangling( save ) );
 }
@@ -1038,17 +1044,17 @@ NAME CppThunkName(              // CREATE NAME OF VIRTUAL FN THUNK
     appendStr( NameStr( thunk->sym->name->name ) );
     appendScopeMangling( scope );
     if( thunk->delta ) {
-        appendDelta( thunk->delta );
+        appendEncodeDelta( thunk->delta );
     }
     if( thunk->ctor_disp ) {
         appendChar( 'C' );
         if( thunk->input_virtual ) {
             appendChar( 'I' );
-            appendDelta( thunk->in.vb_offset );
-            appendDelta( thunk->in.vb_index );
+            appendEncodeDelta( thunk->in.vb_offset );
+            appendEncodeDelta( thunk->in.vb_index );
         }
         if( thunk->in.delta ) {
-            appendDelta( thunk->in.delta );
+            appendEncodeDelta( thunk->in.delta );
         }
     }
     appendStr( IN_NAME_PREFIX );
@@ -1144,12 +1150,12 @@ NAME CppNameUniqueNS(           // NAME OF UNIQUE NAMESPACE
 
     // this can change in a patch since it is an externally unique name
     save = setMangling( IN_NAME_UNNAMED );
-    appendBase36UInt( NameNextDummyIndex() );
+    appendEncode36UInt( NameNextDummyIndex() );
     appendChar( '_' );
     // we now have enough to ensure an unique internal name
     // but we have to try to create an unique external name...
     h = TimeOfCompilation();
-    appendBase36UInt( h );
+    appendEncode36UInt( h );
     src = locn->src_file;
     h ^= SrcFileTimeStamp( src );
     h ^= locn->line;
@@ -1159,7 +1165,7 @@ NAME CppNameUniqueNS(           // NAME OF UNIQUE NAMESPACE
         h ^= SrcFileTimeStamp( primary );
     }
     h = objNameHash( h, SrcFileFullName( primary ) );
-    appendBase36UInt( h );
+    appendEncode36UInt( h );
     return( retMangling( save ) );
 }
 
@@ -1359,25 +1365,36 @@ NAME CppTsName(                 // MANGLED NAME FOR TYPE SIGNATURE
 }
 
 
+char *EncodeClassHash(          // ENCODE CLASS HASH
+    unsigned hash,              // - class hash value
+    char *buffer )              // - output buffer
+{
+    buffer[0] = '_';
+    buffer[1] = '_';
+    encodeBaseUInt( buffer + 2, hash, 31 );
+    return( buffer );
+}
+
+
 NAME CppPCHDebugInfoName(       // MANGLED NAME FOR PCH DEBUG INFO
     char *include_file )        // - include file of PCH
 {
     time_t curr_time;
     char *save;
     char *p;
-    char buff[_MAX_PATH];
+    char sbuf[_MAX_PATH];
 
     save = setMangling( IN_NAME_DEBUG_INFO );
     curr_time = time( NULL );
-    appendBase32UInt( curr_time );
+    appendEncode32UInt( curr_time );
     appendChar( '@' );
-    p = IoSuppFullPath( include_file, buff, sizeof( buff ) );
-    for( p = buff; *p; ++p ) {
-        if( ! isalnum( *p ) ) {
+    p = IoSuppFullPath( include_file, sbuf, sizeof( sbuf ) );
+    for( p = sbuf; *p != '\0'; ++p ) {
+        if( !isalnum( *p ) ) {
             *p = '_';
         }
     }
-    appendStr( buff );
+    appendStr( sbuf );
     return( retMangling( save ) );
 }
 
@@ -1410,7 +1427,7 @@ static void cppNamesInit(       // INITIALIZE NAMES FOR NAMES PROCESSING
                 // use in CppLookupOperatorName will still work
                 *op = operatorNames[*ap];
             } else {
-#ifndef NDEBUG
+#ifdef DEVBUILD
                 {
                     const char  **t;
                     for( t = operatorNamesStr; t < cp; ++t ) {

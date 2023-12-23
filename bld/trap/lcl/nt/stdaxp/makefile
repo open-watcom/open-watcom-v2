@@ -2,16 +2,21 @@
 #
 # Create the NT STD.DLL for Alpha
 #
+
+tree_depth = 5
+
 host_os  = nt
 host_cpu = axp
 
 target_cpu = axp
-target_os  = nt
 
 srv     = lcl
 which   = TRAP
 
-extra_objs =
+extra_objs = $(nt_trap_objs)
+
+#extra_cppflags += -DWOW
 
 !include $(trap_dir)/lcl/nt/nt.mif
-
+!include $(trap_dir)/lcl/lcl.mif
+!include $(trap_dir)/master.mif

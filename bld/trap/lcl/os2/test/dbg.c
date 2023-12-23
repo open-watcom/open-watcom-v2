@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -59,7 +60,7 @@ extern int printf(char*,...);
 
 struct location_context Context;
 dbg_switches            DbgSwitches;
-char                    TrpBuff[ TRP_LEN + 1 ];
+char                    TrpBuff[TRP_LEN + 1];
 char                    *TxtBuff;
 char                    *TrpFile;
 char                    NullStr[] = { '\0' };
@@ -105,13 +106,14 @@ InitIt( char *trp, void __far *hab, void __far *hwnd )
     TrpFile = DbgAlloc( 512 );
     strcpy( TrpFile, trp );
     InitTrap( TRUE );  // Init rfx
-    TellHandles( hab, hwnd );
+    TRAPENTRY_FUNC( TellHandles )( hab, hwnd );
 }
 
 int LoadIt()
 {
     unsigned long handle;
-    return( DoLoad( getcmd( TxtBuff ), &handle ) == 0 );
+    _bgetcmd( TxtBuff, 512 );
+    return( DoLoad( TxtBuff, &handle ) == 0 );
 }
 
 int RunIt()
@@ -169,8 +171,6 @@ void WndUser()
 void StartupErr( const char *err )
 {
     printf( "%s\n", err );
-    exit( 1 );
-    // never return
 }
 #pragma off(unreferenced)
 void SectLoad( unsigned sect_id )
@@ -216,7 +216,9 @@ void AddLibInfo()
     module = 0;
     for( ;; ) {
         module = RemoteGetLibName( module, TxtBuff, TXT_LEN );
-        if( module == 0 ) break;
+        if( module == 0 ) {
+            break;
+        }
     }
 }
 

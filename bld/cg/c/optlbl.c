@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -162,13 +162,13 @@ ins_entry       *AliasLabels( ins_entry *oldlbl, ins_entry *newlbl )
         if( _ObjLen( oldlbl ) > _ObjLen( newlbl ) ) {
             _ObjLen( newlbl ) = _ObjLen( oldlbl );
         }
-#if _TARGET & _TARG_RISC
+#if _TARGET_RISC
         /* one of the line numbers (at most) is non-zero - keep it */
         if( _LblLine( oldlbl ) != 0 ) {
             _LblLine( newlbl ) = _LblLine( oldlbl );
         }
 #endif
-        _SetAttr( newlbl, _Attr( oldlbl ) & ATTR_SHORT );
+        _SetAttr( newlbl, _GetAttr( oldlbl ) & OC_ATTR_SHORT );
         new = _Label( newlbl );
         old = _Label( oldlbl );
         if( new->redirect == old ) {

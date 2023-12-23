@@ -4,4 +4,4 @@ system=winnt
 linkage=dynamic
 export_only=1
 
-!include $(mathlib_dir)/mrglib.mif
+!include ../../../mrglib.mif

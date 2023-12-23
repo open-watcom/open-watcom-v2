@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -172,7 +172,7 @@ int main( int argc, char *argv[] )
             word = &Chars[chars_count];
             len1 = strlen( Words[idx].word );
             len = len1 - 1;
-            if( chars_count < len )
+            if( len > chars_count )
                 len = chars_count;
             for( ; len > 0; --len ) {
                 if( memcmp( word - len, Words[idx].word, len ) == 0 ) {

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,8 +37,7 @@
 #include "scan.h"
 #include <ctype.h>
 
-static  hw_reg_set      AsmRegsSaved = HW_D( HW_FULL );
-static  int             AsmFuncNum;
+
 static  aux_info        AuxInfo;
 
 static struct {
@@ -56,10 +55,22 @@ uint_32 AsmQuerySPOffsetOf( void *handle )
     return( 0 );
 }
 
-
-static byte_seq_reloc *GetFixups( void )
-/**************************************/
+void AsmUsesAuto( aux_info *info )
+/********************************/
 {
+    /* unused parameters */ (void)info;
+
+    /*
+     * We want to force the calling routine to set up a stack frame
+     * for the use of this pragma.
+     */
+//    info->cclass_target |= FECALL_X86_GENERATE_STACK_FRAME;
+}
+
+bool AsmInsertFixups( aux_info *info )
+/************************************/
+{
+    byte_seq            *seq;
     asmreloc            *reloc;
     byte_seq_reloc      *head;
     byte_seq_reloc      *new;
@@ -69,10 +80,10 @@ static byte_seq_reloc *GetFixups( void )
 
     lnk = &head;
     for( reloc = AsmRelocs; reloc != NULL; reloc = reloc->next ) {
-        sym_handle = SymLook( CalcHash( reloc->name, strlen( reloc->name ) ), reloc->name );
+        sym_handle = SymLook( CalcHashID( reloc->name ), reloc->name );
         if( sym_handle == SYM_NULL ) {
             CErr2p( ERR_UNDECLARED_SYM, reloc->name );
-            return( NULL );
+            break;
         }
         SymGet( &sym, sym_handle );
         sym.flags |= SYM_REFERENCED | SYM_ADDR_TAKEN;
@@ -93,9 +104,13 @@ static byte_seq_reloc *GetFixups( void )
         lnk = &new->next;
     }
     *lnk = NULL;
-    return( head );
+    seq = (byte_seq *)CMemAlloc( offsetof( byte_seq, data ) + AsmCodeAddress );
+    seq->relocs = head;
+    seq->length = AsmCodeAddress;
+    memcpy( &seq->data[0], AsmCodeBuffer, AsmCodeAddress );
+    info->code = seq;
+    return( false );
 }
-
 
 void AsmSysLine( const char *buff )
 /*********************************/
@@ -103,17 +118,16 @@ void AsmSysLine( const char *buff )
     AsmLine( buff );
 }
 
-static bool GetByteSeq( byte_seq **code )
-/***************************************/
+static bool GetByteSeq( aux_info *info )
+/**************************************/
 {
-    unsigned char       buff[MAXIMUM_BYTESEQ + 32];
+    unsigned char       buff[MAXIMUM_BYTESEQ + ASM_BLOCK];
     bool                uses_auto;
     bool                too_many_bytes;
 
     AsmSysInit( buff );
     NextToken();
     too_many_bytes = false;
-    uses_auto = false;
     for( ;; ) {
         if( CurToken == T_STRING ) {
             AsmLine( Buffer );
@@ -135,21 +149,11 @@ static bool GetByteSeq( byte_seq **code )
             AsmCodeAddress = 0; // reset index to we don't overrun buffer
         }
     }
-    AsmFini();
     if( too_many_bytes ) {
         uses_auto = false;
     } else {
-        byte_seq      *seq;
-        byte_seq_len  len;
-
-        len = AsmCodeAddress;
-        seq = (byte_seq *)CMemAlloc( offsetof( byte_seq, data ) + len );
-        seq->relocs = GetFixups();
-        seq->length = len;
-        memcpy( &seq->data[0], buff, len );
-        *code = seq;
+        uses_auto = AsmInsertFixups( info );
     }
-    AsmFiniRelocs();
     AsmSysFini();
     return( uses_auto );
 }
@@ -158,13 +162,14 @@ static bool GetByteSeq( byte_seq **code )
 void PragmaInit( void )
 /*********************/
 {
-    AsmFuncNum = 0;
+
 }
 
 
 void PragmaFini( void )
 /*********************/
 {
+
 }
 
 static void InitAuxInfo( void )
@@ -248,6 +253,7 @@ void PragAux( void )
 /******************/
 {
     struct {
+        boolbit     f_call      : 1;
         boolbit     f_export    : 1;
         boolbit     f_parm      : 1;
         boolbit     f_value     : 1;
@@ -264,6 +270,7 @@ void PragAux( void )
         SetCurrInfo( Buffer );
         NextToken();
         PragObjNameInfo( &AuxInfo.objname );
+        have.f_call = false;
         have.f_export = false;
         have.f_parm = false;
         have.f_value = false;
@@ -272,10 +279,11 @@ void PragAux( void )
         have.f_except = false;
         have.uses_auto = false;
         for( ;; ) {
-            if( CurToken == T_EQUAL ) {
-                have.uses_auto = GetByteSeq( &AuxInfo.code );
+            if( !have.f_call && CurToken == T_EQUAL ) {
+                have.uses_auto = GetByteSeq( &AuxInfo );
+                have.f_call = true;
             } else if( !have.f_export && PragRecogId( "export" ) ) {
-                AuxInfo.cclass |= DLL_EXPORT;
+                AuxInfo.cclass |= FECALL_GEN_DLL_EXPORT;
                 have.f_export = true;
             } else if( !have.f_parm && PragRecogId( "parm" ) ) {
                 GetParmInfo();
@@ -284,25 +292,20 @@ void PragAux( void )
                 GetRetInfo();
                 have.f_value = true;
             } else if( !have.f_value && PragRecogId( "aborts" ) ) {
-                AuxInfo.cclass |= SUICIDAL;
+                AuxInfo.cclass |= FECALL_GEN_ABORTS;
                 have.f_value = true;
             } else if( !have.f_modify && PragRecogId( "modify" ) ) {
                 GetSaveInfo();
                 have.f_modify = true;
             } else if( !have.f_frame && PragRecogId( "frame" ) ) {
-//                AuxInfo.cclass |= GENERATE_STACK_FRAME;
+//                AuxInfo.cclass_target |= FECALL_X86_GENERATE_STACK_FRAME;
                 have.f_frame = true;
             } else {
                 break;
             }
         }
         if( have.uses_auto ) {
-            /*
-               We want to force the calling routine to set up a [E]BP frame
-               for the use of this pragma. This is done by saying the pragma
-               modifies the [E]SP register. A kludge, but it works.
-            */
-//            HW_CTurnOff( AuxInfo.save, HW_SP );
+            AsmUsesAuto( &AuxInfo );
         }
         PragmaAuxEnd();
     }
@@ -310,63 +313,56 @@ void PragAux( void )
 }
 
 
-hw_reg_set PragRegName( const char *regname, size_t regnamelen )
-/**************************************************************/
+hw_reg_set PragRegName( const char *regname )
+/*******************************************/
 {
     int             index;
-    const char      *str;
     hw_reg_set      name;
-    size_t          len;
 
-    if( regnamelen > 0 ) {
-        len = regnamelen;
-        str = SkipUnderscorePrefix( regname, &len, false );
-        if( len > 0 && *str == '$' ) {
-            str++;
-            len--;
-            if( len > 0 ) {
+    if( *regname != '\0' ) {
+        if( *regname == '$' ) {
+            if( regname[1] != '\0' ) {
                 // search register or alias name
-                index = PragRegIndex( Registers, str, len, false );
+                index = PragRegIndex( Registers, regname + 1, false );
                 if( index != -1 ) {
                     return( RegBits[RegMap[index]] );
                 }
                 // decode regular register index
-                index = PragRegNumIndex( str, len, 32 );
+                index = PragRegNumIndex( regname + 1, 32 );
                 if( index != -1 ) {
                     return( RegBits[index] );
                 }
             }
         }
-        PragRegNameErr( regname, regnamelen );
+        PragRegNameErr( regname );
     }
     HW_CAsgn( name, HW_EMPTY );
     return( name );
 }
 
 hw_reg_set PragReg( void )
+/************************/
 {
-    char            buffer[20];
+    char            buffer[REG_BUFF_SIZE];
     size_t          len;
-    bool            prefix;
+    const char      *p;
 
-    prefix = ( CurToken == T_BAD_CHAR && Buffer[0] == '$' );
-    if( prefix ) {
-        buffer[0] = '$';
+    p = Buffer;
+    if( *p == '\0' ) {
         NextToken();
+        p = Buffer;
     }
-    len = TokenLen;
-    if( prefix )
-        len++;
-    if( len > sizeof( buffer ) - 1 ) {
-        len = sizeof( buffer ) - 1;
+    len = 0;
+    if( CurToken == T_BAD_CHAR && Buffer[0] == '$' ) {
+        buffer[len++] = '$';
+        NextToken();
+        p = Buffer;
     }
-    if( prefix ) {
-        memcpy( buffer + 1, Buffer, len - 1 );
-    } else {
-        memcpy( buffer, Buffer, len );
+    while( *p != '\0' && len < ( sizeof( buffer ) - 1 ) ) {
+        buffer[len++] = *p++;
     }
     buffer[len] = '\0';
-    return( PragRegName( buffer, len ) );
+    return( PragRegName( buffer ) );
 }
 
 void AsmSysInit( unsigned char *buf )
@@ -382,63 +378,9 @@ void AsmSysInit( unsigned char *buf )
 void AsmSysFini( void )
 /*********************/
 {
-    AsmFini();
-}
-
-
-void AsmSysMakeInlineAsmFunc( bool too_many_bytes )
-/*************************************************/
-{
-    byte_seq_len        code_length;
-    SYM_HANDLE          sym_handle;
-    TREEPTR             tree;
-    bool                uses_auto;
-    char                name[8];
-
-    AsmFini();
-    uses_auto = false;
-    code_length = AsmCodeAddress;
-    if( code_length != 0 ) {
-        sprintf( name, "F.%d", AsmFuncNum );
-        ++AsmFuncNum;
-        CreateAux( name );
-        CurrInfo = (aux_info *)CMemAlloc( sizeof( aux_info ) );
-        *CurrInfo = WatcallInfo;
-        CurrInfo->use = 1;
-        CurrInfo->save = AsmRegsSaved;  // indicate no registers saved
-        if( too_many_bytes ) {
-            uses_auto = false;
-        } else {
-            byte_seq    *seq;
-
-            seq = (byte_seq *)CMemAlloc( offsetof( byte_seq, data ) + code_length );
-            seq->relocs = GetFixups();
-            seq->length = code_length;
-            memcpy( &seq->data[0], AsmCodeBuffer, code_length );
-            CurrInfo->code = seq;
-        }
-        if( uses_auto ) {
-            /*
-               We want to force the calling routine to set up a [E]BP frame
-               for the use of this pragma. This is done by saying the pragma
-               modifies the [E]SP register. A kludge, but it works.
-            */
-//          HW_CTurnOff( CurrInfo->save, HW_SP );
-        }
-        CurrEntry->info = CurrInfo;
-        CurrEntry->next = AuxList;
-        AuxList = CurrEntry;
-        CurrEntry = NULL;
-        sym_handle = MakeFunction( name, FuncNode( GetType( TYP_VOID ), FLAG_NONE, NULL ) );
-        tree = LeafNode( OPR_FUNCNAME );
-        tree->op.u2.sym_handle = sym_handle;
-        tree = ExprNode( tree, OPR_CALL, NULL );
-        tree->u.expr_type = GetType( TYP_VOID );
-        AddStmt( tree );
-    }
     AsmFiniRelocs();
+    AsmFini();
 }
-
 
 char const *AsmSysDefineByte( void )
 /**********************************/

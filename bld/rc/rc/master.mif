@@ -1,3 +1,5 @@
+tree_depth = 4
+
 proj_name = wrc
 
 !ifndef wrc_autodepends
@@ -22,7 +24,7 @@ os2_yacc_prefix = os2y
 win_yacc_file = $(win_yacc_prefix)tab
 os2_yacc_file = $(os2_yacc_prefix)tab
 
-additional_clean = $(os2_yacc_file).* $(win_yacc_file).* *.uni
+additional_clean = $(os2_yacc_file).* $(win_yacc_file).* *.uni yw.out y2.out
 
 !include cproj.mif
 !include defrule.mif
@@ -54,7 +56,7 @@ extra_cpp_flags   += -DIDE_PGM
 extra_cpp_flags_rcmem    = $(trmem_cpp_flags)
 !ifdef trmem_objs
 extra_cpp_flags_rcmem    = -DRC_USE_TRMEM
-!else ifeq release 0
+!else ifneq debug 0
 extra_cpp_flags_rcalloc0 = -DRCMEM_DEBUG
 extra_cpp_flags_rcalloc1 = -DRCMEM_DEBUG
 !endif
@@ -89,12 +91,14 @@ common_objs = &
     $(_subdir_)exeseg.obj &
     $(_subdir_)exeutil.obj &
     $(_subdir_)global.obj &
+    $(_subdir_)global_2.obj &
     $(_subdir_)layer0.obj &
     $(_subdir_)mergedir.obj &
     $(_subdir_)param.obj &
     $(_subdir_)pass2.obj &
     $(_subdir_)rc.obj &
     $(_subdir_)rcio.obj &
+    $(_subdir_)rcio_2.obj &
     $(_subdir_)rcmem.obj &
     $(_subdir_)rcstr.obj &
     $(_subdir_)ppalloc.obj &
@@ -120,10 +124,6 @@ common_objs = &
     $(_subdir_)semstrw.obj &
     $(_subdir_)dbtable.obj &
     $(_subdir_)unitable.obj &
-    $(_subdir_)preproc.obj &
-    $(_subdir_)ppexpr.obj &
-    $(_subdir_)ppmacro.obj &
-    $(_subdir_)tmpctl.obj &
     $(_subdir_)autodep.obj &
     $(_subdir_)rcldstr.obj &
     $(_subdir_)sharedio.obj &
@@ -132,8 +132,8 @@ common_objs = &
     $(_subdir_)leadbyte.obj &
     $(_subdir_)ideentry.obj &
     $(_subdir_)idemsgpr.obj &
-    $(_subdir_)pathlist.obj &
-    $(_subdir_)rcspawn.obj
+    $(_subdir_)rcspawn.obj &
+    $(cpp_objs)
 
 misc_objs = &
     1250.uni &
@@ -216,11 +216,11 @@ os2_yacc_options = -b $(os2_yacc_prefix) -d -dd -db -de
 
 $(win_yacc_file).c : ../y/rcwin.y ../y/yydrivrw.c
     @%make echo_yacc
-    $(yacc) $(win_yacc_options) $< >$(nulldevice)
+    $(yacc) $(win_yacc_options) $< >yw.out
 
 $(os2_yacc_file).c : ../y/rcos2.y ../y/yydrivr2.c
     @%make echo_yacc
-    $(yacc) $(os2_yacc_options) $< >$(nulldevice)
+    $(yacc) $(os2_yacc_options) $< >y2.out
 
 keywordw.gh : ../hash/rcwin.key
     @%make echo_findhash
@@ -241,7 +241,7 @@ $(misc_objs):
 optencod_opt_qnx = -u=$(exetarg_qnx_res)
 !endif
 optencod_targets = $(host_os)
-!ifeq release 0
+!ifeq debug 2
 optencod_targets += dbg
 !endif
 
@@ -249,7 +249,7 @@ usage.gh $(exetarg_$(host_os)_res) : ../h/options.gml $(__MAKEFILES__)
     @%make echo_optencod
     $(optencod) -rc=MSG_USAGE_BASE -utf8 $(optencod_opt_$(host_os)) $[@ . . $@ $(optencod_targets)
 
-./cvttable.exe: ../c/cvttable.c $(watcom_dir)/h/cp932uni.h $(__MAKEFILES__)
+./cvttable.exe: ../c/cvttable.c $(__MAKEFILES__)
     @%make echo_bldcl
     $(bld_cl) $[@ -D_STANDALONE_ -I"../h" $(bld_clflags) $(bld_ldflags)
 

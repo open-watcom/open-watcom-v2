@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -61,7 +61,7 @@ trap_elen RemoteOvlSectSize( void )
     if( SuppOvlId == 0 )
         return( 0 );
     SUPP_OVL_SERVICE( acc, REQ_OVL_STATE_SIZE );
-    TrapSimpAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
+    TrapSimpleAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
     return( ret.size );
 }
 
@@ -74,7 +74,7 @@ bool RemoteOvlSectPos( unsigned sect, mem_block *where )
         return( false );
     SUPP_OVL_SERVICE( acc, REQ_OVL_GET_DATA );
     acc.sect_id = sect;
-    TrapSimpAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
+    TrapSimpleAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
     if( ret.segment == 0 )
         return( false );
     where->len = ret.size;
@@ -93,7 +93,7 @@ static void CheckRemapping( void )
     SUPP_OVL_SERVICE( acc, REQ_OVL_GET_REMAP_ENTRY );
     acc.ovl_addr.sect_id = 0;
     for( ;; ) {
-        TrapSimpAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
+        TrapSimpleAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
         if( !ret.remapped )
             break;
         RemapSection( ret.ovl_addr.sect_id, ret.ovl_addr.mach.segment );
@@ -106,7 +106,7 @@ void RemoteSectTblRead( byte *ovl )
     ovl_read_state_req  acc;
 
     SUPP_OVL_SERVICE( acc, REQ_OVL_READ_STATE );
-    TrapSimpAccess( sizeof( acc ), &acc, OvlSize, ovl );
+    TrapSimpleAccess( sizeof( acc ), &acc, OvlSize, ovl );
     CheckRemapping();
 }
 
@@ -138,7 +138,7 @@ bool RemoteOvlTransAddr( address *addr )
     AddrFix( &real );
     ConvAddr48ToAddr32( real.mach, acc.ovl_addr.mach );
     acc.ovl_addr.sect_id = addr->sect_id;
-    TrapSimpAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
+    TrapSimpleAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
     if( ret.ovl_addr.sect_id == 0 ) {
         /* not translated */
         return( false );
@@ -164,7 +164,7 @@ bool RemoteOvlRetAddr( address *addr, unsigned ovl_level )
     ConvAddr48ToAddr32( real.mach, acc.ovl_addr.mach );
     /* hide overlay level in section id */
     acc.ovl_addr.sect_id = ovl_level;
-    TrapSimpAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
+    TrapSimpleAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
     if( ret.ovl_addr.sect_id == 0 ) {
         /* not translated */
         return( false );

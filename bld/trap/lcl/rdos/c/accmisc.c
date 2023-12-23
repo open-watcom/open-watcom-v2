@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,6 +33,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <direct.h>
+#include "digcpu.h"
 #include "stdrdos.h"
 #include "rdos.h"
 #include "debug.h"
@@ -47,31 +48,27 @@ trap_retval TRAP_CORE( Machine_data )( void )
     int                 bitness;
     machine_data_req    *acc;
     machine_data_ret    *ret;
-    union {
-        unsigned_8      u8;
-    }                   *data;
+    machine_data_spec   *data;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    data = GetOutPtr( sizeof( *ret ) );
-
     sel = acc->addr.segment;
-
     if( RdosGetSelectorInfo( sel, &size, &bitness ) ) {
-        if( size > 0xFFFF )
+        if( size > 0xFFFF ) {
             bitness = 32;
-        ret->cache_start = 0;
-        ret->cache_end = size;
-        if( bitness == 16 )
-            data->u8 = 0;
-        else
-            data->u8 = 1;
+        }
     } else {
-        ret->cache_start = 0;
-        ret->cache_end = 0xFFFFFFFF;
-        data->u8 = 1;
+        size = -1;
+        bitness = 32;
     }
-    return( sizeof( *ret ) + sizeof( data->u8 ) );
+    ret->cache_start = 0;
+    ret->cache_end = size;
+    if( acc->info_type == X86MD_ADDR_CHARACTERISTICS ) {
+        data = GetOutPtr( sizeof( *ret ) );
+        data->x86_addr_flags = ( bitness == 32 ) ? X86AC_BIG : 0;
+        return( sizeof( *ret ) + sizeof( data->x86_addr_flags ) );
+    }
+    return( sizeof( *ret ) );
 }
 
 trap_retval TRAP_CORE( Get_sys_config )( void )
@@ -79,17 +76,17 @@ trap_retval TRAP_CORE( Get_sys_config )( void )
     get_sys_config_ret  *ret;
     int                 major, minor, release;
 
-        RdosGetVersion(&major, &minor, &release);
+    RdosGetVersion(&major, &minor, &release);
 
     ret = GetOutPtr( 0 );
 
-    ret->sys.cpu = 0x3F;
-    ret->sys.fpu = 0xF;
-    ret->sys.osmajor = (char)major;
-    ret->sys.osminor = (char)minor;
-    ret->sys.os = 0;
-    ret->sys.huge_shift = 3;
-    ret->sys.arch = DIG_ARCH_X86;
+    ret->cpu = X86_P4 | X86_MMX | X86_XMM;
+    ret->fpu = X86_P47;
+    ret->osmajor = (char)major;
+    ret->osminor = (char)minor;
+    ret->os = 0;
+    ret->huge_shift = 3;
+    ret->arch = DIG_ARCH_X86;
 
     return( sizeof( *ret ) );
 }
@@ -169,29 +166,34 @@ trap_retval TRAP_CORE( Get_err_text )( void )
 
 trap_retval TRAP_CORE( Split_cmd )( void )
 {
-    char            *cmd;
-    char            *start;
+    const char      *cmd;
+    const char      *start;
     split_cmd_ret   *ret;
-    unsigned        len;
+    size_t          len;
 
     cmd = GetInPtr( sizeof( split_cmd_req ) );
     len = GetTotalSizeIn() - sizeof( split_cmd_req );
     start = cmd;
     ret = GetOutPtr( 0 );
     ret->parm_start = 0;
-    while( len != 0 ) {
+    while( len > 0 ) {
         switch( *cmd ) {
         case '\"':
-            while( --len && (*++cmd != '\"') )
-                ;
-            if( len != 0 )
+            cmd++;
+            while( --len > 0 && ( *cmd++ != '\"' ) )
+                {}
+            if( len == 0 )
+                continue;
+            switch( *cmd ) {
+            CASE_SEPS
+                ret->parm_start = 1;
                 break;
-            /* fall down */
-        case '\0':
-        case ' ':
-        case '\t':
+            }
+            len = 0;
+            continue;
+        CASE_SEPS
             ret->parm_start = 1;
-            /* fall down */
+            /* fall through */
         case '/':
         case '=':
         case '(':

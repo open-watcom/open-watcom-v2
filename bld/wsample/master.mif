@@ -20,6 +20,11 @@ memory_model_i86 = c
 !ifeq target rsi
 !include $(rsilib_dir)/client.mif
 !endif
+
+dig_arch = $(host_cpu)
+
+!include $(dig_dir)/digcli.mif
+
 !ifneq target win
 !include wres.mif
 !endif
@@ -56,8 +61,9 @@ fardata_dos_rsi =-DFARDATA
 fardata_win_win =-DFARDATA
 !endif
 
+extra_cpp_flags = $(dig_arch_cpp_flags)
 !ifndef bootstrap
-extra_cpp_flags = $(fardata_$(host_os)_$(target))
+extra_cpp_flags += $(fardata_$(host_os)_$(target))
 !endif
 
 !ifeq target pls
@@ -91,7 +97,6 @@ extra_a_flags = $(model_switch_$(host_cpu))
 # lflags
 #
 extra_l_flags_os2_i86 = op stack=4k, newfiles
-extra_l_flags_os2 = $(extra_l_flags_os2_$(host_cpu))
 extra_l_flags_win = option heap=10k, stack=10k &
     opt description 'Open Watcom Sampler' &
     segment class 'CODE' preload fixed &
@@ -101,7 +106,7 @@ extra_l_flags_nov = debug novell option stack=10k @nversion.tmp &
     opt description 'Open Watcom Sampler' &
     module clib import @$(nwoss_dir)/common/imp/ownwos.imp
 !ifeq target rsi
-lflags_dos_i86 = sys dos16m opt stub=$(wstub_dir)/dos386/wstubq.exe runtime auto lib doslfn$(memory_model_i86).lib
+lflags_dos_i86 = sys dos16m opt stub=$(wstub_dir)/dos386/wstubq.exe runtime auto $(lflags_doslfn_i86)
 !else ifeq target pls
 lflags_dos_386 = sys pharlap ext opt nodefaultlibs, maxdata=0 runtime maxreal=1023K, maxibuf=4K, flag=2 &
     lib { clib3r.lib math3r.lib } file { $(plsdir)/dilseg.obj $(plsdir)/dilglue.obj }
@@ -214,7 +219,7 @@ nversion.tmp: ./mknver.exe $(__MAKEFILES__)
 optencod_opt_qnx    = -u=$(exetarg_qnx_res)
 !endif
 optencod_targets = $(target)
-!ifeq release 0
+!ifeq debug 2
 optencod_targets += dbg
 !endif
 

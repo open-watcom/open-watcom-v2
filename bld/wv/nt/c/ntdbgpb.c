@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -52,7 +53,7 @@ BOOL CALLBACK FindPidPB( HWND  hwnd, LPARAM  lParam )
 
     lParam=lParam;
     len = GetClassName( hwnd, buff, sizeof( buff ) );
-    buff[len] = '\0';
+    buff[len] = NULLCHAR;
     if( strstr( buff, "PBFRAME" ) != NULL ) {
         GetWindowThreadProcessId(hwnd, &PidPB );
     }
@@ -79,8 +80,7 @@ const char *CheckForPowerBuilder( const char *name )
         StartupErr( LIT_DUI( PowerBuilder_Not_Running ) );
         return( "" );
     } else {
-        pid[0] = '#';
-        itoa( PidPB, pid + 1, 16 );
+        sprintf( pid, "#%x", PidPB );
 #ifdef GUI_IS_GUI
         WndSetTitle( WndMain, LIT_DUI( The_WATCOM_Debugger_for_PowerBuilder ) );
 #else

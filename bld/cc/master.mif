@@ -1,3 +1,5 @@
+tree_depth = 4
+
 proj_name = cc
 
 cc_autodepends = .autodepend
@@ -29,7 +31,7 @@ dlltarg_name = $(bin_subdir)/$(dllname)
 bin_intname  = $(bin_subdir)/$(intname)
 !endif
 
-additional_clean = *.int
+additional_clean = *.int *.gc
 !ifndef bootstrap
 additional_clean_subdirs = $(bin_subdir)
 !endif
@@ -46,6 +48,7 @@ $(bin_subdir) : .EXPLICIT
 
 # CODEGEN stuff
 !include $(cg_dir)/mif/fe.mif
+!include $(cpp_dir)/client.mif
 !include asclient.mif
 
 !include ../../ccobjs.mif
@@ -53,9 +56,9 @@ $(bin_subdir) : .EXPLICIT
 #
 # cflags
 #
-.c: ../../c;$(asminline_c);$(watcom_dir)/c;$(fe_misc_dir)/c
+.c: ../../c;$(asminline_c);$(fe_misc_dir)/c;$(cpp_c_dirs);$(watcom_dir)/c
 
-inc_dirs  = -I. -I.. -I"../../h" $(cg_inc_dirs) $(asminline_inc_dirs) $(dwarfw_inc_dirs) -I"$(comp_cfg_dir)/h" -I"$(fe_misc_dir)/h"
+inc_dirs  = -I. -I.. -I"../../h" $(cg_inc_dirs) $(asminline_inc_dirs) $(cpp_inc_dirs) $(dwarfw_inc_dirs) -I"$(comp_cfg_dir)/h" -I"$(fe_misc_dir)/h"
 
 extra_cpp_flags = -DINCL_MSGTEXT
 !ifneq cc_dll 1
@@ -68,7 +71,7 @@ extra_cppflags_axp = -DAS_ALPHA
 extra_cppflags_mps = -DAS_MIPS
 extra_cppflags_ppc = -DAS_PPC
 extra_cpp_flags += $(extra_cppflags_$(target_cpu))
-!ifeq release 0
+!ifeq debug 2
 extra_cpp_flags += -DAS_DEBUG_DUMP
 !endif
 
@@ -86,13 +89,14 @@ extra_c_flags_386 = -3r
 
 !ifdef __WATCOM_TOOLS__
 ! ifndef bootstrap
-!  ifeq release 1
+!  ifeq debug 0
 extra_c_flags_cscan_386 = -5r
 extra_c_flags_cscan    = $(extra_c_flags_cscan_$(host_cpu))
 !  endif
 ! endif
 !endif
 extra_c_flags_intlload = $(incl_file_opts)fesupp.h
+extra_c_flags_cmdlnprs = $(incl_file_opts)fesupp.h
 
 #
 # lflags
@@ -115,6 +119,7 @@ prebuild_objs = &
     msgattr.gh &
     weights.gh &
     keywords.gh &
+    cmdlnprs.gh &
     $(asminline_deps) &
     code$(target_cpu).gh &
     $(bin_intname)01.int
@@ -183,8 +188,8 @@ code$(target_cpu).gh : ./mkcode.exe xcode$(target_cpu).tmp
 !endif
 
 target_as_axp   = bwasaxp -zq -w8
-target_as_i86   = bwasm -zq -w8
-target_as_386   = bwasm -zq -w8 -3
+target_as_i86   = bwasm -zq -w8-cx
+target_as_386   = bwasm -zq -w8-cx -3
 target_as_ppc   = bwasppc -zq -w8
 target_as_mps   = bwasmps -zq -w8
 
@@ -222,10 +227,10 @@ optencod_opt_qnx    = -u=$(exetarg_qnx_res)
 !endif
 #optencod_enc_linux  = -utf8
 optencod_targets = $(target_cpu) $(host_os)
-!ifeq release 0
+!ifeq debug 2
 optencod_targets += dbg
 !endif
 
-usage.gh usage01.int $(exetarg_$(host_os)_res): ../../gml/options.gml
+cmdlnprs.gh cmdlnprs.gc usage.gh usage01.int $(exetarg_$(host_os)_res): ../../gml/options.gml
     @%make echo_optencod
-    $(optencod) -i -n $(optencod_opt_$(host_os)) $(optencod_enc_$(host_os)) $]@ . . usage.gh $(optencod_targets)
+    $(optencod) -i -n $(optencod_opt_$(host_os)) $(optencod_enc_$(host_os)) $]@ cmdlnprs.gh cmdlnprs.gc usage.gh $(optencod_targets)

@@ -2,7 +2,7 @@
 :cmt.*
 :cmt.*                            Open Watcom Project
 :cmt.*
-:cmt.* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+:cmt.* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 :cmt.*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 :cmt.*
 :cmt.*  ========================================================================
@@ -287,7 +287,7 @@
 :jusage. 構築ターゲットはマルチスレッド環境です
 
 :option. br
-:target. 386 axp ppc
+:target. 386 axp ppc mps
 :usage.  build target uses DLL version of C/C++ run-time library
 :jusage. 構築ターゲットはDLL版のC/C++実行時ライブラリを使用します
 
@@ -630,7 +630,6 @@
 :option. 87d
 :target. i86 386
 :number. CmdX86CheckStack87 0
-:enumerate. intel_fpu_model
 :internal.
 :usage.  inline 80x87 instructions with specified depth
 :jusage. 指定した深さのインライン80x87命令
@@ -704,20 +703,20 @@
 :jusage. Watcomデバッグ情報を生成します
 
 :option. hd
-:target. i86 386 axp ppc
+:target. i86 386 axp ppc mps
 :enumerate. dbg_output
 :usage.  generate DWARF debugging information
 :jusage. DWARFデバッグ情報を生成します
 
 :option. hda
-:target. i86 386 axp ppc
+:target. i86 386 axp ppc mps
 :enumerate. dbg_output
 :usage.  generate DWARF debugging information
 :jusage. DWARFデバッグ情報を生成します
 :internal.
 
 :option. hc
-:target. i86 386 axp ppc
+:target. i86 386 axp ppc mps
 :enumerate. dbg_output
 :usage.  generate Codeview debugging information
 :jusage. Codeviewデバッグ情報を生成します
@@ -814,7 +813,7 @@
 :jusage. データ･セグメント名を設定します
 
 :option. nm
-:target. i86 386 axp ppc
+:target. i86 386 axp ppc mps
 :file.
 :usage.  set module name
 :jusage. モジュール名を設定します
@@ -836,7 +835,7 @@
 :jusage. 分岐予測にそったコードを生成します
 
 :option. oc
-:target. i86 386 axp ppc
+:target. i86 386 axp ppc mps
 :usage.  disable <call followed by return> to <jump> optimization
 :jusage. <call followed by return>から<jump>の最適化を無効にします
 
@@ -849,7 +848,7 @@
 
 :option. oe
 :target. any
-:number. checkOENumber 100
+:number. checkOENumber 20
 :usage.  expand user functions inline (<num> controls max size)
 :jusage. ユーザ関数をインライン展開します(<num>は最大ｻｲｽﾞを制御します)
 
@@ -894,7 +893,7 @@
 :jusage. ループ・アンローリングでループ最適化を可能にします
 
 :option. om
-:target. i86 386 axp ppc
+:target. i86 386 axp ppc mps
 :usage.  generate inline code for math functions
 :jusage. 算術関数をインラインの80x87コードで展開して生成します
 
@@ -1079,19 +1078,23 @@
 :usage.  set warning level number
 :jusage. 警告レベル番号を設定します
 
+:cmt.
+:cmt. wcd  and wce uses list of values which are 'P' prefix and C++ compiler
+:cmt. message number without any prefix
+:cmt.
 :option. wcd
 :target. any
-:number.
+:id.
 :multiple.
-:usage.  disable warning message <num>
-:jusage. 警告制御: 警告メッセージ<num>を禁止します
+:usage.  disable warning message <id>
+:jusage. 警告制御: 警告メッセージ<id>を禁止します
 
 :option. wce
 :target. any
-:number.
+:id.
 :multiple.
-:usage.  enable warning message <num>
-:jusage. 警告制御: 警告メッセージ <num> の表示をします
+:usage.  enable warning message <id>
+:jusage. 警告制御: 警告メッセージ <id> の表示をします
 
 :option. we
 :target. any
@@ -1219,13 +1222,23 @@
 
 :option. za0x
 :target. any
+:enumerate. cxxstd
+:internal.
 :usage.  enable some features of the upcoming ISO C++0x standard
+:jusage.
+
+:option. zastd
+:target. any
+:special. checkSTD =<standard>
+:number. . 0
+:enumerate. cxxstd
+:usage.  use specified ISO C++ language standard (c++98,c++0x)
 :jusage.
 
 :option. zam
 :target. any
-:usage.  disable all compiler non-ISO compliant names (macros, symbols)
-:jusage. disable all compiler non-ISO compliant names (macros, symbols)
+:usage.  disable all non-ISO compliant names (macros, symbols)
+:jusage. disable all non-ISO compliant names (macros, symbols)
 
 :option. zat
 :target. any
@@ -1405,12 +1418,14 @@
 :jusage. 無メッセージモードで動作します(エラーメッセージのみ表示されます)
 
 :option. zro
-:target. any
+:target. i86 386
+:enumerate. fp_rounding
 :usage.  omit floating point rounding calls (non ANSI)
 :jusage. omit floating point rounding calls (non ANSI)
 
 :option. zri
 :target. i86 386
+:enumerate. fp_rounding
 :usage.  inline floating point rounding calls
 :jusage. inline floating point rounding calls
 
@@ -1435,13 +1450,13 @@
 :usage.  enable virtual function removal optimization
 :jusage. 仮想関数を削除する最適化を行います
 
-:option. zw
-:target. i86 386
+:option. z\w
+:target. i86
 :enumerate. win
 :usage.  generate code for Microsoft Windows
 :jusage. Microsoft Windows用のコードを生成します
 
-:option. zws
+:option. z\ws
 :target. i86
 :enumerate. win
 :usage.  generate code for Microsoft Windows with smart callbacks
@@ -1459,6 +1474,12 @@
 :usage.  generate code for Microsoft Windows with smart callbacks
 :jusage. スマート･コールバックをするMicrosoft Windows用コードを生成します
 
+:option. zw
+:target. 386
+:enumerate. win
+:usage.  generate code for Microsoft Windows
+:jusage. Microsoft Windows用のコードを生成します
+
 :option. zx
 :target. i86 386
 :usage.  assume functions will modify FPU registers
@@ -1467,5 +1488,5 @@
 
 :option. zz
 :target. 386
-:usage.  remove "@size" from __stdcall function names (10.0 compatible)
-:jusage. "@size"を__stdcall関数名から削除します(10.0との互換性)
+:usage.  remove "@size" from __stdcall names (10.0 compatible)
+:jusage. remove "@size" from __stdcall names (10.0 compatible)

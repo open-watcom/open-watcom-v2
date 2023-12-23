@@ -32,8 +32,8 @@
 
 
 #if defined( __NT__ ) || defined( __OS2__ ) && !defined( _M_I86 ) || defined( __RDOS__ )
-_WCRTLINK extern int __sigfpe_handler( int );
+_WCRTLINK extern int        __sigfpe_handler( int );
 #else
-_WCRTLINK extern void _WCI86FAR __sigfpe_handler( int );
+_WCRTLINK extern void       _WCI86FAR __sigfpe_handler( int );
 #endif
-extern void             __terminate( void );        // Defined in abort.c
+_WCNORETURN extern void     __terminate( void );        // Defined in abort.c

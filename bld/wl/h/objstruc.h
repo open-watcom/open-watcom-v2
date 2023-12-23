@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -195,11 +195,10 @@ typedef enum {
     MOD_VISITED         = CONSTU32( 0x00000400 ),   // true if visited in call graph analysis.
     MOD_NEED_PASS_2     = CONSTU32( 0x00000800 ),   // true if pass 2 needed for this module.
     MOD_LAST_SEG        = CONSTU32( 0x00001000 ),   // true if this module should end a group
-    MOD_GOT_NAME        = CONSTU32( 0x00002000 ),   // true if already got a source file name
-    MOD_IMPORT_LIB      = CONSTU32( 0x00004000 ),   // ORL: true if this is an import lib.
-    MOD_KILL            = CONSTU32( 0x00008000 ),   // module should be removed from list
-    MOD_FLATTEN_DBI     = CONSTU32( 0x00010000 ),   // flatten DBI found in this mod.
-    MOD_DONE_PASS_1     = CONSTU32( 0x00020000 ),   // module been through pass 1 already.
+    MOD_IMPORT_LIB      = CONSTU32( 0x00002000 ),   // ORL: true if this is an import lib.
+    MOD_KILL            = CONSTU32( 0x00004000 ),   // module should be removed from list
+    MOD_FLATTEN_DBI     = CONSTU32( 0x00008000 ),   // flatten DBI found in this mod.
+    MOD_DONE_PASS_1     = CONSTU32( 0x00010000 ),   // module been through pass 1 already.
     MOD_IS_FREE         = CONSTU32( 0x80000000 ),   // used for marking carve free blocks
 } module_flags;
 
@@ -287,11 +286,10 @@ typedef struct mod_entry {
 } mod_entry;
 
 typedef enum {
-    CLASS_32BIT         = 0x0001,
-    CLASS_TRANSFER      = 0x0002,   /* used for PE import transfer code */
-    CLASS_MS_TYPE       = 0x0004,
-    CLASS_MS_LOCAL      = 0x0008,
-    CLASS_DWARF         = 0x000C,
+    CLASS_TRANSFER      = 0x0001,   /* used for PE import transfer code */
+    CLASS_MS_TYPE       = 0x0002,
+    CLASS_MS_LOCAL      = 0x0004,
+    CLASS_DWARF         = 0x0008,
     CLASS_CODE          = 0x0010,
     CLASS_LXDATA_SEEN   = 0x0020,
     CLASS_READ_ONLY     = 0x0040,
@@ -311,9 +309,10 @@ typedef struct class_entry {
     SEG_LEADER          *segs;
     name_strtab         name;
     class_status        flags;
+    byte                bits;           // segment bitnese
     section             *section;
-    targ_addr           BaseAddr;   // Fixed location to of this class for loadfile
-    CLASS_ENTRY         *DupClass;  // Class to get data from for output
+    targ_addr           BaseAddr;       // Fixed location to of this class for loadfile
+    CLASS_ENTRY         *DupClass;      // Class to get data from for output
 } class_entry;
 
 typedef struct group_entry {
@@ -408,14 +407,14 @@ enum {
     SEG_ABSOLUTE        = 0x0001,
     SEG_COMDAT          = 0x0002,   /* seg is a comdat */
     SEG_OVERLAYED       = 0x0040,   /* segment belongs to an overlay class */
-    MAKE_ADDR_INFO      = 0x0080,   /* set if making an addr info next time*/
-    SEG_DEAD            = 0x0080,   /* mark a segdef as being "dead"(pass 2)*/
+    MAKE_ADDR_INFO      = 0x0080,   /* set if making an addr info next time */
+    SEG_DEAD            = 0x0080,   /* mark a segdef as being "dead"(pass 2) */
     SEG_CODE            = 0x0200,   /* segment is a code segment.         */
     USE_32              = 0x0400,   /* segment uses 32 bit addresses      */
     LAST_SEGMENT        = 0x0800,   /* force last segment in a code group */
-    SEG_LXDATA_SEEN     = 0x8000,   /* LxDATA rec. seen for this segment */
     SEG_FIXED           = 0x1000,   /* Segment should start at seg_addr, not next addr */
     SEG_NOEMIT          = 0x2000,   /* Segment should not generate output */
+    SEG_LXDATA_SEEN     = 0x8000,   /* LxDATA rec. seen for this segment */
     SEG_BOTH_MASK       = 0x8641,   /* flags common to both structures */
 };
 
@@ -441,6 +440,12 @@ enum {
 
 #define IS_DBG_DWARF( x ) ((x)->dbgtype >= DWARF_DEBUG_INFO)
 #define IS_DBG_INFO( x ) ((x)->dbgtype != NOT_DEBUGGING_INFO)
+
+enum {
+    BITS_16     = 0x00,
+    BITS_32     = 0x01,
+    BITS_64     = 0x02
+};
 
 /*
  * these are used to keep track of each individual contribution to a segment.
@@ -473,8 +478,8 @@ typedef struct segdata {
     unsigned            select     : 3; // comdat: selection type
     unsigned            combine    : 2; // how to combine segment with others
     unsigned            alloc      : 2; // comdat: where to allocate segment.
+    byte                bits;           // segment bitnese
 
-    boolbit             is32bit    : 1; // true if segment is 32 bits
     boolbit             iscode     : 1; // true if a code segment.
     boolbit             isabs      : 1; // true if this is an absolute segment.
     boolbit             iscdat     : 1; // true if this is a comdat

@@ -2,7 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
-;* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+;* Copyright (c) 2015-2023 The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -41,13 +41,15 @@ include traps.inc
         extrn   ChkInt:near          ; check the interrupt number
         extrn   _Flags:byte          ; CPU flags etc
 
-_text segment byte public 'CODE'
+_TEXT segment byte public 'CODE'
 
 WatchTbl   dw   ?,?             ; watch point table address
 WatchCnt   dw   ?               ; number of watch points
 SaveRegs   dw   ?,?             ; save regs pointer
 AreWatching db  0               ; have we got watch points
 
+public  _BreakOpcode
+_BreakOpcode db 0               ; break opcode
 public  TrapType
 TrapType   db   TRAP_NONE       ; trap type
 public  TraceRtn
@@ -88,7 +90,7 @@ REG_GROUP       ends
 
 
 
-assume  cs:_text
+assume  cs:_TEXT
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;
@@ -96,13 +98,16 @@ assume  cs:_text
 F_Is386         equ     0x0001
 
 ; These offsets must match the watch_point struct in dosacc.c
-WP_ADDR         equ     0       ; offset of watch point address
-WP_VALUE        equ     4       ; offset of watch point value
-WP_SIZE         equ     16      ; size of the watch point structure
+WP_VALUE        equ     0       ; offset of watch point value
+WP_VALUE_HI     equ     4       ; offset of watch point value high 32-bit
+WP_ADDR         equ     12      ; offset of watch point segmented far address (16:16)
+WP_SIZE         equ     16      ; watch point data lenght
+WP_STRUCT_SIZE  equ     20      ; size of the watch point structure
 ;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 VALID   equ     1234H           ; value used to validate debugger data segment
+TRAP_BIT equ    100h
 
 public  TrapTypeInit_
 TrapTypeInit_ proc       near           ; initialize trap information
@@ -113,20 +118,20 @@ TrapTypeInit_ endp
 
 public  SetSingle386_
 SetSingle386_   proc near
-        mov     CS:TraceRtn,offset _text:TraceTrap386
+        mov     CS:TraceRtn,offset _TEXT:TraceTrap386
         ret
 SetSingle386_   endp
 
 public  SetSingleStep_
 SetSingleStep_  proc near       ; set interrupt vector 1 at single step routine
-        mov     CS:TraceRtn,offset _text:TraceTrap
+        mov     CS:TraceRtn,offset _TEXT:TraceTrap
         ret                     ; return to caller
 SetSingleStep_  endp
 
 
 public  SetWatchPnt_
 SetWatchPnt_    proc near       ; set interrupt vector 1 at watch point routine
-        mov     CS:TraceRtn,offset _text:WatchTrap
+        mov     CS:TraceRtn,offset _TEXT:WatchTrap
         mov     CS:WatchTbl+0,BX; point at watch point table;
         mov     CS:WatchTbl+2,CX; . . .
         mov     CS:WatchCnt,AX  ; set number of watch points
@@ -137,7 +142,7 @@ SetWatchPnt_    endp
 public  SetWatch386_
 SetWatch386_    proc near       ; set interrupt vector 1 at watch point routine
         call    SetWatchPnt_
-        mov     CS:TraceRtn,offset _text:WatchTrap386
+        mov     CS:TraceRtn,offset _TEXT:WatchTrap386
         ret                     ; return to caller
 SetWatch386_    endp
 
@@ -184,7 +189,7 @@ TraceTrap:                      ; T-trap trap
         mov     byte ptr CS:TrapType,TRAP_TRACE_POINT ; indicate T-bit trap
         push    BP              ; save BP
         mov     BP,SP           ; get access to stack
-        test    byte ptr 7[BP],1; check to see if the T-bit's off
+        test    byte ptr 7[BP],TRAP_BIT shr 8; check to see if the T-bit's off
         pop     BP              ; restore BP
         jnz     DebugTask       ; if T-bit is on then DebugTask
 
@@ -306,12 +311,12 @@ ExitDebugger:
         mov     CS:SaveRegs+2,CX; . . .
         mov     SI,AX           ; get pointer to the current reg set
         mov     DS,DX           ; . . .
-        test    byte ptr 27[SI],1;are we trace trapping?
+        test    byte ptr 1[SI].RFL,TRAP_BIT shr 8; are we trace trapping?
         je      not_watch       ; - quit if not
         mov     DI,CS:TraceRtn
-        cmp     DI,offset _text:WatchTrap; - are we watch trapping?
+        cmp     DI,offset _TEXT:WatchTrap; - are we watch trapping?
         je      watching        ; - quit if not
-        cmp     DI,offset _text:WatchTrap386; - are we watch trapping?
+        cmp     DI,offset _TEXT:WatchTrap386; - are we watch trapping?
         je      watching        ; - quit if not
         jmp     short not_watch ;
 watching:
@@ -322,7 +327,7 @@ not_watch:
 
         ; DS already has correct segment value
         test    DS:_Flags, F_Is386
-        jnz     restore386regs
+        jnz     restore386Regs
 
 ; If no 32-bit registers available, only restore 16-bit regs
 
@@ -412,11 +417,6 @@ regsRestored:
         iret                    ; return to user's program
 
 
-watch_trap:                     ; we have a watch point trap
-        lds     BX,dword ptr CS:SaveRegs; point at save area
-        mov     byte ptr CS:TrapType,TRAP_WATCH_POINT
-        jmp     save_rest       ; save rest of the registers & enter debugger
-
 WatchRestart:                   ; restart a watch point after a soft int
         push    BP              ; save BP
         mov     BP,SP           ; get access to stack
@@ -427,6 +427,11 @@ WatchRestart:                   ; restart a watch point after a soft int
         pop     AX              ; restore AX
         pop     BP              ; restore BP
         jmp     short WatchTrap ; go do rest of watch point
+
+watch_trap:                     ; we have a watch point trap
+        lds     BX,dword ptr CS:SaveRegs; point at save area
+        mov     byte ptr CS:TrapType,TRAP_WATCH_POINT
+        jmp     save_rest       ; save rest of the registers & enter debugger
 
 WatchTrap386:                   ; we have a watchpoint trap
         .386p
@@ -445,21 +450,40 @@ do_watch:
         sti                     ; enable interrupts
         lds     BX,dword ptr CS:SaveRegs; get save area
 ; NYI- this could be fine tuned
-        mov     [BX].RAX,AX       ; save AX
-        mov     [BX].RCX,CX       ; save CX
-        mov     [BX].RSI,SI       ; save SI
-        mov     [BX].RES,ES       ; save ES
+        mov     [BX].RAX,AX     ; save AX
+        mov     [BX].RCX,CX     ; save CX
+        mov     [BX].RSI,SI     ; save SI
+        mov     [BX].RES,ES     ; save ES
         lds     SI,dword ptr CS:WatchTbl; get address of watch point table
         mov     CX,CS:WatchCnt  ; get number of watch points
 start_loop:                     ; loop
         les     BX,WP_ADDR[SI]  ; - get address of watch point
-        mov     AX,ES:[BX]      ; - get low order word
-        cmp     AX,WP_VALUE[SI] ; - compare with entry in table
+        mov     AL,WP_SIZE[SI]  ; - get watch data size
+        cmp     AL,1            ; - if byte size
+        je      check_byte      ; - then go to byte watch entry compare
+        cmp     AL,2            ; - if word size
+        je      check_word      ; - then go to word watch entry compare
+        cmp     AL,4            ; - if dword size
+        je      check_dword     ; - then go to dword watch entry compare
+        mov     AX,ES:6[BX]     ; - get high order word of high dword
+        cmp     AX,WP_VALUE_HI+2[SI];- compare with entry in table
         jne     watch_trap      ; - set watchpoint trap if different
+        mov     AX,ES:4[BX]     ; - get low order word of high dword
+        cmp     AX,WP_VALUE_HI+0[SI];- compare with entry in table
+        jne     watch_trap      ; - set watchpoint trap if different
+check_dword:
         mov     AX,ES:2[BX]     ; - get high order word
         cmp     AX,WP_VALUE+2[SI];- compare with entry in table
         jne     watch_trap      ; - set watchpoint trap if different
-        add     SI,WP_SIZE      ; - point to next entry
+check_word:
+        mov     AL,ES:1[BX]     ; - get high byte of low word
+        cmp     AL,WP_VALUE+1[SI]; - compare with entry in table
+        jne     watch_trap      ; - set watchpoint trap if different
+check_byte:
+        mov     AL,ES:[BX]      ; - get low byte of low word
+        cmp     AL,WP_VALUE+0[SI]; - compare with entry in table
+        jne     watch_trap      ; - set watchpoint trap if different
+        add     SI,WP_STRUCT_SIZE; - point to next entry
         loop    start_loop      ; until --CX = 0
         lds     BX,dword ptr CS:SaveRegs; point at save area
         mov     ES,[BX].RES     ; restore ES
@@ -467,13 +491,13 @@ start_loop:                     ; loop
         mov     CX,[BX].RCX     ; restore CX
         mov     AX,[BX].RAX     ; restore CX
         mov     BX,SP           ; get pointer to interrupt stack frame
-        or      byte ptr SS:9[BX],1; make sure the T-bit is on
+        or      byte ptr SS:9[BX],TRAP_BIT shr 8; make sure the T-bit is on
         lds     BX,SS:4[BX]     ; get return offset and segment
         mov     BX,[BX]         ; get instruction and byte following it
         cmp     BL,0CDH         ; is instruction a software interrupt?
         cli                     ; interrupts off
         je      soft_int        ; handle software interrupt
-        cmp     BL,0CCH         ; is it a break point instruction?
+        cmp     BL,byte ptr CS:_BreakOpcode ; is it a break point instruction?
         je      brk_point       ; handle breakpoint
 cont2:
         pop     DS              ; restore DS
@@ -526,7 +550,7 @@ abort_watch:
         mov     AX,08H[BP]      ; transfer instr pointer
         mov     02H[BP],AX      ; to new stack frame
         mov     0aH[BP],CS      ; set code segment for soft int stack frame
-        mov     AX,offset _text:WatchRestart; set intstruction pointer for
+        mov     AX,offset _TEXT:WatchRestart; set intstruction pointer for
         mov     08H[BP],AX      ; int stack frame
         pop     AX              ; restore AX
         pop     BP              ; restore BP
@@ -538,6 +562,6 @@ brk_point:                      ; next instruction is a break point
         mov     byte ptr CS:TrapType,TRAP_BREAK_POINT ; we have a brk point trap
         jmp     DebugTask       ; enter the debugger
 
-_text           ENDS
+_TEXT           ENDS
 
                 END

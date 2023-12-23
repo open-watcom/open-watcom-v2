@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,6 +34,5 @@
 #define DBG_N_SStep             -101
 #define DBG_N_Signal            -102
 
-extern ULONG CallDosDebug( uDB_t *buff );
-extern ULONG MakeFlatPointer( PVOID ptr );
-extern int IsFlatSeg( USHORT seg );
+extern ULONG     MakeFlatPointer( PVOID ptr );
+extern bool      IsFlatSeg( USHORT seg );

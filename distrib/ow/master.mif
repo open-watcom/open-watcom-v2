@@ -1,3 +1,14 @@
+!ifndef %OWBUILD_STAGE
+!ifeq host_cpu x64
+!ifneq bld_cpu x64
+skip: .SYMBOLIC
+!endif
+!ifneq host_os $(bld_os)
+skip: .SYMBOLIC
+!endif
+!endif
+!endif
+
 installer_c_dos_386     = open-watcom-$(bld_ver_str:.=_)-c-dos.exe
 installer_c_win_386     = open-watcom-$(bld_ver_str:.=_)-c-win16.exe
 installer_c_nt_386      = open-watcom-$(bld_ver_str:.=_)-c-win-x86.exe
@@ -53,11 +64,14 @@ dstdir_linux_x64   = /usr/bin/watcom
 !endif
 dstdir = $(dstdir_$(host_os)_$(host_cpu))
 
+!ifndef %OWBUILD_STAGE
 langdat_keys_ntx64    = -k ntx64
 langdat_keys_linuxx64 = -k lx64
 langdat_keys = $(langdat_keys_$(bld_os)$(bld_cpu))
-!ifdef %OWUSE_FILENAME_VERSION
-langdat_keys += -k newdbg
+mkinf_opt =-dIncl64=0
+!else
+langdat_keys = -k ntx64 -k lx64
+mkinf_opt =-dIncl64=1
 !endif
 
 #mkinf_opt_linux = -utf8
@@ -68,28 +82,27 @@ nulldevice = /dev/null
 nulldevice = nul
 !endif
 
-!ifdef %OWDEBUGBUILD
-debug = $(%OWDEBUGBUILD)
+!ifeq %OWDEBUGBUILD 1
+debug = 1
+!else ifeq %OWDEVBUILD 1
+debug = 1
 !endif
 
 distrib_bindir = ../bin
 
-!ifeq host_cpu x64
-!ifneq bld_cpu x64
-skip_build: .symbolic
-!else ifndef bld64host_$(host_os)
-skip_build: .symbolic
-!endif
-!endif
-
 !ifdef missing
 
 all: .SYMBOLIC
+    @rm -f *.__c
     langdat -l filelist $(langdat_keys) -r $(bld_ver) c
-    mkinf -x -i../include $(mkinf_opt_$(host_os)) c filelist $(%OWRELROOT)
+    mkinf -x -i../include $(mkinf_opt) $(mkinf_opt_$(host_os)) c filelist "$(%OWRELROOT)"
     langdat -l filelist $(langdat_keys) -r $(bld_ver) f77
-    mkinf -x -i../include $(mkinf_opt_$(host_os)) f77 filelist $(%OWRELROOT)
+    mkinf -x -i../include $(mkinf_opt) $(mkinf_opt_$(host_os)) f77 filelist "$(%OWRELROOT)"
+!ifdef debug
+    @%ren filelist      filelist.__c
+!else
     @rm -rf filelist
+!endif
 
 !else
 
@@ -100,10 +113,10 @@ $(distrib_bindir)/$(installer_c) : ../files.dat $(distrib_bindir) $(setup_c) .AL
     @%make clean_inf
     langdat -l filelist $(langdat_keys) -r $(bld_ver) -c $[@ c
     @copy $]@ setup.exe
-    mkinf -i.. -i../../include -dBldVer=$(bld_ver_str) -dDstDir=$(dstdir) $(mkinf_opt_$(host_os)) c filelist $(%OWRELROOT)
-    @copy setup.inf $(%OWRELROOT)/setup.inf
-    uzip setup.zip instarch.lst $(%OWRELROOT)
-    @rm $(%OWRELROOT)/setup.inf
+    mkinf -i.. -i../../include -dBldVer=$(bld_ver_str) -dDstDir=$(dstdir) $(mkinf_opt) $(mkinf_opt_$(host_os)) c filelist "$(%OWRELROOT)"
+    @copy setup.inf "$(%OWRELROOT)/setup.inf"
+    uzip setup.zip instarch.lst "$(%OWRELROOT)"
+    @rm "$(%OWRELROOT)/setup.inf"
     @rm setup.exe
 !ifdef debug
     @%ren filelist      filelist.__c
@@ -120,10 +133,10 @@ $(distrib_bindir)/$(installer_f77) : ../files.dat $(distrib_bindir) $(setup_f77)
     @%make clean_inf
     langdat -l filelist $(langdat_keys) -r $(bld_ver) -c $[@ f77
     @copy $]@ setup.exe
-    mkinf -i.. -i../../include -dBldVer=$(bld_ver_str) -dDstDir=$(dstdir) $(mkinf_opt_$(host_os)) f77 filelist $(%OWRELROOT)
-    @copy setup.inf $(%OWRELROOT)/setup.inf
-    uzip setup.zip instarch.lst $(%OWRELROOT)
-    @rm $(%OWRELROOT)/setup.inf
+    mkinf -i.. -i../../include -dBldVer=$(bld_ver_str) -dDstDir=$(dstdir) $(mkinf_opt) $(mkinf_opt_$(host_os)) f77 filelist "$(%OWRELROOT)"
+    @copy setup.inf "$(%OWRELROOT)/setup.inf"
+    uzip setup.zip instarch.lst "$(%OWRELROOT)"
+    @rm "$(%OWRELROOT)/setup.inf"
     @rm setup.exe
 !ifdef debug
     @%ren filelist      filelist.__f

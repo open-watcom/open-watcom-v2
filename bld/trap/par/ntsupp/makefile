@@ -1,5 +1,7 @@
 #pmake: build remote os_nt cpu_386 par
 
+tree_depth = 4
+
 host_os  = nt
 host_cpu = 386
 
@@ -9,15 +11,15 @@ host_cpu = 386
 
 all: dbginst.exe .SYMBOLIC
 
-!ifeq release 0
-
-debug_compiler=/Z7 /Odi
-debug_linker=-debug:none -debugtype:both /pdb:none
-
-!else
+!ifeq debug 0
 
 debug_compiler=
 debug_linker=-debug:none
+
+!else
+
+debug_compiler=/Z7 /Odi
+debug_linker=-debug:none -debugtype:both /pdb:none
 
 !endif
 
@@ -58,7 +60,7 @@ debug_linker=-debug:none
 #
 .c : ../c
 
-inc_dirs = -I"$(w32api_dir)/nt"
+inc_dirs = -I"$(w32api_dir)/nt/h"
 
 extra_cpp_flags = -D_WIN32 -DWIN32
 

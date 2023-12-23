@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -199,14 +200,18 @@ typedef enum                    // CALL_OPT -- types of call optimizations
 #define ___NodeIsOp(node,op) ( (node)->cgop == (op) )
 #define conversionWorked( val ) ( (val) <= CNV_WORKED )
 
+#if _INTEL_CPU
+
 // TEST IF DEFAULT MEMORY MODEL USES BIG CODE
-#define IsBigCode()     ((TargetSwitches & BIG_CODE) != 0)
+#define IsBigCode()     ((TargetSwitches & CGSW_X86_BIG_CODE) != 0)
 // TEST IF DEFAULT MEMORY MODEL USES BIG DATA
-#define IsBigData()     ((TargetSwitches & BIG_DATA) != 0)
+#define IsBigData()     ((TargetSwitches & CGSW_X86_BIG_DATA) != 0)
 // TEST IF DEFAULT MEMORY MODEL USES HUGE DATA
-#define IsHugeData()    ((TargetSwitches & (BIG_DATA | CHEAP_POINTER)) == (BIG_DATA))
+#define IsHugeData()    ((TargetSwitches & (CGSW_X86_BIG_DATA | CGSW_X86_CHEAP_POINTER)) == CGSW_X86_BIG_DATA)
 // TEST IF DEFAULT MEMORY MODEL IS FLAT
-#define IsFlat()        ((TargetSwitches & FLAT_MODEL) != 0)
+#define IsFlat()        ((TargetSwitches & CGSW_X86_FLAT_MODEL) != 0)
+
+#endif
 
 // PROTOTYPES : exposed to C++ compiler
 
@@ -264,7 +269,7 @@ bool AnalyseClQual(             // ANALYSE :: operator
 ;
 bool AnalyseClQualRes(          // ANALYSE :: operator
     PTREE *a_expr,              // - addr( expression to be analysed )
-    SEARCH_RESULT **out )       // an optional out variable for the result. 
+    SEARCH_RESULT **out )       // an optional out variable for the result.
 ;
 bool AnalyseLvalueAddrOf(       // ANALYSE LVALUE FOR "&"
     PTREE *a_expr )             // - addr[ expression to be analysed ]
@@ -1102,13 +1107,13 @@ PTREE NodeIntegralConstant      // BUILD AN INTEGRAL NODE FOR A VALUE
     ( int val                   // - value
     , TYPE type )               // - node type (integral,enum,ptr)
 ;
-#ifdef NDEBUG
-#define NodeIsBinaryOp(node,op) ___NodeIsOp(node,op)
-#else
+#ifdef DEVBUILD
 bool NodeIsBinaryOp(            // TEST IF BINARY OPERATION OF GIVEN TYPE
     PTREE node,                 // - node
     CGOP operation )            // - operation
 ;
+#else
+#define NodeIsBinaryOp(node,op) ___NodeIsOp(node,op)
 #endif
 bool NodeIsConstantInt(         // TEST IF A CONSTANT INT NODE
     PTREE node )                // - node
@@ -1125,13 +1130,13 @@ bool NodeIsIntConstant          // TEST IF INTEGRAL CONSTANT AND GET VALUE
     ( PTREE node                // - potential constant node
     , INT_CONSTANT* pval )      // - addr[ value ]
 ;
-#ifdef NDEBUG
-#define NodeIsUnaryOp(node,op) ___NodeIsOp(node,op)
-#else
+#ifdef DEVBUILD
 bool NodeIsUnaryOp(             // TEST IF UNARY OPERATION OF GIVEN TYPE
     PTREE node,                 // - node
     CGOP operation )            // - operation
 ;
+#else
+#define NodeIsUnaryOp(node,op) ___NodeIsOp(node,op)
 #endif
 bool NodeIsZeroConstant(        // TEST IF A ZERO CONSTANT
     PTREE node )                // - node
@@ -1464,9 +1469,11 @@ TYPE TypeThisSymbol(            // GET TYPE OF THIS FOR SYMBOL MEMBER
     SYMBOL sym,                 // - symbol
     bool reference )            // - use reference?
 ;
+#if _INTEL_CPU
 bool TypeTruncByMemModel(       // TEST TYPE TRUNCATED TO DEF. MEMORY MODEL
     TYPE type )                 // - the type
 ;
+#endif
 TYPE TypeUnArithResult(         // TYPE OF UNARY ARITHMETIC RESULT
     TYPE op1 )                  // - type
 ;

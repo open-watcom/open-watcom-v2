@@ -30,7 +30,8 @@
 ****************************************************************************/
 
 
-#ifndef PILLTRIG_H
+#ifndef PILLTRIG_H_INCLUDED
+#define PILLTRIG_H_INCLUDED
 
 #if defined(__NT__)
 #include <windows.h>
@@ -54,8 +55,6 @@ struct link_trigger {
     #error link_trigger type not configured for system
 #endif
 };
-
-#define PILLTRIG_H
 
 #include "digunpck.h"
 #endif

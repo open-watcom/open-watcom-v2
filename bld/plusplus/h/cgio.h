@@ -172,7 +172,7 @@ CGINTER *CgioSeek(              // SEEK TO POSITION IN VIRTUAL FILE
     CGFILE *ctl,                // - control for the file
     CGFILE_INS *posn )          // - position to seek to
 ;
-#ifndef NDEBUG
+#ifdef DEVBUILD
 
 void DbgCgioEndCallGr(          // CALLED AT END OF CALL-GRAPH PROCESSING
     void )

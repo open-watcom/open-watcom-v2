@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -100,7 +100,6 @@ WINEXPORT FNCALLBACK DdeCallBack;
 /* static function prototypes                                               */
 /****************************************************************************/
 
-static bool     IEHData2Mem( HDDEDATA, void **, uint_32 * );
 static bool     IEStartDDEEditSession( void );
 static HDDEDATA IECreateResData( img_node *node );
 
@@ -156,7 +155,7 @@ bool IEDDEStart( HINSTANCE inst )
     int         i;
     bool        ok;
 
-    _imged_touch( inst ); /* MakeProcInstance vanishes in NT */
+    /* unused parameters */ (void)inst; /* MakeProcInstance vanishes in NT */
 
     ok = ( IdInst == 0 );
 
@@ -348,45 +347,17 @@ void IEDDEEndConversation( void )
 } /* IEDDEEndConversation */
 
 /*
- * IEHData2Mem
- */
-bool IEHData2Mem( HDDEDATA hData, void **mem, uint_32 *size )
-{
-    bool    ok;
-
-    ok = ( hData != NULL && mem != NULL && size != NULL );
-
-    if( ok ) {
-        *size = (uint_32)DdeGetData( hData, NULL, 0, 0 );
-        ok = ( *size != 0 );
-
-        if( ok ) {
-            *mem = MemAlloc( *size );
-            ok = ( *mem != NULL );
-        }
-
-        if( ok && (DWORD)*size != DdeGetData( hData, *mem, (DWORD)*size, 0 ) ) {
-            MemFree( *mem );
-            *mem = NULL;
-            ok = false;
-        }
-    }
-    return( ok );
-
-} /* IEHData2Mem */
-
-/*
  * IECreateResData
  */
 HDDEDATA IECreateResData( img_node *node )
 {
-    HDDEDATA    hdata;
-    BYTE        *data;
+    HDDEDATA    hData;
+    char        *data;
     size_t      size;
     bool        ok;
 
     data = NULL;
-    hdata = NULL;
+    hData = NULL;
     ok = (node != NULL && EditFormat != DDENone);
 
     if( ok ) {
@@ -404,15 +375,14 @@ HDDEDATA IECreateResData( img_node *node )
         }
     }
 
-    if( ok ) {
-        hdata = DdeCreateDataHandle( IdInst, (LPBYTE)data, (DWORD)size, 0, hDataItem, IEClipFormats[EditFormat].format, 0 );
-    }
-
     if( data != NULL ) {
+        if( ok ) {
+            hData = DdeCreateDataHandle( IdInst, (LPBYTE)data, (DWORD)size, 0, hDataItem, IEClipFormats[EditFormat].format, 0 );
+        }
         MemFree( data );
     }
 
-    return( hdata );
+    return( hData );
 
 } /* IECreateResData */
 
@@ -444,30 +414,25 @@ static img_node *IEGetCurrentImageNode( void )
 bool IEUpdateDDEEditSession( void )
 {
     img_node            *node;
-    HDDEDATA            hdata;
+    HDDEDATA            hData;
     bool                ok;
 
-    hdata = NULL;
     node = IEGetCurrentImageNode();
     ok = (IEClientConv != (HCONV)NULL && node != NULL && EditFormat != DDENone);
 
     if( ok ) {
-        hdata = IECreateResData( node );
-        ok = (hdata != NULL);
-    }
-
-    if( ok ) {
-        ok = DdeClientTransaction( (LPBYTE)hdata, (DWORD)-1L, IEClientConv, hDataItem,
+        hData = IECreateResData( node );
+        if( hData == NULL ) {
+            ok = false;
+        } else {
+            ok = DdeClientTransaction( (LPBYTE)hData, (DWORD)-1L, IEClientConv, hDataItem,
                                          IEClipFormats[EditFormat].format,
                                          XTYP_POKE, TIME_OUT, NULL ) != 0;
-    }
-
-    if( hdata != NULL ) {
-        DdeFreeDataHandle( hdata );
-    }
-
-    if( ok ) {
-        SetIsSaved( node->hwnd, true );
+            DdeFreeDataHandle( hData );
+            if( ok ) {
+                SetIsSaved( node->hwnd, true );
+            }
+        }
     }
 
     return( ok );
@@ -481,9 +446,9 @@ bool IEStartDDEEditSession( void )
 {
     char                *filename;
     HDDEDATA            hData;
-    void                *data;
+    char                *data;
     DWORD               ret;
-    uint_32             size;
+    size_t              size;
     bool                ok;
 
     data = NULL;
@@ -494,23 +459,22 @@ bool IEStartDDEEditSession( void )
         hData = DdeClientTransaction( NULL, 0, IEClientConv, hFileItem,
                                       IEClipFormats[EditFormat].format,
                                       XTYP_REQUEST, TIME_OUT, &ret );
-        ok = (hData != NULL);
-    }
-
-    if( ok ) {
-        ok = IEHData2Mem( hData, (void **)&filename, &size );
-        DdeFreeDataHandle( hData );
+        if( hData == NULL ) {
+            ok = false;
+        } else {
+            ok = WRAllocDataFromDDE( hData, &filename, &size );
+            DdeFreeDataHandle( hData );
+        }
     }
 
     if( ok ) {
         hData = DdeClientTransaction( NULL, 0, IEClientConv, hDataItem,
                                       IEClipFormats[EditFormat].format,
                                       XTYP_REQUEST, TIME_OUT, &ret );
-    }
-
-    if( ok ) {
-        if( hData != NULL ) {
-            ok = IEHData2Mem( hData, &data, &size );
+        if( hData == NULL ) {
+            ok = false;
+        } else {
+            ok = WRAllocDataFromDDE( hData, &data, &size );
             DdeFreeDataHandle( hData );
         }
     }
@@ -559,17 +523,16 @@ bool IEStartDDEEditSession( void )
 /*
  * IEHandlePokedData
  */
-static void IEHandlePokedData( HDDEDATA hdata )
+static void IEHandlePokedData( HDDEDATA hData )
 {
-    void        *cmd;
-    uint_32     size;
+    char        *cmd;
+    size_t      size;
 
-    if( hdata == NULL ) {
+    if( hData == NULL ) {
         return;
     }
 
-    cmd = NULL;
-    if( !IEHData2Mem( hdata, &cmd, &size ) || cmd == NULL ) {
+    if( !WRAllocDataFromDDE( hData, &cmd, &size ) ) {
         return;
     }
 
@@ -607,17 +570,14 @@ static void IEHandlePokedData( HDDEDATA hdata )
  * DdeCallBack
  */
 HDDEDATA CALLBACK DdeCallBack( UINT wType, UINT wFmt, HCONV hConv, HSZ hsz1, HSZ hsz2,
-                               HDDEDATA hdata, ULONG_PTR lData1, ULONG_PTR lData2 )
+                               HDDEDATA hData, ULONG_PTR lData1, ULONG_PTR lData2 )
 {
     img_node            *node;
     HSZPAIR             hszpair[2];
     HDDEDATA            ret;
     int                 i;
 
-    _imged_touch( wFmt );
-    _imged_touch( hdata );
-    _imged_touch( lData1 );
-    _imged_touch( lData2 );
+    /* unused parameters */ (void)wFmt; (void)lData1; (void)lData2;
 
     ret = NULL;
 
@@ -672,7 +632,7 @@ HDDEDATA CALLBACK DdeCallBack( UINT wType, UINT wFmt, HCONV hConv, HSZ hsz1, HSZ
         ret = (HDDEDATA)DDE_FNOTPROCESSED;
         if( hsz1 == IEServices[EditFormat].htopic ) {
             if( hsz2 == hDataItem ) {
-                IEHandlePokedData( hdata );
+                IEHandlePokedData( hData );
                 ret = (HDDEDATA)DDE_FACK;
             }
         }

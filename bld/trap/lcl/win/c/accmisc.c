@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,41 +39,43 @@
 #include <dos.h>
 #include "stdwin.h"
 #include "wdebug.h"
+#include "digcpu.h"
 #include "trperr.h"
-#include "madx86.h"
+#include "madregs.h"
 #include "x86cpu.h"
 #include "di386cli.h"
+#include "winpath.h"
 
 
-BOOL IsSegSize32( WORD seg )
+bool IsSegSize32( WORD seg )
 {
-    WORD        desc[4];
+    descriptor  desc;
 
     if( WDebug386 ) {
-        GetDescriptor( seg, desc );
-        if( desc[3] & 0x40 ) {
-            return( TRUE );
+        GetDescriptor( seg, &desc );
+        if( desc.u2.flags.use32 ) {
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 trap_retval TRAP_CORE( Machine_data )( void )
 {
     machine_data_req    *acc;
     machine_data_ret    *ret;
-    unsigned_8          *data;
+    machine_data_spec   *data;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    data = GetOutPtr( sizeof( *ret ) );
     ret->cache_start = 0;
     ret->cache_end = ~(addr_off)0;
-    *data = 0;
-    if( IsSegSize32( acc->addr.segment ) ) {
-        *data |= X86AC_BIG;
+    if( acc->info_type == X86MD_ADDR_CHARACTERISTICS ) {
+        data = GetOutPtr( sizeof( *ret ) );
+        data->x86_addr_flags = ( IsSegSize32( acc->addr.segment ) ) ? X86AC_BIG : 0;
+        return( sizeof( *ret ) + sizeof( data->x86_addr_flags ) );
     }
-    return( sizeof( *ret ) + sizeof( *data ) );
+    return( sizeof( *ret ) );
 }
 
 trap_retval TRAP_CORE( Get_sys_config )( void )
@@ -83,32 +85,32 @@ trap_retval TRAP_CORE( Get_sys_config )( void )
 
     ret = GetOutPtr( 0 );
 
-    ret->sys.os = DIG_OS_WINDOWS;
-    ret->sys.osmajor = _osmajor;
-    ret->sys.osminor = _osminor;
+    ret->os = DIG_OS_WINDOWS;
+    ret->osmajor = _osmajor;
+    ret->osminor = _osminor;
 
     if( WindowsFlags & WF_CPU086 ) {
-        ret->sys.cpu = X86_86;
+        ret->cpu = X86_86;
         fpu = X86_87;
     } else if( WindowsFlags & WF_CPU186 ) {
-        ret->sys.cpu = X86_186;
+        ret->cpu = X86_186;
         fpu = X86_87;
     } else if( WindowsFlags & WF_CPU286 ) {
-        ret->sys.cpu = X86_286;
+        ret->cpu = X86_286;
         fpu = X86_287;
     } else {
-        ret->sys.cpu = X86CPUType();
-        fpu = ret->sys.cpu & X86_CPU_MASK;
+        ret->cpu = X86CPUType();
+        fpu = ret->cpu & X86_CPU_MASK;
     }
 
     if( WindowsFlags & WF_80x87 ) {
         FPUType = fpu;
     } else {
-        FPUType = X86_NO;
+        FPUType = X86_NOFPU;
     }
-    ret->sys.fpu = FPUType;
-    ret->sys.arch = DIG_ARCH_X86;
-    ret->sys.huge_shift = 3;
+    ret->fpu = FPUType;
+    ret->arch = DIG_ARCH_X86;
+    ret->huge_shift = 3;
     return( sizeof( *ret ) );
 }
 
@@ -121,7 +123,7 @@ trap_retval TRAP_CORE( Get_message_text )( void )
     };
     char                    *err_txt;
     get_message_text_ret    *ret;
-    unsigned                len;
+    size_t                  len;
 
     ret = GetOutPtr( 0 );
     ret->flags = MSG_NEWLINE | MSG_ERROR;
@@ -135,9 +137,9 @@ trap_retval TRAP_CORE( Get_message_text )( void )
             ret->flags |= MSG_MORE;
         }
     } else if( IntResult.InterruptNumber < sizeof( ExceptionMsgs ) / sizeof( ExceptionMsgs[0] ) ) {
-        strcpy( err_txt, ExceptionMsgs[IntResult.InterruptNumber] );
+        StrCopyDst( ExceptionMsgs[IntResult.InterruptNumber], err_txt );
     } else {
-        strcpy( err_txt, TRP_EXC_unknown );
+        StrCopyDst( TRP_EXC_unknown, err_txt );
     }
     return( sizeof( ret ) + strlen( err_txt ) + 1 );
 }
@@ -151,7 +153,7 @@ trap_retval TRAP_CORE( Write_io )( void )
 {
     write_io_ret        *ret;
 
-    ret = GetOutPtr(0);
+    ret = GetOutPtr( 0 );
     ret->len = 0;
     return( sizeof( *ret ) );
 }

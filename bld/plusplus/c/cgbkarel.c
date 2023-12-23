@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,7 +41,7 @@
 #include "cgbackut.h"
 #include "ring.h"
 #include "initdefs.h"
-#ifndef NDEBUG
+#ifdef DEVBUILD
     #include "togglesd.h"
     #include "pragdefn.h"
 #endif
@@ -60,7 +60,7 @@ struct auto_sym {
     AUTO_REL* rels;             // - relocations
 };
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 
     static void __dump_sym( AUTO_SYM*asym, const char* msg )
     {
@@ -133,7 +133,7 @@ void CgBackDtorAutoOffset(      // RELOCATION FOR A SYMBOL
     sym_entry = autoRelLookup( sym );
     if( sym_entry != NULL ) {
         __dump_sym( sym_entry, "-- relocated" );
-#ifndef NDEBUG
+#ifdef DEVBUILD
         if( TOGGLEDBG( dump_auto_rel ) ) {
             printf( "  --- offset = %x/%d\n", offset, offset );
         }
@@ -149,7 +149,7 @@ void CgBackDtorAutoOffset(      // RELOCATION FOR A SYMBOL
 void AutoRelFree(               // FREE ALL RELOCATIONS
     void )
 {
-#ifndef NDEBUG
+#ifdef DEVBUILD
     AUTO_SYM* curr;             // - current entry
     RingIterBeg( ring_syms, curr ) {
         DbgVerify( curr->rels == NULL, "AutoRelFree -- missed relocation" );

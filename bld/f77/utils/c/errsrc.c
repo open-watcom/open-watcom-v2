@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,6 +37,7 @@
 #include <process.h>
 #endif
 
+#include "clibint.h"
 #include "clibext.h"
 
 
@@ -113,58 +114,65 @@ static  char    sw_used_at = { ' ' };
 static  char    *input_file = NULL;
 static  char    file_prefix[2] = { 0 };
 
-static  void    ProcArgs( char *args )
-//====================================
+static  void    ProcArgs( void )
+//==============================
 {
-    size_t  len;
     char    delim = ' ';
     char    c;
     char    *p;
+    int     cmd_len;
+    char    *cmd_line;
+    char    *cmd;
 
-    while( *args == ' ' ) {
-        ++args;
+    cmd_len = _bgetcmd( NULL, 0 ) + 1;
+    cmd_line = malloc( cmd_len );
+    _bgetcmd( cmd_line, cmd_len );
+    cmd = cmd_line;
+    while( *cmd == ' ' ) {
+        ++cmd;
     }
-    if( *args == '\0' )
-        return;
-    len = strlen( args ) + 1;
-    if( *args == '"' ) {
-        delim = '"';
-        len -= 2;
-        ++args;
-    }
-    input_file = malloc( len );
-    p = input_file;
-    while( (c = *args) != '\0' ) {
-        ++args;
-        if( c == delim ) {
-            break;
+    if( *cmd != '\0' ) {
+        size_t  len1 = strlen( cmd ) + 1;
+        if( *cmd == '"' ) {
+            delim = '"';
+            len1 -= 2;
+            ++cmd;
         }
-        *p++ = c;
+        input_file = malloc( len1 );
+        p = input_file;
+        while( (c = *cmd) != '\0' ) {
+            ++cmd;
+            if( c == delim ) {
+                break;
+            }
+            *p++ = c;
+        }
+        *p = '\0';
+        while( *cmd == ' ' ) {
+            ++cmd;
+        }
+        sw_language = *cmd;
+        if( sw_language == 'e' ) {
+            sw_language = ' ';
+        }
+        if( sw_language != ' ' ) {
+            file_prefix[0] = sw_language;
+            file_prefix[1] = '\0';
+        }
+        ++cmd;
+        if( *cmd != '\0' ) {
+            sw_compiler = *cmd;
+            ++cmd;
+            if( *cmd != '\0' ) {
+                sw_target = *cmd;
+                ++cmd;
+                if( *cmd != '\0' ) {
+                    sw_used_at = *cmd;
+                }
+            }
+        }
     }
-    *p = '\0';
-    while( *args == ' ' ) {
-        ++args;
-    }
-    sw_language = *args;
-    if( sw_language == 'e' ) {
-        sw_language = ' ';
-    }
-    if( sw_language != ' ' ) {
-        file_prefix[0] = sw_language;
-        file_prefix[1] = '\0';
-    }
-    ++args;
-    if( *args == '\0' )
-        return;
-    sw_compiler = *args;
-    ++args;
-    if( *args == '\0' )
-        return;
-    sw_target = *args;
-    ++args;
-    if( *args == '\0' )
-        return;
-    sw_used_at = *args;
+    free( cmd_line );
 }
 
 
@@ -881,16 +889,13 @@ static  void    BuildLists( void )
 int     main( int argc, char **argv )
 //===================================
 {
-    char        cmd[128+1];
-
 #if !defined( __WATCOMC__ )
     _argc = argc;
     _argv = argv;
 #else
     /* unused parameters */ (void)argc; (void)argv;
 #endif
-
-    ProcArgs( getcmd( cmd ) );
+    ProcArgs();
     if( Initialize() != 0 ) {
         return( 1 );
     }

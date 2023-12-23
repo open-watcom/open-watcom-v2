@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,8 +30,8 @@
 ****************************************************************************/
 
 
-#ifndef EXEFMT_INCLUDED
-#define EXEFMT_INCLUDED
+#ifndef PASS2_INCLUDED
+#define PASS2_INCLUDED
 
 #include "pass2l1.h"
 
@@ -42,9 +43,11 @@ typedef struct RcPass2Info {
     void            *IoBuffer;
 } RcPass2Info;
 
-extern bool MergeResExePE( void );
-extern bool MergeResExeLX( void );
-extern bool MergeResExeWINNE( void );
-extern bool MergeResExeOS2NE( void );
+extern bool     StopInvoked;
+
+extern bool     MergeResExePE( ExeFileInfo *src, ExeFileInfo *dst, ResFileInfo *resfiles );
+extern bool     MergeResExeLX( ExeFileInfo *src, ExeFileInfo *dst, ResFileInfo *resfiles );
+extern bool     MergeResExeWINNE( ExeFileInfo *src, ExeFileInfo *dst, ResFileInfo *res );
+extern bool     MergeResExeOS2NE( ExeFileInfo *src, ExeFileInfo *dst, ResFileInfo *res );
 
 #endif

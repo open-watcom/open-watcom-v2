@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,6 +36,7 @@
 #define INCL_DOSMODULEMGR
 #define INCL_DOSMISC
 #include <os2.h>
+#include "digld.h"
 #include "dip.h"
 #include "dipimp.h"
 #include "dipsys.h"
@@ -57,34 +58,33 @@ void DIPSysUnload( dip_sys_handle *sys_hdl )
     }
 }
 
-dip_status DIPSysLoad( const char *path, dip_client_routines *cli, dip_imp_routines **imp, dip_sys_handle *sys_hdl )
+dip_status DIPSysLoad( const char *base_name, dip_client_routines *cli, dip_imp_routines **imp, dip_sys_handle *sys_hdl )
 {
-    dip_sys_handle      dip_mod;
+    dip_sys_handle      mod_hdl;
     dip_init_func       *init_func;
-    dip_status          ds;
-#ifndef _M_I86
-    char                dipname[CCHMAXPATH];
-    char                dippath[CCHMAXPATH];
+    dip_status          status;
+    char                filename[CCHMAXPATH];
 
     *sys_hdl = NULL_SYSHDL;
-    /* To prevent conflicts with the 16-bit DIP DLLs, the 32-bit versions have the "D32"
+    /*
+     * To prevent conflicts with the 16-bit DIP DLLs, the 32-bit versions have the "D32"
      * extension. We will search for them along the PATH (not in LIBPATH);
      */
-    strcpy( dipname, path );
-    strcat( dipname, ".D32" );
-    _searchenv( dipname, "PATH", dippath );
-    if( *dippath == '\0' )
-        return( DS_ERR | DS_FOPEN_FAILED );
-    path = dippath;
+#ifdef _M_I86
+    if( DIGLoader( Find )( DIG_FILETYPE_EXE, base_name, 0, ".DLL", filename, sizeof( filename ) ) == 0 ) {
+#else
+    if( DIGLoader( Find )( DIG_FILETYPE_EXE, base_name, 0, ".D32", filename, sizeof( filename ) ) == 0 ) {
 #endif
-    if( LOAD_MODULE( path, dip_mod ) ) {
         return( DS_ERR | DS_FOPEN_FAILED );
     }
-    ds = DS_ERR | DS_INVALID_DIP;
-    if( GET_PROC_ADDRESS( dip_mod, "DIPLOAD", init_func ) && (*imp = init_func( &ds, cli )) != NULL ) {
-        *sys_hdl = dip_mod;
+    if( LOAD_MODULE( filename, mod_hdl ) ) {
+        return( DS_ERR | DS_FOPEN_FAILED );
+    }
+    status = DS_ERR | DS_INVALID_DIP;
+    if( GET_PROC_ADDRESS( mod_hdl, "DIPLOAD", init_func ) && (*imp = init_func( &status, cli )) != NULL ) {
+        *sys_hdl = mod_hdl;
         return( DS_OK );
     }
-    DosFreeModule( dip_mod );
-    return( ds );
+    DIPSysUnload( &mod_hdl );
+    return( status );
 }

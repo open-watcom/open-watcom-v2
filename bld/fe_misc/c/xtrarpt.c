@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,12 +35,12 @@
 #include <string.h>
 #include <stdarg.h>
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 #define XRPT
 #endif
 
 #ifdef XRPT
-#undef NDEBUG
+//#undef NDEBUG
 
 #include header
 #include "carve.h"
@@ -214,8 +214,8 @@ static void extraRptPrintCtr(   // PRINT A COUNTER
 {
     if( reg->ctr.text != NULL ) {
         char buffer[32];
-        memset( buffer, ' ', sizeof(buffer) );
-        ltoa( *reg->ctr.a_ctr, buffer + 16, 10 );
+        memset( buffer, ' ', sizeof( buffer ) );
+        sprintf( buffer + 16, "%d", *reg->ctr.a_ctr );
         outputLineArgs( fp
                       , buffer + strlen(buffer) - 9
                       , " = "
@@ -311,10 +311,10 @@ static void extraRptPrintAvg(   // PRINT AN AVERAGE
         total -= integ * count;
         fract = ( total * 2000 + count ) / count / 2;
     }
-    itoa( fract + 1000, frac_part, 10 );
+    sprintf( frac_part, "%d", fract + 1000 );
     frac_part[0] = '.';
-    itoa( integ + 100000, int_part, 10 );
-    for( p = int_part+1; *p == '0'; ++p ) *p = ' ';
+    sprintf( int_part, "%d", integ + 100000 );
+    for( p = int_part + 1; *p == '0'; ++p ) *p = ' ';
     outputLineArgs( fp
                   , int_part+1
                   , frac_part
@@ -383,10 +383,7 @@ static void extraRptTable(      // PRINT A TABLE
             int *row = &reg->tab.table[ r * reg->tab.dim_col ];
             VbufRewind( &buffer );
             if( row_lbl == NULL ) {
-                sprintf( buf, "%4d", r );
-                buf[4] = ':';
-                buf[5] = ' ';
-                buf[6] = '\0';
+                sprintf( buf, "%4u: ", r );
                 VbufConcStr( &buffer, buf );
             } else {
                 char const *l = row_lbl[r];

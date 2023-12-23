@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -548,7 +548,8 @@ void ib_trans_line( char *line_buf, section_def *section )
             // Definition pop-up's are converted to hyper-links in InfoBench
             trans_add_char( TEMP_HLINK_BREAK, section );
             // Add line number to hyperlink so we can give meaningful errors
-            trans_add_str( itoa( Line_num, buf, 10 ), section );
+            sprintf( buf, "%d", Line_num );
+            trans_add_str( buf, section );
             trans_add_char( TEMP_HLINK_BREAK, section );
 
             // We don't want links to break as IB doesn't like this...

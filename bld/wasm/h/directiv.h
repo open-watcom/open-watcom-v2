@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -163,11 +163,11 @@ typedef struct {
 } comm_info;
 
 typedef struct {
+    asm_tok             *tokens;        // array of asm_tok's to replace symbol
+    token_idx           count;          // number of tokens
     boolbit             predef      :1; // whether it is predefined symbol
     boolbit             redefine    :1; // whether it is redefinable or not
     boolbit             expand_early:1; // if true expand before parsing
-    token_idx           count;          // number of tokens
-    asm_tok             *data;          // array of asm_tok's to replace symbol
 } const_info;
 
 typedef struct regs_list {
@@ -223,15 +223,24 @@ typedef struct  fname_list {
         char    *fullname;
 } FNAME;
 
+typedef struct local_label {
+    struct local_label  *next;
+    char                *local;
+    size_t              local_len;
+    char                *label;
+    size_t              label_len;
+} local_label;
+
 typedef struct {
     parm_list           *parmlist;  // list of parameters
+    local_label         *locallist; // list of local labels
     asmlines            *data;      // the guts of the macro - LL of strings
     const FNAME         *srcfile;
     bool                hidden;     // if true don't print error messages
 } macro_info;
 
 typedef struct {
-    direct_idx          idx;                // lname index
+    direct_idx          idx;        // lname index
 } lname_info;
 
 typedef struct field_list {
@@ -293,12 +302,12 @@ enum assume_reg {
     ASSUME_FS,
     ASSUME_GS,
     ASSUME_CS,
-    ASSUME_ERROR,
-    ASSUME_NOTHING
+    ASSUME_NOTHING,
+    ASSUME_ERROR
 };
 
 #define ASSUME_FIRST    ASSUME_DS
-#define ASSUME_LAST     ASSUME_ERROR
+#define ASSUME_LAST     ASSUME_NOTHING
 
 typedef struct {
     dist_type           distance;       // stack distance;
@@ -336,50 +345,52 @@ extern uint_32          GetCurrAddr( void );    // Get offset from current segme
 extern dir_node         *GetCurrSeg( void );
 /* Get current segment; NULL means none */
 
-extern bool             ExtDef( token_idx, bool );    // define an global or external symbol
-extern bool             CommDef( token_idx );         // define an communal symbol
-extern bool             PubDef( token_idx );          // define a public symbol
-extern bool             GrpDef( token_idx );          // define a group
-extern bool             SegDef( token_idx );          // open or close a segment
-extern bool             SetCurrSeg( token_idx );      // open or close a segment in
+extern bool             ExtDef( token_buffer *tokbuf, token_idx, bool );    // define an global or external symbol
+extern bool             CommDef( token_buffer *tokbuf, token_idx );         // define an communal symbol
+extern bool             PubDef( token_buffer *tokbuf, token_idx );          // define a public symbol
+extern bool             GrpDef( token_buffer *tokbuf, token_idx );          // define a group
+extern bool             SegDef( token_buffer *tokbuf, token_idx );          // open or close a segment
+extern bool             SetCurrSeg( token_buffer *tokbuf, token_idx );      // open or close a segment in
                                                 // the second pass
-extern bool             ProcDef( token_idx, bool );   // define a procedure
-extern bool             ProcEnd( token_idx );         // end a procedure
-extern bool             LocalDef( token_idx );        // define local variables to procedure
-extern bool             ArgDef( token_idx );          // define arguments in procedure
-extern bool             UsesDef( token_idx );         // define used registers in procedure
-extern bool             EnumDef( token_idx );         // handles enumerated values
-extern bool             Ret( token_idx, token_idx, bool ); // emit return statement from procedure
+extern bool             ProcDef( token_buffer *tokbuf, token_idx, bool );   // define a procedure
+extern bool             ProcEnd( token_buffer *tokbuf, token_idx );         // end a procedure
+extern bool             LocalDef( token_buffer *tokbuf, token_idx );        // define local variables to procedure
+extern bool             ArgDef( token_buffer *tokbuf, token_idx );          // define arguments in procedure
+extern bool             UsesDef( token_buffer *tokbuf, token_idx );         // define used registers in procedure
+extern bool             EnumDef( token_buffer *tokbuf, token_idx );         // handles enumerated values
+extern bool             Ret( token_buffer *tokbuf, token_idx, bool );       // emit return statement from procedure
 extern bool             WritePrologue( const char * ); // emit prologue statement after the
                                                 // declaration of a procedure
 extern bool             GetQueueMacroHidden( void );
-extern bool             MacroDef( token_idx, bool );  // define a macro
+extern bool             MacroDef( token_buffer *tokbuf, token_idx, bool );  // define a macro
 extern bool             MacroEnd( bool );       // end a macro
-extern bool             Startup( token_idx );         // handle .startup & .exit
-extern bool             SimSeg( token_idx );          // handle simplified segment
-extern bool             Include( token_idx );         // handle an INCLUDE statement
-extern bool             IncludeLib( token_idx );      // handle an INCLUDELIB statement
-extern bool             Model( token_idx );           // handle .MODEL statement
+extern bool             Startup( token_buffer *tokbuf, token_idx );         // handle .startup & .exit
+extern bool             SimSeg( token_buffer *tokbuf, token_idx );          // handle simplified segment
+extern bool             Include( token_buffer *tokbuf, token_idx );         // handle an INCLUDE statement
+extern bool             IncludeLib( token_buffer *tokbuf, token_idx );      // handle an INCLUDELIB statement
+extern bool             Model( token_buffer *tokbuf, token_idx );           // handle .MODEL statement
 
-extern bool             CheckForLang( token_idx, int *lang );
+extern bool             CheckForLang( token_buffer *tokbuf, token_idx, int *lang );
 
 /* Init/fini the information about the module, which are contained in ModuleInfo */
 extern void             ModuleInit( void );
 extern void             ModuleFini( void );
 
-extern bool             ModuleEnd( token_idx );       // handle END statement
+extern bool             ModuleEnd( token_buffer *tokbuf );                  // handle END statement
 
-extern bool             Locals( token_idx );          // handle [NO]LOCALS statement
+extern bool             Locals( token_buffer *tokbuf, token_idx );          // handle [NO]LOCALS statement
+
+extern bool             Radix( token_buffer *tokbuf, token_idx );
 
 extern bool             ChangeCurrentLocation( bool relative, int_32 value, bool select_data );
-extern bool             OrgDirective( token_idx i );
-extern bool             AlignDirective( asm_token directive, token_idx i );
-extern bool             ForDirective( token_idx, irp_type );
+extern bool             OrgDirective( token_buffer *tokbuf, token_idx i );
+extern bool             AlignDirective( asm_token directive, token_buffer *tokbuf, token_idx i );
+extern bool             ForDirective( token_buffer *tokbuf, token_idx, irp_type );
 
 extern void             DefFlatGroup( void );
 extern bool             SymIs32( struct asm_sym *sym );
 
-extern bool             directive( token_idx, asm_token );
+extern bool             directive( token_buffer *tokbuf, token_idx, asm_token );
 
 extern void             ProcStackInit( void );
 extern void             ProcStackFini( void );
@@ -394,7 +405,7 @@ extern uint_32          GetCurrSegStart(void);
 extern struct asm_sym   *GetGrp( struct asm_sym * );
 
 extern void             AssumeInit( void );     // init all assumed-register table
-extern bool             SetAssume( token_idx );       // Assume a register
+extern bool             SetAssume( token_buffer *tokbuf, token_idx );       // Assume a register
 
 extern enum assume_reg  GetAssume( struct asm_sym*, enum assume_reg );
 /* Return the assumed register of the symbol, and determine the frame and
@@ -403,17 +414,17 @@ extern enum assume_reg  GetAssume( struct asm_sym*, enum assume_reg );
 extern enum assume_reg  GetPrefixAssume( struct asm_sym*, enum assume_reg );
 /* Determine the frame and frame_datum of a symbol with a register prefix */
 
-extern bool             FixOverride( token_idx );
+extern bool             FixOverride( token_buffer *tokbuf, token_idx );
 /* Get the correct frame and frame_datum for a label when there is a segment
    or group override. */
 
 extern void             GetSymInfo( struct asm_sym * );
 /* Store location information about a symbol */
-extern bool             NameDirective( token_idx );
+extern bool             NameDirective( token_buffer *tokbuf, token_idx );
 
-extern bool             Comment( int, token_idx, const char * ); /* handle COMMENT directives */
+extern bool             Comment( int, token_buffer *tokbuf, token_idx, const char * ); /* handle COMMENT directives */
 
-extern bool             AddAlias( token_idx );
+extern bool             AddAlias( token_buffer *tokbuf, token_idx );
 extern void             FreeInfo( dir_node * );
 extern void             push( void *stack, void *elt );
 extern void             *pop( void *stack );

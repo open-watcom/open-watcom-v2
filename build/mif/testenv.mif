@@ -1,6 +1,6 @@
 .EXTENSIONS:
 .EXTENSIONS: .exp .exe .dis .dib .dum .ls1 .lst .obj .ser .mer .err .i .i0 .i1 .p .gc .gcp .c .cpp .for .asm .src .mif
-.mif: ..;$(mif_path)
+.mif: ..;"$(mif_path)"
 
 !include testenv1.mif
 
@@ -280,15 +280,6 @@ dos_redirect = $(dos_redirect_$(targ_env_$(arch)))
 !endif
     @%append $(%ERROR_FILE) $(%ERROR_MSG)
 
-./chk_exec.exe : $(watcom_dir)/c/chk_exec.c .EXPLICIT
-    $(noecho)$(bld_cl) $(bld_cl_opts) $(bld_extra_defines) $<
-
-./chktest.exe : $(watcom_dir)/c/chktest.c .EXPLICIT
-    $(noecho)$(bld_cl) $(bld_cl_opts) $<
-
-./catfile.exe: $(watcom_dir)/c/catfile.c .EXPLICIT
-    $(noecho)$(bld_cl) $(bld_cl_opts) $<
-
 __save_sav : .procedure .EXPLICIT
     @if exist $(sav_file) rm $(sav_file)
     @if exist exec.out %ren exec.out $(sav_file) >$(nulldevice)
@@ -355,7 +346,7 @@ full_set_result : .procedure .EXPLICIT
     @set ERROR_FILE=$(log_file)
     @set ERROR_MSG=FAIL $(%__CWD__)
     @%append $(log_file) ==== $(%__CTIME__) $(%__CWD__) ====
-    -$]@ $(log_file) >$(nulldevice)
+    -chktest $(log_file) >$(nulldevice)
     @if not errorlevel 1 @set ERROR_MSG=PASS $(%__CWD__)
     @%append $(log_file) TEST
     %append $(log_file) $(%ERROR_MSG)

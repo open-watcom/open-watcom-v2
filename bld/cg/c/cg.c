@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -68,7 +68,7 @@ extern  char            *Op(cg_op );
 extern  void            NotDefault(cg_type );
 extern  void            CGError(const char *,... );
 extern  void            VerBack(b *);
-extern  char            *LToS(signed_32 );
+extern  char            *LToS( int_32 );
 extern  void            DumpT(n *);
 extern  void            VerOp(cg_op ,cg_op *);
 extern  void            Find(char *,pointer *,pointer );
@@ -78,7 +78,7 @@ extern  void            CDefLabel(l *lb);
 extern  void            DRefLabel(l *lb);
 extern  void            DDefLabel(l *lb);
 extern  pointer         LkAddBack(sym_handle,pointer);
-extern  unsigned_32     BETypeLength( cg_type );
+extern  uint_32         BETypeLength( cg_type );
 
 /********************************************************************/
 /* Handle feedback for auto locations                               */
@@ -120,11 +120,11 @@ static void dumpAutoLocn( void )
             if( curr == NULL )
                 break;
             auto_locations = curr->next;
-            if( ((pointer)TEMP_LOC_YES) == FEAuxInfo( curr->s, TEMP_LOC_NAME ) ) {
+            if( ((pointer)TEMP_LOC_YES) == FEAuxInfo( curr->s, FEINF_TEMP_LOC_NAME ) ) {
                 Action( "TEMP_LOC_TELL offset=%h symbol=%s%n"
                       , curr->offset
                       , Name( curr->s ) );
-                FEAuxInfo( (sym_handle)curr->offset, TEMP_LOC_TELL );
+                FEAuxInfo( (sym_handle)curr->offset, FEINF_TEMP_LOC_TELL );
             }
             CGFree( curr );
         }
@@ -169,9 +169,9 @@ extern  n       *CGEval( n *nd ) {
 
     Action( "CGEval( %t )", nd );
     VerNode( nd );
-    endptr = CopyStr( "[eval", buff );
-    endptr = CopyStr( LToS( ++EvalNo ), endptr );
-    endptr = CopyStr( "]", endptr );
+    endptr = CopyStrEnd( "[eval", buff );
+    endptr = CopyStrEnd( LToS( ++EvalNo ), endptr );
+    endptr = CopyStrEnd( "]", endptr );
     new = NewNode( LEAF, nd->t );
     new->l = (n *)ACopyOf( buff );
     DumpTree( nd );
@@ -209,14 +209,14 @@ extern  n       **CGDuplicate( n *nd ) {
 
     Action( "CGDuplicate( %t )", nd );
     VerNode( nd );
-    endptr = CopyStr( "[dup", buff );
-    endptr = CopyStr( LToS( ++DupNo ), endptr );
-    endptr = CopyStr( "]", endptr );
+    endptr = CopyStrEnd( "[dup", buff );
+    endptr = CopyStrEnd( LToS( ++DupNo ), endptr );
+    endptr = CopyStrEnd( "]", endptr );
     new1 = NewNode( LEAF, nd->t );
     new1->l = (n *)ACopyOf( buff );
-    endptr = CopyStr( "[dup", buff );
-    endptr = CopyStr( LToS( ++DupNo ), endptr );
-    endptr = CopyStr( "]", endptr );
+    endptr = CopyStrEnd( "[dup", buff );
+    endptr = CopyStrEnd( LToS( ++DupNo ), endptr );
+    endptr = CopyStrEnd( "]", endptr );
     new2 = NewNode( LEAF, nd->t );
     new2->l = (n *)ACopyOf( buff );
     DumpT( nd );
@@ -347,7 +347,7 @@ extern  void    Attrs( sym s ) {
 extern  void    DumpCClass( call_class cclass )
 /*********************************************/
 {
-#if _TARGET & ( _TARG_8086 | _TARG_80386 )
+#if _TARGET_INTEL
     if( cclass & FAR_CALL )
         Action( "FAR " );
     if( cclass & ROUTINE_RETURN )
@@ -361,8 +361,8 @@ extern  void    DumpCClass( call_class cclass )
         Action( "NO_MEMORY_CHANGED " );
     if( cclass & NO_MEMORY_READ )
         Action( "NO_MEMORY_READ " );
-    if( cclass & SUICIDAL )
-        Action( "SUICIDAL " );
+    if( cclass & ABORTS )
+        Action( "ABORTS " );
     if( cclass & NORETURN ) {
         Action( "NORETURN " );
     }
@@ -371,10 +371,10 @@ extern  void    DumpCClass( call_class cclass )
 extern  void    CClass( sym  s ) {
 /********************************/
 
-    call_class  *cclass;
+    call_class  cclass;
 
-    cclass = FindAuxInfoSym( s, CALL_CLASS );
-    DumpCClass( *cclass );
+    cclass = FindAuxInfoSym( s, FEINF_CALL_CLASS );
+    DumpCClass( cclass );
     Action( "%n" );
 }
 
@@ -483,16 +483,16 @@ extern  sh      *CGSelInit() {
     Action( " -> %d%n", SelId );
     return(s);
 }
-extern  void    CGSelCase( sh *s, l *lb, signed_32 v ) {
-/******************************************************/
+extern  void    CGSelCase( sh *s, l *lb, int_32 v ) {
+/*************************************************/
 
     Action( "CGSelCase" );
     Action( "( %d, %l, %s )%n", s->i, v, Label( lb ) );
     CRefLabel( lb );
     SelRange(s,v,v,lb);
 }
-extern  void    CGSelRange( sh *s, signed_32 lo, signed_32 hi, l *lb ) {
-/**********************************************************************/
+extern  void    CGSelRange( sh *s, int_32 lo, int_32 hi, l *lb ) {
+/**************************************************************/
 
     Action( "CGSelRange" );
     Action( "( %d, %l, %l, %s )%n", s->i, lo, hi, Label( lb ) );
@@ -500,8 +500,8 @@ extern  void    CGSelRange( sh *s, signed_32 lo, signed_32 hi, l *lb ) {
     SelRange(s,lo,hi,lb);
 }
 
-extern  void    SelRange( sh *s, signed_32 lo, signed_32 hi, l *lb ) {
-/********************************************************************/
+extern  void    SelRange( sh *s, int_32 lo, int_32 hi, l *lb ) {
+/************************************************************/
 
     rh  **or;
     rh  *n;
@@ -559,8 +559,8 @@ extern  void    CGSelect( sh *s, n *e ) {
     Code("}%n");
     CGFree(s);
 }
-extern  n       *CGInteger( signed_32 i, cg_type t ) {
-/****************************************************/
+extern  n       *CGInteger( int_32 i, cg_type t ) {
+/***********************************************/
 
     n   *in;
 
@@ -865,14 +865,14 @@ extern  void    CGAddParm( n *l, n *p, cg_type t ) {
 extern  n       *CGCall( n *r ) {
 /*******************************/
 
-    call_class  *cclass;
+    call_class  cclass;
 
     Action( "CGCall( %t )", r );
-    cclass = (call_class *)FEAuxInfo( r->h, CALL_CLASS );
-    if( *cclass & MAKE_CALL_INLINE ) {
+    cclass = (call_class)(pointer_uint)FEAuxInfo( r->h, FEINF_CALL_CLASS );
+    if( cclass & MAKE_CALL_INLINE ) {
         Action( " inline handle=%p%n", r );
     } else {
-        DumpCClass( *cclass );
+        DumpCClass( cclass );
         Action( "%n" );
     }
     VerNode( r );

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,25 +43,31 @@ int SemWINStrToAccelEvent( char *string )
 /***************************************/
 {
     if( *string == '^' ) {
-        /* control character requested */
+        /*
+         * control character requested
+         */
         string++;
         if( isalpha( *string ) ) {
-            /* assume we are using the ASCII charater set to get the */
-            /* corresponding code for control-letter */
+            /*
+             * assume we are using the ASCII charater set to get the
+             * corresponding code for control-letter
+             */
             return( toupper( (unsigned char)*string ) - 'A' + 1 );
         } else {
             return( 0 );
         }
     } else if( isprint( *string ) ) {
-        /* only accept printable characters in this position */
+        /*
+         * only accept printable characters in this position
+         */
         return( *string );
     } else {
         return( 0 );
     }
 }
 
-static void CheckAccelFlags( AccelFlags * flags, unsigned long idval )
-/********************************************************************/
+static void CheckAccelFlags( AccelFlags *flags, unsigned long idval )
+/*******************************************************************/
 {
     if( !( *flags & ACCEL_VIRTKEY ) ) {
         if( *flags & ACCEL_SHIFT ) {

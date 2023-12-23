@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -83,8 +83,8 @@ unsigned_32 WriteDOSDefStub( unsigned_32 stub_align )
     unsigned_32         *stubend;
 
     msgsize = doExeTypeString();
-    fullsize = ROUND_UP( msgsize + sizeof( DOSDefStub ), stub_align );
-    stubend = (unsigned_32 *)( DOSDefStub + NH_OFFSET );
+    fullsize = __ROUND_UP_SIZE( msgsize + sizeof( DOSDefStub ), stub_align );
+    stubend = (unsigned_32 *)( DOSDefStub + NE_HEADER_OFFSET );
     *stubend = fullsize;
     WriteLoad( DOSDefStub, sizeof( DOSDefStub ) );
     WriteLoad( TokBuff, msgsize );

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,7 +37,6 @@
 #include "guicontr.h"
 //#include "guixhook.h"
 #include "ctl3dcvr.h"
-#include "wclbproc.h"
 #include "guixwind.h"
 #include "oswincls.h"
 
@@ -77,22 +76,12 @@ BOOL CALLBACK GUISubClassEditComboboxEnumFunc( HWND hwnd, WPI_PARAM2 lparam )
 WPI_WNDPROC GUISubClassEditCombobox( HWND hwnd )
 {
     enum_info           e_info;
-#ifdef __OS2_PM__
     WPI_ENUMPROC        wndenumproc;
-#else
-    WNDENUMPROC         wndenumproc;
-#endif
 
     e_info.success = false;
-#ifdef __OS2_PM__
     wndenumproc = _wpi_makeenumprocinstance( GUISubClassEditComboboxEnumFunc, GUIMainHInst );
     _wpi_enumchildwindows( hwnd, wndenumproc, (LPARAM)&e_info );
     _wpi_freeenumprocinstance( wndenumproc );
-#else
-    wndenumproc = MakeProcInstance_WNDENUM( GUISubClassEditComboboxEnumFunc, GUIMainHInst );
-    EnumChildWindows( hwnd, wndenumproc, (LPARAM)&e_info );
-    FreeProcInstance_WNDENUM( wndenumproc );
-#endif
     if( e_info.success ) {
         return( e_info.old );
     }

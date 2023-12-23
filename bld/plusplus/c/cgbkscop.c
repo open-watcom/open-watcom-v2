@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,7 +44,7 @@
 #include "reposit.h"
 #include "scoperes.h"
 #include "dumpapi.h"
-#ifndef NDEBUG
+#ifdef DEVBUILD
     #include "togglesd.h"
     #include "dbg.h"
     #include "pragdefn.h"
@@ -135,7 +135,7 @@ static VSTK_CTL open_scopes;    // open scopes
 static SCOPE_RES* scopes;       // unresolved scopes
 
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 
 static char const * usage_names[] = {
     #define USAGE_DEF(a) # a
@@ -423,7 +423,7 @@ static SCOPE_RES* markScopeGen  // MARK SCOPE AS GENERATED
     for( enc = sr; ; enc = enc->enclosing ) {
         DbgVerify( enc != NULL, "makeScopeGen -- no scopes" );
         enc->gen_stab = true;
-#ifndef NDEBUG
+#ifdef DEVBUILD
         if( enc != sr ) {
             _printScopeRes( enc, "enclosed scope made genable" );
         }
@@ -527,7 +527,7 @@ void CgResScBlkScanBegin        // START SCANNING OF A BLOCK SCOPE
     , CALLNODE* caller          // - caller
     , DT_METHOD dtm )           // - dtor method for function
 {
-#ifndef NDEBUG
+#ifdef DEVBUILD
     SCOPE_RES* sr = newScope( scope, caller, dtm );
     _printScopeRes( sr, "Start scanning block scope" );
 #else
@@ -1191,7 +1191,7 @@ void CgResFini                  // COMPLETION
     CarveDestroy( carveScRes );
 }
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 
 void DumpUnresolved( void )     // DBG: callable from debugger
 {

@@ -1,3 +1,5 @@
+/* UTF-8 encoding, ¥ */
+
 DLGINCLUDE RCDATA DISCARDABLE
 BEGIN
     "FTBAR.RH\0"

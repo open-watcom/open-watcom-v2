@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -96,7 +97,7 @@ STATIC void put16( type_rec *tr, uint_16 word ) {
     uint_8  *p;
 
     p = getTrData( tr, 2 );
-    WriteU16( p, word );
+    MPUT_LE_16( p, word );
 }
 
 STATIC void put32( type_rec *tr, uint_32 dword ) {
@@ -104,7 +105,7 @@ STATIC void put32( type_rec *tr, uint_32 dword ) {
     uint_8  *p;
 
     p = getTrData( tr, 4 );
-    WriteU32( p, dword );
+    MPUT_LE_32( p, dword );
 }
 
 STATIC void putIndex( type_rec *tr, uint_16 word ) {

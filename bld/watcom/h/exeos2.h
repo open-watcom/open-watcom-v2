@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,6 +33,9 @@
 
 #ifndef _EXEOS2_H
 #define _EXEOS2_H
+
+#include "exesigns.h"
+
 
 /* OS/2 EXE file header and various tables */
 /* ======================================= */
@@ -72,10 +76,11 @@ typedef struct os2_exe_header {
     unsigned_16         expver;
 } os2_exe_header;
 
-#define OS2_SIGNATURE_WORD      0x454e  // 'NE'
-#define RAT_SIGNATURE_WORD      0x454c  // 'LE'
-#define OS2_NE_OFFSET             0x3c
-#define OS2_EXE_HEADER_FOLLOWS  0x0040  /* reloc table offset 0x40 */
+#define RAT_SIGNATURE_WORD          EXESIGN_LE
+#define OS2_SIGNATURE_WORD          EXESIGN_NE
+
+#define NE_HEADER_OFFSET            0x003c
+#define OS2_EXE_HEADER_FOLLOWS(x)   ((x) >= 0x0040) /* reloc table offset 0x40 */
 
 /******************************************************************************
  *
@@ -224,7 +229,12 @@ typedef struct fixed_record {
 
 #define OS2_DEF_SEGMENT_SHIFT  9
 
-/* The resource table is an unsigned_16 resource shift count followed by: */
+/* The resource table entries type */
+typedef struct resource_table_record {
+    unsigned_16         type;           /* resource type */
+    unsigned_16         name;           /* resource name */
+} resource_table_record;
+
 /* repeated for each type */
 typedef struct resource_type_record {
     unsigned_16         type;           /* see below */

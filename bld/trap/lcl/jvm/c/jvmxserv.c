@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -55,7 +56,7 @@
 
 static trap_version     TrapVer;
 
-char    RWBuff[ 0x400 ];
+char    RWBuff[0x400];
 
 static mx_entry     In[1];
 static mx_entry     Out[1];
@@ -81,13 +82,13 @@ bool Session( void )
         In[0].ptr = GetPacketBuffPtr();
         _DBG(("Session got request "));
         req = TRP_REQUEST( In );
-        TRP_REQUEST( In ) &= ~0x80;
-        if( req & 0x80 ) {
-            req &= ~0x80;
+        if( req & REQ_WANT_RETURN ) {
+            req &= ~REQ_WANT_RETURN;
             want_return = FALSE;
         } else {
             want_return = TRUE;
         }
+        TRP_REQUEST( In ) = req;
         switch( req ) {
         case REQ_PROG_KILL:
             _DBG(("REQ_KILL_PROG\n"));
@@ -103,7 +104,7 @@ bool Session( void )
 }
 
 
-void Initialize( void )
+const char *ServInitialize( void )
 {
     const char  *err;
 
@@ -113,24 +114,33 @@ void Initialize( void )
     if( err != NULL ) {
         _DBG(( "ERROR! '%s'\n", err ));
     }
-    if( err != NULL )
-        StartupErr( err );
+    if( err != NULL ) {
+        return( err );
+    }
     _DBG(( "No Remote link error. About to TrapInit." ));
     TrapVer = TrapInit( "", RWBuff, FALSE );
     if( RWBuff[0] != '\0' ) {
 // NO, NO, NO!  RemoteUnLink();
-        StartupErr( RWBuff );
+        err = RWBuff;
+        return( err );
     }
     _DBG(( "No TrapInit error. Initialize complete" ));
     Out[0].len = sizeof( RWBuff );
     Out[0].ptr = (void *)RWBuff;
+    return( err );
 }
 
 
 #pragma aux (cdecl) EntryPoint "Java_sun_tools_debug_jvmhelp_EntryPoint_stub" export
 void EntryPoint( stack_item *p, ExecEnv *ee )
 {
-    Initialize();
+    const char  *err;
+
+    err = ServInitialize();
+    if( err != NULL ) {
+        StartupErr( err );
+        return;
+    }
     RemoteConnect();
     Session();
     TrapFini();

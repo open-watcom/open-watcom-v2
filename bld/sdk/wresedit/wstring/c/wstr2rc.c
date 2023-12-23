@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,9 +33,9 @@
 
 #include "wglbl.h"
 #include "wsetedit.h"
-#include "widn2str.h"
 #include "wstr2rc.h"
 #include "wresall.h"
+
 
 static bool WWriteStringEntry( WStringBlock *block, uint_16 string_id, FILE *fp )
 {
@@ -44,7 +45,7 @@ static bool WWriteStringEntry( WStringBlock *block, uint_16 string_id, FILE *fp 
 
     strtext = NULL;
 
-    text = WResIDNameToStr( block->block.String[string_id & 0xf] );
+    text = WRStringFromWResIDName( block->block.String[string_id & 0xf] );
     ok = (text != NULL);
 
     if( ok ) {

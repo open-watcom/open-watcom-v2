@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,23 +31,25 @@
 
 
 #include "msym.h"
+#include "roundmac.h"
 #include "exedos.h"
 #include "exeos2.h"
 #include "exeflat.h"
 
 
-/* Implementation notes:
+/*
+ * Implementation notes:
  *
  * - Symbol files may contain multiple maps. This is not supported because
  *   I've never seen such a .sym file and I don't even know how to produce one.
  */
 
 #if defined( __WATCOMC__ ) && defined( __386__ )
-
-/* WD looks for this symbol to determine module bitness */
+/*
+ * WD looks for this symbol to determine module bitness
+ */
 int __nullarea;
 #pragma aux __nullarea "*";
-
 #endif
 
 static struct {
@@ -56,19 +59,19 @@ static struct {
     unsigned_8          data[4096];
 } Buff;
 
-static unsigned long BSeek( FILE *fp, unsigned long p, dig_seek w )
+static unsigned long BSeek( FILE *fp, unsigned long p, dig_seek where )
 {
     unsigned long       bpos;
     unsigned long       npos = 0;
 
     bpos = Buff.fpos - Buff.len;
-    switch( w ) {
-    case DIG_END:
+    switch( where ) {
+    case DIG_SEEK_END:
         return( DIG_SEEK_ERROR ); /* unsupported */
-    case DIG_CUR:
+    case DIG_SEEK_CUR:
         npos = bpos + p + Buff.off;
         break;
-    case DIG_ORG:
+    case DIG_SEEK_ORG:
         npos = p;
         break;
     }
@@ -76,7 +79,7 @@ static unsigned long BSeek( FILE *fp, unsigned long p, dig_seek w )
         Buff.off = npos - bpos;
         return( npos );
     }
-    DCSeek( fp, npos, DIG_ORG );
+    DCSeek( fp, npos, DIG_SEEK_ORG );
     Buff.fpos = DCTell( fp );
     Buff.off = 0;
     Buff.len = 0;
@@ -89,7 +92,7 @@ static size_t BRead( FILE *fp, void *b, size_t s )
     size_t      want;
 
     if( s > sizeof( Buff.data ) ) {
-        DCSeek( fp, Buff.fpos + Buff.off - Buff.len, DIG_ORG );
+        DCSeek( fp, Buff.fpos + Buff.off - Buff.len, DIG_SEEK_ORG );
         Buff.fpos = DCTell( fp );
         Buff.len = 0;
         Buff.off = 0;
@@ -125,14 +128,12 @@ static size_t BRead( FILE *fp, void *b, size_t s )
     return( s );
 }
 
-#define ROUND_UP( d, r ) (((d)+(r)-1) & ~((r)-1))
-
 static void *HunkAlloc( imp_image_handle *iih, size_t size )
 {
     msym_hunk   *hunk;
     size_t      alloc;
 
-    size = ROUND_UP( size, sizeof( void * ) );
+    size = __ROUND_UP_SIZE( size, sizeof( void * ) );
     hunk = iih->hunks;
     if( hunk == NULL || size > hunk->left ) {
         alloc = HUNK_SIZE;
@@ -240,18 +241,24 @@ static dip_status AddSymbol( imp_image_handle *iih, addr_seg seg, addr_off off,
     return( DS_OK );
 }
 
-/* Heuristics to determine whether given file is a MAPSYM .sym file */
 static dip_status CheckSymFile( FILE *fp )
+/*
+ * Heuristics to determine whether given file is a MAPSYM .sym file
+ */
 {
     sym_endmap          end_map;
     unsigned long       pos;
 
-    /* seek to the end, read and check end map record */
-    if( DCSeek( fp, DIG_SEEK_POSBACK( sizeof( end_map ) ), DIG_END ) ) {
+    /*
+     * seek to the end, read and check end map record
+     */
+    if( DCSeek( fp, DIG_SEEK_POSBACK( sizeof( end_map ) ), DIG_SEEK_END ) ) {
         return( DS_ERR | DS_FSEEK_FAILED );
     }
     pos = DCTell( fp );
-    /* the endmap record must be 16-byte aligned */
+    /*
+     * the endmap record must be 16-byte aligned
+     */
     if( pos % 16 ) {
         return( DS_FAIL );
     }
@@ -261,8 +268,8 @@ static dip_status CheckSymFile( FILE *fp )
     if( end_map.zero != 0 ) {
         return( DS_FAIL );
     }
-
-    /* Check .sym file version. The version number seems to correspond to
+    /*
+     * Check .sym file version. The version number seems to correspond to
      * the linker version. Versions 3.10, 4.0, 5.10, 5.11, 6.0, 6.10 have
      * been seen. Version 5.1 seems to be identical to 4.0 with added
      * support for 32-bit symbols.
@@ -270,13 +277,16 @@ static dip_status CheckSymFile( FILE *fp )
     if( (end_map.major_ver < 3) || (end_map.major_ver > 6) || (end_map.minor_ver > 11) ) {
         return( DS_FAIL );
     }
-
-    /* looks like the right sort of .sym file */
+    /*
+     * looks like the right sort of .sym file
+     */
     return( DS_OK );
 }
 
-/* Read a Pascal style string - limited to 255 chars max length */
 static dip_status ReadString( FILE *fp, char *buf, unsigned *len_ptr )
+/*********************************************************************
+ * Read a Pascal style string - limited to 255 chars max length
+ */
 {
     unsigned_8  str_len;
 
@@ -292,10 +302,12 @@ static dip_status ReadString( FILE *fp, char *buf, unsigned *len_ptr )
     return( DS_OK );
 }
 
-/* Load symbols for a segment */
 static dip_status LoadSymTable( FILE *fp, imp_image_handle *iih, unsigned count,
                         unsigned long base_ofs, unsigned_32 table_ofs,
                         addr_seg seg, int big_syms )
+/*******************************************************************************
+ * Load symbols for a segment
+ */
 {
     dip_status      ds;
     unsigned_16     *sym_tbl;
@@ -311,7 +323,7 @@ static dip_status LoadSymTable( FILE *fp, imp_image_handle *iih, unsigned count,
     if( sym_tbl == NULL ) {
         return( DS_ERR | DS_NO_MEM );
     }
-    if( BSeek( fp, base_ofs + table_ofs, DIG_ORG ) == DIG_SEEK_ERROR ) {
+    if( BSeek( fp, base_ofs + table_ofs, DIG_SEEK_ORG ) == DIG_SEEK_ERROR ) {
         ds = DS_ERR | DS_FSEEK_FAILED;
         goto done;
     }
@@ -323,7 +335,7 @@ static dip_status LoadSymTable( FILE *fp, imp_image_handle *iih, unsigned count,
     sym.offset = 0;
     sym_32.offset = 0;
     for( i = 0; i < count; ++i ) {
-        if( BSeek( fp, base_ofs + sym_tbl[i], DIG_ORG ) == DIG_SEEK_ERROR ) {
+        if( BSeek( fp, base_ofs + sym_tbl[i], DIG_SEEK_ORG ) == DIG_SEEK_ERROR ) {
             ds = DS_ERR | DS_FSEEK_FAILED;
             goto done;
         }
@@ -370,8 +382,10 @@ done:
     return( ds );
 }
 
-/* Load all segments for a map */
 static dip_status LoadSegments( FILE *fp, imp_image_handle *iih, int count )
+/***************************************************************************
+ * Load all segments for a map
+ */
 {
     dip_status      ds;
     sym_segdef      seg;
@@ -382,7 +396,7 @@ static dip_status LoadSegments( FILE *fp, imp_image_handle *iih, int count )
     int             is_code;
 
     for( i = 0; i < count; ++i ) {
-        seg_start = BSeek( fp, 0, DIG_CUR );
+        seg_start = BSeek( fp, 0, DIG_SEEK_CUR );
         if( seg_start == DIG_SEEK_ERROR ) {
             return( DS_ERR | DS_FSEEK_FAILED );
         }
@@ -392,8 +406,8 @@ static dip_status LoadSegments( FILE *fp, imp_image_handle *iih, int count )
         ds = ReadString( fp, name, &name_len );
         if( ds != DS_OK )
             return( ds );
-
-        /* There's no good way to tell whether segment is code or data. Try
+        /*
+         * There's no good way to tell whether segment is code or data. Try
          * to guess what a segment is based on its name.
          */
         if( strcmp( name, "DGROUP" ) == 0 ) {
@@ -408,26 +422,29 @@ static dip_status LoadSegments( FILE *fp, imp_image_handle *iih, int count )
         LoadSymTable( fp, iih, seg.num_syms, seg_start, seg.sym_tab_ofs,
             seg.load_addr, (seg.sym_type & SYM_FLAG_32BIT) != 0 );
 
-        if( BSeek( fp, SYM_PTR_TO_OFS( seg.next_ptr ), DIG_ORG ) == DIG_SEEK_ERROR ) {
+        if( BSeek( fp, SYM_PTR_TO_OFS( seg.next_ptr ), DIG_SEEK_ORG ) == DIG_SEEK_ERROR ) {
             return( DS_ERR | DS_FSEEK_FAILED );
         }
     }
     return( DS_OK );
 }
 
-/* Load all symbols in a .sym file */
 static dip_status LoadSymFile( FILE *fp, imp_image_handle *iih )
+/***************************************************************
+ * Load all symbols in a .sym file
+ */
 {
     dip_status      ds;
     sym_mapdef      map;
     char            name[256];
     unsigned        name_len;
 
-    if( BSeek( fp, 0, DIG_ORG ) == DIG_SEEK_ERROR ) {
+    if( BSeek( fp, 0, DIG_SEEK_ORG ) == DIG_SEEK_ERROR ) {
         return( DS_ERR | DS_FSEEK_FAILED );
     }
-
-    /* Read the first map and use its name as the module name */
+    /*
+     * Read the first map and use its name as the module name
+     */
     if( BRead( fp, &map, SYM_MAPDEF_FIXSIZE ) != SYM_MAPDEF_FIXSIZE ) {
         return( DS_ERR | DS_FREAD_FAILED );
     }
@@ -440,7 +457,7 @@ static dip_status LoadSymFile( FILE *fp, imp_image_handle *iih )
     if( ds != DS_OK )
         return( ds );
 
-    if( BSeek( fp, SYM_PTR_TO_OFS( map.seg_ptr ), DIG_ORG ) == DIG_SEEK_ERROR ) {
+    if( BSeek( fp, SYM_PTR_TO_OFS( map.seg_ptr ), DIG_SEEK_ORG ) == DIG_SEEK_ERROR ) {
         return( DS_ERR | DS_FSEEK_FAILED );
     }
     ds = LoadSegments( fp, iih, map.num_segs );
@@ -467,7 +484,9 @@ dip_status DIPIMPENTRY( LoadInfo )( FILE *fp, imp_image_handle *iih )
 
     if( ds != DS_OK ) {
         DCStatus( ds );
-        /* clean up any allocations */
+        /*
+         * clean up any allocations
+         */
         ImpUnloadInfo( iih );
         return( ds );
     }

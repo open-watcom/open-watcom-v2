@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -413,7 +414,7 @@ static  name *InitItoF( void ) {
     name        *low;
     name        *dwork;
 
-    start = HeadBlock->ins.hd.next;
+    start = HeadBlock->ins.head.next;
     dwork = SAllocTemp( FD, 8 );
     dwork->v.usage |= USE_MEMORY | NEEDS_MEMORY;
     low =  TempOffset( dwork, 0, WD );

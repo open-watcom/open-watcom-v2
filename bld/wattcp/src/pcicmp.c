@@ -150,7 +150,7 @@ void *icmp_Format (DWORD host)
    * After first ping this will still be in cache.
    */
   if (!_arp_resolve(host,&dest,0))  /* unable to find address */
-     return (NULL);     
+     return (NULL);
 
   return _eth_formatpacket (&dest, IP_TYPE);
 }
@@ -254,7 +254,7 @@ static WORD addr_mask_seq = 0;
 
 void icmp_mask_req (void)
 {
-  mac_address    *dst = (_pktserial ? NULL : &_eth_brdcast);
+  mac_address    *dst = (_pktserial ? NULL : _eth_brdcast);
   struct _pkt    *pkt = (struct _pkt*) _eth_formatpacket (dst, IP_TYPE);
   union icmp_pkt *req = &pkt->icmp;
 

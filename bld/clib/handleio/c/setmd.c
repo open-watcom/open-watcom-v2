@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -53,7 +53,7 @@
 _WCRTLINK int _setmode( int handle, int mode )
 {
     unsigned        iomode_flags;
-    unsigned        old_mode;
+    int             old_mode;
     __stream_link   *link;
     FILE            *fp;
 

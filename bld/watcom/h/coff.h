@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -71,7 +72,9 @@ typedef struct {
 
 #define COFF_SYM_NAME_LEN 8
 
-// typedef struct _IMAGE_SYMBOL in WINNT.H
+/*
+ * typedef struct _IMAGE_SYMBOL in WINNT.H
+ */
 
 typedef struct {
     union {
@@ -82,13 +85,30 @@ typedef struct {
         } non_name;
     } name;
     uint_32             value;
-    signed_16           sec_num;
+    signed_16           sec_num;    /* 1-based */
     uint_16             type;
     uint_8              storage_class;
     uint_8              num_aux;
 } coff_symbol;
 
 #define COFF_SYM_SIZE sizeof(coff_symbol)
+
+typedef struct {
+    union {
+        char            name_string[COFF_SYM_NAME_LEN];
+        struct {
+            uint_32     zeros;
+            uint_32     offset;
+        } non_name;
+    } name;
+    uint_32             value;
+    signed_32           sec_num;    /* 1-based */
+    uint_16             type;
+    uint_8              storage_class;
+    uint_8              num_aux;
+} coff_symbol_ex;
+
+#define COFF_SYM_EX_SIZE sizeof(coff_symbol_ex)
 
 #define _CoffSymType( complex, simple )         ( ( (complex) << 4 ) | (simple) )
 #define _CoffBaseType( sym_type )               ( (sym_type) & 0xf )
@@ -127,9 +147,10 @@ typedef struct {
     uint_16     num_relocs;
     uint_16     num_line_numbers;
     uint_32     checksum;
-    uint_16     number;
+    int_16      number;
     uint_8      selection;
-    char        unused[3];
+    uint_8      reserved;
+    int_16      high_number;
 } coff_sym_section;
 
 typedef struct {
@@ -140,14 +161,30 @@ typedef struct {
     uint_16             line_number;
 } coff_line_num;
 
-/* from the COFF/PE docs */
+typedef struct {
+    union {
+        uint_32 characteristics;
+        uint_32 original_first_thunk;
+    } u;
+    uint_32 time_date_stamp;
+    uint_32 forwarder_chain;
+    uint_32 name;
+    uint_32 first_thunk;
+} import_descriptor;
 
-// CPU types
+/*
+ * from the COFF/PE docs
+ */
+
+/*
+ * CPU types
+ */
 enum {
     COFF_IMAGE_FILE_MACHINE_UNKNOWN          = 0,
     COFF_IMAGE_FILE_MACHINE_I386             = 0x014c, // Intel 386 (Sys V).
     COFF_IMAGE_FILE_MACHINE_I860             = 0x014d, // Intel 860.
-    COFF_IMAGE_FILE_MACHINE_R3000            = 0x0162, // MIPS little-endian, 0x160 big-endian
+    COFF_IMAGE_FILE_MACHINE_R3000BE          = 0x0160, // MIPS big-endian
+    COFF_IMAGE_FILE_MACHINE_R3000            = 0x0162, // MIPS little-endian
     COFF_IMAGE_FILE_MACHINE_R4000            = 0x0166, // MIPS little-endian
     COFF_IMAGE_FILE_MACHINE_R10000           = 0x0168, // MIPS little-endian
     COFF_IMAGE_FILE_MACHINE_WCEMIPSV2        = 0x0169, // MIPS little-endian WCE v2
@@ -168,7 +205,9 @@ enum {
     COFF_IMAGE_FILE_MACHINE_AMD64            = 0x8664  // AMD64 / Intel EM64T
 };
 
-// file flag values
+/*
+ * file flag values
+ */
 enum {
     COFF_IMAGE_FILE_RELOCS_STRIPPED          = 0x0001, // Relocation info stripped from file.
     COFF_IMAGE_FILE_EXECUTABLE_IMAGE         = 0x0002, // File is executable  (i.e. no unresolved externel references).
@@ -188,7 +227,9 @@ enum {
     COFF_IMAGE_FILE_BYTES_REVERSED_HI        = 0x8000  // Bytes of machine word are reversed.
 };
 
-// section flag values
+/*
+ * section flag values
+ */
 enum {
 //  COFF_IMAGE_SCN_TYPE_REG                  = 0x00000000, // Reserved.
 //  COFF_IMAGE_SCN_TYPE_DSECT                = 0x00000001, // Reserved.
@@ -245,21 +286,21 @@ enum {
     COFF_IMAGE_SCN_ALIGN_SHIFT               = 20
 };
 
-//
-// Section values.
-//
-// Symbols have a section number of the section in which they are
-// defined. Otherwise, section numbers have the following meanings:
-//
+/*
+ * Section values.
+ *
+ * Symbols have a section number of the section in which they are
+ * defined. Otherwise, section numbers have the following meanings:
+ */
 enum {
     COFF_IMAGE_SYM_UNDEFINED         = (signed_16)0,  // Symbol is undefined or is common.
     COFF_IMAGE_SYM_ABSOLUTE          = (signed_16)-1, // Symbol is an absolute value.
     COFF_IMAGE_SYM_DEBUG             = (signed_16)-2  // Symbol is a special debug item.
 };
 
-//
-// Type (fundamental) values.
-//
+/*
+ * Type (fundamental) values.
+ */
 enum {
     COFF_IMAGE_SYM_TYPE_NULL         = 0x0000, // no type.
     COFF_IMAGE_SYM_TYPE_VOID         = 0x0001, //
@@ -277,12 +318,13 @@ enum {
     COFF_IMAGE_SYM_TYPE_WORD         = 0x000D, //
     COFF_IMAGE_SYM_TYPE_UINT         = 0x000E, //
     COFF_IMAGE_SYM_TYPE_DWORD        = 0x000F, //
+    COFF_IMAGE_SYM_TYPE_FUNCTION     = 0x0020, // undocumented, symbol is function
     COFF_IMAGE_SYM_TYPE_PCODE        = 0x8000  //
 };
 
-//
-// Type (derived) values.
-//
+/*
+ * Type (derived) values.
+ */
 enum {
     COFF_IMAGE_SYM_DTYPE_NULL        = 0, // no derived type.
     COFF_IMAGE_SYM_DTYPE_POINTER     = 1, // pointer.
@@ -290,9 +332,9 @@ enum {
     COFF_IMAGE_SYM_DTYPE_ARRAY       = 3  // array.
 };
 
-//
-// Storage classes.
-//
+/*
+ * Storage classes.
+ */
 typedef enum {
     COFF_IMAGE_SYM_CLASS_END_OF_FUNCTION     = -1,
     COFF_IMAGE_SYM_CLASS_NULL                = 0x0000,
@@ -324,12 +366,11 @@ typedef enum {
 // new
     COFF_IMAGE_SYM_CLASS_SECTION             = 0x0068,
     COFF_IMAGE_SYM_CLASS_WEAK_EXTERNAL       = 0x0069
-}image_sym_class;
+} image_sym_class;
 
-//
-// Communal selection types.
-//
-
+/*
+ * Communal selection types.
+ */
 typedef enum {
     COFF_IMAGE_COMDAT_SELECT_UNKNOWN         = 0,
     COFF_IMAGE_COMDAT_SELECT_NODUPLICATES    = 1,
@@ -339,22 +380,24 @@ typedef enum {
     COFF_IMAGE_COMDAT_SELECT_ASSOCIATIVE     = 5,
     COFF_IMAGE_COMDAT_SELECT_LARGEST         = 6,
     COFF_IMAGE_COMDAT_SELECT_NEWEST          = 7
-}image_comdat_select;
+} image_comdat_select;
 
-// weak extern types
-
+/*
+ * weak extern types
+ */
 enum {
     COFF_IMAGE_WEAK_EXTERN_SEARCH_NOLIBRARY  = 1,
     COFF_IMAGE_WEAK_EXTERN_SEARCH_LIBRARY    = 2,
     COFF_IMAGE_WEAK_EXTERN_SEARCH_ALIAS      = 3
 };
 
-// Following comes from winnt.h
+/*
+ * Following comes from winnt.h
+ */
 
-//
-// I386 relocation types.
-//
-
+/*
+ * I386 relocation types.
+ */
 #define COFF_IMAGE_REL_I386_ABSOLUTE 0       // Reference is absolute, no relocation is necessary
 #define COFF_IMAGE_REL_I386_DIR16    1       // Direct 16-bit reference to the symbols virtual address
 #define COFF_IMAGE_REL_I386_REL16    2       // PC-relative 16-bit reference to the symbols virtual address
@@ -365,10 +408,9 @@ enum {
 #define COFF_IMAGE_REL_I386_SECREL   11
 #define COFF_IMAGE_REL_I386_REL32    20      // PC-relative 32-bit reference to the symbols virtual address
 
-//
-// MIPS relocation types.
-//
-
+/*
+ * MIPS relocation types.
+ */
 #define COFF_IMAGE_REL_MIPS_ABSOLUTE         0x0000  // Reference is absolute, no relocation is necessary
 #define COFF_IMAGE_REL_MIPS_REFHALF          0x0001
 #define COFF_IMAGE_REL_MIPS_REFWORD          0x0002
@@ -385,10 +427,9 @@ enum {
 #define COFF_IMAGE_REL_MIPS_REFWORDNB        0x0022
 #define COFF_IMAGE_REL_MIPS_PAIR             0x0025
 
-//
-// Alpha Relocation types.
-//
-
+/*
+ * Alpha Relocation types.
+ */
 #define COFF_IMAGE_REL_ALPHA_ABSOLUTE        0x0000
 #define COFF_IMAGE_REL_ALPHA_REFLONG         0x0001
 #define COFF_IMAGE_REL_ALPHA_REFQUAD         0x0002
@@ -414,10 +455,9 @@ enum {
 #define COFF_IMAGE_REL_ALPHA_GPRELLO         0x0016  // Low 16-bit GP relative reference
 #define COFF_IMAGE_REL_ALPHA_GPRELHI         0x0017  // High 16-bit GP relative reference
 
-//
-// PowerPC relocation types.
-//
-
+/*
+ * PowerPC relocation types.
+ */
 #define COFF_IMAGE_REL_PPC_ABSOLUTE          0x0000  // NOP
 #define COFF_IMAGE_REL_PPC_ADDR64            0x0001  // 64-bit address
 #define COFF_IMAGE_REL_PPC_ADDR32            0x0002  // 32-bit address
@@ -444,16 +484,17 @@ enum {
 
 #define COFF_IMAGE_REL_PPC_TYPEMASK          0x00FF  // mask to isolate above values in IMAGE_RELOCATION.Type
 
-// Flag bits in IMAGE_RELOCATION.TYPE
-
+/*
+ * Flag bits in IMAGE_RELOCATION.TYPE
+ */
 #define COFF_IMAGE_REL_PPC_NEG               0x0100  // subtract reloc value rather than adding it
 #define COFF_IMAGE_REL_PPC_BRTAKEN           0x0200  // fix branch prediction bit to predict branch taken
 #define COFF_IMAGE_REL_PPC_BRNTAKEN          0x0400  // fix branch prediction bit to predict branch not taken
 #define COFF_IMAGE_REL_PPC_TOCDEFN           0x0800  // toc slot defined in file (or, data in toc)
 
-//
-// AMD64 (X86-64) relocations
-//
+/*
+ * AMD64 (X86-64) relocations
+ */
 #define COFF_IMAGE_REL_AMD64_ABSOLUTE        0x0000  // Reference is absolute, no relocation is necessary
 #define COFF_IMAGE_REL_AMD64_ADDR64          0x0001  // 64-bit address
 #define COFF_IMAGE_REL_AMD64_ADDR32          0x0002  // 32-bit address
@@ -467,27 +508,35 @@ enum {
 #define COFF_IMAGE_REL_AMD64_SECTION         0x000A  // va of containing section (size unknown yet; I think its 32-bit)
 #define COFF_IMAGE_REL_AMD64_SECREL          0x000B  // 32-bit section relative reference
 #define COFF_IMAGE_REL_AMD64_SECREL7         0x000C  // 7-bit section relative reference
-//
-// I think that I've figured out for what these REL32_x relocations are.
-// following is a simple asm program to demonstate the behavoir:
-//
-// asdf:
-// ; ex for COFF_IMAGE_REL_AMD64_REL32
-// ;          vvvvvvvvvvv <- distance: 0 (to the end)
-// ; 44 12 05 00 00 00 00
-// adc r8b, byte ptr [asdf]
-//
-// ; ex for COFF_IMAGE_REL_AMD64_REL32_1
-// ;       vvvvvvvvvvv <- distance: 1 (to the end)
-// ; 83 15 00 00 00 00 12
-// adc    dword ptr asdf, 12h
-//
-// ; ex for COFF_IMAGE_REL_AMD64_REL32_4
-// ;          vvvvvvvvvvv  <- distance: 4 (to the end)
-// ; 48 81 15 00 00 00 00 78 56 34 12
-// adc qword ptr [asdf], 12345678h
-//
+/*
+ * I think that I've figured out for what these REL32_x relocations are.
+ * following is a simple asm program to demonstate the behavoir:
+ *
+ * asdf:
+ * ; ex for COFF_IMAGE_REL_AMD64_REL32
+ * ;          vvvvvvvvvvv <- distance: 0 (to the end)
+ * ; 44 12 05 00 00 00 00
+ * adc r8b, byte ptr [asdf]
+ *
+ * ; ex for COFF_IMAGE_REL_AMD64_REL32_1
+ * ;       vvvvvvvvvvv <- distance: 1 (to the end)
+ * ; 83 15 00 00 00 00 12
+ * adc    dword ptr asdf, 12h
+ *
+ * ; ex for COFF_IMAGE_REL_AMD64_REL32_4
+ * ;          vvvvvvvvvvv  <- distance: 4 (to the end)
+ * ; 48 81 15 00 00 00 00 78 56 34 12
+ * adc qword ptr [asdf], 12345678h
+ */
 
+/*
+ * Magic numbers for optional image headers
+ */
+#define COFF_IMAGE_NT_OPTIONAL_HDR32_MAGIC   0x010B
+#define COFF_IMAGE_NT_OPTIONAL_HDR64_MAGIC   0x020B
+
+#define COFF_IMAGE_ORDINAL_FLAG32   0x80000000L
+#define COFF_IMAGE_ORDINAL_FLAG64   0x8000000000000000LL
 
 typedef struct {
     uint_32     rva;
@@ -515,7 +564,7 @@ typedef struct {
     uint_16     subsys_minor;
     uint_32     reserved1;
     uint_32     image_size;
-    uint_32     header_size;
+    uint_32     headers_size;
     uint_32     file_checksum;
     uint_16     sub_system;
     uint_16     dll_flags;
@@ -537,9 +586,7 @@ typedef struct {
     coff_image_data_directory   tls_table;
     coff_image_data_directory   load_config_table;
     uint_8      reserved2[40];
-} coff_opt_hdr;
-
-#define COFF_OPT_HDR_SIZE sizeof( coff_opt_hdr )
+} coff_opt_hdr32;
 
 typedef struct {
     uint_16     magic;                  //standard fields
@@ -561,7 +608,7 @@ typedef struct {
     uint_16     subsys_minor;
     uint_32     reserved1;
     uint_32     image_size;
-    uint_32     header_size;
+    uint_32     headers_size;
     uint_32     file_checksum;
     uint_16     sub_system;
     uint_16     dll_flags;
@@ -585,35 +632,37 @@ typedef struct {
     uint_8      reserved2[40];
 } coff_opt_hdr64;
 
-// The following structure defines the new import object. Note the
-// values of the first two fields, which must be set as stated in
-// order to differentiate old and new import members. Following this
-// structure, the linker emits two null-terminated strings used to
-// recreate the import at the time of use. The first string is the
-// import's name, the second is the dll's name.
+/*
+ * The following structure defines the new import object. Note the
+ * values of the first two fields, which must be set as stated in
+ * order to differentiate old and new import members. Following this
+ * structure, the linker emits two null-terminated strings used to
+ * recreate the import at the time of use. The first string is the
+ * import's name, the second is the dll's name.
+ */
 
+#define COFF_IMPORT_OBJECT_HDR_SIG1  0x0000
 #define COFF_IMPORT_OBJECT_HDR_SIG2  0xffff
 
 typedef struct {
-    uint_16 sig1;                       // Must be COFF_IMAGE_FILE_MACHINE_UNKNOWN
-    uint_16 sig2;                       // Must be COFF_IMPORT_OBJECT_HDR_SIG2.
+    uint_16 sig1;                       // Must be COFF_IMPORT_OBJECT_HDR_SIG1
+    uint_16 sig2;                       // Must be COFF_IMPORT_OBJECT_HDR_SIG2
     uint_16 version;
     uint_16 machine;
     uint_32 time_date_stamp;            // Time/date stamp
     uint_32 size_of_data;               // particularly useful for incremental links
-
     union {
         uint_16 ordinal;                // if grf & COFF_IMPORT_OBJECT_ORDINAL
         uint_16 hint;
     } oh;
-
     uint_16 object_type : 2;            // import_object_type
     uint_16 name_type : 3;              // import_name_type
     uint_16 reserved : 11;              // Reserved. Must be zero.
 } coff_import_object_header;
 
-// Note that coff_import_object_header is the same size as coff_file_header
-
+/*
+ * Note that coff_import_object_header is the same size as coff_file_header
+ */
 typedef enum
 {
     COFF_IMPORT_OBJECT_CODE     = 0,

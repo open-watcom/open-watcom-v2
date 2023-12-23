@@ -1,3 +1,5 @@
+/* UTF-8 encoding, ¥ */
+
 WSTRINGEDITDLG DIALOG 0, 0, 241, 213
 STYLE WS_CHILD | WS_VISIBLE
 FONT 8, "Helv"

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2011-2013 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2011-2022 The Open Watcom Contributors. All Rights Reserved.
 *
 * =========================================================================
 *
@@ -13,7 +13,7 @@
 
 #include "rsi1632.h"
 
-int rsi_sel_free( SELECTOR sel )
+bool rsi_sel_free( SELECTOR sel )
 {
     if( USESDPMI() ) {
         DPMIFreeLDTDescriptor( sel );
@@ -25,5 +25,5 @@ int rsi_sel_free( SELECTOR sel )
         r.w.dx = 0x0700;
         intdos( &r, &r );
     }
-    return( 1 );
+    return( true );
 }

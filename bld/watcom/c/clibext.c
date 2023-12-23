@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -37,6 +37,7 @@
 
 #include <string.h>
 #include <ctype.h>
+#include <errno.h>
 #if defined(__UNIX__)
     #include <dirent.h>
   #if defined(__QNX__)
@@ -54,108 +55,16 @@
 #endif
 #include "wio.h"
 #include "wreslang.h"
-
-#include "clibext.h"
 #if defined(__NT__)
     #include "ntext.h"
 #endif
 
+#include "clibint.h"
+#include "clibext.h"
 
-#define __set_errno( err ) errno = (err)
 
 char **_argv;
 int  _argc;
-
-/****************************************************************************
-*
-* Description:  Shared alphabet array for conversion of integers to ASCII.
-*
-****************************************************************************/
-
-#ifndef _MSC_VER
-
-static const char __Alphabet[] = "0123456789abcdefghijklmnopqrstuvwxyz";
-
-
-char *utoa( unsigned value, char *buffer, int radix )
-{
-    char   *p = buffer;
-    char        *q;
-    unsigned    rem;
-    unsigned    quot;
-    char        buf[34];    // only holds ASCII so 'char' is OK
-
-    buf[0] = '\0';
-    q = &buf[1];
-    do {
-        rem = value % radix;
-        quot = value / radix;
-        *q = __Alphabet[rem];
-        ++q;
-        value = quot;
-    } while( value != 0 );
-    while( (*p++ = (char)*--q) != '\0' )
-        ;
-    return( buffer );
-}
-
-
-char *itoa( int value, char *buffer, int radix )
-{
-    char   *p = buffer;
-
-    if( radix == 10 ) {
-        if( value < 0 ) {
-            *p++ = '-';
-            value = - value;
-        }
-    }
-    utoa( value, p, radix );
-    return( buffer );
-}
-
-/****************************************************************************
-*
-* Description:  Implementation of ltoa().
-*
-****************************************************************************/
-
-char *ultoa( unsigned long value, char *buffer, int radix )
-{
-    char   *p = buffer;
-    char        *q;
-    unsigned    rem;
-    char        buf[34];        // only holds ASCII so 'char' is OK
-
-    buf[0] = '\0';
-    q = &buf[1];
-    do {
-        rem = value % radix;
-        value = value / radix;
-        *q = __Alphabet[rem];
-        ++q;
-    } while( value != 0 );
-    while( (*p++ = (char)*--q) != '\0' )
-        ;
-    return( buffer );
-}
-
-
-char *ltoa( long value, char *buffer, int radix )
-{
-    char   *p = buffer;
-
-    if( radix == 10 ) {
-        if( value < 0 ) {
-            *p++ = '-';
-            value = - value;
-        }
-    }
-    ultoa( value, p, radix );
-    return( buffer );
-}
-
-#endif /* !_MSC_VER */
 
 /****************************************************************************
 *
@@ -308,11 +217,9 @@ void  _splitpath2( char const *inp, char *outp, char **drive, char **path, char 
 *
 ****************************************************************************/
 
-#undef _makepath
-
 #if defined(__UNIX__)
   #define PC '/'
-#else   /* DOS, OS/2, Windows, Netware */
+#else   /* DOS, OS/2, Windows */
   #define PC '\\'
   #define ALT_PC '/'
 #endif
@@ -376,75 +283,6 @@ void _makepath(
             *path++ = '.';
         strcpy( path, ext );
         path = strchr( path, '\0' );
-    }
-    *path = '\0';
-}
-
-#elif defined( __NETWARE__ )
-
-/*
-    For silly two choice DOS path characters / and \,
-    we want to return a consistent path character.
-*/
-
-static char pickup( char c, char *pc_of_choice )
-{
-    if( c == PC || c == ALT_PC ) {
-        if( *pc_of_choice == '\0' )
-            *pc_of_choice = c;
-        c = *pc_of_choice;
-    }
-    return( c );
-}
-
-extern void _makepath( char *path, const char *volume,
-                const char *dir, const char *fname, const char *ext )
-{
-    char first_pc = '\0';
-
-    if( volume != NULL && *volume != '\0' ) {
-        do {
-            *path++ = *volume++;
-        } while( *volume != '\0' );
-        if( path[-1] != ':' ) {
-            *path++ = ':';
-        }
-    }
-    *path = '\0';
-    if( dir != NULL && *dir != '\0' ) {
-        do {
-            *path++ = pickup( *dir++, &first_pc );
-        } while( *dir != '\0' );
-        /* if no path separator was specified then pick a default */
-        if( first_pc == '\0' )
-            first_pc = PC;
-        /* if dir did not end in path sep then put in a provisional one */
-        if( path[-1] == first_pc ) {
-            path--;
-        } else {
-            *path = first_pc;
-        }
-    }
-    /* if no path separator was specified thus far then pick a default */
-    if( first_pc == '\0' )
-        first_pc = PC;
-    if( fname != NULL && *fname != '\0' ) {
-        if( (pickup( *fname, &first_pc ) != first_pc) && (*path == first_pc) )
-            path++;
-        while( *fname != '\0' ) {
-            *path++ = pickup( *fname++, &first_pc );
-        }
-    } else {
-        if( *path == first_pc ) {
-            path++;
-        }
-    }
-    if( ext != NULL && *ext != '\0' ) {
-        if( *ext != '.' )
-            *path++ = '.';
-        while( *ext != '\0' ) {
-            *path++ = *ext++;
-        }
     }
     *path = '\0';
 }
@@ -545,7 +383,7 @@ void _makepath( char *path, const char *drive,
 ****************************************************************************/
 
 #define _WILL_FIT( c )  if(( (c) + 1 ) > size ) {       \
-                            __set_errno( ERANGE );      \
+                            errno = ERANGE;             \
                             return( NULL );             \
                         }                               \
                         size -= (c);
@@ -554,14 +392,6 @@ void _makepath( char *path, const char *drive,
 #define _IS_SLASH( c )  ((c) == '/')
 #else
 #define _IS_SLASH( c )  (( (c) == '/' ) || ( (c) == '\\' ))
-#endif
-
-#if !defined( __NT__ ) && !defined( __NETWARE__ ) && !defined( __UNIX__ )
-#pragma on (check_stack);
-#endif
-
-#ifdef __NETWARE__
-extern char *ConvertNameToFullPath( const char *, char * );
 #endif
 
 #if defined(__QNX__)
@@ -578,11 +408,11 @@ static char *__qnx_fullpath(char *fullpath, const char *path)
     if( fd != -1) {
         close(fd);
     } else if (errno != ENOENT) {
-        return 0;
+        return( 0 );
     } else {
         __resolve_net( 0, 0, &msg._io_open, path, 0, fullpath );
     }
-    return fullpath;
+    return( fullpath );
 }
 #endif
 
@@ -606,7 +436,7 @@ char *_sys_fullpath( char *buff, const char *path, size_t size )
     // If the function fails, the return value is zero. To get extended error
     // information, call GetLastError.
     if( (rc == 0) || (rc > (DWORD)size) ) {
-        __set_errno( ERANGE );
+        errno = ERANGE;
         return( NULL );
     }
 
@@ -653,22 +483,16 @@ char *_sys_fullpath( char *buff, const char *path, size_t size )
         return( NULL );
     }
     return( buff );
-#elif defined(__QNX__) || defined( __NETWARE__ )
+#elif defined(__QNX__)
     size_t len;
     char temp_dir[_MAX_PATH];
 
-    #if defined(__NETWARE__)
-        if( ConvertNameToFullPath( path, temp_dir ) != 0 ) {
-            return( NULL );
-        }
-    #else
-        if( __qnx_fullpath( temp_dir, path ) == NULL ) {
-            return( NULL );
-        }
-    #endif
+    if( __qnx_fullpath( temp_dir, path ) == NULL ) {
+        return( NULL );
+    }
     len = strlen( temp_dir );
     if( len >= size ) {
-        __set_errno( ERANGE );
+        errno = ERANGE;
         return( NULL );
     }
     return( strcpy( buff, temp_dir ) );
@@ -682,7 +506,7 @@ char *_sys_fullpath( char *buff, const char *path, size_t size )
     q = buff;
     if( ! _IS_SLASH( p[0] ) ) {
         if( getcwd( curr_dir, sizeof(curr_dir) ) == NULL ) {
-            __set_errno( ENOENT );
+            errno = ENOENT;
             return( NULL );
         }
         len = strlen( curr_dir );
@@ -762,7 +586,7 @@ char *_sys_fullpath( char *buff, const char *path, size_t size )
         OS_UINT os2_drive;
 
         if( DosQCurDisk( &os2_drive, &drive_map ) ) {
-            __set_errno( ENOENT );
+            errno = ENOENT;
             return( NULL );
         }
         path_drive_idx = os2_drive;
@@ -778,7 +602,7 @@ char *_sys_fullpath( char *buff, const char *path, size_t size )
         OS_UINT dir_len = sizeof( curr_dir );
 
         if( DosQCurDir( path_drive_idx, curr_dir, &dir_len ) ) {
-            __set_errno( ENOENT );
+            errno = ENOENT;
             return( NULL );
         }
   #else
@@ -786,7 +610,7 @@ char *_sys_fullpath( char *buff, const char *path, size_t size )
 
         rc = TinyGetCWDir( curr_dir, path_drive_idx );
         if( TINY_ERROR( rc ) ) {
-            __set_errno( ENOENT );
+            errno = ENOENT;
             return( NULL );
         }
   #endif
@@ -875,7 +699,7 @@ char *_fullpath( char *buff, const char *path, size_t size )
         size = _MAX_PATH;
         ptr = malloc( size );
         if( ptr == NULL )
-            __set_errno( ENOMEM );
+            errno = ENOMEM;
         buff = ptr;
     }
     if( buff != NULL ) {
@@ -891,7 +715,7 @@ char *_fullpath( char *buff, const char *path, size_t size )
             }
         }
     }
-    return buff;
+    return( buff );
 }
 
 /****************************************************************************
@@ -1076,7 +900,7 @@ char *_cmdname( char *name )
 
 /****************************************************************************
 *
-* Description:  Implementation of getcmd() and _bgetcmd().
+* Description:  Implementation of _bgetcmd().
 *
 ****************************************************************************/
 
@@ -1125,13 +949,6 @@ int _bgetcmd( char *buffer, int len )
     *buffer = '\0';
 
     return( cmdlen );
-}
-
-
-char *getcmd( char *buffer )
-{
-    _bgetcmd( buffer, INT_MAX );
-    return( buffer );
 }
 
 #else
@@ -1192,12 +1009,6 @@ int (_bgetcmd)( char *buffer, int len )
     }
 
     return( total );
-}
-
-char *(getcmd)( char *buffer )
-{
-    _bgetcmd( buffer, INT_MAX );
-    return( buffer );
 }
 
 #endif
@@ -1342,7 +1153,7 @@ void _searchenv( const char *name, const char *env_var, char *buffer )
                     strcat( p, name );
                     /* check to see if file exists */
                     if( access( buffer, 0 ) == 0 ) {
-                        __set_errno( prev_errno );
+                        errno = prev_errno;
                         return;
                     }
                 }
@@ -1663,6 +1474,15 @@ int unsetenv( const char *name )
 #define OPENMODE_DENY_READ      0x0030
 #define OPENMODE_DENY_NONE      0x0040
 
+void __NT_timet_to_filetime( time_t t, FILETIME *ft )
+{
+    ULARGE_INTEGER  ulint;
+
+    ulint.QuadPart = ( t + SEC_TO_UNIX_EPOCH ) * WINDOWS_TICK;
+    ft->dwLowDateTime = ulint.u.LowPart;
+    ft->dwHighDateTime = ulint.u.HighPart;
+}
+
 time_t __NT_filetime_to_timet( const FILETIME *ft )
 {
     ULARGE_INTEGER  ulint;
@@ -1828,7 +1648,7 @@ static DIR *__opendir( const char *dirname, DIR *dirp )
     }
     h = FindFirstFile( dirname, &ffd );
     if( h == INVALID_HANDLE_VALUE ) {
-        __set_errno( ENOENT );
+        errno = ENOENT;
         return( NULL );
     }
     DTAXXX_HANDLE_OF( dirp->d_dta ) = h;
@@ -1872,7 +1692,7 @@ DIR *opendir( const char *dirname )
     dirp = malloc( sizeof( DIR ) );
     if( dirp == NULL ) {
         FindClose( DTAXXX_HANDLE_OF( tmp.d_dta ) );
-        __set_errno( ENOMEM );
+        errno = ENOMEM;
         return( NULL );
     }
     tmp.d_openpath = strdup( dirname );
@@ -1891,7 +1711,7 @@ struct dirent *readdir( DIR *dirp )
         dirp->d_first = _DIR_NOTFIRST;
     } else {
         if( !FindNextFileA( DTAXXX_HANDLE_OF( dirp->d_dta ), &ffd ) ) {
-            __set_errno( ENOENT );
+            errno = ENOENT;
             return( NULL );
         }
         __GetNTDirInfo( dirp, &ffd );
@@ -1903,7 +1723,8 @@ int closedir( DIR *dirp )
 /***********************/
 {
     if( dirp == NULL || dirp->d_first == _DIR_CLOSED ) {
-        return( __set_errno( ERANGE ) );
+        errno = ERANGE;
+        return( -1 );
     }
     if( !FindClose( DTAXXX_HANDLE_OF( dirp->d_dta ) ) ) {
         return( -1 );

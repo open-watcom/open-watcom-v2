@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,6 +34,9 @@
 #include "widechar.h"
 #include <stdio.h>
 #include <stdarg.h>
+#ifdef __QNX__
+    #include "slibqnx.h"
+#endif
 #include "printf.h"
 
 
@@ -46,7 +49,7 @@ typedef struct buf_limit {
  * buf_putc -- append a character to a string in memory
  */
 static prtf_callback_t buf_putc; // setup calling convention
-static void PRTF_CALLBACK buf_putc( PTR_SPECS specs, PRTF_CHAR_TYPE op_char )
+static void PRTF_CALLBACK buf_putc( PTR_PRTF_SPECS specs, PRTF_CHAR_TYPE op_char )
 {
     buf_limit   *bufinfo;
 
@@ -61,7 +64,7 @@ static void PRTF_CALLBACK buf_putc( PTR_SPECS specs, PRTF_CHAR_TYPE op_char )
  * buf_count_putc -- only count characters to be output
  */
 static prtf_callback_t buf_count_putc; // setup calling convention
-static void PRTF_CALLBACK buf_count_putc( PTR_SPECS specs, PRTF_CHAR_TYPE op_char )
+static void PRTF_CALLBACK buf_count_putc( PTR_PRTF_SPECS specs, PRTF_CHAR_TYPE op_char )
 {
     /* unused parameters */ (void)op_char;
 

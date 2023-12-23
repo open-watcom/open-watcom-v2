@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -35,6 +35,7 @@
 #include <process.h>
 #include <string.h>
 #include <rdos.h>
+#include "roundmac.h"
 #include "rterrno.h"
 #include "stacklow.h"
 #include "liballoc.h"

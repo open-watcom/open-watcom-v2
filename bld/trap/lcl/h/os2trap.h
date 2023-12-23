@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,33 +37,6 @@
 typedef enum { USER_SCREEN, DEBUG_SCREEN } scrtype;
 
 #ifdef _M_I86
-
-/*
- * from BSEDOS16.H, OS/2 2.0
- */
-typedef struct _NEWSTARTDATA {  /* stdata */
-    USHORT  Length;
-    USHORT  Related;
-    USHORT  FgBg;
-    USHORT  TraceOpt;
-    PSZ     PgmTitle;
-    PSZ     PgmName;
-    PBYTE   PgmInputs;
-    PBYTE   TermQ;
-    PBYTE   Environment;
-    USHORT  InheritOpt;
-    USHORT  SessionType;
-    PSZ     IconFile;
-    ULONG   PgmHandle;
-    USHORT  PgmControl;
-    USHORT  InitXPos;
-    USHORT  InitYPos;
-    USHORT  InitXSize;
-    USHORT  InitYSize;
-    USHORT  Reserved;
-    PSZ     ObjectBuffer;
-    ULONG   ObjectBuffLen;
-} NEWSTARTDATA;
 
 /* Global Information Segment */
 
@@ -122,12 +95,10 @@ typedef struct __LINFOSEG {      /* lis */
 
 #endif
 
-char            *StrCopy( const char *, char * );
 long            OpenFile( char *, USHORT, int );
 void            RestoreScreen( void );
-unsigned long   FindProgFile( const char *, char *, const char * );
-char            *AddDriveAndPath( char *, char * );
-void            MergeArgvArray( char *, char *, unsigned );
+char            *AddDriveAndPath( const char *src, char *dst );
+void            MergeArgvArray( const char *src, char *dst, size_t len );
 long            TaskOpenFile( char *name, int mode, int flags );
 HFILE           TaskDupFile( HFILE old, HFILE new );
 long            TaskCloseFile( HFILE hdl );

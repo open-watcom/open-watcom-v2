@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,6 +39,7 @@
 #include "misc.h"
 #include "fnutils.h"
 #include "getopt.h"
+#include "argvenv.h"
 #include "argvrx.h"
 #include "console.h"
 #include "int16.h"
@@ -46,7 +47,6 @@
 
 #define _osmode_REALMODE()  (_osmode == DOS_MODE)
 
-char *OptEnvVar = "more";
 static const char *usageMsg[] = {
     "Usage: more [-?cftX] [+<n>] [-n<lines>] [-p<prompt>] [files]",
     "\tfiles              : files to display",
@@ -340,6 +340,7 @@ int main( int argc, char *argv[] )
     bool        buff_stdin;
     int         ch;
     size_t      read_bytes;
+    char        **argv1;
 
     screenHeight = GetConsoleHeight();
     screenWidth = GetConsoleWidth();
@@ -348,8 +349,10 @@ int main( int argc, char *argv[] )
     buff_stdin = true;
     rxflag = false;
 
+    argv1 = ExpandEnv( &argc, argv, "MORE" );
+
     for( ;; ) {
-        ch = GetOpt( &argc, argv, "#cftXp:n:", usageMsg );
+        ch = GetOpt( &argc, argv1, "#cftXp:n:", usageMsg );
         if( ch == -1 ) {
             break;
         }
@@ -367,7 +370,7 @@ int main( int argc, char *argv[] )
             screenHeight = atoi( OptArg )+1;
             break;
         case 'p':
-            promptString = strdup( OptArg );
+            promptString = MemStrdup( OptArg );
             break;
         case '#':
             startLine = atol( OptArg )-1;
@@ -378,11 +381,11 @@ int main( int argc, char *argv[] )
         }
     }
 
-    argv = ExpandArgv( &argc, argv, rxflag );
+    argv = ExpandArgv( &argc, argv1, rxflag );
 
     lineCount = screenHeight - 1;
 
-    if( argc == 1 ) {
+    if( argc < 2 ) {
         if( buff_stdin ) {
             f = tmpfile();
             if( f == NULL ) {
@@ -416,5 +419,8 @@ int main( int argc, char *argv[] )
             }
         }
     }
+    MemFree( argv );
+    MemFree( argv1 );
+
     return( 0 );
 }

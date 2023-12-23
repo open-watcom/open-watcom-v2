@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,7 +48,7 @@ typedef struct list {
 /****************************************************************************/
 extern void WREInsertObject( LIST **, void *);
 extern void WREListLastElt( LIST *, LIST **);
-extern bool WREListConcat( LIST **, LIST *, uint_32 );
+extern bool WREListConcat( LIST **, LIST *, size_t );
 extern LIST *WREListCopy( LIST * );
 
 extern void *ListElement( LIST * );

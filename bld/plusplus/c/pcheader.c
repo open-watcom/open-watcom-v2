@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,6 +41,7 @@
 #endif
 #include "wio.h"
 #include "sopen.h"
+#include "jmpbuf.h"
 #include "memmgr.h"
 #include "carve.h"
 #include "hfile.h"
@@ -91,11 +92,11 @@ ExtraRptTable( ctr_pchw_region, PCHRW_MAX + 1, 1 );
 
 static pch_reloc_info relocInfo[PCHRELOC_MAX];
 
-static char *pchName;
+static char *pchFileName;
 static NAME pchDebugInfoName;
 static int  pchFile;
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 #define IO_BUFFER_SIZE  1024
 #else
 #define IO_BUFFER_SIZE  65536
@@ -111,21 +112,11 @@ static long     bufferPosition;
 
 static jmp_buf  *abortData;
 
-#ifdef NDEBUG
-
-#define PCHTrashAlreadyRead()
-
-void PCHActivate( void )
-/**********************/
-{
-}
-
-#else
+#ifdef DEVBUILD
 
 static clock_t start_parse;
 
 static void PCHTrashAlreadyRead( void )
-/*************************************/
 {
     if( ioBuffer != NULL && ioBuffer < pch_buff_cur ) {
         unsigned amt = pch_buff_cur - ioBuffer;
@@ -134,24 +125,34 @@ static void PCHTrashAlreadyRead( void )
 }
 
 void PCHActivate( void )
+/**********************/
 {
     start_parse = clock();
+}
+
+#else
+
+#define PCHTrashAlreadyRead()
+
+void PCHActivate( void )
+/**********************/
+{
 }
 
 #endif
 
 
-void PCHSetFileName( char *name )
-/*******************************/
+char **PCHFileNamePtr( void )
+/***************************/
 {
-    CMemFree( pchName );
-    pchName = name;
+    return( &pchFileName );
 }
 
-char *PCHFileName( void )
+char *PCHFileNameGet( void )
+/**************************/
 {
-    if( pchName != NULL ) {
-        return( pchName );
+    if( pchFileName != NULL ) {
+        return( pchFileName );
     }
     return( PCH_DEFAULT_FILE_NAME );
 }
@@ -285,7 +286,7 @@ static void alignPCH( unsigned i, bool writing )
             PCHRead( dummy, skip );
         }
     }
-#ifndef NDEBUG
+#ifdef DEVBUILD
     if( writing ) {
         unsigned w = -i;
         PCHWriteUInt( w );
@@ -349,6 +350,7 @@ static void execControlFunctions( bool writing, pch_status (**tbl)( void ) )
 }
 
 void PCHFlushBuffer( void )
+/*************************/
 {
     unsigned amount;
     unsigned amt_written;
@@ -369,8 +371,9 @@ void PCHFlushBuffer( void )
 }
 
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 void PCHVerifyFile( void *handle )    // DEBUG -- verify handle ok
+/********************************/
 {
     DbgVerify( (int)(pointer_uint)handle == pchFile, "PCH handle is bad" );
 }
@@ -379,6 +382,7 @@ void PCHVerifyFile( void *handle )    // DEBUG -- verify handle ok
 
 #ifdef OPT_BR
 long PCHSeek( long offset, int type )
+/***********************************/
 {
     lseek( pchFile, offset, type );
     return( tell( pchFile ) );
@@ -477,7 +481,7 @@ void PCHeaderCreate( char *include_file )
     char * volatile pch_fname;  // must be preserved by setjmp()
     int status;
     jmp_buf restore_state;
-#ifndef NDEBUG
+#ifdef DEVBUILD
     clock_t start;
     clock_t stop;
 
@@ -490,7 +494,7 @@ void PCHeaderCreate( char *include_file )
         // treat any .PCH as read-only (do not create one)
         return;
     }
-    pch_fname = PCHFileName();
+    pch_fname = PCHFileNameGet();
     pchFile = _sopen4( pch_fname, O_RDWR | O_BINARY | O_CREAT | O_TRUNC, SH_DENYRW, PMODE_RW );
     if( pchFile == -1 ) {
         CErr2p( ERR_PCH_CREATE_ERROR, pch_fname );
@@ -500,7 +504,7 @@ void PCHeaderCreate( char *include_file )
     ioBuffer = CMemAlloc( IO_BUFFER_SIZE );
     bufferCursor = ioBuffer;
     amountLeft = IO_BUFFER_SIZE;
-    abortData = &restore_state;
+    abortData = JMPBUF_PTR( restore_state );
     status = setjmp( restore_state );
     if( status == 0 ) {
         unsigned long brinf_posn;
@@ -532,7 +536,7 @@ void PCHeaderCreate( char *include_file )
             CompFlags.all_debug_type_names = true;
         }
     }
-#ifndef NDEBUG
+#ifdef DEVBUILD
     stop = clock();
     printf( "%u ticks to parse header\n", (unsigned)( start - start_parse ) );
     printf( "%u ticks to save pre-compiled header\n", (unsigned)( stop - start ) );
@@ -782,7 +786,7 @@ pch_absorb PCHeaderAbsorb( char *include_file )
     pch_absorb ret;
     int status;
     jmp_buf restore_state;
-#ifndef NDEBUG
+#ifdef DEVBUILD
     clock_t start;
     clock_t stop;
 
@@ -794,7 +798,7 @@ pch_absorb PCHeaderAbsorb( char *include_file )
     if( CompFlags.fhw_switch_used ) {
         return( PCHA_IGNORE );
     }
-    pchFile = _sopen3( PCHFileName(), O_RDONLY | O_BINARY, SH_DENYWR );
+    pchFile = _sopen3( PCHFileNameGet(), O_RDONLY | O_BINARY, SH_DENYWR );
     if( pchFile == -1 ) {
         return( PCHA_NOT_PRESENT );
     }
@@ -802,7 +806,7 @@ pch_absorb PCHeaderAbsorb( char *include_file )
     pch_buff_eob = ioBuffer + IO_BUFFER_SIZE;
     pch_buff_cur = pch_buff_eob;
     ret = PCHA_OK;
-    abortData = &restore_state;
+    abortData = JMPBUF_PTR( restore_state );
     status = setjmp( restore_state );
     if( status == 0 ) {
         if( initialRead() == 0 ) {
@@ -844,7 +848,7 @@ pch_absorb PCHeaderAbsorb( char *include_file )
     if( CompFlags.pch_debug_info_opt && ret == PCHA_OK ) {
         CompFlags.pch_debug_info_read = true;
     }
-#ifndef NDEBUG
+#ifdef DEVBUILD
     stop = clock();
     printf( "%u ticks to load pre-compiled header\n", (unsigned)( stop - start ) );
 #endif
@@ -906,7 +910,6 @@ void *PCHReadUnaligned( void *p, unsigned size )
 }
 
 static unsigned doReadUnsigned( void )
-/************************************/
 {
     unsigned read_value;
     PCHRead( &read_value, sizeof( read_value ) );
@@ -1039,7 +1042,7 @@ void PCHPerformReloc( pch_reloc_index ri )
     char        *volatile pch_fname;  // must be preserved by setjmp()
     int         status;
     jmp_buf     restore_state;
-#ifndef NDEBUG
+#ifdef DEVBUILD
     clock_t     start;
     clock_t     stop;
 
@@ -1053,7 +1056,7 @@ void PCHPerformReloc( pch_reloc_index ri )
         return;
     }
     stop_position = relocInfo[ri].stop;
-    pch_fname = PCHFileName();
+    pch_fname = PCHFileNameGet();
     pchFile = _sopen3( pch_fname, O_RDWR | O_BINARY | O_EXCL, SH_DENYRW );
     if( pchFile == -1 ) {
         CErr2p( ERR_PCH_OPEN_ERROR, pch_fname );
@@ -1062,7 +1065,7 @@ void PCHPerformReloc( pch_reloc_index ri )
     DbgAssert( ( stop_position - start_position ) < UINT_MAX );
     reloc_size = stop_position - start_position;
     ioBuffer = CMemAlloc( reloc_size );
-    abortData = &restore_state;
+    abortData = JMPBUF_PTR( restore_state );
     status = setjmp( restore_state );
     if( status == 0 ) {
         if( lseek( pchFile, start_position, SEEK_SET ) != start_position ) {
@@ -1092,13 +1095,13 @@ void PCHPerformReloc( pch_reloc_index ri )
         // write error occurred; delete PCH file
         remove( pch_fname );
     }
-#ifndef NDEBUG
+#ifdef DEVBUILD
     stop = clock();
     printf( "%u ticks to relocate pre-compiled header (%u section)\n", (unsigned)( stop - start ), ri );
 #endif
 }
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 static char const * const pchRegionNames[] = {
     #define PCH_EXEC( a, b )    #a ,
     #include "pcregdef.h"
@@ -1112,12 +1115,12 @@ static void pchInit( INITFINI* defn )
 
     /* unused parameters */ (void)defn;
 
-    pchName = NULL;
+    pchFileName = NULL;
     pchDebugInfoName = NULL;
     for( cri = relocInfo; cri < &relocInfo[PCHRELOC_MAX]; ++cri ) {
         cri->start = 0;
     }
-#ifndef NDEBUG
+#ifdef DEVBUILD
     ExtraRptRegisterCtr( &ctr_pch_length, "# bytes in PCH" );
     ExtraRptRegisterCtr( &ctr_pch_waste, "# bytes wasted in PCH for alignment" );
     ExtraRptRegisterTab( "PCH region size table (pcregdef.h)", pchRegionNames, &ctr_pchw_region[0][0], PCHRW_MAX + 1, 1 );
@@ -1131,7 +1134,7 @@ static void pchFini( INITFINI* defn )
 {
     /* unused parameters */ (void)defn;
 
-    CMemFreePtr( &pchName );
+    CMemFreePtr( &pchFileName );
 }
 
 INITDEFN( pchdrs, pchInit, pchFini )

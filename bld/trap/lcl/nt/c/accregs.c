@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,12 +34,14 @@
 #include <stdlib.h>
 #include <string.h>
 #include "stdnt.h"
+#include "globals.h"
 #include "madregs.h"
+
 
 #define LDWORD(x)   (x&0xFFFFFFFFL)
 #define HDWORD(x)   ((x>>32)&0xFFFFFFFFL)
 
-#if defined( MD_x86 )
+#if MADARCH & MADARCH_X86
 static void ReadCPU( struct x86_cpu *r, MYCONTEXT *con )
 {
     r->eax = con->Eax;
@@ -79,7 +81,7 @@ static void WriteCPU( struct x86_cpu *r, MYCONTEXT *con )
     con->SegFs = r->fs;
     con->SegGs = r->gs;
 }
-#elif defined( MD_x64 )
+#elif MADARCH & MADARCH_X64
 #if 0
 static void ReadCPU( struct x64_cpu *r, MYCONTEXT *con )
 {
@@ -187,14 +189,14 @@ trap_retval TRAP_CORE( Read_regs )( void )
 
     mr = GetOutPtr( 0 );
 
-#if defined( MD_x86 )
+#if MADARCH & MADARCH_X86
     memset( mr, 0, sizeof( mr->x86 ) );
-#elif defined( MD_x64 )
+#elif MADARCH & MADARCH_X64
     memset( mr, 0, sizeof( mr->x86 ) );
 //    memset( mr, 0, sizeof( mr->x64 ) );
-#elif defined( MD_axp )
+#elif MADARCH & MADARCH_AXP
     memset( mr, 0, sizeof( mr->axp ) );
-#elif defined( MD_ppc )
+#elif MADARCH & MADARCH_PPC
     memset( mr, 0, sizeof( mr->ppc ) );
 #else
     #error TRAP_CORE( Read_regs ) not configured
@@ -202,19 +204,25 @@ trap_retval TRAP_CORE( Read_regs )( void )
     if( DebugeePid ) {
         ti = FindThread( DebugeeTid );
         MyGetThreadContext( ti, &con );
-#if defined( MD_x86 ) || defined( MD_x64 )
+#if MADARCH & MADARCH_X86
         ReadCPU( &mr->x86.cpu, &con );
         memcpy( &mr->x86.u.fpu, &con.FloatSave, sizeof( mr->x86.u.fpu ) );
-        memcpy( mr->x86.xmm.xmm, &con.ExtendedRegisters[ MYCONTEXT_XMM ],
+        memcpy( mr->x86.xmm.xmm, &con.ExtendedRegisters[MYCONTEXT_XMM],
             sizeof( mr->x86.xmm.xmm ) );
-        mr->x86.xmm.mxcsr = con.ExtendedRegisters[ MYCONTEXT_MXCSR ];
-#elif defined( MD_axp )
+        mr->x86.xmm.mxcsr = con.ExtendedRegisters[MYCONTEXT_MXCSR];
+#elif MADARCH & MADARCH_X64
+        ReadCPU( &mr->x86.cpu, &con );
+        memcpy( &mr->x86.u.fpu, &con.FloatSave, sizeof( mr->x86.u.fpu ) );
+        memcpy( mr->x86.xmm.xmm, &con.ExtendedRegisters[MYCONTEXT_XMM],
+            sizeof( mr->x86.xmm.xmm ) );
+        mr->x86.xmm.mxcsr = con.ExtendedRegisters[MYCONTEXT_MXCSR];
+#elif MADARCH & MADARCH_AXP
         memcpy( &mr->axp.r, &con, sizeof( mr->axp.r ) );
-        mr->axp.pal.nt.fir      = *( unsigned_64 * ) & con.Fir;
-        mr->axp.pal.nt.softfpcr = *( unsigned_64 * ) & con.SoftFpcr;
+        mr->axp.pal.nt.fir      = *(unsigned_64 *)&con.Fir;
+        mr->axp.pal.nt.softfpcr = *(unsigned_64 *)&con.SoftFpcr;
         mr->axp.pal.nt.psr      = con.Psr;
         mr->axp.active_pal      = PAL_nt;
-#elif defined( MD_ppc )
+#elif MADARCH & MADARCH_PPC
         memcpy( &mr->ppc.f0, &con.Fpr0, sizeof( double )* 32 );
         mr->ppc.r0.u._32[0] = con.Gpr0;
         mr->ppc.r1.u._32[0] = con.Gpr1;
@@ -255,19 +263,22 @@ trap_retval TRAP_CORE( Read_regs )( void )
         mr->ppc.msr.u._32[0] = con.Msr;
         mr->ppc.cr = con.Cr;
         mr->ppc.xer = con.Xer;
-        mr->ppc.fpscr = *( unsigned_32 * ) & con.Fpscr; //NYI: is this right?
+        /*
+         * NYI: is this right?
+         */
+        mr->ppc.fpscr = *(unsigned_32 *)&con.Fpscr;
 #else
         #error TRAP_CORE( Read_regs ) not configured
 #endif
     }
-#if defined( MD_x86 )
+#if MADARCH & MADARCH_X86
     return( sizeof( mr->x86 ) );
-#elif defined( MD_x64 )
+#elif MADARCH & MADARCH_X64
     return( sizeof( mr->x86 ) );
 //    return( sizeof( mr->x64 ) );
-#elif defined( MD_axp )
+#elif MADARCH & MADARCH_AXP
     return( sizeof( mr->axp ) );
-#elif defined( MD_ppc )
+#elif MADARCH & MADARCH_PPC
     return( sizeof( mr->ppc ) );
 #else
     #error TRAP_CORE( Read_regs ) not configured
@@ -287,17 +298,22 @@ trap_retval TRAP_CORE( Write_regs )( void )
 
     ti = FindThread( DebugeeTid );
     MyGetThreadContext( ti, &con );
-#if defined( MD_x86 ) || defined( MD_x64 )
+#if MADARCH & MADARCH_X86
     WriteCPU( &mr->x86.cpu, &con );
     memcpy( &con.FloatSave, &mr->x86.u.fpu, sizeof( mr->x86.u.fpu ) );
-    memcpy( &con.ExtendedRegisters[ MYCONTEXT_XMM ], mr->x86.xmm.xmm, sizeof( mr->x86.xmm.xmm ) );
-    con.ExtendedRegisters[ MYCONTEXT_MXCSR ] = mr->x86.xmm.mxcsr;
-#elif defined( MD_axp )
+    memcpy( &con.ExtendedRegisters[MYCONTEXT_XMM], mr->x86.xmm.xmm, sizeof( mr->x86.xmm.xmm ) );
+    con.ExtendedRegisters[MYCONTEXT_MXCSR] = mr->x86.xmm.mxcsr;
+#elif MADARCH & MADARCH_X64
+    WriteCPU( &mr->x86.cpu, &con );
+    memcpy( &con.FloatSave, &mr->x86.u.fpu, sizeof( mr->x86.u.fpu ) );
+    memcpy( &con.ExtendedRegisters[MYCONTEXT_XMM], mr->x86.xmm.xmm, sizeof( mr->x86.xmm.xmm ) );
+    con.ExtendedRegisters[MYCONTEXT_MXCSR] = mr->x86.xmm.mxcsr;
+#elif MADARCH & MADARCH_AXP
     memcpy( &con, &mr->axp.r, sizeof( mr->axp.r ) );
-    *( unsigned_64 * ) & con.Fir            = mr->axp.pal.nt.fir;
-    *( unsigned_64 * ) & con.SoftFpcr       = mr->axp.pal.nt.softfpcr;
-    con.Psr                             = mr->axp.pal.nt.psr;
-#elif defined( MD_ppc )
+    *(unsigned_64 *)&con.Fir        = mr->axp.pal.nt.fir;
+    *(unsigned_64 *)&con.SoftFpcr   = mr->axp.pal.nt.softfpcr;
+    con.Psr                         = mr->axp.pal.nt.psr;
+#elif MADARCH & MADARCH_PPC
     memcpy( &con.Fpr0, &mr->ppc.f0, sizeof( double )* 32 );
     con.Gpr0 = mr->ppc.r0.u._32[0];
     con.Gpr1 = mr->ppc.r1.u._32[0];
@@ -338,7 +354,10 @@ trap_retval TRAP_CORE( Write_regs )( void )
     con.Msr = mr->ppc.msr.u._32[0];
     con.Cr = mr->ppc.cr;
     con.Xer = mr->ppc.xer;
-    *( unsigned_32 * ) & con.Fpscr = mr->ppc.fpscr; //NYI: is this right?
+    /*
+     * NYI: is this right?
+     */
+    *(unsigned_32 *)&con.Fpscr = mr->ppc.fpscr;
 #else
     #error TRAP_CORE( Write_regs ) not configured
 #endif
@@ -346,33 +365,60 @@ trap_retval TRAP_CORE( Write_regs )( void )
     return( 0 );
 }
 
-LPVOID AdjustIP( MYCONTEXT *con, int adjust )
+FARPROC AdjustIP( MYCONTEXT *con, int adjust )
 {
-#if defined( MD_x86 ) || defined( MD_x64 )
+#if MADARCH & MADARCH_X86
     con->Eip += adjust;
-    return( (LPVOID)con->Eip );
-#elif defined( MD_axp )
-    //NYI: 64 bit
-    ( ( unsigned_64 * ) & con->Fir )->u._32[0] += adjust;
-    return( ( ( unsigned_64 * ) & con->Fir )->u._32[0] );
-#elif defined( MD_ppc )
+    return( (FARPROC)con->Eip );
+#elif MADARCH & MADARCH_X64
+    con->Eip += adjust;
+    return( (FARPROC)con->Eip );
+#elif MADARCH & MADARCH_AXP
+    /*
+     * NYI: 64 bit
+     */
+    ( (unsigned_64 *)&con->Fir )->u._32[0] += adjust;
+    return( (FARPROC)( (unsigned_64 *)&con->Fir )->u._32[0] );
+#elif MADARCH & MADARCH_PPC
     con->Iar += adjust;
-    return( con->Iar );
+    return( (FARPROC)con->Iar );
 #else
     #error AdjustIP not configured
 #endif
 }
 
-void SetIP( MYCONTEXT *con, LPVOID new )
+FARPROC GetIP( MYCONTEXT *con )
 {
-#if defined( MD_x86 ) || defined( MD_x64 )
+#if MADARCH & MADARCH_X86
+    return( (FARPROC)con->Eip );
+#elif MADARCH & MADARCH_X64
+    return( (FARPROC)con->Eip );
+#elif MADARCH & MADARCH_AXP
+    /*
+     * NYI: 64 bit
+     */
+    return( (FARPROC)( (unsigned_64 *)&con->Fir )->u._32[0] );
+#elif MADARCH & MADARCH_PPC
+    return( (FARPROC)con->Iar );
+#else
+    #error GetIP not configured
+#endif
+}
+
+void SetIP( MYCONTEXT *con, FARPROC new )
+{
+#if MADARCH & MADARCH_X86
     con->Eip = (DWORD)new;
-#elif defined( MD_axp )
-    //NYI: 64 bit
-    ( ( unsigned_64 * ) & con->Fir )->u._32[0] = new;
-#elif defined( MD_ppc )
+#elif MADARCH & MADARCH_X64
+    con->Eip = (DWORD)new;
+#elif MADARCH & MADARCH_AXP
+    /*
+     * NYI: 64 bit
+     */
+    ( (unsigned_64 *)&con->Fir )->u._32[0] = new;
+#elif MADARCH & MADARCH_PPC
     con->Iar = new;
 #else
-    #error AdjustIP not configured
+    #error SetIP not configured
 #endif
 }

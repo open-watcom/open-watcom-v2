@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -61,7 +62,9 @@ static hmq_redirect *FindHmqRedirect( HMQ hmq )
     static hmq_redirect redir[NUM_REDIRS];
 
     for( i = 0; i < NUM_REDIRS; ++i ) {
-        if( redir[i].hmq == hmq ) return( &redir[i] );
+        if( redir[i].hmq == hmq ) {
+            return( &redir[i] );
+        }
     }
     return( NULL );
 }
@@ -71,7 +74,8 @@ static hmq_redirect *NewHmqRedirect( HMQ hmq )
     hmq_redirect        *redir;
 
     redir = FindHmqRedirect( NULL );
-    if( redir == NULL ) return( NULL );
+    if( redir == NULL )
+        return( NULL );
     redir->hmq = hmq;
     return( redir );
 }
@@ -88,9 +92,11 @@ VOID __saveregs EXPENTRY SendMsgHookProc( HAB hab, PSMHSTRUCT smh, BOOL it )
 
     it=it; hab=hab;
     hmq = (HMQ)WinQueryWindowULong( smh->hwnd, QWL_HMQ );
-    if( hmq == NULL ) return;
+    if( hmq == NULL )
+        return;
     redir = FindHmqRedirect( hmq );
-    if( redir == NULL ) return;
+    if( redir == NULL )
+        return;
     smh->hwnd = redir->hwnd;
 }
 
@@ -101,7 +107,9 @@ VOID __saveregs EXPENTRY SetHmqDebugee( HMQ hmq, HWND hwnd )
     redir = FindHmqRedirect( hmq );
     if( redir == NULL ) {
         redir = NewHmqRedirect( hmq );
-        if( redir == NULL ) return;
+        if( redir == NULL ) {
+            return;
+        }
     }
     redir->hwnd = hwnd;
     if( hwnd == NULL ) {

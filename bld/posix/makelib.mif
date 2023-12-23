@@ -6,20 +6,18 @@ proj_name = posix_lib
 
 posix_lib_autodepends = .AUTODEPEND
 
-!include $(posix_dir)/model.mif
+!include ../common.mif
 
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
 
-!include $(posix_dir)/common.mif
-
 #
 # cflags
 #
-.c: $(posix_dir)/misc
+.c: ../misc
 
-inc_dirs += -I"$(posix_dir)/h"
+inc_dirs += -I"../h"
 
 #
 # LIB

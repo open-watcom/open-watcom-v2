@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,6 +33,7 @@
 #include "vi.h"
 #include "rxsupp.h"
 #include "win.h"
+#include "parse.h"
 #ifdef __WIN__
 #include "wclbproc.h"
 #endif
@@ -151,7 +152,7 @@ vi_rc TwoPartSubstitute( const char *find, const char *replace, int prompt, int 
     long    changecnt, linecnt;
     linenum end_line;
 
-    char *cmd = MemAlloc( MAX_INPUT_LINE );
+    char *cmd = _MemAllocArray( char, MAX_INPUT_LINE );
 
     StartUndoGroup( UndoStack );
 
@@ -175,7 +176,7 @@ vi_rc TwoPartSubstitute( const char *find, const char *replace, int prompt, int 
     }
     EndUndoGroup( UndoStack );
 
-    MemFree( cmd );
+    _MemFreeArray( cmd );
     return( rc );
 
 } /* TwoPartSubstitute */
@@ -188,6 +189,43 @@ static void nextSearchStartPos( i_mark *pos, bool gflag, int rlen )
         pos->column = 0;
     }
 }
+
+
+/*
+ * ReplaceSubString - replace a sub-string with a different one
+ */
+int ReplaceSubString( char *data, int len, int s, int e, char *rep, int replen )
+{
+    int i, ln, delta, slen;
+
+    slen = e - s + 1;
+    delta = slen - replen;
+
+    /*
+     * make room
+     */
+    ln = len;
+    len -= delta;
+    if( delta < 0 ) {
+        delta *= -1;
+        for( i = ln; i > e; i-- ) {
+            data[i + delta] = data[i];
+        }
+    } else if( delta > 0 ) {
+        for(i = e + 1; i <= ln; i++ ) {
+            data[i - delta] = data[i];
+        }
+    }
+
+    /*
+     * copy in new string
+     */
+    for( i = 0; i < replen; i++ ) {
+        data[s + i] = rep[i];
+    }
+    return( len );
+
+} /* ReplaceSubString */
 
 /*
  * Substitute - perform substitution
@@ -357,7 +395,7 @@ vi_rc Substitute( linenum n1, linenum n2, const char *data )
         if( rc != ERR_NO_ERR ) {
             break;
         }
-        if( CurrentLine->len + rlen - slen >= EditVars.MaxLine ) {
+        if( CurrentLine->len + rlen - slen >= EditVars.MaxLineLen ) {
             rc = ERR_LINE_FULL;
             break;
         }

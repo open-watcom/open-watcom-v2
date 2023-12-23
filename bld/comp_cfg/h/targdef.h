@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,6 +36,7 @@
 #define _ASCII  0
 #define _EBCDIC 1
 #define _KANJI  2
+#define _UTF8   3
 
 // Define CPU targets ( _CPU macro ):
 // ==================================

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -177,7 +177,7 @@ void DWENTRY DWLocReg( dw_client cli, dw_loc_id loc, uint reg )
     if( reg < 32 ) {
         op = nextOp( cli, loc, DW_OP_reg( reg ), 0 );
     } else {
-        len = (dw_loc_offs)( ULEB128( buf, reg ) - buf );
+        len = (dw_loc_offs)( WriteULEB128( buf, reg ) - buf );
         op = nextOp( cli, loc, DW_OP_regx, len );
         ADD_ADDR( cli, loc, len );
         memcpy( op->data, buf, len );
@@ -190,7 +190,7 @@ void DWENTRY DWLocPiece( dw_client cli, dw_loc_id loc, uint size )
     loc_op          *op;
     dw_loc_offs     len;
 
-    len = (dw_loc_offs)( ULEB128( buf, size ) - buf );
+    len = (dw_loc_offs)( WriteULEB128( buf, size ) - buf );
     op = nextOp( cli, loc, DW_OP_piece, len );
     ADD_ADDR( cli, loc, len );
     memcpy( op->data, buf, len );
@@ -249,9 +249,7 @@ void DWENTRY DWLocSegment( dw_client cli, dw_loc_id loc, dw_sym_handle sym )
 void DWENTRY DWLocConstU( dw_client cli, dw_loc_id loc, dw_uconst value )
 {
     uint_8          buf[MAX_LEB128];
-#ifndef NDEBUG
     uint_8          *end;
-#endif
     loc_op          *op;
 
     _Validate( loc != NULL );
@@ -269,11 +267,9 @@ void DWENTRY DWLocConstU( dw_client cli, dw_loc_id loc, dw_uconst value )
         ADD_ADDR( cli, loc, sizeof( uint_16 ) );
     } else if( value < ( 1UL << 21 ) ) {
         /* will only take 3 bytes to encode in ULEB128 form */
-#ifndef NDEBUG
-        end = ULEB128( buf, value );
+        end = WriteULEB128( buf, value );
+#ifdef DEVBUILD
         _Assert( end - buf == 3 );
-#else
-        ULEB128( buf, value );
 #endif
         op = nextOp( cli, loc, DW_OP_constu, 3 );
         op->data[0] = buf[0];
@@ -309,7 +305,7 @@ void DWENTRY DWLocConstS( dw_client cli, dw_loc_id loc, dw_sconst value )
         ADD_ADDR( cli, loc, sizeof( int_16 ) );
     } else {
         /* test length of LEB128 form before using DW_OP_const4s */
-        len = (dw_loc_offs)( LEB128( buf, value ) - buf );
+        len = (dw_loc_offs)( WriteSLEB128( buf, value ) - buf );
         if( len > 3 ) {
             op = nextOp( cli, loc, DW_OP_const4s, sizeof( int_32 ) );
             WriteS32( op->data, value );
@@ -365,7 +361,7 @@ void DWENTRY DWLocOp( dw_client cli, dw_loc_id loc, dw_loc_op user_op, ... )
         ADD_ADDR( cli, loc, 1 );
         break;
     case DW_LOC_plus_uconst:
-        len = (dw_loc_offs)( ULEB128( buf, va_arg( args, dw_uconst ) ) - buf );
+        len = (dw_loc_offs)( WriteULEB128( buf, va_arg( args, dw_uconst ) ) - buf );
         op = nextOp( cli, loc, op_code, len );
         memcpy( op->data, buf, len );
         ADD_ADDR( cli, loc, len );
@@ -377,20 +373,20 @@ void DWENTRY DWLocOp( dw_client cli, dw_loc_id loc, dw_loc_op user_op, ... )
         ADD_ADDR( cli, loc, sizeof( int_16 ) );
         break;
     case DW_LOC_fbreg:
-        len = (dw_loc_offs)( LEB128( buf, va_arg( args, dw_sconst ) ) - buf );
+        len = (dw_loc_offs)( WriteSLEB128( buf, va_arg( args, dw_sconst ) ) - buf );
         op = nextOp( cli, loc, op_code, len );
         memcpy( op->data, buf, len );
         ADD_ADDR( cli, loc, len );
         break;
     case DW_LOC_breg:
         reg = va_arg( args, uint );
+        end = buf;
         if( reg < 32 ) {
             op_code = DW_OP_breg( reg );
-            end = buf;
         } else {
-            end = ULEB128( buf, reg );
+            end = WriteULEB128( end, reg );
         }
-        len = (dw_loc_offs)( LEB128( end, va_arg( args, dw_sconst ) ) - buf );
+        len = (dw_loc_offs)( WriteSLEB128( end, va_arg( args, dw_sconst ) ) - buf );
         op = nextOp( cli, loc, op_code, len );
         memcpy( op->data, buf, len );
         ADD_ADDR( cli, loc, len );

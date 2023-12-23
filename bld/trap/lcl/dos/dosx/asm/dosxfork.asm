@@ -2,6 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
+;* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -35,11 +36,11 @@ extrn           _BackFromFork           : byte
 
                 name            fork
 
-DGROUP GROUP _text
+DGROUP GROUP _TEXT
 
 assume cs:DGROUP
 
-_text segment byte public 'code'
+_TEXT segment byte public 'code'
 
 public          GetPSP_
 GetPSP_         proc    near
@@ -187,6 +188,6 @@ saveds          dw      0
 savess          dw      0
 savebp          dw      0
 
-_text           ends
+_TEXT           ends
 
                 end

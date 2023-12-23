@@ -3058,10 +3058,10 @@ Warning! W014: no reference to symbol 'g'
   definition: 'int g'
 File: source\diag0163.c
 (18,15): Error! E580: cannot find a constructor for given initializer argument list
-  definition: '__1jlcfibar::__1jlcfibar( __1jlcfibar const & )'
+  definition: '__1JLCFIbar::__1JLCFIbar( __1JLCFIbar const & )'
   cannot convert argument 1 defined at: (18,15)
   source conversion type is 'int (lvalue)'
-  target conversion type is '__1jlcfibar const (lvalue)'
+  target conversion type is '__1JLCFIbar const (lvalue)'
 (28,1): Error! E585: syntax error; missing start of function body after constructor initializer
   constructor initializer started at: (25,20)
 (28,1): Error! E121: syntax error
@@ -7071,7 +7071,7 @@ File: source\diag0223.c
 (516,5): Error! E029: symbol 'aa2' has not been declared
 (517,9): Error! E166: cannot convert right pointer to type of left operand
   source conversion type is 'char *'
-  target conversion type is '__1nda5aptr *'
+  target conversion type is '__1NDA5Aptr *'
 (522,21): Error! E006: syntax error; probable cause: missing ';'
 (524,11): Error! E057: cannot take address of a bit-field
 (525,18): Error! E394: reference object must be initialized
@@ -8001,7 +8001,7 @@ File: source\diag0232.c
 (92,12): Error! E334: conversion ambiguity: [argument] to [argument type in prototype]
   source conversion type is 'x75::D *'
   target conversion type is 'x75::A *'
-(97,7): Warning! W735: '//' style comment continues on next line
+(97,11): Warning! W735: '//' style comment continues on next line
 (112,12): Error! E334: conversion ambiguity: [argument] to [argument type in prototype]
   source conversion type is 'x95::D *'
   target conversion type is 'x95::A *'
@@ -8174,9 +8174,9 @@ File: source\diag0238.c
   pure virtual function 'int A::pure( void )' defined at: (3,17)
 File: source\diag0239.c
 (5,17): Error! E125: invalid redefinition of the typedef name 'bool'
-(6,17): Warning! W735: '//' style comment continues on next line
-(7,2): Warning! W735: '//' style comment continues on next line
-(10,16): Warning! W735: '//' style comment continues on next line
+(6,32): Warning! W735: '//' style comment continues on next line
+(7,9): Warning! W735: '//' style comment continues on next line
+(10,34): Warning! W735: '//' style comment continues on next line
 (12,17): Warning! W761: octal escape sequence out of range; truncated
 (12,21): Warning! W761: octal escape sequence out of range; truncated
 (12,25): Warning! W761: octal escape sequence out of range; truncated

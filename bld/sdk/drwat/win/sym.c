@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,7 +40,6 @@
 #include "sopen.h"
 #include "dip.h"
 #include "dipimp.h"
-#include "dipcli.h"
 #if 0
 #include "pathgrp2.h"
 
@@ -79,7 +78,7 @@ FILE *PathOpen( char *name, unsigned len, const char *ext )
     _searchenv( realname, "PATH", path );
     if( *path == '\0' )
         return( NULL );
-    return( DIGCli( Open )( path, DIG_READ ) );
+    return( DIGCli( Open )( path, DIG_OPEN_READ ) );
 }
 #endif
 
@@ -128,7 +127,7 @@ bool LoadDbgInfo( void )
     DEBUGOUT( "Enter LoadDbgInfo" );
     curModHdl = NO_MOD;
     curProcess = DIPCreateProcess();
-    fp = DIGCli( Open )( DTModuleEntry.szExePath , DIG_READ );
+    fp = DIGCli( Open )( DTModuleEntry.szExePath, DIG_OPEN_READ );
     if( fp != NULL ) {
         DEBUGOUT( "File open OK" );
         for( priority = 0; (priority = DIPPriority( priority )) != 0; ) {

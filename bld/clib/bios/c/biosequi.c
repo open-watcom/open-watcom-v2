@@ -51,6 +51,7 @@ struct EquipBits {
 
 _WCRTLINK unsigned short _bios_equiplist( void )
 {
+#if defined( __WATCOM_PC98__ )
     if( _RWD_isPC98 ) { /* NEC PC-98 */
         unsigned short          necRc;
         union {
@@ -67,6 +68,7 @@ _WCRTLINK unsigned short _bios_equiplist( void )
         equip.bits.numSerialPorts = ( necRc >> 9 );
         return( equip.val );
     }
+#endif
     /* IBM PC */
     return( __ibm_bios_equiplist() );
 }

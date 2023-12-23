@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,7 +44,6 @@
 //#include "guixhook.h"
 #include "ctl3dcvr.h"
 #include "guirdlg.h"
-#include "wclbproc.h"
 #ifdef __NT__
     #undef _WIN32_IE
     #define _WIN32_IE   0x0400
@@ -401,9 +400,7 @@ WPI_MRESULT CALLBACK GUIGroupBoxFunc( HWND hwnd, WPI_MSG message, WPI_PARAM1 wpa
 WPI_WNDPROC GUIDoSubClass( HWND hwnd, gui_control_class control_class )
 {
     WPI_WNDPROC old;
-#ifdef __OS2_PM__
     WPI_WNDPROC new;
-#endif
 
     //CvrCtl3dSubclassCtl( hwnd );
 
@@ -412,22 +409,12 @@ WPI_WNDPROC GUIDoSubClass( HWND hwnd, gui_control_class control_class )
         return( GUISubClassEditCombobox( hwnd ) );
     case GUI_EDIT:
     case GUI_EDIT_MLE:
-#ifdef __OS2_PM__
-        new = (WPI_WNDPROC)_wpi_makeprocinstance( (WPI_PROC)GUIEditFunc, GUIMainHInst );
+        new = _wpi_makewndprocinstance( GUIEditFunc, GUIMainHInst );
         old = _wpi_subclasswindow( hwnd, new );
-#else
-        old = (WPI_WNDPROC)GET_WNDPROC( hwnd );
-        SET_WNDPROC( hwnd, (LONG_PTR)MakeProcInstance_WND( GUIEditFunc, GUIMainHInst ) );
-#endif
         return( old );
     case GUI_GROUPBOX:
-#ifdef __OS2_PM__
-        new = (WPI_WNDPROC)_wpi_makeprocinstance( (WPI_PROC)GUIGroupBoxFunc, GUIMainHInst );
+        new = _wpi_makewndprocinstance( GUIGroupBoxFunc, GUIMainHInst );
         old = _wpi_subclasswindow( hwnd, new );
-#else
-        old = (WPI_WNDPROC)GET_WNDPROC( hwnd );
-        SET_WNDPROC( hwnd, (LONG_PTR)MakeProcInstance_WND( GUIGroupBoxFunc, GUIMainHInst ) );
-#endif
         return( old );
     default:
         return( NULL );
@@ -570,7 +557,15 @@ static HWND CreateControl( gui_control_info *ctl_info, gui_window *parent_wnd, c
         }
     }
 
-#ifdef __OS2_PM__
+    /* create invisible
+     * if GUIAlloc fails, window will never show
+     */
+    style &= ~WS_VISIBLE;
+    if( parent_wnd != NULL ) {
+        style |= WS_CHILD;
+    }
+
+#if defined( __OS2_PM__ )
     pctldata = NULL;
     if( ctl_info->control_class == GUI_EDIT ) {
         edata.cb = sizeof( edata );
@@ -579,16 +574,6 @@ static HWND CreateControl( gui_control_info *ctl_info, gui_window *parent_wnd, c
         edata.ichMaxSel = 0;
         pctldata = &edata;
     }
-#endif
-
-    style &= ~WS_VISIBLE;  /* create invisible -- if GUIAlloc fails, window
-                            * will never show
-                            */
-    if( parent_wnd != NULL ) {
-        style |= WS_CHILD;
-    }
-
-#if defined( __OS2_PM__ )
     _wpi_createanywindow( (PSZ)GUIControls[ctl_info->control_class].classname,
                   new_text, style, scr_pos->x, scr_pos->y, scr_size->x, scr_size->y,
                   parent_wnd->hwnd, (HMENU)ctl_info->id, GUIMainHInst,

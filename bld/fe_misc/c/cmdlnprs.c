@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,7 +46,8 @@ static void addString           // STORE A STRING
     OPT_STRING *value;
 
     value = _MemoryAllocate( sizeof( *value ) + len );
-    stxvcpy( value->data, s, len );
+    strncpy( value->data, s, len );
+    value->data[len] = '\0';
     value->next = *h;
     *h = value;
 }
@@ -145,7 +147,6 @@ bool OPT_GET_ID                 // PARSE: ID
     char const *id;
 
     CmdRecogEquals();
-    CmdScanChar();
     len = CmdScanId( &id );
     if( len != 0 ) {
         addString( p, id, len );
@@ -158,7 +159,7 @@ bool OPT_GET_ID                 // PARSE: ID
 bool OPT_GET_ID_OPT             // PARSE: OPTIONAL ID
     ( OPT_STRING **p )          // - target
 {
-    if( CmdRecogEquals() || !CmdDelimitChar() ) {
+    if( CmdRecogEquals() || !CmdScanSwEnd() ) {
         return( OPT_GET_ID( p ) );
     }
     return( true );
@@ -237,7 +238,7 @@ bool OPT_GET_FILE_OPT           // PARSE: OPTIONAL FILE NAME
     char const *fname;
 
     // handle leading option char specially
-    if( CmdRecogEquals() || !CmdDelimitChar() ) {
+    if( CmdRecogEquals() || !CmdScanSwEnd() ) {
         // specified an '=' so accept -this-is-a-file-name.fil or /tmp/ack.tmp
         len = CmdScanFilename( &fname );
         if( len != 0 ) {
@@ -275,8 +276,8 @@ bool OPT_GET_PATH_OPT           // PARSE: OPTIONAL PATH
     size_t len;
     char const *fname;
 
-//    if( CmdPathDelim() || !CmdDelimitChar() ) {
-    if( CmdRecogEquals() || !CmdDelimitChar() ) {
+//    if( CmdPathDelim() || !CmdScanSwEnd() ) {
+    if( CmdRecogEquals() || !CmdScanSwEnd() ) {
         // specified an '=' so accept -this-is-a-path-name.fil or /tmp/ack.tmp
         len = CmdScanFilename( &fname );
         if( len != 0 ) {
@@ -290,14 +291,31 @@ bool OPT_GET_PATH_OPT           // PARSE: OPTIONAL PATH
 }
 
 
+bool OPT_GET_OPTION             // PARSE: OPTION TEXT
+    ( OPT_STRING **p )          // - target
+{
+    size_t len;
+    char const *option;
+
+    CmdRecogEquals();
+    len = CmdScanOption( &option );
+    if( len > 0 && ( len != 2 || option[0] != '\"' || option[1] != '\"' ) ) {
+        addString( p, option, len );
+        StripQuotes( (*p)->data );
+    }
+    CmdScanInit( option + len );
+    return( true );
+}
+
+
 bool OPT_GET_CHAR               // PARSE: CHAR
     ( int *p )                  // - target
 {
     int c;
 
-    if( !CmdDelimitChar() ) {
+    if( !CmdScanSwEnd() ) {
         CmdRecogEquals();
-        if( !CmdDelimitChar() ) {
+        if( !CmdScanSwEnd() ) {
             c = CmdScanChar();
             if( isprint( c ) ) {
                 *p = c;
@@ -312,7 +330,7 @@ bool OPT_GET_CHAR               // PARSE: CHAR
 bool OPT_GET_CHAR_OPT           // PARSE: OPTIONAL CHAR
     ( int *p )                  // - target
 {
-    if( CmdRecogEquals() || !CmdDelimitChar() ) {
+    if( CmdRecogEquals() || !CmdScanSwEnd() ) {
         return OPT_GET_CHAR( p );
     }
     return( true );
@@ -323,6 +341,12 @@ bool OPT_RECOG                  // RECOGNIZE CHAR
     ( int c )                   // - to be recog'ed
 {
     return( CmdRecogChar( c ) );
+}
+
+bool OPT_RERECOG                // RE-RECOGNIZE LAST CHAR
+    ( int c )                   // - to be recog'ed
+{
+    return( CmdReRecogChar( c ) );
 }
 
 bool OPT_RECOG_LOWER            // RECOGNIZE LOWERCASE CHAR
@@ -339,5 +363,5 @@ void OPT_UNGET                  // UNGET A CHARACTER
 
 bool OPT_END( void )            // DETECT END OF CHAIN
 {
-    return( CmdDelimitChar() );
+    return( CmdScanSwEnd() );
 }

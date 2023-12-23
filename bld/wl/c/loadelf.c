@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -90,7 +90,7 @@ static int              NumPhdr = 0;    /* just for now untill dynamic objects s
 /* Put debugging info into section WITHIN the file instead of appending a
  * separate elf file at the end */
 
-#define INJECT_DEBUG ( SymFileName == NULL && (LinkFlags & LF_DWARF_DBI_FLAG) )
+#define INJECT_ELF_DEBUG ( SymFileName == NULL && (LinkFlags & LF_DWARF_DBI_FLAG) )
 
 static void InitSections( ElfHdr *hdr )
 /*************************************/
@@ -121,7 +121,7 @@ static void InitSections( ElfHdr *hdr )
     hdr->i.symtab = num++;
     hdr->i.symstr = num++;
     hdr->i.symhash = num++;
-    if( INJECT_DEBUG ) {
+    if( INJECT_ELF_DEBUG ) {
         hdr->i.dbgnum = DwarfCountDebugSections();
     }
     hdr->i.dbgbegin = num;
@@ -149,14 +149,25 @@ static void SetHeaders( ElfHdr *hdr )
     hdr->eh.e_ident[EI_ABIVERSION] = FmtData.u.elf.abiversion;
     memset( &hdr->eh.e_ident[EI_PAD], 0, EI_NIDENT - EI_PAD );
     hdr->eh.e_type = ET_EXEC;
-    if( LinkState & LS_HAVE_PPC_CODE ) {
-        hdr->eh.e_machine = EM_PPC;
-    } else if( LinkState & LS_HAVE_MIPS_CODE ) {
+    switch( LinkState & LS_HAVE_MACHTYPE_MASK ) {
+    case LS_HAVE_ALPHA_CODE:
+        hdr->eh.e_machine = EM_ALPHA;
+        break;
+    case LS_HAVE_MIPS_CODE:
         hdr->eh.e_machine = EM_MIPS;
-    } else if( LinkState & LS_HAVE_X64_CODE ) {
+        break;
+    case LS_HAVE_PPC_CODE:
+        hdr->eh.e_machine = EM_PPC;
+        break;
+    case LS_HAVE_X64_CODE:
         hdr->eh.e_machine = EM_X86_64;
-    } else {
+        break;
+    case LS_HAVE_X86_CODE:
         hdr->eh.e_machine = EM_386;
+        break;
+    default:
+        hdr->eh.e_machine = EM_NONE;
+        break;
     }
     hdr->eh.e_version = EV_CURRENT;
     if( StartInfo.type == START_UNDEFED ) {
@@ -186,7 +197,7 @@ static void SetHeaders( ElfHdr *hdr )
     AddCharStringTable( &hdr->secstrtab, '\0' );
     InitSections( hdr );
     hdr->curr_off = hdr->eh.e_ehsize + hdr->ph_size;
-    hdr->curr_off = ROUND_UP( hdr->curr_off, 0x100 );
+    hdr->curr_off = __ROUND_UP_SIZE_PAGE( hdr->curr_off );
     SeekLoad( hdr->curr_off );
 }
 
@@ -196,7 +207,7 @@ unsigned GetElfHeaderSize( void )
     unsigned    size;
 
     size = sizeof( Elf32_Ehdr ) + sizeof( Elf32_Phdr ) * ( NumGroups + NumPhdr );
-    return( ROUND_UP( size, 0x100 ) );
+    return( __ROUND_UP_SIZE_PAGE( size ) );
 }
 
 size_t AddSecName( ElfHdr *hdr, const char *name )
@@ -296,9 +307,9 @@ static void WriteELFGroups( ElfHdr *hdr )
         sh++;
         if( group == DataGroup && FmtData.dgroupsplitseg != NULL ) {
             sh->sh_name = AddSecName( hdr, ".bss" );
-            linear = ph->p_vaddr + ROUND_UP( ph->p_filesz, FmtData.objalign );
+            linear = ph->p_vaddr + __ROUND_UP_SIZE( ph->p_filesz, FmtData.objalign );
             InitBSSSect( sh, off, CalcSplitSize(), linear );
-            linear = ROUND_UP( linear + sh->sh_size, FmtData.objalign);
+            linear = __ROUND_UP_SIZE( linear + sh->sh_size, FmtData.objalign);
             sh++;
             if( StackSegPtr != NULL ) {
                 sh->sh_name = AddSecName( hdr, ".stack" );
@@ -376,7 +387,7 @@ void FiniELFLoadFile( void )
 
     WriteELFGroups( &hdr ); // Write out all groups
     WriteRelocsSections( &hdr );        // Relocations
-    if( INJECT_DEBUG ) {                // Debug info
+    if( INJECT_ELF_DEBUG ) {            // Debug info
         hdr.curr_off = DwarfWriteElf( hdr.curr_off, &hdr.secstrtab, hdr.sh + hdr.i.dbgbegin );
     }
     if( ElfSymTab != NULL ) {           // Symbol tables
@@ -390,7 +401,7 @@ void FiniELFLoadFile( void )
     hdr.eh.e_shoff = hdr.curr_off;
     WriteLoad( hdr.sh, hdr.sh_size );
     hdr.curr_off += hdr.sh_size;
-    if( !INJECT_DEBUG ) {
+    if( !INJECT_ELF_DEBUG ) {
         DBIWrite();
     }
     SeekLoad( 0 );

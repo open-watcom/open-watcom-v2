@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,26 +30,6 @@
 ****************************************************************************/
 
 
-/*
- * Keep next 3 for now, since the C front end references these consts
- * in 'target independant' files
- */
-#define BIG_DATA                0x00000001L
-#define BIG_CODE                0x00000002L
-#define FLOATING_SS             0x00000004L
-#define ASM_OUTPUT              0x00000008L
-#define ALIGNED_SHORT           0x00000010L
-#define I_MATH_INLINE           0x00000020L
-#define NO_CALL_RET_TRANSFORM   0x00000040L
-#define CHEAP_POINTER           0x00000080L
-#define STACK_INIT              0x00000100L
-#define EXCEPT_FILTER_USED      0x00000200L
-#define STACK_CHECK             0x00000400L
-#define CG_OS2_CC               0x00000800L
-#define CG_NT_CC                0x00001000L
-#define OWL_LOGGING             0x00002000L
-#define LAST_TARG_CGSWITCH      0x00002000L
+CGSW_PPC_OS2_CC     = 0x00000100,
+CGSW_PPC_NT_CC      = 0x00000200,
 
-typedef enum {
-    I_PPC
-} proc_revision;

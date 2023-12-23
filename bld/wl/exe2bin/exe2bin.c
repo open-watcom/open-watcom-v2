@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -149,9 +149,7 @@ static int copy_bindata( FILE *istream, FILE *ostream, unsigned_32 bin_size,
             // apply all relocs fitting in the buffer as a whole
             for( ; cur_reloc < reltab->num && reltab->reloc[cur_reloc] < tot_read + BUF_SIZE - 1; ++cur_reloc ) {
                 bptr  = buffer + reltab->reloc[cur_reloc] - tot_read;
-                addr  = GET_LE_16( *((unsigned_16 *)bptr) );
-                addr += reltab->lseg;
-                *((unsigned_16 *)bptr) = GET_LE_16( addr );
+                MPUT_LE_16( bptr, MGET_LE_16( bptr ) + reltab->lseg );
             }
 
             // is there a "lo"-part of a reloc to apply?
@@ -377,19 +375,24 @@ int main( int argc, char *argv[] )
 
     result = parse_cmdline( &arg, argc, argv );
     if( !arg.opt.be_quiet ) {
-        puts( banner1w( "EXE to Binary Converter", _EXE2BIN_VERSION_ ) );
-        puts( banner2 );
-        puts( banner2a( 2001 ) );
-        puts( banner3 );
-        puts( banner3a );
+        puts(
+            banner1t( "EXE to Binary Converter" ) "\n"
+            banner1v( _EXE2BIN_VERSION_ ) "\n"
+            banner2 "\n"
+            banner2a( 2001 ) "\n"
+            banner3 "\n"
+            banner3a "\n"
+        );
     }
     if( result ) {
-        puts( "Usage:   exe2bin [options] exe_file[.exe] [bin_file]\n"
-               "Options: -q        suppress informational messages\n"
-               "         -h        display exe-header\n"
-               "         -r        display relocations\n"
-               "         -l=<seg>  relocate exe_file to segment <seg>\n"
-               "         -x        extended behaviour, e.g. files > 64KB" );
+        puts(
+            "Usage:   exe2bin [options] exe_file[.exe] [bin_file]\n"
+            "Options: -q        suppress informational messages\n"
+            "         -h        display exe-header\n"
+            "         -r        display relocations\n"
+            "         -l=<seg>  relocate exe_file to segment <seg>\n"
+            "         -x        extended behaviour, e.g. files > 64KB\n"
+        );
         return( EXIT_FAILURE );
     }
 
@@ -398,7 +401,7 @@ int main( int argc, char *argv[] )
         return( EXIT_FAILURE );
     }
 
-    if( (header = get_header( arg.ifile )) == NULL || (header->signature != DOS_SIGNATURE) ) {
+    if( (header = get_header( arg.ifile )) == NULL || ( header->signature != EXESIGN_DOS ) ) {
         printf( "Error. %s has no valid exe-header.\n", arg.iname );
         return( EXIT_FAILURE );
     }

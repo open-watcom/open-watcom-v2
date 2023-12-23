@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,7 +40,8 @@
 typedef struct Scanner {
     FILE        *in;
     uchar       *bot, *tok, *ptr, *cur, *pos, *lim, *top, *eof;
-    uint        tchar, tline, cline;
+    uint        tchar;
+    uint        tline, cline;
 } Scanner;
 
 extern Scanner  *Scanner_new( FILE * );

@@ -1,3 +1,5 @@
+tree_depth = 4
+
 proj_name = emu386
 
 emu386_autodepends = .AUTODEPEND
@@ -10,7 +12,7 @@ emu386_distrib_lib = 1
 #
 # cflags
 #
-.c : ../c;../../c
+.c : ../c;$(fpuemu_dir)/c
 
 extra_cpp_flags_qnx = -DQNX
 
@@ -31,7 +33,7 @@ extra_a_flags_qnx = -ms -D_OS=_QNX -DSEGMENTED
 extra_a_flags_win = -mf -D_OS=_PLDT -D__WIN387__
 extra_a_flags_386inite = -I"$(comp_cfg_dir)/h"
 extra_a_flags_386stub = -ms -I"$(comp_cfg_dir)/h"
-extra_a_flags_emu387 = -I"../inc" -I"../../inc" -I"$(mathlib_dir)/h"
+extra_a_flags_emu387 = -I"../inc" -I"$(fpuemu_dir)/inc" -I"$(mathlib_dir)/h"
 
 # explicit rules
 #################
@@ -56,7 +58,7 @@ exetarg_opts     = opt priv=0, long
 exetarg_name     = emu387
 !include exetarg.mif
 
-usage.u : ../../usage.sp
+usage.u : $(fpuemu_dir)/usage.sp
     @%make echo_wsplice
     $(wsplice) -u $< $@
 

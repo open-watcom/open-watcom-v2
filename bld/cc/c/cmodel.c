@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,14 +37,22 @@
 #include <ctype.h>
 #include "cmacadd.h"
 #include "toggles.h"
-#ifndef NDEBUG
+#ifdef DEVBUILD
     #include "togglesd.h"
 #endif
 
 
 extern  char    CompilerID[];
 
-/* COMMAND LINE PARSING OF MACRO DEFINITIONS */
+/*
+ * COMMAND LINE PARSING OF MACRO DEFINITIONS
+ */
+
+static bool EqualChar( int c )
+{
+    return( c == '#'
+        || c == '=' );
+}
 
 static size_t get_namelen( const char *start )
 {
@@ -63,29 +71,6 @@ static size_t get_namelen( const char *start )
         }
     }
     return( src - start );
-}
-
-
-char *BadCmdLine( int error_code, const char *str )
-{
-    char        *p;
-    char        buffer[128];
-
-    p = buffer;
-    for( ; *str != '\0'; ) {
-        *p++ = *str++;
-        if( *str == ' ' )
-            break;
-        if( *str == '-' )
-            break;
-        if( *str == SwitchChar ) {
-            break;
-        }
-    }
-    *p = '\0';
-    CBanner();
-    CErr2p( error_code, buffer );
-    return( (char *)str );
 }
 
 
@@ -156,9 +141,9 @@ char *Define_Macro( const char *str )
     return( Def_Macro_Tokens( str, CompFlags.extended_defines, MFLAG_NONE ) );
 }
 
-char *Define_UserMacro( const char *str )
+char *Define_UserMacro( const char *str, bool multiple_tokens )
 {
-    return( Def_Macro_Tokens( str, CompFlags.extended_defines, MFLAG_USER_DEFINED ) );
+    return( Def_Macro_Tokens( str, multiple_tokens, MFLAG_USER_DEFINED ) );
 }
 
 void PreDefine_Macro( const char *str )
@@ -176,7 +161,7 @@ void PreDefine_Macro( const char *str )
                 ++len;
             }
             for( uname = UndefNames; uname != NULL; uname = uname->next ) {
-                if( memcmp( uname->name, str, len ) == 0 ) {
+                if( strncmp( uname->name, str, len ) == 0 ) {
                     if( uname->name[len] == '\0' ) {
                         return;
                     }
@@ -188,7 +173,7 @@ void PreDefine_Macro( const char *str )
 }
 
 
-char *AddUndefName( const char *str )
+void AddUndefMacro( const char *str )
 {
     size_t          len;
     undef_names     *uname;
@@ -197,17 +182,13 @@ char *AddUndefName( const char *str )
     if( len == 0 ) {
         CompFlags.undefine_all_macros = true;
     } else {
-        CalcHash( str, len );
         if( !MacroDel( str ) ) {
             uname = (undef_names *)CMemAlloc( sizeof( undef_names ) );
             uname->next = UndefNames;
-            uname->name = CMemAlloc( len + 1 );
-            memcpy( uname->name, str, len + 1 );
+            uname->name = CMemStrDup( str );
             UndefNames = uname;
-            str += len;
         }
     }
-    return( (char *)str );
 }
 
 
@@ -223,7 +204,7 @@ static void FreeUndefNames( void )
 }
 
 
-static void Define_Macros_Extension( void )
+static void PreDefine_Macros_Extension( void )
 {
     PreDefine_Macro( "_far16=__far16" );
     PreDefine_Macro( "near=__near" );
@@ -257,7 +238,9 @@ static void Define_Macros_Extension( void )
     PreDefine_Macro( "_leave=__leave");
     PreDefine_Macro( "_asm=__asm");
 #if _CPU == 8086
-    /* SOM for Windows macros */
+    /*
+     * SOM for Windows macros
+     */
     PreDefine_Macro( "SOMLINK=__cdecl" );
     PreDefine_Macro( "SOMDLINK=__far" );
 #else
@@ -279,7 +262,7 @@ void MiscMacroDefs( void )
         }
     }
     if( CompFlags.non_iso_compliant_names_enabled ) {
-        Define_Macros_Extension();
+        PreDefine_Macros_Extension();
     }
     if( CompFlags.signed_char ) {
         Define_Macro( "__CHAR_SIGNED__" );
@@ -288,36 +271,29 @@ void MiscMacroDefs( void )
         Define_Macro( "__RENT__" );
     }
     PreDefine_Macro( "_PUSHPOP_SUPPORTED" );
-    PreDefine_Macro( "__STDC_NO_VLA__" );
+    Define_Macro( "__STDC_NO_VLA__" );
     PreDefine_Macro( CompilerID );
     FreeUndefNames();
 }
 
 void InitModInfo( void )
 {
-    GenSwitches = 0;
-    TargetSwitches = 0;
-    DataThreshold = 32767;
     OptSize = 50;
     UndefNames = NULL;
     WholeFName = NULL;
     ObjectFileName = NULL;
-    ErrorFileName = CStrSave( "*" );
+    ErrorFileName = CMemStrDup( "*" );
     DependFileName = NULL;
     DependForceSlash = 0;
     ModuleName = NULL;
+    CodeClassName = NULL;
+    PCH_FileName = NULL;
     ErrLimit = 20;
     WngLevel = WLEVEL_DEFAULT;
-#if _CPU == 8086
-    PackAmount = TARGET_INT;     /* pack structs on word boundaries */
-#elif _CPU == 386
-    PackAmount = 8;
-#else
-    CompFlags.make_enums_an_int = true;     // make enums ints
-    CompFlags.original_enum_setting = true;
-    PackAmount = 8;
-#endif
+
     PreProcChar = '#';
+    SET_STD( C89 );
+
     CompFlags.check_syntax                      = false;
     CompFlags.signed_char                       = false;
     CompFlags.use_full_codegen_od               = false;
@@ -332,13 +308,11 @@ void InitModInfo( void )
     CompFlags.slack_byte_warning                = false;
     CompFlags.errfile_written                   = false;
     CompFlags.zu_switch_used                    = false;
-    CompFlags.register_conventions              = false;
     CompFlags.pragma_library                    = false;
     CompFlags.emit_all_default_libs             = false;
     CompFlags.emit_library_names                = true;
     CompFlags.emit_dependencies                 = true;
     CompFlags.emit_targimp_symbols              = true;
-    CompFlags.use_unicode                       = true;
     CompFlags.no_debug_type_names               = false;
     CompFlags.auto_agg_inits                    = false;
     CompFlags.no_check_inits                    = false;
@@ -349,12 +323,10 @@ void InitModInfo( void )
     CompFlags.check_truncated_fnames            = true;
 
     memset( &PragmaToggles, 0, sizeof( PragmaToggles ) );
-#ifndef NDEBUG
+#ifdef DEVBUILD
     memset( &PragmaDbgToggles, 0, sizeof( PragmaDbgToggles ) );
 #endif
     TOGGLE( check_stack ) = true;
     TOGGLE( unreferenced ) = true;
     TOGGLE( reuse_duplicate_strings ) = true;
-
-    SetAuxWatcallInfo();
 }

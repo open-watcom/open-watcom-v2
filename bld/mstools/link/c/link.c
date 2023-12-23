@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,6 +44,7 @@
 #include "message.h"
 #include "pathconv.h"
 #include "translat.h"
+
 #include "clibint.h"
 
 
@@ -53,6 +55,9 @@
     #define LINKER              "wlink"
     #define RESCOMPILER         "wrc"
 #elif defined(__TARGET_PPC__)
+    #define LINKER              "wlink"
+    #define RESCOMPILER         "wrc"
+#elif defined(__TARGET_MPS__)
     #define LINKER              "wlink"
     #define RESCOMPILER         "wrc"
 #else

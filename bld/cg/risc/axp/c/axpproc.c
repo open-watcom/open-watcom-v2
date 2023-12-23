@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,7 +34,6 @@
 #include "coderep.h"
 #include "cgmem.h"
 #include "zoiks.h"
-#include "axpencod.h"
 #include "data.h"
 #include "rtrtn.h"
 #include "objout.h"
@@ -52,6 +51,14 @@
 #include "feprotos.h"
 
 
+#define STORE_QUADWORD  0x2d
+#define STORE_DOUBLE    0x27
+#define LOAD_QUADWORD   0x29
+#define LOAD_DOUBLE     0x23
+#define LEA_OPCODE      0x08
+#define LEAH_OPCODE     0x09
+
+
 static  void    calcUsedRegs( void )
 /**********************************/
 {
@@ -65,7 +72,7 @@ static  void    calcUsedRegs( void )
         if( _IsBlkAttr( blk, BLK_CALL_LABEL ) ) {
             HW_TurnOn( used, ReturnAddrReg() );
         }
-        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+        for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             result = ins->result;
             if( result != NULL && result->n.class == N_REGISTER ) {
                 HW_TurnOn( used, result->r.reg );
@@ -172,28 +179,15 @@ static  void    initSavedRegs( stack_record *saved_regs, type_length *offset )
     *offset += saved_regs->size;
 }
 
-#define STORE_QUADWORD  0x2d
-#define STORE_DOUBLE    0x27
-#define LOAD_QUADWORD   0x29
-#define LOAD_DOUBLE     0x23
-#define LEA_OPCODE      0x08
-#define LEAH_OPCODE     0x09
-
-#define VARARGS_PTR     14
-#define RT_PARM2        2
-#define RT_PARM1        1
-#define RT_RET_REG      0
-
-
 static  void    genMove( uint_32 src, uint_32 dst )
 /*************************************************/
 {
-    GenOPINS( 0x11, 0x20, AXP_ZERO_SINK, src, dst );
+    GenOPINS( 0x11, 0x20, ZERO_REG_IDX, src, dst );
 }
 
 
-static  void    genLea( uint_32 src, signed_16 disp, uint_32 dst )
-/****************************************************************/
+static  void    genLea( uint_32 src, int_16 disp, uint_32 dst )
+/*************************************************************/
 {
     GenMEMINS( LEA_OPCODE, dst, src, disp );
 }
@@ -204,13 +198,13 @@ static  uint_32 addressableRegion( stack_record *region, type_length *offset )
 {
     if( region->start > AXP_MAX_OFFSET ) {
         *offset = 0;
-        GenLOADS32( region->start, AXP_GPR_SCRATCH );
+        GenLOADS32( region->start, AT_REG_IDX );
         // add sp, r28 -> r28
-        GenOPINS( 0x10, 0x00, AXP_STACK_REG, AXP_GPR_SCRATCH, AXP_GPR_SCRATCH );
-        return( AXP_GPR_SCRATCH );
+        GenOPINS( 0x10, 0x00, SP_REG_IDX, AT_REG_IDX, AT_REG_IDX );
+        return( AT_REG_IDX );
     } else {
         *offset = region->start;
-        return( AXP_STACK_REG );
+        return( SP_REG_IDX );
     }
 }
 
@@ -365,7 +359,7 @@ static  void    emitFrameSaveProlog( stack_record *fs )
 
     if( fs->size != 0 ) {
         index_reg = addressableRegion( fs, &offset );
-        saveReg( index_reg, AXP_FRAME_REG, offset, false );
+        saveReg( index_reg, FP_REG_IDX, offset, false );
     }
 }
 
@@ -381,7 +375,7 @@ static  void    emitFrameSaveEpilog( stack_record *fs )
     // varargs epilog above must be empty
     if( fs->size != 0 ) {
         index_reg = addressableRegion( fs, &offset );
-        loadReg( index_reg, AXP_FRAME_REG, offset, false );
+        loadReg( index_reg, FP_REG_IDX, offset, false );
     }
 }
 
@@ -415,10 +409,10 @@ static  void    emitSlopEpilog( stack_record *fs )
 }
 
 
-static  signed_32 frameSize( stack_map *map )
-/*******************************************/
+static int_32   frameSize( stack_map *map )
+/*****************************************/
 {
-    signed_32           size;
+    int_32      size;
 
     size = map->slop.size + map->varargs.size + map->frame_save.size + map->saved_regs.size +
                 map->locals.size + map->parm_cache.size;
@@ -454,10 +448,10 @@ static  void    SetupVarargsReg( stack_map *map )
             offset += REG_SIZE;
         }
         if( offset > AXP_MAX_OFFSET ) {
-            GenLOADS32( offset, VARARGS_PTR );
-            GenOPINS( 0x10, 0x00, AXP_STACK_REG, VARARGS_PTR, VARARGS_PTR );
+            GenLOADS32( offset, RT_VARARGS_REG_IDX );
+            GenOPINS( 0x10, 0x00, SP_REG_IDX, RT_VARARGS_REG_IDX, RT_VARARGS_REG_IDX );
         } else {
-            genLea( AXP_STACK_REG, offset, VARARGS_PTR );
+            genLea( SP_REG_IDX, offset, RT_VARARGS_REG_IDX );
         }
     }
 }
@@ -471,31 +465,31 @@ static  void    emitProlog( stack_map *map )
     frame_size = frameSize( map );
     if( frame_size != 0 ) {
         if( frame_size <= AXP_MAX_OFFSET ) {
-            genLea( AXP_STACK_REG, -frame_size, AXP_STACK_REG );
+            genLea( SP_REG_IDX, -frame_size, SP_REG_IDX );
         } else {
-            GenLOADS32( frame_size, AXP_GPR_SCRATCH );
+            GenLOADS32( frame_size, AT_REG_IDX );
             // sub sp,r28 -> sp
-            GenOPINS( 0x10, 0x09, AXP_STACK_REG, AXP_GPR_SCRATCH, AXP_STACK_REG );
+            GenOPINS( 0x10, 0x09, SP_REG_IDX, AT_REG_IDX, SP_REG_IDX );
         }
         if( frame_size >= _TARGET_PAGE_SIZE ) {
             if( frame_size <= AXP_MAX_OFFSET ) {
-                genLea( AXP_ZERO_SINK, frame_size, RT_PARM1 );
+                genLea( ZERO_REG_IDX, frame_size, RT_PARM1_REG_IDX );
             } else {
-                genMove( AXP_GPR_SCRATCH, RT_PARM1 );
+                genMove( AT_REG_IDX, RT_PARM1_REG_IDX );
             }
-            GenCallLabelReg( RTLabel( RT_STK_CRAWL_SIZE ), RT_RET_REG );
+            GenCallLabelReg( RTLabel( RT_STK_CRAWL_SIZE ), RT_RET_REG_IDX );
         }
     }
     if( map->locals.size != 0 || map->parm_cache.size != 0 ) {
-        if( _IsTargetModel( STACK_INIT ) ) {
+        if( _IsTargetModel( CGSW_RISC_STACK_INIT ) ) {
             type_length         size;
             size = map->locals.size + map->parm_cache.size;
             if( size > AXP_MAX_OFFSET ) {
-                GenLOADS32( size, RT_PARM1 );
+                GenLOADS32( size, RT_PARM1_REG_IDX );
             } else {
-                genLea( AXP_ZERO_SINK, map->locals.size + map->parm_cache.size, RT_PARM1 );
+                genLea( ZERO_REG_IDX, map->locals.size + map->parm_cache.size, RT_PARM1_REG_IDX );
             }
-            GenCallLabelReg( RTLabel( RT_STK_STOMP ), RT_RET_REG );
+            GenCallLabelReg( RTLabel( RT_STK_STOMP ), RT_RET_REG_IDX );
         }
     }
     emitVarargsProlog( &map->varargs );
@@ -505,7 +499,7 @@ static  void    emitProlog( stack_map *map )
     emitLocalProlog( &map->locals );
     emitParmCacheProlog( &map->parm_cache );
     if( map->frame_save.size != 0 ) {
-        genMove( AXP_STACK_REG, AXP_FRAME_REG );
+        genMove( SP_REG_IDX, FP_REG_IDX );
     }
 }
 
@@ -516,9 +510,9 @@ static  void    emitEpilog( stack_map *map )
     type_length         frame_size;
 
     if( map->frame_save.size != 0 ) {
-        // NB should just use AXP_FRAME_REG instead of AXP_STACK_REG in restore
+        // NB should just use FP_REG_IDX instead of SP_REG_IDX in restore
         // code and not bother emitting this instruction
-        genMove( AXP_FRAME_REG, AXP_STACK_REG );
+        genMove( FP_REG_IDX, SP_REG_IDX );
     }
     emitParmCacheEpilog( &map->parm_cache );
     emitLocalEpilog( &map->locals );
@@ -529,10 +523,10 @@ static  void    emitEpilog( stack_map *map )
     frame_size = frameSize( map );
     if( frame_size != 0 ) {
         if( frame_size <= AXP_MAX_OFFSET ) {
-            genLea( AXP_STACK_REG, frame_size, AXP_STACK_REG );
+            genLea( SP_REG_IDX, frame_size, SP_REG_IDX );
         } else {
-            GenLOADS32( frame_size, AXP_GPR_SCRATCH );
-            GenOPINS( 0x10, 0x00, AXP_STACK_REG, AXP_GPR_SCRATCH, AXP_STACK_REG );
+            GenLOADS32( frame_size, AT_REG_IDX );
+            GenOPINS( 0x10, 0x00, SP_REG_IDX, AT_REG_IDX, SP_REG_IDX );
         }
     }
 }
@@ -546,15 +540,15 @@ void    GenProlog( void )
 
     old_segid = SetOP( AskCodeSeg() );
     label = CurrProc->label;
-    if( _IsModel( DBG_NUMBERS ) ) {
-        OutFileStart( HeadBlock->ins.hd.line_num );
+    if( _IsModel( CGSW_GEN_DBG_NUMBERS ) ) {
+        OutFileStart( HeadBlock->ins.head.line_num );
     }
     TellKeepLabel( label );
     TellProcLabel( label );
-    CodeLabelLinenum( label, DepthAlign( PROC_ALIGN ), HeadBlock->ins.hd.line_num );
-    if( _IsModel( DBG_LOCALS ) ) {  // d1+ or d2
+    CodeLabelLinenum( label, DepthAlign( PROC_ALIGN ), HeadBlock->ins.head.line_num );
+    if( _IsModel( CGSW_GEN_DBG_LOCALS ) ) {  // d1+ or d2
         // DbgRtnBeg( CurrProc->targ.debug, lc );
-        EmitRtnBeg( /*label, HeadBlock->ins.hd.line_num*/ );
+        EmitRtnBeg( /*label, HeadBlock->ins.head.line_num*/ );
     }
     // keep stack aligned
     CurrProc->locals.size = _RoundUp( CurrProc->locals.size, REG_SIZE );
@@ -577,8 +571,8 @@ void    GenEpilog( void )
     old_segid = SetOP( AskCodeSeg() );
     EmitEpiBeg();
     emitEpilog( &CurrProc->targ.stack_map );
-    GenRET();
-    CurrProc->prolog_state |= GENERATED_EPILOG;
+    GenReturn();
+    CurrProc->prolog_state |= PST_EPILOG_GENERATED;
     EmitRtnEnd();
     SetOP( old_segid );
 }

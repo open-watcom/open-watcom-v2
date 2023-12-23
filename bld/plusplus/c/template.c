@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,7 +47,7 @@
 #include "pcheader.h"
 #include "initdefs.h"
 #include "conpool.h"
-#ifndef NDEBUG
+#ifdef DEVBUILD
     #include "pragdefn.h"
     #include "dbg.h"
     #include "fmttype.h"
@@ -192,7 +192,7 @@ static void displayActiveInstantiations( NESTED_POST_CONTEXT *blk )
 {
     TEMPLATE_CONTEXT *ctx;
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
     if( blk != &(activeInstantiations.registration) ) {
         CFatal( "registered call-back for template locations incorrect" );
     }
@@ -845,7 +845,7 @@ static void updateTemplatePartialOrdering( TEMPLATE_INFO *tinfo,
 
                 bound = BindGenericTypes( parm_scope, tspec->spec_args,
                                           curr_spec->spec_args, false, 0 );
-#ifndef NDEBUG
+#ifdef DEVBUILD
                 if( TOGGLEDBG( templ_spec ) && bound ) {
                     VBUF    vbuf1;
                     VBUF    vbuf2;
@@ -874,7 +874,7 @@ static void updateTemplatePartialOrdering( TEMPLATE_INFO *tinfo,
 
                 bound = BindGenericTypes( parm_scope, curr_spec->spec_args,
                                           tspec->spec_args, false, 0 );
-#ifndef NDEBUG
+#ifdef DEVBUILD
                 if( TOGGLEDBG( templ_spec ) && bound ) {
                     VBUF    vbuf1;
                     VBUF    vbuf2;
@@ -1407,7 +1407,7 @@ static DECL_INFO *attemptGen( arg_list *args, SYMBOL fn_templ,
     parm_scope = ScopeCreate( SCOPE_TEMPLATE_PARM );
     ScopeSetEnclosing( parm_scope, decl_scope );
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
     if( TOGGLEDBG( templ_function ) ) {
         VBUF vbuf1, vbuf2;
 
@@ -1504,7 +1504,7 @@ static DECL_INFO *attemptGen( arg_list *args, SYMBOL fn_templ,
             ScopeAdjustUsing( GetCurrScope(), save_scope );
             SetCurrScope( save_scope );
         } else if( fn_type != NULL ) {
-#ifndef NDEBUG
+#ifdef DEVBUILD
             if( TOGGLEDBG( templ_function ) ) {
                 printf( "attemptGen: BindGenericTypes failed\n" );
             }
@@ -1513,7 +1513,7 @@ static DECL_INFO *attemptGen( arg_list *args, SYMBOL fn_templ,
 
         popInstContext();
     } else {
-#ifndef NDEBUG
+#ifdef DEVBUILD
         if( TOGGLEDBG( templ_function ) ) {
             printf( "attemptGen: BindExplicitTemplateArguments failed\n" );
         }
@@ -1668,7 +1668,7 @@ SYMBOL TemplateFunctionGenerate( SYMBOL sym, arg_list *args,
         }
     } RingIterEnd( fn_inst )
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
     if( TOGGLEDBG( templ_function ) && ( generated_fn == NULL ) ) {
         VBUF vbuf1, vbuf2, vbuf3;
         FormatType( fn_type, &vbuf1, &vbuf2 );
@@ -2394,7 +2394,7 @@ findTemplateClassSpecialization( TEMPLATE_INFO *tinfo, PTREE parms, SCOPE *parm_
     num_args = tprimary->num_args;
     ambiguous = false;
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
     if( TOGGLEDBG( templ_spec ) && ( tinfo->nr_specs > 1 )) {
         VBUF vbuf;
 
@@ -2419,7 +2419,7 @@ findTemplateClassSpecialization( TEMPLATE_INFO *tinfo, PTREE parms, SCOPE *parm_
 
             bound = BindGenericTypes( parm_scope1, spec_list, parms, false, 0 );
             if( bound ) {
-#ifndef NDEBUG
+#ifdef DEVBUILD
                 if( TOGGLEDBG( templ_spec ) && ( tinfo->nr_specs > 1 ) ) {
                     VBUF vbuf;
 
@@ -2474,7 +2474,7 @@ findTemplateClassSpecialization( TEMPLATE_INFO *tinfo, PTREE parms, SCOPE *parm_
         /* no matching specialization found, use primary template */
         tspec = RingFirst( tinfo->specializations );
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
         if( TOGGLEDBG( templ_spec ) && ( tinfo->nr_specs > 1 )) {
             printf( "chose primary template %s ", NameStr( tinfo->sym->name->name ) );
             DbgDumpTokenLocn( tinfo->sym->locn );
@@ -2490,7 +2490,7 @@ findTemplateClassSpecialization( TEMPLATE_INFO *tinfo, PTREE parms, SCOPE *parm_
 
         RingFree( &candidate_list );
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
         if( TOGGLEDBG( templ_spec ) && ( tinfo->nr_specs > 1 )) {
             VBUF vbuf;
 
@@ -2553,7 +2553,7 @@ TYPE TemplateClassReference( PTREE tid, PTREE parms )
         UNBOUND_TEMPLATE *curr;
         unsigned int hash;
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
         if( TOGGLEDBG( templ_inst ) ) {
             VBUF vbuf;
 
@@ -2682,7 +2682,7 @@ static TYPE makeBoundClass( TYPE unbound_class, SCOPE parm_scope,
     tinfo = classUnboundTemplateInfo( unbound_class );
     parms = fakeUpTemplateParms( parm_scope, type_args );
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
     if( TOGGLEDBG( templ_inst ) ) {
         VBUF vbuf;
 
@@ -3020,7 +3020,7 @@ static void templateFunctionInstantiate( FN_TEMPLATE *fn_templ,
     DbgAssert( parm_scope->enclosing == SymScope( fn_sym ) );
     ScopeSetParmFn( parm_scope, fn_sym->u.defn );
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
     if( TOGGLEDBG( templ_function ) ) {
         VBUF vbuf1, vbuf2, vbuf3;
         FormatType( bound_sym->sym_type, &vbuf1, &vbuf2 );
@@ -3151,7 +3151,7 @@ static void processInstantiationMembers( CLASS_INST *instance )
          || ( sym->flag & SYMF_REFERENCED )
          || ( sym->sym_type->flag & TF1_VIRTUAL ) ) {
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
             if( TOGGLEDBG( member_inst ) ) {
                 VBUF vbuf;
                 printf( "instantiating %stemplate member: %s\n",

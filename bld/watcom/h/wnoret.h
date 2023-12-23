@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2018-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2018-2022 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -11,7 +11,7 @@
 ****************************************************************************/
 
 
-#if defined( _WCNORETURN )
+#if defined( __WATCOMC__ ) && ( __WATCOMC__ > 1290 )
 #define NO_RETURN(x)        _WCNORETURN x
 #define NO_RETURN_FAKE(x)
 #elif defined( __GNUC__ ) || defined( __clang__ )

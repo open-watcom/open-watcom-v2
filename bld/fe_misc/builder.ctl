@@ -7,25 +7,25 @@ set BINTOOL=0
 
 set PROJDIR=<CWD>
 
-[ INCLUDE <OWROOT>/build/prolog.ctl ]
+[ INCLUDE "<OWROOT>/build/prolog.ctl" ]
 
-[ INCLUDE <OWROOT>/build/defrule.ctl ]
+[ INCLUDE "<OWROOT>/build/defrule.ctl" ]
 
 [ BLOCK <BINTOOL> build ]
 #========================
-    cdsay <PROJDIR>
-    <CPCMD> <OWOBJDIR>/optencod.exe  <OWBINDIR>/<OWOBJDIR>/optencod<CMDEXT>
-    <CPCMD> <OWOBJDIR>/msgencod.exe  <OWBINDIR>/<OWOBJDIR>/msgencod<CMDEXT>
-    <CPCMD> <OWOBJDIR>/findhash.exe  <OWBINDIR>/<OWOBJDIR>/findhash<CMDEXT>
+    cdsay "<PROJDIR>"
+    <CPCMD> <OWOBJDIR>/optencod.exe  "<OWROOT>/build/<OWOBJDIR>/optencod<CMDEXT>"
+    <CPCMD> <OWOBJDIR>/msgencod.exe  "<OWROOT>/build/<OWOBJDIR>/msgencod<CMDEXT>"
+    <CPCMD> <OWOBJDIR>/findhash.exe  "<OWROOT>/build/<OWOBJDIR>/findhash<CMDEXT>"
 
 [ BLOCK <BINTOOL> clean ]
 #========================
-    echo rm -f <OWBINDIR>/<OWOBJDIR>/optencod<CMDEXT>
-    rm -f <OWBINDIR>/<OWOBJDIR>/optencod<CMDEXT>
-    echo rm -f <OWBINDIR>/<OWOBJDIR>/msgencod<CMDEXT>
-    rm -f <OWBINDIR>/<OWOBJDIR>/msgencod<CMDEXT>
-    echo rm -f <OWBINDIR>/<OWOBJDIR>/findhash<CMDEXT>
-    rm -f <OWBINDIR>/<OWOBJDIR>/findhash<CMDEXT>
+    echo rm -f "<OWROOT>/build/<OWOBJDIR>/optencod<CMDEXT>"
+    rm -f "<OWROOT>/build/<OWOBJDIR>/optencod<CMDEXT>"
+    echo rm -f "<OWROOT>/build/<OWOBJDIR>/msgencod<CMDEXT>"
+    rm -f "<OWROOT>/build/<OWOBJDIR>/msgencod<CMDEXT>"
+    echo rm -f "<OWROOT>/build/<OWOBJDIR>/findhash<CMDEXT>"
+    rm -f "<OWROOT>/build/<OWOBJDIR>/findhash<CMDEXT>"
 
 [ BLOCK <BLDRULE> rel cprel ]
 #============================
@@ -33,4 +33,4 @@ set PROJDIR=<CWD>
 
 [ BLOCK . . ]
 
-[ INCLUDE <OWROOT>/build/epilog.ctl ]
+[ INCLUDE "<OWROOT>/build/epilog.ctl" ]

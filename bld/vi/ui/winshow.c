@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -154,7 +154,7 @@ void WindowTitleAOI( window_id wid, const char *title, bool active )
     window      *w;
 
     w = WINDOW_FROM_ID( wid );
-    MemFree( w->title );
+    _MemFreeArray( w->title );
     if( title == NULL ) {
         w->title = NULL;
     } else {

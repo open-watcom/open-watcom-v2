@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,8 +44,6 @@
 #include "argvenv.h"
 
 
-extern char *OptEnvVar="split";
-
 static const char *usageMsg[] = {
     "Usage: split [-?] [-number] [@env] file [prefix]",
     "\tenv                : environment variable to expand",
@@ -70,7 +68,7 @@ static int splitFile( FILE *fp, int lines, char *prefix )
     unsigned char   e1   = 'a';
     unsigned char   e2   = 'a';
 
-    file = (char *) malloc( (strlen( prefix ) + 2) * sizeof( char ) + 1 );
+    file = (char *)MemAlloc( (strlen( prefix ) + 2) * sizeof( char ) + 1 );
 
     for( ;; ) {
         ch = fgetc( fp );
@@ -99,7 +97,7 @@ static int splitFile( FILE *fp, int lines, char *prefix )
                 }
                 cnt = 1;                                // current line = 1
             } else {
-                free( file );                           // error case
+                MemFree( file );                        // error case
                 return( 1 );
             }
         }
@@ -112,7 +110,7 @@ static int splitFile( FILE *fp, int lines, char *prefix )
         }
     }
     fclose( out );
-    free( file );
+    MemFree( file );
     return( 0 );
 }
 
@@ -124,7 +122,7 @@ int main( int argc, char **argv )
     char       *prefix = "x";
     int         lines  = 1000;
 
-    argv = ExpandEnv( &argc, argv );
+    argv = ExpandEnv( &argc, argv, "SPLIT" );
 
     for( ;; ) {
         ch = GetOpt( &argc, argv, "#", usageMsg );
@@ -159,5 +157,7 @@ int main( int argc, char **argv )
             fclose( fp );
         }
     }
+    MemFree( argv );
+
     return( 0 );
 }

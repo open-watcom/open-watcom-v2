@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,16 +34,16 @@
 #include <shellapi.h>
 #include <io.h>
 #include <stdarg.h>
-#include "title.h"
+#include "splash.h"
 #include "iedde.h"
+#include "wreddeop.h"
 
 #include "clibint.h"
 
 
-#define DDE_OPT     "-DDE"
-#define NEW_OPT     "/n"
-#define NOTITLE_OPT "/notitle"
-#define FUSION_OPT  "/fusion"
+#define NEW_OPT     "n"
+#define NOTITLE_OPT "notitle"
+#define FUSION_OPT  "fusion"
 
 static char     className[] = "watimgedit";
 static HICON    hBitmapIcon;
@@ -322,7 +322,7 @@ static bool imgEditInit( HANDLE currinst, HANDLE previnst, int cmdshow )
     UpdateWindow( HMainWindow );
 
     if( !ImgedIsDDE && !NoTitleScreen ) {
-        DisplayTitleScreen( Instance, HMainWindow, 2000, IEAppTitle );
+        ImgDisplaySplashScreen( Instance, HMainWindow, 2000 );
     }
 
     CreateColorPal();
@@ -347,17 +347,19 @@ static void parseCmdLine( int count, char **cmdline )
     int         i;
 
     for( i = 1; i < count; i++ ) {
-        if( stricmp( cmdline[i], DDE_OPT ) == 0 ) {
+        if( stricmp( cmdline[i], DDE_OPT_STR ) == 0 ) {
             continue;
         }
-        if( stricmp( cmdline[i], NEW_OPT ) == 0 ) {
-            continue;
-        }
-        if( stricmp( cmdline[i], NOTITLE_OPT ) == 0 ) {
-            continue;
-        }
-        if( stricmp( cmdline[i], FUSION_OPT ) == 0 ) {
-            continue;
+        if( cmdline[i][0] == '/' || cmdline[i][0] == '-' ) {
+            if( stricmp( cmdline[i] + 1, NEW_OPT ) == 0 ) {
+                continue;
+            }
+            if( stricmp( cmdline[i] + 1, NOTITLE_OPT ) == 0 ) {
+                continue;
+            }
+            if( stricmp( cmdline[i] + 1, FUSION_OPT ) == 0 ) {
+                continue;
+            }
         }
         strcpy( fname, cmdline[i] );
         OpenFileOnStart( fname );
@@ -373,22 +375,24 @@ static void parseArgs( int count, char **cmdline )
     int         i;
 
     for( i = 1; i < count; i++ ) {
-        if( stricmp( cmdline[i], DDE_OPT ) == 0 ) {
+        if( stricmp( cmdline[i], DDE_OPT_STR ) == 0 ) {
             ImgedIsDDE = true;
             continue;
         }
-        if( stricmp( cmdline[i], NEW_OPT ) == 0 ) {
-            OpenNewFiles = true;
-            continue;
-        }
-        if( stricmp( cmdline[i], NOTITLE_OPT ) == 0 ) {
-            NoTitleScreen = true;
-            continue;
-        }
-        if( stricmp( cmdline[i], FUSION_OPT ) == 0 ) {
-            FusionCalled = true;
-            NoTitleScreen = true;
-            continue;
+        if( cmdline[i][0] == '/' || cmdline[i][0] == '-' ) {
+            if( stricmp( cmdline[i] + 1, NEW_OPT ) == 0 ) {
+                OpenNewFiles = true;
+                continue;
+            }
+            if( stricmp( cmdline[i] + 1, NOTITLE_OPT ) == 0 ) {
+                NoTitleScreen = true;
+                continue;
+            }
+            if( stricmp( cmdline[i] + 1, FUSION_OPT ) == 0 ) {
+                FusionCalled = true;
+                NoTitleScreen = true;
+                continue;
+            }
         }
     }
 

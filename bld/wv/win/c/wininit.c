@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -79,7 +79,7 @@ void TellWinHandle( void )
 
 void GUImain( void )
 {
-    char buff[256];
+    char cmd_line[256];
 
     // fix up env vars if necessary
     watcom_setup_env();
@@ -87,8 +87,8 @@ void GUImain( void )
     SetErrorMode( SEM_FAILCRITICALERRORS );
     SetHandleCount( 60 );
     _8087 = 0;
-    CmdData=buff;
-    getcmd( CmdData );
+    _bgetcmd( cmd_line, sizeof( cmd_line ) );
+    CmdData = cmd_line;
     DebugMain();
     InitHookFunc();
 }

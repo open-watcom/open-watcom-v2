@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -83,21 +84,21 @@ static void clear_context( struct Context *context )
 bool OpenCmdLineContext( void )
 /*****************************/
 {
-    int                 len;
+    int     cmd_len;
 
     if( curContextInitialized )
         Zoinks();
     clear_context( &curContext );
 
     /*** Make a copy of the command line ***/
-    len = _bgetcmd( NULL, 0 ) + 1;
-    curContext.dataStart = AllocMem( len );
-    getcmd( curContext.dataStart );
+    cmd_len = _bgetcmd( NULL, 0 ) + 1;
+    curContext.dataStart = AllocMem( cmd_len );
+    _bgetcmd( curContext.dataStart, cmd_len );
 
+    curContext.type = COMMAND_LINE_CONTEXT;
     curContext.data = curContext.dataStart;
     curContext.dataLen = strlen( curContext.dataStart );
     curContextInitialized = true;
-    curContext.type = COMMAND_LINE_CONTEXT;
     return( false );
 }
 
@@ -152,14 +153,15 @@ void CloseContext( void )
 {
     if( curContextInitialized ) {
         switch( curContext.type ) {
-          case COMMAND_LINE_CONTEXT:
+        case COMMAND_LINE_CONTEXT:
             free( curContext.dataStart );
-          case ENVIRON_VAR_CONTEXT:
+            /* fall through */
+        case ENVIRON_VAR_CONTEXT:
             break;
-          case COMMAND_FILE_CONTEXT:
+        case COMMAND_FILE_CONTEXT:
             fclose( curContext.fp );
             break;
-          default:
+        default:
             Zoinks();
         }
     }
@@ -194,7 +196,8 @@ void PopContext( void )
 /*********************/
 {
     CloseContext();
-    if( stackItems == 0 )  Zoinks();
+    if( stackItems == 0 )
+        Zoinks();
     memcpy( &curContext, &stack[stackItems-1], sizeof(struct Context) );
     stackItems--;
     curContextInitialized = true;
@@ -215,7 +218,6 @@ char GetCharContext( void )
         Zoinks();
     switch( curContext.type ) {
     case COMMAND_LINE_CONTEXT:
-        /* fall through */
     case ENVIRON_VAR_CONTEXT:
         if( (size_t)( curContext.data - curContext.dataStart ) < curContext.dataLen ) {
             ch = *curContext.data;
@@ -228,7 +230,7 @@ char GetCharContext( void )
             if( (c = fgetc( curContext.fp )) != EOF ) {
                 ch = (char)c;
             }
-        } 
+        }
         break;
     default:
         Zoinks();
@@ -243,7 +245,8 @@ char GetCharContext( void )
 void UngetCharContext( void )
 /***************************/
 {
-    if( !curContextInitialized )  Zoinks();
+    if( !curContextInitialized )
+        Zoinks();
     SetPosContext( GetPosContext() - 1 );
 }
 
@@ -255,7 +258,8 @@ void UngetCharContext( void )
 void MarkPosContext( void )
 /*************************/
 {
-    if( !curContextInitialized )  Zoinks();
+    if( !curContextInitialized )
+        Zoinks();
     curContext.markPos = GetPosContext();
 }
 
@@ -267,8 +271,10 @@ void MarkPosContext( void )
 void GoToMarkContext( void )
 /**************************/
 {
-    if( !curContextInitialized )  Zoinks();
-    if( curContext.markPos == -1L )  Zoinks();
+    if( !curContextInitialized )
+        Zoinks();
+    if( curContext.markPos == -1L )
+        Zoinks();
     SetPosContext( curContext.markPos );
 }
 
@@ -279,17 +285,17 @@ void GoToMarkContext( void )
 long GetPosContext( void )
 /************************/
 {
-    if( !curContextInitialized )  Zoinks();
+    if( !curContextInitialized )
+        Zoinks();
     switch( curContext.type ) {
-      case COMMAND_LINE_CONTEXT:
-        /* fall through */
-      case ENVIRON_VAR_CONTEXT:
+    case COMMAND_LINE_CONTEXT:
+    case ENVIRON_VAR_CONTEXT:
         return( (long)( curContext.data - curContext.dataStart ) );
         break;
-      case COMMAND_FILE_CONTEXT:
+    case COMMAND_FILE_CONTEXT:
         return( ftell( curContext.fp ) );
         break;
-      default:
+    default:
         Zoinks();
     }
     return( EOF );              /* dummy value so compiler won't complain */
@@ -302,18 +308,19 @@ long GetPosContext( void )
 void SetPosContext( long pos )
 /****************************/
 {
-    if( !curContextInitialized )  Zoinks();
-    if( pos < 0 )  Zoinks();
+    if( !curContextInitialized )
+        Zoinks();
+    if( pos < 0 )
+        Zoinks();
     switch( curContext.type ) {
-      case COMMAND_LINE_CONTEXT:
-        /* fall through */
-      case ENVIRON_VAR_CONTEXT:
+    case COMMAND_LINE_CONTEXT:
+    case ENVIRON_VAR_CONTEXT:
         curContext.data = curContext.dataStart + pos;
         break;
-      case COMMAND_FILE_CONTEXT:
+    case COMMAND_FILE_CONTEXT:
         fseek( curContext.fp, pos, SEEK_SET );
         break;
-      default:
+    default:
         Zoinks();
     }
 }

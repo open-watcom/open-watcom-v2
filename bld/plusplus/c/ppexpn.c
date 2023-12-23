@@ -40,7 +40,7 @@
 #include "initdefs.h"
 #include "carve.h"
 #include "dumpapi.h"
-#ifndef NDEBUG
+#ifdef DEVBUILD
     #include "pragdefn.h"
     #include "togglesd.h"
 #endif
@@ -129,7 +129,7 @@ static  int    Prec[] = {   // table of token precedences
     #undef pick
 };
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 void DbgDumpToken( TOKEN token );
 
 void DbgDumpOperatorStack( void )       // dump PPEXPN_OPERATOR_STACK

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,30 +31,36 @@
 
 
 #include "wlib.h"
+#include <errno.h>
 #ifdef __WATCOMC__
 #include <process.h>
 #endif
 #include "wio.h"
 
-#include "clibext.h"
-#ifndef IDE_PGM
 #include "clibint.h"
-#endif
+#include "clibext.h"
 
 
-#define AR_MODE_ENV "WLIB_AR"
+#define AR_MODE_ENV     "WLIB_AR"
+#define MAX_TOKEN_LEN   260
 
 #define eatwhite( c ) while( *(c) != '\0' && isspace( *(unsigned char *)(c) ) ) ++(c);
 #define notwhite( c ) ( (c) != '\0' && !isspace( (unsigned char)(c) ) )
 
 #define my_tolower( c ) tolower( (unsigned char)(c) )
 
+typedef struct {
+    FILE    *fp;
+    char    *buffer;
+    size_t  size;
+} getline_data;
+
 options_def     Options;
 lib_cmd         *CmdList;
 
 static lib_cmd  **CmdListEnd;
 
-static const char *GetString( const char *c, char *buff, bool singlequote, bool ignoreSpaceInQuotes )
+static const char *GetString( const char *c, char *token_buff, bool singlequote, bool ignoreSpaceInQuotes )
 {
     char    quote;
 
@@ -63,7 +69,7 @@ static const char *GetString( const char *c, char *buff, bool singlequote, bool 
         quote = *c;
         c++;
         while( (*c != '\0') && (*c != quote) ) {
-            *buff++ = *c++;
+            *token_buff++ = *c++;
         }
         if( *c == quote ) {
             c++;
@@ -79,14 +85,14 @@ static const char *GetString( const char *c, char *buff, bool singlequote, bool 
                     inquote = !inquote;
                 }
             }
-            *buff++ = *c++;
+            *token_buff++ = *c++;
         }
     }
-    *buff = '\0';
+    *token_buff = '\0';
     return( c );
 }
 
-static const char *GetEqual( const char *c, char *buff, const char *ext, char **ret )
+static const char *GetEqualString( const char *c, char *token_buff, const char *ext, char **ret )
 {
     const char  *start = c;
 
@@ -100,11 +106,11 @@ static const char *GetEqual( const char *c, char *buff, const char *ext, char **
     if( *c == ' ' || *c == '\0' ) {
         *ret = NULL;
     } else {
-        c = GetString( c, buff, false, false );
+        c = GetString( c, token_buff, false, false );
         if( ext != NULL && *ext != '\0' ) {
-            DefaultExtension( buff, ext );
+            DefaultExtension( token_buff, ext );
         }
-        *ret = DupStr( buff );
+        *ret = DupStr( token_buff );
     }
     return( c );
 }
@@ -129,7 +135,7 @@ static void DuplicateOption( const char *c )
     FatalError( ERR_DUPLICATE_OPTION, c );
 }
 
-static const char *ParseOption( const char *c, char *buff )
+static const char *ParseOption( const char *c, char *token_buff )
 {
     unsigned long   page_size;
     const char      *start;
@@ -153,7 +159,7 @@ static const char *ParseOption( const char *c, char *buff )
         if( Options.output_directory != NULL ) {
             DuplicateOption( start );
         }
-        c = GetEqual( c, buff, NULL, &Options.output_directory );
+        c = GetEqualString( c, token_buff, NULL, &Options.output_directory );
         if( access( Options.output_directory, F_OK ) != 0 ) {
             FatalError( ERR_DIR_NOT_EXIST, Options.output_directory );
         }
@@ -191,6 +197,12 @@ static const char *ParseOption( const char *c, char *buff )
                 DuplicateOption( start );
             }
             Options.processor = WL_PROC_AXP;
+            break;
+        case 'm':
+            if( Options.processor != WL_PROC_NONE ) {
+                DuplicateOption( start );
+            }
+            Options.processor = WL_PROC_MIPS;
             break;
         case 'p':
             if( Options.processor != WL_PROC_NONE ) {
@@ -245,7 +257,7 @@ static const char *ParseOption( const char *c, char *buff )
             DuplicateOption( start );
         }
         Options.list_contents = true;
-        c = GetEqual( c, buff, EXT_LST, &Options.list_file );
+        c = GetEqualString( c, token_buff, EXT_LST, &Options.list_file );
         break;
     case 'm': //                       (display C++ mangled names)
         Options.mangled = true;
@@ -254,7 +266,7 @@ static const char *ParseOption( const char *c, char *buff )
         if( Options.output_name != NULL ) {
             DuplicateOption( start );
         }
-        c = GetEqual( c, buff, EXT_LIB, &Options.output_name );
+        c = GetEqualString( c, token_buff, EXT_LIB, &Options.output_name );
         break;
     case 'q': //                       (don't print header)
         Options.quiet = true;
@@ -264,13 +276,13 @@ static const char *ParseOption( const char *c, char *buff )
         break;
     case 'x': //                       (explode all objects in library)
         Options.explode = true;
-#ifndef NDEBUG
+#ifdef DEVBUILD
         Options.explode_count = 0;
         if( my_tolower( *c ) == 'n' ) {
             Options.explode_count = 1;
             ++c;
         }
-        c = GetEqual( c, buff, NULL, &Options.explode_ext );
+        c = GetEqualString( c, token_buff, NULL, &Options.explode_ext );
         if( Options.explode_ext == NULL )
             Options.explode_ext = "." EXT_OBJ;
         if( Options.explode_count ) {
@@ -279,7 +291,7 @@ static const char *ParseOption( const char *c, char *buff )
             Options.explode_ext = DupStr( cn );
         }
 #else
-        c = GetEqual( c, buff, NULL, &Options.explode_ext );
+        c = GetEqualString( c, token_buff, NULL, &Options.explode_ext );
 #endif
         break;
     case 'z':
@@ -301,7 +313,7 @@ static const char *ParseOption( const char *c, char *buff )
             DuplicateOption( start );
         }
         Options.strip_expdef = true;       // JBS 99/07/09
-        c = GetEqual( c, buff, NULL, &Options.export_list_file );
+        c = GetEqualString( c, token_buff, NULL, &Options.export_list_file );
         break;
     case 't':
         if( my_tolower( *c ) == 'l' ) {
@@ -369,7 +381,7 @@ static const char *ParseOption( const char *c, char *buff )
             if( Options.page_size ) {
                 DuplicateOption( start );
             }
-            c = GetEqual( c, buff, NULL, &page );
+            c = GetEqualString( c, token_buff, NULL, &page );
             errno = 0;
             page_size = strtoul( page, &endptr, 0 );
             if( *endptr != '\0' ) {
@@ -495,21 +507,85 @@ static const char *ParseCommand( const char *c )
     return( c );
 }
 
-#define MAX_CMDLINE     (10*1024)
-
-static void ParseOneLine( const char *c )
+static void my_getline_init( const char *name, getline_data *fd )
 {
-    char        *buff;
+    fd->fp = fopen( name, "rb" );
+    if( fd->fp == NULL ) {
+        FatalError( ERR_CANT_OPEN, name, strerror( errno ) );
+    }
+    fd->size = MAX_TOKEN_LEN;
+    fd->buffer = MemAlloc( MAX_TOKEN_LEN );
+    if( fd->buffer == NULL ) {
+        fd->size = 0;
+    }
+}
+
+static char *my_getline( getline_data *fd )
+{
+    char    *p;
+    size_t  len_used;
+    size_t  maxlen;
+    size_t  len;
+
+    p = fd->buffer;
+    maxlen = fd->size;
+    len_used = 0;
+    while( fgets( p, maxlen, fd->fp ) != NULL ) {
+        len = strlen( p );
+        if( len == 0 )
+            continue;
+        len_used += len;
+        if( p[len - 1] == '\n' ) {
+            break;
+        }
+        if( len < maxlen - 1 ) {
+            break;
+        }
+        if( feof( fd->fp ) ) {
+            break;
+        }
+        len = fd->size + MAX_TOKEN_LEN;
+        p = MemAlloc( len );
+        memcpy( p, fd->buffer, len_used + 1 );
+        MemFree( fd->buffer );
+        fd->buffer = p;
+        fd->size = len;
+        p += len_used;
+        maxlen = len - len_used;
+    }
+    if( len_used ) {
+        p = fd->buffer;
+        if( p[len_used - 1] == '\n' ) {
+            len_used--;
+            p[len_used] = '\0';
+        }
+        if( len_used && p[len_used - 1] == '\r' ) {
+            len_used--;
+            p[len_used] = '\0';
+        }
+        return( p );
+    }
+    return( NULL );
+}
+
+static void my_getline_fini( getline_data *fd )
+{
+    fclose( fd->fp );
+    MemFree( fd->buffer );
+}
+
+static void ParseOneLineWlib( const char *c )
+{
+    char        token_buff[MAX_TOKEN_LEN];
     const char  *start;
 
-    buff = MemAlloc( MAX_CMDLINE );
     for( ;; ) {
         eatwhite( c );
         start = c;
         switch( *c ) {
 #if !defined(__UNIX__)
         case '/':
-            c = ParseOption( c, buff );
+            c = ParseOption( c, token_buff );
             if( c == start )
                 FatalError( ERR_BAD_OPTION, c[1] );
             break;
@@ -517,7 +593,7 @@ static void ParseOneLine( const char *c )
 
         case '-':
             if( CmdList == NULL && Options.input_name == NULL ) {
-                c = ParseOption( c, buff );
+                c = ParseOption( c, token_buff );
                 if( c != start ) {
                     break;
                 }
@@ -532,42 +608,40 @@ static void ParseOneLine( const char *c )
             break;
         case '@':
             ++c;
-            c = GetString( c, buff, true, false );
+            c = GetString( c, token_buff, true, false );
             {
-                const char *env = WlibGetEnv( buff );
+                const char *env;
 
-
+                env = WlibGetEnv( token_buff );
                 if( env != NULL ) {
-                    ParseOneLine( env );
+                    ParseOneLineWlib( env );
                 } else {
-                    FILE    *io;
-                    DefaultExtension( buff, EXT_CMD );
-                    io = fopen( buff, "r" );
-                    if( io == NULL ) {
-                        FatalError( ERR_CANT_OPEN, buff, strerror( errno ) );
+                    getline_data    fd;
+                    char            *p;
+
+                    DefaultExtension( token_buff, EXT_CMD );
+                    my_getline_init( token_buff, &fd );
+                    while( (p = my_getline( &fd )) != NULL ) {
+                        ParseOneLineWlib( p );
                     }
-                    while( fgets( buff, MAX_CMDLINE, io ) != NULL ) {
-                        ParseOneLine( buff );
-                    }
-                    fclose( io );
+                    my_getline_fini( &fd );
                 }
             }
             break;
         case '\0':
         case '#':
             // comment - blow away line
-            MemFree( buff );
             return;
         default:
-            c = GetString( c, buff, true, false );
-            if( strcmp( buff, "?" ) == 0 ) {
+            c = GetString( c, token_buff, true, false );
+            if( strcmp( token_buff, "?" ) == 0 ) {
                 Usage();
             }
             if( Options.input_name != NULL ) {
-                AddCommand( OP_ADD|OP_DELETE, buff );
+                AddCommand( OP_ADD|OP_DELETE, token_buff );
             } else {
-                DefaultExtension( buff, EXT_LIB );
-                Options.input_name = DupStr( buff );
+                DefaultExtension( token_buff, EXT_LIB );
+                Options.input_name = DupStr( token_buff );
             }
             break;
         }
@@ -639,13 +713,12 @@ static const char *ParseArOption( const char *c, operation *ar_mode )
     return( c );
 }
 
-static void ParseOneArLine( const char *c, operation *ar_mode )
+static void ParseOneLineAr( const char *c, operation *ar_mode )
 {
-    char        *buff;
+    char        token_buff[MAX_TOKEN_LEN];
     bool        done_options;
 
     done_options = false;
-    buff = MemAlloc( MAX_CMDLINE );
     for( ;; ) {
         eatwhite( c );
         switch( *c ) {
@@ -653,7 +726,6 @@ static void ParseOneArLine( const char *c, operation *ar_mode )
             if( *ar_mode == OP_EXTRACT ) {
                 Options.explode = true;
             }
-            MemFree( buff );
             return;
         case '-':
             if( !done_options ) {
@@ -671,13 +743,13 @@ static void ParseOneArLine( const char *c, operation *ar_mode )
                 c = ParseArOption( c, ar_mode );
                 break;
             }
-            c = GetString( c, buff, true, false );
+            c = GetString( c, token_buff, true, false );
             if( Options.input_name != NULL ) {
-                AddCommand( *ar_mode, buff );
+                AddCommand( *ar_mode, token_buff );
                 break;
             } else {
-                DefaultExtension( buff, EXT_LIB );
-                Options.input_name = DupStr( buff );
+                DefaultExtension( token_buff, EXT_LIB );
+                Options.input_name = DupStr( token_buff );
             }
             break;
         }
@@ -720,9 +792,9 @@ void ProcessCmdLine( char *argv[] )
     if( env != NULL && *env != '\0' ) {
         parse = DupStr( env );
         if( Options.ar ) {
-            ParseOneArLine( parse, &ar_mode );
+            ParseOneLineAr( parse, &ar_mode );
         } else {
-            ParseOneLine( parse );
+            ParseOneLineWlib( parse );
         }
         MemFree( parse );
     }
@@ -731,9 +803,9 @@ void ProcessCmdLine( char *argv[] )
         if( **argv != '\0' ) {
             parse = DupStr( *argv );
             if( Options.ar ) {
-                ParseOneArLine( parse, &ar_mode );
+                ParseOneLineAr( parse, &ar_mode );
             } else {
-                ParseOneLine( parse );
+                ParseOneLineWlib( parse );
             }
             MemFree( parse );
         }

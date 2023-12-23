@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,6 +34,7 @@
 #include "coderep.h"
 #include "zoiks.h"
 #include "seldef.h"
+#include "cgauxcc.h"
 #include "cgauxinf.h"
 #include "makeins.h"
 #include "data.h"
@@ -54,10 +55,9 @@
 
 
 /*
- * If you add a new routine, let John know as the debugger recognizes
- * these.
+ * If you add a new routine, add it to the debugger's symbol list
+ * so the debugger can recognize it.
  */
-
 rtn_info RTInfo[] = {
     #define PICK(e,name,op,class,left,right,result) {name, op, class, left, right, result},
     #define PICK1(e,name,op,class,left,right,result) __FP80BIT(PICK(e,name,op,class,left,right,result),)
@@ -65,8 +65,6 @@ rtn_info RTInfo[] = {
     #undef PICK1
     #undef PICK
 };
-
-static call_class       rt_cclass = 0;
 
 static  struct STRUCT_BYTE_SEQ( 2 ) Scn1 = {
      2, false,
@@ -120,7 +118,7 @@ static  struct STRUCT_BYTE_SEQ( 6 ) Scn4ES = {  /* or Scn2 in USE16 */
 const char  *AskRTName( rt_class rtindex )
 /****************************************/
 {
-    if( _IsTargetModel( INDEXED_GLOBALS ) ) {
+    if( _IsTargetModel( CGSW_X86_INDEXED_GLOBALS ) ) {
         switch( rtindex ) {
         case RT_FDA:
             return( "__FXA" );
@@ -146,9 +144,9 @@ const char  *AskRTName( rt_class rtindex )
 
 bool    RTLeaveOp2( instruction *ins )
 /*************************************
-    return true if it's a bad idea to put op2 into a temporary since we're
-    gonna take the bugger's address in rMAKECALL.
-*/
+ * return true if it's a bad idea to put op2 into a temporary since we're
+ * gonna take the bugger's address in rMAKECALL.
+ */
 {
     /* unused parameters */ (void)ins;
 
@@ -157,13 +155,13 @@ bool    RTLeaveOp2( instruction *ins )
 
 
 name    *ScanCall( tbl_control *table, name *value, type_class_def type_class )
-/*********************************************************************************
-    generates a fake call to a runtime routine that looks up "value" in a table
-    and jumps to the appropriate case, using either a pointer or index
-    returned by the "routine". The "routine" will be generated inline later.
-    See BEAuxInfo for the code sequences generated. That will explain
-    how the jump destination is determined as well.
-*/
+/******************************************************************************
+ * generates a fake call to a runtime routine that looks up "value" in a table
+ * and jumps to the appropriate case, using either a pointer or index
+ * returned by the "routine". The "routine" will be generated inline later.
+ * See BEAuxInfo for the code sequences generated. That will explain
+ * how the jump destination is determined as well.
+ */
 {
     instruction *new_ins;
     name        *reg_name;
@@ -243,10 +241,10 @@ name    *ScanCall( tbl_control *table, name *value, type_class_def type_class )
 
 
 name    *Addressable( name *cons, type_class_def type_class )
-/***************************************************************
-    make sure a floating point constant is addressable (dropped
-    it into memory if it isnt)
-*/
+/************************************************************
+ * make sure a floating point constant is addressable (dropped
+ * it into memory if it isnt)
+ */
 {
     if( cons->n.class == N_CONSTANT )
         return( GenFloat( cons, type_class ) );
@@ -255,43 +253,45 @@ name    *Addressable( name *cons, type_class_def type_class )
 
 
 pointer BEAuxInfo( pointer hdl, aux_class request )
-/**********************************************************
-    see ScanCall for explanation
-*/
+/**************************************************
+ * see ScanCall for explanation
+ */
 {
     switch( request ) {
-    case AUX_LOOKUP:
+    case FEINF_AUX_LOOKUP:
         switch( FindRTLabel( hdl ) ) {
         case RT_SCAN1:
-            if( _IsntTargetModel( FLAT_MODEL ) )
+            if( _IsntTargetModel( CGSW_X86_FLAT_MODEL ) )
                 return( &Scn1ES );
             return( &Scn1 );
         case RT_SCAN2:
-            if( _IsntTargetModel( USE_32 ) ) {
-                if( _IsntTargetModel( FLAT_MODEL ) )
+            if( _IsntTargetModel( CGSW_X86_USE_32 ) ) {
+                if( _IsntTargetModel( CGSW_X86_FLAT_MODEL ) )
                     return( &Scn4ES );
                 return( &Scn4 );
             } else {
-                if( _IsntTargetModel( FLAT_MODEL ) )
+                if( _IsntTargetModel( CGSW_X86_FLAT_MODEL ) )
                     return( &Scn2ES );
                 return( &Scn2 );
             }
         case RT_SCAN4:
-            if( _IsntTargetModel( USE_32 ) ) {
-                if( _IsntTargetModel( FLAT_MODEL ) )
+            if( _IsntTargetModel( CGSW_X86_USE_32 ) ) {
+                if( _IsntTargetModel( CGSW_X86_FLAT_MODEL ) )
                     return( &Scn2ES );
                 return( &Scn2 );
             } else {
-                if( _IsntTargetModel( FLAT_MODEL ) )
+                if( _IsntTargetModel( CGSW_X86_FLAT_MODEL ) )
                     return( &Scn4ES );
                 return( &Scn4 );
             }
         default:
             return( NULL );
         }
-    case CALL_CLASS:
-        return( &rt_cclass );
-    case CALL_BYTES:
+    case FEINF_CALL_CLASS:
+        return( FECALL_GEN_NONE );
+    case FEINF_CALL_CLASS_TARGET:
+        return( FECALL_X86_NONE );
+    case FEINF_CALL_BYTES:
         return( hdl );
     default:
         _Zoiks( ZOIKS_128 );
@@ -301,8 +301,8 @@ pointer BEAuxInfo( pointer hdl, aux_class request )
 
 instruction     *rMAKEFNEG( instruction *ins )
 /*********************************************
-    this is intentionally a stub for the 386.
-*/
+ * this is intentionally a stub for the 386.
+ */
 {
     return( ins );
 }

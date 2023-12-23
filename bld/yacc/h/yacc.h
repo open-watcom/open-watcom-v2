@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -124,7 +125,7 @@ struct a_SR_conflict {
     a_SR_conflict       *next;
     a_sym               *sym;           /* lookahead token causing ambiguity */
     a_state             *state;         /* final state that contains ambigity */
-    a_state             *shift;         /* state if we were to shift token */
+    a_state             *shift_state;   /* state if we were to shift token */
     a_SR_conflict_list  *thread;        /* all registered productions */
     conflict_id         id;             /* numeric id assigned by user */
     index_n             reduce;         /* rule if we were to reduce on token */
@@ -154,7 +155,7 @@ struct a_sym {                          /* symbol: terminal or non-terminal */
     char                *type;
     char                *min;
     a_pro               *pro;           /* productions with this symbol as LHS*/
-    a_state             *enter;
+    a_state             *state;
     boolbit             nullable    : 1;
     a_prec              prec;
     index_n             idx;
@@ -193,9 +194,9 @@ struct a_state {
     a_reduce_action     *default_reduction;
     a_parent            *parents;
     a_look              *look;
-    a_state             *same_enter_sym;
+    a_state             *sym_next;
     unsigned short      kersize;
-    action_n            sidx;           /* index of state [0..nstates] */
+    action_n            idx;            /* index of state [0..nstates] */
     flags               flag;
 };
 
@@ -266,11 +267,14 @@ extern void     parsestats( void );
 extern void     tail( FILE * );
 extern void     dump_header( FILE * );
 extern void     close_header( FILE * );
+extern void     free_header_data( void );
 
 extern void     genobj( FILE * );
 
 extern void     msg( char *, ... );
 extern void     warn( char *, ... );
+extern void     srcinfo_msg( char *, ... );
+extern void     srcinfo_warn( char *, ... );
 extern void     dumpstatistic( char *name, unsigned stat );
 
 extern void     MarkNoUnitRuleOptimizationStates( void );
@@ -332,7 +336,7 @@ extern a_pro    *startpro;
 
 extern set_size *setmembers;
 
-extern char     *srcname;
+extern char     *srcname_norm;
 
 extern FILE     *yaccin;
 

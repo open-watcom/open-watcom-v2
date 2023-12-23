@@ -36,6 +36,7 @@ can be generated in the object code.
 Pragmas are specified in the source file using the
 .kw pragma
 directive.
+.if '&lang' eq 'C' or '&lang' eq 'C/C++' .do begin
 A pragma operator of the form,
 .kw _Pragma
 ( "string-literal" )
@@ -56,6 +57,7 @@ operator can be used in macro definition.
 # define PRAGMA(X) _Pragma(#X)
 LIBRARY(kernel32.lib)  // same as #pragma library ("kernel32.lib")
 .millust end
+.do end
 .np
 .ix 'pragmas' 'notation used to describe'
 The following notation is used to describe the syntax of pragmas.

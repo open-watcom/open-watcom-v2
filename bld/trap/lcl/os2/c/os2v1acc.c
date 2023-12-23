@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,32 +36,58 @@
 #define INCL_DOSDEVICES
 #define INCL_DOSMEMMGR
 #define INCL_DOSSIGNALS
-#include <os2.h>
+//#define INCL_DOSSESMGR
+#include <wos2.h>
 #include <os2dbg.h>
+#include "digcpu.h"
 #include "trpimp.h"
+#include "trpcomm.h"
 #include "trperr.h"
 #include "os2trap.h"
 #include "madregs.h"
 #include "x86cpu.h"
 #include "miscx87.h"
-#include "cpuglob.h"
-#include "os2extx.h"
-#include "os2v2acc.h"
+#include "brkptcpu.h"
+#include "os2path.h"
+#include "accmisc.h"
+
+
+#define EXE_IS_FULLSCREEN       0x0100
+#define EXE_IS_PMC              0x0200
+#define EXE_IS_PM               0x0300
+
+#define MAX_WATCHES             32
+
+#define LOAD_THIS_DLL_SIZE      6
+
+extern PVOID my_alloca( unsigned short );
+#pragma aux my_alloca = \
+        "sub  sp,ax"    \
+        "mov  ax,sp"    \
+        "mov  dx,ss"    \
+    __parm __caller [__ax] \
+    __value         [__ax __dx] \
+    __modify        [__sp]
+
+typedef struct watch_point {
+    uint_64     value;
+    addr48_ptr  addr;
+    word        size;
+} watch_point;
 
 typedef void (*excfn)();
 
-extern void __far *Automagic( unsigned short );
-#pragma aux Automagic = \
-        "sub sp,ax"     \
-        "mov ax,sp"     \
-        "mov dx,ss"     \
-    __parm __caller [__ax] \
-    __value         [__dx __ax] \
-    __modify        [__sp]
+typedef struct {
+    USHORT  phmod[2];               /* offset-segment */
+    USHORT  mod_name[2];            /* offset-segment */
+    USHORT  fail_len;
+    PSZ     fail_name;              /* offset-segment */
+    USHORT  hmod;
+    CHAR    load_name[2];
+} loadstack_t;
 
-
-extern  void    LoadThisDLL( void );
-extern  void    EndLoadThisDLL( void );
+extern void             LoadThisDLL( void );
+extern void             EndLoadThisDLL( void );
 
 extern PID              Pid;
 extern bool             AtEnd;
@@ -71,31 +97,24 @@ extern char             UtilBuff[BUFF_SIZE];
 extern HFILE            SaveStdIn;
 extern HFILE            SaveStdOut;
 extern bool             CanExecTask;
-extern HMODULE          __far *ModHandles;
-extern unsigned         NumModHandles;
-extern unsigned         CurrModHandle;
-extern int              ExceptNum;
 extern HMODULE          ThisDLLModHandle;
 extern scrtype          Screen;
 
 static TRACEBUF         Buff;
 static USHORT           SessionType;
-__GINFOSEG              __far *GblInfo;
-const char              OS2ExtList[] = OS2EXTLIST;
+static watch_point      WatchPoints[MAX_WATCHES];
+static int              WatchCount = 0;
+static volatile bool    BrkPending;
+static int              ExceptNum;
 
+static HMODULE          __far *ModHandles = NULL;
+static unsigned         NumModHandles = 0;
+static unsigned         CurrModHandle = 0;
 
-typedef struct watch_point {
-    addr48_ptr  addr;
-    dword       value;
-} watch_point;
-
-#define MAX_WP  32
-
-watch_point WatchPoints[ MAX_WP ];
-short       WatchCount = 0;
+static char             stack[1024];
 
 #if 0
-static void Out( char __far *str )
+static void Out( PCHAR str )
 {
     USHORT      written;
 
@@ -109,13 +128,13 @@ static void OutNL()
 
 static void OutNum( unsigned i )
 {
-    char numbuff[10];
-    char __far *ptr;
+    char    numbuff[10];
+    PCHAR   ptr;
 
-    ptr = numbuff+10;
+    ptr = numbuff + 10;
     *--ptr = '\0';
     while( i != 0 ) {
-        *--ptr = "0123456789abcdef"[ i & 0x0f ];
+        *--ptr = "0123456789abcdef"[i & 0x0f];
         i >>= 4;
     }
     Out( ptr );
@@ -150,7 +169,7 @@ static USHORT ReadRegs( TRACEBUF __far *buff )
 }
 
 
-static USHORT WriteBuffer( byte __far *data, USHORT segv, USHORT offv, USHORT size )
+static USHORT WriteBuffer( PBYTE data, USHORT segv, USHORT offv, USHORT size )
 {
     USHORT  length;
 
@@ -169,7 +188,8 @@ static USHORT WriteBuffer( byte __far *data, USHORT segv, USHORT offv, USHORT si
                 Buff.value &= 0xff00;
                 Buff.value |= *data;
                 DosPTrace( &Buff );
-                if( Buff.cmd != PT_RET_SUCCESS ) break;
+                if( Buff.cmd != PT_RET_SUCCESS )
+                    break;
                 data++;
                 length--;
                 offv++;
@@ -181,7 +201,8 @@ static USHORT WriteBuffer( byte __far *data, USHORT segv, USHORT offv, USHORT si
                 Buff.offv = offv;
                 Buff.segv = segv;
                 DosPTrace( &Buff );
-                if( Buff.cmd != PT_RET_SUCCESS ) break;
+                if( Buff.cmd != PT_RET_SUCCESS )
+                    break;
                 length -= 2;
                 offv += 2;
             }
@@ -191,18 +212,19 @@ static USHORT WriteBuffer( byte __far *data, USHORT segv, USHORT offv, USHORT si
 }
 
 
-static USHORT ReadBuffer( byte __far *data, USHORT segv, USHORT offv, USHORT size )
+static USHORT ReadBuffer( PBYTE data, USHORT segv, USHORT offv, USHORT size )
 {
     USHORT      length;
 
     length = size;
     if( Pid != 0 ) {
-        while( length != 0 ) {
+        while( length > 0 ) {
             Buff.cmd = PT_CMD_READ_MEM_D;
             Buff.offv = offv;
             Buff.segv = segv;
             DosPTrace( &Buff );
-            if( Buff.cmd != PT_RET_SUCCESS ) break;
+            if( Buff.cmd != PT_RET_SUCCESS )
+                break;
             *data = Buff.value & 0xff;
             data++;
             offv++;
@@ -224,7 +246,7 @@ static void RecordModHandle( HMODULE value )
     SEL         sel;
 
     if( ModHandles == NULL ) {
-        DosAllocSeg( sizeof( USHORT ), (PSEL)&sel, 0 );
+        DosAllocSeg( sizeof( HMODULE ), (PSEL)&sel, 0 );
         ModHandles = _MK_FP( sel, 0 );
     } else {
         DosReallocSeg( ( NumModHandles + 1 ) * sizeof( HMODULE ), _FP_SEG( ModHandles ) );
@@ -239,11 +261,11 @@ static void ExecuteCode( TRACEBUF __far *buff )
         buff->cmd = PT_CMD_GO;
         buff->value = 0;
         DosPTrace( buff ); // go here
-        if( buff->cmd != PT_RET_LIB_LOADED ) break;
+        if( buff->cmd != PT_RET_LIB_LOADED )
+            break;
         RecordModHandle( buff->value );
     }
 }
-
 
 #pragma aux DoOpen __parm [__dx __ax] [__bx] [__cx]
 static void DoOpen( char FAR *name, int mode, int flags )
@@ -251,13 +273,11 @@ static void DoOpen( char FAR *name, int mode, int flags )
     BreakPointParm( OpenFile( name, mode, flags ) );
 }
 
-
 #pragma aux DoClose __parm [__ax]
 static void DoClose( HFILE hdl )
 {
     BreakPointParm( DosClose( hdl ) );
 }
-
 
 #pragma aux DoDupFile __parm [__ax] [__dx]
 static void DoDupFile( HFILE old, HFILE new )
@@ -275,7 +295,7 @@ static void DoDupFile( HFILE old, HFILE new )
 }
 
 #pragma aux DoWritePgmScrn __parm [__dx __ax] [__bx]
-static void DoWritePgmScrn( char __far *buff, USHORT len )
+static void DoWritePgmScrn( PCHAR buff, USHORT len )
 {
     USHORT  written;
 
@@ -289,7 +309,6 @@ static void DoGetMSW( void )
 }
 
 
-static char stack[1024];
 
 static long TaskExecute( excfn rtn )
 {
@@ -310,9 +329,9 @@ static long TaskExecute( excfn rtn )
 }
 
 
-long TaskOpenFile( char __far *name, int mode, int flags ) {
-
-    WriteBuffer( (byte __far *)name, _FP_SEG( UtilBuff ), _FP_OFF( UtilBuff ), strlen( name ) + 1 );
+long TaskOpenFile( PCHAR name, int mode, int flags )
+{
+    WriteBuffer( (PBYTE)name, _FP_SEG( UtilBuff ), _FP_OFF( UtilBuff ), strlen( name ) + 1 );
     Buff.u.r.DX = _FP_SEG( UtilBuff );
     Buff.u.r.AX = _FP_OFF( UtilBuff );
     Buff.u.r.BX = mode;
@@ -345,39 +364,41 @@ trap_retval TRAP_CORE( Get_sys_config )( void )
     TRACEBUF    buff;
     char        tmp[108];
 
-    ret = GetOutPtr(0);
-    ret->sys.os = DIG_OS_OS2;
+    ret = GetOutPtr( 0 );
+    ret->os = DIG_OS_OS2;
     DosGetVersion( &version );
-    ret->sys.osmajor = version >> 8;
-    ret->sys.osminor = version & 0xff;
-    ret->sys.cpu = X86CPUType();
+    ret->osmajor = version >> 8;
+    ret->osminor = version & 0xff;
+    ret->cpu = X86CPUType();
     DosDevConfig( &npx, 3, 0 );
     if( npx ) {
-        if( ret->sys.cpu >= X86_486 ) {
-            ret->sys.fpu = ret->sys.cpu & X86_CPU_MASK;
+        if( ret->cpu >= X86_486 ) {
+            ret->fpu = ret->cpu & X86_CPU_MASK;
         } else {
-            ret->sys.fpu = NPXType();
+            ret->fpu = NPXType();
         }
     } else {
-        ret->sys.fpu = X86_NO;
+        ret->fpu = X86_NOFPU;
     }
-    emu = TaskExecute( (excfn)&DoGetMSW );
+    emu = TaskExecute( (excfn)DoGetMSW );
     if( emu != -1 && (emu & 0x04) ) { /* if EM bit is on in the MSW */
-        ret->sys.fpu = X86_EMU;
+        ret->fpu = X86_EMU;
     }
     WriteRegs( &Buff );
-    if( ret->sys.fpu != X86_NO ) {
+    if( ret->fpu != X86_NOFPU ) {
         buff.cmd = PT_CMD_READ_8087;
         buff.segv = _FP_SEG( tmp );
         buff.offv = _FP_OFF( tmp );
         buff.tid = 1;
         buff.pid = Pid;
         DosPTrace( &buff );
-        if( buff.cmd != PT_RET_SUCCESS ) ret->sys.fpu = X86_NO;
+        if( buff.cmd != PT_RET_SUCCESS ) {
+            ret->fpu = X86_NOFPU;
+        }
     }
     DosGetHugeShift( &shift );
-    ret->sys.huge_shift = shift;
-    ret->sys.arch = DIG_ARCH_X86;
+    ret->huge_shift = shift;
+    ret->arch = DIG_ARCH_X86;
     return( sizeof( *ret ) );
 }
 
@@ -387,8 +408,8 @@ trap_retval TRAP_CORE( Map_addr )( void )
     map_addr_req *acc;
     map_addr_ret *ret;
 
-    acc = GetInPtr(0);
-    ret = GetOutPtr(0);
+    acc = GetInPtr( 0 );
+    ret = GetOutPtr( 0 );
     if( Pid != 0 ) {
         Buff.cmd = PT_CMD_SEG_TO_SEL;
         Buff.value = acc->in_addr.segment;
@@ -412,48 +433,55 @@ trap_retval TRAP_CORE( Map_addr )( void )
 
 trap_retval TRAP_CORE( Machine_data )( void )
 {
+    machine_data_req    *acc;
     machine_data_ret    *ret;
-    unsigned_8          *data;
+    machine_data_spec   *data;
 
+    acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    data = GetOutPtr( sizeof( *ret ) );
     ret->cache_start = 0;
     ret->cache_end = ~(addr_off)0;
-    *data = 0;
-    return( sizeof( *ret ) + sizeof( *data ) );
+    if( acc->info_type == X86MD_ADDR_CHARACTERISTICS ) {
+        data = GetOutPtr( sizeof( *ret ) );
+        data->x86_addr_flags = 0;
+        return( sizeof( *ret ) + sizeof( data->x86_addr_flags ) );
+    }
+    return( sizeof( *ret ) );
 }
 
 
 trap_retval TRAP_CORE( Checksum_mem )( void )
 {
     USHORT              offset;
-    USHORT              length;
+    USHORT              segment;
+    size_t              len;
     ULONG               sum;
     checksum_mem_req    *acc;
     checksum_mem_ret    *ret;
 
-    acc = GetInPtr(0);
-    ret = GetOutPtr(0);
-    length = acc->len;
     sum = 0;
     if( Pid != 0 ) {
+        acc = GetInPtr( 0 );
         offset = acc->in_addr.offset;
-        while( length != 0 ) {
+        segment = acc->in_addr.segment;
+        for( len = acc->len; len > 0; ) {
             Buff.cmd = PT_CMD_READ_MEM_D;
             Buff.offv = offset;
-            Buff.segv = acc->in_addr.segment;
+            Buff.segv = segment;
             DosPTrace( &Buff );
-            if( Buff.cmd != PT_RET_SUCCESS ) break;
+            if( Buff.cmd != PT_RET_SUCCESS )
+                break;
             sum += Buff.value & 0xff;
             offset++;
-            length--;
-            if( length != 0 ) {
+            len--;
+            if( len > 0 ) {
                 sum += Buff.value >> 8;
                 offset++;
-                length--;
+                len--;
             }
         }
     }
+    ret = GetOutPtr( 0 );
     ret->result = sum;
     return( sizeof( *ret ) );
 }
@@ -462,11 +490,9 @@ trap_retval TRAP_CORE( Checksum_mem )( void )
 trap_retval TRAP_CORE( Read_mem )( void )
 {
     read_mem_req        *acc;
-    unsigned            len;
 
-    acc = GetInPtr(0);
-    len = ReadBuffer( GetOutPtr(0), acc->mem_addr.segment, acc->mem_addr.offset, acc->len );
-    return( len );
+    acc = GetInPtr( 0 );
+    return( ReadBuffer( GetOutPtr( 0 ), acc->mem_addr.segment, acc->mem_addr.offset, acc->len ) );
 }
 
 
@@ -474,14 +500,11 @@ trap_retval TRAP_CORE( Write_mem )( void )
 {
     write_mem_req       *acc;
     write_mem_ret       *ret;
-    unsigned            len;
 
-    acc = GetInPtr(0);
-    ret = GetOutPtr(0);
-
-    len = GetTotalSizeIn() - sizeof( *acc );
-
-    ret->len = WriteBuffer( GetInPtr( sizeof( *ret ) ), acc->mem_addr.segment, acc->mem_addr.offset, len );
+    acc = GetInPtr( 0 );
+    ret = GetOutPtr( 0 );
+    ret->len = WriteBuffer( GetInPtr( sizeof( *ret ) ), acc->mem_addr.segment,
+                        acc->mem_addr.offset, GetTotalSizeIn() - sizeof( *acc ) );
     return( sizeof( *ret ) );
 }
 
@@ -526,7 +549,7 @@ trap_retval TRAP_CORE( Read_regs )( void )
     mad_registers       *mr;
     TID                 save;
 
-    mr = GetOutPtr(0);
+    mr = GetOutPtr( 0 );
     memset( mr, 0, sizeof( mr->x86 ) );
     if( Pid != 0 ) {
         ReadRegs( &Buff );
@@ -568,7 +591,7 @@ trap_retval TRAP_CORE( Write_regs )( void )
     return( 0 );
 }
 
-USHORT LibLoadPTrace( TRACEBUF *buff )
+static USHORT LibLoadPTrace( TRACEBUF *buff )
 {
     int         cmd;
     int         value;
@@ -583,7 +606,8 @@ USHORT LibLoadPTrace( TRACEBUF *buff )
     rv = DosPTrace( buff );
     RecordModHandle( buff->mte );
     for( ;; ) {
-        if( buff->cmd != PT_RET_LIB_LOADED ) return( rv );
+        if( buff->cmd != PT_RET_LIB_LOADED )
+            return( rv );
         RecordModHandle( buff->value );
         buff->value = value;
         buff->cmd = cmd;
@@ -593,12 +617,8 @@ USHORT LibLoadPTrace( TRACEBUF *buff )
     }
 }
 
-#define EXE_IS_FULLSCREEN       0x0100
-#define EXE_IS_PMC              0x0200
-#define EXE_IS_PM               0x0300
 
-
-static bool GetExeInfo( USHORT __far *pCS, USHORT __far *pIP, USHORT __far *pExeType, char __far *name )
+static bool GetExeInfo( USHORT __far *pCS, USHORT __far *pIP, USHORT __far *pExeType, PCHAR name )
 {
     long        open_rc;
     HFILE       handle;
@@ -609,41 +629,66 @@ static bool GetExeInfo( USHORT __far *pCS, USHORT __far *pIP, USHORT __far *pExe
     bool        rc;
 
     open_rc = OpenFile( name, 0, OPEN_PRIVATE );
-    if( open_rc < 0 ) return( FALSE );
+    if( open_rc < 0 )
+        return( FALSE );
     handle = open_rc;
     rc = FALSE;
     for( ;; ) { /* guess */
-        if( DosChgFilePtr( handle, 0x00, 0, &pos ) != 0 ) break;
-        if( DosRead( handle, &shorty, sizeof( shorty ), &read ) != 0 ) break;
-        if( read != sizeof( shorty ) ) break;
-        if( shorty != 0x5a4d ) break;   /* MZ */
+        if( DosChgFilePtr( handle, 0x00, 0, &pos ) != 0 )
+            break;
+        if( DosRead( handle, &shorty, sizeof( shorty ), &read ) != 0 )
+            break;
+        if( read != sizeof( shorty ) )
+            break;
+        if( shorty != 0x5a4d )
+            break;   /* MZ */
 
-        if( DosChgFilePtr( handle, 0x18, 0, &pos ) != 0 ) break;
-        if( DosRead( handle, &shorty, sizeof( shorty ), &read ) != 0 ) break;
-        if( read != sizeof( shorty ) ) break;
-        if( shorty < 0x40 ) break;      /* offset of relocation header */
+        if( DosChgFilePtr( handle, 0x18, 0, &pos ) != 0 )
+            break;
+        if( DosRead( handle, &shorty, sizeof( shorty ), &read ) != 0 )
+            break;
+        if( read != sizeof( shorty ) )
+            break;
+        if( shorty < 0x40 )
+            break;      /* offset of relocation header */
 
-        if( DosChgFilePtr( handle, 0x3c, 0, &pos ) != 0 ) break;
-        if( DosRead( handle, &new_head, sizeof( new_head ), &read) != 0 ) break;
-        if( read != sizeof( new_head ) ) break;
+        if( DosChgFilePtr( handle, 0x3c, 0, &pos ) != 0 )
+            break;
+        if( DosRead( handle, &new_head, sizeof( new_head ), &read) != 0 )
+            break;
+        if( read != sizeof( new_head ) )
+            break;
 
-        if( DosChgFilePtr( handle, new_head, 0, &pos ) != 0 ) break;
-        if( DosRead( handle, &shorty, sizeof( shorty ), &read ) != 0 ) break;
-        if( read != sizeof( shorty ) ) break;
-        if( shorty != 0x454e ) break;   /* NE */
+        if( DosChgFilePtr( handle, new_head, 0, &pos ) != 0 )
+            break;
+        if( DosRead( handle, &shorty, sizeof( shorty ), &read ) != 0 )
+            break;
+        if( read != sizeof( shorty ) )
+            break;
+        if( shorty != 0x454e )
+            break;   /* NE */
 
-        if( DosChgFilePtr( handle, new_head+0x0c, 0, &pos ) != 0 ) break;
-        if( DosRead(handle,pExeType,sizeof( *pExeType ),&read) != 0 ) break;
-        if( read != sizeof( *pExeType ) ) break;
+        if( DosChgFilePtr( handle, new_head+0x0c, 0, &pos ) != 0 )
+            break;
+        if( DosRead(handle,pExeType,sizeof( *pExeType ),&read) != 0 )
+            break;
+        if( read != sizeof( *pExeType ) )
+            break;
         *pExeType &= 0x0700;
 
-        if( DosChgFilePtr( handle, new_head+0x14, 0, &pos ) != 0 ) break;
-        if( DosRead( handle, pIP, sizeof( *pIP ), &read ) != 0 ) break;
-        if( read != sizeof( *pIP ) ) break;
+        if( DosChgFilePtr( handle, new_head+0x14, 0, &pos ) != 0 )
+            break;
+        if( DosRead( handle, pIP, sizeof( *pIP ), &read ) != 0 )
+            break;
+        if( read != sizeof( *pIP ) )
+            break;
 
-        if( DosChgFilePtr( handle, new_head+0x16, 0, &pos ) != 0 ) break;
-        if( DosRead( handle, pCS, sizeof( *pCS ), &read ) != 0 ) break;
-        if( read != sizeof( *pCS ) ) break;
+        if( DosChgFilePtr( handle, new_head+0x16, 0, &pos ) != 0 )
+            break;
+        if( DosRead( handle, pCS, sizeof( *pCS ), &read ) != 0 )
+            break;
+        if( read != sizeof( *pCS ) )
+            break;
         rc = TRUE;
         break;
     }
@@ -651,17 +696,6 @@ static bool GetExeInfo( USHORT __far *pCS, USHORT __far *pIP, USHORT __far *pExe
     return( rc );
 }
 
-
-typedef struct {
-        USHORT  phmod[2];               /* offset-segment */
-        USHORT  mod_name[2];            /* offset-segment */
-        USHORT  fail_len;
-        PSZ     fail_name;              /* offset-segment */
-        USHORT  hmod;
-        CHAR    load_name[2];
-} loadstack_t;
-
-#define LOAD_THIS_DLL_SIZE      6
 
 static bool CausePgmToLoadThisDLL( USHORT startCS, USHORT startIP )
 {
@@ -687,14 +721,14 @@ static bool CausePgmToLoadThisDLL( USHORT startCS, USHORT startIP )
         return( FALSE );
 
     /* write the routine LoadThisDLL into program's code */
-    len = WriteBuffer( (byte __far *)LoadThisDLL, startCS, startIP, codesize );
+    len = WriteBuffer( (PBYTE)LoadThisDLL, startCS, startIP, codesize );
     if( len != codesize )
         return( FALSE );
 
     /* set up the stack for the routine LoadThisDLL */
 
     dll_name_len = ( strlen( this_dll ) + 1 ) & ~1;
-    loadstack = Automagic( sizeof( loadstack_t ) + dll_name_len );
+    loadstack = my_alloca( sizeof( loadstack_t ) + dll_name_len );
     Buff.u.r.SP -= sizeof( loadstack_t ) + dll_name_len;
     strcpy( loadstack->load_name, this_dll );
     loadstack->fail_name = NULL;
@@ -703,7 +737,7 @@ static bool CausePgmToLoadThisDLL( USHORT startCS, USHORT startIP )
     loadstack->mod_name[1] = Buff.u.r.SS;
     loadstack->phmod[0] = Buff.u.r.SP + offsetof( loadstack_t, hmod );
     loadstack->phmod[1] = Buff.u.r.SS;
-    len = WriteBuffer( (byte __far *)loadstack, Buff.u.r.SS, Buff.u.r.SP, sizeof( loadstack_t ) + dll_name_len );
+    len = WriteBuffer( (PBYTE)loadstack, Buff.u.r.SS, Buff.u.r.SP, sizeof( loadstack_t ) + dll_name_len );
     if( len != sizeof( loadstack_t ) + dll_name_len )
         return( FALSE );
 
@@ -749,13 +783,14 @@ void DebugSession( void )
 
 trap_retval TRAP_CORE( Prog_load )( void )
 {
-    NEWSTARTDATA        start;
+    STARTDATA           start;
     char                *parms;
-    char                *end;
-    char                *prog;
+    char                *src;
+    char                *name;
     TRACEBUF            save;
     char                exe_name[255];
-    USHORT              startCS, startIP;
+    USHORT              startCS;
+    USHORT              startIP;
     USHORT              exe_type;
     prog_load_ret       *ret;
     char                appname[200];
@@ -764,36 +799,32 @@ trap_retval TRAP_CORE( Prog_load )( void )
 
     ExceptNum = -1;
     AtEnd = FALSE;
-    prog = GetInPtr( sizeof( prog_load_req ) );
-    if( FindProgFile( prog, exe_name, OS2ExtList ) != 0 ) {
-        exe_name[0] = '\0';
-    }
-    parms = AddDriveAndPath( exe_name, UtilBuff );
-    while( *prog != '\0' ) ++prog;
-    ++prog;
-    end = (char *)GetInPtr( GetTotalSizeIn() - 1 ) + 1;
-    MergeArgvArray( prog, parms, end - prog );
+    name = GetInPtr( sizeof( prog_load_req ) );
+    FindFilePath( DIG_FILETYPE_EXE, name, exe_name );
+    parms = AddDriveAndPath( exe_name, UtilBuff ) + 1;
+    src = name;
+    while( *src++ != '\0' )
+        {}
+    MergeArgvArray( src, parms, GetTotalSizeIn() - sizeof( prog_load_req ) - ( src - name ) );
     CanExecTask = TRUE;
     if( !GetExeInfo( &startCS, &startIP, &exe_type, UtilBuff ) ) {
         CanExecTask = FALSE;
         exe_type = EXE_IS_FULLSCREEN;
     }
-    start.Length = 50;
-    start.Related = 1;
-    start.FgBg = !Remote;
-    start.TraceOpt = 1;
     strcpy( appname, TRP_The_WATCOM_Debugger );
     strcat( appname, ": " );
     strcat( appname, exe_name );
+
+    start.Length = offsetof( STARTDATA, IconFile );
+    start.Related = 1;
+    start.FgBg = !Remote;
+    start.TraceOpt = 1;
     start.PgmTitle = appname;
     start.PgmName = UtilBuff;
     start.PgmInputs = (PBYTE)parms;
     start.TermQ = 0;
     start.Environment = NULL;
     start.InheritOpt = 1;
-    start.IconFile = NULL;
-    start.PgmHandle = 0;
-    start.PgmControl = 0;
     if( exe_type == EXE_IS_PM ) {
         start.SessionType = SSF_TYPE_PM;
     } else {
@@ -859,6 +890,7 @@ trap_retval TRAP_CORE( Prog_kill )( void )
     prog_kill_ret       *ret;
 
     ret = GetOutPtr( 0 );
+    ret->err = 0;
     SaveStdIn = NIL_DOS_HANDLE;
     SaveStdOut = NIL_DOS_HANDLE;
     if( Pid != 0 ) {
@@ -868,7 +900,6 @@ trap_retval TRAP_CORE( Prog_kill )( void )
     NumModHandles = 0;
     CurrModHandle = 1;
     Pid = 0;
-    ret->err = 0;
     return( sizeof( *ret ) );
 }
 
@@ -902,36 +933,39 @@ trap_retval TRAP_CORE( Clear_break )( void )
 
 trap_retval TRAP_CORE( Set_watch )( void )
 {
-    set_watch_req       *wp;
-    set_watch_ret       *wr;
-    dword               buff;
+    set_watch_req       *acc;
+    set_watch_ret       *ret;
+    watch_point         *wp;
 
-    wp = GetInPtr( 0 );
-    wr = GetOutPtr( 0 );
-    if( WatchCount < MAX_WP ) { // nyi - artificial limit (32 should be lots)
-        WatchPoints[ WatchCount ].addr.segment = wp->watch_addr.segment;
-        WatchPoints[ WatchCount ].addr.offset = wp->watch_addr.offset;
-        ReadBuffer( (byte __far *)&buff, wp->watch_addr.segment, wp->watch_addr.offset, sizeof( dword ) );
-        WatchPoints[ WatchCount ].value = buff;
+    acc = GetInPtr( 0 );
+    ret = GetOutPtr( 0 );
+    ret->multiplier = 50000;
+    ret->err = 84;      // failure, out of structures
+    if( WatchCount < MAX_WATCHES ) { // nyi - artificial limit (32 should be lots)
+        ret->err = 0;   // OK
+        wp = WatchPoints + WatchCount;
+        wp->addr.segment = acc->watch_addr.segment;
+        wp->addr.offset = acc->watch_addr.offset;
+        wp->size = acc->size;
+        wp->value = 0;
+        ReadBuffer( (PBYTE)&wp->value, wp->addr.segment, wp->addr.offset, wp->size );
+
         ++WatchCount;
-    } else {
-        wr->err = 84; /* out of structures */
     }
-    wr->multiplier = 50000;
-    return( sizeof( *wr ) );
+    return( sizeof( *ret ) );
 }
 
 trap_retval TRAP_CORE( Clear_watch )( void )
 {
-    clear_watch_req     *wp;
+    clear_watch_req     *acc;
     watch_point         *dst;
     watch_point         *src;
     int                 i;
 
-    wp = GetInPtr( 0 );
+    acc = GetInPtr( 0 );
     dst = src = WatchPoints;
     for( i = 0; i < WatchCount; ++i ) {
-        if( src->addr.segment != wp->watch_addr.segment || src->addr.offset != wp->watch_addr.offset ) {
+        if( src->addr.segment != acc->watch_addr.segment || src->addr.offset != acc->watch_addr.offset ) {
             *dst = *src;
             ++dst;
         }
@@ -941,9 +975,7 @@ trap_retval TRAP_CORE( Clear_watch )( void )
     return( 0 );
 }
 
-static volatile bool     BrkPending;
-
-static void __pascal __far __loadds BrkHandler( USHORT sig_arg, USHORT sig_num )
+static void EXPENTRY BrkHandler( USHORT sig_arg, USHORT sig_num )
 {
     PFNSIGHANDLER   prev_hdl;
     USHORT          prev_act;
@@ -983,9 +1015,9 @@ static trap_conditions MapReturn( trap_conditions conditions )
         return( conditions | COND_LIBRARIES );
     case PT_RET_TRD_TERMINATE:
         return( conditions );
-    // Combined PT_RET_FUNERAL & PT_RET_ERROR with default
-    // case PT_RET_FUNERAL:
-    // case PT_RET_ERROR:
+//    // Combined PT_RET_FUNERAL & PT_RET_ERROR with default
+//    case PT_RET_FUNERAL:
+//    case PT_RET_ERROR:
     default:
         CanExecTask = FALSE;
         AtEnd = TRUE;
@@ -993,10 +1025,24 @@ static trap_conditions MapReturn( trap_conditions conditions )
     }
 }
 
+static bool CheckWatchPoints( void )
+{
+    watch_point     *wp;
+    int             i;
+    uint_64         value;
+
+    for( wp = WatchPoints, i = WatchCount; i-- > 0; wp++ ) {
+        value = 0;
+        ReadBuffer( (PBYTE)&value, wp->addr.segment, wp->addr.offset, wp->size );
+        if( wp->value != value ) {
+            return( true );
+        }
+    }
+    return( false );
+}
+
 static unsigned ProgRun( bool step )
 {
-    watch_point         *wp;
-    int                 i;
     PFNSIGHANDLER       prev_brk_hdl;
     USHORT              prev_brk_act;
     PFNSIGHANDLER       prev_intr_hdl;
@@ -1017,20 +1063,15 @@ static unsigned ProgRun( bool step )
     } else if( step ) {
         Buff.cmd = PT_CMD_SINGLE_STEP;
         DosPTrace( &Buff );
-    } else if( WatchCount != 0 ) {
+    } else if( WatchCount > 0 ) {
         for( ;; ) {
             Buff.cmd = PT_CMD_SINGLE_STEP;
             DosPTrace( &Buff );
-            if( Buff.cmd != PT_RET_STEP ) break;
-            for( wp = WatchPoints, i = WatchCount; i > 0; ++wp, --i ) {
-                Buff.cmd = PT_CMD_READ_MEM_D;
-                Buff.segv = wp->addr.segment;
-                Buff.offv = wp->addr.offset;
-                DosPTrace( &Buff );
-                if( Buff.value != wp->value ) {
-                    Buff.cmd = PT_RET_WATCH;
-                    goto leave;
-                }
+            if( Buff.cmd != PT_RET_STEP )
+                break;
+            if( CheckWatchPoints() ) {
+                Buff.cmd = PT_RET_WATCH;
+                break;
             }
         }
     } else {
@@ -1043,7 +1084,6 @@ static unsigned ProgRun( bool step )
             Buff.cmd = PT_RET_FUNERAL;
         }
     }
-leave:
     DosSetSigHandler( prev_brk_hdl, &prev_brk_hdl, &prev_brk_act,
                         prev_brk_act, SIG_CTRLBREAK );
     DosSetSigHandler( prev_brk_hdl, &prev_intr_hdl, &prev_intr_act,
@@ -1072,36 +1112,36 @@ trap_retval TRAP_CORE( Prog_step )( void )
 
 trap_retval TRAP_FILE( write_console )( void )
 {
-    USHORT       len;
+    size_t       len;
     USHORT       written_len;
     unsigned     save_ax;
     unsigned     save_dx;
     unsigned     save_bx;
     byte         *ptr;
-    unsigned            curr;
-    file_write_console_ret      *ret;
+    size_t       size;
+    file_write_console_ret  *ret;
 
     ptr = GetInPtr( sizeof( file_write_console_req ) );
     len = GetTotalSizeIn() - sizeof( file_write_console_req );
     ret = GetOutPtr( 0 );
+    ret->err = 0;
     if( CanExecTask ) {
         ret->len = len;
-        ret->err = 0;
         /* print/program request */
         save_ax = Buff.u.r.AX;
         save_dx = Buff.u.r.DX;
         save_bx = Buff.u.r.BX;
-        ret->err = 0;
-        while( len != 0 ) {
-            curr = len;
-            if( len > sizeof( UtilBuff ) ) len = sizeof( UtilBuff );
-            WriteBuffer( ptr, _FP_SEG( UtilBuff ), _FP_OFF( UtilBuff ), curr );
+        size = sizeof( UtilBuff );
+        while( len > 0 ) {
+            if( size > len )
+                size = len;
+            WriteBuffer( ptr, _FP_SEG( UtilBuff ), _FP_OFF( UtilBuff ), size );
             Buff.u.r.AX = _FP_OFF( UtilBuff );
             Buff.u.r.DX = _FP_SEG( UtilBuff );
-            Buff.u.r.BX = curr;
+            Buff.u.r.BX = size;
             TaskExecute( (excfn)DoWritePgmScrn );
-            ptr += curr;
-            len -= curr;
+            ptr += size;
+            len -= size;
         }
         Buff.u.r.AX = save_ax;
         Buff.u.r.DX = save_dx;
@@ -1182,15 +1222,14 @@ static unsigned DoThread( trace_codes code )
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
+    ret->err = 1;       // failure
     if( ValidThread( acc->thread ) ) {
+        ret->err = 0;   // OK
         save = Buff.tid;
         Buff.tid = acc->thread;
         Buff.cmd = code;
         DosPTrace( &Buff );
         Buff.tid = save;
-        ret->err = 0;
-    } else {
-        ret->err = 1;   // failed
     }
     return( sizeof( *ret ) );
 }
@@ -1213,8 +1252,8 @@ trap_retval TRAP_CORE( Get_lib_name )( void )
     get_lib_name_ret    *ret;
     char                *name;
 
-    acc = GetInPtr(0);
-    ret = GetOutPtr(0);
+    acc = GetInPtr( 0 );
+    ret = GetOutPtr( 0 );
     if( acc->mod_handle != 0 ) {
         CurrModHandle = acc->mod_handle + 1;
     }
@@ -1266,18 +1305,20 @@ trap_retval TRAP_CORE( Get_next_alias )( void )
     return( sizeof( *ret ) );
 }
 
-trap_version TRAPENTRY TrapInit( const char *parms, char *err, unsigned_8 remote )
+trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
 {
     trap_version        ver;
     USHORT              os2ver;
-    SEL                 li,gi;
+    SEL                 li;
+    SEL                 gi;
     __LINFOSEG          __far *linfo;
 
-    parms = parms;
+    /* unused parameters */ (void)parms;
+
     Remote = remote;
     err[0] = '\0';
-    ver.major = TRAP_MAJOR_VERSION;
-    ver.minor = TRAP_MINOR_VERSION;
+    ver.major = TRAP_VERSION_MAJOR;
+    ver.minor = TRAP_VERSION_MINOR;
     ver.remote = FALSE;
     SaveStdIn = NIL_DOS_HANDLE;
     SaveStdOut = NIL_DOS_HANDLE;

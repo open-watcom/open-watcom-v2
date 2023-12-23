@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -50,6 +50,7 @@
 #include "hcerrors.h"
 #include "pathgrp2.h"
 
+#include "clibint.h"
 #include "clibext.h"
 
 
@@ -68,57 +69,61 @@ int main( int argc, char *argv[] )
     }
 
     // Parse the command line.
-    char    cmdline[_MAX_PATH];
-    char    *pfilename, *temp;
+    int     cmd_len;
+    char    *cmd_line;
+    char    *pfilename;
+    char    *cmd;
     bool    quiet = false;
 
-    getcmd( cmdline );
-    temp = cmdline;
-    pfilename = NULL;
-    while( *temp != '\0' && isspace( *temp ) ) {
-        temp++;
+    cmd_len = _bgetcmd( NULL, 0 ) + 1;
+    cmd_line = new char[cmd_len];
+    _bgetcmd( cmd_line, cmd_len );
+    cmd = cmd_line;
+    while( *cmd != '\0' && isspace( *cmd ) ) {
+        cmd++;
     }
-    if( *temp == '-' || *temp == '/' ) {
-        temp++;
-        if( (*temp != 'q' && *temp != 'Q') || !isspace( *(temp+1) ) ) {
+    pfilename = NULL;
+    if( *cmd == '-' || *cmd == '/' ) {
+        cmd++;
+        if( (cmd[0] != 'q' && cmd[0] != 'Q') || !isspace( cmd[1] ) ) {
+            delete[] cmd_line;
             HCWarning( USAGE );
             return( -1 );
-        } else {
+        }
+        quiet = true;
+        cmd++;
+        while( *cmd != '\0' && isspace( *cmd ) ) {
+            cmd++;
+        }
+        if( *cmd == '\0' ) {
+            delete[] cmd_line;
+            HCWarning( USAGE );
+            return( -1 );
+        }
+        pfilename = cmd;
+    } else if( *cmd != '\0' ) {
+        pfilename = cmd++;
+        while( *cmd != '\0' && *cmd != '/' && *cmd != '-' ) {
+            cmd++;
+        }
+        if( *cmd != '\0' ) {
+            *cmd = '\0';
+            cmd++;
+            if( *cmd != 'q' && *cmd != 'Q' ) {
+                delete[] cmd_line;
+                HCWarning( USAGE );
+                return( -1 );
+            }
+            cmd++;
+            while( *cmd != '\0' && isspace( *cmd ) ) {
+                cmd++;
+            }
+            if( *cmd != '\0' ) {
+                delete[] cmd_line;
+                HCWarning( USAGE );
+                return( -1 );
+            }
             quiet = true;
-            temp++;
-            while( *temp != '\0' && isspace( *temp ) ) {
-                temp++;
-            }
-            if( *temp == '\0' ) {
-                HCWarning( USAGE );
-                return( -1 );
-            } else {
-                pfilename = temp;
-            }
-        }
-    } else if( *temp != '\0' ) {
-        pfilename = temp++;
-        while( *temp != '\0' && *temp != '/' && *temp != '-' ) {
-            temp++;
-        }
-        if( *temp != '\0' ) {
-            *temp = '\0';
-            temp++;
-            if( *temp != 'q' && *temp != 'Q' ) {
-                HCWarning( USAGE );
-                return( -1 );
-            } else {
-                temp++;
-                while( *temp != '\0' && isspace( *temp ) ) {
-                    temp++;
-                }
-                if( *temp != '\0' ) {
-                    HCWarning( USAGE );
-                    return( -1 );
-                } else {
-                    quiet = true;
-                }
-            }
         }
     }
 
@@ -134,6 +139,7 @@ int main( int argc, char *argv[] )
     _splitpath2( path, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
 
     if( CMPFEXT( pg.ext, PH_EXT ) || CMPFEXT( pg.ext, HLP_EXT ) ) {
+        delete[] cmd_line;
         HCWarning( BAD_EXT );
         return( -1 );
     }
@@ -148,6 +154,7 @@ int main( int argc, char *argv[] )
         InFile  input( path );
         if( input.bad() ) {
             HCWarning( FILE_ERR, pfilename );
+            delete[] cmd_line;
             return( -1 );
         }
 
@@ -192,10 +199,12 @@ int main( int argc, char *argv[] )
                 delete my_files._phrFile;
             }
         } catch( HCException ) {
+            delete[] cmd_line;
             HCWarning( PROGRAM_STOPPED );
             return( -1 );
         }
     }
+    delete[] cmd_line;
     mem_statistic();
     return( 0 );
 }

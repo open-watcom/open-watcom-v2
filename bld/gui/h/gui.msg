@@ -1,3 +1,5 @@
+/* UTF-8 encoding, Â¥ */
+
 // - the change font menu item and hint text
 
 pick(	Change_XFont_,
@@ -49,7 +51,7 @@ pick(	OK,
 
 pick(	Cancel,
 		"Cancel",
-                "ƒLƒƒƒ“ƒZƒ‹" )
+		"ã‚­ãƒ£ãƒ³ã‚»ãƒ«" )
 
 pick(	List_Files_of_Type_Colon,
 		"List Files of Type:",
@@ -291,7 +293,7 @@ pick(	Blank,
 
 pick(	Windows_Dialog_Font,
 		"Helv.8",
-		"‚l‚r –¾’©.10" )
+		"ï¼­ï¼³ æ˜æœ.10" )
 
 pick(	OS2_Dialog_Font,
 		"System Proportional.10",

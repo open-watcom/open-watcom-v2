@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,6 +34,9 @@
 #ifndef WDEFDIAG_INCLUDED
 #define WDEFDIAG_INCLUDED
 
+#include "wderesiz.h"
+#include "wdefordr.h"
+
 /****************************************************************************/
 /* macro definitions                                                        */
 /****************************************************************************/
@@ -42,18 +46,44 @@
     #define WDE_DIALOG_MAX_CONTROLS 255
 #endif
 
+typedef struct {
+    DISPATCH_FN         *dispatcher;
+    HWND                window_handle;
+    HWND                parent_handle;
+    OBJ_ID              object_id;
+    OBJPTR              object_handle;
+    OBJPTR              parent;
+    OBJPTR              o_item;
+    uint_16             num_children; // was uint_8 ==> not big enough for NT
+    LIST                *children;
+    LIST                *ochildren;
+    HFONT               font;
+    RECT                nc_size;
+    uint_16             mem_flags;
+    WdeDialogBoxHeader  *dialog_info;
+    WdeResInfo          *res_info;
+    WdeResDlgItem       *dlg_item;
+    WdeResizeRatio      resizer;
+    WResID              *name;
+//  WResHelpID          *helpname;
+    char                *file_name;
+    char                *symbol;
+    char                *helpsymbol;
+    WdeOrderMode        mode;
+} WdeDialogObject;
+
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern WdeDialogBoxInfo *WdeDBIFromObject( void * );
+extern WdeDialogBoxInfo *WdeAllocDBIFromObject( WdeDialogObject *obj );
 extern OBJPTR           WdeCreateNewDialog( WResID *, bool is32bit );
 extern OBJPTR           WdeCreateDialogFromRes( WdeResInfo *, WdeResDlgItem * );
 WINEXPORT extern CREATE_RTN WdeDialogCreate;
 extern bool             WdeDialogInit( bool );
 extern void             WdeDialogFini( void );
-extern bool             WdeIsDialogRestorable( void * );
-extern bool             WdePreserveDialogWithDBI( void * );
-extern void             WdeDialogModified( void * );
+extern bool             WdeIsDialogRestorable( WdeDialogObject *obj );
+extern bool             WdePreserveDialogWithDBI( WdeDialogObject *obj );
+extern void             WdeSetDialogModified( WdeDialogObject *obj );
 extern RECT             *WdeGetDefaultDialogNCSize( void );
 
 #endif

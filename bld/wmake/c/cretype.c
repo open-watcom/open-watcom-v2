@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,39 +37,57 @@
 
 
     /* foreign language support */
-#define islang(__c)     ( ( (__c) >= 0x80 && (__c) <= 0xa7 ) || \
-                        ( (__c) >= 0xe0 && (__c) <= 0xee ) )
+#define islang(__c)     \
+    ( ( (__c) >= 0x80 && (__c) <= 0xa7 ) || \
+    ( (__c) >= 0xe0 && (__c) <= 0xee ) )
 
     /* macro identifiers */
-#define ismacc(__c)     ( isalnum(__c) || (__c) == '_' || \
-                        islang(__c) || (__c) == '%' )
+#define ismacc(__c)     \
+    ( isalnum(__c) || (__c) == '_' || \
+    islang(__c) || (__c) == '%' )
 
-    /* extension characters */
-#define isextc(__c)     ( isalnum(__c) || (__c) == '_' || islang(__c) || \
-                        (__c) == '-' || (__c) == '*' || (__c) == '?' || \
-                        (__c) == '&' || (__c) == '$' || (__c) == '!' || \
-                        (__c) == '#' || (__c) == '%' || (__c) == '\'' || \
-                        (__c) == '(' || (__c) == ')' || (__c) == '^' || \
-                        (__c) == '`' || (__c) == '{' || (__c) == '}' || \
-                        (__c) == '~' || (__c) == '@' \
-                        )
+    /* filename characters */
+#if defined( __NT__ ) || defined( __UNIX__ )
+#define isfilec(__c)    \
+    ( isalnum(__c) || (__c) == '_' || islang(__c) || \
+    (__c) == '-' || (__c) == '+' || \
+    (__c) == '&' || (__c) == '$' || (__c) == '!' || \
+    (__c) == '#' || (__c) == '%' || (__c) == '\'' || \
+    (__c) == '(' || (__c) == ')' || (__c) == '^' || \
+    (__c) == '`' || (__c) == '{' || (__c) == '}' || \
+    (__c) == '~' || (__c) == '@' \
+    )
+#else   /* DOS or OS/2 */
+#define isfilec(__c)    \
+    ( isalnum(__c) || (__c) == '_' || islang(__c) || \
+    (__c) == '-' || \
+    (__c) == '&' || (__c) == '$' || (__c) == '!' || \
+    (__c) == '#' || (__c) == '%' || (__c) == '\'' || \
+    (__c) == '(' || (__c) == ')' || (__c) == '^' || \
+    (__c) == '`' || (__c) == '{' || (__c) == '}' || \
+    (__c) == '~' || (__c) == '@' \
+    )
+#endif
 
-    /* directory separator */
-#define isdirc(__c2)    ( (__c2) == '/' || (__c2) == '\\' || (__c2) == ':' )
-
-    /* filename character */
-#define isfilec(__c3)   ( isextc(__c3) || isdirc(__c3) || (__c3) == '.' )
+    /* directory separators */
+#define isdirc(__c2)    \
+    ( (__c2) == '/' || (__c2) == '\\' || (__c2) == ':' )
 
     /* not quite isspace - renamed to make sure you realize difference */
-#define isws(__c)       ( (__c) == ' ' || (__c) == '\t' )
+#define isws(__c)       \
+    ( (__c) == ' ' || (__c) == '\t' )
 
 
-#define isprt(__c)      ( (__c) >= 32 && (__c) <= 255 )
+#define isprt(__c)      \
+    ( (__c) >= 32 && (__c) <= 255 )
 
     /* is an illegal character in a file */
-#define isbarf(__c)     ( !isprt(__c) && (__c) != '\t' && (__c) != '\a' && \
-                            (__c) != '\f' && (__c) != '\n' )
+#define isbarf(__c)     \
+    ( !isprt(__c) && (__c) != '\t' && (__c) != '\a' && (__c) != '\f' && (__c) != '\n' )
 
+    /* wildcard characters */
+#define iswildc(__c2)   \
+    ( (__c2) == '*' || (__c2) == '?' )
 
     /* this macro is used to make coding easier below */
 #define BAR( stuff )    {                   \
@@ -118,8 +137,8 @@ int main( int argc, char *argv[] )
         if( isalpha( i ) ) {
             BAR( IS_ALPHA );
         }
-        if( isextc( i ) ) {
-            BAR( IS_EXTC  );
+        if( iswildc( i ) ) {
+            BAR( IS_WILDC  );
         }
         if( isdirc( i ) ) {
             BAR( IS_DIRC  );

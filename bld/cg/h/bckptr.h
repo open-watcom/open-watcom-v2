@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2016-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2016-2023 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -30,8 +30,8 @@
 ****************************************************************************/
 
 
-#define FAKE_NULL               ((pointer)(pointer_uint)1)
-#define PTR_INT( x )            (*(pointer_uint *)&(x))
+#define FAKE_NULL               ((back_handle)(pointer_uint)1)
+#define PTR_INT( x )            ((pointer_uint)(x))
 #define IS_REAL_BACK( bck )     ((PTR_INT(bck) & 1) == 0)
-#define TO_REAL_BACK( bck )     ((pointer)(PTR_INT(bck) & ~((pointer_uint)1)))
-#define TO_FAKE_BACK( bck )     ((pointer)(PTR_INT(bck) | 1))
+#define TO_REAL_BACK( bck )     ((back_handle)(pointer_uint)(PTR_INT(bck) & ~((pointer_uint)1)))
+#define TO_FAKE_BACK( bck )     ((back_handle)(pointer_uint)(PTR_INT(bck) | 1))

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,30 +38,32 @@
 
 #else
 
+#include "cgauxcc.h"
 #include "auxflags.h"
 
 typedef struct aux_info {
-        call_class      cclass;
-        byte_seq        *code;          // also used by pre-compiled header
-        hw_reg_set      *parms;         // also used by pre-compiled header
-        hw_reg_set      returns;
-        hw_reg_set      streturn;
-        hw_reg_set      save;
-        char            *objname;       // also used by pre-compiled header
-        unsigned        use;            // use count
-        aux_flags       flags;
+        call_class          cclass;
+        call_class_target   cclass_target;
+        byte_seq            *code;          // also used by pre-compiled header
+        hw_reg_set          *parms;         // also used by pre-compiled header
+        hw_reg_set          returns;
+        hw_reg_set          streturn;
+        hw_reg_set          save;
+        char                *objname;       // also used by pre-compiled header
+        unsigned            use;            // use count
+        aux_flags           flags;
   #if defined( BY_C_FRONT_END )
-        unsigned        index;          // for C pre-compiled header
+        unsigned            index;          // for C pre-compiled header
     #if _CPU == 370
-        linkage_regs    *linkage;
+        linkage_regs        *linkage;
     #endif
     #if _CPU == _AXP
-        char            *except_rtn;
+        char                *except_rtn;
     #endif
   #elif defined( BY_CPP_FRONT_END )
-        unsigned        index;          // for C++ pre-compiled header
+        unsigned            index;          // for C++ pre-compiled header
   #elif defined( BY_FORTRAN_FRONT_END )
-        pass_by         *arg_info;
+        pass_by             *arg_info;
   #endif
 } aux_info;
 
@@ -74,16 +76,16 @@ typedef struct aux_info {
 #define OptlinkInfo      BuiltinAuxInfo[6]
 #define StdcallInfo      BuiltinAuxInfo[7]
 #define FastcallInfo     BuiltinAuxInfo[8]
-#if _CPU == 386
+  #if _CPU == 386
 #define Far16CdeclInfo   BuiltinAuxInfo[9]
 #define Far16PascalInfo  BuiltinAuxInfo[10]
-#endif
+  #endif
 
-#if _CPU == 386
+  #if _CPU == 386
 #define MAX_BUILTIN_AUXINFO (9 + 2)
-#else
+  #else
 #define MAX_BUILTIN_AUXINFO 9
-#endif
+  #endif
 
 extern aux_info     *DftCallConv;
 
@@ -94,11 +96,9 @@ extern void         SetAuxStackConventions( void );
 extern void         SetAuxWatcallInfo( void );
 extern void         SetDefaultAuxInfo( void );
 extern int          IsAuxParmsBuiltIn( hw_reg_set *parms );
-extern int          IsAuxInfoBuiltIn( aux_info *info );
+extern int          IsAuxInfoBuiltIn( aux_info *inf );
 extern char         *VarNamePattern( aux_info *inf );
 
 #endif
 
 #endif
-
-

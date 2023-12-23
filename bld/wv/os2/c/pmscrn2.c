@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,11 +42,10 @@
 #include "dbgdata.h"
 #include "dbgwind.h"
 #include "dbgmem.h"
-#include "trptypes.h"
+#include "trpld.h"
 #include "trapaccs.h"
 #include "dbgscrn.h"
 #include "wndsys.h"
-#include "trpld.h"
 #include "trpsys.h"
 #include "dbginit.h"
 #include "guigsysh.h"
@@ -275,16 +274,16 @@ unsigned OnAnotherThreadAccess( trap_elen in_num, in_mx_entry_p in_mx, trap_elen
     }
 }
 
-unsigned OnAnotherThreadSimpAccess( trap_elen in_len, in_data_p in_data, trap_elen out_len, out_data_p out_data )
+unsigned OnAnotherThreadSimpleAccess( trap_elen in_len, in_data_p in_data, trap_elen out_len, out_data_p out_data )
 {
     unsigned    result;
     ULONG       ulCount;
 
     if( !ToldWinHandle || IsTrapFilePumpingMessageQueue() ) {
-        return( TrapSimpAccess( in_len, in_data, out_len, out_data ) );
+        return( TrapSimpleAccess( in_len, in_data, out_len, out_data ) );
     } else {
         DosPostEventSem( PumpMessageSem );
-        result = TrapSimpAccess( in_len, in_data, out_len, out_data );
+        result = TrapSimpleAccess( in_len, in_data, out_len, out_data );
         WinPostMsg( GUIGetSysHandle( WndGui( WndMain ) ), WM_QUIT, 0, 0 );
         DosWaitEventSem( PumpMessageDoneSem, SEM_INDEFINITE_WAIT );
         DosResetEventSem( PumpMessageDoneSem, &ulCount );

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -99,24 +100,28 @@ void VMFini( imp_image_handle *iih )
     }
 }
 
-/*
- * Adds a destructor to a block.
- */
 dip_status VMAddDtor( imp_image_handle *iih, virt_mem start,
                       void ( *dtor )( imp_image_handle *iih, void *user ),
                       void *user )
+/*************************************************************************
+ * Adds a destructor to a block.
+ */
 {
     unsigned            dir_idx;
     unsigned            pg_idx;
     virt_page           *pg;
 
-    /* locate the block. */
+    /*
+     * locate the block.
+     */
     dir_idx = GET_DIR( start );
     if( iih->virt[dir_idx] != NULL ) {
         pg_idx = GET_PAGE( start );
         pg = iih->virt[dir_idx][pg_idx];
         if( pg != NULL ) {
-            /* create a new dtor node and link it in */
+            /*
+             * create a new dtor node and link it in
+             */
             vm_dtor *node = DCAlloc( sizeof( *node ) );
             if( node != NULL ) {
                 node->user = user;
@@ -132,20 +137,23 @@ dip_status VMAddDtor( imp_image_handle *iih, virt_mem start,
     return( DS_ERR | DS_FAIL );
 }
 
-/*
+static void vmFreeBlock( imp_image_handle *iih, virt_page *pg )
+/**************************************************************
  * Check for destructors and free the block.
  */
-static void vmFreeBlock( imp_image_handle *iih, virt_page *pg )
 {
-    /* check for destructors */
+    /*
+     * check for destructors
+     */
     while( pg->block->first_dtor ) {
         struct vm_dtor *cur = pg->block->first_dtor;
         pg->block->first_dtor = cur->next;
         cur->dtor( iih, cur->user );
         DCFree( cur );
     }
-
-    /* free */
+    /*
+     * free
+     */
     DCFree( pg );
 }
 
@@ -204,10 +212,14 @@ void *VMBlock( imp_image_handle *iih, virt_mem start, size_t len )
     pg_start = start & ~(virt_mem)(VM_PAGE_SIZE - 1);
     pg = iih->virt[dir_idx][pg_idx];
     if( pg == NULL || (pg->block->len - pg->offset) < len ) {
-        /* unloaded previously loaded block */
+        /*
+         * unloaded previously loaded block
+         */
         if( pg != NULL ) {
             tmp_idx = dir_idx;
-            /* find first page of the block */
+            /*
+             * find first page of the block
+             */
             i = pg_idx;
             for( ;; ) {
                 iih->virt[tmp_idx][i] = NULL;
@@ -228,7 +240,9 @@ void *VMBlock( imp_image_handle *iih, virt_mem start, size_t len )
             DCStatus( DS_ERR | DS_NO_MEM );
             return( NULL );
         }
-        /* set up new page table entries */
+        /*
+         * set up new page table entries
+         */
         block = (loaded_block *)&pg[num_pages];
         tmp_idx = dir_idx;
         for( j = pg_idx, pageno = 0; pageno < num_pages; ++j, ++pageno ) {
@@ -240,7 +254,9 @@ void *VMBlock( imp_image_handle *iih, virt_mem start, size_t len )
             }
             if( iih->virt[tmp_idx] == NULL ) {
                 if( !InitPageDir( iih, tmp_idx ) ) {
-                    /* unwind the setup already done */
+                    /*
+                     * unwind the setup already done
+                     */
                     num_pages = pageno;
                     for( pageno = 0; pageno < num_pages; ++pageno, ++pg_idx ) {
                         if( pg_idx >= DIR_SIZE ) {
@@ -255,25 +271,29 @@ void *VMBlock( imp_image_handle *iih, virt_mem start, size_t len )
             }
             if( iih->virt[tmp_idx][j] != NULL ) {
                 /*
-                    We just ran into another allocated block, so we have
-                    to kill all the pages mapped in by it. We know that
-                    if the page pointer is non-NULL, it will be offset==0
-                    since KillPages will clean out the others.
-                */
+                 * We just ran into another allocated block, so we have
+                 * to kill all the pages mapped in by it. We know that
+                 * if the page pointer is non-NULL, it will be offset==0
+                 * since KillPages will clean out the others.
+                 */
                 KillPages( iih, tmp_idx, j );
             }
             iih->virt[tmp_idx][j] = &pg[pageno];
         }
-        /* read in new block */
+        /*
+         * read in new block
+         */
         len = num_pages * VM_PAGE_SIZE;
         block->len = len;
         block->first_dtor = NULL;
         pg_start += iih->bias;
-        if( DCSeek( iih->sym_fp, pg_start, DIG_ORG ) ) {
+        if( DCSeek( iih->sym_fp, pg_start, DIG_SEEK_ORG ) ) {
             DCStatus( DS_ERR | DS_FSEEK_FAILED );
             return( NULL );
         }
-        /* last block might be a short read */
+        /*
+         * last block might be a short read
+         */
         if( DCRead( iih->sym_fp, pg->block->data, len ) == DIG_RW_ERROR ) {
             DCStatus( DS_ERR | DS_FREAD_FAILED );
             return( NULL );
@@ -282,7 +302,9 @@ void *VMBlock( imp_image_handle *iih, virt_mem start, size_t len )
     }
     ++TimeStamp;
     if( TimeStamp == 0 ) {
-        /* deal with wrap-around */
+        /*
+         * deal with wrap-around
+         */
         for( iih = ImageList; iih != NULL; iih = iih->next_image ) {
             if( iih->virt != NULL ) {
                 for( i = iih->vm_dir_num - 1; i >= 0; --i ) {
@@ -303,10 +325,10 @@ void *VMBlock( imp_image_handle *iih, virt_mem start, size_t len )
     return( &pg->block->data[(start & (VM_PAGE_SIZE - 1)) + pg->offset] );
 }
 
-/*
+bool VMGetU8( imp_image_handle *iih, virt_mem start, unsigned_8 *valp )
+/**********************************************************************
  * Get a 8-bit value.
  */
-bool VMGetU8( imp_image_handle *iih, virt_mem start, unsigned_8 *valp )
 {
     unsigned_8 *ptr = VMBlock( iih, start, sizeof(*valp) );
     if( ptr ) {
@@ -316,10 +338,10 @@ bool VMGetU8( imp_image_handle *iih, virt_mem start, unsigned_8 *valp )
     return( false );
 }
 
-/*
+bool VMGetU16( imp_image_handle *iih, virt_mem start, unsigned_16 *valp )
+/************************************************************************
  * Get a 16-bit value.
  */
-bool VMGetU16( imp_image_handle *iih, virt_mem start, unsigned_16 *valp )
 {
     unsigned_16 *ptr = VMBlock( iih, start, sizeof(*valp) );
     if( ptr ) {
@@ -329,10 +351,10 @@ bool VMGetU16( imp_image_handle *iih, virt_mem start, unsigned_16 *valp )
     return( false );
 }
 
-/*
+bool VMGetU32( imp_image_handle *iih, virt_mem start, unsigned_32 *valp )
+/************************************************************************
  * Get a 32-bit value.
  */
-bool VMGetU32( imp_image_handle *iih, virt_mem start, unsigned_32 *valp )
 {
     unsigned_32 *ptr = VMBlock( iih, start, sizeof(*valp) );
     if( ptr ) {
@@ -342,11 +364,11 @@ bool VMGetU32( imp_image_handle *iih, virt_mem start, unsigned_32 *valp )
     return( false );
 }
 
-/*
+void *VMRecord( imp_image_handle *iih, virt_mem rec_off, virt_mem *next_rec, unsigned_16 *sizep )
+/************************************************************************************************
  * Gets a symbol scope table record.
  * Returns pointer to a hll_ssr_common structure on success.
  */
-void *VMRecord( imp_image_handle *iih, virt_mem rec_off, virt_mem *next_rec, unsigned_16 *sizep )
 {
     unsigned_16 size = 0;
     unsigned_8 *p;
@@ -371,10 +393,10 @@ void *VMRecord( imp_image_handle *iih, virt_mem rec_off, virt_mem *next_rec, uns
     return( p );
 }
 
-/*
+void *VMSsBlock( imp_image_handle *iih, hll_dir_entry *hde, virt_mem start, size_t len )
+/***************************************************************************************
  * Get a block within a section.
  */
-void *VMSsBlock( imp_image_handle *iih, hll_dir_entry *hde, virt_mem start, size_t len )
 {
     if( start < hde->cb && start + len <= hde->cb ) {
         return( VMBlock( iih, hde->lfo + start, len ) );
@@ -382,10 +404,10 @@ void *VMSsBlock( imp_image_handle *iih, hll_dir_entry *hde, virt_mem start, size
     return( NULL );
 }
 
-/*
+bool VMSsGetU8( imp_image_handle *iih, hll_dir_entry *hde, virt_mem start, unsigned_8 *valp )
+/********************************************************************************************
  * Get a 8-bit value.
  */
-bool VMSsGetU8( imp_image_handle *iih, hll_dir_entry *hde, virt_mem start, unsigned_8 *valp )
 {
     if( start < hde->cb ) {
         unsigned_8 *ptr = VMBlock( iih, hde->lfo + start, sizeof(*valp) );
@@ -397,10 +419,10 @@ bool VMSsGetU8( imp_image_handle *iih, hll_dir_entry *hde, virt_mem start, unsig
     return( false );
 }
 
-/*
+bool VMSsGetU16( imp_image_handle *iih, hll_dir_entry *hde, virt_mem start, unsigned_16 *valp )
+/**********************************************************************************************
  * Get a 16-bit value.
  */
-bool VMSsGetU16( imp_image_handle *iih, hll_dir_entry *hde, virt_mem start, unsigned_16 *valp )
 {
     if( start <= hde->cb - sizeof(*valp) ) {
         unsigned_16 *ptr = VMBlock( iih, hde->lfo + start, sizeof(*valp) );
@@ -412,10 +434,10 @@ bool VMSsGetU16( imp_image_handle *iih, hll_dir_entry *hde, virt_mem start, unsi
     return( false );
 }
 
-/*
+bool VMSsGetU32( imp_image_handle *iih, hll_dir_entry *hde, virt_mem start, unsigned_32 *valp )
+/**********************************************************************************************
  * Get a 32-bit value.
  */
-bool VMSsGetU32( imp_image_handle *iih, hll_dir_entry *hde, virt_mem start, unsigned_32 *valp )
 {
     if( start <= hde->cb - sizeof(*valp) ) {
         unsigned_32 *ptr = VMBlock( iih, hde->lfo + start, sizeof(*valp) );
@@ -427,12 +449,12 @@ bool VMSsGetU32( imp_image_handle *iih, hll_dir_entry *hde, virt_mem start, unsi
     return( false );
 }
 
-/*
+void *VMSsRecord( imp_image_handle *iih, hll_dir_entry *hde, unsigned_32 rec_off,
+                  unsigned_32 *next_rec, unsigned_16 *sizep )
+/********************************************************************************
  * Gets a symbol scope table record.
  * Returns pointer to a hll_ssr_common structure on success.
  */
-void *VMSsRecord( imp_image_handle *iih, hll_dir_entry *hde, unsigned_32 rec_off,
-                  unsigned_32 *next_rec, unsigned_16 *sizep )
 {
     unsigned_16 size = 0;
     unsigned_8 *p = NULL;

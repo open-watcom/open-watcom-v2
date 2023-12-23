@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -187,7 +187,7 @@ static void mylocaltime( ULONG date_time, USHORT *time, USHORT *date )
     date_time -= ((num_leap_since_1970 * 366 +
                   (num_yr_since_1970 - num_leap_since_1970) * 365) * 86400 );
     day = (date_time / 86400) + 1;   // Start from Jan 1, not Jan 0
-    if( ((num_yr_since_1970 - 2) % 4) == 0 ) {
+    if( ( ( num_yr_since_1970 - 2 ) % 4 ) == 0 ) {
         //leap
         if( day >= 366 ) {
             day -= 366;
@@ -199,14 +199,17 @@ static void mylocaltime( ULONG date_time, USHORT *time, USHORT *date )
             num_yr_since_1970++;
         }
     }
-    if( (( num_yr_since_1970 - 2) % 4) == 0 ) {
-        for( month = 2; month <= 12; ++day_since_jan[month], ++month ) {
-            ;
+    if( ( ( num_yr_since_1970 - 2 ) % 4 ) == 0 ) {
+        for( month = 2; month <= 12; ++month ) {
+            ++day_since_jan[month];
         }
     }
     year = num_yr_since_1970 - 10;
-    for( month = 1; (day > day_since_jan[month] && month <= 12); month++ )
-        ;
+    for( month = 1; month <= 12; month++ ) {
+        if( day <= day_since_jan[month] ) {
+            break;
+        }
+    }
     day -= day_since_jan[month - 1];
     date_time %= 86400;
     hour = date_time / 3600;
@@ -257,7 +260,7 @@ static unsigned long mymktime( unsigned time, unsigned date )
     //be around in year 2099....
     num_yr_since_1980 = year;
     num_leap_since_1980 = (num_yr_since_1980 + 3) / 4;
-    if( ( (num_yr_since_1980 % 4) == 0 ) && (month > 2) ) {  // is leap year
+    if( ( ( num_yr_since_1980 % 4 ) == 0 ) && ( month > 2 ) ) {  // is leap year
         day++;
     }
     day += (num_leap_since_1980 * 366
@@ -391,7 +394,7 @@ trap_retval TRAP_RFX( nametocanonical )( void )
     name = GetInPtr( sizeof( rfx_nametocanonical_req ) );
     ret = GetOutPtr( 0 );
     fullname = GetOutPtr( sizeof( *ret ) );
-    ret->err = 1;
+    ret->err = 0;
     while( *name == ' ' ) {
         name++;
     }
@@ -401,10 +404,10 @@ trap_retval TRAP_RFX( nametocanonical )( void )
     } else {
         DosQueryCurrentDisk( &drive, &map );
     }
-    len = RFX_NAME_MAX + 1;
     if( *name != '\\' ) {
         *fullname++ = '\\';
         // DOS : TinyGetCWDir( fullname, TinyGetCurrDrive() + 1 );
+        len = RFX_NAME_MAX;
         DosQueryCurrentDir( drive + 1, (PBYTE)fullname, &len );
         if( *fullname != '\0' ) {
             level++;
@@ -448,8 +451,7 @@ trap_retval TRAP_RFX( nametocanonical )( void )
             level++;
             do {
                 *fullname++ = *p++;
-            } while( *p != '\0' )
-                ;
+            } while( *p != '\0' );
             *fullname = '\0';
         }
     }

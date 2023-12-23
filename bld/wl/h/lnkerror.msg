@@ -166,13 +166,9 @@ pick(    MSG_FRAME_INVALID,     "cannot reference address %A from frame %x" ,
                     "%A アドレスへの %x フレームからの参照は出来ません" )
 pick(    MSG_BAD_TARG_OFF,      "target offset exceeds 64K at %a" ,
                     "%a のターゲットオフセットが64Kを越えています" )
-#ifdef __UNIX__
-pick(    MSG_PRESS_CTRL_Z,      "Press CTRL/D to finish" ,
-                    "終了はCTRL/Dを押して下さい" )
-#else
-pick(    MSG_PRESS_CTRL_Z,      "Press CTRL/Z and then RETURN to finish" ,
-                        "終了はCTRL/Zとﾘﾀｰﾝ･ｷｰを押して下さい" )
-#endif
+/*
+ * unused item
+ */
 pick(    MSG_INV_COM_START_ADDR,        "invalid starting address for .COM file" ,
                     ".COMファイルに対して無効な開始アドレスです" )
 pick(    MSG_STACK_SEG_IGNORED,     "stack segment ignored in .COM file" ,

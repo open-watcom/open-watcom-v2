@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -81,10 +81,10 @@ typedef struct  file_list {
     char                buffer[PPBUFSIZE + 2];
 } FILELIST;
 
-typedef void        pp_callback(const char *, size_t len, const char *, int);
+typedef void        pp_callback( const char *, size_t len, const char *, incl_type );
 
-extern  void        PP_Dependency_List(pp_callback *);
-extern  int         PP_Class(char __c);
+extern  void        PP_Dependency_List( pp_callback * );
+extern  int         PP_Class( char __c );
 extern  MACRO_ENTRY *PP_AddMacro( const char *__name, size_t len );
 extern  MACRO_ENTRY *PP_MacroLookup( const char *__name, size_t len );
 extern  MACRO_ENTRY *PP_ScanMacroLookup( const char *__name );
@@ -94,9 +94,9 @@ extern  const char  *PP_SkipWhiteSpace( const char *__p, bool *__white_space );
 extern  const char  *PP_ScanName( const char *__p );
 extern  int         PPEvalExpr( const char *__p, const char **__endptr, PREPROC_VALUE *__val );
 extern  void        PP_ConstExpr( PREPROC_VALUE * );
-extern  MACRO_TOKEN *PPNextToken(void);
-extern  MACRO_TOKEN *NextMToken(void);
-extern  void        DeleteNestedMacro(void);
+extern  MACRO_TOKEN *PPNextToken( void );
+extern  MACRO_TOKEN *NextMToken( void );
+extern  void        DeleteNestedMacro( void );
 extern  void        DoMacroExpansion( MACRO_ENTRY *__me );
 
 extern  void        PPMacroVarInit( void );

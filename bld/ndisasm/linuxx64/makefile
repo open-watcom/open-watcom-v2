@@ -3,6 +3,4 @@
 host_os  = linux
 host_cpu = x64
 
-target_cpu = all
-
 !include ../master.mif

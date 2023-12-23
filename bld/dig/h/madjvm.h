@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,6 +33,7 @@
 
 #ifndef MADJVM_H
 #define MADJVM_H
+
 #include "digpck.h"
 struct jvm_mad_registers {
     addr_ptr            pc;     /* program counter */
@@ -39,6 +41,6 @@ struct jvm_mad_registers {
     unsigned_32         optop;  /* operand stack pointer */
     addr_ptr            frame;  /* execution environment pointer */
 };
-
 #include "digunpck.h"
+
 #endif

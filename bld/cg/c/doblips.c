@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,7 +36,6 @@
 #include "onexit.h"
 #include "qtimer.h"
 #include "blips.h"
-#include "envvar.h"
 #include "feprotos.h"
 
 #define Version         "WATCOM Code Generator --------"
@@ -50,7 +49,7 @@ extern void     OSCall( void );
     __value     \
     __modify    [__eax __ebx __ecx]
 #else
-static void OSCall( void ){}
+static void OSCall( void ) {}
 #endif
 
 static uint             LastBlipCount;
@@ -130,7 +129,7 @@ static  void    CheckEvents( void )
     if( ticks < LastBlipCount || ticks >= NextTickCount ) {
         OSCall();       /* force a DOS call to get version number */
         if( ticks < LastBlipCount || ticks >= NextBlipCount ) {
-            FEMessage( MSG_BLIP, NULL );
+            FEMessage( FEMSG_BLIP, NULL );
             LastBlipCount = ticks;
             SetNextBlipCount();
         }
@@ -150,7 +149,7 @@ void    FiniBlip( void )
 void    InitBlip( void )
 /**********************/
 {
-    char        buff[80];
+    const char  *envvar;
 
     LastBlipCount = GetTickCnt();
     NextTickCount = LastBlipCount;
@@ -161,10 +160,11 @@ void    InitBlip( void )
 #if defined( __NT__ )
     buff[0] = 0;
 #else
-    if( GetEnvVar( "WCGBLIPON", buff, 9 ) ) {
+    envvar = FEGetEnv( "WCGBLIPON" );
+    if( envvar != NULL ) {
         BlipInit();
         BlipsOn = true;
-        if( Length( buff ) == 7 && Equal( buff, "ALLERRS", 7 ) ) {
+        if( Length( envvar ) == 7 && Equal( envvar, "ALLERRS", 7 ) ) {
             Zoiks2 = true;
         }
     }

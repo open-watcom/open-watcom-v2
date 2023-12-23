@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -126,7 +127,7 @@ OBJPTR WdeMakeTView( OBJPTR parent, RECT *obj_rect, OBJPTR handle, DialogStyle s
     style |= WS_BORDER | WS_VISIBLE | WS_TABSTOP | WS_CHILD;
 
     SETCTL_STYLE( WdeDefaultTView, style );
-    SETCTL_TEXT( WdeDefaultTView, ResStrToNameOrOrd( text ) );
+    SETCTL_TEXT( WdeDefaultTView, ResStrToNameOrOrdinal( text ) );
     SETCTL_ID( WdeDefaultTView, WdeGetNextControlID() );
 
     WdeChangeSizeToDefIfSmallRect( parent, id, obj_rect );
@@ -261,8 +262,7 @@ void WdeTViewFini( void )
 
 bool WdeTViewDestroy( WdeTViewObject *obj, bool *flag, bool *p2 )
 {
-    /* touch unused vars to get rid of warning */
-    _wde_touch( p2 );
+    /* unused parameters */ (void)p2;
 
     if( !Forward( obj->control, DESTROY, flag, NULL ) ) {
         WdeWriteTrail( "WdeTViewDestroy: Control DESTROY failed" );
@@ -278,8 +278,7 @@ bool WdeTViewValidateAction( WdeTViewObject *obj, ACTION_ID *act, void *p2 )
 {
     int     i;
 
-    /* touch unused vars to get rid of warning */
-    _wde_touch( p2 );
+    /* unused parameters */ (void)p2;
 
     for( i = 0; i < MAX_ACTIONS; i++ ) {
         if( WdeTViewActions[i].id == *act ) {
@@ -323,8 +322,7 @@ bool WdeTViewCopyObject( WdeTViewObject *obj, WdeTViewObject **new, OBJPTR handl
 
 bool WdeTViewIdentify( WdeTViewObject *obj, OBJ_ID *id, void *p2 )
 {
-    /* touch unused vars to get rid of warning */
-    _wde_touch( p2 );
+    /* unused parameters */ (void)p2;
 
     *id = obj->object_id;
 
@@ -333,9 +331,7 @@ bool WdeTViewIdentify( WdeTViewObject *obj, OBJ_ID *id, void *p2 )
 
 bool WdeTViewGetWndProc( WdeTViewObject *obj, WNDPROC *proc, void *p2 )
 {
-    /* touch unused vars to get rid of warning */
-    _wde_touch( obj );
-    _wde_touch( p2 );
+    /* unused parameters */ (void)obj; (void)p2;
 
     *proc = WdeTViewSuperClassProc;
 
@@ -344,9 +340,7 @@ bool WdeTViewGetWndProc( WdeTViewObject *obj, WNDPROC *proc, void *p2 )
 
 bool WdeTViewGetWindowClass( WdeTViewObject *obj, char **class, void *p2 )
 {
-    /* touch unused vars to get rid of warning */
-    _wde_touch( obj );
-    _wde_touch( p2 );
+    /* unused parameters */ (void)obj; (void)p2;
 
     *class = WWC_TREEVIEW;
 
@@ -357,9 +351,7 @@ bool WdeTViewDefine( WdeTViewObject *obj, POINT *pnt, void *p2 )
 {
     WdeDefineObjectInfo  o_info;
 
-    /* touch unused vars to get rid of warning */
-    _wde_touch( pnt );
-    _wde_touch( p2 );
+    /* unused parameters */ (void)pnt; (void)p2;
 
     o_info.obj = obj->object_handle;
     o_info.obj_id = obj->object_id;
@@ -401,8 +393,9 @@ void WdeTViewSetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
     // set the extended style controls only
     WdeEXSetDefineInfo( o_info, hDlg );
 #else
-    _wde_touch( o_info );
-    _wde_touch( hDlg );
+
+    /* unused parameters */ (void)o_info; (void)hDlg;
+
 #endif
 }
 
@@ -437,8 +430,9 @@ void WdeTViewGetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
     // get the extended control settings
     WdeEXGetDefineInfo( o_info, hDlg );
 #else
-    _wde_touch( o_info );
-    _wde_touch( hDlg );
+
+    /* unused parameters */ (void)o_info; (void)hDlg;
+
 #endif
 }
 
@@ -446,12 +440,7 @@ bool WdeTViewDefineHook( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam, 
 {
     bool processed;
 
-    /* touch unused vars to get rid of warning */
-    _wde_touch( hDlg );
-    _wde_touch( message );
-    _wde_touch( wParam );
-    _wde_touch( lParam );
-    _wde_touch( mask );
+    /* unused parameters */ (void)hDlg; (void)message; (void)wParam; (void)lParam; (void)mask;
 
     processed = false;
 

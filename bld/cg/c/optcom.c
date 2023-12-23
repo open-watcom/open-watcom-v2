@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -63,7 +63,7 @@ static  bool    JustMoveLabel( common_info *max, ins_entry *ins )
     if( PrevClass( max->start_del ) != OC_LABEL )
         optreturn( false );
     lbl = PrevIns( max->start_del );
-    if( _Attr( lbl ) & ATTR_SHORT )
+    if( _ChkAttr( lbl, OC_ATTR_SHORT ) )
         optreturn( false );
     cl = PrevClass( lbl );
     if( !_TransferClass( cl ) )
@@ -92,26 +92,21 @@ static  void    TransformJumps( ins_entry *ins, ins_entry *first )
     oc_class            cl;
 
   optbegin
-    if( _Class( ins ) == OC_RET )
+    cl = _Class( ins );
+    if( cl == OC_RET || cl == OC_NORET )
         optreturnvoid;
     lbl = _Label( ins )->ins;
-    if( lbl == NULL )
-        optreturnvoid;
-    add = lbl;
-    for( ;; ) {
-        if( add == NULL )
-            optreturnvoid;
+    for( add = lbl; add != NULL; add = NextIns( add ) ) {
         cl = _Class( add );
         if( _TransferClass( cl ) )
             break;
         if( cl == OC_LABEL ) {
-            if( _Attr( add ) & ATTR_SHORT )
+            if( _ChkAttr( add, OC_ATTR_SHORT ) )
                 optreturnvoid;
             _ClrStatus( _Label( add ), SHORTREACH );
         }
-        add = NextIns( add );
     }
-    if( add == first || add == ins )
+    if( add == NULL || add == first || add == ins )
         optreturnvoid;
     if( FindShort( first, lbl ) )
         optreturnvoid;
@@ -135,7 +130,7 @@ static  bool    CommonInstr( ins_entry *old, ins_entry *add )
 /***********************************************************/
 {
   optbegin
-    if( _IsModel( NO_OPTIMIZATION ) )
+    if( _IsModel( CGSW_GEN_NO_OPTIMIZATION ) )
         optreturn( false );
     if( _ClassInfo( add ) != _ClassInfo( old ) )
         optreturn( false );
@@ -166,15 +161,16 @@ static  bool    CommonInstr( ins_entry *old, ins_entry *add )
             optreturn( false );
         if( _Label( old ) != _Label( add ) )
             optreturn( false );
-#if _TARGET & _TARG_RISC
+#if _TARGET_RISC
         if( old->oc.oc_jcond.index != add->oc.oc_jcond.index )
             return( false );
 #endif
         break;
     case OC_RET:
-        if( _RetPop( old ) != _RetPop( add )
-          || (_Attr( old ) & ATTR_NORET) != (_Attr( add ) & ATTR_NORET) )
+        if( _RetPop( old ) != _RetPop( add ) )
             optreturn( false );
+        break;
+    case OC_NORET:
         break;
     default:
         if( !Equal( &add->oc.oc_entry.data, &old->oc.oc_entry.data, _InsLen( add ) - offsetof( oc_entry, data ) ) )

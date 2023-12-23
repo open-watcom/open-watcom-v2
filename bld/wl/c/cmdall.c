@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -100,7 +100,7 @@ static bool ProcDosSeg( void )
 static bool ProcName( void )
 /**************************/
 {
-    if( !GetToken( SEP_NO, TOK_INCLUDE_DOT | TOK_IS_FILENAME ) )
+    if( !GetToken( SEP_NO, TOK_IS_FILENAME ) )
         return( false );
     CmdFlags &= ~CF_UNNAMED;
     if( Name != NULL ) {
@@ -271,7 +271,7 @@ static bool ProcMaxErrors( void )
 static bool ProcSymFile( void )
 /*****************************/
 {
-    if( GetToken( SEP_EQUALS, TOK_INCLUDE_DOT | TOK_IS_FILENAME ) ) {
+    if( GetToken( SEP_EQUALS, TOK_IS_FILENAME ) ) {
         if( SymFileName != NULL ) {
             _LnkFree( SymFileName );
         }
@@ -325,7 +325,7 @@ static bool AddLibFile( void )
     file_list   *entry;
 
     CmdFlags &= ~CF_MEMBER_ADDED;
-    ptr = GetFileName( &membname, false );
+    ptr = GetFileName( &membname );
     if( membname != NULL ) {
         LnkMsg( LOC+LINE+WRN+MSG_NO_MEMB_IN_LIBFILE, NULL );
         _LnkFree( membname );
@@ -356,7 +356,7 @@ static bool ProcLibFile( void )
     if( LastLibFile == NULL ) {
         LastLibFile = &Root->files;
     }
-    return( ProcArgList( AddLibFile, TOK_INCLUDE_DOT | TOK_IS_FILENAME ) );
+    return( ProcArgList( AddLibFile, TOK_IS_FILENAME ) );
 }
 
 static bool AddModFile( void )
@@ -365,7 +365,7 @@ static bool AddModFile( void )
     char        *ptr;
     char        *membname;
 
-    ptr = GetFileName( &membname, false );
+    ptr = GetFileName( &membname );
     AddHTableElem( Root->modFilesHashed, ptr );
     LinkFlags |= LF_GOT_CHGD_FILES;
     if( membname != NULL ) {
@@ -391,7 +391,10 @@ static bool AddFile( void )
         }
     }
 #endif
-    ptr = GetFileName( &membname, true );
+    ptr = GetFileName( &membname );
+    if( membname == NULL && Name == NULL ) {
+        Name = ChkToString( Token.this, Token.len );
+    }
     temp = CurrFList;
     if( *CurrFList != NULL ) {
         CurrFList = &(*CurrFList)->next_file;
@@ -415,13 +418,13 @@ static bool ProcFiles( void )
     if( (LinkFlags & (LF_DWARF_DBI_FLAG | LF_OLD_DBI_FLAG | LF_NOVELL_DBI_FLAG)) == 0 ) {
         CmdFlags |= CF_FILES_BEFORE_DBI;
     }
-    return( ProcArgList( AddFile, TOK_INCLUDE_DOT | TOK_IS_FILENAME ) );
+    return( ProcArgList( AddFile, TOK_IS_FILENAME ) );
 }
 
 static bool ProcModFiles( void )
 /******************************/
 {
-    return( ProcArgList( AddModFile, TOK_INCLUDE_DOT | TOK_IS_FILENAME ) );
+    return( ProcArgList( AddModFile, TOK_IS_FILENAME ) );
 }
 
 
@@ -457,7 +460,7 @@ bool ProcLibrary( void )
         && !IsSystemBlock() ) {
         CmdFlags |= CF_FILES_BEFORE_DBI;
     }
-    return( ProcArgList( AddLib, TOK_INCLUDE_DOT | TOK_IS_FILENAME ) );
+    return( ProcArgList( AddLib, TOK_IS_FILENAME ) );
 }
 
 static bool ProcOptLib( void )
@@ -476,7 +479,7 @@ static bool ProcLibPath( void )
  * process libpath command
  */
 {
-    if( !GetToken( SEP_NO, TOK_INCLUDE_DOT | TOK_IS_FILENAME ) ) {
+    if( !GetToken( SEP_NO, TOK_IS_FILENAME ) ) {
         LnkMsg( LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", "LIBPATH" );
         return( true );
     }
@@ -493,7 +496,7 @@ static bool ProcPath( void )
     char            *p;
     const char      *end;
 
-    if( GetToken( SEP_NO, TOK_INCLUDE_DOT | TOK_IS_FILENAME ) ) {
+    if( GetToken( SEP_NO, TOK_IS_FILENAME ) ) {
         _ChkAlloc( new_path, sizeof( path_entry ) + Token.len );
         end = Token.this + Token.len;
         p = new_path->name;
@@ -517,7 +520,7 @@ static bool ProcMap( void )
  */
 {
     MapFlags |= MAP_FLAG;
-    if( GetToken( SEP_EQUALS, TOK_INCLUDE_DOT | TOK_IS_FILENAME ) ) {
+    if( GetToken( SEP_EQUALS, TOK_IS_FILENAME ) ) {
         if( MapFName != NULL ) {
             _LnkFree( MapFName );
         }
@@ -702,7 +705,7 @@ static bool ProcIncremental( void )
         LnkMsg( LOC+LINE+ERR+MSG_INC_NEAR_START, NULL );
     }
     LinkFlags |= LF_INC_LINK_FLAG;
-    if( GetToken( SEP_EQUALS, TOK_INCLUDE_DOT | TOK_IS_FILENAME ) ) {
+    if( GetToken( SEP_EQUALS, TOK_IS_FILENAME ) ) {
         IncFileName = FileName( Token.this, Token.len, E_ILK, false );
     } else if( Name != NULL ) {
         IncFileName = FileName( Name, strlen( Name ), E_ILK, true );
@@ -731,7 +734,7 @@ static bool ProcMangledNames( void )
 static bool ProcOpResource( void )
 /********************************/
 {
-    if( GetToken( SEP_EQUALS, TOK_INCLUDE_DOT | TOK_IS_FILENAME ) ) {
+    if( GetToken( SEP_EQUALS, TOK_IS_FILENAME ) ) {
         FmtData.res_name_only = true;
         FmtData.resource = tostring();
     } else if( GetToken( SEP_NO, TOK_INCLUDE_DOT ) ) {
@@ -991,7 +994,7 @@ static char **getStubNamePtr( void )
 #endif
 #ifdef _PHARLAP
     if( HintFormat( MK_PHAR_LAP ) ) {
-        Extension = E_LOAD;     /* want .exe instead of .exp now */
+        FmtData.def_ext = E_LOAD;     /* want .exe instead of .exp now */
         return( &FmtData.u.phar.stub );
     }
 #endif
@@ -1004,8 +1007,10 @@ static bool ProcStub( void )
     char        *name;
     char        **nameptr;
 
+    if( !HaveEquals( TOK_IS_FILENAME ) )
+        return( false );
     nameptr = getStubNamePtr();
-    if( !HaveEquals( TOK_INCLUDE_DOT | TOK_IS_FILENAME ) || nameptr == NULL )
+    if( nameptr == NULL )
         return( false );
     name = FileName( Token.this, Token.len, E_LOAD, false );
     if( *nameptr == NULL ) {
@@ -1047,7 +1052,7 @@ static bool ProcImplib( void )
     FmtData.make_implib = true;
     FmtData.make_impfile = false;
     _LnkFree( FmtData.implibname );
-    if( GetToken( SEP_EQUALS, TOK_IS_FILENAME|TOK_INCLUDE_DOT ) ) {
+    if( GetToken( SEP_EQUALS, TOK_IS_FILENAME ) ) {
         FmtData.implibname = tostring();
     }
     return( true );
@@ -1059,7 +1064,7 @@ static bool ProcImpFile( void )
     FmtData.make_implib = true;
     FmtData.make_impfile = true;
     _LnkFree( FmtData.implibname );
-    if( GetToken( SEP_EQUALS, TOK_IS_FILENAME|TOK_INCLUDE_DOT ) ) {
+    if( GetToken( SEP_EQUALS, TOK_IS_FILENAME ) ) {
         FmtData.implibname = tostring();
     }
     return( true );
@@ -1085,7 +1090,7 @@ static bool AddModTrace( void )
     char            *membname;
     char            *fname;
 
-    fname = GetFileName( &membname, false );
+    fname = GetFileName( &membname );
     AddTraceListMod( fname, membname );
     return( true );
 }
@@ -1094,7 +1099,7 @@ static bool ProcModTrace( void )
 /******************************/
 {
     LinkFlags |= LF_TRACE_FLAG;
-    return( ProcArgList( AddModTrace, TOK_INCLUDE_DOT | TOK_IS_FILENAME ) );
+    return( ProcArgList( AddModTrace, TOK_IS_FILENAME ) );
 }
 
 static bool ProcFarCalls( void )
@@ -1337,9 +1342,9 @@ static bool ProcObjAlign( void )
     if( ret != ST_IS_ORDINAL || value == 0 ) {
         return( false );
     }                                            /* value not a power of 2 */
-    if( value < 16 || value > _256MB || (value & (value - 1)) ) {
+    if( value < 16 || value > _256M || (value & (value - 1)) ) {
         LnkMsg( LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", "OBJALIGN" );
-        value = _64KB;
+        value = _64K;
     }
     FmtData.objalign = value;
     ChkBase( value );
@@ -1369,7 +1374,7 @@ void ChkBase( offset align )
     }
     if( FmtData.base != NO_BASE_SPEC && (FmtData.base & (align - 1)) != 0 ) {
         LnkMsg( LOC+LINE+WRN+MSG_OFFSET_MUST_BE_ALIGNED, "l", align );
-        FmtData.base = ROUND_UP( FmtData.base, align );
+        FmtData.base = __ROUND_UP_SIZE( FmtData.base, align );
     }
 }
 
@@ -1513,13 +1518,13 @@ static bool ProcOffset( void )
     }
 #ifdef _PHARLAP
     if( FmtData.type & MK_PHAR_LAP ) {
-        ChkBase( _4KB );
+        ChkBase( _4K );
         return( true );
     }
 #endif
 #ifdef _QNX
     if( FmtData.type & MK_QNX_FLAT ) {
-        ChkBase( _4KB );
+        ChkBase( _4K );
         return( true );
     }
 #endif
@@ -1531,17 +1536,17 @@ static bool ProcOffset( void )
 #endif
 //#ifdef _OS2
 //    if( FmtData.type & (MK_OS2 | MK_PE) ) {
-//        ChkBase( _64KB );
+//        ChkBase( _64K );
 //        return( true );
 //    }
 //#endif
 //#ifdef _ELF
 //    if( FmtData.type & MK_ELF ) {
-//        ChkBase( _4KB );
+//        ChkBase( _4K );
 //        return( true );
 //    }
 //#endif
-    ChkBase( _64KB );
+    ChkBase( _64K );
     return( true );
 }
 #endif
@@ -1564,7 +1569,7 @@ static bool ProcModule( void )
 }
 #endif
 
-#ifdef _INT_DEBUG
+#ifdef DEVBUILD
 static bool ProcXDbg( void )
 /***************************
  * process DEBUG command
@@ -2143,7 +2148,7 @@ static parse_entry  Directives[] = {
 #if defined( _OS2 ) || defined( _EXE ) || defined ( _QNX )
     "NEWsegment",   ProcNewSegment,     (MK_OS2_16BIT | MK_DOS | MK_QNX), 0,
 #endif
-#ifdef _INT_DEBUG
+#ifdef DEVBUILD
     "Xdbg",         ProcXDbg,           MK_ALL,             0,
     "INTDBG",       ProcIntDbg,         MK_ALL,             0,
 #endif

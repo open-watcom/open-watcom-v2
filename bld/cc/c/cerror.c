@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -50,13 +50,17 @@ typedef struct ErrPostList {
     postlist_type       type;
 
     union {
-        /* POSTLIST_SYMBOL */
+        /*
+         * POSTLIST_SYMBOL
+         */
         struct {
             const char  *sym_name;
             const char  *sym_file;
             unsigned    sym_line;
         } s;
-        /* POSTLIST_TWOTYPES */
+        /*
+         * POSTLIST_TWOTYPES
+         */
         struct {
             TOKEN       opr;
             TYPEPTR     types[2];
@@ -92,15 +96,16 @@ void OpenErrFile( void )
 }
 
 static bool okToPrintMsg( msg_codes msgnum, int *plevel )
-/*******************************************************/
-/* See if OK to print message */
+/********************************************************
+ * See if OK to print message
+ */
 {
-    bool    ok;
-    int     level;
-    int     msg_index;
+    bool        ok;
+    int         level;
+    unsigned    msg_index;
 
     msg_index = GetMsgIndex( msgnum );
-    if( msg_index < 0 )
+    if( IS_MSGIDX_INVALID( msg_index ) )
         return( false );
     ok = msg_level[msg_index].enabled;
     level = msg_level[msg_index].level;
@@ -118,7 +123,7 @@ static bool okToPrintMsg( msg_codes msgnum, int *plevel )
         }
         break;
     case MSG_TYPE_WARNING :
-    case MSG_TYPE_ERROR :
+    case MSG_TYPE_ERROR :       /* Error messages are used for Warning */
         break;
     }
     *plevel = level;
@@ -127,8 +132,10 @@ static bool okToPrintMsg( msg_codes msgnum, int *plevel )
     return( ok );
 }
 
-// fill cmsg_info struct
 static void CMsgInfo( cmsg_info *info, int parmno, msg_codes msgnum, va_list args )
+/**********************************************************************************
+ * fill cmsg_info struct
+ */
 {
     char        *fname;
     unsigned    line;
@@ -137,12 +144,14 @@ static void CMsgInfo( cmsg_info *info, int parmno, msg_codes msgnum, va_list arg
     int         prefix_len;
 
     info->msgnum = msgnum;
-//  CMsgSetClass( info, msgnum );
+//    CMsgSetClass( info, msgnum );
     switch( msgnum ) {
     case ERR_INVALID_MEMORY_MODEL:
     case ERR_INVALID_OPTION:
     case ERR_INVALID_OPTIMIZATION:
-        /* no location for error message */
+        /*
+         * no location for error message
+         */
         line = 0;
         column = 0;
         fname = NULL;
@@ -192,8 +201,10 @@ static char const *MsgClassPhrase( cmsg_class class )
     return( phrase );
 }
 
-// format message with line & file int buff
 void FmtCMsg( char *buff, cmsg_info *info )
+/******************************************
+ * format message with line & file int buff
+ */
 {
     size_t      len;
     char const  *phrase;
@@ -211,8 +222,10 @@ void FmtCMsg( char *buff, cmsg_info *info )
     snprintf( buff + len, MAX_MSG_LEN - len, "%s %s%03d: ", phrase, code_prefix, info->msgnum );
 }
 
-// print message to streams
 static void OutMsg( cmsg_info  *info )
+/*************************************
+ * print message to streams
+ */
 {
     char        pre[MAX_MSG_LEN]; //actual message text
 
@@ -262,8 +275,10 @@ static void PrintPostNotes( void )
     }
 }
 
-// Output error message
 static void CErr( int parmno, msg_codes msgnum, ... )
+/****************************************************
+ * Output error message
+ */
 {
     va_list     args1;
     cmsg_info   info;
@@ -316,14 +331,14 @@ void CErrP1( int parmno, msg_codes msgnum )
 }
 
 
-// Out warning message
-static void CWarn( int parmno, int levelx, msg_codes msgnum, ... )
+static void CWarn( int parmno, msg_codes msgnum, ... )
+/*****************************************************
+ * Out warning message
+ */
 {
     va_list     args1;
     cmsg_info   info;
     int         level;
-
-    /* unused parameters */ (void)levelx;
 
     if( okToPrintMsg( msgnum, &level ) ) {
         if( level <= WngLevel ) {
@@ -338,24 +353,24 @@ static void CWarn( int parmno, int levelx, msg_codes msgnum, ... )
     }
 }
 
-void CWarn1( int level, msg_codes msgnum )
+void CWarn1( msg_codes msgnum )
 {
-    CWarn( 0, level, msgnum );
+    CWarn( 0, msgnum );
 }
 
-void CWarn2( int level, msg_codes msgnum, int p1 )
+void CWarn2( msg_codes msgnum, int p1 )
 {
-    CWarn( 0, level, msgnum, p1 );
+    CWarn( 0, msgnum, p1 );
 }
 
-void CWarn2p( int level, msg_codes msgnum, const char *p1 )
+void CWarn2p( msg_codes msgnum, const char *p1 )
 {
-    CWarn( 0, level, msgnum, p1 );
+    CWarn( 0, msgnum, p1 );
 }
 
-void CWarnP1( int parmno, int level, msg_codes msgnum )
+void CWarnP1( int parmno, msg_codes msgnum )
 {
-    CWarn( parmno, level, msgnum );
+    CWarn( parmno, msgnum );
 }
 
 
@@ -377,8 +392,10 @@ void CInfoMsg( msg_codes msgnum, ... )
 }
 
 
-// Output pre-compiled header Note
 void PCHNote( msg_codes msgnum, ... )
+/************************************
+ * Output pre-compiled header Note
+ */
 {
     va_list     args1;
     char        msgbuf[MAX_MSG_LEN];
@@ -418,8 +435,10 @@ void CSuicide( void )
 
 
 #if 0
-//doesn't work in general as phases are used in both errror and warnings
 static void CMsgSetClass( cmsg_info *info, msg_codes msgnum )
+/************************************************************
+ * doesn't work in general as phases are used in both errror and warnings
+ */
 {
     msg_type    kind;
     cmsg_class  class;
@@ -443,8 +462,10 @@ static void CMsgSetClass( cmsg_info *info, msg_codes msgnum )
     info->class = class;
 }
 
-// fill info
 static void DoMsgInfo( msg_codes msgnum )
+/****************************************
+ * fill info
+ */
 {
     cmsg_info   sinfo;
     cmsg_info   *info;
@@ -472,11 +493,10 @@ void DumpAllMsg( void ) {
 }
 #endif
 
-/*
+static struct ErrPostList *NewPostList( postlist_type type )
+/***********************************************************
  * post-processing messages (informational notes)
  */
-
-static struct ErrPostList *NewPostList( postlist_type type )
 {
     struct ErrPostList  *np;
 

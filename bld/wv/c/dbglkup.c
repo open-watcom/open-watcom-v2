@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,6 +45,7 @@
 #include "remcore.h"
 #include "dipimp.h"
 #include "dipinter.h"
+#include "enterdb.h"
 #include "dbglkup.h"
 #include "dbgsetfg.h"
 #include "dbgmisc.h"
@@ -55,6 +56,8 @@
 #define CASE_OPTS \
     pick( "Ignore",  CASE_IGNORE  ) \
     pick( "Respect", CASE_RESPECT )
+
+#define SYM_STR(x)  DEBUG_SYM_STR(x)
 
 enum {
     #define pick(t,e)   e,
@@ -241,19 +244,19 @@ void LookConf( void )
         if( ptr != TxtBuff ) {
             *ptr = NULLCHAR;
             ConfigLine( TxtBuff );
-            ptr = StrCopy( "/add ", TxtBuff );
+            ptr = StrCopyDst( "/add ", TxtBuff );
             respect = true;
         }
         if( respect != curr->respect_case ) {
             respect = curr->respect_case;
             if( respect ) {
-                ptr = StrCopy( "/respect ", ptr );
+                ptr = StrCopyDst( "/respect ", ptr );
             } else {
-                ptr = StrCopy( "/ignore ", ptr );
+                ptr = StrCopyDst( "/ignore ", ptr );
             }
         }
         *ptr++ = '{';
-        ptr = StrCopy( curr->data, ptr );
+        ptr = StrCopyDst( curr->data, ptr );
         *ptr++ = '}';
     }
     *ptr = NULLCHAR;
@@ -537,7 +540,7 @@ bool SetWDPresent( mod_handle mh )
 {
     address     addr;
 
-    if( !GetSymAddr( "__WD_Present", mh, &addr ) && !GetSymAddr( "___WD_Present", mh, &addr ) )
+    if( !GetSymAddr( SYM_STR( DEBUG_PRESENT_NAME ), mh, &addr ) )
         return( false );
     ProgPoke( addr, "\x1", 1 );
     return( true );

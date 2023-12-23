@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,14 +34,12 @@
 #include <ctype.h>
 #include <process.h>
 #include <windows.h>
-#include "_srcmgt.h"
+#include "srcmgt.h"
 #include "dbgdata.h"
-#include "dbgmem.h"
 #include "dbglit.h"
 #include "mad.h"
 #include "dui.h"
 #include "dbgvar.h"
-#include "srcmgt.h"
 #include "dbgscrn.h"
 #include "strutil.h"
 #include "dbgscan.h"
@@ -219,7 +217,7 @@ static void RunRequest( int req )
 
 int main( int argc, char **argv )
 {
-    char        buff[256];
+    char        cmd_line[256];
     DWORD       tid;
     HANDLE      hThread;
 
@@ -227,8 +225,8 @@ int main( int argc, char **argv )
 
     MemInit();
     SetErrorMode( SEM_FAILCRITICALERRORS );
-    getcmd( buff );
-    CmdData = buff;
+    _bgetcmd( cmd_line, sizeof( cmd_line ) );
+    CmdData = cmd_line;
     DebugMain();
     _SwitchOff( SW_ERROR_STARTUP );
     DoInput();

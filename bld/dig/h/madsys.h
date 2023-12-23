@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -50,5 +50,5 @@ typedef int         mad_sys_handle;
 typedef void        *mad_sys_handle;
 #endif
 
-extern mad_status   MADSysLoad( const char *, mad_client_routines *, mad_imp_routines **, mad_sys_handle * );
+extern mad_status   MADSysLoad( const char *base_name, mad_client_routines *, mad_imp_routines **, mad_sys_handle * );
 extern void         MADSysUnload( mad_sys_handle * );

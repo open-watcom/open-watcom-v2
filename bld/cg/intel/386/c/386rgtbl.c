@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -637,7 +637,7 @@ void            InitRegTbl( void )
     if( _FPULevel( FPU_87 ) ) {
         HW_CAsgn( STParmReg[Max87Stk], HW_EMPTY );
     }
-    if( _IsTargetModel( INDEXED_GLOBALS ) ) {
+    if( _IsTargetModel( CGSW_X86_INDEXED_GLOBALS ) ) {
         HW_CAsgn( FPParm2Reg[0], HW_ECX_ESI );
     } else {
         HW_CAsgn( FPParm2Reg[0], HW_ECX_EBX );
@@ -1115,15 +1115,15 @@ hw_reg_set      FixedRegs( void )
     HW_CTurnOn( fixed, HW_EBP );
     HW_CTurnOn( fixed, HW_SS );
     HW_CTurnOn( fixed, HW_CS );
-    if( _IsntTargetModel( FLOATING_DS ) )
+    if( _IsntTargetModel( CGSW_X86_FLOATING_DS ) )
         HW_CTurnOn( fixed, HW_DS );
-    if( _IsntTargetModel( FLOATING_ES ) )
+    if( _IsntTargetModel( CGSW_X86_FLOATING_ES ) )
         HW_CTurnOn( fixed, HW_ES );
-    if( _IsntTargetModel( FLOATING_FS ) )
+    if( _IsntTargetModel( CGSW_X86_FLOATING_FS ) )
         HW_CTurnOn( fixed, HW_FS );
-    if( _IsntTargetModel( FLOATING_GS ) )
+    if( _IsntTargetModel( CGSW_X86_FLOATING_GS ) )
         HW_CTurnOn( fixed, HW_GS );
-    if( _IsTargetModel( INDEXED_GLOBALS ) )
+    if( _IsTargetModel( CGSW_X86_INDEXED_GLOBALS ) )
         HW_CTurnOn( fixed, HW_EBX );
     return( fixed );
 }
@@ -1184,9 +1184,9 @@ hw_reg_set      AllCacheRegs( void )
     HW_CTurnOn( all, HW_ES );
     HW_CTurnOn( all, HW_FS );
     HW_CTurnOn( all, HW_GS );
-    if( _IsTargetModel( FLOATING_DS ) )
+    if( _IsTargetModel( CGSW_X86_FLOATING_DS ) )
         HW_CTurnOn( all, HW_DS );
-    if( _IsTargetModel( INDEXED_GLOBALS ) )
+    if( _IsTargetModel( CGSW_X86_INDEXED_GLOBALS ) )
         HW_CTurnOff( all, HW_EBX );
     return( all );
 }

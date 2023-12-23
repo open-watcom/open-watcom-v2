@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -64,7 +64,7 @@
 #include "rtti.h"
 #include "dumpapi.h"
 #include "compinfo.h"
-#ifndef NDEBUG
+#ifdef DEVBUILD
     #include "dbg.h"
     #include "togglesd.h"
 #endif
@@ -80,10 +80,6 @@
 #define RPT_ARGS_TOTAL          ARGS_MAX+1
 #define RPT_ARGS_MAX            ARGS_MAX+1+1
 
-#define RPT_TYP_NONE            TYP_MAX
-#define RPT_TYP_TOTAL           TYP_MAX+1
-#define RPT_TYP_MAX             TYP_MAX+1+1
-
 #define zero_table( table ) memset( table, 0, sizeof( table ) )
 
 enum {
@@ -93,6 +89,18 @@ enum {
 
 TYPE TypeError;
 TYPE TypeCache[TYPC_LAST];
+
+#if defined( DEVBUILD ) || defined( XTRA_RPT )
+char const * const TypeIdNames[] = {
+    #define pick(id,promo,promo_asm,type_text)  __STR( id ),
+    #include "_typdefs.h"
+    #undef pick
+    "TYP_NONE",
+#if defined( XTRA_RPT )
+    "Total"
+#endif
+};
+#endif
 
 static TYPE basicTypes[TYP_MAX];
 static TYPE typeTable[TYP_MAX];
@@ -499,7 +507,7 @@ static TYPE makeCompilerData( TYPE type, type_flag flags )
     if( defaultDataMemFlag & (TF1_FAR | TF1_HUGE) ) {
 #if _CPU == 8086
         if( (flags & TF1_CONST) == 0 ) {
-            if( TargetSwitches & WINDOWS ) {
+            if( TargetSwitches & CGSW_X86_WINDOWS ) {
                 /* R/W data must be near for 16-bit Windows */
                 flags |= TF1_NEAR;
             } else {
@@ -957,7 +965,7 @@ static bool dupCompare( TYPE test1, TYPE test2 )
     case TYP_POINTER:
         break;
     default:
-#ifndef NDEBUG
+#ifdef DEVBUILD
         CFatal( "unknown type being compared" );
 #else
         return( false );
@@ -1065,7 +1073,7 @@ TYPE CheckDupType( TYPE newtype )
         ExtraRptIncrementCtr( ctr_cg_dups );
     }
 #endif
-#ifndef NDEBUG
+#ifdef DEVBUILD
     if( id == TYP_MODIFIER ) {
         if( newtype->flag == TF1_NULL ) {
             if( newtype->u.m.base == NULL ) {
@@ -1237,7 +1245,7 @@ DECL_INFO *MakeNewDeclarator( DECL_SPEC *dspec,DECL_INFO *ptrs,DECL_INFO*arrays)
         FreeDeclInfo( ptrs );
     }
     arrays = FinishDeclarator( dspec, arrays );
-#ifndef NDEBUG
+#ifdef DEVBUILD
     if( TOGGLEDBG( dump_types ) ) {
         DumpFullType( arrays->type );
     }
@@ -1526,7 +1534,7 @@ TYPE MakeTypeOf(                // MAKE UNIQUE TYPE OF
     return( CheckDupType( new_type ) );
 }
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 
 typedef struct {
     unsigned sum;
@@ -1677,18 +1685,18 @@ void PTypeCheckInit( void )
         }
     }
     initCacheAfterOptions();
+    defaultFunctionMemFlag = TF1_NEAR;
+    defaultDataMemFlag = TF1_NEAR;
+#if _INTEL_CPU
     if( IsBigCode() ) {
         defaultFunctionMemFlag = TF1_FAR;
-    } else {
-        defaultFunctionMemFlag = TF1_NEAR;
     }
     if( IsHugeData() ) {
         defaultDataMemFlag = TF1_HUGE;
     } else if( IsBigData() ) {
         defaultDataMemFlag = TF1_FAR;
-    } else {
-        defaultDataMemFlag = TF1_NEAR;
     }
+#endif
 }
 
 static type_id findTypeId( scalar_t scalar )
@@ -2476,7 +2484,7 @@ DECL_SPEC *PTypeStgClass( stg_class_t val )
 
     spec = makeDeclSpec();
 
-    if( CompFlags.enable_std0x && val == STG_AUTO ) {
+    if( CHECK_STD( >= , CXX0X ) && val == STG_AUTO ) {
         CErr1 ( ERR_CXX11_AUTO_STORAGE_SPECIFIER );
     }
     spec->stg_class = val;
@@ -2983,7 +2991,7 @@ static PTREE nameOfId( PTREE id )
     if( ( id->op == PT_BINARY ) && ( id->cgop == CO_TEMPLATE ) ) {
         CFatal( "template-id not supported in this context" );
     }
-#ifndef NDEBUG
+#ifdef DEVBUILD
     if( id->op != PT_BINARY || ( id->cgop != CO_COLON_COLON && id->cgop != CO_STORAGE )) {
         CFatal( "corrupted qualified id" );
     }
@@ -4047,7 +4055,7 @@ DECL_INFO *FinishDeclarator( DECL_SPEC *dspec, DECL_INFO *dinfo )
             }
         }
     }
-#ifndef NDEBUG
+#ifdef DEVBUILD
     if( TOGGLEDBG( dump_types ) ) {
         DumpFullType( prev_type );
     }
@@ -4081,7 +4089,7 @@ DECL_INFO *AddMSCVQualifierKludge( specifier_t spec, DECL_INFO *dinfo )
 bool IdenticalClassModifiers( TYPE cmod1, TYPE cmod2 )
 /****************************************************/
 {
-#ifndef NDEBUG
+#ifdef DEVBUILD
     {
         TYPE test1 = cmod1;
         TYPE test2 = cmod2;
@@ -4256,7 +4264,7 @@ void PTypeClassInstantiationUndo( DECL_SPEC *dspec )
     PTREE id;
 
     /* must be kept in synch with PTypeActualTypeName/PTypeClassInstantiation */
-#ifndef NDEBUG
+#ifdef DEVBUILD
     if( dspec->decl_checked ||
         dspec->partial == NULL ||
         ! dspec->class_instantiation ||
@@ -4998,7 +5006,7 @@ TYPE MakeFarPointerToNear( TYPE base )
 {
     TYPE ptr_type;
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
     {
         type_flag mod;
 
@@ -6734,9 +6742,11 @@ DECL_INFO *InsertDeclInfo( SCOPE insert_scope, DECL_INFO *dinfo )
                         }
                         sym->sym_type = type;
                     }
-                    if( TargetSwitches & FLOATING_SS ) {
+#if _INTEL_CPU
+                    if( TargetSwitches & CGSW_X86_FLOATING_SS ) {
                         sym->sym_type = MakeModifiedType( sym->sym_type, TF1_FAR );
                     }
+#endif
                 }
             }
         } else if( is_a_function && ScopeLocalClass( scope ) ) {
@@ -7438,7 +7448,7 @@ static void pushArguments( PSTK_CTL *stk, arg_list *args )
     for( i = args->num_args; i != 0; --i ) {
         type = *p;
         TypeStripTdMod( type );
-#ifndef NDEBUG
+#ifdef DEVBUILD
         if( TOGGLEDBG( dump_types ) ) {
             printf( "arg #%u\n", ( args->num_args - i ) + 1 );
             DumpFullType( type );
@@ -7483,7 +7493,7 @@ static void pushPrototypeAndArguments( type_bind_info *data,
             a_type = NULL;
         }
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
         if( TOGGLEDBG( dump_types ) ) {
             printf( "p_arg #%u\n", i + 1 );
             if( p->op == PT_TYPE ) {
@@ -7668,7 +7678,7 @@ static void clearGenericBindings( PSTK_CTL *stk, SCOPE decl_scope )
                 bound_type->of = NULL;
             }
             break;
-#ifndef NDEBUG
+#ifdef DEVBUILD
         default:
             CFatal( "bound generic type corrupted" );
 #endif
@@ -8409,7 +8419,7 @@ static void initBasicTypes( void )
     type_id typ;
     static type_id basics_init_list[] = {
         #define BASETYPES
-        #define pick(id,promo,promo_asm,type_text)  __PASTE( TYP_, id ),
+        #define pick(id,promo,promo_asm,type_text)  id,
         #include "_typdefs.h"
         #undef pick
         #undef BASETYPES
@@ -8606,14 +8616,7 @@ static void typesInit(          // TYPES INITIALIZATION
     ExtraRptRegisterCtr( &ctr_cg_dups_fail, "dup. checks failed (back-end)" );
 #ifdef XTRA_RPT
     {
-        static char const * const typeIdNames[] = {
-            #define pick(id,promo,promo_asm,type_text)  __STR( __PASTE( TYP_, id ) ),
-            #include "_typdefs.h"
-            #undef pick
-            "TYP_NONE",
-            "Total"
-        };
-        ExtraRptRegisterTab( "type id frequency table", typeIdNames, &ctr_type_ids[0][0], RPT_TYP_MAX, 1 );
+        ExtraRptRegisterTab( "type id frequency table", TypeIdNames, &ctr_type_ids[0][0], RPT_TYP_MAX, 1 );
         ExtraRptRegisterTab( "number of fn arguments frequency table", NULL, &ctr_fn_args[0][0], RPT_ARGS_MAX, 1 );
     }
 #endif
@@ -8626,7 +8629,7 @@ static void markFreeType( void *p )
     s->id = TYP_NONE;
 }
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 unsigned num_refs;
 
 static void initXrefType( void *e, carve_walk_base *d )

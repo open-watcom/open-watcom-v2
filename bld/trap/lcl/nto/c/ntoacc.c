@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,6 +40,7 @@
 #include <sys/netmgr.h>
 #include <sys/neutrino.h>
 #include <sys/resource.h>
+#include "digcpu.h"
 #include "trpimp.h"
 #include "trperr.h"
 #include "mad.h"
@@ -51,14 +52,13 @@
 typedef unsigned short  USHORT;
 typedef unsigned long   ULONG;
 
+process_info            ProcInfo;
+
+//#define MAX_WATCHES     32
+//struct _watch_struct    WatchPoints[MAX_WATCHES];
+//static int              WatchCount = 0;
+
 static pid_t            OrigPGrp;
-
-process_info        ProcInfo;
-
-//#define MAX_WP  32
-//struct _watch_struct    WatchPoints[MAX_WP];
-short               WatchCount = 0;
-
 
 unsigned nto_node( void )
 {
@@ -99,56 +99,54 @@ trap_retval TRAP_CORE( Get_sys_config )( void )
     get_sys_config_ret  *ret;
 
     ret = GetOutPtr( 0 );
-    ret->sys.os = DIG_OS_QNX;
+    ret->os = DIG_OS_QNX;
 
-    get_nto_version( &ret->sys.osmajor, &ret->sys.osminor );
+    get_nto_version( &ret->osmajor, &ret->osminor );
 
-    ret->sys.cpu = X86CPUType();
+    ret->cpu = X86CPUType();
     if( HAVE_EMU ) {
-        ret->sys.fpu = X86_EMU;
+        ret->fpu = X86_EMU;
     } else {
-        ret->sys.fpu = ret->sys.cpu & X86_CPU_MASK;
+        ret->fpu = ret->cpu & X86_CPU_MASK;
     }
-    ret->sys.huge_shift = 3;
-    ret->sys.arch = DIG_ARCH_X86;
+    ret->huge_shift = 3;
+    ret->arch = DIG_ARCH_X86;
     return( sizeof( *ret ) );
 }
 
 
 trap_retval TRAP_CORE( Checksum_mem )( void )
 {
-    char                buf[256];
+    unsigned char       buf[256];
     addr_off            offv;
-    USHORT              length;
-    USHORT              size;
-    int                 i;
-    USHORT              amount;
+    size_t              len;
+    size_t              want;
+    size_t              i;
+    size_t              got;
     ULONG               sum;
     checksum_mem_req    *acc;
     checksum_mem_ret    *ret;
 
-    acc = GetInPtr( 0 );
-    ret = GetOutPtr( 0 );
-    dbg_print(( "mem checksum at %08x, %d bytes\n",
-                (unsigned)acc->in_addr.offset, acc->len ));
     sum = 0;
     if( ProcInfo.pid && !ProcInfo.at_end ) {
-        length = acc->len;
+        acc = GetInPtr( 0 );
+        dbg_print(( "mem checksum at %08x, %d bytes\n",
+                (unsigned)acc->in_addr.offset, acc->len ));
         offv = acc->in_addr.offset;
-        for( ;; ) {
-            if( length == 0 )
-                break;
-            size = (length > sizeof( buf )) ? sizeof( buf ) : length;
-            amount = ReadMem( ProcInfo.procfd, buf, offv, size );
-            for( i = amount; i != 0; --i )
-                sum += buf[i - 1];
-            offv += amount;
-            length -= amount;
-            if( amount != size ) {
+        want = sizeof( buf );
+        for( len = acc->len; len > 0; len -= want ) {
+            if( want > len )
+                want = len;
+            got = ReadMemory( ProcInfo.procfd, offv, buf, want );
+            for( i = 0; i < got; ++i )
+                sum += buf[i];
+            if( got != want ) {
                 break;
             }
+            offv += want;
         }
     }
+    ret = GetOutPtr( 0 );
     ret->result = sum;
     return( sizeof( *ret ) );
 }
@@ -157,19 +155,18 @@ trap_retval TRAP_CORE( Checksum_mem )( void )
 trap_retval TRAP_CORE( Read_mem )( void )
 {
     read_mem_req    *acc;
-    unsigned        len = 0;
 
     acc = GetInPtr( 0 );
     CONV_LE_32( acc->mem_addr.offset );
     CONV_LE_16( acc->mem_addr.segment );
     CONV_LE_16( acc->len );
-    if( ProcInfo.pid && !ProcInfo.at_end ) {
+    if( ProcInfo.pid != 0 && !ProcInfo.at_end ) {
 #ifdef DEBUG_MEM
         dbg_print(( "mem read at %08x, %d bytes\n", (unsigned)acc->mem_addr.offset, acc->len ));
 #endif
-        len = ReadMem( ProcInfo.procfd, GetOutPtr( 0 ), acc->mem_addr.offset, acc->len );
+        return( ReadMemory( ProcInfo.procfd, acc->mem_addr.offset, GetOutPtr( 0 ), acc->len ) );
     }
-    return( len );
+    return( 0 );
 }
 
 
@@ -177,7 +174,7 @@ trap_retval TRAP_CORE( Write_mem )( void )
 {
     write_mem_req   *acc;
     write_mem_ret   *ret;
-    unsigned        len;
+    size_t          len;
 
     acc = GetInPtr( 0 );
     CONV_LE_32( acc->mem_addr.offset );
@@ -187,41 +184,75 @@ trap_retval TRAP_CORE( Write_mem )( void )
     ret->len = 0;
     if( ProcInfo.pid && !ProcInfo.at_end ) {
 #ifdef DEBUG_MEM
-        dbg_print(( "mem write at %08x, %d bytes\n", (unsigned)acc->mem_addr.offset, len ));
+        dbg_print(( "mem write at %08x, %d bytes\n",
+                    (unsigned)acc->mem_addr.offset, len ));
 #endif
-        ret->len = WriteMem( ProcInfo.procfd, GetInPtr( sizeof( *acc ) ), acc->mem_addr.offset, len );
+        ret->len = WriteMemory( ProcInfo.procfd, acc->mem_addr.offset,
+                                GetInPtr( sizeof( *acc ) ), len );
     }
     CONV_LE_16( ret->len );
     return( sizeof( *ret ) );}
 
 
 trap_retval TRAP_CORE( Read_io )( void )
+/*
+ * TODO: implement I/O port writes (if possible)
+ */
 {
+#if 0
     read_io_req *acc;
     void        *ret;
-    unsigned    len;
 
-// TODO: implement I/O port reads (if possible)
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    len = 0;
-    return( len );
+    switch( acc->len ) {
+    case 1:
+        break;
+    case 2:
+        break;
+    case 4:
+        break;
+    default:
+        return( 0 );
+    }
+    return( acc->len );
+#else
+    return( 0 );
+#endif
 }
 
 
 trap_retval TRAP_CORE( Write_io )( void )
+/*
+ * TODO: implement I/O port writes (if possible)
+ */
 {
-    write_io_req    *acc;
     write_io_ret    *ret;
+#if 0
+    write_io_req    *acc;
     void            *data;
-    unsigned        len;
+    size_t          len;
 
-// TODO: implement I/O port writes (if possible)
     acc  = GetInPtr( 0 );
     data = GetInPtr( sizeof( *acc ) );
     len  = GetTotalSizeIn() - sizeof( *acc );
+    switch( len ) {
+    case 1:
+        break;
+    case 2:
+        break;
+    case 4:
+        break;
+    default:
+        len = 0;
+        break;
+    }
+    ret  = GetOutPtr( 0 );
+    ret->len = len;
+#else
     ret  = GetOutPtr( 0 );
     ret->len = 0;
+#endif
     return( sizeof( *ret ) );
 }
 
@@ -316,7 +347,12 @@ trap_retval TRAP_CORE( Write_regs )( void )
     return( 0 );
 }
 
-static int SplitParms( char *p, const char **args, unsigned len )
+static int SplitParms( char *p, const char **args, size_t len )
+/**************************************************************
+ * Break up program arguments passed in as a single string into
+ * individual components. Useful for passing argv style array to
+ * exec().
+ */
 {
     int     i;
     char    endc;
@@ -349,11 +385,14 @@ static int SplitParms( char *p, const char **args, unsigned len )
         for( ;; ) {
             if( len == 0 )
                 goto done;
-            if( *p == endc
-             || *p == '\0'
-             || (endc == ' ' && *p == '\t' ) ) {
+            if( *p == endc || *p == '\0' || ( endc == ' ' && *p == '\t' ) ) {
+                /*
+                 * if output array is not specified then source string
+                 * is not changed and it calculates number of parameters only
+                 * as soon as output array is specified then source is modified
+                 */
                 if( args != NULL ) {
-                    *p = '\0';  //NYI: not a good idea, should make a copy
+                    *p = '\0';
                 }
                 ++p;
                 --len;
@@ -427,30 +466,33 @@ static void proc_detach( char *args )
     ProcInfo.pid    = 0;
 }
 
-static pid_t RunningProc( char *name, char **name_ret )
+static pid_t RunningProc( const char *name, const char **name_ret )
 {
     pid_t       pid;
     char        ch;
-    char        *start;
+    const char  *ptr;
 
-    start = name;
-//    name = CollectNid( name, strlen( name ), nid );
+    ptr = name;
+//    ptr = CollectNid( name, strlen( name ), nid );
 
     for( ;; ) {
-        ch = *name;
-        if( ch != ' ' && ch != '\t' ) break;
-        ++name;
+        ch = *ptr;
+        if( ch != ' ' && ch != '\t' )
+            break;
+        ++ptr;
     }
     if( name_ret != NULL ) {
-        *name_ret = name;
+        *name_ret = ptr;
     }
     pid = 0;
     for( ;; ) {
-        if( *name < '0' || *name > '9' ) break;
-        pid = (pid * 10) + (*name - '0');
-        ++name;
+        ch = *ptr;
+        if( ch < '0' || ch > '9' )
+            break;
+        pid = ( pid * 10 ) + ( ch - '0' );
+        ++ptr;
     }
-    if( *name != '\0') {
+    if( *ptr != '\0') {
         return( 0 );
     }
     return( pid );
@@ -467,8 +509,7 @@ static int nto_breakpoint( addr_off addr, int type, int size )
     if( devctl( ProcInfo.procfd, DCMD_PROC_BREAK, &brk, sizeof( brk ), 0 ) != EOK ) {
         dbg_print(( "failed to manipulate breakpoint!\n" ));
         return( 1 );
-    }
-    else {
+    } else {
         return( 0 );
     }
 }
@@ -481,7 +522,7 @@ static bool setup_rdebug( void )
 
         dbg_print(( "rdebug at %08x, ld breakpoint at %08x\n",
                     (unsigned)ProcInfo.rdebug_va, (unsigned)ProcInfo.ld_bp_va ));
-        ReadMem( ProcInfo.procfd, &rdebug, ProcInfo.rdebug_va, sizeof( rdebug ) );
+        ReadMemory( ProcInfo.procfd, ProcInfo.rdebug_va, &rdebug, sizeof( rdebug ) );
         AddLibs( ProcInfo.procfd, (addr_off)rdebug.r_map );
         ProcInfo.have_rdebug = TRUE;
 
@@ -530,14 +571,15 @@ trap_retval TRAP_CORE( Prog_load )( void )
     char                    *parm_start;
     int                     i;
     char                    exe_name[PATH_MAX];
-    char                    *name;
+    const char              *name;
     pid_t                   save_pgrp;
     sigset_t                sig_set;
     prog_load_req           *acc;
     prog_load_ret           *ret;
-    unsigned                len;
+    size_t                  len;
     int                     fds[3];
     struct inheritance      inherit;
+    char                    *p;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
@@ -549,52 +591,40 @@ trap_retval TRAP_CORE( Prog_load )( void )
     ProcInfo.have_rdebug = FALSE;
     ProcInfo.rdebug_va = 0;
     ProcInfo.dynsec_va = 0;
-    parms = (char *)GetInPtr( sizeof( *acc ) );
-    parm_start = parms;
+    parms = parm_start = GetInPtr( sizeof( *acc ) );
     len = GetTotalSizeIn() - sizeof( *acc );
     if( acc->true_argv ) {
         i = 1;
-        for( ;; ) {
-            if( len == 0 ) break;
-            if( *parms == '\0' ) {
+        while( len-- > 0 ) {
+            if( *parms++ == '\0' ) {
                 i++;
             }
-            ++parms;
-            --len;
         }
         args = alloca( i * sizeof( *args ) );
         parms = parm_start;
         len = GetTotalSizeIn() - sizeof( *acc );
         i = 1;
-        for( ;; ) {
-            if( len == 0 ) break;
-            if( *parms == '\0' ) {
-                args[i++] = parms + 1;
+        while( len-- > 0 ) {
+            if( *parms++ == '\0' ) {
+                args[i++] = parms;
             }
-            ++parms;
-            --len;
         }
-        args[i - 1] = NULL;
     } else {
-        while( *parms != '\0' ) {
-            ++parms;
-            --len;
-        }
-        ++parms;
-        --len;
-        i = SplitParms( parms, NULL, len );
-        args = alloca( ( i + 2 ) * sizeof( *args ) );
-        args[SplitParms( parms, args + 1, len ) + 1] = NULL;
+        while( --len, *parms++ != '\0' )
+            {}
+        i = SplitParms( parms, NULL, len ) + 2;
+        args = alloca( i * sizeof( *args ) + len );
+        p = memcpy( (void *)( args + i ), parms, len );
+        SplitParms( p, args + 1, len );
     }
     args[0] = parm_start;
+    args[i - 1] = NULL;
     ProcInfo.pid = RunningProc( args[0], &name );
     if( ProcInfo.pid != 0 ) {
         ProcInfo.loaded_proc = FALSE;
     } else {
         args[0] = name;
-        if( FindFilePath( TRUE, args[0], exe_name ) == 0 ) {
-            exe_name[0] = '\0';
-        }
+        FindFilePath( DIG_FILETYPE_EXE, args[0], exe_name );
         save_pgrp = getpgrp();
         setpgid( 0, OrigPGrp );
 
@@ -669,7 +699,6 @@ trap_retval TRAP_CORE( Prog_kill )( void )
 {
     prog_kill_ret       *ret;
 
-    ret = GetOutPtr( 0 );
     dbg_print(( "killing current process (pid %d)\n", ProcInfo.pid ));
     if( ProcInfo.pid ) {
         if( ProcInfo.loaded_proc && !ProcInfo.at_end ) {
@@ -681,6 +710,7 @@ trap_retval TRAP_CORE( Prog_kill )( void )
     ProcInfo.at_end   = FALSE;
     ProcInfo.save_in  = -1;
     ProcInfo.save_out = -1;
+    ret = GetOutPtr( 0 );
     ret->err = 0;
     CONV_LE_32( ret->err );
     return( sizeof( *ret ) );
@@ -717,7 +747,7 @@ trap_retval TRAP_CORE( Clear_break )( void )
 }
 
 
-static int nto_watchpoint( int addr, int len, int type )
+static int nto_watchpoint( int addr, int size, int type )
 {
     procfs_break    brk;
 
@@ -734,7 +764,7 @@ static int nto_watchpoint( int addr, int len, int type )
     }
     brk.type |= _DEBUG_BREAK_HW;    /* Always ask for HW watchpoint */
     brk.addr = addr;
-    brk.size = len;
+    brk.size = size;
 
     if( devctl( ProcInfo.procfd, DCMD_PROC_BREAK, &brk, sizeof( brk ), 0 ) != EOK ) {
         dbg_print(( "Failed to manipulate hardware watchpoint\n" ));
@@ -752,14 +782,14 @@ trap_retval TRAP_CORE( Set_watch )( void )
     acc = GetInPtr( 0 );
     CONV_LE_32( acc->break_addr.offset );
     CONV_LE_16( acc->break_addr.segment );
-    ret = GetOutPtr( 0 );
-    ret->multiplier = 1000;
-    ret->err = 1;
     dbg_print(( "setting watchpoint %d bytes at %04x:%08x\n", acc->size,
                acc->watch_addr.segment, (unsigned)acc->watch_addr.offset ));
+    ret = GetOutPtr( 0 );
+    ret->multiplier = 1000;
+    ret->err = 1;       // failure
     if( nto_watchpoint( acc->watch_addr.offset, acc->size, 1 ) == 0 ) {
         /* Succeeded */
-        ret->err = 0;
+        ret->err = 0;   // OK
         ret->multiplier |= USING_DEBUG_REG;
     }
     CONV_LE_32( ret->err );
@@ -854,7 +884,7 @@ static trap_conditions RunIt( unsigned step )
     siginfo_t           info;
     procfs_status       status;
 
-    conditions = 0;
+    conditions = COND_NONE;
 
     Resume( step );
 
@@ -1014,13 +1044,12 @@ trap_retval TRAP_CORE( Redirect_stdout )( void  )
 }
 
 
-trap_retval TRAP_FILE( string_to_fullpath )( void )
+trap_retval TRAP_FILE( file_to_fullpath )( void )
 {
-    pid_t              pid;
-    bool               exe;
-    int                len;
-    char               *name;
-    char               *fullname;
+    pid_t               pid;
+    size_t              len;
+    const char          *name;
+    char                *fullname;
     file_string_to_fullpath_req *acc;
     file_string_to_fullpath_ret *ret;
 
@@ -1031,9 +1060,9 @@ trap_retval TRAP_FILE( string_to_fullpath )( void )
     acc  = GetInPtr( 0 );
     name = GetInPtr( sizeof( *acc ) );
     ret  = GetOutPtr( 0 );
+    ret->err = 0;
     fullname = GetOutPtr( sizeof( *ret ) );
-    exe = ( acc->file_type == TF_TYPE_EXE ) ? TRUE : FALSE;
-    if( exe ) {
+    if( acc->file_type == DIG_FILETYPE_EXE ) {
         pid = RunningProc( name, &name );
     }
     if( pid != 0 ) {
@@ -1041,12 +1070,10 @@ trap_retval TRAP_FILE( string_to_fullpath )( void )
         len = pid_to_name( pid, fullname, 512 );
         dbg_print(( "pid %d -> name '%s'\n", pid, name ));
     } else {
-        len = FindFilePath( exe, name, fullname );
+        len = FindFilePath( acc->file_type, name, fullname );
     }
     if( len == 0 ) {
         ret->err = ENOENT;      /* File not found */
-    } else {
-        ret->err = 0;
     }
     CONV_LE_32( ret->err );
     return( sizeof( *ret ) + len + 1 );
@@ -1115,15 +1142,18 @@ trap_retval TRAP_CORE( Machine_data )( void )
 {
     machine_data_req    *acc;
     machine_data_ret    *ret;
-    unsigned_8          *data;
+    machine_data_spec   *data;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    data = GetOutPtr( sizeof( *ret ) );
     ret->cache_start = 0;
     ret->cache_end = ~(addr_off)0;
-    *data = X86AC_BIG;
-    return( sizeof( *ret ) + sizeof( *data ) );
+    if( acc->info_type == X86MD_ADDR_CHARACTERISTICS ) {
+        data = GetOutPtr( sizeof( *ret ) );
+        data->x86_addr_flags = X86AC_BIG;
+        return( sizeof( *ret ) + sizeof( data->x86_addr_flags ) );
+    }
+    return( sizeof( *ret ) );
 }
 
 
@@ -1165,8 +1195,8 @@ trap_retval TRAP_THREAD( set )( void )
 
     req = GetInPtr( 0 );
     CONV_LE_32( req->thread );
-    ret = GetOutPtr( 0 );
     tid = req->thread;
+    ret = GetOutPtr( 0 );
     ret->err = 0;
     ret->old_thread = ProcInfo.tid;
     dbg_print(( "setting thread %d (currently %d)\n", tid, ProcInfo.tid ));
@@ -1190,11 +1220,11 @@ trap_retval TRAP_THREAD( freeze )( void )
     thread_freeze_ret   *ret;
     pthread_t           tid;
 
+    ret = GetOutPtr( 0 );
+    ret->err = 0;
     req = GetInPtr( 0 );
     CONV_LE_32( req->thread );
-    ret = GetOutPtr( 0 );
     tid = req->thread;
-    ret->err = 0;
     dbg_print(( "freezing thread %d\n", tid ));
     if( tid ) {
         /* If debuggee isn't running, do nothing but pretend it worked */
@@ -1218,11 +1248,11 @@ trap_retval TRAP_THREAD( thaw )( void )
     thread_thaw_ret     *ret;
     pthread_t           tid;
 
+    ret = GetOutPtr( 0 );
+    ret->err = 0;
     req = GetInPtr( 0 );
     CONV_LE_32( req->thread );
-    ret = GetOutPtr( 0 );
     tid = req->thread;
-    ret->err = 0;
     dbg_print(( "thawing thread %d\n", tid ));
     if( tid ) {
         /* If debuggee isn't running, do nothing but pretend it worked */
@@ -1298,7 +1328,7 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
     trap_version    ver;
     sigset_t        sig_set;
 
-    parms = parms; remote = remote;
+    /* unused parameters */ (void)parms; (void)remote;
 
     /* We use SIGUSR1 to gain control after blocking wait for a process. */
     sigemptyset( &sig_set );
@@ -1310,8 +1340,8 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
     ProcInfo.node = ND_LOCAL_NODE;
     strcpy( ProcInfo.procfs_path, "/proc" );
     err[0] = '\0';      /* all ok */
-    ver.major = TRAP_MAJOR_VERSION;
-    ver.minor = TRAP_MINOR_VERSION;
+    ver.major = TRAP_VERSION_MAJOR;
+    ver.minor = TRAP_VERSION_MINOR;
     ver.remote = FALSE;
     OrigPGrp = getpgrp();
     return( ver );

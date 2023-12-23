@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,6 +38,7 @@
 #include "madregs.h"
 #include "elfcore.h"
 #include "core_fbsd.h"
+#include "digcpu.h"
 
 
 typedef struct {
@@ -221,6 +223,8 @@ static size_t freebsd_regs( void *_ctx, mad_registers *r, int tid )
     prstatus_t      status;
     char            *note_name;
 
+    /* unused parameters */ (void)tid;
+
     /* Look for a NT_PRSTATUS note */
     note.n_type = NT_PRSTATUS;
     note_name = find_note( ctx->fd, ctx->e_hdr, ctx->p_hdr, ctx->swap, &note );
@@ -264,6 +268,8 @@ static size_t freebsd_regs( void *_ctx, mad_registers *r, int tid )
  */
 static size_t freebsd_freg( void *ctx, mad_registers *r, int tid )
 {
+    /* unused parameters */ (void)ctx; (void)r; (void)tid;
+
     return( 0 );
 }
 

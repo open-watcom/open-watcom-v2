@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,7 +35,6 @@
 #include "dbgerr.h"
 #include "dbgio.h"
 #include "dbgmem.h"
-#include "tcerr.h"
 #include "dbglit.h"
 #include "dui.h"
 #include "trapaccs.h"
@@ -58,17 +58,17 @@ extern trap_elen        CurrRegSize;
 #define MAX_ERR_MSG_SIZE        80
 
 typedef struct{
-    address     addr;
-    size_t      len;
-    char        *data;
+    address         addr;
+    size_t          len;
+    char            *data;
 } cache_block;
 
 typedef struct {
-    address     addr;
-    addr48_off  end;
-    unsigned    info;
-    size_t      len;
-    unsigned_8  data[1];        /* variable sized */
+    address         addr;
+    addr48_off      end;
+    dig_info_type   info_type;
+    size_t          len;
+    unsigned_8      data[1];    /* variable sized */
 } machine_data_cache;
 
 static cache_block              Cache;
@@ -105,7 +105,7 @@ static size_t MemRead( address addr, void *ptr, size_t size )
         CONV_LE_16( acc.len );
         if( int_tbl )
             RestoreHandlers();
-        read_len = (trap_retval)TrapSimpAccess( sizeof( acc ), &acc, piece_len, ptr );
+        read_len = (trap_retval)TrapSimpleAccess( sizeof( acc ), &acc, piece_len, ptr );
         if( int_tbl )
             GrabHandlers();
         left -= read_len;
@@ -227,7 +227,7 @@ unsigned long ProgChkSum( address addr, trap_elen len )
     AddrFix( &addr );
     acc.in_addr = addr.mach;
     acc.len = len;
-    TrapSimpAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
+    TrapSimpleAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
     return( ret.result );
 }
 
@@ -238,7 +238,7 @@ trap_retval PortPeek( unsigned port, void *data, uint_8 size )
     acc.req = REQ_READ_IO;
     acc.IO_offset = port;
     acc.len = size;
-    return( TrapSimpAccess( sizeof( acc ), &acc, size, data ) );
+    return( TrapSimpleAccess( sizeof( acc ), &acc, size, data ) );
 }
 
 trap_retval PortPoke( unsigned port, const void *data, uint_8 size )
@@ -265,7 +265,7 @@ static void ReadRegs( machine_state *state )
     read_regs_req       acc;
 
     acc.req = REQ_READ_REGS;
-    TrapSimpAccess( sizeof( acc ), &acc, CurrRegSize, &state->mr );
+    TrapSimpleAccess( sizeof( acc ), &acc, CurrRegSize, &state->mr );
     MADRegistersHost( &state->mr );
     if( state->ovl != NULL ) {
         RemoteSectTblRead( state->ovl );
@@ -349,7 +349,7 @@ error_handle DoLoad( const char *args, unsigned long *phandle )
     OnAnotherThreadAccess( 2, in, 1, out );
     InitSuppServices();
     GrabHandlers();
-    GetSysConfig();
+    RemoteGetSysConfig();
     CheckMADChange();
     ReadDbgRegs();
     DbgRegs->tid = RemoteSetThread( 0 );
@@ -388,12 +388,12 @@ bool KillProgOvlay( void )
     acc.task_id = TaskId;
     RestoreHandlers();
     FiniSuppServices();
-    OnAnotherThreadSimpAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
+    OnAnotherThreadSimpleAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
     InitSuppServices();
     _SwitchOff( SW_HAVE_TASK );
     GrabHandlers();
     FreeThreads();
-    GetSysConfig();
+    RemoteGetSysConfig();
     ClearMachineDataCache();
     CONV_LE_32( ret.err );
     return( ( ret.err == 0 ) );
@@ -409,7 +409,7 @@ unsigned MakeProgRun( bool single )
     acc.req = single ? REQ_PROG_STEP : REQ_PROG_GO;
     RestoreHandlers();
     DUIExitCriticalSection();
-    OnAnotherThreadSimpAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
+    OnAnotherThreadSimpleAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
     DUIEnterCriticalSection();
     GrabHandlers();
     CONV_LE_32( ret.stack_pointer.offset );
@@ -418,7 +418,7 @@ unsigned MakeProgRun( bool single )
     CONV_LE_16( ret.program_counter.segment );
     CONV_LE_16( ret.conditions );
     if( ret.conditions & COND_CONFIG ) {
-        GetSysConfig();
+        RemoteGetSysConfig();
         CheckMADChange();
     }
     DbgRegs->arch = SysConfig.arch;
@@ -466,7 +466,7 @@ void RemoteMapAddr( addr_ptr *addr, addr_off *lo_bound,
     CONV_LE_32( acc.in_addr.offset );
     CONV_LE_16( acc.in_addr.segment );
     CONV_LE_32( acc.mod_handle );
-    TrapSimpAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
+    TrapSimpleAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
     CONV_LE_32( ret.out_addr.offset );
     CONV_LE_16( ret.out_addr.segment );
     CONV_LE_32( ret.lo_bound );
@@ -481,7 +481,7 @@ void RemoteSetUserScreen( void )
     set_user_screen_req         acc;
 
     acc.req = REQ_SET_USER_SCREEN;
-    TrapSimpAccess( sizeof( acc ), &acc, 0, NULL );
+    TrapSimpleAccess( sizeof( acc ), &acc, 0, NULL );
 }
 
 void RemoteSetDebugScreen( void )
@@ -489,7 +489,7 @@ void RemoteSetDebugScreen( void )
     set_debug_screen_req        acc;
 
     acc.req = REQ_SET_DEBUG_SCREEN;
-    TrapSimpAccess( sizeof( acc ), &acc, 0, NULL );
+    TrapSimpleAccess( sizeof( acc ), &acc, 0, NULL );
 }
 
 unsigned RemoteReadUserKey( uint_16 wait )
@@ -500,7 +500,7 @@ unsigned RemoteReadUserKey( uint_16 wait )
     acc.req = REQ_READ_USER_KEYBOARD;
     acc.wait = wait;
     CONV_LE_16( acc.wait );
-    TrapSimpAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
+    TrapSimpleAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
     return( ret.key );
 }
 
@@ -545,9 +545,8 @@ unsigned RemoteGetMsgText( char *buff, trap_elen buff_len )
     return( ret.flags );
 }
 
-unsigned RemoteMachineData( address addr, uint_8 info_type,
-                        dig_elen in_size,  const void *inp,
-                        dig_elen out_size, void *outp )
+unsigned RemoteMachineData( address addr, dig_info_type info_type, dig_elen in_size,
+                                const void *inp, dig_elen out_size, void *outp )
 {
     in_mx_entry                 in[2];
     mx_entry                    out[2];
@@ -556,7 +555,7 @@ unsigned RemoteMachineData( address addr, uint_8 info_type,
     unsigned                    len;
     machine_data_cache          *new;
 
-    if( info_type == MData->info
+    if( info_type == MData->info_type
       && addr.mach.offset >= MData->addr.mach.offset
       && addr.mach.offset <  MData->end
       && SameAddrSpace( addr, MData->addr ) ) {
@@ -564,7 +563,7 @@ unsigned RemoteMachineData( address addr, uint_8 info_type,
         return( out_size );
     }
     acc.req = REQ_MACHINE_DATA;
-    acc.info_type = info_type;
+    acc.info_type = (unsigned_8)info_type;
     acc.addr = addr.mach;
     in[0].ptr = &acc;
     in[0].len = sizeof( acc );
@@ -589,7 +588,7 @@ unsigned RemoteMachineData( address addr, uint_8 info_type,
     MData->addr = addr;
     MData->addr.mach.offset = ret.cache_start;
     MData->end = ret.cache_end;
-    MData->info = info_type;
+    MData->info_type = info_type;
     MData->len = len;
     return( len );
 }
@@ -604,7 +603,7 @@ dword RemoteSetBreak( address addr )
     acc.break_addr = addr.mach;
     CONV_LE_32( acc.break_addr.offset );
     CONV_LE_16( acc.break_addr.segment );
-    TrapSimpAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
+    TrapSimpleAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
     return( ret.old );
 }
 
@@ -618,7 +617,7 @@ void RemoteRestoreBreak( address addr, dword value )
     acc.old = value;
     CONV_LE_32( acc.break_addr.offset );
     CONV_LE_16( acc.break_addr.segment );
-    TrapSimpAccess( sizeof( acc ), &acc, 0, NULL );
+    TrapSimpleAccess( sizeof( acc ), &acc, 0, NULL );
 }
 
 bool RemoteSetWatch( address addr, uint_8 size, unsigned long *mult )
@@ -630,7 +629,7 @@ bool RemoteSetWatch( address addr, uint_8 size, unsigned long *mult )
     AddrFix( &addr );
     acc.watch_addr = addr.mach;
     acc.size = size;
-    TrapSimpAccess( sizeof( acc ), &acc, sizeof( ret ), &ret ); //
+    TrapSimpleAccess( sizeof( acc ), &acc, sizeof( ret ), &ret ); //
     *mult = ret.multiplier & ~USING_DEBUG_REG;
     return( (ret.multiplier & USING_DEBUG_REG) != 0 );
 }
@@ -643,7 +642,7 @@ void RemoteRestoreWatch( address addr, uint_8 size )
     AddrFix( &addr );
     acc.watch_addr = addr.mach;
     acc.size = size;
-    TrapSimpAccess( sizeof( acc ), &acc, 0, NULL );
+    TrapSimpleAccess( sizeof( acc ), &acc, 0, NULL );
 }
 
 void RemoteSplitCmd( char *cmd, char **end, char **parm )
@@ -678,7 +677,7 @@ void CheckSegAlias( void )
     for( ;; ) {
         ret.seg = 0;
         CONV_LE_16( acc.seg );
-        TrapSimpAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
+        TrapSimpleAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
         CONV_LE_16( ret.seg );
         CONV_LE_16( ret.alias );
         if( ret.seg == 0 )
@@ -688,13 +687,21 @@ void CheckSegAlias( void )
     }
 }
 
-void GetSysConfig( void )
+void RemoteGetSysConfig( void )
 {
     get_sys_config_req  acc;
+    get_sys_config_ret  ret;
 
     acc.req = REQ_GET_SYS_CONFIG;
-    TrapSimpAccess( sizeof( acc ), &acc, sizeof( SysConfig ), &SysConfig );
-    CONV_LE_16( SysConfig.arch );
+    TrapSimpleAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
+    /* map trap format to internal format */
+    SysConfig.cpu.byte   = ret.cpu;
+    SysConfig.fpu.byte   = ret.fpu;
+    SysConfig.osmajor    = ret.osmajor;
+    SysConfig.osminor    = ret.osminor;
+    SysConfig.os         = ret.os;
+    SysConfig.huge_shift = ret.huge_shift;
+    SysConfig.arch       = ret.arch;
 }
 
 bool InitCoreSupp( void )
@@ -703,7 +710,7 @@ bool InitCoreSupp( void )
         _Alloc( MData, sizeof( *MData ) );
         MData->len = sizeof( MData->data );
         ClearMachineDataCache();
-        GetSysConfig();
+        RemoteGetSysConfig();
         CheckMADChange();
         return( true );
     } else {
@@ -715,15 +722,4 @@ void FiniCoreSupp( void )
 {
     _Free( MData );
     MData = NULL;
-}
-
-char    *TrapClientString( tc_error err )
-{
-    switch( err ) {
-    case TC_BAD_TRAP_FILE:      return( LIT_ENG( BAD_TRAP_FILE ) );
-    case TC_CANT_LOAD_TRAP:     return( LIT_ENG( CANT_LOAD_TRAP_FILE ) );
-    case TC_WRONG_TRAP_VERSION: return( LIT_ENG( INCORRECT_TRAP_FILE_VERSION ) );
-    case TC_OUT_OF_DOS_MEMORY:  return( LIT_ENG( OUT_OF_DOS_MEMORY ) );
-    }
-    return( NULL );
 }

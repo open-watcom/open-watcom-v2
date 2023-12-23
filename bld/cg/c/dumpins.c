@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -50,8 +50,8 @@
 #define DO_DUMPOFFSET(str,off) DumpLiteral( str ); DoOffset( (off) )
 
 
-static  void    DoOffset( unsigned_32 o ) {
-/*****************************************/
+static  void    DoOffset( uint_32 o ) {
+/***********************************/
 
     DumpChar( '\t' );
     Dump8h( o );
@@ -168,7 +168,7 @@ void    DumpOperand( name *operand )
         DumpChar( '[' );
         if( operand->i.index_flags & X_BASE ) {
             reg = operand->i.index->r.reg;
-#if _TARGET & ( _TARG_8086 | _TARG_80386 )
+#if _TARGET_INTEL
             if( HW_COvlap( reg, HW_SEGS ) ) {
 
                 hw_reg_set tmp;
@@ -409,7 +409,7 @@ void    DumpInsNoNL( instruction *ins )
     } else {
         DumpId( ins->id );
         DumpLiteral( ":  " );
-#if _TARGET & ( _TARG_80386 | _TARG_8086 )
+#if _TARGET_INTEL
         if( DumpFPUIns87( ins ) )
             return;
 #endif
@@ -435,7 +435,7 @@ void DumpInstrsOnly( block *blk )
 {
     instruction *ins;
 
-    for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+    for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
         DumpIns( ins );
     }
 }
@@ -648,7 +648,7 @@ void    DumpInsList( block *blk )
 {
     instruction *ins;
 
-    for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+    for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
         DumpInOut( ins );
         DumpInsNoNL( ins );
         DumpChar( ' ' );

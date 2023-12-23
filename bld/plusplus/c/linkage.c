@@ -167,7 +167,7 @@ LINKAGE LinkageMergePop( void )
     LINKAGE top_linkage;
 
     /* extern "C" extern "C++" ==> extern "C++" */
-#ifndef NDEBUG
+#ifdef DEVBUILD
     // both linkages must be non-block linkage scopes
     if(!(( nestedLinkages != NULL && nestedLinkages->block == 0 ) &&
          ( nestedLinkages->prev != NULL && nestedLinkages->prev->block == 0 ))) {
@@ -218,7 +218,7 @@ static void linkageFini( INITFINI* defn )
 
 INITDEFN( linkage, linkageInit, linkageFini )
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 static void verifyFileScopeSym( SYMBOL sym )
 {
     if( ! ScopeType( SymScope( sym ), SCOPE_FILE ) ) {

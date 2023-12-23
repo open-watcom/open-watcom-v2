@@ -67,9 +67,9 @@ test : .symbolic start test.lnk $(positive_exes) test_set_result
 check_result : .procedure
     -diff -b error.out error.chk
 
-test_set_result : .symbolic ./chk_exec.exe
+test_set_result : .symbolic
     -$(noecho)%write error.out OK
-    -$]@ exec.out >>error.out
+    -chk_exec exec.out >>error.out
 
 clean : .procedure
     @%make echo_clean

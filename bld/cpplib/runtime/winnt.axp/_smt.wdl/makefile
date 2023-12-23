@@ -9,4 +9,4 @@ mthreaded    = 1
 pd_registration = yes
 export_only  = 1
 
-!include $(cpplib_dir)/runtime/runtime.mif
+!include ../../runtime.mif

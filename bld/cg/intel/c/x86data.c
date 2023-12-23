@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,6 +36,7 @@
 #include "system.h"
 #include "jumps.h"
 #include "zoiks.h"
+#include "cgauxcc.h"
 #include "cgauxinf.h"
 #include "x86objd.h"
 #include "data.h"
@@ -55,8 +56,8 @@
 static void DoLblPtr( label_handle lbl, segment_id segid, fix_class class, offset plus );
 
 
-void    DataAlign( unsigned_32 align )
-/************************************/
+void    DataAlign( uint_32 align )
+/********************************/
 {
     offset      curr_loc;
     uint        modulus;
@@ -75,7 +76,7 @@ void    DataAlign( unsigned_32 align )
 void    DataBytes( unsigned len, const void *src )
 /************************************************/
 {
-    if( len != 0 ){
+    if( len != 0 ) {
         TellOptimizerByPassed();
         SetUpObj( true );
         OutDBytes( len, src );
@@ -84,8 +85,8 @@ void    DataBytes( unsigned len, const void *src )
 }
 
 
-void    DataShort( unsigned_16 val )
-/**********************************/
+void    DataShort( uint_16 val )
+/******************************/
 {
     TellOptimizerByPassed();
     SetUpObj( true );
@@ -93,8 +94,8 @@ void    DataShort( unsigned_16 val )
     TellByPassOver();
 }
 
-void    DataLong( unsigned_32 val )
-/*********************************/
+void    DataLong( uint_32 val )
+/*****************************/
 {
     TellOptimizerByPassed();
     SetUpObj( true );
@@ -114,8 +115,9 @@ void    IterBytes( offset len, byte pat )
 
 
 void    DoBigBckPtr( back_handle bck, offset off )
-/*****************************************************/
-/* Careful! Make sure a DGLabel has been done first! */
+/*************************************************
+ * Careful! Make sure a DGLabel has been done first!
+ */
 {
     TellOptimizerByPassed();
     DoLblPtr( bck->lbl, bck->segid, F_PTR, off );
@@ -207,8 +209,9 @@ void    FEPtr( cg_sym_handle sym, type_def *tipe, offset plus )
 
     TellOptimizerByPassed();
     attr = FEAttr( sym );
-    if( ( attr & FE_PROC ) && _IsTargetModel( WINDOWS )
-      && (*(call_class *)FindAuxInfoSym( sym, CALL_CLASS ) & FAR_CALL) ) {
+    if( (attr & FE_PROC)
+      && _IsTargetModel( CGSW_X86_WINDOWS )
+      && ((call_class_target)(pointer_uint)FindAuxInfoSym( sym, FEINF_CALL_CLASS_TARGET ) & FECALL_X86_FAR_CALL) ) {
         class = F_LDR_OFFSET;
     } else {
         class = F_OFFSET;
@@ -216,7 +219,8 @@ void    FEPtr( cg_sym_handle sym, type_def *tipe, offset plus )
     if( tipe->length != WORD_SIZE ) {
         class = F_PTR;
     }
-    if( (attr & (FE_PROC | FE_DLLIMPORT)) == (FE_PROC | FE_DLLIMPORT) && (tipe->attr & TYPE_CODE) ) {
+    if( (attr & (FE_PROC | FE_DLLIMPORT)) == (FE_PROC | FE_DLLIMPORT)
+      && (tipe->attr & TYPE_CODE) ) {
         class |= F_ALT_DLLIMP;
     }
     if( UseImportForm( attr ) ) {
@@ -234,7 +238,7 @@ void    FEPtrBaseOffset( cg_sym_handle sym,  offset plus )
 
     TellOptimizerByPassed();
     attr = FEAttr( sym );
-    if( UseImportForm( attr ) ) { /* 90-05-22 */
+    if( UseImportForm( attr ) ) {
         DoImpPtr( sym, F_PTR, plus );
     } else {
         DoLblPtr( FEBack( sym )->lbl, FESegID( sym ), F_PTR, plus );
@@ -286,16 +290,12 @@ void    BackPtrBase( back_handle bck, segment_id segid )
     TellByPassOver();
 }
 
-bool    FPCInCode( void )
-/***********************/
-{
-    return( _IsTargetModel( CONST_IN_CODE ) || ( _IsTargetModel( FLOATING_DS ) && _IsTargetModel( FLOATING_SS ) ) );
-}
-
 static  cg_class ConstDataClass( void )
 /*************************************/
 {
-    if( FPCInCode() ) {
+    if( _IsTargetModel( CGSW_X86_CONST_IN_CODE ) ) {
+        return( CG_CLB );
+    } else if( _IsTargetModel( CGSW_X86_FLOATING_DS ) && _IsTargetModel( CGSW_X86_FLOATING_SS ) ) {
         return( CG_CLB );
     } else {
         return( CG_LBL );

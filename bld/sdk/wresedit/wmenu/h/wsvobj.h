@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,7 +47,7 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern bool WSaveObject( WMenuEditInfo *, bool, bool );
-extern bool WSaveSymbols( WMenuEditInfo *einfo, WRHashTable *table, char **file_name, bool prompt );
+extern bool WSaveObject( WMenuEditInfo *, bool prompt_name, bool save_into );
+extern bool WSaveSymbols( HWND win, WRHashTable *table, char **file_name, bool prompt_name );
 
 #endif

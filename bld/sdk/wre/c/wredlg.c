@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,6 +48,7 @@
 #include "wrelist.h"
 #include "wredde.h"
 #include "wre.rh"
+#include "wreddeop.h"
 #include "wredlg.h"
 #include "wresdefn.h"
 
@@ -228,7 +229,7 @@ bool WREDumpPendingDialogSession( void )
 {
     bool                ret;
 
-    ret = TRUE;
+    ret = true;
 
     if( PendingSession != NULL ) {
         DumpEmptyResource( PendingSession );
@@ -246,12 +247,12 @@ bool WREEndEditDialogResource( HCONV conv )
     WREDialogSession    *session;
     bool                ret;
 
-    ret = FALSE;
+    ret = false;
 
     session = WREFindDialogSession( conv );
 
-    if( session ) {
-        ret = TRUE;
+    if( session != NULL ) {
+        ret = true;
         DumpEmptyResource( session );
         WRERemoveDialogEditSession( session );
     }
@@ -279,17 +280,17 @@ bool WRECommitDialogSession( HCONV server, HCONV client )
     return( ok );
 }
 
-bool WREGetDlgSessionFileName( HCONV server, void **data, size_t *size )
+bool WREGetDlgSessionFileName( HCONV server, char **data, size_t *size )
 {
     WREDialogSession *session;
 
     if( data == NULL || size == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     session = WREFindDialogSession( server );
     if( session == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     *data = WREStrDup( session->info.file_name );
@@ -297,157 +298,148 @@ bool WREGetDlgSessionFileName( HCONV server, void **data, size_t *size )
         *size = strlen( *data ) + 1;
     }
 
-    return( TRUE );
+    return( true );
 }
 
-bool WREGetDlgSessionResName( HCONV server, void **data, size_t *size )
+bool WREGetDlgSessionResName( HCONV server, char **data, size_t *size )
 {
     WREDialogSession *session;
 
     if( data == NULL || size == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     session = WREFindDialogSession( server );
     if( session == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
-    if( !WRWResID2Mem( session->info.res_name, data, size, session->info.is32bit ) ) {
-        return( FALSE );
+    if( !WRDataFromWResID( session->info.res_name, data, size, session->info.is32bit ) ) {
+        return( false );
     }
 
-    return( TRUE );
+    return( true );
 }
 
-bool WREGetDlgSessionIs32Bit( HCONV server, void **data, size_t *size )
+bool WREGetDlgSessionIs32Bit( HCONV server, char **pdata, size_t *dsize )
 {
     WREDialogSession *session;
 
-    if( data == NULL || size == NULL ) {
-        return( FALSE );
+    if( pdata == NULL || dsize == NULL ) {
+        return( false );
     }
 
     session = WREFindDialogSession( server );
     if( session == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     if( !session->info.is32bit ) {
-        return( FALSE );
+        return( false );
     }
 
-    *size = sizeof( bool );
-    *data = WRMemAlloc( *size );
-    if( *data == NULL ) {
-        return( FALSE );
+    *dsize = sizeof( bool );
+    *pdata = WRMemAlloc( *dsize );
+    if( *pdata == NULL ) {
+        return( false );
     }
-    memcpy( *data, &session->info.is32bit, *size );
+    memcpy( *pdata, &session->info.is32bit, *dsize );
 
-    return( TRUE );
+    return( true );
 }
 
-bool WREGetDlgSessionData( HCONV server, void **data, size_t *size )
+bool WREGetDlgSessionData( HCONV server, char **pdata, size_t *dsize )
 {
-    size_t  tsize;
+    size_t  size;
 
     WREDialogSession *session;
 
-    if( data == NULL || size == NULL ) {
-        return( FALSE );
+    if( pdata == NULL || dsize == NULL ) {
+        return( false );
     }
 
     session = WREFindDialogSession( server );
     if( session == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     if( session->info.data == NULL  ) {
-        *data = NULL;
-        *size = 0;
-        return( TRUE );
+        *pdata = NULL;
+        *dsize = 0;
+        return( true );
     }
 
-    tsize = session->info.data_size;
-    *size = tsize;
-    *data = WRMemAlloc( tsize );
-    if( *data == NULL ) {
-        return( FALSE );
+    size = session->info.data_size;
+    *dsize = size;
+    *pdata = WRMemAlloc( size );
+    if( *pdata == NULL ) {
+        return( false );
     }
-    memcpy( *data, session->info.data, tsize );
+    memcpy( *pdata, session->info.data, size );
 
-    return( TRUE );
+    return( true );
 }
 
-bool WRESetDlgSessionResName( HCONV server, HDDEDATA hdata )
+bool WRESetDlgSessionResName( HCONV server, HDDEDATA hData )
 {
     WREDialogSession    *session;
     WResID              *name;
-    void                *data;
-    uint_32             size;
+    char                *data;
+    size_t              size;
     bool                ok;
 
-    ok = (server != (HCONV)NULL && hdata != NULL);
+    ok = (server != (HCONV)NULL && hData != NULL);
 
     if( ok ) {
         session = WREFindDialogSession( server );
-        ok = (session != NULL);
-    }
-
-    if( ok ) {
-        ok = WREHData2Mem( hdata, &data, &size );
-    }
-
-    if( ok ) {
-        name = WRMem2WResID( data, session->info.is32bit );
-        ok = (name != NULL);
-    }
-
-    if( ok ) {
-        ok = WRERenameWResResNode( session->tnode, &session->rnode, name );
-    }
-
-    if( ok ) {
-        session->rinfo->modified = true;
-        WRESetResNamesFromType( session->rinfo, RESOURCE2INT( RT_DIALOG ), true, name, 0 );
-    }
-
-    if( data != NULL ) {
-        WRMemFree( data );
-    }
-
-    if( name != NULL ) {
-        WRMemFree( name );
+        if( session == NULL ) {
+            ok = false;
+        } else {
+            ok = WRAllocDataFromDDE( hData, &data, &size );
+            if( ok ) {
+                name = WRWResIDFromData( data, session->info.is32bit );
+                if( name == NULL ) {
+                    ok = false;
+                } else {
+                    ok = WRERenameWResResNode( session->tnode, &session->rnode, name );
+                    if( ok ) {
+                        session->rinfo->modified = true;
+                        WRESetResNamesFromType( session->rinfo, RESOURCE2INT( RT_DIALOG ), true, name, 0 );
+                    }
+                    WRMemFree( name );
+                }
+                WRMemFree( data );
+            }
+        }
     }
 
     return( ok );
 }
 
-bool WRESetDlgSessionResData( HCONV server, HDDEDATA hdata )
+bool WRESetDlgSessionResData( HCONV server, HDDEDATA hData )
 {
     WREDialogSession    *session;
-    void                *data;
-    uint_32             size;
+    char                *data;
+    size_t              size;
     bool                ok;
 
-    ok = (server != (HCONV)NULL && hdata != NULL);
+    ok = (server != (HCONV)NULL && hData != NULL);
 
     if( ok ) {
         session = WREFindDialogSession( server );
-        ok = (session != NULL);
-    }
-
-    if( ok ) {
-        ok = WREHData2Mem( hdata, &data, &size );
-    }
-
-    if( ok ) {
-        if( session->lnode->data != NULL ) {
-            WRMemFree( session->lnode->data );
+        if( session == NULL ) {
+            ok = false;
+        } else {
+            ok = WRAllocDataFromDDE( hData, &data, &size );
+            if( ok ) {
+                if( session->lnode->data != NULL ) {
+                    WRMemFree( session->lnode->data );
+                }
+                session->lnode->data = data;
+                session->lnode->Info.Length = size;
+                session->rinfo->modified = true;
+            }
         }
-        session->lnode->data = data;
-        session->lnode->Info.Length = size;
-        session->rinfo->modified = true;
     }
 
     return( ok );
@@ -486,7 +478,7 @@ WREDialogSession *WREStartDialogSession( WRECurrentResInfo *curr )
 
     PendingSession = session;
 
-    if( WinExec( "wde.exe -dde", SW_SHOW ) < 32 ) {
+    if( WinExec( "wde.exe " DDE_OPT_STR, SW_SHOW ) < 32 ) {
         WREDisplayErrorMsg( WRE_DLGEDITNOTSPAWNED );
         WREFreeEditSession( session );
         PendingSession = NULL;
@@ -505,21 +497,26 @@ bool WREEditDialogResource( WRECurrentResInfo *curr )
 
     if( ok ) {
         session = WREFindLangDialogSession( curr->lang );
-        if( session != NULL ) {
+        if( session == NULL ) {
+            if( curr->lang->data == NULL && curr->lang->Info.Length != 0 ) {
+                curr->lang->data = WREGetCopyResData( curr );
+                if( curr->lang->data == NULL ) {
+                    ok = false;
+                } else {
+                    if( WREStartDialogSession( curr ) == NULL ) {
+                        ok = false;
+                    }
+//                    WRMemFree( curr->lang->data );
+//                    curr->lang->data = NULL;
+                }
+            } else {
+                if( WREStartDialogSession( curr ) == NULL ) {
+                    ok = false;
+                }
+            }
+        } else {
             WREBringSessionToFront( session );
-            return( TRUE );
         }
-    }
-
-    if( ok ) {
-        if( curr->lang->data == NULL && curr->lang->Info.Length != 0 ) {
-            curr->lang->data = WREGetCurrentResData( curr );
-            ok = (curr->lang->data != NULL);
-        }
-    }
-
-    if( ok ) {
-        ok = (WREStartDialogSession( curr ) != NULL);
     }
 
     return( ok );
@@ -531,7 +528,7 @@ bool WREEndAllDialogSessions( bool fatal_exit )
     LIST                *slist;
     bool                ok;
 
-    _wre_touch( fatal_exit );
+    /* unused parameters */ (void)fatal_exit;
 
     ok = true;
 
@@ -654,7 +651,7 @@ void WREFreeEditSession( WREDialogSession *session )
 void WREDisconnectSession( WREDialogSession *session )
 {
     if( session != NULL ) {
-        WREPokeDialogCmd( session, "endsession", TRUE );
+        WREPokeDialogCmd( session, "endsession", true );
         DumpEmptyResource( session );
         if( session->server != (HCONV)NULL ) {
             DdeDisconnect( session->server );
@@ -669,7 +666,7 @@ void WREDisconnectSession( WREDialogSession *session )
 
 void WREBringSessionToFront( WREDialogSession *session )
 {
-    WREPokeDialogCmd( session, "bringtofront", FALSE );
+    WREPokeDialogCmd( session, "bringtofront", false );
 }
 
 void WREShowAllDialogSessions( bool show )
@@ -690,9 +687,9 @@ void WREShowAllDialogSessions( bool show )
 void WREShowSession( WREDialogSession *session, bool show )
 {
     if( show ) {
-        WREPokeDialogCmd( session, "show", FALSE );
+        WREPokeDialogCmd( session, "show", false );
     } else {
-        WREPokeDialogCmd( session, "hide", FALSE );
+        WREPokeDialogCmd( session, "hide", false );
     }
 }
 

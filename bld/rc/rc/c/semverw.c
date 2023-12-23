@@ -377,8 +377,10 @@ void SemWINWriteVerInfo( WResID *name, ResMemFlags flags, VerFixedInfo *info, Fu
     padding = RES_PADDING_DWORD( root.ValSize );
     root.Size = ResSizeVerBlockHeader( &root, use_unicode, res_os )
                     + root.ValSize + padding + CalcNestSize( nest );
-    /* pad the start of the resource so that padding within the resource */
-    /* is easier */
+    /*
+     * pad the start of the resource so that padding within the resource
+     * is easier
+     */
     error = ResWritePadDWord( CurrResFile.fp );
     if( error ) {
         err_code = LastWresErr();
@@ -416,8 +418,9 @@ void SemWINWriteVerInfo( WResID *name, ResMemFlags flags, VerFixedInfo *info, Fu
  * it is reason to comment out following code
  */
 #if 0
-        /* version info resources must be language neutral */
-
+        /*
+         * version info resources must be language neutral
+         */
         lang.lang = DEF_LANG;
         lang.sublang = DEF_SUBLANG;
         SemWINSetResourceLanguage( &lang, false );

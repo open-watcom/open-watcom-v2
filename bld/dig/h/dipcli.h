@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,8 +33,10 @@
 #ifndef DIPCLI_H_INCLUDED
 #define DIPCLI_H_INCLUDED
 
-#include "diptypes.h"
 #include "digcli.h"
+#include "diptypes.h"
+
+#define DIPSIGN         "DIP"
 
 #define DIPCli(n)       DIPCli ## n
 #define _DIPCli(n)      _DIPCli ## n n

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,6 +48,8 @@ enum {
 #define PCH_DEFAULT_FILE_NAME   "wpp.pch"
 #elif _CPU == _AXP
 #define PCH_DEFAULT_FILE_NAME   "wppaxp.pch"
+#elif _CPU == _MIPS
+#define PCH_DEFAULT_FILE_NAME   "wppmps.pch"
 #elif _CPU == _PPC
 #define PCH_DEFAULT_FILE_NAME   "wppppc.pch"
 #else
@@ -55,7 +57,7 @@ enum {
 #endif
 
 #define PHH_MAJOR               0x03
-#define PHH_MINOR               0x32
+#define PHH_MINOR               0x34
 
 #define TEXT_HEADER_SIZE        40
 #ifdef __UNIX__
@@ -67,7 +69,7 @@ enum {
 // use a different signature for the debugging version of the compiler
 // since extra info may be written into the pre-compiled header file
 #define SIGNATURE_SIZE          4
-#ifndef NDEBUG
+#ifdef DEVBUILD
 #define PHH_SIGNATURE_0         'D'
 #else
 #define PHH_SIGNATURE_0         'W'
@@ -82,6 +84,8 @@ enum {
 #define PHH_ARCHITECTURE_PPC    0x04
 #define PHH_ARCHITECTURE_X64    0x05
 #define PHH_ARCHITECTURE_ARM    0x06
+#define PHH_ARCHITECTURE_ARM64  0x07
+#define PHH_ARCHITECTURE_MIPS   0x08
 
 #if _CPU == 386
 #define PHH_TARG_ARCHITECTURE   PHH_ARCHITECTURE_386
@@ -89,6 +93,10 @@ enum {
 #define PHH_TARG_ARCHITECTURE   PHH_ARCHITECTURE_286
 #elif _CPU == _AXP
 #define PHH_TARG_ARCHITECTURE   PHH_ARCHITECTURE_AXP
+#elif _CPU == _MIPS
+#define PHH_TARG_ARCHITECTURE   PHH_ARCHITECTURE_MIPS
+#elif _CPU == _PPC
+#define PHH_TARG_ARCHITECTURE   PHH_ARCHITECTURE_PPC
 #else
 #error missing _CPU check
 #endif
@@ -112,6 +120,12 @@ enum {
 #define PHH_HOST_ARCHITECTURE   PHH_ARCHITECTURE_AXP
 #elif defined( _M_ARM )
 #define PHH_HOST_ARCHITECTURE   PHH_ARCHITECTURE_ARM
+#elif defined( _M_ARM64 )
+#define PHH_HOST_ARCHITECTURE   PHH_ARCHITECTURE_ARM64
+#elif defined( __MIPS__ )
+#define PHH_HOST_ARCHITECTURE   PHH_ARCHITECTURE_MIPS
+#elif defined( __PPC__ )
+#define PHH_HOST_ARCHITECTURE   PHH_ARCHITECTURE_PPC
 #else
 #error missing host architecture check
 #endif
@@ -195,6 +209,9 @@ typedef enum {
 #define PCHReadVar(m)           PCHRead( &(m), sizeof( m ) )
 #define PCHWriteVar(m)          PCHWrite( &(m), sizeof( m ) )
 
+#define PCHReadArray(m)         PCHRead( m, sizeof( m ) )
+#define PCHWriteArray(m)        PCHWrite( m, sizeof( m ) )
+
 #define PCHGetUInt(p)           ((unsigned)(pointer_uint)(p))
 #define PCHSetUInt(v)           ((void *)(pointer_uint)(unsigned)(v))
 
@@ -206,7 +223,8 @@ typedef enum {
 // PROTOTYPES
 
 extern void         PCHActivate( void );
-extern void         PCHSetFileName( char * );
+extern char         **PCHFileNamePtr( void );
+extern char         *PCHFileNameGet( void );
 extern void         PCHeaderCreate( char * );
 extern pch_absorb   PCHeaderAbsorb( char * );
 extern void         PCHWrite( void const *, unsigned );
@@ -222,14 +240,13 @@ extern void         PCHPerformReloc( pch_reloc_index );
 extern void         PCHWarn2p( unsigned, void * );
 extern NAME         PCHDebugInfoName( void );
 extern void         PCHFlushBuffer( void );
-extern char         *PCHFileName( void );
 
 extern void         *PCHReadCVIndexElement( cvinit_t * );
 
 #ifdef OPT_BR
 extern long         PCHSeek( long offset, int type );
 #endif
-#ifndef NDEBUG
+#ifdef DEVBUILD
 extern void         PCHVerifyFile( void *handle );
 #else
 #define  PCHVerifyHandle( handle ) handle = handle

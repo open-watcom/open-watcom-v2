@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,18 +39,37 @@
 #define INCL_DOSSIGNALS
 #include <os2.h>
 #include <os2dbg.h>
-#include <string.h>
-#include "dosdebug.h"
-#include "bsexcpt.h"
-#include "trpimp.h"
-#include "os2trap.h"
 #include "os2v2acc.h"
-#include "cpuglob.h"
+#include "bsexcpt.h"
+#include "brkptcpu.h"
+
 
 #define LOAD_THIS_DLL_SIZE      6
 
-extern dos_debug        Buff;
+extern PVOID my_alloca( unsigned short );
+#pragma aux my_alloca = \
+        "sub  sp,ax"    \
+        "mov  ax,sp"    \
+        "mov  dx,ss"    \
+    __parm __caller [__ax] \
+    __value         [__ax __dx] \
+    __modify        [__sp]
 
+typedef struct {
+    USHORT      phmod[2];               /* offset-segment */
+    USHORT      mod_name[2];            /* offset-segment */
+    USHORT      fail_len;
+    PSZ         fail_name;              /* offset-segment */
+    USHORT      hmod;
+    CHAR        load_name[2];
+} loadstack_t;
+
+typedef void (*excfn)();
+
+extern void         DoReadWord( void );
+extern void         DoWriteWord( void );
+
+static char         stack[1024];
 
 bool CausePgmToLoadThisDLL( ULONG startLinear )
 {
@@ -59,7 +78,7 @@ bool CausePgmToLoadThisDLL( ULONG startLinear )
     USHORT      codesize;
     USHORT      len;
     loadstack_t __far *loadstack;
-    void        __far *ptr;
+    PVOID       ptr;
     USHORT      dll_name_len;
     USHORT      size;
     char        this_dll[BUFF_SIZE];
@@ -72,17 +91,19 @@ bool CausePgmToLoadThisDLL( ULONG startLinear )
         return( FALSE );
     }
     codesize = (char *)EndLoadThisDLL - (char *)LoadThisDLL;
-    if( codesize > LOAD_THIS_DLL_SIZE ) return( FALSE );
+    if( codesize > LOAD_THIS_DLL_SIZE )
+        return( FALSE );
     ReadLinear( savecode, startLinear, codesize );
-    if( Buff.Cmd != DBG_N_Success ) return( FALSE );
-    WriteLinear( (byte __far *)LoadThisDLL, startLinear, codesize );
+    if( Buff.Cmd != DBG_N_Success )
+        return( FALSE );
+    WriteLinear( (PBYTE)LoadThisDLL, startLinear, codesize );
 
     /*
      * set up the stack for the routine LoadThisDLL
      */
     dll_name_len = ( strlen( this_dll ) + 1 ) & ~1;
     size = sizeof( loadstack_t ) + dll_name_len;
-    loadstack = Automagic( size );
+    loadstack = my_alloca( size );
     Buff.ESP -= size;
     strcpy( loadstack->load_name, this_dll );
     loadstack->fail_name = NULL;
@@ -93,8 +114,9 @@ bool CausePgmToLoadThisDLL( ULONG startLinear )
     ptr = MakeItSegmentedNumberOne( Buff.SS, Buff.ESP + offsetof( loadstack_t, hmod ) );
     loadstack->phmod[0] = _FP_OFF( ptr );
     loadstack->phmod[1] = _FP_SEG( ptr );
-    len = WriteBuffer( (byte __far *)loadstack, Buff.SS, Buff.ESP, size );
-    if( len != size ) return( FALSE );
+    len = WriteBuffer( (PBYTE)loadstack, Buff.SS, Buff.ESP, size );
+    if( len != size )
+        return( FALSE );
 
     /*
      * set up 16:16 CS:IP, SS:SP for execution
@@ -120,13 +142,13 @@ bool CausePgmToLoadThisDLL( ULONG startLinear )
     return( rc );
 }
 
-void DoOpen( char __far *name, int mode, int flags )
+void DoOpen( PCHAR name, int mode, int flags )
 {
     BreakPointParm( OpenFile( name, mode, flags ) );
 }
 
 
-static void doClose( HFILE hdl )
+void DoClose( HFILE hdl )
 {
     BreakPointParm( DosClose( hdl ) );
 }
@@ -145,11 +167,7 @@ void DoDupFile( HFILE old, HFILE new )
     }
 }
 
-
-static char stack[1024];
-
-
-long TaskExecute( excfn rtn )
+static long TaskExecute( excfn rtn )
 {
     long        retval;
 
@@ -166,7 +184,7 @@ long TaskExecute( excfn rtn )
             return( -1 );
         }
         DebugExecute( &Buff, DBG_C_Go, FALSE );
-        retval = ( Buff.EDX << 16 ) + (USHORT) Buff.EAX;
+        retval = ( Buff.EDX << 16 ) + (USHORT)Buff.EAX;
         return( retval );
     } else {
         return( -1 );
@@ -182,13 +200,13 @@ static void saveRegs( dos_debug __far *save )
 }
 
 
-long TaskOpenFile( char __far *name, int mode, int flags )
+long TaskOpenFile( PCHAR name, int mode, int flags )
 {
     dos_debug   save;
     long        rc;
 
     saveRegs( &save );
-    WriteBuffer( (byte __far *)name, _FP_SEG( UtilBuff ), _FP_OFF( UtilBuff ), strlen( name ) + 1 );
+    WriteBuffer( (PBYTE)name, _FP_SEG( UtilBuff ), _FP_OFF( UtilBuff ), strlen( name ) + 1 );
     Buff.EDX = _FP_SEG( UtilBuff );
     Buff.EAX = _FP_OFF( UtilBuff );
     Buff.EBX = mode;
@@ -206,7 +224,7 @@ long TaskCloseFile( HFILE hdl )
 
     saveRegs( &save );
     Buff.EAX = hdl;
-    rc = TaskExecute( (excfn)doClose );
+    rc = TaskExecute( (excfn)DoClose );
     WriteRegs( &save );
     return( rc );
 }
@@ -224,10 +242,6 @@ HFILE TaskDupFile( HFILE old, HFILE new )
     return( rc );
 }
 
-extern void DoReadWord( void );
-extern void DoWriteWord( void );
-
-
 bool TaskReadWord( USHORT seg, ULONG off, USHORT __far *data )
 {
     dos_debug   save;
@@ -243,7 +257,7 @@ bool TaskReadWord( USHORT seg, ULONG off, USHORT __far *data )
         rc = FALSE;
     } else {
         rc = TRUE;
-        *data = (USHORT) Buff.EAX;
+        *data = (USHORT)Buff.EAX;
     }
     WriteRegs( &save );
     return( rc );
@@ -272,7 +286,7 @@ bool TaskWriteWord( USHORT seg, ULONG off, USHORT data )
 
 }
 
-void TaskPrint( byte __far *ptr, unsigned len )
+void TaskPrint( PBYTE ptr, unsigned len )
 {
     dos_debug   save;
 

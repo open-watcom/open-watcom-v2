@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -71,14 +71,14 @@
 #include "wrdll.h"
 #include "wrdmsg.h"
 #include "jdlg.h"
+#include "wreddeop.h"
 
 #include "wwinhelp.h"
 #include "aboutdlg.h"
 #include "ldstr.h"
 #include "wclbproc.h"
-#include "clibint.h"
 
-#include "clibext.h"
+#include "clibint.h"
 
 
 /****************************************************************************/
@@ -86,8 +86,7 @@
 /****************************************************************************/
 #define ABOUT_TIMER     666
 #define ABOUT_TIMEOUT   2000
-#define DDE_OPT         "-DDE"
-#define CREATE_NEW_FLAG "/n"
+#define CREATE_NEW_FLAG "n"
 
 /****************************************************************************/
 /* external function prototypes                                             */
@@ -158,12 +157,11 @@ int PASCAL WinMain( HINSTANCE hinstCurrent, HINSTANCE hinstPrevious,
 #endif
 #endif
 
-    /* touch unused vars to get rid of warning */
-    _wde_touch( lpszCmdLine );
-    _wde_touch( nCmdShow );
+    /* unused parameters */ (void)lpszCmdLine; (void)nCmdShow;
 #ifdef __NT__
-    _wde_touch( hinstPrevious );
+    /* unused parameters */ (void)hinstPrevious;
 #endif
+
 #if defined( __NT__ ) && !defined( __WATCOMC__ )
     _argc = __argc;
     _argv = __argv;
@@ -244,9 +242,9 @@ int PASCAL WinMain( HINSTANCE hinstCurrent, HINSTANCE hinstPrevious,
             WdeDisplayErrorMsg( WDE_EXCEPTIONDURINGABNORMALEXIT );
             exit( -1 );
         }
-        WdePushEnv( &WdeEnv );
+        WdePushEnv( WdeEnv );
     } else {
-        WdePushEnv( &WdeEnv );
+        WdePushEnv( WdeEnv );
         WdeProcessArgs( _argv, _argc );
     }
 
@@ -269,7 +267,7 @@ int PASCAL WinMain( HINSTANCE hinstCurrent, HINSTANCE hinstPrevious,
         WdeDDEEndConversation();
     }
 
-    WdePopEnv( &WdeEnv );
+    WdePopEnv( WdeEnv );
 
     if( IsDDE ) {
         WdeDDEEnd();
@@ -443,7 +441,7 @@ bool WdeInitInst( HINSTANCE app_inst )
     WdeSetFontList( hWinWdeMain );
 
     if( !IsDDE ) {
-        WdeDisplaySplashScreen( hInstWde, hWinWdeMain, 1125 );
+        WdeDisplaySplashScreen( hInstWde, hWinWdeMain, 2000 );
     }
 
     if( IsDDE ) {
@@ -766,12 +764,12 @@ LRESULT CALLBACK WdeMainWndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM 
             break;
 
         case IDM_SAVE_RES:
-            WdeSaveResource( res_info, FALSE );
+            WdeSaveResource( res_info, false );
             pass_to_def = false;
             break;
 
         case IDM_SAVEAS_RES:
-            WdeSaveResource( res_info, TRUE );
+            WdeSaveResource( res_info, true );
             pass_to_def = false;
             break;
 
@@ -965,10 +963,7 @@ LRESULT CALLBACK WdeMainWndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM 
             ai.name = AllocRCString( WDE_ABOUT_NAME );
             ai.version = AllocRCString( WDE_ABOUT_VERSION );
             ai.title = AllocRCString( WDE_ABOUT_TITLE );
-            DoAbout( &ai );
-            FreeRCString( ai.name );
-            FreeRCString( ai.version );
-            FreeRCString( ai.title );
+            DoAbout( &ai, FreeRCString );
             pass_to_def = false;
             break;
         }
@@ -1275,12 +1270,12 @@ bool WdeIsDDEArgs( char **argv, int argc )
     int         i;
 
     for( i = 1; i < argc; i++ ) {
-        if( stricmp( argv[i], DDE_OPT ) == 0 ) {
-            return( TRUE );
+        if( stricmp( argv[i], DDE_OPT_STR ) == 0 ) {
+            return( true );
         }
     }
 
-    return( FALSE );
+    return( false );
 }
 
 bool WdeProcessArgs( char **argv, int argc )
@@ -1291,9 +1286,11 @@ bool WdeProcessArgs( char **argv, int argc )
     ok = true;
 
     for( i = 1; i < argc; i++ ) {
-        if( stricmp( argv[i], CREATE_NEW_FLAG ) == 0 ) {
-            WdeCreateNewFiles = TRUE;
-        } else if( stricmp( argv[i], DDE_OPT ) ) {
+        if( stricmp( argv[i], DDE_OPT_STR ) ) {
+            /* skip */
+        } else if( ( argv[i][0] == '/' || argv[i][0] == '-' ) && stricmp( argv[i] + 1, CREATE_NEW_FLAG ) == 0 ) {
+            WdeCreateNewFiles = true;
+        } else {
             if( WRFileExists( argv[i] ) ) {
                 ok = ( WdeOpenResource( argv[i] ) && ok );
             } else if( WdeCreateNewFiles ) {

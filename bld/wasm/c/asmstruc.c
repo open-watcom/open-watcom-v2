@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,12 +44,10 @@ struct asm_sym *FindStructureMember( asm_sym *symbol, const char *name )
 {
     field_list      *field;
     struct asm_sym  *sym;
-    size_t          len;
 
-    len = strlen( name ) + 1;
     for( field = ((dir_node *)symbol)->e.structinfo->head; field != NULL; field = field->next ) {
         if( (sym = field->sym) != NULL ) {
-            if( memcmp( name, sym->name, len ) == 0 ) {
+            if( strcmp( name, sym->name ) == 0 ) {
                 return( sym );
             }
         }
@@ -57,8 +55,8 @@ struct asm_sym *FindStructureMember( asm_sym *symbol, const char *name )
     return( NULL );
 }
 
-bool StructDef( token_idx i )
-/***************************/
+bool StructDef( token_buffer *tokbuf, token_idx i )
+/*************************************************/
 {
     char        *name;
     dir_node    *dir;
@@ -66,8 +64,8 @@ bool StructDef( token_idx i )
 
     if( Options.mode & MODE_IDEAL ) {
         n = i + 1;
-        if( ( AsmBuffer[i].u.token == T_STRUC ) &&
-            ( AsmBuffer[n].class != TC_ID ) ) {
+        if( ( tokbuf->tokens[i].u.token == T_STRUC ) &&
+            ( tokbuf->tokens[n].class != TC_ID ) ) {
             AsmError( SYNTAX_ERROR );
             return( RC_ERROR );
         }
@@ -77,13 +75,13 @@ bool StructDef( token_idx i )
         } else {
             n = INVALID_IDX;
         }
-        if( ( n == INVALID_IDX ) || ( AsmBuffer[n].class != TC_ID ) ) {
+        if( ISINVALID_IDX( n ) || ( tokbuf->tokens[n].class != TC_ID ) ) {
             AsmError( SYNTAX_ERROR );
             return( RC_ERROR );
         }
     }
-    name = AsmBuffer[n].string_ptr;
-    switch( AsmBuffer[i].u.token ) {
+    name = tokbuf->tokens[n].string_ptr;
+    switch( tokbuf->tokens[i].u.token ) {
     case T_STRUC:
     case T_STRUCT:
         dir = (dir_node *)AsmGetSymbol( name );
@@ -108,9 +106,10 @@ bool StructDef( token_idx i )
         break;
     case T_ENDS:
         if( Options.mode & MODE_IDEAL ) {
-            switch( AsmBuffer[n].class ) {
+            switch( tokbuf->tokens[n].class ) {
             case TC_FINAL:   /* Name absent */
                 name = Definition.curr_struct->sym.name;
+                break;
             case TC_ID:
                 break;
             default:
@@ -131,13 +130,12 @@ bool StructDef( token_idx i )
     return( RC_OK );
 }
 
-bool InitializeStructure( asm_sym *sym, asm_sym *struct_symbol, token_idx i )
-/**************************************************************************/
+bool InitializeStructure( asm_sym *sym, asm_sym *struct_symbol, token_buffer *tokbuf, token_idx i )
+/**************************************************************************************************
+ * input: a line that looks like : sym_name struct_name { init. values }
+ * where i marks the struct_name
+ */
 {
-    /* input: a line that looks like : sym_name struct_name { init. values }
-     * where i marks the struct_name
-     */
-
     char            buffer[MAX_LINE_LEN];
     const char      *ptr;
     const char      *ptr1;
@@ -150,7 +148,7 @@ bool InitializeStructure( asm_sym *sym, asm_sym *struct_symbol, token_idx i )
     dir = (dir_node *)struct_symbol;
 
     PushLineQueue();
-    if( AsmBuffer[i].class != TC_STRING ) {
+    if( tokbuf->tokens[i].class != TC_STRING ) {
         AsmError( SYNTAX_ERROR ); // fixme
         return( RC_ERROR );
     }
@@ -161,7 +159,7 @@ bool InitializeStructure( asm_sym *sym, asm_sym *struct_symbol, token_idx i )
         sym->first_length = struct_symbol->first_length;
     }
 
-    ptr = AsmBuffer[i].string_ptr;
+    ptr = tokbuf->tokens[i].string_ptr;
     for( f = dir->e.structinfo->head; f != NULL; f = f->next ) {
         /* put the lines to define the fields of the structure in,
          * using the values specified ( if any ) or the default ones otherwise
@@ -200,8 +198,8 @@ bool InitializeStructure( asm_sym *sym, asm_sym *struct_symbol, token_idx i )
     return( RC_OK );
 }
 
-int AddFieldToStruct( asm_sym *sym, token_idx loc )
-/*************************************************/
+int AddFieldToStruct( asm_sym *sym, token_buffer *tokbuf, token_idx loc )
+/***********************************************************************/
 {
     int         offset;
     size_t      count;
@@ -215,9 +213,11 @@ int AddFieldToStruct( asm_sym *sym, token_idx loc )
 
     f = AsmAlloc( sizeof( field_list ) );
 
-    if( loc == INVALID_IDX ) {
-        for( loc = 0; AsmBuffer[loc].class != TC_FINAL; ++loc ) {
-            /* nothing to do */
+    if( ISINVALID_IDX( loc ) ) {
+        for( loc = 0; ISVALID_IDX( loc ); ++loc ) {
+            if( tokbuf->tokens[loc].class == TC_FINAL ) {
+                break;
+            }
         }
     }
     if( Options.mode & MODE_IDEAL ) {
@@ -226,30 +226,33 @@ int AddFieldToStruct( asm_sym *sym, token_idx loc )
         f->sym = NULL;
     }
     /* now add the initializer to the structure's list */
-    f->initializer = AsmStrDup( AsmBuffer[loc].string_ptr );
+    f->initializer = AsmStrDup( tokbuf->tokens[loc].string_ptr );
 
     /* now add the value to initialize the struct to */
     count = 0;
-    for( i = loc + 1; AsmBuffer[i].class != TC_FINAL; i++ ) {
-        if( AsmBuffer[i].string_ptr != NULL ) {
-            count += strlen( AsmBuffer[i].string_ptr ) + 1;
+    for( i = loc + 1; ISVALID_IDX( i ); i++ ) {
+        if( tokbuf->tokens[i].class == TC_FINAL )
+            break;
+        if( tokbuf->tokens[i].string_ptr != NULL ) {
+            count += strlen( tokbuf->tokens[i].string_ptr ) + 1;
         }
-        if( AsmBuffer[i].class == TC_STRING ) {
+        if( tokbuf->tokens[i].class == TC_STRING ) {
             count += 2;
         }
     }
 
     f->value = AsmAlloc( count + 1 );
     f->value[0] = '\0';
-
-    for( i = loc + 1; AsmBuffer[i].class != TC_FINAL; i++ ) {
-        if( AsmBuffer[i].class == TC_STRING ) {
+    for( i = loc + 1; ISVALID_IDX( i ); i++ ) {
+        if( tokbuf->tokens[i].class == TC_FINAL )
+            break;
+        if( tokbuf->tokens[i].class == TC_STRING ) {
             strcat( f->value, "<" );
         }
-        if( AsmBuffer[i].string_ptr != NULL ) {
-            strcat( f->value, AsmBuffer[i].string_ptr );
+        if( tokbuf->tokens[i].string_ptr != NULL ) {
+            strcat( f->value, tokbuf->tokens[i].string_ptr );
         }
-        if( AsmBuffer[i].class == TC_STRING ) {
+        if( tokbuf->tokens[i].class == TC_STRING ) {
             strcat( f->value, ">" );
         }
         strcat( f->value, " " );

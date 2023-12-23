@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -52,12 +53,7 @@ extern void             Log( char *start, ... );
 extern bool             CheckUpgrade( void );
 extern void             GetInstallName( VBUF * );
 extern bool             PromptUser( const VBUF *name, const char *dlg, const char *skip, const char *replace, bool *resp_replace );
-#if defined( __NT__ ) || defined( __WINDOWS__ )
-extern bool             GetRootFromPath( VBUF *root, const char *path );
-extern disk_size        FreeSpace( const char *path );
-extern long             ClusterSize( const char *path );
 extern void             GetWindowsDirectoryVbuf( VBUF *windir );
-#endif
 extern signed int       IncrementDLLUsageCount( const VBUF *path );
 extern signed int       DecrementDLLUsageCount( const VBUF *path );
 extern void             ReadVariablesFile( const char * name );

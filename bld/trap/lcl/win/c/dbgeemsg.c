@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -119,20 +119,20 @@ LRESULT __export FAR PASCAL DefaultProc( HWND hwnd, UINT message, WPARAM wparam,
  * SubClassProc directly from the message loop we go into for the debugee.
  *
  */
-static BOOL SubClassWindow( HWND hwnd, BOOL do_children )
+static bool SubClassWindow( HWND hwnd, bool do_children )
 {
     char        buffer[80];
     int         len;
 
     if( hwnd == NULL ) {
-        return( 0 );
+        return( false );
     }
     len = GetClassName( hwnd, buffer, sizeof( buffer ) );
     buffer[len] = '\0';
     Out((OUT_SOFT,"--- Subclass (%s), id=%04x",buffer,hwnd));
     if( GetWindowWord( hwnd, GWW_HINSTANCE ) == (WORD)GetModuleHandle( "USER" ) ) {
         Out((OUT_SOFT,"--- Subclass IGNORED (USER)" ));
-        return( 1 );
+        return( true );
     }
     if( buffer[0] != '#' ) { // don't subclass predefined windows classes
         SCWindows[SCCount].hwnd = hwnd;
@@ -142,20 +142,22 @@ static BOOL SubClassWindow( HWND hwnd, BOOL do_children )
             EnumChildWindows( hwnd, EnumChildProcInstance, 0 );
         }
     }
-    return( 1 );
+    return( true );
 
 }
 
 BOOL __export FAR PASCAL EnumTaskWindowsFunc( HWND hwnd, LPARAM lparam )
 {
-    lparam=lparam;
-    return( SubClassWindow( hwnd, TRUE ) );
+    /* unused parameters */ (void)lparam;
+
+    return( SubClassWindow( hwnd, true ) );
 }
 
 BOOL __export FAR PASCAL EnumChildWindowsFunc( HWND hwnd, LPARAM lparam )
 {
-    lparam=lparam;
-    return( SubClassWindow( hwnd, FALSE ) );
+    /* unused parameters */ (void)lparam;
+
+    return( SubClassWindow( hwnd, false ) );
 }
 
 /*
@@ -209,15 +211,15 @@ void ExitSoftMode( void )
 } /* ExitSoftMode */
 
 
-static BOOL IsTaskWnd( HWND wnd )
+static bool IsTaskWnd( HWND wnd )
 {
     if( wnd == NULL )
-        return( FALSE );
+        return( false );
     if( !IsWindow( wnd ) )
-        return( FALSE );
+        return( false );
     if( GetWindowTask( wnd ) != DebugeeTask )
-        return( FALSE );
-    return( TRUE );
+        return( false );
+    return( true );
 }
 
 /*

@@ -1,4 +1,4 @@
-builtin_trap = 1
+!ifndef test
 
 nlm_trap_objs = &
     nlmfile.obj &
@@ -11,15 +11,7 @@ nlm_trap_objs = &
     supp.obj &
     core.obj
 
-!ifndef test
-
-extra_objs += $(nlm_trap_objs)
-
 !endif
 
-extra_srcs = ;$(trap_dir)/lcl/nlm/c;$(trap_dir)/lcl/nlm/asm
-inc_dirs   = -I"$(trap_dir)/lcl/nlm/h"
-
-extra_a_flags = -3s
-
-!include $(trap_dir)/lcl/lcl.mif
+extra_incs += -I"$(trap_dir)/lcl/nlm/h"
+extra_srcs +=;$(trap_dir)/lcl/nlm/c;$(trap_dir)/lcl/nlm/asm

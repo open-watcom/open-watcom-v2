@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -219,7 +219,7 @@ static void buildDefaults( void )
     ReplaceString( &EditVars.StatusString, DEFAULT_STATUSSTRING );
 
     EditVars.NumStatusSections = NARRAY( def_sections );
-    EditVars.StatusSections = MemRealloc( EditVars.StatusSections, sizeof( def_sections ) );
+    EditVars.StatusSections = _MemReallocArray( EditVars.StatusSections, section_size, EditVars.NumStatusSections );
     memcpy( EditVars.StatusSections, def_sections, sizeof( def_sections ) );
 
     totalRedraw();

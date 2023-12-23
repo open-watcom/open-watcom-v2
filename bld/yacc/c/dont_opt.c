@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,7 +44,9 @@ static int hasReduceByPro( a_state *state, a_pro *unit_pro )
     if( IsDead( state ) ) {
         return( 0 );
     }
-    // iterate over all reductions in state
+    /*
+     * iterate over all reductions in state
+     */
     for( raction = state->redun; (pro = raction->pro) != NULL; ++raction ) {
         if( pro->unit && pro == unit_pro ) {
             return( 1 );
@@ -52,11 +55,11 @@ static int hasReduceByPro( a_state *state, a_pro *unit_pro )
     return( 0 );
 }
 
-/*
-    Don't unit rule optimize in states that reduce a unit production
-    that results in a GOTO into an ambiguous state.
-*/
 static void dontOptimizeUnitGOTOStates( a_state *ambig_state, a_pro *pro )
+/*************************************************************************
+ * Don't unit rule optimize in states that reduce a unit production
+ * that results in a GOTO into an ambiguous state.
+ */
 {
     a_sym *unit_rhs;
     a_parent *parent;
@@ -108,8 +111,8 @@ void MarkNoUnitRuleOptimizationStates( void )
 
     for( i = 0; i < nstate; ++i ) {
         state = statetab[i];
-        //if( IsDead( *state ) )
-        //    continue;
+//        if( IsDead( *state ) )
+//            continue;
         if( !IsAmbiguous( state ) )
             continue;
         entry_sym = findEntrySym( state );

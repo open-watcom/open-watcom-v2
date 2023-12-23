@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,6 +35,7 @@
 #include <time.h>
 #include <stdlib.h>
 #include <stddef.h>
+#include <errno.h>
 #include <sys/stat.h>
 #if defined( __UNIX__ ) || defined( __WATCOMC__ )
     #include <utime.h>
@@ -185,6 +186,7 @@ static int ProcSet( const char *cmd )
     rep++;
     if( *rep == '\0' ) {
 #if defined( __WATCOMC__ ) && ( __WATCOMC__ < 1300 )
+        /* fix for OW 1.9 */
         setenv( tmp_buf, NULL, 1 );
 #else
         /* Delete the environment variable! */
@@ -339,12 +341,13 @@ static int mkdir_nested( const char *path )
 /*****************************************/
 {
     struct stat sb;
-    char        pathname[ FILENAME_MAX ];
+    char        pathname[FILENAME_MAX + 1];
     char        *p;
     char        *end;
 
     p = pathname;
     strncpy( pathname, path, FILENAME_MAX );
+    pathname[FILENAME_MAX] = '\0';
     end = pathname + strlen( pathname );
 
 #ifndef __UNIX__
@@ -464,28 +467,18 @@ static int ProcOneCopy( const char *src, char *dst, bool cond_copy, char *copy_b
 
 static int ProcCopy( const char *cmd, bool test_abit, bool cond_copy, bool ignore_errors )
 {
-    char        *p;
     copy_entry  list;
     copy_entry  next;
     int         res;
     char        src[_MAX_PATH];
     char        dst[_MAX_PATH];
 
-    p = src;
-    for( ; *cmd != '\0'; cmd++ ) {
-        if( IS_BLANK( *cmd ) ) {
-            SKIP_BLANKS( cmd );
-            break;
-        }
-        *p++ = *cmd;
-    }
-    *p = '\0';
-    if( *cmd == '\0' ) {
+    cmd = GetPathOrFile( cmd, src );
+    if( *src == '\0' ) {
         Log( false, "Missing parameter\n" );
         return( 1 );
     }
-    strncpy( dst, cmd, _MAX_PATH - 1 );
-    dst[_MAX_PATH - 1] = '\0';
+    cmd = GetPathOrFile( cmd, dst );
     res = BuildList( src, dst, test_abit, cond_copy, &list );
     if( res == 0 && list != NULL ) {
         char    *copy_buff = MAlloc( COPY_BUFF_SIZE );
@@ -732,27 +725,6 @@ static int RecursiveRM( const char *dir )
     return( rc );
 }
 
-static const char *GetString( const char *cmd, char *buffer )
-{
-    char        c;
-    char        quotechar;
-
-    while( isspace( *cmd ) )
-        ++cmd;
-    if( *cmd == '\0' )
-        return( NULL );
-    quotechar = ( *cmd == '"' ) ? *cmd++ : '\0';
-    for( ; (c = *cmd) != '\0'; ++cmd ) {
-        if( c == quotechar ) {
-            ++cmd;
-            break;
-        }
-        *buffer++ = c;
-    }
-    *buffer = '\0';
-    return( cmd );
-}
-
 static int ProcRm( const char *cmd )
 {
     char    buffer[_MAX_PATH];
@@ -788,7 +760,7 @@ static int ProcRm( const char *cmd )
 
     if( rm_rflag ) {
         /* process -r option */
-        while( (cmd = GetString( cmd, buffer )) != NULL ) {
+        while( (cmd = GetPathOrFile( cmd, buffer )) != NULL ) {
             if( strcmp( buffer, MASK_ALL_ITEMS ) == 0 ) {
                 int rc = RecursiveRM( "." );
                 if( rc != 0 ) {
@@ -816,7 +788,7 @@ static int ProcRm( const char *cmd )
         }
     } else {
         /* run through all specified files */
-        while( (cmd = GetString( cmd, buffer )) != NULL ) {
+        while( (cmd = GetPathOrFile( cmd, buffer )) != NULL ) {
             int rc = DoRM( buffer );
             if( rc != 0 ) {
                 retval = rc;
@@ -835,12 +807,18 @@ int RunIt( const char *cmd, bool ignore_errors, bool *res_nolog )
 
     *res_nolog = false;
     if( BUILTIN( cmd, "CD" ) ) {
-        res = SysChdir( SKIP_CMD( cmd, "CD" ) );
+        char    path[_MAX_PATH];
+
+        cmd = GetPathOrFile( SKIP_CMD( cmd, "CD" ), path );
+        res = SysChdir( path );
         if( res == 0 ) {
             SetIncludeCWD();
         }
     } else if( BUILTIN( cmd, "CDSAY" ) ) {
-        res = SysChdir( SKIP_CMD( cmd, "CDSAY" ) );
+        char    path[_MAX_PATH];
+
+        cmd = GetPathOrFile( SKIP_CMD( cmd, "CDSAY" ), path );
+        res = SysChdir( path );
         if( res == 0 ) {
             SetIncludeCWD();
             LogDir( GetIncludeCWD() );

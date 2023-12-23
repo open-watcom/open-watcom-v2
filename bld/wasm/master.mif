@@ -8,7 +8,8 @@ wasm_nofpu = 1
 
 wasm_trmem = 1
 
-#wasm_dos_extender = causeway
+# Extra files to delete on clean
+additional_clean = *.gc
 
 !include cproj.mif
 !include defrule.mif
@@ -20,19 +21,20 @@ wasm_trmem = 1
 #
 # cflags
 #
-.c : ../c;$(trmem_dir);$(watcom_dir)/c
+.c : ../c;$(fe_misc_dir)/c;$(trmem_dir);$(watcom_dir)/c
 
 inc_dirs  = -I. -I"../h" -I"$(fe_misc_dir)/h"
 
 extra_cpp_flags =-D_STANDALONE_
 #extra_cpp_flags += -DINCL_MSGTEXT
-!ifeq release 0
+!ifeq debug 2
 extra_cpp_flags += -DDEBUG_OUT
 !endif
 
 extra_cpp_flags_asmalloc = $(trmem_cpp_flags)
 
 extra_c_flags_asmalloc = $(trmem_cover_cflags)
+extra_c_flags_cmdlnprs = $(incl_file_opts)fesupp.h
 
 #
 # lflags
@@ -41,7 +43,6 @@ extra_l_flags = lib $(wres_lib)
 extra_l_flags_qnx = option offset=16k, stack=12k
 extra_l_flags_dos_i86 = option stack=6k
 extra_l_flags_dos_386 = option stack=12k
-extra_l_flags_dos = $(extra_l_flags_dos_$(host_cpu))
 extra_l_flags_linux = option stack=12k
 
 # explicit rules
@@ -50,10 +51,12 @@ extra_l_flags_linux = option stack=12k
 #
 # EXE
 #
-exetarg_prebuild_objs = asmops.gh asmopsd.gh usage.gh wasmsmsg.grh wasmcmsg.grh
+exetarg_prebuild_objs = asmops.gh asmopsd.gh usage.gh wasmsmsg.grh wasmcmsg.grh cmdlnprs.gh
 exetarg_objs = &
     $(extra_objs_$(host_os)_$(host_cpu)) &
     main.obj &
+    cmdlnprs.obj &
+    cmdscan.obj &
     write.obj &
     fatal.obj &
     direct.obj &
@@ -118,16 +121,16 @@ wresui.res : ../h/wasm.rc usage.gh wasmcmsg.grh wasmsmsg.grh $(__MAKEFILES__)
 
 wasmsmsg.grh : ../h/wasms.msg $(__MAKEFILES__)
     @%make echo_awk
-    $(awk) -v base=MSG_WASM_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@
+    $(awk) -v base=MSG_WASM_BASE -f "$(build_dir)/makemsg.awk" -v OUTFILE=$^. $[@
 
 !ifdef exetarg_qnx_res
 optencod_opt_qnx    = -u=$(exetarg_qnx_res)
 !endif
 optencod_targets = $(host_os)
-!ifeq release 0
+!ifeq debug 2
 optencod_targets += dbg
 !endif
 
-usage.gh $(exetarg_$(host_os)_res) : ../h/options.gml $(__MAKEFILES__)
+cmdlnprs.gh cmdlnprs.gc usage.gh $(exetarg_$(host_os)_res) : ../h/options.gml $(__MAKEFILES__)
     @%make echo_optencod
-    $(optencod) -rc=MSG_USAGE_BASE -utf8 $(optencod_opt_$(host_os)) $[@ . . $@ $(optencod_targets)
+    $(optencod) -rc=MSG_USAGE_BASE -utf8 $(optencod_opt_$(host_os)) $[@ cmdlnprs.gh cmdlnprs.gc $@ $(optencod_targets)

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,7 +32,4 @@
 
 extern char         **dbg_environ;
 
-extern char         *StrCopy( const char *, char * );
-extern unsigned     TryOnePath( const char *, struct stat *, const char *, char * );
-extern unsigned     FindFilePath( bool, const char *, char * );
-extern char         *CollectNid( char *name, unsigned len, nid_t *nidp );
+extern const char   *CollectNid( const char *name, size_t len, nid_t *nidp );

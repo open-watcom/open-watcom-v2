@@ -610,7 +610,7 @@ static void setConversionNode   // SET CONVERSION TYPE INTO PTREE NODE
 static PTREE doReintMPtrToMPtr  // DO A RE-INTERPRET MEMB-PTR CONVERSION
     ( CONVCTL* ctl )            // - conversion control
 {
-#ifndef NDEBUG
+#ifdef DEVBUILD
     CNV_RETN retn;
 
     retn = MembPtrReint( &ctl->expr->u.subtree[1], ctl->tgt.orig );
@@ -2786,7 +2786,7 @@ PTREE AddCastNode               // ADD A CAST NODE
 }
 
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 int infinite_ctr;
 #define INFINITY 10
 #endif

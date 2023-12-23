@@ -1,12 +1,13 @@
 #pmake: serv remote os_nto cpu_x86 tcp x86 monolithic
 
+tree_depth = 4
+
 bootstrap = 1
 
 host_os  = nto
 host_cpu = 386
 
 target_cpu = x86
-target_os  = nto
 
 srv   = tcp
 which = SERVER

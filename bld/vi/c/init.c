@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -52,10 +52,13 @@
 #include "autoenv.h"
 #include "iopath.h"
 #include "tempio.h"
+#include "argvenv.h"
 
-#include "clibext.h"
 #include "clibint.h"
+#include "clibext.h"
 
+
+#define VIENV   "VI"
 
 static char     nullFN[] = "no_name";
 static char     *cFN = NULL;
@@ -91,7 +94,7 @@ char *GetConfigFileName( void )
 
 void FiniConfigFileName( void )
 {
-    MemFree( cfgFN );
+    _MemFreeArray( cfgFN );
 
 } /* FiniConfigFileName */
 
@@ -233,7 +236,6 @@ static void doInitializeEditor( int argc, char *argv[] )
     char            *startup_parms[MAX_STARTUP];
     vi_rc           rc;
     vi_rc           rc1;
-    history_data    *h;
 
     /*
      * Make sure WATCOM is setup and if it is not, make a best guess.
@@ -279,14 +281,17 @@ static void doInitializeEditor( int argc, char *argv[] )
     ChkExtendedKbd();
     SSInitBeforeConfig();
 
-    GetCWD1( &HomeDirectory );
+    GetCWD1( &StartDirectory );
     GetCWD1( &CurrentDirectory );
-    SetCWD( HomeDirectory );
+    SetCWD( StartDirectory );
     if( cfgFN == NULL ) {
         cfgFN = DupString( CFG_NAME );
     }
 
+    argv = ExpandEnv( &argc, argv, VIENV );
+
     checkFlags( &argc, argv, startup, startup_parms, &startcnt );
+
     ScreenInit();
     SetWindowSizes();
     EditFlags.ClockActive = false;
@@ -305,11 +310,11 @@ static void doInitializeEditor( int argc, char *argv[] )
     /*
      * initial configuration
      */
-    EditVars.Majick = MemStrDup( "()~@" );
-    EditVars.FileEndString = MemStrDup( "[END_OF_FILE]" );
+    EditVars.Majick = DupString( "()~@" );
+    EditVars.FileEndString = DupString( "[END_OF_FILE]" );
     MatchInit();
     SetGadgetString( NULL );
-    WorkLine = MemAlloc( sizeof( line ) + EditVars.MaxLine + 2 );
+    WorkLine = MemAlloc( sizeof( line ) + EditVars.MaxLineLen + 2 );
     WorkLine->len = -1;
 
     sline = 0;
@@ -358,11 +363,9 @@ static void doInitializeEditor( int argc, char *argv[] )
     AltDotBuffer = _MemAllocArray( vi_key, maxdotbuffer + 2 );
     DotCmd = _MemAllocArray( vi_key, maxdotbuffer + 2 );
     SwapBlockInit( EditVars.MaxSwapBlocks );
-    ReadBuffer = MemAlloc( MAX_IO_BUFFER + 6 );
-    WriteBuffer = MemAlloc( MAX_IO_BUFFER + 6 );
-    for( h = EditVars.Hist; h - EditVars.Hist < MAX_HIST; h++ ) {
-        HistInit( h, h->max );
-    }
+    ReadBuffer = _MemAllocArray( char, MAX_IO_BUFFER + 6 );
+    WriteBuffer = _MemAllocArray( char, MAX_IO_BUFFER + 6 );
+    HistInit();
     GetClockStart();
     GetSpinStart();
     SelRgnInit();
@@ -502,7 +505,7 @@ static void doInitializeEditor( int argc, char *argv[] )
                 break;
             }
         }
-        MemFreeList( ocnt, list );
+        _MemFreePtrArray( list, ocnt, MemFree );
         if( EditFlags.BreakPressed ) {
             ClearBreak();
             break;
@@ -611,6 +614,7 @@ static void doInitializeEditor( int argc, char *argv[] )
         SetConsoleActiveScreenBuffer( OutputHandle );
     }
 #endif
+    MemFree( argv );
 
 } /* doInitializeEditor */
 

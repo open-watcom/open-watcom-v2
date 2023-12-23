@@ -2,6 +2,6 @@
 host_os  = nt
 host_cpu = x64
 
-wde_release = 0
+wde_debug = 1
 
 !include ../master.mif

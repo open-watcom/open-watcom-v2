@@ -5,4 +5,4 @@ system=linux
 convention=stack
 linkage=static
 
-!include $(mathlib_dir)/mklib.mif
+!include ../../../../mklib.mif

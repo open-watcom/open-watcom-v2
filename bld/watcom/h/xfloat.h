@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -179,7 +179,7 @@ extern  int     __FLDC( ld_stk_ptr, ld_stk_ptr );
 
 #ifdef __WATCOMC__
 #if __WATCOMC__ < 1300
-// fix for OW 1.9
+/* fix for OW 1.9 */
 #define float_fixup float
 #else
 #define float_fixup __float

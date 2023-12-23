@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -67,33 +67,33 @@ void OutNum( unsigned long i )
 #endif
 
 /* Read a block memory in debuggee's address space */
-unsigned ReadMem( pid_handle procfs_fd, void *ptr, addr_off offv, unsigned size )
+size_t ReadMemory( pid_handle procfs_fd, addr_off offv, void *ptr, size_t req_len )
 {
-    int     length = 0;
+    size_t      len = 0;
 
     if( lseek( procfs_fd, (off_t)offv, SEEK_SET ) == (off_t)offv ) {
-        length = read( procfs_fd, ptr, size );
-        if( length < 0 ) {
+        len = read( procfs_fd, ptr, req_len );
+        if( len == -1 ) {
             dbg_print(( "ReadMem failed\n" ));
-            length = 0;
+            len = 0;
         }
     }
-    return( length );
+    return( len );
 }
 
 /* Write a block of memory in debuggee's address space */
-unsigned WriteMem( pid_handle procfs_fd, void *ptr, addr_off offv, unsigned size )
+size_t WriteMemory( pid_handle procfs_fd, addr_off offv, void *ptr, size_t req_len )
 {
-    int     length = 0;
+    size_t      len = 0;
 
     if( lseek( procfs_fd, (off_t)offv, SEEK_SET ) == (off_t)offv ) {
-        length = write( procfs_fd, ptr, size );
-        if( length < 0 ) {
+        len = write( procfs_fd, ptr, req_len );
+        if( len == -1 ) {
             dbg_print(( "WriteMem failed\n" ));
-            length = 0;
+            len = 0;
         }
     }
-    return( length );
+    return( len );
 }
 
 
@@ -151,8 +151,7 @@ int GetLdInfo( pid_handle pid, addr_off dynsec_off, addr_off *rdebug_off, addr_o
         dbg_print(( "GetLdInfo: dynamic section not available\n" ));
         return( FALSE );
     }
-    read_len = sizeof( loc_dyn );
-    if( ReadMem( pid, &loc_dyn, dynsec_off, read_len ) != read_len ) {
+    if( ReadMemory( pid, dynsec_off, &loc_dyn, sizeof( loc_dyn ) ) != sizeof( loc_dyn ) ) {
         dbg_print(( "GetLdInfo: failed to copy first dynamic entry\n" ));
         return( FALSE );
     }
@@ -162,8 +161,8 @@ int GetLdInfo( pid_handle pid, addr_off dynsec_off, addr_off *rdebug_off, addr_o
             dbg_print(( "GetLdInfo: DT_DEBUG entry found (%08lx)\n", rdebug_ptr ));
             break;
         }
-        dynsec_off += sizeof( Elf32_Dyn );
-        if( ReadMem( pid, &loc_dyn, dynsec_off, read_len ) != read_len ) {
+        dynsec_off += sizeof( loc_dyn );
+        if( ReadMemory( pid, dynsec_off, &loc_dyn, sizeof( loc_dyn ) ) != sizeof( loc_dyn ) ) {
             dbg_print(( "GetLdInfo: failed to copy dynamic entry\n" ));
             return( FALSE );
         }
@@ -172,8 +171,7 @@ int GetLdInfo( pid_handle pid, addr_off dynsec_off, addr_off *rdebug_off, addr_o
         dbg_print(( "GetLdInfo: DT_DEBUG entry not found or not set\n" ));
         return( FALSE );
     }
-    read_len = sizeof( rdebug );
-    if( ReadMem( pid, &rdebug, rdebug_ptr, read_len ) != read_len ) {
+    if( ReadMemory( pid, rdebug_ptr, &rdebug, sizeof( rdebug ) ) != sizeof( rdebug ) ) {
         dbg_print(( "GetLdInfo: failed to copy r_debug struct\n" ));
         return( FALSE );
     }
@@ -192,13 +190,13 @@ char *dbg_strcpy( pid_handle pid, char *s1, const char *s2 )
     char    c;
 
     do {
-        if( ReadMem( pid, &c, (addr48_off)s2, 1 ) != 1 ) {
+        if( ReadMemory( pid, (addr48_off)s2, &c, sizeof( c ) ) != sizeof( c ) ) {
             dbg_print(( "dbg_strcpy: failed at %08x\n", (unsigned)s2 ));
             return( NULL );
         }
         *dst++ = c;
         ++s2;
-    } while( c );
+    } while( c != '\0' );
 
     return( s1 );
 }
@@ -210,8 +208,8 @@ int GetLinkMap( pid_handle pid, addr_off dbg_lmap_off, struct link_map *local_lm
 {
     unsigned    read_len;
 
-    read_len = sizeof( *local_lmap );
-    if( ReadMem( pid, local_lmap, dbg_lmap_off, read_len ) != read_len ) {
+    read_len = ;
+    if( ReadMemory( pid, dbg_lmap_off, local_lmap, sizeof( *local_lmap ) ) != sizeof( *local_lmap ) ) {
         dbg_print(( "GetLinkMap: failed to copy link_map struct at %08x\n", (unsigned)dbg_lmap_off ));
         return( FALSE );
     }
@@ -236,11 +234,12 @@ int MapAddrToLinkVA( pid_handle pid, addr_off addr, addr_off *map_addr )
 }
 
 
-/* Break up program arguments passed in as a single string into
+int SplitParms( char *p, const char **args, unsigned len )
+/**************************************************************
+ * Break up program arguments passed in as a single string into
  * individual components. Useful for passing argv style array to
  * exec().
  */
-int SplitParms( char *p, const char **args, unsigned len )
 {
     int     i;
     char    endc;
@@ -273,9 +272,14 @@ int SplitParms( char *p, const char **args, unsigned len )
         for( ;; ) {
             if( len == 0 )
                 goto done;
-            if( *p == endc || *p == '\0' || (endc == ' ' && *p == '\t') ) {
+            if( *p == endc || *p == '\0' || ( endc == ' ' && *p == '\t' ) ) {
+                /*
+                 * if output array is not specified then source string
+                 * is not changed and it calculates number of parameters only
+                 * as soon as output array is specified then source is modified
+                 */
                 if( args != NULL ) {
-                    *p = '\0';  //NYI: not a good idea, should make a copy
+                    *p = '\0';
                 }
                 ++p;
                 --len;

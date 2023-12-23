@@ -118,7 +118,7 @@ static label        *lablst = labels;       /* header for search list */
 
                                         /* string pool for REs, etc. */
 static char         pool[POOLSIZE];         /* the pool */
-static char         *fp     = pool;         /* current pool pointer */
+static char         *poolcurr = pool;       /* current pool pointer */
 static char         *poolend = pool + POOLSIZE; /* pointer past pool end */
 
                                         /* compilation state */
@@ -134,7 +134,7 @@ static int          eflag = 0;              /* -e option flag */
 static bool         gflag = false;          /* -g option flag */
 
 static char const   *fname[WFILES];         /* w file name pointers */
-static FILE         *fout[WFILES];          /* w file file ptrs */
+static FILE         *fout[WFILES];          /* w file stream ptrs */
 static int          nwfiles = 0;            /* count of open w files */
 
 #if defined( __WATCOMC__ ) || defined( __STDC_VERSION__ ) && ( __STDC_VERSION__ >= 199901L )
@@ -159,7 +159,7 @@ static void myexit( int status )
 }
 
 /*
- * accept multiline input from *cp... to *fp... ,
+ * accept multiline input from *cp... to pool ,
  * optionally skipping leading whitespace
  */
 static void gettext( int accept_whitespace )
@@ -168,7 +168,7 @@ static void gettext( int accept_whitespace )
 
     if( !accept_whitespace )
         SKIPWS( cp );                   /* discard whitespace */
-    while( fp < poolend && (c = *cp++) != '\0' ) {
+    while( poolcurr < poolend && (c = *cp++) != '\0' ) {
         switch( c ) {
         case '\\':                      /* handle escapes */
             c = *cp++;
@@ -177,9 +177,9 @@ static void gettext( int accept_whitespace )
             SKIPWS( cp );
             break;
         }
-        *fp++ = c;
+        *poolcurr++ = c;
     }
-    if( fp >= poolend )
+    if( poolcurr >= poolend )
         ABORT( TMTXT );                 /* Not exercised by sedtest.mak */
     --cp;
     return;
@@ -198,10 +198,10 @@ static bool outfiles_open( void )
 
     if( nwfiles >= WFILES )
         ABORT( TMWFI );
-    fname[nwfiles] = (const char *)fp; /* filename is in pool */
+    fname[nwfiles] = (const char *)poolcurr; /* filename is in pool */
     gettext( 0 );
     /* match it in table */
-    for( i = nwfiles - 1; i >= 0; i-- ) {
+    for( i = nwfiles; i-- > 0; ) {
         if( strcmp( fname[nwfiles], fname[i] ) == 0 ) {
             cmdp->fout = fout[i];
             return( true );
@@ -227,6 +227,7 @@ static void outfiles_fini( void )
 {
     int     i;
 
+    fflush( stdout );
     for( i = 1; i < nwfiles; i++ ) {
         if( fout[i] != NULL ) {
             fclose( fout[i] );
@@ -881,7 +882,7 @@ static int cmdcomp( char cchar )        /* character name of command */
     case ':':                           /* label declaration */
         if( cmdp->addr1 != NULL )
             ABORT( AD1NG );             /* no addresses allowed */
-        curlab->name = fp;
+        curlab->name = poolcurr;
         gettext( 0 );                   /* get the label name */
         lpt = search();
         if( lpt != NULL ) {             /* does it have a double? */
@@ -912,7 +913,7 @@ static int cmdcomp( char cchar )        /* character name of command */
             }
             break;
         }
-        curlab->name = fp;
+        curlab->name = poolcurr;
         gettext( 0 );                   /* get the label name */
         lpt = search();
         if( lpt != NULL ) {             /* enter branch to it */
@@ -942,7 +943,7 @@ static int cmdcomp( char cchar )        /* character name of command */
     case 'c':                           /* change text */
         if( *cp == '\\' && *++cp == '\n' )
             cp++;
-        cmdp->u.lhs = fp;
+        cmdp->u.lhs = poolcurr;
         gettext( 1 );
         break;
 
@@ -952,15 +953,15 @@ static int cmdcomp( char cchar )        /* character name of command */
 
     case 's':                           /* substitute regular expression */
         redelim = *cp++;                /* get delimiter from 1st ch */
-        cmdp->u.lhs = fp;
-        fp = recomp( fp, redelim );
-        if( fp == BAD )
+        cmdp->u.lhs = poolcurr;
+        poolcurr = recomp( poolcurr, redelim );
+        if( poolcurr == BAD )
             ABORT( CGMSG );
-        cmdp->rhs = fp;
-        if( fp >= poolend )
+        cmdp->rhs = poolcurr;
+        if( poolcurr >= poolend )
             ABORT( TMTXT );             /* Not exercised by sedtest.mak */
-        fp = rhscomp( cmdp->rhs, redelim );
-        if( fp == BAD )
+        poolcurr = rhscomp( cmdp->rhs, redelim );
+        if( poolcurr == BAD )
             ABORT( CGMSG );
         if( gflag )
             cmdp->flags.global++;
@@ -999,11 +1000,11 @@ static int cmdcomp( char cchar )        /* character name of command */
         break;
 
     case 'y':                           /* transliterate text */
-        cmdp->u.lhs = fp;
-        fp = ycomp( fp, *cp++ );        /* compile translit */
-        if( fp == BAD )                 /* fail on bad form */
+        cmdp->u.lhs = poolcurr;
+        poolcurr = ycomp( poolcurr, *cp++ );        /* compile translit */
+        if( poolcurr == BAD )                 /* fail on bad form */
             ABORT( CGMSG );
-        if( fp >= poolend )             /* fail on overflow */
+        if( poolcurr >= poolend )             /* fail on overflow */
             ABORT( TMTXT );             /* Not exercised by sedtest.mak */
         break;
 
@@ -1057,32 +1058,32 @@ static void compile( void )
             cp++;                       /* ; separates cmds */
 
                                         /* compile first address */
-        if( fp >= poolend )
+        if( poolcurr >= poolend )
             ABORT( TMTXT );             /* Not exercised by sedtest.mak */
-        cmdp->addr1 = fp;
-        fp = getaddress( fp );
-        if( fp == BAD )
+        cmdp->addr1 = poolcurr;
+        poolcurr = getaddress( poolcurr );
+        if( poolcurr == BAD )
             ABORT( AGMSG );
 
-        if( fp == cmdp->addr1 ) {       /* if empty RE was found */
-        } else if( fp == NULL ) {       /* if fp was NULL */
-            fp = cmdp->addr1;           /* use current pool location */
+        if( poolcurr == cmdp->addr1 ) {       /* if empty RE was found */
+        } else if( poolcurr == NULL ) {       /* if poolcurr was NULL */
+            poolcurr = cmdp->addr1;           /* use current pool location */
             cmdp->addr1 = NULL;
         } else {
             if( *cp == ',' || *cp == ';' ) { /* there's 2nd addr */
                 cp++;
-                if( fp >= poolend )
+                if( poolcurr >= poolend )
                     ABORT( TMTXT );     /* Not exercised by sedtest.mak */
-                cmdp->addr2 = fp;
-                fp = getaddress( fp );
-                if( fp == BAD || fp == NULL ) {
+                cmdp->addr2 = poolcurr;
+                poolcurr = getaddress( poolcurr );
+                if( poolcurr == BAD || poolcurr == NULL ) {
                     ABORT( AGMSG );
                 }
             } else {
                 cmdp->addr2 = NULL;     /* no 2nd address */
             }
         }
-        if( fp >= poolend )
+        if( poolcurr >= poolend )
             ABORT( TMTXT );             /* Not exercised by sedtest.mak */
 
         SKIPWS( cp );                   /* discard whitespace after address */

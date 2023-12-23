@@ -48,7 +48,7 @@
 #include "rtfuns.h"
 #include "specfuns.h"
 #include "objmodel.h"
-#ifndef NDEBUG
+#ifdef DEVBUILD
     #include "dbg.h"
     #include "togglesd.h"
 #endif
@@ -423,7 +423,7 @@ static void exprCondEnd(        // END OF CONDITIONAL DTORING, IF REQ'D
     }
 }
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 static bool klugedTyping(       // DEBUG -- see if ptr/ref consistency
     TYPE t1,                    // - type[1]
     TYPE t2 )                   // - type[2]
@@ -510,7 +510,7 @@ static PTREE emitNode(          // EMIT A PTREE NODE
         generate_type( expr );
         CgFrontCodePtr( IC_LEAF_CONST_FLT, ConPoolFloatAdd( expr ) );
         break;
-  #ifndef NDEBUG
+  #ifdef DEVBUILD
     case PT_DUP_EXPR :
         CFatal( "ICEMIT -- PT_DUP_EXPR not promoted away" );
         break;
@@ -912,7 +912,7 @@ PTREE IcEmitExpr(               // EMIT EXPRESSION
     LabelExprBegin();
     expr = NodePromoteDups( expr, &posn );
     SrcPosnEmit( &posn );
-#ifndef NDEBUG
+#ifdef DEVBUILD
     if( TOGGLEDBG( ic_trace_on ) ) {
         CgFrontCode( IC_TRACE_BEG );
         TOGGLEDBG( ic_trace_on ) = false;

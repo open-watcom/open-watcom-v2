@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -55,7 +55,7 @@
 #define PPOPERATOR_PRAGMA           "_Pragma"
 
 #define IS_PPOPERATOR_DEFINED(s)    (strcmp(s, PPOPERATOR_DEFINED) == 0)
-#define IS_PPOPERATOR_PRAGMA(s,l)   ((CompFlags.extensions_enabled || CompFlags.enable_std0x) \
+#define IS_PPOPERATOR_PRAGMA(s,l)   ((CompFlags.extensions_enabled || CHECK_STD( > , CXX98 )) \
                                     && l == (sizeof(PPOPERATOR_PRAGMA) - 1) \
                                     && memcmp(s, PPOPERATOR_PRAGMA, sizeof(PPOPERATOR_PRAGMA)) == 0)
 
@@ -185,10 +185,10 @@ void PpOpen(                    // OPEN PREPROCESSOR OUTPUT
 void PpParse(                   // PARSE WHEN PREPROCESSING
     void )
 ;
-unsigned PpVerifyWidth(         // VERIFY WIDTH FOR PREPROCESSING
+unsigned VerifyPPWidth(         // VERIFY WIDTH FOR PREPROCESSING
     unsigned width )            // - new width
 ;
-void PpSetWidth(                // SET WIDTH FOR PREPROCESSING
+void SetPPWidth(                // SET WIDTH FOR PREPROCESSING
     unsigned width )            // - new width
 ;
 void CppEmitPoundLine(          // EMIT #LINE DIRECTIVE, IF REQ'D

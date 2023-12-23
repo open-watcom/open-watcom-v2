@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -98,6 +98,7 @@ TAG( USAGEOGRP )
 #define FN_GET_LOWER        "OPT_GET_LOWER"             // int ( void )
 #define FN_RECOG            "OPT_RECOG"                 // bool ( int )
 #define FN_RECOG_LOWER      "OPT_RECOG_LOWER"           // bool ( int )
+#define FN_RERECOG          "OPT_RERECOG"               // bool ( int )
 #define FN_END              "OPT_END"                   // bool ( void )
 
 #define FN_NUMBER           "OPT_GET_NUMBER"            // bool ( unsigned * )
@@ -124,12 +125,18 @@ TAG( USAGEOGRP )
 
 #define BUFF_SIZE               1024
 
-#define HAS_OPT_STRING( o )     ( (o)->is_id || (o)->is_file || (o)->is_path || (o)->is_special )
-#define HAS_OPT_NUMBER( o )     ( (o)->is_number && (o)->is_multiple )
+#define HAS_OPT_STRING(o)       ((o)->is_id || (o)->is_file || (o)->is_path || (o)->is_text)
+#define HAS_OPT_NUMBER(o)       ((o)->is_number && (o)->is_multiple)
+#define HAS_OPT_CHAIN(o)        ((o)->chain != NULL && (o)->chain->code_used)
 
 #define NOCHAIN                 ((CHAIN *)(pointer_uint)-1)
+#define NOSENSITIVE             ' '
+
+#define IS_SENSITIVE(c)         ((c)->s != NOSENSITIVE)
 
 #define mytolower(c)            ((c < 'A' || c > 'Z') ? c : c - 'A' + 'a')
+#define mytoupper(c)            ((c < 'a' || c > 'z') ? c : c - 'a' + 'A')
+#define myisalpha(c)            ((c >= 'a' || c <= 'z') || (c >= 'A' || c <= 'Z'))
 #define myisspace(c)            (c == ' ' || c == '\t')
 
 #define IS_SELECTED(s)          ((s->target_mask & targetMask) && (s->ntarget_mask & targetMask) == 0)
@@ -159,7 +166,8 @@ typedef enum tag_id {
 typedef enum flow_control {
     EC_NULL             = 0,
     EC_CONTINUE         = 0x01,
-    EC_CHAIN            = 0x02
+    EC_CHAIN            = 0x02,
+    EC_SWITCH           = 0x04
 } flow_control;
 
 typedef enum cvt_name {
@@ -173,11 +181,18 @@ typedef struct target {
     const char      *name;
 } TARGET;
 
-typedef struct name {
-    struct name     *next;
-    boolbit         is_timestamp : 1;
+typedef struct iname {
+    struct iname    *next;
     char            name[1];
-} NAME;
+} INAME;
+
+typedef struct ename {
+    struct ename    *next;
+    INAME           *items;
+    boolbit         is_timestamp : 1;
+    boolbit         used         : 1;
+    char            name[1];
+} ENAME;
 
 typedef struct title {
     struct title    *next;
@@ -215,7 +230,7 @@ typedef struct option {
     char            *usage_argid;
     char            *field_name;
     char            *value_field_name;
-    NAME            *enumerate;
+    ENAME           *enumerate;
     char            *code;
     unsigned        number_default;
     targmask        target_mask;
@@ -230,12 +245,14 @@ typedef struct option {
     boolbit         is_id             : 1;
     boolbit         is_char           : 1;
     boolbit         is_file           : 1;
+    boolbit         is_text           : 1;
     boolbit         is_optional       : 1;
     boolbit         is_path           : 1;
     boolbit         is_special        : 1;
     boolbit         is_prefix         : 1;
     boolbit         is_timestamp      : 1;
     boolbit         is_negate         : 1;
+    char            equal_char;
     CHAIN           *chain;
     GROUP           *group;
     size_t          name_len;
@@ -248,10 +265,11 @@ typedef struct codeseq {
     struct codeseq  *children;
     OPTION          *option;
     char            c;
-    boolbit         sensitive  : 1;
+    char            s;
     boolbit         accept     : 1;
     boolbit         chain      : 1;
     boolbit         chain_root : 1;
+    boolbit         sel        : 1;
 } CODESEQ;
 
 static unsigned     line;
@@ -366,7 +384,8 @@ static const char *usageMsg[] = {
     "  -c comma separated list",
     "  -i create international file with non-english data",
     "  -l=<lang-n> is the language(number) used for output data",
-    "  -n zero terminated items",
+    "  -n '\0' terminated items",
+    "  -nn '\n' terminated items",
     "  -q quiet operation",
     "  -rc=<macro-name> generate files for resource compiler",
     "  -u=<usage-u> is the output file for the QNX usage file",
@@ -385,17 +404,16 @@ static struct {
     boolbit     quiet           : 1;
     boolbit     no_equal        : 1;
     boolbit     alternate_equal : 1;
-    boolbit     zero_term       : 1;
     boolbit     rc              : 1;
     boolbit     out_utf8        : 1;
-    boolbit     comma_list      : 1;
     char        *rc_macro;
+    char        *line_term;
+    char        *list_sep;
     language_id lang;
 } optFlag;
 
 static TARGET   *targetList;
-static NAME     *enumList;
-static NAME     *enumeratorList;
+static ENAME    *enumList;
 static OPTION   *optionList;
 static OPTION   *uselessOptionList;
 static TITLE    *titleList;
@@ -405,7 +423,7 @@ static GROUP    *groupList = NULL;
 static TITLE    *targetTitle;
 static TITLE    *targetFooter;
 
-static void emitCode( CODESEQ *h, unsigned depth, flow_control control );
+static void emitCode( CODESEQ *head, unsigned depth, flow_control control );
 
 static int mystricmp( const char *p1, const char *p2 )
 {
@@ -484,7 +502,8 @@ static const char *getLangData( lang_data langdata, language_id lang )
     const char *p;
 
     p = langdata[lang];
-    if( p == NULL || *p == '\0' ) {
+    if( p == NULL
+      || *p == '\0' ) {
         p = langdata[LANG_English];
     }
     return( p );
@@ -514,7 +533,7 @@ static void fail( const char *msg, ... )
 {
     va_list args;
 
-    if( line ) {
+    if( line > 0 ) {
         fprintf( stderr, "error on line %u\n", line );
     }
     va_start( args, msg );
@@ -676,10 +695,10 @@ static void finiTargets( void )
     free( targetList );
 }
 
-static NAME *addEnumName( NAME **h, const char *n )
+static ENAME *addEnumName( ENAME **h, const char *n )
 {
     size_t len;
-    NAME *e;
+    ENAME *e;
 
     for( e = *h; e != NULL; e = e->next ) {
         if( strcmp( n, e->name ) == 0 ) {
@@ -691,15 +710,29 @@ static NAME *addEnumName( NAME **h, const char *n )
     strcpy( e->name, n );
     e->next = *h;
     *h = e;
+    e->items = NULL;
     return( e );
 }
 
-static NAME *addEnumerator( const char *enumerate, const char *field_name )
+static INAME *addEnumerator( ENAME *en, const char *field_name )
 {
-    strcpy( tmpbuff, enumerate );
+    INAME *ei;
+    size_t len;
+
+    strcpy( tmpbuff, en->name );
     strcat( tmpbuff, "_" );
     strcat( tmpbuff, field_name );
-    return( addEnumName( &enumeratorList, tmpbuff ) );
+    for( ei = en->items; ei != NULL; ei = ei->next ) {
+        if( strcmp( tmpbuff, ei->name ) == 0 ) {
+            return( ei );
+        }
+    }
+    len = strlen( tmpbuff );
+    ei = malloc( sizeof( *ei ) + len );
+    strcpy( ei->name, tmpbuff );
+    ei->next = en->items;
+    en->items = ei;
+    return( ei );
 }
 
 static GROUP *findGroup( const char *pattern )
@@ -778,7 +811,9 @@ static FILE *initFILE( const char *fnam, const char *fmod )
 
     fp = NULL;
     open_read = ( strchr( fmod, 'r' ) != NULL );
-    if( open_read || fnam[0] != '.' || fnam[1] != '\0' ) {
+    if( open_read
+      || fnam[0] != '.'
+      || fnam[1] != '\0' ) {
         fp = fopen( fnam, fmod );
         if( fp == NULL ) {
             fail( "cannot open '%s' for %s", fnam, ( open_read ) ? "input" : "output" );
@@ -864,6 +899,7 @@ static OPTION *pushNewOption( char *pattern, OPTION *o )
     newo->synonym = o;
     newo->is_simple = true;
     newo->next = optionList;
+    newo->equal_char = '\0';
     optionList = newo;
     return( newo );
 }
@@ -880,9 +916,12 @@ static char *pickUpRest( const char *p )
     // if only two '.' character than it is single space text
     len = strlen( p );
     out = dst = malloc( len + 1 );
-    if( p[0] == '.' && p[1] == '\0' ) {
+    if( p[0] == '.'
+      && p[1] == '\0' ) {
         len = 0;
-    } else if( p[0] == '.' && p[1] == '.' && p[2] == '\0' ) {
+    } else if( p[0] == '.'
+      && p[1] == '.'
+      && p[2] == '\0' ) {
         len = 0;
         *dst++ = ' ';
     } else {
@@ -902,15 +941,27 @@ static char *pickUpRest( const char *p )
 // :argequal. <char>
 static void doARGEQUAL( const char *p )
 {
+    char    c;
+
     if( *p == '\0' ) {
         fail( ":argequal. must have <char> specified\n" );
     } else {
-        if( p[0] == '.' && p[1] == '.' ) {
-            alternateEqual = ' ';
+        if( p[0] == '.'
+          && p[1] == '.' ) {
+            c = ' ';
         } else {
-            alternateEqual = *p;
+            c = *p;
         }
-        optFlag.alternate_equal = true;
+        if( getsUsage == TAG_NULL ) {
+            alternateEqual = c;
+            optFlag.alternate_equal = true;
+        } else if( getsUsage == TAG_OPTION ) {
+            OPTION *o;
+
+            for( o = optionList; o != NULL; o = o->synonym ) {
+                o->equal_char = c;
+            }
+        }
     }
 }
 
@@ -1001,6 +1052,7 @@ static void doNUMBER( const char *p )
     for( o = optionList; o != NULL; o = o->synonym ) {
         o->is_number = true;
         o->is_simple = false;
+        o->is_text = false;
     }
     if( *p != '\0' ) {
         p = nextWord( p, tokbuff );
@@ -1238,7 +1290,7 @@ static void doCHAIN( const char *p )
 // :enumerate. <name> [<option>]
 static void doENUMERATE( const char *p )
 {
-    NAME *en;
+    ENAME *en;
     OPTION *o;
 
     if( *p == '\0' ) {
@@ -1248,13 +1300,13 @@ static void doENUMERATE( const char *p )
     en = addEnumName( &enumList, tokbuff );
     p = nextWord( p, tokbuff );
     if( *tokbuff != '\0' ) {
-        addEnumerator( en->name, tokbuff );
+        addEnumerator( en, tokbuff );
     }
-    addEnumerator( en->name, "default" );
+    addEnumerator( en, "default" );
     for( o = optionList; o != NULL; o = o->synonym ) {
         o->enumerate = en;
         if( o->is_timestamp ) {
-            o->enumerate->is_timestamp = true;
+            en->is_timestamp = true;
         }
         if( *tokbuff != '\0' ) {
             o->field_name = strdup( tokbuff );
@@ -1269,6 +1321,7 @@ static void doSPECIAL( const char *p )
 
     for( o = optionList; o != NULL; o = o->synonym ) {
         o->is_special = true;
+        o->is_text = true;
         o->is_simple = false;
     }
     if( *p == '\0' ) {
@@ -1525,15 +1578,18 @@ static void checkForGMLEscape( const char *p )
     char c1, c2;
 
     c1 = *p++;
-    if( c1 == '\0' || ! isalpha( c1 ) ) {
+    if( c1 == '\0'
+      || ! isalpha( c1 ) ) {
         return;
     }
     c2 = *p++;
-    if( c2 == '\0' || ! isalpha( c2 ) ) {
+    if( c2 == '\0'
+      || ! isalpha( c2 ) ) {
         return;
     }
     is_escape = false;
-    if( *p == '\0' || ! isalpha( *p ) ) {
+    if( *p == '\0'
+      || ! isalpha( *p ) ) {
         is_escape = true;
     }
     if( is_escape ) {
@@ -1597,7 +1653,8 @@ static void checkForMissingUsages( void )
         end_lang = start_lang + 1;
     }
     for( o = optionList; o != NULL; o = o->next ) {
-        if( o->chain == NULL || cmpOptPattern( o->pattern, o->chain->pattern ) ) {
+        if( o->chain == NULL
+          || cmpOptPattern( o->pattern, o->chain->pattern ) ) {
             for( i = start_lang; i < end_lang; ++i ) {
                 if( o->lang_usage[i] == NULL ) {
                     fail( "option '%s' has no %s usage\n", o->pattern, langName[i] );
@@ -1630,6 +1687,8 @@ static void stripUselessOptions( void )
     for( o = *h; o != NULL; o = o_next ) {
         o_next = o->next;
         if( IS_SELECTED( o ) ) {
+            if( o->enumerate != NULL )
+                o->enumerate->used = true;
             h = &(o->next);
         } else {
             o->next = uselessOptionList;
@@ -1693,7 +1752,8 @@ static void makeFieldName( const char *pattern, char *f )
                 continue;
             }
             if( isalnum( c ) ) {
-                if( is_special && *( f - 1 ) != '_' )
+                if( is_special
+                  && *( f - 1 ) != '_' )
                     *f++ = '_';
                 if( !sensitive )
                     c = mytolower( c );
@@ -1731,7 +1791,7 @@ static void initOptionFields( void )
 static void startParserH( void )
 {
     OPTION *o;
-    NAME *en;
+    ENAME *en;
 
     if( ofp != NULL ) {
         fprintf( ofp, "typedef struct opt_string OPT_STRING;\n" );
@@ -1760,14 +1820,25 @@ static void startParserH( void )
                 } else if( HAS_OPT_STRING( o ) ) {
                     fprintf( ofp, "    OPT_STRING   *%s;\n", o->value_field_name );
                 }
-                if( o->is_timestamp ) {
-                    if( o->enumerate == NULL ) {
+                /*
+                 * the enumeration is shared by several options that
+                 * require enumeration timestamp to be processed instead
+                 * of option simple timestamp
+                 * in case of enumeration it is skiped and processed in next code
+                 */
+                if( o->enumerate == NULL ) {
+                    if( o->is_timestamp ) {
                         fprintf( ofp, "    unsigned     %s_timestamp;\n", o->field_name );
                     }
                 }
             }
         }
+        /*
+         * this section process only enumerations (field + timestamp)
+         */
         for( en = enumList; en != NULL; en = en->next ) {
+            if( !en->used )
+                continue;
             fprintf( ofp, "    unsigned     %s;\n", en->name );
             if( en->is_timestamp ) {
                 fprintf( ofp, "    unsigned     %s_timestamp;\n", en->name );
@@ -1786,83 +1857,92 @@ static void startParserH( void )
 
 static void finishParserH( void )
 {
-    NAME *en;
+    ENAME *en;
     unsigned value;
+    INAME *ei;
 
     if( ofp != NULL ) {
         value = 0;
-        for( en = enumeratorList; en != NULL; en = en->next ) {
-            ++value;
-            fprintf( ofp, "#define OPT_ENUM_%s %u\n", en->name, value );
+        for( en = enumList; en != NULL; en = en->next ) {
+            if( !en->used )
+                continue;
+            for( ei = en->items; ei != NULL; ei = ei->next ) {
+                ++value;
+                fprintf( ofp, "#define OPT_ENUM_%s %u\n", ei->name, value );
+            }
         }
     }
 }
 
-static CODESEQ *newCode( OPTION *o, char c, bool sensitive )
+static CODESEQ *newCode( OPTION *o, char c, char s )
 {
-    CODESEQ *p;
+    CODESEQ *code;
 
-    p = calloc( 1, sizeof( *p ) );
-    p->option = o;
-    p->c = c;
-    p->sensitive = sensitive ? true : false;
-    return( p );
+    code = calloc( 1, sizeof( *code ) );
+    code->option = o;
+    code->c = c;
+    code->s = s;
+    return( code );
 }
 
-static CODESEQ *addOptionCodeSeq( CODESEQ *code, OPTION *o )
+static CODESEQ *addCode( CODESEQ **splice, OPTION *o, char c, char s )
 {
-    bool    sensitive;
-    char    *pattern;
-    char    c;
-    CODESEQ *head;
-    CODESEQ **splice;
+    CODESEQ *code;
 
-    head = code;
-    splice = &head;
-    for( pattern = o->pattern; (c = *pattern++) != '\0'; ) {
-        sensitive = false;
-        if( c == '\\' ) {
-            c = *pattern++;
-            sensitive = true;
-        } else {
-            c = mytolower( c );
+    for( code = *splice; code != NULL; code = *splice ) {
+        if( code->c == c
+          && code->s == s ) {
+            break;
         }
-        for( code = *splice; code != NULL; code = *splice ) {
-            if( code->sensitive == sensitive ) {
-                if( code->c == c ) {
-                    break;
-                }
-            }
-            splice = &(code->sibling);
-        }
-        if( code == NULL ) {
-            code = newCode( o, c, sensitive );
-            *splice = code;
-        }
-        splice = &(code->children);
+        splice = &(code->sibling);
     }
     if( code == NULL ) {
-        code = newCode( o, '\0', false );
+        code = newCode( o, c, s );
         *splice = code;
+    }
+    return( code );
+}
+
+static CODESEQ *addOptionCodeSeq( CODESEQ *head, OPTION *o )
+{
+    char    *pattern;
+    char    c;
+    char    s;
+    CODESEQ *code;
+    CODESEQ **splice;
+
+    code = head;
+    splice = &head;
+    for( pattern = o->pattern; (c = *pattern++) != '\0'; ) {
+        s = NOSENSITIVE;
+        if( c == '\\' ) {
+            c = *pattern++;
+            if( myisalpha( c ) ) {
+                s = c;
+                c = mytolower( c );
+            }
+        }
+        code = addCode( splice, o, c, s );
+        splice = &(code->children);
     }
     code->accept = true;
     code->option = o;
     return( head );
 }
 
-static CODESEQ *reorderCode( CODESEQ *c )
+static CODESEQ *reorderCode( CODESEQ *head )
 {
     CODESEQ *a;
-    CODESEQ *h;
+    CODESEQ *c;
     CODESEQ *n;
     CODESEQ **s;
 
-    h = c;
+    c = head;
     if( c->sibling != NULL ) {
         a = NULL;
-        s = &h;
+        s = &head;
         // accepting states move to the end
-        for( c = h; c != NULL; c = n ) {
+        for( c = head; c != NULL; c = n ) {
             n = c->sibling;
             if( c->accept ) {
                 *s = n;
@@ -1873,44 +1953,54 @@ static CODESEQ *reorderCode( CODESEQ *c )
             }
         }
         *s = a;
-        s = &(h->sibling);
+        s = &(head->sibling);
         // sensitive states move to the front
-        for( c = h; c != NULL; c = n ) {
+        for( c = head; c != NULL; c = n ) {
             n = c->sibling;
-            if( c->sensitive ) {
+            if( IS_SENSITIVE( c ) ) {
                 *s = n;
-                c->sibling = h;
-                h = c;
+                c->sibling = head;
+                head = c;
             } else {
                 s = &(c->sibling);
             }
         }
     }
-    for( c = h; c != NULL; c = c->sibling ) {
+    for( c = head; c != NULL; c = c->sibling ) {
         if( c->children != NULL ) {
             c->children = reorderCode( c->children );
         }
     }
-    return( h );
+    return( head );
 }
 
-static bool markChainCode( CODESEQ *h, size_t level )
+static bool markChainCode( CODESEQ *head, size_t level )
 {
     CODESEQ *c;
     bool    rc;
 
     rc = false;
-    for( c = h; c != NULL; c = c->sibling ) {
-        if( c->option->chain != NULL && c->option->chain->code_used ) {
-            if( c->children != NULL ) {
-                if( level == c->option->chain->name_len ) {
-                    if( markChainCode( c->children, level + 1 ) ) {
+    for( c = head; c != NULL; c = c->sibling ) {
+        if( HAS_OPT_CHAIN( c->option ) ) {
+            if( c->children != NULL
+              && level <= c->option->chain->name_len ) {
+                if( markChainCode( c->children, level + 1 ) ) {
+                    if( level == c->option->chain->name_len ) {
                         c->chain_root = true;
                     }
                 }
             } else if( c->option->name_len == c->option->chain->name_len + 1 ) {
                 c->chain = true;
                 rc = true;
+                /*
+                 * this is an extension, you can use two forms of input
+                 * with one character <option character> or <option character>+
+                 * even if only one character is allowed
+                 */
+                if( c->children != NULL
+                  && c->children->c == '+' ) {
+                    c->children->chain = true;
+                }
             }
         }
     }
@@ -1930,21 +2020,6 @@ static CODESEQ *genCode( OPTION *o )
     return( head );
 }
 
-static bool useSwitchStmt( CODESEQ *h )
-{
-    unsigned count;
-    CODESEQ *c;
-
-    count = 0;
-    for( c = h; c != NULL; c = c->sibling ) {
-        if( c->option->is_prefix ) {
-            return( true );
-        }
-        ++count;
-    }
-    return( count >= USE_SWITCH_THRESHOLD );
-}
-
 static void emitSuccessCode( unsigned depth, flow_control control )
 {
     if( control & EC_CONTINUE ) {
@@ -1956,7 +2031,7 @@ static void emitSuccessCode( unsigned depth, flow_control control )
 
 static void emitAcceptCode( CODESEQ *c, unsigned depth, flow_control control )
 {
-    NAME *ei;
+    INAME *ei;
     OPTION *o;
     struct {
         boolbit     close_value_if : 1;
@@ -1971,7 +2046,11 @@ static void emitAcceptCode( CODESEQ *c, unsigned depth, flow_control control )
         ++depth;
     }
     flag.close_value_if = false;
-    if( o->is_number ) {
+    if( o->is_special ) {
+        emitPrintf( depth, "if( %s( &(data->%s) ) ) {\n", o->special_func, o->value_field_name );
+        ++depth;
+        flag.close_value_if = true;
+    } else if( o->is_number ) {
         if( o->default_specified ) {
             emitPrintf( depth, "if( " FN_NUMBER_DEFAULT "( &(data->%s ), %u ) ) {\n", o->value_field_name, o->number_default );
         } else if( o->is_multiple ) {
@@ -2013,16 +2092,12 @@ static void emitAcceptCode( CODESEQ *c, unsigned depth, flow_control control )
         }
         ++depth;
         flag.close_value_if = true;
-    } else if( o->is_special ) {
-        emitPrintf( depth, "if( %s( &(data->%s) ) ) {\n", o->special_func, o->value_field_name );
-        ++depth;
-        flag.close_value_if = true;
     }
     if( o->check_func != NULL ) {
         emitPrintf( depth, "%s( &(data->%s) );\n", o->check_func, o->value_field_name );
     }
     if( o->enumerate != NULL ) {
-        ei = addEnumerator( o->enumerate->name, o->field_name );
+        ei = addEnumerator( o->enumerate, o->field_name );
         if( o->is_timestamp ) {
             emitPrintf( depth, "data->%s_timestamp = ++(data->timestamp);\n", o->enumerate->name );
         }
@@ -2074,14 +2149,14 @@ static void emitCodeTree( CODESEQ *c, unsigned depth, flow_control control )
         if( c->chain ) {
             emitCode( c->children, depth, (control & ~EC_CHAIN) | EC_CONTINUE );
             if( c->accept ) {
-                emitAcceptCode( c, depth, control & ~ EC_CONTINUE );
+                emitAcceptCode( c, depth, control );
             } else {
                 emitPrintf( depth, "return( true );\n" );
             }
         } else if( c->chain_root ) {
             emitCode( c->children, depth, control | EC_CHAIN | EC_CONTINUE );
             if( c->accept ) {
-                emitAcceptCode( c, depth, control & ~ EC_CONTINUE );
+                emitAcceptCode( c, depth, control & ~EC_CONTINUE );
             } else {
                 emitSuccessCode( depth, control );
             }
@@ -2094,18 +2169,18 @@ static void emitCodeTree( CODESEQ *c, unsigned depth, flow_control control )
             }
         }
     } else {
-        if( c->option->chain != NULL && c->option->chain->code_used ) {
+        if( HAS_OPT_CHAIN( c->option ) ) {
             emitAcceptCode( c, depth, control );
         } else {
-            emitAcceptCode( c, depth, control & ~ EC_CONTINUE );
+            emitAcceptCode( c, depth, control & ~EC_CONTINUE );
         }
     }
 }
 
 static void emitIfCode( CODESEQ *c, unsigned depth, flow_control control )
 {
-    if( c->sensitive ) {
-        emitPrintf( depth, "if( %s( '%c' ) ) {\n", FN_RECOG, c->c );
+    if( IS_SENSITIVE( c ) ) {
+        emitPrintf( depth, "if( %s( '%c' ) ) {\n", FN_RECOG, c->s );
     } else {
         emitPrintf( depth, "if( %s( '%c' ) ) {\n", FN_RECOG_LOWER, c->c );
     }
@@ -2113,47 +2188,66 @@ static void emitIfCode( CODESEQ *c, unsigned depth, flow_control control )
     emitPrintf( depth, "}\n" );
 }
 
-static void emitCode( CODESEQ *h, unsigned depth, flow_control control )
+static void emitCodeBlk( CODESEQ *head, unsigned depth, flow_control control )
 {
-    bool use_switch;
     CODESEQ *c;
 
-    for( c = h; c != NULL; c = c->sibling ) {
-        if( c->sensitive || (control & EC_CHAIN) && !c->chain ) {
-            emitIfCode( c, depth, control );
-        } else {
-            break;
-        }
-    }
-    if( c == NULL ) {
-        return;
-    }
     if( control & EC_CHAIN ) {
         emitPrintf( depth, "do {\n" );
         ++depth;
     }
-    use_switch = useSwitchStmt( c );
-    if( use_switch ) {
+    if( control & EC_SWITCH ) {
         emitPrintf( depth, "switch( " FN_GET_LOWER "() ) {\n" );
         ++depth;
-    }
-    for( ; c != NULL; c = c->sibling ) {
-        if( use_switch ) {
-            emitPrintf( depth - 1, "case '%c':\n", c->c );
-            emitCodeTree( c, depth, control );
-        } else {
-            emitIfCode( c, depth, control );
+        for( c = head; c != NULL; c = c->sibling ) {
+            if( c->sel ) {
+                if( IS_SENSITIVE( c ) ) {
+                    emitPrintf( depth - 1, "case '%c':\n", c->s );
+                } else {
+                    emitPrintf( depth - 1, "case '%c':\n", c->c );
+                }
+                emitCodeTree( c, depth, control & ~EC_SWITCH );
+            }
         }
-    }
-    if( use_switch ) {
         --depth;
         emitPrintf( depth, "}\n" );
         emitPrintf( depth, FN_UNGET "();\n" );
+    } else {
+        for( c = head; c != NULL; c = c->sibling ) {
+            if( c->sel ) {
+                emitIfCode( c, depth, control );
+            }
+        }
     }
     if( control & EC_CHAIN ) {
         emitPrintf( depth, "break;\n" );
         --depth;
         emitPrintf( depth, "} while( ! " FN_END "() );\n" );
+    }
+}
+
+static void emitCode( CODESEQ *head, unsigned depth, flow_control control )
+{
+    CODESEQ     *c;
+    unsigned    count;
+
+    count = 0;
+    for( c = head; c != NULL; c = c->sibling ) {
+        if( count == 0
+          && ( IS_SENSITIVE( c )
+          || (control & EC_CHAIN)
+          && !c->chain ) ) {
+            emitIfCode( c, depth, control );
+            c->sel = false;
+        } else {
+            ++count;
+            c->sel = true;
+        }
+    }
+    if( count > 0 ) {
+        if( count >= USE_SWITCH_THRESHOLD )
+            control |= EC_SWITCH;
+        emitCodeBlk( head, depth, control );
     }
 }
 
@@ -2175,8 +2269,8 @@ static void outputFN_PROCESS( void )
 static void outputFN_INIT( void )
 {
     OPTION *o;
-    NAME *en;
-    NAME *ei;
+    ENAME *en;
+    INAME *ei;
     unsigned depth = 0;
 
     emitPrintf( depth, "void " FN_INIT "( OPT_STORAGE *data )\n" );
@@ -2184,12 +2278,16 @@ static void outputFN_INIT( void )
     ++depth;
     emitPrintf( depth, "memset( data, 0, sizeof( *data ) );\n" );
     for( o = optionList; o != NULL; o = o->next ) {
-        if( o->synonym == NULL && o->is_number && o->default_specified ) {
+        if( o->synonym == NULL
+          && o->is_number
+          && o->default_specified ) {
             emitPrintf( depth, "data->%s = %u;\n", o->value_field_name, o->number_default );
         }
     }
     for( en = enumList; en != NULL; en = en->next ) {
-        ei = addEnumerator( en->name, "default" );
+        if( !en->used )
+            continue;
+        ei = addEnumerator( en, "default" );
         emitPrintf( depth, "data->%s = OPT_ENUM_%s;\n", en->name, ei->name );
     }
     --depth;
@@ -2265,10 +2363,16 @@ static int usageCmp( const void *v1, const void *v2 )
     }
 }
 
-static char *catArg( char *arg, char *buf )
+static char *catArg( char *arg, char *buf, char equal_char )
 {
     for( ; *arg != '\0'; ++arg ) {
-        if( optFlag.no_equal ) {
+        if( equal_char != '\0' ) {
+            if( *arg != '=' ) {
+                *buf++ = *arg;
+            } else {
+                *buf++ = equal_char;
+            }
+        } else if( optFlag.no_equal ) {
             if( *arg != '=' ) {
                 *buf++ = *arg;
             }
@@ -2299,48 +2403,58 @@ static char *genOptionUsageStart( OPTION *o, char *buf, bool no_prefix )
         *buf++ = '-';
         buf = cvtOptionSpec( buf, o->pattern, CVT_USAGE );
     }
-    if( o->usage_argid != NULL ) {
+    if( o->is_special ) {
+        if( o->usage_argid != NULL ) {
+            if( o->is_optional ) {
+                buf = catArg( "[", buf, o->equal_char );
+                buf = catArg( o->usage_argid, buf, '\0' );
+                buf = catArg( "]", buf, '\0' );
+            } else {
+                buf = catArg( o->usage_argid, buf, '\0' );
+            }
+        }
+    } else if( o->usage_argid != NULL ) {
         if( o->is_optional ) {
-            buf = catArg( "[=", buf );
-            buf = catArg( o->usage_argid, buf );
-            buf = catArg( "]", buf );
+            buf = catArg( "[=", buf, o->equal_char );
+            buf = catArg( o->usage_argid, buf, '\0' );
+            buf = catArg( "]", buf, '\0' );
         } else {
-            buf = catArg( "=", buf );
-            buf = catArg( o->usage_argid, buf );
+            buf = catArg( "=", buf, o->equal_char );
+            buf = catArg( o->usage_argid, buf, '\0' );
         }
     } else if( o->is_number ) {
-        if( o->default_specified || o->is_optional ) {
-            buf = catArg( "[=<num>]", buf );
+        if( o->default_specified
+          || o->is_optional ) {
+            buf = catArg( "[=<num>]", buf, o->equal_char );
         } else {
-            buf = catArg( "=<num>", buf );
+            buf = catArg( "=<num>", buf, o->equal_char );
         }
     } else if( o->is_char ) {
         if( o->is_optional ) {
-            buf = catArg( "[=<char>]", buf );
+            buf = catArg( "[=<char>]", buf, o->equal_char );
         } else {
-            buf = catArg( "=<char>", buf );
+            buf = catArg( "=<char>", buf, o->equal_char );
         }
     } else if( o->is_id ) {
         if( o->is_optional ) {
-            buf = catArg( "[=<id>]", buf );
+            buf = catArg( "[=<id>]", buf, o->equal_char );
         } else {
-            buf = catArg( "=<id>", buf );
+            buf = catArg( "=<id>", buf, o->equal_char );
         }
     } else if( o->is_file ) {
         if( o->is_optional ) {
-            buf = catArg( "[=<file>]", buf );
+            buf = catArg( "[=<file>]", buf, o->equal_char );
         } else {
-            buf = catArg( "=<file>", buf );
+            buf = catArg( "=<file>", buf, o->equal_char );
         }
     } else if( o->is_path ) {
         if( o->is_optional ) {
-            buf = catArg( "[=<path>]", buf );
+            buf = catArg( "[=<path>]", buf, o->equal_char );
         } else {
-            buf = catArg( "=<path>", buf );
+            buf = catArg( "=<path>", buf, o->equal_char );
         }
     } else if( o->is_negate ) {
-        buf = catArg( "[-]", buf );
-    } else if( o->is_special ) {
+        buf = catArg( "[-]", buf, '\0' );
     }
     return( buf );
 }
@@ -2351,12 +2465,13 @@ static bool usageValid( OPTION *o, GROUP *gr )
         return( false );
     if( o->synonym != NULL )
         return( false );
-    if( o->is_internal && (targetMask & targetDbgMask) == 0 )
+    if( o->is_internal
+      && (targetMask & targetDbgMask) == 0 )
         return( false );
     return( true );
 }
 
-static void emitQuotedString( FILE *fp, const char *str, bool zero_term, bool comma_list )
+static void emitQuotedString( FILE *fp, const char *str, const char *line_term, char *list_sep )
 {
     size_t      len;
     const char  *q;
@@ -2370,7 +2485,7 @@ static void emitQuotedString( FILE *fp, const char *str, bool zero_term, bool co
         tmpbuff[len] = '\0';
         fprintf( fp, "%s\\\"", tmpbuff );
     }
-    fprintf( fp, "%s%s\"%s", s, ( zero_term ) ? "\\0" : "", ( comma_list ) ? "," : "" );
+    fprintf( fp, "%s%s\"%s", s, line_term, list_sep );
 }
 
 static void emitUsageH( void )
@@ -2382,14 +2497,14 @@ static void emitUsageH( void )
     if( optFlag.rc ) {
         if( ufp != NULL ) {
             fprintf( ufp, "pick((%s+%d), ", optFlag.rc_macro, line_offs++ );
-            emitQuotedString( ufp, getLangData( outputdata, LANG_English ), false, false );
+            emitQuotedString( ufp, getLangData( outputdata, LANG_English ), "", "" );
             fprintf( ufp, ", " );
             str = getLangData( outputdata, LANG_Japanese );
             if( !optFlag.out_utf8 ) {
                 utf8_to_cp932( str, tmpbuff );
                 str = tmpbuff;
             }
-            emitQuotedString( ufp, str, false, false );
+            emitQuotedString( ufp, str, "", "" );
             fprintf( ufp, ")\n" );
         }
     } else {
@@ -2400,7 +2515,7 @@ static void emitUsageH( void )
             strcpy( maxusgbuff, str );
         }
         if( ufp != NULL ) {
-            emitQuotedString( ufp, str, ( optFlag.zero_term ) ? true : false, ( optFlag.comma_list ) ? true : false );
+            emitQuotedString( ufp, str, optFlag.line_term, optFlag.list_sep );
             fprintf( ufp, "\n" );
         }
     }
@@ -2431,7 +2546,8 @@ static void expand_tab( const char *s, char *buf )
     int len;
 
     for( ; *s != '\0'; ++s ) {
-        if( s[0] == '\\' && s[1] == 't' ) {
+        if( s[0] == '\\'
+          && s[1] == 't' ) {
             ++s;
             for( len = 8; len-- > 0; ) {
                 *buf++ = ' ';
@@ -2522,24 +2638,24 @@ static void clearChainUsage( void )
     }
 }
 
-static bool createChainHeaderPrefix( OPTION **t, char *buf, size_t max )
+static bool createChainHeaderPrefix( OPTION **o, char *buf, size_t max )
 {
     size_t      len;
     CHAIN       *cn;
     char        *stop;
 
     stop = buf + max;
-    cn = (*t)->chain;
+    cn = (*o)->chain;
     *buf++ = '-';
     buf = cvtOptionSpec( buf, cn->pattern, CVT_NAME );
     *buf++ = '{';
     len = 0;
-    for( ; *t != NULL && (*t)->chain == cn; t++ ) {
-        if( (*t)->chain != NULL ) {
+    for( ; *o != NULL && (*o)->chain == cn; o++ ) {
+        if( (*o)->chain != NULL ) {
             if( len > 0 ) {
                 *buf++ = ',';
             }
-            buf = genOptionUsageStart( *t, buf, true );
+            buf = genOptionUsageStart( *o, buf, true );
             ++len;
         }
     }
@@ -2551,24 +2667,24 @@ static bool createChainHeaderPrefix( OPTION **t, char *buf, size_t max )
     return( buf == stop );
 }
 
-static void outputChainHeader( OPTION **t, process_line_fn *process_line, size_t max )
+static void outputChainHeader( OPTION **o, process_line_fn *process_line, size_t max )
 {
     char        *buf;
     size_t      len;
     language_id lang;
 
-    if( createChainHeaderPrefix( t, hdrbuff, max ) ) {
+    if( createChainHeaderPrefix( o, hdrbuff, max ) ) {
         for( lang = 0; lang < LANG_MAX; lang++ ) {
             buf = GET_OUTPUT_BUF( lang );
             strcpy( buf, hdrbuff );
-            strcpy( buf + max, getLangData( (*t)->chain->Usage, lang ) );
+            strcpy( buf + max, getLangData( (*o)->chain->Usage, lang ) );
         }
     } else {
         for( lang = 0; lang < LANG_MAX; lang++ ) {
             buf = GET_OUTPUT_BUF( lang );
             for( len = max / 2; len-- > 0; )
                 *buf++ = ' ';
-            strcpy( buf, getLangData( (*t)->chain->Usage, lang ) );
+            strcpy( buf, getLangData( (*o)->chain->Usage, lang ) );
         }
         process_output( process_line );
         for( lang = 0; lang < LANG_MAX; lang++ ) {
@@ -2621,7 +2737,7 @@ static void processUsage( process_line_fn *process_line, GROUP *gr )
     size_t      max;
     size_t      len;
     OPTION      *o;
-    OPTION      **t;
+    OPTION      **oo;
     OPTION      **c;
 
     maxUsageLen = 0;
@@ -2637,25 +2753,26 @@ static void processUsage( process_line_fn *process_line, GROUP *gr )
         }
     }
     ++max;
-    t = calloc( count + 1, sizeof( OPTION * ) );
-    c = t;
+    oo = calloc( count + 1, sizeof( OPTION * ) );
+    c = oo;
     for( o = optionList; o != NULL; o = o->next ) {
         if( usageValid( o, gr ) ) {
             *c++ = o;
         }
     }
     *c = NULL;
-    qsort( t, count, sizeof( OPTION * ), usageCmp );
+    qsort( oo, count, sizeof( OPTION * ), usageCmp );
 
     clearChainUsage();
     for( i = 0; i < count; ++i ) {
-        if( t[i]->chain != NULL && !t[i]->chain->usage_used ) {
-            t[i]->chain->usage_used = true;
-            outputChainHeader( &t[i], process_line, max );
+        if( oo[i]->chain != NULL
+          && !oo[i]->chain->usage_used ) {
+            oo[i]->chain->usage_used = true;
+            outputChainHeader( &oo[i], process_line, max );
         }
-        outputOption( t[i], process_line, max );
+        outputOption( oo[i], process_line, max );
     }
-    free( t );
+    free( oo );
     if( checkUsageLength( maxUsageLen ) ) {
         fprintf( stderr, "usage message exceeds %u chars\n%s\n", CONSOLE_WIDTH, maxusgbuff );
     }
@@ -2768,7 +2885,7 @@ static char *ReadIndirectFile( char *name )
 {
     char        *str;
     FILE        *fp;
-    int         len;
+    size_t      len;
     char        ch;
 
     str = NULL;
@@ -2787,7 +2904,8 @@ static char *ReadIndirectFile( char *name )
                 *str = '\0';        // - mark end of str
                 break;
             }
-            if( ch != ' ' && myisspace( ch ) ) {
+            if( ch != ' '
+              && myisspace( ch ) ) {
                 *str = ' ';
             }
         }
@@ -2808,13 +2926,15 @@ static char *getFileName( char *str, char *name )
             if( ch == '"' ) {
                 break;
             }
-            if( ch == '\\' && *str == '"' ) {
+            if( ch == '\\'
+              && *str == '"' ) {
                 ch = *str++;
             }
             *name++ = ch;
         }
     } else {
-        while( *str != '\0' && !myisspace( *str ) ) {
+        while( *str != '\0'
+          && !myisspace( *str ) ) {
             *name++ = *str++;
         }
     }
@@ -2827,7 +2947,7 @@ static char *ProcessOption( char *s, char *option_start )
 {
     switch( *s++ ) {
     case 'c':
-        optFlag.comma_list = true;
+        optFlag.list_sep = ",";
         return( s );
     case 'i':
         optFlag.international = true;
@@ -2839,13 +2959,19 @@ static char *ProcessOption( char *s, char *option_start )
         }
         break;
     case 'n':
-        optFlag.zero_term = true;
+        if( *s == 'n' ) {
+            s++;
+            optFlag.line_term = "\\n";
+        } else {
+            optFlag.line_term = "\\0";
+        }
         return( s );
     case 'q':
         optFlag.quiet = true;
         return( s );
     case 'r':
-        if( *s++ == 'c' && *s++ == '=' ) {
+        if( *s++ == 'c'
+          && *s++ == '=' ) {
             optFlag.rc = true;
             SKIP_SPACES( s );
             optFlag.rc_macro = option_start;
@@ -2868,7 +2994,9 @@ static char *ProcessOption( char *s, char *option_start )
                 fail( "cannot open '%s' for output", option_start );
             }
             return( s );
-        } else if( *s++ == 't' && *s++ == 'f' && *s++ == '8' ) {
+        } else if( *s++ == 't'
+          && *s++ == 'f'
+          && *s++ == '8' ) {
             optFlag.out_utf8 = true;
             return( s );
         }
@@ -2876,6 +3004,13 @@ static char *ProcessOption( char *s, char *option_start )
     }
     printf( "Unknown option: %s\n", option_start );
     return( NULL );
+}
+
+static void initOptions( void )
+/*****************************/
+{
+     optFlag.line_term = "";
+     optFlag.list_sep = "";
 }
 
 static bool ProcessOptions( char *str )
@@ -2964,18 +3099,20 @@ int main( int argc, char **argv )
     bool    ok;
     int     i;
 
-    setlocale(LC_ALL,"C");
+    setlocale( LC_ALL, "C" );
     ok = _LANG_DEFS_OK();
     if( !ok )
         fail( "language index mismatch\n" );
     initTargets();
+    initOptions();
     for( i = 1; i < argc; i++ ) {
         if( ProcessOptions( argv[i] ) ) {
             ok = false;
             break;
         }
     }
-    if( !ok || fno < NUM_FILES ) {
+    if( !ok
+      || fno < NUM_FILES ) {
         ok = false;
         dumpUsage();
     } else {
@@ -3002,3 +3139,4 @@ int main( int argc, char **argv )
         return( EXIT_SUCCESS );
     return( EXIT_FAILURE );
 }
+

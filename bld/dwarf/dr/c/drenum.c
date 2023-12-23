@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,10 +32,10 @@
 
 #include "drpriv.h"
 #include "drutils.h"
-#include "drenum.h"
+
 
 typedef struct {
-    enumCallback    callback;
+    DRENUMCB        callback;
     void            *data;
 } enum_cb_info;
 
@@ -57,8 +58,8 @@ static bool ReadEnumerator( drmem_hdl abbrev, drmem_hdl mod, void *inf )
     return( info->callback( name, val, info->data ) );
 }
 
-void DRLoadEnum( drmem_hdl entry, void * data, enumCallback callback )
-/********************************************************************/
+void DRENTRY DRLoadEnum( drmem_hdl entry, void * data, DRENUMCB callback )
+/************************************************************************/
 {
     enum_cb_info    info;
     drmem_hdl       abbrev;

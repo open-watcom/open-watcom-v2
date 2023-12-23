@@ -1,3 +1,5 @@
+tree_depth = 5
+
 exetarg_prebuild_objs = cmdlnprs.gc
 exetarg_objs = rc.obj message.obj parse.obj translat.obj $(mstools_objs)
 

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,7 +31,6 @@
 
 
 #include "drpriv.h"
-#include <string.h>
 #include "drutils.h"
 #include "walloca.h"
 
@@ -66,7 +66,7 @@ static void InitState( line_info *info )
     info->state.offset = 0;
     info->state.file = 1;
     info->state.line = 1;
-    info->state.col = 0;
+    info->state.column = 0;
     info->state.is_stmt = info->rdr.def_is_stmt;
     info->state.basic_blk = false;
     info->state.end_seq = false;
@@ -162,7 +162,7 @@ static bool WlkStateProg( line_info *info, DRCUEWLK cue, void *cue_data,
                     }
                     curr += curr_len;
                     df.name = name_buf;                             // directory path
-                    df.dir = (uint_16)DWRVMReadULEB128( &curr );    // directory index
+                    df.dir = DWRVMReadULEB128( &curr );             // directory index
                     df.time = DWRVMReadULEB128( &curr );            // time
                     df.len = DWRVMReadULEB128( &curr );             // length
                     df.index = (filetab_idx)info->rdr.file_idx;     // index
@@ -193,10 +193,10 @@ static bool WlkStateProg( line_info *info, DRCUEWLK cue, void *cue_data,
                 info->state.line += DWRVMReadSLEB128( &curr );
                 break;
             case DW_LNS_set_file:
-                info->state.file = (uint_16)DWRVMReadULEB128( &curr );
+                info->state.file = DWRVMReadULEB128( &curr );
                 break;
             case DW_LNS_set_column:
-                info->state.col = (uint_16)DWRVMReadULEB128( &curr );
+                info->state.column = DWRVMReadULEB128( &curr );
                 break;
             case DW_LNS_negate_stmt:
                 info->state.is_stmt = !info->state.is_stmt;
@@ -271,9 +271,11 @@ static void FiniProgInfo( prog_rdr *rdr )
     DWRFREE( rdr->op_lens );
 }
 
-drmem_hdl  DRGetStmtList( drmem_hdl ccu )
-/***************************************/
-// Return the start of the statement list or 0 if no lines
+drmem_hdl DRENTRY DRGetStmtList( drmem_hdl ccu )
+/***********************************************
+ * Return the start of the statement list from ccu
+ * or NULL if no statements
+ */
 {
     drmem_hdl   abbrev;
 
@@ -286,9 +288,11 @@ drmem_hdl  DRGetStmtList( drmem_hdl ccu )
     return( ccu );
 }
 
-bool DRWalkLines( drmem_hdl stmt, uint_16 seg, DRCUEWLK wlk, void *d )
-/********************************************************************/
-// Run the statement program
+bool DRENTRY DRWalkLines( drmem_hdl stmt, uint_16 seg, DRCUEWLK wlk, void *d )
+/*****************************************************************************
+ * Run the statement program
+ * walk lines given statement list handle
+ */
 {
     line_info   info;
     bool        ret;
@@ -299,10 +303,12 @@ bool DRWalkLines( drmem_hdl stmt, uint_16 seg, DRCUEWLK wlk, void *d )
     return( ret );
 }
 
-bool DRWalkLFiles( drmem_hdl stmt, DRLFILEWLK file, void *file_data,
-                                        DRLDIRWLK dir, void *dir_data )
-/*********************************************************************/
-// Run the statement program
+bool DRENTRY DRWalkLFiles( drmem_hdl stmt, DRLFILEWLK file,
+                        void *file_data, DRLDIRWLK dir, void *dir_data )
+/***********************************************************************
+ * Run the statement program
+ * walk files given statement list handle
+ */
 {
     line_info       info;
     unsigned_8      value;
@@ -359,7 +365,7 @@ bool DRWalkLFiles( drmem_hdl stmt, DRLFILEWLK file, void *file_data,
         stmt += curr_len;
         info.rdr.file_idx++;
         df.name = name_buf;                             // directory path
-        df.dir = (uint_16)DWRVMReadULEB128( &stmt );    // directory index
+        df.dir = DWRVMReadULEB128( &stmt );             // directory index
         df.time = DWRVMReadULEB128( &stmt );            // time
         df.len = DWRVMReadULEB128( &stmt );             // length
         df.index = (filetab_idx)info.rdr.file_idx;      // index

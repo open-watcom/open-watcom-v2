@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,24 +39,28 @@
 #include "pillimp.h"
 #include "pillctrl.h"
 
-int PILLSysLoad( const char *path, const pill_client_routines *cli,
+int PILLSysLoad( const char *base_name, const pill_client_routines *cli,
                 link_handle *lh, link_message *msg )
 {
-    HMODULE                     dll;
-    pill_init_func              *init_func;
+    HMODULE                 mod_hdl;
+    char                    filename[_MAX_PATH];
+    pill_init_func          *init_func;
 
     msg->source = NULL;
     msg->id = LM_SYSTEM_ERROR;
-    msg->data.code = DosLoadModule( NULL, 0, path, &dll );
+    if( DIGLoader( Find )( DIG_FILETYPE_DBG, base_name, 0, ".dll", filename, sizeof( filename ) ) == 0 ) {
+        return( 0 );
+    }
+    msg->data.code = DosLoadModule( NULL, 0, filename, &mod_hdl );
     if( msg->data.code != 0 ) {
         return( 0 );
     }
-    msg->data.code = DosGetProcAddr( dll, "PILLLOAD", (PFN FAR *)&init_func );
+    msg->data.code = DosGetProcAddr( mod_hdl, "PILLLOAD", (PFN FAR *)&init_func );
     if( msg->data.code != 0 ) {
-        DosFreeModule( dll );
+        DosFreeModule( mod_hdl );
         return( 0 );
     }
-    lh->sys = (void *)dll;
+    lh->sys = (void *)mod_hdl;
     lh->rtns = init_func( cli, msg );
     if( lh->rtns == NULL ) {
         /* don't free DLL yet, we need the message processor */

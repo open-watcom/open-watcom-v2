@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -848,7 +848,7 @@ static  void    DoDataInit( PTYPE var_type )
     } else {        // numeric to numeric
         if( DtConstType != var_type ) {
             DataCnvTab[ ( var_type - PT_INT_1 ) * CONST_TYPES +
-                        ( DtConstType - PT_INT_1 ) ]( (ftn_type *)const_ptr, (ftn_type *)&const_buff );
+                        ( DtConstType - PT_INT_1 ) ]( (ftn_type *)const_ptr, (ftn_type *)const_buff );
             const_ptr = const_buff;
         }
 

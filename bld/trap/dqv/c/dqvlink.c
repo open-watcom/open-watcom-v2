@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -49,12 +49,14 @@ static a_handle         PutHandle;
 #define PATTERN 0xA5
 
 
-static int fstrlen( char __far *str )
+static size_t fstrlen( char __far *str )
 {
-    int         i;
+    size_t      len;
 
-    for( i=0; *str; ++i, ++str );
-    return( i );
+    len = 0;
+    while( *str++ != '\0' )
+        ++len;
+    return( len );
 }
 
 unsigned RemoteGet( void __far *data, unsigned len )
@@ -63,11 +65,11 @@ unsigned RemoteGet( void __far *data, unsigned len )
     int         buflen;
     int         status;
 
-    len=len;
+    /* unused parameters */ (void)len;
+
     status = mal_read( GetHandle, &buffer, &buflen );
     movedata( _FP_SEG( buffer ), _FP_OFF( buffer ),
-              _FP_SEG( data ), _FP_OFF( data ),
-              buflen );
+              _FP_SEG( data ), _FP_OFF( data ), buflen );
     return( buflen );
 }
 
@@ -89,7 +91,7 @@ bool RemoteConnect( void )
     if( status == 0 )
         return( false );
     status = mal_read( GetHandle, &buffer, &buflen );
-    if( *buffer == PATTERN ){
+    if( *buffer == PATTERN ) {
         PutHandle = mal_of( mal_addr( GetHandle ) );
         pattern = PATTERN;
         mal_write( PutHandle, &pattern, sizeof(pattern) );
@@ -99,7 +101,7 @@ bool RemoteConnect( void )
     pattern = PATTERN;
     mal_write( PutHandle, &pattern, sizeof( pattern ) );
     status = mal_read( GetHandle, &buffer, &buflen );
-    if( *buffer == PATTERN ){
+    if( *buffer == PATTERN ) {
         return( true );
     }
 #endif
@@ -113,18 +115,18 @@ void RemoteDisco( void )
 
 const char *RemoteLink( const char __far *parms, char server )
 {
-    int                 version;
+    int         version;
 
     server = server;
 
     version = api_init();
-    if( version == 0 ){
+    if( version == 0 ) {
         return( "DESQview not installed" );
     } else if( version < 0x200 ) {
         return( "this program requires DESQview 2.00 or higher" );
     }
     api_level( 0x200 );
-    if( *parms == '\0' ){
+    if( *parms == '\0' ) {
         parms = "WATCOM Server";
     }
 

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,7 +34,7 @@
 #include "ms2wlink.h"
 #include "banner.h"
 
-#include "clibext.h"
+#include "clibint.h"
 
 
 // this array contains linked lists of the commands which are to be put into the
@@ -160,8 +160,8 @@ static void BuildWATCOM( void )
 
 #define NL "\n"
 static const char TheHelp[] = {
-    banner1w1( "Microsoft to Watcom linker command translation utility" ) NL
-    banner1w2( _MS2WLINK_VERSION_ ) NL
+    banner1t( "Microsoft to Watcom linker command translation utility" ) NL
+    banner1v( _MS2WLINK_VERSION_ ) NL
     banner2 NL
     banner2a( 1990 ) NL
     banner3 NL
@@ -199,11 +199,11 @@ int main( int argc, char **argv )
 /*******************************/
 {
 #if !defined( __WATCOMC__ )
-    _argc = argc;                                                                                                           
-    _argv = argv;                                                                                                       
-#else                                                                                                                       
-    /* unused parameters */ (void)argc; (void)argv;                                                                     
-#endif 
+    _argc = argc;
+    _argv = argv;
+#else
+    /* unused parameters */ (void)argc; (void)argv;
+#endif
 
     MemInit();
     UtilsInit();

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,6 +35,8 @@
 #include "coderep.h"
 #include "cgmem.h"
 #include "cgaux.h"
+#include "cgauxcc.h"
+#include "cgauxinf.h"
 #include "zoiks.h"
 #include "makeins.h"
 #include "data.h"
@@ -52,17 +54,18 @@
 #include "bldcall.h"
 #include "bldins.h"
 #include "x86segs.h"
-#include "cgprotos.h"
 #include "parm.h"
 #include "bgcall.h"
+#include "cgprotos.h"
+#include "feprotos.h"
 
 
 static  void    AddCall( instruction *ins, cn call );
 
 #if _TARGET & _TARG_80386
-static  void    Far16Parms( cn call ) {
-/*************************************/
-
+static  void    Far16Parms( cn call )
+/***********************************/
+{
     instruction         *ins;
     type_length         parm_size;
     pn                  parm, next;
@@ -134,8 +137,8 @@ static  void    Far16Parms( cn call ) {
 #endif
 
 
-an      BGCall( cn call, bool use_return, bool in_line )
-/******************************************************/
+an      BGCall( cn call, bool use_return, bool aux_inline )
+/*********************************************************/
 {
     instruction         *call_ins;
     call_state          *state;
@@ -154,10 +157,10 @@ an      BGCall( cn call, bool use_return, bool in_line )
     state = call->state;
     result = BGNewTemp( call->tipe );
     call_ins = call->ins;
-
-/*   If we have a return value that won't fit in a register*/
-/*   pass a pointer to result as the first parm*/
-
+    /*
+     * If we have a return value that won't fit in a register
+     * pass a pointer to result as the first parm
+     */
     if( call_ins->type_class == XX ) {
         if( _RoutineIsFar16( state->attr ) ) {
             if( state->attr & ROUTINE_ALLOCS_RETURN ) {
@@ -166,7 +169,7 @@ an      BGCall( cn call, bool use_return, bool in_line )
                 HW_CAsgn( state->return_reg, HW_EBX );
             }
         }
-        if( ( state->attr & ROUTINE_ALLOCS_RETURN ) == 0 ) {
+        if( (state->attr & ROUTINE_ALLOCS_RETURN) == 0 ) {
             if( HW_CEqual( state->return_reg, HW_EMPTY ) ) {
                 ret_ptr = AllocTemp( WD );
             } else {
@@ -177,7 +180,8 @@ an      BGCall( cn call, bool use_return, bool in_line )
             call_ins->flags.call_flags |= CALL_RETURNS_STRUCT;
         }
     }
-    if( _IsTargetModel(FLOATING_DS) && (state->attr&ROUTINE_NEEDS_DS_LOADED) ) {
+    if( _IsTargetModel( CGSW_X86_FLOATING_DS )
+      && (state->attr & ROUTINE_NEEDS_DS_LOADED) ) {
         HW_CTurnOn( state->parm.used, HW_DS );
     }
     if( _RoutineIsFar16( state->attr ) ) {
@@ -185,26 +189,34 @@ an      BGCall( cn call, bool use_return, bool in_line )
         Far16Parms( call );
 #endif
     } else {
-        if( AssgnParms( call, in_line ) ) {
+        if( AssgnParms( call, aux_inline ) ) {
             if( state->attr & ROUTINE_REMOVES_PARMS ) {
                 call_ins->flags.call_flags |= CALL_POPS_PARMS;
             }
         }
     }
 
-    if( state->attr & (ROUTINE_MODIFIES_NO_MEMORY | ROUTINE_NEVER_RETURNS) ) {
-        /* a routine that never returns can not write any memory as far
-            as this routine is concerned */
+    if( state->attr & (ROUTINE_MODIFIES_NO_MEMORY | ROUTINE_NEVER_RETURNS_ABORTS | ROUTINE_NEVER_RETURNS_NORETURN) ) {
+        /*
+         * a routine that never returns can not write any memory
+         * as far as this routine is concerned
+         */
         call_ins->flags.call_flags |= CALL_WRITES_NO_MEMORY;
     }
     if( state->attr & ROUTINE_READS_NO_MEMORY ) {
         call_ins->flags.call_flags |= CALL_READS_NO_MEMORY;
     }
-    if( state->attr & ROUTINE_NEVER_RETURNS ) {
+    if( state->attr & ROUTINE_NEVER_RETURNS_ABORTS ) {
         call_ins->flags.call_flags |= CALL_ABORTS;
+    }
+    if( state->attr & ROUTINE_NEVER_RETURNS_NORETURN ) {
+        call_ins->flags.call_flags |= CALL_NORETURN;
     }
     if( _RoutineIsInterrupt( state->attr ) ) {
         call_ins->flags.call_flags |= CALL_INTERRUPT | CALL_POPS_PARMS;
+    }
+    if( state->attr & ROUTINE_NEEDS_BP_CHAIN ) {
+        call_ins->flags.call_flags |= CALL_NEEDS_BP_CHAIN;
     }
     if( !use_return ) {
         call_ins->flags.call_flags |= CALL_IGNORES_RETURN;
@@ -252,7 +264,8 @@ an      BGCall( cn call, bool use_return, bool in_line )
             AddIns( ret_ins );
         }
     }
-    if( state->parm.offset != 0 && ( state->attr & ROUTINE_REMOVES_PARMS ) == 0 ) {
+    if( state->parm.offset != 0
+      && (state->attr & ROUTINE_REMOVES_PARMS) == 0 ) {
         reg_name = AllocRegName( HW_xSP );
         AddIns( MakeBinary( OP_ADD, reg_name,
                 AllocS32Const( state->parm.offset ), reg_name, WD ) );
@@ -296,7 +309,7 @@ void    BGProcDecl( cg_sym_handle sym, type_def *tipe )
         }
     }
     if( CurrProc->state.attr & ROUTINE_FARSS ) {
-        TargetModel |= FLOATING_SS;
+        TargetModel |= CGSW_X86_FLOATING_SS;
     }
 }
 
@@ -315,7 +328,8 @@ name    *StReturn( an retval, type_def *tipe, instruction **pins )
         AddIns( MakeUnary( OP_LA, retp, AllocRegName( CurrProc->state.return_reg ), WD ) );
         *pins = NULL;
     } else {
-        if( _IsTargetModel( FLOATING_SS ) || _IsTargetModel( FLOATING_DS ) ) {
+        if( _IsTargetModel( CGSW_X86_FLOATING_SS )
+          || _IsTargetModel( CGSW_X86_FLOATING_DS ) ) {
             ptr = AllocTemp( CP );
             off = OffsetPart( ptr );
             seg = SegmentPart( ptr );
@@ -339,7 +353,8 @@ static  void    AddCall( instruction *ins, cn call ) {
 
     name        *proc_name;
 
-    if( _IsTargetModel(FLOATING_DS) && (call->state->attr&ROUTINE_NEEDS_DS_LOADED) ) {
+    if( _IsTargetModel( CGSW_X86_FLOATING_DS )
+      && (call->state->attr & ROUTINE_NEEDS_DS_LOADED) ) {
         AddIns( MakeMove( NearSegment(), AllocRegName( HW_DS ), U2 ) );
     }
     if( call->name->tipe == TypeProcParm ) {
@@ -450,10 +465,10 @@ void    PostCall( cn call )
     /* unused parameters */ (void)call;
 }
 
-type_def    *PassParmType( cg_sym_handle func, type_def* tipe, call_class cclass )
-/********************************************************************************/
+type_def    *PassParmType( cg_sym_handle func, type_def* tipe )
+/*************************************************************/
 {
-    if( cclass & FAR16_CALL )
+    if( (call_class_target)(pointer_uint)FindAuxInfoSym( func, FEINF_CALL_CLASS_TARGET ) & FECALL_X86_FAR16_CALL )
         return( tipe );
     return( QParmType( func, NULL, tipe ) );
 }

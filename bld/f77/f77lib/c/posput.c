@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,30 +43,8 @@
 #include "posdat.h"
 
 
-/* forward declarations */
-static  void    PutTextRec( b_file *io, const char *b, size_t len );
-static  void    PutVariableRec( b_file *io, const char *b, size_t len );
-static  void    PutFixedRec( b_file *io, const char *b, size_t len );
-
-void    FPutRec( b_file *io, const char *b, size_t len )
-//======================================================
-// Put a record to a file.
-{
-    FSetIOOk( io );
-    if( io->attrs & REC_TEXT ) {
-        PutTextRec( io, b, len );
-    } else if( io->attrs & REC_VARIABLE ) {
-        PutVariableRec( io, b, len );
-    } else {
-        PutFixedRec( io, b, len );
-    }
-    if( io->attrs & TRUNC_ON_WRITE ) {
-        ChopFile( io );
-    }
-}
-
-
 void    ChopFile( b_file *io )
+//============================
 {
     long    offset;
 
@@ -85,14 +63,6 @@ void    ChopFile( b_file *io )
         FSetSysErr( io );
     }
 }
-
-#if 0
-void    PutRec( const char *b, size_t len )
-// Put a record to standard output device.
-{
-    FPutRec( FStdOut, b, len );
-}
-#endif
 
 static  void    PutTextRec( b_file *io, const char *b, size_t len )
 //=================================================================
@@ -115,14 +85,14 @@ static  void    PutTextRec( b_file *io, const char *b, size_t len )
     }
     if( SysWrite( io, b, len ) == -1 )
         return;
-    if( ( io->attrs & CC_NOCR ) == 0 ) {
+    if( (io->attrs & CC_NOCR) == 0 ) {
 #if defined( __UNIX__ )
         tag[0] = CHAR_LF;
         len = 1;
 #else
         tag[0] = CHAR_CR;
         len = 1;
-        if( ( io->attrs & CC_NOLF ) == 0 ) {
+        if( (io->attrs & CC_NOLF) == 0 ) {
             tag[1] = CHAR_LF;
             ++len;
         }
@@ -139,17 +109,17 @@ static  void    PutVariableRec( b_file *io, const char *b, size_t len )
 //=====================================================================
 // Put a record to a file with "variable" records.
 {
-    unsigned_32 tag;
+    variable_rec_tag    rec_tag;
 
-    tag = len;
+    rec_tag = len;
     if( io->attrs & LOGICAL_RECORD ) {
-        tag |= 0x80000000;
+        rec_tag |= VARIABLE_REC_LOGICAL;
     }
-    if( SysWrite( io, (char *)(&tag), sizeof( tag ) ) == -1 )
+    if( SysWrite( io, (char *)&rec_tag, sizeof( rec_tag ) ) == -1 )
         return;
     if( SysWrite( io, b, len ) == -1 )
         return;
-    if( SysWrite( io, (char *)(&tag), sizeof( tag ) ) == -1 ) {
+    if( SysWrite( io, (char *)&rec_tag, sizeof( rec_tag ) ) == -1 ) {
         return;
     }
 }
@@ -166,6 +136,7 @@ static  void    PutFixedRec( b_file *io, const char *b, size_t len )
 
 
 size_t  writebytes( b_file *io, const char *buff, size_t len )
+//============================================================
 {
     size_t      written;
     size_t      total;
@@ -196,6 +167,7 @@ size_t  writebytes( b_file *io, const char *buff, size_t len )
 
 
 int SysWrite( b_file *io, const char *b, size_t len )
+//===================================================
 {
     size_t      amt;
 
@@ -212,7 +184,7 @@ int SysWrite( b_file *io, const char *b, size_t len )
         io->b_curs += amt;
         if( io->b_curs > io->high_water ) {
             io->high_water = io->b_curs;
-            if( ( io->attrs & READ_AHEAD ) == 0 ) {
+            if( (io->attrs & READ_AHEAD) == 0 ) {
                 io->read_len = io->high_water;
             }
         }
@@ -249,3 +221,28 @@ int SysWrite( b_file *io, const char *b, size_t len )
     }
     return( 0 );
 }
+
+void    FPutRec( b_file *io, const char *b, size_t len )
+//======================================================
+// Put a record to a file.
+{
+    FSetIOOk( io );
+    if( io->attrs & REC_TEXT ) {
+        PutTextRec( io, b, len );
+    } else if( io->attrs & REC_VARIABLE ) {
+        PutVariableRec( io, b, len );
+    } else {
+        PutFixedRec( io, b, len );
+    }
+    if( io->attrs & TRUNC_ON_WRITE ) {
+        ChopFile( io );
+    }
+}
+
+#if 0
+void    PutRec( const char *b, size_t len )
+// Put a record to standard output device.
+{
+    FPutRec( FStdOut, b, len );
+}
+#endif

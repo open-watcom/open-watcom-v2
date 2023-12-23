@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2009-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2009-2023 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -36,6 +36,7 @@
 #include <string.h>
 #include <stdarg.h>
 #include <i86.h>
+#include "roundmac.h"
 #include "trpimp.h"
 #include "trpcomm.h"
 #include "trperr.h"
@@ -49,11 +50,12 @@
 #include "tinyio.h"
 #include "exeos2.h"
 #include "exeflat.h"
-#include "cpuglob.h"
+#include "brkptcpu.h"
 #include "cwacc.h"
 
 
 #define MAX_WATCHES         256
+#define MAX_DREGS           3
 
 #define ST_EXECUTING        0x01
 #define ST_BREAK            0x02
@@ -63,8 +65,6 @@
 #define ST_TERMINATE        0x20
 #define ST_LOAD_MODULE      0x40
 #define ST_UNLOAD_MODULE    0x80
-
-#define ALIGN4K(x)          (((x)+0x0fffL)&~0x0fffL)
 
 #define FLAT_SEL            0x73
 
@@ -80,7 +80,6 @@ extern void dos_printf( const char *format, ... );
 #endif
 
 #define GetModuleHandle GetSelBase
-#define GetLinAddr(x)   GetSelBase(x.segment)+x.offset
 
 typedef unsigned_16 selector;
 typedef unsigned_16 segment;
@@ -133,20 +132,13 @@ typedef struct mod_t {
     seg_t           *ObjInfo;
 } mod_t;
 
-typedef struct hbrk_t {
-    unsigned_32     address;
-    unsigned_16     handle;
-    unsigned_8      type;
-    unsigned_8      size;
-    unsigned        inuse     :1;
-    unsigned        installed :1;
-} hbrk_t;
-
 typedef struct watch_point {
-    unsigned_32     address;
-    unsigned_32     check;
-    unsigned_8      length;
-    unsigned        inuse     :1;
+    uint_64         value;
+    dword           linear;
+    addr48_ptr      addr;
+    word            size;
+    word            dregs;
+    short           handle[MAX_DREGS];
 } watch_point;
 
 void dos_print( char *s );
@@ -165,9 +157,9 @@ extern unsigned_32 GetSelBase( unsigned_16 );
     __value     [__edx] \
     __modify    [__ax __ebx __ecx]
 
-extern int RelSel( unsigned_16 );
-#pragma aux RelSel = \
-        "mov  ax,0FF04h" /* RelSel */ \
+extern int ReleaseSel( unsigned_16 );
+#pragma aux ReleaseSel = \
+        "mov  ax,0FF04h" /* ReleaseSel */ \
         "int  31h" \
         "sbb  eax,eax" \
     __parm      [__bx] \
@@ -225,122 +217,127 @@ extern int GetExecCount( unsigned_32 * );
     __modify    [__bx]
 
 extern unsigned     MemoryCheck( unsigned_32, unsigned, unsigned );
-extern unsigned     MemoryRead( unsigned_32, unsigned, void *, unsigned );
-extern unsigned     MemoryWrite( unsigned_32, unsigned, void *, unsigned );
-extern unsigned     Execute( bool );
+extern size_t       MemoryRead( unsigned_32, unsigned, void *, size_t );
+extern size_t       MemoryWrite( unsigned_32, unsigned, void *, size_t );
+extern unsigned     Execute( void );
 extern int          DebugLoad( char *prog_name, char *cmdl );
 extern int          GrabVectors( void );
 extern void         ReleaseVectors( void );
 
 extern unsigned_8       Exception;
 extern int              XVersion;
-extern trap_cpu_regs    DebugRegs;
-extern unsigned_16      DebugPSP;
+extern trap_cpu_regs    ProcRegs;
+extern unsigned_16      ProcPSP;
 
-int                 WatchCount = 0;
 bool                FakeBreak = false;
 
 static unsigned_8   RealNPXType;
-static hbrk_t       HBRKTable[4];
 static watch_point  WatchPoints[MAX_WATCHES];
+static int          WatchCount = 0;
 static mod_t        *ModHandles = NULL;
 static int          NumModHandles = 0;
 
 static selector     flatCode = FLAT_SEL;
 static selector     flatData = FLAT_SEL;
 
+static opcode_type  BreakOpcode;
+
 #ifdef DEBUG_TRAP
 void dos_printf( const char *format, ... )
 {
     static char     dbg_buf[256];
     va_list         args;
+    size_t          len;
 
     va_start( args, format );
     vsnprintf( dbg_buf, sizeof( dbg_buf ), format, args );
     // Convert to DOS string
-    dbg_buf[strlen( dbg_buf )] = '\$';
+    len = strlen( dbg_buf );
+    dbg_buf[len++] = '\r';
+    dbg_buf[len++] = '\n';
+    dbg_buf[len] = '\$';
     dos_print( dbg_buf );
     va_end( args );
 }
 #endif
 
-static void HBRKInit( void )
-/**************************/
+static int DRegsCount( void )
 {
+    int     needed;
     int     i;
 
-    for( i = 0; i < 4; ++i ) {
-        HBRKTable[i].inuse = false;
+    needed = 0;
+    for( i = 0; i < WatchCount; i++ ) {
+        needed += WatchPoints[i].dregs;
     }
+    return( needed );
 }
 
-void SetHBRK( void )
-/******************/
-{
-    int     i;
-
-    // Install hardware break points.
-    for( i = 0; i < 4; ++i ) {
-        if( HBRKTable[i].inuse ) {
-            long    wh;
-
-            wh = _DPMISetWatch( HBRKTable[i].address, HBRKTable[i].size, HBRKTable[i].type );
-            if( wh >= 0 ) {
-                HBRKTable[i].installed = true;
-                HBRKTable[i].handle = wh;
-                _DPMIResetWatch( wh );
-            }
-        }
-    }
-}
-
-void ResetHBRK( void )
-/********************/
-{
-    int     i;
-
-    // Uninstall hardware break points.
-    for( i = 0; i < 4; ++i ) {
-        if( HBRKTable[i].inuse && HBRKTable[i].installed ) {
-            _DPMIClearWatch( HBRKTable[i].handle );
-            HBRKTable[i].installed = false;
-        }
-    }
-}
-
-int IsHardBreak( void )
-/*********************/
-{
-    int     i;
-
-    for( i = 0; i < 4; ++i ) {
-        if( HBRKTable[i].inuse && HBRKTable[i].installed ) {
-            if( _DPMITestWatch( HBRKTable[i].handle ) > 0 ) {
-                return( true );
-            }
-        }
-    }
-    return( false );
-}
-
-int CheckWatchPoints( void )
-/**************************/
+static void ClearDebugRegs( void )
 {
     int         i;
     int         j;
-    unsigned_8  *p;
-    unsigned_32 sum;
+    watch_point *wp;
 
-    for( i = 0; i < MAX_WATCHES; ++i ) {
-        if( WatchPoints[i].inuse ) {
-            p = (unsigned_8 *)WatchPoints[i].address;
-            sum = 0;
-            for( j = 0; j < WatchPoints[i].length; ++j ) {
-                sum += *(p++);
+    for( wp = WatchPoints, i = WatchCount; i-- > 0; wp++ ) {
+        for( j = 0; j < MAX_DREGS; j++ ) {
+            if( wp->handle[j] >= 0 ) {
+                DPMIClearWatch( wp->handle[j] );
+                wp->handle[j] = -1;
             }
-            if( sum != WatchPoints[i].check ) {
-                return( true );
+        }
+    }
+}
+
+static bool SetDebugRegs( void )
+{
+    int                 i;
+    int                 j;
+    long                rc;
+    watch_point         *wp;
+    dword               linear;
+    word                size;
+
+    if( DRegsCount() > 4 )
+        return( false );
+
+    for( i = 0; i < WatchCount; ++i ) {
+        for( j = 0; j < MAX_DREGS; j++ ) {
+            WatchPoints[i].handle[j] = -1;
+        }
+    }
+    for( wp = WatchPoints, i = WatchCount; i-- > 0; wp++ ) {
+        linear = wp->linear;
+        size = wp->size;
+        if( size == 8 )
+            size = 4;
+        _DBG( "Setting Watch On 0x%X", linear );
+        for( j = 0; j < wp->dregs; j++ ) {
+            rc = DPMISetWatch( linear, size, DPMI_WATCH_WRITE );
+            _DBG( "OK %d = %d", j, ( rc >= 0 ) );
+            if( rc < 0 ) {
+                ClearDebugRegs();
+                return( false );
             }
+            wp->handle[j] = rc;
+            linear += size;
+        }
+    }
+    return( true );
+}
+
+static bool CheckWatchPoints( void )
+/**********************************/
+{
+    watch_point *wp;
+    int         i;
+    uint_64     value;
+
+    for( wp = WatchPoints, i = WatchCount; i-- > 0; wp++ ) {
+        value = 0;
+        MemoryRead( wp->addr.offset, wp->addr.segment, &value, wp->size );
+        if( wp->value != value ) {
+            return( true );
         }
     }
     return( false );
@@ -361,28 +358,28 @@ static trap_conditions MapStateToCond( unsigned state )
     trap_conditions rc;
 
     if( state & ST_TERMINATE ) {
-        _DBG( "Condition: TERMINATE\r\n" );
+        _DBG( "Condition: TERMINATE" );
         rc = COND_TERMINATE;
     } else if( state & ST_KEYBREAK ) {
-        _DBG( "Condition: USER\r\n" );
+        _DBG( "Condition: USER" );
         rc = COND_USER;
     } else if( state & ST_LOAD_MODULE ) {
-        _DBG( "Condition: LIBRARIES\r\n" );
+        _DBG( "Condition: LIBRARIES" );
         rc = COND_LIBRARIES;
     } else if( state & ST_UNLOAD_MODULE ) {
-        _DBG( "Condition: LIBRARIES\r\n" );
+        _DBG( "Condition: LIBRARIES" );
         rc = COND_LIBRARIES;
     } else if( state & ST_WATCH ) {
-        _DBG( "Condition: WATCH\r\n" );
+        _DBG( "Condition: WATCH" );
         rc = COND_WATCH;
     } else if( state & ST_BREAK ) {
-        _DBG( "Condition: BREAK\r\n" );
+        _DBG( "Condition: BREAK" );
         rc = COND_BREAK;
     } else if( state & ST_TRACE ) {
-        _DBG( "Condition: TRACE\r\n" );
+        _DBG( "Condition: TRACE" );
         rc = COND_TRACE;
     } else {
-        _DBG( "Condition: EXCEPTION\r\n" );
+        _DBG( "Condition: EXCEPTION" );
         rc = COND_EXCEPTION;
     }
     return( rc );
@@ -395,7 +392,7 @@ static void AddModHandle( const char *name, epsp_t *epsp )
     tiny_ret_t      rc;
     int             handle;
     object_record   obj;
-    unsigned_32     off;
+    unsigned_32     ne_header_off;
     os2_flat_header os2_hdr;
     addr_off        new_base;
     unsigned        i;
@@ -419,11 +416,11 @@ static void AddModHandle( const char *name, epsp_t *epsp )
         return;
     }
     handle = TINY_INFO( rc );
-    TinySeek( handle, OS2_NE_OFFSET, SEEK_SET );
-    TinyRead( handle, &off, sizeof( off ) );
-    TinySeek( handle, off, SEEK_SET );
+    TinySeek( handle, NE_HEADER_OFFSET, SEEK_SET );
+    TinyRead( handle, &ne_header_off, sizeof( ne_header_off ) );
+    TinySeek( handle, ne_header_off, SEEK_SET );
     TinyRead( handle, &os2_hdr, sizeof( os2_hdr ) );
-    TinySeek( handle, os2_hdr.objtab_off + off, SEEK_SET );
+    TinySeek( handle, os2_hdr.objtab_off + ne_header_off, SEEK_SET );
     mod->SegCount = os2_hdr.num_objects;
     mod->ObjInfo = malloc( os2_hdr.num_objects * sizeof( seg_t ) );
     new_base = 0;
@@ -433,7 +430,7 @@ static void AddModHandle( const char *name, epsp_t *epsp )
         mod->ObjInfo[i].base = obj.addr;
         mod->ObjInfo[i].size = obj.size;
         mod->ObjInfo[i].new_base = new_base;
-        new_base += ALIGN4K( obj.size );
+        new_base += __ROUND_UP_SIZE_4K( obj.size );
         if( NumModHandles == 1 ) {      // main executable
             if( obj.flags & OBJ_BIG ) {
                 if( obj.flags & OBJ_EXECUTABLE ) {
@@ -505,17 +502,17 @@ trap_retval TRAP_CORE( Get_sys_config )( void )
 {
     get_sys_config_ret  *ret;
 
-    _DBG( "AccGetConfig\r\n" );
+    _DBG( "AccGetConfig" );
     ret = GetOutPtr( 0 );
-    ret->sys.os = DIG_OS_RATIONAL;      // Pretend we're DOS/4G
-    ret->sys.osmajor = _osmajor;
-    ret->sys.osminor = _osminor;
-    ret->sys.cpu = X86CPUType();
-    ret->sys.huge_shift = 12;
-    ret->sys.fpu = NPXType();       //RealNPXType;
-    ret->sys.arch = DIG_ARCH_X86;
-    _DBG( "os = %d, cpu=%d, fpu=%d, osmajor=%d, osminor=%d\r\n",
-        ret->sys.os, ret->sys.cpu, ret->sys.fpu, ret->sys.osmajor, ret->sys.osminor );
+    ret->os = DIG_OS_RATIONAL;      // Pretend we're DOS/4G
+    ret->osmajor = _osmajor;
+    ret->osminor = _osminor;
+    ret->cpu = X86CPUType();
+    ret->huge_shift = 12;
+    ret->fpu = NPXType();       //RealNPXType;
+    ret->arch = DIG_ARCH_X86;
+    _DBG( "os = %d, cpu=%d, fpu=%d, osmajor=%d, osminor=%d",
+        ret->os, ret->cpu, ret->fpu, ret->osmajor, ret->osminor );
     return( sizeof( *ret ) );
 }
 
@@ -530,9 +527,9 @@ trap_retval TRAP_CORE( Map_addr )( void )
     mod_t           *mod;
     int             i;
 
-    _DBG1( "AccMapAddr\r\n" );
-    acc = GetInPtr(0);
-    ret = GetOutPtr(0);
+    _DBG1( "AccMapAddr" );
+    acc = GetInPtr( 0 );
+    ret = GetOutPtr( 0 );
     ret->out_addr.offset = 0;
     ret->out_addr.segment = 0;
     ret->lo_bound = 0;
@@ -565,19 +562,19 @@ trap_retval TRAP_CORE( Map_addr )( void )
         }
         // convert offset
         ret->out_addr.offset = off + mod->ObjInfo[seg].new_base + mod->epsp->MemBase;
-        _DBG( "Map_addr: module=%d %X:%X -> %X:%X\n", acc->mod_handle, acc->in_addr.segment, acc->in_addr.offset, ret->out_addr.segment, ret->out_addr.offset );
+        _DBG( "Map_addr: module=%d %X:%X -> %X:%X", acc->mod_handle, acc->in_addr.segment, acc->in_addr.offset, ret->out_addr.segment, ret->out_addr.offset );
     }
     return( sizeof( *ret ) );
 }
 
-static trap_elen ReadMemory( addr48_ptr *addr, void *data, trap_elen len )
-/************************************************************************/
+static size_t ReadMemory( addr48_ptr *addr, void *data, size_t len )
+/******************************************************************/
 {
     return( MemoryRead( addr->offset, addr->segment, data, len ) );
 }
 
-static trap_elen WriteMemory( addr48_ptr *addr, void *data, trap_elen len )
-/*************************************************************************/
+static size_t WriteMemory( addr48_ptr *addr, void *data, size_t len )
+/*******************************************************************/
 {
     return( MemoryWrite( addr->offset, addr->segment, data, len ) );
 }
@@ -585,35 +582,34 @@ static trap_elen WriteMemory( addr48_ptr *addr, void *data, trap_elen len )
 trap_retval TRAP_CORE( Checksum_mem )( void )
 /*******************************************/
 {
-    trap_elen           len;
-    int                 i;
-    trap_elen           read;
+    size_t              len;
+    size_t              i;
+    size_t              want;
+    size_t              got;
+    unsigned_32         sum;
     checksum_mem_req    *acc;
     checksum_mem_ret    *ret;
-    char                buffer[256];
+    unsigned char       buffer[256];
 
-    _DBG1(( "AccChkSum\n" ));
+    _DBG1(( "AccChkSum" ));
 
     acc = GetInPtr( 0 );
+    want = sizeof( buffer );
+    sum = 0;
+    for( len = acc->len; len > 0; len -= got ) {
+        if( want > len )
+            want = len;
+        got = ReadMemory( &acc->in_addr, buffer, want );
+        for( i = 0; i < got; ++i ) {
+            sum += buffer[i];
+        }
+        acc->in_addr.offset += got;
+        if( got != want ) {
+            break;
+        }
+    }
     ret = GetOutPtr( 0 );
-    len = acc->len;
-    ret->result = 0;
-    while( len >= sizeof( buffer ) ) {
-        read = ReadMemory( &acc->in_addr, buffer, sizeof( buffer ) );
-        for( i = 0; i < read; ++i ) {
-            ret->result += buffer[i];
-        }
-        if( read != sizeof( buffer ) )
-            return( sizeof( *ret ) );
-        len -= sizeof( buffer );
-        acc->in_addr.offset += sizeof( buffer );
-    }
-    if( len != 0 ) {
-        read = ReadMemory( &acc->in_addr, buffer, len );
-        for( i = 0; i < read; ++i ) {
-            ret->result += buffer[i];
-        }
-    }
+    ret->result = sum;
     return( sizeof( ret ) );
 }
 
@@ -634,7 +630,8 @@ trap_retval TRAP_CORE( Write_mem )( void )
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    ret->len = WriteMemory( &acc->mem_addr, GetInPtr( sizeof( *acc ) ), GetTotalSizeIn() - sizeof( *acc ) );
+    ret->len = WriteMemory( &acc->mem_addr, GetInPtr( sizeof( *acc ) ),
+                                GetTotalSizeIn() - sizeof( *acc ) );
     return( sizeof( *ret ) );
 }
 
@@ -644,14 +641,20 @@ trap_retval TRAP_CORE( Read_io )( void )
     read_io_req         *acc;
     void                *data;
 
-    acc = GetInPtr(0);
-    data = GetOutPtr(0);
-    if( acc->len == 1 ) {
+    acc = GetInPtr( 0 );
+    data = GetOutPtr( 0 );
+    switch( acc->len ) {
+    case 1:
         *(byte *)data = In_b( acc->IO_offset );
-    } else if( acc->len == 2 ) {
+        break;
+    case 2:
         *(word *)data = In_w( acc->IO_offset );
-    } else {
+        break;
+    case 4:
         *(dword *)data = In_d( acc->IO_offset );
+        break;
+    default:
+        return( 0 );
     }
     return( acc->len );
 }
@@ -659,24 +662,45 @@ trap_retval TRAP_CORE( Read_io )( void )
 trap_retval TRAP_CORE( Write_io )( void )
 /***************************************/
 {
-    trap_elen           len;
+    size_t              len;
     write_io_req        *acc;
     write_io_ret        *ret;
     void                *data;
 
-    acc = GetInPtr(0);
+    acc = GetInPtr( 0 );
     data = GetInPtr( sizeof( *acc ) );
     len = GetTotalSizeIn() - sizeof( *acc );
-    ret = GetOutPtr(0);
-    if( len == 1 ) {
+    switch( len ) {
+    case 1:
         Out_b( acc->IO_offset, *(byte *)data );
-    } else if( len == 2 ) {
+        break;
+    case 2:
         Out_w( acc->IO_offset, *(word *)data );
-    } else {
+        break;
+    case 4:
         Out_d( acc->IO_offset, *(dword *)data );
+        break;
+    default:
+        len = 0;
+        break;
     }
+    ret = GetOutPtr( 0 );
     ret->len = len;
     return( sizeof( *ret ) );
+}
+
+static opcode_type place_breakpoint( addr48_ptr *addr )
+{
+    opcode_type     old_opcode;
+
+    ReadMemory( addr, &old_opcode, sizeof( old_opcode ) );
+    WriteMemory( addr, &BreakOpcode, sizeof( BreakOpcode ) );
+    return( old_opcode );
+}
+
+static int remove_breakpoint( addr48_ptr *addr, opcode_type old_opcode )
+{
+    return( WriteMemory( addr, &old_opcode, sizeof( old_opcode ) ) != sizeof( old_opcode ) );
 }
 
 static unsigned ProgRun( bool step )
@@ -686,26 +710,73 @@ static unsigned ProgRun( bool step )
     unsigned    status;
     epsp_t      *epsp;
 
-    _DBG1( "AccRunProg %X:%X\n", DebugRegs.CS, DebugRegs.EIP );
+    _DBG1( "AccRunProg %X:%X", ProcRegs.CS, ProcRegs.EIP );
     ret = GetOutPtr( 0 );
-    status = Execute( step );
+    if( step ) {
+        ProcRegs.EFL |= INTR_TF;
+        status = Execute();
+        ProcRegs.EFL &= ~INTR_TF;
+    } else if( WatchCount > 0 ) {
+        if( SetDebugRegs() ) {
+            status = Execute();
+            ClearDebugRegs();
+            if( status & ST_TRACE ) {
+                status |= ST_WATCH;
+                status &= ~ST_TRACE;
+            }
+        } else {
+            for( ;; ) {
+                addr48_ptr  start_addr;
+                byte        int_buff[2 + sizeof( opcode_type )];
+
+                start_addr.segment = ProcRegs.CS;
+                start_addr.offset = ProcRegs.EIP;
+                /*
+                 * have to breakpoint across software interrupts because Intel
+                 * doesn't know how to design chips
+                 */
+                if( ReadMemory( &start_addr, int_buff, 2 + sizeof( opcode_type ) ) == 2 + sizeof( opcode_type ) && int_buff[0] == 0xcd ) {
+                    opcode_type old_opcode;
+
+                    start_addr.offset += 2;
+                    old_opcode = place_breakpoint( &start_addr );
+                    status = Execute();
+                    start_addr.offset = ProcRegs.EIP;
+                    remove_breakpoint( &start_addr, old_opcode );
+                } else {
+                    ProcRegs.EFL |= INTR_TF;
+                    status = Execute();
+                    ProcRegs.EFL &= ~INTR_TF;
+                }
+                if( (status & (ST_TRACE | ST_BREAK)) == 0 )
+                    break;
+                if( CheckWatchPoints() ) {
+                    status |= ST_WATCH;
+                    status &= ~(ST_TRACE | ST_BREAK);
+                    break;
+                }
+            }
+        }
+    } else {
+        status = Execute();
+    }
     //handle module load/unload
     if( status & ST_LOAD_MODULE ) {
-        epsp = (epsp_t *)DebugRegs.EDI;
+        epsp = (epsp_t *)ProcRegs.EDI;
         if( epsp->EntryCS != 0 ) {
             epsp->EntryCS = flatCode;   // set debugee flat selector for init routine
         }
         AddModHandle( NULL, epsp );
     } else if( status & ST_UNLOAD_MODULE ) {
-        RemoveModHandle( (epsp_t *)DebugRegs.EDI );
+        RemoveModHandle( (epsp_t *)ProcRegs.EDI );
     }
     ret->conditions = MapStateToCond( status );
     ret->conditions |= COND_CONFIG;
     // Now setup return value to reflect why we stopped execution.
-    ret->program_counter.offset = DebugRegs.EIP;
-    ret->program_counter.segment = DebugRegs.CS;
-    ret->stack_pointer.offset = DebugRegs.ESP;
-    ret->stack_pointer.segment = DebugRegs.SS;
+    ret->program_counter.offset = ProcRegs.EIP;
+    ret->program_counter.segment = ProcRegs.CS;
+    ret->stack_pointer.offset = ProcRegs.ESP;
+    ret->stack_pointer.segment = ProcRegs.SS;
     return( sizeof( *ret ) );
 }
 
@@ -721,45 +792,52 @@ trap_retval TRAP_CORE( Prog_step )( void )
     return( ProgRun( true ) );
 }
 
-trap_retval TRAP_CORE( Prog_load )( void )
-/****************************************/
+static size_t MergeArgvArray( const char *src, char *dst, size_t len )
+/********************************************************************/
 {
-    char            *src;
-    char            *dst;
-    char            *name;
-    char            ch;
-    prog_load_ret   *ret;
-    unsigned        len;
-    int             rc;
-    char            cmdl[128];
+    char    ch;
+    char    *start = dst;
 
-    _DBG1( "AccLoadProg\r\n" );
-    ret = GetOutPtr( 0 );
-    src = name = GetInPtr( sizeof( prog_load_req ) );
-    while( *src++ != '\0' ) {}
-    len = GetTotalSizeIn() - ( src - name ) - sizeof( prog_load_req );
-    if( len > 126 )
-        len = 126;
-    dst = cmdl + 1;
-    for( ; len > 0; --len ) {
+    while( len-- > 0 ) {
         ch = *src++;
         if( ch == '\0' ) {
-            if( len == 1 )
+            if( len == 0 )
                 break;
             ch = ' ';
         }
         *dst++ = ch;
     }
     *dst = '\0';
-    *cmdl = dst - cmdl - 1;
+    return( dst - start );
+}
+
+trap_retval TRAP_CORE( Prog_load )( void )
+/****************************************/
+{
+    char            *src;
+    char            *name;
+    prog_load_ret   *ret;
+    size_t          len;
+    int             rc;
+    char            cmdl[128];
+
+    _DBG1( "AccLoadProg" );
+    ret = GetOutPtr( 0 );
+    ret->err = 0;
+    src = name = GetInPtr( sizeof( prog_load_req ) );
+    while( *src++ != '\0' )
+        {}
+    len = GetTotalSizeIn() - sizeof( prog_load_req ) - ( src - name );
+    if( len > 126 )
+        len = 126;
+    *cmdl = MergeArgvArray( src, cmdl + 1, len );
     rc = DebugLoad( name, cmdl );
-    _DBG1( "back from debugload - %d\r\n", rc );
+    _DBG1( "back from debugload - %d", rc );
     ret->flags = LD_FLAG_IS_BIG | LD_FLAG_IS_PROT | LD_FLAG_DISPLAY_DAMAGED | LD_FLAG_HAVE_RUNTIME_DLLS;
     ret->mod_handle = 0;
     if( rc == 0 ) {
-        ret->err = 0;
-        ret->task_id = DebugPSP;
-        AddModsInfo( name, (epsp_t *)GetModuleHandle( DebugPSP ) );
+        ret->task_id = ProcPSP;
+        AddModsInfo( name, (epsp_t *)GetModuleHandle( ProcPSP ) );
     } else {
         ret->task_id = 0;
         if( rc == 1 ) {
@@ -772,7 +850,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
             ret->err = rc;
         }
     }
-    _DBG1( "done AccLoadProg\r\n" );
+    _DBG1( "done AccLoadProg" );
     return( sizeof( *ret ) );
 }
 
@@ -782,13 +860,33 @@ trap_retval TRAP_CORE( Prog_kill )( void )
     prog_kill_req       *acc;
     prog_kill_ret       *ret;
 
-    _DBG( "AccKillProg\r\n" );
-    acc = GetInPtr(0);
-    ret = GetOutPtr( 0 );
+    _DBG( "AccKillProg" );
+    acc = GetInPtr( 0 );
     RedirectFini();
     FreeModsInfo();
-    ret->err = ( RelSel( acc->task_id ) ) ? ERR_INVALID_HANDLE : 0;
+    ret = GetOutPtr( 0 );
+    ret->err = 0;
+    if( ReleaseSel( acc->task_id ) )
+        ret->err = ERR_INVALID_HANDLE;
     return( sizeof( *ret ) );
+}
+
+static word GetDRInfo( word segment, dword offset, word size, dword *plinear )
+{
+    word    dregs;
+    dword   linear;
+
+    linear = GetSelBase( segment ) + offset;
+    dregs = 1;
+    if( size == 8 ) {
+        size = 4;
+        dregs++;
+    }
+    if( linear & ( size - 1 ) )
+        dregs++;
+    if( plinear != NULL )
+        *plinear = linear & ~( size - 1 );
+    return( dregs );
 }
 
 trap_retval TRAP_CORE( Set_watch )( void )
@@ -797,112 +895,64 @@ trap_retval TRAP_CORE( Set_watch )( void )
     set_watch_req   *acc;
     set_watch_ret   *ret;
     int             i;
-    int             j;
-    unsigned_8      *p;
-    unsigned_32     sum;
+    watch_point     *wp;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    if( acc->size == 1 || acc->size == 2 || acc->size == 4 ) {
-        for( i = 0; i < 4; ++i ) {
-            if( !HBRKTable[i].inuse ) {
-                HBRKTable[i].inuse = true;
-                HBRKTable[i].installed = false;
-                HBRKTable[i].address = GetLinAddr( acc->watch_addr );
-                HBRKTable[i].size = acc->size;
-                HBRKTable[i].type = DPMI_WATCH_WRITE;
-                ret->err = 0;
-                ret->multiplier = 10 | USING_DEBUG_REG;
-                return( sizeof( *ret ) );
-            }
-        }
-    }
-    if( WatchCount < MAX_WATCHES ) {
-        for( i = 0; i < MAX_WATCHES; ++i ) {
-            if( !WatchPoints[i].inuse ) {
-                WatchPoints[i].inuse = true;
-                WatchPoints[i].address = GetLinAddr( acc->watch_addr );
-                WatchPoints[i].length = acc->size;
-                p = (unsigned_8 *)WatchPoints[i].address;
-                sum = 0;
-                for( j = 0; j < acc->size; ++j ) {
-                    sum += *(p++);
-                }
-                WatchPoints[i].check = sum;
-                ++WatchCount;
-                ret->err = 0;
-                ret->multiplier = 5000;
-                return( sizeof( *ret ) );
-            }
-        }
-    }
-    ret->err = ERR_INVALID_DATA;
     ret->multiplier = 0;
+    ret->err = ERR_INVALID_DATA;
+    if( WatchCount < MAX_WATCHES ) {
+        ret->err = 0;   // OK
+        ret->multiplier = 5000;
+        wp = WatchPoints + WatchCount;
+        wp->addr.segment = acc->watch_addr.segment;
+        wp->addr.offset = acc->watch_addr.offset;
+        wp->size = acc->size;
+        wp->value = 0;
+        MemoryRead( wp->addr.offset, wp->addr.segment, &wp->value, wp->size );
+
+        wp->dregs = GetDRInfo( wp->addr.segment, wp->addr.offset, wp->size, &wp->linear );
+        for( i = 0; i < MAX_DREGS; i++ ) {
+            wp->handle[i] = -1;
+        }
+
+        WatchCount++;
+        if( DRegsCount() <= 4 ) {
+            ret->multiplier = 10 | USING_DEBUG_REG;
+        }
+    }
     return( sizeof( *ret ) );
 }
 
 trap_retval TRAP_CORE( Clear_watch )( void )
 /******************************************/
 {
-    clear_watch_req     *acc;
-    int                 i;
-    unsigned_32         watch_addr;
-
-    acc = GetInPtr( 0 );
-    watch_addr = GetLinAddr( acc->watch_addr );
-    for( i = 0; i < 4; i++ ) {
-        if( HBRKTable[i].inuse ) {
-            if( HBRKTable[i].address == watch_addr ) {
-                if( HBRKTable[i].size == acc->size ) {
-                    HBRKTable[i].inuse = false;
-                    return( 0 );
-                }
-            }
-        }
-    }
-    if( WatchCount ) {
-        for( i = 0; i < MAX_WATCHES; ++i ) {
-            if( WatchPoints[i].inuse ) {
-                if( WatchPoints[i].address == watch_addr ) {
-                    if( WatchPoints[i].length == acc->size ) {
-                        WatchPoints[i].inuse = false;
-                        --WatchCount;
-                        break;
-                    }
-                }
-            }
-        }
-    }
+    /* assume all watches removed at same time */
+    WatchCount = 0;
     return( 0 );
 }
 
 trap_retval TRAP_CORE( Set_break )( void )
 /****************************************/
 {
-    opcode_type     brk_opcode;
     set_break_req   *acc;
     set_break_ret   *ret;
 
-    _DBG( "AccSetBreak\r\n" );
+    _DBG( "AccSetBreak" );
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    ReadMemory( &acc->break_addr, &brk_opcode, sizeof( brk_opcode ) );
-    ret->old = brk_opcode;
-    brk_opcode = BRKPOINT;
-    WriteMemory( &acc->break_addr, &brk_opcode, sizeof( brk_opcode ) );
+    ret->old = place_breakpoint( &acc->break_addr );
     return( sizeof( *ret ) );
 }
 
 trap_retval TRAP_CORE( Clear_break )( void )
 /******************************************/
 {
-    opcode_type     brk_opcode;
     clear_break_req *acc;
 
-    _DBG( "AccClearBreak\r\n" );
+    _DBG( "AccClearBreak" );
     acc = GetInPtr( 0 );
-    brk_opcode = acc->old;
-    WriteMemory( &acc->break_addr, &brk_opcode, sizeof( brk_opcode ) );
+    remove_breakpoint( &acc->break_addr, acc->old );
     return( 0 );
 }
 
@@ -926,7 +976,7 @@ trap_retval TRAP_CORE( Get_lib_name )( void )
     get_lib_name_req    *acc;
     get_lib_name_ret    *ret;
     int                 handle;
-    size_t              max_len;
+    size_t              name_maxlen;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
@@ -938,9 +988,9 @@ trap_retval TRAP_CORE( Get_lib_name )( void )
     name = GetOutPtr( sizeof( *ret ) );
     *name = '\0';
     if( ModHandles[handle].loaded ) {
-        max_len = GetTotalSizeOut() - 1 - sizeof( *ret );
-        strncpy( name, ModHandles[handle].epsp->FileName, max_len );
-        name[max_len] = '\0';
+        name_maxlen = GetTotalSizeOut() - sizeof( *ret ) - 1;
+        strncpy( name, ModHandles[handle].epsp->FileName, name_maxlen );
+        name[name_maxlen] = '\0';
     }
     ret->mod_handle = handle;
     return( sizeof( *ret ) + strlen( name ) + 1 );
@@ -957,17 +1007,17 @@ trap_retval TRAP_CORE( Get_err_text )( void )
     get_err_text_req    *acc;
     char                *err_txt;
 
-    _DBG( "AccErrText\r\n" );
+    _DBG( "AccErrText" );
     acc = GetInPtr( 0 );
     err_txt = GetOutPtr( 0 );
     if( acc->err < ERR_LAST ) {
         strcpy( err_txt, DosErrMsgs[acc->err] );
-        _DBG( "After strcpy\r\n" );
+        _DBG( "After strcpy" );
     } else {
         _DBG( "After acc->error_code > MAX_ERR_CODE" );
         strcpy( err_txt, TRP_ERR_unknown_system_error );
         ultoa( acc->err, err_txt + strlen( err_txt ), 16 );
-        _DBG( "After utoa()\r\n" );
+        _DBG( "After utoa()" );
     }
     return( strlen( err_txt ) + 1 );
 }
@@ -1000,7 +1050,7 @@ trap_retval TRAP_CORE( Read_regs )( void )
     mad_registers       *mr;
 
     mr = GetOutPtr( 0 );
-    *(&mr->x86.cpu) = DebugRegs;
+    *(&mr->x86.cpu) = ProcRegs;
     Read387( &mr->x86.u.fpu );
     return( sizeof( mr->x86 ) );
 }
@@ -1011,7 +1061,7 @@ trap_retval TRAP_CORE( Write_regs )( void )
     mad_registers       *mr;
 
     mr = GetInPtr( sizeof( write_regs_req ) );
-    DebugRegs = *(&mr->x86.cpu);
+    ProcRegs = *(&mr->x86.cpu);
     Write387( &mr->x86.u.fpu );
     return( 0 );
 }
@@ -1021,28 +1071,21 @@ trap_retval TRAP_CORE( Machine_data )( void )
 {
     machine_data_req    *acc;
     machine_data_ret    *ret;
-    union {
-        unsigned_8      charact;
-    } *data;
-    trap_elen           len;
+    machine_data_spec   *data;
 
-    _DBG( "AccMachineData\r\n" );
+    _DBG( "AccMachineData" );
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
     ret->cache_start = 0;
-    ret->cache_end = 0;
-    len = 0;
+    ret->cache_end = ~(addr_off)0;
     if( acc->info_type == X86MD_ADDR_CHARACTERISTICS ) {
-        ret->cache_end = ~(addr_off)0;
         data = GetOutPtr( sizeof( *ret ) );
-        len = sizeof( data->charact );
-        data->charact = 0;
-        if( IsSel32bit( acc->addr.segment ) ) {
-            data->charact = X86AC_BIG;
-        }
+        data->x86_addr_flags = ( IsSel32bit( acc->addr.segment ) ) ? X86AC_BIG : 0;
+        _DBG( "address %x:%x is %s", acc->addr.segment, acc->addr.offset, data->x86_addr_flags ? "32-bit" : "16-bit" );
+        return( sizeof( *ret ) + sizeof( data->x86_addr_flags ) );
     }
-    _DBG( "address %x:%x is %s\r\n", acc->addr.segment, acc->addr.offset, data->charact ? "32-bit" : "16-bit" );
-    return( sizeof( *ret ) + len );
+    _DBG( "address %x:%x", acc->addr.segment, acc->addr.offset );
+    return( sizeof( *ret ) );
 }
 
 trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
@@ -1051,16 +1094,17 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
     trap_version    ver;
     char            ver_msg[] = "CauseWay API version = 0.00\r\n$";
 
-    parms=parms;remote=remote;
+    /* unused parameters */ (void)parms; (void)remote;
+
     err[0] = '\0'; /* all ok */
-    ver.major = TRAP_MAJOR_VERSION;
-    ver.minor = TRAP_MINOR_VERSION;
+    ver.major = TRAP_VERSION_MAJOR;
+    ver.minor = TRAP_VERSION_MINOR;
     ver.remote = false;
     RedirectInit();
     RealNPXType = NPXType();
-    HBRKInit();
     WatchCount = 0;
     FakeBreak = false;
+    BreakOpcode = BRKPOINT;
     XVersion = GrabVectors();
     ver_msg[23] = XVersion / 256 + '0';
     ver_msg[25] = ( XVersion % 256 ) / 10 + '0';

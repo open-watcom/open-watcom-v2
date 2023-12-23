@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,6 +34,7 @@
 #ifndef mfamily_class
 #define mfamily_class
 
+#include "idecfg.h"
 #include "wobject.hpp"
 #include "wstring.hpp"
 #include "wpicklst.hpp"
@@ -49,11 +51,15 @@ WCLASS MFamily : public WObject
         void name( WString& name ) { name = _name; }
         WPickList& switches() { return( _switches ); }
         bool WEXPORT hasSwitches( bool setable );
-        MSwitch* WEXPORT findSwitch( MTool *tool, WString& switchtag, long fixed_version=0 );
+        MSwitch* WEXPORT findSwitch( const char* swtag, int kludge=0 );
         void WEXPORT addSwitches( WVList& list, const char* mask, bool setable );
+        WString* WEXPORT displayText( MSwitch* sw, WString& text );
+        WString* WEXPORT findSwitchIdByText( const char* text, int kludge=0 );
+        WString* WEXPORT translateID( const char* id, WString& text );
     private:
         WString         _name;
         WPickList       _switches;      //<MSwitch>
+        WVList          _switchesIds;
 };
 
 #endif

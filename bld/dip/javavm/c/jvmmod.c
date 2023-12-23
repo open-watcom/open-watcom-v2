@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,8 +35,9 @@
 
 
 /*
-        This guy needs to be *FAST*. He's called from all over.
-*/
+ * This guy needs to be *FAST*. He's called from all over.
+ */
+
 search_result FindMBIndex( imp_image_handle *iih, addr_off off, unsigned *idx )
 {
     ji_ptr              code_start;

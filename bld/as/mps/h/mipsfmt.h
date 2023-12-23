@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,6 +32,6 @@
 
 typedef enum {
     #define PICK( a, b, c, d, e ) a,
-    #include "mipsfmt.inc"
+    #include "_mipsfmt.h"
     #undef PICK
 } mips_template;

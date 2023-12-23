@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,9 +41,11 @@
 #include "cle.h"
 #include "fmeminit.h"
 #include "utility.h"
-#include "cspawn.h"
 #include "wresmem.h"
 #include "trmemcvr.h"
+
+#include "clibext.h"
+#include "cspawn.h"
 
 
 void    FMemInit( void ) {
@@ -150,8 +152,8 @@ void    wres_free( void *p )
 #endif
 }
 
-char *FStrDup( const char *buf )
-//==============================
+char *FMemStrDup( const char *buf )
+//=================================
 {
     char    *new;
     size_t  len;

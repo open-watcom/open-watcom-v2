@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -142,7 +143,7 @@ OBJPTR WdeMakeScroll( OBJPTR parent, RECT *obj_rect, OBJPTR handle, DialogStyle 
 
     style |= WS_VISIBLE | WS_CHILD;
     SETCTL_STYLE( WdeDefaultScroll, style );
-    SETCTL_TEXT( WdeDefaultScroll, ResStrToNameOrOrd( text ) );
+    SETCTL_TEXT( WdeDefaultScroll, ResStrToNameOrOrdinal( text ) );
     SETCTL_ID( WdeDefaultScroll, WdeGetNextControlID() );
 
     WdeChangeSizeToDefIfSmallRect( parent, id, obj_rect );
@@ -277,8 +278,7 @@ void WdeScrollFini( void )
 
 bool WdeScrollDestroy( WdeScrollObject *obj, bool *flag, bool *p2 )
 {
-    /* touch unused vars to get rid of warning */
-    _wde_touch( p2 );
+    /* unused parameters */ (void)p2;
 
     if( !Forward( obj->control, DESTROY, flag, NULL ) ) {
         WdeWriteTrail( "WdeScrollDestroy: Control DESTROY failed" );
@@ -341,8 +341,7 @@ bool WdeScrollValidateAction( WdeScrollObject *obj, ACTION_ID *act, void *p2 )
     int                 i;
     WdeOrderMode        mode;
 
-    /* touch unused vars to get rid of warning */
-    _wde_touch( p2 );
+    /* unused parameters */ (void)p2;
 
     if( *act == MOVE || *act == RESIZE ) {
         if( Forward( (OBJPTR)obj, GET_ORDER_MODE, &mode, NULL ) && mode != WdeSelect ) {
@@ -393,8 +392,7 @@ bool WdeScrollCopyObject( WdeScrollObject *obj, WdeScrollObject **new, OBJPTR ha
 
 bool WdeScrollIdentify( WdeScrollObject *obj, OBJ_ID *id, void *p2 )
 {
-    /* touch unused vars to get rid of warning */
-    _wde_touch( p2 );
+    /* unused parameters */ (void)p2;
 
     *id = obj->object_id;
 
@@ -403,9 +401,7 @@ bool WdeScrollIdentify( WdeScrollObject *obj, OBJ_ID *id, void *p2 )
 
 bool WdeScrollGetWndProc( WdeScrollObject *obj, WNDPROC *proc, void *p2 )
 {
-    /* touch unused vars to get rid of warning */
-    _wde_touch( obj );
-    _wde_touch( p2 );
+    /* unused parameters */ (void)obj; (void)p2;
 
     *proc = WdeScrollSuperClassProc;
 
@@ -414,9 +410,7 @@ bool WdeScrollGetWndProc( WdeScrollObject *obj, WNDPROC *proc, void *p2 )
 
 bool WdeScrollGetWindowClass( WdeScrollObject *obj, char **class, void *p2 )
 {
-    /* touch unused vars to get rid of warning */
-    _wde_touch( obj );
-    _wde_touch( p2 );
+    /* unused parameters */ (void)obj; (void)p2;
 
     *class = "scrollbar";
 
@@ -427,9 +421,7 @@ bool WdeScrollDefine( WdeScrollObject *obj, POINT *pnt, void *p2 )
 {
     WdeDefineObjectInfo  o_info;
 
-    /* touch unused vars to get rid of warning */
-    _wde_touch( pnt );
-    _wde_touch( p2 );
+    /* unused parameters */ (void)pnt; (void)p2;
 
     o_info.obj = obj->object_handle;
     o_info.obj_id = obj->object_id;
@@ -588,9 +580,7 @@ bool WdeScrollDefineHook( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam,
     bool    processed;
     WORD    wp;
 
-    /* touch unused vars to get rid of warning */
-    _wde_touch( mask );
-    _wde_touch( lParam );
+    /* unused parameters */ (void)mask; (void)lParam;
 
     processed = false;
 

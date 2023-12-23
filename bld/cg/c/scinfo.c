@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -79,7 +79,7 @@ static  bool    ScoreStomp( score_info *x, score_info *y ) {
     if( x->class == SC_N_INDEXED && x->base == NULL ) {
         switch( y->class ) {
         case SC_N_MEMORY:
-            if( _IsModel( RELAX_ALIAS ) )
+            if( _IsModel( CGSW_GEN_RELAX_ALIAS ) )
                 return( false );
             /* fall through */
         case SC_N_INDEXED:
@@ -150,7 +150,7 @@ bool    ScoreEqual( score *scoreboard, int index, score_info *info )
 {
     if( ScoreLookup( &scoreboard[index], info ) )
         return( true );
-    if( _IsModel( SUPER_OPTIMAL ) ) {
+    if( _IsModel( CGSW_GEN_SUPER_OPTIMAL ) ) {
         score_reg   *entry;
         bool        is_equal;
         type_length half_size;
@@ -200,7 +200,7 @@ static  void    ScoreInsert(  score *scoreboard,  int i,  score_info  *info )
 static  void    ScoreAdd( score *scoreboard, int i, score_info *info )
 /********************************************************************/
 {
-    if( _IsModel( SUPER_OPTIMAL ) ) {
+    if( _IsModel( CGSW_GEN_SUPER_OPTIMAL ) ) {
         score       *first;
         score       *curr;
 
@@ -234,7 +234,7 @@ void    ScoreAssign( score *scoreboard, int index, score_info *info )
 /*******************************************************************/
 {
     ScoreAdd( scoreboard, index, info );
-    if( _IsModel( SUPER_OPTIMAL ) ) {
+    if( _IsModel( CGSW_GEN_SUPER_OPTIMAL ) ) {
         score_reg   *entry;
         uint        hi_off;
         uint        lo_off;
@@ -293,10 +293,10 @@ void    ScoreInfo( score_info *info, name *op )
             /* FIXME: not sure what to do here */
             if( op->c.value != NULL ) {
                 info->symbol.p = &HighAddrSymbol;
-                info->offset = (signed_32)(pointer_uint)op->c.value;
+                info->offset = (int_32)(pointer_uint)op->c.value;
             } else {
                 info->symbol.p = &HighAddrConst;
-                info->offset = (signed_32)op->c.lo.int_value;
+                info->offset = (int_32)op->c.lo.int_value;
             }
             break;
         default:
@@ -343,6 +343,7 @@ bool    ScoreLAInfo( score_info *info, name *op )
         info->offset = 0;
         info->index_reg = NO_INDEX;
         info->base = NULL;
+        info->scale = 0;
         return( true );
     default:
         return( false );

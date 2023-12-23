@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -632,7 +632,7 @@ static bool WriteType( TYPEPTR typ )
 }
 
 typedef struct type_indices {
-    int     basetype_index[TYP_LAST_ENTRY];
+    int     basetype_index[DATA_TYPE_SIZE];
     int     stringtype_index;
     int     constchartype_index;
 } type_indices;
@@ -644,7 +644,7 @@ static void OutPutTypeIndexes( void )
     int                 i;
     type_indices        typ_index;
 
-    for( i = TYP_BOOL; i < TYP_LAST_ENTRY; i++ ) {
+    for( i = 0; i < DATA_TYPE_SIZE; i++ ) {
         typ = BaseTypes[i];
         if( typ == NULL ) {
             typ_index.basetype_index[i] = 0;
@@ -741,7 +741,7 @@ static void OutPutTypes( void )
     OutPutTypeIndexes();
 }
 
-#if ( _CPU == 8086 ) || ( _CPU == 386 )
+#if _INTEL_CPU
 static void OutPutAuxInfo( aux_info *info )
 {
     hw_reg_set          *regs;
@@ -846,17 +846,17 @@ static void OutPutPragmaInfo( void )
 
 static void OutPutMacros( void )
 {
-    mac_hash_idx    h;
+    mac_hash_idx    hash;
     bool            rc;
     MEPTR           mentry;
     MEPTR           mentry_next_macro;
 
     PH_MacroCount = 0;
     PH_MacroSize = PH_size;
-    for( h = 0; h < MACRO_HASH_SIZE; ++h ) {
-        for( mentry = MacHash[h]; mentry != NULL; mentry = mentry_next_macro ) {
+    for( hash = 0; hash < MACRO_HASH_SIZE; hash++ ) {
+        for( mentry = MacHash[hash]; mentry != NULL; mentry = mentry_next_macro ) {
             mentry_next_macro = mentry->next_macro;        // save pointer
-            mentry->next_macro = PCHSetUInt( h );
+            mentry->next_macro = PCHSetUInt( hash );
             rc = PCHWrite( mentry, mentry->macro_len );
             mentry->next_macro = mentry_next_macro;        // restore pointer
             if( rc ) {
@@ -883,24 +883,24 @@ static void OutPutSymHashTable( void )
     SYM_HASHPTR     hsym_next_sym;
     TYPEPTR         hsym_sym_typ;
     SYM_HASHPTR     sym_list;
-    id_hash_idx     h;
+    id_hash_idx     hash;
     bool            rc;
     size_t          len;
 
-    for( h = 0; h < ID_HASH_SIZE; h++ ) {
+    for( hash = 0; hash < ID_HASH_SIZE; hash++ ) {
         // reverse the list
         sym_list = NULL;
-        for( hsym = HashTab[h]; hsym != NULL; hsym = hsym_next_sym ) {
+        for( hsym = HashTab[hash]; hsym != NULL; hsym = hsym_next_sym ) {
             hsym_next_sym = hsym->next_sym;
             hsym->next_sym = sym_list;
             sym_list = hsym;
             ++PH_SymHashCount;
         }
-        HashTab[h] = NULL;
+        HashTab[hash] = NULL;
         rc = false;
         for( hsym = sym_list; hsym != NULL; hsym = hsym_next_sym ) {
             hsym_next_sym = hsym->next_sym;
-            hsym->next_sym = PCHSetUInt( h );
+            hsym->next_sym = PCHSetUInt( hash );
             hsym_sym_typ = hsym->sym_type;               // save type pointer
             if( hsym_sym_typ != NULL ) {
                 hsym->sym_type = PCHSetUInt( hsym_sym_typ->u1.type_index ); // replace with index
@@ -908,8 +908,8 @@ static void OutPutSymHashTable( void )
             len = offsetof( id_hash_entry, name ) + strlen( hsym->name ) + 1;
             rc |= PCHWrite( hsym, len );
             hsym->sym_type = hsym_sym_typ;               // restore type pointer
-            hsym->next_sym = HashTab[h];
-            HashTab[h] = hsym;
+            hsym->next_sym = HashTab[hash];
+            HashTab[hash] = hsym;
         }
         if( rc ) {
             longjmp( PH_jmpbuf, rc );
@@ -960,7 +960,7 @@ static void OutPutEverything( void )
     OutPutSegInfo();
     OutPutTypes();
     OutPutTags();
-#if ( _CPU == 8086 ) || ( _CPU == 386 )
+#if _INTEL_CPU
     OutPutPragmaInfo();
 #endif
     OutPutSymHashTable();
@@ -1253,34 +1253,31 @@ static char *FixupUndefMacros( char *p, unsigned undef_macro_count )
 
 static int VerifyMacros( char *p, unsigned macro_count, unsigned undef_count )
 {
-    mac_hash_idx    h;
+    mac_hash_idx    hash;
     MEPTR           mpch;
     MEPTR           mcur;
-    int             macro_compare;
-    size_t          len;
+    bool            macro_compare;
 
     PCHMacroHash = (MEPTR *)CMemAlloc( MACRO_HASH_SIZE * sizeof( MEPTR ) );
     p = FixupMacros( p, macro_count );
     p = FixupUndefMacros( p, undef_count );
-    for( h = 0; h < MACRO_HASH_SIZE; ++h ) {
+    for( hash = 0; hash < MACRO_HASH_SIZE; hash++ ) {
         MEPTR       prev_mpch;
 
         prev_mpch = NULL;
-        for( mpch = PCHMacroHash[h]; mpch != NULL; mpch = mpch->next_macro ) {
+        for( mpch = PCHMacroHash[hash]; mpch != NULL; mpch = mpch->next_macro ) {
             if( mpch->macro_flags & MFLAG_DEFINED_BEFORE_FIRST_INCLUDE ) {
-                len = strlen( mpch->macro_name ) + 1;
-                for( mcur = MacHash[h]; mcur != NULL; mcur = mcur->next_macro ) {
-                    if( memcmp( mcur->macro_name, mpch->macro_name, len ) == 0 ) {
+                for( mcur = MacHash[hash]; mcur != NULL; mcur = mcur->next_macro ) {
+                    if( strcmp( mcur->macro_name, mpch->macro_name ) == 0 ) {
                         macro_compare = MacroCompare( mpch, mcur );
                         if( mpch->macro_flags & MFLAG_REFERENCED ) {
-                            if( macro_compare == 0 )
-                                break;
-                            return( -1 );       // abort: macros different
-                        }
-                        if( macro_compare != 0 ) { /* if different */
+                            if( macro_compare ) {
+                                return( -1 );           /* abort: macros different */
+                            }
+                        } else if( macro_compare ) {    /* if different */
                             /* delete macro from pch, add new one */
                             if( prev_mpch == NULL ) {
-                                PCHMacroHash[h] = mpch->next_macro;
+                                PCHMacroHash[hash] = mpch->next_macro;
                             } else {
                                 prev_mpch->next_macro = mpch->next_macro;
                             }
@@ -1294,7 +1291,7 @@ static int VerifyMacros( char *p, unsigned macro_count, unsigned undef_count )
                     }
                     // delete macro from PCH list
                     if( prev_mpch == NULL ) {
-                        PCHMacroHash[h] = mpch->next_macro;
+                        PCHMacroHash[hash] = mpch->next_macro;
                     } else {
                         prev_mpch->next_macro = mpch->next_macro;
                     }
@@ -1317,11 +1314,10 @@ static int VerifyMacros( char *p, unsigned macro_count, unsigned undef_count )
     // -- endif
     // - endif
     // endloop
-    for( h = 0; h < MACRO_HASH_SIZE; ++h ) {
-        for( mcur = MacHash[h]; mcur != NULL; mcur = mcur->next_macro ) {
-            len = strlen( mcur->macro_name ) + 1;
-            for( mpch = PCHMacroHash[h]; mpch != NULL; mpch = mpch->next_macro ) {
-                if( memcmp( mpch->macro_name, mcur->macro_name, len ) == 0 ) {
+    for( hash = 0; hash < MACRO_HASH_SIZE; hash++ ) {
+        for( mcur = MacHash[hash]; mcur != NULL; mcur = mcur->next_macro ) {
+            for( mpch = PCHMacroHash[hash]; mpch != NULL; mpch = mpch->next_macro ) {
+                if( strcmp( mpch->macro_name, mcur->macro_name ) == 0 ) {
                     break;
                 }
             }
@@ -1329,8 +1325,8 @@ static int VerifyMacros( char *p, unsigned macro_count, unsigned undef_count )
             // macro may either have been undef'd (mpch == NULL ) or undef'd and defined
                 if( mcur->macro_flags & MFLAG_USER_DEFINED ) {  //compiler defined macros not saved on undefs
                     for( mpch = PCHUndefMacroList; mpch != NULL; mpch = mpch->next_macro ) {
-                        if( memcmp( mpch->macro_name, mcur->macro_name, len ) == 0 ) {
-                            if( MacroCompare( mpch, mcur ) != 0 ) {
+                        if( strcmp( mpch->macro_name, mcur->macro_name ) == 0 ) {
+                            if( MacroCompare( mpch, mcur ) ) {
                                 return( -1 );
                             } else {
                                 break;
@@ -1346,20 +1342,19 @@ static int VerifyMacros( char *p, unsigned macro_count, unsigned undef_count )
         }
     }
 
-    for( h = 0; h < MACRO_HASH_SIZE; ++h ) {
+    for( hash = 0; hash < MACRO_HASH_SIZE; hash++ ) {
         MEPTR       next_mcur;
 
-        for( mcur = MacHash[h]; mcur != NULL; mcur = next_mcur ) {
-            len = strlen( mcur->macro_name ) + 1;
-            for( mpch = PCHMacroHash[h]; mpch != NULL; mpch = mpch->next_macro ) {
-                if( memcmp( mpch->macro_name, mcur->macro_name, len ) == 0 ) {
+        for( mcur = MacHash[hash]; mcur != NULL; mcur = next_mcur ) {
+            for( mpch = PCHMacroHash[hash]; mpch != NULL; mpch = mpch->next_macro ) {
+                if( strcmp( mpch->macro_name, mcur->macro_name ) == 0 ) {
                     break;
                 }
             }
             next_mcur = mcur->next_macro;
-            if( mpch == NULL ) {                    // if this macro not found in PCH
-                mcur->next_macro = PCHMacroHash[h]; // add it to PCH
-                PCHMacroHash[h] = mcur;
+            if( mpch == NULL ) {                        // if this macro not found in PCH
+                mcur->next_macro = PCHMacroHash[hash];  // add it to PCH
+                PCHMacroHash[hash] = mcur;
             }
         }
     }
@@ -1416,7 +1411,7 @@ static void FixupTypeIndexes( type_indices *typ_index )
     DATA_TYPE   i;
     int         index;
 
-    for( i = TYP_BOOL; i < TYP_LAST_ENTRY; ++i ) {
+    for( i = 0; i < DATA_TYPE_SIZE; ++i ) {
         index = typ_index->basetype_index[i];
         if( index != 0 ) {
             BaseTypes[i] = TypeArray + index;
@@ -1430,7 +1425,7 @@ static void FixupTypeIndexes( type_indices *typ_index )
 static char *FixupTypes( char *p, unsigned type_count )
 {
     TYPEPTR         typ;
-    parm_hash_idx   h;
+    parm_hash_idx   hash;
     array_info      *array;
     TYPEPTR         *parm_types;
     int             idx;
@@ -1455,9 +1450,9 @@ static char *FixupTypes( char *p, unsigned type_count )
     }
     parm_types = (TYPEPTR *)( typ + type_count );
     for( ; type_count != 0; --type_count ) {
-        h = (parm_hash_idx)PCHGetUInt( typ->u.fn.parms );
-        typ->next_type = FuncTypeHead[h];
-        FuncTypeHead[h] = typ;
+        hash = (parm_hash_idx)PCHGetUInt( typ->u.fn.parms );
+        typ->next_type = FuncTypeHead[hash];
+        FuncTypeHead[hash] = typ;
         if( PCHGetUInt( typ->object ) != 0 ) {
             typ->object = TypeArray + PCHGetUInt( typ->object );
         }
@@ -1572,7 +1567,7 @@ static char *FixupTags( char *p, unsigned tag_count )
     return( p );
 }
 
-#if ( _CPU == 8086 ) || ( _CPU == 386 )
+#if _INTEL_CPU
 static char *FixupAuxInfo( char *p, aux_info *info )
 {
     unsigned            len;
@@ -1684,7 +1679,7 @@ static int FixupDataStructures( char *p, pheader *pch )
     p = FixupSegInfo( p, pch->seg_count );
     p = FixupTypes( p, pch->type_count );
     p = FixupTags( p, pch->tag_count );
-#if ( _CPU == 8086 ) || ( _CPU == 386 )
+#if _INTEL_CPU
     p = FixupPragmaInfo( p, pch->pragma_count, pch->pragma_entry_count );
 #endif
     p = FixupSymHashTable( p, pch->symhash_count );

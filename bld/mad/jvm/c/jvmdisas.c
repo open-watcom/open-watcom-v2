@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,7 +42,7 @@ static dis_handle DH;
 
 mad_status DisasmInit()
 {
-    if( DisInit( DISCPU_jvm, &DH ) != DR_OK ) {
+    if( DisInit( DISCPU_JVM, &DH ) != DR_OK ) {
         return( MS_ERR | MS_FAIL );
     }
     return( MS_OK );

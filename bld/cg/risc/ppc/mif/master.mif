@@ -1,8 +1,0 @@
-!include $(cg_dir)/risc/ppc/mif/ppc.mif
-!include $(cg_dir)/risc/mif/risc.mif
-!include $(cg_dir)/mif/master.mif
-
-target_objs     = $(ppc_objs) $(risc_objs) $(cg_objs)
-target_cpu      = ppc
-
-!include $(cg_dir)/mif/target.mif

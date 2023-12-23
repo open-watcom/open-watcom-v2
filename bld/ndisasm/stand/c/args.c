@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,7 +45,6 @@
 #include "buffer.h"
 #include "memfuncs.h"
 #include "print.h"
-#include "cmdlhelp.h"
 #include "pathgrp2.h"
 
 #include "clibext.h"
@@ -61,15 +60,6 @@
 
 #define LIST_FILE_EXTENSION     "lst"
 
-static const char * const banner[] = {
-    banner1w( "Multi-processor Disassembler", _WDISASM_VERSION_ ),
-    banner2,
-    banner2a( 1995 ),
-    banner3,
-    banner3a,
-    NULL
-};
-
 enum {
     MSG_USAGE_COUNT = 0
     #define pick(n,e,j)     + 1
@@ -80,25 +70,23 @@ enum {
 static void printUsage( int msg )
 {
     int                 id;
-    const char * const  *text;
     char                buff[MAX_RESOURCE_SIZE];
 
-    ChangePrintDest( stderr );
     if( msg != 0 ) {
-        BufferMsg( msg );
-        BufferConcatNL();
-        BufferConcatNL();
-        BufferPrint();
+        MsgGet( msg, buff );
+        fputs( buff, stderr );
     }
-    for( text = banner; *text != NULL; ++text ) {
-        Print( *text );
-        Print( "\n" );
-    }
+    puts(
+        banner1t( "Multi-processor Disassembler" ) "\n"
+        banner1v( _WDISASM_VERSION_ ) "\n"
+        banner2 "\n"
+        banner2a( 1995 ) "\n"
+        banner3 "\n"
+        banner3a "\n"
+    );
     for( id = MSG_USAGE_BASE; id < MSG_USAGE_BASE + MSG_USAGE_COUNT; id++ ) {
         MsgGet( id, buff );
-        BufferConcat( buff );
-        BufferConcatNL();
-        BufferPrint();
+        puts( buff );
     }
 }
 
@@ -120,6 +108,34 @@ static char *skipBlanks( const char *cmd )
     return( (char *)cmd );
 }
 
+static char *FindNextSep( const char *str, bool (*chk_sep)(char) )
+/*****************************************************************
+ * Finds next free white space character, allowing doublequotes to
+ * be used to specify strings with white spaces.
+ */
+{
+    bool        string_open;
+    char        c;
+
+    string_open = false;
+    while( (c = *str) != '\0' ) {
+        if( c == '\"' ) {
+            string_open = !string_open;
+        } else if( c == '\\' ) {
+            if( string_open ) {
+                if( str[1] == '\"' || str[1] == '\\' ) {
+                    ++str;
+                }
+            }
+        } else if( !string_open && chk_sep( c ) ) {
+            break;
+        }
+        ++str;
+    }
+
+    return( (char *)str );
+}
+
 static char *findNextWS( const char *cmd )
 {
     return( FindNextSep( cmd, is_ws ) );
@@ -128,6 +144,42 @@ static char *findNextWS( const char *cmd )
 static char *findNextArg( const char *cmd )
 {
     return( skipBlanks( FindNextSep( cmd, is_ws_or_option ) ) );
+}
+
+static void UnquoteItem( char *dst, size_t maxlen, const char *src, bool (*chk_sep)(char) )
+/******************************************************************************************
+ * Removes doublequote characters from filename and copies other content
+ * from src to dst. Only maxlen number of characters are copied to dst
+ * including terminating NUL character. Returns value 1 when quotes was
+ * removed from orginal filename, 0 otherwise.
+ */
+{
+    size_t  pos;
+    char    c;
+    bool    string_open;
+
+    // leave space for NUL terminator
+    maxlen--;
+    pos = 0;
+    string_open = false;
+    while( pos < maxlen && (c = *src++) != '\0' ) {
+        if( c == '\"' ) {
+            string_open = !string_open;
+            continue;
+        }
+        if( c == '\\' ) {
+            if( string_open ) {
+                if( *src == '\"' || *src == '\\' ) {
+                    c = *src++;
+                }
+            }
+        } else if( !string_open && chk_sep( c ) ) {
+            break;
+        }
+        *dst++ = c;
+        pos++;
+    }
+    *dst = '\0';
 }
 
 static char *getFileName( const char *start, const char *following )
@@ -187,37 +239,34 @@ return_val HandleArgs( void )
 {
     const char  *ptr;
     bool        list_file = false;
+    int         cmd_len;
+    char        *cmd_line;
     char        *cmd;
-    char        *p;
-    int         len;
     return_val  error;
 
     DFormat |= DFF_PSEUDO | DFF_SYMBOLIC_REG;
 
-    len = _bgetcmd( NULL, 0 );
-    p = cmd = malloc( len + 1 );
-    if( cmd == NULL ) {
+    cmd_len = _bgetcmd( NULL, 0 ) + 1;
+    cmd_line = malloc( cmd_len );
+    if( cmd_line == NULL ) {
         return( RC_OUT_OF_MEMORY );
     }
-    error = RC_OKAY;
-    if( len > 0 ) {
-        _bgetcmd( p, len + 1 );
-    } else {
-        *p = '\0';
-    }
-    p = skipBlanks( p );
-    if( *p == '\0' || *p == '?' ) {
+    _bgetcmd( cmd_line, cmd_len );
+    cmd = cmd_line;
+    cmd = skipBlanks( cmd );
+    if( *cmd == '\0' || *cmd == '?' ) {
         printUsage( 0 );
         error = RC_ERROR;
     } else {
-        while( *p != '\0' ) {
-            if( IS_OPT_DELIM( *p ) ) {
-                p++;
-                switch( tolower( *p ) ) {
+        error = RC_OKAY;
+        while( *cmd != '\0' ) {
+            if( IS_OPT_DELIM( *cmd ) ) {
+                cmd++;
+                switch( tolower( *cmd ) ) {
                 case 'a':
                     DFormat |= DFF_ASM;
-                    if( p[1] == 'u' ) {
-                        ++p;
+                    if( cmd[1] == 'u' ) {
+                        ++cmd;
                         DFormat |= DFF_UNIX;
                     }
                     break;
@@ -225,11 +274,11 @@ return_val HandleArgs( void )
                     Options |= PRINT_EXTERNS;
                     break;
                 case 'i':
-                    p++;
-                    if( *p == '=' ) {
-                        p++;
-                        if( !isspace( *p ) ) {
-                            LabelChar = (char)toupper( *(unsigned char *)p );
+                    cmd++;
+                    if( *cmd == '=' ) {
+                        cmd++;
+                        if( !isspace( *cmd ) ) {
+                            LabelChar = (char)toupper( *(unsigned char *)cmd );
                             break;
                         }
                     }
@@ -243,41 +292,41 @@ return_val HandleArgs( void )
                         break;
                     }
                     list_file = true;
-                    p++;
-                    if( *p == '=' ) {
-                        p++;
-                        ptr = p;
-                        p = findNextWS( p );
-                        ListFileName = getFileName( ptr, p );
+                    cmd++;
+                    if( *cmd == '=' ) {
+                        cmd++;
+                        ptr = cmd;
+                        cmd = findNextWS( cmd );
+                        ListFileName = getFileName( ptr, cmd );
                     }
                     break;
                 case 'f':
-                    switch( p[1] ) {
+                    switch( cmd[1] ) {
                     case 'p':
                         DFormat ^= DFF_PSEUDO;
-                        ++p;
+                        ++cmd;
                         break;
                     case 'r':
                         DFormat ^= DFF_SYMBOLIC_REG;
-                        ++p;
+                        ++cmd;
                         break;
                     case 'f':
                         Options |= PRINT_FPU_EMU_FIXUP;
                         break;
                     case 'i':
                         DFormat ^= DFF_ALT_INDEXING;
-                        ++p;
+                        ++cmd;
                         break;
                     case 'u':
-                        ++p;
-                        switch( p[1] ) {
+                        ++cmd;
+                        switch( cmd[1] ) {
                         case 'r':
                             DFormat ^= DFF_REG_UP;
-                            ++p;
+                            ++cmd;
                             break;
                         case 'i':
                             DFormat ^= DFF_INS_UP;
-                            ++p;
+                            ++cmd;
                             break;
                         default:
                             DFormat ^= DFF_INS_UP | DFF_REG_UP;
@@ -286,9 +335,9 @@ return_val HandleArgs( void )
                     }
                     break;
                 case 'm':
-                    if( p[1] == 'w' ) {
+                    if( cmd[1] == 'w' ) {
                         Options |= METAWARE_COMPATIBLE;
-                        ++p;
+                        ++cmd;
                         break;
                     }
                     Options |= NODEMANGLE_NAMES;
@@ -303,18 +352,18 @@ return_val HandleArgs( void )
                         break;
                     }
                     source_mix = true;
-                    p++;
-                    if( *p == '=' ) {
-                        p++;
-                        ptr = p;
-                        p = findNextWS( p );
-                        SourceFileName = getFileName( ptr, p );
+                    cmd++;
+                    if( *cmd == '=' ) {
+                        cmd++;
+                        ptr = cmd;
+                        cmd = findNextWS( cmd );
+                        SourceFileName = getFileName( ptr, cmd );
                     }
                     break;
                 default:
                     BufferMsg( INVALID_OPTION );
                     BufferConcat( "  -" );
-                    BufferConcatChar( *p );
+                    BufferConcatChar( *cmd );
                     BufferConcatNL();
                     BufferConcatNL();
                     BufferPrint();
@@ -331,11 +380,11 @@ return_val HandleArgs( void )
                     error = RC_ERROR;
                     break;
                 }
-                ptr = p;
-                p = findNextWS( p );
-                ObjFileName = getFileName( ptr, p );
+                ptr = cmd;
+                cmd = findNextWS( cmd );
+                ObjFileName = getFileName( ptr, cmd );
             }
-            p = findNextArg( p );
+            cmd = findNextArg( cmd );
         }
     }
     if( error == RC_OKAY ) {
@@ -349,6 +398,6 @@ return_val HandleArgs( void )
             }
         }
     }
-    free( cmd );
+    free( cmd_line );
     return( error );
 }

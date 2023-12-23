@@ -1,3 +1,5 @@
+tree_depth = 4
+
 proj_name = wheapwlk
 
 !ifndef wheapwlk_autodepends
@@ -74,11 +76,11 @@ rc_inc_dirs = -I"../res" $(commonui_inc_dirs) $(dis_includes)
 
 $(proj_name).res : ../res/wheapwlk.rc .AUTODEPEND
     @%make echo_rc
-    $(rc) $(rc_flags) -ad -zk0 $(rc_inc_path) $[@ -fo=$@
+    $(rc) $(rc_ui8_flags) $(rc_flags) -ad $(rc_inc_path) $[@ -fo=$@
 
 rcstrmsg.gh : ../res/heapwalk.msg
     @%make echo_cpp
-    $(cpp) $(rc_ui_flags) -o$@ $[@
+    $(cpp) $(rc_ui8_flags) -o$@ $[@
 
 rcstr.grh : rcstrmsg.gh
     @%make echo_awk

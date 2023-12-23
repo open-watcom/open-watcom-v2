@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,10 +34,9 @@
 #ifndef __BTREEBAS_H__
 #define __BTREEBAS_H__
 
-#include <wstd.h>
 #include <assert.h>
 
-#pragma disable_message( 433 )      // mangled name truncated
+#pragma disable_message( P433 )      // mangled name truncated
 
 template <class Type> class              WCValSList;
 template <class Type, class FType> class WCStack;

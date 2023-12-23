@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,12 +41,12 @@ extern int InternalError( const char *file, unsigned line );
 #define __FNAME__ __FILE__
 #endif
 
-#ifdef NDEBUG
-#   define never_reach()    ((void)0)
-#   define myassert(expr)   ((void)0)
-#else
+#ifdef DEVBUILD
 #   define never_reach()    InternalError(__FNAME__,__LINE__)
 #   define myassert(expr)   ((void)((expr)?0:InternalError(__FNAME__,__LINE__)))
+#else
+#   define never_reach()    ((void)0)
+#   define myassert(expr)   ((void)0)
 #endif
 
 #define MYASSERT_H  1

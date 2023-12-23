@@ -5,9 +5,9 @@ set PROJNAME=install
 
 set PROJDIR=<CWD>
 
-[ INCLUDE <OWROOT>/build/prolog.ctl ]
+[ INCLUDE "<OWROOT>/build/prolog.ctl" ]
 
-cdsay <PROJDIR>
+cdsay "<PROJDIR>"
 
 echo Installer Build: <1> <2> <3> <4> <5>
 
@@ -32,4 +32,4 @@ echo Installer Build: <1> <2> <3> <4> <5>
 
 [ BLOCK . . ]
 
-[ INCLUDE <OWROOT>/build/epilog.ctl ]
+[ INCLUDE "<OWROOT>/build/epilog.ctl" ]

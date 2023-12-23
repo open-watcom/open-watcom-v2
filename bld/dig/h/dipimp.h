@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,42 +33,32 @@
 #ifndef DIPIMP_H_INCLUDED
 #define DIPIMP_H_INCLUDED
 
-#define DIP_MAJOR       2
-#define DIP_MINOR       0
-
-#define MH2IMH( mh )    ((mh)&0x0000FFFF)
-#define IMH2MH( imh )   (imh)
-
-/*
-    An imp_mod_handle is defined as an unsigned_16. The value zero is
-    reserved to indicate "no module".
-*/
-#define IMH_NOMOD       ((imp_mod_handle)0)
-#define IMH_BASE        ((imp_mod_handle)1)
-#define IMH_GBL         ((imp_mod_handle)-1)
-
-#define DIPImp(n)       DIPImp ## n
-#define _DIPImp(n)      _DIPImp ## n n
-
-#define DIPIMPENTRY(n)  DIGENTRY DIPImp( n )
-
-struct imp_image_handle;
-struct imp_type_handle;
-struct imp_cue_handle;
-struct imp_sym_handle;
-
-typedef struct imp_image_handle imp_image_handle;
-typedef struct imp_type_handle  imp_type_handle;
-typedef struct imp_cue_handle   imp_cue_handle;
-typedef struct imp_sym_handle   imp_sym_handle;
-
-typedef int strcomp_fn( const char *, const char * );
-typedef int strcompn_fn( const char *, const char *, size_t );
-
 #include "dipcli.h"
 
-typedef unsigned_16     imp_mod_handle;
-typedef unsigned_16     image_index;
+#define DIP_VERSION_MAJOR   2
+#define DIP_VERSION_MINOR   0
+
+#define MH2IMH( mh )        ((mh)&0x0000FFFF)
+#define IMH2MH( imh )       (imh)
+
+/*
+ * An imp_mod_handle is defined as an unsigned_16. The value zero is
+ * reserved to indicate "no module".
+ */
+#define IMH_NOMOD           ((imp_mod_handle)0)
+#define IMH_BASE            ((imp_mod_handle)1)
+#define IMH_GBL             ((imp_mod_handle)-1)
+
+#define DIPImp(n)           DIPImp ## n
+#define _DIPImp(n)          _DIPImp ## n n
+
+#define DIPIMPENTRY(n)      DIGENTRY DIPImp( n )
+
+typedef int                 strcomp_fn( const char *, const char * );
+typedef int                 strcompn_fn( const char *, const char *, size_t );
+
+typedef unsigned_16         imp_mod_handle;
+typedef unsigned_16         image_index;
 
 typedef walk_result (DIGCLIENT DIP_IMP_MOD_WALKER)( imp_image_handle *, imp_mod_handle, void * );
 typedef walk_result (DIGCLIENT DIP_IMP_TYPE_WALKER)( imp_image_handle *, imp_type_handle *, void * );
@@ -182,8 +172,6 @@ typedef struct dip_client_routines {
 
     _DIPCli( Status );
     _DIPCli( CurrArch );
-
-    _DIGCli( MachineData );
 
 } dip_client_routines;
 

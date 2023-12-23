@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,84 +33,95 @@
 #include <stdlib.h>
 #include <string.h>
 #include <direct.h>
+#include "digcpu.h"
 #include "stdnt.h"
+#include "globals.h"
 #include "trperr.h"
 #include "madregs.h"
-#if defined( MD_x86 )
+#if MADARCH & MADARCH_X86
 #include "x86cpu.h"
 #endif
 
-BOOL IsBigSel( WORD sel )
+
+bool GetSelectorLDTEntry( WORD sel, LDT_ENTRY *ldt )
 {
-#if defined( MD_axp ) | defined( MD_ppc )
-    return( TRUE );
-#elif defined( MD_x86 ) || defined( MD_x64 )
     thread_info *ti;
+
+    ti = FindThread( DebugeeTid );
+    if( ti != NULL ) {
+        if( GetThreadSelectorEntry( ti->thread_handle, sel, ldt ) ) {
+            return( true );
+        }
+    }
+    return( false );
+}
+
+bool IsBigSel( WORD sel )
+{
+#if MADARCH & (MADARCH_AXP | MADARCH_PPC)
+    return( true );
+#elif MADARCH & (MADARCH_X86 | MADARCH_X64)
     LDT_ENTRY   ldt;
 
     if( sel == FlatCS || sel == FlatDS ) {
-        return( TRUE );
+        return( true );
     }
-    ti = FindThread( DebugeeTid );
-    if( ti == NULL ) {
-        return( TRUE );
-    }
-    GetThreadSelectorEntry( ti->thread_handle, sel, &ldt );
-    return( ldt.HighWord.Bits.Default_Big );
+    if( GetSelectorLDTEntry( sel, &ldt ) != NULL )
+        return( ldt.HighWord.Bits.Default_Big );
+    return( true );
 #else
    #error IsBigSel not configured
 #endif
 }
 
-#if defined( MD_axp )
+#if MADARCH & MADARCH_AXP
 typedef struct {
     unsigned_32 beg_addr;
     unsigned_32 end_addr;
     unsigned_32 except_handler;
     unsigned_32 handler_data;
     unsigned_32 pro_end_addr;
-} nt_pdata;
+} nt_pdata_struct;
 
-bool FindPData( addr_off off, axp_pdata *pdata )
+bool FindPData( addr_off off, axp_pdata_struct *axp_pdata )
 {
-    nt_pdata    pd;
-    LPVOID      tbl;
-    addr_off    size;
-    DWORD       bytes;
+    nt_pdata_struct nt_pdata;
+    LPVOID          tbl;
+    addr_off        size;
+    DWORD           bytes;
 
     if( !FindExceptInfo( off, &tbl, &size ) ) {
-        return( FALSE );
+        return( false );
     }
     for( ;; ) {
         if( size == 0 ) {
-            return( FALSE );
+            return( false );
         }
-        ReadProcessMemory( ProcessInfo.process_handle, tbl, ( LPVOID )&pd,
-                    sizeof( pd ), &bytes );
-        if( bytes != sizeof( pd ) ) {
-            return( FALSE );
+        ReadProcessMemory( ProcessInfo.process_handle, tbl, (LPVOID)&nt_pdata, sizeof( nt_pdata ), &bytes );
+        if( bytes != sizeof( nt_pdata ) ) {
+            return( false );
         }
-        if( off >= pd.beg_addr && off < pd.end_addr ) {
+        if( off >= nt_pdata.beg_addr && off < nt_pdata.end_addr ) {
             /*
              *  This is an optimization - if the prologue end addr is not
              *  in the exception start/end range, this is not the entry
              *  for the start of the procedure and the MAD isn't interested.
              *  Keep looking for real one.
              */
-            if( pd.pro_end_addr >= pd.beg_addr &&
-                    pd.pro_end_addr < pd.end_addr ) {
+            if( nt_pdata.pro_end_addr >= nt_pdata.beg_addr &&
+                    nt_pdata.pro_end_addr < nt_pdata.end_addr ) {
                 break;
             }
         }
-        tbl = ( LPVOID ) ( ( DWORD ) tbl + sizeof( pd ) );
-        size -= sizeof( pd );
+        tbl = (LPVOID)( (DWORD)tbl + sizeof( nt_pdata ) );
+        size -= sizeof( nt_pdata );
     }
-    pdata->beg_addr.u._32[0] = pd.beg_addr;
-    pdata->end_addr.u._32[0] = pd.end_addr;
-    pdata->except_handler.u._32[0] = pd.except_handler;
-    pdata->handler_data.u._32[0] = pd.handler_data;
-    pdata->pro_end_addr.u._32[0] = pd.pro_end_addr;
-    return( TRUE );
+    axp_pdata->beg_addr.u._32[0] = nt_pdata.beg_addr;
+    axp_pdata->end_addr.u._32[0] = nt_pdata.end_addr;
+    axp_pdata->except_handler.u._32[0] = nt_pdata.except_handler;
+    axp_pdata->handler_data.u._32[0] = nt_pdata.handler_data;
+    axp_pdata->pro_end_addr.u._32[0] = nt_pdata.pro_end_addr;
+    return( true );
 }
 #endif
 
@@ -118,48 +129,52 @@ trap_retval TRAP_CORE( Machine_data )( void )
 {
     machine_data_req    *acc;
     machine_data_ret    *ret;
-    union {
-        unsigned_8      u8;
-#if defined( MD_axp )
-        axp_pdata       pd;
-#endif
-    }                   *data;
+    machine_data_spec   *data;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    data = GetOutPtr( sizeof( *ret ) );
-#if defined( MD_x86 )
+#if MADARCH & MADARCH_X86
     ret->cache_start = 0;
-    ret->cache_end = ~( addr_off ) 0;
-    data->u8 = 0;
-    if( IsBigSel( acc->addr.segment ) ) {
-        data->u8 |= X86AC_BIG;
+    ret->cache_end = ~(addr_off)0;
+    if( acc->info_type == X86MD_ADDR_CHARACTERISTICS ) {
+        data = GetOutPtr( sizeof( *ret ) );
+  #ifdef WOW
+        data->x86_addr_flags = ( IsBigSel( acc->addr.segment ) ) ? X86AC_BIG : (( IsDOS ) ? X86AC_REAL : 0);
+  #else
+        data->x86_addr_flags = ( IsBigSel( acc->addr.segment ) ) ? X86AC_BIG : 0;
+  #endif
+        return( sizeof( *ret ) + sizeof( data->x86_addr_flags ) );
     }
-    return( sizeof( *ret ) + sizeof( data->u8 ) );
-#elif defined( MD_x64 )
+#elif MADARCH & MADARCH_X64
     ret->cache_start = 0;
-    ret->cache_end = ~( addr_off ) 0;
-    data->u8 = 0;
-    if( IsBigSel( acc->addr.segment ) ) {
-        data->u8 |= X86AC_BIG;
-//        data->u8 |= X64AC_BIG;
+    ret->cache_end = ~(addr_off)0;
+    if( acc->info_type == X64MD_ADDR_CHARACTERISTICS ) {
+        data = GetOutPtr( sizeof( *ret ) );
+        data->x64_addr_flags = ( IsBigSel( acc->addr.segment ) ) ? X64AC_BIG : 0;
+        return( sizeof( *ret ) + sizeof( data->x64_addr_flags ) );
     }
-    return( sizeof( *ret ) + sizeof( data->u8 ) );
-#elif defined( MD_axp )
-    memset( &data->pd, 0, sizeof( data->pd ) );
-    if( FindPData( acc->addr.offset, &data->pd ) ) {
-        ret->cache_start = data->pd.beg_addr.u._32[0];
-        ret->cache_end = data->pd.end_addr.u._32[0];
-    } else {
-        ret->cache_start = 0;
-        ret->cache_end = 0;
+#elif MADARCH & MADARCH_AXP
+    if( acc->info_type == AXPMD_PDATA ) {
+        data = GetOutPtr( sizeof( *ret ) );
+        memset( &data->axp_pdata, 0, sizeof( data->axp_pdata ) );
+        if( FindPData( acc->addr.offset, &data->axp_pdata ) ) {
+            ret->cache_start = data->axp_pdata.beg_addr.u._32[0];
+            ret->cache_end = data->axp_pdata.end_addr.u._32[0];
+        } else {
+            ret->cache_start = 0;
+            ret->cache_end = 0;
+        }
+        return( sizeof( *ret ) + sizeof( data->axp_pdata ) );
     }
-    return( sizeof( *ret ) + sizeof( data->pd ) );
-#elif defined( MD_ppc )
-    return( sizeof( *ret ) );
+    ret->cache_start = 0;
+    ret->cache_end = ~(addr_off)0;
+#elif MADARCH & MADARCH_PPC
+    ret->cache_start = 0;
+    ret->cache_end = ~(addr_off)0;
 #else
     #error TRAP_CORE( Machine_data ) not configured
 #endif
+    return( sizeof( *ret ) );
 }
 
 trap_retval TRAP_CORE( Get_sys_config )( void )
@@ -168,66 +183,68 @@ trap_retval TRAP_CORE( Get_sys_config )( void )
     SYSTEM_INFO         info;
 
     ret = GetOutPtr( 0 );
-    ret->sys.os = DIG_OS_NT;
+    ret->os = DIG_OS_NT;
 #if defined( __WATCOMC__ )
-    ret->sys.osmajor = _osmajor;
-    ret->sys.osminor = _osminor;
+    ret->osmajor = _osmajor;
+    ret->osminor = _osminor;
 #else
 #endif
-    ret->sys.huge_shift = 3;
+    ret->huge_shift = 3;
 
     GetSystemInfo( &info );
-#if defined( MD_x86 )
-    ret->sys.cpu = X86CPUType();
-    ret->sys.fpu = ret->sys.cpu & X86_CPU_MASK;
+#if MADARCH & MADARCH_X86
+    ret->cpu = X86CPUType();
+    ret->fpu = ret->cpu & X86_CPU_MASK;
+  #ifdef WOW
     if( IsWOW ) {
-        ret->sys.os = DIG_OS_WINDOWS;
+        ret->os = DIG_OS_WINDOWS;
     }
-    ret->sys.arch = DIG_ARCH_X86;
-#elif defined( MD_x64 )
-    ret->sys.cpu = X86_P4 | X86_MMX | X86_XMM;
-    ret->sys.fpu = ret->sys.cpu & X86_CPU_MASK;
-//    ret->sys.cpu = X64_CPU1;
-//    ret->sys.fpu = X64_FPU1;
-    if( !IsWOW ) {
-//        ret->sys.os = DIG_OS_NT64;
+  #endif
+    ret->arch = DIG_ARCH_X86;
+#elif MADARCH & MADARCH_X64
+    ret->cpu = X86_P4 | X86_MMX | X86_XMM;
+    ret->fpu = ret->cpu & X86_CPU_MASK;
+//    ret->cpu = X64_CPU1;
+//    ret->fpu = X64_FPU1;
+    if( !IsWOW64 ) {
+//        ret->os = DIG_OS_NT64;
     }
-//    ret->sys.arch = DIG_ARCH_X64;
-    ret->sys.arch = DIG_ARCH_X86;
-#elif defined( MD_axp )
+//    ret->arch = DIG_ARCH_X64;
+    ret->arch = DIG_ARCH_X86;
+#elif MADARCH & MADARCH_AXP
     switch( info.dwProcessorType ) {
     case PROCESSOR_ALPHA_21064:
-        ret->sys.cpu = AXP_21064;
+        ret->cpu = AXP_21064;
         break;
     case 21164: /* guessing that this is the constant */
-        ret->sys.cpu = AXP_21164;
+        ret->cpu = AXP_21164;
         break;
     default:
-        ret->sys.cpu = AXP_DUNNO;
+        ret->cpu = AXP_DUNNO;
         break;
     }
-    ret->sys.fpu = 0;
-    ret->sys.arch = DIG_ARCH_AXP;
-#elif defined( MD_ppc )
+    ret->fpu = 0;
+    ret->arch = DIG_ARCH_AXP;
+#elif MADARCH & MADARCH_PPC
     switch( info.dwProcessorType ) {
     case PROCESSOR_PPC_601:
-        ret->sys.cpu = PPC_601;
+        ret->cpu = PPC_601;
         break;
     case PROCESSOR_PPC_603:
-        ret->sys.cpu = PPC_603;
+        ret->cpu = PPC_603;
         break;
     case PROCESSOR_PPC_604:
-        ret->sys.cpu = PPC_604;
+        ret->cpu = PPC_604;
         break;
     case PROCESSOR_PPC_620:
-        ret->sys.cpu = PPC_620;
+        ret->cpu = PPC_620;
         break;
     default:
-        ret->sys.cpu = AXP_DUNNO;
+        ret->cpu = AXP_DUNNO;
         break;
     }
-    ret->sys.fpu = 0;
-    ret->sys.arch = DIG_ARCH_PPC;
+    ret->fpu = 0;
+    ret->arch = DIG_ARCH_PPC;
 #else
     #error TRAP_CORE( Get_sys_config ) not configured
 #endif
@@ -256,7 +273,7 @@ trap_retval TRAP_CORE( Get_message_text )( void )
         case -1:
             *err_txt = '\0';
             break;
-        case 0xC0000008L: // STATUS_INVALID_HANDLE - new for NT 4.0
+        case STATUS_INVALID_HANDLE: /* new for NT 4.0 */
             strcpy( err_txt, TRP_NT_invalid_handle );
             break;
         case STATUS_WAIT_0:
@@ -357,7 +374,7 @@ trap_retval TRAP_CORE( Get_next_alias )( void )
     return( sizeof( *ret ) );
 }
 
-static DWORD DoFmtMsg( LPTSTR *p, DWORD err, ... )
+static DWORD DoFmtMsg( char **p, DWORD err, ... )
 {
     va_list args;
     DWORD   len;
@@ -367,19 +384,19 @@ static DWORD DoFmtMsg( LPTSTR *p, DWORD err, ... )
     va_start( args, err );
     options = FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM;
     len = FormatMessage( options, NULL, err,
-        MAKELANGID( LANG_NEUTRAL, SUBLANG_DEFAULT ), ( LPSTR )p, 0, &args );
-    while( ( q = strchr( *p, '\r' ) ) != NULL ) {
+        MAKELANGID( LANG_NEUTRAL, SUBLANG_DEFAULT ), (char *)p, 0, &args );
+    while( (q = strchr( *p, '\r' )) != NULL ) {
         *q = ' ';
     }
-    while( ( q = strchr( *p, '\n' ) ) != NULL ) {
+    while( (q = strchr( *p, '\n' )) != NULL ) {
         *q = ' ';
     }
     va_end( args );
     return( len );
 }
 
-void AddMessagePrefix( char *buff, int len )
-/******************************************/
+void AddMessagePrefix( const char *buff, size_t len )
+/***************************************************/
 {
     if( len == 0 ) {
         len = strlen( buff ) + 1;
@@ -395,7 +412,7 @@ trap_retval TRAP_CORE( Get_err_text )( void )
 {
     get_err_text_req    *acc;
     char                *err_txt;
-    LPTSTR              lpMessageBuffer;
+    char                *lpMessageBuffer;
     DWORD               len;
     char                buff[20];
 
@@ -424,121 +441,35 @@ trap_retval TRAP_CORE( Get_err_text )( void )
     return( strlen( err_txt ) + 1 );
 }
 
-static int tryPath( const char *name, char *end, const char *ext_list )
-{
-    char    *p;
-    BOOL    done;
-    HANDLE  h;
-
-    done = FALSE;
-    do {
-        if( *ext_list == 0 ) {
-            done = 1;
-        }
-        for( p = end; (*p = *ext_list) != 0; ++p,++ext_list ) {
-        }
-
-        h = CreateFile( name, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL );
-        if( h != INVALID_HANDLE_VALUE ) {
-            CloseHandle( h );
-            return( 0 );
-        }
-        ++ext_list;
-    } while( !done );
-    return( -1 );
-}
-
-unsigned long FindProgFile( const char *pgm, char *buffer, const char *ext_list )
-{
-    const char      *p;
-    char            *p2;
-    const char      *p3;
-    BOOL            have_ext;
-    BOOL            have_path;
-    char            *envbuf;
-    DWORD           envlen;
-    unsigned long   rc;
-
-    have_ext = FALSE;
-    have_path = FALSE;
-    for( p = pgm, p2 = buffer; (*p2 = *p) != 0; ++p, ++p2 ) {
-        switch( *p ) {
-        case '\\':
-        case '/':
-        case ':':
-            have_path = TRUE;
-            have_ext = FALSE;
-            break;
-        case '.':
-            have_ext = TRUE;
-            break;
-        }
-    }
-    if( have_ext ) {
-        ext_list = "";
-    }
-    if( !tryPath( buffer, p2, ext_list ) ) {
-        return( 0 );
-    }
-    if( have_path ) {
-        return( ERROR_FILE_NOT_FOUND );
-    }
-    envlen = GetEnvironmentVariable( "PATH", NULL, 0 );
-    if( envlen == 0 )
-        return( GetLastError() );
-    envbuf = LocalAlloc( LMEM_FIXED, envlen );
-    GetEnvironmentVariable( "PATH", envbuf, envlen );
-    rc = ERROR_FILE_NOT_FOUND;
-    for( p = envbuf; *p != '\0'; ++p ) {
-        p2 = buffer;
-        while( *p != '\0' ) {
-            if( *p == ';' ) {
-                break;
-            }
-            *p2++ = *p++;
-        }
-        if( p2[-1] != '\\' && p2[-1] != '/' ) {
-            *p2++ = '\\';
-        }
-        for( p3 = pgm; (*p2 = *p3) != '\0'; ++p2, ++p3 ) {
-        }
-        if( !tryPath( buffer, p2, ext_list ) ) {
-            rc = 0;
-            break;
-        }
-        if( *p == '\0' ) {
-            break;
-        }
-    }
-    LocalFree( envbuf );
-    return( rc );
-}
-
 trap_retval TRAP_CORE( Split_cmd )( void )
 {
-    char            *cmd;
-    char            *start;
+    const char      *cmd;
+    const char      *start;
     split_cmd_ret   *ret;
-    unsigned        len;
+    size_t          len;
 
     cmd = GetInPtr( sizeof( split_cmd_req ) );
     len = GetTotalSizeIn() - sizeof( split_cmd_req );
     start = cmd;
     ret = GetOutPtr( 0 );
     ret->parm_start = 0;
-    while( len != 0 ) {
+    while( len > 0 ) {
         switch( *cmd ) {
         case '\"':
-            while( --len && (*++cmd != '\"') )
-                ;
-            if( len != 0 )
-                break;
-            /* fall down */
-        case '\0':
-        case ' ':
-        case '\t':
+            cmd++;
+            while( --len > 0 && ( *cmd++ != '\"' ) )
+                {}
+            if( len == 0 )
+                continue;
+            switch( *cmd ) {
+            CASE_SEPS
+                ret->parm_start = 1;
+            }
+            len = 0;
+            continue;
+        CASE_SEPS
             ret->parm_start = 1;
-            /* fall down */
+            /* fall through */
         case '/':
         case '=':
         case '(':
@@ -580,7 +511,7 @@ trap_retval TRAP_CORE( Set_debug_screen )( void )
     return( 0 );
 }
 
-void say( char *fmt, ... )
+void say( const char *fmt, ... )
 {
     va_list args;
     char    buff[512];

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,11 +36,7 @@ extern HWND HwndDebugger;
 extern void TellSoftModeHandles( HAB, HWND );
 extern void AssumeQueue( PID pid, TID tid );
 extern void ReleaseQueue( PID pid, TID tid );
-extern VOID InitSoftDebug( VOID );
-extern BOOL IsPMDebugger( void );
+extern void InitSoftDebug( void );
+extern bool IsPMDebugger( void );
 extern char SetHardMode( char hard );
-extern VOID WakeThreads( PID pid );
-extern void SetBrkPending( void );
-
-
-
+extern void WakeThreads( PID pid );

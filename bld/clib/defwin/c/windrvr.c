@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,10 +40,10 @@
 #include "winmenu.rh"
 
 
-static char  DefaultAboutTitle[] = "About Open Watcom Default Windowing System";
+static char  DefaultAboutTitle[] = "About " banner1t( "Default Windowing System" );
 static char  DefaultAboutMsg[] = {
-    banner1w1("Default Windowing System") "\n\n"
-    "            Version 1.0\n\n"
+    banner1t( "Default Windowing System" ) "\n\n"
+    "            Version " _DEFWIN_VERSION_ "\n\n"
     banner21 "\n"
     banner21a( 1991 )
 };

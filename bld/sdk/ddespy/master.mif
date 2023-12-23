@@ -1,3 +1,5 @@
+tree_depth = 4
+
 proj_name = wddespy
 
 !ifndef wddespy_autodepends
@@ -31,7 +33,6 @@ extra_c_flags     = -fh
 extra_l_flags_win = option stack=7k option heapsize=2k lib ddeml.lib, commdlg.lib
 
 #extra_l_flags_nt_axp = lib ctl3d32.lib
-#extra_l_flags_nt     = $(extra_l_flags_nt_$(host_cpu))
 
 # explicit rules
 #################
@@ -51,7 +52,7 @@ exetarg_nt_manif_x64  = ntmanif.res
 !include exetarg.mif
 
 #!ifeq host_cpu axp
-#!ifeq release 0
+#!ifneq debug 0
 #    cvpack $^&.exe
 #    @%make echo_wstrip_sym
 #    $(wstrip) $^&.exe $^&.exe $^&.sym
@@ -67,7 +68,7 @@ rc_inc_dirs = $(commonui_inc_dirs) $(wpi_inc_dirs)
 
 $(proj_name).res : ../res/wddespy.rc .AUTODEPEND $(__MAKEFILES__)
     @%make echo_rc
-    $(rc) $(rc_flags) -ad -zk0 -I"../res" $(rc_inc_path) $[@ -fo=$@
+    $(rc) $(rc_ui8_flags) $(rc_flags) -ad -I"../res" $(rc_inc_path) $[@ -fo=$@
 
 ntmanif.res : ../res/ntmanif.rc
     @%make echo_rc
@@ -79,4 +80,4 @@ rcstr.grh : rcstrmsg.gh $(__MAKEFILES__)
 
 rcstrmsg.gh : ../res/ddespy.msg $(__MAKEFILES__)
     @%make echo_cpp
-    $(cpp) $(rc_ui_flags) -o$@ $[@
+    $(cpp) $(rc_ui8_flags) $(rc_ui_flags) -o$@ $[@

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,10 +35,11 @@
 #include <stdlib.h>
 #include <string.h>
 #ifdef __WATCOMC__
-#include <malloc.h>
+    #include <malloc.h>
 #endif
 #include <setjmp.h>
 #include "bool.h"
+#include "jmpbuf.h"
 #include "idedll.h"
 #include "cgdefs.h"
 #include "cgmisc.h"
@@ -55,14 +56,20 @@ static   IDECallBacks   *IdeCbs;       // - call backs into IDE
 //static   IDEInitInfo   Info;
 
 void ConBlip( void )
-// C compiler do a blip to console
+/*******************
+ * C compiler do a blip to console
+ */
 {
     IDEFN( PrintWithCRLF )( IdeHdl, "." );
-    // we are ignoring return for now
+    /*
+     * we are ignoring return for now
+     */
 }
 
-void ConsErrMsg( cmsg_info  *cinfo )
-// C compiler call back to do a  console print to stderr
+void ConsErrMsg( cmsg_info *cinfo )
+/**********************************
+ * C compiler call back to do a  console print to stderr
+ */
 {
     IDEMsgInfo  info;
     IDEMsgSeverity severity;
@@ -89,51 +96,71 @@ void ConsErrMsg( cmsg_info  *cinfo )
         IdeMsgSetSrcLine( &info, cinfo->line );
     }
     IDEFN( PrintWithInfo )( IdeHdl, &info );
-    // we are ignoring return for now
+    /*
+     * we are ignoring return for now
+     */
 }
 
-void ConsErrMsgVerbatim( char const  *line )
-// C compiler call back to a console print to stderr
+void ConsErrMsgVerbatim( char const *line )
+/******************************************
+ * C compiler call back to a console print to stderr
+ */
 {
     IDEMsgInfo info;
 
     IdeMsgInit( &info, IDEMSGSEV_ERROR, line );
     IDEFN( PrintWithInfo )( IdeHdl, &info );
-    // we are ignoring return for now
+    /*
+     * we are ignoring return for now
+     */
 }
 
 void BannerMsg( char const  *line )
-// C compiler call back to print a banner type msg
+/**********************************
+ * C compiler call back to print a banner type msg
+ */
 {
     IDEMsgInfo info;
 
     IdeMsgInit( &info, IDEMSGSEV_BANNER, line );
     IDEFN( PrintWithInfo )( IdeHdl, &info );
-    // we are ignoring return for now
+    /*
+     * we are ignoring return for now
+     */
 }
 
 void DebugMsg( char const  *line )
-// C compiler call back to print a banner type msg
+/**********************************
+ * C compiler call back to print a banner type msg
+ */
 {
     IDEMsgInfo info;
 
     IdeMsgInit( &info, IDEMSGSEV_DEBUG, line );
     IDEFN( PrintWithInfo )( IdeHdl, &info );
-    // we are ignoring return for now
+    /*
+     * we are ignoring return for now
+     */
 }
 
 void NoteMsg( char const  *line )
-// C compiler call back to print a banner type msg
+/**********************************
+ * C compiler call back to print a banner type msg
+ */
 {
     IDEMsgInfo info;
 
     IdeMsgInit( &info, IDEMSGSEV_NOTE_MSG, line );
     IDEFN( PrintWithInfo )( IdeHdl, &info );
-    // we are ignoring return for now
+    /*
+     * we are ignoring return for now
+     */
 }
 
 const char *FEGetEnv( char const *name )
-// get enviorment variable
+/***************************************
+ * get enviorment variable
+ */
 {
     const char *ret;
 
@@ -149,15 +176,17 @@ const char *FEGetEnv( char const *name )
 static   jmp_buf *FatalEnv;
 
 void MyExit( int ret )
+/********************/
 {
     longjmp( *FatalEnv, ret );
 }
 
 // IDE INTERFACE
 
-
 unsigned IDEAPI IDEGetVersion ( void )
-// GET IDE VERSION
+/*************************************
+ * GET IDE VERSION
+ */
 {
     return IDE_CUR_DLL_VER;
 }
@@ -173,9 +202,9 @@ IDEBool IDEAPI IDEInitDLL
     ( IDECBHdl      idehdl          // - handle for this instantiation
     , IDECallBacks  *idecbs         // - call backs into IDE
     , IDEDllHdl     *dllhdl ) {     // - uninitialized info
-//***********************
-// DLL INITIALIZATION
-//***********************
+/************************
+ * DLL INITIALIZATION
+ ************************/
     IdeHdl = idehdl;
     IdeCbs = idecbs;
     *dllhdl = NULL;
@@ -187,19 +216,20 @@ IDEBool IDEAPI IDEInitDLL
     return( false );
 }
 
-void IDEAPI IDEFreeHeap( void ) {
-//*************************************
-//Cleanup Heap
-//*************************************
+void IDEAPI IDEFreeHeap( void )
+/*************************************
+ * Cleanup Heap
+ */
+{
 #ifdef __WATCOMC__
    _heapmin();
 #endif
 }
 
 void IDEAPI IDEFiniDLL( IDEDllHdl hdl )
-//*********************************************
-//DLL COMPLETION
-//********************************************
+/**************************************
+ * DLL COMPLETION
+ */
 {
     /* unused parameters */ (void)hdl;
 
@@ -243,7 +273,8 @@ struct heap_stat {
     int used;
 };
 
-static int heap_size( struct heap_stat *stat ) {
+static int heap_size( struct heap_stat *stat )
+{
     struct _heapinfo h_info;
     int heap_status;
     h_info._pentry = NULL;
@@ -282,26 +313,28 @@ static void getFrontEndArgv( char **argv, char *infile, char *outfile )
 }
 
 
-IDEBool IDEAPI IDERunYourSelf   // COMPILE A PROGRAM
+int IDEAPI IDERunYourSelf       // COMPILE A PROGRAM
     ( IDEDllHdl hdl             // - handle for this instantiation
     , const char* opts          // - options
-    , IDEBool* fatal_error ) {  // - addr[fatality indication]
-
-    //****************************
-    // Do a compile of a file
-    //****************************
+    , IDEBool* fatal_error )    // - addr[fatality indication]
+/****************************
+ * Do a compile of a file
+ */
+{
     jmp_buf     env;
     char        infile[_MAX_PATH];      // - input file name
     char        outfile[4 + _MAX_PATH]; // - output file name (need room for "-fo=")
     char        *argv[4];
-    IDEBool     ret;
+    int         ret;
 
     /* unused parameters */ (void)hdl;
 
     TBreak();   // clear any pending IDEStopRunning's
     *fatal_error = false;
-    FatalEnv = &env;
-    /* initialize argv array */
+    FatalEnv = JMPBUF_PTR( env );
+    /*
+     * initialize argv array
+     */
     argv[0] = (char *)opts;
     argv[1] = NULL;
     getFrontEndArgv( argv + 1, infile, outfile );
@@ -342,27 +375,29 @@ static char **init_argv( char **args, int argc, char *infile, char *outfile )
     return( argv );
 }
 
-IDEBool IDEAPI IDERunYourSelfArgv   // COMPILE A PROGRAM
-    ( IDEDllHdl hdl,                // - handle for this instantiation
-    int argc,                       // - # of arguments
-    char **args,                    // - argument vector
-    IDEBool* fatal_error )          // - addr[fatality indication]
+int IDEAPI IDERunYourSelfArgv   // COMPILE A PROGRAM
+    ( IDEDllHdl hdl,            // - handle for this instantiation
+    int argc,                   // - # of arguments
+    char **args,                // - argument vector
+    IDEBool* fatal_error )      // - addr[fatality indication]
+/****************************
+ * Do a compile of a file
+ */
 {
-    //****************************
-    // Do a compile of a file
-    //****************************
     jmp_buf             env;
     char                infile[_MAX_PATH];      // - input file name
     char                outfile[4 + _MAX_PATH]; // - output file name (need room for "-fo=")
     char                **argv;
-    IDEBool             ret;
+    int                 ret;
 
     /* unused parameters */ (void)hdl;
 
     TBreak();   // clear any pending IDEStopRunning's
     *fatal_error = false;
-    FatalEnv = &env;
-    /* allocate and initialize argv array */
+    FatalEnv = JMPBUF_PTR( env );
+    /*
+     * allocate and initialize argv array
+     */
     argv = init_argv( args, argc, infile, outfile );
     if( setjmp( env ) != 0 ) {  /* if fatal error has occurred */
         *fatal_error = true;
@@ -397,6 +432,7 @@ IDEBool IDEAPI IDEProvideHelp   // PROVIDE HELP INFORMATION
 #endif
 
 IDEBool IDEAPI IDEPassInitInfo( IDEDllHdl hdl, IDEInitInfo *info )
+/****************************************************************/
 {
     /* unused parameters */ (void)hdl;
 
@@ -421,8 +457,5 @@ IDEBool IDEAPI IDEPassInitInfo( IDEDllHdl hdl, IDEInitInfo *info )
             }
         }
     }
-#if defined( wcc_dll )
-//    GlobalCompFlags.dll_active = true;
-#endif
     return( false );
 }

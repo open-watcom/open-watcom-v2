@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,51 +33,61 @@
 #include <stdlib.h>
 #include <string.h>
 #ifdef __WATCOMC__
-#include <process.h>
+    #include <process.h>
 #endif
 #include "idedrv.h"
 
+#include "clibint.h"
 #include "clibext.h"
 
 
 #ifndef DLL_NAME
-  #error DLL_NAME must be given with -d switch when DLL Driver
-#else
-  #define quoted( name ) # name
-  #define _str(x) quoted(x)
-  #define DLL_NAME_STR _str(DLL_NAME)
+    #error      DLL_NAME must be given with -d switch when DLL Driver
 #endif
 
-static IDEDRV info = {
-    DLL_NAME_STR
-};
+#define quoted(name)    # name
+#define _str(x)         quoted(x)
+#define DLL_NAME_STR    _str(DLL_NAME)
+
 
 int main( int argc, char *argv[] )
-/*********************************/
+/********************************/
 {
-    int retcode;
+    int         retcode;
+    IDEDRV      info;
 #ifndef __UNIX__
-    int len;
-    char *cmd_line;
+    int         cmd_len;
+    char        *cmd_line;
 #endif
 
-#ifndef __WATCOMC__
+#if !defined( __WATCOMC__ )
     _argv = argv;
     _argc = argc;
 #elif !defined( __UNIX__ )
     /* unused parameters */ (void)argc; (void)argv;
 #endif
-#ifndef __UNIX__
-    len = _bgetcmd( NULL, 0 ) + 1;
-    cmd_line = malloc( len );
-    _bgetcmd( cmd_line, len );
+
+    IdeDrvInit( &info, DLL_NAME_STR, NULL );
+#ifdef __UNIX__
+    retcode = IdeDrvExecDLLArgv( &info, argc, argv );
+#else
+    cmd_len = _bgetcmd( NULL, 0 ) + 1;
+    cmd_line = malloc( cmd_len );
+    if( cmd_line != NULL )
+        _bgetcmd( cmd_line, cmd_len );
     retcode = IdeDrvExecDLL( &info, cmd_line );
     free( cmd_line );
-#else
-    retcode = IdeDrvExecDLLArgv( &info, argc, argv );
 #endif
-    if( retcode != IDEDRV_ERR_INIT_EXEC ) {
-        IdeDrvUnloadDLL( &info );               // UNLOAD THE DLL
+    switch( retcode ) {
+    case IDEDRV_SUCCESS:
+    case IDEDRV_ERR_RUN:
+    case IDEDRV_ERR_RUN_EXEC:
+    case IDEDRV_ERR_RUN_FATAL:
+        break;
+    default:
+        IdeDrvPrintError( &info );
+        break;
     }
-    return( retcode );
+    IdeDrvUnloadDLL( &info );
+    return( retcode == IDEDRV_SUCCESS ? EXIT_SUCCESS : EXIT_FAILURE );
 }

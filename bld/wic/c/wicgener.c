@@ -435,13 +435,13 @@ void wicAssert( int exprTrue, char *expr, char *file, int line)
 }
 
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 static FILE *_debugFile;
 #endif
 
 void initDebug(void)
 {
-#ifndef NDEBUG
+#ifdef DEVBUILD
     _debugFile = wicFopen("debug.wic", "wt");
     if (_debugFile == NULL) {
         reportError(ERR_CLOSE_FILE, strerror(errno));
@@ -451,7 +451,7 @@ void initDebug(void)
 
 void zapDebug()
 {
-#ifndef NDEBUG
+#ifdef DEVBUILD
     wicFclose(_debugFile);
     if (_fileNum != 0) {
         printf("DEBUG: _fileNum = %d != 0,  at the end!", _fileNum);
@@ -461,7 +461,7 @@ void zapDebug()
 
 void debugOut(char *format, ...)
 {
-#ifndef NDEBUG
+#ifdef DEVBUILD
     va_list args;
 
     va_start( args, format );
@@ -539,13 +539,13 @@ void dribble(void)
         newLineLen += sprintf(line+newLineLen, "%s", g_currFileName);
         newLineLen += sprintf(line+newLineLen, "(%d)   ", g_currLineNum);
     }
-#ifdef NDEBUG
-    newLineLen += sprintf(line+newLineLen, "TOTAL: %d   SYM: %d   ERR: %d",
-        g_totalNumLines, g_numSymbols, g_numErrNotDisp);
-#else
+#ifdef DEVBUILD
     newLineLen += sprintf(line+newLineLen,
             "TOTAL: %d  SYM: %d   MEM: %d   ERR: %d",
             g_totalNumLines, g_numSymbols, g_memUsed, g_numErrNotDisp);
+#else
+    newLineLen += sprintf(line+newLineLen, "TOTAL: %d   SYM: %d   ERR: %d",
+        g_totalNumLines, g_numSymbols, g_numErrNotDisp);
 #endif
     if (newLineLen > 79) {
         newLineLen = 79;

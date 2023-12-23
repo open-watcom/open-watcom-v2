@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,21 +35,24 @@
 #include "poscc.h"
 
 
-static  char            FFSeq[] = { CHAR_LF, CHAR_FF };     // for form feeds
-static  char            SpcSeq[] = { CHAR_LF,               // for single spacing
-                                     CHAR_CR, CHAR_LF,      // for double spacing
-                                     CHAR_CR, CHAR_LF };    // for triple spacing
-
 #define FF_SEQ_LEN      sizeof( FFSeq );
 #define SPC_SEQ_LEN     sizeof( SpcSeq );
 
+static char     FFSeq[] = {
+    CHAR_LF, CHAR_FF    // for form feeds
+};
+
+static char     SpcSeq[] = {
+    CHAR_LF,            // for single spacing
+    CHAR_CR, CHAR_LF,   // for double spacing
+    CHAR_CR, CHAR_LF    // for triple spacing
+};
 
 static  bool    __lf_with_ff = false;
 
-
-void    __LineFeedWithFormFeed( void ) {
-//================================
-
+void    __LineFeedWithFormFeed( void )
+//====================================
+{
     __lf_with_ff = true;
 }
 

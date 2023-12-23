@@ -35,8 +35,9 @@
 #include "rcrtns.h"
 #include "preproc.h"
 
-void * PPENTRY PP_Malloc( size_t size )
-/*************************************/
+
+void *PPENTRY PP_Malloc( size_t size )
+/************************************/
 {
     return( RESALLOC( size ) );
 }

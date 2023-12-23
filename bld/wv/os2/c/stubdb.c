@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,15 +35,13 @@
 #include <process.h>
 #define INCL_DOS
 #include <os2.h>
-#include "_srcmgt.h"
+#include "srcmgt.h"
 #include "dbgdata.h"
-#include "dbgmem.h"
 #include "dbglit.h"
 #include "mad.h"
 #include "dui.h"
 #include "dbgvar.h"
 #include "dbgstk.h"
-#include "srcmgt.h"
 #include "trapaccs.h"
 #include "dbgscrn.h"
 #include "strutil.h"
@@ -344,15 +342,15 @@ void DlgCmd( void )
 
 int main( int argc, char **argv )
 {
-    char        buff[256];
+    char        cmd_line[256];
     TID         tid;
     APIRET      rc;
 
     /* unused parameters */ (void)argc; (void)argv;
 
     MemInit();
-    getcmd( buff );
-    CmdData = buff;
+    _bgetcmd( cmd_line, sizeof( cmd_line ) );
+    CmdData = cmd_line;
     DebugMain();
     _SwitchOff( SW_ERROR_STARTUP );
     DoInput();
@@ -1037,8 +1035,8 @@ unsigned OnAnotherThreadAccess( trap_elen in_num, in_mx_entry_p in_mx, trap_elen
     return( TrapAccess( in_num, in_mx, out_num, out_mx ) );
 }
 
-unsigned OnAnotherThreadSimpAccess( trap_elen in_len, in_data_p in_data, trap_elen out_len, out_data_p out_data )
+unsigned OnAnotherThreadSimpleAccess( trap_elen in_len, in_data_p in_data, trap_elen out_len, out_data_p out_data )
 {
-    return( TrapSimpAccess( in_len, in_data, out_len, out_data ) );
+    return( TrapSimpleAccess( in_len, in_data, out_len, out_data ) );
 }
 #endif

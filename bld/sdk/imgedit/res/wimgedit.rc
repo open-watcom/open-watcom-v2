@@ -1,3 +1,5 @@
+/* UTF-8 encoding, ¥ */
+
 #include <windows.h>
 #include "banner.h"
 #include "menuids.rh"
@@ -123,4 +125,4 @@ END
 #include "selcolor.dlg"
 #include "settings.dlg"
 #include "about.dlg"
-#include "title.dlg"
+#include "splash.dlg"

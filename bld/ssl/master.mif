@@ -27,10 +27,5 @@ exetarg_objs = &
     sslrule.obj     &
     sslsym.obj      &
     sslgen.obj      &
-    preproc.obj     &
-    ppexpr.obj      &
-    ppmacro.obj     &
-    ppmem.obj       &
-    ppenv.obj       &
-    pathlist.obj
+    $(cpp_objs) ppenv.obj ppmem.obj
 !include exetarg.mif

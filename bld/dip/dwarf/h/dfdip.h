@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -80,7 +81,9 @@ typedef struct {
 } mem_minfo;
 
 struct imp_sym_handle {
-    /* any stuff for getting information on symbols */
+    /*
+     * any stuff for getting information on symbols
+     */
     sym_sclass          sclass;
     imp_mod_handle      imh;
     unsigned            size;
@@ -110,7 +113,9 @@ typedef struct {
 
 
 struct imp_type_handle {
-    /* any stuff for getting information on types */
+    /*
+     * any stuff for getting information on types
+     */
     imp_mod_handle      imh;
     drmem_hdl           type;
     dr_typeinfo         typeinfo;
@@ -120,7 +125,9 @@ struct imp_type_handle {
 };
 
 struct imp_cue_handle {
-    /* any stuff for getting information on source line cues */
+    /*
+     * any stuff for getting information on source line cues
+     */
     imp_mod_handle      imh;
     address             a;
     uint_16             fno;
@@ -128,11 +135,12 @@ struct imp_cue_handle {
     uint_16             col;
 };
 
-/* Remember that that imp_[sym/type/cue]_handle's may be freely copied and
-   destroyed by clients. No pointers to allocated memory unless there's
-   another pointer somewhere else to free that memory. Clients don't have
-   tell you how long they're hanging on to a handle either. Nasty bunch. */
-
+/*
+ * Remember that that imp_[sym/type/cue]_handle's may be freely copied and
+ * destroyed by clients. No pointers to allocated memory unless there's
+ * another pointer somewhere else to free that memory. Clients don't have
+ * tell you how long they're hanging on to a handle either. Nasty bunch.
+ */
 
 typedef struct dwarf_info  dwarf_info; // private type
 typedef struct mod_info    mod_info;   // private type

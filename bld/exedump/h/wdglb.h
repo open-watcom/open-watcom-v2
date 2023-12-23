@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -201,7 +202,7 @@ extern extended_header          Phar_ext_head;  /* the phar_extended_header*/
 extern simple_header            Phar_head;      /* the phar_header         */
 extern extended_nlm_header      Nlm_ext_head;   /* the nlm_extended_header */
 extern nlm_header               Nlm_head;       /* the nlm_header          */
-extern exe_pe_header            Pe_head;        /* the exe_pe_header       */
+extern pe_exe_header            Pe_head;        /* the pe_exe_header       */
 extern struct os2_flat_header   Os2_386_head;   /* the new_header (V2.0)   */
 extern struct os2_exe_header    Os2_head;       /* the new_header          */
 extern dos_exe_header_ex        Dos_head;       /* the old_header          */

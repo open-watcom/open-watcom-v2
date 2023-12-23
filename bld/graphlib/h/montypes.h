@@ -36,7 +36,7 @@
  */
 
 enum {
-    MT_NODISPLAY,       // no display in system
+    MT_NONE,            // no display in system
     MT_MDPA,            // IBM Mono Display/Printer Adapter
     MT_CGA_COLOUR,      // IBM Colour/Graphics Display Adapter
     MT_EGA_ENHANCED,    // IBM EGA (enhanced colour)

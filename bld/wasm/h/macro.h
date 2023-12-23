@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,6 +33,16 @@
 #ifndef _MACRO_H_
 #define _MACRO_H_
 
-extern token_idx        ExpandMacro( token_idx );
+typedef enum {
+    MACSTATE_NONE   = 0,
+    MACSTATE_INDEF  = 0x01,
+    MACSTATE_INEXP  = 0x02,
+    MACSTATE_HIDEN  = 0x04,
+    MACSTATE_REPT   = 0x08,
+} macro_state;
+
+extern macro_state  MacroIntState;
+
+extern bool         ExpandMacro( token_buffer *tokbuf );
 
 #endif

@@ -332,7 +332,7 @@ typedef UINT_PTR (CALLBACK *LPPAGESETUPHOOK)( HWND, UINT, WPARAM, LPARAM );
 :include pshpack1.sp
 
 /* GetOpenFileName() parameters as of Windows NT 4.0 */
-typedef struct tagOFN_NT4 {
+typedef struct tagOFN_NT4A {
     DWORD           lStructSize;
     HWND            hwndOwner;
     HINSTANCE       hInstance;
@@ -355,6 +355,7 @@ typedef struct tagOFN_NT4 {
     LPCSTR          lpTemplateName;
 } OPENFILENAME_NT4A;
 typedef OPENFILENAME_NT4A   *LPOPENFILENAME_NT4A;
+
 typedef struct tagOFN_NT4W {
     DWORD           lStructSize;
     HWND            hwndOwner;
@@ -378,6 +379,7 @@ typedef struct tagOFN_NT4W {
     LPCWSTR         lpTemplateName;
 } OPENFILENAME_NT4W;
 typedef OPENFILENAME_NT4W   *LPOPENFILENAME_NT4W;
+
 #ifdef UNICODE
 typedef OPENFILENAME_NT4W   OPENFILENAME_NT4;
 typedef LPOPENFILENAME_NT4W LPOPENFILENAME_NT4;
@@ -415,6 +417,7 @@ typedef struct tagOFNA {
 #endif
 } OPENFILENAMEA;
 typedef OPENFILENAMEA   *LPOPENFILENAMEA;
+
 typedef struct tagOFNW {
     DWORD           lStructSize;
     HWND            hwndOwner;
@@ -443,6 +446,7 @@ typedef struct tagOFNW {
 #endif
 } OPENFILENAMEW;
 typedef OPENFILENAMEW   *LPOPENFILENAMEW;
+
 #ifdef UNICODE
 typedef OPENFILENAMEW   OPENFILENAME;
 typedef LPOPENFILENAMEW LPOPENFILENAME;

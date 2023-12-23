@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -68,7 +69,7 @@ static RTN_GEN *findGenRoutine( RTN_GEN **head, unsigned index, void *parm )
 {
     RTN_GEN *r;
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
     if( parm == NULL ) {
         CFatal( "rtn gen parm must be non-NULL" );
     }

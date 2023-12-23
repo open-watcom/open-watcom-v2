@@ -1326,6 +1326,8 @@ allocate a memory block from a based heap
 return the size of a memory block
 .fd _brealloc
 re-allocate a memory block in a based heap
+.fd brk
+set allocation "break" position
 .fd calloc
 allocate and zero memory
 .fd _expand
@@ -1811,7 +1813,7 @@ equivalent to "fgetc" with the argument "stdin"
 get current file position
 .fd fgets
 get a string
-.fd flushall
+.fd _flushall
 flush output buffers for all streams
 .fd fopen
 open a stream

@@ -1,30 +1,32 @@
 @echo off
-if not exist %OWBINDIR%\%OWOBJDIR%\builder.exe goto no_builder
+if not exist %OWROOT%\build\%OWOBJDIR%\builder.exe goto no_builder
 REM delete the builder and wmake build directories
-if exist %OWSRCDIR%\builder\%OWOBJDIR%\*.exe del %OWSRCDIR%\builder\%OWOBJDIR%\*.exe
-if exist %OWSRCDIR%\builder\%OWOBJDIR%\*.obj del %OWSRCDIR%\builder\%OWOBJDIR%\*.obj
-if exist %OWSRCDIR%\builder\%OWOBJDIR%\*.map del %OWSRCDIR%\builder\%OWOBJDIR%\*.map
-if exist %OWSRCDIR%\builder\%OWOBJDIR%\*.err del %OWSRCDIR%\builder\%OWOBJDIR%\*.err
-if exist %OWSRCDIR%\builder\%OWOBJDIR%\*.sym del %OWSRCDIR%\builder\%OWOBJDIR%\*.sym
-if exist %OWSRCDIR%\builder\%OWOBJDIR% rmdir %OWSRCDIR%\builder\%OWOBJDIR%
-if exist %OWSRCDIR%\wmake\%OWOBJDIR%\*.exe del %OWSRCDIR%\wmake\%OWOBJDIR%\*.exe
-if exist %OWSRCDIR%\wmake\%OWOBJDIR%\*.obj del %OWSRCDIR%\wmake\%OWOBJDIR%\*.obj
-if exist %OWSRCDIR%\wmake\%OWOBJDIR%\*.map del %OWSRCDIR%\wmake\%OWOBJDIR%\*.map
-if exist %OWSRCDIR%\wmake\%OWOBJDIR%\*.gh del %OWSRCDIR%\wmake\%OWOBJDIR%\*.gh
-if exist %OWSRCDIR%\wmake\%OWOBJDIR%\*.err del %OWSRCDIR%\wmake\%OWOBJDIR%\*.err
-if exist %OWSRCDIR%\wmake\%OWOBJDIR%\*.sym del %OWSRCDIR%\wmake\%OWOBJDIR%\*.sym
-if exist %OWSRCDIR%\wmake\%OWOBJDIR%\*.tmp del %OWSRCDIR%\wmake\%OWOBJDIR%\*.tmp
-if exist %OWSRCDIR%\wmake\%OWOBJDIR% rmdir %OWSRCDIR%\wmake\%OWOBJDIR%
+if exist %OWROOT%\bld\builder\%OWOBJDIR%\*.exe del %OWROOT%\bld\builder\%OWOBJDIR%\*.exe
+if exist %OWROOT%\bld\builder\%OWOBJDIR%\*.obj del %OWROOT%\bld\builder\%OWOBJDIR%\*.obj
+if exist %OWROOT%\bld\builder\%OWOBJDIR%\*.map del %OWROOT%\bld\builder\%OWOBJDIR%\*.map
+if exist %OWROOT%\bld\builder\%OWOBJDIR%\*.err del %OWROOT%\bld\builder\%OWOBJDIR%\*.err
+if exist %OWROOT%\bld\builder\%OWOBJDIR%\*.lnk del %OWROOT%\bld\builder\%OWOBJDIR%\*.lnk
+if exist %OWROOT%\bld\builder\%OWOBJDIR%\*.sym del %OWROOT%\bld\builder\%OWOBJDIR%\*.sym
+if exist %OWROOT%\bld\builder\%OWOBJDIR% rmdir %OWROOT%\bld\builder\%OWOBJDIR%
+if exist %OWROOT%\bld\wmake\%OWOBJDIR%\*.exe del %OWROOT%\bld\wmake\%OWOBJDIR%\*.exe
+if exist %OWROOT%\bld\wmake\%OWOBJDIR%\*.obj del %OWROOT%\bld\wmake\%OWOBJDIR%\*.obj
+if exist %OWROOT%\bld\wmake\%OWOBJDIR%\*.map del %OWROOT%\bld\wmake\%OWOBJDIR%\*.map
+if exist %OWROOT%\bld\wmake\%OWOBJDIR%\*.gh del %OWROOT%\bld\wmake\%OWOBJDIR%\*.gh
+if exist %OWROOT%\bld\wmake\%OWOBJDIR%\*.err del %OWROOT%\bld\wmake\%OWOBJDIR%\*.err
+if exist %OWROOT%\bld\wmake\%OWOBJDIR%\*.lnk del %OWROOT%\bld\wmake\%OWOBJDIR%\*.lnk
+if exist %OWROOT%\bld\wmake\%OWOBJDIR%\*.sym del %OWROOT%\bld\wmake\%OWOBJDIR%\*.sym
+if exist %OWROOT%\bld\wmake\%OWOBJDIR%\*.tmp del %OWROOT%\bld\wmake\%OWOBJDIR%\*.tmp
+if exist %OWROOT%\bld\wmake\%OWOBJDIR% rmdir %OWROOT%\bld\wmake\%OWOBJDIR%
 REM clean all projects
-cd %OWSRCDIR%
+cd %OWROOT%\bld
 builder -i clean
 builder -i bootclean
 REM Finally delete the builder and wmake executables
-if exist %OWBINDIR%\%OWOBJDIR%\builder.exe del %OWBINDIR%\%OWOBJDIR%\builder.exe
+if exist %OWROOT%\build\%OWOBJDIR%\builder.exe del %OWROOT%\build\%OWOBJDIR%\builder.exe
 goto wmake_del
 :no_builder
 echo Cannot find builder - did you run build.bat?
 :wmake_del
-if exist %OWBINDIR%\%OWOBJDIR%\wmake.exe del %OWBINDIR%\%OWOBJDIR%\wmake.exe
+if exist %OWROOT%\build\%OWOBJDIR%\wmake.exe del %OWROOT%\build\%OWOBJDIR%\wmake.exe
 cd %OWROOT%
 

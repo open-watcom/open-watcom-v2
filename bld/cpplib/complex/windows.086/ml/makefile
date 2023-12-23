@@ -7,4 +7,4 @@ system     = windows
 model      = ml
 linkage    = static
 
-!include $(cpplib_dir)/complex/complex.mif
+!include ../../complex.mif

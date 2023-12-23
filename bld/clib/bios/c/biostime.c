@@ -36,6 +36,8 @@
 #include "rtdata.h"
 
 
+#if defined( __WATCOM_PC98__ )
+
 #define SECONDS_PER_MINUTE      60
 #define SECONDS_PER_HOUR        ( 60 * SECONDS_PER_MINUTE )
 #define BCD_GET_HIGH( w )       ( w >> 4 )
@@ -97,8 +99,11 @@ static void ibm_to_nec( unsigned char *necBuf, const long *timeval )
     necBuf[5] = ( high << 4 ) | low;
 }
 
+#endif
+
 _WCRTLINK unsigned short _bios_timeofday( unsigned cmd, long *timeval )
 {
+#if defined( __WATCOM_PC98__ )
     if( _RWD_isPC98 ) { /* NEC PC-98 */
         unsigned char   necBuf[6];
 
@@ -118,6 +123,7 @@ _WCRTLINK unsigned short _bios_timeofday( unsigned cmd, long *timeval )
         }
         return( 0 );
     }
+#endif
     /* IBM PC */
     return( __ibm_bios_timeofday( cmd, timeval ) );
 }

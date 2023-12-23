@@ -2,6 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
+;* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -30,11 +31,6 @@
 ;*****************************************************************************
 
 
-ifdef __386__
- .387
-else
- .8087
-endif
 include mdef.inc
 include struct.inc
 include math87.inc
@@ -47,21 +43,12 @@ include math87.inc
         xdefp   atanl_  ; long double atanl( long double x )
         xdefp   atan2l_ ; long double atan2l( long double y, long double x )
 
-ifndef __386__
-if _MODEL and _BIG_CODE
-argx    equ     6
-else
-argx    equ     4
-endif
-endif
-
-
 ;  input:       x - on the stack
 ;  output:      arctan of x in st(0)
 ;
         defp    atanl_
 ifdef __386__
-        fld     tbyte ptr 4[ESP]; load x
+        fld     tbyte ptr argx[ESP]; load x
         call    IF@DATAN        ; calculate atan(x)
         loadres                 ; load result
 else
@@ -76,14 +63,14 @@ endif
 
         defp    atan2l_
 ifdef __386__
-        fld     tbyte ptr 4+12[ESP]; load x
-        fld     tbyte ptr 4[ESP]; load y
+        fld     tbyte ptr argx+_POP_LD_[ESP]; load x
+        fld     tbyte ptr argx[ESP]; load y
         call    IF@DATAN2       ; calculate atan2(y,x)
         loadres                 ; load result
 else
         push    BP              ; save BP
         mov     BP,SP           ; get access to stack
-        fld     tbyte ptr argx+10[BP]; load x
+        fld     tbyte ptr argx+_POP_LD_[BP]; load x
         fld     tbyte ptr argx[BP]; load y
         call    IF@DATAN2       ; calculate atan2(y,x)
         pop     BP              ; restore BP

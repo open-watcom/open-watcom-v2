@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,7 +37,6 @@
 #ifdef __WATCOMC__
     #include <process.h>
 #endif
-#include "wio.h"
 #include "watcom.h"
 #include "common.h"
 #include "msg.h"
@@ -82,7 +81,7 @@ STATIC char * cmdNames[] = {
 #endif
     "?",
     "help",
-#ifndef NDEBUG
+#ifdef DEVBUILD
     "r",
 #endif
     NULL
@@ -96,7 +95,7 @@ STATIC unsigned_8 cmdLen[] = {
 #endif
     1,
     1,
-#ifndef NDEBUG
+#ifdef DEVBUILD
     1
 #endif
 };
@@ -109,7 +108,7 @@ STATIC int cmdType[] = {
 #endif
     HELP_OPT,
     HELP_OPT,
-#ifndef NDEBUG
+#ifdef DEVBUILD
     R_OPT
 #endif
 };
@@ -139,19 +138,23 @@ static size_t   WProfDipSize = 0;
 void WPInit( void )
 /*****************/
 {
-    char        *rover;
+    char        *wp_env;
     bool        do_report;
-    char        buff[256];
+    int         cmd_len;
+    char        *cmd_line;
 
     WPMemOpen();
     SamplePath[0] = 0;
     InitPaths();
-    rover = getenv( "WPROF" );
-    if( rover != NULL ) {
-        procCmd( rover );
+    wp_env = getenv( "WPROF" );
+    if( wp_env != NULL ) {
+        procCmd( wp_env );
     }
-    getcmd( buff );
-    do_report = procCmd( buff );
+    cmd_len = _bgetcmd( NULL, 0 ) + 1;
+    cmd_line = ProfAlloc( cmd_len );
+    _bgetcmd( cmd_line, cmd_len );
+    do_report = procCmd( cmd_line );
+    ProfFree( cmd_line );
     WndInit( "Open Watcom Profiler" );
     WPWndInitDone = true;
     InitMADInfo();
@@ -267,7 +270,7 @@ STATIC bool procCmd( char * cmd )
                 WndStyle &= ~(GUI_CHARMAP_DLG|GUI_CHARMAP_MOUSE);
                 break;
 #endif
-#ifndef NDEBUG
+#ifdef DEVBUILD
             case R_OPT:
                 do_report = true;
                 break;

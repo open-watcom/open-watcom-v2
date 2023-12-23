@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -51,8 +51,8 @@
 #include "bgcall.h"
 
 
-an      BGCall( cn call, bool use_return, bool in_line )
-/******************************************************/
+an      BGCall( cn call, bool use_return, bool aux_inline )
+/*********************************************************/
 {
     instruction         *call_ins;
     instruction         *conv_ins;
@@ -65,7 +65,7 @@ an      BGCall( cn call, bool use_return, bool in_line )
     call_ins = call->ins;
     state = call->state;
 
-    if( state->attr & ROUTINE_MODIFIES_NO_MEMORY ) {
+    if( state->attr & (ROUTINE_MODIFIES_NO_MEMORY | ROUTINE_NEVER_RETURNS_ABORTS | ROUTINE_NEVER_RETURNS_NORETURN) ) {
         call_ins->flags.call_flags |= CALL_WRITES_NO_MEMORY;
     }
     if( state->attr & ROUTINE_READS_NO_MEMORY ) {
@@ -84,11 +84,11 @@ an      BGCall( cn call, bool use_return, bool in_line )
     } else {
         call_ins->result = AllocRegName( state->return_reg );
     }
-    AssgnParms( call, in_line );
+    AssgnParms( call, aux_inline );
     AddCallIns( call_ins, call );
     if( use_return ) {
 #if 1
-        if( call_ins->type_class != XX ){
+        if( call_ins->type_class != XX ) {
             conv_ins = MakeConvert( call_ins->result, result, result->n.type_class,
                                     call_ins->result->n.type_class );
             AddIns( conv_ins );
@@ -108,8 +108,8 @@ void    BGProcDecl( cg_sym_handle sym, type_def *tipe )
     name                *temp;
     hw_reg_set          reg;
 
-    type_class = AddCallBlock( sym, tipe );
     SaveTargetModel = TargetModel;
+    type_class = AddCallBlock( sym, tipe );
     if( tipe != TypeNone ) {
         if( type_class == XX ) {
             reg = HW_D3;
@@ -123,11 +123,9 @@ void    BGProcDecl( cg_sym_handle sym, type_def *tipe )
 }
 
 
-type_def    *PassParmType( cg_sym_handle func, type_def* tipe, call_class cclass )
-/********************************************************************************/
+type_def    *PassParmType( cg_sym_handle func, type_def* tipe )
+/*************************************************************/
 {
-    /* unused parameters */ (void)cclass;
-
     tipe = QParmType( func, NULL, tipe );
     return( tipe );
 }

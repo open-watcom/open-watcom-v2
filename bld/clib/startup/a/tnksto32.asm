@@ -2,6 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
+;* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -37,7 +38,7 @@
 
                 assume  nothing
 
-extrn __STK                     : near
+extrn __CHK                     : near
 extrn "C",__init_threadstksize  : near
 
 DGROUP  group   STACK
@@ -71,7 +72,8 @@ __TNC           proc    near export
                 mov     eax,8[esp]              ; get local size
                 add     eax,12[esp]             ; add parm size
                 add     eax,8*1024              ; add 8k
-                call    __STK                   ; check the stack
+                push    eax                     ; push parameter
+                call    __CHK                   ; check the stack
                 pop     eax                     ; ...
 __TNK           proc    near export
                 push    eax                     ; ...

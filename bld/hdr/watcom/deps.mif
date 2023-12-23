@@ -26,7 +26,7 @@ maxpath_sp  = ../maxpath.sp $(extension)
 
 assert_deps   = $(mh_dir)/assert.mh $(owhdr) $(cplus) $(extension)
 ctype_deps    = $(mh_dir)/ctype.mh $(owhdr) $(cplus) $(extension) $(c99ext) $(ns_std)
-errno_deps    = $(mh_dir)/errno.mh $(crwatqnx_sp) ../readonly.sp ../owrtlink.sp $(cplus) ../errno.sp $(saferc) ../incdir.sp
+errno_deps    = $(mh_dir)/errno.mh $(crwatqnx_sp) ../readonly.sp ../owrtlink.sp $(cplus) ../errno.sp $(saferc) ../incdir.sp ../errsbase.sp
 float_deps    = $(mh_dir)/float.mh $(owhdr) $(cplus) ../null.sp $(extension)
 inttypes_deps = $(mh_dir)/inttypes.mh $(crwatqnx_sp) ../readonly.sp ../owrtlink.sp $(packll) $(cplus) ../wchar_t.sp $(ns_std)
 iso646_deps   = $(mh_dir)/iso646.mh $(owhdr)
@@ -34,7 +34,7 @@ limits_deps   = $(mh_dir)/limits.mh $(crwatqnx_sp) $(owhdrcnt) ../mblenmax.sp $(
 locale_deps   = $(mh_dir)/locale.mh $(crwatqnx_sp) $(owhdrcnt) ../owrtlink.sp $(cplus) $(packll) ../wchar_t.sp ../null.sp $(ns_std) ../nyi.sp
 math_deps     = $(mh_dir)/math.mh $(owhdr) $(extension) $(c99ext) $(cplus) $(packll) $(ns_std)
 setjmp_deps   = $(mh_dir)/setjmp.mh $(crwatqnx_sp) ../readonly.sp ../owrtlink.sp $(cplus) $(unixext) $(packll)
-signal_deps   = $(mh_dir)/signal.mh $(crwatqnx_sp) ../readonly.sp ../owrtlink.sp $(cplus) $(packll) $(ns_std) ../size_t.sp ../uid_t.sp ../timespec.sp ../systypes.sp ../pthread1.sp ../incdir.sp $(posixext) $(unixext)
+signal_deps   = $(mh_dir)/signal.mh $(crwatqnx_sp) ../readonly.sp ../owrtlink.sp $(cplus) $(packll) $(ns_std) ../size_t.sp ../uid_t.sp ../timespec.sp ../systypes.sp ../pthread1.sp ../sigevent.sp ../incdir.sp $(posixext) $(unixext)
 stdarg_deps   = $(mh_dir)/stdarg.mh $(owhdr) $(cplus) ../_valist.sp ../valist.sp $(extension) $(ns_std)
 stdbool_deps  = $(mh_dir)/stdbool.mh $(owhdr)
 stddef_deps   = $(mh_dir)/stddef.mh $(owhdr) $(cplus) ../size_t.sp ../wchar_t.sp ../null.sp ../ptrdifft.sp $(saferc) $(extension) ../thrdhndl.sp
@@ -199,8 +199,8 @@ h/_rbtree.h       : $(mh_dir)/_rbtree.mh $(owhdrcnt) ../cpponly.sp $(ns_std)
 h/_strdef.h       : $(mh_dir)/_strdef.mh $(owhdrcnt) ../cpponly.sp $(ns_std)
 h/alloca.h        : $(mh_dir)/alloca.mh $(owhdr) ../size_t.sp ../null.sp $(cplus) ../alloca.sp
 h/assert.h        : $(assert_deps)
-h/bios.h          : $(mh_dir)/bios.mh $(owhdr) $(cplus) $(packll) $(extension)
-h/bios98.h        : $(mh_dir)/bios98.mh $(owhdr) $(cplus) $(packll) $(extension)
+h/bios.h          : $(mh_dir)/bios.mh $(owhdr) ../pc98.sp $(cplus) $(packll) $(extension)
+h/bios98.h        : $(mh_dir)/bios98.mh $(owhdr) ../pc98.sp $(cplus) $(packll) $(extension)
 h/common.cnv      : $(mh_dir)/common.mh $(crwat_sp)
 h/complex.h       : $(complex_deps)
 h/conio.h         : $(mh_dir)/conio.mh $(owhdr) $(cplus) ../_valist.sp
@@ -210,6 +210,7 @@ h/direct.h        : $(mh_dir)/direct.mh $(owhdr) ../lfndos.sp ../systypes.sp $(c
 h/dos.h           : $(mh_dir)/dos.mh $(owhdr) ../lfndos.sp $(cplus) $(packll) ../wchar_t.sp $(maxpath_sp) ../dskfreet.sp ../delay.sp
 h/dosfunc.h       : $(mh_dir)/dosfunc.mh $(owhdr)
 h/eh.h            : $(mh_dir)/eh.mh $(owhdr) ../cpponly.sp
+h/endian.h        : $(mh_dir)/endian.mh $(owhdrcnt) $(posixext)
 h/env.h           : $(mh_dir)/env.mh $(owhdr) $(cplus) ../wchar_t.sp ../getenv.sp ../putenv.sp ../setenv.sp ../unsetenv.sp $(posixext)
 h/errno.h         : $(errno_deps)
 h/except.h        : $(mh_dir)/except.mh $(owhdr) ../cpponly.sp  ../cpppfv.sp ../watexc.sp ../except.sp
@@ -315,6 +316,7 @@ h/sys/socket.h    : $(mh_dir)/sys/socket.mh $(owhdr) $(cplus) $(packlnxk) ../inc
 !ifeq system dos
 
 h/sys/_lfndos.h   : $(mh_dir)/dos/sys/_lfndos.mh $(owhdrcnt)
+h/sys/_pc98.h     : $(mh_dir)/dos/sys/_pc98.mh $(owhdrcnt)
 h/sys/stat.h      : $(mh_dir)/sys/stat.mh $(sys_stat_deps)
 
 !else ifeq system rdos
@@ -353,6 +355,7 @@ h/arch/i386/fcntl.h        : $(mh_dir)/linux/arch/i386/fcntl.mh $(crwatcnt_sp) .
 h/arch/i386/siginfo.h      : $(mh_dir)/linux/arch/i386/siginfo.mh $(crwatcnt_sp) ../clock_t.sp
 h/arch/i386/signal.h       : $(mh_dir)/linux/arch/i386/signal.mh $(crwatcnt_sp)
 h/arch/i386/sigposix.h     : $(mh_dir)/linux/arch/i386/sigposix.mh $(crwatcnt_sp)
+h/arch/i386/sys/endian.h   : $(mh_dir)/linux/arch/i386/sys/endian.mh $(crwatcnt_sp)
 h/arch/i386/sys/ioctl.h    : $(mh_dir)/linux/arch/i386/sys/ioctl.mh $(crwatcnt_sp)
 h/arch/i386/sys/resource.h : $(mh_dir)/linux/arch/i386/sys/resource.mh $(crwatcnt_sp)
 h/arch/i386/sys/socket.h   : $(mh_dir)/linux/arch/i386/sys/socket.mh $(crwatcnt_sp)
@@ -364,12 +367,15 @@ h/arch/mips/fcntl.h        : $(mh_dir)/linux/arch/mips/fcntl.mh $(crwatcnt_sp) .
 h/arch/mips/siginfo.h      : $(mh_dir)/linux/arch/mips/siginfo.mh $(crwatcnt_sp) ../clock_t.sp
 h/arch/mips/signal.h       : $(mh_dir)/linux/arch/mips/signal.mh $(crwatcnt_sp)
 h/arch/mips/sigposix.h     : $(mh_dir)/linux/arch/mips/sigposix.mh $(crwatcnt_sp)
+h/arch/mips/sys/endian.h   : $(mh_dir)/linux/arch/mips/sys/endian.mh $(crwatcnt_sp)
 h/arch/mips/sys/ioctl.h    : $(mh_dir)/linux/arch/mips/sys/ioctl.mh $(crwatcnt_sp)
 h/arch/mips/sys/resource.h : $(mh_dir)/linux/arch/mips/sys/resource.mh $(crwatcnt_sp)
 h/arch/mips/sys/socket.h   : $(mh_dir)/linux/arch/mips/sys/socket.mh $(crwatcnt_sp)
 h/arch/mips/sys/stat.h     : $(mh_dir)/linux/arch/mips/sys/stat.mh $(crwatcnt_sp) ../dev_t.sp ../ino_t.sp ../mode_t.sp ../nlink_t.sp ../uid_t.sp ../gid_t.sp ../blksizet.sp ../blkcnt_t.sp
 h/arch/mips/sys/sysmacro.h : $(mh_dir)/linux/arch/mips/sys/sysmacro.mh $(crwatcnt_sp)
 h/arch/mips/sys/types.h    : $(mh_dir)/linux/arch/mips/sys/types.mh $(crwatcnt_sp) ../dev_t.sp ../ino_t.sp ../mode_t.sp ../nlink_t.sp ../uid_t.sp ../gid_t.sp ../blksizet.sp ../blkcnt_t.sp ../id_t.sp
+h/arch/ppc/err_no.h        : $(mh_dir)/linux/arch/ppc/err_no.mh $(crwatcnt_sp)
+h/arch/ppc/sys/endian.h    : $(mh_dir)/linux/arch/ppc/sys/endian.mh $(crwatcnt_sp)
 
 !else ifeq system qnx
 

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -54,8 +54,8 @@ static FILE *OpenUnicodeFile( const char *filename )
     _searchenv( filename, "ETC_PATH", fullpath );
     if( fullpath[0] == '\0' ) {
         #define ETC "/etc/"
-        memcpy( fullpath, ETC, sizeof( ETC ) - 1 );
-        strcpy( fullpath + sizeof( ETC ) - 1, filename );
+        strcpy( fullpath, ETC );
+        strcpy( fullpath + LENLIT( ETC ), filename );
     }
 #else
     _searchenv( filename, "PATH", fullpath );
@@ -74,7 +74,9 @@ static void ReadUnicodeFile( FILE *fp )
     unicode_type    unicode_table[256];
 
     len = fread( unicode_table, sizeof( unicode_type ), 256, fp );
-    /* UniCode might be a FAR table */
+    /*
+     * UniCode might be a FAR table
+     */
     for( i = 0; i < 256; i++ ) {
         UniCode[i] = ( i < len ) ? unicode_table[i] : 0;
     }
@@ -103,10 +105,10 @@ void LoadUnicodeTable( unsigned codePage )
 
 void StringInit( void )
 {
-    str_hash_idx    h;
+    str_hash_idx    hash;
 
-    for( h = 0; h < STRING_HASH_SIZE; ++h ) {
-        StringHash[h] = 0;
+    for( hash = 0; hash < STRING_HASH_SIZE; hash++ ) {
+        StringHash[hash] = 0;
     }
 }
 
@@ -146,7 +148,7 @@ static target_size RemoveEscapes( char *buf, const char *inbuf, target_size ilen
                 if( !CompFlags.cpp_mode ) {
                     if( SkipLevel == NestLevel ) {
                         if( BadTokenInfo == ERR_CONSTANT_TOO_BIG ) {
-                            CWarn1( WARN_CONSTANT_TOO_BIG, ERR_CONSTANT_TOO_BIG );
+                            CWarn1( ERR_CONSTANT_TOO_BIG );
                         } else if( BadTokenInfo == ERR_INVALID_HEX_CONSTANT ) {
                             CErr1( ERR_INVALID_HEX_CONSTANT );
                         }
@@ -170,11 +172,7 @@ static target_size RemoveEscapes( char *buf, const char *inbuf, target_size ilen
                     c = read_inp();
                 }
             } else if( CompFlags.wide_char_string ) {
-                if( CompFlags.use_unicode ) {
-                    c = UniCode[c];
-                } else if( CompFlags.jis_to_unicode ) {
-                    c = JIS2Unicode( c );
-                }
+                c = EncodeWchar( c );
                 WRITE_BYTE( c );
                 c = c >> 8;
 #if _CPU == 370
@@ -198,13 +196,17 @@ STR_HANDLE GetLiteral( void )
     STR_HANDLE          q;
     bool                is_wide;
 
-    /* first we store the whole string in a linked list to see if
-       the end result is wide or not wide */
+    /*
+     * first we store the whole string in a linked list to see if
+     * the end result is wide or not wide
+     */
     p = str_lit = CMemAlloc( sizeof( STRING_LITERAL ) );
     q = NULL;
     is_wide = false;
     do {
-        /* if one component is wide then the whole string is wide */
+        /*
+         * if one component is wide then the whole string is wide
+         */
         if( CompFlags.wide_char_string )
             is_wide = true;
         if( q != NULL ) {
@@ -214,12 +216,13 @@ STR_HANDLE GetLiteral( void )
         q = p;
         p->next_string = NULL;
         p->length = TokenLen + 1;
-        p->literal = CMemAlloc( TokenLen + 1 );
-        memcpy( p->literal, Buffer, TokenLen + 1 );
+        p->literal = ToStringDup( Buffer, TokenLen );
     } while( NextToken() == T_STRING );
     CompFlags.wide_char_string = is_wide;
-    /* then remove escapes (C99: translation phase 5), and only then
-       concatenate (translation phase 6), not the other way around! */
+    /*
+     * then remove escapes (C99: translation phase 5), and only then
+     * concatenate (translation phase 6), not the other way around!
+     */
     len = 1;
     s = NULL;
     q = str_lit;
@@ -276,26 +279,30 @@ TREEPTR StringLeaf( string_flags flags )
     STR_HANDLE          new_lit;
     STR_HANDLE          strlit;
     TREEPTR             leaf_index;
-    str_hash_idx        h;
+    str_hash_idx        hash;
 
     strlit = NULL;
     new_lit = GetLiteral();
-    if( TargetSwitches & BIG_DATA ) {
+#if _INTEL_CPU
+    if( TargetSwitches & CGSW_X86_BIG_DATA ) {
         if( !CompFlags.strings_in_code_segment ) {
             if( new_lit->length > DataThreshold ) {
                 flags |= STRLIT_FAR;
             }
         }
     }
+#endif
     if( CompFlags.wide_char_string )
         flags |= STRLIT_WIDE;
+#if _INTEL_CPU
     if( flags & STRLIT_FAR )
         CompFlags.far_strings = true;
-    h = CalcStringHash( new_lit );
+#endif
+    hash = CalcStringHash( new_lit );
     if( TOGGLE( reuse_duplicate_strings ) ) {
-        for( strlit = StringHash[h]; strlit != NULL; strlit = strlit->next_string ) {
+        for( strlit = StringHash[hash]; strlit != NULL; strlit = strlit->next_string ) {
             if( strlit->length == new_lit->length && strlit->flags == flags ) {
-                if( memcmp( strlit->literal, new_lit->literal, new_lit->length ) == 0 ) {
+                if( strcmp( strlit->literal, new_lit->literal ) == 0 ) {
                     break;
                 }
             }
@@ -305,8 +312,8 @@ TREEPTR StringLeaf( string_flags flags )
         new_lit->flags = flags;
         ++LitCount;
         LitPoolSize += CLitLength;
-        new_lit->next_string = StringHash[h];
-        StringHash[h] = new_lit;
+        new_lit->next_string = StringHash[hash];
+        StringHash[hash] = new_lit;
     } else {            // we found a duplicate
         FreeLiteral( new_lit );
         new_lit = strlit;

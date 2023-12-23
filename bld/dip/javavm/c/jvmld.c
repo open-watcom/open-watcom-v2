@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,7 +46,7 @@ dip_status DIPIMPENTRY( LoadInfo )( FILE *fp, imp_image_handle *iih )
 
     if( DCCurrArch() != DIG_ARCH_JVM )
         return( DS_FAIL );
-    DCSeek( fp, 0, DIG_ORG );
+    DCSeek( fp, 0, DIG_SEEK_ORG );
     if( DCRead( fp, &jcf, sizeof( jcf ) ) != sizeof( jcf ) )
         return( DS_FAIL );
     if( memcmp( jcf.sig, JAVA_SIG, sizeof( jcf.sig ) ) != 0 )

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,7 +41,7 @@ extern  FILE_CTL        Files[MAX_SEG + 1];
 extern  int             FilesOpen;
 
 extern  bool            SegOk[MAX_SEG + 1];
-extern  unsigned_32     Locs[MAX_SEG + 1];
+extern  uint_32         Locs[MAX_SEG + 1];
 extern  int             SymDebug;
 extern  int             TypDebug;
 extern  int             Actions;

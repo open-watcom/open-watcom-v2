@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -159,21 +159,21 @@ static unsigned_32 GetLeaf( void )
     if( leaf <= COMDEF_LEAF_SIZE ) {
         value = leaf;
     } else if( leaf == COMDEF_LEAF_2 ) {
-        value = GET_U16_UN( ObjBuff );
+        value = MGET_U16_UN( ObjBuff );
         ObjBuff += sizeof( unsigned_16 );
     } else if( leaf == COMDEF_LEAF_3 ) {
-        value = GET_U16_UN( ObjBuff );
+        value = MGET_U16_UN( ObjBuff );
         ObjBuff += sizeof( unsigned_16 );
         value += ( (unsigned_32)*ObjBuff++ ) << 16;
     } else if( leaf == COMDEF_LEAF_4 ) {
-        value = GET_U32_UN( ObjBuff );
+        value = MGET_U32_UN( ObjBuff );
         ObjBuff += sizeof( unsigned_32 );
     }
     return( value );
 }
 
-static bool isCOMDEF32( void )
-/****************************/
+static byte COMDEF_bits( void )
+/*****************************/
 {
     SEGDATA *segs = CurrMod->segs;
     SEGDATA *seg = NULL;
@@ -185,16 +185,16 @@ static bool isCOMDEF32( void )
         // none of these are generated for Dwarf debug info so
         // we should not get confused when we are 16-bit
         if( seg->isuninit || seg->iscdat || seg->iscode ) {
-            return( seg->is32bit );
+            return( seg->bits );
         }
     }
-    return( (ObjFormat & FMT_32BIT_REC) != 0 );
+    return( (ObjFormat & FMT_32BIT_REC) ? BITS_32 : BITS_16 );
 }
 
 void ProcComdef( bool isstatic )
-/*************************************/
+/******************************/
 {
-    bool                is32bit = isCOMDEF32();
+    byte                bits;
     char *              sym_name;
     unsigned_8          sym_len;
     byte                kind;
@@ -203,6 +203,7 @@ void ProcComdef( bool isstatic )
     extnode *           ext;
     sym_flags           symop;
 
+    bits = COMDEF_bits();
     symop = ST_CREATE_REFERENCE;
     if( isstatic ) {
         symop |= ST_STATIC;
@@ -218,7 +219,7 @@ void ProcComdef( bool isstatic )
             size *= GetLeaf();
         }
         sym = SymOp( symop, sym_name, sym_len );
-        sym = MakeCommunalSym( sym, size, kind == COMDEF_FAR, is32bit );
+        sym = MakeCommunalSym( sym, size, kind == COMDEF_FAR, bits );
         ext = AllocNode( ExtNodes );
         ext->entry = sym;
         ext->ovlref = 0;
@@ -319,7 +320,7 @@ static void AddToLinkerComdat( symbol *sym )
             sect = NonSect;             /* data in an overlaid app */
         }
 #endif
-        class = FindClass( sect, CDatClassNames[alloc], alloc > 1, alloc & 1 );
+        class = FindClass( sect, CDatClassNames[alloc], ( alloc > 2 ) ? BITS_32 : BITS_16, alloc & 1 );
     } else {
         class = leader->class;
         seglen = CAlign( leader->size, align ) + sdata->length;
@@ -349,13 +350,13 @@ static offset CountIDBlock( unsigned_8 **buffptr )
 
     buff = *buffptr;
     if( ObjFormat & FMT_MS_386 ) {
-        _TargU32toHost( _GetU32( buff ), repeat );
+        _TargU32toHost( MGET_U32( buff ), repeat );
         buff += sizeof( unsigned_32 );
     } else {
-        _TargU16toHost( _GetU16( buff ), repeat );
+        _TargU16toHost( MGET_U16( buff ), repeat );
         buff += sizeof( unsigned_16 );
     }
-    _TargU16toHost( _GetU16( buff ), count );
+    _TargU16toHost( MGET_U16( buff ), count );
     buff += sizeof( unsigned_16 );
     if( count == 0 ) {  // this is followed by actual data
         repeat *= *buff;
@@ -392,7 +393,7 @@ static bool CompInfoSym( void *info, void *sym )
     return( ((comdat_info *)info)->sym == (symbol *)sym );
 }
 
-#ifdef _INT_DEBUG
+#ifdef DEVBUILD
 static bool CheckSameComdat( void *info, void *sym )
 /***********************************************************/
 {
@@ -436,10 +437,10 @@ void ProcComdat( void )
         align = OMFAlignTab[align];
     }
     if( ObjFormat & FMT_32BIT_REC ) {
-        _TargU32toHost( _GetU32UN( ObjBuff ), dataoff );
+        _TargU32toHost( MGET_U32_UN( ObjBuff ), dataoff );
         ObjBuff += sizeof( unsigned_32 );
     } else {
-        _TargU16toHost( _GetU16UN( ObjBuff ), dataoff );
+        _TargU16toHost( MGET_U16_UN( ObjBuff ), dataoff );
         ObjBuff += sizeof( unsigned_16 );
     }
     SkipIdx();  /* not interested in the type index */
@@ -493,16 +494,14 @@ void ProcComdat( void )
         sdata->align = align;
         sdata->u.leader = seg->entry->u.leader;
         sdata->iscode = ( (seg->info & SEG_CODE) != 0 );
-        if( ObjFormat & FMT_32BIT_REC ) {
-            sdata->is32bit = true;
-        }
+        sdata->bits = ( ObjFormat & FMT_32BIT_REC ) ? BITS_32 : BITS_16;
         info = AllocCDatInfo();
         info->sdata = sdata;
         info->sym = sym;
         info->flags = (attr & CDAT_SELECT_MASK) << CDAT_SELECT_SHIFT;
         info->flags |= SYM_DEAD;        // assume redefined
         RingAppend( &info->pieces, piece );
-#ifdef _INT_DEBUG
+#ifdef DEVBUILD
         RingLookup( CDatList, CheckSameComdat, sym );
 #endif
         RingAppend( &CDatList, info );

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,12 +48,12 @@ typedef enum {
 
 typedef enum {
     #define PICK( a, b ) a,
-    #include "insenum.inc"
+    #include "_insenum.h"
     #undef PICK
 } ins_enum_method;              // All the possible enumeration methods
 
-typedef uint_16 ins_opcode;
-typedef uint_16 ins_funccode;
+typedef uint_16         ins_opcode;
+typedef uint_16         ins_funccode;
 
 typedef enum {
     NOTHING             = 0x00,
@@ -63,14 +64,14 @@ typedef enum {
 
 typedef enum {
     #define PICK( a, b ) OP_##a = b,
-    #include "regclass.inc"
+    #include "_regclas.h"
     #undef PICK
     OP_IMMED            = (1 << REGCLASS_COUNT),        // an immediate constant (could have reloc with it)
     OP_REG_INDIRECT     = (1 << (REGCLASS_COUNT+1)),    // register with an immediate attached
 } op_type;
 
-typedef int_32  op_const;
-typedef reg     op_reg;                 /* from chip-specific register.h - must be included before inslist.h */
+typedef int_32          op_const;
+typedef reg             op_reg;     /* from chip-specific register.h - must be included before inslist.h */
 
 typedef union {
     int_32              label;

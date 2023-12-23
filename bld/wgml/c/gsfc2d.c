@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2013 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2022 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -81,7 +81,7 @@ condcode    scr_c2d( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * resul
         n += (unsigned char)*pval;
         pval++;
     }
-    ultoa( n, linestr, 10 );
+    sprintf( linestr, "%lu", (unsigned long)n );
     p = linestr;
     while( *p && ressize > 0) {
         **result = *p++;

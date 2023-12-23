@@ -1,72 +1,72 @@
 #fixme: may be some emulator stuff in here that should go away
-#                    d16c d16i d32c d32i n32c n32i winc wini nta ntp opc lpc lmp
-#================================================================================
+#                    d16c d16i d32c d32i n32c n32i winc wini nta ntm ntp opc lpc lmp
+#====================================================================================
 !inject __87ldi2.obj      d16i      d32i      n32i      wini
 !inject __87ldi4.obj      d16i      d32i      n32i      wini
 !inject _gr_cvt.obj  d16c d16i d32c d32i           winc wini
 !inject _gr_math.obj d16c d16i d32c d32i           winc wini
-!inject _matherr.obj d16c d16i d32c d32i n32c n32i winc wini nta ntp opc
-!inject _uatof.obj   d16c d16i d32c d32i n32c n32i winc wini nta ntp opc
-!inject _uefcvt.obj            d32c d32i n32c n32i           nta ntp opc
-!inject _ugcvt.obj             d32c d32i n32c n32i           nta ntp opc
-!inject _ustrtod.obj d16c d16i d32c d32i n32c n32i winc wini nta ntp opc
-!inject _ustrtof.obj d16c d16i d32c d32i n32c n32i winc wini nta ntp opc
-!inject _ustrtld.obj d16c d16i d32c d32i n32c n32i winc wini nta ntp opc
-!inject acos.obj     d16c      d32c      n32c      winc      nta ntp opc
+!inject _matherr.obj d16c d16i d32c d32i n32c n32i winc wini nta ntm ntp opc
+!inject _uatof.obj   d16c d16i d32c d32i n32c n32i winc wini nta ntm ntp opc
+!inject _uefcvt.obj            d32c d32i n32c n32i           nta ntm ntp opc
+!inject _ugcvt.obj             d32c d32i n32c n32i           nta ntm ntp opc
+!inject _ustrtod.obj d16c d16i d32c d32i n32c n32i winc wini nta ntm ntp opc
+!inject _ustrtof.obj d16c d16i d32c d32i n32c n32i winc wini nta ntm ntp opc
+!inject _ustrtld.obj d16c d16i d32c d32i n32c n32i winc wini nta ntm ntp opc
+!inject acos.obj     d16c      d32c      n32c      winc      nta ntm ntp opc
 !inject acos87.obj        d16i      d32i      n32i      wini
-!inject acosh.obj    d16c      d32c      n32c      winc      nta ntp opc
+!inject acosh.obj    d16c      d32c      n32c      winc      nta ntm ntp opc
 !inject acosh87.obj       d16i      d32i      n32i      wini
 !inject acosl87.obj       d16i      d32i      n32i      wini
-!inject asin.obj     d16c      d32c      n32c      winc      nta ntp opc
+!inject asin.obj     d16c      d32c      n32c      winc      nta ntm ntp opc
 !inject asin87.obj        d16i      d32i      n32i      wini
-!inject asinh.obj    d16c      d32c      n32c      winc      nta ntp opc
+!inject asinh.obj    d16c      d32c      n32c      winc      nta ntm ntp opc
 !inject asinh87.obj       d16i      d32i      n32i      wini
 !inject asinl87.obj       d16i      d32i      n32i      wini
-!inject atan.obj     d16c      d32c      n32c      winc      nta ntp opc
-!inject atan2.obj    d16c      d32c      n32c      winc      nta ntp opc
+!inject atan.obj     d16c      d32c      n32c      winc      nta ntm ntp opc
+!inject atan2.obj    d16c      d32c      n32c      winc      nta ntm ntp opc
 !inject atan87.obj        d16i      d32i      n32i      wini
 !inject atan087_.obj d16c                          winc
 !inject atan387_.obj           d32c      n32c
-!inject atanh.obj    d16c      d32c      n32c      winc      nta ntp opc
+!inject atanh.obj    d16c      d32c      n32c      winc      nta ntm ntp opc
 !inject atanh87.obj       d16i      d32i      n32i      wini
 !inject atanl87.obj       d16i      d32i      n32i      wini
-!inject atof.obj     d16c d16i d32c d32i n32c n32i winc wini nta ntp opc
+!inject atof.obj     d16c d16i d32c d32i n32c n32i winc wini nta ntm ntp opc
 !inject bufld086.obj d16c d16i                     winc wini
 !inject bufld386.obj           d32c d32i n32c n32i
-!inject cabs.obj     d16c d16i d32c d32i n32c n32i winc wini nta ntp opc
-!inject cbrt.obj     d16c d16i d32c d32i n32c n32i winc wini nta ntp opc lpc lmp
-!inject ceil.obj     d16c d16i d32c d32i n32c n32i winc wini nta ntp opc
+!inject cabs.obj     d16c d16i d32c d32i n32c n32i winc wini nta ntm ntp opc
+!inject cbrt.obj     d16c d16i d32c d32i n32c n32i winc wini nta ntm ntp opc lpc lmp
+!inject ceil.obj     d16c d16i d32c d32i n32c n32i winc wini nta ntm ntp opc
 !inject clear87.obj  d16c d16i d32c d32i n32c n32i winc wini
-!inject cnvd2f.obj   d16c d16i d32c d32i n32c n32i winc wini nta ntp opc lpc lmp
+!inject cnvd2f.obj   d16c d16i d32c d32i n32c n32i winc wini nta ntm ntp opc lpc lmp
 !inject cnvd2ld.obj  d16c d16i d32c d32i n32c n32i winc wini
-!inject cnvs2d.obj   d16c d16i d32c d32i n32c n32i winc wini nta ntp opc lpc lmp
-!inject copysign.obj d16c d16i d32c d32i n32c n32i winc wini nta ntp opc lpc lmp
-!inject cosh.obj     d16c      d32c      n32c      winc      nta ntp opc
+!inject cnvs2d.obj   d16c d16i d32c d32i n32c n32i winc wini nta ntm ntp opc lpc lmp
+!inject copysign.obj d16c d16i d32c d32i n32c n32i winc wini nta ntm ntp opc lpc lmp
+!inject cosh.obj     d16c      d32c      n32c      winc      nta ntm ntp opc
 !inject cotan87.obj       d16i      d32i      n32i      wini
-!inject cvt.obj      d16c d16i d32c d32i n32c n32i winc wini nta ntp opc
-!inject difftime.obj d16c d16i d32c d32i n32c n32i winc wini nta ntp opc
-!inject divc16.obj   d16c d16i d32c d32i n32c n32i winc wini nta ntp opc
-!inject divc20.obj   d16c d16i d32c d32i n32c n32i winc wini nta ntp opc
-!inject divc8.obj    d16c d16i d32c d32i n32c n32i winc wini nta ntp opc
-!inject efcvt.obj    d16c d16i d32c d32i n32c n32i winc wini nta ntp opc
-!inject efgfmt.obj   d16c d16i d32c d32i n32c n32i winc wini nta ntp opc lpc lmp
-!inject erf.obj      d16c d16i d32c d32i n32c n32i winc wini nta ntp opc lpc lmp
-!inject evalpoly.obj d16c d16i d32c d32i n32c n32i winc wini nta ntp opc
-!inject exp.obj      d16c      d32c      n32c      winc      nta ntp opc
+!inject cvt.obj      d16c d16i d32c d32i n32c n32i winc wini nta ntm ntp opc
+!inject difftime.obj d16c d16i d32c d32i n32c n32i winc wini nta ntm ntp opc
+!inject divc16.obj   d16c d16i d32c d32i n32c n32i winc wini nta ntm ntp opc
+!inject divc20.obj   d16c d16i d32c d32i n32c n32i winc wini nta ntm ntp opc
+!inject divc8.obj    d16c d16i d32c d32i n32c n32i winc wini nta ntm ntp opc
+!inject efcvt.obj    d16c d16i d32c d32i n32c n32i winc wini nta ntm ntp opc
+!inject efgfmt.obj   d16c d16i d32c d32i n32c n32i winc wini nta ntm ntp opc lpc lmp
+!inject erf.obj      d16c d16i d32c d32i n32c n32i winc wini nta ntm ntp opc lpc lmp
+!inject evalpoly.obj d16c d16i d32c d32i n32c n32i winc wini nta ntm ntp opc
+!inject exp.obj      d16c      d32c      n32c      winc      nta ntm ntp opc
 !inject exp87.obj         d16i      d32i      n32i      wini
 !inject exp087_.obj  d16c                          winc
 !inject exp387_.obj            d32c      n32c
-!inject exp2.obj     d16c d16i d32c d32i n32c n32i winc wini nta ntp opc lpc lmp
-!inject expm1.obj    d16c d16i d32c d32i n32c n32i winc wini nta ntp opc lpc lmp
-!inject fabs.obj     d16c      d32c      n32c      winc      nta ntp opc
+!inject exp2.obj     d16c d16i d32c d32i n32c n32i winc wini nta ntm ntp opc lpc lmp
+!inject expm1.obj    d16c d16i d32c d32i n32c n32i winc wini nta ntm ntp opc lpc lmp
+!inject fabs.obj     d16c      d32c      n32c      winc      nta ntm ntp opc
 !inject fabs87.obj        d16i      d32i      n32i      wini
 !inject fchop87.obj       d16i      d32i      n32i      wini
-!inject fdclass.obj  d16c d16i d32c d32i n32c n32i winc wini nta ntp opc lpc lmp
-!inject fdim.obj     d16c d16i d32c d32i n32c n32i winc wini nta ntp opc lpc lmp
+!inject fdclass.obj  d16c d16i d32c d32i n32c n32i winc wini nta ntm ntp opc lpc lmp
+!inject fdim.obj     d16c d16i d32c d32i n32c n32i winc wini nta ntm ntp opc lpc lmp
 !inject fdld086.obj  d16c                          winc
 !inject fdld386.obj            d32c      n32c
-!inject fdsign.obj   d16c d16i d32c d32i n32c n32i winc wini nta ntp opc lpc lmp
-!inject finite.obj   d16c d16i d32c d32i n32c n32i winc wini nta ntp opc
+!inject fdsign.obj   d16c d16i d32c d32i n32c n32i winc wini nta ntm ntp opc lpc lmp
+!inject finite.obj   d16c d16i d32c d32i n32c n32i winc wini nta ntm ntp opc
 !inject flda086.obj  d16c                          winc
 !inject flda386.obj            d32c      n32c
 !inject fldc086.obj  d16c                          winc
@@ -75,41 +75,41 @@
 !inject fldd386.obj            d32c      n32c
 !inject fldm086.obj  d16c                          winc
 !inject fldm386.obj            d32c      n32c
-!inject floor.obj    d16c d16i d32c d32i n32c n32i winc wini nta ntp opc
-!inject flsign.obj   d16c d16i d32c d32i n32c n32i winc wini nta ntp opc lpc lmp
-!inject fma.obj      d16c d16i d32c d32i n32c n32i winc wini nta ntp opc lpc lmp
-!inject fmax.obj     d16c d16i d32c d32i n32c n32i winc wini nta ntp opc lpc lmp
-!inject fmin.obj     d16c d16i d32c d32i n32c n32i winc wini nta ntp opc lpc lmp
-!inject fmod.obj     d16c      d32c      n32c      winc      nta ntp opc
+!inject floor.obj    d16c d16i d32c d32i n32c n32i winc wini nta ntm ntp opc
+!inject flsign.obj   d16c d16i d32c d32i n32c n32i winc wini nta ntm ntp opc lpc lmp
+!inject fma.obj      d16c d16i d32c d32i n32c n32i winc wini nta ntm ntp opc lpc lmp
+!inject fmax.obj     d16c d16i d32c d32i n32c n32i winc wini nta ntm ntp opc lpc lmp
+!inject fmin.obj     d16c d16i d32c d32i n32c n32i winc wini nta ntm ntp opc lpc lmp
+!inject fmod.obj     d16c      d32c      n32c      winc      nta ntm ntp opc
 !inject fmod87.obj        d16i      d32i      n32i      wini
 !inject fprem086.obj d16c                          winc
 !inject fprem386.obj           d32c      n32c
-!inject fpremaxp.obj                                         nta ntp opc
-!inject frexp.obj    d16c d16i d32c d32i n32c n32i winc wini nta ntp opc
-!inject fsclass.obj  d16c d16i d32c d32i n32c n32i winc wini nta ntp opc lpc lmp
+!inject fpremaxp.obj                                         nta ntm ntp opc
+!inject frexp.obj    d16c d16i d32c d32i n32c n32i winc wini nta ntm ntp opc
+!inject fsclass.obj  d16c d16i d32c d32i n32c n32i winc wini nta ntm ntp opc lpc lmp
 !inject fsld086.obj  d16c                          winc
 !inject fsld386.obj            d32c      n32c
-!inject fssign.obj   d16c d16i d32c d32i n32c n32i winc wini nta ntp opc lpc lmp
-!inject gcvt.obj     d16c d16i d32c d32i n32c n32i winc wini nta ntp opc
-!inject hypot.obj    d16c d16i d32c d32i n32c n32i winc wini nta ntp opc
+!inject fssign.obj   d16c d16i d32c d32i n32c n32i winc wini nta ntm ntp opc lpc lmp
+!inject gcvt.obj     d16c d16i d32c d32i n32c n32i winc wini nta ntm ntp opc
+!inject hypot.obj    d16c d16i d32c d32i n32c n32i winc wini nta ntm ntp opc
 !inject i4ld086.obj  d16c                          winc
 !inject i4ld386.obj            d32c      n32c
 !inject i8ld086.obj  d16c                          winc
 !inject i8ld386.obj            d32c      n32c
-!inject ifcdabs.obj  d16c d16i d32c d32i n32c n32i winc wini nta ntp opc
-!inject ifcdcos.obj  d16c d16i d32c d32i n32c n32i winc wini nta ntp opc
-!inject ifcdexp.obj  d16c d16i d32c d32i n32c n32i winc wini nta ntp opc
-!inject ifcdlog.obj  d16c d16i d32c d32i n32c n32i winc wini nta ntp opc
-!inject ifcdsin.obj  d16c d16i d32c d32i n32c n32i winc wini nta ntp opc
-!inject ifcdsqrt.obj d16c d16i d32c d32i n32c n32i winc wini nta ntp opc
-!inject ilogb.obj    d16c d16i d32c d32i n32c n32i winc wini nta ntp opc lpc lmp
-!inject inf_nan.obj  d16c d16i d32c d32i n32c n32i winc wini nta ntp opc lpc lmp
-!inject j0.obj       d16c d16i d32c d32i n32c n32i winc wini nta ntp opc
-!inject j1.obj       d16c d16i d32c d32i n32c n32i winc wini nta ntp opc
-!inject jn.obj       d16c d16i d32c d32i n32c n32i winc wini nta ntp opc
-!inject ldclass.obj  d16c d16i d32c d32i n32c n32i winc wini nta ntp opc lpc lmp
-!inject ldcvt.obj    d16c d16i d32c d32i n32c n32i winc wini nta ntp opc lpc lmp
-!inject ldexp.obj    d16c d16i d32c d32i n32c n32i winc wini nta ntp opc
+!inject ifcdabs.obj  d16c d16i d32c d32i n32c n32i winc wini nta ntm ntp opc
+!inject ifcdcos.obj  d16c d16i d32c d32i n32c n32i winc wini nta ntm ntp opc
+!inject ifcdexp.obj  d16c d16i d32c d32i n32c n32i winc wini nta ntm ntp opc
+!inject ifcdlog.obj  d16c d16i d32c d32i n32c n32i winc wini nta ntm ntp opc
+!inject ifcdsin.obj  d16c d16i d32c d32i n32c n32i winc wini nta ntm ntp opc
+!inject ifcdsqrt.obj d16c d16i d32c d32i n32c n32i winc wini nta ntm ntp opc
+!inject ilogb.obj    d16c d16i d32c d32i n32c n32i winc wini nta ntm ntp opc lpc lmp
+!inject inf_nan.obj  d16c d16i d32c d32i n32c n32i winc wini nta ntm ntp opc lpc lmp
+!inject j0.obj       d16c d16i d32c d32i n32c n32i winc wini nta ntm ntp opc
+!inject j1.obj       d16c d16i d32c d32i n32c n32i winc wini nta ntm ntp opc
+!inject jn.obj       d16c d16i d32c d32i n32c n32i winc wini nta ntm ntp opc
+!inject ldclass.obj  d16c d16i d32c d32i n32c n32i winc wini nta ntm ntp opc lpc lmp
+!inject ldcvt.obj    d16c d16i d32c d32i n32c n32i winc wini nta ntm ntp opc lpc lmp
+!inject ldexp.obj    d16c d16i d32c d32i n32c n32i winc wini nta ntm ntp opc
 !inject ldfd086.obj  d16c                          winc
 !inject ldfd386.obj            d32c      n32c
 !inject ldfs086.obj  d16c                          winc
@@ -118,80 +118,80 @@
 !inject ldi4386.obj            d32c      n32c
 !inject ldi8086.obj  d16c                          winc
 !inject ldi8386.obj            d32c      n32c
-!inject lgamma.obj   d16c d16i d32c d32i n32c n32i winc wini nta ntp opc lpc lmp
-!inject log.obj      d16c      d32c      n32c      winc      nta ntp opc
-!inject log10.obj    d16c      d32c      n32c      winc      nta ntp opc
-!inject log1p.obj    d16c d16i d32c d32i n32c n32i winc wini nta ntp opc lpc lmp
-!inject log2.obj     d16c      d32c      n32c      winc      nta ntp opc
+!inject lgamma.obj   d16c d16i d32c d32i n32c n32i winc wini nta ntm ntp opc lpc lmp
+!inject log.obj      d16c      d32c      n32c      winc      nta ntm ntp opc
+!inject log10.obj    d16c      d32c      n32c      winc      nta ntm ntp opc
+!inject log1p.obj    d16c d16i d32c d32i n32c n32i winc wini nta ntm ntp opc lpc lmp
+!inject log2.obj     d16c      d32c      n32c      winc      nta ntm ntp opc
 !inject log87.obj         d16i      d32i      n32i      wini
 !inject log087_.obj  d16c                          winc
 !inject log387_.obj            d32c      n32c
-!inject logmerr.obj  d16c d16i d32c d32i n32c n32i winc wini nta ntp opc
-!inject logb.obj     d16c d16i d32c d32i n32c n32i winc wini nta ntp opc lpc lmp
-!inject lrint.obj    d16c d16i d32c d32i n32c n32i winc wini nta ntp opc lpc lmp
-!inject math2err.obj d16c d16i d32c d32i n32c n32i winc wini nta ntp opc
+!inject logmerr.obj  d16c d16i d32c d32i n32c n32i winc wini nta ntm ntp opc
+!inject logb.obj     d16c d16i d32c d32i n32c n32i winc wini nta ntm ntp opc lpc lmp
+!inject lrint.obj    d16c d16i d32c d32i n32c n32i winc wini nta ntm ntp opc lpc lmp
+!inject math2err.obj d16c d16i d32c d32i n32c n32i winc wini nta ntm ntp opc
 !inject math87e.obj       d16i      d32i      n32i      wini
-!inject matherr.obj  d16c d16i d32c d32i n32c n32i winc wini nta ntp opc
-!inject mathint.obj  d16c d16i d32c d32i n32c n32i winc wini nta ntp opc lpc lmp
+!inject matherr.obj  d16c d16i d32c d32i n32c n32i winc wini nta ntm ntp opc
+!inject mathint.obj  d16c d16i d32c d32i n32c n32i winc wini nta ntm ntp opc lpc lmp
 !inject modf.obj     d16c      d32c      n32c      winc
 !inject modf87.obj        d16i      d32i      n32i      wini
 !inject modf086.obj  d16c                          winc
 !inject modf386.obj            d32c      n32c
-!inject modfaxp.obj                                          nta ntp opc
-!inject mulc16.obj   d16c d16i d32c d32i n32c n32i winc wini nta ntp opc
-!inject mulc20.obj   d16c d16i d32c d32i n32c n32i winc wini nta ntp opc
-!inject mulc8.obj    d16c d16i d32c d32i n32c n32i winc wini nta ntp opc
-!inject nan.obj      d16c d16i d32c d32i n32c n32i winc wini nta ntp opc lpc lmp
+!inject modfaxp.obj                                          nta ntm ntp opc
+!inject mulc16.obj   d16c d16i d32c d32i n32c n32i winc wini nta ntm ntp opc
+!inject mulc20.obj   d16c d16i d32c d32i n32c n32i winc wini nta ntm ntp opc
+!inject mulc8.obj    d16c d16i d32c d32i n32c n32i winc wini nta ntm ntp opc
+!inject nan.obj      d16c d16i d32c d32i n32c n32i winc wini nta ntm ntp opc lpc lmp
 !inject normdw.obj   d16c                          winc
 !inject normqw.obj   d16c                          winc
-!inject nrbyint.obj  d16c d16i d32c d32i n32c n32i winc wini nta ntp opc lpc lmp
-!inject nxtafter.obj d16c d16i d32c d32i n32c n32i winc wini nta ntp opc lpc lmp
-!inject pow.obj      d16c      d32c      n32c      winc      nta ntp opc
+!inject nrbyint.obj  d16c d16i d32c d32i n32c n32i winc wini nta ntm ntp opc lpc lmp
+!inject nxtafter.obj d16c d16i d32c d32i n32c n32i winc wini nta ntm ntp opc lpc lmp
+!inject pow.obj      d16c      d32c      n32c      winc      nta ntm ntp opc
 !inject pow87.obj         d16i      d32i      n32i      wini
 !inject pow87e.obj        d16i      d32i      n32i      wini
-!inject powc16.obj   d16c d16i d32c d32i n32c n32i winc wini nta ntp opc
-!inject powc20.obj   d16c d16i d32c d32i n32c n32i winc wini nta ntp opc
-!inject powc8.obj    d16c d16i d32c d32i n32c n32i winc wini nta ntp opc
-!inject powic16.obj  d16c d16i d32c d32i n32c n32i winc wini nta ntp opc
-!inject powic32.obj  d16c d16i d32c d32i n32c n32i winc wini nta ntp opc
-!inject powic8.obj   d16c d16i d32c d32i n32c n32i winc wini nta ntp opc
-!inject powii.obj    d16c d16i d32c d32i n32c n32i winc wini nta ntp opc
-!inject powri.obj    d16c d16i d32c d32i n32c n32i winc wini nta ntp opc
-!inject powrr.obj    d16c d16i d32c d32i n32c n32i winc wini nta ntp opc
-!inject powxi.obj    d16c d16i d32c d32i n32c n32i winc wini nta ntp opc
-!inject qmatherr.obj d16c d16i d32c d32i n32c n32i winc wini nta ntp opc
-!inject rint.obj     d16c d16i d32c d32i n32c n32i winc wini nta ntp opc lpc lmp
-!inject rmnder.obj   d16c d16i d32c d32i n32c n32i winc wini nta ntp opc lpc lmp
-!inject remquo.obj   d16c d16i d32c d32i n32c n32i winc wini nta ntp opc lpc lmp
-!inject round.obj    d16c d16i d32c d32i n32c n32i winc wini nta ntp opc lpc lmp
-!inject scalbn.obj   d16c d16i d32c d32i n32c n32i winc wini nta ntp opc lpc lmp
-!inject sgn.obj      d16c d16i d32c d32i n32c n32i winc wini nta ntp opc
+!inject powc16.obj   d16c d16i d32c d32i n32c n32i winc wini nta ntm ntp opc
+!inject powc20.obj   d16c d16i d32c d32i n32c n32i winc wini nta ntm ntp opc
+!inject powc8.obj    d16c d16i d32c d32i n32c n32i winc wini nta ntm ntp opc
+!inject powic16.obj  d16c d16i d32c d32i n32c n32i winc wini nta ntm ntp opc
+!inject powic32.obj  d16c d16i d32c d32i n32c n32i winc wini nta ntm ntp opc
+!inject powic8.obj   d16c d16i d32c d32i n32c n32i winc wini nta ntm ntp opc
+!inject powii.obj    d16c d16i d32c d32i n32c n32i winc wini nta ntm ntp opc
+!inject powri.obj    d16c d16i d32c d32i n32c n32i winc wini nta ntm ntp opc
+!inject powrr.obj    d16c d16i d32c d32i n32c n32i winc wini nta ntm ntp opc
+!inject powxi.obj    d16c d16i d32c d32i n32c n32i winc wini nta ntm ntp opc
+!inject qmatherr.obj d16c d16i d32c d32i n32c n32i winc wini nta ntm ntp opc
+!inject rint.obj     d16c d16i d32c d32i n32c n32i winc wini nta ntm ntp opc lpc lmp
+!inject rmnder.obj   d16c d16i d32c d32i n32c n32i winc wini nta ntm ntp opc lpc lmp
+!inject remquo.obj   d16c d16i d32c d32i n32c n32i winc wini nta ntm ntp opc lpc lmp
+!inject round.obj    d16c d16i d32c d32i n32c n32i winc wini nta ntm ntp opc lpc lmp
+!inject scalbn.obj   d16c d16i d32c d32i n32c n32i winc wini nta ntm ntp opc lpc lmp
+!inject sgn.obj      d16c d16i d32c d32i n32c n32i winc wini nta ntm ntp opc
 !inject sin087_.obj  d16c                          winc
 !inject sin387_.obj            d32c      n32c
-!inject sincos.obj   d16c      d32c      n32c      winc      nta ntp opc
-!inject sinh.obj     d16c      d32c      n32c      winc      nta ntp opc
-!inject sqrt.obj     d16c      d32c      n32c      winc      nta ntp opc
+!inject sincos.obj   d16c      d32c      n32c      winc      nta ntm ntp opc
+!inject sinh.obj     d16c      d32c      n32c      winc      nta ntm ntp opc
+!inject sqrt.obj     d16c      d32c      n32c      winc      nta ntm ntp opc
 !inject sqrt086.obj  d16c                          winc
 !inject sqrt386.obj            d32c      n32c
 !inject sqrt87.obj        d16i      d32i      n32i      wini
 !inject sqrt087_.obj d16c                          winc
 !inject sqrt387_.obj           d32c      n32c
-!inject strtod.obj   d16c d16i d32c d32i n32c n32i winc wini nta ntp opc lpc lmp
-!inject strtof.obj   d16c d16i d32c d32i n32c n32i winc wini nta ntp opc lpc lmp
-!inject strtold.obj  d16c d16i d32c d32i n32c n32i winc wini nta ntp opc lpc lmp
+!inject strtod.obj   d16c d16i d32c d32i n32c n32i winc wini nta ntm ntp opc lpc lmp
+!inject strtof.obj   d16c d16i d32c d32i n32c n32i winc wini nta ntm ntp opc lpc lmp
+!inject strtold.obj  d16c d16i d32c d32i n32c n32i winc wini nta ntm ntp opc lpc lmp
 !inject tan087_.obj  d16c                          winc
 !inject tan387_.obj            d32c      n32c
-!inject tanh.obj     d16c      d32c      n32c      winc      nta ntp opc
-!inject tgamma.obj   d16c d16i d32c d32i n32c n32i winc wini nta ntp opc lpc lmp
+!inject tanh.obj     d16c      d32c      n32c      winc      nta ntm ntp opc
+!inject tgamma.obj   d16c d16i d32c d32i n32c n32i winc wini nta ntm ntp opc lpc lmp
 !inject trig87.obj        d16i      d32i      n32i      wini
 !inject trigh87.obj       d16i      d32i      n32i      wini
 !inject trigl87.obj       d16i      d32i      n32i      wini
-!inject trunc.obj    d16c d16i d32c d32i n32c n32i winc wini nta ntp opc lpc lmp
-!inject y0.obj       d16c d16i d32c d32i n32c n32i winc wini nta ntp opc
-!inject y1.obj       d16c d16i d32c d32i n32c n32i winc wini nta ntp opc
-!inject yn.obj       d16c d16i d32c d32i n32c n32i winc wini nta ntp opc
-!inject zbuf2ld.obj  d16c d16i d32c d32i n32c n32i winc wini nta ntp opc lpc lmp
-!inject zmatherr.obj d16c d16i d32c d32i n32c n32i winc wini nta ntp opc
+!inject trunc.obj    d16c d16i d32c d32i n32c n32i winc wini nta ntm ntp opc lpc lmp
+!inject y0.obj       d16c d16i d32c d32i n32c n32i winc wini nta ntm ntp opc
+!inject y1.obj       d16c d16i d32c d32i n32c n32i winc wini nta ntm ntp opc
+!inject yn.obj       d16c d16i d32c d32i n32c n32i winc wini nta ntm ntp opc
+!inject zbuf2ld.obj  d16c d16i d32c d32i n32c n32i winc wini nta ntm ntp opc lpc lmp
+!inject zmatherr.obj d16c d16i d32c d32i n32c n32i winc wini nta ntm ntp opc
 
 !include $(mathlib_dir)/objlist.mif
 

@@ -361,7 +361,7 @@ void    OpenErr( void ) {
         MakeName( SDFName( SrcName ), ErrExtn, buffer );
         ErrFile = SDOpenText( buffer, "wt" );
         if( SDError( ErrFile, errmsg, sizeof( errmsg ) ) ) {
-            InfoError( SM_OPENING_FILE, &buffer, &errmsg );
+            InfoError( SM_OPENING_FILE, buffer, errmsg );
         }
         if( ErrFile != NULL ) {
             ErrCursor = 0;
@@ -600,12 +600,8 @@ bool    WasStmtListed( void ) {
 void    TOutBanner( void ) {
 //==========================
 
-#if defined( _BETAVER )
-    TOutNL( banner1w1( _Banner ) );
-    TOutNL( banner1w2( _WFC_VERSION_ ) );
-#else
-    TOutNL( banner1w( _Banner, _WFC_VERSION_ ) );
-#endif
+    TOutNL( banner1t( _Banner ) );
+    TOutNL( banner1v( _WFC_VERSION_ ) );
     TOutNL( banner2 );
     TOutNL( banner2a( 1984 ) );
     TOutNL( banner3 );
@@ -621,13 +617,8 @@ void    PrtBanner( void ) {
     time_t      time_of_day;
     struct tm   *t;
 
-#if defined( _BETAVER )
-    strcpy( banner, banner1w1( _Banner ) );
-    PrtLstNL( banner );
-    strcpy( banner, banner1w2( _WFC_VERSION_ ) );
-#else
-    strcpy( banner, banner1w( _Banner, _WFC_VERSION_ ) );
-#endif
+    PrtLstNL( banner1t( _Banner ) );
+    strcpy( banner, banner1v( _WFC_VERSION_ ) );
     time_of_day = time( NULL );
     t = localtime( &time_of_day );
     MsgFormat( "  %4d1/%2d2/%2d3 %2d4:%2d5:%2d6", banner + strlen( banner ),

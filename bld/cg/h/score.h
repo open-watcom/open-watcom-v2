@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -68,7 +68,7 @@ typedef struct score_reg {
 
 
 typedef struct score_info {
-    signed_32               offset;
+    int_32                  offset;
     union  name             *base;      /*  indexed names only */
     union {
         struct temp_name    *t;
@@ -94,7 +94,7 @@ typedef struct score {
     struct score            *prev_reg;
     byte                    index;
     byte                    generation;
-    unsigned_16             __pad_to_16;
+    uint_16                 __pad_to_16;
 } score;
 
 

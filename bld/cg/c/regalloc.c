@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -204,7 +204,7 @@ static  void    InitChoices( void )
     if( BlockByBlock ) {
         /* this is WAY faster for BlockByBlock */
         for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-            for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+            for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
                 for( i = ins->num_operands; i-- > 0; ) {
                     InitAChoice( ins->operands[i] );
                 }
@@ -348,7 +348,7 @@ static  bool  FixInstructions( conflict_node *conf, reg_tree *tree,
         conf->name->v.usage |= USE_MEMORY;
     }
     opnd = tree->temp;
-    if( _IsModel( DBG_LOCALS ) ) {
+    if( _IsModel( CGSW_GEN_DBG_LOCALS ) ) {
         DBAllocReg( reg_name, opnd );
     }
 
@@ -413,7 +413,7 @@ static  void    BitOff( conflict_node *conf )
 }
 
 
-static signed_32     CountRegMoves( conflict_node *conf,
+static int_32   CountRegMoves( conflict_node *conf,
                                hw_reg_set reg, reg_tree *tree,
                                int levels )
 /********************************************
@@ -427,11 +427,11 @@ static signed_32     CountRegMoves( conflict_node *conf,
     block               *blk;
     instruction         *ins;
     instruction         *last;
-    signed_32           count;
+    int_32              count;
     int                 half;
     name                *reg_name;
     name                *op1;
-#if _TARGET & (_TARG_80386 | _TARG_8086 | _TARG_370)
+#if _TARGET_INTEL || (_TARGET & _TARG_370)
     name                *op2;
 #endif
     name                *res;
@@ -457,10 +457,10 @@ static signed_32     CountRegMoves( conflict_node *conf,
     for( ;; ) {
         if( ins->head.opcode == OP_BLOCK ) {
             blk = blk->next_block;
-            ins = blk->ins.hd.next;
+            ins = blk->ins.head.next;
         } else {
             if( ins->head.opcode != OP_MOV ) {
-#if _TARGET & (_TARG_80386 | _TARG_8086 | _TARG_370)
+#if _TARGET_INTEL || (_TARGET & _TARG_370)
                 op1 = NULL;
                 op2 = NULL;
                 if( ins->num_operands != 0 ) {
@@ -529,14 +529,14 @@ static signed_32     CountRegMoves( conflict_node *conf,
         }
     }
 #if ( _TARGET & _TARG_370 ) == 0
-    if( _IsModel( SUPER_OPTIMAL ) ) {
+    if( _IsModel( CGSW_GEN_SUPER_OPTIMAL ) ) {
 #endif
         count += CountRegMoves( conf, HighOffsetReg( reg ), tree->hi, levels );
         count += CountRegMoves( conf, LowOffsetReg( reg ), tree->lo, levels );
 #if ( _TARGET & _TARG_370 ) == 0
     }
 #endif
-    if( _IsModel( SUPER_OPTIMAL ) ) {
+    if( _IsModel( CGSW_GEN_SUPER_OPTIMAL ) ) {
         /*
          * This is really expensive, compile time-wise, but what it does is
          * checks to see if we have an intervening temp or two that may turn
@@ -557,7 +557,7 @@ static signed_32     CountRegMoves( conflict_node *conf,
         if( count != 0 || levels == 0 )
             return( count );
         for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-            for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+            for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
                 if( ins->head.opcode == OP_MOV ) {
                     other_opnd = NULL;
                     if( ins->result == conf->name ) {
@@ -761,7 +761,7 @@ static  bool_maybe TooGreedy( conflict_node *conf, hw_reg_set reg, name *op )
         }
         if( ins == last )
             break;
-        for( ins = ins->head.next; ins->head.opcode == OP_BLOCK; ins = blk->ins.hd.next ) {
+        for( ins = ins->head.next; ins->head.opcode == OP_BLOCK; ins = blk->ins.head.next ) {
             blk = blk->next_block;
         }
         if( rc != MB_FALSE ) {
@@ -1123,7 +1123,7 @@ conflict_node   *InMemory( conflict_node *conf )
 
     for( conf_list = conf->name->v.conflict; conf_list != NULL; conf_list = next ) {
         next = conf_list->next_for_name;
-        if( conf != conf_list ){
+        if( conf != conf_list ) {
             PutInMemory( conf_list );
             next = conf_list->next_for_name;
             FreeAConflict( conf_list );
@@ -1292,7 +1292,7 @@ void    ReConstFold( void )
     block                       *blk;
 
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = next ) {
+        for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = next ) {
             next = ins->head.next;
             FoldIns( ins );
         }
@@ -1328,7 +1328,7 @@ bool    RegAlloc( bool keep_on_truckin )
             FreeConflicts();
             NullConflicts( EMPTY );
             HaveLiveInfo = false;
-            if( _IsntModel( NO_OPTIMIZATION ) ) {
+            if( _IsntModel( CGSW_GEN_NO_OPTIMIZATION ) ) {
                 DeadInstructions();
                 FindReferences();
                 PropagateMoves();

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,7 +34,7 @@
 #ifndef DRRTNS_INLCUDED
 #define DRRTNS_INLCUDED
 
-extern struct WDRRoutines DWRRtns;
+extern WDRRoutines      DWRRtns;
 
 #define DWRREAD         DWRRtns.cli_read
 #define DWRSEEK         DWRRtns.cli_seek

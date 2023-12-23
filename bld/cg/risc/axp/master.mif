@@ -1,0 +1,26 @@
+tree_depth = 5
+
+target_cpu      = axp
+target_cls      = risc
+
+axp_objs = &
+        axpcall.obj  &
+        axpconv.obj  &
+        axpdfsup.obj &
+        axpenc.obj   &
+        axpenc2.obj  &
+        axpfunit.obj &
+        axpoptab.obj &
+        axpproc.obj  &
+        axpptype.obj &
+        axpreg.obj   &
+        axprgtbl.obj &
+        axprtrtn.obj &
+        axpsplit.obj &
+        axpstub.obj  &
+        axptable.obj &
+        axpparm.obj  &
+        rscconst.obj &
+    	encode.obj
+
+!include $(cg_dir)/$(target_cls)/master.mif

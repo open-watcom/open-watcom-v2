@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -64,6 +64,8 @@
 #define DIG_SEEK_ERROR      ((unsigned long)-1L)
 #define DIG_RW_ERROR        ((size_t)-1)
 
+#define SIGN_EQUAL(s1,s2)   (memcmp( s1, s2, 4 ) == 0)
+
 typedef enum {
     SR_NONE,
     SR_EXACT,
@@ -79,7 +81,8 @@ typedef enum {
     WR_LAST
 } walk_result;
 
-typedef unsigned context_item; enum {
+/* context_item */
+enum {
     /* common */
     CI_FRAME,
     CI_STACK,
@@ -327,7 +330,8 @@ typedef unsigned context_item; enum {
     CI_LAST
 };
 
-typedef unsigned_8 type_kind; enum {
+/* type_kind */
+enum {
     TK_NONE,
     TK_DATA,
     TK_CODE,
@@ -371,49 +375,58 @@ typedef enum {
     TM_UNICODE,
 } type_modifier;
 
-typedef unsigned_8  dig_seek; enum {
-    DIG_ORG,
-    DIG_CUR,
-    DIG_END
-};
+typedef enum {
+    DIG_SEEK_ORG,
+    DIG_SEEK_CUR,
+    DIG_SEEK_END
+} dig_seek;
 
-typedef unsigned_8  dig_open; enum {
-    DIG_READ        = 0x01,
-    DIG_WRITE       = 0x02,
-    DIG_CREATE      = 0x04,
-    DIG_TRUNC       = 0x08,
-    DIG_APPEND      = 0x10,
-    DIG_REMOTE      = 0x20,
-    DIG_LOCAL       = 0x40,
-    DIG_SEARCH      = 0x80
-};
+typedef enum {
+    DIG_FILETYPE_EXE,
+    DIG_FILETYPE_DBG,
+    DIG_FILETYPE_PRS,
+    DIG_FILETYPE_HLP,
+    DIG_FILETYPE_GEN
+} dig_filetype;
 
-enum archtypes {
+typedef enum {
+    DIG_OPEN_READ   = 0x01,
+    DIG_OPEN_WRITE  = 0x02,
+    DIG_OPEN_CREATE = 0x04,
+    DIG_OPEN_TRUNC  = 0x08,
+    DIG_OPEN_APPEND = 0x10,
+    DIG_OPEN_REMOTE = 0x20,
+    DIG_OPEN_LOCAL  = 0x40,
+    DIG_OPEN_SEARCH = 0x80
+} dig_open;
+
+typedef enum {
     DIG_ARCH_NIL,
-    #define pick(enum,file,desc) DIG_ ## enum,
+    #define pick(enum,file,desc) enum,
     #include "digarch.h"
     #undef pick
     DIG_ARCH_MAX
-};
+} dig_arch;
 
-enum ostypes {                  //NYI: redo these for PIL
-    #define pick(enum,desc) DIG_ ## enum,
+typedef enum {                  //NYI: redo these for PIL
+    #define pick(enum,desc) enum,
     #include "digos.h"
     #undef pick
     DIG_OS_MAX
-};
+} dig_os;
 
 enum {
     MAP_FLAT_CODE_SELECTOR      = (unsigned_16)-1,
     MAP_FLAT_DATA_SELECTOR      = (unsigned_16)-2,
 };
 
+typedef unsigned        context_item;
+typedef unsigned_8      type_kind;
+
 typedef unsigned_16     dig_elen;
 typedef unsigned        dig_info_type;
 
 typedef unsigned_16     dig_size_bits;
-
-typedef unsigned_16     dig_arch;
 
 /* these must be unsigned/signed type pair */
 typedef unsigned_32     dig_type_size;
@@ -427,16 +440,6 @@ typedef struct dig_type_info {
     type_modifier       modifier;
     bool                deref;
 } dig_type_info;
-
-typedef struct {                //NYI: redo this for PIL
-    unsigned_8          cpu;
-    unsigned_8          fpu;
-    unsigned_8          osmajor;
-    unsigned_8          osminor;
-    unsigned_8          os;
-    unsigned_8          huge_shift;
-    dig_arch            arch;
-} system_config;
 
 #include "digunpck.h"
 

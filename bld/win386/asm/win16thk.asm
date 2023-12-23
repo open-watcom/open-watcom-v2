@@ -62,7 +62,7 @@ _DATA ends
 _TEXT segment use16
 extrn   __ThunkTable : word
         assume cs:_TEXT
-        assume ds:dgroup
+        assume ds:DGROUP
 
 
         public GetFirst16Alias

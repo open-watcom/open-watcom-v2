@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -169,12 +169,12 @@ void CheckedFile::reOpen()
 // re-open a file and seek to the position it
 // was closed at.
 {
-#ifndef NDEBUG
+#ifdef DEVBUILD
     long newOff;
 #endif
 
     CheckedFile::open( _openAccess, _openPermission );
-#ifndef NDEBUG
+#ifdef DEVBUILD
     newOff = ::lseek( _handle, _currOffset, SEEK_SET );
     assert( newOff == _currOffset );
 #else
@@ -201,12 +201,12 @@ void CheckedFile::privClose()
 // since privClose is called from a destructor, avoid
 // doing a throw in it.
 {
-#ifndef NDEBUG
+#ifdef DEVBUILD
     int retVal;
 #endif
 
     if( _isOpen ) {
-#ifndef NDEBUG
+#ifdef DEVBUILD
         retVal = ::close( _handle );
         assert( retVal == 0 );
 #endif

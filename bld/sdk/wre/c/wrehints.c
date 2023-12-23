@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -141,12 +141,12 @@ void WREHandleMenuSelect ( WPARAM wParam, LPARAM lParam )
     WORD  flags;
 
     if( MENU_CLOSED( wParam, lParam ) ) {
-        WRESetStatusText ( NULL, "", TRUE );
+        WRESetStatusText ( NULL, "", true );
     } else {
         hmenu  = WREGetMenuHandle();
         flags = GET_WM_MENUSELECT_FLAGS( wParam, lParam );
         if ( flags & (MF_SYSMENU | MF_SEPARATOR) ) {
-            WRESetStatusText ( NULL, "", TRUE );
+            WRESetStatusText ( NULL, "", true );
         } else if ( flags & MF_POPUP ) {
 #ifdef __NT__
             hpopup = GetSubMenu( (HMENU)lParam, GET_WM_MENUSELECT_ITEM( wParam, lParam ) );
@@ -177,7 +177,7 @@ void WREDisplayHint( ctl_id id )
             buf = WRMemAlloc( strlen(mditext) + 20 + 1 );
             if( buf ) {
                 sprintf( buf, mditext, WRE_MDI_FIRST + 1 - id );
-                WRESetStatusText( NULL, buf, TRUE );
+                WRESetStatusText( NULL, buf, true );
                 WRMemFree( buf );
             }
             FreeRCString( mditext );
@@ -244,7 +244,7 @@ void WREHandlePopupHint( HMENU hmenu, HMENU hpopup )
     if( hint > 0 ) {
         WRESetStatusByID( 0, hint );
     } else {
-        WRESetStatusText( NULL, "", TRUE );
+        WRESetStatusText( NULL, "", true );
     }
 }
 
@@ -282,13 +282,13 @@ bool WRECreateWREPopupListItem ( int num, HMENU hmenu, WREPopupHintItem *hint_it
             ListAddElt ( &WREPopupList, p );
         } else {
             WRMemFree( p );
-            return ( FALSE );
+            return ( false );
         }
     } else {
-        return ( FALSE );
+        return ( false );
     }
 
-    return ( TRUE );
+    return ( true );
 }
 
 bool WREInitHintItems ( int num, HMENU hmenu, WREPopupHintItem *hint_items )
@@ -305,5 +305,5 @@ bool WREInitHintItems ( int num, HMENU hmenu, WREPopupHintItem *hint_items )
         hint_items[i].hpopup = hpopup;
     }
 
-    return ( TRUE );
+    return ( true );
 }

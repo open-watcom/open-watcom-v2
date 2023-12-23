@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -80,7 +81,9 @@ bool DTVSourceRefs::contextHelp( bool is_active_win )
 //---------------------------------------------------
 {
     if( is_active_win ) {
+#ifndef NOWGML
         WBRWinBase::helpInfo()->sysHelpId( BRH_SOURCE_REFERENCES );
+#endif
     }
     return( true );
 }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -164,7 +164,7 @@ int _dospawn( int mode, char *pgm, char *cmdline, char *envp, const char * const
 
             if( app_type & FAPPTYP_DOS ) { // DOS app
                 // merge argv[0] & argv[1]
-                cmdline[ strlen( cmdline ) ] = ' ';
+                cmdline[strlen( cmdline )] = ' ';
                 len = strlen( cmdline ) + 8;
     #if defined( __BIG_DATA__ )
                 np = lib_fmalloc( len );
@@ -202,22 +202,19 @@ int _dospawn( int mode, char *pgm, char *cmdline, char *envp, const char * const
                 }
                 related = 1;    //SSF_RELATED_CHILD;
             }
-            sd.Length = 30;
+            while( *cmdline++ != '\0' )
+                {}              // don't need argv[0]
+            sd.Length = offsetof( STARTDATA, SessionType );
             sd.Related = related;
             sd.FgBg = 0;
             sd.TraceOpt = 0;
             sd.PgmTitle = NULL;
-            while( *cmdline != '\0' )
-                ++cmdline;      // don't need argv[0]
-            ++cmdline;
             sd.PgmName = pgm;
             sd.PgmInputs = (PBYTE)cmdline;
             sd.SessionType = SSF_TYPE_DEFAULT;
             sd.Environment = (PBYTE)envp;
             sd.TermQ = (PBYTE)queuename;
             sd.InheritOpt = 1;
-            sd.IconFile = NULL;
-            sd.PgmHandle = 0;
             rc = DosStartSession( &sd, &session, &pid );
             if( ( rc == 0 ) || ( rc == ERROR_SMG_START_IN_BACKGROUND ) ) {
                 rc = 0;
@@ -296,14 +293,13 @@ int _dospawn( int mode, char *pgm, char *cmdline, char *envp, const char * const
                 }
                 related = SSF_RELATED_CHILD;
             }
-            sd.Length = 32;
+            while( *cmdline++ != '\0' )
+                {}              // don't need argv[0]
+            sd.Length = offsetof( STARTDATA, IconFile );
             sd.Related = related;
             sd.FgBg = SSF_FGBG_FORE;
             sd.TraceOpt = SSF_TRACEOPT_NONE;
             sd.PgmTitle = NULL;
-            while( *cmdline != '\0' )
-                ++cmdline;    // don't need argv[0]
-            ++cmdline;
             sd.PgmName = pgm;
             sd.PgmInputs = (PBYTE)cmdline;
             if( app_type & FAPPTYP_DOS ) {  // A DOS program
@@ -319,8 +315,6 @@ int _dospawn( int mode, char *pgm, char *cmdline, char *envp, const char * const
             }
             sd.TermQ = (PBYTE)queuename;
             sd.InheritOpt = SSF_INHERTOPT_PARENT;
-            sd.IconFile = NULL;
-            sd.PgmHandle = 0;
             rc = DosStartSession( &sd, &session, &pid );
             if( ( rc == 0 ) || ( rc == ERROR_SMG_START_IN_BACKGROUND ) ) {
                 rc = 0;

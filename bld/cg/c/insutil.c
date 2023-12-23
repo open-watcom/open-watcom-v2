@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -78,7 +78,7 @@ static void RenumFrom( instruction *ins )
             blk = _BLOCK( ins )->next_block;
             if( blk == NULL )
                 break;
-            ins = blk->ins.hd.next;
+            ins = blk->ins.head.next;
         }
     }
 }
@@ -199,7 +199,7 @@ void    PrefixInsRenum( instruction *ins, instruction *pref, bool renum )
 
         pref->stk_entry = ins->stk_entry;
         pref->stk_exit = ins->stk_entry;
-        // pref->s.stk_extra = ins->s.stk_extra;
+//        pref->s.stk_extra = ins->s.stk_extra;
         pref->sequence = ins->sequence;
 
         pref->id = ins->id;
@@ -222,7 +222,7 @@ void    PrefixInsRenum( instruction *ins, instruction *pref, bool renum )
                     Zoiks( ZOIKS_141 );
                     break;
                 }
-                next = blk->ins.hd.next;
+                next = blk->ins.head.next;
                 if( next->head.opcode != OP_BLOCK ) {
                     break;
                 }
@@ -236,9 +236,9 @@ void    PrefixInsRenum( instruction *ins, instruction *pref, bool renum )
     }
 
     if( HaveLiveInfo ) {
-
-/*      move the first/last pointers of any relevant conflict nodes */
-
+        /*
+         * move the first/last pointers of any relevant conflict nodes
+         */
         if( ins->head.opcode != OP_BLOCK ) {
             MakeConflictInfo( pref, ins );
             for( info = ConflictInfo; info->conf != NULL; ++info ) {
@@ -255,14 +255,14 @@ void    PrefixInsRenum( instruction *ins, instruction *pref, bool renum )
                 }
             }
         }
-
-    /*   Set up the state for both instructions*/
-
+        /*
+         * Set up the state for both instructions
+         */
         ins->head.state = INS_NEEDS_WORK;
         pref->head.state = INS_NEEDS_WORK;
-
-    /*   Add live & conflict information for the new instruction */
-
+        /*
+         * Add live & conflict information for the new instruction
+         */
         UpdateLive( pref, ins );
     }
 }
@@ -276,8 +276,9 @@ void    PrefixIns( instruction *ins, instruction *pref )
 
 
 void    SuffixIns( instruction *ins, instruction *suff )
-/******************************************************/
-/*   Link the new instruction into the instruction ring */
+/*******************************************************
+ * Link the new instruction into the instruction ring
+ */
 {
     conflict_info       *info;
     conflict_node       *conf;
@@ -292,12 +293,16 @@ void    SuffixIns( instruction *ins, instruction *suff )
      * A little dirty, but check of OP_BLOCK can be skipped - in this case
      * we'll just Renumber() everything from scratch.
      */
-    /* _INS_NOT_BLOCK( ins ); */
+//    _INS_NOT_BLOCK( ins );
     suff->id = ins->id;
     if( ins->head.opcode == OP_NOP ) {
-        /* get rid of the little bugger so it doesn't mess up our optimizing */
+        /*
+         * get rid of the little bugger so it doesn't mess up our optimizing
+         */
         if( ins->flags.nop_flags & NOP_SOURCE_QUEUE ) {
-            /* transfer the line_num info to the next instruction */
+            /*
+             * transfer the line_num info to the next instruction
+             */
             suff->head.line_num = ins->head.line_num;
             ins = ins->head.prev;
             FreeIns( ins->head.next );
@@ -306,14 +311,14 @@ void    SuffixIns( instruction *ins, instruction *suff )
     if( ins->head.opcode != OP_BLOCK ) {
         suff->stk_entry = ins->stk_exit;
         suff->stk_exit = ins->stk_exit;
-        // suff->s.stk_extra = ins->s.stk_extra;
+//        suff->s.stk_extra = ins->s.stk_extra;
         suff->sequence = ins->sequence;
     }
     RenumFrom( ins );
     if( HaveLiveInfo ) {
-
-        /* move the first/last pointers of any relevant conflict nodes */
-
+        /*
+         * move the first/last pointers of any relevant conflict nodes
+         */
         if( ins->head.opcode != OP_BLOCK ) {
             MakeConflictInfo( ins, suff );
             for( info = ConflictInfo; info->conf != NULL; ++info ) {
@@ -330,9 +335,9 @@ void    SuffixIns( instruction *ins, instruction *suff )
                 }
             }
         }
-
-        /* Set up the state for both instructions */
-
+        /*
+         * Set up the state for both instructions
+         */
         ins->head.state = INS_NEEDS_WORK;
         suff->head.state = INS_NEEDS_WORK;
         UpdateLive( ins, suff );
@@ -354,19 +359,19 @@ void    ReplIns( instruction *ins, instruction *new )
     conflict_info       *info;
     conflict_node       *conf;
 
-
-/*   Move conflict information to the new instruction*/
-
-/*   Link the new instruction into the instruction ring*/
-/*   (It will be removed by FreeIns() )*/
-
+    /*
+     * Move conflict information to the new instruction
+     *
+     * Link the new instruction into the instruction ring
+     * (It will be removed by FreeIns() )
+     */
     new->head.next = ins->head.next;
     new->head.next->head.prev = new;
     new->head.prev = ins;
     ins->head.next = new;
     new->stk_entry = ins->stk_entry;
     new->stk_exit = ins->stk_exit;
-    // new->s.stk_extra = ins->s.stk_extra;
+//    new->s.stk_extra = ins->s.stk_extra;
     new->sequence = ins->sequence;
 
     _INS_NOT_BLOCK( new );
@@ -376,28 +381,27 @@ void    ReplIns( instruction *ins, instruction *new )
     new->head.state = INS_NEEDS_WORK;
     blk = NULL;
     if( HaveLiveInfo ) {
-
-/*  Copy the live analysis information from ins to new*/
-
+        /*
+         * Copy the live analysis information from ins to new
+         */
         new->head.live.regs         = ins->head.live.regs;
         new->head.live.within_block = ins->head.live.within_block;
         new->head.live.out_of_block = ins->head.live.out_of_block;
-
-/*      move the first/last pointers of any relevant conflict nodes */
-
-/*
- * !!! BUG BUG !!!
- * Moving/changing egde of conflict with CONFLICT_ON_HOLD flag set
- * to non-conflicting instruction can cause famous bug 352. If new instruction
- * should be also replaced, codegen will not notice that it's a part of
- * any conflict and will not update egde. Event worse, if replaced instruction
- * is replaced again, this case will be completely missed by conflict manager.
- * At least, compiler can Zoiks now.
- *
- * This problem may also exist in other instruction modification functions.
- * It must be fixed in more correct way if somebody ever understand
- * how all this stuff works.
- */
+        /*
+         * move the first/last pointers of any relevant conflict nodes
+         *
+         * !!! BUG BUG !!!
+         * Moving/changing egde of conflict with CONFLICT_ON_HOLD flag set
+         * to non-conflicting instruction can cause famous bug 352. If new instruction
+         * should be also replaced, codegen will not notice that it's a part of
+         * any conflict and will not update egde. Event worse, if replaced instruction
+         * is replaced again, this case will be completely missed by conflict manager.
+         * At least, compiler can Zoiks now.
+         *
+         * This problem may also exist in other instruction modification functions.
+         * It must be fixed in more correct way if somebody ever understand
+         * how all this stuff works.
+         */
         MakeConflictInfo( ins, new );
         for( info = ConflictInfo; info->conf != NULL; ++info ) {
             if( info->flags & CB_FOR_INS1 ) {
@@ -413,30 +417,32 @@ void    ReplIns( instruction *ins, instruction *new )
                 if( conf->ins_range.first == new ) {
                     if( blk == NULL )
                         blk = InsBlock( ins );
-                    conf->ins_range.first = blk->ins.hd.prev;
+                    conf->ins_range.first = blk->ins.head.prev;
                 }
                 if( conf->ins_range.last == new ) {
                     if( blk == NULL )
                         blk = InsBlock( ins );
-                    conf->ins_range.last = blk->ins.hd.next; /* 89-08-16 */
-                    if( blk->ins.hd.next == ins ) {
-                        // oops - grasping for a straw and caught hold of
-                        // ins (which is about to be deleted)
-                        conf->ins_range.last = blk->ins.hd.next->head.next;
+                    conf->ins_range.last = blk->ins.head.next;
+                    if( blk->ins.head.next == ins ) {
+                        /*
+                         * oops - grasping for a straw and caught hold of
+                         * ins (which is about to be deleted)
+                         */
+                        conf->ins_range.last = blk->ins.head.next->head.next;
                     }
                 }
             }
         }
     }
-
-/*  Free up the old instruction */
-
+    /*
+     * Free up the old instruction
+     */
     FreeIns( ins );
-
-/*  if we wrecked a conflicts first or last pointer */
-
-    if( blk != NULL ) { /* moved here 89-08-16 */
-        UpdateLive( blk->ins.hd.next, blk->ins.hd.prev );
+    /*
+     * if we wrecked a conflicts first or last pointer
+     */
+    if( blk != NULL ) {
+        UpdateLive( blk->ins.head.next, blk->ins.head.prev );
     }
 }
 
@@ -448,7 +454,7 @@ instruction_id  Renumber( void )
     instruction         *ins;
     instruction_id      id;
     instruction_id      increment;
-    unsigned_32         number_instrs;
+    uint_32             number_instrs;
 
     number_instrs = 0;
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
@@ -464,7 +470,7 @@ instruction_id  Renumber( void )
     }
     id = 0;
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+        for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             ins->id = id;
             id += increment;
         }
@@ -481,7 +487,7 @@ void            ClearInsBits( instruction_flags mask )
 
     mask = ~mask;
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+        for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             ins->ins_flags &= mask;
         }
     }

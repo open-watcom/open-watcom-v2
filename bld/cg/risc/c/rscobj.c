@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,6 +33,7 @@
 #include "_cgstd.h"
 #include <time.h>
 #include "coderep.h"
+#include "cgauxcc.h"
 #include "cgauxinf.h"
 #include "cgmem.h"
 #include "reloc.h"
@@ -40,7 +41,6 @@
 #include "owl.h"
 #include "rscobj.h"
 #include "autodep.h"
-#include "axpencod.h"
 #include "data.h"
 #include "rtrtn.h"
 #include "utils.h"
@@ -149,17 +149,18 @@ void    ObjInit( void )
 {
     OpenObj();
     CurrFNo = 0;
-    if( _IsModel( DBG_DF ) ) {
-        if( _IsModel( DBG_LOCALS | DBG_TYPES ) ) {
+    if( _IsModel( CGSW_GEN_DBG_DF ) ) {
+        if( _IsModel( CGSW_GEN_DBG_LOCALS )
+          || _IsModel( CGSW_GEN_DBG_TYPES ) ) {
             DFDefSegs();
             DFObjInitDbgInfo();
 #if 0 //save for jimr
-        } else if( _IsModel( DBG_NUMBERS ) ) {
+        } else if( _IsModel( CGSW_GEN_DBG_NUMBERS ) ) {
             DFDefSegs();
             DFObjLineInitDbgInfo();
 #endif
         }
-    } else if( _IsModel( DBG_CV ) ) {
+    } else if( _IsModel( CGSW_GEN_DBG_CV ) ) {
         CVDefSegs();
         CVObjInitDbgInfo();
     }
@@ -176,13 +177,13 @@ static  void    DefaultLibs( void )
     comments = NULL;
     lib = NULL;
     for( ;; ) {  //Library dependencies
-        lib = FEAuxInfo( lib, NEXT_LIBRARY );
+        lib = FEAuxInfo( lib, FEINF_NEXT_LIBRARY );
         if( lib == NULL )
             break;
-        name =  (char *)FEAuxInfo( lib, LIBRARY_NAME ) + 1;
+        name =  (char *)FEAuxInfo( lib, FEINF_LIBRARY_NAME );
         if( name == NULL || *name == '\0' )
             continue;
-        if( comments == NULL ){
+        if( comments == NULL ) {
             comments = OWLSectionInit( owlFile, ".drectve", OWL_SECTION_INFO, 1 );
             if( comments == NULL ) {
                 break;
@@ -214,18 +215,18 @@ static  void    AliasNames( void )
 
     alias = NULL;
     for( ;; ) {  // Aliases
-        alias = FEAuxInfo( alias, NEXT_ALIAS );
+        alias = FEAuxInfo( alias, FEINF_NEXT_ALIAS );
         if( alias == NULL )
             break;
-        alias_name = FEAuxInfo( alias, ALIAS_NAME );
+        alias_name = FEAuxInfo( alias, FEINF_ALIAS_NAME );
         if( alias_name == NULL ) {
-            OUTPUT_OBJECT_NAME( FEAuxInfo( alias, ALIAS_SYMBOL ),
+            OUTPUT_OBJECT_NAME( FEAuxInfo( alias, FEINF_ALIAS_SYMBOL ),
                              stringOut, &alias_name, NORMAL );
         }
-        subst_name = FEAuxInfo( alias, ALIAS_SUBST_NAME );
+        subst_name = FEAuxInfo( alias, FEINF_ALIAS_SUBST_NAME );
         owl_alias = OWLSymbolInit( owlFile, alias_name );
         if( subst_name == NULL ) {
-            OUTPUT_OBJECT_NAME( FEAuxInfo( alias, ALIAS_SUBST_SYMBOL ),
+            OUTPUT_OBJECT_NAME( FEAuxInfo( alias, FEINF_ALIAS_SUBST_SYMBOL ),
                              stringOut, &subst_name, NORMAL );
         }
         owl_subst = OWLSymbolInit( owlFile, subst_name );
@@ -241,17 +242,17 @@ static  void    EmitImports( void )
 
     auto_import = NULL;
     for( ;; ) {
-        auto_import = FEAuxInfo( auto_import, NEXT_IMPORT );
+        auto_import = FEAuxInfo( auto_import, FEINF_NEXT_IMPORT );
         if( auto_import == NULL )
             break;
-        OWLEmitImport( owlFile, FEAuxInfo( auto_import, IMPORT_NAME ) );
+        OWLEmitImport( owlFile, FEAuxInfo( auto_import, FEINF_IMPORT_NAME ) );
     }
     auto_import = NULL;
     for( ;; ) {
-        auto_import = FEAuxInfo( auto_import, NEXT_IMPORT_S );
+        auto_import = FEAuxInfo( auto_import, FEINF_NEXT_IMPORT_S );
         if( auto_import == NULL )
             break;
-        OUTPUT_OBJECT_NAME( FEAuxInfo( auto_import, IMPORT_NAME_S ),
+        OUTPUT_OBJECT_NAME( FEAuxInfo( auto_import, FEINF_IMPORT_NAME_S ),
                          stringOut, &name, NORMAL );
         OWLEmitImport( owlFile, name );
     }
@@ -273,22 +274,23 @@ static  void    EmitDependencyInfo( void )
     sect = NULL;
     depend = NULL;
     for( ;; ) {
-        depend = FEAuxInfo( depend, NEXT_DEPENDENCY );
+        depend = FEAuxInfo( depend, FEINF_NEXT_DEPENDENCY );
         if( depend == NULL )
             break;
         if( sect == NULL ) {
             sect = OWLSectionInit( owlFile, dependSectionName, OWL_SECTION_INFO, 16 );
         }
-        name = (char *)FEAuxInfo( depend, DEPENDENCY_NAME );
-        info.time = *(time_t *)FEAuxInfo( depend, DEPENDENCY_TIMESTAMP );
+        name = (char *)FEAuxInfo( depend, FEINF_DEPENDENCY_NAME );
+        info.time = *(time_t *)FEAuxInfo( depend, FEINF_DEPENDENCY_TIMESTAMP );
         info.len = strlen( name ) + 1;
-        OWLEmitData( sect, (char *)&info, sizeof( DepInfo ) - 1 );
-        OWLEmitData( sect, (char *)name, strlen( name ) + 1 );
+        OWLEmitData( sect, (char *)&info, offsetof( DepInfo, name ) );
+        OWLEmitData( sect, (char *)name, info.len );
     }
     /* put out a handy little sentinel value at the end */
     if( sect != NULL ) {
+        info.time = 0;
         info.len = 0;
-        OWLEmitData( sect, (char *)&info, sizeof( DepInfo ) );
+        OWLEmitData( sect, (char *)&info, offsetof( DepInfo, name ) );
     }
 }
 
@@ -305,7 +307,7 @@ static void DoDFSegRange( void )
     for( bucket = 0; bucket < N_SECTIONS; bucket++ ) {
         for( ptr = sectionDefs[bucket]; ptr != NULL; ptr = ptr->next ) {
             tipe = OWLTellSectionType( ptr->owl_handle );
-            switch( tipe ){
+            switch( tipe ) {
             case OWL_SECTION_INFO:
             case OWL_SECTION_DEBUG:
             case OWL_SECTION_PDATA:
@@ -338,16 +340,17 @@ void    ObjFini( void )
     curr = FindSection( codeSectionId );
     code_size = OWLTellSize( curr->owl_handle  );
 
-    if( _IsModel( DBG_DF ) ) {
-        if( _IsModel( DBG_LOCALS | DBG_TYPES ) ) {
+    if( _IsModel( CGSW_GEN_DBG_DF ) ) {
+        if( _IsModel( CGSW_GEN_DBG_LOCALS )
+          || _IsModel( CGSW_GEN_DBG_TYPES ) ) {
             DoDFSegRange();
             DFObjFiniDbgInfo( code_size );
 #if 0 // save for jimr
-        } else if( _IsModel( DBG_NUMBERS ) ) {
+        } else if( _IsModel( CGSW_GEN_DBG_NUMBERS ) ) {
             DFObjLineFiniDbgInfo();
 #endif
         }
-    } else if( _IsModel( DBG_CV ) ) {
+    } else if( _IsModel( CGSW_GEN_DBG_CV ) ) {
         CVObjFiniDbgInfo();
     }
     DefaultLibs();
@@ -358,14 +361,14 @@ void    ObjFini( void )
     OWLFini( owlHandle );
     DeleteSections();
     CloseObj();
-    FEMessage( MSG_CODE_SIZE, (pointer)(pointer_uint)code_size );
+    FEMessage( FEMSG_CODE_SIZE, (pointer)(pointer_uint)code_size );
 }
 
 
 static  int PutBytes( owl_client_file f, const char *buffer, size_t len )
 /***********************************************************************/
 {
-#ifndef NDEBUG
+#ifdef DEVBUILD
     // enable OWL logging
     if( f == NULL ) {
         PutObjBytes( buffer, len );
@@ -397,7 +400,7 @@ static const char   *LabelName( label_handle label )
     cg_sym_handle       sym;
     const char          *name;
     char                *buff;
-    import_type         kind;
+    import_kind         kind;
     fe_attr             attr;
 
     sym = AskForLblSym( label );
@@ -462,14 +465,14 @@ void    InitSegDefs( void )
     #error Unknown RISC target
 #endif
 
-    if( _IsModel( OBJ_ELF ) ) {
+    if( _IsModel( CGSW_GEN_OBJ_ELF ) ) {
         format = OWL_FORMAT_ELF;
     } else {
         format = OWL_FORMAT_COFF;
     }
 
-    owlFile = OWLFileInit( owlHandle, FEAuxInfo( NULL, SOURCE_NAME ), NULL, format, OWL_FILE_OBJECT );
-    if( _IsTargetModel( OWL_LOGGING ) ) {
+    owlFile = OWLFileInit( owlHandle, FEAuxInfo( NULL, FEINF_SOURCE_NAME ), NULL, format, OWL_FILE_OBJECT );
+    if( _IsTargetModel( CGSW_RISC_OWL_LOGGING ) ) {
         OWLLogEnable( owlFile, FILE2OWLF( stdout ) );
     }
 
@@ -498,7 +501,7 @@ void    DefSegment( segment_id segid, seg_attr attr, const char *str, uint align
         }
         if( codeSectionId == BACKSEGS ) {
             codeSectionId = segid;
-            if( _IsModel( DBG_DF ) ) {
+            if( _IsModel( CGSW_GEN_DBG_DF ) ) {
                 DFBegCCU( segid, NULL );
             }
         }
@@ -525,10 +528,11 @@ void    OutFileStart( int line )
     cue_state           info;
     const char          *fname;
 
-    if( _IsModel( DBG_DF ) || _IsModel( DBG_CV ) ){
+    if( _IsModel( CGSW_GEN_DBG_DF )
+      || _IsModel( CGSW_GEN_DBG_CV ) ) {
         CueFind( line, &info );
         line = info.line;
-        if( info.fno != CurrFNo ){
+        if( info.fno != CurrFNo ) {
             fname = SrcFNoFind( info.fno );
             CurrFNo = info.fno;
             OWLFileSymbol( owlFile, fname );
@@ -541,11 +545,13 @@ void    OutFuncStart( label_handle label, offset start, cg_linenum line )
 {
     cue_state            info;
 
-    if( _IsModel( DBG_DF ) || _IsModel( DBG_CV ) ){
+    if( _IsModel( CGSW_GEN_DBG_DF )
+      || _IsModel( CGSW_GEN_DBG_CV ) ) {
         CueFind( line, &info );
         line = info.line;
-        if( _IsModel( DBG_DF ) ){
-            if( _IsModel( DBG_LOCALS | DBG_TYPES ) ){
+        if( _IsModel( CGSW_GEN_DBG_DF ) ) {
+            if( _IsModel( CGSW_GEN_DBG_LOCALS )
+              || _IsModel( CGSW_GEN_DBG_TYPES ) ) {
                 DFLineNum( &info, start );
             }
         }
@@ -572,13 +578,15 @@ void    OutLineNum( cg_linenum line, bool label_line )
     /* unused parameters */ (void)label_line;
 
     lc = OWLTellOffset( currSection->owl_handle );
-    if( _IsModel( DBG_DF ) || _IsModel( DBG_CV ) ) {
+    if( _IsModel( CGSW_GEN_DBG_DF )
+      || _IsModel( CGSW_GEN_DBG_CV ) ) {
         CueFind( line, &info );
-        if( _IsModel( DBG_DF ) ) {
-            if( _IsModel( DBG_LOCALS | DBG_TYPES ) ) {
+        if( _IsModel( CGSW_GEN_DBG_DF ) ) {
+            if( _IsModel( CGSW_GEN_DBG_LOCALS )
+              || _IsModel( CGSW_GEN_DBG_TYPES ) ) {
                 DFLineNum( &info, lc );
             }
-        } else if( _IsModel( DBG_CV ) ) {
+        } else if( _IsModel( CGSW_GEN_DBG_CV ) ) {
             const char  *fname;
 
             if( info.fno != CurrFNo ) {
@@ -602,21 +610,7 @@ char GetMemModel( void )
 {
     char    model;
 
-    if( _IsTargetModel( BIG_CODE ) ) {
-        if( _IsTargetModel( BIG_DATA ) ) {
-            if( _IsntTargetModel( CHEAP_POINTER ) ) {
-                model = 'h';
-            } else {
-                model = 'l';
-            }
-        } else {
-            model = 'm';
-        }
-    } else if( _IsTargetModel( BIG_DATA ) ) {
-        model = 'c';
-    } else {
-        model = 'f';
-    }
+    model = 'f';
     return( model );
 }
 
@@ -660,11 +654,13 @@ segment_id  AskBackSeg( void )
 static bool     InlineFunction( cg_sym_handle sym )
 /*************************************************/
 {
-    if( (FEAttr( sym ) & FE_PROC) == 0 )
-        return( false );
-    if( FindAuxInfoSym( sym, CALL_BYTES ) != NULL )
-        return( true );
-    return( (*(call_class *)FindAuxInfoSym( sym, CALL_CLASS ) & MAKE_CALL_INLINE) != 0 );
+    if( FEAttr( sym ) & FE_PROC ) {
+        if( FindAuxInfoSym( sym, FEINF_CALL_BYTES ) != NULL
+          || ((call_class)(pointer_uint)FindAuxInfoSym( sym, FEINF_CALL_CLASS ) & FECALL_GEN_MAKE_CALL_INLINE) ) {
+            return( true );
+        }
+    }
+    return( false );
 }
 
 segment_id  AskSegID( pointer hdl, cg_class class )
@@ -780,7 +776,7 @@ void    FlushOP( segment_id segid )
     owl_section_type    tipe;
 
     sect = FindSection( segid );
-    if( _IsModel( DBG_DF ) ) {
+    if( _IsModel( CGSW_GEN_DBG_DF ) ) {
         tipe = OWLTellSectionType( sect->owl_handle );
         switch( tipe ) {
         case OWL_SECTION_INFO:
@@ -865,17 +861,17 @@ static void DumpImportResolve( label_handle label )
     cg_sym_handle       def_resolve;
     cg_sym_handle       sym;
     pointer             cond;
-    int                 type;
+    import_type         type;
     back_handle         bck;
 
     if( AskIfRTLabel( label ) )
         return;
     sym = AskForLblSym( label );
-    if( sym != NULL ){
-        def_resolve = FEAuxInfo( sym, DEFAULT_IMPORT_RESOLVE );
+    if( sym != NULL ) {
+        def_resolve = FEAuxInfo( sym, FEINF_DEFAULT_IMPORT_RESOLVE );
         if( def_resolve != NULL && def_resolve != sym ) {
             bck =  FEBack( def_resolve);
-            type = (int)(pointer_uint)FEAuxInfo( sym, IMPORT_TYPE );
+            type = (import_type)(pointer_uint)FEAuxInfo( sym, FEINF_IMPORT_TYPE );
             switch( type ) {
             case IMPORT_IS_LAZY:
                 OWLWeakExt( owlFile, labelOwlSym( label ), labelOwlSym( bck->lbl ), OWL_WKSYM_LAZY );
@@ -886,10 +882,10 @@ static void DumpImportResolve( label_handle label )
             case IMPORT_IS_CONDITIONAL_PURE:
                 /* fall through */
             case IMPORT_IS_CONDITIONAL:
-                cond = FEAuxInfo( sym, CONDITIONAL_IMPORT );
+                cond = FEAuxInfo( sym, FEINF_CONDITIONAL_IMPORT );
                 while( cond != NULL ) {
-                    sym = FEAuxInfo( cond, CONDITIONAL_SYMBOL );
-                    cond = FEAuxInfo( cond, NEXT_CONDITIONAL );
+                    sym = FEAuxInfo( cond, FEINF_CONDITIONAL_SYMBOL );
+                    cond = FEAuxInfo( cond, FEINF_NEXT_CONDITIONAL );
                 }
                 assert( 0 ); // not implemented
                 break;
@@ -1028,16 +1024,16 @@ void OutPDataRec( label_handle label, offset proc_size, offset pro_size )
     OWLEmitReloc( owl_pdata,OWLTellOffset( owl_pdata ), labelOwlSym( label ), OWL_RELOC_WORD );
     OWLEmitData( owl_pdata, (char *)&proc_size, 4 );
     if( sym != NULL ) { // put  out exception handler stuff
-        curr = FEAuxInfo( sym, EXCEPTION_HANDLER );
+        curr = FEAuxInfo( sym, FEINF_EXCEPTION_HANDLER );
         if( curr != NULL ) {
             lbl =  AskForSymLabel( curr, CG_FE );
             OWLEmitReloc( owl_pdata, OWLTellOffset( owl_pdata ), labelOwlSym( lbl ), OWL_RELOC_WORD );
-        } else if( _IsTargetModel( EXCEPT_FILTER_USED ) ) {
+        } else if( _IsTargetModel( CGSW_RISC_EXCEPT_FILTER_USED ) ) {
             lbl = RTLabel( RT_EXCEPT_RTN );
             OWLEmitReloc( owl_pdata, OWLTellOffset( owl_pdata ), labelOwlSym( lbl ), OWL_RELOC_WORD );
         }
         OWLEmitData( owl_pdata, (char *)&Zero, 4 );
-        curr = FEAuxInfo( sym, EXCEPTION_DATA );
+        curr = FEAuxInfo( sym, FEINF_EXCEPTION_DATA );
         if( curr != NULL ) {
             lbl =  AskForSymLabel( curr, CG_FE );
             OWLEmitReloc( owl_pdata, OWLTellOffset( owl_pdata ), labelOwlSym( lbl ), OWL_RELOC_WORD );
@@ -1086,11 +1082,11 @@ void    TellObjNewProc( cg_sym_handle proc )
         currSection->is_start = true;
     }
     if( FEAttr( proc ) & FE_COMMON ) {
-        if( _IsModel( DBG_CV ) ) { // set the $debug for comdat
+        if( _IsModel( CGSW_GEN_DBG_CV ) ) { // set the $debug for comdat
             CVDefSymComdat( currSection->owl_handle );
         }
     } else {
-        if( _IsModel( DBG_CV ) ) {
+        if( _IsModel( CGSW_GEN_DBG_CV ) ) {
             CVDefSymNormal();  // reset to normal $debug section
         }
     }
@@ -1179,18 +1175,18 @@ void    ObjEmitSeq( byte_seq *code )
         reloc_sym = NULL;
         ins_opcode = InsRelocInit( code_ptr );
         while( curr != NULL && curr->off == i ) {
-            back = SymBack( curr->sym );
             switch( curr->type ) {
             case OWL_RELOC_FP_OFFSET:
-                loc = TempLocation( (name *)back );
+                loc = TempLocation( SymBackUserTemp( curr->sym ) );
                 if( loc > 32767 ) {
-                    FEMessage( MSG_ERROR, "auto variable out of range for reference within inline assembly sequence" );
+                    FEMessage( FEMSG_ERROR, "auto variable out of range for reference within inline assembly sequence" );
                 }
                 InsRelocAddSignedImmed( loc );
                 break;
             case OWL_RELOC_PAIR:
                 break;
             default:
+                back = FEBack( curr->sym );
                 reloc_type = curr->type;
                 reloc_sym = back->lbl;
             }
@@ -1199,4 +1195,20 @@ void    ObjEmitSeq( byte_seq *code )
         EmitInsReloc( ins_opcode, reloc_sym, reloc_type );
         code_ptr = InsRelocNext( code_ptr );
     }
+}
+
+bool SymIsExported( cg_sym_handle sym )
+/*************************************/
+{
+    bool        exported;
+
+    exported = false;
+    if( sym != NULL ) {
+        if( FEAttr( sym ) & FE_DLLEXPORT ) {
+            exported = true;
+        } else if( (call_class)(pointer_uint)FindAuxInfoSym( sym, FEINF_CALL_CLASS ) & FECALL_GEN_DLL_EXPORT ) {
+            exported = true;
+        }
+    }
+    return( exported );
 }

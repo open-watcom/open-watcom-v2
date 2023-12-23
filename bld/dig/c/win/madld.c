@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -25,7 +25,7 @@
 *
 *  ========================================================================
 *
-* Description:  Windows 3.x MAD loader.
+* Description:  MAD module loader for Windows 3.x.
 *
 ****************************************************************************/
 
@@ -36,6 +36,7 @@
 #include <i86.h>
 #include <windows.h>
 #include "watcom.h"
+#include "digld.h"
 #include "mad.h"
 #include "madimp.h"
 #include "madcli.h"
@@ -62,11 +63,11 @@ void MADSysUnload( mad_sys_handle *sys_hdl )
     }
 }
 
-mad_status MADSysLoad( const char *path, mad_client_routines *cli,
+mad_status MADSysLoad( const char *base_name, mad_client_routines *cli,
                                 mad_imp_routines **imp, mad_sys_handle *sys_hdl )
 {
-    HINSTANCE           dip_dll;
-    char                newpath[256];
+    HINSTANCE           mod_hdl;
+    char                filename[_MAX_PATH];
     mad_status          status;
     char                parm[10];
     struct {
@@ -84,8 +85,9 @@ mad_status MADSysLoad( const char *path, mad_client_routines *cli,
     UINT                prev;
 
     *sys_hdl = NULL_SYSHDL;
-    strcpy( newpath, path );
-    strcat( newpath, ".dll" );
+    if( DIGLoader( Find )( DIG_FILETYPE_EXE, base_name, 0, ".dll", filename, sizeof( filename ) ) == 0 ) {
+        return( MS_ERR | MS_FOPEN_FAILED );
+    }
     p = parm;
     *p++ = ' ';
     utoa( _FP_SEG( &transfer_block ), p, 16 );
@@ -101,10 +103,10 @@ mad_status MADSysLoad( const char *path, mad_client_routines *cli,
     parm_block.show = &show_block;
     parm_block.reserved = 0;
     prev = SetErrorMode( SEM_NOOPENFILEERRORBOX );
-    dip_dll = LoadModule( newpath, &parm_block );
-    MADLastHandle = dip_dll;
+    mod_hdl = LoadModule( filename, &parm_block );
     SetErrorMode( prev );
-    if( dip_dll < HINSTANCE_ERROR ) {
+    MADLastHandle = mod_hdl;
+    if( mod_hdl < HINSTANCE_ERROR ) {
         return( MS_ERR | MS_FOPEN_FAILED );
     }
     status = MS_ERR | MS_INVALID_MAD;

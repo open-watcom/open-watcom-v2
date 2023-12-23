@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -81,21 +81,21 @@ typedef unsigned_32     comp_options;
     #define     CGOPT_DB_LOCALS     0x00000002L
 
     #define     CGOPT_STACK_CHK     0x00000004L
-#if ( _CPU == 8086 || _CPU == 386 )
+#if _INTEL_CPU
     #define     CGOPT_CONST_CODE    0x00000008L
     #define     CGOPT_STK_ARGS      0x00000010L
     #define     CGOPT_SEG_REGS      0x00000020L
     #define     CGOPT_FS_FLOATS     0x00000040L
     #define     CGOPT_GS_FLOATS     0x00000080L
-#if _CPU == 8086
+  #if _CPU == 8086
     #define     CGOPT_SS_FLOATS     0x00000100L
-#endif
+  #endif
 
     #define     CGOPT_M_LARGE       0x00000200L
     #define     CGOPT_M_MEDIUM      0x00000400L
-#if _CPU == 8086
+  #if _CPU == 8086
     #define     CGOPT_M_HUGE        0x00000800L
-#else
+  #else
     #define     CGOPT_M_FLAT        0x00001000L
     #define     CGOPT_M_SMALL       0x00002000L
     #define     CGOPT_M_COMPACT     0x00004000L
@@ -104,8 +104,8 @@ typedef unsigned_32     comp_options;
     #define     CGOPT_BD            0x00010000L
     #define     CGOPT_BM            0x00020000L
     #define     CGOPT_STACK_GROW    0x00040000L
-#endif
-#elif _CPU == _AXP || _CPU == _PPC
+  #endif
+#else /* _RISC_CPU */
     #define     CGOPT_BD            0x00010000L
     #define     CGOPT_BM            0x00020000L
     #define     CGOPT_STACK_GROW    0x00040000L
@@ -117,7 +117,7 @@ typedef unsigned_32     comp_options;
     #define     CGOPT_DI_DWARF      0x00800000L
     #define     CGOPT_DI_WATCOM     0x01000000L
     #define     CGOPT_MANGLE        0x02000000L
-#if _CPU == _AXP || _CPU == _PPC
+#if _RISC_CPU
     #define     CGOPT_GENASM        0x10000000L
     #define     CGOPT_LOGOWL        0x20000000L
 #endif
@@ -133,7 +133,7 @@ typedef unsigned_32     comp_options;
     #define     OZOPT_O_VOLATILE    0x00000010L
     #define     OZOPT_O_CALL_RET    0x00000020L
     #define     OZOPT_O_MATH        0x00000040L
-#if _CPU == 386 || _CPU == 8086
+#if _INTEL_CPU
     #define     OZOPT_O_FRAME       0x00000080L
 #endif
     #define     OZOPT_O_INSSCHED    0x00000100L
@@ -155,7 +155,7 @@ typedef unsigned_32     comp_options;
 // CPU Options:
 // ------------
 
-#if ( _CPU == 8086 || _CPU == 386 )
+#if _INTEL_CPU
 // Floating-point reverse compatibility:
     #define     CPUOPT_FPR          0x00000001L
 
@@ -174,17 +174,18 @@ typedef unsigned_32     comp_options;
     #define     CPUOPT_FP6          0x00000100L
 
 // CPU:
-#if _CPU == 8086
+  #if _CPU == 8086
     #define     CPUOPT_8086         0x00000200L
     #define     CPUOPT_80186        0x00000400L
     #define     CPUOPT_80286        0x00000800L
-#endif
+  #endif
     #define     CPUOPT_80386        0x00001000L
     #define     CPUOPT_80486        0x00002000L
     #define     CPUOPT_80586        0x00004000L
     #define     CPUOPT_80686        0x00008000L
 
 #endif
+
 #if _CPU == 8086
 
 #define _SmallDataModel( opts ) (opts & (CGOPT_M_MEDIUM))

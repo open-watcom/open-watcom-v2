@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -65,17 +65,17 @@ type_def *PTCodePointer;
 static    type_list     *TypeList;
 
 
-/*                          refno           length  attributes */
-/*                          ======          ======  ========== */
+/*                              refno           length  attributes */
+/*                              ======          ======  ========== */
 
-static type_def TUInt1 = {  TY_UINT_1,       1,      0 };
-static type_def TInt1  = {  TY_INT_1,        1,      TYPE_SIGNED };
-static type_def TUInt2 = {  TY_UINT_2,       2,      0 };
-static type_def TInt2  = {  TY_INT_2,        2,      TYPE_SIGNED };
-static type_def TUInt4 = {  TY_UINT_4,       4,      0 };
-static type_def TInt4  = {  TY_INT_4,        4,      TYPE_SIGNED };
-static type_def TUInt8 = {  TY_UINT_8,       8,      0 };
-static type_def TInt8  = {  TY_INT_8,        8,      TYPE_SIGNED };
+static type_def TUInt1      = {  TY_UINT_1,       1,      0 };
+static type_def TInt1       = {  TY_INT_1,        1,      TYPE_SIGNED };
+static type_def TUInt2      = {  TY_UINT_2,       2,      0 };
+static type_def TInt2       = {  TY_INT_2,        2,      TYPE_SIGNED };
+static type_def TUInt4      = {  TY_UINT_4,       4,      0 };
+static type_def TInt4       = {  TY_INT_4,        4,      TYPE_SIGNED };
+static type_def TUInt8      = {  TY_UINT_8,       8,      0 };
+static type_def TInt8       = {  TY_INT_8,        8,      TYPE_SIGNED };
 static type_def TSingle     = {  TY_SINGLE,       4,      TYPE_SIGNED + TYPE_FLOAT };
 static type_def TDouble     = {  TY_DOUBLE,       8,      TYPE_SIGNED + TYPE_FLOAT };
 static type_def TLongDouble = {  TY_LONG_DOUBLE,  10,     TYPE_SIGNED + TYPE_FLOAT };
@@ -206,7 +206,7 @@ type_def        *TypeDef( cg_type refno, type_length length, type_length align )
     list->tipe.type_def.refno  =  refno;
     list->tipe.type_def.length = length;
     list->tipe.type_def.attr   = 0;
-#if _TARGET & _TARG_RISC
+#if _TARGET_RISC
     list->tipe.type_def.align  = align;
 #endif
     return( &list->tipe.type_def );

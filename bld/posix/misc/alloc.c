@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,6 +44,17 @@ void *MemAlloc( size_t size )
         Die( "Out of memory!\n" );
     }
     memset( tmp, 0, size );
+    return( tmp );
+}
+
+char *MemStrdup( const char *str )
+{
+    char        *tmp;
+
+    tmp = strdup( str );
+    if( tmp == NULL ) {
+        Die( "Out of memory!\n" );
+    }
     return( tmp );
 }
 

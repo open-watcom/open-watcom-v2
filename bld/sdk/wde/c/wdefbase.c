@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -146,8 +146,7 @@ OBJPTR CALLBACK WdeBaseCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
     int                 font_pointsize;
     bool                use_default;
 
-    /* touch unused vars to get rid of warning */
-    _wde_touch( obj_rect );
+    /* unused parameters */ (void)obj_rect;
 
     WdeDebugCreate( "Base", parent, obj_rect, handle );
 
@@ -226,7 +225,8 @@ bool CALLBACK WdeBaseDispatcher( ACTION_ID act, OBJPTR obj, void *p1, void *p2 )
 
 bool WdeBaseInit( bool first )
 {
-    _wde_touch( first );
+    /* unused parameters */ (void)first;
+
     WdeBaseDispatch = MakeProcInstance_DISPATCHER( WdeBaseDispatcher, WdeGetAppInstance() );
     return( true );
 }
@@ -238,9 +238,7 @@ void WdeBaseFini( void )
 
 bool WdeBaseIsMarkValid( WdeBaseObject *obj, bool *flag, void *p2 )
 {
-    /* touch unused vars to get rid of warning */
-    _wde_touch( p2 );
-    _wde_touch( obj );
+    /* unused parameters */ (void)p2; (void)obj;
 
     *flag = false;
 
@@ -287,9 +285,7 @@ bool WdeBaseDestroy( WdeBaseObject *obj, bool *flag, bool *p2 )
     OBJPTR  sub_obj;
     LIST    *clist;
 
-    /* touch unused vars to get rid of warning */
-    _wde_touch( p2 );
-
+    /* unused parameters */ (void)p2;
 
     /* if the user initiated this destroy then don't do it! */
     if( *flag ) {
@@ -324,8 +320,7 @@ bool WdeBaseGetResizeInc( WdeBaseObject *obj, POINT *p, void *p2 )
     WdeDialogSizeInfo   sizeinfo;
     RECT                r;
 
-    /* touch unused vars to get rid of warning */
-    _wde_touch( p2 );
+    /* unused parameters */ (void)p2;
 
     p->x = 1;
     p->y = 1;
@@ -355,9 +350,7 @@ bool WdeBaseGetResizer( WdeBaseObject *obj, WdeResizeRatio *resizer, OBJPTR *o )
 
 bool WdeBaseGetFont( WdeBaseObject *obj, HFONT *font, void *p2 )
 {
-    /* touch unused vars to get rid of warning */
-    _wde_touch( obj );
-    _wde_touch( p2 );
+    /* unused parameters */ (void)obj; (void)p2;
 
     *font = obj->font;
 
@@ -367,8 +360,7 @@ bool WdeBaseGetFont( WdeBaseObject *obj, HFONT *font, void *p2 )
 bool WdeBaseGetNCSize( WdeBaseObject *obj, RECT *size, void *p2 )
 {
     /* touch unused vars to get rid of warning */
-    _wde_touch( obj );
-    _wde_touch( p2 );
+    /* unused parameters */ (void)obj; (void)p2;
 
     memset( size, 0, sizeof( RECT ) );
 
@@ -377,18 +369,14 @@ bool WdeBaseGetNCSize( WdeBaseObject *obj, RECT *size, void *p2 )
 
 bool WdeBaseFirstChild( WdeBaseObject *obj, void *p1, void *p2 )
 {
-    /* touch unused vars to get rid of warning */
-    _wde_touch( obj );
-    _wde_touch( p1 );
-    _wde_touch( p2 );
+    /* unused parameters */ (void)obj; (void)p1; (void)p2;
 
     return( true );
 }
 
 bool WdeBaseGetFirstChild( WdeBaseObject *obj, OBJPTR *first, void *p2 )
 {
-    /* touch unused vars to get rid of warning */
-    _wde_touch( p2 );
+    /* unused parameters */ (void)p2;
 
     if( obj->num_children == 0 || obj->children == NULL ) {
         *first = NULL;
@@ -410,8 +398,7 @@ bool WdeBaseDraw( WdeBaseObject *obj, RECT *area, HDC *dc )
     RECT    child_rect;
     bool    show_child;
 
-    /* touch unused vars to get rid of warning */
-    _wde_touch( dc );
+    /* unused parameters */ (void)dc;
 
     GetOffset( &origin );
 
@@ -461,9 +448,7 @@ bool WdeBaseDraw( WdeBaseObject *obj, RECT *area, HDC *dc )
 
 bool WdeBaseGetResizeInfo( WdeBaseObject *obj, RESIZE_ID *info, void *p2 )
 {
-    /* touch unused vars to get rid of warning */
-    _wde_touch( obj );
-    _wde_touch( p2 );
+    /* unused parameters */ (void)obj; (void)p2;
 
     *info = R_NONE;
 
@@ -472,8 +457,7 @@ bool WdeBaseGetResizeInfo( WdeBaseObject *obj, RESIZE_ID *info, void *p2 )
 
 bool WdeBaseIdentify( WdeBaseObject *obj, OBJ_ID *id, void *p2 )
 {
-    /* touch unused vars to get rid of warning */
-    _wde_touch( p2 );
+    /* unused parameters */ (void)p2;
 
     *id = obj->object_id;
 
@@ -484,8 +468,7 @@ bool WdeBaseValidateAction( WdeBaseObject *obj, ACTION_ID *act, void *p2 )
 {
     int     i;
 
-    /* touch unused vars to get rid of warning */
-    _wde_touch( p2 );
+    /* unused parameters */ (void)p2;
 
     if( *act == MOVE ) {
         return( false );
@@ -502,8 +485,7 @@ bool WdeBaseValidateAction( WdeBaseObject *obj, ACTION_ID *act, void *p2 )
 
 bool WdeBaseGetWindowHandle( WdeBaseObject *obj, HWND *hwin, void *p2 )
 {
-    /* touch unused vars to get rid of warning */
-    _wde_touch( p2 );
+    /* unused parameters */ (void)p2;
 
     *hwin = obj->res_info->edit_win;
 
@@ -512,8 +494,7 @@ bool WdeBaseGetWindowHandle( WdeBaseObject *obj, HWND *hwin, void *p2 )
 
 bool WdeBaseAddSubObject( WdeBaseObject *base_obj, OBJPTR obj, void *p2 )
 {
-    /* touch unused vars to get rid of warning */
-    _wde_touch( p2 );
+    /* unused parameters */ (void)p2;
 
     /* make sure objects are inserted at the end of list */
     WdeInsertObject( &base_obj->children, obj );
@@ -552,8 +533,7 @@ bool WdeBaseFindObjectsPt( WdeBaseObject *obj, POINT *pt, LIST **obj_list )
 
 bool WdeBaseRemoveSubObject( WdeBaseObject *base_obj, OBJPTR obj, void *p2 )
 {
-    /* touch unused vars to get rid of warning */
-    _wde_touch( p2 );
+    /* unused parameters */ (void)p2;
 
     if( base_obj->num_children && ListFindElt( base_obj->children, obj ) ) {
         ListRemoveElt( &base_obj->children, obj );
@@ -572,8 +552,7 @@ bool WdeBaseRemoveSubObject( WdeBaseObject *base_obj, OBJPTR obj, void *p2 )
 
 bool WdeBasePutChildFirst( WdeBaseObject *obj, OBJPTR child, void *p2 )
 {
-    /* touch unused vars to get rid of warning */
-    _wde_touch( p2 );
+    /* unused parameters */ (void)p2;
 
     if( obj->num_children ) {
         if( !WdePutObjFirst( child, &obj->children ) ) {
@@ -593,8 +572,7 @@ bool WdeBaseNotify( WdeBaseObject *base_obj, NOTE_ID *noteid, void *p2 )
     OBJPTR           obj;
     WdeInfoStruct    is;
 
-    /* touch unused vars to get rid of warning */
-    _wde_touch( p2 );
+    /* unused parameters */ (void)p2;
 
     switch( *noteid ) {
     case PRIMARY_OBJECT:
@@ -628,9 +606,7 @@ bool WdeBaseLocation( WdeBaseObject *base_obj, RECT *obj_rect, void *p2 )
     RECT rect1;
     RECT rect2;
 
-    /* touch unused vars to get rid of warning */
-    _wde_touch( base_obj );
-    _wde_touch( p2 );
+    /* unused parameters */ (void)base_obj; (void)p2;
 
     if( base_obj->res_info->edit_win != NULL ) {
         GetClientRect( base_obj->res_info->edit_win, &rect1 );
@@ -654,8 +630,7 @@ bool WdeBaseLocation( WdeBaseObject *base_obj, RECT *obj_rect, void *p2 )
 
 bool WdeBaseGetSubObjectList( WdeBaseObject *base_obj, LIST **l, void *p2 )
 {
-    /* touch unused vars to get rid of warning */
-    _wde_touch( p2 );
+    /* unused parameters */ (void)p2;
 
     *l = base_obj->children;
 

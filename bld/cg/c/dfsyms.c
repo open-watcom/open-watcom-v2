@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,6 +37,7 @@
 #include "coderep.h"
 #include "cgmem.h"
 #include "zoiks.h"
+#include "cgauxcc.h"
 #include "cgauxinf.h"
 #include "dw.h"
 #include "dwarf.h"
@@ -239,8 +240,8 @@ static void CLIReloc( dw_sectnum sect, dw_reloc_type reloc_type, ... )
         break;
     case DW_W_ARANGE_ADDR:
         DoLblReloc( ARange, 0 );
-#if _TARGET & ( _TARG_8086 | _TARG_80386 )
-        if( _IsntTargetModel( FLAT_MODEL ) ) {
+#if _TARGET_INTEL
+        if( _IsntTargetModel( CGSW_X86_FLAT_MODEL ) ) {
             DoSegLblReloc( ARange );
         }
 #endif
@@ -297,8 +298,9 @@ static back_handle  MakeLabel( void )
 }
 
 void    DFInitDbgInfo( void )
-/***************************/
-/* called after ObjInit */
+/****************************
+ * called after ObjInit
+ */
 {
     CurrFNo = 0;
     CcuDef = false;
@@ -326,7 +328,7 @@ static int SetLang( void )
     int     index;
 
     ret = DWLANG_C;
-    name =  FEAuxInfo( NULL, SOURCE_LANGUAGE );
+    name =  FEAuxInfo( NULL, FEINF_SOURCE_LANGUAGE );
     for( index = 0; index < MAX_LANG; ++index ) {
         if( strcmp( name, LangNames[index].name ) == 0 ) {
             ret = LangNames[index].lang;
@@ -393,15 +395,15 @@ static int InitCU( dw_cu_info *cu )
 {
     type_def        *tipe_addr;
 
-    cu->source_filename = FEAuxInfo( NULL, SOURCE_NAME );
+    cu->source_filename = FEAuxInfo( NULL, FEINF_SOURCE_NAME );
     cu->directory = "";
     cu->inc_list = NULL;
     cu->inc_list_len = 0;
     tipe_addr = TypeAddress( TY_NEAR_POINTER );
     cu->offset_size = tipe_addr->length;
     cu->segment_size = 0;
-#if _TARGET & ( _TARG_8086 | _TARG_80386 )
-    if( _IsntTargetModel( FLAT_MODEL ) ) {
+#if _TARGET_INTEL
+    if( _IsntTargetModel( CGSW_X86_FLAT_MODEL ) ) {
         cu->segment_size = 2;
     }
 #endif
@@ -426,29 +428,33 @@ static int InitCU( dw_cu_info *cu )
 }
 
 void    DFSymRange( cg_sym_handle sym, offset size )
-/**************************************************/
-// I don't see what this is good for. The aranges for any
-// comdat symbols will be taken care of by DFSegRange().
-// Running this code may produce overlapping aranges that
-// confuse the hell out of the debugger. However, not running
-// this may cause debug information to be missing... call it
-// a FIXME
+/***************************************************
+ * I don't see what this is good for. The aranges for any
+ * comdat symbols will be taken care of by DFSegRange().
+ * Running this code may produce overlapping aranges that
+ * confuse the hell out of the debugger. However, not running
+ * this may cause debug information to be missing... call it
+ * a FIXME
+ */
 {
-    if( _IsModel( DBG_LOCALS | DBG_TYPES ) ) {
+    if( _IsModel( CGSW_GEN_DBG_LOCALS )
+      || _IsModel( CGSW_GEN_DBG_TYPES ) ) {
         ARange = FEBack( sym );
         DWAddress( Client, size );
     }
 }
 
 void    DFSegRange( void )
-/************************/
-/* do arange for the current segment */
+/*************************
+ * do arange for the current segment
+ */
 {
     back_handle bck;
     offset      off;
     offset      size;
 
-    if( _IsModel( DBG_LOCALS | DBG_TYPES ) ) {
+    if( _IsModel( CGSW_GEN_DBG_LOCALS )
+      || _IsModel( CGSW_GEN_DBG_TYPES ) ) {
         size = AskMaxSize();
         if( size > 0 ) {
             bck = MakeLabel();
@@ -464,8 +470,9 @@ void    DFSegRange( void )
 }
 
 void    DFBegCCU( segment_id code_segid, dw_sym_handle dbg_pch )
-/**************************************************************/
-// Call when codeseg hase been defined
+/***************************************************************
+ * Call when codeseg hase been defined
+ */
 {
     dw_cu_info      cu;
     back_handle     bck;
@@ -477,7 +484,8 @@ void    DFBegCCU( segment_id code_segid, dw_sym_handle dbg_pch )
     /* unused parameters */ (void)code_segid;
 #endif
 
-    if( _IsntModel( DBG_LOCALS | DBG_TYPES ) ) {
+    if( _IsntModel( CGSW_GEN_DBG_LOCALS )
+      && _IsntModel( CGSW_GEN_DBG_TYPES ) ) {
         return;
     }
     if( CcuDef ) {
@@ -490,8 +498,8 @@ void    DFBegCCU( segment_id code_segid, dw_sym_handle dbg_pch )
         cu.flags = false;
 #else
         old_segid = SetOP( code_segid );
-    #if _TARGET & ( _TARG_8086 | _TARG_80386 )
-        if( _IsTargetModel( FLAT_MODEL ) ) {
+    #if _TARGET_INTEL
+        if( _IsTargetModel( CGSW_X86_FLAT_MODEL ) ) {
             bck = MakeLabel();
             OutLabel( bck->lbl );
             Pc_Low = bck;
@@ -534,7 +542,7 @@ static const char *SetDwarfProducer( void )
     const char  *name;
 
 #if 0      // disable this feature for now, to have compatibility with OW 1.9
-    name = (const char *)FEAuxInfo( NULL, DBG_DWARF_PRODUCER );
+    name = (const char *)FEAuxInfo( NULL, FEINF_DBG_DWARF_PRODUCER );
     if( name == NULL )
         name = "";
 #else
@@ -544,8 +552,9 @@ static const char *SetDwarfProducer( void )
 }
 
 void    DFObjInitDbgInfo( void )
-/******************************/
-/* called by objinit to init segments and dwarf writing library */
+/*******************************
+ * called by objinit to init segments and dwarf writing library
+ */
 {
     static const dw_funcs cli_funcs = {
         CLIReloc,
@@ -560,7 +569,8 @@ void    DFObjInitDbgInfo( void )
     cg_sym_handle   debug_pch;
     fe_attr         attr;
 
-    if( _IsntModel( DBG_LOCALS | DBG_TYPES ) ) {
+    if( _IsntModel( CGSW_GEN_DBG_LOCALS )
+      && _IsntModel( CGSW_GEN_DBG_TYPES ) ) {
         return;
     }
     info.compiler_options = DW_CM_DEBUGGER;
@@ -570,8 +580,8 @@ void    DFObjInitDbgInfo( void )
     if( setjmp( info.exception_handler ) == 0 ) {
         info.funcs = cli_funcs;
         InitSegBck(); // start each seg with a ref label
-        if( _IsModel( DBG_PREDEF ) ) {
-            abbrev_sym = FEAuxInfo( NULL, DBG_PREDEF_SYM );
+        if( _IsModel( CGSW_GEN_DBG_PREDEF ) ) {
+            abbrev_sym = FEAuxInfo( NULL, FEINF_DBG_PREDEF_SYM );
             info.abbrev_sym = (dw_sym_handle)abbrev_sym;
             attr = FEAttr( abbrev_sym );
             if( (attr & FE_IMPORT) ) {
@@ -588,7 +598,7 @@ void    DFObjInitDbgInfo( void )
                 SetOP( old_segid );
             }
         }
-        debug_pch = FEAuxInfo( NULL, DBG_PCH_SYM );
+        debug_pch = FEAuxInfo( NULL, FEINF_DBG_PCH_SYM );
         if( debug_pch != NULL ) {
             attr = FEAttr( debug_pch );
             if( (attr & FE_IMPORT) == 0 ) {
@@ -614,8 +624,9 @@ void    DFObjInitDbgInfo( void )
 }
 
 void    DFObjLineInitDbgInfo( void )
-/**********************************/
-/* called by objinit to init segments and dwarf writing library */
+/***********************************
+ * called by objinit to init segments and dwarf writing library
+ */
 {
     static const dw_funcs cli_funcs = {
         CLIReloc,
@@ -645,8 +656,8 @@ void    DFObjLineInitDbgInfo( void )
 #ifdef DWARF_CU_REC_NO_PCLO_PCHI
         cu.flags = false;
 #else
-#if _TARGET & ( _TARG_8086 | _TARG_80386 )
-        if( _IsTargetModel( FLAT_MODEL ) ) {
+#if _TARGET_INTEL
+        if( _IsTargetModel( CGSW_X86_FLAT_MODEL ) ) {
             cu.flags = true;
         } else {
             cu.flags = false;
@@ -663,14 +674,18 @@ void    DFObjLineInitDbgInfo( void )
 
 
 pointer _CGAPI DFClient( void )
-/* return the client handle **/
+/******************************
+ * return the client handle
+ */
 {
     return( Client );
 }
 
-//TODO: maybe this should be some sort of call back
 void _CGAPI DFDwarfLocal( pointer client, pointer locid, pointer sym )
-/*** add to location expr where local sym is ************************/
+/*********************************************************************
+ * TODO: maybe this should be some sort of call back
+ * add to location expr where local sym is
+ */
 {
     name        *tmp;
     type_length offset;
@@ -678,7 +693,6 @@ void _CGAPI DFDwarfLocal( pointer client, pointer locid, pointer sym )
     tmp = DeAlias( AllocUserTemp( sym, XX ) );
     offset = NewBase( tmp );
     DWLocOp( client, locid, DW_LOC_fbreg, offset );
-
 }
 
 void    DFFiniDbgInfo( void )
@@ -693,7 +707,8 @@ void    DFObjFiniDbgInfo( offset codesize )
     offset          here;
     back_handle     bck;
 
-    if( _IsModel( DBG_LOCALS | DBG_TYPES ) ) {
+    if( _IsModel( CGSW_GEN_DBG_LOCALS )
+      || _IsModel( CGSW_GEN_DBG_TYPES ) ) {
         bck = Comp_High;
         if( bck != NULL ) {
             old_segid = SetOP( AskCodeSeg() );
@@ -733,8 +748,8 @@ void     DFLineNum( cue_state *state, offset lc )
         bck = MakeLabel();
         OutLabel( bck->lbl );
         DWLineAddr( Client, (dw_sym_handle)bck, lc );
-#if _TARGET & ( _TARG_8086 | _TARG_80386 )
-        if( _IsntTargetModel( FLAT_MODEL ) ) {
+#if _TARGET_INTEL
+        if( _IsntTargetModel( CGSW_X86_FLAT_MODEL ) ) {
             DWLineSeg( Client, (dw_sym_handle)bck );
         }
 #endif
@@ -749,7 +764,7 @@ void     DFLineNum( cue_state *state, offset lc )
 }
 
 
-#if _TARGET & ( _TARG_8086 | _TARG_80386 )
+#if _TARGET_INTEL
 static  dw_loc_handle   SegLoc( cg_sym_handle sym )
 /*************************************************/
 {
@@ -782,9 +797,9 @@ void    DFGenStatic( cg_sym_handle sym, dbg_loc loc )
     }
     name = FEName( sym );
     dw_segloc = NULL;
-#if _TARGET & ( _TARG_8086 | _TARG_80386 )
+#if _TARGET_INTEL
     if( attr & FE_STATIC ) {
-        if( _IsntTargetModel( FLAT_MODEL ) ) {
+        if( _IsntTargetModel( CGSW_X86_FLAT_MODEL ) ) {
             dw_segloc = SegLoc( sym );
         }
     }
@@ -799,7 +814,7 @@ void    DFGenStatic( cg_sym_handle sym, dbg_loc loc )
     if( dw_loc != NULL ) {
         DWLocTrash( Client, dw_loc );
     }
-#if _TARGET & ( _TARG_8086 | _TARG_80386 )
+#if _TARGET_INTEL
     if( dw_segloc != NULL ) {
         DWLocTrash( Client, dw_segloc );
     }
@@ -807,7 +822,9 @@ void    DFGenStatic( cg_sym_handle sym, dbg_loc loc )
 }
 
 void    DFTypedef( const char *nm, dbg_type tipe )
-/*** emit a user typedef ************************/
+/*************************************************
+ * emit a user typedef
+ */
 {
      DWTypedef( Client, tipe, nm, 0, 0 );
 }
@@ -840,13 +857,15 @@ static void    SymParm( cg_sym_handle sym, dw_loc_handle loc, dw_loc_handle entr
     DWFormalParameter( Client, dbtype, loc, entry,  name, DW_DEFAULT_NONE );
 }
 
-/**/
-/* Coming out of optimizer queue*/
-/**/
+/*
+ * Coming out of optimizer queue
+ */
 
-#if _TARGET & ( _TARG_8086 | _TARG_80386 )
+#if _TARGET_INTEL
 static dw_loc_handle  RetLoc( uint_32 ret_offset )
-/**** make a loc for return address *************/
+/*************************************************
+ * make a loc for return address
+ */
 {
     dw_loc_id       locid;
     dw_loc_handle   df_loc;
@@ -858,7 +877,9 @@ static dw_loc_handle  RetLoc( uint_32 ret_offset )
 }
 
 static dw_loc_handle  FrameLoc( void )
-/** make a loc for frame  address ***/
+/*
+ * make a loc for frame address
+ */
 {
     uint            dsp;
     dw_loc_id       locid;
@@ -872,7 +893,9 @@ static dw_loc_handle  FrameLoc( void )
 }
 #endif
 static dw_loc_id StkLoc( uint_32 stk_offset, dw_loc_id locid )
-/**** make a loc for stack  address *************************/
+/*************************************************************
+ * make a loc for stack  address
+ */
 {
     uint            stk;
 
@@ -882,8 +905,9 @@ static dw_loc_id StkLoc( uint_32 stk_offset, dw_loc_id locid )
 }
 
 static  dbg_local *UnLinkLoc( dbg_local **owner, cg_sym_handle sym )
-/******************************************************************/
-// unlink dbg_local with sym from owner
+/*******************************************************************
+ * unlink dbg_local with sym from owner
+ */
 {
     dbg_local           *curr;
 
@@ -994,8 +1018,8 @@ void    DFProEnd( dbg_rtn *rtn, offset lc )
     sym = AskForLblSym( CurrProc->label );
     tipe = FEDbgRetType( sym );
     flags = 0;
-#if _TARGET & ( _TARG_8086 | _TARG_80386 )
-    if( *(call_class *)FindAuxInfoSym( sym, CALL_CLASS ) & FAR_CALL ) {
+#if _TARGET_INTEL
+    if( (call_class_target)(pointer_uint)FindAuxInfoSym( sym, FEINF_CALL_CLASS_TARGET ) & FECALL_X86_FAR_CALL ) {
         flags |= DW_PTR_TYPE_FAR;
     }
 #endif
@@ -1010,7 +1034,7 @@ void    DFProEnd( dbg_rtn *rtn, offset lc )
         flags |= DW_FLAG_ARTIFICIAL;
     }
     flags |= DW_FLAG_PROTOTYPED;
-    access = FEAuxInfo( sym,DBG_SYM_ACCESS );
+    access = FEAuxInfo( sym, FEINF_DBG_SYM_ACCESS );
     if( access != NULL ) {
         if( *access == SYM_ACC_PUBLIC ) {
             flags |= DW_FLAG_PUBLIC;
@@ -1021,7 +1045,7 @@ void    DFProEnd( dbg_rtn *rtn, offset lc )
         }
     }
     DBLocFini( rtn->obj_loc );
-#if _TARGET & ( _TARG_8086 | _TARG_80386 )
+#if _TARGET_INTEL
     dw_retloc = RetLoc( rtn->ret_offset );
     dw_frameloc = FrameLoc();
 #else
@@ -1029,8 +1053,8 @@ void    DFProEnd( dbg_rtn *rtn, offset lc )
     dw_frameloc = NULL;
 #endif
     dw_segloc = NULL;
-#if _TARGET & ( _TARG_8086 | _TARG_80386 )
-    if( _IsntTargetModel( FLAT_MODEL ) ) {
+#if _TARGET_INTEL
+    if( _IsntTargetModel( CGSW_X86_FLAT_MODEL ) ) {
         dw_segloc = SegLoc( sym );
     }
 #endif
@@ -1042,13 +1066,13 @@ void    DFProEnd( dbg_rtn *rtn, offset lc )
                      dw_segloc, name, rtn->pro_size, flags );
     if( attr &  FE_GLOBAL ) {
         if( rtn->obj_type != DBG_NIL_TYPE ) {
-            name = FEAuxInfo( sym, CLASS_APPENDED_NAME );
+            name = FEAuxInfo( sym, FEINF_CLASS_APPENDED_NAME );
         } else {
             name = FEName( sym );
         }
         DWPubname( Client, obj, name );
     }
-#if _TARGET & ( _TARG_8086 | _TARG_80386 )
+#if _TARGET_INTEL
     if( dw_retloc != NULL ) {
         DWLocTrash( Client, dw_retloc );
     }
@@ -1067,9 +1091,9 @@ void    DFProEnd( dbg_rtn *rtn, offset lc )
         DBLocFini( parm->loc );
         CGFree( parm );
     }
-    if( rtn->reeturn != NULL ) {
-        GenRetSym( rtn->reeturn, tipe );
-        DBLocFini( rtn->reeturn );
+    if( rtn->return_loc != NULL ) {
+        GenRetSym( rtn->return_loc, tipe );
+        DBLocFini( rtn->return_loc );
     }
     DFBlkBeg( rtn->rtn_blk, lc );
 //   DumpLocals( rtn->blk->locals );

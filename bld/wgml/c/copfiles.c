@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -239,7 +239,7 @@ static void compute_metrics( wgml_font * in_font )
         if( (height % 7200) > 0 ) shift_height++;
 
         height = (shift_height * 3 ) / 10;
-        utoa( height, in_font->shift_height, 10 );
+        sprintf( in_font->shift_height, "%lu", height );
         in_font->shift_count = strlen( in_font->shift_height );
         if( in_font->shift_count > 4 ) {
             in_font->shift_count = 4;

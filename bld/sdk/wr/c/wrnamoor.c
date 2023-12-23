@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,6 +33,8 @@
 
 #include "wrglbl.h"
 #include "wresall.h"
+#include "wrutili.h"
+
 
 /****************************************************************************/
 /* macro definitions                                                        */
@@ -54,7 +57,7 @@
 /****************************************************************************/
 
 // UNICODE strings are always compacted
-static ResNameOrOrdinal *WR32Mem2NameOrOrdinal( const void *data )
+static ResNameOrOrdinal *WRNameOrOrdinalFromData32( const void *data )
 {
     ResNameOrOrdinal    *new;
     const uint_16       *data16;
@@ -83,7 +86,7 @@ static ResNameOrOrdinal *WR32Mem2NameOrOrdinal( const void *data )
     return( new );
 }
 
-static ResNameOrOrdinal *WR16Mem2NameOrOrdinal( const void *data )
+static ResNameOrOrdinal *WRNameOrOrdinalFromData16( const void *data )
 {
     ResNameOrOrdinal    *new;
     const uint_8        *data8;
@@ -122,7 +125,7 @@ static ResNameOrOrdinal *WR16Mem2NameOrOrdinal( const void *data )
     return( new );
 }
 
-static bool WRNameOrOrd2Mem16( ResNameOrOrdinal *name, void **data, size_t *size )
+static bool WRDataFromNameOrOrdinal16( ResNameOrOrdinal *name, void **data, size_t *size )
 {
     size_t      len;
     size_t      stringlen;
@@ -155,7 +158,7 @@ static bool WRNameOrOrd2Mem16( ResNameOrOrdinal *name, void **data, size_t *size
     return( true );
 }
 
-static bool WRNameOrOrd2Mem32( ResNameOrOrdinal *name, void **data, size_t *size )
+static bool WRDataFromNameOrOrdinal32( ResNameOrOrdinal *name, void **data, size_t *size )
 {
     uint_16     *data16;
     char        *uni_str;
@@ -185,24 +188,24 @@ static bool WRNameOrOrd2Mem32( ResNameOrOrdinal *name, void **data, size_t *size
     return( true );
 }
 
-ResNameOrOrdinal * WRAPI WRMem2NameOrOrdinal( const void *data, bool is32bit )
+ResNameOrOrdinal * WRAPI WRNameOrOrdinalFromData( const void *data, bool is32bit )
 {
     ResNameOrOrdinal    *n;
 
     if( is32bit ) {
-        n = WR32Mem2NameOrOrdinal( data );
+        n = WRNameOrOrdinalFromData32( data );
     } else {
-        n = WR16Mem2NameOrOrdinal( data );
+        n = WRNameOrOrdinalFromData16( data );
     }
 
     return( n );
 }
 
-int WRAPI WRNameOrOrd2Mem( ResNameOrOrdinal *name, bool is32bit, void **data, size_t *size )
+int WRAPI WRDataFromNameOrOrdinal( ResNameOrOrdinal *name, bool is32bit, void **data, size_t *size )
 {
     if( is32bit ) {
-        return( WRNameOrOrd2Mem32( name, data, size ) );
+        return( WRDataFromNameOrOrdinal32( name, data, size ) );
     } else {
-        return( WRNameOrOrd2Mem16( name, data, size ) );
+        return( WRDataFromNameOrOrdinal16( name, data, size ) );
     }
 }

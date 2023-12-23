@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,7 +33,9 @@
 #ifndef DBGLOC_INCLUDED
 #define DBGLOC_INCLUDED
 
-/* locations */
+/*
+ * locations
+ */
 
 #define CLASS_MASK      0xf0
 #define SUBCLASS_MASK   0x0f
@@ -79,36 +82,42 @@
 
 #include "pushpck1.h"
 
-/* no location, class 0x */
-
+/*
+ * no location, class 0x
+ */
 typedef struct {
     unsigned char       class;
 } loc_void;
 
-/* bp offset, class 1x */
-
+/*
+ * bp offset, class 1x
+ */
 typedef struct {
     unsigned char       class;
     unsigned long       offset;
 } _WCUNALIGNED loc_bp_off;
 
-/* memory, class 2x */
-
+/*
+ * memory, class 2x
+ */
 typedef struct {
     unsigned char       class;
     address             addr;
 } _WCUNALIGNED loc_mem;
 
-/* constant, class 2x */
-
+/*
+ * constant, class 2x
+ */
 typedef struct {
     unsigned char       class;
     unsigned long       val;
 } _WCUNALIGNED loc_const;
 
-/* multiple registers, class 3x */
-/* register, class 4x */
-
+/*
+ * multiple registers, class 3x
+ *
+ * register, class 4x
+ */
 #define MAX_MULTI_REGS  4
 #define EMPTY_MULTI_REG ((char)-1)
 typedef struct {
@@ -117,8 +126,9 @@ typedef struct {
     unsigned char       regs[MAX_MULTI_REGS];
 } loc_mreg;
 
-/* ind register, class 5x */
-
+/*
+ * ind register, class 5x
+ */
 typedef struct {
     unsigned char       class;
     unsigned char       off_reg;

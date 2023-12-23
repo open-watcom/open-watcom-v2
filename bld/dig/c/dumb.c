@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,8 +32,8 @@
 
 
 #include <string.h>
-#include "trpcore.h"
 #include "trpld.h"
+#include "trpcore.h"
 
 
 #define TRAP_DUMB(a)        TRAP_SYM( Dumb, a )
@@ -188,8 +188,8 @@ static trap_retval TRAPENTRY DumbRequest( trap_elen num_in_mx, in_mx_entry_p mx_
 char *LoadDumbTrap( trap_version *ver )
 {
     ReqFunc = DumbRequest;
-    ver->major = TRAP_MAJOR_VERSION;
-    ver->minor = TRAP_MINOR_VERSION;
+    ver->major = TRAP_VERSION_MAJOR;
+    ver->minor = TRAP_VERSION_MINOR;
     ver->remote = false;
     return( NULL );
 }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -64,6 +64,7 @@ static  void    ExInquire( void ) {
         inq_by_file = false;
         if( IOCB->flags & BAD_UNIT ) {
             IOErr( IO_IUNIT );
+            // never return
         }
         FindFtnFile();
         exist = ( IOCB->unitid <= PREC_MAX_UNIT );

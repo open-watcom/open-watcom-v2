@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -57,7 +57,7 @@ static  label_handle procLabel;
 static  void    saveDebug( any_oc *oc ) {
 /***************************************/
 
-    if( ( debugOC.oc_header.class & GET_BASE ) != OC_DEAD ) {
+    if( OC_BASE_CLASS( debugOC.oc_header.class ) != OC_DEAD ) {
         _Zoiks( ZOIKS_103 );
     }
     Copy( oc, &debugOC, oc->oc_header.reclen );
@@ -70,24 +70,24 @@ static  void    dumpDebug( void ) {
     oc_class            class;
 
     class = debugOC.oc_header.class;
-    if( ( class & GET_BASE ) != OC_INFO )
+    if( OC_BASE_CLASS( class ) != OC_INFO )
         return;
     loc = AskLocation();
-    switch( class & INFO_MASK ) {
-    case INFO_LINE:
+    switch( OC_INFO_CLASS( class ) ) {
+    case OC_INFO_LINE:
         OutLineNum( debugOC.oc_linenum.line, debugOC.oc_linenum.label_line );
         break;
-    case INFO_DBG_RTN_BEG:
-        if( _IsModel( DBG_LOCALS ) ) {
+    case OC_INFO_DBG_RTN_BEG:
+        if( _IsModel( CGSW_GEN_DBG_LOCALS ) ) {
             DbgRtnBeg( debugOC.oc_debug.ptr, loc );
         }
         break;
-    case INFO_DBG_EPI_BEG:
-        if( _IsModel( DBG_LOCALS ) ) {
+    case OC_INFO_DBG_EPI_BEG:
+        if( _IsModel( CGSW_GEN_DBG_LOCALS ) ) {
             DbgEpiBeg( debugOC.oc_debug.ptr, loc );
         }
         break;
-    case INFO_DBG_BLK_BEG:
+    case OC_INFO_DBG_BLK_BEG:
         DbgBlkBeg( debugOC.oc_debug.ptr, loc );
         break;
     }
@@ -101,39 +101,39 @@ static  void    doInfo( any_oc *oc ) {
     offset              lc;
 
     lc = 0;
-    base = oc->oc_header.class & INFO_MASK;
+    base = OC_INFO_CLASS( oc->oc_header.class );
     switch( base ) {
-    case INFO_LDONE:
+    case OC_INFO_LDONE:
         TellScrapLabel( oc->oc_handle.handle );
         break;
-    case INFO_DEAD_JMP:
+    case OC_INFO_DEAD_JMP:
         _Zoiks( ZOIKS_036 );
         break;
-    case INFO_DBG_RTN_BEG:
-    case INFO_DBG_EPI_BEG:
-    case INFO_DBG_BLK_BEG:
-    case INFO_FUNC_START:
-    case INFO_LINE:
+    case OC_INFO_DBG_RTN_BEG:
+    case OC_INFO_DBG_EPI_BEG:
+    case OC_INFO_DBG_BLK_BEG:
+    case OC_INFO_FUNC_START:
+    case OC_INFO_LINE:
         saveDebug( oc );
         break;
-    case INFO_DBG_BLK_END:
+    case OC_INFO_DBG_BLK_END:
         DbgBlkEnd( oc->oc_debug.ptr, AskLocation() );
         break;
-    case INFO_DBG_PRO_END:
+    case OC_INFO_DBG_PRO_END:
         lc = AskLocation();
-        if( _IsModel( DBG_LOCALS ) ) {
+        if( _IsModel( CGSW_GEN_DBG_LOCALS ) ) {
             DbgProEnd( oc->oc_debug.ptr, lc );
         }
         prologueEnd = lc;
         break;
-    case INFO_DBG_RTN_END:
-        if( _IsModel( DBG_NUMBERS ) ) {
+    case OC_INFO_DBG_RTN_END:
+        if( _IsModel( CGSW_GEN_DBG_NUMBERS ) ) {
             OutFuncEnd( lc );
         }
-        if( _IsModel( DBG_LOCALS ) ) {
+        if( _IsModel( CGSW_GEN_DBG_LOCALS ) ) {
             DbgRtnEnd( oc->oc_debug.ptr, AskLocation() );
         }
-        if( _IsModel( OBJ_COFF ) ) {
+        if( _IsModel( CGSW_GEN_OBJ_COFF ) ) {
             // Only emit .pdata section into COFF objects; there might be some
             // better mechanism to decide whether .pdata should be emitted.
             lc = AskLocation();
@@ -153,8 +153,8 @@ void    OutputOC( any_oc *oc, any_oc *next_lbl )
 
     /* unused parameters */ (void)next_lbl;
 
-    base = oc->oc_header.class & GET_BASE;
-    if( base == OC_RET && (oc->oc_header.class & ATTR_NORET) )
+    base = OC_BASE_CLASS( oc->oc_header.class );
+    if( base == OC_NORET )
         return;
     if( base != OC_LABEL ) {
         dumpDebug();
@@ -163,7 +163,7 @@ void    OutputOC( any_oc *oc, any_oc *next_lbl )
     case OC_RCODE:
         if( _HasReloc( &oc->oc_rins ) ) {
             OutReloc( oc->oc_rins.sym, oc->oc_rins.reloc, 0 );
-            if( _IsModel( OBJ_COFF ) ) {
+            if( _IsModel( CGSW_GEN_OBJ_COFF ) ) {
                 // ELF doesn't do pair relocs, just don't emit them
                 if( oc->oc_rins.reloc == OWL_RELOC_HALF_HI ) {
                     OutReloc( oc->oc_rins.sym, OWL_RELOC_PAIR, 0 );
@@ -209,7 +209,7 @@ void    OutputOC( any_oc *oc, any_oc *next_lbl )
             lc = AskLocation();
             procStart = lc;
             procLabel = lbl;
-            if( _IsModel( DBG_NUMBERS ) ) {
+            if( _IsModel( CGSW_GEN_DBG_NUMBERS ) ) {
                 OutFuncStart( lbl, lc, oc->oc_handle.line );
             }
         }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -127,7 +127,7 @@ void StopProg( void )
 void StartProg( const char *cmd, const char *prog, const char *full_args, char *dos_args )
 {
     struct  SREGS       segs;
-    seg_offset          ovl_tbl;
+    far_address         ovl_tbl;
     struct ovl_header   __far *ovl;
     pblock              parms;
     overlay_record_t    FAR_PTR *ovl_struct;

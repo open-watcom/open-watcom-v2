@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,6 +45,7 @@
 #include "rscsplit.h"
 #include "optimize.h"
 #include "optab.h"
+#include "mpsenc.h"
 #include "_split.h"
 #include "_rscsplt.h"
 
@@ -152,14 +153,14 @@ instruction *rMOVEXX_8( instruction *ins )
 instruction *rCONSTLOAD( instruction *ins )
 /*****************************************/
 {
-    unsigned_32         low;
-    unsigned_32         high;
-    unsigned_32         c;
-    name                *high_part;
-    name                *temp;
-    instruction         *first_ins;
-    instruction         *new_ins;
-    type_class_def      type_class;
+    uint_32         low;
+    uint_32         high;
+    uint_32         c;
+    name            *high_part;
+    name            *temp;
+    instruction     *first_ins;
+    instruction     *new_ins;
+    type_class_def  type_class;
 
     assert( ins->operands[0]->n.class == N_CONSTANT );
     assert( ins->operands[0]->c.const_type == CONS_ABSOLUTE );
@@ -222,10 +223,9 @@ static instruction *CheapCall( instruction *ins, rt_class rtindex, name *p1, nam
     call->num_operands = 2;     /* special case for OP_CALL*/
     HW_TurnOn( reg, ReturnAddrReg() );
     HW_TurnOn( reg, ScratchReg() );
-    // TODO: these regs are most likely wrong for MIPS
-    HW_CTurnOn( reg, HW_R1 );   // know this is only other reg modified!
-    HW_CTurnOn( reg, HW_R2 );   // and this one two!
-    HW_CTurnOn( reg, HW_R3 );   // and this one three!
+    HW_CTurnOn( reg, HW_RT_PARM1_REG );
+    HW_CTurnOn( reg, HW_RT_PARM2_REG );
+    HW_CTurnOn( reg, HW_RT_TEMP_REG );
     reg_name = AllocRegName( reg );
     call->zap = &reg_name->r;
     PrefixIns( ins, call );
@@ -240,10 +240,10 @@ static void CopyStack( instruction *ins, name *alloc_size, type_length arg_size 
     name                *p1;
     name                *p2;
 
-    p1 = AllocRegName( HW_D1 );
+    p1 = AllocRegName( HW_RT_PARM1_REG );
     new_ins = MakeMove( alloc_size, p1, WD );
     PrefixIns( ins, new_ins );
-    p2 = AllocRegName( HW_D2 );
+    p2 = AllocRegName( HW_RT_PARM2_REG );
     new_ins = MakeMove( AllocS32Const( arg_size ), p2, WD );
     PrefixIns( ins, new_ins );
     CheapCall( ins, RT_STK_COPY, p1, p2 );
@@ -257,7 +257,7 @@ instruction *rALLOCA( instruction *ins )
     name                *amount;
     name                *real_amount;
     name                *temp;
-    unsigned_32         value;
+    uint_32             value;
     instruction         *first;
     instruction         *last;
     type_class_def      type_class;
@@ -293,7 +293,7 @@ instruction *rALLOCA( instruction *ins )
         CheapCall( ins, RT_STK_CRAWL, AllocRegName( HW_EMPTY ), AllocRegName( HW_EMPTY ) );
     }
     if( MaxStack != 0 ) {
-        if( _IsModel( MICROSOFT_COMPATIBLE ) ) {
+        if( _IsModel( CGSW_GEN_MICROSOFT_COMPATIBLE ) ) {
             // in order to support doing alloca's in parm lists, we copy
             // the parm cache area down now
             CopyStack( ins, real_amount, MaxStack );
@@ -341,7 +341,7 @@ instruction      *rM_SIMPCMP( instruction *ins )
         /* Special reduction: use OP_SET_LESS but increment constant */
         if( (ins->operands[1]->n.class == N_CONSTANT)
             && (ins->operands[1]->c.const_type == CONS_ABSOLUTE) ) {
-            signed_32           value;
+            int_32      value;
 
             opcode = OP_SET_LESS;
             // TODO: we may be leaking memory here by losing track of the

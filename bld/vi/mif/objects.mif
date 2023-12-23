@@ -1,7 +1,7 @@
 objtimeroot = &
     rxwrap.obj rxsupp.obj tab_hell.obj regsub.obj findrx.obj &
     mem.obj memdmp.obj fcbxmint.obj addstr.obj llrtns.obj &
-    parse.obj
+    parse.obj tokenize.obj utilstok.obj
 
 objtime = &
     fcbems.obj fcbxms.obj fcbdisk.obj fcbxmem.obj &
@@ -22,7 +22,7 @@ objtime = &
 
 objtime += rcs.obj
 
-objinit = init.obj getopt.obj autoenv.obj
+objinit = init.obj getopt.obj argvenv.obj argvstr.obj autoenv.obj
 
 objsizeroot = &
     name.obj key.obj &
@@ -53,7 +53,7 @@ objsize = &
     io.obj myio.obj tempio.obj clread.obj cledit.obj misc.obj &
     tags.obj alias.obj bnddata.obj abandon.obj &
     filter.obj ex.obj exappend.obj &
-    wingen.obj printf.obj &
+    wingen.obj bprintf.obj myprintf.obj &
     selrgn.obj cstatus.obj help.obj &
     readstr.obj tab_e_c.obj gencfg.obj fts.obj
 

@@ -143,7 +143,7 @@ obj_rec *ObjReadRec( OBJ_RFILE *obj ) {
 
     data = readData( obj, 3 );
     command = data[0];
-    length = ReadU16( data + 1 );
+    length = MGET_LE_16( data + 1 );
     --length;               /* we don't care about checksum */
     if( length > OBJ_MAX_REC ) {
         Fatal( MSG_MAX_REC_EXCEEDED, OBJ_MAX_REC );
@@ -296,7 +296,7 @@ void ObjWEndRec( OBJ_WFILE *obj ) {
         objWFlushBuffer( obj );
     }
     ++obj->length;                  /* add 1 for checksum byte */
-    WriteU16( buf, obj->length );
+    MPUT_LE_16( buf, obj->length );
     checksum = obj->checksum + buf[0] + buf[1];
     checksum = -checksum;
     safeWrite( obj->fh, &checksum, 1 );
@@ -324,7 +324,7 @@ void ObjWrite16( OBJ_WFILE *obj, uint_16 word ) {
     if( obj->in_buf >= OBJ_BUFFER_SIZE - 1 ) {
         objWFlushBuffer( obj );
     }
-    WriteU16( obj->buffer + obj->in_buf, word );
+    MPUT_LE_16( obj->buffer + obj->in_buf, word );
     obj->in_buf += 2;
 }
 
@@ -335,7 +335,7 @@ void ObjWrite32( OBJ_WFILE *obj, uint_32 dword ) {
     if( obj->in_buf >= OBJ_BUFFER_SIZE - 3 ) {
         objWFlushBuffer( obj );
     }
-    WriteU32( obj->buffer + obj->in_buf, dword );
+    MPUT_LE_32( obj->buffer + obj->in_buf, dword );
     obj->in_buf += 4;
 }
 

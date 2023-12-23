@@ -2,36 +2,41 @@
 # Master makefile for creating DIPs
 #
 
+tree_depth = 4
+
 proj_name = dip
 
 dip_autodepends = .autodepend
 
 dip_nofpu = 1
 
+!ifneq host_os win
+dip_nocheckstack = 1
+!endif
+
 !ifeq host_cpu x64
 sys_dll = 1
 !endif
+
+dllname = $(dip_format)
 
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
 !include dllbase.mif
 
-!ifdef dwarf
+!ifeq dip_format dwarf
 !include $(dwarfr_dir)/client.mif
 !endif
 
 #
 # cflags
 #
-.c: ../c;../../c;$(extra_srcs)
+.c: ../c;../../c;$(lib_misc_dir)/c;$(extra_srcs)
 
-inc_dirs = -I"../h" $(dwarfr_inc_dirs) $(extra_incs) -I"$(dig_dir)/h"
+inc_dirs = -I"../h" $(dwarfr_inc_dirs) -I"$(lib_misc_dir)/h" $(extra_incs) -I"$(dig_dir)/h"
 
 extra_cpp_flags = -DINSIDE_DIP $(extra_cppflags)
-!ifdef %OWUSE_FILENAME_VERSION
-extra_cpp_flags += -DUSE_FILENAME_VERSION=$(bld_ver)
-!endif
 
 extra_c_flags_i86 = -zc -zu
 
@@ -48,7 +53,7 @@ lflags_dll_qnx_i86     = sys qnx disable 1023
 lflags_dll_qnx_386     = sys rex_qnx
 lflags_dll_win_i86     = sys windows
 
-extra_l_flags_dll      = $(extra_dllbase)
+extra_l_flags_dll      = $(dip_dllbase_$(host_os)_$(host_cpu)_$(dip_format))
 
 #
 # names
@@ -86,7 +91,7 @@ dlltarg_objs += $(imp_objs_watcom)
 !ifdef imp_libs
 dlltarg_libs += $(imp_libs)
 !endif
-!ifdef dwarf
+!ifeq dip_format dwarf
 dlltarg_libs += $(dwarfr_lib)
 !endif
 dlltarg_res_version_nt_386 = version.res

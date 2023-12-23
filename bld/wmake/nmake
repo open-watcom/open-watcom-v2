@@ -2,7 +2,7 @@ CPPFLAGS = $(DEFS) -I. -I..\h -I..\..\lib_misc\h -I..\..\watcom\h
 # -wd4214 "bit field types other than int"
 # -wd4244 "conversion ....., possible loss of data"
 CFLAGS = -nologo -Zi -W4 -WX -MT -Fm -wd4214 -wd4244 -wd4063
-DEFS = -D_BLDVER=$(OWBLDVERTOOL) -D_CYEAR=$(OWCYEAR) -D_CRT_SECURE_NO_WARNINGS -D_CRT_NONSTDC_NO_WARNINGS -DBOOTSTRAP -D__NT__
+DEFS = -D_BLDVER=$(OWBLDVERTOOL) -D_CYEAR=xxxx -D_CRT_SECURE_NO_WARNINGS -D_CRT_NONSTDC_NO_WARNINGS -DBOOTSTRAP -D__NT__
 LFLAGS = -link -INCREMENTAL:NO -DEBUG -NODEFAULTLIB:libucrt.lib -DEFAULTLIB:ucrt.lib
 
 {..\c}.c.obj :
@@ -14,7 +14,7 @@ LFLAGS = -link -INCREMENTAL:NO -DEBUG -NODEFAULTLIB:libucrt.lib -DEFAULTLIB:ucrt
 {..\..\watcom\c}.c.obj :
         $(CC) -c $(CFLAGS) $(CPPFLAGS) -Fo$@ $<
 
-all: $(OWBINDIR)\$(OWOBJDIR)\wmake.exe
+all: ..\..\..\build\$(OWOBJDIR)\wmake.exe
 
 OBJS= macros.obj main.obj mautodep.obj mautoomf.obj \
   mautores.obj memory.obj mexec.obj mglob.obj mhash.obj mlex.obj mlexmac.obj \
@@ -32,12 +32,12 @@ usage.gh : ..\h\usage.sp wsplice.exe
 <<
 
 cretype.exe : ..\c\cretype.c
-        $(CC) -nologo -I..\..\watcom\h -Fe$@ $** $(LFLAGS)
+        $(CC) -nologo -I..\..\watcom\h -D__NT__ -Fe$@ $** $(LFLAGS)
 
 isarray.gh : cretype.exe
         cretype.exe $@
 
-$(OWBINDIR)\$(OWOBJDIR)\wmake.exe: wmake.exe
+..\..\..\build\$(OWOBJDIR)\wmake.exe: wmake.exe
         copy wmake.exe $@
 
 wmake.exe: usage.gh isarray.gh $(OBJS)

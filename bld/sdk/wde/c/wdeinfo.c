@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -272,8 +272,7 @@ void WdeWriteSymInfo( WdeInfoStruct *is, bool same_as_last, char *s )
             Forward( obj, RESOLVE_HELPSYMBOL, NULL, NULL );   /* JPK */
         }
         if( !same_as_last || dirty ) {
-            WdeAddSymbolsToComboBox( is->res_info->hash_table,
-                                     WdeInfoWindow, IDB_INFO_IDSTR );
+            WRAddSymbolsToComboBox( is->res_info->hash_table, WdeInfoWindow, IDB_INFO_IDSTR, WR_HASHENTRY_ALL );
             WdeUntouchHashTable( is->res_info->hash_table );
         }
     } else {
@@ -289,7 +288,7 @@ void WdeWriteSymInfo( WdeInfoStruct *is, bool same_as_last, char *s )
 
 void WdeWriteInfo( WdeInfoStruct *is )
 {
-    static WdeHashTable *last_table = NULL;
+    static WRHashTable  *last_table = NULL;
     static WdeResInfo   *last_res = NULL;
     static OBJ_ID       last_obj = 0;
     char                *cap_text, *id;
@@ -376,7 +375,7 @@ void WdeDisplayDialogInfo( WdeInfoStruct *is )
     name = is->u.dlg.name;
     if( name->IsName ) {
         char    *str1, *str2;
-        int     len;
+        size_t  len;
         bool    ok;
 
         ok = false;
@@ -455,7 +454,7 @@ void WdeChangeDialogInfo( WdeInfoStruct *is )
     bool                str_is_ordinal;
     uint_16             ord;
     bool                found;
-    WdeHashValue        value;
+    WRHashValue         value;
 
     c_is = *is;
 
@@ -513,7 +512,7 @@ void WdeChangeDialogInfo( WdeInfoStruct *is )
         c_is.u.dlg.name = WResIDFromNum( ord );
         WRMemFree( str );
     } else {
-        if( !WdeIsValidSymbol( str ) ) {
+        if( !WRIsValidSymbol( str ) ) {
             WRMemFree( str );
             WRMemFree( c_is.u.dlg.caption );
             c_is.u.dlg.caption = NULL;
@@ -549,7 +548,7 @@ void WdeChangeControlInfo( WdeInfoStruct *is )
     bool                str_is_ordinal;
     uint_16             ord;
     bool                found;
-    WdeHashValue        value;
+    WRHashValue         value;
 
     c_is = *is;
 
@@ -561,7 +560,7 @@ void WdeChangeControlInfo( WdeInfoStruct *is )
     }
 
     if( str != NULL ) {
-        c_is.u.ctl.text = ResStrToNameOrOrd( str );
+        c_is.u.ctl.text = ResStrToNameOrOrdinal( str );
         WRMemFree( str );
     } else {
         c_is.u.ctl.text = NULL;
@@ -592,7 +591,7 @@ void WdeChangeControlInfo( WdeInfoStruct *is )
         c_is.u.ctl.id = ord;
         WRMemFree( str );
     } else {
-        if( !WdeIsValidSymbol( str ) ) {
+        if( !WRIsValidSymbol( str ) ) {
             WRMemFree( str );
             WRMemFree( c_is.u.ctl.text );
             c_is.u.ctl.text = NULL;
@@ -635,7 +634,7 @@ void WdeInfoLookupComboEntry( HWND hWnd, WORD hw )
 {
     char                *cp;
     char                *str;
-    WdeHashValue        value;
+    WRHashValue         value;
     bool                found;
     LRESULT             index;
 
@@ -687,7 +686,7 @@ INT_PTR CALLBACK WdeInfoWndDlgProc( HWND hWnd, UINT message, WPARAM wParam, LPAR
     RECT    r;
     HDC     dc;
 
-    _wde_touch( lParam );
+    /* unused parameters */ (void)lParam;
 
     switch( message ) {
 #if defined( __NT__ )

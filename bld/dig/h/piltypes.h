@@ -30,7 +30,8 @@
 ****************************************************************************/
 
 
-#ifndef PILTYPES_H
+#ifndef PILTYPES_H_INCLUDED
+#define PILTYPES_H_INCLUDED
 
 #include "digtypes.h"
 #include "digpck.h"
@@ -182,8 +183,6 @@ enum pil_alignment {
 #define ALIGNSIZE_1             MKALIGNSIZE( 1, 1 )
 #define ALIGNSIZE_2             MKALIGNSIZE( 2, 2 )
 #define ALIGNSIZE_4             MKALIGNSIZE( 4, 4 )
-
-#define PILTYPES_H
 
 #include "digunpck.h"
 #endif

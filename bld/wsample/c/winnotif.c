@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,10 +32,12 @@
 
 
 #include <string.h>
-#include "commonui.h"
+#define INCLUDE_TOOLHELP_H
+#include <wwindows.h>
 #include "sample.h"
 #include "smpstuff.h"
 #include "sampwin.h"
+#include "mythelp.h"
 
 
 #define MAX_STR         512
@@ -121,25 +124,3 @@ BOOL __export FAR PASCAL NotifyHandler( WORD id, DWORD data )
     return( FALSE );
 
 } /* NotifyHandler */
-
-/*
- * HandleNotify - handle a notification...
- */
-void HandleNotify( WORD wparam, DWORD lparam )
-{
-    notify              *ptr;
-
-    ptr = (notify *)lparam;
-
-    switch( wparam ) {
-    case NFY_STARTTASK:
-        break;
-
-    case NFY_EXITTASK:
-        break;
-
-    case NFY_STARTDLL:
-        break;
-    }
-
-} /* HandleNotify */

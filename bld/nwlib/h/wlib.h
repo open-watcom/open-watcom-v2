@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -73,9 +73,6 @@
 #include "exepe.h"
 #include "exenov.h"
 
-#define Round(x,s)      (((x) + (s) - 1) & ~((s) - 1))
-#define Round2(x)       Round((x),2)
-#define Round2var(x)    if((x) & 1) ++(x)
 
 #define FILE_TEMPLATE_MASK  "00000000"
 #define FILE_TEMPLATE_FMT   "%8.8d"

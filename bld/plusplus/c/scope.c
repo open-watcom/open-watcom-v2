@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -62,7 +62,7 @@
 #include "fmtsym.h"
 #include "vfun.h"
 #include "yydriver.h"
-#ifndef NDEBUG
+#ifdef DEVBUILD
     #include "dbg.h"
     #include "togglesd.h"
 #endif
@@ -316,7 +316,7 @@ extern SCOPE    SetCurrScope(SCOPE newScope)
     SCOPE oldScope = g_CurrScope;
     g_CurrScope = newScope;
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
     if( TOGGLEDBG( dump_scopes ) )
     {
         printf("Set new scope to 0x%p\n", newScope);
@@ -402,7 +402,7 @@ static NAME_SPACE *allNameSpaces;       // list of all namespaces
 static inherit_flag verifyAccess( access_data * );
 static inherit_flag checkBaseAccess( SCOPE, SCOPE, derived_status );
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 static void printScopeName( SCOPE scope, char *suffix )
 {
     const char *name;
@@ -831,7 +831,7 @@ static void scopeInit(          // SCOPES INITIALIZATION
     injectChipBug();
     injectDwarfAbbrev();
     injectBool();
-    if( !CompFlags.enable_std0x ) {
+    if( CHECK_STD( < , CXX0X ) ) {
         KwDisable( T_STATIC_ASSERT );
         KwDisable( T_DECLTYPE );
         KwDisable( T_NULLPTR );
@@ -862,7 +862,7 @@ static void scopeFini(          // SCOPES COMPLETION
     if( CompFlags.extensions_enabled ) {
         KwEnable( T_BOOL );
     }
-    if( !CompFlags.enable_std0x ) {
+    if( CHECK_STD( < , CXX0X ) ) {
         KwEnable( T_STATIC_ASSERT );
         KwEnable( T_DECLTYPE );
         KwEnable( T_NULLPTR );
@@ -931,7 +931,7 @@ static void addUsingDirective( SCOPE gets_using, SCOPE using_scope, SCOPE trigge
     USING_NS *using_entry;
     USING_NS *curr;
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
     if( TOGGLEDBG( dump_using_dir ) ) {
         printf( "using directive: in " );
         printScopeName( gets_using, "using " );
@@ -959,7 +959,7 @@ static void addUsingDirective( SCOPE gets_using, SCOPE using_scope, SCOPE trigge
         RingAppend( &gets_using->using_list, using_entry );
 
         addLexicalTrigger( trigger, using_scope, false );
-#ifndef NDEBUG
+#ifdef DEVBUILD
     } else {
         USING_NS *curr;
         RingIterBeg( trigger->using_list, curr ) {
@@ -1423,7 +1423,7 @@ void ScopeAdjustUsing( SCOPE prev_scope, SCOPE new_scope )
 void ScopeJumpForward( SCOPE scope )
 /**********************************/
 {
-#ifndef NDEBUG
+#ifdef DEVBUILD
     if( ! ScopeEnclosed( GetCurrScope(), scope ) ) {
         CFatal( "invalid scope jump forward" );
     }
@@ -1434,7 +1434,7 @@ void ScopeJumpForward( SCOPE scope )
 void ScopeJumpBackward( SCOPE scope )
 /***********************************/
 {
-#ifndef NDEBUG
+#ifdef DEVBUILD
     if( ! ScopeEnclosed( scope, GetCurrScope() ) ) {
         CFatal( "invalid scope jump backward" );
     }
@@ -1494,7 +1494,7 @@ SYMBOL ScopeOrderedFirst( SCOPE scope )
     SYMBOL first;
 
     first = ScopeOrderedNext( ScopeOrderedStart( scope ), NULL );
-#ifndef NDEBUG
+#ifdef DEVBUILD
     {
         SYMBOL curr;
         SYMBOL stop;
@@ -1516,7 +1516,7 @@ SYMBOL ScopeOrderedLast( SCOPE scope )
     SYMBOL last;
 
     last = ScopeOrderedStart( scope );
-#ifndef NDEBUG
+#ifdef DEVBUILD
     {
         SYMBOL curr;
         SYMBOL stop;
@@ -1632,7 +1632,7 @@ void ScopeEndFileScope( void )
 SCOPE ScopeEnd( scope_type_t scope_type )
 /***************************************/
 {
-#ifndef NDEBUG
+#ifdef DEVBUILD
     if( GetCurrScope()->id != scope_type ) {
         CFatal( "scope terminated incorrectly" );
     }
@@ -2603,7 +2603,7 @@ unsigned ScopeRttiClasses( TYPE class_type )
     return( count );
 }
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 static walk_status verifyOfIsNull( BASE_STACK *top, void *parm )
 {
     SCOPE scope;
@@ -2822,7 +2822,7 @@ static derived_status isQuickScopeDerived( SCOPE derived, SCOPE possible_base )
 {
     derived_walk data;
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
     if( derived == NULL || ! _IsClassScope( derived ) ) {
         CFatal( "bad derived scope used for derivation check" );
     }
@@ -3610,7 +3610,7 @@ static walk_status memberSearch( BASE_STACK *top, void *parm )
 }
 
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 static void dumpSearch( lookup_walk *data )
 {
     PATH_CAP *cap;
@@ -5334,7 +5334,7 @@ static void checkAmbiguousOverride( THUNK_ACTION *thunk, vftable_walk *data )
     }
     override_scope = SymScope( override_sym );
     base_sym = thunk->sym;
-#ifndef NDEBUG
+#ifdef DEVBUILD
     if( TOGGLEDBG( dump_vftables ) ) {
         printf( "Searching for: base(" );
         printSymbolName( base_sym );
@@ -5377,7 +5377,7 @@ static void checkAmbiguousOverride( THUNK_ACTION *thunk, vftable_walk *data )
                 test_sym = findOverride( top, NULL, base_sym );
                 if( test_sym != NULL ) {
                     test_override_sym = test_sym;
-#ifndef NDEBUG
+#ifdef DEVBUILD
                     if( TOGGLEDBG( dump_vftables ) ) {
                         printf( "found override(" );
                         printSymbolName( test_override_sym );
@@ -6922,7 +6922,7 @@ SCOPE ScopeHostClass( SCOPE class_scope )
 {
     SCOPE next;
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
     if( ! _IsClassScope( class_scope ) ) {
         CFatal( "ScopeHostClass passed a non-class scope" );
     }

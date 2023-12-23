@@ -1,3 +1,5 @@
+tree_depth = 6
+
 !include $(mathlib_dir)/master.mif
 
 !include ../../../objects.mif

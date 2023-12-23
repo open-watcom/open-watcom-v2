@@ -32,18 +32,23 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include "walloca.h"
 #include "linkstd.h"
-#include "newmem.h"
-#include "msg.h"
+#include "roundmac.h"
 #include "alloc.h"
-#include "wlnkmsg.h"
-#include "ostype.h"
-#include "spillio.h"
-#include "loadfile.h"
-#include "fileio.h"
 #include "virtmem.h"
+#if defined( USE_VIRTMEM )
+    #include "walloca.h"
+    #include "newmem.h"
+    #include "msg.h"
+    #include "wlnkmsg.h"
+    #include "ostype.h"
+    #include "spillio.h"
+    #include "loadfile.h"
+    #include "fileio.h"
+#endif
 
+
+#if defined( USE_VIRTMEM )
 
 /* flags used in the virtual memory structure */
 typedef enum {
@@ -159,6 +164,21 @@ typedef union {
 
 #define TINY_BLOCK_CUTOFF 256
 
+#else
+
+#define TINY_ALLOC_CUTOFF _2K
+
+typedef struct vmemblock {
+    struct vmemblock    *next;
+    struct vmemblock    *prev;
+    char                mem[1];
+} vmemblock;
+
+#endif
+
+
+#if defined( USE_VIRTMEM )
+
 static huge_table       *HugeTab;
 static unsigned         NumHuge;
 static unsigned         NextHuge;
@@ -171,6 +191,14 @@ static seg_table        *NextSwap;      /* next entry to swap out. */
 static unsigned         TinyLeft;
 static virt_mem         TinyAddr;
 
+#else
+
+static vmemblock        *VMemBlocks;
+
+#endif
+
+
+#if defined( USE_VIRTMEM )
 
 static void GetMoreBranches( void )
 /**********************************
@@ -570,11 +598,16 @@ void PutInfoNulls( virt_mem stg, virt_mem_size len )
     ScanNodes( stg, NULL, len, NullInfo );
 }
 
-void VirtMemInit( void )
-/***********************
- * Allocate space for the branch pointers.
- */
+#endif
+
+
+void     VirtMemInit( void )
+/**************************/
 {
+#if defined( USE_VIRTMEM )
+    /***********************
+     * Allocate space for the branch pointers.
+     */
     NumHuge = HUGE_INITIAL_ALLOC;
     NextHuge = 0;
     NumBranches = 127;
@@ -592,14 +625,18 @@ void VirtMemInit( void )
     memset( SegTab[1], 0, sizeof( seg_table ) * MAX_LEAFS );
     _ChkAlloc( HugeTab, NumHuge * sizeof( huge_table ) );
     memset( HugeTab, 0, NumHuge * sizeof( huge_table ) );
+#else
+    VMemBlocks = NULL;
+#endif
 }
 
 virt_mem AllocStg( virt_mem_size size )
 /*************************************/
 {
+#if defined( USE_VIRTMEM )
     if( size == 0 )
         return( 0 );
-    size = MAKE_EVEN( size );
+    size = __ROUND_UP_SIZE_EVEN( size );
     if( size <= TINY_BLOCK_CUTOFF ) {
         return( AllocTinyStg( size ) );
     } else if( size >= MAX_BIGNODE_SIZE ) {
@@ -607,22 +644,69 @@ virt_mem AllocStg( virt_mem_size size )
     } else {
         return( DoAllocStg( GetStg, size, MAX_NODE_SIZE ) );
     }
+#else
+    vmemblock * ptr;
+
+    if( size == 0 )
+        return( 0 );
+    if( size < TINY_ALLOC_CUTOFF ) {
+        _PermAlloc( ptr, size + sizeof( vmemblock ) - 1 );
+        ptr->next = ptr;
+    } else {
+        _ChkAlloc( ptr, size + sizeof( vmemblock ) - 1 );
+        ptr->prev = NULL;
+        ptr->next = VMemBlocks;
+        if( VMemBlocks != NULL ) {
+            VMemBlocks->prev = ptr;
+        }
+        VMemBlocks = ptr;
+    }
+    return( (virt_mem)ptr->mem );
+#endif
 }
 
-void ReleaseInfo( virt_mem stg )
-/*******************************
- * can't prematurely release, but no big deal
- */
+void     ReleaseInfo( virt_mem stg )
+/**********************************/
 {
+#if defined( USE_VIRTMEM )
+    /*******************************
+     * can't prematurely release, but no big deal
+     */
+
     /* unused parameters */ (void)stg;
+#else
+    vmemblock * ptr;
+
+    if( stg == 0 )
+        return;
+    if( VMemBlocks == NULL )
+        return;
+    ptr = (vmemblock *)( stg - offsetof( vmemblock, mem ) );
+    if( ptr->next == ptr )
+        return;
+    if( ptr->prev == NULL ) {
+        VMemBlocks = ptr->next;
+        if( VMemBlocks != NULL ) {
+            VMemBlocks->prev = NULL;
+        }
+    } else {
+        ptr->prev->next = ptr->next;
+        if( ptr->next != NULL ) {
+            ptr->next->prev = ptr->prev;
+        }
+    }
+    _LnkFree( ptr );
+#endif
 }
 
-bool SwapOutVirt( void )
-/***********************
- * NOTE - this routine assumes that once something has been swapped out, it
- * will never be read back in again.
- */
+bool     SwapOutVirt( void )
+/**************************/
 {
+#if defined( USE_VIRTMEM )
+    /***********************
+     * NOTE - this routine assumes that once something has been swapped out, it
+     * will never be read back in again.
+     */
     spilladdr       *spillmem;
     void            *mem;
     seg_table       *seg_entry;
@@ -663,12 +747,14 @@ bool SwapOutVirt( void )
             }
         }
     }
+#endif
     return( false );
 }
 
 void FreeVirtMem( void )
 /**********************/
 {
+#if defined( USE_VIRTMEM )
     unsigned        index;
     unsigned        inner;
     unsigned        branch;
@@ -703,4 +789,8 @@ void FreeVirtMem( void )
         }
         _LnkFree( HugeTab );
     }
+#else
+    FreeList( VMemBlocks );
+    VMemBlocks = NULL;
+#endif
 }

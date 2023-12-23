@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -69,11 +69,11 @@
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static bool WREDoSaveObjectInto( WRInfo *, WRSaveIntoData *, bool * );
+static bool WREDoSaveObjectInto( WRInfo *, WRSaveIntoData *idata, bool * );
 static bool WREDoSaveObjectAs( WRInfo *info, WRSaveIntoData *idata );
 static bool WREDoSaveImageAs( WRInfo *info, WRSaveIntoData *idata, bool is_icon );
 static bool WREDoSaveImageInto( WRInfo *info, WRSaveIntoData *idata, bool *dup, bool is_icon );
-static bool WRTestReplace( WRInfo *, WRSaveIntoData * );
+static bool WRTestReplace( WRInfo *, WRSaveIntoData *idata );
 static bool WQueryMergeStrings( WResID * );
 static bool WQueryReplaceObject( void );
 
@@ -406,7 +406,15 @@ bool WRAPI WRSaveResource( WRInfo *info, bool backup )
     }
 
     if( tmp != NULL ) {
-        ok = ( ok && WRRenameFile( tmp, info->save_name ) );
+        if( backup ) {
+            ok = WRBackupFile( tmp, false );
+        }
+        if( ok ) {
+            ok = WRCopyFile( tmp, info->save_name );
+        }
+        if( ok ) {
+            ok = WRDeleteFile( info->save_name );
+        }
         MemFree( info->save_name );
         info->save_name = tmp;
     }
@@ -709,7 +717,7 @@ bool WREDoSaveObjectAs( WRInfo *info, WRSaveIntoData *idata )
 bool WREDoSaveImageAs( WRInfo *info, WRSaveIntoData *idata, bool is_icon )
 {
     bool                ok;
-    BYTE                *data;
+    char                *data;
     size_t              size;
     WResLangNode        *lnode;
 
@@ -792,7 +800,7 @@ bool WREDoSaveObjectInto( WRInfo *info, WRSaveIntoData *idata, bool *dup )
 
 bool WREDoSaveImageInto( WRInfo *info, WRSaveIntoData *idata, bool *dup, bool is_icon )
 {
-    BYTE                *data;
+    char                *data;
     size_t              size;
     WResLangNode        *lnode;
     bool                replace_nixed;
@@ -924,7 +932,7 @@ bool WRTestReplace( WRInfo *info, WRSaveIntoData *idata )
     WResResNode     *rnode;
     WResLangNode    *lnode;
     long            type;
-    void            *data;
+    char            *data;
     uint_32         size;
     bool            strings;
 
@@ -956,10 +964,9 @@ bool WRTestReplace( WRInfo *info, WRSaveIntoData *idata )
         if( !WQueryMergeStrings( idata->name ) ) {
             return( false );
         }
-        data = WRLoadResData( info->file_name, lnode->Info.Offset, lnode->Info.Length );
+        data = WRAllocLoadResData( info->file_name, lnode->Info.Offset, lnode->Info.Length );
         size = lnode->Info.Length;
-        if( !WRMergeStringData( &data, &size, idata->data, idata->size,
-                                WRIs32Bit( info->save_type ), true ) ) {
+        if( !WRMergeStringData( &data, &size, idata->data, idata->size, WRIs32Bit( info->save_type ), true ) ) {
             if( data != NULL ) {
                 MemFree( data );
             }

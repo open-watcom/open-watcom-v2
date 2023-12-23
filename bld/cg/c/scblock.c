@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,14 +45,13 @@
 
 void    FreeJunk( block *blk )
 /*************************************
-    Free instructions which aren't going to be generated.
-
-*/
+ * Free instructions which aren't going to be generated.
+ */
 {
     instruction *ins;
     instruction *next;
 
-    for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = next ) {
+    for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = next ) {
         next = ins->head.next;
         if( !DoesSomething( ins ) && !SideEffect( ins )
          && ins->head.opcode < FIRST_OP_WITH_LABEL
@@ -84,11 +83,11 @@ static bool StupidMove( score *scoreboard, instruction *ins )
         }
     }
     /*
-        We've seen a condition already in the
-        block, but we've got a move instruction
-        that assigns a value to the result register that the
-        register already has. Kill the sucker.
-    */
+     * We've seen a condition already in the
+     * block, but we've got a move instruction
+     * that assigns a value to the result register that the
+     * register already has. Kill the sucker.
+     */
     DoNothing( ins );
     return( true );
 }
@@ -96,11 +95,11 @@ static bool StupidMove( score *scoreboard, instruction *ins )
 
 static  bool    RemDeadCode( block *blk )
 /****************************************
-    This removes any instructions in "blk" which assign to a register which
-    dies immediately following that instruction and has no side effects.
-    Returns true if any instructions were killed, in which case the
-    live information must be updated.
-*/
+ * This removes any instructions in "blk" which assign to a register which
+ * dies immediately following that instruction and has no side effects.
+ * Returns true if any instructions were killed, in which case the
+ * live information must be updated.
+ */
 {
     bool        change;
     name        *result;
@@ -108,17 +107,19 @@ static  bool    RemDeadCode( block *blk )
     instruction *next;
 
     change = false;
-    for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = next ) {
+    for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = next ) {
         next = ins->head.next;
         result = ins->result;
-        /* if result is a register and it dies after this instruction*/
+        /*
+         * if result is a register and it dies after this instruction
+         */
         if( !_OpIsCall( ins->head.opcode )
-         && !UnChangeable( ins )
-         && !SideEffect( ins )
-         && result != NULL
-         && !ScConvert( ins )
-         && result->n.class == N_REGISTER
-         && !HW_Ovlap( ins->head.next->head.live.regs, result->r.reg ) ) {
+          && !UnChangeable( ins )
+          && !SideEffect( ins )
+          && result != NULL
+          && !ScConvert( ins )
+          && result->n.class == N_REGISTER
+          && !HW_Ovlap( ins->head.next->head.live.regs, result->r.reg ) ) {
             FreeIns( ins );
             change = true;
         }
@@ -128,11 +129,11 @@ static  bool    RemDeadCode( block *blk )
 
 bool    DoScore( block *blk )
 /************************************
-    Do register scoreboarding on a basic block. Remember which
-    registers contain which values as we run through the block and
-    then use that information to try to replace memory references
-    with register references.
-*/
+ * Do register scoreboarding on a basic block. Remember which
+ * registers contain which values as we run through the block and
+ * then use that information to try to replace memory references
+ * with register references.
+ */
 {
     instruction *next;
     score       *scoreboard;
@@ -147,7 +148,7 @@ bool    DoScore( block *blk )
     for( ;; ) {
         SCBlip();
         while( RemDeadCode( blk ) ) {
-            UpdateLive( blk->ins.hd.next, blk->ins.hd.prev );
+            UpdateLive( blk->ins.head.next, blk->ins.head.prev );
             change = true;
         }
         if( !RegThrash( blk ) )
@@ -156,9 +157,11 @@ bool    DoScore( block *blk )
     }
     scoreboard = blk->u1.scoreboard;
     had_condition = false;
-    for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = next ) {
+    for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = next ) {
         ScoreSegments( scoreboard );
-        /* May all intel designers rot in hell forever and ever, amen*/
+        /*
+         * May all intel designers rot in hell forever and ever, amen
+         */
         if( _OpIsCondition( ins->head.opcode ) && ins->result == NULL ) {
             if( had_condition ) {
                 _MarkBlkAttr( blk, BLK_MULTIPLE_EXITS );
@@ -167,11 +170,13 @@ bool    DoScore( block *blk )
         }
         if( ScoreZero( scoreboard, &ins ) ) {
             change = true;
-            UpdateLive( blk->ins.hd.next, blk->ins.hd.prev );
+            UpdateLive( blk->ins.head.next, blk->ins.head.prev );
         }
         if( ins->head.opcode == OP_BLOCK )
             break;
-        /* ScoreZero freed the last instr!*/
+        /*
+         * ScoreZero freed the last instr!
+         */
         next = ins->head.next;
         dst = ins->result;
         if( UnChangeable( ins ) ) {
@@ -192,12 +197,12 @@ bool    DoScore( block *blk )
             } else {
                 if( FindRegOpnd( scoreboard, ins ) ) {
                     change = true;
-                    UpdateLive( blk->ins.hd.next, blk->ins.hd.prev );
+                    UpdateLive( blk->ins.head.next, blk->ins.head.prev );
                 }
                 if( ins->head.opcode == OP_MOV && !had_condition ) {
                     if( ScoreMove( scoreboard, ins ) ) {
                         change = true;
-                        UpdateLive( blk->ins.hd.next, blk->ins.hd.prev );
+                        UpdateLive( blk->ins.head.next, blk->ins.head.prev );
                     }
                     if( next->head.prev == ins ) {
                         RegKill( scoreboard, ins->zap->reg );
@@ -205,7 +210,7 @@ bool    DoScore( block *blk )
                 } else if( ins->head.opcode == OP_LA && !had_condition ) {
                     if( ScoreLA( scoreboard, ins ) ) {
                         change = true;
-                        UpdateLive( blk->ins.hd.next, blk->ins.hd.prev );
+                        UpdateLive( blk->ins.head.next, blk->ins.head.prev );
                     }
                     if( next->head.prev == ins ) {
                         RegKill( scoreboard, ins->zap->reg );
@@ -243,10 +248,10 @@ bool    DoScore( block *blk )
 
 byte    HasZero( score *scoreboard, name *n )
 /********************************************
-    given a scoreboard "sc", determine if name "n" is equal to
-    zero or has any portions which are equal to zero. This is recursive
-    since a regisiter like EAX on the 386 has pieces AX, AH, and AL.
-*/
+ * given a scoreboard "sc", determine if name "n" is equal to
+ * zero or has any portions which are equal to zero. This is recursive
+ * since a regisiter like EAX on the 386 has pieces AX, AH, and AL.
+ */
 {
     byte        bits;
     int         i;

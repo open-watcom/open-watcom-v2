@@ -1,3 +1,18 @@
+.if '&machine' eq '8086' .do begin
+:set symbol="mdlref" value="mdl86".
+:set symbol="mdlbits" value="16-bit".
+:set symbol="mdlsize" value="16".
+:set symbol="mdlptrsize" value="32".
+:set symbol="mdlmaxsize" value="64kB".
+.do end
+.el .do begin
+:set symbol="mdlref" value="mdl386".
+:set symbol="mdlbits" value="32-bit".
+:set symbol="mdlsize" value="32".
+:set symbol="mdlptrsize" value="48".
+:set symbol="mdlmaxsize" value="4GB".
+.do end
+.*
 .if '&lang' eq 'C' or '&lang' eq 'C/C++' .do begin
 :set symbol="function"  value="function".
 :set symbol="functions" value="functions".
@@ -7,30 +22,28 @@
 :set symbol="functions" value="subprograms".
 .do end
 .*
-.chap *refid=mdl86 16-bit Memory Models
+.chap *refid=&mdlref. Memory Models
 .*
 .if &e'&dohelp eq 0 .do begin
-.*
 .section Introduction
-.*
 .do end
 .np
-.ix 'memory models' '16-bit'
-This chapter describes the various 16-bit memory models supported by
+.ix 'memory models' '&mdlbits.'
+This chapter describes the various memory models supported by
 &cmpname..
 Each memory model is distinguished by two properties; the code model
 used to implement &function calls and the data model used to reference
 data.
 .*
-.section 16-bit Code Models
+.section Code Models
 .*
 .np
-There are two code models;
+There are two code models:
 .autopoint
 .point
-the small code model and
+the small code model
 .point
-the big code model.
+the big code model
 .endpoint
 .pc
 .ix 'small code model'
@@ -39,43 +52,52 @@ the big code model.
 A small code model is one in which all calls to &functions are made
 with
 .us near calls.
-In a near call, the destination address is 16 bits and is relative to
+In a near call, the destination address is &mdlsize. bits and is relative to
 the segment value in segment register CS.
 Hence, in a small code model, all code comprising your program,
-including library &functions, must be less than 64K.
-.if '&lang' eq 'FORTRAN 77' .do begin
-&cmpname does not support the small code model.
-.do end
+including library &functions, must be less than &mdlmaxsize..
 .np
 .ix 'big code model'
 .ix 'code models' 'big'
 .ix 'far call'
 A big code model is one in which all calls to &functions are made with
 .us far calls.
-In a far call, the destination address is 32 bits (a segment value and
-an offset relative to the segment value).
+In a far call, the destination address is &mdlptrsize. bits
+(a 16-bit segment value and a &mdlbits. offset relative to the segment value).
 This model allows the size of the code comprising your program to
-exceed 64K.
-.if '&lang' eq 'C' or '&lang' eq 'C/C++' .do begin
+exceed &mdlmaxsize..
+.if '&machine' eq '8086' and '&lang' eq 'FORTRAN 77' .do begin
 .remark
-If your program contains less than 64K of code, you should use a memory
+&cmpname does not support the small code model.
+.eremark
+.do end
+.if '&machine' eq '80386' or '&lang' eq 'C' or '&lang' eq 'C/C++' .do begin
+.remark
+If your program contains less than &mdlmaxsize. of code, you should use a memory
 model that employs the small code model.
 This will result in smaller and faster code since near calls are
 smaller instructions and are processed faster by the CPU.
 .eremark
 .do end
 .*
-.section 16-bit Data Models
+.section Data Models
 .*
 .np
-There are three data models;
+.if '&machine' eq '8086' .do begin
+There are three data models:
+.do end
+.if '&machine' eq '80386' .do begin
+There are two data models:
+.do end
 .autopoint
 .point
-the small data model,
+the small data model
 .point
-the big data model and
+the big data model
+.if '&machine' eq '8086' .do begin
 .point
-the huge data model.
+the huge data model
+.do end
 .endpoint
 .pc
 .ix 'small data model'
@@ -83,27 +105,28 @@ the huge data model.
 A small data model is one in which all references to data are made
 with
 .us near pointers.
-Near pointers are 16 bits; all data references are made relative to
+Near pointers are &mdlsize. bits; all data references are made relative to
 the segment value in segment register DS.
 Hence, in a small data model, all data comprising your program must be
-less than 64K.
+less than &mdlmaxsize..
 .np
 .ix 'big data model'
 .ix 'data models' 'big'
 A big data model is one in which all references to data are made with
 .us far pointers.
-Far pointers are 32 bits (a segment value and an offset relative to
-the segment value).
-This removes the 64K limitation on data size imposed by the small data
+Far pointers are &mdlptrsize. bits
+(a 16-bit segment value and a &mdlbits. offset relative to the segment value).
+This removes the &mdlmaxsize. limitation on data size imposed by the small data
 model.
 However, when a far pointer is incremented, only the offset is
 adjusted.
 &cmpname assumes that the offset portion of a far pointer will not be
-incremented beyond 64K.
+incremented beyond &mdlmaxsize..
 The compiler will assign an object to a new segment if the grouping of
 data in a segment will cause the object to cross a segment boundary.
 Implicit in this is the requirement that no individual object exceed
-64K bytes.
+&mdlmaxsize..
+.if '&machine' eq '8086' .do begin
 For example, an array containing 40,000 integers does not fit into
 the big data model.
 An object such as this should be described as
@@ -124,45 +147,56 @@ imposed by the big data model is removed in the huge data model.
 .if '&lang' eq 'FORTRAN 77' .do begin
 .note
 The huge data model has the same characteristics as the big data
-model, but formal array arguments are assumed to exceed 64K bytes.
+model, but formal array arguments are assumed to exceed &mdlmaxsize..
 You should use the huge data model whenever any arrays in your
-application exceed 64K bytes in size.
+application exceed &mdlmaxsize. in size.
 .do end
-.note
-If your program contains less than 64K of data, you should use the
-small data model.
-This will result in smaller and faster code since references using
-near pointers produce fewer instructions.
 .note
 The huge data model should be used only if needed.
 The code generated in the huge data model is not very efficient since
 a run-time routine is called in order to increment far pointers.
 This increases the size of the code significantly and increases
 execution time.
+.note
+.do end
+.el .do begin
+.remark
+.do end
+If your program contains less than &mdlmaxsize. of data, you should use the
+small data model.
+This will result in smaller and faster code since references using
+near pointers produce fewer instructions.
+.if '&machine' eq '8086' .do begin
 .endnote
+.do end
+.el .do begin
+.eremark
+.do end
 .*
-.section Summary of 16-bit Memory Models
+.section Summary of Memory Models
 .*
 .np
 As previously mentioned, a memory model is a combination of a code
 model and a data model.
 The following table describes the memory models supported by
 &cmpname..
+.*
+.* 16-bit C/C++
+.*
+.if '&machine' eq '8086' .do begin
 .if '&lang' eq 'C' or '&lang' eq 'C/C++' .do begin
 .ix 'tiny memory model'
 .ix 'memory models' 'tiny'
 .ix 'small memory model'
 .ix 'memory models' 'small'
-.ix 'compact memory model'
-.ix 'memory models' 'compact'
-.do end
 .ix 'medium memory model'
 .ix 'memory models' 'medium'
+.ix 'compact memory model'
+.ix 'memory models' 'compact'
 .ix 'large memory model'
 .ix 'memory models' 'large'
 .ix 'huge memory model'
 .ix 'memory models' 'huge'
-.if '&lang' eq 'C' or '&lang' eq 'C/C++' .do begin
 .millust begin
 Memory      Code        Data        Default     Default
 Model       Model       Model       Code        Data
@@ -176,7 +210,16 @@ large       big         big         far         far
 huge        big         huge        far         huge
 .millust end
 .do end
+.*
+.* 16-bit FORTRAN
+.*
 .if '&lang' eq 'FORTRAN 77' .do begin
+.ix 'medium memory model'
+.ix 'memory models' 'medium'
+.ix 'large memory model'
+.ix 'memory models' 'large'
+.ix 'huge memory model'
+.ix 'memory models' 'huge'
 .millust begin
 Memory      Code        Data        Default     Default
 Model       Model       Model       Code        Data
@@ -187,15 +230,43 @@ large       big         big         far         far
 huge        big         huge        far         huge
 .millust end
 .do end
+.do end
+.*
+.* 32-bit C/C++ and FORTRAN
+.*
+.if '&machine' eq '80386' .do begin
+.ix 'flat memory model'
+.ix 'memory models' 'flat'
+.ix 'small memory model'
+.ix 'memory models' 'small'
+.ix 'medium memory model'
+.ix 'memory models' 'medium'
+.ix 'compact memory model'
+.ix 'memory models' 'compact'
+.ix 'large memory model'
+.ix 'memory models' 'large'
+.millust begin
+Memory      Code        Data        Default     Default
+Model       Model       Model       Code        Data
+                                    Pointer     Pointer
+--------    --------    --------    --------    --------
+flat        small       small       near        near
+small       small       small       near        near
+medium      big         small       far         near
+compact     small       big         near        far
+large       big         big         far         far
+.millust end
+.do end
+.*
+.if '&machine' eq '8086' and '&target' ne 'QNX' .do begin
 .if '&lang' eq 'C' or '&lang' eq 'C/C++' .do begin
-.if '&target' ne 'QNX' .do begin
 .*
 .section Tiny Memory Model
 .*
 .np
 .ix 'memory models' 'tiny'
 In the tiny memory model, the application's code and data must total
-less than 64K bytes in size.
+less than &mdlmaxsize. in size.
 All code and data are placed in the same segment.
 Use of the tiny memory model allows the creation of a COM file for
 the executable program instead of an EXE file.
@@ -204,7 +275,23 @@ For more information, see the section entitled
 .do end
 .do end
 .*
-.section Mixed 16-bit Memory Model
+.if '&machine' eq '80386' .do begin
+.*
+.section Flat Memory Model
+.*
+.np
+.ix 'memory models' 'flat'
+In the flat memory model, the application's code and data must total
+less than &mdlmaxsize. in size.
+Segment registers CS, DS, SS and ES point to the same linear address
+space (this does not imply that the segment registers contain the same
+value).
+That is, a given offset in one segment refers to the same memory
+location as that offset in another segment.
+Essentially, a flat model operates as if there were no segments.
+.do end
+.*
+.section Mixed Memory Model
 .*
 .np
 .ix 'mixed memory model'
@@ -214,16 +301,23 @@ code and data models.
 .if '&lang' eq 'C' or '&lang' eq 'C/C++' .do begin
 A mixed memory model application might be characterized as one that
 uses the
+.if '&machine' eq '8086' .do begin
 .kw near
 .ct ,
 .kw far
 .ct , or
 .kw huge
+.do end
+.if '&machine' eq '80386' .do begin
+.kw near
+.ct , or
+.kw far
+.do end
 keywords when describing some of its &functions or data objects.
 .do end
 .if '&lang' eq 'FORTRAN 77' .do begin
 A mixed memory model application might be characterized as one that
-includes arrays which are larger than 64K bytes.
+includes arrays which are larger than &mdlmaxsize..
 .do end
 .np
 For example, a medium memory model application that uses some
@@ -231,10 +325,10 @@ For example, a medium memory model application that uses some
 far pointers to data
 .do end
 .if '&lang' eq 'FORTRAN 77' .do begin
-arrays which exceed 64K bytes in total size
+arrays which exceed &mdlmaxsize. in total size
 .do end
 can be described as a mixed memory model.
-In an application such as this, most of the data is in a 64K segment
+In an application such as this, most of the data is in a &mdlmaxsize. segment
 (DGROUP) and hence can be referenced with near pointers relative to
 the segment value in segment register DS.
 This results in more efficient code being generated and better
@@ -245,7 +339,7 @@ Data objects outside of the DGROUP segment are described with the
 keyword.
 .do end
 .*
-.section Linking Applications for the Various 16-bit Memory Models
+.section Linking Applications for the Various Memory Models
 .*
 .np
 .ix 'memory models' 'libraries'
@@ -255,7 +349,15 @@ Each library assumes a particular memory model and should be linked
 only with modules that have been compiled with the same memory model.
 The following table lists the libraries that are to be used to link an
 application that has been compiled for a particular memory model.
+.*
+.*****************************
+.* C/C++ section
+.*****************************
 .if '&lang' eq 'C' or '&lang' eq 'C/C++' .do begin
+.*
+.* 16-bit C/C++ QNX
+.*
+.if '&machine' eq '8086' .do begin
 .if '&target' eq 'QNX' .do begin
 .millust begin
 Memory  Run-time      Floating-Point  Floating-Point
@@ -278,6 +380,9 @@ huge    clibh.lib     mathh.lib       math87h.lib
                                       +(no)emu87.lib*
 .millust end
 .do end
+.*
+.* 16-bit C/C++ !QNX
+.*
 .el .do begin
 .millust begin
 Memory  Run-time      Floating-Point  Floating-Point
@@ -302,6 +407,9 @@ huge    CLIBH.LIB     MATHH.LIB       MATH87H.LIB
                                       +(NO)EMU87.LIB*
 .millust end
 .do end
+.*
+.* 16-bit C/C++
+.*
 .np
 * One of
 .fi emu87.lib
@@ -311,27 +419,151 @@ will be used with the 80x87 math
 libraries depending on the use of the "fpi" (include emulation) or
 "fpi87" (do not include emulation) options.
 .do end
+.*
+.* 32-bit C/C++
+.*
+.if '&machine' eq '80386' .do begin
+.remark
+Currently, only libraries for the flat/small memory model are provided.
+.eremark
+.*
+.* 32-bit C/C++ QNX
+.*
+.if '&target' eq 'QNX' .do begin
+.sr letr='r'
+.sr lets='s'
+.millust begin
+Memory      Run-time    Floating-Point   Floating-Point
+Model       Library     Library (80x87)  Library (calls)
+----------  ----------  ---------------  ---------------
+flat/small  clib3r.lib  math387r.lib     math3r.lib
+            clib3s.lib  math387s.lib     math3s.lib
+            plib3r.lib  cplx73r.lib      cplx3r.lib
+            plib3s.lib  cplx73s.lib      cplx3s.lib
+.millust end
+.do end
+.*
+.* 32-bit C/C++ !QNX
+.*
+.el .do begin
+.sr letr='R'
+.sr lets='S'
+.millust begin
+Memory      Run-time    Floating-Point   Floating-Point
+Model       Library     Library (80x87)  Library (calls)
+----------  ----------  ---------------  ---------------
+flat/small  CLIB3R.LIB  MATH387R.LIB     MATH3R.LIB
+            CLIB3S.LIB  MATH387S.LIB     MATH3S.LIB
+            PLIB3R.LIB  CPLX73R.LIB      CPLX3R.LIB
+            PLIB3S.LIB  CPLX73S.LIB      CPLX3S.LIB
+.millust end
+.do end
+.*
+.* 32-bit C/C++
+.*
+.pc
+The letter "&letr." or "&lets." which is affixed to the file name
+indicates the particular strategy with which the modules in the
+library have been compiled.
+.begnote
+.ix 'C libraries' 'flat'
+.ix 'flat model' 'libraries'
+.ix 'C libraries' 'small'
+.ix 'small model' 'libraries'
+.note &letr.
+denotes a version of the &product &mdlbits. libraries which have been
+compiled for the "flat/small" memory models using the "3r", "4r" or
+"5r" option.
+.note &lets.
+denotes a version of the &product &mdlbits. libraries which have been
+compiled for the "flat/small" memory models using the "3s", "4s" or
+"5s" option.
+.endnote
+.do end
+.do end
+.*
+.*****************************
+.* FORTRAN section
+.*****************************
+.*
 .if '&lang' eq 'FORTRAN 77' .do begin
-.code begin
+.if '&machine' eq '80386' .do begin
+.remark
+Currently, only libraries for the flat/small memory model are provided.
+.eremark
+.do end
+The following table lists the run-time libraries used by FORTRAN 77 and
+the compiler options that cause their use.
+.autopoint
+.point
+The "Library" column specified the library name.
+.point
+The "Memory model" column indicates the compiler options that specify the
+memory model of the library.
+.point
+The "Floating-point column" indicates the compiler options that specify the
+floating-point model of the library.
+.if '&machine' eq '80386' .do begin
+.point
+The "Calling convention" column indicates the compiler option that specifies
+the calling convention of the library (register-based or stack-based).
+.do end
+.endpoint
+.*
+.* 16-bit FORTRAN
+.*
+.if '&machine' eq '8086' .do begin
+.millust begin
 Library         Memory           Floating-point
                 model            model
--------         ------           --------------
-flibm.lib       /mm              /fpc
-flibl.lib       /ml, /mh         /fpc
-flib7m.lib      /mm              /fpi, /fpi87
-flib7l.lib      /ml, /mh         /fpi, /fpi87
-clibm.lib       /mm              /fpc, /fpi, /fpi87
-clibl.lib       /ml, /mh         /fpc, /fpi, /fpi87
-mathm.lib       /mm,             /fpc
-mathl.lib       /ml, /mh         /fpc
-math87m.lib     /mm,             /fpi, /fpi87
-math87l.lib     /ml, /mh         /fpi, /fpi87
-emu87.lib       /mm, /ml, /mh    /fpi
-noemu87.lib     /mm, /ml, /mh    /fpi87
-.code end
+-----------     -------------    ------------------
+flibm.lib       -mm              -fpc
+flibl.lib       -ml, -mh         -fpc
+flib7m.lib      -mm              -fpi, -fpi87
+flib7l.lib      -ml, -mh         -fpi, -fpi87
+clibm.lib       -mm              -fpc, -fpi, -fpi87
+clibl.lib       -ml, -mh         -fpc, -fpi, -fpi87
+mathm.lib       -mm,             -fpc
+mathl.lib       -ml, -mh         -fpc
+math87m.lib     -mm,             -fpi, -fpi87
+math87l.lib     -ml, -mh         -fpi, -fpi87
+emu87.lib       -mm, -ml, -mh    -fpi
+noemu87.lib     -mm, -ml, -mh    -fpi87
+.millust end
 .do end
+.*
+.* 32-bit FORTRAN
+.*
+.if '&machine' eq '80386' .do begin
+.ix 'FORTRAN libraries' 'flat'
+.ix 'flat model' 'libraries'
+.ix 'FORTRAN libraries' 'small'
+.ix 'small model' 'libraries'
+.millust begin
+Library         Memory      Floating-point        Calling
+                model       model                 convention
+------------    --------    ------------------    ----------
+flib.lib        -mf, -ms    -fpc
+flibs.lib       -mf, -ms    -fpc                  -sc
+flib7.lib       -mf, -ms    -fpi, -fpi87
+flib7s.lib      -mf, -ms    -fpi, -fpi87          -sc
+clib3r.lib      -mf, -ms    -fpc, -fpi, -fpi87
+clib3r.lib      -mf, -ms    -fpc, -fpi, -fpi87    -sc
+math387r.lib    -mf, -ms    -fpi, -fpi87
+math387s.lib    -mf, -ms    -fpi, -fpi87          -sc
+math3r.lib      -mf, -ms    -fpc
+math3s.lib      -mf, -ms    -fpc                  -sc
+emu387.lib      -mf, -ms    -fpi
+noemu387.lib    -mf, -ms    -fpi87
+.millust end
+.do end
+.do end
+.*****************************
+.* FORTRAN, C/C++ section end
+.*****************************
+.*
+.if '&machine' eq '8086' and '&target' ne 'QNX' .do begin
 .if '&lang' eq 'C' or '&lang' eq 'C/C++' .do begin
-.if '&target' ne 'QNX' .do begin
 .*
 .section Creating a Tiny Memory Model Application
 .*
@@ -387,7 +619,7 @@ It must be the first object file specified when linking the program.
 The following sequence will create the executable file
 "MYPROG.COM" from the file "MYPROG.C":
 .exam begin
-C>wcc myprog /ms
+C>wcc myprog -ms
 C>wlink system com file myprog
 .exam end
 .pc
@@ -422,7 +654,7 @@ This message may be ignored.
 :cmt.exe2. The specified file %s could not be opened.
 :cmt.exe2. Check that the file exists.
 :cmt.exe2. .note EXE file too large
-:cmt.exe2. The executable (EXE) file contains more than 64K of code and data.
+:cmt.exe2. The executable (EXE) file contains more than &mdlmaxsize. of code and data.
 :cmt.exe2. .note STACK segment ignored
 :cmt.exe2. The "STACK" segment in an EXE file is not included in the COM file.
 :cmt.exe2. .note Invalid start address
@@ -440,10 +672,4 @@ This message may be ignored.
 :cmt.exe2. .endnote
 .do end
 .do end
-.if &e'&dohelp ne 0 .do begin
-.   .helppref 16-bit
-.do end
 .im wmemlay
-.if &e'&dohelp ne 0 .do begin
-.   .helppref
-.do end

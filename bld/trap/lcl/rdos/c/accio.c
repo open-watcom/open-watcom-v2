@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -76,24 +76,16 @@ trap_retval TRAP_FILE( open )( void )
 {
     file_open_req           *acc;
     file_open_ret           *ret;
-    void                    *buff;
     int                     handle;
 
     acc = GetInPtr( 0 );
-    buff = GetInPtr( sizeof( *acc ) );
-
     ret = GetOutPtr( 0 );
-
-    handle = RdosOpenFile( buff, 0 );
-
-    if( handle ) {
-        LH2TRPH( ret, handle );
-        ret->err = 0;
-    } else {
-        LH2TRPH( ret, 0 );
+    ret->err = 0;
+    handle = RdosOpenFile( GetInPtr( sizeof( *acc ) ), 0 );
+    LH2TRPH( ret, handle );
+    if( handle == 0 ) {
         ret->err = MSG_FILE_NOT_FOUND;
     }
-
     return( sizeof( *ret ) );
 }
 
@@ -102,32 +94,30 @@ trap_retval TRAP_FILE( seek )( void )
     file_seek_req   *acc;
     file_seek_ret   *ret;
     long            pos;
+    int             h;
 
     acc = GetInPtr( 0 );
-    ret = GetOutPtr( 0 );
-
     pos = acc->pos;
+    h = TRPH2LH( acc );
+    ret = GetOutPtr( 0 );
     ret->err = 0;
-    ret->pos = 0;
     switch( acc->mode ) {
-    case TF_SEEK_ORG:
-        RdosSetFilePos( TRPH2LH( acc ), pos );
-        ret->pos = pos;
+    case DIG_SEEK_ORG:
+        RdosSetFilePos( h, pos );
         break;
-    case TF_SEEK_CUR:
-        pos += RdosGetFilePos( TRPH2LH( acc ) );
-        RdosSetFilePos( TRPH2LH( acc ), pos );
-        ret->pos = pos;
+    case DIG_SEEK_CUR:
+        pos += RdosGetFilePos( h );
+        RdosSetFilePos( h, pos );
         break;
-    case TF_SEEK_END:
-        pos += RdosGetFileSize( TRPH2LH( acc ) );
-        RdosSetFilePos( TRPH2LH( acc ), pos );
-        ret->pos = pos;
+    case DIG_SEEK_END:
+        pos += RdosGetFileSize( h );
+        RdosSetFilePos( h, pos );
         break;
     default:
         ret->err = MSG_FILE_MODE_ERROR;
         break;
     }
+    ret->pos = pos;
     return( sizeof( *ret ) );
 }
 
@@ -135,22 +125,17 @@ trap_retval TRAP_FILE( write )( void )
 {
     file_write_req  *acc;
     file_write_ret  *ret;
-    int             len;
-    void            *buff;
+    size_t          len;
 
     acc = GetInPtr( 0 );
-    buff = GetInPtr( sizeof( *acc ) );
     ret = GetOutPtr( 0 );
-
-    len = GetTotalSizeIn() - sizeof( *acc );
-
     ret->err = 0;
-
-    if( len )
-        ret->len = RdosWriteFile( TRPH2LH( acc ), buff, len );
-    else
+    len = GetTotalSizeIn() - sizeof( *acc );
+    if( len > 0 ) {
+        ret->len = RdosWriteFile( TRPH2LH( acc ), GetInPtr( sizeof( *acc ) ), len );
+    } else {
         ret->len = 0;
-
+    }
     return( sizeof( *ret ) );
 }
 
@@ -158,19 +143,14 @@ trap_retval TRAP_FILE( write_console )( void )
 {
     file_write_console_req  *acc;
     file_write_console_ret  *ret;
-    int                     len;
-    void                    *buff;
+    size_t                  len;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    buff = GetInPtr( sizeof( *acc ) );
-    len = GetTotalSizeIn() - sizeof( *acc );
-
-    RdosWriteSizeString( buff, len );
-
     ret->err = 0;
+    len = GetTotalSizeIn() - sizeof( *acc );
+    RdosWriteSizeString( GetInPtr( sizeof( *acc ) ), len );
     ret->len = len;
-
     return( sizeof( *ret ) );
 }
 
@@ -178,16 +158,12 @@ trap_retval TRAP_FILE( read )( void )
 {
     file_read_req   *acc;
     file_read_ret   *ret;
-    void            *buff;
     int             bytes;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    buff = GetOutPtr( sizeof( *ret ) );
-
-    bytes = RdosReadFile( TRPH2LH( acc ), buff, acc->len );
     ret->err = 0;
-
+    bytes = RdosReadFile( TRPH2LH( acc ), GetOutPtr( sizeof( *ret ) ), acc->len );
     return( sizeof( *ret ) + bytes );
 }
 
@@ -198,28 +174,21 @@ trap_retval TRAP_FILE( close )( void )
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-
     ret->err = 0;
     RdosCloseFile( TRPH2LH( acc ) );
-
     return( sizeof( *ret ) );
 }
 
 trap_retval TRAP_FILE( erase )( void )
 {
     file_erase_ret  *ret;
-    char            *buff;
 
-    buff = GetInPtr( sizeof( file_erase_req ) );
     ret = GetOutPtr( 0 );
-
     ret->err = 0;
-
-    if( !RdosDeleteFile( buff ) )
+    if( RdosDeleteFile( GetInPtr( sizeof( file_erase_req ) ) ) == 0 ) {
         ret->err = MSG_FILE_NOT_FOUND;
-
+    }
     return( sizeof( *ret ) );
-
 }
 
 trap_retval TRAP_FILE( run_cmd )( void )
@@ -232,7 +201,7 @@ trap_retval TRAP_FILE( run_cmd )( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval TRAP_FILE( string_to_fullpath )( void )
+trap_retval TRAP_FILE( file_to_fullpath )( void )
 {
     file_string_to_fullpath_req *acc;
     file_string_to_fullpath_ret *ret;
@@ -243,24 +212,19 @@ trap_retval TRAP_FILE( string_to_fullpath )( void )
     acc = GetInPtr( 0 );
     name = GetInPtr( sizeof( *acc ) );
     ret = GetOutPtr( 0 );
+    ret->err = 0;
     fullname = GetOutPtr( sizeof( *ret ) );
 
     _splitpath2( name, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
     _makepath( fullname, pg.drive, pg.dir, pg.fname, pg.ext );
 
-    if( access( fullname, 0 ) == 0 ) {
-        ret->err = 0;
-    } else {
+    if( access( fullname, 0 ) != 0 ) {
         _makepath( fullname, pg.drive, pg.dir, pg.fname, "exe" );
 
-        if( access( fullname, 0 ) == 0 ) {
-            ret->err = 0;
-        } else {
+        if( access( fullname, 0 ) != 0 ) {
             _makepath( fullname, pg.drive, pg.dir, pg.fname, "dll" );
 
-            if( access( fullname, 0 ) == 0 ) {
-                ret->err = 0;
-            } else {
+            if( access( fullname, 0 ) != 0 ) {
                 ret->err = MSG_FILE_NOT_FOUND;
                 *fullname = 0;
             }

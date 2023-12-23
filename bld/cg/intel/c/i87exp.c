@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -49,6 +49,7 @@
 #include "revcond.h"
 #include "temps.h"
 #include "opctable.h"
+#include "x86regn.h"
 #include "feprotos.h"
 
 
@@ -221,11 +222,7 @@ bool    FPStackReg( name *reg_name )
 {
     int         reg_num;
 
-    if( reg_name == NULL
-      || reg_name->n.class != N_REGISTER
-      || !HW_COvlap( reg_name->r.reg, HW_FLTS ) )
-        return( false );
-    reg_num = FPRegTrans( reg_name->r.reg );
+    reg_num = FPRegNum( reg_name );
     if( reg_num == -1 )
         return( false );
     if( reg_num < Max87Stk )
@@ -233,19 +230,6 @@ bool    FPStackReg( name *reg_name )
     return( false );
 }
 
-
-int     FPRegNum( name *reg_name )
-/*********************************
-    given a name, return the 8087 register number (0-7) or -1 if
-    it isn't an 8087 register
-*/
-{
-    if( reg_name == NULL
-      || reg_name->n.class != N_REGISTER
-      || !HW_COvlap( reg_name->r.reg, HW_FLTS ) )
-        return( -1 );
-    return( FPRegTrans( reg_name->r.reg ) );
-}
 
 instruction *PrefFLDOp( instruction *ins, operand_type op, name *opnd )
 /*********************************************************************/
@@ -463,13 +447,13 @@ static instruction  *ExpMove( instruction *ins, operand_type src,
         DoNothing( ins );
         ins = SuffixFSTPRes( ins );
         */
-        if( _IsModel( FPU_ROUNDING_INLINE ) ) {
+        if( _IsModel( CGSW_GEN_FPU_ROUNDING_INLINE ) ) {
             DoNothing( ins );
             ins = SuffixFSTPRes( ins );
             if( WantsChop( ins ) ) {
                 ins->u.gen_table = MFSTRND;
             }
-        } else if( _IsModel( FPU_ROUNDING_OMIT ) ) {
+        } else if( _IsModel( CGSW_GEN_FPU_ROUNDING_OMIT ) ) {
             DoNothing( ins );
             ins = SuffixFSTPRes( ins );
         } else {
@@ -482,13 +466,13 @@ static instruction  *ExpMove( instruction *ins, operand_type src,
         DoNothing( ins );
         break;
     case _Move( OP_STK0, RES_MEM  ):
-        if( _IsModel( FPU_ROUNDING_INLINE ) ) {
+        if( _IsModel( CGSW_GEN_FPU_ROUNDING_INLINE ) ) {
             if( WantsChop( ins ) ) {
                 ins->u.gen_table = MFSTRND;
             } else {
                 ins->u.gen_table = MFST;
             }
-        } else if( _IsModel( FPU_ROUNDING_OMIT ) ) {
+        } else if( _IsModel( CGSW_GEN_FPU_ROUNDING_OMIT ) ) {
             ins->u.gen_table = MFST;
         } else {
             PrefixChop( ins );
@@ -559,7 +543,7 @@ static  instruction     *ExpPush( instruction *ins, operand_type op )
             }
             ++idx;
         }
-        if( _IsntTargetModel( FLOATING_DS ) && _IsntTargetModel( FLOATING_SS ) ) {
+        if( _IsntTargetModel( CGSW_X86_FLOATING_DS ) && _IsntTargetModel( CGSW_X86_FLOATING_SS ) ) {
             HW_CTurnOff( avail_index, HW_SS );
         }
         index = AllocRegName( avail_index );
@@ -903,8 +887,9 @@ static instruction *ExpandFPIns( instruction *ins, operand_type op1,
         case OP_TAN:
         case OP_SQRT:
         case OP_ATAN:
-            if( _FPULevel( FPU_387 ) && _IsTargetModel( I_MATH_INLINE ) &&
-                _IsntTargetModel( P5_DIVIDE_CHECK ) ) {
+            if( _FPULevel( FPU_387 )
+              && _IsModel( CGSW_GEN_I_MATH_INLINE )
+              && _IsntTargetModel( CGSW_X86_P5_DIVIDE_CHECK ) ) {
                 ins = ExpUnary( ins, op1, res, FMATH );
             } else {
                 ins = ExpUnary( ins, op1, res, IFUNC );
@@ -913,8 +898,10 @@ static instruction *ExpandFPIns( instruction *ins, operand_type op1,
         case OP_LOG:
         case OP_LOG10:
         case OP_EXP:
-            if( _FPULevel( FPU_387 ) && _IsTargetModel( I_MATH_INLINE ) &&
-                _IsntTargetModel( P5_DIVIDE_CHECK ) && OptForSize <= 50 ) {
+            if( _FPULevel( FPU_387 )
+              && _IsModel( CGSW_GEN_I_MATH_INLINE )
+              && _IsntTargetModel( CGSW_X86_P5_DIVIDE_CHECK )
+              && OptForSize <= 50 ) {
                 ins = ExpUnary( ins, op1, res, FMATH );
             } else {
                 ins = ExpUnary( ins, op1, res, IFUNC );
@@ -1036,7 +1023,7 @@ static  void    Expand( void )
     instruction *ins;
 
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+        for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             if( DoesSomething( ins ) ) {
                 if( _OpIsCall( ins->head.opcode ) ) {
                     ins = ExpCall( ins );
@@ -1197,7 +1184,7 @@ void    FPInit( void )
     Initialize.
 */
 {
-    Max87Stk = (int)(pointer_uint)FEAuxInfo( NULL, STACK_SIZE_8087 );
+    Max87Stk = (int)(pointer_uint)FEAuxInfo( NULL, FEINF_STACK_SIZE_8087 );
     if( Max87Stk > 8 )
         Max87Stk = 8;
     if( Max87Stk < 4 )

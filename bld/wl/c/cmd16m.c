@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,8 +48,8 @@
 void SetD16MFmt( void )
 /*********************/
 {
-    Extension = E_PROTECT;
     LinkState &= ~LS_MAKE_RELOCS;           // assume none being produced.
+    FmtData.def_ext = E_PROTECT;
     FmtData.u.d16m.options = 0;
     FmtData.u.d16m.flags = 0;
     FmtData.u.d16m.strategy = MNoStrategy;
@@ -93,7 +93,7 @@ static bool ProcBuffer( void )
 
     if( !GetLong( &value ) )
         return( false );
-    if( value < _1KB || value > _32KB ) {
+    if( value < _1K || value > _32K ) {
         LnkMsg( LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", "BUFFER" );
     } else {
         FmtData.u.d16m.buffer = value;
@@ -168,7 +168,7 @@ static bool ProcExtended( void )
 static bool ProcExpName( void )
 /*****************************/
 {
-    if( !HaveEquals( TOK_INCLUDE_DOT | TOK_IS_FILENAME ) )
+    if( !HaveEquals( TOK_IS_FILENAME ) )
         return( false );
     if( FmtData.u.d16m.exp_name != NULL ) {
         _LnkFree( FmtData.u.d16m.exp_name );
@@ -185,7 +185,7 @@ static bool ProcDataSize( void )
 
     if( !GetLong( &value ) )
         return( false );
-    if( value > _64KB ) {
+    if( value > _64K ) {
         LnkMsg( LOC+LINE+WRN+MSG_VALUE_TOO_LARGE, "s", "DATASIZE" );
     } else {
         FmtData.u.d16m.datasize = (value + 15) >> 4;

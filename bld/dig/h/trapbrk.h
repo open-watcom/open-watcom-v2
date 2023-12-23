@@ -31,6 +31,7 @@
 
 
 typedef enum {
+    COND_NONE           = 0x0000,
     COND_CONFIG         = 0x0001,
     COND_SECTIONS       = 0x0002,
     COND_LIBRARIES      = 0x0004,

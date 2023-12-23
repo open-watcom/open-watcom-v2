@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,11 +31,13 @@
 
 
 #include "cvars.h"
-#include "iopath.h"
-#include "scan.h"
 #include <stdarg.h>
 #include <stdio.h>
+#include <errno.h>
 #include <sys/stat.h>
+#include "iopath.h"
+#include "scan.h"
+#include "jmpbuf.h"
 #include "cgdefs.h"
 #include "feprotos.h"
 #include "swchar.h"
@@ -45,8 +47,8 @@
 #include "pathgrp2.h"
 #include "cscanbuf.h"
 
-#include "clibext.h"
 #include "clibint.h"
+#include "clibext.h"
 
 
 #if defined(__UNIX__)
@@ -71,9 +73,9 @@ static  bool    IsStdIn;
 static  char    *FNameBuf = NULL;
 
 void FrontEndInit( bool reuse )
-//***************************//
-// Do the once only things   //
-//***************************//
+/******************************
+ * Do the once only things
+ ******************************/
 {
     GlobalCompFlags.cc_reuse = reuse;
     GlobalCompFlags.cc_first_use = true;
@@ -86,9 +88,9 @@ void FrontEndInit( bool reuse )
 }
 
 void FrontEndFini( void )
-//********************//
-// Fini the once only //
-//********************//
+/************************
+ * Fini the once only
+ ************************/
 {
     GlobalCompFlags.cc_reuse = false;
     GlobalCompFlags.cc_first_use = true;
@@ -214,7 +216,9 @@ static char *createFileName( const char *template, const char *ext, bool forceex
         template = WholeFName;
     _splitpath2( template, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
     if( use_defaults ) {
-        /* default object file goes in current directory */
+        /*
+         * default object file goes in current directory
+         */
         pg.drive = "";
         pg.dir = "";
     }
@@ -268,11 +272,13 @@ static IALIASPTR AddIAlias( const char *alias_name, const char *real_name, bool 
     alias->next = NULL;
     alias->is_lib = is_lib;
     alias->real_name = alias->alias_name + alias_len;
-    memcpy( alias->alias_name, alias_name, alias_len );
-    memcpy( alias->real_name, real_name, real_len );
+    strcpy( alias->alias_name, alias_name );
+    strcpy( alias->real_name, real_name );
     *lnk = alias;
     if( old_alias != NULL ) {
-        /* Replace old alias if it exists */
+        /*
+         * Replace old alias if it exists
+         */
         alias->next = old_alias->next;
         CMemFree( old_alias );
     }
@@ -323,23 +329,26 @@ static bool openForcePreInclude( void )
 }
 
 
-/* open the primary source file, and return pointer to root file name */
-
 #define STDIN_NAME      "stdin"
 
 static void MakePgmName( void )
+/******************************
+ * open the primary source file, and return pointer to root file name
+ */
 {
-// Get fname, if file name has no extension whack ".c" on
-// if stdin a "." then replace with "stdin" don't whack ".c"
-// If no module name make the same as fname
     size_t      len;
     pgroup2     pg;
 
+    /*
+     * Get fname, if file name has no extension whack ".c" on
+     * if stdin a "." then replace with "stdin" don't whack ".c"
+     * If no module name make the same as fname
+     */
     if( WholeFName[0] == '.' && WholeFName[1] == '\0' ) {
         IsStdIn = true;
         CMemFree( WholeFName );
         WholeFName = CMemAlloc( sizeof( STDIN_NAME ) );
-        memcpy( WholeFName, STDIN_NAME, sizeof( STDIN_NAME ) );
+        strcpy( WholeFName, STDIN_NAME );
         pg.fname = WholeFName;
         len = sizeof( STDIN_NAME );
     } else {
@@ -352,7 +361,7 @@ static void MakePgmName( void )
         len = strlen( pg.fname ) + 1;
     }
     SrcFName = CMemAlloc( len );
-    memcpy( SrcFName, pg.fname, len );
+    strcpy( SrcFName, pg.fname );
     if( ModuleName == NULL ) {
         ModuleName = SrcFName;
     }
@@ -373,7 +382,7 @@ static unsigned CppWidth = 0;
 static unsigned CommentChar = '\0';
 static bool     CppFirstChar = false;
 
-void SetCppWidth( unsigned width )
+void SetPPWidth( unsigned width )
 {
     CppWidth = width - 1;
 }
@@ -555,7 +564,9 @@ void CClose( FILE *fp )
 /*********************/
 {
     if( fp == NULL ) {
-        /* nothing to do */
+        /*
+         * nothing to do
+         */
     } else if( fp != stdin ) {
         fclose( fp );
     }
@@ -592,7 +603,10 @@ static bool FreeSrcFP( void )
 
 
 static FNAMEPTR FindFlist( char const *filename )
-{ // find a flist
+/************************************************
+ * find a flist
+ */
+{
     FNAMEPTR    flist;
 
     for( flist = FNames; flist != NULL; flist = flist->next ) {
@@ -635,7 +649,9 @@ static bool TryOpen( const char *path, pgroup2 *ff, src_file_type typ )
     if( ff->drive[0] != '\0' && fd.drive[0] != '\0' ) {
         return( false );
     }
-    // concatenate fd.dir + sep + fp.dir
+    /*
+     * concatenate fd.dir + sep + fp.dir
+     */
     p = fd.dir + strlen( fd.dir );
     if( fd.dir[0] != '\0' ) {
         if( !IS_PATH_SEP( p[-1] ) ) {
@@ -656,7 +672,7 @@ static bool TryOpen( const char *path, pgroup2 *ff, src_file_type typ )
     }
     if( fp == NULL )
         return( false );
-/*
+#if 0
     if( CompFlags.use_precompiled_header ) {
         CompFlags.use_precompiled_header = false;
         if( UsePreCompiledHeader( filename ) ) {
@@ -664,7 +680,7 @@ static bool TryOpen( const char *path, pgroup2 *ff, src_file_type typ )
             return( true );
         }
     }
-*/
+#endif
     if( OpenFCB( fp, filename, typ ) ) {
         if( CompFlags.cpp_mode ) {
             if( CppFile == NULL )
@@ -701,9 +717,9 @@ FNAMEPTR AddFlist( char const *filename )
         } else {
             len2 = strlen( DependHeaderPath );
             flist = (FNAMEPTR)CMemAlloc( offsetof( fname_list, name ) + len2 + len1 );
-            memcpy( flist->name, DependHeaderPath, len2 );
+            strcpy( flist->name, DependHeaderPath );
         }
-        memcpy( flist->name + len2, filename, len1 );
+        strcpy( flist->name + len2, filename );
         *lnk = flist;
         flist->next = NULL;
         flist->index = index;
@@ -739,7 +755,7 @@ char *FNameFullPath( FNAMEPTR flist )
     if( flist->fullpath == NULL ) {
         fullpath = SrcFullPath( flist->name, fullbuff, sizeof( fullbuff ) );
         if( fullpath != NULL ) {
-            fullpath = CStrSave( fullpath );
+            fullpath = CMemStrDup( fullpath );
             flist->fullpath = fullpath;
         } else {
             fullpath = flist->name;
@@ -796,11 +812,9 @@ void AddIncFile( INCFILE *ifile )
 void AddIncFileList( const char *filename )
 {
     INCFILE     *ifile;
-    size_t      len;
 
-    len = strlen( filename ) + 1;
-    ifile = (INCFILE *)CMemAlloc( offsetof( INCFILE, filename ) + len );
-    memcpy( ifile->filename, filename, len );
+    ifile = (INCFILE *)CMemAlloc( offsetof( INCFILE, filename ) + strlen( filename ) + 1 );
+    strcpy( ifile->filename, filename );
     AddIncFile( ifile );
 }
 
@@ -818,7 +832,6 @@ static RDIRPTR AddRDir( const char *path )
 {
     RDIRPTR     dirlist;
     RDIRPTR     *lnk;
-    size_t      len;
 
     for( lnk = &RDirNames; (dirlist = *lnk) != NULL; lnk = &dirlist->next ) {
         if( stricmp( path, dirlist->name ) == 0 ) {
@@ -826,10 +839,9 @@ static RDIRPTR AddRDir( const char *path )
         }
     }
     if( dirlist == NULL ) {
-        len = strlen( path ) + 1;
-        dirlist = (RDIRPTR)CMemAlloc( offsetof( rdir_list, name ) + len );
+        dirlist = (RDIRPTR)CMemAlloc( offsetof( rdir_list, name ) + strlen( path ) + 1 );
         dirlist->next = NULL;
-        memcpy( dirlist->name, path, len );
+        strcpy( dirlist->name, path );
         *lnk = dirlist;
     }
     return( dirlist );
@@ -846,10 +858,13 @@ void FreeRDir( void )
 }
 
 void SrcFileReadOnlyDir( char const *dirs )
-{ // add dir to ro set
+/******************************************
+ * add dir to ro set
+ */
+{
     char    *full;              // - full path
-    char    path[_MAX_PATH];  // - used to extract directory
-    char    buff[_MAX_PATH];  // - expanded path for directory
+    char    path[_MAX_PATH];    // - used to extract directory
+    char    buff[_MAX_PATH];    // - expanded path for directory
 
     while( *dirs != '\0' ) {
         char *p = path;
@@ -917,9 +932,9 @@ static void ParseInit( void )
     SegInit();
     force = FEGetEnv( "FORCE" );
     if( force != NULL ) {
-        ForceInclude = CStrSave( force );
+        ForceInclude = CMemStrDup( force );
     }
-    ForcePreInclude = CStrSave( "_preincl.h" );
+    ForcePreInclude = CMemStrDup( "_preincl.h" );
 }
 
 static bool OpenPgmFile( void )
@@ -954,10 +969,12 @@ static bool OpenPgmFile( void )
 static void Parse( void )
 {
     EmitInit();
-    // The first token in a file should be #include if a user wants to
-    // use pre-compiled headers. The following call to NextToken() to
-    // get the very first token of the file will load the pre-compiled
-    // header if the user requested such and it is a #include directive.
+    /*
+     * The first token in a file should be #include if a user wants to
+     * use pre-compiled headers. The following call to NextToken() to
+     * get the very first token of the file will load the pre-compiled
+     * header if the user requested such and it is a #include directive.
+     */
     if( ForceInclude != NULL ) {
         if( !OpenSrcFile( ForceInclude, FT_HEADER_FORCED ) ) {
             PrtfFilenameErr( ForceInclude, FT_HEADER_FORCED, true );
@@ -968,8 +985,10 @@ static void Parse( void )
     }
     CompFlags.ok_to_use_precompiled_hdr = true;
     NextToken();
-    // If we didn't get a #include with the above call to NextToken()
-    // it's too late to use pre-compiled header now.
+    /*
+     * If we didn't get a #include with the above call to NextToken()
+     * it's too late to use pre-compiled header now.
+     */
     CompFlags.ok_to_use_precompiled_hdr = false;
     ParsePgm();
     if( DefFile != NULL ) {
@@ -1002,7 +1021,7 @@ static void DoCCompile( char **cmdline )
 {
     jmp_buf     env;
 
-    Environment = &env;
+    Environment = JMPBUF_PTR( env );
     if( setjmp( env ) ) {           /* if fatal error has occurred */
         EmitAbort();                /* abort code generator */
         CPragmaFini();
@@ -1021,7 +1040,6 @@ static void DoCCompile( char **cmdline )
         }
         MakePgmName();
         DelErrFile();               /* delete old error file */
-        MergeInclude();             /* merge INCLUDE= with IncPathList */
         CPragmaInit();              /* memory model is known now */
 #if _CPU == 370
         ParseAuxFile();
@@ -1092,13 +1110,17 @@ static bool try_open_file( const char *path, pgroup2 *fp, pgroup2 *fa, src_file_
     char    save_chr_fname;
     char    save_chr_ext;
 
-    // try to open regular name
+    /*
+     * try to open regular name
+     */
     ok = TryOpen( path, fp, typ );
     if( ok ) {
         return( ok );
     }
     if( fa != NULL ) {
-        // try to open alias name if defined
+        /*
+         * try to open alias name if defined
+         */
         ok = TryOpen( path, fa, typ );
         if( ok ) {
             return( ok );
@@ -1116,7 +1138,9 @@ static bool try_open_file( const char *path, pgroup2 *fp, pgroup2 *fa, src_file_
             fp->ext[4] = '\0';
         }
         if( save_chr_fname != '\0' || save_chr_ext != '\0' ) {
-            // try to open truncated name if enabled
+            /*
+             * try to open truncated name if enabled
+             */
             ok = TryOpen( path, fp, typ );
             if( !ok ) {
                 if( save_chr_fname != '\0' ) {
@@ -1151,8 +1175,10 @@ static bool doOpenSrcFile( pgroup2 *fp, pgroup2 *fa, src_file_type typ )
         return( false );
     }
     if( fp->drive[0] != '\0' || IS_DIR_SEP( fp->dir[0] ) ) {
-        // try absolute path
-        // if drive letter given or path from root given
+        /*
+         * try absolute path
+         * if drive letter given or path from root given
+         */
         if( try_open_file( "", fp, fa, typ ) ) {
             return( true );
         }
@@ -1165,21 +1191,27 @@ static bool doOpenSrcFile( pgroup2 *fp, pgroup2 *fa, src_file_type typ )
         case FT_HEADER_FORCED:
             if( CompFlags.ignore_default_dirs ) {
                 try[0] = '\0';
-                // physical file name must be used, not logical
+                /*
+                 * physical file name must be used, not logical
+                 */
                 _splitpath2( SrcFile->src_flist->name, fd.buffer, &fd.drive, &fd.dir, NULL, NULL );
                 _makepath( try, fd.drive, fd.dir, NULL, NULL );
                 if( try_open_file( try, fp, fa, typ ) ) {
                     return( true );
                 }
             } else {
-                // try current directory
+                /*
+                 * try current directory
+                 */
                 if( !GlobalCompFlags.ignore_current_dir ) {
                     if( try_open_file( "", fp, fa, typ ) ) {
                         return( true );
                     }
                 }
                 for( curr = SrcFile; curr!= NULL; curr = curr->prev_file ) {
-                    // physical file name must be used, not logical
+                    /*
+                     * physical file name must be used, not logical
+                     */
                     _splitpath2( curr->src_flist->name, fd.buffer, &fd.drive, &fd.dir, NULL, NULL );
                     _makepath( try, fd.drive, fd.dir, NULL, NULL );
                     if( try_open_file( try, fp, fa, typ ) ) {
@@ -1198,9 +1230,11 @@ static bool doOpenSrcFile( pgroup2 *fp, pgroup2 *fa, src_file_type typ )
                     break;
                 *p++ = c;
             } while( (c = *s) != '\0' );
-            c = p[-1];
-            if( !IS_PATH_SEP( c ) ) {
-                *p++ = DIR_SEP;
+            if( p != fd.buffer ) {
+                c = p[-1];
+                if( !IS_PATH_SEP( c ) ) {
+                    *p++ = DIR_SEP;
+                }
             }
             *p = '\0';
             if( try_open_file( fd.buffer, fp, fa, typ ) ) {
@@ -1214,7 +1248,9 @@ static bool doOpenSrcFile( pgroup2 *fp, pgroup2 *fa, src_file_type typ )
         case FT_HEADER:
         case FT_HEADER_FORCED:
             if( !CompFlags.ignore_default_dirs ) {
-                // try current ../h directory
+                /*
+                 * try current ../h directory
+                 */
                 if( try_open_file( H_PATH, fp, fa, typ ) ) {
                     return( true );
                 }
@@ -1258,7 +1294,9 @@ bool OpenSrcFile( const char *filename, src_file_type typ )
     case FT_HEADER_FORCED:
     case FT_HEADER_PRE:
     case FT_LIBRARY:
-        // See if there's an alias for this filename
+        /*
+         * See if there's an alias for this filename
+         */
         alias_filename = IncludeAlias( filename, ( typ == FT_LIBRARY || typ == FT_HEADER_PRE ) );
         if( alias_filename != NULL ) {
             _splitpath2( alias_filename, fa.buffer, &fa.drive, &fa.dir, &fa.fname, &fa.ext );
@@ -1274,11 +1312,17 @@ bool OpenSrcFile( const char *filename, src_file_type typ )
 void CppEmitPoundLine( unsigned line_num, const char *filename, bool newline )
 {
     char    buf[30];
+    char    c;
 
     if( CompFlags.cpp_line_wanted && CppPrinting() && CompFlags.cpp_output ) {
-        sprintf( buf, "#line %u ", line_num );
+        sprintf( buf, "#line %u \"", line_num );
         CppPuts( buf );
-        CppPutsQuoted( filename );
+        while( (c = *filename++) != '\0' ) {
+            if( c == '\\' )
+                c = '/';
+            CppPutc( c );
+        }
+        CppPutc( '"' );
         if( newline ) {
             CppPutc( '\n' );
         }
@@ -1349,7 +1393,9 @@ void CloseFiles( void )
             char    msgtxt[80];
             char    msgbuf[MAX_MSG_LEN];
 
-            /* issue message */
+            /*
+             * issue message
+             */
             CGetMsg( msgtxt, ERR_FATAL_ERROR );
             sprintf( msgbuf, msgtxt, strerror( errno ) );
             NoteMsg( msgbuf );
@@ -1374,7 +1420,9 @@ void CloseFiles( void )
 bool FrontEnd( char **cmdline )
 {
 #if defined(__WATCOMC__) && defined( _M_IX86 )
-    /* set to 0 in case 8087 is present */
+    /*
+     * set to 0 in case 8087 is present
+     */
     _real87 = 0;
     _8087 = 0;
 #endif

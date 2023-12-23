@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -330,10 +330,9 @@ bool WdeLoadBorCustomControls( WdeCustLib *lib )
     uint_8              *list_locked;
     uint_16             num_classes;
     WdeBorlandClassList *class_list;
-    uint_32             class_list_size;
+    size_t              class_list_size;
 
-    /* touch unused var to get rid of warning */
-    _wde_touch( lib );
+    /* unused parameters */ (void)lib;
 
     list_proc = (WdeListClassesProc)GetProcAddress( lib->inst, "ListClasses" );
 
@@ -839,9 +838,7 @@ BOOL CALLBACK WdeCustEDITRES( LPCSTR type_name, LPCSTR res_name )
 {
     char      out[160];
 
-    /* touch unused var to get rid of warning */
-    _wde_touch( type_name );
-    _wde_touch( res_name );
+    /* unused parameters */ (void)type_name; (void)res_name;
 
     sprintf( out, "Request to edit type:%lu res:%lu",
              (unsigned long)(uint_32)type_name, (unsigned long)(uint_32)res_name );

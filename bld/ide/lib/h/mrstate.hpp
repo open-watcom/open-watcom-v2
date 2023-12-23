@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,9 +43,7 @@ WCLASS MRState : public MState
         public:
                 MRState( MTool* tool, SwMode mode=SWMODE_DEBUG, MRSwitch* sw=NULL, bool state=false );
                 ~MRState() {}
-                bool state() { return( _state ); }
         private:
-                bool            _state;
 };
 
 #endif

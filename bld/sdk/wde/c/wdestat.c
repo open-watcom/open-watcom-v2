@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -224,8 +224,7 @@ bool WdeSetStatusText( const char *status1, const char *status2, bool redisplay 
     int len;
     int pos;
 
-    /* touch unused vars to get rid of warning */
-    _wde_touch( redisplay );
+    /* unused parameters */ (void)redisplay;
 
     if( WdeStatusWindow == NULL ) {
         return( true );
@@ -291,10 +290,7 @@ bool WdeDisplayStatusText( char *str )
 
 bool WdeStatusHookProc( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam )
 {
-    /* touch unused vars to get rid of warning */
-    _wde_touch( hWnd );
-    _wde_touch( wParam );
-    _wde_touch( lParam );
+    /* unused parameters */ (void)hWnd; (void)wParam; (void)lParam;
 
     if( msg == WM_DESTROY ) {
         WdeStatusWindow = NULL;

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -28,7 +29,7 @@
 *
 ****************************************************************************/
 
-extern  int             GetLog2( unsigned_32 value );
+extern  int             GetLog2( uint_32 value );
 extern  tn              FoldTimes( tn left, tn rite, type_def *tipe );
 extern  float_handle    OkToNegate( float_handle value, type_def *tipe );
 extern  tn      FoldMinus( tn left, tn rite, type_def *tipe );

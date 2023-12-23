@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,19 +33,18 @@
 #include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
-#include "trptypes.h"
-#include "trpcore.h"
 #include "trpld.h"
+#include "trpcore.h"
 #include "trpcomm.h"
 #include "trperr.h"
 #include "packet.h"
-#include "tcerr.h"
 #include "servio.h"
 #include "nothing.h"
 
+
 trap_version     TrapVersion;
 
-char    RWBuff[ 0x400 ];
+char    RWBuff[0x400];
 
 static in_mx_entry  In[1];
 static mx_entry     Out[1];
@@ -116,13 +116,13 @@ bool Session( void )
         In_Mx_Num = 1;
         Out_Mx_Num = 1;
         req = TRP_REQUEST( In );
-        TRP_REQUEST( In ) &= ~0x80;
-        if( req & 0x80 ) {
-            req &= ~0x80;
+        if( req & REQ_WANT_RETURN ) {
+            req &= ~REQ_WANT_RETURN;
             want_return = false;
         } else {
             want_return = true;
         }
+        TRP_REQUEST( In ) = req;
         switch( req ) {
         case REQ_CONNECT:
             if( !AccConnect() )
@@ -136,7 +136,7 @@ bool Session( void )
             RemoteDisco();
             for(;;) {
                 while( !RemoteConnect() )
-                    ;
+                    {}
                 if( !Session() )
                     break;
                 RemoteDisco();
@@ -153,15 +153,4 @@ bool Session( void )
             break;
         }
     }
-}
-
-char    *TrapClientString( tc_error err )
-{
-    switch( err ) {
-    case TC_BAD_TRAP_FILE:      return( TRP_ERR_BAD_TRAP_FILE );
-    case TC_CANT_LOAD_TRAP:     return( TRP_ERR_CANT_LOAD_TRAP );
-    case TC_WRONG_TRAP_VERSION: return( TRP_ERR_WRONG_TRAP_VERSION );
-    case TC_OUT_OF_DOS_MEMORY:  return( TRP_ERR_OUT_OF_DOS_MEMORY );
-    }
-    return( NULL );
 }

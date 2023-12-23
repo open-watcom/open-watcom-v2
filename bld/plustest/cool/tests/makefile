@@ -1,5 +1,7 @@
 plustest_name = cool
 
+tree_depth = 4
+
 !ifdef test1
 test_flags = -op-d2
 alt_error=01

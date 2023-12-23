@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,7 +43,9 @@
 #if defined( __WIDECHAR__ ) || defined( CLIB_USE_MBCS_TRANSLATION )
     #include <mbstring.h>
 #endif
-#include "slibqnx.h"
+#ifdef __QNX__
+    #include "slibqnx.h"
+#endif
 #include "prtscncf.h"
 #include "fixpoint.h"
 #include "fltsupp.h"
@@ -87,7 +89,7 @@
 
 #else
 
-static const CHAR_TYPE *evalflags( const CHAR_TYPE *ctl, PTR_SPECS specs )
+static const CHAR_TYPE *evalflags( const CHAR_TYPE *ctl, PTR_PRTF_SPECS specs )
 {
     specs->_flags = 0;
     for( ; ; ctl++ ) {
@@ -114,7 +116,7 @@ static const CHAR_TYPE *evalflags( const CHAR_TYPE *ctl, PTR_SPECS specs )
     return( ctl );
 }
 
-static const CHAR_TYPE *getprintspecs( const CHAR_TYPE *ctl, va_list *pargs, PTR_SPECS specs )
+static const CHAR_TYPE *getprintspecs( const CHAR_TYPE *ctl, va_list *pargs, PTR_PRTF_SPECS specs )
 {
     specs->_pad_char = STRING( ' ' );
     ctl = evalflags( ctl, specs );
@@ -290,7 +292,7 @@ static void fmt4hex( unsigned value, CHAR_TYPE *buf, int maxlen )
 }
 
 
-static void FixedPoint_Format( CHAR_TYPE *buf, long value, PTR_SPECS specs )
+static void FixedPoint_Format( CHAR_TYPE *buf, long value, PTR_PRTF_SPECS specs )
 {
     T32         at;
     int         i;
@@ -349,7 +351,7 @@ static void FixedPoint_Format( CHAR_TYPE *buf, long value, PTR_SPECS specs )
     }
 }
 
-static void float_format( CHAR_TYPE *buffer, va_list *pargs, PTR_SPECS specs )
+static void float_format( CHAR_TYPE *buffer, va_list *pargs, PTR_PRTF_SPECS specs )
 {
 #ifdef __WIDECHAR__
     unsigned char       mbBuffer[BUF_SIZE*MB_CUR_MAX];
@@ -418,7 +420,7 @@ static void float_format( CHAR_TYPE *buffer, va_list *pargs, PTR_SPECS specs )
 #endif
 }
 
-static void SetZeroPad( PTR_SPECS specs )
+static void SetZeroPad( PTR_PRTF_SPECS specs )
 {
     int         n;
 
@@ -435,7 +437,7 @@ static void SetZeroPad( PTR_SPECS specs )
 
 
 #if !defined( __WIDECHAR__ ) && defined( CLIB_USE_MBCS_TRANSLATION )
-static void write_wide_string( FAR_WIDE_STRING str, SPECS *specs, prtf_callback_t *out_putc )
+static void write_wide_string( FAR_WIDE_STRING str, PTR_PRTF_SPECS specs, prtf_callback_t *out_putc )
 {
     int     bytes;
     char    mbBuf[MB_CUR_MAX];
@@ -460,7 +462,7 @@ static void write_wide_string( FAR_WIDE_STRING str, SPECS *specs, prtf_callback_
 
 
 #if defined( __WIDECHAR__ ) && defined( CLIB_USE_MBCS_TRANSLATION )
-static void write_skinny_string( FAR_ASCII_STRING str, SPECS *specs, prtf_callback_t *out_putc )
+static void write_skinny_string( FAR_ASCII_STRING str, PTR_PRTF_SPECS specs, prtf_callback_t *out_putc )
 {
     int                 bytes;
     wchar_t             wc;
@@ -486,7 +488,7 @@ static void write_skinny_string( FAR_ASCII_STRING str, SPECS *specs, prtf_callba
 #endif
 
 
-static FAR_STRING formstring( CHAR_TYPE *buffer, va_list *pargs, PTR_SPECS specs, CHAR_TYPE *null_string )
+static FAR_STRING formstring( CHAR_TYPE *buffer, va_list *pargs, PTR_PRTF_SPECS specs, CHAR_TYPE *null_string )
 {
     FAR_STRING              arg;
     int                     length;
@@ -870,7 +872,7 @@ int __F_NAME(__prtf,__wprtf)( void PTR_PRTF_FAR dest, const CHAR_TYPE *format, v
     CHAR_TYPE           *a;
     FAR_STRING          arg;
     const CHAR_TYPE     *ctl;
-    SPECS               specs;
+    PRTF_SPECS          specs;
 
     specs._dest = dest;
     specs._flags = 0;

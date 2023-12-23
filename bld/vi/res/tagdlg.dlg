@@ -1,3 +1,5 @@
+/* UTF-8 encoding, ¥ */
+
 #include "tagdlg.rh"
 
 TAGS DIALOG 28, 25, 143, 98

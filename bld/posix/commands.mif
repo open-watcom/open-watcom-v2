@@ -2,7 +2,7 @@
 #   commands:   define the names of all the commands in the project
 #
 
-#   The directory $(posix_dir)\src\<command_name> must exist and contain
+#   The directory posix\src\<command_name> must exist and contain
 #   the source for each command.
 
 #                 all qnx boot      # build doc test

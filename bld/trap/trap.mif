@@ -16,32 +16,26 @@ sys_x86_qnx   = sys qnx
 sys_x86_linux = sys linux
 sys_axp_nt    = sys ntaxp
 
-trap_ext_os2_i86 = cli1.exe
-trap_ext_qnx_i86 = cli.qnx
-trap_ext_qnx_386 = cli.qnx
-trap_ext_win_i86 = cliw.exe
+trap_suf_os2_i86 = cli1
+trap_suf_win_i86 = cliw
 
-!ifdef trap_ext_$(host_os)_$(host_cpu)
-trap_basename = $(xname)
+!ifdef trap_suf_$(host_os)_$(host_cpu)
+trap_basename = $(xname)$(trap_suf_$(host_os)_$(host_cpu))
 !else
 trap_basename = $(xname)cli
 !endif
 
-!ifdef trap_ext_$(host_os)_$(host_cpu)
-target = $(trap_basename)$(trap_ext_$(host_os)_$(host_cpu))
-!else
 target = $(trap_basename).exe
-!endif
 
 TRAP_common_objs = testcli.obj
 TRAP_remote_objs =
 
-!else
+!else   ## ifdef test
 
 !include dllbase.mif
 
 !ifndef remote_link
-!ifndef core_only
+!ifndef core_entries
 full_export = 1
 !endif
 !endif
@@ -51,7 +45,7 @@ full_export = 1
 alias_symbols_nt = alias __DLLstart_='_LibMain@12'
 !endif
 
-!ifneq release 0
+!ifeq debug 0
 dllbase = $(trap_dllbase_$(host_os)_$(host_cpu))
 !endif
 
@@ -64,27 +58,27 @@ export_full_nt_risc = export TrapInfoFunction.4, TrapInterruptProgram.5, TrapTer
 export_full_win = export TRAPINPUTHOOK.5, TRAPINFOFUNCTION.6, TRAPHARDMODECHECK.7, TRAPGETHWNDFUNC.8, TRAPSETHARDMODE.12, TRAPUNLOCKINPUT.13
 !endif
 
-sys_x86_os2  = sys os2 dll initinstance &
+sys_x86_os2  = sys os2 dll initinstance opt dosseg &
     $(export_common_intel) $(export_full_os2) &
     op modname=$^& &
     option description $(description)
 
-sys_x86_os2v2  = sys os2v2 dll initinstance terminstance &
+sys_x86_os2v2  = sys os2v2 dll initinstance terminstance opt dosseg &
     $(export_common_intel) $(export_full_os2) &
     lib os2386.lib &
     op modname=$^& &
     option description $(description)
 
-sys_x86_win  = sys windows_dll &
+sys_x86_win  = sys windows_dll opt dosseg &
     export WEP.1 RESIDENT &
     export TRAPINIT.2, TRAPFINI.3, TRAPREQUEST.4 $(export_full_win) &
     op modname=$^& &
     option description $(description)
 #    option rwr
 
-sys_x86_dos  = sys dos
+sys_x86_dos  = sys dos opt dosseg
 
-sys_x86_rdos = sys rdos_dll &
+sys_x86_rdos = sys rdos_dll opt dosseg &
     export TrapInit_, TrapFini_, TrapRequest_ &
     $(dllbase)
 
@@ -129,8 +123,8 @@ trap_ext_win         = .dll
 
 trap_basename = $(xname)
 
-!ifdef trap_ext_$(host_os)_$(target_os)
-target = $(trap_basename)$(trap_ext_$(host_os)_$(target_os))
+!ifdef trap_ext_$(host_os)_$(target_sys)
+target = $(trap_basename)$(trap_ext_$(host_os)_$(target_sys))
 !else ifdef trap_ext_$(host_os)
 target = $(trap_basename)$(trap_ext_$(host_os))
 !else
@@ -143,12 +137,12 @@ target = $(trap_basename)$(ext_lib_shared)
 !endif
 
 TRAP_common_objs = $(os_prefix)strt.obj
+TRAP_remote_objs = remote.obj
+
+!endif  ## ifndef test
+
 !ifeq srv par
 TRAP_common_objs += $(os_prefix)noth.obj
 !else ifeq srv ser
 TRAP_common_objs += $(os_prefix)noth.obj
-!endif
-
-TRAP_remote_objs = remote.obj
-
 !endif

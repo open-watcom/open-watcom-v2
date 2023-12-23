@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -91,10 +91,7 @@ void InitGlobalVars( void )
     FuncCount               = 0;        /* total # of functions defined in module */
     SizeOfCount             = 0;        /* # of nested sizeof() expressions  */
     SymLevel                = 0;        /* current lex level (# of nested {) */
-    HashValue               = 0;        /* hash value for identifier */
-    MacHashValue            = 0;        /* hash value for macro name */
     SavedId                 = NULL;     /* saved id when doing look ahead */
-    SavedHash               = 0;        /* hash value for saved id */
     SavedTokenLoc.line      = 0;        /* value of TokenLine when id saved */
     SavedTokenLoc.column    = 0;        /* value of TokenColumn when id saved */
     SavedTokenLoc.fno       = 0;        /* value of TokenFno when id saved */
@@ -150,7 +147,6 @@ void InitGlobalVars( void )
     ProEpiDataSize          = 0;        /* data to be alloc'd for pro/epi hook */
     ErrLimit                = 0;
 
-    DataThreshold           = 0;        /* sizeof(obj) > this ==> separate segment */
     Inline_Threshold        = 0;        /* -oe=num for function inlining */
 
     DataPtrSize             = 0;
@@ -216,7 +212,7 @@ void InitGlobalVars( void )
     Trunc                   = 0;        /* stop at Trunc when reading  */
     PrevProtoType           = NULL;     /* prev func prototype */
 
-    TargSys                 = TS_OTHER;
+    TargetSystem            = TS_OTHER;
     DefDataSegment          = SEG_NULL; /* #pragma data_seg("segname","class") */
     DefCodeSegment          = NULL;     /* #pragma code_seg("seg","c") */
 
@@ -229,6 +225,7 @@ void InitGlobalVars( void )
     Check_global_prototype  = 0;
 
     memset( &CompFlags, 0, sizeof( CompFlags ) );
+    memset( &CompVars, 0, sizeof( CompVars ) );
 
     InitMacroSegments();                /* initialize pointer to list of macro segments */
     InitStmt();

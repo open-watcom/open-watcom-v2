@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2011-2013 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2011-2022 The Open Watcom Contributors. All Rights Reserved.
 * Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 * Copyright (c) 1987-1992 Rational Systems, Incorporated. All Rights Reserved.
 *
@@ -14,8 +14,8 @@
 
 typedef ACTION_RETURN   CDECL_FAR16 loader_init_fn(void);
 typedef ACTION_RETURN   CDECL_FAR16 loader_load_fn(FDORNAME filename,ULONG,TSF32 FarPtr tspv,LONG FarPtr main_cookie,char FarPtr cmdline);
-typedef ACTION_RETURN   CDECL_FAR16 loader_rel_fn(Fptr32 FarPtr fptrp, LONG current_cookie);
-typedef ACTION_RETURN   CDECL_FAR16 loader_unrel_fn(Fptr32 FarPtr fptrp, LONG current_cookie);
+typedef ACTION_RETURN   CDECL_FAR16 loader_rel_fn(addr48_ptr FarPtr fptrp, LONG current_cookie);
+typedef ACTION_RETURN   CDECL_FAR16 loader_unrel_fn(addr48_ptr FarPtr fptrp, LONG current_cookie);
 typedef ACTION_RETURN   CDECL_FAR16 loader_unload_fn(LONG FarPtr main_cookie);
 typedef ACTION_RETURN   CDECL_FAR16 loader_freemap_fn(void);   // ???
 typedef ACTION_RETURN   CDECL_FAR16 loader_canload_fn(FDORNAME filename,ULONG);

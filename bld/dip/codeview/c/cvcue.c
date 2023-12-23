@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -64,9 +64,9 @@ walk_result DIPIMPENTRY( WalkFileList )( imp_image_handle *iih, imp_mod_handle i
                 file_tab_size = file_tab_count * sizeof( unsigned_32 );
                 hdr = VMBlock( iih, cde->lfo, sizeof( *hdr ) + file_tab_size );
                 /*
-                    Make a copy of the file table offset so that we don't have to worry
-                    about the VM system throwing it out.
-                */
+                 * Make a copy of the file table offset so that we don't have to worry
+                 * about the VM system throwing it out.
+                 */
                 file_off = walloca( file_tab_size );
                 memcpy( file_off, &hdr->baseSrcFile[0], file_tab_size );
                 icueh->imh = imh;
@@ -114,8 +114,10 @@ size_t DIPIMPENTRY( CueFile )( imp_image_handle *iih, imp_cue_handle *icueh, cha
     p = VMBlock( iih, offset, sizeof( unsigned_16 ) );
     if( p == NULL )
         return( 0 );
-    /* Doc says the length is unsigned_16, cvpack says unsigned_8. */
-    /* testing on real files confirm unsigned_8 */
+    /*
+     * Doc says the length is unsigned_16, cvpack says unsigned_8.
+     * testing on real files confirm unsigned_8
+     */
     name_len = *(unsigned_8 *)p;
     p = VMBlock( iih, offset + sizeof( unsigned_8 ), name_len );
     if( p == NULL )
@@ -228,8 +230,10 @@ static dip_status AdjBackward( imp_image_handle *iih, unsigned long bias, imp_cu
     if( lp == NULL )
         return( DS_ERR | DS_FAIL );
     for( ;; ) {
-        /* if icueh->pair went negative, the following compare will fail
-           because of unsigned comparison */
+        /*
+         * if icueh->pair went negative, the following compare will fail
+         * because of unsigned comparison
+         */
         if( icueh->pair < lp->cPair )
             return( ds );
         fp = VMBlock( iih, icueh->file, sizeof( *fp ) );
@@ -326,8 +330,10 @@ search_result DIPIMPENTRY( LineCue )( imp_image_handle *iih, imp_mod_handle imh,
     fp = VMBlock( iih, file, sizeof( *fp ) + num_segs * sizeof( unsigned_32 ) );
     if( fp == NULL )
         return( SR_NONE );
-    /* make a copy of the line/offset table so that we don't have to worry
-       about the VM system throwing it out */
+    /*
+     * make a copy of the line/offset table so that we don't have to worry
+     * about the VM system throwing it out
+     */
     line_off = walloca( num_segs * sizeof( unsigned_32 ) );
     memcpy( line_off, &fp->baseSrcLn[0], num_segs * sizeof( unsigned_32 ) );
     best_line = (unsigned long)-1L;
@@ -452,7 +458,8 @@ static search_result SearchFile( imp_image_handle *iih, address addr, imp_cue_ha
             continue;
         if( (ranges[seg_idx].start != 0 || ranges[seg_idx].end != 0)
           && (addr.mach.offset < ranges[seg_idx].start + curr_addr.mach.offset
-          /* The next condition is commented out. Digital Mars tools are known to
+          /*
+           * The next condition is commented out. Digital Mars tools are known to
            * emit buggy CV4 data where the upper range does not cover all code,
            * causing us to fail finding last addresses within a module.
            */
@@ -471,7 +478,8 @@ static search_result SearchFile( imp_image_handle *iih, address addr, imp_cue_ha
             }
         }
     }
-    /* We abuse the SR_FAIL return code to really mean SR_CONTINUE (ie. continue
+    /*
+     * We abuse the SR_FAIL return code to really mean SR_CONTINUE (ie. continue
      * searching other files). A SR_CONTINUE code is not defined because it does
      * not make sense as a return value for DIPImpAddrCue()
      */

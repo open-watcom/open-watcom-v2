@@ -1,8 +1,8 @@
-
 /****************************************************************************
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,8 +30,8 @@
 *
 ****************************************************************************/
 
-#ifndef _CLIBINT_H_E9806518_31C7_4441_BCA4_93A19CDE39C4
-#define _CLIBINT_H_E9806518_31C7_4441_BCA4_93A19CDE39C4
+#ifndef _CLIBINT_H_INCLUDED
+#define _CLIBINT_H_INCLUDED
 
 /*
  * From CLIB
@@ -57,4 +57,4 @@ extern unsigned char    _real87;
 }
 #endif
 
-#endif /* _CLIBINT_H_E9806518_31C7_4441_BCA4_93A19CDE39C4 */
+#endif /* _CLIBINT_H_INCLUDED */

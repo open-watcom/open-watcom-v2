@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,9 +37,9 @@ extern  uint    BuffLoc( void );
 extern  void    BuffPatch( byte val, uint loc );
 extern  void    BuffByte( byte b );
 extern  void    BuffWord( uint w );
-extern  void    BuffDWord( unsigned_32 w );
+extern  void    BuffDWord( uint_32 w );
 extern  void    BuffOffset( offset w );
-extern  void    BuffValue( unsigned_32 val, uint class );
+extern  void    BuffValue( uint_32 val, uint class );
 extern  void    BuffRelocatable( pointer ptr, fixup_kind type, offset off );
 extern  void    BuffBack( pointer back, int off );
 extern  void    BuffAddr( pointer sym );

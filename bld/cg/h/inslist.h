@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,7 +40,7 @@
 typedef int                     instruction_id;
 #define MAX_INS_ID              INT_MAX
 
-typedef unsigned_32             source_line_number;
+typedef uint_32                 source_line_number;
 
 typedef byte                    opcnt;
 
@@ -50,9 +51,12 @@ typedef enum {
 } instruction_state;
 
 typedef enum {
-        CALL_READS_NO_MEMORY    = 0x01,
-        CALL_WRITES_NO_MEMORY   = 0x02,
-        CALL_IGNORES_RETURN     = 0x04,
+        CALL_READS_NO_MEMORY    = 0x0001,
+        CALL_WRITES_NO_MEMORY   = 0x0002,
+        CALL_IGNORES_RETURN     = 0x0004,
+        CALL_RETURNS_STRUCT     = 0x0008,
+        CALL_ABORTS             = 0x0010,
+        CALL_NORETURN           = 0x0020,
         #include "targcall.h"
 } call_flags;
 
@@ -116,7 +120,7 @@ typedef struct instruction {
         instruction_id          id;
         type_class_def          type_class;
         type_class_def          base_type_class;
-        unsigned_16             sequence;
+        uint_16                 sequence;
         union {
                 byte            byte;
                 bool            bool_flag;

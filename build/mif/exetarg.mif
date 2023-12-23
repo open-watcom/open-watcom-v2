@@ -39,6 +39,15 @@ exetarg_qnx_res_opt = opt resource=$(exetarg_qnx_res)
 !undef exetarg_qnx_res_obj
 !undef exetarg_qnx_res_opt
 !endif
+!ifeq host_os osx
+# now unsupported on OSX
+# not clear what is running on OSX by default
+# and what can be installed to work
+# no problem, OSX build is experimental
+#objcopy = gobjcopy
+!else
+objcopy = objcopy
+!endif
 $(exetarg_name)$(exetarg_ext) : $+$(exetarg_prebuild_objs) $(exetarg_qnx_res_obj) &
         $(exetarg_objs) $(exetarg_libs)$- $(exetarg_res_version_$(host_os)_$(host_cpu)) &
         $(exetarg_$(host_os)_manif_$(host_cpu)) $+$(exetarg_res_wresui) $(exetarg_res)$- &
@@ -49,6 +58,16 @@ $(exetarg_name)$(exetarg_ext) : $+$(exetarg_prebuild_objs) $(exetarg_qnx_res_obj
     $(bld_cl) $(bld_clflags) $+$(exetarg_objs) $(exetarg_libs)$- $(bld_ldflags)
 !else
     $(cl) $(clflags) $+$(exetarg_objs) $(exetarg_libs)$- $(ldflags)
+!endif
+!ifeq host_os osx
+# now unsupported on OSX
+!else
+!if defined("__CLANG_TOOLS__") || defined("__GCC_TOOLS__")
+    $(objcopy) --only-keep-debug $@ $^&.sym
+    chmod -x $^&.sym
+    $(objcopy) --strip-debug $@
+    $(objcopy) --add-gnu-debuglink=$^&.sym $@
+!endif
 !endif
 !else
     $(noecho)%write $^&.lnk $(lflags) $+$(exetarg_opts) $(exetarg_qnx_res_opt)$-
@@ -89,14 +108,14 @@ $(exetarg_name)$(exetarg_ext) : $+$(exetarg_prebuild_objs) $(exetarg_qnx_res_obj
 !ifeq verbose 0
     @echo bind res $@ manif+ver+appl
 !endif
-    $(rcbnd) $+$(exetarg_res)$- $@ -fr=$(exetarg_res_version_$(host_os)_$(host_cpu)) &
+    $(rcbind) -q -k $+$(exetarg_res)$- $@ -fr=$(exetarg_res_version_$(host_os)_$(host_cpu)) &
         -fr=$(exetarg_$(host_os)_manif_$(host_cpu))
 !else
 # manifest + version only
 !ifeq verbose 0
     @echo bind res $@ manif+ver
 !endif
-    $(rcbnd) $(exetarg_res_version_$(host_os)_$(host_cpu)) $@ &
+    $(rcbind) -q -k $(exetarg_res_version_$(host_os)_$(host_cpu)) $@ &
         -fr=$(exetarg_$(host_os)_manif_$(host_cpu))
 !endif
 !else ifdef exetarg_res
@@ -104,13 +123,13 @@ $(exetarg_name)$(exetarg_ext) : $+$(exetarg_prebuild_objs) $(exetarg_qnx_res_obj
 !ifeq verbose 0
     @echo bind res $@ manif+appl
 !endif
-    $(rcbnd) $+$(exetarg_res)$- $@ -fr=$(exetarg_$(host_os)_manif_$(host_cpu))
+    $(rcbind) -q -k $+$(exetarg_res)$- $@ -fr=$(exetarg_$(host_os)_manif_$(host_cpu))
 !else
 # manifest only
 !ifeq verbose 0
     @echo bind res $@ manif
 !endif
-    $(rcbnd) $(exetarg_$(host_os)_manif_$(host_cpu)) $@
+    $(rcbind) -q -k $(exetarg_$(host_os)_manif_$(host_cpu)) $@
 !endif
 !else ifdef exetarg_res_version_$(host_os)_$(host_cpu)
 #
@@ -121,20 +140,20 @@ $(exetarg_name)$(exetarg_ext) : $+$(exetarg_prebuild_objs) $(exetarg_qnx_res_obj
 !ifeq verbose 0
     @echo bind res $@ ver+appl
 !endif
-    $(rcbnd) $+$(exetarg_res)$- $@ -fr=$(exetarg_res_version_$(host_os)_$(host_cpu))
+    $(rcbind) -q -k $+$(exetarg_res)$- $@ -fr=$(exetarg_res_version_$(host_os)_$(host_cpu))
 !else
 # version only
 !ifeq verbose 0
     @echo bind res $@ ver
 !endif
-    $(rcbnd) $(exetarg_res_version_$(host_os)_$(host_cpu)) $@
+    $(rcbind) -q -k $(exetarg_res_version_$(host_os)_$(host_cpu)) $@
 !endif
 !else ifdef exetarg_res
 # application only
 !ifeq verbose 0
     @echo bind res $@ appl
 !endif
-    $(rcbnd) $+$(exetarg_res)$- $@
+    $(rcbind) -q -k $+$(exetarg_res)$- $@
 !endif
 ###############################
 # add Windows 3.x resources

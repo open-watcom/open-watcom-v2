@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,7 +38,7 @@
 #include "wnoret.h"
 #if defined( __UNIX__ ) && defined( __WATCOMC__ )
   #if ( __WATCOMC__ < 1300 )
-    // fix for OW 1.9
+    /* fix for OW 1.9 */
     #include <limits.h>
   #endif
 #endif
@@ -70,11 +70,11 @@ void leave( int rc )
 static void ShowProductInfo( void )
 {
     if( !quiet ) {
-        Output( banner1w( "OMF Dump Utility", BAN_VER_STR ) CRLF );
-        Output( banner2 CRLF );
-        Output( banner2a( 1984 ) CRLF );
-        Output( banner3 CRLF );
-        Output( banner3a CRLF );
+        Output( banner1w( "OMF Dump Utility", BAN_VER_STR ) "\n"
+                banner2 "\n"
+                banner2a( 1984 ) "\n"
+                banner3 "\n"
+                banner3a "\n" );
     }
 }
 
@@ -82,17 +82,18 @@ static void usage( void )
 {
     ShowProductInfo();
 
-    Output( "Usage: dmpobj [options] objfile[." OBJSUFFIX "]..." CRLF );
-    Output( "Options:" CRLF );
-    Output( "-l\t\tProduce listing file" CRLF );
-    Output( "-d\t\tPrint descriptive titles for some output" CRLF );
-    Output( "-t\t\tPrint names for some index values and list at end" CRLF );
-    Output( "-c\t\tDump COMENT records without interpretation" CRLF );
-    Output( "-i\t\tOriginal Intel OMF-86 format" CRLF );
-    Output( "-q\t\tQuiet, don't show product info" CRLF );
-    Output( "-r\t\tProvide raw dump of records as well" CRLF );
-    Output( "-rec=xxx\tProvide dump of selected record type" CRLF );
-    Output( "\t\t  (by number or by symbolic name)" CRLF );
+    Output( "Usage:\n"
+            "  dmpobj [options] objfile[." OBJSUFFIX "]...\n"
+            "Options:\n"
+            "  -l[=file]\tProduce listing file\n"
+            "  -d\t\tPrint descriptive titles for some output\n"
+            "  -t\t\tPrint names for some index values and list at end\n"
+            "  -c\t\tDump COMENT records without interpretation\n"
+            "  -i\t\tOriginal Intel OMF-86 format\n"
+            "  -q\t\tQuiet, don't show product info\n"
+            "  -r\t\tProvide raw dump of records as well\n"
+            "  -rec=xxx\tProvide dump of selected record type\n"
+            "\t\t  (by number or by symbolic name)\n" );
 }
 
 int main( int argc, char **argv )
@@ -103,7 +104,7 @@ int main( int argc, char **argv )
     char        file[_MAX_PATH];
     char        *fn;
     int         i;
-    bool        list_file;
+    char        *list_file;
     FILE        *fh;
     bool        is_intel;
 
@@ -113,14 +114,17 @@ int main( int argc, char **argv )
     Descriptions = false;
     InterpretComent = true;
     TranslateIndex = false;
-    list_file = false;
+    list_file = NULL;
     is_intel = false;
     quiet = false;
     for( i = 1; i < argc; ++i ) {
         if( argv[i][0] == '-' ) {
             switch( tolower( argv[i][1] ) ) {
             case 'l':
-                list_file = true;
+                list_file = argv[i] + 2;
+                if( *list_file == '=' ) {
+                    list_file++;
+                }
                 break;
             case 'd':
                 Descriptions = true;
@@ -137,7 +141,7 @@ int main( int argc, char **argv )
                             rec_type[rec_count++] = RecNameToNumber( argv[i] + 5 );
                         }
                     } else {
-                        Output( "Maximum 10 record type allowed." CRLF );
+                        Output( "Maximum 10 record type allowed.\n" );
                         OutputFini();
                     }
                 } else {
@@ -179,15 +183,17 @@ int main( int argc, char **argv )
         }
         fp = fopen( fn, "rb" );
         if( fp == NULL ) {
-            Output( "Cannot open '%s' for reading" CRLF, fn );
+            Output( "Cannot open '%s' for reading\n", fn );
             leave( 20 );
             // never return
         }
-        if( list_file ) {
-            _makepath( file, pg.drive, pg.dir, pg.fname, LSTSUFFIX );
-            fh = fopen( file, "w" );
+        if( list_file != NULL ) {
+            if( *list_file == '\0' ) {
+                _makepath( file, pg.drive, pg.dir, pg.fname, LSTSUFFIX );
+            }
+            fh = fopen( list_file, "wt" );
             if( fh == NULL ) {
-                Output( "Cannot open '%s' for writing" CRLF, file );
+                Output( "Cannot open '%s' for writing\n", list_file );
                 leave( 20 );
                 // never return
             }

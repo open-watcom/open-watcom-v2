@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,6 +33,7 @@
 
 #include "vi.h"
 #include "specio.h"
+#include "parse.h"
 
 /*
  * ReadDataFile - do just that
@@ -98,7 +99,7 @@ vi_rc ReadDataFile( const char *file, char **buffer, bool (*fn_alloc)(int), bool
         // add space for token terminator
         len = strlen( token ) + 1;
         // add space for list terminator
-        buffdata = MemRealloc( buffdata, size + len + 1 );
+        buffdata = _MemReallocArray( buffdata, char, size + len + 1 );
         // copy token with terminator
         memcpy( buffdata + size, token, len );
         size += len;
@@ -116,7 +117,7 @@ vi_rc ReadDataFile( const char *file, char **buffer, bool (*fn_alloc)(int), bool
     SpecialFclose( &gf );
     if( i < dcnt ) {
         if( buffdata != NULL )
-            MemFree( buffdata );
+            _MemFreeArray( buffdata );
         return( ERR_INVALID_DATA_FILE );
     }
     *buffer = buffdata;

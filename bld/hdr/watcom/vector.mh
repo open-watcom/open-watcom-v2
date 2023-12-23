@@ -143,7 +143,7 @@ public:
     }
 
     template< class InputIterator >
-    void insert(iterator position, InputIterator first, InputIterator last )
+    void insert( iterator position, InputIterator first, InputIterator last )
     {
         helper_insert( position,
                        first,
@@ -152,10 +152,7 @@ public:
     }
 
     template< class Integral >
-    void helper_insert( iterator position,
-                        Integral count,
-                        Integral value,
-                        true_type )
+    void helper_insert( iterator position, Integral count, Integral value, true_type )
     {
         insert( position,
                 static_cast<size_type>( count ),
@@ -163,13 +160,10 @@ public:
     }
 
     template< class InputIterator >
-    void helper_insert( iterator position,
-                        InputIterator first,
-                        InputIterator last,
-                        false_type )
+    void helper_insert( iterator position, InputIterator first, InputIterator last, false_type )
     {
         while( first != last ) {
-            insert( position, *first );
+            position = insert( position, *first );
             ++position;
             ++first;
         }

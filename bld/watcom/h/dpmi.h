@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,21 +34,10 @@
 #define __DPMI_H
 
 #include "watcom.h"
+#include "descript.h"
 
 
 #define VECTOR_DPMI     0x31
-
-/*
- * access right definitions
- */
-#define ACCESS_DATA16      0x0093     /* 0000 0000 1001 0011 */
-#define ACCESS_DATA16BIG   0x8093     /* 1000 0000 1001 0011 */
-#define ACCESS_CODE32SMALL 0x409B     /* 0100 0000 1001 1011 */
-#define ACCESS_CODE32BIG   0xC09B     /* 1100 0000 1001 1011 */
-#define ACCESS_DATA32SMALL 0x4093     /* 0100 0000 1001 0011 */
-#define ACCESS_DATA32BIG   0xC093     /* 1100 0000 1001 0011 */
-#define ACCESS_CODE 1
-#define ACCESS_DATA 2
 
 typedef struct {
     uint_32     edi;
@@ -92,56 +81,6 @@ typedef struct {
     uint_8      slave_pic_base_interrupt;
 } version_info;
 #define VERSION_80386   0x0001
-
-/* Definitions for manipulating protected mode descriptors ... used
- * with DPMIGetDescriptor, DPMISetDescriptor, DPMISetDescriptorAccessRights,
- * etc.
- */
-typedef enum {
-    DSC_ACCESSED        = 0x01,
-    DSC_RDWR            = 0x02,
-    DSC_EXPAND_DOWN     = 0x04,
-    DSC_EXECUTE         = 0x08,
-    DSC_MUST_BE_1       = 0x10,
-    DSC_PRESENT         = 0x80,
-    DSC_USER_AVAIL      = 0x1000,
-    DSC_MUST_BE_0       = 0x2000,
-    DSC_USE32           = 0x4000,
-    DSC_PAGE_GRANULAR   = 0x8000
-} dsc_flags;
-
-typedef struct {
-    uint_8  accessed : 1;
-    uint_8  rdwr     : 1;
-    uint_8  exp_down : 1;
-    uint_8  execute  : 1;
-    uint_8  mustbe_1 : 1;
-    uint_8  dpl      : 2;
-    uint_8  present  : 1;
-} dsc_type;
-
-typedef struct {
-    uint_8           : 4;
-    uint_8  useravail: 1;
-    uint_8  mustbe_0 : 1;
-    uint_8  use32    : 1;
-    uint_8  page_gran: 1;
-} dsc_xtype;
-
-typedef struct {
-    uint_16         lim_0_15;
-    uint_16         base_0_15;
-    uint_8          base_16_23;
-    dsc_type        type;
-    union {
-        struct {
-            uint_8  lim_16_19: 4;
-            uint_8           : 4;
-        };
-        dsc_xtype   xtype;
-    };
-    uint_8          base_24_31;
-} descriptor;
 
 typedef enum {
     DPMI_WATCH_EXEC,

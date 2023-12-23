@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2018-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2018-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,11 +40,6 @@
 #include "realmod.h"
 #include "int10.h"
 
-
-#define GetBIOSData( offset, var ) \
-    MyMoveData( BDATA_SEG, offset, _FP_SEG( &var ), _FP_OFF( &var ), sizeof( var ) );
-#define SetBIOSData( offset, var ) \
-    MyMoveData( _FP_SEG( &var ), _FP_OFF( &var ), BDATA_SEG, offset, sizeof( var ) );
 
 typedef enum {
     DISP_NONE,
@@ -341,12 +336,7 @@ static void finiSwapperW( void )
  */
 static void setRegenClear( void )
 {
-    unsigned char regen;
-
-    GetBIOSData( BDATA_VID_CTRL1, regen );
-    regen &= 0x7f;
-    regen |= saveMode & 0x80;
-    SetBIOSData( BDATA_VID_CTRL1, regen );
+    BIOSData( BDATA_VIDEO_INFO_0, unsigned char ) = (BIOSData( BDATA_VIDEO_INFO_0, unsigned char ) & 0x7f) | (saveMode & 0x80);
 
 } /* setREgenClear */
 

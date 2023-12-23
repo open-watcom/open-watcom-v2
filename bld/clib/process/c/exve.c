@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,6 +41,7 @@
 #include <dos.h>
 #include <stdlib.h>
 #include <stddef.h>
+#include "roundmac.h"
 #include "rtdata.h"
 #include "psp.h"
 #include "msdos.h"
@@ -186,7 +188,7 @@ static int doalloc( unsigned size, unsigned envdata, unsigned envsize_paras )
                 _pspptr( _RWD_psp )->maxpara = _RWD_psp + _mcbptr( _RWD_psp )->size;
                 if( _mcbptr( _RWD_psp )->size < size ) {
                     puts( "Not enough memory on exec\r\n" );
-                    TinyTerminateProcess( 0xff );
+                    TinyTerminateProcess( -1 );
                 }
                 return( TRUE );
             }

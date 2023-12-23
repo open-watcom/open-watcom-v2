@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,7 +42,7 @@
 #include "cgbackut.h"
 #include "ring.h"
 #include "initdefs.h"
-#ifndef NDEBUG
+#ifdef DEVBUILD
     #include "dbg.h"
 #endif
 
@@ -153,7 +153,7 @@ bool StabGenerate(              // GENERATE A STATE TABLE
             }
         }
     } RingIterEnd( se )
-#if !defined( NDEBUG ) || !defined( _INTEL_CPU )
+#if defined( _RISC_CPU ) || defined( DEVBUILD )
     DgPtrSymCode( NULL );
     DgPtrSymData( NULL );
 #endif

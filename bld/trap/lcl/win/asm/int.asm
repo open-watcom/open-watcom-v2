@@ -2,7 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
-;* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+;* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -56,13 +56,13 @@ _NewSS  dw      0
 _NewAX  dw      0
 _NewIP  dw      0
 _NewCS  dw      0
-_NewFLAGS dw    0
+_NewFlags dw    0
 _OldretCS dw    0
 _OldretIP dw    0
 _Oldintnumber dw        0
 _Oldhandle dw   0
 _RetHow dw      0
-public _NewSS,_NewESP,_NewAX, _NewIP, _NewCS, _NewFLAGS, _OldretCS
+public _NewSS,_NewESP,_NewAX, _NewIP, _NewCS, _NewFlags, _OldretCS
 public _OldretIP, _Oldintnumber, _Oldhandle,_RetHow
 ;**************************************************************************
 ;***                                                                    ***

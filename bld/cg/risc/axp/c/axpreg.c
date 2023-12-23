@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,6 +34,7 @@
 #include "_cgstd.h"
 #include "coderep.h"
 #include "cgaux.h"
+#include "cgauxcc.h"
 #include "cgmem.h"
 #include "data.h"
 #include "utils.h"
@@ -41,6 +42,7 @@
 #include "typemap.h"
 #include "makeblk.h"
 #include "bldcall.h"
+#include "axpenc.h"
 #include "feprotos.h"
 
 
@@ -56,8 +58,8 @@ hw_reg_set SavedRegs( void )
     HW_CTurnOn( saved, HW_R12 );
     HW_CTurnOn( saved, HW_R13 );
     HW_CTurnOn( saved, HW_R14 );
-    HW_CTurnOn( saved, HW_R15 );
-    HW_CTurnOn( saved, HW_R26 );
+    HW_CTurnOn( saved, HW_FP_REG );
+    HW_CTurnOn( saved, HW_RA_REG );
     HW_CTurnOn( saved, HW_F2 );
     HW_CTurnOn( saved, HW_F3 );
     HW_CTurnOn( saved, HW_F4 );
@@ -96,17 +98,20 @@ type_class_def  CallState( aux_handle aux, type_def *tipe, call_state *state )
     HW_CTurnOff( state->modify, HW_UNUSED );
     state->used = state->modify;     /* anything not saved is used*/
     state->attr = 0;
-    cclass = *(call_class *)FEAuxInfo( aux, CALL_CLASS );
-    if( cclass & SETJMP_KLUGE ) {
+    cclass = (call_class)(pointer_uint)FEAuxInfo( aux, FEINF_CALL_CLASS );
+    if( cclass & FECALL_GEN_SETJMP_KLUGE ) {
         state->attr |= ROUTINE_IS_SETJMP;
     }
-    if( cclass & SUICIDAL ) {
-        state->attr |= ROUTINE_NEVER_RETURNS;
+    if( cclass & FECALL_GEN_ABORTS ) {
+        state->attr |= ROUTINE_NEVER_RETURNS_ABORTS;
     }
-    if( cclass & NO_MEMORY_CHANGED ) {
+    if( cclass & FECALL_GEN_NORETURN ) {
+        state->attr |= ROUTINE_NEVER_RETURNS_NORETURN;
+    }
+    if( cclass & FECALL_GEN_NO_MEMORY_CHANGED ) {
         state->attr |= ROUTINE_MODIFIES_NO_MEMORY;
     }
-    if( cclass & NO_MEMORY_READ ) {
+    if( cclass & FECALL_GEN_NO_MEMORY_READ ) {
         state->attr |= ROUTINE_READS_NO_MEMORY;
     }
     i = 0;
@@ -114,7 +119,7 @@ type_class_def  CallState( aux_handle aux, type_def *tipe, call_state *state )
     for( parm_src = ParmRegs(); !HW_CEqual( *parm_src, HW_EMPTY ); ++parm_src ) {
         *parm_dst = *parm_src;
         if( HW_Ovlap( *parm_dst, state->unalterable ) ) {
-            FEMessage( MSG_BAD_SAVE, aux );
+            FEMessage( FEMSG_BAD_SAVE, aux );
         }
         HW_CTurnOff( *parm_dst, HW_UNUSED );
         parm_dst++;
@@ -136,7 +141,7 @@ type_class_def  CallState( aux_handle aux, type_def *tipe, call_state *state )
 hw_reg_set      RAReg( void )
 /***************************/
 {
-    return( HW_R26 );
+    return( HW_RA_REG );
 }
 #endif
 
@@ -203,7 +208,7 @@ bool            IsStackReg( name *n )
         return( false );
     if( n->n.class != N_REGISTER )
         return( false );
-    if( !HW_CEqual( n->r.reg, HW_R30 ) && !HW_CEqual( n->r.reg, HW_D30 ) )
+    if( !HW_CEqual( n->r.reg, HW_SP_REG ) && !HW_CEqual( n->r.reg, HW_SP_REG32 ) )
         return( false );
     return( true );
 }

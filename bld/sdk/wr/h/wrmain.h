@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,7 +41,7 @@ typedef struct WRSaveIntoData {
     WRInfo                      *info;
     WResID                      *type;
     WResID                      *name;
-    void                        *data;
+    char                        *data;
     WResLangType                lang;
     uint_32                     size;
     uint_16                     MemFlags;
@@ -54,9 +55,9 @@ WRDLLENTRY extern void             WRAPI WRInit( void );
 WRDLLENTRY extern void             WRAPI WRFini( void );
 WRDLLENTRY extern WRInfo *         WRAPI WRLoadResource( const char *, WRFileType );
 WRDLLENTRY extern bool             WRAPI WRUpdateTmp( WRInfo *info );
-WRDLLENTRY extern bool             WRAPI WRSaveResource( WRInfo *, bool );
-WRDLLENTRY extern bool             WRAPI WRSaveObjectAs( const char *, WRFileType, WRSaveIntoData * );
-WRDLLENTRY extern bool             WRAPI WRSaveObjectInto( const char *, WRSaveIntoData *, bool * );
+WRDLLENTRY extern bool             WRAPI WRSaveResource( WRInfo *, bool backup );
+WRDLLENTRY extern bool             WRAPI WRSaveObjectAs( const char *, WRFileType, WRSaveIntoData *idata );
+WRDLLENTRY extern bool             WRAPI WRSaveObjectInto( const char *, WRSaveIntoData *idata, bool * );
 WRDLLENTRY extern bool             WRAPI WRFindAndSetData( WResDir dir, WResID *type, WResID *name, WResLangType *lang, void *data );
 WRDLLENTRY extern WResLangNode *   WRAPI WRFindLangNode( WResDir dir, WResID *type, WResID *name, WResLangType *lang );
 

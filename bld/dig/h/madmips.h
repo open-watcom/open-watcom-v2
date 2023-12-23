@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,14 +34,6 @@
 #define MADMIPS_H
 
 #include "digpck.h"
-enum mips_cputypes {
-    MIPS_DUNNO,
-    MIPS_R2000,
-    MIPS_R3000,
-    MIPS_R4000,
-    MIPS_R5000
-};
-
 typedef union {
     unsigned_64         u64;
     lreal               f;
@@ -181,44 +174,44 @@ struct mips_mad_registers {
         unsigned_64     ra;
     } u31;
 
-    unsigned_64 pc;
-    unsigned_32 lo;
-    unsigned_32 hi;
-    unsigned_32 fpcsr;
-    unsigned_32 fpivr;
+    unsigned_64         pc;
+    unsigned_32         lo;
+    unsigned_32         hi;
+    unsigned_32         fpcsr;
+    unsigned_32         fpivr;
 
-    mipsfloat   f0;
-    mipsfloat   f1;
-    mipsfloat   f2;
-    mipsfloat   f3;
-    mipsfloat   f4;
-    mipsfloat   f5;
-    mipsfloat   f6;
-    mipsfloat   f7;
-    mipsfloat   f8;
-    mipsfloat   f9;
-    mipsfloat   f10;
-    mipsfloat   f11;
-    mipsfloat   f12;
-    mipsfloat   f13;
-    mipsfloat   f14;
-    mipsfloat   f15;
-    mipsfloat   f16;
-    mipsfloat   f17;
-    mipsfloat   f18;
-    mipsfloat   f19;
-    mipsfloat   f20;
-    mipsfloat   f21;
-    mipsfloat   f22;
-    mipsfloat   f23;
-    mipsfloat   f24;
-    mipsfloat   f25;
-    mipsfloat   f26;
-    mipsfloat   f27;
-    mipsfloat   f28;
-    mipsfloat   f29;
-    mipsfloat   f30;
-    mipsfloat   f31;
+    mipsfloat           f0;
+    mipsfloat           f1;
+    mipsfloat           f2;
+    mipsfloat           f3;
+    mipsfloat           f4;
+    mipsfloat           f5;
+    mipsfloat           f6;
+    mipsfloat           f7;
+    mipsfloat           f8;
+    mipsfloat           f9;
+    mipsfloat           f10;
+    mipsfloat           f11;
+    mipsfloat           f12;
+    mipsfloat           f13;
+    mipsfloat           f14;
+    mipsfloat           f15;
+    mipsfloat           f16;
+    mipsfloat           f17;
+    mipsfloat           f18;
+    mipsfloat           f19;
+    mipsfloat           f20;
+    mipsfloat           f21;
+    mipsfloat           f22;
+    mipsfloat           f23;
+    mipsfloat           f24;
+    mipsfloat           f25;
+    mipsfloat           f26;
+    mipsfloat           f27;
+    mipsfloat           f28;
+    mipsfloat           f29;
+    mipsfloat           f30;
+    mipsfloat           f31;
 };
 #include "digunpck.h"
 

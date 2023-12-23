@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,6 +35,7 @@
 #define _SAMPINFO_H
 
 #include <limits.h>
+#include "digsyscf.h"
 #include "sample.h"
 
 
@@ -267,5 +268,7 @@ typedef struct sio_data {
 
 #define RAW_BUCKET_IDX( idx )   ((idx) / MAX_RAW_BUCKET_INDEX)
 #define MSG_BUCKET_IDX( idx )   ((idx) / MAX_MASSGD_BUCKET_INDEX)
+
+extern system_config        DefSysConfig;
 
 #endif

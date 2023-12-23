@@ -3,4 +3,4 @@ processor=axp
 system=winnt
 linkage=dynamic
 
-!include $(mathlib_dir)/mrglib.mif
+!include ../../../mrglib.mif

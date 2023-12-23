@@ -1,1 +1,1 @@
-mad_objs = $(_subdir_)madman.obj $(_subdir_)madld.obj $(_subdir_)i64.obj
+mad_objs = $(_subdir_)madman.obj $(_subdir_)madld.obj

@@ -15,8 +15,8 @@ tests = test00
 test : .symbolic start $(tests)
     $(noecho)%make common_set_result
 
-test00 : .symbolic ./catfile.exe $(diags_0099)
-    $[@ -a *.err | sed -f source/fixpath.sed >>exec.out
+test00 : .symbolic $(diags_0099)
+    catfile -a *.err | sed -f source/fixpath.sed >>exec.out
     @%make diag_clean
 
 diag_clean : .procedure

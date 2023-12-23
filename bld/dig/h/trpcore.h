@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -51,7 +51,7 @@ enum {
 
 #include "digpck.h"
 typedef struct {
-    access_req          req;
+    trap_req            req;
     trap_version        ver;
 } connect_req;
 
@@ -61,25 +61,25 @@ typedef struct {
 } connect_ret;
 
 typedef struct {
-    access_req          req;
+    trap_req            req;
 } disconnect_req;
 
 /* no disconnect_ret */
 
 typedef struct {
-    access_req          req;
+    trap_req            req;
 } suspend_req;
 
 /* no suspend_ret */
 
 typedef struct {
-    access_req          req;
+    trap_req            req;
 } resume_req;
 
 /* no resume_ret */
 
 typedef struct {
-    access_req          req;
+    trap_req            req;
     /* followed by service name */
 } get_supplementary_service_req;
 
@@ -90,24 +90,30 @@ typedef struct {
 
 /* perform_supplementary_service structures defined by service providers */
 typedef struct {
-    access_req          req;
+    trap_req            req;
     trap_shandle        id;
 } perform_supplementary_service_req;
 
 /*================ REQ_GET_SYS_CONFIG =================*/
 
 typedef struct {
-    access_req          req;
+    trap_req            req;
 } get_sys_config_req;
 
 typedef struct {
-    system_config       sys;
+    unsigned_8          cpu;
+    unsigned_8          fpu;
+    unsigned_8          osmajor;
+    unsigned_8          osminor;
+    unsigned_8          os;
+    unsigned_8          huge_shift;
+    unsigned_8          arch;
 } get_sys_config_ret;
 
 /*================== REQ_MAP_ADDR ====================*/
 
 typedef struct {
-    access_req          req;
+    trap_req            req;
     addr48_ptr          in_addr;
     trap_mhandle        mod_handle;
 } _WCUNALIGNED map_addr_req;
@@ -119,7 +125,7 @@ typedef struct {
 } _WCUNALIGNED map_addr_ret;
 
 typedef struct {
-    access_req          req;
+    trap_req            req;
     addr48_ptr          in_addr;
     unsigned_16         len;
 } _WCUNALIGNED checksum_mem_req;
@@ -129,7 +135,7 @@ typedef struct {
 } checksum_mem_ret;
 
 typedef struct {
-    access_req          req;
+    trap_req            req;
     addr48_ptr          mem_addr;
     unsigned_16         len;
 } _WCUNALIGNED read_mem_req;
@@ -137,7 +143,7 @@ typedef struct {
 /* read_mem_ret is just the sequences of bytes requested */
 
 typedef struct {
-    access_req          req;
+    trap_req            req;
     addr48_ptr          mem_addr;
     /* followed by data to write */
 } _WCUNALIGNED write_mem_req;
@@ -147,7 +153,7 @@ typedef struct {
 } write_mem_ret;
 
 typedef struct {
-    access_req          req;
+    trap_req            req;
     unsigned_32         IO_offset;
     unsigned_8          len;
 } _WCUNALIGNED read_io_req;
@@ -155,7 +161,7 @@ typedef struct {
 /* read_io_ret is just the sequence of bytes requested */
 
 typedef struct {
-    access_req          req;
+    trap_req            req;
     unsigned_32         IO_offset;
     /* followed by data to write */
 } _WCUNALIGNED write_io_req;
@@ -213,7 +219,7 @@ typedef struct {
 #include "trapbrk.h"
 
 typedef struct {
-    access_req          req;
+    trap_req            req;
 } prog_go_req;
 
 typedef struct {
@@ -237,7 +243,7 @@ enum {
 };
 
 typedef struct {
-    access_req          req;
+    trap_req            req;
     unsigned_8          true_argv;
     /* followed by program name/command line */
 } prog_load_req;
@@ -250,7 +256,7 @@ typedef struct {
 } prog_load_ret;
 
 typedef struct {
-    access_req          req;
+    trap_req            req;
     trap_phandle        task_id;
 } _WCUNALIGNED prog_kill_req;
 
@@ -262,7 +268,7 @@ typedef struct {
 #define USING_DEBUG_REG         0x80000000UL
 
 typedef struct {
-    access_req          req;
+    trap_req            req;
     addr48_ptr          watch_addr;
     unsigned_8          size;
 } _WCUNALIGNED set_watch_req;
@@ -273,7 +279,7 @@ typedef struct {
 } set_watch_ret;
 
 typedef struct {
-    access_req          req;
+    trap_req            req;
     addr48_ptr          watch_addr;
     unsigned_8          size;
 } _WCUNALIGNED clear_watch_req;
@@ -281,7 +287,7 @@ typedef struct {
 /* no clear_watch_ret */
 
 typedef struct {
-    access_req          req;
+    trap_req            req;
     addr48_ptr          break_addr;
 } _WCUNALIGNED set_break_req;
 
@@ -290,7 +296,7 @@ typedef struct {
 } set_break_ret;
 
 typedef struct {
-    access_req          req;
+    trap_req            req;
     addr48_ptr          break_addr;
     unsigned_32         old;
 } _WCUNALIGNED clear_break_req;
@@ -298,7 +304,7 @@ typedef struct {
 /* no clear_break_ret */
 
 typedef struct {
-    access_req          req;
+    trap_req            req;
     unsigned_16         seg;
 } _WCUNALIGNED get_next_alias_req;
 
@@ -308,19 +314,19 @@ typedef struct {
 } get_next_alias_ret;
 
 typedef struct {
-    access_req          req;
+    trap_req            req;
 } set_user_screen_req;
 
 /* no set_user_screen_ret */
 
 typedef struct {
-    access_req          req;
+    trap_req            req;
 } set_debug_screen_req;
 
 /* no set_debug_screen_ret */
 
 typedef struct {
-    access_req          req;
+    trap_req            req;
     unsigned_16         wait;
 } _WCUNALIGNED read_user_keyboard_req;
 
@@ -329,7 +335,7 @@ typedef struct {
 } read_user_keyboard_ret;
 
 typedef struct {
-    access_req          req;
+    trap_req            req;
     trap_mhandle        mod_handle;
 } _WCUNALIGNED get_lib_name_req;
 
@@ -339,7 +345,7 @@ typedef struct {
 } get_lib_name_ret;
 
 typedef struct {
-    access_req          req;
+    trap_req            req;
     trap_error          err;
 } _WCUNALIGNED get_err_text_req;
 
@@ -354,7 +360,7 @@ enum {
 };
 
 typedef struct {
-    access_req          req;
+    trap_req            req;
 } get_message_text_req;
 
 typedef struct {
@@ -363,7 +369,7 @@ typedef struct {
 } get_message_text_ret;
 
 typedef struct {
-    access_req          req;
+    trap_req            req;
     /* followed by filename to redirect to */
 } redirect_stdin_req;
 
@@ -376,7 +382,7 @@ typedef redirect_stdin_ret      redirect_stdout_ret;
 
 
 typedef struct {
-    access_req          req;
+    trap_req            req;
     /* followed by command string */
 } split_cmd_req;
 
@@ -387,14 +393,14 @@ typedef struct {
 
 /*====================== REQ_READ_REGS =============== */
 typedef struct {
-    access_req          req;
+    trap_req            req;
 } read_regs_req;
 
 /* send back appropriate mad_registers union member for machine */
 
 /*====================== REQ_WRITE_REGS ============== */
 typedef struct {
-    access_req          req;
+    trap_req            req;
     /* followed by the appropriate mad_registers union member */
 } write_regs_req;
 
@@ -403,7 +409,7 @@ typedef struct {
 /*====================== REQ_MACHINE_DATA ============ */
 
 typedef struct {
-    access_req          req;
+    trap_req            req;
     unsigned_8          info_type;
     addr48_ptr          addr;
     /* followed by whatever machine specific data is required */

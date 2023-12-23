@@ -365,6 +365,7 @@
         page_position=left
         post_skip='0.2i'
         pre_top_skip=0
+        appendix_string=""
 :BANNER
         place = bottom
         docsect = head0

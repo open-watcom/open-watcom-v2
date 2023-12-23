@@ -370,7 +370,7 @@ C_FIND:                                 ; find first/find next
         push    edx                     ; save edx (filename address)
         push    edi                     ; save edi
         push    esi                     ; save esi
-        mov     esi,_DTA_addr           ; get addr of 32-bit DTA
+        mov     esi,_DTA_Addr           ; get addr of 32-bit DTA
         lea     di,_DTA_Area            ; point to local DTA
         push    cx                      ; save attribute
         mov     cx,DTA_SIZE             ; get size of DTA
@@ -411,7 +411,7 @@ C_FIND:                                 ; find first/find next
           int   21h                     ; - issue interrupt
         _endif                          ; endif
         pushf                           ; save flags
-        mov     esi,_DTA_addr           ; get addr of 32-bit DTA
+        mov     esi,_DTA_Addr           ; get addr of 32-bit DTA
         lea     di,_DTA_Area            ; point to local DTA
         mov     cx,DTA_SIZE             ; get size of DTA
         push    ax                      ; save ax

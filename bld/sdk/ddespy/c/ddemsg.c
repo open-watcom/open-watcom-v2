@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -797,7 +797,7 @@ static void processMsgStruct( char *buf, MONMSGSTRUCT *info, bool posted )
 /*
  * DDEProc - process DDE messages received from the DDE manager
  */
-HDDEDATA CALLBACK DDEProc( UINT type, UINT fmt, HCONV hconv, HSZ hsz1, HSZ hsz2, HDDEDATA hdata, ULONG_PTR data1, ULONG_PTR data2 )
+HDDEDATA CALLBACK DDEProc( UINT type, UINT fmt, HCONV hconv, HSZ hsz1, HSZ hsz2, HDDEDATA hData, ULONG_PTR data1, ULONG_PTR data2 )
 {
     char        buf[2 * MARK_LEN];
     void        *info;
@@ -811,7 +811,7 @@ HDDEDATA CALLBACK DDEProc( UINT type, UINT fmt, HCONV hconv, HSZ hsz1, HSZ hsz2,
     if( type != XTYP_MONITOR ) {
         return( NULL );
     }
-    info = DdeAccessData( hdata, NULL );
+    info = DdeAccessData( hData, NULL );
     if( info == NULL ) {
         return( NULL );
     }
@@ -884,7 +884,7 @@ HDDEDATA CALLBACK DDEProc( UINT type, UINT fmt, HCONV hconv, HSZ hsz1, HSZ hsz2,
         //RecordMsg( "Unknown message\n" );
         break;
     }
-    DdeUnaccessData( hdata );
+    DdeUnaccessData( hData );
     return( NULL );
 
 } /* DDEProc */

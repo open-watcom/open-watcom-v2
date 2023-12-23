@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,6 +35,7 @@
 #include <time.h>
 #include "dbgdefn.h"
 #include "dbgio.h"
+#include "digsyscf.h"
 #include "trpcore.h"
 #include "trprfx.h"
 #include "remote.h"
@@ -66,7 +67,7 @@ bool InitRFXSupp( void )
         return( false );
 #ifdef __NT__
     acc.req = REQ_GET_SYS_CONFIG;
-    TrapSimpAccess( sizeof( acc ), &acc, sizeof( SysConfig ), &SysConfig );
+    TrapSimpleAccess( sizeof( acc ), &acc, sizeof( SysConfig ), &SysConfig );
 #endif
     return( true );
 }
@@ -134,7 +135,7 @@ error_handle RemoteSetDrv( int drv )
 
     SUPP_RFX_SERVICE( acc, REQ_RFX_SETDRIVE );
     acc.drive = drv;
-    TrapSimpAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
+    TrapSimpleAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
     return( StashErrCode( ret.err, OP_REMOTE ) );
 }
 
@@ -144,7 +145,7 @@ int RemoteGetDrv( void )
     rfx_getdrive_ret        ret;
 
     SUPP_RFX_SERVICE( acc, REQ_RFX_GETDRIVE );
-    TrapSimpAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
+    TrapSimpleAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
     return( ret.drive );
 }
 
@@ -214,7 +215,7 @@ long RemoteGetFreeSpace( int drv )
 
     SUPP_RFX_SERVICE( acc, REQ_RFX_GETFREESPACE );
     acc.drive = drv;
-    TrapSimpAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
+    TrapSimpleAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
     if( (ret.size & 0xffff0000) == 0xffff0000 ) {
         StashErrCode( ret.size, OP_REMOTE );
         return( -1L );
@@ -307,7 +308,7 @@ error_handle RemoteDateTime( sys_handle sh, int *time, int *date, int set )
         acc.handle = sh;
         acc.time = mymktime( *time, *date );
 
-        TrapSimpAccess( sizeof( acc ), &acc, 0, NULL );
+        TrapSimpleAccess( sizeof( acc ), &acc, 0, NULL );
     } else {
         rfx_getdatetime_req     acc;
         rfx_getdatetime_ret     ret;
@@ -315,7 +316,7 @@ error_handle RemoteDateTime( sys_handle sh, int *time, int *date, int set )
         SUPP_RFX_SERVICE( acc, REQ_RFX_GETDATETIME );
         acc.handle = sh;
 
-        TrapSimpAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
+        TrapSimpleAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
 
         mylocaltime( ret.time, time, date );
     }

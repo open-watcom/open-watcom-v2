@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,11 +31,14 @@
 ****************************************************************************/
 
 
-#include <stddef.h>
+//#define DEBUG
+
+#include <stdarg.h>
 #include <stdio.h>
+#include <string.h>
 #include <dos.h>
 #define INCLUDE_TOOL_H
-#include "cpuglob.h"
+#include "segmcpu.h"
 #include "wdebug.h"
 #include "stdwin.h"
 #include "trperr.h"
@@ -46,12 +49,106 @@
 #include "initfini.h"
 #include "di386cli.h"
 #include "wclbtool.h"
+#ifdef DEBUG
+    #include "dpmi.h"
+#endif
 
 
 extern WORD FAR PASCAL AllocCSToDSAlias( WORD );
 
 static LPFNINTHCALLBACK     fault_fn;
 static LPFNNOTIFYCALLBACK   notify_fn;
+
+#ifdef DEBUG
+
+#define MONO
+
+/*
+ * Debugging output code for AT
+ */
+static unsigned             DbgFlags = OUT_ALL;
+static int                  _cnt;
+#ifdef MONO
+static int                  _line = 0;
+#endif
+
+static char *GetScreenPointer( void )
+{
+#if 0
+    static short    sel;
+    long            rc;
+
+    if( sel == 0 ) {
+        rc = _DPMISegmentToDescriptor( 0xB000 );
+        if( rc >= 0 ) {
+            sel = rc;
+        }
+    }
+    return( _MK_FP( sel, 0 ) );
+#else
+    extern char _B000H[];
+    return( _MK_FP( _B000H, 0 ) );
+#endif
+}
+
+void MyClearScreen( void )
+{
+#ifdef MONO
+    int i;
+
+    char *scrn = GetScreenPointer();
+
+    for( i = 0; i < ( 80 * 25 ); i++ ) {
+        scrn[i * 2] = ' ';
+        scrn[i * 2 + 1] = 7;
+    }
+#endif
+}
+
+void MyOut( unsigned f, char *str, ... )
+{
+    va_list     args;
+    char        res[128];
+    int         len,i;
+    char        *scr;
+    char        *scrn;
+
+    if( (f & DbgFlags) == 0 )
+        return;
+    sprintf( res, "%03d) ", ++_cnt );
+    va_start( args, str );
+    vsprintf( &res[5], str, args );
+    va_end( args );
+#ifdef MONO
+    len = strlen( res );
+
+    scrn = GetScreenPointer();
+
+    scr = &scrn[_line * 80 * 2];
+
+    for( i = 0; i < len; i++ ) {
+        scr[i * 2] = res[i];
+        scr[i * 2 + 1] = 7;
+    }
+    for( i = len; i < 80; i++ ) {
+        scr[i * 2] = ' ';
+        scr[i * 2 + 1] = 7;
+    }
+    _line++;
+    if( _line > 24 )
+        _line = 0;
+
+    scr = &scrn[_line * 80 * 2];
+    for( i = 0; i < 80; i++ ) {
+        scr[i * 2] = ' ';
+        scr[i * 2 + 1] = 7;
+    }
+#else
+    MessageBox( NULL, res, "FOO", MB_SYSTEMMODAL | MB_OK );
+#endif
+}
+
+#endif
 
 void SetInputLock( bool lock_status )
 {
@@ -81,10 +178,9 @@ void SetInputLock( bool lock_status )
  */
 char *InitDebugging( void )
 {
-
-    DebuggerState=ACTIVE;
+    DebuggerState = ACTIVE;
     if( CheckWin386Debug() == WGOD_VERSION ) {
-        WDebug386 = TRUE;
+        WDebug386 = true;
         UseHotKey( 1 );
     }
     fault_fn = MakeProcInstance_INTH( IntHandler, Instance );
@@ -116,7 +212,6 @@ char *InitDebugging( void )
  */
 void FinishDebugging( void )
 {
-
     InterruptUnRegister( NULL );
     if( fault_fn != NULL ) {
         FreeProcInstance_INTH( fault_fn );
@@ -151,12 +246,14 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
 {
     trap_version        ver;
 
-    remote = remote;
+    /* unused parameters */ (void)remote;
 
     DebuggerTask = GetCurrentTask();
 
     ClearScreen();
     Out(( OUT_INIT,"TrapInit entered, debugger task=%04x", DebuggerTask ));
+
+    BreakOpcode = BRKPOINT;
 
 #ifdef DEBUG
     if( *parms == '[' ) {
@@ -169,7 +266,7 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
                 break;
             switch( c ) {
             case 'a':
-                bit = -1;
+                bit = OUT_ALL;
                 break;
             case 'b':
                 bit = OUT_BREAK;
@@ -215,16 +312,16 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
     }
 #endif
     if( parms[0] == 'c' && parms[1] == 'g' && parms[2] == 'e' ) {
-        DebugDebugeeOnly = TRUE;
+        DebugDebugeeOnly = true;
     }
     if( parms[0] == '3' && parms[1] == '2' ) {
-        StopOnExtender = TRUE;
+        StopOnExtender = true;
     }
 
     err[0] = 0;
-    ver.major = TRAP_MAJOR_VERSION;
-    ver.minor = TRAP_MINOR_VERSION;
-    ver.remote = FALSE;
+    ver.major = TRAP_VERSION_MAJOR;
+    ver.minor = TRAP_VERSION_MINOR;
+    ver.remote = false;
 
     return( ver );
 }

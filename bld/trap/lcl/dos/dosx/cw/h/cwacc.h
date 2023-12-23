@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2009-2013 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2009-2022 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -29,8 +29,4 @@
 ****************************************************************************/
 
 
-extern void SetHBRK( void );
-extern void ResetHBRK( void );
-extern int IsHardBreak( void );
-extern int CheckWatchPoints( void );
 extern int CheckTerminate( void );

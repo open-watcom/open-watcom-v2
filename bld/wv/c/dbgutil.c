@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -462,7 +463,7 @@ void PopInpStack( void )
     if( old == NULL )
         return;
     if( old->lang != NULL ) {
-        StrCopy( old->lang, buff );
+        StrCopyDst( old->lang, buff );
         _Free( old->lang );
         old->lang = NULL; /* in case NewLang gets an error */
         NewLang( buff );

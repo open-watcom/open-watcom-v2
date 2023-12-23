@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -54,6 +54,7 @@
 #include "omfobjre.h"
 #include "omfgen.h"
 #include "omfgenio.h"
+#include "macro.h"
 
 #include "clibext.h"
 
@@ -67,14 +68,13 @@
 // if you want exactly same behaviour as MASM then undefine following macro
 #define PRIVATE_PROC_INFO
 
-#define MAX_REC_LENGTH 0xFFFEL
+#define MAX_REC_LENGTH  0xFFFEL
 
 extern void             CmdlParamsInit( void );
 
 extern symbol_queue     Tables[];       // tables of definitions
 extern unsigned         BufSize;
 
-extern int              MacroExitState;
 extern bool             in_prologue;
 
 extern bool             EndDirectiveFound;
@@ -94,7 +94,7 @@ bool                    PhaseError;
 
 struct asmfixup         *ModendFixup = NULL; // start address fixup
 
-global_vars     Globals = { 0, 0, 0, 0, 0, 0, 0 };
+global_vars             Globals = { 0, 0, 0, 0, 0, 0, 0 };
 
 static const FNAME      *FNames = NULL;
 static unsigned long    lastLineNumber;
@@ -117,9 +117,9 @@ const FNAME *AddFlist( char const *name )
     len2 = strlen( fname ) + 1;
     last = (FNAME *)FNames;
     for( flist = last; flist != NULL; flist = flist->next ) {
-        if( memcmp( name, flist->name, len1 ) == 0 )
+        if( strcmp( name, flist->name ) == 0 )
             return( flist );
-        if( memcmp( fname, flist->fullname, len2 ) == 0 )
+        if( strcmp( fname, flist->fullname ) == 0 )
             return( flist );
         index++;
         last = flist;
@@ -189,8 +189,9 @@ void OutSelect( bool starts )
     unsigned long       curr;
 
     if( starts ) {
-        if( !Options.output_comment_data_in_code_records || Globals.data_in_code
-            || !Globals.code_seg )
+        if( !Options.output_comment_data_in_code_records
+          || Globals.data_in_code
+          || !Globals.code_seg )
             return;
         Globals.sel_start = GetCurrAddr();
         Globals.data_in_code = true;
@@ -706,7 +707,7 @@ static bool write_autodep( void )
         objr = ObjNewRec( CMD_COMENT );
         objr->d.coment.attr = 0x80;
         objr->d.coment.class = CMT_DEPENDENCY;
-        WriteU32( buff, _timet2dos( curr->mtime ) );
+        MPUT_LE_32( buff, _timet2dos( curr->mtime ) );
         buff[4] = (unsigned char)len;
         memcpy( buff + 4 + 1, curr->fullname, len );
         ObjAttachData( objr, (uint_8 *)buff, (uint_16)( 4 + 1 + len ) );
@@ -733,7 +734,7 @@ void AddLinnumDataRef( void )
     } else {
         line_num = LineNumber;
     }
-    if( line_num < 0x8000 )  {
+    if( line_num < 0x8000 ) {
         if( lastLineNumber != line_num ) {
             curr = AsmAlloc( sizeof( struct line_num_info ) );
             curr->number = (uint_16)line_num;
@@ -1049,7 +1050,7 @@ static void write_alias( void )
     bool                first;
 
     first = true;
-    while( ( alias = GetAliasData( first ) ) != NULL ) {
+    while( (alias = GetAliasData( first )) != NULL ) {
         /* output an alias record for this alias */
         len1 = strlen( alias );
         subst = alias + len1 + 1;
@@ -1078,7 +1079,7 @@ static bool write_pub( void )
 }
 
 void FlushCurrSeg( void )
-/***************************/
+/***********************/
 {
     unsigned i = 0;
 
@@ -1125,8 +1126,9 @@ void FlushCurrSeg( void )
 }
 
 static void reset_seg_len( void )
-/*******************************/
-/* Reset length of all segments to zero */
+/********************************
+ * Reset length of all segments to zero
+ */
 {
     dir_node    *curr;
 
@@ -1167,6 +1169,7 @@ static void writepass1stuff( char *name )
 static void OnePassInit( void )
 /*****************************/
 {
+    RadixSet( 10 );
     CmdlParamsInit();
     AssumeInit();
 
@@ -1177,7 +1180,7 @@ static void OnePassInit( void )
     PassTotal = 0;
     LineNumber = 0;
     lastLineNumber = 0;
-    MacroExitState = 0;
+    MacroIntState = MACSTATE_NONE;
 }
 
 static unsigned long OnePass( char *string )
@@ -1200,9 +1203,9 @@ static unsigned long OnePass( char *string )
 }
 
 void WriteObjModule( void )
-/**************************/
+/*************************/
 {
-    uint_8              codebuf[ MAX_LEDATA_THRESHOLD ];
+    uint_8              codebuf[ MAX_LEDATA_LEN ];
     char                string[ MAX_LINE_LEN ];
     char                *p;
     unsigned long       prev_total;
@@ -1244,10 +1247,10 @@ void WriteObjModule( void )
         put_private_proc_in_public_table();
     }
 #endif
-    if( Options.module_name != NULL ) {
-        mod_name = Options.module_name;
-    } else {
+    if( Options.debug_info || Options.module_name == NULL ) {
         mod_name = ModuleInfo.srcfile->fullname;
+    } else {
+        mod_name = Options.module_name;
     }
     for( ;; ) {
         if( !write_to_file || Options.error_count > 0 )

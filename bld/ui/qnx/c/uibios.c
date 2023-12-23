@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -70,7 +70,6 @@ bool UIAPI uiset80col( void )
 char *GetTermType( void )
 {
     const char  *p;
-    size_t      len;
 
     if( UITermType == NULL ) {
         p = getenv( "TERM" );
@@ -80,26 +79,22 @@ char *GetTermType( void )
             /* We're always a QNX terminal if UIConCtrol != NULL */
             p = "qnx";
         }
-        len = strlen( p ) + 1;
-        UITermType = uimalloc( len );
-        memcpy( UITermType, p, len );
+        UITermType = uimalloc( strlen( p ) + 1 );
+        strcpy( UITermType, p );
     }
     return( UITermType );
 }
 
 void SetTermType( const char *new_term )
 {
-    size_t      len;
-
     if( UITermType != NULL ) {
         uifree( UITermType );
     }
     if( new_term == NULL ) {
         new_term = "";
     }
-    len = strlen( new_term ) + 1;
-    UITermType = uimalloc( len );
-    memcpy( UITermType, new_term, len );
+    UITermType = uimalloc( strlen( new_term ) + 1 );
+    strcpy( UITermType, new_term );
 }
 
 bool intern initbios( void )
@@ -182,12 +177,12 @@ void intern physupdate( SAREA *area )
     }
 }
 
-#if defined( QNX_DEBUG )
+#if defined( UI_DEBUG )
 
 #include <stdio.h>
 #include <stdarg.h>
 
-void QNXDebugPrintf( const char *f, ... )
+void UIDebugPrintf( const char *f, ... )
 {
     static FILE *file = NULL;
     va_list args;

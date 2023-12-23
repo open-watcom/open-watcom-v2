@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,6 +38,7 @@
 #include <string.h>
 #include <dos.h>
 #include <windows.h>
+#include "roundmac.h"
 #include "rterrno.h"
 #include "stacklow.h"
 #include "liballoc.h"
@@ -137,7 +139,7 @@ int __CBeginThread( thread_fn *start_addr, void *stack_bottom,
     td->argument = arglist;
 
     th = CreateThread( NULL, stack_size, (LPTHREAD_START_ROUTINE)&begin_thread_helper,
-                (LPVOID) td, CREATE_SUSPENDED, &tid );
+                (LPVOID)td, CREATE_SUSPENDED, &tid );
     if( th != NULL ) {
         td->thread_handle = th;
         ResumeThread( th );

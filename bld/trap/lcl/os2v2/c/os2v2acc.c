@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,14 +40,12 @@
 #define INCL_DOSSESMGR
 #define INCL_DOSMODULEMGR
 #include <os2.h>
-#include "cpuglob.h"
-#include "dosdebug.h"
-#include "trpimp.h"
-#include "trpcomm.h"
-#include "trpld.h"
-#include "trpsys.h"
-#include "os2trap.h"
+#include "brkptcpu.h"
 #include "os2v2acc.h"
+#include "digcpu.h"
+#include "trpld.h"
+#include "trpcomm.h"
+#include "trpsys.h"
 #include "bsexcpt.h"
 #include "wdpmhelp.h"
 #include "softmode.h"
@@ -58,18 +56,62 @@
 #include "exeos2.h"
 #include "exeflat.h"
 #include "x86cpu.h"
-#include "os2extx.h"
 #include "dbgthrd.h"
+#include "os22path.h"
+#include "accmisc.h"
 
+
+/* Maximum watchpoints */
+#define MAX_WATCHES         32
+
+#define OBJECT_IS_CODE      0x0004L
+#define OBJECT_IS_BIG       0x2000L
+
+#define EXE_IS_FULLSCREEN   0x0100
+#define EXE_IS_PMC          0x0200
+#define EXE_IS_PM           0x0300
+
+/* Kernel memory not accessible via DosDebug */
+#define KERNEL_MEM_OFFSET   0xE0000000
+
+#define MAX_OBJECTS         128
+
+typedef struct watch_point {
+    uint_64     value;
+    dword       linear;
+    addr48_ptr  addr;
+    word        size;
+    word        dregs;
+} watch_point;
 
 uDB_t                   Buff;
 USHORT                  TaskFS;
+ULONG                   ExceptNum;
+bool                    ExpectingAFault = false;
 
-static BOOL             stopOnSecond;
-static BOOL             isAttached;
+static bool             stopOnSecond = false;
+static bool             isAttached;
 static byte             saved_opcode;
-static BOOL             splice_bp_set;
+static bool             splice_bp_set;
 static ULONG            splice_bp_lin_addr;
+
+static ULONG            ExceptLinear;
+static UCHAR            TypeProcess;
+static bool             Is32Bit;
+static watch_point      WatchPoints[MAX_WATCHES];
+static int              WatchCount = 0;
+static unsigned_16      lastCS;
+static unsigned_16      lastSS;
+static unsigned_32      lastEIP;
+static unsigned_32      lastESP;
+
+static HMODULE          LastMTE;
+static unsigned         NumObjects;
+static object_record    ObjInfo[MAX_OBJECTS];
+
+static HMODULE          *ModHandles = NULL;
+static unsigned         NumModHandles = 0;
+static unsigned         CurrModHandle = 0;
 
 #ifdef DEBUG_OUT
 
@@ -81,12 +123,13 @@ static void Out( char *str )
 }
 
 #define NSIZE 20
+
 static void OutNum( ULONG i )
 {
     char    numbuff[NSIZE];
     char    *ptr;
 
-    ptr = numbuff+NSIZE;
+    ptr = numbuff + NSIZE;
     *--ptr = '\0';
     if( i == 0 ) {
         *--ptr = '0';
@@ -100,42 +143,13 @@ static void OutNum( ULONG i )
 
 #endif
 
-#define EXE_MZ  0x5a4d
-#define EXE_NE  0x454e
-#define EXE_LE  0x454c
-#define EXE_LX  0x584c
-
-#define OBJECT_IS_CODE  0x0004L
-#define OBJECT_IS_BIG   0x2000L
-
-#define EXE_IS_FULLSCREEN       0x0100
-#define EXE_IS_PMC              0x0200
-#define EXE_IS_PM               0x0300
-
-/* Kernel memory not accessible via DosDebug */
-#define KERNEL_MEM_OFFSET       0xE0000000
-
-static ULONG            ExceptLinear;
-static UCHAR            TypeProcess;
-static BOOL             Is32Bit;
-static watch_point      WatchPoints[MAX_WP];
-static short            WatchCount = 0;
-static short            DebugRegsNeeded = 0;
-static unsigned_16      lastCS;
-static unsigned_16      lastSS;
-static unsigned_32      lastEIP;
-static unsigned_32      lastESP;
-
-bool        ExpectingAFault;
-const char  OS2ExtList[] = OS2EXTLIST;
-
 static bool Is32BitSeg( unsigned seg )
 {
     if( IsFlatSeg( seg ) )
-        return( TRUE );
+        return( true );
     if( IsUnknownGDTSeg( seg ) )
-        return( TRUE );
-    return( FALSE );
+        return( true );
+    return( false );
 }
 
 /*
@@ -153,21 +167,21 @@ static void RecordModHandle( HMODULE value )
 /*
  * SeekRead - seek to a file position, and read the data
  */
-static BOOL SeekRead( HFILE handle, ULONG newpos, void *ptr, ULONG size )
+static bool SeekRead( HFILE handle, ULONG newpos, void *ptr, ULONG size )
 {
     ULONG       read;
     ULONG       pos;
 
-    if( DosSetFilePtr(handle, newpos, 0, &pos) != 0 ) {
-        return( FALSE );
+    if( DosSetFilePtr( handle, newpos, 0, &pos ) != 0 ) {
+        return( false );
     }
-    if( DosRead(handle, ptr, size, &read) != 0 ) {
-        return( FALSE );
+    if( DosRead( handle, ptr, size, &read ) != 0 ) {
+        return( false );
     }
     if( read != size ) {
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 
 } /* SeekRead */
 
@@ -175,63 +189,34 @@ static BOOL SeekRead( HFILE handle, ULONG newpos, void *ptr, ULONG size )
 /*
  * FindNewHeader - get a pointer to the new exe header
  */
-static BOOL FindNewHeader( char *name, HFILE *hdl,
-                          ULONG *new_head, USHORT *id )
+static bool FindNewHeader( HFILE hdl, ULONG *ne_header_off, USHORT *type )
 {
-    long        open_rc;
-    HFILE       h;
-    BOOL        rc;
+    bool        rc;
     USHORT      data; /* MUST be 16-bit! */
 
-    open_rc = OpenFile( name, 0, OPEN_PRIVATE );
-    if( open_rc < 0 ) {
-        return( FALSE );
+    rc = false;
+    if( SeekRead( hdl, 0, &data, sizeof( data ) )
+      && data == EXESIGN_DOS ) {
+        if( SeekRead( hdl, DOS_RELOC_OFFSET, &data, sizeof( data ) )
+          && NE_HEADER_FOLLOWS( data ) ) {
+            if( SeekRead( hdl, NE_HEADER_OFFSET, ne_header_off, sizeof( *ne_header_off ) )
+              && SeekRead( hdl, *ne_header_off, type, sizeof( *type ) ) ) {
+                rc = true;
+            }
+        }
     }
-    h = open_rc;
-    rc = FALSE;
-    while( 1 ) {
-        if( !SeekRead( h, 0x00, &data, sizeof( data ) ) ) {
-            break;
-        }
-        if( data != EXE_MZ ) break;   /* MZ */
-
-        if( !SeekRead( h, 0x18, &data, sizeof( data ) ) ) {
-            break;
-        }
-        if( data < 0x40 )       /* offset of relocation header */
-            break;
-
-        if( !SeekRead( h, 0x3c, new_head, sizeof( ULONG ) ) ) {
-            break;
-        }
-
-        if( !SeekRead( h, *new_head, id, sizeof( USHORT ) ) ) {
-            break;
-        }
-        rc = TRUE;
-        break;
-    }
-    if( !rc ) {
-        DosClose( h );
-    }
-    *hdl = h;
     return( rc );
 
 } /* FindNewHeader */
 
-#define MAX_OBJECTS     128
-
-static HMODULE          LastMTE;
-static unsigned         NumObjects;
-static object_record    ObjInfo[MAX_OBJECTS];
-
 static void GetObjectInfo( HMODULE mte )
 {
     HFILE               hdl;
-    ULONG               new_head;
+    ULONG               ne_header_off;
     USHORT              type;
     unsigned_32         objoff;
     unsigned_32         numobjs;
+    long                open_rc;
 
     char                buff[CCHMAXPATH];
 
@@ -241,21 +226,22 @@ static void GetObjectInfo( HMODULE mte )
     memset( ObjInfo, 0, sizeof( ObjInfo ) );
     DosQueryModuleName( mte, sizeof( buff ), buff );
     NumObjects = 0;
-    if( !FindNewHeader( buff, &hdl, &new_head, &type ) ) {
-        return;
-    }
-    if( type != EXE_LE && type != EXE_LX ) {
+    open_rc = OpenFile( buff, 0, OPEN_PRIVATE );
+    if( open_rc >= 0 ) {
+        hdl = open_rc;
+        if( FindNewHeader( hdl, &ne_header_off, &type ) ) {
+            if( type == EXESIGN_LE || type == EXESIGN_LX ) {
+                SeekRead( hdl, ne_header_off + 0x40, &objoff, sizeof( objoff ) );
+                SeekRead( hdl, ne_header_off + 0x44, &numobjs, sizeof( numobjs ) );
+                if( numobjs <= MAX_OBJECTS ) {
+                    SeekRead( hdl, ne_header_off + objoff, ObjInfo, numobjs * sizeof( ObjInfo[0] ) );
+                    NumObjects = numobjs;
+                }
+                LastMTE = mte;
+            }
+        }
         DosClose( hdl );
-        return;
     }
-    SeekRead( hdl, new_head + 0x40, &objoff, sizeof( objoff ) );
-    SeekRead( hdl, new_head + 0x44, &numobjs, sizeof( numobjs ) );
-    if( numobjs <= MAX_OBJECTS ) {
-        SeekRead( hdl, new_head + objoff, ObjInfo, numobjs * sizeof( ObjInfo[0] ) );
-        NumObjects = numobjs;
-    }
-    LastMTE = mte;
-    DosClose( hdl );
 }
 
 
@@ -265,7 +251,7 @@ bool DebugExecute( uDB_t *buff, ULONG cmd, bool stop_on_module_load )
     ULONG                       value;
     ULONG                       stopvalue;
     ULONG                       notify = 0;
-    BOOL                        got_second_notification;
+    bool                        got_second_notification;
     ULONG                       fcp;
     CONTEXTRECORD               fcr;
 
@@ -275,7 +261,7 @@ bool DebugExecute( uDB_t *buff, ULONG cmd, bool stop_on_module_load )
         value = 0;
     }
     stopvalue = XCPT_CONTINUE_EXECUTION;
-    got_second_notification = FALSE;
+    got_second_notification = false;
     if( cmd == DBG_C_Stop ) {
         stopvalue = XCPT_CONTINUE_STOP;
     }
@@ -295,7 +281,7 @@ bool DebugExecute( uDB_t *buff, ULONG cmd, bool stop_on_module_load )
         case DBG_N_ModuleLoad:
             RecordModHandle( buff->Value );
             if( stop_on_module_load )
-                return( TRUE );
+                return( true );
             break;
         case DBG_N_ModuleFree:
             break;
@@ -386,14 +372,14 @@ bool DebugExecute( uDB_t *buff, ULONG cmd, bool stop_on_module_load )
             buff->SS  = fcr.ctx_SegSs;
             buff->EIP = fcr.ctx_RegEip;
             buff->EFlags = fcr.ctx_EFlags;
-            WriteRegs(buff);
+            WriteRegs( buff );
 
             if( ExpectingAFault || got_second_notification ) {
                 break;
             }
             if( stopOnSecond ) {
                 value = XCPT_CONTINUE_EXECUTION;
-                got_second_notification = TRUE;
+                got_second_notification = true;
             }
             break;
         default:
@@ -405,28 +391,28 @@ bool DebugExecute( uDB_t *buff, ULONG cmd, bool stop_on_module_load )
 
                     // Remove breakpoint
                     WriteLinear( &saved_opcode, splice_bp_lin_addr, sizeof( saved_opcode ) );
-                    splice_bp_set = FALSE;
+                    splice_bp_set = false;
                     splice_bp_lin_addr = 0;
 
                     // Attempt to load helper DLL
                     save.Pid = Pid;
                     save.Tid = 1;
                     ReadRegs( &save );
-                    ExpectingAFault = TRUE;
+                    ExpectingAFault = true;
                     // NB - the following will recursively call DebugExecute!
                     if( !CausePgmToLoadHelperDLL( ExceptLinear ) ) {
-                        CanExecTask = FALSE;
+                        CanExecTask = false;
                     } else {
-                        CanExecTask = TRUE;
+                        CanExecTask = true;
                     }
                     WriteRegs( &save );
                     break;
                 }
             }
-            return( FALSE );
+            return( false );
         }
     }
-//    return( FALSE );
+//    return( false );
 }
 
 
@@ -458,7 +444,7 @@ void ReadLinear( void *data, ULONG lin, USHORT size )
     Buff.Addr = lin;
     Buff.Buffer = (ULONG)data;
     Buff.Len = size;
-    CallDosDebug(&Buff);
+    CallDosDebug( &Buff );
 }
 
 void WriteLinear( void *data, ULONG lin, USHORT size )
@@ -467,13 +453,13 @@ void WriteLinear( void *data, ULONG lin, USHORT size )
     Buff.Addr   = lin;
     Buff.Buffer = (ULONG)data;
     Buff.Len    = size;
-    CallDosDebug(&Buff);
+    CallDosDebug( &Buff );
 }
 
 USHORT WriteBuffer( void *src, USHORT segv, ULONG offv, USHORT size )
 {
     USHORT      length;
-    bool        iugs;
+    bool        is_ugs;
     USHORT      resdata;
     ULONG       flat;
     BYTE        *data = src;
@@ -484,8 +470,8 @@ USHORT WriteBuffer( void *src, USHORT segv, ULONG offv, USHORT size )
 
     length = size;
     if( Pid != 0 ) {
-        iugs = IsUnknownGDTSeg( segv );
-        if( !iugs ) {
+        is_ugs = IsUnknownGDTSeg( segv );
+        if( !is_ugs ) {
             flat = MakeItFlatNumberOne( segv, offv );
             WriteLinear( data, flat, size );
             if( Buff.Cmd == DBG_N_Success ) {
@@ -496,7 +482,7 @@ USHORT WriteBuffer( void *src, USHORT segv, ULONG offv, USHORT size )
             Buff.Cmd = DBG_C_WriteMem_D;
             if( length == 1 ) {
                 /* Don't want to write anything in the kernel area - that means no breakpoints! */
-                if( iugs /*|| offv > KERNEL_MEM_OFFSET*/ ) {
+                if( is_ugs /*|| offv > KERNEL_MEM_OFFSET*/ ) {
                     if( !TaskReadWord( segv, offv, &resdata ) ) {
                         break;
                     }
@@ -526,7 +512,7 @@ USHORT WriteBuffer( void *src, USHORT segv, ULONG offv, USHORT size )
                 data++;
                 resdata |= *data << 8;
                 data++;
-                if( iugs ) {
+                if( is_ugs ) {
                     if( !TaskWriteWord( segv, offv, resdata ) ) {
                         break;
                     }
@@ -550,7 +536,7 @@ USHORT WriteBuffer( void *src, USHORT segv, ULONG offv, USHORT size )
 static USHORT ReadBuffer( void *dst, USHORT segv, ULONG offv, USHORT size )
 {
     USHORT      length;
-    bool        iugs;
+    bool        is_ugs;
     USHORT      resdata;
     ULONG       flat;
     BYTE        *data = dst;
@@ -560,8 +546,8 @@ static USHORT ReadBuffer( void *dst, USHORT segv, ULONG offv, USHORT size )
     }
     length = size;
     if( Pid != 0 ) {
-        iugs = IsUnknownGDTSeg( segv );
-        if( !iugs ) {
+        is_ugs = IsUnknownGDTSeg( segv );
+        if( !is_ugs ) {
             flat = MakeItFlatNumberOne( segv, offv );
             ReadLinear( data, flat, size );
             if( Buff.Cmd == DBG_N_Success ) {
@@ -569,14 +555,14 @@ static USHORT ReadBuffer( void *dst, USHORT segv, ULONG offv, USHORT size )
             }
         }
         while( length != 0 ) {
-            if( iugs || offv > KERNEL_MEM_OFFSET ) {
+            if( is_ugs || offv > KERNEL_MEM_OFFSET ) {
                 if( !TaskReadWord( segv, offv, &resdata ) ) {
                     break;
                 }
             } else {
                 Buff.Cmd = DBG_C_ReadMem_D;
                 Buff.Addr = MakeItFlatNumberOne( segv, offv );
-                CallDosDebug(&Buff);
+                CallDosDebug( &Buff );
                 if( Buff.Cmd != DBG_N_Success ) {
                     break;
                 }
@@ -606,13 +592,13 @@ trap_retval TRAP_CORE( Get_sys_config )( void )
     get_sys_config_ret  *ret;
 
     ret = GetOutPtr( 0 );
-    ret->sys.os = DIG_OS_OS2;
-    DosQuerySysInfo( QSV_VERSION_MAJOR, QSV_VERSION_MINOR, &version, sizeof( version ) );
-    ret->sys.osminor = version[1];
-    ret->sys.osmajor = version[0];
-    ret->sys.cpu     = X86CPUType();
-    ret->sys.fpu     = ret->sys.cpu & X86_CPU_MASK;
-    WriteRegs(&Buff);
+    ret->os = DIG_OS_OS2;
+    DosQuerySysInfo( QSV_VERSION_MAJOR, QSV_VERSION_MINOR, version, sizeof( version ) );
+    ret->osminor = version[1];
+    ret->osmajor = version[0];
+    ret->cpu     = X86CPUType();
+    ret->fpu     = ret->cpu & X86_CPU_MASK;
+    WriteRegs( &Buff );
 
     buff.Cmd    = DBG_C_ReadCoRegs;
     buff.Buffer = (ULONG)tmp;
@@ -623,10 +609,10 @@ trap_retval TRAP_CORE( Get_sys_config )( void )
     buff.Index  = 0;                /* for 2.0: must be 0 */
     CallDosDebug( &buff );
     if( buff.Cmd != DBG_N_Success ) {
-        ret->sys.fpu = X86_NO;
+        ret->fpu = X86_NOFPU;
     }
-    ret->sys.huge_shift = 3;
-    ret->sys.arch = DIG_ARCH_X86;
+    ret->huge_shift = 3;
+    ret->arch = DIG_ARCH_X86;
     return( sizeof( *ret ) );
 }
 
@@ -640,8 +626,8 @@ trap_retval TRAP_CORE( Map_addr )( void )
     unsigned            i;
     addr_off            off;
 
-    acc = GetInPtr(0);
-    ret = GetOutPtr(0);
+    acc = GetInPtr( 0 );
+    ret = GetOutPtr( 0 );
     ret->lo_bound = 0;
     ret->hi_bound = ~(addr48_off)0;
     if( Pid == 0 ) {
@@ -673,7 +659,7 @@ trap_retval TRAP_CORE( Map_addr )( void )
     Buff.MTE = ModHandles[acc->mod_handle];
     Buff.Cmd = DBG_C_NumToAddr;
     Buff.Value = seg;
-    CallDosDebug(&Buff);
+    CallDosDebug( &Buff );
     Buff.MTE = ModHandles[0];
     flags = ObjInfo[seg - 1].flags;
     if( flags & OBJECT_IS_BIG ) {
@@ -692,50 +678,52 @@ trap_retval TRAP_CORE( Machine_data )( void )
 {
     machine_data_req    *acc;
     machine_data_ret    *ret;
-    unsigned_8          *data;
+    machine_data_spec   *data;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    data = GetOutPtr( sizeof( *ret ) );
     ret->cache_start = 0;
     ret->cache_end = ~(addr_off)0;
-    *data = 0;
-    if( Is32BitSeg( acc->addr.segment ) )
-        *data |= X86AC_BIG;
-    return( sizeof( *ret ) + sizeof( *data ) );
+    if( acc->info_type == X86MD_ADDR_CHARACTERISTICS ) {
+        data = GetOutPtr( sizeof( *ret ) );
+        data->x86_addr_flags = ( Is32BitSeg( acc->addr.segment ) ) ? X86AC_BIG : 0;
+        return( sizeof( *ret ) + sizeof( data->x86_addr_flags ) );
+    }
+    return( sizeof( *ret ) );
 }
 
 trap_retval TRAP_CORE( Checksum_mem )( void )
 {
     ULONG               offset;
-    trap_elen           length;
+    USHORT              segment;
+    size_t              len;
     ULONG               sum;
     checksum_mem_req    *acc;
     checksum_mem_ret    *ret;
 
-    acc = GetInPtr( 0 );
-    ret = GetOutPtr( 0 );
-    length = acc->len;
     sum = 0;
     if( Pid != 0 ) {
+        acc = GetInPtr( 0 );
         offset = acc->in_addr.offset;
-        while( length != 0 ) {
+        segment = acc->in_addr.segment;
+        for( len = acc->len; len > 0; ) {
             Buff.Cmd  = DBG_C_ReadMem_D;
-            Buff.Addr = MakeItFlatNumberOne( acc->in_addr.segment, offset );
+            Buff.Addr = MakeItFlatNumberOne( segment, offset );
             CallDosDebug( &Buff );
             if( Buff.Cmd != DBG_N_Success ) {
                 break;
             }
             sum += Buff.Value & 0xff;
             offset++;
-            length--;
-            if( length != 0 ) {
+            len--;
+            if( len > 0 ) {
                 sum += Buff.Value >> 8;
                 offset++;
-                length--;
+                len--;
             }
         }
     }
+    ret = GetOutPtr( 0 );
     ret->result = sum;
     return( sizeof( *ret ) );
 }
@@ -744,13 +732,9 @@ trap_retval TRAP_CORE( Checksum_mem )( void )
 trap_retval TRAP_CORE( Read_mem )( void )
 {
     read_mem_req        *acc;
-    void                *ret;
-    trap_elen           len;
 
     acc = GetInPtr( 0 );
-    ret = GetOutPtr( 0 );
-    len = ReadBuffer( ret, acc->mem_addr.segment, acc->mem_addr.offset, acc->len );
-    return( len );
+    return( ReadBuffer( GetOutPtr( 0 ), acc->mem_addr.segment, acc->mem_addr.offset, acc->len ) );
 }
 
 
@@ -758,14 +742,11 @@ trap_retval TRAP_CORE( Write_mem )( void )
 {
     write_mem_req       *acc;
     write_mem_ret       *ret;
-    trap_elen           len;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-
-    len = GetTotalSizeIn() - sizeof( *acc );
-
-    ret->len = WriteBuffer( GetInPtr( sizeof( *acc ) ), acc->mem_addr.segment, acc->mem_addr.offset, len );
+    ret->len = WriteBuffer( GetInPtr( sizeof( *acc ) ), acc->mem_addr.segment,
+                        acc->mem_addr.offset, GetTotalSizeIn() - sizeof( *acc ) );
     return( sizeof( *ret ) );
 }
 
@@ -876,7 +857,7 @@ trap_retval TRAP_CORE( Get_lib_name )( void )
         return( sizeof( *ret ) );
     }
     Buff.Value = ModHandles[CurrModHandle];
-    max_len = GetTotalSizeOut() - 1 - sizeof( *ret );
+    max_len = GetTotalSizeOut() - sizeof( *ret ) - 1;
     name = GetOutPtr( sizeof( *ret ) );
     DosQueryModuleName( ModHandles[CurrModHandle], max_len + 1, name );
     name[max_len] = '\0';
@@ -888,97 +869,97 @@ static USHORT GetEXEFlags( char *name )
 {
     HFILE       hdl;
     USHORT      type;
-    ULONG       new_head;
+    ULONG       ne_header_off;
     USHORT      exeflags;
+    long        open_rc;
 
-    if( !FindNewHeader( name, &hdl, &new_head, &type ) ) {
-        return( 0 );
+    exeflags = 0;
+    open_rc = OpenFile( name, 0, OPEN_PRIVATE );
+    if( open_rc >= 0 ) {
+        hdl = open_rc;
+        if( FindNewHeader( hdl, &ne_header_off, &type ) ) {
+            if( type == EXESIGN_NE ) {
+                SeekRead( hdl, ne_header_off + 0x0c, &exeflags, sizeof( exeflags ) );
+                exeflags &= 0x0700;
+            } else if( type == EXESIGN_LE || type == EXESIGN_LX ) {
+                SeekRead( hdl, ne_header_off + 0x10, &exeflags, sizeof( exeflags ) );
+                exeflags &= 0x0700;
+            }
+        }
+        DosClose( hdl );
     }
-    if( type == EXE_NE ) {
-        SeekRead( hdl, new_head + 0x0c, &exeflags, sizeof( exeflags ) );
-    } else if( type == EXE_LE || type == EXE_LX ) {
-        SeekRead( hdl, new_head + 0x10, &exeflags, sizeof( exeflags ) );
-    } else {
-        exeflags = 0;
-    }
-    DosClose( hdl );
-    exeflags &= 0x0700;
     return( exeflags );
 
 } /* GetEXEFlags */
+
+static bool setExeInfo( ULONG *pLin, ULONG objnum, ULONG eip )
+{
+    Buff.Cmd   = DBG_C_NumToAddr;
+    Buff.Value = objnum;
+    Buff.MTE   = ModHandles[0];
+    CallDosDebug( &Buff );
+    if( Buff.Cmd != DBG_N_Success ) {
+        return( false );
+    }
+    *pLin = eip + Buff.Addr;
+    Buff.MTE = ModHandles[0];
+    return( true );
+}
 
 static bool FindLinearStartAddress( ULONG *pLin, char *name )
 {
     bool        rc;
     HFILE       hdl;
     USHORT      type;
-    ULONG       new_head;
-    ULONG       objnum;
-    USHORT      sobjn;
-    ULONG       eip;
-    USHORT      ip;
+    ULONG       ne_header_off;
+    long        open_rc;
 
-    if( !FindNewHeader( name, &hdl, &new_head, &type ) ) {
-        return( FALSE );
-    }
-    for( ;; ) {
-        rc = FALSE;
-        if( type == EXE_NE ) {
-            if( !SeekRead( hdl, new_head + 0x14, &ip, sizeof( ip ) ) ) {
-                break;
-            }
-            eip = ip;
-            if( !SeekRead( hdl, new_head + 0x16, &sobjn, sizeof( sobjn ) ) ) {
-                break;
-            }
-            objnum = sobjn;
+    rc = false;
+    open_rc = OpenFile( name, 0, OPEN_PRIVATE );
+    if( open_rc >= 0 ) {
+        hdl = open_rc;
+        if( FindNewHeader( hdl, &ne_header_off, &type ) ) {
+            if( type == EXESIGN_NE ) {
+                USHORT      sobjn;
+                USHORT      ip;
 
-            Is32Bit = FALSE;
-        } else if( type == EXE_LE || type == EXE_LX ) {
-            if( !SeekRead( hdl, new_head + 0x1c, &eip, sizeof( eip ) ) ) {
-                break;
-            }
-            if( !SeekRead( hdl, new_head + 0x18, &objnum, sizeof( objnum ) ) ) {
-                break;
-            }
+                if( SeekRead( hdl, ne_header_off + 0x14, &ip, sizeof( ip ) ) ) {
+                    if( SeekRead( hdl, ne_header_off + 0x16, &sobjn, sizeof( sobjn ) ) ) {
+                        Is32Bit = false;
+                        rc = setExeInfo( pLin, sobjn, ip );
+                    }
+                }
+            } else if( type == EXESIGN_LE || type == EXESIGN_LX ) {
+                ULONG       objnum;
+                ULONG       eip;
 
-            Is32Bit = TRUE;
-        } else {
-            break;
+                if( SeekRead( hdl, ne_header_off + 0x1c, &eip, sizeof( eip ) ) ) {
+                    if( SeekRead( hdl, ne_header_off + 0x18, &objnum, sizeof( objnum ) ) ) {
+                        Is32Bit = true;
+                        rc = setExeInfo( pLin, objnum, eip );
+                    }
+                }
+            }
         }
-
-        Buff.Cmd   = DBG_C_NumToAddr;
-        Buff.Value = objnum;
-        Buff.MTE   = ModHandles[0];
-        CallDosDebug( &Buff );
-        if( Buff.Cmd != DBG_N_Success ) {
-            break;
-        }
-        *pLin = eip + Buff.Addr;
-
-        Buff.MTE = ModHandles[0];
-
-        rc = TRUE;
-        break;
+        DosClose( hdl );
     }
-    DosClose( hdl );
     return( rc );
 } /* FindLinearStartAddress */
 
-static BOOL ExecuteUntilLinearAddressHit( ULONG lin )
+static bool ExecuteUntilLinearAddressHit( ULONG lin )
 {
     opcode_type brk_opcode = BRKPOINT;
-    BOOL        rc = TRUE;
+    bool        rc = true;
 
     ReadLinear( &saved_opcode, lin, sizeof( saved_opcode ) );
     WriteLinear( &brk_opcode, lin, sizeof( brk_opcode ) );
-    splice_bp_set = TRUE;
+    splice_bp_set = true;
     splice_bp_lin_addr = lin;
     do {
         ExceptNum = 0;
-        DebugExecute( &Buff, DBG_C_Go, TRUE );
+        DebugExecute( &Buff, DBG_C_Go, true );
         if( ExceptNum == 0 ) {
-            rc = TRUE; // DLL loaded
+            rc = true; // DLL loaded
             /* Breaking on DLL load means that this routine does not
              * necessarily stop when the linear address is truly hit;
              * this seemingly strange behaviour is desirable if we
@@ -988,7 +969,7 @@ static BOOL ExecuteUntilLinearAddressHit( ULONG lin )
             break;
         }
         if( ExceptNum != XCPT_BREAKPOINT ) {
-            rc = FALSE;
+            rc = false;
             break;
         }
     } while( ExceptLinear != lin );
@@ -997,14 +978,16 @@ static BOOL ExecuteUntilLinearAddressHit( ULONG lin )
 
 void AppSession( void )
 {
-    if( !IsPMDebugger() )
+    if( !IsPMDebugger() ) {
         DosSelectSession( SID );
+    }
 }
 
 void DebugSession( void )
 {
-    if( !IsPMDebugger() )
+    if( !IsPMDebugger() ) {
         DosSelectSession( 0 );
+    }
 }
 
 static unsigned StartProcess( const char *exe_name, char *parms )
@@ -1015,13 +998,14 @@ static unsigned StartProcess( const char *exe_name, char *parms )
     char            appname[CCHMAXPATH];
     unsigned        rc;
 
+    strcpy( appname, TRP_The_WATCOM_Debugger );
+    strcat( appname, ": " );
+    strcat( appname, exe_name );
+
     start.Length = offsetof( STARTDATA, IconFile ); /* default for the rest */
     start.Related = 1;
     start.FgBg = !Remote;
     start.TraceOpt = 1;
-    strcpy( appname, TRP_The_WATCOM_Debugger );
-    strcat( appname, ": " );
-    strcat( appname, exe_name );
     start.PgmTitle = (PSZ)appname;
     start.PgmName = UtilBuff;
     start.PgmInputs = (PBYTE)parms;
@@ -1057,9 +1041,8 @@ static unsigned StartProcess( const char *exe_name, char *parms )
 trap_retval TRAP_CORE( Prog_load )( void )
 {
     char            *parms;
-    char            *end;
     char            *src;
-    char            *prog;
+    char            *name;
     char            *endsrc;
     char            exe_name[CCHMAXPATH];
     ULONG           startLinear;
@@ -1068,11 +1051,12 @@ trap_retval TRAP_CORE( Prog_load )( void )
 
     LastMTE    = 0;
     ExceptNum  = -1;
-    ret        = GetOutPtr(0);
-    AtEnd      = FALSE;
+    ret        = GetOutPtr( 0 );
+    ret->err   = 0;
+    AtEnd      = false;
     TaskFS     = 0;
     attach_pid = -1;
-    src = prog = GetInPtr( sizeof( prog_load_req ) );
+    src = name = GetInPtr( sizeof( prog_load_req ) );
 
     // See if a PID was specified; if so, we will be attaching to
     // an existing process, not loading a new one. The PID may
@@ -1080,36 +1064,34 @@ trap_retval TRAP_CORE( Prog_load )( void )
     if( *src == '#' ) {
         src++;
         attach_pid = strtoul( src, &endsrc, 16 );
-        if( attach_pid == 0 )
+        if( attach_pid == 0 ) {
             attach_pid = -1;
+        }
 //        strcpy( buff, endsrc );
     } else {
-        while( *src ) {
+        while( *src != '\0' ) {
             if( !isdigit( *src ) ) {
                 break;
             }
             src++;
         }
-        if( *src == 0 && src != prog ) {
-            attach_pid = atoi( prog );
+        if( *src == '\0' && src != name ) {
+            attach_pid = atoi( name );
         }
     }
 
     /* If PID was not specified, start the debuggee process */
     if( attach_pid == -1 ) {
-        isAttached = FALSE;
-        if( FindProgFile( prog, exe_name, OS2ExtList ) != 0 ) {
-            exe_name[0] = '\0';
-        }
-        parms = AddDriveAndPath( exe_name, UtilBuff );
-        while( *prog != '\0' )
-            ++prog;
-        ++prog;
-        end = (char *)GetInPtr( GetTotalSizeIn() - 1 ) + 1;
-        MergeArgvArray( prog, parms, end - prog );
+        isAttached = false;
+        FindFilePath( DIG_FILETYPE_EXE, name, exe_name );
+        parms = AddDriveAndPath( exe_name, UtilBuff ) + 1;
+        src = name;
+        while( *src++ != '\0' )
+            {}
+        MergeArgvArray( src, parms, GetTotalSizeIn() - sizeof( prog_load_req ) - ( src - name ) );
         ret->err = StartProcess( exe_name, parms );
     } else {
-        isAttached = TRUE;
+        isAttached = true;
         Buff.Addr  = 0; // Sever connection
         Buff.Pid   = attach_pid;
         Buff.Tid   = 0;
@@ -1118,7 +1100,6 @@ trap_retval TRAP_CORE( Prog_load )( void )
         CallDosDebug( &Buff );
         if( Buff.Cmd == DBG_N_Success ) {
             Pid = attach_pid;
-            ret->err = 0;
         } else {
             ret->err = Buff.Value;
         }
@@ -1141,17 +1122,16 @@ trap_retval TRAP_CORE( Prog_load )( void )
             Buff.Cmd   = DBG_C_Connect;
             Buff.Value = DBG_L_386;
             CallDosDebug( &Buff );
-        }
-        else {
+        } else {
             ret->flags |= LD_FLAG_IS_STARTED;
             // TODO: figure out if 32-bit process
-            Is32Bit = TRUE;
+            Is32Bit = true;
         }
 
         Buff.Pid = Pid;
         Buff.Tid = 1;
         if( !isAttached ) {
-            DebugExecute( &Buff, DBG_C_Stop, FALSE );
+            DebugExecute( &Buff, DBG_C_Stop, false );
             if( Buff.Cmd != DBG_N_Success ) {
                 ret->err = 14; /* can't load */
                 return( sizeof( *ret ) );
@@ -1159,12 +1139,11 @@ trap_retval TRAP_CORE( Prog_load )( void )
         }
 
         ReadRegs( &Buff );
-        CanExecTask = FALSE;
-        splice_bp_set = FALSE;
+        CanExecTask = false;
+        splice_bp_set = false;
         splice_bp_lin_addr = 0;
 
-        if( isAttached ) {
-        } else {
+        if( !isAttached ) {
             if( FindLinearStartAddress( &startLinear, UtilBuff ) ) {
                 CanExecTask = ExecuteUntilLinearAddressHit( startLinear );
                 ReadRegs( &Buff );
@@ -1178,13 +1157,13 @@ trap_retval TRAP_CORE( Prog_load )( void )
             save.Tid = 1;
             ReadRegs( &save );
             if( !CausePgmToLoadHelperDLL( startLinear ) ) {
-                CanExecTask = FALSE;
+                CanExecTask = false;
                 // Note - the breakpoint is still set; we'll likely hit
                 // it later
             } else {
                 // Remove breakpoint
                 WriteLinear( &saved_opcode, startLinear, sizeof( saved_opcode ) );
-                splice_bp_set = FALSE;
+                splice_bp_set = false;
                 splice_bp_lin_addr = 0;
             }
             WriteRegs( &save );
@@ -1209,20 +1188,21 @@ trap_retval TRAP_CORE( Prog_kill )( void )
     prog_kill_ret       *ret;
 
     ret = GetOutPtr( 0 );
+    ret->err = 0;
     SaveStdIn  = NIL_DOS_HANDLE;
     SaveStdOut = NIL_DOS_HANDLE;
     if( Pid != 0 ) {
-        if( isAttached )
+        if( isAttached ) {
             Buff.Cmd = DBG_C_Detach;
-        else
+        } else {
             Buff.Cmd = DBG_C_Term;
+        }
         Buff.Pid = Pid;
         CallDosDebug( &Buff );
     }
     NumModHandles = 0;
     CurrModHandle = 1;
     Pid = 0;
-    ret->err = 0;
     DosSleep( 100 ); // Without this, it seems that restarts happen too fast
                      // and we end up running a 2nd instance of a dead task
                      // or some such sillyness.  I don't really know, but
@@ -1258,29 +1238,61 @@ trap_retval TRAP_CORE( Clear_break )( void )
     return( 0 );
 }
 
+static int DRegsCount( void )
+{
+    int     needed;
+    int     i;
+
+    needed = 0;
+    for( i = 0; i < WatchCount; i++ ) {
+        needed += WatchPoints[i].dregs;
+    }
+    return( needed );
+}
+
+static word GetDRInfo( word segment, dword offset, word size, dword *plinear )
+{
+    word    dregs;
+    dword   linear;
+
+    linear = MakeItFlatNumberOne( segment, offset );
+    dregs = 1;
+    if( size == 8 ) {
+        size = 4;
+        dregs++;
+    }
+    if( linear & ( size - 1 ) )
+        dregs++;
+    if( plinear != NULL )
+        *plinear = linear & ~( size - 1 );
+    return( dregs );
+}
+
 trap_retval TRAP_CORE( Set_watch )( void )
 {
     set_watch_req       *acc;
     set_watch_ret       *ret;
-    dword               buff;
+    watch_point         *wp;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    ret->err = 1;
-    if( WatchCount < MAX_WP ) { // nyi - artificial limit (32 should be lots)
-        WatchPoints[WatchCount].addr.segment = acc->watch_addr.segment;
-        WatchPoints[WatchCount].addr.offset = acc->watch_addr.offset;
-        WatchPoints[WatchCount].len = acc->size;
-        ReadBuffer( (char *)&buff, acc->watch_addr.segment,
-                    acc->watch_addr.offset, sizeof( dword ) );
-        WatchPoints[WatchCount].value = buff;
-        DebugRegsNeeded += (acc->watch_addr.offset & (acc->size - 1)) ? 2 : 1;
-        ret->err = 0;
-        ++WatchCount;
-    }
     ret->multiplier = 50000;
-    if( ret->err == 0 && DebugRegsNeeded <= 4 ) {
-        ret->multiplier |= USING_DEBUG_REG;
+    ret->err = 1;       // failure
+    if( WatchCount < MAX_WATCHES ) { // nyi - artificial limit (32 should be lots)
+        wp = WatchPoints + WatchCount;
+        wp->addr.segment = acc->watch_addr.segment;
+        wp->addr.offset = acc->watch_addr.offset;
+        wp->size = acc->size;
+        wp->value = 0;
+        ReadBuffer( &wp->value, wp->addr.segment, wp->addr.offset, wp->size );
+
+        wp->dregs = GetDRInfo( wp->addr.segment, wp->addr.offset, wp->size, &wp->linear );
+
+        WatchCount++;
+        if( DRegsCount() <= 4 ) {
+            ret->multiplier |= USING_DEBUG_REG;
+        }
+        ret->err = 0;   // OK
     }
     return( sizeof( *ret ) );
 }
@@ -1292,23 +1304,21 @@ trap_retval TRAP_CORE( Clear_watch )( void )
     watch_point      *src;
     int              i;
 
-
     acc = GetInPtr( 0 );
     dst = src = WatchPoints;
     for( i = 0; i < WatchCount; ++i ) {
-        if( src->addr.segment != acc->watch_addr.segment ||
-                src->addr.offset != acc->watch_addr.offset ) {
+        if( src->addr.segment != acc->watch_addr.segment
+          || src->addr.offset != acc->watch_addr.offset ) {
             *dst = *src;
             ++dst;
         } else {
-            DebugExecute( &Buff, DBG_C_Stop, FALSE );
+            DebugExecute( &Buff, DBG_C_Stop, false );
             Buff.Cmd = DBG_C_ClearWatch;
             Buff.Index = 0; // src->id;
             CallDosDebug( &Buff );
         }
         ++src;
     }
-    DebugRegsNeeded -= (acc->watch_addr.offset & (acc->size - 1)) ? 2 : 1;
     --WatchCount;
     return( 0 );
 }
@@ -1317,7 +1327,7 @@ static volatile bool     BrkPending;
 
 void SetBrkPending( void )
 {
-    BrkPending = TRUE;
+    BrkPending = true;
 }
 
 static trap_conditions MapReturn( trap_conditions conditions )
@@ -1360,61 +1370,69 @@ static trap_conditions MapReturn( trap_conditions conditions )
         Buff.Pid = Pid;
         CallDosDebug( &Buff );
     default:
-        AtEnd = TRUE;
-        CanExecTask = FALSE;
+        AtEnd = true;
+        CanExecTask = false;
         return( conditions | COND_TERMINATE );
     }
 }
 
-static bool setDebugRegs(void)
+static bool setDebugRegs( void )
 {
-    int                 needed;
-    int                 i;
+    int         i;
+    int         j;
+    watch_point *wp;
+    dword       linear;
+    word        size;
 
-    needed = 0;
-    for( i = 0; i < WatchCount; ++i ) {
-        needed += WatchPoints[i].addr.offset & (WatchPoints[i].len - 1) ? 2 : 1;
-        if( needed > 4 ) {
-            return( FALSE );
-        }
+    if( DRegsCount() > 4 ) {
+        return( false );
     }
-    for( i = 0; i < WatchCount; ++i ) {
-        Buff.Cmd = DBG_C_SetWatch;
-        Buff.Addr = MakeItFlatNumberOne( WatchPoints[i].addr.segment,
-                                        WatchPoints[i].addr.offset & ~(WatchPoints[i].len - 1) );
-        Buff.Len = WatchPoints[i].len;
-        Buff.Index = 0;
+    for( wp = WatchPoints, i = WatchCount; i-- > 0; wp++ ) {
+        linear = wp->linear;
+        size = wp->size;
+        if( size == 8 )
+            size = 4;
         Buff.Value = DBG_W_Write | DBG_W_Local;
-        CallDosDebug( &Buff );
-        if( WatchPoints[i].addr.offset & (WatchPoints[i].len - 1) ) {
+        for( j = 0; j < wp->dregs; j++ ) {
             Buff.Cmd = DBG_C_SetWatch;
-            Buff.Addr += WatchPoints[i].len;
+            Buff.Addr = linear;
+            Buff.Len = size;
             Buff.Index = 0;
             CallDosDebug( &Buff );
+            linear += size;
         }
     }
-    return( TRUE );
+    return( true );
+}
+
+static bool CheckWatchPoints( void )
+{
+    watch_point     *wp;
+    int             i;
+    uDB_t           save;
+    uint_64         value;
+
+    for( wp = WatchPoints, i = WatchCount; i-- > 0; wp++ ) {
+        ReadRegs( &save );
+        value = 0;
+        ReadBuffer( &value, wp->addr.segment, wp->addr.offset, wp->size );
+        WriteRegs( &save );
+        if( wp->value != value ) {
+            return( true );
+        }
+    }
+    return( false );
 }
 
 static void watchSingleStep(void)
 {
-    uDB_t               save;
-    dword               memval;
-    int                 i;
-
-    DebugExecute( &Buff, DBG_C_SStep, TRUE );
+    DebugExecute( &Buff, DBG_C_SStep, true );
     while( Buff.Cmd == DBG_N_SStep ) {
-        for (i = 0; i < WatchCount; ++i) {
-            ReadRegs( &save );
-            ReadBuffer( (char *)&memval, WatchPoints[i].addr.segment,
-                       WatchPoints[i].addr.offset, sizeof( memval ) );
-            WriteRegs(&save);
-            if( WatchPoints[i].value != memval ) {
-                Buff.Cmd = DBG_N_Watchpoint;
-                return;
-            }
+        if( CheckWatchPoints() ) {
+            Buff.Cmd = DBG_N_Watchpoint;
+            break;
         }
-        DebugExecute( &Buff, DBG_C_SStep, TRUE );
+        DebugExecute( &Buff, DBG_C_SStep, true );
     }
 }
 
@@ -1463,7 +1481,7 @@ static unsigned progRun( bool step )
         ret->program_counter.offset  = lastEIP;
         return( sizeof( *ret ) );
     }
-    BrkPending = FALSE;
+    BrkPending = false;
 
     // Set exception handler and don't forget to set signal focus!
     DosSetExceptionHandler( &RegRec );
@@ -1472,11 +1490,11 @@ static unsigned progRun( bool step )
     if( AtEnd ) {
         Buff.Cmd = DBG_N_ProcTerm;
     } else if( step ) {
-        DebugExecute( &Buff, DBG_C_SStep, TRUE );
+        DebugExecute( &Buff, DBG_C_SStep, true );
     } else if( !setDebugRegs() ) {
         watchSingleStep();
     } else {
-        DebugExecute( &Buff, DBG_C_Go, TRUE );
+        DebugExecute( &Buff, DBG_C_Go, true );
         if( Buff.Cmd == DBG_N_Success ) {
             Buff.Cmd = DBG_N_ProcTerm;
         }
@@ -1496,8 +1514,8 @@ static unsigned progRun( bool step )
     lastEIP = ret->program_counter.offset = Buff.EIP;
     //runret->thread = Buff.Tid;
     //if( runret->returnvalue == TRAP_TERMINATE ) {
-    //    AtEnd = TRUE;
-    //    CanExecTask = FALSE;
+    //    AtEnd = true;
+    //    CanExecTask = false;
     //}
     return( sizeof( *ret ) );
 }
@@ -1507,7 +1525,7 @@ trap_retval TRAP_CORE( Prog_go )( void )
     trap_elen   rc;
 
     PMUnLock();
-    rc = progRun( FALSE );
+    rc = progRun( false );
     PMLock( Buff.Pid, Buff.Tid );
     return( rc );
 }
@@ -1517,14 +1535,14 @@ trap_retval TRAP_CORE( Prog_step )( void )
     trap_elen   rc;
 
     PMUnLock();
-    rc = progRun( TRUE );
+    rc = progRun( true );
     PMLock( Buff.Pid, Buff.Tid );
     return( rc );
 }
 
 trap_retval TRAP_FILE( write_console )( void )
 {
-    ULONG        len;
+    size_t       len;
     ULONG        written_len;
     byte         *ptr;
     file_write_console_ret      *ret;
@@ -1532,10 +1550,10 @@ trap_retval TRAP_FILE( write_console )( void )
     ptr = GetInPtr( sizeof( file_write_console_req ) );
     len = GetTotalSizeIn() - sizeof( file_write_console_req );
     ret = GetOutPtr( 0 );
+    ret->err = 0;
     if( CanExecTask ) {
         /* print/program request */
         ret->len = len;
-        ret->err = 0;
         TaskPrint( ptr, len );
     } else {
         ret->err = DosWrite( 2, ptr, len, &written_len );
@@ -1647,16 +1665,15 @@ static trap_elen DoThread( trace_codes code )
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
+    ret->err = 1;       // fail
     if( ValidThread( acc->thread ) ) {
+        ret->err = 0;   // OK
         save = Buff.Tid;
         Buff.Pid = Pid;
         Buff.Tid = acc->thread;
         Buff.Cmd = code;
         CallDosDebug( &Buff );
         Buff.Tid = save;
-        ret->err = 0;
-    } else {
-        ret->err = 1;   // failed
     }
     return( sizeof( *ret ) );
 }
@@ -1722,14 +1739,14 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
 
     Remote = remote;
     err[0] = '\0';
-    ver.major  = TRAP_MAJOR_VERSION;
-    ver.minor  = TRAP_MINOR_VERSION;
-    ver.remote = FALSE;
+    ver.major = TRAP_VERSION_MAJOR;
+    ver.minor = TRAP_VERSION_MINOR;
+    ver.remote = false;
     SaveStdIn  = NIL_DOS_HANDLE;
     SaveStdOut = NIL_DOS_HANDLE;
     Screen     = DEBUG_SCREEN;
     if( *parms == '2' ) {
-        stopOnSecond = TRUE;
+        stopOnSecond = true;
     }
 
     DosGetInfoBlocks( &ptib, &ppib );

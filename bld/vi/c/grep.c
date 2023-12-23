@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,6 +37,8 @@
 #include "rxsupp.h"
 #include "win.h"
 #include "pathgrp2.h"
+#include "myprintf.h"
+#include "parse.h"
 #ifdef __WIN__
     #include "filelist.rh"
     #include "vifont.h"
@@ -105,7 +107,7 @@ vi_rc DoFGREP( const char *dirlist, const char *string, bool ci )
         strlwr( searchString );
     }
     rc = doGREP( dirlist );
-    MemFree( searchString );
+    _MemFreeArray( searchString );
     return( rc );
 
 } /* DoFGREP */
@@ -124,10 +126,10 @@ vi_rc DoEGREP( const char *dirlist, const char *string )
         origString = string;
         isFgrep = false;
         rc = doGREP( dirlist );
-        MemFree( searchString );
+        _MemFreeArray( searchString );
     }
     if( cRx != NULL ) {
-        MemFree( cRx );
+        _MemFreeArray( cRx );
         cRx = NULL;
     }
     return( rc );
@@ -274,7 +276,7 @@ static void getOneFile( HWND dlg, char **files, int *count, bool leave )
       #ifdef __NT__
             }
       #endif
-            MemFree( files[i] );
+            _MemFreeArray( files[i] );
             for( j = i; j < *count; j++ ) {
                 files[j] = files[j + 1];
             }
@@ -311,7 +313,7 @@ WINEXPORT INT_PTR CALLBACK GrepListDlgProc( HWND dlg, UINT msg, WPARAM wparam, L
         SendMessage( list_box, WM_SETFONT, (WPARAM)FontHandle( dirw_info.text_style.font ), 0L );
         MySprintf( tmp, "Files Containing \"%s\"", searchString );
         SetWindowText( dlg, tmp );
-        fileList = _MemAllocList( MAX_FILES );
+        fileList = _MemAllocPtrArray( char, MAX_FILES );
         fileCount = (int)initList( list_box, (const char *)lparam, fileList );
         if( fileCount == 0 ) {
             /* tell him that there are no matches and close down? */
@@ -344,7 +346,7 @@ WINEXPORT INT_PTR CALLBACK GrepListDlgProc( HWND dlg, UINT msg, WPARAM wparam, L
         }
         break;
     case WM_DESTROY:
-        MemFreeList( fileCount, fileList );
+        _MemFreePtrArray( fileList, fileCount, MemFree );
         break;
     }
     return( FALSE );
@@ -384,7 +386,7 @@ WINEXPORT INT_PTR CALLBACK GrepListDlgProc95( HWND dlg, UINT msg, WPARAM wparam,
         lvc.pszText = "Line";
         lvc.iSubItem = 1;
         SendMessage( list_box, LVM_INSERTCOLUMN, 1, (LPARAM)&lvc );
-        fileList = _MemAllocList( MAX_FILES );
+        fileList = _MemAllocPtrArray( char, MAX_FILES );
         fileCount = (int)initList( list_box, (const char *)lparam, fileList );
         if( fileCount == 0 ) {
             Message1( "String \"%s\" not found", searchString );
@@ -419,7 +421,7 @@ WINEXPORT INT_PTR CALLBACK GrepListDlgProc95( HWND dlg, UINT msg, WPARAM wparam,
         }
         break;
     case WM_DESTROY:
-        MemFreeList( fileCount, fileList );
+        _MemFreePtrArray( fileList, fileCount, MemFree );
         break;
     }
     return( FALSE );
@@ -484,7 +486,7 @@ static vi_rc doGREP( const char *dirlist )
      * prepare list array
      */
     clist = 0;
-    list = _MemAllocList( MAX_FILES );
+    list = _MemAllocPtrArray( char, MAX_FILES );
 
     /*
      * create info. window
@@ -563,7 +565,7 @@ static vi_rc doGREP( const char *dirlist )
                         si.event == VI_KEY( F1 ) || si.event == VI_KEY( F3 ) ) {
                         break;
                     }
-                    MemFree( list[si.num] );
+                    _MemFreeArray( list[si.num] );
                     for( i = si.num; i < clist - 1; i++ ) {
                         list[i] = list[i + 1];
                     }
@@ -584,7 +586,7 @@ static vi_rc doGREP( const char *dirlist )
     /*
      * cleanup
      */
-    MemFreeList( clist, list );
+    _MemFreePtrArray( list, clist, MemFree );
     return( rc );
 
 } /* DoFGREP */
@@ -695,7 +697,7 @@ static vi_rc eSearch( const char *fn, char *res )
     buff = StaticAlloc();
     if( buff != NULL ) {
         rc = ERR_NO_ERR;
-        while( fgets( buff, EditVars.MaxLine, fp ) != NULL ) {
+        while( fgets( buff, EditVars.MaxLineLen, fp ) != NULL ) {
             for( i = strlen( buff ); i > 0 && isEOL( buff[i - 1] ); --i ) {
                 buff[i - 1] = '\0';
             }
@@ -737,7 +739,7 @@ static vi_rc fSearch( const char *fn, char *r )
     rc = FileOpen( fn, false, O_BINARY | O_RDONLY, 0, &handle );
     if( rc == ERR_NO_ERR ) {
         rc = ERR_NO_MEMORY;
-        buff = MemAlloc( MAXBYTECNT );
+        buff = _MemAllocArray( char, MAXBYTECNT );
         if( buff != NULL ) {
             /*
              * read in buffers from the file, and search through them
@@ -812,7 +814,7 @@ static vi_rc fSearch( const char *fn, char *r )
                     strncpy( context_display, buffloc - MAX_DISP, MAX_DISP );
                 }
             }
-            MemFree( buff );
+            _MemFreeArray( buff );
         }
         close( handle );
     }

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,33 +39,36 @@
 #define INCL_DOSFILEMGR
 #define INCL_DOSMEMMGR
 #define INCL_DOSSIGNALS
-#include <os2.h>
+#include <wos2.h>
 #include <os2dbg.h>
-#include "os2trap.h"
-#include "dosdebug.h"
-#include "trpimp.h"
+#include "os2v2acc.h"
 #include "trperr.h"
 #include "wdpmhelp.h"
 
+
+#define STACK_SIZE      8192
+
+static byte             thestack[STACK_SIZE];
 static HFILE            PmInh;
 static HFILE            PmOuth;
 static HFILE            HisInh;
 static HFILE            HisOuth;
 static bool             Response;
 static bool             HaveHelper;
-static USHORT   SID;
+static USHORT           lockSID;
 
 static int SpawnLocker( HFILE inh, HFILE outh )
 {
-    NEWSTARTDATA        start;
-    char        parms[20];
-    PID         pid;
+    STARTDATA       start;
+    char            parms[20];
+    PID             pid;
 
     parms[0] = inh + ADJUST_HFILE;
     parms[1] = ' ';
     parms[2] = outh + ADJUST_HFILE;
     parms[3] = '\0';
-    start.Length = offsetof( NEWSTARTDATA, IconFile );
+
+    start.Length = offsetof( STARTDATA, IconFile );
     start.Related = 1;
     start.FgBg = 1;
     start.TraceOpt = 0;
@@ -75,25 +79,26 @@ static int SpawnLocker( HFILE inh, HFILE outh )
     start.Environment = NULL;
     start.InheritOpt = 1;
     start.SessionType = SSF_TYPE_PM;
-    return( DosStartSession( (void __far *) &start, &SID, &pid ) );
+    return( DosStartSession( (PVOID)&start, &lockSID, &pid ) );
 }
 
 static void PmHelp( int command )
 {
-    USHORT      dummy;
-    pmhelp_packet       data;
+    USHORT          dummy;
+    pmhelp_packet   data;
 
-    if( !HaveHelper ) return;
+    if( !HaveHelper )
+        return;
     data.command = command;
     DosWrite( PmOuth, &data, sizeof( data ), &dummy );
 }
 
 
-static VOID __far SwitchBack( VOID )
+static void __far SwitchBack( void )
 {
-    USHORT      rc;
-    pmhelp_packet       data;
-    USHORT      dummy;
+    USHORT          rc;
+    pmhelp_packet   data;
+    USHORT          dummy;
 
     for( ;; ) {
         rc = DosRead( PmInh, &data, sizeof( data ), &dummy );
@@ -106,7 +111,8 @@ static VOID __far SwitchBack( VOID )
 
 void StopPMHelp( void )
 {
-    if( !HaveHelper ) return;
+    if( !HaveHelper )
+        return;
     PmHelp( PMHELP_EXIT );
     DosClose( PmInh );
     DosClose( PmOuth );
@@ -116,7 +122,8 @@ void StopPMHelp( void )
 
 void PMLock( unsigned long pid, unsigned long tid )
 {
-    pid=pid;tid=tid;
+    /* unused parameters */ (void)pid; (void)tid;
+
     PmHelp( PMHELP_LOCK );
 }
 
@@ -127,24 +134,27 @@ void PMUnLock( void )
 
 int PMFlip( void )
 {
-    if( !HaveHelper ) return( FALSE );
+    if( !HaveHelper )
+        return( FALSE );
     Response = 0;
-    DosSelectSession( SID, 0 );
-    while( !Response ) DosSleep( 100 );
+    DosSelectSession( lockSID, 0 );
+    while( !Response )
+        DosSleep( 100 );
     return( TRUE );
 }
-
-#define STACK_SIZE 8192
-byte    thestack[STACK_SIZE];
 
 void StartPMHelp( void )
 {
     TID         tid;
 
     HaveHelper = FALSE;
-    if( DosMakePipe( &PmInh, &HisOuth, sizeof( pmhelp_packet ) ) ) return;
-    if( DosMakePipe( &HisInh, &PmOuth, sizeof( pmhelp_packet ) ) ) return;
-    if( SpawnLocker( HisInh, HisOuth ) ) return;
-    if( DosCreateThread( SwitchBack, &tid, thestack + STACK_SIZE ) ) return;
+    if( DosMakePipe( &PmInh, &HisOuth, sizeof( pmhelp_packet ) ) )
+        return;
+    if( DosMakePipe( &HisInh, &PmOuth, sizeof( pmhelp_packet ) ) )
+        return;
+    if( SpawnLocker( HisInh, HisOuth ) )
+        return;
+    if( DosCreateThread( SwitchBack, &tid, thestack + STACK_SIZE ) )
+        return;
     HaveHelper = TRUE;
 }

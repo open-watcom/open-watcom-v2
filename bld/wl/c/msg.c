@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -326,7 +326,7 @@ size_t DoFmtStr( char *buff, size_t len, const char *src, va_list args )
                 } else {
                     num = va_arg( args, unsigned int );
                 }
-                ultoa( num, dest, 10 );
+                sprintf( dest, "%u", (unsigned)num );
                 size = strlen( dest );
                 dest += size;
                 len -= size;
@@ -340,7 +340,7 @@ size_t DoFmtStr( char *buff, size_t len, const char *src, va_list args )
                 } else {
                     num2 = va_arg( args, unsigned_32 );
                 }
-                ultoa( num2, dest, 10 );
+                sprintf( dest, "%lu", (unsigned long)num2 );
                 size = strlen( dest );
                 dest += size;
                 len -= size;

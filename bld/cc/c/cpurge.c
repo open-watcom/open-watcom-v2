@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -54,14 +55,14 @@ static void Purge( char **ptr )
 void PurgeMemory( void )
 /**********************/
 {
-//  MacroPurge();
+//    MacroPurge();
     SymsPurge();        /* calls TypesPurge */
     FreeFNames();
     FreeRDir();
     SrcPurge();
     SwitchPurge();
     Purge( &IncPathList );
-//  Purge( &ErrSym );               /* ErrSym is in CPermArea */
+//    Purge( &ErrSym );               /* ErrSym is in CPermArea */
     Purge( &SavedId );
     FreePreCompiledHeader();
 }

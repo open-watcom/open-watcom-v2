@@ -1,3 +1,5 @@
+tree_depth = 5
+
 target_cpu = axp
 
 exetarg_prebuild_objs = cmdlnprs.gc

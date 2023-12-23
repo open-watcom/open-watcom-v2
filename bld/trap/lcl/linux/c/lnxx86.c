@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,6 +34,7 @@
 #include <string.h>
 #include <sys/types.h>
 #include <sys/ptrace.h>
+#include "digcpu.h"
 #include "trpimp.h"
 #include "trpcomm.h"
 #include "trperr.h"
@@ -43,8 +44,20 @@
 #include "lnxcomm.h"
 #include "x86cpu.h"
 
-static watch_point      wpList[ MAX_WP ];
-static int              wpCount = 0;
+
+#define MAX_WATCHES 32
+
+/* Structure used internally to set hardware watch points */
+typedef struct {
+    uint_64     value;
+    dword       linear;
+    addr48_ptr  addr;
+    word        size;
+    word        dregs;
+} watch_point;
+
+static watch_point  WatchPoints[MAX_WATCHES];
+static int          WatchCount = 0;
 
 static void ReadCPU( struct x86_cpu *r )
 {
@@ -185,22 +198,22 @@ u_long GetDR6( void )
     return( val );
 }
 
-static void SetDR6( u_long val )
+static void SetDR6( dword val )
 {
     ptrace( PTRACE_POKEUSER, pid, O_DEBUGREG( 6 ), (void *)val );
 }
 
-static void SetDR7( u_long val )
+static void SetDR7( dword val )
 {
     ptrace( PTRACE_POKEUSER, pid, O_DEBUGREG(7), (void *)val );
 }
 
-static u_long SetDRn( int i, u_long linear, long type )
+static dword SetDRn( int i, dword linear, word type )
 {
     ptrace( PTRACE_POKEUSER, pid, O_DEBUGREG( i ), (void *)linear );
-    return( ( type << DR7_RWLSHIFT( i ) )
-//        | ( DR7_GEMASK << DR7_GLSHIFT( i ) ) | DR7_GE
-          | ( DR7_LEMASK << DR7_GLSHIFT( i ) ) | DR7_LE );
+    return( ( (dword)type << DR7_RWLSHIFT( i ) )
+//        | ( DR7_GEMASK << DR7_GLSHIFT( i ) )
+          | ( DR7_LEMASK << DR7_GLSHIFT( i ) ) );
 }
 
 void ClearDebugRegs( void )
@@ -213,75 +226,110 @@ void ClearDebugRegs( void )
     SetDR7( 0 );
 }
 
-int SetDebugRegs( void )
+static int DRegsCount( void )
 {
-    int         needed,i,dr;
-    u_long      dr7;
-    watch_point *wp;
+    int     needed;
+    int     i;
 
     needed = 0;
-    for( i = 0; i < wpCount; i++)
-        needed += wpList[i].dregs;
-    if( needed > 4 )
+    for( i = 0; i < WatchCount; i++ ) {
+        needed += WatchPoints[i].dregs;
+    }
+    return( needed );
+}
+
+int SetDebugRegs( void )
+{
+    int         i;
+    int         j;
+    int         dr;
+    dword       dr7;
+    watch_point *wp;
+    dword       linear;
+    word        size;
+    word        type;
+
+    if( DRegsCount() > 4 )
         return( false );
     dr  = 0;
-    dr7 = 0;
-    for( i = 0, wp = wpList; i < wpCount; i++, wp++ ) {
-        dr7 |= SetDRn( dr, wp->linear, DRLen( wp->len ) | DR7_BWR );
-        dr++;
-        if( wp->dregs == 2 ) {
-            dr7 |= SetDRn( dr, wp->linear+wp->len, DRLen( wp->len ) | DR7_BWR );
+    dr7 = /* DR7_GE | */ DR7_LE;
+    for( wp = WatchPoints, i = WatchCount; i-- > 0; wp++ ) {
+        linear = wp->linear;
+        size = wp->size;
+        if( size == 8 )
+            size = 4;
+        type = DRLen( size ) | DR7_BWR;
+        for( j = 0; j < wp->dregs; j++ ) {
+            dr7 |= SetDRn( dr, linear, type );
             dr++;
+            linear += size;
         }
     }
     SetDR7( dr7 );
     return( true );
 }
 
-int CheckWatchPoints( void )
+#if 0
+bool CheckWatchPoints( void )
 {
-    u_long  value;
-    int     i;
+    watch_point *wp;
+    int         i;
+    uint_64     value;
 
-    for( i = 0; i < wpCount; i++ ) {
-        ReadMem( pid, &value, wpList[i].loc.offset, sizeof( value ) );
-        if( value != wpList[i].value ) {
+    for( wp = WatchPoints, i = WatchCount; i-- > 0; wp++ ) {
+        value = 0;
+        ReadMemory( pid, wp->addr.offset, &value, wp->size );
+        if( wp->value != value ) {
             return( true );
         }
     }
     return( false );
+}
+#endif
+
+static word GetDRInfo( word segment, dword offset, word size, dword *plinear )
+{
+    word    dregs;
+    dword   linear;
+
+    /* unused parameters */ (void)segment;
+
+    linear = offset;
+    dregs = 1;
+    if( size == 8 ) {
+        size = 4;
+        dregs++;
+    }
+    if( linear & ( size - 1 ) )
+        dregs++;
+    if( plinear != NULL )
+        *plinear = linear & ~( size - 1 );
+    return( dregs );
 }
 
 trap_retval TRAP_CORE( Set_watch )( void )
 {
     set_watch_req   *acc;
     set_watch_ret   *ret;
-    u_long          value;
-    watch_point     *curr;
-    u_long          linear;
-    unsigned        i,needed;
+    watch_point     *wp;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
     ret->multiplier = 100000;
-    ret->err = 1;
-    if( wpCount < MAX_WP ) {
-        ret->err = 0;
-        curr = wpList + wpCount;
-        curr->loc.segment = acc->watch_addr.segment;
-        curr->loc.offset = acc->watch_addr.offset;
-        ReadMem( pid, &value, acc->watch_addr.offset, sizeof( dword ) );
-        curr->value = value;
-        curr->len = acc->size;
-        wpCount++;
-        curr->linear = linear = acc->watch_addr.offset;
-        curr->linear &= ~(curr->len-1);
-        curr->dregs = (linear & (curr->len-1) ) ? 2 : 1;
-        needed = 0;
-        for( i = 0; i < wpCount; ++i ) {
-            needed += wpList[ i ].dregs;
-        }
-        if( needed <= 4 ) {
+    ret->err = 1;       // failure
+    if( WatchCount < MAX_WATCHES ) {
+        ret->err = 0;   // OK
+        wp = WatchPoints + WatchCount;
+        wp->addr.segment = acc->watch_addr.segment;
+        wp->addr.offset = acc->watch_addr.offset;
+        wp->size = acc->size;
+        wp->value = 0;
+        ReadMemory( pid, wp->addr.offset, &wp->value, wp->size );
+
+        wp->dregs = GetDRInfo( wp->addr.segment, wp->addr.offset, wp->size, &wp->linear );
+
+        WatchCount++;
+        if( DRegsCount() <= 4 ) {
             ret->multiplier |= USING_DEBUG_REG;
         }
     }
@@ -296,93 +344,93 @@ trap_retval TRAP_CORE( Clear_watch )( void )
     int             i;
 
     acc = GetInPtr( 0 );
-    dst = src = wpList;
-    for( i = 0; i < wpCount; i++ ) {
-        if( src->loc.segment != acc->watch_addr.segment
-                || src->loc.offset != acc->watch_addr.offset ) {
-            dst->loc.offset = src->loc.offset;
-            dst->loc.segment = src->loc.segment;
-            dst->value = src->value;
+    dst = src = WatchPoints;
+    for( i = 0; i < WatchCount; i++ ) {
+        if( src->addr.segment != acc->watch_addr.segment
+          || src->addr.offset != acc->watch_addr.offset ) {
+            *dst = *src;
             dst++;
         }
         src++;
     }
-    wpCount--;
+    WatchCount--;
     return( 0 );
 }
 
 trap_retval TRAP_CORE( Read_io )( void )
+/*
+ * Perform I/O on the target machine on behalf of the debugger.
+ * Since there are no kernel APIs in Linux to do this, we just
+ * enable IOPL and use regular I/O. We will bail if we can't get
+ * IOPL=3, so the debugger trap file will need to be run as root
+ * before it can be used for I/O access.
+ */
 {
+#ifdef __WATCOMC__
     read_io_req *acc;
     void        *ret;
-    trap_elen   len;
 
-    /* Perform I/O on the target machine on behalf of the debugger.
-     * Since there are no kernel APIs in Linux to do this, we just
-     * enable IOPL and use regular I/O. We will bail if we can't get
-     * IOPL=3, so the debugger trap file will need to be run as root
-     * before it can be used for I/O access.
-     */
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-#ifdef __WATCOMC__
     if( iopl( 3 ) == 0 ) {
-        len = acc->len;
-        switch( len ) {
+        switch( acc->len ) {
         case 1:
-            *((unsigned_8*)ret) = inpb( acc->IO_offset );
+            *(unsigned_8 *)ret = inpb( acc->IO_offset );
             break;
         case 2:
-            *((unsigned_16*)ret) = inpw( acc->IO_offset );
+            *(unsigned_16 *)ret = inpw( acc->IO_offset );
             break;
         case 4:
-            *((unsigned_32*)ret) = inpd( acc->IO_offset );
+            *(unsigned_32 *)ret = inpd( acc->IO_offset );
             break;
+        default:
+            return( 0 );
         }
-    } else {
-        len = 0;
+        return( acc->len );
     }
-#else
-    len = 0;
 #endif
-    return( len );
+    return( 0 );
 }
 
 trap_retval TRAP_CORE( Write_io )( void )
+/*
+ * Perform I/O on the target machine on behalf of the debugger.
+ * Since there are no kernel APIs in Linux to do this, we just
+ * enable IOPL and use regular I/O. We will bail if we can't get
+ * IOPL=3, so the debugger trap file will need to be run as root
+ * before it can be used for I/O access.
+ */
 {
-    write_io_req    *acc;
     write_io_ret    *ret;
+#ifdef __WATCOMC__
+    write_io_req    *acc;
     void            *data;
-    trap_elen       len;
+    size_t          len;
 
-    /* Perform I/O on the target machine on behalf of the debugger.
-     * Since there are no kernel APIs in Linux to do this, we just
-     * enable IOPL and use regular I/O. We will bail if we can't get
-     * IOPL=3, so the debugger trap file will need to be run as root
-     * before it can be used for I/O access.
-     */
     acc = GetInPtr( 0 );
     data = GetInPtr( sizeof( *acc ) );
-    len = GetTotalSizeIn() - sizeof( *acc );
-    ret = GetOutPtr( 0 );
-#ifdef __WATCOMC__
+    len = 0;
     if( iopl( 3 ) == 0 ) {
-        ret->len = len;
+        len = GetTotalSizeIn() - sizeof( *acc );
         switch( len ) {
         case 1:
-            outpb( acc->IO_offset, *((unsigned_8*)data) );
+            outpb( acc->IO_offset, *(unsigned_8 *)data );
             break;
         case 2:
-            outpw( acc->IO_offset, *((unsigned_16*)data) );
+            outpw( acc->IO_offset, *(unsigned_16 *)data );
             break;
         case 4:
-            outpd( acc->IO_offset, *((unsigned_32*)data) );
+            outpd( acc->IO_offset, *(unsigned_32 *)data );
+            break;
+        default:
+            len = 0;
             break;
         }
-    } else {
-        ret->len = 0;
     }
+    ret = GetOutPtr( 0 );
+    ret->len = len;
 #else
+    ret = GetOutPtr( 0 );
     ret->len = 0;
 #endif
     return( sizeof( *ret ) );
@@ -393,20 +441,20 @@ trap_retval TRAP_CORE( Get_sys_config )( void )
     get_sys_config_ret  *ret;
 
     ret = GetOutPtr( 0 );
-    ret->sys.os = DIG_OS_LINUX;
+    ret->os = DIG_OS_LINUX;
 
     // TODO: Detect OS version (kernel version?)!
-    ret->sys.osmajor = 1;
-    ret->sys.osminor = 0;
+    ret->osmajor = 1;
+    ret->osminor = 0;
 
-    ret->sys.cpu = X86CPUType();
+    ret->cpu = X86CPUType();
     if( HAVE_EMU ) {
-        ret->sys.fpu = X86_EMU;
+        ret->fpu = X86_EMU;
     } else {
-        ret->sys.fpu = ret->sys.cpu & X86_CPU_MASK;
+        ret->fpu = ret->cpu & X86_CPU_MASK;
     }
-    ret->sys.huge_shift = 3;
-    ret->sys.arch = DIG_ARCH_X86;
+    ret->huge_shift = 3;
+    ret->arch = DIG_ARCH_X86;
     return( sizeof( *ret ) );
 }
 
@@ -414,15 +462,18 @@ trap_retval TRAP_CORE( Machine_data )( void )
 {
     machine_data_req    *acc;
     machine_data_ret    *ret;
-    unsigned_8          *data;
+    machine_data_spec   *data;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    data = GetOutPtr( sizeof( *ret ) );
     ret->cache_start = 0;
     ret->cache_end = ~(addr_off)0;
-    *data = X86AC_BIG;
-    return( sizeof( *ret ) + sizeof( *data ) );
+    if( acc->info_type == X86MD_ADDR_CHARACTERISTICS ) {
+        data = GetOutPtr( sizeof( *ret ) );
+        data->x86_addr_flags = X86AC_BIG;
+        return( sizeof( *ret ) + sizeof( data->x86_addr_flags ) );
+    }
+    return( sizeof( *ret ) );
 }
 
 const char *const ExceptionMsgs[33] = {

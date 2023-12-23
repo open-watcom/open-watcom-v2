@@ -1,9 +1,11 @@
 #pmake: serv lcl os_dos dsx cpu_386 x86
+
+tree_depth = 5
+
 host_cpu = 386
 host_os  = nt
 
 target_cpu = jvm
-target_os  = nt
 
 srv = jvm
 which = SERVER

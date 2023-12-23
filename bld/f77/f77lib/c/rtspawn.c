@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,47 +47,42 @@
 #include "rtspawn.h"
 
 
-#if defined( __WINDOWS__ ) && defined( _M_I86 )
-  #define __setjmp      Catch
-  #define __longjmp     Throw
-  #define __jmp_buf     CATCHBUF
-#else
-  #define __setjmp      setjmp
-  #define __longjmp     longjmp
-  #define __jmp_buf     jmp_buf
-#endif
-
 #ifdef __SW_BM
 
-#define __SpawnStack    (*(__jmp_buf **)&(__FTHREADDATAPTR->__SpawnStack))
+#define _SPAWNSTACK     (__FTHREADDATAPTR->__SpawnStack)
 
 #else
 
 static  __jmp_buf       *SpawnStack = { NULL };
-#define __SpawnStack    SpawnStack
+#define _SPAWNSTACK     SpawnStack
 
 #endif
 
 
-int     RTSpawn( void (*fn)( void ) ) {
+int     RTSpawn( void (*fn)( void ) )
+//===================================
+{
     __jmp_buf   *save_env;
     __jmp_buf   env;
     int         status;
 
-    save_env = __SpawnStack;
-    __SpawnStack = &env;
+    save_env = _SPAWNSTACK;
+    _SPAWNSTACK = env;
     status = __setjmp( env );
     if( status == 0 ) {
         (*fn)();
     }
-    __SpawnStack = save_env;
+    _SPAWNSTACK = save_env;
     return( status );
 }
 
 
-void    RTSuicide( void )
+_WCNORETURN void    RTSuicide( void )
+//===================================
 {
-    if( __SpawnStack == NULL )
+    if( _SPAWNSTACK == NULL )
         exit( -1 );
-    __longjmp( *__SpawnStack, 1 );
+        // never return
+    __longjmp( *_SPAWNSTACK, 1 );
+    // never return
 }

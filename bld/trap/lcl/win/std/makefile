@@ -1,19 +1,20 @@
 #pmake: build guitool lcl os_win cpu_i86 cpu_386 trap x86
 
+tree_depth = 5
+
 host_os  = win
 host_cpu = i86
 
 target_cpu = x86
-target_os  = win
+
+srv   = lcl
+which = TRAP
 
 sys_windowed = 1
 
 #
 # Create the Windows 3.x std.dll
 #
-
-srv   = lcl
-which = TRAP
 
 extra_objs = &
         initfini.obj &
@@ -33,10 +34,10 @@ extra_objs = &
         accredir.obj &
         accmisc.obj &
         accgen.obj &
-        out.obj &
-        dosfile.obj &
-        dosrfx.obj &
-        dossplit.obj &
+        winpath.obj &
+        winfile.obj &
+        winrfx.obj &
+        winsplit.obj &
         x86cpu.obj &
         misc7086.obj &
         supp.obj &
@@ -58,7 +59,9 @@ extra_linker = &
 
 !include $(commonui_dir)/windbg.mif
 
-inc_dirs = -I"$(trap_dir)/lcl/win/h" $(windbg_inc_dirs)
+extra_incs = $(windbg_inc_dirs)
 extra_libs = $(windbg_lib)
 
 !include $(trap_dir)/lcl/win/win.mif
+!include $(trap_dir)/lcl/lcl.mif
+!include $(trap_dir)/master.mif

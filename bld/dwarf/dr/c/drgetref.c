@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,8 +32,8 @@
 
 #include "drpriv.h"
 #include "drutils.h"
-#include "drgetref.h"
 #include "drgettab.h"
+
 
 typedef enum {
     REFERSTO   = 0x01,
@@ -102,8 +103,8 @@ static drmem_hdl ScopeLastNameable( dr_scope_stack *scope, char **name )
     return( 0 );
 }
 
-static bool ToHook( dr_ref_info *reg, void *data )
-/************************************************/
+static bool ToHook( dr_ref_info * reg, void *data )
+/*************************************************/
 {
     ToData  *info = (ToData *)data;
 
@@ -111,8 +112,8 @@ static bool ToHook( dr_ref_info *reg, void *data )
             && reg->scope.stack[reg->scope.free - 1] == info->entry );
 }
 
-static bool ByHook( dr_ref_info *registers, void * data )
-/*******************************************************/
+static bool ByHook( dr_ref_info * registers, void * data )
+/********************************************************/
 {
     return( registers->dependent == ((ByData*)data)->entry );
 }
@@ -164,7 +165,7 @@ static void References( ReferWhich which, drmem_hdl entry, void *data1,
             break;
 
         case REF_SET_COLUMN:
-            registers.column = (unsigned_8)DWRVMReadULEB128( &loc );
+            registers.column = DWRVMReadULEB128( &loc );
             break;
 
         case REF_ADD_LINE:
@@ -173,7 +174,7 @@ static void References( ReferWhich which, drmem_hdl entry, void *data1,
             break;
 
         case REF_ADD_COLUMN:
-            registers.column += (signed_8)DWRVMReadSLEB128( &loc );
+            registers.column += DWRVMReadSLEB128( &loc );
             break;
 
         case REF_COPY:
@@ -212,16 +213,16 @@ static void References( ReferWhich which, drmem_hdl entry, void *data1,
     DWRFREE( registers.scope.stack );
 }
 
-void DRRefersTo( drmem_hdl entry, void *data, DRSYMREF callback )
-/***************************************************************/
+void DRENTRY DRRefersTo( drmem_hdl entry, void *data, DRSYMREF callback )
+/***********************************************************************/
 {
     ToData info;
     info.entry = entry;
     References( REFERSTO, entry, &info, ToHook, data, callback );
 }
 
-void DRReferredToBy( drmem_hdl entry, void * data, DRSYMREF callback )
-/********************************************************************/
+void DRENTRY DRReferredToBy( drmem_hdl entry, void * data, DRSYMREF callback )
+/****************************************************************************/
 {
     ByData info;
     info.entry = entry;
@@ -236,8 +237,8 @@ static bool RefHook( dr_ref_info * reg, void * data )
     return( DRGetSymType( reg->dependent ) == info->search );
 }
 
-void DRReferencedSymbols( dr_sym_type search, void * data, DRSYMREF callback )
-/****************************************************************************/
+void DRENTRY DRReferencedSymbols( dr_sym_type search, void * data, DRSYMREF callback )
+/************************************************************************************/
 {
     RefData info;
     info.search = search;

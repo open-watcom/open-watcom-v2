@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,10 +34,7 @@
 extern void     WriteBufferChar( int c );
 extern int      WriteBufferCharNextChar( int c );
 extern void     WriteBufferNullChar( void );
-extern void     WriteBufferStr( const char *src );
+extern void     WriteBufferString( const char *src );
 extern void     WriteBufferMem( const char *src, size_t len );
-extern size_t   WriteBufferPosChar( size_t pos, int c );
-extern void     WriteBufferPosNullChar( size_t pos );
-extern size_t   WriteBufferPosStr( size_t pos, const char *src );
-extern size_t   WriteBufferPosEscStr( size_t pos, const char **src, bool quote );
+extern void     WriteBufferEscStr( const char **src, bool quote );
 

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,8 +40,8 @@
 
 static void GetARValue( const char *element, ar_len len, char delimiter, char *buffer );
 
-static unsigned long GetARNumeric( const char *str, int max, int base )
-/*********************************************************************/
+static unsigned long GetARNumeric( const char *str, int max )
+/***********************************************************/
 // get a numeric value from an ar_header
 {
     char                buf[20];
@@ -49,7 +49,20 @@ static unsigned long GetARNumeric( const char *str, int max, int base )
 
     memcpy( buf, str, max );
     buf[max] = '\0';
-    value = strtoul( buf, NULL, base );
+    value = strtoul( buf, NULL, 10 );
+    return( value );
+}
+
+static unsigned long GetARNumericMode( const char *str, int max )
+/***************************************************************/
+// get a numeric value from an ar_header
+{
+    char                buf[20];
+    unsigned long       value;
+
+    memcpy( buf, str, max );
+    buf[max] = '\0';
+    value = strtoul( buf, NULL, 8 );
     return( value );
 }
 
@@ -76,10 +89,10 @@ char *GetARName( libfile io, ar_header *header, arch_header *arch )
     size_t      len;
 
     if( header->name[0] == '/' ) {
-        len = GetARNumeric( header->name + 1, AR_NAME_LEN - 1, AR_ELEMENT_BASE );
+        len = GetARNumeric( header->name + 1, AR_NAME_LEN - 1 );
         buf = arch->fnametab + len;
     } else if( header->name[0] == '#' && header->name[1] == '1' && header->name[2] == '/') {
-        len = GetARNumeric( header->name + 3, AR_NAME_LEN - 3, AR_ELEMENT_BASE );
+        len = GetARNumeric( header->name + 3, AR_NAME_LEN - 3 );
         name = MemAlloc( len + 1 );
         LibRead( io, name, len );
         name[len] = '\0';
@@ -130,11 +143,11 @@ static void GetARValue( const char *element, ar_len len, char delimiter, char *b
 
 void GetARHeaderValues( ar_header *header, arch_header * arch )
 {
-    arch->date = GetARNumeric( header->date, AR_DATE_LEN, AR_ELEMENT_BASE );
-    arch->uid = GetARNumeric( header->uid, AR_UID_LEN, AR_ELEMENT_BASE );
-    arch->gid = GetARNumeric( header->gid, AR_GID_LEN, AR_ELEMENT_BASE );
-    arch->mode = GetARNumeric( header->mode, AR_MODE_LEN, AR_MODE_BASE );
-    arch->size = GetARNumeric( header->size, AR_SIZE_LEN, AR_ELEMENT_BASE );
+    arch->date = GetARNumeric( header->date, AR_DATE_LEN );
+    arch->uid = GetARNumeric( header->uid, AR_UID_LEN );
+    arch->gid = GetARNumeric( header->gid, AR_GID_LEN );
+    arch->mode = GetARNumericMode( header->mode, AR_MODE_LEN );
+    arch->size = GetARNumeric( header->size, AR_SIZE_LEN );
 }
 
 static void PutARPadding( char * element, ar_len current_len, ar_len desired_len )
@@ -158,24 +171,40 @@ static void PutARName( char *ar_name, const char *arch_name )
     }
 }
 
-static void PutARValue( char *element, uint_32 value, uint_8 base, ar_len desired_len )
+static void PutARValue( char *element, uint_32 value, ar_len desired_len )
 {
     ar_len      value_len;
 
-    ultoa( value, element, base );
+    sprintf( element, "%lu", (unsigned long)value );
     value_len = strlen( element );
     if( value_len < desired_len ) {
         PutARPadding( element, value_len, desired_len );
     }
 }
 
+static void PutARValueMode( char *element, uint_32 value, ar_len desired_len )
+{
+    ar_len      value_len;
+    char        buffer[14];
+
+    sprintf( buffer, "%lo", (unsigned long)value );
+    value_len = strlen( buffer );
+    if( value_len < desired_len ) {
+        strcpy( element, buffer );
+        PutARPadding( element, value_len, desired_len );
+    } else {
+        strncpy( element, buffer + (value_len - desired_len), desired_len );
+    }
+}
+
 void CreateARHeader( ar_header *ar, arch_header * arch )
 {
     PutARName( ar->name, arch->name );
-    PutARValue( ar->date, arch->date, AR_ELEMENT_BASE, AR_DATE_LEN );
-    PutARValue( ar->uid, arch->uid, AR_ELEMENT_BASE, AR_UID_LEN );
-    PutARValue( ar->gid, arch->gid, AR_ELEMENT_BASE, AR_GID_LEN );
-    PutARValue( ar->mode, arch->mode, AR_MODE_BASE, AR_MODE_LEN );
-    PutARValue( ar->size, arch->size, AR_ELEMENT_BASE, AR_SIZE_LEN );
+    PutARValue( ar->date, arch->date, AR_DATE_LEN );
+    PutARValue( ar->uid, arch->uid, AR_UID_LEN );
+    PutARValue( ar->gid, arch->gid, AR_GID_LEN );
+    PutARValueMode( ar->mode, arch->mode, AR_MODE_LEN );
+    PutARValue( ar->size, arch->size, AR_SIZE_LEN );
     memcpy( ar->header_ident, AR_HEADER_IDENT, AR_HEADER_IDENT_LEN );
 }
+

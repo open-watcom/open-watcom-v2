@@ -1,8 +1,25 @@
 #
 # Open Watcom Debugger makefile
 #
+
+tree_depth = 4
+
 proj_name = wv
-name = $(proj_name)
+
+!ifeq sys_windowed 1
+name_os2i86    = wdw16
+!else
+name_os2i86    = wd16
+name_wini86    = wdc
+!endif
+
+!ifdef name_$(host_os)$(host_cpu)
+name = $(name_$(host_os)$(host_cpu))
+!else ifeq sys_windowed 1
+name = wdw
+!else
+name = wd
+!endif
 
 !ifndef wv_autodepends
 wv_autodepends = .AUTODEPEND
@@ -10,11 +27,15 @@ wv_autodepends = .AUTODEPEND
 
 wv_trmem = 1
 
+wv_dos_extender = dos4g	#causeway
+
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
 !include wres.mif
 !include trmem.mif
+
+dig_arch = all
 
 !include $(dig_dir)/digcli.mif
 !include $(dig_dir)/dipcli.mif
@@ -37,7 +58,7 @@ target_nt  = win
 #
 # cflags
 #
-.c: ../c;../../c;$(aui_dir)/c;$(dig_srcs);$(trmem_dir)
+.c: ../c;../../c;$(aui_dir)/c;$(dig_srcs);$(watcom_dir)/c;$(trmem_dir)
 
 !ifdef wv_engine_noui
 res_strings_dir = h
@@ -65,14 +86,12 @@ inc_dirs += -I"$(gui_dir)/ui/h"
 inc_dirs += -I"$(ncurses_dir)/h"
 !endif
 
+extra_cpp_flags = $(dig_arch_cpp_flags) -DBLDVER=$(bld_ver)
 !ifdef wv_engine_noui
 extra_cpp_flags += -D__NOUI__
 !endif
-!ifeq release 0
+!ifeq debug 2
 extra_cpp_flags += -DAUI_DBG
-!endif
-!ifdef %OWUSE_FILENAME_VERSION
-extra_cpp_flags += -DUSE_FILENAME_VERSION=$(bld_ver)
 !endif
 !ifeq sys_windowed 1
 extra_cpp_flags    += -DGUI_IS_GUI -DUI_GUI
@@ -91,7 +110,6 @@ extra_c_flags_os2_i86 = -zc
 !endif
 
 extra_c_flags_dynmem = $(trmem_cover_cflags)
-extra_c_flags_srcmgt = $(incl_file_opts)__srcmgt.h
 
 #
 # aflags
@@ -108,7 +126,6 @@ extra_l_flags_win_i86 = op stack=12K, heap=15K import DEATH GDI.121 import RESUR
 !else
 extra_l_flags_win_i86 = op stack=15K, heap=10K, align=512
 !endif
-extra_l_flags_win = $(extra_l_flags_win_$(host_cpu))
 # NB: DOS4GOPTIONS export is disabled due to incompatibility with DOS/4G 2.x
 extra_l_flags_dos = op stack=24k #export DOS4GOPTIONS=_DOS4GOPTIONS
 !ifeq sys_windowed 1
@@ -117,9 +134,7 @@ extra_l_flags_os2_386 = imp WinThreadAssocQueue PMMERGE.5398
 !else
 extra_l_flags_os2_i86 = op stack=16k, newfile
 !endif
-extra_l_flags_os2 = $(extra_l_flags_os2_$(host_cpu))
 extra_l_flags_qnx_386 = opt stack = 0x8000, offset=0x9000
-extra_l_flags_qnx = $(extra_l_flags_qnx_$(host_cpu))
 extra_l_flags_rdos =
 
 # explicit rules
@@ -149,6 +164,8 @@ exetarg_res_wresui    = wresui.res
 exetarg_nt_manif_386  = ntmanif.res
 exetarg_nt_manif_x64  = ntmanif.res
 exetarg_qnx_res       = usage.u
+exetarg_name          = $(name)
+exetarg_ext           = .exe
 !include exetarg.mif
 !endif
 
@@ -443,7 +460,7 @@ litdef.gh : litdefs1.tmp litdefs2.tmp litdefm.tmp $(__MAKEFILES__)
     $(awk) -v prefix=DBG_DUI_LITERAL_ -v base=DBG_DUI_BASE -f $(build_dir)/makemsg2.awk -v OUTFILE=$^. litdefs2.tmp
     $(awk) -v prefix=DBG_DUI_MENU_ -v base=DBG_MENU_BASE -f $(build_dir)/makemsg2.awk -v OUTFILE=$^. litdefm.tmp
 
-!ifeq release 0
+!ifeq debug 2
 wsplice_keys = -kHIDDEN
 !endif
 

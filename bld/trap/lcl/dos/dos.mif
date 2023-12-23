@@ -1,17 +1,16 @@
-dos_objs = dossplit.obj &
-        dosenv.obj &
-        dosrfx.obj &
-        dosfile.obj &
-        doschk.obj &
-        doschkx.obj &
-        dosflip.obj &
-        fork.obj &
-        supp.obj &
-        core.obj
+dos_trap_core_objs = &
+    dossplit.obj &
+    dospath.obj &
+    dosrfx.obj &
+    dosfile.obj &
+    doschk.obj &
+    doschkx.obj &
+    dosflip.obj &
+    fork.obj &
+    supp.obj &
+    core.obj
 
-inc_dirs += -I"$(trap_dir)/lcl/dos/h"
+extra_incs += -I"$(trap_dir)/lcl/dos/h"
 extra_srcs +=;$(trap_dir)/lcl/dos/c;$(trap_dir)/lcl/dos/asm
-
-!include $(trap_dir)/lcl/lcl.mif
 
 .c : $(watcom_dir)/c

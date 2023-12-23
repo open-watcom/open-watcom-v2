@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,6 +35,7 @@
 #include "coderep.h"
 #include "cgmem.h"
 #include "zoiks.h"
+#include "cgauxcc.h"
 #include "cgauxinf.h"
 #include "wvdbg.h"
 #include "data.h"
@@ -172,7 +173,7 @@ void    WVSetBase( void )
     temp_buff   temp;
     back_handle bck;
 
-    if( _IsModel( DBG_LOCALS ) && NeedBaseSet() ) {
+    if( _IsModel( CGSW_GEN_DBG_LOCALS ) && NeedBaseSet() ) {
         bck = BENewBack( NULL );
         bck->segid = AskOP();
         OutLabel( bck->lbl );
@@ -252,7 +253,7 @@ void    WVRtnEnd( dbg_rtn *rtn, offset lc )
     }
     sym = AskForLblSym( CurrProc->label );
     tipe = FEDbgType( sym );
-    if( *(call_class *)FindAuxInfoSym( sym, CALL_CLASS ) & FAR_CALL ) {
+    if( (call_class_target)(pointer_uint)FindAuxInfoSym( sym, FEINF_CALL_CLASS_TARGET ) & FECALL_X86_FAR_CALL ) {
         BuffStart( &temp, SYM_CODE + CODE_FAR_RTN );
     } else {
         BuffStart( &temp, SYM_CODE + CODE_NEAR_RTN );
@@ -267,10 +268,10 @@ void    WVRtnEnd( dbg_rtn *rtn, offset lc )
     BuffByte( lc - rtn->epi_start );
     BuffOffset( rtn->ret_offset );
     BuffIndex( (uint) tipe );
-    if( rtn->reeturn == NULL ) {
+    if( rtn->return_loc == NULL ) {
         BuffByte( 0 ); /* no return location */
     } else {
-        LocDump( rtn->reeturn );
+        LocDump( rtn->return_loc );
     }
     count = 0;
     parm = rtn->parms;

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -694,8 +694,8 @@ static bool WInitEditWindow( WMenuEditInfo *einfo )
 bool WPasteMenuItem( WMenuEditInfo *einfo )
 {
     WMenuEntry  *entry;
-    void        *data;
-    uint_32     dsize;
+    char        *data;
+    size_t      dsize;
     bool        ok;
 
     data = NULL;
@@ -729,8 +729,8 @@ bool WClipMenuItem( WMenuEditInfo *einfo, bool cut )
 {
     HWND        lbox;
     LRESULT     pos;
-    void        *data;
-    uint_32     dsize;
+    char        *data;
+    size_t      dsize;
     WMenuEntry  *entry;
     bool        ok;
 
@@ -972,8 +972,7 @@ WINEXPORT INT_PTR CALLBACK WMenuEditDlgProc( HWND hDlg, UINT message, WPARAM wPa
         einfo = (WMenuEditInfo *)lParam;
         einfo->edit_dlg = hDlg;
         SET_DLGDATA( hDlg, einfo );
-        WRAddSymbolsToComboBox( einfo->info->symbol_table, hDlg,
-                                IDM_MENUEDID, WR_HASHENTRY_ALL );
+        WRAddSymbolsToComboBox( einfo->info->symbol_table, hDlg, IDM_MENUEDID, WR_HASHENTRY_ALL );
         ret = TRUE;
         break;
 

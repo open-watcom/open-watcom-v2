@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -295,35 +295,51 @@ static void ProcSize( wnd_class_wv wndclass )
     gui_coord   min;
     bool        coord_specified;
     gui_rect    def_rect;
+    unsigned    value;
 
     optn = GetOption();
     if( optn == DISP_FLOATING || optn == DISP_FIXED ) {
         Error( ERR_LOC, LIT_ENG( ERR_BAD_OPTION ), GetCmdName( CMD_DISPLAY ) );
     }
-    size.x = OptExpr( -1 );
+    coord_specified = false;
+    size.x = -1;
     size.y = -1;
     size.width = -1;
     size.height = -1;
+    #define NO_ENTRY    ((unsigned)-1)
+    value = OptExpr( NO_ENTRY );
+    if( value != NO_ENTRY ) {
+        size.x = value;
+        coord_specified = true;
+    }
     if( CurrToken == T_COMMA ) {
         Scan();
-        size.y = OptExpr( -1 );
+        value = OptExpr( NO_ENTRY );
+        if( value != NO_ENTRY ) {
+            size.y = value;
+            coord_specified = true;
+        }
         if( CurrToken == T_COMMA ) {
             Scan();
-            size.width = OptExpr( -1 );
+            value = OptExpr( NO_ENTRY );
+            if( value != NO_ENTRY ) {
+                size.width = value;
+                coord_specified = true;
+            }
             if( CurrToken == T_COMMA ) {
                 Scan();
-                size.height = OptExpr( -1 );
+                value = OptExpr( NO_ENTRY );
+                if( value != NO_ENTRY ) {
+                    size.height = value;
+                    coord_specified = true;
+                }
             }
         }
     }
+    #undef NO_ENTRY
     ReqEOC();
 
     GUIGetMinSize( &min );
-    if( size.x != -1 || size.y != -1 || size.width != -1 || size.height != -1 ) {
-        coord_specified = true;
-    } else {
-        coord_specified = false;
-    }
     WndPosToRect( &WndPosition[wndclass], &def_rect, &WndScreen );
     size.x = range( size.x, 0, WndScreen.x, def_rect.x );
     size.y = range( size.y, 0, WndScreen.y, def_rect.y );

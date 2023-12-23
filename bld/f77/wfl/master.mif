@@ -1,3 +1,5 @@
+tree_depth = 5
+
 proj_name = wfl
 
 !ifndef wfl_autodepends
@@ -15,9 +17,19 @@ wfl_trmem = 1
 #
 # cflags
 #
-.c: ../../c;$(trmem_dir)
+.c: $(f77wfl_dir)/c;$(trmem_dir)
 
-inc_dirs = -I. -I.. -I"../../h" -I"$(comp_cfg_dir)/h"
+inc_dirs = -I. -I.. -I"$(f77wfl_dir)/h" -I"$(comp_cfg_dir)/h"
+
+!ifeq dos_extender causeway
+extra_cpp_flags_dos = -DCAUSEWAY
+!else ifeq dos_extender pharlap
+extra_cpp_flags_dos = -DPHARLAP
+!else ifeq dos_extender dos4g
+extra_cpp_flags_dos = -DDOS4G
+!else
+extra_cpp_flags_dos = -DDOS4G
+!endif
 
 #
 # lflags
@@ -48,15 +60,15 @@ exetarg_res_wresui    = wresui.res
 verrc_exe = $(exetarg_name)
 !include verrc.mif
 
-rcui_inc_dirs = -I. -I.. -I"../.." -I"../../../h" -I"$(comp_cfg_dir)/h"
+rcui_inc_dirs = -I. -I"$(f77wfl_dir)" -I"$(f77_dir)/h" -I"$(comp_cfg_dir)/h"
 
-wresui.res : ../../h/wfl.rc wflmsgs.gh wflmsgs.grh
+wresui.res : $(f77wfl_dir)/h/wfl.rc wflmsgs.gh wflmsgs.grh
     @%make echo_rc
     $(rcui8)
 
 #msgencod_enc_linux = -utf8
 
-wflmsgs.gh wflmsgs.grh : ../../gml/wflmsgs.gml
+wflmsgs.gh wflmsgs.grh : $(f77wfl_dir)/gml/wflmsgs.gml
     @%make echo_msgencod
     $(msgencod) -s -ip -rc=MSG_LANG_BASE -utf8 $(msgencod_enc_$(host_os)) $[@ wflmsgs.gh wflmsgs.grh . .
 
@@ -68,10 +80,10 @@ optencod_opt_qnx    = -u=$(exetarg_qnx_res)
 #optencod_enc_linux  = -utf8
 optencod_targets_i86 = targ2
 optencod_targets = $(target_cpu) $(host_os) targ1 $(optencod_targets_$(target_cpu))
-!ifeq release 0
+!ifeq debug 2
 optencod_targets += dbg
 !endif
 
-usage.gh $(exetarg_$(host_os)_res) : ../../../gml/wfxopts.gml $(__MAKEFILES__)
+usage.gh $(exetarg_$(host_os)_res) : $(f77_dir)/gml/wfxopts.gml $(__MAKEFILES__)
     @%make echo_optencod
     $(optencod) -rc=MSG_USAGE_BASE -utf8 $(optencod_opt_$(host_os)) $[@ . . $@ $(optencod_targets)

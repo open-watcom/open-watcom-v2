@@ -9,4 +9,4 @@ export_only=1
 
 lib_debug = 1
 
-!include $(mathlib_dir)/mklib.mif
+!include ../../../../mklib.mif

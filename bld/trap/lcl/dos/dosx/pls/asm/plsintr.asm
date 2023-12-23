@@ -2,6 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
+;* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -99,7 +100,7 @@ restintr        macro   num,reg
 endm
 
 
-_data segment word public 'data'
+_DATA segment word public 'DATA'
 saveesp         dd              0
 saveeip         dd              0
 savecs          dd              0
@@ -118,20 +119,20 @@ dataseg         dw              0
 spawned         db              0
 break_hit       db              0
 extrn           _XVersion       : byte
-extrn           _SavedByte      : byte
+extrn           _OldFakeOpcode  : byte
 extrn           _AtEnd          : byte
 extrn           _FakeBreak      : byte
 extrn           _InitialSS      : word
 extrn           _InitialCS      : word
 sysregs dd      14 dup(0)       ; only need 12, but just in case
-_data ends
+_DATA ends
 
 
-dgroup group _data
+DGROUP group _DATA
 
 assume  ds:DGROUP
 
-_text segment byte public 'code'
+_TEXT segment byte public 'CODE'
 
 int05H          proc    near
                 push    ds                      ; save ds
@@ -192,7 +193,7 @@ endver:                                         ; endif
                 jne     alldone                 ; - return
                 mov     es,_InitialSS           ; writable segment to app's code
                 mov     al,es:[ebx]             ; get byte of next instruction
-                mov     _SavedByte,al           ; ... save it
+                mov     _OldFakeOpcode,al       ; ... save it
                 mov     _FakeBreak,1            ; indicate we have fake break
                 mov     byte ptr es:[ebx],0CCH  ; ... set break point
 alldone:        mov     break_hit,0             ; reset break hit
@@ -268,7 +269,7 @@ less3:          mov     ebx,14h[esi+esp]        ; fish stacked return address
                 dec     ebx                     ; back it up one
                 dec     ebx                     ; back it up one
                 mov     al,es:[ebx]             ; get last byte of instruction
-                mov     ds:_SavedByte,al        ; save the last byte of instr
+                mov     ds:_OldFakeOpcode,al    ; save the last byte of instr
                 mov     ds:_FakeBreak,1         ; indicate we have fake break
                 mov     ds:_AtEnd,1             ; indicate we are terminated
                 mov     es,ds:_InitialSS        ; ...
@@ -482,6 +483,6 @@ ring_0:
                 jmp     short done
 SetMSW_         endp
 
-_text           ends
+_TEXT           ends
 
                 end

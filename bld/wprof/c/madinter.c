@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,15 +36,10 @@
 #include <stdio.h>
 #include <limits.h>
 #include "bool.h"
-#include "wio.h"
-#define MD_x86
-#define MD_axp
 #include "madcli.h"
 #include "mad.h"
 #include "madregs.h"
-
 #include "dip.h"
-
 #include "aui.h"
 #include "common.h"
 #include "sampinfo.h"
@@ -181,6 +176,37 @@ system_config *MADCLIENTRY( SystemConfig )( void )
     return( &CurrSIOData->config );
 }
 
+unsigned MADCLIENTRY( MachineData )( address addr, dig_info_type info_type, dig_elen in_size,
+                                        const void *in, dig_elen out_size, void *out )
+/*******************************************************************************************/
+{
+    /* unused parameters */ (void)in_size; (void)in; (void)out_size;
+
+    switch( CurrSIOData->config.arch ) {
+    case DIG_ARCH_X86:
+        if( info_type == X86MD_ADDR_CHARACTERISTICS ) {
+            *(x86_addrflags *)out = 0;
+            if( IsX86BigAddr( addr ) ) {
+                *(x86_addrflags *)out = X86AC_BIG;
+            } else if( IsX86RealAddr( addr ) ) {
+                *(x86_addrflags *)out = X86AC_REAL;
+            }
+            return( sizeof( x86_addrflags ) );
+        }
+        break;
+#if 0
+    case DIG_ARCH_AXP:
+        if( acc->info_type == AXPMD_PDATA ) {
+            memcpy( out, in, sizeof( axp_data ) );
+            return( sizeof( axp_data ) );
+        }
+        break;
+#endif
+    /* add other machines here */
+    }
+    return( 0 );
+}
+
 /*
  *      Debugger routines
  */
@@ -208,7 +234,7 @@ static void ReportMADFailure( mad_status ms )
         fatal( LIT( LMS_RECURSIVE_MAD_FAILURE ) );
     }
     arch = CurrSIOData->config.arch;
-    MADNameFile( arch, buff, sizeof( buff ) );
+    MADBaseName( arch, buff, sizeof( buff ) );
     CurrSIOData->config.arch = DIG_ARCH_NIL;
     /* this deregisters the MAD, and sets the active one to the dummy */
     MADRegister( arch, NULL, NULL );

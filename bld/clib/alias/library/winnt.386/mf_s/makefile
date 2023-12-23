@@ -5,4 +5,4 @@ system=winnt
 linkage=dynamic
 convention=stack
 
-!include $(clib_dir)/mklib.mif
+!include ../../../../mklib.mif

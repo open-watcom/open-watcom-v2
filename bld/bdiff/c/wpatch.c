@@ -126,24 +126,27 @@ static void DirDelete( char *tgtDir )
     remove( tgtDir );
 }
 
-static void WPatchApply( const char *patch_name, const char *TgtPath )
+static int WPatchApply( const char *patch_name, const char *TgtPath )
 {
     short   flag;
     char    RelPath[PATCH_MAX_PATH_SIZE];
     char    FullPath[PATCH_MAX_PATH_SIZE];
 
-    PatchReadOpen( patch_name );
-    for( ;; ) {
-        PatchReadFile( &flag, RelPath );
-        if( flag == PATCH_EOF )
-            break;
-        strcpy( FullPath, TgtPath );
-        strcat( FullPath, "\\" );
-        strcat( FullPath, RelPath );
-        switch( flag ) {
+    if( PatchReadOpen( patch_name ) ) {
+        for( ;; ) {
+            PatchReadFile( &flag, RelPath );
+            if( flag == PATCH_EOF )
+                break;
+            strcpy( FullPath, TgtPath );
+            strcat( FullPath, "\\" );
+            strcat( FullPath, RelPath );
+            switch( flag ) {
             case PATCH_FILE_PATCHED:
                 printf( "Patching file %s\n", FullPath );
-                DoPatch( "", 0, 0, 0, FullPath );
+                if( DoPatch( "", 0, 0, 0, FullPath ) != PATCH_RET_OKAY ) {
+                    PatchReadClose();
+                    return( EXIT_FAILURE );
+                }
                 break;
             case PATCH_DIR_DELETED:
                 printf( "Deleting directory %s\n", FullPath );
@@ -161,28 +164,35 @@ static void WPatchApply( const char *patch_name, const char *TgtPath )
                 printf( "Adding file %s\n", FullPath );
                 PatchGetFile( FullPath );
                 break;
+            }
         }
+        PatchReadClose();
+        return( EXIT_SUCCESS );
     }
-    PatchReadClose();
+    return( EXIT_FAILURE );
 }
 
 int main( int argc, char *argv[] )
 {
-    MsgInit();
-    if( argc != 3 ) {
-        puts( "Usage: WPATCH patchfile target-dir" );
-        puts( "    where target-dir is the directory containing files to be modified" );
-        puts( "    and patchfile contains patch information for modifying target-dir" );
-        puts( "    (as created by WCPATCH)" );
-        puts( "" );
-        exit( -2 );
-    } else {
-        puts( "Watcom Patch version 11.0" );
-        puts( "Copyright (c) 1996 by Sybase, Inc., and its subsidiaries." );
-        puts( "All rights reserved.  Watcom is a trademark of Sybase, Inc." );
-        puts( "" );
+    int     rc;
+
+    rc = EXIT_FAILURE;
+    if( MsgInit() ) {
+        if( argc != 3 ) {
+            puts( "Usage: WPATCH patchfile target-dir" );
+            puts( "    where target-dir is the directory containing files to be modified" );
+            puts( "    and patchfile contains patch information for modifying target-dir" );
+            puts( "    (as created by WCPATCH)" );
+            puts( "" );
+        } else {
+            puts( "Watcom Patch version 11.0" );
+            puts( "Copyright (c) 1996 by Sybase, Inc., and its subsidiaries." );
+            puts( "All rights reserved.  Watcom is a trademark of Sybase, Inc." );
+            puts( "" );
+
+            rc = WPatchApply( argv[1], argv[2] );
+        }
+        MsgFini();
     }
-    WPatchApply( argv[1], argv[2] );
-    MsgFini();
-    return( EXIT_SUCCESS );
+    return( rc );
 }

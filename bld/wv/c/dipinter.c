@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,7 +42,6 @@
 #include "dbgmem.h"
 #include "dbgio.h"
 #include "dipimp.h"
-#include "dipcli.h"
 #include "mad.h"
 #include "strutil.h"
 #include "dbgloc.h"
@@ -277,7 +276,7 @@ static char     WVImp( Name )[] = "Debugger Internal";
 static unsigned WVIMPENTRY( HandleSize )( handle_kind hk )
 {
     static const unsigned_8 Sizes[] = {
-        #define pick(e,hdl,imphdl,wvimphdl) wvimphdl,
+        #define pick(enum,hsize,ihsize,wvihsize,cvdmndtype,wdmndtype)   wvihsize,
         #include "diphndls.h"
         #undef pick
     };
@@ -870,8 +869,8 @@ static dip_status WVIMPENTRY( SymFreeAll )( imp_image_handle *iih )
 }
 
 static dip_imp_routines InternalInterface = {
-    DIP_MAJOR,
-    DIP_MINOR,
+    DIP_VERSION_MAJOR,
+    DIP_VERSION_MINOR,
     DIP_PRIOR_EXPORTS,
     WVImp( Name ),
 
@@ -981,16 +980,16 @@ char *DIPMsgText( dip_status ds )
     return( *DIPErrTxt[ds] );
 }
 
-static bool CheckDIPLoad( char *dip, bool defaults )
+static bool CheckDIPLoad( char *base_name, bool defaults )
 {
     dip_status  ds;
 
-    ds = DIPLoad( dip );
+    ds = DIPLoad( base_name );
     if( ds != DS_OK ) {
         if( defaults && ( ds == (DS_ERR | DS_FOPEN_FAILED) ) )
             return( false );
         DIPFini();
-        Format( TxtBuff, LIT_ENG( DIP_load_failed ), dip, DIPMsgText( ds ) );
+        Format( TxtBuff, LIT_ENG( DIP_load_failed ), base_name, DIPMsgText( ds ) );
         StartupErr( TxtBuff );
     }
     return( true );
@@ -999,7 +998,7 @@ static bool CheckDIPLoad( char *dip, bool defaults )
 void InitDbgInfo( void )
 {
     char        **dip;
-    char        *p;
+    char        *base_name;
     char        *d;
     unsigned    dip_count;
 
@@ -1013,18 +1012,18 @@ void InitDbgInfo( void )
     dip = DipFiles;
     if( *dip == NULL ) {
         dip_count = 0;
-        for( p = DIPDefaults; *p != NULLCHAR; p += strlen( p ) + 1 ) {
-            if( CheckDIPLoad( p, true ) ) {
+        for( base_name = DIPDefaults; *base_name != NULLCHAR; base_name += strlen( base_name ) + 1 ) {
+            if( CheckDIPLoad( base_name, true ) ) {
                 ++dip_count;
             }
         }
         if( dip_count == 0 ) {
             DIPFini();
-            d = StrCopy( LIT_ENG( No_DIPs_Found ), TxtBuff );
+            d = StrCopyDst( LIT_ENG( No_DIPs_Found ), TxtBuff );
             *d++ = ' ';
             *d++ = '(';
-            for( p = DIPDefaults; *p != NULLCHAR; p += strlen( p ) + 1 ) {
-                d = StrCopy( p, d );
+            for( base_name = DIPDefaults; *base_name != NULLCHAR; base_name += strlen( base_name ) + 1 ) {
+                d = StrCopyDst( base_name, d );
                 *d++ = ',';
             }
             --d;
@@ -1037,7 +1036,7 @@ void InitDbgInfo( void )
             CheckDIPLoad( *dip, false );
             _Free( *dip );
             *dip = NULL;
-        } while( *++dip != NULLCHAR );
+        } while( *++dip != NULL );
     }
 }
 

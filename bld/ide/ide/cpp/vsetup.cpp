@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -333,7 +333,7 @@ void VSetup::initialize()
                             } else {
                                 style = RStyleGroupLast;
                             }
-                            _tool->displayText( sw, text );
+                            fam->displayText( sw, text );
                             WRect rbrect( xoff+xgoff, yoff+ygoff, wid-2*xgoff, radiobutton_hite );
                             WRadioButton* t = new WRadioButton( w, rbrect, text, style );
                             swList->add( new SwitchMap( sw, t, st ) );
@@ -355,7 +355,7 @@ void VSetup::initialize()
                     //
                     } else if( streq( sw->className(), "MCSwitch" )
                                || streq( sw->className(), "MC2Switch" ) ) {
-                        _tool->displayText( sw, text );
+                        fam->displayText( sw, text );
                         WCheckBox* t = new WCheckBox( w, WRect(xoff,yoff,wid,checkbox_hite), text );
                         swList->add( new SwitchMap( sw, t, st ) );
 #ifndef TEST
@@ -368,7 +368,7 @@ void VSetup::initialize()
                     //
                     } else if( streq( sw->className(), "MVSwitch" ) ) {
                         WBoolSwitch* tt = NULL;
-                        _tool->displayText( sw, text );
+                        fam->displayText( sw, text );
                         if( ((MVSwitch*)sw)->optional() ) {
                             tt = new WCheckBox( w, WRect(xoff,yoff,wid, checkbox_hite), text );
 #ifndef TEST
@@ -536,48 +536,36 @@ void VSetup::initControls( WVList* swList, SwMode mode, bool useStates )
         if( useStates ) {
             st = findState( sw, mode );
         }
-        if( !sw ) {
-        } else if( streq( sw->className(), "MRSwitch" ) ) {
-            bool b = false;
-            if( st ) {
-                b = ((MRState*)st)->state();
+        if( sw != NULL ) {
+            if( streq( sw->className(), "MVSwitch" ) ) {
+                if( ((MVSwitch*)sw)->optional() ) {
+                    bool b = false;
+                    if( st ) {
+                        b = st->state();
+                    } else {
+                        b = sw->state( mode );
+                    }
+                    m->ctl()->setCheck( b );
+                }
+                WString* v;
+                if( st ) {
+                    v = &((MVState*)st)->value();
+                } else {
+                    v = &((MVSwitch*)sw)->value( mode );
+                }
+                m->ctl2()->setText( *v );
             } else {
-                b = ((MRSwitch*)sw)->state( mode );
-            }
-            m->ctl()->setCheck( b );
-        } else if( streq( sw->className(), "MCSwitch" ) ) {
-            bool b = false;
-            if( st ) {
-                b = ((MCState*)st)->state();
-            } else {
-                b = ((MCSwitch*)sw)->state( mode );
-            }
-            m->ctl()->setCheck( b );
-        } else if( streq( sw->className(), "MC2Switch" ) ) {
-            bool b = false;
-            if( st ) {
-                b = ((MCState*)st)->state();
-            } else {
-                b = ((MC2Switch*)sw)->state( mode );
-            }
-            m->ctl()->setCheck( b );
-        } else if( streq( sw->className(), "MVSwitch" ) ) {
-            if( ((MVSwitch*)sw)->optional() ) {
+                /*
+                 * MCSwitch, MC2Switch, MRSwitch
+                 */
                 bool b = false;
                 if( st ) {
-                    b = ((MVState*)st)->state();
+                    b = st->state();
                 } else {
-                    b = ((MVSwitch*)sw)->state( mode );
+                    b = sw->state( mode );
                 }
                 m->ctl()->setCheck( b );
             }
-            WString* v;
-            if( st ) {
-                v = &((MVState*)st)->value();
-            } else {
-                v = &((MVSwitch*)sw)->value( mode );
-            }
-            m->ctl2()->setText( *v );
         }
     }
 }
@@ -608,36 +596,36 @@ void VSetup::okButton( WWindow* )
         for( int j = 0; j < jcount; j++ ) {
             SwitchMap* m = (SwitchMap*)(*swList)[j];
             MSwitch* sw = m->sw();
-            if( !sw ) {
-            } else if( streq( sw->className(), "MRSwitch" ) ) {
-                bool b = m->ctl()->checked();
-                if( b != ((MRSwitch*)sw)->state( _mode ) ) {
-                    MRState* st = new MRState( _tool, _mode, (MRSwitch*)sw, b );
-                    _states->add( st );
-                }
-            } else if( streq( sw->className(), "MCSwitch" ) ) {
-                bool b = m->ctl()->checked();
-                if( b != ((MCSwitch*)sw)->state( _mode ) ) {
-                    MCState* st = new MCState( _tool, _mode, (MCSwitch*)sw, b );
-                    _states->add( st );
-                }
-            } else if( streq( sw->className(), "MC2Switch" ) ) {
-                bool b = m->ctl()->checked();
-                if( b != ((MC2Switch*)sw)->state( _mode ) ) {
-                    MCState* st = new MCState( _tool, _mode, (MCSwitch*)sw, b );
-                    _states->add( st );
-                }
-            } else if( streq( sw->className(), "MVSwitch" ) ) {
-                bool b = false;
-                if( ((MVSwitch*)sw)->optional() ) {
-                    b = m->ctl()->checked();
-                }
-                WString v;
-                m->ctl2()->getText( v );
-                v.trim();
-                if( b != ((MVSwitch*)sw)->state( _mode ) || !(((MVSwitch*)sw)->value( _mode ) == v) ) {
-                    MVState* st = new MVState( _tool, _mode, (MVSwitch*)sw, b, &v );
-                    _states->add( st );
+            if( sw != NULL ) {
+                if( streq( sw->className(), "MVSwitch" ) ) {
+                    bool b = false;
+                    if( ((MVSwitch*)sw)->optional() ) {
+                        b = m->ctl()->checked();
+                    }
+                    WString v;
+                    m->ctl2()->getText( v );
+                    v.trim();
+                    if( b != sw->state( _mode ) || !(((MVSwitch*)sw)->value( _mode ) == v) ) {
+                        MVState* st = new MVState( _tool, _mode, (MVSwitch*)sw, b, &v );
+                        _states->add( st );
+                    }
+                } else {
+                    /*
+                     * MCSwitch, MC2Switch, MRSwitch
+                     */
+                    bool b = m->ctl()->checked();
+                    if( b != sw->state( _mode ) ) {
+                        if( streq( sw->className(), "MRSwitch" ) ) {
+                            MRState* st = new MRState( _tool, _mode, (MRSwitch*)sw, b );
+                            _states->add( st );
+                        } else if( streq( sw->className(), "MCSwitch" ) ) {
+                            MCState* st = new MCState( _tool, _mode, (MCSwitch*)sw, b );
+                            _states->add( st );
+                        } else if( streq( sw->className(), "MC2Switch" ) ) {
+                            MCState* st = new MCState( _tool, _mode, (MCSwitch*)sw, b );
+                            _states->add( st );
+                        }
+                    }
                 }
             }
         }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,6 +47,7 @@
 #include "error.h"
 #include "pbmem.h"
 #include "srusuprt.h"
+#include "enterdb.h"
 #include "gen_cpp.h"
 #include "dllmain.h"
 #include "winexprt.h"
@@ -88,16 +89,7 @@ int __stdcall DllMain( HINSTANCE hdll, DWORD reason, LPVOID reserved )
     say( "DLLMain", NULL );
 #if 0
     if( reason == DLL_PROCESS_ATTACH ) {
-        extern char __WD_Present;
-        if( __WD_Present ) {
-            extern void Int3WithSignature( char __far * );
-            #pragma aux Int3WithSignature parm caller [] = \
-                    "int 3" \
-                    "jmp short L1" \
-                    'W' 'V' 'I' 'D' 'E' 'O' \
-                    "L1:"
-            Int3WithSignature( "DLL Loaded" );
-        }
+        CheckEnterDebuggerWithMessage( "DLL Loaded" );
     }
 #endif
     hdll = hdll;

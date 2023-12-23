@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -51,13 +52,13 @@ extern void             RemoteSetDebugScreen( void );
 extern unsigned         RemoteReadUserKey( uint_16 wait );
 extern unsigned long    RemoteGetLibName( unsigned long lib_hdl, char *buff, trap_elen buff_len );
 extern unsigned         RemoteGetMsgText( char *buff, trap_elen buff_len );
-extern unsigned         RemoteMachineData( address addr, uint_8 info_type, dig_elen in_size, const void *inp, dig_elen out_size, void *outp );
+extern unsigned         RemoteMachineData( address addr, dig_info_type info_type, dig_elen in_size, const void *inp, dig_elen out_size, void *outp );
 extern dword            RemoteSetBreak( address addr );
 extern void             RemoteRestoreBreak( address addr, dword value );
 extern bool             RemoteSetWatch( address addr, uint_8 size, unsigned long *mult );
 extern void             RemoteRestoreWatch( address addr, uint_8 size );
 extern void             RemoteSplitCmd( char *cmd, char **end, char **parm );
+extern void             RemoteGetSysConfig( void );
 extern void             CheckSegAlias( void );
-extern void             GetSysConfig( void );
 extern bool             InitCoreSupp( void );
 extern void             FiniCoreSupp( void );

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,5 +34,5 @@
 extern void IfCondInit( void );
 extern void IfCondFini( void );
 extern void prep_line_for_conditional_assembly( char * );
-extern bool conditional_assembly_directive( token_idx );
-extern bool conditional_error_directive( token_idx );
+extern bool conditional_assembly_directive( token_buffer *tokbuf, token_idx );
+extern bool conditional_error_directive( token_buffer *tokbuf, token_idx );

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -30,35 +30,28 @@
 
 
 #ifndef __WATCOMC__
-
-/* clibext.h:
-   This file contains defines and prototypes of functions that are present
-   in Watcom's CLIB but not in many other C libraries */
-
+/*
+ * clibext.h:
+ * This file contains defines and prototypes of functions that are present
+ * in Watcom's CLIB but not in many other C libraries
+ */
 #include <limits.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <errno.h>
 #include <stdarg.h>
 #ifdef __BSD__
 #include <unistd.h>         /* for off_t */
 #else
 #include <sys/types.h>      /* for off_t */
 #endif
-#if defined(__QNX__) || defined(__SVR4)
-    #define _XPG4_2         /* Required on Solaris... */
-    #include <strings.h>    /* for str*case* functions */
-    #undef _XPG4_2          /* ...but causes trouble */
-#elif defined(__UNIX__)
-    #include <strings.h>    /* for str*case* functions */
-#endif
 #ifdef __UNIX__
+    #include <strings.h>    /* for str*case* functions */
     #include <sys/wait.h>
 #endif
-#include "clibint.h"
 
 #define _WCRTLINK
 #define _WCNEAR
+#define _WCNORETURN
 #define __near
 #define __based(x)
 
@@ -101,13 +94,7 @@
 #define FNM_LEADING_DIR 0x10
 #define NAME_MAX FILENAME_MAX
 #define PATH_MAX FILENAME_MAX
-#define fseeko fseek
-#define strcasecmp stricmp
 #define _grow_handles _setmaxstdio
-#define _mbislead _ismbblead
-#define utoa ultoa
-#define gmtime_r(a,b) gmtime_s(b,a)
-#define localtime_r(a,b) localtime_s(b,a)
 
 #endif
 
@@ -116,7 +103,6 @@
 //#ifndef getch
 //#define getch getchar
 //#endif
-#define __va_list  va_list
 #define __Strtold(s,ld,endptr) ((*(double *)(ld))=strtod(s,endptr))
 
 #ifndef __cplusplus
@@ -170,10 +156,6 @@ typedef int     mode_t;
 
 #if defined( __UNIX__ )
 
-extern char     *itoa( int value, char *buf, int radix );
-extern char     *utoa( unsigned int value, char *buf, int radix );
-extern char     *ltoa( long value, char *buf, int radix );
-extern char     *ultoa( unsigned long value, char *buf, int radix );
 extern void     _makepath( char *path, const char *drive, const char *dir, const char *fname, const char *ext );
 extern char     *_fullpath( char *buf, const char *path, size_t size );
 extern char     *strlwr( char *string );
@@ -207,7 +189,6 @@ extern int      mkstemp( char *__template );
 
 extern void     _splitpath2( const char *inp, char *outp, char **drive, char **dir, char **fn, char **ext );
 extern int      _bgetcmd( char *buffer, int len );
-extern char     *getcmd( char *buffer );
 extern char     *_cmdname( char *name );
 extern char     *get_dllname( char *buf, int len );
 

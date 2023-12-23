@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -400,7 +400,7 @@ ss_block *SSNewBlock( void )
 
 void SSKillBlock( ss_block *ss )
 {
-    MemFree( ss );
+    _MemFreeArray( ss );
 }
 
 bool SSKillsFlags( char ch )

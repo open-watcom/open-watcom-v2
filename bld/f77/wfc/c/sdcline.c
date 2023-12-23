@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -49,7 +49,7 @@
 #endif
 
 
-bool MainCmdLine( char **fn, char **rest, char **opts, char *ptr )
+bool MainCmdLine( char **fn, char **rest, char **opts, char *cmd )
 //================================================================
 {
     uint        opt_num;
@@ -62,44 +62,41 @@ bool MainCmdLine( char **fn, char **rest, char **opts, char *ptr )
     for(;;) {
         scanning_file_name = false;
         quoted = false;
-        ptr = SkipBlanks( ptr );
-        if( *ptr == NULLCHAR )
+        cmd = SkipBlanks( cmd );
+        if( *cmd == NULLCHAR )
             break;
-        if( _IsSwitchChar( *ptr ) ) {
-            *ptr = NULLCHAR;    // terminate previous option or filename
-            ++ptr;
+        if( _IsSwitchChar( *cmd ) ) {
+            *cmd++ = NULLCHAR;    // terminate previous option or filename
             if( opt_num < MAX_OPTIONS ) {
-                *opts = ptr;
-                ++opts;
+                *opts++ = cmd;
             }
             ++opt_num;
         } else if( *fn == NULL ) {
-            *fn = ptr;
+            *fn = cmd;
             scanning_file_name = true;
         } else {
-            *rest = ptr;
+            *rest = cmd;
             break;
         }
-        for( ; *ptr != NULLCHAR; ptr++ ) {
+        for( ; *cmd != NULLCHAR; cmd++ ) {
             if( quoted ) {
-                if( *ptr == '\"' ) {
+                if( *cmd == '\"' ) {
                     quoted = false;
                     if( scanning_file_name ) {
-                        *ptr = NULLCHAR;
+                        *cmd = NULLCHAR;
                     }
                 }
-            } else if( *ptr == '\"' ) {
+            } else if( *cmd == '\"' ) {
                 quoted = true;
                 if( scanning_file_name ) {
-                    *fn = ptr + 1;
+                    *fn = cmd + 1;
                 }
-            } else if( ( *ptr == ' ' ) || ( *ptr == '\t' ) ) {
-                *ptr = NULLCHAR;
-                ++ptr;
+            } else if( ( *cmd == ' ' ) || ( *cmd == '\t' ) ) {
+                *cmd++ = NULLCHAR;
                 break;
             }
             if( !scanning_file_name && !quoted ) {
-                if( _IsSwitchChar( *ptr ) ) {
+                if( _IsSwitchChar( *cmd ) ) {
                     break;
                 }
             }

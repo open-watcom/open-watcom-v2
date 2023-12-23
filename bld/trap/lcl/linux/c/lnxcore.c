@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,26 +32,20 @@
 
 #include <string.h>
 #include <stdlib.h>
+#include <errno.h>
 #include <unistd.h>
 #include <fcntl.h>
 //#include <sys/stat.h>
+#include "digcpu.h"
 #include "trpimp.h"
 #include "trpcomm.h"
 #include "exeelf.h"
-#include "coremisc.h"
+#include "lnxcomm.h"
+#include "lnxpath.h"
 //#include "miscx87.h"
 #include "mad.h"
 #include "madregs.h"
 
-//extern unsigned FindFilePath( int exe, const char *name, char *result );
-
-#ifdef __BIG_ENDIAN__
-    #define SWAP_16     CONV_LE_16
-    #define SWAP_32     CONV_LE_32
-#else
-    #define SWAP_16     CONV_BE_16
-    #define SWAP_32     CONV_BE_32
-#endif
 
 #define NO_FILE         (-1)
 
@@ -219,14 +213,14 @@ trap_retval TRAP_CORE( Get_sys_config )( void )
 {
     get_sys_config_ret  *ret;
 
-    ret = GetOutPtr(0);
-    ret->sys.arch = DIG_ARCH_X86;
-    ret->sys.os  = DIG_OS_LINUX;
-    ret->sys.osmajor = 1;
-    ret->sys.osminor = 0;
-    ret->sys.fpu = X86_387;
-    ret->sys.cpu = X86_686;
-    ret->sys.huge_shift = 3;
+    ret = GetOutPtr( 0 );
+    ret->arch = DIG_ARCH_X86;
+    ret->os  = DIG_OS_LINUX;
+    ret->osmajor = 1;
+    ret->osminor = 0;
+    ret->fpu = X86_387;
+    ret->cpu = X86_686;
+    ret->huge_shift = 3;
     return( sizeof( *ret ) );
 }
 
@@ -237,8 +231,8 @@ trap_retval TRAP_CORE( Map_addr )( void )
     unsigned            index;
     unsigned            seg;
 
-    acc = GetInPtr(0);
-    ret = GetOutPtr(0);
+    acc = GetInPtr( 0 );
+    ret = GetOutPtr( 0 );
     ret->lo_bound = 0;
     ret->hi_bound = ~(addr48_off)9;
 
@@ -262,7 +256,7 @@ trap_retval TRAP_CORE( Map_addr )( void )
         }
 #if 0
         if( core_info.loaded ) {
-            ret->out_addr.offset += core_info.segs[ index ].mem_off;
+            ret->out_addr.offset += core_info.segs[index].mem_off;
         }
 #endif
         break;
@@ -285,7 +279,7 @@ trap_retval TRAP_CORE( Checksum_mem )( void )
 {
     checksum_mem_ret    *ret;
 
-    ret = GetOutPtr(0);
+    ret = GetOutPtr( 0 );
     ret->result = 0;
     return( sizeof( *ret ) );
 }
@@ -295,11 +289,11 @@ trap_retval TRAP_CORE( Read_mem )( void )
     read_mem_req        *acc;
     void                *ret;
     unsigned            i;
-    unsigned            len;
+    size_t              len;
     Elf32_Phdr          *e_phdr;
 
-    acc = GetInPtr(0);
-    ret = GetOutPtr(0);
+    acc = GetInPtr( 0 );
+    ret = GetOutPtr( 0 );
     if( !core_info.loaded ) {
         return( 0 );
     }
@@ -309,7 +303,8 @@ trap_retval TRAP_CORE( Read_mem )( void )
         int             read_len;
         Elf32_Off       rel_ofs;    // Relative offset within segment
 
-        if( e_phdr->p_type != PT_LOAD ) continue;
+        if( e_phdr->p_type != PT_LOAD )
+            continue;
         if( (acc->mem_addr.offset < e_phdr->p_vaddr) ||
             (acc->mem_addr.offset > e_phdr->p_vaddr + e_phdr->p_memsz - 1) ) {
             continue;
@@ -323,8 +318,9 @@ trap_retval TRAP_CORE( Read_mem )( void )
         /* Adjust length to read from file if p_memsz > p_filesz */
         if( (acc->mem_addr.offset + len) > (e_phdr->p_vaddr + e_phdr->p_filesz) ) {
             read_len = e_phdr->p_filesz - rel_ofs;
-            if( read_len < 0 )
+            if( read_len < 0 ) {
                 read_len = 0;
+            }
         }
         if( len != 0 ) {
             if( read_len != 0 ) {
@@ -348,7 +344,7 @@ trap_retval TRAP_CORE( Write_mem )( void )
 {
     write_mem_ret       *ret;
 
-    ret = GetOutPtr(0);
+    ret = GetOutPtr( 0 );
     ret->len = 0;
     return( sizeof( *ret ) );
 }
@@ -364,7 +360,7 @@ trap_retval TRAP_CORE( Write_io )( void )
 {
     write_io_ret        *ret;
 
-    ret = GetOutPtr(0);
+    ret = GetOutPtr( 0 );
     ret->len = 0;
     return( sizeof( *ret ) );
 }
@@ -404,7 +400,9 @@ static void ReadFPU( struct x86_fpu *r )
     if( core_info.loaded ) {
 #if 0
         memcpy( r, core_info.hdr.x87, sizeof( core_info.hdr.x87 ) );
-        if( !core_info.fpu32 ) FPUExpand( r );
+        if( !core_info.fpu32 ) {
+            FPUExpand( r );
+        }
 #endif
     }
 }
@@ -433,8 +431,9 @@ static int load_core_header( const char *core_name )
     result = false;
     if( core_info.e_hdr == NULL ) {
         core_info.e_hdr = malloc( sizeof( *core_info.e_hdr ) );
-        if( core_info.e_hdr == NULL )
+        if( core_info.e_hdr == NULL ) {
             return( result );
+        }
     }
     fd = open( core_name, O_RDONLY );
     if( fd < 0 )
@@ -517,7 +516,7 @@ trap_retval TRAP_CORE( Set_watch )( void )
     set_watch_ret       *ret;
 
     ret = GetOutPtr( 0 );
-    ret->err = 0;
+    ret->err = 0;   // OK
     ret->multiplier = USING_DEBUG_REG | 1;
     return( sizeof( *ret ) );
 }
@@ -569,7 +568,7 @@ trap_retval TRAP_CORE( Redirect_stdout )( void )
     return( TRAP_CORE( Redirect_stdin )() );
 }
 
-trap_retval TRAP_FILE( string_to_fullpath )( void )
+trap_retval TRAP_FILE( file_to_fullpath )( void )
 {
     unsigned_16                 len;
     char                        *name;
@@ -581,13 +580,12 @@ trap_retval TRAP_FILE( string_to_fullpath )( void )
     acc = GetInPtr( 0 );
     name = GetInPtr( sizeof( *acc ) );
     ret = GetOutPtr( 0 );
+    ret->err = 0;
     fullname = GetOutPtr( sizeof( *ret ) );
     fullname[0] = '\0';
     len = 0;
-    if( acc->file_type != TF_TYPE_EXE ) {
-        len = FindFilePath( false, name, fullname );
-    } else if( core_info.mapping_shared ) {
-        len = FindFilePath( true, name, fullname );
+    if( acc->file_type != DIG_FILETYPE_EXE || core_info.mapping_shared ) {
+        len = FindFilePath( acc->file_type, name, fullname );
     } else {
         save_handle = core_info.fd;
         if( load_core_header( name ) ) {
@@ -603,13 +601,14 @@ trap_retval TRAP_FILE( string_to_fullpath )( void )
             if( stat( name, &chk ) != 0 ) {
                 /* try it without the node number */
                 name += 2;
-                while( *name != '/' ) ++name;
+                while( *name != '/' )
+                    ++name;
                 if( stat( name, &chk ) != 0 ) {
                     chk.st_mtime = 0;
                 }
             }
             if( core_info.ignore_timestamp || chk.st_mtime == core_info.hdr.cmdtime ) {
-                len = StrCopy( name, fullname ) - fullname;
+                len = StrCopyDst( name, fullname ) - fullname;
             }
 #endif
             close( core_info.fd );
@@ -618,8 +617,6 @@ trap_retval TRAP_FILE( string_to_fullpath )( void )
     }
     if( len == 0 ) {
         ret->err = ENOENT;      /* File not found */
-    } else {
-        ret->err = 0;
     }
     return( sizeof( *ret ) + len + 1 );
 }
@@ -628,15 +625,18 @@ trap_retval TRAP_CORE( Machine_data )( void )
 {
     machine_data_req    *acc;
     machine_data_ret    *ret;
-    unsigned_8          *data;
+    machine_data_spec   *data;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    data = GetOutPtr( sizeof( *ret ) );
     ret->cache_start = 0;
     ret->cache_end = ~(addr_off)0;
-    *data = X86AC_BIG;
-    return( sizeof( *ret ) + sizeof( *data ) );
+    if( acc->info_type == X86MD_ADDR_CHARACTERISTICS ) {
+        data = GetOutPtr( sizeof( *ret ) );
+        data->x86_addr_flags = X86AC_BIG;
+        return( sizeof( *ret ) + sizeof( data->x86_addr_flags ) );
+    }
+    return( sizeof( *ret ) );
 }
 
 trap_retval TRAP_CORE( Get_lib_name )( void )
@@ -645,10 +645,10 @@ trap_retval TRAP_CORE( Get_lib_name )( void )
     get_lib_name_ret    *ret;
     char                *name;
     char                *p;
-    size_t              max_len;
+    size_t              name_maxlen;
 
     // TODO: we could probably figure out what shared libs were loaded
-    acc = GetInPtr(0);
+    acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
     switch( acc->mod_handle ) {
     case MH_NONE:
@@ -664,10 +664,10 @@ trap_retval TRAP_CORE( Get_lib_name )( void )
         ret->mod_handle = 0;
         return( sizeof( *ret ) );
     }
-    max_len = GetTotalSizeOut() - 1 - sizeof( *ret );
+    name_maxlen = GetTotalSizeOut() - sizeof( *ret ) - 1;
     name = GetOutPtr( sizeof( *ret ) );
-    strncpy( name, p, max_len );
-    name[max_len] = '\0';
+    strncpy( name, p, name_maxlen );
+    name[name_maxlen] = '\0';
     return( sizeof( *ret ) + strlen( name ) + 1 );
 }
 
@@ -729,21 +729,22 @@ trap_retval TRAP_THREAD( get_extra )( void )
 trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
 {
     trap_version ver;
+    char         ch;
 
-    remote = remote;
+    /* unused parameters */ (void)remote;
+
     core_info.fd = NO_FILE;
-    while( *parms != '\0' ) {
-        switch( *parms ) {
+    while( (ch = *parms++) != '\0' ) {
+        switch( ch ) {
         case 'I':
         case 'i':
             core_info.ignore_timestamp = true;
             break;
         }
-        ++parms;
     }
     err[0] = '\0'; /* all ok */
-    ver.major = TRAP_MAJOR_VERSION;
-    ver.minor = TRAP_MINOR_VERSION;
+    ver.major = TRAP_VERSION_MAJOR;
+    ver.minor = TRAP_VERSION_MINOR;
     ver.remote = false;
     return( ver );
 }

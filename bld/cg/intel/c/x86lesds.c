@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -112,12 +112,12 @@ static bool     MemMove( instruction *ins )
 static bool     OptMemMove( instruction *ins, instruction *next )
 /***************************************************************/
 {
-    unsigned_32         shift;
-    unsigned_32         lo;
-    unsigned_32         hi;
-    type_class_def      result_type_class;
-    unsigned_32         result_const;
-    name                *result;
+    uint_32         shift;
+    uint_32         lo;
+    uint_32         hi;
+    type_class_def  result_type_class;
+    uint_32         result_const;
+    name            *result;
 
     assert( MemMove( ins ) && MemMove( next ) );
     if( ins->type_class == next->type_class ) {
@@ -217,16 +217,22 @@ static bool OptPushDWORDConstant( instruction *ins, instruction *next )
     }
     if( opi->c.lo.int_value != 0 ) {
         if( opi->c.lo.int_value != -1 ) {
-            // first word constant isn't 0 or -1
+            /*
+             * first word constant isn't 0 or -1
+             */
             return( false );
         }
         if( opn->c.lo.int_value >= 0 || opn->c.lo.int_value < -128 ) {
-            // second word constant won't sign-extend
+            /*
+             * second word constant won't sign-extend
+             */
             return( false );
         }
     } else {
         if( opn->c.lo.int_value < 0 || opn->c.lo.int_value > 127 ) {
-            // second word constant exceeds signed byte positive maximum
+            /*
+             * second word constant exceeds signed byte positive maximum
+             */
             return( false );
         }
     }
@@ -284,9 +290,13 @@ static  void    CheckLDSES( instruction *seg, instruction *reg, bool seg_first )
     if( !AdjacentMem( seg->operands[0], reg->operands[0], U2 ) )
         return;
     if( seg->operands[0]->n.class == N_INDEXED ) {
-        // special case of using result of seg
+        /*
+         * special case of using result of seg
+         */
         if( seg_first ) {
-            // don't think we can get here - using one of DS|ES|SS|FS|GS as index reg?!?
+            /*
+             * don't think we can get here - using one of DS|ES|SS|FS|GS as index reg?!?
+             */
             if( HW_Ovlap( reg->operands[0]->i.index->r.reg, seg->result->r.reg ) ) {
                 return;
             }
@@ -316,7 +326,7 @@ void    OptSegs( void )
     do {
         redo = false;
         for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-            for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = next ) {
+            for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = next ) {
                 next = ins->head.next;
                 if( NotByteMove( ins ) && NotByteMove( next ) ) {
                     if( IsLDSES( ins, next ) ) {
@@ -327,11 +337,15 @@ void    OptSegs( void )
                 }
                 if( MemMove( ins )  && !VolatileIns( ins )
                   && MemMove( next ) && !VolatileIns( next ) ) {
-                    // look for adjacent byte/word moves and combine them
+                    /*
+                     * look for adjacent byte/word moves and combine them
+                     */
                     if( OptMemMove( ins, next ) ) {
-                        // tell ourselves to go around again in case
-                        // we combined four byte moves into two word
-                        // moves - want to combine into dword move
+                        /*
+                         * tell ourselves to go around again in case
+                         * we combined four byte moves into two word
+                         * moves - want to combine into dword move
+                         */
                         switch( next->type_class ) {
                         case I1:
                         case I2:
@@ -349,31 +363,38 @@ void    OptSegs( void )
                 }
 #if _TARGET & _TARG_8086
                 /* The scoreboarder may split "and ax,imm" into
-                   "xor ah,ah; and al,imm". This is sometimes useful
-                   (ah can be eliminated for
-                      short a, b, c; a &= 0x01; b &= 0x0f; c = (a|b) & 0xff;)
-                   but produces longer code if it is not. Remerge them here.
-                */
+                 * "xor ah,ah; and al,imm". This is sometimes useful
+                 * (ah can be eliminated for
+                 *    short a, b, c; a &= 0x01; b &= 0x0f; c = (a|b) & 0xff;)
+                 * but produces longer code if it is not. Remerge them here.
+                 */
                 if(
-                 /* is next of the form "and byte, imm" ? */
-                    ( next->head.opcode == OP_AND )
-                 && ( next->type_class == I1 || next->type_class == U1 )
-                 && ( next->result->n.class == N_REGISTER )
-                 && ( next->operands[0] == next->result )
-                 && ( next->operands[1]->n.class == N_CONSTANT )
-
-                 /* is ins of the form "xor byte, byte" ? */
-                 && ( ins->head.opcode == OP_XOR )
-                 && ( ins->type_class == next->type_class )
-                 && ( ins->result->n.class == N_REGISTER )
-                 && ( ins->operands[0] == ins->result )
-                 && ( ins->operands[1] == ins->result ) ) {
+                  /*
+                   * is next of the form "and byte, imm" ?
+                   */
+                     ( next->head.opcode == OP_AND )
+                  && ( next->type_class == I1 || next->type_class == U1 )
+                  && ( next->result->n.class == N_REGISTER )
+                  && ( next->operands[0] == next->result )
+                  && ( next->operands[1]->n.class == N_CONSTANT )
+                  /*
+                   * is ins of the form "xor byte, byte" ?
+                   */
+                  && ( ins->head.opcode == OP_XOR )
+                  && ( ins->type_class == next->type_class )
+                  && ( ins->result->n.class == N_REGISTER )
+                  && ( ins->operands[0] == ins->result )
+                  && ( ins->operands[1] == ins->result ) ) {
                     hw_reg_set full_reg = FullReg( next->result->r.reg );
-                    /* check if instructions operate on correct halves */
+                    /*
+                     * check if instructions operate on correct halves
+                     */
                     if( HW_Equal( Low16Reg( full_reg ), next->result->r.reg )
                       && HW_Equal( High16Reg( full_reg ), ins->result->r.reg )
                        ) {
-                        /* convert to "and fullreg, imm" */
+                        /*
+                         * convert to "and fullreg, imm"
+                         */
                         next->type_class = next->type_class == I1 ? I2 : U2;
                         next->result->r.reg = full_reg;
                         next->operands[1] = AllocIntConst( next->operands[1]->c.lo.int_value & 0xFF );
@@ -383,7 +404,9 @@ void    OptSegs( void )
                 if( _CPULevel( CPU_386 ) ) {
                     if( isPushX2( ins ) && isPushX2( next ) ) {
                         if( OptPushDWORDConstant( ins, next ) ) {
-                            // 'next' was not a OP_BLOCK if we optimized it
+                            /*
+                             * 'next' was not a OP_BLOCK if we optimized it
+                             */
                             next = next->head.next;
                         } else if( OptPushDWORDMemory( ins, next ) ) {
                             next = next->head.next;

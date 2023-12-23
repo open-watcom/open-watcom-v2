@@ -11,4 +11,4 @@ export_only=1
 mthreaded  = 1
 fs_registration = yes
 
-!include $(cpplib_dir)/contain/contain.mif
+!include ../../contain.mif

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,7 +40,7 @@ extern void _test_486( void );
         0x0f 0x08       /* invd */ \
         0x0f 0x09       /* wbinvd */ \
                         /* L1: */ \
-        parm caller;
+        __parm __caller [];
 #endif
 
 void    set_false( int k );

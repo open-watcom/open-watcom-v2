@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -195,7 +195,7 @@ extern char * findTokenString( int token )
 
 // static functions
 
-#pragma disable_message( 14 )   // Warning! W014: no reference to symbol 'showUnique'
+#pragma disable_message( P14 )   // Warning! W014: no reference to symbol 'showUnique'
 /*
  * change a string to mixed case, capitals showing characters needed to
  * make it unique.

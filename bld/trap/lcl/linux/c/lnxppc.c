@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,11 +35,13 @@
 #include <sys/types.h>
 #include <sys/ptrace.h>
 #include <asm/ptrace.h>
+#include "digcpu.h"
 #include "trpimp.h"
 #include "trperr.h"
 #include "mad.h"
 #include "madregs.h"
 #include "lnxcomm.h"
+
 
 /* Implementation notes:
  *
@@ -131,7 +133,7 @@ trap_retval TRAP_CORE( Set_watch )( void )
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
     ret->multiplier = 100000;
-    ret->err = 1;
+    ret->err = 1;   // failure
     return( sizeof( *ret ) );
 }
 
@@ -149,22 +151,13 @@ trap_retval TRAP_CORE( Clear_watch )( void )
  */
 trap_retval TRAP_CORE( Read_io )( void )
 {
-    read_io_req *acc;
-    void        *ret;
-
-    acc = GetInPtr( 0 );
-    ret = GetOutPtr( 0 );
     return( 0 );
 }
 
 trap_retval TRAP_CORE( Write_io )( void )
 {
-    write_io_req    *acc;
     write_io_ret    *ret;
-    void            *data;
 
-    acc = GetInPtr( 0 );
-    data = GetInPtr( sizeof( *acc ) );
     ret = GetOutPtr( 0 );
     ret->len = 0;
     return( sizeof( *ret ) );
@@ -175,33 +168,31 @@ trap_retval TRAP_CORE( Get_sys_config )( void )
     get_sys_config_ret  *ret;
 
     ret = GetOutPtr( 0 );
-    ret->sys.os = DIG_OS_LINUX;
+    ret->os = DIG_OS_LINUX;
 
     // TODO: Detect OS version (kernel version?)!
-    ret->sys.osmajor = 1;
-    ret->sys.osminor = 0;
+    ret->osmajor = 1;
+    ret->osminor = 0;
 
-    ret->sys.cpu = PPC_604;
-    ret->sys.fpu = 0;
-    ret->sys.huge_shift = 3;
-    ret->sys.arch = DIG_ARCH_PPC;
-    CONV_LE_16( ret->sys.arch );
+    ret->cpu = PPC_604;
+    ret->fpu = 0;
+    ret->huge_shift = 3;
+    ret->arch = DIG_ARCH_PPC;
     return( sizeof( *ret ) );
 }
 
 trap_retval TRAP_CORE( Machine_data )( void )
 {
-    machine_data_req    *acc;
+//    machine_data_req    *acc;
     machine_data_ret    *ret;
-    unsigned_8          *data;
+//    machine_data_spec   *data;
 
-    acc = GetInPtr( 0 );
+//    acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    data = GetOutPtr( sizeof( *ret ) );
+//    data = GetOutPtr( sizeof( *ret ) );
     ret->cache_start = 0;
     ret->cache_end = ~(addr_off)0;
-    *data = 0;
-    return( sizeof( *ret ) + sizeof( *data ) );
+    return( sizeof( *ret ) );
 }
 
 // TODO: fix up ordering/contents

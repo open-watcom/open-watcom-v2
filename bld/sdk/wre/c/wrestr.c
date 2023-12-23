@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -197,25 +197,22 @@ bool WREEditStringResource( WRECurrentResInfo *curr )
     bool                ok;
     WREStringSession    *session;
 
-    nodes = NULL;
-
     ok = (curr != NULL && curr->info != NULL && curr->type != NULL);
 
     if( ok ) {
         session = WREFindResStringSession( curr->info );
-        if( session != NULL ) {
+        if( session == NULL ) {
+            nodes = WRECreateStringNodes( curr );
+            if( nodes == NULL ) {
+                ok = false;
+            } else {
+                if( WREStartStringSession( curr, nodes ) == NULL ) {
+                    ok = false;
+                }
+            }
+        } else {
             WStringBringToFront( session->hndl );
-            return( TRUE );
         }
-    }
-
-    if( ok ) {
-        nodes = WRECreateStringNodes( curr );
-        ok = (nodes != NULL);
-    }
-
-    if( ok ) {
-        ok = (WREStartStringSession( curr, nodes ) != NULL);
     }
 
     return( ok );
@@ -232,13 +229,13 @@ bool WREEndEditStringResource( WStringHandle hndl )
     session = WREFindStringSession( hndl );
 
     if( session != NULL ) {
-        ret = TRUE;
+        ret = true;
         if( session->tnode == NULL || session->tnode->Head->Head->Info.Length == 0 ) {
             curr.info = session->rinfo;
             curr.type = session->tnode;
             curr.res = NULL;
             curr.lang = NULL;
-            ret = WREDeleteStringResources( &curr, TRUE );
+            ret = WREDeleteStringResources( &curr, true );
             WRESetStatusByID( 0, WRE_EMPTYREMOVED );
         }
         WRERemoveStringEditSession( session );
@@ -290,7 +287,7 @@ WREStringSession *WREStartStringSession( WRECurrentResInfo *curr, WStringNode *n
     session->tnode = curr->type;
     session->rinfo = curr->info;
 
-    session->hndl = WRStringStartEdit( session->info );
+    session->hndl = WStringStartEdit( session->info );
 
     if( session->hndl != 0 ) {
         WREInsertObject( &WREStringSessions, session );
@@ -446,7 +443,7 @@ WStringNode *WREMakeNode( WRECurrentResInfo *curr )
     node->MemFlags = curr->lang->Info.MemoryFlags;
     node->block_name = WRECopyWResID( &curr->res->Info.ResName );
     node->data_size = curr->lang->Info.Length;
-    node->data = WREGetCurrentResData( curr );
+    node->data = WREGetCopyResData( curr );
 
     if( node->data == NULL ) {
         WREFreeStringNode( node );

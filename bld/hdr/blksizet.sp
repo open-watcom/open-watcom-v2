@@ -8,10 +8,14 @@
  typedef unsigned long  blksize_t;
 :elsesegment ARCHMIPS
  typedef unsigned long  blksize_t;
+:elsesegment ARCHPPC
+ typedef unsigned long  blksize_t;
 :elsesegment
  #ifdef __386__
   typedef unsigned long  blksize_t;
  #elif defined(__MIPS__)
+  typedef unsigned long  blksize_t;
+ #elif defined(__PPC__)
   typedef unsigned long  blksize_t;
  #endif
 :endsegment

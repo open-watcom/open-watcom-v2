@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -413,7 +413,7 @@ instruction     *rMOVEXX( instruction *ins )
 name    *TrimConst( name *c, type_class_def type_class )
 /******************************************************/
 {
-    signed_32           value;
+    int_32          value;
 
     switch( type_class ) {
     case U1:
@@ -423,10 +423,10 @@ name    *TrimConst( name *c, type_class_def type_class )
         value = (signed_8)c->c.lo.int_value;
         break;
     case U2:
-        value = (unsigned_16)c->c.lo.int_value;
+        value = (uint_16)c->c.lo.int_value;
         break;
     case I2:
-        value = (signed_16)c->c.lo.int_value;
+        value = (int_16)c->c.lo.int_value;
         break;
     case U4:
     case I4:
@@ -525,7 +525,7 @@ name    *Int64Equivalent( name *name )
     constant_defn       *defn;
 
     defn = GetFloat( name, FD );
-    return( AllocU64Const( *(unsigned_32 *)( defn->value + 0 ), *(unsigned_32 *)( defn->value + 2 ) ) );
+    return( AllocU64Const( *(uint_32 *)( defn->value + 0 ), *(uint_32 *)( defn->value + 2 ) ) );
 }
 
 name    *LowPart( name *tosplit, type_class_def type_class )
@@ -539,8 +539,8 @@ name    *LowPart( name *tosplit, type_class_def type_class )
     name                *new;
     signed_8            s8;
     unsigned_8          u8;
-    signed_16           s16;
-    unsigned_16         u16;
+    int_16              s16;
+    uint_16             u16;
     constant_defn       *floatval;
 
     new = NULL;
@@ -567,7 +567,7 @@ name    *LowPart( name *tosplit, type_class_def type_class )
                 _Zoiks( ZOIKS_129 );
             } else { /* FD */
                 floatval = GetFloat( tosplit, FD );
-                new = AllocConst( CFCnvU32F( _TargetLongInt( *(unsigned_32 *)( floatval->value + 0 ) ) ) );
+                new = AllocConst( CFCnvU32F( _TargetLongInt( *(uint_32 *)( floatval->value + 0 ) ) ) );
             }
 #if 0
         } else if( tosplit->c.const_type == CONS_ADDRESS ) {
@@ -621,8 +621,8 @@ name    *HighPart( name *tosplit, type_class_def type_class )
     name                *new;
     signed_8            s8;
     unsigned_8          u8;
-    signed_16           s16;
-    unsigned_16         u16;
+    int_16              s16;
+    uint_16             u16;
     constant_defn       *floatval;
 
     new = NULL;
@@ -649,7 +649,7 @@ name    *HighPart( name *tosplit, type_class_def type_class )
                 _Zoiks( ZOIKS_129 );
             } else { /* FD */
                 floatval = GetFloat( tosplit, FD );
-                new = AllocConst( CFCnvU32F( _TargetLongInt( *(unsigned_32 *)( floatval->value + 2 ) ) ) );
+                new = AllocConst( CFCnvU32F( _TargetLongInt( *(uint_32 *)( floatval->value + 2 ) ) ) );
             }
 #if 0
         } else if( tosplit->c.const_type == CONS_ADDRESS ) {

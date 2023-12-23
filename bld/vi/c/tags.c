@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,6 +37,8 @@
     #include "winrtns.h"
 #endif
 #include "myio.h"
+#include "myprintf.h"
+#include "parse.h"
 
 #include "clibext.h"
 
@@ -176,7 +178,7 @@ static vi_rc selectTag( FILE *fp, const char *str, char *fname, char *buff, int 
     tag_list = NULL;
     p = GetNextWord1( buff, tag );
     for( ;; ) {
-        tag_list = _MemReallocList( tag_list, tag_count + 1 );
+        tag_list = _MemReallocPtrArray( tag_list, char, tag_count + 1 );
         p1 = tag_list[tag_count] = DupString( p );
         SKIP_NOSPACES( p1 );
         p1 = strchr( tag_list[tag_count], ' ' );
@@ -209,7 +211,7 @@ static vi_rc selectTag( FILE *fp, const char *str, char *fname, char *buff, int 
     }
     tag_list[whichtag][strlen( tag_list[whichtag] )] = ' ';
     strcpy( buff, tag_list[whichtag] );
-    MemFreeList( tag_count, tag_list );
+    _MemFreePtrArray( tag_list, tag_count, MemFree );
     p = GetNextWord1( buff, fname );
     if( *fname == '\0' ) {
         return( ERR_INVALID_TAG_FOUND );

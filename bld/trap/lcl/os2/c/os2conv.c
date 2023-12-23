@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,26 +43,19 @@
 #define INCL_WINSYS
 #include <os2.h>
 #include <os2dbg.h>
-#include "trpimp.h"
-#include "trperr.h"
-#include "dosdebug.h"
-#include "os2trap.h"
-#include "bsexcpt.h"
 #include "os2v2acc.h"
+#include "trperr.h"
+#include "bsexcpt.h"
+#include "dbgthrd.h"
+#include "os2path.h"
 
-extern USHORT           TaskFS;
 
-ULONG MakeItFlatNumberOne( USHORT seg, ULONG offset );
-extern dos_debug        Buff;
+#define LOCATOR     "OS2V2HLP.EXE"
 
-
-extern HMODULE          ThisDLLModHandle;
-extern ULONG            ExceptNum;
-
-extern unsigned short __pascal __far Dos16SelToFlat();
-
-extern long CallDosSelToFlat( long );
+extern long APIENTRY Dos16SelToFlat( long );
+extern ULONG CallDosSelToFlat( PVOID );
 #pragma aux CallDosSelToFlat = \
+        ".386"          \
         "xchg eax,edx"  \
         "shl  eax,16"   \
         "xchg ax,dx"    \
@@ -72,21 +65,31 @@ extern long CallDosSelToFlat( long );
     __parm  [__dx __ax] \
     __value [__dx __ax]
 
-ULONG MakeLocalPtrFlat( void __far *ptr );
-
-USHORT  (APIENTRY *DebugFunc)( PVOID );
-USHORT  FlatCS,FlatDS;
-static ULONG    _retaddr;
-extern void __far *DoReturn();
-
-extern USHORT   DoCall( void __far *, ULONG, ULONG );
+extern USHORT   DoCall( PVOID, ULONG, ULONG );
 #pragma aux DoCall \
     __parm      [__dx __ax] [__cx __bx] [__di __si] \
     __modify    [__ax __bx __cx __dx __si __di __es]
 
-#define LOCATOR     "OS2V2HLP.EXE"
+extern PVOID __far DoReturn( void );
 
-unsigned int Call32BitDosDebug( dos_debug __far *buff )
+extern HMODULE          ThisDLLModHandle;
+
+USHORT          (APIENTRY *DebugFunc)( PVOID );
+USHORT          FlatCS;
+USHORT          FlatDS;
+
+static ULONG    _retaddr;
+
+/*
+ * MakeLocalPtrFlat - create a 0:32 ptr from a 16:16 ptr
+ */
+ULONG MakeLocalPtrFlat( PVOID ptr )
+{
+    return( CallDosSelToFlat( ptr ) );
+
+} /* MakeLocalPtrFlat */
+
+unsigned Call32BitDosDebug( dos_debug __far *buff )
 {
     return( DoCall( DebugFunc, MakeLocalPtrFlat( buff ), _retaddr ) );
 }
@@ -94,7 +97,7 @@ unsigned int Call32BitDosDebug( dos_debug __far *buff )
 /*
  * get the address of Dos32Debug, and get the flat selectors, too.
  */
-int GetDos32Debug( char __far *err )
+int GetDos32Debug( PCHAR err )
 {
     char        buff[256];
     RESULTCODES resc;
@@ -113,7 +116,7 @@ int GetDos32Debug( char __far *err )
 
     rc = DosGetModName( ThisDLLModHandle, sizeof( buff ), buff );
     if( rc ) {
-        StrCopy( TRP_OS2_no_dll, err );
+        StrCopyDst( TRP_OS2_no_dll, err );
         return( FALSE );
     }
     start = buff;
@@ -126,9 +129,9 @@ int GetDos32Debug( char __far *err )
            break;
         }
     }
-    p = StrCopy( LOCATOR, start );
+    p = StrCopyDst( LOCATOR, start );
     if( DosMakePipe( &inh, &outh, sizeof( data ) ) ) {
-        StrCopy( TRP_OS2_no_pipe, err );
+        StrCopyDst( TRP_OS2_no_pipe, err );
         return( FALSE );
     }
     *++p = outh + '0';
@@ -138,27 +141,27 @@ int GetDos32Debug( char __far *err )
     DosClose( outh );
     if( rc )  {
         DosClose( inh );
-        StrCopy( TRP_OS2_no_help, err );
+        StrCopyDst( TRP_OS2_no_help, err );
         return( FALSE );
     }
     rc = DosRead( inh, &data, sizeof( data ), &dummy );
     DosClose( inh );
     if( rc ) {
-        StrCopy( TRP_OS2_no_help, err );
+        StrCopyDst( TRP_OS2_no_help, err );
         return( FALSE );
     }
-    DebugFunc = (void __far *)data.dos_debug;
-    FlatCS = (USHORT) data.cs;
-    FlatDS = (USHORT) data.ds;
+    DebugFunc = (PVOID)data.dos_debug;
+    FlatCS = (USHORT)data.cs;
+    FlatDS = (USHORT)data.ds;
 
-    _retaddr = MakeLocalPtrFlat( (void __far *)DoReturn );
+    _retaddr = MakeLocalPtrFlat( (PVOID)DoReturn );
     return( TRUE );
 }
 
 /*
  * MakeSegmentedPointer - create a 16:16 ptr from a 0:32 ptr
  */
-void __far *MakeSegmentedPointer( ULONG val )
+PVOID MakeSegmentedPointer( ULONG val )
 {
     dos_debug   buff;
 
@@ -171,20 +174,12 @@ void __far *MakeSegmentedPointer( ULONG val )
 } /* MakeSegmentedPointer */
 
 /*
- * MakeLocalPtrFlat - create a 0:32 ptr from a 16:16 ptr
- */
-ULONG MakeLocalPtrFlat( void __far *ptr )
-{
-    return( CallDosSelToFlat( (long) ptr ) );
-
-} /* MakeLocalPtrFlat */
-
-/*
  * IsFlatSeg - check for flat segment
  */
 int IsFlatSeg( USHORT seg )
 {
-    if( seg == FlatCS || seg == FlatDS ) return( TRUE );
+    if( seg == FlatCS || seg == FlatDS )
+        return( TRUE );
     return( FALSE );
 
 } /* IsFlatSeg */
@@ -198,15 +193,15 @@ int IsUnknownGDTSeg( USHORT seg )
     if( seg == FlatCS || seg == FlatDS ) {
         return( FALSE );
     }
-    #if 0
-        if( !(seg & 0x04) ) {
-            return( TRUE );
-        }
-    #else
-        if( seg == TaskFS ) {
-            return( TRUE );
-        }
-    #endif
+#if 0
+    if( !(seg & 0x04) ) {
+        return( TRUE );
+    }
+#else
+    if( seg == TaskFS ) {
+        return( TRUE );
+    }
+#endif
     return( FALSE );
 
 } /* IsUnknownGDTSeg */
@@ -219,7 +214,8 @@ ULONG MakeItFlatNumberOne( USHORT seg, ULONG offset )
 {
     dos_debug   buff;
 
-    if( IsFlatSeg( seg ) ) return( offset );
+    if( IsFlatSeg( seg ) )
+        return( offset );
     buff.Pid = Buff.Pid;
     buff.Cmd = DBG_C_SelToLin;
     buff.Value = seg;
@@ -232,7 +228,7 @@ ULONG MakeItFlatNumberOne( USHORT seg, ULONG offset )
 /*
  * MakeItSegmentedNumberOne - make a (sel,offset) into a 16:16 pointer
  */
-void __far * MakeItSegmentedNumberOne( USHORT seg, ULONG offset )
+PVOID MakeItSegmentedNumberOne( USHORT seg, ULONG offset )
 {
     if( !IsFlatSeg( seg ) )
         return( _MK_FP( seg, (USHORT) offset ) );
@@ -244,9 +240,9 @@ void __far * MakeItSegmentedNumberOne( USHORT seg, ULONG offset )
 /*
  * GetExceptionText - return text for last exception
  */
-char __far *GetExceptionText( void )
+PCHAR GetExceptionText( void )
 {
-    char        __far *str;
+    PCHAR   str;
 
     switch( ExceptNum ) {
     case XCPT_DATATYPE_MISALIGNMENT:

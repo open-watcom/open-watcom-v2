@@ -152,7 +152,7 @@ static bool tm_check( MOUSESTAT *status, MOUSEORD *row, MOUSEORD *col, MOUSETIME
 /**************************************************************************************/
 {
     if( MouseInstalled ) {
-        QNXDebugPrintf1("mouse_string = '%s'", buf);
+        UIDebugPrintf1("mouse_string = '%s'", buf);
         if( new_sample ) {
             switch( MouseType ) {
             case M_QW:

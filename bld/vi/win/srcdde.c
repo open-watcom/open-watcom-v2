@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,6 +36,7 @@
 #include "ddedef.h"
 #include "expr.h"
 #include "srcwin.h"
+#include "parse.h"
 
 
 #define TIME_OUT        10 * 1000L
@@ -136,10 +137,10 @@ bool RunDDECommand( int token, const char *data, char *buffer, vi_rc *result, va
             break;
         }
         len = DdeQueryString( DDEInstId, hdl, NULL, 0, CP_WINANSI ) + 1;
-        ptr = MemAlloc( len  );
+        ptr = _MemAllocArray( char, len  );
         DdeQueryString( DDEInstId, hdl, ptr, len, CP_WINANSI );
         VarAddStr( buffer, ptr, vl );
-        MemFree( ptr );
+        _MemFreeArray( ptr );
         break;
 
     case T_DDERET:
@@ -219,10 +220,10 @@ bool RunDDECommand( int token, const char *data, char *buffer, vi_rc *result, va
             break;
         }
         len = DdeGetData( dde_data, NULL, 0, 0 );
-        ptr = MemAlloc( len );
+        ptr = _MemAllocArray( char, len );
         DdeGetData( dde_data, (LPBYTE)ptr, len, 0 );
         VarAddStr( buffer, ptr,  vl );
-        MemFree( ptr );
+        _MemFreeArray( ptr );
 //      DdeFreeDataHandle( dde_data );
         break;
 
@@ -314,10 +315,10 @@ bool RunDDECommand( int token, const char *data, char *buffer, vi_rc *result, va
             rc = ERR_DDE_FAILED;
         } else {
             len = DdeGetData( dde_data, NULL, 0, 0 ) + 1;
-            ptr = MemAlloc( len );
+            ptr = _MemAllocArray( char, len );
             DdeGetData( dde_data, (LPBYTE)ptr, len, 0 );
             VarAddStr( buffer, ptr,  vl );
-            MemFree( ptr );
+            _MemFreeArray( ptr );
             DdeFreeDataHandle( dde_data );
         }
         break;

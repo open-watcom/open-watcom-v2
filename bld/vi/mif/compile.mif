@@ -23,13 +23,21 @@ extra_cpp_flags = -DINSIDE_VI
 extra_cpp_flags += -DNOUSE3D -D__WIN__
 !else
 !ifeq ui_os unix
-!ifeq release 0
+!ifneq debug 0
 extra_cpp_flags += -DTRACE
 !endif
 !endif
 !endif
 
-extra_cpp_flags_dos_386 = -D__4G__
+!ifeq dos_extender causeway
+extra_cpp_flags_dos_386 = -DCAUSEWAY
+!else ifeq dos_extender pharlap
+extra_cpp_flags_dos_386 = -DPHARLAP
+!else ifeq dos_extender dos4g
+extra_cpp_flags_dos_386 = -DDOS4G
+!else
+extra_cpp_flags_dos_386 = -DDOS4G
+!endif
 
 extra_cpp_flags_mem      = $(trmem_cpp_flags)
 

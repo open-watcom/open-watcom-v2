@@ -26,7 +26,6 @@ clean : .procedure
  @if exist *.tbl rm -f *.tbl
  @if exist *.kw rm -f *.kw
  @if exist *.mix rm -f *.mix
- @if exist *.cn1 rm -f *.cn1
  @if exist *.LAY rm -f *.LAY
  @if exist *.lay rm -f *.lay
  @if exist *.tim rm -f *.tim
@@ -40,9 +39,10 @@ clean : .procedure
 
  @if exist *.ch? rm -f *.ch?
 
- @if exist tmp rm -rf tmp
-
-!ifeq dotarget htmlhelp
+!ifdef dirs
+ @rm -rf $(dirs)
+!endif
+!ifeq dotarget chm
  @for %f in ($(books)) do @if exist %f rm -rf %f
 !endif
 

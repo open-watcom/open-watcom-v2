@@ -36,35 +36,44 @@
 /*
  * Values for '_Extender'
  */
-#define DOSX_ERGO       0
-#define DOSX_RATIONAL   1
-#define DOSX_PHAR_V2    2
-#define DOSX_PHAR_V3    3
-#define DOSX_PHAR_V4    4
-#define DOSX_PHAR_V5    5
-#define DOSX_PHAR_V6    6
-#define DOSX_PHAR_V7    7
-#define DOSX_PHAR_V8    8
-#define DOSX_INTEL      9
-#define DOSX_WIN386     10
+#define DOSX_ERGO           0
+#define DOSX_RATIONAL       1
+#define DOSX_PHARLAP_V1     2
+#define DOSX_PHARLAP_V2     3
+#define DOSX_PHARLAP_V3     4
+#define DOSX_PHARLAP_V4     5
+#define DOSX_PHARLAP_V5     6
+#define DOSX_PHARLAP_V6     7
+#define DOSX_PHARLAP_V7     8
+#define DOSX_PHARLAP_V8     9
+#define DOSX_INTEL          10
+#define DOSX_WIN386         11
+#define DOSX_HX             12
 
 /*
  * Values for '_ExtenderSubtype'
  */
+#define DOSX_NORMAL                 0
+
 #define DOSX_RATIONAL_ZEROBASE      0
 #define DOSX_RATIONAL_NONZEROBASE   1  /* Only in DOS4G Pro */
 
+#define DOSX_PHARLAP_NORMAL         0
+#define DOSX_PHARLAP_FUJITSU        1
+
 #define _IsOS386()               ( _Extender == DOSX_ERGO )
 #define _IsRational()            ( _Extender == DOSX_RATIONAL )
-#define _IsPharLap()             ( _Extender >= DOSX_PHAR_V2 && _Extender <= DOSX_PHAR_V8 )
+#define _IsPharLap()             ( _Extender >= DOSX_PHARLAP_V1 && _Extender <= DOSX_PHARLAP_V8 )
+#define _IsPharLapFujitsu()      ( _IsPharLap() && _ExtenderSubtype == DOSX_PHARLAP_FUJITSU )
 #define _IsCodeBuilder()         ( _Extender == DOSX_INTEL )
 #define _IsWin386()              ( _Extender == DOSX_WIN386 )
 #define _IsRationalNonZeroBase() ( _Extender == DOSX_RATIONAL && _ExtenderSubtype == DOSX_RATIONAL_NONZEROBASE )
 #define _IsRationalZeroBase()    ( _Extender == DOSX_RATIONAL && _ExtenderSubtype == DOSX_RATIONAL_ZEROBASE )
-#define _IsFlashTek()            ( _Extender == DOSX_PHAR_V3 && __X32VM != 0 )
+#define _IsFlashTek()            ( _Extender == DOSX_PHARLAP_V3 && __X32VM != 0 )
+#define _IsHX()                  ( _Extender == DOSX_HX )
 
-extern  char            _Extender;
-extern  char            _ExtenderSubtype;
+extern  char    _Extender;
+extern  char    _ExtenderSubtype;
 
 extern  char    __X32VM;
 #pragma aux     __X32VM "*";

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -113,7 +113,9 @@ static int nt_get_drive( void )
 }
 
 trap_retval TRAP_RFX( setdrive )( void )
-/* entry 0=A,1=B,... */
+/***************************************
+ * entry 0=A,1=B,...
+ */
 {
     rfx_setdrive_req    *acc;
     rfx_setdrive_ret    *ret;
@@ -126,7 +128,9 @@ trap_retval TRAP_RFX( setdrive )( void )
 
 
 trap_retval TRAP_RFX( getdrive )( void )
-/* return 0=A,1=B,... */
+/***************************************
+ * return 0=A,1=B,...
+ */
 {
     rfx_getdrive_ret    *ret;
 
@@ -155,7 +159,7 @@ trap_retval TRAP_RFX( getfileattr )( void )
     rfx_getfileattr_ret *ret;
 
     ret = GetOutPtr( 0 );
-    h = __fixed_FindFirstFile( GetInPtr( sizeof( rfx_getfileattr_req ) ), &ffd );
+    h = __lib_FindFirstFile( GetInPtr( sizeof( rfx_getfileattr_req ) ), &ffd );
     if( h == INVALID_HANDLE_VALUE ) {
         ret->attribute = (0xffff0000 | GetLastError());
     } else {
@@ -168,11 +172,12 @@ trap_retval TRAP_RFX( getfileattr )( void )
 
 trap_retval TRAP_RFX( setfileattr )( void )
 {
-    LPTSTR              name;
+    char                *name;
     rfx_setfileattr_req *acc;
     rfx_setfileattr_ret *ret;
-
-    // Not tested, and not used right now
+    /*
+     * Not tested, and not used right now
+     */
     acc = GetInPtr( 0 );
     name = GetInPtr( sizeof( *acc ) );
     ret = GetOutPtr( 0 );
@@ -240,8 +245,10 @@ trap_retval TRAP_RFX( getdatetime )( void )
     return( sizeof( *ret ) );
 }
 
-static void nt_getdcwd( int drive, char *buff, size_t max_len )
-/* entry 0=current drive,1=A,2=B,... */
+static void nt_getdcwd( int drive, char *buff, size_t buff_maxlen )
+/******************************************************************
+ * entry 0=current drive,1=A,2=B,...
+ */
 {
     int                 old_drive;
     char                tmp[MAX_PATH];
@@ -249,14 +256,14 @@ static void nt_getdcwd( int drive, char *buff, size_t max_len )
     *buff = '\0';
     if( GetError( GetCurrentDirectory( sizeof( tmp ), tmp ) ) == 0 ) {
         if( drive == 0 ) {
-            strncpy( buff, tmp, max_len );
-            buff[max_len] = '\0';
+            strncpy( buff, tmp, buff_maxlen );
+            buff[buff_maxlen] = '\0';
         } else {
             old_drive = CHARLOW( tmp[0] ) - 'a';
             if( nt_set_drive( drive ) == 0 ) {
                 if( GetError( GetCurrentDirectory( sizeof( tmp ), tmp ) ) == 0 ) {
-                    strncpy( buff, tmp, max_len );
-                    buff[max_len] = '\0';
+                    strncpy( buff, tmp, buff_maxlen );
+                    buff[buff_maxlen] = '\0';
                 }
                 nt_set_drive( old_drive );
             }
@@ -265,30 +272,37 @@ static void nt_getdcwd( int drive, char *buff, size_t max_len )
 }
 
 trap_retval TRAP_RFX( getcwd )( void )
-/* entry 0=current drive,1=A,2=B,... */
+/*************************************
+ * entry 0=current drive,1=A,2=B,...
+ */
 {
     rfx_getcwd_req      *acc;
     rfx_getcwd_ret      *ret;
     char                *buff;
-    size_t              max_len;
+    size_t              cwd_maxlen;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
     buff = GetOutPtr( sizeof( *ret ) );
-    max_len = GetTotalSizeOut() - 1 - sizeof( *ret );
-    nt_getdcwd( acc->drive, buff, max_len );
+    cwd_maxlen = GetTotalSizeOut() - sizeof( *ret ) - 1;
+    nt_getdcwd( acc->drive, buff, cwd_maxlen );
     return( sizeof( *ret ) + strlen( buff ) + 1 );
 }
 
 static void makeDTARFX( LPWIN32_FIND_DATA ffd, rfx_find *info, HANDLE h, unsigned nt_attribs )
 /********************************************************************************************/
 {
+    unsigned short  d;
+    unsigned short  t;
+
     DTARFX_HANDLE_OF( info ) = (pointer_uint)h;
     DTARFX_ATTRIB_OF( info ) = nt_attribs;
     info->attr = NT2DOSATTR( ffd->dwFileAttributes );
-    __MakeDOSDT( &ffd->ftLastWriteTime, &info->date, &info->time );
-    DTARFX_TIME_OF( info ) = info->time;
-    DTARFX_DATE_OF( info ) = info->date;
+    __MakeDOSDT( &ffd->ftLastWriteTime, &d, &t );
+    info->date = d;
+    info->time = t;
+    DTARFX_TIME_OF( info ) = d;
+    DTARFX_DATE_OF( info ) = t;
     info->size = ffd->nFileSizeLow;
 #if RFX_NAME_MAX < MAX_PATH
     strncpy( info->name, ffd->cFileName, RFX_NAME_MAX );
@@ -313,7 +327,7 @@ trap_retval TRAP_RFX( findfirst )( void )
     ret = GetOutPtr( 0 );
     ret->err = 0;
     info = GetOutPtr( sizeof( *ret ) );
-    h = __fixed_FindFirstFile( GetInPtr( sizeof( *acc ) ), &ffd );
+    h = __lib_FindFirstFile( GetInPtr( sizeof( *acc ) ), &ffd );
     if( h == INVALID_HANDLE_VALUE || !__NTFindNextFileWithAttr( h, nt_attribs, &ffd ) ) {
         ret->err = GetLastError();
         if( h != INVALID_HANDLE_VALUE ) {
@@ -336,6 +350,7 @@ trap_retval TRAP_RFX( findnext )( void )
 
     info = GetInPtr( sizeof( rfx_findnext_req ) );
     ret = GetOutPtr( 0 );
+    ret->err = 0;
     if( DTARFX_HANDLE_OF( info ) == DTARFX_INVALID_HANDLE ) {
         ret->err = -1;
         return( sizeof( *ret ) );
@@ -343,13 +358,12 @@ trap_retval TRAP_RFX( findnext )( void )
     h = (HANDLE)DTARFX_HANDLE_OF( info );
     nt_attribs = DTARFX_ATTRIB_OF( info );
     info = GetOutPtr( sizeof( *ret ) );
-    if( !__fixed_FindNextFile( h, &ffd ) || !__NTFindNextFileWithAttr( h, nt_attribs, &ffd ) ) {
+    if( !__lib_FindNextFile( h, &ffd ) || !__NTFindNextFileWithAttr( h, nt_attribs, &ffd ) ) {
         ret->err = GetLastError();
         FindClose( h );
         DTARFX_HANDLE_OF( info ) = DTARFX_INVALID_HANDLE;
         return( sizeof( *ret ) );
     }
-    ret->err = 0;
     makeDTARFX( &ffd, info, h, nt_attribs );
     return( sizeof( *ret ) + offsetof( rfx_find, name ) + strlen( info->name ) + 1 );
 }
@@ -378,14 +392,16 @@ trap_retval TRAP_RFX( nametocanonical )( void )
     char                        tmp[MAX_PATH];
     int                         level = 0;
     int                         drive;
-    size_t                      max_len;
+    size_t                      fullname_maxlen;
 
-    // Not tested, and not used right now
+    /*
+     * Not tested, and not used right now
+     */
     name = GetInPtr( sizeof( rfx_nametocanonical_req ) );
     ret = GetOutPtr( 0 );
     fullname = GetOutPtr( sizeof( *ret ) );
-    max_len = GetTotalSizeOut() - 1 -  sizeof( *ret );
-    ret->err = 1;
+    fullname_maxlen = GetTotalSizeOut() - sizeof( *ret ) - 1;
+    ret->err = 0;
     while( *name == ' ' ) {
         name++;
     }
@@ -400,8 +416,8 @@ trap_retval TRAP_RFX( nametocanonical )( void )
         p = tmp;
         if( p[0] != '\0' && p[1] == ':' )
             p += 2;
-        strncpy( fullname, p, max_len );
-        fullname[max_len] = '\0';
+        strncpy( fullname, p, fullname_maxlen );
+        fullname[fullname_maxlen] = '\0';
         if( *fullname != '\0' ) {
             level++;
             while( *fullname != '\0' ) {

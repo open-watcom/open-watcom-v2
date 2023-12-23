@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -105,9 +105,9 @@ static char *SaveLine( bool listview, HWND list, int line )
 }
 
 /*
- * WindowProc - main window message handler
+ * MainWindowProc - main window message handler
  */
-LONG __export FAR PASCAL WindowProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+LONG __export FAR PASCAL MainWindowProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     HDC         hdc;
     TEXTMETRIC  tm;
@@ -192,10 +192,7 @@ LONG __export FAR PASCAL WindowProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
             ai.name = AllocRCString( STR_ABOUT_NAME );
             ai.version = AllocRCString( STR_ABOUT_VERSION );
             ai.title = AllocRCString( STR_ABOUT_TITLE );
-            DoAbout( &ai );
-            FreeRCString( ai.name );
-            FreeRCString( ai.version );
-            FreeRCString( ai.title );
+            DoAbout( &ai, FreeRCString );
             break;
         case MENU_EXIT:
             SendMessage( hwnd, WM_CLOSE, 0, 0L );
@@ -255,4 +252,4 @@ LONG __export FAR PASCAL WindowProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
     }
     return( 0L );
 
-} /* WindowProc */
+} /* MainWindowProc */

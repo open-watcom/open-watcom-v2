@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -64,14 +64,16 @@ char        *bindfile = _bf;
 
 static void Banner( void )
 {
-    if( qflag ) {
-        return;
+    if( !qflag ) {
+        puts(
+            banner1t( "Editor Bind Utility" ) "\n"
+            banner1v( _EDBIND_VERSION_ ) "\n"
+            banner2 "\n"
+            banner2a( 1984 ) "\n"
+            banner3 "\n"
+            banner3a "\n"
+        );
     }
-    printf( banner1w( "Editor Bind Utility", _EDBIND_VERSION_ ) "\n" );
-    printf( banner2 "\n" );
-    printf( banner2a( 1984 ) "\n" );
-    printf( banner3 "\n" );
-    printf( banner3a "\n" );
 }
 
 /*
@@ -140,7 +142,7 @@ static int copy_file( FILE *src, FILE *dst, unsigned long tocopy )
 /*
  * AddDataToEXE - tack data to end of an EXE
  */
-static void AddDataToEXE( char *exe, char *data, bind_size data_len, unsigned long tocopy )
+static void AddDataToEXE( char *exe, char *outexe, char *data, bind_size data_len, unsigned long tocopy )
 {
     FILE            *fp;
     FILE            *newfp;
@@ -193,7 +195,9 @@ static void AddDataToEXE( char *exe, char *data, bind_size data_len, unsigned lo
      * copy crap
      */
     rc = copy_file( fp, newfp, tocopy );
-
+    /*
+     * close input executable, now not necessary
+     */
     fclose( fp );
 
     if( rc ) {
@@ -214,9 +218,12 @@ static void AddDataToEXE( char *exe, char *data, bind_size data_len, unsigned lo
             Abort( "write 2 error on \"%s\"", exe );
         }
     }
-    fp = fopen( exe, "wb" );
+    /*
+     * create output executable
+     */
+    fp = fopen( outexe, "wb" );
     if( fp == NULL ) {
-        Abort( "Fatal error opening \"%s\"", exe );
+        Abort( "Fatal error opening \"%s\"", outexe );
     }
     tocopy = ftell( newfp );
     rewind( newfp );
@@ -266,11 +273,12 @@ static void Usage( char *msg )
     if( msg != NULL ) {
         printf( "%s\n", msg );
     }
-    printf( "Usage: edbind [-?sq] [-d<datfile>] <exename>\n" );
+    printf( "Usage: edbind [-?sq] [-d<datfile>] <exename> [<output exename>]\n" );
     if( msg == NULL ) {
         printf( "\t<exename>\t     executable to add editor data to\n" );
+        printf( "\t<output exename>     optional output file (default is <exename>)\n" );
         printf( "\tOptions -?:\t     display this message\n" );
-        printf( "\t\t-s:\t     strip info from executable\n" );
+        printf( "\t\t-s:\t     strip editor data from executable\n" );
         printf( "\t\t-q:\t     run quietly\n" );
         printf( "\t\t-d<datfile>: specify data file other than edbind.dat\n" );
     }
@@ -307,6 +315,7 @@ int main( int argc, char *argv[] )
     struct stat         fs;
     pgroup2             pg;
     char                path[_MAX_PATH];
+    char                outpath[_MAX_PATH];
     char                tmppath[_MAX_PATH];
     bind_size           data_len;
     bind_size           len1;
@@ -355,6 +364,14 @@ int main( int argc, char *argv[] )
     _makepath( path, pg.drive, pg.dir, pg.fname, pg.ext );
     if( stat( path, &fs ) == -1 ) {
         Abort( "Could not find executable \"%s\"", path );
+    }
+    if( argc > 2 ) {
+        _splitpath2( argv[2], pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
+        if( pg.ext[0] == '\0' )
+            pg.ext = "exe";
+        _makepath( outpath, pg.drive, pg.dir, pg.fname, pg.ext );
+    } else {
+        strcpy( outpath, path );
     }
 
     data_len = 0;
@@ -446,7 +463,7 @@ int main( int argc, char *argv[] )
         free( buff2 );
         free( buff3 );
 
-        AddDataToEXE( path, data, data_len, fs.st_size );
+        AddDataToEXE( path, outpath, data, data_len, fs.st_size );
 
         free( data );
     }

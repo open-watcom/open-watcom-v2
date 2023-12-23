@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,6 +31,7 @@
 ****************************************************************************/
 
 
+#include "idecfg.h"
 #include "mconfig.hpp"
 #include "mcstate.hpp"
 #include "wobjfile.hpp"
@@ -38,8 +40,7 @@
 Define( MCState )
 
 MCState::MCState( MTool* tool, SwMode mode, MCSwitch* sw, bool state )
-    : MState( tool, mode, sw )
-    , _state( state )
+    : MState( tool, mode, sw, state )
 {
 }
 
@@ -52,12 +53,13 @@ MCState* WEXPORT MCState::createSelf( WObjectFile& )
 void WEXPORT MCState::readSelf( WObjectFile& p )
 {
     MState::readSelf( p );
-    p.readObject( &_state );
+    if( p.version() < 41 ) {
+        MState::readState( p );
+    }
 }
 
 void WEXPORT MCState::writeSelf( WObjectFile& p )
 {
     MState::writeSelf( p );
-    p.writeObject( _state );
 }
 #endif

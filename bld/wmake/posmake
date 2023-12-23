@@ -4,10 +4,10 @@
 # tabs, too!
 
 INCS = -I. -I../h -I../../watcom/h -I../../lib_misc/h $(DEFS)
-DEFS = $(TARGETDEF) -D__UNIX__ -DBOOTSTRAP -D_POSIX_C_SOURCE=200112L -D_BLDVER=$(OWBLDVERTOOL) -D_CYEAR=$(OWCYEAR)
+DEFS = $(TARGETDEF) -D__UNIX__ -DBOOTSTRAP -D_POSIX_C_SOURCE=200112L -D_BLDVER=$(OWBLDVERTOOL) -D_CYEAR=xxxx
 CFLAGS = -g -O2 $(INCS)
 
-all: $(OWBINDIR)/$(OWOBJDIR)/wmake
+all: ../../../build/$(OWOBJDIR)/wmake
 
 # Unfortunately there appears to be no portable way of specifying source
 # directories. So we use brute force - it's just this one makefile, once we
@@ -82,12 +82,12 @@ usage.gh : ../h/usage.sp wsplice.exe
 	./wsplice.exe -kENGLISH -f 'pick((MSG_USAGE_BASE+%#%+), "%s", "")' ../h/usage.sp $@
 
 cretype.exe : ../c/cretype.c
-	$(CC) -I../../watcom/h -o $@ $?
+	$(CC) -I../../watcom/h -D__UNIX__ -o $@ $?
 
 isarray.gh : cretype.exe
 	./cretype.exe $@
 
-$(OWBINDIR)/$(OWOBJDIR)/wmake: wmake.exe
+../../../build/$(OWOBJDIR)/wmake: wmake.exe
 	cp wmake.exe $@
 
 wmake.exe: usage.gh isarray.gh $(OBJS)

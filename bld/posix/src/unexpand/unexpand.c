@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,8 +42,6 @@
 #include "argvrx.h"
 #include "argvenv.h"
 
-
-char *OptEnvVar="unexpand";
 
 static const char *usageMsg[] = {
     "Usage: unexpand [-?Xa] [@env] [files...]",
@@ -126,12 +124,14 @@ int main( int argc, char **argv )
     int         ch;
     bool        regexp;
     mode        m = LEADING;
+    int         i;
+    char        **argv1;
 
-    argv = ExpandEnv( &argc, argv );
+    argv1 = ExpandEnv( &argc, argv, "UNEXPAND" );
 
     regexp = false;
     for( ;; ) {
-        ch = GetOpt( &argc, argv, "Xa", usageMsg );
+        ch = GetOpt( &argc, argv1, "Xa", usageMsg );
         if( ch == -1 ) {
             break;
         } else if( ch == 'a' ) {
@@ -141,25 +141,25 @@ int main( int argc, char **argv )
         }
     }
 
-    argv = ExpandArgv( &argc, argv, regexp );
-    argv++;
-    if( argv[0] == NULL ) {
+    argv = ExpandArgv( &argc, argv1, regexp );
+    if( argc < 2 ) {
         unexpandFile( stdin, m );
     } else {
-        while( *argv != NULL ) {
-            fp = fopen( *argv, "r" );
+        for( i = 1; i < argc; i++ ) {
+            fp = fopen( argv[i], "r" );
             if( fp == NULL ) {
-                fprintf( stderr, "unexpand: cannot open input file \"%s\"\n",
-                                                                        *argv );
+                fprintf( stderr, "unexpand: cannot open input file \"%s\"\n", argv[i] );
             } else {
                 if( argc > 2 ) {
-                    fprintf( stdout, "%s:\n", *argv );
+                    fprintf( stdout, "%s:\n", argv[i] );
                 }
                 unexpandFile( fp, m );
                 fclose( fp );
             }
-            argv++;
         }
     }
+    MemFree( argv );
+    MemFree( argv1 );
+
     return( 0 );
 }

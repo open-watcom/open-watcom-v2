@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2011-2013 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2011-2022 The Open Watcom Contributors. All Rights Reserved.
 *
 * =========================================================================
 *
@@ -13,15 +13,15 @@
 
 #include "rsi1632.h"
 
-static int __fstreq( char FarPtr p1, char FarPtr p2 )
+static bool __fstreq( char FarPtr p1, char FarPtr p2 )
 {
     while( *p1 == *p2 ) {
         if( *p1 == 0 )
-            return( 1 );
+            return( true );
         ++p1;
         ++p2;
     }
-    return( 0 );
+    return( false );
 }
 
 PACKAGE FarPtr rsi_find_package( char FarPtr name )

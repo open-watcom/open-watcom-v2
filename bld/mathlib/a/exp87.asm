@@ -2,6 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
+;* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -33,11 +34,7 @@
 ;
 ;     interface to floating point library for trig functions
 ;
-ifdef __386__
- .387
-else
- .8087
-endif
+
 include mdef.inc
 include struct.inc
 include math87.inc
@@ -53,14 +50,6 @@ include math87.inc
 
         xdefp   "C",exp         ; calc exp(fac1)
 
-ifndef __386__
-if _MODEL and _BIG_CODE
-argx    equ     6
-else
-argx    equ     4
-endif
-endif
-
 ifdef __386__
     datasegment
 endif
@@ -74,13 +63,18 @@ endif
 
         public  __@DEXP1
         defp    __@DEXP1                ; calc. exp(x) with no check
-ifndef __386__
-        local   func:WORD,data:QWORD
-elseifdef __STACK__
-        local   sedx:DWORD,secx:DWORD,func:DWORD,data:QWORD
-else
-        local   func:DWORD,data:QWORD
+
+ifdef __386__
+ ifdef __STACK__
+        local   sedx:DWORD,secx:DWORD
+ endif
 endif
+ifdef __386__
+        local   func:DWORD,data:QWORD
+else
+        local   func:WORD,data:QWORD
+endif
+
         jmp     short calc_exp          ; go calculate exp(x)
         endproc __@DEXP1
 
@@ -94,13 +88,18 @@ endif
 
         public  __@DEXP
         defp    __@DEXP
-ifndef __386__
-        local   func:WORD,data:QWORD
-elseifdef __STACK__
-        local   sedx:DWORD,secx:DWORD,func:DWORD,data:QWORD
-else
-        local   func:DWORD,data:QWORD
+
+ifdef __386__
+ ifdef __STACK__
+        local   sedx:DWORD,secx:DWORD
+ endif
 endif
+ifdef __386__
+        local   func:DWORD,data:QWORD
+else
+        local   func:WORD,data:QWORD
+endif
+
         fcom    qword ptr MaxExpVal     ; compare with largest valid argument
         fstsw   word ptr func           ; get status
         fwait                           ; wait for it
@@ -187,7 +186,7 @@ endif                                   ; __FPI87__
 
         defp    exp
 ifdef __386__
-        fld     qword ptr 4[ESP]; load argument x
+        fld     qword ptr argx[ESP]; load argument x
         call    IF@DEXP         ; calculate exp(x)
         loadres                 ; load result
 else

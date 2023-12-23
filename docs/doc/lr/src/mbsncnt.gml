@@ -32,24 +32,42 @@ function counts the number of bytes in the first
 multibyte characters of the string
 .arg string
 .period
-This function was called
-.kw mtob
-in earlier versions.
-.pc
+.cp
 The
-.id &mfunc.
+.id _mbsnccnt
 function counts the number of multibyte characters in the first
 .arg n
 bytes of the string
 .arg string
 .period
 If
-.id &mfunc.
+.id _mbsnccnt
 finds a null byte as the second byte of a double-byte
 character, the first (lead) byte is not included in the count.
-This function was called
+.cp
+.us Note:
+.id _mbsnbcnt
+function was called
+.kw mtob
+and
+.id _mbsnccnt
+function was called
 .kw btom
 in earlier versions.
+.cp
+.if &farfnc ne 0 .do begin
+.np
+The
+.id _fmbsnbcnt
+function is a data model independent form of the _mbsnbcnt
+function that accepts far pointer arguments.
+.cp
+The
+.id _fmbsnccnt
+function is a data model independent form of the _fmbsnccnt
+function that accepts far pointer arguments.
+It is most useful in mixed memory model applications.
+.do end
 .np
 .farfuncp &ffunc. &funcb.
 .br
@@ -62,27 +80,21 @@ in earlier versions.
 .desc end
 .return begin
 The
-.id &funcb.
-functions return the number of bytes in the string up to the
-specified number of characters or until a null character is
-encountered.
+.id _mbsnbcnt
+functions return the number of bytes in the string from the beginning
+of the string up to the specified number of characters
+.arg n
+.period
+.np
+The
+.id _mbsnccnt
+funstions return the number of characters in the string from the beginning
+of the string up to the specified number of bytes
+.arg n
+or until a null character is encountered.
 The null character is not included in the count.
 If the character preceding the null character was a lead byte, the lead
 byte is not included in the count.
-.pc
-The
-.id &mfunc.
-returns the number of characters from the beginning
-of the string to byte
-.arg n
-.period
-If these functions find a null character before byte
-.arg n
-.ct , they return the number of characters before the null character.
-If the string consists of fewer than
-.arg n
-characters, these functions return the number of characters in the
-string.
 .return end
 .see begin
 .seelist _mbsnbcat

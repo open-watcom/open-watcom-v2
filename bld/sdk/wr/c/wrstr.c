@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,6 +34,8 @@
 #include "wrglbl.h"
 #include "wresall.h"
 #include "wrstrdup.h"
+#include "wrutili.h"
+
 
 /****************************************************************************/
 /* external function prototypes                                             */
@@ -60,7 +63,7 @@ static size_t getUniStringLength( WResIDName *id, bool is32bit )
     size_t      len;
 
     if( is32bit ) {
-        str = WRWResIDNameToStr( id );
+        str = WRStringFromWResIDName( id );
         if( str != NULL ) {
             len = 0;
             WRmbcs2unicode( str, NULL, &len );
@@ -97,11 +100,11 @@ static size_t WRCalcStringBlockSize( StringTableBlock *block, bool is32bit )
 static char *copyNULLWResIDNameToData( char *data, bool is32bit )
 {
     if( is32bit ) {
-        *(uint_16 *)data = (uint_16)0;
-        data += sizeof( uint_16 );
+        VALU16( data ) = 0;
+        INCU16( data );
     } else {
-        *(uint_8 *)data = (uint_8)0;
-        data += sizeof( uint_8 );
+        VALU8( data ) = 0;
+        INCU8( data );
     }
 
     return( data );
@@ -120,7 +123,7 @@ static char *copyWResIDNameToData( char *data, WResIDName *name, bool is32bit )
     if( is32bit ) {
         new_str = NULL;
         len = 0;
-        str = WRWResIDNameToStr( name );
+        str = WRStringFromWResIDName( name );
         if( str != NULL ) {
             WRmbcs2unicode( str, &new_str, &len );
             MemFree( str );
@@ -131,8 +134,8 @@ static char *copyWResIDNameToData( char *data, WResIDName *name, bool is32bit )
         }
 
         // write the length of the string
-        *(uint_16 *)data = (uint_16)(len / 2 - 1);
-        data += sizeof( uint_16 );
+        VALU16( data ) = (uint_16)(len / 2 - 1);
+        INCU16( data );
 
         // write the string
         data = WRCopyString( data, new_str, len - 2 );
@@ -140,8 +143,8 @@ static char *copyWResIDNameToData( char *data, WResIDName *name, bool is32bit )
         MemFree( new_str );
     } else {
         // write the length of the string
-        *(uint_8 *)data = name->NumChars;
-        data += sizeof( uint_8 );
+        VALU8( data ) = name->NumChars;
+        INCU8( data );
 
         // write the string
         data = WRCopyString( data, &name->Name[0], name->NumChars );
@@ -150,7 +153,7 @@ static char *copyWResIDNameToData( char *data, WResIDName *name, bool is32bit )
     return( data );
 }
 
-static bool WRInitDataFromBlock( StringTableBlock *block, void *data, size_t size, bool is32bit )
+static bool WRInitDataFromBlock( StringTableBlock *block, char *data, size_t size, bool is32bit )
 {
     int         i;
     size_t      dsize;
@@ -183,8 +186,7 @@ bool WRAPI WRIsBlockEmpty( StringTableBlock *block )
     return( true );
 }
 
-bool WRAPI WRMakeDataFromStringBlock( StringTableBlock *block, void **pdata,
-                                         size_t *psize, bool is32bit )
+bool WRAPI WRMakeDataFromStringBlock( StringTableBlock *block, char **pdata, size_t *psize, bool is32bit )
 {
     if( pdata != NULL && psize != NULL ) {
         *psize = WRCalcStringBlockSize( block, is32bit );
@@ -208,7 +210,7 @@ bool WRAPI WRMakeDataFromStringBlock( StringTableBlock *block, void **pdata,
     return( false );
 }
 
-bool WRAPI WRMakeStringBlockFromData( StringTableBlock *block, void *data, size_t size, bool is32bit )
+bool WRAPI WRMakeStringBlockFromData( StringTableBlock *block, char *data, size_t size, bool is32bit )
 {
     char        *text;
     char        *uni_str;
@@ -228,14 +230,13 @@ bool WRAPI WRMakeStringBlockFromData( StringTableBlock *block, void *data, size_
     while( i < STRTABLE_STRS_PER_BLOCK && dsize > 0 ) {
         text = (char *)data;
         if( is32bit ) {
-            tlen = *(uint_16 *)text;
-            tlen *= 2;
-            text += sizeof( uint_16 );
-            dsize -= tlen + sizeof( uint_16 );
+            tlen = 2 * VALU16( text );
+            INCU16( text );
+            dsize -= tlen + SIZEU16;
         } else {
-            tlen = *(uint_8 *)text;
-            text += sizeof( uint_8 );
-            dsize -= tlen + sizeof( uint_8 );
+            tlen = VALU8( text );
+            INCU8( text );
+            dsize -= tlen + SIZEU8;
         }
         if( tlen != 0 ) {
             if( is32bit ) {
@@ -309,12 +310,11 @@ bool WRAPI WRMergeStringBlock( StringTableBlock *b1, StringTableBlock *b2, bool 
     return( true );
 }
 
-bool WRAPI WRMergeStringData( void **s1, uint_32 *sz1, void *s2, uint_32 sz2,
-                                 bool is32bit, bool replace )
+bool WRAPI WRMergeStringData( char **s1, uint_32 *sz1, char *s2, uint_32 sz2, bool is32bit, bool replace )
 {
     StringTableBlock    b1;
     StringTableBlock    b2;
-    void                *new_data;
+    char                *new_data;
     size_t              new_size;
     bool                ok;
 

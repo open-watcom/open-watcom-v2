@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,14 +44,15 @@
 #define CONN_TRAP_SUFF  ".TCN"
 
 #define MAX_NAME        8
-#define MAX_TRANS       (2048+10)
-#define DEFAULT_NAME    "NMPLink"
+#define MAX_TRANS       (2048 + 10)
+
+#define DEFAULT_LINK_NAME   "NMPLink"
 
 #define MACH_NAME       128
 
-#define MAX_PIPE_NAME   (MACH_NAME+MAX_NAME+PREFIX_LEN+2)
+#define MAX_PIPE_NAME   (MACH_NAME + MAX_NAME + PREFIX_LEN + 2)
 
-#define BUFF_LEN        (2*MAX_TRANS)
+#define BUFF_LEN        (2 * MAX_TRANS)
 
 enum {
     OPEN_SERV           = 'o',
@@ -93,7 +95,7 @@ enum {
 #define BHANDLE_STDERR  GetStdHandle( STD_ERROR_HANDLE )
 #elif defined( __OS2__ )
 #define bhandle         HFILE
-#define BHANDLE_INVALID ((HFILE)-1L)
+#define BHANDLE_INVALID ((HFILE) - 1L)
 #define BHANDLE_STDERR  2
 #else
 #define bhandle         int

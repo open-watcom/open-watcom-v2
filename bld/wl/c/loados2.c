@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -105,8 +105,9 @@ typedef struct {
 
 
 static void ReadNameTable( f_handle the_file )
-/********************************************/
-// Read a name table & set export ordinal value accordingly.
+/*********************************************
+ * Read a name table & set export ordinal value accordingly.
+ */
 {
     unsigned_8          len_u8;
     unsigned_16         ordinal;
@@ -129,66 +130,64 @@ static void ReadNameTable( f_handle the_file )
 }
 
 static void ReadOldLib( void )
-/****************************/
-// Read an old DLL & match ordinals of exports in it with exports in this.
+/*****************************
+ * Read an old DLL & match ordinals of exports in it with exports in this.
+ */
 {
     f_handle    the_file;
-    long        filepos;
     union {
         dos_exe_header  dos;
         os2_exe_header  os2;
         os2_flat_header os2f;
-        exe_pe_header   pe;
+        pe_exe_header   pe;
     }           head;
     char        *fname;
     pe_object   *objects;
     pe_object   *currobj;
-    unsigned_32 val32;
+    unsigned_32 ne_header_off;
+    unsigned_16 signature;
 
     fname = FmtData.u.os2fam.old_lib_name;
     the_file = QOpenR( fname );
     QRead( the_file, &head, sizeof( dos_exe_header ), fname );
-    if( head.dos.signature != DOS_SIGNATURE || head.dos.reloc_offset != 0x40 ) {
+    if( head.dos.signature != EXESIGN_DOS || !NE_HEADER_FOLLOWS( head.dos.reloc_offset ) ) {
         LnkMsg( WRN + MSG_INV_OLD_DLL, NULL );
     } else {
-        QSeek( the_file, NH_OFFSET, fname );
-        QRead( the_file, &val32, sizeof( val32 ), fname );
-        filepos = val32;
-        QSeek( the_file, filepos, fname );
-        QRead( the_file, &head, sizeof( head ), fname );
-        if( head.os2.signature == OS2_SIGNATURE_WORD ) {
-            QSeek( the_file, filepos + head.os2.resident_off, fname );
+        QSeek( the_file, NE_HEADER_OFFSET, fname );
+        QRead( the_file, &ne_header_off, sizeof( ne_header_off ), fname );
+        QSeek( the_file, ne_header_off, fname );
+        QRead( the_file, &signature, sizeof( signature ), fname );
+        QSeek( the_file, ne_header_off, fname );
+        if( signature == EXESIGN_NE ) {
+            QRead( the_file, &head.os2, sizeof( head.os2 ), fname );
+            QSeek( the_file, ne_header_off + head.os2.resident_off, fname );
             ReadNameTable( the_file );
             QSeek( the_file, head.os2.nonres_off, fname );
             ReadNameTable( the_file );
-        } else if( head.os2f.signature == OSF_FLAT_SIGNATURE || head.os2f.signature == OSF_FLAT_LX_SIGNATURE ) {
+        } else if( signature == EXESIGN_LE || signature == EXESIGN_LX ) {
+            QRead( the_file, &head.os2f, sizeof( head.os2f ), fname );
             if( head.os2f.resname_off != 0 ) {
-                QSeek( the_file, filepos + head.os2f.resname_off, fname );
+                QSeek( the_file, ne_header_off + head.os2f.resname_off, fname );
                 ReadNameTable( the_file );
             }
             if( head.os2f.nonres_off != 0 ) {
                 QSeek( the_file, head.os2f.nonres_off, fname );
                 ReadNameTable( the_file );
             }
-        } else if( head.pe.pe32.signature == PE_SIGNATURE ) {
-            unsigned            num_objects;
-            pe_hdr_table_entry  *table;
+        } else if( signature == EXESIGN_PE ) {
+            unsigned    num_objects;
 
-            if( IS_PE64( head.pe ) ) {
-                num_objects = PE64( head.pe ).num_objects;
-                table = PE64( head.pe ).table;
-            } else {
-                num_objects = PE32( head.pe ).num_objects;
-                table = PE32( head.pe ).table;
-            }
+            QRead( the_file, &head.pe, PE_HDR_SIZE, fname );
+            QRead( the_file, (char *)&head.pe + PE_HDR_SIZE, PE_OPT_SIZE( head.pe ), fname );
+            num_objects = head.pe.fheader.num_objects;
             _ChkAlloc( objects, num_objects * sizeof( pe_object ) );
             QRead( the_file, objects, num_objects * sizeof( pe_object ), fname );
             currobj = objects;
             for( ; num_objects > 0; --num_objects ) {
-                if( currobj->rva == table[PE_TBL_EXPORT].rva ) {
+                if( currobj->rva == PE_DIRECTORY( head.pe, PE_TBL_EXPORT ).rva ) {
                     QSeek( the_file, currobj->physical_offset, fname );
-                    table[PE_TBL_EXPORT].rva -= currobj->physical_offset;
-                    ReadPEExportTable( the_file, &table[PE_TBL_EXPORT]);
+                    PE_DIRECTORY( head.pe, PE_TBL_EXPORT ).rva -= currobj->physical_offset;
+                    ReadPEExportTable( the_file, &PE_DIRECTORY( head.pe, PE_TBL_EXPORT ) );
                     break;
                 }
                 currobj++;
@@ -207,8 +206,9 @@ static void ReadOldLib( void )
 }
 
 static void AssignOrdinals( void )
-/********************************/
-/* assign ordinal values to entries in the export list */
+/*********************************
+ * assign ordinal values to entries in the export list
+ */
 {
     entry_export        *exp;
     entry_export        *place;
@@ -223,8 +223,11 @@ static void AssignOrdinals( void )
         place = prev->next;
         isspace = false;
         for( exp = FmtData.u.os2fam.exports; exp->ordinal == 0; exp = FmtData.u.os2fam.exports ) {
-            // while still unassigned values
-            for( ;; ) {             // search for an unassigned value
+            /*
+             * while still unassigned values
+             * search for an unassigned value
+             */
+            for( ;; ) {
                 if( place != NULL ) {
                     isspace = ( ( place->ordinal - prev->ordinal ) > 1 );
                 }
@@ -235,7 +238,10 @@ static void AssignOrdinals( void )
                         exp->next = place;
                     }
                     exp->ordinal = prev->ordinal + 1;
-                    prev = exp;      // now exp is 'previous' to place
+                    /*
+                     * now exp is 'previous' to place
+                     */
+                    prev = exp;
                     break;
                 } else {
                     prev = place;
@@ -247,8 +253,9 @@ static void AssignOrdinals( void )
 }
 
 static unsigned long WriteOS2Relocs( group_entry *group )
-/*******************************************************/
-/* write all relocs associated with group to the file */
+/********************************************************
+ * write all relocs associated with group to the file
+ */
 {
     unsigned long relocsize;
     unsigned long relocnum;
@@ -263,8 +270,9 @@ static unsigned long WriteOS2Relocs( group_entry *group )
 }
 
 static void WriteOS2Data( unsigned_32 stub_len, os2_exe_header *exe_head )
-/************************************************************************/
-/* copy code from extra memory to loadfile. */
+/*************************************************************************
+ * copy code from extra memory to loadfile.
+ */
 {
     group_entry         *group;
     unsigned            group_num;
@@ -281,8 +289,8 @@ static void WriteOS2Data( unsigned_32 stub_len, os2_exe_header *exe_head )
             continue;   // DANGER DANGER DANGER <--!!!
         segrec.info = group->segflags;
         // write segment
-        segrec.min = MAKE_EVEN( group->totalsize );
-        segrec.size = MAKE_EVEN( group->size );
+        segrec.min = __ROUND_UP_SIZE_EVEN( group->totalsize );
+        segrec.size = __ROUND_UP_SIZE_EVEN( group->size );
         if( segrec.size != 0 ) {
             off = NullAlign( 1 << FmtData.u.os2fam.segment_shift );
             seg_addr = off >> FmtData.u.os2fam.segment_shift;
@@ -553,8 +561,9 @@ static unsigned long ImportNameTable( void )
 }
 
 static unsigned long ModRefTable( void )
-/**************************************/
-/* count total number of groups */
+/***************************************
+ * count total number of groups
+ */
 {
     obj_name_list       *node;
     obj_name_list       *inode;
@@ -598,8 +607,9 @@ static size_t create_exp_extname( entry_export *exp, char *ext_name, bool ucase 
 }
 
 unsigned long ResNonResNameTable( bool dores )
-/********************************************/
-/* NOTE: this routine assumes INTEL byte ordering (in the use of namelen) */
+/*********************************************
+ * NOTE: this routine assumes INTEL byte ordering (in the use of namelen)
+ */
 {
     entry_export    *exp;
     unsigned long   size;
@@ -654,9 +664,9 @@ unsigned long ResNonResNameTable( bool dores )
             size += 2;
             if( !exp->isprivate ) {
                 if( exp->impname != NULL ) {
-                    AddImpLibEntry( exp->impname, ext_name, NOT_IMP_BY_ORDINAL );
+                    AddImpLibEntry( exp->impname, ext_name, 0, true );
                 } else {
-                    AddImpLibEntry( exp->sym->name.u.ptr, NULL, exp->ordinal );
+                    AddImpLibEntry( exp->sym->name.u.ptr, NULL, exp->ordinal, false );
                 }
             }
         }
@@ -677,8 +687,9 @@ unsigned long ResNonResNameTable( bool dores )
  *       one as well.
  */
 static unsigned long WriteEntryTable( void )
-/******************************************/
-/* Write the entry table to the file */
+/*******************************************
+ * Write the entry table to the file
+ */
 {
     entry_export    *start;
     entry_export    *place;
@@ -800,9 +811,10 @@ static void CheckGrpFlags( void *_leader )
 }
 
 void SetOS2GroupFlags( void )
-/***************************/
-// This goes through the groups, setting the flag word to be compatible with
-// the flag words that are specified in the segments.
+/****************************
+ * This goes through the groups, setting the flag word to be compatible with
+ * the flag words that are specified in the segments.
+ */
 {
     group_entry     *group;
 
@@ -811,8 +823,9 @@ void SetOS2GroupFlags( void )
             continue;   // DANGER DANGER DANGER <--!!!
         group->segflags |= DEF_SEG_ON;
         Ring2Walk( group->leaders, CheckGrpFlags );
-        /* for some insane reason, level 2 segments must be marked as
-            movable */
+        /*
+         * for some insane reason, level 2 segments must be marked as movable
+         */
         if( (group->segflags & SEG_LEVEL_MASK) == SEG_LEVEL_2 ) {
             group->segflags |= SEG_MOVABLE;
         }
@@ -820,8 +833,9 @@ void SetOS2GroupFlags( void )
 }
 
 void ChkOS2Exports( void )
-/*******************************/
-// NOTE: there is a continue in this loop!
+/********************************
+ * NOTE: there is a continue in this loop!
+ */
 {
     symbol          *sym;
     entry_export    *exp;
@@ -888,8 +902,9 @@ void ChkOS2Exports( void )
 }
 
 void PhoneyStack( void )
-/*****************************/
-// signal that we will be making a fake stack later on.
+/******************************
+ * signal that we will be making a fake stack later on.
+ */
 {
     FmtData.u.os2fam.flags |= PHONEY_STACK_FLAG;
 }
@@ -972,11 +987,12 @@ static unsigned_32 ComputeResourceSize( WResDir dir )
     return( length );
 }
 
-#define MAX_DGROUP_SIZE _64KB
+#define MAX_DGROUP_SIZE _64K
 
 void FiniOS2LoadFile( void )
-/***************************/
-/* terminate writing of load file */
+/****************************
+ * terminate writing of load file
+ */
 {
     os2_exe_header      exe_head;
     unsigned long       temp;
@@ -1076,7 +1092,7 @@ void FiniOS2LoadFile( void )
     SeekEndLoad( 0 );
     FiniNEResources( res_fp, inRes, &outRes );
     DBIWrite();
-    exe_head.signature = OS2_SIGNATURE_WORD;
+    exe_head.signature = EXESIGN_NE;
     exe_head.version = 0x0105;          /* version 5.1 */
     exe_head.chk_sum = 0L;
     exe_head.info = 0;
@@ -1237,7 +1253,7 @@ unsigned_32 WriteStubFile( unsigned_32 stub_align )
         _ChkAlloc( FmtData.u.os2fam.stub_file_name, len );
         memcpy( FmtData.u.os2fam.stub_file_name, fullname, len );
         QRead( the_file, &dosheader, sizeof( dos_exe_header ), FmtData.u.os2fam.stub_file_name );
-        if( dosheader.signature != DOS_SIGNATURE ) {
+        if( dosheader.signature != EXESIGN_DOS ) {
             LnkMsg( ERR + MSG_INV_STUB_FILE, NULL );
             stub_len = WriteDOSDefStub( stub_align );
         } else {
@@ -1246,14 +1262,14 @@ unsigned_32 WriteStubFile( unsigned_32 stub_align )
             code_start = dosheader.hdr_size * 16ul;
             read_len = dosheader.file_size * 512ul - (-dosheader.mod_size & 0x1ff) - code_start;
             // make sure reloc_size is a multiple of 16.
-            reloc_size = MAKE_PARA( dosheader.num_relocs * 4ul );
+            reloc_size = __ROUND_UP_SIZE_PARA( dosheader.num_relocs * 4ul );
             dosheader.hdr_size = 4 + reloc_size / 16;
             stub_len = read_len + dosheader.hdr_size * 16ul;
             dosheader.file_size = ( stub_len + 511 ) / 512;  // round up.
             dosheader.mod_size = stub_len % 512;
             WriteLoad( &dosheader, sizeof( dos_exe_header ) );
-            PadLoad( NH_OFFSET - sizeof( dos_exe_header ) );
-            stub_len = ROUND_UP( stub_len, stub_align );
+            PadLoad( NE_HEADER_OFFSET - sizeof( dos_exe_header ) );
+            stub_len = __ROUND_UP_SIZE( stub_len, stub_align );
             WriteLoadU32( stub_len );
             for( num_relocs = dosheader.num_relocs; num_relocs > 0; num_relocs-- ) {
                 QRead( the_file, &the_reloc, sizeof( unsigned_32 ), FmtData.u.os2fam.stub_file_name );

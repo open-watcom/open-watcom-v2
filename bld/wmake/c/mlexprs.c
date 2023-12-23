@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -120,7 +121,7 @@ MTOKEN_T LexPath( STRM_T s )
 
         if( s == STRM_MAGIC ) {
             InsString( DeMacro( TOK_EOL ), true );
-        } else if( !sisfilec( s ) && !IS_PATH_SPLIT( s ) && s != '\"' && !sisws( s ) ) {
+        } else if( !sisfilec( s ) && !siswildc( s ) && !sisdirc( s ) && !sisdotc( s ) && !IS_PATH_SPLIT( s ) && s != '\"' && !sisws( s ) ) {
             PrtMsg( ERR | LOC | EXPECTING_M, M_PATH );
         } else if( !sisws( s ) ) {
             break;
@@ -129,7 +130,7 @@ MTOKEN_T LexPath( STRM_T s )
         s = PreGetCHR(); /* keep fetching characters */
     }
     /* just so you know what we've got now */
-    assert( sisfilec( s ) || IS_PATH_SPLIT( s ) || s == '\"' );
+    assert( sisfilec( s ) || siswildc( s ) || sisdirc( s ) || sisdotc( s ) || IS_PATH_SPLIT( s ) || s == '\"' );
 
     vec = StartVec();
 
@@ -170,7 +171,7 @@ MTOKEN_T LexPath( STRM_T s )
                 } else {
                     if( dquote ) {
                         path[pos++] = s;
-                    } else if( sisfilec( s ) ) {
+                    } else if( sisfilec( s ) || siswildc( s ) || sisdirc( s ) || sisdotc( s ) ) {
                         path[pos++] = s;
                     } else {
                         break; // not valid path character, break out.
@@ -230,7 +231,7 @@ STATIC MTOKEN_T lexFileName( STRM_T s )
     char        file[_MAX_PATH];
     unsigned    pos;
 
-    assert( sisfilec( s ) || s == '\"' ||
+    assert( sisfilec( s ) || siswildc( s ) || sisdirc( s ) || sisdotc( s ) || s == '\"' ||
        ( (Glob.compat_nmake || Glob.compat_posix) && s == SPECIAL_TMP_DOLLAR ) );
 
     if( s == '\"' ) {
@@ -238,7 +239,7 @@ STATIC MTOKEN_T lexFileName( STRM_T s )
     }
 
     pos = 0;
-    while( pos < _MAX_PATH && (sisfilec( s ) ||
+    while( pos < _MAX_PATH && (sisfilec( s ) || siswildc( s ) || sisdirc( s ) || sisdotc( s ) ||
             ( s == SPECIAL_TMP_DOLLAR && (Glob.compat_nmake || Glob.compat_posix) ) ) ) {
         file[pos++] = s;
         s = PreGetCHR();
@@ -397,7 +398,7 @@ STATIC MTOKEN_T lexDotName( void )
             return( lexFileName( '.' ) );
         }
     } else {    /* get string {extc}+ */
-        while( pos < MAX_SUFFIX && sisextc( s ) && s != '{' ) {
+        while( pos < MAX_SUFFIX && ( sisextc( s ) || siswildc( s ) ) && s != '{' ) {
             ext[pos++] = s;
             s = PreGetCHR();
         }
@@ -417,7 +418,7 @@ STATIC MTOKEN_T lexDotName( void )
 
     if( s == '.' ) {        /* maybe of form "."{extc}*"."{extc}* */
         ext[pos++] = s;
-        for( s = PreGetCHR(); pos < MAX_SUFFIX && sisextc( s ); s = PreGetCHR() ) {
+        for( s = PreGetCHR(); pos < MAX_SUFFIX && ( sisextc( s ) || siswildc( s ) ); s = PreGetCHR() ) {
             ext[pos++] = s;
         }
         if( pos == MAX_SUFFIX ) {
@@ -532,19 +533,72 @@ STATIC char *deMacroDoubleQuote( bool start_dquote )
     VECSTR  OutString;
     int     pos;
     STRM_T  s;
-    bool    dquote;
-
+    bool    in_dquote;
+    bool    in_word;
 
     s = PreGetCHR();
     UnGetCHR( s );
     if( s == '\n' || s == STRM_END || s == STRM_MAGIC ) {
         return( CharToStrSafe( NULLCHAR ) );
     }
+
+    in_dquote = start_dquote;
+    in_word = false;
+
     if( s == STRM_TMP_LEX_START ) {
         PreGetCHR();  /* Eat STRM_TMP_LEX_START */
         pos = 0;
         for( s = PreGetCHR(); s != STRM_MAGIC && pos < _MAX_PATH; s = PreGetCHR() ) {
+            /*
+             * this divide stream to quoted strings
+             * and single words separated by spaces
+             * to not overflow buffer size
+             */
             assert( s != '\n' || s != STRM_END );
+            if( s == '\"' ) {
+                if( !in_dquote ) {
+                    /* Found the start of a Double Quoted String */
+                    if( pos != 0 ) {
+                        buffer[pos] = NULLCHAR;
+                        UnGetCHR( s );
+                        UnGetCHR( STRM_TMP_LEX_START );
+                        return( StrDupSafe( buffer ) );
+                    }
+                    in_dquote = true;
+                } else {
+                    /* Found the end of the Double Quoted String */
+                    buffer[pos++] = s;
+                    buffer[pos] = NULLCHAR;
+                    s = PreGetCHR();
+                    if( s != STRM_MAGIC ) {
+                        UnGetCHR( s );
+                        UnGetCHR( STRM_TMP_LEX_START );
+                    }
+                    return( StrDupSafe( buffer ) );
+                }
+            }
+            if( !in_dquote ) {
+                if( sisws( s ) ) {
+                    if( in_word ) {
+                        /* Found the end of the Word */
+                        buffer[pos] = NULLCHAR;
+                        UnGetCHR( s );
+                        UnGetCHR( STRM_TMP_LEX_START );
+                        return( StrDupSafe( buffer ) );
+                    }
+                } else {
+                    if( !in_word ) {
+                        /* Found the start of the Word */
+                        if( pos != 0 ) {
+                            buffer[pos] = NULLCHAR;
+                            UnGetCHR( s );
+                            UnGetCHR( STRM_TMP_LEX_START );
+                            return( StrDupSafe( buffer ) );
+                        }
+                        in_word = true;
+                    }
+                }
+            }
             buffer[pos++] = s;
         }
 
@@ -557,37 +611,37 @@ STATIC char *deMacroDoubleQuote( bool start_dquote )
         buffer[pos] = NULLCHAR;
         p = StrDupSafe( buffer );
     } else {
+
         p = DeMacro( MAC_WS );
-    }
 
-    dquote = start_dquote;
-
-    for( current = p; *current != NULLCHAR; ++current ) {
-        if( *current == '\"' ) {
-            if( !dquote ) {
-                /* Found the start of a Double Quoted String */
-                if( current != p ) {
-                    UnGetCHR( STRM_MAGIC );
-                    InsString( StrDupSafe( current ), true );
-                    UnGetCHR( STRM_TMP_LEX_START );
-                    *current = NULLCHAR;
+        for( current = p; *current != NULLCHAR; ++current ) {
+            if( *current == '\"' ) {
+                if( !in_dquote ) {
+                    /* Found the start of a Double Quoted String */
+                    if( current != p ) {
+                        UnGetCHR( STRM_MAGIC );
+                        InsString( StrDupSafe( current ), true );
+                        UnGetCHR( STRM_TMP_LEX_START );
+                        *current = NULLCHAR;
+                        return( p );
+                    }
+                    in_dquote = true;
+                } else {
+                    /* Found the end of the Double Quoted String */
+                    current++;
+                    if( *current != NULLCHAR ) {
+                        UnGetCHR( STRM_MAGIC );
+                        InsString( StrDupSafe( current ), true );
+                        UnGetCHR( STRM_TMP_LEX_START );
+                        *current = NULLCHAR;
+                    }
                     return( p );
                 }
-                dquote = true;
-            } else {
-                /* Found the end of the Double Quoted String */
-                if( *(current + 1) != NULLCHAR ) {
-                    UnGetCHR( STRM_MAGIC );
-                    InsString( StrDupSafe( current + 1 ), true );
-                    UnGetCHR( STRM_TMP_LEX_START );
-                    *(current + 1) = NULLCHAR;
-                }
-                return( p );
             }
         }
     }
 
-    if( !start_dquote && !dquote ) {
+    if( !start_dquote && !in_dquote ) {
         /* there are no double quotes in the text */
         /* so return text as is */
         return( p );
@@ -686,7 +740,7 @@ MTOKEN_T LexParser( STRM_T s )
             UnGetCHR( s );
             return( TOK_SCOLON );
         default:
-            if( sisfilec( s ) || s == '\"' || ( (Glob.compat_nmake || Glob.compat_posix) && s == SPECIAL_TMP_DOLLAR ) ) {
+            if( sisfilec( s ) || siswildc( s ) || sisdirc( s ) || sisdotc( s ) || s == '\"' || ( (Glob.compat_nmake || Glob.compat_posix) && s == SPECIAL_TMP_DOLLAR ) ) {
                 return( lexFileName( s ) );
             }
             PrtMsg( WRN | LOC | UNKNOWN_TOKEN, s );

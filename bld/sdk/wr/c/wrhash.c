@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -461,18 +461,14 @@ static unsigned WRAddSymbolsToLorCBox( WRHashTable *table, HWND hDlg, int id,
     return( count );
 }
 
-unsigned WRAPI WRAPI WRAddSymbolsToListBox( WRHashTable *table, HWND hDlg,
-                                          int id, WRHashEntryFlags flags )
+unsigned WRAPI WRAPI WRAddSymbolsToListBox( WRHashTable *table, HWND hDlg, int id, WRHashEntryFlags flags )
 {
-    return( WRAddSymbolsToLorCBox( table, hDlg, id, flags, LB_ADDSTRING, LB_SETITEMDATA,
-                                   LB_RESETCONTENT, LB_ERR, LB_ERRSPACE ) );
+    return( WRAddSymbolsToLorCBox( table, hDlg, id, flags, LB_ADDSTRING, LB_SETITEMDATA, LB_RESETCONTENT, LB_ERR, LB_ERRSPACE ) );
 }
 
-unsigned WRAPI WRAddSymbolsToComboBox( WRHashTable *table, HWND hDlg,
-                                           int id, WRHashEntryFlags flags )
+unsigned WRAPI WRAddSymbolsToComboBox( WRHashTable *table, HWND hDlg, int id, WRHashEntryFlags flags )
 {
-    return( WRAddSymbolsToLorCBox( table, hDlg, id, flags, CB_ADDSTRING, CB_SETITEMDATA,
-                                   CB_RESETCONTENT, CB_ERR, CB_ERRSPACE ) );
+    return( WRAddSymbolsToLorCBox( table, hDlg, id, flags, CB_ADDSTRING, CB_SETITEMDATA, CB_RESETCONTENT, CB_ERR, CB_ERRSPACE ) );
 }
 
 bool WRAPI WRWriteSymbolsToFile( WRHashTable *table, const char *filename )

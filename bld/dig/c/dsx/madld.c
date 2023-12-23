@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -25,8 +25,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  MAD module loader for DOS extended debugger.
 *
 ****************************************************************************/
 
@@ -34,53 +33,62 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "digld.h"
 #include "mad.h"
 #include "madimp.h"
 #include "madcli.h"
 #include "madsys.h"
-#include "ldimp.h"
-#include "digld.h"
+#include "exephar.h"
+#include "roundmac.h"
 
 
-#define MADSIG  0x0044414DUL    // "MAD"
+#define DEFEXT      ".mad"
+//#define MODINIT     "MADLOAD"
+#define MODSIGN     MADSIGN
+
+#include "../ldrrex.c"       /* PharLap REX format loader */
 
 void MADSysUnload( mad_sys_handle *sys_hdl )
 {
     if( *sys_hdl != NULL_SYSHDL ) {
-        DIGCli( Free )( *sys_hdl );
+        loader_unload_image( *sys_hdl );
         *sys_hdl = NULL_SYSHDL;
     }
 }
 
-mad_status MADSysLoad( const char *path, mad_client_routines *cli,
+mad_status MADSysLoad( const char *base_name, mad_client_routines *cli,
                                 mad_imp_routines **imp, mad_sys_handle *sys_hdl )
 {
     FILE                *fp;
-    imp_header          *mad;
+    module              modhdl;
     mad_init_func       *init_func;
     mad_status          status;
+    char                filename[256];
+    digld_error         err;
 
     *sys_hdl = NULL_SYSHDL;
-    fp = DIGLoader( Open )( path, strlen( path ), "mad", NULL, 0 );
+    if( DIGLoader( Find )( DIG_FILETYPE_EXE, base_name, 0, DEFEXT, filename, sizeof( filename ) ) == 0 ) {
+        return( MS_ERR | MS_FOPEN_FAILED );
+    }
+    fp = DIGLoader( Open )( filename );
     if( fp == NULL ) {
         return( MS_ERR | MS_FOPEN_FAILED );
     }
-    mad = ReadInImp( fp );
+    err = loader_load_image( fp, filename, &modhdl, (void **)&init_func );
     DIGLoader( Close )( fp );
+    if( err == DIGS_ERR_CANT_LOAD_MODULE )
+        return( MS_ERR | MS_FREAD_FAILED );
+    if( err == DIGS_ERR_OUT_OF_MEMORY
+      || err == DIGS_ERR_OUT_OF_DOS_MEMORY )
+        return( MS_ERR | MS_NO_MEM );
     status = MS_ERR | MS_INVALID_MAD;
-    if( mad != NULL ) {
-#ifdef __WATCOMC__
-        if( mad->sig == MADSIG ) {
-#endif
-            init_func = (mad_init_func *)mad->init_rtn;
-            if( init_func != NULL && (*imp = init_func( &status, cli )) != NULL ) {
-                *sys_hdl = mad;
-                return( MS_OK );
-            }
-#ifdef __WATCOMC__
-        }
-#endif
-        DIGCli( Free )( mad );
+    if( err != DIGS_OK ) {
+        return( status );
     }
+    if( init_func != NULL && (*imp = init_func( &status, cli )) != NULL ) {
+        *sys_hdl = modhdl;
+        return( MS_OK );
+    }
+    loader_unload_image( modhdl );
     return( status );
 }

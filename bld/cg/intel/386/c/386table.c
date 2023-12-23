@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1585,16 +1585,16 @@ _OE( _Bin(   ANY,  ANY,  ANY,  NONE ), V_NO,                RG_,              G_
 static const opcode_entry    CallI[] = {
 /*************************/
 /*           op1   op2   res   eq      verify               reg               gen             fu  */
-_OE( _Bin(   ANY,  ANY,  ANY,  NONE ), V_NO,                RG_,              G_ICALL,        FU_CALL ),
+_OE( _Bin(   ANY,  ANY,  ANY,  NONE ), V_NO,                RG_,              G_CALLI,        FU_CALL ),
 };
 
 
 static const opcode_entry    SJump[] = {
 /*************************/
 /*           op1   op2   eq            verify               reg               gen             fu  */
-_OE( _Un(    R|U,  ANY,  NONE ),       V_NO,                RG_DBL,           G_RJMP,         FU_CALL ),
-_OE( _Un(    M,    ANY,  NONE ),       V_NO,                RG_,              G_MJMP,         FU_CALL ),
-_OE( _Un(    C,    ANY,  NONE ),       V_NO,                RG_,              G_CJMP,         FU_CALL ),
+_OE( _Un(    R|U,  ANY,  NONE ),       V_NO,                RG_DBL,           G_JMPR,         FU_CALL ),
+_OE( _Un(    M,    ANY,  NONE ),       V_NO,                RG_,              G_JMPM,         FU_CALL ),
+_OE( _Un(    C,    ANY,  NONE ),       V_NO,                RG_,              G_JMPC,         FU_CALL ),
 _OE( _Un(    ANY,  ANY,  NONE ),       V_NO,                RG_,              G_UNKNOWN,      FU_NO ),
 };
 

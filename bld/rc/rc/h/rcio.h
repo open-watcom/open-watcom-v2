@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,6 +40,7 @@
 #include "semstr.h"
 #include "sharedio.h"
 
+
 typedef struct FullFontDirEntry {
     struct FullFontDirEntry *Next;
     struct FullFontDirEntry *Prev;
@@ -56,18 +57,20 @@ typedef struct RcResFileID {
     char                    *filename;
     FullStringTable         *StringTable;
     FullStringTable         *ErrorTable;
-    boolbit                 IsWatcomRes     : 1;
-    boolbit                 IsOpen          : 1;
+    bool                    IsWatcomRes;
     uint_16                 NextCurOrIcon;
     WResDir                 dir;                    /* don't write this if !IsWatcomRes */
     FILE                    *fp;                    /* file I/O handle */
     FullFontDir             *FontDir;
 } RcResFileID;
 
+#define RcIoOpenInputText(f)    RcIoOpenInput((f),true)
+#define RcIoOpenInputBin(f)     RcIoOpenInput((f),false)
+#define RcIoCloseInputText(fp)  if( fp != NULL ) fclose( fp )
+#define RcIoCloseInputBin(fp)   if( fp != NULL ) ResCloseFile( fp )
+
 extern bool         RcPass1IoInit( void );
 extern void         RcPass1IoShutdown( void );
-extern bool         RcPass2IoInit( void );
-extern void         RcPass2IoShutdown( bool noerror );
 extern int          RcIoGetChar( void );
 extern bool         RcIoIsCOrHFile( void );
 extern const char   *RcIoGetCurrentFileName( void );

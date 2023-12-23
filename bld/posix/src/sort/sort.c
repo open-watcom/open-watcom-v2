@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,7 +40,6 @@
 #include "argvrx.h"
 #include "argvenv.h"
 
-char *OptEnvVar = "sort";
 
 static const char *usageMsg[] = {
     "Usage: sort [-?fr] [-o outfile] [infile]",
@@ -83,6 +82,26 @@ static int compareRevI( const void *p1, const void *p2 )
     return( stricmp( *cp2, *cp1 ) );
 }
 
+static char *my_fgets( char *buffer, int size, FILE *fp )
+{
+    size_t  len;
+
+    if( fgets( buffer, size, fp ) == NULL ) {
+        return( NULL );
+    }
+    len = strlen( buffer );
+    while( len-- > 0 ) {
+        if( buffer[len] == '\n' ) {
+            buffer[len] = '\0';
+        } else if( buffer[len] == '\r' ) {
+            buffer[len] = '\0';
+        } else {
+            break;
+        }
+    }
+    return( buffer );
+}
+
 // main is allways int on windows
 int main( int argc, char **argv )
 {
@@ -93,12 +112,13 @@ int main( int argc, char **argv )
     int     i;
     FILE    *infile, *outfile;
     int     own_infile = 0, own_outfile = 0;
-        int     ret;
+    int     ret;
 
     infile = NULL;
     outfile = NULL;
-    argv = ExpandEnv( &argc, argv );
-        ret = EXIT_SUCCESS;
+    argv = ExpandEnv( &argc, argv, "SORT" );
+
+    ret = EXIT_SUCCESS;
 
     for( ;; ) {
         ch = GetOpt( &argc, argv, "o:fr", usageMsg );
@@ -109,7 +129,8 @@ int main( int argc, char **argv )
         } else if( ch == 'r' ) {
             rflag = 1;
         } else if( ch == 'o' ) {
-            outfile = fopen( OptArg, "w" );
+            // allways open output file in text mode
+            outfile = fopen( OptArg, "wt" );
             if( outfile == NULL ) {
                 fprintf( stderr, "sort: cannot open output file \"%s\"\n", OptArg );
                 ret = EXIT_FAILURE;
@@ -118,33 +139,30 @@ int main( int argc, char **argv )
             own_outfile = 1;
         }
     }
-    argv++;
 
-    if( *argv != NULL ) {
-        // allways open in binary mode on windows
-        infile = fopen( *argv, "rb" );
+    if( argc < 2 ) {
+        infile = stdin;
+    } else {
+        // allways open input file in binary mode
+        infile = fopen( argv[1], "rb" );
         if( infile == NULL ) {
-            fprintf( stderr, "sort: cannot open input file \"%s\"\n", *argv );
+            fprintf( stderr, "sort: cannot open input file \"%s\"\n", argv[1] );
             if( own_outfile ) {
                 fclose( outfile );
             }
+            MemFree( argv );
             ret = EXIT_FAILURE;
             goto done;
         }
         own_infile = 1;
-    } else {
-        infile = stdin;
     }
     if( !own_outfile ) {
         outfile = stdout;
     }
+    MemFree( argv );
 
-    for( ;; ) {
-        fgets( buffer, sizeof( buffer ), infile );
-        if( feof( infile ) ) {
-            break;
-        }
-        lines[line_count] = (char *)malloc( sizeof( char ) * strlen( buffer ) + 1 );
+    while( my_fgets( buffer, sizeof( buffer ), infile ) != NULL ) {
+        lines[line_count] = (char *)MemAlloc( sizeof( char ) * strlen( buffer ) + 1 );
         strcpy( lines[line_count], buffer );
         line_count++;
     }
@@ -164,8 +182,8 @@ int main( int argc, char **argv )
     }
 
     for( i = 0; i < line_count; i++ ) {
-        fputs( lines[i], outfile );
-        free( lines[i] );
+        fprintf( outfile, "%s\n", lines[i] );
+        MemFree( lines[i] );
     }
 
     if( own_infile ) {
@@ -177,4 +195,3 @@ int main( int argc, char **argv )
 done:; // a goto! flee in terror...
     return( ret );
 }
-

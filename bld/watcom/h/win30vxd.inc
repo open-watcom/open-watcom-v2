@@ -2,6 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
+;* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -328,12 +329,12 @@ endm
 
 argscnt = 0
 
-BeginProc macro Name, P1, P2, P3, P4, P5, P6, P7, LastArg
+VxDBeginProc macro Name, P1, P2, P3, P4, P5, P6, P7, LastArg
   Name proc near
   public Name
 endm
 
-EndProc macro Name
+VxDEndProc macro Name
   Name endp
 endm
 
@@ -351,15 +352,6 @@ endm
 
 VxDcall3 macro P, Param1, Param2, Param3
   push Param3
-  push Param2
-  push Param1
-  int 20h
-  dd  P
-  add esp,0ch
-endm
-
-VxDcall3a macro P, Param1, Param2, Param3
-  push OFFSET Param3
   push Param2
   push Param1
   int 20h
@@ -385,14 +377,14 @@ Push_Client_State macro
   sub  esp, SIZE Client_Reg_Struc
   push edi
   lea  edi, [esp+4]
-  VxDCall Save_Client_State
+  VxDcall Save_Client_State
   pop  edi
 endm
 
 Pop_Client_State macro
   push esi
   lea  esi, [esp+4]
-  VxDCall Restore_Client_State
+  VxDcall Restore_Client_State
   pop  esi
   add  esp, SIZE Client_Reg_Struc
 endm
@@ -406,7 +398,7 @@ Client_Ptr_Flat MACRO Reg_32, Cli_Seg, Cli_Off, Can_Trash_EAX
   ELSE
     mov ax, (Client_&Cli_Seg * 100h) + Client_&Cli_Off
   ENDIF
-    VxDCall Map_Flat
+    VxDcall Map_Flat
 
   IFDIFI <Reg_32>, <EAX>
     xchg Reg_32, eax

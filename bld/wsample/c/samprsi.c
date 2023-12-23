@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,10 +43,10 @@
 #include "rsi1632.h"
 
 
-static TSF32   Proc;
-static byte    Break;
+static TSF32        Proc;
+static opcode_type  BreakOpcode;
 
-static seg_offset       CommonAddr = { 0, 0 };
+static addr48_ptr   CommonAddr = { 0, 0 };
 
 unsigned NextThread( unsigned tid )
 {
@@ -101,14 +101,14 @@ void GetCommArea( void )
         Comm.push_no = 0;
         Comm.in_hook = 1;               /* don't record this sample */
     } else {
-        D32DebugRead( CommonAddr.offset, CommonAddr.segment, 0, &Comm, sizeof( Comm ) );
+        D32DebugRead( &CommonAddr, false, &Comm, sizeof( Comm ) );
     }
 }
 
 
 void GetNextAddr( void )
 {
-    seg_offset  addr;
+    addr48_ptr  addr;
     struct {
         unsigned long   ptr;
         seg             cs;
@@ -121,7 +121,7 @@ void GetNextAddr( void )
     } else {
         addr.segment = CommonAddr.segment;
         addr.offset = Comm.cgraph_top;
-        D32DebugRead( addr.offset, addr.segment, 0, &stack_entry, sizeof( stack_entry ) );
+        D32DebugRead( &addr, false, &stack_entry, sizeof( stack_entry ) );
         CGraphOff = stack_entry.ip;
         CGraphSeg = stack_entry.cs;
         Comm.cgraph_top = stack_entry.ptr;
@@ -135,7 +135,7 @@ void ResetCommArea( void )
         Comm.pop_no = 0;
         Comm.push_no = 0;
         CommonAddr.offset += 11;
-        D32DebugWrite( CommonAddr.offset, CommonAddr.segment, 0, &Comm.pop_no, 4 );
+        D32DebugWrite( &CommonAddr, false, &Comm.pop_no, 4 );
         CommonAddr.offset -= 11;
     }
 }
@@ -151,11 +151,11 @@ void StopProg( void )
 
 void StartProg( const char *cmd, const char *prog, const char *full_args, char *dos_args )
 {
-
-    seg_offset  where;
-    int         error_num;
+    far_address where;
+    addr48_ptr  addr;
+    bool        err;
     char        buff[BSIZE];
-    Fptr32      fp;
+    addr48_ptr  fp;
     short       initial_cs;
     int         len;
 
@@ -164,15 +164,15 @@ void StartProg( const char *cmd, const char *prog, const char *full_args, char *
     SampleIndex = 0;
     CurrTick  = 0L;
 
-    D32HookTimer( TimerMult );  /* ask for timer - before D32DebugInit!! */
-    D32DebugBreakOp( &Break );  /* Get the 1 byte break op */
+    D32HookTimer( TimerMult );          /* ask for timer - before D32DebugInit!! */
+    D32DebugBreakOp( &BreakOpcode );    /* Get the 1 byte break op */
 
-    error_num = D32DebugInit( &Proc, -1 );
-    if( error_num == 0 ) {
+    err = D32DebugInit( &Proc, -1 );
+    if( !err ) {
         strcpy( buff, full_args );
-        error_num = D32DebugLoad( prog, buff, &Proc );
+        err = ( D32DebugLoad( prog, buff, &Proc ) != 0 );
     }
-    if( error_num != 0 ) {
+    if( err ) {
         OutputMsgParmNL( MSG_SAMPLE_2, prog );
         MsgFini();
         exit(1);
@@ -182,10 +182,10 @@ void StartProg( const char *cmd, const char *prog, const char *full_args, char *
     where.segment = 0;
     WriteCodeLoad( where, ExeName, SAMP_MAIN_LOAD );
 
-    fp.sel = 1;
-    fp.off = 0;
-    D32Relocate(&fp);
-    WriteAddrMap( 1, fp.sel, fp.off );
+    fp.segment = 1;
+    fp.offset = 0;
+    D32Relocate( &fp );
+    WriteAddrMap( 1, fp.segment, fp.offset );
 
     initial_cs = Proc.cs;
     for( ;; ) {
@@ -199,18 +199,17 @@ void StartProg( const char *cmd, const char *prog, const char *full_args, char *
             --InsiderTime;
         } else if( Proc.int_id == 3 && (Proc.edx & 0xffff) != 0 ) {
             len = 0;                                    /* this is a mark */
-            where.segment = Proc.edx & 0xffff;
-            where.offset = Proc.eax;
+            addr.segment = Proc.edx & 0xffff;
+            addr.offset = Proc.eax;
             for( ;; ) {
-                if( rsi_addr32_check( where.offset, where.segment, 1, NULL ) != MEMBLK_VALID )
+                if( D32DebugRead( &addr, false, &buff[len], 1 ) )
                     break;
-                D32DebugRead( where.offset, where.segment, 0, &buff[len], 1 );
                 if( len == BSIZE )
                     break;
                 if( buff[len] == '\0' )
                     break;
                 len++;
-                where.offset++;
+                addr.offset++;
             }
             buff[len] = '\0';
             where.segment = Proc.cs;

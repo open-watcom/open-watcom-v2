@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -155,7 +156,7 @@ OBJPTR WdeMakeButton( OBJPTR parent, RECT *obj_rect, OBJPTR handle, DialogStyle 
         style |= WS_TABSTOP;
     }
     SETCTL_STYLE( WdeDefaultButton, style );
-    SETCTL_TEXT( WdeDefaultButton, ResStrToNameOrOrd( text ) );
+    SETCTL_TEXT( WdeDefaultButton, ResStrToNameOrOrdinal( text ) );
     SETCTL_ID( WdeDefaultButton, WdeGetNextControlID() );
 
     WdeChangeSizeToDefIfSmallRect( parent, id, obj_rect );
@@ -304,8 +305,7 @@ void WdeButtonFini( void )
 
 bool WdeButtonDestroy( WdeButtonObject *obj, bool *flag, bool *p2 )
 {
-    /* touch unused vars to get rid of warning */
-    _wde_touch( p2 );
+    /* unused parameters */ (void)p2;
 
     if( !Forward( obj->control, DESTROY, flag, NULL ) ) {
         WdeWriteTrail( "WdeButtonDestroy: Control DESTROY failed" );
@@ -336,7 +336,7 @@ static bool WdeValidateGroupBoxMove( WdeButtonObject *obj, POINT *pnt )
 
     if( Forward( obj->control, GET_OBJECT_INFO, &info, NULL ) && parent != NULL &&
         Forward( parent, GET_RESIZER, &resizer, NULL ) ) {
-        if( WdeGetNameOrOrdSize( parent, GETCTL_TEXT( info ), &size ) ) {
+        if( WdeGetNameOrOrdinalSize( parent, GETCTL_TEXT( info ), &size ) ) {
             text_rect.left = obj_rect.left + 8;
             text_rect.top = obj_rect.top + (resizer.xmap * 3) / 4;
             text_rect.right = text_rect.left + size.cx;
@@ -415,8 +415,7 @@ bool WdeButtonCopyObject( WdeButtonObject *obj, WdeButtonObject **new, OBJPTR ha
 
 bool WdeButtonIdentify( WdeButtonObject *obj, OBJ_ID *id, void *p2 )
 {
-    /* touch unused vars to get rid of warning */
-    _wde_touch( p2 );
+    /* unused parameters */ (void)p2;
 
     *id = obj->object_id;
 
@@ -425,9 +424,7 @@ bool WdeButtonIdentify( WdeButtonObject *obj, OBJ_ID *id, void *p2 )
 
 bool WdeButtonGetWndProc( WdeButtonObject *obj, WNDPROC *proc, void *p2 )
 {
-    /* touch unused vars to get rid of warning */
-    _wde_touch( obj );
-    _wde_touch( p2 );
+    /* unused parameters */ (void)obj; (void)p2;
 
     *proc = WdeButtonSuperClassProc;
 
@@ -436,9 +433,7 @@ bool WdeButtonGetWndProc( WdeButtonObject *obj, WNDPROC *proc, void *p2 )
 
 bool WdeButtonGetWindowClass( WdeButtonObject *obj, char **class, void *p2 )
 {
-    /* touch unused vars to get rid of warning */
-    _wde_touch( obj );
-    _wde_touch( p2 );
+    /* unused parameters */ (void)obj; (void)p2;
 
     //*class = "wdebutton";
     *class = "button";
@@ -450,9 +445,7 @@ bool WdeButtonDefine( WdeButtonObject *obj, POINT *pnt, void *p2 )
 {
     WdeDefineObjectInfo  o_info;
 
-    /* touch unused vars to get rid of warning */
-    _wde_touch( pnt );
-    _wde_touch( p2 );
+    /* unused parameters */ (void)pnt; (void)p2;
 
     o_info.obj = obj->object_handle;
     o_info.obj_id = obj->object_id;

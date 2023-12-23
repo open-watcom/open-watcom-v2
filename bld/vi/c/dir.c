@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,6 +33,7 @@
 #include "vi.h"
 #include <sys/types.h>
 #include "posix.h"
+#include "myprintf.h"
 
 #include "clibext.h"
 
@@ -96,7 +97,7 @@ vi_rc ChangeDirectory( const char *dir )
 vi_rc ConditionalChangeDirectory( const char *where )
 {
     if( CurrentDirectory != NULL ) {
-        if( stricmp( CurrentDirectory, where ) == 0 ) {
+        if( FILE_CMP( CurrentDirectory, where ) == 0 ) {
             return( ERR_NO_ERR );
         }
     }
@@ -110,7 +111,7 @@ vi_rc ConditionalChangeDirectory( const char *where )
 void UpdateCurrentDirectory( void )
 {
 
-    MemFreePtr( (void **)&CurrentDirectory );
+    _MemFreeArray( CurrentDirectory );
     GetCWD1( &CurrentDirectory );
 
 } /* UpdateCurrentDirectory */

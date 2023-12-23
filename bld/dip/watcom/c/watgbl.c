@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -87,18 +87,17 @@ void GblSymFini( section_info *inf )
     }
 }
 
-/*
- * GblNamHash -- hash a symbol name
- */
-
 static unsigned GblNameHash( const char *name, size_t name_len )
+/***************************************************************
+ * hash a symbol name
+ */
 {
     unsigned    rtrn;
 
     rtrn = name_len;
-    rtrn += toupper( GETU8( name ) );
-    rtrn += toupper( GETU8( name + name_len / 2 ) );
-    rtrn += toupper( GETU8( name + name_len - 1 ) );
+    rtrn += toupper( MGET_U8( name ) );
+    rtrn += toupper( MGET_U8( name + name_len / 2 ) );
+    rtrn += toupper( MGET_U8( name + name_len - 1 ) );
     return( rtrn & (SYM_TAB_SIZE - 1) );
 }
 
@@ -120,7 +119,9 @@ static int source_name( const char *gstart, size_t glen, const char **rstart, si
         *rstart = gstart;
         gstart = memchr( gstart, '@', glen );
         if( gstart != NULL ) {
-            /* stupid MS stdcall with it's stupid trailing "@<num>" */
+            /*
+             * stupid MS stdcall with it's stupid trailing "@<num>"
+             */
             glen = gstart - *rstart;
             type = __MANGLED;
         }
@@ -138,9 +139,6 @@ static int source_name( const char *gstart, size_t glen, const char **rstart, si
     return( type );
 }
 
-/*
- * SearchGbl -- look up a global symbol name
- */
 static search_result LkupGblName( imp_image_handle *iih, section_info *inf, imp_mod_handle curr_imh,
                         imp_mod_handle imh, lookup_item *li, void *d )
 {
@@ -170,7 +168,9 @@ static search_result LkupGblName( imp_image_handle *iih, section_info *inf, imp_
 
     lkup_dtor = (li->type == ST_DESTRUCTOR);
     lkup_full = false;
-    /* only want to hash the source code portion of the name */
+    /*
+     * only want to hash the source code portion of the name
+     */
     switch( source_name( li->name.start, li->name.len, &snam, &snamlen ) ) {
     case __NOT_MANGLED:
         nam = snam;
@@ -236,10 +236,13 @@ static search_result LkupGblName( imp_image_handle *iih, section_info *inf, imp_
             ish = DCSymCreate( iih, d );
             ish->imh = GBL_MOD( gbl );
             MK_ADDR( addr, gbl->addr, inf->sect_id );
-            /* need to see if there's a local symbol at the right
-                    address and use that instead */
+            /*
+             * need to see if there's a local symbol at the right address and use that instead
+             */
             if( curr_imh == ish->imh ) {
-                /* We've already checked the local symbols. It ain't there. */
+                /*
+                 * We've already checked the local symbols. It ain't there.
+                 */
                 GblCreate( iih, ish, gbl );
             } else if( LookupLclAddr( iih, addr, ish ) == SR_EXACT ) {
                 SetGblLink( ish, gbl );
@@ -254,6 +257,9 @@ static search_result LkupGblName( imp_image_handle *iih, section_info *inf, imp_
 
 search_result SearchGbl( imp_image_handle *iih, imp_mod_handle curr_imh,
                         imp_mod_handle imh, lookup_item *li, void *d )
+/***********************************************************************
+ * look up a global symbol name
+ */
 {
     section_info        *inf;
     section_info        *end;
@@ -287,10 +293,10 @@ static int MachAddrComp( addr_ptr a1, imp_mod_handle imh1,
     return( 0 );
 }
 
-/*
- * LookupGblAddr -- look up a global address
- */
 static search_result LkupGblAddr( info_block *inf, imp_sym_handle *ish, addr_ptr addr )
+/**************************************************************************************
+ * look up a global address
+ */
 {
     gbl_link            *low, *high;
     gbl_link            *nearest;
@@ -355,11 +361,10 @@ search_result LookupGblAddr( imp_image_handle *iih, address addr, imp_sym_handle
 }
 
 
-/*
- * Insert -- insert into hash table
- */
-
 static void Insert( imp_image_handle *iih, info_block *inf, gbl_link *new )
+/**************************************************************************
+ * insert into hash table
+ */
 {
     hash_link           *owner;
     gbl_info            *gbl;
@@ -368,7 +373,9 @@ static void Insert( imp_image_handle *iih, info_block *inf, gbl_link *new )
     size_t              name_len;
 
     gbl = new->gbl;
-    /* only want to hash the source code portion of the name */
+    /*
+     * only want to hash the source code portion of the name
+     */
     mangled_name = GBL_NAME( iih, gbl );
     new->dtor = ( source_name( mangled_name, GBL_NAMELEN( iih, gbl ), &name, &name_len ) == __MANGLED_DTOR );
     new->src_off = name - mangled_name;
@@ -388,10 +395,10 @@ static int CmpInfo( const void *a, const void *b )
 }
 
 
-/*
- * AdjustSyms -- adjust symbol table info according to start segment location
- */
 void AdjustSyms( imp_image_handle *iih, unsigned sectno )
+/********************************************************
+ * adjust symbol table info according to start segment location
+ */
 {
     info_block      *ginf;
     gbl_link        *lnk;
@@ -481,7 +488,9 @@ unsigned GblSymSplit( imp_image_handle *iih, info_block *gbl, section_info *inf 
     /* unused parameters */ (void)inf;
 
     ptr = gbl->info;
-    /* check if there is enough there to pick up the name length field */
+    /*
+     * check if there is enough there to pick up the name length field
+     */
     for( total = 0; ( total + sizeof( gbl_info ) + 1 ) <= gbl->size; total = next ) {
         size = GBL_SIZE( iih, (gbl_info *)ptr );
         next = total + size;
@@ -535,7 +544,8 @@ unsigned SymHdl2GblName( imp_image_handle *iih, imp_sym_handle *ish, char *buff,
     /* unused parameters */ (void)iih;
 
     gbl = (const char *)ish->u.gbl + ish->name_off;
-    len = GETU8( gbl++ );
+    len = MGET_U8( gbl );
+    gbl++;
     __unmangled_name( gbl, len, &gbl, &len );
     if( buff_size > 0 ) {
         --buff_size;
@@ -555,7 +565,8 @@ unsigned SymHdl2ObjGblName( imp_image_handle *iih, imp_sym_handle *ish, char *bu
     /* unused parameters */ (void)iih;
 
     gbl = (const char *)ish->u.gbl + ish->name_off;
-    len = GETU8( gbl++ );
+    len = MGET_U8( gbl );
+    gbl++;
     if( buff_size > 0 ) {
         --buff_size;
         if( buff_size > len )
@@ -619,10 +630,10 @@ walk_result WalkGblModSymList( imp_image_handle *iih, imp_mod_handle imh,
                     seen_module = true;
                 } else if( seen_module ) {
                     /*
-                        WARNING: Assuming that all the publics for a
-                        particular module are right next to each other
-                        in the info.
-                    */
+                     * WARNING: Assuming that all the publics for a
+                     * particular module are right next to each other
+                     * in the info.
+                     */
                     return( WR_CONTINUE );
                 }
             }

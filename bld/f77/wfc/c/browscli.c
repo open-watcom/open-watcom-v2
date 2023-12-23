@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,6 +33,7 @@
 
 #include "ftnstd.h"
 #include <ctype.h>
+#include <errno.h>
 #include "global.h"
 #include "dw.h"
 #include "dwarf.h"
@@ -42,8 +43,10 @@
 #include "browscli.h"
 #include "fmemmgr.h"
 #include "ferror.h"
-#include "cspawn.h"
 #include "sdcio.h"
+
+#include "clibext.h"
+#include "cspawn.h"
 
 
 #define SWAP( x, y )    {x^=y^=x^=y;}

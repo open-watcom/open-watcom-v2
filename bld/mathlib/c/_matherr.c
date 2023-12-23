@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -61,7 +61,7 @@ static const char * const Msgs[] = {
     "Partial loss of significance"
 };
 
-static char *MathFuncNames[] = {
+static const char * const MathFuncNames[] = {
     #define pick(enum,name) name,
     #include "_mathfun.h"
     #undef pick
@@ -83,7 +83,7 @@ void __rterrmsg( int errcode, const char *funcname )
     fputc( '\n', fp );
 }
 
-char *__rtmathfuncname( int funccode )
+const char *__rtmathfuncname( int funccode )
 {
     return( MathFuncNames[funccode] );
 }

@@ -3,7 +3,7 @@
 #
 # Build libraries in place, do not copy any files around.
 
-cdsay <PROJDIR>
+cdsay "<PROJDIR>"
 
 [ BLOCK .<PROJNAME> . ]
     error PROJNAME must be set!

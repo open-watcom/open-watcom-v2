@@ -2,6 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
+;* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -30,11 +31,6 @@
 ;*****************************************************************************
 
 
-ifdef __386__
- .387
-else
- .8087
-endif
 include mdef.inc
 include struct.inc
 include math87.inc
@@ -49,26 +45,22 @@ include math87.inc
         xdefp   "C",log2        ; calc log2(fac1)
         xdefp   "C",log10       ; calc log10(fac1)
 
-ifndef __386__
-        if _MODEL and _BIG_CODE
-         argx    equ     6
-        else
-         argx    equ     4
-        endif
-endif
-
-
         public  IF@LOG
         public  IF@DLOG
         defp    IF@DLOG
         defp    IF@LOG
-ifndef __386__
-        local   func:WORD,data:QWORD
-elseifdef __STACK__
-        local   sedx:DWORD,secx:DWORD,func:DWORD,data:QWORD
-else
-        local   func:DWORD,data:QWORD
+
+ifdef __386__
+ ifdef __STACK__
+        local   sedx:DWORD,secx:DWORD
+ endif
 endif
+ifdef __386__
+        local   func:DWORD,data:QWORD
+else
+        local   func:WORD,data:QWORD
+endif
+
         mov     AL,FP_FUNC_LOG          ; indicate log
 do_log:
         ftst                            ; test sign of argument
@@ -118,13 +110,18 @@ endif
         public  IF@DLOG2
         defp    IF@DLOG2
         defp    IF@LOG2
-ifndef __386__
-        local   func:WORD,data:QWORD
-elseifdef __STACK__
-        local   sedx:DWORD,secx:DWORD,func:DWORD,data:QWORD
-else
-        local   func:DWORD,data:QWORD
+
+ifdef __386__
+ ifdef __STACK__
+        local   sedx:DWORD,secx:DWORD
+ endif
 endif
+ifdef __386__
+        local   func:DWORD,data:QWORD
+else
+        local   func:WORD,data:QWORD
+endif
+
         mov     AL,FP_FUNC_LOG2         ; indicate log2
         jmp     do_log                  ; calculate log2
         endproc IF@LOG2
@@ -135,13 +132,18 @@ endif
         public  IF@DLOG10
         defp    IF@DLOG10
         defp    IF@LOG10
-ifndef __386__
-        local   func:WORD,data:QWORD
-elseifdef __STACK__
-        local   sedx:DWORD,secx:DWORD,func:DWORD,data:QWORD
-else
-        local   func:DWORD,data:QWORD
+
+ifdef __386__
+ ifdef __STACK__
+        local   sedx:DWORD,secx:DWORD
+ endif
 endif
+ifdef __386__
+        local   func:DWORD,data:QWORD
+else
+        local   func:WORD,data:QWORD
+endif
+
         mov     AL,FP_FUNC_LOG10        ; indicate log10
         jmp     do_log                  ; calculate log10
         endproc IF@LOG10
@@ -150,7 +152,7 @@ endif
 
         defp    log
 ifdef __386__
-        fld     qword ptr 4[ESP]        ; load argument
+        fld     qword ptr argx[ESP]     ; load argument
         call    IF@DLOG                 ; calculate log(x)
         loadres                         ; load result
 else
@@ -164,7 +166,7 @@ endif
 
         defp    log10
 ifdef __386__
-        fld     qword ptr 4[ESP]        ; load argument
+        fld     qword ptr argx[ESP]     ; load argument
         call    IF@DLOG10               ; calculate log10(x)
         loadres                         ; load result
 else
@@ -179,7 +181,7 @@ endif
 
         defp    log2
 ifdef __386__
-        fld     qword ptr 4[ESP]        ; load argument
+        fld     qword ptr argx[ESP]     ; load argument
         call    IF@DLOG2                ; calculate log2(x)
         loadres                         ; load result
 else

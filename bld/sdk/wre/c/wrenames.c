@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -62,25 +62,25 @@
 /****************************************************************************/
 
 WRETypeName WRETypeNames[] = {
-    { RESOURCE2INT( RT_GROUP_CURSOR ), WRE_CURSORGROUPNAME,    FALSE },
-    { RESOURCE2INT( RT_GROUP_ICON ),   WRE_ICONGROUPNAME,      FALSE },
-    { RESOURCE2INT( RT_BITMAP ),       WRE_BITMAPNAME,         FALSE },
-    { RESOURCE2INT( RT_MENU ),         WRE_MENUNAME,           FALSE },
-    { RESOURCE2INT( RT_DIALOG ),       WRE_DIALOGNAME,         FALSE },
-    { RESOURCE2INT( RT_STRING ),       WRE_STRINGNAME,         FALSE },
-    { RESOURCE2INT( RT_FONT ),         WRE_FONTNAME,           FALSE },
-    { RESOURCE2INT( RT_ACCELERATOR ),  WRE_ACCELNAME,          FALSE },
-    { RESOURCE2INT( RT_RCDATA ),       WRE_USERDATANAME,       FALSE },
-    { RESOURCE2INT( RT_FONTDIR ),      WRE_FONTDIRNAME,        FALSE },
-    { RESOURCE2INT( RT_CURSOR ),       WRE_CURSORNAME,         TRUE  },
-    { RESOURCE2INT( RT_ICON ),         WRE_ICONNAME,           TRUE  },
-    { RESOURCE2INT( RT_FONTDIR ),      WRE_FONTDIRNAME,        FALSE },
-    { RESOURCE2INT( RT_MESSAGETABLE ), WRE_MESSAGETABLENAME,   FALSE },
-    { RESOURCE2INT( RT_VERSION ),      WRE_VERSIONNAME,        FALSE },
-    { RESOURCE2INT( RT_DLGINCLUDE ),   WRE_DLGINCLUDENAME,     FALSE },
-    { RESOURCE2INT( RT_HTML ),         WRE_HTMLNAME,           FALSE },
-    { RESOURCE2INT( RT_MANIFEST ),     WRE_MANIFESTNAME,       FALSE },
-    { 0,                               0,                      FALSE }
+    { RESOURCE2INT( RT_GROUP_CURSOR ), WRE_CURSORGROUPNAME,    false,   NULL },
+    { RESOURCE2INT( RT_GROUP_ICON ),   WRE_ICONGROUPNAME,      false,   NULL },
+    { RESOURCE2INT( RT_BITMAP ),       WRE_BITMAPNAME,         false,   NULL },
+    { RESOURCE2INT( RT_MENU ),         WRE_MENUNAME,           false,   NULL },
+    { RESOURCE2INT( RT_DIALOG ),       WRE_DIALOGNAME,         false,   NULL },
+    { RESOURCE2INT( RT_STRING ),       WRE_STRINGNAME,         false,   NULL },
+    { RESOURCE2INT( RT_FONT ),         WRE_FONTNAME,           false,   NULL },
+    { RESOURCE2INT( RT_ACCELERATOR ),  WRE_ACCELNAME,          false,   NULL },
+    { RESOURCE2INT( RT_RCDATA ),       WRE_USERDATANAME,       false,   NULL },
+    { RESOURCE2INT( RT_FONTDIR ),      WRE_FONTDIRNAME,        false,   NULL },
+    { RESOURCE2INT( RT_CURSOR ),       WRE_CURSORNAME,         true,    NULL },
+    { RESOURCE2INT( RT_ICON ),         WRE_ICONNAME,           true,    NULL },
+    { RESOURCE2INT( RT_FONTDIR ),      WRE_FONTDIRNAME,        false,   NULL },
+    { RESOURCE2INT( RT_MESSAGETABLE ), WRE_MESSAGETABLENAME,   false,   NULL },
+    { RESOURCE2INT( RT_VERSION ),      WRE_VERSIONNAME,        false,   NULL },
+    { RESOURCE2INT( RT_DLGINCLUDE ),   WRE_DLGINCLUDENAME,     false,   NULL },
+    { RESOURCE2INT( RT_HTML ),         WRE_HTMLNAME,           false,   NULL },
+    { RESOURCE2INT( RT_MANIFEST ),     WRE_MANIFESTNAME,       false,   NULL },
+    { 0,                               0,                      false,   NULL }
 };
 
 static bool WRESetResNamesFromTypeNode( HWND lbox, WResTypeNode *tnode )
@@ -162,7 +162,7 @@ bool WREAddToTypeListBox( HWND lbox, WResTypeNode *tnode )
     }
 
     if( !ok && tn != NULL && tn->exclude ) {
-        return( TRUE );
+        return( true );
     }
 
     return( ok );
@@ -176,20 +176,20 @@ static bool WREInitTypeListBox( HWND hDlg, WResDir dir )
     bool                ok;
 
     if( hDlg == (HWND)NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     WREResetListbox( GetDlgItem( hDlg, IDM_RNRES ) );
 
     lbox = GetDlgItem( hDlg, IDM_RNTYPE );
     if( lbox == (HWND)NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     WREResetListbox( lbox );
 
     if( dir == NULL ) {
-        return( TRUE );
+        return( true );
     }
 
     ok = true;
@@ -238,7 +238,7 @@ bool WRESetResNamesFromType( WREResInfo *info, uint_16 type, bool force, WResID 
     ok = (info != NULL);
 
     if( ok && type != 0 && info->current_type == type && !force ) {
-        return( TRUE );
+        return( true );
     }
 
     if( ok ) {
@@ -259,7 +259,7 @@ bool WRESetResNamesFromType( WREResInfo *info, uint_16 type, bool force, WResID 
             }
         }
         if( typeIndex == LB_ERR ) {
-            return( TRUE );
+            return( true );
         }
         info->current_type = type;
         SendMessage( typeLbox, LB_SETCURSEL, (WPARAM)typeIndex, 0 );
@@ -374,9 +374,9 @@ bool WREInitTotalText( void )
     WRETotalTextOne = AllocRCString( WRE_TOTALTEXT_ONE );
     WRETotalTextNone = AllocRCString( WRE_TOTALTEXT_NONE );
     if( WRETotalText == NULL || WRETotalTextOne == NULL || WRETotalTextNone == NULL ) {
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 }
 
 void WRESetTotalText( WREResInfo *info )
@@ -425,7 +425,7 @@ WRETypeName *WREGetTypeNameFromRT( uint_16 type )
             return( &WRETypeNames[i] );
         }
     }
-    return( FALSE );
+    return( NULL );
 }
 
 void WREInitTypeNames( void )

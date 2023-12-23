@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -337,20 +337,20 @@ static void formatSel( char *which, WORD sel )
     base = GET_DESC_BASE( desc );
     limit = GET_DESC_LIMIT( desc );
     logPrint( "%08lx  %08lx  ", base, limit );
-    if( desc.granularity ) {
+    if( desc.u2.flags.page_granular ) {
         logPrint( "page  " );
     } else {
         logPrint( "byte  " );
     }
-    if( desc.type == 2 ) {
+    if( desc.u1.flags.nonsystem && !desc.u1.flags.execute ) {
         logPrint( "data  " );
     } else {
         logPrint( "code  " );
     }
-    logPrint( "%1d   ", (WORD) desc.dpl );
-    if( desc.type == 2 )  {
+    logPrint( "%1d   ", (WORD)desc.u1.flags.dpl );
+    if( desc.u1.flags.nonsystem && !desc.u1.flags.execute ) {
         logPrint( "R" );
-        if( desc.writeable_or_readable ) {
+        if( desc.u1.flags_data.writeable ) {
             logPrint( "/W" );
         } else {
             logPrint( "  " );
@@ -358,14 +358,14 @@ static void formatSel( char *which, WORD sel )
         logPrint( "    " );
     } else {
         logPrint( "Ex" );
-        if( desc.writeable_or_readable ) {
+        if( desc.u1.flags_exec.readable ) {
             logPrint( "/R" );
         } else {
             logPrint( "  " );
         }
         logPrint( "   " );
     }
-    if( desc.big_or_default ) {
+    if( desc.u2.flags.use32 ) {
         logPrint( "Y\n" );
     } else {
         logPrint( " \n" );

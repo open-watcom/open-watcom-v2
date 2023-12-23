@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -65,8 +65,8 @@
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static bool             WSaveObjectAs( bool, WStringEditInfo *, WRSaveIntoData * );
-static bool             WSaveObjectInto( WStringEditInfo *, WRSaveIntoData * );
+static bool             WSaveObjectAs( bool prompt_name, WStringEditInfo *, WRSaveIntoData *idata );
+static bool             WSaveObjectInto( WStringEditInfo *, WRSaveIntoData *idata );
 static WRSaveIntoData   *WMakeSaveData( WStringTable *tbl );
 static void             WFreeSaveIntoData( WRSaveIntoData *idata );
 static WRSaveIntoData   *WAllocSaveIntoData( void );
@@ -104,7 +104,7 @@ static bool WSaveObjectToRC( WStringEditInfo *einfo, const char *filename,
     return( true );
 }
 
-bool WSaveObject( WStringEditInfo *einfo, bool get_name, bool save_into )
+bool WSaveObject( WStringEditInfo *einfo, bool prompt_name, bool save_into )
 {
     WRSaveIntoData      *idata;
     bool                ok;
@@ -117,7 +117,7 @@ bool WSaveObject( WStringEditInfo *einfo, bool get_name, bool save_into )
 
     if( ok ) {
         if( !WRIsDefaultHashTable( einfo->info->symbol_table ) &&
-            (get_name || WRIsHashTableDirty( einfo->info->symbol_table )) ) {
+            (prompt_name || WRIsHashTableDirty( einfo->info->symbol_table )) ) {
             if( einfo->info->symbol_file == NULL ) {
                 char    *fname;
                 if( einfo->file_name == NULL ) {
@@ -127,8 +127,7 @@ bool WSaveObject( WStringEditInfo *einfo, bool get_name, bool save_into )
                 }
                 einfo->info->symbol_file = WCreateSymFileName( fname );
             }
-            ok = WSaveSymbols( einfo, einfo->info->symbol_table,
-                               &einfo->info->symbol_file, get_name );
+            ok = WSaveSymbols( einfo->win, einfo->info->symbol_table, &einfo->info->symbol_file, prompt_name );
         }
     }
 
@@ -144,7 +143,7 @@ bool WSaveObject( WStringEditInfo *einfo, bool get_name, bool save_into )
         if( save_into ) {
             ok = WSaveObjectInto( einfo, idata );
         } else {
-            ok = WSaveObjectAs( get_name, einfo, idata );
+            ok = WSaveObjectAs( prompt_name, einfo, idata );
         }
     }
 
@@ -161,7 +160,7 @@ bool WSaveObject( WStringEditInfo *einfo, bool get_name, bool save_into )
     return( ok );
 }
 
-bool WSaveObjectAs( bool get_name, WStringEditInfo *einfo, WRSaveIntoData *idata )
+bool WSaveObjectAs( bool prompt_name, WStringEditInfo *einfo, WRSaveIntoData *idata )
 {
     char                resfile[_MAX_PATH];
     char                *fname;
@@ -195,7 +194,7 @@ bool WSaveObjectAs( bool get_name, WStringEditInfo *einfo, WRSaveIntoData *idata
     }
 
     if( ok ) {
-        if( einfo->file_name == NULL || get_name ) {
+        if( einfo->file_name == NULL || prompt_name ) {
             gf.file_name = NULL;
             gf.title = AllocRCString( W_SAVERESAS );
             gf.filter = AllocRCString( W_SAVERESFILTER );
@@ -328,8 +327,8 @@ bool WSaveObjectInto( WStringEditInfo *einfo, WRSaveIntoData *idata )
 
 WRSaveIntoData *WMakeSaveData( WStringTable *tbl )
 {
-    WRSaveIntoData      *node;
-    WRSaveIntoData      *new;
+    WRSaveIntoData      *idata;
+    WRSaveIntoData      *idata2;
     WStringBlock        *block;
     WResID              *tname;
     WResLangType        *lang;
@@ -347,55 +346,55 @@ WRSaveIntoData *WMakeSaveData( WStringTable *tbl )
     lang->lang = DEF_LANG;
     lang->sublang = DEF_SUBLANG;
 
-    node = NULL;
+    idata = NULL;
     block = tbl->first_block;
     while( block != NULL ) {
-        new = WInitSaveData( block, tname, lang );
-        if( new == NULL ) {
+        idata2 = WInitSaveData( block, tname, lang );
+        if( idata2 == NULL ) {
             WRMemFree( tname );
-            WFreeSaveIntoData( node );
+            WFreeSaveIntoData( idata );
             return( NULL );
         }
-        if( node != NULL ) {
-            new->next = node;
-            node = new;
+        if( idata != NULL ) {
+            idata2->next = idata;
+            idata = idata2;
         } else {
-            node = new;
+            idata = idata2;
         }
         block = block->next;
     }
 
-    return( node );
+    return( idata );
 }
 
 WRSaveIntoData *WInitSaveData( WStringBlock *block, WResID *type, WResLangType *lang )
 {
     size_t              size;
-    WRSaveIntoData      *new;
+    WRSaveIntoData      *idata;
 
-    new = WAllocSaveIntoData();
-    if( new == NULL ) {
+    idata = WAllocSaveIntoData();
+    if( idata == NULL ) {
         return( NULL );
     }
 
-    new->name = WResIDFromNum( (block->blocknum >> 4) + 1 );
-    if( new->name == NULL ) {
-        WFreeSaveIntoData( new );
+    idata->name = WResIDFromNum( (block->blocknum >> 4) + 1 );
+    if( idata->name == NULL ) {
+        WFreeSaveIntoData( idata );
         return( NULL );
     }
 
-    WRMakeDataFromStringBlock( &block->block, &new->data, &size, block->is32bit );
-    if( new->data == NULL ) {
-        WFreeSaveIntoData( new );
+    WRMakeDataFromStringBlock( &block->block, &idata->data, &size, block->is32bit );
+    if( idata->data == NULL ) {
+        WFreeSaveIntoData( idata );
         return( NULL );
     }
 
-    new->size = (uint_32)size;
-    new->type = type;
-    new->lang = *lang;
-    new->MemFlags = block->MemFlags;
+    idata->size = (uint_32)size;
+    idata->type = type;
+    idata->lang = *lang;
+    idata->MemFlags = block->MemFlags;
 
-    return( new );
+    return( idata );
 }
 
 WRSaveIntoData *WAllocSaveIntoData( void )
@@ -412,7 +411,7 @@ WRSaveIntoData *WAllocSaveIntoData( void )
 
 void WFreeSaveIntoData( WRSaveIntoData *idata )
 {
-    WRSaveIntoData *next;
+    WRSaveIntoData *idata2;
 
     if( idata != NULL ) {
         if( idata->type != NULL ) {
@@ -421,7 +420,7 @@ void WFreeSaveIntoData( WRSaveIntoData *idata )
     }
 
     while( idata != NULL ) {
-        next = idata->next;
+        idata2 = idata->next;
         if( idata->name != NULL ) {
             WRMemFree( idata->name );
         }
@@ -429,18 +428,17 @@ void WFreeSaveIntoData( WRSaveIntoData *idata )
             WRMemFree( idata->data );
         }
         WRMemFree( idata );
-        idata = next;
+        idata = idata2;
     }
 }
 
-bool WSaveSymbols( WStringEditInfo *einfo, WRHashTable *table, char **file_name,
-                   bool prompt )
+bool WSaveSymbols( HWND win, WRHashTable *table, char **file_name, bool prompt_name )
 {
     char                *name;
     WGetFileStruct      gf;
     bool                ok;
 
-    if( einfo == NULL || table == NULL || file_name == NULL ) {
+    if( win == NULL || table == NULL || file_name == NULL ) {
         return( false );
     }
 
@@ -450,14 +448,14 @@ bool WSaveSymbols( WStringEditInfo *einfo, WRHashTable *table, char **file_name,
 
     ok = true;
 
-    WSetWaitCursor( einfo->win, true );
+    WSetWaitCursor( win, true );
 
-    if( prompt || *file_name == NULL ) {
+    if( prompt_name || *file_name == NULL ) {
         gf.file_name = *file_name;
         gf.title = AllocRCString( W_SAVESYMTITLE );
         gf.filter = AllocRCString( W_SYMFILTER );
         WMassageFilter( gf.filter );
-        name = WGetSaveFileName( einfo->win, &gf );
+        name = WGetSaveFileName( win, &gf );
         if( gf.title != NULL ) {
             FreeRCString( gf.title );
         }
@@ -483,7 +481,7 @@ bool WSaveSymbols( WStringEditInfo *einfo, WRHashTable *table, char **file_name,
         WRMakeHashTableClean( table );
     }
 
-    WSetWaitCursor( einfo->win, false );
+    WSetWaitCursor( win, false );
 
     return( ok );
 }

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,8 +33,8 @@
 
 #if defined( GUI_IS_GUI ) && defined( __OS2__ )
 extern unsigned OnAnotherThreadAccess( trap_elen, in_mx_entry_p, trap_elen, mx_entry_p );
-extern unsigned OnAnotherThreadSimpAccess( trap_elen, in_data_p, trap_elen, out_data_p );
+extern unsigned OnAnotherThreadSimpleAccess( trap_elen, in_data_p, trap_elen, out_data_p );
 #else
 #define     OnAnotherThreadAccess( a,b,c,d ) TrapAccess( a,b,c,d )
-#define     OnAnotherThreadSimpAccess( a,b,c,d ) TrapSimpAccess( a,b,c,d )
+#define     OnAnotherThreadSimpleAccess( a,b,c,d ) TrapSimpleAccess( a,b,c,d )
 #endif

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2011-2013 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2011-2022 The Open Watcom Contributors. All Rights Reserved.
 *
 * =========================================================================
 *
@@ -13,7 +13,8 @@
 
 #include "rsi1632.h"
 
-int rsi_get_descriptor( SELECTOR sel, descriptor FarPtr g )
+
+bool rsi_get_descriptor( SELECTOR sel, descriptor FarPtr g )
 {
     descriptor FarPtr  p;
 
@@ -22,11 +23,11 @@ int rsi_get_descriptor( SELECTOR sel, descriptor FarPtr g )
     } else {
         p = makeptr( gdt_sel, sel & SelMask );
         *g = *p;
-        return( p->type.accessed != 0 );
+        return( p->u1.flags.accessed != 0 );
     }
 }
 
-int rsi_set_descriptor( SELECTOR sel, descriptor FarPtr g )
+bool rsi_set_descriptor( SELECTOR sel, descriptor FarPtr g )
 {
     descriptor FarPtr  p;
 

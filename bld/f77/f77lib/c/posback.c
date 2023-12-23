@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,14 +44,15 @@ static  uint    GetPrevChar( b_file *io )
 //=======================================
 // Get previous character in file.
 {
-    if( CurrFileOffset( io ) == 0 ) return( NO_CHAR );
+    if( CurrFileOffset( io ) == 0 )
+        return( NO_CHAR );
     if( SysSeek( io, -1L, SEEK_CUR ) < 0 ) {
         return( NO_CHAR );
     }
-    if( ( io->attrs & READ_AHEAD ) && io->b_curs < io->read_len ) {
-        return( io->buffer[ io->b_curs ] );
+    if( (io->attrs & READ_AHEAD) && io->b_curs < io->read_len ) {
+        return( io->buffer[io->b_curs] );
     } else if( io->b_curs < io->high_water ) {
-        return( io->buffer[ io->b_curs ] );
+        return( io->buffer[io->b_curs] );
     }
     return( NO_CHAR );
 }
@@ -61,25 +62,18 @@ void    FBackspace( b_file *io, int rec_size )
 //============================================
 // Backspace a file.
 {
-    uint        ch;
-    unsigned_32 u32;
-    bool        start_of_logical_record;
+    uint                ch;
+    variable_rec_tag    rec_tag;
 
     FSetIOOk( io );
     if( io->attrs & REC_VARIABLE ) {
-        for(;;) {
-            if( SysSeek( io, -(long)sizeof( u32 ), SEEK_CUR ) < 0 )
+        for( ;; ) {
+            if( SysSeek( io, -(long)sizeof( rec_tag ), SEEK_CUR ) < 0 )
                 return;
-            if( SysRead( io, (char *)&u32, sizeof( u32 ) ) == READ_ERROR )
+            if( SysRead( io, (char *)&rec_tag, sizeof( rec_tag ) ) == READ_ERROR )
                 return;
-            if( u32 & 0x80000000 ) {
-                u32 &= 0x7fffffff;
-                start_of_logical_record = false;
-            } else {
-                start_of_logical_record = true;
-            }
-            SysSeek( io, -(long)( u32 + 2 * sizeof( u32 ) ), SEEK_CUR );
-            if( start_of_logical_record ) {
+            SysSeek( io, -(long)( (rec_tag & VARIABLE_REC_LEN_MASK) + 2 * sizeof( rec_tag ) ), SEEK_CUR );
+            if( (rec_tag & VARIABLE_REC_LOGICAL) == 0 ) {
                 break;
             }
         }
@@ -87,7 +81,7 @@ void    FBackspace( b_file *io, int rec_size )
         // skip first record separator
         if( GetPrevChar( io ) == NO_CHAR )
             return;
-        for(;;) {
+        for( ;; ) {
             ch = GetPrevChar( io );
             if( ch == NO_CHAR )
                 return;

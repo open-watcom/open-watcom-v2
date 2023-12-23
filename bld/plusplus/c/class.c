@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -102,7 +102,7 @@ typedef enum {
 
 static uint_16 classIndex;
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 void DumpClasses( void )
 {
     CLASS_DATA *data;
@@ -1628,7 +1628,7 @@ static void createVFPtrField( CLASS_DATA *data, bool do_creation )
     if( do_creation ) {
         vfptr_type = MakeVFTableFieldType( true );
         data->vf_offset = addTypeField( data, vfptr_type );
-#ifndef NDEBUG
+#ifdef DEVBUILD
     } else if( data->own_vfptr ) {
         CFatal( "vfptr created twice" );
 #endif
@@ -2037,7 +2037,7 @@ static void verifyCtor( CLASS_DATA *data, SYMBOL sym )
     SYMBOL base_sym;
     CLASSINFO *info;
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
     if( sym->name->name != CppConstructorName() ) {
         CFatal( "ctor check used on non-ctor symbol" );
     }
@@ -2986,7 +2986,7 @@ bool ClassOKToRewrite( void )
         return( false );
     }
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
     if( ! ScopeType( GetCurrScope(), SCOPE_CLASS ) ) {
         DbgAssert( ScopeType( GetCurrScope()->enclosing, SCOPE_CLASS ) );
     }
@@ -3017,7 +3017,7 @@ void ClassStoreInlineFunc( DECL_INFO *dinfo )
     CLASS_DATA *data;
 
     data = classDataStack;
-#ifndef NDEBUG
+#ifdef DEVBUILD
     if( data == NULL ) {
         CFatal( "inline function is not in a class definition" );
     }
@@ -3028,7 +3028,7 @@ void ClassStoreInlineFunc( DECL_INFO *dinfo )
     }
 #endif
     data = data->inline_data;
-#ifndef NDEBUG
+#ifdef DEVBUILD
     if( data == NULL ) {
         CFatal( "inline function is not nested in a class definition" );
     }
@@ -3082,9 +3082,7 @@ void ClassMakeUniqueName( TYPE class_type, NAME signature )
         len = strlen( NameStr( signature ) );
     }
     hash *= len + 1;
-    buff[0] = '_';
-    buff[1] = '_';
-    ultoa( hash, &buff[2], 31 );
+    EncodeClassHash( hash, buff );
     if( len != 0 ) {
         VBUF big_buff;
 
@@ -3107,7 +3105,7 @@ static void doPromotion( SYMBOL_NAME sym_name )
 
     sym = sym_name->name_syms;
     sym_name->name_syms = NULL;
-#ifndef NDEBUG
+#ifdef DEVBUILD
     if( sym == NULL ) {
         CFatal( "missing check for anonymous unions" );
     }
@@ -3502,7 +3500,7 @@ void ClassCtorNullBody( SYMBOL ctor )
         info->ctor_user_code = false;
     } else {
         /* out-of-line definition */
-        if(( GenSwitches & DBG_LOCALS ) == 0 ) {
+        if(( GenSwitches & CGSW_GEN_DBG_LOCALS ) == 0 ) {
             if( IsSrcFilePrimary( ctor->locn->tl.src_file ) ) {
                 if( info->ctor_user_code_checked ) {
                     CErr1( WARN_OPTIMIZE_IF_EARLIER );
@@ -3527,7 +3525,7 @@ void ClassDtorNullBody( SYMBOL dtor )
         info->dtor_user_code = false;
     } else {
         /* out-of-line definition */
-        if(( GenSwitches & DBG_LOCALS ) == 0 ) {
+        if(( GenSwitches & CGSW_GEN_DBG_LOCALS ) == 0 ) {
             if( IsSrcFilePrimary( dtor->locn->tl.src_file ) ) {
                 //
                 // If dtor is:

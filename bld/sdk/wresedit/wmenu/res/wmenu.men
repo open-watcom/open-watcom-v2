@@ -1,3 +1,5 @@
+/* UTF-8 encoding, ¥ */
+
 "WMainMenu" MENU
 BEGIN
     POPUP      sp( "&File",

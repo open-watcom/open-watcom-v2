@@ -1,3 +1,5 @@
+/* UTF-8 encoding, ¥ */
+
 #include "alias.rh"
 
 ALIAS_DLG DIALOG 6, 18, 187, 175

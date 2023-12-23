@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -25,8 +25,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  DIP module loader for Win32.
 *
 ****************************************************************************/
 
@@ -34,10 +33,11 @@
 #include <stdio.h>
 #include <string.h>
 #include <windows.h>
+#include "digld.h"
 #include "dip.h"
 #include "dipimp.h"
-#include "dipcli.h"
 #include "dipsys.h"
+
 
 void DIPSysUnload( dip_sys_handle *sys_hdl )
 {
@@ -47,26 +47,27 @@ void DIPSysUnload( dip_sys_handle *sys_hdl )
     }
 }
 
-dip_status DIPSysLoad( const char *path, dip_client_routines *cli, dip_imp_routines **imp, dip_sys_handle *sys_hdl )
+dip_status DIPSysLoad( const char *base_name, dip_client_routines *cli, dip_imp_routines **imp, dip_sys_handle *sys_hdl )
 {
-    dip_sys_handle      dip_dll;
+    dip_sys_handle      mod_hdl;
     dip_init_func       *init_func;
-    char                newpath[256];
-    dip_status          ds;
+    char                filename[_MAX_PATH];
+    dip_status          status;
 
     *sys_hdl = NULL_SYSHDL;
-    strcpy( newpath, path );
-    strcat( newpath, ".dll" );
-    dip_dll = LoadLibrary( newpath );
-    if( dip_dll == NULL ) {
+    if( DIGLoader( Find )( DIG_FILETYPE_EXE, base_name, 0, ".dll", filename, sizeof( filename ) ) == 0 ) {
         return( DS_ERR | DS_FOPEN_FAILED );
     }
-    ds = DS_ERR | DS_INVALID_DIP;
-    init_func = (dip_init_func *)GetProcAddress( dip_dll, "DIPLOAD" );
-    if( init_func != NULL && (*imp = init_func( &ds, cli )) != NULL ) {
-        *sys_hdl = dip_dll;
+    mod_hdl = LoadLibrary( filename );
+    if( mod_hdl == NULL ) {
+        return( DS_ERR | DS_FOPEN_FAILED );
+    }
+    status = DS_ERR | DS_INVALID_DIP;
+    init_func = (dip_init_func *)GetProcAddress( mod_hdl, "DIPLOAD" );
+    if( init_func != NULL && (*imp = init_func( &status, cli )) != NULL ) {
+        *sys_hdl = mod_hdl;
         return( DS_OK );
     }
-    FreeLibrary( dip_dll );
-    return( ds );
+    DIPSysUnload( &mod_hdl );
+    return( status );
 }

@@ -42,8 +42,9 @@ common_objs = &
     $(_subdir_)cmemmgr.obj &
     $(_subdir_)cmodel.obj &
     $(_subdir_)cmsg.obj &
-    $(_subdir_)cname.obj &
     $(_subdir_)coptions.obj &
+    $(_subdir_)cmdlnprs.obj &
+    $(_subdir_)cmdscan.obj &
     $(_subdir_)caux.obj &
     $(_subdir_)cpragma.obj &
     $(_subdir_)cpurge.obj &
@@ -54,12 +55,12 @@ common_objs = &
     $(_subdir_)cstring.obj &
     $(_subdir_)csym.obj &
     $(_subdir_)ctimepc.obj &
+    $(_subdir_)ppfmttm.obj &
     $(_subdir_)ctoken.obj &
     $(_subdir_)ctype.obj &
     $(_subdir_)cusage.obj &
     $(_subdir_)cutil.obj &
     $(_subdir_)ftoa.obj &
-    $(_subdir_)strsave.obj &
     $(_subdir_)watcom.obj &
     $(_subdir_)cgetch.obj &
     $(_subdir_)cmacadd.obj &
@@ -87,19 +88,19 @@ common_objs = &
     $(_subdir_)ppexpn.obj &
     $(_subdir_)unicode.obj
 
-!ifeq release 0
+!ifeq debug 2
 cc_debug_objs = $(_subdir_)cfedump.obj
 !endif
 
 #
 # target specific files
 #
-cc_objs_i86   = $(_subdir_)cpragx86.obj $(_subdir_)pragi86.obj
-cc_objs_386   = $(_subdir_)cpragx86.obj $(_subdir_)prag386.obj
-cc_objs_axp   = $(_subdir_)cpragaxp.obj $(_subdir_)pragaxp.obj
-cc_objs_ppc   = $(_subdir_)cpragppc.obj $(_subdir_)pragppc.obj
-cc_objs_mps   = $(_subdir_)cpragmps.obj $(_subdir_)pragmips.obj
-cc_objs_sparc = $(_subdir_)cpragspc.obj $(_subdir_)pragspc.obj $(_subdir_)stubspc.obj
+cc_objs_i86   = $(_subdir_)cmdlnx86.obj $(_subdir_)cpragx86.obj $(_subdir_)pragi86.obj
+cc_objs_386   = $(_subdir_)cmdlnx86.obj $(_subdir_)cpragx86.obj $(_subdir_)prag386.obj
+cc_objs_axp   = $(_subdir_)cmdlnrsc.obj $(_subdir_)cpragaxp.obj $(_subdir_)pragaxp.obj
+cc_objs_ppc   = $(_subdir_)cmdlnrsc.obj $(_subdir_)cpragppc.obj $(_subdir_)pragppc.obj
+cc_objs_mps   = $(_subdir_)cmdlnrsc.obj $(_subdir_)cpragmps.obj $(_subdir_)pragmips.obj
+cc_objs_sparc = $(_subdir_)cmdlnrsc.obj $(_subdir_)cpragspc.obj $(_subdir_)pragspc.obj $(_subdir_)stubspc.obj
 
 cc_template = $(common_objs) $(cc_debug_objs) $(asminline_objs) $(cg_objs) $(cc_objs_$(target_cpu))
 

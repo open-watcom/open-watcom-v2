@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,14 +33,20 @@
 
 #if !defined( __cplusplus )
   #if !defined( __bool_true_false_are_defined )
-    #if defined( __WATCOMC__ ) && __WATCOMC__ > 1290 || __STDC_VERSION__ >= 199901L
-        #include <stdbool.h>
-    #else
+    #if !defined( __STDC_VERSION__ ) || __STDC_VERSION__ < 199901L || defined( __WATCOMC__ ) && __WATCOMC__ < 1300
+        /*
+         * support for pre C99 compilers
+         * fix for OW 1.9 bug in _Bool implementation
+         */
         #define bool        unsigned char
         #define true        1
         #define false       0
         #define __bool_true_false_are_defined 1
+    #else
+        #include <stdbool.h>
     #endif
+  #endif
+  #if !defined( boolbit )
     #ifdef _MSC_VER
         #define boolbit     unsigned char
     #else

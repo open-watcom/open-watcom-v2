@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -105,18 +105,18 @@ static void WritePharSimple( unsigned_32 start )
     if( FmtData.type & MK_PHAR_REX ) {
         SeekLoad( start + sizeof( simple_header ) );
         extra = start + sizeof( simple_header ) + WritePharRelocs();
-        header_size = MAKE_PARA( extra );
+        header_size = __ROUND_UP_SIZE_PARA( extra );
         PadLoad( header_size - extra );
     } else {
-        SeekLoad( start + MAKE_PARA( sizeof( simple_header ) ) );
-        header_size = MAKE_PARA( sizeof( simple_header ) );    // para align.
+        SeekLoad( start + __ROUND_UP_SIZE_PARA( sizeof( simple_header ) ) );
+        header_size = __ROUND_UP_SIZE_PARA( sizeof( simple_header ) );    // para align.
     }
     file_size = header_size + WritePharData( start + header_size );
     DBIWrite();
     if( FmtData.type & MK_PHAR_SIMPLE ) {
         _HostU16toTarg( SIMPLE_SIGNATURE, header.signature );
     } else {
-        _HostU16toTarg( REX_SIGNATURE, header.signature );
+        _HostU16toTarg( EXESIGN_REX, header.signature );
     }
     _HostU16toTarg( file_size % 512U, header.mod_size );
     _HostU16toTarg( (file_size + 511U) / 512U, header.file_size );
@@ -151,34 +151,35 @@ static void WriteDescriptor( unsigned_32 base, unsigned_32 limit,
 {
     descriptor  desc;
 
-    desc.baselow = base;
-    desc.basemid = base >> 16;
-    desc.basehigh = base >> 24;
-    desc.bits1 = 0;
-    desc.bits2 = 0;
+    SET_DESC_BASE( desc, base );
+    desc.u1.val = 0;
     if( flags & DR_BASE ) {
-        desc.bits1 |= DESC_READWRITE | DESC_PRESENT;
+        desc.u1.flags_data.writeable = 1;
+        desc.u1.flags.present = 1;
     }
     if( flags & DR_TSS ) {
-        desc.bits1 |= DESC_PRESENT | DESC_TSS;
+        desc.u1.flags_sys.type = 1;
+//        desc.u1.flags_sys.gate = 0;
+        desc.u1.flags_sys.use32 = 1;
+        desc.u1.flags.present = 1;
     }
     if( flags & DR_IS_CODE ) {
-        desc.bits1 |= DESC_CODE;
+        desc.u1.flags.execute = 1;
     }
     if( flags & DR_IS_APP ) {
-        desc.bits1 |= DESC_APPLICATION;
+        desc.u1.flags.nonsystem = 1;
     }
+    desc.u2.val = 0;
     if( flags & DR_IS_USER ) {
-        desc.bits2 |= DESC_GENERAL;
+        desc.u2.flags.use32 = 1;
     }
     if( limit > 0 )
         limit--;
-    if( limit >= _1MB ) {
+    if( limit >= _1M ) {
         limit >>= 12;
-        desc.bits2 |= DESC_GRANULARITY_BIT;
+        desc.u2.flags.page_granular = 1;
     }
-    desc.limitlow = limit;
-    desc.bits2 |= (limit >> 16) & DESC_LIMIT_HIGH_MASK;
+    SET_DESC_LIMIT( desc, limit );
     WriteLoad( &desc, sizeof( descriptor ) );
 }
 

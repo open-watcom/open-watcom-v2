@@ -52,12 +52,12 @@ static  owl_section_handle  owlCVSym; //.debug$s for non-comdats .text
 void    CVDefSegs( void )
 /***********************/
 {
-    if( _IsModel( DBG_LOCALS ) ) {
+    if( _IsModel( CGSW_GEN_DBG_LOCALS ) ) {
         CVSyms = DbgSegDef( ".debug$S"  );
         CVSymMain = FindSection( CVSyms );
         owlCVSym = CVSymMain->owl_handle;
     }
-    if( _IsModel( DBG_TYPES ) ) {
+    if( _IsModel( CGSW_GEN_DBG_TYPES ) ) {
         CVTypes = DbgSegDef( ".debug$T" );
     }
 }
@@ -65,7 +65,7 @@ void    CVDefSegs( void )
 void  CVDefSymNormal( void )
 /**************************/
 {
-    if( _IsModel( DBG_LOCALS ) ) {
+    if( _IsModel( CGSW_GEN_DBG_LOCALS ) ) {
         CVSymMain->owl_handle = owlCVSym;
     }
 }
@@ -73,7 +73,7 @@ void  CVDefSymNormal( void )
 void  CVDefSymComdat( owl_section_handle depof )
 /**********************************************/
 {
-    if( _IsModel( DBG_LOCALS ) ) {
+    if( _IsModel( CGSW_GEN_DBG_LOCALS ) ) {
         CVSymMain->owl_handle = DbgSectDefComdat( ".debug$S" );
         OWLComdatDep( CVSymMain->owl_handle, depof );
     }

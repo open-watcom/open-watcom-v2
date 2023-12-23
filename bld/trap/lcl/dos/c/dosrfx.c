@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -25,8 +25,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  DOS version of RFX stuff (16-bit code)
 *
 ****************************************************************************/
 
@@ -51,8 +50,10 @@ trap_retval TRAP_RFX( rename )( void )
     old_name = GetInPtr( sizeof( rfx_rename_req ) );
     new_name = GetInPtr( sizeof( rfx_rename_req ) + strlen( old_name ) + 1 );
     ret = GetOutPtr( 0 );
+    ret->err = 0;
     rc = TinyRename( old_name, new_name );
-    ret->err = TINY_ERROR( rc ) ? TINY_INFO( rc ) : 0;
+    if( TINY_ERROR( rc ) )
+        ret->err = TINY_INFO( rc );
     return( sizeof( *ret ) );
 }
 
@@ -62,8 +63,10 @@ trap_retval TRAP_RFX( mkdir )( void )
     rfx_mkdir_ret   *ret;
 
     ret = GetOutPtr( 0 );
-    rc = TinyMakeDir( (char *)GetInPtr( sizeof( rfx_mkdir_req ) ) );
-    ret->err = TINY_ERROR( rc ) ? TINY_INFO( rc ) : 0;
+    ret->err = 0;
+    rc = TinyMakeDir( GetInPtr( sizeof( rfx_mkdir_req ) ) );
+    if( TINY_ERROR( rc ) )
+        ret->err = TINY_INFO( rc );
     return( sizeof( *ret ) );
 }
 
@@ -73,8 +76,10 @@ trap_retval TRAP_RFX( rmdir )( void )
     rfx_mkdir_ret   *ret;
 
     ret = GetOutPtr( 0 );
-    rc = TinyRemoveDir( (char *)GetInPtr( sizeof( rfx_rmdir_req ) ) );
-    ret->err = TINY_ERROR( rc ) ? TINY_INFO( rc ) : 0;
+    ret->err = 0;
+    rc = TinyRemoveDir( GetInPtr( sizeof( rfx_rmdir_req ) ) );
+    if( TINY_ERROR( rc ) )
+        ret->err = TINY_INFO( rc );
     return( sizeof( *ret ) );
 }
 
@@ -85,8 +90,8 @@ trap_retval TRAP_RFX( setdrive )( void )
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    TinySetCurrDrive( acc->drive );
     ret->err = 0;
+    TinySetCurrDrive( acc->drive );
     return( sizeof( *ret ) );
 }
 
@@ -105,8 +110,10 @@ trap_retval TRAP_RFX( setcwd )( void )
     rfx_setcwd_ret      *ret;
 
     ret = GetOutPtr( 0 );
+    ret->err = 0;
     rc = TinyChangeDir( GetInPtr( sizeof( rfx_setcwd_req ) ) );
-    ret->err = TINY_ERROR( rc ) ? TINY_INFO( rc ) : 0;
+    if( TINY_ERROR( rc ) )
+        ret->err = TINY_INFO( rc );
     return( sizeof( *ret ) );
 }
 
@@ -125,6 +132,7 @@ trap_retval TRAP_RFX( getcwd )( void )
     if( TINY_ERROR( rc ) ) {
         ret->err = TINY_INFO( rc );
         *cwd = '\0';
+        return( sizeof( *ret ) + 1 );
     }
     return( sizeof( *ret ) + 1 + strlen( cwd ) );
 }
@@ -137,8 +145,10 @@ trap_retval TRAP_RFX( setfileattr )( void )
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
+    ret->err = 0;
     rc = TinySetFileAttr( GetInPtr( sizeof( *acc ) ), acc->attribute );
-    ret->err = TINY_ERROR( rc ) ? TINY_INFO( rc ) : 0;
+    if( TINY_ERROR( rc ) )
+        ret->err = TINY_INFO( rc );
     return( sizeof( *ret ) );
 }
 
@@ -190,10 +200,16 @@ static void mylocaltime( unsigned long date_time, tiny_ftime_t *time, tiny_fdate
         }
     }
     if( ( ( num_yr_since_1970 - 2 ) % 4 ) == 0 ) {
-        for( month=2; month<=12; ++day_since_jan[month], ++month ) {}
+        for( month = 2; month <= 12; ++month ) {
+            ++day_since_jan[month];
+        }
     }
     date->year = num_yr_since_1970 - 10;
-    for( month=1;( day > day_since_jan[month] && month <= 12 ); month++ ) {}
+    for( month = 1; month <= 12; month++ ) {
+        if( day <= day_since_jan[month] ) {
+            break;
+        }
+    }
     date->month = month;
     date->day = day - day_since_jan[month - 1];
     date_time %= 86400;
@@ -241,8 +257,8 @@ static unsigned long mymktime( unsigned time, unsigned date )
     }
     day += ( num_leap_since_1980 * 366
              + ( num_yr_since_1980 - num_leap_since_1980 ) * 365
-             + day_since_jan[month-1] - 1 );
-    return( NM_SEC_1970_1980 + day*86400 + hour*3600 + min*60 + sec );
+             + day_since_jan[month - 1] - 1 );
+    return( NM_SEC_1970_1980 + day * 86400 + hour * 3600 + min * 60 + sec );
 }
 
 trap_retval TRAP_RFX( getdatetime )( void )
@@ -270,9 +286,11 @@ trap_retval TRAP_RFX( findfirst )( void )
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
+    ret->err = 0;
     TinySetDTA( GetOutPtr( sizeof( *ret ) ) );
-    rc = TinyFindFirst( (char *)GetInPtr( sizeof( *acc ) ), acc->attrib );
-    ret->err = TINY_ERROR( rc ) ? TINY_INFO( rc ) : 0;
+    rc = TinyFindFirst( GetInPtr( sizeof( *acc ) ), acc->attrib );
+    if( TINY_ERROR( rc ) )
+        ret->err = TINY_INFO( rc );
     return( sizeof( *ret ) + sizeof( tiny_find_t ) );
 }
 
@@ -285,12 +303,12 @@ trap_retval TRAP_RFX( findnext )( void )
     info = GetInPtr( sizeof( rfx_findnext_req ) );
     TinyFarSetDTA( info );
     ret = GetOutPtr( 0 );
+    ret->err = 0;
     rc = TinyFindNext();
     if( TINY_ERROR( rc ) ) {
         ret->err = TINY_INFO( rc );
     } else {
         memcpy( GetOutPtr( sizeof( *ret ) ), info, sizeof( tiny_find_t ) );
-        ret->err = 0;
     }
     return( sizeof( *ret ) + sizeof( tiny_find_t ) );
 }
@@ -316,8 +334,8 @@ trap_retval TRAP_RFX( nametocanonical )( void )
 
     name = GetInPtr( sizeof( rfx_nametocanonical_req ) );
     ret = GetOutPtr( 0 );
+    ret->err = 0;
     fullname = GetOutPtr( sizeof( *ret ) );
-    ret->err = 1;
     while( *name == ' ' ) {
         name++;
     }
@@ -352,8 +370,10 @@ trap_retval TRAP_RFX( nametocanonical )( void )
     for( ;; ) {
         for( ;; ) {
             ch = *p++;
-            if( ch == '\\' ) break;
-            if( ch == '/' ) break;
+            if( ch == '\\' )
+                break;
+            if( ch == '/' )
+                break;
             if( ch == '\0' ) {
                 return( sizeof( *ret ) + strlen( GetOutPtr( 0 ) ) + 1 );
             }

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -53,5 +54,20 @@
 #define UINT8STRLEN     3
 
 #define CMPFEXT(e,c)    (e[0] == '.' && stricmp(e + 1, c) == 0)
+
+#define VALU8(p)        *(uint_8 *)(p)
+#define VALU16(p)       *(uint_16 *)(p)
+#define VALU32(p)       *(uint_32 *)(p)
+
+#define INCU8(p)        (p) += sizeof( uint_8 )
+#define INCU16(p)       (p) += sizeof( uint_16 )
+#define INCU32(p)       (p) += sizeof( uint_32 )
+
+#define SIZEU8          sizeof( uint_8 )
+#define SIZEU16         sizeof( uint_16 )
+#define SIZEU32         sizeof( uint_32 )
+
+#define CHUNK_SIZE      ((unsigned short)(48 * 1024))
+#define MB_SINGLE_BEEP  ((UINT)-1)
 
 #endif

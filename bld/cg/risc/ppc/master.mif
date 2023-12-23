@@ -1,0 +1,25 @@
+tree_depth = 5
+
+target_cpu      = ppc
+target_cls      = risc
+
+ppc_objs = &
+        ppccall.obj  &
+        ppcdfsup.obj &
+        ppcenc.obj   &
+        ppcenc2.obj   &
+        ppcoptab.obj &
+        ppcreg.obj   &
+        ppcrtrtn.obj &
+        ppcconv.obj  &
+        ppcfunit.obj &
+        ppclbl.obj   &
+        ppcparm.obj  &
+        ppcproc.obj  &
+        ppcrgtbl.obj &
+        ppcsplit.obj &
+        ppctable.obj &
+        ppcstub.obj  &
+        ppcptype.obj
+
+!include $(cg_dir)/$(target_cls)/master.mif

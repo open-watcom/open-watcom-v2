@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -55,6 +56,7 @@ PATCH_RET_CODE CloseNew( foff len, foff actual_sum, bool *havenew )
     unsigned long   off;
     FILE            *fd;
     byte            *p;
+    PATCH_RET_CODE  rc;
 
     *havenew = true;
     sum = 0;
@@ -65,26 +67,28 @@ PATCH_RET_CODE CloseNew( foff len, foff actual_sum, bool *havenew )
     if( sum != actual_sum ) {
         *havenew = false;
         if( CheckSumOld( len ) == actual_sum ) {
-            return( PATCH_RET_OKAY );
+            rc = PATCH_RET_OKAY;
         } else {
             PatchError( ERR_WRONG_CHECKSUM, sum, actual_sum );
-            bdiff_free( NewFile );
-            NewFile = NULL;
-            return( PATCH_BAD_CHECKSUM );
+            rc = PATCH_BAD_CHECKSUM;
+        }
+    } else {
+        fd = fopen( NewName, "wb" );
+        if( FileCheck( fd, NewName ) ) {
+            if( fwrite( NewFile, 1, len, fd ) != len ) {
+                *havenew = false;
+                FilePatchError( ERR_CANT_WRITE, NewName );
+                rc = PATCH_CANT_WRITE;
+            } else {
+                SameDate( NewName, PatchName );
+                rc = PATCH_RET_OKAY;
+            }
+            fclose( fd );
+        } else {
+            rc = PATCH_CANT_OPEN_FILE;
         }
     }
-    fd = fopen( NewName, "wb" );
-    FileCheck( fd, NewName );
-    if( fwrite( NewFile, 1, len, fd ) != len ) {
-        *havenew = false;
-        FilePatchError( ERR_CANT_WRITE, NewName );
-        bdiff_free( NewFile );
-        NewFile = NULL;
-        return( PATCH_CANT_WRITE );
-    }
-    fclose( fd );
-    SameDate( NewName, PatchName );
     bdiff_free( NewFile );
     NewFile = NULL;
-    return( PATCH_RET_OKAY );
+    return( rc );
 }

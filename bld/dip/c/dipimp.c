@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,8 +38,8 @@
 #include <i86.h>
 #endif
 #include "bool.h"
-#include "diptypes.h"
 #include "dipimp.h"
+
 
 #ifndef DIP_PRIORITY
 #define DIP_PRIORITY DIP_PRIOR_NORMAL
@@ -53,8 +53,8 @@ address                 NilAddr;
 dip_client_routines     *DIPClient;
 
 dip_imp_routines        ImpInterface = {
-    DIP_MAJOR,
-    DIP_MINOR,
+    DIP_VERSION_MAJOR,
+    DIP_VERSION_MINOR,
     DIP_PRIORITY,
     DIPImp( Name ),
 
@@ -136,7 +136,7 @@ static HANDLE       TaskId;
 #endif
 
 #if defined( __WATCOMC__ ) && ( defined( __DOS__ ) || defined( __UNIX__ ) )
-const char __based( __segname( "_CODE" ) ) Signature[4] = "DIP";
+const char __based( __segname( "_CODE" ) ) Signature[4] = { DIPSIGN };
 #endif
 
 DIG_DLLEXPORT dip_imp_routines * DIGENTRY DIPLOAD( dip_status *ds, dip_client_routines *client )
@@ -202,14 +202,14 @@ void DCAddrSection( address *a )
     DIPClient->AddrSection( a );
 }
 
-FILE *DCOpen( const char *path, dig_open flags )
+FILE *DCOpen( const char *path, dig_open mode )
 {
-    return( DIPClient->Open( path, flags ) );
+    return( DIPClient->Open( path, mode ) );
 }
 
-int DCSeek( FILE *fp, unsigned long p, dig_seek w )
+int DCSeek( FILE *fp, unsigned long p, dig_seek where )
 {
-    return( DIPClient->Seek( fp, p, w ) );
+    return( DIPClient->Seek( fp, p, where ) );
 }
 
 unsigned long DCTell( FILE *fp )
@@ -224,7 +224,7 @@ size_t DCRead( FILE *fp, void *b, size_t s )
 
 dip_status DCReadAt( FILE *fp, void *b, size_t s, unsigned long p )
 {
-    if( DIPClient->Seek( fp, p, DIG_ORG ) ) {
+    if( DIPClient->Seek( fp, p, DIG_SEEK_ORG ) ) {
         return( DS_ERR | DS_FSEEK_FAILED );
     }
     if( DIPClient->Read( fp, b, s ) != s ) {
@@ -243,9 +243,9 @@ void DCClose( FILE *fp )
     DIPClient->Close( fp );
 }
 
-void DCRemove( const char *path, dig_open flags )
+void DCRemove( const char *path, dig_open mode )
 {
-    DIPClient->Remove( path, flags );
+    DIPClient->Remove( path, mode );
 }
 
 void DCStatus( dip_status ds )
@@ -255,19 +255,12 @@ void DCStatus( dip_status ds )
 
 dig_arch DCCurrArch( void )
 {
-    /* check for old client */
+    /*
+     * check for old client
+     */
     if( DIPClient->sizeof_struct < offsetof(dip_client_routines,CurrArch) )
         return( DIG_ARCH_X86 );
     return( DIPClient->CurrArch() );
-}
-
-unsigned DCMachineData( address a, dig_info_type info_type,
-                                dig_elen in_size,  const void *in,
-                                dig_elen out_size, void *out )
-{
-    if( DIPClient->sizeof_struct < offsetof(dip_client_routines,MachineData) )
-        return( 0 );
-    return( DIPClient->MachineData( a, info_type, in_size, in, out_size, out ) );
 }
 
 dip_status DIPIMPENTRY( OldTypeBase )(imp_image_handle *iih, imp_type_handle *ith, imp_type_handle *base_ith )
@@ -291,9 +284,8 @@ void DIGENTRY DIPUNLOAD( void )
 
 int PASCAL WinMain( HINSTANCE this_inst, HINSTANCE prev_inst, LPSTR cmdline, int cmdshow )
 /*****************************************************************************************
-
-    Initialization, message loop.
-*/
+ * Initialization, message loop.
+ */
 {
     MSG                 msg;
     FARPROC             *func;

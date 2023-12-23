@@ -1,7 +1,10 @@
 #
 # Change this macro name to whatever the name of your machine is
 #
-target_cpu = xmp
+
+tree_depth = 4
+
+dig_arch = xmp
 
 imp_objs = &
         xmpaddr.obj &

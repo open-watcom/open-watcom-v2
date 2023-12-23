@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -210,53 +210,7 @@ static bool MainSetupWndGUIEventProc( gui_window *gui, gui_event gui_ev, void *p
 
 gui_coord               GUIScale;
 
-#if defined( __WINDOWS__ )
-static bool CheckForSetup32( int argc, char **argv )
-{
-    DWORD       version;
-    int         winver;
-    VBUF        buff;
-    int         i;
-    VBUF        drive;
-    VBUF        path;
-    VBUF        name;
-    VBUF        ext;
-    char        *os;
-    bool        ok;
-
-    ok = false;
-    version = GetVersion();
-    winver = LOBYTE( LOWORD( version ) ) * 100 + HIBYTE( LOWORD( version ) );
-    os = getenv( "OS" );
-    if( winver >= 390 || ( os != NULL && stricmp( os, "Windows_NT" ) == 0 ) ) {
-        VbufInit( &buff );
-        VbufInit( &drive );
-        VbufInit( &path );
-        VbufInit( &name );
-        VbufInit( &ext );
-
-        VbufConcStr( &buff, argv[0] );
-        VbufConcStr( &name, "SETUP32" );
-        VbufSplitpath( &buff, &drive, &path, NULL, &ext );
-        VbufMakepath( &buff, &drive, &path, &name, &ext );
-        if( access_vbuf( &buff, F_OK ) == 0 ) {
-            for( i = 1; i < argc; i++ ) {
-                VbufConcChr( &buff, ' ' );
-                VbufConcStr( &buff, argv[i] );
-            }
-            WinExec( VbufString( &buff ), SW_SHOW );
-            ok = true;
-        }
-
-        VbufFree( &ext );
-        VbufFree( &name );
-        VbufFree( &path );
-        VbufFree( &drive );
-        VbufFree( &buff );
-    }
-    return( ok );
-}
-#elif defined( __NT__ ) && !defined( _M_X64 )
+#if defined( __NT__ ) && !defined( _M_X64 )
 static bool CheckWin95Uninstall( int argc, char **argv )
 {
 // The Windows 95 version of setup gets installed as the
@@ -309,10 +263,7 @@ bool SetupPreInit( int argc, char **argv )
 {
     gui_rect            rect;
 
-#if defined( __WINDOWS__ )
-    if( CheckForSetup32( argc, argv ) )
-        return false;
-#elif defined( __NT__ ) && !defined( _M_X64 )
+#if defined( __NT__ ) && !defined( _M_X64 )
     if( CheckWin95Uninstall( argc, argv ) )
         return false;
 #else

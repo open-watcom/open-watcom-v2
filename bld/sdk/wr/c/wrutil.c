@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,6 +34,7 @@
 #include "wrglbl.h"
 #include <mbstring.h>
 #include "wresall.h"
+#include "wrutili.h"
 
 #include "clibext.h"
 
@@ -99,7 +101,7 @@ char *WRAPI WRConvertStringFrom( const char *_str, const char *_from, const char
             new[pos++] = to[s - from];
         } else {
             new[pos++] = str[0];
-            if( _mbislead( str[0] ) ) {
+            if( _ismbblead( str[0] ) ) {
                 new[pos++] = str[1];
             }
         }
@@ -134,7 +136,7 @@ char *WRAPI WRConvertFrom( const char *_str, char from, char to )
             new[pos++] = to;
         } else {
             new[pos++] = str[0];
-            if( _mbislead( str[0] ) ) {
+            if( _ismbblead( str[0] ) ) {
                 new[pos++] = str[1];
             }
         }
@@ -164,13 +166,13 @@ char *WRAPI WRConvertTo( const char *_str, char to, char from )
 
     pos = 0;
     for( ; *str != '\0'; str = _mbsinc( str ) ) {
-        if( !_mbislead( str[0] ) && !_mbislead( str[1] ) &&
+        if( !_ismbblead( str[0] ) && !_ismbblead( str[1] ) &&
             str[0] == '\\' && str[1] == from ) {
             new[pos++] = to;
             str++;
         } else {
             new[pos++] = str[0];
-            if( _mbislead( str[0] ) ) {
+            if( _ismbblead( str[0] ) ) {
                 new[pos++] = str[1];
             }
         }
@@ -202,13 +204,13 @@ char * WRAPI WRConvertStringTo( const char *_str, const char *to, const char *_f
 
     pos = 0;
     for( ; *str != '\0'; str = _mbsinc( str ) ) {
-        if( !_mbislead( str[0] ) && !_mbislead( str[1] ) &&
+        if( !_ismbblead( str[0] ) && !_ismbblead( str[1] ) &&
             str[0] == '\\' && (s = _mbschr( from, str[1] )) != NULL ) {
             new[pos++] = to[s - from];
             str++;
         } else {
             new[pos++] = str[0];
-            if( _mbislead( str[0] ) ) {
+            if( _ismbblead( str[0] ) ) {
                 new[pos++] = str[1];
             }
         }
@@ -242,7 +244,7 @@ void WRAPI WRMassageFilter( char *_filter )
 
 #if defined( __NT__ )
 
-bool WRAPI WRmbcs2unicodeBuf( const char *src, char *dest, size_t len )
+bool WRmbcs2unicodeBuf( const char *src, char *dest, size_t len )
 {
     uint_16     *new;
     size_t      len1, len2;
@@ -279,7 +281,7 @@ bool WRAPI WRmbcs2unicodeBuf( const char *src, char *dest, size_t len )
     return( true );
 }
 
-bool WRAPI WRunicode2mbcsBuf( const char *src, char *dest, size_t len )
+bool WRunicode2mbcsBuf( const char *src, char *dest, size_t len )
 {
     size_t      len1, len2;
 
@@ -313,7 +315,7 @@ bool WRAPI WRunicode2mbcsBuf( const char *src, char *dest, size_t len )
     return( true );
 }
 
-bool WRAPI WRmbcs2unicode( const char *src, char **dest, size_t *len )
+bool WRmbcs2unicode( const char *src, char **dest, size_t *len )
 {
     uint_16     *new;
     size_t      len1, len2;
@@ -357,7 +359,7 @@ bool WRAPI WRmbcs2unicode( const char *src, char **dest, size_t *len )
     return( true );
 }
 
-bool WRAPI WRunicode2mbcs( const char *src, char **dest, size_t *len )
+bool WRunicode2mbcs( const char *src, char **dest, size_t *len )
 {
     char        *new;
     size_t      len1, len2;
@@ -403,7 +405,7 @@ bool WRAPI WRunicode2mbcs( const char *src, char **dest, size_t *len )
 
 #else
 
-bool WRAPI WRmbcs2unicodeBuf( const char *src, char *dest, size_t len )
+bool  WRmbcs2unicodeBuf( const char *src, char *dest, size_t len )
 {
     uint_16     *new;
     size_t      len1;
@@ -418,7 +420,7 @@ bool WRAPI WRmbcs2unicodeBuf( const char *src, char *dest, size_t len )
     }
 
     // if len is -1 then dont bother checking the buffer length
-    if( len != WRLEN_AUTO && ( len1 * sizeof( uint_16 ) ) > len ) {
+    if( len != WRLEN_AUTO && ( len1 * SIZEU16 ) > len ) {
         return( false );
     }
 
@@ -435,7 +437,7 @@ bool WRAPI WRmbcs2unicodeBuf( const char *src, char *dest, size_t len )
     return( true );
 }
 
-bool WRAPI WRunicode2mbcsBuf( const char *src, char *dest, size_t len )
+bool WRunicode2mbcsBuf( const char *src, char *dest, size_t len )
 {
     uint_16     *uni_str;
     size_t      len1;
@@ -466,7 +468,7 @@ bool WRAPI WRunicode2mbcsBuf( const char *src, char *dest, size_t len )
     return( true );
 }
 
-bool WRAPI WRmbcs2unicode( const char *src, char **dest, size_t *len )
+bool WRmbcs2unicode( const char *src, char **dest, size_t *len )
 {
     uint_16     *new;
     size_t      len1;
@@ -480,13 +482,13 @@ bool WRAPI WRmbcs2unicode( const char *src, char **dest, size_t *len )
         len1 += strlen( src );
     }
 
-    *len = len1 * sizeof( uint_16 );
+    *len = len1 * SIZEU16;
 
     if( dest == NULL ) {
         return( true );
     }
 
-    new = MemAlloc( len1 * sizeof( uint_16 ) );
+    new = MemAlloc( len1 * SIZEU16 );
     if( new == NULL ) {
         return( false );
     }
@@ -504,7 +506,7 @@ bool WRAPI WRmbcs2unicode( const char *src, char **dest, size_t *len )
     return( true );
 }
 
-bool WRAPI WRunicode2mbcs( const char *src, char **dest, size_t *len )
+bool WRunicode2mbcs( const char *src, char **dest, size_t *len )
 {
     char        *new;
     uint_16     *uni_str;
@@ -546,7 +548,7 @@ bool WRAPI WRunicode2mbcs( const char *src, char **dest, size_t *len )
 
 #endif
 
-char * WRAPI WRWResIDNameToStr( WResIDName *name )
+char * WRAPI WRStringFromWResIDName( WResIDName *name )
 {
     char        *string;
 
@@ -603,21 +605,100 @@ size_t WRAPI WRFindFnOffset( const char *_name )
     const unsigned char *name = (const unsigned char *)_name;
 
     if( name == NULL ) {
-        return( -1 );
+        return( (size_t)-1 );
     }
 
     cp = name;
     last = name;
     while( *cp != 0 ) {
-        if( !_mbislead( *cp ) && (*cp == ':' || *cp == '\\') ) {
+        if( !_ismbblead( *cp ) && (*cp == ':' || *cp == '\\') ) {
             last = cp + 1;
         }
         cp = _mbsinc( cp );
     }
 
     if( *last == '\0' ) {
-        return( -1 );
+        return( (size_t)-1 );
     }
 
     return( (size_t)( last - name ) );
+}
+
+WRDLLENTRY size_t WRAPI WRCalcStrlen( const char *str, bool is32bit )
+{
+    size_t      len;
+
+    if( str == NULL ) {
+        str = "";
+    }
+
+    if( is32bit ) {
+        if( !WRmbcs2unicode( str, NULL, &len ) ) {
+            len = SIZEU16;
+        }
+    } else {
+        len = strlen( str ) + 1;
+    }
+
+    return( len );
+}
+
+WRDLLENTRY size_t WRAPI WRDataFromString( const char *str, bool is32bit, char *data )
+{
+    size_t      size;
+
+    if( str == NULL ) {
+        str = "";
+    }
+
+    if( is32bit ) {
+        if( !WRmbcs2unicode( str, NULL, &size ) ) {
+            size = SIZEU16;
+        } else if( !WRmbcs2unicodeBuf( str, data, size ) ) {
+            size = SIZEU16;
+        }
+        if( size == SIZEU16 ) {
+            VALU16( data ) = 0;
+            INCU16( data );
+        }
+    } else {
+        size = strlen( str ) + 1;
+        memcpy( data, str, size );
+    }
+
+    return( size );
+}
+
+WRDLLENTRY char * WRAPI WRStringFromData( const char **pdata, bool is32bit )
+{
+    char        *new;
+    size_t      size;
+    const char  *data;
+
+    if( pdata == NULL || *pdata == NULL ) {
+        return( NULL );
+    }
+
+    data = *pdata;
+    if( is32bit ) {
+        WRunicode2mbcs( data, NULL, &size );
+    } else {
+        size = strlen( data ) + 1;
+    }
+
+    new = WRMemAlloc( size );
+    if( new == NULL ) {
+        return( NULL );
+    }
+
+    if( is32bit ) {
+        WRunicode2mbcsBuf( data, new, size );
+        size = WRStrlen32( data ) + SIZEU16;
+    } else {
+        memcpy( new, data, size );
+    }
+
+    *pdata += size;
+
+    return( new );
 }

@@ -13,7 +13,7 @@ memory_model_i86 = s
 #
 .c : ..
 
-!ifeq release 1
+!ifneq debug 0
 extra_c_flags = -oaxs
 !endif
 

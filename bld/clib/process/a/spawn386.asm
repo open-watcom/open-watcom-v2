@@ -2,6 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
+;* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -35,7 +36,7 @@
         include struct.inc
 
         name    dospawn
-        xrefp   __dosretax
+        xrefp   "C",__set_errno_dos
 
 _TEXT   segment byte public 'CODE'
 _TEXT   ends
@@ -147,9 +148,16 @@ endif
         _if     nc                      ; If spawn was successful
           callos wait                   ; .. wait for child to complete
         _endif                          ; Endif
-        sbb     edx,edx                 ; set dx = status of carry flag
-        movzx   eax,ax
-        call    __dosretax
+        movzx   eax,ax                  ; extend eax by zero
+        _if     c                       ; If spawn was failed
+ifdef __STACK__
+          push  EAX                     ; .. pass DOS error code on stack
+endif
+          call  __set_errno_dos         ; .. set errno and return -1
+ifdef __STACK__
+          add   esp,4                   ; .. cleanup stack
+endif
+        _endif                          ; Endif
         pop     ds                      ; restore segment registers
         pop     es                      ;
         pop     ebx                     ; restore registers

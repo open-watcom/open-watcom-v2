@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,18 +41,16 @@
 #if defined(__WATCOMC__)
     #include <process.h>
 #endif
-#include "trptypes.h"
-#include "digcli.h"
-#include "digld.h"
 #include "servio.h"
 
 
-void Output( const char *str )
+void OutputLine( const char *str )
 {
     write( STDERR_FILENO, str, strlen( str ) );
+    write( STDERR_FILENO, "\n", 1 );
 }
 
-void SayGNiteGracey( int return_code )
+void ServTerminate( int return_code )
 {
     _exit( return_code );
     // never return
@@ -59,10 +58,7 @@ void SayGNiteGracey( int return_code )
 
 void StartupErr( const char *err )
 {
-    Output( err );
-    Output( "\n" );
-    SayGNiteGracey( 1 );
-    // never return
+    OutputLine( err );
 }
 
 int KeyPress( void )
@@ -112,146 +108,4 @@ int WantUsage( const char *ptr )
     if( *ptr == '-' )
         ++ptr;
     return( *ptr == '?' );
-}
-
-static char *StrCopy( const char *src, char *dst )
-{
-    while( (*dst = *src) ) {
-        ++src;
-        ++dst;
-    }
-    return( dst );
-}
-
-static unsigned TryOnePath( const char *path, struct stat *tmp, const char *name, char *result )
-{
-    char        *end;
-    char        *ptr;
-
-    if( path == NULL )
-        return( 0 );
-    ptr = result;
-    for( ;; ) {
-        if( *path == '\0' || *path == ':' ) {
-            if( ptr != result )
-                *ptr++ = '/';
-            end = StrCopy( name, ptr );
-            if( stat( result, tmp ) == 0 )
-                return( end - result );
-            if( *path == '\0' )
-                return( 0 );
-            ++path;
-            ptr = result;
-        }
-        if( *path != ' ' && *path != '\t' ) {
-            *ptr++ = *path;
-        }
-        ++path;
-    }
-}
-
-static unsigned FindFilePath( const char *name, char *result )
-{
-    struct stat tmp;
-    unsigned    len;
-    char        *end;
-    char        cmd[256];
-
-    if( stat( name, &tmp ) == 0 ) {
-        end = StrCopy( name, result );
-        return( end - result );
-    }
-    len = TryOnePath( getenv( "WD_PATH" ), &tmp, name, result );
-    if( len != 0 )
-        return( len );
-    len = TryOnePath( getenv( "HOME" ), &tmp, name, result );
-    if( len != 0 )
-        return( len );
-    if( _cmdname( cmd ) != NULL ) {
-        end = strrchr( cmd, '/' );
-        if( end != NULL ) {
-            *end = '\0';
-            /* look in the executable's directory */
-            len = TryOnePath( cmd, &tmp, name, result );
-            if( len != 0 )
-                return( len );
-            end = strrchr( cmd, '/' );
-            if( end != NULL ) {
-                /* look in the wd sibling directory of where the command
-                   came from */
-                StrCopy( "wd", end + 1 );
-                len = TryOnePath( cmd, &tmp, name, result );
-                if( len != 0 ) {
-                    return( len );
-                }
-            }
-        }
-    }
-    return( TryOnePath( "/opt/watcom/wd", &tmp, name, result ) );
-}
-
-FILE *DIGLoader( Open )( const char *name, unsigned name_len, const char *ext, char *result, unsigned max_result )
-{
-    bool                has_ext;
-    bool                has_path;
-    const char          *src;
-    char                *dst;
-    char                trpfile[256];
-    FILE                *fp;
-    char                c;
-
-    max_result = max_result;
-    has_ext = false;
-    has_path = false;
-    src = name;
-    dst = trpfile;
-    while( name_len-- > 0 ) {
-        c = *src++;
-        *dst++ = c;
-        switch( c ) {
-        case '.':
-            has_ext = true;
-            break;
-        case '/':
-            has_ext = false;
-            has_path = true;
-            /* fall through */
-            break;
-        }
-    }
-    if( !has_ext ) {
-        *dst++ = '.';
-        name_len = strlen( ext );
-        memcpy( dst, ext, name_len );
-        dst += name_len;
-    }
-    *dst = '\0';
-    fp = NULL;
-    if( has_path ) {
-        fp = fopen( trpfile, "rb" );
-        for( src = trpfile, dst = result; (*dst = *src++) != '\0'; ++dst ) {
-            if( max_result-- < 2 ) {
-                *dst = '\0';
-                break;
-            }
-        }
-    } else if( FindFilePath( trpfile, result ) ) {
-        fp = fopen( result, "rb" );
-    }
-    return( fp );
-}
-
-int DIGLoader( Read )( FILE *fp, void *buff, size_t len )
-{
-    return( fread( buff, 1, len, fp ) != len );
-}
-
-int DIGLoader( Seek )( FILE *fp, unsigned long offs, dig_seek where )
-{
-    return( fseek( fp, offs, where ) );
-}
-
-int DIGLoader( Close )( FILE *fp )
-{
-    return( fclose( fp ) );
 }

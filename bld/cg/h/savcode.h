@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -222,19 +223,19 @@
             if( first_use == NULL ) {
                 first_use = conf->ins_range.first;
                 _INS_NOT_BLOCK( first_use );
-                _INS_NOT_BLOCK( blk->ins.hd.next );
-                if( first_use->id < blk->ins.hd.next->id ) {
-                    first_use = blk->ins.hd.next;
+                _INS_NOT_BLOCK( blk->ins.head.next );
+                if( first_use->id < blk->ins.head.next->id ) {
+                    first_use = blk->ins.head.next;
                 }
             }
             if( final_defn == NULL ) {
                 final_defn = conf->ins_range.last;
                 _INS_NOT_BLOCK( final_defn );
-                _INS_NOT_BLOCK( blk->ins.hd.prev );
-                if( final_defn->id > blk->ins.hd.prev->id ) {
-                    final_defn = blk->ins.hd.prev;
+                _INS_NOT_BLOCK( blk->ins.head.prev );
+                if( final_defn->id > blk->ins.head.prev->id ) {
+                    final_defn = blk->ins.head.prev;
                     if( _IsBlkAttr( blk, BLK_CONDITIONAL | BLK_SELECT ) ) {
-                        final_defn = blk->ins.hd.next;
+                        final_defn = blk->ins.head.next;
                         while( !_OpIsJump( final_defn->head.opcode ) ) {
                             final_defn = final_defn->head.next;
                         }
@@ -247,7 +248,7 @@
                 }
             }
 #endif
-            if( (instruction *)&blk->ins == blk->ins.hd.next ) {
+            if( (instruction *)&blk->ins == blk->ins.head.next ) {
                 if( _GBitOverlap( conf->id.out_of_block, flow->need_store ) ) {
                     _SuffixStore( (instruction *)&blk->ins, reg_name, opnd, class );
                 }
@@ -285,5 +286,5 @@
         if( last )
             break;
         blk = blk->next_block;
-        ins = blk->ins.hd.next;
+        ins = blk->ins.head.next;
     }

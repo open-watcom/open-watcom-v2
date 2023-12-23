@@ -1,18 +1,8 @@
-proj_name = trap
-
-!ifndef trap_autodepends
-trap_autodepends = .AUTODEPEND
-!endif
-
-trap_nofpu = 1
-
-suppress_zc = 1
-
 #
 # Common stuff between trap file and server implementations
 #
 # Macros:
-#       target_os       - Name of the operating system the executable is
+#       target_sys      - Name of the operating system the executable is
 #                         being built for. Look at the "comp_*" macros
 #                         below for the list of acceptable names (required).
 #       srv             - Name of the remote link that the server/trap file
@@ -43,9 +33,32 @@ suppress_zc = 1
 #                         the executable (optional).
 #       resource_file   - root name of a resource file (optional).
 
+proj_name = trap
+
+!ifndef trap_autodepends
+trap_autodepends = .AUTODEPEND
+!endif
+#
+# optimization for size
+# only 16-bit DOS executable
+#
+!ifeq host_os dos
+!ifeq host_cpu i86
+dft_oflags = -oais
+!endif
+!endif
+
+trap_nofpu = 1
+
+suppress_zc = 1
+
 !ifndef memory_model_i86
 memory_model_i86 = c
 !endif
+
+additional_clean = $(target)
+
+additional_clean_qnx = usage.u
 
 !ifdef test
 !ifndef remote_link
@@ -53,43 +66,62 @@ memory_model_i86 = c
 !endif
 !endif
 
-!ifndef target_sys
-target_sys = $(target_os)
+# target_sys
+##############
+target_sys_os2_386 = os2v2
+!ifdef target_sys_$(host_os)_$(host_cpu)
+target_sys = $(target_sys_$(host_os)_$(host_cpu))
+!else ifndef target_sys
+target_sys = $(host_os)
 !endif
 
-additional_clean_dos = *.trp
-additional_clean_os2 = *.d32
-additional_clean_qnx = usage.u
+# os_prefix
+##############
+os_prefix_linux = lnx
+os_prefix_nlm3  = nlm
+os_prefix_nlm4  = nlm
+os_prefix_nlm5  = nlm
+os_prefix_os2v2 = os22
+os_prefix_tnt   = pls
+!ifdef os_prefix_$(target_sys)
+os_prefix = $(os_prefix_$(target_sys))
+!else
+os_prefix = $(target_sys)
+!endif
 
+# os_subdir
+##############
+os_subdir_nov_386 = nlm
+os_subdir_os2_386 = os2v2
+!ifdef os_subdir_$(host_os)_$(host_cpu)
+os_subdir = $(os_subdir_$(host_os)_$(host_cpu))
+!else
+os_subdir = $(host_os)
+!endif
+
+# srv_prefix
+##############
+srv_prefix = $(srv)
+
+# name
+##############
 !ifeq srv lcl
+! ifndef name
 name = std
-! ifndef test
-!  ifdef %OWUSE_FILENAME_VERSION
-name = std$(bld_ver)
-!  endif
 ! endif
+!else ifdef name
 !else ifeq which SERVER
 ! ifdef remote_link
-!  ifeq target_os win
-name = $(srv)servw$(nlm_ver)
+!  ifeq target_sys win
+name = $(srv_prefix)servw
 !  else
-name = $(srv)serv$(nlm_ver)
+name = $(srv_prefix)serv
 !  endif
 ! else
-name = $(srv)help
-!  ifndef test
-!   ifdef %OWUSE_FILENAME_VERSION
-name = $(srv)hel$(bld_ver)
-!   endif
-!  endif
+name = $(srv_prefix)help
 ! endif
 !else
 name = $(srv)
-! ifndef test
-!  ifdef %OWUSE_FILENAME_VERSION
-name = $(srv)$(bld_ver)
-!  endif
-! endif
 !endif
 
 !ifdef test
@@ -98,22 +130,10 @@ xname = z$(name)
 xname = $(name)
 !endif
 
-!ifeq target_sys nlm_libc
-os_prefix = libc
-!else ifeq target_os linux
-os_prefix = lnx
-!else ifeq target_os os2v2
-os_prefix = os22
-!else
-os_prefix = $(target_os)
-!endif
-
-!ifeq target_sys nlm_libc
-srv_prefix = nlm
-!else ifeq srv ped
-srv_prefix = pls
-!else
-srv_prefix = $(srv)
+# stack check handling
+#######################
+!ifeq which TRAP
+nocheckstack = 1
 !endif
 
 !include cproj.mif
@@ -126,44 +146,57 @@ srv_prefix = $(srv)
 !include $(trap_dir)/trap.mif
 !endif
 
+dig_arch = $(target_cpu)
+
+!include $(dig_dir)/digcli.mif
+
 # cflags stuff
 ###############
-extra_cpp_flags = -D$(which) -DMD_$(target_cpu) $(extra_cppflags)
-!ifdef %OWUSE_FILENAME_VERSION
-extra_cpp_flags += -DUSE_FILENAME_VERSION=$(bld_ver)
-!endif
+extra_cpp_flags = -D$(which) $(dig_arch_cpp_flags) -DBLDVER=$(bld_ver) $(extra_cppflags)
 !ifndef test
 !ifdef builtin_trap
 extra_cpp_flags += -DBUILTIN_TRAP_FILE
 !endif
 !endif
-!ifeq target_os ads
-extra_cpp_flags += -DACAD
-!endif
 !ifdef japanese
 extra_cpp_flags += -DJAPANESE
 !endif
+!ifeq debug 2
+!ifeq host_os nov
+extra_cpp_flags += -DDEBUG_ME
+!endif
+!endif
+!ifdef gui
+extra_cpp_flags += -DTRAPGUI
+!endif
 
-extra_cppflags_nlm5 = -D__NW50__ -D_USE_NEW_KERNEL
+extra_cppflags_nlm5 = -D__NW50__ -D_USE_NEW_KERNEL -D__NETWARE_LIBC__
 extra_cppflags_nlm4 = -D__NW40__
 extra_cppflags_nlm3 = -D__NW30__
-extra_cpp_flags_nov = $(extra_cppflags_nlm$(nlm_ver))
-!ifeq release 0
-extra_cpp_flags_nov += -DDEBUG_ME
-!endif
-!ifeq target_sys nlm_libc
-extra_cpp_flags_nov += -D__NETWARE_LIBC__
+extra_cppflags_ads  = -DACAD
+extra_cppflags_cw   = -DCAUSEWAY
+extra_cppflags_hx   = -DHX
+extra_cppflags_pls  = -DPHARLAP
+extra_cppflags_ped  = -DPHARLAP
+extra_cppflags_rsi  = -DDOS4G
+!ifeq srv lcl
+extra_cpp_flags += $(extra_cppflags_$(target_sys))
+!else ifeq host_os nov
+extra_cpp_flags += $(extra_cppflags_$(target_sys))
+!else
+extra_cpp_flags += $(extra_cppflags_$(srv))
 !endif
 
 extra_c_flags += $(extra_cflags)
 !ifeq which TRAP
 extra_c_flags += -zlf
 !endif
-!ifeq target_os ads
+!ifeq target_sys ads
 extra_c_flags += -3s
 !endif
-
-extra_c_flags_nov = -3s
+!ifeq host_os nov
+extra_c_flags += -3s
+!endif
 
 !ifeq which TRAP
 extra_c_flags_i86 = -zu
@@ -175,8 +208,18 @@ extra_c_flags_win_i86 = -bd
 # aflags stuff
 ###############
 extra_a_flags += $(model_switch_$(host_cpu)) -D$(which)
-!ifeq target_os ads
-extra_a_flags += -3s -DACAD
+!ifeq target_sys ads
+extra_a_flags += -3s
+!endif
+!ifeq host_os nov
+extra_a_flags += -3s
+!endif
+!ifeq srv lcl
+extra_a_flags += $(extra_cppflags_$(target_sys))
+!else ifeq host_os nov
+extra_a_flags += $(extra_cppflags_$(target_sys))
+!else
+extra_a_flags += $(extra_cppflags_$(srv))
 !endif
 
 extra_a_flags_misc7086 = -fpi87
@@ -187,7 +230,7 @@ extra_a_flags_misc7386 = -fpi87
 extra_lflags_nlm5 = module libc
 extra_lflags_nlm4 = module clib
 extra_lflags_nlm3 =
-extra_l_flags_nov = debug all debug Novell $(extra_lflags_nlm$(nlm_ver))
+extra_l_flags_nov = debug all debug Novell $(extra_lflags_$(target_sys))
 
 trperr_h = _err.gh
 jtrperr_h = _jerr.gh
@@ -199,11 +242,11 @@ rcui_inc_dirs = -I"$(trap_dir)/h"
 
 $(trperr_h) : $(trap_dir)/h/trapmsg.h $(trap_dir)/h/trap.msg $(__MAKEFILES__)
     @%make echo_cpp
-    $(cpp) $(rc_ui_flags) $(rc_ui_inc_path) $[@ -o$@
+    $(cpp) $(rc_ui8_flags) $(rc_ui_inc_path) $[@ -o$@
 
 $(jtrperr_h) : $(trap_dir)/h/trapmsg.h $(trap_dir)/h/trap.msg $(__MAKEFILES__)
     @%make echo_cpp
-    $(cpp) $(rc_ui_flags) -DJAPANESE $(rc_ui_inc_path) $[@ -o$@
+    $(cpp) $(rc_ui8_flags) -DJAPANESE $(rc_ui_inc_path) $[@ -o$@
 
 ./mknver.exe: $(watcom_dir)/c/mknver.c $(watcom_dir)/h/banner.h $(__MAKEFILES__)
     @%make echo_bldcl
@@ -225,13 +268,13 @@ dbg_libs_dos = dbgstr.lib
 remote_objs = &
     $($(which)_remote_objs) &
     packet.obj &
-    $(srv_prefix)link.obj &
+    $(srv)link.obj &
 !endif
 
-!ifeq release 1
-objs = $($(which)_common_objs) mxutil.obj $(remote_objs) $(extra_objs)
+!ifeq debug 0
+objs = $(extra_objs) $($(which)_common_objs) mxutil.obj $(remote_objs)
 !else
-objs = $($(which)_common_objs) mxutil.obj $(remote_objs) $(extra_dobjs)
+objs = $(extra_dobjs) $($(which)_common_objs) mxutil.obj $(remote_objs)
 !endif
 
 libs = $(extra_libs) $(dbg_libs_$(host_os))
@@ -246,9 +289,7 @@ $(target) : $(extra_link_res_$(host_os)) $(objs) $(libs) $(resource_file) $(extr
     @%append $^&.lnk op elim
     @%append $^&.lnk name $@
     @%append $^&.lnk $(sys_$(target_cpu)_$(target_sys))
-!ifeq which TRAP
-    @%append $^&.lnk op dosseg
-!endif
+    @%append $^&.lnk $(proj_l_flags)
     @for %i in ($(objs)) do @%append $^&.lnk file %i
     @for %i in ($(libs)) do @%append $^&.lnk library %i
     @%append $^&.lnk $(extra_linker)
@@ -267,21 +308,31 @@ libtarg_name = dbgstr
 !include libtarg.mif
 
 !ifdef resource_file
-$(resource_file) : $(trap_dir)/common/wserver.rc
+$(resource_file) : $(trap_dir)/common/servw.rc
     @%make echo_rc
-    $(rc) $(rc_flags) $(inc_path) $[@ -fo=$@
+    $(rc) $(rc_ui8_encoding) $(rc_flags) $(inc_path) $[@ -fo=$@
 !endif
 
-inc_dirs += -I. -I"../h" -I"$(dig_dir)/h" -I"$(trap_dir)/common/$(target_os)"
+inc_subdir_nwsdk_nlm5 = &
+    -I"$(nwoss_dir)/nw5/h" &
+    -I"$(nwoss_dir)/nw5/src"
+inc_subdir_nwsdk_nlm4 = &
+    -I"$(nwoss_dir)/nw4/h" &
+    -I"$(nwoss_dir)/nw4/src"
+inc_subdir_nwsdk_nlm3 = &
+    -I"$(nwoss_dir)/nw3/h" &
+    -I"$(nwoss_dir)/nw3/src"
+inc_dirs_nwsdk_nov = &
+    $(inc_subdir_nwsdk_$(target_sys)) &
+    -I"$(nwoss_dir)/common/h"
+
+inc_dirs += -I. -I"../h" $(extra_incs) -I"$(trap_dir)/common/$(os_subdir)"
 inc_dirs += -I"$(trap_dir)/common" -I"$(trap_dir)/h"
-!ifeq host_os nov
-inc_dirs += -I"$(nwoss_dir)/nw$(nlm_ver)/h"
-inc_dirs += -I"$(nwoss_dir)/nw$(nlm_ver)/src" -I"$(nwoss_dir)/common/h"
-!endif
+inc_dirs += -I"$(dig_dir)/h" $(inc_dirs_nwsdk_$(host_os))
 
-.c: ../c;../../c;$(trap_dir)/common/$(target_os);$(trap_dir)/common;$(trap_dir)/c;$(extra_srcs)
-.cpp: ../c;../../c;$(trap_dir)/common/$(target_os);$(trap_dir)/common;$(trap_dir)/c;$(extra_srcs)
-.asm: ../asm;../../asm;$(trap_dir)/common/$(target_os);$(trap_dir)/common;$(extra_srcs)
+.c: ../c;../../c;$(trap_dir)/common/$(os_subdir);$(trap_dir)/common;$(trap_dir)/c;$(extra_srcs)
+.cpp: ../c;../../c;$(trap_dir)/common/$(os_subdir);$(trap_dir)/common;$(trap_dir)/c;$(extra_srcs)
+.asm: ../asm;../../asm;$(trap_dir)/common/$(os_subdir);$(trap_dir)/common;$(extra_srcs)
 
 rc_inc_dirs = -I"$(trap_dir)/common"
 

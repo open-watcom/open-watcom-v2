@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,13 +41,12 @@ Define( MCSwitch )
 MCSwitch::MCSwitch( WTokenFile& fil, WString& tok )
     : MSwitch( fil, tok )
 {
-    fil.token( _on );
     bool state = false;
-    for( int i=0; i<SWMODE_COUNT; i++ ) {
+    for( SwMode i=0; i<SWMODE_COUNT; i++ ) {
         if( !fil.eol() ) {
             state = ( fil.token( tok ) == "ON" );
         }
-        _state[i] = state;
+        MSwitch::state( i, state );
     }
 }
 
@@ -59,31 +59,29 @@ MCSwitch* WEXPORT MCSwitch::createSelf( WObjectFile& )
 void WEXPORT MCSwitch::readSelf( WObjectFile& p )
 {
     MSwitch::readSelf( p );
-    p.readObject( &_on );
     if( p.version() > 28 ) {
-        for( int i=0; i<SWMODE_COUNT; i++ ) {
-            p.readObject( &_state[i] );
+        for( SwMode i=0; i<SWMODE_COUNT; i++ ) {
+            MSwitch::readState( p, i );
         }
     } else {
-        p.readObject( &_state[SWMODE_RELEASE] );
-        _state[SWMODE_DEBUG] = _state[SWMODE_RELEASE];
+        MSwitch::readState( p, SWMODE_RELEASE );
+        MSwitch::copyState( SWMODE_DEBUG, SWMODE_RELEASE );
     }
 }
 
 void WEXPORT MCSwitch::writeSelf( WObjectFile& p )
 {
     MSwitch::writeSelf( p );
-    p.writeObject( &_on );
-    for( int i=0; i<SWMODE_COUNT; i++ ) {
-        p.writeObject( _state[i] );
+    for( SwMode i=0; i<SWMODE_COUNT; i++ ) {
+        MSwitch::writeState( p, i );
     }
 }
 #endif
 
 void MCSwitch::addone( WString& str, bool state )
 {
-    if( state && _on.size() > 0 ) {
-        str.concat( _on );
+    if( state && on().size() > 0 ) {
+        str.concat( on() );
     }
 }
 
@@ -95,7 +93,7 @@ void MCSwitch::getText( WString& str, MState* state )
 
 void MCSwitch::getText( WString& str, WVList* states, SwMode mode )
 {
-    bool state = _state[mode];
+    bool state = MSwitch::state( mode );
     WVList found;
     findStates( states, found );
     int icount = found.count();

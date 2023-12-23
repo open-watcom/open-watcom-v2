@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -55,47 +55,51 @@
 #define _HAS_ANY_MAIN   (_HAS_EXE_MAIN || _HAS_DLL_MAIN)
 
 static unsigned char VarFuncWeights[] = {
-//a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x, y,z
-  0, 0,13, 0, 2, 1, 0, 0, 0, 0, 0,12, 0,14, 4,10, 0, 0, 6, 0, 0, 0, 0, 0, 0,0
+/* a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x, y, z */
+   0, 0,13, 0, 2, 1, 0, 0, 0, 0, 0,12, 0,14, 4,10, 0, 0, 6, 0, 0, 0, 0, 0, 0, 0
 };
 
 static const char *VarParmFuncs[] = {
-    /* functions with var parm lists */
-    "",             // 0
-    "",             // 1
-    "",             // 2
-    "",             // 3
-    "",             // 4
-    "",             // 5
-    "",             // 6
-    "",             // 7
-    "fscanf",       // 8
-    "fprintf",      // 9
-    "execle",       // 10
-    "execlpe",      // 11
-    "scanf",        // 12
-    "sscanf",       // 13
-    "sprintf",      // 14
-    "spawnle",      // 15
-    "spawnlpe",     // 16
-    "printf",       // 17
-    "execlp",       // 18
-    "execl",        // 19
-    "cscanf",       // 20
-    "cprintf",      // 21
-    "open",         // 22
-    "spawnlp",      // 23
-    "spawnl",       // 24
-    "sopen",        // 25
-    "",             // 26
-    "",             // 27
-    "",             // 28
-    "",             // 29
-    "",             // 30
-    "",             // 31
+    /*
+     * functions with var parm lists
+     */
+    "",             /* 0 */
+    "",             /* 1 */
+    "",             /* 2 */
+    "",             /* 3 */
+    "",             /* 4 */
+    "",             /* 5 */
+    "",             /* 6 */
+    "",             /* 7 */
+    "fscanf",       /* 8 */
+    "fprintf",      /* 9 */
+    "execle",       /* 10 */
+    "execlpe",      /* 11 */
+    "scanf",        /* 12 */
+    "sscanf",       /* 13 */
+    "sprintf",      /* 14 */
+    "spawnle",      /* 15 */
+    "spawnlpe",     /* 16 */
+    "printf",       /* 17 */
+    "execlp",       /* 18 */
+    "execl",        /* 19 */
+    "cscanf",       /* 20 */
+    "cprintf",      /* 21 */
+    "open",         /* 22 */
+    "spawnlp",      /* 23 */
+    "spawnl",       /* 24 */
+    "sopen",        /* 25 */
+    "",             /* 26 */
+    "",             /* 27 */
+    "",             /* 28 */
+    "",             /* 29 */
+    "",             /* 30 */
+    "",             /* 31 */
 };
 
-/* bitmap for which of the above are Standard */
+/*
+ * bitmap for which of the above are Standard
+ */
 #define VAR_PARM_FUNCS_ANSI \
     ((1<<8) | (1<<9) | (1<<12) | (1<<13) | (1<<14) | (1<<17))
 
@@ -132,10 +136,10 @@ static struct STRUCT_BYTE_SEQ( 6 ) TryFiniCode = {
 #endif
 
 
-/*
-//    does the specified symbol take variable parameters? manual search.
-*/
 bool VarParm( SYMPTR sym )
+/*************************
+ * does the specified symbol take variable parameters? manual search.
+ */
 {
     TYPEPTR     *parm_types;
     TYPEPTR     typ;
@@ -158,11 +162,10 @@ bool VarParm( SYMPTR sym )
     return( false );
 }
 
-/*
-//    does the specified symbol take variable args? hash calc'ed
-//
-*/
 bool VarFunc( SYMPTR sym )
+/*************************
+ * does the specified symbol take variable args? hash calc'ed
+ */
 {
     unsigned    hash;
     size_t      len;
@@ -176,8 +179,8 @@ bool VarFunc( SYMPTR sym )
         len = strlen( p );
         hash = (len + VarFuncWeights[p[0] - 'a'] + VarFuncWeights[p[len - 1] -'a']) & 31;
 
-        if( memcmp( p, VarParmFuncs[hash], len + 1 ) == 0
-            && ( CompFlags.extensions_enabled || ( ( 1 << hash ) & VAR_PARM_FUNCS_ANSI ) ) )
+        if( strcmp( p, VarParmFuncs[hash] ) == 0
+          && ( CompFlags.extensions_enabled || (( 1 << hash ) & VAR_PARM_FUNCS_ANSI) ) )
             return( true );
 
         return( VarParm( sym ) );
@@ -185,14 +188,14 @@ bool VarFunc( SYMPTR sym )
     return( false );
 }
 
-#if ( _CPU == 8086 ) || ( _CPU == 386 )
+#if _INTEL_CPU
 
 static const inline_funcs *Flat( const inline_funcs *ifunc )
 {
   #if _CPU == 386
     const alt_inline_funcs  *p;
 
-    if( TargetSwitches & FLAT_MODEL ) {
+    if( TargetSwitches & CGSW_X86_FLAT_MODEL ) {
         for( p = FlatAlternates; p->byteseq != NULL; p++ ) {
             if( p->byteseq == ifunc->code ) {
                 return( &(p->alt_ifunc) );
@@ -206,27 +209,25 @@ static const inline_funcs *Flat( const inline_funcs *ifunc )
 static const inline_funcs *IF_Lookup( const char *name )
 {
     const inline_funcs  *ifunc;
-    size_t              len;
 
-    len = strlen( name ) + 1;
-    if( GET_FPU( ProcRevision ) > FPU_NONE ) {
+    if( !GET_FPU_FPC( ProcRevision ) ) {
         for( ifunc = _8087_Functions; ifunc->name != NULL; ++ifunc ) {
-            if( memcmp( ifunc->name, name, len ) == 0 ) {
+            if( strcmp( ifunc->name, name ) == 0 ) {
                 return( Flat( ifunc ) );
             }
         }
     }
     if( OptSize == 100 ) {              /* if /os specified */
         ifunc = SInline_Functions;
-        if( TargetSwitches & BIG_DATA ) {
+        if( TargetSwitches & CGSW_X86_BIG_DATA ) {
   #if _CPU == 8086
-            if( TargetSwitches & FLOATING_DS ) {
+            if( TargetSwitches & CGSW_X86_FLOATING_DS ) {
                 ifunc = ZF_Data_Functions;
             } else {
                 ifunc = ZP_Data_Functions;
             }
-  #else
-            if( TargetSwitches & FLOATING_DS ) {
+  #else /* _CPU == 386 */
+            if( TargetSwitches & CGSW_X86_FLOATING_DS ) {
                 ifunc = SBigData_Functions;
             } else {
                 ifunc = SBigDataNoDs_Functions;
@@ -234,30 +235,30 @@ static const inline_funcs *IF_Lookup( const char *name )
   #endif
         }
         for( ; ifunc->name != NULL; ++ifunc ) {
-            if( memcmp( ifunc->name, name, len ) == 0 ) {
+            if( strcmp( ifunc->name, name ) == 0 ) {
                 return( Flat( ifunc ) );
             }
         }
     }
   #if _CPU == 386
-    if( TargetSwitches & FLAT_MODEL ) {
+    if( TargetSwitches & CGSW_X86_FLAT_MODEL ) {
         for( ifunc = Flat_Functions; ifunc->name != NULL; ++ifunc ) {
-            if( memcmp( ifunc->name, name, len ) == 0 ) {
+            if( strcmp( ifunc->name, name ) == 0 ) {
                 return( ifunc );
             }
         }
     }
   #endif
     ifunc = Inline_Functions;
-    if( TargetSwitches & BIG_DATA ) {
+    if( TargetSwitches & CGSW_X86_BIG_DATA ) {
   #if _CPU == 8086
-        if( TargetSwitches & FLOATING_DS ) {
+        if( TargetSwitches & CGSW_X86_FLOATING_DS ) {
             ifunc = DF_Data_Functions;
         } else {
             ifunc = DP_Data_Functions;
         }
-  #else
-        if( TargetSwitches & FLOATING_DS ) {
+  #else /* _CPU == 386 */
+        if( TargetSwitches & CGSW_X86_FLOATING_DS ) {
             ifunc = BigData_Functions;
         } else {
             ifunc = BigDataNoDs_Functions;
@@ -265,12 +266,12 @@ static const inline_funcs *IF_Lookup( const char *name )
   #endif
     }
     for( ; ifunc->name != NULL; ++ifunc ) {
-        if( memcmp( ifunc->name, name, len ) == 0 ) {
+        if( strcmp( ifunc->name, name ) == 0 ) {
             return( Flat( ifunc ) );
         }
     }
     for( ifunc = Common_Functions; ifunc->name != NULL; ++ifunc ) {
-        if( memcmp( ifunc->name, name, len ) == 0 ) {
+        if( strcmp( ifunc->name, name ) == 0 ) {
             return( Flat( ifunc ) );
         }
     }
@@ -302,23 +303,14 @@ aux_info *GetLangInfo( type_modifiers flags )
     }
 }
 
-/*
-//    return language specific info
-*/
-static aux_info *LangInfo( type_modifiers flags, aux_info *inf )
-{
-    if( inf != &DefaultInfo )
-        return( inf );
-
-    return( GetLangInfo( flags ) );
-}
-
-bool ParmsToBeReversed( int flags, aux_info *inf )
+bool ParmsToBeReversed( type_modifiers flags, aux_info *inf )
 {
 #ifdef REVERSE
-    inf = LangInfo( flags, inf );
+    if( inf == &DefaultInfo ) {
+        inf = GetLangInfo( flags );
+    }
     if( inf != NULL ) {
-        if( inf->cclass & REVERSE_PARMS ) {
+        if( inf->cclass & FECALL_GEN_REVERSE_PARMS ) {
             return( true );
         }
     }
@@ -335,21 +327,25 @@ static aux_info *InfoLookup( SYMPTR sym )
     aux_entry       *ent;
 
     name = sym->name;
-    inf = &DefaultInfo;         /* assume default */
+    /*
+     * assume default
+     */
+    inf = &DefaultInfo;
     if( name == NULL )
         return( inf );
     ent = AuxLookup( name );
     if( ent != NULL )
         inf = ent->info;
-    if( ( ent == NULL ) || (sym->flags & SYM_INTRINSIC) ) {
+    if( ( ent == NULL )
+      || (sym->flags & SYM_INTRINSIC) ) {
         if( sym->flags & SYM_DEFINED )
             return( inf );
         if( (sym->flags & SYM_INTRINSIC) == 0 ) {
-            if( memcmp( name, "_inline_", 8 ) != 0 )
+            if( strncmp( name, "_inline_", 8 ) != 0 )
                 return( inf );
             name += 8;
         }
-#if ( _CPU == 8086 ) || ( _CPU == 386 )
+#if _INTEL_CPU
         {
             const inline_funcs  *ifunc;
 
@@ -362,7 +358,7 @@ static aux_info *InfoLookup( SYMPTR sym )
               || HW_CEqual( ifunc->returns, HW_ES_DI )
               || HW_CEqual( ifunc->returns, HW_CX_DI ) ) {
                 if( SizeOfArg( sym->sym_type->object ) != 4 ) {
-  #else
+  #else /* _CPU == 386 */
             if( HW_CEqual( ifunc->returns, HW_DX_AX )
               || HW_CEqual( ifunc->returns, HW_DS_ESI )
               || HW_CEqual( ifunc->returns, HW_ES_EDI )
@@ -373,20 +369,20 @@ static aux_info *InfoLookup( SYMPTR sym )
                 }
             }
             inf = &InlineInfo;
-            inf->cclass = (WatcallInfo.cclass & FAR_CALL) | MODIFY_EXACT;
-            if( (sym->flags & SYM_INTRINSIC) && ( ent != NULL ) )
-                inf->cclass |= ent->info->cclass;
+            inf->cclass         = FECALL_GEN_NONE;
+            inf->cclass_target  = (WatcallInfo.cclass_target & FECALL_X86_FAR_CALL) | FECALL_X86_MODIFY_EXACT;
+
+            if( (sym->flags & SYM_INTRINSIC)
+              && ( ent != NULL ) ) {
+                inf->cclass         |= ent->info->cclass;
+                inf->cclass_target  |= ent->info->cclass_target;
+            }
             inf->code = ifunc->code;
             inf->parms = ifunc->parms;
             inf->returns = ifunc->returns;
-  #if ( _CPU == 8086 )
-            if( !HW_CEqual( inf->returns, HW_AX )
+            if( !HW_CEqual( inf->returns, HW_xAX )
               && !HW_CEqual( inf->returns, HW_EMPTY ) ) {
-  #else
-            if( !HW_CEqual( inf->returns, HW_EAX )
-              && !HW_CEqual( inf->returns, HW_EMPTY ) ) {
-  #endif
-                inf->cclass |= SPECIAL_RETURN;
+                inf->cclass_target |= FECALL_X86_SPECIAL_RETURN;
             }
             HW_CAsgn( inf->streturn, HW_EMPTY );
             inf->save = ifunc->save;
@@ -405,13 +401,17 @@ aux_info *FindInfo( SYMPTR sym, SYM_HANDLE sym_handle )
     TYPEPTR         typ;
     aux_info        *inf;
 
-    inf = &DefaultInfo;         /* assume default */
+    /*
+     * assume default
+     */
+    inf = &DefaultInfo;
     if( sym_handle == SYM_NULL )
         return( inf );
 
     SymGet( sym, sym_handle );
 #if _CPU == 386
-    if( (sym_handle == SymSTOSB) || (sym_handle == SymSTOSD) ) {
+    if( (sym_handle == SymSTOSB)
+      || (sym_handle == SymSTOSD) ) {
         return( &STOSBInfo );
     } else if( sym_handle == SymFinally ) {
         InlineInfo = WatcallInfo;
@@ -425,7 +425,9 @@ aux_info *FindInfo( SYMPTR sym, SYM_HANDLE sym_handle )
     }
 #endif
     if( (sym->flags & SYM_TEMP) == 0 ) {
-        /* not an indirect func call*/
+        /*
+         * not an indirect func call
+         */
         inf = InfoLookup( sym );
     }
     if( inf == &DefaultInfo ) {
@@ -442,14 +444,19 @@ aux_info *FindInfo( SYMPTR sym, SYM_HANDLE sym_handle )
         }
     }
 #if _CPU == 386
-    if( (inf->flags & AUX_FLAG_FAR16) || (sym->mods & FLAG_FAR16) ) {
-        if( (sym->mods & MASK_LANGUAGES) == LANG_PASCAL || (inf->cclass & REVERSE_PARMS) ) {
+    if( (inf->flags & AUX_FLAG_FAR16)
+      || (sym->mods & FLAG_FAR16) ) {
+        if( (sym->mods & MASK_LANGUAGES) == LANG_PASCAL
+          || (inf->cclass & FECALL_GEN_REVERSE_PARMS) ) {
             return( &Far16PascalInfo );
         } else {
             return( &Far16CdeclInfo );
         }
     }
 #endif
+    if( inf == &DefaultInfo ) {
+        inf = GetLangInfo( sym->mods );
+    }
     return( inf );
 }
 
@@ -465,7 +472,7 @@ bool FunctionAborts( SYMPTR sym, SYM_HANDLE sym_handle )
             return( true );
         ent = AuxLookup( SymName( sym, sym_handle ) );
         if( ent != NULL ) {
-            if( ent->info->cclass & SUICIDAL ) {
+            if( ent->info->cclass & FECALL_GEN_ABORTS ) {
                 return( true );
             }
         }
@@ -473,127 +480,135 @@ bool FunctionAborts( SYMPTR sym, SYM_HANDLE sym_handle )
     return( false );
 }
 
-call_class GetCallClass( SYM_HANDLE sym_handle )
+static call_class getCallClass( SYM_HANDLE sym_handle )
+/******************************************************
+ * handle only generic attributes for call class
+ */
 {
     aux_info            *inf;
     SYM_ENTRY           sym;
     call_class          cclass;
 
-    cclass = DefaultInfo.cclass;
+    sym.mods = 0;
+    inf = FindInfo( &sym, sym_handle );
+    cclass = inf->cclass;
     if( sym_handle != SYM_NULL ) {
-        inf = FindInfo( &sym, sym_handle );
         if( sym.flags & SYM_FUNCTION ) {
-            if( inf != &DefaultInfo ) {
-                cclass = inf->cclass;
-            } else {
-                cclass = GetLangInfo( sym.mods )->cclass;
-#if _CPU == 8086
-                if( TargSys == TS_WINDOWS ) {
-                    if( sym.mods & (LANG_CDECL | LANG_PASCAL) ) {
-                        cclass |= FAT_WINDOWS_PROLOG;
-                    }
-                }
-#endif
-            }
             if( sym.mods & FLAG_ABORTS ) {
-                cclass |= SUICIDAL;
+                cclass |= FECALL_GEN_ABORTS;
             }
             if( sym.mods & FLAG_NORETURN ) {
-                cclass |= SUICIDAL;
+                cclass |= FECALL_GEN_NORETURN;
             }
-#if ( _CPU == 8086 ) || ( _CPU == 386 )
-            if( sym.mods & FLAG_FARSS ) {
-                cclass |= FARSS;
-            }
-            if( CompFlags.emit_names ) {
-                cclass |= EMIT_FUNCTION_NAME;
-            }
-            if( sym.mods & FLAG_FAR ) {
-                cclass |= FAR_CALL;
-                if( sym.mods & FLAG_NEAR ) {
-                    cclass |= INTERRUPT;
-                }
-            } else if( sym.mods & FLAG_NEAR ) {
-                cclass &= ~ FAR_CALL;
-            }
-#endif
-#ifdef DLL_EXPORT
             if( sym.mods & FLAG_EXPORT ) {
-                cclass |= DLL_EXPORT;
+                cclass |= FECALL_GEN_DLL_EXPORT;
             }
-#endif
-#ifdef LOAD_DS_ON_ENTRY
-            if( sym.mods & FLAG_LOADDS ) {
-  #if 0
-                if( TargSys == TS_WINDOWS ) {
-                    cclass |= FAT_WINDOWS_PROLOG;
-                } else {
-                    cclass |= LOAD_DS_ON_ENTRY;
-                }
-  #else
-                cclass |= LOAD_DS_ON_ENTRY;
-  #endif
-            }
-#endif
-#ifdef MAKE_CALL_INLINE
             if( IsInLineFunc( sym_handle ) ) {
-                cclass |= MAKE_CALL_INLINE;
+                cclass |= FECALL_GEN_MAKE_CALL_INLINE;
             }
-#endif
             if( VarFunc( &sym ) ) {
-                cclass |= CALLER_POPS | HAS_VARARGS;
+                cclass |= FECALL_GEN_CALLER_POPS | FECALL_GEN_HAS_VARARGS;
             }
         }
-#if ( _CPU == 8086 ) || ( _CPU == 386 )
-        if( sym.flags & SYM_FUNC_NEEDS_THUNK ) {
-            cclass |= THUNK_PROLOG;
-        }
-#endif
     }
 #ifdef REVERSE
-    cclass &= ~ REVERSE_PARMS;
-#endif
-#ifdef PROLOG_HOOKS
-    if( CompFlags.ep_switch_used ) {
-        cclass |= PROLOG_HOOKS;
-    }
-#endif
-#ifdef EPILOG_HOOKS
-    if( CompFlags.ee_switch_used ) {
-        cclass |= EPILOG_HOOKS;
-    }
-#endif
-#ifdef GROW_STACK
-    if( CompFlags.sg_switch_used ) {
-        cclass |= GROW_STACK;
-    }
-#endif
-#ifdef TOUCH_STACK
-    if( CompFlags.st_switch_used ) {
-        cclass |= TOUCH_STACK;
-    }
+    cclass &= ~ FECALL_GEN_REVERSE_PARMS;
 #endif
     return( cclass );
 }
 
-/*
-//    NextLibrary
-//        Called (indirectly) from the code generator to inject automagically defined symbols.
-//    Inputs:
-//        index    (n-1)
-//            Usually called from a loop until we return 0/NULL to show no more libraries
-//        request
-//            NEXT_LIBRARY
-//                examines the current flags to see if any libraries should be
-//                automagically referenced and returns the relevant index if so.
-//            LIBRARY_NAME
-//                returns the requested name.
-//
-*/
+static call_class_target getCallClassTarget( SYM_HANDLE sym_handle )
+/*******************************************************************
+ * handle only target specific attributes for call class
+ */
+{
+    call_class_target   cclass_target;
+#if _INTEL_CPU
+    aux_info            *inf;
+    SYM_ENTRY           sym;
+
+    sym.mods = 0;
+    inf = FindInfo( &sym, sym_handle );
+    cclass_target = inf->cclass_target;
+    if( sym_handle != SYM_NULL ) {
+        if( sym.flags & SYM_FUNCTION ) {
+  #if _CPU == 8086
+            if( TargetSystem == TS_WINDOWS ) {
+                if( inf == &PascalInfo
+                  || inf == &CdeclInfo ) {
+                    cclass_target |= FECALL_X86_PROLOG_FAT_WINDOWS;
+                }
+            }
+  #endif
+            if( sym.mods & FLAG_FARSS ) {
+                cclass_target |= FECALL_X86_FARSS;
+            }
+            if( CompFlags.emit_names ) {
+                cclass_target |= FECALL_X86_EMIT_FUNCTION_NAME;
+            }
+            if( sym.mods & FLAG_FAR ) {
+                cclass_target |= FECALL_X86_FAR_CALL;
+                if( sym.mods & FLAG_NEAR ) {
+                    cclass_target |= FECALL_X86_INTERRUPT;
+                }
+            } else if( sym.mods & FLAG_NEAR ) {
+                cclass_target &= ~ FECALL_X86_FAR_CALL;
+            }
+            if( sym.mods & FLAG_LOADDS ) {
+  #if 0
+                if( TargetSystem == TS_WINDOWS ) {
+                    cclass_target |= FECALL_X86_PROLOG_FAT_WINDOWS;
+                } else {
+                    cclass_target |= FECALL_X86_LOAD_DS_ON_ENTRY;
+                }
+  #else
+                cclass_target |= FECALL_X86_LOAD_DS_ON_ENTRY;
+  #endif
+            }
+        }
+        if( sym.flags & SYM_FUNC_NEEDS_THUNK ) {
+            cclass_target |= FECALL_X86_THUNK_PROLOG;
+        }
+    }
+    if( CompFlags.ep_switch_used ) {
+        cclass_target |= FECALL_X86_PROLOG_HOOKS;
+    }
+    if( CompFlags.ee_switch_used ) {
+        cclass_target |= FECALL_X86_EPILOG_HOOKS;
+    }
+    if( CompFlags.sg_switch_used ) {
+        cclass_target |= FECALL_X86_GROW_STACK;
+    }
+    if( CompFlags.st_switch_used ) {
+        cclass_target |= FECALL_X86_TOUCH_STACK;
+    }
+#else
+    /* unused parameters */ (void)sym_handle;
+
+    cclass_target = 0;
+#endif
+    return( cclass_target );
+}
+
 static void addDefaultLibs( void )
+/*********************************
+ * NextLibrary
+ *  Called (indirectly) from the code generator to inject automagically defined symbols.
+ * Inputs:
+ *  index   (n-1)
+ *      Usually called from a loop until we return 0/NULL to show no more libraries
+ *  request
+ *      FEINF_NEXT_LIBRARY
+ *          examines the current flags to see if any libraries should be
+ *          automagically referenced and returns the relevant index if so.
+ *      FEINF_LIBRARY_NAME
+ *          returns the requested name.
+ */
 {
     if( CompFlags.emit_library_names ) {
-        if( _HAS_ANY_MAIN || CompFlags.pragma_library || CompFlags.emit_all_default_libs ) {
+        if( _HAS_ANY_MAIN
+          || CompFlags.pragma_library
+          || CompFlags.emit_all_default_libs ) {
             AddLibraryName( CLIB_Name + 1, CLIB_Name[0] );
         }
         AddLibraryName( MATHLIB_Name + 1, MATHLIB_Name[0] );
@@ -613,7 +628,7 @@ static CGPOINTER NextLibrary( int index, aux_class request )
     if( index == 0 ) {
         addDefaultLibs();
     }
-    if( request == NEXT_LIBRARY )
+    if( request == FEINF_NEXT_LIBRARY )
         ++index;
     if( index > 0 ) {
         for( i = 1, lib = HeadLibs; lib != NULL; lib = lib->next ) {
@@ -624,34 +639,41 @@ static CGPOINTER NextLibrary( int index, aux_class request )
             ++i;
         }
     }
-    /* return library name, or */
-    if( request == LIBRARY_NAME || name == NULL )
+    /*
+     * return library name, or
+     */
+    if( request == FEINF_LIBRARY_NAME
+      || name == NULL )
         return( (CGPOINTER)name );
-    /* library index */
+    /*
+     * library index
+     */
     return( (CGPOINTER)(pointer_uint)index );
 }
 
-//    NextAlias
-//        Called (indirectly) from the code generator to go through the list of
-//        linker aliases.
-//    Inputs:
-//        index    (n-1)
-//            Called from a loop until we return 0/NULL to show no more aliases
-//        request
-//            NEXT_ALIAS
-//                returns the index of next alias in the list, or zero if none.
-//            ALIAS_NAME
-//                returns the alias name, or NULL if alias refers to a symbol.
-//            ALIAS_SYMBOL
-//                returns the alias symbol, or NULL if alias refers to a name.
-//            ALIAS_SUBST_NAME
-//                returns the name to be substituted for the alias, or NULL.
-//            ALIAS_SUBST_SYMBOL
-//                returns the symbol to be substituted for the alias, or NULL.
-//
-// Note: One of ALIAS..._NAME and ALIAS..._SYMBOL will always be 0/NULL and the other
-// will be valid, depending on which form of the pragma was used.
 static CGPOINTER NextAlias( int index, aux_class request )
+/*********************************************************
+ * NextAlias
+ *  Called (indirectly) from the code generator to go through the list of
+ *  linker aliases.
+ * Inputs:
+ *  index    (n-1)
+ *      Called from a loop until we return 0/NULL to show no more aliases
+ *  request
+ *      FEINF_NEXT_ALIAS
+ *          returns the index of next alias in the list, or zero if none.
+ *      FEINF_ALIAS_NAME
+ *          returns the alias name, or NULL if alias refers to a symbol.
+ *      FEINF_ALIAS_SYMBOL
+ *          returns the alias symbol, or NULL if alias refers to a name.
+ *      FEINF_ALIAS_SUBST_NAME
+ *          returns the name to be substituted for the alias, or NULL.
+ *      FEINF_ALIAS_SUBST_SYMBOL
+ *          returns the symbol to be substituted for the alias, or NULL.
+ *
+ * Note: One of FEINF_ALIAS..._NAME and FEINF_ALIAS..._SYMBOL will always be 0/NULL
+ * and the other will be valid, depending on which form of the pragma was used.
+ */
 {
     alias_list          *aliaslist;
     SYM_HANDLE          alias_sym = SYM_NULL;
@@ -660,7 +682,7 @@ static CGPOINTER NextAlias( int index, aux_class request )
     const char          *subst_name = NULL;
     int                 i;
 
-    if( request == NEXT_ALIAS )
+    if( request == FEINF_NEXT_ALIAS )
         ++index;
 
     for( i = 1, aliaslist = AliasHead; aliaslist != NULL; aliaslist = aliaslist->next, ++i ) {
@@ -675,23 +697,24 @@ static CGPOINTER NextAlias( int index, aux_class request )
     if( aliaslist == NULL )
         index = 0;          /* no (more) aliases */
 
-    if( request == ALIAS_NAME ) {
+    if( request == FEINF_ALIAS_NAME ) {
         return( (CGPOINTER)alias_name );
-    } else if( request == ALIAS_SYMBOL ) {
+    } else if( request == FEINF_ALIAS_SYMBOL ) {
         return( (CGPOINTER)alias_sym );
-    } else if( request == ALIAS_SUBST_NAME ) {
+    } else if( request == FEINF_ALIAS_SUBST_NAME ) {
         return( (CGPOINTER)subst_name );
-    } else if( request == ALIAS_SUBST_SYMBOL ) {
+    } else if( request == FEINF_ALIAS_SUBST_SYMBOL ) {
         return( (CGPOINTER)subst_sym );
-    } else {    // this had better be a NEXT_ALIAS request
+    } else {    /* this had better be a FEINF_NEXT_ALIAS request */
         return( (CGPOINTER)(pointer_uint)index );
     }
 }
 
-/* Return the size of function parameters or -1 if size could
+static unsigned GetParmsSize( SYM_HANDLE sym_handle )
+/****************************************************
+ * Return the size of function parameters or -1 if size could
  * not be determined (symbol isn't a function or is variadic)
  */
-static unsigned GetParmsSize( SYM_HANDLE sym_handle )
 {
     unsigned    total_parm_size = 0;
     unsigned    parm_size;
@@ -725,10 +748,10 @@ static unsigned GetParmsSize( SYM_HANDLE sym_handle )
     return( total_parm_size );
 }
 
-/*
-//    Return name pattern manipulator string
-*/
 static const char *GetNamePattern( SYM_HANDLE sym_handle )
+/*********************************************************
+ * Return name pattern manipulator string
+ */
 {
     char                 *pattern;
     SYM_ENTRY            sym;
@@ -743,10 +766,9 @@ static const char *GetNamePattern( SYM_HANDLE sym_handle )
         pattern = "*";
     } else {
 #endif
-        inf = LangInfo( sym.mods, inf );
         if( sym.flags & SYM_FUNCTION ) {
             pattern = inf->objname;
-#if ( _CPU == 386 ) || ( _CPU == 8086 )
+#if _INTEL_CPU
             if( VarFunc( &sym ) ) {
                 if( inf == &DefaultInfo )
                     inf = DftCallConv;
@@ -767,7 +789,7 @@ static const char *GetNamePattern( SYM_HANDLE sym_handle )
             }
         }
 #ifdef __SEH__
-    }       // close that else
+    }   /* close that else */
 #endif
     return( pattern );
 }
@@ -791,13 +813,12 @@ const char *FEExtName( CGSYM_HANDLE sym_handle, int request )
     case EXTN_PRMSIZE:
         return( (const char *)(pointer_uint)GetParmsSize( (SYM_HANDLE)sym_handle ) );
     case EXTN_IMPPREFIX:
-        return( ( TargSys == TS_NT ) ? "__imp_" : NULL );
+        return( ( TargetSystem == TS_NT ) ? "__imp_" : NULL );
     case EXTN_CALLBACKNAME:
     default:
         return( NULL );
     }
 }
-
 
 static void addDefaultImports( void )
 {
@@ -831,7 +852,8 @@ static void addDefaultImports( void )
             control = CM_NULL;
         }
 #if _CPU == 8086
-        if( (control & CM_WINMAIN) && CompFlags.has_winmain || (TargetSwitches & WINDOWS) && CompFlags.has_main ) {
+        if( (control & CM_WINMAIN) && CompFlags.has_winmain
+          || (TargetSwitches & CGSW_X86_WINDOWS) && CompFlags.has_main ) {
 #else
         if( (control & CM_WINMAIN) && CompFlags.has_winmain ) {
 #endif
@@ -852,7 +874,7 @@ static void addDefaultImports( void )
             control = CM_NULL;
         }
     }
-#if ( _CPU == 8086 ) || ( _CPU == 386 )
+#if _INTEL_CPU
     if( CompFlags.emit_library_names ) {
         if( CompFlags.float_used ) {
             if( CompFlags.use_long_double ) {
@@ -863,22 +885,23 @@ static void addDefaultImports( void )
         }
   #if _CPU == 8086
         if( FirstStmt != 0 ) {
-            if( TargetSwitches & BIG_CODE ) {
+            if( TargetSwitches & CGSW_X86_BIG_CODE ) {
                 AddExtRefN( "_big_code_" );
             } else {
                 AddExtRefN( "_small_code_" );
             }
         }
   #endif
-        if( CompFlags.pgm_used_8087 || CompFlags.float_used ) {
-            if( GET_FPU( ProcRevision ) & FPU_EMU ) {
+        if( CompFlags.pgm_used_8087
+          || CompFlags.float_used ) {
+            if( GET_FPU_EMU( ProcRevision ) ) {
   #if _CPU == 8086
                 AddExtRefN( "__init_87_emulator" );
-  #else
+  #else /* _CPU == 386 */
                 AddExtRefN( "__init_387_emulator" );
   #endif
             }
-            if( GET_FPU( ProcRevision ) > FPU_NONE ) {
+            if( !GET_FPU_FPC( ProcRevision ) ) {
                 if( Stack87 == 4 ) {
                     AddExtRefN( "__old_8087" );
                 } else {
@@ -887,15 +910,17 @@ static void addDefaultImports( void )
             }
         }
     }
-#else
+#else /* _RISC_CPU */
     if( CompFlags.emit_library_names ) {
-        /* handle floating-point support */
+        /*
+         * handle floating-point support
+         */
         if( CompFlags.float_used ) {
             AddExtRefN( "_fltused_" );
         }
     }
 #endif
-#if ( _CPU == 8086 ) || ( _CPU == 386 )
+#if _INTEL_CPU
     if( CompFlags.main_has_parms ) {
   #if _CPU == 8086
         if( CompFlags.has_wchar_entry ) {
@@ -903,7 +928,7 @@ static void addDefaultImports( void )
         } else {
             AddExtRefN( "__argc" );
         }
-  #else
+  #else /* _CPU == 386 */
         if( CompFlags.register_conventions ) {
             if( CompFlags.has_wchar_entry ) {
                 AddExtRefN( "__wargc" );
@@ -919,58 +944,68 @@ static void addDefaultImports( void )
         }
   #endif
     }
-#else
+#else /* _RISC_CPU */
     if( CompFlags.main_has_parms ) {
         AddExtRefN( "_argc" );
     }
 #endif
-    /* handle default windowing app */
+    /*
+     * handle default windowing app
+     */
     if( CompFlags.bw_switch_used ) {
         AddExtRefN( "__init_default_win" );
     }
-#if ( _CPU == 8086 ) || ( _CPU == 386 )
-    /* handle NetWare */
-    if( TargSys == TS_NETWARE || TargSys == TS_NETWARE5 ) {
-        /* is target NETWARE or NETWARE5? */
+#if _INTEL_CPU
+    /*
+     * handle NetWare
+     */
+    if( TargetSystem == TS_NETWARE
+      || TargetSystem == TS_NETWARE5 ) {
+        /*
+         * is target NETWARE or NETWARE5?
+         */
         AddExtRefN( "__WATCOM_Prelude" );
     }
-
-    /* handle 'old' profiling */
-    if( TargetSwitches & P5_PROFILING ) {
-        /* is profiling enabled (-et)? */
+    /*
+     * handle 'old' profiling
+     */
+    if( TargetSwitches & CGSW_X86_P5_PROFILING ) {
+        /*
+         * is profiling enabled (-et)?
+         */
         AddExtRefN( "__p5_profile" );
     }
-
-    /* handle 'new' profiling */
-    if( TargetSwitches & NEW_P5_PROFILING ) {
-        /* is profiling enabled (-etp)? */
+    /*
+     * handle 'new' profiling
+     */
+    if( TargetSwitches & CGSW_X86_NEW_P5_PROFILING ) {
+        /*
+         * is profiling enabled (-etp)?
+         */
         AddExtRefN( "__new_p5_profile" );
     }
 #endif
 }
 
 
-/*
-//    NextImport
-//        Called (indirectly) from the code generator to inject automagically defined symbols.
-//    Inputs:
-//        index    (n-1)
-//            Usually called from a loop until we return 0/NULL to show no more symbols
-//            are required.
-//        request
-//            NEXT_IMPORT
-//                examines the current flags to see if any symbols should be
-//                automagically inserted and returns the relevant index if so.
-//            IMPORT_NAME
-//                returns the requested name. if we have returned an index for
-//                the current compiler settings we should be called with a valid
-//                index but we still perform exactly the same checks as this is
-//                good practise.
-//
-*/
-
 static CGPOINTER NextImport( int index, aux_class request )
-/*******************************************************/
+/**********************************************************
+ * NextImport
+ *  Called (indirectly) from the code generator to inject automagically defined symbols.
+ * Inputs:
+ *  index    (n-1)
+ *      Usually called from a loop until we return 0/NULL to show no more symbols
+ *      are required.
+ *  request
+ *      FEINF_NEXT_IMPORT
+ *          examines the current flags to see if any symbols should be
+ *          automagically inserted and returns the relevant index if so.
+ *      FEINF_IMPORT_NAME
+ *          returns the requested name. if we have returned an index for
+ *          the current compiler settings we should be called with a valid
+ *          index but we still perform exactly the same checks as this is
+ *          good practise.
+ */
 {
     char        *name;
     int         i;
@@ -983,7 +1018,7 @@ static CGPOINTER NextImport( int index, aux_class request )
     if( index == 0 ) {
         addDefaultImports();
     }
-    if( request == NEXT_IMPORT )
+    if( request == FEINF_NEXT_IMPORT )
         ++index;
     if( index > 0 ) {
         for( i = 1, e = ExtrefInfo; e != NULL; e = e->next ) {
@@ -996,15 +1031,20 @@ static CGPOINTER NextImport( int index, aux_class request )
             ++i;
         }
     }
-    /* return the import name, or */
-    if( request == IMPORT_NAME || name == NULL )
+    /*
+     * return the import name, or
+     */
+    if( request == FEINF_IMPORT_NAME
+      || name == NULL )
         return( (CGPOINTER)name );
-    /* return the index */
+    /*
+     * return the index
+     */
     return( (CGPOINTER)(pointer_uint)index );
 }
 
 static CGPOINTER NextImportS( int index, aux_class request )
-/********************************************************/
+/**********************************************************/
 {
     void        *symbol;
     int         i;
@@ -1014,7 +1054,7 @@ static CGPOINTER NextImportS( int index, aux_class request )
         return( NULL );
 
     symbol = NULL;
-    if( request == NEXT_IMPORT_S )
+    if( request == FEINF_NEXT_IMPORT_S )
         ++index;
     if( index > 0 ) {
         for( i = 1, e = ExtrefInfo; e != NULL; e = e->next ) {
@@ -1027,50 +1067,52 @@ static CGPOINTER NextImportS( int index, aux_class request )
             ++i;
         }
     }
-    /* return the import symbol, or */
-    if( request == IMPORT_NAME_S || symbol == NULL )
+    /*
+     * return the import symbol, or
+     */
+    if( request == FEINF_IMPORT_NAME_S
+      || symbol == NULL )
         return( (CGPOINTER)symbol );
-    /* return the index */
+    /*
+     * return the index
+     */
     return( (CGPOINTER)(pointer_uint)index );
 }
 
-#if ( _CPU == 8086 ) || ( _CPU == 386 )
-
-/*
-//    This section is for
-//        8086
-//        386
-//
-//    pass auxiliary information to back end
-*/
-CGPOINTER FEAuxInfo( CGPOINTER req_handle, int request )
+CGPOINTER FEAuxInfo( CGPOINTER req_handle, aux_class request )
+/*************************************************************
+ * pass auxiliary information to back end
+ */
 {
     aux_info            *inf;
     SYM_ENTRY           sym;
     static hw_reg_set   save_set;
 
     switch( request ) {
-    case SOURCE_LANGUAGE:
+    case FEINF_SOURCE_LANGUAGE:
         return( (CGPOINTER)"C" );
-    case STACK_SIZE_8087:
+#if _INTEL_CPU
+    case FEINF_STACK_SIZE_8087:
         return( (CGPOINTER)(pointer_uint)Stack87 );
-    case CODE_GROUP:
+    case FEINF_CODE_GROUP:
         return( (CGPOINTER)GenCodeGroup );
-    case DATA_GROUP:
+    case FEINF_DATA_GROUP:
         return( (CGPOINTER)DataSegName );
-    case OBJECT_FILE_NAME:
+#endif
+    case FEINF_OBJECT_FILE_NAME:
         return( (CGPOINTER)ObjFileName() );
-    case REVISION_NUMBER:
+    case FEINF_REVISION_NUMBER:
         return( (CGPOINTER)(pointer_uint)II_REVISION );
-    case AUX_LOOKUP:
+    case FEINF_AUX_LOOKUP:
         return( req_handle );
-    case PROEPI_DATA_SIZE:
+#if _INTEL_CPU
+    case FEINF_PROEPI_DATA_SIZE:
         return( (CGPOINTER)(pointer_uint)ProEpiDataSize );
-    case DBG_PREDEF_SYM:
+    case FEINF_DBG_PREDEF_SYM:
         return( (CGPOINTER)SymDFAbbr );
-    case P5_CHIP_BUG_SYM:
+    case FEINF_P5_CHIP_BUG_SYM:
         return( (CGPOINTER)SymChipBug );
-    case CODE_LABEL_ALIGNMENT:
+    case FEINF_CODE_LABEL_ALIGNMENT:
         {
             static  unsigned char   Alignment[] = { 2, 1, 1 };
 
@@ -1079,95 +1121,86 @@ CGPOINTER FEAuxInfo( CGPOINTER req_handle, int request )
 
             return( (CGPOINTER)Alignment );
         }
-    case CLASS_NAME:
+    case FEINF_CLASS_NAME:
         return( (CGPOINTER)SegClassName( (segment_id)(pointer_uint)req_handle ) );
-    case USED_8087:
+    case FEINF_USED_8087:
         CompFlags.pgm_used_8087 = true;
         return( NULL );
   #if _CPU == 386
-    case P5_PROF_DATA:
+    case FEINF_P5_PROF_DATA:
         return( (CGPOINTER)FunctionProfileBlock );
-    case P5_PROF_SEG:
+    case FEINF_P5_PROF_SEG:
         return( (CGPOINTER)(pointer_uint)FunctionProfileSegId );
   #endif
-    case SOURCE_NAME:
+#endif
+    case FEINF_SOURCE_NAME:
         if( SrcFName == ModuleName ) {
             return( (CGPOINTER)FNameFullPath( FNames ) );
         } else {
             return( (CGPOINTER)ModuleName );
         }
-    case CALL_CLASS:
-        {
-            static call_class cclass;
-
-            cclass = GetCallClass( req_handle );
-            return( (CGPOINTER)&cclass );
-        }
-    case FREE_SEGMENT:
+    case FEINF_CALL_CLASS:
+        return( (CGPOINTER)getCallClass( req_handle ) );
+    case FEINF_CALL_CLASS_TARGET:
+        return( (CGPOINTER)getCallClassTarget( req_handle ) );
+    case FEINF_FREE_SEGMENT:
         return( NULL );
-    case NEXT_LIBRARY:
-    case LIBRARY_NAME:
+    case FEINF_NEXT_LIBRARY:
+    case FEINF_LIBRARY_NAME:
         return( NextLibrary( (int)(pointer_uint)req_handle, request ) );
-    case NEXT_IMPORT:
-    case IMPORT_NAME:
+    case FEINF_NEXT_IMPORT:
+    case FEINF_IMPORT_NAME:
         return( NextImport( (int)(pointer_uint)req_handle, request ) );
-    case NEXT_IMPORT_S:
-    case IMPORT_NAME_S:
+    case FEINF_NEXT_IMPORT_S:
+    case FEINF_IMPORT_NAME_S:
         return( NextImportS( (int)(pointer_uint)req_handle, request ) );
-    case NEXT_ALIAS:
-    case ALIAS_NAME:
-    case ALIAS_SYMBOL:
-    case ALIAS_SUBST_NAME:
-    case ALIAS_SUBST_SYMBOL:
+    case FEINF_NEXT_ALIAS:
+    case FEINF_ALIAS_NAME:
+    case FEINF_ALIAS_SYMBOL:
+    case FEINF_ALIAS_SUBST_NAME:
+    case FEINF_ALIAS_SUBST_SYMBOL:
         return( NextAlias( (int)(pointer_uint)req_handle, request ) );
-    case TEMP_LOC_NAME:
+    case FEINF_TEMP_LOC_NAME:
         return( (CGPOINTER)(pointer_uint)TEMP_LOC_QUIT );
-    case TEMP_LOC_TELL:
+    case FEINF_TEMP_LOC_TELL:
         return( NULL );
-    case NEXT_DEPENDENCY:
+    case FEINF_NEXT_DEPENDENCY:
         if( CompFlags.emit_dependencies )
             return( (CGPOINTER)NextDependency( (FNAMEPTR)req_handle ) );
         return( NULL );
-    case DEPENDENCY_TIMESTAMP:
+    case FEINF_DEPENDENCY_TIMESTAMP:
         return( (CGPOINTER)&(((FNAMEPTR)req_handle)->mtime) );
-    case DEPENDENCY_NAME:
+    case FEINF_DEPENDENCY_NAME:
         return( (CGPOINTER)FNameFullPath( (FNAMEPTR)req_handle ) );
-    case PEGGED_REGISTER:
+#if _INTEL_CPU
+    case FEINF_PEGGED_REGISTER:
         return( (CGPOINTER)SegPeggedReg( (segment_id)(pointer_uint)req_handle ) );
-    case DBG_DWARF_PRODUCER:
+#endif
+    case FEINF_DBG_DWARF_PRODUCER:
         return( (CGPOINTER)DWARF_PRODUCER_ID );
-    case SAVE_REGS:
+    case FEINF_SAVE_REGS:
+        sym.mods = 0;
         inf = FindInfo( &sym, req_handle );
-        if( req_handle != NULL ) {
-            inf = LangInfo( sym.mods, inf );
-        } else {
-            sym.mods = 0;
-        }
         save_set = inf->save;
+#if _INTEL_CPU
         if( sym.mods & FLAG_SAVEREGS ) {
             HW_CTurnOn( save_set, HW_SEGS );
         }
-
   #ifdef __SEH__
         if( (SYM_HANDLE)req_handle == SymTryInit ) {
-    #if _CPU == 8086
-            HW_CTurnOff( save_set, HW_SP );
-    #else
-            HW_CTurnOff( save_set, HW_ESP );
-    #endif
+            HW_CTurnOff( save_set, HW_xSP );
         }
   #endif
+#endif
         return( (CGPOINTER)&save_set );
-    case RETURN_REG:
+    case FEINF_RETURN_REG:
         inf = FindInfo( &sym, req_handle );
-        if( req_handle != NULL ) {
-            inf = LangInfo( sym.mods, inf );
-        }
         return( (CGPOINTER)&inf->returns );
-    case CALL_BYTES:
+    case FEINF_CALL_BYTES:
         inf = FindInfo( &sym, req_handle );
         return( (CGPOINTER)inf->code );
-    case PARM_REGS:
+    case FEINF_PARM_REGS:
+#if _INTEL_CPU
   #ifdef __SEH__
         if(( (SYM_HANDLE)req_handle == SymTryInit )
           || ( (SYM_HANDLE)req_handle == SymTryFini )
@@ -1176,128 +1209,27 @@ CGPOINTER FEAuxInfo( CGPOINTER req_handle, int request )
             return( (CGPOINTER)TryParms );
         }
   #endif
-        inf = FindInfo( &sym, req_handle );
-        if( req_handle != NULL ) {
-            inf = LangInfo( sym.mods, inf );
-            if( inf->code == NULL && VarFunc( &sym ) ) {
-                return( (CGPOINTER)DefaultVarParms );
-            }
-        }
-        return( (CGPOINTER)inf->parms );
-    case STRETURN_REG:
-        inf = FindInfo( &sym, req_handle );
-        if( req_handle != NULL ) {
-            inf = LangInfo( sym.mods, inf );
-        }
-        return( (CGPOINTER)&inf->streturn );
-    default:
-        break;
-    }
-    return( NULL );
-}
-
-#else
-
-/*
-//    This section is NOT 8086 and 386 , i.e.,
-//        _AXP
-//        _PPC
-//        _MIPS
-//
-//    pass auxiliary information to back end
-*/
-CGPOINTER FEAuxInfo( CGPOINTER req_handle, int request )
-{
-    aux_info            *inf;
-    SYM_ENTRY           sym;
-    static hw_reg_set   save_set;
-
-    switch( request ) {
-    case SOURCE_LANGUAGE:
-        return( (CGPOINTER)"C" );
-    case OBJECT_FILE_NAME:
-        return( (CGPOINTER)ObjFileName() );
-    case REVISION_NUMBER:
-        return( (CGPOINTER)(pointer_uint)II_REVISION );
-    case AUX_LOOKUP:
-        return( req_handle );
-    case SOURCE_NAME:
-        if( SrcFName == ModuleName ) {
-            return( (CGPOINTER)FNameFullPath( FNames ) );
-        } else {
-            return( (CGPOINTER)ModuleName );
-        }
-    case CALL_CLASS:
-        {
-            static call_class cclass;
-
-            cclass = GetCallClass( req_handle );
-            return( (CGPOINTER)&cclass );
-        }
-    case NEXT_LIBRARY:
-    case LIBRARY_NAME:
-        return( NextLibrary( (int)(pointer_uint)req_handle, request ) );
-    case NEXT_IMPORT:
-    case IMPORT_NAME:
-        return( NextImport( (int)(pointer_uint)req_handle, request ) );
-    case NEXT_IMPORT_S:
-    case IMPORT_NAME_S:
-        return( NextImportS( (int)(pointer_uint)req_handle, request ) );
-    case NEXT_ALIAS:
-    case ALIAS_NAME:
-    case ALIAS_SYMBOL:
-    case ALIAS_SUBST_NAME:
-    case ALIAS_SUBST_SYMBOL:
-        return( NextAlias( (int)(pointer_uint)req_handle, request ) );
-    case FREE_SEGMENT:
-        return( NULL );
-    case TEMP_LOC_NAME:
-        return( (CGPOINTER)(pointer_uint)TEMP_LOC_QUIT );
-    case TEMP_LOC_TELL:
-        return( NULL );
-    case NEXT_DEPENDENCY:
-        if( CompFlags.emit_dependencies )
-            return( (CGPOINTER)NextDependency( (FNAMEPTR)req_handle ) );
-        return( NULL );
-    case DEPENDENCY_TIMESTAMP:
-        return( (CGPOINTER)&(((FNAMEPTR)req_handle)->mtime) );
-    case DEPENDENCY_NAME:
-        return( (CGPOINTER)FNameFullPath( (FNAMEPTR)req_handle ) );
-    case SAVE_REGS:
-        inf = FindInfo( &sym, req_handle );
-        if( req_handle != NULL ) {
-            inf = LangInfo( sym.mods, inf );
-        } else {
-            sym.mods = 0;
-        }
-        save_set = inf->save;
-        return( (CGPOINTER)&save_set );
-    case RETURN_REG:
-        inf = FindInfo( &sym, req_handle );
-        if( req_handle != NULL ) {
-            inf = LangInfo( sym.mods, inf );
-        }
-        return( (CGPOINTER)&inf->returns );
-    case CALL_BYTES:
-        inf = FindInfo( &sym, req_handle );
-        return( (CGPOINTER)inf->code );
-    case PARM_REGS:
-        inf = FindInfo( &sym, req_handle );
-        if( req_handle != NULL ) {
-            inf = LangInfo( sym.mods, inf );
-            if( inf->code == NULL && VarFunc( &sym ) ) {
-                return( (CGPOINTER)DefaultVarParms );
-            }
-        }
-        return( (CGPOINTER)inf->parms );
-    default:
-        break;
-    }
-    return( NULL );
-}
 #endif
+        inf = FindInfo( &sym, req_handle );
+        if( req_handle != NULL ) {
+            if( inf->code == NULL
+              && VarFunc( &sym ) ) {
+                return( (CGPOINTER)DefaultVarParms );
+            }
+        }
+        return( (CGPOINTER)inf->parms );
+#if _INTEL_CPU
+    case FEINF_STRETURN_REG:
+        inf = FindInfo( &sym, req_handle );
+        return( (CGPOINTER)&inf->streturn );
+#endif
+    default:
+        break;
+    }
+    return( NULL );
+}
 
-char *SrcFullPath( char const *name, char *buff, unsigned max )
+char *SrcFullPath( char const *name, char *buff, size_t max )
 {
     return( _getFilenameFullPath( buff, name, max ) );
 }

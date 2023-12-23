@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -49,17 +49,15 @@ static const char *usageTxt[] = {
     NULL
 };
 
-char *OptEnvVar = "";
-
 static int      flagUTC;
 
 int main( int argc, char **argv )
 {
     struct tm   *time_of_day;
     time_t      ltime;
-    char        buf[ 256 ];
+    char        buf[256];
     int         ch;
-    char        fmt[ 256 ] = "%a %b %e %H:%M:%S %Z %Y";
+    char        fmt[256] = "%a %b %e %H:%M:%S %Z %Y";
 
     for(;;) {
         ch = GetOpt( &argc, argv, "u", usageTxt );
@@ -74,16 +72,15 @@ int main( int argc, char **argv )
     if( argc > 2 ) {
         Quit( usageTxt, "invalid number of arguments\n" );
     }
-    argv++;
-    if( *argv != NULL ) {
-        if( **argv == '+' ) {
-            if( (*argv)[ 1 ] == '\0' ) {
+    if( argc > 1 ) {
+        if( argv[1][0] == '+' ) {
+            if( argv[1][1] == '\0' ) {
                 Quit( usageTxt, "empty formatstring not allowed\n" );
             }
-            strncpy( fmt, &((*argv)[ 1 ]), sizeof( fmt ) );
-            fmt[ sizeof( fmt ) - 1 ] = '\0';
+            strncpy( fmt, argv[1] + 1, sizeof( fmt ) );
+            fmt[sizeof( fmt ) - 1] = '\0';
         } else {
-            Quit( usageTxt, "invalid argument %s\n", *argv );
+            Quit( usageTxt, "invalid argument %s\n", argv[1] );
         }
     }
     time( &ltime );

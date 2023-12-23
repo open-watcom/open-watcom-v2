@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -52,7 +52,7 @@ const opcode_entry  *ResetGenEntry( instruction *ins )
     bool                dummy;
 
     try = FindGenEntry( ins, &dummy );
-#if _TARGET & ( _TARG_80386 | _TARG_8086 )
+#if _TARGET_INTEL
     /*
      * Real architectures are orthogonal and don't need to swap
      * op's. BBB
@@ -74,14 +74,14 @@ const opcode_entry  *ResetGenEntry( instruction *ins )
 
 bool    ChangeIns( instruction *ins, name *to, name **op, change_type flags )
 /****************************************************************************
-    Is it alright to change operand "*op" to a reference to "to" in
-    instruction "ins".  We check here that the instruction would still
-    be generatable by looking up its generate entry.  We must also check
-    that it sets the condition codes the same way as the original
-    instruction would.  For example, SUB R1,1 => R1 becoming LA 1[R1] =>
-    R1 would be no good if the first form set condition codes but the
-    second form did not.
-*/
+ * Is it alright to change operand "*op" to a reference to "to" in
+ * instruction "ins".  We check here that the instruction would still
+ * be generatable by looking up its generate entry.  We must also check
+ * that it sets the condition codes the same way as the original
+ * instruction would.  For example, SUB R1,1 => R1 becoming LA 1[R1] =>
+ * R1 would be no good if the first form set condition codes but the
+ * second form did not.
+ */
 {
     const opcode_entry  *try;
     const opcode_entry  *table;
@@ -137,8 +137,10 @@ bool    ChangeIns( instruction *ins, name *to, name **op, change_type flags )
         }
     }
     if( !ok || (flags & CHANGE_CHECK) ) {
-        // if we failed or we were just checking then
-        // restore the original instruction
+        /*
+         * if we failed or we were just checking then
+         * restore the original instruction
+         */
         for( i = ins->num_operands; i-- > 0; ) {
             ins->operands[i] = save_ops[i];
         }
@@ -152,9 +154,9 @@ bool    ChangeIns( instruction *ins, name *to, name **op, change_type flags )
 
 static  bool    TryOldIndex( score *scoreboard, instruction *ins, name **opp )
 /*****************************************************************************
-    Try to find an 'older' index register to replace the index of
-    "*opp", in instruction "ins", given register scoreboard "sc".
-*/
+ * Try to find an 'older' index register to replace the index of
+ * "*opp", in instruction "ins", given register scoreboard "sc".
+ */
 {
     name        *op;
     score       *this_reg;
@@ -173,8 +175,10 @@ static  bool    TryOldIndex( score *scoreboard, instruction *ins, name **opp )
     for( curr_reg = this_reg->next_reg; curr_reg != this_reg; curr_reg = curr_reg->next_reg ) {
         if( curr_reg->generation < this_reg->generation ) {
             reg_name = ScoreList[curr_reg->index]->reg_name;
-            // OOPS! what about "op [edx] -> [edx]" which zaps edx...
-            // if( opp != &ins->result ||       BBB - Feb 18 - 1994
+            /*
+             * OOPS! what about "op [edx] -> [edx]" which zaps edx...
+             */
+//            if( opp != &ins->result ||
             if( *opp != ins->result ||
                 !HW_Ovlap( reg_name->r.reg, ins->zap->reg ) ) {
                 index = ScaleIndex( reg_name,
@@ -194,10 +198,10 @@ static  bool    TryOldIndex( score *scoreboard, instruction *ins, name **opp )
 
 static  bool    TryRegOp( score *scoreboard, instruction *ins, name **opp )
 /**************************************************************************
-    See if we can find an equivalent register operand for the operand
-    "*opp" in instruction "ins", given that the current state of
-    registers is reflected by scoreboard "sc".
-*/
+ * See if we can find an equivalent register operand for the operand
+ * "*opp" in instruction "ins", given that the current state of
+ * registers is reflected by scoreboard "sc".
+ */
 {
     name        *op;
     int         i;
@@ -233,11 +237,15 @@ static  bool    TryRegOp( score *scoreboard, instruction *ins, name **opp )
         if( info.class == SC_N_CONSTANT ) {
             if( _OpIsCondition( ins->head.opcode ) &&
                 info.symbol.p == NULL && info.offset == 0 ) {
-                /* don't change cmp x,0 */
+                /*
+                 * don't change cmp x,0
+                 */
                 return( false );
             }
             if( _IsFloating( ins->type_class ) ) {
-                /* careful -- info->offset is NOT right for FP consts! */
+                /*
+                 * careful -- info->offset is NOT right for FP consts!
+                 */
                 return( false );
             }
         }
@@ -247,7 +255,9 @@ static  bool    TryRegOp( score *scoreboard, instruction *ins, name **opp )
             }
         }
 
-        /*% couldn't find a register operand, try for an older index*/
+        /*
+         * % couldn't find a register operand, try for an older index
+         */
         return( TryOldIndex( scoreboard, ins, opp ) );
     }
 }
@@ -255,9 +265,9 @@ static  bool    TryRegOp( score *scoreboard, instruction *ins, name **opp )
 
 bool    FindRegOpnd( score *scoreboard, instruction *ins )
 /*********************************************************
-    See if we can find an operand of "ins" that could be replaces by a
-    register or an 'older' register (one that was defined first).
-*/
+ * See if we can find an operand of "ins" that could be replaces by a
+ * register or an 'older' register (one that was defined first).
+ */
 {
     opcnt       i;
     bool        change;
@@ -280,9 +290,9 @@ bool    FindRegOpnd( score *scoreboard, instruction *ins )
 
 void    ScoreMakeEqual( score *scoreboard, name *op1, name *op2 )
 /**************************************************************
-    Make 'op1' and 'op2' equivalent in scoreboarder information
-        - one of them must be a register
-*/
+ * Make 'op1' and 'op2' equivalent in scoreboarder information
+ *     - one of them must be a register
+ */
 {
     int         op2_index;
     name        *tmp;
@@ -299,7 +309,9 @@ void    ScoreMakeEqual( score *scoreboard, name *op1, name *op2 )
             RegAdd( scoreboard, op2_index, op1->r.reg_index );
         } else {
             ScoreInfo( &info, op1 );
-            /* NB: reg can never have the value x[reg]*/
+            /*
+             * NB: reg can never have the value x[reg]
+             */
             if( info.index_reg == NO_INDEX
                 || !HW_Ovlap( op2->r.reg, ScoreList[info.index_reg]->reg ) ) {
                 ScoreAssign( scoreboard, op2_index, &info );
@@ -310,9 +322,9 @@ void    ScoreMakeEqual( score *scoreboard, name *op1, name *op2 )
 
 bool    ScoreMove( score *scoreboard, instruction *ins )
 /*******************************************************
-    Update "sc" to reflect the affect of an OP_MOV instruction "ins" on
-    the registers and memory locations.
-*/
+ * Update "sc" to reflect the affect of an OP_MOV instruction "ins" on
+ * the registers and memory locations.
+ */
 {
     name        *src;
     name        *dst;
@@ -343,9 +355,11 @@ bool    ScoreMove( score *scoreboard, instruction *ins )
                 return( true );
             } else {
                 RegKill( scoreboard, dst->r.reg );
-                /* NB: reg can never have the value x[reg]*/
-               if( info.index_reg == NO_INDEX
-                || !HW_Ovlap( dst->r.reg, ScoreList[info.index_reg]->reg ) ) {
+                /*
+                 * NB: reg can never have the value x[reg]
+                 */
+                if( info.index_reg == NO_INDEX
+                  || !HW_Ovlap( dst->r.reg, ScoreList[info.index_reg]->reg ) ) {
                     if( !FPIsConvert( ins ) ) {
                         ScoreAssign( scoreboard, dst_index, &info );
                     }
@@ -374,9 +388,9 @@ bool    ScoreMove( score *scoreboard, instruction *ins )
 
 bool    ScoreLA( score *scoreboard, instruction *ins )
 /*****************************************************
-    Update "sc" to reflect the affect of an OP_MOV instruction "ins" on
-    the registers and memory locations.
-*/
+ * Update "sc" to reflect the affect of an OP_MOV instruction "ins" on
+ * the registers and memory locations.
+ */
 {
     name        *src;
     name        *dst;
@@ -406,9 +420,9 @@ bool    ScoreLA( score *scoreboard, instruction *ins )
 
 void    ScZeroCheck( score *scoreboard, instruction *ins )
 /*********************************************************
-    Check if instruction "ins" ends up with the result being Zero.  For
-    example SUB R1,R1 => R1, results in R1 becoming 0.
-*/
+ * Check if instruction "ins" ends up with the result being Zero.  For
+ * example SUB R1,R1 => R1, results in R1 becoming 0.
+ */
 {
     int i;
 

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,8 +33,8 @@
 
 #include <string.h>
 #include <stdio.h>
+#include <sys/stat.h>
 #include "walloca.h"
-#include "wio.h"
 #include "common.h"
 #include "aui.h"
 #include "dip.h"
@@ -588,7 +588,7 @@ STATIC void loadImageInfo( image_info * curr_image )
     } else {
         if( curr_image->sym_deleted ) {
         } else if( curr_image->sym_name != NULL ) {
-            sym_fp = DIGCli( Open )( curr_image->sym_name, DIG_READ );
+            sym_fp = DIGCli( Open )( curr_image->sym_name, DIG_OPEN_READ );
             if( sym_fp != NULL ) {
                 curr_image->dip_handle = WPDipLoadInfo( sym_fp, curr_image->sym_name, curr_image,
                                            sizeof( image_info ), DIP_PRIOR_MIN, DIP_PRIOR_MAX );
@@ -601,7 +601,7 @@ STATIC void loadImageInfo( image_info * curr_image )
             name_len = strlen( FNameBuff ) + 1;
             curr_image->sym_name = ProfAlloc( name_len );
             memcpy( curr_image->sym_name, FNameBuff, name_len );
-            sym_fp = DIGCli( Open )( curr_image->sym_name, DIG_READ );
+            sym_fp = DIGCli( Open )( curr_image->sym_name, DIG_OPEN_READ );
             if( sym_fp != NULL ) {
                 curr_image->dip_handle = WPDipLoadInfo( sym_fp, curr_image->sym_name, curr_image,
                                           sizeof( image_info ), DIP_PRIOR_MIN, DIP_PRIOR_MAX );
@@ -629,7 +629,7 @@ STATIC void loadImageInfo( image_info * curr_image )
                 }
             }
         }
-        obj_fp = DIGCli( Open )( curr_image->name, DIG_READ );
+        obj_fp = DIGCli( Open )( curr_image->name, DIG_OPEN_READ );
         if( obj_fp != NULL ) {
             if( curr_image->sym_deleted ) {
             } else if( curr_image->dip_handle == NO_MOD ) {

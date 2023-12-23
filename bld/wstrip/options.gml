@@ -2,7 +2,7 @@
 :cmt.*
 :cmt.*                            Open Watcom Project
 :cmt.*
-:cmt.* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+:cmt.* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 :cmt.*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 :cmt.*
 :cmt.*  ========================================================================
@@ -134,6 +134,11 @@
 :target. any
 :usage.  add information rather than delete information
 :jusage. 情報削除ではなく、情報付加をします
+
+:option. b
+:target. any
+:usage.  create backup file (.bak) for input executable
+:jusage. create backup file (.bak) for input executable
 
 :option. n
 :target. any

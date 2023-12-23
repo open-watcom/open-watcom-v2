@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,10 +35,10 @@
 #include "u32moddi.h"
 
 
-unsigned_32     U32ModDiv( unsigned_32 *x, unsigned_32 y )
-/********************************************************/
+uint_32     U32ModDiv( uint_32 *x, uint_32 y )
+/********************************************/
 {
-    unsigned_32 rem;
+    uint_32 rem;
 
     rem = *x % y;
     *x /= y;

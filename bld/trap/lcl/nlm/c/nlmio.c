@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,43 +41,34 @@
 #undef FALSE
 
 #include "miniproc.h"
-#if defined ( __NW40__ )
+#if defined( __NW40__ )
     #include "datamig.h"
-#elif defined ( __NW30__ )
+#elif defined( __NW30__ )
     #include "cconfig.h"
 #endif
 
 #include "locks.h"
 #include "bits.h"
 #include "nlmio.h"
+#include "nw3to5.h"
+#include "nlmclib.h"
 
-
-typedef LONG file_fn( LONG, LONG, LONG, LONG, BYTE *, LONG, LONG, LONG, LONG, BYTE, LONG *, LONG *, void ** );
-
-extern LONG ConvertPathString(
-                LONG stationNumber,
-                BYTE base,
-                BYTE *modifierString,
-                LONG *volumeNumber,
-                LONG *pathBase,
-                BYTE *pathString,
-                LONG *pathCount);
 
 #define FIRST_HANDLE    5
 
-#define     FILE_ATTRIB_MASK    (_A_NORMAL | _A_HIDDEN | _A_RDONLY)
+#define FILE_ATTRIB_MASK    (_A_NORMAL | _A_HIDDEN | _A_RDONLY)
 /*
 //  RWPRIVS | DENYW -
 //  as 0x0B is 1011 I don't know which one is which or has two bits
 //  though I would hazard a guess as RWPRIVS
 */
-#define     FILE_OPEN_PRIVS 0x0B
+#define FILE_OPEN_PRIVS 0x0B
 
-/* From NLMCLIB.C */
+#define NIL_DOS_HANDLE  ((short)0xFFFF)
+#define NUM_FILES       (100 - FIRST_HANDLE)
 
-extern int WriteStdErr( char *buff, int len );
+typedef LONG file_fn( LONG, LONG, LONG, LONG, BYTE *, LONG, LONG, LONG, LONG, BYTE, LONG *, LONG *, void ** );
 
-int     ccode;
 typedef enum {
         FILE_INVALID,
         FILE_DOS,
@@ -92,21 +84,17 @@ typedef struct {
         int     handlenum;
 } my_file;
 
-
-#define NIL_DOS_HANDLE  ((short)0xFFFF)
-#define NUM_FILES       (100-FIRST_HANDLE)
-
-my_file                 Files[NUM_FILES];
+int             ccode;
+my_file         Files[NUM_FILES];
 
 static int AppendStr( char *dst, char *src )
 {
-    int         len;
-    while( *dst ) {
+    int     len;
+
+    while( *dst != '\0' ) {
         ++dst;
     }
-    len = 0;
-    while( *dst = *src ) {
-        ++len;
+    for( len = 0; (*dst = *src) != '\0'; len++ ) {
         ++dst;
         ++src;
     }
@@ -119,7 +107,8 @@ static long WriteServer( long handle, long pos, void *buffer, long requested ) {
     LONG ccode;
 
     ccode = WriteFile( 0, handle, pos, requested, buffer );
-    if( ccode != 0 ) return( 0 );
+    if( ccode != 0 )
+        return( 0 );
     return( requested );
 }
 
@@ -128,22 +117,24 @@ static long ReadServer( long handle, long pos, void *buffer, long requested ) {
 
     LONG ccode, bytes_read;
 
-                                                                    _DBG_IO(( "Reading server %8x at %d for %d\r\n", handle, pos, requested ));
+    _DBG_IO(( "Reading server %8x at %d for %d", handle, pos, requested ));
     ccode = ReadFile( 0, handle, pos, requested, &bytes_read, buffer );
-                                                                    _DBG_IO(( "-- Got %d\r\n", bytes_read ));
-    if( ccode != 0 ) return( 0 );
+    _DBG_IO(( "-- Got %d", bytes_read ));
+    if( ccode != 0 )
+        return( 0 );
     return( bytes_read );
 }
 
 
 static long ReadDOS( long handle, long pos, void *buffer, long requested )
 {
-   LONG ccode, bytes_read;
+    LONG ccode, bytes_read;
 
-                                                                    _DBG_IO(( "Reading DOS %8x at %d for %d\r\n", handle, pos, requested ));
+    _DBG_IO(( "Reading DOS %8x at %d for %d", handle, pos, requested ));
     ccode = INWDOSRead( handle, pos, buffer, requested, &bytes_read );
-                                                                    _DBG_IO(( "-- Got %d\r\n", bytes_read ));
-    if( ccode != 0 ) return( 0 );
+    _DBG_IO(( "-- Got %d", bytes_read ));
+    if( ccode != 0 )
+        return( 0 );
     return( bytes_read );
 }
 
@@ -183,10 +174,12 @@ static my_file *FindFile( void )
     my_file     *p;
 
     for( i = 0, p = Files; i < NUM_FILES; ++i, ++p ) {
-        if( p->handle == 0 ) break;
+        if( p->handle == 0 ) {
+            break;
+        }
     }
     if( i == NUM_FILES ) {
-        Abend( "Debug server out of file handles\r\n" );
+        Abend( "Debug server out of file handles" );
     }
     p->file_type = FILE_INVALID;
     p->seekpos = 0;
@@ -202,15 +195,16 @@ int IOCreat( char *name )
    LONG         handle;
    my_file      *p;
 
-//  if( !MayRelinquishControl ) return( -1 );
-                                                                    _DBG_IO(( "Creating %s. Open RC(%d)\r\n", name, ccode ));
+//    if( !MayRelinquishControl )
+//        return( -1 );
+    _DBG_IO(( "Creating %s. Open RC(%d)", name, ccode ));
     ccode = OpenServer( OpenFile, name, &handle,
                         FILE_ATTRIB_MASK, FILE_OPEN_PRIVS );
     if( ccode == 0 ) {
         ccode = WriteFile( 0, handle, 0, 0, "" );
     } else {
         ccode = OpenServer( CreateFile, name, &handle, 0, 0 );
-                                                                    _DBG_IO(( "Creating %s. Create RC(%d)\r\n", name, ccode ));
+        _DBG_IO(( "Creating %s. Create RC(%d)", name, ccode ));
     }
     if( ccode == 0 ) {
         p = FindFile();
@@ -233,8 +227,10 @@ void StringToNLMPath( char *name, char *res )
     /* right trim the name */
     i = strlen( name );
     for( ;; ) {
-        if( i == 0 ) break;
-        if( name[i-1] != ' ' ) break;
+        if( i == 0 )
+            break;
+        if( name[i - 1] != ' ' )
+            break;
         --i;
     }
     name[i] = '\0';
@@ -264,19 +260,20 @@ int IOOpen( char *openname, int openmode )
     LONG        filesize;
     struct      find_t  dta;
 
-//  if( !MayRelinquishControl ) return( -1 );
+//    if( !MayRelinquishControl )
+//        return( -1 );
     if( openmode == O_RDONLY ) {
         ccode = OpenFileUsingSearchPath( (BYTE *)openname, &handle, &isdos,
                                          loadpath, filename, FALSE, 0 );
         AppendStr( (char *)loadpath, (char *)filename );
-                                                                    _DBG_IO(( ( ccode==0 ? "Opened %s." : "" ), loadpath ));
+        _DBG_IO(( ( ccode==0 ? "Opened %s." : "" ), loadpath ));
     } else {
         ccode = OpenServer( OpenFile, openname, &handle,
                             FILE_ATTRIB_MASK, FILE_OPEN_PRIVS );
-                                                                    _DBG_IO(( "Opened %s.", openname ));
+        _DBG_IO(( "Opened %s.", openname ));
         isdos = FALSE;
     }
-                                                                    _DBG_IO(( " RC(%d). Handle=%8x\r\n", ccode, handle ));
+    _DBG_IO(( " RC(%d). Handle=%8x", ccode, handle ));
     if( ccode == 0 ) {
         p = FindFile();
         p->handle = handle;
@@ -294,15 +291,15 @@ int IOOpen( char *openname, int openmode )
         if( openmode != O_RDONLY ) {
             p->routine = NULL;
         }
-                                                                    _DBG_IO(( ( ccode != 0 ? "    Size failed - ccode %d\r\n" : "" ), ccode ));
-                                                                    _DBG_IO(( ( ccode == 0 ? "    Size is %d\r\n" : "" ), p->filesize ));
+        _DBG_IO(( ( ccode != 0 ? "    Size failed - ccode %d" : "" ), ccode ));
+        _DBG_IO(( ( ccode == 0 ? "    Size is %d" : "" ), p->filesize ));
     }
     return( ccode ? ErrorCode() : ( p->handlenum + FIRST_HANDLE ) );
 }
 
 static void BadFile( void )
 {
-    Abend( "Debug server detected an invalid file (Close)\r\n" );
+    Abend( "Debug server detected an invalid file (Close)" );
 }
 
 
@@ -311,16 +308,18 @@ int IOClose( int closehandle )
     long        handle;
     int         index;
 
-//  if( !MayRelinquishControl ) return( -1 );
+//    if( !MayRelinquishControl )
+//        return( -1 );
     index = closehandle - FIRST_HANDLE;
-    if( index < 0 || index > NUM_FILES ) return( 0 );
-    handle = Files[ index ].handle;
-    Files[ index ].handle = 0;
-                                                                    _DBG_IO(( "Closing file %8x", handle ));
-    if( index < 0 || index >= NUM_FILES || Files[ index ].file_type == FILE_INVALID ) {
+    if( index < 0 || index > NUM_FILES )
+        return( 0 );
+    handle = Files[index].handle;
+    Files[index].handle = 0;
+    _DBG_IO(( "Closing file %8x", handle ));
+    if( index < 0 || index >= NUM_FILES || Files[index].file_type == FILE_INVALID ) {
         BadFile();
     }
-    switch( Files[ index ].file_type ) {
+    switch( Files[index].file_type ) {
     case FILE_DOS:
         ccode = INWDOSClose( handle );
         break;
@@ -328,7 +327,7 @@ int IOClose( int closehandle )
         ccode = CloseFile(0, 1, handle );
         break;
     }
-                                                                    _DBG_IO(( " RC(%d)\r\n", ccode ));
+    _DBG_IO(( " RC(%d)", ccode ));
     return( ccode ? ErrorCode() : 0 );
 }
 
@@ -343,12 +342,13 @@ int IOWrite( int writehandle, char *buff, int buff_len )
     int         index;
     int         written;
 
-//  if( !MayRelinquishControl ) return( -1 );
+//    if( !MayRelinquishControl )
+//        return( -1 );
     index = writehandle - FIRST_HANDLE;
-    if( index < 0 || index >= NUM_FILES || Files[ index ].file_type != FILE_SERVER ) {
+    if( index < 0 || index >= NUM_FILES || Files[index].file_type != FILE_SERVER ) {
         BadFile();
     }
-    p = &Files[ index ];
+    p = &Files[index];
     written = WriteServer( p->handle, p->seekpos, buff, buff_len );
     if( written != buff_len ) {
         written = ErrorCode();
@@ -362,12 +362,13 @@ long IOSeek( int seekhandle, int seekmode, long seekpos )
     long        pos;
     int         index;
 
-//  if( !MayRelinquishControl ) return( -1 );
+//    if( !MayRelinquishControl )
+//        return( -1 );
     index = seekhandle - FIRST_HANDLE;
-    if( index < 0 || index >= NUM_FILES || Files[ index ].file_type == FILE_INVALID ) {
+    if( index < 0 || index >= NUM_FILES || Files[index].file_type == FILE_INVALID ) {
         BadFile();
     }
-    pos = Files[ index ].seekpos;
+    pos = Files[index].seekpos;
     switch( seekmode ) {
     case SEEK_SET:
         pos = seekpos;
@@ -376,13 +377,13 @@ long IOSeek( int seekhandle, int seekmode, long seekpos )
         pos += seekpos;
         break;
     case SEEK_END:
-        pos = Files[ index ].filesize + seekpos;
+        pos = Files[index].filesize + seekpos;
         break;
     }
     if( pos < 0 ) {
         return( ccode ? ErrorCode() : -1 );
     } else {
-        Files[ index ].seekpos = pos;
+        Files[index].seekpos = pos;
         return( pos );
     }
 }
@@ -394,12 +395,13 @@ int IORead( int readhandle, char *buff, int len )
     int         index;
     int         amt_read;
 
-//  if( !MayRelinquishControl ) return( -1 );
+//    if( !MayRelinquishControl )
+//        return( -1 );
     index = readhandle - FIRST_HANDLE;
-    if( index < 0 || index >= NUM_FILES || Files[ index ].file_type == FILE_INVALID ) {
+    if( index < 0 || index >= NUM_FILES || Files[index].file_type == FILE_INVALID ) {
         BadFile();
     }
-    p = &Files[ index ];
+    p = &Files[index];
     amt_read = p->routine( p->handle, p->seekpos, buff, len );
     p->seekpos += amt_read;
     return( amt_read );

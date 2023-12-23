@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,7 +41,7 @@
 #include "context.h"
 #include "unicode.h"
 #include "cscanbuf.h"
-#ifndef NDEBUG
+#ifdef DEVBUILD
     #include "dbg.h"
 #endif
 
@@ -117,11 +117,11 @@ static uint_8 InitClassTable[] = {
 };
 
 #if TARGET_INT == 2
-static unsigned_64 intMax   = I64Val( 0x00000000, 0x00007fff );
-static unsigned_64 uintMax  = I64Val( 0x00000000, 0x0000ffff );
+static unsigned_64 intMax   = Init64Val( 0x00000000, 0x00007fff );
+static unsigned_64 uintMax  = Init64Val( 0x00000000, 0x0000ffff );
 #else
-static unsigned_64 intMax   = I64Val( 0x00000000, 0x7fffffff );
-static unsigned_64 uintMax  = I64Val( 0x00000000, 0xffffffff );
+static unsigned_64 intMax   = Init64Val( 0x00000000, 0x7fffffff );
+static unsigned_64 uintMax  = Init64Val( 0x00000000, 0xffffffff );
 #endif
 
 void ReScanInit( const char *ptr )
@@ -354,6 +354,19 @@ static int doESCChar( int c, bool expanding, type_id char_type )
     return( n );
 }
 
+int EncodeWchar( int c )
+/**********************/
+{
+    if( CompFlags.use_double_byte ) {
+        if( CompFlags.jis_to_unicode ) {
+            c = JIS2Unicode( c );
+        }
+    } else {
+        c = UniCode[c];
+    }
+    return( c );
+}
+
 static TOKEN doScanCharConst( type_id char_type, bool expanding )
 {
     int c;
@@ -402,11 +415,7 @@ static TOKEN doScanCharConst( type_id char_type, bool expanding )
                     c &= 0x00FF;
                     flag.double_byte_char = true;
                 } else if( char_type == TYP_WCHAR ) {
-                    if( CompFlags.use_unicode ) {
-                        c = UniCode[c];
-                    } else if( CompFlags.jis_to_unicode ) {
-                        c = JIS2Unicode( c );
-                    }
+                    c = EncodeWchar( c );
                     ++i;
                     value = (value << 8) + ((c & 0xFF00) >> 8);
                     c &= 0x00FF;
@@ -1530,7 +1539,7 @@ TOKEN NextToken( void )
         return( CurToken );
     }
     (*tokenSource)();
-#ifndef NDEBUG
+#ifdef DEVBUILD
     CtxScanToken();
     DumpToken();
 #endif

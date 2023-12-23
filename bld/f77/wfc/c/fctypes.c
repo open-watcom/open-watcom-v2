@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -204,7 +204,7 @@ cg_type             PromoteToBaseType( cg_type typ ) {
 // if type is integer TY_INT_1, TY_INT_2 under the _AXP or _PPC, we must promote
 // it in order to make a call
 
-#if _CPU == _AXP || _CPU == _PPC
+#if _RISC_CPU
     if( ( typ == TY_INT_1 ) || ( typ == TY_INT_2 )  ) {
         typ = TY_INT_4;
     }

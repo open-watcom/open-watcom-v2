@@ -1,4 +1,4 @@
-extra_objs += &
+nt_trap_objs = &
         task.obj &
         globals.obj &
         accmisc.obj &
@@ -17,17 +17,11 @@ extra_objs += &
         peread.obj &
         supp.obj &
         dbgthrd.obj &
+        ntpath.obj &
         ntrfx.obj &
         core.obj
 
-inc_dirs += -I"$(trap_dir)/lcl/dos/h" -I"$(lib_misc_dir)/h" -I"$(clib_dir)/h"
-
-extra_cppflags = -DWOW
+extra_incs += -I"$(trap_dir)/lcl/nt/h" -I"$(lib_misc_dir)/h" -I"$(clib_dir)/h"
+extra_srcs +=;$(trap_dir)/lcl/nt/c
 
 extra_c_flags_accio = -I"$(clib_dir)/h"
-
-!include $(trap_dir)/lcl/lcl.mif
-!include $(trap_dir)/master.mif
-
-globals.obj :: ../h/globals.h
-

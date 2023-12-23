@@ -43,6 +43,9 @@ YYSTYPE yyval, yylval;
 #define YYACCEPT        return(0)
 #define YYERROR         goto yyerrlab
 
+extern int              yylex( void );
+extern void             yyerror( void );
+
 static YYACTTYPE find_action( YYACTTYPE yyk, YYTOKENTYPE yytoken )
 {
     int     yyi;

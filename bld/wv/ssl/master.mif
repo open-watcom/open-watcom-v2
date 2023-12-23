@@ -1,26 +1,13 @@
-proj_name = wd_ssl
+tree_depth = 4
 
-!ifeq host_cpu x64
-!ifneq bld_cpu x64
-skip_build: .symbolic
-!else ifndef bld64host_$(host_os)
-skip_build: .symbolic
-!endif
-!endif
+proj_name = wd_ssl
 
 !include cproj.mif
 
-!ifdef %OWUSE_FILENAME_VERSION
-fortran_prs = fortra$(bld_ver).prs
-cpp_prs     = cpp$(bld_ver).prs
-c_prs       = c$(bld_ver).prs
-java_prs    = java$(bld_ver).prs
-!else
 fortran_prs = fortran.prs
 cpp_prs     = cpp.prs
 c_prs       = c.prs
 java_prs    = java.prs
-!endif
 
 prs_list = &
     $(fortran_prs) &
@@ -28,7 +15,7 @@ prs_list = &
     $(c_prs) &
     $(java_prs)
 
-!ifeq release 0
+!ifneq debug 0
 ssl_options = -v
 !endif
 

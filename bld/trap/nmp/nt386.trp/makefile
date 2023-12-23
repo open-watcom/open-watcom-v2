@@ -1,9 +1,11 @@
 #pmake: trap remote os_nt cpu_i86 cpu_386 nmp
+
+tree_depth = 4
+
 host_cpu = 386
 host_os  = nt
 
 target_cpu = x86
-target_os  = nt
 
 srv = nmp
 which = TRAP

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -83,49 +83,17 @@ bool CmdScanSwEnd(              // TEST IF END OF SWITCH
 {
     int ch;                     // - current character
 
-    ch = *cmd.curr_ptr;
+    ch = *(unsigned char *)cmd.curr_ptr;
     if( ch == '\0' ) {
         return( true );
     }
     if( isspace( ch ) ) {
         return( true );
     }
-    if( ch == _SWITCH_CHAR1 || ch == _SWITCH_CHAR2 ) {
+    if( _IS_SWITCH_CHAR( ch ) ) {
         return( true );
     }
     return( false );
-}
-
-
-static bool cmdFileChar(        // TEST IF A FILENAME CHARACTER
-    void )
-{
-    char c = *cmd.curr_ptr;
-
-    if( c == _SWITCH_CHAR1 || c == _SWITCH_CHAR2 ) {
-        return( true );
-    }
-    return !CmdScanSwEnd();
-}
-
-
-bool CmdDelimitChar(            // TEST IF SWITCH-DELIMITING CHARACTER
-    void )
-{
-    bool retn;                  // - return: true ==> is a delimiter
-    char ch;                    // - next character
-
-    if( ! cmdFileChar() ) {
-        retn = true;
-    } else {
-        ch = *cmd.curr_ptr;
-        if( ch == _SWITCH_CHAR1 || ch == _SWITCH_CHAR2 ) {
-            retn = true;
-        } else {
-            retn = false;
-        }
-    }
-    return( retn );
 }
 
 
@@ -181,6 +149,21 @@ bool CmdRecogChar(              // RECOGNIZE A CHARACTER
 }
 
 
+bool CmdReRecogChar(            // RE-RECOGNIZE LAST CHARACTER
+    int recog )                 // - character to be recognized
+{
+    bool retn;                  // - true ==> got it
+
+    CmdScanUngetChar();
+    if( recog == CmdScanChar() ) {
+        retn = true;
+    } else {
+        retn = false;
+    }
+    return( retn );
+}
+
+
 bool CmdRecogEquals(            // SKIP EQUALCHAR IN COMMAND LINE
     void )
 {
@@ -199,8 +182,7 @@ bool CmdPathDelim(              // SKIP EQUALCHAR # or ' ' IN COMMAND LINE
 {
     switch( CmdPeekChar() ) {
     case ' ':
-        CmdScanWhiteSpace();
-        CmdScanUngetChar();
+        CmdScanSkipWhiteSpace();
         return( true );
     case '=':
     case '#':
@@ -235,10 +217,9 @@ size_t CmdScanOption(           // SCAN AN OPTION
     *option = str;
     for( ; ; ++str ) {
         int ch;
-        ch = *str;
+        ch = *(unsigned char *)str;
         if( ch == '\0' ) break;
-        if( ch == _SWITCH_CHAR1 ) break;
-        if( ch == _SWITCH_CHAR2 ) break;
+        if( _IS_SWITCH_CHAR( ch ) ) break;
         if( isspace( ch ) ) break;
     }
     return( str - cmd.curr_ptr );
@@ -255,36 +236,30 @@ char const *CmdScanUngetChar(   // UNGET THE LAST CMD SCAN CHARACTER
 size_t CmdScanNumber(           // SCAN A NUMBER
     unsigned *pvalue )          // - addr( return value )
 {
-    char const *p;              // - scan position
     char const *str_beg;        // - start of string
     unsigned value;             // - base 10 value
 
-    str_beg = cmd.curr_ptr;
     value = 0;
-    for( p = str_beg; isdigit(*p); ++p ) {
+    str_beg = cmd.curr_ptr;
+    for( ; isdigit( *(unsigned char *)cmd.curr_ptr ); cmd.curr_ptr++ ) {
         value *= 10;
-        value += *p - '0';
+        value += *(unsigned char *)cmd.curr_ptr - '0';
     }
-    cmd.curr_ptr = p;
     *pvalue = value;
-    return( p - str_beg );
+    return( cmd.curr_ptr - str_beg );
 }
 
 
 size_t CmdScanId(               // SCAN AN IDENTIFIER
     char const **option )       // - addr( option pointer )
 {
-    char const *p;              // - scan position
     char const *str_beg;        // - start of string
 
-    p = CmdScanUngetChar();
-    *option = p;
-    str_beg = p;
-    while( isalnum( *p ) || *p == '_' ) {
-        ++p;
+    *option = str_beg = cmd.curr_ptr;
+    while( isalnum( *(unsigned char *)cmd.curr_ptr ) || *(unsigned char *)cmd.curr_ptr == '_' ) {
+        cmd.curr_ptr++;
     }
-    cmd.curr_ptr = p;
-    return( p - str_beg );
+    return( cmd.curr_ptr - str_beg );
 }
 
 
@@ -292,46 +267,43 @@ size_t CmdScanFilename(         // SCAN A FILE NAME
     char const **option )       // - addr( option pointer )
 {
     char const *str_beg;        // - start of string
-    char const *p;              // - pointer into string
+    int ch;
 
-    str_beg = cmd.curr_ptr;
-    *option = str_beg;
+    *option = str_beg = cmd.curr_ptr;
     if( cmd.unix_mode ) {
-        while( *cmd.curr_ptr == '\0' ) {
+        while( *cmd.curr_ptr != '\0' ) {
             cmd.curr_ptr++;
         }
     } else if( *cmd.curr_ptr == '"' ) {
-        for( p = cmd.curr_ptr + 1; *p; ++p ) {
-            if( *p == '"' ) {
-                ++p;
+        for( cmd.curr_ptr++; (ch = *(unsigned char *)cmd.curr_ptr) != '\0'; cmd.curr_ptr++ ) {
+            if( ch == '"' ) {
+                cmd.curr_ptr++;
                 break;
             }
             // '"\\"' means '\', not '\"'
-            if( p[0] == '\\' && p[1] == '\\' ) {
-                ++p;
-            } else if( p[0] == '\\' && p[1] == '"' ) {
-                ++p;
+            if( ch == '\\' ) {
+                if( cmd.curr_ptr[1] == '\\' ) {
+                    cmd.curr_ptr++;
+                } else if( cmd.curr_ptr[1] == '"' ) {
+                    cmd.curr_ptr++;
+                }
             }
         }
-        cmd.curr_ptr = p;
     } else {
-        for( ; cmdFileChar(); ++ cmd.curr_ptr );
+        for( ; (ch = *(unsigned char *)cmd.curr_ptr) != '\0'; cmd.curr_ptr++ ) {
+            if( isspace( ch ) ) {
+                break;
+            }
+        }
     }
     return( cmd.curr_ptr - str_beg );
 }
 
 
-int CmdScanWhiteSpace(          // SCAN OVER WHITE SPACE
+void CmdScanSkipWhiteSpace(     // SKIP OVER WHITE SPACES
     void )
 {
-    int c;                      // - next character
-
-    for( ; ; ) {
-        c = CmdScanLowerChar();
-        if( c == '\n' ) continue;
-        if( c == '\r' ) continue;
-        if( isspace( c ) ) continue;
-        break;
+    while( isspace( *(unsigned char *)cmd.curr_ptr ) ) {
+        cmd.curr_ptr++;
     }
-    return c;
 }

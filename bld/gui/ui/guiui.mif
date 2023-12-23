@@ -1,3 +1,5 @@
+tree_depth = 4
+
 type=ui
 
 ui_sysobjs = &
@@ -82,7 +84,7 @@ ui_sysobjs = &
     guif1hk.obj  &
     guigetrc.obj
 
-!ifeq release 0
+!ifneq debug 0
 ui_sysobjs += uibarf.obj
 !endif
 
@@ -100,4 +102,4 @@ ui_sysobjs_wini86 = &
 
 sysobjs = $(ui_sysobjs) $(ui_sysobjs_$(objs_subdir)) $(sys_hooks) $(hlpview_objs)
 
-!include ../../master.mif
+!include $(gui_dir)/master.mif

@@ -56,6 +56,7 @@ eng_objs = &
     $(_subdir_)dbgmodfy.obj &
     $(_subdir_)dbgtback.obj &
     $(_subdir_)dbgerr.obj &
+    $(_subdir_)i64.obj &
     $(_subdir_)namelist.obj &
     $(_subdir_)modlist.obj &
     $(_subdir_)sortlist.obj &

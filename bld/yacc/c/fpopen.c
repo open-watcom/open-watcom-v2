@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,7 +37,7 @@
 
 
 FILE *fpopen( char *path, char *name )
-/*
+/*************************************
  *  Attempt to open 'name', first in the current directory, then along
  *  'path' (a list of ';' separated directory names.)
  */

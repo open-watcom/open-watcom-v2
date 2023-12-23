@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,7 +31,7 @@
 
 
 #include "gdefn.h"
-#include "gbios.h"
+#include "realmod.h"
 
 
 _WCRTLINK short _WCI86FAR _CGRAPH _getactivepage( void )
@@ -51,7 +52,7 @@ _WCRTLINK short _WCI86FAR _CGRAPH _setactivepage( short pagenum )
    This routine sets the active page for graphics output. */
 
 {
-    short               pos;
+    unsigned short      pos;
     short               prev;
 
     _InitState();
@@ -71,7 +72,7 @@ _WCRTLINK short _WCI86FAR _CGRAPH _setactivepage( short pagenum )
         _CurrState->screen_seg = _CurrState->screen_seg_base;
         _CurrState->screen_off = _CurrState->screen_off_base + ( ( _CurrState->page_size * pagenum ) << 4 );
 //    #endif
-    pos = _BIOS_data( CURSOR_POSN + 2 * pagenum, short );
+    pos = BIOSData( BDATA_CURSOR_POS + pagenum * sizeof( unsigned short ), unsigned short );
     _TextPos.row = pos >> 8;                        /* cursor position  */
     _TextPos.col = pos & 0xFF;                      /* on new page      */
     prev = _CurrActivePage;

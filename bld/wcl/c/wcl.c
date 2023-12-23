@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,18 +30,19 @@
 ****************************************************************************/
 
 
-#include <sys/types.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
+#include <errno.h>
+#include <sys/types.h>
 #if defined( __WATCOMC__ ) || !defined( __UNIX__ )
-#include <process.h>
+    #include <process.h>
 #endif
 #ifdef __UNIX__
-#include <dirent.h>
+    #include <dirent.h>
 #else
-#include <direct.h>
+    #include <direct.h>
 #endif
 #include "bool.h"
 #include "wio.h"
@@ -52,6 +53,7 @@
 #include "banner.h"
 #include "pathgrp2.h"
 
+#include "clibint.h"
 #include "clibext.h"
 
 
@@ -118,7 +120,7 @@
   #define _TARGET_      "x86 32-bit"
 #endif
 
-#define TEMPFILE        "__wcl__" TOOL_LNK_EXT   /* temporary linker directive file  */
+#define TEMPFILE        "__wcl__" TOOL_LNK_EXT  /* temporary linker directive file 8.3 */
 
 #ifdef __UNIX__
 #define IS_OPT(x)       ((x)=='-')
@@ -198,8 +200,9 @@ static void initialize_Flags( void )
 
 
 static int handle_environment_variable( const char *env )
-/*******************************************************/
-// This is an adaptation of code in sdk/rc/rc/c/param.c
+/********************************************************
+ * This is an adaptation of code in sdk/rc/rc/c/param.c
+ */
 {
     typedef struct EnvVarInfo {
         struct EnvVarInfo       *next;
@@ -300,12 +303,8 @@ static void print_banner( void )
     if( !printed ) {
         printed = true;
         if( !Flags.be_quiet ) {
-#if defined( _BETAVER )
-            puts( banner1w1( "C/C++ " _TARGET_ " Compile and Link Utility" ) );
-            puts( banner1w2( _WCL_VERSION_ ) );
-#else
-            puts( banner1w( "C/C++ " _TARGET_ " Compile and Link Utility", _WCL_VERSION_ ) );
-#endif
+            puts( banner1t( "C/C++ " _TARGET_ " Compile and Link Utility" ) );
+            puts( banner1v( _WCL_VERSION_ ) );
             puts( banner2 );
             puts( banner2a( 1988 ) );
             puts( banner3 );
@@ -568,14 +567,15 @@ static int Parse( const char *cmd )
                     file_end = ScanFName( end, Word + len );
                     switch( tolower( Word[1] ) ) {
                     case 'd':           /* name of linker directive file */
+                        if( Link_Name != NULL )
+                            MemFree( Link_Name );
                         if( Word[2] == '=' || Word[2] == '#' ) {
                             end = file_end;
                             NormalizeFName( Word, MAX_CMD, Word + 3 );
                             MakeName( Word, TOOL_LNK_EXT );  /* add extension */
-                            MemFree( Link_Name );
-                            Link_Name = MemStrDup( Word );
+                            Link_Name = MemAlloc( strlen( Word ) + 1 );
+                            strcpy( Link_Name, Word );
                         } else {
-                            MemFree( Link_Name );
                             Link_Name = MemStrDup( TEMPFILE );
                         }
                         wcc_option = 0;
@@ -918,7 +918,11 @@ void BuildSystemLink( FILE *fp )
         Fputnl( "system ntppc", fp );
   #endif
 #elif defined( WCLMPS )
+  #if defined( __LINUX__ )
         Fputnl( "system linuxmips", fp );
+  #else
+        Fputnl( "system ntmips", fp );
+  #endif
 #else
   #if defined( __OS2__ )
         Fputnl( "system os2v2", fp );
@@ -927,7 +931,15 @@ void BuildSystemLink( FILE *fp )
   #elif defined( __LINUX__ )
         Fputnl( "system linux", fp );
   #else
+    #if defined( CAUSEWAY )
+        Fputnl( "system causeway", fp );
+    #elif defined( PHARLAP )
+        Fputnl( "system pharlap", fp );
+    #elif defined( DOS4G )
         Fputnl( "system dos4g", fp );
+    #else
+        Fputnl( "system dos4g", fp );
+    #endif
   #endif
 #endif
     }
@@ -937,6 +949,24 @@ void BuildSystemLink( FILE *fp )
     }
     ListFree( Res_List );
     Res_List = NULL;
+}
+
+static FILE *OpenWlinkTmpFile( char *name )
+{
+    int     i;
+    int     fh;
+
+    for( i = 0; i < 100; i++ ) {
+        sprintf( name + 1 + 6, "%2.2d" TOOL_LNK_EXT, i );
+        fh = open( name + 1, O_RDWR | O_CREAT | O_EXCL | O_BINARY, PMODE_RW );
+        if( fh != -1 ) {
+            close( fh );
+            errno = 0; /* Standard C does not require fopen failure to set errno */
+            return( fopen( name + 1, "w" ) );
+        }
+    }
+    errno = EEXIST;
+    return( NULL );
 }
 
 static  int  CompLink( void )
@@ -989,17 +1019,17 @@ static  int  CompLink( void )
         rc = 1;
     } else {
         FILE    *fp;
+        char    tmp_name[1 + 12 + 1] = "@" TEMPFILE;
 
-        errno = 0; /* Standard C does not require fopen failure to set errno */
-        if( (fp = fopen( TEMPFILE, "w" )) == NULL ) {
-            PrintMsg( WclMsgs[UNABLE_TO_OPEN_TEMPORARY_FILE], TEMPFILE, strerror( errno ) );
+        if( (fp = OpenWlinkTmpFile( tmp_name )) == NULL ) {
+            PrintMsg( WclMsgs[UNABLE_TO_OPEN_TEMPORARY_FILE], tmp_name + 1, strerror( errno ) );
             rc = 2;
         } else {
             rc = 0;
             BuildLinkFile( fp );
             fclose( fp );
             if( ( Obj_List != NULL || Flags.do_link ) && !Flags.no_link ) {
-                rc = tool_exec( TYPE_LINK, "@" TEMPFILE, NULL );
+                rc = tool_exec( TYPE_LINK, tmp_name, NULL );
                 if( rc == 0 && Flags.do_cvpack ) {
                     char fname[_MAX_PATH];
 
@@ -1007,13 +1037,10 @@ static  int  CompLink( void )
                 }
             }
             if( Link_Name != NULL ) {
-                if( fname_cmp( Link_Name, TEMPFILE ) != 0 ) {
-                    remove( Link_Name );
-                    rename( TEMPFILE, Link_Name );
-                }
-            } else {
-                remove( TEMPFILE );
+                remove( Link_Name );
+                rename( tmp_name + 1, Link_Name );
             }
+            remove( tmp_name + 1 );
         }
     }
     for( i = 0; i < TYPE_MAX; ++i ) {
@@ -1089,8 +1116,9 @@ int  main( int argc, char **argv )
 {
     int         rc;
     const char  *wcl_env;
-    const char  *p;
-    char        *cmd;           /* command line parameters  */
+    int         cmd_len;
+    char        *cmd_line;
+    const char  *cmd;
 
 #if !defined( __WATCOMC__ )
     _argc = argc;
@@ -1104,24 +1132,35 @@ int  main( int argc, char **argv )
 #endif
     MemInit();
     ProcMemInit();
-    cmd = MemAlloc( MAX_CMD * 2 );  /* enough for cmd line & wcl variable */
-
-    /* add wcl environment variable to cmd             */
-    /* unless /y is specified in either cmd or wcl */
-
+    /*
+     * add wcl environment variable to cmd
+     * unless /y is specified in either cmd or wcl
+     */
+    cmd_len = _bgetcmd( NULL, 0 ) + 1;  /* check cmd line len */
     wcl_env = getenv( WCLENV );
     if( wcl_env != NULL ) {
-        strcpy( cmd, wcl_env );
-        strcat( cmd, " " );
-        p = getcmd( cmd + strlen( cmd ) );
-        if( check_y_opt( cmd ) ) {
-            p = getcmd( cmd );
+        size_t  envlen;
+        envlen = strlen( wcl_env );
+        /*
+         * allocate space enough for wcl variable and cmd line
+         */
+        cmd_line = MemAlloc( envlen + 1 + cmd_len );
+        strcpy( cmd_line, wcl_env );
+        cmd_line[envlen++] = ' ';
+        _bgetcmd( cmd_line + envlen, cmd_len );
+        if( check_y_opt( cmd_line ) ) {
+            _bgetcmd( cmd_line, cmd_len );
         }
     } else {
-        p = getcmd( cmd );
+        /*
+         * allocate space enough for cmd line
+         */
+        cmd_line = MemAlloc( cmd_len );
+        _bgetcmd( cmd_line, cmd_len );
     }
-    SKIP_SPACES( p );
-    if( *p == '\0' || p[0] == '?' && ( p[1] == '\0' || p[1] == ' ' ) || IS_OPT( p[0] ) && p[1] == '?' ) {
+    cmd = cmd_line;
+    SKIP_SPACES( cmd );
+    if( cmd[0] == '\0' || cmd[0] == '?' && ( cmd[1] == '\0' || cmd[1] == ' ' ) || IS_OPT( cmd[0] ) && cmd[1] == '?' ) {
         Usage();
         rc = 1;
     } else {
@@ -1132,7 +1171,7 @@ int  main( int argc, char **argv )
             rc = CompLink();
         }
     }
-    MemFree( cmd );
+    MemFree( cmd_line );
     ProcMemFini();
     MemFini();
     return( ( rc != 0 ) );

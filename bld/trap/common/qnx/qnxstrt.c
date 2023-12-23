@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,7 +34,6 @@
 #include <malloc.h>     /* necessary for near/far versions */
 #include <sys/types.h>
 #include <signal.h>
-#include "trptypes.h"
 #include "trpld.h"
 #include "trpcomm.h"
 #include "qnxstrt.h"
@@ -44,7 +44,7 @@ static const trap_callbacks *Client;
 static const trap_requests  ImpInterface = { TrapInit, TrapRequest, TrapFini } ;
 
 #ifdef __WATCOMC__
-const char __based( __segname( "_CODE" ) ) Signature[4] = "TRAP";
+const char __based( __segname( "_CODE" ) ) Signature[4] = { TRAPSIGN };
 #endif
 
 const trap_requests *TrapLoad( const trap_callbacks *client )

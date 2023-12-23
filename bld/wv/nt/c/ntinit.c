@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -53,9 +53,7 @@
 #include "dbginit.h"
 #include "dbgcmdln.h"
 
-#ifdef __WATCOMC__
 #include "clibint.h"
-#endif
 #include "clibext.h"
 
 
@@ -74,8 +72,8 @@ static char             *CmdData;
 
 void GUImain( void )
 {
-    char        *buff;
-    int         len;
+    int         cmd_len;
+    char        *cmd_line;
 
     // fix up env vars if necessary
     watcom_setup_env();
@@ -84,10 +82,10 @@ void GUImain( void )
 #if defined( _M_IX86 )
     _8087 = 0;
 #endif
-    len = _bgetcmd( NULL, 0 );
-    _AllocA( buff, len + 1 );
-    getcmd( buff );
-    CmdData = buff;
+    cmd_len = _bgetcmd( NULL, 0 ) + 1;
+    _AllocA( cmd_line, cmd_len );
+    _bgetcmd( cmd_line, cmd_len );
+    CmdData = cmd_line;
 
     DebugMain();
 }

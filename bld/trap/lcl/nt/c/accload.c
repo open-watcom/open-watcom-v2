@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,95 +34,89 @@
 #include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include <errno.h>
 #include "stdnt.h"
+#include "globals.h"
 #include "trperr.h"
 #include "srvcdbg.h"
 #include "doserr.h"
-#include "ntextx.h"
+#include "ntpath.h"
+#include "segmcpu.h"
 
 #include "clibext.h"
 
 
-const char  NtExtList[] = NTEXTLIST;
-
-/*
- * executeUntilStart - run program until start address hit
+static bool executeUntilStart( bool was_running )
+/************************************************
+ * run program until start address hit
  */
-static BOOL executeUntilStart( BOOL was_running )
 {
     HANDLE      ph;
-    opcode_type saved_opcode;
-    opcode_type brk_opcode = BRKPOINT;
-    LPVOID      base;
-    SIZE_T      bytes;
+    opcode_type old_opcode;
+    FARPROC     base;
     MYCONTEXT   con;
     thread_info *ti;
+    bool        done;
 
     ph = DebugEvent.u.CreateProcessInfo.hProcess;
-    if( !was_running ) {
+    if( was_running ) {
+        /*
+         * a trick to make app execute long enough to hit a breakpoint
+         */
+        PostMessage( HWND_TOPMOST, WM_NULL, 0, 0L );
+    } else {
         /*
          * if we are not debugging an already running app, then we
          * plant a breakpoint at the first instruction of our new app
          */
-        base = (LPVOID)DebugEvent.u.CreateProcessInfo.lpStartAddress;
-        ReadProcessMemory( ph, base, (LPVOID)&saved_opcode, sizeof( saved_opcode ), &bytes );
-        WriteProcessMemory( ph, base, (LPVOID)&brk_opcode, sizeof( brk_opcode ), &bytes );
-    } else {
-        // a trick to make app execute long enough to hit a breakpoint
-        PostMessage( HWND_TOPMOST, WM_NULL, 0, 0L );
+        base = (FARPROC)DebugEvent.u.CreateProcessInfo.lpStartAddress;
+        old_opcode = place_breakpoint_lin( ph, base );
     }
 
-    for( ;; ) {
+    done = false;
+    do {
         /*
          * if we encounter anything but a break point, then we are in
          * trouble!
          */
-        if( DebugExecute( STATE_IGNORE_DEBUG_OUT | STATE_IGNORE_DEAD_THREAD, NULL, FALSE ) & COND_BREAK ) {
-            ti = FindThread( DebugEvent.dwThreadId );
-            MyGetThreadContext( ti, &con );
-            if( was_running ) {
-                AdjustIP( &con, sizeof( brk_opcode ) );
-                MySetThreadContext( ti, &con );
-                return( TRUE );
-            }
-            if( StopForDLLs ) {
-                /*
-                 * the user has asked us to stop before any DLL's run
-                 * their startup code (";dll"), so we do.
-                 */
-                WriteProcessMemory( ph, base, (LPVOID)&saved_opcode, sizeof( saved_opcode ), &bytes );
-                AdjustIP( &con, sizeof( brk_opcode ) );
-                MySetThreadContext( ti, &con );
-                return( TRUE );
-            }
-            if( ( AdjustIP( &con, 0 ) == base ) ) {
-                /*
-                 * we stopped at the applications starting address,
-                 * so we can offically declare that the app has loaded
-                 */
-                WriteProcessMemory( ph, base, (LPVOID)&saved_opcode, sizeof( saved_opcode ), &bytes );
-                return( TRUE );
-            }
+        if( (DebugExecute( STATE_IGNORE_DEBUG_OUT | STATE_IGNORE_DEAD_THREAD, NULL, false ) & COND_BREAK) == 0 )
+            return( false );
+        ti = FindThread( DebugEvent.dwThreadId );
+        MyGetThreadContext( ti, &con );
+        if( was_running ) {
+            done = true;
+        } else if( StopForDLLs ) {
             /*
-             * skip this breakpoint and continue
+             * the user has asked us to stop before any DLL's run
+             * their startup code (";dll"), so we do.
              */
-            AdjustIP( &con, sizeof( brk_opcode ) );
-            MySetThreadContext( ti, &con );
-        } else {
-            return( FALSE );
+            remove_breakpoint_lin( ph, base, old_opcode );
+            done = true;
+        } else if( GetIP( &con ) == base ) {
+            /*
+             * we stopped at the applications starting address,
+             * so we can offically declare that the app has loaded
+             */
+            remove_breakpoint_lin( ph, base, old_opcode );
+            break;
         }
-    }
-
+        /*
+         * skip this breakpoint and continue
+         */
+        AdjustIP( &con, sizeof( opcode_type ) );
+        MySetThreadContext( ti, &con );
+    } while( !done );
+    return( true );
 }
 
-#if defined( MD_x86 )
 #ifdef WOW
-/*
- * addKERNEL - add the KERNEL module to the library load (WOW)
- */
+#if MADARCH & MADARCH_X86
 static void addKERNEL( void )
+/****************************
+ * add the KERNEL module to the library load (WOW)
+ */
 {
-#if 0
+  #if 0
     /*
      * there are bugs in the way VDMDBG.DLL implements some of this
      * stuff, so this is currently disabled
@@ -141,12 +135,12 @@ static void addKERNEL( void )
         if( strnicmp( me.szModule, "KERNEL", 6 ) == 0 ) {
             memcpy( &im.Module, &me.szModule, sizeof( me.szModule ) );
             memcpy( &im.FileName, &me.szExePath, sizeof( me.szExePath ) );
-            AddLib( TRUE, &im );
+            AddLib16( &im );
             break;
         }
         me.dwSize = sizeof( MODULEENTRY );
     }
-#else
+  #else
     IMAGE_NOTE                  im;
 
     /*
@@ -157,17 +151,16 @@ static void addKERNEL( void )
     strcpy( im.Module, "KERNEL" );
     GetSystemDirectory( im.FileName, sizeof( im.FileName ) );
     strcat( im.FileName, "\\KRNL386.EXE" );
-    AddLib( TRUE, &im );
-#endif
-
+    AddLib16( &im );
+  #endif
 }
 
-/*
- * addAllWOWModules - add all modules as libraries.  This is invoked if
- *                    WOW was already running, since we will get no
- *                    lib load notifications if it was.
- */
 static void addAllWOWModules( void )
+/***********************************
+ * add all modules as libraries.  This is invoked if
+ * WOW was already running, since we will get no
+ * lib load notifications if it was.
+ */
 {
     MODULEENTRY         me;
     thread_info         *ti;
@@ -182,33 +175,16 @@ static void addAllWOWModules( void )
     {
         memcpy( &im.Module, &me.szModule, sizeof( me.szModule ) );
         memcpy( &im.FileName, &me.szExePath, sizeof( me.szExePath ) );
-        AddLib( TRUE, &im );
+        AddLib16( &im );
         me.dwSize = sizeof( MODULEENTRY );
     }
 
 }
 
-/*
- * executeUntilVDMStart - go until we hit our first VDM exception
- */
-static BOOL executeUntilVDMStart( void )
-{
-    myconditions    rc;
-
-    for( ;; ) {
-        rc = DebugExecute( STATE_WAIT_FOR_VDM_START, NULL, FALSE );
-        if( rc == COND_VDM_START ) {
-            return( TRUE );
-        }
-        return( FALSE );
-    }
-
-}
-
-/*
+static BOOL WINAPI EnumWOWProcessFunc( DWORD pid, DWORD attrib, LPARAM lparam )
+/******************************************************************************
  * EnumWOWProcessFunc - callback for each WOW process in the system
  */
-static BOOL WINAPI EnumWOWProcessFunc( DWORD pid, DWORD attrib, LPARAM lparam )
 {
     if( attrib & WOW_SYSTEM ) {
         *(DWORD *)lparam = pid;
@@ -217,29 +193,37 @@ static BOOL WINAPI EnumWOWProcessFunc( DWORD pid, DWORD attrib, LPARAM lparam )
     return( TRUE );
 
 }
-#else
-static BOOL WINAPI EnumWOWProcessFunc( DWORD pid, DWORD attrib, LPARAM lparam )
-{
-    (void)pid, (void)attrib; // Unused
-    *(DWORD *)lparam = 0;
-    return( FALSE );
-}
-#endif
-#endif
+#endif  /* MADARCH & MADARCH_X86 */
+#endif  /* WOW */
 
-/*
- * AccLoadProg - create a new process for debugging
- */
+static size_t MergeArgvArray( const char *src, char *dst, size_t len )
+{
+    char    ch;
+    char    *start = dst;
+
+    while( len-- > 0 ) {
+        ch = *src++;
+        if( ch == '\0' ) {
+            if( len == 0 )
+                break;
+            ch = ' ';
+        }
+        *dst++ = ch;
+    }
+    *dst = '\0';
+    return( dst - start );
+}
+
 trap_retval TRAP_CORE( Prog_load )( void )
+/*****************************************
+ * create a new process for debugging
+ */
 {
     char            *parm;
     char            *src;
     char            *dst;
     char            *endsrc;
     char            exe_name[PATH_MAX];
-    char            ch;
-    BOOL            rc;
-    int             len;
     MYCONTEXT       con;
     thread_info     *ti;
     HANDLE          handle;
@@ -247,7 +231,6 @@ trap_retval TRAP_CORE( Prog_load )( void )
     prog_load_ret   *ret;
     header_info     hi;
     WORD            stack;
-    WORD            version;
     DWORD           pid;
     DWORD           pid_started;
     DWORD           cr_flags;
@@ -260,31 +243,29 @@ trap_retval TRAP_CORE( Prog_load )( void )
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
+    ret->err = 0;
     parm = GetInPtr( sizeof( *acc ) );
-
     /*
      * reset status variables
      */
     LastExceptionCode = -1;
     DebugString = NULL;
-    DebugeeEnded = FALSE;
+    DebugeeEnded = false;
     RemoveAllThreads();
     FreeLibList();
-    DidWaitForDebugEvent = FALSE;
+    DidWaitForDebugEvent = false;
     DebugeePid = 0;
     DebugeeTid = 0;
-    SupportingExactBreakpoints = 0;
-
+    SupportingExactBreakpoints = false;
     /*
      * check if pid is specified
      */
     ParseServiceStuff( parm, &dll_name, &service_name, &dll_destination, &service_parm );
     pid = 0;
     src = parm;
-
     /*
-    //  Just to be really safe!
-    */
+     *  Just to be really safe!
+     */
     nBuffRequired = GetTotalSizeIn() + PATH_MAX + 16;
     buff = LocalAlloc( LMEM_FIXED, nBuffRequired );
     if( buff == NULL ) {
@@ -303,91 +284,80 @@ trap_retval TRAP_CORE( Prog_load )( void )
         while( isdigit( *src ) ) {
             src++;
         }
-        if( *src == 0 && src != parm ) {
+        if( *src == '\0' && src != parm ) {
             pid = atoi( parm );
         }
     }
-
     /*
      * get program to debug.  If the user has specified a pid, then
      * skip directly to doing a DebugActiveProcess
      */
-    IsWOW = FALSE;
-#if !defined( MD_x64 )
-    IsDOS = FALSE;
+    handle = INVALID_HANDLE_VALUE;
+#if MADARCH & MADARCH_X64
+    IsWOW64 = false;
+#elif defined( WOW )
+    IsWOW = false;
+    IsDOS = false;
 #endif
     if( pid == 0 ) {
-        ret->err = FindProgFile( parm, exe_name, NtExtList );
-        if( ret->err != 0 ) {
+        if( FindFilePath( DIG_FILETYPE_EXE, parm, exe_name ) == 0 ) {
+            ret->err = ENOENT;
             goto error_exit;
         }
-
         /*
          * Get type of application
          */
-        handle = CreateFile( (LPTSTR)exe_name, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, 0 );
+        handle = CreateFile( exe_name, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, 0 );
         if( handle == INVALID_HANDLE_VALUE ) {
-            ret->err = GetLastError();
             goto error_exit;
         }
         GetFullPathName( exe_name, MAX_PATH, CurrEXEName, NULL );
-
         /*
          * get the parm list
          */
         if( strchr( CurrEXEName, ' ' ) != NULL ) {
-            strcpy( buff, "\"" );
-            strcat( buff, CurrEXEName );
-            strcat( buff, "\"" );
+            dst = StrCopyDst( "\"", buff );
+            dst = StrCopyDst( CurrEXEName, dst );
+            dst = StrCopyDst( "\"", dst );
         } else {
-            strcpy( buff, CurrEXEName );
+            dst = StrCopyDst( CurrEXEName, buff );
         }
-        dst = &buff[strlen( buff )];
+        *dst++ = ' ';
         src = parm;
-        while( *src != 0 ) {
-            ++src;
-        }
-        // parm layout
-        // <--parameters-->0<--program_name-->0<--arguments-->0
-        //
-        for( len = GetTotalSizeIn() - sizeof( *acc ) - (src - parm) - 1; len > 0; --len ) {
-            ch = *src;
-            if( ch == 0 ) {
-                ch = ' ';
-            }
-            *dst = ch;
-            ++dst;
-            ++src;
-        }
-        *dst = 0;
+        while( *src++ != '\0' )
+            {}
+        /*
+         * parm layout
+         * <--parameters-->0<--program_name-->0<--arguments-->0
+         */
+        MergeArgvArray( src, dst, GetTotalSizeIn() - sizeof( *acc ) - ( src - parm ) );
 
         cr_flags = DEBUG_ONLY_THIS_PROCESS;
 
         if( !GetEXEHeader( handle, &hi, &stack ) ) {
-            ret->err = GetLastError();
-            CloseHandle( handle );
             goto error_exit;
         }
-        if( hi.sig == EXE_PE ) {
-            if( IS_PE64( hi.u.peh ) ) {
-                DebugeeSubsystem = PE64( hi.u.peh ).subsystem;
-            } else {
-                DebugeeSubsystem = PE32( hi.u.peh ).subsystem;
-#if defined( MD_x64 )
-                IsWOW = TRUE;
-#endif
+        if( hi.signature == EXESIGN_PE ) {
+            DebugeeSubsystem = PE( hi.u.pehdr, subsystem );
+#if MADARCH & MADARCH_X64
+            if( !IS_PE64( hi.u.pehdr ) ) {
+                IsWOW64 = true;
             }
+#endif
             if( DebugeeSubsystem == SS_WINDOWS_CHAR ) {
                 cr_flags |= CREATE_NEW_CONSOLE;
             }
-#if !defined( MD_x64 )
-        } else if( hi.sig == EXE_NE ) {
-            IsWOW = TRUE;
+#if MADARCH & MADARCH_X64
+#elif defined( WOW )
+        } else if( hi.signature == EXESIGN_NE ) {
+            IsWOW = true;
             /*
              * find out the pid of WOW, if it is already running.
              */
             pVDMEnumProcessWOW( EnumWOWProcessFunc, (LPARAM)&pid );
             if( pid != 0 ) {
+                WORD    version;
+
                 version = LOWORD( GetVersion() );
                 if( LOBYTE( version ) == 3 && HIBYTE( version ) < 50 ) {
                     int kill = MessageBox( NULL, TRP_NT_wow_warning, TRP_The_WATCOM_Debugger, MB_APPLMODAL + MB_YESNO );
@@ -406,17 +376,15 @@ trap_retval TRAP_CORE( Prog_load )( void )
                 }
             }
             if( pid != 0 ) {
-                ret->err = GetLastError();
-                CloseHandle( handle );
                 goto error_exit;
             }
         } else {
-            IsDOS = TRUE;
+            IsDOS = true;
 #endif
         }
         CloseHandle( handle );
+        handle = INVALID_HANDLE_VALUE;
     }
-
     /*
      * start the debugee
      */
@@ -449,23 +417,37 @@ trap_retval TRAP_CORE( Prog_load )( void )
      * CREATE_PROCESS_DEBUG_EVENT will always be the first debug event.
      * If it is not, then something is horribly wrong.
      */
-    rc = MyWaitForDebugEvent();
-    if( !rc || ( DebugEvent.dwDebugEventCode != CREATE_PROCESS_DEBUG_EVENT ) || ( DebugEvent.dwProcessId != pid_started ) ) {
-        ret->err = GetLastError();
+    if( !MyWaitForDebugEvent() )
+        goto error_exit;
+    if( ( DebugEvent.dwDebugEventCode != CREATE_PROCESS_DEBUG_EVENT ) || ( DebugEvent.dwProcessId != pid_started ) ) {
         goto error_exit;
     }
     ProcessInfo.pid = DebugEvent.dwProcessId;
     ProcessInfo.process_handle = DebugEvent.u.CreateProcessInfo.hProcess;
     ProcessInfo.base_addr = DebugEvent.u.CreateProcessInfo.lpBaseOfImage;
-    AddProcess( &hi );
-    AddThread( DebugEvent.dwThreadId, DebugEvent.u.CreateProcessInfo.hThread, DebugEvent.u.CreateProcessInfo.lpStartAddress );
+#ifdef WOW
+#if MADARCH & MADARCH_X86
+    if( IsWOW || IsDOS ) {
+        AddProcess16( &hi );
+    } else {
+#endif
+#endif
+        AddProcess( &hi );
+#ifdef WOW
+#if MADARCH & MADARCH_X86
+    }
+#endif
+#endif
+    AddThread( DebugEvent.dwThreadId, DebugEvent.u.CreateProcessInfo.hThread, (FARPROC)DebugEvent.u.CreateProcessInfo.lpStartAddress );
     DebugeePid = DebugEvent.dwProcessId;
     DebugeeTid = DebugEvent.dwThreadId;
     LastDebugEventTid = DebugEvent.dwThreadId;
 
-#if defined( MD_x86 )
 #ifdef WOW
+#if MADARCH & MADARCH_X86
     if( IsWOW ) {
+        bool    vdm_start;
+
         ret->flags = LD_FLAG_IS_PROT;
         ret->err = 0;
         ret->task_id = DebugeePid;
@@ -475,8 +457,8 @@ trap_retval TRAP_CORE( Prog_load )( void )
          */
         FlatDS = GetDS();
         FlatCS = GetCS();
-        if( !executeUntilVDMStart() ) {
-            ret->err = GetLastError();
+        DebugExecute( STATE_WAIT_FOR_VDM_START, &vdm_start, false );
+        if( !vdm_start ) {
             goto error_exit;
         }
         if( pid ) {
@@ -490,13 +472,16 @@ trap_retval TRAP_CORE( Prog_load )( void )
          */
         ti = FindThread( DebugeeTid );
         MyGetThreadContext( ti, &con );
-        WOWAppInfo.segment = (WORD)con.SegCs;
-        WOWAppInfo.offset = (WORD)con.Eip;
+        WOWAppInfo.addr.segment = (WORD)con.SegCs;
+        WOWAppInfo.addr.offset = (WORD)con.Eip;
         con.SegSs = con.SegDs; // Wow lies about the stack segment.  Reset it
         con.Esp = stack;
         MySetThreadContext( ti, &con );
     } else if( IsDOS ) {
-        // TODO! Clean up this code
+        bool    vdm_start;
+        /*
+         * TODO! Clean up this code
+         */
         ret->flags = 0; //LD_FLAG_IS_PROT;
         ret->err = 0;
         ret->task_id = DebugeePid;
@@ -506,8 +491,8 @@ trap_retval TRAP_CORE( Prog_load )( void )
          */
         FlatDS = GetDS();
         FlatCS = GetCS();
-        if( !executeUntilVDMStart() ) {
-            ret->err = GetLastError();
+        DebugExecute( STATE_WAIT_FOR_VDM_START, &vdm_start, false );
+        if( !vdm_start ) {
             goto error_exit;
         }
 #if 0
@@ -523,22 +508,18 @@ trap_retval TRAP_CORE( Prog_load )( void )
          */
         ti = FindThread( DebugeeTid );
         MyGetThreadContext( ti, &con );
-        WOWAppInfo.segment = (WORD)con.SegCs;
-        WOWAppInfo.offset = (WORD)con.Eip;
+        WOWAppInfo.addr.segment = (WORD)con.SegCs;
+        WOWAppInfo.addr.offset = (WORD)con.Eip;
         con.SegSs = con.SegDs; // Wow lies about the stack segment.  Reset it
         con.Esp = stack;
         MySetThreadContext( ti, &con );
     } else {
-#else
-    {
 #endif
-#else
-    {
 #endif
-        LPVOID base;
+        FARPROC base;
 
         if( pid == 0 ) {
-            base = (LPVOID)DebugEvent.u.CreateProcessInfo.lpStartAddress;
+            base = (FARPROC)DebugEvent.u.CreateProcessInfo.lpStartAddress;
         } else {
             base = 0;
         }
@@ -547,17 +528,16 @@ trap_retval TRAP_CORE( Prog_load )( void )
         ret->err = 0;
         ret->task_id = DebugeePid;
         if( executeUntilStart( pid != 0 ) ) {
-            LPVOID old;
+            FARPROC old;
             /*
              * make the application load our DLL, so that we can have it
              * run code out of it.  One small note: this will not work right
              * if the app does not load our DLL at the same address the
              * debugger loaded it at!!!
              */
-
             ti = FindThread( DebugeeTid );
             MyGetThreadContext( ti, &con );
-            old = (LPVOID)AdjustIP( &con, 0 );
+            old = GetIP( &con );
             if( base != 0 ) {
                 SetIP( &con, base );
             }
@@ -567,19 +547,31 @@ trap_retval TRAP_CORE( Prog_load )( void )
         }
         ti = FindThread( DebugeeTid );
         MyGetThreadContext( ti, &con );
-#if defined( MD_x86 )
+#if MADARCH & MADARCH_X86
         FlatCS = con.SegCs;
         FlatDS = con.SegDs;
 #endif
         ret->flags |= LD_FLAG_IS_BIG;
+#ifdef WOW
+#if MADARCH & MADARCH_X86
     }
+#endif
+#endif
     ret->flags |= LD_FLAG_HAVE_RUNTIME_DLLS;
     if( pid != 0 ) {
         ret->flags |= LD_FLAG_IS_STARTED;
     }
     ret->mod_handle = 0;
+    if( buff != NULL ) {
+        LocalFree( buff );
+    }
+    return( sizeof( *ret ) );
 
 error_exit:
+    if( ret->err == 0 )
+        ret->err = GetLastError();
+    if( handle != INVALID_HANDLE_VALUE )
+        CloseHandle( handle );
     if( buff != NULL ) {
         LocalFree( buff );
     }
@@ -591,9 +583,9 @@ trap_retval TRAP_CORE( Prog_kill )( void )
 {
     prog_kill_ret   *ret;
 
+    DelProcess( true );
+    StopControlThread();
     ret = GetOutPtr( 0 );
     ret->err = 0;
-    DelProcess( TRUE );
-    StopControlThread();
     return( sizeof( *ret ) );
 }

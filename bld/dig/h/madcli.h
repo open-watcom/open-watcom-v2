@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,8 +33,11 @@
 #ifndef MADCLI_H_INCLUDED
 #define MADCLI_H_INCLUDED
 
-#include "madtypes.h"
 #include "digcli.h"
+#include "digsyscf.h"
+#include "madtypes.h"
+
+#define MADSIGN         "MAD"
 
 #define MADCli(n)       MADCli ## n
 #define _MADCli(n)      _MADCli ## n n

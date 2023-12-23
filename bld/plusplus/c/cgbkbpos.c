@@ -41,7 +41,7 @@
 #include "vstk.h"
 #include "initdefs.h"
 #include "dumpapi.h"
-#ifndef NDEBUG
+#ifdef DEVBUILD
     #include "pragdefn.h"
     #include "togglesd.h"
 #endif
@@ -59,9 +59,7 @@ struct blk_posn                 // BLK_POSN -- current block position
 
 static VSTK_CTL stack_blk_posn;     // stack: current block position
 
-#ifdef NDEBUG
-    #define DbgDumpBlkPosn(a,b)
-#else
+#ifdef DEVBUILD
 
 static void DbgDumpBlkPosn(     // DUMP A BLK_POSN
     BLK_POSN* bpos,             // - entry
@@ -101,6 +99,8 @@ void DumpBlkPosns(              // DUMP ALL BLK_POSN'S
         }
     }
 }
+#else
+    #define DbgDumpBlkPosn(a,b)
 #endif
 
 
@@ -217,7 +217,7 @@ void BlkPosnPop(                // POP A BLOCK POSITION
 void BlkPosnTrash(              // TRASH TOP BLOCK POSITION
     void )
 {
-#ifndef NDEBUG
+#ifdef DEVBUILD
     BLK_POSN *bpos;             // - popped element
 
     bpos = VstkPop( &stack_blk_posn );

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -57,7 +58,7 @@ typedef struct {
     unsigned    elm_count;
     unsigned    blk_top;
     unsigned    blk_count;
-#ifndef NDEBUG
+#ifdef DEVBUILD
     free_t      *zapped_free_list;
 #endif
 } cv_t, *carve_t;
@@ -73,7 +74,7 @@ extern void CarveDestroy( carve_t cv );
 extern void *CarveAlloc( carve_t cv );
 extern void CarveFree( carve_t cv, void *elm );
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
     extern void CarveVerifyFreeElement( carve_t cv, void *elm );
     extern void CarveVerifyAllGone( carve_t cv, char const * );
 #else

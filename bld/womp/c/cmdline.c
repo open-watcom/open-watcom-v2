@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -600,8 +600,8 @@ cmdline_t *CmdLineParse( void ) {
 /*****************************/
 
     const char  *env_var;
+    int         cmd_len;
     char        *cmd_line;
-    size_t      cmd_len;
     act_grp_t   *cur;
     act_grp_t   *next;
 
@@ -610,19 +610,17 @@ cmdline_t *CmdLineParse( void ) {
     if( env_var != NULL ) {
         parseString( env_var );
     }
-    cmd_line = MemAlloc( 10240 );   /* FIXME - arbitrarily large constant! */
-    getcmd( cmd_line );
-    cmd_len = strlen( cmd_line );
-    if( cmd_len > 0 ) {
-        cmd_line = MemRealloc( cmd_line, cmd_len + 1 );
+    cmd_len = _bgetcmd( NULL, 0 ) + 1;
+    cmd_line = MemAlloc( cmd_len );
+    _bgetcmd( cmd_line, cmd_len );
+    if( *cmd_line != '\0' ) {
         parseString( cmd_line );
     }
     MemFree( cmd_line );
 
     /* reverse the stack of actions */
     cmdLine.action = NULL;  /* no actions by default */
-    cur = curAct;
-    while( cur != NULL ) {
+    for( cur = curAct; cur != NULL; cur = next ) {
         next = cur->next;
         if( cur->num_files == 0 ) { /* trim out the needless actions */
             MemFree( cur );
@@ -630,7 +628,6 @@ cmdline_t *CmdLineParse( void ) {
             cur->next = cmdLine.action; /* stack it up */
             cmdLine.action = cur;
         }
-        cur = next;
     }
     if( cmdLine.action == NULL ) {
         usage();

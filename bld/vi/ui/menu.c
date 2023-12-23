@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,6 +35,8 @@
 #include <time.h>
 #include "menu.h"
 #include "win.h"
+#include "myprintf.h"
+#include "parse.h"
 
 #include "clibext.h"
 
@@ -295,7 +297,7 @@ static void initMenuList( menu *cmenu )
 
     MemFree( cmenu->list );
     MemFree( cmenu->hi_list );
-    cmenu->list = _MemAllocList( cmenu->itemcnt );
+    cmenu->list = _MemAllocPtrArray( char, cmenu->itemcnt );
     cmenu->hi_list = _MemAllocArray( hichar, cmenu->itemcnt + 1 );
 
     cmi = cmenu->itemhead;
@@ -425,8 +427,7 @@ vi_rc DoItemDelete( const char *data )
 
     cmenu->itemcnt--;
     cmenu->maxwidth = maxwidth;
-    DeleteLLItem( (ss **)&cmenu->itemhead, (ss **)&cmenu->itemtail, (ss *)dmi );
-    MemFree( dmi );
+    MemFree( DeleteLLItem( (ss **)&cmenu->itemhead, (ss **)&cmenu->itemtail, (ss *)dmi ) );
     initMenuList( cmenu );
     return( ERR_NO_ERR );
 
@@ -478,8 +479,7 @@ vi_rc DoMenuDelete( const char *data )
         *predef_menu = NULL;
         return( ERR_NO_ERR );
     }
-    DeleteLLItem( (ss **)&menuHead, (ss **)&menuTail, (ss *)cmenu );
-    freeMenu( cmenu );
+    freeMenu( DeleteLLItem( (ss **)&menuHead, (ss **)&menuTail, (ss *)cmenu ) );
     maxMenuId--;
     InitMenu();
     return( ERR_NO_ERR );
@@ -530,8 +530,7 @@ static void removeFileList( menu *cmenu )
     }
     for( ; citem != NULL; citem = next ) {
         next = citem->next;
-        DeleteLLItem( (ss **)&cmenu->itemhead, (ss **)&cmenu->itemtail, (ss *)citem );
-        MemFree( citem );
+        MemFree( DeleteLLItem( (ss **)&cmenu->itemhead, (ss **)&cmenu->itemtail, (ss *)citem ) );
         cmenu->itemcnt--;
     }
     cmenu->maxwidth = cmenu->orig_maxwidth;

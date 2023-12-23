@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1093,14 +1093,12 @@ static void printHelp( void )
     }
 }
 
-int main( int argc, char **argv ) {
-/************************************/
-
+int main( int argc, char **argv )
+/*******************************/
+{
     bool        ignore;
 #if defined( __WATCOMC__ )
     bool        prtcmd;
-    int         cmdlen;
-    char        *cmdline;
 #endif
     char        *fs;
     char        ch;
@@ -1117,11 +1115,6 @@ int main( int argc, char **argv ) {
     }
 
 #if defined( __WATCOMC__ )
-    cmdlen = _bgetcmd( NULL, 0 ) + 1;
-    cmdline = malloc( cmdlen );
-    if( cmdline != NULL ) {
-        cmdlen = _bgetcmd( cmdline, cmdlen );
-    }
     prtcmd = false;
 #endif
     ignore = false;                 // initialize options
@@ -1223,7 +1216,16 @@ int main( int argc, char **argv ) {
     }
 #if defined( __WATCOMC__ )
     if( prtcmd ) {
-        printf( "Demarcated command line arguments: [%s]\n", cmdline );
+        int     cmd_len;
+        char    *cmd_line;
+
+        cmd_len = _bgetcmd( NULL, 0 ) + 1;
+        cmd_line = malloc( cmd_len );
+        if( cmd_line != NULL ) {
+            _bgetcmd( cmd_line, cmd_len );
+        }
+        printf( "Demarcated command line arguments: [%s]\n", cmd_line );
+        free( cmd_line );
     }
 #endif
 

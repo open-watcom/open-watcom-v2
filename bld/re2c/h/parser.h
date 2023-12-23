@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,6 +36,13 @@
 
 #include "scanner.h"
 #include "re.h"
+
+
+#if defined( _M_I86 )
+#define YYFAR           __far
+#else
+#define YYFAR
+#endif
 
 typedef struct Symbol {
     struct Symbol   *first;

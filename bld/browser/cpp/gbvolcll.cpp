@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -55,7 +55,9 @@ bool GBVCallOutline::contextHelp( bool is_active_win )
 //----------------------------------------------------
 {
     if( is_active_win ) {
+#ifndef NOWGML
         WBRWinBase::helpInfo()->sysHelpId( BRH_CALL_TREE_VIEW );
+#endif
     }
     return( true );
 }
@@ -121,7 +123,7 @@ void GBVCallOutline::load()
 }
 
 // Complain about defining trivial destructor inside class
-#pragma disable_message( 656 )
+#pragma disable_message( P656 )
 
 GBVCallOutline::~GBVCallOutline()
 //-------------------------------------

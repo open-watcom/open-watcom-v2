@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,12 +31,18 @@
 ****************************************************************************/
 
 
+#define WL_PROCS \
+    WL_PROC( WL_PROC_NONE, 0,           "" ) \
+    WL_PROC( WL_PROC_AXP,  EM_ALPHA,    "AXP" ) \
+    WL_PROC( WL_PROC_MIPS, EM_MIPS,     "MIPS" ) \
+    WL_PROC( WL_PROC_PPC,  EM_PPC,      "PPC" ) \
+    WL_PROC( WL_PROC_X86,  EM_386,      "X86" ) \
+    WL_PROC( WL_PROC_X64,  EM_X86_64,   "X64" )
+
 typedef enum {
-    WL_PROC_NONE,
-    WL_PROC_AXP,
-    WL_PROC_PPC,
-    WL_PROC_X86,
-    WL_PROC_X64
+    #define WL_PROC(p,e,n)  p,
+    WL_PROCS
+    #undef WL_PROC
 } processor_type;
 
 typedef enum {

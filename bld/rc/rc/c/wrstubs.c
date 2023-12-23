@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,44 +32,40 @@
 
 
 #include "global.h"
-#include "rccore.h"
-#include "semsingl.h"
+#include "rccore_2.h"
 #include "exelxobj.h"
 #include "iortns.h"
+#include "exereslx.h"
+#include "exeres.h"
 
 
-void SemOS2WriteFontDir( void )
+bool RcBuildLXResourceObjects( ExeFileInfo *dst, ResFileInfo *resfiles )
 {
-}
-
-void SemOS2WriteStringTable( FullStringTable *currtable, WResID *type )
-{
-    /* unused parameters */ (void)currtable; (void)type;
-}
-
-bool RcBuildLXResourceObjects( void )
-{
+    /* unused parameters */ (void)dst; (void)resfiles;
     return( true );
 }
 
-bool CopyLXExeObjects( void )
+bool CopyLXExeObjects( ExeFileInfo *src, ExeFileInfo *dst )
 {
+    /* unused parameters */ (void)src; (void)dst;
     return( true );
 }
 
-RcStatus RcWriteLXResourceObjects( void )
+RcStatus RcWriteLXResourceObjects( ExeFileInfo *dst, ResFileInfo *res )
 {
+    /* unused parameters */ (void)dst; (void)res;
     return( RS_WRITE_ERROR );
 }
 
-RcStatus CopyOS2Resources( void )
+RcStatus CopyOS2Resources( ExeFileInfo *dst, ResFileInfo *res )
 {
+    /* unused parameters */ (void)dst; (void)res;
     return( RS_READ_ERROR );
 }
 
-RcStatus InitOS2ResTable( int *err_code )
+RcStatus InitOS2ResTable( ExeFileInfo *dst, ResFileInfo *res, int *err_code )
 {
-    /* unused parameters */ (void)err_code;
+    /* unused parameters */ (void)dst; (void)res; (void)err_code;
 
     return( RS_READ_ERROR );
 }
@@ -85,8 +82,4 @@ uint_32 ComputeOS2ResSegCount( WResDir dir )
     /* unused parameters */ (void)dir;
 
     return( 0 );
-}
-
-void CloseAllFiles( void )
-{
 }

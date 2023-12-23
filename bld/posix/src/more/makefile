@@ -9,4 +9,4 @@ extra_link = op stack=20k
 !endif
 !endif
 
-!include $(posix_dir)/makeone.mif
+!include ../makeone.mif

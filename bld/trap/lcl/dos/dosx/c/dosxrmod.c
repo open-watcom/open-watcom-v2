@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -74,7 +74,7 @@ typedef struct {
 } map;
 
 #define NONE            -1
-#define MAX_MAPPINGS    sizeof(Mappings_pool)/sizeof(Mappings_pool[0])
+#define MAX_MAPPINGS    sizeof( Mappings_pool ) / sizeof( Mappings_pool[0] )
 
 static map  Mappings_pool[] = {
     {NONE,NONE},
@@ -86,8 +86,8 @@ static map  Mappings_pool[] = {
 static int  Loser = 0;
 static long dummy = 0;
 
-void __far *RMLinToPM( unsigned long linear_addr, int pool )
-/**********************************************************/
+void __far *RMLinToPM( unsigned long linear_addr, bool pool )
+/***********************************************************/
 {
     int         i;
     short       real;
@@ -98,8 +98,8 @@ void __far *RMLinToPM( unsigned long linear_addr, int pool )
     offset = linear_addr;
     if( pool ) {
         for( i = 0; i < MAX_MAPPINGS; ++i ) {
-            if( Mappings_pool[ i ].real == real ) {
-                return( _MK_FP( Mappings_pool[ i ].prot, offset ) );
+            if( Mappings_pool[i].real == real ) {
+                return( _MK_FP( Mappings_pool[i].prot, offset ) );
             }
         }
     }
@@ -112,15 +112,15 @@ void __far *RMLinToPM( unsigned long linear_addr, int pool )
     }
     if( pool ) {
         for( i = 0; i < MAX_MAPPINGS; ++i ) {
-            if( Mappings_pool[ i ].real == NONE ) {
-                Mappings_pool[ i ].real = real;
-                Mappings_pool[ i ].prot = pm_sel;
+            if( Mappings_pool[i].real == NONE ) {
+                Mappings_pool[i].real = real;
+                Mappings_pool[i].prot = pm_sel;
                 return( _MK_FP( pm_sel, offset ) );
             }
         }
-        rsi_sel_free( Mappings_pool[ Loser ].prot );
-        Mappings_pool[ Loser ].real = real;
-        Mappings_pool[ Loser ].prot = pm_sel;
+        rsi_sel_free( Mappings_pool[Loser].prot );
+        Mappings_pool[Loser].real = real;
+        Mappings_pool[Loser].prot = pm_sel;
         ++Loser;
         if( Loser == MAX_MAPPINGS ) {
             Loser = 0;

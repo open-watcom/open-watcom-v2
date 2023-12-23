@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,4 +45,5 @@ pick_class( OC_JCONDI )          // 0x0B unused
 pick_class( OC_JMP )             // 0x0C
 pick_class( OC_JMPI )            // 0x0D
 pick_class( OC_RET )             // 0x0E
-pick_class( OC_IDATA )           // 0x0F unused
+pick_class( OC_NORET )           // 0x0F
+pick_class( OC_IDATA )           // 0x10 unused

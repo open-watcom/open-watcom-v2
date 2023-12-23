@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -272,7 +272,7 @@ static void GetTrapParm( int pass )
     GetRawItem( start );
     if( pass == 2 ) {
         _Alloc( start, strlen( parm ) + strlen( TrapParms ) + 1 );
-        StrCopy( parm, StrCopy( TrapParms, start ) );
+        StrCopyDst( parm, StrCopyDst( TrapParms, start ) );
         _Free( TrapParms );
         TrapParms = start;
     }
@@ -288,7 +288,7 @@ static void GetInitCmd( int pass )
     if( pass == 2 ) {
         _Free( InitCmdList );
         _Alloc( InitCmdList, strlen( cmd ) + 1 );
-        StrCopy( cmd, InitCmdList );
+        StrCopyDst( cmd, InitCmdList );
     }
 }
 
@@ -490,7 +490,7 @@ void ProcCmd( void )
     ProcSysOptInit();
     DUIScreenOptInit();
 
-    have_env = DUIEnvLkup( EXENAME, buff, sizeof( buff ) );
+    have_env = DUIEnvLkup( WDENVNAME, buff, sizeof( buff ) );
     for( pass = 1; pass <= 2; ++pass ) {
         if( have_env ) {
             GetArg = &GetEnvArg;

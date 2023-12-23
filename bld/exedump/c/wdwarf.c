@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -99,17 +100,17 @@ static bool os2_debug( void )
 {
     Wlseek( 0 );
     Wread( &Dos_head, sizeof( Dos_head.hdr ) );
-    if( Dos_head.hdr.signature == DOS_SIGNATURE ) {
-        if( Dos_head.hdr.reloc_offset == OS2_EXE_HEADER_FOLLOWS ) {
-            Wlseek( OS2_NE_OFFSET );
+    if( Dos_head.hdr.signature == EXESIGN_DOS ) {
+        if( NE_HEADER_FOLLOWS( Dos_head.hdr.reloc_offset ) ) {
+            Wlseek( NE_HEADER_OFFSET );
             Wread( &New_exe_off, sizeof( New_exe_off ) );
             Wlseek( New_exe_off );
         }
     }
     // MZ stub is optional
     Wread( &Os2_386_head, sizeof( Os2_386_head ) );
-    if( Os2_386_head.signature == OSF_FLAT_SIGNATURE ||
-        Os2_386_head.signature == OSF_FLAT_LX_SIGNATURE ) {
+    if( Os2_386_head.signature == EXESIGN_LE ||
+        Os2_386_head.signature == EXESIGN_LX ) {
         if( Os2_386_head.debug_len ) {
             Wlseek( Os2_386_head.debug_off );
             return( Dmp_elf_header( Os2_386_head.debug_off ) );

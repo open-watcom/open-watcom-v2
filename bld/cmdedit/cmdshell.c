@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -188,9 +189,9 @@ void SetCurPosWithScroll( int row, int col )
         static USHORT length;
 
         length = 2;
-        VioReadCellStr( &buffer, &length, row, col, 0 );
+        VioReadCellStr( buffer, &length, row, col, 0 );
         buffer[0] = ' ';
-        VioScrollUp( 0, 0, -1, -1, 1, (PBYTE)&buffer, 0 );
+        VioScrollUp( 0, 0, (USHORT)-1, (USHORT)-1, 1, (PBYTE)buffer, 0 );
         VioSetCurPos( row, 0, 0 );
     }
 }
@@ -217,7 +218,7 @@ void main( void )
     buffer[0] = 0;
     InitRetrieve( buffer );
     memset( buffer, 0, sizeof( buffer ) );
-    getcmd( buffer );
+    _bgetcmd( buffer, sizeof( buffer ) );
     src = buffer;
     while( *src == ' ' )
         ++src;

@@ -1,3 +1,5 @@
+/* UTF-8 encoding, ¥ */
+
 pick(   LOG_CHOOSE_LOG_NAME,
         "Choose Log Name",
         "Choose Log Name" );

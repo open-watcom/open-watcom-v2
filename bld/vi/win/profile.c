@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,9 +37,9 @@
     typedef HRESULT (CALLBACK *GetFolderPath)( HWND, int, HANDLE, DWORD, LPTSTR );
 #endif
 #include "posix.h"
+#include "myprintf.h"
 
 
-#define CONFIG_INI "weditor.ini"
 #define CONFIG_DIR "Open Watcom"
 #define INI_FILE   "watcom.ini"
 
@@ -216,10 +216,10 @@ static void getConfigFilePaths( void )
     ReplaceString( &iniPath, path );                /* these freed in WriteProfile */
     GlobVarAddStr( GLOBVAR_INIPATH, iniPath );      /* make accessable to scripts */
     strcat( path, "\\" INI_FILE );
-    ReplaceString( &iniFile, path);
+    ReplaceString( &iniFile, path );
     strcpy( path, iniPath );
-    strcat( path, "\\" CONFIG_INI );
-    ReplaceString( &cfgFile, path);
+    strcat( path, "\\" CFG_NAME );
+    ReplaceString( &cfgFile, path );
 
 } /* getConfigFilePaths */
 
@@ -326,8 +326,11 @@ void WriteProfile( void )
  */
 void FiniProfile( void )
 {
-    DeleteString( &cfgFile );
-    DeleteString( &iniFile );
-    DeleteString( &iniPath );
+    _MemFreeArray( cfgFile );
+    cfgFile = NULL;
+    _MemFreeArray( iniFile );
+    iniFile = NULL;
+    _MemFreeArray( iniPath );
+    iniPath = NULL;
 
 } /* FiniProfile */

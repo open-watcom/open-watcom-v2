@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -25,7 +25,7 @@
 *
 *  ========================================================================
 *
-* Description:  DOS memory Swap handling
+* Description:  DOS memory Swap handling (16-bit code)
 *
 ****************************************************************************/
 
@@ -64,7 +64,7 @@ tiny_handle_t XchkOpenFile( char *f_buff )
         *f_buff++ = '\\';
         rc = TinyFarGetCWDir( f_buff, 0 );
         if( TINY_OK( rc ) ) {
-            while( *f_buff != 0 )
+            while( *f_buff != '\0' )
                 ++f_buff;
             if( f_buff[-1] == '\\' ) {
                 --f_buff;

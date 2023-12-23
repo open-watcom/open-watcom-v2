@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,8 +41,9 @@
 #if !defined( INSIDE_WLINK ) || defined( _OS2 )
 static size_t RemoveRedundantStrings( void **strlist, size_t num,
                     int (*compare)(const void *, const void *) )
-/***************************************************************/
-/* strlist is a SORTED array of char *'s of size num */
+/****************************************************************
+ * strlist is a SORTED array of char *'s of size num
+ */
 {
     void **     curr;       /* element being examined */
     void **     last;       /* last unique element */
@@ -65,47 +66,46 @@ static size_t RemoveRedundantStrings( void **strlist, size_t num,
 
 static size_t SortAndRemoveRedundantStrings( void **strlist, size_t num,
                             int (*compare)(const void *, const void *) )
-/**********************************************************************/
-/* strlist is an array of char *'s of size num */
+/***********************************************************************
+ * strlist is an array of char *'s of size num
+ */
 {
     qsort( (void *)strlist, num, sizeof( void * ), compare );
     return( RemoveRedundantStrings( strlist, num, compare ) );
 } /* SortAndRemoveRedundantStrings */
 
 static size_t InitStringList( WResDir dir, void **list, size_t len )
-/******************************************************************/
-/* The list will be a list of pointers to WResIDName's */
+/*******************************************************************
+ * The list will be a list of pointers to WResIDName's
+ */
 {
     WResDirWindow   wind;
-    WResTypeInfo    *type;
-    WResResInfo     *res;
+    WResTypeInfo    *typeinfo;
+    WResResInfo     *resinfo;
     void            **element;
 
-    wind = WResFirstResource( dir );
     element = list;
-
-    while( !WResIsEmptyWindow( wind ) ) {
+    for( wind = WResFirstResource( dir ); !WResIsEmptyWindow( wind ); wind = WResNextResource( wind, dir ) ) {
         if( WResIsFirstResOfType( wind ) ) {
-            type = WResGetTypeInfo( wind );
-            if( type->TypeName.IsName ) {
+            typeinfo = WResGetTypeInfo( wind );
+            if( typeinfo->TypeName.IsName ) {
                 if( len == 0 )
                     return( 0 );      /* should never occur */
-                *element = &(type->TypeName.ID.Name);
+                *element = &(typeinfo->TypeName.ID.Name);
                 element++;
                 len--;
             }
         }
         if( WResIsFirstLangOfRes( wind ) ) {
-            res = WResGetResInfo( wind );
-            if( res->ResName.IsName ) {
+            resinfo = WResGetResInfo( wind );
+            if( resinfo->ResName.IsName ) {
                 if( len == 0 )
                     return( 0 );      /* should never occur */
-                *element = &(res->ResName.ID.Name);
+                *element = &(resinfo->ResName.ID.Name);
                 element++;
                 len--;
             }
         }
-        wind = WResNextResource( wind, dir );
     }
 
     return( element - list );
@@ -161,18 +161,21 @@ static void CopyString( void **nextstr, WResIDName **name, bool use_unicode )
 } /* CopyString */
 
 static void ConstructStringBlock( StringsBlock *str )
-/***************************************************/
-/* the string list should be filled in when this is called */
+/****************************************************
+ * the string list should be filled in when this is called
+ */
 {
-    char            *nextstring;     /* make this a char * so we can add by */
+    char            *nextstring;    /* make this a char * so we can add by */
                                     /* by bytes */
     WResIDName      *currname;
     unsigned        i;
     unsigned        cnt;
 
-    /* calculate the size of the block needed */
+    /*
+     * calculate the size of the block needed
+     */
     str->StringBlockSize = 0;
-#if( 0 ) //may 24 1996 DRW
+#if 0
     for( currname = str->StringList; currname < str->StringList + str->StringListLen; currname++ ) {
         if( str->UseUnicode ) {
             str->StringBlockSize += sizeof( StringItem32 ) + 2 * ((**currname).NumChars - 1);
@@ -191,13 +194,15 @@ static void ConstructStringBlock( StringsBlock *str )
         }
     }
 #endif
-
-    /* allocate the block for the strings */
+    /*
+     * allocate the block for the strings
+     */
     str->StringBlock = RESALLOC( str->StringBlockSize );
-
-    /* copy the strings into the block */
+    /*
+     * copy the strings into the block
+     */
     nextstring = str->StringBlock;
-#if( 0 ) //may 24 1996 DRW
+#if 0
     for( currname = str->StringList; currname < str->StringList + str->StringListLen; currname++ ) {
         CopyString( &nextstring, currname, str->UseUnicode );
     }
@@ -224,10 +229,14 @@ void StringBlockBuild( StringsBlock *str, WResDir dir, bool use_unicode )
     void    **new_list;
 
     if( WResIsEmpty( dir ) ) {
-        /* Empty directories are allowed since windows exe's may contain */
-        /* no resources */
+        /*
+         * Empty directories are allowed since windows exe's may contain
+         * no resources
+         */
     } else {
-        /* set the initial list_len to be the max possible */
+        /*
+         * set the initial list_len to be the max possible
+         */
         list_len = WResGetNumTypes( dir ) + WResGetNumResources( dir );
         str->UseUnicode = use_unicode;
         str->StringList = RESALLOC( list_len * sizeof( void * ) );
@@ -299,8 +308,9 @@ static int genericCompare( const char *name1, uint_16 len1,
             char2u++;
         }
     }
-
-    /* Longer names with the same prefix are greater */
+    /*
+     * Longer names with the same prefix are greater
+     */
     if( len1 < len2 ) {
         return( -1 );
     } else if( len1 > len2 ) {
@@ -311,23 +321,25 @@ static int genericCompare( const char *name1, uint_16 len1,
 }
 
 static int compareStrings16( const WResIDName *key,
-                             const StringItem16 **item ) {
-/********************************************************************/
-
+                             const StringItem16 **item )
+/******************************************************/
+{
     return( genericCompare( key->Name, key->NumChars,
                             (*item)->Name, (*item)->NumChars, false ) );
 }
 
 static int compareStrings32( const WResIDName *key,
-                             const StringItem32 **item ) {
-/**********************************************************************/
+                             const StringItem32 **item )
+/******************************************************/
+{
     return( genericCompare( key->Name, key->NumChars,
                             (*item)->Name, (*item)->NumChars, true ) );
 }
 
 int CompareStringItems32( const StringItem32 *item1,
-                          const StringItem32 *item2 ) {
-/********************************************************************/
+                          const StringItem32 *item2 )
+/***************************************************/
+{
     uint_16     *ptr1;
     uint_16     *ptr2;
     uint_16      ch1;
@@ -353,7 +365,9 @@ int CompareStringItems32( const StringItem32 *item1,
         ptr1++;
         ptr2++;
     }
-    /* Longer names with the same prefix are greater */
+    /*
+     * Longer names with the same prefix are greater
+     */
     if( item1->NumChars < item2->NumChars ) {
         return( -1 );
     } else if( item1->NumChars > item2->NumChars ) {
@@ -364,9 +378,10 @@ int CompareStringItems32( const StringItem32 *item1,
 }
 
 int_32 StringBlockFind( StringsBlock *str, WResIDName *name )
-/***********************************************************/
-/* if the return code is -1 the name was not found, otherwise it is the */
-/* number of bytes into the StringBlock at which to find the name. */
+/************************************************************
+ * if the return code is -1 the name was not found, otherwise it is the
+ * number of bytes into the StringBlock at which to find the name.
+ */
 {
     uint_8          **location;
 

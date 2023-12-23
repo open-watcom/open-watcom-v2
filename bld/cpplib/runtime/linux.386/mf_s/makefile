@@ -5,4 +5,4 @@ model      = mf
 convention = stack
 linkage    = static
 
-!include $(cpplib_dir)/runtime/runtime.mif
+!include ../../runtime.mif

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,8 +31,9 @@
 
 
 #include "ftnstd.h"
+#include <errno.h>
 #if defined( __WATCOMC__ ) || !defined( __UNIX__ )
-#include <process.h>
+    #include <process.h>
 #endif
 #include "wio.h"
 #include "progsw.h"
@@ -58,8 +59,6 @@
 #define _PageOffset( v_ptr ) (ObjCode + ((v_ptr) - ((v_ptr) / WFC_PAGE_SIZE) * WFC_PAGE_SIZE))
 #define _MakeVirtual( page, o_ptr ) ((page) * WFC_PAGE_SIZE + ( (o_ptr) - ObjCode ))
 
-static  char            *PageFileName = { "__wfc__.vm" };
-static  char            PageFileBuff[_MAX_PATH];
 static  unsigned_32     CurrPage;
 static  unsigned_32     MaxPage;
 static  unsigned_8      PageFlags;
@@ -75,17 +74,13 @@ static void PageFileIOErr( int error )
 //====================================
 // Output i/o errors for page file.
 {
-    Error( error, PageFileName, strerror( errno ) );
+    Error( error, "temporary page file", strerror( errno ) );
 }
 
 void    InitObj( void ) {
 //=================
 
 // Allocate memory for object code.
-
-    char        *fn;
-    char        *tmp;
-    int         idx;
 
     ObjCode = NULL; // in case FMemAlloc() fails
     ObjCode = FMemAlloc( WFC_PAGE_SIZE );
@@ -94,32 +89,9 @@ void    InitObj( void ) {
     *(unsigned_16 *)ObjPtr = FC_END_OF_SEQUENCE; // in case no source code in file
     PageFile = NULL;
     if( (ProgSw & PS_DONT_GENERATE) == 0 ) {
-        fn = PageFileBuff;
-        tmp = getenv( "TMP" );
-        if( tmp != NULL && *tmp != NULLCHAR ) {
-            GetPathElement( tmp, NULL, &fn );
-            if( fn != PageFileBuff ) {
-                char c = fn[-1];
-                if( !IS_PATH_SEP( c ) ) {
-                    *fn++ = DIR_SEP;
-                }
-            }
-        }
-        strcpy( fn, PageFileName );
-        fn += strlen( fn );
-        fn[1] = NULLCHAR;
-        for( idx = 0; idx < 26; idx++ ) {
-            fn[0] = 'a' + idx;
-            if( access( PageFileBuff, 0 ) == -1 ) {
-                PageFile = fopen( PageFileBuff, "w+b" );
-                if( PageFile != NULL ) {
-                    break;
-                }
-                InfoError( SM_OPENING_FILE, PageFileName, strerror( errno ) );
-            }
-        }
-        if( idx == 26 ) {
-            Error( SM_OUT_OF_VM_FILES, PageFileName );
+        PageFile = tmpfile();
+        if( PageFile == NULL ) {
+            PageFileIOErr( SM_OPENING_FILE );
         }
     }
     PageFlags = PF_INIT;
@@ -139,7 +111,6 @@ void    FiniObj( void ) {
     if( PageFile != NULL ) {
         fclose( PageFile );
         PageFile = NULL;
-        SDScratch( PageFileBuff );
     }
 }
 

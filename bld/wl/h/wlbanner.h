@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,13 +32,13 @@
 
 #if 0
     #define IDV     "** EXPERIMENTAL ** "
-#elif defined( _DEVELOPMENT )
+#elif defined( DEVBUILD )
     #define IDV     "**INTERNAL DEVELOPMENT** "
 #else
     #define IDV
 #endif
 
-pick( PRODUCT,      IDV banner1w( "Linker", _WLINK_VERSION_ ) )
+pick( PRODUCT,      banner1w( "Linker", _WLINK_VERSION_ ) IDV )
 pick( COPYRIGHT,    banner2 )
 pick( COPYRIGHT2,   banner2a( 1985 ) )
 pick( TRADEMARK,    banner3 )

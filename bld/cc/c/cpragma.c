@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,7 +38,7 @@
 #include "cfeinfo.h"
 #include "asmstmt.h"
 #include "toggles.h"
-#ifndef NDEBUG
+#ifdef DEVBUILD
     #include "togglesd.h"
 #endif
 
@@ -46,7 +46,6 @@
 
 
 #define pragmaNameRecog(what)   (strcmp(Buffer, what) == 0)
-#define pragmaIdRecog(what)     (stricmp(what, SkipUnderscorePrefix(Buffer, NULL, true)) == 0)
 
 typedef enum {
     #define pick(a,b,c,d)   a,
@@ -60,8 +59,9 @@ typedef struct prag_stack {
     unsigned            value;
 } prag_stack;
 
+hw_reg_set              AsmRegsSaved = HW_D( HW_FULL );
 pragma_toggles          PragmaToggles;
-#ifndef NDEBUG
+#ifdef DEVBUILD
 pragma_dbg_toggles      PragmaDbgToggles;
 #endif
 
@@ -71,6 +71,7 @@ pragma_dbg_toggles      PragmaDbgToggles;
 static prag_stack       *TOGGLE_STK( pack );
 static prag_stack       *TOGGLE_STK( enum );
 static prag_stack       *FreePrags;
+static int              AsmFuncNum;
 
 static struct magic_words_data {
     const char      *name;
@@ -150,6 +151,7 @@ void CPragmaInit( void )
     TOGGLE_STK( pack ) = NULL;
     TOGGLE_STK( enum ) = NULL;
     FreePrags = NULL;
+    AsmFuncNum = 0;
 
     TextSegList = NULL;
     AliasHead = NULL;
@@ -213,31 +215,20 @@ static void endOfPragma( bool check_end )
     }
 }
 
-const char *SkipUnderscorePrefix( const char *str, size_t *len, bool iso_compliant_names )
-/****************************************************************************************/
+const char *SkipUnderscorePrefix( const char *str )
+/*************************************************/
 {
-    const char  *start;
-
-    start = str;
-    if( !iso_compliant_names || CompFlags.non_iso_compliant_names_enabled ) {
+    if( CompFlags.non_iso_compliant_names_enabled ) {
         if( *str == '_' ) {
             str++;
             if( *str == '_' ) {
                 str++;
             }
         }
+    } else if( str[0] == '_' && str[1] == '_' ) {
+        str += 2;
     } else {
-        if( str[0] == '_' && str[1] == '_' ) {
-            str += 2;
-        } else {
-            if( len != NULL ) {
-                *len = 0;
-            }
-            return( "" );
-        }
-    }
-    if( len != NULL ) {
-        *len -= str - start;
+        str = NULL;
     }
     return( str );
 }
@@ -245,11 +236,13 @@ const char *SkipUnderscorePrefix( const char *str, size_t *len, bool iso_complia
 bool PragRecogId( const char *what )
 /**********************************/
 {
-    bool    ok;
+    bool        ok;
+    const char  *p;
 
     ok = IS_ID_OR_KEYWORD( CurToken );
     if( ok ) {
-        ok = pragmaIdRecog(what);
+        p = SkipUnderscorePrefix( Buffer );
+        ok = ( p != NULL && stricmp( p, what ) == 0 );
         if( ok ) {
             PPNextToken();
         }
@@ -295,7 +288,6 @@ bool GetPragmaAuxAliasInfo( void )
         PPNextToken();
         return( IS_ID_OR_KEYWORD( CurToken ) );
     } else if( LAToken == T_COMMA ) {       /* #pragma aux (symbol, alias) */
-        HashValue = SavedHash;
         SetCurrInfo( SavedId );
         advanceToken();
         PPNextToken();
@@ -312,7 +304,7 @@ bool GetPragmaAuxAliasInfo( void )
 void *AsmQuerySymbol( const char *name )
 /**************************************/
 {
-    return( SymLook( CalcHash( name, strlen( name ) ), name ) );
+    return( SymLook( CalcHashID( name ), name ) );
 }
 
 enum sym_state AsmQueryState( void *handle )
@@ -341,10 +333,11 @@ static aux_info *lookupMagicKeyword( const char *name )
 {
     magic_words     mword;
 
-    name = SkipUnderscorePrefix( name, NULL, true );
-    for( mword = 0; mword < M_SIZE; mword++ ) {
-        if( strcmp( name, magicWords[mword].name + 2 ) == 0 ) {
-            return( magicWords[mword].info );
+    if( (name = SkipUnderscorePrefix( name )) != NULL ) {
+        for( mword = 0; mword < M_SIZE; mword++ ) {
+            if( strcmp( name, magicWords[mword].name + 2 ) == 0 ) {
+                return( magicWords[mword].info );
+            }
         }
     }
     return( NULL );
@@ -354,14 +347,34 @@ static aux_info *lookupMagicKeyword( const char *name )
 void CreateAux( const char *id )
 /******************************/
 {
-    size_t  len;
-
-    len = strlen( id ) + 1;
-    CurrEntry = (aux_entry *)CMemAlloc( offsetof( aux_entry, name ) + len );
-    memcpy( CurrEntry->name, id, len );
+    CurrEntry = (aux_entry *)CMemAlloc( offsetof( aux_entry, name ) + strlen( id ) + 1 );
+    strcpy( CurrEntry->name, id );
 #if _CPU == 370
     CurrEntry->offset = -1;
 #endif
+}
+
+
+void CreateAuxInlineFunc( bool too_many_bytes )
+/*********************************************/
+{
+    char        name[10];
+
+    sprintf( name, "F.%d", AsmFuncNum );
+    ++AsmFuncNum;
+    CreateAux( name );
+    CurrInfo = (aux_info *)CMemAlloc( sizeof( aux_info ) );
+    CurrEntry->info = CurrInfo;
+    *CurrInfo = WatcallInfo;
+    CurrInfo->use = 1;
+    CurrInfo->save = AsmRegsSaved;  // indicate no registers saved
+    if( !too_many_bytes ) {
+        if( AsmInsertFixups( CurrInfo ) ) {
+            AsmUsesAuto( CurrInfo );
+        }
+    }
+    CurrEntry->next = AuxList;
+    AuxList = CurrEntry;
 }
 
 
@@ -375,7 +388,7 @@ void SetCurrInfo( const char *name )
     CurrInfo = lookupMagicKeyword( name );
     if( CurrInfo == NULL ) {
         if( CurrAlias == NULL ) {
-            sym_handle = SymLook( HashValue, name );
+            sym_handle = SymLook( CalcHashID( name ), name );
             if( sym_handle != SYM_NULL ) {
                 SymGet( &sym, sym_handle );
                 sym_attrib = sym.mods;
@@ -470,7 +483,9 @@ static void CopyCode( void )
     byte_seq    *code;
     unsigned    size;
 
-// TODO deal with reloc list
+    /*
+     * TODO deal with reloc list
+     */
     if( CurrInfo->code == NULL )
         return;
     if( CurrInfo->code != CurrAlias->code )
@@ -488,7 +503,7 @@ static void CopyObjName( void )
         return;
     if( CurrInfo->objname != CurrAlias->objname )
         return;
-    CurrInfo->objname = CStrSave( CurrInfo->objname );
+    CurrInfo->objname = CMemStrDup( CurrInfo->objname );
 }
 
 #if _CPU == _AXP
@@ -499,7 +514,7 @@ static void CopyExceptRtn( void )
         return;
     if( CurrInfo->except_rtn != CurrAlias->except_rtn )
         return;
-    CurrInfo->except_rtn = CStrSave( CurrInfo->except_rtn );
+    CurrInfo->except_rtn = CMemStrDup( CurrInfo->except_rtn );
 }
 #endif
 
@@ -524,13 +539,14 @@ void PragmaAuxEnding( void )
         CurrInfo->use = 1;
         CurrEntry->info = CurrInfo;
     }
-
-    /* If this pragma defines code, check to see if we already have a function body */
+    /*
+     * If this pragma defines code, check to see if we already have a function body
+     */
     if( CurrEntry != NULL && CurrEntry->info != NULL && CurrEntry->info->code != NULL ) {
         SYM_HANDLE  sym_handle;
         SYM_ENTRY   sym;
 
-        if( SYM_NULL != (sym_handle = SymLook( CalcHash( CurrEntry->name, strlen( CurrEntry->name ) ), CurrEntry->name )) ) {
+        if( SYM_NULL != (sym_handle = SymLook( CalcHashID( CurrEntry->name ), CurrEntry->name )) ) {
             SymGet( &sym, sym_handle );
             if( ( sym.flags & SYM_DEFINED ) && ( sym.flags & SYM_FUNCTION ) ) {
                 CErr2p( ERR_SYM_ALREADY_DEFINED, CurrEntry->name );
@@ -547,7 +563,7 @@ void PragObjNameInfo( char **objname )
 /************************************/
 {
     if( CurToken == T_STRING ) {
-        *objname = CStrSave( Buffer );
+        *objname = CMemStrDup( Buffer );
         PPNextToken();
     }
 }
@@ -562,15 +578,17 @@ TOKEN PragRegSet( void )
     return( T_NULL );
 }
 
-int PragRegIndex( const char *registers, const char *name, size_t len, bool ignorecase )
-/**************************************************************************************/
+int PragRegIndex( const char *registers, const char *name, bool ignorecase )
+/**************************************************************************/
 {
     int             index;
     const char      *p;
     unsigned char   c;
     unsigned char   c2;
     size_t          i;
+    size_t          len;
 
+    len = strlen( name );
     index = 0;
     for( p = registers; *p != '\0'; ) {
         i = 0;
@@ -592,38 +610,32 @@ int PragRegIndex( const char *registers, const char *name, size_t len, bool igno
     return( -1 );
 }
 
-int PragRegNumIndex( const char *str, size_t len, int max_reg )
-/*************************************************************/
+int PragRegNumIndex( const char *str, int max_reg )
+/*************************************************/
 {
-    int             index;
+    int         index;
 
-    /* decode regular register index, max 2 digit */
-    if( len > 0 && isdigit( (unsigned char)str[0] ) ) {
-        if( len == 1 ) {
-            index = str[0] - '0';
-            if( index < max_reg ) {
+    /*
+     * decode regular register index, max 2 digit
+     */
+    if( isdigit( (unsigned char)str[0] ) ) {
+        index = str[0] - '0';
+        if( isdigit( (unsigned char)str[1] ) ) {
+            index = index * 10 + ( str[1] - '0' );
+            if( str[2] == '\0' && index < max_reg ) {
                 return( index );
             }
-        } else if( len == 2 && isdigit( (unsigned char)str[1] ) ) {
-            index = ( str[1] - '0' ) * 10 + ( str[0] - '0' );
-            if( index < max_reg ) {
-                return( index );
-            }
+        } else if( str[1] == '\0' && index < max_reg ) {
+            return( index );
         }
     }
     return( -1 );
 }
 
-void PragRegNameErr( const char *regname, size_t regnamelen )
-/***********************************************************/
+void PragRegNameErr( const char *regname )
+/****************************************/
 {
-    char            buffer[20];
-
-    if( regnamelen > sizeof( buffer ) - 1 )
-        regnamelen = sizeof( buffer ) - 1;
-    memcpy( buffer, regname, regnamelen );
-    buffer[regnamelen] = '\0';
-    CErr2p( ERR_BAD_REGISTER_NAME, buffer );
+    CErr2p( ERR_BAD_REGISTER_NAME, regname );
 }
 
 hw_reg_set PragRegList( void )
@@ -679,7 +691,7 @@ hw_reg_set *PragManyRegSets( void )
 void SetToggleFlag( char const *name, int func, bool push )
 /*********************************************************/
 {
-#ifndef NDEBUG
+#ifdef DEVBUILD
     #define pick( x ) \
         if( strcmp( name, #x ) == 0 ) { \
             if( func == -1 ) { \
@@ -710,14 +722,14 @@ void SetToggleFlag( char const *name, int func, bool push )
     #undef pick
 }
 
-/* forms:
- *
- *      #pragma on (<toggle name>)
- *      #pragma off (<toggle name>)
- *      #pragma pop (<toggle name>)
- */
 static void pragOptions( int func )
-/**********************************/
+/**********************************
+ * forms:
+ *
+ *  #pragma on (<toggle name>)
+ *  #pragma off (<toggle name>)
+ *  #pragma pop (<toggle name>)
+ */
 {
     PPCTL_ENABLE_MACROS();
     PPNextToken();
@@ -730,37 +742,50 @@ static void pragOptions( int func )
     PPCTL_DISABLE_MACROS();
 }
 
-void AddLibraryName( const char *name, const char priority )
-/**********************************************************/
+void AddLibraryName( const char *libname, char priority )
+/*******************************************************/
 {
-    library_list    **new_owner;
     library_list    **owner;
     library_list    *lib;
-    size_t          len;
 
     for( owner = &HeadLibs; (lib = *owner) != NULL; owner = &lib->next ) {
-        if( lib->libname[0] < priority ) {
+        if( lib->priority < priority ) {
+            library_list    **tmp_owner;
+            /*
+             * search library entry with lower priority
+             */
+            for( tmp_owner = owner; (lib = *tmp_owner) != NULL; tmp_owner = &lib->next ) {
+                if( FNAMECMPSTR( lib->libname, libname ) == 0 ) {
+                    /*
+                     * remove library entry from linked list
+                     */
+                    *tmp_owner = lib->next;
+                    break;
+                }
+            }
             break;
         }
-        if( FNAMECMPSTR( lib->libname + 1, name ) == 0 ) {
+        if( FNAMECMPSTR( lib->libname, libname ) == 0 ) {
+            /*
+             * library entry already exists with higher or equal priority
+             * no change required
+             */
             return;
         }
     }
-    new_owner = owner;
-    for( ; (lib = *owner) != NULL; owner = &lib->next ) {
-        if( FNAMECMPSTR( lib->libname + 1, name ) == 0 ) {
-            *owner = lib->next;
-            break;
-        }
-    }
+    /*
+     * if library entry not found then create new one
+     */
     if( lib == NULL ) {
-        len = strlen( name ) + 1;
-        lib = CMemAlloc( offsetof( library_list, libname ) + len + 1 );
-        memcpy( lib->libname + 1, name, len );
+        lib = CMemAlloc( sizeof( library_list ) + strlen( libname ) );
+        strcpy( lib->libname, libname );
     }
-    lib->libname[0] = priority;
-    lib->next = *new_owner;
-    *new_owner = lib;
+    /*
+     * set priority and insert library entry to proper position
+     */
+    lib->priority = priority;
+    lib->next = *owner;
+    *owner = lib;
 }
 
 static void GetLibraryNames( void )
@@ -772,13 +797,13 @@ static void GetLibraryNames( void )
     }
 }
 
-/* forms:
- *
- *      #pragma library
- *      #pragma library (<libraries name list>)
- */
 static void pragLibs( void )
-/**************************/
+/***************************
+ * forms:
+ *
+ *  #pragma library
+ *  #pragma library (<libraries name list>)
+ */
 {
     PPCTL_ENABLE_MACROS();
     PPNextToken();
@@ -792,12 +817,12 @@ static void pragLibs( void )
     PPCTL_DISABLE_MACROS();
 }
 
-/* forms:
- *
- *      #pragma comment ( comment_type [, "comment_string"] )
- */
 static void pragComment( void )
-/*****************************/
+/******************************
+ * forms:
+ *
+ *  #pragma comment ( comment_type [, "comment_string"] )
+ */
 {
     PPCTL_ENABLE_MACROS();
     PPNextToken();
@@ -814,26 +839,35 @@ static void pragComment( void )
     PPCTL_DISABLE_MACROS();
 }
 
+unsigned VerifyPackAmount( unsigned amount )
+/******************************************/
+{
+    if( amount <= 1 ) {
+        amount = 1;
+    } else if( amount <= 2 ) {
+        amount = 2;
+    } else if( amount <= 4 ) {
+        amount = 4;
+    } else if( amount <= 8 ) {
+        amount = 8;
+    } else {
+        amount = 16;
+    }
+    return( amount );
+}
+
 void SetPackAmount( unsigned amount )
 /***********************************/
 {
-    if( amount <= 1 ) {
-        PackAmount = 1;
-    } else if( amount <= 2 ) {
-        PackAmount = 2;
-    } else if( amount <= 4 ) {
-        PackAmount = 4;
-    } else if( amount <= 8 ) {
-        PackAmount = 8;
-    } else {
-        PackAmount = 16;
-    }
+    PackAmount = VerifyPackAmount( amount );
 }
 
 static void getPackArgs( void )
 /****************************/
 {
-    /* check to make sure it is a numeric token */
+    /*
+     * check to make sure it is a numeric token
+     */
     if( PragRecogId( "push" ) ) {
         pushPrag( &TOGGLE_STK( pack ), (unsigned)PackAmount );
         if( CurToken == T_COMMA ) {
@@ -854,16 +888,16 @@ static void getPackArgs( void )
     }
 }
 
-/* forms:
- *
- *      #pragma pack ()
- *      #pragma pack ( n )
- *      #pragma pack ( push )
- *      #pragma pack ( pop )
- *      #pragma pack ( push, n )
- */
 static void pragPack( void )
-/**************************/
+/***************************
+ * forms:
+ *
+ *  #pragma pack ()
+ *  #pragma pack ( n )
+ *  #pragma pack ( push )
+ *  #pragma pack ( pop )
+ *  #pragma pack ( push, n )
+ */
 {
     PPCTL_ENABLE_MACROS();
     PPNextToken();
@@ -891,13 +925,13 @@ textsegment *NewTextSeg( const char *name, const char *suffix, const char *class
     size_t          len3;
 
     len1 = strlen( name );
-    len2 = strlen( suffix ) + 1;
-    len3 = strlen( classname ) + 1;
-    tseg = CMemAlloc( offsetof( textsegment, segname ) + len1 + len2 + len3 );
-    tseg->class = len1 + len2;
-    memcpy( tseg->segname, name, len1 );
-    memcpy( tseg->segname + len1, suffix, len2 );
-    memcpy( tseg->segname + tseg->class, classname, len3 );
+    len2 = strlen( suffix );
+    len3 = strlen( classname );
+    tseg = CMemAlloc( offsetof( textsegment, segname ) + len1 + len2 + 1 + len3 + 1 );
+    tseg->class = len1 + len2 + 1;
+    strcpy( tseg->segname, name );
+    strcpy( tseg->segname + len1, suffix );
+    strcpy( tseg->segname + tseg->class, classname );
     tseg->next = TextSegList;
     TextSegList = tseg;
     return( tseg );
@@ -907,14 +941,10 @@ textsegment *LkSegName( const char *segname, const char *classname )
 /******************************************************************/
 {
     textsegment     *tseg;
-    size_t          len1;
-    size_t          len2;
 
-    len1 = strlen( segname ) + 1;
-    len2 = strlen( classname ) + 1;
     for( tseg = TextSegList; tseg != NULL; tseg = tseg->next ) {
-        if( memcmp( tseg->segname, segname, len1 ) == 0 ) {
-            if( memcmp( tseg->segname + tseg->class, classname, len2 ) == 0 ) {
+        if( strcmp( tseg->segname, segname ) == 0 ) {
+            if( strcmp( tseg->segname + tseg->class, classname ) == 0 ) {
                 return( tseg );
             }
         }
@@ -922,12 +952,12 @@ textsegment *LkSegName( const char *segname, const char *classname )
     return( NewTextSeg( segname, "", classname ) );
 }
 
-/* forms:
- *
- *      #pragma alloc_text ( seg_name, fn [, fn] )
- */
 static void pragAllocText( void )
-/*******************************/
+/********************************
+ * forms:
+ *
+ *  #pragma alloc_text ( seg_name, fn [, fn] )
+ */
 {
     struct textsegment  *tseg;
     SYM_HANDLE          sym_handle;
@@ -937,22 +967,30 @@ static void pragAllocText( void )
     PPNextToken();
     if( ExpectingToken( T_LEFT_PAREN ) ) {
         PPNextToken();
-        /* current token can be an T_ID or a T_STRING */
+        /*
+         * current token can be an T_ID or a T_STRING
+         */
         tseg = LkSegName( Buffer, "" );
         PPNextToken();
         for( ;; ) {
             MustRecog( T_COMMA );
-            /* current token can be an T_ID or a T_STRING */
-            sym_handle = Sym0Look( CalcHash( Buffer, TokenLen ), Buffer );
+            /*
+             * current token can be an T_ID or a T_STRING
+             */
+            sym_handle = Sym0Look( CalcHashID( Buffer ), Buffer );
             if( sym_handle == SYM_NULL ) {
-                /* error */
+                /*
+                 * error
+                 */
             } else {
                 SymGet( &sym, sym_handle );
                 if( sym.flags & SYM_FUNCTION ) {
                     sym.seginfo = tseg;
                     SymReplace( &sym, sym_handle );
                 } else {
-                    /* error, must be function */
+                    /*
+                     * error, must be function
+                     */
                 }
             }
             PPNextToken();
@@ -964,7 +1002,7 @@ static void pragAllocText( void )
                 break;
             }
         }
-#if _CPU == 8086 || _CPU == 386
+#if _INTEL_CPU
         CompFlags.multiple_code_segments = true;
 #endif
         MustRecog( T_RIGHT_PAREN );
@@ -978,12 +1016,16 @@ static void changeLevel( unsigned level, int msg_index )
     if( msg_level[msg_index].level != level ) {
         msg_level[msg_index].level = level;
         if( level == WLEVEL_DISABLED ) {
-            /* disable message */
+            /*
+             * disable message
+             */
             if( msg_level[msg_index].enabled ) {
                 msg_level[msg_index].enabled = false;
             }
         } else {
-            /* enable message */
+            /*
+             * enable message
+             */
             if( !msg_level[msg_index].enabled ) {
                 msg_level[msg_index].enabled = true;
             }
@@ -999,23 +1041,63 @@ static void changeStatus( bool enabled, int msg_index )
     }
 }
 
-static void warnChangeLevel( unsigned level, msg_codes msgnum )
-/*************************************************************/
-/* CHANGE WARNING LEVEL FOR A MESSAGE */
+bool GetMsgNum( const char *str, msg_codes *val )
+/***********************************************/
 {
-    int     msg_index;
+    /*
+     * skip, C++ compiler messages, prefixed by 'P' character
+     */
+    if( tolower( *(unsigned char *)str ) == 'p' ) {
+        *val = 0;
+        return( true );
+    }
+    /*
+     * process C compiler messages, prefixed by 'C' character
+     * or old messages without prefix which can be C or C++ message
+     * it is for backward compatibility
+     */
+    if( tolower( *(unsigned char *)str ) == 'c' )
+        str++;
+    if( isdigit( *(unsigned char *)str ) ) {
+        *val = atol( str );
+        return( true );
+    }
+    return( false );
+}
 
+static bool getMessageNum( msg_codes *val )
+/*****************************************/
+{
+    if( CurToken == T_CONSTANT ) {
+        *val = Constant;
+        return( true );
+    } else if( CurToken == T_ID ) {
+        return( GetMsgNum( Buffer, val ) );
+    }
+    return( false );
+}
+
+static void warnChangeLevel( unsigned level, msg_codes msgnum )
+/**************************************************************
+ * CHANGE WARNING LEVEL FOR A MESSAGE
+ */
+{
+    unsigned    msg_index;
+
+    if( msgnum == 0 )
+        return;
     msg_index = GetMsgIndex( msgnum );
-    if( msg_index < 0 ) {
-        CWarn2( WARN_PRAG_WARNING_BAD_MESSAGE, ERR_PRAG_WARNING_BAD_MESSAGE, msgnum );
+    if( IS_MSGIDX_INVALID( msg_index ) ) {
+        CWarn2( ERR_PRAG_WARNING_BAD_MESSAGE, msgnum );
         return;
     }
     switch( msg_level[msg_index].type ) {
-    case MSG_TYPE_ERROR :
+//    case MSG_TYPE_ERROR :       /* Error messages are used for Warning */
     case MSG_TYPE_INFO :
     case MSG_TYPE_ANSIERR :
-        CWarn2( WARN_PRAG_WARNING_BAD_MESSAGE, ERR_PRAG_WARNING_BAD_MESSAGE, msgnum );
+        CWarn2( ERR_PRAG_WARNING_BAD_MESSAGE, msgnum );
         break;
+    case MSG_TYPE_ERROR :       /* Error messages are used for Warning */
     case MSG_TYPE_WARNING :
     case MSG_TYPE_ANSI :
     case MSG_TYPE_ANSIWARN :
@@ -1025,13 +1107,15 @@ static void warnChangeLevel( unsigned level, msg_codes msgnum )
 }
 
 static void warnChangeLevels( unsigned level )
-/********************************************/
-/* CHANGE WARNING LEVELS FOR ALL MESSAGES */
+/*********************************************
+ * CHANGE WARNING LEVELS FOR ALL MESSAGES
+ */
 {
     int     msg_index;          // - index for number
 
     for( msg_index = 0; msg_index < MESSAGE_COUNT; msg_index++ ) {
         switch( msg_level[msg_index].type ) {
+        case MSG_TYPE_ERROR :       /* Error messages are used for Warning */
         case MSG_TYPE_WARNING :
         case MSG_TYPE_ANSI :
         case MSG_TYPE_ANSIWARN :
@@ -1044,19 +1128,22 @@ static void warnChangeLevels( unsigned level )
 void WarnEnableDisable( bool enabled, msg_codes msgnum )
 /******************************************************/
 {
-    int     msg_index;
+    unsigned    msg_index;
 
+    if( msgnum == 0 )
+        return;
     msg_index = GetMsgIndex( msgnum );
-    if( msg_index < 0 ) {
-        CWarn2( WARN_PRAG_WARNING_BAD_MESSAGE, ERR_PRAG_WARNING_BAD_MESSAGE, msgnum );
+    if( IS_MSGIDX_INVALID( msg_index ) ) {
+        CWarn2( ERR_PRAG_WARNING_BAD_MESSAGE, msgnum );
         return;
     }
     switch( msg_level[msg_index].type ) {
-    case MSG_TYPE_ERROR :
+//    case MSG_TYPE_ERROR :       /* Error messages are used for Warning */
     case MSG_TYPE_INFO :
     case MSG_TYPE_ANSIERR :
-        CWarn2( WARN_PRAG_WARNING_BAD_MESSAGE, ERR_PRAG_WARNING_BAD_MESSAGE, msgnum );
+        CWarn2( ERR_PRAG_WARNING_BAD_MESSAGE, msgnum );
         break;
+    case MSG_TYPE_ERROR :       /* Error messages are used for Warning */
     case MSG_TYPE_WARNING :
     case MSG_TYPE_ANSI :
     case MSG_TYPE_ANSIWARN :
@@ -1065,18 +1152,18 @@ void WarnEnableDisable( bool enabled, msg_codes msgnum )
     }
 }
 
-/*
- * forms: #pragma warning # level   (change message # to have level "level)
- *      : #pragma warning * level   (change all messages to have level "level)
- *
- *   "level" must be digit (0-5)
- *   "level==0" implies warning will be treated as an error
- */
 static bool pragWarning( void )
-/*****************************/
-/* PROCESS #PRAGMA WARNING */
+/******************************
+ * forms:
+ *
+ *  #pragma warning # level   (change message # to have level "level)
+ *  #pragma warning * level   (change all messages to have level "level)
+ *
+ * "level" must be digit (0-5)
+ * "level==0" implies warning will be treated as an error
+ */
 {
-    unsigned msgnum;            // - message number
+    msg_codes msgnum;           // - message number
     unsigned level;             // - new level
     bool change_all;            // - true ==> change all levels
     bool ignore;
@@ -1088,10 +1175,10 @@ static bool pragWarning( void )
     NextToken();
     if( CurToken == T_TIMES ) {
         change_all = true;
-    } else if( CurToken == T_CONSTANT ) {
-        msgnum = Constant;
-    } else {
-        // ignore; MS or other vendor's #pragma
+    } else if( !getMessageNum( &msgnum ) ) {
+        /*
+         * ignore; MS or other vendor's #pragma
+         */
         ignore = true;
     }
     if( !ignore ) {
@@ -1105,7 +1192,7 @@ static bool pragWarning( void )
                 warnChangeLevel( level, msgnum );
             }
         } else {
-            CWarn1( WARN_PRAG_WARNING_BAD_LEVEL, ERR_PRAG_WARNING_BAD_LEVEL );
+            CWarn1( ERR_PRAG_WARNING_BAD_LEVEL );
             NextToken();
         }
     }
@@ -1113,22 +1200,24 @@ static bool pragWarning( void )
     return( ignore );
 }
 
-/* forms:
+static void pragEnableDisableMessage( bool enabled )
+/***************************************************
+ * forms:
  *
- *    #pragma enable_message( messageNo )
- *    #pragma disable_message( messageNo )
+ *  #pragma enable_message( messageNo )
+ *  #pragma disable_message( messageNo )
  *
  * disable/enable display of selected message number
  */
-static void pragEnableDisableMessage( bool enabled )
-/**************************************************/
 {
+    msg_codes msgnum;
+
     PPCTL_ENABLE_MACROS();
     PPNextToken();
     if( ExpectingToken( T_LEFT_PAREN ) ) {
         PPNextToken();
-        while( CurToken == T_CONSTANT ) {
-            WarnEnableDisable( enabled, Constant );
+        while( getMessageNum( &msgnum ) ) {
+            WarnEnableDisable( enabled, msgnum );
             PPNextToken();
             if( CurToken == T_COMMA ) {
                 PPNextToken();
@@ -1155,16 +1244,16 @@ static char *collectStrings( char *message )
     return( message );
 }
 
-/* form:
+static void pragMessage( void )
+/******************************
+ * form:
  *
- * #pragma message ("one or more " "long message " "strings")
+ *  #pragma message ("one or more " "long message " "strings")
  *
  * output these strings to stdout
  * this output is _not_ dependent on setting
  * of #pragma enable_message or disable_message.
  */
-static void pragMessage( void )
-/*****************************/
 {
     char    *message;
 
@@ -1184,12 +1273,14 @@ static void pragMessage( void )
     PPCTL_DISABLE_MACROS();
 }
 
-/* forms:
+static void pragEnum( void )
+/***************************
+ * forms:
  *
- * (1) #pragma enum int
- * (2) #pragma enum minimum
- * (3) #pragma enum original
- * (4) #pragma enum pop
+ *  #pragma enum int        (1)
+ *  #pragma enum minimum    (2)
+ *  #pragma enum original   (3)
+ *  #pragma enum pop        (4)
  *
  * The pragma affects the underlying storage-definition for subsequent
  * enum declarations.
@@ -1201,8 +1292,6 @@ static void pragMessage( void )
  *
  * 1-3 all push previous value before affecting value
  */
-static void pragEnum( void )
-/**************************/
 {
     PPCTL_ENABLE_MACROS();
     PPNextToken();
@@ -1225,12 +1314,12 @@ static void pragEnum( void )
     PPCTL_DISABLE_MACROS();
 }
 
-/* forms:
- *
- * #pragma intrinsic ( fn [, fn] )
- */
 static void pragIntrinsic( int intrinsic )
-/****************************************/
+/*****************************************
+ * forms:
+ *
+ *  #pragma intrinsic ( fn [, fn] )
+ */
 {
     SYM_HANDLE  sym_handle;
     SYM_ENTRY   sym;
@@ -1239,7 +1328,7 @@ static void pragIntrinsic( int intrinsic )
     PPNextToken();
     if( ExpectingToken( T_LEFT_PAREN ) ) {
         for( PPNextToken(); IS_ID_OR_KEYWORD( CurToken ); PPNextToken() ) {
-            sym_handle = SymLook( HashValue, Buffer );
+            sym_handle = SymLook( CalcHashID( Buffer ), Buffer );
             if( sym_handle != SYM_NULL ) {
                 SymGet( &sym, sym_handle );
                 sym.flags &= ~ SYM_INTRINSIC;
@@ -1257,12 +1346,12 @@ static void pragIntrinsic( int intrinsic )
     PPCTL_DISABLE_MACROS();
 }
 
-/* forms:
- *
- * #pragma code_seg ( seg_name [, class_name] )
- */
 static void pragCodeSeg( void )
-/*****************************/
+/******************************
+ * forms:
+ *
+ *  #pragma code_seg ( seg_name [, class_name] )
+ */
 {
     textsegment     *tseg;
     char            *segname;
@@ -1274,15 +1363,15 @@ static void pragCodeSeg( void )
         tseg = NULL;
         PPNextToken();
         if( ( CurToken == T_STRING ) || ( CurToken == T_ID ) ) {
-            segname = CStrSave( Buffer );
-            classname = CStrSave( "" );
+            segname = CMemStrDup( Buffer );
+            classname = CMemStrDup( "" );
             PPNextToken();
             if( CurToken == T_COMMA ) {
                 PPNextToken();
                 if( ( CurToken == T_STRING ) || ( CurToken == T_ID ) ) {
                     CMemFree( classname );
-                    classname = CStrSave( Buffer );
-//                  CodeClassName = CStrSave( Buffer ); */
+                    classname = CMemStrDup( Buffer );
+//                    CodeClassName = CMemStrDup( Buffer ); */
                     PPNextToken();
                 }
             }
@@ -1292,19 +1381,19 @@ static void pragCodeSeg( void )
         }
         MustRecog( T_RIGHT_PAREN );
         DefCodeSegment = tseg;
-#if _CPU == 8086 || _CPU == 386
+#if _INTEL_CPU
         CompFlags.multiple_code_segments = true;
 #endif
     }
     PPCTL_DISABLE_MACROS();
 }
 
-/* forms:
- *
- * #pragma data_seg ( seg_name [, class_name] )
- */
 static void pragDataSeg( void )
-/*****************************/
+/******************************
+ * forms:
+ *
+ *  #pragma data_seg ( seg_name [, class_name] )
+ */
 {
     char        *segname;
     segment_id  segid;
@@ -1315,7 +1404,7 @@ static void pragDataSeg( void )
         segid = SEG_NULL;
         PPNextToken();
         if( ( CurToken == T_STRING ) || ( CurToken == T_ID ) ) {
-            segname = CStrSave( Buffer );
+            segname = CMemStrDup( Buffer );
             PPNextToken();
             if( CurToken == T_COMMA ) {
                 PPNextToken();
@@ -1336,12 +1425,12 @@ static void pragDataSeg( void )
     PPCTL_DISABLE_MACROS();
 }
 
-/* forms:
- *
- * #pragma unroll ( n )
- */
 static void pragUnroll( void )
-/****************************/
+/*****************************
+ * forms:
+ *
+ *  #pragma unroll ( n )
+ */
 {
     unroll_type unroll_count;
 
@@ -1360,17 +1449,17 @@ static void pragUnroll( void )
     PPCTL_DISABLE_MACROS();
 }
 
-/* forms:
+static void pragReadOnlyFile( void )
+/***********************************
+ * forms:
  *
- * (1) #pragma read_only_file
- * (2) #pragma read_only_file "file"*
+ *  #pragma read_only_file          (1)
+ *  #pragma read_only_file "file"*  (2)
  *
  * (1) causes current file to be marked read-only
  * (2) causes indicated file to be marked read-only
  *      - file must have started inclusion (may have completed)
  */
-static void pragReadOnlyFile( void )
-/**********************************/
 {
     PPCTL_ENABLE_MACROS();
     PPNextToken();
@@ -1389,14 +1478,14 @@ static void pragReadOnlyFile( void )
 }
 
 
-/* forms:
+static void pragReadOnlyDir( void )
+/**********************************
+ * forms:
  *
  *  #pragma read_only_directory "directory"*
  *
- * (1) causes all files within directory to be marked read-only
+ * causes all files within directory to be marked read-only
  */
-static void pragReadOnlyDir( void )
-/*********************************/
 {
     PPCTL_ENABLE_MACROS();
     PPNextToken();
@@ -1410,16 +1499,16 @@ static void pragReadOnlyDir( void )
     PPCTL_DISABLE_MACROS();
 }
 
-/* forms:
+static void pragIncludeAlias( void )
+/***********************************
+ * forms:
  *
- * (1) #pragma include_alias ( "alias_name", "real_name" )
- * (2) #pragma include_alias ( <alias_name>, <real_name> )
+ *  #pragma include_alias ( "alias_name", "real_name" )
+ *  #pragma include_alias ( <alias_name>, <real_name> )
  *
  * causes include directives referencing alias_name to be refer
  * to real_name instead
  */
-static void pragIncludeAlias( void )
-/**********************************/
 {
     PPCTL_ENABLE_MACROS();
     PPNextToken();
@@ -1428,7 +1517,7 @@ static void pragIncludeAlias( void )
         if( CurToken == T_STRING ) {
             char    *alias_name;
 
-            alias_name = CStrSave( Buffer );
+            alias_name = CMemStrDup( Buffer );
             PPNextToken();
             MustRecog( T_COMMA );
             if( CurToken == T_STRING ) {
@@ -1466,14 +1555,14 @@ static void pragIncludeAlias( void )
     PPCTL_DISABLE_MACROS();
 }
 
-/* forms:
+static void pragOnce( void )
+/***************************
+ * forms:
  *
- * #pragma once
+ *  #pragma once
  *
  * include file once
  */
-static void pragOnce( void )
-/**************************/
 {
     PPCTL_ENABLE_MACROS();
     PPNextToken();
@@ -1490,12 +1579,12 @@ static void OptionPragSTDC( void )
     }
 }
 
-/* forms:
- *
- * #pragma STDC (FP_CONTRACT|FENV_ACCESS|CX_LIMITED_RANGE) (ON|OFF|DEFAULT)
- */
 static void pragSTDC( void )
-/**************************/
+/***************************
+ * forms:
+ *
+ *  #pragma STDC (FP_CONTRACT|FENV_ACCESS|CX_LIMITED_RANGE) (ON|OFF|DEFAULT)
+ */
 {
     PPCTL_DISABLE_MACROS();
     PPNextToken();
@@ -1513,13 +1602,11 @@ void AddExtRefN ( const char *name )
 {
     extref_info     **extref;
     extref_info     *new_extref;
-    size_t          len;
 
     for( extref = &ExtrefInfo; *extref != NULL; extref = &(*extref)->next )
         ; /* nothing to do */
-    len = strlen( name ) + 1;
-    new_extref = CMemAlloc( sizeof( extref_info ) - 1 + len );
-    memcpy( new_extref->name, name, len );
+    new_extref = CMemAlloc( sizeof( extref_info ) + strlen( name ) );
+    strcpy( new_extref->name, name );
     new_extref->symbol = NULL;
     new_extref->next = NULL;
     *extref = new_extref;
@@ -1548,7 +1635,7 @@ static void parseExtRef ( void )
     if( CurToken == T_STRING ) {
         AddExtRefN( Buffer );
     } else {
-        extref_sym = SymLook( HashValue, Buffer );
+        extref_sym = SymLook( CalcHashID( Buffer ), Buffer );
         if( extref_sym != NULL ) {
             AddExtRefS( extref_sym );
         } else {
@@ -1557,13 +1644,13 @@ static void parseExtRef ( void )
     }
 }
 
-/* forms:
- *
- * #pragma extref ( symbolid [, ...] )
- * #pragma extref ( "symbolname" [, ...] )
- */
 static void pragExtRef( void )
-/****************************/
+/*****************************
+ * forms:
+ *
+ *  #pragma extref ( symbolid [, ...] )
+ *  #pragma extref ( "symbolname" [, ...] )
+ */
 {
     PPCTL_ENABLE_MACROS();
     PPNextToken();
@@ -1583,16 +1670,16 @@ static void pragExtRef( void )
     PPCTL_DISABLE_MACROS();
 }
 
-/* forms:
+static void pragAlias( void )
+/****************************
+ * forms:
  *
- * #pragma alias(id1/"name1", id2/"name2")
+ *  #pragma alias(id1/"name1", id2/"name2")
  *
  * Causes linker to replace references to id1/name1 with references
  * to id2/name2. Both the alias and the substituted symbol may be defined
  * either as a string name or an id of existing symbol.
  */
-static void pragAlias( void )
-/***************************/
 {
     SYM_HANDLE      alias_sym;
     SYM_HANDLE      subst_sym;
@@ -1611,29 +1698,30 @@ static void pragAlias( void )
     if( ExpectingToken( T_LEFT_PAREN ) ) {
         PPNextToken();
         if( CurToken == T_ID ) {
-            alias_sym = SymLook( HashValue, Buffer );
+            alias_sym = SymLook( CalcHashID( Buffer ), Buffer );
             if( alias_sym == SYM_NULL ) {
                 CErr2p( ERR_UNDECLARED_SYM, Buffer );
             }
         } else if( CurToken == T_STRING ) {
-            alias_name = CStrSave( Buffer );
+            alias_name = CMemStrDup( Buffer );
         }
         PPNextToken();
         MustRecog( T_COMMA );
         if( CurToken == T_ID ) {
-            subst_sym = SymLook( HashValue, Buffer );
+            subst_sym = SymLook( CalcHashID( Buffer ), Buffer );
             if( subst_sym == 0 ) {
                 CErr2p( ERR_UNDECLARED_SYM, Buffer );
             }
         } else if( CurToken == T_STRING ) {
-            subst_name = CStrSave( Buffer );
+            subst_name = CMemStrDup( Buffer );
         }
         PPNextToken();
         MustRecog( T_RIGHT_PAREN );
     }
     PPCTL_DISABLE_MACROS();
-
-    /* Add a new alias record - if it's valid - to the list */
+    /*
+     * Add a new alias record - if it's valid - to the list
+     */
     if( ( alias_name != NULL || alias_sym != SYM_NULL ) && ( subst_name != NULL || subst_sym != SYM_NULL ) ) {
         for( alias = &AliasHead; *alias != NULL; alias = &(*alias)->next )
             ; /* nothing to do */
@@ -1658,7 +1746,8 @@ void CPragma( void )
 {
     bool    check_end;
 
-    /* Note that the include_alias pragma must always be processed
+    /*
+     * Note that the include_alias pragma must always be processed
      * because it's intended for the preprocessor, not the compiler.
      */
     CompFlags.in_pragma = true;
@@ -1701,8 +1790,10 @@ void CPragma( void )
             pragDataSeg();
         } else if( pragmaNameRecog( "warning" ) ) {
             if( pragWarning() ) {
-                /* ignore #pragma warning */
-                /* skip rest of line */
+                /*
+                 * ignore #pragma warning
+                 * skip rest of line
+                 */
                 check_end = false;
             }
         } else if( pragmaNameRecog( "disable_message" ) ) {

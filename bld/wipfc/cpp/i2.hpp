@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2009-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2009-2023 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -49,7 +49,7 @@ public:
     I2( Document* d, Element* p, const std::wstring* f, unsigned int r, unsigned int c ) :
         Element( d, p, f, r, c ), _index( new IndexItem( IndexItem::SECONDARY ) ),
         _parentId( 0 ), _parentRes( 0 ) { }
-    ~I2() { };
+    ~I2() { delete _index; };
     Lexer::Token parse( Lexer* lexer );
     void buildIndex();
     void buildText( Cell* cell ) { (void)cell; };
@@ -62,7 +62,7 @@ private:
     I2& operator=( const I2& rhs );     //no assignment
     Lexer::Token parseAttributes( Lexer* lexer );
 
-    std::auto_ptr< IndexItem >  _index;
+    IndexItem*                  _index;
     std::wstring                _refid;
     GlobalDictionaryWord*       _parentId;
     word                        _parentRes;

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,148 +31,154 @@
 
 
 #include "global.h"
+#include <errno.h>
 #include "rcerrors.h"
 #include "os2res.h"
 #include "rcrtns.h"
-#include "rccore.h"
+#include "rccore_2.h"
 #include "exeutil.h"
 #include "exeres.h"
 
 
-/* Note: IBM's OS/2 RC accepts string resource IDs/types but quietly
+/*
+ * Note: IBM's OS/2 RC accepts string resource IDs/types but quietly
  * replaces all strings with zeros when writing out the resources to
  * NE modules. Strange thing to do, but we'll do the same.
  */
 
-
-/* Build OS/2 NE style resource table. Each resource gets one entry, and
+static void buildOS2ResTable( OS2ResTable *restab, WResDir dir )
+/***************************************************************
+ * Build OS/2 NE style resource table. Each resource gets one entry, and
  * resources > 64K will get an additional entry for each 64K chunk.
  */
-static void buildOS2ResTable( OS2ResTable *res_tbl, WResDir dir )
-/***************************************************************/
 {
     WResDirWindow   wind;
-    WResLangInfo    *lang;
+    WResLangInfo    *langinfo;
     OS2ResEntry     *entry;
-    WResTypeInfo    *res_type;
+    WResTypeInfo    *typeinfo;
     WResResInfo     *resinfo;
     uint_16         type_id;
     uint_16         name_id;
     int_32          length;
 
-    entry = res_tbl->resources;
-
-    /* Walk through the WRes directory */
+    /*
+     * Walk through the WRes directory
+     */
+    entry = restab->resources;
     for( wind = WResFirstResource( dir ); !WResIsEmptyWindow( wind ); wind = WResNextResource( wind, dir ) ) {
-        lang = WResGetLangInfo( wind );
-        res_type = WResGetTypeInfo( wind );
+        langinfo = WResGetLangInfo( wind );
+        typeinfo = WResGetTypeInfo( wind );
         resinfo  = WResGetResInfo( wind );
-
-        // RT_DEFAULTICON is not written into the executable, ignore
-        if( res_type->TypeName.ID.Num == OS2_RT_DEFAULTICON ) {
-            wind = WResNextResource( wind, dir );
+        /*
+         * RT_DEFAULTICON is not written into the executable, ignore
+         */
+        if( typeinfo->TypeName.ID.Num == OS2_RT_DEFAULTICON ) {
             continue;
         }
 
         type_id = 0;
-        if( !res_type->TypeName.IsName )
-            type_id = res_type->TypeName.ID.Num;
+        if( !typeinfo->TypeName.IsName )
+            type_id = typeinfo->TypeName.ID.Num;
 
         name_id = 0;
         if( !resinfo->ResName.IsName )
             name_id = resinfo->ResName.ID.Num;
-
-        /* Fill in resource entries */
+        /*
+         * Fill in resource entries
+         */
         entry->res_type   = type_id;
-        entry->res_id     = name_id;
+        entry->res_name   = name_id;
         entry->wind       = wind;
-        entry->mem_flags  = lang->MemoryFlags;
+        entry->mem_flags  = langinfo->MemoryFlags;
         entry->seg_length = 0;  /* Zero means 64K */
         entry->first_part = true;
 
-        for( length = lang->Length; length > 0x10000; length -= 0x10000 ) {
+        for( length = langinfo->Length; length > 0x10000; length -= 0x10000 ) {
             entry++;
             entry->res_type   = type_id;
-            entry->res_id     = name_id;
+            entry->res_name   = name_id;
             entry->wind       = wind;
-            entry->mem_flags  = lang->MemoryFlags;
+            entry->mem_flags  = langinfo->MemoryFlags;
             entry->seg_length = 0;
             entry->first_part = false;
         }
-        entry->seg_length = lang->Length % 0x10000;
+        entry->seg_length = langinfo->Length % 0x10000;
         entry++;
     }
 }
 
 
-static int compareOS2ResTypeId( const void * _entry1, const void * _entry2 )
-/*************************************************************************/
+static int compareOS2ResTypeId( const void *e1, const void *e2 )
+/**************************************************************/
 {
-    const LXResEntry *entry1 = _entry1;
-    const LXResEntry *entry2 = _entry2;
-
-    if( entry1->resource.type_id == entry2->resource.type_id ) {
-        return( entry1->resource.name_id - entry2->resource.name_id );
+#define LXRE(e) ((LXResEntry *)(e))
+    if( LXRE(e1)->resource.type_id == LXRE(e2)->resource.type_id ) {
+        return( LXRE(e1)->resource.name_id - LXRE(e2)->resource.name_id );
     } else {
-        return( entry1->resource.type_id - entry2->resource.type_id );
+        return( LXRE(e1)->resource.type_id - LXRE(e2)->resource.type_id );
     }
+#undef LXRE
 } /* compareOS2ResTypeId */
 
 
-RcStatus InitOS2ResTable( int *err_code )
-/***************************************/
+RcStatus InitOS2ResTable( ExeFileInfo *dst, ResFileInfo *res, int *err_code )
+/***************************************************************************/
 {
-    OS2ResTable         *res;
+    OS2ResTable         *restab;
     WResDir             dir;
 
-    res = &(Pass2Info.TmpFile.u.NEInfo.OS2Res);
-    dir = Pass2Info.ResFile->Dir;
+    restab = &(dst->u.NEInfo.OS2Res);
+    dir = res->Dir;
 
     if( CmdLineParms.NoResFile ) {
-        res->resources    = NULL;
-        res->num_res_segs = 0;
-        res->table_size   = 0;
+        restab->resources    = NULL;
+        restab->num_res_segs = 0;
+        restab->table_size   = 0;
     } else {
-        res->num_res_segs = ComputeOS2ResSegCount( dir );
-        /* One resource type/id record per resource segment, 16-bits each */
-        res->table_size   = res->num_res_segs * 2 * sizeof( uint_16 );
+        restab->num_res_segs = ComputeOS2ResSegCount( dir );
+        /*
+         * One resource type/id record per resource segment
+         */
+        restab->table_size   = restab->num_res_segs * sizeof( resource_table_record );
 
-        res->resources = RESALLOC( res->num_res_segs * sizeof( res->resources[0] ) );
-        if( res->resources == NULL ) {
+        restab->resources = RESALLOC( restab->num_res_segs * sizeof( restab->resources[0] ) );
+        if( restab->resources == NULL ) {
             *err_code = errno;
             return( RS_NO_MEM );
         }
-        buildOS2ResTable( res, dir );
-
-        /* OS/2 requires resources to be sorted */
-        qsort( res->resources, res->num_res_segs, sizeof( res->resources[0] ), compareOS2ResTypeId );
+        buildOS2ResTable( restab, dir );
+        /*
+         * OS/2 requires resources to be sorted
+         */
+        qsort( restab->resources, restab->num_res_segs, sizeof( restab->resources[0] ), compareOS2ResTypeId );
     }
     return( RS_OK );
 } /* InitOS2ResTable */
 
 
 uint_32 ComputeOS2ResSegCount( WResDir dir )
-/******************************************/
-/* Compute the number of resource segments in an OS/2 NE module. Each
+/*******************************************
+ * Compute the number of resource segments in an OS/2 NE module. Each
  * resource gets its own segment and resources > 64K will be split into
  * as many segments as necessary.
  */
 {
     uint_32         length;
     WResDirWindow   wind;
-    WResTypeInfo    *res_type;
-    WResLangInfo    *res;
+    WResTypeInfo    *typeinfo;
+    WResLangInfo    *langinfo;
     uint_32         num_res_segs;
 
     num_res_segs = 0;
     for( wind = WResFirstResource( dir ); !WResIsEmptyWindow( wind ); wind = WResNextResource( wind, dir ) ) {
-        res = WResGetLangInfo( wind );
-        res_type = WResGetTypeInfo( wind );
-
-        // RT_DEFAULTICON is not written into the executable, ignore
-        if( res_type->TypeName.ID.Num != OS2_RT_DEFAULTICON ) {
+        langinfo = WResGetLangInfo( wind );
+        typeinfo = WResGetTypeInfo( wind );
+        /*
+         * RT_DEFAULTICON is not written into the executable, ignore
+         */
+        if( typeinfo->TypeName.ID.Num != OS2_RT_DEFAULTICON ) {
             ++num_res_segs;
-            for( length = res->Length; length > 0x10000; length -= 0x10000 ) {
+            for( length = langinfo->Length; length > 0x10000; length -= 0x10000 ) {
                 ++num_res_segs;
             }
         }
@@ -180,47 +187,49 @@ uint_32 ComputeOS2ResSegCount( WResDir dir )
 } /* ComputeOS2ResSegCount */
 
 
-/* NB: We copy resources in one go even if they span multiple segments.
+static RcStatus copyOneResource( WResLangInfo *langinfo, FILE *res_fp,
+            FILE *dst_fp, int shift_count, int *err_code )
+/*********************************************************************
+ * NB: We copy resources in one go even if they span multiple segments.
  * This is fine because all segments but the last one are 64K big, and
  * hence will be nicely aligned.
  */
-static RcStatus copyOneResource( WResLangInfo *lang, FILE *res_fp,
-            FILE *out_fp, int shift_count, int *err_code )
-/*****************************************************************/
 {
     RcStatus            ret;
-    long                out_offset;
+    long                dst_offset;
     long                align_amount;
 
-    /* align the output file to a boundary for shift_count */
+    /*
+     * align the output file to a boundary for shift_count
+     */
     ret = RS_OK;
-    out_offset = RESTELL( out_fp );
-    if( out_offset == -1 ) {
+    dst_offset = RESTELL( dst_fp );
+    if( dst_offset == -1 ) {
         ret = RS_WRITE_ERROR;
         *err_code = errno;
     }
     if( ret == RS_OK ) {
-        align_amount = AlignAmount( out_offset, shift_count );
-        if( RESSEEK( out_fp, align_amount, SEEK_CUR ) ) {
+        align_amount = AlignAmount( dst_offset, shift_count );
+        if( RESSEEK( dst_fp, align_amount, SEEK_CUR ) ) {
             ret = RS_WRITE_ERROR;
             *err_code = errno;
         }
-        out_offset += align_amount;
+//        dst_offset += align_amount;
     }
 
     if( ret == RS_OK ) {
-        if( RESSEEK( res_fp, lang->Offset, SEEK_SET ) ) {
+        if( RESSEEK( res_fp, langinfo->Offset, SEEK_SET ) ) {
             ret = RS_READ_ERROR;
             *err_code = errno;
         }
     }
     if( ret == RS_OK ) {
-        ret = CopyExeData( res_fp, out_fp, lang->Length );
+        ret = CopyExeData( res_fp, dst_fp, langinfo->Length );
         *err_code = errno;
     }
     if( ret == RS_OK ) {
-        align_amount = AlignAmount( RESTELL( out_fp ), shift_count );
-        ret = PadExeData( out_fp, align_amount );
+        align_amount = AlignAmount( RESTELL( dst_fp ), shift_count );
+        ret = PadExeData( dst_fp, align_amount );
         *err_code = errno;
     }
 
@@ -228,84 +237,78 @@ static RcStatus copyOneResource( WResLangInfo *lang, FILE *res_fp,
 } /* copyOneResource */
 
 
-RcStatus CopyOS2Resources( void )
+RcStatus CopyOS2Resources( ExeFileInfo *dst, ResFileInfo *res )
 {
     OS2ResEntry         *entry;
     WResDirWindow       wind;
-    OS2ResTable         *restab;
-    WResLangInfo        *lang;
-    FILE                *tmp_fp;
-    FILE                *res_fp;
+    WResLangInfo        *langinfo;
     RcStatus            ret;
     int                 err_code;
     int                 shift_count;
-    int                 currseg;
-    segment_record      *tmpseg;
+    segment_record      *dst_seg;
     uint_32             seg_offset;
     long                align_amount;
     int                 i;
 
-    restab    = &(Pass2Info.TmpFile.u.NEInfo.OS2Res);
-    tmp_fp    = Pass2Info.TmpFile.fp;
-    res_fp    = Pass2Info.ResFile->fp;
-    tmpseg    = Pass2Info.TmpFile.u.NEInfo.Seg.Segments;
-    currseg   = Pass2Info.OldFile.u.NEInfo.Seg.NumSegs
-                - Pass2Info.OldFile.u.NEInfo.Seg.NumOS2ResSegs;
-    entry     = restab->resources;
     ret       = RS_OK;
     err_code  = 0;
-
-    tmpseg += currseg;
-    shift_count = Pass2Info.TmpFile.u.NEInfo.WinHead.align;
-    seg_offset = 0;     // shut up gcc
-
-    /* We may need to add padding before the first resource segment */
-    align_amount = AlignAmount( RESTELL( tmp_fp ), shift_count );
+    shift_count = dst->u.NEInfo.WinHead.align;
+    /*
+     * We may need to add padding before the first resource segment
+     */
+    align_amount = AlignAmount( RESTELL( dst->fp ), shift_count );
     if( align_amount ) {
-        ret = PadExeData( tmp_fp, align_amount );
+        ret = PadExeData( dst->fp, align_amount );
         err_code = errno;
     }
-
-    /* Walk through the resource entries */
-    for( i = 0; i < restab->num_res_segs; i++, entry++, tmpseg++ ) {
+    /*
+     * Walk through the resource entries
+     */
+    seg_offset = 0;
+    entry = dst->u.NEInfo.OS2Res.resources;
+    dst_seg = dst->u.NEInfo.Seg.Segments + ( dst->u.NEInfo.Seg.NumSegs - dst->u.NEInfo.Seg.NumOS2ResSegs );
+    for( i = 0; i < dst->u.NEInfo.OS2Res.num_res_segs; i++, entry++, dst_seg++ ) {
         wind = entry->wind;
-        lang = WResGetLangInfo( wind );
+        langinfo = WResGetLangInfo( wind );
 
         if( entry->first_part ) {
-            seg_offset = RESTELL( tmp_fp );
+            seg_offset = RESTELL( dst->fp );
         } else {
             seg_offset += 0x10000;
         }
-
-        /* Fill in segment structure */
-        tmpseg->address = seg_offset >> shift_count;
-        tmpseg->size    = entry->seg_length;
-        tmpseg->min     = entry->seg_length;
-        tmpseg->info    = SEG_DATA | SEG_READ_ONLY | SEG_LEVEL_3;
+        /*
+         * Fill in segment structure
+         */
+        dst_seg->address = seg_offset >> shift_count;
+        dst_seg->size    = entry->seg_length;
+        dst_seg->min     = entry->seg_length;
+        dst_seg->info    = SEG_DATA | SEG_READ_ONLY | SEG_LEVEL_3;
         if( entry->mem_flags & MEMFLAG_MOVEABLE )
-            tmpseg->info |= SEG_MOVABLE;
+            dst_seg->info |= SEG_MOVABLE;
         if( entry->mem_flags & MEMFLAG_PURE )
-            tmpseg->info |= SEG_PURE;
+            dst_seg->info |= SEG_PURE;
         if( entry->mem_flags & MEMFLAG_PRELOAD )
-            tmpseg->info |= SEG_PRELOAD;
+            dst_seg->info |= SEG_PRELOAD;
         if( entry->mem_flags & MEMFLAG_DISCARDABLE )
-            tmpseg->info |= SEG_DISCARD;
-
-        /* For non-last segment of a resource, there's nothing to copy */
+            dst_seg->info |= SEG_DISCARD;
+        /*
+         * For non-last segment of a resource, there's nothing to copy
+         */
         if( !entry->first_part )
             continue;
-
-        /* Copy resource data */
-        ret = copyOneResource( lang, res_fp, tmp_fp, shift_count, &err_code );
-        if( ret != RS_OK )
+        /*
+         * Copy resource data
+         */
+        ret = copyOneResource( langinfo, res->fp, dst->fp, shift_count, &err_code );
+        if( ret != RS_OK ) {
             break;
-
-        CheckDebugOffset( &(Pass2Info.TmpFile) );
+        }
     }
+    CheckDebugOffset( dst );
 
     switch( ret ) {
     case RS_WRITE_ERROR:
-        RcError( ERR_WRITTING_FILE, Pass2Info.TmpFile.name, strerror( err_code ) );
+        RcError( ERR_WRITTING_FILE, dst->name, strerror( err_code ) );
         break;
     case RS_READ_ERROR:
         RcError( ERR_READING_RES, CmdLineParms.OutResFileName, strerror( err_code ) );
@@ -321,27 +324,20 @@ RcStatus CopyOS2Resources( void )
 
 
 RcStatus WriteOS2ResTable( FILE *fp, OS2ResTable *restab, int *err_code )
-/***********************************************************************/
-/*
- * WriteOS2ResTable
+/************************************************************************
  * NB when an error occurs this function must return without altering errno
  */
 {
-    RcStatus                    ret;
-    uint_16                     res_type;
-    uint_16                     res_id;
-    int                         i;
+    RcStatus                ret;
+    resource_table_record   res_tab;
+    int                     i;
 
     ret = RS_OK;
     for( i = 0; i < restab->num_res_segs && ret == RS_OK; i++ ) {
-        res_type = restab->resources[i].res_type;
-        res_id   = restab->resources[i].res_id;
-        if( RESWRITE( fp, &res_type, sizeof( uint_16 ) ) != sizeof( uint_16 ) ) {
+        res_tab.type = restab->resources[i].res_type;
+        res_tab.name = restab->resources[i].res_name;
+        if( RESWRITE( fp, &res_tab, sizeof( res_tab ) ) != sizeof( res_tab ) ) {
             ret = RS_WRITE_ERROR;
-        } else {
-            if( RESWRITE( fp, &res_id, sizeof( uint_16 ) ) != sizeof( uint_16 ) ) {
-                ret = RS_WRITE_ERROR;
-            }
         }
     }
 

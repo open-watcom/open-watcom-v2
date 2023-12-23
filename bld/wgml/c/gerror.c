@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2013 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2022 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -234,10 +234,10 @@ void g_info_inp_pos( void )
     char        linestr[MAX_L_AS_STR];
 
     if( input_cbs->fmflags & II_tag_mac ) {
-        ultoa( input_cbs->s.m->lineno, linestr, 10 );
+        sprintf( linestr, "%lu", (unsigned long)input_cbs->s.m->lineno );
         g_info( inf_mac_line, linestr, input_cbs->s.m->mac->name );
     } else {
-        ultoa( input_cbs->s.f->lineno, linestr, 10 );
+        sprintf( linestr, "%lu", (unsigned long)input_cbs->s.f->lineno );
         g_info( inf_file_line, linestr, input_cbs->s.f->filename );
     }
 }

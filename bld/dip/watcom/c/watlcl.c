@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -56,10 +56,12 @@ const char *GetIndex( const char *ptr, unsigned *value )
 {
     unsigned tmp;
 
-    tmp = GETU8( ptr++ );
+    tmp = MGET_U8( ptr );
+    ptr++;
     if( tmp & 0x80 ) {
         tmp = (tmp & 0x7f) << 8;
-        tmp += GETU8( ptr++ );
+        tmp += MGET_U8( ptr );
+        ptr++;
     }
     *value = tmp;
     return( ptr );
@@ -96,11 +98,10 @@ static void LclCreate( imp_sym_handle *ish, const char *ptr, const char *name, l
     ish->name_off = (byte)( name - ptr );
 }
 
-/*
- * LoadLocalSyms -- load the local symbol information for the module
- */
-
 static dip_status LoadLocalSyms( imp_image_handle *iih, imp_mod_handle imh, lclinfo *new )
+/*****************************************************************************************
+ * load the local symbol information for the module
+ */
 {
     dip_status  ds;
 
@@ -127,13 +128,15 @@ static void PopLocal( lclinfo *local )
 
 void KillLclLoadStack( void )
 {
-    // Nothing to do - not using globals anymore
+    /*
+     * Nothing to do - not using globals anymore
+     */
 }
 
-/*
- * ProcBlock -- process a block definition
- */
 static const char *ProcBlock( imp_image_handle *iih, const char *ptr, lcl_defn *defn, lclinfo *local )
+/*****************************************************************************************************
+ * process a block definition
+ */
 {
     if( local->base_off == NO_BASE ) {
         defn->b.start = FindModBase( iih, local->imh );
@@ -157,17 +160,18 @@ static const char *ProcBlock( imp_image_handle *iih, const char *ptr, lcl_defn *
 }
 
 
-/*
- * ProcDefn -- process the next definition in the local symbol information
- */
 static const char *ProcDefn( imp_image_handle *iih, const char *ptr, lcl_defn *defn, lclinfo *local )
+/****************************************************************************************************
+ * process the next definition in the local symbol information
+ */
 {
     const char  *end;
     unsigned    parms;
 
-    end = ptr + GETU8( ptr );
+    end = ptr + MGET_U8( ptr );
     ptr++;
-    defn->i.class = GETU8( ptr++ );
+    defn->i.class = MGET_U8( ptr );
+    ptr++;
     defn->i.unparsed = ptr;
     switch( defn->i.class ) {
     case VAR_SYMBOL | VAR_MODULE386:
@@ -192,8 +196,10 @@ static const char *ProcDefn( imp_image_handle *iih, const char *ptr, lcl_defn *d
     case CODE_SYMBOL | CODE_NEAR_ROUT :
     case CODE_SYMBOL | CODE_FAR_ROUT :
         ptr = ProcBlock( iih, ptr, defn, local );
-        defn->r.pro_size = GETU8( ptr++ );
-        defn->r.epi_size = GETU8( ptr++ );
+        defn->r.pro_size = MGET_U8( ptr );
+        ptr++;
+        defn->r.epi_size = MGET_U8( ptr );
+        ptr++;
         if( defn->i.class >= (CODE_SYMBOL | CODE_BLOCK386) ) {
             defn->r.ret_addr_offset = *((dword *)ptr);
             ptr += sizeof( dword );
@@ -204,7 +210,7 @@ static const char *ProcDefn( imp_image_handle *iih, const char *ptr, lcl_defn *d
         ptr = GetIndex( ptr, &defn->i.type_index );
         defn->i.unparsed = ptr;
         ptr = SkipLocation( ptr );
-        for( parms = GETU8( ptr++ ); parms != 0; --parms ) {
+        for( parms = MGET_U8( ptr ), ptr++; parms != 0; --parms ) {
             ptr = SkipLocation( ptr );
         }
         break;
@@ -214,7 +220,9 @@ static const char *ProcDefn( imp_image_handle *iih, const char *ptr, lcl_defn *d
         ptr = GetIndex( ptr, &defn->i.type_index );
         if( ptr < end ) {
             defn->i.unparsed = ptr;
-            /* skip the 'this' pointer type and the object loc expr */
+            /*
+             * skip the 'this' pointer type and the object loc expr
+             */
             ptr = SkipLocation( ptr + 1 );
         } else {
             defn->i.unparsed = NULL;
@@ -229,11 +237,11 @@ static const char *ProcDefn( imp_image_handle *iih, const char *ptr, lcl_defn *d
 static void NewBase( imp_image_handle *iih, const char *ptr, lclinfo *local )
 {
     ptr += 1;
-    if( (GETU8( ptr ) & CLASS_MASK) == NEW_BASE ) {
+    if( (MGET_U8( ptr ) & CLASS_MASK) == NEW_BASE ) {
         local->base_off = ptr - local->start - 1;
         local->code_base.sect_id = local->inf->sect_id;
         local->code_base.indirect = true;
-        switch( GETU8( ptr ) & SUBCLASS_MASK ) {
+        switch( MGET_U8( ptr ) & SUBCLASS_MASK ) {
         case ADD_PREV_SEG:
             ptr += 1;
             local->code_base.mach.segment += *(word *)ptr;
@@ -254,12 +262,12 @@ static const char *FindBlockRout( imp_image_handle *iih, const char *ptr, lclinf
     byte        cls;
 
     while( ptr < local->end ) {
-        cls = GETU8( ptr + 1 );
+        cls = MGET_U8( ptr + 1 );
         if( (cls & CLASS_MASK) == CODE_SYMBOL && cls != (CODE_SYMBOL | CODE_MEMBER_SCOPE) )  {
             return( ptr );
         }
         NewBase( iih, ptr, local );
-        ptr += GETU8( ptr );
+        ptr += MGET_U8( ptr );
     }
     return( NULL );
 }
@@ -267,7 +275,7 @@ static const char *FindBlockRout( imp_image_handle *iih, const char *ptr, lclinf
 static const char *ModAddrLkupVar( imp_image_handle *iih, const char *ptr, lclinfo *local )
 {
     while( ptr < local->end ) {
-        switch( GETU8( ptr + 1 ) ) {
+        switch( MGET_U8( ptr + 1 ) ) {
         case VAR_SYMBOL | VAR_MODULE:
         case VAR_SYMBOL | VAR_MODULE386:
         case CODE_SYMBOL | CODE_NEAR_ROUT:
@@ -277,7 +285,7 @@ static const char *ModAddrLkupVar( imp_image_handle *iih, const char *ptr, lclin
             return( ptr );
         }
         NewBase( iih, ptr, local );
-        ptr += GETU8( ptr );
+        ptr += MGET_U8( ptr );
     }
     return( NULL );
 }
@@ -285,12 +293,12 @@ static const char *ModAddrLkupVar( imp_image_handle *iih, const char *ptr, lclin
 static const char *FindLclVar( imp_image_handle *iih, const char *ptr, lclinfo *local )
 {
     while( ptr < local->end ) {
-        if( (GETU8( ptr + 1 ) & CLASS_MASK) == CODE_SYMBOL )
+        if( (MGET_U8( ptr + 1 ) & CLASS_MASK) == CODE_SYMBOL )
             break;
-        if( GETU8( ptr + 1 ) == (VAR_SYMBOL | VAR_LOCAL) )
+        if( MGET_U8( ptr + 1 ) == (VAR_SYMBOL | VAR_LOCAL) )
             return( ptr );
         NewBase( iih, ptr, local );
-        ptr += GETU8( ptr );
+        ptr += MGET_U8( ptr );
     }
     return( NULL );
 }
@@ -470,7 +478,9 @@ search_result LookupLclAddr( imp_image_handle *iih, address addr, imp_sym_handle
             mod_addr = DefnAddr( iih, &defn, local );
             if( DCSameAddrSpace( addr, mod_addr ) == DS_OK ) {
                 if( addr.mach.offset >= mod_addr.mach.offset ) {
-                    /* possible */
+                    /*
+                     * possible
+                     */
                     if( sr == SR_NONE || close_addr.mach.offset <= mod_addr.mach.offset ) {
                         LclCreate( ish, curr, defn.i.name, local );
                         close_addr = mod_addr;
@@ -501,7 +511,7 @@ unsigned SymHdl2LclName( imp_image_handle *iih, imp_sym_handle *ish,
     if( LoadLocalSyms( iih, ish->imh, &lclld ) == DS_OK ) {
         local = &lclld;
         ptr = local->start + ish->u.lcl.offset;
-        len = GETU8( ptr ) - ish->name_off;
+        len = MGET_U8( ptr ) - ish->name_off;
         if( buff_size > 0 ) {
             --buff_size;
             if( buff_size > len )
@@ -658,7 +668,7 @@ dip_status SymHdl2LclInfo( imp_image_handle *iih, imp_sym_handle *ish, sym_info 
             }
             si->ret_addr_offset = defn.r.ret_addr_offset;
             p = SkipLocation( defn.i.unparsed );
-            si->num_parms = GETU8( p );
+            si->num_parms = MGET_U8( p );
             si->prolog_size = defn.r.pro_size;
             si->epilog_size = defn.r.epi_size;
             si->rtn_size = defn.b.size;
@@ -690,7 +700,7 @@ dip_status SymHdl2LclParmLoc( imp_image_handle *iih, imp_sym_handle *ish,
             }
         } else {
             p = SkipLocation( defn.i.unparsed );
-            if( GETU8( p ) < parm ) {
+            if( MGET_U8( p ) < parm ) {
                 ds = DS_NO_PARM;
             } else {
                 ++p;
@@ -808,7 +818,9 @@ static walk_result WalkOneBlock( imp_image_handle *iih, const char *ptr, lcl_def
     wr = WR_CONTINUE;
     switch( blk->i.class ) {
     case CODE_SYMBOL | CODE_MEMBER_SCOPE:
-        /* process member list */
+        /*
+         * process member list
+         */
         if( FindTypeHandle( iih, local->imh, blk->i.type_index, &ith ) == DS_OK ) {
             wr = WalkTypeSymList( iih, &ith, wk, ish, d );
         }
@@ -819,7 +831,9 @@ static walk_result WalkOneBlock( imp_image_handle *iih, const char *ptr, lcl_def
     case CODE_SYMBOL | CODE_NEAR_ROUT386:
     case CODE_SYMBOL | CODE_FAR_ROUT:
     case CODE_SYMBOL | CODE_FAR_ROUT386:
-        /* process local scope */
+        /*
+         * process local scope
+         */
         for( ; (ptr = FindLclVar( iih, ptr, local )) != NULL; ptr = next ) {
             next = ProcDefn( iih, ptr, &defn, local );
             LclCreate( ish, ptr, defn.i.name, local );
@@ -849,7 +863,7 @@ walk_result WalkScopedSymList( imp_image_handle *iih, address *addr, DIP_IMP_SYM
             local = &lclld;
             ptr = FindBlockScope( iih, local->start, &blk, addr, local );
             if( ptr != NULL ) {
-                ptr += GETU8( ptr );
+                ptr += MGET_U8( ptr );
                 for( ; (wr = WalkOneBlock( iih, ptr, &blk, wk, ish, d, local )) == WR_CONTINUE; ) {
                     if( blk.b.parent_block == 0 )
                         break;

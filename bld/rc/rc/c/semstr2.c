@@ -45,7 +45,9 @@ static bool ResOS2WriteStringTableBlock( StringTableBlock *currblock, FILE *fp, 
     bool        error;
     WResIDName  *name;
 
-    // Write string table codepage
+    /*
+     * Write string table codepage
+     */
     error = ResWriteUint16( codepage, fp );
     if( error )
         return( error );
@@ -54,18 +56,24 @@ static bool ResOS2WriteStringTableBlock( StringTableBlock *currblock, FILE *fp, 
     for( stringid = 0; stringid < STRTABLE_STRS_PER_BLOCK && !error; stringid++ ) {
         name = currblock->String[stringid];
         if( name == NULL ) {
-            // Write an empty string
+            /*
+             * Write an empty string
+             */
             error = ResWriteUint16( 1, fp );
         } else {
             size_t  len;
-            // The string can't be longer than 255 chars
+            /*
+             * The string can't be longer than 255 chars
+             */
             len = name->NumChars + 1;
             if( len > 255 )
                 len = 255;
             error = ResWriteUint8( len, fp );
             if( !error )
                 error = ResWriteStringLen( name->Name, false, fp, len - 1 );
-            // The terminating NULL is not stored in the table, need to add it now
+            /*
+             * The terminating NULL is not stored in the table, need to add it now
+             */
             if( !error ) {
                 error = ResWriteUint8( 0, fp );
             }
@@ -154,7 +162,9 @@ void SemOS2AddStrToStringTable( FullStringTable *currtable,
     currblock = findStringTableBlock( currtable, blocknum );
     if( currblock != NULL ) {
         if( currblock->Block.String[stringnum] != NULL ) {
-            /* duplicate stringid */
+            /*
+             * duplicate stringid
+             */
             RcError( ERR_DUPLICATE_STRING_CONST, stringid );
             ErrorHasOccured = true;
         }
@@ -191,27 +201,36 @@ static void mergeStringTableBlocks( FullStringTableBlock *currblock,
 static void semMergeStringTables( FullStringTable *currtable,
             FullStringTable *oldtable, ResMemFlags newblockflags,
             uint_32 codepage )
-/****************************************************************/
-/* merge oldtable into currtable and free oldtable when done */
-/* returns TRUE if there was one or more duplicate entries */
+/****************************************************************
+ * merge oldtable into currtable and free oldtable when done
+ * returns TRUE if there was one or more duplicate entries
+ */
 {
     FullStringTableBlock        *currblock;
     FullStringTableBlock        *oldblock;
     FullStringTableBlock        *nextblock;
 
-    /* run through the list of block in oldtable */
+    /*
+     * run through the list of block in oldtable
+     */
     for( oldblock = oldtable->Head; oldblock != NULL; oldblock = nextblock ) {
-        /* find oldblock in currtable if it is there */
+        /*
+         * find oldblock in currtable if it is there
+         */
         nextblock = oldblock->Next;
         currblock = findStringTableBlock( currtable, oldblock->BlockNum );
         if( currblock == NULL ) {
-            /* if oldblock in not in currtable move it there from oldtable */
+            /*
+             * if oldblock in not in currtable move it there from oldtable
+             */
             ResDeleteLLItem( (void **)&(oldtable->Head), (void **)&(oldtable->Tail), oldblock );
             oldblock->Flags = newblockflags;
             oldblock->codePage = codepage;
             ResAddLLItemAtEnd( (void **)&(currtable->Head), (void **)&(currtable->Tail), oldblock );
         } else {
-            /* otherwise move the WSemID's to that block */
+            /*
+             * otherwise move the WSemID's to that block
+             */
             mergeStringTableBlocks( currblock, oldblock );
         }
     }
@@ -277,9 +296,10 @@ void SemOS2MergeMsgTable( FullStringTable *currtable, ResMemFlags flags )
 }
 
 void SemOS2WriteStringTable( FullStringTable *currtable, WResID *type )
-/****************************************************************************/
-/* write the table identified by currtable as a table of type type and then */
-/* free the memory that it occupied */
+/**********************************************************************
+ * write the table identified by currtable as a table of type type and then
+ * free the memory that it occupied
+ */
 {
     FullStringTableBlock    *currblock;
     FullStringTable         *nexttable;
@@ -303,7 +323,9 @@ void SemOS2WriteStringTable( FullStringTable *currtable, WResID *type )
             }
 
             loc.len = SemEndResource( loc.start );
-            /* +1 because WResID's can't be 0 */
+            /*
+             * +1 because WResID's can't be 0
+             */
             name = WResIDFromNum( currblock->BlockNum + 1 );
             SemAddResource( name, type, currblock->Flags, loc );
             RESFREE( name );

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,8 +34,6 @@
 
 // Note -- there is no protection on this header as it is included multiple
 //         times with different definitions of YYPARSER.
-
-#include <wstd.h>
 
 #include "scancm.h"
 

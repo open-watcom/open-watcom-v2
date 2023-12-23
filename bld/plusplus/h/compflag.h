@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,10 +36,10 @@
 
 typedef struct comp_flags {
 /*****************************************************************************
-//                                                                          //
-//  execution status flags                                                  //
-//                                                                          //
-*****************************************************************************/
+ *
+ * execution status flags
+ *
+ *****************************************************************************/
 
     boolbit     float_used                      : 1;
     boolbit     stats_printed                   : 1;
@@ -70,7 +70,6 @@ typedef struct comp_flags {
     boolbit     codegen_active                  : 1;    // code generator is active
     boolbit     dt_method_pragma                : 1;    // pragma destruct encountered
     boolbit     dll_subsequent                  : 1;    // DLL called second time thru
-    boolbit     dll_active                      : 1;    // DLL version of compiler
     boolbit     compile_failed                  : 1;    // compilation failed
     boolbit     cmdline_error                   : 1;    // error in cmd line
     boolbit     watch_for_pcheader              : 1;    // watch for first #include
@@ -90,24 +89,24 @@ typedef struct comp_flags {
     boolbit     namespace_checks_done           : 1;    // namespace ref/def checks done
 
 /*****************************************************************************
-//                                                                          //
-// Command Line Option flags                                                //
-//                                                                          //
-*****************************************************************************/
+ *
+ * Command Line Option flags
+ *
+ *****************************************************************************/
 
 /*****************************************************************************
-//                                                                          //
-// 'dbg' target flags                                                       //
-//                                                                          //
-*****************************************************************************/
+ *
+ * 'dbg' target flags
+ *
+ *****************************************************************************/
 
     boolbit     extra_stats_wanted              : 1;
 
 /*****************************************************************************
-//                                                                          //
-//  'any' target flags                                                      //
-//                                                                          //
-*****************************************************************************/
+ *
+ * 'any' target flags
+ *
+ *****************************************************************************/
 
     boolbit     signed_char                     : 1;
     boolbit     check_syntax                    : 1;
@@ -127,7 +126,7 @@ typedef struct comp_flags {
     boolbit     no_debug_type_names             : 1;
     boolbit     emit_names                      : 1;
     boolbit     warnings_cause_bad_exit         : 1;
-    boolbit     use_unicode                     : 1;
+    boolbit     use_double_byte                 : 1;
     boolbit     unique_functions                : 1;
     boolbit     jis_to_unicode                  : 1;
     boolbit     emit_dependencies               : 1;
@@ -188,7 +187,6 @@ typedef struct comp_flags {
     boolbit     dont_autogen_ext_src            : 1;
     boolbit     use_old_for_scope               : 1;
     boolbit     no_alternative_tokens           : 1;    // disable alternative tokens
-    boolbit     enable_std0x                    : 1;    // enable some C++0x features
     boolbit     generate_auto_depend            : 1;
     boolbit     ignore_fnf                      : 1;
     boolbit     cpp_ignore_env                  : 1;    // ignore include path env vars
@@ -196,10 +194,10 @@ typedef struct comp_flags {
     boolbit     non_iso_compliant_names_enabled : 1;    // enable all compiler non-ISO compliant names (macros, symbols, etc.)
 
 /*****************************************************************************
-//                                                                          //
-// 'i86' '386' target flags
-//                                                                          //
-*****************************************************************************/
+ *
+ * 'i86' '386' target flags
+ *
+ *****************************************************************************/
 
     boolbit     register_conventions            : 1;    // on for -3r, off for -3s
     boolbit     strings_in_code_segment         : 1;    // on => put strings in CODE
@@ -218,6 +216,16 @@ typedef struct comp_flags {
     boolbit     mfi_switch_used                 : 1;    // flat model interrupts (ss stays same)
 
 } COMP_FLAGS;
+
+typedef struct comp_vars {
+/*****************************************************************************
+ *
+ *  execution status variables
+ *
+ *****************************************************************************/
+
+    cxxstd_ver      cxxstd;                 // used C++ standard
+} COMP_VARS;
 
 #ifdef OPT_BR
     #define BrinfActive() (     \

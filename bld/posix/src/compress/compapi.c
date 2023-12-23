@@ -125,7 +125,7 @@ CONST CODE mc[] = {
 #define Maxcode(maxb) (mc[(maxb) -MINBITS])
 
 #ifdef __STDC__
-#ifndef NDEBUG
+#ifdef DEVBUILD
 #define allocx(type, ptr, size) \
     (((ptr) = (type FAR *) emalloc((unsigned int)(size),sizeof(type))) == NULLPTR(type) \
     ?   (fprintf(stderr,"%s: "#ptr" -- ", prog_name), NOMEM) : OK \
@@ -297,7 +297,7 @@ int cl_block( void )
     long    rat;
 
     checkpoint = in_count + CHECK_GAP;
-#ifndef NDEBUG
+#ifdef DEVBUILD
         if ( debug ) {
         fprintf ( stderr, "count: %ld, ratio: ", in_count );
         prratio ( stderr, in_count, bytes_out );
@@ -321,7 +321,7 @@ int cl_block( void )
     }
     else {
         ratio = 0;
-#ifndef NDEBUG
+#ifdef DEVBUILD
         if(debug)
                 fprintf ( stderr, "clear\n" );
 #endif
@@ -479,7 +479,7 @@ void compress( void )
      * Print out stats on stderr
      */
     if(!zcat_flg && !quiet) {
-#ifndef NDEBUG
+#ifdef DEVBUILD
         fprintf( stderr,
             "%ld chars in, (%ld bytes) out, compression factor: ",
             in_count, bytes_out );
@@ -493,7 +493,7 @@ void compress( void )
 #else
         fprintf( stderr, "Compression: " );
         prratio( stderr, in_count-bytes_out, in_count );
-#endif /* NDEBUG */
+#endif /* DEVBUILD */
     }
     if(bytes_out > in_count)      /*  if no savings */
         exit_stat = NOSAVING;
@@ -532,10 +532,10 @@ void putcode(CODE code, int bits)
         offset = 0;
       }
       oldbits = bits;
-#ifndef NDEBUG
+#ifdef DEVBUILD
       if ( debug )
         fprintf( stderr, "\nChange to %d bits\n", bits );
-#endif /* !NDEBUG */
+#endif /* !DEVBUILD */
     }
   }
   /*  Get to the first byte. */
@@ -666,7 +666,7 @@ void decompress( void )
      * successive prefix tokens of the current token.  Then output it.
      */
     while (code >= 256) {
-#     if !defined(NDEBUG)
+#ifdef DEVBUILD
         /* These are checks to ease paranoia. Prefix codes must decrease
          * monotonically, otherwise we must have corrupt tables.  We can
          * also check that we haven't overrun the token buffer.
@@ -679,7 +679,7 @@ void decompress( void )
             exit_stat = TOKTOOBIG;
             return;
         }
-#     endif
+#endif
       token[i++] = suffix(code);
       code = prefix(code);
     }

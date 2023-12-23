@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2013 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2022 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -206,7 +206,7 @@ static void sysapagefun( symvar *e )   // absolute page
 {
     /* unused parameters */ (void)e;
 
-    utoa( apage, sysapagestr, 10 );
+    sprintf( sysapagestr, "%lu", apage );
     return;
 };
 
@@ -226,7 +226,7 @@ static void sysbmfun( symvar *e )
 {
     /* unused parameters */ (void)e;
 
-    utoa( bm, sysbmstr, 10 );
+    sprintf( sysbmstr, "%ld", bm );
     return;
 };
 
@@ -264,7 +264,7 @@ static void syscdfun( symvar *e )      // column count
 {
     /* unused parameters */ (void)e;
 
-    ultoa( g_cd, syscdstr, 10 );
+    sprintf( syscdstr, "%lu", g_cd );
     return;
 };
 
@@ -284,7 +284,7 @@ static void sysclfun( symvar *e )      // column length
 {
     /* unused parameters */ (void)e;
 
-    ultoa( g_cl, sysclstr, 10 );
+    sprintf( sysclstr, "%lu", g_cl );
     return;
 };
 
@@ -328,7 +328,7 @@ static void syscpifun( symvar *e )     // cpi chars per inch
 {
     /* unused parameters */ (void)e;
 
-    utoa( CPI, syscpistr, 10 );
+    sprintf( syscpistr, "%d", CPI );
     return;
 };
 
@@ -414,7 +414,7 @@ static void sysflnestfun( symvar *e )  // include level file/macro
 {
     /* unused parameters */ (void)e;
 
-    utoa( inc_level, sysflneststr, 10 );
+    sprintf( sysflneststr, "%u", inc_level );
     return;
 };
 
@@ -422,7 +422,7 @@ static void sysfmfun( symvar *e )
 {
     /* unused parameters */ (void)e;
 
-    utoa( fm, sysfmstr, 10 );
+    sprintf( sysfmstr, "%ld", fm );
     return;
 };
 
@@ -474,7 +474,7 @@ static void sysfnumfun( symvar *e )// lineno of current input file not macro
             l = wk->s.f->lineno;
         }
     }
-    ultoa( l, e->sub_0->value, 10 );
+    sprintf( e->sub_0->value, "%lu", l );
     return;
 };
 
@@ -494,7 +494,7 @@ static void sysgutterfun( symvar *e )  // gutter
 {
     /* unused parameters */ (void)e;
 
-    ultoa( g_gutter, sysgutterstr, 10 );
+    sprintf( sysgutterstr, "%lu", g_gutter );
     return;
 };
 
@@ -508,7 +508,7 @@ static void syshmfun( symvar *e )
 {
     /* unused parameters */ (void)e;
 
-    utoa( hm, syshmstr, 10 );
+    sprintf( syshmstr, "%ld", hm );
     return;
 };
 
@@ -552,7 +552,7 @@ static void sysinfun( symvar *e )      // .in indent value
 {
     /* unused parameters */ (void)e;
 
-    ultoa( g_indent * CPI / g_resh, sysinstr, 10 ); // in chars
+    sprintf( sysinstr, "%ld", g_indent * CPI / g_resh ); // in chars
     return;
 };
 
@@ -560,7 +560,7 @@ static void sysinrfun( symvar *e )     // .in indentr indent right value
 {
     /* unused parameters */ (void)e;
 
-    ltoa( g_ll + g_indentr * CPI / g_resh, sysinrstr, 10 );
+    sprintf( sysinrstr, "%ld", g_ll + g_indentr * CPI / g_resh );
     return;
 };
 
@@ -606,7 +606,7 @@ static void syslcfun( symvar *e )      // remaining linecount on page
 {
     /* unused parameters */ (void)e;
 
-    utoa( lc, syslcstr, 10 );
+    sprintf( syslcstr, "%ld", lc );
     return;
 };
 
@@ -628,7 +628,7 @@ static void syslinefun( symvar *e )    // current lineno on page
 {
     /* unused parameters */ (void)e;
 
-    ultoa( line, syslinestr, 10 );
+    sprintf( syslinestr, "%lu", line );
     return;
 };
 
@@ -636,7 +636,7 @@ static void sysllfun( symvar *e )
 {
     /* unused parameters */ (void)e;
 
-    ultoa( g_ll, sysllstr, 10 );
+    sprintf( sysllstr, "%lu", g_ll );
     return;
 };
 
@@ -653,7 +653,7 @@ static void syslnumfun( symvar *e )  // lineno of current input file / macro
             l = input_cbs->s.m->lineno;
         }
     }
-    ultoa( l, e->sub_0->value, 10 );
+    sprintf( e->sub_0->value, "%lu", l );
     return;
 };
 
@@ -721,7 +721,7 @@ static void syspagefun( symvar *e )    // pageno in body
 {
     /* unused parameters */ (void)e;
 
-    utoa( page, syspagestr, 10 );
+    sprintf( syspagestr, "%lu", page );
     return;
 };
 
@@ -729,7 +729,7 @@ static void syspagedfun( symvar *e )   // page depth
 {
     /* unused parameters */ (void)e;
 
-    ultoa( g_page_depth, syspagedstr, 10 );
+    sprintf( syspagedstr, "%lu", g_page_depth );
     return;
 };
 
@@ -737,7 +737,7 @@ static void syspagelmfun( symvar *e )  // page left margin
 {
     /* unused parameters */ (void)e;
 
-    ultoa( lm, syspagelmstr, 10 );
+    sprintf( syspagelmstr, "%ld", lm );
     return;
 };
 
@@ -745,7 +745,7 @@ static void syspagermfun( symvar *e )  // page right margin
 {
     /* unused parameters */ (void)e;
 
-    ultoa( rm, syspagermstr, 10 );
+    sprintf( syspagermstr, "%ld", rm );
     return;
 };
 
@@ -753,7 +753,7 @@ static void syspgnumafun( symvar *e )  // pagenumber
 {
     /* unused parameters */ (void)e;
 
-    ultoa( page, syspgnumastr, 10 );
+    sprintf( syspgnumastr, "%lu", page );
     return;
 };
 
@@ -761,8 +761,7 @@ static void syspgnumadfun( symvar *e ) // pagenumber.
 {
     /* unused parameters */ (void)e;
 
-    ultoa( page, syspgnumadstr, 10 );
-    strcat( syspgnumadstr, "." );
+    sprintf( syspgnumadstr, "%lu.", page );
     return;
 };
 
@@ -830,7 +829,7 @@ static void syspnfun( symvar *e )      // page no
 {
     /* unused parameters */ (void)e;
 
-    ultoa( page, syspnstr, 10 );
+    sprintf( syspnstr, "%lu", page );
     return;
 };
 
@@ -838,7 +837,7 @@ static void sysppagefun( symvar *e )   // page no
 {
     /* unused parameters */ (void)e;
 
-    ultoa( page, sysppagestr, 10 );
+    sprintf( sysppagestr, "%lu", page );
     return;
 };
 
@@ -891,7 +890,7 @@ static void sysreshfun( symvar *e )    // horiz base units
 {
     /* unused parameters */ (void)e;
 
-    utoa( g_resh, sysreshstr, 10 );
+    sprintf( sysreshstr, "%ld", g_resh );
     return;
 };
 
@@ -899,7 +898,7 @@ static void sysresvfun( symvar *e )    // vert base units
 {
     /* unused parameters */ (void)e;
 
-    utoa( g_resv, sysresvstr, 10 );
+    sprintf( sysresvstr, "%ld", g_resv );
     return;
 };
 
@@ -1000,7 +999,7 @@ static void systmfun( symvar *e )
 {
     /* unused parameters */ (void)e;
 
-    utoa( tm, systmstr, 10 );
+    sprintf( systmstr, "%ld", tm );
     return;
 };
 

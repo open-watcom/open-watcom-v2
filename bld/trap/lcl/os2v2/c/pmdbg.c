@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,16 +38,18 @@
 
 #include <os2.h>                        /* PM header file               */
 #include <string.h>                     /* C/2 string functions         */
-#include "pmdbg.h"                     /* Resource symbolic identifiers*/
+#include "bool.h"
+#include "pmdbg.h"                      /* Resource symbolic identifiers*/
 #include "trpimp.h"
+
 
 extern InitIt( char *trp, HAB, HWND );
 extern int LoadIt();
 extern int RunIt();
 extern KillIt();
 extern FiniIt();
-extern char TellHardMode( char );
 extern BOOL APIENTRY WinLockInput( HWND, USHORT );
+
 enum {
     RUNNING,
     LOADED,
@@ -55,8 +58,8 @@ enum {
     NONE,
 } State = NONE;
 
-int HardMode = 0;
-int InHardMode = 0;
+bool HardMode = false;
+bool InHardMode = false;
 
 #define HARD_POS 17
 char *IsHardMode[] = {
@@ -153,124 +156,127 @@ MRESULT EXPENTRY MyWindowProc( HWND hwnd, USHORT msg, MPARAM mp1, MPARAM mp2 )
   RECTL  rc;                            /* Rectangle coordinates        */
   POINTL pt;                            /* String screen coordinates    */
 
-  switch( msg )
-  {
+    switch( msg ) {
     case WM_CREATE:
-      if( State == RUNNING ) break;
-      /******************************************************************/
-      /* Window initialization is performed here in WM_CREATE processing*/
-      /* WinLoadString loads strings from the resource file.            */
-      /******************************************************************/
-      InitIt( "DSTD32", Hab, hwnd );
-      ReDraw( hwnd );
-      break;
+        if( State == RUNNING )
+            break;
+        /******************************************************************/
+        /* Window initialization is performed here in WM_CREATE processing*/
+        /* WinLoadString loads strings from the resource file.            */
+        /******************************************************************/
+        InitIt( "DSTD32", Hab, hwnd );
+        ReDraw( hwnd );
+        break;
 
     case WM_COMMAND:
-      /******************************************************************/
-      /* When the user chooses option 1, 2, or 3 from the Options pull- */
-      /* down, the text string is set to 1, 2, or 3, and                */
-      /* WinInvalidateRegion sends a WM_PAINT message.                  */
-      /* When Exit is chosen, the application posts itself a WM_CLOSE   */
-      /* message.                                                       */
-      /******************************************************************/
-      command = SHORT1FROMMP(mp1);      /* Extract the command value    */
-      switch (command)
-      {
+        /******************************************************************/
+        /* When the user chooses option 1, 2, or 3 from the Options pull- */
+        /* down, the text string is set to 1, 2, or 3, and                */
+        /* WinInvalidateRegion sends a WM_PAINT message.                  */
+        /* When Exit is chosen, the application posts itself a WM_CLOSE   */
+        /* message.                                                       */
+        /******************************************************************/
+        command = SHORT1FROMMP(mp1);      /* Extract the command value    */
+        switch( command ) {
         case ID_LOAD:
-          if( State == RUNNING ) break;
-          if( State != NONE ) {
-              KillIt();
-              State = NONE;
-          }
-          if( LoadIt() ) {
-              State = LOADED;
-          }
-          ReDraw( hwnd );
-          break;
+            if( State == RUNNING )
+                break;
+            if( State != NONE ) {
+                KillIt();
+                State = NONE;
+            }
+            if( LoadIt() ) {
+                State = LOADED;
+            }
+            ReDraw( hwnd );
+            break;
         case ID_RUN:
-          if( State == RUNNING ) break;
-          State = RUNNING;
-          ReDraw( hwnd );
-          if( InHardMode ) {
-              WinLockInput( 0, FALSE );
-              InHardMode = FALSE;
-          }
-          State = RunIt() ? BROKE : TERMINATED;
-          if( HardMode ) {
-              WinLockInput( 0, TRUE );
-              InHardMode = TRUE;
-          }
-          ReDraw( hwnd );
-          break;
+            if( State == RUNNING )
+                break;
+            State = RUNNING;
+            ReDraw( hwnd );
+            if( InHardMode ) {
+                WinLockInput( 0, FALSE );
+                InHardMode = false;
+            }
+            State = RunIt() ? BROKE : TERMINATED;
+            if( HardMode ) {
+                WinLockInput( 0, TRUE );
+                InHardMode = true;
+            }
+            ReDraw( hwnd );
+            break;
         case ID_KILL:
-          if( State == RUNNING ) break;
-          if( InHardMode ) {
-              WinLockInput( 0, FALSE );
-              InHardMode = FALSE;
-          }
-          if( State != NONE ) {
-              KillIt();
-              State = NONE;
-          }
-          ReDraw( hwnd );
-          break;
+            if( State == RUNNING )
+                break;
+            if( InHardMode ) {
+                WinLockInput( 0, FALSE );
+                InHardMode = false;
+            }
+            if( State != NONE ) {
+                KillIt();
+                State = NONE;
+            }
+            ReDraw( hwnd );
+            break;
         case ID_HARD:
-          if( State == RUNNING ) break;
-          HardMode = !HardMode;
-          TellHardMode( HardMode ? (char)-1 : 0 );
-          ReDraw( hwnd );
-          break;
+            if( State == RUNNING )
+                break;
+            HardMode = !HardMode;
+            TRAPENTRY_FUNC( TellHardMode )( HardMode ? (char)-1 : 0 );
+            ReDraw( hwnd );
+            break;
         case ID_EXITPROG:
-          if( InHardMode ) {
-              WinLockInput( 0, FALSE );
-              InHardMode = FALSE;
-          }
-          if( State == RUNNING ) break;
-          WinPostMsg( hwnd, WM_CLOSE, 0L, 0L );
-          break;
+            if( InHardMode ) {
+                WinLockInput( 0, FALSE );
+                InHardMode = false;
+            }
+            if( State == RUNNING )
+                break;
+            WinPostMsg( hwnd, WM_CLOSE, 0L, 0L );
+            break;
         default:
-          return WinDefWindowProc( hwnd, msg, mp1, mp2 );
-      }
-      break;
+            return WinDefWindowProc( hwnd, msg, mp1, mp2 );
+        }
+        break;
     case WM_ERASEBACKGROUND:
-      /******************************************************************/
-      /* Return TRUE to request PM to paint the window background       */
-      /* in SYSCLR_WINDOW.                                              */
-      /******************************************************************/
-      return (MRESULT)( TRUE );
+        /******************************************************************/
+        /* Return TRUE to request PM to paint the window background       */
+        /* in SYSCLR_WINDOW.                                              */
+        /******************************************************************/
+        return (MRESULT)( TRUE );
     case WM_PAINT:
-      /******************************************************************/
-      /* Window contents are drawn here in WM_PAINT processing.         */
-      /******************************************************************/
+        /******************************************************************/
+        /* Window contents are drawn here in WM_PAINT processing.         */
+        /******************************************************************/
                                         /* Create a presentation space  */
-      hps = WinBeginPaint( hwnd, NULL, &rc );
-      pt.x = 50; pt.y = 50;             /* Set the text coordinates,    */
-      GpiSetColor( hps, CLR_NEUTRAL );         /* colour of the text,   */
-      GpiSetBackColor( hps, CLR_BACKGROUND );  /* its background and    */
-      GpiSetBackMix( hps, BM_OVERPAINT );      /* how it mixes,         */
+        hps = WinBeginPaint( hwnd, NULL, &rc );
+        pt.x = 50; pt.y = 50;             /* Set the text coordinates,    */
+        GpiSetColor( hps, CLR_NEUTRAL );         /* colour of the text,   */
+        GpiSetBackColor( hps, CLR_BACKGROUND );  /* its background and    */
+        GpiSetBackMix( hps, BM_OVERPAINT );      /* how it mixes,         */
                                                /* and draw the string...*/
-      strcpy( WhatItIs[ State ] +HARD_POS, IsHardMode[ HardMode ] );
-      GpiCharStringAt( hps, &pt, (LONG)strlen( WhatItIs[ State ] ), WhatItIs[ State ] );
-      WinEndPaint( hps );                      /* Drawing is complete   */
-      break;
+        strcpy( WhatItIs[State] +HARD_POS, IsHardMode[( HardMode ? 1 : 0 )] );
+        GpiCharStringAt( hps, &pt, (LONG)strlen( WhatItIs[State] ), WhatItIs[State] );
+        WinEndPaint( hps );                      /* Drawing is complete   */
+        break;
     case WM_CLOSE:
-      /******************************************************************/
-      /* This is the place to put your termination routines             */
-      /******************************************************************/
-      if( State == RUNNING ) break;
-      FiniIt();
-      WinPostMsg( hwnd, WM_QUIT, 0L, 0L );  /* Cause termination        */
-      break;
+        /******************************************************************/
+        /* This is the place to put your termination routines             */
+        /******************************************************************/
+        if( State == RUNNING )
+            break;
+        FiniIt();
+        WinPostMsg( hwnd, WM_QUIT, 0L, 0L );  /* Cause termination        */
+        break;
     default:
-      /******************************************************************/
-      /* Everything else comes here.  This call MUST exist              */
-      /* in your window procedure.                                      */
-      /******************************************************************/
+        /******************************************************************/
+        /* Everything else comes here.  This call MUST exist              */
+        /* in your window procedure.                                      */
+        /******************************************************************/
 
-      return WinDefWindowProc( hwnd, msg, mp1, mp2 );
-  }
-  return FALSE;
+        return WinDefWindowProc( hwnd, msg, mp1, mp2 );
+    }
+    return FALSE;
 }
 /**********************  End of window procedure  ***********************/
-void __STK(){}
-#pragma aux __STK "*";

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -128,9 +129,10 @@ struct name_ctl {
 };
 
 
-// hashpjw out of dragon book
 static uint_32 elf_hash( char const *name )
-/*****************************************/
+/******************************************
+ * hashpjw out of dragon book
+ */
 {
     uint_32     h;
     uint_32     g;
@@ -167,8 +169,9 @@ name_ctl *InitHashName( void )
 
 
 void FiniHashName( name_ctl *ctl )
-/********************************/
-// Kill hash table
+/*********************************
+ * Kill hash table
+ */
 {
     unsigned    bnum;
     unsigned    vacant;
@@ -202,8 +205,9 @@ void FiniHashName( name_ctl *ctl )
 
 
 void AddHashName( name_ctl *ctl, const char *name, drmem_hdl sym )
-/****************************************************************/
-// Add name, sym to foray
+/*****************************************************************
+ * Add name, sym to foray
+ */
 {
     uint_32     key;
     int         bnum;
@@ -235,8 +239,9 @@ void AddHashName( name_ctl *ctl, const char *name, drmem_hdl sym )
 
 
 bool FindHashWalk( name_ctl *ctl, name_wlk *wlk )
-/***********************************************/
-// Walk all entries that hash to same key
+/************************************************
+ * Walk all entries that hash to same key
+ */
 {
     uint_32     key;
     int         bnum;

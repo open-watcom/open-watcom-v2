@@ -1,9 +1,5 @@
 # toggle debugger DLL's base
-!ifdef %OWUSE_FILENAME_VERSION
-dll_start = 80000
-!else
 dll_start = 00000
-!endif
 # NT
 rtdll_dllbase_winnt_386_mathlib = op offset=0x6ff00000          # mtxxxx.dll    (run-time DLL math library)
 rtdll_dllbase_winnt_386_clib    = op offset=0x6fe00000          # clbxxxx.dll   (run-time DLL C library)

@@ -26,6 +26,8 @@ extra_cpp_flags = -D__TARGET_386__
 #targdef = -D__TARGET_386__
 #!else ifeq host_cpu x64
 #targdef = -D__TARGET_X64__
+#!else ifeq host_cpu mps
+#targdef = -D__TARGET_MPS__
 #!else
 #!error undrecognized CPU
 !endif
@@ -58,7 +60,7 @@ exetarg_res_version_nt_x64 = exever.res
 
 #optencod_enc_linux = -utf8
 optencod_targets = $(target_cpu) $(host_os)
-!ifeq release 0
+!ifeq debug 2
 optencod_targets += dbg
 !endif
 

@@ -261,7 +261,7 @@ bool SymIsEnumDefinition(       // TEST IF SYMBOL IS AN ENUMERATION
 }
 
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 SYMBOL SymDeAlias(              // REDUCE TO NON-ALIASED SYMBOL
     SYMBOL sym )                // - the symbol
 {
@@ -986,7 +986,7 @@ bool SymIsExtern(               // SYMBOL IS DEFINED OUTSIDE THIS MODULE
             ok = true;
         }
     }
-#ifndef NDEBUG
+#ifdef DEVBUILD
     if( ok && !CompFlags.parsing_finished ) {
         // symbol still has a chance of being initialized!
         CFatal( "SymIsExtern return value is not accurate" );
@@ -1212,7 +1212,7 @@ SYMBOL SymDeriveThrowBits(      // DERIVE SYMF_.._LONGJUMP BITS FROM SOURCE
     symbol_flag src_flag        // - source flags
         = SymThrowFlags( src );
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
     if( src_flag & SYMF_LONGJUMP ) {
         DbgVerify( (tgt->flag & SYMF_NO_LONGJUMP) == 0
                  , "SymDeriveThrowBits -- target has SYMF_NO_LONGJUMP" );

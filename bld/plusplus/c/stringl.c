@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -217,11 +217,7 @@ static size_t compressLiteral( char *tgt, const char *s, size_t len, bool wide )
                 }
                 --len;
             } else if( wide ) {
-                if( CompFlags.use_unicode ) {
-                    chr = UniCode[chr];
-                } else if( CompFlags.jis_to_unicode ) {
-                    chr = JIS2Unicode( chr );
-                }
+                chr = EncodeWchar( chr );
                 STORE_WCHAR( tgt, chr, new_len );
             } else {
 //              _ASCIIOUT( chr );
@@ -389,7 +385,7 @@ pch_status PCHInitStringPool( bool writing )
         ++p;
     }
     qsort( stringTranslateTable, stringCount, sizeof( STRING_CONSTANT ), cmpString );
-#ifndef NDEBUG
+#ifdef DEVBUILD
     {
         unsigned i;
         for( i = 1; i < stringCount; ++i ) {
@@ -455,7 +451,7 @@ STRING_CONSTANT StringMapIndex( STRING_CONSTANT index )
     if( PCHGetUInt( index ) < PCH_FIRST_INDEX ) {
         return( NULL );
     }
-#ifndef NDEBUG
+#ifdef DEVBUILD
     if( PCHGetUInt( index ) >= stringCount + PCH_FIRST_INDEX ) {
         CFatal( "invalid string index" );
     }

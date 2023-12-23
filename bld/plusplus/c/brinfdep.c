@@ -37,7 +37,7 @@
     #include "ring.h"
     #include "pstk.h"
     #include "srcfile.h"
-  #ifndef NDEBUG
+  #ifdef DEVBUILD
     #include "dbg.h"
     #include "pragdefn.h"
   #endif

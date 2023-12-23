@@ -1,3 +1,5 @@
+tree_depth = 4
+
 proj_name = dlgprs
 proj_type = cxx
 
@@ -18,13 +20,13 @@ dlg_yacc_file = $(dlg_yacc_prefix)tab
 #
 # cflags
 #
-.cpp: .;../cpp;$(browse_dir)/cpp
+.cpp: .;../cpp;$(browser_dir)/cpp
 
 inc_dirs = -I. -I"../h"
 
 extra_c_flags=-xs
 
-extra_c_flags_mempool = -I"$(browse_dir)/h"
+extra_c_flags_mempool = -I"$(browser_dir)/h"
 
 # explicit rules
 #################
@@ -41,11 +43,11 @@ exetarg_objs_scan_files = &
     styles.obj &
     $(bnd_yacc_file).obj &
     $(dlg_yacc_file).obj
-exetarg_objs_browse_files = &
+exetarg_objs_browser_files = &
     chfile.obj  &
     chbffile.obj &
     mempool.obj
-exetarg_objs = $+$(exetarg_objs_scan_files) $(exetarg_objs_browse_files)$-
+exetarg_objs = $+$(exetarg_objs_scan_files) $(exetarg_objs_browser_files)$-
 exetarg_name = dlgprs
 !include exetarg.mif
 

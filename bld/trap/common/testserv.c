@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,15 +38,17 @@
 #ifdef __WINDOWS__
 #include <windows.h>
 #endif
+#include "trptypes.h"
 #include "testlink.h"
 #include "packet.h"
 #include "nothing.h"
+#include "servio.h"
 
 #ifdef __WINDOWS__
 extern HANDLE   *_MainWindowData; // KLUDGE!!! (who cares - it's just a test program)
 #endif
 
-char            RWBuff[256];
+char            RWBuff[0x400];
 full_block      Data;
 
 #ifdef __NETWARE__
@@ -60,18 +63,17 @@ void TrapFini( void )
 HANDLE  Instance;
 #endif
 
-void Output( const char *p )
+void OutputLine( const char *p )
 {
-    printf( "%s", p );
+    printf( "%s\n", p );
 }
 
 void ServMessage( const char *msg )
 {
-    Output( msg );
-    Output( "\n" );
+    OutputLine( msg );
 }
 
-void RunTime( void )
+static void RunTime( void )
 {
     unsigned long   iter_count;
     unsigned        block_size;
@@ -104,7 +106,7 @@ int main( int argc, char *argv[] )
 #ifdef __WINDOWS__
     Instance = *_MainWindowData;
 #endif
-    err = RemoteLink( ( argc > 1 ) ? argv[1] : "", TRUE );
+    err = RemoteLink( ( argc > 1 ) ? argv[1] : "", true );
     if( err != 0 ) {
         printf( "%s\n", err );
         return( 1 );

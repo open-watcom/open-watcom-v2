@@ -1,6 +1,6 @@
 srcmgt_obj = srcmgt.obj
 
-!ifeq release 0
+!ifneq debug 0
 debug_objs = dumpmem.obj
 !endif
 
@@ -43,4 +43,5 @@ objs = &
     pathlist.obj &
     wpwind.obj &
     autoenv.obj &
+    i64.obj &
     $(dip_objs) $(mad_objs) $(dig_objs)

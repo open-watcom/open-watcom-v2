@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,7 +46,7 @@ ref_entry DoPass1Relocs( unsigned_8 *contents, ref_entry r_entry, dis_sec_offset
     dis_sec_addend                      addend;
     unnamed_label_return_struct         rs;
 
-    if( !IsIntelx86() )
+    if( !IsIntelx86 )
         return( r_entry );
 
     for( ; r_entry != NULL; r_entry = r_entry->next ) {
@@ -118,10 +118,11 @@ return_val DoPass1( orl_sec_handle shnd, unsigned_8 *contents, dis_sec_size size
     ref_entry                           r_entry;
     dis_inst_flags                      flags;
     dis_sec_offset                      op_pos;
-    bool                                is_intel;
+    dis_operand_type                    op_type;
     int                                 adjusted;
     sa_disasm_struct                    sds;
     const char                          *FPU_fixup;
+    orl_reloc_type                      reltype;
 
     sds.data = contents;
     sds.last = size - 1;
@@ -131,19 +132,18 @@ return_val DoPass1( orl_sec_handle shnd, unsigned_8 *contents, dis_sec_size size
         r_entry = NULL;
     }
 
+    reltype = ORL_RELOC_TYPE_WDIS_JUMP;
     flags.u.all = DIF_NONE;
-    if( GetMachineType() == ORL_MACHINE_TYPE_I386 ) {
-        if( ( GetFormat() != ORL_OMF ) || (ORLSecGetFlags( shnd ) & ORL_SEC_FLAG_USE_32) ) {
+    if( MachineType == ORL_MACHINE_TYPE_I386 ) {
+        if( ( FileFormat != ORL_OMF ) || (ORLSecGetFlags( shnd ) & ORL_SEC_FLAG_USE_32) ) {
             flags.u.x86 = DIF_X86_USE32_FLAGS;
         }
-        is_intel = true;
-    } else if( GetMachineType() == ORL_MACHINE_TYPE_AMD64 ) {
-        is_intel = true;
-    } else {
-        is_intel = IsIntelx86();
     }
-    if( is_intel ) {
+    if( IsIntelx86 ) {
         flags.u.x86 |= DIF_X86_FPU_EMU;
+        if( ORLSecGetFlags( shnd ) & ORL_SEC_FLAG_USE_16 ) {
+            reltype = ORL_RELOC_TYPE_WDIS_JUMP16;
+        }
     }
 
     for( loop = 0; loop < size; loop += decoded.size ) {
@@ -155,7 +155,7 @@ return_val DoPass1( orl_sec_handle shnd, unsigned_8 *contents, dis_sec_size size
         }
         if( stl != NULL && ( loop >= stl->start ) ) {
             decoded.size = 0;
-            if( is_intel ) {
+            if( IsIntelx86 ) {
                 r_entry = DoPass1Relocs( contents, r_entry, loop, stl->end );
             }
             loop = stl->end;
@@ -172,7 +172,7 @@ return_val DoPass1( orl_sec_handle shnd, unsigned_8 *contents, dis_sec_size size
         }
         r_entry = ProcessFpuEmulatorFixup( r_entry, loop, &FPU_fixup );
         if( r_entry != NULL && ( r_entry->offset == loop ) ) {
-            if( is_intel || IsDataReloc( r_entry ) ) {
+            if( IsIntelx86 || IsDataReloc( r_entry ) ) {
                 // we just skip the data
                 op_pos = loop;
                 decoded.size = 0;
@@ -196,14 +196,15 @@ return_val DoPass1( orl_sec_handle shnd, unsigned_8 *contents, dis_sec_size size
         for( i = 0; i < decoded.num_ops; ++i ) {
             adjusted = 0;
             op_pos = loop + decoded.op[i].op_position;
-            switch( decoded.op[i].type & DO_MASK ) {
+            op_type = decoded.op[i].type & DO_MASK;
+            switch( op_type ) {
             case DO_IMMED:
-                if( !is_intel )
+                if( !IsIntelx86 )
                     break;
                 /* fall through */
             case DO_RELATIVE:
             case DO_MEMORY_REL:
-                if( (decoded.op[i].type & DO_MASK) != DO_IMMED ) {
+                if( op_type != DO_IMMED ) {
                     decoded.op[i].value.u._32[I64LO32] += loop;
                     adjusted = 1;
                 }
@@ -217,7 +218,7 @@ return_val DoPass1( orl_sec_handle shnd, unsigned_8 *contents, dis_sec_size size
                     }
                 }
                 if( r_entry != NULL && ( r_entry->offset == op_pos ) ) {
-                    if( is_intel && r_entry->label->shnd != ORL_NULL_HANDLE
+                    if( IsIntelx86 && r_entry->label->shnd != ORL_NULL_HANDLE
                         && ( r_entry->type != ORL_RELOC_TYPE_SEGMENT )
                         && ( r_entry->label->type == LTYP_SECTION ) ) {
                         /* For section offsets under intel we MUST generate a
@@ -259,9 +260,9 @@ return_val DoPass1( orl_sec_handle shnd, unsigned_8 *contents, dis_sec_size size
                     } else {
                         // fixme: got to handle other types of relocs here
                     }
-                } else if( (decoded.op[i].type & DO_MASK) != DO_IMMED ) {
+                } else if( op_type != DO_IMMED ) {
                     if( decoded.op[i].base == DR_NONE && decoded.op[i].index == DR_NONE ) {
-                        switch( decoded.op[i].type & DO_MASK ) {
+                        switch( op_type ) {
                         case DO_MEMORY_REL:
                         case DO_MEMORY_ABS:
                             // use decoded instruction size for absolute memory on amd64.
@@ -269,7 +270,7 @@ return_val DoPass1( orl_sec_handle shnd, unsigned_8 *contents, dis_sec_size size
                             // completely fetched and decoded.
                             // relocations in pass2 are not applied because they break
                             // relative memory references if no relocation is present!
-                            if( GetMachineType() == ORL_MACHINE_TYPE_AMD64 ) {
+                            if( MachineType == ORL_MACHINE_TYPE_AMD64 ) {
                                 decoded.op[i].value.u._32[I64LO32] += decoded.size;
 
                                 // I don't know if this is neccessary, but it will generate
@@ -278,13 +279,13 @@ return_val DoPass1( orl_sec_handle shnd, unsigned_8 *contents, dis_sec_size size
                                 CreateUnnamedLabel( shnd, decoded.op[i].value.u._32[I64LO32], &rs );
                                 if( rs.error != RC_OKAY )
                                     return( rs.error );
-                                error = CreateUnnamedLabelRef( shnd, rs.entry, op_pos );
+                                error = CreateUnnamedLabelRef( shnd, rs.entry, op_pos, ORL_RELOC_TYPE_WDIS_JUMP );
                             } else {
                                 // create an LTYP_ABSOLUTE label
                                 CreateAbsoluteLabel( shnd, decoded.op[i].value.u._32[I64LO32], &rs );
                                 if( rs.error != RC_OKAY )
                                     return( rs.error );
-                                error = CreateAbsoluteLabelRef( shnd, rs.entry, op_pos );
+                                error = CreateAbsoluteLabelRef( shnd, rs.entry, op_pos, ORL_RELOC_TYPE_WDIS_ABS );
                             }
                             break;
                         default:
@@ -292,7 +293,7 @@ return_val DoPass1( orl_sec_handle shnd, unsigned_8 *contents, dis_sec_size size
                             CreateUnnamedLabel( shnd, decoded.op[i].value.u._32[I64LO32], &rs );
                             if( rs.error != RC_OKAY )
                                 return( rs.error );
-                            error = CreateUnnamedLabelRef( shnd, rs.entry, op_pos );
+                            error = CreateUnnamedLabelRef( shnd, rs.entry, op_pos, reltype );
                             break;
                         }
                         if( error != RC_OKAY ) {

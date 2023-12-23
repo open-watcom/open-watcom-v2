@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,14 +34,18 @@
 #include <stdlib.h>
 #include <string.h>
 #include <direct.h>
-#include "srvcdbg.h"
 #include "stdnt.h"
+#include "globals.h"
+#include "srvcdbg.h"
 #include "trperr.h"
 #include "trpimp.h"
 #include "pathgrp2.h"
+#include "libwin32.h"
 
 #include "clibext.h"
 
+
+#define MAX_HWNDS 40 // maximum number of hwnds in the debugger
 
 typedef enum {
     CTL_START,
@@ -50,25 +54,38 @@ typedef enum {
     CTL_CONTINUE
 }   ctl_request;
 
+//static void StopDebuggee( void );
+//static void RequestDone( void );
+static bool StartDebuggee( void );
+static bool DoWaitForDebugEvent( void );
+
+static HWND InvalidHWNDs[MAX_HWNDS];
+static int  NumInvalid = 0;
+
 static struct {
-    // control overhead
+    /*
+     * control overhead
+     */
     ctl_request request;
     HANDLE      requestsem;
     HANDLE      requestdonesem;
     HANDLE      hThread;
-    BOOL        on_control_thread;
-    BOOL        control_thread_running;
-    BOOL        req_done;
-
-    // CTL_*
-    BOOL        rc;
-
-    // CTL_START
+    bool        on_control_thread;
+    bool        control_thread_running;
+    bool        req_done;
+    /*
+     * CTL_*
+     */
+    bool        rc;
+    /*
+     * CTL_START
+     */
     DWORD       pid;
     DWORD       flags;
     char        *name;
-
-    // CTL_CONTINUE
+    /*
+     * CTL_CONTINUE
+     */
     DWORD       how;
     DWORD       err;
 
@@ -86,53 +103,110 @@ static void CantDoIt( void )
     }
 }
 
-/*
- * DoContinueDebugEvent
- */
-static BOOL DoContinueDebugEvent( DWORD continue_how )
+static bool DoContinueDebugEvent( DWORD continue_how )
 {
     SetLastError( 0 );
     if( !DidWaitForDebugEvent ) {
-        return( FALSE );
+        return( false );
     }
-    return( ContinueDebugEvent( DebugeePid, LastDebugEventTid, continue_how ) );
+    return( ContinueDebugEvent( DebugeePid, LastDebugEventTid, continue_how ) != 0 );
 }
 
-static void StopDebuggee( void );
-static void RequestDone( void );
-static BOOL StartDebuggee( void );
-static BOOL DoWaitForDebugEvent( void );
+static void StopDebuggee( void )
+{
+#if MADARCH & MADARCH_X64
+    if( DebugeePid && ( IsWOW64 || !DebugeeEnded ) ) {
+#elif defined( WOW )
+    if( DebugeePid && ( IsWOW || !DebugeeEnded ) ) {
+#else
+    if( DebugeePid && !DebugeeEnded ) {
+#endif
+        /*
+         * we must process debug events until the process is actually
+         * terminated
+         */
+        Slaying = true;
+#if MADARCH & MADARCH_X64
+        {
+#else
+        if( IsWin32s ) {
+            DoContinueDebugEvent( DBG_TERMINATE_PROCESS );
+            DoWaitForDebugEvent();
+            DoContinueDebugEvent( DBG_CONTINUE );
+        } else {
+#endif
+            HANDLE  hp;
+
+            hp = OpenProcess( PROCESS_ALL_ACCESS, FALSE, DebugeePid );
+            if( hp != NULL ) {
+                TerminateProcess( hp, 0 );
+                CloseHandle( hp );
+                while( (DebugExecute( STATE_NONE, NULL, false ) & COND_TERMINATE) == 0 )
+                    {}
+                /*
+                 * we must continue the final debug event for everything to
+                 * be truly clean and wonderful
+                 */
+                DoContinueDebugEvent( DBG_CONTINUE );
+            }
+        }
+        Slaying = false;
+    }
+    DebugeePid = 0;
+}
+
+static void RequestDone( void )
+{
+    if( !IsWindow( DebuggerWindow ) ) {
+        DebuggerWindow = NULL;
+    }
+    if( DebuggerWindow == NULL ) {
+        ReleaseSemaphore( Shared.requestdonesem, 1, NULL );
+    } else {
+        Shared.req_done = true;
+        /*
+         * Notify that something has happened, avoid delay
+         */
+        PostMessage( DebuggerWindow, WM_NULL, 0, 0 );
+        WaitForSingleObject( Shared.requestdonesem, INFINITE );
+    }
+}
 
 static bool DoOneControlRequest( void )
 {
-    Shared.on_control_thread = TRUE;
-    if( Shared.request == CTL_STOP ) {
+    bool    rc;
+
+    rc = true;
+    Shared.on_control_thread = true;
+    switch( Shared.request ) {
+    case CTL_STOP:
         StopDebuggee();
-        RequestDone();
-        return( FALSE );
-    } else if( Shared.request == CTL_START ) {
+        rc = false;
+        break;
+    case CTL_START:
         Shared.err = 0;
         if( !StartDebuggee() ) {
             Shared.err = GetLastError();
         }
-        RequestDone();
-    } else if( Shared.request == CTL_WAIT ) {
+        break;
+    case CTL_WAIT:
         Shared.rc = DoWaitForDebugEvent();
-        RequestDone();
-    } else if( Shared.request == CTL_CONTINUE ) {
+        break;
+    case CTL_CONTINUE:
         DoContinueDebugEvent( Shared.how );
+        break;
+    }
+    if( Shared.control_thread_running ) {
+        Shared.on_control_thread = false;
         RequestDone();
     }
-    return( TRUE );
+    return( rc );
 }
 
-#define MAX_HWNDS 40 // maximum number of hwnds in the debugger
-static HWND InvalidHWNDs[MAX_HWNDS];
-static int  NumInvalid = 0;
-
-
-// NB: ProcessQueuedRepains() currently doesn't do anything useful
 void ProcessQueuedRepaints( void )
+/*********************************
+ * NB: currently doesn't do anything useful
+ */
 {
     int     i;
     RECT    r;
@@ -148,7 +222,7 @@ static void ControlReq( ctl_request req )
 {
     MSG     msg;
     HWND    hwnd;
-    BOOL    is_dbg_wnd;
+    bool    is_dbg_wnd;
     char    buff[10];
     int     len;
 
@@ -165,13 +239,13 @@ static void ControlReq( ctl_request req )
         WaitForSingleObject( Shared.requestdonesem, INFINITE );
     } else {
         while( !Shared.req_done ) {
-            if ( !GetMessage( &msg, NULL, 0, 0 ) )
+            if( !GetMessage( &msg, NULL, 0, 0 ) )
                 break;    // break on WM_QUIT, when Windows requests this. (If ever)
             hwnd = msg.hwnd;
-            is_dbg_wnd = FALSE;
+            is_dbg_wnd = false;
             while( hwnd ) {
                 if( hwnd == DebuggerWindow ) {
-                    is_dbg_wnd = TRUE;
+                    is_dbg_wnd = true;
                     break;
                 }
                 hwnd = GetParent( hwnd );
@@ -188,15 +262,20 @@ static void ControlReq( ctl_request req )
                         InterruptProgram();
                     }
                     break;
-                case WM_SYSKEYDOWN: // Do not activate menu on F10 single step in GUI debugger
-                      if( msg.wParam == VK_F10 && strcmp( buff, "GUIClass" ) == 0 ) {
+                case WM_SYSKEYDOWN:
+                    /*
+                     * Do not activate menu on F10 single step in GUI debugger
+                     */
+                    if( msg.wParam == VK_F10 && strcmp( buff, "GUIClass" ) == 0 ) {
                         break;
-                      }
-                      /* Allow someone to press ALT+TAB to get focus! */
-                      if( msg.wParam == VK_MENU ){
+                    }
+                    /*
+                     * Allow someone to press ALT+TAB to get focus!
+                     */
+                    if( msg.wParam == VK_MENU ) {
                         break;
-                      }
-                      // fall through!
+                    }
+                    /* fall through */
                 case WM_COMMAND:
                     CantDoIt();
                     break;
@@ -208,43 +287,26 @@ static void ControlReq( ctl_request req )
                 case WM_MOUSEMOVE:
                     break;
                 case WM_PAINT:
-                    // WM_PAINT must be sent to the target window in order
-                    // to remove it from the queue
+                    /*
+                     * WM_PAINT must be sent to the target window in order
+                     * to remove it from the queue
+                     */
                     DefWindowProc( msg.hwnd, msg.message, msg.wParam, msg.lParam );
                     break;
                 default:
-                    DefWindowProc( DebuggerWindow, msg.message, msg.wParam,
-                        msg.lParam );
+                    DefWindowProc( DebuggerWindow, msg.message, msg.wParam, msg.lParam );
                 }
             }
         }
-        Shared.req_done = FALSE;    // Reset
+        Shared.req_done = false;    // Reset
         ReleaseSemaphore( Shared.requestdonesem, 1, NULL );
-    }
-}
-
-static void RequestDone( void )
-{
-    if( !Shared.control_thread_running ) {
-        return;
-    }
-    Shared.on_control_thread = FALSE;
-    if( !IsWindow( DebuggerWindow ) ) {
-        DebuggerWindow = NULL;
-    }
-    if( DebuggerWindow == NULL ) {
-        ReleaseSemaphore( Shared.requestdonesem, 1, NULL );
-    } else {
-        Shared.req_done = TRUE;
-        // Notify that something has happened, avoid delay
-        PostMessage( DebuggerWindow, WM_NULL, 0, 0 );
-        WaitForSingleObject( Shared.requestdonesem, INFINITE );
     }
 }
 
 static DWORD WINAPI ControlFunc( LPVOID parm )
 {
-    parm = parm;
+    /* unused parameters */ (void)parm;
+
     for( ;; ) {
         WaitForSingleObject( Shared.requestsem, INFINITE );
         if( !DoOneControlRequest() ) {
@@ -254,69 +316,68 @@ static DWORD WINAPI ControlFunc( LPVOID parm )
     return( 0 ); // thread over!
 }
 
-static BOOL MyDebugActiveProcess( DWORD dwPidToDebug )
+static bool MyDebugActiveProcess( DWORD dwPidToDebug )
 {
     HANDLE              Token;
     TOKEN_PRIVILEGES    NewPrivileges;
     BYTE                OldPriv[1024];
     PBYTE               pbOldPriv;
     ULONG               cbNeeded;
-    BOOL                b;
-    BOOLEAN             fRc;
+    bool                ok;
+    bool                f_ok;
     LUID                LuidPrivilege;
 
-    fRc = 0;
+    f_ok = false;
     pbOldPriv = NULL;
-    //
-    // Make sure we have access to adjust and to get the old token privileges
-    //
+    /*
+     * Make sure we have access to adjust and to get the old token privileges
+     */
     Token = NULL;
     if( OpenProcessToken( GetCurrentProcess(), TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, &Token ) ) {
 
         cbNeeded = 0;
-
-        //
-        // Initialize the privilege adjustment structure
-        //
-
+        /*
+         * Initialize the privilege adjustment structure
+         */
         LookupPrivilegeValue( NULL, SE_DEBUG_NAME, &LuidPrivilege );
 
         NewPrivileges.PrivilegeCount = 1;
         NewPrivileges.Privileges[0].Luid = LuidPrivilege;
         NewPrivileges.Privileges[0].Attributes = SE_PRIVILEGE_ENABLED;
-
-        //
-        // Enable the privilege
-        //
-
+        /*
+         * Enable the privilege
+         */
         pbOldPriv = OldPriv;
-        fRc = AdjustTokenPrivileges( Token, FALSE, &NewPrivileges, 1024, (PTOKEN_PRIVILEGES)pbOldPriv, &cbNeeded );
+        f_ok = ( AdjustTokenPrivileges( Token, FALSE, &NewPrivileges, 1024, (PTOKEN_PRIVILEGES)pbOldPriv, &cbNeeded ) != 0 );
 
-        if( fRc == 0 && GetLastError() == ERROR_INSUFFICIENT_BUFFER ) {
-
-            //
-            // If the stack was too small to hold the privileges
-            // then allocate off the heap
-            //
+        if( !f_ok && GetLastError() == ERROR_INSUFFICIENT_BUFFER ) {
+            /*
+             * If the stack was too small to hold the privileges
+             * then allocate off the heap
+             */
             pbOldPriv = LocalAlloc( LMEM_FIXED | LMEM_ZEROINIT, cbNeeded );
             if( pbOldPriv != NULL ) {
-                fRc = AdjustTokenPrivileges( Token, FALSE, &NewPrivileges, cbNeeded, (PTOKEN_PRIVILEGES)pbOldPriv, &cbNeeded );
+                f_ok = ( AdjustTokenPrivileges( Token, FALSE, &NewPrivileges, cbNeeded, (PTOKEN_PRIVILEGES)pbOldPriv, &cbNeeded ) != 0 );
             }
         }
     }
-    if( fRc == 0 && Token != NULL ) {
-        /* failed to set privilege, close privilege token handle */
+    if( !f_ok && Token != NULL ) {
+        /*
+         * failed to set privilege, close privilege token handle
+         */
         CloseHandle( Token );
     }
-    b = DebugActiveProcess( dwPidToDebug );
-    if( fRc != 0 ) {
-        /* restore original privileges */
+    ok = ( DebugActiveProcess( dwPidToDebug ) != 0 );
+    if( f_ok ) {
+        /*
+         * restore original privileges
+         */
         AdjustTokenPrivileges( Token, FALSE, (PTOKEN_PRIVILEGES)pbOldPriv, 0, NULL, NULL );
         CloseHandle( Token );
     }
     if( pbOldPriv != NULL && pbOldPriv != OldPriv )
         LocalFree( pbOldPriv );
-    return( b );
+    return( ok );
 }
 
 static int match( const char *p, const char *criterion )
@@ -337,7 +398,7 @@ void ParseServiceStuff( char *name,
     ( *pservice_name ) = "";
     ( *pdll_destination ) = "";
     ( *pservice_parm ) = "";
-    while( ( p = strrchr( name, LOAD_PROG_CHR_DELIM ) ) != NULL ) {
+    while( (p = strrchr( name, LOAD_PROG_CHR_DELIM )) != NULL ) {
         if( match( p, LOAD_PROG_STR_DLLNAME ) ) {
             *p = '\0';
             ( *pdll_name ) = p + strlen( LOAD_PROG_STR_DLLNAME ) + 1;
@@ -374,12 +435,12 @@ void ParseServiceStuff( char *name,
 
 typedef long( __stdcall *SELECTPROCESS ) ( char *name );
 
-static BOOL StartDebuggee( void )
+static bool StartDebuggee( void )
 {
     STARTUPINFO         sinfo;
     PROCESS_INFORMATION pinfo;
-    BOOL                rc;
-    DWORD               oldErrorMode = SetErrorMode( 0 );
+    bool                rc;
+    DWORD               oldErrorMode;
     HMODULE             mod;
     SELECTPROCESS       select;
     char                *dll_name;
@@ -393,14 +454,15 @@ static BOOL StartDebuggee( void )
     char                buff[_MAX_PATH];
     pgroup2             pg;
 
+    oldErrorMode = SetErrorMode( 0 );
+    rc = false;
     ParseServiceStuff( Shared.name, &dll_name, &service_name, &dll_destination, &service_parm );
     service = NULL;
     service_manager = NULL;
-    if( service_name[0] ) {
+    if( *service_name != '\0' ) {
         service_manager = OpenSCManager( NULL, NULL, SC_MANAGER_ALL_ACCESS );
         if( service_manager == NULL ) {
             AddMessagePrefix( "Unable to open service manager", 0 );
-            rc = FALSE;
             goto failed;
         }
     }
@@ -414,7 +476,6 @@ static BOOL StartDebuggee( void )
         if( servicesReturned == 0 ) {
             eenum = LocalAlloc( LMEM_FIXED | LMEM_ZEROINIT, bytesNeeded );
             if( eenum == NULL ) {
-                rc = FALSE;
                 goto failed;
             }
             EnumServicesStatus( service_manager, SERVICE_WIN32 + SERVICE_DRIVER, SERVICE_ACTIVE + SERVICE_INACTIVE, eenum, bytesNeeded, &bytesNeeded, &servicesReturned, &resumeHandle );
@@ -455,7 +516,6 @@ static BOOL StartDebuggee( void )
         service = OpenService( service_manager, service_name, SERVICE_ALL_ACCESS );
         if( service == NULL ) {
             AddMessagePrefix( "Unable to open the specified service", 0 );
-            rc = FALSE;
             goto failed;
         }
         LocalFree( eenum );
@@ -472,7 +532,6 @@ static BOOL StartDebuggee( void )
                 }
                 if( !QueryServiceStatus( service, &status ) ) {
                     AddMessagePrefix( "Unable to stop the specified service", 0 );
-                    rc = FALSE;
                     goto failed;
                 }
                 if( status.dwCurrentState == SERVICE_STOPPED )
@@ -483,7 +542,7 @@ static BOOL StartDebuggee( void )
         }
     }
 
-    if( dll_name[0] && dll_destination[0] ) {
+    if( *dll_name != '\0' && *dll_destination != '\0' ) {
         char *end;
         WIN32_FIND_DATA dat;
         strcpy( buff, dll_destination );
@@ -492,7 +551,7 @@ static BOOL StartDebuggee( void )
             strcat( buff, "\\" );
         }
         strcat( buff, "." );
-        if( FindFirstFile( buff, &dat ) != INVALID_HANDLE_VALUE ) {
+        if( __lib_FindFirstFile( buff, &dat ) != INVALID_HANDLE_VALUE ) {
            if( dat.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY ) {
                 _splitpath2( dll_name, pg.buffer, NULL, NULL, &pg.fname, &pg.ext );
                 _makepath( buff, NULL, dll_destination, pg.fname, pg.ext );
@@ -505,7 +564,6 @@ static BOOL StartDebuggee( void )
             strcat( MsgPrefix, "' to '" );
             strcat( MsgPrefix, dll_destination );
             strcat( MsgPrefix, "'" );
-            rc = FALSE;
             goto failed;
         }
     }
@@ -524,7 +582,6 @@ static BOOL StartDebuggee( void )
             }
             if( !QueryServiceStatus( service, &status ) ) {
                 AddMessagePrefix( "Unable to start the specified service", 0 );
-                rc = FALSE;
                 goto failed;
             }
             if( status.dwCurrentState == SERVICE_RUNNING )
@@ -544,16 +601,16 @@ static BOOL StartDebuggee( void )
         if( mod != NULL ) {
             select = ( SELECTPROCESS )GetProcAddress( mod, "_SelectProcess@4" );
             if( select != NULL ) {
-                if( Shared.name == NULL || Shared.name[0] == '\0' ) {
-                    Shared.pid = ( *select ) ( "" );
+                if( Shared.name == NULL || *Shared.name == '\0' ) {
+                    Shared.pid = (*select)( "" );
                 } else {
                     i = 0;
                     for( ;; ) {
                         if( i == 10 ) {
-                            Shared.pid = ( *select ) ( "" );
+                            Shared.pid = (*select)( "" );
                             break;
                         }
-                        Shared.pid = ( *select ) ( Shared.name );
+                        Shared.pid = (*select)( Shared.name );
                         if( Shared.pid != 0 && Shared.pid != -1 ) {
                             break;
                         }
@@ -567,7 +624,8 @@ static BOOL StartDebuggee( void )
     }
     if( Shared.pid != 0 && Shared.pid != -1 ) {
         rc = MyDebugActiveProcess( Shared.pid );
-#if !defined( MD_x64 )
+#if MADARCH & MADARCH_X64
+#elif defined( WOW )
         if( IsWOW ) {
             /*
              * WOW was already running, so we start up wowdeb (this
@@ -578,10 +636,12 @@ static BOOL StartDebuggee( void )
              */
             memset( &sinfo, 0, sizeof( sinfo ) );
             sinfo.cb = sizeof( sinfo );
-            // set ShowWindow default value for nCmdShow parameter
+            /*
+             * set ShowWindow default value for nCmdShow parameter
+             */
             sinfo.dwFlags = STARTF_USESHOWWINDOW;
             sinfo.wShowWindow = SW_SHOWNORMAL;
-            rc = CreateProcess( NULL,           /* application name */
+            rc = ( CreateProcess( NULL,         /* application name */
                                 "wowdeb.exe",   /* command line */
                                 NULL,           /* process attributes */
                                 NULL,           /* thread attributes */
@@ -591,8 +651,8 @@ static BOOL StartDebuggee( void )
                                 NULL,           /* starting directory */
                                 &sinfo,         /* startup info */
                                 &pinfo          /* process info */
-                                );
-            rc = CreateProcess( NULL,           /* application name */
+                                ) != 0 );
+            rc = ( CreateProcess( NULL,         /* application name */
                                 Shared.name,    /* command line */
                                 NULL,           /* process attributes */
                                 NULL,           /* thread attributes */
@@ -602,62 +662,61 @@ static BOOL StartDebuggee( void )
                                 NULL,           /* starting directory */
                                 &sinfo,         /* startup info */
                                 &pinfo          /* process info */
-                                );
+                                ) != 0 );
         }
 #endif
         pinfo.dwProcessId = Shared.pid;
     } else {
         memset( &sinfo, 0, sizeof( sinfo ) );
         sinfo.cb = sizeof( sinfo );
-        // set ShowWindow default value for nCmdShow parameter
+        /*
+         * set ShowWindow default value for nCmdShow parameter
+         */
         sinfo.dwFlags = STARTF_USESHOWWINDOW;
         sinfo.wShowWindow = SW_SHOWNORMAL;
-        rc = CreateProcess( NULL,               /* application name */
+        rc = ( CreateProcess( NULL,             /* application name */
                             Shared.name,        /* command line */
                             NULL,               /* process attributes */
                             NULL,               /* thread attributes */
-                            TRUE,              /* inherit handles */
+                            TRUE,               /* inherit handles */
                             Shared.flags,       /* creation flags */
                             NULL,               /* environment block */
                             NULL,               /* starting directory */
                             &sinfo,             /* startup info */
                             &pinfo              /* process info */
-                            );
+                            ) != 0 );
     }
+    Shared.pid = pinfo.dwProcessId;
 failed:
     SetErrorMode( oldErrorMode );
-    Shared.pid = pinfo.dwProcessId;
     return( rc );
 }
 
-static BOOL DoWaitForDebugEvent( void )
+static bool DoWaitForDebugEvent( void )
 {
-    BOOL    done;
+    bool    done;
     DWORD   code;
-    BOOL    rc;
+    bool    rc;
 
-    done = FALSE;
-
-#if !defined( MD_x64 )
-    UseVDMStuff = FALSE;
+#if MADARCH & MADARCH_X64
+#elif defined( WOW )
+    UseVDMStuff = false;
 #endif
+    rc = false;
+    done = false;
     while( !done ) {
         SetLastError( 0 );
         if( WaitForDebugEvent( &DebugEvent, INFINITE ) ) {
-            rc = TRUE;
-            DidWaitForDebugEvent = TRUE;
-
+            rc = true;
+            DidWaitForDebugEvent = true;
             if( DebugEvent.dwDebugEventCode == EXCEPTION_DEBUG_EVENT ) {
                 code = DebugEvent.u.Exception.ExceptionRecord.ExceptionCode;
+                switch( code ) {
 #ifdef WOW
-#if !defined( MD_x64 )
-                if( code == STATUS_VDM_EVENT ) {
-                    BOOL    vdmrc;
-
-                    vdmrc = pVDMProcessException( &DebugEvent );
-                    if( vdmrc ) {
-                        UseVDMStuff = TRUE;
-                        done = TRUE;
+                case STATUS_VDM_EVENT:
+                    if( pVDMProcessException( &DebugEvent ) ) {
+                        UseVDMStuff = true;
+                        done = true;
                     } else {
                         LastDebugEventTid = DebugEvent.dwThreadId;
                         DoContinueDebugEvent( DBG_CONTINUE );
@@ -666,94 +725,54 @@ static BOOL DoWaitForDebugEvent( void )
                      * sometimes, we seem to get crap back, so the thing to do
                      * is to ignore it.  When all else fails, punt.
                      */
-                } else
+                    break;
 #endif
-#endif
-                {
-                    switch( code ) {
-                    case STATUS_DATATYPE_MISALIGNMENT:
-                    case STATUS_BREAKPOINT:
-                    case STATUS_SINGLE_STEP:
-                    case STATUS_ACCESS_VIOLATION:
-                    case STATUS_IN_PAGE_ERROR:
-                    case STATUS_NO_MEMORY:
-                    case STATUS_ILLEGAL_INSTRUCTION:
-                    case STATUS_NONCONTINUABLE_EXCEPTION:
-                    case STATUS_INVALID_DISPOSITION:
-                    case STATUS_ARRAY_BOUNDS_EXCEEDED:
-                    case STATUS_FLOAT_DENORMAL_OPERAND:
-                    case STATUS_FLOAT_DIVIDE_BY_ZERO:
-                    case STATUS_FLOAT_INVALID_OPERATION:
-                    case STATUS_FLOAT_OVERFLOW:
-                    case STATUS_FLOAT_STACK_CHECK:
-                    case STATUS_FLOAT_UNDERFLOW:
-                    case STATUS_INTEGER_DIVIDE_BY_ZERO:
-                    case STATUS_INTEGER_OVERFLOW:
-                    case STATUS_PRIVILEGED_INSTRUCTION:
-                    case STATUS_STACK_OVERFLOW:
-                    case STATUS_CONTROL_C_EXIT:
-                        done = TRUE;
-                        break;
-                    default:
-                        if( ( code & ERROR_SEVERITY_ERROR ) ==
-                                ERROR_SEVERITY_ERROR ) {
-                            done = TRUE;
-                            break;
-                        }
-                        LastDebugEventTid = DebugEvent.dwThreadId;
-                        DoContinueDebugEvent( DBG_EXCEPTION_NOT_HANDLED );
+                case STATUS_DATATYPE_MISALIGNMENT:
+                case STATUS_BREAKPOINT:
+                case STATUS_SINGLE_STEP:
+                case STATUS_ACCESS_VIOLATION:
+                case STATUS_IN_PAGE_ERROR:
+                case STATUS_NO_MEMORY:
+                case STATUS_ILLEGAL_INSTRUCTION:
+                case STATUS_NONCONTINUABLE_EXCEPTION:
+                case STATUS_INVALID_DISPOSITION:
+                case STATUS_ARRAY_BOUNDS_EXCEEDED:
+                case STATUS_FLOAT_DENORMAL_OPERAND:
+                case STATUS_FLOAT_DIVIDE_BY_ZERO:
+                case STATUS_FLOAT_INVALID_OPERATION:
+                case STATUS_FLOAT_OVERFLOW:
+                case STATUS_FLOAT_STACK_CHECK:
+                case STATUS_FLOAT_UNDERFLOW:
+                case STATUS_INTEGER_DIVIDE_BY_ZERO:
+                case STATUS_INTEGER_OVERFLOW:
+                case STATUS_PRIVILEGED_INSTRUCTION:
+                case STATUS_STACK_OVERFLOW:
+                case STATUS_CONTROL_C_EXIT:
+                    done = true;
+                    break;
+                default:
+                    if( (code & ERROR_SEVERITY_ERROR) == ERROR_SEVERITY_ERROR ) {
+                        done = true;
                         break;
                     }
+                    LastDebugEventTid = DebugEvent.dwThreadId;
+                    DoContinueDebugEvent( DBG_EXCEPTION_NOT_HANDLED );
+                    break;
                 }
             } else {
-                done = TRUE;
+                done = true;
             }
         } else {
-            rc = FALSE;
+            rc = false;
             break;
         }
     }
     return( rc );
 }
 
-static void StopDebuggee( void )
-{
-    if( DebugeePid && ( IsWOW || !DebugeeEnded ) ) {
-        /*
-         * we must process debug events until the process is actually
-         * terminated
-         */
-        Slaying = TRUE;
-#if !defined( MD_x64 )
-        if( IsWin32s ) {
-            DoContinueDebugEvent( DBG_TERMINATE_PROCESS );
-            DoWaitForDebugEvent();
-            DoContinueDebugEvent( DBG_CONTINUE );
-        } else {
-#else
-        {
-#endif
-            HANDLE  hp;
-
-            hp = OpenProcess( PROCESS_ALL_ACCESS, FALSE, DebugeePid );
-            if( hp != NULL ) {
-                TerminateProcess( hp, 0 );
-                CloseHandle( hp );
-                while( (DebugExecute( 0, NULL, FALSE ) & COND_TERMINATE) == 0 ) {
-                }
-                /*
-                 * we must continue the final debug event for everything to
-                 * be truly clean and wonderful
-                 */
-                DoContinueDebugEvent( DBG_CONTINUE );
-            }
-        }
-        Slaying = FALSE;
-    }
-    DebugeePid = 0;
-}
-
-// end of seperate thread
+/*
+ * end of seperate thread
+ */
 
 DWORD StartControlThread( char *name, DWORD *pid, DWORD cr_flags )
 {
@@ -761,11 +780,11 @@ DWORD StartControlThread( char *name, DWORD *pid, DWORD cr_flags )
     Shared.pid = *pid;
     Shared.flags = cr_flags;
     Shared.name = name;
-    Shared.control_thread_running = FALSE;
-#if !defined( MD_x64 )
-    if( !IsWin32s ) {
-#else
+    Shared.control_thread_running = false;
+#if MADARCH & MADARCH_X64
     {
+#else
+    if( !IsWin32s ) {
 #endif
         DWORD       tid;
 
@@ -775,18 +794,18 @@ DWORD StartControlThread( char *name, DWORD *pid, DWORD cr_flags )
         if( Shared.hThread == NULL ) {
             MessageBox( NULL, "Error creating thread!", TRP_The_WATCOM_Debugger, MB_APPLMODAL + MB_OK );
         }
-        Shared.control_thread_running = TRUE;
+        Shared.control_thread_running = true;
     }
     ControlReq( CTL_START );
     *pid = Shared.pid;
     return( Shared.err );
 }
 
-/*
- * MyWaitForDebugEvent - wait for a debug event.  Only return meaningful
- *                       VDM debug events
+bool MyWaitForDebugEvent( void )
+/*******************************
+ * wait for a debug event
+ * Only return meaningful VDM debug events
  */
-BOOL MyWaitForDebugEvent( void )
 {
     if( Shared.on_control_thread ) {
         return( DoWaitForDebugEvent() );
@@ -812,6 +831,6 @@ void StopControlThread( void )
         WaitForSingleObject( Shared.hThread, INFINITE );
         CloseHandle( Shared.requestsem );
         CloseHandle( Shared.requestdonesem );
-        Shared.control_thread_running = FALSE;
+        Shared.control_thread_running = false;
     }
 }

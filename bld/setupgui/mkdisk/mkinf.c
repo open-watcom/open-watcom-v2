@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,6 +35,7 @@
 #include <string.h>
 #include <ctype.h>
 #include <limits.h>
+#include <errno.h>
 #include <sys/stat.h>
 #ifndef __UNIX__
     #include <direct.h>
@@ -150,6 +151,8 @@ static bool                 IgnoreMissingFiles = false;
 static bool                 CreateMissingFiles = false;
 static LIST                 *Include = NULL;
 static const char           MksetupInf[] = "mksetup.inf";
+
+static const char encode36_table[] = "0123456789abcdefghijklmnopqrstuvwxyz";
 
 /*
  * Shift-JIS (CP932) lead byte ranges
@@ -1157,6 +1160,26 @@ void ReadInfFile( void )
     fclose( fp );
 }
 
+static char *encode36( char *buffer, unsigned long value )
+/********************************************************/
+{
+    char        *p = buffer;
+    char        *q;
+    unsigned    rem;
+    char        buf[34];        // only holds ASCII so 'char' is OK
+
+    buf[0] = '\0';
+    q = &buf[1];
+    do {
+        rem = value % 36;
+        value = value / 36;
+        *q = encode36_table[rem];
+        ++q;
+    } while( value != 0 );
+    while( (*p++ = (char)*--q) != '\0' )
+        ;
+    return( buffer );
+}
 
 static void fput36( FILE *fp, long value )
 /****************************************/
@@ -1167,8 +1190,7 @@ static void fput36( FILE *fp, long value )
         fprintf( fp, "-" );
         value = -value;
     }
-    ltoa( value, buff, 36 );
-    fprintf( fp, "%s", buff );
+    fprintf( fp, "%s", encode36( buff, value ) );
 }
 
 void DumpSizes( FILE *fp, FILE_INFO *curr )

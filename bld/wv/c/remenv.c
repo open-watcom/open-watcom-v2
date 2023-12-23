@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -78,9 +78,8 @@ bool RemoteSetEnvironmentVariable( char *name, char *value )
     if( ret.err != 0 ) {
         StashErrCode( ret.err, OP_REMOTE );
         return( false );
-    } else {
-        return( true );
     }
+    return( true );
 }
 
 bool RemoteGetEnvironmentVariable( char *name, char *res, trap_elen res_len )
@@ -106,7 +105,6 @@ bool RemoteGetEnvironmentVariable( char *name, char *res, trap_elen res_len )
     if( ret.err != 0 ) {
         StashErrCode( ret.err, OP_REMOTE );
         return( false );
-    } else {
-        return( true );
     }
+    return( true );
 }

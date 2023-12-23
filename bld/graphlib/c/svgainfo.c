@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -71,7 +71,7 @@ static int TestForVESA( void )
 #endif
 
 #if defined( _M_I86 ) || defined( __QNX__ )
-    val = GetVESAInfo( 0x4f00, 0, &buf );
+    val = GetVESAInfo( 0x4f00, 0, buf );
     if( val == 0x004f && buf[0] == 'V' && buf[1] == 'E' &&
                          buf[2] == 'S' && buf[3] == 'A' ) {
         return( TRUE );
@@ -112,7 +112,7 @@ short _SuperVGAType( void )
         return _SVGAType;
     }
 
-    dcc = VideoInt( _BIOS_VIDEO_DCC, 0, 0, 0 ) & 0x00ff;
+    dcc = VideoInt( VIDEOINT_VIDEO_DCC, 0, 0, 0 ) & 0x00ff;
     if( dcc != 0x1a ) {
         return( _SV_NONE );
     }

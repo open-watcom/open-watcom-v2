@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,15 +36,13 @@
 #include "asmopnds.h"
 #include "asmsym.h"
 #include "asmops.h"
+#include "asmtok.h"
 
 enum regsize {
     A_BYTE = 0,
     A_WORD,
     A_DWORD,
 };
-
-typedef unsigned char   token_idx;
-#define INVALID_IDX     ((token_idx)-1)
 
 typedef enum operand_idx {
     OPND1 = 0,
@@ -153,13 +151,12 @@ extern int      GetInsString( asm_token, char * );
 
 #endif
 
-extern bool     check_override( token_idx *i );
 extern int      OperandSize( OPNDTYPE opnd );
 extern bool     InRange( unsigned long val, unsigned bytes );
 extern bool     cpu_directive( asm_token );
-extern bool     AsmParse( const char *curline );
-extern bool     NextArrayElement( bool *next );
-extern bool     data_init( token_idx, token_idx );
+extern bool     AsmParse( token_buffer *tokbuf, const char *curline );
+extern bool     NextArrayElement( token_buffer *tokbuf, bool *next );
+extern bool     data_init( token_buffer *tokbuf, token_idx, token_idx );
 extern bool     match_phase_1( void );
 
 #endif

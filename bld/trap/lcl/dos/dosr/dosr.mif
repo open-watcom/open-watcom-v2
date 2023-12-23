@@ -1,5 +1,4 @@
-std_objs = &
-        $(dos_objs) &
+dosr_objs = &
         dosredir.obj &
         dosovl.obj &
         dosacc.obj &
@@ -8,9 +7,10 @@ std_objs = &
         misc7086.obj
 
 extra_cppflags += -DREAL_MODE
-extra_a_flags = -DREAL_MODE
-
-extra_objs  = $(std_objs) realtrap.obj
-extra_dobjs = $(std_objs) dumtrap.obj
+extra_a_flags += -DREAL_MODE
 
 !include $(trap_dir)/lcl/dos/dos.mif
+!include $(trap_dir)/lcl/lcl.mif
+
+extra_objs  += realtrap.obj $(dosr_objs) $(dos_trap_core_objs)
+extra_dobjs += dumtrap.obj $(dosr_objs) $(dos_trap_core_objs)

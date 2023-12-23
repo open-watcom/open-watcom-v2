@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,7 +31,9 @@
 
 
 #include <setjmp.h>
+#include "jmpbuf.h"
 #include "spawn.h"
+
 
 static  jmp_buf *SpawnStack;
 
@@ -43,7 +46,7 @@ int     Spawn( void (*fn)( void ) )
     int         status;
 
     save_env = SpawnStack;
-    SpawnStack = &env;
+    SpawnStack = JMPBUF_PTR( env );
     status = setjmp( env );
     if( status == 0 ) {
         (*fn)();

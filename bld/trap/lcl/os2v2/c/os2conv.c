@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,31 +38,24 @@
 #define INCL_WINSYS
 #include <os2.h>
 #include <os2dbg.h>
-#include "trpimp.h"
-#include "trperr.h"
-#include "dosdebug.h"
-#include "os2trap.h"
-#include "bsexcpt.h"
+#include "bool.h"
 #include "os2v2acc.h"
+#include "trperr.h"
+#include "bsexcpt.h"
+#include "dbgthrd.h"
 
-extern uDB_t            Buff;
-
-extern USHORT           TaskFS;
 
 /* Hardcoded selector values - extremely unlikely to change. */
-USHORT FlatCS = 0x5B, FlatDS = 0x53;
-
-extern ULONG            ExceptNum;
+USHORT                  FlatCS = 0x5B;
+USHORT                  FlatDS = 0x53;
 
 
 /*
  * IsFlatSeg - check for flat segment
  */
-int IsFlatSeg( USHORT seg )
+bool IsFlatSeg( USHORT seg )
 {
-    if( seg == FlatCS || seg == FlatDS )
-        return( TRUE );
-    return( FALSE );
+    return( seg == FlatCS || seg == FlatDS );
 } /* IsFlatSeg */
 
 
@@ -69,15 +63,15 @@ int IsFlatSeg( USHORT seg )
  * IsUnknownGDTSeg - tell if someone is NOT a flat segment but IS a GDT seg.
  * This is useful for FS segment access.
  */
-int IsUnknownGDTSeg( USHORT seg )
+bool IsUnknownGDTSeg( USHORT seg )
 {
     if( seg == FlatCS || seg == FlatDS ) {
-        return( FALSE );
+        return( false );
     }
     if( seg == TaskFS ) {
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 } /* IsUnknownGDTSeg */
 
 

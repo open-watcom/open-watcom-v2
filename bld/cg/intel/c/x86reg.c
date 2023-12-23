@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,6 +34,7 @@
 #include "_cgstd.h"
 #include "coderep.h"
 #include "cgaux.h"
+#include "cgauxcc.h"
 #include "cgmem.h"
 #include "data.h"
 #include "utils.h"
@@ -50,6 +51,7 @@ type_class_def  CallState( aux_handle aux, type_def *tipe, call_state *state )
 /****************************************************************************/
 {
     call_class          cclass;
+    call_class_target   cclass_target;
     type_class_def      type_class;
     uint                i;
     hw_reg_set          parms[10];
@@ -59,7 +61,7 @@ type_class_def  CallState( aux_handle aux, type_def *tipe, call_state *state )
     hw_reg_set          tmp;
 
     state->unalterable = FixedRegs();
-    pregs = FEAuxInfo( aux, SAVE_REGS );
+    pregs = FEAuxInfo( aux, FEINF_SAVE_REGS );
     HW_CAsgn( state->modify, HW_FULL );
     HW_TurnOff( state->modify, *pregs );
     HW_CTurnOff( state->modify, HW_UNUSED );
@@ -68,97 +70,104 @@ type_class_def  CallState( aux_handle aux, type_def *tipe, call_state *state )
     HW_TurnOff( tmp, StackReg() );
     HW_CTurnOff( tmp, HW_xBP ); /* should be able to call routine which modifies [E]BP */
     if( HW_Ovlap( state->unalterable, tmp ) ) {
-        FEMessage( MSG_BAD_SAVE, aux );
+        FEMessage( FEMSG_BAD_SAVE, aux );
     }
     state->attr = ROUTINE_REMOVES_PARMS;
-    cclass = *(call_class *)FEAuxInfo( aux, CALL_CLASS );
-    if( cclass & INTERRUPT ) {
+    cclass = (call_class)(pointer_uint)FEAuxInfo( aux, FEINF_CALL_CLASS );
+    cclass_target = (call_class_target)(pointer_uint)FEAuxInfo( aux, FEINF_CALL_CLASS_TARGET );
+    if( cclass_target & FECALL_X86_INTERRUPT ) {
         state->attr |= ROUTINE_INTERRUPT;
-    } else if( cclass & FAR_CALL ) {
+    } else if( cclass_target & FECALL_X86_FAR_CALL ) {
         state->attr |= ROUTINE_LONG;
-    } else if( cclass & FAR16_CALL ) {
+    } else if( cclass_target & FECALL_X86_FAR16_CALL ) {
         state->attr |= ROUTINE_FAR16;
     }
-    if( cclass & CALLER_POPS ) {
+    if( cclass & FECALL_GEN_CALLER_POPS ) {
         state->attr &= ~ROUTINE_REMOVES_PARMS;
     }
-    if( cclass & SUICIDAL ) {
-        state->attr |= ROUTINE_NEVER_RETURNS;
+    if( cclass & FECALL_GEN_ABORTS ) {
+        state->attr |= ROUTINE_NEVER_RETURNS_ABORTS;
     }
-    if( cclass & ROUTINE_RETURN ) {
+    if( cclass & FECALL_GEN_NORETURN ) {
+        state->attr |= ROUTINE_NEVER_RETURNS_NORETURN;
+    }
+    if( cclass_target & FECALL_X86_ROUTINE_RETURN ) {
         state->attr |= ROUTINE_ALLOCS_RETURN;
     }
-    if( cclass & NO_STRUCT_REG_RETURNS ) {
+    if( cclass_target & FECALL_X86_NO_STRUCT_REG_RETURNS ) {
         state->attr |= ROUTINE_NO_STRUCT_REG_RETURNS;
     }
-    if( cclass & NO_FLOAT_REG_RETURNS ) {
+    if( cclass_target & FECALL_X86_NO_FLOAT_REG_RETURNS ) {
         state->attr |= ROUTINE_NO_FLOAT_REG_RETURNS;
         state->attr |= ROUTINE_NO_8087_RETURNS;
     }
-    if( cclass & NO_8087_RETURNS ) {
+    if( cclass_target & FECALL_X86_NO_8087_RETURNS ) {
         state->attr |= ROUTINE_NO_8087_RETURNS;
     }
-    if( cclass & MODIFY_EXACT ) {
+    if( cclass_target & FECALL_X86_MODIFY_EXACT ) {
         state->attr |= ROUTINE_MODIFY_EXACT;
     }
-    if( cclass & NO_MEMORY_CHANGED ) {
+    if( cclass & FECALL_GEN_NO_MEMORY_CHANGED ) {
         state->attr |= ROUTINE_MODIFIES_NO_MEMORY;
     }
-    if( cclass & NO_MEMORY_READ ) {
+    if( cclass & FECALL_GEN_NO_MEMORY_READ ) {
         state->attr |= ROUTINE_READS_NO_MEMORY;
     }
-    if( cclass & LOAD_DS_ON_ENTRY ) {
+    if( cclass_target & FECALL_X86_LOAD_DS_ON_ENTRY ) {
         state->attr |= ROUTINE_LOADS_DS;
     }
-    if( cclass & LOAD_DS_ON_CALL ) {
+    if( cclass_target & FECALL_X86_LOAD_DS_ON_CALL ) {
         state->attr |= ROUTINE_NEEDS_DS_LOADED;
     }
-    if( cclass & PARMS_STACK_RESERVE ) {
+    if( cclass_target & FECALL_X86_PARMS_STACK_RESERVE ) {
         state->attr |= ROUTINE_STACK_RESERVE;
     }
-    if( cclass & PARMS_PREFER_REGS ) {
+    if( cclass_target & FECALL_X86_PARMS_PREFER_REGS ) {
         state->attr |= ROUTINE_PREFER_REGS;
     }
-    if( cclass & FARSS ) {
+    if( cclass_target & FECALL_X86_FARSS ) {
         state->attr |= ROUTINE_FARSS;
     }
+    if( cclass_target & FECALL_X86_NEEDS_BP_CHAIN ) {
+        state->attr |= ROUTINE_NEEDS_BP_CHAIN;
+    }
     if( state == &CurrProc->state ) {
-        if( cclass & ( GENERATE_STACK_FRAME | PROLOG_HOOKS | EPILOG_HOOKS ) ) {
-            CurrProc->prolog_state |= GENERATE_FAT_PROLOG;
+        if( cclass_target & (FECALL_X86_GENERATE_STACK_FRAME | FECALL_X86_PROLOG_HOOKS | FECALL_X86_EPILOG_HOOKS) ) {
+            CurrProc->prolog_state |= PST_PROLOG_FAT;
             state->attr |= ROUTINE_NEEDS_PROLOG;
         }
-        if( cclass & PROLOG_HOOKS ) {
-            CurrProc->prolog_state |= GENERATE_PROLOG_HOOKS;
+        if( cclass_target & FECALL_X86_PROLOG_HOOKS ) {
+            CurrProc->prolog_state |= PST_PROLOG_HOOKS;
         }
-        if( cclass & EPILOG_HOOKS ) {
-            CurrProc->prolog_state |= GENERATE_EPILOG_HOOKS;
+        if( cclass_target & FECALL_X86_EPILOG_HOOKS ) {
+            CurrProc->prolog_state |= PST_EPILOG_HOOKS;
         }
-        if( cclass & FAT_WINDOWS_PROLOG ) {
-            CurrProc->prolog_state |= GENERATE_FAT_PROLOG;
+        if( cclass_target & FECALL_X86_PROLOG_FAT_WINDOWS ) {
+            CurrProc->prolog_state |= PST_PROLOG_FAT;
         }
-        if( cclass & EMIT_FUNCTION_NAME ) {
-            CurrProc->prolog_state |= GENERATE_FUNCTION_NAME;
+        if( cclass_target & FECALL_X86_EMIT_FUNCTION_NAME ) {
+            CurrProc->prolog_state |= PST_FUNCTION_NAME;
         }
-        if( cclass & THUNK_PROLOG ) {
-            CurrProc->prolog_state |= GENERATE_THUNK_PROLOG;
+        if( cclass_target & FECALL_X86_THUNK_PROLOG ) {
+            CurrProc->prolog_state |= PST_PROLOG_THUNK;
         }
-        if( cclass & GROW_STACK ) {
-            CurrProc->prolog_state |= GENERATE_GROW_STACK;
+        if( cclass_target & FECALL_X86_GROW_STACK ) {
+            CurrProc->prolog_state |= PST_GROW_STACK;
         }
-        if( cclass & TOUCH_STACK ) {
-            CurrProc->prolog_state |= GENERATE_TOUCH_STACK;
+        if( cclass_target & FECALL_X86_TOUCH_STACK ) {
+            CurrProc->prolog_state |= PST_TOUCH_STACK;
         }
-        if( cclass & LOAD_RDOSDEV_ON_ENTRY ) {
-            CurrProc->prolog_state |= GENERATE_RDOSDEV_PROLOG;
+        if( cclass_target & FECALL_X86_LOAD_RDOSDEV_ON_ENTRY ) {
+            CurrProc->prolog_state |= PST_PROLOG_RDOSDEV;
         }
     }
     type_class = ReturnTypeClass( tipe, state->attr );
     i = 0;
     parm_dst = &parms[0];
-    for( parm_src = FEAuxInfo( aux, PARM_REGS ); !HW_CEqual( *parm_src, HW_EMPTY ); ++parm_src ) {
+    for( parm_src = FEAuxInfo( aux, FEINF_PARM_REGS ); !HW_CEqual( *parm_src, HW_EMPTY ); ++parm_src ) {
         *parm_dst = *parm_src;
         if( HW_Ovlap( *parm_dst, state->unalterable ) ) {
-            FEMessage( MSG_BAD_SAVE, aux );
+            FEMessage( FEMSG_BAD_SAVE, aux );
         }
         HW_CTurnOff( *parm_dst, HW_UNUSED );
         parm_dst++;
@@ -174,8 +183,8 @@ type_class_def  CallState( aux_handle aux, type_def *tipe, call_state *state )
     if( tipe == TypeNone ) {
         HW_CAsgn( state->return_reg, HW_EMPTY );
     } else if( type_class == XX ) {
-        if( cclass & SPECIAL_STRUCT_RETURN ) {
-            pregs = FEAuxInfo( aux, STRETURN_REG );
+        if( cclass_target & FECALL_X86_SPECIAL_STRUCT_RETURN ) {
+            pregs = FEAuxInfo( aux, FEINF_STRETURN_REG );
             state->return_reg = *pregs;
             state->attr |= ROUTINE_HAS_SPECIAL_RETURN;
         } else {
@@ -186,8 +195,8 @@ type_class_def  CallState( aux_handle aux, type_def *tipe, call_state *state )
             HW_TurnOn( state->modify, tmp );
         }
     } else {
-        if( cclass & SPECIAL_RETURN ) {
-            pregs = FEAuxInfo( aux, RETURN_REG );
+        if( cclass_target & FECALL_X86_SPECIAL_RETURN ) {
+            pregs = FEAuxInfo( aux, FEINF_RETURN_REG );
             state->return_reg = *pregs;
             state->attr |= ROUTINE_HAS_SPECIAL_RETURN;
         } else {
@@ -204,7 +213,9 @@ void    UpdateReturn( call_state *state, type_def *tipe, type_class_def type_cla
 {
     hw_reg_set  normal;
 
-    if( _FPULevel( FPU_87 ) && _NPX( state->attr ) && (tipe->attr & TYPE_FLOAT) ) {
+    if( _FPULevel( FPU_87 )
+      && _NPX( state->attr )
+      && (tipe->attr & TYPE_FLOAT) ) {
         HW_COnlyOn( state->return_reg, HW_ST0 );
     } else {
         HW_CTurnOff( state->return_reg, HW_FLTS );
@@ -212,7 +223,7 @@ void    UpdateReturn( call_state *state, type_def *tipe, type_class_def type_cla
     if( tipe == TypeNone ) {
         if( HW_CEqual( state->return_reg, HW_EMPTY ) )
             return;
-        FEMessage( MSG_BAD_RETURN_REGISTER, aux );
+        FEMessage( FEMSG_BAD_RETURN_REGISTER, aux );
         HW_CAsgn( state->return_reg, HW_EMPTY );
         state->attr &= ~ROUTINE_HAS_SPECIAL_RETURN;
     } else if( type_class == XX ) {
@@ -221,24 +232,24 @@ void    UpdateReturn( call_state *state, type_def *tipe, type_class_def type_cla
             return;
         if( HW_CEqual( state->return_reg, HW_EMPTY ) )
             return;
-        // if( !HW_Ovlap( state->return_reg, state->unalterable ) &&
-        //    IsRegClass( state->return_reg, WD ) )
-        //     return;
+//        if( !HW_Ovlap( state->return_reg, state->unalterable )
+//          && IsRegClass( state->return_reg, WD ) )
+//            return;
         if( IsRegClass( state->return_reg, WD ) )
             return;
-        FEMessage( MSG_BAD_RETURN_REGISTER, aux );
+        FEMessage( FEMSG_BAD_RETURN_REGISTER, aux );
         state->return_reg = normal;
         state->attr &= ~ROUTINE_HAS_SPECIAL_RETURN;
     } else {
         normal = ReturnReg( type_class, _NPX( state->attr ) );
         if( HW_Equal( state->return_reg, normal ) )
             return;
-        // if( !HW_Ovlap( state->return_reg, state->unalterable ) &&
-        //    IsRegClass( state->return_reg, type_class ) )
-        //     return;
+//        if( !HW_Ovlap( state->return_reg, state->unalterable )
+//          && IsRegClass( state->return_reg, type_class ) )
+//            return;
         if( IsRegClass( state->return_reg, type_class ) )
             return;
-        FEMessage( MSG_BAD_RETURN_REGISTER, aux );
+        FEMessage( FEMSG_BAD_RETURN_REGISTER, aux );
         state->return_reg = normal;
         state->attr &= ~ROUTINE_HAS_SPECIAL_RETURN;
     }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,6 +32,7 @@
 
 
 #include "gdefn.h"
+#include "realmod.h"
 #include "gbios.h"
 
 
@@ -89,19 +90,20 @@ short                   _NoClear = 0;       // allow user to control whether
                                             // SetMode clears the screen
 
 static short _ValidMode( short mode )
-/*============================
-
-    Check if desired mode is valid  */
-
+/*===================================
+ *
+ * Check if desired mode is valid
+ */
 {
+    unsigned short      sys_monitor;
     short               monitor;
     short               alternate;
     long                mode_test;
 
     mode &= 0x7F;                   // wipe regen bits
-    monitor = _SysMonType();
-    alternate = monitor >> 8;       // separate active/alternate adapters
-    monitor &= 0xff;
+    sys_monitor = _SysMonType();
+    alternate = sys_monitor >> 8;   // separate active/alternate adapters
+    monitor = sys_monitor & 0xff;
     mode_test = 1L << mode;
     if( ModeTable[monitor] & mode_test ||       // check active
         ModeTable[alternate] & mode_test ) {    // check alternate
@@ -114,21 +116,21 @@ static short _ValidMode( short mode )
 
 short _SetMode( short mode )
 /*==========================
-
-    This function sets the video mode on IBM PC family. */
-
+ *
+ * This function sets the video mode on IBM PC family.
+ */
 {
     if( _ValidMode( mode ) ) {
         if( mode == 7 || mode == 15 ) {
-            _BIOS_data( EQUIP_FLAGS, char ) |= 0x30;        // monochrome
+            BIOSData( BDATA_EQUIP_LIST, unsigned char ) |= 0x30;        // monochrome
         } else {
-            _BIOS_data( EQUIP_FLAGS, char ) &= ~0x30;       // remove previous settings
-            _BIOS_data( EQUIP_FLAGS, char ) |= 0x20;        // colour
+            BIOSData( BDATA_EQUIP_LIST, unsigned char ) &= ~0x30;       // remove previous settings
+            BIOSData( BDATA_EQUIP_LIST, unsigned char ) |= 0x20;        // colour
         }
         if( _NoClear ) {
             mode |= 0x80;           // set high bit, screen won't be cleared
         }
-        VideoInt( _BIOS_SET_MODE + mode, 0, 0, 0 );
+        VideoInt( VIDEOINT_SET_MODE + mode, 0, 0, 0 );
     }
     return( GetVideoMode() );
 }

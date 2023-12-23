@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -275,7 +275,7 @@ void RecordCommand( const char *startpos, wd_cmd cmd )
     char        *p;
 
     endpos = ScanPos();
-    p = StrCopy( GetCmdName( cmd ), TxtBuff );
+    p = StrCopyDst( GetCmdName( cmd ), TxtBuff );
     *p++ = ' ';
     memcpy( p, startpos, endpos - startpos );
     p += endpos - startpos;
@@ -293,10 +293,10 @@ char *GetEventAddress( event_record *ev )
     char        *p;
 
     if( IS_NIL_ADDR( ev->ip ) ) {
-        p = StrCopy( LIT_ENG( Quest_Marks ), TxtBuff );
+        p = StrCopyDst( LIT_ENG( Quest_Marks ), TxtBuff );
     } else {
         p = StrAddr( &ev->ip, TxtBuff, TXT_LEN );
     }
-    StrCopy( ":", p );
+    StrCopyDst( ":", p );
     return( TxtBuff );
 }

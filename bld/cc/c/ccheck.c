@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,7 +36,9 @@
 #include "cfeinfo.h"
 
 
-/*  return types from TypeCheck */
+/*
+ * return types from TypeCheck
+ */
 typedef enum {
     TCE_OK,                     /* types are OK */
     TCE_TYPE_MISMATCH,          /* types mismatch */
@@ -61,7 +63,7 @@ extern call_list    *CallNodeList;
 
 #define __  NO
 
-static cmp_type const   CompTable[TYP_LAST_ENTRY][TYP_LAST_ENTRY] = {
+static cmp_type const   CompTable[DATA_TYPE_SIZE][DATA_TYPE_SIZE] = {
 /*               BL,CH,UC,SH,US,IN,UI,LO,UL,DL,DU,FL,DB,LD,FI,DI,LI,PO,AR,ST,UN,FU,FI,VO,EN,TY,UF,DD,PC,WC,FC,DC,LC, */
 /* BOOL     */ { OK,AC,AC,AC,AC,AC,AC,AC,AC,AC,AC,AC,AC,AC,AC,AC,AC,AC,__,__,__,__,AC,__,AC,__,AC,__,__,__,__,__,__, },
 /* CHAR     */ { AC,OK,OK,OK,OK,OK,OK,AC,AC,AC,AC,AC,AC,AC,__,__,__,PC,__,__,__,__,OK,__,OK,__,OK,__,__,__,__,__,__, },
@@ -167,8 +169,11 @@ static cmp_type CompatibleStructs( TAGPTR tag1, TAGPTR tag2 )
         return( NO );
     field1 = tag1->u.field_list;
     field2 = tag2->u.field_list;
-    /* if either struct is undefined, let's be conservative */
-    if( (field1 == NULL) || (field2 == NULL) )
+    /*
+     * if either struct is undefined, let's be conservative
+     */
+    if( (field1 == NULL)
+      || (field2 == NULL) )
         return( NO );
     for( ; field1 != NULL && field2 != NULL; ) {
         typ1 = field1->field_type;
@@ -176,8 +181,8 @@ static cmp_type CompatibleStructs( TAGPTR tag1, TAGPTR tag2 )
         typ2 = field2->field_type;
         SKIP_TYPEDEFS( typ2 );
         if( !IdenticalType( typ1, typ2 ) ) {
-            if( ( typ1->decl_type == TYP_STRUCT && typ2->decl_type == TYP_STRUCT ) ||
-                ( typ1->decl_type == TYP_UNION && typ2->decl_type == TYP_UNION ) ) {
+            if( ( typ1->decl_type == TYP_STRUCT && typ2->decl_type == TYP_STRUCT )
+              || ( typ1->decl_type == TYP_UNION && typ2->decl_type == TYP_UNION ) ) {
                 if( CompatibleStructs( typ1->u.tag, typ2->u.tag ) != OK ) {
                     return( NO );
                 }
@@ -188,8 +193,11 @@ static cmp_type CompatibleStructs( TAGPTR tag1, TAGPTR tag2 )
         field1 = field1->next_field;
         field2 = field2->next_field;
     }
-    /* one list longer than other (possible with -zp4) */
-    if( field1 != NULL || field2 != NULL )
+    /*
+     * one list longer than other (possible with -zp4)
+     */
+    if( field1 != NULL
+      || field2 != NULL )
         return( NO );
     return( OK );
 }
@@ -226,7 +234,8 @@ static typecheck_err ChkCompatibleFunctionParms( TYPEPTR typ1, TYPEPTR typ2, boo
         } else {
             p1 = *plist1++; p2 = *plist2++;
             for( parmno = 1; p1 != NULL && p2 != NULL; ++parmno ) {
-                if( p1->decl_type == TYP_DOT_DOT_DOT || p2->decl_type == TYP_DOT_DOT_DOT ) {
+                if( p1->decl_type == TYP_DOT_DOT_DOT
+                  || p2->decl_type == TYP_DOT_DOT_DOT ) {
                     break;
                 }
                 if( !IdenticalType( p1, p2 ) ) {
@@ -239,11 +248,13 @@ static typecheck_err ChkCompatibleFunctionParms( TYPEPTR typ1, TYPEPTR typ2, boo
                 }
                 p1 = *plist1++; p2 = *plist2++;
             }
-            if( p1 != NULL && p1->decl_type == TYP_DOT_DOT_DOT || p2 != NULL && p2->decl_type == TYP_DOT_DOT_DOT ) {
+            if( ( p1 != NULL && p1->decl_type == TYP_DOT_DOT_DOT )
+              || ( p2 != NULL && p2->decl_type == TYP_DOT_DOT_DOT ) ) {
                 p1 = NULL;
                 p2 = NULL;
             }
-            if( p1 != NULL || p2 != NULL ) {
+            if( p1 != NULL
+              || p2 != NULL ) {
                 if( topLevelCheck ) {
                     CErr1( ERR_PARM_COUNT_MISMATCH );
                 }
@@ -278,17 +289,24 @@ static cmp_type DoCompatibleType( TYPEPTR typ1, TYPEPTR typ2, int ptr_indir_leve
     typ2_flags = FLAG_NONE;
     ret_val = OK;
     for( ;; ) {   // * [] loop
-        // skip typedefs, go into enum base
+        /*
+         * skip typedefs, go into enum base
+         */
         typ1 = SkipTypeFluff( typ1 );
-        // skip typedefs, go into enum base
+        /*
+         * skip typedefs, go into enum base
+         */
         typ2 = SkipTypeFluff( typ2 );
         if( typ1 == typ2 )
             break;
         if( typ1->decl_type != typ2->decl_type )
             break;
         if( typ1->decl_type == TYP_ARRAY ) {
-            /* See C99, 6.7.5.2p5 */
-            if( typ1->u.array->dimension && typ2->u.array->dimension ) {
+            /*
+             * See C99, 6.7.5.2p5
+             */
+            if( typ1->u.array->dimension
+              && typ2->u.array->dimension ) {
                 if( typ1->u.array->dimension != typ2->u.array->dimension ) {
                     ret_val = PM;
                 }
@@ -297,7 +315,7 @@ static cmp_type DoCompatibleType( TYPEPTR typ1, TYPEPTR typ2, int ptr_indir_leve
             typ1_flags = typ1->u.p.decl_flags;
             typ2_flags = typ2->u.p.decl_flags;
             if( (typ1_flags & MASK_QUALIFIERS) != (typ2_flags & MASK_QUALIFIERS) ) {
-                if( ret_val == OK ) {   //PM is a worse case
+                if( ret_val == OK ) {   // PM is a worse case
                     ret_val = PQ;
                 }
             }
@@ -317,26 +335,36 @@ static cmp_type DoCompatibleType( TYPEPTR typ1, TYPEPTR typ2, int ptr_indir_leve
     }
     if( typ1 != typ2 ) {    // if not equal see if diff by pointers
         if( ptr_indir_level > 0 ) {
-            if( typ1->decl_type == TYP_VOID || typ2->decl_type == TYP_VOID ) {
-                // allow  void ** with any ** (but warn about it)
-                if( ( ptr_indir_level == 1 ) || !CompFlags.strict_ANSI ) {
+            if( typ1->decl_type == TYP_VOID
+              || typ2->decl_type == TYP_VOID ) {
+                /*
+                 * allow  void ** with any ** (but warn about it)
+                 */
+                if( ( ptr_indir_level == 1 )
+                  || !CompFlags.strict_ANSI ) {
                     if( ptr_indir_level > 1 ) {
                         ret_val = PM;
                     }
                     return( ret_val ); // void *  and  anything *
                 }
             }
-            if( typ1->decl_type == TYP_POINTER && typ2->decl_type != TYP_ARRAY ) {
+            if( typ1->decl_type == TYP_POINTER
+              && typ2->decl_type != TYP_ARRAY ) {
                 ret_val = PW;
                 while( typ1->decl_type == TYP_POINTER ) {
-                    // skip typedefs, go into enum base
+                    /*
+                     * skip typedefs, go into enum base
+                     */
                     typ1 = SkipTypeFluff( typ1->object );
                     ++ptr_indir_level;
                 }
-            } else if( typ2->decl_type == TYP_POINTER && typ1->decl_type != TYP_ARRAY ) {
+            } else if( typ2->decl_type == TYP_POINTER
+              && typ1->decl_type != TYP_ARRAY ) {
                 ret_val = PW;
                 while( typ2->decl_type == TYP_POINTER ) {
-                    // skip typedefs, go into enum base
+                    /*
+                     * skip typedefs, go into enum base
+                     */
                     typ2 = SkipTypeFluff( typ2->object );
                     ++ptr_indir_level;
                 }
@@ -354,12 +382,17 @@ static cmp_type DoCompatibleType( TYPEPTR typ1, TYPEPTR typ2, int ptr_indir_leve
             } else if( !IdenticalType( typ1->object, typ2->object ) ) {
                 ret_val = NO;
             }
-        } else if( typ1->decl_type == TYP_STRUCT || typ1->decl_type == TYP_UNION ) {
-           /* allow pointers to different structs */
-           /* stop this for ANSI! */
-            if( ( typ1 != typ2 ) ) {
-                // Types are not the same
-                // if extensions are enabled, then we can do a compatible struct test
+        } else if( typ1->decl_type == TYP_STRUCT
+          || typ1->decl_type == TYP_UNION ) {
+           /*
+            * allow pointers to different structs
+            * stop this for ANSI!
+            */
+            if( typ1 != typ2 ) {
+                /*
+                 * Types are not the same
+                 * if extensions are enabled, then we can do a compatible struct test
+                 */
                 if( CompFlags.extensions_enabled ) {
                     if( CompatibleStructs( typ1->u.tag, typ2->u.tag ) != OK ) {
                         if( ptr_indir_level > 0 ) {
@@ -376,18 +409,21 @@ static cmp_type DoCompatibleType( TYPEPTR typ1, TYPEPTR typ2, int ptr_indir_leve
                     ret_val = NO;
                 }
             }
-        } else if( ( TYP_FIELD == typ1->decl_type ) || ( TYP_UFIELD == typ1->decl_type ) ) {
+        } else if( ( TYP_FIELD == typ1->decl_type )
+          || ( TYP_UFIELD == typ1->decl_type ) ) {
             if( typ2->u.f.field_width > typ1->u.f.field_width ) {
                 ret_val = AC;
             }
         }
-    } else if( typ1->decl_type == TYP_UNION && ptr_indir_level > 0 ) {
+    } else if( typ1->decl_type == TYP_UNION
+      && ptr_indir_level > 0 ) {
         if( InUnion( typ1, typ2, false ) != OK ) {
             ret_val = NO;
         } else {
             ret_val = PM;
         }
-    } else if( typ2->decl_type == TYP_UNION && ptr_indir_level > 0 ) {
+    } else if( typ2->decl_type == TYP_UNION
+      && ptr_indir_level > 0 ) {
         if( InUnion( typ2, typ1, true ) != OK ) {
             ret_val = NO;
         } else {
@@ -413,7 +449,8 @@ static cmp_type DoCompatibleType( TYPEPTR typ1, TYPEPTR typ2, int ptr_indir_leve
                 ret_val = PM;
             }
         }
-    } else if( typ1->decl_type >= TYP_LAST_ENTRY || typ2->decl_type >= TYP_LAST_ENTRY ) {
+    } else if( typ1->decl_type >= DATA_TYPE_SIZE
+      || typ2->decl_type >= DATA_TYPE_SIZE ) {
         ret_val = NO;
     } else if( ptr_indir_level == 0 ) {
         ret_val = CompTable[typ1->decl_type][typ2->decl_type];
@@ -458,24 +495,34 @@ static cmp_type CompatibleType( TYPEPTR typ1, TYPEPTR typ2, bool assignment, boo
     typ1_flags = FLAG_NONE;
     typ2_flags = FLAG_NONE;
     ret_pq = OK;
-    // skip typedefs go into enums base
+    /*
+     * skip typedefs go into enums base
+     */
     typ1 = SkipTypeFluff( typ1 );
-    // skip typedefs, go into enum base
+    /*
+     * skip typedefs, go into enum base
+     */
     typ2 = SkipTypeFluff( typ2 );
-    if( typ1->decl_type == TYP_POINTER && typ2->decl_type == TYP_POINTER ) {
-        // top level pointer
+    if( typ1->decl_type == TYP_POINTER
+      && typ2->decl_type == TYP_POINTER ) {
+        /*
+         * top level pointer
+         */
         typ1_flags = typ1->u.p.decl_flags;
         typ2_flags = typ2->u.p.decl_flags;
-        // Special dispensation: assigning null pointer constant is allowed even
-        // when the pointer size doesn't match. Required for MS compatibility.
-        if( assignment && !null_ptr ) {
+        /*
+         * Special dispensation: assigning null pointer constant is allowed even
+         * when the pointer size doesn't match. Required for MS compatibility.
+         */
+        if( assignment
+          && !null_ptr ) {
             type_modifiers  subnot;
 
             subnot = SUBNOT( typ1_flags, typ2_flags, MASK_QUALIFIERS );
             if( subnot ) {  // allow void * =  unaligned *
                 if( subnot & (MASK_QUALIFIERS & ~FLAG_UNALIGNED) ) {
                     ret_pq = PQ;
-                } else if( subnot & FLAG_UNALIGNED) {
+                } else if( subnot & FLAG_UNALIGNED ) {
                     align_type align1;
 
                     align1 = GetTypeAlignment( typ1->object );
@@ -516,21 +563,21 @@ void CompatiblePtrType( TYPEPTR typ1, TYPEPTR typ2, TOKEN opr )
         break;
     case PQ:
         if( !CompFlags.no_check_qualifiers ) { // else fuck em
-            CWarn1( WARN_QUALIFIER_MISMATCH, ERR_QUALIFIER_MISMATCH );
+            CWarn1( ERR_QUALIFIER_MISMATCH );
         }
         break;
     case PM:
     case NO:
-        CWarn1( WARN_POINTER_TYPE_MISMATCH, ERR_POINTER_TYPE_MISMATCH );
+        CWarn1( ERR_POINTER_TYPE_MISMATCH );
         break;
     case PS:
-        CWarn1( WARN_SIGN_MISMATCH, ERR_SIGN_MISMATCH );
+        CWarn1( ERR_SIGN_MISMATCH );
         break;
     case PW:
-        CWarn1( WARN_INCONSISTENT_INDIRECTION_LEVEL, ERR_INCONSISTENT_INDIRECTION_LEVEL );
+        CWarn1( ERR_INCONSISTENT_INDIRECTION_LEVEL );
         break;
     case PC:
-        CWarn1( WARN_PCTYPE_MISMATCH, ERR_PCTYPE_MISMATCH );
+        CWarn1( ERR_PCTYPE_MISMATCH );
         break;
     case OK:
     case AC:
@@ -578,31 +625,39 @@ static void CompareParms( TYPEPTR *master, TREEPTR parms, bool reverse )
     typ1 = *master++;
     if( typ1 != NULL ) {
         if( typ1->decl_type == TYP_VOID ) { /* type func(void);  */
-            typ1 = NULL;                     /* indicate no parms */
+            typ1 = NULL;                    /* indicate no parms */
         }
     }
     for( parmno = 1, parm = parms; ( typ1 != NULL ) && ( parm != NULL ); parm = parm->left, ++parmno ) {
         SKIP_TYPEDEFS( typ1 );
-        // TODO is crap needed or has it been done
+        /*
+         * TODO is crap needed or has it been done
+         */
         if( typ1->decl_type == TYP_FUNCTION ) {
             typ1 = PtrNode( typ1, FLAG_NONE, SEG_CODE );
         } else if( typ1->decl_type == TYP_ARRAY ) {
             typ1 = PtrNode( typ1->object, FLAG_WAS_ARRAY, SEG_DATA );
         }
-        /* check compatibility of parms */
+        /*
+         * check compatibility of parms
+         */
         ParmAsgnCheck( typ1, parm, parmno, false );
         typ1 = *master++;
-        if( typ1 != NULL && typ1->decl_type == TYP_DOT_DOT_DOT ) {
+        if( typ1 != NULL
+          && typ1->decl_type == TYP_DOT_DOT_DOT ) {
             typ1 = NULL;
             parm = NULL;
             break;
         }
     }
-    if( typ1 != NULL || parm != NULL ) {     /* should both be NULL now */
+    if( typ1 != NULL
+      || parm != NULL ) {     /* should both be NULL now */
 #if _CPU == 386
-        /* can allow wrong number of parms with -3s option */
+        /*
+         * can allow wrong number of parms with -3s option
+         */
         if( !CompFlags.register_conventions ) {
-            CWarn1( WARN_PARM_COUNT_MISMATCH, ERR_PARM_COUNT_WARNING );
+            CWarn1( ERR_PARM_COUNT_WARNING );
         } else {
             CErr1( ERR_PARM_COUNT_MISMATCH );
         }
@@ -615,8 +670,10 @@ static void CompareParms( TYPEPTR *master, TREEPTR parms, bool reverse )
     }
 }
 
-/* Check parameters of function that were called before a prototype was seen */
 extern void ChkCallParms( void )
+/*******************************
+ * Check parameters of function that were called before a prototype was seen
+ */
 {
     call_list   *nextcall;
     call_list   *next;
@@ -637,7 +694,8 @@ extern void ChkCallParms( void )
             if( (sym.flags & SYM_TEMP) == 0 )
                 SetDiagSymbol( &sym, callsite->op.u2.sym_handle );
             SetErrLoc( &nextcall->src_loc );
-            if( typ->u.fn.parms == NULL && callnode->right == NULL ) {
+            if( typ->u.fn.parms == NULL
+              && callnode->right == NULL ) {
                 /*
                  * this relax case
                  * if function prototype is defined without any parameter type
@@ -652,13 +710,15 @@ extern void ChkCallParms( void )
             } else if( typ->u.fn.parms != NULL ) {
                 CompareParms( typ->u.fn.parms, callnode->right, ParmsToBeReversed( sym.mods, NULL ) );
             } else {
-                // Unprototyped function called. Note that for indirect calls, there
-                // is no symbol associated with the function and diagnostic information
-                // is hence limited.
+                /*
+                 * Unprototyped function called. Note that for indirect calls, there
+                 * is no symbol associated with the function and diagnostic information
+                 * is hence limited.
+                 */
                 if( sym.flags & SYM_TEMP ) {
-                    CWarn1( WARN_NONPROTO_FUNC_CALLED_INDIRECT, ERR_NONPROTO_FUNC_CALLED_INDIRECT );
+                    CWarn1( ERR_NONPROTO_FUNC_CALLED_INDIRECT );
                 } else {
-                    CWarn2p( WARN_NONPROTO_FUNC_CALLED, ERR_NONPROTO_FUNC_CALLED, SymName( &sym, callsite->op.u2.sym_handle ) );
+                    CWarn2p( ERR_NONPROTO_FUNC_CALLED, SymName( &sym, callsite->op.u2.sym_handle ) );
                 }
             }
             InitErrLoc();
@@ -670,61 +730,96 @@ extern void ChkCallParms( void )
     }
 }
 
-#define MAXSIZE        TARGET_BITS
-
 bool AssRangeChk( TYPEPTR typ1, TREEPTR opnd2 )
 {
     unsigned        high;
+    unsigned long   value;
+    bool            sign;
 
     if( opnd2->op.opr == OPR_PUSHINT ) {
+        typ1 = SkipTypeFluff( typ1 );
         switch( typ1->decl_type ) {
         case TYP_FIELD:
         case TYP_UFIELD:
-            high = 0xffffffffU >> (MAXSIZE - (typ1->u.f.field_width));
-            if( opnd2->op.u2.ulong_value > high ) {
-                if( (opnd2->op.u2.ulong_value | (high >> 1)) != ~0U ) {
-                    return( false );
-                }
-            }
-            break;
+        case TYP_BOOL:
         case TYP_CHAR:
-            if( opnd2->op.u2.long_value > 127 ||
-                opnd2->op.u2.long_value < -128 ) {
-                return( false );
-            }
-            break;
         case TYP_UCHAR:
-            if( opnd2->op.u2.ulong_value > 0xff) {
-                if( (opnd2->op.u2.ulong_value | (0xff >> 1)) != ~0U ) {
-                    return( false );
-                }
-            }
-            break;
-        case TYP_UINT:
-#if TARGET_INT > TARGET_SHORT
-            break;
-#endif
-            // fall throught
-        case TYP_USHORT:
-            if( opnd2->op.u2.ulong_value > 0xffff ) {
-                if( (opnd2->op.u2.ulong_value | (0xffff >> 1)) != ~0U ) {
-                    return( false );
-                }
-            }
-            break;
-        case TYP_INT:
-#if TARGET_INT > TARGET_SHORT
-            break;
-#endif
-            // fall throught
         case TYP_SHORT:
-            if( opnd2->op.u2.long_value > 32767 ||
-                opnd2->op.u2.long_value < -32768 ) {
-                return( false );
+        case TYP_USHORT:
+        case TYP_INT:
+        case TYP_UINT:
+        case TYP_LONG:
+        case TYP_ULONG:
+        case TYP_LONG64:
+        case TYP_ULONG64:
+            if( opnd2->u.expr_type->decl_type == TYP_LONG64
+              || opnd2->u.expr_type->decl_type == TYP_ULONG64 ) {
+                value = opnd2->op.u2.ulong64_value.u._32[I64HI32];
+                sign = ( value == 0xffffffffU );
+                if( value != 0
+                  && !sign ) {
+                    return( typ1->decl_type == TYP_LONG64 || typ1->decl_type == TYP_ULONG64 );
+                }
+                value = opnd2->op.u2.ulong64_value.u._32[I64LO32];
+            } else {
+                sign = ( opnd2->op.u2.long_value < 0 );
+                value = opnd2->op.u2.ulong_value;
             }
-            break;
-        default:
-            break;
+            switch( typ1->decl_type ) {
+            case TYP_FIELD:
+            case TYP_UFIELD:
+                high = 0xffffffffU >> (TARGET_BITFIELD * CHAR_BIT - typ1->u.f.field_width);
+                if( value > high ) {
+                    if( (value | (high >> 1)) != ~0U ) {
+                        return( false );
+                    }
+                }
+                break;
+            case TYP_BOOL:
+                if( sign || value > 1 )
+                    return( false );
+                break;
+            case TYP_CHAR:
+                if( !sign && ( value > 127 )
+                  || sign && ( (long)value < -128 ) )
+                    return( false );
+                break;
+            case TYP_UCHAR:
+                if( value > 0xffU ) {
+                    if( (value | ( 0xffU >> 1 )) != ~0U ) {
+                        return( false );
+                    }
+                }
+                break;
+#if TARGET_INT == TARGET_SHORT
+            case TYP_INT:
+#endif
+            case TYP_SHORT:
+                if( !sign && ( value > 32767 )
+                  || sign && ( (long)value < -32768 ) )
+                    return( false );
+                break;
+#if TARGET_INT == TARGET_SHORT
+            case TYP_UINT:
+#endif
+            case TYP_USHORT:
+                if( value > 0xffffU ) {
+                    if( (value | (0xffffU >> 1)) != ~0U ) {
+                        return( false );
+                    }
+                }
+                break;
+#if TARGET_INT == TARGET_LONG
+            case TYP_INT:
+#endif
+            case TYP_LONG:
+                if( !sign && ( value > 2147483647 )
+                  || sign && ( (long)value < -2147483648 ) )
+                    return( false );
+                break;
+            default:
+                break;
+            }
         }
     } else if( opnd2->op.opr == OPR_PUSHFLOAT ) {
         if( typ1->decl_type == TYP_FLOAT ) {
@@ -764,9 +859,10 @@ void ParmAsgnCheck( TYPEPTR typ1, TREEPTR opnd2, int parmno, bool asgn_check )
 
     if( opnd2->op.opr == OPR_ERROR )
         return;
-
-    // Fold RHS expression so that we can properly check for null
-    // pointers or out of range constants
+    /*
+     * Fold RHS expression so that we can properly check for null
+     * pointers or out of range constants
+     */
     FoldExprTree( opnd2 );
     typ2 = opnd2->u.expr_type;
 
@@ -782,7 +878,7 @@ void ParmAsgnCheck( TYPEPTR typ1, TREEPTR opnd2, int parmno, bool asgn_check )
     case PT:
         if( asgn_check ) {
             if( !IsPtrConvSafe( opnd2, typ1, typ2 ) ) {
-                CWarnP1( parmno, WARN_POINTER_TRUNCATION, ERR_POINTER_TRUNCATION );
+                CWarnP1( parmno, ERR_POINTER_TRUNCATION );
             }
         } else if( parmno ) {
             CErr2( ERR_PARM_TYPE_MISMATCH, parmno );
@@ -796,7 +892,7 @@ void ParmAsgnCheck( TYPEPTR typ1, TREEPTR opnd2, int parmno, bool asgn_check )
                 if( parmno ) {
                     CErr2( ERR_PARM_POINTER_TYPE_MISMATCH, parmno );
                 } else {
-                    CWarn1( WARN_POINTER_TYPE_MISMATCH, ERR_POINTER_TYPE_MISMATCH );
+                    CWarn1( ERR_POINTER_TYPE_MISMATCH );
                 }
             }
         } else if( parmno ) {
@@ -808,9 +904,9 @@ void ParmAsgnCheck( TYPEPTR typ1, TREEPTR opnd2, int parmno, bool asgn_check )
     case PQ:
         if( !CompFlags.no_check_qualifiers ) {
             if( parmno ) {
-                CWarn2( WARN_QUALIFIER_MISMATCH, ERR_PARM_QUALIFIER_MISMATCH, parmno );
+                CWarn2( ERR_PARM_QUALIFIER_MISMATCH, parmno );
             } else {
-                CWarn1( WARN_QUALIFIER_MISMATCH, ERR_QUALIFIER_MISMATCH );
+                CWarn1( ERR_QUALIFIER_MISMATCH );
             }
         }
         break;
@@ -818,31 +914,32 @@ void ParmAsgnCheck( TYPEPTR typ1, TREEPTR opnd2, int parmno, bool asgn_check )
         if( parmno ) {
             CErr2( ERR_PARM_POINTER_TYPE_MISMATCH, parmno );
         } else {
-            CWarn1( WARN_POINTER_TYPE_MISMATCH, ERR_POINTER_TYPE_MISMATCH );
+            CWarn1( ERR_POINTER_TYPE_MISMATCH );
         }
         break;
     case PS:
         if( parmno ) {
-            CWarn2( WARN_SIGN_MISMATCH, ERR_PARM_SIGN_MISMATCH, parmno );
+            CWarn2( ERR_PARM_SIGN_MISMATCH, parmno );
         } else {
-            CWarn1( WARN_SIGN_MISMATCH, ERR_SIGN_MISMATCH );
+            CWarn1( ERR_SIGN_MISMATCH );
         }
         break;
     case PW:
         if( parmno ) {
-            CWarn2( WARN_PARM_INCONSISTENT_INDIRECTION_LEVEL, ERR_PARM_INCONSISTENT_INDIRECTION_LEVEL, parmno );
+            CWarn2( ERR_PARM_INCONSISTENT_INDIRECTION_LEVEL, parmno );
         } else {
-            CWarn1( WARN_INCONSISTENT_INDIRECTION_LEVEL, ERR_INCONSISTENT_INDIRECTION_LEVEL );
+            CWarn1( ERR_INCONSISTENT_INDIRECTION_LEVEL );
         }
         break;
     case PC:
         if( asgn_check ) {  /* Allow only "... *p = int 0";  */
-            if( IsPointer( typ1 ) && opnd2->op.opr == OPR_PUSHINT ) {
+            if( IsPointer( typ1 )
+              && opnd2->op.opr == OPR_PUSHINT ) {
                 if( opnd2->op.u2.long_value != 0 ) {
-                    CWarnP1( parmno, WARN_NONPORTABLE_PTR_CONV, ERR_NONPORTABLE_PTR_CONV );
+                    CWarnP1( parmno, ERR_NONPORTABLE_PTR_CONV );
                 }
             } else {
-                CWarnP1( parmno, WARN_PCTYPE_MISMATCH, ERR_PCTYPE_MISMATCH );
+                CWarnP1( parmno, ERR_PCTYPE_MISMATCH );
             }
         } else if( parmno ) {
             CErr2( ERR_PARM_TYPE_MISMATCH, parmno );
@@ -855,10 +952,10 @@ void ParmAsgnCheck( TYPEPTR typ1, TREEPTR opnd2, int parmno, bool asgn_check )
             bitfield_width  fsize_1 = 0, fsize_2 = 0;
 
             if( TypeSizeEx( typ2, &fsize_2 ) > TypeSizeEx( typ1, &fsize_1 ) ) {
-                CWarnP1( parmno, WARN_LOSE_PRECISION, ERR_LOSE_PRECISION );
+                CWarnP1( parmno, ERR_LOSE_PRECISION );
             }
             if( fsize_2 > fsize_1 ) {
-                CWarnP1( parmno, WARN_LOSE_PRECISION, ERR_LOSE_PRECISION );
+                CWarnP1( parmno, ERR_LOSE_PRECISION );
             }
         } else {
             if( parmno ) {
@@ -871,7 +968,7 @@ void ParmAsgnCheck( TYPEPTR typ1, TREEPTR opnd2, int parmno, bool asgn_check )
     case OK:
         if( asgn_check ) {
             if( !AssRangeChk( typ1, opnd2 ) ) {
-                CWarnP1( parmno, WARN_CONSTANT_TOO_BIG, ERR_CONSTANT_TOO_BIG );
+                CWarnP1( parmno, ERR_CONSTANT_TOO_BIG );
             }
         }
         break;
@@ -888,24 +985,24 @@ void TernChk( TYPEPTR typ1, TYPEPTR typ2 )
         break;
     case PT:
     case PX:
-        CWarn1( WARN_POINTER_TRUNCATION, ERR_POINTER_TRUNCATION );
+        CWarn1( ERR_POINTER_TRUNCATION );
         break;
     case PQ:
         if( !CompFlags.no_check_qualifiers ) {
-            CWarn1( WARN_QUALIFIER_MISMATCH,ERR_QUALIFIER_MISMATCH );
+            CWarn1( ERR_QUALIFIER_MISMATCH );
         }
         break;
     case PM:
-        CWarn1( WARN_POINTER_TYPE_MISMATCH, ERR_POINTER_TYPE_MISMATCH );
+        CWarn1( ERR_POINTER_TYPE_MISMATCH );
         break;
     case PS:
-        CWarn1( WARN_SIGN_MISMATCH, ERR_SIGN_MISMATCH );
+        CWarn1( ERR_SIGN_MISMATCH );
         break;
     case PW:
-        CWarn1( WARN_INCONSISTENT_INDIRECTION_LEVEL, ERR_INCONSISTENT_INDIRECTION_LEVEL );
+        CWarn1( ERR_INCONSISTENT_INDIRECTION_LEVEL );
         break;
     case PC:
-        CWarn1( WARN_PCTYPE_MISMATCH, ERR_PCTYPE_MISMATCH );
+        CWarn1( ERR_PCTYPE_MISMATCH );
         break;
     case OK:
     case AC:
@@ -927,10 +1024,12 @@ void ChkRetType( TREEPTR tree )
         CErr2p( ERR_NOT_EXPECTING_RETURN_VALUE, CurFunc->name );
     } else if( ret_type->decl_type == TYP_POINTER ) {
         if( ret_type->u.p.segid == SEG_STACK ) {
-            CWarn1( WARN_RET_ADDR_OF_AUTO, ERR_RET_ADDR_OF_AUTO );
+            CWarn1( ERR_RET_ADDR_OF_AUTO );
         }
     }
-    /* check that the types are compatible */
+    /*
+     * check that the types are compatible
+     */
     ParmAsgnCheck( func_type, tree, 0, true );
 }
 
@@ -943,27 +1042,41 @@ static typecheck_err TypeCheck( TYPEPTR typ1, TYPEPTR typ2, SYMPTR sym )
 
     pointer_type = 0;
     retcode = TCE_OK;
-    /* "char *s" and "char s[]" differs only by FLAG_WAS_ARRAY, ignore it too */
-    if( TargetSwitches & BIG_DATA ) {
+    /*
+     * "char *s" and "char s[]" differs only by FLAG_WAS_ARRAY, ignore it too
+     */
+#if _INTEL_CPU
+    if( TargetSwitches & CGSW_X86_BIG_DATA ) {
         ptr_mask = ~(FLAG_FAR  | FLAG_WAS_ARRAY | MASK_LANGUAGES);
     } else {
         ptr_mask = ~(FLAG_NEAR | FLAG_WAS_ARRAY | MASK_LANGUAGES);
     }
+#else /* _RISC_CPU */
+    ptr_mask = ~(FLAG_NEAR | FLAG_WAS_ARRAY | MASK_LANGUAGES);
+#endif
     for( ;; ) {
-        // skip typedefs, go into enum base
+        /*
+         * skip typedefs, go into enum base
+         */
         typ1 = SkipTypeFluff( typ1 );
-        // skip typedefs, go into enum base
+        /*
+         * skip typedefs, go into enum base
+         */
         typ2= SkipTypeFluff( typ2);
-        /* this compare was moved here */
-        /* ptr to typedef struct failed when this was before typedef skips */
+        /*
+         * this compare was moved here
+         * ptr to typedef struct failed when this was before typedef skips
+         */
         if( typ1 == typ2 )
             return( retcode );
         if( typ1->decl_type != typ2->decl_type ) {
             if( pointer_type ) {
-                /* by popular demand, I disabled the questionable feature to accept
-                   void *foo(void);
-                   int *foo(void) {return NULL};
-                   - Bart Oldeman, 2002/10/24 */
+                /*
+                 * by popular demand, I disabled the questionable feature to accept
+                 * void *foo(void);
+                 * int *foo(void) {return NULL};
+                 * - Bart Oldeman, 2002/10/24
+                 */
                 if( typ1->decl_type == TYP_ARRAY ) {
                     return( TypeCheck( typ1->object, typ2, sym ) );
                 }
@@ -979,10 +1092,10 @@ static typecheck_err TypeCheck( TYPEPTR typ1, TYPEPTR typ2, SYMPTR sym )
                 break;
             }
         }
-        if( TypeSize(typ1) != TypeSize(typ2) ) {
-            if( TypeSize(typ1) == 0 ) {
+        if( TypeSize( typ1 ) != TypeSize( typ2 ) ) {
+            if( TypeSize( typ1 ) == 0 ) {
                 retcode = TCE_TYPE2_HAS_MORE_INFO;
-            } else if( TypeSize(typ2) == 0 ) {
+            } else if( TypeSize( typ2 ) == 0 ) {
                 retcode = TCE_OK;
             } else {
                 break;
@@ -991,21 +1104,26 @@ static typecheck_err TypeCheck( TYPEPTR typ1, TYPEPTR typ2, SYMPTR sym )
                 return( retcode );
             }
         }
-        if( ( TYP_FIELD == typ1->decl_type ) || ( TYP_UFIELD == typ1->decl_type ) ) {
+        if( ( TYP_FIELD == typ1->decl_type )
+          || ( TYP_UFIELD == typ1->decl_type ) ) {
             if( typ1->u.f.field_width != typ2->u.f.field_width ) {
                 break;
             }
         }
-        if( typ1->decl_type == TYP_STRUCT || typ1->decl_type == TYP_UNION ) {
-            /* must be the same tag to be identical, if they are the
-               same tag, then typ1 == typ2 which is checked above */
+        if( typ1->decl_type == TYP_STRUCT
+          || typ1->decl_type == TYP_UNION ) {
+            /*
+             * must be the same tag to be identical, if they are the
+             * same tag, then typ1 == typ2 which is checked above
+             */
             break;
         }
         if( typ1->decl_type == TYP_FUNCTION ) {
             retcode = ChkCompatibleFunctionParms( typ1, typ2, false );
             if( retcode != TCE_OK )
                 return( retcode );
-            if( typ1->object == NULL || typ2->object == NULL ) {
+            if( typ1->object == NULL
+              || typ2->object == NULL ) {
                 return( TCE_OK );
             }
         }
@@ -1036,8 +1154,10 @@ bool VerifyType( TYPEPTR new, TYPEPTR old, SYMPTR sym )
 {
     switch( TypeCheck( new, old, sym ) ) {
     case TCE_TYPE2_HAS_MORE_INFO:
-        /* new= void *, old= something * */
-        /* indicate want old definition  */
+        /*
+         * new= void *, old= something *
+         * indicate want old definition
+         */
         return( true );
     case TCE_TYPE_MISMATCH:
     case TCE_PARM_COUNT_MISMATCH:

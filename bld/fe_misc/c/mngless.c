@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -56,8 +57,8 @@ cmp_result CheckMeaninglessCompare( rel_op rel, int op1_size, int result_size,
 {
     enum case_range     range;
     cmp_result          ret;
-    signed_64           LOW_VAL = I64Val( 0x80000000, 0 );
-    signed_64           HIGH_VAL = I64Val( 0xFFFFFFFF, 0xFFFFFFFF );
+    signed_64           LOW_VAL = Init64Val( 0x80000000, 0 );
+    signed_64           HIGH_VAL = Init64Val( 0xFFFFFFFF, 0xFFFFFFFF );
     signed_64           tmp;
     int                 shift;
 

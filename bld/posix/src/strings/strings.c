@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,10 +38,10 @@
 #include <string.h>
 #include "bool.h"
 #include "getopt.h"
+#include "argvenv.h"
 #include "misc.h"
 #include "argvrx.h"
 
-char *OptEnvVar = "STRINGS";
 
 #define STATIC  static
 
@@ -118,12 +118,15 @@ int main( int argc, char **argv )
     int         ch;
     int         i;
     FILE        *fp;
+    char        **argv1;
+
+    argv1 = ExpandEnv( &argc, argv, "STRINGS" );
 
     rxflag = false;
     threshold = 4;
     gimmeHexOffsets = false;
     for(;;) {
-        ch = GetOpt( &argc, argv, "#xX", usageTxt );
+        ch = GetOpt( &argc, argv1, "#xX", usageTxt );
         if( ch == -1 )
             break;
         switch( ch ) {
@@ -142,18 +145,18 @@ int main( int argc, char **argv )
         }
     }
 
-    thresholdBuf = malloc( threshold + 1 );
+    thresholdBuf = MemAlloc( threshold + 1 );
     if( thresholdBuf == NULL ) {
         Die( "not enough memory\n" );
     }
 
-    argv = ExpandArgv( &argc, argv, rxflag );
+    argv = ExpandArgv( &argc, argv1, rxflag );
 
-    if( argc == 1 ) {
+    if( argc < 2 ) {
         /* FIXME: stdin is in TEXT mode... */
         doStrings( stdin );
     } else {
-        for( i = 1; i < argc; ++i ) {
+        for( i = 1; i < argc; i++ ) {
             if( argv[i][0] == '-' && argv[i][1] == 0 ) {
                 doStrings( stdin );
             } else {
@@ -166,5 +169,8 @@ int main( int argc, char **argv )
             }
         }
     }
+    MemFree( argv );
+    MemFree( argv1 );
+
     return( 0 );
 }

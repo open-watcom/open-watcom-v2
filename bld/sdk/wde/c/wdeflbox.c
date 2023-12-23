@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -123,7 +124,7 @@ OBJPTR WdeMakeLBox( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
 
     style |= WS_VISIBLE | WS_TABSTOP | WS_CHILD;
     SETCTL_STYLE( WdeDefaultLBox, style );
-    SETCTL_TEXT( WdeDefaultLBox, ResStrToNameOrOrd( text ) );
+    SETCTL_TEXT( WdeDefaultLBox, ResStrToNameOrOrdinal( text ) );
     SETCTL_ID( WdeDefaultLBox, WdeGetNextControlID() );
 
     WdeChangeSizeToDefIfSmallRect( parent, id, obj_rect );
@@ -261,8 +262,7 @@ void WdeLBoxFini( void )
 
 bool WdeLBoxDestroy( WdeLBoxObject *obj, bool *flag, bool *p2 )
 {
-    /* touch unused vars to get rid of warning */
-    _wde_touch( p2 );
+    /* unused parameters */ (void)p2;
 
     if( !Forward( obj->control, DESTROY, flag, NULL ) ) {
         WdeWriteTrail( "WdeLBoxDestroy: Control DESTROY failed" );
@@ -278,8 +278,7 @@ bool WdeLBoxValidateAction( WdeLBoxObject *obj, ACTION_ID *act, void *p2 )
 {
     int     i;
 
-    /* touch unused vars to get rid of warning */
-    _wde_touch( p2 );
+    /* unused parameters */ (void)p2;
 
     for( i = 0; i < MAX_ACTIONS; i++ ) {
         if( WdeLBoxActions[i].id == *act ) {
@@ -324,8 +323,7 @@ bool WdeLBoxCopyObject( WdeLBoxObject *obj, WdeLBoxObject **new, OBJPTR handle )
 
 bool WdeLBoxIdentify( WdeLBoxObject *obj, OBJ_ID *id, void *p2 )
 {
-    /* touch unused vars to get rid of warning */
-    _wde_touch( p2 );
+    /* unused parameters */ (void)p2;
 
     *id = obj->object_id;
 
@@ -334,9 +332,7 @@ bool WdeLBoxIdentify( WdeLBoxObject *obj, OBJ_ID *id, void *p2 )
 
 bool WdeLBoxGetWndProc( WdeLBoxObject *obj, WNDPROC *proc, void *p2 )
 {
-    /* touch unused vars to get rid of warning */
-    _wde_touch( obj );
-    _wde_touch( p2 );
+    /* unused parameters */ (void)obj; (void)p2;
 
     *proc = WdeLBoxSuperClassProc;
 
@@ -345,9 +341,7 @@ bool WdeLBoxGetWndProc( WdeLBoxObject *obj, WNDPROC *proc, void *p2 )
 
 bool WdeLBoxGetWindowClass( WdeLBoxObject *obj, char **class, void *p2 )
 {
-    /* touch unused vars to get rid of warning */
-    _wde_touch( obj );
-    _wde_touch( p2 );
+    /* unused parameters */ (void)obj; (void)p2;
 
     *class = "listbox";
 
@@ -358,9 +352,7 @@ bool WdeLBoxDefine( WdeLBoxObject *obj, POINT *pnt, void *p2 )
 {
     WdeDefineObjectInfo  o_info;
 
-    /* touch unused vars to get rid of warning */
-    _wde_touch( pnt );
-    _wde_touch( p2 );
+    /* unused parameters */ (void)pnt; (void)p2;
 
     o_info.obj = obj->object_handle;
     o_info.obj_id = obj->object_id;
@@ -585,9 +577,7 @@ bool WdeLBoxDefineHook ( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam, 
 {
     bool processed;
 
-    /* touch unused vars to get rid of warning */
-    _wde_touch( mask );
-    _wde_touch( lParam );
+    /* unused parameters */ (void)mask; (void)lParam;
 
     processed = false;
 

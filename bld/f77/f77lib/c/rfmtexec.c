@@ -63,6 +63,7 @@ static  void   R_FEH( uint dummy1 , char dummy2 )
         len = IOCB->fmtptr->fmtstring.fld1;
         if( fcb->col + len > fcb->bufflen ) {
             IOErr( IO_BUFF_LEN );
+            // never return
         }
         str = IOCB->fmtptr->fmtstring.str;
         SendStr( str, len );
@@ -522,6 +523,7 @@ static  void    FmtPrepOp( void ) {
     width = IOCB->fmtptr->fmt1.fld1;
     if( width + fcb->col > fcb->bufflen ) {
         IOErr( IO_BUFF_LEN );
+        // never return
     }
 }
 

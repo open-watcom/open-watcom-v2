@@ -1,3 +1,5 @@
+/* UTF-8 encoding, ¥ */
+
 //wmsg.c
 pick(   W_ERRMSG,
         "Error Message",

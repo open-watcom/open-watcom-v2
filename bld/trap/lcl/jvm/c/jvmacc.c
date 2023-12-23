@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,6 +40,7 @@
 #include "javaname.h"
 #include "jvmerr.h"
 
+
 ClassClass              *cbCallJava;
 HANDLE                  EventSem;
 HANDLE                  EventDoneSem;
@@ -68,7 +69,7 @@ int CurrThreadIdx;
 int NumThreads;
 #define CurrThread ( ( CurrThreadIdx == -1 ) \
                    ? ( NULL ) \
-                   : ((Classjava_lang_Thread*)unhand(Threads[CurrThreadIdx])) )
+                   : ((Classjava_lang_Thread*)unhand( Threads[CurrThreadIdx] )) )
 
 #define OP_BREAK        "\xCA"
 
@@ -80,8 +81,8 @@ int NumThreads;
 #define JS( x )         makeJavaString( x, strlen( x ) )
 ClassClass                              *CbMain;
 
-static void ThreadName( Classjava_lang_Thread* trd, char *buff, int len )
-/***********************************************************************/
+static void ThreadName( Classjava_lang_Thread* trd, char *buff, size_t len )
+/**************************************************************************/
 {
     char        *p;
     unicode     *src;
@@ -89,9 +90,7 @@ static void ThreadName( Classjava_lang_Thread* trd, char *buff, int len )
     src = unhand( trd->name )->body;
     len = obj_length( trd->name );
     p = buff;
-    while( *src ) {
-        if( --len < 0 )
-            break;
+    while( *src != '\0' && len-- > 0 ) {
         *p++ = *src++;
     }
     *p = '\0';
@@ -105,23 +104,23 @@ static void TheBigSleep()
     }
 }
 
-unsigned DoRead( int addr, char *buff, unsigned length )
-/******************************************************/
+unsigned DoRead( int addr, char *buff, size_t len )
+/*************************************************/
 {
     DWORD               bytes;
 
     ReadProcessMemory( GetCurrentProcess(), (LPVOID)addr, buff,
-                        length, (LPDWORD) &bytes );
+                        len, (LPDWORD)&bytes );
     return( bytes );
 }
 
-unsigned DoWrite( int addr, char *buff, unsigned length )
-/*******************************************************/
+unsigned DoWrite( int addr, char *buff, size_t len )
+/**************************************************/
 {
     DWORD               bytes;
 
     WriteProcessMemory( GetCurrentProcess(), (LPVOID)addr, buff,
-                        length, (LPDWORD) &bytes );
+                        len, (LPDWORD)&bytes );
     return( bytes );
 }
 
@@ -281,8 +280,8 @@ void BreakpointLoop( stack_item *p, ExecEnv *ee )
 }
 
 #pragma aux (cdecl) HandleExit;
-void HandleExit(void)
-/*******************/
+void HandleExit( void )
+/*********************/
 {
     Event( COND_TERMINATE );
     TheBigSleep();
@@ -294,13 +293,13 @@ trap_retval TRAP_CORE( Get_sys_config )( void )
     get_sys_config_ret  *ret;
 
     ret = GetOutPtr( 0 );
-    ret->sys.os = DIG_OS_NT;
-    ret->sys.osmajor = 1;
-    ret->sys.osminor = 0;
-    ret->sys.huge_shift = 3;
-    ret->sys.cpu = 0;
-    ret->sys.fpu = 0;
-    ret->sys.arch = DIG_ARCH_JVM;
+    ret->os = DIG_OS_NT;
+    ret->osmajor = 1;
+    ret->osminor = 0;
+    ret->huge_shift = 3;
+    ret->cpu = 0;
+    ret->fpu = 0;
+    ret->arch = DIG_ARCH_JVM;
     return( sizeof( *ret ) );
 }
 
@@ -332,13 +331,13 @@ trap_retval TRAP_CORE( Map_addr )( void )
 trap_retval TRAP_CORE( Machine_data )( void )
 /*******************************************/
 {
-    machine_data_req    *acc;
+//    machine_data_req    *acc;
     machine_data_ret    *ret;
-    unsigned_8          *data;
+//    machine_data_spec   *data;
 
-    acc = GetInPtr( 0 );
+//    acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    data = GetOutPtr( sizeof( *ret ) );
+//    data = GetOutPtr( sizeof( *ret ) );
     return( sizeof( *ret ) );
 }
 
@@ -347,28 +346,27 @@ trap_retval TRAP_CORE( Checksum_mem )( void )
 /*******************************************/
 {
     DWORD               offset;
-    WORD                length,value;
+    size_t              len;
+    WORD                value;
     DWORD               sum;
     checksum_mem_req    *acc;
     checksum_mem_ret    *ret;
 
-    acc = GetInPtr(0);
-    ret = GetOutPtr(0);
-
-    length = acc->len;
-    sum = 0;
+    acc = GetInPtr( 0 );
     offset = acc->in_addr.offset;
-    while( length != 0 ) {
-        DoRead( offset, (char*)&value, sizeof( value ) );
+    sum = 0;
+    for( len = acc->len; len > 0; ) {
+        DoRead( offset, &value, sizeof( value ) );
         sum += value & 0xff;
         offset++;
-        length--;
-        if( length != 0 ) {
+        len--;
+        if( len > 0 ) {
             sum += value >> 8;
             offset++;
-            length--;
+            len--;
         }
     }
+    ret = GetOutPtr( 0 );
     ret->result = sum;
     return( sizeof( *ret ) );
 }
@@ -396,8 +394,10 @@ static void LineNumLookup( mad_jvm_findline_ret *info )
     best_ln = ~0L;
     for( cb_idx = 0; cb_idx < nbinclasses; ++cb_idx ) {
         cb = binclasses[cb_idx];
-        if( cb->source_name == NULL ) continue;
-        if( stricmp( cb->source_name, ((ClassClass*)(FindLineInfo.l.class_pointer))->source_name ) != 0 ) continue;
+        if( cb->source_name == NULL )
+            continue;
+        if( stricmp( cb->source_name, ((ClassClass*)(FindLineInfo.l.class_pointer))->source_name ) != 0 )
+            continue;
         mb = cbMethods(cb);
         for( mb_idx = 0; mb_idx < cb->methods_count; ++mb_idx, ++mb ) {
             ln = mb->line_number_table;
@@ -439,10 +439,13 @@ static void LineAddrLookup( mad_jvm_findline_ret *info )
     mb = cbMethods( cc );
     i = 0;
     for( ;; ) {
-        if( i >= cc->methods_count ) return;
+        if( i >= cc->methods_count )
+            return;
         if( !(mb->fb.access & ACC_NATIVE) ) {
             if( FindLineInfo.a.addr >= (unsigned_32)mb->code
-             && FindLineInfo.a.addr < (unsigned_32)mb->code + mb->code_length ) break;
+             && FindLineInfo.a.addr < (unsigned_32)mb->code + mb->code_length ) {
+                break;
+            }
         }
         ++mb;
         ++i;
@@ -466,7 +469,8 @@ static void LineAddrLookup( mad_jvm_findline_ret *info )
             return;
         }
     }
-    if( hi < 0 ) return;
+    if( hi < 0 )
+        return;
     info->line_index = hi;
     info->ret = SR_CLOSEST;
 }
@@ -476,33 +480,37 @@ trap_retval TRAP_CORE( Read_mem )( void )
 {
     read_mem_req        *acc;
     char                *data;
-    int                 length;
+    size_t              len;
     ClassClass          *cb;
     char                buff[512], *p;
 
-    acc = GetInPtr(0);
+    acc = GetInPtr( 0 );
     data = GetOutPtr( 0 );
-    length = acc->len;
+    len = acc->len;
     switch( acc->mem_addr.segment ) {
     case MAD_JVM_USER_MEM_SELECTOR:
     case MAD_JVM_UNKNOWN_SELECTOR:
     case MAD_JVM_DIP_MEM_SELECTOR:
     default:
-        return( DoRead( acc->mem_addr.offset, data, length ) );
+        return( DoRead( acc->mem_addr.offset, data, len ) );
     case MAD_JVM_FINDCLASS_SELECTOR:
         DoRead( acc->mem_addr.offset, buff, sizeof( buff ) );
         p = strchr( buff, ';' );
-        if( p ) *p = '\0';
+        if( p != NULL )
+            *p = '\0';
         cb = FindClass( EE(), buff, FALSE );
-        if( length < sizeof( cb ) ) return( 0 );
+        if( len < sizeof( cb ) )
+            return( 0 );
         memcpy( data, (char const*)&cb, sizeof( cb ) );
         return( sizeof( cb ) );
     case MAD_JVM_FINDLINECUE_SELECTOR:
-        if( length < sizeof( mad_jvm_findline_ret ) ) return( 0 );
+        if( len < sizeof( mad_jvm_findline_ret ) )
+            return( 0 );
         LineNumLookup( (mad_jvm_findline_ret*)data );
         return( sizeof( mad_jvm_findline_ret ) );
     case MAD_JVM_FINDADDRCUE_SELECTOR:
-        if( length < sizeof( mad_jvm_findline_ret ) ) return( 0 );
+        if( len < sizeof( mad_jvm_findline_ret ) )
+            return( 0 );
         LineAddrLookup( (mad_jvm_findline_ret*)data );
         return( sizeof( mad_jvm_findline_ret ) );
     }
@@ -512,18 +520,16 @@ trap_retval TRAP_CORE( Write_mem )( void )
 /****************************************/
 {
     DWORD               offset;
-    DWORD               length,len;
     LPSTR               data;
     write_mem_req       *acc;
     write_mem_ret       *ret;
 
-    acc = GetInPtr(0);
-    ret = GetOutPtr(0);
+    acc = GetInPtr( 0 );
+    ret = GetOutPtr( 0 );
 
     ret->len = 0;
     offset = acc->mem_addr.offset;
-    len = length = GetTotalSizeIn() - sizeof( *acc );
-    data = (LPSTR) GetInPtr( sizeof( *acc ) );
+    data = (LPSTR)GetInPtr( sizeof( *acc ) );
     switch( acc->mem_addr.segment ) {
     case MAD_JVM_FINDLINECUE_SELECTOR:
         FindLineInfo.l = *(mad_jvm_findlinecue_acc*)data;
@@ -534,7 +540,7 @@ trap_retval TRAP_CORE( Write_mem )( void )
         ret->len = sizeof( mad_jvm_findaddrcue_acc );
         break;
     default:
-        ret->len = DoWrite( offset, data, length );
+        ret->len = DoWrite( offset, data, GetTotalSizeIn() - sizeof( *acc ) );
         break;
     }
     return( sizeof( *ret ) );
@@ -553,7 +559,7 @@ trap_retval TRAP_CORE( Write_io )( void )
 {
     write_io_ret        *ret;
 
-    ret = GetOutPtr(0);
+    ret = GetOutPtr( 0 );
     ret->len = 0;
     return( sizeof( *ret ) );
 }
@@ -567,17 +573,26 @@ static void GetRegs( unsigned_32 *pc,
     ExecEnv             *ee;
 
     if( CurrThread == NULL ) {
-        if( pc ) *pc = 0;
-        if( frame ) *frame = 0;
-        if( optop ) *optop = 0;
-        if( vars ) *vars = 0;
+        if( pc != NULL )
+            *pc = 0;
+        if( frame != NULL )
+            *frame = 0;
+        if( optop != NULL )
+            *optop = 0;
+        if( vars != NULL )
+            *vars = 0;
         return;
     }
     ee = (ExecEnv*)CurrThread->eetop;
-    if( pc ) *pc = (unsigned_32)ee->current_frame->lastpc;
-    if( optop ) *optop = (unsigned_32)ee->current_frame->optop;
-    if( vars ) *vars = (unsigned_32)ee->current_frame->vars;
-    if( frame ) *frame = (unsigned_32)ee->current_frame;
+    if( pc != NULL )
+        *pc = (unsigned_32)ee->current_frame->lastpc;
+    if( optop != NULL )
+        *optop = (unsigned_32)ee->current_frame->optop;
+    if( vars != NULL )
+        *vars = (unsigned_32)ee->current_frame->vars;
+    if( frame != NULL ) {
+        *frame = (unsigned_32)ee->current_frame;
+    }
 }
 
 trap_retval TRAP_CORE( Read_regs )( void )
@@ -632,7 +647,8 @@ BuildArguments( char **argv, struct execenv *ee)
     int argc;
     HArrayOfString *args;
 
-    for( argc = 0; argv[argc] != NULL; ++argc ) ;
+    for( argc = 0; argv[argc] != NULL; ++argc )
+        {}
     args = (HArrayOfString *)ArrayAlloc(T_CLASS, argc);
     if (args == NULL) {
         return NULL;
@@ -642,15 +658,19 @@ BuildArguments( char **argv, struct execenv *ee)
                         (JHandle *)FindClass(ee, JAVAPKG "String", TRUE);
     while (--argc >= 0) {
         char *s = argv[argc];
-        if ((unhand(args)->body[argc] = makeJavaString(s, strlen(s))) == NULL) {
+        if( (unhand( args )->body[argc] = makeJavaString( s, strlen( s ) )) == NULL ) {
             return NULL;
         }
     }
     return args;
 }
 
-static int SplitParms( char *p, const char **args, unsigned len )
-/****************************************************************/
+static int SplitParms( char *p, const char **args, size_t len )
+/**************************************************************
+ * Break up program arguments passed in as a single string into
+ * individual components. Useful for passing argv style array to
+ * exec().
+ */
 {
     int     i;
     char    endc;
@@ -682,11 +702,14 @@ static int SplitParms( char *p, const char **args, unsigned len )
         for( ;; ) {
             if( len == 0 )
                 goto done;
-            if( *p == endc
-                || *p == '\0'
-                || (endc == ' ' && *p == '\t' ) ) {
+            if( *p == endc || *p == '\0' || ( endc == ' ' && *p == '\t' ) ) {
+                /*
+                 * if output array is not specified then source string
+                 * is not changed and it calculates number of parameters only
+                 * as soon as output array is specified then source is modified
+                 */
                 if( args != NULL ) {
-                    *p = '\0';  //TODO: not a good idea, should make a copy
+                    *p = '\0';
                 }
                 ++p;
                 --len;
@@ -706,7 +729,7 @@ done:
 stack_item *PlantAppletBreak( stack_item *p, ExecEnv *ee )
 /********************************************************/
 {
-    int         len;
+    size_t      len;
     Classjava_lang_String *applet;
     char        *dst;
     unicode     *src;
@@ -715,30 +738,32 @@ stack_item *PlantAppletBreak( stack_item *p, ExecEnv *ee )
     struct methodblock  *mb;
     char        *dot;
 
-    applet  = unhand((HString*)p[0].h);
-    len = obj_length(applet->value);
+    applet  = unhand( (HString *)p[0].h );
+    len = obj_length( applet->value );
     buff = walloca( len + 1 );
     dst = buff;
-    src = unhand(applet->value)->body;
-    while( *src ) {
-        if( --len < 0 ) break;
+    src = unhand( applet->value )->body;
+    while( *src != '\0' && len-- > 0 ) {
         *dst++ = *src++;
     }
     *dst = '\0';
     dst = buff;
     for( ;; ) {
         dot = strchr( dst, '.' );
-        if( dot == NULL ) break;
+        if( dot == NULL )
+            break;
         if( stricmp( dot, ".class" ) == 0 ) {
             *dot = '\0';
             break;
         }
-        dst = dot+1;
+        dst = dot + 1;
     }
-    cb = FindClass(ee, buff, TRUE);
-    if( cb == NULL ) return( p );
-    mb = FindMethod(cb, "init", "()V");
-    if( mb == NULL ) return( p );
+    cb = FindClass( ee, buff, TRUE );
+    if( cb == NULL )
+        return( p );
+    mb = FindMethod( cb, "init", "()V" );
+    if( mb == NULL )
+        return( p );
     AddStartingBreakpoint( (unsigned)mb->code );
     ++AppsLoaded;
     return( p );
@@ -750,62 +775,52 @@ stack_item *LoadCallBack( stack_item *p, ExecEnv *ee )
 {
     prog_load_req       *acc;
     prog_load_ret       *ret;
-    char                *parm;
-    char                *parms;
-    int                 i,len;
-    char                *parm_start;
     char                **args;
+    char                *parms;
+    char                *parm_start;
+    int                 i;
+    size_t              len;
     struct methodblock  *mb;
     bool                html;
+    char                *p;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
     /* the IS_STARTED flag is to stop the "go main" in the profile. We're
        already at main */
     ret->flags = LD_FLAG_IS_STARTED | LD_FLAG_IGNORE_SEGMENTS | LD_FLAG_HAVE_RUNTIME_DLLS;
-    parm = GetInPtr( sizeof( *acc ) );
-    parms = (char *)GetInPtr( sizeof( *acc ) );
-    parm_start = parms;
+    parms = parm_start = GetInPtr( sizeof( *acc ) );
     len = GetTotalSizeIn() - sizeof( *acc );
     if( acc->true_argv ) {
         i = 1;
-        for( ;; ) {
-            if( len == 0 ) break;
-            if( *parms == '\0' ) {
+        while( len-- > 0 ) {
+            if( *parms++ == '\0' ) {
                 i++;
             }
-            ++parms;
-            --len;
         }
         args = walloca( i * sizeof( *args ) );
         parms = parm_start;
         len = GetTotalSizeIn() - sizeof( *acc );
         i = 1;
-        for( ;; ) {
-            if( len == 0 ) break;
-            if( *parms == '\0' ) {
-                args[ i++ ] = parms + 1;
+        while( len-- > 0 ) {
+            if( *parms++ == '\0' ) {
+                args[i++] = parms;
             }
-            ++parms;
-            --len;
         }
-        args[ i-1 ] = NULL;
     } else {
-        while( *parms != '\0' ) {
-            ++parms;
-            --len;
-        }
-        ++parms;
-        --len;
-        i = SplitParms( parms, NULL, len );
-        args = walloca( ( i + 3 ) * sizeof( *args ) );
-        args[ SplitParms( parms, args + 1, len ) + 1 ] = NULL;
+        while( --len, *parms++ != '\0' )
+            {}
+        i = SplitParms( parms, NULL, len ) + 2;
+        args = alloca( i * sizeof( *args ) + len );
+        p = memcpy( (void *)( args + i ), parms, len );
+        SplitParms( p, args + 1, len );
     }
     args[0] = parm_start;
+    args[i - 1] = NULL;
 
     html = FALSE;
-    CbMain = FindClass(ee, parm, TRUE);
-    if (CbMain == NULL) {
+    CbMain = FindClass( ee, parm_start, TRUE );
+    if( CbMain == NULL ) {
         html = TRUE;
         CbMain = FindClass( ee, "sun/applet/AppletViewer", TRUE );
         if( CbMain == NULL ) {
@@ -814,8 +829,8 @@ stack_item *LoadCallBack( stack_item *p, ExecEnv *ee )
             return( p );
         }
     }
-    mb = FindMethod(CbMain, "main", "([Ljava/lang/String;)V");
-    if (mb == NULL) {
+    mb = FindMethod( CbMain, "main", "([Ljava/lang/String;)V" );
+    if( mb == NULL ) {
         ret->err = ERR_JVM_CANT_FIND_MAIN;
         Event( 0 );
         return( p );
@@ -1021,10 +1036,10 @@ trap_retval TRAP_CORE( Get_lib_name )( void )
     ClassClass          *cb;
     int                 nbinclasses = get_nbinclasses();
     ClassClass          **binclasses = get_binclasses();
-    size_t              max_len;
+    size_t              name_maxlen;
 
-    acc = GetInPtr(0);
-    ret = GetOutPtr(0);
+    acc = GetInPtr( 0 );
+    ret = GetOutPtr( 0 );
 
     ret->mod_handle = 0;
     // first is 0 based, LastClassGiven is 1 based, so no increment is required
@@ -1040,20 +1055,20 @@ trap_retval TRAP_CORE( Get_lib_name )( void )
     if( first >= nbinclasses )
         return( sizeof( *ret ) );
 
-    cb = binclasses[ first ];
+    cb = binclasses[first];
     if( cb == CbMain ) {
         ++first;
         if( first >= nbinclasses )
             return( sizeof( *ret ) );
-        cb = binclasses[ first ];
+        cb = binclasses[first];
     }
 
-    max_len = GetTotalSizeOut() - 1 - sizeof( *ret );
+    name_maxlen = GetTotalSizeOut() - sizeof( *ret ) - 1;
     name = GetOutPtr( sizeof( *ret ) );
-    strncpy( name, JAVAPREFIX, max_len );
-    name[max_len] = '\0';
-    strcat( name, cb->name, max_len - strlen( name ) );
-    name[max_len] = '\0';
+    strncpy( name, JAVAPREFIX, name_maxlen );
+    name[name_maxlen] = '\0';
+    strncat( name, cb->name, name_maxlen - strlen( name ) );
+    name[name_maxlen] = '\0';
     ret->mod_handle = LastClassGiven = first + 1;
     return( sizeof( *ret ) + strlen( name ) + 1 );
 }
@@ -1093,7 +1108,7 @@ trap_retval TRAP_THREAD( get_next )( void )
             return( sizeof( *ret ) );
         }
     }
-    if( SysThreads[ret->thread-1] && SysThreads[ret->thread-1]->state == RUNNABLE ) {
+    if( SysThreads[ret->thread - 1] && SysThreads[ret->thread - 1]->state == RUNNABLE ) {
         ret->state = THREAD_THAWED;
     } else {
         ret->state = THREAD_FROZEN;
@@ -1109,12 +1124,12 @@ trap_retval TRAP_THREAD( set )( void )
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    ret->old_thread = CurrThreadIdx+1;
+    ret->old_thread = CurrThreadIdx + 1;
     ret->err = 0;
     if( acc->thread != 0 ) {
-        if( acc->thread <= NumThreads && SysThreads[acc->thread-1] &&
-            SysThreads[acc->thread-1]->state == RUNNABLE ) {
-            CurrThreadIdx = acc->thread-1;
+        if( acc->thread <= NumThreads && SysThreads[acc->thread - 1] &&
+            SysThreads[acc->thread - 1]->state == RUNNABLE ) {
+            CurrThreadIdx = acc->thread - 1;
         } else {
             ret->err = ERR_JVM_THREAD_NOT_RUNNABLE;
         }
@@ -1161,13 +1176,13 @@ trap_retval TRAP_THREAD( get_extra )( void )
     name = GetOutPtr( 0 );
     strcpy( name, "" );
     if( acc->thread != 0 ) {
-        trd = (Classjava_lang_Thread*)unhand(Threads[acc->thread-1]);
+        trd = (Classjava_lang_Thread*)unhand(Threads[acc->thread - 1]);
         ThreadName( trd, buff, sizeof( buff ) );
         strcat( name, buff );
 
         strcat( name, " (" );
-        if( SysThreads[acc->thread-1] ) {
-            switch( SysThreads[acc->thread-1]->state ) {
+        if( SysThreads[acc->thread - 1] ) {
+            switch( SysThreads[acc->thread - 1]->state ) {
             case RUNNABLE:
                 strcat( name, "running, " );
                 break;
@@ -1200,8 +1215,8 @@ trap_retval TRAP_FILE( get_config )( void )
     return( 0 );
 }
 
-trap_retval TRAP_FILE( string_to_fullpath )( void )
-/*************************************************/
+trap_retval TRAP_FILE( file_to_fullpath )( void )
+/***********************************************/
 {
     // never called
     return( 0 );
@@ -1227,9 +1242,9 @@ trap_retval TRAP_FILE( open )( void )
     if( memcmp( buff, JAVAPREFIX, sizeof( JAVAPREFIX )-1 ) == 0 ) {
         buff += sizeof( JAVAPREFIX ) - 1;
         for( i = 0; i < nbinclasses; ++i ) {
-            if( strcmp( binclasses[ i ]->name, buff ) == 0 ) {
+            if( strcmp( binclasses[i]->name, buff ) == 0 ) {
                 ret->err = 0;
-                CbOpened = binclasses[ i ];
+                CbOpened = binclasses[i];
                 break;
             }
         }
@@ -1267,20 +1282,21 @@ trap_retval TRAP_FILE( read )( void )
 {
     file_read_req       *acc;
     file_read_ret       *ret;
-    void                *buff;
     char                tmp[LENGTH];
-    unsigned            bytes;
+    size_t              bytes;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    buff = GetOutPtr( sizeof( *ret ) );
-    if( CbOpened == NULL ) return( sizeof( *ret ) );
-    strcpy( tmp, PREFIX );
-    *((void**)(tmp+PREFIX_SIZE)) = (void*)CbOpened;
-    bytes=LENGTH;
-    if( bytes > acc->len ) bytes = acc->len;
-    memcpy( buff, tmp, bytes );
     ret->err = 0;
+    if( CbOpened == NULL ) {
+        return( sizeof( *ret ) );
+    }
+    strcpy( tmp, PREFIX );
+    *((void **)( tmp + PREFIX_SIZE )) = (void *)CbOpened;
+    bytes = LENGTH;
+    if( bytes > acc->len )
+        bytes = acc->len;
+    memcpy( GetOutPtr( sizeof( *ret ) ), tmp, bytes );
     return( sizeof( *ret ) + bytes );
 }
 
@@ -1311,10 +1327,11 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
 {
     trap_version        ver;
 
-    remote = remote; parms = parms;
+    /* unused parameters */ (void)remote; (void)parms;
+
     err[0] = '\0'; /* all ok */
-    ver.major = TRAP_MAJOR_VERSION;
-    ver.minor = TRAP_MINOR_VERSION;
+    ver.major = TRAP_VERSION_MAJOR;
+    ver.minor = TRAP_VERSION_MINOR;
     ver.remote = FALSE;
     sysAtexit( HandleExit );
     cbCallJava = FindClass( EE(), "sun/tools/debug/jvmhelp", TRUE );

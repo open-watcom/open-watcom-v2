@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -459,7 +459,7 @@ void WndMenuSetHotKey( gui_menu_struct *menu, bool is_main, const char *key )
     memcpy( new, menu->label, len );
     p = new + len;
     *p++ = '\t';
-    StrCopy( key, p );
+    StrCopyDst( key, p );
     if( menu->style & WND_MENU_ALLOCATED )
         WndFree( (void *)menu->label );
     menu->style |= WND_MENU_ALLOCATED;

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -80,7 +80,7 @@
 #endif
 
 #if defined( __RDOS__ )
-static ThreadState state;
+static struct RdosThreadState state;
 static char FatalErrorStr[256];
 #endif
 
@@ -187,20 +187,13 @@ _WCRTLINK _WCNORETURN void __exit_with_msg( char _WCI86FAR *msg, int retcode )
     EXIT( retcode );
     // never return
 #endif
-#if defined( __RDOSDEV__ )
-    __asm int 3
-#endif
 }
 
 _WCRTLINK _WCNORETURN void __fatal_runtime_error( char _WCI86FAR *msg, int retcode )
 {
-#if defined( __RDOS__ )
-#elif defined( __RDOSDEV__ )
-#else
     if( __EnterWVIDEO( msg ) )
         EXIT( retcode );
         // never return
-#endif
     __exit_with_msg( msg, retcode );
     // never return
 }

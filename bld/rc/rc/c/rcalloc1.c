@@ -42,10 +42,12 @@
 
 typedef unsigned char   HeapIndex;
 
-// Need a long instead of a char for Alpha to work,
-// as Alpha doesn't allow odd boundary memory accesses for non-chars.
-// Pls note that there might be problems (for AXP) of this kind lying around.
-// In fact, the RCMEM_DEBUG version is not working for AXP.     KH 5/17/95
+/*
+ * Need a long instead of a char for Alpha to work,
+ * as Alpha doesn't allow odd boundary memory accesses for non-chars.
+ * Pls note that there might be problems (for AXP) of this kind lying around.
+ * In fact, the RCMEM_DEBUG version is not working for AXP.
+ */
 typedef struct HeapId {
 #if defined( __AXP__ )
     long                id;

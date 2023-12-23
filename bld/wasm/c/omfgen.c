@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -227,6 +227,7 @@ static int writeLedata( obj_rec *objr )
     return( 0 );
 }
 
+#if 0
 static void id32Block( obj_rec *objr, int_16 *delta, uint_16 first_block_offset )
 /*
     Since LIDATAs are different under PharLap and MicroSoft 386 formats,
@@ -255,6 +256,7 @@ static void id32Block( obj_rec *objr, int_16 *delta, uint_16 first_block_offset 
         }
     }
 }
+#endif
 
 static int writeLidata( obj_rec *objr )
 {

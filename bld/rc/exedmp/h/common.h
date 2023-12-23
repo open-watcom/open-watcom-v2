@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,13 +37,11 @@
 #include "exepe.h"
 #include "exedos.h"
 #include "bool.h"
+#include "stringsd.h"
 
 
 #ifndef COMMON_H
 #define COMMON_H
-
-#define RT_NONE                 0
-#define RT_COUNT                15
 
 typedef enum {
     TABLE,
@@ -56,33 +54,32 @@ typedef enum {
 } NameOrID;
 
 typedef struct ExeFile {
-    FILE                        *file;
-    dos_exe_header               dosHdr;
-    pe_header                    pexHdr;
-    unsigned_32                  pexHdrAddr;
-    pe_object                    resObj;
-    long                         resObjAddr;
-    struct ResTableEntry        *tabEnt;
+    FILE                    *file;
+    dos_exe_header          dosHdr;
+    pe_exe_header           pexHdr;
+    unsigned_32             pexHdrAddr;
+    pe_object               resObj;
+    long                    resObjAddr;
+    struct ResTableEntry    *tabEnt;
 } ExeFile;
 
 typedef struct ResTableEntry {
-    resource_dir_header  header;
-    struct ResDirEntry  *dirs;
+    resource_dir_header     header;
+    struct ResDirEntry      *dirs;
 } ResTableEntry;
 
 typedef struct ResDirEntry {
-    resource_dir_entry   dir;
-    ResTableEntry       *table;
-    struct ResDataEntry *data;
-    NameOrID             nameID;
-    TableOrData          entryType;
-    unsigned_16         *name;
-    unsigned_16          nameSize;
+    resource_dir_entry      dir;
+    ResTableEntry           *table;
+    struct ResDataEntry     *data;
+    NameOrID                nameID;
+    TableOrData             entryType;
+    unsigned_16             *name;
+    unsigned_16             nameSize;
 } ResDirEntry;
 
 typedef struct ResDataEntry {
-    resource_entry       entry;
+    resource_entry          entry;
 } ResDataEntry;
-
 
 #endif

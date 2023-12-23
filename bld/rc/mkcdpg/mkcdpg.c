@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -237,20 +238,23 @@ int main( int argc, char *argv[] ) {
     bool                error;
 
     error = false;
-    printf( banner1( "WRC Code Page Generator", "1.0" ) "\n" );
-    printf( banner2 "\n" );
-    printf( banner2a( 1984 ) "\n" );
-    printf( banner3 "\n" );
-    printf( banner3a "\n\n" );
+    puts(
+        banner1t( "WRC Code Page Generator" ) "\n"
+        banner1v( "1.0" ) "\n"
+        banner2 "\n"
+        banner2a( 1984 ) "\n"
+        banner3 "\n"
+        banner3a "\n"
+    );
     if( argc != 3 ) {
-        printf( "This program creates data files used by the resource compiler to convert text\n" );
-        printf( "from a given code page into UNICODE. It can only create data files for code\n" );
-        printf( "pages that are currently installed and available in the system. It will \n" );
-        printf( "correctly create conversion files for code pages that contain multi-byte\n" );
-        printf( "characters.\n" );
-        printf( "\n" );
-        printf( "Usage:\n" );
-        printf( "    %s <codepage> <filename>\n", argv[0] );
+        printf( "This program creates data files used by the resource compiler to convert text\n"
+                "from a given code page into UNICODE. It can only create data files for code\n"
+                "pages that are currently installed and available in the system. It will \n"
+                "correctly create conversion files for code pages that contain multi-byte\n"
+                "characters.\n"
+                "\n"
+                "Usage:\n"
+                "    %s <codepage> <filename>\n", argv[0] );
         return( 1 );
     }
     info = buildInfo( argv[1] );

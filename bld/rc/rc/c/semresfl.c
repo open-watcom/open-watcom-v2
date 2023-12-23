@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,6 +32,7 @@
 
 
 #include "global.h"
+#include <errno.h>
 #include "semantic.h"
 #include "rcerrors.h"
 #include "reserr.h"
@@ -76,7 +78,7 @@ static bool copyResourcesFromRes( const char *full_filename )
 
     buffer = NULL;
     dir = WResInitDir();
-    fp = RcIoOpenInput( full_filename, false );
+    fp = RcIoOpenInputBin( full_filename );
     if( fp == NULL ) {
         RcError( ERR_CANT_OPEN_FILE, full_filename, strerror( errno ) );
         error = true;
@@ -100,15 +102,13 @@ static bool copyResourcesFromRes( const char *full_filename )
                 error = true;
             } else {
                 buffer = RESALLOC( BUFFER_SIZE );
-                wind = WResFirstResource( dir );
-                while( !WResIsEmptyWindow( wind ) ) {
+                for( wind = WResFirstResource( dir ); !WResIsEmptyWindow( wind ); wind = WResNextResource( wind, dir ) ) {
                     copyAResource( fp, &wind, buffer, full_filename );
-                    wind = WResNextResource( wind, dir );
                 }
                 RESFREE( buffer );
             }
         }
-        RESCLOSE( fp );
+        RcIoCloseInputBin( fp );
     }
     WResFreeDir( dir );
     if( error ) {

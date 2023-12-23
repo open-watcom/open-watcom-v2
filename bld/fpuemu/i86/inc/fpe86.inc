@@ -15,7 +15,7 @@ _OS2  = 2
 
   NC = '$'
 
-ifndef NDEBUG
+ifdef DEVBUILD
 public  badop,prtnyi,my87,modrm,memop,stkop,stkop1
 endif
 
@@ -41,7 +41,7 @@ _DATA segment word public 'DATA'
 ifndef __QNX__
 my87            sarea           <>
 endif
-ifndef NDEBUG
+ifdef DEVBUILD
 nyimsg          db ": not yet implemented",0dH,0aH,NC
 illopmsg        db "Illegal instruction encountered by 8087 emulator",0dH,0aH,NC
 endif
@@ -868,7 +868,7 @@ stkop:  dw      s00,s01,s02,s03,s04,s05,s06,s07         ; stack operand
         xrefp   __fxam
         xrefp   __frndint
 
-ifndef NDEBUG
+ifdef DEVBUILD
 badop   proc    near
         lea     dx,illopmsg
         mov     ah,9H
@@ -878,12 +878,12 @@ badop   endp
 endif
 
 illop   macro
-ifndef NDEBUG
+ifdef DEVBUILD
         call    badop
 endif
         endm
 
-ifndef NDEBUG
+ifdef DEVBUILD
 prtnyi  proc    near
         mov     ah,9H
         int     21H

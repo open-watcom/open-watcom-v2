@@ -3,7 +3,7 @@ OBJS =  rm.obj
 
 extra_lnk = xlnk
 
-!include $(posix_dir)/makeone.mif
+!include ../makeone.mif
 
 !ifeq host_cpu i86
 model=s

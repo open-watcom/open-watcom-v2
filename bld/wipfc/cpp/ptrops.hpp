@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2009-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2009-2023 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -32,19 +32,19 @@
 #define PTROPS_INCLUDED
 
 template < class Type >
-struct ptrEqualTo : std::binary_function< Type, Type, bool > {
+struct ptrEqualTo {
     bool operator( )( const Type &x, const Type &y ) const
         { return( *x == *y ); }
 };
 
 template < class Type >
-struct ptrLess : std::binary_function< Type, Type, bool > {
+struct ptrLess {
     bool operator( )( const Type &x, const Type &y ) const
         { return( *x < *y ); }
 };
 
 template < class Type >
-struct ptrGreater : std::binary_function< Type, Type, bool > {
+struct ptrGreater {
     bool operator( )( const Type &x, const Type &y ) const
         { return( *x > *y ); }
 };

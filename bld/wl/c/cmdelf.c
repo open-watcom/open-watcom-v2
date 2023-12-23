@@ -44,7 +44,7 @@
 void SetELFFmt( void )
 /********************/
 {
-    Extension = E_ELF;
+    FmtData.def_ext = E_ELF;
     FmtData.u.elf.exp.export = NULL;
     FmtData.u.elf.exp.module = NULL;
     FmtData.u.elf.extrasects = 0;
@@ -278,7 +278,7 @@ static bool ProcELFRSolrs( void )
 /*******************************/
 {
     FmtData.u.elf.abitype = ELFOSABI_SOLARIS;
-    ParseABIVersion( "FREEBSD" );
+    ParseABIVersion( "SOLARIS" );
     return( true );
 }
 
@@ -286,7 +286,7 @@ static bool ProcELFRFBSD( void )
 /******************************/
 {
     FmtData.u.elf.abitype = ELFOSABI_FREEBSD;
-    ParseABIVersion( "SOLARIS" );
+    ParseABIVersion( "FREEBSD" );
     return( true );
 }
 

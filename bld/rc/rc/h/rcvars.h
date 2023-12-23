@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,9 +34,10 @@
 #ifndef RCVARS_INCLUDED
 #define RCVARS_INCLUDED
 
-/****** initialized global data ******/
-/* This variable is set to true if any error occurs. No further file I/O will */
-/* then take place. */
+/****** initialized global data ******
+ * This variable is set to true if any error occurs. No further file I/O will
+ * then take place.
+ */
 #ifndef RCEXTERN
 extern bool                 ErrorHasOccured;
 #else
@@ -47,11 +49,8 @@ RCEXTERN bool               ErrorHasOccured = false;
 #endif
 
 /****** uninitialized global data ******/
-RCEXTERN RCParams           CmdLineParms;
 RCEXTERN RcResFileID        CurrResFile;
-RCEXTERN RcPass2Info        Pass2Info;
 RCEXTERN char               CharSetLen[256];
-RCEXTERN bool               StopInvoked;
 RCEXTERN bool               IgnoreINCLUDE;
 RCEXTERN bool               IgnoreCWD;
 

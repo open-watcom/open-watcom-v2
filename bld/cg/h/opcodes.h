@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -58,7 +58,7 @@ typedef enum {
 #define     LAST_UNARY_OP       OP_PTR_TO_FOREIGN
 #define  LAST_ARITH_OP          OP_PTR_TO_FOREIGN
 #define  FIRST_MOVE_OP          OP_CONVERT
-#if ( _TARGET & _TARG_RISC ) == 0
+#if !_TARGET_RISC
 #define LAST_CSE_OP             OP_CONVERT
 #else
 #define LAST_CSE_OP             OP_LA

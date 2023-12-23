@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -59,7 +60,9 @@
 static bool WdeGetTextSize( HWND win, HFONT font, char *text, SIZE *size )
 {
     char        *str;
-    int         i, len, pos;
+    size_t      i;
+    size_t      len;
+    int         pos;
     HFONT       old_font;
     HDC         dc;
     bool        ok;
@@ -106,7 +109,7 @@ static bool WdeGetTextSize( HWND win, HFONT font, char *text, SIZE *size )
     return( ok );
 }
 
-bool WdeGetNameOrOrdSize( OBJPTR parent, ResNameOrOrdinal *name, SIZE *size )
+bool WdeGetNameOrOrdinalSize( OBJPTR parent, ResNameOrOrdinal *name, SIZE *size )
 {
     char        *text;
     HWND        win;

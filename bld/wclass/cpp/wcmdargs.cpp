@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,27 +36,26 @@
 #include "clibext.h"
 
 
-WEXPORT WCommandArgs::WCommandArgs() {
-/************************************/
+WEXPORT WCommandArgs::WCommandArgs()
+/**********************************/
+{
+    int     cmd_len;
 
-    // temporary: allocate a buffer of fixed size since we don't
-    // know the length of the command line arguments.  We need
-    // a new C-library function:
-    //     cmdlen = getcmd2( char *buffer, unsigned buff_size );
-    _args = new char [1024];
-    getcmd( _args );
+    cmd_len = _bgetcmd( NULL, 0 ) + 1;
+    _args = new char[cmd_len];
+    _bgetcmd( _args, cmd_len );
 }
 
 
-WEXPORT WCommandArgs::~WCommandArgs() {
-/*************************************/
-
+WEXPORT WCommandArgs::~WCommandArgs()
+/***********************************/
+{
     delete[] _args;
 }
 
 
-void WEXPORT WCommandArgs::getCommandArgs( WString& args ) {
-/**********************************************************/
-
+void WEXPORT WCommandArgs::getCommandArgs( WString& args )
+/********************************************************/
+{
     args = _args;
 }

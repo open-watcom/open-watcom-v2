@@ -182,10 +182,17 @@
 /*
  *  Pathname variable values (may vary by pathname)
  */
-#define LINK_MAX    65535u
+#define LINK_MAX    65535U
 #define MAX_CANON   _POSIX_MAX_CANON
 #define MAX_INPUT   _POSIX_MAX_INPUT
+:segment LINUX
+:keep NAMEMAX
+:include maxpath.sp
+:remove NAMEMAX
+:endsegment
+:segment QNX
 #define NAME_MAX    48
+:endsegment
 #define PATH_MAX    _POSIX_PATH_MAX
 #define PIPE_BUF    5120
 

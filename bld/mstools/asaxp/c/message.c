@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,8 +45,7 @@ static const char usageMsg[] = {
     #include "usagemsg.gh"
 };
 
-static bool             quietMode = false;
-
+static bool     quietMode = false;
 
 /*
  * Print the copyright banner.
@@ -55,16 +54,16 @@ void BannerMessage( void )
 /************************/
 {
     static bool         alreadyPrinted = false;
-    static char *       helpMsg = {
-        banner1w( "C/C++ ASAXP Clone for " CPU_NAME " ", _ASAXP_CLONE_VERSION_ ) "\n"
-        banner2 "\n"
-        banner2a( 1995 ) "\n"
-        banner3 "\n"
-        banner3a "\n"
-    };
 
     if( !alreadyPrinted && !quietMode ) {
-        printf( helpMsg );
+        puts(
+            banner1t( "C/C++ ASAXP Clone for " CPU_NAME ) "\n"
+            banner1v( _ASAXP_CLONE_VERSION_ ) "\n"
+            banner2 "\n"
+            banner2a( 1995 ) "\n"
+            banner3 "\n"
+            banner3a
+        );
         alreadyPrinted = true;
     }
 }

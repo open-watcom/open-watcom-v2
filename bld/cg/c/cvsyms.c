@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,6 +38,7 @@
 #include "coderep.h"
 #include "cgmem.h"
 #include "zoiks.h"
+#include "cgauxcc.h"
 #include "cgauxinf.h"
 #include "cvdbg.h"
 #include "data.h"
@@ -179,9 +180,9 @@ static int SetLang( void )
     int     index;
 
     ret = LANG_C;
-    name =  FEAuxInfo( NULL, SOURCE_LANGUAGE );
-    for( index = 0; index < MAX_LANG; ++index ){
-        if( strcmp( name, LangNames[index].name ) == 0 ){
+    name =  FEAuxInfo( NULL, FEINF_SOURCE_LANGUAGE );
+    for( index = 0; index < MAX_LANG; ++index ) {
+        if( strcmp( name, LangNames[index].name ) == 0 ) {
             ret = LangNames[index].lang;
             break;
         }
@@ -195,12 +196,12 @@ static  void    InitSegBck( void )
 {
     segment_id  old_segid;
 
-    if( _IsModel( DBG_LOCALS ) ) {
+    if( _IsModel( CGSW_GEN_DBG_LOCALS ) ) {
         old_segid = SetOP( CVSyms );
         DataLong( CV_OMF_SIG );
         SetOP( old_segid );
     }
-    if( _IsModel( DBG_TYPES ) ) {
+    if( _IsModel( CGSW_GEN_DBG_TYPES ) ) {
         old_segid = SetOP( CVTypes );
         DataLong( CV_OMF_SIG );
         SetOP( old_segid );
@@ -218,11 +219,11 @@ void    CVObjInitDbgInfo( void )
     char        *name;
 
     InitSegBck();
-    if( _IsModel( DBG_LOCALS ) ) {
+    if( _IsModel( CGSW_GEN_DBG_LOCALS ) ) {
         NewBuff( out, CVSyms );
         optr = StartSym(  out, SG_OBJNAME );
         optr->signature = 0;
-        name =  FEAuxInfo( NULL, OBJECT_FILE_NAME );
+        name =  FEAuxInfo( NULL, FEINF_OBJECT_FILE_NAME );
         CVPutStr( out, name );
         EndSym( out );
         buffEnd( out );
@@ -241,7 +242,7 @@ void    CVObjInitDbgInfo( void )
         cptr->flags.f.Mode32 = true;
         cptr->flags.f.FloatPrecision = 1;
     #endif
-        switch( GetMemModel() ){
+        switch( GetMemModel() ) {
             case 'h':
                 cptr->flags.f.AmbientData = AMBIENT_HUGE;
                 cptr->flags.f.AmbientCode = AMBIENT_FAR;
@@ -336,7 +337,7 @@ static  void FrameVar( cv_out *out, const char *nm, dbg_type tipe, int disp )
 /***  local rel to  frame  *************************************************/
 #if 1     // it seems like BPREL works for AXP so I'll give it a try
 {
-//#if _TARGET & ( _TARG_8086 | _TARG_80386 )
+//#if _TARGET_INTEL
     cs_bprel   *ptr;
 
     ptr = StartSym(  out, SG_BPREL );
@@ -410,8 +411,8 @@ void    CVGenStatic( cg_sym_handle sym, dbg_loc loc, bool mem )
     ptr->offset = 0;
     ptr->segment = 0;
     ptr->type = tipe;
-    if( mem ){
-        name = FEAuxInfo( sym, CLASS_APPENDED_NAME );
+    if( mem ) {
+        name = FEAuxInfo( sym, FEINF_CLASS_APPENDED_NAME );
     } else {
         name = FEName( sym );
     }
@@ -515,7 +516,7 @@ static  name    *LocSymBP( dbg_loc loc )
 {
     if( loc == NULL )
         return( NULL );
-    if( (loc->class & 0xf0) != LOC_BP_OFFSET ){
+    if( (loc->class & 0xf0) != LOC_BP_OFFSET ) {
         return( NULL );
     }
     return( loc->u.be_sym );
@@ -529,7 +530,7 @@ static  dbg_local *UnLinkLoc( dbg_local **owner, cg_sym_handle sym )
     dbg_local           *curr;
 
     for( ; (curr = *owner) != NULL; owner = &(*owner)->link ) {
-        if( curr->sym == sym ){
+        if( curr->sym == sym ) {
             *owner = curr->link;
             break;
         }
@@ -546,20 +547,20 @@ static  void DumpParms( dbg_local *parm, dbg_local **locals )
     for( ; parm != NULL; parm = next ) {    /* find and unlink from locals */
         next = parm->link;
         alt = UnLinkLoc( locals, parm->sym );
-        if( alt != NULL ){
+        if( alt != NULL ) {
             dbg_type    tipe;
             type_length offset;
             name       *t;
 
-            if( alt->kind == DBG_SYM_VAR ){
+            if( alt->kind == DBG_SYM_VAR ) {
                 tipe = FEDbgType( alt->sym );
                 t = LocSymBP( alt->loc );
-                if( t != NULL ){
+                if( t != NULL ) {
                     offset = NewBase( t );
                     NewBuff( out, CVSyms );
                     FrameVar( out, FEName( alt->sym ), tipe, offset );
                     buffEnd( out );
-                }else{
+                } else {
                     CVGenStatic( alt->sym, alt->loc, false );
                 }
             }
@@ -630,9 +631,9 @@ void    CVProEnd( dbg_rtn *rtn, offset lc )
 
     sym = AskForLblSym( CurrProc->label );
     attr = FEAttr( sym );
-    if( attr & FE_GLOBAL ){
+    if( attr & FE_GLOBAL ) {
         kind = SG_GPROC;
-    }else{
+    } else {
         kind = SG_LPROC;
     }
     NewBuff( out, CVSyms );
@@ -648,13 +649,13 @@ void    CVProEnd( dbg_rtn *rtn, offset lc )
     tipe = FEDbgType( sym );
     ptr->proctype = tipe;
     ptr->flags.s = 0;
-#if _TARGET & ( _TARG_8086 | _TARG_80386 )
-    if( *(call_class *)FindAuxInfoSym( sym, CALL_CLASS ) & FAR_CALL ) {
+#if _TARGET_INTEL
+    if( (call_class_target)(pointer_uint)FindAuxInfoSym( sym, FEINF_CALL_CLASS_TARGET ) & FECALL_X86_FAR_CALL ) {
         ptr->flags.f.far_ret = true;
     }
 #endif
     if( rtn->obj_type != DBG_NIL_TYPE ) {
-        name = FEAuxInfo( sym, CLASS_APPENDED_NAME );
+        name = FEAuxInfo( sym, FEINF_CLASS_APPENDED_NAME );
     } else {
         name = FEName( sym );
     }
@@ -665,9 +666,9 @@ void    CVProEnd( dbg_rtn *rtn, offset lc )
     SymReloc( CVSyms, sym, 0 );
     BuffSkip( out, &ptr->proctype );
     buffEnd( out );
-    DBLocFini( rtn->reeturn );
+    DBLocFini( rtn->return_loc );
     DBLocFini( rtn->obj_loc );
-    if( rtn->parms != NULL ){
+    if( rtn->parms != NULL ) {
         DumpParms( rtn->parms, &rtn->rtn_blk->locals );
     }
     DumpLocals( rtn->rtn_blk->locals );

@@ -89,8 +89,8 @@ const char *inet_atoeth (const char *src, BYTE *eth)
 static void EtherAddr (const char *value, int set_it)
 {
   eth_address eth;
-  const char *ip     = inet_atoeth (value, (BYTE*)&eth);
-  BOOL        is_own = memcmp (&eth, &_eth_addr, sizeof(eth)) == 0;
+  const char *ip     = inet_atoeth (value, (BYTE *)eth);
+  BOOL        is_own = memcmp (eth, _eth_addr, sizeof(eth)) == 0;
 
   if (!isdigit(*ip) && !set_it)
      return;
@@ -103,7 +103,7 @@ static void EtherAddr (const char *value, int set_it)
 
   if (set_it && !is_own)
   {
-    if (!_eth_set_addr(&eth))
+    if (!_eth_set_addr(eth))
        outsnl (_LANG("Cannot set Ether-addr"));
 #if defined(USE_RARP)
     else
@@ -123,7 +123,7 @@ static void EtherAddr (const char *value, int set_it)
   {
     DWORD addr = _inet_addr (ip);
     if (addr)
-      _arp_add_cache (addr, &eth, FALSE); /* add ip-addr to arp-table */
+      _arp_add_cache (addr, eth, FALSE);  /* add ip-addr to arp-table */
   }
 }
 
@@ -587,7 +587,7 @@ int tcp_config (const char *path)
   *name = *value = mode = num = 0;
   quotemode = ch[1] = 0;
 
-  while (FREAD(&ch,f) == 1)
+  while (FREAD(ch,f) == 1)
   {
     switch (ch[0])
     {

@@ -31,19 +31,19 @@
 
 
 /*
-
-Lattice                         Range of characters for first byte
-switch  Character Set           of a double-byte character
-------  -------------           --------------------------
--e0     Japanese:               0x81 - 0x9f, 0xe0 - 0xfc
--e1     Chinese and Taiwanese:  0x81 - 0xfc // JBS obsolete
--e2     Korean:                 0x81 - 0xfd // JBS obsolete
-
-*/
+ * Lattice                         Range of characters for first byte
+ * switch  Character Set           of a double-byte character
+ * ------  -------------           --------------------------
+ * -e0     Japanese:               0x81 - 0x9f, 0xe0 - 0xfc
+ * -e1     Chinese and Taiwanese:  0x81 - 0xfc // JBS obsolete
+ * -e2     Korean:                 0x81 - 0xfd // JBS obsolete
+ */
 #include "cvars.h"
 
 #if defined( __RDOS__ )
-// !TODO fix MBCS stuff
+/*
+ * !TODO fix MBCS stuff
+ */
 #elif defined( __WATCOMC__ ) || !defined( __UNIX__ )
     #include <mbstring.h>
     #include <mbctype.h>

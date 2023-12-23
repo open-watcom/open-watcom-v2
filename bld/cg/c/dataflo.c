@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -120,7 +120,7 @@ static  void    RoughSortTemps( void )
         }
     }
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+        for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             for( i = 0; i < ins->num_operands; ++i ) {
                 AddTempSave( ins->operands[i], blk );
             }
@@ -186,7 +186,7 @@ static  void    CheckGlobals( void )
     name        *op;
 
 #define FORCE_MEM (USE_MEMORY|USE_ADDRESS)
-    if( _IsntModel( RELAX_ALIAS ) ) {
+    if( _IsntModel( CGSW_GEN_RELAX_ALIAS ) ) {
         for( op = Names[N_MEMORY]; op != NULL; op = op->n.next_name ) {
             if( op->m.memory_type == CG_FE ) {
                 if( ( op->v.usage & FORCE_MEM ) != FORCE_MEM ) {
@@ -263,10 +263,10 @@ void    SetInOut( block *blk )
         _GBitAssign( blk->dataflow->out, blk->dataflow->in );
     }
     if( _IsBlkAttr( blk, BLK_RETURN ) ) {
-        HW_TurnOn( blk->ins.hd.live.regs, CurrProc->state.return_reg );
+        HW_TurnOn( blk->ins.head.live.regs, CurrProc->state.return_reg );
     }
-    _LBitInit( blk->ins.hd.live.within_block, EMPTY );
-    _GBitAssign( blk->ins.hd.live.out_of_block, blk->dataflow->out );
+    _LBitInit( blk->ins.head.live.within_block, EMPTY );
+    _GBitAssign( blk->ins.head.live.out_of_block, blk->dataflow->out );
     _LBitInit( blk->available_bit, ~EMPTY );
 }
 

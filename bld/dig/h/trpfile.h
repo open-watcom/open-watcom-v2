@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,6 +31,7 @@
 
 
 #ifndef TRPFILE_H
+#define TRPFILE_H
 
 #include "trptypes.h"
 
@@ -47,7 +48,7 @@
     REQ_FILE_DEF( WRITE_CONSOLE,      write_console ) \
     REQ_FILE_DEF( CLOSE,              close ) \
     REQ_FILE_DEF( ERASE,              erase ) \
-    REQ_FILE_DEF( STRING_TO_FULLPATH, string_to_fullpath ) \
+    REQ_FILE_DEF( STRING_TO_FULLPATH, file_to_fullpath ) \
     REQ_FILE_DEF( RUN_CMD,            run_cmd )
 
 enum {
@@ -64,7 +65,7 @@ typedef unsigned_64     trap_fhandle; /* file handle */
 
 typedef struct {
     supp_prefix         supp;
-    access_req          req;
+    trap_req            req;
 } file_get_config_req;
 
 typedef struct {
@@ -72,16 +73,9 @@ typedef struct {
 } file_get_config_ret;
 
 /*==================== REQ_FILE_OPEN ===================*/
-enum {
-    TF_READ     = 0x1,
-    TF_WRITE    = 0x2,
-    TF_CREATE   = 0x4,
-    TF_EXEC     = 0x8
-};
-
 typedef struct {
     supp_prefix         supp;
-    access_req          req;
+    trap_req            req;
     unsigned_8          mode;
 } file_open_req;
 
@@ -91,15 +85,9 @@ typedef struct {
 } file_open_ret;
 
 /*====================== REQ_FILE_SEEK ===================*/
-enum {
-    TF_SEEK_ORG,
-    TF_SEEK_CUR,
-    TF_SEEK_END
-};
-
 typedef struct {
     supp_prefix         supp;
-    access_req          req;
+    trap_req            req;
     trap_fhandle        handle;
     unsigned_8          mode;
     unsigned_32         pos;
@@ -112,7 +100,7 @@ typedef struct {
 
 typedef struct {
     supp_prefix         supp;
-    access_req          req;
+    trap_req            req;
     trap_fhandle        handle;
     unsigned_16         len;
 } _WCUNALIGNED file_read_req;
@@ -124,7 +112,7 @@ typedef struct {
 
 typedef struct {
     supp_prefix         supp;
-    access_req          req;
+    trap_req            req;
     trap_fhandle        handle;
     /* followed by sequence of bytes to write */
 } _WCUNALIGNED file_write_req;
@@ -136,7 +124,7 @@ typedef struct {
 
 typedef struct {
     supp_prefix         supp;
-    access_req          req;
+    trap_req            req;
     /* followed by data to write to console */
 } _WCUNALIGNED file_write_console_req;
 
@@ -147,7 +135,7 @@ typedef struct {
 
 typedef struct {
     supp_prefix         supp;
-    access_req          req;
+    trap_req            req;
     trap_fhandle        handle;
 } _WCUNALIGNED file_close_req;
 
@@ -157,7 +145,7 @@ typedef struct {
 
 typedef struct {
     supp_prefix         supp;
-    access_req          req;
+    trap_req            req;
     /* followed by file name to be deleted */
 } file_erase_req;
 
@@ -166,16 +154,9 @@ typedef struct {
 } file_erase_ret;
 
 /*====================== REQ_FILE_STRING_TO_FULLPATH =================*/
-enum {
-    TF_TYPE_EXE,
-    TF_TYPE_DBG,
-    TF_TYPE_PRS,
-    TF_TYPE_HLP
-};
-
 typedef struct {
     supp_prefix         supp;
-    access_req          req;
+    trap_req            req;
     unsigned_8          file_type;
     /* followed by file name to be searched for */
 } file_string_to_fullpath_req;
@@ -187,7 +168,7 @@ typedef struct {
 
 typedef struct {
     supp_prefix         supp;
-    access_req          req;
+    trap_req            req;
     unsigned_16         chk_size;
 } _WCUNALIGNED file_run_cmd_req;
 
@@ -196,7 +177,5 @@ typedef struct {
 } file_run_cmd_ret;
 
 #include "poppck.h"
-
-#define TRPFILE_H
 
 #endif

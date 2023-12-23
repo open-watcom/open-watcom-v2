@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -93,8 +93,8 @@ static name *AllocName( name_class_def class, type_class_def type_class, type_le
     return( new );
 }
 
-static name *findConst64( unsigned_32 low, unsigned_32 high, float_handle cf_value )
-/**********************************************************************************/
+static name *findConst64( uint_32 low, uint_32 high, float_handle cf_value )
+/**************************************************************************/
 {
     name        *new_c;
     name        **last;
@@ -135,7 +135,7 @@ name    *AllocConst( float_handle cf_value )
 {
     name        *new_c;
     name        **last;
-    signed_32   int_value;
+    int_32      int_value;
     int         test;
 
     int_value = CFCnvF32( cf_value );
@@ -167,7 +167,7 @@ name    *AllocConst( float_handle cf_value )
     new_c = AllocName( N_CONSTANT, XX, 0 );
     new_c->c.value = cf_value;
     new_c->c.lo.int_value = int_value;
-    if( test < 0 ){
+    if( test < 0 ) {
         new_c->c.hi.int_value = -1; //sign extend
     } else {
         new_c->c.hi.int_value = 0;
@@ -214,8 +214,8 @@ name    *AllocAddrConst( name *value, int seg, constant_type_class const_type, t
 }
 
 
-name    *FindIntValue( signed_32 value )
-/**************************************/
+name    *FindIntValue( int_32 value )
+/***********************************/
 {
     if( value == 0 && ConstZero != NULL )
         return( ConstZero );
@@ -249,8 +249,8 @@ name    *AllocUIntConst( uint value )
 }
 
 
-name    *AllocS32Const( signed_32 value )
-/***************************************/
+name    *AllocS32Const( int_32 value )
+/************************************/
 {
     name        *konst;
 
@@ -260,8 +260,8 @@ name    *AllocS32Const( signed_32 value )
     return( AllocConst( CFCnvI32F( value ) ) );
 }
 
-name    *AllocU32Const( unsigned_32 value )
-/*****************************************/
+name    *AllocU32Const( uint_32 value )
+/*************************************/
 {
     name        *konst;
 
@@ -271,14 +271,14 @@ name    *AllocU32Const( unsigned_32 value )
     return( AllocConst( CFCnvU32F( value ) ) );
 }
 
-name    *AllocS64Const( unsigned_32 low, unsigned_32 high )
-/*********************************************************/
+name    *AllocS64Const( uint_32 low, uint_32 high )
+/*************************************************/
 {
     name            *new_c;
     float_handle    cf_value = CFCnvI64F( low, high );
 
     new_c = findConst64( low, high, cf_value );
-    if( new_c == NULL ){
+    if( new_c == NULL ) {
         new_c = AllocName( N_CONSTANT, XX, 0 );
         new_c->c.value = cf_value;
         new_c->c.lo.uint_value = low;
@@ -291,14 +291,14 @@ name    *AllocS64Const( unsigned_32 low, unsigned_32 high )
     return( new_c );
 }
 
-name    *AllocU64Const( unsigned_32 low, unsigned_32 high )
-/*********************************************************/
+name    *AllocU64Const( uint_32 low, uint_32 high )
+/*************************************************/
 {
     name            *new_c;
     float_handle    cf_value = CFCnvU64F( low, high );
 
     new_c = findConst64( low, high, cf_value );
-    if( new_c == NULL ){
+    if( new_c == NULL ) {
         new_c = AllocName( N_CONSTANT, XX, 0 );
         new_c->c.value = cf_value;
         new_c->c.lo.uint_value = low;
@@ -381,7 +381,7 @@ memory_name     *SAllocMemory( pointer symbol, type_length offset, cg_class clas
         new_m->v.usage = NEEDS_MEMORY;
         new_m->m.same_sym = NULL;
     }
-    if( class == CG_FE && _IsModel( NO_OPTIMIZATION ) ) {
+    if( class == CG_FE && _IsModel( CGSW_GEN_NO_OPTIMIZATION ) ) {
         new_m->v.usage |= USE_MEMORY;
     }
     new_m->v.block_usage = 0;
@@ -491,14 +491,14 @@ name    *SAllocUserTemp( pointer symbol, type_class_def type_class, type_length 
     name        *new_t;
 
     type_class = OneClass[type_class];
-    new_t = LkAddBack( symbol, NULL );
+    new_t = LkAddBackUserTemp( symbol, NULL );
     if( new_t == NULL ) {
         new_t = AllocTemp( type_class );
         new_t->v.symbol = symbol;
         if( size != 0 ) {
             new_t->n.size = size;
         }
-        LkAddBack( symbol, new_t );
+        LkAddBackUserTemp( symbol, new_t );
         return( new_t );
     } else {
         if( new_t->n.type_class == type_class && type_class != XX )
@@ -547,9 +547,10 @@ name    *AllocRegName( hw_reg_set regs )
     }
     new_r = AllocName( N_REGISTER, RegClass( regs ), 0 );
     new_r->r.reg = regs;
+#if _TARGET_RISC
+    new_r->r.reg_index = GetArchIndex( regs );
+#else
     new_r->r.reg_index = -1;
-#if _TARGET & _TARG_RISC
-    SetArchIndex( new_r, regs );
 #endif
     return( new_r );
 }

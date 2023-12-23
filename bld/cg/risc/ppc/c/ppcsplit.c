@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -50,14 +50,14 @@
 instruction      *rCONSTLOAD( instruction *ins )
 /**********************************************/
 {
-    unsigned_32         low;
-    unsigned_32         high;
-    unsigned_32         c;
-    name                *high_part;
-    name                *temp;
-    instruction         *first_ins;
-    instruction         *new_ins;
-    type_class_def      type_class;
+    uint_32         low;
+    uint_32         high;
+    uint_32         c;
+    name            *high_part;
+    name            *temp;
+    instruction     *first_ins;
+    instruction     *new_ins;
+    type_class_def  type_class;
 
     assert( ins->operands[0]->n.class == N_CONSTANT );
     assert( ins->operands[0]->c.const_type == CONS_ABSOLUTE );

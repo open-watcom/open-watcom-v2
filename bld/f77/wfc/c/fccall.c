@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -153,8 +153,7 @@ void    FCPrologue( void ) {
         }
         main_entry_label = BENewLabel();
         CGSelOther( sel, main_entry_label );
-        CGSelect( sel, CGUnary( O_POINTS, CGFEName( EPValue, TY_INTEGER ),
-                                TY_INTEGER ) );
+        CGSelect( sel, CGUnary( O_POINTS, CGFEName( EPValue, TY_INTEGER ), TY_INTEGER ) );
         CGControl( O_LABEL, NULL, main_entry_label );
         BEFiniLabel( main_entry_label );
     }
@@ -519,7 +518,7 @@ void    FCCall( void ) {
     bool        pass_scb;
     bool        pass_len;
     cg_name     *arg_vec;
-#if _CPU == 386 || _CPU == 8086
+#if _INTEL_CPU
     bool        arg_proc_far16;
 #endif
 
@@ -550,7 +549,7 @@ void    FCCall( void ) {
             scb = GetPtr();
             arg = SCBPointer( CGFEName( scb, TY_CHAR ) );
 #if _CPU == 386
-            if( info->cclass & FAR16_CALL ) {
+            if( info->cclass_target & FECALL_X86_FAR16_CALL ) {
                 arg = CGUnary( O_PTR_TO_FOREIGN, arg, TY_POINTER );
             }
 #endif
@@ -563,7 +562,7 @@ void    FCCall( void ) {
         arg_info = GetU16();
         arg_type = _GetTypeInfo2( arg_info );
         arg_code = _GetTypeInfo1( arg_info );
-#if _CPU == 386 || _CPU == 8086
+#if _INTEL_CPU
         arg_proc_far16 = ( (arg_code & PC_PROC_FAR16) != 0 );
         arg_code &= ~PC_PROC_FAR16;
 #endif
@@ -571,8 +570,8 @@ void    FCCall( void ) {
         if( arg_code == PC_PROCEDURE || arg_code == PC_FN_OR_SUB ) {
             arg = XPop();
             cg_typ = TY_CODE_PTR;
-#if _CPU == 386 || _CPU == 8086
-            if( (info->cclass & FAR16_CALL) && arg_proc_far16 ) {
+#if _INTEL_CPU
+            if( (info->cclass_target & FECALL_X86_FAR16_CALL) && arg_proc_far16 ) {
                 chk_foreign = false;
             } else if( arg_aux != NULL ) {
                 if( arg_aux->info & ARG_FAR ) {
@@ -610,7 +609,7 @@ void    FCCall( void ) {
                 ++idx;
             }
 #if _CPU == 386
-            if( pass_scb && (info->cclass & FAR16_CALL) ) {
+            if( pass_scb && (info->cclass_target & FECALL_X86_FAR16_CALL) ) {
                 arg = MkSCB16( arg );
             }
 #endif
@@ -707,8 +706,8 @@ void    FCCall( void ) {
                 }
             }
         }
-#if _CPU == 386 || _CPU == 8086
-        if( (info->cclass & FAR16_CALL) && chk_foreign ) {
+#if _INTEL_CPU
+        if( (info->cclass_target & FECALL_X86_FAR16_CALL) && chk_foreign ) {
             arg = CGUnary( O_PTR_TO_FOREIGN, arg, cg_typ );
         }
 #endif
@@ -732,7 +731,7 @@ void    FCCall( void ) {
                 scb = GetPtr();
                 arg = CGFEName( scb, TY_CHAR );
 #if _CPU == 386
-                if( info->cclass & FAR16_CALL ) {
+                if( info->cclass_target & FECALL_X86_FAR16_CALL ) {
                     arg = MkSCB16( arg );
                     arg = CGUnary( O_PTR_TO_FOREIGN, arg, TY_GLOBAL_POINTER );
                 }

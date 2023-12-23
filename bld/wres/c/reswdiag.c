@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2016-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2016-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -110,7 +110,7 @@ static bool ResWriteDialogHeaderCommon32( DialogBoxHeader32 *head, FILE *fp, boo
             strcpy( newname + 1, head->MenuName->name );
             newname[len + 1] = '"';
             newname[len + 2] = '\0';
-            head->MenuName = ResStrToNameOrOrd( newname );
+            head->MenuName = ResStrToNameOrOrdinal( newname );
             WRESFREE( newname );
         }
     }
@@ -330,8 +330,8 @@ bool ResWriteDialogBoxExControl32( DialogBoxExControl32 *control, FILE *fp )
     return( error );
 }
 
-ControlClass *ResNameOrOrdToControlClass( const ResNameOrOrdinal *name )
-/**********************************************************************/
+ControlClass *ResNameOrOrdinalToControlClass( const ResNameOrOrdinal *name )
+/**************************************************************************/
 {
     size_t          stringlen;
     ControlClass    *class;

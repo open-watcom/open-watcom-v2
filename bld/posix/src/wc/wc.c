@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,9 +38,10 @@
 #include <stdlib.h>
 #include "bool.h"
 #include "getopt.h"
+#include "argvenv.h"
 #include "argvrx.h"
+#include "misc.h"
 
-char *OptEnvVar="wc";
 
 bool    line_flag = false;
 bool    word_flag = false;
@@ -120,13 +121,16 @@ static void DoWC( FILE *fh, const char *name )
 
 int main( int argc, char **argv )
 {
-    int         i,ch;
+    int         i;
+    int         ch;
     FILE        *fh;
-    bool        more_than_one;
     bool        rxflag;
+    char        **argv1;
+
+    argv1 = ExpandEnv( &argc, argv, "WC" );
 
     rxflag = false;
-    while( (ch = GetOpt( &argc, argv, "Xwlc", usageMsg )) != -1 ) {
+    while( (ch = GetOpt( &argc, argv1, "Xwlc", usageMsg )) != -1 ) {
         switch( ch ) {
         case 'w':
             word_flag = true;
@@ -143,33 +147,30 @@ int main( int argc, char **argv )
         }
     }
 
-    argv = ExpandArgv( &argc, argv, rxflag );
+    argv = ExpandArgv( &argc, argv1, rxflag );
 
     if( !word_flag && !line_flag && !char_flag ) {
         word_flag = line_flag = char_flag = true;
     }
-    if( argc == 1 ) {
+    if( argc < 2 ) {
         DoWC( stdin, NULL );
     } else {
-        i = 1;
-        more_than_one = false;
-        for(;;) {
-            fh = fopen( argv[ i ], "r" );
+        for( i = 1; i < argc; i++ ) {
+            fh = fopen( argv[i], "r" );
             if( fh == NULL ) {
                 fprintf( stderr, "error opening %s for read: %s\n",
                     argv[i], strerror( errno ) );
                 exit( 1 );
             }
-            DoWC( fh, argv[ i ] );
+            DoWC( fh, argv[i] );
             fclose( fh );
-            ++i;
-            if( i == argc )
-                break;
-            more_than_one = true;
         }
-        if( more_than_one ) {
+        if( argc > 2 ) {
             PrintLine( total_lines, total_words, total_chars, "--Total" );
         }
     }
+    MemFree( argv );
+    MemFree( argv1 );
+
     return( 0 );
 }

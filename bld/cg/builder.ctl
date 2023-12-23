@@ -3,7 +3,7 @@
 
 set PROJDIR=<CWD>
 
-[ INCLUDE <OWROOT>/build/master.ctl ]
+[ INCLUDE "<OWROOT>/build/master.ctl" ]
 
 cdsay .
 

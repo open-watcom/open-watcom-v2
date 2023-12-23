@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -56,7 +56,7 @@
 #include "clibext.h"
 
 
-#define DEMAND_INFO_SPLIT   _16KB
+#define DEMAND_INFO_SPLIT   _16K
 
 #define NON_SECT_INFO 0x8000
 
@@ -100,7 +100,7 @@ static master_dbg_header    Master;             // rest depend on .obj files.
 
 static snamelist            *DBISourceLang;     // list of source languages
 
-#ifdef _INT_DEBUG
+#ifdef DEVBUILD
 struct {
     offset   sizeadded;
     offset   sizegenned;
@@ -132,7 +132,7 @@ void ODBIInit( section *sect )
     DBISourceLang->next = NULL;
     _PermAlloc( sect->dbg_info, sizeof( debug_info ) );
     memset( sect->dbg_info, 0, sizeof( debug_info ) );  //assumes NULL == 0
-#ifdef _INT_DEBUG
+#ifdef DEVBUILD
     memset( &TraceInfo, 0, sizeof( TraceInfo ) );
 #endif
 }
@@ -200,7 +200,7 @@ static void DoAddLocal( dbi_section *dbi, offset length )
         dbi->size = 0;
     }
     dbi->size += length;
-#ifdef _INT_DEBUG
+#ifdef DEVBUILD
     TraceInfo.sizeadded += length;
 #endif
 }
@@ -252,7 +252,7 @@ static void DoGenLocal( dbi_section *dsect, dbi_section *dlink, demanddata *dmod
     }
     dsect->curr.u.vm_ptr += length;
     dmod->size += length;
-#ifdef _INT_DEBUG
+#ifdef DEVBUILD
     TraceInfo.sizegenned += length;
 #endif
 }
@@ -316,6 +316,8 @@ void ODBIDefClass( class_entry *class, unsigned_32 size )
 {
     debug_info *dinfo;
 
+    if( class->flags & CLASS_DWARF )
+        return;
     dinfo = CurrSect->dbg_info;
     if( dinfo == NULL )
         return;
@@ -830,7 +832,7 @@ static unsigned_16 WriteSegValues( void )
         DBIWriteLocal( segarray, sizeof( unsigned_16 ) * 2 );
         return( sizeof( unsigned_16 ) * 2 );
     } else {
-        buffer = (unsigned_16 *) TokBuff;
+        buffer = (unsigned_16 *)TokBuff;
         buflen = 0;
         for( currgrp = Groups; currgrp != NULL; currgrp = currgrp->next_group ) {
             *buffer++ = currgrp->grp_addr.seg;
@@ -896,7 +898,7 @@ void ODBIWrite( void )
     if( Master.obj_major_ver == 0 )
         Master.obj_major_ver = 1;
     WriteLoad( &Master, sizeof( master_dbg_header ) );
-#ifdef _INT_DEBUG
+#ifdef DEVBUILD
     if( TraceInfo.sizeadded != TraceInfo.sizegenned ) {
         LnkMsg( WRN+MSG_INTERNAL, "s", "size mismatch in watcom dbi" );
     }

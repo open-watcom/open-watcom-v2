@@ -1,0 +1,34 @@
+name: tests
+description: 'Process OW tests'
+inputs:
+  arch:
+    description: 'run-time platform'
+    required: false
+    default: ''
+    type: string
+  bldscript:
+    description: 'script to build action'
+    required: false
+    default: ''
+    type: string
+  tools:
+    description: 'used compiler toolchain'
+    required: false
+    default: ''
+    type: string
+  owdebug:
+    description: 'verbosed/debug output for GH Actions scripts development'
+    required: false
+    default: ''
+    type: string
+runs:
+  using: composite
+  steps:
+  - name: Load Artifact
+    uses: "./.github/actions/artfload"
+    with:
+      arch:     ${{ inputs.arch }}
+      gitpath:  'build binbuild'
+      artifact: "build ${{ inputs.arch }}"
+      tools:    ${{ inputs.tools }}
+      owdebug:  ${{ inputs.owdebug }}

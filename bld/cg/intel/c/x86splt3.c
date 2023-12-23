@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,23 +39,32 @@
 
 
 static bool SegMemLoc( name *op )
-/*******************************/
-/*
- * Return true if the operand COULD be the one associated with the segment */
+/********************************
+ * Return true if the operand COULD be the one associated with the segment
+ */
 {
     if( op->n.class == N_INDEXED )
         return( true );
     if( op->n.class != N_MEMORY )
         return( false );
     if( op->m.memory_type == CG_LBL ) {
-        /* kluge for TLS stuff - want to be able to put fs: override on
-           the __tls_array runtime label - BBB May 15, 1996 */
+        /*
+         * kluge for TLS stuff - want to be able to put fs: override on
+         * the __tls_array runtime label
+         */
         if( AskIfRTLabel( op->v.symbol ) )
             return( true );
-        return( false ); /* made by Addressable */
+        /*
+         * made by Addressable
+         */
+        return( false );
     }
-    if( op->m.memory_type == CG_CLB )
-        return( false ); /* made by Addressable */
+    if( op->m.memory_type == CG_CLB ) {
+        /*
+         * made by Addressable
+         */
+        return( false );
+    }
     return( true );
 }
 
@@ -166,7 +176,8 @@ void    DelSegOp( instruction *ins, opcnt i )
     if( ins->result == ins->operands[i] )
         return;
     for( j = ins->num_operands; j-- > 0; ) {
-        if( i != j && ins->operands[j] == ins->operands[i] ) {
+        if( i != j
+          && ins->operands[j] == ins->operands[i] ) {
             return;
         }
     }

@@ -5,10 +5,13 @@
  */
 #ifndef _BIOS_H_INCLUDED
 #define _BIOS_H_INCLUDED
+#define _BIOS98_H_INCLUDED
 
 :include readonly.sp
 
 :include owrtlink.sp
+
+:include pc98.sp
 
 :include cpluspro.sp
 
@@ -26,7 +29,7 @@ struct  _nec98_diskinfo_t {     /* disk parameters */
         void _WCI86FAR *buffer; /* buffer to read to,write from, or compare */
         void _WCI86FAR *result;
 };
-#define _diskinfo_t     _nec98_diskinfo
+#define _diskinfo_t     _nec98_diskinfo_t
 
 :include ext.sp
 #define diskinfo_t      _nec98_diskinfo_t

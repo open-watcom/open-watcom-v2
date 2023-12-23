@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -192,10 +192,10 @@ void WREDestroyRibbon( void )
 
 static void wreRibbonHelpHook( HWND hwnd, ctl_id id, bool pressed )
 {
-    _wre_touch( hwnd );
+    /* unused parameters */ (void)hwnd;
 
     if( !pressed ) {
-        WRESetStatusText( NULL, "", TRUE );
+        WRESetStatusText( NULL, "", true );
     } else {
         WREDisplayHint( id );
     }
@@ -205,9 +205,7 @@ static bool wreRibbonHook( HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam )
 {
     bool         ret;
 
-    _wre_touch( hwnd );
-    _wre_touch( wParam );
-    _wre_touch( lParam );
+    /* unused parameters */ (void)hwnd; (void)wParam; (void)lParam;
 
     if( WRERibbon == NULL ) {
         return( false );
@@ -264,8 +262,8 @@ bool WREInitRibbon( HINSTANCE inst )
     WRERibbonInfo->dinfo.helphook = wreRibbonHelpHook;
     WRERibbonInfo->dinfo.foreground = NULL;
     WRERibbonInfo->dinfo.background = NULL;
-    WRERibbonInfo->dinfo.is_fixed = TRUE;
-    WRERibbonInfo->dinfo.use_tips = TRUE;
+    WRERibbonInfo->dinfo.is_fixed = true;
+    WRERibbonInfo->dinfo.use_tips = true;
 
     return( true );
 }

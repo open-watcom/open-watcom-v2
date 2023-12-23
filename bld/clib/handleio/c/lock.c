@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -71,7 +71,7 @@ _WCRTLINK int lock( int handle, unsigned long offset, unsigned long nbytes )
     __handle_check( handle, -1 );
     lock_block[0] = offset;
     lock_block[1] = nbytes;
-    rc = DosFileLocks( handle, NULL, &lock_block );
+    rc = DosFileLocks( handle, NULL, lock_block );
 
     #endif
   #else

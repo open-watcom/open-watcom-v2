@@ -147,6 +147,8 @@ session
 session
 .notebreak
 32-bit Linux executables (synonym for "LINUX") under Linux
+.note CAUSEWAY
+32-bit Causeway DOS Extender executables
 .note COM
 16-bit DOS "COM" files
 .note DOS
@@ -179,6 +181,8 @@ session
 32-bit OS/2 PM executables
 .note PHARLAP
 32-bit PharLap DOS Extender executables
+.note PMODEW
+32-bit PMODE/W DOS Extender executables
 .note QNX
 16-bit QNX executables
 .note QNX386
@@ -212,6 +216,12 @@ system definitions and these may be specified as an argument to the
 "l=" option.
 The "system_name" specified in the "l=" option is used to create a
 "SYSTEM system_name" &lnkname directive when linking the application.
+.note L <dir>
+.ix 'owcc options' 'L <dir>'
+add <dir> to directories search list for library search
+.note l <library>
+.ix 'owcc options' 'l <library>'
+search the library named lib<library>.a
 .note mstack-size=<size>
 .ix 'owcc options' 'mstack-size=<size>'
 set stack size

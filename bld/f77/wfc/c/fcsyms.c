@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -66,41 +66,41 @@
 #include "feprotos.h"
 
 
+typedef struct old_back_handle {
+    struct old_back_handle  *next;
+    back_handle             old;
+} old_back_handle;
+
 extern  cg_name         SubAltSCB( sym_id );
 
 extern  segment_id      CurrCodeSegId;
 
-/* Forward declarations */
-static  void    AssignAdv( sym_id sym );
-static  void    AssignName2Adv( sym_id sym );
-static  void    AssignStaticAdv( sym_id sym );
-static  void    CreateAllocatableADV( sym_id sym );
-static  void    DefineCommonEntry( void );
-static  void    MergeCommonInfo( void );
-static  void    DumpBrTable( void );
-static  void    DumpLitSCBs( void );
-static  void    DumpNameLists( void );
-static  void    DumpSymName( sym_id sym );
-static  void    DumpStaticAdv( sym_id sym, bool dmp_nam_ptr );
-static  void    DbgVarInfo( sym_id sym );
-static  void    DbgSubProgInfo( sym_id sym );
-static  void    AssignAutoAdv( sym_id sym );
-static  void    DumpAutoAdv( sym_id sym, sym_id shadow );
-static  void    PostponeFreeBackHandle( back_handle data );
-static  void    FreeBackHandle( void *_back );
-static  void    DefineArgs( entry_pt *ep );
-static  void    DeclareArg( parameter *arg, pass_by *arg_aux );
-
-static  back_handle     ModuleName = { NULL };
-
 back_handle             TraceEntry;
 
-typedef struct old_back_handle {
-                struct old_back_handle  *next;
-                back_handle             old;
-} old_back_handle;
+/* Forward declarations */
+static void     AssignAdv( sym_id sym );
+static void     AssignName2Adv( sym_id sym );
+static void     AssignStaticAdv( sym_id sym );
+static void     CreateAllocatableADV( sym_id sym );
+static void     DefineCommonEntry( void );
+static void     MergeCommonInfo( void );
+static void     DumpBrTable( void );
+static void     DumpLitSCBs( void );
+static void     DumpNameLists( void );
+static void     DumpSymName( sym_id sym );
+static void     DumpStaticAdv( sym_id sym, bool dmp_nam_ptr );
+static void     DbgVarInfo( sym_id sym );
+static void     DbgSubProgInfo( sym_id sym );
+static void     AssignAutoAdv( sym_id sym );
+static void     DumpAutoAdv( sym_id sym, sym_id shadow );
+static void     PostponeFreeBackHandle( back_handle data );
+static void     FreeBackHandle( void *_back );
+static void     DefineArgs( entry_pt *ep );
+static void     DeclareArg( parameter *arg, pass_by *arg_aux );
 
-static old_back_handle *OldBackHandles = NULL;
+static back_handle      ModuleName = { NULL };
+
+static old_back_handle  *OldBackHandles = NULL;
 
 /*
 static  back_handle     MakeStaticSCB( int len ) {
@@ -122,7 +122,6 @@ static  void            CheckAutoSize( sym_id sym, cg_type typ ) {
 //================================================================
 
 #if _CPU == 8086
-
     if( BETypeLength( typ ) <= 0x7fff )
         return;
 
@@ -506,15 +505,16 @@ static  unsigned_32     DumpVariable( sym_id sym, unsigned_32 g_offset ) {
 }
 
 
-static  void    SetConstDataSeg( void ) {
-//=================================
-#if _CPU == 8086 || _CPU == 386
+static  void    SetConstDataSeg( void )
+//=====================================
+{
+#if _INTEL_CPU
     if( (CGOpts & CGOPT_CONST_CODE) && ( _BigDataModel( CGOpts ) ) ) {
         BESetSeg( CurrCodeSegId );
     } else {
         BESetSeg( SEG_CDATA );
     }
-#else
+#else /* _RISC_CPU */
     BESetSeg( SEG_CDATA );
 #endif
 }
@@ -1511,7 +1511,7 @@ static  void    DefineArgs( entry_pt *ep ) {
     pass_by     *arg_aux;
 
     info = InfoLookup( ep->id );
-    if( (info->cclass & REVERSE_PARMS) ) {
+    if( (info->cclass & FECALL_GEN_REVERSE_PARMS) ) {
         ReverseList( (void **)&ep->parms );
         ReverseList( (void **)&info->arg_info );
     }
@@ -1527,7 +1527,7 @@ static  void    DefineArgs( entry_pt *ep ) {
     if( (Options & OPT_DESCRIPTOR) == 0 ) {
         DeclareShadowArgs( ep, info );
     }
-    if( info->cclass & REVERSE_PARMS ) {
+    if( info->cclass & FECALL_GEN_REVERSE_PARMS ) {
         ReverseList( (void **)&ep->parms );
         ReverseList( (void **)&info->arg_info );
     }

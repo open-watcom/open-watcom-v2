@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,4 +31,4 @@
 ****************************************************************************/
 
 
-extern unsigned_32      U32ModDiv( unsigned_32 *x, unsigned_32 y );
+extern uint_32      U32ModDiv( uint_32 *x, uint_32 y );

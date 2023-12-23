@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -239,7 +240,7 @@ _WCRTLINK short _WCI86FAR _CGRAPH _pg_chartpie( chartenv _WCI86FAR *env,
     /* Record old settings. */
     _getcliprgn( &x1, &y1, &x2, &y2 );
     oldcolor = _getcolor();
-    _getfillmask( &oldfillmask );
+    _getfillmask( oldfillmask );
 
     error = _pg_analyzepie( env, categories, values, explode, n );
     if( error > 100 ) {

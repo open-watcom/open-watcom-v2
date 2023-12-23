@@ -1,26 +1,16 @@
 .if '&machine' eq '8086' .do begin
 :set symbol="calref" value="cal86".
-:set symbol="calttl" value="16-bit Assembly Language Considerations".
 .do end
 .el .do begin
 :set symbol="calref" value="cal386".
-:set symbol="calttl" value="32-bit Assembly Language Considerations".
 .do end
 .*
-.chap *refid=&calref. &calttl.
+.chap *refid=&calref. Assembly Language Considerations
 .*
 .if &e'&dohelp eq 0 .do begin
 .*
 .section Introduction
 .*
-.do end
-.el .do begin
-.   .if '&machine' eq '8086' .do begin
-.   .   .helppref 16-bit:
-.   .do end
-.   .el .do begin
-.   .   .helppref 32-bit:
-.   .do end
 .do end
 .np
 This chapter will deal with the following topics.
@@ -486,8 +476,6 @@ the size of the storage.
 .endlevel
 .*
 .endlevel
-.*
-.im WMEMLAY
 .*
 .section Writing Assembly Language Subprograms
 .*

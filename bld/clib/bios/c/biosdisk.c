@@ -38,6 +38,7 @@
 
 _WCRTLINK unsigned short _bios_disk( unsigned ibmCmd, struct diskinfo_t *ibmBuf )
 {
+#if defined( __WATCOM_PC98__ )
     if( _RWD_isPC98 ) { /* NEC PC-98 */
 
 //        unsigned                  necCmd;
@@ -70,6 +71,7 @@ _WCRTLINK unsigned short _bios_disk( unsigned ibmCmd, struct diskinfo_t *ibmBuf 
          */
         return( 1 );
     }
+#endif
     /* IBM PC */
     return( __ibm_bios_disk( ibmCmd, ibmBuf ) );
 }

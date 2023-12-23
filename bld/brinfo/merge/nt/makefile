@@ -1,4 +1,4 @@
-!ifeq release 0
+!ifneq debug 0
 
 debug_cpp_opts= -d2 -dDEBUG_PRT
 debug_link_opts=d all

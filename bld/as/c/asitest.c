@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,11 +40,17 @@
 #include "asinline.h"
 #include "asalloc.h"
 
+
 #define MAX_NUM_INS     256
 
 static uint_32  buffer[MAX_NUM_INS];
 static int      curLine;
 
+static char     *typeName[] = {         // OWL_RELOCS macro from owl.h
+    #define OWL_RELOC(e) #e,
+    OWL_RELOCS
+    #undef OWL_RELOC
+};
 
 void *AsmQuerySymbol( const char *name ) {
 //****************************************
@@ -111,26 +117,6 @@ void AsmFree( void *ptr ) {
 
     TRMemFree( ptr );
 }
-
-static char *typeName[] = {             // types from owl.h
-    "OWL_RELOC_ABSOLUTE",               // ref to a 32-bit absolute address
-    "OWL_RELOC_WORD",                   // a direct ref to a 32-bit address
-    "OWL_RELOC_HALF_HI",                // ref to high half of 32-bit address
-    "OWL_RELOC_HALF_HA",                // ditto adjusted for signed low 16 bits
-    "OWL_RELOC_PAIR",                   // pair - used to indicate prev hi and next lo linked
-    "OWL_RELOC_HALF_LO",                // ref to low half of 32-bit address
-    "OWL_RELOC_BRANCH_REL",             // relative branch (Alpha: 21-bit; PPC: 14-bit)
-    "OWL_RELOC_BRANCH_ABS",             // absolute branch (Alpha: not used; PPC: 14-bit)
-    "OWL_RELOC_JUMP_REL",               // relative jump (Alpha: 14-bit hint; PPC: 24-bit)
-    "OWL_RELOC_JUMP_ABS",               // absolute jump (Alpha: not used; PPC: 24-bit)
-    "OWL_RELOC_SECTION_OFFSET",         // offset of item within it's section
-
-    // meta relocs
-    "OWL_RELOC_SECTION_INDEX",          // index of section within COFF file
-    "OWL_RELOC_TOC_OFFSET",             // 16-bit offset within TOC (PPC)
-    "OWL_RELOC_GLUE",                   // location of NOP for GLUE code
-    "OWL_RELOC_FP_OFFSET",              // cheesy hack for inline assembler
-};
 
 void main( void ) {
 //*****************

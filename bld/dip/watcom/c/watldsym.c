@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -51,10 +51,6 @@ static void FreeInfBlks( info_block *blk )
     }
 }
 
-/*
- * DIPImpUnloadInfo -- unload the symbolic information for an image
- */
-
 static void UnloadInfo( imp_image_handle *iih )
 {
     section_info        *inf;
@@ -75,20 +71,25 @@ static void UnloadInfo( imp_image_handle *iih )
     DCFree( iih->lang );
 }
 
+/*
+ * DIPImpUnloadInfo
+ */
 void DIPIMPENTRY( UnloadInfo )( imp_image_handle *iih )
+/******************************************************
+ * unload the symbolic information for an image
+ */
 {
     InfoClear( iih );
     UnloadInfo( iih );
 }
 
 
-/*
- * GetBlockInfo -- get permanent information into memory
- */
-
 static dip_status GetBlockInfo( imp_image_handle *iih, section_info *new, unsigned long off,
                             dword size, info_block **owner,
                             unsigned (*split)(imp_image_handle *, info_block *, section_info *) )
+/************************************************************************************************
+ * get permanent information into memory
+ */
 {
     size_t              split_size;
     info_block          *curr;
@@ -124,11 +125,10 @@ static dip_status GetBlockInfo( imp_image_handle *iih, section_info *new, unsign
 }
 
 
-/*
- * GetNumSect - find the number of sections for this load
- */
-
 static dip_status GetNumSect( FILE *fp, unsigned long curr, unsigned long end, unsigned *count )
+/***********************************************************************************************
+ * find the number of sections for this load
+ */
 {
     section_dbg_header  header;
 
@@ -138,8 +138,10 @@ static dip_status GetNumSect( FILE *fp, unsigned long curr, unsigned long end, u
             DCStatus( DS_ERR | DS_INFO_INVALID );
             return( DS_ERR | DS_INFO_INVALID );
         }
-        /* if there are no modules in the section, it's a 'placekeeper' section
-            for the linker overlay structure -- just ignore it */
+        /*
+         * if there are no modules in the section, it's a 'placekeeper' section
+         * for the linker overlay structure -- just ignore it
+         */
         if( header.mod_offset != header.gbl_offset ) {
             if( header.mod_offset > header.gbl_offset ) {
                 DCStatus( DS_ERR | DS_INFO_INVALID );
@@ -156,7 +158,7 @@ static dip_status GetNumSect( FILE *fp, unsigned long curr, unsigned long end, u
         }
         (*count)++;
         curr += header.section_size;
-        DCSeek( fp, curr, DIG_ORG );
+        DCSeek( fp, curr, DIG_SEEK_ORG );
     }
     if( curr > end ) {
         DCStatus( DS_ERR | DS_INFO_INVALID );
@@ -169,7 +171,6 @@ static dip_status GetNumSect( FILE *fp, unsigned long curr, unsigned long end, u
  * This function assumes that section 0 is the lowest numbered section and
  * that section numbers are contiguous
  */
-
 static dip_status ProcSectionsInfo( imp_image_handle *iih, unsigned num_sects )
 {
     section_dbg_header  header;
@@ -186,8 +187,10 @@ static dip_status ProcSectionsInfo( imp_image_handle *iih, unsigned num_sects )
         new->addr_info = NULL;
         new->gbl = NULL;
         new->dmnd_link = NULL;
-        /* if there are no modules in the section, it's a 'placekeeper' section
-            for the linker overlay structure -- just ignore it */
+        /*
+         * if there are no modules in the section, it's a 'placekeeper' section
+         * for the linker overlay structure -- just ignore it
+         */
         if( header.mod_offset != header.gbl_offset ) {
             ds = GetBlockInfo( iih, new, header.mod_offset + pos,
                                 header.gbl_offset - header.mod_offset,
@@ -214,7 +217,7 @@ static dip_status ProcSectionsInfo( imp_image_handle *iih, unsigned num_sects )
         }
         iih->num_sects++;
         pos += header.section_size;
-        if( DCSeek( iih->sym_fp, pos, DIG_ORG ) ) {
+        if( DCSeek( iih->sym_fp, pos, DIG_SEEK_ORG ) ) {
             DCStatus( DS_ERR | DS_INFO_INVALID );
             return( DS_ERR | DS_INFO_INVALID );
         }
@@ -234,7 +237,7 @@ static dip_status DoPermInfo( imp_image_handle *iih )
     bool                v2;
     char                *new;
 
-    if( DCSeek( iih->sym_fp, DIG_SEEK_POSBACK( sizeof( header ) ), DIG_END ) )
+    if( DCSeek( iih->sym_fp, DIG_SEEK_POSBACK( sizeof( header ) ), DIG_SEEK_END ) )
         return( DS_FAIL );
     end = DCTell( iih->sym_fp );
     if( DCRead( iih->sym_fp, &header, sizeof( header ) ) != sizeof( header ) ) {
@@ -248,7 +251,7 @@ static dip_status DoPermInfo( imp_image_handle *iih )
             return( DS_ERR | DS_INFO_INVALID );
         }
         end -= header.debug_size;
-        DCSeek( iih->sym_fp, end, DIG_ORG );
+        DCSeek( iih->sym_fp, end, DIG_SEEK_ORG );
         DCRead( iih->sym_fp, &header, sizeof( header ) );
     }
     if( header.signature != WAT_DBG_SIGNATURE )
@@ -281,7 +284,7 @@ static dip_status DoPermInfo( imp_image_handle *iih )
         return( DS_ERR | DS_INFO_INVALID );
     }
     num_segs = header.segment_size / sizeof( addr_seg );
-    DCSeek( iih->sym_fp, header.lang_size + header.segment_size - header.debug_size, DIG_CUR );
+    DCSeek( iih->sym_fp, header.lang_size + header.segment_size - header.debug_size, DIG_SEEK_CUR );
     curr = DCTell( iih->sym_fp );
     ds = GetNumSect( iih->sym_fp, curr, end, &num_sects );
     if( ds != DS_OK )
@@ -300,7 +303,7 @@ static dip_status DoPermInfo( imp_image_handle *iih )
     iih->real_segs = (void *)( iih->map_segs + num_segs );
     iih->sect = (void *)( iih->real_segs + num_segs );
     iih->num_sects = 0;
-    DCSeek( iih->sym_fp, curr - header.lang_size - header.segment_size, DIG_ORG );
+    DCSeek( iih->sym_fp, curr - header.lang_size - header.segment_size, DIG_SEEK_ORG );
     if( DCRead( iih->sym_fp, iih->lang, header.lang_size ) != header.lang_size ) {
         DCStatus( DS_ERR | DS_INFO_INVALID );
         return( DS_ERR | DS_INFO_INVALID );
@@ -318,9 +321,12 @@ static dip_status DoPermInfo( imp_image_handle *iih )
 }
 
 /*
- * DIPImpLoadInfo -- process symbol table info on end of .exe file
+ * DIPImpLoadInfo
  */
 dip_status DIPIMPENTRY( LoadInfo )( FILE *fp, imp_image_handle *iih )
+/********************************************************************
+ * process symbol table info on end of .exe file
+ */
 {
     dip_status          ds;
 
@@ -335,13 +341,12 @@ dip_status DIPIMPENTRY( LoadInfo )( FILE *fp, imp_image_handle *iih )
 }
 
 
-/*
- * InfoRead -- read demand information from disk
- */
-
 dip_status InfoRead( FILE *fp, unsigned long offset, size_t size, void *buff )
+/*****************************************************************************
+ * read demand information from disk
+ */
 {
-    if( DCSeek( fp, offset, DIG_ORG ) ) {
+    if( DCSeek( fp, offset, DIG_SEEK_ORG ) ) {
         DCStatus( DS_ERR | DS_FSEEK_FAILED );
         return( DS_ERR | DS_FSEEK_FAILED );
     }
@@ -353,13 +358,13 @@ dip_status InfoRead( FILE *fp, unsigned long offset, size_t size, void *buff )
 }
 
 
-
 /*
- * DIPImpMapInfo -- change all map addresses into real addresses
+ * DIPImpMapInfo
  */
-
-
 void DIPIMPENTRY( MapInfo )( imp_image_handle *iih, void *d )
+/************************************************************
+ * change all map addresses into real addresses
+ */
 {
     unsigned        i;
 
@@ -376,15 +381,16 @@ void DIPIMPENTRY( MapInfo )( imp_image_handle *iih, void *d )
 }
 
 
-/*
+void AddressMap( imp_image_handle *iih, addr_ptr *addr )
+/*******************************************************
  * AddressMap - take a map address and turn it into a real address
  */
-
-void AddressMap( imp_image_handle *iih, addr_ptr *addr )
 {
     unsigned            i;
 
-    /* could probably binary search this */
+    /*
+     * could probably binary search this
+     */
     for( i = 0; i < iih->num_segs; ++i ) {
         if( addr->segment == iih->map_segs[i] ) {
             addr->segment = iih->real_segs[i].segment;

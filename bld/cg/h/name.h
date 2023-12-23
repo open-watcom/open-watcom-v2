@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -133,13 +134,13 @@ typedef struct var_name {
 typedef struct constant_defn {
         struct constant_defn    *next_defn;
         pointer                 label;          /*  back end label for static */
-        unsigned_16             value[4];       /*  in internal format */
+        uint_16                 value[4];       /*  in internal format */
         type_class_def          const_class;
 } constant_defn;
 
 typedef union value32 {
-        signed_32               int_value;
-        unsigned_32             uint_value;
+        int_32                  int_value;
+        uint_32                 uint_value;
 } value32;
 
 typedef struct const_name {
@@ -171,7 +172,7 @@ typedef struct temp_name {
         } v;
         union {
             block_num           block_id;       /* AKA block_num */
-            unsigned_16         ref_count;      /* for counting references */
+            uint_16             ref_count;      /* for counting references */
         } u;
         t_flags                 temp_flags;
 } temp_name;
@@ -180,7 +181,7 @@ typedef struct register_name {
         struct name_def         _n;
         hw_reg_set              reg;
         int                     reg_index;      /*  for scoreboarding */
-        int                     arch_index;     /*  used for encoding on AXP */
+        int                     arch_index;     /*  used for encoding on RISC architectures */
 } register_name;
 
 typedef struct indexed_name {
@@ -203,8 +204,8 @@ typedef union name {
         union   name            *_n;
 } name;
 
-#define _FrontEndTmp( op ) ( ((op)->t.temp_flags & CONST_TEMP) == 0 && \
+#define _FrontEndTmp( op )  ( ((op)->t.temp_flags & CONST_TEMP) == 0 && \
                                 (op)->v.symbol != NULL )
 
-#define _ConstTemp( op ) ( ( (op)->n.class == N_TEMP ) && \
-                           ( (op)->t.temp_flags & CONST_TEMP ) )
+#define _ConstTemp( op )    ( ( (op)->n.class == N_TEMP ) && \
+                                ( (op)->t.temp_flags & CONST_TEMP ) )

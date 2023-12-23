@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -58,6 +59,7 @@ static  void    ExClose( void ) {
 
     if( IOCB->flags & BAD_UNIT ) {
         IOErr( IO_IUNIT );
+        // never return
     }
     FindFtnFile();
     if( IOCB->fileinfo != NULL ) {
@@ -73,6 +75,7 @@ static  void    ExClose( void ) {
         }
         if( ( cl_stat == STATUS_KEEP ) && ( op_stat == STATUS_SCRATCH ) ) {
             IOErr( IO_ISTAT );
+            // never return
         }
         if( (cl_stat == STATUS_DELETE) && (IOCB->fileinfo->flags & FTN_FSEXIST) ) {
             CloseDeleteFile( IOCB->fileinfo );

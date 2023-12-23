@@ -41,35 +41,29 @@
 #define BUFSIZE         0x4000
 
 static char *Buffer;
-static char UsageText[] = {
+
+static const char UsageText[] = {
     "Usage: bpcmt comment_file patch_file\0"
 };
 
 static char TmpExt[] = "A";
 
-static void Fatal( char *reason, char *insert )
+static void Fatal( const char *reason, const char *insert )
 /* the reason doesn't have to be good */
 {
-    for( ; *reason; ++reason ) {
-        if( *reason == '*' ) {
-            fputs( insert, stdout );
-        } else {
-            fputc( *reason, stdout );
-        }
-    }
+    printf( reason, insert );
     puts( "\nbpcmt aborted" );
     exit( EXIT_FAILURE );
 }
 
 static void Usage( void )
 {
-    const char *p;
+    const char  *p;
 
     for( p = UsageText; *p != '\0'; ) {
         puts( p );
         while( *p++ != '\0' ) ;
     }
-    exit( EXIT_FAILURE );
 }
 
 int main( int argc, char *argv[] )
@@ -79,84 +73,86 @@ int main( int argc, char *argv[] )
     pgroup2     pg;
     FILE        *fpin, *fpout, *fpcmt;
     char        *pos;
+    int         rc;
 
-
-    if( argc != 3 )
+    rc = EXIT_FAILURE;
+    if( argc != 3 || argv[1][0] == '?' && argv[1][1] == '\0' ) {
         Usage();
-    if( argv[1][0] == '?' && argv[1][1] == '\0' )
-        Usage();
-    bufsize = BUFSIZE;
-    while( ( Buffer = bdiff_malloc( bufsize ) ) == NULL ) {
-        size = bufsize & (bufsize - 1);
-        bufsize = size ? size : ( (bufsize << 1) | (bufsize << 2) );
-        if( bufsize < MXFNAME ) {
-            Fatal( "Too low on memory", NULL  );
+    } else {
+        bufsize = BUFSIZE;
+        while( ( Buffer = bdiff_malloc( bufsize ) ) == NULL ) {
+            size = bufsize & (bufsize - 1);
+            bufsize = size ? size : ( (bufsize << 1) | (bufsize << 2) );
+            if( bufsize < MXFNAME ) {
+                Fatal( "Too low on memory", NULL  );
+            }
         }
-    }
 
-    fpcmt = fopen( argv[1], "rb" );
-    if( fpcmt == NULL ) {
-        Fatal( "Unable to open '*' to read", argv[2] );
-    }
-
-    strcpy( infile, argv[2] );
-    _splitpath2( infile, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
-    for( ;; ) {
-        _makepath( outfile, pg.drive, pg.dir, "__", TmpExt );
-        if( access( outfile, 0 ) != 0 )
-            break;
-        TmpExt[0]++;
-        if( TmpExt[0] > 'Z' ) {
-            Fatal( "Cannot create temporary file", NULL );
+        fpcmt = fopen( argv[1], "rb" );
+        if( fpcmt == NULL ) {
+            Fatal( "Unable to open '%s' to read", argv[2] );
         }
-    }
 
-    /* initialize input file */
-    fpin = fopen( infile, "rb" );
-    if( fpin == NULL ) {
-        Fatal( "Unable to open '*' to read", infile );
-    }
-
-    /* initialize output file */
-    fpout = fopen( outfile, "wb" );
-    if( fpout == NULL ) {
-        Fatal( "Unable to create output file '*'", outfile );
-    }
-    /* write new comment */
-    fwrite( PATCH_SIGNATURE, 1, sizeof( PATCH_SIGNATURE ) - 1, fpout );
-    for( ;; ) {
-        size = fread( Buffer, 1, bufsize, fpcmt );
-        if( size == 0 )
-            break;
-        pos = memchr( Buffer, EOF_CHAR, size );
-        if( pos != NULL ) {
-            size = pos - Buffer;
-            fseek( fpcmt, 0L, SEEK_END ); /*cause it to quit next time round*/
+        strcpy( infile, argv[2] );
+        _splitpath2( infile, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
+        for( ;; ) {
+            _makepath( outfile, pg.drive, pg.dir, "__", TmpExt );
+            if( access( outfile, 0 ) != 0 )
+                break;
+            TmpExt[0]++;
+            if( TmpExt[0] > 'Z' ) {
+                Fatal( "Cannot create temporary file", NULL );
+            }
         }
-        fwrite( Buffer, 1, size, fpout );
-    }
-    /* strip old comment */
-    for( ;; ) {
-        size = fread( Buffer, 1, bufsize, fpin );
-        pos = memchr( Buffer, EOF_CHAR, size );
-        if( pos != NULL ) {
-            break;
-        }
-    }
-    size -= pos - Buffer;
-    if( size != 0 )
-        fwrite( pos, 1, size, fpout );
-    /* transfer patch file */
-    while( (size = fread( Buffer, 1, bufsize, fpin )) != 0 ) {
-        fwrite( Buffer, 1, size, fpout );
-    }
-    fclose( fpin );
-    fclose( fpout );
-    fclose( fpcmt );
 
-    if( remove( infile ) )
-        Fatal( "Cannot erase file '*'", infile );
-    if( rename( outfile, infile ) )
-        Fatal( "Cannot rename file '*'", outfile );
-    return( EXIT_SUCCESS );
+        /* initialize input file */
+        fpin = fopen( infile, "rb" );
+        if( fpin == NULL ) {
+            Fatal( "Unable to open '%s' to read", infile );
+        }
+
+        /* initialize output file */
+        fpout = fopen( outfile, "wb" );
+        if( fpout == NULL ) {
+            Fatal( "Unable to create output file '%s'", outfile );
+        }
+        /* write new comment */
+        fwrite( PATCH_SIGNATURE, 1, sizeof( PATCH_SIGNATURE ) - 1, fpout );
+        for( ;; ) {
+            size = fread( Buffer, 1, bufsize, fpcmt );
+            if( size == 0 )
+                break;
+            pos = memchr( Buffer, EOF_CHAR, size );
+            if( pos != NULL ) {
+                size = pos - Buffer;
+                fseek( fpcmt, 0L, SEEK_END ); /*cause it to quit next time round*/
+            }
+            fwrite( Buffer, 1, size, fpout );
+        }
+        /* strip old comment */
+        for( ;; ) {
+            size = fread( Buffer, 1, bufsize, fpin );
+            pos = memchr( Buffer, EOF_CHAR, size );
+            if( pos != NULL ) {
+                break;
+            }
+        }
+        size -= pos - Buffer;
+        if( size != 0 )
+            fwrite( pos, 1, size, fpout );
+        /* transfer patch file */
+        while( (size = fread( Buffer, 1, bufsize, fpin )) != 0 ) {
+            fwrite( Buffer, 1, size, fpout );
+        }
+        fclose( fpin );
+        fclose( fpout );
+        fclose( fpcmt );
+
+        if( remove( infile ) )
+            Fatal( "Cannot erase file '%s'", infile );
+        if( rename( outfile, infile ) )
+            Fatal( "Cannot rename file '%s'", outfile );
+        rc = EXIT_SUCCESS;
+    }
+    return( rc );
 }

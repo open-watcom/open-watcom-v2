@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -226,6 +226,15 @@ extern void _wpi_releasepres( HWND hwnd, WPI_PRES pres );
         // nothing
 
     #define _wpi_freeenumprocinstance( proc ) \
+        // nothing
+
+    #define _wpi_freewndprocinstance( proc ) \
+        // nothing
+
+    #define _wpi_freelineddaprocinstance( proc ) \
+        // nothing
+
+    #define _wpi_freefontprocinstance( proc ) \
         // nothing
 
     #define _wpi_freeprocinstance( proc ) \
@@ -516,13 +525,17 @@ extern HWND _wpi_createobjwindow( LPSTR class, LPSTR name, ULONG style, int x,
 
     #define _wpi_setwindowlongptr( hwnd, id, data ) WinSetWindowULong( hwnd, id, (LONG)data )
 
-    #define _wpi_makeprocinstance( proc, inst ) ( (WPI_PROC) proc )
+    #define _wpi_makeprocinstance( proc, inst ) ( (WPI_PROC)proc )
 
     #define _wpi_makedlgprocinstance( proc, inst ) ( proc )
 
     #define _wpi_makeenumprocinstance( proc, inst ) ( proc )
 
-    #define _wpi_makelineddaprocinstance( proc, inst ) ((WPI_LINEDDAPROC)proc)
+    #define _wpi_makewndprocinstance( proc, inst ) ( proc )
+
+    #define _wpi_makelineddaprocinstance( proc, inst ) ( proc )
+
+    #define _wpi_makefontprocinstance( proc, inst ) ( proc )
 
     #define _wpi_defdlgproc( hwnd, msg, mp1, mp2 ) WinDefDlgProc(hwnd, msg, mp1, mp2)
 
@@ -530,7 +543,7 @@ extern HWND _wpi_createobjwindow( LPSTR class, LPSTR name, ULONG style, int x,
         ((proc)( hwnd, msg, (WPI_PARAM1) parm1, (WPI_PARAM2) parm2 ))
 
 extern void _wpi_enddialog( HWND hwnd, ULONG result );
-extern int _wpi_dialogbox( HWND parent, WPI_PROC proc, WPI_INST inst,
+extern int _wpi_dialogbox( HWND parent, WPI_DLGPROC proc, WPI_INST inst,
                                                     LPCSTR res_id, void *data );
 extern void _wpi_stretchblt( WPI_PRES dest, int x_dest, int y_dest,
         int cx_dest, int cy_dest, WPI_PRES src, int x_src, int y_src, int cx_src,
@@ -633,10 +646,8 @@ extern int _wpi_selectcliprgn( WPI_PRES pres, HRGN rgn );
 extern HFILE _wpi_fileopen( LPSTR filename, int format );
 extern HFILE _wpi_filecreate( LPSTR filename, int format );
 extern PM1632_FILESIZETYPE _wpi_fileclose( HFILE hfile );
-extern PM1632_FILESIZETYPE _wpi_filewrite( HFILE hfile, void *buf,
-                                                    PM1632_FILESIZETYPE size );
-extern PM1632_FILESIZETYPE _wpi_fileread( HFILE hfile, void *buf,
-                                                    PM1632_FILESIZETYPE size );
+extern PM1632_FILESIZETYPE _wpi_filewrite( HFILE hfile, void *buf, PM1632_FILESIZETYPE size );
+extern PM1632_FILESIZETYPE _wpi_fileread( HFILE hfile, void *buf, PM1632_FILESIZETYPE size );
 
     #define _wpi_isdialogmessage( win_hld, wpi_msg ) ( (wpi_msg)->hwnd == win_hld )
     #define _wpi_ismessage( qmsg, id ) ( (qmsg)->msg == (id) )

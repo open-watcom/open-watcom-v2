@@ -2,6 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
+;* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -30,11 +31,6 @@
 ;*****************************************************************************
 
 
-ifdef __386__
- .387
-else
- .8087
-endif
 include mdef.inc
 include struct.inc
 include math87.inc
@@ -49,40 +45,33 @@ include math87.inc
 
         defp    sqrt
 ifdef __386__
- ifdef __STACK__
-        argx    equ     4+8+4
- else
-        argx    equ     8+4
- endif
         _guess                          ; guess: number is negative
-          test  byte ptr 4+7[ESP],80h   ; - quit if argument is positive
+          test  byte ptr argx+7[ESP],80h; - quit if argument is positive
           _quif e                       ; - ...
-          mov   EAX,4+4[ESP]            ; - get high word
+          mov   EAX,argx+4[ESP]         ; - get high word
           and   EAX,7FFFFFFFh           ; - get rid of sign bit
-          or    EAX,4[ESP]              ; - or in lower word
+          or    EAX,argx[ESP]           ; - or in lower word
           _quif e                       ; - quit if -0.0
  ifdef __STACK__
           push  ECX
- endif
           push  FP_FUNC_SQRT            ; - indicate "sqrt"
-          push  argx[ESP]               ; - push argument
-          push  argx[ESP]               ; - ...
+          push  argx+8+4[ESP]           ; - push argument
+          push  argx+8+4[ESP]           ; - ...
           call  __math87_err            ; - math error
- ifdef __STACK__
-          add   ESP,8+4                 ; - remove arguments
+          add   ESP,3*4                 ; - remove arguments
           pop   ECX
+ else
+          push  FP_FUNC_SQRT            ; - indicate "sqrt"
+          push  argx+8[ESP]             ; - push argument
+          push  argx+8[ESP]             ; - ...
+          call  __math87_err            ; - math error
  endif
         _admit                          ; admit: number is +ve or -0.0
-          fld   qword ptr 4[ESP]        ; - load argument x
+          fld   qword ptr argx[ESP]     ; - load argument x
           fsqrt                         ; - calculate sqrt root
           loadres                       ; - load result
         _endguess                       ; endguess
 else
- if _MODEL and _BIG_CODE
-        argx    equ     6
- else
-        argx    equ     4
- endif
         prolog
         _guess                          ; guess: number is negative
           test  byte ptr argx+7[BP],80h ; - quit if argument is positive
@@ -118,13 +107,18 @@ endif
 
         public  __@DSQRT
         defp    __@DSQRT
-ifndef __386__
-        local   func:WORD,data:QWORD
-elseifdef __STACK__
-        local   sedx:DWORD,secx:DWORD,func:DWORD,data:QWORD
-else
-        local   func:DWORD,data:QWORD
+
+ifdef __386__
+ ifdef __STACK__
+        local   sedx:DWORD,secx:DWORD
+ endif
 endif
+ifdef __386__
+        local   func:DWORD,data:QWORD
+else
+        local   func:WORD,data:QWORD
+endif
+
         ftst                            ; test sign of argument
         fstsw   word ptr func           ; get status
         fwait                           ; wait for it

@@ -2,6 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
+;* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -52,23 +53,23 @@ DGROUP  group   _DATA
 _TEXT   segment dword public 'CODE'
         assume  cs:_TEXT
 
-endproc         macro   dsym
-         dsym   endp
-                endm
-
 endif
 
 modstart        macro   modname
                 endm
 
 xdefp           macro   xsym
-                ifndef NDEBUG
+                ifdef DEVBUILD
                 public  xsym
                 endif
                 endm
 
 defp            macro   dsym
          dsym   proc    near
+                endm
+
+endproc         macro   dsym
+         dsym   endp
                 endm
 
 xrefp           macro   dsym

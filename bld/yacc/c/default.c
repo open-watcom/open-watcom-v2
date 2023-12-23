@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -53,14 +54,18 @@ void MarkDefaultReductions( void )
     unsigned nreduces;
 
     for( i = 0; i < nstate; ++i ) {
-        // iterate over all reductions in state
+        /*
+         * iterate over all reductions in state
+         */
         state = statetab[i];
         nshifts = 0;
         for( saction = state->trans; saction->sym != NULL; ++saction ) {
             ++nshifts;
             if( saction->sym == errsym ) {
-                // if there is a shift on the error token then
-                // we don't want default reduce actions
+                /*
+                 * if there is a shift on the error token then
+                 * we don't want default reduce actions
+                 */
                 state = NULL;
                 break;
             }

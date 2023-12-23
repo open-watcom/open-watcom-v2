@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,13 +36,16 @@
 #include <io.h>
 #include <dos.h>
 #include <fcntl.h>
-#include "commonui.h"
+#define INCLUDE_TOOLHELP_H
+#include <wwindows.h>
 #include "sample.h"
 #include "smpstuff.h"
 #include "sampwin.h"
 #include "exeos2.h"
 #include "exedos.h"
 #include "ismod32.h"
+#include "mythelp.h"
+#include "segmem.h"
 
 
 /*
@@ -109,9 +112,9 @@ static WORD horkyFindSegment( HMODULE modid, WORD segment )
 static void newModule( HANDLE hmod, const char *name, samp_block_kinds kind )
 {
     GLOBALENTRY         ge;
-    os2_exe_header      ne;
-    dos_exe_header      de;
-    seg_offset          ovl;
+    os2_exe_header      nehdr;
+    dos_exe_header      doshdr;
+    far_address         ovl;
     int                 i;
     LPVOID              ptr;
     WORD                sel;
@@ -142,17 +145,17 @@ static void newModule( HANDLE hmod, const char *name, samp_block_kinds kind )
     }
     WriteCodeLoad( ovl, name, kind );
 
-    handle = open( name,O_BINARY | O_RDONLY );
+    handle = open( name, O_BINARY | O_RDONLY );
     if( handle >= 0 ) {
-        read( handle, &de, sizeof( de ) );
-        if( de.signature == DOS_SIGNATURE ) {
-            lseek( handle, de.file_size * 512L - (-de.mod_size & 0x1ff), SEEK_SET );
+        read( handle, &doshdr, sizeof( doshdr ) );
+        if( doshdr.signature == EXESIGN_DOS ) {
+            lseek( handle, doshdr.file_size * 512L - (-doshdr.mod_size & 0x1ff), SEEK_SET );
         } else {
             lseek( handle, 0, SEEK_SET );
         }
-        read( handle, &ne, sizeof( ne ) );
-        if( ne.signature == OS2_SIGNATURE_WORD ) {
-            numsegs = ne.segments;
+        read( handle, &nehdr, sizeof( nehdr ) );
+        if( nehdr.signature == EXESIGN_NE ) {
+            numsegs = nehdr.segments;
             if( numsegs > 8192 ) {
                 // must not really be a valid OS2 sig.
                 numsegs = -1;

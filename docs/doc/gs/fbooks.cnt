@@ -3,7 +3,7 @@
 
 1 About Watcom FORTRAN 77 On-line Documentation=About_Watcom_FORTRAN_77_OnMline_Documentation
 :include f_readme.cnt
-:include fuguide.cnt
+:include fguide.cnt
 :include wfcerrs.cnt
 :include f77lr.cnt
 :include fpguide.cnt

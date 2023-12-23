@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,12 +33,20 @@
 #ifndef __CONTROL_INCLUDED__
 #define __CONTROL_INCLUDED__
 
-#if defined( _M_I86 )
+#if defined( VICOMP )
+    #define _FAR
+    #define _NEAR
+#elif defined( _M_I86 )
     #define _FAR    __far
     #define _NEAR   __near
-#elif defined( __DOS__ ) && !defined( __4G__ )
+#elif defined( __DOS__ )
+  #if defined( DOS4G ) || defined( CAUSEWAY )
+    #define _FAR
+    #define _NEAR
+  #elif defined( PHARLAP )
     #define _FAR    __far
     #define _NEAR
+  #endif
 #else
     #define _FAR
     #define _NEAR
@@ -55,9 +63,9 @@
 #endif
 
 #ifdef __UNIX__
-  #define FSYS_CASE_SENSITIVE         1
+  #define FILE_CMP      strcmp
 #else
-  #define FSYS_CASE_SENSITIVE         0
+  #define FILE_CMP      stricmp
 #endif
 
 #endif

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,7 +45,6 @@
 /****************************************************************************/
 /* macro definitions                                                        */
 /****************************************************************************/
-#define CHUNK_SIZE 0x7fff
 
 /****************************************************************************/
 /* Here comes the code                                                      */
@@ -75,7 +74,7 @@ static bool WRWriteResourceToWRES( WResTypeNode *tnode, WResResNode *rnode,
                                   WResDir new_dir, FILE *src_fp,
                                   FILE *dst_fp, bool is32bit )
 {
-    WResLangType    lt;
+    WResLangType    lang;
     WResLangNode    *lnode;
     uint_32         offset;
     bool            dup;
@@ -88,11 +87,11 @@ static bool WRWriteResourceToWRES( WResTypeNode *tnode, WResResNode *rnode,
 
     offset = RESTELL( dst_fp );
     for( lnode = rnode->Head; lnode != NULL; lnode = lnode->Next ) {
-        lt = lnode->Info.lang;
+        lang = lnode->Info.lang;
         if( WResAddResource( &tnode->Info.TypeName, &rnode->Info.ResName,
                              lnode->Info.MemoryFlags, offset,
                              lnode->Info.Length, new_dir,
-                             &lt, &dup ) || dup ) {
+                             &lang, &dup ) || dup ) {
             if( dup ) {
                 displayDupMsg( &tnode->Info.TypeName, &rnode->Info.ResName );
             }
@@ -128,7 +127,7 @@ static ResNameOrOrdinal *WRCreateMRESResName( WResResNode *rnode, WResLangNode *
     }
 
     if( !lnode->Info.lang.lang && !lnode->Info.lang.sublang ) {
-        name = WResIDToNameOrOrd( &rnode->Info.ResName );
+        name = WResIDToNameOrOrdinal( &rnode->Info.ResName );
     } else {
         if( rnode->Info.ResName.IsName ) {
             len = rnode->Info.ResName.ID.Name.NumChars;
@@ -147,7 +146,7 @@ static ResNameOrOrdinal *WRCreateMRESResName( WResResNode *rnode, WResLangNode *
             sprintf( str, "%u_%u_%u", rnode->Info.ResName.ID.Num,
                         lnode->Info.lang.lang, lnode->Info.lang.sublang );
         }
-        name = ResStrToNameOrOrd( str );
+        name = ResStrToNameOrOrdinal( str );
         MemFree( str );
     }
 
@@ -165,7 +164,7 @@ static bool WRWriteResourceToMRES( WResTypeNode *tnode, WResResNode *rnode,
     for( lnode = rnode->Head; lnode != NULL && ok; lnode = lnode->Next ) {
         mheader.Size = lnode->Info.Length;
         mheader.MemoryFlags = lnode->Info.MemoryFlags;
-        mheader.Type = WResIDToNameOrOrd( &tnode->Info.TypeName );
+        mheader.Type = WResIDToNameOrOrdinal( &tnode->Info.TypeName );
         mheader.Name = WRCreateMRESResName( rnode, lnode );
         ok = (mheader.Type != NULL && mheader.Name != NULL);
         if( ok ) {
@@ -407,26 +406,24 @@ bool WRSaveResourceToRES( WRInfo *info, bool backup )
 
 bool WRCopyResFromFileToFile( FILE *src_fp, uint_32 offset, uint_32 length, FILE *dst_fp )
 {
-    uint_32     size;
-    uint_8      *buf;
+    char        *buf;
     bool        ok;
 
-    size = 0;
     buf = NULL;
 
     ok = (src_fp != NULL && dst_fp != NULL);
 
-    ok = (ok && (buf = (uint_8 *)MemAlloc( CHUNK_SIZE )) != NULL);
+    ok = (ok && (buf = MemAlloc( CHUNK_SIZE )) != NULL);
 
     ok = ( ok && !RESSEEK( src_fp, offset, SEEK_SET ) );
 
-    while( ok && length - size > CHUNK_SIZE ) {
-        ok = ok && WRReadResData( src_fp, (BYTE *)buf, CHUNK_SIZE );
-        ok = ok && WRWriteResData( dst_fp, (BYTE *)buf, CHUNK_SIZE );
-        size += CHUNK_SIZE;
+    while( ok && length > CHUNK_SIZE ) {
+        ok = ok && WRReadResData( src_fp, buf, CHUNK_SIZE );
+        ok = ok && WRWriteResData( dst_fp, buf, CHUNK_SIZE );
+        length -= CHUNK_SIZE;
     }
-    ok = ok && WRReadResData( src_fp, (BYTE *)buf, length - size );
-    ok = ok && WRWriteResData( dst_fp, (BYTE *)buf, length - size );
+    ok = ok && WRReadResData( src_fp, buf, length );
+    ok = ok && WRWriteResData( dst_fp, buf, length );
 
     if( buf != NULL ) {
         MemFree( buf );
@@ -435,7 +432,7 @@ bool WRCopyResFromFileToFile( FILE *src_fp, uint_32 offset, uint_32 length, FILE
     return( ok );
 }
 
-bool WRCopyResFromDataToFile( void *ResData, uint_32 len, FILE *dst_fp )
+bool WRCopyResFromDataToFile( void *data, uint_32 len, FILE *fp )
 {
-    return( WRWriteResData( dst_fp, (BYTE *)ResData, len ) );
+    return( WRWriteResData( fp, data, len ) );
 }

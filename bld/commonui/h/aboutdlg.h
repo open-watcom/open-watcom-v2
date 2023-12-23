@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,9 +38,9 @@
 typedef struct {
     HINSTANCE   inst;
     HWND        owner;
-    LPSTR       title;
-    LPSTR       name;
-    LPSTR       version;
+    LPCSTR      title;
+    LPCSTR      name;
+    LPCSTR      version;
 } about_info;
 
 #ifdef _M_I86
@@ -48,6 +49,6 @@ typedef about_info __far *LPABOUTINFO;
 typedef about_info *LPABOUTINFO;
 #endif
 
-extern void DoAbout( LPABOUTINFO ai );
+extern void DoAbout( LPABOUTINFO ai, void(*free_fn)(char *) );
 
 #endif /* _ABOUTDLG_H_INCLUDED */

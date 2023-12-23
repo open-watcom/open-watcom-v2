@@ -1,4 +1,7 @@
 # AUI sample project makefile
+
+tree_depth = 4
+
 proj_name = auisample
 
 !include cproj.mif

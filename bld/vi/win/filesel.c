@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -139,7 +139,7 @@ vi_rc SelectFileOpen( const char *dir, char **result, const char *mask, bool wan
 #if defined( __NT__ ) && !defined( _WIN64 )
         if( !is_chicago ) {
 #endif
-            MemFree( (char*)(of.lpstrFile) );
+            _MemFreeArray( (char *)of.lpstrFile );
             *result = FileNameList;
 #if defined( __NT__ ) && !defined( _WIN64 )
         }
@@ -216,10 +216,11 @@ vi_rc SelectFileSave( char *result )
  */
 char *GetInitialFileName( void )
 {
-    char        *path = MemAlloc( FILENAME_MAX );
+    char        *path;
     char        *ptr;
     vi_rc       rc;
 
+    path = _MemAllocArray( char, FILENAME_MAX );
     path[0] = '\0';
     rc = SelectFileOpen( "", &path, NULL, false );
     if( rc == ERR_NO_ERR && path[0] != '\0' ) {
@@ -227,7 +228,7 @@ char *GetInitialFileName( void )
     } else {
         ptr = NULL;
     }
-    MemFree( path );
+    _MemFreeArray( path );
     return( ptr );
 
 } /* GetInitialFileName */

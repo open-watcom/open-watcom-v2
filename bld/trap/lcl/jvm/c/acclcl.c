@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,17 +37,25 @@
 #include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include <fcntl.h>
 #include "trpimp.h"
+#include "trpcomm.h"
 #include "packet.h"
+#include "ntext.h"
 #include "javaname.h"
 #include "jvmerr.h"
+#include "jvmxremo.h"
+
+
+#ifdef _WIN64
+#define TRPH2LH(th)     (HANDLE)((th)->handle.u._64[0])
+#define LH2TRPH(th,lh)  (th)->handle.u._64[0]=lh
+#else
+#define TRPH2LH(th)     (HANDLE)((th)->handle.u._32[0])
+#define LH2TRPH(th,lh)  (th)->handle.u._32[0]=(unsigned_32)lh;(th)->handle.u._32[1]=0
+#endif
 
 #define OP_TRUNC        0x08
-
-extern HANDLE           FakeHandle;
-extern bool             TaskLoaded;
-
-extern unsigned         DoAccess();
 
 static const DWORD      local_seek_method[] = { FILE_BEGIN, FILE_CURRENT, FILE_END };
 
@@ -75,7 +83,8 @@ trap_retval TRAP_CORE( Read_user_keyboard )( void )
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
     delay = acc->wait * 1000;
-//  if( delay == 0 ) delay = 10000;
+//    if( delay == 0 )
+//        delay = 10000;
     Sleep( delay );
     ret->key = ' ';
     return( sizeof( *ret ) );
@@ -88,100 +97,90 @@ trap_retval TRAP_FILE( open )( void )
     file_open_ret       *ret;
     void                *buff;
     unsigned            mode;
-    static int          mapAcc[] = { 0, 1, 2 };
+    DWORD               share_mode;
+    DWORD               desired_access;
+    DWORD               attr;
+    DWORD               create_disp;
 
     ret = GetOutPtr( 0 );
     if( TaskLoaded ) {
         DoAccess();
         if( ret->err == 0 ) {
-            ret->handle = (DWORD)FakeHandle;
+            LH2TRPH( ret, FakeHandle );
             return( sizeof( *ret ) );
         }
     }
+    ret->err = 0;
     acc = GetInPtr( 0 );
     buff = GetInPtr( sizeof(*acc) );
-
-
-    ret->err = 0;
-    {
-        /*
-         * these __GetNT... routines are in the C library.  they turn
-         * DOS style access and share bits into NT style ones
-         */
-        extern void __GetNTAccessAttr( int rwmode, LPDWORD desired_access,
-                                        LPDWORD attr );
-        extern void __GetNTShareAttr( int share, LPDWORD share_mode );
-        DWORD   share_mode,desired_access,attr;
-        DWORD   create_disp;
-
-        mode = mapAcc[ (0x3 & acc->mode) -1 ];
-        __GetNTAccessAttr( mode & 0x7, &desired_access, &attr );
-        __GetNTShareAttr( mode & 0x70, &share_mode );
-        if( acc->mode & TF_CREATE ) {
-            create_disp = CREATE_ALWAYS;
-        } else {
-            create_disp = OPEN_EXISTING;
+    mode = O_RDONLY;
+    if( acc->mode & DIG_OPEN_WRITE ) {
+        mode = O_WRONLY;
+        if( acc->mode & DIG_OPEN_READ ) {
+            mode = O_RDWR;
         }
-        h = CreateFile( (LPTSTR) buff, desired_access, share_mode, 0, create_disp, FILE_ATTRIBUTE_NORMAL, NULL );
-        if( h == INVALID_HANDLE_VALUE ) {
-            ret->err = GetLastError();
-            h = 0;
-        }
-
     }
-    ret->handle = (DWORD) h;
+    /*
+     * these __GetNT... routines are in the C library.  they turn
+     * DOS style access and share bits into NT style ones
+     */
+    __GetNTAccessAttr( mode & 0x7, &desired_access, &attr );
+    __GetNTShareAttr( mode & 0x70, &share_mode );
+    if( acc->mode & DIG_OPEN_CREATE ) {
+        create_disp = CREATE_ALWAYS;
+    } else {
+        create_disp = OPEN_EXISTING;
+    }
+    h = CreateFile( (LPTSTR)buff, desired_access, share_mode, 0, create_disp, FILE_ATTRIBUTE_NORMAL, NULL );
+    if( h == INVALID_HANDLE_VALUE ) {
+        ret->err = GetLastError();
+        h = 0;
+    }
+    LH2TRPH( ret, h );
     return( sizeof( *ret ) );
 }
 
 trap_retval TRAP_FILE( seek )( void )
 {
-    DWORD               rc;
+    DWORD               pos;
     file_seek_req       *acc;
     file_seek_ret       *ret;
+    HANDLE              h;
 
     acc = GetInPtr( 0 );
+    h = TRPH2LH( acc );
     ret = GetOutPtr( 0 );
-    if( (HANDLE)acc->handle == FakeHandle ) {
+    ret->err = 0;
+    if( h == FakeHandle ) {
         ret->err = ERR_JVM_INTERNAL_ERROR;
         ret->pos = -1;
         return( sizeof( *ret ) );
     }
-    rc = SetFilePointer( (HANDLE) acc->handle, acc->pos, NULL, local_seek_method[acc->mode] );
-    if( rc == INVALID_SET_FILE_POINTER ) {
+    pos = SetFilePointer( h, acc->pos, NULL, local_seek_method[acc->mode] );
+    if( pos == INVALID_SET_FILE_POINTER ) {
         ret->err = GetLastError();
-    } else {
-        ret->err = 0;
     }
-    ret->pos = rc;
+    ret->pos = pos;
     return( sizeof( *ret ) );
 }
 
 trap_retval TRAP_FILE( write )( void )
 {
     DWORD               bytes;
-    BOOL                rc;
     file_write_req      *acc;
     file_write_ret      *ret;
-    int                 len;
-    void                *buff;
+    HANDLE              h;
 
     acc = GetInPtr( 0 );
-    buff = GetInPtr( sizeof( *acc ) );
+    h = TRPH2LH( acc );
     ret = GetOutPtr( 0 );
-
-    if( (HANDLE)acc->handle == FakeHandle ) {
+    if( h == FakeHandle ) {
         ret->err = ERR_JVM_INTERNAL_ERROR;
         return( sizeof( *ret ) );
     }
-
-    len = GetTotalSizeIn() - sizeof( *acc );
-
-    rc = WriteFile( (HANDLE) acc->handle, buff, len, &bytes, NULL );
-    if( !rc ) {
+    ret->err = 0;
+    if( WriteFile( h, GetInPtr( sizeof( *acc ) ), GetTotalSizeIn() - sizeof( *acc ), &bytes, NULL ) == 0 ) {
         ret->err = GetLastError();
-        bytes = 0;
-    } else {
-        ret->err = 0;
     }
     ret->len = bytes;
     return( sizeof( *ret ) );
@@ -189,26 +188,16 @@ trap_retval TRAP_FILE( write )( void )
 
 trap_retval TRAP_FILE( write_console )( void )
 {
-    DWORD               bytes;
-    BOOL                rc;
-    file_write_console_req      *acc;
-    file_write_console_ret      *ret;
-    int                 len;
-    void                *buff;
-    HANDLE              handle;
+    DWORD                   bytes;
+    file_write_console_req  *acc;
+    file_write_console_ret  *ret;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    buff = GetInPtr( sizeof( *acc ) );
-    len = GetTotalSizeIn() - sizeof( *acc );
-
-    handle = GetStdHandle( STD_ERROR_HANDLE );
-    rc = WriteFile( handle, buff, len, &bytes, NULL );
-    if( !rc ) {
+    ret->err = 0;
+    if( WriteFile( GetStdHandle( STD_ERROR_HANDLE ), GetInPtr( sizeof( *acc ) ),
+            GetTotalSizeIn() - sizeof( *acc ), &bytes, NULL ) == 0 ) {
         ret->err = GetLastError();
-        bytes = 0;
-    } else {
-        ret->err = 0;
     }
     ret->len = bytes;
     return( sizeof( *ret ) );
@@ -217,43 +206,39 @@ trap_retval TRAP_FILE( write_console )( void )
 trap_retval TRAP_FILE( read )( void )
 {
     DWORD               bytes;
-    BOOL                rc;
     file_read_req       *acc;
     file_read_ret       *ret;
-    void                *buff;
+    HANDLE              h;
 
     acc = GetInPtr( 0 );
+    h = TRPH2LH( acc );
     ret = GetOutPtr( 0 );
-    buff = GetOutPtr( sizeof( *ret ) );
-
-    if( (HANDLE)acc->handle == FakeHandle ) {
-        if( TaskLoaded ) return( DoAccess() );
+    ret->err = 0;
+    if( h == FakeHandle ) {
+        if( TaskLoaded )
+            return( DoAccess() );
         ret->err = ERR_JVM_INTERNAL_ERROR;
         return( sizeof( *ret ) );
     }
-    rc = ReadFile( (HANDLE) acc->handle, buff, acc->len, &bytes, NULL );
-    if( !rc ) {
+    if( ReadFile( h, GetOutPtr( sizeof( *ret ) ), acc->len, &bytes, NULL ) == 0 ) {
         ret->err = GetLastError();
-        bytes = 0;
-    } else {
-        ret->err = 0;
+        return( sizeof( *ret ) );
     }
     return( sizeof( *ret ) + bytes );
 }
 
 trap_retval TRAP_FILE( close )( void )
 {
-    file_close_req      *acc;
-    file_close_ret      *ret;
-    BOOL                rc;
+    file_close_req  *acc;
+    file_close_ret  *ret;
+    HANDLE          h;
 
     acc = GetInPtr( 0 );
+    h = TRPH2LH( acc );
     ret = GetOutPtr( 0 );
-
     ret->err = 0;
-    if( (HANDLE)acc->handle != FakeHandle ) {
-        rc = CloseHandle( (HANDLE) acc->handle );
-        if( !rc ) {
+    if( h != FakeHandle ) {
+        if( CloseHandle( h ) == 0 ) {
             ret->err = GetLastError();
         }
     }
@@ -263,15 +248,11 @@ trap_retval TRAP_FILE( close )( void )
 trap_retval TRAP_FILE( erase )( void )
 {
     file_erase_ret      *ret;
-    char                *buff;
 
-    buff = GetInPtr( sizeof( file_erase_req ) );
     ret = GetOutPtr( 0 );
-
-    if( DeleteFile( buff ) ) {
+    ret->err = 0;
+    if( DeleteFile( GetInPtr( sizeof( file_erase_req ) ) ) ) {
         ret->err = GetLastError();
-    } else {
-        ret->err = 0;
     }
     return( sizeof( *ret ) );
 
@@ -286,7 +267,7 @@ trap_retval TRAP_FILE( run_cmd )( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval TRAP_FILE( string_to_fullpath )( void )
+trap_retval TRAP_FILE( file_to_fullpath )( void )
 {
     file_string_to_fullpath_req *acc;
     file_string_to_fullpath_ret *ret;
@@ -296,14 +277,14 @@ trap_retval TRAP_FILE( string_to_fullpath )( void )
     acc = GetInPtr( 0 );
     name = GetInPtr( sizeof( *acc ) );
     ret = GetOutPtr( 0 );
+    ret->err = 0;
     fullname = GetOutPtr( sizeof( *ret ) );
-    if( acc->file_type == TF_TYPE_EXE ) {
+    if( acc->file_type == DIG_FILETYPE_EXE ) {
         strcpy( fullname, JAVAPREFIX );
         strcat( fullname, name );
     } else {
         _searchenv( name, "PATH", fullname );
     }
-    ret->err = 0;
     return( sizeof( *ret ) + strlen( fullname ) + 1 );
 }
 
@@ -319,10 +300,10 @@ trap_retval TRAP_ENV( set_var )( void )
     var = GetInPtr( sizeof( *req ) );
     value = GetInPtr( sizeof( *req ) + strlen( var ) + 1 );
     ret = GetOutPtr( 0 );
-
     ret->err = 0;
-    if( value[0] == '\0' ) value = NULL;
-    if( !SetEnvironmentVariable( var, value ) ) {
+    if( value[0] == '\0' )
+        value = NULL;
+    if( SetEnvironmentVariable( var, value ) == 0 ) {
         ret->err = GetLastError();
     }
     return( sizeof( *ret ) );
@@ -332,20 +313,17 @@ trap_retval TRAP_ENV( get_var )( void )
 {
     env_get_var_req     *req;
     env_get_var_ret     *ret;
-    char                *var;
     char                *value;
 
     req = GetInPtr( 0 );
-    var = GetInPtr( sizeof( *req ) );
     ret = GetOutPtr( 0 );
-    value = GetOutPtr( sizeof( *ret ) );
     ret->err = 0;
-    if( GetEnvironmentVariable( var, value, req->res_len ) == 0 ) {
+    value = GetOutPtr( sizeof( *ret ) );
+    if( GetEnvironmentVariable( GetInPtr( sizeof( *req ) ), value, req->res_len ) == 0 ) {
         ret->err = GetLastError();
         return( sizeof( *ret ) );
-    } else {
-        return( sizeof( *ret ) + strlen( value ) + 1 );
     }
+    return( sizeof( *ret ) + strlen( value ) + 1 );
 }
 
 
@@ -354,21 +332,19 @@ trap_retval TRAP_FILE_INFO( get_date )( void )
     file_info_get_date_req      *req;
     file_info_get_date_ret      *ret;
     static WIN32_FIND_DATA      ffd;
-    char                *name;
     HANDLE              h;
     WORD                md,mt;
 
     req = GetInPtr( 0 );
-    name = GetInPtr( sizeof( *req ) );
     ret = GetOutPtr( 0 );
-    h = FindFirstFile( name, &ffd );
+    ret->err = 0;
+    h = FindFirstFile( GetInPtr( sizeof( *req ) ), &ffd );
     if( h == INVALID_HANDLE_VALUE ) {
         ret->err = ERROR_FILE_NOT_FOUND;
         return( sizeof( *ret ) );
     }
     FindClose( h );
     FileTimeToDosDateTime( &ffd.ftLastWriteTime, &md, &mt );
-    ret->err = 0;
     ret->date = ( md << 16 ) + mt;
     return( sizeof( *ret ) );
 }
@@ -378,32 +354,25 @@ trap_retval TRAP_FILE_INFO( set_date )( void )
 {
     file_info_set_date_req      *req;
     file_info_set_date_ret      *ret;
-    char                *name;
     HANDLE              h;
-    WORD                md,mt;
+    WORD                md;
+    WORD                mt;
     FILETIME            ft;
 
     req = GetInPtr( 0 );
-    name = GetInPtr( sizeof( *req ) );
     ret = GetOutPtr( 0 );
+    ret->err = 0;
     md = ( req->date >> 16 ) & 0xffff;
     mt = req->date;
     DosDateTimeToFileTime( md, mt, &ft );
-    h = CreateFile( name, GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, 0, NULL );
+    h = CreateFile( GetInPtr( sizeof( *req ) ), GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, 0, NULL );
     if( h == INVALID_HANDLE_VALUE ) {
         ret->err = GetLastError();
         return( sizeof( *ret ) );
     }
-    if( !SetFileTime( h, &ft, &ft, &ft ) ) {
+    if( SetFileTime( h, &ft, &ft, &ft ) == 0 ) {
         ret->err = GetLastError();
-        return( sizeof( *ret ) );
     }
     CloseHandle( h );
-    ret->err = 0;
     return( sizeof( *ret ) );
-}
-
-bool Terminate( void )
-{
-    return( FALSE );
 }

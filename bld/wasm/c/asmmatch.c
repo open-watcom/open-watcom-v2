@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,9 +39,7 @@
 #endif
 
 
-#define USE_FPU_EMUL    ((floating_point==DO_FP_EMULATION)&&(!rCode->use32)&&(ins->cpu & P_FPU_MASK)!=P_NO87)
-
-enum fpe        floating_point = DO_FP_EMULATION;
+#define USE_FPU_EMUL    ((SWData.fpt==DO_FP_EMULATION)&&(!rCode->use32)&&(ins->cpu & P_FPU_MASK)!=P_NO87)
 
 static bool match_phase_3( bool *found, const asm_ins ASMI86FAR **pins, OPNDTYPE determinant );
 
@@ -80,7 +78,7 @@ static bool output( const asm_ins ASMI86FAR *ins )
     /*
      * Check if FP is valid
      */
-    if(( (ins->cpu & P_FPU_MASK) != P_NO87 ) && ( floating_point == NO_FP_ALLOWED )) {
+    if(( (ins->cpu & P_FPU_MASK) != P_NO87 ) && ( SWData.fpt == NO_FP_ALLOWED )) {
         AsmError( NO_FP_WITH_FPC_SET );
         return( RC_ERROR );
     }

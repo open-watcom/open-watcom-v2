@@ -52,10 +52,9 @@
 #define STRIP_TRAIL_WS(i,s) for( i = strlen( s ); i-- > 0 && isspace( (s)[i] ); ) (s)[i] = '\0'
 #define SKIP_LEAD_WS(s)     while( isspace( *(s) ) ) (s)++
 
+#define OBJBUF_SIZE     512
 
-int genstubs = 0;
-int quiet = 0;
-char *listfile = NULL;
+typedef unsigned char   byte;
 
 typedef enum {
     PARM_PTR,
@@ -63,7 +62,7 @@ typedef enum {
     PARM_DWORD,
     PARM_VOID,
     PARM_DOUBLE
-} parm_types;
+} param_types;
 
 typedef enum {
     RETURN_PTR,
@@ -73,49 +72,57 @@ typedef enum {
     RETURN_VOID
 } return_types;
 
-struct  subparm {
-    struct subparm *nextparm;
-    unsigned    offset;
-    unsigned    parmnum;
-};
+typedef struct subparm {
+    struct subparm  *next;
+    unsigned        offset;
+    byte            param_num;
+} subparm;
 
 /*
  * data structure containing all data about a prototype
  */
 typedef struct fcn {
-    struct fcn  *next;      /* link */
-    char        *fn;            /* function name */
-    char        *plist;         /* parameter list */
-    struct subparm *subparms;   /* sub parms that need aliasing */
-    int         class;          /* what class it belongs to */
-    struct fcn  *next_class;/* connects to next function in same class */
-    char        pcnt;           /* number of parms */
-    char        returntype;     /* function return type */
-    char        aliascnt;       /* number of 16-bit aliases to be created */
-    unsigned    thunkindex:5;   /* ThunkStrs index */
-    unsigned    thunk:1;        /* requires a thunking layer */
-    unsigned    is_16:1;        /* is an _16 function */
-    unsigned    noregfor_16:1;  /* _16 function has no regular function */
-    unsigned    need_fpusave:1; /* function requires floating point save */
-    unsigned    __special_func:1;/* special @func requires extra thunking */
+    struct fcn      *next;              /* link to next item */
+    char            *fn;                /* function name */
+    param_types     *param_type_list;   /* parameter list */
+    subparm         *subparms;          /* sub parms that need aliasing */
+    int             class;              /* what class it belongs to */
+    struct fcn      *next_class;        /* connects to next function in same class */
+    unsigned        thunk           :1; /* requires a thunking layer */
+    unsigned        is_16           :1; /* is an _16 function */
+    unsigned        noregfor_16     :1; /* _16 function has no regular function */
+    unsigned        need_fpusave    :1; /* function requires floating point save */
+    unsigned        special_func    :1; /* special @func requires extra thunking */
+    return_types    return_type;        /* function return type */
+    byte            param_count;        /* number of parms */
+    byte            alias_count;        /* number of 16-bit aliases to be created */
+    byte            thunk_index;        /* ThunkStrs index */
 } fcn;
 
-struct parmlist {
-    struct parmlist     *next;
-    char                parm_count;
-    char                alias_count;
-    char                parm_types[1];
-};
+typedef struct param_list {
+    struct param_list   *next;
+    byte                param_count;
+    byte                alias_count;
+    param_types         param_type_list[1];
+} param_list;
 
-char    **ThunkStrs;
-char    * ThunkGenerated;
-int     ThunkIndex;
-int     MaxAliasCount;
-struct parmlist *ParmList;
+static int         genstubs = 0;
+static int         quiet = 0;
+static char        *listfile = NULL;
 
-fcn     *Class, *CurrClass;      /* class list */
-fcn     *Head, *Curr;            /* list of all prototypes */
-fcn     *VoidHead, *VoidCurr;    /* list of all prototypes */
+static char        **ThunkStrs;
+//static char        *ThunkGenerated;
+static int         ThunkIndex;
+static int         MaxAliasCount;
+static param_list  *ParmList;
+
+static fcn      *Class, *CurrClass;     /* class list */
+static fcn      *Head, *Curr;           /* list of all prototypes */
+static fcn      *VoidHead, *VoidCurr;   /* list of all prototypes */
+
+static FILE     *objFile = NULL;
+static int      objBufIndex;
+static char     objBuf[OBJBUF_SIZE];
 
 static void *myalloc( size_t size )
 {
@@ -174,7 +181,7 @@ static int IsWord( char *str )
 /*
  * ClassifyParm - decide if a parm is a pointer, word or dword
  */
-static parm_types ClassifyParm( char *buff )
+static param_types ClassifyParm( char *buff )
 {
     size_t  i;
 
@@ -218,16 +225,16 @@ static void ClassifyParmList( char *plist, fcn *tmpf )
     int             i;
     int             j;
     int             k;
-    int             parmcnt;
-    struct parmlist *p;
-    struct subparm  *subparm;
-    char            parm_list[32];
+    param_list      *p;
+    subparm         *sub_parm;
+    param_types     param_type_list[32];
+    param_types     param_type;
+    byte            param_count;
     char            c;
-    char            parmtype;
 
     k = 0;
     i = 0;
-    parmcnt = 0;
+    param_count = 0;
     for( ;; ) {
         c = plist[i];
         if( c == '\0' || c == ',' ) {
@@ -236,12 +243,12 @@ static void ClassifyParmList( char *plist, fcn *tmpf )
             plist[i] = '\0';
             t = &plist[k];
             SKIP_LEAD_WS( t );
-            parmtype = ClassifyParm( t );
-            if( parmtype == PARM_DOUBLE ) {
-                parmtype = PARM_DWORD;
-                parm_list[parmcnt++] = parmtype;
+            param_type = ClassifyParm( t );
+            if( param_type == PARM_DOUBLE ) {
+                param_type = PARM_DWORD;
+                param_type_list[param_count++] = param_type;
             }
-            parm_list[parmcnt++] = parmtype;
+            param_type_list[param_count++] = param_type;
             if( c == '\0' )
                 break;
             k = i + 1;
@@ -253,11 +260,11 @@ static void ClassifyParmList( char *plist, fcn *tmpf )
                 c = plist[i];
                 if( c == ';' || c == ']' ) {
                     plist[i] = '\0';
-                    subparm = myalloc( sizeof( struct subparm ) );
-                    subparm->nextparm = tmpf->subparms;
-                    tmpf->subparms = subparm;
-                    subparm->parmnum = parmcnt;
-                    subparm->offset = atoi( &plist[j] );
+                    sub_parm = myalloc( sizeof( subparm ) );
+                    sub_parm->next = tmpf->subparms;
+                    tmpf->subparms = sub_parm;
+                    sub_parm->param_num = param_count;
+                    sub_parm->offset = atoi( &plist[j] );
                     j = i + 1;
                     if( c == ']' ) {
                         break;
@@ -267,27 +274,27 @@ static void ClassifyParmList( char *plist, fcn *tmpf )
         }
         i++;
     }
-    if( parmcnt == 1 && parm_list[0] == PARM_VOID ) {
-        tmpf->pcnt = 0;
-        tmpf->aliascnt = 0;
-        tmpf->plist = NULL;
+    if( param_count == 1 && param_type_list[0] == PARM_VOID ) {
+        tmpf->param_count = 0;
+        tmpf->alias_count = 0;
+        tmpf->param_type_list = NULL;
     } else {
         for( p = ParmList; p != NULL; p = p->next ) {
-            if( p->parm_count == parmcnt ) {
-                if( memcmp( p->parm_types, parm_list, parmcnt ) == 0 ) {
+            if( p->param_count == param_count ) {
+                if( memcmp( p->param_type_list, param_type_list, param_count * sizeof( param_types ) ) == 0 ) {
                     break;
                 }
             }
         }
         if( p == NULL ) {
-            p = myalloc( sizeof( struct parmlist ) + parmcnt );
+            p = myalloc( sizeof( param_list ) + param_count * sizeof( param_types ) );
             p->next = ParmList;
             ParmList = p;
-            p->parm_count = (char)parmcnt;
-            memcpy( p->parm_types, parm_list, parmcnt );
+            p->param_count = param_count;
+            memcpy( p->param_type_list, param_type_list, param_count * sizeof( param_types ) );
             p->alias_count = 0;
-            for( i = 0; i < parmcnt; i++ ) {
-                if( parm_list[i] == PARM_PTR ) {
+            for( i = 0; i < param_count; i++ ) {
+                if( param_type_list[i] == PARM_PTR ) {
                     p->alias_count++;
                 }
             }
@@ -295,9 +302,9 @@ static void ClassifyParmList( char *plist, fcn *tmpf )
                 MaxAliasCount = p->alias_count;
             }
         }
-        tmpf->pcnt = (char)parmcnt;
-        tmpf->aliascnt = p->alias_count;
-        tmpf->plist = p->parm_types;
+        tmpf->param_count = param_count;
+        tmpf->alias_count = p->alias_count;
+        tmpf->param_type_list = p->param_type_list;
     }
 } /* ClassifyParmList */
 
@@ -394,22 +401,22 @@ static void ProcessDefFile( FILE *f )
          * save all data but parms
          */
         tmpf = _fmyalloc( sizeof( fcn ) );
-        tmpf->returntype = ClassifyReturnType( type );
+        tmpf->return_type = ClassifyReturnType( type );
 
         tmpf->need_fpusave = 0;
         if( *fn == '^' ) {
             fn++;
             tmpf->need_fpusave = 1;
         }
-        tmpf->__special_func = 0;
+        tmpf->special_func = 0;
         if( *fn == '@' ) {
             *fn = '#';
-            tmpf->__special_func = 1;
+            tmpf->special_func = 1;
         }
         if( *fn == '#' ) {
             fn++;
             tmpf->thunk = 1;
-            tmpf->thunkindex = ThunkIndex - 1;
+            tmpf->thunk_index = ThunkIndex - 1;
         } else {
             tmpf->thunk = 0;
         }
@@ -426,7 +433,7 @@ static void ProcessDefFile( FILE *f )
         /*
          * chain this guy into our list
          */
-        if( tmpf->returntype == RETURN_VOID ) {
+        if( tmpf->return_type == RETURN_VOID ) {
             if( VoidHead == NULL ) {
                 VoidCurr = VoidHead = tmpf;
             } else {
@@ -481,8 +488,8 @@ static void BuildClasses( void )
             /*
              * same number of parameters, and need fpu save?
              */
-            if( tmpf->pcnt == cl->pcnt ) {
-                if( tmpf->plist == cl->plist ) {
+            if( tmpf->param_count == cl->param_count ) {
+                if( tmpf->param_type_list == cl->param_type_list ) {
                     tmpf->class = cl->class;
                     j = 1;
                     break;
@@ -538,11 +545,6 @@ static void GenerateThunkC( void )
 
 } /* GenerateThunkC */
 
-#define OBJBUF_SIZE     512
-static FILE *objFile = NULL;
-static int objBufIndex;
-static char objBuf[OBJBUF_SIZE];
-
 static void writeObjBuf( void )
 {
     if( objBufIndex != 0 ) {
@@ -551,7 +553,7 @@ static void writeObjBuf( void )
     }
 }
 
-static void writeObj( void *p, int len )
+static void writeObj( const void *p, int len )
 {
     int         n;
 
@@ -569,11 +571,11 @@ static void writeObj( void *p, int len )
     }
 }
 
-static void emitBYTE( int byte )
+static void emitBYTE( int data_byte )
 {
-    char        b;
+    byte    b;
 
-    b = (char)byte;
+    b = (byte)data_byte;
     writeObj( &b, 1 );
 }
 
@@ -597,11 +599,11 @@ static void emitDWORD( unsigned long dword )
     writeObj( &dw, 4 );
 }
 
-static void emitSTRING( char *data )
+static void emitSTRING( const char *data )
 {
-    char        len;
+    byte        len;
 
-    len = (char)strlen( data );
+    len = (byte)strlen( data );
     writeObj( &len, 1 );
     writeObj( data, len );
 }
@@ -654,7 +656,7 @@ static void emitSEGDEF( unsigned long segment_length )
 }
 
 
-static void emitPUBDEF( char *name )
+static void emitPUBDEF( const char *name )
 {
     emitBYTE( 0x90 );
     emitWORD( (int)( 2 + 1 + strlen( name ) + 6 ) );
@@ -667,7 +669,7 @@ static void emitPUBDEF( char *name )
     emitBYTE( 0 );
 }
 
-static void emitEXTDEF( char *func )
+static void emitEXTDEF( const char *func )
 {
     emitBYTE( 0x8c );
     emitWORD( (int)( strlen( func ) + 1 + 1 + 1 ) );
@@ -676,9 +678,9 @@ static void emitEXTDEF( char *func )
     emitBYTE( 0 );
 }
 
-static char *getThunkName( fcn *tmpf )
+static const char *getThunkName( fcn *tmpf )
 {
-    char        *name;
+    const char  *name;
 
     if( tmpf->thunk == 0 )
         return( NULL );
@@ -692,7 +694,7 @@ static char *getThunkName( fcn *tmpf )
 
 static size_t sizeofThunkName( fcn *tmpf )
 {
-    char        *name;
+    const char      *name;
 
     name = getThunkName( tmpf );
     if( name == NULL )
@@ -702,9 +704,9 @@ static size_t sizeofThunkName( fcn *tmpf )
 
 static void emitThunkName( fcn *tmpf )
 {
-    char        *name;
+    const char      *name;
 
-    emitBYTE( tmpf->thunkindex );
+    emitBYTE( tmpf->thunk_index );
     for( name = getThunkName( tmpf ); *name != '\0'; name++ ) {
         emitBYTE( *name );
     }
@@ -720,12 +722,12 @@ static void emitSaveFPU( fcn *tmpf )
     }
 }
 
-static int sizeofSubParms( struct subparm *p )
+static int sizeofSubParms( subparm *sub_parm )
 {
     int         size;
 
     size = 0;
-    for( ; p != NULL; p = p->nextparm ) {
+    for( ; sub_parm != NULL; sub_parm = sub_parm->next ) {
         size += 5;
     }
     if( size )
@@ -733,18 +735,18 @@ static int sizeofSubParms( struct subparm *p )
     return( size );
 }
 
-static void emitSubParms( struct subparm *p )
+static void emitSubParms( subparm *sub_parm )
 {
     int         count;
 
     count = 0;
-    for( ; p != NULL; p = p->nextparm ) {
+    for( ; sub_parm != NULL; sub_parm = sub_parm->next ) {
         count++;
         emitBYTE( 0x6a );               /* push offset */
-        emitBYTE( p->offset );
+        emitBYTE( sub_parm->offset );
         emitBYTE( 0xff );
         emitBYTE( 0x77 );
-        emitBYTE( 0x10 + p->parmnum * 4 );
+        emitBYTE( 0x10 + sub_parm->param_num * 4 );
     }
     if( count != 0 ) {
         emitBYTE( 0x6a );               /* push count */
@@ -752,12 +754,12 @@ static void emitSubParms( struct subparm *p )
     }
 }
 
-static void cleanupSubParms( struct subparm *p )
+static void cleanupSubParms( subparm *sub_parm )
 {
     int         count;
 
     count = 4;
-    for( ; p != NULL; p = p->nextparm ) {
+    for( ; sub_parm != NULL; sub_parm = sub_parm->next ) {
         count += 8;
     }
     emitBYTE( 0x83 );   /* add esp,nnn */
@@ -772,7 +774,7 @@ static void cleanupSubParms( struct subparm *p )
 /***  the function.                                             ****/
 /*******************************************************************/
 
-static void emitnormalThunk( char *proc, fcn *tmpf, int index )
+static void emitnormalThunk( const char *proc, fcn *tmpf, int index )
 {
     size_t      size;
     size_t      segsize;
@@ -782,7 +784,7 @@ static void emitnormalThunk( char *proc, fcn *tmpf, int index )
     segsize = size + 29;
     if( tmpf->need_fpusave )
         segsize += 2 * 6;
-    if( tmpf->returntype == RETURN_INT )
+    if( tmpf->return_type == RETURN_INT )
         segsize += 3;
     subparmsize = sizeofSubParms( tmpf->subparms );
     segsize += subparmsize;
@@ -792,7 +794,7 @@ static void emitnormalThunk( char *proc, fcn *tmpf, int index )
     emitSEGDEF( (unsigned long)segsize );
     emitPUBDEF( proc );
     emitEXTDEF( "_LocalPtr" );
-    if( tmpf->returntype == RETURN_PTR ) {
+    if( tmpf->return_type == RETURN_PTR ) {
         if( subparmsize == 0 ) {
             emitEXTDEF( "__WIN16THUNK3ADDR" );
         } else {
@@ -833,7 +835,7 @@ static void emitnormalThunk( char *proc, fcn *tmpf, int index )
     emitBYTE( 0x1D );
     emitDWORD( 0 );
     emitSaveFPU( tmpf );
-    if( tmpf->returntype == RETURN_INT ) {
+    if( tmpf->return_type == RETURN_INT ) {
         emitBYTE( 0x0F );       /* movsx eax,ax */
         emitBYTE( 0xBF );
         emitBYTE( 0xC0 );
@@ -845,7 +847,7 @@ static void emitnormalThunk( char *proc, fcn *tmpf, int index )
     emitBYTE( 0x5F );           /* pop edi */
     emitBYTE( 0x5D );           /* pop ebp */
     emitBYTE( 0xC2 );           /* ret  nnnn */
-    emitWORD( 4 * tmpf->pcnt );
+    emitWORD( 4 * tmpf->param_count );
     if( size != 0 ) {
         emitThunkName( tmpf );
     }
@@ -888,13 +890,13 @@ static void emitnormalThunk( char *proc, fcn *tmpf, int index )
     emitBYTE( 0 );
 }
 
-static void emitspecialThunk( char *proc, fcn *tmpf, int index )
+static void emitspecialThunk( const char *proc, fcn *tmpf, int index )
 {
     size_t      size;
     size_t      segsize;
     int         offset;
 
-    switch( tmpf->pcnt ) {
+    switch( tmpf->param_count ) {
     case 0:     segsize = 18 + 7;   break;
     case 1:     segsize = 24 + 7;   break;
     case 2:     segsize = 28 + 7;   break;
@@ -907,12 +909,12 @@ static void emitspecialThunk( char *proc, fcn *tmpf, int index )
     segsize += size;
     if( tmpf->need_fpusave )
         segsize += 2 * 6;
-    if( tmpf->returntype == RETURN_INT )
+    if( tmpf->return_type == RETURN_INT )
         segsize += 3;
     emitSEGDEF( (unsigned long)segsize );
     emitPUBDEF( proc );
     emitEXTDEF( "_LocalPtr" );
-    if( tmpf->returntype == RETURN_PTR ) {
+    if( tmpf->return_type == RETURN_PTR ) {
         emitEXTDEF( "__WIN16THUNK4ADDR" );
     } else {
         emitEXTDEF( "__WIN16THUNK2ADDR" );
@@ -930,7 +932,7 @@ static void emitspecialThunk( char *proc, fcn *tmpf, int index )
     emitBYTE( 0x55 );           /* push ebp */
     emitBYTE( 0x57 );           /* push edi */
     emitBYTE( 0x56 );           /* push esi */
-    switch( tmpf->pcnt ) {
+    switch( tmpf->param_count ) {
     case 5:                     /* mov edi,20h[esp] */
         emitBYTE( 0x8B ); emitBYTE( 0x7c ); emitBYTE( 0x24 ); emitBYTE( 0x20 );
     case 4:                     /* mov esi,1Ch[esp] */
@@ -954,7 +956,7 @@ static void emitspecialThunk( char *proc, fcn *tmpf, int index )
     emitBYTE( 0x1D );
     emitDWORD( 0 );
     emitSaveFPU( tmpf );
-    if( tmpf->returntype == RETURN_INT ) {
+    if( tmpf->return_type == RETURN_INT ) {
         emitBYTE( 0x0F );       /* movsx eax,ax */
         emitBYTE( 0xBF );
         emitBYTE( 0xC0 );
@@ -962,9 +964,9 @@ static void emitspecialThunk( char *proc, fcn *tmpf, int index )
     emitBYTE( 0x5E );           /* pop esi */
     emitBYTE( 0x5F );           /* pop edi */
     emitBYTE( 0x5D );           /* pop ebp */
-    if( tmpf->pcnt != 0 ) {
+    if( tmpf->param_count != 0 ) {
         emitBYTE( 0xC2 );       /* ret  nnnn */
-        emitWORD( 4 * tmpf->pcnt );
+        emitWORD( 4 * tmpf->param_count );
     } else {
         emitBYTE( 0xC3 );       /* ret */
     }
@@ -979,7 +981,7 @@ static void emitspecialThunk( char *proc, fcn *tmpf, int index )
     if( tmpf->need_fpusave ) {
         emitWORD( 18 );         /* len */
         emitBYTE( 0xD4 );       /* data */
-        offset = 3+2+(4*tmpf->pcnt); /* offset into LEDATA record */
+        offset = 3+2+( 4 * tmpf->param_count ); /* offset into LEDATA record */
         emitBYTE( offset );     /* offset into LEDATA record */
         emitBYTE( 0x56 );       /* data */
         emitBYTE( 3 );          /* __FSTENV */
@@ -1000,7 +1002,7 @@ static void emitspecialThunk( char *proc, fcn *tmpf, int index )
     } else {
         emitWORD( 10 );         /* len */
         emitBYTE( 0xD4 );       /* data */
-        offset = 3+2+(4*tmpf->pcnt); /* offset into LEDATA record */
+        offset = 3+2+(4*tmpf->param_count); /* offset into LEDATA record */
         emitBYTE( offset );     /* offset into LEDATA record */
         emitBYTE( 0x56 );       /* data */
         emitBYTE( 1 );          /* _LocalPtr */
@@ -1021,12 +1023,12 @@ static void emitMODEND( void )
     emitBYTE( 0 );
 }
 
-static void emitOBJECT( int modindex, char *proc, fcn *tmpf, int index )
+static void emitOBJECT( int modindex, const char *proc, fcn *tmpf, int index )
 {
     emitTHEADR( modindex );
     emitCOMMENT();
     emitLNAMES();
-    if( tmpf->aliascnt == 0 && tmpf->pcnt < 6 ) {
+    if( tmpf->alias_count == 0 && tmpf->param_count < 6 ) {
         emitspecialThunk( proc, tmpf, index );
     } else {
         emitnormalThunk( proc, tmpf, index );
@@ -1060,7 +1062,7 @@ static void GenerateCStubs( void )
         return;
     }
     for( tmpf = Head; tmpf != NULL; tmpf = tmpf->next ) {
-        if( tmpf->__special_func ) {
+        if( tmpf->special_func ) {
             fn2[0] = '_';
             fn2[1] = '_';
             strcpy( &fn2[2], tmpf->fn );
@@ -1364,8 +1366,8 @@ static int GenerateStackLocals( FILE *f, fcn *tmpf )
     /* unused parameters */ (void)f;
 
     offset = 0;
-    for( i = tmpf->pcnt; i-- > 0; ) {
-        if( tmpf->plist[i] == PARM_PTR ) {
+    for( i = tmpf->param_count; i-- > 0; ) {
+        if( tmpf->param_type_list[i] == PARM_PTR ) {
             offset += 8;
 //          fprintf( f, "Parm%dAlias = dword ptr [bp-%d]\n", i + 1, offset );
         }
@@ -1387,8 +1389,8 @@ static void Generate16BitAliases( FILE *f, fcn *tmpf )
 
     first = "First";
     offset = STACK_FRAME;
-    for( i = tmpf->pcnt; i-- > 0; ) {
-        if( tmpf->plist[i] == PARM_PTR ) {
+    for( i = tmpf->param_count; i-- > 0; ) {
+        if( tmpf->param_type_list[i] == PARM_PTR ) {
             fprintf( f, "\tmov\teax,es:[edi+%d]\t\t; Parm%d\n", offset, i + 1 );
             fprintf( f, "\tcall\tGet%s16Alias\n", first );
             first = "";
@@ -1401,7 +1403,7 @@ static void Generate16BitAliases( FILE *f, fcn *tmpf )
 
 static int Parm1Offset( fcn *tmpf )
 {
-    return( tmpf->pcnt * 4 + 12 );
+    return( tmpf->param_count * 4 + 12 );
 }
 
 /*
@@ -1422,22 +1424,22 @@ static void GenerateAPICall( FILE *f, fcn *tmpf )
     alias_offset = GenerateStackLocals( f, tmpf );
     Generate16BitAliases( f, tmpf );
 
-    if( tmpf->aliascnt == 0 && tmpf->pcnt < 6 ) {
-        j = tmpf->pcnt;
-        for( i = 0; i < tmpf->pcnt; i++ ) {
+    if( tmpf->alias_count == 0 && tmpf->param_count < 6 ) {
+        j = tmpf->param_count;
+        for( i = 0; i < tmpf->param_count; i++ ) {
             j--;
             r = RegParms[j];
-            if( tmpf->plist[i] == PARM_WORD )
+            if( tmpf->param_type_list[i] == PARM_WORD )
                 r++;
             fprintf( f, "\tpush\t%s\n", r );
         }
     } else {
         offset = Parm1Offset( tmpf );
-        for( i = 0; i < tmpf->pcnt; i++ ) {
-            if( tmpf->plist[i] == PARM_PTR ) {
+        for( i = 0; i < tmpf->param_count; i++ ) {
+            if( tmpf->param_type_list[i] == PARM_PTR ) {
                 fprintf( f, "\tpush\tdword ptr [bp-%d]\t; Parm%dAlias\n", alias_offset, i + 1 );
                 alias_offset -= 8;
-            } else if( tmpf->plist[i] == PARM_WORD ) {
+            } else if( tmpf->param_type_list[i] == PARM_WORD ) {
                 fprintf( f, "\tpush\tword ptr es:[edi+%d]\t; Parm%d\n", offset, i + 1 );
             } else {
                 fprintf( f, "\tpush\tdword ptr es:[edi+%d]\t; Parm%d\n", offset, i + 1 );
@@ -1445,11 +1447,11 @@ static void GenerateAPICall( FILE *f, fcn *tmpf )
             offset -= 4;
         }
     }
-    if( tmpf->aliascnt != 0 ) {
+    if( tmpf->alias_count != 0 ) {
         fprintf( f, "\tjmp\tFree16Alias\n" );
     } else {
         fprintf( f, "\tcall\tdword ptr ds:[bx]\n" );
-        if( tmpf->pcnt >= 6 ) {
+        if( tmpf->param_count >= 6 ) {
             fprintf( f, "\tpush\tdx\n" );
             fprintf( f, "\tpush\tax\n" );
             fprintf( f, "\tpop\teax\n" );
@@ -1466,16 +1468,16 @@ static void GenerateAPICall( FILE *f, fcn *tmpf )
  * GenerateStackAccessEquates - generate equates to access the variables
  *                              passed in by the 32 bit application
  */
-void GenerateStackAccessEquates( FILE *f, fcn *tmpf )
+static void GenerateStackAccessEquates( FILE *f, fcn *tmpf )
 {
     int         i;
     int         offset;
     const char  *p;
 
     offset = STACK_FRAME;
-    for( i = tmpf->pcnt; i-- > 0; ) {
+    for( i = tmpf->param_count; i-- > 0; ) {
         p = "dword";
-        if( tmpf->plist[i] == PARM_WORD )
+        if( tmpf->param_type_list[i] == PARM_WORD )
             p++;
         fprintf( f, "Parm%d   = %s ptr es:[edi+%d]\n", i + 1, p, offset );
         offset += 4;
@@ -1491,6 +1493,7 @@ static void FunctionHeader( FILE *f )
 {
     fcn         *tmpf;
     const char  *fn_name;
+    int         index;
 
     OpenHeader( f );
     fprintf( f, ";*** WINGLUE.ASM - windows glue functions                                 ***\n" );
@@ -1503,6 +1506,7 @@ static void FunctionHeader( FILE *f )
     fprintf( f, ".386p\n" );
     fprintf( f, "\n" );
     fprintf( f, "extrn        __DLLPatch:far\n" );
+    index = 0;
     for( tmpf = Head; tmpf != NULL; tmpf = tmpf->next ) {
         if( tmpf->is_16 && tmpf->noregfor_16 ) {
             fn_name = &tmpf->fn[3];
@@ -1511,17 +1515,18 @@ static void FunctionHeader( FILE *f )
         }
         if( tmpf->thunk ) {
             if( !tmpf->is_16 || tmpf->noregfor_16 ) {
-                fprintf( f, ";extrn PASCAL %s:FAR ; t=%d (%s)\n", fn_name, tmpf->class, ThunkStrs[tmpf->thunkindex] );
+                fprintf( f, ";extrn PASCAL %s:FAR ; t=%d (%s) i=%d\n", fn_name, tmpf->class, ThunkStrs[tmpf->thunk_index], index );
             } else {
-                fprintf( f, ";      PASCAL %s ; t=%d (%s)\n", fn_name, tmpf->class, ThunkStrs[tmpf->thunkindex] );
+                fprintf( f, ";      PASCAL %s ; t=%d (%s) i=%d\n", fn_name, tmpf->class, ThunkStrs[tmpf->thunk_index], index );
             }
         } else {
             if( !tmpf->is_16 || tmpf->noregfor_16 ) {
-                fprintf( f, "extrn PASCAL %s:FAR ; t=%d\n", fn_name, tmpf->class );
+                fprintf( f, "extrn PASCAL %s:FAR ; t=%d i=%d\n", fn_name, tmpf->class, index );
             } else {
-                fprintf( f, ";      PASCAL %s ; t=%d\n", fn_name, tmpf->class );
+                fprintf( f, ";      PASCAL %s ; t=%d i=%d\n", fn_name, tmpf->class, index );
             }
         }
+        ++index;
     }
     fprintf( f, "extrn        GetFirst16Alias:near\n" );
     fprintf( f, "extrn        Get16Alias:near\n" );
@@ -1549,7 +1554,7 @@ static void FunctionData( FILE *f )
         }
         if( tmpf->thunk ) {
             if( !tmpf->is_16 || tmpf->noregfor_16 ) {
-                fprintf( f, "\tdd\t__DLLPatch ; (%s) %s\n", ThunkStrs[tmpf->thunkindex], fn_name );
+                fprintf( f, "\tdd\t__DLLPatch ; (%s) %s\n", ThunkStrs[tmpf->thunk_index], fn_name );
             }
         } else {
             if( !tmpf->is_16 || tmpf->noregfor_16 ) {
@@ -1568,7 +1573,7 @@ static void FunctionCode( FILE *f )
 
     fprintf( f, "_TEXT segment\n" );
     fprintf( f, "\tassume cs:_TEXT\n" );
-    fprintf( f, "\tassume ds:dgroup\n" );
+    fprintf( f, "\tassume ds:DGROUP\n" );
     fprintf( f, "\n" );
     fprintf( f, "public __ThunkTable\n" );
     fprintf( f, "__ThunkTable LABEL WORD\n" );
@@ -1660,7 +1665,7 @@ static void GenerateCode( void )
 /*
  * AddCommentTrailer -  add trailing '***' to a comment line
  */
-static void AddCommentTrailer( FILE *f, char *tmp )
+static void AddCommentTrailer( FILE *f, const char *tmp )
 {
     size_t      i, j;
     char        tmp2[81];

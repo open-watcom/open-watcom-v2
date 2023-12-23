@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -148,7 +149,7 @@ ins_operand *OpImmed( expr_tree *expr )
 
 static op_type RegClassOpTypes[] = {
     #define PICK( a, b )        OP_##a,
-    #include "regclass.inc"
+    #include "_regclas.h"
     #undef PICK
     0
 };
@@ -166,7 +167,7 @@ ins_operand *OpRegister( reg r )
 {
     ins_operand *op;
 
-    assert( RegClass( r ) >= 0 && RegClass( r ) < RC_LAST );
+    assert( RegClass( r ) < RC_LAST );
     op = initOp();
     op->type = RegClassOpTypes[ RegClass( r ) ];
     op->reg = r;
@@ -179,7 +180,7 @@ ins_operand *OpRegIndirect( reg r, expr_tree *expr )
 {
     ins_operand *op;
 
-    assert( RegClass( r ) >= 0 && RegClass( r ) < RC_LAST );
+    assert( RegClass( r ) < RC_LAST );
     op = initOp();
     op->type = OP_REG_INDIRECT;
     op->reg = r;

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,10 +40,9 @@
 #include "dfcue.h"
 
 
-/************************/
-/*** cue cache **********/
-/************************/
-
+/************************
+ *** cue cache **********
+ ************************/
 
 void InitImpCueInfo( imp_image_handle *iih )
 /******************************************/
@@ -88,12 +87,13 @@ bool FiniImpCueInfo( imp_image_handle *iih )
 
 
 imp_mod_handle DIPIMPENTRY( CueMod )( imp_image_handle *iih, imp_cue_handle *icueh )
-/**********************************************************************************/
+/***********************************************************************************
+ * Return the module the source cue comes from.
+ */
 {
     /* unused parameters */ (void)iih;
 
-    /* Return the module the source cue comes from. */
-     return( icueh->imh );
+    return( icueh->imh );
 }
 
 
@@ -126,7 +126,8 @@ static bool ACueFile( void *_info, dr_line_file *curr )
                     strcat( info->ret, "/");
                     strcat( info->ret, curr->name );
                 } else {
-                    /* This should be an error, but it isn't fatal as we should
+                    /*
+                     * This should be an error, but it isn't fatal as we should
                      * never get here in practice.
                      */
                     info->ret = DCAlloc( strlen( curr->name ) + 1 );
@@ -164,7 +165,9 @@ static bool ACueDir( void *_info, dr_line_dir *curr )
 static bool IsRelPathname( const char *name )
 /*******************************************/
 {
-    /* Detect UNIX or DOS style relative pathnames */
+    /*
+     * Detect UNIX or DOS style relative pathnames
+     */
     if( (name[0] == '/') || (name[0] == '\\') ) {
         return( false );
     }
@@ -201,8 +204,9 @@ size_t DIPIMPENTRY( CueFile )( imp_image_handle *iih, imp_cue_handle *icueh, cha
     wlk.dirs = NULL;
     DRWalkLFiles( stmts, ACueFile, &wlk, ACueDir, &wlk );
     name = wlk.ret;
-
-    // Free directory and file table information
+    /*
+     * Free directory and file table information
+     */
     for( i = 0; i < wlk.num_dirs; i++ ) {
         DCFree( wlk.dirs[i].name );
     }
@@ -212,8 +216,10 @@ size_t DIPIMPENTRY( CueFile )( imp_image_handle *iih, imp_cue_handle *icueh, cha
         DCStatus( DS_FAIL );
         return( 0 );
     }
-    // If compilation unit has a DW_AT_comp_dir attribute, we need to
-    // stuff that in front of the file pathname, unless that is absolute
+    /*
+     * If compilation unit has a DW_AT_comp_dir attribute, we need to
+     * stuff that in front of the file pathname, unless that is absolute
+     */
     len = DRGetCompDirBuff( cu_tag, buff, buff_size );
     if( ( len > 1 ) && IsRelPathname( name ) ) {  // Ignore empty comp dirs
         len = NameCopy( buff, "/", buff_size, len );
@@ -255,7 +261,7 @@ static bool FirstCue( drmem_hdl stmts, uint_16 fno, imp_cue_handle *icueh )
     if( cont == false ) {
         icueh->fno = wlk.first.file;
         icueh->line = wlk.first.line;
-//      icueh->col = wlk.first.col;
+//        icueh->col = wlk.first.col;
         icueh->col = 0;
         icueh->a = NilAddr;
         icueh->a.mach.segment = wlk.first.seg;
@@ -336,9 +342,9 @@ cue_fileid DIPIMPENTRY( CueFileId )( imp_image_handle *iih, imp_cue_handle *icue
     return( icueh->fno );
 }
 
-/*******************************/
-/*** Load Cue map find cues  ***/
-/*******************************/
+/*******************************
+ *** Load Cue map find cues  ***
+ *******************************/
 
 typedef struct {
     address         ret;
@@ -371,25 +377,24 @@ static void LoadCueMap( drmem_hdl stmts, address *addr, cue_list *list )
 }
 
 
-/*
-    Adjust the 'src' cue by 'adj' amount and return the result in 'dst'.
-    That is, If you get called with "DIPImpCueAdjust( iih, src, 1, dst )",
-    the 'dst' handle should be filled in with implementation cue handle
-    representing the source cue immediately following the 'src' cue.
-    Passing in an 'adj' of -1 will get the immediately preceeding source
-    cue. The list of source cues for each file are considered a ring,
-    so if 'src' is the first cue in a file, an 'adj' of -1 will return
-    the last source cue FOR THAT FILE. The cue adjust never crosses a
-    file boundry. Also, if 'src' is the last cue in a file, and 'adj' of
-    1 will get the first source cue FOR THAT FILE. If an adjustment
-    causes a wrap from begining to end or vice versa, you should return
-    DS_WRAPPED status (NOTE: DS_ERR should *not* be or'd in, nor should
-    DCStatus be called in this case). Otherwise DS_OK should be returned
-    unless an error occurred.
-*/
 dip_status DIPIMPENTRY( CueAdjust )( imp_image_handle *iih, imp_cue_handle *src_icueh,
                                                 int adj, imp_cue_handle *dst_icueh )
-/************************************************************************************/
+/*************************************************************************************
+ * Adjust the 'src' cue by 'adj' amount and return the result in 'dst'.
+ * That is, If you get called with "DIPImpCueAdjust( iih, src, 1, dst )",
+ * the 'dst' handle should be filled in with implementation cue handle
+ * representing the source cue immediately following the 'src' cue.
+ * Passing in an 'adj' of -1 will get the immediately preceeding source
+ * cue. The list of source cues for each file are considered a ring,
+ * so if 'src' is the first cue in a file, an 'adj' of -1 will return
+ * the last source cue FOR THAT FILE. The cue adjust never crosses a
+ * file boundry. Also, if 'src' is the last cue in a file, and 'adj' of
+ * 1 will get the first source cue FOR THAT FILE. If an adjustment
+ * causes a wrap from begining to end or vice versa, you should return
+ * DS_WRAPPED status (NOTE: DS_ERR should *not* be or'd in, nor should
+ * DCStatus be called in this case). Otherwise DS_OK should be returned
+ * unless an error occurred.
+ */
 {
     drmem_hdl       stmts;
     dfline_search   start_state;
@@ -461,26 +466,27 @@ unsigned long DIPIMPENTRY( CueLine )( imp_image_handle *iih, imp_cue_handle *icu
 
 
 unsigned DIPIMPENTRY( CueColumn )( imp_image_handle *iih, imp_cue_handle *icueh )
-/*******************************************************************************/
+/********************************************************************************
+ * Return the column number of source cue. Return zero if there
+ * is no column number associated with the cue, or an error occurs in
+ * getting the information.
+ */
 {
     /* unused parameters */ (void)iih;
 
-    /* Return the column number of source cue. Return zero if there
-     * is no column number associated with the cue, or an error occurs in
-     * getting the information.
-     */
     return( icueh->col );
 }
 
 
 address DIPIMPENTRY( CueAddr )( imp_image_handle *iih, imp_cue_handle *icueh )
-/****************************************************************************/
+/*****************************************************************************
+ * Return the address of source cue. Return NilAddr if there
+ * is no address associated with the cue, or an error occurs in
+ * getting the information.
+ */
 {
     address     ret;
-    /* Return the address of source cue. Return NilAddr if there
-     * is no address associated with the cue, or an error occurs in
-     * getting the information.
-     */
+
     ret = icueh->a;
     DCMapAddr( &ret.mach, iih->dcmap );
     return( ret );
@@ -489,13 +495,13 @@ address DIPIMPENTRY( CueAddr )( imp_image_handle *iih, imp_cue_handle *icueh )
 
 search_result DIPIMPENTRY( AddrCue )( imp_image_handle *iih,
                 imp_mod_handle imh, address addr, imp_cue_handle *icueh )
-/***********************************************************************/
+/************************************************************************
+ * Search for the closest cue in the given module that has an address
+ * less then or equal to the given address. If there is no such cue
+ * return SR_NONE. If there is one exactly at the address return
+ * SR_EXACT. Otherwise, return SR_CLOSEST.
+ */
 {
-    /* Search for the closest cue in the given module that has an address
-     * less then or equal to the given address. If there is no such cue
-     * return SR_NONE. If there is one exactly at the address return
-     * SR_EXACT. Otherwise, return SR_CLOSEST.
-     */
     address         map_addr;
     search_result   ret;
     cue_list        *cue_map;
@@ -622,20 +628,20 @@ search_result DIPIMPENTRY( LineCue )( imp_image_handle *iih,
 
 
 int DIPIMPENTRY( CueCmp )( imp_image_handle *iih, imp_cue_handle *icueh1, imp_cue_handle *icueh2 )
-/************************************************************************************************/
+/*************************************************************************************************
+ * Compare two cue handles and return 0 if they refer to the same
+ * information. If they refer to differnt things return either a
+ * positive or negative value to impose an 'order' on the information.
+ * The value should obey the following constraints.
+ * Given three handles H1, H2, H3:
+ *         - if H1 < H2 then H1 is always < H2
+ *         - if H1 < H2 and H2 < H3 then H1 is < H3
+ * The reason for the constraints is so that a client can sort a
+ * list of handles and binary search them.
+ */
 {
     /* unused parameters */ (void)iih;
 
-    /* Compare two cue handles and return 0 if they refer to the same
-     * information. If they refer to differnt things return either a
-     * positive or negative value to impose an 'order' on the information.
-     * The value should obey the following constraints.
-     * Given three handles H1, H2, H3:
-     *         - if H1 < H2 then H1 is always < H2
-     *         - if H1 < H2 and H2 < H3 then H1 is < H3
-     * The reason for the constraints is so that a client can sort a
-     * list of handles and binary search them.
-     */
     if( icueh1->imh < icueh2->imh )
         return( -1 );
     if( icueh1->imh > icueh2->imh )

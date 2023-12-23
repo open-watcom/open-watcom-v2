@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,11 +34,13 @@
 #define FORMAT_H
 
 #include "common.h"
-#include "strings.h"
 #include "param.h"
+
 
 #define SCREENWIDTH     78
 #define RULERSTRING     "-"
+
+extern const char *resTypes[];
 
 void indentMore( int level );
 void indentLess( int level );

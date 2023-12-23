@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -68,23 +69,23 @@ static void preamble( FILE *fp )
 static void prolog( FILE *fp, int i )
 {
     a_name              name;
-    a_state *           x;
+    a_state             *state;
 
     fprintf( fp, "\nint YYNEAR state%d( parse_stack * yysp, unsigned token )\n/*\n", i );
-    x = statetab[i];
-    for( name.item = x->name.item; *name.item != NULL; ++name.item ) {
+    state = statetab[i];
+    for( name.item = state->name.item; *name.item != NULL; ++name.item ) {
         showitem( fp, *name.item, " ." );
     }
     fprintf( fp, "*/\n{\n" );
 }
 
-static void copyact( a_pro * pro, char * indent )
+static void copyact( a_pro *pro, char *indent )
 {
     char        *s;
     char        *type;
     int         i;
-    a_sym *     lhs;
-    an_item *   rhs;
+    a_sym       *lhs;
+    an_item     *rhs;
     unsigned    n;
     int         only_default_type;
 
@@ -148,13 +149,14 @@ static void copyact( a_pro * pro, char * indent )
     fprintf( fp, "\n%s};\n", indent );
 }
 
-static a_state * unique_shift( a_pro * reduced )
+static a_state *unique_shift( a_pro *reduced )
+/*********************************************
+ * See if there is a unique shift when this state is reduced
+ */
 {
-    // See if there is a unique shift when this state is reduced
-
-    a_state *           shift_to;
-    a_state *           test;
-    a_shift_action *    tx;
+    a_state             *shift_to;
+    a_state             *test;
+    a_shift_action      *tx;
     int                 i;
 
     shift_to = NULL;
@@ -162,9 +164,13 @@ static a_state * unique_shift( a_pro * reduced )
         test = statetab[i];
         for( tx = test->trans; tx->sym != NULL; ++tx ) {
             if( tx->sym == reduced->sym ) {
-                // Found something that uses this lhs
+                /*
+                 * Found something that uses this lhs
+                 */
                 if( shift_to == NULL || shift_to == tx->state ) {
-                    // This is the first one or it matches the first one
+                    /*
+                     * This is the first one or it matches the first one
+                     */
                     shift_to = tx->state;
                 } else {
                     return( NULL );     // Not unique
@@ -178,9 +184,9 @@ static a_state * unique_shift( a_pro * reduced )
 static void reduce( FILE *fp, int production, int error )
 {
     int                 plen;
-    an_item *           item;
-    a_pro *             pro;
-    a_state *           shift_to;
+    an_item             *item;
+    a_pro               *pro;
+    a_state             *shift_to;
 
     if( production == error ) {
         fprintf( fp, "\treturn( ERROR );\n" );
@@ -194,9 +200,9 @@ static void reduce( FILE *fp, int production, int error )
             fprintf( fp, "\tyysp -= %d;\n", plen );
         }
         copyact( pro, "\t" );
-        // fprintf( fp, "\tactions( %d, yysp );\n", production );
+//        fprintf( fp, "\tactions( %d, yysp );\n", production );
         if( (shift_to = unique_shift( pro )) != NULL ) {
-            fprintf( fp, "\tyysp[0].state = state%d;\n", shift_to->sidx );
+            fprintf( fp, "\tyysp[0].state = state%d;\n", shift_to->idx );
         } else {
             fprintf( fp, "\t(*yysp[-1].state) ( yysp, %d );\n", pro->sym->token );
         }
@@ -245,10 +251,14 @@ static void gencode( FILE *fp, int statenum, short *toklist, short *s, short *ac
                 fprintf( fp, "    case %d: /* %s */\n", token, symtab[symnum]->name );
             }
             if( todo >= nstate ) {
-                // Reduction or error
+                /*
+                 * Reduction or error
+                 */
                 reduce( fp, todo, error );
             } else {
-                // Shift
+                /*
+                 * Shift
+                 */
                 fprintf( fp, "\tyysp[0].state = state%d;\n", todo );
                 fprintf( fp, "\tbreak;\n" );
             }
@@ -259,8 +269,10 @@ static void gencode( FILE *fp, int statenum, short *toklist, short *s, short *ac
     }
     todo = actions[parent_token];
     if( todo != error ) {
-        // There is a parent production
-        // For now, try parents only when there is no default action
+        /*
+         * There is a parent production
+         * For now, try parents only when there is no default action
+         */
         fprintf( fp, "\treturn( state%d( yysp, token ) );\n", todo );
     } else if( default_action != 0 ) {
         reduce( default_action, error );
@@ -306,7 +318,7 @@ void genobj( FILE *fp )
     set_size *mp;
     a_sym *sym;
     a_pro *pro;
-    a_state *x;
+    a_state *state;
     a_shift_action *tx;
     a_reduce_action *rx;
     int i, j, ntoken, dtoken, ptoken;
@@ -339,15 +351,15 @@ void genobj( FILE *fp )
         for( s = actions + ntoken; --s >= actions; ) {
             *s = error;
         }
-        x = statetab[i];
+        state = statetab[i];
         q = token;
-        for( tx = x->trans; (sym = tx->sym) != NULL; ++tx ) {
+        for( tx = state->trans; (sym = tx->sym) != NULL; ++tx ) {
             tokval = sym->token;
             *q++ = tokval;
-            actions[tokval] = tx->state->sidx;
+            actions[tokval] = tx->state->idx;
         }
         max_savings = 0;
-        for( rx = x->redun; (pro = rx->pro) != NULL; ++rx ) {
+        for( rx = state->redun; (pro = rx->pro) != NULL; ++rx ) {
             if( (savings = (mp = Members( rx->follow )) - setmembers) == 0 )
                 continue;
             redun = pro->pidx + nstate;
@@ -381,15 +393,17 @@ void genobj( FILE *fp )
         max_savings = 0;
         parent[i] = nstate;
         for( j = nstate; --j > i; ) {
-            // FOR NOW -- only use parent if no default here or same default
+            /*
+             * FOR NOW -- only use parent if no default here or same default
+             */
             if( other[i] != error && other[i] != other[j] )
                 continue;
             savings = 0;
-            x = statetab[j];
+            state = statetab[j];
             p = test;
             q = test + ntoken;
-            for( tx = x->trans; (sym = tx->sym) != NULL; ++tx )
-                if( actions[sym->token] == tx->state->sidx ) {
+            for( tx = state->trans; (sym = tx->sym) != NULL; ++tx )
+                if( actions[sym->token] == tx->state->idx ) {
                     ++savings;
                     *p++ = sym->token;
                 } else {
@@ -397,7 +411,7 @@ void genobj( FILE *fp )
                         --savings;
                     *--q = sym->token;
                 }
-            for( rx = x->redun; (pro = rx->pro) != NULL; ++rx ) {
+            for( rx = state->redun; (pro = rx->pro) != NULL; ++rx ) {
                 if( (redun = pro->pidx + nstate) == other[j] )
                     redun = error;
                 redun = pro->pidx + nstate;
@@ -476,8 +490,8 @@ void genobj( FILE *fp )
     putnum( fp, "YYNOACTION", error - nstate + dtoken );
     putnum( fp, "YYEOFTOKEN", eofsym->token );
     putnum( fp, "YYERRTOKEN", errsym->token );
-    putnum( fp, "YYERR", errstate->sidx );
-    fprintf( fp, "#define YYSTART   state%d\n", startstate->sidx );
-    fprintf( fp, "#define YYSTOP    state%d\n", eofsym->enter->sidx );
+    putnum( fp, "YYERR", errstate->idx );
+    fprintf( fp, "#define YYSTART   state%d\n", startstate->idx );
+    fprintf( fp, "#define YYSTOP    state%d\n", eofsym->state->idx );
     printf( "%u states, %u with defaults, %u with parents\n", nstate, num_default, num_parent );
 }

@@ -4,6 +4,8 @@ setupgui_autodepends = .AUTODEPEND
 
 setupgui_nofpu = 1
 
+setupgui_nodoslfn = 1
+
 setupgui_trmem = 1
 
 setupgui_dos_extender = causeway
@@ -24,14 +26,6 @@ additional_clean = *.i *.rex setup.inf
 !include $(hlpview_dir)/client.mif
 !include $(wpi_dir)/client.mif
 !include $(commonui_dir)/client.mif
-
-!ifeq sys_windowed 1
-!ifeq host_os win
-!ifeq host_cpu i86
-dosstub = dosstub.exe
-!endif
-!endif
-!endif
 
 #
 # cflags
@@ -63,22 +57,14 @@ extra_c_flags_loadfind = $(wres_inc_dirs)
 extra_l_flags_dos = option stack=30K
 extra_l_flags_os2 = option stack=30K
 extra_l_flags_nt = option stack=30K, heap=20K
-!ifneq host_cpu axp
-extra_l_flags_nt += lib {shell32.lib uuid.lib}
-!endif
-!ifdef win386
-extra_l_flags_win = option stack=24K
-!else
+extra_l_flags_nt_axp = lib {shell32.lib uuid.lib}
+extra_l_flags_win_386 = option stack=24K
 # Segments must be NONDISCARDABLE so that Windows will not attempt
 # to load a segment after the user has swapped diskettes.
-extra_l_flags_win = option manyautodata, stack=20K, heap=10K &
+extra_l_flags_win_i86 = option manyautodata, stack=20K, heap=10K &
     SEGMENT CLASS 'CODE' MOVEABLE PRELOAD &
     SEGMENT CLASS 'DATA' MOVEABLE PRELOAD &
     LIBRARY ddeml.lib
-!endif
-!ifdef dosstub
-extra_l_flags_win += op stub=$(dosstub)
-!endif
 
 # explicit rules
 ##################
@@ -145,7 +131,6 @@ libs = $(gui_lib) $(libs_$(host_os)) $(libs_$(objs_subdir)) ../ziplib/$(objs_sub
 #
 # EXE's
 #
-exetarg_prebuild_objs = $(dosstub)
 exetarg_objs          = $(objs)
 exetarg_libs          = $(libs)
 exetarg_res_version_nt_386 = exever.res
@@ -201,24 +186,21 @@ wresui.res : ../res/setupui.rc $(depend_res) $(__MAKEFILES__)
 # GUI resources
 csetup.res : ../res/$(host_os)/setup.rc $(depend_res) ../res/wcc.bmp $(__MAKEFILES__)
     @%make echo_rc
-    $(rc) $(rc_flags) -DCSETUP $(rc_inc_path) $[@ -fo=$@
+    $(rc) $(rc_ui8_encoding) $(rc_flags) -DCSETUP $(rc_inc_path) $[@ -fo=$@
 
 jcsetup.res : ../res/$(host_os)/setup.rc $(depend_res) ../res/wcc.bmp $(__MAKEFILES__)
     @%make echo_rc
-    $(rc) $(rc_flags) -DJCSETUP -DJAPANESE -zk0 $(rc_inc_path) $[@ -fo=$@
+    $(rc) $(rc_ui8_encoding) $(rc_flags) -DJCSETUP -DJAPANESE -zk0 $(rc_inc_path) $[@ -fo=$@
 
 f77setup.res : ../res/$(host_os)/setup.rc $(depend_res) ../res/f77.bmp $(__MAKEFILES__)
     @%make echo_rc
-    $(rc) $(rc_flags) -DF77SETUP $(rc_inc_path) $[@ -fo=$@
+    $(rc) $(rc_ui8_encoding) $(rc_flags) -DF77SETUP $(rc_inc_path) $[@ -fo=$@
 
 jfsetup.res : ../res/$(host_os)/setup.rc $(depend_res) ../res/f77.bmp $(__MAKEFILES__)
     @%make echo_rc
-    $(rc) $(rc_flags) -DJFSETUP -DJAPANESE -zk0 $(rc_inc_path) $[@ -fo=$@
+    $(rc) $(rc_ui8_encoding) $(rc_flags) -DJFSETUP -DJAPANESE -zk0 $(rc_inc_path) $[@ -fo=$@
 
 # manifest resource for NT
 ntmanif.res : ../res/nt/ntmanif.rc .EXPLICIT
     @%make echo_rc
-    $(rc) $(rc_flags) -I"../res/nt" $(inc_dirs_sys_nt) $< -fo=$@
-
-dosstub.exe : dosstub.c $(__MAKEFILES__)
-    $(cl_i86) -zq -bcl=dos -s-os -d0 $(inc_dirs_lang_dos) -I"$(watcom_dir)/h" $[@
+    $(rc) $(rc_ui8_encoding) $(rc_flags) -I"../res/nt" $(inc_dirs_sys_nt) $< -fo=$@

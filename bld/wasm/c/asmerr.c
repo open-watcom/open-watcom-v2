@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,11 +35,8 @@
 #include "directiv.h"
 #include "asminput.h"
 #include "fatal.h"
-#include "errout.h"
 #include "standalo.h"
 
-
-void                    OpenErrFile( void );
 
 //    WngLvls[level] // warning levels associated with warning messages
 //    CompFlags.errout_redirected
@@ -51,7 +48,6 @@ void                    OpenErrFile( void );
 #define WngLevel Options.warning_level
 
 static bool             Errfile_Written = false;
-static FILE             *ErrFile = NULL;
 
 static void             AsmSuicide( void );
 static void             PutMsg( FILE *fp, char *prefix, unsigned msgnum, va_list args );
@@ -72,7 +68,7 @@ void DoDebugMsg( const char *format, ... )
 }
 #endif
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 int InternalError( const char *file, unsigned line )
 /**************************************************/
 // it is used by myassert function in debug version
@@ -80,8 +76,8 @@ int InternalError( const char *file, unsigned line )
     char msgbuf[MAX_MESSAGE_SIZE];
 
     MsgGet( MSG_INTERNAL_ERROR, msgbuf );
-    fprintf( errout, msgbuf, file, line );
-    fflush( errout );
+    fprintf( stderr, msgbuf, file, line );
+    fflush( stderr );
     exit( EXIT_FAILURE );
     return( 0 );
 }
@@ -169,13 +165,16 @@ static void PrtMsg1( char *prefix, unsigned msgnum, va_list args1, va_list args2
 // print standard WASM messages
 {
     PrintBanner();
-    if( ErrFile == NULL )
-        OpenErrFile();
-    PutMsg( errout, prefix, msgnum, args1 );
-    fflush( errout );
-    if( ErrFile ) {
+    if( AsmFiles.file[ERR] == NULL ) {
+        if( AsmFiles.fname[ERR] != NULL ) {
+            AsmFiles.file[ERR] = fopen( AsmFiles.fname[ERR], "w" );
+        }
+    }
+    PutMsg( stderr, prefix, msgnum, args1 );
+    fflush( stderr );
+    if( AsmFiles.file[ERR] != NULL ) {
         Errfile_Written = true;
-        PutMsg( ErrFile, prefix, msgnum, args2 );
+        PutMsg( AsmFiles.file[ERR], prefix, msgnum, args2 );
     }
 }
 
@@ -184,15 +183,6 @@ void DelErrFile( void )
 {
     // fixme if( CompFlags.errout_redirected ) return;
     remove( AsmFiles.fname[ERR] );
-}
-
-void OpenErrFile( void )
-/**********************/
-{
-//    if( !isatty( fileno( errout ) ) ) return;
-    if( AsmFiles.fname[ERR] != NULL ) {
-        ErrFile = fopen( AsmFiles.fname[ERR], "w" );
-    }
 }
 
 void LstMsg( const char *format, ... )

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -179,7 +179,9 @@ void    NamesCrossBlocks( void )
     an          next;
     name        *temp;
 
-    /* Careful. The list shifts under our feet.*/
+    /*
+     * Careful. The list shifts under our feet.
+     */
     for( addr = AddrList; addr != NULL; addr = next ) {
         next = addr->link;
         if( addr->flags & FL_ADDR_OK_ACROSS_BLOCKS ) {
@@ -252,7 +254,7 @@ an      MakeGets( an dst, an src, type_def *tipe )
     InsToAddr( dst );
     dst_name = Points( dst, tipe );
     ins = src->u.i.ins;
-    if( src->format == NF_INS && CurrBlock->ins.hd.prev == ins ) {
+    if( src->format == NF_INS && CurrBlock->ins.head.prev == ins ) {
         ins->result = dst_name;
         src->format = NF_ADDR;  /* so instruction doesn't get freed! */
     } else {
@@ -263,8 +265,10 @@ an      MakeGets( an dst, an src, type_def *tipe )
             src_name = GenIns( src );
             if( dst_name->n.class == N_INDEXED &&
              (dst_name->i.index_flags & X_VOLATILE) == 0 ) {
-                /* don't give him back an indexed name - it extends the life of*/
-                /* a pointer*/
+                /*
+                 * don't give him back an indexed name - it extends the life of
+                 * a pointer
+                 */
                 temp = SAllocTemp( dst_name->n.type_class, dst_name->n.size );
                 AddIns( MakeMove( src_name, dst_name, type_class ) );
                 AddIns( MakeMove( dst_name, temp, type_class ) );

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -94,15 +95,15 @@ ResNameOrOrdinal *WdeStrToResNameOrOrdinal( char *str )
     }
 
     if( str[0] == '\0' ) {
-        return( ResStrToNameOrOrd( str ) );
+        return( ResStrToNameOrOrdinal( str ) );
     }
 
     ul = strtoul( str, &ep, 0 );
     if( !*ep && ul <= 0xffff ) {
         ordID = (uint_16)ul;
-        rp = ResNumToNameOrOrd( ordID );
+        rp = ResNumToNameOrOrdinal( ordID );
     } else {
-        rp = ResStrToNameOrOrd( str );
+        rp = ResStrToNameOrOrdinal( str );
     }
 
     return( rp );
@@ -281,9 +282,9 @@ ResNameOrOrdinal *WdeCopyResNameOr( ResNameOrOrdinal *src )
     }
 
     if( src->ord.fFlag == 0xff ) {
-        dest = ResNumToNameOrOrd( src->ord.wOrdinalID );
+        dest = ResNumToNameOrOrdinal( src->ord.wOrdinalID );
     } else {
-        dest = ResStrToNameOrOrd( src->name );
+        dest = ResStrToNameOrOrdinal( src->name );
     }
 
     return( dest );

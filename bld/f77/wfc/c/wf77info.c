@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,7 +48,6 @@
 #include "ferror.h"
 #include "inout.h"
 #include "fctypes.h"
-#include "cspawn.h"
 #include "stdio.h"
 #include "charset.h"
 #include "cbsize.h"
@@ -66,7 +65,7 @@
 #include "rstutils.h"
 
 #include "langenvd.h"
-#if _CPU == 386 || _CPU == 8086
+#if _INTEL_CPU
   #define __TGT_SYS     __TGT_SYS_X86
 #elif _CPU == _AXP
   #define __TGT_SYS     __TGT_SYS_AXP_NT
@@ -85,6 +84,7 @@
 #include "feprotos.h"
 
 #include "clibext.h"
+#include "cspawn.h"
 
 
 extern  global_seg      *CurrGSeg;
@@ -106,7 +106,7 @@ static  char            ObjExtn[] = { "obj" };
 #endif
 
 static  char            GData[] = { "GDATA@" };
-#if _CPU == 8086 || _CPU == 386
+#if _INTEL_CPU
 static  char            *CSSuff = TS_SEG_CODE;
 static  unsigned char   CodeAlignSeq[] = { 2, sizeof( inttarg ), 1 };
 static  unsigned char   DefCodeAlignSeq[] = { 2, 1, 1 };
@@ -163,7 +163,7 @@ static  void    AllocComBlk( sym_id cb );
 #define SYM_MANGLE_PRE_LEN      8
 #define SYM_MANGLE_POST_LEN     5
 #define SYM_MANGLE_LEN          (SYM_MANGLE_PRE_LEN + SYM_MANGLE_POST_LEN)
-#if _CPU == 8086 || _CPU == 386
+#if _INTEL_CPU
 static char                     MangleSymBuff[MAX_SYMLEN+4+SYM_MANGLE_LEN];
 #endif
 
@@ -222,7 +222,7 @@ void    InitSegs( void )
 // Define segments.
 {
     CurrSegId = SEG_FREE;
-#if _CPU == _AXP || _CPU == _PPC
+#if _RISC_CPU
     BEDefSeg( SEG_TDATA, EXEC | GLOBAL | GIVEN_NAME, TS_SEG_CODE, ALIGN_DWORD );
     CurrCodeSegId = SEG_TDATA;
 #endif
@@ -263,13 +263,13 @@ void    SubCodeSeg( void )
 //========================
 // Define a code segment for a subprogram.
 {
-#if _CPU == 8086 || _CPU == 386
+#if _INTEL_CPU
     DefCodeSeg();
 #endif
 }
 
 
-#if _CPU == 8086 || _CPU == 386
+#if _INTEL_CPU
 static  unsigned char   *AlignmentSeq( void )
 //===========================================
 {
@@ -307,11 +307,11 @@ static  void    BldCSName( char *buff )
 //=====================================
 // Build code segment name.
 {
-#if _CPU == 8086
+  #if _CPU == 8086
     strcpy( STGetName( SubProgId, buff ), CSSuff );
-#else
+  #else
     strcpy( buff, CSSuff );
-#endif
+  #endif
 }
 #endif
 
@@ -327,7 +327,7 @@ static  void    DefineCommonSegs( void )
     int         private;
     char        cb_name[MAX_SYMLEN + 4 + SYM_MANGLE_LEN];
 
-#if _CPU == 386 || _CPU == 8086
+#if _INTEL_CPU
     if( _SmallDataModel( CGOpts ) ) {
         private = INIT; // so segment doesn't get put in BSS class
     } else {
@@ -337,7 +337,7 @@ static  void    DefineCommonSegs( void )
     for( sym = GList; sym != NULL; sym = sym->u.ns.link ) {
         if( (sym->u.ns.flags & SY_CLASS) != SY_COMMON )
             continue;
-#if _CPU == _AXP || _CPU == _PPC
+#if _RISC_CPU
         if( sym->u.ns.flags & SY_COMMON_INIT ) {
             private = INIT | COMDAT;
         } else {
@@ -423,13 +423,13 @@ static  void   DefineGlobalSeg( global_seg *seg )
 // Define a global segment.
 {
     int         private;
-    char        g_name[G_DATA_LEN+3];
+    char        g_name[G_DATA_LEN+8];
 
     seg->segid = AllocSegId();
     memcpy( g_name, GData, G_DATA_LEN );
-    itoa( seg->segid - GlobalSeg->segid, &g_name[G_DATA_LEN], 10 );
+    sprintf( &g_name[G_DATA_LEN], "%d", (int)( seg->segid - GlobalSeg->segid ) );
 
-#if _CPU == 386 || _CPU == 8086
+#if _INTEL_CPU
     if( _SmallDataModel( CGOpts ) ) {
         if( seg->initialized ) {
             private = INIT; // so segment doesn't get put in BSS class
@@ -439,7 +439,7 @@ static  void   DefineGlobalSeg( global_seg *seg )
     } else {
         private = PRIVATE;
     }
-#else
+#else /* _RISC_CPU */
     if( seg->initialized ) {
         private = INIT; // so segment doesn't get put in BSS class
     } else {
@@ -809,7 +809,7 @@ void    DefTypes( void )
     int         adv_size;
     int         total_size;
 
-#if _CPU == 386 || _CPU == 8086
+#if _INTEL_CPU
     if( _BigDataModel( CGOpts ) ) {
         BEAliasType( TY_LOCAL_POINTER, TY_LONG_POINTER );
         BEAliasType( TY_GLOBAL_POINTER, TY_LONG_POINTER );
@@ -817,7 +817,7 @@ void    DefTypes( void )
         BEAliasType( TY_LOCAL_POINTER, TY_NEAR_POINTER );
         BEAliasType( TY_GLOBAL_POINTER, TY_NEAR_POINTER );
     }
-#else
+#else /* _RISC_CPU */
     BEAliasType( TY_LOCAL_POINTER, TY_POINTER );
     BEAliasType( TY_GLOBAL_POINTER, TY_POINTER );
 #endif
@@ -860,15 +860,15 @@ void    DefTypes( void )
     BEDefType( TY_ARR_ALLOCATABLE, ALIGN_BYTE,
                ( BETypeLength( TY_UINT_2 ) + BETypeLength( TY_POINTER ) ) );
 
-#if _CPU == 386
-    total_size = BETypeLength( TY_LONG_POINTER );
-#elif _CPU == 8086
+#if _CPU == 8086
     if( CGOpts & CGOPT_M_LARGE ) {
         total_size = BETypeLength( TY_HUGE_POINTER );
     } else { // if( CGOpts & CGOPT_M_MEDIUM ) {
         total_size = BETypeLength( TY_LONG_POINTER );
     }
-#else
+#elif _CPU == 386
+    total_size = BETypeLength( TY_LONG_POINTER );
+#else /* _RISC_CPU */
     total_size = BETypeLength( TY_POINTER );
 #endif
     BEDefType( TY_ARR_ALLOCATABLE_EXTENDED, ALIGN_BYTE,
@@ -1124,7 +1124,7 @@ static aux_info *GetAuxInfo( sym_id sym )
 static const char *GetBaseName( sym_id sym )
 {
     _UnShadow( sym );
-    return( sym->u.ns.name );
+    return( NameLookup( sym ) );
 }
 
 static const char *GetNamePattern( sym_id sym )
@@ -1235,7 +1235,7 @@ cg_type FEParmType( cg_sym_handle fn, cg_sym_handle parm, cg_type tipe )
 
             info = InfoLookup( (sym_id)fn );
             if( info != NULL ) {
-                if( info->cclass & FAR16_CALL ) {
+                if( info->cclass_target & FECALL_X86_FAR16_CALL ) {
                     return( TY_INT_2 );
                 }
             }
@@ -1291,8 +1291,8 @@ void    FCMessage( fc_msg_class tipe, pointer x )
     }
 }
 
-void    FEMessage( int msg, pointer x )
-//=====================================
+void    FEMessage( fe_msg femsg, pointer x )
+//==========================================
 // Print a message for the back end.
 {
     char        name[MAX_SYMLEN+1];
@@ -1301,68 +1301,68 @@ void    FEMessage( int msg, pointer x )
         SendStd( x );
         exit( 1 );
     }
-    switch( msg ) {
-    case MSG_SYMBOL_TOO_LONG:
+    switch( femsg ) {
+    case FEMSG_SYMBOL_TOO_LONG:
         /*  symbol too long, truncated (sym) */
         break;
-    case MSG_CODE_SIZE :
+    case FEMSG_CODE_SIZE :
 #if _CPU == 8086
         CodeSize = (unsigned short)(pointer_uint)x;
 #else
         CodeSize = (unsigned long)(pointer_uint)x;
 #endif
         break;
-    case MSG_DATA_SIZE :
+    case FEMSG_DATA_SIZE :
         break;
-    case MSG_ERROR :
+    case FEMSG_ERROR :
         Error( CP_ERROR, x );
         break;
-    case MSG_FATAL :
+    case FEMSG_FATAL :
         Error( CP_FATAL_ERROR, x );
         CGFlags |= CG_FATAL;
         CSuicide();
         break;
-    case MSG_BAD_PARM_REGISTER :
+    case FEMSG_BAD_PARM_REGISTER :
         Error( CP_BAD_PARM_REGISTER, x );
         break;
-    case MSG_BAD_RETURN_REGISTER :
+    case FEMSG_BAD_RETURN_REGISTER :
         Error( CP_BAD_RETURN_REGISTER, FEName( x ) );
         break;
-    case MSG_REGALLOC_DIED :
-    case MSG_SCOREBOARD_DIED :
-    case MSG_SCHEDULER_DIED :
+    case FEMSG_REGALLOC_DIED :
+    case FEMSG_SCOREBOARD_DIED :
+    case FEMSG_SCHEDULER_DIED :
         if( CGFlags & CG_MEM_LOW_ISSUED )
             break;
         Warning( CP_LOW_ON_MEMORY, FEName( x ) );
         CGFlags |= CG_MEM_LOW_ISSUED;
         break;
-    case MSG_PEEPHOLE_FLUSHED :
+    case FEMSG_PEEPHOLE_FLUSHED :
         if( CGFlags & CG_MEM_LOW_ISSUED )
             break;
         STGetName( SubProgId, name );
         Warning( CP_LOW_ON_MEMORY, name );
         CGFlags |= CG_MEM_LOW_ISSUED;
         break;
-    case MSG_BACK_END_ERROR :
+    case FEMSG_BACK_END_ERROR :
         Error( CP_BACK_END_ERROR, (int)(pointer_uint)x );
         break;
-    case MSG_BAD_SAVE :
+    case FEMSG_BAD_SAVE :
         Error( CP_BAD_SAVE, FEName( x ) );
         break;
-    case MSG_BLIP :
+    case FEMSG_BLIP :
         if( (Options & OPT_QUIET) == 0 ) {
             SendBlip();
         }
         break;
-    case MSG_INFO :
+    case FEMSG_INFO :
         PrtLst( x );
         break;
-    case MSG_INFO_PROC :
+    case FEMSG_INFO_PROC :
         PrintErr( x );
         break;
-    case MSG_NO_SEG_REGS :      // can't be generated by FORTRAN 77
-    case MSG_WANT_MORE_DATA :   // not used
-    case MSG_INFO_FILE :        // not used
+    case FEMSG_NO_SEG_REGS :      // can't be generated by FORTRAN 77
+    case FEMSG_WANT_MORE_DATA :   // not used
+    case FEMSG_INFO_FILE :        // not used
         break;
     }
 }
@@ -1461,10 +1461,8 @@ static  dbg_type        GetDBGSubProgType( sym_id sym )
     if( (sym->u.ns.flags & SY_SUBPROG_TYPE) == SY_SUBROUTINE ) {
 #if _CPU == 8086
         return( DBGTypes[PT_INT_2] );
-#elif _CPU == 386 || _CPU == _AXP || _CPU == _PPC
-        return( DBGTypes[PT_INT_4] );
 #else
-        #error Unknown platform
+        return( DBGTypes[PT_INT_4] );
 #endif
     } else if( (sym->u.ns.flags & SY_SUBPROG_TYPE) == SY_FUNCTION ) {
         if( sym->u.ns.u1.s.typ == FT_CHAR ) {
@@ -1484,10 +1482,8 @@ static  dbg_type        GetDBGSubProgType( sym_id sym )
         // Since we don't really know what it is.
 #if _CPU == 8086
         return( DBGTypes[PT_INT_2] );
-#elif _CPU == 386 || _CPU == _AXP || _CPU == _PPC
-        return( DBGTypes[PT_INT_4] );
 #else
-        #error Unknown platform
+        return( DBGTypes[PT_INT_4] );
 #endif
     } else {
         return( DBG_NIL_TYPE );
@@ -1792,12 +1788,12 @@ char    *GetFullSrcName( void )
     }
 }
 
-pointer FEAuxInfo( pointer req_handle, int request )
-//==================================================
+pointer FEAuxInfo( pointer req_handle, aux_class request )
+//========================================================
 // Return specified auxiliary information for given auxiliary entry.
 {
     uint_16     flags;
-#if _CPU == 8086 || _CPU == 386
+#if _INTEL_CPU
     int         idx;
     uint_32     com_size;
 #endif
@@ -1808,56 +1804,54 @@ pointer FEAuxInfo( pointer req_handle, int request )
     aux_info    *info;
 
     switch( request ) {
-    case CALL_CLASS :
-        {
-            static call_class CallClass;
-
-            info = GetAuxInfo( req_handle );
-            CallClass = info->cclass ^ REVERSE_PARMS;
-            return( (pointer)&CallClass );
-        }
-    case SAVE_REGS :
+    case FEINF_CALL_CLASS :
+        info = GetAuxInfo( req_handle );
+        return( (pointer)(call_class)( info->cclass ^ FECALL_GEN_REVERSE_PARMS ) );
+    case FEINF_CALL_CLASS_TARGET :
+#if _INTEL_CPU
+        info = GetAuxInfo( req_handle );
+        return( (pointer)info->cclass_target );
+#else
+        return( (pointer)0 );
+#endif
+    case FEINF_SAVE_REGS :
         info = GetAuxInfo( req_handle );
         return( (pointer)&info->save );
-    case RETURN_REG :
+    case FEINF_RETURN_REG :
         info = GetAuxInfo( req_handle );
         return( (pointer)&info->returns );
-    case PARM_REGS :
+    case FEINF_PARM_REGS :
         info = GetAuxInfo( req_handle );
         return( (pointer)info->parms );
-    case CALL_BYTES :
-#if _CPU == _AXP || _CPU == _PPC
-        return( NULL );
-#else
+#if _INTEL_CPU
+    case FEINF_CALL_BYTES :
         info = GetAuxInfo( req_handle );
         return( (pointer)info->code );
-#endif
-#if _CPU == 8086 || _CPU == 386
-    case CODE_GROUP :
-    case DATA_GROUP :
+    case FEINF_CODE_GROUP :
+    case FEINF_DATA_GROUP :
         return( (pointer)"" );
-    case STRETURN_REG :
+    case FEINF_STRETURN_REG :
         info = GetAuxInfo( req_handle );
         return( (pointer)&info->streturn );
 #endif
-    case NEXT_IMPORT :
+    case FEINF_NEXT_IMPORT :
         switch( (int)(pointer_uint)req_handle ) {
         case 0:
             if( CGFlags & CG_HAS_PROGRAM )
                 return( (pointer)(pointer_uint)1 );
-#if _CPU == 386 || _CPU == _AXP || _CPU == _PPC
+#if _CPU == 386 || _RISC_CPU
             if( CGOpts & CGOPT_BD )
                 return( (pointer)(pointer_uint)1 );
 #endif
             /* fall through */
         case 1:
-#if _CPU == 386 || _CPU == 8086
+#if _INTEL_CPU
             if( (CGFlags & CG_FP_MODEL_80x87)
               && (CGFlags & CG_USED_80x87) )
                 return( (pointer)(pointer_uint)2 );
             /* fall through */
         case 2:
-#if _CPU == 386
+    #if _CPU == 386
             if( CPUOpts & CPUOPT_FPI )
                 return( (pointer)(pointer_uint)3 );
             /* fall through */
@@ -1866,7 +1860,7 @@ pointer FEAuxInfo( pointer req_handle, int request )
                 return( (pointer)(pointer_uint)4 );
             /* fall through */
         case 4:
-#endif
+    #endif
 #endif
             return( (pointer)(pointer_uint)5 );
         case 5:
@@ -1880,7 +1874,7 @@ pointer FEAuxInfo( pointer req_handle, int request )
                 return( (pointer)(pointer_uint)8 );
             /* fall through */
         case 8:
-#if _CPU == 386 || _CPU == _PPC || _CPU == _AXP
+#if _CPU == 386 || _RISC_CPU
             if( CGOpts & (CGOPT_BM | CGOPT_BD) )
                 return( (pointer)(pointer_uint)9 );
             /* fall through */
@@ -1892,8 +1886,8 @@ pointer FEAuxInfo( pointer req_handle, int request )
         default:
             break;
         }
-        return( NULL );
-    case NEXT_IMPORT_S :
+        break;
+    case FEINF_NEXT_IMPORT_S :
         if( req_handle == NULL ) {
             ImpSym = GList;
         } else {
@@ -1907,28 +1901,28 @@ pointer FEAuxInfo( pointer req_handle, int request )
                 return( (pointer)(pointer_uint)1 );
             }
         }
-        return( NULL );
-    case IMPORT_NAME :
+        break;
+    case FEINF_IMPORT_NAME :
         switch( (int)(pointer_uint)req_handle ) {
         case 1:
-#if _CPU == 386 || _CPU == _AXP || _CPU == _PPC
+#if _CPU == 386 || _RISC_CPU
             if( CGOpts & CGOPT_BD )
                 return( "__DLLstart_" );
 #endif
             return( "_cstart_" );
-#if _CPU == 8086 || _CPU == 386
+#if _INTEL_CPU
         case 2:
             if( CPUOpts & CPUOPT_FPR ) {
                 return( "__old_8087" );
             } else {
                 return( "__8087" );
             }
-#endif
-#if _CPU == 386
+    #if _CPU == 386
         case 3:
             return( "__init_387_emulator" );
         case 4:
             return( "__init_default_win" );
+    #endif
 #endif
         case 5:
             return( CharSetInfo.initializer );
@@ -1938,28 +1932,29 @@ pointer FEAuxInfo( pointer req_handle, int request )
             return( "__unit_6_cc" );
         case 8:
             return( "__lf_with_ff" );
-#if _CPU == 386 || _CPU == _PPC || _CPU == _AXP
+#if _CPU == 386 || _RISC_CPU
         case 9:
             return( "__fthread_init" );
 #endif
         case 10:
             return( "__comma_inp_sep" );
         }
-    case IMPORT_NAME_S :
+        break;
+    case FEINF_IMPORT_NAME_S :
         return( ImpSym );
-    case NEXT_LIBRARY :
+    case FEINF_NEXT_LIBRARY :
         if( req_handle == NULL ) {
             return( DefaultLibs );
         } else {
             return( ((default_lib *)req_handle)->link );
         }
-    case LIBRARY_NAME :
-        return( &((default_lib *)req_handle)->lib );
-    case SOURCE_NAME :
+    case FEINF_LIBRARY_NAME :
+        return( &((default_lib *)req_handle)->libname );
+    case FEINF_SOURCE_NAME :
         return( GetFullSrcName() );
-    case AUX_LOOKUP :
+    case FEINF_AUX_LOOKUP :
         return( req_handle );
-    case OBJECT_FILE_NAME :
+    case FEINF_OBJECT_FILE_NAME :
         if( ObjName == NULL ) {
             MakeName( SDFName( SrcName ), ObjExtn, TokenBuff );
         } else {
@@ -1975,13 +1970,11 @@ pointer FEAuxInfo( pointer req_handle, int request )
             }
             MakeName( fn, fe, ptr );
         }
-        return( &TokenBuff );
-    case FREE_SEGMENT :
-        return( NULL );
-    case REVISION_NUMBER :
+        return( TokenBuff );
+    case FEINF_REVISION_NUMBER :
         return( (pointer)(pointer_uint)II_REVISION );
-#if _CPU == 8086 || _CPU == 386
-    case CLASS_NAME :
+#if _INTEL_CPU
+    case FEINF_CLASS_NAME :
         for( sym = GList; sym != NULL; sym = sym->u.ns.link ) {
             if( (sym->u.ns.flags & SY_CLASS) != SY_COMMON )
                 continue;
@@ -1992,59 +1985,51 @@ pointer FEAuxInfo( pointer req_handle, int request )
             if(( (segment_id)(pointer_uint)req_handle >= sym->u.ns.si.cb.segid )
               && ( (segment_id)(pointer_uint)req_handle <= sym->u.ns.si.cb.segid + idx )) {
                 MangleCommonBlockName( sym, MangleSymBuff, true );
-                return( &MangleSymBuff );
+                return( MangleSymBuff );
             }
         }
-        return( NULL );
-    case USED_8087 :
+        break;
+    case FEINF_USED_8087 :
         CGFlags |= CG_USED_80x87;
-        return( NULL );
+        break;
 #endif
-    case SHADOW_SYMBOL :
+    case FEINF_SHADOW_SYMBOL :
         sym = (sym_id)req_handle;
         _Shadow( sym );
         return( sym );
-#if _CPU == 8086 || _CPU == 386
-    case STACK_SIZE_8087 :
+#if _INTEL_CPU
+    case FEINF_STACK_SIZE_8087 :
         // return the number of floating-point registers
         // that are NOT used as cache
         if( CPUOpts & CPUOPT_FPR )
             return( (pointer)(pointer_uint)4 );
         return( (pointer)(pointer_uint)8 );
-    case CODE_LABEL_ALIGNMENT :
+    case FEINF_CODE_LABEL_ALIGNMENT :
         return( AlignmentSeq() );
 #endif
-    case TEMP_LOC_NAME :
+    case FEINF_TEMP_LOC_NAME :
         return( (pointer)(pointer_uint)TEMP_LOC_QUIT );
-    case TEMP_LOC_TELL :
-        return( NULL );
-    case NEXT_DEPENDENCY :
-        if( (Options & OPT_DEPENDENCY) == 0 ) {
-            return( NULL );
-        } else {
+    case FEINF_NEXT_DEPENDENCY :
+        if( Options & OPT_DEPENDENCY ) {
             if( req_handle == NULL ) {
                 return( DependencyInfo );
             } else {
                 return( ((dep_info *)req_handle)->link );
             }
         }
-    case DEPENDENCY_TIMESTAMP :
+        break;
+    case FEINF_DEPENDENCY_TIMESTAMP :
         return( &(((dep_info *)req_handle)->time_stamp) );
-    case DEPENDENCY_NAME :
+    case FEINF_DEPENDENCY_NAME :
         return( ((dep_info *)req_handle)->fn );
-    case SOURCE_LANGUAGE:
+    case FEINF_SOURCE_LANGUAGE:
         return( "FORTRAN" );
-#if _CPU == 8086 || _CPU == 386
-    case PEGGED_REGISTER:
-        return( NULL );
-#endif
-    case UNROLL_COUNT:
-        return( NULL );
-    case DBG_DWARF_PRODUCER:
+    case FEINF_DBG_DWARF_PRODUCER:
         return( DWARF_PRODUCER_ID );
     default:
-        return( NULL );
+        break;
     }
+    return( NULL );
 }
 
 #if 0

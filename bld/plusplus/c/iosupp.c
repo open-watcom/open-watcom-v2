@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,6 +32,7 @@
 
 #include "plusplus.h"
 #include <stdarg.h>
+#include <errno.h>
 #if defined(__UNIX__)
  #include <dirent.h>
 #else
@@ -791,7 +792,7 @@ char *IoSuppFullPath(           // GET FULL PATH OF FILE NAME (ALWAYS USE RET VA
     unsigned size )             // - output buffer size
 {
     DbgAssert( size >= _MAX_PATH );
-#ifndef NDEBUG
+#ifdef DEVBUILD
     // caller should use return value only!
     // - this code will make sure caller doesn't use buff
     *buff = '.';

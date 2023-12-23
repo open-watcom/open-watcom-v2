@@ -7,36 +7,37 @@ set BINTOOL=0
 
 set PROJDIR=<CWD>
 
-[ INCLUDE <OWROOT>/build/prolog.ctl ]
+[ INCLUDE "<OWROOT>/build/prolog.ctl" ]
 
-[ INCLUDE <OWROOT>/build/defrule.ctl ]
+[ INCLUDE "<OWROOT>/build/defrule.ctl" ]
 
 [ BLOCK <BLDRULE> rel ]
 #======================
-    cdsay <PROJDIR>
+    cdsay "<PROJDIR>"
 
 [ BLOCK <BINTOOL> build ]
 #========================
-    cdsay <PROJDIR>
-    <CPCMD> <OWOBJDIR>/bwclmps.exe <OWBINDIR>/<OWOBJDIR>/bwclmps<CMDEXT>
+    cdsay "<PROJDIR>"
+    <CPCMD> <OWOBJDIR>/bwclmps.exe "<OWROOT>/build/<OWOBJDIR>/bwclmps<CMDEXT>"
 
 [ BLOCK <BINTOOL> clean ]
 #========================
-    echo rm -f <OWBINDIR>/<OWOBJDIR>/bwclmps<CMDEXT>
-    rm -f <OWBINDIR>/<OWOBJDIR>/bwclmps<CMDEXT>
+    echo rm -f "<OWROOT>/build/<OWOBJDIR>/bwclmps<CMDEXT>"
+    rm -f "<OWROOT>/build/<OWOBJDIR>/bwclmps<CMDEXT>"
 
 [ BLOCK <BLDRULE> rel cprel ]
 #============================
-    <CCCMD> nt386/wclmps.exe      <OWRELROOT>/binnt/
-    <CCCMD> nt386/wclmps.sym      <OWRELROOT>/binnt/
-    <CCCMD> os2386/wclmps.exe     <OWRELROOT>/binp/
-    <CCCMD> os2386/wclmps.sym     <OWRELROOT>/binp/
-    <CCCMD> linux386/wclmps.exe   <OWRELROOT>/binl/wclmps
-    <CCCMD> linux386/wclmps.sym   <OWRELROOT>/binl/
+    <CCCMD> nt386/wclmps.exe      "<OWRELROOT>/binnt/"
+    <CCCMD> nt386/wclmps.sym      "<OWRELROOT>/binnt/"
+    <CCCMD> os2386/wclmps.exe     "<OWRELROOT>/binp/"
+    <CCCMD> os2386/wclmps.sym     "<OWRELROOT>/binp/"
+    <CCCMD> linux386/wclmps.exe   "<OWRELROOT>/binl/wclmps"
+    <CCCMD> linux386/wclmps.sym   "<OWRELROOT>/binl/"
 
-    <CCCMD> ntx64/wclmps.exe      <OWRELROOT>/binnt64/
-    <CCCMD> linuxx64/wclmps.exe   <OWRELROOT>/binl64/wclmps
+    <CCCMD> ntx64/wclmps.exe      "<OWRELROOT>/binnt64/"
+    <CCCMD> linuxx64/wclmps.exe   "<OWRELROOT>/binl64/wclmps"
+    <CCCMD> linuxx64/wclmps.sym   "<OWRELROOT>/binl64/"
 
 [ BLOCK . . ]
 
-[ INCLUDE <OWROOT>/build/epilog.ctl ]
+[ INCLUDE "<OWROOT>/build/epilog.ctl" ]

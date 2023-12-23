@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -160,7 +160,7 @@ void AddNumOption( const char *msg, unsigned value )
     char    buffer[7];
     char    *msg2;
 
-    ultoa( value, buffer, 10 );
+    sprintf( buffer, "%u", value );
     msg2 = Msg3Splice( msg, "=", buffer );
     AddOption( msg2 );
     MemFree( msg2 );

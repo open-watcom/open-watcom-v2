@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -79,11 +79,13 @@
     #define PMODE_R         (S_IRUSR | S_IRGRP | S_IROTH)
     #define PMODE_W         (S_IWUSR | S_IWGRP | S_IWOTH)
     #define PMODE_X         (S_IXUSR | S_IXGRP | S_IXOTH)
+    #define PMODE_USR_RW    (S_IRUSR | S_IWUSR)
     #define PMODE_USR_W     S_IWUSR
 #else
     #define PMODE_R         (S_IREAD)
     #define PMODE_W         (S_IWRITE)
     #define PMODE_X         (S_IEXEC)
+    #define PMODE_USR_RW    (S_IREAD | S_IWRITE)
     #define PMODE_USR_W     S_IWRITE
 #endif
 #define PMODE_RW            (PMODE_R | PMODE_W)

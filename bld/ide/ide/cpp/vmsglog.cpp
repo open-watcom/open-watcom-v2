@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -295,7 +295,7 @@ bool VMsgLog::saveLogAs()
     }
     fn.setExt( "txt" );
     WFileDialog fd( this, sFilter );
-    fn = fd.getOpenFileName( fn, "Save Log as", WFSaveDefault );
+    fn = fd.getSaveFileName( fn, "Save Log as", WFSaveDefault );
     if( fn.legal() ) {
 //        fn.toLower();
         WFile f;
@@ -413,8 +413,12 @@ void VMsgLog::doRun()
     setFocus();
     _batcher->setFocus();
     if( _cwd.size() > 0 ) {
-        WString c( "cd " );
-        c.concat( _cwd );
+        WString c;
+        if( _cwd.needQuotes() ) {
+            c.printf( "cd \"%s\"", (const char*)_cwd );
+        } else {
+            c.printf( "cd %s", (const char*)_cwd );
+        }
         lastCD = "";
         if( !_batserv ) {
             runCmd( c );
@@ -770,13 +774,10 @@ void VMsgLog::editRequest( WMenuItem* )
             int resId = atoi( help ) + 1;
             WFileName filename( file );
             if( filename.needQuotes() ) {
-                msg.printf( "EditFileAtPos -f\"%s\" %d %d 0 %d",
-                            file, line, offset, resId );
-            } else {
-                msg.printf( "EditFileAtPos -f%s %d %d 0 %d",
-                            file, line, offset, resId );
+                filename.addQuotes();
             }
-            msg.concatf( " \"%s\" %s", text, hf );  // error message, helpfile
+            msg.printf( "EditFileAtPos -f%s %d %d 0 %d \"%s\" %s",
+                            (const char*)filename, line, offset, resId, text, hf );
             _parent->executeCommand( msg, EXECUTE_EDITOR, "LogEdit" );
         } else {
             WMessageDialog::info( this, "Can't find a filename in '%s'", text );

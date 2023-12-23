@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,7 +44,7 @@
 #include "fmtsym.h"
 #include "template.h"
 #include "initdefs.h"
-#ifndef NDEBUG
+#ifdef DEVBUILD
     #include "dbg.h"
     #include "pragdefn.h"
     #include "togglesd.h"
@@ -1728,7 +1728,7 @@ static FNOV_RESULT doOverload( FNOV_INFO* info )
         }
     }
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
     if( TOGGLEDBG( dump_rank ) ) {
         printf( "\nOverloaded Symbol Resolution" );
         PrintFnovResolution( result
@@ -2046,7 +2046,7 @@ static FNOV_RESULT doFunctionDistinctCheck( FNOV_CONTROL control, SYMBOL *pold_s
         }
     }
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
     if( TOGGLEDBG( dump_rank ) ) {
         printf( "Overloaded Symbol Distinct Check" );
         PrintFnovResolution( result
@@ -2109,7 +2109,7 @@ bool IsOverloadedFunc( SYMBOL sym )
         }
     }
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
     if( TOGGLEDBG( dump_rank ) ) {
         VBUF name;
         printf( "Function '%s' is%soverloaded\n", FormatSym( sym, &name ), ok ? " " : " not " );
@@ -2199,7 +2199,7 @@ bool IsActualOverloadedFunc(            // TEST IF ACTUAL (IGNORE SYMC_DEFAULT) 
     bool ok;
 
     ok = ( NULL == ActualNonOverloadedFunc( sym, result ) );
-#ifndef NDEBUG
+#ifdef DEVBUILD
     if( TOGGLEDBG( dump_rank ) ) {
         VBUF name;
         printf( "Function '%s' is%soverloaded (ignoring default arguments)\n",

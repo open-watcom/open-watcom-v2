@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,10 +40,9 @@
 #include "wio.h"
 #include "misc.h"
 #include "getopt.h"
+#include "argvenv.h"
 #include "argvrx.h"
 
-
-char *OptEnvVar = "tail";
 
 static const char *usageMsg[] = {
     "Usage: tail [-?X][-<number>] [files]",
@@ -182,11 +181,14 @@ int main( int argc, char *argv[] )
     int         ch;
     int         i;
     bool        rxflag;
+    char        **argv1;
+
+    argv1 = ExpandEnv( &argc, argv, "TAIL" );
 
     tailCount = 10;
     rxflag = false;
     for(;;) {
-        ch = GetOpt( &argc, argv, "#X", usageMsg );
+        ch = GetOpt( &argc, argv1, "#X", usageMsg );
         if( ch == -1 ) {
             break;
         }
@@ -200,9 +202,9 @@ int main( int argc, char *argv[] )
         }
     }
 
-    argv = ExpandArgv( &argc, argv, rxflag );
+    argv = ExpandArgv( &argc, argv1, rxflag );
 
-    if( argc == 1 ) {
+    if( argc < 2 ) {
         tailStdin();
     } else {
         for( i = 1; i < argc; i++ ) {
@@ -212,5 +214,8 @@ int main( int argc, char *argv[] )
             tailFile( argv[i] );
         }
     }
+    MemFree( argv );
+    MemFree( argv1 );
+
     return( 0 );
 }

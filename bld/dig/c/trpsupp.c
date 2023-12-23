@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,8 +38,7 @@
 #elif defined( ENABLE_TRAP_LOGGING )
     #include <windows.h>
 #endif
-#include "madregs.h"
-#include "trptypes.h"
+//#include "madregs.h"
 #include "trpld.h"
 #if defined( __WINDOWS__ ) && !defined( SERVER )
     #include "trpsys.h"
@@ -206,7 +205,7 @@ unsigned TrapAccess( trap_elen num_in_mx, in_mx_entry_p mx_in, trap_elen num_out
     return( result );
 }
 
-unsigned TrapSimpAccess( trap_elen in_len, in_data_p in_data, trap_elen out_len, out_data_p out_data )
+unsigned TrapSimpleAccess( trap_elen in_len, in_data_p in_data, trap_elen out_len, out_data_p out_data )
 {
     in_mx_entry     in[1];
     mx_entry        out[1];

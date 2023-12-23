@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,6 +43,7 @@
 #include "lib.h"
 #include "message.h"
 #include "translat.h"
+
 #include "clibint.h"
 
 
@@ -50,6 +52,8 @@
 #elif defined(__TARGET_AXP__)
     #define LIBRARIAN           "wlib"
 #elif defined(__TARGET_PPC__)
+    #define LIBRARIAN           "wlib"
+#elif defined(__TARGET_MPS__)
     #define LIBRARIAN           "wlib"
 #else
     #error Unrecognized CPU type (lib.c)

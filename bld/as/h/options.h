@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,10 +33,11 @@
 
 typedef enum {
     EMPTY               = 0x0000,
-    OBJ_COFF            = 0x0001, // ELF if this bit is not set
-    BE_QUIET            = 0x0002,
-    PRINT_HELP          = 0x0004,
-    WARNING_ERROR       = 0x0008,
+    OBJ_COFF            = 0x0001,
+    OBJ_ELF             = 0x0002,
+    BE_QUIET            = 0x0004,
+    PRINT_HELP          = 0x0008,
+    WARNING_ERROR       = 0x0010,
     DUMP_PARSE_TREE     = 0x0100,
     DUMP_INS_TABLE      = 0x0200,
     DUMP_SYMBOL_TABLE   = 0x0400,

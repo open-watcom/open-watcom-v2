@@ -54,7 +54,7 @@ typedef DWORD   D3DCOLORMODEL;
 #define RGBA_GETGREEN( x )      (((x) >> 8) & 0x000000FFL)
 #define RGBA_GETBLUE( x )       ((x) & 0x000000FFL)
 #define RGBA_MAKE( p1, p2, p3, p4 ) \
-    ((D3DCOLOR)(((p4) << 24) | ((p1) << 16) | (p2) << 8) || (p3)))
+    ((D3DCOLOR)(((p4) << 24) | ((p1) << 16) | ((p2) << 8) | (p3)))
 #define RGBA_SETALPHA( p1, p2 ) (((p1) << 24) | ((p2) & 0x00FFFFFFL))
 #define RGBA_TORGB( x )         ((D3DCOLOR)((x) & 0x00FFFFFFL))
 
@@ -829,7 +829,7 @@ typedef D3DPICKRECORD   *LPD3DPICKRECORD;
 #if (DIRECT3D_VERSION < 0x0800)
 typedef enum _D3DSHADEMODE {
     D3DSHADE_FLAT       = 1,
-    D3DSHADE_GOURAND    = 2,
+    D3DSHADE_GOURAUD    = 2,
 #if (DIRECT3D_VERSION >= 0x0500)
     D3DSHADE_PHONG      = 3,
     D3DSHADE_FORCE_DWORD    = 0x7FFFFFFF
@@ -1443,7 +1443,7 @@ typedef enum _D3DTEXTURESTAGESTATETYPE {
     D3DTSS_MIPFILTER                = 18,
     D3DTSS_MIPMAPLODBIAS            = 19,
     D3DTSS_MAXMIPLEVEL              = 20,
-    D3DTSS_MAXANSIOTROPY            = 21,
+    D3DTSS_MAXANISOTROPY            = 21,
     D3DTSS_BUMPENVLSCALE            = 22,
     D3DTSS_BUMPENVLOFFSET           = 23,
 #if (DIRECT3D_VERSION >= 0x0700)
@@ -1490,8 +1490,8 @@ typedef enum _D3DTEXTUREMAGFILTER {
     D3DTFG_POINT            = 1,
     D3DTFG_LINEAR           = 2,
     D3DTFG_FLATCUBIC        = 3,
-    D3DTFG_GUASSIANCUBIC    = 4,
-    D3DTFG_ANSIOTROPIC      = 5,
+    D3DTFG_GAUSSIANCUBIC    = 4,
+    D3DTFG_ANISOTROPIC      = 5,
     D3DTFG_FORCE_DWORD      = 0x7FFFFFFF
 } D3DTEXTUREMAGFILTER;
 #endif

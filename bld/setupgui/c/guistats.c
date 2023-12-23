@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -178,8 +178,7 @@ static bool StatusGUIEventProc( gui_window *gui, gui_event gui_ev, void *parm )
 
                 memset( StatusBarBuf, ' ', StatusBarLen );
                 StatusBarBuf[StatusBarLen] = '\0';
-                itoa( Percent, num, 10 );
-                strcat( num, "%" );
+                sprintf( num, "%d%%", Percent );
                 memcpy( StatusBarBuf + StatusBarLen / 2 - 1, num, strlen( num ) );
                 // draw bar in two parts
                 len1 = (StatusBarLen * (long)Percent) / 100;
@@ -526,7 +525,7 @@ void StatusInit( void )
 {
     VBUF    buff;
 
-    if( StatusWnd == NULL ) {
+    if( StatusWnd == NULL && !Invisible ) {
         VbufInit( &buff );
         ReplaceVars( &buff, GetVariableStrVal( "AppName" ) );
         if( OpenStatusWindow( VbufString( &buff ) ) ) {

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,47 +32,42 @@
 
 
 #ifndef _CG_SWITCH_INCLUDED
-
-#define NO_OPTIMIZATION         0x80000000L
-#define DBG_NUMBERS             0x40000000L
-#define FORTRAN_ALIASING        0x20000000L
-
-#define DBG_DF                  0x10000000L
-#define DBG_CV                  0x08000000L
-
-#define RELAX_ALIAS             0x04000000L
-#define DBG_LOCALS              0x02000000L
-#define DBG_TYPES               0x01000000L
-#define LOOP_UNROLLING          0x00800000L
-#define LOOP_OPTIMIZATION       0x00400000L
-#define INS_SCHEDULING          0x00200000L
-#define MEMORY_LOW_FAILS        0x00100000L
-#define FP_UNSTABLE_OPTIMIZATION 0x0080000L
-#define NULL_DEREF_OK           0x00040000L
-#define DBG_PREDEF              0x00020000L
-#define BRANCH_PREDICTION       0x00010000L
-#define FLOW_REG_SAVES          0x00008000L
-
-#define FPU_ROUNDING_INLINE     0x00004000L
-#define FPU_ROUNDING_OMIT       0x00002000L
-
-#define SUPER_OPTIMAL           0x00001000L
-#define ECHO_API_CALLS          0x00000800L
-#define MICROSOFT_COMPATIBLE    0x00000400L
-#define POSITION_INDEPENDANT    0x00000200L
-#define DLL_RESIDENT_CODE       0x00000100L
-
-#define OBJ_ELF                 0x00000080L
-#define OBJ_COFF                0x00000040L
-#define OBJ_OWL                 (OBJ_COFF | OBJ_ELF)
-#define OBJ_ENDIAN_BIG          0x00000020L
-
-#define _TARG_CGSWITCH_SHIFT     0
+#define _CG_SWITCH_INCLUDED
 
 #include "cgtargsw.h"
 
-typedef unsigned                cg_switches;
-typedef unsigned                cg_target_switches;
+typedef enum {
+    CGSW_GEN_OBJ_ENDIAN_BIG           = 0x00000001,
+    CGSW_GEN_OBJ_COFF                 = 0x00000002,
+    CGSW_GEN_OBJ_ELF                  = 0x00000004,
+    CGSW_GEN_DLL_RESIDENT_CODE        = 0x00000008,
+    CGSW_GEN_POSITION_INDEPENDANT     = 0x00000010,
+    CGSW_GEN_MICROSOFT_COMPATIBLE     = 0x00000020,
+    CGSW_GEN_ECHO_API_CALLS           = 0x00000040,
+    CGSW_GEN_SUPER_OPTIMAL            = 0x00000080,
+    CGSW_GEN_FPU_ROUNDING_OMIT        = 0x00000100,
+    CGSW_GEN_FPU_ROUNDING_INLINE      = 0x00000200,
+    CGSW_GEN_FLOW_REG_SAVES           = 0x00000400,
+    CGSW_GEN_BRANCH_PREDICTION        = 0x00000800,
+    CGSW_GEN_DBG_PREDEF               = 0x00001000,
+    CGSW_GEN_NULL_DEREF_OK            = 0x00002000,
+    CGSW_GEN_FP_UNSTABLE_OPTIMIZATION = 0x00004000,
+    CGSW_GEN_MEMORY_LOW_FAILS         = 0x00008000,
+    CGSW_GEN_INS_SCHEDULING           = 0x00010000,
+    CGSW_GEN_LOOP_OPTIMIZATION        = 0x00020000,
+    CGSW_GEN_LOOP_UNROLLING           = 0x00040000,
+    CGSW_GEN_DBG_TYPES                = 0x00080000,
+    CGSW_GEN_DBG_LOCALS               = 0x00100000,
+    CGSW_GEN_RELAX_ALIAS              = 0x00200000,
+    CGSW_GEN_DBG_CV                   = 0x00400000,
+    CGSW_GEN_DBG_DF                   = 0x00800000,
+    CGSW_GEN_FORTRAN_ALIASING         = 0x01000000,
+    CGSW_GEN_DBG_NUMBERS              = 0x02000000,
+    CGSW_GEN_NO_OPTIMIZATION          = 0x04000000,
+    CGSW_GEN_I_MATH_INLINE            = 0x08000000,
+    CGSW_GEN_NO_CALL_RET_TRANSFORM    = 0x10000000,
+} cg_switches;
 
-#define _CG_SWITCH_INCLUDED
+#define CGSW_GEN_OBJ_OWL        (CGSW_GEN_OBJ_COFF | CGSW_GEN_OBJ_ELF)
+
 #endif

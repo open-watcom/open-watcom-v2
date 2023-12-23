@@ -90,7 +90,7 @@ static bool dirFuncAlign ( directive_t *dir, dir_table_enum parm )
         return( true );
     }
     autoAlignment = false;
-    CurrAlignment = val;
+    CurrAlignment = (uint_8)val;
     return( true );
 }
 
@@ -656,27 +656,22 @@ static bool dirFuncValues( directive_t *dir, dir_table_enum parm )
 //****************************************************************
 {
     dir_operand         *dirop;
-    static int_8        byte;
-    static int_16       half;
-    static int_32       word;
-    static signed_64    quad;
-    static float        flt;
-    static double       dbl;
+    static union {
+        int_8        byte;
+        int_16       half;
+        int_32       word;
+        signed_64    quad;
+        float        flt;
+        double       dbl;
+    } u;
     int_32              rep;
     uint_8              prev_alignment = 0;
     int                 opnum;
     void                *target = NULL;
     owl_reloc_type      rtype = 0;
-    struct { int size; void *ptr; uint_8 alignment; } data_table[] =
-    {
-        { 1, &byte,     0 },    // DT_VAL_INT8
-        { 8, &dbl,      3 },    // DT_VAL_DOUBLE
-        { 4, &flt,      2 },    // DT_VAL_FLOAT
-        { 2, &half,     1 },    // DT_VAL_INT16
-        { 4, &word,     2 },    // DT_VAL_INT32
-        { 8, &quad,     3 },    // DT_VAL_INT64
-    };
-#define TABLE_IDX( x )      ( ( x ) - DT_VAL_FIRST )
+    void                *data_ptr;
+    int                 data_size;
+    uint_8              data_align;
 
 #ifdef _STANDALONE_
     if( OWLTellSectionType( CurrentSection ) & OWL_SEC_ATTR_BSS ) {
@@ -684,9 +679,42 @@ static bool dirFuncValues( directive_t *dir, dir_table_enum parm )
         return( true );
     }
 #endif
+    switch( parm ) {
+    default:
+    case DT_VAL_INT8:
+        data_align = 0;
+        data_ptr = &u.byte;
+        data_size = 1;
+        break;
+    case DT_VAL_INT16:
+        data_align = 1;
+        data_ptr = &u.half;
+        data_size = 2;
+        break;
+    case DT_VAL_FLOAT:
+        data_ptr = &u.flt;
+        data_size = 4;
+        data_align = 2;
+        break;
+    case DT_VAL_INT32:
+        data_ptr = &u.word;
+        data_size = 4;
+        data_align = 2;
+        break;
+    case DT_VAL_DOUBLE:
+        data_ptr = &u.dbl;
+        data_size = 8;
+        data_align = 3;
+        break;
+    case DT_VAL_INT64:
+        data_ptr = &u.quad;
+        data_size = 8;
+        data_align = 3;
+        break;
+    }
     if( autoAlignment ) {
         prev_alignment = CurrAlignment;
-        CurrAlignment = data_table[TABLE_IDX( parm )].alignment;
+        CurrAlignment = data_align;
     }
 
     opnum = 0;
@@ -696,49 +724,49 @@ static bool dirFuncValues( directive_t *dir, dir_table_enum parm )
         case DT_VAL_INT8:
             assert( dirop->type == DIROP_INTEGER || dirop->type == DIROP_REP_INT );
             if( dirop->type == DIROP_INTEGER ) {
-                byte = (int_8)NUMBER_INTEGER( dirop );
+                u.byte = (int_8)NUMBER_INTEGER( dirop );
             } else { // repeat
                 rep = REPEAT_COUNT( dirop );
-                byte = (int_8)REPEAT_INTEGER( dirop );
+                u.byte = (int_8)REPEAT_INTEGER( dirop );
             }
             break;
         case DT_VAL_INT64:
             assert( dirop->type == DIROP_INTEGER || dirop->type == DIROP_REP_INT );
             if( dirop->type == DIROP_INTEGER ) {
-                quad.u._32[I64LO32] = NUMBER_INTEGER( dirop );
+                u.quad.u._32[I64LO32] = NUMBER_INTEGER( dirop );
             } else { // repeat
                 rep = REPEAT_COUNT( dirop );
-                quad.u._32[I64LO32] = REPEAT_INTEGER( dirop );
+                u.quad.u._32[I64LO32] = REPEAT_INTEGER( dirop );
             }
             break;
         case DT_VAL_DOUBLE:
             assert( dirop->type == DIROP_FLOATING || dirop->type == DIROP_REP_FLT );
             if( dirop->type == DIROP_FLOATING ) {
-                dbl = NUMBER_FLOAT( dirop );
+                u.dbl = NUMBER_FLOAT( dirop );
             } else {
                 rep = REPEAT_COUNT( dirop );
-                dbl = REPEAT_FLOAT( dirop );
+                u.dbl = REPEAT_FLOAT( dirop );
             }
             break;
         case DT_VAL_FLOAT:
             assert( dirop->type == DIROP_FLOATING || dirop->type == DIROP_REP_FLT );
             if( dirop->type == DIROP_FLOATING ) {
-                flt = (float)NUMBER_FLOAT( dirop );
+                u.flt = (float)NUMBER_FLOAT( dirop );
             } else {
                 rep = REPEAT_COUNT( dirop );
-                flt = (float)REPEAT_FLOAT( dirop );
+                u.flt = (float)REPEAT_FLOAT( dirop );
             }
             break;
         case DT_VAL_INT32:
             assert( dirop->type == DIROP_INTEGER || dirop->type == DIROP_REP_INT ||
                     dirop->type == DIROP_SYMBOL || dirop->type == DIROP_NUMLABEL_REF );
             if( dirop->type == DIROP_INTEGER ) {
-                word = NUMBER_INTEGER( dirop );
+                u.word = NUMBER_INTEGER( dirop );
             } else if( dirop->type == DIROP_REP_INT ) {
                 rep = REPEAT_COUNT( dirop );
-                word = REPEAT_INTEGER( dirop );
+                u.word = REPEAT_INTEGER( dirop );
             } else {    // reloc
-                word = SYMBOL_OFFSET( dirop );
+                u.word = SYMBOL_OFFSET( dirop );
                 if( assignRelocType( &rtype, SYMBOL_RELOC_TYPE( dirop ), parm ) ) {
                     if( dirop->type == DIROP_SYMBOL ) {
                         target = SymName( SYMBOL_HANDLE( dirop ) );
@@ -755,12 +783,12 @@ static bool dirFuncValues( directive_t *dir, dir_table_enum parm )
             assert( dirop->type == DIROP_INTEGER || dirop->type == DIROP_REP_INT ||
                     dirop->type == DIROP_SYMBOL || dirop->type == DIROP_NUMLABEL_REF );
             if( dirop->type == DIROP_INTEGER ) {
-                half = (int_16)NUMBER_INTEGER( dirop );
+                u.half = (int_16)NUMBER_INTEGER( dirop );
             } else if( dirop->type == DIROP_REP_INT ) {
                 rep = REPEAT_COUNT( dirop );
-                half = (int_16)REPEAT_INTEGER( dirop );
+                u.half = (int_16)REPEAT_INTEGER( dirop );
             } else {    // reloc
-                half = (int_16)SYMBOL_OFFSET( dirop );
+                u.half = (int_16)SYMBOL_OFFSET( dirop );
                 if( assignRelocType( &rtype, SYMBOL_RELOC_TYPE( dirop ), parm ) ) {
                     if( dirop->type == DIROP_SYMBOL ) {
                         target = SymName( SYMBOL_HANDLE( dirop ) );
@@ -790,37 +818,37 @@ static bool dirFuncValues( directive_t *dir, dir_table_enum parm )
         }
 #ifdef _STANDALONE_
         // only align for the first data operand
-        ObjEmitData( CurrentSection, data_table[TABLE_IDX( parm )].ptr, data_table[TABLE_IDX( parm )].size, ( opnum == 0 ) );
+        ObjEmitData( CurrentSection, data_ptr, data_size, ( opnum == 0 ) );
 #else
         // only align for the first data operand
-        ObjEmitData( data_table[TABLE_IDX( parm )].ptr, data_table[TABLE_IDX( parm )].size, ( opnum == 0 ) );
+        ObjEmitData( data_ptr, data_size, ( opnum == 0 ) );
 #endif
         for( rep--; rep > 0; rep-- ) {
 #ifdef _STANDALONE_
-            OWLEmitData( CurrentSection, data_table[TABLE_IDX( parm )].ptr, data_table[TABLE_IDX( parm )].size );
+            OWLEmitData( CurrentSection, data_ptr, data_size );
 #else
-            ObjDirectEmitData( data_table[TABLE_IDX( parm )].ptr, data_table[TABLE_IDX( parm )].size );
+            ObjDirectEmitData( data_ptr, data_size );
 #endif
 #if 0
-            printf( "Size=%d\n", data_table[TABLE_IDX( parm )].size );
+            printf( "Size=%d\n", data_size );
             switch( parm ) {
             case DT_VAL_INT8:
-                printf( "Out->%d\n", *(int_8 *)(data_table[TABLE_IDX( parm )].ptr) );
+                printf( "Out->%d\n", u.byte );
                 break;
             case DT_VAL_DOUBLE:
-                printf( "Out->%lf\n", *(double *)(data_table[TABLE_IDX( parm )].ptr) );
+                printf( "Out->%lf\n", u.dbl );
                 break;
             case DT_VAL_FLOAT:
-                printf( "Out->%f\n", *(float *)(data_table[TABLE_IDX( parm )].ptr) );
+                printf( "Out->%f\n", u.flt );
                 break;
             case DT_VAL_INT16:
-                printf( "Out->%d\n", *(int_16 *)(data_table[TABLE_IDX( parm )].ptr) );
+                printf( "Out->%d\n", u.half );
                 break;
             case DT_VAL_INT32:
-                printf( "Out->%d\n", *(int_32 *)(data_table[TABLE_IDX( parm )].ptr) );
+                printf( "Out->%d\n", u.word );
                 break;
             case DT_VAL_INT64:
-                printf( "Out->%d\n", ((signed_64 *)(data_table[TABLE_IDX( parm )].ptr))->_32[0] );
+                printf( "Out->%lld\n", u.quad );
                 break;
             default:
                 assert( false );

@@ -44,7 +44,7 @@ trying to write portable programs, this book points out those areas
 of the language that may vary from one system to another.
 Where possible, the probable behavior of other C compilers is
 mentioned.
-..if &targetQNX = 0 ..th ..do begin
+..if '&target.' ne 'QNX' ..th ..do begin
 :cmt. .pp
 :cmt. Additional copies of this manual may be ordered from:
 :cmt. .illust begin

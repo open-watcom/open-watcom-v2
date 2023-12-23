@@ -5,6 +5,7 @@
 *.COP
 *.core
 *.d32
+*.dep
 *.dip
 *.dis
 # ignore *.dll files, but include *.dll subdirectories
@@ -116,7 +117,7 @@
 !/docs/gml/**
 /docs/dos/*
 /docs/html/*
-/docs/htmlhelp/*
+/docs/chm/*
 /docs/nt/*
 /docs/os2/*
 /docs/pdf/*

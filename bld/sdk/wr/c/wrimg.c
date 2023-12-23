@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -62,11 +62,11 @@ bool WRLoadBitmapFile( WRInfo *info )
     pgroup2             pg;
     WResID              *type;
     WResID              *name;
-    WResLangType        def_lang;
+    WResLangType        lang;
 
     fp = NULL;
-    def_lang.sublang = DEF_LANG;
-    def_lang.lang = DEF_SUBLANG;
+    lang.sublang = DEF_LANG;
+    lang.lang = DEF_SUBLANG;
 
     ok = ( info != NULL );
 
@@ -99,7 +99,7 @@ bool WRLoadBitmapFile( WRInfo *info )
     if( ok ) {
         ok = !WResAddResource( type, name, 0, sizeof( BITMAPFILEHEADER ),
                                file_length - sizeof( BITMAPFILEHEADER ),
-                               info->dir, &def_lang, NULL );
+                               info->dir, &lang, NULL );
     }
 
     if( fp != NULL ) {
@@ -119,7 +119,7 @@ bool WRLoadBitmapFile( WRInfo *info )
 
 bool WRLoadIconFile( WRInfo *info )
 {
-    BYTE                *data;
+    char                *data;
     size_t              data_size;
     ICONHEADER          *pih;
     size_t              pihsize;
@@ -208,7 +208,7 @@ bool WRLoadIconFile( WRInfo *info )
 
 bool WRLoadCursorFile( WRInfo *info )
 {
-    BYTE                *data;
+    char                *data;
     size_t              data_size;
     CURSORHEADER        *ch;
     size_t              chsize;
@@ -363,7 +363,7 @@ bool WRSaveBitmapResource( WRInfo *info, bool backup )
     bool                ok;
     WResTypeNode        *tnode;
     WResLangNode        *lnode;
-    BYTE                *data;
+    char                *data;
     size_t              dsize;
 
     ok = ( info != NULL && info->dir != NULL );
@@ -393,7 +393,7 @@ bool WRSaveBitmapResource( WRInfo *info, bool backup )
 
     if( ok ) {
         if( lnode->data == NULL ) {
-            lnode->data = WRLoadResData( info->file_name, lnode->Info.Offset, lnode->Info.Length );
+            lnode->data = WRAllocLoadResData( info->file_name, lnode->Info.Offset, lnode->Info.Length );
         }
         ok = ( lnode->data != NULL && lnode->Info.Length != 0 );
     }
@@ -430,7 +430,7 @@ bool WRSaveCursorResource( WRInfo *info, bool backup )
     WResResNode         *rnode;
     WResLangNode        *lnode;
     WResLangType        lang;
-    BYTE                *data;
+    char                *data;
     size_t              size;
     bool                use_rename;
     bool                ok;
@@ -487,7 +487,7 @@ bool WRSaveIconResource( WRInfo *info, bool backup )
     WResResNode         *rnode;
     WResLangNode        *lnode;
     WResLangType        lang;
-    BYTE                *data;
+    char                *data;
     size_t              size;
     bool                use_rename;
     bool                ok;

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,7 +37,7 @@ extern tn           TGWarp( tn before, label_handle label, tn after );
 extern tn           TGHandle( void );
 extern tn           TGCallback( cg_callback rtn, callback_handle ptr );
 extern tn           TGCompare( cg_op op, tn left, tn rite, type_def *tipe );
-extern unsigned_32  TGMask32( tn node );
+extern uint_32      TGMask32( tn node );
 extern tn           TGConvert( tn name, type_def *tipe );
 extern tn           TGBinary( cg_op op, tn left, tn rite, type_def *tipe );
 extern tn           TGUnary( cg_op op, tn left, type_def *tipe );

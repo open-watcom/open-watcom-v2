@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -166,9 +166,53 @@ size_t MADCLIENTRY( WriteMem )( address a, size_t size, const void *buff )
     return( byteswritten );
 }
 
+unsigned MADCLIENTRY( MachineData )( address addr, dig_info_type info_type, dig_elen in_size,
+                                            const void *in, dig_elen out_size, void *out )
+/********************************************************************************************
+ * MADCliMachineData
+ */
+{
+#if defined( _M_IX86 )
+    /* unused parameters */ (void)addr; (void)info_type; (void)in_size; (void)in; (void)out_size;
+#else
+    /* unused parameters */ (void)addr; (void)info_type; (void)in_size; (void)in; (void)out_size; (void)out;
+#endif
+
+    switch( SysConfig.arch ) {
+#if defined( _M_IX86 )
+    case DIG_ARCH_X86:
+        if( info_type == X86MD_ADDR_CHARACTERISTICS ) {
+            *(x86_addrflags *)out = X86AC_BIG;
+            return( sizeof( x86_addrflags ) );
+        }
+        break;
+#elif defined( _M_X64 )
+    case DIG_ARCH_X86:
+    case DIG_ARCH_X64:
+        if( info_type == X64MD_ADDR_CHARACTERISTICS ) {
+            *(x64_addrflags *)out = ( SysConfig.arch == DIG_ARCH_X64 ) ? X64AC_BIG : 0;
+            return( sizeof( x64_addrflags ) );
+        }
+        break;
+#elif defined( __AXP__ )
+  #if 0
+    case DIG_ARCH_AXP:
+        if( info_type == AXPMD_PDATA ) {
+            memcpy( out, in, sizeof( axp_data ) );
+            return( sizeof( axp_data ) );
+        }
+        break;
+  #endif
+#endif
+    default:
+        break;
+    }
+    return( 0 );
+}
+
 bool InitMADInfo( void )
 {
-    GetSysConfig();
+    LocalGetSysConfig();
     if( MADInit() != MS_OK ) {
         return( false );
     }

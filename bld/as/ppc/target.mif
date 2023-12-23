@@ -1,3 +1,5 @@
+tree_depth = 4
+
 target_cpu = ppc
 
-!include $(as_dir)/master.mif
+!include ../../master.mif

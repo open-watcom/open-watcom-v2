@@ -2,6 +2,4 @@
 host_cpu = 386
 host_os  = os2
 
-target_cpu = all
-
 !include ../master.mif

@@ -1,3 +1,5 @@
+tree_depth = 4
+
 host_os  = dos
 host_cpu = i86
 

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -75,9 +75,9 @@ typedef struct asm_label *label_list;
 
 static label_list       labelList = NULL;       // The list of pending labels
 
-void ObjSetObjFile( char *obj_name ) {
-//************************************
-
+void ObjSetObjFile( char *obj_name )
+//**********************************
+{
     strcpy( objName, obj_name );
     objectDefined = true;
 }
@@ -90,14 +90,14 @@ typedef struct {
 
 static sect_info reservedSecInfo[] = {
     #define PICK( a, b, c, d )  { b, c, d },
-    #include "sections.inc"
+    #include "_section.h"
     #undef PICK
 };
 
-void ObjSwitchSection( reserved_section section ) {
-//*************************************************
+void ObjSwitchSection( reserved_section section )
+//***********************************************
 // Switch to a reserved section
-
+{
     sect_info   *secinfo;
 
     secinfo = &reservedSecInfo[ section ];
@@ -123,9 +123,9 @@ static int owl_seek( owl_client_file f, long offset, int where )
     return( fseek( f, offset, where ) );
 }
 
-bool ObjInit( char *fname ) {
-//***************************
-
+bool ObjInit( char *fname )
+//*************************
+{
     owl_client_funcs    funcs = { owl_write, owl_tell, owl_seek, MemAlloc, MemFree };
     pgroup2             pg1;
     pgroup2             pg2;
@@ -153,8 +153,18 @@ bool ObjInit( char *fname ) {
     }
     ErrorFile = fopen( errorFilename, "wt" );
     OwlHandle = OWLInit( &funcs, OBJ_OWL_CPU );
-    obj_format = ( _IsOption( OBJ_COFF ) ? OWL_FORMAT_COFF : OWL_FORMAT_ELF );
-    OwlFile = OWLFileInit( OwlHandle, fname, objFP, obj_format, OWL_FILE_OBJECT );
+    if( _IsOption( OBJ_COFF ) ) {
+        obj_format = OWL_FORMAT_COFF;
+    } else if( _IsOption( OBJ_ELF ) ) {
+        obj_format = OWL_FORMAT_ELF;
+    } else {
+#if defined( __NT__ )
+        obj_format = OWL_FORMAT_COFF;
+#else
+        obj_format = OWL_FORMAT_ELF;
+#endif
+    }
+       OwlFile = OWLFileInit( OwlHandle, fname, objFP, obj_format, OWL_FILE_OBJECT );
     ObjSwitchSection( AS_SECTION_TEXT );
     CurrAlignment = 0;
     return( true );
@@ -166,9 +176,9 @@ static owl_sym_linkage linkage_table[] = {
     OWL_SYM_STATIC      // Static
 };
 
-bool ObjLabelDefined( sym_handle sym ) {
-//**************************************
-
+bool ObjLabelDefined( sym_handle sym )
+//************************************
+{
     owl_sym_linkage     linkage;
     label_list          curr_label;
     char                *sym_name;
@@ -181,7 +191,8 @@ bool ObjLabelDefined( sym_handle sym ) {
     curr_label = labelList;
     sym_name = SymName( sym );
     while( curr_label ) {
-        if( (!curr_label->is_numeric) && strcmp( curr_label->sym_name, sym_name ) == 0 ) {
+        if( !curr_label->is_numeric
+          && strcmp( curr_label->sym_name, sym_name ) == 0 ) {
             return( true );
         }
         curr_label = curr_label->next;
@@ -189,9 +200,9 @@ bool ObjLabelDefined( sym_handle sym ) {
     return( false );
 }
 
-static void doStackLabel( sym_handle sym, owl_sym_type type, owl_sym_linkage linkage ) {
-//**************************************************************************************
-
+static void doStackLabel( sym_handle sym, owl_sym_type type, owl_sym_linkage linkage )
+//************************************************************************************
+{
     label_list          new_label;
 
     new_label = MemAlloc( sizeof( struct asm_label ) );
@@ -205,9 +216,9 @@ static void doStackLabel( sym_handle sym, owl_sym_type type, owl_sym_linkage lin
     labelList = new_label;
 }
 
-static void doStackNumericLabel( int_32 label_num, owl_sym_type type, owl_sym_linkage linkage ) {
-//****************************************************************************************
-
+static void doStackNumericLabel( int_32 label_num, owl_sym_type type, owl_sym_linkage linkage )
+//*********************************************************************************************
+{
     label_list          new_label;
 
     new_label = MemAlloc( sizeof( struct asm_label ) );
@@ -221,10 +232,11 @@ static void doStackNumericLabel( int_32 label_num, owl_sym_type type, owl_sym_li
     labelList = new_label;
 }
 
-void ObjEmitLabel( sym_handle sym ) {
-//***********************************
-// Stacks up the label in the list for ObjEmitData to emit
-
+void ObjEmitLabel( sym_handle sym )
+/**********************************
+ * Stacks up the label in the list for ObjEmitData to emit
+ */
+{
     owl_sym_type        type;
     owl_sym_linkage     linkage;
     sym_linkage         symbol_linkage;
@@ -248,10 +260,11 @@ void ObjEmitLabel( sym_handle sym ) {
     doStackLabel( sym, type, linkage );
 }
 
-void ObjEmitNumericLabel( uint_32 label_num ) {
-//*********************************************
-// Stacks up the numeric label in the list for ObjEmitData to emit
-
+void ObjEmitNumericLabel( uint_32 label_num )
+/********************************************
+ * Stacks up the numeric label in the list for ObjEmitData to emit
+ */
+{
     owl_sym_type        type;
     owl_section_type    section_type;
 
@@ -264,9 +277,9 @@ void ObjEmitNumericLabel( uint_32 label_num ) {
     doStackNumericLabel( label_num, type, OWL_SYM_STATIC );
 }
 
-void ObjFlushLabels( void ) {
-//***************************
-
+void ObjFlushLabels( void )
+//*************************
+{
     label_list  next_label;
 
     while( labelList ) {
@@ -288,10 +301,11 @@ void ObjFlushLabels( void ) {
     }
 }
 
-void ObjEmitData( owl_section_handle section, void *buffer, int size, bool align ) {
-//**********************************************************************************
-// Aligns to proper address, emits all pending labels, then emits the data
-
+void ObjEmitData( owl_section_handle section, void *buffer, size_t size, bool align )
+/************************************************************************************
+ * Aligns to proper address, emits all pending labels, then emits the data
+ */
+{
     if( align ) {
         (void)ObjAlign( section, CurrAlignment );
     }
@@ -300,10 +314,11 @@ void ObjEmitData( owl_section_handle section, void *buffer, int size, bool align
     // printf( "real data emitted.\n" );
 }
 
-void ObjNopPad( owl_section_handle section, uint_8 count ) {
-//**********************************************************
-// Emits count no-ops
-
+void ObjNopPad( owl_section_handle section, uint_8 count )
+/*********************************************************
+ * Emits count no-ops
+ */
+{
     uint_32     nop_opcode = INS_NOP;
 
     while( count-- > 0 ) {
@@ -311,10 +326,11 @@ void ObjNopPad( owl_section_handle section, uint_8 count ) {
     }
 }
 
-void ObjNullPad( owl_section_handle section, uint_8 count ) {
-//***********************************************************
-// Emits count bytes of zeros
-
+void ObjNullPad( owl_section_handle section, uint_8 count )
+/**********************************************************
+ * Emits count bytes of zeros
+ */
+{
     char        byte = 0;
 
     while( count-- > 0 ) {
@@ -322,11 +338,12 @@ void ObjNullPad( owl_section_handle section, uint_8 count ) {
     }
 }
 
-owl_offset ObjAlign( owl_section_handle section, uint_8 alignment ) {
-//*******************************************************************
-// Aligns the offset to 2^alignment boundary. Returns the offset for
-// convenience.
-
+owl_offset ObjAlign( owl_section_handle section, uint_8 alignment )
+/******************************************************************
+ * Aligns the offset to 2^alignment boundary. Returns the offset for
+ * convenience.
+ */
+{
     owl_offset  offset;
 
     offset = OWLTellOffset( section );
@@ -351,9 +368,9 @@ owl_offset ObjAlign( owl_section_handle section, uint_8 alignment ) {
 
 static void doEmitReloc( owl_section_handle section, owl_offset offset,
                          void *target, owl_reloc_type type,
-                         bool named_sym ) {
-//***************************************************************************************************************************
-
+                         bool named_sym )
+//*********************************************************************
+{
     obj_section_handle  ref_section;
     sym_handle          sym;
     int_32              label_num;
@@ -374,26 +391,28 @@ static void doEmitReloc( owl_section_handle section, owl_offset offset,
     }
 }
 
-void ObjDirectEmitReloc( owl_section_handle section, owl_offset offset, void *target, owl_reloc_type type, bool named_sym ) {
-//***************************************************************************************************************************
-// Just emit the reloc. No alignment check, no l^-h^ reloc pairing etc.
-
+void ObjDirectEmitReloc( owl_section_handle section, owl_offset offset, void *target, owl_reloc_type type, bool named_sym )
+/**************************************************************************************************************************
+ * Just emit the reloc. No alignment check, no l^-h^ reloc pairing etc.
+ */
+{
     doEmitReloc( section, offset, target, type, named_sym );
 }
 
 #if 0
-owl_offset ObjTellOffset( owl_section_handle section ) {
-//******************************************************
-
+owl_offset ObjTellOffset( owl_section_handle section )
+//****************************************************
+{
     return( OWLTellOffset( section ) );
 }
 #endif
 
-void ObjEmitReloc( owl_section_handle section, void *target, owl_reloc_type type, bool align, bool named_sym ) {
-//**************************************************************************************************************
-// Should be called before emitting the data that has the reloc.
-// (named_sym == true) iff the target is a named label
-
+void ObjEmitReloc( owl_section_handle section, void *target, owl_reloc_type type, bool align, bool named_sym )
+/*************************************************************************************************************
+ * Should be called before emitting the data that has the reloc.
+ * (named_sym == true) iff the target is a named label
+ */
+{
     owl_offset          offset;
 
     if( align ) { // If data is aligned, we should also align this reloc offset!
@@ -411,7 +430,8 @@ void ObjEmitReloc( owl_section_handle section, void *target, owl_reloc_type type
         owl_offset      offset_hi, offset_lo;
         sym_handle      (*lookup_func)( void * );
 
-        if( type != OWL_RELOC_HALF_HI && type != OWL_RELOC_HALF_LO ) {
+        if( type != OWL_RELOC_HALF_HI
+          && type != OWL_RELOC_HALF_LO ) {
             doEmitReloc( section, offset, target, type, named_sym );
         } else {
             lookup_func = named_sym ?
@@ -439,12 +459,13 @@ void ObjEmitReloc( owl_section_handle section, void *target, owl_reloc_type type
 #endif
 }
 
-void ObjRelocsFini( void ) {
-//**************************
-// If the parse was successful, we need to check whether there're any unmatched
-// relocs still hanging around. If there're unmatched h^relocs, we issue an
-// error. If there're unmatched l^relocs, we should be able to emit them.
-
+void ObjRelocsFini( void )
+/*************************
+ * If the parse was successful, we need to check whether there're any unmatched
+ * relocs still hanging around. If there're unmatched h^relocs, we issue an
+ * error. If there're unmatched l^relocs, we should be able to emit them.
+ */
+{
     sym_reloc   reloc;
     sym_handle  sym;
     int_32      numlabel_ref;
@@ -480,14 +501,15 @@ void ObjRelocsFini( void ) {
     AsNumLabelFini();       // resolve all numeric label relocs
 }
 
-void ObjFini( void ) {
-//********************
-
+void ObjFini( void )
+//******************
+{
     ObjFlushLabels();       // In case there're still pending labels
     OWLFileFini( OwlFile );
     fclose( objFP );
     fclose( ErrorFile );
-    if( ErrorsExceeding( 0 ) || ( _IsOption( WARNING_ERROR ) && WarningsExceeding( 0 ) ) ) {
+    if( ErrorsExceeding( 0 )
+      || ( _IsOption( WARNING_ERROR ) && WarningsExceeding( 0 ) ) ) {
         remove( objName );
         ExitStatus = EXIT_FAILURE;
     } else if( !WarningsExceeding( 0 ) ) {

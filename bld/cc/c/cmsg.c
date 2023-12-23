@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -137,13 +137,13 @@ static enum grp_index  GetGrpIndex( msg_codes msgnum )
     return( grp_index_err );
 }
 
-int GetMsgIndex( msg_codes msgnum )
+unsigned GetMsgIndex( msg_codes msgnum )
 {
     enum grp_index   index;
 
     index = GetGrpIndex( msgnum );
     if( index == grp_index_err )
-        return( -1 );
+        return( MSGIDX_INVALID );
     return( msgnum - LevelIndex[index] + GroupBase[index] );
 }
 
@@ -160,8 +160,8 @@ char const *CGetMsgPrefix( msg_codes msgnum )
 #if 0
 msg_type CGetMsgType( msg_codes msgnum )
 {
-    int              msg_index;
-    msg_type         kind;
+    unsigned        msg_index;
+    msg_type        kind;
 
     msg_index = GetMsgIndex( msgnum );
     kind = MsgType[msg_index];
@@ -172,11 +172,11 @@ msg_type CGetMsgType( msg_codes msgnum )
 char const *CGetMsgStr( msg_codes msgnum )
 {
     char const      *p;
-    int             msg_index;
+    unsigned        msg_index;
 
     msg_index = GetMsgIndex( msgnum );
     p = NULL;
-    if( msg_index >= 0 ) {
+    if( !IS_MSGIDX_INVALID( msg_index ) ) {
         if( internationalData == NULL ) {
             p = EMsgArray[msg_index];
         } else if( msg_index < internationalData->errors_count ) {

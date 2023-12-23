@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,13 +37,19 @@
 #define MAX_CB_PARMS            50
 #define MAX_CB_JUMPTABLE        512
 
-DWORD               _CBJumpTable[MAX_CB_JUMPTABLE]; /* Callback jump table */
+#define GET_CB16_INDEX(a)       ((((char *)__16BitCallBackAddr - (char *)(a)) / CB_CODE_SIZE) - 1)
+#define GET_CB_ADDR16(i)        (void *)((char *)__16BitCallBackAddr - ((i) + 1) * CB_CODE_SIZE)
+
+#define CB_ADDR32_TO_CODE_SEL(a)    ((DWORD)(a) - *_DataSelectorBaseAddr + *_CodeSelectorBaseAddr)
+#define CB_ADDR32_TO_DATA_SEL(a)    ((DWORD)(a) - *_CodeSelectorBaseAddr + *_DataSelectorBaseAddr)
+
+DWORD               _CBJump32Table[MAX_CB_JUMPTABLE]; /* Callback jump table */
 BYTE                _CBRefsTable[MAX_CB_JUMPTABLE]; /* Callback reference counts */
 extern  CALLBACKPTR __16BitCallBackAddr;
 extern  REALFARPROC __far *__32BitCallBackAddr;
 extern  void        __far __32BitCallBack( void );
 
-#pragma aux _CBJumpTable        "*";
+#pragma aux _CBJump32Table      "*";
 #pragma aux __16BitCallBackAddr "*";
 #pragma aux __32BitCallBackAddr "*";
 #pragma aux __32BitCallBack     "*";
@@ -77,7 +83,7 @@ static void emitByte( unsigned char byte )
     if( emitWhere != NULL ) {
         emitWhere[emitOffset] = byte;
     }
-    emitOffset ++;
+    emitOffset++;
 }
 
 static void emitWord( unsigned short word )
@@ -202,35 +208,30 @@ static CALLBACKPTR DoEmitCode( int argcnt, int bytecnt, char *array,
      * get a callback jump table entry
      */
     for( i = 0; i < MAX_CB_JUMPTABLE; i++ ) {
-        if( _CBJumpTable[i] == 0L ) {
-            break;
+        if( _CBJump32Table[i] == 0L ) {
+            /*
+             * build the callback code
+             */
+            emitWhere = NULL;
+            codesize = emitCode( argcnt, bytecnt, array, fn, is_cdecl );
+            emitWhere = malloc( codesize );
+            if( emitWhere == NULL ) {
+                return( NULL );
+            }
+            emitCode( argcnt, bytecnt, array, fn, is_cdecl );
+
+            /*
+             * set up the callback jump table, and return the proper callback rtn
+             */
+            _CBJump32Table[i] = CB_ADDR32_TO_CODE_SEL( emitWhere );
+            _CBRefsTable[i]++;  /* increase reference count */
+            if( MaxCBIndex < i )
+                MaxCBIndex = i;
+            *__32BitCallBackAddr = &__32BitCallBack;
+            return( GET_CB_ADDR16( i ) );
         }
     }
-    if( i == MAX_CB_JUMPTABLE ) {
-        return( NULL );
-    }
-
-    /*
-     * build the callback code
-     */
-    emitWhere = NULL;
-    codesize = emitCode( argcnt, bytecnt, array, fn, is_cdecl );
-    emitWhere = malloc( codesize );
-    if( emitWhere == NULL ) {
-        return( NULL );
-    }
-    emitCode( argcnt, bytecnt, array, fn, is_cdecl );
-
-    /*
-     * set up the callback jump table, and return the proper callback rtn
-     */
-    _CBJumpTable[i] = (DWORD)emitWhere  - *_DataSelectorBaseAddr
-                                        + *_CodeSelectorBaseAddr;
-    _CBRefsTable[i]++;  /* increase reference count */
-    if( i > MaxCBIndex )
-        MaxCBIndex = i;
-    *__32BitCallBackAddr = &__32BitCallBack;
-    return( (char *)__16BitCallBackAddr - (i+1) * CB_CODE_SIZE );
+    return( NULL );
 
 } /* DoEmitCode */
 
@@ -278,13 +279,14 @@ void ReleaseCallbackRoutine( CALLBACKPTR cbp )
     int         i;
     DWORD       cb;
 
-    i = ((char *)__16BitCallBackAddr - (char *)cbp) / CB_CODE_SIZE;
-    --i;
-    cb = _CBJumpTable[i] - *_CodeSelectorBaseAddr + *_DataSelectorBaseAddr;
+    i = GET_CB16_INDEX( cbp );
+    if( _CBJump32Table[i] == 0L )
+        return;
+    cb = CB_ADDR32_TO_DATA_SEL( _CBJump32Table[i] );
     _CBRefsTable[i]--;  /* decrease reference count */
     if( _CBRefsTable[i] == 0 ) {
         free( (void *)cb );
-        _CBJumpTable[i] = 0L;
+        _CBJump32Table[i] = 0L;
     }
 } /* ReleaseCallbackRoutine */
 
@@ -296,11 +298,12 @@ void *SetProc( FARPROC fp, int type )
     if( fp == NULL )
         return( NULL );
     for( i = 0; i <= MaxCBIndex; i++ ) {
-        cbp = (char *)(_CBJumpTable[i] - *_CodeSelectorBaseAddr
-                                       + *_DataSelectorBaseAddr);
-        if( *(FARPROC *)(cbp+1) == fp ) {
+        if( _CBJump32Table[i] == 0L )
+            continue;
+        cbp = (char *)CB_ADDR32_TO_DATA_SEL( _CBJump32Table[i] );
+        if( *(FARPROC *)( cbp + 1 ) == fp ) {
             _CBRefsTable[i]++;  /* increase reference count */
-            return( (char *)__16BitCallBackAddr - (i+1) * CB_CODE_SIZE );
+            return( GET_CB_ADDR16( i ) );
         }
     }
     return( GetProc16( (PROCPTR)fp, type ) );
@@ -326,13 +329,15 @@ void PASCAL FreeProcInstance( FARPROC fp )
     int         i;
     char        *cbp;
 
-    for( i = 0; i <= MaxCBIndex && _CBJumpTable[i] != 0L; i++ ) {
-        cbp = (char *)(_CBJumpTable[i] - *_CodeSelectorBaseAddr + *_DataSelectorBaseAddr);
-        if( *(FARPROC *)(cbp+1) == fp ) {
+    for( i = 0; i <= MaxCBIndex; i++ ) {
+        if( _CBJump32Table[i] == 0L )
+            continue;
+        cbp = (char *)CB_ADDR32_TO_DATA_SEL( _CBJump32Table[i] );
+        if( *(FARPROC *)( cbp + 1 ) == fp ) {
             _CBRefsTable[i]--;  /* decrease reference count */
             if( _CBRefsTable[i] == 0 ) {
                 free( cbp );
-                _CBJumpTable[i] = 0L;
+                _CBJump32Table[i] = 0L;
             }
         }
     }

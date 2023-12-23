@@ -3,5 +3,4 @@
 host_os  = linux
 host_cpu = arm
 
-proj_path = ..
-!include $(proj_path)/master.mif
+!include ../master.mif

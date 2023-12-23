@@ -14,7 +14,8 @@ to disk immediately.
 .return begin
 The
 .id &funcb.
-function returns &minus.1 if the changes have been successfully committed.  Otherwise, 0 is returned and
+function returns &minus.1 if the changes have been successfully committed.
+Otherwise, 0 is returned and
 .kw errno
 is set to indicate the error.
 .return end

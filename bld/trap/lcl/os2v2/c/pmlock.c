@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,11 +38,12 @@
 #define INCL_DOSPROCESS
 #include <os2.h>
 #include <os2dbg.h>
-#include "os2trap.h"
-#include "dosdebug.h"
 #include "trpimp.h"
 #include "trperr.h"
+#include "os2trap.h"
+#include "dosdebug.h"
 #include "wdpmhelp.h"
+
 
 static HFILE            PmInh;
 static HFILE            PmOuth;
@@ -61,6 +63,7 @@ static int SpawnLocker( HFILE inh, HFILE outh )
     parms[1] = ' ';
     parms[2] = outh + ADJUST_HFILE;
     parms[3] = '\0';
+
     start.Length = offsetof( STARTDATA, IconFile );
     start.Related = 1;
     start.FgBg = 1;
@@ -87,11 +90,13 @@ static void PmHelp( int command )
 }
 
 
-static VOID SwitchBack( VOID )
+static void APIENTRY SwitchBack( ULONG arg )
 {
     APIRET         rc;
     pmhelp_packet  data;
     ULONG          dummy;
+
+    /* unused parameters */ (void)arg;
 
     for( ; ; ) {
         rc = DosRead( PmInh, &data, sizeof( data ), &dummy );
@@ -147,7 +152,7 @@ void StartPMHelp()
         return;
     if( SpawnLocker( HisInh, HisOuth ) )
         return;
-    if( DosCreateThread( &tid, (PFNTHREAD)SwitchBack, 0, 0, STACK_SIZE ) )
+    if( DosCreateThread( &tid, SwitchBack, 0, CREATE_READY | STACK_SPARSE, STACK_SIZE ) )
         return;
     HaveHelper = TRUE;
 }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -117,12 +117,12 @@ void CreateSpyTool( HWND parent )
     dinfo.border_size.x = BORDER_X( BITMAP_X );
     dinfo.border_size.y = BORDER_Y( BITMAP_Y );
     dinfo.style = TOOLBAR_FIXED_STYLE;
-    dinfo.is_fixed = TRUE;
+    dinfo.is_fixed = true;
     dinfo.area = r;
     dinfo.hook = myToolBarProc;
     dinfo.helphook = spyToolBarHint;
     dinfo.background = NULL;
-    dinfo.use_tips = TRUE;
+    dinfo.use_tips = true;
     toolBar = ToolBarInit( parent );
 
     ToolBarDisplay( toolBar, &dinfo );

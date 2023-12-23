@@ -1,10 +1,11 @@
 #pmake: serv lcl os_dos dsx cpu_386 x86 pls
+
+tree_depth = 7
+
 host_cpu = 386
 host_os  = dos
 
 target_cpu = x86
-target_os  = pls
-
 target_sys = tnt
 
 srv = ped
@@ -12,7 +13,9 @@ which = SERVER
 
 trap_nodoslfn = 1
 
-extra_objs = plsord.obj   # must be first
+!include tools.mif
+
+extra_objs = plsord.obj $(pls_objs)
 
 extra_linker = &
         op offset=0, objalign=4k &
@@ -21,3 +24,4 @@ extra_linker = &
         file $(plsdir)/dilseg.obj
 
 !include $(trap_dir)/lcl/dos/dosx/pls/pls.mif
+!include $(trap_dir)/master.mif

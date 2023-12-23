@@ -1,15 +1,60 @@
-# enable to switch to causeway extender
-!ifdef $(proj_name)_causeway
-clflags_dos_386 = -l=causeway
-lflags_dos_386  = sys causeway
+##############################################################################
+#
+# HANDLING OF NON-WATCOM COMPILERS/PLATFORMS
+#
+##############################################################################
+#
+# x64 CPU (64-bit)
+#
+##################################
+# use native tools for x64 cpu
+# skip build for unsupported platforms
+!ifeq host_cpu x64
+! ifneq bld_cpu x64
+skip_build: .SYMBOLIC
+! else ifndef bldonly_$(host_os)
+skip_build: .SYMBOLIC
+! endif
+##################################
+#
+# arm CPU (32-bit)
+#
+##################################
+# use native tools for arm cpu
+# skip build for unsupported platforms
+!else ifeq host_cpu arm
+! ifneq bld_cpu arm
+skip_build: .SYMBOLIC
+! else ifndef bldonly_$(host_os)
+skip_build: .SYMBOLIC
+! endif
+##################################
+#
+# arm CPU (64-bit)
+#
+##################################
+# use native tools for a64 cpu
+# skip build for unsupported platforms
+!else ifeq host_cpu a64
+! ifneq bld_cpu a64
+skip_build: .SYMBOLIC
+! else ifndef bldonly_$(host_os)
+skip_build: .SYMBOLIC
+! endif
+##################################
+#
+# others
+#
+##################################
+!else
 !endif
+##############################################################################
 
 # bootstrap overrides
 ######################
 
 !ifdef bootstrap
 !ifdef __WATCOM_TOOLS__
-
 !ifdef __LOADDLL__
 !loaddll wcc    wccd.dll
 !loaddll wcc386 wccd386.dll
@@ -21,7 +66,6 @@ lflags_dos_386  = sys causeway
 !loaddll wppaxp wppdaxp.dll
 !loaddll wrc    wrcd.dll
 !endif
-
 !endif
 !endif
 
@@ -58,7 +102,7 @@ common_flags_dbg = -Zi -fast
 common_flags_rel = -Ox -Zi
 common_flags_dbg = -Zi
 !endif
-!ifeq release 1
+!ifeq debug 0
 common_flags = $(common_flags_rel)
 !else
 common_flags = $(common_flags_dbg)
@@ -73,11 +117,11 @@ common_flags = $(common_flags_dbg)
 # -wd4702 "unreachable code"
 #common_cflags_wng = -wd4068 -wd4102 -wd4127 -wd4214 -wd4244 -wd4306 -wd4702
 common_cflags_wng = -W4 -wd4214
-common_cflags = $(common_cflags_wng) -MT -D_STATIC_CPPLIB
+common_cflags = $(common_cflags_wng) -D_STATIC_CPPLIB
 
 common_ldflags_rel =
 common_ldflags_dbg =
-!ifeq release 1
+!ifeq debug 0
 common_ldflags = $(common_ldflags_rel)
 !else
 common_ldflags = $(common_ldflags_dbg)
@@ -94,7 +138,7 @@ common_clflags_exe =
 
 # Options for building DLLs
 common_cflags_lib_shared  = -LD
-common_clflags_lib_shared = -MT -LD
+common_clflags_lib_shared = -LD
 
 # Target specific options
 target_cflags_386   =
@@ -251,9 +295,9 @@ incl_file_opts = -FI
 !if defined("__LINUX__") || defined("__BSD__") || defined("__HAIKU__") || defined("__OSX__")
 
 !ifdef __LINUX__
-!if !defined( "__WATCOM_TOOLS__" ) || "$(bld_cpu)" == "x64" || "$(bld_cpu)" == "arm"
+! if !defined( "__WATCOM_TOOLS__" ) || "$(bld_cpu)" == "x64" || "$(bld_cpu)" == "arm" || "$(bld_cpu)" == "a64"
 use_for_build = 1
-!endif
+! endif
 !else ifdef __BSD__
 use_for_build = 1
 !else ifdef __HAIKU__
@@ -278,12 +322,14 @@ common_cppflags_x64     = -D_M_X64
 common_cppflags_ppc     = -D__PPC__
 common_cppflags_mps     = -D__MIPS__ -Umips
 common_cppflags_arm     = -D_M_ARM
+common_cppflags_a64     = -D_M_ARM64
 
 common_cppflags_linux_386   = -D__LINUX_386__
 common_cppflags_linux_x64   = -D__LINUX_X64__
 common_cppflags_linux_ppc   =
 common_cppflags_linux_mps   =
 common_cppflags_linux_arm   = -D__LINUX_ARM__
+common_cppflags_linux_a64   = -D__LINUX_ARM64__
 
 common_cppflags_bsd_386     = -D__BSD_386__
 common_cppflags_bsd_x64     = -D__BSD_X64__
@@ -297,19 +343,30 @@ common_cppflags_osx_386     = -D__OSX_386__
 common_cppflags_osx_x64     = -D__OSX_X64__
 common_cppflags_osx_ppc     =
 common_cppflags_osx_arm     = -D__OSX_ARM__
+common_cppflags_osx_a64     = -D__OSX_ARM64__
 
 # common release/debug options
-common_flags_rel = -O -g
-common_flags_dbg = -g
-!ifeq release 1
-common_flags = $(common_flags_rel)
+common_flags_rel = -O -g1 -gdwarf-2
+common_flags_dbg = -g -gdwarf
+# common debug info compression options
+!ifdef __CLANG_TOOLS__
+common_flags_compr = -gz
 !else
-common_flags = $(common_flags_dbg)
+! ifdef __OSX__
+! else
+common_flags_compr = -gz
+! endif
+!endif
+
+!ifeq debug 0
+common_flags = $(common_flags_rel) $(common_flags_compr)
+!else
+common_flags = $(common_flags_dbg) $(common_flags_compr)
 !endif
 
 # Warning flags: all enabled except the ones that have no use besides annoy people
 !ifdef __CLANG_TOOLS__
-common_cflags_wng = -Wall -Wno-switch -Wno-missing-braces -Wno-parentheses -Wpragma-pack -Wno-implicit-exception-spec-mismatch -ferror-limit=200
+common_cflags_wng = -Wall -Wno-switch -Wno-missing-braces -Wno-parentheses -Wno-pragma-pack -Wno-implicit-exception-spec-mismatch -ferror-limit=200
 !else
 common_cflags_wng = -Wall -Wno-switch -Wno-missing-braces -Wno-parentheses
 !endif
@@ -317,7 +374,7 @@ common_cflags = $(common_cflags_wng)
 
 common_ldflags_rel =
 common_ldflags_dbg =
-!ifeq release 1
+!ifeq debug 0
 common_ldflags = $(common_ldflags_rel)
 !else
 common_ldflags = $(common_ldflags_dbg)
@@ -344,11 +401,13 @@ target_cflags_386   =
 !ifdef bootstrap
 target_cflags_x64   =
 !else
-target_cflags_x64   = -march=core2 -msse2
+target_cflags_x64   =
+#target_cflags_x64   = -march=core2 -msse2
 !endif
 target_cflags_ppc   =
 target_cflags_mps   =
 target_cflags_arm   =
+target_cflags_a64   =
 
 # DLL/shared library file extension
 ext_lib_shared = .so
@@ -419,13 +478,13 @@ bld_ldflags_dll_cxx = -lc++
 bld_ldflags_cxx = -lstdc++
 bld_ldflags_dll_cxx = -lstdc++
 !else ifdef __GCC_TOOLS__
-!if $(__GCC_TOOLS__) < 7
+! if $(__GCC_TOOLS__) < 7
 bld_ldflags_cxx = -lsupc++ -lstdc++
 bld_ldflags_dll_cxx = -lsupc++ -lstdc++
-!else
+! else
 bld_ldflags_cxx = -lstdc++
 bld_ldflags_dll_cxx = -lstdc++
-!endif
+! endif
 !else
 bld_ldflags_cxx = -lsupc++ -lstdc++
 bld_ldflags_dll_cxx = -lsupc++ -lstdc++
@@ -469,6 +528,7 @@ cppflags_ppc    = $(common_cppflags_ppc) $(common_cppflags_$(host_os)_ppc)
 cppflags_mps    = $(common_cppflags_mps) $(common_cppflags_$(host_os)_mps)
 cppflags_x64    = $(common_cppflags_x64) $(common_cppflags_$(host_os)_x64)
 cppflags_arm    = $(common_cppflags_arm) $(common_cppflags_$(host_os)_arm)
+cppflags_a64    = $(common_cppflags_a64) $(common_cppflags_$(host_os)_a64)
 
 c_flags   =
 cxx_flags = -std=c++98
@@ -522,3 +582,4 @@ incl_file_opts = -include
 !endif
 
 ##############################################################################
+

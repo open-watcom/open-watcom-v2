@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -24,7 +25,7 @@
 *
 *  ========================================================================
 *
-* Description:  RDOS trap file loading.
+* Description:  Trap module loader for RDOS.
 *
 ****************************************************************************/
 
@@ -33,91 +34,70 @@
 #include <rdos.h>
 #include <string.h>
 #include <stdlib.h>
-#include "trptypes.h"
 #include "trpld.h"
-#include "tcerr.h"
 
 
-static int              TrapFile = 0;
+static int              mod_hdl = 0;
 static trap_fini_func   *FiniFunc = NULL;
 
-void KillTrap( void )
+void UnLoadTrap( void )
 {
     ReqFunc = NULL;
     if( FiniFunc != NULL ) {
         FiniFunc();
         FiniFunc = NULL;
     }
-    if( TrapFile != 0 ) {
-        RdosFreeDll( TrapFile );
-        TrapFile = 0;
+    if( mod_hdl != 0 ) {
+        RdosFreeDll( mod_hdl );
+        mod_hdl = 0;
     }
 }
 
-char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
+digld_error LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
 {
-    char                trpfile[256];
-    char                *p;
-    char                chr;
-    bool                have_ext;
+    char                filename[_MAX_PATH];
+    const char          *base_name;
+    size_t              len;
     trap_init_func      *init_func;
+    digld_error         err;
 
     if( parms == NULL || *parms == '\0' )
         parms = DEFAULT_TRP_NAME;
-    have_ext = false;
-    p = trpfile;
-    for( ; (chr = *parms) != '\0'; parms++ ) {
-        if( chr == TRAP_PARM_SEPARATOR ) {
+    base_name = parms;
+    len = 0;
+    for( ; *parms != '\0'; parms++ ) {
+        if( *parms == TRAP_PARM_SEPARATOR ) {
             parms++;
             break;
         }
-        switch( chr ) {
-        case ':':
-        case '/':
-        case '\\':
-            have_ext = false;
-            break;
-        case '.':
-#ifdef USE_FILENAME_VERSION
-            *p++ = ( USE_FILENAME_VERSION / 10 ) + '0';
-            *p++ = ( USE_FILENAME_VERSION % 10 ) + '0';
-#endif
-            have_ext = true;
-            break;
-        }
-        *p++ = chr;
+        len++;
     }
-    if( !have_ext ) {
-#ifdef USE_FILENAME_VERSION
-        *p++ = ( USE_FILENAME_VERSION / 10 ) + '0';
-        *p++ = ( USE_FILENAME_VERSION % 10 ) + '0';
-#endif
-        *p++ = '.';
-        *p++ = 'd';
-        *p++ = 'l';
-        *p++ = 'l';
+    if( DIGLoader( Find )( DIG_FILETYPE_EXE, base_name, len, ".dll", filename, sizeof( filename ) ) == 0 ) {
+        return( DIGS_ERR_CANT_FIND_MODULE );
     }
-    *p = '\0';
-    TrapFile = RdosLoadDll( trpfile );
-    if( TrapFile == NULL ) {
-        sprintf( buff, "%s '%s'", TC_ERR_CANT_LOAD_TRAP, trpfile );
-        return( buff );
+    mod_hdl = RdosLoadDll( filename );
+    if( mod_hdl == NULL ) {
+        return( DIGS_ERR_CANT_LOAD_MODULE );
     }
-    init_func = RdosGetModuleProc( TrapFile, "TrapInit_" );
-    FiniFunc = RdosGetModuleProc( TrapFile, "TrapFini_" );
-    ReqFunc  = RdosGetModuleProc( TrapFile, "TrapRequest_" );
-//    LibListFunc = RdosGetModuleProc( TrapFile, "TrapLibList_" );
-    strcpy( buff, TC_ERR_WRONG_TRAP_VERSION );
-    if( init_func != NULL && FiniFunc != NULL && ReqFunc != NULL /* && LibListFunc != NULL */ ) {
+    err = DIGS_ERR_BAD_MODULE_FILE;
+    init_func = RdosGetModuleProc( mod_hdl, "TrapInit_" );
+    FiniFunc = RdosGetModuleProc( mod_hdl, "TrapFini_" );
+    ReqFunc  = RdosGetModuleProc( mod_hdl, "TrapRequest_" );
+//    LibListFunc = RdosGetModuleProc( mod_hdl, "TrapLibList_" );
+    if( init_func != NULL
+      && FiniFunc != NULL
+      && ReqFunc != NULL
+      /* && LibListFunc != NULL */ ) {
         *trap_ver = init_func( parms, buff, trap_ver->remote );
+        err = DIGS_ERR_BUF;
         if( buff[0] == '\0' ) {
             if( TrapVersionOK( *trap_ver ) ) {
                 TrapVer = *trap_ver;
-                return( NULL );
+                return( DIGS_OK );
             }
-            strcpy( buff, TC_ERR_WRONG_TRAP_VERSION );
+            err = DIGS_ERR_WRONG_MODULE_VERSION;
         }
     }
-    KillTrap();
-    return( buff );
+    UnLoadTrap();
+    return( err );
 }

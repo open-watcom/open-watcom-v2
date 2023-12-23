@@ -128,11 +128,11 @@ sub set_prev_changeno
 sub batch_output_make_change_objdir
 {
     if ($OStype eq 'UNIX') {
-        print BATCH 'if [ ! -d $OWBINDIR/$OWOBJDIR ]; then mkdir $OWBINDIR/$OWOBJDIR; fi';
+        print BATCH 'if [ ! -d ../../build/$OWOBJDIR ]; then mkdir ../../build/$OWOBJDIR; fi';
         print BATCH 'if [ ! -d $OWOBJDIR ]; then mkdir $OWOBJDIR; fi';
         print BATCH 'cd $OWOBJDIR';
     } else {
-        print BATCH 'if not exist %OWBINDIR%\\%OWOBJDIR% mkdir %OWBINDIR%\\%OWOBJDIR%';
+        print BATCH 'if not exist ..\\..\\build\\%OWOBJDIR% mkdir ..\\..\\build\\%OWOBJDIR%';
         print BATCH 'if not exist %OWOBJDIR% mkdir %OWOBJDIR%';
         print BATCH 'cd %OWOBJDIR%';
     }
@@ -165,9 +165,9 @@ sub batch_output_set_test_env
 sub batch_output_reset_env
 {
     if ($OStype eq 'UNIX') {
-        print BATCH ". \$OWROOT/cmnvars.$ext";
+        print BATCH '. "\$OWROOT/cmnvars.$ext"';
     } else {
-        print BATCH "call %OWROOT%\\cmnvars.$ext";
+        print BATCH 'call "%OWROOT%\\cmnvars.$ext"';
     }
 }
 
@@ -177,38 +177,38 @@ sub batch_output_build_wmake_builder
     # if builder tools from previous build are somehow broken
     #
     # Create new wmake tool, previous clean removed it.
-    print BATCH "cd $OW"; print BATCH 'cd bld'; print BATCH 'cd wmake';
+    print BATCH 'cd "', $OW, '"'; print BATCH 'cd bld'; print BATCH 'cd wmake';
     batch_output_make_change_objdir();
     if ($OStype eq 'UNIX') {
-        print BATCH 'rm -f $OWBINDIR/$OWOBJDIR/wmake >>$OWBINDIR/$OWOBJDIR/bootx.log 2>&1';
+        print BATCH 'rm -f ../../../build/$OWOBJDIR/wmake >>../../../build/$OWOBJDIR/bootx.log 2>&1';
         if ($TOOLS eq 'WATCOM') {
-            print BATCH 'wmake -h -f ../wmake clean >>$OWBINDIR/$OWOBJDIR/bootx.log 2>&1';
-            print BATCH 'wmake -h -f ../wmake >>$OWBINDIR/$OWOBJDIR/bootx.log 2>&1';
+            print BATCH 'wmake -h -f ../wmake clean >>../../../build/$OWOBJDIR/bootx.log 2>&1';
+            print BATCH 'wmake -h -f ../wmake >>../../../build/$OWOBJDIR/bootx.log 2>&1';
         } else {
-            print BATCH 'make -f ../posmake clean >>$OWBINDIR/$OWOBJDIR/bootx.log 2>&1';
-            print BATCH 'make -f ../posmake >>$OWBINDIR/$OWOBJDIR/bootx.log 2>&1';
+            print BATCH 'make -f ../posmake clean >>../../../build/$OWOBJDIR/bootx.log 2>&1';
+            print BATCH 'make -f ../posmake >>../../../build/$OWOBJDIR/bootx.log 2>&1';
         }
     } else {
-        print BATCH 'if exist %OWBINDIR%\\%OWOBJDIR%\\wmake.exe del %OWBINDIR%\\%OWOBJDIR%\\wmake.exe >>%OWBINDIR%\\%OWOBJDIR%\\bootx.log 2>&1';
+        print BATCH 'if exist ..\\..\\..\\build\\%OWOBJDIR%\\wmake.exe del ..\\..\\..\\build\\%OWOBJDIR%\\wmake.exe >>..\\..\\..\\build\\%OWOBJDIR%\\bootx.log 2>&1';
         if ($TOOLS eq 'WATCOM') {
-            print BATCH 'wmake -h -f ..\\wmake clean >>%OWBINDIR%\\%OWOBJDIR%\\bootx.log 2>&1';
-            print BATCH 'wmake -h -f ..\\wmake >>%OWBINDIR%\\%OWOBJDIR%\\bootx.log 2>&1';
+            print BATCH 'wmake -h -f ..\\wmake clean >>..\\..\\..\\build\\%OWOBJDIR%\\bootx.log 2>&1';
+            print BATCH 'wmake -h -f ..\\wmake >>..\\..\\..\\build\\%OWOBJDIR%\\bootx.log 2>&1';
         } else {
-            print BATCH 'nmake -nologo -f ..\\nmake clean >>%OWBINDIR%\\%OWOBJDIR%\\bootx.log 2>&1';
-            print BATCH 'nmake -nologo -f ..\\nmake >>%OWBINDIR%\\%OWOBJDIR%\\bootx.log 2>&1';
+            print BATCH 'nmake -nologo -f ..\\nmake clean >>..\\..\\..\\build\\%OWOBJDIR%\\bootx.log 2>&1';
+            print BATCH 'nmake -nologo -f ..\\nmake >>..\\..\\..\\build\\%OWOBJDIR%\\bootx.log 2>&1';
         }
     }
     # Create new builder tool, previous clean removed it.
-    print BATCH "cd $OW"; print BATCH 'cd bld'; print BATCH 'cd builder';
+    print BATCH 'cd "', $OW, '"'; print BATCH 'cd bld'; print BATCH 'cd builder';
     batch_output_make_change_objdir();
     if ($OStype eq 'UNIX') {
-        print BATCH 'rm -f $OWBINDIR/$OWOBJDIR/builder >>$OWBINDIR/$OWOBJDIR/bootx.log 2>&1';
-        print BATCH '$OWBINDIR/$OWOBJDIR/wmake -h -f ../binmake clean >>$OWBINDIR/$OWOBJDIR/bootx.log 2>&1';
-        print BATCH '$OWBINDIR/$OWOBJDIR/wmake -h -f ../binmake bootstrap=1 >>$OWBINDIR/$OWOBJDIR/bootx.log 2>&1';
+        print BATCH 'rm -f ../../../build/$OWOBJDIR/builder >>../../../build/$OWOBJDIR/bootx.log 2>&1';
+        print BATCH '../../../build/$OWOBJDIR/wmake -h -f ../binmake clean >>../../../build/$OWOBJDIR/bootx.log 2>&1';
+        print BATCH '../../../build/$OWOBJDIR/wmake -h -f ../binmake bootstrap=1 >>../../../build/$OWOBJDIR/bootx.log 2>&1';
     } else {
-        print BATCH 'if exist %OWBINDIR%\\%OWOBJDIR%\\builder.exe del %OWBINDIR%\\%OWOBJDIR%\\builder.exe >>%OWBINDIR%\\%OWOBJDIR%\\bootx.log 2>&1';
-        print BATCH '%OWBINDIR%\\%OWOBJDIR%\\wmake -h -f ..\\binmake clean >>%OWBINDIR%\\%OWOBJDIR%\\bootx.log 2>&1';
-        print BATCH '%OWBINDIR%\\%OWOBJDIR%\\wmake -h -f ..\\binmake bootstrap=1 >>%OWBINDIR%\\%OWOBJDIR%\\bootx.log 2>&1';
+        print BATCH 'if exist ..\\..\\..\\build\\%OWOBJDIR%\\builder.exe del ..\\..\\..\\build\\%OWOBJDIR%\\builder.exe >>..\\..\\..\\build\\%OWOBJDIR%\\bootx.log 2>&1';
+        print BATCH '..\\..\\..\\build\\%OWOBJDIR%\\wmake -h -f ..\\binmake clean >>..\\..\\..\\build\\%OWOBJDIR%\\bootx.log 2>&1';
+        print BATCH '..\\..\\..\\build\\%OWOBJDIR%\\wmake -h -f ..\\binmake bootstrap=1 >>..\\..\\..\\build\\%OWOBJDIR%\\bootx.log 2>&1';
     }
 }
 
@@ -232,17 +232,17 @@ sub make_boot_batch
     print BATCH "$setenv OWDOCBUILD=0";
     print BATCH "$setenv OWDOCQUIET=1";
     if ($OStype eq 'UNIX') {
-        print BATCH 'if [ -f $OWBINDIR/$OWOBJDIR/bootx.log ]; then rm $OWBINDIR/$OWOBJDIR/bootx.log; fi';
+        print BATCH 'if [ -f "$OWROOT/build/$OWOBJDIR/bootx.log" ]; then rm "$OWROOT/build/$OWOBJDIR/bootx.log"; fi';
     } else {
-        print BATCH "if exist %OWBINDIR%\\%OWOBJDIR%\\bootx.log del %OWBINDIR%\\%OWOBJDIR%\\bootx.log";
+        print BATCH 'if exist "%OWROOT%\\build\\%OWOBJDIR%\\bootx.log" del "%OWROOT%\\build\\%OWOBJDIR%\\bootx.log"';
     }
     # Create fresh builder tools, to prevent lockup build server
     # if builder tools from previous build are somehow broken
     batch_output_build_wmake_builder();
-    print BATCH "cd $OW"; print BATCH 'cd bld';
+    print BATCH 'cd "', $OW, '"'; print BATCH 'cd bld';
     print BATCH 'builder -i bootclean';
     batch_output_build_wmake_builder();
-    print BATCH "cd $OW"; print BATCH 'cd bld';
+    print BATCH 'cd "', $OW, '"'; print BATCH 'cd bld';
     print BATCH 'builder boot';
     print BATCH "cd $home";
     if (($Common::config{'INITCMD'} || '') ne '') {
@@ -278,10 +278,10 @@ sub make_build_batch
     print BATCH "$setenv OWDOCQUIET=1";
     # start building by bootstrap tools.
     # Remove release directory tree and clean previous build.
-    print BATCH "cd $OW"; print BATCH 'cd bld';
+    print BATCH 'cd "', $OW, '"'; print BATCH 'cd bld';
     print BATCH 'builder -i passclean';
     # Start build process.
-    print BATCH "cd $OW"; print BATCH 'cd bld';
+    print BATCH 'cd "', $OW, '"'; print BATCH 'cd bld';
     print BATCH 'builder -i pass';
     print BATCH "cd $home";
     if (($Common::config{'INITCMD'} || '') ne '') {
@@ -327,7 +327,7 @@ sub make_docs_batch
     }
     print BATCH "$setenv OWDOCQUIET=1";
     # Start build process.
-    print BATCH "cd $OW"; print BATCH 'cd docs';
+    print BATCH 'cd "', $OW, '"'; print BATCH 'cd docs';
     print BATCH 'builder -i docsclean';
     print BATCH 'builder -i docs';
     print BATCH "cd $home";
@@ -368,7 +368,7 @@ sub make_test_batch
             print BATCH "$setenv EXTRA_ARCH=i86";
         }
     }
-    print BATCH "cd $OW"; print BATCH 'cd bld';
+    print BATCH 'cd "', $OW, '"'; print BATCH 'cd bld';
     print BATCH 'builder -i testclean';
     print BATCH 'builder -i test';
     print BATCH "cd $home";
@@ -397,7 +397,7 @@ sub make_installer_batch
     close(INPUT);
     print BATCH "$setenv OWRELROOT=", $relroot;
     # Add additional commands to do installers.
-    print BATCH "cd $OW"; print BATCH 'cd distrib'; print BATCH 'cd ow';
+    print BATCH 'cd "', $OW, '"'; print BATCH 'cd distrib'; print BATCH 'cd ow';
     print BATCH 'builder missing';
     print BATCH 'builder build';
     print BATCH "cd $home";

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,10 +34,10 @@
 #include "exp.h"
 
 /*
-        Stuff dealing with module handles
-*/
-walk_result DIPIMPENTRY( WalkModList )( imp_image_handle *iih,
-                        DIP_IMP_MOD_WALKER *wk, void *d )
+ * Stuff dealing with module handles
+ */
+
+walk_result DIPIMPENTRY( WalkModList )( imp_image_handle *iih, DIP_IMP_MOD_WALKER *wk, void *d )
 {
     return( wk( iih, IMH_EXPORT, d ) );
 }

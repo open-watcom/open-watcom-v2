@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -518,13 +519,7 @@ static int HeuristicTraceBack(
 
 
 
-static void SymbolicTraceBack(
-    address  *start,
-    unsigned characteristics,
-    long     bp_disp,
-    address  *execution,
-    address  *frame,
-    address  *stack )
+static void SymbolicTraceBack( address *start, unsigned rtn_characteristics, long bp_disp, address *execution, address *frame, address *stack )
 {
     address     where;
 
@@ -537,8 +532,8 @@ static void SymbolicTraceBack(
         where.mach.offset += bp_disp;
     }
     execution->mach.offset = GetAnOffset( &where );
-    if( characteristics ) {
-        execution->mach.segment = (unsigned short) GetDataWord();
+    if( rtn_characteristics ) {
+        execution->mach.segment = GetDataWord();
     }
     *stack = DbgAddr;
 }
@@ -553,9 +548,9 @@ static int BPTraceBack( address *execution, address *frame,
     where = *frame;
     is_far = GetBPFromStack( &where, frame );
     if( frame->mach.offset == 0 ) return( 0 );
-    execution->mach.offset = (unsigned short) GetDataWord();
+    execution->mach.offset = (unsigned short)GetDataWord();
     if( is_far ) {
-        execution->mach.segment = (unsigned short) GetDataWord();
+        execution->mach.segment = GetDataWord();
     }
     *stack = DbgAddr;
     return( 1 );
@@ -596,17 +591,21 @@ mad_status MADIMPENTRY( CallUpStackLevel )( mad_call_up_data *cud,
     }
     prev_sp_value = *stack;
     if( start.mach.segment == 0 && start.mach.offset == 0 ) {
-        if( Is32BitSegment ) return( MS_FAIL );
-        if( !BPTraceBack( execution, frame, stack ) ) return( MS_FAIL );
+        if( Is32BitSegment )
+            return( MS_FAIL );
+        if( !BPTraceBack( execution, frame, stack ) ) {
+            return( MS_FAIL );
+        }
     } else {
         if( return_disp != -1L ) {
-            SymbolicTraceBack( &start, rtn_characteristics, return_disp,
-                        execution, frame, stack );
+            SymbolicTraceBack( &start, rtn_characteristics, return_disp, execution, frame, stack );
         } else {
-            if( !HeuristicTraceBack( &prev_sp_value, &start,
-                                execution, frame, stack ) ) return( MS_FAIL );
+            if( !HeuristicTraceBack( &prev_sp_value, &start, execution, frame, stack ) ) {
+                return( MS_FAIL );
+            }
         }
     }
-    if( stack->mach.offset <= prev_sp_value.mach.offset ) return( MS_FAIL );
+    if( stack->mach.offset <= prev_sp_value.mach.offset )
+        return( MS_FAIL );
     return( MS_OK );
 }

@@ -2,9 +2,8 @@
 host_os  = nt
 host_cpu = 386
 
-debug_cpp_flags=-D_DEVELOPMENT -D_INT_DEBUG
-
 wlink_dll     = 1
-wlink_release = 0
+
+debug = 2
 
 !include ../master.mif

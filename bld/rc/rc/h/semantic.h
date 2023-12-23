@@ -81,11 +81,11 @@ typedef struct IntMask {
 /**** Semantic global routines ****/
 extern SemOffset            SemStartResource( void );
 extern SemLength            SemEndResource( SemOffset start );
-extern void                 SemAddResourceFree( WResID * name, WResID * type,
+extern void                 SemAddResourceFree( WResID *name, WResID *type,
                                         ResMemFlags flags, ResLocation loc );
-extern void                 SemAddResource( WResID * name, WResID * type,
+extern void                 SemAddResource( WResID *name, WResID *type,
                                         ResMemFlags, ResLocation );
-extern void                 SemAddResource2( WResID * name, WResID * type,
+extern void                 SemAddResource2( WResID *name, WResID *type,
                                         ResMemFlags flags, ResLocation loc,
                                         const char *filename );
 extern void                 SemSetDefLang( void );

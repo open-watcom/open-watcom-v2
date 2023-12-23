@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,21 +36,22 @@
 #define HW_NEED_160
 #include "cghwreg.h"
 
-/*       Target dependent set of hardware registers available */
+/*
+ * Target dependent set of hardware registers available
+ *
+ *  Note: after having contemplated all sorts of horrific
+ *  manners in which to automate the following in terms of
+ *  preprocessor abuse, I have decided that brute force is good.
+ *
+ * Due to some strange assumptions in the code generator about register
+ * names being tightly linked to the size of data contained therein, we
+ * have to give each register a unique name to correspond to each of the
+ * data types which can be held within it.
+ */
 
 /*
-        Note: after having contemplated all sorts of horrific
-        manners in which to automate the following in terms of
-        preprocessor abuse, I have decided that brute force is good.
-*/
-
-/* Due to some strange assumptions in the code generator about register
-    names being tightly linked to the size of data contained therein, we
-    have to give each register a unique name to correspond to each of the
-    data types which can be held within it.
-*/
-
-/* low bytes of the integer registers - byte 0 */
+ * low bytes of the integer registers - byte 0
+ */
 HW_DEFINE_SIMPLE( HW_B0,     0x00000001U, 0x00000000U, 0x00000000U, 0x00000000U, 0x00000000U );
 HW_DEFINE_SIMPLE( HW_B1,     0x00000002U, 0x00000000U, 0x00000000U, 0x00000000U, 0x00000000U );
 HW_DEFINE_SIMPLE( HW_B2,     0x00000004U, 0x00000000U, 0x00000000U, 0x00000000U, 0x00000000U );
@@ -84,7 +85,9 @@ HW_DEFINE_SIMPLE( HW_B29,    0x20000000U, 0x00000000U, 0x00000000U, 0x00000000U,
 HW_DEFINE_SIMPLE( HW_B30,    0x40000000U, 0x00000000U, 0x00000000U, 0x00000000U, 0x00000000U );
 HW_DEFINE_SIMPLE( HW_B31,    0x80000000U, 0x00000000U, 0x00000000U, 0x00000000U, 0x00000000U );
 
-/* high bytes of lower word registers - byte 1 */
+/*
+ * high bytes of lower word registers - byte 1
+ */
 HW_DEFINE_SIMPLE( HW_hb0,    0x00000000U, 0x00000001U, 0x00000000U, 0x00000000U, 0x00000000U );
 HW_DEFINE_SIMPLE( HW_hb1,    0x00000000U, 0x00000002U, 0x00000000U, 0x00000000U, 0x00000000U );
 HW_DEFINE_SIMPLE( HW_hb2,    0x00000000U, 0x00000004U, 0x00000000U, 0x00000000U, 0x00000000U );
@@ -118,7 +121,9 @@ HW_DEFINE_SIMPLE( HW_hb29,   0x00000000U, 0x20000000U, 0x00000000U, 0x00000000U,
 HW_DEFINE_SIMPLE( HW_hb30,   0x00000000U, 0x40000000U, 0x00000000U, 0x00000000U, 0x00000000U );
 HW_DEFINE_SIMPLE( HW_hb31,   0x00000000U, 0x80000000U, 0x00000000U, 0x00000000U, 0x00000000U );
 
-/* upper word of dword registers - bytes 2 and 3 */
+/*
+ * upper word of dword registers - bytes 2 and 3
+ */
 HW_DEFINE_SIMPLE( HW_hw0,    0x00000000U, 0x00000000U, 0x00000001U, 0x00000000U, 0x00000000U );
 HW_DEFINE_SIMPLE( HW_hw1,    0x00000000U, 0x00000000U, 0x00000002U, 0x00000000U, 0x00000000U );
 HW_DEFINE_SIMPLE( HW_hw2,    0x00000000U, 0x00000000U, 0x00000004U, 0x00000000U, 0x00000000U );
@@ -152,7 +157,9 @@ HW_DEFINE_SIMPLE( HW_hw29,   0x00000000U, 0x00000000U, 0x20000000U, 0x00000000U,
 HW_DEFINE_SIMPLE( HW_hw30,   0x00000000U, 0x00000000U, 0x40000000U, 0x00000000U, 0x00000000U );
 HW_DEFINE_SIMPLE( HW_hw31,   0x00000000U, 0x00000000U, 0x80000000U, 0x00000000U, 0x00000000U );
 
-/* upper dword of qword registers - bytes 4 through 7 */
+/*
+ * upper dword of qword registers - bytes 4 through 7
+ */
 HW_DEFINE_SIMPLE( HW_hd0,    0x00000000U, 0x00000000U, 0x00000000U, 0x00000001U, 0x00000000U );
 HW_DEFINE_SIMPLE( HW_hd1,    0x00000000U, 0x00000000U, 0x00000000U, 0x00000002U, 0x00000000U );
 HW_DEFINE_SIMPLE( HW_hd2,    0x00000000U, 0x00000000U, 0x00000000U, 0x00000004U, 0x00000000U );
@@ -186,7 +193,9 @@ HW_DEFINE_SIMPLE( HW_hd29,   0x00000000U, 0x00000000U, 0x00000000U, 0x20000000U,
 HW_DEFINE_SIMPLE( HW_hd30,   0x00000000U, 0x00000000U, 0x00000000U, 0x40000000U, 0x00000000U );
 HW_DEFINE_SIMPLE( HW_hd31,   0x00000000U, 0x00000000U, 0x00000000U, 0x80000000U, 0x00000000U );
 
-/* floating point registers */
+/*
+ * floating point registers
+ */
 HW_DEFINE_SIMPLE( HW_F0,     0x00000000U, 0x00000000U, 0x00000000U, 0x00000000U, 0x00000001U );
 HW_DEFINE_SIMPLE( HW_F1,     0x00000000U, 0x00000000U, 0x00000000U, 0x00000000U, 0x00000002U );
 HW_DEFINE_SIMPLE( HW_F2,     0x00000000U, 0x00000000U, 0x00000000U, 0x00000000U, 0x00000004U );
@@ -228,13 +237,12 @@ HW_DEFINE_SIMPLE( HW_SEGS,   0x00000000U, 0x00000000U, 0x00000000U, 0x00000000U,
 
 /*
  * HW_GPR - general purpose registers - can use for any integer ops
- * HW_IR - integer registers - above plus the R31 sink
+ * HW_IR  - integer registers - above plus the R31 sink
  * HW_FPR - floating point registers
  */
 
 #define HW_DEFINE_COMPOUND( x )         \
 enum {                                  \
-                                        \
 /* word sized registers */              \
 HW_W0_##x = (HW_B0_##x+HW_hb0_##x),     \
 HW_W1_##x = (HW_B1_##x+HW_hb1_##x),     \
@@ -541,7 +549,9 @@ HW_DEFINE_GLOBAL_CONST( HW_F29 );
 HW_DEFINE_GLOBAL_CONST( HW_F30 );
 HW_DEFINE_GLOBAL_CONST( HW_F31 );
 
-// TODO: Shouldn't this be much higher? Like 32?
+/*
+ * TODO: Shouldn't this be much higher? Like 32?
+ */
 #define MAX_POSSIBLE_REG        8
 
 #endif

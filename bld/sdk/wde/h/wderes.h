@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -56,7 +57,7 @@ extern bool         WdeRegisterResClass( HINSTANCE );
 extern bool         WdeQueryKillApp( bool );
 extern void         WdeFreeResList( void );
 extern WdeResInfo   *WdeCreateNewResource( char * );
-extern bool         WdeSaveResource( WdeResInfo *, bool );
+extern bool         WdeSaveResource( WdeResInfo *, bool prompt_name );
 extern bool         WdeOpenResource( char * );
 extern int          WdeGetNumRes( void );
 extern WdeResInfo   *WdeGetCurrentRes( void );

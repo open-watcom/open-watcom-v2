@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,7 +33,7 @@
 #include "param.h"
 #include "read.h"
 #include "format.h"
-#include "strings2.h"
+
 
 void main( int argc, char *argv[] ) {
     Parameters          param;

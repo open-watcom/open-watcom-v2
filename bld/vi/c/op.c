@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -203,7 +204,7 @@ vi_rc Change( range *r )
 #else
     vecol = VirtualColumnOnCurrentLine( ecol + 1 );
     vecol--;
-    ExpandTabsInABuffer( CurrentLine->data, CurrentLine->len, WorkLine->data, EditVars.MaxLine + 1 );
+    ExpandTabsInABuffer( CurrentLine->data, CurrentLine->len, WorkLine->data, EditVars.MaxLineLen + 1 );
     WorkLine->len = strlen( WorkLine->data );
     tmp = WorkLine->data[vecol];
     WorkLine->data[vecol] = '$';

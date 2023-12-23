@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,6 +39,10 @@
 #include "win.h"
 #include "menu.h"
 #include "tempio.h"
+#include "myprintf.h"
+#include "tokenize.h"
+#include "parse.h"
+#include "utilstok.h"
 
 #include "clibext.h"
 
@@ -273,7 +277,7 @@ static const char *getOneSetVal( int token, bool isbool, char *tmpstr, bool want
                 j = EditVars.Hist[HIST_LASTFILES].max;
                 break;
             case SETVAR_T_MAXLINELEN:
-                j = EditVars.MaxLine;
+                j = EditVars.MaxLineLen;
                 break;
             case SETVAR_T_PAGELINESEXPOSED:
                 j = EditVars.PageLinesExposed;
@@ -668,7 +672,7 @@ static vi_rc processSetToken( int j, char *new, const char **pvalue, int *winfla
         switch( j ) {
         case SETVAR_T_STATUSSECTIONS:
             if( EditVars.StatusSections != NULL ) {
-                MemFree( EditVars.StatusSections );
+                _MemFreeArray( EditVars.StatusSections );
                 EditVars.StatusSections = NULL;
                 EditVars.NumStatusSections = 0;
             }
@@ -752,13 +756,14 @@ static vi_rc processSetToken( int j, char *new, const char **pvalue, int *winfla
             break;
         case SETVAR_T_FIGNORE:
             if( *fn == '\0' ) {
-                MemFreePtr( (void **)&EditVars.FIgnore );
+                _MemFreeArray( EditVars.FIgnore );
+                EditVars.FIgnore = NULL;
                 EditVars.CurrFIgnore = 0;
                 if( msgFlag ) {
                     MySprintf( fn, "fignore reset" );
                 }
             } else {
-                EditVars.FIgnore = MemRealloc( EditVars.FIgnore, EXTENSION_LENGTH * (EditVars.CurrFIgnore + 1) );
+                EditVars.FIgnore = _MemReallocArray( EditVars.FIgnore, char, EXTENSION_LENGTH * (EditVars.CurrFIgnore + 1) );
                 str[0] = '.';
                 str[1] = '\0';
                 strcat( str, fn );
@@ -974,16 +979,16 @@ static vi_rc processSetToken( int j, char *new, const char **pvalue, int *winfla
   #endif
                 break;
             case SETVAR_T_MAXFILTERHISTORY:
-                HistInit( &EditVars.Hist[HIST_FILTER], lval );
+                HistInitSingle( HIST_FILTER, lval );
                 break;
             case SETVAR_T_MAXCLHISTORY:
-                HistInit( &EditVars.Hist[HIST_CMD], lval );
+                HistInitSingle( HIST_CMD, lval );
                 break;
             case SETVAR_T_MAXFINDHISTORY:
-                HistInit( &EditVars.Hist[HIST_FIND], lval );
+                HistInitSingle( HIST_FIND, lval );
                 break;
             case SETVAR_T_MAXLASTFILESHISTORY:
-                HistInit( &EditVars.Hist[HIST_LASTFILES], lval );
+                HistInitSingle( HIST_LASTFILES, lval );
                 break;
             case SETVAR_T_MAXTILECOLORS:
                 k = (EditVars.TileColors == NULL) ? 0 : EditVars.MaxTileColors + 1;
@@ -1015,9 +1020,9 @@ static vi_rc processSetToken( int j, char *new, const char **pvalue, int *winfla
                 /* file save fails if 1 line is > MAX_IO_BUFFER */
                 if( lval > MAX_IO_BUFFER )
                     lval = MAX_IO_BUFFER;
-                EditVars.MaxLine = lval;
+                EditVars.MaxLineLen = lval;
                 StaticStart();
-                WorkLine = MemRealloc( WorkLine, sizeof( line ) + EditVars.MaxLine + 2 );
+                WorkLine = MemRealloc( WorkLine, sizeof( line ) + EditVars.MaxLineLen + 2 );
                 break;
             case SETVAR_T_TOOLBARBUTTONHEIGHT:
                 EditVars.ToolBarButtonHeight = lval;
@@ -1107,6 +1112,24 @@ static int compareString( void const *p1, void const *p2 )
 } /* compareString */
 
 /*
+ * getLongestTokenLength - return length of longest token in token string
+ */
+static size_t getLongestTokenLength( const char *list )
+{
+    size_t      max_len = 0, len;
+    const char  *t;
+
+    for( t = list; *t != '\0'; t += len + 1 ) {
+        len = strlen( t );
+        if( max_len < len ) {
+            max_len = len;
+        }
+    }
+    return( max_len );
+
+} /* getLongestTokenLength */
+
+/*
  * getSetInfo - build string of values
  */
 static list_linenum getSetInfo( char ***vals, char ***list, size_t *longest )
@@ -1124,9 +1147,9 @@ static list_linenum getSetInfo( char ***vals, char ***list, size_t *longest )
     tc1 = GetNumberOfTokens( SetVarTokens );
     tc2 = GetNumberOfTokens( SetFlagTokens );
     tc = tc1 + tc2;
-    sdata = _MemAllocArray( set_data *, tc );
-    *list = _MemAllocList( tc );
-    *vals = _MemAllocList( tc );
+    sdata = _MemAllocPtrArray( set_data, tc );
+    *list = _MemAllocPtrArray( char, tc );
+    *vals = _MemAllocPtrArray( char, tc );
 
     for( i1 = 0; i1 < tc1; i1++ ) {
         sdata[i1] = MemAlloc( sizeof( set_data ) );
@@ -1142,11 +1165,10 @@ static list_linenum getSetInfo( char ***vals, char ***list, size_t *longest )
     for( i = 0; i < tc; i++ ) {
         (*list)[i] = sdata[i]->setting;
         (*vals)[i] = sdata[i]->val;
-        MemFree( sdata[i] );
     }
-    MemFree( sdata );
-    i1 = GetLongestTokenLength( SetVarTokens );
-    i2 = GetLongestTokenLength( SetFlagTokens );
+    _MemFreePtrArray( sdata, tc, MemFree );
+    i1 = getLongestTokenLength( SetVarTokens );
+    i2 = getLongestTokenLength( SetFlagTokens );
     if( i1 > i2 ) {
         *longest = i1;
     } else {
@@ -1208,8 +1230,8 @@ vi_rc Set( const char *name )
         }
         rc = SelectItemAndValue( &setw_info, "Settings", list, tc, SettingSelected, 1, vals, longest + 3 );
         setw_info.area.y2 = tmp;
-        MemFreeList( tc, vals );
-        MemFreeList( tc, list );
+        _MemFreePtrArray( vals, tc, MemFree );
+        _MemFreePtrArray( list, tc, MemFree );
         ReDisplayScreen();
   #endif
 #endif /* VICOMP */
@@ -1285,24 +1307,4 @@ const char *GetASetVal( const char *token, char *tmpstr )
     return( "" );
 
 } /* GetASetVal */
-
-char *ExpandTokenSet( char *token_no, char *buff )
-{
-    bool        val;
-    int         tok;
-    char        settokstr[TOK_MAX_LEN + 1];
-
-    tok = atoi( token_no );
-    val = true;
-    if( tok < 0 ) {
-        tok *= -1;
-        val = false;
-    }
-    if( tok >= SETVAR_T_ ) {
-        sprintf( buff, "%s%s", GET_BOOL_PREFIX( val ), GetTokenStringCVT( SetFlagTokens, tok - SETVAR_T_, settokstr, true ) );
-    } else {
-        sprintf( buff, "%s" CFG_SET_SEPARATOR, GetTokenStringCVT( SetVarTokens, tok, settokstr, true ) );
-    }
-    return( buff );
-}
 #endif

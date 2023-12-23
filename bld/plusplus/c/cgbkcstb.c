@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,7 +39,7 @@
 #include "cgbackut.h"
 #include "ring.h"
 #include "initdefs.h"
-#ifndef NDEBUG
+#ifdef DEVBUILD
 #include "pragdefn.h"
 #include "togglesd.h"
 #endif
@@ -47,7 +47,7 @@
 
 static carve_t carve_call_stab; // carve control: CALL_STAB
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 
 static void __dump( const char* text, CALL_STAB* cstb )
 {

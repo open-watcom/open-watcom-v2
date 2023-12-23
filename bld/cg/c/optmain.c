@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -61,13 +61,15 @@ static  void    PullQueue( void )
             break;
         if( _Class( FirstIns ) == OC_LABEL ) {
             if( UniqueLabel( _Label( FirstIns ) ) ) {
-                /* take off extra byte added when the ins went into queue */
+                /*
+                 * take off extra byte added when the ins went into queue
+                 */
                 FirstIns->oc.oc_header.objlen--;
             }
             /*
-                We want to order the alias list so that the labels with
-                symbols dump out first. They might be FE_COMMON labels.
-            */
+             * We want to order the alias list so that the labels with
+             * symbols dump out first. They might be FE_COMMON labels.
+             */
             be_lbls = NULL;
             owner = &_Label( FirstIns );
             for( lbl = _Label( FirstIns ); lbl != NULL; lbl = next ) {
@@ -104,10 +106,10 @@ static  void    PullQueue( void )
         DelInstr( FirstIns );
         FreePendingDeletes();
         /*
-           Head of queue must be immediately after an unconditional control
-           flow instruction since things may be bypassing the control
-           flow optimizer.
-        */
+         * Head of queue must be immediately after an unconditional control
+         * flow instruction since things may be bypassing the control
+         * flow optimizer.
+         */
         if( _TransferClass( cl ) )
             break;
         if( FirstIns == NULL ) {
@@ -138,13 +140,18 @@ static  bool    LDone( any_oc *oc )
 void    InputOC( any_oc *oc )
 /***************************/
 {
+    oc_class        cl;
+
   optbegin
     PSBlip();
     if( !LDone( oc ) ) {
-        if( (oc->oc_header.class & GET_BASE) != OC_INFO
-         && (oc->oc_header.class & GET_BASE) != OC_LABEL
-         && _TransferClass( PrevClass( NULL ) ) )
-            optreturnvoid; /*dead code*/
+        if( OC_BASE_CLASS( oc->oc_header.class ) != OC_INFO
+         && OC_BASE_CLASS( oc->oc_header.class ) != OC_LABEL ) {
+            cl = PrevClass( NULL );
+            if( _TransferClass( cl ) ) {
+                optreturnvoid; /*dead code*/
+            }
+        }
         while( QCount >= Q_MAX ) {
             PullQueue();
         }
@@ -152,7 +159,9 @@ void    InputOC( any_oc *oc )
         switch( _Class( LastIns ) ) {
         case OC_LABEL:
             if( _TstStatus( _Label( LastIns ), UNIQUE ) ) {
-                /* Unique labels might need an addition byte of spacing */
+                /*
+                 * Unique labels might need an addition byte of spacing
+                 */
                 LastIns->oc.oc_header.objlen++;
             }
             /* fall through */

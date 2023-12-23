@@ -1,3 +1,5 @@
+tree_depth = 4
+
 proj_name = res2res
 
 res2res_autodepends = .AUTODEPEND

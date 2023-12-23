@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -60,10 +60,8 @@ void FiniMsg( void ) {}
 #include "wressetr.h"
 #include "wresset2.h"
 #include "wreslang.h"
-#if !defined( IDE_PGM )
-#include "clibint.h"
-#endif
 
+#include "clibint.h"
 #include "clibext.h"
 
 

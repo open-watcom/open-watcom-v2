@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -255,7 +255,7 @@ static bool MacPopupClicked( a_window wnd, gui_ctl_id id )
     wndmac = WndMac( wnd );
     if( wndmac->mac == NULL )
         return( false );
-    p = StrCopy( GetCmdName( CMD_ACCEL ), TxtBuff );
+    p = StrCopyDst( GetCmdName( CMD_ACCEL ), TxtBuff );
     *p++ = ' ';
     if( wndmac->mac->type == MACRO_MAIN_MENU ) {
         p = GetCmdMain( p );
@@ -340,8 +340,8 @@ static void MacModCmd( a_window wnd, wnd_row row )
 
     mac = MacGetMacro( row );
     cmds = mac->cmd;
-//    p = StrCopy( cmds->buff, TxtBuff );
-    StrCopy( cmds->buff, TxtBuff );
+//    p = StrCopyDst( cmds->buff, TxtBuff );
+    StrCopyDst( cmds->buff, TxtBuff );
     if( DlgNew( LIT_DUI( Enter_New_Command ), TxtBuff, TXT_LEN ) ) {
         cmds = AllocCmdList( TxtBuff, strlen( TxtBuff ) );
         FreeCmdList( mac->cmd );
@@ -499,15 +499,15 @@ static  bool MacGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_pi
         line->indent = Indents[piece];
         switch( piece ) {
         case PIECE_KEY:
-            p = StrCopy( KeyName( mac->key ), TxtBuff );
+            p = StrCopyDst( KeyName( mac->key ), TxtBuff );
             while( WndExtentX( wnd, TxtBuff ) < MIN_KEY_SIZE( wnd ) ) {
-                p = StrCopy( " ", p );
+                p = StrCopyDst( " ", p );
             }
             line->text = TxtBuff;
             return( true );
         case PIECE_WHERE:
             line->text = TxtBuff;
-            StrCopy( *WndDisplayNames[mac->wndclass], TxtBuff );
+            StrCopyDst( *WndDisplayNames[mac->wndclass], TxtBuff );
             return( true );
         case PIECE_WHAT:
             line->text = *WhatList[mac->type];

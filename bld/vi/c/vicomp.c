@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,21 +36,21 @@
 #include "specio.h"
 #include "pathgrp2.h"
 #include "myio.h"
+#include "bprintf.h"
+#include "parse.h"
+#include "myprintf.h"
 
 #include "clibext.h"
 
 
 #define MAX_SRC_LINE    512
 
-const char _NEAR  SingleBlank[] = " ";
-const char _NEAR  SingleSlash[] = "/";
-const char _NEAR  SingleDQuote[] = "\"";
+const char  SingleBlank[] = " ";
+const char  SingleDQuote[] = "\"";
 
 int         SourceErrCount = 0;
 line        *WorkLine;
-key_map     *KeyMaps = NULL;
-key_map     *InputKeyMaps = NULL;
-int         MaxLine = 512;
+int         MaxLineLen = 1024;
 
 vi_rc       LastRC      = ERR_NO_ERR;
 vi_rc       LastRetCode = ERR_NO_ERR;
@@ -71,21 +71,6 @@ void MemFree( void *ptr )
     free( ptr );
 
 } /* MemFree */
-
-/*
- * MemFreeList - free up memory
- */
-void MemFreeList( list_linenum count, char **ptr )
-{
-    if( ptr != NULL ) {
-        list_linenum i;
-        for( i = 0; i < count; i++ ) {
-            free( ptr[i] );
-        }
-        free( ptr );
-    }
-
-} /* MemFreeList */
 
 /*
  * MemRealloc - reallocate a block, and it will succeed.
@@ -161,9 +146,13 @@ static vi_rc initSource( vars_list *vl )
 static void finiSource( labels *lab, vars_list *vl, sfile *sf )
 {
     sfile       *curr, *tmp;
+    int         i;
 
     if( lab != NULL ) {
-        MemFreeList( lab->cnt, lab->name );
+        for( i = 0; i < lab->cnt; i++ ) {
+            MemFree( lab->name[i] );
+        }
+        MemFree( lab->name );
         MemFree( lab->pos );
     }
 
@@ -179,6 +168,45 @@ static void finiSource( labels *lab, vars_list *vl, sfile *sf )
     }
 
 } /* finiSource */
+
+// out_char_str() - called from BasePrintf() - writes to cStr
+static char *cStr;
+
+static void out_char_str( char ch )
+{
+    *cStr++ = ch;
+}
+
+// out_char_file() - called from BasePrintf() - writes to cFile
+static FILE *cFile;
+
+static void out_char_file( char ch )
+{
+    fputc( ch, cFile );
+}
+
+void MyFprintf( FILE *fp, const char *str, ... )
+// vfprintf++ functionality
+{
+    va_list args;
+
+    cFile = fp;
+    va_start( args, str );
+    BasePrintf( str, out_char_file, args );
+    va_end( args );
+}
+
+void MySprintf( char *out, const char *str, ... )
+// sprintf++ functionality
+{
+    va_list     args;
+
+    cStr = out;
+    va_start( args, str );
+    BasePrintf( str, out_char_str, args );
+    va_end( args );
+    *cStr++ = '\0';
+}
 
 /*
  * writeScript - write a compiled script
@@ -287,7 +315,7 @@ static vi_rc Compile( const char *fn, const char *data )
     vi_rc       rc;
     srcline     sline = 0;
 
-    WorkLine = MemAlloc( sizeof( line ) + MaxLine + 2 );
+    WorkLine = MemAlloc( sizeof( line ) + MaxLineLen + 2 );
     WorkLine->len = -1;
     LastRC = LastRetCode;
     vl.head = vl.tail = NULL;

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -146,7 +147,7 @@ OBJPTR WdeMakeStatic( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
 
     style |= WS_VISIBLE | WS_CHILD;
     SETCTL_STYLE( WdeDefaultStatic, style );
-    SETCTL_TEXT( WdeDefaultStatic, ResStrToNameOrOrd( text ) );
+    SETCTL_TEXT( WdeDefaultStatic, ResStrToNameOrOrdinal( text ) );
     SETCTL_ID( WdeDefaultStatic, WdeGetNextControlID() );
 
     WdeChangeSizeToDefIfSmallRect( parent, id, obj_rect );
@@ -282,8 +283,7 @@ void WdeStaticFini( void )
 
 bool WdeStaticDestroy( WdeStaticObject *obj, bool *flag, bool *p2 )
 {
-    /* touch unused vars to get rid of warning */
-    _wde_touch( p2 );
+    /* unused parameters */ (void)p2;
 
     if( !Forward( obj->control, DESTROY, flag, NULL ) ) {
         WdeWriteTrail( "WdeStaticDestroy: Control DESTROY failed" );
@@ -299,8 +299,7 @@ bool WdeStaticValidateAction( WdeStaticObject *obj, ACTION_ID *act, void *p2 )
 {
     int     i;
 
-    /* touch unused vars to get rid of warning */
-    _wde_touch( p2 );
+    /* unused parameters */ (void)p2;
 
     for( i = 0; i < MAX_ACTIONS; i++ ) {
         if( WdeStaticActions[i].id == *act ) {
@@ -345,8 +344,7 @@ bool WdeStaticCopyObject( WdeStaticObject *obj, WdeStaticObject **new, OBJPTR ha
 
 bool WdeStaticIdentify( WdeStaticObject *obj, OBJ_ID *id, void *p2 )
 {
-    /* touch unused vars to get rid of warning */
-    _wde_touch( p2 );
+    /* unused parameters */ (void)p2;
 
     *id = obj->object_id;
 
@@ -355,9 +353,7 @@ bool WdeStaticIdentify( WdeStaticObject *obj, OBJ_ID *id, void *p2 )
 
 bool WdeStaticGetWndProc( WdeStaticObject *obj, WNDPROC *proc, void *p2 )
 {
-    /* touch unused vars to get rid of warning */
-    _wde_touch( obj );
-    _wde_touch( p2 );
+    /* unused parameters */ (void)obj; (void)p2;
 
     *proc = WdeStaticSuperClassProc;
 
@@ -366,9 +362,7 @@ bool WdeStaticGetWndProc( WdeStaticObject *obj, WNDPROC *proc, void *p2 )
 
 bool WdeStaticGetWindowClass( WdeStaticObject *obj, char **class, void *p2 )
 {
-    /* touch unused vars to get rid of warning */
-    _wde_touch( obj );
-    _wde_touch( p2 );
+    /* unused parameters */ (void)obj; (void)p2;
 
     *class = "static";
 
@@ -379,9 +373,7 @@ bool WdeStaticDefine( WdeStaticObject *obj, POINT *pnt, void *p2 )
 {
     WdeDefineObjectInfo  o_info;
 
-    /* touch unused vars to get rid of warning */
-    _wde_touch( pnt );
-    _wde_touch( p2 );
+    /* unused parameters */ (void)pnt; (void)p2;
 
     o_info.obj = obj->object_handle;
     o_info.obj_id = obj->object_id;

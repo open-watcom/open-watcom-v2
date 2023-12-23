@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,37 +31,37 @@
 
 
 /*
-    The data structures for OS/2 dialog templates are as follows:
-
-struct DLGTEMPLATE {
-    USHORT      cbTemplate;         // Template size
-    USHORT      type;               // Dialog type - always zero?
-    USHORT      codepage;           // Dialog codepage
-    USHORT      offadlgti;          // Offset to first item
-    USHORT      fsTemplateStatus;   // Template status flags
-    USHORT      iItemFocus;         // Index to initial focus window
-    USHORT      coffPresParams;     // Offset to presentation parameters
-    DLGTIITEM   adlgti[1];          // Array of item templates
-}
-
-struct DLGTITEM {
-    USHORT      fsItemStatus;       // Item status flags
-    USHORT      cChildren;          // Number of child windows
-    USHORT      cchClassName;       // Number of chars in class name
-    USHORT      offClassName;       // Offset to class name
-    USHORT      cchText;            // Number of chars in window text
-    USHORT      offText;            // Offset to window text
-    ULONG       flStyle;            // Window style
-    USHORT      x;                  // X coordinate
-    USHORT      y;                  // Y coordinate
-    USHORT      cx;                 // Width
-    USHORT      cy;                 // Height
-    USHORT      id;                 // Window ID
-    USHORT      offPresParams;      // Offset to presentation parameters
-    USHORT      offCtlData;         // Offset to class specific data
-}
-
-*/
+ * The data structures for OS/2 dialog templates are as follows:
+ *
+ * struct DLGTEMPLATE {
+ *     USHORT      cbTemplate;         // Template size
+ *     USHORT      type;               // Dialog type - always zero?
+ *     USHORT      codepage;           // Dialog codepage
+ *     USHORT      offadlgti;          // Offset to first item
+ *     USHORT      fsTemplateStatus;   // Template status flags
+ *     USHORT      iItemFocus;         // Index to initial focus window
+ *     USHORT      coffPresParams;     // Offset to presentation parameters
+ *     DLGTIITEM   adlgti[1];          // Array of item templates
+ * }
+ *
+ * struct DLGTITEM {
+ *     USHORT      fsItemStatus;       // Item status flags
+ *     USHORT      cChildren;          // Number of child windows
+ *     USHORT      cchClassName;       // Number of chars in class name
+ *     USHORT      offClassName;       // Offset to class name
+ *     USHORT      cchText;            // Number of chars in window text
+ *     USHORT      offText;            // Offset to window text
+ *     ULONG       flStyle;            // Window style
+ *     USHORT      x;                  // X coordinate
+ *     USHORT      y;                  // Y coordinate
+ *     USHORT      cx;                 // Width
+ *     USHORT      cy;                 // Height
+ *     USHORT      id;                 // Window ID
+ *     USHORT      offPresParams;      // Offset to presentation parameters
+ *     USHORT      offCtlData;         // Offset to class specific data
+ * }
+ *
+ */
 
 #include <assert.h>
 #include "global.h"
@@ -176,9 +177,10 @@ static FullDialogBoxControlOS2 *SemOS2InitDiagCtrl( void )
     return( newctrl );
 }
 
-/* These are the default styles used for OS/2 dialog box controls  */
-/* statments except the CONTROL statement (see rcos2.y for that).  */
-
+/*
+ * These are the default styles used for OS/2 dialog box controls
+ * statments except the CONTROL statement (see rcos2.y for that).
+ */
 #define DEF_AUTOCHECKBOX     (OS2_BS_AUTOCHECKBOX|OS2_WS_VISIBLE|OS2_WS_TABSTOP)
 #define DEF_AUTORADIOBUTTON  (OS2_BS_AUTORADIOBUTTON|OS2_WS_VISIBLE)
 #define DEF_CHECKBOX         (OS2_BS_CHECKBOX|OS2_WS_VISIBLE|OS2_WS_TABSTOP)
@@ -311,7 +313,9 @@ FullDialogBoxControlOS2 *SemOS2NewDiagCtrl( YYTOKENTYPE token,
     newctrl->ctrl.Text       = opts.Text;
     newctrl->ctrl.ClassID    = cont_class;
     newctrl->ctrl.Style      = style;
-    /* ExtraBytes is 0 for all predefined controls */
+    /*
+     * ExtraBytes is 0 for all predefined controls
+     */
     newctrl->ctrl.ExtraBytes = 0;
     newctrl->presParams      = presparams;
 
@@ -345,7 +349,9 @@ static void SemOS2FreeDiagCtrlList( FullDiagCtrlListOS2 *list )
 
     for( ctrl = list->head; ctrl != NULL; ctrl = next ) {
         next = ctrl->next;
-        /* free the contents of pointers within the structure */
+        /*
+         * free the contents of pointers within the structure
+         */
         if( ctrl->ctrl.ClassID != NULL ) {
             RESFREE( ctrl->ctrl.ClassID );
         }
@@ -558,8 +564,9 @@ static char *SemOS2BuildTemplateArray( char *ptr, FullDiagCtrlListOS2 *ctrls )
     DialogBoxControl            *control;
     DialogTemplateItemOS2       *tmpl;
 
-    /* Create the DLGTITEM array and fill in whatever data
-       we know at this point.
+    /*
+     * Create the DLGTITEM array and fill in whatever data
+     * we know at this point.
      */
     tmpl = (DialogTemplateItemOS2 *)ptr;
     for( ctrl = ctrls->head; ctrl != NULL; ctrl = ctrl->next ) {
@@ -615,23 +622,26 @@ static char *SemOS2DumpTemplateData( char *base, char *ptr,
     DialogBoxControl            *control;
     DialogTemplateItemOS2       *tmpl;
 
-    /* Dump all strings etc. into the resource image and update the
-       offsets as appropriate.
+    /*
+     * Dump all strings etc. into the resource image and update the
+     * offsets as appropriate.
      */
     for( ctrl = ctrls->head; ctrl != NULL; ctrl = ctrl->next ) {
         control = &(ctrl->ctrl);
         tmpl    = ctrl->tmpl;
-
-        // Write out class name if provided
+        /*
+         * Write out class name if provided
+         */
         if( (control->ClassID->Class & 0x80) == 0 ) {
             strcpy( ptr, control->ClassID->ClassName );
             tmpl->offClassName = (uint_16)( ptr - base );
             ptr += tmpl->cchClassName + 1;
         }
-
-        // IBM's RC always stores at least one character of text
-        // even if no text is provided; it could be a buglet but we'll
-        // do the same for compatibility.
+        /*
+         * IBM's RC always stores at least one character of text
+         * even if no text is provided; it could be a buglet but we'll
+         * do the same for compatibility.
+         */
         tmpl->offText = (uint_16)( ptr - base );
         if( control->Text != NULL ) {
             if( control->Text->ord.fFlag == 0xFF ) {
@@ -672,13 +682,14 @@ static char *SemOS2DumpTemplateData( char *base, char *ptr,
     return( ptr );
 }
 
-/* The OS/2 dialog templates present us with a problem because the
-   template items contain a number of offsets that are not known until
-   the template is processed; this means we cannot just start spitting
-   the data into a file. Instead we build an in-memory image of the
-   resource (the size must be < 64K) and then dump the entire resource
-   into the file - which certainly shouldn't hurt performance either.
-*/
+/*
+ * The OS/2 dialog templates present us with a problem because the
+ * template items contain a number of offsets that are not known until
+ * the template is processed; this means we cannot just start spitting
+ * the data into a file. Instead we build an in-memory image of the
+ * resource (the size must be < 64K) and then dump the entire resource
+ * into the file - which certainly shouldn't hurt performance either.
+ */
 void SemOS2WriteDialogTemplate( WResID *name, ResMemFlags flags,
                                        uint_32 codepage,
                                        FullDiagCtrlListOS2 *ctrls )
@@ -742,7 +753,7 @@ FullDialogBoxControlOS2 *SemOS2SetControlData( ResNameOrOrdinal *name,
     control->ctrl.ID         = id;
     control->ctrl.SizeInfo   = sizeinfo;
     control->ctrl.Text       = name;
-    control->ctrl.ClassID    = ResNameOrOrdToControlClass( ctlclassname );
+    control->ctrl.ClassID    = ResNameOrOrdinalToControlClass( ctlclassname );
     control->ctrl.Style      = style.Value;
     control->children        = childctls;
     control->ctrl.ExtraBytes = 0;
@@ -765,7 +776,7 @@ FullDialogBoxControlOS2 *SemOS2SetWndData( ResNameOrOrdinal *name,
     control->ctrl.ID         = id;
     control->ctrl.SizeInfo   = sizeinfo;
     control->ctrl.Text       = name;
-    control->ctrl.ClassID    = ResNameOrOrdToControlClass( ctlclassname );
+    control->ctrl.ClassID    = ResNameOrOrdinalToControlClass( ctlclassname );
     control->ctrl.Style      = style.Value;
     control->children        = childctls;
     control->ctrl.ExtraBytes = 4;
@@ -792,14 +803,17 @@ FullDialogBoxControlOS2 *SemOS2SetWindowData( FullDiagCtrlOptionsOS2 opts,
     if( token == Y_FRAME ) {
         defstyle = OS2_WS_VISIBLE;
     } else {
-        /* it's gotta be a Y_DIALOG */
+        /*
+         * it's gotta be a Y_DIALOG
+         */
         defstyle = OS2_WS_CLIPSIBLINGS | OS2_WS_SAVEBITS | OS2_FS_DLGBORDER;
     }
     style_mask  = opts.Style.Mask;
     style_value = opts.Style.Value;
     style = (style_mask & style_value) | (~style_mask & defstyle);
-
-    /* IBM's RC is trying to be clever */
+    /*
+     * IBM's RC is trying to be clever
+     */
     if( framectl.Value & OS2_FCF_SIZEBORDER )
         style &= ~OS2_FS_DLGBORDER;
 

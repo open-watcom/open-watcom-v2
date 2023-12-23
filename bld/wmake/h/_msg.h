@@ -47,7 +47,7 @@ pick( BANNER, banner1w( "Make", _WMAKE_VERSION_ ) "\n" banner2 "\n" banner2a( 19
  * versions of WMake...
  */
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 pick( ASSERTION_FAILED,         "Assertion %E in %s(%d) failed" )
 #endif
 

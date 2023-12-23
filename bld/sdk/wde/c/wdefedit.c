@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -123,7 +124,7 @@ OBJPTR WdeMakeEdit( OBJPTR parent, RECT *obj_rect, OBJPTR handle, DialogStyle st
     style |= WS_BORDER | WS_VISIBLE | WS_TABSTOP | WS_CHILD;
 
     SETCTL_STYLE( WdeDefaultEdit, style );
-    SETCTL_TEXT( WdeDefaultEdit, ResStrToNameOrOrd( text ) );
+    SETCTL_TEXT( WdeDefaultEdit, ResStrToNameOrOrdinal( text ) );
     SETCTL_ID( WdeDefaultEdit, WdeGetNextControlID() );
 
     WdeChangeSizeToDefIfSmallRect( parent, id, obj_rect );
@@ -262,8 +263,7 @@ void WdeEditFini( void )
 
 bool WdeEditDestroy( WdeEditObject *obj, bool *flag, bool *p2 )
 {
-    /* touch unused vars to get rid of warning */
-    _wde_touch( p2 );
+    /* unused parameters */ (void)p2;
 
     if( !Forward( obj->control, DESTROY, flag, NULL ) ) {
         WdeWriteTrail( "WdeEditDestroy: Control DESTROY failed" );
@@ -279,8 +279,7 @@ bool WdeEditValidateAction( WdeEditObject *obj, ACTION_ID *act, void *p2 )
 {
     int     i;
 
-    /* touch unused vars to get rid of warning */
-    _wde_touch( p2 );
+    /* unused parameters */ (void)p2;
 
     for( i = 0; i < MAX_ACTIONS; i++ ) {
         if( WdeEditActions[i].id == *act ) {
@@ -325,8 +324,7 @@ bool WdeEditCopyObject( WdeEditObject *obj, WdeEditObject **new, OBJPTR handle )
 
 bool WdeEditIdentify( WdeEditObject *obj, OBJ_ID *id, void *p2 )
 {
-    /* touch unused vars to get rid of warning */
-    _wde_touch( p2 );
+    /* unused parameters */ (void)p2;
 
     *id = obj->object_id;
 
@@ -335,9 +333,7 @@ bool WdeEditIdentify( WdeEditObject *obj, OBJ_ID *id, void *p2 )
 
 bool WdeEditGetWndProc( WdeEditObject *obj, WNDPROC *proc, void *p2 )
 {
-    /* touch unused vars to get rid of warning */
-    _wde_touch( obj );
-    _wde_touch( p2 );
+    /* unused parameters */ (void)obj; (void)p2;
 
     *proc = WdeEditSuperClassProc;
 
@@ -346,9 +342,7 @@ bool WdeEditGetWndProc( WdeEditObject *obj, WNDPROC *proc, void *p2 )
 
 bool WdeEditGetWindowClass( WdeEditObject *obj, char **class, void *p2 )
 {
-    /* touch unused vars to get rid of warning */
-    _wde_touch( obj );
-    _wde_touch( p2 );
+    /* unused parameters */ (void)obj; (void)p2;
 
     *class = "Edit";
 
@@ -359,9 +353,7 @@ bool WdeEditDefine( WdeEditObject *obj, POINT *pnt, void *p2 )
 {
     WdeDefineObjectInfo  o_info;
 
-    /* touch unused vars to get rid of warning */
-    _wde_touch( pnt );
-    _wde_touch( p2 );
+    /* unused parameters */ (void)pnt; (void)p2;
 
     o_info.obj = obj->object_handle;
     o_info.obj_id = obj->object_id;
@@ -557,9 +549,7 @@ bool WdeEditDefineHook( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam, D
 {
     bool processed;
 
-    /* touch unused vars to get rid of warning */
-    _wde_touch( mask );
-    _wde_touch( lParam );
+    /* unused parameters */ (void)mask; (void)lParam;
 
     processed = false;
 

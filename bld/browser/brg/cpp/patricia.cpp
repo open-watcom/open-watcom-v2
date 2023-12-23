@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -57,7 +58,7 @@ private:
                                         PatriciaNode * left,
                                         PatriciaNode * right );
 
-    static ubit         getBit( const char * str, size_t len, uint_16 bitpos );
+    static uint_8       getBit( const char * str, size_t len, uint_16 bitpos );
 
     int_16              _bitPos;    // bit to compare for this node
     char *              _key;       // the key value
@@ -100,7 +101,7 @@ static void PatriciaNode::ragnarok()
     _stringPool.ragnarok();
 }
 
-static inline ubit PatriciaNode::getBit( const char * str, size_t len,
+static inline uint_8 PatriciaNode::getBit( const char * str, size_t len,
                                          uint_16 bitPos )
 //--------------------------------------------------------------------
 {
@@ -110,7 +111,7 @@ static inline ubit PatriciaNode::getBit( const char * str, size_t len,
                                     *(str + (bitPos / 8)) & (0x80 >> (bitPos % 8)) );
     #endif
 
-    ubit res;
+    uint_8 res;
 
     if( bitPos == (uint_16) -1 ) return 0;
 
@@ -120,7 +121,7 @@ static inline ubit PatriciaNode::getBit( const char * str, size_t len,
 
     str += bitPos >> 3 ;
 
-    res = (ubit) (*str & ( 0x80 >> ( bitPos & 0x07 ) ) );
+    res = (uint_8)(*str & ( 0x80 >> ( bitPos & 0x07 ) ) );
 
     return( res != 0 );
 }

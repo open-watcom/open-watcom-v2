@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -151,7 +151,7 @@ static  name    *TruncImmediate( instruction *mem_ins, name *index ) {
 
     assert( index->n.class == N_INDEXED );
     result = index;
-    if( index->i.constant != (signed_16)index->i.constant ) {
+    if( index->i.constant != (int_16)index->i.constant ) {
         // too big to fit into a signed-16 displacement on a memory operand
         temp = AllocTemp( I4 );
         ins = MakeBinary( OP_ADD, index->i.index, AllocS32Const( index->i.constant ), temp, I4 );
@@ -191,7 +191,7 @@ void    FixMemRefs() {
     opcnt       i;
 
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+        for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             op = &ins->result;
             for( i = 0; i <= ins->num_operands; i++ ) {
                 if( *op != NULL ) {

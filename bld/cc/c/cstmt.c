@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -50,7 +50,9 @@ typedef struct block_entry {
     bool        gen_endblock;   /* set if OPR_ENDBLOCK needed */
 } BLOCKDEFN, *BLOCKPTR;
 
-// values for return_type
+/*
+ * values for return_type
+ */
 enum return_with {
     RETURN_WITH_NONE = 0,
     RETURN_WITH_NO_EXPR = 1,
@@ -91,9 +93,9 @@ static void ChkStringLeaf( TREEPTR leaf )
 static void ChkUseful( void )
 {
     if( CompFlags.useful_side_effect ) {
-        CWarn1( WARN_USEFUL_SIDE_EFFECT, ERR_USEFUL_SIDE_EFFECT );
+        CWarn1( ERR_USEFUL_SIDE_EFFECT );
     } else {
-        CWarn1( WARN_MEANINGLESS, ERR_MEANINGLESS );
+        CWarn1( ERR_MEANINGLESS );
     }
 }
 
@@ -182,7 +184,7 @@ void GenFunctionNode( SYM_HANDLE sym_handle )
     tree->op.u2.func.flags = FUNC_NONE;
     if( TOGGLE( inline ) || (sym->mods & FLAG_INLINE) ) {
         if( !sym->attribs.naked ) {
-            if( CMPLIT( sym->name, "main" ) != 0 ) {
+            if( strcmp( sym->name, "main" ) != 0 ) {
                 tree->op.u2.func.flags |= FUNC_OK_TO_INLINE;
             }
         }
@@ -190,7 +192,9 @@ void GenFunctionNode( SYM_HANDLE sym_handle )
     tree->op.flags = OpFlags( sym->mods );
     tree->u.expr_type = sym->sym_type->object;    // function return type
     AddStmt( tree );
-    // Evil, evil globals! But we need this for later lookups in cgen.c
+    /*
+     * Evil, evil globals! But we need this for later lookups in cgen.c
+     */
     sym->u.func.start_of_func = LastStmt;
     CurFuncNode = tree;
     NodeCount = 0;
@@ -308,8 +312,7 @@ static void JumpTrue( TREEPTR expr, LABEL_INDEX label )
 
 void LookAhead( void )
 {
-    SavedId = CStrSave( Buffer );       /* save current id */
-    SavedHash = HashValue;              /* and its hash value */
+    SavedId = CMemStrDup( Buffer );     /* save current id */
     SavedTokenLoc = TokenLoc;           /* save linenum and fno */
     NextToken();                        /* get next token */
     LAToken = CurToken;                 /* save it in look ahead */
@@ -429,7 +432,7 @@ static void ChkRetValue( void )
     typ = typ->object;
     SKIP_TYPEDEFS( typ );
     if( typ->decl_type != TYP_VOID ) {
-        CWarn2p( WARN_MISSING_RETURN_VALUE, ERR_MISSING_RETURN_VALUE, CurFunc->name );
+        CWarn2p( ERR_MISSING_RETURN_VALUE, CurFunc->name );
     }
 }
 
@@ -442,8 +445,10 @@ static SYM_HANDLE GetLocalVarDecls( void )
     DeclList( &symlist );
     if( symlist != SYM_NULL ) {
         symhandle = CurFunc->u.func.locals;
-        // symhandle will be non-zero if MakeNewSym was called while
-        // parsing the declaration list.
+        /*
+         * symhandle will be non-zero if MakeNewSym was called while
+         * parsing the declaration list.
+         */
         if( symhandle != SYM_NULL ) {   // if some temporaries were created
             for( ;; ) {                 // - find end of list
                 SymGet( &sym, symhandle );
@@ -464,7 +469,7 @@ static SYM_HANDLE GetLocalVarDecls( void )
 static void DeadMsg( void )
 /*************************/
 {
-    CWarn1( WARN_DEAD_CODE, ERR_DEAD_CODE );
+    CWarn1( ERR_DEAD_CODE );
     DeadCode = 2;   /* so we don't get more messages */
 }
 
@@ -494,8 +499,10 @@ static void LeftBrace( void )
     {   <- this is SymLevel == 1
     (weird code is for SymLevel > 1 )
 */
-    // DeclList might generate some quads to do some initializers
-    // if that happens, we want them output after the OPR_NEWBLOCK node
+    /*
+     * DeclList might generate some quads to do some initializers
+     * if that happens, we want them output after the OPR_NEWBLOCK node
+     */
     StartNewBlock();
     NextToken();
     ++SymLevel;
@@ -681,11 +688,11 @@ static void ForStmt( void )
 
     NextToken();
     MustRecog( T_LEFT_PAREN );
-    if( CompFlags.c99_extensions ) {
+    if( CHECK_STD( > , C89 ) ) {
         PushBlock();    // 'for' opens new scope
     }
     if( CurToken != T_SEMI_COLON ) {
-        if( CompFlags.c99_extensions ) {
+        if( CHECK_STD( > , C89 ) ) {
             TREEPTR     tree;
 
             tree = LeafNode( OPR_NEWBLOCK );
@@ -755,7 +762,7 @@ static void AddCaseLabel( unsigned value )
     leaf.u.ulong_konst = value;
     leaf.data_type = SwitchStack->case_type;
     SetLeafType( &leaf, 1 );
-//      converted_value = value & SwitchStack->case_mask;
+//    converted_value = value & SwitchStack->case_mask;
     converted_value = leaf.u.ulong_konst;
 #else
     converted_value = value;
@@ -812,10 +819,14 @@ static void CaseStmt( void )
     NextToken();
     if( SwitchStack ) {
         if( ConstExprAndType( &val ) ) {
-            if( ( val.type == TYP_ULONG64 ) && !U64IsU32( val.value ) ) {
-                CErr1( ERR_CONSTANT_TOO_BIG );
-            } else if( ( val.type == TYP_LONG64 ) && !I64IsI32( val.value ) ) {
-                CErr1( ERR_CONSTANT_TOO_BIG );
+            if( val.type == TYP_ULONG64 ) {
+                if( !U64IsU32( val.value ) ) {
+                    CErr1( ERR_CONSTANT_TOO_BIG );
+                }
+            } else if( val.type == TYP_LONG64 ) {
+                if( !I64IsI32( val.value ) ) {
+                    CErr1( ERR_CONSTANT_TOO_BIG );
+                }
             }
             AddCaseLabel( U32FetchTrunc( val.value) );
         }
@@ -978,7 +989,7 @@ static void SwitchStmt( void )
     typ = TypeOf( tree );
     SKIP_ENUM( typ );
     if( typ->decl_type == TYP_UFIELD ) {
-        if( typ->u.f.field_width == (TARGET_INT * 8) ) {
+        if( typ->u.f.field_width == (TARGET_INT * CHAR_BIT) ) {
             sw->case_format = "%lu";
 //            switch_type = TYP_UINT;
         }
@@ -1026,9 +1037,9 @@ static void EndSwitch( void )
             sw->default_label = BlockStack->break_label;
         }
     }
-//      if( sw->case_list == NULL ) {
-//          CWarn1( WARN_EMPTY_SWITCH, ERR_EMPTY_SWITCH );
-//      }
+//    if( sw->case_list == NULL ) {
+//        CWarn1( ERR_EMPTY_SWITCH );
+//    }
 #if 0
     for( ; (ce = sw->case_list) != NULL; ) {
         sw->case_list = ce->next_case;
@@ -1066,7 +1077,7 @@ static void EndOfStmt( void )
             EndForStmt();
             --LoopDepth;
             DropBreakLabel();
-            if( CompFlags.c99_extensions ) {
+            if( CHECK_STD( > , C89 ) ) {
                 EndBlock();     /* Terminate the scope introduced by 'for' */
                 PopBlock();
             }
@@ -1151,9 +1162,9 @@ static bool IsDeclarator( TOKEN token )
     /* If token is an ID, it might be a typedef */
     if( (CurToken == T_ID) || (CurToken == T_SAVED_ID) ) {
         if( CurToken == T_ID ) {
-            sym_handle = SymLookTypedef( HashValue, Buffer, &sym );
+            sym_handle = SymLookTypedef( CalcHashID( Buffer ), Buffer, &sym );
         } else {    /* T_SAVED_ID */
-            sym_handle = SymLookTypedef( SavedHash, SavedId, &sym );
+            sym_handle = SymLookTypedef( CalcHashID( SavedId ), SavedId, &sym );
         }
         if( sym_handle != SYM_NULL && sym.attribs.stg_class == SC_TYPEDEF ) {
             return( true );
@@ -1194,7 +1205,7 @@ void Statement( void )
     struct return_info  return_info;
     SYM_ENTRY           sym;
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
     if( DebugFlag >= 1 ) {
         printf( "***** line %u, func=%s\n", TokenLoc.line, CurFunc->name );
         PrintStats();
@@ -1234,7 +1245,7 @@ void Statement( void )
         if( GrabLabels() == 0 && declaration_allowed && IsDeclarator( CurToken ) ) {
             GetLocalVarDecls();
         }
-        if( CompFlags.c99_extensions ) {
+        if( CHECK_STD( > , C89 ) ) {
             declaration_allowed = true;
         }
         skip_to_next_token = false;
@@ -1270,7 +1281,7 @@ void Statement( void )
             }
             if( CurToken == T_SEMI_COLON ) {
                 if( !CompFlags.useful_side_effect ) {
-                    CWarn1( WARN_MEANINGLESS, ERR_MEANINGLESS );
+                    CWarn1( ERR_MEANINGLESS );
                 }
             }
             declaration_allowed = false;
@@ -1379,10 +1390,10 @@ void Statement( void )
         case T_DOUBLE:
         case T_SIGNED:
         case T_UNSIGNED:
-            if( CompFlags.c99_extensions ) {
-                CErr1( ERR_UNEXPECTED_DECLARATION );
-            } else {
+            if( CHECK_STD( < , C99 ) ) {
                 CErr1( ERR_MISSING_RIGHT_BRACE );
+            } else {
+                CErr1( ERR_UNEXPECTED_DECLARATION );
             }
             break;
         case T_EOF:
@@ -1414,7 +1425,7 @@ void Statement( void )
         }
     }
     /* C99 has special semantics for return value of main() */
-    if( CompFlags.c99_extensions && !CMPLIT( CurFunc->name, "main" ) ) {
+    if( CHECK_STD( > , C89 ) && strcmp( CurFunc->name, "main" ) == 0 ) {
         if( !return_at_outer_level ) {
             FixupC99MainReturn( func_result_handle, &return_info );
             return_at_outer_level = true;
@@ -1424,9 +1435,9 @@ void Statement( void )
         if( DeadCode == 0 && !CurFunc->attribs.naked ) {
             ChkRetValue();
         }
-    } else if( ! return_at_outer_level ) {
+    } else if( !return_at_outer_level ) {
         if( DeadCode == 0 && !CurFunc->attribs.naked ) {
-            CWarn2p( WARN_MISSING_RETURN_VALUE, ERR_MISSING_RETURN_VALUE, CurFunc->name );
+            CWarn2p( ERR_MISSING_RETURN_VALUE, CurFunc->name );
         }
     }
     if( end_of_func_label != 0 ) {

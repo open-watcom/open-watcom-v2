@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,11 +33,14 @@
 #include <stdarg.h>
 #include <string.h>
 #include <ctype.h>
+#include <errno.h>
 #include <sys/stat.h>
 #include "make.h"
 #include "mrcmsg.h"
 #include "msg.h"
 #include "mstream.h"
+
+#include "clibext.h"
 
 
 typedef union msg_arg {
@@ -401,7 +404,15 @@ void PrtMsg( enum MsgClass num, ... )
     if( class == INF ) {
         fp = stdout;
     } else {
+#ifdef __DOS__
+        if( Glob.redir_err ) {
+            fp = stdout;
+        } else {
+            fp = stderr;
+        }
+#else
         fp = stderr;
+#endif
         switch( class ) {
         case WRN:
             wefchar = 'W';
@@ -454,7 +465,7 @@ void PrtMsg( enum MsgClass num, ... )
 #pragma off(check_stack);
 #endif
 
-#if !defined( NDEBUG )
+#ifdef DEVBUILD
 void massert( const char *expr, const char *file, int line )
 {
     PrtMsg( FTL | ASSERTION_FAILED, expr, file, line );

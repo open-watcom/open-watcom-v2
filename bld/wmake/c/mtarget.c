@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -127,13 +127,18 @@ TLIST *NewTList( void )
     return( (TLIST *)CallocSafe( sizeof( TLIST ) ) );
 }
 
+STATIC TARGET *removeTarget( const char *name )
+/*********************************************/
+{
+    return( (TARGET *)RemHashNode( targTab, name, FILENAMESENSITIVE ) );
+}
 
 void RenameTarget( const char *oldname, const char *newname )
 /***********************************************************/
 {
     TARGET *targ;
 
-    targ = (TARGET *)RemHashNode( targTab, oldname, NOCASESENSITIVE );
+    targ = removeTarget( oldname );
     if( targ != NULL ) {
         if( targ->node.name != NULL ) {
             FreeSafe( targ->node.name );
@@ -168,7 +173,7 @@ TARGET *FindTarget( const char *name )
 {
     assert( name != NULL );
 
-    return( (TARGET *)FindHashNode( targTab, name, NOCASESENSITIVE ) );
+    return( (TARGET *)FindHashNode( targTab, name, FILENAMESENSITIVE ) );
 }
 
 
@@ -462,9 +467,9 @@ void KillTarget( const char *name )
  * function that the target is not a member of some TLIST
  */
 {
-    void    *mykill;
+    TARGET  *mykill;
 
-    mykill = RemHashNode( targTab, name, NOCASESENSITIVE );
+    mykill = removeTarget( name );
     if( mykill != NULL ) {
         freeTarget( mykill );
     }
@@ -482,7 +487,7 @@ STATIC TARGET *findOrNewTarget( const char *tname, bool mentioned )
     targ = FindTarget( FixName( strcpy( name, tname ) ) );
     if( targ == NULL ) {
         targ = NewTarget( name );
-        if( name[0] == '.' && cisextc( name[1] ) ) {
+        if( name[0] == '.' && ( cisextc( name[1] ) || ciswildc( name[1] ) ) ) {
             targ->special = true;
             if( stricmp( name + 1, BEFORE_S ) == 0 ||
                 stricmp( name + 1, AFTER_S )  == 0 ) {
@@ -744,7 +749,7 @@ void CheckNoCmds( void )
 }
 
 
-#if defined( USE_SCARCE ) || !defined( NDEBUG )
+#if defined( USE_SCARCE ) || defined( DEVBUILD )
 STATIC bool cleanupLeftovers( void )
 /**********************************/
 {
@@ -824,7 +829,7 @@ void TargetInit( void )
 }
 
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 STATIC bool walkFree( void *targ, void *ptr )
 /*******************************************/
 {
@@ -839,7 +844,7 @@ STATIC bool walkFree( void *targ, void *ptr )
 void TargetFini( void )
 /*********************/
 {
-#ifndef NDEBUG
+#ifdef DEVBUILD
     WalkHashTab( targTab, walkFree, NULL );
     FreeHashTab( targTab );
     targTab = NULL;

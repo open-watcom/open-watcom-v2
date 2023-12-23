@@ -505,7 +505,7 @@ static int ip_transmit (Socket *socket, const void *tx, int len)
         tx_room = mtu + sizeof (*ip);
     }
 
-    if (!dest || !_arp_resolve(ntohl(dest),&eth,0)) {
+    if (!dest || !_arp_resolve(ntohl(dest),eth,0)) {
         SOCK_DEBUGF ((socket, ", no route"));
         SOCK_ERR (EHOSTUNREACH);
         STAT (ipstats.ips_noroute++);
@@ -533,7 +533,7 @@ static int ip_transmit (Socket *socket, const void *tx, int len)
     }
 #endif
 
-    ip = (struct ip*) _eth_formatpacket (&eth, IP_TYPE);
+    ip = (struct ip*) _eth_formatpacket (eth, IP_TYPE);
 
     if (socket->inp_flags & INP_HDRINCL) {
         memcpy (ip, buf, len);

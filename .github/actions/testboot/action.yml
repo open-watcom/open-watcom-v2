@@ -1,0 +1,52 @@
+name: test-boot
+description: 'Process test bootstrap build by OW (for test compatibility)'
+inputs:
+  arch:
+    description: 'run-time platform'
+    required: false
+    default: ''
+    type: string
+  gitpath:
+    description: 'git subdirectory'
+    required: false
+    default: ''
+    type: string
+  bldscript:
+    description: 'script to build action'
+    required: false
+    default: ''
+    type: string
+  owdebug:
+    description: 'verbosed/debug output for GH Actions scripts development'
+    required: false
+    default: ''
+    type: string
+runs:
+  using: composite
+  steps:
+  - if: inputs.arch == 'lnx'
+    name: Test Bootstrap OW
+    run: ${{ inputs.bldscript }}
+    env:
+      OWBUILD_STAGE: 'boot'
+      OWTOOLS:       'WATCOM'
+      OWROOT:        ${{ github.workspace }}
+      WATCOM:        ${{ github.workspace }}/${{ inputs.gitpath }}
+      INCLUDE:       ${{ github.workspace }}/${{ inputs.gitpath }}/lh
+      WATCOM_PATH:   ${{ github.workspace }}/${{ inputs.gitpath }}/binl
+      OWDEBUG:       ${{ inputs.owdebug }}
+      OWVERBOSE:     1
+    shell: bash
+  - if: inputs.arch == 'nt'
+    name: Test Bootstrap OW
+    run: ${{ inputs.bldscript }}
+    env:
+      OWBUILD_STAGE: 'boot'
+      OWTOOLS:       'WATCOM'
+      OWROOT:        ${{ github.workspace }}
+      WATCOM:        ${{ github.workspace }}\${{ inputs.gitpath }}
+      INCLUDE:       ${{ github.workspace }}\${{ inputs.gitpath }}\h;${{ github.workspace }}\${{ inputs.gitpath }}\h\nt
+      WATCOM_PATH:   ${{ github.workspace }}\${{ inputs.gitpath }}\binnt
+      OWDEBUG:       ${{ inputs.owdebug }}
+      OWVERBOSE:     1
+    shell: cmd

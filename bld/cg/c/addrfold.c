@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -361,7 +361,7 @@ bool    CypAddrPlus( an l_addr, an r_addr, type_def *tipe )
 static        bool    AddToTypeLength( type_length x, type_length y ) {
 /*********************************************************************/
 
-    signed_32 lx,ly;
+    int_32  lx,ly;
 
     lx = x; ly = y;
     x += y; lx += ly;
@@ -512,7 +512,7 @@ static  bool    ShiftConst( an r_addr ) {
 #if WORD_SIZE == 2
     if( r_addr->u.n.offset < 0 || r_addr->u.n.offset > 16 )
         return( false );
-    if( _IsTargetModel( BIG_DATA ) && _IsntTargetModel( CHEAP_POINTER ) )
+    if( _IsTargetModel( CGSW_X86_BIG_DATA ) && _IsntTargetModel( CGSW_X86_CHEAP_POINTER ) )
         return( false );
 #else
     if( r_addr->u.n.offset < 0 || r_addr->u.n.offset > 8 )
@@ -540,10 +540,10 @@ bool    CypAddrShift( an l_addr, an r_addr, type_def *tipe )
 }
 
 
-static  bool    ShiftToTypeLength( type_length x, unsigned_16 y ) {
-/*****************************************************************/
-
-    signed_32 lx;
+static  bool    ShiftToTypeLength( type_length x, uint_16 y )
+/***********************************************************/
+{
+    int_32  lx;
 
     lx = x;
     x <<= y; lx <<= y;
@@ -563,7 +563,7 @@ an      AddrShift( an l_addr, an r_addr, type_def *tipe )
 /*       Returns NULL if code needs to be generated*/
 {
     instruction         *ins;
-    signed_16           rv;
+    int_16              rv;
     an                  addr;
     type_class_def      type_class;
 

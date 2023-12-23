@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,11 +35,15 @@
 
 #ifdef __WATCOMC__
 // ignore "temporary object used to initialize non-constant reference" warning
+#if !defined( BOOTSTRAP )
+#pragma disable_message( P665 )
+#else
 #pragma disable_message( 665 )
 #endif
+#endif
 
-#include "wstd.h"
 #include <vector>
+#include "watcom.h"
 
 #define YYPARSER BindingParser
 #include "yydriver.h"

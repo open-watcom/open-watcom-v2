@@ -2,6 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
+;* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -30,11 +31,6 @@
 ;*****************************************************************************
 
 
-ifdef __386__
- .387
-else
- .8087
-endif
 include mdef.inc
 include math87.inc
 
@@ -51,51 +47,52 @@ include math87.inc
 ;  output:      signed fractional part of x in EDX:EAX
 ;               *iptr gets the integer part of x
 ;
+        iptr    equ     argx+8
+ifdef __386__
+        popamt  equ     8+4
+else
+ if _MODEL and (_BIG_DATA or _HUGE_DATA)
+        popamt  equ     8+4
+ else
+        popamt  equ     8+2
+ endif
+endif
+
         defp    modf
 ifdef __386__
         push    EAX             ; save EAX
-        fld     qword ptr 8[ESP]; load x
+        fld     qword ptr argx+4[ESP]; load x
         fld     st(0)           ; duplicate it
         call    __CHP           ; calculate integer part
         fsub    st(1),st(0)     ; subtract integer part from x
-        mov     EAX,16[ESP]     ; get iptr
+        mov     EAX,iptr+4[ESP] ; get iptr
         fstp    qword ptr [EAX] ; store integer part
         pop     EAX             ; restore EAX
         loadres                 ; load result
         fwait                   ; wait
-        ret_pop 12              ; return
 else
-        if _MODEL and _BIG_CODE
-         argx    equ     6
-        else
-         argx    equ     4
-        endif
-        iptr    equ     argx+8
-
         push    BP              ; save BP
         mov     BP,SP           ; get access to parms
         push    BX              ; save BX
-if _MODEL and (_BIG_DATA or _HUGE_DATA)
+ if _MODEL and (_BIG_DATA or _HUGE_DATA)
         push    DS              ; save DS
         lds     BX,iptr[BP]     ; get segment and offset of iptr
-        popamt  equ     8+4
-else
+ else
         mov     BX,iptr[BP]     ; get iptr
-        popamt  equ     8+2
-endif
+ endif
         fld     qword ptr argx[BP]; load argument
         fld     st(0)           ; dup x
         docall  __CHP           ; calculate integer part
         fsub    st(1),st(0)     ; subtract integer part from x
         fstp    qword ptr [bx]  ; store integer part
-if _MODEL and (_BIG_DATA or _HUGE_DATA)
+ if _MODEL and (_BIG_DATA or _HUGE_DATA)
         pop     DS              ; restore DS
-endif
+ endif
         pop     BX              ; restore BX
         fwait                   ; wait
         pop     BP              ; restore BP
-        ret     popamt          ; return
 endif
+        ret_pop popamt          ; return
         endproc modf
 
         endmod

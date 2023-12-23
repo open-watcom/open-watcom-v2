@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -51,7 +51,7 @@
 
 
 extern  int             TempId;
-extern  unsigned_16     TypeIdx;
+extern  uint_16         TypeIdx;
 
 extern  char            *ACopyOf(const char *);
 extern  char            *Tipe(cg_type );
@@ -92,11 +92,11 @@ extern  cg_init_info    BEInit( cg_switches cg_data, cg_target_switches tg_data,
     Action( ", opt_size==%d, proc_rev=%h%n", opt_size, proc );
     SymDebug = 0;
     TypDebug = 0;
-    if( cg_data & DBG_LOCALS ) {
+    if( cg_data & CGSW_GEN_DBG_LOCALS ) {
         SymDebug = FCreate( "DBGSYM" );
         ++FilesOpen;
     }
-    if( cg_data & DBG_TYPES ) {
+    if( cg_data & CGSW_GEN_DBG_TYPES ) {
         TypDebug = FCreate( "DBGTYP" );
         ++FilesOpen;
     }
@@ -142,6 +142,8 @@ extern  cg_init_info    BEInit( cg_switches cg_data, cg_target_switches tg_data,
     info.version.target = II_TARG_AXP;
 #elif _TARGET & _TARG_PPC
     info.version.target = II_TARG_PPC;
+#elif _TARGET & _TARG_MIPS
+    info.version.target = II_TARG_MIPS;
 #else
     #error UNKNOWN TARGET
 #endif
@@ -226,8 +228,9 @@ extern  void    BEFiniLabel(l *lb) {
         CGError( "BEFiniLabel must be called between CGProcDecl and CGReturn%n" );
     }
 }
-extern  void    BEDefType( cg_type t, uint algn, unsigned_32 l ) {
-//================================================================
+extern  void    BEDefType( cg_type t, uint algn, uint_32 l )
+//==========================================================
+{
     algn=algn;
 
     Action( "BEDefType" );
@@ -241,7 +244,7 @@ extern  void    BEAliasType( cg_type t1, cg_type t2 ) {
     TypeAlias(t1,t2);
     Action( "( %s, %s )%n", Tipe(t1), Tipe(t2) );
 }
-extern  unsigned_32     BETypeLength( cg_type t ) {
+extern uint_32  BETypeLength( cg_type t ) {
 //=========================================
 
     Action( "BETypeLength" );
@@ -260,8 +263,8 @@ extern  void    *BEPatch() {
     Action( "BEPatch()%n" );
     return( NULL );
 }
-extern  void    BEPatchInteger( void *hdl, signed_32 val ) {
-//==========================================================
+extern  void    BEPatchInteger( void *hdl, int_32 val ) {
+//=====================================================
     Action( "BEPatchInteger( %p, %l )%n", hdl, val );
 }
 extern  void    BEFiniPatch( void *hdl ) {
@@ -421,7 +424,7 @@ extern  bool    BEMoreMem( void ) {
     return(false);
 }
 
-extern  unsigned_32 BEUnrollCount( unsigned_32 c ) {
+extern  uint_32 BEUnrollCount( uint_32 c ) {
 /**************************************************/
     return( c );
 }

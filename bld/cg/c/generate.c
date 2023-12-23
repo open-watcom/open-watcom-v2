@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -149,7 +149,7 @@ static  void            PreOptimize( void )
 {
     bool        change;
 
-    if( _IsntModel( NO_OPTIMIZATION ) ) {
+    if( _IsntModel( CGSW_GEN_NO_OPTIMIZATION ) ) {
 //      CharsAndShortsToInts();
         MakeMovAddrConsts();
         PushPostOps();
@@ -157,11 +157,11 @@ static  void            PreOptimize( void )
         InsDead();
         MakeFlowGraph();
         BlockTrim();
-        CommonSex( _IsModel( LOOP_OPTIMIZATION ) );
+        CommonSex( _IsModel( CGSW_GEN_LOOP_OPTIMIZATION ) );
         SetOnCondition();
         BlockTrim();
         AddANop();
-        if( _IsModel( LOOP_OPTIMIZATION ) ) {
+        if( _IsModel( CGSW_GEN_LOOP_OPTIMIZATION ) ) {
             change = false;
             if( TransLoops( false ) ) {
                 change = true;
@@ -216,7 +216,7 @@ static  block           *NextBlock( block *blk, void *parm )
 static  void            PostOptimize( void )
 /******************************************/
 {
-    if( _IsntModel( NO_OPTIMIZATION ) ) {
+    if( _IsntModel( CGSW_GEN_NO_OPTIMIZATION ) ) {
         // Run peephole optimizer again. Important: It is critical that the
         // new instructions can be directly generated because RegAlloc is
         // done by now. PeepOpt() is responsible for verifying that.
@@ -229,8 +229,8 @@ static  void            PostOptimize( void )
         DeadInstructions();
     }
     MergeIndex();
-    if( _IsntModel( NO_OPTIMIZATION ) ) {
-    #if (_TARGET & _TARG_RISC) == 0
+    if( _IsntModel( CGSW_GEN_NO_OPTIMIZATION ) ) {
+#if !_TARGET_RISC
         //
         // Calling Conditions() at this point has nice optimization effect,
         // but doesn't working correctly right now. It optimizes conditions
@@ -241,12 +241,12 @@ static  void            PostOptimize( void )
     #if 0
         // Get rid of unused conditions on variables level
         // to decrease number of referenced vars in LdStAlloc() and Score()
-        if( _IsntTargetModel( STATEMENT_COUNTING ) ) {
+        if( _IsntTargetModel( CGSW_X86_STATEMENT_COUNTING ) ) {
             Conditions();
             DeadInstructions(); // cleanup junk after Conditions()
         }
     #endif
-    #endif
+#endif
         // OptCloseMoves();  // todo: merge constant moves before riscifier
         LdStAlloc();
         Score();
@@ -259,18 +259,18 @@ static  void            PostOptimize( void )
         DeadInstructions(); // cleanup junk after Score()
         if( !BlockByBlock )
             LoopRegInvariant();
-    #if (_TARGET & _TARG_RISC) == 0
+#if !_TARGET_RISC
         // Get rid of remaining unused conditions on register level.
-        if( _IsntTargetModel( STATEMENT_COUNTING ) ) {
+        if( _IsntTargetModel( CGSW_X86_STATEMENT_COUNTING ) ) {
             Conditions();
         }
-    #endif
+#endif
     }
     FPExpand();
-    if( _IsntModel( NO_OPTIMIZATION ) ) {
+    if( _IsntModel( CGSW_GEN_NO_OPTIMIZATION ) ) {
         DeadInstructions();   // cleanup junk after Conditions()
         // Run scheduler last, when all instructions are stable
-        if( _IsModel( INS_SCHEDULING ) ) {
+        if( _IsModel( CGSW_GEN_INS_SCHEDULING ) ) {
             HaveLiveInfo = false;
             Schedule(); /* NOTE: Schedule messes up live information */
             LiveInfoUpdate();
@@ -296,9 +296,9 @@ static  void    FreeExtraTemps( name *last, block_num id )
         temp = *owner;
         if( temp == last )
             break;
-        if( ( temp->v.usage & USE_IN_ANOTHER_BLOCK ) == 0
-         && !_FrontEndTmp( temp )
-         && temp->t.u.block_id == id ) {
+        if( (temp->v.usage & USE_IN_ANOTHER_BLOCK) == 0
+          && !_FrontEndTmp( temp )
+          && temp->t.u.block_id == id ) {
             *owner = temp->n.next_name;
             FreeAName( temp );
         } else {
@@ -317,7 +317,8 @@ static  void    ForceTempsMemory( void )
     ParmPropagate();
     for( op = Names[N_TEMP]; op != LastTemp; op = next ) {
         next = op->n.next_name;
-        if( ( op->v.usage & USE_IN_ANOTHER_BLOCK ) || _FrontEndTmp( op ) ) {
+        if( (op->v.usage & USE_IN_ANOTHER_BLOCK)
+          || _FrontEndTmp( op ) ) {
             op = DeAlias( op );
             op->v.usage |= NEEDS_MEMORY | USE_MEMORY;
             while( op->v.conflict != NULL ) {
@@ -377,14 +378,15 @@ static  void    BlockToCode( bool partly_done )
     if( !partly_done ) {
         FixMemRefs();
         HaveLiveInfo = false;
-        if( _IsntModel( NO_OPTIMIZATION | FORTRAN_ALIASING ) ) {
+        if( _IsntModel( CGSW_GEN_NO_OPTIMIZATION )
+          && _IsntModel( CGSW_GEN_FORTRAN_ALIASING ) ) {
             FindReferences();
             CommonSex(false);
             PushPostOps();
         }
         FindReferences();
         DeadTemps();
-        if( _IsModel( NO_OPTIMIZATION ) ) {
+        if( _IsModel( CGSW_GEN_NO_OPTIMIZATION ) ) {
             SetInOut( HeadBlock );
         } else {
             MakeConflicts();
@@ -433,7 +435,7 @@ static  void    BlockToCode( bool partly_done )
 
     /* generate a prolog that saves all registers*/
 
-    if( ( CurrProc->prolog_state & GENERATED_PROLOG ) == 0 ) {
+    if( (CurrProc->prolog_state & PST_PROLOG_GENERATED) == 0 ) {
         CurrProc->state.used = AllCacheRegs();
         GenProlog();
     }
@@ -469,8 +471,8 @@ static  void    FlushBlocks( bool partly_done )
     block       *curr;
     block_class classes;
 
-    if( !BlockByBlock && _IsntModel( NO_OPTIMIZATION ) ) {
-        ProcMessage( MSG_REGALLOC_DIED );
+    if( !BlockByBlock ) {
+        FEMessageCurrProc( FEMSG_REGALLOC_DIED );
     }
     if( !partly_done ) {
         Renumber();
@@ -503,8 +505,8 @@ static  void    FreeExtraSyms( name *last )
         temp = *owner;
         if( temp == last )
             break;
-        if( ( temp->v.usage & USE_IN_ANOTHER_BLOCK ) == 0
-         && !_FrontEndTmp( temp ) ) {
+        if( (temp->v.usage & USE_IN_ANOTHER_BLOCK) == 0
+          && !_FrontEndTmp( temp ) ) {
             *owner = temp->n.next_name;
             FreeAName( temp );
         } else {
@@ -532,7 +534,7 @@ static  void    FinishIndex( void )
     instruction *next;
 
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = next ) {
+        for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = next ) {
             next = NeedIndex( ins );
             if( next == ins ) {
                 next = ins->head.next;
@@ -555,9 +557,9 @@ static  void    ForceConflictsMemory( void )
     for( conf = ConfList; conf != NULL; conf = next ) {
         next = conf->next_conflict;
         if( !_GBitEmpty( conf->id.out_of_block )
-         || ( conf->name->n.class == N_TEMP && _FrontEndTmp( conf->name ) )
-         || ( conf->name->n.class == N_MEMORY && conf->name->v.symbol != NULL )
-         || ( conf->name->v.usage & USE_IN_ANOTHER_BLOCK ) ) {
+          || ( conf->name->n.class == N_TEMP && _FrontEndTmp( conf->name ) )
+          || ( conf->name->n.class == N_MEMORY && conf->name->v.symbol != NULL )
+          || (conf->name->v.usage & USE_IN_ANOTHER_BLOCK) ) {
             next = InMemory( conf );
         }
     }
@@ -580,7 +582,7 @@ static  void    Panic( bool partly_done )
     curr_proc = CurrProc;
     FlushBlocks( partly_done );
     if( curr_proc == CurrProc /* if not freed (dummy!) */
-     && ( CurrProc->prolog_state & GENERATED_EPILOG ) == 0 ) {
+      && (CurrProc->prolog_state & PST_EPILOG_GENERATED) == 0 ) {
         GenEpilog();
         FiniStackMap();
         FreeProc();
@@ -615,13 +617,14 @@ static  void            GenPartialRoutine( bool routine_done )
 }
 
 
-void    ProcMessage( msg_class msg )
-/**********************************/
+void    FEMessageCurrProc( fe_msg femsg )
+/***************************************/
 {
     static proc_def *lastproc = NULL;
 
-    if( _IsntModel( NO_OPTIMIZATION ) && lastproc != CurrProc ) {
-        FEMessage( msg, AskForLblSym( CurrProc->label ) );
+    if( _IsntModel( CGSW_GEN_NO_OPTIMIZATION )
+      && lastproc != CurrProc ) {
+        FEMessage( femsg, AskForLblSym( CurrProc->label ) );
         lastproc = CurrProc;
     }
 }
@@ -637,9 +640,9 @@ void    Generate( bool routine_done )
         return;
     HaveLiveInfo = false;
     HaveDominatorInfo = false;
-#if ( _TARGET & ( _TARG_370 | _TARG_RISC ) ) == 0
+#if _TARGET_RISC == 0 && ( _TARGET & _TARG_370 ) == 0
     /* if we want to go fast, generate statement at a time */
-    if( _IsModel( NO_OPTIMIZATION ) ) {
+    if( _IsModel( CGSW_GEN_NO_OPTIMIZATION ) ) {
         if( !BlockByBlock ) {
             InitStackMap();
             BlockByBlock = true;
@@ -656,7 +659,8 @@ void    Generate( bool routine_done )
 
     /* if we couldn't get the whole procedure in memory, generate part of it */
     if( BlockByBlock ) {
-        if( _MemLow || routine_done ) {
+        if( _MemLow
+          || routine_done ) {
             GenPartialRoutine( routine_done );
         } else {
             BlkTooBig();
@@ -697,7 +701,7 @@ void    Generate( bool routine_done )
         return;
     }
     MakeConflicts();
-    if( _IsModel( LOOP_OPTIMIZATION ) ) {
+    if( _IsModel( CGSW_GEN_LOOP_OPTIMIZATION ) ) {
         SplitVars();
     }
     AddCacheRegs();
@@ -737,13 +741,13 @@ void    Generate( bool routine_done )
     UnFixEdges();
     OptSegs();
     GenObject();
-    if( ( CurrProc->prolog_state & GENERATED_EPILOG ) == 0 ) {
+    if( (CurrProc->prolog_state & PST_EPILOG_GENERATED) == 0 ) {
         GenEpilog();
     }
     FreeProc();
     HaveLiveInfo = false;
-#if _TARGET & _TARG_INTEL
-    if( _IsModel( NEW_P5_PROFILING ) ) {
+#if _TARGET_INTEL
+    if( _IsTargetModel( CGSW_X86_NEW_P5_PROFILING ) ) {
         FlushQueue();
     }
 #else

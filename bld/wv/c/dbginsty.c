@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -140,11 +140,11 @@ bool    WndEvalInspectExpr( const char *item, bool pop )
     if( ispunct(item[0]) &&
       ( item[1] == NULLCHAR || ( ispunct( item[1] ) && item[2] == NULLCHAR ) ) ) {
         // nyi - pui - use SSL
-        p = StrCopy( item, StrCopy( "operator", buff ) );
+        p = StrCopyDst( item, StrCopyDst( "operator", buff ) );
         if( item[0] == '[' && item[1] == NULLCHAR ) {
-            StrCopy( "]", p );
+            StrCopyDst( "]", p );
         } else if( item[0] == '(' && item[1] == NULLCHAR ) {
-            StrCopy( ")", p );
+            StrCopyDst( ")", p );
         }
         old = ReScan( buff );
     } else {

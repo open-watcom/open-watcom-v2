@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,11 +33,9 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include "wio.h"
 #include "common.h"
 #include "dip.h"
 #include "aui.h"
-#include "machtype.h"
 #include "msg.h"
 #include "sampinfo.h"
 #include "memutil.h"
@@ -143,12 +141,18 @@ STATIC void procInfoBlock( clicks_t ticks, samp_data *data )
     if( CurrSIOData->header.major_ver == 2 && CurrSIOData->header.minor_ver < 2 ) {
         /* pre-MAD sample file */
         CurrSIOData->config = DefSysConfig;
-    } else {
-        CurrSIOData->config = data->info.config;
+    } else if( data->info.config.arch == DIG_ARCH_NIL ) {
         /* sanity check for non-MADified sampler */
-        if( CurrSIOData->config.arch == DIG_ARCH_NIL ) {
-            CurrSIOData->config = DefSysConfig;
-        }
+        CurrSIOData->config = DefSysConfig;
+    } else {
+        /* map file format to internal format */
+        CurrSIOData->config.cpu.byte    = data->info.config.cpu;
+        CurrSIOData->config.fpu.byte    = data->info.config.fpu;
+        CurrSIOData->config.osmajor     = data->info.config.osmajor;
+        CurrSIOData->config.osminor     = data->info.config.osminor;
+        CurrSIOData->config.os          = data->info.config.os;
+        CurrSIOData->config.huge_shift  = data->info.config.huge_shift;
+        CurrSIOData->config.arch        = data->info.config.arch;
     }
     SetCurrentMAD( CurrSIOData->config.arch );
 

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,12 +33,18 @@
 #include "wlib.h"
 #include "ar.h"
 #include "coff.h"
+#include "roundmac.h"
+#include "exedos.h"
 
 #include "clibext.h"
 
 
 // must correspond to defines in implib.h
-static char *procname[5] = { "", "AXP", "PPC", "X86","" };
+static char *procname[] = {
+    #define WL_PROC(p,e,n)  n,
+    WL_PROCS
+    #undef WL_PROC
+};
 
 static void fillInU16( unsigned_16 value, char *out )
 {
@@ -242,20 +248,35 @@ static void os2AddImport( arch_header *arch, libfile io, long header_offset )
     }
 }
 
+static void AddSymWithPrefix( const char *prefix, const char *name, symbol_strength strength, unsigned char info )
+/****************************************************************************************************************/
+{
+    size_t  len;
+    char    *buffer;
+
+    len = strlen( prefix );
+    buffer = MemAlloc( len + strlen( name ) + 1 );
+    strcpy( strcpy( buffer, prefix ) + len, name );
+    AddSym( buffer, strength, info );
+    MemFree( buffer );
+}
+
 static void coffAddImportOverhead( arch_header *arch, const char *DLLName, processor_type processor )
 {
-    char    buffer[100];
+    char    *buffer;
+    char        *fname;
+    size_t  len;
 
-    memcpy( buffer, "__IMPORT_DESCRIPTOR_", 20 );
-    strcpy( buffer + 20, MakeFName( DLLName ) );
+    fname = MakeFName( DLLName );
+    len = strlen( fname );
+    buffer = MemAlloc( len + 22 );
+    strcpy( strcpy( buffer, "__IMPORT_DESCRIPTOR_" ) + sizeof( "__IMPORT_DESCRIPTOR_" ) - 1, fname );
     CoffMKImport( arch, IMPORT_DESCRIPTOR, 0, DLLName, buffer, NULL, processor );
-
     CoffMKImport( arch, NULL_IMPORT_DESCRIPTOR, 0, DLLName, "__NULL_IMPORT_DESCRIPTOR", NULL, processor );
-
     buffer[0] = 0x7f;
-    strcpy( buffer + 1, MakeFName( DLLName ) );
-    strcat( buffer, "_NULL_THUNK_DATA" );
+    strcpy( strcpy( buffer + 1, fname ) + len, "_NULL_THUNK_DATA" );
     CoffMKImport( arch, NULL_THUNK_DATA, 0, DLLName, buffer, NULL, processor );
+    MemFree( buffer );
 }
 
 static void os2FlatAddImport( arch_header *arch, libfile io, long header_offset )
@@ -335,7 +356,6 @@ static void peAddImport( arch_header *arch, libfile io, long header_offset )
     char            *DLLName;
     char            *oldname;
     char            *currname;
-    char            *buffer;
     Coff32_Export   *export_header;
     Coff32_EName    *name_table;
     Coff32_EOrd     *ord_table;
@@ -345,7 +365,6 @@ static void peAddImport( arch_header *arch, libfile io, long header_offset )
     importType      type;
     bool            coff_obj;
     long            adjust;
-    unsigned        sym_len;
 
     LibSeek( io, header_offset, SEEK_SET );
     if( Options.libtype == WL_LTYPE_MLIB ) {
@@ -361,6 +380,11 @@ static void peAddImport( arch_header *arch, libfile io, long header_offset )
     switch( ORLFileGetMachineType( ofile->orl ) ) {
     case ORL_MACHINE_TYPE_ALPHA:
         processor = WL_PROC_AXP;
+        coff_obj = true;
+        Options.coff_found = true;
+        break;
+    case ORL_MACHINE_TYPE_R4000:
+        processor = WL_PROC_MIPS;
         coff_obj = true;
         Options.coff_found = true;
         break;
@@ -407,28 +431,17 @@ static void peAddImport( arch_header *arch, libfile io, long header_offset )
     }
     for( i = 0; i < export_header->numNamePointer; i++ ) {
         currname = &(edata[name_table[i] - export_base.u._32[I64LO32] + adjust]);
-        // allocate the space for the current symbol name and
-        // add enough room for the following strcpy/strcat pairs.
-        sym_len = strlen( currname ) + 1;
-        buffer = MemAlloc( sym_len + 6 );
         if( coff_obj ) {
             CoffMKImport( arch, ORDINAL, ord_table[i] + ordinal_base, DLLName, currname, NULL, processor );
-            memcpy( buffer, "__imp_", 6 );
-            memcpy( buffer + 6, currname, sym_len );
-            AddSym( buffer, SYM_WEAK, 0 );
+            AddSymWithPrefix( "__imp_", currname, SYM_WEAK, 0 );
         } else {
             type = Options.r_ordinal ? ORDINAL : NAMED;
             OmfMKImport( arch, type, ord_table[i] + ordinal_base, DLLName, currname, NULL, WL_PROC_X86 );
-//            memcpy( buffer, "__imp_", 6 );
-//            memcpy( buffer + 6, currname, sym_len );
-//            AddSym( buffer, SYM_WEAK, 0 );
+//            AddSymWithPrefix( "__imp_", currname, SYM_WEAK, 0 );
         }
         if( processor == WL_PROC_PPC ) {
-            memcpy( buffer, "..", 2 );
-            memcpy( buffer + 2, currname, sym_len );
-            AddSym( buffer, SYM_WEAK, 0 );
+            AddSymWithPrefix( "..", currname, SYM_WEAK, 0 );
         }
-        MemFree( buffer );  // dispose symbol name.
     }
     MemFree( DLLName );
 
@@ -580,10 +593,12 @@ void ProcessImport( char *name )
                 Options.processor = WL_PROC_PPC;
                 break;
             default:
-#if defined( __PPC__ )
-                Options.processor = WL_PROC_PPC;
-#elif defined( __AXP__ )
+#if defined( __AXP__ )
                 Options.processor = WL_PROC_AXP;
+#elif defined( __MIPS__ )
+                Options.processor = WL_PROC_MIPS;
+#elif defined( __PPC__ )
+                Options.processor = WL_PROC_PPC;
 #else
                 Options.processor = WL_PROC_X86;
 #endif
@@ -607,9 +622,32 @@ void ProcessImport( char *name )
             break;
         default:
             switch( Options.processor ) {
-            case WL_PROC_X86:
-                Options.filetype = WL_FTYPE_OMF;
-                Warning( ERR_NO_TYPE, "OMF" );
+            case WL_PROC_AXP:
+                Options.libtype = WL_LTYPE_AR;
+                Options.filetype = WL_FTYPE_COFF;
+                Warning( ERR_NO_TYPE, "COFF" );
+                break;
+            case WL_PROC_MIPS:
+#ifdef __NT__
+                Options.libtype = WL_LTYPE_AR;
+                Options.filetype = WL_FTYPE_COFF;
+                Warning( ERR_NO_TYPE, "COFF" );
+#else
+                Options.libtype = WL_LTYPE_MLIB;
+                Options.filetype = WL_FTYPE_ELF;
+                Warning( ERR_NO_TYPE, "ELF" );
+#endif
+                break;
+            case WL_PROC_PPC:
+#ifdef __NT__
+                Options.libtype = WL_LTYPE_AR;
+                Options.filetype = WL_FTYPE_COFF;
+                Warning( ERR_NO_TYPE, "COFF" );
+#else
+                Options.libtype = WL_LTYPE_MLIB;
+                Options.filetype = WL_FTYPE_ELF;
+                Warning( ERR_NO_TYPE, "ELF" );
+#endif
                 break;
             case WL_PROC_X64:
 #ifdef __NT__
@@ -622,21 +660,10 @@ void ProcessImport( char *name )
                 Warning( ERR_NO_TYPE, "ELF" );
 #endif
                 break;
-            case WL_PROC_AXP:
-                Options.libtype = WL_LTYPE_AR;
-                Options.filetype = WL_FTYPE_COFF;
-                Warning( ERR_NO_TYPE, "COFF" );
+            case WL_PROC_X86:
+                Options.filetype = WL_FTYPE_OMF;
+                Warning( ERR_NO_TYPE, "OMF" );
                 break;
-            case WL_PROC_PPC:
-#ifdef __NT__
-                Options.libtype = WL_LTYPE_AR;
-                Options.filetype = WL_FTYPE_COFF;
-                Warning( ERR_NO_TYPE, "COFF" );
-#else
-                Options.libtype = WL_LTYPE_MLIB;
-                Options.filetype = WL_FTYPE_ELF;
-                Warning( ERR_NO_TYPE, "ELF" );
-#endif
             }
         }
     }
@@ -691,17 +718,10 @@ void ProcessImport( char *name )
         } else {
             CoffMKImport( arch, ORDINAL, ordinal, DLLName, symName, NULL, Options.processor );
         }
-        sym_len = strlen( symName ) + 1;
-        buffer = MemAlloc( sym_len + 6 );
-        memcpy( buffer, "__imp_", 6 );
-        memcpy( buffer + 6, symName, sym_len );
-        AddSym( buffer, SYM_WEAK, 0 );
+        AddSymWithPrefix( "__imp_", symName, SYM_WEAK, 0 );
         if( Options.processor == WL_PROC_PPC ) {
-            memcpy( buffer, "..", 2 );
-            memcpy( buffer + 2, symName, sym_len );
-            AddSym( buffer, SYM_WEAK, 0 );
+            AddSymWithPrefix( "..", symName, SYM_WEAK, 0 );
         }
-        MemFree( buffer );
         break;
     case WL_FTYPE_OMF:
         if( Options.libtype == WL_LTYPE_MLIB ) {
@@ -712,12 +732,7 @@ void ProcessImport( char *name )
         } else {
             OmfMKImport( arch, ORDINAL, ordinal, DLLName, symName, NULL, WL_PROC_X86 );
         }
-        //sym_len = strlen( symName ) + 1;
-        //buffer = MemAlloc( sym_len + 6 );
-        //memcpy( buffer, "__imp_", 6 );
-        //memcpy( buffer + 6, symName, sym_len );
-        //AddSym( buffer, SYM_WEAK, 0 );
-        //MemFree( buffer );
+        //AddSymWithPrefix( "__imp_", symName, SYM_WEAK, 0 );
         break;
     }
     MemFree( arch->name );
@@ -736,11 +751,11 @@ size_t ElfImportSize( import_sym *import )
         for( temp = import->u.elf.symlist; temp != NULL; temp = temp->next ) {
             len += temp->len;
         }
-        Round2var( len );
+        len = __ROUND_UP_SIZE_EVEN( len );
         break;
     case ELFRENAMED:
         len += 0x21 + 1 + import->u.elf.symlist->len + import->u.elf.symlist->next->len;
-        Round2var( len );
+        len = __ROUND_UP_SIZE_EVEN( len );
         break;
     default:
         break;
@@ -770,11 +785,12 @@ size_t CoffImportSize( import_sym *import )
             }
             break;
         case WL_PROC_AXP:
+        case WL_PROC_MIPS:
         case WL_PROC_PPC:
         case WL_PROC_X86:
         default:
             if( Options.coff_import_long ) {
-                opt_hdr_len = sizeof( coff_opt_hdr );
+                opt_hdr_len = sizeof( coff_opt_hdr32 );
             }
             break;
         }
@@ -782,7 +798,7 @@ size_t CoffImportSize( import_sym *import )
             + opt_hdr_len                               // optional header
             + 2 * COFF_SECTION_HEADER_SIZE +            // section table (headers)
             + 0x14 + 3 * COFF_RELOC_SIZE                // section data
-            + Round2( dll_len + 1 )                     // section data
+            + __ROUND_UP_SIZE_EVEN( dll_len + 1 )       // section data
             + 7 * COFF_SYM_SIZE                         // symbol table
             + 4 + mod_len + 21 + 25 + mod_len + 18 );   // string table
     case NULL_IMPORT_DESCRIPTOR:
@@ -809,11 +825,11 @@ size_t CoffImportSize( import_sym *import )
                 }
                 ret = COFF_FILE_HEADER_SIZE
                     + 4 * COFF_SECTION_HEADER_SIZE
-                    + 4 + COFF_RELOC_SIZE       // idata$5
-                    + 4 + COFF_RELOC_SIZE       // idata$4
-                    + 2 + Round2( exp_len + 1 ) // idata$6
+                    + 4 + COFF_RELOC_SIZE                       // idata$5
+                    + 4 + COFF_RELOC_SIZE                       // idata$4
+                    + 2 + __ROUND_UP_SIZE_EVEN( exp_len + 1 )   // idata$6
                     + 11 * COFF_SYM_SIZE
-                    + 4 + mod_len + 21;         // 21 = strlen("__IMPORT_DESCRIPTOR_") + 1
+                    + 4 + mod_len + 21;                         // 21 = strlen("__IMPORT_DESCRIPTOR_") + 1
             } else {
                 ret = COFF_FILE_HEADER_SIZE
                     + 3 * COFF_SECTION_HEADER_SIZE
@@ -832,6 +848,11 @@ size_t CoffImportSize( import_sym *import )
                     ret += 7 + sym_len;
                 }
                 ret += 0xc + 3 * COFF_RELOC_SIZE;   // .text
+                break;
+            case WL_PROC_MIPS:
+                /*
+                 * not yet implemented
+                 */
                 break;
             case WL_PROC_PPC:
                 if( sym_len > 8 ) {
@@ -876,7 +897,11 @@ size_t CoffImportSize( import_sym *import )
     return( 0 );
 }
 
-static short    ElfProcessors[4] = { 0, EM_ALPHA, EM_PPC, 0 };
+static short    ElfProcessors[] = {
+    #define WL_PROC(p,e,n)  e,
+    WL_PROCS
+    #undef WL_PROC
+};
 
 void ElfWriteImport( libfile io, sym_file *sfile )
 {
@@ -894,7 +919,7 @@ void ElfWriteImport( libfile io, sym_file *sfile )
         strtabsize += temp->len + 1;
     }
     padding = ( (strtabsize & 1) != 0 );
-    Round2var( strtabsize );
+    strtabsize = __ROUND_UP_SIZE_EVEN( strtabsize );
     fillInU16( ElfProcessors[import->processor], &(ElfBase[0x12]) );
     fillInU32( strtabsize, &(ElfBase[0x74]) );
     fillInU32( strtabsize + 0x100, &(ElfBase[0x98]) );
@@ -913,7 +938,7 @@ void ElfWriteImport( libfile io, sym_file *sfile )
     fillInU32( 0x10 * ( numsyms + 1 ), &(ElfBase[0xc4]) );
     fillInU32( strtabsize + 0x128 + 0x10 * numsyms, &(ElfBase[0xe8]) );
     fillInU32( 0x10 * numsyms, &(ElfBase[0xec]) );
-    LibWrite( io, &ElfBase, ElfBase_SIZE );
+    LibWrite( io, ElfBase, ElfBase_SIZE );
     LibWrite( io, import->DLLName, strlen( import->DLLName ) + 1);
     for( temp = import->u.elf.symlist; temp != NULL; temp = temp->next ) {
         LibWrite( io, temp->name, temp->len + 1 );
@@ -921,7 +946,7 @@ void ElfWriteImport( libfile io, sym_file *sfile )
     if( padding ) {
         LibWrite( io, AR_FILE_PADDING_STRING, AR_FILE_PADDING_STRING_LEN );
     }
-    LibWrite( io, &ElfOSInfo, ElfOSInfo_SIZE );
+    LibWrite( io, ElfOSInfo, ElfOSInfo_SIZE );
 
     offset = 0;
     strtabsize = ELFBASESTRTABSIZE + strlen( import->DLLName ) + 1;
@@ -974,7 +999,7 @@ void ElfWriteImport( libfile io, sym_file *sfile )
 
 bool AddImport( arch_header *arch, libfile io )
 {
-    unsigned_32     offset;
+    unsigned_32     ne_header_off;
     long            header_offset;
     unsigned_16     signature;
     bool            ok;
@@ -984,24 +1009,24 @@ bool AddImport( arch_header *arch, libfile io )
     ok = ( LibRead( io, &signature, sizeof( signature ) ) == sizeof( signature ) );
     if( ok ) {
         header_offset = 0;
-        if( signature == DOS_SIGNATURE ) {
-            header_offset = OS2_NE_OFFSET;
+        if( signature == EXESIGN_DOS ) {
+            header_offset = NE_HEADER_OFFSET;
             LibSeek( io, header_offset, SEEK_SET );
-            ok = ( LibRead( io, &offset, sizeof( offset ) ) == sizeof( offset ) );
+            ok = ( LibRead( io, &ne_header_off, sizeof( ne_header_off ) ) == sizeof( ne_header_off ) );
             if( ok ) {
-                header_offset = offset;
+                header_offset = ne_header_off;
                 LibSeek( io, header_offset, SEEK_SET );
                 ok = ( LibRead( io, &signature, sizeof( signature ) ) == sizeof( signature ) );
             }
         }
         if( ok ) {
-            if( signature == OSF_FLAT_SIGNATURE ) {
+            if( signature == EXESIGN_LE ) {
                 os2FlatAddImport( arch, io, header_offset );
-            } else if( signature == OSF_FLAT_LX_SIGNATURE ) {
+            } else if( signature == EXESIGN_LX ) {
                 os2FlatAddImport( arch, io, header_offset );
-            } else if( signature == OS2_SIGNATURE_WORD ) {
+            } else if( signature == EXESIGN_NE ) {
                 os2AddImport( arch, io, header_offset );
-            } else if( signature == PE_SIGNATURE ) {
+            } else if( signature == EXESIGN_PE ) {
                 peAddImport( arch, io, header_offset );
             } else if( header_offset ) {
                 ok = false;

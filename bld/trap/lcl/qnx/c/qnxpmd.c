@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -54,9 +54,10 @@
 #include <sys/console.h>
 #include <sys/dev.h>
 #include <sys/name.h>
+#include "digcpu.h"
 #include "trpimp.h"
 #include "trpcomm.h"
-#include "qnxcomm.h"
+#include "qnxpath.h"
 #include "miscx87.h"
 #include "mad.h"
 #include "madregs.h"
@@ -125,62 +126,62 @@ trap_retval TRAP_CORE( Get_sys_config )( void )
     struct  _osinfo     info;
     get_sys_config_ret  *ret;
 
-    ret = GetOutPtr(0);
+    ret = GetOutPtr( 0 );
     if( PmdInfo.loaded )  {
         info = PmdInfo.hdr.osdata;
     } else {
         qnx_osinfo( 0, &info );
     }
-    ret->sys.arch = DIG_ARCH_X86;
-    ret->sys.os = DIG_OS_QNX;
-    ret->sys.osmajor = info.version / 100;
-    ret->sys.osminor = info.version % 100;
+    ret->arch = DIG_ARCH_X86;
+    ret->os = DIG_OS_QNX;
+    ret->osmajor = info.version / 100;
+    ret->osminor = info.version % 100;
     if( info.sflags & _PSF_EMULATOR_INSTALLED ) {
-        ret->sys.fpu = X86_EMU;
+        ret->fpu = X86_EMU;
     } else if( (info.sflags & _PSF_NDP_INSTALLED) == 0 ) {
-        ret->sys.fpu = X86_NO;
+        ret->fpu = X86_NOFPU;
     } else {
         switch( info.fpu ) {
         case 87:
-            ret->sys.fpu = X86_87;
+            ret->fpu = X86_87;
             break;
         case 287:
-            ret->sys.fpu = X86_287;
+            ret->fpu = X86_287;
             break;
         case 387:
         default:
-            ret->sys.fpu = X86_387;
+            ret->fpu = X86_387;
             break;
         }
     }
     switch( info.cpu ) {
     case 8088:
-        ret->sys.cpu = X86_86;
+        ret->cpu = X86_86;
         break;
     case 186:
-        ret->sys.cpu = X86_186;
+        ret->cpu = X86_186;
         break;
     case 286:
-        ret->sys.cpu = X86_286;
+        ret->cpu = X86_286;
         break;
     case 386:
     default:
-        ret->sys.cpu = X86_386;
+        ret->cpu = X86_386;
         break;
     case 486:
-        ret->sys.cpu = X86_486;
+        ret->cpu = X86_486;
         break;
     case 586:
-        ret->sys.cpu = X86_586;
+        ret->cpu = X86_586;
         break;
     case 686:
-        ret->sys.cpu = X86_686;
+        ret->cpu = X86_686;
         break;
     }
     if( info.sflags & _PSF_PROTECTED ) {
-        ret->sys.huge_shift = 3;
+        ret->huge_shift = 3;
     } else {
-        ret->sys.huge_shift = 12;
+        ret->huge_shift = 12;
     }
     return( sizeof( *ret ) );
 }
@@ -252,8 +253,8 @@ trap_retval TRAP_CORE( Map_addr )( void )
     addr48_ptr          slib;
     unsigned            seg;
 
-    acc = GetInPtr(0);
-    ret = GetOutPtr(0);
+    acc = GetInPtr( 0 );
+    ret = GetOutPtr( 0 );
     ret->lo_bound = 0;
     ret->hi_bound = ~(addr48_off)9;
 
@@ -277,8 +278,8 @@ trap_retval TRAP_CORE( Map_addr )( void )
             index = seg >> 3;
         }
         if( PmdInfo.loaded && index < PmdInfo.hdr.numsegs ) {
-            seg = PmdInfo.segs[ seg >> 3 ].real_seg;
-            ret->out_addr.offset += PmdInfo.segs[ index ].mem_off;
+            seg = PmdInfo.segs[seg >> 3].real_seg;
+            ret->out_addr.offset += PmdInfo.segs[index].mem_off;
         }
         break;
     case MH_SLIB:
@@ -298,7 +299,7 @@ trap_retval TRAP_CORE( Checksum_mem )( void )
 {
     checksum_mem_ret    *ret;
 
-    ret = GetOutPtr(0);
+    ret = GetOutPtr( 0 );
     ret->result = 0;
     return( sizeof( *ret ) );
 }
@@ -318,18 +319,24 @@ static unsigned ReadGDT( read_mem_req *acc, unsigned len, void *ret )
     struct _seginfo     info;
     unsigned            segment;
 
-    if( !PmdInfo.read_gdts ) return( 0 );
+    if( !PmdInfo.read_gdts )
+        return( 0 );
     segment = acc->mem_addr.segment;
-    if( segment & 0x04 ) return( 0 );
-    if( segment == 0 ) return( 0 );
-    if( !ver_read( segment ) ) return( 0 );
-    if(qnx_segment_info(PROC_PID,PROC_PID,segment,&info)==-1) return( 0 );
+    if( segment & 0x04 )
+        return( 0 );
+    if( segment == 0 )
+        return( 0 );
+    if( !ver_read( segment ) )
+        return( 0 );
+    if( qnx_segment_info( PROC_PID, PROC_PID, segment, &info ) == -1 )
+        return( 0 );
     if( acc->mem_addr.offset >= info.nbytes ) {
         len = 0;
     } else if( acc->mem_addr.offset+len > info.nbytes ) {
         len = info.nbytes - acc->mem_addr.offset;
     }
-    if( len == 0 ) return( 0 );
+    if( len == 0 )
+        return( 0 );
     _fmemcpy( ret, _MK_FP( segment, acc->mem_addr.offset ), len );
     return( len );
 }
@@ -341,8 +348,8 @@ trap_retval TRAP_CORE( Read_mem )( void )
     unsigned            i;
     unsigned            len;
 
-    acc = GetInPtr(0);
-    ret = GetOutPtr(0);
+    acc = GetInPtr( 0 );
+    ret = GetOutPtr( 0 );
     if( !PmdInfo.loaded ) {
         return( 0 );
     }
@@ -358,7 +365,9 @@ trap_retval TRAP_CORE( Read_mem )( void )
                 lseek( PmdInfo.fd, PmdInfo.segs[i].file_off + acc->mem_addr.offset,
                          SEEK_SET );
                 len = read( PmdInfo.fd, ret, len );
-                if( len == -1 ) len = 0;
+                if( len == -1 ) {
+                    len = 0;
+                }
             }
             return( len );
         }
@@ -371,7 +380,7 @@ trap_retval TRAP_CORE( Write_mem )( void )
 {
     write_mem_ret       *ret;
 
-    ret = GetOutPtr(0);
+    ret = GetOutPtr( 0 );
     ret->len = 0;
     return( sizeof( *ret ) );
 }
@@ -387,7 +396,7 @@ trap_retval TRAP_CORE( Write_io )( void )
 {
     write_io_ret        *ret;
 
-    ret = GetOutPtr(0);
+    ret = GetOutPtr( 0 );
     ret->len = 0;
     return( sizeof( *ret ) );
 }
@@ -420,7 +429,9 @@ static void ReadFPU( struct x86_fpu *r )
     memset( r, 0, sizeof( *r ) );
     if( PmdInfo.loaded ) {
         memcpy( r, PmdInfo.hdr.x87, sizeof( PmdInfo.hdr.x87 ) );
-        if( !PmdInfo.fpu32 ) FPUExpand( r );
+        if( !PmdInfo.fpu32 ) {
+            FPUExpand( r );
+        }
     }
 }
 
@@ -445,21 +456,28 @@ static bool LoadPmdHeader( char *name )
     struct stat     tmp;
     char            result[PATH_MAX + 1];
 
-    if( TryOnePath( ":/usr/dumps", &tmp, name, result ) == 0 )
-        return( false );
+    strcpy( result, name );
+    if( stat( result, &tmp ) != 0 ) {
+        #define DUMPSDIR    "/usr/dumps/"
+        strcpy( result, DUMPSDIR );
+        strcpy( result + sizeof( DUMPSDIR ) - 1, name );
+        #undef DUMPSDIR
+        if( stat( result, &tmp ) != 0 ) {
+            return( false );
+        }
+    }
     PmdInfo.fd = open( result, O_RDONLY );
     if( PmdInfo.fd < 0 )
         return( false );
-    if( read( PmdInfo.fd, &PmdInfo.hdr, sizeof( PmdInfo.hdr ) )
-            != sizeof( PmdInfo.hdr ) ) {
+    if( read( PmdInfo.fd, &PmdInfo.hdr, sizeof( PmdInfo.hdr ) ) != sizeof( PmdInfo.hdr ) ) {
         close( PmdInfo.fd );
         PmdInfo.fd = NO_FILE;
         errno = ENOEXEC;
         return( false );
     }
     if( PmdInfo.hdr.signature != DUMP_SIGNATURE
-     || PmdInfo.hdr.version != DUMP_VERSION
-     || PmdInfo.hdr.errnum != 0 ) {
+      || PmdInfo.hdr.version != DUMP_VERSION
+      || PmdInfo.hdr.errnum != 0 ) {
         close( PmdInfo.fd );
         PmdInfo.fd = NO_FILE;
         errno = ENOEXEC;
@@ -477,9 +495,10 @@ static void ReadSegData( void )
 
     offset = sizeof( PmdInfo.hdr );
     for( ptr = PmdInfo.segs, i = PmdInfo.hdr.numsegs; i != 0; ++ptr, --i ) {
-        if( lseek( PmdInfo.fd, offset, SEEK_SET ) != offset ) return;
-        if( read( PmdInfo.fd, &seg_info, sizeof( seg_info ) )
-                 != sizeof( seg_info ) ) return;
+        if( lseek( PmdInfo.fd, offset, SEEK_SET ) != offset )
+            return;
+        if( read( PmdInfo.fd, &seg_info, sizeof( seg_info ) ) != sizeof( seg_info ) )
+            return;
         ptr->is_32 = ((seg_info.flags & _PMF_DBBIT) != 0);
         ptr->file_off = offset + sizeof( seg_info );
         ptr->seg_len = seg_info.nbytes;
@@ -489,7 +508,7 @@ static void ReadSegData( void )
                 /* flat model */
                 ptr[0] = ptr[-1];
                 ptr[-1].mem_off = seg_info.addr;
-                ptr[ 0].mem_off = seg_info.addr + seg_info.nbytes;
+                ptr[0].mem_off = seg_info.addr + seg_info.nbytes;
                 seg_info.nbytes = 0;
             }
             ptr->real_seg = seg_info.selector & 0x7fff;
@@ -512,9 +531,9 @@ trap_retval TRAP_CORE( Prog_load )( void )
     PmdInfo.mapping_shared = false;
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    argv = GetInPtr( sizeof( *acc ) );
+    ret->err = 0;
     ret->mod_handle = MH_DEBUGGEE;
-
+    argv = GetInPtr( sizeof( *acc ) );
     if( argv[0] == '\0' ) {
         ret->task_id = 0;
         ret->err = ENOENT;
@@ -603,7 +622,7 @@ trap_retval TRAP_CORE( Set_watch )( void )
     set_watch_ret       *ret;
 
     ret = GetOutPtr( 0 );
-    ret->err = 0;
+    ret->err = 0;   // OK
     ret->multiplier = USING_DEBUG_REG | 1;
     return( sizeof( *ret ) );
 }
@@ -655,10 +674,10 @@ trap_retval TRAP_CORE( Redirect_stdout )( void )
     return( TRAP_CORE( Redirect_stdin )() );
 }
 
-trap_retval TRAP_FILE( string_to_fullpath )( void )
+trap_retval TRAP_FILE( file_to_fullpath )( void )
 {
     struct  stat                chk;
-    unsigned_16                 len;
+    size_t                      len;
     char                        *name;
     char                        *fullname;
     unsigned                    save_handle;
@@ -668,13 +687,12 @@ trap_retval TRAP_FILE( string_to_fullpath )( void )
     acc = GetInPtr( 0 );
     name = GetInPtr( sizeof( *acc ) );
     ret = GetOutPtr( 0 );
+    ret->err = 0;
     fullname = GetOutPtr( sizeof( *ret ) );
     fullname[0] = '\0';
     len = 0;
-    if( acc->file_type != TF_TYPE_EXE ) {
-        len = FindFilePath( false, name, fullname );
-    } else if( PmdInfo.mapping_shared ) {
-        len = FindFilePath( true, name, fullname );
+    if( acc->file_type != DIG_FILETYPE_EXE || PmdInfo.mapping_shared ) {
+        len = FindFilePath( acc->file_type, name, fullname );
     } else {
         save_handle = PmdInfo.fd;
         if( LoadPmdHeader( name ) ) {
@@ -682,23 +700,21 @@ trap_retval TRAP_FILE( string_to_fullpath )( void )
             if( stat( name, &chk ) != 0 ) {
                 /* try it without the node number */
                 name += 2;
-                while( *name != '/' ) ++name;
+                while( *name != '/' )
+                    ++name;
                 if( stat( name, &chk ) != 0 ) {
                     chk.st_mtime = 0;
                 }
             }
-            if( PmdInfo.ignore_timestamp || chk.st_mtime==PmdInfo.hdr.cmdtime ) {
-                len = StrCopy( name, fullname ) - fullname;
+            if( PmdInfo.ignore_timestamp || chk.st_mtime == PmdInfo.hdr.cmdtime ) {
+                len = StrCopyDst( name, fullname ) - fullname;
             }
             close( PmdInfo.fd );
         }
         PmdInfo.fd = save_handle;
     }
-    if( len == 0 ) {
+    if( len == 0 )
         ret->err = ENOENT;      /* File not found */
-    } else {
-        ret->err = 0;
-    }
     return( sizeof( *ret ) + len + 1 );
 }
 
@@ -718,7 +734,7 @@ static bool AddrIs32( addr_seg seg )
             }
          }
     } else if( PmdInfo.loaded && index < PmdInfo.hdr.numsegs ) {
-        is_32 = PmdInfo.segs[ index ].is_32;
+        is_32 = PmdInfo.segs[index].is_32;
     }
     return( is_32 );
 }
@@ -727,18 +743,18 @@ trap_retval TRAP_CORE( Machine_data )( void )
 {
     machine_data_req    *acc;
     machine_data_ret    *ret;
-    unsigned_8          *data;
+    machine_data_spec   *data;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    data = GetOutPtr( sizeof( *ret ) );
     ret->cache_start = 0;
     ret->cache_end = ~(addr_off)0;
-    *data = 0;
-    if( AddrIs32( acc->addr.segment ) ) {
-        *data |= X86AC_BIG;
+    if( acc->info_type == X86MD_ADDR_CHARACTERISTICS ) {
+        data = GetOutPtr( sizeof( *ret ) );
+        data->x86_addr_flags = ( AddrIs32( acc->addr.segment ) ) ? X86AC_BIG : 0;
+        return( sizeof( *ret ) + sizeof( data->x86_addr_flags ) );
     }
-    return( sizeof( *ret ) + sizeof( *data ) );
+    return( sizeof( *ret ) );
 }
 
 trap_retval TRAP_CORE( Get_lib_name )( void )
@@ -747,9 +763,9 @@ trap_retval TRAP_CORE( Get_lib_name )( void )
     get_lib_name_ret    *ret;
     char                *name;
     const char          *p;
-    size_t              max_len;
+    size_t              name_maxlen;
 
-    acc = GetInPtr(0);
+    acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
     ret->mod_handle = 0;
     if( PmdInfo.read_gdts == 0 )
@@ -775,10 +791,10 @@ trap_retval TRAP_CORE( Get_lib_name )( void )
     default:
         return( sizeof( *ret ) );
     }
-    max_len = GetTotalSizeOut() - 1 - sizeof( *ret );
+    name_maxlen = GetTotalSizeOut() - sizeof( *ret ) - 1;
     name = GetOutPtr( sizeof( *ret ) );
-    strncpy( name, p, max_len );
-    name[max_len] = '\0';
+    strncpy( name, p, name_maxlen );
+    name[name_maxlen] = '\0';
     PmdInfo.mapping_shared = true;
     return( sizeof( *ret ) + strlen( name ) + 1 );
 }
@@ -838,14 +854,16 @@ trap_retval TRAP_THREAD( get_extra )( void )
 
 trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
 {
-    trap_version ver;
+    trap_version    ver;
+    char            ch;
 
-    remote = remote;
+    /* unused parameters */ (void)remote;
+
     PmdInfo.fd = NO_FILE;
     PmdInfo.enable_read_gdts = true;
     PmdInfo.force_read_gdts  = false;
-    while( *parms != '\0' ) {
-        switch( *parms ) {
+    while( (ch = *parms++) != '\0' ) {
+        switch( ch ) {
         case 'I':
         case 'i':
             PmdInfo.ignore_timestamp = true;
@@ -859,11 +877,10 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
             PmdInfo.enable_read_gdts = false;
             break;
         }
-        ++parms;
     }
     err[0] = '\0'; /* all ok */
-    ver.major = TRAP_MAJOR_VERSION;
-    ver.minor = TRAP_MINOR_VERSION;
+    ver.major = TRAP_VERSION_MAJOR;
+    ver.minor = TRAP_VERSION_MINOR;
     ver.remote = false;
     return( ver );
 }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,13 +37,16 @@
 #include <stdio.h>
 #include <conio.h>
 #include <stdarg.h>
+#ifdef __QNX__
+    #include "slibqnx.h"
+#endif
 #include "printf.h"
 
 /*
  * con_putc -- output character to console
  */
 static prtf_callback_t con_putc; // setup calling convention
-static void PRTF_CALLBACK con_putc( PTR_SPECS specs, PRTF_CHAR_TYPE op_char )
+static void PRTF_CALLBACK con_putc( PTR_PRTF_SPECS specs, PRTF_CHAR_TYPE op_char )
 {
     if( (UCHAR_TYPE)op_char == putch( (UCHAR_TYPE)op_char ) ) {
         specs->_output_count++;

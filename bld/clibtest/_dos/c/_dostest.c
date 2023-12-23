@@ -99,7 +99,6 @@
 struct dosdate_t        ddate;
 struct dostime_t        dtime;
 int verbose = 0;
-char *runtime;
 
 void NowTest( char *funcname )
 {
@@ -113,6 +112,8 @@ void TestDateTimeOperations( void )
 {
     struct dosdate_t    newdate;
     struct dostime_t    newtime;
+    int                 rc;
+    int                 noprivilege;
 
     NowTest( "_dos_getdate(), and _dos_gettime()" );
     _dos_getdate( &ddate );
@@ -123,27 +124,43 @@ void TestDateTimeOperations( void )
         printf( "The time (HH:MM:SS) is: %.2d:%.2d:%.2d\n",
             dtime.hour, dtime.minute, dtime.second );
     }
-    // run286 doesn't support the DosSetDateTime call
-    if( stricmp( runtime, "run286" ) != 0 ) {
-        NowTest( "_dos_setdate(), and _dos_settime()" );
-        newdate.year = 1999;
-        newdate.month = 12;
-        newdate.day = 31;
-        newtime.hour = 19;
-        newtime.minute = 19;
-        newtime.second = 30;
-        _dos_setdate( &newdate );
-        _dos_settime( &newtime );
-        newdate.year = 1980;
-        newdate.month = 1;
-        newdate.day = 1;
-        newtime.hour = 0;
-        newtime.minute = 0;
-        newtime.second = 0;
-        _dos_getdate( &newdate );
-        _dos_gettime( &newtime );
-        _dos_setdate( &ddate );
-        _dos_settime( &dtime );
+    NowTest( "_dos_setdate(), and _dos_settime()" );
+    newdate.year = 1999;
+    newdate.month = 12;
+    newdate.day = 31;
+    newtime.hour = 19;
+    newtime.minute = 19;
+    newtime.second = 30;
+    noprivilege = 0;
+    rc = _dos_setdate( &newdate );
+#ifdef __NT__
+    if( rc == 1314 ) {
+        noprivilege = 1;
+    } else if( rc ) {
+        printf( "_dos_setdate error=%d\n", rc );
+    }
+#endif
+    rc = _dos_settime( &newtime );
+#ifdef __NT__
+    if( rc == 1314 ) {
+        noprivilege = 1;
+    } else if( rc ) {
+        printf( "_dos_settime error=%d\n", rc );
+    }
+#endif
+    newdate.year = 1980;
+    newdate.month = 1;
+    newdate.day = 1;
+    newtime.hour = 0;
+    newtime.minute = 0;
+    newtime.second = 0;
+    _dos_getdate( &newdate );
+    _dos_gettime( &newtime );
+    _dos_setdate( &ddate );
+    _dos_settime( &dtime );
+    if( noprivilege ) {
+        printf( "Skip, no privilege for change date/time !\n" );
+    } else {
         if( ( newdate.year != 1999 ) || ( newdate.month != 12 ) ||
             ( newdate.day != 31 ) || ( newtime.hour != 19 ) ||
             ( newtime.minute != 19 ) ) {
@@ -504,9 +521,6 @@ int main( int argc, char *argv[] )
 #endif
     if( argc > 1 )
         verbose = 1;
-    runtime = getenv( "RUNTIME" );
-    if( runtime == 0 )
-        runtime = "";
     TestDateTimeOperations();   // This should go first
     TestFileOperations();
 #if !( defined(__WINDOWS__) || defined(__WINDOWS_386__) )
@@ -530,6 +544,7 @@ int main( int argc, char *argv[] )
 
 int main( int argc, char *argv[] )
 {
+    (void)argc;
     printf( "Tests completed (%s).\n", strlwr( argv[0] ) );
     return( EXIT_SUCCESS );
 }

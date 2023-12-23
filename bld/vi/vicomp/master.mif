@@ -1,3 +1,5 @@
+tree_depth = 4
+
 proj_name = vicomp
 
 !ifndef vicomp_autodepends
@@ -21,16 +23,15 @@ exetarg_objs = &
     addstr.obj &
     srcgen.obj &
     srclabel.obj &
-    printf.obj &
+    bprintf.obj &
     srccs.obj &
     srcdata.obj &
     pdata.obj &
     exdata.obj &
-    mapkey.obj &
-    dat.obj &
     clset.obj &
     llrtns.obj &
     srcvar.obj &
+    tokenize.obj &
     parse.obj &
     myio.obj
 

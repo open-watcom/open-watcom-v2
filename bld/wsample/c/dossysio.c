@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -66,7 +66,7 @@ unsigned long SysSeek( int handle, unsigned long loc )
 {
     uint_32     new_loc;
 
-    if( TINY_ERROR( TinyLSeek( handle, loc, TIO_SEEK_START, &new_loc ) ) )
+    if( TINY_ERROR( TinyLSeek( handle, loc, TIO_SEEK_SET, &new_loc ) ) )
         return( -1UL );
     return( new_loc );
 }

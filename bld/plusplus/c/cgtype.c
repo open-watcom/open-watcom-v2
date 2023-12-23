@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -573,12 +573,9 @@ static void init(               // MODULE INITIALIZATION
 
     defined_type = TY_FIRST_FREE;
     cg_member_ptr = NULL_CGREFNO;
-#if _CPU == _AXP
     defaultDataPtrClass = PTR_NEAR;
     defaultCodePtrClass = PTR_NEAR;
-#elif _INTEL_CPU
-    defaultDataPtrClass = PTR_NEAR;
-    defaultCodePtrClass = PTR_NEAR;
+#if _INTEL_CPU
     if( !IsFlat() ) {
         if( IsHugeData() ) {
             defaultDataPtrClass = PTR_HUGE;
@@ -589,8 +586,6 @@ static void init(               // MODULE INITIALIZATION
             defaultCodePtrClass = PTR_LONG;
         }
     }
-#else
-    #error bad target
 #endif
 }
 

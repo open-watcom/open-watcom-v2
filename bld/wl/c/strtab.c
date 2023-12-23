@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,7 +45,7 @@
 #include <string.h>
 
 
-#define STR_BLOCK_SIZE   _4KB
+#define STR_BLOCK_SIZE   _4K
 
 #define TableNoSplitItems(t)    ((t)->currbase & 1)
 #define GetTableLastBlkStart(t) ((t)->currbase & ~1U)

@@ -78,6 +78,8 @@ static bool         Blank_line_sfx = true;
 static char         *Trans_str = NULL;
 static size_t       Trans_len = 0;
 
+static bool         tt_mode = false;
+
 static void draw_line( section_def *section )
 /*******************************************/
 {
@@ -493,10 +495,27 @@ void html_trans_line( char *line_buf, section_def *section )
             end = strchr( ptr, WHP_FONTTYPE );
             *end++ = '\0';
             if( stricmp( ptr, Fonttype_courier ) == 0 ) {
-                strcpy( buf, "<tt>" );
+                /*
+                 * monospaced font
+                 * switch on teletype mode
+                 */
+                if( tt_mode ) {
+                    buf[0] = '\0';
+                } else {
+                    strcpy( buf, "<tt>" );
+                    tt_mode = true;
+                }
             } else {
-                /* default system font */
-                strcpy( buf, "</tt>" );
+                /*
+                 * proportional font
+                 * switch off teletype mode
+                 */
+                if( tt_mode ) {
+                    strcpy( buf, "</tt>" );
+                    tt_mode = false;
+                } else {
+                    buf[0] = '\0';
+                }
             }
             ptr = strchr( end, WHP_FONTTYPE ) + 1;
             line_len += trans_add_str( buf, section );

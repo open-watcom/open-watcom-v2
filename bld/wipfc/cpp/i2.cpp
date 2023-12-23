@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2009-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2009-2023 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -133,7 +133,7 @@ void I2::buildIndex()
             _document->addXRef( _parentId, xref );
         }
         I1* i1( _document->indexById( _refid ) );
-        i1->addSecondary( _index.get() );
+        i1->addSecondary( _index );
     }
     catch( Class1Error& e ) {
         printError( e._code );

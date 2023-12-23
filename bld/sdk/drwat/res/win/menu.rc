@@ -1,3 +1,5 @@
+/* UTF-8 encoding, ¥ */
+
 "APPLMENU" MENU
 BEGIN
     POPUP sp( "&File",

@@ -4,4 +4,4 @@ model=mc
 system=windows
 linkage=static
 
-!include $(clib_dir)/mrglib.mif
+!include ../../../mrglib.mif

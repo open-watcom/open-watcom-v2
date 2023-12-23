@@ -6,4 +6,4 @@ system     = os2
 convention = stack
 mthreaded=1
 
-!include $(rtdll_dir)/master.mif
+!include ../../../rtdll.mif

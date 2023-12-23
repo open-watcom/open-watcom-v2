@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -219,31 +219,28 @@ target_size_t ArrayTypeNumberItems( // GET ACTUAL NUMBER OF ITEMS FOR AN ARRAY
 TYPE TypeTargetSizeT(           // GET TYPE OF TARGET'S size_t
     void )
 {
-    TYPE type;                  // - return type
-
+#if _INTEL_CPU
     if( IsHugeData() ) {
-        type = GetBasicType( TYP_ULONG );
-    } else {
-        type = GetBasicType( TYP_UINT );
+        return( GetBasicType( TYP_ULONG ) );
     }
-    return( type );
+#endif
+    return( GetBasicType( TYP_UINT ) );
 }
 
 
 unsigned SizeTargetSizeT(       // GET SIZE OF TARGET'S size_t
     void )
 {
-    unsigned size;              // - size of type
-
+#if _INTEL_CPU
     if( IsHugeData() ) {
-        size = TARGET_ULONG;
-    } else {
-        size = TARGET_UINT;
+        return( TARGET_ULONG );
     }
-    return( size );
+#endif
+    return( TARGET_UINT );
 }
 
 
+#if _INTEL_CPU
 bool TypeTruncByMemModel(       // TEST TYPE TRUNCATION FOR DEF. MEMORY MODEL
     TYPE type )                 // - the type
 {
@@ -264,6 +261,7 @@ bool TypeTruncByMemModel(       // TEST TYPE TRUNCATION FOR DEF. MEMORY MODEL
     }
     return( ok );
 }
+#endif
 
 
 TYPE TypeRebuildPcPtr(          // REBUILD PC-PTR TYPE
@@ -370,9 +368,10 @@ TYPE TypeConvertFromPcPtr(      // TRANSFORM TYPE AFTER CONVERSION FROM PC PTR
 
 
 static type_id intPromo[] = {   // Table of integral promotions
-    #define pick(id,promo,promo_asm,type_text)  __PASTE( TYP_, promo ),
+    #define pick(id,promo,promo_asm,type_text)  promo,
     #include "_typdefs.h"
     #undef pick
+    TYP_NONE
 };
 
 
@@ -700,7 +699,7 @@ bool ExprIsLvalue               // TEST IF EXPRESSION IS LVALUE
     if( expr->flags & PTF_LVALUE ) {
         ok = true;
     } else {
-#ifndef NDEBUG
+#ifdef DEVBUILD
         TYPE type_expr;
         TYPE type_lv;
         type_expr = NodeType( expr );

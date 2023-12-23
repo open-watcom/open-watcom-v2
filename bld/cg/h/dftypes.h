@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,15 +36,15 @@ extern  dbg_type        DFScope( const char *name );
 extern  char const      *DFScopeName( dbg_type scope );
 extern  void            DFDumpName( dbg_name name, dbg_type tipe );
 extern  void            DFBackRefType( dbg_name name, dbg_type tipe );
-extern  dbg_type        DFCharBlock( unsigned_32 len );
-extern  dbg_type        DFCharBlockNamed( const char *name, unsigned_32 len );
+extern  dbg_type        DFCharBlock( uint_32 len );
+extern  dbg_type        DFCharBlockNamed( const char *name, uint_32 len );
 extern  dbg_type        DFIndCharBlock( back_handle len, cg_type len_type, int off );
 extern  dbg_type        DFLocCharBlock( dbg_loc loc, cg_type len_type );
 extern  dbg_type        DFFtnArray( back_handle dims, cg_type lo_bound_tipe, cg_type num_elts_tipe, int off, dbg_type base );
 extern  dbg_type        DFArray( dbg_type idx, dbg_type base );
-extern  dbg_type        DFIntArray( unsigned_32 hi, dbg_type base );
+extern  dbg_type        DFIntArray( uint_32 hi, dbg_type base );
 extern  dbg_type        DFEndArray( dbg_array ar );
-extern  dbg_type        DFSubRange( signed_32 lo, signed_32 hi, dbg_type base );
+extern  dbg_type        DFSubRange( int_32 lo, int_32 hi, dbg_type base );
 extern  dbg_type        DFDereference( cg_type ptr_type, dbg_type base );
 extern  dbg_type        DFPtr( cg_type ptr_type, dbg_type base );
 extern  dbg_type        DFBasedPtr( cg_type ptr_type, dbg_type base, dbg_loc loc_segment );

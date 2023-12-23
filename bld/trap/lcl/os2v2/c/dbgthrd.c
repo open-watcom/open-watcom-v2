@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,10 +42,17 @@
 #define INCL_WINMESSAGEMGR
 #include <os2.h>
 #include <os2dbg.h>
-#include "dosdebug.h"
+#include "bool.h"
+#include "os2v2acc.h"
 #include "softmode.h"
+#include "trpimp.h"
 #include "trperr.h"
 #include "dbgthrd.h"
+
+
+#define STACK_SIZE      32768
+#define MAX_PAINTS      100
+#define MAX_CLASS_NAME  80
 
 static uDB_t            *DebugReqBuff;
 static uDB_t            StopBuff;
@@ -52,14 +60,12 @@ static unsigned int     DebugReqResult;
 static HEV              DebugReqSem = NULLHANDLE;
 static HEV              DebugDoneSem = NULLHANDLE;
 static HEV              StopDoneSem = NULLHANDLE;
-static BOOL             InDosDebug;
+static bool             InDosDebug;
 
-#define STACK_SIZE      32768
-#define MAX_PAINTS      100
-#define MAX_CLASS_NAME  80
-
-static void StopApplication(void)
+static void APIENTRY StopApplication( ULONG arg )
 {
+    /* unused parameters */ (void)arg;
+
     StopBuff.Cmd = DBG_C_Stop;
     DosDebug(&StopBuff);
     DosPostEventSem(StopDoneSem);
@@ -67,15 +73,15 @@ static void StopApplication(void)
     // never return
 }
 
-static void CantDoIt(void)
+static void CantDoIt( void )
 {
-     WinMessageBox(HWND_DESKTOP, HwndDebugger,
+     WinMessageBox( HWND_DESKTOP, HwndDebugger,
         TRP_WIN_no_can_do,
-        TRP_The_WATCOM_Debugger, 1, MB_ERROR | MB_SYSTEMMODAL | MB_OK);
+        TRP_The_WATCOM_Debugger, 1, MB_ERROR | MB_SYSTEMMODAL | MB_OK );
 }
 
 
-ULONG CallDosDebug(uDB_t *buff)
+ULONG CallDosDebug( uDB_t *buff )
 {
     QMSG        qmsg;
     int         num_paints;
@@ -89,70 +95,70 @@ ULONG CallDosDebug(uDB_t *buff)
     TID         tid;
     ULONG       ulCount;
 
-    if (!IsPMDebugger()) {
-        return DosDebug(buff);
+    if( !IsPMDebugger() ) {
+        return( DosDebug( buff ) );
     }
 
-    switch (buff->Cmd) {
-        case DBG_C_ClearWatch:
-        case DBG_C_Freeze:
-        case DBG_C_LinToSel:
-        case DBG_C_NumToAddr:
-        case DBG_C_ReadCoRegs:
-        case DBG_C_ReadMemBuf:
-        case DBG_C_ReadMem_D:
-        case DBG_C_ReadReg:
-        case DBG_C_SelToLin:
-        case DBG_C_SetWatch:
-        case DBG_C_ThrdStat:
-        case DBG_C_WriteCoRegs:
-        case DBG_C_WriteMemBuf:
-        case DBG_C_WriteMem_D:
-        case DBG_C_WriteReg:
-            return DosDebug(buff);
+    switch( buff->Cmd ) {
+    case DBG_C_ClearWatch:
+    case DBG_C_Freeze:
+    case DBG_C_LinToSel:
+    case DBG_C_NumToAddr:
+    case DBG_C_ReadCoRegs:
+    case DBG_C_ReadMemBuf:
+    case DBG_C_ReadMem_D:
+    case DBG_C_ReadReg:
+    case DBG_C_SelToLin:
+    case DBG_C_SetWatch:
+    case DBG_C_ThrdStat:
+    case DBG_C_WriteCoRegs:
+    case DBG_C_WriteMemBuf:
+    case DBG_C_WriteMem_D:
+    case DBG_C_WriteReg:
+        return( DosDebug( buff ) );
     }
-    switch (buff->Cmd) {
-        case DBG_C_Go:
-        case DBG_C_SStep:
-        case DBG_C_Term:
-            ReleaseQueue(buff->Pid, buff->Tid);
+    switch( buff->Cmd ) {
+    case DBG_C_Go:
+    case DBG_C_SStep:
+    case DBG_C_Term:
+        ReleaseQueue( buff->Pid, buff->Tid );
     }
     DebugReqBuff = buff;
     StopBuff = *buff;
-    DosResetEventSem(DebugDoneSem, &ulCount);
-    DosPostEventSem(DebugReqSem);
+    DosResetEventSem( DebugDoneSem, &ulCount );
+    DosPostEventSem( DebugReqSem );
     num_paints = 0;
-    if (IsPMDebugger()) {
-        while (WinGetMsg(HabDebugger, &qmsg, 0L, 0, 0) || InDosDebug) {
-            WinQueryClassName(qmsg.hwnd, MAX_CLASS_NAME, class_name);
+    if( IsPMDebugger() ) {
+        while( WinGetMsg( HabDebugger, &qmsg, 0L, 0, 0 ) || InDosDebug ) {
+            WinQueryClassName( qmsg.hwnd, MAX_CLASS_NAME, class_name );
             switch (qmsg.msg) {
             case WM_CHAR:
-                if ((SHORT1FROMMP(qmsg.mp1) & KC_VIRTUALKEY) &&
-                    (SHORT2FROMMP(qmsg.mp2) == VK_BREAK)) {
+                if( (SHORT1FROMMP( qmsg.mp1 ) & KC_VIRTUALKEY) &&
+                    (SHORT2FROMMP( qmsg.mp2 ) == VK_BREAK) ) {
                     ULONG    ulCount;
 
                     SetBrkPending();
-                    DosCreateThread(&tid, (PFNTHREAD)StopApplication, NULLHANDLE, 0, STACK_SIZE);
-                    DosSetPriority(PRTYS_THREAD, PRTYC_TIMECRITICAL, 10, tid);
-                    WakeThreads(StopBuff.Pid);
-                    DosWaitEventSem(StopDoneSem, SEM_INDEFINITE_WAIT);
-                    DosResetEventSem(StopDoneSem, &ulCount);
+                    DosCreateThread( &tid, StopApplication, 0, CREATE_READY | STACK_SPARSE, STACK_SIZE );
+                    DosSetPriority( PRTYS_THREAD, PRTYC_TIMECRITICAL, 10, tid );
+                    WakeThreads( StopBuff.Pid );
+                    DosWaitEventSem( StopDoneSem, SEM_INDEFINITE_WAIT );
+                    DosResetEventSem( StopDoneSem, &ulCount );
                 }
                 break;
             case WM_COMMAND:
                 CantDoIt();
                 break;
             default:
-                if (strcmp(class_name, "GUIClass") == 0 ||
-                    strcmp(class_name, "WTool") == 0) {
-                    switch (qmsg.msg) {
+                if( strcmp( class_name, "GUIClass" ) == 0 ||
+                    strcmp( class_name, "WTool" ) == 0 ) {
+                    switch( qmsg.msg ) {
                     case WM_PAINT:
-                        if (num_paints >= MAX_PAINTS)
+                        if( num_paints >= MAX_PAINTS )
                             --num_paints;
                         paints[num_paints].hwnd = qmsg.hwnd;
-                        ps = WinBeginPaint(qmsg.hwnd, 0, &paints[num_paints].rcl);
-                        GpiErase(ps);
-                        WinEndPaint(ps);
+                        ps = WinBeginPaint( qmsg.hwnd, 0, &paints[num_paints].rcl );
+                        GpiErase( ps );
+                        WinEndPaint( ps );
                         num_paints++;
                         break;
                     case WM_BUTTON1DOWN:
@@ -163,72 +169,72 @@ ULONG CallDosDebug(uDB_t *buff)
                     case WM_MOUSEMOVE:
                     {
                         HPOINTER hourglass = WinQuerySysPointer( HWND_DESKTOP, SPTR_WAIT, FALSE );
-                        if (WinQueryPointer(HWND_DESKTOP) != hourglass) {
-                            WinSetPointer(HWND_DESKTOP, hourglass);
+                        if( WinQueryPointer( HWND_DESKTOP ) != hourglass ) {
+                            WinSetPointer( HWND_DESKTOP, hourglass );
                         }
                         break;
                     }
                     default:
-                        WinDefWindowProc(qmsg.hwnd, qmsg.msg, qmsg.mp1, qmsg.mp2);
+                        WinDefWindowProc( qmsg.hwnd, qmsg.msg, qmsg.mp1, qmsg.mp2 );
                     }
                 } else {
-                    WinDispatchMsg(HabDebugger, &qmsg);
+                    WinDispatchMsg( HabDebugger, &qmsg );
                 }
             }
         }
     } else {
-        DosWaitEventSem(DebugDoneSem, SEM_INDEFINITE_WAIT);
+        DosWaitEventSem( DebugDoneSem, SEM_INDEFINITE_WAIT );
     }
-    switch (buff->Cmd) {
-        case DBG_N_Exception:
-        case DBG_N_AsyncStop:
-        case DBG_N_Watchpoint:
-            AssumeQueue(buff->Pid, buff->Tid);
-            break;
+    switch( buff->Cmd ) {
+    case DBG_N_Exception:
+    case DBG_N_AsyncStop:
+    case DBG_N_Watchpoint:
+        AssumeQueue( buff->Pid, buff->Tid );
+        break;
     }
-    for (i = 0; i < num_paints; ++i) {
-        WinInvalidateRect(paints[i].hwnd, &paints[i].rcl, FALSE);
+    for( i = 0; i < num_paints; ++i ) {
+        WinInvalidateRect( paints[i].hwnd, &paints[i].rcl, FALSE );
     }
-    return DebugReqResult;
+    return( DebugReqResult );
 }
 
-static VOID APIENTRY DoDebugRequests(ULONG arg)
+static void APIENTRY DoDebugRequests( ULONG arg )
 {
     ULONG   ulCount;
 
     /* unused parameters */ (void)arg;
 
-    for ( ; ; ) {
-        DosWaitEventSem(DebugReqSem, SEM_INDEFINITE_WAIT);
-        DosResetEventSem(DebugReqSem, &ulCount);
-        InDosDebug = TRUE;
-        DebugReqResult = DosDebug(DebugReqBuff);
-        InDosDebug = FALSE;
-        if (IsPMDebugger()) {
-            WinPostMsg(HwndDebugger, WM_QUIT, 0, 0);
+    for( ;; ) {
+        DosWaitEventSem( DebugReqSem, SEM_INDEFINITE_WAIT );
+        DosResetEventSem( DebugReqSem, &ulCount );
+        InDosDebug = true;
+        DebugReqResult = DosDebug( DebugReqBuff );
+        InDosDebug = false;
+        if( IsPMDebugger() ) {
+            WinPostMsg( HwndDebugger, WM_QUIT, 0, 0 );
         } else {
-            DosPostEventSem(DebugDoneSem);
+            DosPostEventSem( DebugDoneSem );
         }
     }
 }
 
-VOID InitDebugThread( VOID )
+void InitDebugThread( void )
 {
     TID                 tid;
     ULONG               ulCount;
 
-    if (StopDoneSem == NULLHANDLE)
-        DosCreateEventSem(NULL, &StopDoneSem, 0, FALSE);
+    if( StopDoneSem == NULLHANDLE )
+        DosCreateEventSem( NULL, &StopDoneSem, 0, FALSE );
 
-    if (DebugReqSem == NULLHANDLE)
-        DosCreateEventSem(NULL, &DebugReqSem, 0, FALSE);
+    if( DebugReqSem == NULLHANDLE )
+        DosCreateEventSem( NULL, &DebugReqSem, 0, FALSE );
 
-    if (DebugDoneSem == NULLHANDLE)
-        DosCreateEventSem(NULL, &DebugDoneSem, 0, FALSE);
+    if( DebugDoneSem == NULLHANDLE )
+        DosCreateEventSem( NULL, &DebugDoneSem, 0, FALSE );
 
-    DosResetEventSem(StopDoneSem, &ulCount);
-    DosResetEventSem(DebugReqSem, &ulCount);
-    DosResetEventSem(DebugDoneSem, &ulCount);
-    DosCreateThread(&tid, DoDebugRequests, NULLHANDLE, 0, STACK_SIZE);
-    DosSetPriority(PRTYS_THREAD, PRTYC_TIMECRITICAL, 0, tid);
+    DosResetEventSem( StopDoneSem, &ulCount );
+    DosResetEventSem( DebugReqSem, &ulCount );
+    DosResetEventSem( DebugDoneSem, &ulCount );
+    DosCreateThread( &tid, DoDebugRequests, 0, CREATE_READY | STACK_SPARSE, STACK_SIZE );
+    DosSetPriority( PRTYS_THREAD, PRTYC_TIMECRITICAL, 0, tid );
 }

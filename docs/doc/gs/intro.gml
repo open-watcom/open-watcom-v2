@@ -206,8 +206,8 @@ designed.
 Although a significant amount of testing has gone into this product,
 you may encounter errors in the software or documentation.
 Technical support is provided on an informal basis through the
-&product newsgroups. Please visit http://www.openwatcom.org/ for more
-information.
+"Open Watcom Discord Channel" at &owurl2. or by "GitHub issues"
+at &owurl1. . Please visit &owurl. for more information.
 .*
 .beglevel
 .*
@@ -225,8 +225,8 @@ accessible through on-line help.
 The "README" file in the main product directory contains up-to-date
 information that recently became available.
 .np
-Answers to frequently asked questions are available on the Open Watcom
-World Wide Web server (http://www.openwatcom.org/).
+Answers to frequently asked questions are available on the "Open Watcom
+Web site" at &owurl. .
 .*
 .section Contacting Technical Support
 .*
@@ -237,13 +237,13 @@ in the software. Note that all support is currently informal and free.
 The following are ways to contact technical support.
 .begnote
 .*
-.note Newsgroups
-The easiest way to get support is through the Open Watcom newsgroups
-at news://news.openwatcom.org/.
+.note Open Watcom Discord Channel
+The easiest way to get support is through the "Open Watcom Discord Channel"
+at &owurl2. .
 .*
 .note World Wide Web
 You can also submit bug reports or enhancement requests through the
-Open Watcom bug tracking system at http://bugzilla.openwatcom.org/.
+bug tracking on "GitHub issues" at &owurl1. .
 .*
 .endnote
 .np

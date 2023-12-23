@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2009-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2009-2023 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -262,6 +262,16 @@ Document::~Document()
         delete *itr;
     _ipfcartwork_paths.resize( 0 );
     _ipfcimbed_paths.resize( 0 );
+
+    delete _dict;
+    delete _gnames;
+    delete _fonts;
+    delete _controls;
+    delete _extfiles;
+    delete _strings;
+    delete _eHdr;
+    delete _hdr;
+    delete _nls;
 }
 
 void Document::setTitle( std::string& buffer )
@@ -316,11 +326,11 @@ void Document::parse( Lexer* lexer )
             } else if( lexer->tagId() == Lexer::DOCPROF ) {
                 DocProf dp( this );
                 tok = dp.parse( lexer );
-                dp.build( _controls.get(), _strings.get() );
+                dp.build( _controls, _strings );
             } else if( lexer->tagId() == Lexer::CTRLDEF ) {
                 CtrlDef cd( this );
                 tok = cd.parse( lexer );
-                cd.build( _controls.get() );
+                cd.build( _controls );
             } else if( lexer->tagId() == Lexer::H1 || lexer->tagId() == Lexer::FN ) {
                 break;
             } else if( lexer->tagId() == Lexer::EUSERDOC ) {
@@ -995,7 +1005,7 @@ word Document::getGroupIndexById( const std::wstring& id )
 
 std::wstring * Document::pushFileInput( std::wstring *wfname )
 {
-    IpfFile *ipff = new IpfFile( wfname, _nls.get() );
+    IpfFile *ipff = new IpfFile( wfname, _nls );
     wfname = _compiler.addFileName( wfname );
     ipff->setName( wfname );
     _compiler.pushInput( ipff );
@@ -1004,7 +1014,7 @@ std::wstring * Document::pushFileInput( std::wstring *wfname )
 
 std::wstring * Document::pushFileInput( std::string& sfname, std::wstring *wfname )
 {
-    IpfFile *ipff = new IpfFile( sfname, wfname, _nls.get() );
+    IpfFile *ipff = new IpfFile( sfname, wfname, _nls );
     wfname = _compiler.addFileName( wfname );
     ipff->setName( wfname );
     _compiler.pushInput( ipff );
@@ -1013,7 +1023,7 @@ std::wstring * Document::pushFileInput( std::string& sfname, std::wstring *wfnam
 
 void Document::setOutFile( const std::string& fileName )
 {
-    _out = new OutFile( fileName, _nls.get() );
+    _out = new OutFile( fileName, _nls );
     if( !_out ) {
         throw FatalIOError( ERR_OPEN, L"for inf or hlp output" );
     }

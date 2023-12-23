@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,6 +45,8 @@
   #include "winrtns.h"
 #endif
 #include "myio.h"
+#include "myprintf.h"
+#include "parse.h"
 
 #include "clibext.h"
 
@@ -276,6 +278,19 @@ bool LostFileCheck( void )
 
 } /* LostFileCheck */
 
+static char *encodeFN( char *buffer, unsigned value )
+{
+    char        *p;
+
+    p = buffer;
+    do {
+        *p++ = Encode36Table[(unsigned char)( value % 36 )];
+        value /= 36;
+    } while( value != 0 );
+    *p = '\0';
+    return( buffer );
+}
+
 /*
  * AutoSaveInit - initialize for auto-save
  */
@@ -288,7 +303,6 @@ void AutoSaveInit( void )
     size_t      len;
     int         cnt;
     FILE        *fp;
-    int         pid;
     int         ch;
     int         handle;
     size_t      off;
@@ -303,22 +317,18 @@ void AutoSaveInit( void )
 #else
     strcpy( currTmpName,"aaaaaaaa.tmp" );
 #endif
-    pid = getpid();
-    itoa( pid, path, 36 );
+    encodeFN( path, getpid() );
     len = strlen( path );
     memcpy( &currTmpName[TMP_FNAME_LEN - len], path, len );
 #ifdef __QNX__
     {
         size_t  len2, len3;
-        int     nid, uid;
 
-        nid = getnid();
-        itoa( nid, path, 36 );
+        encodeFN( path, getnid() );
         len2 = strlen( path );
         memcpy( &currTmpName[TMP_FNAME_LEN - len - len2], path, len2 );
 
-        uid = getuid();
-        itoa( uid, path, 36 );
+        encodeFN( path, getuid() );
         len3 = strlen( path );
         memcpy( &currTmpName[TMP_FNAME_LEN - len - len2 - len3], path, len3 );
         memcpy( &checkFileName[EXTRA_EXT_OFF], path, len3 );

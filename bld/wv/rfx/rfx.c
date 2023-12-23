@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,7 +40,6 @@
 #include "banner.h"
 #include "dbgio.h"
 #include "objloc.h"
-#include "tcerr.h"
 #include "trprfx.h"
 #include "local.h"
 #include "remote.h"
@@ -249,10 +248,10 @@ static void Usage( void )
     Error( "Usage: rfx trap_file[;trap_parm] [rfx_command]" );
 }
 
-char *StrCopy( const char *src, char *dest )
+char *StrCopyDst( const char *src, char *dest )
 {
     while( (*dest = *src++) != NULLCHAR ) {
-        ++dest;
+        dest++;
     }
     return( dest );
 }
@@ -627,7 +626,7 @@ static void    CopyStrMax( const char *src, char *dst, size_t max_len )
         Copy( src, dst, max_len );
         dst[max_len] = NULLCHAR;
     } else {
-        StrCopy( src, dst );
+        StrCopyDst( src, dst );
     }
 }
 
@@ -998,7 +997,7 @@ static error_handle DoCopy( const char *src_name, const char *dst_name, object_l
             return( StashErrCode( IO_INTERRUPT, OP_LOCAL ) );
         }
         read_len = ReadStream( fh_src, Buff, BUFF_LEN );
-        if( read_len == ERR_RETURN ) {
+        if( read_len == ERR_READ ) {
             errh = GetLastErr();
             FiniCopy( fh_src, src_name, src_loc, fh_dst, dst_name, dst_loc );
             return( errh );
@@ -1006,7 +1005,7 @@ static error_handle DoCopy( const char *src_name, const char *dst_name, object_l
         if( read_len == 0 )
             break;
         write_len = WriteStream( fh_dst, Buff, read_len );
-        if( write_len == ERR_RETURN ) {
+        if( write_len == ERR_WRITE ) {
             errh = GetLastErr();
             FiniCopy( fh_src, src_name, src_loc, fh_dst, dst_name, dst_loc );
             return( errh );
@@ -1728,22 +1727,6 @@ static bool ProcDrive( int argc, char **argv )
     }
     return( false );
 }
-
-char *TrapClientString( tc_error err )
-{
-    switch( err ) {
-    case TC_BAD_TRAP_FILE:
-        return( "Bad trap file" );
-    case TC_CANT_LOAD_TRAP:
-        return( "Cannot load trap file %s" );
-    case TC_WRONG_TRAP_VERSION:
-        return( "Incorrect trap file version" );
-    case TC_OUT_OF_DOS_MEMORY:
-        return( "Out of DOS memory" );
-    }
-    return( NULL );
-}
-
 
 /**************************************************************************/
 /* MAIN LINEISH                                                           */

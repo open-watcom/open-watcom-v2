@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,6 +37,12 @@
 #endif
 #include <ctype.h>
 
+
+typedef union {
+    float   f;
+    long    l;
+} NUMBERFL;
+
 #ifdef DEBUG_OUT
 const char              *CurrString; // Current Input Line
 #endif
@@ -47,12 +53,9 @@ bool                    EnumDirective;
 
 #endif
 
-typedef union {
-    float   f;
-    long    l;
-} NUMBERFL;
+static unsigned         radix_base = 10;
 
-static bool get_float( token_idx idx, const char **input, char **output )
+static bool get_float( asm_tok *tok, const char **input, char **output )
 /**********************************************************************/
 {
     /* valid floats look like:  (int)[.(int)][e(int)][r] */
@@ -93,29 +96,37 @@ static bool get_float( token_idx idx, const char **input, char **output )
             ptr++;
         }
     }
-    AsmBuffer[idx].class = TC_FLOAT;
+    tok->class = TC_FLOAT;
     /* copy the string, fix input & output pointers */
-    AsmBuffer[idx].string_ptr = *output;
+    tok->string_ptr = *output;
     len = ptr - *input + extra;
     memcpy( *output, *input, len );
     *output += len;
     *(*output)++ = '\0';
     *input = ptr + extra;
 
-    AsmBuffer[idx].u.float_value = (float)atof( AsmBuffer[idx].string_ptr );
+    tok->u.float_value = (float)atof( tok->string_ptr );
     return( RC_OK );
 }
 
-static void array_mul_add( unsigned char *buf, unsigned base, unsigned num, unsigned size )
+static void array_mul_add( unsigned char *buf, unsigned base, const char *dig, unsigned size )
 {
+    unsigned long   num;
+
+    if( isdigit( *dig ) ) {
+        num = *dig - '0';
+    } else {
+        num = tolower( *dig ) - 'a' + 10;
+    }
     while( size-- > 0 ) {
-        num += *buf * base;
-        *(buf++) = (unsigned char)num;
+        num = num + *buf * base;
+        *buf = (unsigned char)num;
         num >>= 8;
+        buf++;
     }
 }
 
-static bool get_string( token_idx idx, const char **input, char **output )
+static bool get_string( asm_tok *tok, const char **input, char **output )
 /***********************************************************************/
 {
     char    symbol_o;
@@ -123,11 +134,11 @@ static bool get_string( token_idx idx, const char **input, char **output )
     int     count;
     int     level;
 
-    AsmBuffer[idx].string_ptr = *output;
+    tok->string_ptr = *output;
 
     symbol_o = **input;
 
-    AsmBuffer[idx].class = TC_STRING;
+    tok->class = TC_STRING;
     switch( symbol_o ) {
     case '"':
     case '\'':
@@ -148,7 +159,7 @@ static bool get_string( token_idx idx, const char **input, char **output )
             *(*output)++ = *(*input)++; /* keep the 2nd one */
         }
         *(*output)++ = '\0';
-        AsmBuffer[idx].u.value = count;
+        tok->u.value = count;
         return( RC_OK );
     }
     (*input)++;
@@ -181,12 +192,12 @@ static bool get_string( token_idx idx, const char **input, char **output )
         *(*output)++ = *(*input)++;
     }
     *(*output)++ = '\0';
-    AsmBuffer[idx].u.value = count;
+    tok->u.value = count;
     return( RC_OK );
 }
 
-static bool get_number( token_idx idx, const char **input, char **output )
-/***********************************************************************/
+static bool get_number( asm_tok *tok, const char **input, char **output, bool base10 )
+/************************************************************************************/
 {
     const char          *ptr;
     const char          *dig_start;
@@ -195,7 +206,6 @@ static bool get_number( token_idx idx, const char **input, char **output )
     size_t              len;
     unsigned            base = 0;
     unsigned            digits_seen;
-    unsigned long       val;
     int                 c;
     int                 c2;
 
@@ -208,9 +218,9 @@ static bool get_number( token_idx idx, const char **input, char **output )
     first_char_0 = false;
     extra = 0;
     ptr = *input;
-    if( *ptr == '0' ) {
+    if( *(unsigned char *)ptr == '0' ) {
         ++ptr;
-        if( tolower( *ptr ) == 'x' ) {
+        if( tolower( *(unsigned char *)ptr ) == 'x' ) {
             ++ptr;
             base = 16;
         } else {
@@ -218,7 +228,7 @@ static bool get_number( token_idx idx, const char **input, char **output )
         }
     }
     dig_start = ptr;
-    for( ; (c = *ptr) != '\0'; ++ptr ) {
+    for( ; (c = *(unsigned char *)ptr) != '\0'; ++ptr ) {
         if( isdigit( c ) ) {
             digits_seen |= 1 << (c - '0');
             continue;
@@ -228,28 +238,33 @@ static bool get_number( token_idx idx, const char **input, char **output )
             /* note that a float MUST contain a dot
              * OR be ended with an "r"
              * 1234e78 is NOT a valid float */
-            return( get_float( idx, input, output ) );
+            return( get_float( tok, input, output ) );
         }
         c = tolower( c );
         if( isxdigit( c ) ) {
-            if( c == 'b' ) {
-                if( base == 0 && OK_NUM( BINARY ) ) {
-                    c2 = ptr[1];
-                    if( !isxdigit( c2 ) && tolower( c2 ) != 'h' ) {
-                        base = 2;
-                        extra = 1;
-                        break;
-                    }
-                }
-            } else if( c == 'd' ) {
-                if( base == 0 && OK_NUM( DECIMAL ) ) {
-                    c2 = ptr[1];
-                    if( !isxdigit( c2 ) && tolower( c2 ) != 'h' ) {
-                        if( !isalnum( c2 ) && c2 != '_' ) {
-                            base = 10;
+            /*
+             * process only a-fA-F characters, 0-9 are already processed
+             */
+            if( base != 16 && radix_base != 16 ) {
+                if( c == 'b' ) {
+                    if( base == 0 && OK_NUM( BINARY ) ) {
+                        c2 = ((unsigned char *)ptr)[1];
+                        if( !isxdigit( c2 ) && tolower( c2 ) != 'h' ) {
+                            base = 2;
                             extra = 1;
+                            break;
                         }
-                        break;
+                    }
+                } else if( c == 'd' ) {
+                    if( base == 0 && OK_NUM( DECIMAL ) ) {
+                        c2 = ptr[1];
+                        if( !isxdigit( c2 ) && tolower( c2 ) != 'h' ) {
+                            if( !isalnum( c2 ) && c2 != '_' ) {
+                                base = 10;
+                                extra = 1;
+                            }
+                            break;
+                        }
                     }
                 }
             }
@@ -258,14 +273,17 @@ static bool get_number( token_idx idx, const char **input, char **output )
         } else if( c == 'h' ) {
             base = 16;
             extra = 1;
-        } else if( c == 'o' ) {
+        } else if( c == 't' ) {
+            base = 10;
+            extra = 1;
+        } else if( c == 'o' || c == 'q' ) {
             base = 8;
             extra = 1;
         } else if( c == 'r' ) {
             /* note that a float MUST contain a dot
              * OR be ended with an "r"
              * 1234e78 is NOT a valid float */
-            return( get_float( idx, input, output ) );
+            return( get_float( tok, input, output ) );
         } else if( c == 'y' ) {
             base = 2;
             extra = 1;
@@ -274,7 +292,7 @@ static bool get_number( token_idx idx, const char **input, char **output )
     }
     if( digits_seen == 0 ) {
         if( !first_char_0 ) {
-            return( get_string( idx, input, output ) );
+            return( get_string( tok, input, output ) );
         }
         digits_seen |= 1;
         first_char_0 = false;
@@ -285,9 +303,13 @@ static bool get_number( token_idx idx, const char **input, char **output )
         first_char_0 = false;
     }
 #endif
-    AsmBuffer[idx].class = TC_NUM;
+    tok->class = TC_NUM;
     if( base == 0 ) {
-        base = ( first_char_0 ) ? 8 : 10;
+        if( base10 ) {
+            base = 10;
+        } else {
+            base = radix_base;
+        }
     }
     switch( base ) {
     case 10:
@@ -304,42 +326,34 @@ static bool get_number( token_idx idx, const char **input, char **output )
         /* fall through */
         //AsmError( INVALID_NUMBER_DIGIT );
         /* swallow remainder of token */
-        while( isalnum( *ptr )
-            || *ptr == '_'
-            || *ptr == '$'
-            || *ptr == '@'
-            || *ptr == '?' ) {
-            ++ptr;
+        c = *(unsigned char *)ptr;
+        while( IS_VALID_ID_CHAR( c ) ) {
+            c = *(unsigned char *)(++ptr);
         }
-        AsmBuffer[idx].class = TC_BAD_NUM;
+        tok->class = TC_BAD_NUM;
         break;
     }
     /* copy the string, fix input & output pointers */
-    AsmBuffer[idx].string_ptr = *output;
+    tok->string_ptr = *output;
     len = ptr - *input + extra;
     memcpy( *output, *input, len );
     *output += len;
     *(*output)++ = '\0';
     *input = ptr + extra;
-    memset( AsmBuffer[idx].u.bytes, 0, sizeof( AsmBuffer[idx].u.bytes ) );
+    memset( tok->u.bytes, 0, sizeof( tok->u.bytes ) );
     while( dig_start < ptr ) {
-        if( isdigit( *dig_start ) ) {
-            val = *dig_start - '0';
-        } else {
-            val = tolower( *dig_start ) - 'a' + 10;
-        }
-        array_mul_add( AsmBuffer[idx].u.bytes, base, val, sizeof( AsmBuffer[idx].u.bytes ) );
+        array_mul_add( tok->u.bytes, base, dig_start, sizeof( tok->u.bytes ) );
         ++dig_start;
     }
     return( RC_OK );
 } /* get_number */
 
-static bool get_id_in_backquotes( token_idx idx, const char **input, char **output )
+static bool get_id_in_backquotes( asm_tok *tok, const char **input, char **output )
 /*********************************************************************************/
 {
-    AsmBuffer[idx].string_ptr = *output;
-    AsmBuffer[idx].class = TC_ID;
-    AsmBuffer[idx].u.value = 0;
+    tok->string_ptr = *output;
+    tok->class = TC_ID;
+    tok->u.value = 0;
 
     /* copy char from input to output & inc both */
     (*input)++;             // strip off the backquotes
@@ -355,35 +369,31 @@ static bool get_id_in_backquotes( token_idx idx, const char **input, char **outp
     return( RC_OK );
 }
 
-static bool get_id( token_idx idx, const char **input, char **output )
-/*********************************************************************/
-/* get_id could change buf_index, if a COMMENT directive is found */
+static bool get_id( asm_tok *tok, const char **input, char **output )
+/********************************************************************
+ * get_id could change buf_index, if a COMMENT directive is found
+ */
 {
-    char            cur_char;
+    int             c;
     const asm_ins   ASMI86FAR *ins;
 
-    AsmBuffer[idx].string_ptr = *output;
-    if( **input != '\\' ) {
-        AsmBuffer[idx].class = TC_ID;
+    tok->string_ptr = *output;
+    if( **input == '\\' ) {
+        tok->class = TC_PATH;
     } else {
-        AsmBuffer[idx].class = TC_PATH;
+        tok->class = TC_ID;
     }
-    AsmBuffer[idx].u.value = 0;
+    tok->u.value = 0;
 
     *(*output)++ = *(*input)++;
     for( ; ; ) {
-        cur_char = **input;
+        c = *(unsigned char *)*input;
         /* if character is part of a valid name, add it */
-        if( isalpha( cur_char )
-            || isdigit( cur_char )
-            || cur_char == '_'
-            || cur_char == '$'
-            || cur_char == '@'
-            || cur_char == '?'  ) {
+        if( IS_VALID_ID_CHAR( c ) ) {
             *(*output)++ = *(*input)++;
-        } else if( cur_char == '\\' ) {
+        } else if( c == '\\' ) {
             *(*output)++ = *(*input)++;
-            AsmBuffer[idx].class = TC_PATH;
+            tok->class = TC_PATH;
         } else  {
             break;
         }
@@ -392,15 +402,15 @@ static bool get_id( token_idx idx, const char **input, char **output )
 
     /* now decide what to do with it */
 
-    if( AsmBuffer[idx].class == TC_PATH )
+    if( tok->class == TC_PATH )
         return( RC_OK );
-    ins = get_instruction( AsmBuffer[idx].string_ptr );
+    ins = get_instruction( tok->string_ptr );
     if( ins == NULL ) {
-        if( AsmBuffer[idx].string_ptr[1] == '\0' && AsmBuffer[idx].string_ptr[0] == '?' ) {
-            AsmBuffer[idx].class = TC_QUESTION_MARK;
+        if( tok->string_ptr[1] == '\0' && tok->string_ptr[0] == '?' ) {
+            tok->class = TC_QUESTION_MARK;
         }
     } else {
-        AsmBuffer[idx].u.token = ins->token;
+        tok->u.token = ins->token;
 #if defined( _STANDALONE_ )
         switch( ins->token ) {
         // MASM6 keywords
@@ -480,39 +490,39 @@ static bool get_id( token_idx idx, const char **input, char **output )
 
         if( ins->opnd_type1 == OP_SPECIAL ) {
             if( ins->rm_byte == OP_REGISTER ) {
-                AsmBuffer[idx].class = TC_REG;
+                tok->class = TC_REG;
             } else if( ins->rm_byte == OP_RES_ID ) {
-                AsmBuffer[idx].class = TC_RES_ID;
-                if( AsmBuffer[idx].u.token == T_DP ) {
-                    AsmBuffer[idx].u.token = T_DF;
+                tok->class = TC_RES_ID;
+                if( tok->u.token == T_DP ) {
+                    tok->u.token = T_DF;
                 }
             } else if( ins->rm_byte == OP_RES_ID_PTR_MODIF ) {
-                AsmBuffer[idx].class = TC_RES_ID;
-                if( AsmBuffer[idx].u.token == T_PWORD ) {
-                    AsmBuffer[idx].u.token = T_FWORD;
+                tok->class = TC_RES_ID;
+                if( tok->u.token == T_PWORD ) {
+                    tok->u.token = T_FWORD;
                 }
             } else if( ins->rm_byte == OP_UNARY_OPERATOR ) {
-                AsmBuffer[idx].class = TC_UNARY_OPERATOR;
+                tok->class = TC_UNARY_OPERATOR;
 #if defined( _STANDALONE_ )
             } else if( ins->rm_byte == OP_RELATION_OPERATOR ) {
-                AsmBuffer[idx].class = TC_RELATION_OPERATOR;
+                tok->class = TC_RELATION_OPERATOR;
 #endif
             } else if( ins->rm_byte == OP_ARITH_OPERATOR ) {
-                AsmBuffer[idx].class = TC_ARITH_OPERATOR;
+                tok->class = TC_ARITH_OPERATOR;
             } else if( ins->rm_byte == OP_DIRECTIVE ) {
-                AsmBuffer[idx].class = TC_DIRECTIVE;
+                tok->class = TC_DIRECTIVE;
 #if defined( _STANDALONE_ )
                 if( ins->token == T_ENUM ) {
                     EnumDirective = true;
                 }
             } else if( ins->rm_byte == OP_DIRECT_EXPR ) {
-                AsmBuffer[idx].class = TC_DIRECT_EXPR;
+                tok->class = TC_DIRECT_EXPR;
 #endif
             } else {
-                AsmBuffer[idx].class = TC_INSTR;
+                tok->class = TC_INSTR;
             }
         } else {
-            AsmBuffer[idx].class = TC_INSTR;
+            tok->class = TC_INSTR;
         }
     }
     return( RC_OK );
@@ -520,31 +530,31 @@ static bool get_id( token_idx idx, const char **input, char **output )
 
 #if defined( _STANDALONE_ )
 
-static bool get_comment( token_idx idx, const char **input, char **output )
+static bool get_comment( asm_tok *tok, const char **input, char **output )
 {
     size_t  len;
     /* save the whole line .. we need to check
      * if the delim. char shows up 2 times */
-    AsmBuffer[idx].string_ptr = *output;
+    tok->string_ptr = *output;
     len = strlen( *input );
-    memcpy( AsmBuffer[idx].string_ptr, *input, len );
+    memcpy( tok->string_ptr, *input, len );
     (*output) += len;
     *(*output)++ = '\0';
     *input += len;
-    AsmBuffer[idx].class = TC_STRING;
-    AsmBuffer[idx].u.value = 0;
+    tok->class = TC_STRING;
+    tok->u.value = 0;
     return( RC_OK );
 }
 
 #endif
 
-static bool get_special_symbol( token_idx idx, const char **input, char **output )
+static bool get_special_symbol( asm_tok *tok, const char **input, char **output )
 /*******************************************************************************/
 {
     char        symbol;
     tok_class   cls;
 
-    AsmBuffer[idx].string_ptr = *output;
+    tok->string_ptr = *output;
 
     symbol = **input;
     switch( symbol ) {
@@ -561,11 +571,11 @@ static bool get_special_symbol( token_idx idx, const char **input, char **output
         cls = TC_MINUS;
         break;
     case '*' :
-        AsmBuffer[idx].u.token = T_OP_TIMES;
+        tok->u.token = T_OP_TIMES;
         cls = TC_ARITH_OPERATOR;
         break;
     case '/' :
-        AsmBuffer[idx].u.token = T_OP_DIVIDE;
+        tok->u.token = T_OP_DIVIDE;
         cls = TC_ARITH_OPERATOR;
         break;
     case '[' :
@@ -588,7 +598,7 @@ static bool get_special_symbol( token_idx idx, const char **input, char **output
         break;
 #if defined( _STANDALONE_ )
     case '=' :
-        AsmBuffer[idx].u.token = T_EQU2;
+        tok->u.token = T_EQU2;
         cls = TC_DIRECTIVE;
         break;
     case '}' :
@@ -611,23 +621,23 @@ static bool get_special_symbol( token_idx idx, const char **input, char **output
         /* anything we don't recognise we will consider a string,
          * delimited by space characters, commas, newlines or nulls
          */
-        return( get_string( idx, input, output ) );
+        return( get_string( tok, input, output ) );
     }
-    AsmBuffer[idx].class = cls;
+    tok->class = cls;
     *(*output)++ = *(*input)++;
     *(*output)++ = '\0';
     return( RC_OK );
 }
 
 #if defined( _STANDALONE_ )
-static bool get_inc_path( token_idx idx, const char **input, char **output )
+static bool get_inc_path( asm_tok *tok, const char **input, char **output )
 /*************************************************************************/
 {
     char symbol;
 
-    AsmBuffer[idx].class = TC_PATH;
-    AsmBuffer[idx].u.value = 0;
-    AsmBuffer[idx].string_ptr = *output;
+    tok->class = TC_PATH;
+    tok->u.value = 0;
+    tok->string_ptr = *output;
 
     while( isspace( **input ) )
         (*input)++;
@@ -640,7 +650,7 @@ static bool get_inc_path( token_idx idx, const char **input, char **output )
     case '<' :
     case '{' :
         /* string delimiters -- just get the path as a string */
-        return( get_string( idx, input, output ) );
+        return( get_string( tok, input, output ) );
     default:
         /* otherwise, just copy whatever is here */
         while( **input && !isspace( **input )  ) {
@@ -652,83 +662,105 @@ static bool get_inc_path( token_idx idx, const char **input, char **output )
 }
 #endif
 
-token_idx AsmScan( const char *string )
-/*************************************/
-/*
-- perform syntax checking on scan line;
-- pass back tokens for later use;
-- string contains the WHOLE line to scan
-*/
+static bool endFinalToken( asm_tok *tok, char *buff, bool rc )
 {
-    const char                  *ptr;
-    char                        *output_ptr;
-    token_idx                   idx;
-    // stringbuf - buffer in which to store strings
-    static char                 stringbuf[MAX_LINE_LEN];
+    tok->string_ptr = buff;
+    tok->class = TC_FINAL;
+    return( rc );
+}
+
+bool AsmScan( token_buffer *tokbuf, const char *string )
+/*******************************************************
+ * - perform syntax checking on scan line;
+ * - pass back tokens for later use;
+ * - string contains the WHOLE line to scan
+ */
+{
+    const char          *ptr;
+    char                *output_ptr;
+    asm_tok             *tok;
+    int                 c;
+    bool                base10;
 
 #ifdef DEBUG_OUT
     CurrString = string;
 #endif
-    output_ptr = stringbuf;
 #if defined( _STANDALONE_ )
     EnumDirective = false;
 #endif
 
+    base10 = false;
     ptr = string;
 // FIXME !!
     /* skip initial spaces and expansion codes */
     while( isspace( *ptr ) || (*ptr == '%') ) {
         ptr++;
     }
-    for( idx = 0; idx < MAX_TOKEN; ++idx ) {
-        AsmBuffer[idx].string_ptr = output_ptr;
+    output_ptr = tokbuf->stringbuf;
+    /*
+     * create blank string on buffer beginning
+     * for termination token
+     */
+    *output_ptr++ = '\0';
+    tokbuf->count = 0;
+    tok = tokbuf->tokens;
+    while( tokbuf->count < MAX_TOKEN ) {
+        tok->string_ptr = output_ptr;
         while( isspace( *ptr ) ) {
             ptr++;
         }
-        if( *ptr == NULLC ) {
-            AsmBuffer[idx].class = TC_FINAL;
-            *output_ptr='\0';
-            return( idx );
+        c = *(unsigned char *)ptr;
+        if( c == NULLC ) {
+            return( endFinalToken( tok, tokbuf->stringbuf, RC_OK ) );
         }
 
-        if( isalpha( *ptr )
-            || *ptr == '_'
-            || *ptr == '$'
-            || *ptr == '@'
-            || *ptr == '?'
-            || *ptr == '\\'
-            || ( *ptr == '.' && idx == 0 ) ) {
-            if( get_id( idx, &ptr, &output_ptr ) ) {
-                return( INVALID_IDX );
+        if( IS_VALID_ID_CHAR_FIRST( c )
+          || c == '\\'
+          || ( c == '.' && tokbuf->count == 0 ) ) {
+            if( get_id( tok, &ptr, &output_ptr ) ) {
+                return( endFinalToken( tok + 1, tokbuf->stringbuf, RC_ERROR ) );
             }
 #if defined( _STANDALONE_ )
-            if( AsmBuffer[idx].class == TC_DIRECTIVE ) {
-                if( AsmBuffer[idx].u.token == T_COMMENT ) {
-                    if( ++idx >= MAX_TOKEN )
+            if( tok->class == TC_DIRECTIVE ) {
+                if( tok->u.token == T_COMMENT ) {
+                    tok++;
+                    tokbuf->count++;
+                    if( tokbuf->count >= MAX_TOKEN )
                         break;
-                    get_comment( idx, &ptr, &output_ptr );
-                } else if( AsmBuffer[idx].u.token == T_INCLUDE || AsmBuffer[idx].u.token == T_INCLUDELIB ) {
+                    get_comment( tok, &ptr, &output_ptr );
+                } else if( tok->u.token == T_INCLUDE || tok->u.token == T_INCLUDELIB ) {
                     // this mess allows include directives with undelimited file names
-                    if( ++idx >= MAX_TOKEN )
+                    tok++;
+                    tokbuf->count++;
+                    if( tokbuf->count >= MAX_TOKEN )
                         break;
-                    get_inc_path( idx, &ptr, &output_ptr );
+                    get_inc_path( tok, &ptr, &output_ptr );
+                } else if( tok->u.token == T_DOT_RADIX ) {
+                    base10 = true;
                 }
             }
 #endif
-        } else if( isdigit( *ptr ) ) {
-            if( get_number( idx, &ptr, &output_ptr ) ) {
-                return( INVALID_IDX );
+        } else if( isdigit( c ) ) {
+            if( get_number( tok, &ptr, &output_ptr, base10 ) ) {
+                return( endFinalToken( tok + 1, tokbuf->stringbuf, RC_ERROR ) );
             }
-        } else if( *ptr == '`' ) {
-            if( get_id_in_backquotes( idx, &ptr, &output_ptr ) ) {
-                return( INVALID_IDX );
+        } else if( c == '`' ) {
+            if( get_id_in_backquotes( tok, &ptr, &output_ptr ) ) {
+                return( endFinalToken( tok + 1, tokbuf->stringbuf, RC_ERROR ) );
             }
         } else {
-            if( get_special_symbol( idx, &ptr, &output_ptr ) ) {
-                return( INVALID_IDX );
+            if( get_special_symbol( tok, &ptr, &output_ptr ) ) {
+                return( endFinalToken( tok + 1, tokbuf->stringbuf, RC_ERROR ) );
             }
         }
+        tok++;
+        tokbuf->count++;
     }
     AsmError( TOO_MANY_TOKENS );
-    return( INVALID_IDX );
+    return( endFinalToken( tok, tokbuf->stringbuf, RC_ERROR ) );
+}
+
+void RadixSet( unsigned new_base )
+{
+    radix_base = new_base;
 }

@@ -1,9 +1,9 @@
 # Master Open Watcom Builder Control file
 # =======================================
 
-set PROJDIR=<OWBINDIR>/<OWOBJDIR>
+set PROJDIR=<OWROOT>/build/<OWOBJDIR>
 
-[ INCLUDE <OWROOT>/build/master.ctl ]
+[ INCLUDE "<OWROOT>/build/master.ctl" ]
 
 echo Build host: <BLD_HOST>
 
@@ -16,115 +16,110 @@ cdsay .
 # NB: The ordering of the following inclusions is significant!
 # At the beginning, we only have wmake and builder/pmake
 # If necessary, build clibext library
-[ INCLUDE <OWSRCDIR>/watcom/builder.ctl ]
+[ INCLUDE "<OWROOT>/bld/watcom/builder.ctl" ]
 # GIT related stuff
-[ INCLUDE <OWSRCDIR>/git/builder.ctl ]
+[ INCLUDE "<OWROOT>/bld/git/builder.ctl" ]
 # If necessary, build POSIX tools (awk, sed, cp, ...)
 [ IFDEF <BLD_HOST> OS2 NT DOS ]
-[ INCLUDE <OWSRCDIR>/posix/builder.ctl ]
+[ INCLUDE "<OWROOT>/bld/posix/builder.ctl" ]
 [ ENDIF ]
 # Build wsplice and genverrc
-[ INCLUDE <OWSRCDIR>/builder/builder.ctl ]
+[ INCLUDE "<OWROOT>/bld/builder/builder.ctl" ]
 # Build our version of yacc
-[ INCLUDE <OWSRCDIR>/yacc/builder.ctl ]
+[ INCLUDE "<OWROOT>/bld/yacc/builder.ctl" ]
 [ IFDEF <BLD_HOST> OS2 NT DOS ]
-[ INCLUDE <OWSRCDIR>/awk/builder.ctl ]
+[ INCLUDE "<OWROOT>/bld/awk/builder.ctl" ]
 [ ENDIF ]
 # Build C preprocessing utility
-[ INCLUDE <OWSRCDIR>/cpp/builder.ctl ]
+[ INCLUDE "<OWROOT>/bld/cpp/builder.ctl" ]
 # Build optencod, msgencod and findhash utilities
-[ INCLUDE <OWSRCDIR>/fe_misc/builder.ctl ]
+[ INCLUDE "<OWROOT>/bld/fe_misc/builder.ctl" ]
 # Start with the ORL and librarian - boot build has no other dependencies
-[ INCLUDE <OWSRCDIR>/orl/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/nwlib/builder.ctl ]
+[ INCLUDE "<OWROOT>/bld/orl/builder.ctl" ]
+[ INCLUDE "<OWROOT>/bld/nwlib/builder.ctl" ]
 # Next build wres and the resource compiler
-[ INCLUDE <OWSRCDIR>/wres/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/rc/rc/builder.ctl ]
+[ INCLUDE "<OWROOT>/bld/wres/builder.ctl" ]
+[ INCLUDE "<OWROOT>/bld/rc/rc/builder.ctl" ]
 # Build wstrip
-[ INCLUDE <OWSRCDIR>/wstrip/builder.ctl ]
+[ INCLUDE "<OWROOT>/bld/wstrip/builder.ctl" ]
 # Continue with the linker
-[ INCLUDE <OWSRCDIR>/dwarf/dw/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/wl/builder.ctl ]
-#[ INCLUDE <OWSRCDIR>/wl/exe2bin/builder.ctl ]
+[ INCLUDE "<OWROOT>/bld/dwarf/dw/builder.ctl" ]
+[ INCLUDE "<OWROOT>/bld/wl/builder.ctl" ]
+#[ INCLUDE "<OWROOT>/bld/wl/exe2bin/builder.ctl" ]
 # Build the OWL for code generator and assemblers
-[ INCLUDE <OWSRCDIR>/owl/builder.ctl ]
+[ INCLUDE "<OWROOT>/bld/owl/builder.ctl" ]
 # Now we also have everything to build assemblers
 # Build RISC assemblers
-[ INCLUDE <OWSRCDIR>/re2c/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/as/builder.ctl ]
+[ INCLUDE "<OWROOT>/bld/re2c/builder.ctl" ]
+[ INCLUDE "<OWROOT>/bld/as/builder.ctl" ]
 # Build WASM assembler
-[ INCLUDE <OWSRCDIR>/wasm/builder.ctl ]
+[ INCLUDE "<OWROOT>/bld/wasm/builder.ctl" ]
 # Now we also have everything to build wcl, owcc
-[ INCLUDE <OWSRCDIR>/wcl/386/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/wcl/i86/builder.ctl ]
-#[ INCLUDE <OWSRCDIR>/wcl/owcc/builder.ctl ]
+[ INCLUDE "<OWROOT>/bld/wcl/builder.ctl" ]
+#[ INCLUDE "<OWROOT>/bld/wcl/owcc/builder.ctl" ]
 # Build the 16-bit and 32-bit x86 compilers
-[ INCLUDE <OWSRCDIR>/cfloat/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/cg/intel/386/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/cg/intel/i86/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/cc/386/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/cc/i86/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/plusplus/386/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/plusplus/i86/builder.ctl ]
+[ INCLUDE "<OWROOT>/bld/cfloat/builder.ctl" ]
+[ INCLUDE "<OWROOT>/bld/cg/builder.ctl" ]
+[ INCLUDE "<OWROOT>/bld/cc/builder.ctl" ]
+[ INCLUDE "<OWROOT>/bld/plusplus/builder.ctl" ]
 # copy DOS4GW extender on build PATH for DOS build host
 [ IFDEF <BLD_HOST> DOS ]
-[ INCLUDE <OWSRCDIR>/redist/builder.ctl ]
+[ INCLUDE "<OWROOT>/bld/redist/builder.ctl" ]
 [ ENDIF ]
 # Now miscellaneous utilities required during build
-[ INCLUDE <OWSRCDIR>/lib_misc/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/ssl/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/causeway/cwc/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/parsedlg/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/vi/bind/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/vi/ctl/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/vi/vicomp/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/omftools/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/whpcvt/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/win386/wbind/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/browser/dlgprs/builder.ctl ]
+[ INCLUDE "<OWROOT>/bld/lib_misc/builder.ctl" ]
+[ INCLUDE "<OWROOT>/bld/ssl/builder.ctl" ]
+[ INCLUDE "<OWROOT>/bld/causeway/cwc/builder.ctl" ]
+[ INCLUDE "<OWROOT>/bld/parsedlg/builder.ctl" ]
+[ INCLUDE "<OWROOT>/bld/vi/bind/builder.ctl" ]
+[ INCLUDE "<OWROOT>/bld/vi/ctl/builder.ctl" ]
+[ INCLUDE "<OWROOT>/bld/vi/vicomp/builder.ctl" ]
+[ INCLUDE "<OWROOT>/bld/omftools/builder.ctl" ]
+[ INCLUDE "<OWROOT>/bld/whpcvt/builder.ctl" ]
+[ INCLUDE "<OWROOT>/bld/win386/wbind/builder.ctl" ]
+[ INCLUDE "<OWROOT>/bld/browser/dlgprs/builder.ctl" ]
 # Build help compilers and tools
-[ INCLUDE <OWSRCDIR>/hcdos/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/hcwin/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/wipfc/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/bmp2eps/builder.ctl ]
+[ INCLUDE "<OWROOT>/bld/hcdos/builder.ctl" ]
+[ INCLUDE "<OWROOT>/bld/hcwin/builder.ctl" ]
+[ INCLUDE "<OWROOT>/bld/wipfc/builder.ctl" ]
+[ INCLUDE "<OWROOT>/bld/bmp2eps/builder.ctl" ]
 # Build ide2make tool for idedemo
-[ INCLUDE <OWSRCDIR>/wclass/builder.ctl ]
-[ IFDEF <OWDOCBUILD> 1 ]
-[ INCLUDE <OWSRCDIR>/ide/lib/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/ide/ide2make/builder.ctl ]
-[ ENDIF ]
+[ INCLUDE "<OWROOT>/bld/wclass/builder.ctl" ]
+[ INCLUDE "<OWROOT>/bld/ide/lib/builder.ctl" ]
+[ INCLUDE "<OWROOT>/bld/ide/ide2make/builder.ctl" ]
 # Miscellaneous libraries/utilities required during installers build
-[ INCLUDE <OWSRCDIR>/setupgui/ziplib/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/setupgui/zlib/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/setupgui/mkdisk/builder.ctl ]
+[ INCLUDE "<OWROOT>/bld/setupgui/ziplib/builder.ctl" ]
+[ INCLUDE "<OWROOT>/bld/setupgui/zlib/builder.ctl" ]
+[ INCLUDE "<OWROOT>/bld/setupgui/mkdisk/builder.ctl" ]
 # The following tools are required by F77
-[ INCLUDE <OWSRCDIR>/f77/utils/builder.ctl ]
+[ INCLUDE "<OWROOT>/bld/f77/utils/builder.ctl" ]
 
 ## The following tools are required by tests
-[ INCLUDE <OWSRCDIR>/ndisasm/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/dmpobj/builder.ctl ]
+[ INCLUDE "<OWROOT>/bld/ndisasm/builder.ctl" ]
+[ INCLUDE "<OWROOT>/bld/dmpobj/builder.ctl" ]
+[ INCLUDE "<OWROOT>/bld/testutil/builder.ctl" ]
 
 ## The following tools are not required during build
-#[ INCLUDE <OWSRCDIR>/exedump/builder.ctl ]
-#[ INCLUDE <OWSRCDIR>/orl/test/builder.ctl ]
-#[ INCLUDE <OWSRCDIR>/dwarf/util/builder.ctl ]
+#[ INCLUDE "<OWROOT>/bld/exedump/builder.ctl" ]
+#[ INCLUDE "<OWROOT>/bld/orl/test/builder.ctl" ]
+#[ INCLUDE "<OWROOT>/bld/dwarf/util/builder.ctl" ]
 ## Debugger/profiler libraries
-#[ INCLUDE <OWSRCDIR>/dip/builder.ctl ]
-#[ INCLUDE <OWSRCDIR>/mad/builder.ctl ]
+#[ INCLUDE "<OWROOT>/bld/dip/builder.ctl" ]
+#[ INCLUDE "<OWROOT>/bld/mad/builder.ctl" ]
 
 #[ IFDEF <BLD_HOST> UNIX ]
 ##========================
 ## Build UNIX specific utilities using native tools.
 ##
 ## Build our vi editor and the libs it requires
-#[ INCLUDE <OWSRCDIR>/ncurses/builder.ctl ]
-#[ INCLUDE <OWSRCDIR>/ui/builder.ctl ]
-#[ INCLUDE <OWSRCDIR>/vi/builder.ctl ]
-#[ INCLUDE <OWSRCDIR>/hlpview/builder.ctl ]
+#[ INCLUDE "<OWROOT>/bld/ncurses/builder.ctl" ]
+#[ INCLUDE "<OWROOT>/bld/ui/builder.ctl" ]
+#[ INCLUDE "<OWROOT>/bld/vi/builder.ctl" ]
+#[ INCLUDE "<OWROOT>/bld/hlpview/builder.ctl" ]
 ## Build gui/aui lib and the profiler
-#[ INCLUDE <OWSRCDIR>/gui/builder.ctl ]
-#[ INCLUDE <OWSRCDIR>/aui/builder.ctl ]
-#[ INCLUDE <OWSRCDIR>/wprof/builder.ctl ]
+#[ INCLUDE "<OWROOT>/bld/gui/builder.ctl" ]
+#[ INCLUDE "<OWROOT>/bld/aui/builder.ctl" ]
+#[ INCLUDE "<OWROOT>/bld/wprof/builder.ctl" ]
 #[ ENDIF ]
 
 [ BLOCK <1> clean build rel cprel passclean pass ]
@@ -135,150 +130,141 @@ cdsay .
 # At the beginning, assume to have compilers/assemblers/librarian/linker
 # running on the host platform, but not necessarily anything else.
 # If necessary, build clibext library (64-bit)
-[ INCLUDE <OWSRCDIR>/watcom/builder.ctl ]
+[ INCLUDE "<OWROOT>/bld/watcom/builder.ctl" ]
 # Start with language and API headers
-[ INCLUDE <OWSRCDIR>/hdr/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/os2api/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/w16api/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/w32api/builder.ctl ]
+[ INCLUDE "<OWROOT>/bld/hdr/builder.ctl" ]
+[ INCLUDE "<OWROOT>/bld/os2api/builder.ctl" ]
+[ INCLUDE "<OWROOT>/bld/w16api/builder.ctl" ]
+[ INCLUDE "<OWROOT>/bld/w32api/builder.ctl" ]
 # Continue with runtime libraries.
-[ INCLUDE <OWSRCDIR>/clib/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/mathlib/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/cpplib/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/rtdll/builder.ctl ]
+[ INCLUDE "<OWROOT>/bld/clib/builder.ctl" ]
+[ INCLUDE "<OWROOT>/bld/mathlib/builder.ctl" ]
+[ INCLUDE "<OWROOT>/bld/cpplib/builder.ctl" ]
+[ INCLUDE "<OWROOT>/bld/rtdll/builder.ctl" ]
 #
-[ INCLUDE <OWSRCDIR>/f77/f77lib/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/fpuemu/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/omftools/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/graphlib/builder.ctl ]
+[ INCLUDE "<OWROOT>/bld/f77/f77lib/builder.ctl" ]
+[ INCLUDE "<OWROOT>/bld/fpuemu/builder.ctl" ]
+[ INCLUDE "<OWROOT>/bld/omftools/builder.ctl" ]
+[ INCLUDE "<OWROOT>/bld/graphlib/builder.ctl" ]
 # Start with DOS4GW DOS extender stub.
-[ INCLUDE <OWSRCDIR>/wstuba/builder.ctl ]
+[ INCLUDE "<OWROOT>/bld/wstuba/builder.ctl" ]
 # Continue with Causeway DOS extender.
-[ INCLUDE <OWSRCDIR>/causeway/builder.ctl ]
+[ INCLUDE "<OWROOT>/bld/causeway/builder.ctl" ]
 # Continue with WIN386 extender.
-[ INCLUDE <OWSRCDIR>/win386/builder.ctl ]
+[ INCLUDE "<OWROOT>/bld/win386/builder.ctl" ]
 # Now we have enough to start cross building everything else
 # Start with the libs used by various tools
-[ INCLUDE <OWSRCDIR>/wres/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/orl/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/owl/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/dwarf/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/cfloat/builder.ctl ]
+[ INCLUDE "<OWROOT>/bld/wres/builder.ctl" ]
+[ INCLUDE "<OWROOT>/bld/orl/builder.ctl" ]
+[ INCLUDE "<OWROOT>/bld/owl/builder.ctl" ]
+[ INCLUDE "<OWROOT>/bld/dwarf/builder.ctl" ]
+[ INCLUDE "<OWROOT>/bld/cfloat/builder.ctl" ]
 # Continue with the assemblers/librarian/linker/make
-[ INCLUDE <OWSRCDIR>/wasm/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/as/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/nwlib/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/wl/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/wmake/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/wtouch/builder.ctl ]
+[ INCLUDE "<OWROOT>/bld/wasm/builder.ctl" ]
+[ INCLUDE "<OWROOT>/bld/as/builder.ctl" ]
+[ INCLUDE "<OWROOT>/bld/nwlib/builder.ctl" ]
+[ INCLUDE "<OWROOT>/bld/wl/builder.ctl" ]
+[ INCLUDE "<OWROOT>/bld/wmake/builder.ctl" ]
+[ INCLUDE "<OWROOT>/bld/wtouch/builder.ctl" ]
 # On to the compilers
-[ INCLUDE <OWSRCDIR>/cg/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/cc/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/plusplus/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/f77/wfc/builder.ctl ]
+[ INCLUDE "<OWROOT>/bld/cg/builder.ctl" ]
+[ INCLUDE "<OWROOT>/bld/cc/builder.ctl" ]
+[ INCLUDE "<OWROOT>/bld/plusplus/builder.ctl" ]
+[ INCLUDE "<OWROOT>/bld/f77/wfc/builder.ctl" ]
 # Resource tools, first Resource compiler
-[ INCLUDE <OWSRCDIR>/rc/builder.ctl ]
+[ INCLUDE "<OWROOT>/bld/rc/builder.ctl" ]
 # Continue with SDK tools
-[ INCLUDE <OWSRCDIR>/wpi/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/commonui/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/sdk/builder.ctl ]
+[ INCLUDE "<OWROOT>/bld/wpi/builder.ctl" ]
+[ INCLUDE "<OWROOT>/bld/commonui/builder.ctl" ]
+[ INCLUDE "<OWROOT>/bld/sdk/builder.ctl" ]
 # Now miscellaneous command line tools
-[ INCLUDE <OWSRCDIR>/ndisasm/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/exedump/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/dmpobj/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/wcl/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/f77/wfl/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/wstrip/builder.ctl ]
+[ INCLUDE "<OWROOT>/bld/ndisasm/builder.ctl" ]
+[ INCLUDE "<OWROOT>/bld/exedump/builder.ctl" ]
+[ INCLUDE "<OWROOT>/bld/dmpobj/builder.ctl" ]
+[ INCLUDE "<OWROOT>/bld/wcl/builder.ctl" ]
+[ INCLUDE "<OWROOT>/bld/f77/wfl/builder.ctl" ]
+[ INCLUDE "<OWROOT>/bld/wstrip/builder.ctl" ]
 # User interface libs
-[ INCLUDE <OWSRCDIR>/ncurses/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/ui/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/gui/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/aui/builder.ctl ]
+[ INCLUDE "<OWROOT>/bld/ncurses/builder.ctl" ]
+[ INCLUDE "<OWROOT>/bld/ui/builder.ctl" ]
+[ INCLUDE "<OWROOT>/bld/gui/builder.ctl" ]
+[ INCLUDE "<OWROOT>/bld/aui/builder.ctl" ]
 # The vi(w) editor
-[ INCLUDE <OWSRCDIR>/rcsdll/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/vi/builder.ctl ]
+[ INCLUDE "<OWROOT>/bld/rcsdll/builder.ctl" ]
+[ INCLUDE "<OWROOT>/bld/vi/builder.ctl" ]
 # Build the debugger and sampler
-[ INCLUDE <OWSRCDIR>/dip/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/mad/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/rsilib/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/wattcp/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/trap/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/wv/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/wsample/builder.ctl ]
+[ INCLUDE "<OWROOT>/bld/dip/builder.ctl" ]
+[ INCLUDE "<OWROOT>/bld/mad/builder.ctl" ]
+[ INCLUDE "<OWROOT>/bld/rsilib/builder.ctl" ]
+[ INCLUDE "<OWROOT>/bld/wattcp/builder.ctl" ]
+[ INCLUDE "<OWROOT>/bld/trap/builder.ctl" ]
+[ INCLUDE "<OWROOT>/bld/wv/builder.ctl" ]
+[ INCLUDE "<OWROOT>/bld/wsample/builder.ctl" ]
 # GUI tools libraries
-[ INCLUDE <OWSRCDIR>/wclass/builder.ctl ]
+[ INCLUDE "<OWROOT>/bld/wclass/builder.ctl" ]
 # Other GUI tools
-[ INCLUDE <OWSRCDIR>/wprof/builder.ctl ]
-[ IFDEF <OWDOCBUILD> 1 ]
-[ INCLUDE <OWSRCDIR>/browser/builder.ctl ]
-[ ENDIF ]
+[ INCLUDE "<OWROOT>/bld/wprof/builder.ctl" ]
+[ INCLUDE "<OWROOT>/bld/browser/builder.ctl" ]
 # The IDE tools
-[ INCLUDE <OWSRCDIR>/editdll/builder.ctl ]
-[ IFDEF <OWDOCBUILD> 1 ]
-[ INCLUDE <OWSRCDIR>/idebatch/builder.ctl ]
-[ ENDIF ]
-[ IFDEF <OWDOCBUILD> 1 ]
-[ INCLUDE <OWSRCDIR>/ide/builder.ctl ]
-[ ENDIF ]
+[ INCLUDE "<OWROOT>/bld/editdll/builder.ctl" ]
+[ INCLUDE "<OWROOT>/bld/idebatch/builder.ctl" ]
+[ INCLUDE "<OWROOT>/bld/ide/builder.ctl" ]
 # The miscelaneous tools
-[ INCLUDE <OWSRCDIR>/cmdedit/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/cvpack/builder.ctl ]
+[ INCLUDE "<OWROOT>/bld/cmdedit/builder.ctl" ]
+[ INCLUDE "<OWROOT>/bld/cvpack/builder.ctl" ]
 # OW clones for MS tools
-[ INCLUDE <OWSRCDIR>/mstools/builder.ctl ]
+[ INCLUDE "<OWROOT>/bld/mstools/builder.ctl" ]
 # Miscelaneous files
-[ INCLUDE <OWSRCDIR>/misc/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/bdiff/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/techinfo/builder.ctl ]
+[ INCLUDE "<OWROOT>/bld/misc/builder.ctl" ]
+[ INCLUDE "<OWROOT>/bld/bdiff/builder.ctl" ]
+[ INCLUDE "<OWROOT>/bld/techinfo/builder.ctl" ]
 # Source code samples
-[ INCLUDE <OWSRCDIR>/src/builder.ctl ]
+[ INCLUDE "<OWROOT>/bld/src/builder.ctl" ]
 # IDE samples
-[ IFDEF <OWDOCBUILD> 1 ]
-[ INCLUDE <OWSRCDIR>/idedemo/builder.ctl ]
-[ ENDIF ]
+[ INCLUDE "<OWROOT>/bld/idedemo/builder.ctl" ]
 # Build help viewer
-[ INCLUDE <OWSRCDIR>/hlpview/builder.ctl ]
+[ INCLUDE "<OWROOT>/bld/hlpview/builder.ctl" ]
 # Build help compilers
-[ INCLUDE <OWSRCDIR>/hcdos/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/hcwin/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/wipfc/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/bmp2eps/builder.ctl ]
+[ INCLUDE "<OWROOT>/bld/hcdos/builder.ctl" ]
+[ INCLUDE "<OWROOT>/bld/hcwin/builder.ctl" ]
+[ INCLUDE "<OWROOT>/bld/wipfc/builder.ctl" ]
+[ INCLUDE "<OWROOT>/bld/bmp2eps/builder.ctl" ]
 # Copy the redistributable components
-[ INCLUDE <OWSRCDIR>/redist/builder.ctl ]
+[ INCLUDE "<OWROOT>/bld/redist/builder.ctl" ]
 # Build installer tools
-[ INCLUDE <OWSRCDIR>/uninstal/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/setupgui/builder.ctl ]
+[ INCLUDE "<OWROOT>/bld/uninstal/builder.ctl" ]
+[ INCLUDE "<OWROOT>/bld/setupgui/builder.ctl" ]
 # Build text documents
-[ INCLUDE <OWSRCDIR>/docstxt/builder.ctl ]
+[ INCLUDE "<OWROOT>/bld/docstxt/builder.ctl" ]
 
 # only test build for now
-[ IFDEF <OWDOCBUILD> 1 ]
-[ INCLUDE <OWSRCDIR>/wgml/builder.ctl ]
-[ ENDIF ]
+#[ INCLUDE "<OWROOT>/bld/wgml/builder.ctl" ]
+
 # Build documentation
 [ IFDEF <OWDOCBUILD> 1 ]
-[ INCLUDE <OWDOCSDIR>/builder.ctl ]
+[ INCLUDE "<OWROOT>/docs/builder.ctl" ]
 [ ENDIF ]
 # Build installers
 [ IFDEF <OWDISTRBUILD> 1 ]
-[ INCLUDE <OWDISTRDIR>/ow/builder.ctl ]
+[ INCLUDE "<OWROOT>/distrib/ow/builder.ctl" ]
 [ ENDIF ]
 
 [ BLOCK <BLDRULE> docsclean docs ]
 #=================================
-[ INCLUDE <OWDOCSDIR>/builder.ctl ]
+[ INCLUDE "<OWROOT>/docs/builder.ctl" ]
 
 [ BLOCK <BLDRULE> install missing instclean ]
 #============================================
-[ INCLUDE <OWDISTRDIR>/ow/builder.ctl ]
+[ INCLUDE "<OWROOT>/distrib/ow/builder.ctl" ]
 
 [ BLOCK <BLDRULE> testclean test cleanlog ]
 #==========================================
-[ INCLUDE <OWSRCDIR>/wasmtest/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/ctest/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/f77test/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/plustest/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/clibtest/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/mathtest/builder.ctl ]
+[ INCLUDE "<OWROOT>/bld/wasmtest/builder.ctl" ]
+[ INCLUDE "<OWROOT>/bld/ctest/builder.ctl" ]
+[ INCLUDE "<OWROOT>/bld/f77test/builder.ctl" ]
+[ INCLUDE "<OWROOT>/bld/plustest/builder.ctl" ]
+[ INCLUDE "<OWROOT>/bld/clibtest/builder.ctl" ]
+[ INCLUDE "<OWROOT>/bld/mathtest/builder.ctl" ]
 
 [ BLOCK <1> relclean passclean ]
 #===============================

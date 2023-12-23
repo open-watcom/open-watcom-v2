@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,7 +45,6 @@
 #include "guigmous.h"
 #include "dbgcmdln.h"
 #include "dbglkup.h"
-#include "trptypes.h"
 #include "trpld.h"
 #include "trpsys.h"
 #include "dbginit.h"
@@ -303,14 +302,14 @@ static void GetLines( void )
 static void SetEGA43( void )
 {
     FlipMech = FLIP_SWAP;
-    ScrnMode = MD_EGA;
+    ScrnMode = VMODE_EGA;
     ScrnLines = 43;
 }
 
 static void SetVGA50( void )
 {
     FlipMech = FLIP_SWAP;
-    ScrnMode = MD_EGA;
+    ScrnMode = VMODE_EGA;
     ScrnLines = 50;
 }
 
@@ -367,6 +366,6 @@ bool ScreenOption( const char *start, unsigned len, int pass )
 
 void ScreenOptInit( void )
 {
-    ScrnMode = MD_DEFAULT;
+    ScrnMode = VMODE_DEFAULT;
     FlipMech = FLIP_TWO;
 }

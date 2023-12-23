@@ -1,3 +1,5 @@
+/* UTF-8 encoding, ¥ */
+
 // zero code is not included
 pickdoserr( INVALID_FUNCTION,       "invalid function number" )
 pickdoserr( FILE_NOT_FOUND,         "file not found" )

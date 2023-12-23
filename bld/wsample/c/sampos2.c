@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,18 +39,19 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-#include "sample.h"
-#include "wmsg.h"
-#include "smpstuff.h"
-#define INCL_BASE
 #define INCL_DOSDEVICES
 #define INCL_DOSMEMMGR
 #define INCL_DOSPROCESS
-#include "os2.h"
+#include "wos2.h"
+#include "sample.h"
+#include "wmsg.h"
+#include "smpstuff.h"
 #include "os2dbg.h"
 
 
-#define BUFF_SIZE 512
+#define BUFF_SIZE   512
+#define STACK_SIZE  4096
+
 static char             UtilBuff[BUFF_SIZE];
 static TRACEBUF         Buff;
 static USHORT           Pid;
@@ -67,7 +68,6 @@ static int              NewSession;
 
 static seg_offset       CommonAddr;
 
-#define STACK_SIZE 4096
 static unsigned char    __near Stack[STACK_SIZE];
 
 unsigned NextThread( unsigned tid )
@@ -116,40 +116,37 @@ unsigned SafeMargin( void )
     return( Ceiling - 10 );
 }
 
-#define EXE_LX  0x584c
-#define EXE_NE  0x454e
-
-static int IsLX( void )
+static bool IsLX( void )
 {
     int                 f;
-    unsigned_32         offset;
-    unsigned_16         sig;
+    unsigned_32         ne_offset;
+    unsigned_16         signature;
     unsigned_16         flags;
 
     f = open( ExeName, O_BINARY | O_RDONLY );
     if( f == -1 )
-        return( 0 );
-    if( lseek( f, 0x3c, SEEK_SET ) != 0x3c )
-        return( 0 );
-    if( read( f, &offset, sizeof( offset ) ) != sizeof( offset ) )
-        return( 0 );
-    if( lseek( f, offset, SEEK_SET ) != offset )
-        return( 0 );
-    if( read( f, &sig, sizeof( sig ) ) != sizeof( sig ) )
-        return( 0 );
-    if( sig == EXE_NE ) {
-        offset += 12;
-        if( lseek( f, offset, SEEK_SET ) != offset )
-            return( 0 );
+        return( false );
+    if( lseek( f, NE_HEADER_OFFSET, SEEK_SET ) != NE_HEADER_OFFSET )
+        return( false );
+    if( read( f, &ne_offset, sizeof( ne_offset ) ) != sizeof( ne_offset ) )
+        return( false );
+    if( lseek( f, ne_offset, SEEK_SET ) != ne_offset )
+        return( false );
+    if( read( f, &signature, sizeof( signature ) ) != sizeof( signature ) )
+        return( false );
+    if( signature == EXESIGN_NE ) {
+        ne_offset += 12;
+        if( lseek( f, ne_offset, SEEK_SET ) != ne_offset )
+            return( false );
         if( read( f, &flags, sizeof( flags ) ) != sizeof( flags ) )
-            return( 0 );
+            return( false );
         if( (flags & 0x0300) == 0x0300 ) {
             /* PM app */
             NewSession = 1;
         }
     }
     close( f );
-    return( sig == EXE_LX );
+    return( signature == EXESIGN_LX );
 }
 
 #if 0
@@ -418,38 +415,14 @@ static void __far Sleeper( void )
     }
 }
 
-typedef struct _NEWSTARTDATA {  /* stdata */
-    USHORT  Length;
-    USHORT  Related;
-    USHORT  FgBg;
-    USHORT  TraceOpt;
-    PSZ     PgmTitle;
-    PSZ     PgmName;
-    PBYTE   PgmInputs;
-    PBYTE   TermQ;
-    PBYTE   Environment;
-    USHORT  InheritOpt;
-    USHORT  SessionType;
-    PSZ     IconFile;
-    ULONG   PgmHandle;
-    USHORT  PgmControl;
-    USHORT  InitXPos;
-    USHORT  InitYPos;
-    USHORT  InitXSize;
-    USHORT  InitYSize;
-    USHORT  Reserved;
-    PSZ     ObjectBuffer;
-    ULONG   ObjectBuffLen;
-} NEWSTARTDATA;
-
 static void LoadProg( char *cmd, char *cmd_args )
 {
     RESULTCODES         res;
-    NEWSTARTDATA        start;
+    STARTDATA           start;
     USHORT              SID;
 
     if( NewSession ) {
-        start.Length = 50;
+        start.Length = offsetof( STARTDATA, IconFile );
         start.Related = 1;
         start.FgBg = 0;
         start.TraceOpt = 1;
@@ -460,9 +433,6 @@ static void LoadProg( char *cmd, char *cmd_args )
         start.Environment = NULL;
         start.InheritOpt = 1;
         start.SessionType = SSF_TYPE_DEFAULT;
-        start.IconFile = NULL;
-        start.PgmHandle = 0;
-        start.PgmControl = 0;
         if( DosStartSession( (void __far *)&start, &SID, &Pid ) != 0 ) {
             internalErrorMsg( MSG_SAMPLE_3 );
         }
@@ -520,10 +490,10 @@ void StartProg( const char *cmd, const char *prog, const char *full_args, char *
         }
     }
     while( (*dst++ = *src++) != '\0' )
-        ;
+        {}
     cmd_args = dst;
     while( (*dst++ = *full_args++) != '\0' )
-        ;
+        {}
     *dst = '\0';  /* Need two nulls at end */
     LoadProg( UtilBuff, cmd_args );
     OutputMsgParmNL( MSG_SAMPLE_1, UtilBuff );

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,26 +36,22 @@
 #include <stddef.h>
 #include <ctype.h>
 #include <string.h>
+#include <errno.h>
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/time.h>
 #include <sys/stat.h>
 #include <sys/ptrace.h>
 #include <sys/wait.h>
+#include "madconf.h"
 #include "sample.h"
 #include "wmsg.h"
 #include "smpstuff.h"
-// Helper functions shared with debugger
-#if defined( __386__ )
-    #define MD_x86
-#elif defined( __PPC__ )
-    #define MD_ppc
-#else
-    #error Unsupported CPU architecture
-#endif
 #include "exeelf.h"
 #include "lnxcomm.h"
-#include "cpuglob.h"
+#include "brkptcpu.h"
+// Helper functions shared with debugger
+
 
 #if 0
     #define dbg_printf( ... ) printf( __VA_ARGS__ )
@@ -98,7 +94,7 @@ static volatile bool    TimerTicked;
 static unsigned short   FlatSeg = 1;    // hardcoded value, no real segments
 static opcode_type      saved_opcode;
 
-static seg_offset       CommonAddr;
+static far_address      CommonAddr;
 
 static lib_load_info    *ModuleInfo;
 static int              ModuleTop;
@@ -403,7 +399,7 @@ void GetCommArea( void )
         Comm.push_no = 0;
         Comm.in_hook = 1;               /* don't record this sample */
     } else {
-        ReadMem( Pid, &Comm, CommonAddr.offset, sizeof( Comm ) );
+        ReadMemory( Pid, CommonAddr.offset, &Comm, sizeof( Comm ) );
     }
 }
 
@@ -413,7 +409,7 @@ void ResetCommArea( void )
     if( CommonAddr.segment != 0 ) {     /* reset common variables */
         Comm.pop_no = 0;
         Comm.push_no = 0;
-        WriteMem( Pid, &Comm.pop_no, CommonAddr.offset + 11, 2 * sizeof( short ) );
+        WriteMemory( Pid, CommonAddr.offset + 11, &Comm.pop_no, 2 * sizeof( short ) );
     }
 }
 
@@ -430,7 +426,7 @@ void GetNextAddr( void )
         CGraphOff = 0;
         CGraphSeg = 0;
     } else {
-        ReadMem( Pid, &stack_entry, Comm.cgraph_top, sizeof( stack_entry ) );
+        ReadMemory( Pid, Comm.cgraph_top, &stack_entry, sizeof( stack_entry ) );
         CGraphOff = stack_entry.ip;
         CGraphSeg = stack_entry.cs;
         Comm.cgraph_top = stack_entry.ptr;
@@ -445,7 +441,7 @@ void StopProg( void )
 
 static void CodeLoad( const char *name, u_long addr, samp_block_kinds kind )
 {
-    seg_offset  ovl;
+    far_address ovl;
 
     ovl.offset = 0;
     ovl.segment = 0;
@@ -469,7 +465,7 @@ static void internalErrorMsg( int msg )
     _exit( -1 );
 }
 
-#if defined( MD_x86 )
+#if MADARCH & MADARCH_X86
 
 /* Handle profiler marks (hardcoded breakpoints with a string) */
 static bool ProcessMark( pid_t pid, user_regs_struct *regs )
@@ -477,13 +473,13 @@ static bool ProcessMark( pid_t pid, user_regs_struct *regs )
     if( (regs->edx & 0xffff) != 0 ) {   /* this is a mark */
         char            buff[BUFF_SIZE];
         int             len = 0;
-        seg_offset      where;
+        far_address     where;
 
         /* read the mark string char by char */
         for( ;; ) {
             if( len >= (BUFF_SIZE - 1) )
                 break;
-            ReadMem( pid, buff + len, regs->eax + len, 1 );
+            ReadMemory( pid, regs->eax + len, buff + len, 1 );
             if( buff[len] == '\0' )
                 break;
             ++len;
@@ -510,7 +506,7 @@ static bool ProcessBreakpoint( pid_t pid, u_long ip )
     static int  ld_state = RT_CONSISTENT;   // This ought to be per-pid
     int         ptrace_sig = 0;
 
-#if defined( MD_x86 )
+#if MADARCH & MADARCH_X86
     user_regs_struct    regs;
 
     // on x86, when breakpoint was hit the EIP points to the next
@@ -518,7 +514,8 @@ static bool ProcessBreakpoint( pid_t pid, u_long ip )
     ptrace( PTRACE_GETREGS, pid, NULL, &regs );
 
     if( ip == Rdebug.r_brk + sizeof( opcode_type ) ) {
-#elif defined( MD_ppc )
+//#elif MADARCH & MADARCH_PPC
+#else
     if( ip == Rdebug.r_brk ) {
 #endif
         opcode_type         brk_opcode = BRKPOINT;
@@ -531,9 +528,9 @@ static bool ProcessBreakpoint( pid_t pid, u_long ip )
          * at the breakpoint and execute it, but we still want to
          * keep the breakpoint.
          */
-        if( WriteMem( pid, &saved_opcode, Rdebug.r_brk, sizeof( saved_opcode ) ) != sizeof( saved_opcode ) )
-            printf( "WriteMem() #1 failed\n" );
-        ReadMem( pid, &Rdebug, (addr_off)DbgRdebug, sizeof( Rdebug ) );
+        if( WriteMemory( pid, Rdebug.r_brk, &saved_opcode, sizeof( saved_opcode ) ) != sizeof( saved_opcode ) )
+            printf( "WriteMemory() #1 failed\n" );
+        ReadMemory( pid, (addr_off)DbgRdebug, &Rdebug, sizeof( Rdebug ) );
         dbg_printf( "ld breakpoint hit, state is " );
         switch( Rdebug.r_state ) {
         case RT_ADD:
@@ -555,7 +552,7 @@ static bool ProcessBreakpoint( pid_t pid, u_long ip )
             dbg_printf( "error!\n" );
             break;
         }
-#if defined( MD_x86 )
+#if MADARCH & MADARCH_X86
         regs.eip--;
         ptrace( PTRACE_SETREGS, pid, NULL, &regs );
 #endif
@@ -567,12 +564,12 @@ static bool ProcessBreakpoint( pid_t pid, u_long ip )
         } while( (ret < 0) && (errno == EINTR) );
         if( ret == -1)
             perror( "waitpid()" );
-        if( WriteMem( pid, &brk_opcode, Rdebug.r_brk, sizeof( brk_opcode ) ) != sizeof( brk_opcode ) )
-            dbg_printf( "WriteMem() #2 failed with errno %d for pid %d, %d bytes (at %p)!\n", errno, pid, sizeof( brk_opcode ), Rdebug.r_brk );
+        if( WriteMemory( pid, Rdebug.r_brk, &brk_opcode, sizeof( brk_opcode ) ) != sizeof( brk_opcode ) )
+            dbg_printf( "WriteMemory() #2 failed with errno %d for pid %d, %d bytes (at %p)!\n", errno, pid, sizeof( brk_opcode ), Rdebug.r_brk );
         return( true ); // indicate this was our breakpoint
     } else {
         dbg_printf( "Not an ld breakpoint, assuming mark\n" );
-#if defined( MD_x86 )
+#if MADARCH & MADARCH_X86
         return( ProcessMark( pid, &regs ) );
 #endif
     }
@@ -659,9 +656,9 @@ static void SampleLoop( pid_t pid )
         do_cont = true;
 
         /* record current execution point */
-#if defined( MD_x86 )
+#if MADARCH & MADARCH_X86
         ptrace( PTRACE_GETREGS, pid, NULL, &regs );
-#elif defined( MD_ppc )
+#elif MADARCH & MADARCH_PPC
         regs.eip = ptrace( PTRACE_PEEKUSER, pid, REGSIZE * PT_NIP, NULL );
 #endif
         if( WIFSTOPPED( status ) ) {
@@ -678,9 +675,9 @@ static void SampleLoop( pid_t pid )
                     /* Set a breakpoint in dynamic linker. That way we can be
                      * informed on dynamic library load/unload events.
                      */
-                    ReadMem( pid, &saved_opcode, Rdebug.r_brk, sizeof( saved_opcode ) );
+                    ReadMemory( pid, Rdebug.r_brk, &saved_opcode, sizeof( saved_opcode ) );
                     dbg_printf( "setting ld breakpoint at %p, old opcode was %X\n", Rdebug.r_brk, saved_opcode );
-                    WriteMem( pid, &brk_opcode, Rdebug.r_brk, sizeof( brk_opcode ) );
+                    WriteMemory( pid, Rdebug.r_brk, &brk_opcode, sizeof( brk_opcode ) );
                 }
             }
 
@@ -778,13 +775,20 @@ void StartProg( const char *cmd, const char *prog, const char *full_args, char *
 
         /* massage 'full_args' into argv format */
         len = strlen( full_args );
-        /* SplitParms changes input string, use copy of it now */
-        args = alloca( len + 1 );
-        strcpy( args, full_args );
-        num_args = SplitParms( args, NULL, len );
-        argv = alloca( ( num_args + 2 ) * sizeof( *argv ) );
-        argv[SplitParms( args, argv + 1, len ) + 1] = NULL;
+        /*
+         * SplitParms calculate number of arguments
+         * if no output then no changes in input string
+         */
+        num_args = SplitParms( (char *)full_args, NULL, len ) + 2;
+        argv = alloca( num_args * sizeof( *argv ) + len + 1 );
+        args = memcpy( (void *)( argv + num_args ), full_args, len + 1 );
+        /*
+         * SplitParms changes input string if output specified
+         * use copy of it now
+         */
+        SplitParms( args, argv + 1, len );
         argv[0] = prog;
+        argv[num_args - 1] = NULL;
 
         OutputMsgParmNL( MSG_SAMPLE_1, prog );
 

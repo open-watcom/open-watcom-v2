@@ -1,10 +1,12 @@
+tree_depth = 4
+
 proj_name = ms2wlink
 
 ms2wlink_autodepends = .AUTODEPEND
 
 ms2wlink_trmem = 1
 
-memory_model_i86 = c
+memory_model_i86 = m
 
 !include cproj.mif
 !include defrule.mif

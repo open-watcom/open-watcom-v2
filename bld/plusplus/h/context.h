@@ -73,7 +73,7 @@ char const *CtxGetSwitchAddr(   // GET ADDRESS OF CURRENT SWITCH
 
 // PROTOTYPES : debugging only (stubbed otherwise)
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 void CtxLine(                   // SET LINE BEING PROCESSED
     LINE_NO curr )              // - current line no.
 ;

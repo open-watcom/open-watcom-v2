@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -184,8 +184,6 @@ static  void    SetDlgStatus( dlg_brk *dlg, gui_window *gui )
     GUISetChecked( gui, CTL_BRK_BYTE,    mti.b.bits == BYTES2BITS( 1 ) );
     GUISetChecked( gui, CTL_BRK_WORD,    mti.b.bits == BYTES2BITS( 2 ) );
     GUISetChecked( gui, CTL_BRK_DWORD,   mti.b.bits == BYTES2BITS( 4 ) );
-
-    GUIEnableControl( gui, CTL_BRK_QWORD, Is8ByteBreakpointsSupported() );
     GUISetChecked( gui, CTL_BRK_QWORD,   mti.b.bits == BYTES2BITS( 8 ) );
 
     if( dlg->cmd_error ) {
@@ -352,7 +350,7 @@ bool DlgBreak( address addr )
         dlg.cmd_error = true;
     }
     dlg.tmpbp = *bp;
-    CnvULongDec( bp->index, StrCopy( " ", StrCopy( LIT_DUI( DlgBreak ), TxtBuff ) ), TXT_LEN );
+    CnvULongDec( bp->index, StrCopyDst( " ", StrCopyDst( LIT_DUI( DlgBreak ), TxtBuff ) ), TXT_LEN );
     ResDlgOpen( BrkGUIEventProc, &dlg, DIALOG_BREAK );
     SetRecord( true );
     return( !dlg.cancel );

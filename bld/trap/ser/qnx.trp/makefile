@@ -1,9 +1,11 @@
 #pmake: trap remote os_qnx cpu_i86 cpu_386 ser x86
+
+tree_depth = 4
+
 host_cpu = 386
 host_os  = qnx
 
 target_cpu = x86
-target_os  = qnx
 
 srv = ser
 which = TRAP
@@ -11,4 +13,5 @@ remote_link = 1
 
 extra_objs = serqnx.obj
 
+!include $(trap_dir)/lcl/qnx/qnx.mif
 !include $(trap_dir)/master.mif

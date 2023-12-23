@@ -1,4 +1,6 @@
-target_cpu = mps
+tree_depth = 4
+
+dig_arch = mps
 
 imp_objs = &
         mpsaddr.obj &

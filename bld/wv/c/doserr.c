@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -51,6 +52,6 @@ void GetDOSErrMsg( sys_error code, char *buff )
     if( code > MAX_CODE ) {
         Format( buff, "error #%u", code );
     } else {
-        StrCopy( *DosErrMsgs[code], buff );
+        StrCopyDst( *DosErrMsgs[code], buff );
     }
 }

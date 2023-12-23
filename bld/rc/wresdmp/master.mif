@@ -1,3 +1,5 @@
+tree_depth = 4
+
 proj_name = wresdmp
 
 wresdmp_autodepeds = .AUTODEPEND

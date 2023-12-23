@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,6 +37,7 @@
 #include <stdlib.h>
 #include <stddef.h>
 #include <limits.h>
+#include "roundmac.h"
 #include "rtinit.h"
 #include "p5prof.h"
 #include "pathgrp2.h"

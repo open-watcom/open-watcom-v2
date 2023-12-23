@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -64,10 +65,10 @@ typedef struct expr_list {
     struct asm_sym  *mbr;
 } expr_list;
 
-extern token_idx    EvalExpr( token_idx, token_idx, token_idx, bool );
-extern bool         EvalOperand( token_idx *, token_idx, expr_list *, bool );
+extern token_idx    EvalExpr( token_buffer *tokbuf, token_idx start, token_idx end, bool );
+extern bool         EvalOperand( token_buffer *tokbuf, token_idx *, token_idx, expr_list *, bool );
 #if defined( _STANDALONE_ )
-extern token_idx    EvalConstant( token_idx, token_idx, token_idx, bool );
+extern token_idx    EvalConstant( token_buffer *tokbuf, token_idx start, token_idx end, bool );
 #endif
 
 #endif

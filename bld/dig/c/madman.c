@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,13 +36,13 @@
 #include <float.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <i64.h>
 #if defined( __WINDOWS__ )
 #elif defined( __NT__ )
 #include <windows.h>
 #elif defined( __OS2__ )
 #include <os2.h>
 #endif
+#include "digsyscf.h"
 #include "mad.h"
 #include "madimp.h"
 #include "madcli.h"
@@ -78,7 +78,7 @@ struct mad_state_data {
 
 typedef struct mad_entry {
     struct mad_entry    *next;
-    char                *file;
+    char                *base_name;
     char                *desc;
     mad_imp_routines    *rtns;
     mad_state_data      *sl;
@@ -110,8 +110,8 @@ mad_status MADCLIENTRY( TypeToString )( mad_radix radix, const mad_type_info *mt
 }
 
 static mad_client_routines MADClientInterface = {
-    MAD_MAJOR,
-    MAD_MINOR,
+    MAD_VERSION_MAJOR,
+    MAD_VERSION_MINOR,
     sizeof( mad_client_routines ),
 
     DIGCli( Alloc ),
@@ -131,7 +131,7 @@ static mad_client_routines MADClientInterface = {
 
     MADCli( Notify ),
 
-    DIGCli( MachineData ),
+    MADCli( MachineData ),
 
     MADCli( AddrToString ),
     MADCli( MemExpr ),
@@ -194,14 +194,10 @@ mad_status      MADInit( void )
 {
     static const struct {
         dig_arch        arch;
-        const char      *file;
+        const char      *base_name;
         const char      *desc;
     } list[] = {
-#ifdef USE_FILENAME_VERSION
-        #define pick(enum,file,desc) {DIG_ ## enum,file QUOTED(USE_FILENAME_VERSION),desc},
-#else
-        #define pick(enum,file,desc) {DIG_ ## enum,file,desc},
-#endif
+        #define pick(enum,base_name,desc) {enum,base_name,desc},
         #include "digarch.h"
         #undef pick
     };
@@ -212,7 +208,7 @@ mad_status      MADInit( void )
     MADList = NULL;
     Active = &Dummy;
     for( i = 0; i < sizeof( list ) / sizeof( list[0] ); ++i ) {
-        ms = MADRegister( list[i].arch, list[i].file, list[i].desc );
+        ms = MADRegister( list[i].arch, list[i].base_name, list[i].desc );
         if( ms != MS_OK ) {
             return( ms );
         }
@@ -220,12 +216,12 @@ mad_status      MADInit( void )
     return( ms );
 }
 
-mad_status      MADRegister( dig_arch arch, const char *file, const char *desc )
+mad_status      MADRegister( dig_arch arch, const char *base_name, const char *desc )
 {
     mad_entry   **owner;
     mad_entry   *curr;
     mad_entry   *old;
-    size_t      file_len;
+    size_t      base_name_len;
     size_t      desc_len;
 
     for( owner = &MADList; (curr = *owner) != NULL; owner = &curr->next ) {
@@ -250,22 +246,22 @@ mad_status      MADRegister( dig_arch arch, const char *file, const char *desc )
             break;
         }
     }
-    if( file == NULL )
+    if( base_name == NULL )
         return( MS_OK );
-    file_len = strlen( file );
+    base_name_len = strlen( base_name );
     desc_len = strlen( desc );
-    curr = DIGCli( Alloc )( sizeof( *curr ) + 2 + file_len + desc_len );
+    curr = DIGCli( Alloc )( sizeof( *curr ) + 2 + base_name_len + desc_len );
     if( curr == NULL )
         return( MADStatus( MS_ERR | MS_NO_MEM ) );
     curr->next = *owner;
     *owner = curr;
-    curr->file = (char *)curr + sizeof( *curr );
-    curr->desc = &curr->file[file_len + 1];
+    curr->base_name = (char *)curr + sizeof( *curr );
+    curr->desc = &curr->base_name[base_name_len + 1];
     curr->rtns = NULL;
     curr->sl   = NULL;
     curr->arch  = arch;
     curr->sys_hdl = NULL_SYSHDL;
-    strcpy( curr->file, file );
+    strcpy( curr->base_name, base_name );
     strcpy( curr->desc, desc );
     return( MS_OK );
 }
@@ -286,7 +282,7 @@ mad_status      MADLoad( dig_arch arch )
         return( MADStatus( MS_ERR | MS_UNREGISTERED_MAD ) );
     if( me->rtns != NULL )
         return( MS_OK );
-    ms = MADSysLoad( me->file, &MADClientInterface, &me->rtns, &me->sys_hdl );
+    ms = MADSysLoad( me->base_name, &MADClientInterface, &me->rtns, &me->sys_hdl );
     if( ms != MS_OK ) {
         me->rtns = NULL;
         return( MADStatus( ms ) );
@@ -454,7 +450,7 @@ walk_result     MADWalk( MAD_WALKER *wk, void *d )
     return( WR_CONTINUE );
 }
 
-size_t MADNameFile( dig_arch arch, char *buff, size_t buff_size )
+size_t MADBaseName( dig_arch arch, char *buff, size_t buff_size )
 {
     mad_entry   *me;
     size_t      len;
@@ -464,18 +460,18 @@ size_t MADNameFile( dig_arch arch, char *buff, size_t buff_size )
         MADStatus( MS_ERR | MS_UNREGISTERED_MAD );
         return( 0 );
     }
-    len = strlen( me->file );
+    len = strlen( me->base_name );
     if( buff_size > 0 ) {
         --buff_size;
         if( buff_size > len )
             buff_size = len;
-        memcpy( buff, me->file, buff_size );
+        memcpy( buff, me->base_name, buff_size );
         buff[buff_size] = '\0';
     }
     return( len );
 }
 
-size_t MADNameDescription( dig_arch arch, char *buff, size_t buff_size )
+size_t MADDescription( dig_arch arch, char *buff, size_t buff_size )
 {
     mad_entry   *me;
     size_t      len;
@@ -1189,13 +1185,12 @@ static mad_status DUMMYIMPENTRY( TypeToString )( mad_radix radix, const mad_type
 static const char DigitTab[] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
 //NYI: big endian hosts & targets
-static char *U64CvtNum( unsigned_64 val, mad_radix radix, char *p, int bit_length )
+static char *CvtNum( int_64 val, mad_radix radix, char *p, int bit_length )
 {
     size_t              len;
     char                save;
     int                 digits;
-    unsigned_64         rem;
-    unsigned_64         divisor;
+    lldiv_t             result;
 
     switch( radix ) {
     case 2:
@@ -1208,26 +1203,18 @@ static char *U64CvtNum( unsigned_64 val, mad_radix radix, char *p, int bit_lengt
         digits = 0;
         break;
     }
-    U32ToU64( radix, &divisor );
+    result.quot = val;
     do {
-        U64Div( &val, &divisor, &val, &rem );
-        *--p = DigitTab[rem.u._32[I64LO32]];
+        result = lldiv( result.quot, radix );
+        *--p = DigitTab[result.rem];
         --digits;
-    } while( val.u._32[I64LO32] != 0 || val.u._32[I64HI32] != 0 || digits > 0 );
+    } while( result.quot != 0 || digits > 0 );
     len = MADCli( RadixPrefix )( radix, NULL, 0 );
     p -= len;
     save = p[len];
     MADCli( RadixPrefix )( radix, p, len + 1 );
     p[len] = save; /* got overwritten with a '\0' */
     return( p );
-}
-
-static char *CvtNum( unsigned long val, mad_radix radix, char *p, int bit_length )
-{
-    unsigned_64 tmp;
-
-    U32ToU64( val, &tmp );
-    return( U64CvtNum( tmp, radix, p, bit_length ) );
 }
 
 static mad_status IntTypeToString( mad_radix radix, mad_type_info const *mti, const void *d, char *buff, size_t *buff_size_p )
@@ -1240,16 +1227,15 @@ static mad_status IntTypeToString( mad_radix radix, mad_type_info const *mti, co
     size_t              len;
     mad_status          ms;
 
-
     ms = DecomposeInt( mti, d, &val );
     if( ms != MS_OK )
         return( ms );
     neg = false;
     if( mti->i.nr != MNR_UNSIGNED && val.i.u.sign.v ) {
         neg = true;
-        U64Neg( &val.i, &val.i );
+        val.i.u._64[0] = -val.i.u._64[0];
     }
-    p = U64CvtNum( val.i, radix, buff1 + sizeof( buff1 ), mti->b.bits );
+    p = CvtNum( val.i.u._64[0], radix, buff1 + sizeof( buff1 ), mti->b.bits );
     if( neg )
         *--p = '-';
     len = buff1 + sizeof( buff1 ) - p;
@@ -2188,8 +2174,8 @@ mad_status      MADUnexpectedBreak( mad_registers *mr, char *buff, size_t *buff_
 
 
 static mad_imp_routines DummyRtns = {
-    MAD_MAJOR,
-    MAD_MINOR,
+    MAD_VERSION_MAJOR,
+    MAD_VERSION_MINOR,
     sizeof( DummyRtns ),
 
     DummyImp( Init ),

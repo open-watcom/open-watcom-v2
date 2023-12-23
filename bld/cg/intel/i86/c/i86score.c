@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -59,13 +59,14 @@ static  name    *ES;
 
 void    ScInitRegs( score *scoreboard )
 /**************************************
-    Add some register equality "truths" to the scoreboard "sc"
-*/
+ * Add some register equality "truths" to the scoreboard "sc"
+ */
 {
     int     ss;
     int     ds;
 
-    if( _IsntTargetModel( FLOATING_DS | FLOATING_SS ) ) {
+    if( _IsntTargetModel( CGSW_X86_FLOATING_DS )
+      && _IsntTargetModel( CGSW_X86_FLOATING_SS ) ) {
         ss = AllocRegName( HW_SS )->r.reg_index;
         ds = AllocRegName( HW_DS )->r.reg_index;
         if( !RegsEqual( scoreboard, ss, ds ) ) {
@@ -77,8 +78,8 @@ void    ScInitRegs( score *scoreboard )
 
 static  name    *NewRegName( hw_reg_set reg )
 /********************************************
-    Allocate a new "far pointer" register an set its class
-*/
+ * Allocate a new "far pointer" register an set its class
+ */
 {
     name        *reg_name;
 
@@ -90,9 +91,9 @@ static  name    *NewRegName( hw_reg_set reg )
 
 void    AddRegs( void )
 /******************************
-    Add some registers to the N_REGISTER list, so that we can do
-    scoreboarding on them
-*/
+ * Add some registers to the N_REGISTER list, so that we can do
+ * scoreboarding on them
+ */
 {
     hw_reg_set  lo_part;
     name        *reg_name;
@@ -101,7 +102,6 @@ void    AddRegs( void )
 
     DS = AllocRegName( HW_DS );
     SS = AllocRegName( HW_SS );
-/*      89-01-03*/
     ES = AllocRegName( HW_ES );
     for( i = S_MAX; i-- > 0; ) {
         for( j = I_MAX; j-- > 0; ) {
@@ -130,15 +130,14 @@ void    AddRegs( void )
             }
         }
     }
-/*      89-01-03*/
 }
 
 
 void    ScoreSegments( score *scoreboard )
 /*****************************************
-    Do special scoreboarding on segment registers.  Given that BX = DI,
-    for example, we know that SS:BX = SS:DI, and DS:BX = DS:DI.
-*/
+ * Do special scoreboarding on segment registers.  Given that BX = DI,
+ * for example, we know that SS:BX = SS:DI, and DS:BX = DS:DI.
+ */
 {
     score       *ds;
     score       *xs;
@@ -175,10 +174,10 @@ void    ScoreSegments( score *scoreboard )
 
 bool    ScAddOk( hw_reg_set reg1, hw_reg_set reg2 )
 /**********************************************************
-    Is it ok to say that "reg1" = "reg2"?  This is not ok for
-    unalterable registers since there may be hidden modifications of
-    these registers.
-*/
+ * Is it ok to say that "reg1" = "reg2"?  This is not ok for
+ * unalterable registers since there may be hidden modifications of
+ * these registers.
+ */
 {
     if( HW_Ovlap( reg1, CurrProc->state.unalterable ) ) {
         if( !HW_CEqual( reg1, HW_DS ) && !HW_CEqual( reg1, HW_SS ) ) {
@@ -196,9 +195,9 @@ bool    ScAddOk( hw_reg_set reg1, hw_reg_set reg2 )
 
 bool    ScConvert( instruction *ins )
 /********************************************
-    Get rid of instructions like CBW if the high part is not used in the
-    next instruction.
-*/
+ * Get rid of instructions like CBW if the high part is not used in the
+ * next instruction.
+ */
 {
     hw_reg_set  tmp;
 
@@ -215,10 +214,10 @@ bool    ScConvert( instruction *ins )
 
 bool    CanReplace( instruction *ins )
 /*********************************************
-    Are we allowed to replace any of the operands of "ins" with
-    different registers?  For long shifts the answer is no since CX is a
-    must for the loop counter.
-*/
+ * Are we allowed to replace any of the operands of "ins" with
+ * different registers?  For long shifts the answer is no since CX is a
+ * must for the loop counter.
+ */
 {
     if( ( ins->head.opcode == OP_LSHIFT
        || ins->head.opcode == OP_RSHIFT )
@@ -230,9 +229,9 @@ bool    CanReplace( instruction *ins )
 
 bool    ScRealRegister( name *reg )
 /******************************************
-    Return "true" if "reg" is a real machine register and not some
-    monstrosity like AX:DX:BX used for calls.
-*/
+ * Return "true" if "reg" is a real machine register and not some
+ * monstrosity like AX:DX:BX used for calls.
+ */
 {
     return( reg->n.type_class != XX );
 }

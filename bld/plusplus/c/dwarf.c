@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -50,7 +50,7 @@
 #include "name.h"
 #include "icopmask.h"
 #include "fmttype.h"
-#ifndef NDEBUG
+#ifdef DEVBUILD
     #include "dbg.h"
 #endif
 
@@ -153,7 +153,7 @@ static void sym_reset( SYMBOL sym )
 static void sym_update( SYMBOL sym, symbol_flag2 flags, dw_handle dh )
 /********************************************************************/
 {
-    #ifndef NDEBUG
+    #ifdef DEVBUILD
     if( sym->flag2 & SYMF2_CG_HANDLE ) {
         DumpSymbol( sym );
         CFatal( "dwarf: handle for sym busy" );
@@ -267,9 +267,7 @@ static uint  dwarfAddressClassFlags( TYPE type ) {
     case TY_NEAR_POINTER:
     case TY_NEAR_CODE_PTR:
     case TY_POINTER:
-#if _CPU == _AXP
-        flags = DW_PTR_TYPE_DEFAULT;
-#else
+#if _INTEL_CPU
         if( IsFlat() ) {
             flags = DW_PTR_TYPE_DEFAULT;
         } else {
@@ -280,6 +278,8 @@ static uint  dwarfAddressClassFlags( TYPE type ) {
                 flags = DW_PTR_TYPE_NEAR16;
             }
         }
+#else
+        flags = DW_PTR_TYPE_DEFAULT;
 #endif
         break;
     default:
@@ -738,7 +738,7 @@ static dw_handle dwarfEnum( TYPE type, DC_CONTROL control )
         dh = DWBeginEnumeration( Client, CgTypeSize( type->of ), NameStr( SimpleTypeName( type ) ), 0, 0 );
         for( sym = type->u.t.sym->thread; SymIsEnumeration( sym ); sym = sym->thread ) {
             // fixme: enums need to be in reverse order
-            DWAddConstant( Client, sym->u.sval, NameStr( sym->name->name ) );
+            DWAddEnumerationConstant( Client, sym->u.sval, NameStr( sym->name->name ) );
         }
         DWEndEnumeration( Client );
     }
@@ -1190,7 +1190,7 @@ static dw_handle dwarfType( TYPE type, DC_CONTROL control )
         DbgStmt( CFatal( "dwarf: illegal type" ) );
         break;
     }
-#ifndef NDEBUG
+#ifdef DEVBUILD
     if( dh == 0 && (control & DC_RETURN) == 0 ) {
         DumpFullType( type );
         CFatal( "dwarf: unable to define type" );
@@ -1523,7 +1523,7 @@ static dw_handle dwarfData( SYMBOL sym )
     dw_handle class_dh;
     uint      flags;
 
-    #ifndef NDEBUG
+    #ifdef DEVBUILD
         if( sym->flag2 & SYMF2_DW_HANDLE_DEF ) {
             DumpSymbol( sym );
             CFatal( "dwarf: data symbol already defined" );
@@ -1569,7 +1569,7 @@ static dw_handle dwarfDebugStatic( SYMBOL sym )
     char            *name;
 
     sym_reset( sym );
-#ifndef NDEBUG
+#ifdef DEVBUILD
     if( sym->flag2 & SYMF2_DW_HANDLE_DEF ) {
         DumpSymbol( sym );
         CFatal( "dwarf: data symbol already defined" );
@@ -1666,7 +1666,7 @@ static dw_handle dwarfSymbol( SYMBOL sym, DC_CONTROL control )
         dh = dwarfFunction( sym, control );
     } else if( SymIsData( sym ) ) {
         dh = dwarfData( sym );
-#ifndef NDEBUG
+#ifdef DEVBUILD
     } else {
         DumpSymbol( sym );
         CFatal( "dwarf: illegal symbol" );
@@ -1680,7 +1680,7 @@ static void doDwarfForwardFollowupClass( TYPE type, void *ignore )
 {
     bool *keep_going = ignore;
     if( (type->dbgflag & TF2_DWARF) == TF2_DWARF_FWD ) {
-#ifndef NDEBUG
+#ifdef DEVBUILD
         if( type->flag & TF1_UNBOUND ) {
             DumpFullType( type );
             CFatal( "dwarf: unbound template type in browser info" );
@@ -1791,7 +1791,7 @@ extern void DwarfDebugInit( void )
 /********************************/
 {
     assert( sizeof( vf_FieldType->dbg.handle ) == sizeof( dbg_type ) );
-    if( GenSwitches & DBG_TYPES ) {
+    if( GenSwitches & CGSW_GEN_DBG_TYPES ) {
         initDwarf( true, DSI_NULL );
         Client = DFClient();
         dummyLoc = DWLocFini( Client, DWLocInit( Client ) );
@@ -1831,7 +1831,7 @@ static bool dwarfUsedTypeSymbol( SCOPE scope );
 extern void DwarfDebugFini( void )
 /********************************/
 {
-    if( GenSwitches & DBG_TYPES ) {
+    if( GenSwitches & CGSW_GEN_DBG_TYPES ) {
         if( !CompFlags.all_debug_type_names ) { // generate what's used
             dwarfUsedTypeSymbol(GetFileScope());
             dwarfForwardFollowup();
@@ -2114,7 +2114,7 @@ static void dwarfDebugNamedType( void )
 extern void DwarfDebugEmit( void )
 /********************************/
 {
-    if( GenSwitches & DBG_TYPES ) {
+    if( GenSwitches & CGSW_GEN_DBG_TYPES ) {
         dwarfEmitFundamentalType();
         if( CompFlags.all_debug_type_names ) {      // generate the works
             dwarfDebugSymbol( GetFileScope() );

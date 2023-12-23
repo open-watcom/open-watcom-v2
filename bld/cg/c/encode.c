@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -54,7 +54,7 @@ static  label_handle    LocateLabel( instruction *ins, byte dst_idx )
     return( InsBlock( ins->head.next )->edge[dst_idx].destination.u.lbl );
 }
 
-#if _TARGET & _TARG_RISC
+#if _TARGET_RISC
 void    CodeLabelLinenum( label_handle label, unsigned align, cg_linenum line )
 /*****************************************************************************/
 {
@@ -81,9 +81,9 @@ void    CodeLabel( label_handle label, unsigned align )
     if( OptForSize > 50 || align == 0 )
         align = 1;
     CodeHandle( OC_LABEL, align - 1, label );
-#if _TARGET & _TARG_RISC
-#ifndef NDEBUG
-    if( _IsTargetModel( ASM_OUTPUT ) ) {
+#if _TARGET_RISC
+#ifdef DEVBUILD
+    if( _IsTargetModel( CGSW_RISC_ASM_OUTPUT ) ) {
         DumpChar( 'L' );
         DumpPtr( label );
         DumpChar( ':' );
@@ -106,9 +106,9 @@ void    CodeLineNumber( cg_linenum line, bool label_line )
         oc.oc_linenum.hdr.objlen = 0;
         oc.oc_linenum.label_line = label_line;
         oc.oc_linenum.line = line;
-#if _TARGET & _TARG_RISC
-#ifndef NDEBUG
-        if( _IsTargetModel( ASM_OUTPUT ) ) {
+#if _TARGET_RISC
+#ifdef DEVBUILD
+        if( _IsTargetModel( CGSW_RISC_ASM_OUTPUT ) ) {
             DumpLiteral( "Source Line: " );
             DumpInt( line );
             DumpNL();
@@ -133,7 +133,7 @@ void    CodeHandle( oc_class class, obj_length len, label_handle handle )
     oc.oc_handle.hdr.objlen = len;
     oc.oc_handle.ref = NULL;
     oc.oc_handle.handle = handle;
-#if _TARGET & _TARG_RISC
+#if _TARGET_RISC
     oc.oc_handle.line = 0;
 #endif
     InputOC( &oc );
@@ -167,14 +167,14 @@ static  void    DoCondJump( instruction *cond )
     if( dest_true != NULL && dest_false != dest_true &&
         ( dest_true != dest_next || dest_false == NULL ) ) {
         oc.oc_jcond.hdr.class = OC_JCOND;
-#if _TARGET & _TARG_INTEL
+#if _TARGET_INTEL
         if( !_CPULevel( CPU_386 ) ) {
-            oc.oc_jcond.hdr.class |= ATTR_SHORT;
+            oc.oc_jcond.hdr.class |= OC_ATTR_SHORT;
         }
 #endif
-#if _TARGET & _TARG_RISC
+#if _TARGET_RISC
         if( _IsFloating( cond->type_class ) ) {
-            oc.oc_jcond.hdr.class |= ATTR_FLOAT;
+            oc.oc_jcond.hdr.class |= OC_ATTR_FLOAT;
         }
 #endif
         oc.oc_jcond.hdr.reclen = sizeof( oc_jcond );
@@ -182,7 +182,7 @@ static  void    DoCondJump( instruction *cond )
         oc.oc_jcond.ref = NULL;
         oc.oc_jcond.cond = CondCode( cond );
         oc.oc_jcond.handle = dest_true;
-#if _TARGET & _TARG_RISC
+#if _TARGET_RISC
         assert( cond->operands[0]->n.class == N_REGISTER );
         oc.oc_jcond.index = cond->operands[0]->r.arch_index;
         if( cond->operands[1]->n.class == N_REGISTER ) {
@@ -192,9 +192,9 @@ static  void    DoCondJump( instruction *cond )
         }
 #endif
         InputOC( &oc );
-#if _TARGET & _TARG_RISC
-#ifndef NDEBUG
-        if( _IsTargetModel( ASM_OUTPUT ) ) {
+#if _TARGET_RISC
+#ifdef DEVBUILD
+        if( _IsTargetModel( CGSW_RISC_ASM_OUTPUT ) ) {
             DumpLiteral( "Jcc L" );
             DumpPtr( dest_true );
             DumpNL();
@@ -235,9 +235,9 @@ void    GenJumpLabel( label_handle label )
 */
 {
     CodeHandle( OC_JMP, OptInsSize( OC_JMP, OC_DEST_NEAR ), label );
-#if _TARGET & _TARG_RISC
-#ifndef NDEBUG
-    if( _IsTargetModel( ASM_OUTPUT ) ) {
+#if _TARGET_RISC
+#ifdef DEVBUILD
+    if( _IsTargetModel( CGSW_RISC_ASM_OUTPUT ) ) {
         DumpLiteral( "JMP L" );
         DumpPtr( label );
         DumpNL();

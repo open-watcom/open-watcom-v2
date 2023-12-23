@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -124,14 +124,14 @@ struct Options
 {
     unsigned verbose :1;        // verbose printing
     unsigned actions :1;        // echo actions file
-#ifndef NDEBUG
+#ifdef DEVBUILD
     unsigned pstack  :1;        // dump pstack
 #endif
 
     Options()                   // CONSTRUCTOR
         : verbose( 0 )
         , actions( 0 )
-#ifndef NDEBUG
+#ifdef DEVBUILD
         , pstack(0)
 #endif
         {
@@ -557,7 +557,7 @@ protected:
 
     static PrintStack& pstackTop();     // access top of stack
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
     static pstackDump()
     {
         static char* state[] =
@@ -694,7 +694,7 @@ void ExpOp::print                       // PRINT A TREE
 {
     pstackPush( this, NS_RIGHT_BEFORE, 0 );
     for( ; ; ) {
-#ifndef NDEBUG
+#ifdef DEVBUILD
         if( options.pstack ) {
             pstackDump();
         }
@@ -2707,7 +2707,7 @@ static void processOptions                  // PROCESS OPTIONS
             puts( "         h -- display help information" );
             exit( 0 );
             break;
-#ifndef NDEBUG
+#ifdef DEVBUILD
         case 'p' :
             options.pstack = 1;
             break;

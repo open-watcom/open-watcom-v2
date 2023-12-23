@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,10 +36,8 @@
 #define INCL_DOSMODULEMGR
 #define INCL_DOSMISC
 #include <wos2.h>
-#include "trptypes.h"
 #include "trpld.h"
 #include "trpsys.h"
-#include "tcerr.h"
 
 
 #ifdef _M_I86
@@ -60,7 +58,7 @@
 #include "_trpextf.h"
 #undef pick
 
-static HMODULE          TrapFile = 0;
+static HMODULE          mod_hdl = 0;
 static trap_fini_func   *FiniFunc = NULL;
 
 bool IsTrapFilePumpingMessageQueue( void )
@@ -86,7 +84,7 @@ char TRAP_EXTFUNC( TellHardMode )( char hard )
     return( 0 );
 }
 
-void KillTrap( void )
+void UnLoadTrap( void )
 {
     ReqFunc = NULL;
     TRAP_EXTFUNC_PTR( TellHandles ) = NULL;
@@ -95,89 +93,79 @@ void KillTrap( void )
         FiniFunc();
         FiniFunc = NULL;
     }
-    if( TrapFile != 0 ) {
-        DosFreeModule( TrapFile );
-        TrapFile = 0;
+    if( mod_hdl != 0 ) {
+        DosFreeModule( mod_hdl );
+        mod_hdl = 0;
     }
 }
 
-char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
+digld_error LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
 {
-    char                *p;
-    char                chr;
+    const char          *base_name;
+    size_t              len;
     trap_init_func      *init_func;
-    char                trpfile[CCHMAXPATH];
-#ifndef _M_I86
-    char                trpname[CCHMAXPATH];
-#endif
+    char                filename[CCHMAXPATH];
+    digld_error         err;
 
     if( parms == NULL || *parms == '\0' )
         parms = DEFAULT_TRP_NAME;
-    p = trpfile;
-    for( ; (chr = *parms) != '\0'; parms++ ) {
-        if( chr == TRAP_PARM_SEPARATOR ) {
+    base_name = parms;
+    len = 0;
+    for( ; *parms != '\0'; parms++ ) {
+        if( *parms == TRAP_PARM_SEPARATOR ) {
             parms++;
             break;
         }
-        *p++ = chr;
+        len++;
     }
+    /*
+     * To prevent conflicts with the 16-bit DIP DLLs, the 32-bit versions have the "D32"
+     * extension. We will search for them along the PATH (not in LIBPATH);
+     */
 #ifdef _M_I86
-    if( LOW( trpfile[0] ) == 's' && LOW( trpfile[1] ) == 't'
-      && LOW( trpfile[2] ) == 'd' && trpfile[3] == '\0' ) {
+    if( len == 3
+      && LOW( base_name[0] ) == 's' && LOW( base_name[1] ) == 't' && LOW( base_name[2] ) == 'd' ) {
         unsigned        version;
         char            os2ver;
 
         DosGetVersion( (PUSHORT)&version );
         os2ver = version >> 8;
         if( os2ver >= 20 ) {
-            *p++ = '3';
-            *p++ = '2';
+            base_name = "std32";
         } else {
-            *p++ = '1';
-            *p++ = '6';
+            base_name = "std16";
         }
+        len = 5;
     }
+    if( DIGLoader( Find )( DIG_FILETYPE_EXE, base_name, len, ".DLL", filename, sizeof( filename ) ) == 0 ) {
+#else
+    if( DIGLoader( Find )( DIG_FILETYPE_EXE, base_name, len, ".D32", filename, sizeof( filename ) ) == 0 ) {
 #endif
-#ifdef USE_FILENAME_VERSION
-    *p++ = ( USE_FILENAME_VERSION / 10 ) + '0';
-    *p++ = ( USE_FILENAME_VERSION % 10 ) + '0';
-#endif
-    *p = '\0';
-#ifndef _M_I86
-    /* To prevent conflicts with the 16-bit DIP DLLs, the 32-bit versions have the "D32"
-     * extension. We will search for them along the PATH (not in LIBPATH);
-     */
-    strcpy( trpname, trpfile );
-    strcat( trpname, ".D32" );
-    _searchenv( trpname, "PATH", trpfile );
-    if( *trpfile == '\0' ) {
-        sprintf( buff, "%s '%s'", TC_ERR_CANT_LOAD_TRAP, trpname );
-        return( buff );
+        return( DIGS_ERR_CANT_FIND_MODULE );
     }
-#endif
-    if( LOAD_MODULE( trpfile, TrapFile ) ) {
-        sprintf( buff, "%s '%s'", TC_ERR_CANT_LOAD_TRAP, trpfile );
-        return( buff );
+    if( LOAD_MODULE( filename, mod_hdl ) ) {
+        return( DIGS_ERR_CANT_LOAD_MODULE );
     }
-    strcpy( buff, TC_ERR_WRONG_TRAP_VERSION );
-    if( GET_PROC_ADDRESS( TrapFile, 1, init_func )
-      && GET_PROC_ADDRESS( TrapFile, 2, FiniFunc )
-      && GET_PROC_ADDRESS( TrapFile, 3, ReqFunc ) ) {
-        if( !GET_PROC_ADDRESS( TrapFile, 4, TRAP_EXTFUNC_PTR( TellHandles ) ) ) {
+    err = DIGS_ERR_BAD_MODULE_FILE;
+    if( GET_PROC_ADDRESS( mod_hdl, 1, init_func )
+      && GET_PROC_ADDRESS( mod_hdl, 2, FiniFunc )
+      && GET_PROC_ADDRESS( mod_hdl, 3, ReqFunc ) ) {
+        if( !GET_PROC_ADDRESS( mod_hdl, 4, TRAP_EXTFUNC_PTR( TellHandles ) ) ) {
             TRAP_EXTFUNC_PTR( TellHandles ) = NULL;
         }
-        if( !GET_PROC_ADDRESS( TrapFile, 5, TRAP_EXTFUNC_PTR( TellHardMode ) ) ) {
+        if( !GET_PROC_ADDRESS( mod_hdl, 5, TRAP_EXTFUNC_PTR( TellHardMode ) ) ) {
             TRAP_EXTFUNC_PTR( TellHardMode ) = NULL;
         }
         *trap_ver = init_func( parms, buff, trap_ver->remote );
+        err = DIGS_ERR_BUF;
         if( buff[0] == '\0' ) {
             if( TrapVersionOK( *trap_ver ) ) {
                 TrapVer = *trap_ver;
-                return( NULL );
+                return( DIGS_OK );
             }
-            strcpy( buff, TC_ERR_WRONG_TRAP_VERSION );
+            err = DIGS_ERR_WRONG_MODULE_VERSION;
         }
     }
-    KillTrap();
-    return( buff );
+    UnLoadTrap();
+    return( err );
 }

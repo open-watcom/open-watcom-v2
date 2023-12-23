@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,9 +30,11 @@
 ****************************************************************************/
 
 
-/* - collapse adjacent BIT operations (AND,OR) */
-/* - collapse adjacent integral ADD,SUB operations */
-/* - collapse adjacent integral MUL operations */
+/*
+ * - collapse adjacent BIT operations (AND,OR)
+ * - collapse adjacent integral ADD,SUB operations
+ * - collapse adjacent integral MUL operations
+ */
 
 #include "_cgstd.h"
 #include "coderep.h"
@@ -66,15 +68,16 @@ static  bool    InsChangeable( instruction *ins, name *new_op, name **op )
     return( true );
 }
 
-static  void    InsReset( instruction *ins ) {
-/********************************************/
+static  void    InsReset( instruction *ins )
+/******************************************/
+{
     if( AfterRegAlloc ) {
         ResetGenEntry( ins );
     }
 }
 
-static  bool    MergeTwo( instruction *a, instruction *b, signed_32 value )
-/*************************************************************************/
+static  bool    MergeTwo( instruction *a, instruction *b, int_32 value )
+/**********************************************************************/
 {
     name        *cons;
     name        *old_res_a;
@@ -82,8 +85,10 @@ static  bool    MergeTwo( instruction *a, instruction *b, signed_32 value )
 
     cons = AllocS32Const( value );
     if( a->result == b->result ) {
-        /* A op X -> A     A op f(X,Y) -> A */
-        /* A op Y -> A                      */
+        /*
+         * A op X -> A     A op f(X,Y) -> A
+         * A op Y -> A
+         */
         if( InsChangeable( a, cons, &a->operands[1] ) ) {
             a->operands[1] = cons;
             ResetGenEntry( a );
@@ -91,18 +96,19 @@ static  bool    MergeTwo( instruction *a, instruction *b, signed_32 value )
             return( true );
         }
     } else if( a->operands[0] == b->operands[0] ) {
-        /* A op X -> A     A op f(X,Y) -> B */
-        /* A op Y -> B     A op X      -> A */
-        /* becomes */
-
-        /* This could be bad if we had something like
-                A op X -> A
-                USE( B )
-                A op Y -> B
-            which can occur quite frequently after register allocation,
-            so we make sure all instructions between a and b are
-            InsOrderDependant with b. BBB - Apr 27, 1994
-        */
+        /*
+         * A op X -> A     A op f(X,Y) -> B
+         * A op Y -> B     A op X      -> A
+         * becomes
+         *
+         * This could be bad if we had something like
+         *      A op X -> A
+         *      USE( B )
+         *      A op Y -> B
+         * which can occur quite frequently after register allocation,
+         * so we make sure all instructions between a and b are
+         * InsOrderDependant with b.
+         */
         instruction *ins;
 
         for( ins = a->head.next; ins != b; ins = ins->head.next ) {
@@ -127,14 +133,18 @@ static  bool    MergeTwo( instruction *a, instruction *b, signed_32 value )
                 ResetGenEntry( b );
                 return( true );
             } else {
-                /* retreat! retreat! */
+                /*
+                 * retreat! retreat!
+                 */
                 a->result = old_res_a;
                 b->result = old_res_b;
             }
         }
     } else if( b->operands[0] != a->operands[0] || b->operands[1] != cons ) {
-        /* A op X -> B     A op X      -> B */
-        /* B op Y -> C     A op f(X,Y) -> C */
+        /*
+         * A op X -> B     A op X      -> B
+         * B op Y -> C     A op f(X,Y) -> C
+         */
         if( InsChangeable( b, a->operands[0], &b->operands[0] ) &&
             InsChangeable( b, cons, &b->operands[1] ) ) {
             b->operands[0] = a->operands[0];
@@ -148,7 +158,7 @@ static  bool    MergeTwo( instruction *a, instruction *b, signed_32 value )
 
 static  ONE_OP  DoAdd;
 static  bool    DoAdd( instruction *a, instruction *b )
-/*******************************************************/
+/*****************************************************/
 {
     return( MergeTwo( a, b, OP2VAL( a ) + OP2VAL( b ) ) );
 }
@@ -156,7 +166,7 @@ static  bool    DoAdd( instruction *a, instruction *b )
 
 static  ONE_OP  DoMul;
 static  bool    DoMul( instruction *a, instruction *b )
-/*******************************************************/
+/*****************************************************/
 {
     return( MergeTwo( a,b, OP2VAL( a ) * OP2VAL( b ) ) );
 }
@@ -164,7 +174,7 @@ static  bool    DoMul( instruction *a, instruction *b )
 
 static  ONE_OP  DoAnd;
 static  bool    DoAnd( instruction *a, instruction *b )
-/**************************************************************/
+/*****************************************************/
 {
     return( MergeTwo( a,b, OP2VAL( a ) & OP2VAL( b ) ) );
 }
@@ -172,7 +182,7 @@ static  bool    DoAnd( instruction *a, instruction *b )
 
 static  ONE_OP  DoOr;
 static  bool    DoOr( instruction *a, instruction *b )
-/*******************************************************/
+/****************************************************/
 {
     return( MergeTwo( a,b, OP2VAL( a ) | OP2VAL( b ) ) );
 }
@@ -182,7 +192,7 @@ static TWO_OP AndOr;
 static bool AndOr( instruction *and_ins, instruction *or_ins )
 /************************************************************/
 {
-    signed_32   new_and;
+    int_32      new_and;
     name        *mask;
 
     if( and_ins->operands[0] != and_ins->result )
@@ -205,9 +215,9 @@ static TWO_OP OrAnd;
 static bool OrAnd( instruction *or_ins, instruction *and_ins )
 /************************************************************/
 {
-    signed_32   new_or;
-    signed_32   or;
-    signed_32   and;
+    int_32      new_or;
+    int_32      or;
+    int_32      and;
     name        *mask;
 
     if( or_ins->operands[0] != or_ins->result )
@@ -242,7 +252,7 @@ static THREE_OP OrAndOr;
 static bool OrAndOr( instruction *a, instruction *b )
 /***************************************************/
 {
-    signed_32   and_val;
+    int_32      and_val;
     name        *mask;
 
     if( a->result != b->result )
@@ -260,7 +270,9 @@ static bool OrAndOr( instruction *a, instruction *b )
         InsReset( b );
         return( true );
     }
-    /* Put things back the way they were */
+    /*
+     * Put things back the way they were
+     */
     a->head.opcode = OP_OR;
     b->head.opcode = OP_AND;
     return( false );
@@ -271,7 +283,7 @@ static THREE_OP AndOrAnd;
 static bool AndOrAnd( instruction *a, instruction *b )
 /****************************************************/
 {
-    signed_32   or_val;
+    int_32      or_val;
     name        *mask;
 
     if( a->result != b->result )
@@ -289,7 +301,9 @@ static bool AndOrAnd( instruction *a, instruction *b )
         InsReset( b );
         return( true );
     }
-    /* Put things back the way they were */
+    /*
+     * Put things back the way they were
+     */
     a->head.opcode = OP_AND;
     b->head.opcode = OP_OR;
     return( false );
@@ -297,7 +311,7 @@ static bool AndOrAnd( instruction *a, instruction *b )
 
 
 static  bool    DoRShift( instruction *a, instruction *b )
-/*******************************************************/
+/********************************************************/
 {
     if( a->type_class != b->type_class )
         return( false );
@@ -314,7 +328,7 @@ static  bool    DoLShift( instruction *a, instruction *b )
 
 static TWO_OP LRShift;
 static bool LRShift( instruction *a, instruction *b )
-/*************************************************/
+/***************************************************/
 {
     /* unused parameters */ (void)a; (void)b;
 
@@ -324,7 +338,7 @@ static bool LRShift( instruction *a, instruction *b )
 
 static TWO_OP RLShift;
 static bool RLShift( instruction *a, instruction *b )
-/*************************************************/
+/***************************************************/
 {
     /* unused parameters */ (void)a; (void)b;
 
@@ -334,7 +348,7 @@ static bool RLShift( instruction *a, instruction *b )
 
 static THREE_OP Nop3;
 static bool Nop3( instruction *a, instruction *b )
-/****************************************************/
+/************************************************/
 {
     /* unused parameters */ (void)a; (void)b;
 
@@ -343,7 +357,7 @@ static bool Nop3( instruction *a, instruction *b )
 
 
 static bool SameOpWithConst( instruction *ins, instruction *next )
-/*****************************************************************/
+/****************************************************************/
 {
     name        *op;
 
@@ -381,7 +395,7 @@ static  instruction     *FindInsPair( instruction *ins,
                                      bool *pchange, opcode_defs op,
                                      opcode_defs op2,
                                      ONE_OP *oprtn )
-/**********************************************************************/
+/*****************************************************************/
 {
     instruction         *next;
 
@@ -410,7 +424,7 @@ static instruction *FindInsTriple( instruction *ins, bool *pchange,
                                    opcode_defs op1, opcode_defs op2,
                                    ONE_OP *op1rtn, ONE_OP *op2rtn,
                                    TWO_OP *op12rtn, THREE_OP *op121rtn )
-/************************************************************************/
+/**********************************************************************/
 {
     bool        change;
     instruction *ins2;
@@ -454,7 +468,9 @@ static instruction *AddOpt( instruction *ins, bool *pchange )
 static instruction *SubOpt( instruction *ins, bool *pchange )
 /***********************************************************/
 {
-    // DoAdd will work fine for subtracts
+    /*
+     * DoAdd will work fine for subtracts
+     */
     return( FindInsPair( ins, NULL, pchange, OP_SUB, OP_NOP, DoAdd ) );
 }
 
@@ -467,7 +483,7 @@ static instruction *MulOpt( instruction *ins, bool *pchange )
 
 
 static instruction *OrOpt( instruction *ins, bool *pchange )
-/***********************************************************/
+/**********************************************************/
 {
     return( FindInsTriple( ins, pchange, OP_OR, OP_AND,
                            DoOr, DoAnd, OrAnd, OrAndOr ) );
@@ -561,17 +577,20 @@ static bool DoConversionOps( instruction *ins, bool *change, instruction **n )
         if( ins->head.opcode == OP_CONVERT && next->head.opcode == OP_CONVERT ) {
             if( ins->result == next->operands[0] &&
                 ins->type_class == next->base_type_class ) {
-
-                // change (cnv i1 -> i2; cnv i2 -> i4) into
-                //     (cnv i1 -> i2; cnv i1 -> i4) and let dead code take care of
-                //         the first ins if it is not needed
-
-                // pointer conversions are too dangerous to fold
+                /*
+                 * change (cnv i1 -> i2; cnv i2 -> i4) into
+                 *        (cnv i1 -> i2; cnv i1 -> i4) and let dead code take care of
+                 * the first ins if it is not needed
+                 *
+                 * pointer conversions are too dangerous to fold
+                 */
                 if( _IsPointer( next->type_class ) || _IsPointer( next->base_type_class ) )
                     return( false );
                 if( _IsPointer( ins->type_class ) )
                     return( false );
-                // watch for converting down - bad to fold
+                /*
+                 * watch for converting down - bad to fold
+                 */
                 if( ins->type_class < ins->base_type_class )
                     return( false );
                 next->base_type_class = ins->base_type_class;
@@ -579,7 +598,9 @@ static bool DoConversionOps( instruction *ins, bool *change, instruction **n )
                 if( next->operands[0]->n.class == N_TEMP ) {
                     next->operands[0]->t.temp_flags &= ~CAN_STACK;
                 }
-                // in case we are in register allocator
+                /*
+                 * in case we are in register allocator
+                 */
                 next->table = NULL;
                 *change = true;
                 return( true );
@@ -610,10 +631,14 @@ static bool ReferencedBy( instruction *ins, name *op )
             return( true );
         }
     }
-    // this should only be called for index names and USE_ADDRESS temps
+    /*
+     * this should only be called for index names and USE_ADDRESS temps
+     */
     for( i = 0; i < ins->num_operands; i++ ) {
         curr = ins->operands[i];
-        // assume anything which looks at memory uses op
+        /*
+         * assume anything which looks at memory uses op
+         */
         if( curr->n.class == N_INDEXED ||
             curr->n.class == N_MEMORY )
             return( true );
@@ -624,8 +649,9 @@ static bool ReferencedBy( instruction *ins, name *op )
     return( false );
 }
 
-static bool DoMemWrites( instruction *ins, bool *change, instruction **n ) {
-/**************************************************************************/
+static bool DoMemWrites( instruction *ins, bool *change, instruction **n )
+/************************************************************************/
+{
     instruction *next;
 
     /* unused parameters */ (void)n;
@@ -666,7 +692,7 @@ bool PeepOptBlock( block *blk, bool after_reg_alloc )
 
     change = false;
     AfterRegAlloc = after_reg_alloc;
-    for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = next ) {
+    for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = next ) {
         next = ins->head.next;
         if( VolatileIns( ins ) )
             continue;

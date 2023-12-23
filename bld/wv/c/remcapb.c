@@ -8,7 +8,6 @@
  *  Find if the current trap file supports the capabilities service
  */
 
-static bool             Supports8ByteBreakpoints = false;
 static bool             SupportsExactBreakpoints = false;
 
 static trap_shandle     SuppCapabilitiesId = 0;
@@ -18,49 +17,10 @@ static trap_shandle     SuppCapabilitiesId = 0;
         in.supp.id              = SuppCapabilitiesId;       \
         in.req                  = request;
 
-static bool CapabilitiesGet8ByteBreakpointSupport( void )
-{
-    capabilities_get_8b_bp_req  acc;
-    capabilities_get_8b_bp_ret  ret;
-
-    if( SuppCapabilitiesId == 0 )
-        return( false );
-
-    SUPP_CAPABILITIES_SERVICE( acc, REQ_CAPABILITIES_GET_8B_BP );
-
-    TrapSimpAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
-    if( ret.err != 0 ) {
-        return( false );
-    } else {
-        Supports8ByteBreakpoints = true;    /* The trap supports 8 byte breakpoints */
-        return( true );
-    }
-}
-
-static bool CapabilitiesSet8ByteBreakpointSupport( bool status )
-{
-    capabilities_set_8b_bp_req  acc;
-    capabilities_set_8b_bp_ret  ret;
-
-    if( SuppCapabilitiesId == 0 )
-        return( false );
-
-    SUPP_CAPABILITIES_SERVICE( acc, REQ_CAPABILITIES_SET_8B_BP );
-    acc.status = status ? true : false;
-
-    TrapSimpAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
-    if( ret.err != 0 ) {
-        return( false );
-    } else {
-        Supports8ByteBreakpoints = ret.status ? true : false;
-        return( true );
-    }
-}
-
 static bool CapabilitiesGetExactBreakpointSupport( void )
 {
-    capabilities_get_8b_bp_req  acc;
-    capabilities_get_8b_bp_ret  ret;
+    capabilities_get_exact_bp_req  acc;
+    capabilities_get_exact_bp_ret  ret;
 
 
     if( SuppCapabilitiesId == 0 )
@@ -68,34 +28,32 @@ static bool CapabilitiesGetExactBreakpointSupport( void )
 
     SUPP_CAPABILITIES_SERVICE( acc, REQ_CAPABILITIES_GET_EXACT_BP );
 
-    TrapSimpAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
+    TrapSimpleAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
     if( ret.err != 0 ) {
         return( false );
-    } else {
-        /* The trap may support it, but it is not possible currently */
-        SupportsExactBreakpoints = ret.status ? true : false;
-        return( true );
     }
+    /* The trap may support it, but it is not possible currently */
+    SupportsExactBreakpoints = ret.status;
+    return( true );
 }
 
 static bool CapabilitiesSetExactBreakpointSupport( bool status )
 {
-    capabilities_set_8b_bp_req  acc;
-    capabilities_set_8b_bp_ret  ret;
+    capabilities_set_exact_bp_req  acc;
+    capabilities_set_exact_bp_ret  ret;
 
     if( SuppCapabilitiesId == 0 )
         return( false );
 
     SUPP_CAPABILITIES_SERVICE( acc, REQ_CAPABILITIES_SET_EXACT_BP );
-    acc.status = status ? true : false;
+    acc.status = status;
 
-    TrapSimpAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
+    TrapSimpleAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
     if( ret.err != 0 ) {
         return( false );
-    } else {
-        _SwitchSet( SW_BREAK_ON_WRITE, ret.status ? true : false );
-        return( true );
     }
+    _SwitchSet( SW_BREAK_ON_WRITE, ret.status );
+    return( true );
 }
 
 bool SetCapabilitiesExactBreakpointSupport( bool status, bool set_switch )
@@ -121,26 +79,16 @@ bool IsExactBreakpointsSupported( void )
     }
 }
 
-bool Is8ByteBreakpointsSupported( void )
-{
-    return( Supports8ByteBreakpoints );
-}
-
 bool InitCapabilities( void )
 {
     /* Always reset in case of trap switch */
-    Supports8ByteBreakpoints = false;
     SupportsExactBreakpoints = false;
 
     SuppCapabilitiesId = GETSUPPID( CAPABILITIES_SUPP_NAME );
     if( SuppCapabilitiesId == 0 )
         return( false );
 
-    CapabilitiesGet8ByteBreakpointSupport();
     CapabilitiesGetExactBreakpointSupport();
-
-    if( Supports8ByteBreakpoints )
-        CapabilitiesSet8ByteBreakpointSupport( true );
 
     if( SupportsExactBreakpoints && _IsOn( SW_BREAK_ON_WRITE ) )
         CapabilitiesSetExactBreakpointSupport( true );

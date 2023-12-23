@@ -1,3 +1,5 @@
+tree_depth = 4
+
 proj_name = wig
 
 wig_autodepends = .AUTODEPEND
@@ -69,7 +71,7 @@ dlltarg_name = pbide
 # EXE
 #
 exetarg_prebuild_objs = ytab.h
-exetarg_obj = $(objs)
+exetarg_objs = $(objs)
 exetarg_libs = $(libs)
 exetarg_name = wig
 !include exetarg.mif
@@ -78,6 +80,6 @@ exetarg_name = wig
 #
 # rc and others
 #
-ytab.c ytab.h: sruparse.y ../c/yydriver.c
+ytab.c ytab.h: ../c/sruparse.y ../c/yydriver.c
     @%make echo_yacc
     $(yacc) -d $[@ ../c/yydriver.c > $(nulldevice)

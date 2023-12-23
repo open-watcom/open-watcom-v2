@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,94 +41,10 @@
 #endif
 
 #ifndef __WATCOMC__
-#if defined( __GNUC__ ) || defined( __SUNPRO_C )
-#define _INTEGRAL_MAX_BITS  64
-#endif
 /* An equivalent of the __unaligned keyword may be necessary on RISC
  * architectures, but on x86/x64 it's useless
  */
 #define _WCUNALIGNED
-#endif
-
-#include <errno.h>
-
-#if !defined(__sun__) && !defined(sun) && !defined(__sgi) && !defined(__hppa) && !defined(_AIX) && !defined(__alpha) && !defined(_TYPES_H_) && !defined(_SYS_TYPES_H)
-typedef unsigned        uint;
-#endif
-
-typedef unsigned char   uint_8;
-typedef unsigned short  uint_16;
-#if defined( _M_I86 )
-typedef unsigned long   uint_32;
-#else
-typedef unsigned int    uint_32;
-#endif
-typedef unsigned char   unsigned_8;
-typedef unsigned short  unsigned_16;
-#if defined( _M_I86 )
-typedef unsigned long   unsigned_32;
-#else
-typedef unsigned int    unsigned_32;
-#endif
-
-typedef signed char     int_8;
-typedef signed short    int_16;
-#if defined( _M_I86 )
-typedef signed long     int_32;
-#else
-typedef signed int      int_32;
-#endif
-typedef signed char     signed_8;
-typedef signed short    signed_16;
-#if defined( _M_I86 )
-typedef signed long     signed_32;
-#else
-typedef signed int      signed_32;
-#endif
-
-#if _INTEGRAL_MAX_BITS >= 64
-#if defined( _MSC_VER )
-typedef unsigned __int64    uint_64;
-typedef __int64             int_64;
-#else
-typedef unsigned long long  uint_64;
-typedef long long           int_64;
-#endif
-#endif
-
-typedef struct {
-    union {
-        unsigned_32     _32[2];
-        unsigned_16     _16[4];
-        unsigned_8       _8[8];
-        struct {
-#if defined( __BIG_ENDIAN__ )
-            unsigned    v       : 1;
-            unsigned            : 15;
-            unsigned            : 16;
-            unsigned            : 16;
-            unsigned            : 16;
-#else
-            unsigned            : 16;
-            unsigned            : 16;
-            unsigned            : 16;
-            unsigned            : 15;
-            unsigned    v       : 1;
-#endif
-        }       sign;
-#if _INTEGRAL_MAX_BITS >= 64
-        uint_64         _64[1];
-#endif
-    } u;
-} unsigned_64;
-typedef unsigned_64     signed_64;
-
-#if defined( _WIN64 )
-typedef __int64             pointer_int;
-typedef unsigned __int64    pointer_uint;
-#else
-typedef long                pointer_int;
-typedef unsigned long       pointer_uint;
 #endif
 
 /* Macros for low/high end access on little and big endian machines */
@@ -147,17 +63,6 @@ typedef unsigned long       pointer_uint;
     #define I64HI16     3
     #define I64LO8      0
     #define I64HI8      7
-#endif
-
-/* Define _crtn for prototypes for external C routines called from C++.
- * Eg. extern _crtn void Foo();
- */
-#if !defined( _crtn )
-    #if defined( __cplusplus )
-        #define _crtn   "C"
-    #else
-        #define _crtn
-    #endif
 #endif
 
 /*  Macros for little/big endian conversion; These exist to simplify writing
@@ -209,9 +114,9 @@ typedef unsigned long       pointer_uint;
     #define CONV_BE_32(w)
     #define CONV_BE_64(w)
     /* Macros to swap byte order */
-    #define SWAP_16     CONV_LE_16
-    #define SWAP_32     CONV_LE_32
-    #define SWAP_64     CONV_LE_64
+    #define SWAP_16         CONV_LE_16
+    #define SWAP_32         CONV_LE_32
+    #define SWAP_64         CONV_LE_64
 #else
     /* Macros to get little endian data */
     #define GET_LE_16(w)    (w)
@@ -230,26 +135,173 @@ typedef unsigned long       pointer_uint;
     #define CONV_BE_32(w)   (w) = SWAPNC_32(w)
     #define CONV_BE_64(w)   (w) = SWAPNC_64(w)
     /* Macros to swap byte order */
-    #define SWAP_16     CONV_BE_16
-    #define SWAP_32     CONV_BE_32
-    #define SWAP_64     CONV_BE_64
+    #define SWAP_16         CONV_BE_16
+    #define SWAP_32         CONV_BE_32
+    #define SWAP_64         CONV_BE_64
+#endif
+
+    #define MGET_S8(p)          (*(int_8*)(p))
+    #define MGET_S16(p)         (*(int_16*)(p))
+    #define MGET_S32(p)         (*(int_32*)(p))
+    #define MGET_S64(p)         (*(int_64*)(p))
+
+    #define MGET_U8(p)          (*(uint_8*)(p))
+    #define MGET_U16(p)         (*(uint_16*)(p))
+    #define MGET_U32(p)         (*(uint_32*)(p))
+    #define MGET_U64(p)         (*(uint_64*)(p))
+
+    #define MGET_U8_UN(p)       (*(uint_8 _WCUNALIGNED*)(p))
+    #define MGET_U16_UN(p)      (*(uint_16 _WCUNALIGNED*)(p))
+    #define MGET_U32_UN(p)      (*(uint_32 _WCUNALIGNED*)(p))
+    #define MGET_U64_UN(p)      (*(uint_64 _WCUNALIGNED*)(p))
+
+    #define MPUT_8(p,w)         (MGET_U8(p)) = (w)
+    #define MPUT_16(p,w)        (MGET_U16(p)) = (w)
+    #define MPUT_32(p,w)        (MGET_U32(p)) = (w)
+    #define MPUT_64(p,w)        (MGET_U64(p)) = (w)
+
+    #define MPUT_8_UN(p,w)      (MGET_U8_UN(p)) = (w)
+    #define MPUT_16_UN(p,w)     (MGET_U16_UN(p)) = (w)
+    #define MPUT_32_UN(p,w)     (MGET_U32_UN(p)) = (w)
+    #define MPUT_64_UN(p,w)     (MGET_U64_UN(p)) = (w)
+
+#if defined( __BIG_ENDIAN__ )
+    /* Macros to get little endian data */
+    #define MGET_LE_16(p)       SWAPNC_16(MGET_U16(p))
+    #define MGET_LE_32(p)       SWAPNC_32(MGET_U32(p))
+    #define MGET_LE_64(p)       SWAPNC_64(MGET_U64(p))
+
+    #define MGET_LE_16_UN(p)    SWAPNC_16(MGET_U16_UN(p))
+    #define MGET_LE_32_UN(p)    SWAPNC_32(MGET_U32_UN(p))
+    #define MGET_LE_64_UN(p)    SWAPNC_64(MGET_U64_UN(p))
+    /* Macros to get big endian data */
+    #define MGET_BE_16(p)       (MGET_U16(p))
+    #define MGET_BE_32(p)       (MGET_U32(p))
+    #define MGET_BE_64(p)       (MGET_U64(p))
+
+    #define MGET_BE_16_UN(p)    (MGET_U16_UN(p))
+    #define MGET_BE_32_UN(p)    (MGET_U32_UN(p))
+    #define MGET_BE_64_UN(p)    (MGET_U64_UN(p))
+    /* Macros to convert little endian data in place */
+    #define MPUT_LE_16(p,w)     (MGET_U16(p)) = SWAPNC_16(w)
+    #define MPUT_LE_32(p,w)     (MGET_U32(p)) = SWAPNC_32(w)
+    #define MPUT_LE_64(p,w)     (MGET_U64(p)) = SWAPNC_64(w)
+    /* Macros to convert big endian data in place */
+    #define MPUT_BE_16(p,w)     (MGET_U16(p)) = (w)
+    #define MPUT_BE_32(p,w)     (MGET_U32(p)) = (w)
+    #define MPUT_BE_64(p,w)     (MGET_U64(p)) = (w)
+#else
+    /* Macros to get little endian data */
+    #define MGET_LE_16(p)       (MGET_U16(p))
+    #define MGET_LE_32(p)       (MGET_U32(p))
+    #define MGET_LE_64(p)       (MGET_U64(p))
+
+    #define MGET_LE_16_UN(p)    (MGET_U16_UN(p))
+    #define MGET_LE_32_UN(p)    (MGET_U32_UN(p))
+    #define MGET_LE_64_UN(p)    (MGET_U64_UN(p))
+    /* Macros to get big endian data */
+    #define MGET_BE_16(p)       SWAPNC_16(MGET_U16(p))
+    #define MGET_BE_32(p)       SWAPNC_32(MGET_U32(p))
+    #define MGET_BE_64(p)       SWAPNC_64(MGET_U64(p))
+
+    #define MGET_BE_16_UN(p)    SWAPNC_16(MGET_U16_UN(p))
+    #define MGET_BE_32_UN(p)    SWAPNC_32(MGET_U32_UN(p))
+    #define MGET_BE_64_UN(p)    SWAPNC_64(MGET_U64_UN(p))
+    /* Macros to convert little endian data in place */
+    #define MPUT_LE_16(p,w)     (MGET_U16(p)) = (w)
+    #define MPUT_LE_32(p,w)     (MGET_U32(p)) = (w)
+    #define MPUT_LE_64(p,w)     (MGET_U64(p)) = (w)
+    /* Macros to convert big endian data in place */
+    #define MPUT_BE_16(p,w)     (MGET_U16(p)) = SWAPNC_16(w)
+    #define MPUT_BE_32(p,w)     (MGET_U32(p)) = SWAPNC_32(w)
+    #define MPUT_BE_64(p,w)     (MGET_U64(p)) = SWAPNC_64(w)
 #endif
 
 /* Macros to swap byte order in 64-bit structure */
 #if defined( __BIG_ENDIAN__ )
-  #if _INTEGRAL_MAX_BITS >= 64
-    #define SCONV_LE_64(w)   (w).u._64[0] = SWAPNC_64((w).u._64[0])
-  #else
-    #define SCONV_LE_64(w)   {unsigned_32 x = SWAPNC_32(w.u._32[I64LO32]);w.u._32[I64LO32]=SWAPNC_32(w.u._32[I64HI32]);w.u._32[I64HI32] = x;}
-  #endif
+    #define SCONV_LE_64(w)  (w).u._64[0] = SWAPNC_64((w).u._64[0])
     #define SCONV_BE_64(w)
 #else
     #define SCONV_LE_64(w)
-  #if _INTEGRAL_MAX_BITS >= 64
-    #define SCONV_BE_64(w)   (w).u._64[0] = SWAPNC_64((w).u._64[0])
-  #else
-    #define SCONV_BE_64(w)   {unsigned_32 x = SWAPNC_32(w.u._32[I64LO32]);w.u._32[I64LO32]=SWAPNC_32(w.u._32[I64HI32]);w.u._32[I64HI32] = x;}
-  #endif
+    #define SCONV_BE_64(w)  (w).u._64[0] = SWAPNC_64((w).u._64[0])
 #endif
+
+#if !defined(__sun__) && !defined(sun) && !defined(__sgi) && !defined(__hppa) && !defined(_AIX) && !defined(__alpha) && !defined(_TYPES_H_) && !defined(_SYS_TYPES_H)
+typedef unsigned        uint;
+#endif
+
+typedef unsigned char   uint_8;
+typedef unsigned short  uint_16;
+#if defined( _M_I86 )
+typedef unsigned long   uint_32;
+#else
+typedef unsigned int    uint_32;
+#endif
+#if defined( _MSC_VER )
+typedef unsigned __int64    uint_64;
+#else
+typedef unsigned long long  uint_64;
+#endif
+
+typedef signed char     int_8;
+typedef signed short    int_16;
+#if defined( _M_I86 )
+typedef signed long     int_32;
+#else
+typedef signed int      int_32;
+#endif
+#if defined( _MSC_VER )
+typedef __int64         int_64;
+#else
+typedef long long       int_64;
+#endif
+
+#if defined( _WIN64 )
+typedef __int64             pointer_int;
+typedef unsigned __int64    pointer_uint;
+#else
+typedef long                pointer_int;
+typedef unsigned long       pointer_uint;
+#endif
+
+typedef unsigned char   unsigned_8;
+typedef unsigned short  unsigned_16;
+#if defined( _M_I86 )
+typedef unsigned long   unsigned_32;
+#else
+typedef unsigned int    unsigned_32;
+#endif
+typedef struct {
+    union {
+        unsigned_32     _32[2];
+        unsigned_16     _16[4];
+        unsigned_8      _8[8];
+        struct {
+#if defined( __BIG_ENDIAN__ )
+            unsigned    v: 1;
+            unsigned     : 15;
+            unsigned     : 16;
+            unsigned     : 16;
+            unsigned     : 16;
+#else
+            unsigned     : 16;
+            unsigned     : 16;
+            unsigned     : 16;
+            unsigned     : 15;
+            unsigned    v: 1;
+#endif
+        }       sign;
+        uint_64         _64[1];
+    } u;
+} unsigned_64;
+
+typedef signed char     signed_8;
+typedef signed short    signed_16;
+#if defined( _M_I86 )
+typedef signed long     signed_32;
+#else
+typedef signed int      signed_32;
+#endif
+typedef unsigned_64     signed_64;
 
 #endif

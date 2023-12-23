@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,7 +42,7 @@
 #include "stats.h"
 #include "template.h"
 #include "class.h"
-#ifndef NDEBUG
+#ifdef DEVBUILD
     #include "dbg.h"
 #endif
 
@@ -85,7 +85,7 @@ static OP_MASK opfun_mask[] =
 ;
 
 static type_id op_basic_arg[][2] =
-    #define OPBASIC( arg1, arg2, mask ) { __PASTE( TYP_, arg1 ), __PASTE( TYP_, arg2 ) }
+    #define OPBASIC( arg1, arg2, mask ) { arg1, arg2 }
     #include "ppopscnv.h"
     #undef OPBASIC
 ;
@@ -122,7 +122,7 @@ static OP_MASK opfun_mask_extra[] =
 ;
 
 static type_id op_basic_arg_extra[][2] =
-    #define OPBASIC_EXTRA( arg1, arg2, mask, ctl ) { __PASTE( TYP_, arg1 ), __PASTE( TYP_, arg2 ) }
+    #define OPBASIC_EXTRA( arg1, arg2, mask, ctl ) { arg1, arg2 }
     #include "ppopscnv.h"
     #undef OPBASIC_EXTRA
 ;
@@ -158,7 +158,7 @@ typedef struct {                            // OLINF -- overload information
     unsigned    have_user_type      : 1;    // - true ==> have a class,enum operand
 } OLINF;
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 void DumpOpovLoad               // DEBUG -- DUMP ROUTINE
     ( OLINF* oli )              // - overload info
 ;
@@ -1222,7 +1222,7 @@ pch_status PCHFiniOperatorOverloadData( bool writing )
 }
 
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 
 static void dumpOVOP            // DEBUG -- DUMP OVOP structure
     ( OVOP* ovop                // - OVOP

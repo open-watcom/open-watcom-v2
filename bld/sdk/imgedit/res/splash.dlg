@@ -1,0 +1,14 @@
+/* UTF-8 encoding, ¥ */
+
+ImgSplashScreen DIALOG 22, 17, 229, 233
+STYLE WS_POPUP | WS_DLGFRAME
+FONT 8, "Helv"
+BEGIN
+        CONTROL "APPLICON", 0, "STATIC", SS_ICON | WS_CHILD | WS_VISIBLE, 6, 8, 18, 20
+        CONTROL [ banner1t( "Image Editor" ) " for Windows" ], -1, "STATIC", SS_CENTER | WS_CHILD | WS_VISIBLE | WS_GROUP, 30, 5, 161, 8
+        CONTROL [ banner1v( _RESEDIT_VERSION_ ) ] , -1, "STATIC", SS_CENTER | WS_CHILD | WS_VISIBLE | WS_GROUP, 30, 15, 161, 8
+        CONTROL [ banner2 ], -1, "STATIC", SS_CENTER | WS_CHILD | WS_VISIBLE | WS_GROUP, 30, 25, 161, 8
+        CONTROL [ banner2a( 1984 ) ], -1, "STATIC", SS_CENTER | WS_CHILD | WS_VISIBLE | WS_GROUP, 30, 35, 161, 8
+        CONTROL "APPLICON", 0, "STATIC", SS_ICON | WS_CHILD | WS_VISIBLE, 204, 8, 18, 20
+        CONTROL "", 666, "static", SS_BLACKRECT | WS_CHILD | WS_VISIBLE, 2, 46, 225, 1
+END

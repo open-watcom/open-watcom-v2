@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -120,12 +121,12 @@ static int SortByHandle( heap_list **p1, heap_list **p2 )
 
 static int SortByGran( heap_list **p1, heap_list **p2 )
 {
-    return( (*p1)->info.mem.desc.granularity - (*p2)->info.mem.desc.granularity );
+    return( (*p1)->info.mem.desc.u2.flags.page_granular - (*p2)->info.mem.desc.u2.flags.page_granular );
 } /* SortByGran */
 
 static int SortByDPL( heap_list **p1, heap_list **p2 )
 {
-    return( (*p1)->info.mem.desc.dpl - (*p2)->info.mem.desc.dpl );
+    return( (*p1)->info.mem.desc.u1.flags.dpl - (*p2)->info.mem.desc.u1.flags.dpl );
 } /* SortByDPL */
 
 static int SortByFlag( heap_list **p1, heap_list **p2 )

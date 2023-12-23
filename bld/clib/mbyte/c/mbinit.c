@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -180,9 +180,9 @@ int __mbinit( int codepage )
     /*** Update __MBCodePage ***/
     if( codepage == 0 ) {
   #if defined(_M_I86)
-        rc = DosGetCp( sizeof( buf ), &buf, &bytes );
+        rc = DosGetCp( sizeof( buf ), buf, &bytes );
   #else
-        rc = DosQueryCp( sizeof( buf ), &buf, &bytes );
+        rc = DosQueryCp( sizeof( buf ), buf, &bytes );
   #endif
         if( rc != 0 ) {
             __MBCodePage = 0;

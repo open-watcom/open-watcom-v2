@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -560,7 +560,7 @@ int RdosAttachDebugger( int pid )
 
 
 static prtf_callback_t mem_putc;
-static void PRTF_CALLBACK mem_putc( PTR_SPECS specs, CHAR_TYPE op_char )
+static void PRTF_CALLBACK mem_putc( PTR_PRTF_SPECS specs, CHAR_TYPE op_char )
 {
     TRdosPrintfCallback  *callback = GET_SPECS_DEST( TRdosPrintfCallback, specs );
 

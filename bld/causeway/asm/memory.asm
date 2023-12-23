@@ -13,7 +13,7 @@
 ;SI:DI  - Handle.
 ;BX:CX  - Logical address of block.
 ;
-RAWGetMemory    proc    near
+RawGetMemory    proc    near
         ;
         push    eax
         push    edx
@@ -226,7 +226,7 @@ mem1_exit:
         pop     eax
         ret
         assume ds:_cwDPMIEMU
-RAWGetMemory    endp
+RawGetMemory    endp
 
 
 ;-------------------------------------------------------------------------------
@@ -243,7 +243,7 @@ RAWGetMemory    endp
 ;SI:DI  - New handle.
 ;BX:CX  - New address.
 ;
-RAWResMemory    proc    near
+RawResMemory    proc    near
         ;
         push    eax
         push    edx
@@ -355,7 +355,7 @@ mem2_s0:
         inc     edx
         dec     ecx
         jnz     mem2_s0
-        call    EMUCR3Flush
+        call    EmuCR3Flush
         jmp     mem2_RetNewAddr
         ;
 mem2_Bigger:
@@ -512,7 +512,7 @@ mem2_exit:
         pop     eax
         ret
         assume ds:_cwDPMIEMU
-RAWResMemory    endp
+RawResMemory    endp
 
 
 ;-------------------------------------------------------------------------------
@@ -523,7 +523,7 @@ RAWResMemory    endp
 ;
 ;SI:DI  - handle (Base linear address).
 ;
-RAWRelMemory    proc    near
+RawRelMemory    proc    near
         ;
         pushad
         push    ds
@@ -603,7 +603,7 @@ mem3_0: mov     eax,DWORD PTR es:[1024*4096*1022+esi*4]
         dec     ecx
         jnz     mem3_0
         ;
-mem3_1: call    EMUCR3Flush
+mem3_1: call    EmuCR3Flush
         ;
         clc
         jmp     mem3_exit
@@ -622,7 +622,7 @@ mem3_exit:
         popad
         ret
         assume ds:_cwDPMIEMU
-RAWRelMemory    endp
+RawRelMemory    endp
 
 
 ;-------------------------------------------------------------------------------
@@ -696,7 +696,7 @@ mem4_1: add     edx,4096
         dec     ecx
         jnz     mem4_0
 ;
-mem4_2: call    EMUCR3Flush             ;update page cache.
+mem4_2: call    EmuCR3Flush             ;update page cache.
 ;
 mem4_8: clc
         popad
@@ -821,7 +821,7 @@ mem5_3: and     ecx,1           ;put user bits in useful place.
         or      edx,ecx         ;set use flags.
         mov     DWORD PTR es:[edi],edx  ;store this tables address.
         push    edi
-        sub     edi,PageDIRLinear
+        sub     edi,PageDirLinear
         add     edi,PageAliasLinear     ;get alias table address.
         mov     DWORD PTR es:[edi],edx  ;setup in alias table as well.
         pop     edi
@@ -830,7 +830,7 @@ mem5_3: and     ecx,1           ;put user bits in useful place.
         ;
         push    ecx
         push    edi
-        sub     edi,PageDIRLinear
+        sub     edi,PageDirLinear
         shl     edi,10
         add     edi,1024*4096*1023      ;base of page alias's.
         mov     ecx,4096/4
@@ -847,7 +847,7 @@ mem5_3: and     ecx,1           ;put user bits in useful place.
 ;
 ;Now map specified physical address range into place.
 ;
-        sub     edi,PageDIRLinear
+        sub     edi,PageDirLinear
         shl     edi,10          ;start of first page table
         push    edi
         add     edi,1024*4096*1023
@@ -897,7 +897,7 @@ RawUnMapPhys2Lin endp
 
 
 ;-------------------------------------------------------------------------------
-RAWLockMemory   proc    near
+RawLockMemory   proc    near
         ;
         push    eax
         push    ebx
@@ -1074,11 +1074,11 @@ mem7_1:
         pop     eax
         ret
         assume ds:_cwDPMIEMU
-RAWLockMemory   endp
+RawLockMemory   endp
 
 
 ;-------------------------------------------------------------------------------
-RAWUnLockMemory proc near
+RawUnLockMemory proc near
         ;
         push    eax
         push    ebx
@@ -1171,11 +1171,11 @@ mem8_1:
         pop     eax
         ret
         assume ds:_cwDPMIEMU
-RAWUnLockMemory endp
+RawUnLockMemory endp
 
 
 ;=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-RAWGetMemoryMax proc near
+RawGetMemoryMax proc near
 ;
 ;Work out biggest memory block remaining.
 ;
@@ -1398,7 +1398,7 @@ mem9_l9:
         pop     eax
         ret
         assume ds:_cwDPMIEMU
-RAWGetMemoryMax endp
+RawGetMemoryMax endp
 
 
 ;-------------------------------------------------------------------------------
@@ -1451,7 +1451,7 @@ mem10_f0:
 ;
         call    PhysicalGetPages
         cmp     edx,2
-        jc      mem10_virtual
+        jc      mem10_Virtual
 ;
 ;both pages available so go to it.
 ;
@@ -1488,7 +1488,7 @@ mem10_f1:
         dec     ebp             ;update the counter.
         jnz     mem10_f0                ;keep looking.
         clc
-        jmp     mem10_exit              ;All physical so exit.
+        jmp     mem10_Exit              ;All physical so exit.
         ;
 mem10_Virtual:
         ;Virtual memory will be needed so see if we can provide any.
@@ -1644,7 +1644,7 @@ mem10_v4:
         mov     bl,21h
         push    ds
         pop     es
-        call    EMURawSimulateInt       ;move to right place.
+        call    EmuRawSimulateInt       ;move to right place.
         pop     edi
         mov     ah,40h
         mov     bx,VMMHandle            ;get swap file handle.
@@ -1660,11 +1660,11 @@ mem10_v4:
         mov     bl,21h
         push    ds
         pop     es
-        call    EMURawSimulateInt       ;move to right place.
+        call    EmuRawSimulateInt       ;move to right place.
         pop     edi
         pop     ecx
         test    RealRegsStruc.Real_Flags[edi],1
-        jnz     mem10_disk_error
+        jnz     mem10_Disk_Error
         mov     SwapFileLength,ecx
         ;
         xor     cx,cx
@@ -1682,16 +1682,16 @@ mem10_v4:
         mov     bl,21h
         push    ds
         pop     es
-        call    EMURawSimulateInt       ;move to right place.
+        call    EmuRawSimulateInt       ;move to right place.
         pop     edi
         test    RealRegsStruc.Real_Flags[edi],1
-        jnz     mem10_disk_error
+        jnz     mem10_Disk_Error
         mov     edx,RealRegsStruc.Real_EDX[edi]
         mov     eax,RealRegsStruc.Real_EAX[edi]
         shl     edx,16
         mov     dx,ax
         cmp     edx,SwapFileLength
-        jnz     mem10_disk_error
+        jnz     mem10_Disk_Error
         ;
 mem10_Extended:
         ;Update the end of the memory map.
@@ -1870,7 +1870,7 @@ mem11_NoLocking:
         push    es
         push    ds
         pop     es
-        call    EMURawSimulateInt       ;move to right place.
+        call    EmuRawSimulateInt       ;move to right place.
         mov     edi,offset PageInt
         mov     ax,VMMHandle
         mov     RealRegsStruc.Real_EBX[edi],eax
@@ -1882,7 +1882,7 @@ mem11_NoLocking:
         mov     RealRegsStruc.Real_SS[edi],0
         mov     RealRegsStruc.Real_SP[edi],0
         mov     bl,21h
-        call    EMURawSimulateInt       ;read it from disk.
+        call    EmuRawSimulateInt       ;read it from disk.
         pop     es
         test    RealRegsStruc.Real_Flags[edi],1
         jz      mem11_ok
@@ -1910,7 +1910,7 @@ mem11_ok:
         mov     eax,LinearEntry ;get new entry number.
         mov     esi,1024*4096*1023      ;base of page alias's.
         and     DWORD PTR es:[esi+eax*4],0FFFFFFFFh-(3 shl 5)   ;clear accesed & dirty bits.
-        call    EMUCR3Flush
+        call    EmuCR3Flush
         ;
 mem11_NoRead:
         inc     LinearEntry             ;update counter.
@@ -2122,7 +2122,7 @@ mem12_GotPage:
         mov     bl,21h
         push    ds
         pop     es
-        call    EMURawSimulateInt       ;move to right place.
+        call    EmuRawSimulateInt       ;move to right place.
         ;
         test    RealRegsStruc.Real_Flags[edi],1
         stc
@@ -2145,7 +2145,7 @@ mem12_GotPage:
         mov     RealRegsStruc.Real_SS[edi],0
         mov     RealRegsStruc.Real_SP[edi],0
         mov     bl,21h
-        call    EMURawSimulateInt       ;write it to disk.
+        call    EmuRawSimulateInt       ;write it to disk.
         test    RealRegsStruc.Real_Flags[edi],1
         stc
         jnz     mem12_error_anyway
@@ -2172,7 +2172,7 @@ mem12_5:
         and     edx,0FFFFFFFFh-4095     ;lose flag bits.
         shr     ecx,10
         and     ecx,1           ;preserve user flags.
-        call    EMUCR3Flush
+        call    EmuCR3Flush
         ;
         ;Update number of un-locked physical pages present.
         ;
@@ -2445,7 +2445,7 @@ VirtualFault    proc    far
 mem18_Use32Bit3:
         retf
         ;
-mem18_disk_error:
+mem18_Disk_Error:
         jmp     mem18_OldExit
         ;
         assume ds:nothing
@@ -2488,7 +2488,7 @@ mem19_0:
         mov     RealRegsStruc.Real_SS[edi],0
         mov     RealRegsStruc.Real_SP[edi],0
         mov     bl,21h
-        call    EMURawSimulateINT       ;allocate it.
+        call    EmuRawSimulateInt       ;allocate it.
         pop     ecx
         mov     eax,RealRegsStruc.Real_EAX[edi] ;get result.
         mov     ebx,RealRegsStruc.Real_EBX[edi]
@@ -2575,7 +2575,7 @@ mem19_8:
         mov     es:RealRegsStruc.Real_SS[edi],0
         mov     es:RealRegsStruc.Real_SP[edi],0
         mov     bl,21h
-        call    EMURawSimulateINT       ;release it.
+        call    EmuRawSimulateInt       ;release it.
         ;
 mem19_9:
         stc
@@ -2642,7 +2642,7 @@ mem20_Shrink:
         mov     RealRegsStruc.Real_SS[edi],0
         mov     RealRegsStruc.Real_SP[edi],0
         mov     bl,21h
-        call    EMURawSimulateINT
+        call    EmuRawSimulateInt
         mov     eax,RealRegsStruc.Real_EAX[edi]
         mov     ebx,RealRegsStruc.Real_EBX[edi]
         test    RealRegsStruc.Real_Flags[edi],1
@@ -2863,7 +2863,7 @@ mem21_0:
         mov     RealRegsStruc.Real_SS[edi],0
         mov     RealRegsStruc.Real_SP[edi],0
         mov     bl,21h
-        call    EMURawSimulateINT       ;release it.
+        call    EmuRawSimulateInt       ;release it.
         mov     eax,RealRegsStruc.Real_EAX[edi]
         test    RealRegsStruc.Real_Flags[edi],1
         clc

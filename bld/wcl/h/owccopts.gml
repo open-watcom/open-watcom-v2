@@ -113,6 +113,7 @@
 
 :option. b
 :usage. compile and link for <target>
+:argequal. ..
 :id. . <target>
 :target. any
 
@@ -122,6 +123,7 @@
 
 :option. o
 :usage. set output file name
+:argequal. ..
 :file.
 :target. any
 
@@ -129,8 +131,10 @@
 :usage. show sub program invocations
 :target. any
 
-:option. x{c,c++}
+:option. x
 :usage. treat source files as C or C++ code
+:argequal. ..
+:id. . {c,c++}
 :target. any
 
 :cmt
@@ -397,7 +401,7 @@
 :option. std
 :usage. disable/enable extensions
 :group. 3
-:id. . {c89,c99,wc}
+:id. . {c89,c99,ow}
 :target. any
 
 :option. Wall

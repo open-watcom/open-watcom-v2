@@ -2,7 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
-;* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+;* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -300,7 +300,7 @@ around:
         inc     ax                      ; DOS/16M returns -1 in ax
         jz      setup                   ; okay, DOS/16M active
         mov     ah, 9                   ; not DOS/16M, display error
-        mov     dx, offset _text:msg_notPM
+        mov     dx, offset _TEXT:msg_notPM
         push    cs
         pop     ds
         int     21h                     ; with a message

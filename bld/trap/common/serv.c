@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,12 +40,10 @@
   #include <windows.h>
 #endif
 #include "banner.h"
-#include "trptypes.h"
 #include "trpld.h"
 #include "trperr.h"
 #include "packet.h"
 #include "servname.rh"
-#include "tcerr.h"
 #include "servio.h"
 #include "nothing.h"
 
@@ -57,8 +56,7 @@ static bool             OneShot;
 
 void ServError( const char *msg )
 {
-    Output( msg );
-    Output( "\r\n" );
+    OutputLine( msg );
 }
 
 void ServMessage( const char *msg )
@@ -66,46 +64,42 @@ void ServMessage( const char *msg )
     ServError( msg );
 }
 
-static void Initialize( void )
+static const char *ServInitialize( void )
 {
-
     const char  *err;
     char        trapparms[PARMS_MAXLEN];
-    char        cmdline[PARMS_MAXLEN];
+    char        cmd_line[PARMS_MAXLEN];
 
-#define servparms RWBuff
-
-    getcmd( cmdline );
-    ParseCommandLine( cmdline, trapparms, servparms, &OneShot );
-    err = RemoteLink( servparms, true );
-
-#undef servparms
-
+    _bgetcmd( cmd_line, sizeof( cmd_line ) );
+    err = ParseCommandLine( cmd_line, trapparms, RWBuff, &OneShot );
     if( err == NULL ) {
-        err = LoadTrap( trapparms, RWBuff, &TrapVersion );
+        err = RemoteLink( RWBuff, true );
+        if( err == NULL ) {
+            switch( LoadTrap( trapparms, RWBuff, &TrapVersion ) ) {
+            #define DIGS_ERROR(e,t) case e: err = t; break;
+            DIGS_ERRORS( "TRAP Loader: ", RWBuff )
+            #undef DIGS_ERROR
+            default: err = DIGS_ERRORS_default( "TRAP Loader: " ); break;
+            }
+        }
     }
-    if( err != NULL ) {
-        StartupErr( err );
-    }
+    return( err );
 }
 
 static void OpeningStatement( void )
 {
-#if defined( VERSION_ON_EXTRA_LINE )
-    Output( banner1w1( SERVNAME ) "\r\n" );
-    Output( banner1w2( _XXXSERV_VERSION_ ) "\r\n" );
-#else
-    Output( banner1w( SERVNAME, _XXXSERV_VERSION_ ) "\r\n" );
-#endif
-    Output( banner2 "\r\n" );
-    Output( banner2a( 1988 ) "\r\n" );
-    Output( banner3 "\r\n" );
-    Output( banner3a "\r\n" );
+    OutputLine( banner1t( SERVNAME ) );
+    OutputLine( banner1v( _XXXSERV_VERSION_ ) );
+    OutputLine( banner2 );
+    OutputLine( banner2a( 1988 ) );
+    OutputLine( banner3 );
+    OutputLine( banner3a );
 }
 
 int main( int argc, char **argv )
 {
-    char key;
+    char        key;
+    const char  *err;
 
 #ifndef __WATCOMC__
     _argc = argc;
@@ -114,11 +108,14 @@ int main( int argc, char **argv )
     /* unused parameters */ (void)argc; (void)argv;
 #endif
 
-    Initialize();
+    err = ServInitialize();
+    if( err != NULL ) {
+        StartupErr( err );
+        return( 1 );
+    }
     OpeningStatement();
     for( ;; ) {
-        Output( TRP_MSG_press_q );
-        Output( "\r\n" );
+        OutputLine( TRP_MSG_press_q );
         for( ;; ) {
             if( RemoteConnect() )
                 break;
@@ -126,28 +123,31 @@ int main( int argc, char **argv )
             if( KeyPress() ) {
                 key = KeyGet();
                 if( key == 'q' || key == 'Q' ) {
-                    KillTrap();
+                    UnLoadTrap();
                     RemoteUnLink();
-                    SayGNiteGracey( 0 );
+                    ServTerminate( 0 );
+                    // never return
                 }
             }
         }
-        Output( TRP_MSG_session_started );
-        Output( "\r\n\r\n" );
+        OutputLine( TRP_MSG_session_started );
+        OutputLine( "" );
         Session();
 #ifndef NETWARE
         /* flush keyboard input */
         while( KeyPress() )
             KeyGet();
 #endif
-        Output( "\r\n\r\n" );
-        Output( TRP_MSG_session_ended );
-        Output( "\r\n\r\n" );
+        OutputLine( "" );
+        OutputLine( "" );
+        OutputLine( TRP_MSG_session_ended );
+        OutputLine( "" );
         RemoteDisco();
         if( OneShot ) {
-            KillTrap();
+            UnLoadTrap();
             RemoteUnLink();
-            SayGNiteGracey( 0 );
+            ServTerminate( 0 );
+            // never return
         }
     }
     return( 0 );

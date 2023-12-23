@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -87,7 +87,7 @@ static  void    AddGlobalIndex( void )
 
     gblreg = AllocRegName( HW_EBX );
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+        for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             for( i = ins->num_operands; i-- > 0; ) {
                 CheckName( &ins->operands[i], gblreg );
             }
@@ -108,7 +108,7 @@ void    InitZeroPage( void )
 */
 {
     ZPageType = ZP_USES_SS;
-    if( _IsTargetModel( INDEXED_GLOBALS ) ) {
+    if( _IsTargetModel( CGSW_X86_INDEXED_GLOBALS ) ) {
         AddGlobalIndex();
     }
 }

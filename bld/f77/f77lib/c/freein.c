@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -56,7 +56,6 @@ static  void    GetFloat( extended *result, int prec );
 static  void    GetString( void );
 static  void    InCplx( void );
 static  void    InLog( void );
-static  void    FreeIOErr( uint err );
 
 
 static const char *GetDelim( const char *start, const char *buff_end )
@@ -85,7 +84,7 @@ signed_32   GetNum( void )
     bool        minus;
 
     fcb = IOCB->fileinfo;
-    ch = fcb->buffer[ fcb->col ];
+    ch = fcb->buffer[fcb->col];
     minus = false;
     if( ch == '+' ) {
         fcb->col++;
@@ -95,7 +94,7 @@ signed_32   GetNum( void )
     }
     value = 0;
     for(;;) {
-        ch = fcb->buffer[ fcb->col ];
+        ch = fcb->buffer[fcb->col];
         if( isdigit( ch ) == 0 )
             break;
         value = value*10 + ( ch - '0' );
@@ -134,18 +133,24 @@ void    DoFreeIn( void ) {
         if( fcb->col >= fcb->len ) {
             while( IOCB->rptnum-- > 0 ) {
                 FreeIOType();
-                if( IOCB->typ == PT_NOTYPE ) break;
+                if( IOCB->typ == PT_NOTYPE ) {
+                    break;
+                }
             }
         } else {
-            ch = fcb->buffer[ fcb->col ];
-            if( ch == '/' ) break;
+            ch = fcb->buffer[fcb->col];
+            if( ch == '/' )
+                break;
             switch( ch ) {
             case ',':
             case ' ':
                 for(;;) {
                     FreeIOType();
-                    if( IOCB->typ == PT_NOTYPE ) break;
-                    if( IOCB->rptnum-- <= 1 ) break;
+                    if( IOCB->typ == PT_NOTYPE )
+                        break;
+                    if( IOCB->rptnum-- <= 1 ) {
+                        break;
+                    }
                 }
                 fcb->col++;
                 break;
@@ -180,7 +185,7 @@ void    DoFreeIn( void ) {
                 BumpComma();
                 break;
             case '.':
-                ch = toupper( fcb->buffer[ fcb->col + 1 ] );
+                ch = toupper( fcb->buffer[fcb->col + 1] );
                 if( ( ch != 'T' ) && ( ch != 'F' ) ) {
                     InNumber();
                 } else {
@@ -190,8 +195,16 @@ void    DoFreeIn( void ) {
                 BumpComma();
                 break;
             default:
-                FreeIOErr( IO_BAD_CHAR );
-                break;
+                /*
+                 * Report error during list-directed or NAMELIST-directed i/o.
+                 */
+                if( IOCB->flags & NML_DIRECTED ) {
+                    IOCB->flags |= NML_CONTINUE;
+                    RTSuicide();
+                    // never return
+                }
+                IOErr( IO_BAD_CHAR );
+                // never return
             }
         }
     }
@@ -213,7 +226,7 @@ void    BumpComma( void ) {
 
     fcb = IOCB->fileinfo;
     Blanks();
-    if( fcb->buffer[ fcb->col ] == ',' ) {
+    if( fcb->buffer[fcb->col] == ',' ) {
         fcb->col++;
     }
 }
@@ -226,7 +239,7 @@ void    Blanks( void ) {
     char        *buff;
 
     fcb = IOCB->fileinfo;
-    buff = &fcb->buffer[ fcb->col ];
+    buff = &fcb->buffer[fcb->col];
     fcb->col += JmpBlanks( buff ) - buff;
 }
 
@@ -256,12 +269,12 @@ static  void    RptNum( void ) {
     fcb = IOCB->fileinfo;
     col = fcb->col;
     num = GetNum();
-    if( fcb->buffer[ fcb->col ] == '*' ) {
-        if( num > 0 ) {
-            fcb->col++;
-        } else {
+    if( fcb->buffer[fcb->col] == '*' ) {
+        if( num <= 0 ) {
             IOErr( IO_BAD_CHAR );
+            // never return
         }
+        fcb->col++;
     } else {
         fcb->col = col;
         num = 0;
@@ -294,7 +307,7 @@ static  void    InNumber( void ) {
                 break;
             default:
                 IOErr( IO_FREE_MISMATCH );
-                break;
+                // never return
             }
         } else {
             GetInt( &intval );
@@ -310,11 +323,13 @@ static  void    InNumber( void ) {
                 break;
             default:
                 IOErr( IO_FREE_MISMATCH );
-                break;
+                // never return
             }
         }
         FreeIOType();
-        if( ( IOCB->rptnum-- <= 1 ) || ( IOCB->typ == PT_NOTYPE ) ) break;
+        if( ( IOCB->rptnum-- <= 1 ) || ( IOCB->typ == PT_NOTYPE ) ) {
+            break;
+        }
     }
 }
 
@@ -327,7 +342,7 @@ static  void    InLog( void ) {
     char        *chptr;
 
     fcb = IOCB->fileinfo;
-    chptr = &fcb->buffer[ fcb->col ];
+    chptr = &fcb->buffer[fcb->col];
     if( toupper( *chptr ) == 'T' ) {
         value = _LogValue( true );
     } else {
@@ -357,10 +372,12 @@ big_break:
             break;
         default:
             IOErr( IO_FREE_MISMATCH );
-            break;
+            // never return
         }
         FreeIOType();
-        if( ( IOCB->rptnum-- <= 1 ) || ( IOCB->typ == PT_NOTYPE ) ) break;
+        if( ( IOCB->rptnum-- <= 1 ) || ( IOCB->typ == PT_NOTYPE ) ) {
+            break;
+        }
     }
 }
 
@@ -378,16 +395,18 @@ static  void    InCplx( void ) {
     GetFloat( &value.realpart, ( IOCB->typ - PT_CPLX_8 ) );
     Blanks();
     CheckEor();
-    if( fcb->buffer[ fcb->col ] != ',' ) {
+    if( fcb->buffer[fcb->col] != ',' ) {
         IOErr( IO_BAD_CHAR );
+        // never return
     }
     fcb->col++;
     Blanks();
     CheckEor();
     GetFloat( &value.imagpart, ( IOCB->typ - PT_CPLX_8 ) );
     Blanks();
-    if( fcb->buffer[ fcb->col ] != ')' ) {
+    if( fcb->buffer[fcb->col] != ')' ) {
         IOErr( IO_BAD_CHAR );
+        // never return
     }
     fcb->col++;
     rpt = IOCB->rptnum;
@@ -407,10 +426,12 @@ static  void    InCplx( void ) {
             break;
         default:
             IOErr( IO_FREE_MISMATCH );
-            break;
+            // never return
         }
         FreeIOType();
-        if( ( rpt-- <= 1 ) || ( IOCB->typ == PT_NOTYPE ) ) break;
+        if( ( rpt-- <= 1 ) || ( IOCB->typ == PT_NOTYPE ) ) {
+            break;
+        }
     }
 }
 
@@ -423,6 +444,7 @@ static  void    InString( void ) {
     if( IOCB->rptnum == 0 ) {
         if( IOCB->typ != PT_CHAR ) {
             IOErr( IO_FREE_MISMATCH );
+            // never return
         }
         GetString();
         FreeIOType();
@@ -431,11 +453,14 @@ static  void    InString( void ) {
         for(;;) {
             if( IOCB->typ != PT_CHAR ) {
                 IOErr( IO_FREE_MISMATCH );
+                // never return
             }
             IOCB->fileinfo->col = save_col;
             GetString();
             FreeIOType();
-            if( ( IOCB->rptnum-- <= 1 ) || ( IOCB->typ == PT_NOTYPE ) ) break;
+            if( ( IOCB->rptnum-- <= 1 ) || ( IOCB->typ == PT_NOTYPE ) ) {
+                break;
+            }
         }
     }
 }
@@ -458,20 +483,24 @@ static  void    GetString( void ) {
         if( fcb->col >= fcb->len ) {
             CheckEor();
         }
-        if( fcb->buffer[ fcb->col ] == '\'' ) {
+        if( fcb->buffer[fcb->col] == '\'' ) {
             fcb->col++;
-            if( fcb->buffer[ fcb->col ] != '\'' ) break;
+            if( fcb->buffer[fcb->col] != '\'' ) {
+                break;
+            }
         }
         count++;
-        *ptr = fcb->buffer[ fcb->col ];
+        *ptr = fcb->buffer[fcb->col];
         ptr = ptr + sizeof( char );
         fcb->col++;
     }
     if( count == len ) {
         for(;;) {
-            if( fcb->buffer[ fcb->col ] == '\'' ) {
+            if( fcb->buffer[fcb->col] == '\'' ) {
                 fcb->col++;
-                if( fcb->buffer[ fcb->col ] != '\'' ) break;
+                if( fcb->buffer[fcb->col] != '\'' ) {
+                    break;
+                }
             }
             if( fcb->col >= fcb->len ) {
                 CheckEor();
@@ -495,13 +524,15 @@ static  void    GetInt( intstar4 *result ) {
     start = fcb->buffer + fcb->col;
     len = GetDelim( start, fcb->buffer + fcb->len ) - start;
     status = FmtS2I( start, len, false, result, false, NULL );
-    if( status == INT_OK ) {
-        fcb->col += len;
-    } else if( status == INT_INVALID ) {
+    if( status == INT_INVALID ) {
         IOErr( IO_BAD_CHAR );
-    } else {
-        IOErr( IO_IOVERFLOW );
+        // never return
     }
+    if( status != INT_OK ) {
+        IOErr( IO_IOVERFLOW );
+        // never return
+    }
+    fcb->col += len;
 }
 
 
@@ -517,26 +548,14 @@ static  void    GetFloat( extended *result, int prec ) {
     start = fcb->buffer + fcb->col;
     len = GetDelim( start, fcb->buffer + fcb->len ) - start;
     status = FmtS2F( start, len, 0, false, 0, prec, result, false, NULL, false );
-    if( status == FLT_OK ) {
-        fcb->col += len;
-    } else {
-        if( status == FLT_INVALID ) {
-            IOErr( IO_BAD_CHAR );
-        } else { // FLT_RANGE_EXCEEDED
-            IOErr( IO_FRANGE_EXCEEDED );
-        }
+    if( status == FLT_INVALID ) {
+        IOErr( IO_BAD_CHAR );
+        // never return
     }
-}
-
-
-static  void    FreeIOErr( uint err ) {
-//=====================================
-
-// Report error during list-directed or NAMELIST-directed i/o.
-
-    if( IOCB->flags & NML_DIRECTED ) {
-        IOCB->flags |= NML_CONTINUE;
-        RTSuicide();
+    if( status != FLT_OK ) {
+        // FLT_RANGE_EXCEEDED
+        IOErr( IO_FRANGE_EXCEEDED );
+        // never return
     }
-    IOErr( err );
+    fcb->col += len;
 }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -53,70 +53,6 @@ void print_msg( const char *format, ... )
     va_end( args );
 }
 
-char *StrCopy( const char *src, char *dst )
-{
-    while( (*dst = *src) ) {
-        ++src;
-        ++dst;
-    }
-    return( dst );
-}
-
-unsigned TryOnePath( const char *path, struct stat *tmp, const char *name, char *result )
-{
-    char        *end;
-    char        *ptr;
-
-    if( path == NULL ) return( 0 );
-    ptr = result;
-    for( ;; ) {
-        switch( *path ) {
-        case ':':
-        case '\0':
-            if( ptr != result && ptr[-1] != '/' )
-                *ptr++ = '/';
-            end = StrCopy( name, ptr );
-            if( stat( result, tmp ) == 0 )
-                return( end - result );
-            if( *path == '\0' )
-                return( 0 );
-            ptr = result;
-            break;
-        case ' ':
-        case '\t':
-            break;
-        default:
-            *ptr++ = *path;
-            break;
-        }
-        ++path;
-    }
-}
-
-unsigned FindFilePath( int exe, const char *name, char *result )
-{
-    struct stat tmp;
-    unsigned    len;
-    char        *end;
-
-    if( stat( name, &tmp ) == 0 ) {
-        end = StrCopy( name, result );
-        return( end - result );
-    }
-    // TODO: Need to find out how to get at the environment for the
-    //       debug server process (I think!).
-    if( exe ) {
-        return( TryOnePath( getenv( "PATH" ), &tmp, name, result ) );
-    } else {
-        len = TryOnePath( getenv( "WD_PATH" ), &tmp, name, result );
-        if( len != 0 ) return( len );
-        len = TryOnePath( getenv( "HOME" ), &tmp, name, result );
-        if( len != 0 ) return( len );
-        return( TryOnePath( "/usr/watcom/wd", &tmp, name, result ) );
-    }
-    return 0;
-}
-
 trap_retval TRAP_CORE( Read_user_keyboard )( void )
 {
     read_user_keyboard_req  *acc;
@@ -124,7 +60,8 @@ trap_retval TRAP_CORE( Read_user_keyboard )( void )
     fd_set                  rdfs;
     struct timeval          tv;
     struct timeval          *ptv;
-    struct termios          old, new;
+    struct termios          old;
+    struct termios          new;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
@@ -144,10 +81,11 @@ trap_retval TRAP_CORE( Read_user_keyboard )( void )
     tv.tv_sec = acc->wait;
     tv.tv_usec = 0;
     ptv = &tv;
-    if( acc->wait == 0 ) ptv = NULL;
+    if( acc->wait == 0 )
+        ptv = NULL;
 
     ret->key = '\0';
-    if ( select( 1, &rdfs, NULL, NULL, ptv ) )
+    if( select( 1, &rdfs, NULL, NULL, ptv ) )
         read( STDIN_FILENO, &ret->key, 1 );
 
     tcsetattr( STDIN_FILENO, TCSADRAIN, &old );
@@ -168,21 +106,19 @@ trap_retval TRAP_CORE( Get_err_text )( void )
 
 trap_retval TRAP_CORE( Split_cmd )( void )
 {
-    char                *cmd;
-    char                *start;
+    const char          *cmd;
+    const char          *start;
     split_cmd_ret       *ret;
-    trap_elen           len;
+    size_t              len;
 
     cmd = GetInPtr( sizeof( split_cmd_req ) );
     ret = GetOutPtr( 0 );
     ret->parm_start = 0;
     start = cmd;
     len = GetTotalSizeIn() - sizeof( split_cmd_req );
-    while( len != 0 ) {
+    while( len > 0 ) {
         switch( *cmd ) {
-        case '\0':
-        case ' ':
-        case '\t':
+        CASE_SEPS
             ret->parm_start = 1;
             len = 0;
             continue;

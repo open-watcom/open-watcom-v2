@@ -1,41 +1,41 @@
-#                       d16 d32 dpm nt  nta ntp nvc nvl o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
-#===================================================================================================
-!inject conutwnt.obj                nt  nta ntp
-!inject cgets.obj       d16 d32                                         w16 w32
-!inject cgetsos2.obj                                    o16 o32
-!inject cgetsqnx.obj                                            q16 q32
-!inject cgetswnt.obj                nt  nta ntp
-!inject cgetslnx.obj                                                            l32 lpc lmp
-!inject cgetsrdu.obj                                                                        rdu
-!inject cprintf.obj     d16 d32     nt  nta ntp nvc nvl o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu
-!inject cputs.obj       d16 d32     nt  nta ntp nvc nvl o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu
-!inject cscanf.obj      d16 d32     nt  nta ntp nvc nvl o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu
-!inject getch.obj       d16 d32                                         w16 w32
-!inject getchos2.obj                                    o16 o32
-!inject getchqnx.obj                                            q16 q32
-!inject getchlnx.obj                                                            l32 lpc lmp
-!inject getchwnt.obj                nt  nta ntp
-!inject getchrdu.obj                                                                        rdu
-!inject gtche.obj       d16 d32                                         w16 w32
-!inject gtcheos2.obj                                    o16 o32
-!inject gtcheqnx.obj                                            q16 q32
-!inject gtchelnx.obj                                                            l32 lpc lmp
-!inject gtchewnt.obj                nt  nta ntp
-!inject gtcherdu.obj                                                                        rdu
-!inject kbhit.obj       d16 d32                                         w16 w32
-!inject kbhitos2.obj                                    o16 o32
-!inject kbhitqnx.obj                                            q16 q32
-!inject kbhitlnx.obj                                                            l32 lpc lmp
-!inject kbhitwnt.obj                nt  nta ntp
-!inject kbhitrdu.obj                                                                        rdu
-!inject putch.obj       d16 d32                                         w16 w32
-!inject putchos2.obj                                    o16 o32
-!inject putchqnx.obj                                            q16 q32
-!inject putchlnx.obj                                                            l32 lpc lmp
-!inject putchwnt.obj                nt  nta ntp
-!inject putchrdu.obj                                                                        rdu
-!inject ungetch.obj     d16 d32     nt  nta ntp         o16 o32 q16 q32 w16 w32 l32 lpc lmp
-!inject ungetrdu.obj                                                                        rdu
+#                       d16 d32 dpm nt  nta ntp ntm nvc nvl o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
+#=======================================================================================================
+!inject conutwnt.obj                nt  nta ntp ntm
+!inject cgets.obj       d16 d32                                             w16 w32
+!inject cgetsos2.obj                                        o16 o32
+!inject cgetsqnx.obj                                                q16 q32
+!inject cgetswnt.obj                nt  nta ntp ntm
+!inject cgetslnx.obj                                                                l32 lpc lmp
+!inject cgetsrdu.obj                                                                            rdu
+!inject cprintf.obj     d16 d32     nt  nta ntp ntm nvc nvl o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu
+!inject cputs.obj       d16 d32     nt  nta ntp ntm nvc nvl o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu
+!inject cscanf.obj      d16 d32     nt  nta ntp ntm nvc nvl o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu
+!inject getch.obj       d16 d32                                             w16 w32
+!inject getchos2.obj                                        o16 o32
+!inject getchqnx.obj                                                q16 q32
+!inject getchlnx.obj                                                                l32 lpc lmp
+!inject getchwnt.obj                nt  nta ntp ntm
+!inject getchrdu.obj                                                                            rdu
+!inject gtche.obj       d16 d32                                             w16 w32
+!inject gtcheos2.obj                                        o16 o32
+!inject gtcheqnx.obj                                                q16 q32
+!inject gtchelnx.obj                                                                l32 lpc lmp
+!inject gtchewnt.obj                nt  nta ntp ntm
+!inject gtcherdu.obj                                                                            rdu
+!inject kbhit.obj       d16 d32                                             w16 w32
+!inject kbhitos2.obj                                        o16 o32
+!inject kbhitqnx.obj                                                q16 q32
+!inject kbhitlnx.obj                                                                l32 lpc lmp
+!inject kbhitwnt.obj                nt  nta ntp ntm
+!inject kbhitrdu.obj                                                                            rdu
+!inject putch.obj       d16 d32                                             w16 w32
+!inject putchos2.obj                                        o16 o32
+!inject putchqnx.obj                                                q16 q32
+!inject putchlnx.obj                                                                l32 lpc lmp
+!inject putchwnt.obj                nt  nta ntp ntm
+!inject putchrdu.obj                                                                            rdu
+!inject ungetch.obj     d16 d32     nt  nta ntp ntm         o16 o32 q16 q32 w16 w32 l32 lpc lmp
+!inject ungetrdu.obj                                                                            rdu
 
 !include ../../../../objlist.mif
 

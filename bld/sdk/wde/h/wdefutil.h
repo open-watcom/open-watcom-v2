@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -66,15 +67,15 @@ extern bool     WdeFindSubObjects( SUBOBJ_REQUEST *, LIST **, LIST * );
 extern void     WdeDisableChildWindows( HWND );
 extern bool     WdeProcessMouse( HWND, UINT, WPARAM, LPARAM );
 extern bool     WdeControlDefine( WdeDefineObjectInfo * );
-extern bool     WdeProcessSymbolCombo( HWND, UINT, WPARAM, LPARAM, WdeHashTable *, uint_16, bool );
-extern bool     WdeProcessHelpSymbolCombo( HWND, UINT, WPARAM, LPARAM, WdeHashTable *, uint_32, bool );
+extern bool     WdeProcessSymbolCombo( HWND, UINT, WPARAM, LPARAM, WRHashTable *, uint_16, bool );
+extern bool     WdeProcessHelpSymbolCombo( HWND, UINT, WPARAM, LPARAM, WRHashTable *, uint_32, bool );
 extern void     WdeSetDefineObjectSymbolInfo( WdeDefineObjectInfo *, HWND );
 extern void     WdeGetDefineObjectSymbolInfo( WdeDefineObjectInfo *, HWND );
 extern void     WdeGetDefineObjectHelpSymbolInfo( WdeDefineObjectInfo *, HWND );
 extern void     WdeMapWindowRect( HWND, HWND, RECT * );
 extern bool     WdeIsStrSpace( char * );
 extern bool     WdeWinStylesHook( HWND, UINT, WPARAM, LPARAM, DialogStyle );
-extern void     WdeAddSymbolToObjectHashTable( WdeResInfo *, char *, WdeHashValue );
+extern void     WdeAddSymbolToObjectHashTable( WdeResInfo *, char *, WRHashValue );
 
 extern void     WdeEXSetDefineInfo( WdeDefineObjectInfo *, HWND );
 extern void     WdeEXGetDefineInfo( WdeDefineObjectInfo *, HWND );

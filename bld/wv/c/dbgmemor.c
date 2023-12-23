@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -67,7 +68,7 @@ void ChangeMemUndoable( address addr, const void *data, size_t size )
         end = TxtBuff + TXT_LEN;
         p = Format( TxtBuff, "%s %A", GetCmdName( CMD_MODIFY ), addr );
         for( ; size > 0 && p < end - ( 2 + 8 ); --size ) {
-            p = StrCopy( ", ", p );
+            p = StrCopyDst( ", ", p );
             p = CnvULong( *(unsigned char *)data, p, end - p );
             data = (char *)data + 1;
         }

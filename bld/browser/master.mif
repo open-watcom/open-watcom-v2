@@ -1,14 +1,16 @@
-proj_name = browse
+proj_name = browser
 
-!ifndef browse_autodepends
-browse_autodepends = .AUTODEPEND
+!ifndef browser_autodepends
+browser_autodepends = .AUTODEPEND
 !endif
 
-browse_trmem = 1
+browser_trmem = 1
 
 docs_host_dir = $(docs_dir)/$(host_os)
 
+!ifneq nowgml 1
 additional_clean = $(docs_host_dir)/wbrw.gh
+!endif
 
 .extensions: .gpp
 
@@ -38,18 +40,21 @@ inc_dirs = -I"../h" -I"../brg/h" -I"../gen" $(wclass_inc_dirs) -I"$(docs_host_di
     $(dwarfr_inc_dirs) -I"$(posix_dir)/h" -I"$(editdll_dir)"
 
 extra_cpp_flags = -DNOPERSIST=1
-!ifeq release 0
+!ifneq debug 0
 extra_cpp_flags += -DDEBUG=1 -DDEBUG_ASSERT=1 -DDEBUGTREE=1
 !endif
 !ifeq use_virtmem 1
 extra_cpp_flags += -DUSE_VIRTMEM
+!endif
+!ifeq nowgml 1
+extra_cpp_flags += -DNOWGML
 !endif
 
 extra_cpp_flags_rxwrap = -DALLOC=WBRAlloc
 extra_cpp_flags_brmem  = $(trmem_cpp_flags)
 
 extra_cxx_flags = -ew -xs
-!ifdef gen_browse_file
+!ifdef gen_browser_file
 extra_cxx_flags += -db
 !endif
 
@@ -78,13 +83,12 @@ extra_l_flags   += op show,art,static
 extra_l_flags_dos = op stub=$(pharlap)stub386.exe
 extra_l_flags_win = op packdata=48k seg CLASS CODE FIXED, CLASS FAR_DATA FIXED, CLASS DATA FIXED
 extra_l_flags_nt_axp = op undefsok
-extra_l_flags_nt = $(extra_l_flags_nt_$(host_cpu))
 extra_l_flags_os2 =
 
 # explicit rules
 #################
 
-!ifdef gen_browse_file
+!ifdef gen_browser_file
 ext = mbr
 mbr_files = $+$(template)$-
 !endif
@@ -92,14 +96,16 @@ mbr_files = $+$(template)$-
 ext = obj
 objs      = $+$(template)$- rxwrap.obj brmem.obj $(trmem_objs)
 
-!ifeq release 0
+!ifneq debug 0
 objs_dbg  = debuglog.obj
 !endif
 
 #
 # EXE
 #
+!ifneq nowgml 1
 exetarg_prebuild_objs = $(docs_host_dir)/wbrw.gh
+!endif
 exetarg_objs          = $(objs) $(objs_dbg)
 exetarg_libs_dos      = $(ui_lib)
 exetarg_libs          = $(gui_lib) $(exetarg_libs_$(host_os)) $(dwarfr_lib) $(wclass_lib)
@@ -110,7 +116,7 @@ exetarg_nt_manif_386  = ntmanif.res
 exetarg_nt_manif_x64  = ntmanif.res
 exetarg_name          = wbrw
 !include exetarg.mif
-!ifdef gen_browse_file
+!ifdef gen_browser_file
     $(noecho)%create browser.wbr
     @for %i in ($(mbr_files)) do @%append browser.wbr file %i
 !endif
@@ -143,8 +149,8 @@ $(docs_host_dir) : .SYMBOLIC
     $(noecho)cd $@
 
 $(docs_host_dir)/wbrw.gh : $(docs_host_dir) .ALWAYS
-    $(noecho)!$(nested_wmake) -h -f ../mif/onebook.mif hbook=wbrw header=1 dotarget=$(host_os)
-    $(noecho)cd $(curr_dir)
+    $(noecho)!$(nested_wmake) -h -f ../mif/master.mif hbook=wbrw header=1 dotarget=$(host_os) tree_depth=2
+    $(noecho)cd "$(curr_dir)"
 
 # implicit rules
 #################

@@ -1,10 +1,11 @@
 #pmake: build lcl os_rdos cpu_386 trap x86
 
+tree_depth = 5
+
 host_os  = rdos
 host_cpu = 386
 
 target_cpu = x86
-target_os  = rdos
 
 #
 # Create the RDOS STD.DLL
@@ -35,10 +36,8 @@ extra_objs = &
         supp.obj &
         core.obj
 
-inc_dirs += -I"$(trap_dir)/lcl/dos/h" -I"$(clib_dir)/h"
+extra_incs = -I"$(clib_dir)/h"
 
+!include $(trap_dir)/lcl/rdos/rdos.mif
 !include $(trap_dir)/lcl/lcl.mif
 !include $(trap_dir)/master.mif
-
-globals.obj :: ../h/globals.h
-

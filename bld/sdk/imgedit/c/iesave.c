@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -118,7 +118,7 @@ static bool writeDataInPieces( BITMAPINFO *bmi, FILE *fp, img_node *node )
 /*
  * writeDataInPiecesData
  */
-static bool writeDataInPiecesData( BITMAPINFO *bmi, BYTE **data, size_t *size, img_node *node )
+static bool writeDataInPiecesData( BITMAPINFO *bmi, char **data, size_t *size, img_node *node )
 {
     HDC         hdc;
     HDC         memdc;
@@ -343,7 +343,7 @@ static bool saveBitmapFile( img_node *node )
 /*
  * SaveBitmapToData - get the bitmap data and save into a block of memory
  */
-bool SaveBitmapToData( img_node *node, BYTE **data, size_t *size )
+bool SaveBitmapToData( img_node *node, char **data, size_t *size )
 {
     BITMAPFILEHEADER    bmfh;
     BITMAPINFO          *bmi;
@@ -607,7 +607,7 @@ static int getSaveImgDataLength( img_node *node, an_img_file *img_file,
 /*
  * SaveImgToData
  */
-bool SaveImgToData( img_node *node, BYTE **data, size_t *size )
+bool SaveImgToData( img_node *node, char **data, size_t *size )
 {
     an_img_file         *img_file;
     an_img_resource     img_res;
@@ -817,7 +817,7 @@ static bool createNewImageLNODE( img_node *node, uint_16 type )
  */
 static bool saveResourceFile( img_node *node )
 {
-    BYTE            *data;
+    char            *data;
     size_t          size = 0;
     uint_16         type;
     WRFileType      save_type = 0;

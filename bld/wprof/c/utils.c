@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -82,6 +82,9 @@
 #endif
 #define HELP_NAME  "WWINHELP"
 
+#define QQSTR(x)    # x
+#define QSTR(x)     QQSTR(x)
+
 char   *HelpPathList = NULL;
 char   *FilePathList = NULL;
 char   *DipExePathList = NULL;
@@ -149,32 +152,45 @@ char *FindHelpFile( char *fullname, const char *help_name )
     return( fullname );
 }
 
-#if defined( __UNIX__ ) || defined( __DOS__ )
-FILE *DIGLoader( Open )( const char *name, size_t name_len, const char *ext, char *result, size_t max_result )
-/************************************************************************************************************/
+size_t DIGLoader( Find )( dig_filetype ftype, const char *base_name, size_t base_name_len,
+                                const char *defext, char *filename, size_t filename_maxlen )
+/******************************************************************************************/
 {
-    char        realname[ _MAX_PATH2 ];
-    char        *filename;
-    FILE        *fp;
+    char        fname[_MAX_PATH2];
+    char        buffer[_MAX_PATH2];
+    char        *p;
+    size_t      len;
 
-    /* unused parameters */ (void)max_result;
+    /* unused parameters */ (void)ftype;
 
-    memcpy( realname, name, name_len );
-    realname[name_len] = '\0';
-    if( ext != NULL && *ext != NULLCHAR ) {
-        pgroup2     pg;
-
-        _splitpath2( realname, pg.buffer, NULL, NULL, &pg.fname, NULL );
-        _makepath( realname, NULL, NULL, pg.fname, ext );
+    if( base_name_len == 0 )
+        base_name_len = strlen( base_name );
+    strncpy( fname, base_name, base_name_len );
+    strcpy( fname + base_name_len, defext );
+    p = findFile( buffer, fname, FilePathList );
+    if( p == NULL ) {
+        p = findFile( buffer, fname, DipExePathList );
+        if( p == NULL ) {
+            p = "";
+        }
     }
-    filename = findFile( result, realname, FilePathList );
-    if( filename == NULL ) {
-        filename = findFile( result, realname, DipExePathList );
+    len = strlen( p );
+    if( filename_maxlen > 0 ) {
+        filename_maxlen--;
+        if( filename_maxlen > len )
+            filename_maxlen = len;
+        if( filename_maxlen > 0 )
+            strncpy( filename, p, filename_maxlen );
+        filename[filename_maxlen] = '\0';
     }
-    fp = NULL;
-    if( filename != NULL )
-        fp = fopen( filename, "rb" );
-    return( fp );
+    return( len );
+}
+
+#if defined( __UNIX__ ) || defined( __DOS__ )
+FILE *DIGLoader( Open )( const char *filename )
+/*********************************************/
+{
+    return( fopen( filename, "rb" ) );
 }
 
 int DIGLoader( Read )( FILE *fp, void *buff, size_t len )
@@ -209,7 +225,7 @@ static char *AddPath( char *old_list, const char *path_list )
         } else {
             old_len = strlen( old_list );
             new_list = ProfAlloc( old_len + 1 + len + 1 );
-            memcpy( new_list, old_list, old_len );
+            strcpy( new_list, old_list );
             ProfFree( old_list );
             p = new_list + old_len;
         }
@@ -234,6 +250,13 @@ void InitPaths( void )
 
     watcom_setup_env();
 
+#ifdef BLDVER
+    env = getenv( "WD_PATH" QSTR( BLDVER ) );
+    FilePathList = AddPath( FilePathList, env );
+  #if defined(__UNIX__)
+    DipExePathList = AddPath( DipExePathList, env );
+  #endif
+#endif
     env = getenv( PATH_NAME );
     FilePathList = AddPath( FilePathList, env );
     HelpPathList = AddPath( HelpPathList, env );
@@ -267,7 +290,7 @@ void Ring( void )
 /***************/
 {
 #if defined( __DOS__ )
-    _BIOSVideoRingBell( BIOSData( BDATA_ACT_VPAGE, unsigned char ) );
+    _BIOSVideoRingBell( BIOSData( BDATA_ACTIVE_VIDEO_PAGE, unsigned char ) );
 #elif defined( __WINDOWS__ ) || defined( __NT__ )
     MessageBeep( 0 );
 #elif defined( __QNX__ ) || defined( __LINUX__ )
@@ -277,22 +300,18 @@ void Ring( void )
 #endif
 }
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 void AssertionFailed( char * file, unsigned line )
 /************************************************/
 {
     pgroup2     pg;
-    char        buff[ 13 + _MAX_FNAME ];
-    size_t      size;
+    char        buff[13 + _MAX_FNAME];
 
     _splitpath2( file, pg.buffer, NULL, NULL, &pg.fname, NULL ); /* _MAX_FNAME */
-    size = strlen( pg.fname );
-    memcpy( buff, pg.fname, size );
-    buff[size] = ' ';                                   /*   1 */
-    utoa( line, &buff[size + 1], 10 );                  /*  10 */
-                                                        /* '\0' + 1 */
-                                                        /* --- */
-                                                        /*  12+_MAX_FNAME */
+    sprintf( buff, "%s %u", pg.fname, line );   /*  10 */
+                                                /* '\0' + 1 */
+                                                /* --- */
+                                                /*  12+_MAX_FNAME */
     fatal( LIT( Assertion_Failed ), buff );
 }
 #endif

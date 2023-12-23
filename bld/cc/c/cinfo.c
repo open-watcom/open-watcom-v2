@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,6 +45,10 @@
 #include "clibext.h"
 
 
+#define FIRST_USER_SEGMENT      10000
+
+#define CONSTANT( decl_flags )  ((decl_flags & MASK_CV_QUALIFIERS) == FLAG_CONST)
+
 typedef struct user_seg {
     struct user_seg *next;
     char            *name;
@@ -59,10 +63,16 @@ typedef struct user_seg {
 } user_seg;
 
 typedef struct seg_name {
-    char            *name;
+    const char      *name;
     segment_id      segid;
     SYM_HANDLE      sym_handle;
 } seg_name;
+
+typedef struct spc_info {
+    const char      *name;
+    const char      *class_name;
+    seg_type        segtype;
+} spc_info;
 
 static seg_name Predefined_Segs[] = {
     { "_CODE",      SEG_CODE,       SYM_NULL },
@@ -71,7 +81,28 @@ static seg_name Predefined_Segs[] = {
     { "_STACK",     SEG_STACK,      SYM_NULL },
 };
 
-#define FIRST_USER_SEGMENT      10000
+static const spc_info InitFiniSegs[][3] = {
+    {
+        { TS_SEG_TIB, "DATA",           SEGTYPE_INITFINI },
+        { TS_SEG_TI,  "DATA",           SEGTYPE_INITFINI },
+        { TS_SEG_TIE, "DATA",           SEGTYPE_INITFINI }
+    },
+    {
+        { TS_SEG_XIB, "DATA",           SEGTYPE_INITFINI },
+        { TS_SEG_XI,  "DATA",           SEGTYPE_INITFINI },
+        { TS_SEG_XIE, "DATA",           SEGTYPE_INITFINI }
+    },
+    {
+        { TS_SEG_YIB, "DATA",           SEGTYPE_INITFINI },
+        { TS_SEG_YI,  "DATA",           SEGTYPE_INITFINI },
+        { TS_SEG_YIE, "DATA",           SEGTYPE_INITFINI }
+    },
+    {
+        { TS_SEG_TLSB, TS_SEG_TLS_CLASS,SEGTYPE_INITFINITR },
+        { TS_SEG_TLS,  TS_SEG_TLS_CLASS,SEGTYPE_INITFINITR },
+        { TS_SEG_TLSE, TS_SEG_TLS_CLASS,SEGTYPE_INITFINITR }
+    }
+};
 
 static user_seg     *userSegments;
 static segment_id   userSegId;
@@ -82,9 +113,12 @@ static segment_id   import_near_segid = SEG_NULL;       /* data seg # for -nd op
 void AssignSeg( SYMPTR sym )
 {
     SetFarHuge( sym, true );
-    if( (sym->attribs.stg_class == SC_AUTO) || (sym->attribs.stg_class == SC_REGISTER)
-     || (sym->attribs.stg_class == SC_TYPEDEF) ) {
-        /* if stack/register var, there is no segment */
+    if( (sym->attribs.stg_class == SC_AUTO)
+      || (sym->attribs.stg_class == SC_REGISTER)
+      || (sym->attribs.stg_class == SC_TYPEDEF) ) {
+        /*
+         * if stack/register var, there is no segment
+         */
         sym->u.var.segid = SEG_NULL;
     } else if( sym->attribs.stg_class != SC_EXTERN ) {  /* if not imported */
         if( (sym->flags & SYM_INITIALIZED) == 0 ) {
@@ -107,24 +141,25 @@ void AssignSeg( SYMPTR sym )
 
 void SetFarHuge( SYMPTR sym, bool report )
 {
+#if _INTEL_CPU
     TYPEPTR             typ;
     type_modifiers      attrib;
     target_size         size;
 
-#if _CPU != 8086
+  #if _CPU != 8086
     /* unused parameters */ (void)report;
-#endif
+  #endif
 
-#if _CPU == 8086
+  #if _CPU == 8086
     if( sym->attribs.declspec == DECLSPEC_DLLIMPORT
       || sym->attribs.declspec == DECLSPEC_DLLEXPORT ) {
         sym->mods |= FLAG_FAR;
     } else if( sym->mods & FLAG_EXPORT ) {
         sym->mods |= FLAG_FAR;
     }
-#endif
+  #endif
     size = SizeOfArg( sym->sym_type );
-    if( TargetSwitches & BIG_DATA ) {
+    if( TargetSwitches & CGSW_X86_BIG_DATA ) {
         attrib = sym->mods;
         if( (attrib & MASK_ALL_MEM_MODELS) == 0 ) {
             if( size == 0 ) {   /* unspecified array size */
@@ -136,31 +171,31 @@ void SetFarHuge( SYMPTR sym, bool report )
                 }
             } else if( size > DataThreshold ) {
                 attrib |= FLAG_FAR;
-            } else if( CompFlags.strings_in_code_segment && ( sym->mods & FLAG_CONST ) ) {
+            } else if( CompFlags.strings_in_code_segment && (sym->mods & FLAG_CONST) ) {
                 attrib |= FLAG_FAR;
             }
-#if _CPU == 8086
+  #if _CPU == 8086
             if( (attrib & FLAG_FAR) && size > 0x10000 ) {
                 attrib &= ~FLAG_FAR;
                 attrib |= FLAG_HUGE;
             }
-#endif
+  #endif
             sym->mods = attrib;
         }
     }
-#if _CPU == 8086
+  #if _CPU == 8086
    if( report && size > 0x10000 && (sym->mods & FLAG_HUGE) == 0 ) {
         SetErrLoc( &sym->src_loc );
         CErr1( ERR_VAR_TOO_LARGE );
         InitErrLoc();
    }
+  #endif
+#else /* _RISC_CPU */
+
+    /* unused parameters */ (void)sym; (void)report;
+
 #endif
 }
-
-
-#define CONSTANT( decl_flags ) ( (decl_flags & MASK_CV_QUALIFIERS) == FLAG_CONST )
-
-
 
 static fe_attr FESymAttr( SYMPTR sym )
 /************************************/
@@ -269,17 +304,18 @@ void SetSegment( SYMPTR sym )
     segment_list        *seg;
     target_size         size;
 
-#if _CPU == 8086
+#if _INTEL_CPU
+  #if _CPU == 8086
     if( (sym->mods & FLAG_FAR) && CompFlags.zc_switch_used ) {
         if( CONSTANT( sym->mods )
-        || (sym->attribs.stg_class == SC_STATIC && (sym->flags & SYM_TEMP)) ) {
+          || (sym->attribs.stg_class == SC_STATIC && (sym->flags & SYM_TEMP)) ) {
             sym->u.var.segid = SEG_CODE;
             return;
         }
     }
-#elif _CPU == 386
+  #else /* _CPU == 386 */
     if( !CompFlags.rent ) {
-        if( (sym->mods & FLAG_FAR) || (TargetSwitches & FLAT_MODEL) ) {
+        if( (sym->mods & FLAG_FAR) || (TargetSwitches & CGSW_X86_FLAT_MODEL) ) {
            if( CONSTANT( sym->mods ) && CompFlags.zc_switch_used ) {
                 sym->u.var.segid = SEG_CODE;
                 return;
@@ -290,8 +326,9 @@ void SetSegment( SYMPTR sym )
             }
          }
      }
+  #endif
 #endif
-    if( sym->mods & ( FLAG_FAR | FLAG_HUGE ) ) {
+    if( sym->mods & (FLAG_FAR | FLAG_HUGE) ) {
         size = SizeOfArg( sym->sym_type );
         seg = NULL;
 #if _CPU == 8086
@@ -343,47 +380,26 @@ static user_seg *AllocUserSeg( const char *segname, const char *class_name, seg_
 
     useg = CMemAlloc( sizeof( user_seg ) );
     useg->next = NULL;
-    useg->name = CStrSave( segname );
+    useg->name = CMemStrDup( segname );
     useg->class_name = NULL;
     useg->segtype = segtype;
     if( class_name != NULL ) {
-        useg->class_name = CStrSave( class_name );
+        useg->class_name = CMemStrDup( class_name );
     }
     useg->segid = userSegId++;
     return( useg );
 }
 
-struct spc_info {
-    char        *name;
-    char        *class_name;
-    seg_type    segtype;
-};
-
-static struct spc_info InitFiniSegs[] = {
-    { TS_SEG_TIB, "DATA",           SEGTYPE_INITFINI },
-    { TS_SEG_TI,  "DATA",           SEGTYPE_INITFINI },
-    { TS_SEG_TIE, "DATA",           SEGTYPE_INITFINI },
-    { TS_SEG_XIB, "DATA",           SEGTYPE_INITFINI },
-    { TS_SEG_XI,  "DATA",           SEGTYPE_INITFINI },
-    { TS_SEG_XIE, "DATA",           SEGTYPE_INITFINI },
-    { TS_SEG_YIB, "DATA",           SEGTYPE_INITFINI },
-    { TS_SEG_YI,  "DATA",           SEGTYPE_INITFINI },
-    { TS_SEG_YIE, "DATA",           SEGTYPE_INITFINI },
-    { TS_SEG_TLSB, TS_SEG_TLS_CLASS,SEGTYPE_INITFINITR },
-    { TS_SEG_TLS,  TS_SEG_TLS_CLASS,SEGTYPE_INITFINITR },
-    { TS_SEG_TLSE, TS_SEG_TLS_CLASS,SEGTYPE_INITFINITR },
-};
-
-static struct spc_info *InitFiniLookup( const char *name )
+static const spc_info *InitFiniLookup( const char *name )
 {
     int     i;
-    size_t  len;
+    int     j;
 
-    len = strlen( name ) + 1;
-    for( i = 0; i < ARRAY_SIZE( InitFiniSegs ); ++i ) {
-        if( memcmp( InitFiniSegs[i].name, name, len ) == 0 ) {
-            i = (i / 3) * 3;
-            return( &InitFiniSegs[i] );
+    for( j = 0; j < ARRAY_SIZE( InitFiniSegs ); j++ ) {
+        for( i = 0; i < ARRAY_SIZE( InitFiniSegs[0] ); i++ ) {
+            if( strcmp( InitFiniSegs[j][i].name, name ) == 0 ) {
+                return( &InitFiniSegs[j][0] );
+            }
         }
     }
     return( NULL );
@@ -393,16 +409,15 @@ static struct spc_info *InitFiniLookup( const char *name )
 static segment_id AddSeg( const char *segname, const char *class_name, int segtype )
 {
     int             i;
-    user_seg        *useg, **lnk;
+    user_seg        *useg;
+    user_seg        **lnk;
 #if _INTEL_CPU
     hw_reg_set      reg;
     const char      *p;
 #endif
-    size_t          len;
 
-    len = strlen( segname ) + 1;
     for( i = 0; i < ARRAY_SIZE( Predefined_Segs ); i++ ) {
-        if( memcmp( segname, Predefined_Segs[i].name, len ) == 0 ) {
+        if( strcmp( segname, Predefined_Segs[i].name ) == 0 ) {
             return( Predefined_Segs[i].segid );
         }
     }
@@ -410,15 +425,31 @@ static segment_id AddSeg( const char *segname, const char *class_name, int segty
     HW_CAsgn( reg, HW_EMPTY );
     for( p = segname; *p != '\0'; ++p ) {
         if( *p == ':' ) {
-            reg = PragRegName( segname, p - segname );
+            char        buffer[REG_BUFF_SIZE];
+            const char  *p1;
+            size_t      len;
+
+            p1 = SkipUnderscorePrefix( segname );
+            if( p1 == NULL ) {
+                /*
+                 * error missing underscore prefix
+                 */
+                PragRegNameErr( segname );
+                p1 = segname;
+            }
+            len = 0;
+            while( p1 != p && len < ( sizeof( buffer ) - 1 ) ) {
+                buffer[len++] = *p1++;
+            }
+            buffer[len] = '\0';
+            reg = PragRegName( buffer );
             segname = p + 1;
-            len = strlen( segname ) + 1;
             break;
         }
     }
 #endif
     for( lnk = &userSegments; (useg = *lnk) != NULL; lnk = &useg->next ) {
-        if( memcmp( segname, useg->name, len ) == 0 ) {
+        if( strcmp( segname, useg->name ) == 0 ) {
             return( useg->segid ); /* was return( segment ) */
         }
     }
@@ -434,14 +465,15 @@ static segment_id AddSeg( const char *segname, const char *class_name, int segty
 
 segment_id AddSegName( const char *segname, const char *class_name, int segtype )
 {
-    struct spc_info     *initfini;
-    segment_id          segid;
+    const spc_info  *initfini;
+    segment_id      segid;
+    int             i;
 
     initfini = InitFiniLookup( segname );
     if( initfini != NULL ) {
-        AddSeg( initfini[0].name, initfini[0].class_name, initfini[0].segtype );
-        AddSeg( initfini[1].name, initfini[1].class_name, initfini[1].segtype );
-        AddSeg( initfini[2].name, initfini[2].class_name, initfini[2].segtype );
+        for( i = 0; i < ARRAY_SIZE( InitFiniSegs[0] ); i++ ) {
+            AddSeg( initfini[i].name, initfini[i].class_name, initfini[i].segtype );
+        }
     }
     segid = AddSeg( segname, class_name, segtype );
     return( segid );
@@ -502,9 +534,13 @@ char *SegClassName( segment_id segid )
     }
     for( tseg = TextSegList; tseg != NULL; tseg = tseg->next ) {
         if( tseg->segid == segid )  {
-            // class name appears after the segment name
+            /*
+             * class name appears after the segment name
+             */
             classname = tseg->segname + tseg->class;
-            // if class name not specified, then use the default
+            /*
+             * if class name not specified, then use the default
+             */
             if( *classname == '\0' )
                 classname = CodeClassName;
             return( classname );
@@ -617,9 +653,11 @@ void    SetSegs( void )
     for( useg = userSegments; useg != NULL ; useg = useg->next ) {
         segid = useg->segid;
         switch( useg->segtype ) {
-//      case SEGTYPE_CODE:
-//          BEDefSeg( segid, INIT | GLOBAL | EXEC, useg->name, 1 );
-//          break;
+#if 0
+        case SEGTYPE_CODE:
+            BEDefSeg( segid, INIT | GLOBAL | EXEC, useg->name, 1 );
+            break;
+#endif
         case SEGTYPE_DATA:  /* created through #pragma data_seg */
             BEDefSeg( segid, INIT | GLOBAL, useg->name, SegAlign( TARGET_INT ) );
             break;
@@ -704,40 +742,40 @@ const char *FEName( CGSYM_HANDLE cgsym_handle )
 }
 
 
-void FEMessage( int class, CGPOINTER parm )
-/*****************************************/
+void FEMessage( fe_msg femsg, CGPOINTER parm )
+/********************************************/
 {
     char    msgtxt[80];
     char    msgbuf[MAX_MSG_LEN];
 
-    switch( class ) {
-    case MSG_SYMBOL_TOO_LONG:
+    switch( femsg ) {
+    case FEMSG_SYMBOL_TOO_LONG:
         {
             SYM_ENTRY   *sym;
 
             sym = SymGetPtr( (SYM_HANDLE)parm );
             SetErrLoc( &sym->src_loc );
-            CWarn2p( WARN_SYMBOL_NAME_TOO_LONG, ERR_SYMBOL_NAME_TOO_LONG, sym->name );
+            CWarn2p( ERR_SYMBOL_NAME_TOO_LONG, sym->name );
             InitErrLoc();
         }
         break;
-    case MSG_BLIP:
+    case FEMSG_BLIP:
         if( GlobalCompFlags.ide_console_output ) {
             if( !CompFlags.quiet_mode ) {
                 ConBlip();
             }
         }
         break;
-    case MSG_INFO:
-    case MSG_INFO_FILE:
-    case MSG_INFO_PROC:
+    case FEMSG_INFO:
+    case FEMSG_INFO_FILE:
+    case FEMSG_INFO_PROC:
         if( GlobalCompFlags.ide_console_output ) {
             if( !CompFlags.quiet_mode ) {
                 NoteMsg( parm );
             }
         }
         break;
-    case MSG_CODE_SIZE:
+    case FEMSG_CODE_SIZE:
         if( GlobalCompFlags.ide_console_output ) {
             if( !CompFlags.quiet_mode ) {
                 CGetMsg( msgtxt, PHRASE_CODE_SIZE );
@@ -746,54 +784,56 @@ void FEMessage( int class, CGPOINTER parm )
             }
         }
         break;
-    case MSG_DATA_SIZE:
+    case FEMSG_DATA_SIZE:
         break;
-    case MSG_ERROR:
-        CErr2p( ERR_USER_ERROR_MSG, parm );
+    case FEMSG_ERROR:
+        CErr2p( ERR_INTERNAL_ERROR_MSG, parm );
         break;
-    case MSG_FATAL:
+    case FEMSG_FATAL:
         CErr2p( ERR_FATAL_ERROR, parm );
         CloseFiles();       /* get rid of temp file */
         MyExit( 1 );        /* exit to DOS do not pass GO */
         break;
-    case MSG_BAD_PARM_REGISTER:
-        /* this will be issued after a call to CGInitCall or CGProcDecl */
+    case FEMSG_BAD_PARM_REGISTER:
+        /*
+         * this will be issued after a call to CGInitCall or CGProcDecl
+         */
         CErr2( ERR_BAD_PARM_REGISTER, (int)(pointer_uint)parm );
         break;
-    case MSG_BAD_RETURN_REGISTER:
+    case FEMSG_BAD_RETURN_REGISTER:
         CErr2p( ERR_BAD_RETURN_REGISTER, FEName( (CGSYM_HANDLE)parm ) );
         break;
-    case MSG_SCHEDULER_DIED:
-    case MSG_REGALLOC_DIED:
-    case MSG_SCOREBOARD_DIED:
-        if( (GenSwitches & NO_OPTIMIZATION) == 0 ) {
+    case FEMSG_SCHEDULER_DIED:
+    case FEMSG_REGALLOC_DIED:
+    case FEMSG_SCOREBOARD_DIED:
+        if( (GenSwitches & CGSW_GEN_NO_OPTIMIZATION) == 0 ) {
             if( LastFuncOutOfMem != parm ) {
                 CInfoMsg( INFO_NOT_ENOUGH_MEMORY_TO_FULLY_OPTIMIZE, FEName( (CGSYM_HANDLE)parm ) );
                 LastFuncOutOfMem = parm;
             }
         }
         break;
-    case MSG_PEEPHOLE_FLUSHED:
-        if( (GenSwitches & NO_OPTIMIZATION) == 0 ) {
+    case FEMSG_PEEPHOLE_FLUSHED:
+        if( (GenSwitches & CGSW_GEN_NO_OPTIMIZATION) == 0 ) {
             if( !CompFlags.low_on_memory_printed ) {
                 CInfoMsg( INFO_NOT_ENOUGH_MEMORY_TO_MAINTAIN_PEEPHOLE);
                 CompFlags.low_on_memory_printed = true;
             }
         }
         break;
-    case MSG_BACK_END_ERROR:
+    case FEMSG_BACK_END_ERROR:
         CErr2( ERR_BACK_END_ERROR, (int)(pointer_uint)parm );
         break;
-    case MSG_BAD_SAVE:
+    case FEMSG_BAD_SAVE:
         CErr2p( ERR_BAD_SAVE, FEName( (CGSYM_HANDLE)parm ) );
         break;
-    case MSG_BAD_LINKAGE:
+    case FEMSG_BAD_LINKAGE:
         CErr2p( ERR_BAD_LINKAGE, FEName( (CGSYM_HANDLE)parm ) );
         break;
-    case MSG_NO_SEG_REGS:
+    case FEMSG_NO_SEG_REGS:
         CErr2p( ERR_NO_SEG_REGS, FEName( (CGSYM_HANDLE)parm ) );
         break;
-    case MSG_BAD_PEG_REG:
+    case FEMSG_BAD_PEG_REG:
         CErr2p( ERR_BAD_PEG_REG, FEName( (CGSYM_HANDLE)parm ) );
         break;
     default:
@@ -834,18 +874,21 @@ segment_id FESegID( CGSYM_HANDLE cgsym_handle )
 
         attr = FESymAttr( sym );
         if( attr & FE_PROC ) {
-            /* in large code models, should return different segment #
+            /*
+             * in large code models, should return different segment #
              * for every imported routine.
              */
             segid = SEG_CODE;
             if( sym->seginfo != NULL ) {
                 segid = sym->seginfo->segid;
+    #if _INTEL_CPU
             } else if( attr & FE_IMPORT ) {
-                if( (sym->mods & FLAG_FAR) || (TargetSwitches & BIG_CODE) ) {
+                if( (sym->mods & FLAG_FAR) || (TargetSwitches & CGSW_X86_BIG_CODE) ) {
                     if( sym->flags & SYM_ADDR_TAKEN ) {
                         segid = import_segid--;
                     }
                 }
+    #endif
             }
         } else if( sym->u.var.segid != SEG_NULL ) {
             segid = sym->u.var.segid;
@@ -931,7 +974,7 @@ cg_type FEParmType( CGSYM_HANDLE func, CGSYM_HANDLE parm, cg_type tipe )
     /* unused parameters */ (void)parm;
 
     switch( tipe ) {
-#if _CPU == 386 || _CPU == 370 || _CPU == _PPC || _CPU == _MIPS
+#if _CPU == 386 || _RISC_CPU
     case TY_UINT_2:
     case TY_INT_2:
 #endif

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,8 +33,10 @@
 #ifndef _LINUXCOMM_H
 #define _LINUXCOMM_H
 
+#include "madconf.h"
 #include "machtype.h"
 #include "exeelf.h"
+
 
 //#define DEBUG_OUT
 
@@ -45,7 +47,7 @@
 /* Options set using PTRACE_SETOPTIONS */
 #define PTRACE_O_TRACESYSGOOD   0x00000001
 
-#if defined( MD_x86 )
+#if MADARCH & MADARCH_X86
 
 /* This defines the structure used to read and write the entire
  * set of general purpose CPU registers using sys_ptrace().
@@ -131,22 +133,9 @@ typedef struct {
 
 #define O_DEBUGREG(r)   (void *)offsetof(user_struct,u_debugreg[r])
 
-/* Structure used internally to set hardware watch points */
-
-typedef struct {
-    addr48_ptr  loc;
-    u_long      value;
-    u_long      linear;
-    u_short     len;
-    u_short     dregs;
-} watch_point;
-
-
-#define MAX_WP          32
-
 #endif
 
-#if defined( MD_ppc )
+#if MADARCH & MADARCH_PPC
 
 typedef struct {
     u_long eax;
@@ -195,7 +184,7 @@ typedef struct user {
 
 #endif
 
-#if defined( MD_mips )
+#if MADARCH & MADARCH_MIPS
 
 typedef struct {
     unsigned long eax;
@@ -315,12 +304,10 @@ u_long inpd(u_long port);
 
 /* Internal helper functions */
 
-extern unsigned     TryOnePath( const char *, struct stat *, const char *, char * );
-extern unsigned     FindFilePath( int, const char *, char * );
 extern u_long       GetDR6( void );
 extern void         ClearDebugRegs( void );
 extern int          SetDebugRegs( void );
-extern int          CheckWatchPoints( void );
+//extern bool         CheckWatchPoints( void );
 extern int          GetLinkMap( pid_t pid, struct link_map *, struct link_map * );
 extern int          AddInitialLibs( struct link_map * );
 extern int          AddOneLib( struct link_map * );
@@ -328,15 +315,14 @@ extern int          DelOneLib( struct link_map * );
 extern void         AddProcess( void );
 extern void         DelProcess( void );
 extern void         print_msg( const char *format, ... );
-extern char         *StrCopy( const char *src, char *dst );
 
 /* Utility functions shared with execution sampler */
-extern unsigned     ReadMem( pid_t pid, void *ptr, addr_off offv, unsigned size );
-extern unsigned     WriteMem( pid_t pid, void *ptr, addr_off offv, unsigned size );
+extern size_t       ReadMemory( pid_t pid, addr_off offv, void *ptr, size_t size );
+extern size_t       WriteMemory( pid_t pid, addr_off offv, void *ptr, size_t size );
 extern Elf32_Dyn    *GetDebuggeeDynSection( const char *exe_name );
 extern int          Get_ld_info( pid_t pid, Elf32_Dyn *dbg_dyn, struct r_debug *debug_ptr, struct r_debug **dbg_rdebug_ptr );
 extern char         *dbg_strcpy( pid_t pid, char *, const char * );
-extern int          SplitParms( char *p, const char **args, unsigned len );
+extern int          SplitParms( char *p, const char **args, size_t len );
 
 /* Copy of parent's environment */
 #if !defined( BUILTIN_TRAP_FILE )
@@ -365,8 +351,8 @@ extern void OutNum( unsigned long i );
 
 /* Global trap file vairables */
 
-extern u_short          flatCS;
-extern u_short          flatDS;
+extern addr_seg         flatCS;
+extern addr_seg         flatDS;
 extern pid_t            pid;
 
 #include "poppck.h"

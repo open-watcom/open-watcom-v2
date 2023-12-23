@@ -77,6 +77,7 @@ void AdDump( void )
                fprintf( AutoDepFile, " %s%s", DependHeaderPath, DoForceSlash( name, ForceSlash ) );
             }
         }
+        fprintf( AutoDepFile, "\n" );
     }
 }
 

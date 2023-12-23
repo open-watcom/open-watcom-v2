@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -50,6 +50,8 @@
 #include "_windpmi.h"
 #include "wininit.h"
 #include "windata.h"
+#include "brkptcpu.h"
+
 
 // define FLAT to 1 to get flat address space for entire memory
 #define FLAT    1
@@ -73,9 +75,6 @@ struct  fpu_area {
     unsigned short      fpregs[5 * 8];
 };
 
-
-extern void BreakPoint( void );
-#pragma aux BreakPoint = "int 3"
 
 #include "pushpck1.h"
 struct wstart_vars {
@@ -185,9 +184,9 @@ bool Init32BitTask( HINSTANCE thisInstance, HINSTANCE prevInstance, LPSTR cmdlin
     }
     handle = TINY_INFO( rc );
 
-    _TinySeek( handle, 0x38, TIO_SEEK_START );
+    _TinySeek( handle, 0x38, TIO_SEEK_SET );
     _fTinyRead( handle, &exelen, sizeof( DWORD ) );
-    _TinySeek( handle, exelen, TIO_SEEK_START );
+    _TinySeek( handle, exelen, TIO_SEEK_SET );
 
     /*
      * check if we are being run by the debugger.  When the debugger
@@ -226,7 +225,7 @@ bool Init32BitTask( HINSTANCE thisInstance, HINSTANCE prevInstance, LPSTR cmdlin
     /*
      * get exe data - data start and stack start
      */
-    _TinySeek( handle, exelen + file_header_size + (long)exe.initial_eip, TIO_SEEK_START );
+    _TinySeek( handle, exelen + file_header_size + (long)exe.initial_eip, TIO_SEEK_SET );
     _fTinyRead( handle, &exedat, sizeof( exe_data ) );
     /*
      * get file size
@@ -320,7 +319,7 @@ bool Init32BitTask( HINSTANCE thisInstance, HINSTANCE prevInstance, LPSTR cmdlin
      * read the exe into memory
      */
     currsize = size - file_header_size;
-    _TinySeek( handle, exelen + file_header_size, TIO_SEEK_START );
+    _TinySeek( handle, exelen + file_header_size, TIO_SEEK_SET );
     i = _DPMIGetAliases( CodeLoadAddr, (LPDWORD)&aliasptr, 0 );
     if( i ) {
         return( Fini( 3, (char _FAR *)"Error ",
@@ -362,7 +361,7 @@ bool Init32BitTask( HINSTANCE thisInstance, HINSTANCE prevInstance, LPSTR cmdlin
         relsize += kcnt * ( 0x10000L * sizeof( DWORD ) );
     }
     if( relsize != 0 ) {
-        _TinySeek( handle, exelen + (DWORD)exe.first_reloc, TIO_SEEK_START );
+        _TinySeek( handle, exelen + (DWORD)exe.first_reloc, TIO_SEEK_SET );
         if( StackSize >= (DWORD)READSIZE ) {
             amount = READSIZE;
         } else {

@@ -5,12 +5,14 @@ set PROJNAME=docs
 
 set PROJDIR=<CWD>
 
-[ INCLUDE <OWROOT>/build/prolog.ctl ]
+[ INCLUDE "<OWROOT>/build/prolog.ctl" ]
 
-cdsay <PROJDIR>
+cdsay "<PROJDIR>"
 
 [ BLOCK .<OWGUINOBUILD> .1 ]
     set PROJPMAKE=guitool .not .and
+[ BLOCK .<OWNOWGML> .1 ]
+    set PROJPMAKE=0 .and
 
 [ BLOCK <BLDRULE> docs build rel ]
 #=================================
@@ -22,20 +24,20 @@ cdsay <PROJDIR>
 
 [ BLOCK <BLDRULE> docs rel ]
 #===========================
-    cdsay <PROJDIR>
+    cdsay "<PROJDIR>"
 
 [ BLOCK <BLDRULE> docs rel cprel ]
 #=================================
-    <CCCMD> dos/*.ihp       <OWRELROOT>/binw/
-    <CCCMD> win/*.hlp       <OWRELROOT>/binw/
-    <CCCMD> os2/*.inf       <OWRELROOT>/binp/help/
-    <CCCMD> os2/*.hlp       <OWRELROOT>/binp/help/
-    <CCCMD> nt/*.hlp        <OWRELROOT>/binnt/
-    <CCCMD> nt/*.cnt        <OWRELROOT>/binnt/
-    <CCCMD> htmlhelp/*.chm  <OWRELROOT>/binnt/help/
-    <CCCMD> pdf/*.pdf       <OWRELROOT>/docs/
+    <CCCMD> dos/*.ihp       "<OWRELROOT>/binw/"
+    <CCCMD> win/*.hlp       "<OWRELROOT>/binw/"
+    <CCCMD> os2/*.inf       "<OWRELROOT>/binp/help/"
+    <CCCMD> os2/*.hlp       "<OWRELROOT>/binp/help/"
+    <CCCMD> nt/*.hlp        "<OWRELROOT>/binnt/"
+    <CCCMD> nt/*.cnt        "<OWRELROOT>/binnt/"
+    <CCCMD> chm/*.chm       "<OWRELROOT>/binnt/help/"
+    <CCCMD> pdf/*.pdf       "<OWRELROOT>/docs/"
 
 [ BLOCK . . ]
     set PROJPMAKE=
 
-[ INCLUDE <OWROOT>/build/epilog.ctl ]
+[ INCLUDE "<OWROOT>/build/epilog.ctl" ]

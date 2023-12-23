@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -59,15 +60,16 @@ struct seg_cue {
 
 
 
-void  InitCueList( cue_list *ctl ) {
+void  InitCueList( cue_list *ctl )
 /*********************************/
-
+{
     ctl->head = NULL;
 }
 
 seg_cue *InitSegCue( cue_list *ctl, addr_seg seg, addr_off offset )
-/*****************************************************************/
-/* Keep in asending order  seg:offset */
+/******************************************************************
+ * Keep in asending order  seg:offset
+ */
 {
     seg_cue     *curr;
     seg_cue     **lnk;
@@ -89,9 +91,10 @@ seg_cue *InitSegCue( cue_list *ctl, addr_seg seg, addr_off offset )
 }
 
 void AddCue( seg_cue *ctl, dr_line_data *new )
-/********************************************/
-// Add a new offset to the last block if full alloc a new one
-// bump the item count
+/*********************************************
+ * Add a new offset to the last block if full alloc a new one
+ * bump the item count
+ */
 {
     cue_blk     *blk, **lnk;
     cue_info    *next;
@@ -131,9 +134,11 @@ typedef struct{
 }off_cmp;
 
 
-static  long BlkOffSearch( off_cmp *cmp  ) {
-/****************************************/
-// Do a B-search on the blk
+static  long BlkOffSearch( off_cmp *cmp  )
+/*****************************************
+ * Do a B-search on the blk
+ */
+{
     cue_info    *curr;
     cue_info    *base;
     addr_off    key;
@@ -417,8 +422,9 @@ not_found:
 }
 
 static void FreeSegCue( seg_cue *curr )
-/***********************************************/
-// Free all offset blocks for a segment
+/**************************************
+ * Free all offset blocks for a segment
+ */
 {
     cue_blk    *blk, *next;
 
@@ -429,9 +435,10 @@ static void FreeSegCue( seg_cue *curr )
 }
 
 void  FiniCueInfo( cue_list *list )
-/*********************************/
-//Free all offset blocks for a line segment
-//Free all line segments
+/**********************************
+ * Free all offset blocks for a line segment
+ * Free all line segments
+ */
 {
     seg_cue   *ctl;
 

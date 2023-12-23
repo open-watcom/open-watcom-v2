@@ -7,23 +7,23 @@ set BINTOOL=0
 
 set PROJDIR=<CWD>
 
-[ INCLUDE <OWROOT>/build/prolog.ctl ]
+[ INCLUDE "<OWROOT>/build/prolog.ctl" ]
 
-[ INCLUDE <OWROOT>/build/defrule.ctl ]
+[ INCLUDE "<OWROOT>/build/defrule.ctl" ]
 
 [ BLOCK <BLDRULE> rel ]
 #======================
-    cdsay <PROJDIR>
+    cdsay "<PROJDIR>"
 
 [ BLOCK <BINTOOL> build ]
 #========================
-    cdsay <PROJDIR>
-    <CPCMD> <OWOBJDIR>/wbind.exe <OWBINDIR>/<OWOBJDIR>/bwbind<CMDEXT>
+    cdsay "<PROJDIR>"
+    <CPCMD> <OWOBJDIR>/wbind.exe "<OWROOT>/build/<OWOBJDIR>/bwbind<CMDEXT>"
 
 [ BLOCK <BINTOOL> clean ]
 #========================
-    echo rm -f <OWBINDIR>/<OWOBJDIR>/bwbind<CMDEXT>
-    rm -f <OWBINDIR>/<OWOBJDIR>/bwbind<CMDEXT>
+    echo rm -f "<OWROOT>/build/<OWOBJDIR>/bwbind<CMDEXT>"
+    rm -f "<OWROOT>/build/<OWOBJDIR>/bwbind<CMDEXT>"
 
 [ BLOCK <BLDRULE> rel cprel ]
 #============================
@@ -31,4 +31,4 @@ set PROJDIR=<CWD>
 
 [ BLOCK . . ]
 
-[ INCLUDE <OWROOT>/build/epilog.ctl ]
+[ INCLUDE "<OWROOT>/build/epilog.ctl" ]

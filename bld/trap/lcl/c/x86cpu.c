@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,7 +31,7 @@
 
 
 #include "mad.h"
-#include "madx86.h"
+#include "digcpu.h"
 #include "x86cpu.h"
 
 #ifdef __WATCOMC__
@@ -164,12 +165,17 @@ extern unsigned CPUId( void );
 unsigned_8 X86CPUType( void )
 {
 #if defined( _M_I86 )
-    if( Is8086() ) return( X86_86 );
-    if( Is186() ) return( X86_186 );
-    if( Is286() ) return( X86_286 );
+    if( Is8086() )
+        return( X86_86 );
+    if( Is186() )
+        return( X86_186 );
+    if( Is286() )
+        return( X86_286 );
 #endif
-    if( Is386() ) return( X86_386 );
-    if( Is486() ) return( X86_486 );
+    if( Is386() )
+        return( X86_386 );
+    if( Is486() )
+        return( X86_486 );
     return( CPUId() );
 }
 

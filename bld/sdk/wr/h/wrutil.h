@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,14 +40,13 @@ WRDLLENTRY extern char      *WRAPI WRConvertStringTo( const char *str, const cha
 
 WRDLLENTRY extern void      WRAPI WRMassageFilter( char *filter );
 
-WRDLLENTRY extern bool      WRAPI WRmbcs2unicode( const char *src, char **dest, size_t *len );
-WRDLLENTRY extern bool      WRAPI WRmbcs2unicodeBuf( const char *src, char *dest, size_t len );
-WRDLLENTRY extern bool      WRAPI WRunicode2mbcs( const char *src, char **dest, size_t *len );
-WRDLLENTRY extern bool      WRAPI WRunicode2mbcsBuf( const char *src, char *dest, size_t len );
-
 WRDLLENTRY extern size_t    WRAPI WRStrlen( const char *str, bool is32Bit );
 WRDLLENTRY extern size_t    WRAPI WRStrlen32( const char *str );
 
-WRDLLENTRY extern char      *WRAPI WRWResIDNameToStr( WResIDName *name );
+WRDLLENTRY extern char      *WRAPI WRStringFromWResIDName( WResIDName *name );
 
 WRDLLENTRY extern size_t    WRAPI WRFindFnOffset( const char *name );
+
+WRDLLENTRY extern size_t    WRAPI WRCalcStrlen( const char *str, bool is32bit );
+WRDLLENTRY extern size_t    WRAPI WRDataFromString( const char *str, bool is32bit, char *data );
+WRDLLENTRY extern char      *WRAPI WRStringFromData( const char **pdata, bool is32bit );

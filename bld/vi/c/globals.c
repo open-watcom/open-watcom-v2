@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -49,6 +49,7 @@ const char          _NEAR SingleBlank[] = " ";
 const char          _NEAR SingleSlash[] = "/";
 const char          _NEAR SingleDQuote[] = "\"";
 const char          _NEAR SpinData[] = { '-', '\\', '|', '/' };
+const char          _NEAR Encode36Table[] = "0123456789abcdefghijklmnopqrstuvwxyz";
 
 /* event data */
 event _NEAR EventList[] = {
@@ -189,7 +190,7 @@ window_info activegreyedmenu_info = { WHITE, BLACK, DEF_TEXT_STYLE, DEF_HILIGHT_
  */
 char            *CommandBuffer = NULL;
 char            *CurrentDirectory = NULL;
-char            *HomeDirectory = NULL;
+char            *StartDirectory = NULL;
 char            *ReadBuffer = NULL;
 char            *WriteBuffer = NULL;
 unsigned char   *SwapBlocks = NULL;

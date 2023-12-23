@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -49,6 +49,7 @@
 #include "wredde.h"
 #include "wre.rh"
 #include "wreimage.h"
+#include "wreddeop.h"
 #include "wreimg.h"
 #include "wresdefn.h"
 
@@ -236,7 +237,7 @@ bool WRENewImageResource( WRESPT service, uint_16 type )
     ok = WREAddImageToDir( &curr, type );
 
     if( ok ) {
-        ok = (WREStartImageSession( service, &curr, TRUE ) != NULL);
+        ok = (WREStartImageSession( service, &curr, true ) != NULL);
     }
 
     return( ok );
@@ -246,7 +247,7 @@ bool WREDumpPendingImageSession( void )
 {
     bool                ret;
 
-    ret = TRUE;
+    ret = true;
 
     if( PendingSession != NULL ) {
         DumpEmptyResource( PendingSession );
@@ -264,12 +265,12 @@ bool WREEndEditImageResource( HCONV conv )
     WREImageSession     *session;
     bool                ret;
 
-    ret = FALSE;
+    ret = false;
 
     session = WREFindImageSession( conv );
 
     if( session != NULL ) {
-        ret = TRUE;
+        ret = true;
         DumpEmptyResource( session );
         WRERemoveImageEditSession( session );
     }
@@ -297,17 +298,17 @@ bool WRECommitImageSession( HCONV server, HCONV client )
     return( ok );
 }
 
-bool WREGetImageSessionFileName( HCONV server, void **data, size_t *size )
+bool WREGetImageSessionFileName( HCONV server, char **data, size_t *size )
 {
     WREImageSession *session;
 
     if( data == NULL || size == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     session = WREFindImageSession( server );
     if( session == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     *data = WREStrDup( session->info.file_name );
@@ -315,120 +316,112 @@ bool WREGetImageSessionFileName( HCONV server, void **data, size_t *size )
         *size = strlen( *data ) + 1;
     }
 
-    return( TRUE );
+    return( true );
 }
 
-bool WREGetImageSessionResName( HCONV server, void **data, size_t *size )
+bool WREGetImageSessionResName( HCONV server, char **data, size_t *size )
 {
     WREImageSession *session;
 
     if( data == NULL || size == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     session = WREFindImageSession( server );
     if( session == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
-    if( !WRWResID2Mem( session->info.res_name, data, size, session->info.is32bit ) ) {
-        return( FALSE );
+    if( !WRDataFromWResID( session->info.res_name, data, size, session->info.is32bit ) ) {
+        return( false );
     }
 
-    return( TRUE );
+    return( true );
 }
 
-bool WREGetImageSessionData( HCONV server, void **data, size_t *size )
+bool WREGetImageSessionData( HCONV server, char **pdata, size_t *dsize )
 {
     WREImageSession     *session;
-    size_t              tsize;
+    size_t              size;
 
-    if( data == NULL || size == NULL ) {
-        return( FALSE );
+    if( pdata == NULL || dsize == NULL ) {
+        return( false );
     }
 
     session = WREFindImageSession( server );
     if( session == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     if( session->info.data == NULL || session->info.data_size == 0 ) {
-        *data = NULL;
-        *size = 0;
-        return( TRUE );
+        *pdata = NULL;
+        *dsize = 0;
+        return( true );
     }
 
-    tsize = session->info.data_size;
-    *size = tsize;
-    *data = WRMemAlloc( tsize );
-    if( *data == NULL ) {
-        return( FALSE );
+    size = session->info.data_size;
+    *dsize = size;
+    *pdata = WRMemAlloc( size );
+    if( *pdata == NULL ) {
+        return( false );
     }
-    memcpy( *data, session->info.data, tsize );
+    memcpy( *pdata, session->info.data, size );
 
     if( session->type == RESOURCE2INT( RT_BITMAP ) ) {
-        if( !WREAddBitmapFileHeader( (BYTE **)data, size ) ) {
-            if( *data != NULL ) {
-                WRMemFree( *data );
+        if( !WRAddBitmapFileHeader( pdata, dsize ) ) {
+            if( *pdata != NULL ) {
+                WRMemFree( *pdata );
             }
-            return( FALSE );
+            return( false );
         }
     }
 
-    return( TRUE );
+    return( true );
 }
 
-bool WRESetImageSessionResName( HCONV server, HDDEDATA hdata )
+bool WRESetImageSessionResName( HCONV server, HDDEDATA hData )
 {
     WREImageSession     *session;
     WResID              *name;
-    void                *data;
-    uint_32             size;
+    char                *data;
+    size_t              size;
     bool                ok;
 
-    ok = (server != (HCONV)NULL && hdata != NULL);
+    ok = (server != (HCONV)NULL && hData != NULL);
 
     if( ok ) {
         session = WREFindImageSession( server );
-        ok = (session != NULL);
-    }
-
-    if( ok ) {
-        ok = WREHData2Mem( hdata, &data, &size );
-    }
-
-    if( ok ) {
-        name = WRMem2WResID( data, FALSE );
-        ok = (name != NULL);
-    }
-
-    if( ok ) {
-        ok = WRERenameWResResNode( session->tnode, &session->rnode, name );
-    }
-
-    if( ok ) {
-        WRESetResNamesFromType( session->rinfo, session->type, true, name, 0 );
-    }
-
-    if( data != NULL ) {
-        WRMemFree( data );
-    }
-
-    if( name != NULL ) {
-        WRMemFree( name );
+        if( session == NULL ) {
+            ok = false;
+        } else {
+            ok = WRAllocDataFromDDE( hData, &data, &size );
+            if( ok ) {
+                name = WRWResIDFromData( data, false );
+                if( name == NULL ) {
+                    ok = false;
+                } else {
+                    ok = WRERenameWResResNode( session->tnode, &session->rnode, name );
+                    if( ok ) {
+                        WRESetResNamesFromType( session->rinfo, session->type, true, name, 0 );
+                    }
+                    WRMemFree( name );
+                }
+                WRMemFree( data );
+            }
+        }
     }
 
     return( ok );
 }
 
-static bool WRESetBitmapSessionResData( WREImageSession *session, void *data, size_t size )
+static bool WRESetBitmapSessionResData( WREImageSession *session, char *data, size_t size )
 {
     bool                ok;
 
     ok = (session != NULL);
 
     if( ok ) {
-        WREStripBitmapFileHeader( (BYTE **)&data, &size );
+        WRStripBitmapFileHeader( &data, &size );
         if( session->lnode->data != NULL ) {
             WRMemFree( session->lnode->data );
         }
@@ -440,7 +433,7 @@ static bool WRESetBitmapSessionResData( WREImageSession *session, void *data, si
     return( ok );
 }
 
-static bool WRESetCursorSessionResData( WREImageSession *session, void *data, uint_32 size )
+static bool WRESetCursorSessionResData( WREImageSession *session, char *data, size_t size )
 {
     WRECurrentResInfo   curr;
     bool                ok;
@@ -465,7 +458,7 @@ static bool WRESetCursorSessionResData( WREImageSession *session, void *data, ui
     return( ok );
 }
 
-static bool WRESetIconSessionResData( WREImageSession *session, void *data, uint_32 size )
+static bool WRESetIconSessionResData( WREImageSession *session, char *data, size_t size )
 {
     WRECurrentResInfo   curr;
     bool                ok;
@@ -490,31 +483,35 @@ static bool WRESetIconSessionResData( WREImageSession *session, void *data, uint
     return( ok );
 }
 
-bool WRESetImageSessionResData( HCONV server, HDDEDATA hdata )
+bool WRESetImageSessionResData( HCONV server, HDDEDATA hData )
 {
     WREImageSession     *session;
-    void                *data;
-    uint_32             size;
+    char                *data;
+    size_t              size;
     bool                ok;
 
-    ok = (server != (HCONV)NULL && hdata != NULL);
+    ok = (server != (HCONV)NULL && hData != NULL);
 
     if( ok ) {
         session = WREFindImageSession( server );
-        ok = (session != NULL);
-    }
-
-    if( ok ) {
-        ok = WREHData2Mem( hdata, &data, &size );
-    }
-
-    if( ok ) {
-        if( session->type == RESOURCE2INT( RT_BITMAP ) ) {
-            ok = WRESetBitmapSessionResData( session, data, size );
-        } else if( session->type == RESOURCE2INT( RT_GROUP_CURSOR ) ) {
-            ok = WRESetCursorSessionResData( session, data, size );
-        } else if( session->type == RESOURCE2INT( RT_GROUP_ICON ) ) {
-            ok = WRESetIconSessionResData( session, data, size );
+        if( session == NULL ) {
+            ok = false;
+        } else {
+            ok = WRAllocDataFromDDE( hData, &data, &size );
+            if( ok ) {
+                if( session->type == RESOURCE2INT( RT_BITMAP ) ) {
+                    ok = WRESetBitmapSessionResData( session, data, size );
+                } else if( session->type == RESOURCE2INT( RT_GROUP_CURSOR ) ) {
+                    ok = WRESetCursorSessionResData( session, data, size );
+                } else if( session->type == RESOURCE2INT( RT_GROUP_ICON ) ) {
+                    ok = WRESetIconSessionResData( session, data, size );
+                } else {
+                    ok = false;
+                }
+                if( !ok ) {
+                    WRMemFree( data );
+                }
+            }
         }
     }
 
@@ -524,7 +521,7 @@ bool WRESetImageSessionResData( HCONV server, HDDEDATA hdata )
 WREImageSession *WREStartImageSession( WRESPT service, WRECurrentResInfo *curr, bool new )
 {
     WREImageSession     *session;
-    BYTE                *data;
+    char                *data;
     size_t              size;
     bool                ok;
 
@@ -595,7 +592,7 @@ WREImageSession *WREStartImageSession( WRESPT service, WRECurrentResInfo *curr, 
 
     PendingSession = session;
 
-    if( WinExec( "wimgedit.exe -dde", SW_SHOW ) < 32 ) {
+    if( WinExec( "wimgedit.exe " DDE_OPT_STR, SW_SHOW ) < 32 ) {
         WREDisplayErrorMsg( WRE_IMGEDITNOTSPAWNED );
         WREFreeEditSession( session );
         PendingSession = NULL;
@@ -615,33 +612,37 @@ bool WREEditImageResource( WRECurrentResInfo *curr )
 
     if( ok ) {
         session = WREFindLangImageSession( curr->lang );
-        if( session != NULL ) {
-            WREBringSessionToFront( session );
-            return( TRUE );
-        }
-    }
-
-    if( ok ) {
-        if( curr->info->current_type == RESOURCE2INT( RT_BITMAP ) ) {
-            service = BitmapService;
-        } else if( curr->info->current_type == RESOURCE2INT( RT_GROUP_CURSOR ) ) {
-            service = CursorService;
-        } else if( curr->info->current_type == RESOURCE2INT( RT_GROUP_ICON ) ) {
-            service = IconService;
+        if( session == NULL ) {
+            if( curr->info->current_type == RESOURCE2INT( RT_BITMAP ) ) {
+                service = BitmapService;
+            } else if( curr->info->current_type == RESOURCE2INT( RT_GROUP_CURSOR ) ) {
+                service = CursorService;
+            } else if( curr->info->current_type == RESOURCE2INT( RT_GROUP_ICON ) ) {
+                service = IconService;
+            } else {
+                ok = false;
+            }
+            if( ok ) {
+                if( curr->lang->data == NULL && curr->lang->Info.Length != 0 ) {
+                    curr->lang->data = WREGetCopyResData( curr );
+                    if( curr->lang->data == NULL ) {
+                        ok = false;
+                    } else {
+                        if( WREStartImageSession( service, curr, false ) == NULL ) {
+                            ok = false;
+                        }
+//                        curr->lang->data = NULL;
+//                        WRMemFree( curr->lang->data );
+                    }
+                } else {
+                    if( WREStartImageSession( service, curr, false ) == NULL ) {
+                        ok = false;
+                    }
+                }
+            }
         } else {
-            ok = false;
+            WREBringSessionToFront( session );
         }
-    }
-
-    if( ok ) {
-        if( curr->lang->data == NULL && curr->lang->Info.Length != 0 ) {
-            curr->lang->data = WREGetCurrentResData( curr );
-            ok = (curr->lang->data != NULL);
-        }
-    }
-
-    if( ok ) {
-        ok = (WREStartImageSession( service, curr, FALSE ) != NULL);
     }
 
     return( ok );
@@ -653,7 +654,7 @@ bool WREEndAllImageSessions( bool fatal_exit )
     LIST                *slist;
     bool                ok;
 
-    _wre_touch( fatal_exit );
+    /* unused parameters */ (void)fatal_exit;
 
     ok = true;
 
@@ -776,7 +777,7 @@ void WREFreeEditSession( WREImageSession *session )
 void WREDisconnectSession( WREImageSession *session )
 {
     if( session != NULL ) {
-        WREPokeImageCmd( session, "endsession", TRUE );
+        WREPokeImageCmd( session, "endsession", true );
         DumpEmptyResource( session );
         if( session->server != (HCONV)NULL ) {
             DdeDisconnect( session->server );
@@ -791,7 +792,7 @@ void WREDisconnectSession( WREImageSession *session )
 
 void WREBringSessionToFront( WREImageSession *session )
 {
-    WREPokeImageCmd( session, "bringtofront", FALSE );
+    WREPokeImageCmd( session, "bringtofront", false );
 }
 
 void WREShowAllImageSessions( bool show )
@@ -812,9 +813,9 @@ void WREShowAllImageSessions( bool show )
 void WREShowSession( WREImageSession *session, bool show )
 {
     if( show ) {
-        WREPokeImageCmd( session, "show", FALSE );
+        WREPokeImageCmd( session, "show", false );
     } else {
-        WREPokeImageCmd( session, "hide", FALSE );
+        WREPokeImageCmd( session, "hide", false );
     }
 }
 

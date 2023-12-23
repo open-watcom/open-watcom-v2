@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,15 +33,11 @@
 #ifndef DWUTILS_H_INCLUDED
 #define DWUTILS_H_INCLUDED
 
-#include "dwcnf.h"
+#include "leb128wr.h"
 
-/* max storage req'd in LEB128 form to store a 32 bit int/uint */
-#define MAX_LEB128      5
+#define WriteSLEB128(h,v)   (unsigned char *)EncodeSLEB128((h), OutputLEB128, (v))
+#define WriteULEB128(h,v)   (unsigned char *)EncodeULEB128((h), OutputLEB128, (v))
 
-#define LEB128                  DW_LEB128
-#define ULEB128                 DW_ULEB128
-
-extern uint_8   *LEB128( uint_8 *buf, dw_sconst value );
-extern uint_8   *ULEB128( uint_8 *buf, dw_uconst value );
+extern void     OutputLEB128( void **h, unsigned char byte );
 
 #endif

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,16 +32,14 @@
 
 #ifndef TRPCAPB_H
 
-#include "trptypes.h"
 #include <time.h>
+#include "trptypes.h"
 
 #define CAPABILITIES_SUPP_NAME  Capabilities
 #define TRAP_CAPABILITIES(s)    TRAP_SYM( CAPABILITIES_SUPP_NAME, s )
 
 //#define REQ_CAPABILITIES_DEF(sym,func)
 #define REQ_CAPABILITIES_DEFS() \
-    REQ_CAPABILITIES_DEF( GET_8B_BP,    get_8b_bp ) \
-    REQ_CAPABILITIES_DEF( SET_8B_BP,    set_8b_bp ) \
     REQ_CAPABILITIES_DEF( GET_EXACT_BP, get_exact_bp ) \
     REQ_CAPABILITIES_DEF( SET_EXACT_BP, set_exact_bp )
 
@@ -53,60 +51,32 @@ enum {
 
 #include "pushpck1.h"
 
-/*======================= REQ_CAPABILITIES_GET_8B_BP ================*/
-/*
- *  Check to see if the trap support 8 byte breakpoints.
- *  If returns no error, then supported and _ret.status tells you if currently enabled or not
- */
-typedef struct {
-    supp_prefix         supp;
-    access_req          req;
-} capabilities_get_8b_bp_req;
-
-typedef struct {
-    trap_error          err;
-    unsigned_32         status;     /* 0 = off, !0 = on */
-} capabilities_get_8b_bp_ret;
-
-/*======================= REQ_CAPABILITIES_SET_8B_BP ================*/
-
-typedef struct {
-    supp_prefix         supp;
-    access_req          req;
-    unsigned_32         status;     /* 0 = off, !0 = on */
-} capabilities_set_8b_bp_req;
-
-typedef struct {
-    trap_error          err;
-    unsigned_32         status;     /* 0 = off, !0 = on */
-} capabilities_set_8b_bp_ret;
-
-/*======================= REQ_CAPABILITIES_EXACT_8B_BP ================*/
+/*======================= REQ_CAPABILITIES_EXACT_BP ====================*/
 /*
  *  Check to see if the trap support exact breakpoints.
  *  If returns no error, then supported and _ret.status tells you if currently enabled or not
  */
 typedef struct {
     supp_prefix         supp;
-    access_req          req;
+    trap_req            req;
 } capabilities_get_exact_bp_req;
 
 typedef struct {
     trap_error          err;
-    unsigned_32         status;     /* 0 = off, !0 = on */
+    unsigned_8          status;     /* 0 = un-supported, 1 = supported */
 } capabilities_get_exact_bp_ret;
 
 /*======================= REQ_CAPABILITIES_SET_EXACT_BP ================*/
 
 typedef struct {
     supp_prefix         supp;
-    access_req          req;
-    unsigned_32         status;     /* 0 = off, !0 = on */
+    trap_req            req;
+    unsigned_8          status;     /* 0 = off, 1 = on */
 } capabilities_set_exact_bp_req;
 
 typedef struct {
     trap_error          err;
-    unsigned_32         status;     /* 0 = off, !0 = on */
+    unsigned_8          status;     /* 0 = off, 1 = on */
 } capabilities_set_exact_bp_ret;
 
 #include "poppck.h"

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -49,12 +50,6 @@
 
 #include "banner.h"
 
-static const char* CVpackHeader =
-    banner1w( "CV4 Symbolic Debugging Information Compactor", BAN_VER_STR ) "\n" \
-    banner2 "\n" \
-    banner2a( 1995 ) "\n" \
-    banner3 "\n" \
-    banner3a "\n";
 
 static const char* CVpackUsage = "usage : cvpack [/nologo] <exefile>\n";
 
@@ -76,7 +71,7 @@ uint NumLeafLength( const char* buffer )
 /**************************************/
 {
     uint length = 0;
-    uint index = * (unsigned_16 *) buffer;
+    uint index = *(unsigned_16 *)buffer;
 
     // skip the index of the numeric leaf.
     buffer += WORD;
@@ -89,23 +84,25 @@ uint NumLeafLength( const char* buffer )
     // next 2 bytes.
     //
     if ( index == LF_VARSTRING ) {
-        length += * (unsigned_16 *) buffer;
+        length += *(unsigned_16 *)buffer;
     } else if ( index >= LF_NUMERIC ) {
-        length += NumLeafSize[index-LF_NUMERIC];
+        length += NumLeafSize[index - LF_NUMERIC];
     }
-    return length;
+    return( length );
 }
 
 void ConvertFName( char* f )
 /**************************/
 {
-    strcpy(fName,f);
-    if ( strchr(f,'.') == NULL ) {
-        strcat(fName,".exe");
+    strcpy( fName, f );
+    if ( strchr( f, '.' ) == NULL ) {
+        strcat( fName, ".exe" );
     }
 }
-void outOfMemory() {
-/******************/
+
+void outOfMemory()
+/****************/
+{
     throw OutOfMemory();
 }
 
@@ -113,12 +110,12 @@ void CVpack::DoExeCode()
 /**********************/
 {
     unsigned_32 length = _aRetriever.TellExeLength();
-    if ( length ) {
-        char* buffer = new char [length];
-        if ( ! _aRetriever.ReadExeCode(buffer) ) {
-            throw MiscError("error while reading executable code.");
+    if( length ) {
+        char* buffer = new char[length];
+        if ( !_aRetriever.ReadExeCode( buffer ) ) {
+            throw MiscError( "error while reading executable code." );
         }
-        _eMaker.DumpToExe(buffer,length);
+        _eMaker.DumpToExe( buffer, length );
         delete[] buffer;
     }
     _lfaBase = length;
@@ -154,10 +151,10 @@ uint CVpack::DoSrcModule( const uint module )
     unsigned_32 length;
     char*       buffer;
 
-    if ( _aRetriever.ReadSubsection(buffer,length,sstSrcModule,module) ) {
-        _newDir.Insert(sstSrcModule,module,OFBase(),length);
-        _eMaker.DumpToExe(buffer,length);
-        return ( * (unsigned_16 *) (buffer + WORD) );
+    if( _aRetriever.ReadSubsection( buffer, length, sstSrcModule, module ) ) {
+        _newDir.Insert( sstSrcModule, module, OFBase(), length );
+        _eMaker.DumpToExe( buffer, length );
+        return( *(unsigned_16 *)( buffer + WORD ) );
     } else {
         return( 0 );
     }
@@ -171,22 +168,21 @@ uint CVpack::DoSegMap()
     unsigned_32 length;
     char*       buffer;
 
-    if ( _aRetriever.ReadSubsection(buffer,length,sstSegMap) ) {
-        cSeg = * (unsigned_16 *) buffer;
-        _newDir.Insert(sstSegMap,MODULE_INDEPENDENT,OFBase(),length);
-        _eMaker.DumpToExe(buffer,length);
+    if( _aRetriever.ReadSubsection( buffer, length, sstSegMap ) ) {
+        cSeg = *(unsigned_16 *)buffer;
+        _newDir.Insert( sstSegMap, MODULE_INDEPENDENT, OFBase(), length );
+        _eMaker.DumpToExe( buffer, length );
     } else {
-        throw MiscError("no sstSegMap present.");
+        throw MiscError( "no sstSegMap present." );
     }
     return( cSeg );
 }
 
-void CVpack::DoAlignSym( SstAlignSym*      alignSym,
-                         const uint        module )
-/**************************************************/
+void CVpack::DoAlignSym( SstAlignSym* alignSym, const uint module )
+/*****************************************************************/
 {
-    _newDir.Insert(sstAlignSym,module,OFBase(),alignSym -> Length());
-    alignSym -> Put(_eMaker);
+    _newDir.Insert( sstAlignSym, module, OFBase(), alignSym -> Length() );
+    alignSym->Put( _eMaker );
 }
 
 
@@ -194,18 +190,18 @@ void CVpack::DoGlobalSym( SstGlobalSym& globalSym, const uint cSeg )
 /******************************************************************/
 {
     unsigned_32 oldOffset = OFBase();
-    globalSym.Put(_eMaker,cSeg);
+    globalSym.Put( _eMaker, cSeg );
     unsigned_32 length = OFBase() - oldOffset;
-    _newDir.Insert(sstGlobalSym,MODULE_INDEPENDENT,oldOffset,length);
+    _newDir.Insert( sstGlobalSym, MODULE_INDEPENDENT, oldOffset, length );
 }
 
 void CVpack::DoStaticSym( SstStaticSym& staticSym, const uint cSeg )
 /******************************************************************/
 {
     unsigned_32 oldOffset = OFBase();
-    staticSym.Put(_eMaker,cSeg);
+    staticSym.Put( _eMaker, cSeg );
     unsigned_32 length = OFBase() - oldOffset;
-    _newDir.Insert(sstStaticSym,MODULE_INDEPENDENT,oldOffset,length);
+    _newDir.Insert( sstStaticSym, MODULE_INDEPENDENT, oldOffset, length );
 }
 
 void CVpack::DoDirectory()
@@ -213,25 +209,24 @@ void CVpack::DoDirectory()
 {
     streampos dirOffset = OFBase();
     unsigned_32 cvSize;
-    _newDir.Put(_eMaker);
+    _newDir.Put( _eMaker );
 
     DumpSig();
     // compute lfoBase and dump it out.
-    cvSize = (unsigned_32)(_eMaker.TellPos()+LONG_WORD-_lfaBase);
-    _eMaker.DumpToExe(cvSize);
+    cvSize = (unsigned_32)( _eMaker.TellPos() + LONG_WORD - _lfaBase );
+    _eMaker.DumpToExe( cvSize );
 
-    _eMaker.SeekTo(_lfaBase+LONG_WORD);
-    _eMaker.DumpToExe((unsigned_32)dirOffset);
+    _eMaker.SeekTo( _lfaBase + LONG_WORD );
+    _eMaker.DumpToExe( (unsigned_32)dirOffset );
 
-    if (_ddeBase) {
-        _eMaker.SeekTo(_ddeBase+0x10);  // offset of debug_size field entry
-        _eMaker.DumpToExe(cvSize);      // write new segment size to PE debug dir entry
+    if( _ddeBase ) {
+        _eMaker.SeekTo( _ddeBase + 0x10 );  // offset of debug_size field entry
+        _eMaker.DumpToExe( cvSize );        // write new segment size to PE debug dir entry
     }
 }
 
-void CVpack::DoPublics( const uint segNum,
-                        const uint moduleNum )
-/********************************************/
+void CVpack::DoPublics( const uint segNum, const uint moduleNum )
+/***************************************************************/
 {
     unsigned_32  length;
     uint         index;
@@ -239,32 +234,32 @@ void CVpack::DoPublics( const uint segNum,
     char*        ptr = NULL;
     char*        end = NULL;
     SstGlobalPub globalPub;
-    for ( uint module = 1; module <= moduleNum; module++ ) {
-        if ( ! _aRetriever.ReadSubsection(buffer,length,sstPublicSym,module)) {
+    for( uint module = 1; module <= moduleNum; module++ ) {
+        if( !_aRetriever.ReadSubsection( buffer, length, sstPublicSym, module ) ) {
             continue;
         }
         ptr = buffer;
         end = &ptr[length];
         ptr += LONG_WORD; // skip 0x00000001 header.
-        while ( ptr < end ) {
-            index = * (unsigned_16 *)(ptr + WORD);
-            if ( index == S_PUB16 ) {
-                if (!globalPub.Insert(CSPub16::Construct(ptr))) {
+        while( ptr < end ) {
+            index = *(unsigned_16 *)( ptr + WORD );
+            if( index == S_PUB16 ) {
+                if( !globalPub.Insert( CSPub16::Construct( ptr ) ) ) {
                     cerr << "Error: Failed : globalPub.Insert(CSPub16::Construct(ptr))\n";
                     cerr.flush();
                 }
-            } else if ( index == S_PUB32 ) {
-                if (!globalPub.Insert(CSPub32::Construct(ptr))) {
+            } else if( index == S_PUB32 ) {
+                if( !globalPub.Insert( CSPub32::Construct( ptr ) ) ) {
                     cerr << "Error: Failed :globalPub.Insert(CSPub32::Construct(ptr))\n";
                     cerr.flush();
                 }
-            } else if ( index == S_PUB32_NEW ) {
-                if (!globalPub.Insert(CSPub32_new::Construct(ptr))) {
+            } else if( index == S_PUB32_NEW ) {
+                if( !globalPub.Insert( CSPub32_new::Construct( ptr ) ) ) {
                     cerr << "Error: Failed :globalPub.Insert(CSPub32_new::Construct(ptr))\n";
                     cerr.flush();
                 }
             }
-            ptr += * (unsigned_16 *) ptr + WORD;
+            ptr += *(unsigned_16 *)ptr + WORD;
         }
     }
     unsigned_32 oldOffset = OFBase();
@@ -274,10 +269,10 @@ void CVpack::DoPublics( const uint segNum,
     cerr << " now\n";
     cerr.flush();
     */
-    globalPub.Put(_eMaker,segNum);
+    globalPub.Put( _eMaker, segNum );
     unsigned_32 secLen = OFBase() - oldOffset;
-    if ( secLen != 0 ) {
-        _newDir.Insert(sstGlobalPub,MODULE_INDEPENDENT,oldOffset,secLen);
+    if( secLen != 0 ) {
+        _newDir.Insert( sstGlobalPub, MODULE_INDEPENDENT, oldOffset, secLen );
     }
 }
 
@@ -286,9 +281,9 @@ void CVpack::DoLibraries()
 {
     unsigned_32 length;
     char*       buffer;
-    if ( _aRetriever.ReadSubsection(buffer,length,sstLibraries) ) {
-        _newDir.Insert(sstLibraries,MODULE_INDEPENDENT,OFBase(),length);
-        _eMaker.DumpToExe(buffer,length);
+    if( _aRetriever.ReadSubsection( buffer, length, sstLibraries ) ) {
+        _newDir.Insert( sstLibraries, MODULE_INDEPENDENT, OFBase(), length );
+        _eMaker.DumpToExe( buffer, length );
     }
 }
 
@@ -296,9 +291,9 @@ void CVpack::DoGlobalTypes( SstGlobalTypes& globalType )
 /******************************************************/
 {
     unsigned_32 oldOffset = OFBase();
-    globalType.Put(_eMaker);
+    globalType.Put( _eMaker );
     unsigned_32 length = OFBase() - oldOffset;
-    _newDir.Insert(sstGlobalTypes,MODULE_INDEPENDENT,oldOffset,length);
+    _newDir.Insert( sstGlobalTypes, MODULE_INDEPENDENT, oldOffset, length );
 }
 
 void CVpack::CreatePackExe()
@@ -310,7 +305,7 @@ void CVpack::CreatePackExe()
     DoExeCode();
     DumpSig();
     // reserve for directory offset.
-    _eMaker.Reserve(LONG_WORD);
+    _eMaker.Reserve( LONG_WORD );
     moduleNum = DoSstModule();
 
     SstGlobalTypes globalType;
@@ -321,49 +316,49 @@ void CVpack::CreatePackExe()
     unsigned_32    length;
     char           *buffer, *buffer2;
 
-    SymbolDistributor symDis(_aRetriever, globalSym, staticSym);
-    for ( uint module = 1; ; module++ ) {
+    SymbolDistributor symDis( _aRetriever, globalSym, staticSym );
+    for( uint module = 1; ; module++ ) {
         if( _aRetriever.IsAtSubsection( sstSegMap ) )
             break;
-        gottype = globalType.LoadTypes(_aRetriever,module);
+        gottype = globalType.LoadTypes( _aRetriever, module );
         gotsrcmod = false;
-        if ( _aRetriever.ReadSubsection(buffer,length,sstSrcModule,module) ) {
-            moduleSeg = ( * (unsigned_16 *) (buffer + WORD) );
+        if( _aRetriever.ReadSubsection( buffer, length, sstSrcModule, module ) ) {
+            moduleSeg = *(unsigned_16 *)( buffer + WORD );
             gotsrcmod = true;
-            buffer2 = new char [length];
+            buffer2 = new char[length];
             memcpy( buffer2, buffer, length );
         }
         if( gottype ) {
-            alignSym = new SstAlignSym(moduleSeg);
-            if ( ! symDis.Distribute(module, *alignSym) ) {
+            alignSym = new SstAlignSym( moduleSeg );
+            if( !symDis.Distribute( module, *alignSym ) ) {
                 delete alignSym;
                 break;
             }
-            DoAlignSym(alignSym, module);
+            DoAlignSym( alignSym, module );
             delete alignSym;
         }
-        if (gotsrcmod) {
-            _newDir.Insert(sstSrcModule,module,OFBase(),length);
-            _eMaker.DumpToExe(buffer2,length);
+        if( gotsrcmod ) {
+            _newDir.Insert( sstSrcModule, module, OFBase(), length );
+            _eMaker.DumpToExe( buffer2, length );
             delete[] buffer2;
             buffer2 = NULL;
         }
 
     }
     uint cSeg = DoSegMap();
-    DoPublics(cSeg,moduleNum);
+    DoPublics( cSeg, moduleNum );
     //cerr << "finished DoPublics.\n"; cerr.flush();
 
-    DoGlobalSym(globalSym,cSeg);
+    DoGlobalSym( globalSym, cSeg );
     //cerr << "finished DoGlobalSym.\n"; cerr.flush();
 
     DoLibraries();
     //cerr << "finished DoLibraries.\n"; cerr.flush();
 
-    DoGlobalTypes(globalType);
+    DoGlobalTypes( globalType );
     //cerr << "finished DoGlobalTypes.\n"; cerr.flush();
 
-    DoStaticSym(staticSym,cSeg);
+    DoStaticSym( staticSym, cSeg );
     //cerr << "finished DoStaticSym.\n"; cerr.flush();
 
     DoDirectory();
@@ -374,8 +369,8 @@ void CVpack::CreatePackExe()
 }
 
 
-int main(int argc, char* argv[])
-/******************************/
+int main( int argc, char* argv[] )
+/********************************/
 {
     char tmpFile[L_tmpnam];
     bool quiet;
@@ -393,15 +388,20 @@ int main(int argc, char* argv[])
             }
         }
         if( !quiet ) {
-            cout << CVpackHeader << endl;
+            cout << banner1t( "CV4 Symbolic Debugging Information Compactor" ) << endl
+                 << banner1v( BAN_VER_STR ) << endl
+                 << banner2 << endl
+                 << banner2a( 1995 ) << endl
+                 << banner3 << endl
+                 << banner3a << endl;
         }
-        ::ConvertFName(argv[1]);
-        ifstream  fd(fName, ios::in | ios::binary);
-        if ( !fd ) {
-            throw FileError(fName);
+        ::ConvertFName( argv[1] );
+        ifstream  fd( fName, ios::in | ios::binary );
+        if( !fd ) {
+            throw FileError( fName );
         }
-        tmpnam(tmpFile);
-        CVpack packMaker(fd,tmpFile);
+        tmpnam( tmpFile );
+        CVpack packMaker( fd, tmpFile );
         //cerr << "calling packMaker.CreatePackExe()\n";
         //cerr.flush();
 
@@ -410,17 +410,17 @@ int main(int argc, char* argv[])
         //cout.flush();
 
         fd.close();
-        if ( remove(fName) ) {
-            throw MiscError(strerror(errno));
+        if( remove( fName ) ) {
+            throw MiscError( strerror( errno ) );
         }
-        if ( rename(tmpFile,fName) ) {
-            throw MiscError(strerror(errno));
+        if( rename( tmpFile, fName ) ) {
+            throw MiscError( strerror( errno ) );
         }
     }
-    catch (CVpackError& CVerr) {
+    catch( CVpackError& CVerr ) {
         CVerr.ErrorPrint();
-        remove(tmpFile);
-        exit(1);
+        remove( tmpFile );
+        exit( 1 );
     }
-    return 0;
+    return( 0 );
 }

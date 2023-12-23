@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,6 +38,7 @@
 #include "system.h"
 #include "x86objd.h"
 #include "pcencode.h"
+#include "cgauxcc.h"
 #include "cgauxinf.h"
 #include "seldef.h"
 #include "pccode.h"
@@ -61,75 +62,76 @@
 #include "feprotos.h"
 
 
-static  void            JumpReg( instruction *ins, name *reg_name );
-static  void            Pushf(void);
+typedef enum {
+    UNSIGNED,               /* always an unsigned jump */
+    SIGNED_86,              /* signed if 8086 instruction, else unsigned */
+    SIGNED_87,              /* signed if 8087 instruction, else unsigned */
+    SIGNED_BOTH             /* always signed */
+} issigned;
 
 static byte UCondTable[] = {
 /***************************
-    the 8086 code for an unsigned jmp
-*/
-        5,              /* OP_BIT_TEST_TRUE */
-        4,              /* OP_BIT_TEST_FALSE */
-        4,              /* OP_CMP_EQUAL */
-        5,              /* OP_CMP_NOT_EQUAL */
-        7,              /* OP_CMP_GREATER */
-        6,              /* OP_CMP_LESS_EQUAL */
-        2,              /* OP_CMP_LESS */
-        3 };            /* OP_CMP_GREATER_EQUAL */
+ * The 8086 code for an unsigned jmp
+ */
+    5,              /* OP_BIT_TEST_TRUE */
+    4,              /* OP_BIT_TEST_FALSE */
+    4,              /* OP_CMP_EQUAL */
+    5,              /* OP_CMP_NOT_EQUAL */
+    7,              /* OP_CMP_GREATER */
+    6,              /* OP_CMP_LESS_EQUAL */
+    2,              /* OP_CMP_LESS */
+    3               /* OP_CMP_GREATER_EQUAL */
+};
 
 static byte SCondTable[] = {
 /***************************
-    the 8086 code for a signed jmp
-*/
-        5,              /* OP_BIT_TEST_TRUE */
-        4,              /* OP_BIT_TEST_FALSE */
-        4,              /* OP_CMP_EQUAL */
-        5,              /* OP_CMP_NOT_EQUAL */
-        15,             /* OP_CMP_GREATER */
-        14,             /* OP_CMP_LESS_EQUAL */
-        12,             /* OP_CMP_LESS */
-        13 };           /* OP_CMP_GREATER_EQUAL */
+ * The 8086 code for a signed jmp
+ */
+    5,              /* OP_BIT_TEST_TRUE */
+    4,              /* OP_BIT_TEST_FALSE */
+    4,              /* OP_CMP_EQUAL */
+    5,              /* OP_CMP_NOT_EQUAL */
+    15,             /* OP_CMP_GREATER */
+    14,             /* OP_CMP_LESS_EQUAL */
+    12,             /* OP_CMP_LESS */
+    13              /* OP_CMP_GREATER_EQUAL */
+};
 
 static byte rev_condition[] = {
-/************************
-    reverse the sense of an 8086 jmp (ie: ja -> jbe)
-*/
-        1,0,3,2,5,4,7,6,9,8,11,10,13,12,15,14 };        /* i.e. XOR 1*/
-
-typedef enum {
-        UNSIGNED,               /* always an unsigned jump */
-        SIGNED_86,              /* signed if 8086 instruction, else unsigned */
-        SIGNED_87,              /* signed if 8087 instruction, else unsigned */
-        SIGNED_BOTH             /* always signed */
-} issigned;
+/******************************
+ * Reverse the sense of an 8086 jmp (ie: ja -> jbe)
+ * i.e. XOR 1
+ */
+    1,0,3,2,5,4,7,6,9,8,11,10,13,12,15,14
+};
 
 static issigned signed_type[] = {
 /********************************
-    what kind of a jump does the instruction need following it
-*/
-        UNSIGNED,       /* U1*/
-        SIGNED_BOTH,    /* I1*/
-        UNSIGNED,       /* U2*/
-        SIGNED_BOTH,    /* I2*/
-        UNSIGNED,       /* U4*/
-        SIGNED_BOTH,    /* I4*/
-        UNSIGNED,       /* U8*/
-        SIGNED_BOTH,    /* I8*/
-        UNSIGNED,       /* CP*/
-        UNSIGNED,       /* PT*/
-        SIGNED_86,      /* FS*/
-        SIGNED_86,      /* FD*/
-        SIGNED_86,      /* FL*/
-        UNSIGNED };     /* XX*/
-
+ * What kind of a jump does the instruction need following it
+ */
+    UNSIGNED,       /* U1*/
+    SIGNED_BOTH,    /* I1*/
+    UNSIGNED,       /* U2*/
+    SIGNED_BOTH,    /* I2*/
+    UNSIGNED,       /* U4*/
+    SIGNED_BOTH,    /* I4*/
+    UNSIGNED,       /* U8*/
+    SIGNED_BOTH,    /* I8*/
+    UNSIGNED,       /* CP*/
+    UNSIGNED,       /* PT*/
+    SIGNED_86,      /* FS*/
+    SIGNED_86,      /* FD*/
+    SIGNED_86,      /* FL*/
+    UNSIGNED        /* XX*/
+};
 
 unsigned DepthAlign( unsigned depth )
 /***********************************/
 {
-    static unsigned char AlignArray[10] = { 0 };
+    static unsigned char    AlignArray[10] = { 0 };
 
     if( AlignArray[0] == 0 || depth == PROC_ALIGN ) {
-        unsigned char *align_info_bytes = FEAuxInfo( NULL, CODE_LABEL_ALIGNMENT );
+        unsigned char *align_info_bytes = FEAuxInfo( NULL, FEINF_CODE_LABEL_ALIGNMENT );
         Copy( align_info_bytes, AlignArray, align_info_bytes[0] + 1 );
     }
     if( OptForSize > 0 )
@@ -155,12 +157,12 @@ unsigned DepthAlign( unsigned depth )
     return( AlignArray[depth + 1] );
 }
 
-byte    CondCode( instruction *cond ) {
-/**************************************
-    Return the condition code number for the encoding, associated with "cond"
-*/
-
-    issigned            is_signed;
+byte    CondCode( instruction *cond )
+/************************************
+ * Return the condition code number for the encoding, associated with "cond"
+ */
+{
+    issigned        is_signed;
 
     if( _FPULevel( FPU_87 ) ) {
         is_signed = SIGNED_87;
@@ -174,11 +176,11 @@ byte    CondCode( instruction *cond ) {
     }
 }
 
-void    GenSetCC( instruction *cond ) {
-/**************************************
-    given a conditional "cond", generate the correct setxx instruction
-*/
-
+void    GenSetCC( instruction *cond )
+/************************************
+ * Given a conditional "cond", generate the correct setxx instruction
+ */
+{
     _Code;
     LayOpword( M_SETCC | CondCode( cond ) );
     if( cond->result->n.class == N_REGISTER ) {
@@ -190,56 +192,56 @@ void    GenSetCC( instruction *cond ) {
     _Emit;
 }
 
-byte    ReverseCondition( byte cond ) {
-/**************************************
-    reverse the sense of a conditional jump (already encoded)
-*/
-
+byte    ReverseCondition( byte cond )
+/************************************
+ * Reverse the sense of a conditional jump (already encoded)
+ */
+{
     return( rev_condition[cond] );
 }
 
 void    DoCall( label_handle lbl, bool imported, bool big, bool pop )
 /********************************************************************
-    call routine "lbl".
-*/
+ * Call routine "lbl".
+ */
 {
-    oc_class    occlass;
-    obj_length  len;
+    oc_class        occlass;
+    oc_dest_attr    destattr;
 
     /* unused parameters */ (void)imported;
 
     occlass = OC_CALL;
     if( pop )
-        occlass |= ATTR_POP;
+        occlass |= OC_ATTR_POP;
     if( big )
-        occlass |= ATTR_FAR;
+        occlass |= OC_ATTR_FAR;
     if( !big ) {
-        len = OptInsSize( OC_CALL, OC_DEST_NEAR );
+        destattr = OC_DEST_NEAR;
     } else if( AskIfRTLabel( lbl )
             || imported //NYI:multi-code-segment, this can go when FORTRAN is fixed up
             || AskCodeSeg() != FESegID( AskForLblSym( lbl ) ) ) {
-        len = OptInsSize( OC_CALL, OC_DEST_FAR );
+        destattr = OC_DEST_FAR;
     } else {
-        len = OptInsSize( OC_CALL, OC_DEST_CHEAP );
+        destattr = OC_DEST_CHEAP;
     }
-    CodeHandle( occlass, len, lbl );
+    CodeHandle( occlass, OptInsSize( occlass, destattr ), lbl );
 }
 
 
 static  void    CodeSequence( const byte *p, byte_seq_len len )
 /**************************************************************
-    Dump an inline sequence, taking into account the floating fixups and
-    the "seg foo", "offset foo" sequences.
-*/
+ * Dump an inline sequence, taking into account the floating fixups and
+ * the "seg foo", "offset foo" sequences.
+ */
 {
-    bool        first;
-    const byte  *endp;
-    const byte  *startp;
-    byte        type;
-    cg_sym_handle sym = 0;
-    offset      off = 0;
-    fe_attr     attr = 0;
-    name        *temp;
+    bool            first;
+    const byte      *endp;
+    const byte      *startp;
+    byte            type;
+    cg_sym_handle   sym = 0;
+    offset          off = 0;
+    fe_attr         attr = 0;
+    name            *temp;
 
     first = false;
     endp = p + len;
@@ -268,7 +270,7 @@ static  void    CodeSequence( const byte *p, byte_seq_len len )
                         if( attr & (FE_STATIC | FE_GLOBAL) ) {
                             DoFESymRef( sym, CG_FE, off, FE_FIX_BASE );
                         } else {
-                            FEMessage( MSG_ERROR, "aux seg used with local symbol" );
+                            FEMessage( FEMSG_ERROR, "aux seg used with local symbol" );
                         }
                         break;
                     case FIX_SYM_OFFSET:
@@ -280,7 +282,7 @@ static  void    CodeSequence( const byte *p, byte_seq_len len )
                             if( temp->t.location != NO_LOCATION ) {
                                 EmitOffset( NewBase( temp ) - temp->v.offset + off );
                             } else {
-                                FEMessage( MSG_ERROR, "aux offset used with register symbol" );
+                                FEMessage( FEMSG_ERROR, "aux offset used with register symbol" );
                             }
                         }
                         break;
@@ -289,7 +291,7 @@ static  void    CodeSequence( const byte *p, byte_seq_len len )
                         if( attr & FE_PROC ) {
                             DoFESymRef( sym, CG_FE, off, FE_FIX_SELF );
                         } else {
-                            FEMessage( MSG_ERROR, "aux reloff used with data symbol" );
+                            FEMessage( FEMSG_ERROR, "aux reloff used with data symbol" );
                         }
                         break;
                     }
@@ -324,39 +326,48 @@ static  void    CodeSequence( const byte *p, byte_seq_len len )
 }
 
 
-static  void    GenNoReturn( void ) {
-/************************************
-    Generate a noreturn instruction (pseudo instruction)
-*/
+static  void    GenNoReturn( void )
+/**********************************
+ * Generate a noreturn instruction (pseudo instruction)
+ */
+{
+    any_oc          oc;
 
-    any_oc      oc;
-
-    oc.oc_ret.hdr.class = OC_RET | ATTR_NORET;
-    oc.oc_ret.hdr.reclen = sizeof( oc_ret );
-    oc.oc_ret.hdr.objlen = 0;
-    oc.oc_ret.ref = NULL;
-    oc.oc_ret.pops = 0;
+    oc.oc_entry.hdr.class = OC_NORET;
+    oc.oc_entry.hdr.reclen = offsetof( oc_entry, data );
+    oc.oc_entry.hdr.objlen = 0;
     InputOC( &oc );
 }
 
-void    GenCall( instruction *ins ) {
-/************************************
-    Generate a call for "ins". (eg: call foo, or call far ptr foo)
-*/
+static  void    Pushf( void )
+/***************************/
+{
+    LayOpbyte( 0x9c ); /* PUSHF*/
+    _Emit;
+    _Code;
+}
 
-    name                *op;
-    cg_sym_handle       sym;
-    bool                imp;
-    call_class          cclass;
-    byte_seq            *code;
-    label_handle        lbl;
+
+void    GenCall( instruction *ins )
+/**********************************
+ * Generate a call for "ins". (eg: call foo, or call far ptr foo)
+ */
+{
+    name            *op;
+    cg_sym_handle   sym;
+    bool            imp;
+    call_class      cclass;
+    byte_seq        *code;
+    label_handle    lbl;
+    bool            far_call;
 
     if( ins->flags.call_flags & CALL_INTERRUPT ) {
         Pushf();
     }
     op = ins->operands[CALL_OP_ADDR];
-    cclass = *(call_class *)FindAuxInfo( op, CALL_CLASS );
-    code = FindAuxInfo( op, CALL_BYTES );
+    cclass = (call_class)(pointer_uint)FindAuxInfo( op, FEINF_CALL_CLASS );
+    far_call = ( ((call_class_target)(pointer_uint)FindAuxInfo( op, FEINF_CALL_CLASS_TARGET ) & FECALL_X86_FAR_CALL) != 0 );
+    code = FindAuxInfo( op, FEINF_CALL_BYTES );
     if( code != NULL ) {
         _Emit;
         if( code->relocs ) {
@@ -364,102 +375,112 @@ void    GenCall( instruction *ins ) {
         } else {
             CodeBytes( code->data, code->length );
         }
-        if( cclass & SUICIDAL ) {
-            GenNoReturn();
-        }
-    } else if( ( cclass & SUICIDAL ) && _IsntTargetModel( NEW_P5_PROFILING ) ) {
+    } else if( (cclass & FECALL_GEN_ABORTS)
+      && _IsntTargetModel( CGSW_X86_NEW_P5_PROFILING ) ) {
         sym = op->v.symbol;
         lbl = FEBack( sym )->lbl;
-        if( (cclass & FAR_CALL) && (FEAttr( sym ) & FE_IMPORT) ) {
-            CodeHandle( OC_JMP | ATTR_FAR, OptInsSize( OC_JMP, OC_DEST_FAR ), lbl );
+        if( far_call && (FEAttr( sym ) & FE_IMPORT) ) {
+            CodeHandle( OC_JMP | OC_ATTR_FAR, OptInsSize( OC_JMP, OC_DEST_FAR ), lbl );
         } else {
             CodeHandle( OC_JMP, OptInsSize( OC_JMP, OC_DEST_NEAR ), lbl );
         }
+        return;
     } else {
         sym = op->v.symbol;
         if( op->m.memory_type == CG_FE ) {
             lbl = FEBack( sym )->lbl;
             imp = ( (FEAttr( sym ) & (FE_COMMON | FE_IMPORT)) != 0 );
         } else {
-            // handles mismatch Fix it!
+            /*
+             * handles mismatch Fix it!
+             */
             lbl = (label_handle)sym;
             imp = true;
         }
-        DoCall( lbl, imp, (cclass & FAR_CALL) != 0, (ins->flags.call_flags & CALL_POPS_PARMS) != 0 );
+        DoCall( lbl, imp, far_call, (ins->flags.call_flags & CALL_POPS_PARMS) != 0 );
+    }
+    if( (cclass & (FECALL_GEN_ABORTS | FECALL_GEN_NORETURN))
+      && _IsntTargetModel( CGSW_X86_NEW_P5_PROFILING ) ) {
+        GenNoReturn();
     }
 }
 
 
-void    GenICall( instruction *ins ) {
-/*************************************
-    Generate an indirect call for "ins" (eg: call dword ptr [eax])
-*/
-
-    oc_class    entry;
-    gen_opcode  opcode;
-
-    if( ins->flags.call_flags & CALL_INTERRUPT ) {
-        Pushf();
-    }
-    entry = 0;
-    if( ins->flags.call_flags & CALL_POPS_PARMS ) {
-        entry |= ATTR_POP;
-    }
-    if( ( ins->flags.call_flags & CALL_ABORTS ) && _IsntTargetModel( NEW_P5_PROFILING ) ) {
-        entry |= OC_JMPI;
-    } else {
-        entry |= OC_CALLI;
-    }
-    if( ins->operands[CALL_OP_ADDR]->n.type_class == PT
-     || ins->operands[CALL_OP_ADDR]->n.type_class == CP ) {
-        entry |= ATTR_FAR;
-        opcode = M_CJILONG;
-    } else {
-        opcode = M_CJINEAR;
-    }
-    ReFormat( entry );
-    LayOpword( opcode );
-    LayModRM( ins->operands[CALL_OP_ADDR] );
-    _Emit;
-}
-
-
-void    GenRCall( instruction *ins )
-/*****************************************
-    generate a call to a register (eg: call eax)
-*/
+void    GenCallIndirect( instruction *ins )
+/******************************************
+ * Generate an indirect call for "ins" (eg: call dword ptr [eax])
+ */
 {
-    name                *op;
+    oc_class        occlass;
+    gen_opcode      opcode;
+    name            *op;
 
     if( ins->flags.call_flags & CALL_INTERRUPT ) {
         Pushf();
     }
-    ReFormat( ( (ins->flags.call_flags & CALL_POPS_PARMS) != 0 ) ? OC_CALLI | ATTR_POP : OC_CALLI );
-    LayOpword( M_CJINEAR );
+    if( (ins->flags.call_flags & CALL_ABORTS)
+      && _IsntTargetModel( CGSW_X86_NEW_P5_PROFILING ) ) {
+        occlass = OC_JMPI;
+    } else {
+        occlass = OC_CALLI;
+    }
+    if( ins->flags.call_flags & CALL_POPS_PARMS ) {
+        occlass |= OC_ATTR_POP;
+    }
     op = ins->operands[CALL_OP_ADDR];
+    opcode = M_CJINEAR;
+    if( op->n.type_class == PT
+      || op->n.type_class == CP ) {
+        opcode = M_CJILONG;
+        occlass |= OC_ATTR_FAR;
+    }
+    ReFormat( occlass );
+    LayOpword( opcode );
+    LayModRM( op );
+    _Emit;
+    if( (ins->flags.call_flags & CALL_NORETURN)
+      && _IsntTargetModel( CGSW_X86_NEW_P5_PROFILING ) ) {
+        GenNoReturn();
+    }
+}
+
+
+void    GenCallRegister( instruction *ins )
+/******************************************
+ * Generate a call to a register (eg: call eax)
+ */
+{
+    name            *op;
+    oc_class        occlass;
+
+    if( ins->flags.call_flags & CALL_INTERRUPT ) {
+        Pushf();
+    }
+    op = ins->operands[CALL_OP_ADDR];
+    occlass = OC_CALLI;
+    if( ins->flags.call_flags & CALL_POPS_PARMS ) {
+        occlass |= OC_ATTR_POP;
+    }
+    ReFormat( occlass );
+    LayOpword( M_CJINEAR );
     LayRegRM( op->r.reg );
     _Emit;
-}
-
-
-static  void    Pushf( void ) {
-/***********************/
-
-    LayOpbyte( 0x9c ); /* PUSHF*/
-    _Emit;
-    _Code;
+    if( (ins->flags.call_flags & CALL_NORETURN)
+      && _IsntTargetModel( CGSW_X86_NEW_P5_PROFILING ) ) {
+        GenNoReturn();
+    }
 }
 
 
 void    GenSelEntry( bool starts )
-/*******************************************
-    dump a queue that a select table is starting/ending ("starts") into
-    the code segment queue.
-*/
+/*********************************
+ * Dump a queue that a select table is starting/ending ("starts") into
+ * the code segment queue.
+ */
 {
-    any_oc      oc;
+    any_oc          oc;
 
-    oc.oc_select.hdr.class = OC_INFO + INFO_SELECT;
+    oc.oc_select.hdr.class = OC_INFO + OC_INFO_SELECT;
     oc.oc_select.hdr.reclen = sizeof( oc_select );
     oc.oc_select.hdr.objlen = 0;
     oc.oc_select.starts = starts;
@@ -468,9 +489,9 @@ void    GenSelEntry( bool starts )
 
 
 void    Gen1ByteValue( byte value )
-/****************************************
-    drop an 8 bit integer into the queue.
-*/
+/**********************************
+ * Drop an 8 bit integer into the queue.
+ */
 {
     _Code;
     AddByte( value );
@@ -478,11 +499,11 @@ void    Gen1ByteValue( byte value )
 }
 
 
-void    Gen2ByteValue( unsigned_16 value ) {
-/***************************************************
-    drop a 16 bit integer into the queue.
-*/
-
+void    Gen2ByteValue( uint_16 value )
+/*************************************
+ * Drop a 16 bit integer into the queue.
+ */
+{
     _Code;
     AddByte( value & 0xFF );
     AddByte( ( value >> 8 ) & 0xFF );
@@ -490,11 +511,11 @@ void    Gen2ByteValue( unsigned_16 value ) {
 }
 
 
-void    Gen4ByteValue( unsigned_32 value ) {
-/***************************************************
-    drop a 32 bit integer into the queue.
-*/
-
+void    Gen4ByteValue( uint_32 value )
+/*************************************
+ * Drop a 32 bit integer into the queue.
+ */
+{
     _Code;
     AddByte( value & 0xFF );
     AddByte( ( value >> 8 ) & 0xFF );
@@ -504,69 +525,80 @@ void    Gen4ByteValue( unsigned_32 value ) {
 }
 
 
-void    GenCodePtr( pointer label ) {
-/********************************************
-    Dump a near reference to a label into the code segment.
-*/
-
+void    GenCodePtr( pointer label )
+/**********************************
+ * Dump a near reference to a label into the code segment.
+ */
+{
     CodeHandle( OC_LREF, TypeAddress( TY_NEAR_CODE_PTR )->length, label );
 }
 
 
 void    GenCallLabel( pointer label )
 /************************************
-    generate a call to a label within the procedure (near call)
-*/
+ * Generate a call to a label within the procedure (near call)
+ */
 {
     DoCall( label, false, false, false );
 }
 
 
-void    GenLabelReturn( void ) {
-/*********************************
-    generate a return from CALL_LABEL instruction (near return)
-*/
-
-    GenReturn( 0, false, false );
+void    GenLabelReturn( void )
+/*****************************
+ * Generate a return from CALL_LABEL instruction (near return)
+ */
+{
+    GenReturn( 0, false );
 }
 
-void    GenReturn( int pop, bool is_long, bool iret ) {
-/**************************************************************
-    Generate a return instruction
-*/
-
-    any_oc      oc;
+void    GenReturn( int pop, bool is_long )
+/*****************************************
+ * Generate a return instruction
+ */
+{
+    any_oc          oc;
 
     oc.oc_ret.hdr.class = OC_RET;
-    if( pop != 0 ) {
-        oc.oc_ret.hdr.class |= ATTR_POP;
-    }
-    if( is_long ) {
-        oc.oc_ret.hdr.class |= ATTR_FAR;
-    }
-    if( iret ) {
-        oc.oc_ret.hdr.class |= ATTR_IRET;
-    }
     oc.oc_ret.hdr.reclen = sizeof( oc_ret );
     oc.oc_ret.hdr.objlen = 1;
     if( pop != 0 ) {
+        oc.oc_ret.hdr.class |= OC_ATTR_POP;
         oc.oc_ret.hdr.objlen += 2;
+    }
+    if( is_long ) {
+        oc.oc_ret.hdr.class |= OC_ATTR_FAR;
     }
     oc.oc_ret.ref = NULL;
     oc.oc_ret.pops = pop;
     InputOC( &oc );
 }
 
-void    GenMJmp( instruction *ins ) {
-/********************************************
-    Generate a jump indirect through memory instruction.
-*/
+void    GenIRET( void )
+/**********************
+ * Generate a IRET instruction
+ */
+{
+    any_oc          oc;
 
+    oc.oc_ret.hdr.class = OC_RET | OC_ATTR_IRET;
+    oc.oc_ret.hdr.reclen = sizeof( oc_ret );
+    oc.oc_ret.hdr.objlen = 1;
+    oc.oc_ret.ref = NULL;
+    oc.oc_ret.pops = 0;
+    InputOC( &oc );
+}
+
+void    GenJmpMemory( instruction *ins )
+/***************************************
+ * Generate a jump indirect through memory instruction.
+ */
+{
     label_handle    lbl;
     name            *base;
 
-    if( ins->head.opcode != OP_SELECT && _IsTargetModel( BIG_CODE ) ) {
-        ReFormat( OC_JMPI | ATTR_FAR );
+    if( ins->head.opcode != OP_SELECT
+      && _IsTargetModel( CGSW_X86_BIG_CODE ) ) {
+        ReFormat( OC_JMPI | OC_ATTR_FAR );
         LayOpword( M_CJILONG );
     } else {
         ReFormat( OC_JMPI );
@@ -585,21 +617,12 @@ void    GenMJmp( instruction *ins ) {
     }
 }
 
-void    GenRJmp( instruction *ins ) {
-/********************************************
-    Generate a jump to register instruction (eg: jmp eax)
-*/
-
-    JumpReg( ins, ins->operands[0] );
-}
-
-
-static  void    JumpReg( instruction *ins, name *reg_name ) {
-/************************************************************
-    Generate a jump to register instruction (eg: jmp eax)
-*/
-
-    hw_reg_set  regs;
+static  void    JumpReg( instruction *ins, name *reg_name )
+/**********************************************************
+ * Generate a jump to register instruction (eg: jmp eax)
+ */
+{
+    hw_reg_set      regs;
 
     /* unused parameters */ (void)ins;
 
@@ -613,7 +636,7 @@ static  void    JumpReg( instruction *ins, name *reg_name ) {
         LayOpbyte( M_PUSH );
         LayRegAC( Low32Reg( regs ) );
         _Emit;
-        GenReturn( 0, true, false );
+        GenReturn( 0, true );
     } else {
         ReFormat( OC_JMPI );
         LayOpword( M_CJINEAR );
@@ -622,19 +645,29 @@ static  void    JumpReg( instruction *ins, name *reg_name ) {
     }
 }
 
-static  void    DoCodeBytes( const void *src, byte_seq_len len, oc_class class ) {
-/*******************************************************************************
-    Dump bytes "src" directly into the queue, for length "len".
-*/
-    any_oc    *oc;
-    uint      addlen;
+void    GenJmpRegister( instruction *ins )
+/*****************************************
+ * Generate a jump to register instruction (eg: jmp eax)
+ */
+{
+    JumpReg( ins, ins->operands[0] );
+}
+
+
+static  void    DoCodeBytes( const void *src, byte_seq_len len, oc_class occlass )
+/*********************************************************************************
+ * Dump bytes "src" directly into the queue, for length "len".
+ */
+{
+    any_oc          *oc;
+    uint            addlen;
 
     oc = CGAlloc( offsetof( oc_entry, data ) + MAX_OBJ_LEN );
-    oc->oc_entry.hdr.class = class;
+    oc->oc_entry.hdr.class = occlass;
     oc->oc_entry.hdr.reclen = offsetof( oc_entry, data ) + MAX_OBJ_LEN;
     oc->oc_entry.hdr.objlen = MAX_OBJ_LEN;
     addlen = 0;
-    if( class == OC_IDATA ) {
+    if( occlass == OC_IDATA ) {
         if( len > 255 )
             len = 255;
         addlen = 1;

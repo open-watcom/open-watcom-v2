@@ -29,10 +29,14 @@
 ****************************************************************************/
 
 
+#include <stdlib.h>
 #include "drpriv.h"
 #include "drutils.h"
-#include <stdlib.h>
-#include <string.h>
+#include "leb128rd.h"
+
+
+#define ReadSLEB128(h)   DecodeSLEB128((void **)&(h), readLEB)
+#define ReadULEB128(h)   DecodeULEB128((void **)&(h), readLEB)
 
 static dw_locop_op const LocOpr[] = {
 #define DW_LOC_OP( __n, __v )    __v,
@@ -40,43 +44,10 @@ static dw_locop_op const LocOpr[] = {
 #undef DW_LOC_OP
 };
 
-static uint_8 *DecodeULEB128( const uint_8 *input, uint_32 *value )
-/*****************************************************************/
+static unsigned char readLEB( void **h )
+/**************************************/
 {
-    uint_32     result;
-    uint        shift;
-    uint_8      in;
-
-    result = 0;
-    shift = 0;
-    do {
-        in = *input++;
-        result |= (in & 0x7f) << shift;
-        shift += 7;
-    } while( (in & 0x80) != 0 );
-    *value = result;
-    return( (uint_8 *)input );
-}
-
-static uint_8 *DecodeSLEB128( const uint_8 *input, int_32 *value )
-/****************************************************************/
-{
-    int_32      result;
-    uint        shift;
-    uint_8      in;
-
-    result = 0;
-    shift = 0;
-    do {
-        in = *input++;
-        result |= ( in & 0x7f ) << shift;
-        shift += 7;
-    } while( (in & 0x80) != 0 );
-    if( ( shift < 32 ) && (in & 0x40) != 0 ) {
-        result |= - ((int_32)( 1 << shift ));
-    }
-    *value = result;
-    return( (uint_8 *)input );
+    return( *(*(unsigned char **)h)++ );
 }
 
 //TODO: check stack bounds
@@ -94,12 +65,13 @@ static void DoLocExpr( unsigned_8       *p,
     uint_32         op2;
     uint_32         stk1;
     uint_32         stk2;
-    uint_32         utmp;
-    int_32          stmp;
+    uint_64         utmp;
+    int_64          stmp;
     uint_32         stack[101];
     uint_32         *top;
     uint_32         *stk_top;
     dr_loc_kind     kind;
+    unsigned_32     utmp32;
 
 #define Pop( a )     (++a)
 #define Push( a )    (--a)
@@ -112,7 +84,7 @@ static void DoLocExpr( unsigned_8       *p,
     stack[100] = 0;
     top = stk_top;
     if( callbck->init!= NULL  ) {
-        kind = callbck->init( d, &utmp );
+        kind = callbck->init( d, &utmp32 );
         switch( kind ){
         case DR_LOC_NONE:
              kind = DR_LOC_ADDR;
@@ -120,7 +92,7 @@ static void DoLocExpr( unsigned_8       *p,
         case DR_LOC_REG:
         case DR_LOC_ADDR:
             Push( top );
-            top[0] = utmp;
+            top[0] = utmp32;
         }
     } else {
         kind = DR_LOC_ADDR;
@@ -180,17 +152,17 @@ static void DoLocExpr( unsigned_8       *p,
             p += sizeof(uint_32);
             break;
         case DW_LOP_U128:
-            p = DecodeULEB128( p, &utmp );
+            utmp = ReadULEB128( p );
             op1 = utmp;
             break;
         case DW_LOP_S128:
-            p = DecodeSLEB128( p, &stmp );
+            stmp = ReadSLEB128( p );
             op1 = stmp;
             break;
         case DW_LOP_U128_S128:
-            p = DecodeULEB128( p, &utmp );
+            utmp = ReadULEB128( p );
             op1 = utmp;
-            p = DecodeSLEB128( p, &stmp );
+            stmp = ReadSLEB128( p );
             op2 = stmp;
             break;
         case DW_LOP_LIT1:
@@ -204,7 +176,7 @@ static void DoLocExpr( unsigned_8       *p,
         case DW_LOP_BRG1:
             op1 = op - DW_OP_breg0;
             op = DW_OP_breg0;
-            p = DecodeSLEB128( p, &stmp );
+            stmp = ReadSLEB128( p );
             op2 = stmp;
             break;
         case DW_LOP_STK2:
@@ -538,8 +510,8 @@ exit:
     return( ret );
 }
 
-bool DRLocBasedAT( drmem_hdl var, dr_loc_callbck *callbck, void *d )
-/******************************************************************/
+bool DRENTRY DRLocBasedAT( drmem_hdl var, dr_loc_callbck *callbck, void *d )
+/**************************************************************************/
 {
     dw_tagnum       tag;
     dw_atnum        at;
@@ -581,8 +553,8 @@ bool DRLocBasedAT( drmem_hdl var, dr_loc_callbck *callbck, void *d )
     return( ret );
 }
 
-bool DRLocationAT( drmem_hdl var, dr_loc_callbck *callbck, void *d )
-/******************************************************************/
+bool DRENTRY DRLocationAT( drmem_hdl var, dr_loc_callbck *callbck, void *d )
+/**************************************************************************/
 {
     dw_tagnum       tag;
     dw_atnum        at;
@@ -613,8 +585,8 @@ bool DRLocationAT( drmem_hdl var, dr_loc_callbck *callbck, void *d )
     return( ret );
 }
 
-bool DRParmEntryAT( drmem_hdl var, dr_loc_callbck *callbck, void *d )
-/*******************************************************************/
+bool DRENTRY DRParmEntryAT( drmem_hdl var, dr_loc_callbck *callbck, void *d )
+/***************************************************************************/
 {
     drmem_hdl       abbrev;
     drmem_hdl       sym = var;
@@ -629,8 +601,8 @@ bool DRParmEntryAT( drmem_hdl var, dr_loc_callbck *callbck, void *d )
     return( ret );
 }
 
-drmem_hdl DRStringLengthAT( drmem_hdl str )
-/*****************************************/
+drmem_hdl DRENTRY DRStringLengthAT( drmem_hdl str )
+/*************************************************/
 {
     drmem_hdl   abbrev;
 
@@ -642,8 +614,8 @@ drmem_hdl DRStringLengthAT( drmem_hdl str )
     }
 }
 
-bool DRRetAddrLocation( drmem_hdl var, dr_loc_callbck *callbck, void *d )
-/***********************************************************************/
+bool DRENTRY DRRetAddrLocation( drmem_hdl var, dr_loc_callbck *callbck, void *d )
+/*******************************************************************************/
 {
     drmem_hdl   abbrev;
     drmem_hdl   sym = var;
@@ -658,8 +630,8 @@ bool DRRetAddrLocation( drmem_hdl var, dr_loc_callbck *callbck, void *d )
     return( ret );
 }
 
-bool DRSegLocation( drmem_hdl var, dr_loc_callbck *callbck, void *d )
-/*******************************************************************/
+bool DRENTRY DRSegLocation( drmem_hdl var, dr_loc_callbck *callbck, void *d )
+/***************************************************************************/
 {
     drmem_hdl   abbrev;
     drmem_hdl   sym = var;

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,15 +48,17 @@ static void CheckBitfieldType( TYPEPTR typ );
         }
 #endif
 
-/* matches enum DataType in ctypes.h */
+/*
+ * matches enum DataType in ctypes.h
+ */
 static unsigned char  CTypeSizes[] = {
     #define pick1(enum,cgtype,x86asmtype,name,size) size,
     #include "cdatatyp.h"
     #undef  pick1
 };
 
-TYPEPTR CTypeHash[TYP_LAST_ENTRY];
-TYPEPTR PtrTypeHash[TYP_LAST_ENTRY];
+TYPEPTR CTypeHash[DATA_TYPE_SIZE];
+TYPEPTR PtrTypeHash[DATA_TYPE_SIZE];
 
 TAGPTR  TagHash[ID_HASH_SIZE + 1];
 FIELDPTR FieldHash[ID_HASH_SIZE];
@@ -80,20 +82,20 @@ typedef enum {
 
 void InitTypeHashTables( void )
 {
-    parm_hash_idx   h1;
-    id_hash_idx     h2;
+    parm_hash_idx   hash1;
+    id_hash_idx     hash2;
     DATA_TYPE       base_type;
 
-    for( h1 = 0; h1 <= MAX_PARM_LIST_HASH_SIZE; ++h1 ) {
-        FuncTypeHead[h1] = NULL;
+    for( hash1 = 0; hash1 <= MAX_PARM_LIST_HASH_SIZE; hash1++ ) {
+        FuncTypeHead[hash1] = NULL;
     }
-    for( base_type = TYP_BOOL; base_type < TYP_LAST_ENTRY; ++base_type ) {
+    for( base_type = 0; base_type < DATA_TYPE_SIZE; ++base_type ) {
         CTypeHash[base_type] = NULL;
         PtrTypeHash[base_type] = NULL;
     }
-    for( h2 = 0; h2 < ID_HASH_SIZE; ++h2 ) {
-        TagHash[h2] = NULL;
-        FieldHash[h2] = NULL;
+    for( hash2 = 0; hash2 < ID_HASH_SIZE; hash2++ ) {
+        TagHash[hash2] = NULL;
+        FieldHash[hash2] = NULL;
     }
     TagHash[ID_HASH_SIZE] = NULL;
 }
@@ -107,7 +109,7 @@ void CTypeInit( void )
     FieldCount = 0;
     EnumCount = 0;
     InitTypeHashTables();
-    for( base_type = TYP_BOOL; base_type < TYP_LAST_ENTRY; ++base_type ) {
+    for( base_type = 0; base_type < DATA_TYPE_SIZE; ++base_type ) {
         CTypeCounts[base_type] = 0;
 #if 0
         if ( base_type == TYP_FCOMPLEX || base_type == TYP_DCOMPLEX || base_type == TYP_LDCOMPLEX ) {
@@ -145,11 +147,11 @@ TYPEPTR GetType( DATA_TYPE base_type )
 void WalkFuncTypeList( void (*func)(TYPEPTR,int) )
 {
     TYPEPTR         typ;
-    parm_hash_idx   h;
+    parm_hash_idx   hash;
 
-    for( h = 0; h <= MAX_PARM_LIST_HASH_SIZE; h++ ) {
-        for( typ = FuncTypeHead[h]; typ != NULL; typ = typ->next_type ) {
-            func( typ, h );
+    for( hash = 0; hash <= MAX_PARM_LIST_HASH_SIZE; hash++ ) {
+        for( typ = FuncTypeHead[hash]; typ != NULL; typ = typ->next_type ) {
+            func( typ, hash );
         }
     }
 }
@@ -159,12 +161,12 @@ void WalkTypeList( void (*func)(TYPEPTR) )
     TYPEPTR     typ;
     DATA_TYPE   base_type;
 
-    for( base_type = TYP_BOOL; base_type < TYP_LAST_ENTRY; ++base_type ) {
+    for( base_type = 0; base_type < DATA_TYPE_SIZE; ++base_type ) {
         for( typ = CTypeHash[base_type]; typ != NULL; typ = typ->next_type ) {
             func( typ );
         }
     }
-    for( base_type = TYP_BOOL; base_type < TYP_LAST_ENTRY; ++base_type ) {
+    for( base_type = 0; base_type < DATA_TYPE_SIZE; ++base_type ) {
         for( typ = PtrTypeHash[base_type]; typ != NULL; typ = typ->next_type ) {
             func( typ );
         }
@@ -241,7 +243,7 @@ type_modifiers TypeQualifier( void )
         default:
             return( flags );
         }
-        if( (flags & bit) && !CompFlags.c99_extensions )
+        if( (flags & bit) && CHECK_STD( < , C99 ) )
             CErr1( ERR_REPEATED_MODIFIER );
         flags |= bit;
         NextToken();
@@ -533,25 +535,25 @@ static void DeclSpecifiers( bool *plain_int, decl_info *info )
                         CErr1( ERR_INVALID_DECLARATOR );
                         break;
                     }
-                    if( CMPLIT( Buffer, "dllimport" ) == 0 ) {
+                    if( strcmp( Buffer, "dllimport" ) == 0 ) {
                         decl = DECLSPEC_DLLIMPORT;
-                    } else if( CMPLIT( Buffer, "overridable" ) == 0 ) {
+                    } else if( strcmp( Buffer, "overridable" ) == 0 ) {
                         decl = DECLSPEC_DLLIMPORT;
-                    } else if( CMPLIT( Buffer, "dllexport" ) == 0 ) {
+                    } else if( strcmp( Buffer, "dllexport" ) == 0 ) {
                         decl = DECLSPEC_DLLEXPORT;
-                    } else if( CMPLIT( Buffer, "thread" ) == 0 ) {
+                    } else if( strcmp( Buffer, "thread" ) == 0 ) {
                         decl = DECLSPEC_THREAD;
-                    } else if( CMPLIT( Buffer, "naked" ) == 0 ) {
+                    } else if( strcmp( Buffer, "naked" ) == 0 ) {
                         if( info->naked ) {
                             CErr1( ERR_INVALID_DECLSPEC );
                         } else {
                             info->naked = true;
                         }
-                    } else if( CMPLIT( Buffer, "aborts" ) == 0 ) {
+                    } else if( strcmp( Buffer, "aborts" ) == 0 ) {
                         modifier = FLAG_ABORTS;
-                    } else if( CMPLIT( Buffer, "noreturn" ) == 0 ) {
+                    } else if( strcmp( Buffer, "noreturn" ) == 0 ) {
                         modifier = FLAG_NORETURN;
-                    } else if( CMPLIT( Buffer, "farss" ) == 0 ) {
+                    } else if( strcmp( Buffer, "farss" ) == 0 ) {
                         modifier = FLAG_FARSS;
                     } else {
                         CErr1( ERR_INVALID_DECLSPEC );
@@ -605,12 +607,14 @@ static void DeclSpecifiers( bool *plain_int, decl_info *info )
         case T_ID:
             if( typ != NULL || bmask != M_NONE )
                 goto got_specifier;
-            /* lookup id in symbol table */
-            /* if valid type identifier then OK */
+            /*
+             * lookup id in symbol table
+             * if valid type identifier then OK
+             */
             if( CurToken == T_ID ) {
-                sym_handle = SymLookTypedef( HashValue, Buffer, &sym );
+                sym_handle = SymLookTypedef( CalcHashID( Buffer ), Buffer, &sym );
             } else {    /* T_SAVED_ID */
-                sym_handle = SymLookTypedef( SavedHash, SavedId, &sym );
+                sym_handle = SymLookTypedef( CalcHashID( SavedId ), SavedId, &sym );
             }
             if( sym_handle == SYM_NULL )
                 goto got_specifier;
@@ -681,8 +685,10 @@ static void DeclSpecifiers( bool *plain_int, decl_info *info )
 got_specifier:
     info->stg = specified_stg_class;
     if( typ != NULL ) {
-        /* already have a type (TYP_STRUCT, TYP_UNION, TYP_ENUM) */
-        /* or an ID that was a typedef name */
+        /*
+         * already have a type (TYP_STRUCT, TYP_UNION, TYP_ENUM)
+         * or an ID that was a typedef name
+         */
         if( bmask != M_NONE ) {
             CErr1( ERR_INV_TYPE );  // picked up an int
         }
@@ -724,18 +730,16 @@ TYPEPTR TypeDefault( void )
 }
 
 
-static TAGPTR NewTag( const char *name, id_hash_idx h )
+static TAGPTR NewTag( id_hash_idx hash, const char *name )
 {
     TAGPTR      tag;
-    size_t      len;
 
-    len = strlen( name ) + 1;
-    tag = (TAGPTR)CPermAlloc( sizeof( TAGDEFN ) - 1 + len );
+    tag = (TAGPTR)CPermAlloc( sizeof( TAGDEFN ) + strlen( name ) );
     tag->level = (id_level_type)SymLevel;
-    tag->hash = h;
-    tag->next_tag = TagHash[h];
-    TagHash[h] = tag;
-    memcpy( tag->name, name, len );
+    tag->hash = hash;
+    tag->next_tag = TagHash[hash];
+    TagHash[hash] = tag;
+    strcpy( tag->name, name );
     ++TagCount;
     return( tag );
 }
@@ -743,7 +747,7 @@ static TAGPTR NewTag( const char *name, id_hash_idx h )
 
 TAGPTR NullTag( void )
 {
-    return( NewTag( "", ID_HASH_SIZE ) );
+    return( NewTag( ID_HASH_SIZE, "" ) );
 }
 
 
@@ -751,7 +755,7 @@ TAGPTR VfyNewTag( TAGPTR tag, DATA_TYPE tag_type )
 {
     if( tag->sym_type != NULL ) {               /* tag already exists */
         if( !ChkEqSymLevel( tag ) ) {
-            tag = NewTag( tag->name, tag->hash );
+            tag = NewTag( tag->hash, tag->name );
         } else if( tag->size != 0 || tag->sym_type->decl_type != tag_type ) {
             CErr2p( ERR_DUPLICATE_TAG, tag->name );
         }
@@ -766,7 +770,7 @@ static FIELDPTR NewField( FIELDPTR new_field, TYPEPTR decl )
     FIELDPTR    prev_field;
     TYPEPTR     typ;
     TAGPTR      tag;
-    size_t      len;
+    id_hash_idx hash;
 
     ++FieldCount;
     typ = new_field->field_type;
@@ -774,7 +778,9 @@ static FIELDPTR NewField( FIELDPTR new_field, TYPEPTR decl )
         SKIP_TYPEDEFS( typ );
     }
     if( new_field->name[0] == '\0' ) {
-        /* allow nameless structs and unions */
+        /*
+         * allow nameless structs and unions
+         */
         if( (typ->decl_type != TYP_STRUCT && typ->decl_type != TYP_UNION)
           || !CompFlags.extensions_enabled ) {
             CErr1( ERR_INVALID_DECLARATOR );
@@ -783,7 +789,9 @@ static FIELDPTR NewField( FIELDPTR new_field, TYPEPTR decl )
     if( typ == decl ) {
         CErr1( ERR_STRUCT_OR_UNION_INSIDE_ITSELF );
     } else if( SizeOfArg( typ ) == 0 ) {   /* was TypeSize(typ) */
-        /* can't have an array of incomplete type */
+        /*
+         * can't have an array of incomplete type
+         */
         if( typ->decl_type == TYP_ARRAY
           && ( SizeOfArg( typ->object ) == 0 || !CompFlags.extensions_enabled )
           || typ->decl_type != TYP_ARRAY ) {
@@ -791,20 +799,22 @@ static FIELDPTR NewField( FIELDPTR new_field, TYPEPTR decl )
         }
     }
     tag = decl->u.tag;
-    new_field->hash = HashValue;
+    hash = CalcHashID( new_field->name );
+    new_field->hash = hash;
     if( new_field->name[0] != '\0' ) {  /* only check non-empty names */
-        len = strlen( new_field->name ) + 1;
-        for( field = FieldHash[HashValue]; field != NULL; field = field->next_field_same_hash ) {
-            /* fields were added at the front of the hash linked list --
-               may as well stop if the level isn't the same anymore */
+        for( field = FieldHash[hash]; field != NULL; field = field->next_field_same_hash ) {
+            /*
+             * fields were added at the front of the hash linked list --
+             * may as well stop if the level isn't the same anymore
+             */
             if( field->level != new_field->level )
                 break;
-            if( memcmp( field->name, new_field->name, len ) == 0 ) {
+            if( strcmp( field->name, new_field->name ) == 0 ) {
                 CErr2p( ERR_DUPLICATE_FIELD_NAME, field->name );
             }
         }
-        new_field->next_field_same_hash = FieldHash[HashValue];
-        FieldHash[HashValue] = new_field;
+        new_field->next_field_same_hash = FieldHash[hash];
+        FieldHash[hash] = new_field;
     }
     if( tag->u.field_list == NULL ) {
         tag->u.field_list = new_field;
@@ -892,7 +902,7 @@ static target_size FieldAlign( target_size next_offset, FIELDPTR field, align_ty
         old_offset = next_offset;
         next_offset = _RoundUp( next_offset, align );
         if( CompFlags.slack_byte_warning && (next_offset - old_offset) ) {
-            CWarn2( WARN_LEVEL_1, ERR_SLACK_ADDED, (unsigned)( next_offset - old_offset ) );
+            CWarn2( ERR_SLACK_ADDED, (unsigned)( next_offset - old_offset ) );
         }
     }
     field->offset = next_offset;
@@ -927,9 +937,11 @@ static DATA_TYPE UnQualifiedType( TYPEPTR typ )
     return( TYP_UNDEFINED );
 }
 
-/* clear the hash table of all fields that were just defined
-   in the struct with tag tag */
 static void ClearFieldHashTable( TAGPTR tag )
+/********************************************
+ * clear the hash table of all fields that were just defined
+ * in the struct with tag tag
+ */
 {
     FIELDPTR field;
     FIELDPTR hash_field;
@@ -939,11 +951,15 @@ static void ClearFieldHashTable( TAGPTR tag )
         prev_field = NULL;
         hash_field = FieldHash[field->hash];
         if( hash_field == field ) {
-            /* first entry: easy kick out */
+            /*
+             * first entry: easy kick out
+             */
             FieldHash[field->hash] = field->next_field_same_hash;
         } else {
             while( hash_field != NULL ) {
-                /* search for candidate to kick */
+                /*
+                 * search for candidate to kick
+                 */
                 prev_field = hash_field;
                 hash_field = hash_field->next_field_same_hash;
                 if( hash_field == field ) {
@@ -1023,7 +1039,9 @@ static target_size GetFields( TYPEPTR decl )
     worst_alignment = 1;
     bits_available = 1;
     bits_total = 0;
-    /* assertion: bits_available != bits_total && bits_total >> 3 == 0 */
+    /*
+     * assertion: bits_available != bits_total && ( bits_total / CHAR_BIT ) == 0
+     */
     struct_size = start;
     next_offset = start;
     for(;;) {
@@ -1046,13 +1064,13 @@ static target_size GetFields( TYPEPTR decl )
         }
         unqualified_type = UnQualifiedType( typ );
         if( decl->decl_type == TYP_UNION ) {
-            bits_total = TypeSize( typ ) * 8;
+            bits_total = TypeSize( typ ) * CHAR_BIT;
         } else if( bits_available == bits_total ) {
-            bits_total = TypeSize( typ ) * 8;
+            bits_total = TypeSize( typ ) * CHAR_BIT;
             bits_available = bits_total;
         } else if( unqualified_type != prev_unqualified_type ) {
-            next_offset += bits_total >> 3;
-            bits_total = TypeSize( typ ) * 8;
+            next_offset += bits_total / CHAR_BIT;
+            bits_total = TypeSize( typ ) * CHAR_BIT;
             bits_available = bits_total;
         }
         prev_unqualified_type = unqualified_type;
@@ -1081,20 +1099,24 @@ static target_size GetFields( TYPEPTR decl )
                 if( (int)width < 0 ) {
                     CErr1( ERR_WIDTH_NEGATIVE );
                     width = 0;
-                } else if( width > TARGET_BITS || width > bits_total ) {
+                } else if( width > ( TARGET_BITFIELD * CHAR_BIT ) || width > bits_total ) {
                     CErr1( ERR_FIELD_TOO_WIDE );
-                    width = TARGET_BITS;
+                    width = TARGET_BITFIELD * CHAR_BIT;
                 }
                 if( width > bits_available || width == 0 ) {
                     scalar_size = TypeSize( typ );
                     if( bits_available != bits_total ) {
-                        /* some bits have been used; abandon this unit */
-                        next_offset += bits_total >> 3;
+                        /*
+                         * some bits have been used; abandon this unit
+                         */
+                        next_offset += bits_total / CHAR_BIT;
                     } else if( width == 0 ) {
-                        /* no bits have been used; align to base type */
+                        /*
+                         * no bits have been used; align to base type
+                         */
                         next_offset = _RoundUp( next_offset, scalar_size );
                     }
-                    bits_total = scalar_size * 8;
+                    bits_total = scalar_size * CHAR_BIT;
                     bits_available = bits_total;
                 }
                 if( field != NULL ) {
@@ -1106,9 +1128,9 @@ static target_size GetFields( TYPEPTR decl )
                 bits_available -= width;
             } else {
                 if( bits_available != bits_total ) { //changed from bit field to non
-                    next_offset += bits_total >> 3;
+                    next_offset += bits_total / CHAR_BIT;
                     field->offset = next_offset;
-                    bits_total = TypeSize( typ ) * 8;
+                    bits_total = TypeSize( typ ) * CHAR_BIT;
                     bits_available = bits_total;
                 }
                 next_offset = FieldAlign( next_offset, field, &worst_alignment );
@@ -1121,7 +1143,7 @@ static target_size GetFields( TYPEPTR decl )
             NextToken();
         }
         if( CurToken == T_RIGHT_BRACE ) {
-            CWarn1( WARN_MISSING_LAST_SEMICOLON, ERR_MISSING_LAST_SEMICOLON );
+            CWarn1( ERR_MISSING_LAST_SEMICOLON );
         } else {
             MustRecog( T_SEMI_COLON );
         }
@@ -1130,7 +1152,7 @@ static target_size GetFields( TYPEPTR decl )
         }
     }
     if( bits_available != bits_total ) { /* if last field was bit field */
-        next_offset += bits_total >> 3;
+        next_offset += bits_total / CHAR_BIT;
         if( next_offset > struct_size ) {
             struct_size = next_offset;
         }
@@ -1170,7 +1192,7 @@ static TYPEPTR StructDecl( DATA_TYPE decl_typ, bool packed )
             NextToken();
         }
         if( CurToken == T_ID ) {        /* structure or union tag */
-            tag = TagLookup();
+            tag = TagLookup( Buffer );
             NextToken();
         } else {
             tag = NullTag();
@@ -1178,7 +1200,7 @@ static TYPEPTR StructDecl( DATA_TYPE decl_typ, bool packed )
         if( CurToken != T_LEFT_BRACE ) {
             if( CurToken == T_SEMI_COLON ) {
                 if( !ChkEqSymLevel( tag ) ) {
-                    tag = NewTag( tag->name, tag->hash );
+                    tag = NewTag( tag->hash, tag->name );
                 }
             }
             typ = tag->sym_type;
@@ -1210,14 +1232,13 @@ static TYPEPTR StructDecl( DATA_TYPE decl_typ, bool packed )
 }
 
 /*
-Next three functions descripe a struct that looks like
-struct {
-    double __ow_real;
-    double _Imaginary __ow_imaginary;
-}
-*/
-
-/*
+ * Next three functions describe a struct that looks like
+ * struct {
+ *     double __ow_real;
+ *     double _Imaginary __ow_imaginary;
+ * }
+ */
+#if 0
 static void GetComplexFieldTypeSpecifier( decl_info *info, DATA_TYPE data_type )
 {
     info->stg = SC_NONE;      // indicate don't want any storage class specifiers
@@ -1311,7 +1332,7 @@ static TYPEPTR ComplexDecl( DATA_TYPE decl_typ, bool packed )
 
     return( typ );
 }
-*/
+#endif
 
 static void CheckBitfieldType( TYPEPTR typ )
 {
@@ -1325,7 +1346,9 @@ static void CheckBitfieldType( TYPEPTR typ )
     case TYP_INT:
     case TYP_UINT:
     case TYP_BOOL:
-        /* ANSI C only allows int and unsigned [int]; C99 adds _Bool */
+        /*
+         * ANSI C only allows int and unsigned [int]; C99 adds _Bool
+         */
         return;
     case TYP_CHAR:
     case TYP_UCHAR:
@@ -1346,19 +1369,19 @@ static void CheckBitfieldType( TYPEPTR typ )
 }
 
 
-void VfyNewSym( id_hash_idx h, const char *name )
+void VfyNewSym( id_hash_idx hash, const char *name )
 {
     SYM_HANDLE  sym_handle;
     SYM_ENTRY   sym;
     ENUMPTR     ep;
 
-    ep = EnumLookup( h, name );
+    ep = EnumLookup( hash, name );
     if( ep != NULL && ChkEqSymLevel( ep->parent ) ) {
         SetDiagEnum( ep );
         CErr2p( ERR_SYM_ALREADY_DEFINED, name );
         SetDiagPop();
     }
-    sym_handle = SymLook( h, name );
+    sym_handle = SymLook( hash, name );
     if( sym_handle != SYM_NULL ) {
         SymGet( &sym, sym_handle );
         if( ChkEqSymLevel( &sym ) ) {
@@ -1370,28 +1393,30 @@ void VfyNewSym( id_hash_idx h, const char *name )
 }
 
 
-TAGPTR TagLookup( void )
+TAGPTR TagLookup( const char *name )
 {
-    TAGPTR          tag;
+    TAGPTR      tag;
+    id_hash_idx hash;
 
-    for( tag = TagHash[HashValue]; tag != NULL; tag = tag->next_tag ) {
-        if( memcmp( Buffer, tag->name, TokenLen + 1 ) == 0 ) {
+    hash = CalcHashID( name );
+    for( tag = TagHash[hash]; tag != NULL; tag = tag->next_tag ) {
+        if( strcmp( name, tag->name ) == 0 ) {
             return( tag );
         }
     }
-    return( NewTag( Buffer, HashValue ) );
+    return( NewTag( hash, name ) );
 }
 
 void FreeTags( void )
 {
     TAGPTR          tag;
-    id_hash_idx     h;
+    id_hash_idx     hash;
 
-    for( h = 0; h <= ID_HASH_SIZE; ++h ) {
-        for( ; (tag = TagHash[h]) != NULL; ) {
+    for( hash = 0; hash <= ID_HASH_SIZE; hash++ ) {
+        for( ; (tag = TagHash[hash]) != NULL; ) {
             if( ChkLtSymLevel( tag ) )
                 break;
-            TagHash[h] = tag->next_tag;
+            TagHash[hash] = tag->next_tag;
             tag->next_tag = DeadTags;
             DeadTags = tag;
         }
@@ -1401,10 +1426,10 @@ void FreeTags( void )
 void WalkTagList( void (*func)(TAGPTR) )
 {
     TAGPTR          tag;
-    id_hash_idx     h;
+    id_hash_idx     hash;
 
-    for( h = 0; h <= ID_HASH_SIZE; ++h ) {
-        for( tag = TagHash[h]; tag != NULL; tag = tag->next_tag ) {
+    for( hash = 0; hash <= ID_HASH_SIZE; hash++ ) {
+        for( tag = TagHash[hash]; tag != NULL; tag = tag->next_tag ) {
             func( tag );
         }
     }
@@ -1435,7 +1460,7 @@ TYPEPTR TypeNode( DATA_TYPE type_spec, TYPEPTR the_object )
 {
     TYPEPTR     typ;
 
-    typ = (TYPEPTR) CPermAlloc( sizeof( TYPEDEFN ) );
+    typ = (TYPEPTR)CPermAlloc( sizeof( TYPEDEFN ) );
     typ->decl_type = type_spec;
     typ->object = the_object;
     typ->u.tag = NULL;
@@ -1493,27 +1518,27 @@ TYPEPTR BPtrNode( TYPEPTR typ, type_modifiers flags, segment_id segid, SYM_HANDL
 
 static parm_hash_idx FuncHeadIndex( TYPEPTR *parm_types )
 {
-    parm_hash_idx  h;
+    parm_hash_idx  hash;
 
     if( parm_types == NULL )
         return( 0 );
-    for( h = 0; h < MAX_PARM_LIST_HASH_SIZE; ++h ) {
+    for( hash = 0; hash < MAX_PARM_LIST_HASH_SIZE; hash++ ) {
         if( *parm_types == NULL ) {
             break;
         }
         ++parm_types;
     }
-    return( h );
+    return( hash );
 }
 
 TYPEPTR FuncNode( TYPEPTR return_typ, type_modifiers flag, TYPEPTR *parm_types )
 {
     TYPEPTR         typ;
-    parm_hash_idx   h;
+    parm_hash_idx   hash;
 
-    h = FuncHeadIndex( parm_types );
+    hash = FuncHeadIndex( parm_types );
     if( return_typ != NULL ) {
-        for( typ = FuncTypeHead[h]; typ != NULL; typ = typ->next_type ) {
+        for( typ = FuncTypeHead[hash]; typ != NULL; typ = typ->next_type ) {
             if( typ->object == return_typ &&
                 typ->u.fn.decl_flags == flag &&
                 typ->u.fn.parms == parm_types ) {
@@ -1524,8 +1549,8 @@ TYPEPTR FuncNode( TYPEPTR return_typ, type_modifiers flag, TYPEPTR *parm_types )
     typ = TypeNode( TYP_FUNCTION, return_typ );
     typ->u.fn.decl_flags = flag;
     typ->u.fn.parms = parm_types;
-    typ->next_type = FuncTypeHead[h];
-    FuncTypeHead[h] = typ;
+    typ->next_type = FuncTypeHead[hash];
+    FuncTypeHead[hash] = typ;
     return( typ );
 }
 
@@ -1595,7 +1620,9 @@ target_size TypeSizeEx( TYPEPTR typ, bitfield_width *pFieldWidth )
     case TYP_STRUCT:
         size = typ->u.tag->size;
         if( typ->object != NULL ) {
-            /* structure has a zero length array as last field */
+            /*
+             * structure has a zero length array as last field
+             */
             typ = typ->object;  /* point to TYP_ARRAY entry */
             size += SizeOfArg( typ );
         }
@@ -1617,7 +1644,8 @@ target_size TypeSizeEx( TYPEPTR typ, bitfield_width *pFieldWidth )
     return( size );
 }
 
-/* Return an integer type of specified size, or NULL in case of failure.
+/*
+ * Return an integer type of specified size, or NULL in case of failure.
  * The type will be signed if 'sign' is true. The type will have exactly
  * requested size if 'exact' is true, or the next larger type will be
  * returned (eg. 64-bit integer if 6 byte size is requested).
@@ -1631,7 +1659,9 @@ TYPEPTR GetIntTypeBySize( target_size size, bool sign, bool exact )
     TYPEPTR                 typ = NULL;
     unsigned                i;
 
-    /* Make sure the types are laid out the way we expect */
+    /*
+     * Make sure the types are laid out the way we expect
+     */
     assert( TYP_BOOL == 0 );
     assert( TYP_CHAR == 1 );
     assert( TYP_FLOAT == TYP_ULONG64 + 1 );
@@ -1653,7 +1683,9 @@ TYPEPTR GetIntTypeBySize( target_size size, bool sign, bool exact )
 void TypesPurge( void )
 {
 #if 0
-    /* The type entries are in permanent memory, so they can't be freed */
+    /*
+     * The type entries are in permanent memory, so they can't be freed
+     */
     TYPEPTR     temp;
 
     while( TypeHead != NULL ) {

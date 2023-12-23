@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -163,14 +164,14 @@ bool WRAPI WRRemoveTypeNodeFromDir( WResDir dir, WResTypeNode *tnode )
 
 int WRFreeResNodes( WResTypeNode *tnode )
 {
-    WResResNode         *currnode;
+    WResResNode         *rnode;
     int                 count;
 
     count = 0;
-    while( (currnode = tnode->Head) != NULL ) {
-        tnode->Head = currnode->Next;
-        WRFreeLangNodes( currnode );
-        MemFree( currnode );
+    while( (rnode = tnode->Head) != NULL ) {
+        tnode->Head = rnode->Next;
+        WRFreeLangNodes( rnode );
+        MemFree( rnode );
         count++;
     }
     tnode->Tail = NULL;
@@ -180,13 +181,13 @@ int WRFreeResNodes( WResTypeNode *tnode )
 
 int WRFreeLangNodes( WResResNode *rnode )
 {
-    WResLangNode        *currnode;
+    WResLangNode        *lnode;
     int                 count;
 
     count = 0;
-    while( (currnode = rnode->Head) != NULL ) {
-        rnode->Head = currnode->Next;
-        MemFree( currnode );
+    while( (lnode = rnode->Head) != NULL ) {
+        rnode->Head = lnode->Next;
+        MemFree( lnode );
         count++;
     }
     rnode->Tail = NULL;

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,7 +42,7 @@
 #include "carve.h"
 #include "dumpapi.h"
 #include "cscanbuf.h"
-#ifndef NDEBUG
+#ifdef DEVBUILD
     #include "dbg.h"
 #endif
 
@@ -198,7 +198,7 @@ static TOKEN doGetMacroToken(       // GET NEXT TOKEN
         }
         if( (token = mtok->token) != T_NULL ) {
             keep_token = false;
-            WriteBufferStr( mtok->data );
+            WriteBufferString( mtok->data );
             switch( token ) {
             case T_SAVED_ID:
                 if( doing_macro_expansion ) {
@@ -252,7 +252,7 @@ static TOKEN doGetMacroToken(       // GET NEXT TOKEN
         *mlist = mtok->next;
         CMemFree( mtok );
     }
-#ifndef NDEBUG
+#ifdef DEVBUILD
     DumpMacToken();
 #endif
     return( token );
@@ -264,7 +264,7 @@ TOKEN GetMacroToken(                // GET NEXT TOKEN
     return( doGetMacroToken( false, doing_macro_expansion ) );
 }
 
-static size_t expandMacroToken( size_t i, MACRO_TOKEN *m )
+static void expandMacroToken( MACRO_TOKEN *m )
 {
     switch( m->token ) {
     case T_CONSTANT:
@@ -273,47 +273,28 @@ static size_t expandMacroToken( size_t i, MACRO_TOKEN *m )
     case T_UNEXPANDABLE_ID:
     case T_SAVED_ID:
     case T_BAD_TOKEN:
-        i = WriteBufferPosStr( i, m->data );
+        WriteBufferString( m->data );
         break;
     case T_LSTRING:
-        i = WriteBufferPosChar( i, 'L' );
+        WriteBufferChar( 'L' );
         /* fall through */
     case T_STRING:
-        i = WriteBufferPosChar( i, '"' );
-        i = WriteBufferPosStr( i, m->data );
-        i = WriteBufferPosChar( i, '"' );
-        WriteBufferPosNullChar( i );
+        WriteBufferChar( '"' );
+        WriteBufferString( m->data );
+        WriteBufferChar( '"' );
+        WriteBufferNullChar();
         break;
     default:
-        i = WriteBufferPosStr( i, Tokens[m->token] );
+        WriteBufferString( Tokens[m->token] );
+        break;
     }
-    return( i );
-}
-
-static size_t genFUNCTION(
-    void )
-{
-    SYMBOL  sym;
-    size_t  len;
-    VBUF    buff;
-
-    sym = ParseCurrFunction();
-    if( sym != NULL ) {
-        FormatSymWithTypedefs( sym, &buff );
-        len = WriteBufferPosStr( 0, VbufString( &buff ) );
-        VbufFree( &buff );
-    } else {
-        Buffer[0] = '?';
-        Buffer[1] = '\0';
-        len = 1;
-    }
-    return( len );
 }
 
 TOKEN SpecialMacro(             // EXECUTE A SPECIAL MACRO
     MEPTR mentry )              // - macro entry
 {
-    const char *p;
+    const char  *p;
+    SYMBOL      sym;
 
     switch( mentry->parm_count ) {
     case MACRO_LINE:
@@ -322,30 +303,61 @@ TOKEN SpecialMacro(             // EXECUTE A SPECIAL MACRO
         ConstType = TYP_SINT;
         return( T_CONSTANT );
     case MACRO_FILE:
+        TokenLen = 0;
         p = SrcFileNameCurrent();
-        TokenLen = WriteBufferPosEscStr( 0, &p, false );
+        WriteBufferEscStr( &p, false );
         return( T_STRING );
     case MACRO_DATE:
-        strcpy( Buffer, __Date );
-        TokenLen = strlen( Buffer );
+        TokenLen = 0;
+        WriteBufferString( __Date );
         return( T_STRING );
     case MACRO_TIME:
-        strcpy( Buffer, __Time );
-        TokenLen = strlen( Buffer );
+        TokenLen = 0;
+        WriteBufferString( __Time );
         return( T_STRING );
     case MACRO_FUNCTION:
     case MACRO_FUNC:
+        TokenLen = 0;
         if( FUNCTION_not_expandable ) {
-            TokenLen = WriteBufferPosStr( 0, SpcMacros[mentry->parm_count].name );
+            WriteBufferString( SpcMacros[mentry->parm_count].name );
             return( T_ID );
         }
-        TokenLen = genFUNCTION();
+        sym = ParseCurrFunction();
+        if( sym != NULL ) {
+            VBUF    buff;
+
+            FormatSymWithTypedefs( sym, &buff );
+            WriteBufferString( VbufString( &buff ) );
+            VbufFree( &buff );
+        } else {
+            WriteBufferString( "?" );
+        }
         return( T_STRING );
     case MACRO_CPLUSPLUS:
-        Buffer[0] = '1';
-        Buffer[1] = '\0';
-        TokenLen = 1;
-        U32ToU64( 1, &Constant64 );
+        TokenLen = 0;
+        if( CHECK_STD( >= , CXX0X ) ) {
+            /*
+             * it should be modified for C++ standard specific value
+             * as soon as standard support will be more complete
+             *
+             * standard value
+             * older:   1L
+             * C++98:   199711L
+             * C++11:   201103L
+             * C++14:   201402L
+             * C++17:   201703L
+             * C++20:   202002L
+             */
+            WriteBufferString( "1" );
+            U32ToU64( 1, &Constant64 );
+        } else {
+            /*
+             * this is original WATCOM C++ implementation
+             * not fully 1998 C++ standard compliant
+             */
+            WriteBufferString( "1" );
+            U32ToU64( 1, &Constant64 );
+        }
         ConstType = TYP_SINT;
         return( T_CONSTANT );
     case MACRO_ALT_AND:
@@ -568,7 +580,7 @@ static MACRO_ARG *collectParms( MEPTR mentry )
 }
 
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 #if 0
 void DumpMTokens( MACRO_TOKEN *mtok )
 {
@@ -734,10 +746,10 @@ static MACRO_TOKEN *expandNestedMacros( MACRO_TOKEN *head, bool rescanning )
 
     ptail = &head;
     ++macroDepth;
-#ifndef NDEBUG
+#ifdef DEVBUILD
     if( macroDepth > 100 ) {
   #if defined( __WATCOMC__ )
-        __trap();
+        EnterDebugger();
   #endif
     }
 #endif
@@ -870,18 +882,16 @@ static MACRO_TOKEN *reTokenBuffer( const char *buffer )
 
 static MACRO_TOKEN *glue2Tokens( MACRO_TOKEN *first, MACRO_TOKEN *second )
 {
-    size_t      i;
-
     #define INPOUT_SHIFT    10
 
-    i = INPOUT_SHIFT;
-    Buffer[i] = '\0';
+    TokenLen = INPOUT_SHIFT;
     if( first != NULL ) {
-        i = expandMacroToken( i, first );
+        expandMacroToken( first );
     }
     if( second != NULL ) {
-        i = expandMacroToken( i, second );
+        expandMacroToken( second );
     }
+    WriteBufferNullChar();
     return( reTokenBuffer( Buffer + INPOUT_SHIFT ) );
 }
 
@@ -990,11 +1000,10 @@ static MACRO_TOKEN *glueTokens( MACRO_TOKEN *head )
 
 static MACRO_TOKEN **buildString( MACRO_TOKEN **ptail, const char *p )
 {
-    size_t      i;
     size_t      last_non_ws;
     TOKEN       tok;
 
-    i = 0;
+    TokenLen = 0;
     last_non_ws = 0;
     // skip leading whitespace
     while( *(TOKEN *)p == T_WHITE_SPACE ) {
@@ -1007,38 +1016,39 @@ static MACRO_TOKEN **buildString( MACRO_TOKEN **ptail, const char *p )
             while( *(TOKEN *)p == T_WHITE_SPACE ) {
                 p += sizeof( TOKEN );
             }
-            i = WriteBufferPosChar( i, ' ' );
+            WriteBufferChar( ' ' );
             break;
         case T_CONSTANT:
         case T_PPNUMBER:
         case T_ID:
         case T_UNEXPANDABLE_ID:
         case T_BAD_TOKEN:
-            i = WriteBufferPosEscStr( i, &p, false );
-            last_non_ws = i;
+            WriteBufferEscStr( &p, false );
+            last_non_ws = TokenLen;
             break;
         case T_LSTRING:
-            i = WriteBufferPosChar( i, 'L' );
+            WriteBufferChar( 'L' );
             /* fall through */
         case T_STRING:
-            i = WriteBufferPosChar( i, '\\' );
-            i = WriteBufferPosChar( i, '"' );
-            i = WriteBufferPosEscStr( i, &p, true );
-            i = WriteBufferPosChar( i, '\\' );
-            i = WriteBufferPosChar( i, '"' );
-            last_non_ws = i;
+            WriteBufferChar( '\\' );
+            WriteBufferChar( '"' );
+            WriteBufferEscStr( &p, true );
+            WriteBufferChar( '\\' );
+            WriteBufferChar( '"' );
+            last_non_ws = TokenLen;
             break;
         case T_BAD_CHAR:
-            i = WriteBufferPosChar( i, *p++ );
-            last_non_ws = i;
+            WriteBufferChar( *p++ );
+            last_non_ws = TokenLen;
             break;
         default:
-            i = WriteBufferPosStr( i, Tokens[tok] );
-            last_non_ws = i;
+            WriteBufferString( Tokens[tok] );
+            last_non_ws = TokenLen;
             break;
         }
     }
-    WriteBufferPosNullChar( last_non_ws );
+    TokenLen = last_non_ws;
+    WriteBufferNullChar();
     ptail = buildTokenOnEnd( ptail, T_STRING, Buffer );
     return( ptail );
 }

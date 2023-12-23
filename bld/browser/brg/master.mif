@@ -1,3 +1,5 @@
+tree_depth = 4
+
 proj_name = merge
 
 merge_autodepends = .autodepend
@@ -13,9 +15,9 @@ merge_trmem = 1
 # cflags
 #
 .c: ../cpp;$(trmem_dir)
-.cpp: ../cpp;$(browse_dir)/cpp
+.cpp: ../cpp;$(browser_dir)/cpp
 
-inc_dirs = -I"../h" -I"$(browse_dir)/h" -I"$(dwarfr_dir)/h" -I"$(posix_dir)/h"
+inc_dirs = -I"../h" -I"$(browser_dir)/h" -I"$(dwarfr_dir)/h" -I"$(posix_dir)/h"
 
 extra_cpp_flags     = -DSTANDALONE_MERGER
 !ifndef NDEBUG
@@ -35,7 +37,6 @@ extra_c_flags_brmem  = $(trmem_cover_cflags)
 #
 extra_l_flags        = op stack=16k
 extra_l_flags_nt_axp = op undefsok
-extra_l_flags_nt = $(extra_l_flags_nt_$(host_cpu))
 
 # explicit rules
 #################

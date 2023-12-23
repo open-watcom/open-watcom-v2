@@ -130,7 +130,7 @@ static void _zapStrEntry(void *_entry) {
 void zapStringTable(void) {
     int longestChainLen, numElems;
     getHTableStats(strTable, &numElems, &longestChainLen);
-    #ifndef NDEBUG
+    #ifdef DEVBUILD
         printf("Number of elements: %d;  Longest chain length: %d\n",
                         numElems, longestChainLen);
     #endif

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,6 +34,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <assert.h>
+#include <errno.h>
 #if defined( __WATCOMC__ ) || !defined( __UNIX__ )
     #include <process.h>
 #endif
@@ -50,8 +51,8 @@
 #include "trmem.h"
 #endif
 
-#include "clibext.h"
 #include "clibint.h"
+#include "clibext.h"
 
 
 #if defined( __OS2__ )
@@ -235,8 +236,6 @@ static void PrintHelp( void )
     }
 }
 
-static char     CmdBuff[512];
-
 #if !defined( __WATCOMC__ )
 int main( int argc, char **argv )
 {
@@ -246,6 +245,8 @@ int main( void )
 #endif
     pmake_data  pmake;
     int         rc;
+    int         cmd_len;
+    char        *cmd_line;
 
 #if !defined( __WATCOMC__ )
     _argv = argv;
@@ -254,8 +255,10 @@ int main( void )
 
     rc = EXIT_FAILURE;
     MOpen();
-    getcmd( CmdBuff );
-    if( PMakeBuild( &pmake, CmdBuff ) != NULL ) {
+    cmd_len = _bgetcmd( NULL, 0 ) + 1;
+    cmd_line = MAlloc( cmd_len );
+    _bgetcmd( cmd_line, cmd_len );
+    if( PMakeBuild( &pmake, cmd_line ) != NULL ) {
         if( pmake.want_help ) {
             PrintHelp();
         } else if( !pmake.signaled ) {
@@ -270,6 +273,7 @@ int main( void )
         }
         PMakeCleanup( &pmake );
     }
+    MFree( cmd_line );
     MClose();
     return( rc );
 }

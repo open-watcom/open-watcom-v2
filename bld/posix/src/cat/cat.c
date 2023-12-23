@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,8 +44,6 @@
 
 #define  BUFSIZE    16384
 
-char *OptEnvVar = "cat";
-
 static const char *usageMsg[] = {
     "Usage: cat [-?X] [@env] [files...]",
     "\tenv         : environment variable to expand",
@@ -77,12 +75,14 @@ int main( int argc, char **argv )
     bool        rxflag;
     int         ch;
     int         fh;
+    int         i;
+    char        **argv1;
 
-    argv = ExpandEnv( &argc, argv );
+    argv1 = ExpandEnv( &argc, argv, "CAT" );
 
     rxflag = false;
     for( ;; ) {
-        ch = GetOpt( &argc, argv, "X", usageMsg );
+        ch = GetOpt( &argc, argv1, "X", usageMsg );
         if( ch == -1 ) {
             break;
         } else if( ch == 'X' ) {
@@ -90,23 +90,24 @@ int main( int argc, char **argv )
         }
     }
 
-    argv = ExpandArgv( &argc, argv, rxflag );
-    argv++;
+    argv = ExpandArgv( &argc, argv1, rxflag );
     setmode( STDOUT_FILENO, O_BINARY );
-    if( argc == 1 ) {
+    if( argc < 2 ) {
         setmode( STDIN_FILENO, O_BINARY );
         DoCAT( STDIN_FILENO );
     } else {
-        while( *argv != NULL ) {
-            fh = open( *argv, O_RDONLY | O_BINARY );
+        for( i = 1; i < argc; i++ ) {
+            fh = open( argv[i], O_RDONLY | O_BINARY );
             if( fh == -1 ) {
-                fprintf( stderr, "cat: cannot open input file \"%s\"\n", *argv );
+                fprintf( stderr, "cat: cannot open input file \"%s\"\n", argv[i] );
             } else {
                 DoCAT( fh );
                 close( fh );
             }
-            argv++;
         }
     }
+    MemFree( argv );
+    MemFree( argv1 );
+
     return( EXIT_SUCCESS );
 }

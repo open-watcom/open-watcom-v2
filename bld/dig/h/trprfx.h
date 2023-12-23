@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -70,7 +70,7 @@ enum {
 
 typedef struct {
     supp_prefix         supp;
-    access_req          req;
+    trap_req            req;
     /* followed by old_name, new_name strings */
 } rfx_rename_req;
 
@@ -80,7 +80,7 @@ typedef struct {
 
 typedef struct {
     supp_prefix         supp;
-    access_req          req;
+    trap_req            req;
     /* followed by directory name string */
 } rfx_mkdir_req;
 
@@ -93,7 +93,7 @@ typedef rfx_mkdir_ret           rfx_rmdir_ret;
 
 typedef struct {
     supp_prefix         supp;
-    access_req          req;
+    trap_req            req;
     unsigned_8          drive;
 } rfx_setdrive_req;
 
@@ -103,7 +103,7 @@ typedef struct {
 
 typedef struct {
     supp_prefix         supp;
-    access_req          req;
+    trap_req            req;
 } rfx_getdrive_req;
 
 typedef struct {
@@ -112,7 +112,7 @@ typedef struct {
 
 typedef struct {
     supp_prefix         supp;
-    access_req          req;
+    trap_req            req;
     /* followed by new cwd string */
 } rfx_setcwd_req;
 
@@ -122,7 +122,7 @@ typedef struct {
 
 typedef struct {
     supp_prefix         supp;
-    access_req          req;
+    trap_req            req;
     unsigned_8          drive;
 } rfx_getcwd_req;
 
@@ -133,7 +133,7 @@ typedef struct {
 
 typedef struct {
     supp_prefix         supp;
-    access_req          req;
+    trap_req            req;
     trap_fhandle        handle;
     unsigned_32         time;
 } _WCUNALIGNED rfx_setdatetime_req;
@@ -142,7 +142,7 @@ typedef struct {
 
 typedef struct {
     supp_prefix         supp;
-    access_req          req;
+    trap_req            req;
     trap_fhandle        handle;
 } _WCUNALIGNED rfx_getdatetime_req;
 
@@ -152,7 +152,7 @@ typedef struct {
 
 typedef struct {
     supp_prefix         supp;
-    access_req          req;
+    trap_req            req;
     unsigned_8          drive;
 } rfx_getfreespace_req;
 
@@ -162,7 +162,7 @@ typedef struct {
 
 typedef struct {
     supp_prefix         supp;
-    access_req          req;
+    trap_req            req;
     unsigned_32         attribute;
     /* followed by file name string */
 } _WCUNALIGNED rfx_setfileattr_req;
@@ -173,7 +173,7 @@ typedef struct {
 
 typedef struct {
     supp_prefix         supp;
-    access_req          req;
+    trap_req            req;
     /* followed by file name string */
 } rfx_getfileattr_req;
 
@@ -183,7 +183,7 @@ typedef struct {
 
 typedef struct {
     supp_prefix         supp;
-    access_req          req;
+    trap_req            req;
     /* followed by file name string */
 } rfx_nametocanonical_req;
 
@@ -237,7 +237,7 @@ typedef struct {
 
 typedef struct {
     supp_prefix         supp;
-    access_req          req;
+    trap_req            req;
     unsigned_8          attrib;
     /* followed by directory name string */
 } rfx_findfirst_req;
@@ -249,7 +249,7 @@ typedef struct {
 
 typedef struct {
     supp_prefix         supp;
-    access_req          req;
+    trap_req            req;
     /* followed by a rfx_find */
 } rfx_findnext_req;
 
@@ -260,7 +260,7 @@ typedef struct {
 
 typedef struct {
     supp_prefix         supp;
-    access_req          req;
+    trap_req            req;
     /* followed by a rfx_find */
 } rfx_findclose_req;
 

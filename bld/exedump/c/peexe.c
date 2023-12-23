@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,25 +39,39 @@
 #include "wdfunc.h"
 
 
-#define PE_RVA(t) \
-    (( IS_PE64( Pe_head ) ) ? PE64( Pe_head ).table[t].rva : PE32( Pe_head ).table[t].rva )
-
-#define PE_NUM_OBJECTS() \
-    (( IS_PE64( Pe_head ) ) ? PE64( Pe_head ).num_objects : PE32( Pe_head ).num_objects )
-
 #define IN_RANGE(r,o)       (r >= (o).rva && r < ((o).rva + (o).physical_size))
 
 #define PHYS_OFFSET(r,o)    ((o).physical_offset + r - (o).rva)
 
-static  const_string_table pe_exe_msg[] = {
-    "2cpu type                                        = ",
+static  const_string_table pe32_exe_msg1[] = {
+    "2cpu type (32-bit)                               = ",
+    NULL
+};
+static  const_string_table pe64_exe_msg1[] = {
+    "2cpu type (64-bit)                               = ",
+    NULL
+};
+
+static  const_string_table pe_exe_msg1[] = {
     "2number of object entries                        = ",
     "4time/date stamp                                 = ",
     "4symbol table                                    = ",
     "4number of symbols                               = ",
     "2no. of bytes in nt header following flags field = ",
     "2flags                                           = ",
+    NULL
+};
+
+static  const_string_table pe32_exe_msg2[] = {
     "2magic (32-bit)                                  = ",
+    NULL
+};
+static  const_string_table pe64_exe_msg2[] = {
+    "2magic (64-bit)                                  = ",
+    NULL
+};
+
+static  const_string_table pe_exe_msg2[] = {
     "1link major version number                       = ",
     "1link minor version number                       = ",
     "4code size                                       = ",
@@ -64,8 +79,20 @@ static  const_string_table pe_exe_msg[] = {
     "4uninititialized data size                       = ",
     "4entrypoint rva                                  = ",
     "4code base                                       = ",
+    NULL
+};
+
+static  const_string_table pe32_exe_msg3[] = {
     "4data base                                       = ",
     "4image base                                      = ",
+    NULL
+};
+static  const_string_table pe64_exe_msg3[] = {
+    "8image base                                      = ",
+    NULL
+};
+
+static  const_string_table pe_exe_msg3[] = {
     "4object alignment: power of 2, 512 to 256M       = ",
     "4file alignment factor to align image pages      = ",
     "2os major version number                         = ",
@@ -80,6 +107,10 @@ static  const_string_table pe_exe_msg[] = {
     "4file checksum                                   = ",
     "2nt subsystem                                    = ",
     "2dll flags                                       = ",
+    NULL
+};
+
+static  const_string_table pe32_exe_msg4[] = {
     "4stack reserve size                              = ",
     "4stack commit size                               = ",
     "4size of local heap to reserve                   = ",
@@ -89,37 +120,7 @@ static  const_string_table pe_exe_msg[] = {
     NULL
 };
 
-static  const_string_table pe64_exe_msg[] = {
-    "2cpu type                                        = ",
-    "2number of object entries                        = ",
-    "4time/date stamp                                 = ",
-    "4symbol table                                    = ",
-    "4number of symbols                               = ",
-    "2no. of bytes in nt header following flags field = ",
-    "2flags                                           = ",
-    "2magic (64-bit)                                  = ",
-    "1link major version number                       = ",
-    "1link minor version number                       = ",
-    "4code size                                       = ",
-    "4initialized data size                           = ",
-    "4uninititialized data size                       = ",
-    "4entrypoint rva                                  = ",
-    "4code base                                       = ",
-    "8image base                                      = ",
-    "4object alignment: power of 2, 512 to 256M       = ",
-    "4file alignment factor to align image pages      = ",
-    "2os major version number                         = ",
-    "2os minor version number                         = ",
-    "2user major version number                       = ",
-    "2user minor version number                       = ",
-    "2subsystem major version number                  = ",
-    "2subsystem minor version number                  = ",
-    "4reserved1                                       = ",
-    "4virtual size of the image                       = ",
-    "4total header size                               = ",
-    "4file checksum                                   = ",
-    "2nt subsystem                                    = ",
-    "2dll flags                                       = ",
+static  const_string_table pe64_exe_msg4[] = {
     "8stack reserve size                              = ",
     "8stack commit size                               = ",
     "8size of local heap to reserve                   = ",
@@ -202,45 +203,65 @@ bool Dmp_pe_head( void )
 /**********************/
 {
     unsigned_16         i;
-    unsigned_16         signature;
     unsigned_32         num_tables;
-    pe_hdr_table_entry  *tbl_entry;
+    pe_dir_entry        *tbl_entry;
     unsigned_32         offset;
+    const unsigned char *data;
 
     Exp_off = 0;
     Imp_off = 0;
     Res_off = 0;
     Fix_off = 0;
     Wlseek( New_exe_off );
-    Wread( &signature, sizeof( signature ) );
-    switch( signature ) {
-    case PE_SIGNATURE:
+    Wread( &Pe_head, PE_HDR_SIZE );
+    switch( Pe_head.signature ) {
+    case EXESIGN_PE:
         Banner( "Windows NT EXE Header" );
         break;
-    case PL_SIGNATURE:
+    case EXESIGN_PL:
         Banner( "PharLap TNT DosStyle Header" );
         break;
     default:
         return( false );
     }
-    Wlseek( New_exe_off );
-    Wread( &Pe_head, sizeof( pe_header ) );
-    if( signature == PE_SIGNATURE && IS_PE64( Pe_head ) ) {
-        Wlseek( New_exe_off );
-        Wread( &Pe_head, sizeof( pe_header64 ) );
-    }
+    Wread( (char *)&Pe_head + PE_HDR_SIZE, PE_OPT_SIZE( Pe_head ) );
     Wdputs( "file offset = " );
     Puthex( New_exe_off, 8 );
     Wdputslc( "H\n" );
     Wdputslc( "\n" );
+    data = (const unsigned char *)&Pe_head.fheader.cpu_type;
     if( IS_PE64( Pe_head ) ) {
-        Dump_header( (char *)&PE64( Pe_head ).cpu_type, pe64_exe_msg, 8 );
-        DumpCoffHdrFlags( PE64( Pe_head ).flags );
+        Dump_header( data, pe64_exe_msg1, 8 );
+        data += 2;
+        Dump_header( data, pe_exe_msg1,   8 );
+        data += 18;
+        Dump_header( data, pe64_exe_msg2, 8 );
+        data += 2;
+        Dump_header( data, pe_exe_msg2,   8 );
+        data += 22;
+        Dump_header( data, pe64_exe_msg3, 8 );
+        data += 8;
+        Dump_header( data, pe_exe_msg3,   8 );
+        data += 40;
+        Dump_header( data, pe64_exe_msg4, 8 );
+        DumpCoffHdrFlags( Pe_head.fheader.flags );
         tbl_entry = PE64( Pe_head ).table;
         num_tables = PE64( Pe_head ).num_tables;
     } else {
-        Dump_header( (char *)&PE32( Pe_head ).cpu_type, pe_exe_msg, 4 );
-        DumpCoffHdrFlags( PE32( Pe_head ).flags );
+        Dump_header( data, pe32_exe_msg1, 4 );
+        data += 2;
+        Dump_header( data, pe_exe_msg1,   4 );
+        data += 18;
+        Dump_header( data, pe32_exe_msg2, 4 );
+        data += 2;
+        Dump_header( data, pe_exe_msg2,   4 );
+        data += 22;
+        Dump_header( data, pe32_exe_msg3, 4 );
+        data += 8;
+        Dump_header( data, pe_exe_msg3,   4 );
+        data += 40;
+        Dump_header( data, pe32_exe_msg4, 4 );
+        DumpCoffHdrFlags( Pe_head.fheader.flags );
         tbl_entry = PE32( Pe_head ).table;
         num_tables = PE32( Pe_head ).num_tables;
     }
@@ -251,7 +272,7 @@ bool Dmp_pe_head( void )
         Puthex( tbl_entry->rva, 8 );
         Wdputs( "H    size = " );
         Puthex( tbl_entry->size, 8 );
-        if( signature == PE_SIGNATURE ) {
+        if( Pe_head.signature == EXESIGN_PE ) {
             switch( i ) {
             case 0: Wdputslc( "H   (Export Directory)\n" ); break;
             case 1: Wdputslc( "H   (Import Directory)\n" ); break;
@@ -277,13 +298,9 @@ bool Dmp_pe_head( void )
         tbl_entry++;
     }
     Wdputslc( "\n" );
-    if( IS_PE64( Pe_head ) ) {
-        offset = New_exe_off + offsetof( pe_header64, magic ) + PE64( Pe_head ).nt_hdr_size;
-    } else {
-        offset = New_exe_off + offsetof( pe_header, magic ) + PE32( Pe_head ).nt_hdr_size;
-    }
+    offset = New_exe_off + PE_SIZE( Pe_head );
     Wlseek( offset );
-    dmp_objects( PE_NUM_OBJECTS() );
+    dmp_objects( Pe_head.fheader.num_objects );
     if( Exp_off != 0 ) {
         Dmp_exports();
     }
@@ -347,7 +364,7 @@ static void DumpSection( pe_object *hdr )
             Wread( &reloc, sizeof( coff_reloc ) );
             Puthex( reloc.offset, 8 );
             Wdputc( ' ' );
-            Puthex( reloc.sym_tab_index, 8 );
+            Puthex( reloc.sym_tab_index + 1, 8 );
             Wdputc( ' ' );
             Putdecbz( reloc.type, 5 );
             if( i % 3 == 2 ) {
@@ -407,10 +424,10 @@ void dmp_objects( unsigned num_objects )
     pe_obj = Wmalloc( num_objects * sizeof(pe_object) );
     Wread( pe_obj, num_objects * sizeof(pe_object) );
     start = pe_obj;
-    export_rva = PE_RVA( PE_TBL_EXPORT );
-    import_rva = PE_RVA( PE_TBL_IMPORT );
-    resource_rva = PE_RVA( PE_TBL_RESOURCE );
-    fixup_rva = PE_RVA( PE_TBL_FIXUP );
+    export_rva = PE_DIRECTORY( Pe_head, PE_TBL_EXPORT ).rva;
+    import_rva = PE_DIRECTORY( Pe_head, PE_TBL_IMPORT ).rva;
+    resource_rva = PE_DIRECTORY( Pe_head, PE_TBL_RESOURCE ).rva;
+    fixup_rva = PE_DIRECTORY( Pe_head, PE_TBL_FIXUP ).rva;
     for( i = 1; i <= num_objects; i++ ) {
         Wdputs( "object " );
         Putdec( i );
@@ -456,46 +473,33 @@ void dmp_objects( unsigned num_objects )
 bool Dmp_pe_tab( void )
 /*********************/
 {
-    unsigned_32     offset;        /* current offset position */
     unsigned_16     i;
     pe_object       pe_obj;
     unsigned_32     export_rva;
     unsigned_32     num_objects;
 
     Wread( &Dos_head, sizeof( Dos_head.hdr ) );
-    if( Dos_head.hdr.signature != DOS_SIGNATURE ) {
+    if( ( Dos_head.hdr.signature != EXESIGN_DOS )
+      || !NE_HEADER_FOLLOWS( Dos_head.hdr.reloc_offset ) ) {
         return( false );
     }
-    if( Dos_head.hdr.reloc_offset != OS2_EXE_HEADER_FOLLOWS ) {
-        return( false );
-    }
-    Wlseek( OS2_NE_OFFSET );
+    Wlseek( NE_HEADER_OFFSET );
     Wread( &New_exe_off, sizeof( New_exe_off ) );
     Wlseek( New_exe_off );
-    Wread( &Pe_head, sizeof( pe_header ) );
-    if( IS_PE64( Pe_head ) ) {
-        Wlseek( New_exe_off );
-        Wread( &Pe_head, sizeof( pe_header64 ) );
-    }
-    switch( PE32( Pe_head ).signature ) {
-    case PE_SIGNATURE:
-    case PL_SIGNATURE:
+    Wread( &Pe_head, PE_HDR_SIZE );
+    switch( Pe_head.signature ) {
+    case EXESIGN_PE:
+    case EXESIGN_PL:
         break;
     default:
         return( false );
     }
+    Wread( (char *)&Pe_head + PE_HDR_SIZE, PE_OPT_SIZE( Pe_head) );
     Exp_off = 0;
-    export_rva = PE_RVA( PE_TBL_EXPORT );
-    if( IS_PE64( Pe_head ) ) {
-        offset = New_exe_off  + sizeof( pe_header64 );
-    } else {
-        offset = New_exe_off  + sizeof( pe_header );
-    }
-    num_objects = PE_NUM_OBJECTS();
+    export_rva = PE_DIRECTORY( Pe_head, PE_TBL_EXPORT ).rva;
+    num_objects = Pe_head.fheader.num_objects;
     for( i = 0; i < num_objects; i++ ) {
-        Wlseek( offset );
         Wread( &pe_obj, sizeof( pe_object ) );
-        offset += sizeof( pe_object );
         if( IN_RANGE( export_rva, pe_obj ) ) {
             Exp_off = PHYS_OFFSET( export_rva, pe_obj );
         }

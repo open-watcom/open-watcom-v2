@@ -1,0 +1,27 @@
+tree_depth = 5
+
+target_cpu      = mps
+target_cls      = risc
+
+mps_objs = &
+        mpscall.obj  &
+        mpsconv.obj  &
+        mpsdfsup.obj &
+        mpsenc.obj   &
+        mpsenc2.obj  &
+        mpsfunit.obj &
+        mpsoptab.obj &
+        mpsproc.obj  &
+        mpsptype.obj &
+        mpsreg.obj   &
+        mpsrgtbl.obj &
+        mpsrtrtn.obj &
+        mpssetc.obj  &
+        mpssplit.obj &
+        mpsstub.obj  &
+        mpstable.obj &
+        mpsparm.obj  &
+        rscconst.obj &
+    	encode.obj
+
+!include $(cg_dir)/$(target_cls)/master.mif

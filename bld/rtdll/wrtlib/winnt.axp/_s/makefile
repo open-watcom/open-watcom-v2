@@ -4,4 +4,4 @@ component  = wlib
 processor  = axp
 system     = winnt
 
-!include $(rtdll_dir)/master.mif
+!include ../../../rtdll.mif

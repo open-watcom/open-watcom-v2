@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,11 +35,11 @@
 #include "dwcliuti.h"
 
 
-void CLIWriteLEB128( dw_client cli, dw_sectnum sect, dw_sconst value )
+void CLIWriteSLEB128( dw_client cli, dw_sectnum sect, dw_sconst value )
 {
     uint_8              buf[MAX_LEB128];
 
-    CLIWrite( cli, sect, buf, LEB128( buf, value ) - buf );
+    CLIWrite( cli, sect, buf, WriteSLEB128( buf, value ) - buf );
 }
 
 
@@ -47,7 +47,7 @@ void CLIWriteULEB128( dw_client cli, dw_sectnum sect, dw_uconst value )
 {
     uint_8              buf[MAX_LEB128];
 
-    CLIWrite( cli, sect, buf, ULEB128( buf, value ) - buf );
+    CLIWrite( cli, sect, buf, WriteULEB128( buf, value ) - buf );
 }
 
 void CLISectionSetSize( dw_client cli, dw_sectnum sect )

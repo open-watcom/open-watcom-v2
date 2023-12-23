@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -158,55 +158,53 @@ WRFileType WRIdentifyRESFile( const char *file )
 
 static bool IdentifyWinExeHeader( FILE *fh, bool win16 )
 {
-    os2_exe_header  os2_hdr;
-    exe_pe_header   pe_hdr;
-    uint_16         offset;
+    os2_exe_header  nehdr;
+    pe_exe_header   pehdr;
+    uint_16         data;
+    uint_32         ne_header_off;
     bool            ok;
 
     ok = ( fh != NULL );
 
+    /*
+     * check the reloc offset
+     */
     if( ok ) {
-        ok = ( fseek( fh, 0x18, SEEK_SET ) == 0 );
+        ok = ( fseek( fh, DOS_RELOC_OFFSET, SEEK_SET ) == 0 )
+                && ( fread( &data, 1, sizeof( data ), fh ) == sizeof( data ) )
+                && NE_HEADER_FOLLOWS( data );
     }
-
-    /* check the reloc offset */
+    /*
+     * check the NE header offset
+     */
     if( ok ) {
-        ok = ( fread( &offset, 1, sizeof( offset ), fh ) == sizeof( offset ) && offset >= 0x0040 );
+        ok = ( fseek( fh, NE_HEADER_OFFSET, SEEK_SET ) == 0 )
+            && ( fread( &ne_header_off, 1, sizeof( ne_header_off ), fh ) == sizeof( ne_header_off ) )
+            && ( ne_header_off != 0 );
     }
-
+    /*
+     * seek to the header
+     */
     if( ok ) {
-        ok = ( fseek( fh, NH_OFFSET, SEEK_SET ) == 0 );
+        ok = ( fseek( fh, ne_header_off, SEEK_SET ) == 0 );
     }
-
-    /* check the header offset */
-    if( ok ) {
-        ok = ( fread( &offset, 1, sizeof( offset ), fh ) == sizeof( offset ) && offset != 0 );
-    }
-
-    /* seek to the header */
-    if( ok ) {
-        ok = ( fseek( fh, offset, SEEK_SET ) == 0 );
-    }
-
     if( ok ) {
         if( win16 ) {
-            ok = ( fread( &os2_hdr, 1, sizeof( os2_hdr ), fh ) == sizeof( os2_hdr ));
-            /* check for valid Win16 EXE */
+            /*
+             * check for valid Win16 EXE
+             */
+            ok = ( fread( &nehdr, 1, sizeof( nehdr ), fh ) == sizeof( nehdr ));
             if( ok ) {
-                return( WRIsHeaderValidWIN16( &os2_hdr ) );
+                return( WRIsHeaderValidWIN16( &nehdr ) );
             }
         } else {
-            ok = ( fread( &PE32( pe_hdr ), 1, sizeof( pe_header ), fh ) == sizeof( pe_header ) );
-            if( ok && IS_PE64( pe_hdr ) ) {
-                /* seek to the header again */
-                ok = ( fseek( fh, offset, SEEK_SET ) == 0 );
-                if( ok ) {
-                    ok = ( fread( &PE64( pe_hdr ), 1, sizeof( pe_header64 ), fh ) == sizeof( pe_header64 ) );
-                }
-            }
-            /* check for valid Win32 EXE */
+            /*
+             * check for valid Win32 EXE
+             */
+            ok = ( fread( &pehdr, 1, PE_HDR_SIZE, fh ) == PE_HDR_SIZE
+                 && fread( (char *)&pehdr + PE_HDR_SIZE, 1, PE_OPT_SIZE( pehdr ), fh ) == PE_OPT_SIZE( pehdr ) );
             if( ok ) {
-                return( WRIsHeaderValidWINNT( &pe_hdr ) );
+                return( WRIsHeaderValidWINNT( &pehdr ) );
             }
         }
     }

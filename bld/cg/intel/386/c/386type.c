@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,12 +35,15 @@
 #include "model.h"
 
 
-// type_def THugeCP= {  TY_HUGE_CODE_PTR,6,      TYPE_POINTER + TYPE_CODE };
-type_def TLongCP= {  TY_LONG_CODE_PTR,6,      TYPE_POINTER + TYPE_CODE };
-type_def TNearCP= {  TY_NEAR_CODE_PTR,4,      TYPE_POINTER + TYPE_CODE };
-type_def THugeP = {  TY_HUGE_POINTER, 6,      TYPE_POINTER };
-type_def TLongP = {  TY_LONG_POINTER, 6,      TYPE_POINTER };
-type_def TNearP = {  TY_NEAR_POINTER, 4,      TYPE_POINTER };
+/*                      refno           length  attributes */
+/*                      ======          ======  ========== */
+
+// type_def THugeCP = { TY_HUGE_CODE_PTR, 6,      TYPE_POINTER + TYPE_CODE };
+type_def TLongCP = { TY_LONG_CODE_PTR,  6,      TYPE_POINTER + TYPE_CODE };
+type_def TNearCP = { TY_NEAR_CODE_PTR,  4,      TYPE_POINTER + TYPE_CODE };
+type_def THugeP  = { TY_HUGE_POINTER,   6,      TYPE_POINTER };
+type_def TLongP  = { TY_LONG_POINTER,   6,      TYPE_POINTER };
+type_def TNearP  = { TY_NEAR_POINTER,   4,      TYPE_POINTER };
 
 void    TargTypeInit( void )
 /**************************/
@@ -51,14 +54,14 @@ void    TargTypeInit( void )
     PTInteger = TypeAddress( TY_INT_4 );
     PTUnsigned = TypeAddress( TY_UINT_4 );
 
-    if( _IsTargetModel( BIG_CODE ) ) {
+    if( _IsTargetModel( CGSW_X86_BIG_CODE ) ) {
         TypeAlias( TY_CODE_PTR, TY_LONG_CODE_PTR );
         PTCodePointer = TypeAddress( TY_LONG_CODE_PTR );
     } else {
         TypeAlias( TY_CODE_PTR, TY_NEAR_CODE_PTR );
         PTCodePointer = TypeAddress( TY_NEAR_CODE_PTR );
     }
-    if( _IsTargetModel( BIG_DATA ) ) {
+    if( _IsTargetModel( CGSW_X86_BIG_DATA ) ) {
         TypeAlias( TY_POINTER, TY_LONG_POINTER );
         PTPointer = TypeAddress( TY_LONG_POINTER );
     } else {

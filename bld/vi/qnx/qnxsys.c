@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -114,7 +114,12 @@ void ScreenInit( void )
     QNXCon = console_open( QNXConHandle, O_WRONLY );
     if( QNXCon == NULL ) {
         // FatalError( ERR_BAD_TERMINAL );
-        ChangeDirectory( HomeDirectory );
+        ChangeDirectory( StartDirectory );
+        _MemFreeArray( StartDirectory );
+        StartDirectory = NULL;
+        _MemFreeArray( CurrentDirectory );
+        CurrentDirectory = NULL;
+        FiniMem();
         exit( 0 );
     }
     if( console_size( QNXCon, QNXConsole, 0, 0, &rows, &cols ) != 0 ) {

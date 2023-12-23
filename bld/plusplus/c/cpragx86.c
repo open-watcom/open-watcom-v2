@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,19 +46,66 @@
 #include "pcheader.h"
 #include "cgfront.h"
 
+
 #define IS_REGSET(t)    (t == T_LEFT_BRACKET || t == T_LEFT_BRACE)
-
-
-static byte_seq *AuxCodeDup( byte_seq *code );
-static int      GetByteSeq( void );
-
-static  hw_reg_set          asmRegsSaved = HW_D( HW_FULL );
 
 #define WCPP_ASM            // enable assembler
 
 #define ASM_BLOCK           (64)
 
 #define ROUND_ASM_BLOCK(x)  ((x+ASM_BLOCK-1) & ~(ASM_BLOCK-1))
+
+#if _CPU == 8086
+    #define SYM_INT     SYM_INT2
+    #define SYM_FFAR    SYM_FAR2
+    #define SYM_FNEAR   SYM_NEAR2
+    #define SYM_DFAR    SYM_INT4
+    #define SYM_DNEAR   SYM_INT2
+#else
+    #define SYM_INT     SYM_INT4
+    #define SYM_FFAR    SYM_FAR4
+    #define SYM_FNEAR   SYM_NEAR2
+    #define SYM_DFAR    SYM_INT6
+    #define SYM_DNEAR   SYM_INT4
+#endif
+
+//
+// The following defines which flags are to be ignored when checking
+// a pragma call classes for equivalence.
+//
+#define FECALL_GEN_CALL_CLASS_IGNORE ( 0 \
+    | FECALL_GEN_NO_MEMORY_CHANGED       \
+    | FECALL_GEN_NO_MEMORY_READ          \
+    | FECALL_GEN_DLL_EXPORT              \
+)
+#define FECALL_X86_CALL_CLASS_IGNORE ( 0 \
+    | FECALL_X86_MODIFY_EXACT            \
+    | FECALL_X86_GENERATE_STACK_FRAME    \
+    | FECALL_X86_EMIT_FUNCTION_NAME      \
+    | FECALL_X86_GROW_STACK              \
+    | FECALL_X86_PROLOG_HOOKS            \
+    | FECALL_X86_EPILOG_HOOKS            \
+    | FECALL_X86_TOUCH_STACK             \
+    | FECALL_X86_LOAD_DS_ON_ENTRY        \
+)
+
+typedef enum
+{   FIXWORD_NONE
+,   FIXWORD_FLOAT
+,   FIXWORD_SEGMENT
+,   FIXWORD_OFFSET
+,   FIXWORD_RELOFF
+} fix_words;
+
+static  hw_reg_set          asmRegsSaved = HW_D( HW_FULL );
+
+#ifdef WCPP_ASM
+static enum sym_type AsmDataType[] = {
+    #define pick(id,promo,promo_asm,type_text)  promo_asm,
+    #include "_typdefs.h"
+    #undef pick
+};
+#endif
 
 static void pragmasInit(        // INITIALIZATION FOR PRAGMAS
     INITFINI* defn )            // - definition
@@ -69,18 +116,14 @@ static void pragmasInit(        // INITIALIZATION FOR PRAGMAS
 
     AuxInfoInit( CompFlags.use_stdcall_at_number );
 
+    HW_CTurnOff( asmRegsSaved, HW_xAX );
+    HW_CTurnOff( asmRegsSaved, HW_xBX );
+    HW_CTurnOff( asmRegsSaved, HW_xCX );
+    HW_CTurnOff( asmRegsSaved, HW_xDX );
+    HW_CTurnOff( asmRegsSaved, HW_xSI );
+    HW_CTurnOff( asmRegsSaved, HW_xDI );
 #if _CPU == 8086
-    HW_CTurnOff( asmRegsSaved, HW_ABCD );
-    HW_CTurnOff( asmRegsSaved, HW_SI );
-    HW_CTurnOff( asmRegsSaved, HW_DI );
     HW_CTurnOff( asmRegsSaved, HW_ES );
-#else
-    HW_CTurnOff( asmRegsSaved, HW_EAX );
-    HW_CTurnOff( asmRegsSaved, HW_EBX );
-    HW_CTurnOff( asmRegsSaved, HW_ECX );
-    HW_CTurnOff( asmRegsSaved, HW_EDX );
-    HW_CTurnOff( asmRegsSaved, HW_ESI );
-    HW_CTurnOff( asmRegsSaved, HW_EDI );
 #endif
 
     SetDefaultAuxInfo();
@@ -118,7 +161,7 @@ static void pragmasFini(        // FINISH PRAGMAS
                 info->use--;
             } else {
                 freeInfo( info );
-#ifndef NDEBUG
+#ifdef DEVBUILD
                 if( IsAuxInfoBuiltIn( info ) ) {
                     CFatal( "freeing a static calling convention info" );
                 }
@@ -190,9 +233,9 @@ static void assemblerInit(      // INITIALIZATION OF ASSEMBLER
 #endif
     }
 #if _CPU == 8086
-    AsmInit( 0, cpu, fpu, GET_FPU_EMU( CpuSwitches ) );
+    AsmEnvInit( 0, cpu, fpu, GET_FPU_EMU( CpuSwitches ) );
 #else
-    AsmInit( 1, cpu, fpu, false );
+    AsmEnvInit( 1, cpu, fpu, false );
 #endif
 }
 
@@ -204,6 +247,18 @@ static void assemblerFini(      // FINALIZATION OF ASSEMBLER
 
 INITDEFN( assembler, assemblerInit, assemblerFini )
 
+
+static byte_seq *AuxCodeDup(        // DUPLICATE AUX CODE
+    byte_seq *code )
+{
+    byte_seq_len size;
+
+    if( code == NULL ) {
+        return( code );
+    }
+    size = offsetof( byte_seq, data ) + code->length;
+    return( (byte_seq *)vctsave( (char *)code, size ) );
+}
 
 static void AuxCopy(           // COPY AUX STRUCTURE
     AUX_INFO *to,               // - destination
@@ -234,7 +289,7 @@ void GetPragmaAuxAlias( void )
 
 static void GetParmInfo(
     void )
-    {
+{
     struct {
         unsigned f_pop           : 1;
         unsigned f_reverse       : 1;
@@ -250,19 +305,19 @@ static void GetParmInfo(
     have.f_list          = 0;
     for( ;; ) {
         if( !have.f_pop && PragRecogId( "caller" ) ) {
-            CurrInfo->cclass |= CALLER_POPS;
+            CurrInfo->cclass |= FECALL_GEN_CALLER_POPS;
             have.f_pop = 1;
         } else if( !have.f_pop && PragRecogId( "routine" ) ) {
-            CurrInfo->cclass &= ~ CALLER_POPS;
+            CurrInfo->cclass &= ~ FECALL_GEN_CALLER_POPS;
             have.f_pop = 1;
         } else if( !have.f_reverse && PragRecogId( "reverse" ) ) {
-            CurrInfo->cclass |= REVERSE_PARMS;
+            CurrInfo->cclass |= FECALL_GEN_REVERSE_PARMS;
             have.f_reverse = 1;
         } else if( !have.f_nomemory && PragRecogId( "nomemory" ) ) {
-            CurrInfo->cclass |= NO_MEMORY_READ;
+            CurrInfo->cclass |= FECALL_GEN_NO_MEMORY_READ;
             have.f_nomemory = 1;
         } else if( !have.f_loadds && PragRecogId( "loadds" ) ) {
-            CurrInfo->cclass |= LOAD_DS_ON_CALL;
+            CurrInfo->cclass_target |= FECALL_X86_LOAD_DS_ON_CALL;
             have.f_loadds = 1;
         } else if( !have.f_list && IS_REGSET( CurToken ) ) {
             PragManyRegSets();
@@ -290,19 +345,19 @@ static void GetSTRetInfo(
     for( ;; ) {
         if( !have.f_float && PragRecogId( "float" ) ) {
             have.f_float = 1;
-            CurrInfo->cclass |= NO_FLOAT_REG_RETURNS;
+            CurrInfo->cclass_target |= FECALL_X86_NO_FLOAT_REG_RETURNS;
         } else if( !have.f_struct && PragRecogId( "struct" ) ) {
             have.f_struct = 1;
-            CurrInfo->cclass |= NO_STRUCT_REG_RETURNS;
+            CurrInfo->cclass_target |= FECALL_X86_NO_STRUCT_REG_RETURNS;
         } else if( !have.f_allocs && PragRecogId( "routine" ) ) {
             have.f_allocs = 1;
-            CurrInfo->cclass |= ROUTINE_RETURN;
+            CurrInfo->cclass_target |= FECALL_X86_ROUTINE_RETURN;
         } else if( !have.f_allocs && PragRecogId( "caller" ) ) {
             have.f_allocs = 1;
-            CurrInfo->cclass &= ~ROUTINE_RETURN;
+            CurrInfo->cclass_target &= ~FECALL_X86_ROUTINE_RETURN;
         } else if( !have.f_list && IS_REGSET( CurToken ) ) {
             have.f_list = 1;
-            CurrInfo->cclass |= SPECIAL_STRUCT_RETURN;
+            CurrInfo->cclass_target |= FECALL_X86_SPECIAL_STRUCT_RETURN;
             CurrInfo->streturn = PragRegList();
         } else {
             break;
@@ -322,15 +377,15 @@ static void GetRetInfo(
     have.f_no8087  = 0;
     have.f_list    = 0;
     have.f_struct  = 0;
-    CurrInfo->cclass &= ~ NO_8087_RETURNS;
+    CurrInfo->cclass_target &= ~ FECALL_X86_NO_8087_RETURNS;
     for( ;; ) {
         if( !have.f_no8087 && PragRecogId( "no8087" ) ) {
             have.f_no8087 = 1;
             HW_CTurnOff( CurrInfo->returns, HW_FLTS );
-            CurrInfo->cclass |= NO_8087_RETURNS;
+            CurrInfo->cclass_target |= FECALL_X86_NO_8087_RETURNS;
         } else if( !have.f_list && IS_REGSET( CurToken ) ) {
             have.f_list = 1;
-            CurrInfo->cclass |= SPECIAL_RETURN;
+            CurrInfo->cclass_target |= FECALL_X86_SPECIAL_RETURN;
             CurrInfo->returns = PragRegList();
         } else if( !have.f_struct && PragRecogId( "struct" ) ) {
             have.f_struct = 1;
@@ -360,10 +415,10 @@ static void GetSaveInfo(
     have.f_list     = 0;
     for( ;; ) {
         if( !have.f_exact && PragRecogId( "exact" ) ) {
-            CurrInfo->cclass |= MODIFY_EXACT;
+            CurrInfo->cclass_target |= FECALL_X86_MODIFY_EXACT;
             have.f_exact = 1;
         } else if( !have.f_nomemory && PragRecogId( "nomemory" ) ) {
-            CurrInfo->cclass |= NO_MEMORY_CHANGED;
+            CurrInfo->cclass |= FECALL_GEN_NO_MEMORY_CHANGED;
             have.f_nomemory = 1;
         } else if( !have.f_list && IS_REGSET( CurToken ) ) {
             modlist = PragRegList();
@@ -385,95 +440,6 @@ static void GetSaveInfo(
         HW_TurnOff( CurrInfo->save, modlist );
     }
 }
-
-void PragAux(                   // #PRAGMA AUX ...
-    void )
-{
-    struct {
-        unsigned f_call         : 1;
-        unsigned f_loadds       : 1;
-        unsigned f_rdosdev      : 1;
-        unsigned f_export       : 1;
-        unsigned f_parm         : 1;
-        unsigned f_value        : 1;
-        unsigned f_modify       : 1;
-        unsigned f_frame        : 1;
-        unsigned uses_auto      : 1;
-    } have;
-
-    PPCTL_ENABLE_MACROS();
-    NextToken();
-    if( GetPragmaAuxAliasInfo() ) {
-        CurrEntry = NULL;
-        if( IS_ID_OR_KEYWORD( CurToken ) ) {
-            SetCurrInfo( Buffer );
-            NextToken();
-            AuxCopy( CurrInfo, CurrAlias );
-            PragObjNameInfo();
-            have.f_call   = 0;
-            have.f_loadds = 0;
-            have.f_rdosdev = 0;
-            have.f_export = 0;
-            have.f_parm   = 0;
-            have.f_value  = 0;
-            have.f_modify = 0;
-            have.f_frame = 0;
-            have.uses_auto = 0;
-            for( ;; ) {
-                if( !have.f_call && CurToken == T_EQUAL ) {
-                    have.uses_auto = GetByteSeq();
-                    have.f_call = 1;
-                } else if( !have.f_call && PragRecogId( "far" ) ) {
-                    CurrInfo->cclass |= FAR_CALL;
-                    have.f_call = 1;
-                } else if( !have.f_call && PragRecogId( "near" ) ) {
-                    CurrInfo->cclass &= ~FAR_CALL;
-                    have.f_call = 1;
-                } else if( !have.f_loadds && PragRecogId( "loadds" ) ) {
-                    CurrInfo->cclass |= LOAD_DS_ON_ENTRY;
-                    have.f_loadds = 1;
-                } else if( !have.f_rdosdev && PragRecogId( "rdosdev" ) ) {
-                    CurrInfo->cclass |= LOAD_RDOSDEV_ON_ENTRY;
-                    have.f_rdosdev = 1;
-                } else if( !have.f_export && PragRecogId( "export" ) ) {
-                    CurrInfo->cclass |= DLL_EXPORT;
-                    have.f_export = 1;
-                } else if( !have.f_parm && PragRecogId( "parm" ) ) {
-                    GetParmInfo();
-                    have.f_parm = 1;
-                } else if( !have.f_value && PragRecogId( "value" ) ) {
-                    GetRetInfo();
-                    have.f_value = 1;
-                } else if( !have.f_value && PragRecogId( "aborts" ) ) {
-                    CurrInfo->cclass |= SUICIDAL;
-                    have.f_value = 1;
-                } else if( !have.f_modify && PragRecogId( "modify" ) ) {
-                    GetSaveInfo();
-                    have.f_modify = 1;
-                } else if( !have.f_frame && PragRecogId( "frame" ) ) {
-                    CurrInfo->cclass |= GENERATE_STACK_FRAME;
-                    have.f_frame = 1;
-                } else {
-                    break;
-                }
-            }
-            if( have.uses_auto ) {
-                AsmSysUsesAuto();
-            }
-            PragmaAuxEnding( true );
-        }
-    }
-    PPCTL_DISABLE_MACROS();
-}
-
-typedef enum
-{       FIXWORD_NONE
-,       FIXWORD_FLOAT
-,       FIXWORD_SEGMENT
-,       FIXWORD_OFFSET
-,       FIXWORD_RELOFF
-} fix_words;
-
 
 static fix_words FixupKeyword( void )
 {
@@ -520,20 +486,6 @@ enum sym_state AsmQueryState( void *handle )
 }
 
 
-#if _CPU == 8086
-    #define SYM_INT     SYM_INT2
-    #define SYM_FFAR    SYM_FAR2
-    #define SYM_FNEAR   SYM_NEAR2
-    #define SYM_DFAR    SYM_INT4
-    #define SYM_DNEAR   SYM_INT2
-#else
-    #define SYM_INT     SYM_INT4
-    #define SYM_FFAR    SYM_FAR4
-    #define SYM_FNEAR   SYM_NEAR2
-    #define SYM_DFAR    SYM_INT6
-    #define SYM_DNEAR   SYM_INT4
-#endif
-
 #ifdef WCPP_ASM
 static enum sym_type CodePtrType( type_flag flags )
 {
@@ -571,13 +523,6 @@ static enum sym_type PtrType( type_flag flags )
 
 
 #ifdef WCPP_ASM
-
-static enum sym_type AsmDataType[] = {
-    #define pick(id,promo,promo_asm,type_text)  promo_asm,
-    #include "_typdefs.h"
-    #undef pick
-};
-
 static enum sym_type AsmType(
     TYPE type )
 {
@@ -605,7 +550,6 @@ static enum sym_type AsmType(
         return( AsmDataType[type->id] );
     }
 }
-
 #endif
 
 
@@ -849,18 +793,6 @@ static void AddAFix(
     FixupHead = fix;
 }
 
-static byte_seq *AuxCodeDup(        // DUPLICATE AUX CODE
-    byte_seq *code )
-{
-    byte_seq_len size;
-
-    if( code == NULL ) {
-        return( code );
-    }
-    size = offsetof( byte_seq, data ) + code->length;
-    return( (byte_seq *)vctsave( (char *)code, size ) );
-}
-
 void AsmSysCopyCode( void )
 /*************************/
 {
@@ -878,7 +810,6 @@ bool AsmSysInsertFixups( VBUF *code )
     bool uses_auto;
 
     uses_auto = insertFixups( code );
-    AsmSymFini();
     return( uses_auto );
 }
 
@@ -896,16 +827,7 @@ AUX_INFO *AsmSysCreateAux( const char *name )
 void AsmSysUsesAuto( void )
 /*************************/
 {
-    /*
-       We want to force the calling routine to set up a [E]BP frame
-       for the use of this pragma. This is done by saying the pragma
-       modifies the [E]SP register. A kludge, but it works.
-    */
-#if _CPU == 8086
-    HW_CTurnOff( CurrInfo->save, HW_SP );
-#else
-    HW_CTurnOff( CurrInfo->save, HW_ESP );
-#endif
+    CurrInfo->cclass_target |= FECALL_X86_NEEDS_BP_CHAIN;
     ScopeASMUsesAuto();
 }
 
@@ -924,14 +846,15 @@ void AsmSysDone( void )
 void AsmSysInit( void )
 /*********************/
 {
+    AsmInit();
     AsmCodeAddress = 0;
-    AsmSaveCPUInfo();
 }
 
 void AsmSysFini( void )
 /*********************/
 {
-    AsmRestoreCPUInfo();
+    AsmFiniRelocs();
+    AsmFini();
 }
 
 static byte *copyCodeLen( byte *d, void *v, unsigned len )
@@ -958,7 +881,7 @@ void AsmSysPCHWriteCode( AUX_INFO *info )
     byte *c;
     byte *p;
     byte *tmp_buff;
-#ifndef NDEBUG
+#ifdef DEVBUILD
     byte buff[8];
 #else
     byte buff[1024];
@@ -1075,6 +998,31 @@ void AsmSysLine( const char *buf )
 #endif
 }
 
+static bool checkEnum( int *value )
+{
+    SYMBOL          sym;
+    SEARCH_RESULT   *result;
+    bool            ok;
+
+    ok = false;
+    if( CurToken == T_ID ) {
+        result = ScopeFindNaked( GetCurrScope(), NameCreateNoLen( Buffer ) );
+        if( result != NULL ) {
+            if( result->simple ) {
+                sym = result->sym_name->name_syms;
+                if( sym != NULL ) {
+                    if( SymIsEnumeration( sym ) ) {
+                        *value = sym->u.sval;
+                        ok = true;
+                    }
+                }
+            }
+            ScopeFreeResult( result );
+        }
+    }
+    return( ok );
+}
+
 static int GetByteSeq( void )
 {
     int             len;
@@ -1083,6 +1031,7 @@ static int GetByteSeq( void )
     unsigned        fixword;
     int             uses_auto;
     VBUF            code_buffer;
+    int             value;
 #if _CPU == 8086
     bool            use_fpu_emu = false;
 #endif
@@ -1120,6 +1069,9 @@ static int GetByteSeq( void )
 #endif
             VbufBuffer( &code_buffer )[len++] = U32Fetch( Constant64 );
             NextToken();
+        } else if( checkEnum( &value ) ) {
+            VbufBuffer( &code_buffer )[len++] = value;
+            NextToken();
         } else {
 #if _CPU == 8086
             use_fpu_emu = false;
@@ -1137,7 +1089,7 @@ static int GetByteSeq( void )
                 if( !IS_ID_OR_KEYWORD( CurToken ) ) {
                     CErr1( ERR_EXPECTING_ID );
                 } else {
-                    name = strsave( Buffer );
+                    name = CMemStrDup( Buffer );
                     offset = 0;
                     NextToken();
                     if( CurToken == T_PLUS ) {
@@ -1188,31 +1140,123 @@ static int GetByteSeq( void )
     return( uses_auto );
 }
 
+void PragAux(                   // #PRAGMA AUX ...
+    void )
+{
+    struct {
+        unsigned f_call         : 1;
+        unsigned f_loadds       : 1;
+        unsigned f_rdosdev      : 1;
+        unsigned f_export       : 1;
+        unsigned f_parm         : 1;
+        unsigned f_value        : 1;
+        unsigned f_modify       : 1;
+        unsigned f_frame        : 1;
+        unsigned uses_auto      : 1;
+    } have;
 
-hw_reg_set PragRegName(         // GET REGISTER NAME
-    const char *regname,        // - register name
-    size_t regnamelen )         // - register name len
+    PPCTL_ENABLE_MACROS();
+    NextToken();
+    if( GetPragmaAuxAliasInfo() ) {
+        CurrEntry = NULL;
+        if( IS_ID_OR_KEYWORD( CurToken ) ) {
+            SetCurrInfo( Buffer );
+            NextToken();
+            AuxCopy( CurrInfo, CurrAlias );
+            PragObjNameInfo();
+            have.f_call    = 0;
+            have.f_loadds  = 0;
+            have.f_rdosdev = 0;
+            have.f_export  = 0;
+            have.f_parm    = 0;
+            have.f_value   = 0;
+            have.f_modify  = 0;
+            have.f_frame   = 0;
+            have.uses_auto = 0;
+            for( ;; ) {
+                if( !have.f_call && CurToken == T_EQUAL ) {
+                    have.uses_auto = GetByteSeq();
+                    have.f_call = 1;
+                } else if( !have.f_call && PragRecogId( "far" ) ) {
+                    CurrInfo->cclass_target |= FECALL_X86_FAR_CALL;
+                    have.f_call = 1;
+                } else if( !have.f_call && PragRecogId( "near" ) ) {
+                    CurrInfo->cclass_target &= ~FECALL_X86_FAR_CALL;
+                    have.f_call = 1;
+                } else if( !have.f_loadds && PragRecogId( "loadds" ) ) {
+                    CurrInfo->cclass_target |= FECALL_X86_LOAD_DS_ON_ENTRY;
+                    have.f_loadds = 1;
+                } else if( !have.f_rdosdev && PragRecogId( "rdosdev" ) ) {
+                    CurrInfo->cclass_target |= FECALL_X86_LOAD_RDOSDEV_ON_ENTRY;
+                    have.f_rdosdev = 1;
+                } else if( !have.f_export && PragRecogId( "export" ) ) {
+                    CurrInfo->cclass |= FECALL_GEN_DLL_EXPORT;
+                    have.f_export = 1;
+                } else if( !have.f_parm && PragRecogId( "parm" ) ) {
+                    GetParmInfo();
+                    have.f_parm = 1;
+                } else if( !have.f_value && PragRecogId( "value" ) ) {
+                    GetRetInfo();
+                    have.f_value = 1;
+                } else if( !have.f_value && PragRecogId( "aborts" ) ) {
+                    CurrInfo->cclass |= FECALL_GEN_ABORTS;
+                    have.f_value = 1;
+                } else if( !have.f_modify && PragRecogId( "modify" ) ) {
+                    GetSaveInfo();
+                    have.f_modify = 1;
+                } else if( !have.f_frame && PragRecogId( "frame" ) ) {
+                    CurrInfo->cclass_target |= FECALL_X86_GENERATE_STACK_FRAME;
+                    have.f_frame = 1;
+                } else {
+                    break;
+                }
+            }
+            if( have.uses_auto ) {
+                AsmSysUsesAuto();
+            }
+            PragmaAuxEnding( true );
+        }
+    }
+    PPCTL_DISABLE_MACROS();
+}
+
+hw_reg_set PragRegName( const char *regname )
 {
     int             index;
     hw_reg_set      name;
-    size_t          len;
-    const char      *str;
 
-    if( regnamelen > 0 ) {
-        len = regnamelen;
-        str = SkipUnderscorePrefix( regname, &len, true );
-        index = PragRegIndex( Registers, str, len, true );
+    if( *regname != '\0' ) {
+        index = PragRegIndex( Registers, regname, true );
         if( index != -1 ) {
             return( RegBits[RegMap[index]] );
         }
-        if( len == 4 && memcmp( str, "8087", 4 ) == 0 ) {
+        if( strcmp( regname, "8087" ) == 0 ) {
             HW_CAsgn( name, HW_FLTS );
             return( name );
         }
-        PragRegNameErr( regname, regnamelen );
+        PragRegNameErr( regname );
     }
     HW_CAsgn( name, HW_EMPTY );
     return( name );
+}
+
+hw_reg_set PragReg( void )      // GET REGISTER
+{
+    char            buffer[REG_BUFF_SIZE];
+    size_t          len;
+    const char      *p;
+
+    p = SkipUnderscorePrefix( Buffer );
+    if( p == NULL ) {
+        PragRegNameErr( Buffer );
+        p = Buffer;
+    }
+    len = 0;
+    while( *p != '\0' && len < ( sizeof( buffer ) - 1 ) ) {
+        buffer[len++] = *p++;
+    }
+    buffer[len] = '\0';
+    return( PragRegName( buffer ) );
 }
 
 static bool parmSetsIdentical( hw_reg_set *parms1, hw_reg_set *parms2 )
@@ -1230,23 +1274,10 @@ static bool parmSetsIdentical( hw_reg_set *parms1, hw_reg_set *parms2 )
     return( false );
 }
 
+//
 // The following defines which flags are to be ignored when checking
 // a pragma call classes for equivalence.
 //
-#define CALL_CLASS_IGNORE ( 0                       \
-                          | NO_MEMORY_CHANGED       \
-                          | NO_MEMORY_READ          \
-                          | MODIFY_EXACT            \
-                          | GENERATE_STACK_FRAME    \
-                          | EMIT_FUNCTION_NAME      \
-                          | GROW_STACK              \
-                          | PROLOG_HOOKS            \
-                          | EPILOG_HOOKS            \
-                          | TOUCH_STACK             \
-                          | LOAD_DS_ON_ENTRY        \
-                          | DLL_EXPORT              \
-                          )
-
 bool PragmasTypeEquivalent(     // TEST IF TWO PRAGMAS ARE TYPE-EQUIVALENT
     AUX_INFO *inf1,             // - pragma [1]
     AUX_INFO *inf2 )            // - pragma [2]
@@ -1261,8 +1292,10 @@ bool PragmasTypeEquivalent(     // TEST IF TWO PRAGMAS ARE TYPE-EQUIVALENT
         return( true );
     }
     return
-           ( ( inf1->cclass & ~CALL_CLASS_IGNORE ) ==
-             ( inf2->cclass & ~CALL_CLASS_IGNORE ) )
+           ( ( inf1->cclass & ~FECALL_GEN_CALL_CLASS_IGNORE ) ==
+             ( inf2->cclass & ~FECALL_GEN_CALL_CLASS_IGNORE ) )
+        && ( ( inf1->cclass_target & ~FECALL_X86_CALL_CLASS_IGNORE ) ==
+             ( inf2->cclass_target & ~FECALL_X86_CALL_CLASS_IGNORE ) )
         && parmSetsIdentical( inf1->parms, inf2->parms )
         && HW_Equal( inf1->returns, inf2->returns )
         && HW_Equal( inf1->streturn, inf2->streturn )
@@ -1299,6 +1332,9 @@ bool PragmaOKForVariables(      // TEST IF PRAGMA IS SUITABLE FOR A VARIABLE
     if( datap->cclass != def_info->cclass ) {
         return( false );
     }
+    if( datap->cclass_target != def_info->cclass_target ) {
+        return( false );
+    }
     if( datap->code != def_info->code ) {
         return( false );
     }
@@ -1325,6 +1361,14 @@ static bool okClassChange(      // TEST IF OK TO CHANGE A CLASS IN PRAGMA
     call_class oldp,                 // - old
     call_class newp,                 // - new
     call_class defp )                // - default
+{
+    return( ( ( oldp & newp) == oldp ) || ( oldp == defp ) );
+}
+
+static bool okClassTargetChange(    // TEST IF OK TO CHANGE A CLASS IN PRAGMA
+    call_class_target oldp,         // - old
+    call_class_target newp,         // - new
+    call_class_target defp )        // - default
 {
     return( ( ( oldp & newp) == oldp ) || ( oldp == defp ) );
 }
@@ -1385,6 +1429,9 @@ bool PragmaChangeConsistent(    // TEST IF PRAGMA CHANGE IS CONSISTENT
     return( ( okClassChange( oldp->cclass
                          , newp->cclass
                          , DefaultInfo.cclass ) )
+        && ( okClassTargetChange( oldp->cclass_target
+                         , newp->cclass_target
+                         , DefaultInfo.cclass_target ) )
         && ( ( oldp->flags & newp->flags ) == oldp->flags )
         && ( okParmChange( oldp->parms
                          , newp->parms

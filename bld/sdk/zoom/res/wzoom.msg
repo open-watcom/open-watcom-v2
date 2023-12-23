@@ -1,26 +1,30 @@
+/* UTF-8 encoding, Â¥ */
+
+#define PRODUCT_NAME    banner1t( "Zoom" )
+
 // NB the maximum allowable string length is 128 bytes
 
 pick(   STR_APP_NAME,
-        "Open Watcom Zoom",
-        "Open Watcom ƒY[ƒ€" )
+        PRODUCT_NAME,
+        PRODUCT_NAME )
 pick(   STR_ABOUT_VER,
         "",     //NOT USED
         "" )
 pick(   STR_ABOUT_TITLE,
-        "About Open Watcom Zoom",
-        "Open Watcom ƒY[ƒ€‚Ìƒo[ƒWƒ‡ƒ“î•ñ" )
+        "About " PRODUCT_NAME,
+        "About " PRODUCT_NAME )
 pick(   STR_UNABLE_TO_AUTOREFRESH,
         "Unable to do autorefresh.  No system timer available",
-        "©“®XV‚ªs‚¦‚Ü‚¹‚ñ.  g—p‰Â”\‚ÈƒVƒXƒeƒ€ ƒ^ƒCƒ}[‚ª‚ ‚è‚Ü‚¹‚ñ" )
+        "è‡ªå‹•æ›´æ–°ãŒè¡Œãˆã¾ã›ã‚“.  ä½¿ç”¨å¯èƒ½ãªã‚·ã‚¹ãƒ†ãƒ  ã‚¿ã‚¤ãƒãƒ¼ãŒã‚ã‚Šã¾ã›ã‚“" )
 pick(   STR_INTERV_NOT_NUMERIC,
         "The Interval field must contain a numeric value",
-        "ŠÔŠu‚Í”’l‚Åw’è‚µ‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ" )
+        "é–“éš”ã¯æ•°å€¤ã§æŒ‡å®šã—ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“" )
 pick(   STR_ABOUT_NAME,
-        "Open Watcom Zoom for Windows" STR_BITNESS,
-        "Open Watcom ƒY[ƒ€‚ÌWindows”Å" STR_BITNESS )
+        PRODUCT_NAME " for Windows",
+        PRODUCT_NAME " for Windows" )
 pick(   STR_ABOUT_VERSION,
         banner1v( _ZOOM_VERSION_ ),
         banner1v( _ZOOM_VERSION_ ) )
 pick(   STR_INTERV_IS_ZERO,
         "The refresh interval must be greater than zero.",
-        "XVŠÔŠu‚Í 0 ‚æ‚è‘å‚«‚¢’l‚Å‚·." )
+        "æ›´æ–°é–“éš”ã¯ 0 ã‚ˆã‚Šå¤§ãã„å€¤ã§ã™." )

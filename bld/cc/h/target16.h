@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,7 +30,9 @@
 ****************************************************************************/
 
 
-/* target16.h: target types for 16-bit machine */
+/*
+ * target16.h: target types for 16-bit machine
+ */
 
 #define TARGET_CHAR     1
 #define TARGET_SHORT    2
@@ -53,7 +56,7 @@
 #define TARGET_LDIMAGINARY 10
 #define TARGET_BOOL     1
 #define TARGET_WCHAR    2
-#define TARGET_BITS     32
+#define TARGET_BITFIELD 4
 
 #define TARGET_INT_MAX  32767
 #define TARGET_INT_MIN  (-32767-1)

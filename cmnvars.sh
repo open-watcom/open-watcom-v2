@@ -13,18 +13,6 @@ export OWBLDVERTOOL=1300
 # Subdirectory to be used for building OW build tools
 if [ -z "$OWOBJDIR" ]; then export OWOBJDIR=binbuild; fi
 
-# Subdirectory to be used for build binaries
-export OWBINDIR=$OWROOT/build
-
-# Subdirectory containing OW sources
-export OWSRCDIR=$OWROOT/bld
-
-# Subdirectory containing documentation sources
-export OWDOCSDIR=$OWROOT/docs
-
-# Subdirectory containing distribution sources
-export OWDISTRDIR=$OWROOT/distrib
-
 # Set environment variables
 # Set up default path information variable
 if [ -z "$OWDEFPATH" ]; then
@@ -32,7 +20,7 @@ if [ -z "$OWDEFPATH" ]; then
     if [ -n "$INCLUDE" ]; then export OWDEFINCLUDE=$INCLUDE; fi
     if [ -n "$WATCOM" ]; then export OWDEFWATCOM=$WATCOM; fi
 fi
-export PATH="$OWBINDIR/$OWOBJDIR:$OWBINDIR:$OWDEFPATH"
+export PATH="$OWROOT/build/$OWOBJDIR:$OWROOT/build:$OWDEFPATH"
 if [ -n "$OWDEFINCLUDE" ]; then export INCLUDE=$OWDEFINCLUDE; fi
 if [ -n "$OWDEFWATCOM" ]; then export WATCOM=$OWDEFWATCOM; fi
 
@@ -57,6 +45,5 @@ if [ -f ./getversi.sh ]; then
     . ./getversi.sh
     rm getversi.*
 fi
-export OWCYEAR=`date +'%Y'`
 
-echo "Open Watcom build environment (${OWTOOLS} version=${OWTOOLSVER}, CYEAR=${OWCYEAR})"
+echo "Open Watcom build environment (${OWTOOLS} version=${OWTOOLSVER})"

@@ -5,8 +5,6 @@
 #
 #   Macros used by this file:
 #
-#   posix_dir   Must point to the root of the posix project.
-#
 #   cflags      If defined, these options to the compiler override the
 #               defaults selected by this file.
 #
@@ -15,8 +13,25 @@
 #   if make_lib isn't defined, then the following must be defined:
 #
 #   name        The name of the command which is being built.  The
-#               directory $(posix_dir)/src/$(name) must exist, and
+#               directory posix/src/$(name) must exist, and
 #               contain the source for the command.
+
+!ifndef model
+!ifeq host_cpu i86
+model=c
+!else ifeq host_cpu 386
+!ifeq host_os qnx
+model=s
+!else ifeq host_os dos
+model=s
+!else
+model=f
+!endif
+!endif
+!endif
+
+memory_model_i86=$(model)
+memory_model_386=$(model)
 
 #
 # definitions for POSIX library build
@@ -43,6 +58,7 @@ alt_posixlib = 1
 posixlib_objs = &
     $(_subdir_)alloc.obj &
     $(_subdir_)argvenv.obj &
+    $(_subdir_)argvstr.obj &
     $(_subdir_)argvrx.obj &
     $(_subdir_)console.obj &
     $(_subdir_)die.obj &
@@ -62,9 +78,9 @@ stdlibdir=$(std_subdir_$(host_cpu))
 altlibdir=$(alt_subdir_$(host_os)$(host_cpu)$(model))
 !endif
 !else
-stdlibdir=$(posix_dir)/misc/$(objs_subdir)/$(std_subdir_$(host_cpu))
+stdlibdir=../misc/$(objs_subdir)/$(std_subdir_$(host_cpu))
 !ifdef alt_posixlib
-altlibdir=$(posix_dir)/misc/$(objs_subdir)/$(alt_subdir_$(host_os)$(host_cpu)$(model))
+altlibdir=../misc/$(objs_subdir)/$(alt_subdir_$(host_os)$(host_cpu)$(model))
 !endif
 !endif
 
@@ -74,3 +90,5 @@ altlibdir=$(posix_dir)/misc/$(objs_subdir)/$(alt_subdir_$(host_os)$(host_cpu)$(m
 
 extra_cppflags_ntaxp = -DWIN32 -D_WIN32
 extra_cpp_flags      = -DSTANDALONE_RX $(extra_cppflags_$(host_os)$(host_cpu)) $(extra_cppflags)
+
+extra_c_flags_i86 = -zt=10000

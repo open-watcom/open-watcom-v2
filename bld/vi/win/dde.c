@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,6 +35,7 @@
 #include <stddef.h>
 #include "ddedef.h"
 #include "wclbdde.h"
+#include "myprintf.h"
 
 
 /* Local Windows CALLBACK function prototypes */
@@ -131,8 +132,7 @@ bool CreateStringHandle( const char *name, HSZ *hdl )
 static void deleteStringData( hsz_list *hlptr )
 {
     DdeFreeStringHandle( DDEInstId, hlptr->hsz );
-    DeleteLLItem( (ss **)&hszHead, (ss **)&hszTail, (ss *)hlptr );
-    MemFree( hlptr );
+    MemFree( DeleteLLItem( (ss **)&hszHead, (ss **)&hszTail, (ss *)hlptr ) );
 
 } /* deleteStringData */
 

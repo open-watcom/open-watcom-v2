@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -52,29 +52,29 @@ static  void    SysIOErr( int errcode, ... ) {
 }
 
 
-void    IOErr( int errcode, ... ) {
-//=================================
-
+_WCNORETURN void    IOErr( int errcode, ... )
+//===========================================
 // Handle a run time i/o error.
-
+{
     char        errbuff[ERR_BUFF_SIZE+1];
     va_list     args;
 
     va_start( args, errcode );
-        if( ( IOCB->set_flags & (SET_IOSPTR|SET_ERRSTMT) ) == 0 ) {
-            if( errcode == IO_FILE_PROBLEM ) {
-                GetIOErrMsg( IOCB->fileinfo, errbuff, sizeof( errbuff ) );
-                SysIOErr( errcode, errbuff );
-            } else {
-                RTErrHandler( errcode, args );
-            }
+    if( ( IOCB->set_flags & (SET_IOSPTR|SET_ERRSTMT) ) == 0 ) {
+        if( errcode == IO_FILE_PROBLEM ) {
+            GetIOErrMsg( IOCB->fileinfo, errbuff, sizeof( errbuff ) );
+            SysIOErr( errcode, errbuff );
         } else {
-            errcode = ErrCodOrg( errcode );
-            if( IOCB->fileinfo != NULL ) {
-                IOCB->fileinfo->error = errcode;
-            }
-            IOCB->status = errcode;
+            RTErrHandler( errcode, args );
         }
-        RTSuicide();
+    } else {
+        errcode = ErrCodOrg( errcode );
+        if( IOCB->fileinfo != NULL ) {
+            IOCB->fileinfo->error = errcode;
+        }
+        IOCB->status = errcode;
+    }
     va_end( args );
+    RTSuicide();
+    // never return
 }

@@ -3,6 +3,4 @@
 host_os = nt
 host_cpu = 386
 
-wsplice_opts = -k FOR_NT
-
 !include ../master.mif

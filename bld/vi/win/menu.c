@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,7 +32,9 @@
 
 #include "vi.h"
 #include "menu.h"
+#include "myprintf.h"
 #include <assert.h>
+#include "parse.h"
 
 
 /* The following value comes from Petzold - page 344 */
@@ -69,6 +71,7 @@ typedef struct menu {
 static menu     mainMenu = { NULL, NULL, NULL, NULL, 0, 0, 0, NULL, false, false, false };
 static menu     *rootMenu = &mainMenu;
 static menu     *currMenu = NULL;
+static unsigned nextAvail = 0;
 
 /* utility functions used in rest of module */
 
@@ -109,8 +112,6 @@ static vi_key getHotKey( const char *str )
     return( 0 );
 
 } /* getHotKey */
-
-static unsigned nextAvail = 0;
 
 /*
  * NextMenuId - returns the next available unique idea for a menu item
@@ -364,8 +365,7 @@ static bool freeItem( menu *m, int pos )
             DeleteMenu( m->hmenu, pos, MF_BYPOSITION );
         }
         m->num_items -= 1;
-        DeleteLLItem( (ss **)&m->item_head, (ss **)&m->item_tail, (ss *)citem );
-        MemFree( citem );
+        MemFree( DeleteLLItem( (ss **)&m->item_head, (ss **)&m->item_tail, (ss *)citem ) );
         return( true );
     }
     return( false );
@@ -446,8 +446,7 @@ static void freeMenu( menu *parent, menu *m )
         DestroyMenu( m->hmenu );
     }
     parent->num_items -= 1;
-    DeleteLLItem( (ss **)&parent->item_head, (ss **)&parent->item_tail, (ss *)m );
-    MemFree( m );
+    MemFree( DeleteLLItem( (ss **)&parent->item_head, (ss **)&parent->item_tail, (ss *)m ) );
 
 } /* freeMenu */
 
@@ -523,6 +522,25 @@ vi_rc StartMenu( const char *data )
 } /* StartMenu */
 
 /*
+ * translateTabs
+ */
+static void translateTabs( char *buff )
+{
+    int     k;
+    int     j;
+
+    for( k = 0; buff[k] != '\0'; ++k ) {
+        if( buff[k] == '\\' && buff[k + 1] == 't') {
+            buff[k] = '\t';
+            for( j = k + 1; buff[j] != 0; j++ ) {
+                buff[j] = buff[j + 1];
+            }
+        }
+    }
+
+} /* translateTabs */
+
+/*
  * MenuItem - add an item to the current menu
  */
 vi_rc MenuItem( const char *data )
@@ -535,7 +553,7 @@ vi_rc MenuItem( const char *data )
     }
     GetNextWordOrString( &data, name );
     GetNextWordOrString( &data, help );
-    TranslateTabs( name );
+    translateTabs( name );
     addItemToMenu( currMenu, name, help, data, false );
     return( ERR_NO_ERR );
 
@@ -702,8 +720,7 @@ void FiniMenu( void )
                     clearMenu( m );
                     // DestroyMenu( m->hmenu );
                 }
-                DeleteLLItem( (ss **)&rootMenu->item_head, (ss **)&rootMenu->item_tail, (ss *)m );
-                MemFree( m );
+                MemFree( DeleteLLItem( (ss **)&rootMenu->item_head, (ss **)&rootMenu->item_tail, (ss *)m ) );
             }
             // DestroyMenu( rootMenu->hmenu );
         }
@@ -919,8 +936,7 @@ static void purgeOldMenuBottom( menu *cmenu )
         for( ; cnt < cmenu->num_items; cnt++ ) {
             next = citem->next;
             DeleteMenu( cmenu->hmenu, cmenu->orig_num_items, MF_BYPOSITION );
-            DeleteLLItem( (ss **)&cmenu->item_head, (ss **)&cmenu->item_tail, (ss *)citem );
-            MemFree( citem );
+            MemFree( DeleteLLItem( (ss **)&cmenu->item_head, (ss **)&cmenu->item_tail, (ss *)citem ) );
             citem = next;
         }
         cmenu->num_items = cmenu->orig_num_items;

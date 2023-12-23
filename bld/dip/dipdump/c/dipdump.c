@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,12 +38,12 @@
 #include <unistd.h>
 #include "walloca.h"
 #include "bool.h"
-#include "dip.h"
 #include "digcli.h"
+#include "dip.h"
 #include "dipdump.h"
 
 
-/**
+/*
  * Options
  */
 static struct {
@@ -51,7 +51,8 @@ static struct {
 } Opts = { 1 };
 
 
-/**
+static int ErrorMsg( const char *pszFormat, ... )
+/************************************************
  * Prints an error message.
  *
  * @returns Appropriate exit code for an error.
@@ -59,7 +60,6 @@ static struct {
  * @param   pszFormat   The format string (passed to vfprintf).
  * @param   ...         Format arguments.
  */
-static int ErrorMsg( const char *pszFormat, ... )
 {
     va_list va;
 
@@ -70,13 +70,13 @@ static int ErrorMsg( const char *pszFormat, ... )
     return( 1 );
 }
 
-/**
+static void InfoMsg( const char *pszFormat, ... )
+/************************************************
  * Prints an informational message.
  *
  * @param   pszFormat   The format string (passed to vfprintf).
  * @param   ...         Format arguments.
  */
-static void InfoMsg( const char *pszFormat, ... )
 {
     va_list va;
 
@@ -86,12 +86,12 @@ static void InfoMsg( const char *pszFormat, ... )
     va_end( va );
 }
 
-/**
+static const char *GetTypeKind( type_kind kind )
+/***********************************************
  * Get type kind name.
  * @returns type kind name (readonly).
  * @param   kind        The type kind.
  */
-static const char *GetTypeKind(type_kind kind)
 {
     switch( kind ) {
     case TK_NONE:       return( "TK_NONE" );
@@ -115,13 +115,13 @@ static const char *GetTypeKind(type_kind kind)
     }
 }
 
-/**
+static const char *GetTypeModifier( dig_type_info *ti )
+/******************************************************
  * Get type modifier name.
  * @returns type modifier name (readonly).
  * @param   modifier    The type modifier.
  * @param   kind        The type kind (needed to understand the modifier).
  */
-static const char *GetTypeModifier( dig_type_info *ti )
 {
     if( ti->modifier == TM_NONE ) {
         return( ( ti->deref ) ? "TM_NONE|TM_FLAG_DEREF" : "TM_NONE" );
@@ -172,12 +172,12 @@ static const char *GetTypeModifier( dig_type_info *ti )
     }
 }
 
-/**
+static const char *GetTypeTag( symbol_type tag )
+/***********************************************
  * Get the tag name.
  * @returns tag name. (readonly)
  * @param   tag     The tag.
  */
-static const char *GetTypeTag( symbol_type tag )
 {
     switch( tag ) {
     case ST_NONE:       return( "ST_NONE" );
@@ -194,7 +194,8 @@ static const char *GetTypeTag( symbol_type tag )
     }
 }
 
-/**
+static walk_result Sym2Callback( sym_walk_info swi, sym_handle *sym, void *_idx )
+/********************************************************************************
  * WalkSymList callback, the module pass.
  *
  * @returns WR_CONTINUE;
@@ -202,7 +203,6 @@ static const char *GetTypeTag( symbol_type tag )
  * @param   sym     The Symbol.
  * @param   _idx    Pointer to the symbol index number.
  */
-static walk_result Sym2Callback( sym_walk_info swi, sym_handle *sym, void *_idx )
 {
     int             *idx = (int *)_idx;
     char            buff[2048];
@@ -212,10 +212,13 @@ static walk_result Sym2Callback( sym_walk_info swi, sym_handle *sym, void *_idx 
     sym_info        sinfo;
     int             i;
 
-    /* index */
+    /*
+     * index
+     */
     printf( "%5d  ", ++*idx );
-
-    /* symbol info */
+    /*
+     * symbol info
+     */
     ds = DIPSymInfo( sym, NULL, &sinfo );
     if( ds == DS_OK ) {
         switch( sinfo.kind ) {
@@ -233,8 +236,9 @@ static walk_result Sym2Callback( sym_walk_info swi, sym_handle *sym, void *_idx 
         memset( &sinfo, 0, sizeof( sinfo ) );
         sinfo.kind= SK_NONE;
     }
-
-    /* location (i.e. address) */
+    /*
+     * location (i.e. address)
+     */
     ll.num = MAX_LOC_ENTRIES;
     ds = DIPSymLocation( sym, NULL, &ll );
     if( ds == DS_OK ) {
@@ -266,8 +270,9 @@ static walk_result Sym2Callback( sym_walk_info swi, sym_handle *sym, void *_idx 
         printf( "status=%#x  ", ds );
         ll.num = 0;
     }
-
-    /* swi */
+    /*
+     * swi
+     */
     switch( swi ) {
     case SWI_SYMBOL:
         printf( "SYMBOL    " );
@@ -282,9 +287,10 @@ static walk_result Sym2Callback( sym_walk_info swi, sym_handle *sym, void *_idx 
         printf( "%#d  ", swi );
         break;
     }
-
-    /* finally, the name. */
-    /* try get the name */
+    /*
+     * finally, the name.
+     * try get the name
+     */
     buff[0] = '\0';
     len = DIPSymName( sym, NULL, SNT_DEMANGLED, buff, sizeof( buff ) );
     if( len == 0 ) {
@@ -298,9 +304,9 @@ static walk_result Sym2Callback( sym_walk_info swi, sym_handle *sym, void *_idx 
     } else {
         printf( "(len=%u)\n", len );
     }
-
-
-    /* Get more stuff, mainly to test the APIs. */
+    /*
+     * Get more stuff, mainly to test the APIs.
+     */
     if( 1 ) {
         type_handle *th = alloca( DIPHandleSize( HK_TYPE ) );
 
@@ -308,9 +314,9 @@ static walk_result Sym2Callback( sym_walk_info swi, sym_handle *sym, void *_idx 
         if( ds ) {
         }
     }
-
-
-    /* more locations. */
+    /*
+     * more locations.
+     */
     for( i = 1; i < ll.num; i++ ) {
         if( ll.e[0].type == LT_ADDR ) {
             printf( "       %04x:%08lx\n",
@@ -319,22 +325,20 @@ static walk_result Sym2Callback( sym_walk_info swi, sym_handle *sym, void *_idx 
             printf( "       %p\n", ll.e[i].u.p); /// what's this?
         }
     }
-
     /*
      * Perform alternative lookups to the those interfaces.
      */
-
     return( WR_CONTINUE );
 }
 
-/**
+static walk_result Type2Callback( type_handle *th, void *_idx )
+/**************************************************************
  * WalkTypeList callback.
  *
  * @returns WR_CONTINUE
  * @param   th          The type handle.
  * @param   _idx        Pointer to the current module index.
  */
-static walk_result Type2Callback( type_handle *th, void *_idx )
 {
     int             *idx = (int *)_idx;
     char            buff[2048];
@@ -347,15 +351,18 @@ static walk_result Type2Callback( type_handle *th, void *_idx )
 
 /** @todo all this needs some serious work */
 
-    /* type name. */
+    /*
+     * type name.
+     */
     len = DIPTypeName( th, 0, &tag, buff, sizeof( buff ) );
     if( len > 0 ) {
         printf( "tag=%d %-13s  name=%s\n"
                 "       ",
                 tag, GetTypeTag( tag ), buff );
     }
-
-    /* type info */
+    /*
+     * type info
+     */
     ds = DIPTypeInfo( th, NULL, &ti );
     if( ds == DS_OK ) {
         printf( "size=%#06lx  kind=%2d %-12s  modifier=%#04x deref=%d %s\n",
@@ -388,7 +395,12 @@ static walk_result Type2Callback( type_handle *th, void *_idx )
     return( WR_CONTINUE );
 }
 
-/**
+static void CompareCues( cue_handle *cueh1, cue_handle *cueh2,
+                         search_result expected_rc, search_result actual_rc,
+                         bool exp_exact_line, bool exp_le_line,
+                         bool exp_exact_addr, bool exp_le_addr,
+                         const char *operation )
+/***************************************************************************
  * Compares two cues, the first one being the one which information we use
  * searching for the 2nd.
  *
@@ -402,11 +414,6 @@ static walk_result Type2Callback( type_handle *th, void *_idx )
  * @param   exp_le_line     Set if we're to expect a less or equal address.
  * @param   operation       The name of the search operation.
  */
-static void CompareCues( cue_handle *cueh1, cue_handle *cueh2,
-                         search_result expected_rc, search_result actual_rc,
-                         bool exp_exact_line, bool exp_le_line,
-                         bool exp_exact_addr, bool exp_le_addr,
-                         const char *operation )
 {
     if( actual_rc != expected_rc ) {
         printf( "FAILED: %s returned %d instead of %d\n", operation, actual_rc, expected_rc );
@@ -434,14 +441,14 @@ static void CompareCues( cue_handle *cueh1, cue_handle *cueh2,
     }
 }
 
-/**
+static walk_result File2Callback( cue_handle *cueh1, void *ignored )
+/*******************************************************************
  * WalkFileList callback, the module pass.
  *
  * @returns WR_CONTINUE
  * @param   cue     The file.
  * @param   ignored Unused user argument.
  */
-static walk_result File2Callback( cue_handle *cueh1, void *ignored )
 {
     address         prev_addr = {0};
     long            prev_line = -1;
@@ -457,7 +464,9 @@ static walk_result File2Callback( cue_handle *cueh1, void *ignored )
 
     /* unused parameters */ (void)ignored;
 
-    /* filename */
+    /*
+     * filename
+     */
     buff[0] = '\0';
     len = DIPCueFile( cueh1, buff, sizeof( buff ) );
     if( len > 0 ) {
@@ -465,19 +474,20 @@ static walk_result File2Callback( cue_handle *cueh1, void *ignored )
     } else {
         printf( " %lx (len=%u)\n", file_id, len );
     }
-
-    /* check the LineCue function */
+    /*
+     * check the LineCue function
+     */
     if( Opts.do_cue_tests ) {
         search_rc = DIPLineCue( mod, file_id, 0, 0, cueh2 );
         CompareCues( cueh1, cueh2, SR_EXACT, search_rc, true, false, true, false, "DIPLineCue(,,0,)" );
     }
-
-    /* lines */
+    /*
+     * lines
+     */
     do {
         long        line   = DIPCueLine( cueh1 );
         unsigned    column = DIPCueColumn( cueh1 );
         address     addr   = DIPCueAddr( cueh1 );
-
 
         printf( "  Line %5ld ", line );
         if( column ) {
@@ -487,8 +497,9 @@ static walk_result File2Callback( cue_handle *cueh1, void *ignored )
                 prev_line >= 0 && addr.mach.offset < prev_addr.mach.offset
                 ? "^"
                 : prev_line >= 0 && line < prev_line ? "!" : "" );
-
-        /* do tests */
+        /*
+         * do tests
+         */
         if( Opts.do_cue_tests ) {
             if( DIPCueFileId( cueh1 ) !=  file_id ) {
                 printf( "ERROR: file id changed! new:%#lx old:%#lx\n", (long)DIPCueFileId( cueh1 ), (long)file_id );
@@ -496,8 +507,9 @@ static walk_result File2Callback( cue_handle *cueh1, void *ignored )
             if( DIPCueMod( cueh1 ) !=  mod ) {
                 printf( "ERROR: module changed! new:%#lx old:%#lx\n", (long)DIPCueMod( cueh1 ), (long)file_id );
             }
-
-            /* line searches */
+            /*
+             * line searches
+             */
             search_rc = DIPLineCue( mod, file_id, line, 0, cueh2 );
             CompareCues( cueh1, cueh2, SR_EXACT, search_rc, true, false, false, false, "DIPLineCue(,,n,)" );
             if( line > prev_line + 1 && prev_line >= 0 ) {
@@ -505,14 +517,15 @@ static walk_result File2Callback( cue_handle *cueh1, void *ignored )
                 CompareCues( prev_cueh, cueh2, prev_line == line - 1 ? SR_EXACT : SR_CLOSEST,
                              search_rc, true, false, false, false, "DIPLineCue(,,n-1,)" );
             }
-
-            /* address searches */
+            /*
+             * address searches
+             */
             search_rc = DIPAddrCue( mod, addr, cueh2 );
             CompareCues( cueh1, cueh2, SR_EXACT, search_rc, false, false, true, false, "DIPAddrCue(,,n,)" );
         }
-
-
-        /* next */
+        /*
+         * next
+         */
         ds = DIPCueAdjust( cueh1, 1, next_cueh );
         prev_cueh  = cueh1;
         cueh1      = next_cueh;
@@ -524,21 +537,21 @@ static walk_result File2Callback( cue_handle *cueh1, void *ignored )
     return( WR_CONTINUE );
 }
 
-/**
+static walk_result Mod2Callback( mod_handle mh, void *_idx )
+/***********************************************************
  * WalkModList callback, pass 2.
  *
  * @returns WR_CONTINUE
  * @param   mh          The module.
  * @param   ignored     Pointer to the current module index.
  */
-static walk_result Mod2Callback( mod_handle mh, void *_idx )
 {
     walk_result     walkres;
     int             i;
     int             need_trailing_newline = 0;
     int             *idx = (int *)_idx;
-    ++*idx;
 
+    ++*idx;
     /*
      * Linenumbers.
      */
@@ -553,7 +566,6 @@ static walk_result Mod2Callback( mod_handle mh, void *_idx )
                 "\n" );
         need_trailing_newline = 1;
     }
-
     /*
      * Types
      */
@@ -570,8 +582,6 @@ static walk_result Mod2Callback( mod_handle mh, void *_idx )
                 "\n" );
         need_trailing_newline = 1;
     }
-
-
     /*
      * Symbols.
      */
@@ -593,7 +603,8 @@ static walk_result Mod2Callback( mod_handle mh, void *_idx )
     return( WR_CONTINUE );
 }
 
-/**
+static walk_result SymCallback( sym_walk_info swi, sym_handle *sym, void *_idx )
+/*******************************************************************************
  * WalkSymList callback.
  *
  * @returns WR_CONTINUE;
@@ -601,7 +612,6 @@ static walk_result Mod2Callback( mod_handle mh, void *_idx )
  * @param   sym     The Symbol.
  * @param   _idx    Pointer to the symbol index number.
  */
-static walk_result SymCallback( sym_walk_info swi, sym_handle *sym, void *_idx )
 {
 #if 1
     return( Sym2Callback( swi, sym, _idx ) );
@@ -613,10 +623,13 @@ static walk_result SymCallback( sym_walk_info swi, sym_handle *sym, void *_idx )
     location_list   ll = {0};
     int             i;
 
-    /* index */
+    /*
+     * index
+     */
     printf( "%5d  ", ++*idx );
-
-    /* location (i.e. address) */
+    /*
+     * location (i.e. address)
+     */
     ll.num = MAX_LOC_ENTRIES;
     ds = SymLocation( sym, NULL, &ll );
     if( ds == DS_OK ) {
@@ -633,8 +646,9 @@ static walk_result SymCallback( sym_walk_info swi, sym_handle *sym, void *_idx )
         printf( "status=%#x  ", ds );
         ll.num = 0;
     }
-
-    /* swi */
+    /*
+     * swi
+     */
     switch( swi ) {
     case SWI_SYMBOL:
         printf("SYMBOL    ");
@@ -649,9 +663,10 @@ static walk_result SymCallback( sym_walk_info swi, sym_handle *sym, void *_idx )
         printf("%#d  ", swi);
         break;
     }
-
-    /* finally, the name. */
-    /* try get the name */
+    /*
+     * finally, the name.
+     * try get the name
+     */
     buff[0] = '\0';
     len = DIPSymName( sym, NULL, SNT_DEMANGLED, buff, sizeof( buff ) );
     if( len == 0 ) {
@@ -665,8 +680,9 @@ static walk_result SymCallback( sym_walk_info swi, sym_handle *sym, void *_idx )
     } else {
         printf( "(len=%u)\n", len );
     }
-
-    /* more locations. */
+    /*
+     * more locations.
+     */
     for( i = 1; i < ll.num; i++ ) {
         if( ll.e[0].type == LT_ADDR ) {
             printf( "       %04x:%08lx\n",
@@ -680,14 +696,14 @@ static walk_result SymCallback( sym_walk_info swi, sym_handle *sym, void *_idx )
 #endif
 }
 
-/**
+static walk_result ModCallback( mod_handle mh, void *_idx )
+/**********************************************************
  * WalkModList callback.
  *
  * @returns WR_CONTINUE
  * @param   mh          The module.
  * @param   _idx        Pointer to the current module index.
  */
-static walk_result ModCallback( mod_handle mh, void *_idx )
 {
     int         *idx = (int *)_idx;
     char        buff[2048];
@@ -696,20 +712,23 @@ static walk_result ModCallback( mod_handle mh, void *_idx )
     address     addr = {0};
 
     printf( "%5d  ", ++*idx );
-
-    /* address */
+    /*
+     * address
+     */
     addr = DIPModAddr( mh );
     printf( "%04x:%08lx  ", addr.mach.segment, (long)addr.mach.offset );
-
-    /* what info do we have? */
+    /*
+     * what info do we have?
+     */
     printf( "%c%c%c%c  ",
             DIPModHasInfo( mh, HK_IMAGE ) == DS_OK ? 'I' : '-',
             DIPModHasInfo( mh, HK_TYPE  ) == DS_OK ? 'T' : '-',
             DIPModHasInfo( mh, HK_CUE   ) == DS_OK ? 'C' : '-',
             DIPModHasInfo( mh, HK_SYM   ) == DS_OK ? 'S' : '-'
             );
-
-    /* language and name */
+    /*
+     * language and name
+     */
     lang = DIPModSrcLang( mh );
     len = DIPModName( mh, buff, sizeof(buff) );
     if( len == 0 ) {
@@ -720,7 +739,8 @@ static walk_result ModCallback( mod_handle mh, void *_idx )
     return( WR_CONTINUE );
 }
 
-/**
+static int DumpIt( const char *file, mod_handle mh, process_info *proc )
+/***********************************************************************
  * Dumps the loaded debug info.
  *
  * @returns 0 on success, exit code on failure.
@@ -728,12 +748,9 @@ static walk_result ModCallback( mod_handle mh, void *_idx )
  * @param   mh      The DIP/DIG module handle.
  * @param   proc    The process which the module is loaded into.
  */
-static int DumpIt( const char *file, mod_handle mh, process_info *proc )
 {
     walk_result     walkres;
     struct stat     s;
-    char            buff[1024];
-    unsigned        len;
     int             i;
 
     /* unused parameters */ (void)proc;
@@ -756,119 +773,118 @@ static int DumpIt( const char *file, mod_handle mh, process_info *proc )
     }
     printf( "DIP         = %s\n", DIPImageName( mh ) );
 
-#if 0 /* crashes codeview, nothing on dwarf. */
-    buff[0] = '\0';
-    len = DIPModName( mh, buff, sizeof( buff ) );
-    if( len ) {
-        printf( "module name = %s\n", buff );
+#if 0
+    /*
+     * crashes codeview, nothing on dwarf.
+     */
+    {
+        char    buff[1024];
+
+        buff[0] = '\0';
+        if( DIPModName( mh, buff, sizeof( buff ) ) ) {
+            printf( "module name = %s\n", buff );
+        }
     }
-#else
-    len = len;
-    (void)buff;
 #endif
     printf( "\n"
             "\n" );
-
+#if 1
     /*
      * Compiled units?
      */
-    if( 1 ) {
-        printf( " Compiled Units\n"
-                "================\n"
-                "\n"
-                "index   seg:offset    info  lang  name\n"
-                "---------------------------------------\n");
-        i = 0;
-        walkres = DIPWalkModList( mh, ModCallback, &i );
-        printf( "\n"
-                "\n" );
-    }
+    printf( " Compiled Units\n"
+            "================\n"
+            "\n"
+            "index   seg:offset    info  lang  name\n"
+            "---------------------------------------\n");
+    i = 0;
+    walkres = DIPWalkModList( mh, ModCallback, &i );
+    printf( "\n"
+            "\n" );
+#endif
 
 #if 0
     /*
      * Types.
      * This crashes DWARF, and with codeview it'll only work on one special module.
      */
-    if( 1 ) {
-        printf( " Types\n"
-                "=======\n"
-                "\n"
-                "index   seg:offset    info  lang  name\n"
-                "---------------------------------------\n");
-        i = 0;
-        walkres = DIPWalkTypeList( /*mh*/ IMH_GBL, TypeCallback, &i );
-        printf( "\n"
-                "\n" );
-    }
+    printf( " Types\n"
+            "=======\n"
+            "\n"
+            "index   seg:offset    info  lang  name\n"
+            "---------------------------------------\n");
+    i = 0;
+    walkres = DIPWalkTypeList( /*mh*/ IMH_GBL, TypeCallback, &i );
+    printf( "\n"
+            "\n" );
 #endif
 
+#if 1
     /*
      * Global (?) Symbols.
      */
-    if( 1 ) {
-        printf( " Global Symbols\n"
-                "================\n"
-                "\n"
-                "index  kind   seg:offset    info  lng name\n"
-                "------------------------------------------\n");
-        i = 0;
-        walkres = DIPWalkSymList( SS_MODULE, &mh, SymCallback, &i );
-        printf( "\n"
-                "\n" );
-    }
+    printf( " Global Symbols\n"
+            "================\n"
+            "\n"
+            "index  kind   seg:offset    info  lng name\n"
+            "------------------------------------------\n");
+    i = 0;
+    walkres = DIPWalkSymList( SS_MODULE, &mh, SymCallback, &i );
+    printf( "\n"
+            "\n" );
+#endif
 
-
+#if 1
     /*
      * Iterate compiled modules and dump their line numbers and symbols.
      */
-    if( 1 ) {
-        i = 0;
-        walkres = DIPWalkModList( mh, Mod2Callback, &i );
-    }
+    i = 0;
+    walkres = DIPWalkModList( mh, Mod2Callback, &i );
+#endif
 
     printf("\n");
     return( 0 );
 }
 
-/**
+static bool InitDIP( char **dips )
+/*********************************
  * Initializes DIP.
  *
  * @returns success indicator.
  * @param   dips    Pointer to an array of dip names terminated by a NULL entry.
  */
-static bool InitDIP( char **dips )
 {
     bool    rc = false;
 
     if( !(DIPInit() & DS_ERR) ) {
-        char        *ptr;
+        char        *base_name;
         unsigned    dips_loaded = 0;
 
-        for( ptr = *dips++; ptr != NULL; ptr = *dips++ ) {
+        for( base_name = *dips++; base_name != NULL; base_name = *dips++ ) {
             dip_status  ds;
 
-            ds = DIPLoad( ptr );
+            ds = DIPLoad( base_name );
             if( ds & DS_ERR ) {
                 ds &= ~DS_ERR;
                 switch( ds ) {
                 case DS_FOPEN_FAILED:
-                    ErrorMsg( "%s - not found\n", ptr );
+                    ErrorMsg( "%s - not found\n", base_name );
                     break;
                 case DS_INVALID_DIP_VERSION:
-                    ErrorMsg( "%s - wrong DIP version\n", ptr );
+                    ErrorMsg( "%s - wrong DIP version\n", base_name );
                     break;
                 case DS_INVALID_DIP:
-                    ErrorMsg( "%s - invalid DIP\n", ptr );
+                    ErrorMsg( "%s - invalid DIP\n", base_name );
                     break;
                 case DS_TOO_MANY_DIPS:
-                    ErrorMsg( "%s - too many DIPs\n", ptr );
+                    ErrorMsg( "%s - too many DIPs\n", base_name );
                     break;
                 default:
-                    ErrorMsg( "%s - status=%#x (%d)\n", ptr, ds, ds );
+                    ErrorMsg( "%s - status=%#x (%d)\n", base_name, ds, ds );
                     break;
                 }
             } else {
-                InfoMsg( "Loaded DIP %s\n", ptr);
+                InfoMsg( "Loaded DIP %s\n", base_name);
                 dips_loaded++;
             }
         }
@@ -882,23 +898,23 @@ static bool InitDIP( char **dips )
     return( rc );
 }
 
-/**
+static void TermDIP( void )
+/**************************
  * Terminates the DIP manager.
  */
-static void TermDIP( void )
 {
     /// @todo implement me
 }
 
 
-/**
+static int DumpFile( const char *file, char **dips )
+/***************************************************
  * Dumps the debug information in a file.
  *
  * @returns 0 on success, exit code on failure.
  * @param   file    The filename.
  * @param   dips    The dips to load and use.
  */
-static int DumpFile( const char *file, char **dips )
 {
     int             rc = 1;
     FILE            *fp;
@@ -906,11 +922,10 @@ static int DumpFile( const char *file, char **dips )
     /*
      * Open the file
      */
-    fp = DIGCli( Open )( file, DIG_READ );
+    fp = DIGCli( Open )( file, DIG_OPEN_READ );
     if( fp == NULL ) {
         return( ErrorMsg( "Failed to open '%s'\n", file ) );
     }
-
     /*
      * Init DIP, create a process and load the file into the process.
      */
@@ -922,7 +937,7 @@ static int DumpFile( const char *file, char **dips )
             mod_handle      mh = 0;
 
             for( priority = 0; (priority = DIPPriority( priority )) != 0;  ) {
-                DIGCli( Seek )( fp, 0, DIG_ORG );
+                DIGCli( Seek )( fp, 0, DIG_SEEK_ORG );
                 mh = DIPLoadInfo( fp, 0, priority );
                 if( mh != NO_MOD ) {
                     break;
@@ -931,12 +946,10 @@ static int DumpFile( const char *file, char **dips )
             if( mh != NO_MOD ) {
                 DIPMapInfo( mh, NULL );
                 InfoMsg( "DIP opened '%s' at prty=%d, mh=%lx\n", file, priority, (long)mh );
-
                 /*
                  * Enumerate the debug info.
                  */
                 rc = DumpIt( file, mh, proc );
-
                 /*
                  * Cleanup.
                  */
@@ -954,7 +967,9 @@ static int DumpFile( const char *file, char **dips )
 
 
 static int PrintUsage( void )
-/* Prints the dipdump usage instructions and and copyright message. */
+/****************************
+ * Prints the dipdump usage instructions and and copyright message.
+ */
 {
     printf( "Usage:  dipdump [-h?] [-d<dip>] files...\n"
             "dipdump reads and dumps debugging information\n"
@@ -973,7 +988,9 @@ int main( int argc, char **argv )
     int     rc;
 //    char    *s;
 
-    /* Process command line options */
+    /*
+     * Process command line options
+     */
     if( argc < 2 ) {
         return( PrintUsage() );
     }
@@ -997,7 +1014,9 @@ int main( int argc, char **argv )
     }
 
 #if 0
-    /* Add default DIPs at end of list. */
+    /*
+     * Add default DIPs at end of list.
+     */
     s = DIPDefaults;
     while( *s ) {
         if( next_dip >= sizeof( dips ) / sizeof( dips[0] ) ) {
@@ -1008,10 +1027,10 @@ int main( int argc, char **argv )
     }
 #endif
 
-#if defined( __UNIX__ ) || defined( __DOS__ )
     PathInit();
-#endif
-    /* Try to dump debug info for all remaining arguments */
+    /*
+     * Try to dump debug info for all remaining arguments
+     */
     rc = 0;
     while( argv[optind] ) {
         rc = DumpFile( argv[optind], dips );
@@ -1021,8 +1040,6 @@ int main( int argc, char **argv )
         }
         ++optind;
     }
-#if defined( __UNIX__ ) || defined( __DOS__ )
     PathFini();
-#endif
     return( rc );
 }

@@ -2,6 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
+;* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -32,6 +33,12 @@
 
 include _mathfun.inc
 
+ifdef __386__
+ .387
+else
+ .8087
+endif
+
 ifdef   __386__
  _BP    equ     EBP
  _SP    equ     ESP
@@ -48,6 +55,17 @@ else
  _CX    equ     CX
  _DX    equ     DX
  _POP_LD_ equ   10      ; amount to pop from stack to remove long double
+endif
+
+; stack position of first parameter
+ifdef __386__
+    argx        equ     4
+else
+ if _MODEL and _BIG_CODE
+    argx        equ     6
+ else
+    argx        equ     4
+ endif
 endif
 
 loadres macro

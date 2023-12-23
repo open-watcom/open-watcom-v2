@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,28 +36,16 @@
 #include <direct.h>
 #include <ctype.h>
 #include <dos.h>
-#include "cpuglob.h"
-#include "wdebug.h"
 #include "stdwin.h"
+#include "wdebug.h"
 #include "getcsip.h"
 #include "getsaddr.h"
 #include "winerr.h"
 #include "di386cli.h"
-#include "dosextx.h"
-#include "dosfile.h"
+#include "winpath.h"
 #include "pathgrp2.h"
 #include "dbgrmsg.h"
 
-
-#define SIG_OFF         0
-#define SIG_SIZE        4
-
-#define TINY_ERROR(x)  ((signed long)x < 0)
-
-const unsigned short __based(__segname("_CONST")) win386sig[] = { 0xDEAD,0xBEEF };
-const unsigned short __based(__segname("_CONST")) win386sig2[] = { 0xBEEF,0xDEAD };
-
-BOOL WasStarted;
 
 typedef struct {
     WORD        mustbe2;
@@ -71,6 +59,26 @@ typedef struct
     word_struct *cmdshow;
     DWORD       reserved;
 } lm_parms;
+
+static bool WasStarted;
+
+static size_t MergeArgvArray( const char *src, char *dst, size_t len )
+{
+    char    ch;
+    char    *start = dst;
+
+    while( len-- > 0 ) {
+        ch = *src++;
+        if( ch == '\0' ) {
+            if( len == 0 )
+                break;
+            ch = ' ';
+        }
+        *dst++ = ch;
+    }
+    *dst = '\0';
+    return( dst - start );
+}
 
 /*
  * AccLoadProg
@@ -106,19 +114,18 @@ trap_retval TRAP_CORE( Prog_load )( void )
     word_struct         cmdshow;
     char                *parm;
     char                *src;
-    char                *dst;
-    char                ch;
-    unsigned            a,b;
+    unsigned            a;
+    unsigned            b;
     private_msg         pmsg;
-    char                sig[sizeof(DWORD)];
+    char                sig[SIG_SIZE];
     HTASK               tid;
     DWORD               csip;
     prog_load_req       *acc;
     prog_load_ret       *ret;
-    char                *end;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
+    ret->err = 0;
     ret->flags = LD_FLAG_IS_PROT | LD_FLAG_HAVE_RUNTIME_DLLS;
     parm = GetInPtr( sizeof( *acc ) );
 
@@ -126,9 +133,9 @@ trap_retval TRAP_CORE( Prog_load )( void )
      * reset flags
      */
     OutPos = 0;
-    WasStarted = FALSE;
-    LoadingDebugee = TRUE;
-    Debugging32BitApp = FALSE;
+    WasStarted = false;
+    LoadingDebugee = true;
+    Debugging32BitApp = false;
     AddAllCurrentModules();
 
     /*
@@ -140,13 +147,13 @@ trap_retval TRAP_CORE( Prog_load )( void )
         src++;
         tid = (HTASK)strtol( src, NULL, 16 );
     } else {
-        while( *src != 0 ) {
+        while( *src != '\0' ) {
             if( !isdigit( *src ) ) {
                 break;
             }
             src++;
         }
-        if( *src == 0 && src != parm ) {
+        if( *src == '\0' && src != parm ) {
             tid = (HTASK)atoi( parm );
         }
     }
@@ -156,12 +163,9 @@ trap_retval TRAP_CORE( Prog_load )( void )
             tid = 0;
         } else {
             DebugeeTask = tid;
-            StopNewTask.loc.segment = _FP_SEG( (LPVOID) csip );
-            StopNewTask.loc.offset = _FP_OFF( (LPVOID) csip );
-            ReadMem( StopNewTask.loc.segment, StopNewTask.loc.offset,
-                    &StopNewTask.value, 1 );
-            ch = '\xcc';
-            WriteMem( StopNewTask.loc.segment, StopNewTask.loc.offset, &ch, 1 );
+            StopNewTask.addr.segment = _FP_SEG( (LPVOID)csip );
+            StopNewTask.addr.offset = _FP_OFF( (LPVOID)csip );
+            StopNewTask.old_opcode = place_breakpoint( &StopNewTask.addr );
         }
     } else {
         tid = 0;
@@ -171,53 +175,34 @@ trap_retval TRAP_CORE( Prog_load )( void )
      * get the file to execute
      */
     if( tid == 0 ) {
-        if( TINY_ERROR( FindProgFile( parm, exe_name, DosExtList ) ) ) {
-            exe_name[0] = 0;
-        } else {
+        if( FindFilePath( DIG_FILETYPE_EXE, parm, exe_name ) != 0 ) {
             _splitpath2( exe_name, pg.buffer, &pg.drive, &pg.dir, NULL, NULL );
             a = tolower( pg.drive[0] ) - 'a' + 1;
             _dos_setdrive( a, &b );
-            pg.dir[strlen( pg.dir ) - 1] = 0;
+            pg.dir[strlen( pg.dir ) - 1] = '\0';
             chdir( pg.dir );
         }
 
         /*
          * get the parm list
          */
-
         src = parm;
-        while( *src != 0 )
-            ++src;
-        ++src;
-        end = GetInPtr( GetTotalSizeIn() - 1 );
-        dst = &buff[1];
-        for( ;; ) {
-            if( src > end )
-                break;
-            ch = *src;
-            if( ch == 0 )
-                ch = ' ';
-            *dst = ch;
-            ++dst;
-            ++src;
-        }
-        if( dst > &buff[1] )
-            --dst;
-        *dst = '\0';
-        buff[0] = dst - buff - 1;
+        while( *src++ != '\0' )
+            {}
+        buff[0] = MergeArgvArray( src, buff + 1, GetTotalSizeIn() - sizeof( *acc ) - ( src - parm ) );
 
         /*
          * get starting point in task
          */
-        if( !GetStartAddress( exe_name, &StopNewTask.loc ) ) {
+        if( !GetStartAddress( exe_name, &StopNewTask.addr ) ) {
             Out((OUT_ERR,"Could not get starting address"));
             ret->err = WINERR_NOSTART;
-            LoadingDebugee = FALSE;
+            LoadingDebugee = false;
             return( sizeof( *ret ) );
         }
-        StopNewTask.segment_number = StopNewTask.loc.segment;
-        Out((OUT_LOAD,"Loading %s, cs:ip = %04x:%04lx", exe_name, StopNewTask.loc.segment,
-                            StopNewTask.loc.offset ));
+        StopNewTask.segment_number = StopNewTask.addr.segment;
+        Out((OUT_LOAD,"Loading %s, cs:ip = %04x:%04lx", exe_name, StopNewTask.addr.segment,
+                            StopNewTask.addr.offset ));
 
         /*
          * load the task
@@ -233,7 +218,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
         if( DebugeeInstance < HINSTANCE_ERROR ) {
             Out((OUT_ERR,"Debugee did not load %d", DebugeeInstance));
             ret->err = WINERR_NOLOAD;
-            LoadingDebugee = FALSE;
+            LoadingDebugee = false;
             return( sizeof( *ret ) );
         }
         DebuggerWaitForMessage( WAITING_FOR_TASK_LOAD, NULL, RESTART_APP );
@@ -241,29 +226,31 @@ trap_retval TRAP_CORE( Prog_load )( void )
     AddDebugeeModule();
     pmsg = DebuggerWaitForMessage( WAITING_FOR_BREAKPOINT, DebugeeTask, RESTART_APP );
     if( pmsg == START_BP_HIT ) {
+        addr48_ptr  sig_addr;
 
-        ret->err = 0;
         ret->task_id = (unsigned_32)DebugeeTask;
 
         /*
          * look for 32-bit windows application
          */
-        ReadMem( IntResult.CS, SIG_OFF, sig, sizeof( DWORD ) );
-        if( !StopOnExtender && (!memcmp( sig, win386sig, 4 ) ||
-                !memcmp( sig, win386sig2, 4 )) ) {
+        sig_addr.segment = IntResult.CS;
+        sig_addr.offset = SIG_OFF;
+        ReadMemory( &sig_addr, sig, SIG_SIZE );
+        if( !StopOnExtender && ( memcmp( sig, win386sig, SIG_SIZE ) == 0 ||
+                memcmp( sig, win386sig2, SIG_SIZE ) == 0 ) ) {
             Out((OUT_LOAD,"Is Win32App" ));
-            Debugging32BitApp = TRUE;
+            Debugging32BitApp = true;
             /*
              * make sure that WDEBUG.386 is installed
              */
             if( !WDebug386 ) {
                 ret->err = WINERR_NODEBUG32; /* Can't debug 32 bit app */
-                LoadingDebugee = FALSE;
+                LoadingDebugee = false;
                 return( sizeof( *ret ) );
             }
             ret->flags |= LD_FLAG_IS_BIG;
             if( tid == 0 ) {
-                WriteMem( IntResult.CS, SIG_OFF, win386sig2, sizeof( DWORD ) );
+                WriteMemory( &sig_addr, win386sig2, SIG_SIZE );
                 pmsg = DebuggerWaitForMessage( GOING_TO_32BIT_START, DebugeeTask, RESTART_APP );
                 if( pmsg == FAULT_HIT && IntResult.InterruptNumber == INT_3 ) {
                     IntResult.EIP++;
@@ -281,7 +268,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
         }
         if( tid != 0 ) {
             ret->flags |= LD_FLAG_IS_STARTED;
-            WasStarted = TRUE;
+            WasStarted = true;
         }
     } else {
         Out((OUT_ERR,"Starting breakpoint not found, pmsg=%d", pmsg ));
@@ -292,7 +279,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
         InitASynchHook();
     }
 #endif
-    LoadingDebugee = FALSE;
+    LoadingDebugee = false;
     CurrentModule = 1;
     ret->mod_handle = 0;
     return( sizeof( *ret ) );
@@ -319,12 +306,10 @@ trap_retval TRAP_CORE( Prog_kill )( void )
 {
     prog_kill_ret       *ret;
 
-    ret = GetOutPtr( 0 );
-    ret->err = 0;
     Out((OUT_LOAD,"KILL: DebugeeTask=%04x, WasStarted=%d",
         DebugeeTask, WasStarted ));
     if( DebugeeTask != NULL ) {
-        IntResult.EFlags &= ~TRACE_BIT;
+        IntResult.EFlags &= ~INTR_TF;
         if( WasStarted ) {
             Out((OUT_LOAD,"Doing Release Debugee"));
             DebuggerWaitForMessage( RELEASE_DEBUGEE, DebugeeTask, RESTART_APP );
@@ -355,9 +340,11 @@ trap_retval TRAP_CORE( Prog_kill )( void )
     ModuleTop = 0;
     CurrentModule = 1;
     FaultHandlerEntered = false;
-    PendingTrap = FALSE;
+    PendingTrap = false;
     SaveStdIn = NIL_HANDLE;
     SaveStdOut = NIL_HANDLE;
-    Debugging32BitApp = FALSE;
+    Debugging32BitApp = false;
+    ret = GetOutPtr( 0 );
+    ret->err = 0;
     return( sizeof( *ret ) );
 }

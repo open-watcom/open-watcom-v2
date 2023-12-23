@@ -38,6 +38,7 @@
 
 
 void    FTruncate( b_file *io )
+//=============================
 // Truncate a file.
 {
     FSetIOOk( io );

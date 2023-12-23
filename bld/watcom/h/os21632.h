@@ -78,6 +78,19 @@
 
 #endif
 
+#if defined(INCL_DOSFILEMGR) || !defined(INCL_NOCOMMON)
+
+/*
+ * from BSEDOS.H, OS/2 2.0
+ *
+ * File info levels
+ */
+#define FIL_STANDARD           1
+#define FIL_QUERYEASIZE        2
+#define FIL_QUERYEASFROMLIST   3
+
+#endif
+
 #else
 
 #define OS_UINT         ULONG

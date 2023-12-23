@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,6 +33,7 @@
 //#define DEBUG_TRAP
 #include <stdlib.h>
 #include <string.h>
+#include "digcpu.h"
 #include "trpimp.h"
 #include "trpcomm.h"
 #include "trperr.h"
@@ -44,8 +45,7 @@
 #include "madregs.h"
 #include "dosxlink.h"
 #include "dosxfork.h"
-#include "dosextx.h"
-#include "dosfile.h"
+#include "dospath.h"
 
 
 static char             LinkParms[256];
@@ -70,13 +70,13 @@ static trap_elen DoAccess( void )
     StartPacket();
     if( Out_Mx_Num == 0 ) {
         /* Tell the server we're not expecting anything back */
-        TRP_REQUEST( In_Mx_Ptr ) |= 0x80;
+        TRP_REQUEST( In_Mx_Ptr ) |= REQ_WANT_RETURN;
     }
     for( i = 0; i < In_Mx_Num; ++i ) {
         _DBG_Writeln( "AddPacket" );
         AddPacket( In_Mx_Ptr[i].ptr, In_Mx_Ptr[i].len );
     }
-    TRP_REQUEST( In_Mx_Ptr ) &= ~0x80;
+    TRP_REQUEST( In_Mx_Ptr ) &= ~REQ_WANT_RETURN;
     _DBG_Writeln( "PutPacket" );
     PutPacket();
     if( Out_Mx_Num != 0 ) {
@@ -107,14 +107,14 @@ trap_retval TRAP_CORE( Get_sys_config )( void )
     get_sys_config_ret  *ret;
 
     if( !TaskLoaded ) {
-        ret = GetOutPtr(0);
-        ret->sys.os = DIG_OS_IDUNNO;
-        ret->sys.osmajor = 0;
-        ret->sys.osminor = 0;
-        ret->sys.fpu = X86_NO;
-        ret->sys.huge_shift = 12;
-        ret->sys.cpu = X86_386;
-        ret->sys.arch = DIG_ARCH_X86;
+        ret = GetOutPtr( 0 );
+        ret->os = DIG_OS_IDUNNO;
+        ret->osmajor = 0;
+        ret->osminor = 0;
+        ret->fpu = X86_NOFPU;
+        ret->huge_shift = 12;
+        ret->cpu = X86_386;
+        ret->arch = DIG_ARCH_X86;
         return( sizeof( *ret ) );
     }
     return( DoAccess() );
@@ -137,7 +137,7 @@ trap_retval TRAP_CORE( Get_err_text )( void )
             strcpy( err_txt, LoadError );
             LoadError = NULL;
         } else if( acc->err < ERR_LAST ) {
-            strcpy( err_txt, DosErrMsgs[ acc->err ] );
+            strcpy( err_txt, DosErrMsgs[acc->err] );
         } else {
             strcpy( err_txt, TRP_ERR_unknown_system_error );
             ultoa( acc->err, err_txt + strlen( err_txt ), 16 );
@@ -153,8 +153,8 @@ trap_retval TRAP_CORE( Map_addr )( void )
     map_addr_ret        *ret;
 
     if( !TaskLoaded ) {
-        acc = GetInPtr(0);
-        ret = GetOutPtr(0);
+        acc = GetInPtr( 0 );
+        ret = GetOutPtr( 0 );
         ret->out_addr = acc->in_addr;
         ret->lo_bound = 0;
         ret->hi_bound = ~(addr48_off)0;
@@ -176,7 +176,7 @@ trap_retval TRAP_CORE( Write_io )( void )
     write_io_ret        *ret;
 
     if( !TaskLoaded ) {
-        ret = GetOutPtr(0);
+        ret = GetOutPtr( 0 );
         ret->len = 0;
         return( sizeof( *ret ) );
     }
@@ -188,7 +188,7 @@ trap_retval TRAP_CORE( Read_regs )( void )
     mad_registers       *mr;
 
     if( !TaskLoaded ) {
-        mr = GetOutPtr(0);
+        mr = GetOutPtr( 0 );
         memset( mr, 0, sizeof( mr->x86 ) );
         return( sizeof( mr->x86 ) );
     }
@@ -240,16 +240,21 @@ trap_retval TRAP_CORE( Prog_go )( void )
 
 trap_retval TRAP_CORE( Machine_data )( void )
 {
+    machine_data_req    *acc;
     machine_data_ret    *ret;
-    unsigned_8          *data;
+    machine_data_spec   *data;
 
     if( !TaskLoaded ) {
+        acc = GetInPtr( 0 );
         ret = GetOutPtr( 0 );
-        data = GetOutPtr( sizeof( *ret ) );
         ret->cache_start = 0;
         ret->cache_end = ~(addr_off)0;
-        *data = X86AC_BIG;
-        return( sizeof( *ret ) + sizeof( *data ) );
+        if( acc->info_type == X86MD_ADDR_CHARACTERISTICS ) {
+            data = GetOutPtr( sizeof( *ret ) );
+            data->x86_addr_flags = X86AC_BIG;
+            return( sizeof( *ret ) + sizeof( data->x86_addr_flags ) );
+        }
+        return( sizeof( *ret ) );
     }
     return( DoAccess() );
 }
@@ -294,17 +299,19 @@ trap_retval TRAP_CORE( Prog_load )( void )
     char                *name;
     char                *endparm;
     const char          *err;
-    tiny_ret_t          rc;
+    bool                prog_ok;
     prog_load_ret       *ret;
-    trap_elen           len;
+    size_t              len;
 
     SaveVectors( OrigVectors );
     _DBG_EnterFunc( "AccLoadProg()" );
     ret = GetOutPtr( 0 );
+    ret->err = 0;
     src = name = GetInPtr( sizeof( prog_load_req ) );
-    rc = FindProgFile( src, buffer, DosExtList );
+    prog_ok = ( FindFilePath( DIG_FILETYPE_EXE, src, buffer ) != 0 );
     endparm = LinkParms;
-    while( *endparm++ != '\0' ) {}      // skip trap parameters
+    while( *endparm++ != '\0' )         // skip trap parameters
+        {}
     strcpy( endparm, buffer );          // add command line
     // result is as follow
     // "trap parameters string"+"\0"+"command line string"+"\0"
@@ -316,11 +323,13 @@ trap_retval TRAP_CORE( Prog_load )( void )
         ret->err = 1;
         len = 0;
     } else {
-        if( TINY_OK( rc ) ) {
-            while( *src++ != '\0' ) {}
-            len = GetTotalSizeIn() - ( src - name ) - sizeof( prog_load_req );
+        if( prog_ok ) {
+            while( *src++ != '\0' )
+                {}
+            len = GetTotalSizeIn() - sizeof( prog_load_req ) - ( src - name );
             dst = (char *)buffer;
-            while( *dst++ != '\0' ) {};
+            while( *dst++ != '\0' )
+                {}
             memcpy( dst, src, len );
             dst += len;
             _DBG_Writeln( "StartPacket" );
@@ -452,22 +461,21 @@ trap_retval TRAP_CORE( Prog_step )( void )
     return( TRAP_CORE( Prog_go )() );
 }
 
-trap_version TRAPENTRY TrapInit( const char *parms, char *error, bool remote )
+trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
 {
     trap_version    ver;
 
-    remote = remote;
     ver.remote = false;
-    ver.major = TRAP_MAJOR_VERSION;
-    ver.minor = TRAP_MINOR_VERSION;
+    ver.major = TRAP_VERSION_MAJOR;
+    ver.minor = TRAP_VERSION_MINOR;
     if( !remote && DPMIVersion() == 90 && !DOSEMUCheck() ) {
-        strcpy( error, TRP_ERR_bad_dpmi );
+        strcpy( err, TRP_ERR_bad_dpmi );
         return( ver );
     }
     _DBG_EnterFunc( "TrapInit()" );
     InitPSP();
     LoadError = NULL;
-    error[0] = '\0';
+    err[0] = '\0';
     strcpy( LinkParms, parms );      // save trap parameters
     TaskLoaded = false;
     _DBG_ExitFunc( "TrapInit()" );

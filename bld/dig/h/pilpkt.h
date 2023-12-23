@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,6 +32,7 @@
 
 
 #ifndef PILPKT_H
+#define PILPKT_H
 
 #include "piltypes.h"
 
@@ -96,5 +98,4 @@ unsigned_32     PPGetU32NO( link_packet *pkt );
 #define         PPGetU16LO( pkt )       PPU16LO( PPGetU16NO( pkt ) )
 #define         PPGetU32LO( pkt )       PPU32LO( PPGetU32NO( pkt ) )
 
-#define PILPKT_H
 #endif

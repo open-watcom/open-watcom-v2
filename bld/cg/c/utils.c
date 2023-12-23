@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,74 +33,6 @@
 #include "_cgstd.h"
 #include "utils.h"
 
-#if defined( _M_IX86 ) && defined(__WATCOMC__)
-
-#include "cypfunc.h"
-
-void    *Copy( const void *x, void *y, size_t len )
-/*************************************************/
-{
-    return( CypCopy( x, y, len ) );
-}
-
-void    *Fill( void *start, size_t len, unsigned char filler )
-/************************************************************/
-{
-    return( CypFill( start, len, filler ) );
-}
-
-bool    Equal( const void *src, const void *dst, size_t length )
-/**************************************************************/
-{
-    return( CypEqual( src, dst, length ) );
-}
-
-char    *CopyStr( const char *src, char *dst )
-/********************************************/
-{
-    return( (char *)CypCopy( src, dst, CypLength( src ) + 1 ) - 1 );
-}
-
-size_t  Length( const char *string )
-/**********************************/
-{
-    return( CypLength( string ) );
-}
-
-#else
-
-void    *Copy( const void *x, void *y, size_t len )
-/*************************************************/
-{
-    return( memcpy( y, x, len ) );
-}
-
-void    *Fill( void *start, size_t len, unsigned char filler )
-/************************************************************/
-{
-    return( memset( start, filler, len ) );
-}
-
-bool    Equal( const void *src, const void *dst, size_t length )
-/**************************************************************/
-{
-    return( memcmp( src, dst, length ) == 0 );
-}
-
-char    *CopyStr( const char *src, char *dst )
-/********************************************/
-{
-    strcpy( dst, src );
-    return( dst + strlen( dst ) );
-}
-
-size_t  Length( const char *string )
-/**********************************/
-{
-    return( strlen( string ) );
-}
-
-#endif
 
 uint_32 CountBits( uint_32 value )
 /********************************/

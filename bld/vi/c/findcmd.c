@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,6 +34,7 @@
 #include "vi.h"
 #include "rxsupp.h"
 #include "win.h"
+#include "parse.h"
 
 
 static char     *lastFind = NULL;
@@ -55,10 +56,10 @@ static vi_rc    processFind( range *, char *, vi_rc (*)( char *, i_mark *, int *
 
 void FindCmdFini( void )
 {
-    MemFree( lastFind );
-    MemFree( sStr );
+    _MemFreeArray( lastFind );
+    _MemFreeArray( sStr );
 #ifdef __WIN__
-    MemFree( lastFindStr );
+    _MemFreeArray( lastFindStr );
 #endif
 }
 

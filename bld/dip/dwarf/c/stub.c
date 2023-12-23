@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,7 +49,9 @@ void __FPE_exception( void );
 void __FPE_exception( void ) {};
 #endif
 
-/* WD looks for this symbol to determine module bitness */
+/*
+ * WD looks for this symbol to determine module bitness
+ */
 #if !defined( __NT__ )
 int __nullarea;
 #pragma aux __nullarea "*";
@@ -67,4 +70,16 @@ int DllMainCRTStartup()
 int fltused_;
 #elif defined(__AXP__)
 int _fltused_;
+#endif
+
+#ifndef __WINDOWS__
+#if defined( _M_I86 )
+extern void __STK( int );
+#pragma aux __STK "*" __parm [__ax];
+void __STK( int x ) { (void)x; }
+#elif defined( _M_IX86 )
+extern void __CHK( int );
+#pragma aux __CHK "*" __parm [];
+void __CHK( int x ) { (void)x; }
+#endif
 #endif

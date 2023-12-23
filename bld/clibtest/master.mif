@@ -105,7 +105,7 @@ test_flags_axp = -hc
 
 # Avoid the need for !include $(clib_dir)/flags.mif with
 # debug flags need to be last to override optimization flags
-!ifeq release 0
+!ifneq debug 0
 c_dbg_flags = -d2
 a_dbg_flags = -d1
 !else
@@ -118,7 +118,7 @@ defwin=-bw
 
 link_x86  = DEBUG dwarf
 link_axp  = DEBUG codeview
-!ifeq release 0
+!ifneq debug 0
 link_opts = OPTION quiet, map, symf
 !else
 link_opts = OPTION quiet, map
@@ -653,7 +653,7 @@ $+$(t_rund4g)$- : .symbolic
     # not handle long PATH env vars; make PATH short for this test
     @set OPATH=$(%PATH)
 !ifdef buildtest
-    @set PATH=$(%OWSRCDIR)\redist\dos4gw
+    @set PATH=$(%OWROOT)\bld\redist\dos4gw
 !else
     @set PATH=$(%WATCOM)\binw
 !endif

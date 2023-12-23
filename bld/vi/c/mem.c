@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -159,7 +159,8 @@ static void tossBoundData( void )
 {
     if( BoundData ) {
         if( !EditFlags.BndMemoryLocked ) {
-            MemFreePtr( (void **)&BndMemory );
+            _MemFreeArray( BndMemory );
+            BndMemory = NULL;
         }
     }
 
@@ -248,38 +249,20 @@ void MemFree( void *ptr )
 } /* MemFree */
 
 /*
- * MemFreePtr - free up memory
+ * MemFreePtrArray - free up memory
  */
-void MemFreePtr( void **ptr )
-{
-#ifdef TRMEM
-#ifndef __WATCOMC__
-    _trmem_free( *ptr, (WHO_PTR)5, trmemHandle );
-#else
-    _trmem_free( *ptr, _trmem_guess_who(), trmemHandle );
-#endif
-#else
-    free( *ptr );
-#endif
-    *ptr = NULL;
-
-} /* MemFreePtr */
-
-
-/*
- * MemFreeList - free up memory
- */
-void MemFreeList( list_linenum count, char **ptr )
+void MemFreePtrArray( void **ptr, size_t count, void(*free_fn)(void *) )
 {
     if( ptr != NULL ) {
-        list_linenum    i;
-        for( i = 0; i < count; i++ ) {
-            MemFree( ptr[i] );
+        if( free_fn != NULL ) {
+            while( count-- > 0 ) {
+                free_fn( ptr[count] );
+            }
         }
         MemFree( ptr );
     }
 
-} /* MemFreeList */
+} /* MemFreePtrArray */
 
 
 /*
@@ -430,9 +413,9 @@ void StaticStart( void )
 {
     int i, bs;
 
-    MemFree( StaticBuffer );
-    bs = EditVars.MaxLine + 2;
-    StaticBuffer = MemAlloc( MAX_STATIC_BUFFERS * bs );
+    _MemFreeArray( StaticBuffer );
+    bs = EditVars.MaxLineLen + 2;
+    StaticBuffer = _MemAllocArray( char, MAX_STATIC_BUFFERS * bs );
     for( i = 0; i < MAX_STATIC_BUFFERS; i++ ) {
         staticUse[i] = false;
         staticBuffs[i] = &StaticBuffer[i * bs];
@@ -442,23 +425,7 @@ void StaticStart( void )
 
 void StaticFini( void )
 {
-    MemFree( StaticBuffer );
-}
-
-/*
- * MemStrDup - Safe strdup()
- */
-char *MemStrDup( const char *string )
-{
-    char *rptr;
-
-    if( string == NULL ) {
-        rptr = NULL;
-    } else {
-        rptr = (char *)MemAlloc( strlen( string ) + 1 );
-        strcpy( rptr, string );
-    }
-    return( rptr );
+    _MemFreeArray( StaticBuffer );
 }
 
 #if defined( __LINUX__ )

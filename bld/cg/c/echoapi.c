@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,7 +46,6 @@
 #include "dumpio.h"
 #include "addrname.h"
 #include "inline.h"
-#include "envvar.h"
 #include "feprotos.h"
 
 #include "clibext.h"
@@ -65,13 +64,15 @@ static  int     EchoAPIFlush = 0;
 static void     EchoAPIRedirect( void )
 /*************************************/
 {
-    char    tmpfile[PATH_MAX];
+    const char  *envvar;
 
-    if( GetEnvVar("echoapiflush", tmpfile, 11 ) ) {
+    envvar = FEGetEnv( "echoapiflush" );
+    if( envvar != NULL ) {
         EchoAPIFlush = 1;
     }
-    if( GetEnvVar("echoapifile", tmpfile, 11 ) ) {
-        EchoAPIFile = fopen( tmpfile, "wt" );
+    envvar = FEGetEnv( "echoapifile" );
+    if( envvar != NULL ) {
+        EchoAPIFile = fopen( envvar, "wt" );
     }
 }
 
@@ -224,7 +225,7 @@ void EchoAPI              // EchoAPI ROUTINE
     ( const char *text          // - text
     , ... )                     // - operands
 {
-    if( _IsModel( ECHO_API_CALLS ) ) {
+    if( _IsModel( CGSW_GEN_ECHO_API_CALLS ) ) {
         char buffer[256];
         va_list args;
         va_start( args, text );

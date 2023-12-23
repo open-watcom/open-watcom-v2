@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -108,8 +108,8 @@ char    *DoIToHS( char * buff, int buff_len, int i )
     return( buff );
 }
 
-char    *DoIToS( char * buff, int buff_len, signed_32 i )
-//=======================================================
+char    *DoIToS( char * buff, int buff_len, int_32 i )
+//====================================================
 {
     char        *p;
     bool        neg;
@@ -154,7 +154,7 @@ void    PutFmt( int out, const char *str, va_list args )
                 }
                 break;
             case 'l':
-                str2 = DoIToS( buff, 79, va_arg( args, signed_32 ) );
+                str2 = DoIToS( buff, 79, va_arg( args, int_32 ) );
                 while( *str2 ) {
                     FPut( out, str2++, 1 );
                 }
@@ -292,9 +292,9 @@ char    *Name( pointer sym )
     char        hexbuf[20];
     char        *end,*hex;
 
-    end = CopyStr( "[", CopyStr( FEName( sym ), buff ) );
+    end = CopyStrEnd( "[", CopyStrEnd( FEName( sym ), buff ) );
     hex = DoIToHS( hexbuf, 20, (int)sym );
-    end = CopyStr( "]", CopyStr( hex, end ) );
+    end = CopyStrEnd( "]", CopyStrEnd( hex, end ) );
     return( buff );
 }
 
@@ -309,8 +309,8 @@ char    *FtnTipe( dbg_ftn_type tipe )
     return( NULL );
 }
 
-char    *LToS( signed_32 i )
-//==========================
+char    *LToS( int_32 i )
+//=======================
 {
     return( DoIToS( UBuff, UBUFF_LEN, i ) );
 }
@@ -636,7 +636,7 @@ extern  bool    CheckInLine( n * t ) {
     n   *parm;
     b   *bk;
 
-    if( (*(call_class*)FEAuxInfo( t->h, CALL_CLASS ) & MAKE_CALL_INLINE) == 0 ) {
+    if( ((call_class)(pointer_uint)FEAuxInfo( t->h, FEINF_CALL_CLASS ) & FECALL_MAKE_CALL_INLINE) == 0 ) {
         return( false );
     }
     icall = CGAlloc( sizeof( ic ) );

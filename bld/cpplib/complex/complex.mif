@@ -1,3 +1,5 @@
+tree_depth = 5
+
 prefix = cplx
 
 objs_cpp = &

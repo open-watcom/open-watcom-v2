@@ -1,55 +1,32 @@
-os2_objs = &
+os_common_objs = &
     objio.obj &
     memlimit.obj &
-    envvar.obj &
-    onexit.obj &
-    pmstubs.obj &
-    doblips.obj &
     cgmemmgr.obj &
+    onexit.obj &
     stackcg.obj
+
+os2_objs = &
+    pmstubs.obj &
+    doblips.obj
 
 nt_objs = &
-    objio.obj &
-    memlimit.obj &
-    envvar.obj &
-    onexit.obj &
     pmstubs.obj &
-    ntblips.obj &
-    cgmemmgr.obj &
-    stackcg.obj
+    ntblips.obj
 
 dos_objs = &
-    objio.obj &
-    memlimit.obj &
-    cgmemmgr.obj &
     doblips.obj &
-    blip.obj &
-    getenv.obj &
-    onexit.obj &
-    timer.obj &
-    stackcg.obj
+    dblip.obj &
+    dtimer.obj
 
 unix_objs = &
-    objio.obj &
-    memlimit.obj &
-    envvar.obj &
-    onexit.obj &
     qtimer.obj &
     qblip.obj &
-    cgmemmgr.obj &
-    doblips.obj &
-    stackcg.obj
+    doblips.obj
 
 rdos_objs = &
-    objio.obj &
-    memlimit.obj &
-    envvar.obj &
-    onexit.obj &
     qtimer.obj &
     qblip.obj &
-    cgmemmgr.obj &
-    doblips.obj &
-    stackcg.obj
+    doblips.obj
 
 linux_objs = $(unix_objs)
 qnx_objs   = $(unix_objs)

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,11 +34,11 @@
 #include <stdio.h>
 #include "coderep.h"
 #include "optmain.h"
-#include "mipsenc.h"
 #include "reloc.h"
 #include "zoiks.h"
 #include "coff.h"
 #include "encode.h"
+#include "cgauxcc.h"
 #include "cgauxinf.h"
 #include "data.h"
 #include "rtrtn.h"
@@ -58,128 +58,172 @@
 #include "feprotos.h"
 
 
-#define _NameReg( op )                  ( (op)->r.arch_index )
+#define _NameRegTrans( op )         ((reg_idx)(op)->r.arch_index)
 
-#define _BinaryOpcode( a, b )           { { a, b }, { a, b } }
-#define _SignedOpcode( a, b, c, d )     { { a, b }, { c, d } }
-#define _BinaryImmOpcode( a )           { a, a }
-#define _SignedImmOpcode( a, b )        { a, b }
+#define _BinaryOpcode( a, b )       { { a, b }, { a, b } }
+#define _SignedOpcode( a, b, c, d ) { { a, b }, { c, d } }
+#define _BinaryImmOpcode( a )       { a, a }
+#define _SignedImmOpcode( a, b )    { a, b }
 
-// Our table for opcode values is really a list of pairs of
-// primary opcode / function code pairs. There are two entries
-// for each opcode in case the sign of the instruction matters;
-// for example, for OP_RSHIFT we need to generate either srav or
-// srlv. If the sign of the type of the instruction doesn't
-// matter, we can just use the _BinaryOpcode macro to create
-// identical cases, otherwise we give each pair explicitly.
+/*
+ * This is NT stuff - probably irreleveant unless someone wanted to
+ * support the MIPS version of NT!
+ */
+#define RDTEB_ENCODING          0x000000ab
+#define RDTEB_MAGIC_CONST       0x2c
+
+/*
+ * Our table for opcode values is really a list of pairs of
+ * primary opcode / function code pairs. There are two entries
+ * for each opcode in case the sign of the instruction matters;
+ * for example, for OP_RSHIFT we need to generate either srav or
+ * srlv. If the sign of the type of the instruction doesn't
+ * matter, we can just use the _BinaryOpcode macro to create
+ * identical cases, otherwise we give each pair explicitly.
+ */
 
 static  uint_8  BinaryOpcodes4[][2][2] = {
-        _BinaryOpcode( 0x00, 0x21 ),                    /* OP_ADD */
-        _BinaryOpcode( 0x00, 0x21 ),                    /* OP_EXT_ADD */
-        _BinaryOpcode( 0x00, 0x23 ),                    /* OP_SUB */
-        _BinaryOpcode( 0x00, 0x23 ),                    /* OP_EXT_SUB */
-        _SignedOpcode( 0x00, 0x19, 0x00, 0x18 ),        /* OP_MUL */
-        _SignedOpcode( 0x00, 0x19, 0x00, 0x18 ),        /* OP_EXT_MUL */
-        _SignedOpcode( 0x00, 0x1b, 0x00, 0x1a ),        /* OP_DIV */
-        _SignedOpcode( 0x00, 0x1b, 0x00, 0x1a ),        /* OP_MOD */
-        _BinaryOpcode( 0x00, 0x24 ),                    /* OP_AND */
-        _BinaryOpcode( 0x00, 0x25 ),                    /* OP_OR */
-        _BinaryOpcode( 0x00, 0x26 ),                    /* OP_XOR */
-        _SignedOpcode( 0x00, 0x06, 0x00, 0x07 ),        /* OP_RSHIFT */
-        _BinaryOpcode( 0x00, 0x04 ),                    /* OP_LSHIFT */
-        _BinaryOpcode( 0x00, 0x00 ),                    /* OP_POW */
-        _BinaryOpcode( 0x00, 0x00 ),                    /* OP_ATAN2 */
-        _BinaryOpcode( 0x00, 0x00 ),                    /* OP_FMOD */
+    _BinaryOpcode( 0x00, 0x21 ),                /* OP_ADD */
+    _BinaryOpcode( 0x00, 0x21 ),                /* OP_EXT_ADD */
+    _BinaryOpcode( 0x00, 0x23 ),                /* OP_SUB */
+    _BinaryOpcode( 0x00, 0x23 ),                /* OP_EXT_SUB */
+    _SignedOpcode( 0x00, 0x19, 0x00, 0x18 ),    /* OP_MUL */
+    _SignedOpcode( 0x00, 0x19, 0x00, 0x18 ),    /* OP_EXT_MUL */
+    _SignedOpcode( 0x00, 0x1b, 0x00, 0x1a ),    /* OP_DIV */
+    _SignedOpcode( 0x00, 0x1b, 0x00, 0x1a ),    /* OP_MOD */
+    _BinaryOpcode( 0x00, 0x24 ),                /* OP_AND */
+    _BinaryOpcode( 0x00, 0x25 ),                /* OP_OR */
+    _BinaryOpcode( 0x00, 0x26 ),                /* OP_XOR */
+    _SignedOpcode( 0x00, 0x06, 0x00, 0x07 ),    /* OP_RSHIFT */
+    _BinaryOpcode( 0x00, 0x04 ),                /* OP_LSHIFT */
+    _BinaryOpcode( 0x00, 0x00 ),                /* OP_POW */
+    _BinaryOpcode( 0x00, 0x00 ),                /* OP_ATAN2 */
+    _BinaryOpcode( 0x00, 0x00 ),                /* OP_FMOD */
 };
 
 static  uint_8  BinaryOpcodes8[][2][2] = {
-        _BinaryOpcode( 0x00, 0x21 ),                    /* OP_ADD */
-        _BinaryOpcode( 0x00, 0x21 ),                    /* OP_EXT_ADD */
-        _BinaryOpcode( 0x00, 0x23 ),                    /* OP_SUB */
-        _BinaryOpcode( 0x00, 0x23 ),                    /* OP_EXT_SUB */
-        _SignedOpcode( 0x00, 0x19, 0x00, 0x18 ),        /* OP_MUL */
-        _SignedOpcode( 0x00, 0x19, 0x00, 0x18 ),        /* OP_EXT_MUL */
-        _BinaryOpcode( 0x00, 0x00 ),                    /* OP_DIV */
-        _BinaryOpcode( 0x00, 0x00 ),                    /* OP_MOD */
-        _BinaryOpcode( 0x00, 0x24 ),                    /* OP_AND */
-        _BinaryOpcode( 0x00, 0x25 ),                    /* OP_OR */
-        _BinaryOpcode( 0x00, 0x26 ),                    /* OP_XOR */
-        _SignedOpcode( 0x00, 0x06, 0x00, 0x07 ),        /* OP_RSHIFT */
-        _BinaryOpcode( 0x00, 0x04 ),                    /* OP_LSHIFT */
-        _BinaryOpcode( 0x00, 0x00 ),                    /* OP_POW */
-        _BinaryOpcode( 0x00, 0x00 ),                    /* OP_ATAN2 */
-        _BinaryOpcode( 0x00, 0x00 ),                    /* OP_FMOD */
+    _BinaryOpcode( 0x00, 0x21 ),                /* OP_ADD */
+    _BinaryOpcode( 0x00, 0x21 ),                /* OP_EXT_ADD */
+    _BinaryOpcode( 0x00, 0x23 ),                /* OP_SUB */
+    _BinaryOpcode( 0x00, 0x23 ),                /* OP_EXT_SUB */
+    _SignedOpcode( 0x00, 0x19, 0x00, 0x18 ),    /* OP_MUL */
+    _SignedOpcode( 0x00, 0x19, 0x00, 0x18 ),    /* OP_EXT_MUL */
+    _BinaryOpcode( 0x00, 0x00 ),                /* OP_DIV */
+    _BinaryOpcode( 0x00, 0x00 ),                /* OP_MOD */
+    _BinaryOpcode( 0x00, 0x24 ),                /* OP_AND */
+    _BinaryOpcode( 0x00, 0x25 ),                /* OP_OR */
+    _BinaryOpcode( 0x00, 0x26 ),                /* OP_XOR */
+    _SignedOpcode( 0x00, 0x06, 0x00, 0x07 ),    /* OP_RSHIFT */
+    _BinaryOpcode( 0x00, 0x04 ),                /* OP_LSHIFT */
+    _BinaryOpcode( 0x00, 0x00 ),                /* OP_POW */
+    _BinaryOpcode( 0x00, 0x00 ),                /* OP_ATAN2 */
+    _BinaryOpcode( 0x00, 0x00 ),                /* OP_FMOD */
 };
 
-/* MIPS only has slt/sltu - every other operation needs to be
+/*
+ * MIPS only has slt/sltu - every other operation needs to be
  * reduced to something else.
  */
 static  uint_8  SetOpcodes[][2][2] = {
-        _BinaryOpcode( 0x00, 0x00 ),                    /* OP_SET_EQUAL */
-        _BinaryOpcode( 0x00, 0x00 ),                    /* OP_SET_NOT_EQUAL */
-        _BinaryOpcode( 0x00, 0x00 ),                    /* OP_SET_GREATER */
-        _BinaryOpcode( 0x00, 0x00 ),                    /* OP_SET_LESS_EQUAL */
-        _SignedOpcode( 0x00, 0x2b, 0x00, 0x2a ),        /* OP_SET_LESS */
-        _BinaryOpcode( 0x00, 0x00 ),                    /* OP_SET_GREATER_EQUAL */
+    _BinaryOpcode( 0x00, 0x00 ),                /* OP_SET_EQUAL */
+    _BinaryOpcode( 0x00, 0x00 ),                /* OP_SET_NOT_EQUAL */
+    _BinaryOpcode( 0x00, 0x00 ),                /* OP_SET_GREATER */
+    _BinaryOpcode( 0x00, 0x00 ),                /* OP_SET_LESS_EQUAL */
+    _SignedOpcode( 0x00, 0x2b, 0x00, 0x2a ),    /* OP_SET_LESS */
+    _BinaryOpcode( 0x00, 0x00 ),                /* OP_SET_GREATER_EQUAL */
 };
 
 static  uint_8  BinaryImmedOpcodes[] = {
-        0x09,                                           /* OP_ADD */
-        0x09,                                           /* OP_EXT_ADD */
-        0x09,                                           /* OP_SUB */
-        0x09,                                           /* OP_EXT_SUB */
-        0,                                              /* OP_MUL */
-        0,                                              /* OP_EXT_MUL */
-        0,                                              /* OP_DIV */
-        0,                                              /* OP_MOD */
-        0x0c,                                           /* OP_AND */
-        0x0d,                                           /* OP_OR */
-        0x0e,                                           /* OP_XOR */
-        0,                                              /* OP_RSHIFT */
-        0,                                              /* OP_LSHIFT */
-        0,                                              /* OP_POW */
-        0,                                              /* OP_ATAN2 */
-        0,                                              /* OP_FMOD */
+    0x09,                           /* OP_ADD */
+    0x09,                           /* OP_EXT_ADD */
+    0x09,                           /* OP_SUB */
+    0x09,                           /* OP_EXT_SUB */
+    0,                              /* OP_MUL */
+    0,                              /* OP_EXT_MUL */
+    0,                              /* OP_DIV */
+    0,                              /* OP_MOD */
+    0x0c,                           /* OP_AND */
+    0x0d,                           /* OP_OR */
+    0x0e,                           /* OP_XOR */
+    0,                              /* OP_RSHIFT */
+    0,                              /* OP_LSHIFT */
+    0,                              /* OP_POW */
+    0,                              /* OP_ATAN2 */
+    0,                              /* OP_FMOD */
 };
 
-/* Note - 'reg SET_LESS_EQUAL imm' will be converted to 'reg SET_LESS (imm + 1)'
+/*
+ * Note - 'reg SET_LESS_EQUAL imm' will be converted to 'reg SET_LESS (imm + 1)'
  * inside FindImmedOpcode. That's why the opcodes are the same as for SET_LESS.
  */
 static  uint_8  SetImmedOpcodes[][2] = {
-        _BinaryImmOpcode( 0x00 ),                       /* OP_SET_EQUAL */
-        _BinaryImmOpcode( 0x00 ),                       /* OP_SET_NOT_EQUAL */
-        _BinaryImmOpcode( 0x00 ),                       /* OP_SET_GREATER */
-        _SignedImmOpcode( 0x0b, 0x0a ),                 /* OP_SET_LESS_EQUAL */
-        _SignedImmOpcode( 0x0b, 0x0a ),                 /* OP_SET_LESS */
-        _BinaryImmOpcode( 0x00 ),                       /* OP_SET_GREATER_EQUAL */
+    _BinaryImmOpcode( 0x00 ),       /* OP_SET_EQUAL */
+    _BinaryImmOpcode( 0x00 ),       /* OP_SET_NOT_EQUAL */
+    _BinaryImmOpcode( 0x00 ),       /* OP_SET_GREATER */
+    _SignedImmOpcode( 0x0b, 0x0a ), /* OP_SET_LESS_EQUAL */
+    _SignedImmOpcode( 0x0b, 0x0a ), /* OP_SET_LESS */
+    _BinaryImmOpcode( 0x00 ),       /* OP_SET_GREATER_EQUAL */
 };
 
-// For floating point operate format instructions. We don't need to store
-// the primary opcode here since it is always 0x11 (ie. COP1) and we don't
-// need the format type since it can be derived from the operand size easily
-// enough. Function code is all we need here.
-// Note that we are in for some minor discomfort if we need to start
-// enabling different trap bits on instructions.
+/*
+ * For floating point operate format instructions. We don't need to store
+ * the primary opcode here since it is always 0x11 (ie. COP1) and we don't
+ * need the format type since it can be derived from the operand size easily
+ * enough. Function code is all we need here.
+ * Note that we are in for some minor discomfort if we need to start
+ * enabling different trap bits on instructions.
+ */
 
 static  uint_8 FloatingBinaryOpcodes[] = {
-        0x00,                                       /* OP_ADD */
-        0x00,                                       /* OP_EXT_ADD */
-        0x01,                                       /* OP_SUB */
-        0x01,                                       /* OP_EXT_SUB */
-        0x02,                                       /* OP_MUL */
-        0x02,                                       /* OP_EXT_MUL */
-        0x03,                                       /* OP_DIV */
+    0x00,                       /* OP_ADD */
+    0x00,                       /* OP_EXT_ADD */
+    0x01,                       /* OP_SUB */
+    0x01,                       /* OP_EXT_SUB */
+    0x02,                       /* OP_MUL */
+    0x02,                       /* OP_EXT_MUL */
+    0x03,                       /* OP_DIV */
 };
 
 static  uint_8 FloatingSetOpcodes[] = {
-        0x32,                                       /* OP_SET_EQUAL */
-        0x32,                                       /* OP_SET_NOT_EQUAL */
-        0x36,                                       /* OP_SET_GREATER */
-        0x36,                                       /* OP_SET_LESS_EQUAL */
-        0x34,                                       /* OP_SET_LESS */
-        0x34,                                       /* OP_SET_GREATER_EQUAL */
+    0x32,                       /* OP_SET_EQUAL */
+    0x32,                       /* OP_SET_NOT_EQUAL */
+    0x36,                       /* OP_SET_GREATER */
+    0x36,                       /* OP_SET_LESS_EQUAL */
+    0x34,                       /* OP_SET_LESS */
+    0x34,                       /* OP_SET_GREATER_EQUAL */
 };
 
+static  uint_8  loadOpcodes[] = {
+    0x24,                       /* U1 */
+    0x20,                       /* I1 */
+    0x25,                       /* U2 */
+    0x21,                       /* I2 */
+    0x23,                       /* U4 */    // 0x27 for MIPS64
+    0x23,                       /* I4 */
+    0x37,                       /* U8 */
+    0x37,                       /* I8 */
+    0x23,                       /* CP */
+    0x23,                       /* PT */
+    0x31,                       /* FS */
+    0x35,                       /* FD */
+    0x35,                       /* FL */
+};
+
+static  uint_8  storeOpcodes[] = {
+    0x28,                       /* U1 */
+    0x28,                       /* I1 */
+    0x29,                       /* U2 */
+    0x29,                       /* I2 */
+    0x2b,                       /* U4 */
+    0x2b,                       /* I4 */
+    0x3f,                       /* U8 */
+    0x3f,                       /* I8 */
+    0x2b,                       /* CP */
+    0x2b,                       /* PT */
+    0x39,                       /* FS */
+    0x3d,                       /* FD */
+    0x3d,                       /* FL */
+};
 
 static mips_ins  ins_encoding = 0;
 
@@ -223,22 +267,31 @@ static  void EmitIns( mips_ins ins )
 }
 
 
-void GenLOADS32( signed_32 value, uint_8 reg )
-/*****************************************************
+void GenLOADS32( int_32 value, reg_idx reg )
+/*******************************************
  * Load a signed 32-bit constant 'value' into register 'reg'
  */
 {
-    if( (value < 32768) && (value > -32769) ) {
-        // Only need sign extended low 16 bits - 'addiu rt,$zero,value'
-        GenIType( 0x09, reg, MIPS_ZERO_SINK, (unsigned_16)value );
+    if( (value < 32768)
+      && (value > -32769) ) {
+        /*
+         * Only need sign extended low 16 bits - 'addiu rt,$zero,value'
+         */
+        GenIType( 0x09, reg, ZERO_REG_IDX, (int_16)value );
     } else if( (value & 0xffff) == 0 ) {
-        // Only need high 16 bits - 'lui rt,$zero,(value >> 16)'
-        GenIType( 0x0f, reg, MIPS_ZERO_SINK, (unsigned_16)(value >> 16) );
+        /*
+         * Only need high 16 bits - 'lui rt,$zero,(value >> 16)'
+         */
+        GenIType( 0x0f, reg, ZERO_REG_IDX, (int_16)(value >> 16) );
     } else {
-        // Need two instructions - 'lui rt,$zero,(value >> 16)'
-        GenIType( 0x0f, reg, MIPS_ZERO_SINK, (unsigned_16)(value >> 16) );
-        // followed by 'ori rt,$zero,(value & 0xffff)'
-        GenIType( 0x0d, reg, MIPS_ZERO_SINK, (unsigned_16)value );
+        /*
+         * Need two instructions - 'lui rt,$zero,(value >> 16)'
+         */
+        GenIType( 0x0f, reg, ZERO_REG_IDX, (int_16)(value >> 16) );
+        /*
+         * followed by 'ori rt,$zero,(value & 0xffff)'
+         */
+        GenIType( 0x0d, reg, ZERO_REG_IDX, (int_16)value );
     }
 }
 
@@ -251,7 +304,8 @@ static  uint_8  *FindOpcodes( instruction *ins )
     uint_8      *opcodes;
 
     if( _OpIsBinary( ins->head.opcode ) ) {
-        if( ins->type_class == U8 || ins->type_class == I8 ) {
+        if( ins->type_class == U8
+          || ins->type_class == I8 ) {
             opcodes = &BinaryOpcodes8[ins->head.opcode - FIRST_BINARY_OP][_IsSigned( ins->type_class ) ? 1 : 0][0];
         } else {
             opcodes = &BinaryOpcodes4[ins->head.opcode - FIRST_BINARY_OP][_IsSigned( ins->type_class ) ? 1 : 0][0];
@@ -280,8 +334,10 @@ static  uint_8 FindImmedOpcode( instruction *ins )
     } else if( _OpIsSet( ins->head.opcode ) ) {
         opcode = SetImmedOpcodes[ins->head.opcode - FIRST_SET_OP][_IsSigned( ins->type_class ) ? 1 : 0];
         if( ins->head.opcode == OP_SET_LESS_EQUAL ) {
-            // need to increment the immediate by one (since CPU can do
-            // 'less than' but not 'less than or equal')
+            /*
+             * need to increment the immediate by one (since CPU can do
+             * 'less than' but not 'less than or equal')
+             */
             ins->operands[1]->c.lo.int_value++;
             assert( ins->operands[1]->c.lo.int_value <= MIPS_MAX_OFFSET );
         }
@@ -305,7 +361,9 @@ static  uint_8 FindFloatingOpcodes( instruction *ins )
     assert( _IsFloating( ins->type_class ) );
     if( _OpIsBinary( ins->head.opcode ) ) {
         opcode = FloatingBinaryOpcodes[ins->head.opcode - FIRST_BINARY_OP];
-        /* NB: this opcode may legitimately be zero - that's 'add' */
+        /*
+         * NB: this opcode may legitimately be zero - that's 'add'
+         */
     } else if( _OpIsSet( ins->head.opcode ) ) {
         opcode = FloatingSetOpcodes[ins->head.opcode - FIRST_SET_OP];
         assert( opcode );
@@ -317,90 +375,84 @@ static  uint_8 FindFloatingOpcodes( instruction *ins )
 }
 
 
-void GenMEMINSRELOC( uint_8 opcode, uint_8 rt, uint_8 rs, signed_16 displacement, pointer lbl, owl_reloc_type type )
-/**************************************************************************************************************************/
+static void GenMEMINSRELOC( uint_8 opcode, reg_idx rt, reg_idx rs, int_16 displacement, pointer lbl, owl_reloc_type type )
+/************************************************************************************************************************/
 {
     ins_encoding = _Opcode( opcode ) | _Rt( rt ) | _Rs( rs ) | _SignedImmed( displacement );
     EmitInsReloc( &ins_encoding, lbl, type );
 }
 
 
-void GenMEMINS( uint_8 opcode, uint_8 a, uint_8 b, signed_16 displacement )
-/*********************************************************************************/
+void GenMEMINS( uint_8 opcode, reg_idx rt, reg_idx rs, int_16 displacement )
+/**************************************************************************/
 {
-    ins_encoding = _Opcode( opcode ) | _Rt( a ) | _Rs( b ) | _SignedImmed( displacement );
+    ins_encoding = _Opcode( opcode ) | _Rt( rt ) | _Rs( rs ) | _SignedImmed( displacement );
     EmitIns( ins_encoding );
 }
 
 
-void GenIType( uint_8 opcode, uint_8 rt, uint_8 rs, signed_16 immed )
+void GenIType( uint_8 opcode, reg_idx rt, reg_idx rs, int_16 immed )
+/******************************************************************/
+{
+    ins_encoding = _Opcode( opcode ) | _Rs( rs ) | _Rt( rt ) | _SignedImmed( immed );
+    EmitIns( ins_encoding );
+}
+
+
+void GenRType( uint_8 opcode, uint_8 fc, reg_idx rd, reg_idx rs, reg_idx rt )
 /***************************************************************************/
-{
-    ins_encoding = _Opcode( opcode ) | _Rs( rs ) | _Rt( rt ) | _Immed( immed );
-    EmitIns( ins_encoding );
-}
-
-
-void GenRType( uint_8 opcode, uint_8 fc, uint_8 rd, uint_8 rs, uint_8 rt )
-/********************************************************************************/
 {
     ins_encoding = _Opcode( opcode ) | _Rs( rs ) | _Rt( rt ) | _Rd( rd ) | _Function( fc );
     EmitIns( ins_encoding );
 }
 
-void GenIShift( uint_8 fc, uint_8 rd, uint_8 rt, uint_8 sa )
-/******************************************************************/
+void GenIShift( uint_8 fc, reg_idx rd, reg_idx rt, uint_8 sa )
+/************************************************************/
 {
     ins_encoding = _Opcode( 0 ) | _Rs( 0 ) | _Rt( rt ) | _Rd( rd ) | _Shift( sa ) | _Function( fc );
     EmitIns( ins_encoding );
 }
 
 void GenJType( uint_8 opcode, pointer label )
-/***************************************************/
+/*******************************************/
 {
     ins_encoding = _Opcode( opcode );
     EmitInsReloc( &ins_encoding, label, OWL_RELOC_JUMP_ABS );
-    // TODO: Handle delay slot better
+    /*
+     * TODO: Handle delay slot better
+     */
     ins_encoding = MIPS_NOP;
     EmitIns( ins_encoding );
 }
 
 
-static  void GenFloatRType( type_class_def type_class, uint_8 fnc, uint_8 fd, uint_8 fs, uint_8 ft )
-/**************************************************************************************************/
+static void GenFloatRType( type_class_def type_class, uint_8 fnc, reg_idx fd, reg_idx fs, reg_idx ft )
+/****************************************************************************************************/
 {
-    int                 fmt;
+    int         fmt;
 
-    // Select operand format
+    /*
+     * Select operand format
+     */
     if( type_class == FS ) {
         fmt = 0x10;
-    } else if( type_class == FD || type_class == FL ) {
+    } else if( type_class == FD
+      || type_class == FL ) {
         fmt = 0x11;
     } else {
         fmt = 0;
         assert( 0 );
     }
-
-    // Opcode is always COP1
+    /*
+     * Opcode is always COP1
+     */
     ins_encoding = _Opcode( 0x11 ) | _FPFormat( fmt ) | _Ft( ft ) | _Fs( fs ) | _Fd( fd ) | _Function( fnc );
     EmitIns( ins_encoding );
 }
 
 
-#if 0
-static  uint_8  BranchOpcodes[][2] = {
-    { 0x39, 0x31 },                     /* OP_CMP_EQUAL */
-    { 0x3d, 0x35 },                     /* OP_CMP_NOT_EQUAL */
-    { 0x3f, 0x37 },                     /* OP_CMP_GREATER */
-    { 0x3b, 0x33 },                     /* OP_CMP_LESS_EQUAL */
-    { 0x3a, 0x32 },                     /* OP_CMP_LESS */
-    { 0x3e, 0x36 },                     /* OP_CMP_GREATER_EQUAL */
-};
-#endif
-
-
-void GenRET( void )
-/*************************/
+void GenReturn( void )
+/********************/
 {
     any_oc      oc;
 
@@ -408,7 +460,7 @@ void GenRET( void )
     oc.oc_ret.hdr.reclen = sizeof( oc_ret );
     oc.oc_ret.hdr.objlen = 4;
     oc.oc_ret.ref = NULL;
-    oc.oc_ret.pops = false;            /* not used */
+    oc.oc_ret.pops = 0;         /* not used */
     InputOC( &oc );
 }
 
@@ -418,38 +470,6 @@ static  pointer symLabel( name *mem )
 {
     return( AskForSymLabel( mem->v.symbol, mem->m.memory_type ) );
 }
-
-static  uint_8  loadOpcodes[] = {
-    0x24,                       /* U1 */
-    0x20,                       /* I1 */
-    0x25,                       /* U2 */
-    0x21,                       /* I2 */
-    0x23,                       /* U4 */    // 0x27 for MIPS64
-    0x23,                       /* I4 */
-    0x37,                       /* U8 */
-    0x37,                       /* I8 */
-    0x23,                       /* CP */
-    0x23,                       /* PT */
-    0x31,                       /* FS */
-    0x35,                       /* FD */
-    0x35,                       /* FL */
-};
-
-static  uint_8  storeOpcodes[] = {
-    0x28,                       /* U1 */
-    0x28,                       /* I1 */
-    0x29,                       /* U2 */
-    0x29,                       /* I2 */
-    0x2b,                       /* U4 */
-    0x2b,                       /* I4 */
-    0x3f,                       /* U8 */
-    0x3f,                       /* I8 */
-    0x2b,                       /* CP */
-    0x2b,                       /* PT */
-    0x39,                       /* FS */
-    0x3d,                       /* FD */
-    0x3d,                       /* FL */
-};
 
 type_length TempLocation( name *temp )
 /************************************/
@@ -470,24 +490,29 @@ type_length TempLocation( name *temp )
 }
 
 
-void GenCallLabelReg( pointer label, uint reg )
-/*********************************************/
+void GenCallLabelReg( pointer label, reg_idx reg )
+/************************************************/
 {
-    // This is used for calling into certain cg support routines. We'd
-    // kinda like to use 'jal', except we must use something other
-    // than ra for the return address. So 'jalr' it is...
-
-    // Load address into $at (lui/addiu)
-    // TODO: This should be different for PIC
-    GenMEMINSRELOC( 0x0f, MIPS_GPR_SCRATCH, MIPS_ZERO_SINK, 0,
-                label, OWL_RELOC_HALF_HI );
-    GenMEMINSRELOC( 0x09, MIPS_GPR_SCRATCH, MIPS_GPR_SCRATCH, 0,
-                label, OWL_RELOC_HALF_LO );
-
-    // 'jalr reg,$at'
-    GenRType( 0x00, 0x09, reg, MIPS_GPR_SCRATCH, 0 );
-    // WARNING! WARNING! WARNING!
-    // There's no delay slot here. Caller must handle that.
+    /*
+     * This is used for calling into certain cg support routines. We'd
+     * kinda like to use 'jal', except we must use something other
+     * than ra for the return address. So 'jalr' it is...
+     *
+     * Load address into $at (lui/addiu)
+     * TODO: This should be different for PIC
+     */
+    GenMEMINSRELOC( 0x0f, AT_REG_IDX, ZERO_REG_IDX, 0,
+        label, OWL_RELOC_HALF_HI );
+    GenMEMINSRELOC( 0x09, AT_REG_IDX, AT_REG_IDX, 0,
+        label, OWL_RELOC_HALF_LO );
+    /*
+     * 'jalr reg,$at'
+     */
+    GenRType( 0x00, 0x09, reg, AT_REG_IDX, ZERO_REG_IDX );
+    /*
+     * WARNING! WARNING! WARNING!
+     * There's no delay slot here. Caller must handle that.
+     */
 }
 
 
@@ -498,86 +523,96 @@ void GenCallLabel( pointer label )
 }
 
 
-static  void    GenNoReturn( void ) {
-/************************************
-    Generate a noreturn instruction (pseudo instruction)
-*/
-
+static void     GenNoReturn( void )
+/**********************************
+ *   Generate a noreturn instruction (pseudo instruction)
+ */
+{
     any_oc      oc;
 
-    oc.oc_ret.hdr.class = OC_RET | ATTR_NORET;
-    oc.oc_ret.hdr.reclen = sizeof( oc_ret );
-    oc.oc_ret.hdr.objlen = 0;
-    oc.oc_ret.ref = NULL;
-    oc.oc_ret.pops = 0;
+    oc.oc_entry.hdr.class = OC_NORET;
+    oc.oc_entry.hdr.reclen = offsetof( oc_entry, data );
+    oc.oc_entry.hdr.objlen = 0;
     InputOC( &oc );
 }
 
-static  void doCall( instruction *ins )
-/*************************************/
+static void doCall( instruction *ins )
+/************************************/
 {
     cg_sym_handle       sym;
     byte_seq            *code;
     label_handle        lbl;
+    name                *op;
+    call_class          cclass;
 
+    op = ins->operands[CALL_OP_ADDR];
+    sym = op->v.symbol;
+    lbl = symLabel( op );
     code = NULL;
-    sym = ins->operands[CALL_OP_ADDR]->v.symbol;
-    lbl = symLabel( ins->operands[CALL_OP_ADDR] );
     if( !AskIfRTLabel( lbl ) ) {
-        code = FindAuxInfoSym( sym, CALL_BYTES );
+        code = FindAuxInfoSym( sym, FEINF_CALL_BYTES );
     }
     if( code != NULL ) {
+        cclass = (call_class)(pointer_uint)FindAuxInfoSym( sym, FEINF_CALL_CLASS );
         ObjEmitSeq( code );
-        if( *(call_class *)FindAuxInfoSym( sym, CALL_CLASS ) & SUICIDAL ) {
+        if( cclass & FECALL_GEN_ABORTS ) {
             GenNoReturn();
         }
     } else {
-        GenCallLabel( symLabel( ins->operands[CALL_OP_ADDR] ) );
+        cclass = FECALL_GEN_NONE; //!
+        GenCallLabel( lbl );
+    }
+    if( cclass & FECALL_GEN_NORETURN ) {
+        GenNoReturn();
     }
 }
 
 
-static  void addressTemp( name *temp, uint_8 *reg, int_16 *offset )
+static void addressTemp( name *temp, reg_idx *reg, int_16 *offset )
 /*****************************************************************/
 {
     type_length         temp_offset;
 
     temp_offset = TempLocation( temp );
     if( temp_offset > MIPS_MAX_OFFSET ) {
-        // gen some code to load temp address into SCRATCH_REG
-        GenLOADS32( temp_offset, MIPS_GPR_SCRATCH );
-        // 'or $sp,$at,$zero', aka 'move $sp,$at'
-        GenRType( 0x00, 0x25, MIPS_STACK_REG, MIPS_GPR_SCRATCH, MIPS_ZERO_SINK );
+        /*
+         * gen some code to load temp address into scratch register
+         */
+        GenLOADS32( temp_offset, AT_REG_IDX );
+        /*
+         * 'or $sp,$at,$zero', aka 'move $sp,$at'
+         */
+        GenRType( 0x00, 0x25, SP_REG_IDX, AT_REG_IDX, ZERO_REG_IDX );
         *offset = 0;
-        *reg = MIPS_GPR_SCRATCH;
+        *reg = AT_REG_IDX;
     } else {
         *offset = temp_offset;
-        *reg = MIPS_STACK_REG;
+        *reg = SP_REG_IDX;
         if( CurrProc->targ.base_is_fp ) {
-            *reg = MIPS_FRAME_REG;
+            *reg = FP_REG_IDX;
         }
     }
 }
 
 
-static  void getMemEncoding( name *mem, uint_8 *reg_index, int_16 *offset )
-/*************************************************************************/
+static void getMemEncoding( name *mem, reg_idx *reg_mem, int_16 *offset )
+/***********************************************************************/
 {
     switch( mem->n.class ) {
     case N_INDEXED:
         assert( mem->i.index->n.class == N_REGISTER );
         assert( mem->i.scale == 0 );
-        assert( mem->i.constant == (type_length)((signed_16)mem->i.constant) );
+        assert( mem->i.constant == (type_length)((int_16)mem->i.constant) );
         assert( ( mem->i.index_flags & X_LOW_ADDR_BASE ) == 0 );
-        *reg_index = _NameReg( mem->i.index );
+        *reg_mem = _NameRegTrans( mem->i.index );
         *offset = (int_16)mem->i.constant;
         break;
     case N_TEMP:
-        addressTemp( mem, reg_index, offset );
+        addressTemp( mem, reg_mem, offset );
         break;
     case N_MEMORY:
     default:
-        *reg_index = MIPS_ZERO_SINK;
+        *reg_mem = ZERO_REG_IDX;
         *offset = 0;
         _Zoiks( ZOIKS_078 );
         break;
@@ -591,7 +626,7 @@ static  void doLoadStore( instruction *ins, bool load )
     name        *mem;
     name        *reg;
     uint_8      opcode;
-    uint_8      index;
+    reg_idx     reg_mem;
     int_16      offset;
 
     if( load ) {
@@ -604,8 +639,8 @@ static  void doLoadStore( instruction *ins, bool load )
         opcode = storeOpcodes[ins->type_class];
     }
     assert( reg->n.class == N_REGISTER );
-    getMemEncoding( mem, &index, &offset );
-    GenMEMINS( opcode, _NameReg( reg ), index, offset );
+    getMemEncoding( mem, &reg_mem, &offset );
+    GenMEMINS( opcode, _NameRegTrans( reg ), reg_mem, offset );
 }
 
 
@@ -617,25 +652,31 @@ static  void doLoadStoreUnaligned( instruction *ins, bool load )
     name        *reg;
     uint_8      opcode1;
     uint_8      opcode2;
-    uint_8      index;
+    reg_idx     reg_mem;
     int_16      offset;
 
     if( load ) {
         mem = ins->operands[0];
         reg = ins->result;
-        // 'lwl', 'lwr'
+        /*
+         * 'lwl', 'lwr'
+         */
         opcode1 = 0x22; opcode2 = 0x26;
     } else {
         reg = ins->operands[0];
         mem = ins->result;
-        // 'swl', 'swr'
+        /*
+         * 'swl', 'swr'
+         */
         opcode1 = 0x2a; opcode2 = 0x2e;
     }
     assert( reg->n.class == N_REGISTER );
-    getMemEncoding( mem, &index, &offset );
-    // TODO: make sure offset can't overflow
-    GenMEMINS( opcode1, _NameReg( reg ), index, offset + 3 );
-    GenMEMINS( opcode2, _NameReg( reg ), index, offset );
+    getMemEncoding( mem, &reg_mem, &offset );
+    /*
+     * TODO: make sure offset can't overflow
+     */
+    GenMEMINS( opcode1, _NameRegTrans( reg ), reg_mem, offset + 3 );
+    GenMEMINS( opcode2, _NameRegTrans( reg ), reg_mem, offset );
 #else
     doLoadStore( ins, load );
 #endif
@@ -645,26 +686,33 @@ static  void doLoadStoreUnaligned( instruction *ins, bool load )
 static  void GenCallIndirect( instruction *call )
 /***********************************************/
 {
-    uint_8      reg_index;
-    uint_8      mem_index;
+    reg_idx     reg_addr;
+    reg_idx     reg_mem;
     int_16      mem_offset;
     name        *addr;
 
-    reg_index = MIPS_GPR_SCRATCH;   /* use the volatile scratch reg if possible */
+    /*
+     * use the scratch register if possible
+     */
+    reg_addr = AT_REG_IDX;
     addr = call->operands[CALL_OP_ADDR];
     switch( addr->n.class ) {
     case N_REGISTER:
-        reg_index = _NameReg( addr );
+        reg_addr = _NameRegTrans( addr );
         break;
     case N_TEMP:
     case N_INDEXED:
-        getMemEncoding( addr, &mem_index, &mem_offset );
-        GenMEMINS( 0x23, reg_index, mem_index, mem_offset );
+        getMemEncoding( addr, &reg_mem, &mem_offset );
+        GenMEMINS( 0x23, reg_addr, reg_mem, mem_offset );
         break;
     }
-    // 'jalr ra,reg_index'
-    GenRType( 0x00, 0x09, MIPS_RETURN_ADDR, reg_index, 0 );
-    // TODO: Handle delay slot better
+    /*
+     * 'jalr ra,reg_addr'
+     */
+    GenRType( 0x00, 0x09, RA_REG_IDX, reg_addr, ZERO_REG_IDX );
+    /*
+     * TODO: Handle delay slot better
+     */
     EmitIns( MIPS_NOP );
 }
 
@@ -677,12 +725,16 @@ static  void doZero( instruction *ins, type_class_def type_class )
     size = TypeClassSize[type_class];
     switch( size ) {
     case 1:
-        // 'andi res,op1,0x00ff'
-        GenIType( 0x0c, _NameReg( ins->result ), _NameReg( ins->operands[0] ), 0x00ff );
+        /*
+         * 'andi res,op1,0x00ff'
+         */
+        GenIType( 0x0c, _NameRegTrans( ins->result ), _NameRegTrans( ins->operands[0] ), 0x00ff );
         break;
     case 2:
-        // 'andi res,op1,0xffff'
-        GenIType( 0x0c, _NameReg( ins->result ), _NameReg( ins->operands[0] ), 0x0ffff );
+        /*
+         * 'andi res,op1,0xffff'
+         */
+        GenIType( 0x0c, _NameRegTrans( ins->result ), _NameRegTrans( ins->operands[0] ), -1 );
         break;
     default:
         _Zoiks( ZOIKS_091 );
@@ -694,31 +746,38 @@ static  void doSignExtend( instruction *ins, type_class_def type_class )
 /**********************************************************************/
 {
     unsigned    from_size;
-    int         res_index;
-    int         src_index;
+    reg_idx     reg_res;
+    reg_idx     reg_src;
     int         shift_amt;
 
-    res_index = _NameReg( ins->result );
-    src_index = _NameReg( ins->operands[0] );
+    reg_res = _NameRegTrans( ins->result );
+    reg_src = _NameRegTrans( ins->operands[0] );
     from_size = TypeClassSize[type_class];
     if( from_size == 4 ) {
-        // 'addu rd,$zero,rs' - MIPS64 only?
-        GenRType( 0x00, 0x21, res_index, MIPS_ZERO_SINK, src_index );
+        /*
+         * 'addu rd,$zero,rs' - MIPS64 only?
+         */
+        GenRType( 0x00, 0x21, reg_res, ZERO_REG_IDX, reg_src );
     } else {
-        // MIPS32 ISA Release 2 has 'seb'/'seh' instructions for this
+        /*
+         * MIPS32 ISA Release 2 has 'seb'/'seh' instructions for this
+         */
         shift_amt = (REG_SIZE - from_size) * 8;
-        // 'sll rd,rs,n'
-        GenIShift( 0x00, res_index, src_index, shift_amt );
-        // 'sra rd,rs,n'
-        GenIShift( 0x03, res_index, res_index, shift_amt );
+        /*
+         * 'sll rd,rs,n'
+         */
+        GenIShift( 0x00, reg_res, reg_src, shift_amt );
+        /*
+         * 'sra rd,rs,n'
+         */
+        GenIShift( 0x03, reg_res, reg_res, shift_amt );
     }
 }
 
-// This is NT stuff - probably irreleveant unless someone wanted to
-// support the MIPS version of NT!
-#define RDTEB_ENCODING          0x000000ab
-#define RDTEB_MAGIC_CONST       0x2c
-#define V0                      0
+/*
+ * This is NT stuff - probably irreleveant unless someone wanted to
+ * support the MIPS version of NT!
+ */
 
 static  bool    encodeThreadDataRef( instruction *ins )
 /*****************************************************/
@@ -736,31 +795,31 @@ static  bool    encodeThreadDataRef( instruction *ins )
 
     /*
      * Put out a sequence that looks like:
-                ldah    at, h^__tls_index(zero)
-                lda     at, l^__tls_index(at)
-                rdteb
-                ldl     v0, 0x2c(v0)
-                s4addl  at, v0, v0
-                ldl     v0, (v0)
-                lda     rn, l^variable(v0)
-
-        In order to be able to zap v0 (which rdteb does),
-        we always set the zap set on a LEA foo -> rn instruction
-        to be v0 when foo is a piece of thread-local storage.
-        This is done in FixMemRefs.
-    */
+     *          ldah    at, h^__tls_index(zero)
+     *          lda     at, l^__tls_index(at)
+     *          rdteb
+     *          ldl     v0, 0x2c(v0)
+     *          s4addl  at, v0, v0
+     *          ldl     v0, (v0)
+     *          lda     rn, l^variable(v0)
+     *
+     * In order to be able to zap v0 (which rdteb does),
+     * we always set the zap set on a LEA foo -> rn instruction
+     * to be v0 when foo is a piece of thread-local storage.
+     * This is done in FixMemRefs.
+     */
 //    tls_index = RTLabel( RT_TLS_INDEX );
 #if 0
-    GenMEMINSRELOC( 0x09, MIPS_GPR_SCRATCH, MIPS_ZERO_SINK, 0,
-                tls_index, OWL_RELOC_HALF_HI );
-    GenMEMINSRELOC( 0x08, MIPS_GPR_SCRATCH, MIPS_GPR_SCRATCH, 0,
-                tls_index, OWL_RELOC_HALF_LO );
+    GenMEMINSRELOC( 0x09, AT_REG_IDX, ZERO_REG_IDX, 0,
+        tls_index, OWL_RELOC_HALF_HI );
+    GenMEMINSRELOC( 0x08, AT_REG_IDX, AT_REG_IDX, 0,
+        tls_index, OWL_RELOC_HALF_LO );
     EmitIns( RDTEB_ENCODING );
-    GenMEMINS( loadOpcodes[I4], V0, V0, RDTEB_MAGIC_CONST );
-    GenOPINS( 0x0010, 0x0002, MIPS_GPR_SCRATCH, V0, V0 );
-    GenMEMINS( loadOpcodes[I4], V0, V0, 0 );
-    GenMEMINSRELOC( 0x08, _NameReg( ins->result ),
-                V0, 0, symLabel( op ), OWL_RELOC_HALF_LO );
+    GenMEMINS( loadOpcodes[I4], RT_RET_REG_IDX, RT_RET_REG_IDX, RDTEB_MAGIC_CONST );
+    GenOPINS( 0x0010, 0x0002, AT_REG_IDX, RT_RET_REG_IDX, RT_RET_REG_IDX );
+    GenMEMINS( loadOpcodes[I4], RT_RET_REG_IDX, RT_RET_REG_IDX, 0 );
+    GenMEMINSRELOC( 0x08, _NameRegTrans( ins->result ),
+        RT_RET_REG_IDX, 0, symLabel( op ), OWL_RELOC_HALF_LO );
 #else
     assert( 0 );
 #endif
@@ -771,16 +830,16 @@ static  bool    encodeThreadDataRef( instruction *ins )
 static  void Encode( instruction *ins )
 /*************************************/
 {
-    uint_8              *opcodes;
-    uint_8              opcode;
-    uint_16             function;
-    uint_8              reg_index;
-    uint_8              mem_index;
-    int_16              mem_offset;
-    signed_16           high;
-    signed_16           extra;
-    signed_16           low;
-    signed_16           imm_value;
+    uint_8          *opcodes;
+    uint_8          opcode;
+    uint_16         function;
+    reg_idx         reg_addr;
+    reg_idx         reg_mem;
+    int_16          mem_offset;
+    int_16          high;
+    int_16          extra;
+    int_16          low;
+    int_16          imm_value;
 
     switch( G( ins ) ) {
     case G_CALL:
@@ -795,21 +854,30 @@ static  void Encode( instruction *ins )
         assert( ins->result->n.class == N_REGISTER );
         switch( ins->head.opcode ) {
         case OP_NEGATE:
-            // 'neg.fmt fd,fs'
+            /*
+             * 'neg.fmt fd,fs'
+             */
             switch( ins->type_class ) {
             case FS:
             case FD:
             case FL:
-                GenFloatRType( ins->type_class, 0x07, _NameReg( ins->result ), _NameReg( ins->operands[0] ), 0 );
+                GenFloatRType( ins->type_class, 0x07, _NameRegTrans( ins->result ),
+                    _NameRegTrans( ins->operands[0] ), ZERO_REG_IDX );
                 break;
             default:
-                // 'subu rd,$zero,rs'
-                GenRType( 0x00, 0x23, _NameReg( ins->result ), MIPS_ZERO_SINK, _NameReg( ins->operands[0] ) );
+                /*
+                 * 'subu rd,$zero,rs'
+                 */
+                GenRType( 0x00, 0x23, _NameRegTrans( ins->result ), ZERO_REG_IDX,
+                    _NameRegTrans( ins->operands[0] ) );
             }
             break;
         case OP_COMPLEMENT:
-            // 'nor rd,$zero,rs'
-            GenRType( 0x00, 0x27, _NameReg( ins->result ), MIPS_ZERO_SINK, _NameReg( ins->operands[0] ) );
+            /*
+             * 'nor rd,$zero,rs'
+             */
+            GenRType( 0x00, 0x27, _NameRegTrans( ins->result ),
+                ZERO_REG_IDX, _NameRegTrans( ins->operands[0] ) );
             break;
         default:
             _Zoiks( ZOIKS_028 );
@@ -818,8 +886,11 @@ static  void Encode( instruction *ins )
     case G_MOVE_FP:
         assert( ins->operands[0]->n.class == N_REGISTER );
         assert( ins->result->n.class == N_REGISTER );
-        // 'mov.s fd,fs'
-        GenFloatRType( FS, 0x06, _NameReg( ins->result ), _NameReg( ins->operands[0] ), 0 );
+        /*
+         * 'mov.s fd,fs'
+         */
+        GenFloatRType( FS, 0x06, _NameRegTrans( ins->result ),
+            _NameRegTrans( ins->operands[0] ), ZERO_REG_IDX );
         break;
     case G_ZERO:
         assert( ins->operands[0]->n.class == N_REGISTER );
@@ -836,32 +907,40 @@ static  void Encode( instruction *ins )
     case G_CVTTS:
         assert( ins->operands[0]->n.class == N_REGISTER );
         assert( ins->result->n.class == N_REGISTER );
-        // 'cvt.s.d fd,fs'
-        GenFloatRType( FD, 0x20, _NameReg( ins->result ), _NameReg( ins->operands[0] ), 0 );
+        /*
+         * 'cvt.s.d fd,fs'
+         */
+        GenFloatRType( FD, 0x20, _NameRegTrans( ins->result ),
+            _NameRegTrans( ins->operands[0] ), ZERO_REG_IDX );
         break;
     case G_FREGTOMI8:
         assert( ins->operands[0]->n.class == N_REGISTER );
         assert( ins->result->n.class != N_REGISTER );
-        reg_index = _NameReg( ins->operands[0] );
-        getMemEncoding( ins->result, &mem_index, &mem_offset );
-        // 'sdc1 rt,offset(base)' - MIPS32-R2/MIPS64 only?
-        GenIType( 0x3d, reg_index, mem_index, mem_offset );
+        reg_addr = _NameRegTrans( ins->operands[0] );
+        getMemEncoding( ins->result, &reg_mem, &mem_offset );
+        /*
+         * 'sdc1 rt,offset(base)' - MIPS32-R2/MIPS64 only?
+         */
+        GenIType( 0x3d, reg_addr, reg_mem, mem_offset );
         break;
     case G_MI8TOFREG:
         assert( ins->operands[0]->n.class != N_REGISTER );
         assert( ins->result->n.class == N_REGISTER );
-        reg_index = _NameReg( ins->result );
-        getMemEncoding( ins->operands[0], &mem_index, &mem_offset );
-        // 'ldc1 rt,offset(base)' - MIPS32-R2/MIPS64 only?
-        GenIType( 0x35, reg_index, mem_index, mem_offset );
+        reg_addr = _NameRegTrans( ins->result );
+        getMemEncoding( ins->operands[0], &reg_mem, &mem_offset );
+        /*
+         * 'ldc1 rt,offset(base)' - MIPS32-R2/MIPS64 only?
+         */
+        GenIType( 0x35, reg_addr, reg_mem, mem_offset );
         break;
     case G_BINARY_FP:
         assert( ins->operands[0]->n.class == N_REGISTER );
         assert( ins->operands[1]->n.class == N_REGISTER );
         assert( ins->result->n.class == N_REGISTER );
         function = FindFloatingOpcodes( ins );
-        reg_index = _OpIsSet( ins->head.opcode ) ? 0 : _NameReg( ins->result );
-        GenFloatRType( ins->type_class, function, reg_index, _NameReg( ins->operands[0] ), _NameReg( ins->operands[1] ) );
+        reg_addr = _OpIsSet( ins->head.opcode ) ? ZERO_REG_IDX : _NameRegTrans( ins->result );
+        GenFloatRType( ins->type_class, function, reg_addr,
+            _NameRegTrans( ins->operands[0] ), _NameRegTrans( ins->operands[1] ) );
         break;
     case G_BINARY:
         assert( ins->operands[0]->n.class == N_REGISTER );
@@ -871,28 +950,45 @@ static  void Encode( instruction *ins )
         switch( ins->head.opcode ) {
         case OP_LSHIFT:
         case OP_RSHIFT:
-            // 'sllv', 'srlv' and 'srav' have the operands backwards
-            GenRType( opcodes[0], opcodes[1], _NameReg( ins->result ), _NameReg( ins->operands[1] ), _NameReg( ins->operands[0] ) );
+            /*
+             * 'sllv', 'srlv' and 'srav' have the operands backwards
+             */
+            GenRType( opcodes[0], opcodes[1], _NameRegTrans( ins->result ),
+                _NameRegTrans( ins->operands[1] ), _NameRegTrans( ins->operands[0] ) );
             break;
         case OP_MUL:
-            GenRType( opcodes[0], opcodes[1], 0, _NameReg( ins->operands[0] ), _NameReg( ins->operands[1] ) );
-            // 'mflo rd'
-            GenRType( 0, 0x12, _NameReg( ins->result ), 0, 0 );
+            GenRType( opcodes[0], opcodes[1], ZERO_REG_IDX, _NameRegTrans( ins->operands[0] ),
+                _NameRegTrans( ins->operands[1] ) );
+            /*
+             * 'mflo rd'
+             */
+            GenRType( 0, 0x12, _NameRegTrans( ins->result ), ZERO_REG_IDX, ZERO_REG_IDX );
             break;
         case OP_DIV:
-            // TODO: do something if divisor is zero
-            GenRType( opcodes[0], opcodes[1], 0, _NameReg( ins->operands[0] ), _NameReg( ins->operands[1] ) );
-            // 'mflo rd'
-            GenRType( 0, 0x12, _NameReg( ins->result ), 0, 0 );
+            /*
+             * TODO: do something if divisor is zero
+             */
+            GenRType( opcodes[0], opcodes[1], ZERO_REG_IDX,
+                _NameRegTrans( ins->operands[0] ), _NameRegTrans( ins->operands[1] ) );
+            /*
+             * 'mflo rd'
+             */
+            GenRType( 0, 0x12, _NameRegTrans( ins->result ), ZERO_REG_IDX, ZERO_REG_IDX );
             break;
         case OP_MOD:
-            // TODO: do something if divisor is zero
-            GenRType( opcodes[0], opcodes[1], 0, _NameReg( ins->operands[0] ), _NameReg( ins->operands[1] ) );
-            // 'mfhi rd'
-            GenRType( 0, 0x10, _NameReg( ins->result ), 0, 0 );
+            /*
+             * TODO: do something if divisor is zero
+             */
+            GenRType( opcodes[0], opcodes[1], ZERO_REG_IDX,
+                _NameRegTrans( ins->operands[0] ), _NameRegTrans( ins->operands[1] ) );
+            /*
+             * 'mfhi rd'
+             */
+            GenRType( 0, 0x10, _NameRegTrans( ins->result ), ZERO_REG_IDX, ZERO_REG_IDX );
             break;
         default:
-            GenRType( opcodes[0], opcodes[1], _NameReg( ins->result ), _NameReg( ins->operands[0] ), _NameReg( ins->operands[1] ) );
+            GenRType( opcodes[0], opcodes[1], _NameRegTrans( ins->result ),
+                _NameRegTrans( ins->operands[0] ), _NameRegTrans( ins->operands[1] ) );
             break;
         }
         break;
@@ -903,61 +999,92 @@ static  void Encode( instruction *ins )
         imm_value = ins->operands[1]->c.lo.int_value;
         switch( ins->head.opcode ) {
         case OP_LSHIFT:
-            // 'sll rd,rs,n'
-            GenIShift( 0x00, _NameReg( ins->result ), _NameReg( ins->operands[0] ), imm_value );
+            /*
+             * 'sll rd,rs,n'
+             */
+            GenIShift( 0x00, _NameRegTrans( ins->result ),
+                _NameRegTrans( ins->operands[0] ), imm_value );
             break;
         case OP_RSHIFT:
             if( _IsSigned( ins->type_class ) ) {
-                // 'sra rd,rs,n'
-                GenIShift( 0x03, _NameReg( ins->result ), _NameReg( ins->operands[0] ), imm_value );
+                /*
+                 * 'sra rd,rs,n'
+                 */
+                GenIShift( 0x03, _NameRegTrans( ins->result ),
+                    _NameRegTrans( ins->operands[0] ), imm_value );
             } else {
-                // 'srl rd,rs,n'
-                GenIShift( 0x02, _NameReg( ins->result ), _NameReg( ins->operands[0] ), imm_value );
+                /*
+                 * 'srl rd,rs,n'
+                 */
+                GenIShift( 0x02, _NameRegTrans( ins->result ),
+                    _NameRegTrans( ins->operands[0] ), imm_value );
             }
             break;
         case OP_SUB:
         case OP_EXT_SUB:
-            // Have to flip sign since there's no 'subiu'
+            /*
+             * Have to flip sign since there's no 'subiu'
+             */
             imm_value = -imm_value;
-            // Fall through
+            /*
+             * Fall through
+             */
         default:
             opcode = FindImmedOpcode( ins );
-            GenIType( opcode, _NameReg( ins->result ), _NameReg( ins->operands[0] ), imm_value );
+            GenIType( opcode, _NameRegTrans( ins->result ),
+                _NameRegTrans( ins->operands[0] ), imm_value );
             break;
         }
         break;
     case G_BYTE_CONST:
-        // TODO: this may not be needed on MIPS (since we can easily load 16-bit const)?
+        /*
+         * TODO: this may not be needed on MIPS (since we can easily load 16-bit const)?
+         */
         assert( ins->operands[0]->n.class == N_CONSTANT );
         assert( ins->result->n.class == N_REGISTER );
-        // 'addiu rt,$zero,immed'
-        GenIType( 0x09, _NameReg( ins->result ), MIPS_ZERO_SINK, (uint_8)ins->operands[0]->c.lo.int_value );
+        /*
+         * 'addiu rt,$zero,immed'
+         */
+        GenIType( 0x09, _NameRegTrans( ins->result ), ZERO_REG_IDX,
+            (uint_8)ins->operands[0]->c.lo.int_value );
         break;
     case G_MOVE:
         assert( ins->operands[0]->n.class == N_REGISTER );
         assert( ins->result->n.class == N_REGISTER );
-        // 'or rd,rs,$zero'
-        GenRType( 0x00, 0x25, _NameReg( ins->result ), _NameReg( ins->operands[0] ), MIPS_ZERO_SINK );
+        /*
+         * 'or rd,rs,$zero'
+         */
+        GenRType( 0x00, 0x25, _NameRegTrans( ins->result ),
+            _NameRegTrans( ins->operands[0] ), ZERO_REG_IDX );
         if( TypeClassSize[ins->type_class] == 8 ) {
-            // Move the odd register, too
-            // TODO: there should probably be a separate G_MOVE8?
-            GenRType( 0x00, 0x25, _NameReg( ins->result ) + 1, _NameReg( ins->operands[0] ) + 1, MIPS_ZERO_SINK );
+            /*
+             * Move the odd register, too
+             * TODO: there should probably be a separate G_MOVE8?
+             */
+            GenRType( 0x00, 0x25, _NameRegTrans( ins->result ) + 1,
+                _NameRegTrans( ins->operands[0] ) + 1, ZERO_REG_IDX );
         }
         break;
     case G_LEA_HIGH:
         assert( ins->operands[0]->n.class == N_CONSTANT );
         assert( ins->operands[0]->c.const_type == CONS_HIGH_ADDR );
         assert( ins->result->n.class == N_REGISTER );
-        // 'lui rt,immed'
-        GenIType( 0x0f, _NameReg( ins->result ), MIPS_ZERO_SINK, ins->operands[0]->c.lo.int_value & 0xffff );
+        /*
+         * 'lui rt,immed'
+         */
+        GenIType( 0x0f, _NameRegTrans( ins->result ), ZERO_REG_IDX,
+            ins->operands[0]->c.lo.int_value & 0xffff );
         break;
     case G_LEA:
         assert( ins->operands[0]->n.class == N_CONSTANT );
         assert( ins->result->n.class == N_REGISTER );
         switch( ins->operands[0]->c.const_type ) {
         case CONS_ABSOLUTE:
-            // 'addiu rt,$zero,immed'
-            GenIType( 0x09, _NameReg( ins->result ), MIPS_ZERO_SINK, ins->operands[0]->c.lo.int_value );
+            /*
+             * 'addiu rt,$zero,immed'
+             */
+            GenIType( 0x09, _NameRegTrans( ins->result ), ZERO_REG_IDX,
+                ins->operands[0]->c.lo.int_value );
             break;
         case CONS_LOW_ADDR:
         case CONS_HIGH_ADDR:
@@ -972,9 +1099,11 @@ static  void Encode( instruction *ins )
         case N_INDEXED:
         case N_TEMP:
             assert( ins->result->n.class == N_REGISTER );
-            getMemEncoding( ins->operands[0], &mem_index, &mem_offset );
-            // 'addiu rt,rs,immed'
-            GenIType( 0x09, _NameReg( ins->result ), mem_index, mem_offset );
+            getMemEncoding( ins->operands[0], &reg_mem, &mem_offset );
+            /*
+             * 'addiu rt,rs,immed'
+             */
+            GenIType( 0x09, _NameRegTrans( ins->result ), reg_mem, mem_offset );
             break;
         case N_MEMORY:
             assert( ins->result->n.class == N_REGISTER );
@@ -983,10 +1112,16 @@ static  void Encode( instruction *ins )
                 _Zoiks( ZOIKS_132 );
             }
             if( !encodeThreadDataRef( ins ) ) {
-                // 'lui rt,immed'
-                GenMEMINSRELOC( 0x0f, _NameReg( ins->result ), MIPS_ZERO_SINK, high, symLabel( ins->operands[0] ), OWL_RELOC_HALF_HI );
-                // 'addiu rt,rs,immed'
-                GenMEMINSRELOC( 0x09, _NameReg( ins->result ), _NameReg( ins->result ), low, symLabel( ins->operands[0] ), OWL_RELOC_HALF_LO );
+                /*
+                 * 'lui rt,immed'
+                 */
+                GenMEMINSRELOC( 0x0f, _NameRegTrans( ins->result ), ZERO_REG_IDX,
+                    high, symLabel( ins->operands[0] ), OWL_RELOC_HALF_HI );
+                /*
+                 * 'addiu rt,rs,immed'
+                 */
+                GenMEMINSRELOC( 0x09, _NameRegTrans( ins->result ), _NameRegTrans( ins->result ),
+                    low, symLabel( ins->operands[0] ), OWL_RELOC_HALF_LO );
             }
             break;
         default:
@@ -994,9 +1129,12 @@ static  void Encode( instruction *ins )
         }
         break;
     case G_MOVE_UI:
-        // a load of an unsigned 16-bit immediate
-        // 'ori rt,rs,immed'
-        GenIType( 0x0d, _NameReg( ins->result ), MIPS_ZERO_SINK, ins->operands[0]->c.lo.int_value );
+        /*
+         * a load of an unsigned 16-bit immediate
+         * 'ori rt,rs,immed'
+         */
+        GenIType( 0x0d, _NameRegTrans( ins->result ), ZERO_REG_IDX,
+            ins->operands[0]->c.lo.int_value );
         break;
     case G_LOAD_UA:
         doLoadStoreUnaligned( ins, true );
@@ -1028,8 +1166,8 @@ static  void Encode( instruction *ins )
         _Zoiks( ZOIKS_028 );
         break;
     }
-#ifndef NDEBUG
-    if( _IsTargetModel( ASM_OUTPUT ) ) {
+#ifdef DEVBUILD
+    if( _IsTargetModel( CGSW_RISC_ASM_OUTPUT ) ) {
         DumpLiteral( "        " );
         DumpGen( ins->u.gen_table );
         DumpLiteral( " - " );
@@ -1051,7 +1189,7 @@ void GenObjCode( instruction *ins )
 void GenLabelReturn( void )
 /*************************/
 {
-    GenRET();
+    GenReturn();
 }
 
 

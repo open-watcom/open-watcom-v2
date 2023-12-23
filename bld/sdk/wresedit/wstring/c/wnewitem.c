@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,7 +39,6 @@
 #include "wstrdup.h"
 #include "wnewitem.h"
 #include "sysall.rh"
-#include "widn2str.h"
 
 
 /****************************************************************************/
@@ -255,7 +254,7 @@ bool WAddEditWinLBoxEntry( WStringEditInfo *einfo, WStringBlock *block, uint_16 
     }
 
     if( ok ) {
-        text = WResIDNameToStr( block->block.String[string_id & 0xf] );
+        text = WRStringFromWResIDName( block->block.String[string_id & 0xf] );
         ok = (text != NULL);
     }
 

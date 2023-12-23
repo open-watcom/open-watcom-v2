@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,12 +42,15 @@
 #include "massert.h"
 
 
+#ifdef DEVELOPMENT
+#define STATIC
+#else
+#define STATIC static
+#endif
+
 #if defined( __WATCOMC__ ) && !defined( __UNIX__ )
 #define USE_DIR_CACHE
 #endif
-
-#define CASESENSITIVE       true    /* Is Name case sensitive                   */
-#define NOCASESENSITIVE     false   /* Is not Name case sensitive               */
 
 #define LINECONT_C          '&'     /* line continuation                        */
 #define UNIX_LINECONT_C     '\\'    /* UNIX line continuation                   */
@@ -104,6 +107,9 @@ struct Glob {
     boolbit     auto_depends    : 1;    /* force autodepends info to be used             */
     boolbit     show_offenders  : 1;    /* display the out-of-date file                  */
 
+#ifdef __DOS__
+    boolbit     redir_err       : 1;    /* DOS redirect stderr output to stdout          */
+#endif
 #ifdef CACHE_STATS
     boolbit     cachestat       : 1;    /* cache status report                           */
 #endif
@@ -112,11 +118,11 @@ struct Glob {
 #endif
 };
 
-#ifdef DEVELOPMENT
-#define STATIC
-#else
-#define STATIC static
-#endif
+typedef enum {
+    NOCASESENSITIVE,    /* always non case sensitive */
+    CASESENSITIVE,      /* always case sensitive */
+    FILENAMESENSITIVE   /* depend on host file name case sensitivity */
+} case_sensitivity;
 
 extern struct Glob      Glob;
 extern const char FAR   BuiltIns[];

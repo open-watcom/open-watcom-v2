@@ -207,6 +207,5 @@ extern int      WalkExprTree( TREEPTR,
                     void (*prefix_operator)(TREEPTR),
                     void (*infix_operator)(TREEPTR),
                     void (*postfix_operator)(TREEPTR) );
-extern void     CastFloatValue(TREEPTR,DATA_TYPE);
 extern void     CastConstValue(TREEPTR,DATA_TYPE);
 extern void     MakeBinaryFloat(TREEPTR);

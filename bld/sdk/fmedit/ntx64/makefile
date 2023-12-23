@@ -3,6 +3,6 @@
 host_os  = nt
 host_cpu = x64
 
-fmedit_release = 0
+fmedit_debug = 1
 
 !include ../master.mif

@@ -135,7 +135,7 @@ static pfun __old_int_ctrl_break = 0;
 static pfun __old_pm_int23 = 0;
 static pfun __old_pm_int_ctrl_break = 0;
 #define MY_STACK_SIZE 256
-static unsigned int my_stack[256];
+static unsigned int my_stack[MY_STACK_SIZE];
 
 #endif
 
@@ -147,7 +147,7 @@ static void _WCINTERRUPT _WCFAR __int23_handler( void )
 
     save_stack = set_stack( &(my_stack[MY_STACK_SIZE-1]) );
     save_stacklow = _STACKLOW;
-    _STACKLOW = (unsigned)&my_stack;
+    _STACKLOW = (unsigned)my_stack;
 #endif
     if(( _RWD_child == 0 )
       && ( __int23_exit != __null_int23_exit )
@@ -177,7 +177,7 @@ static void _WCINTERRUPT _WCFAR __int_ctrl_break_handler( void )
 
     save_stack = set_stack( &(my_stack[(sizeof(my_stack)-sizeof(my_stack[0]))]) );
     save_stacklow = _STACKLOW;
-    _STACKLOW = (unsigned)&my_stack;
+    _STACKLOW = (unsigned)my_stack;
 #endif
     if(( _RWD_child == 0 )
      && ( __int23_exit != __null_int23_exit )
@@ -238,18 +238,18 @@ void __restore_int_ctrl_break( void )
         __int23_exit = __null_int23_exit;
     }
 #if defined(__WINDOWS_386__)
-    TinySetVect( __ctrl_break_int, __old_int_ctrl_break );
+    TinySetVect( CTRL_BREAK_INT, __old_int_ctrl_break );
 #elif defined( _M_I86 )
-    _dos_setvect( __ctrl_break_int, __old_int_ctrl_break );
+    _dos_setvect( CTRL_BREAK_INT, __old_int_ctrl_break );
 #else
     if( _IsPharLap() ) {
-        pharlap_rm_setvect( __ctrl_break_int, __old_int_ctrl_break );
-        pharlap_pm_setvect( __ctrl_break_int, __old_pm_int_ctrl_break );
+        pharlap_rm_setvect( CTRL_BREAK_INT, __old_int_ctrl_break );
+        pharlap_pm_setvect( CTRL_BREAK_INT, __old_pm_int_ctrl_break );
     } else if( __DPMI_hosted() == 1 ) {
-        DPMISetRealModeInterruptVector( __ctrl_break_int, __old_int_ctrl_break );
-        DPMISetPMInterruptVector( __ctrl_break_int, __old_pm_int_ctrl_break );
+        DPMISetRealModeInterruptVector( CTRL_BREAK_INT, __old_int_ctrl_break );
+        DPMISetPMInterruptVector( CTRL_BREAK_INT, __old_pm_int_ctrl_break );
     } else {
-        _dos_setvect( __ctrl_break_int, __old_int_ctrl_break );
+        _dos_setvect( CTRL_BREAK_INT, __old_int_ctrl_break );
     }
 #endif
     __old_int_ctrl_break = 0;
@@ -298,25 +298,25 @@ void __grab_int_ctrl_break( void )
 {
     if( __old_int_ctrl_break == 0 ) {
 #if defined(__WINDOWS_386__)
-        __old_int_ctrl_break = _dos_getvect( __ctrl_break_int );
-        TinySetVect( __ctrl_break_int, (void (_WCNEAR *)(void))__int_ctrl_break_handler );
+        __old_int_ctrl_break = _dos_getvect( CTRL_BREAK_INT );
+        TinySetVect( CTRL_BREAK_INT, (void (_WCNEAR *)(void))__int_ctrl_break_handler );
 #elif defined( _M_I86 )
-        __old_int_ctrl_break = _dos_getvect( __ctrl_break_int );
-        _dos_setvect( __ctrl_break_int, __int_ctrl_break_handler );
+        __old_int_ctrl_break = _dos_getvect( CTRL_BREAK_INT );
+        _dos_setvect( CTRL_BREAK_INT, __int_ctrl_break_handler );
 #else
         if( _IsPharLap() ) {
-            __old_int_ctrl_break = pharlap_rm_getvect( __ctrl_break_int );
-            __old_pm_int_ctrl_break = pharlap_pm_getvect( __ctrl_break_int );
-            pharlap_setvect( __ctrl_break_int, __int_ctrl_break_handler );
+            __old_int_ctrl_break = pharlap_rm_getvect( CTRL_BREAK_INT );
+            __old_pm_int_ctrl_break = pharlap_pm_getvect( CTRL_BREAK_INT );
+            pharlap_setvect( CTRL_BREAK_INT, __int_ctrl_break_handler );
         } else if( __DPMI_hosted() == 1 ) {
             DPMILockLinearRegion((long)__int_ctrl_break_handler,
                 ((long)__restore_int23 - (long)__int_ctrl_break_handler));
-            __old_int_ctrl_break = DPMIGetRealModeInterruptVector( __ctrl_break_int );
-            __old_pm_int_ctrl_break = DPMIGetPMInterruptVector( __ctrl_break_int );
-            DPMISetPMInterruptVector( __ctrl_break_int, __int_ctrl_break_handler );
+            __old_int_ctrl_break = DPMIGetRealModeInterruptVector( CTRL_BREAK_INT );
+            __old_pm_int_ctrl_break = DPMIGetPMInterruptVector( CTRL_BREAK_INT );
+            DPMISetPMInterruptVector( CTRL_BREAK_INT, __int_ctrl_break_handler );
         } else {        /* what it used to do */
-            __old_int_ctrl_break = _dos_getvect( __ctrl_break_int );
-            _dos_setvect( __ctrl_break_int, __int_ctrl_break_handler );
+            __old_int_ctrl_break = _dos_getvect( CTRL_BREAK_INT );
+            _dos_setvect( CTRL_BREAK_INT, __int_ctrl_break_handler );
         }
 #endif
         if( __int23_exit == __null_int23_exit ) {

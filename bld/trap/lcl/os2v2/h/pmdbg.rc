@@ -1,3 +1,5 @@
+/* UTF-8 encoding, ¥ */
+
 #include <os2.h>
 #include "pmdbg.rh"
 

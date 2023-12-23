@@ -80,7 +80,7 @@ typedef enum {
     TY_BOOLEAN,         /*  Resultant type for O_FLOW, comparison ops */
 
     TY_PROC_PARM,       /*  For Pascal procedural parameters */
-    TY_VA_LIST,         /*  For RISC-based O_VA_START support */
+    TY_VA_LIST,         /*  For RISC-based OP_VA_START support */
 
     TY_FIRST_FREE,      /*  First user definable type */
 

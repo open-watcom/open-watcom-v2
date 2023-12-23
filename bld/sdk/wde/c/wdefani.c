@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -125,7 +126,7 @@ OBJPTR WdeMakeAniC( OBJPTR parent, RECT *obj_rect, OBJPTR handle, DialogStyle st
     style |= WS_BORDER | WS_VISIBLE | WS_TABSTOP | WS_CHILD;
 
     SETCTL_STYLE( WdeDefaultAniC, style );
-    SETCTL_TEXT( WdeDefaultAniC, ResStrToNameOrOrd( text ) );
+    SETCTL_TEXT( WdeDefaultAniC, ResStrToNameOrOrdinal( text ) );
     SETCTL_ID( WdeDefaultAniC, WdeGetNextControlID() );
 
     WdeChangeSizeToDefIfSmallRect( parent, id, obj_rect );
@@ -262,8 +263,7 @@ void WdeAniCFini( void )
 
 bool WdeAniCDestroy( WdeAniCObject *obj, bool *flag, bool *p2 )
 {
-    /* touch unused vars to get rid of warning */
-    _wde_touch( p2 );
+    /* unused parameters */ (void)p2;
 
     if( !Forward( obj->control, DESTROY, flag, NULL ) ) {
         WdeWriteTrail( "WdeAniCDestroy: Control DESTROY failed" );
@@ -279,8 +279,7 @@ bool WdeAniCValidateAction( WdeAniCObject *obj, ACTION_ID *act, void *p2 )
 {
     int     i;
 
-    /* touch unused vars to get rid of warning */
-    _wde_touch( p2 );
+    /* unused parameters */ (void)p2;
 
     for( i = 0; i < MAX_ACTIONS; i++ ) {
         if( WdeAniCActions[i].id == *act ) {
@@ -325,8 +324,7 @@ bool WdeAniCCopyObject( WdeAniCObject *obj, WdeAniCObject **new, OBJPTR handle )
 
 bool WdeAniCIdentify( WdeAniCObject *obj, OBJ_ID *id, void *p2 )
 {
-    /* touch unused vars to get rid of warning */
-    _wde_touch( p2 );
+    /* unused parameters */ (void)p2;
 
     *id = obj->object_id;
 
@@ -335,9 +333,7 @@ bool WdeAniCIdentify( WdeAniCObject *obj, OBJ_ID *id, void *p2 )
 
 bool WdeAniCGetWndProc( WdeAniCObject *obj, WNDPROC *proc, void *p2 )
 {
-    /* touch unused vars to get rid of warning */
-    _wde_touch( obj );
-    _wde_touch( p2 );
+    /* unused parameters */ (void)obj; (void)p2;
 
     *proc = WdeAniCSuperClassProc;
 
@@ -346,9 +342,7 @@ bool WdeAniCGetWndProc( WdeAniCObject *obj, WNDPROC *proc, void *p2 )
 
 bool WdeAniCGetWindowClass( WdeAniCObject *obj, char **class, void *p2 )
 {
-    /* touch unused vars to get rid of warning */
-    _wde_touch( obj );
-    _wde_touch( p2 );
+    /* unused parameters */ (void)obj; (void)p2;
 
     *class = WANIMATE_CLASS;
 
@@ -359,9 +353,7 @@ bool WdeAniCDefine( WdeAniCObject *obj, POINT *pnt, void *p2 )
 {
     WdeDefineObjectInfo  o_info;
 
-    /* touch unused vars to get rid of warning */
-    _wde_touch( pnt );
-    _wde_touch( p2 );
+    /* unused parameters */ (void)pnt; (void)p2;
 
     o_info.obj = obj->object_handle;
     o_info.obj_id = obj->object_id;
@@ -394,8 +386,9 @@ void WdeAniCSetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
     // set the extended style controls only
     WdeEXSetDefineInfo( o_info, hDlg );
 #else
-    _wde_touch( o_info );
-    _wde_touch( hDlg );
+
+    /* unused parameters */ (void)o_info; (void)hDlg;
+
 #endif
 }
 
@@ -420,19 +413,15 @@ void WdeAniCGetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
     // get the extended control settings
     WdeEXGetDefineInfo( o_info, hDlg );
 #else
-    _wde_touch( o_info );
-    _wde_touch( hDlg );
+
+    /* unused parameters */ (void)o_info; (void)hDlg;
+
 #endif
 }
 
 bool WdeAniCDefineHook( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam, DialogStyle mask )
 {
-    /* touch unused vars to get rid of warning */
-    _wde_touch( hDlg );
-    _wde_touch( message );
-    _wde_touch( wParam );
-    _wde_touch( lParam );
-    _wde_touch( mask );
+    /* unused parameters */ (void)hDlg; (void)message; (void)wParam; (void)lParam; (void)mask;
 
     return( false );
 }

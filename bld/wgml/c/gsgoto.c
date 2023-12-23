@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2013 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2022 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -197,7 +197,7 @@ void    scr_label( void )
             } else {
                 wng_count++;
                 g_warn( wng_label_num );
-                ultoa( input_cbs->s.f->lineno, linestr, 10 );
+                sprintf( linestr, "%lu", (unsigned long)input_cbs->s.f->lineno );
                 g_info( inf_file_line, linestr, input_cbs->s.f->filename );
                 show_include_stack();
             }
@@ -220,7 +220,7 @@ void    scr_label( void )
                 if( len >  MAC_NAME_LENGTH ) {
                     err_count++;
                     g_err( err_sym_long, token_buf );
-                    ultoa( input_cbs->s.f->lineno, linestr, 10 );
+                    sprintf( linestr, "%lu", (unsigned long)input_cbs->s.f->lineno );
                     g_info( inf_file_line, linestr, input_cbs->s.f->filename );
                     show_include_stack();
                     token_buf[MAC_NAME_LENGTH] = '\0';
@@ -236,7 +236,7 @@ void    scr_label( void )
                             scan_err = true;
                             err_count++;
                             g_err( err_label_dup, token_buf );
-                            ultoa( input_cbs->s.m->lineno, linestr, 10 );
+                            sprintf( linestr, "%lu", (unsigned long)input_cbs->s.m->lineno );
                             g_info( inf_mac_line, linestr,
                                      input_cbs->s.m->mac->name );
                             show_include_stack();
@@ -259,7 +259,7 @@ void    scr_label( void )
                             scan_err = true;
                             err_count++;
                             g_err( err_label_dup, token_buf );
-                            ultoa( input_cbs->s.f->lineno, linestr, 10 );
+                            sprintf( linestr, "%lu", (unsigned long)input_cbs->s.f->lineno );
                             g_info( inf_file_line, linestr, input_cbs->s.f->filename );
                             show_include_stack();
                             return;

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,12 +35,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <limits.h>
-#include "wio.h"
 #include "common.h"
 #include "dip.h"
 #include "dipimp.h"
-#include "dipcli.h"
-#include "diptypes.h"
 #include "aui.h"
 #include "sampinfo.h"
 #include "msg.h"
@@ -49,9 +46,6 @@
 #include "utils.h"
 #include "wpdata.h"
 #include "memutil.h"
-
-#define MD_x86
-#define MD_axp
 #include "madcli.h"
 #include "mad.h"
 #include "madregs.h"
@@ -77,25 +71,25 @@ void DIGCLIENTRY( Free )( void *p )
     ProfFree( p );
 }
 
-FILE * DIGCLIENTRY( Open )( const char *name, dig_open mode )
-/***********************************************************/
+FILE * DIGCLIENTRY( Open )( const char *name, dig_open dig_mode )
+/***************************************************************/
 {
-    const char  *access;
+    const char  *mode;
 
-    if( mode & DIG_APPEND ) {
-        access = "ab";
-    } else if( mode & (DIG_WRITE | DIG_CREATE) ) {
-        access = "wb";
+    if( dig_mode & DIG_OPEN_APPEND ) {
+        mode = "ab";
+    } else if( dig_mode & (DIG_OPEN_WRITE | DIG_OPEN_CREATE) ) {
+        mode = "wb";
     } else {
-        access = "rb";
+        mode = "rb";
     }
-    return( fopen( name, access ) );
+    return( fopen( name, mode ) );
 }
 
-int DIGCLIENTRY( Seek )( FILE *fp, unsigned long p, dig_seek k )
-/**************************************************************/
+int DIGCLIENTRY( Seek )( FILE *fp, unsigned long p, dig_seek where )
+/******************************************************************/
 {
-    return( fseek( fp, p, k ) );
+    return( fseek( fp, p, where ) );
 }
 
 unsigned long DIGCLIENTRY( Tell )( FILE *fp )
@@ -122,35 +116,10 @@ void DIGCLIENTRY( Close )( FILE *fp )
     fclose( fp );
 }
 
-void DIGCLIENTRY( Remove )( const char *name, dig_open mode )
-/***********************************************************/
+void DIGCLIENTRY( Remove )( const char *name, dig_open dig_mode )
+/***************************************************************/
 {
-    /* unused parameters */ (void)mode;
+    /* unused parameters */ (void)dig_mode;
 
     remove( name );
-}
-
-unsigned DIGCLIENTRY( MachineData )( address addr, unsigned info_type,
-                        dig_elen in_size,  const void *in,
-                        dig_elen out_size, void *out )
-/********************************************************************/
-{
-    enum x86_addr_characteristics       *d;
-
-    /* unused parameters */ (void)info_type; (void)in_size; (void)in; (void)out_size;
-
-    switch( CurrSIOData->config.arch ) {
-    case DIG_ARCH_X86:
-        d = out;
-        *d = 0;
-        if( IsX86BigAddr( addr ) ) {
-            *d |= X86AC_BIG;
-        }
-        if( IsX86RealAddr( addr ) ) {
-            *d |= X86AC_REAL;
-        }
-        return( sizeof( *d ) );
-    /* add other machines here */
-    }
-    return( 0 );
 }

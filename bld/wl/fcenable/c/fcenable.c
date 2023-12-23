@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,6 +35,7 @@
 #include <string.h>
 #include <ctype.h>
 #include <setjmp.h>
+#include <errno.h>
 #if defined( __WATCOMC__ ) || !defined( __UNIX__ )
     #include <process.h>
 #endif
@@ -552,8 +553,8 @@ int main(int argc, char **argv )
 
     MemInit();
 #if defined( _BETAVER )
-    printf( banner1w1( "Far Call Optimization Enabling Utility" ) );
-    printf( banner1w2( _FCENABLE_VERSION_ ) );
+    printf( banner1t( "Far Call Optimization Enabling Utility" ) );
+    printf( banner1v( _FCENABLE_VERSION_ ) );
 #else
     printf( banner1w( "Far Call Optimization Enabling Utility", _FCENABLE_VERSION_ ) );
 #endif

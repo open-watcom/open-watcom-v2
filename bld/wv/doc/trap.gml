@@ -87,7 +87,7 @@ They are defined as follows:
 2 byte unsigned quantity
 .note unsigned_32
 4 byte unsigned quantity
-.note access_req
+.note trap_req
 The first field of every request is of this type.
 It is a 1 byte field which identifies the request to be performed.
 .note addr48_ptr
@@ -319,7 +319,7 @@ bytes described by the
 array).
 .np
 Since every request must start with an
-.id access_req
+.id trap_req
 field, the minimum size of a request message is one byte.
 .np
 Some requests do not require a return message.
@@ -344,7 +344,7 @@ mx_entry        in[1];
 mx_entry        out[1];
 unsigned char   buffer[30];
 struct in_msg_def {
-    access_req          req;
+    trap_req            req;
     addr48_ptr          addr;
     unsigned_16         len;
 } in_msg = { REQ_READ_MEM, { 0x8000, 0x0010 }, sizeof( buffer ) };
@@ -427,7 +427,7 @@ This must be the first request made.
 .np
 Request message:
 .millust begin
-access_req      req
+trap_req        req
 unsigned_8      major;   <-+- struct trap_version
 unsigned_8      minor;     |
 unsigned_8      remote;  <-+
@@ -488,7 +488,7 @@ After this request, a REQ_CONNECT must be the next one made.
 .np
 Request message:
 .millust begin
-access_req      req
+trap_req        req
 .millust end
 .pp
 The
@@ -514,7 +514,7 @@ missing files to the remote machine before continuing the debugging process.
 .np
 Request message:
 .millust begin
-access_req      req
+trap_req        req
 .millust end
 .pp
 The
@@ -534,7 +534,7 @@ The debugger issues this request when the spawned sub-shell exits.
 .np
 Request message:
 .millust begin
-access_req      req
+trap_req        req
 .millust end
 .pp
 The
@@ -553,7 +553,7 @@ Request to obtain a supplementary service id.
 .np
 Request message:
 .millust begin
-access_req  req
+trap_req    req
 ------------------------
 string      service_name
 .millust end
@@ -597,7 +597,7 @@ Request to perform a supplementary service.
 .np
 Request message:
 .millust begin
-access_req  req
+trap_req    req
 unsigned_32 service_id
 ------------------------
 unspecified
@@ -627,7 +627,7 @@ Request to get system information from the remote machine.
 .np
 Request message:
 .millust begin
-access_req      req
+trap_req        req
 .millust end
 .pp
 The
@@ -642,29 +642,29 @@ unsigned_8  osmajor;
 unsigned_8  osminor;
 unsigned_8  os;
 unsigned_8  huge_shift;
-mad_handle  mad;
+unsigned_8  arch;
 .millust end
 .pp
 The
-.id mad
-field specifies the MAD (Machine Architecture Description) in use and
+.id arch
+field specifies the architecture in use and
 determines how the other fields will be interpreted.
-Currently the following MADs are used:
+Currently the following architectures are used:
 .millust begin
-MAD_X86  - Intel Architecture IA-32 compatible
-MAD_X64  - Intel Architecture X64 compatible
-MAD_AXP  - Alpha Architecture
-MAD_PPC  - PowerPC Architecture
-MAD_MIPS - MIPS Architecture
-MAD_MSJ  - Java Virtual Machine (Microsoft)
-MAD_JVM  - Java Virtual Machine (Sun)
+DIG_ARCH_X86  - Intel Architecture IA-32 compatible
+DIG_ARCH_X64  - Intel Architecture X64 compatible
+DIG_ARCH_AXP  - Alpha Architecture
+DIG_ARCH_PPC  - PowerPC Architecture
+DIG_ARCH_MIPS - MIPS Architecture
+DIG_ARCH_MSJ  - Java Virtual Machine (Microsoft)
+DIG_ARCH_JVM  - Java Virtual Machine (Sun)
 .millust end
 .pp
 The
 .id cpu
 fields returns the type of the remote CPU.
 The size of that field is unsigned_8.
-Possible CPU types for MAD_X86 are:
+Possible CPU types for DIG_ARCH_X86 are:
 .millust begin
 bits 0-3
    X86_86  = 0   - 8086
@@ -685,17 +685,17 @@ The
 .id fpu
 fields tells the type of FPU.
 The size of the field is unsigned_8.
-FPU types for MAD_X86 include:
+FPU types for DIG_ARCH_X86 include:
 .millust begin
-X86_EMU = -1     - Software emulated FPU
-X86_NO  =  0     - No FPU
-X86_87  =  1     - 8087
-X86_287 =  2     - 80287
-X86_387 =  3     - 80387
-X86_487 =  4     - 486 integrated FPU
-X86_587 =  5     - Pentium integrated FPU
-X86_587 =  6     - Pentium Pro/II/III integrated FPU
-X86_P47 =  15    - Pentium 4 integrated FPU
+X86_NOFPU =  0   - No FPU
+X86_87    =  1   - 8087
+X86_287   =  2   - 80287
+X86_387   =  3   - 80387
+X86_487   =  4   - 486 integrated FPU
+X86_587   =  5   - Pentium integrated FPU
+X86_687   =  6   - Pentium Pro/II/III integrated FPU
+X86_P47   =  15  - Pentium 4 integrated FPU
+X86_EMU   = 255  - Software emulated FPU
 .millust end
 .pp
 The
@@ -710,22 +710,22 @@ field.
 The size of this field is unsigned_8.
 The OS can be:
 .millust begin
-OS_IDUNNO    =  0   - Unknown operating system
-OS_DOS       =  1   - DOS
-OS_OS2       =  2   - OS/2
-OS_PHAR      =  3   - Phar Lap 386 DOS Extender
-OS_ECLIPSE   =  4   - Eclipse 386 DOS Extender (obsolete)
-OS_NW386     =  5   - NetWare 386
-OS_QNX       =  6   - QNX 4.x
-OS_RATIONAL  =  7   - DOS/4G or compatible
-OS_WINDOWS   =  8   - Windows 3.x
-OS_PENPOINT  =  9   - PenPoint (obsolete)
-OS_NT        = 10   - Win32
-OS_AUTOCAD   = 11   - ADS/ADI development (obsolete)
-OS_NEUTRINO  = 12   - QNX 6.x
-OS_LINUX     = 13   - Linux
-OS_FREEBSD   = 14   - FreeBSD
-OS_WIN64     = 15   - Windows 64-bit
+DIG_OS_IDUNNO    =  0   - Unknown operating system
+DIG_OS_DOS       =  1   - DOS
+DIG_OS_OS2       =  2   - OS/2
+DIG_OS_PHAR      =  3   - Phar Lap 386 DOS Extender
+DIG_OS_ECLIPSE   =  4   - Eclipse 386 DOS Extender (obsolete)
+DIG_OS_NW386     =  5   - NetWare 386
+DIG_OS_QNX       =  6   - QNX 4.x
+DIG_OS_RATIONAL  =  7   - DOS/4G or compatible
+DIG_OS_WINDOWS   =  8   - Windows 3.x
+DIG_OS_PENPOINT  =  9   - PenPoint (obsolete)
+DIG_OS_NT        = 10   - Win32
+DIG_OS_AUTOCAD   = 11   - ADS/ADI development (obsolete)
+DIG_OS_NEUTRINO  = 12   - QNX 6.x
+DIG_OS_LINUX     = 13   - Linux
+DIG_OS_FREEBSD   = 14   - FreeBSD
+DIG_OS_WIN64     = 15   - Windows 64-bit
 .millust end
 .pp
 The
@@ -749,7 +749,7 @@ update its addresses.
 .np
 Request message:
 .millust begin
-access_req      req;
+trap_req        req;
 addr48_ptr      in_addr;
 trap_mhandle    mod_handle;
 .millust end
@@ -816,7 +816,7 @@ The debugger does not care how the checksum is calculated.
 .np
 Request message:
 .millust begin
-access_req      req;
+trap_req        req;
 addr48_ptr      in_addr;
 unsigned_16     len;
 .millust end
@@ -846,7 +846,7 @@ Request to read a block of memory.
 .np
 Request message:
 .millust begin
-access_req      req;
+trap_req        req;
 addr48_ptr      mem_addr;
 unsigned_16     len;
 .millust end
@@ -878,7 +878,7 @@ Request to write a block of memory.
 .np
 Request message:
 .millust begin
-access_req      req
+trap_req        req
 addr48_ptr      mem_addr
 ------------------------
 bytes           data
@@ -911,7 +911,7 @@ Request to read data from I/O address space of the debuggee.
 .np
 Request message:
 .millust begin
-access_req      req
+trap_req        req
 unsigned_32     IO_offset
 unsigned_8      len
 .millust end
@@ -946,7 +946,7 @@ Request to write data to the I/O address space of the debuggee.
 .np
 Request message:
 .millust begin
-access_req      req
+trap_req        req
 unsigned_32     IO_offset
 -------------------------
 bytes           data
@@ -990,7 +990,7 @@ instruction when there are active watchpoints present.
 .np
 Request message:
 .millust begin
-access_req      req
+trap_req        req
 .millust end
 .pp
 The request is in
@@ -1044,7 +1044,7 @@ Request to load a program.
 .np
 Request message:
 .millust begin
-access_req      req
+trap_req        req
 unsigned_8      true_argv
 -------------------------
 bytes           argv
@@ -1103,7 +1103,7 @@ Request to kill the program.
 .np
 Request message:
 .millust begin
-access_req      req
+trap_req        req
 trap_phandle    task_id
 .millust end
 .pp
@@ -1130,7 +1130,7 @@ Request to set a watchpoint at the address given.
 .np
 Request message:
 .millust begin
-access_req      req
+trap_req        req
 addr48_ptr      watch_addr
 unsigned_8      size
 .millust end
@@ -1140,7 +1140,7 @@ The address of the watchpoint is given by the
 field.
 The
 .id size
-field gives the number of bytes to be watched.
+field gives the number of bytes to be watched (1, 2, 4 or 8 bytes).
 .np
 Return message:
 .millust begin
@@ -1164,7 +1164,7 @@ The trap file may assume all watch points are cleared at once.
 .np
 Request message:
 .millust begin
-access_req      req
+trap_req        req
 addr48_ptr      watch_addr
 unsigned_8      size
 .millust end
@@ -1174,7 +1174,7 @@ The address of the watch point is given by the
 field.
 The
 .id size
-field gives the size of the watch point.
+field gives the size of the watch point (1, 2, 4 or 8 bytes).
 .np
 Return message:
 .millust begin
@@ -1188,7 +1188,7 @@ Request to set a breakpoint at the address given.
 .np
 Request message:
 .millust begin
-access_req      req
+trap_req        req
 addr48_ptr      break_addr
 .millust end
 .pp
@@ -1215,7 +1215,7 @@ The trap file may assume all breakpoints are cleared at once.
 .np
 Request message:
 .millust begin
-access_req      req
+trap_req        req
 addr48_ptr      break_addr
 unsigned_32     old
 .millust end
@@ -1243,7 +1243,7 @@ Which selectors do this is important to the debugger in certain cases
 .np
 Request message:
 .millust begin
-access_req      req
+trap_req        req
 unsigned_16     seg
 .millust end
 .pp
@@ -1274,7 +1274,7 @@ Request to make the debuggee's screen visible.
 .np
 Request message:
 .millust begin
-access_req      req
+trap_req        req
 .millust end
 .np
 Return message:
@@ -1289,7 +1289,7 @@ Request to make the debugger's screen visible.
 .np
 Request message:
 .millust begin
-access_req      req
+trap_req        req
 .millust end
 .np
 Return message:
@@ -1304,7 +1304,7 @@ Request to read the remote keyboard input.
 .np
 Request message:
 .millust begin
-access_req      req
+trap_req        req
 unsigned_16     wait
 .millust end
 .pp
@@ -1330,7 +1330,7 @@ Request to get the name of a newly loaded library (DLL).
 .np
 Request message:
 .millust begin
-access_req      req
+trap_req        req
 trap_mhandle    mod_handle
 .millust end
 .pp
@@ -1370,7 +1370,7 @@ Request to get the error message text for an error code.
 .np
 Request message:
 .millust begin
-access_req      req
+trap_req        req
 trap_error      err
 .millust end
 .pp
@@ -1401,7 +1401,7 @@ to display to the user.
 .np
 Request message:
 .millust begin
-access_req      req
+trap_req        req
 .millust end
 .np
 Return message:
@@ -1445,7 +1445,7 @@ standard output (REQ_REDIRECT_STDOUT) of the debuggee.
 .np
 Request message:
 .millust begin
-access_req      req
+trap_req        req
 ------------------------
 string          name
 .millust end
@@ -1472,7 +1472,7 @@ parameters.
 .np
 Request message:
 .millust begin
-access_req      req
+trap_req        req
 ------------------------
 string          cmd
 .millust end
@@ -1504,7 +1504,7 @@ the MAD file.
 .np
 Request message:
 .millust begin
-access_req      req
+trap_req        req
 .millust end
 .pp
 .np
@@ -1528,7 +1528,7 @@ The data is target architecture specific.
 .np
 Request message:
 .millust begin
-access_req      req
+trap_req        req
 -------------------
 unspecified
 .millust end
@@ -1550,7 +1550,7 @@ Request to retrieve machine specific data.
 .np
 Request message:
 .millust begin
-access_req      req;
+trap_req        req;
 unsigned_8      info_type;
 addr48_ptr      addr;
 -----------------------------
@@ -1609,7 +1609,7 @@ Request to retreive characteristics of the remote file system.
 .np
 Request message:
 .millust begin
-access_req      req
+trap_req        req
 .millust end
 .np
 Return message:
@@ -1641,7 +1641,7 @@ Request to create/open a file.
 .np
 Request message:
 .millust begin
-access_req          req
+trap_req            req
 unsigned_8          mode
 ------------------------
 string              name
@@ -1655,25 +1655,25 @@ The
 field stores the access mode of the file.
 The following bits are defined:
 .millust begin
-Bit 0      :  TF_READ
-Bit 1      :  TF_WRITE
-Bit 2      :  TF_CREATE
-Bit 3      :  TF_EXEC
-Bit 4      :  not used
-Bit 5      :  not used
-Bit 6      :  not used
-Bit 7      :  not used
+Bit 0      :  DIG_OPEN_READ
+Bit 1      :  DIG_OPEN_WRITE
+Bit 2      :  DIG_OPEN_CREATE
+Bit 3      :  DIG_OPEN_TRUNC
+Bit 4      :  DIG_OPEN_APPEND
+Bit 5      :  reserved
+Bit 6      :  reserved
+Bit 7      :  reserved
 .millust end
 .pp
 For read/write mode, turn both
-.id TF_READ
+.id DIG_OPEN_READ
 and
-.id TF_WRITE
+.id DIG_OPEN_WRITE
 bits on.
 The
-.id TF_EXEC
+.id DIG_OPEN_TRUNC
 bit should only be used together with
-.id TF_CREATE
+.id DIG_OPEN_CREATE
 and indicates that the created file needs executable permission (if relevant
 on the target platform).
 .np
@@ -1697,7 +1697,7 @@ Request to seek to a particular file position.
 .np
 Request message:
 .millust begin
-access_req      req
+trap_req        req
 trap_fhandle    handle
 unsigned_8      mode
 unsigned_32     pos
@@ -1711,9 +1711,9 @@ The
 field stores the seek mode.
 There are three seek modes:
 .millust begin
-TF_SEEK_ORG = 0  - Relative to the start of file
-TF_SEEK_CUR = 1  - Relative to the current file position
-TF_SEEK_END = 2  - Rrelative to the end of file
+DIG_SEEK_ORG = 0  - Relative to the start of file
+DIG_SEEK_CUR = 1  - Relative to the current file position
+DIG_SEEK_END = 2  - Rrelative to the end of file
 .millust end
 .pp
 The position to seek to is in the
@@ -1740,7 +1740,7 @@ Request to read a block of data from a file.
 .np
 Request message:
 .millust begin
-access_req          req
+trap_req            req
 trap_fhandle        handle
 unsigned_16         len
 .millust end
@@ -1782,7 +1782,7 @@ Request to write a block of data to a file.
 .np
 Request message:
 .millust begin
-access_req      req
+trap_req        req
 trap_fhandle    handle
 ------------------------
 bytes           data
@@ -1817,7 +1817,7 @@ Request to write a block of data to the debuggee's screen.
 .np
 Request message:
 .millust begin
-access_req      req
+trap_req        req
 ------------------------
 bytes           data
 .millust end
@@ -1848,7 +1848,7 @@ Request to close a file.
 .np
 Request message:
 .millust begin
-access_req      req
+trap_req        req
 trap_fhandle    handle
 .millust end
 .pp
@@ -1872,7 +1872,7 @@ Request to erase a file.
 .np
 Request message:
 .millust begin
-access_req      req
+trap_req        req
 -------------------------
 string          file_name
 .millust end
@@ -1897,7 +1897,7 @@ Request to convert a file name to its full path name.
 .np
 Request message:
 .millust begin
-access_req      req
+trap_req        req
 unsigned_8      file_type
 -------------------------
 string          file_name
@@ -1908,16 +1908,16 @@ The
 field indicates the type of the input file.
 File types can be:
 .millust begin
-TF_FILE_EXE  =  0
-TF_FILE_DBG  =  1
-TF_FILE_PRS  =  2
-TF_FILE_HLP  =  3
+DIG_FILETYPE_EXE  =  0
+DIG_FILETYPE_DBG  =  1
+DIG_FILETYPE_PRS  =  2
+DIG_FILETYPE_HLP  =  3
 .millust end
 .pp
 This is
 so the trap file can search different paths for the different types of files.
 For example, under QNX, the PATH environment variable is searched for the
-FILE_EXE type, and the WD_PATH environment variable is searched for the others.
+DIG_FILETYPE_EXE type, and the WD_PATH environment variable is searched for the others.
 The
 .id file_name
 field contains the file name to be converted.
@@ -1946,7 +1946,7 @@ Request to run a command on the target (debuggee's) system.
 .np
 Request message:
 .millust begin
-access_req      req
+trap_req        req
 unsigned_16     chk_size
 ------------------------
 string          cmd
@@ -2040,7 +2040,7 @@ contents of the return message.
 .np
 Request message:
 .millust begin
-access_req      req
+trap_req        req
 .millust end
 .pp
 The
@@ -2068,7 +2068,7 @@ the contents of the return message.
 .np
 Request message:
 .millust begin
-access_req      req
+trap_req        req
 unsigned_16     sect_id
 .millust end
 The
@@ -2104,7 +2104,7 @@ trap file request.
 .np
 Request message:
 .millust begin
-access_req      req
+trap_req        req
 .millust end
 .np
 Return message:
@@ -2126,7 +2126,7 @@ the contents of the return message.
 .np
 Request message:
 .millust begin
-access_req      req
+trap_req        req
 --------------------
 bytes           data
 .millust end
@@ -2150,7 +2150,7 @@ the contents of the messages.
 .np
 Request message:
 .millust begin
-access_req      req
+trap_req        req
 ovl_address     ovl_addr
 .millust end
 .pp
@@ -2185,7 +2185,7 @@ the contents of the messages.
 .np
 Request message:
 .millust begin
-access_req      req
+trap_req        req
 ovl_address     ovl_addr
 .millust end
 .np
@@ -2214,7 +2214,7 @@ the contents of the messages.
 .np
 Request message:
 .millust begin
-access_req      req
+trap_req        req
 ovl_address     ovl_addr
 .millust end
 .pp
@@ -2267,7 +2267,7 @@ Request to get next thread.
 .np
 Request message:
 .millust begin
-access_req      req
+trap_req        req
 trap_thandle    thread
 .millust end
 .pp
@@ -2303,7 +2303,7 @@ Request to set a given thread ID to be the current thread.
 .np
 Request message:
 .millust begin
-access_req      req
+trap_req        req
 trap_thandle    thread
 .millust end
 .pp
@@ -2333,7 +2333,7 @@ the task program.
 .np
 Request message:
 .millust begin
-access_req      req
+trap_req        req
 trap_thandle    thread
 .millust end
 .pp
@@ -2356,7 +2356,7 @@ Request to allow a thread to run next time when executing the program.
 .np
 Request message:
 .millust begin
-access_req      req
+trap_req        req
 trap_thandle    thread
 .millust end
 .pp
@@ -2383,7 +2383,7 @@ would be useful for the user to know.
 .np
 Request message:
 .millust begin
-access_req      req
+trap_req        req
 unsigned_32     thread
 .millust end
 .pp
@@ -2423,7 +2423,7 @@ Request to rename a file on the debuggee's system.
 .np
 Request message:
 .millust begin
-access_req      req
+trap_req        req
 -------------------------
 string          from_name
 -------------------------
@@ -2452,7 +2452,7 @@ Request to create a directory on the target (debuggee) system.
 .np
 Request message:
 .millust begin
-access_req      req
+trap_req        req
 ------------------------
 string          dir_name
 .millust end
@@ -2477,7 +2477,7 @@ Request to remove a directory on the target system.
 .np
 Request message:
 .millust begin
-access_req      req
+trap_req        req
 ------------------------
 string          dir_name
 .millust end
@@ -2502,7 +2502,7 @@ Request to set the current drive on the target system.
 .np
 Request message:
 .millust begin
-access_req      req
+trap_req        req
 unsigned_8      drive
 .millust end
 .pp
@@ -2526,7 +2526,7 @@ Request to get the current drive on the target system.
 .np
 Request message:
 .millust begin
-access_req      req
+trap_req        req
 .millust end
 .pp
 The
@@ -2549,7 +2549,7 @@ Request to set a directory on the target system.
 .np
 Request message:
 .millust begin
-access_req      req
+trap_req        req
 ------------------------
 string          dir_name
 .millust end
@@ -2574,7 +2574,7 @@ Request to get the current directory name on the target system.
 .np
 Request message:
 .millust begin
-access_req      req
+trap_req        req
 unsigned_8      drive
 .millust end
 .pp
@@ -2603,7 +2603,7 @@ Request to set a file's date and time information on the target system.
 .np
 Request message:
 .millust begin
-access_req      req
+trap_req        req
 trap_fhandle    handle
 time_t          time
 .millust end
@@ -2630,7 +2630,7 @@ Request to get the date and time information for a file on the target system.
 .np
 Request message:
 .millust begin
-access_req      req
+trap_req        req
 trap_fhandle    handle
 .millust end
 .pp
@@ -2657,7 +2657,7 @@ Request to get the amount of free space left on the drive.
 .np
 Request message:
 .millust begin
-access_req      req
+trap_req        req
 unsigned_8      drive
 .millust end
 .pp
@@ -2681,7 +2681,7 @@ Request to set the file attribute of a file.
 .np
 Request message:
 .millust begin
-access_req      req
+trap_req        req
 unsigned_32     attribute
 -------------------------
 string          name
@@ -2710,7 +2710,7 @@ Request to get the file attribute of a file.
 .np
 Request message:
 .millust begin
-access_req      req
+trap_req        req
 --------------------
 string          name
 .millust end
@@ -2735,7 +2735,7 @@ Request to convert a file name to its canonical form.
 .np
 Request message:
 .millust begin
-access_req      req
+trap_req        req
 -------------------------
 string          file_name
 .millust end
@@ -2768,7 +2768,7 @@ Request to find the first file in a directory.
 .np
 Request message:
 .millust begin
-access_req      req
+trap_req        req
 unsigned_8      attrib
 ----------------------
 string          name
@@ -2815,7 +2815,7 @@ This request should be used only after REQ_RFX_FINDFIRST.
 .np
 Request message:
 .millust begin
-access_req      req
+trap_req        req
 --------------------
 rfx_find        info
 .millust end
@@ -2846,7 +2846,7 @@ Request to end the directory search operation.
 .np
 Request message:
 .millust begin
-access_req      req
+trap_req        req
 .millust end
 .pp
 The
@@ -2886,7 +2886,7 @@ Request to retreive Environment variable from the remote system.
 .np
 Request message:
 .millust begin
-access_req      req
+trap_req        req
 ------------------------
 string          name
 .millust end
@@ -2910,7 +2910,7 @@ Request to set Environment variable on the remote system.
 .np
 Request message:
 .millust begin
-access_req      req
+trap_req        req
 ------------------------
 string          name
 string          value;
@@ -2939,7 +2939,7 @@ on the remote system.
 .np
 Request message:
 .millust begin
-access_req      req
+trap_req        req
 .millust end
 .np
 Return message:
@@ -2953,7 +2953,7 @@ trap_error      err
 .np
 Request message:
 .millust begin
-access_req      req
+trap_req        req
 .millust end
 .np
 Return message:
@@ -2974,7 +2974,7 @@ trap_error      err
 .np
 Request message:
 .millust begin
-access_req      req
+trap_req        req
 .millust end
 .np
 Return message:
@@ -2988,7 +2988,7 @@ trap_error      err
 .np
 Request message:
 .millust begin
-access_req      req
+trap_req        req
 .millust end
 .np
 Return message:
@@ -3002,7 +3002,7 @@ trap_error      err
 .np
 Request message:
 .millust begin
-access_req      req
+trap_req        req
 .millust end
 .np
 Return message:
@@ -3016,7 +3016,7 @@ trap_error      err
 .np
 Request message:
 .millust begin
-access_req      req
+trap_req        req
 .millust end
 .np
 Return message:
@@ -3030,7 +3030,7 @@ trap_error      err
 .np
 Request message:
 .millust begin
-access_req      req
+trap_req        req
 .millust end
 .np
 Return message:
@@ -3044,7 +3044,7 @@ trap_error      err
 .np
 Request message:
 .millust begin
-access_req      req
+trap_req        req
 .millust end
 .np
 Return message:
@@ -3065,7 +3065,7 @@ trap_error      err
 .np
 Request message:
 .millust begin
-access_req      req
+trap_req        req
 .millust end
 .np
 Return message:
@@ -3079,7 +3079,7 @@ trap_error      err
 .np
 Request message:
 .millust begin
-access_req      req
+trap_req        req
 .millust end
 .np
 Return message:
@@ -3093,7 +3093,7 @@ trap_error      err
 .np
 Request message:
 .millust begin
-access_req      req
+trap_req        req
 .millust end
 .np
 Return message:
@@ -3107,7 +3107,7 @@ trap_error      err
 .np
 Request message:
 .millust begin
-access_req      req
+trap_req        req
 .millust end
 .np
 Return message:
@@ -3121,7 +3121,7 @@ trap_error      err
 .np
 Request message:
 .millust begin
-access_req      req
+trap_req        req
 .millust end
 .np
 Return message:
@@ -3135,7 +3135,7 @@ trap_error      err
 .np
 Request message:
 .millust begin
-access_req      req
+trap_req        req
 .millust end
 .np
 Return message:
@@ -3149,7 +3149,7 @@ trap_error      err
 .np
 Request message:
 .millust begin
-access_req      req
+trap_req        req
 .millust end
 .np
 Return message:
@@ -3163,7 +3163,7 @@ trap_error      err
 .np
 Request message:
 .millust begin
-access_req      req
+trap_req        req
 .millust end
 .np
 Return message:
@@ -3179,61 +3179,55 @@ trap_error      err
 .np
 .beglevel
 .*
-.section REQ_CAPABILITIES_GET_8B_BP
-.*
-.np
-Request message:
-.millust begin
-access_req      req
-.millust end
-.np
-Return message:
-.millust begin
-trap_error      err
-.millust end
-.pp
-.*
-.section REQ_CAPABILITIES_SET_8B_BP
-.*
-.np
-Request message:
-.millust begin
-access_req      req
-.millust end
-.np
-Return message:
-.millust begin
-trap_error      err
-.millust end
-.pp
-.*
 .section REQ_CAPABILITIES_GET_EXACT_BP
 .*
 .np
+Request to get information if exact breakpoints are supported
+on the remote system.
+.np
 Request message:
 .millust begin
-access_req      req
+trap_req        req
 .millust end
 .np
 Return message:
 .millust begin
 trap_error      err
+unsigned_8      status
 .millust end
 .pp
+The
+.id status
+contains true if exact breakpoints are supported
+on the remote system otherwise
+.id status
+contains false.
 .*
 .section REQ_CAPABILITIES_SET_EXACT_BP
 .*
 .np
+Request to set if exact breakpoints are active
+on the remote system.
+.np
 Request message:
 .millust begin
-access_req      req
+trap_req        req
+unsigned_8      status
 .millust end
 .np
 Return message:
 .millust begin
 trap_error      err
+unsigned_8      status
 .millust end
 .pp
+The input
+.id status
+contains if exact breakpoints are required to be active on the remote system.
+.pp
+The output
+.id status
+contains status if exact breakpoints are currently active on the remote system.
 .endlevel
 .*
 .*
@@ -3381,3 +3375,4 @@ the command line and then terminates.
 .np
 The trap file routines are linked directly into the remote server code and
 TrapInit, TrapRequest, TrapFini are directly called.
+

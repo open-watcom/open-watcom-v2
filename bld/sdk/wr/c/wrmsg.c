@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,7 +43,7 @@ void WRDisplayMsg( const char *msg )
     title = WRAllocRCString( WR_ERRMSG );
 
     if( !MessageBox( (HWND)NULL, msg, title, MB_ICONEXCLAMATION | MB_OK | MB_TASKMODAL ) ) {
-        MessageBeep( (UINT)-1 );
+        MessageBeep( MB_SINGLE_BEEP );
     }
 
     if( title != NULL ) {
@@ -68,7 +68,7 @@ int WRCopyRCString( msg_id id, char *buf, int bufsize )
 
 void WRInitDisplayError( HINSTANCE inst )
 {
-    SetInstance( inst );
+    SetRCInstance( inst );
 }
 
 void WRDisplayErrorMsg( msg_id msg )
@@ -78,7 +78,7 @@ void WRDisplayErrorMsg( msg_id msg )
     title = WRAllocRCString( WR_ERRMSG );
 
     if( !RCMessageBox( (HWND)NULL, msg, title, MB_ICONEXCLAMATION | MB_OK | MB_TASKMODAL ) ) {
-        MessageBeep( (UINT)-1 );
+        MessageBeep( MB_SINGLE_BEEP );
     }
 
     if( title != NULL ) {

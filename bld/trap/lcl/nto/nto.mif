@@ -1,4 +1,8 @@
+!ifndef test
+
+nto_trap_objs_x86 = x86cpu.obj
 nto_trap_objs = &
+    $(nto_trap_objs_$(target_cpu)) &
     ntoacc.obj &
     ntomap.obj &
     ntoutl.obj &
@@ -7,27 +11,7 @@ nto_trap_objs = &
     supp.obj &
     core.obj
 
-!ifeq target_cpu x86
-nto_trap_objs += x86cpu.obj
 !endif
 
-!ifdef builtin_trap
-!ifndef test
-
-extra_objs += $(nto_trap_objs)
-
-extra_srcs = $(trap_dir)/lcl/nto/c;$(clib_dir)/environ/c
-inc_dirs   = -I"$(trap_dir)/lcl/nto/h" -I"$(lib_misc_dir)/h"
-
-!endif
-!else ifeq srv lcl
-
-extra_objs += $(nto_trap_objs)
-
-extra_srcs = $(trap_dir)/lcl/nto/c;$(clib_dir)/environ/c
-inc_dirs   = -I"$(trap_dir)/lcl/nto/h" -I"$(lib_misc_dir)/h"
-
-!endif
-
-!include $(trap_dir)/lcl/lcl.mif
-
+extra_srcs += $(trap_dir)/lcl/nto/c;$(clib_dir)/environ/c
+extra_incs += -I"$(trap_dir)/lcl/nto/h" -I"$(lib_misc_dir)/h"

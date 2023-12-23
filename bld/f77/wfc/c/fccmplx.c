@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -467,7 +467,7 @@ void    FCMulCmplx( void ) {
 //====================
 
 // Multiply one complex number by another.
-#if _CPU == 8086 || _CPU == 386
+#if _INTEL_CPU
     if( CPUOpts & CPUOPT_FPC ) {
         // generate call to runtime complex multiply
         XCmplxOp( RT_CMPLXMUL );
@@ -475,7 +475,7 @@ void    FCMulCmplx( void ) {
         // do multiplication inline
         InLineMulCC( GetU16() );
     }
-#else
+#else /* _RISC_CPU */
     // For risc we just inline the entire code
     InLineMulCC( GetU16() );
 #endif

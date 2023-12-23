@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,27 +34,28 @@
 #define _TARG_INCLUDED
 
 /*  target processors (_HOST) */
-#define   _TARG_8086     1
-#define   _TARG_80386    2
-#define   _TARG_370      4
-#define   _TARG_PPC      8
-#define   _TARG_AXP     16
-#define   _TARG_MIPS    32
+#define _TARG_8086      1
+#define _TARG_80386     2
+#define _TARG_370       4
+#define _TARG_PPC       8
+#define _TARG_AXP       16
+#define _TARG_MIPS      32
 
-#define   _TARG_INTEL   (_TARG_80386 | _TARG_8086)
-#define   _TARG_RISC    (_TARG_PPC | _TARG_AXP | _TARG_MIPS)
+#define _TARGET_INTEL   (_TARGET & (_TARG_80386 | _TARG_8086))
+#define _TARGET_RISC    (_TARGET & (_TARG_PPC | _TARG_AXP | _TARG_MIPS))
 
 /*  target character sets (_CSET) */
-#define   _TARG_ASCII    1
-#define   _TARG_EBCDIC   2
+#define _TARG_ASCII     1
+#define _TARG_EBCDIC    2
+#define _TARG_UTF8      3
 
 /*  target word ordering (_MEMORY) */
-#define   _TARG_LOW_FIRST       1
-#define   _TARG_HIGH_FIRST      2
+#define _TARG_LOW_FIRST     1
+#define _TARG_HIGH_FIRST    2
 
 #include "deftarg.h"
 
-#if _TARGET &  _TARG_8086
+#if _TARGET & _TARG_8086
     #define _TARG_CSET          _TARG_ASCII
     #define _TARG_INTEGER       16
     #define _TARG_MEMORY        _TARG_LOW_FIRST

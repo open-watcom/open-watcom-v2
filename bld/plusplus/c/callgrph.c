@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,7 +35,7 @@
 #include "callgrph.h"
 #include "stats.h"
 #include "cgfront.h"
-#ifndef NDEBUG
+#ifdef DEVBUILD
     #include "dbg.h"
 #endif
 
@@ -291,7 +291,7 @@ bool CgrfWalkCalls(             // WALK CALLS FROM NODE IN GRAPH
             , (bool (*)( DIRGRAPH_CTL*, DIRGRAPH_EDGE*))walker );
 }
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 
 static bool cgrfDumpCall(       // DUMP CALL GRAPH EDGE
     CALLGRAPH *ctl,             // - call graph information

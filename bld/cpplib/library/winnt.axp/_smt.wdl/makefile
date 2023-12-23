@@ -5,4 +5,4 @@ linkage      = dynamic
 mthreaded    = 1
 export_only  = 1
 
-!include $(cpplib_dir)/mrglib.mif
+!include ../../../mrglib.mif

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,7 +34,7 @@
 #include "wdeglbl.h"
 #include "wdemsgbx.h"
 #include "rcstr.grh"
-#include "wdei2mem.h"
+#include "wde2data.h"
 #include "wdewait.h"
 #include "wrdll.h"
 #include "wdeselft.h"
@@ -53,7 +53,7 @@
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static bool WdeSaveObjectAs ( WdeResInfo *, WdeDialogBoxInfo *, char **, WResID *, void *, uint_32, WResLangType *, bool );
+static bool WdeSaveObjectAs ( WdeResInfo *, WdeDialogBoxInfo *, char **, WResID *, void *, uint_32, WResLangType *, bool prompt_name );
 static bool WdeSaveObjectInto( WdeResInfo *, WdeDialogBoxInfo *, WResID *, void *, uint_32, WResLangType * );
 
 /****************************************************************************/
@@ -68,11 +68,10 @@ extern char     *WdeResSaveFilter;
 /* static variables                                                         */
 /****************************************************************************/
 
-bool WdeSaveObject( WdeResInfo *rinfo, WdeDialogBoxInfo *dbi,
-                    char **fname, WResID *rname, WResLangType *langtype,
-                    bool save_into, bool get_name )
+bool WdeSaveObject( WdeResInfo *rinfo, WdeDialogBoxInfo *dbi, char **fname, WResID *rname,
+                                WResLangType *langtype, bool save_into, bool prompt_name )
 {
-    void                *rdata;
+    char                *rdata;
     size_t              size;
     bool                ok;
     WResLangType        lang;
@@ -89,14 +88,14 @@ bool WdeSaveObject( WdeResInfo *rinfo, WdeDialogBoxInfo *dbi,
             lang.lang = DEF_LANG;
             lang.sublang = DEF_SUBLANG;
         }
-        ok = WdeDBI2Mem( dbi, (unsigned_8 **)&rdata, &size );
+        ok = WdeAllocDataFromDBI( dbi, &rdata, &size );
     }
 
     if( ok ) {
         if( save_into ) {
             ok = WdeSaveObjectInto( rinfo, dbi, rname, rdata, size, &lang );
         } else {
-            ok = WdeSaveObjectAs( rinfo, dbi, fname, rname, rdata, size, &lang, get_name );
+            ok = WdeSaveObjectAs( rinfo, dbi, fname, rname, rdata, size, &lang, prompt_name );
         }
     }
 
@@ -111,7 +110,7 @@ bool WdeSaveObject( WdeResInfo *rinfo, WdeDialogBoxInfo *dbi,
 
 bool WdeSaveObjectAs( WdeResInfo *rinfo, WdeDialogBoxInfo *dbi,
                       char **file_name, WResID *name, void *rdata, uint_32 size,
-                      WResLangType *lang, bool get_name )
+                      WResLangType *lang, bool prompt_name )
 {
     char                *fname;
     WRFileType          ftype;
@@ -128,10 +127,10 @@ bool WdeSaveObjectAs( WdeResInfo *rinfo, WdeDialogBoxInfo *dbi,
           name != NULL && rdata != NULL);
 
     if( ok ) {
-        if( get_name || *file_name == NULL ) {
+        if( prompt_name || *file_name == NULL ) {
             gf.file_name = *file_name;
             gf.title = WdeDlgSaveTitle;
-            if( get_name ) {
+            if( prompt_name ) {
                 gf.title = WdeDlgSaveAsTitle;
             }
             gf.filter = WdeResSaveFilter;

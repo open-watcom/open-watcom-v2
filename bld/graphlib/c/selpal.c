@@ -61,9 +61,9 @@ _WCRTLINK short _WCI86FAR _CGRAPH _selectpalette( short palnum )
     }
     _Palette = palnum;
     /* select either green-red-yellow or cyan-magenta-white */
-    VideoInt( _BIOS_SET_OVERSCAN, ( 1 << 8 ) + ( palnum & 1 ), 0, 0 );
+    VideoInt( VIDEOINT_SET_OVERSCAN, ( 1 << 8 ) + ( palnum & 1 ), 0, 0 );
     /* select either low or high intensity */
-    VideoInt( _BIOS_SET_OVERSCAN, ( palnum & 2 ) << 3, 0, 0 );
+    VideoInt( VIDEOINT_SET_OVERSCAN, ( palnum & 2 ) << 3, 0, 0 );
     return( prev );
 }
 

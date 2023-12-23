@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,9 +36,17 @@
 #include <time.h>
 #include "expr.h"
 #include "rxsupp.h"
+#include "tokenize.h"
+#include "parse.h"
 
 #include "clibext.h"
 
+
+static const char _NEAR StrTokens[] = {
+    "SUBSTR\0"
+    "STRLEN\0"
+    "STRCHR\0"
+};
 
 /*
  * SrcAssign - assign a value to a variable
@@ -133,7 +141,7 @@ vi_rc SrcAssign( const char *data, vars_list *vl )
             switch( j ) {
             case STR_T_STRLEN:
                 if( v != NULL ) {
-                    sprintf( tmp1, "%d", v->len );
+                    sprintf( tmp1, "%u", (unsigned)v->len );
                 } else {
                     strcpy( tmp1, "0" );
                 }
@@ -229,7 +237,7 @@ vi_rc SrcAssign( const char *data, vars_list *vl )
                 v1 = "";
             }
         } else {
-            v1 = ltoa( val, tmp1, EditVars.Radix );
+            v1 = EvalRadix( tmp1, val );
         }
     } else {
         v1 = tmp1;

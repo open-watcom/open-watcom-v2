@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,10 +33,10 @@
 #include "_cgstd.h"
 #include "coderep.h"
 #include "symdbg.h"
-#include "mipsenc.h"
 #include "reloc.h"
 #include "rscenc2.h"
 #include "rscobj.h"
+#include "mpsenc.h"
 
 
 void EncodeRet( oc_ret *oc )
@@ -46,22 +46,28 @@ void EncodeRet( oc_ret *oc )
 
     /* unused parameters */ (void)oc;
 
-    // 'jr ra'
-    encoding = _Opcode( 0 ) | _Rs( MIPS_RETURN_ADDR ) | _Function( 0x08 );
+    /*
+     * 'jr ra'
+     */
+    encoding = _Opcode( 0 ) | _Rs( RA_REG_IDX ) | _Function( 0x08 );
     ObjBytes( &encoding, sizeof( encoding ) );
-    // TODO: Handle delay slot better
+    /*
+     * TODO: Handle delay slot better
+     */
     encoding = MIPS_NOP;
     ObjBytes( &encoding, sizeof( encoding ) );
 }
 
 
-static void doBranch( mips_ins opcode, uint_8 cc, pointer lbl, uint reg1, uint reg2 )
-/***********************************************************************************/
+static void doBranch( mips_ins opcode, uint_8 cc, pointer lbl, reg_idx rs, reg_idx rt )
+/*************************************************************************************/
 {
-    opcode = _Opcode( opcode ) | _Rs( reg1 ) | _Rt( reg2 ) | _Rt( cc );
+    opcode = _Opcode( opcode ) | _Rs( rs ) | _Rt( rt ) | _Rt( cc );
     OutReloc( lbl, OWL_RELOC_BRANCH_REL, 0 );
     ObjBytes( &opcode, sizeof( opcode ) );
-    // TODO: Handle delay slot better
+    /*
+     * TODO: Handle delay slot better
+     */
     opcode = MIPS_NOP;
     ObjBytes( &opcode, sizeof( opcode ) );
 }
@@ -72,15 +78,19 @@ static void doCopBranch( mips_ins opcode, uint_8 cc, pointer lbl )
 {
     mips_ins    nop_code;
 
-    // TODO: This is lame - there must be at least one instruction
-    // between a FP comparison instruction and a branch testing the result
+    /*
+     * TODO: This is lame - there must be at least one instruction
+     * between a FP comparison instruction and a branch testing the result
+     */
     nop_code = MIPS_NOP;
     ObjBytes( &nop_code, sizeof( nop_code ) );
 
     opcode = _Opcode( 0x11 ) | _Rs( opcode ) | _Rt( cc );
     OutReloc( lbl, OWL_RELOC_BRANCH_REL, 0 );
     ObjBytes( &opcode, sizeof( opcode ) );
-    // TODO: Handle delay slot better
+    /*
+     * TODO: Handle delay slot better
+     */
     opcode = MIPS_NOP;
     ObjBytes( &opcode, sizeof( opcode ) );
 }
@@ -89,8 +99,10 @@ static void doCopBranch( mips_ins opcode, uint_8 cc, pointer lbl )
 void EncodeJump( oc_handle *oc )
 /******************************/
 {
-    // 'beq $zero,$zero,displacement'
-    doBranch( 0x04, 0x00, oc->handle, MIPS_ZERO_SINK, MIPS_ZERO_SINK );
+    /*
+     * 'beq $zero,$zero,displacement'
+     */
+    doBranch( 0x04, 0x00, oc->handle, ZERO_REG_IDX, ZERO_REG_IDX );
 }
 
 
@@ -99,13 +111,17 @@ void EncodeCall( oc_handle *oc )
 {
     mips_ins            encoding;
 
-    // TODO: PIC call
-    // Call to absolute address
-    // 'jal target'
+    /*
+     * TODO: PIC call
+     * Call to absolute address
+     * 'jal target'
+     */
     encoding = _Opcode( 0x03 );
     OutReloc( oc->handle, OWL_RELOC_JUMP_ABS, 0 );
     ObjBytes( &encoding, sizeof( encoding ) );
-    // TODO: Handle delay slot better
+    /*
+     * TODO: Handle delay slot better
+     */
     encoding = MIPS_NOP;
     ObjBytes( &encoding, sizeof( encoding ) );
 }
@@ -126,25 +142,29 @@ void EncodeCond( oc_jcond *oc )
     mips_ins    opcode;
     uint_8      cncode;
     int         floating;
-    uint        reg2;
+    reg_idx     reg2;
 
     floating = 0;
-    if( oc->hdr.class & ATTR_FLOAT ) {
+    if( oc->hdr.class & OC_ATTR_FLOAT ) {
         floating = 1;
     }
-    reg2 = oc->index2 == -1 ? 0 : oc->index2;
+    reg2 = ( oc->index2 == -1 ) ? 0 : (reg_idx)oc->index2;
     opcode = BranchOpcodes[oc->cond - FIRST_COMPARISON][floating][0];
     cncode = BranchOpcodes[oc->cond - FIRST_COMPARISON][floating][1];
-    // Floating conditionals are quite different - we only have bc1f/bc1t
-    // but have a full set of comparison instructions
+    /*
+     * Floating conditionals are quite different - we only have bc1f/bc1t
+     * but have a full set of comparison instructions
+     */
     if( floating ) {
         doCopBranch( opcode, cncode, oc->handle );
     } else {
         if( (oc->cond != OP_CMP_EQUAL) && (oc->cond != OP_CMP_NOT_EQUAL) ) {
-            // Only beq/bne can do reg/reg comparisons
-            assert( reg2 == MIPS_ZERO_SINK );
+            /*
+             * Only beq/bne can do reg/reg comparisons
+             */
+            assert( reg2 == ZERO_REG_IDX );
         }
         assert( opcode );
-        doBranch( opcode, cncode, oc->handle, oc->index, reg2 );
+        doBranch( opcode, cncode, oc->handle, (reg_idx)oc->index, reg2 );
     }
 }

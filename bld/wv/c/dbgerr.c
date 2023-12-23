@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -72,18 +72,18 @@ static int error( dbg_err_flags flg, char *fmt, va_list args )
 
     ptr = buff;
     if( flg & ERR_INTERNAL ) {
-        ptr = StrCopy( LIT_ENG( Internal_Error ), ptr );
+        ptr = StrCopyDst( LIT_ENG( Internal_Error ), ptr );
     }
     ptr = FmtStr( ptr, fmt, args );
-    ptr = StrCopy( ".", ptr );
+    ptr = StrCopyDst( ".", ptr );
     if( flg & ERR_LOC ) {
-        ptr = StrCopy( "\n    ", ptr );
+        ptr = StrCopyDst( "\n    ", ptr );
         switch( CurrToken ) {
         case T_CMD_SEPARATOR:
-            ptr = StrCopy( LIT_ENG( ERR_NEAR_END_OF_COMMAND ), ptr );
+            ptr = StrCopyDst( LIT_ENG( ERR_NEAR_END_OF_COMMAND ), ptr );
             break;
         case T_LINE_SEPARATOR:
-            ptr = StrCopy( LIT_ENG( ERR_NEAR_END_OF_LINE ), ptr );
+            ptr = StrCopyDst( LIT_ENG( ERR_NEAR_END_OF_LINE ), ptr );
             break;
         default:
             if( ScanLen() == 0 )
@@ -109,14 +109,14 @@ static int error( dbg_err_flags flg, char *fmt, va_list args )
     }
     if( _IsOn( SW_ERR_IN_TXTBUFF ) ) {
         PurgeInpStack();
-        StrCopy( buff, TxtBuff );
+        StrCopyDst( buff, TxtBuff );
     } else {
         if( (flg & ERR_SILENT) == 0 ) {
             where = LIT_ENG( ERR_EXECUTING_AT );
             for( inp = InpStack; inp != NULL; inp = inp->link ) {
                 if( inp->type & INP_CMD_FILE ) {
                     inv = inp->handle;
-                    ptr = StrCopy( "\n    ", ptr );
+                    ptr = StrCopyDst( "\n    ", ptr );
                     ptr = Format( ptr, where, inv->line, inv->name );
                     where = LIT_ENG( ERR_CALLED_FROM );
                 }

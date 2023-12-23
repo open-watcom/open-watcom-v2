@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -443,7 +444,7 @@ bool AddLeadingTabSpace( size_t *len, char *buff, int amount )
         start++;
     tmp = StaticAlloc();
     j = *len;
-    ExpandTabsInABuffer( buff, j, tmp, EditVars.MaxLine + 1 );
+    ExpandTabsInABuffer( buff, j, tmp, EditVars.MaxLineLen + 1 );
     i = 0;
     while( tmp[i] == ' ' )
         i++;
@@ -466,7 +467,7 @@ bool AddLeadingTabSpace( size_t *len, char *buff, int amount )
     } else {
         // shift right, amount > 0
         l = i + amount;
-        if( l >= EditVars.MaxLine ) {
+        if( l >= EditVars.MaxLineLen ) {
             full = true;
             k = i;
         } else {

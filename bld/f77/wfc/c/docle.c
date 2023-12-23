@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,13 +45,13 @@
 #include "errcod.h"
 #include "comio.h"
 #include "inout.h"
-#include "cspawn.h"
 #include "mkname.h"
 #include "compprog.h"
 #include "docle.h"
 #include "errutil.h"
 
 #include "clibext.h"
+#include "cspawn.h"
 
 
 extern  unsigned_32     CompTime;
@@ -74,7 +74,7 @@ static  void    FmtU32( char *buff, unsigned_32 num, size_t len )
 
     memset( buff, ' ', len );
     num_ptr = num_buff;
-    ltoa( num, num_ptr, 10 );
+    sprintf( num_ptr, "%lu", (unsigned long)num );
     num_len = strlen( num_ptr );
     if( num_len > len ) {
         num_ptr += num_len - len;

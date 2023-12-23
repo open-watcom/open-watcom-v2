@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -149,7 +149,7 @@ bool WREToolBarHook( HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam )
     switch( msg ) {
     case WM_USER:
         if( lParam ) {
-            WRESetStatusText( NULL, "", TRUE );
+            WRESetStatusText( NULL, "", true );
         } else {
             WREDisplayHint( LOWORD( wParam ) );
         }
@@ -215,7 +215,7 @@ bool WRECloseToolBar( WREToolBar *tbar )
         WREFreeToolBar( tbar );
     }
 
-    return( TRUE );
+    return( true );
 }
 
 void WREFreeToolBarInfo( WREToolBarInfo *info )

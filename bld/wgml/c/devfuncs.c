@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1917,7 +1917,8 @@ static void *df_decimal( void )
     /* Convert and return the value. */
 
     value = mem_alloc( 12 );
-    return( (void *)ltoa( first, value, 10 ) );
+    sprintf( value, "%ld", (long)first );
+    return( (void *)value );
 }
 
 /* Function df_divide().
@@ -2042,7 +2043,8 @@ static void *df_hex( void )
     /* Convert and return a pointer to the parameter */
 
     value = mem_alloc( 9 );
-    return( (void *)ltoa( first, value, 16 ) );
+    sprintf( value, "%lx", (long)first );
+    return( (void *)value );
 }
 
 /* Function df_lower().

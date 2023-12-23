@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -97,6 +98,7 @@ typedef struct {
 
 #define ELF_SIGNATURE   "\177ELF"
 #define ELF_SIGNATURE_LEN 4
+
 #define ELFMAG0         '\177'  // bytes of signature
 #define ELFMAG1         'E'     // bytes of signature
 #define ELFMAG2         'L'     // bytes of signature
@@ -348,7 +350,7 @@ typedef struct {
 #define SHF_MASKPROC    0xf0000000      // processor specific flags
 
 #define SHF_X86_64_LARGE 0x1000000      // section with more than 2GB
-#define SHF_ALPHA_GPREL 0x10000000      
+#define SHF_ALPHA_GPREL 0x10000000
 
 // symbol table entry
 
@@ -422,13 +424,13 @@ typedef struct {
 
 // r_info field contents
 
-#define ELF32_R_SYM(i)  ((i)>>8)                // gets the symbol index
-#define ELF32_R_TYPE(i) ((unsigned_8)(i))       // gets the symbol type
-#define ELF32_R_INFO(s,t) (((s)<<8)+(unsigned_8)(t))    // make a new r_info
+#define ELF32_R_SYM(i)          ((i)>>8)                        // gets the symbol index
+#define ELF32_R_TYPE(i)         ((unsigned_8)(i))               // gets the symbol type
+#define ELF32_R_INFO(s,t)       (((s)<<8)+(unsigned_8)(t))      // make a new r_info
 
-#define ELF64_R_SYM(i)  ((i)>>32)               // gets the symbol index
-#define ELF64_R_TYPE(i) ((i)&0xffffffffL)       // gets the symbol type
-#define ELF64_R_INFO(s,t) (((s)<<32)+((t)&0xffffffffL)) // make a new r_info
+#define ELF64_R_SYM(i)          ((i)>>32)                       // gets the symbol index
+#define ELF64_R_TYPE(i)         ((i)&0xffffffffL)               // gets the symbol type
+#define ELF64_R_INFO(s,t)       (((s)<<32)+((t)&0xffffffffL))   // make a new r_info
 
 // relocation types.
 //386
@@ -600,16 +602,16 @@ typedef struct {
 #define R_MIPS_CALLLO16         31
 
 // Alpha
-#define R_ALPHA_NONE            0 
-#define R_ALPHA_REFLONG         1 
-#define R_ALPHA_REFQUAD         2 
-#define R_ALPHA_GPREL32         3 
-#define R_ALPHA_LITERAL         4 
-#define R_ALPHA_LITUSE          5 
-#define R_ALPHA_GPDISP          6 
-#define R_ALPHA_BRADDR          7 
-#define R_ALPHA_HINT            8 
-#define R_ALPHA_SREL16          9 
+#define R_ALPHA_NONE            0
+#define R_ALPHA_REFLONG         1
+#define R_ALPHA_REFQUAD         2
+#define R_ALPHA_GPREL32         3
+#define R_ALPHA_LITERAL         4
+#define R_ALPHA_LITUSE          5
+#define R_ALPHA_GPDISP          6
+#define R_ALPHA_BRADDR          7
+#define R_ALPHA_HINT            8
+#define R_ALPHA_SREL16          9
 #define R_ALPHA_SREL32          10
 #define R_ALPHA_SREL64          11
 #define R_ALPHA_GPRELHIGH       17

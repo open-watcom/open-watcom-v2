@@ -1,0 +1,76 @@
+name: last-build
+description: 'Check if git tag requires update, if it is outdated or not exist'
+inputs:
+  tag:
+    description: 'git tag to update check'
+    required: false
+    default: ''
+    type: string
+  owdebug:
+    description: 'verbosed/debug output for GH Actions scripts development'
+    required: false
+    default: ''
+    type: string
+outputs:
+  sha:
+    description: 'SHA of git tag commit'
+    value: ${{ steps.tagref.outputs.sha }}
+  old:
+    description: '1 - git tag needs update'
+    value: ${{ steps.tagref.outputs.old }}
+runs:
+  using: composite
+  steps:
+  - name: Setup curl options
+    id: curlcmd
+    uses: "./.github/actions/curlcmd"
+  - id: last_commit
+    run: |
+      $sha = git rev-parse HEAD
+      "sha=$sha" | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
+      if( '${{ inputs.owdebug }}' -eq '1' ) { echo "sha_last=$sha" }
+    shell: pwsh
+  - id: tagref
+    run: |
+      $response = ${{ steps.curlcmd.outputs.gh }} -H "Authorization: Bearer ${{ github.token }}" `
+      "https://api.github.com/repos/${{ github.repository }}/git/ref/tags/${{ inputs.tag }}"
+      if( '${{ inputs.owdebug }}' -eq '1' ) { $response }
+      $sha = $response | jq -r .object.sha
+      if( "$sha" -eq 'null' ) { $sha = '' }
+      if( "$sha" -ne '' ) {
+        $type = $response | jq -r .object.type
+        if( "$type" -eq 'tag' ) {
+          $response = ${{ steps.curlcmd.outputs.gh }} -H "Authorization: Bearer ${{ github.token }}" `
+          "https://api.github.com/repos/${{ github.repository }}/git/tags/$sha"
+          if( '${{ inputs.owdebug }}' -eq '1' ) { $response }
+          $sha = $response | jq -r .object.sha
+        } elseif( "$type" -eq 'commit' ) {
+        } else {
+          $sha = ''
+        }
+      }
+      if( '${{ inputs.owdebug }}' -eq '1' ) { "sha=$sha" }
+      "sha=$sha" | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
+      if( "$sha" -ne "${{ steps.last_commit.outputs.sha }}" ) {
+        if( "$sha" -eq "" ) {
+          if( '${{ inputs.owdebug }}' -eq '1' ) { 'old=1' }
+          'old=1' | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
+        } else {
+          $response = ${{ steps.curlcmd.outputs.gh }} -H "Authorization: Bearer ${{ github.token }}" `
+          "https://api.github.com/repos/${{ github.repository }}/git/commits/${{ steps.last_commit.outputs.sha }}"
+          if( '${{ inputs.owdebug }}' -eq '1' ) { $response }
+          $timestamp_last = $response | jq -r .committer.date
+          if( '${{ inputs.owdebug }}' -eq '1' ) { echo "timestamp_last=$timestamp_last" }
+          $response = ${{ steps.curlcmd.outputs.gh }} -H "Authorization: Bearer ${{ github.token }}" `
+          "https://api.github.com/repos/${{ github.repository }}/git/commits/$sha"
+          if( '${{ inputs.owdebug }}' -eq '1' ) { $response }
+          $timestamp = $response | jq -r .committer.date
+          if( '${{ inputs.owdebug }}' -eq '1' ) { echo "timestamp=$timestamp" }
+          if( "$timestamp" -lt "$timestamp_last" ) {
+            if( '${{ inputs.owdebug }}' -eq '1' ) { "$timestamp < $timestamp_last" }
+            if( '${{ inputs.owdebug }}' -eq '1' ) { 'old=1' }
+            'old=1' | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
+          }
+        }
+      }
+    shell: pwsh

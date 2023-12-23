@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,11 +35,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <limits.h>
-#include "wio.h"
 #include "common.h"
 #include "dip.h"
 #include "dipimp.h"
-#include "dipcli.h"
 #include "aui.h"
 #include "sampinfo.h"
 #include "msg.h"
@@ -54,7 +52,7 @@
 //#include "msg.def"
 
 STATIC char         *errMsgText( dip_status );
-STATIC bool         loadDIP( const char *, bool, bool );
+STATIC bool         loadDIP( const char *base_name, bool, bool );
 
 STATIC dip_status   DIPStatus;
 
@@ -157,7 +155,7 @@ dig_arch DIPCLIENTRY( CurrArch )( void )
 void WPDipInit( void )
 /********************/
 {
-    char        *dip_name;
+    const char  *base_name;
     unsigned    dip_count;
     dip_status  ds;
 
@@ -167,12 +165,12 @@ void WPDipInit( void )
     }
     dip_count = 0;
     if( WProfDips == NULL ) {
-        dip_name = DIPDefaults;
+        base_name = DIPDefaults;
     } else {
-        dip_name = WProfDips;
+        base_name = WProfDips;
     }
-    for( ; *dip_name != NULLCHAR; dip_name += strlen( dip_name ) + 1 ) {
-        if( loadDIP( dip_name, true, true ) ) {
+    for( ; *base_name != NULLCHAR; base_name += strlen( base_name ) + 1 ) {
+        if( loadDIP( base_name, true, true ) ) {
             dip_count++;
         }
     }
@@ -244,20 +242,20 @@ void WPDipFini( void )
 
 
 
-STATIC bool loadDIP( const char *dip, bool defaults, bool fail_big )
-/******************************************************************/
+STATIC bool loadDIP( const char *base_name, bool defaults, bool fail_big )
+/************************************************************************/
 {
     dip_status  ds;
 
-    ds = DIPLoad( dip );
+    ds = DIPLoad( base_name );
     if( ds != DS_OK ) {
         if( defaults && ( ds == (DS_ERR | DS_FOPEN_FAILED) ) ) {
             return( false );
         }
         if( fail_big ) {
-            fatal( LIT( Dip_Load_Failed ), dip, errMsgText( ds ) );
+            fatal( LIT( Dip_Load_Failed ), base_name, errMsgText( ds ) );
         }
-        ErrorMsg( LIT( Dip_Load_Failed ), dip, errMsgText( ds ) );
+        ErrorMsg( LIT( Dip_Load_Failed ), base_name, errMsgText( ds ) );
         return( false );
     }
     return( true );

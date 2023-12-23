@@ -50,7 +50,8 @@ wres_more_objs = &
     loadres.obj &
     loadresx.obj &
     rdlli.obj &
-    resaccel.obj &
+    resraccl.obj &
+    reswaccl.obj &
     resbitmp.obj &
     resrdiag.obj &
     reswdiag.obj &
@@ -66,6 +67,8 @@ wres_more_objs = &
     resver.obj &
     rillia.obj &
     rillib.obj &
+    rmraccl.obj &
+    rmwaccl.obj &
     ropenfrw.obj &
     ropenewf.obj &
     ropentmp.obj &

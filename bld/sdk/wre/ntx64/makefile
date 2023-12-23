@@ -2,6 +2,6 @@
 host_os  = nt
 host_cpu = x64
 
-wre_release = 0
+wre_debug = 1
 
 !include ../master.mif

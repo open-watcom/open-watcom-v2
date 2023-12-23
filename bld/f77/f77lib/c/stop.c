@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,10 +31,6 @@
 ****************************************************************************/
 
 
-//
-// STOP         : STOP statement (for optimizing compiler)
-//
-
 #include "ftnstd.h"
 #include <string.h>
 #if defined( __NT__ )
@@ -57,18 +53,19 @@
 #include "rterr.h"
 
 
-void    Stop( string PGM *ptr ) {
-//===============================
-
+void    Stop( string PGM *ptr )
+//=============================
 // Process a STOP statement.
-
+{
     RTSysInit();
     if( ptr != NULL ) {
         _AccessFIO();
-        // Before writing the error message, flush standard output files so that
-        // if unit 6 is connected to the standard output device which has been
-        // redirected to a file, the file gets flushed before the error message
-        // is written.
+        /*
+         * Before writing the error message, flush standard output files so that
+         * if unit 6 is connected to the standard output device which has been
+         * redirected to a file, the file gets flushed before the error message
+         * is written.
+         */
         FlushStdUnit();
         StdBuffer();
         if( __DevicesCC() ) {
@@ -80,4 +77,5 @@ void    Stop( string PGM *ptr ) {
     }
     _RWD_XcptFlags |= XF_FATAL_ERROR;
     RTSuicide();
+    // never return
 }

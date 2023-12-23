@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -170,19 +171,19 @@ static void flushStack( traceback **h )
 
 static void doRunUntilShift( traceback **h, a_sym *sym, traceback **ht, unsigned count )
 {
-    index_n             sidx;
+    index_n             sym_idx;
     a_sym               *chk_sym;
     a_state             *state;
-    a_state             *top;
+    a_state             *top_state;
     a_reduce_action     *raction;
 
     for( ; *h != NULL; ) {
-        top = (*h)->state;
-        if( top == NULL ) {
+        top_state = (*h)->state;
+        if( top_state == NULL ) {
             flushStack( h );
             break;
         }
-        state = findNewShiftState( top, sym );
+        state = findNewShiftState( top_state, sym );
         if( state != NULL ) {
             pushTrace( h, state, sym );
             pushTrace( ht, NULL, sym );
@@ -190,39 +191,43 @@ static void doRunUntilShift( traceback **h, a_sym *sym, traceback **ht, unsigned
                 break;
             }
             for( ; *h != NULL; ) {
-                top = (*h)->state;
-                if( top->redun->pro == NULL )
+                top_state = (*h)->state;
+                if( top_state->redun->pro == NULL )
                     break;
-                performReduce( h, top->redun->pro );
+                performReduce( h, top_state->redun->pro );
             }
             break;
         }
-        sidx = sym->idx;
-        for( raction = top->redun; raction->pro != NULL; ++raction ) {
-            if( IsBitSet( raction->follow, sidx ) ) {
+        sym_idx = sym->idx;
+        for( raction = top_state->redun; raction->pro != NULL; ++raction ) {
+            if( IsBitSet( raction->follow, sym_idx ) ) {
                 performReduce( h, raction->pro );
                 break;
             }
         }
         if( raction->pro == NULL ) {
             if( sym != eofsym ) {
-                /* a syntax error will result */
+                /*
+                 * a syntax error will result
+                 */
                 flushStack( h );
                 break;
             }
-            if( top->redun->pro != NULL ) {
-                performReduce( h, top->redun->pro );
+            if( top_state->redun->pro != NULL ) {
+                performReduce( h, top_state->redun->pro );
             } else {
                 if( count ) {
                     --count;
-                    chk_sym = findNewShiftSym( top, ht );
+                    chk_sym = findNewShiftSym( top_state, ht );
                 } else {
                     chk_sym = NULL;
                 }
                 if( chk_sym != NULL ) {
                     doRunUntilShift( h, chk_sym, ht, count );
                 } else {
-                    /* a syntax error will result */
+                    /*
+                     * a syntax error will result
+                     */
                     flushStack( h );
                     break;
                 }
@@ -291,55 +296,59 @@ static traceback *makeReversedCopy( traceback *top )
 }
 
 
-static traceback *getStatePrefix( a_state *s, a_state *initial_parent )
+static traceback *getStatePrefix( a_state *state, a_state *initial_parent )
 {
     traceback       *list;
     a_parent        *parent;
-    a_state         *min;
-    a_state         *min_check;
+    a_state         *min_state;
+    a_state         *min_state_check;
     a_shift_action  *t;
 
     list = NULL;
-    for( ; (parent = s->parents) != NULL; s = min ) {
+    for( ; (parent = state->parents) != NULL; state = min_state ) {
         if( initial_parent != NULL ) {
-            min = initial_parent;
+            min_state = initial_parent;
             initial_parent = NULL;
         } else {
-            min = parent->state;
+            min_state = parent->state;
             for( parent = parent->next; parent != NULL; parent = parent->next ) {
-                min_check = parent->state;
-                if( min_check->sidx < min->sidx ) {
-                    min = min_check;
+                min_state_check = parent->state;
+                if( min_state->idx > min_state_check->idx ) {
+                    min_state = min_state_check;
                 }
             }
         }
-        for( t = min->trans; t->sym != NULL; ++t ) {
-            if( t->state == s ) {
-                pushTrace( &list, s, t->sym );
+        for( t = min_state->trans; t->sym != NULL; ++t ) {
+            if( t->state == state ) {
+                pushTrace( &list, state, t->sym );
             }
         }
     }
-    pushTrace( &list, s, NULL );
+    pushTrace( &list, state, NULL );
     return( list );
 }
 
-void ShowSentence( a_state *s, a_sym *sym, a_pro *pro, a_state *to_state )
-/************************************************************************/
+void ShowSentence( a_state *state, a_sym *sym, a_pro *pro, a_state *to_state )
+/****************************************************************************/
 {
     traceback   *list;
     traceback   *parse_stack;
     traceback   *token_stack;
     a_parent    *parent;
 
-    for( parent = s->parents; parent != NULL; parent = parent->next ) {
+    for( parent = state->parents; parent != NULL; parent = parent->next ) {
         if( to_state != NULL ) {
-            /* S/R conflict */
-            printf( "Sample sentence(s) for shift to state %u:\n", to_state->sidx );
+            /*
+             * S/R conflict
+             */
+            printf( "Sample sentence(s) for shift to state %u:\n", to_state->idx );
         } else {
-            /* R/R conflict */
+            /*
+             * R/R conflict
+             */
             printf( "Sample sentence(s) for reduce of rule %u:\n", pro->pidx );
         }
-        list = getStatePrefix( s, parent->state );
+        list = getStatePrefix( state, parent->state );
         parse_stack = makeReversedCopy( list );
         token_stack = NULL;
         if( to_state != NULL ) {
@@ -359,7 +368,9 @@ void ShowSentence( a_state *s, a_sym *sym, a_pro *pro, a_state *to_state )
             printAndFreeStack( token_stack );
             putchar( '\n' );
         }
-        // dump all of the contexts if we have verbose state output
+        /*
+         * dump all of the contexts if we have verbose state output
+         */
         if( ! showflag )
             break;
         putchar( '\n' );
@@ -384,7 +395,9 @@ static size_t symHasMinLen( a_sym *sym, a_pro *pro, a_sym *disallow_error )
 
     for( p = pro->items; p->p.sym != NULL; ++p ) {
         if( p->p.sym == disallow_error ) {
-            // derivations using the error sym are not desirable
+            /*
+             * derivations using the error sym are not desirable
+             */
             return( 0 );
         }
         if( p->p.sym->min == NULL ) {
@@ -485,7 +498,9 @@ static void seedWithSimpleMin( void )
     a_sym       *sym;
     unsigned    i;
 
-    // set terminals to their name and set nullable syms
+    /*
+     * set terminals to their name and set nullable syms
+     */
     for( i = 0; i < nsym; ++i ) {
         sym = symtab[i];
         if( sym->pro != NULL ) {
@@ -517,9 +532,13 @@ void CalcMinSentence( void )
 /**************************/
 {
     seedWithSimpleMin();
-    // disallow 'error' in the expansions
+    /*
+     * disallow 'error' in the expansions
+     */
     propagateMin( errsym );
-    // allow 'error' in the expansions
+    /*
+     * allow 'error' in the expansions
+     */
     propagateMin( NULL );
     verifyAllHaveMin();
 }

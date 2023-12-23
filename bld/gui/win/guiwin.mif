@@ -1,3 +1,5 @@
+tree_depth = 4
+
 type=win
 
 sys_windowed = 1
@@ -90,4 +92,4 @@ win_sysobjs_nt = &
 
 sysobjs = $(win_sysobjs) $(win_sysobjs_$(host_os)) $(wpi_sysobjs)
 
-!include ../../master.mif
+!include $(gui_dir)/master.mif

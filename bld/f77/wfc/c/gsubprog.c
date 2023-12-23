@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -219,7 +219,7 @@ static  int     DumpArgInfo( itnode *node ) {
 #if _CPU == 386
                 if( (parm_code == PC_PROCEDURE) || (parm_code == PC_FN_OR_SUB) ) {
                     info = InfoLookup( node->sym_ptr );
-                    if( info->cclass & FAR16_CALL ) {
+                    if( info->cclass_target & FECALL_X86_FAR16_CALL ) {
                         parm_code |= PC_PROC_FAR16;
                     }
                 }

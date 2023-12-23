@@ -31,8 +31,6 @@
 ****************************************************************************/
 
 
-#include <drsrchdf.h>
-#include <drgetref.h>
 #include <wcvector.h>
 #include <wclist.h>
 #include <wclistit.h>

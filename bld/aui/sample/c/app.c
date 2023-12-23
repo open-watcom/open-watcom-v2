@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -179,24 +179,30 @@ gui_resource MainIcon = { ICON_MAIN, "main_icon" };
 
 void GUImain( void )
 {
-    char        buff[256];
-    char        *p;
+    int         cmd_len;
+    char        *cmd_line;
+    char        *cmd;
 
     WndMaxDirtyRects = 20;
-    getcmd( buff );
-    p = buff;
-    while( *p == ' ' ) ++p;
-    if( p[0] == '-' && p[1] == 'n' ) {
+    cmd_len = _bgetcmd( NULL, 0 ) + 1;
+    cmd_line = WndAlloc( cmd_len );
+    _bgetcmd( cmd_line, cmd_len );
+    cmd = cmd_line;
+    while( *cmd == ' ' )
+        ++cmd;
+    if( cmd[0] == '-' && cmd[1] == 'n' ) {
         WndStyle &= ~GUI_GMOUSE;
-        p += 2;
+        cmd += 2;
     }
-    while( *p == ' ' ) ++p;
-    if( p[0] == '-' && p[1] == '1' ) {
+    while( *cmd == ' ' )
+        ++cmd;
+    if( cmd[0] == '-' && cmd[1] == '1' ) {
 #ifdef __DOS__
         BIOSSetPage( 1 ); // just make sure it works for the debugger
 #endif
-        p += 2;
+        cmd += 2;
     }
+    WndFree( cmd_line );
     WndGadgetInit();
     WndInit( "Sample Application" );
     WndCreateStatusWindow( &WndColours[GUI_MENU_STANDOUT] );

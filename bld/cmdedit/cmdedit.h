@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -61,8 +62,8 @@
 
 #ifdef __DOS__
 
-#define PASPTR /**/
-#define USHORT  unsigned short
+#define PASPTR      /**/
+#define USHORT      unsigned short
 
 enum { FALSE, TRUE };
 
@@ -286,7 +287,7 @@ enum {
 #define VioGetCurType( c , z ) DVioGetCurType( c )
 #define VioReadCellStr( b, l, r, c, z ) DVioReadCellStr( b, l, r, c );
 #define VioWrtCellStr( b, l, r, c, z ) DVioWrtCellStr( b, l, r, c );
-#define DosOpen( n, h, ac, s, at, fl, md, z ) DDosOpen( n, h )
+#define DosOpen( n, h, ac, s, at, fl, md, z ) (void)(ac),DDosOpen( n, h )
 #define DosFindFirst( s, h, a, b, l, c, z ) DDosFindFirst( s, a, b )
 #define DosFindNext( h, b, l, c ) DDosFindNext( b )
 #define DosQCurDisk( n, m ) DDosQCurDisk( n )

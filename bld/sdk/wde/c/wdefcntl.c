@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -175,7 +176,7 @@ static DISPATCH_ITEM WdeControlActions[] = {
 static void WdeControlModified ( WdeControlObject *obj )
 {
     if( obj != NULL && obj->parent != NULL && obj->parent != obj->base_obj ) {
-        WdeDialogModified( obj->parent );
+        WdeSetDialogModified( (WdeDialogObject *)obj->parent );
     }
 }
 
@@ -326,7 +327,8 @@ bool CALLBACK WdeControlDispatcher( ACTION_ID act, OBJPTR obj, void *p1, void *p
 
 bool WdeControlInit( bool first )
 {
-    _wde_touch( first );
+    /* unused parameters */ (void)first;
+
     WdeAppInst = WdeGetAppInstance();
     WdeControlDispatch = MakeProcInstance_DISPATCHER( WdeControlDispatcher, WdeAppInst );
     return( true );
@@ -440,8 +442,7 @@ bool WdeControlIsMarkValid( WdeControlObject *obj, bool *flag, void *p2 )
 {
     DWORD   style;
 
-    /* touch unused vars to get rid of warning */
-    _wde_touch( p2 );
+    /* unused parameters */ (void)p2;
 
     if( obj->mode == WdeSelect && obj->window_handle != NULL ) {
         style = GET_WNDSTYLE( obj->window_handle );
@@ -459,8 +460,7 @@ bool WdeControlDestroy( WdeControlObject *obj, bool *flag, bool *p2 )
     OBJPTR      next;
     bool        check_scroll;
 
-    /* touch unused vars to get rid of warning */
-    _wde_touch( p2 );
+    /* unused parameters */ (void)p2;
 
     check_scroll = ( obj->parent == obj->base_obj );
 
@@ -485,7 +485,7 @@ bool WdeControlDestroy( WdeControlObject *obj, bool *flag, bool *p2 )
 
     if( !Forward( obj->o_item, DESTROY, flag, NULL ) ) {
         WdeWriteTrail( "WdeControlDestroy: Failed to destroy OITEM!" );
-        if( obj->parent ) {
+        if( obj->parent != NULL ) {
             AddObject( obj->parent, obj->object_handle );
         }
         return( false );
@@ -584,8 +584,7 @@ bool WdeControlSetFont( WdeControlObject *obj, HFONT *font, WdeResizeRatio *resi
     char                *name;
     char                temp[10];
 
-    /* touch unused vars to get rid of warning */
-    _wde_touch( resizer );
+    /* unused parameters */ (void)resizer;
 
     obj->font = *font;
 
@@ -656,9 +655,7 @@ bool WdeControlDraw( WdeControlObject *obj, RECT *area, HDC *dc )
 
 bool WdeControlOnTop( WdeControlObject *obj, void *p1, void *p2 )
 {
-    /* touch unused vars to get rid of warning */
-    _wde_touch( p1 );
-    _wde_touch( p2 );
+    /* unused parameters */ (void)p1; (void)p2;
 
     WdeBringControlToTop( obj );
 
@@ -667,8 +664,7 @@ bool WdeControlOnTop( WdeControlObject *obj, void *p1, void *p2 )
 
 bool WdeControlSetClearInt( WdeControlObject *obj, bool *b, void *p2 )
 {
-    /* touch unused vars to get rid of warning */
-    _wde_touch( p2 );
+    /* unused parameters */ (void)p2;
 
     obj->clear_interior = *b;
 
@@ -677,8 +673,7 @@ bool WdeControlSetClearInt( WdeControlObject *obj, bool *b, void *p2 )
 
 bool WdeControlGetClearInt( WdeControlObject *obj, bool *b, void *p2 )
 {
-    /* touch unused vars to get rid of warning */
-    _wde_touch( p2 );
+    /* unused parameters */ (void)p2;
 
     *b = obj->clear_interior;
 
@@ -703,9 +698,7 @@ bool WdeControlCreateWindow( WdeControlObject *obj, bool *p1, void *p2 )
     OBJ_ID              oid;
     WNDPROC             new_proc;
 
-    /* touch unused vars to get rid of warning */
-    _wde_touch( p1 );
-    _wde_touch( p2 );
+    /* unused parameters */ (void)p1; (void)p2;
 
     if( !Forward( obj->parent, GET_WINDOW_HANDLE, &obj->parent_handle, NULL ) ) {
         WdeWriteTrail( "WdeControlCreateWindow: GET_WINDOW_HANDLE failed!" );
@@ -841,8 +834,7 @@ bool WdeControlCreateWindow( WdeControlObject *obj, bool *p1, void *p2 )
 
 bool WdeControlDestroyWindow( WdeControlObject *obj, bool *quick, bool *destroy_children )
 {
-    /* touch unused vars to get rid of warning */
-    _wde_touch( destroy_children );
+    /* unused parameters */ (void)destroy_children;
 
     if( !quick || (!*quick && (obj->window_handle != NULL)) ) {
         DestroyWindow( obj->window_handle );
@@ -856,8 +848,7 @@ bool WdeControlDestroyWindow( WdeControlObject *obj, bool *quick, bool *destroy_
 
 bool WdeControlShowWindow( WdeControlObject *obj, bool *flag, void *p2 )
 {
-    /* touch unused vars to get rid of warning */
-    _wde_touch( p2 );
+    /* unused parameters */ (void)p2;
 
     WdeShowObjectWindow( obj->window_handle, *flag );
 
@@ -867,8 +858,7 @@ bool WdeControlShowWindow( WdeControlObject *obj, bool *flag, void *p2 )
 bool WdeControlGetResizeInfo( WdeControlObject *obj, RESIZE_ID *info, void *p2 )
 {
     /* touch unused vars to get rid of warning */
-    _wde_touch( obj );
-    _wde_touch( p2 );
+    /* unused parameters */ (void)obj; (void)p2;
 
     if( obj->sizeable && obj->mode == WdeSelect ) {
         *info = R_ALL;
@@ -944,8 +934,7 @@ bool WdeControlValidateAction( WdeControlObject *obj, ACTION_ID *act, void *p2 )
 
 bool WdeControlGetWindowHandle( WdeControlObject *obj, HWND *hwin, void *p2 )
 {
-    /* touch unused vars to get rid of warning */
-    _wde_touch( p2 );
+    /* unused parameters */ (void)p2;
 
     *hwin = obj->window_handle;
 
@@ -1078,8 +1067,7 @@ bool WdeControlCutObject( WdeControlObject *obj, OBJPTR *new, void *p2 )
     NOTE_ID     noteid;
     bool        check_scroll;
 
-    /* touch unused vars to get rid of warning */
-    _wde_touch( p2 );
+    /* unused parameters */ (void)p2;
 
     *new = NULL;
 
@@ -1119,8 +1107,7 @@ bool WdeControlCutObject( WdeControlObject *obj, OBJPTR *new, void *p2 )
 bool WdeControlFirstChild( WdeControlObject *obj, void *p1, void *p2 )
 {
     /* touch unused vars to get rid of warning */
-    _wde_touch( p1 );
-    _wde_touch( p2 );
+    /* unused parameters */ (void)p1; (void)p2;
 
     if( obj->parent == NULL ) {
         return( true );
@@ -1199,9 +1186,8 @@ bool WdeControlNotify( WdeControlObject *obj, NOTE_ID *noteid, void *p2 )
         if( obj->parent == obj->base_obj ) {
             WdeSetControlObjectMenu( FALSE, FALSE, FALSE, obj->mode );
         } else {
-            WdeSetControlObjectMenu( TRUE, WdeIsDialogRestorable( obj->parent ),
-                                     obj->res_info && obj->res_info->hash_table,
-                                     obj->mode );
+            WdeSetControlObjectMenu( TRUE, WdeIsDialogRestorable( (WdeDialogObject *)obj->parent ),
+                                     obj->res_info && obj->res_info->hash_table, obj->mode );
         }
 
         WdeWriteControlToInfo( obj );
@@ -1630,7 +1616,7 @@ bool WdeControlSetObjectInfo( WdeControlObject *obj, void *_info, void *s )
 bool WdeControlSetObjectHelpInfo( WdeControlObject *obj, void *info, char *hs )
 {
 //    WdeDialogBoxControl *info = _info;
-    _wde_touch( info );
+    /* unused parameters */ (void)info;
 
     if( obj->helpsymbol != NULL ) {
         WRMemFree( obj->helpsymbol );
@@ -1659,13 +1645,13 @@ bool WdeControlGetObjectHelpInfo( WdeControlObject *obj, void **_info, char **hs
 
 bool WdeControlResolveSymbol( WdeControlObject *obj, bool *b, bool *from_id )
 {
-    WdeHashValue        val;
+    WRHashValue         val;
     void                *vp;
     bool                found;
 
     if( obj->control_info != NULL && obj->res_info != NULL ) {
         if( from_id != NULL && *from_id ) {
-            vp = WdeResolveValue( obj->res_info->hash_table, (WdeHashValue)GETCTL_ID( obj->control_info ) );
+            vp = WRResolveValue( obj->res_info->hash_table, (WRHashValue)GETCTL_ID( obj->control_info ) );
             if( vp != NULL ) {
                 if( obj->symbol != NULL ) {
                     WRMemFree( obj->symbol );
@@ -1697,13 +1683,13 @@ bool WdeControlResolveSymbol( WdeControlObject *obj, bool *b, bool *from_id )
 
 bool WdeControlResolveHelpSymbol( WdeControlObject *obj, bool *b, bool *from_id )
 {
-    WdeHashValue        val;
+    WRHashValue         val;
     void                *vp;
     bool                found;
 
     if( obj->control_info != NULL && obj->res_info != NULL ) {
         if( from_id != NULL && *from_id ) {
-            vp = WdeResolveValue( obj->res_info->hash_table, (WdeHashValue)GETCTL_HELPID( obj->control_info ) );
+            vp = WRResolveValue( obj->res_info->hash_table, (WRHashValue)GETCTL_HELPID( obj->control_info ) );
             if( vp != NULL ) {
                 if( obj->helpsymbol != NULL ) {
                     WRMemFree( obj->helpsymbol );
@@ -1739,12 +1725,11 @@ bool WdeControlResolveHelpSymbol( WdeControlObject *obj, bool *b, bool *from_id 
 
 bool WdeControlModifyInfo( WdeControlObject *obj, WdeInfoStruct *in, void *p2 )
 {
-    WdeHashEntry        *entry;
+    WRHashEntry         *entry;
     char                *text;
     bool                dup;
 
-    /* touch unused vars to get rid of warning */
-    _wde_touch( p2 );
+    /* unused parameters */ (void)p2;
 
     if( in->u.ctl.text ) {
         if( GETCTL_TEXT( obj->control_info ) ) {
@@ -1785,8 +1770,7 @@ bool WdeControlModifyInfo( WdeControlObject *obj, WdeInfoStruct *in, void *p2 )
 
 bool WdeControlGetOrderMode( WdeControlObject *obj, WdeOrderMode *mode, WdeSetOrderLists *p2 )
 {
-    /* touch unused vars to get rid of warning */
-    _wde_touch( p2 );
+    /* unused parameters */ (void)p2;
 
     *mode = obj->mode;
 
@@ -1862,9 +1846,7 @@ bool WdeControlSizeToText( WdeControlObject *obj, void *p1, void *p2 )
     RECT        pos;
     bool        ok;
 
-    /* touch unused vars to get rid of warning */
-    _wde_touch( p1 );
-    _wde_touch( p2 );
+    /* unused parameters */ (void)p1; (void)p2;
 
     ok = true;
     id = 0;
@@ -1883,7 +1865,7 @@ bool WdeControlSizeToText( WdeControlObject *obj, void *p1, void *p2 )
     }
 
     if( ok ) {
-        ok = WdeGetNameOrOrdSize( obj->parent, GETCTL_TEXT( obj->control_info ), &size );
+        ok = WdeGetNameOrOrdinalSize( obj->parent, GETCTL_TEXT( obj->control_info ), &size );
     }
 
     if( ok ) {

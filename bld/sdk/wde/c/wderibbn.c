@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -256,7 +256,7 @@ void WdeSetRibbonItemState( UINT item, int state )
 
 static void wdeRibbonHelpHook( HWND hwnd, ctl_id id, bool pressed )
 {
-    _wde_touch( hwnd );
+    /* unused parameters */ (void)hwnd;
 
     WdeHandleToolHint( id, pressed );
 }
@@ -265,9 +265,7 @@ static bool wdeRibbonHook( HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam )
 {
     bool         ret;
 
-    _wde_touch( hwnd );
-    _wde_touch( wParam );
-    _wde_touch( lParam );
+    /* unused parameters */ (void)hwnd; (void)wParam; (void)lParam;
 
     if( WdeRibbon == NULL ) {
         return( false );
@@ -324,8 +322,8 @@ bool WdeDoInitRibbon( HINSTANCE inst, WdeRibbonName *tools, int num_tools )
     WdeRibbonInfo->dinfo.helphook = wdeRibbonHelpHook;
     WdeRibbonInfo->dinfo.foreground = NULL;
     WdeRibbonInfo->dinfo.background = NULL;
-    WdeRibbonInfo->dinfo.is_fixed = TRUE;
-    WdeRibbonInfo->dinfo.use_tips = TRUE;
+    WdeRibbonInfo->dinfo.is_fixed = true;
+    WdeRibbonInfo->dinfo.use_tips = true;
 
     return( true );
 }

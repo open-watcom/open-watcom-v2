@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -71,10 +72,7 @@ hw_reg_set *AuxParmDup(         // DUPLICATE AUX PARMS
 char *AuxObjnameDup(            // DUPLICATE AUX OBJNAME
     char *objname )
 {
-    if( objname == NULL ) {
-        return( objname );
-    }
-    return( strsave( objname ) );
+    return( CMemStrDup( objname ) );
 }
 
 void freeAuxInfo( AUX_INFO *i ) // FREE ALL AUX INFO MEM
@@ -252,7 +250,7 @@ AUX_INFO *PragmaGetIndex( AUX_INFO *i )
     if( i == NULL ) {
         return( (AUX_INFO *)PCH_NULL_INDEX );
     }
-#ifndef NDEBUG
+#ifdef DEVBUILD
     if( i->index < PCH_FIRST_INDEX ) {
         CFatal( "aux info not assigned an index" );
     }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -104,8 +104,7 @@ typedef struct toolbar {
     HBRUSH      bgbrush;
     int         border_width;
     tool        *tool_list;
-    char        is_fixed    : 1;
-    char        spare       : 7;
+    boolbit     is_fixed    : 1;
 #ifdef __NT__
     HWND        container;
     WNDPROC     old_wndproc;

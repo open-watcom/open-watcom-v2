@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -58,7 +59,9 @@
 bool WRECtl3DInit ( HINSTANCE inst )
 {
 #if !defined( WRE_USE_3D )
-    _wre_touch( inst );
+
+    /* unused parameters */ (void)inst;
+
     return( true );
 #else
     bool ok;
@@ -75,7 +78,9 @@ bool WRECtl3DInit ( HINSTANCE inst )
 void WRECtl3DFini( HINSTANCE inst )
 {
 #if !defined( WRE_USE_3D )
-    _wre_touch( inst );
+
+    /* unused parameters */ (void)inst;
+
 #else
     WRCtl3dUnregister( inst );
 #endif
@@ -91,8 +96,9 @@ void WRECtl3dColorChange( void )
 void WRECtl3dSubclassDlg( HWND win, WORD w )
 {
 #if !defined( WRE_USE_3D)
-    _wre_touch( win );
-    _wre_touch( w );
+
+    /* unused parameters */ (void)win; (void)w;
+
 #else
     WRCtl3dSubclassDlg( win, w );
 #endif
@@ -101,7 +107,9 @@ void WRECtl3dSubclassDlg( HWND win, WORD w )
 void WRECtl3dSubclassDlgAll( HWND win )
 {
 #if !defined( WRE_USE_3D)
-    _wre_touch( win );
+
+    /* unused parameters */ (void)win;
+
 #else
     WRCtl3dSubclassDlgAll( win );
 #endif

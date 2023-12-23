@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,6 +38,8 @@
  *            a library.  The method of conversion will be from the start
  *            of the file to the end.
  *************************************************************************/
+
+#include "wclbproc.h"
 
     #define GlobalUnlockCheck( hmem ) GlobalUnlock( hmem )
 
@@ -304,22 +306,34 @@ extern void _wpi_getbitmapdim( WPI_HBITMAP hbitmap, int *pwidth, int *pheight );
     #define _wpi_getclassinfo( inst, name, info ) \
                                             GetClassInfo( NULL, name, info )
 
-    #define _wpi_makeprocinstance( proc, inst ) MakeProcInstance( proc, inst )
+    #define _wpi_makeprocinstance( proc, inst ) (WPI_PROC)MakeProcInstance( (FARPROC)proc, inst )
 
     #define _wpi_makedlgprocinstance( proc, inst ) \
-                                    (WPI_DLGPROC)MakeProcInstance( (FARPROC)proc, inst )
+                                    (WPI_DLGPROC)MakeProcInstance_DLG( proc, inst )
 
     #define _wpi_makeenumprocinstance( proc, inst ) \
-                                    (WPI_ENUMPROC)MakeProcInstance( (FARPROC)proc, inst )
+                                    (WPI_ENUMPROC)MakeProcInstance_WNDENUM( proc, inst )
+
+    #define _wpi_makewndprocinstance( proc, inst ) \
+                                    (WPI_WNDPROC)MakeProcInstance_WND( proc, inst )
 
     #define _wpi_makelineddaprocinstance( proc, inst ) \
-                                    (WPI_LINEDDAPROC)MakeProcInstance( (FARPROC)proc, inst )
+                                    (WPI_LINEDDAPROC)MakeProcInstance_LINEDDA( proc, inst )
+
+    #define _wpi_makefontprocinstance( proc, inst ) \
+                                    (WPI_ENUMFONTPROC)MakeProcInstance_ENUMFONT( proc, inst )
 
     #define _wpi_defdlgproc( hwnd, msg, mp1, mp2 ) FALSE
 
-    #define _wpi_freedlgprocinstance( proc ) FreeProcInstance( (FARPROC)proc )
+    #define _wpi_freedlgprocinstance( proc ) FreeProcInstance_DLG( proc )
 
-    #define _wpi_freeenumprocinstance( proc ) FreeProcInstance( (FARPROC)proc )
+    #define _wpi_freeenumprocinstance( proc ) FreeProcInstance_WNDENUM( proc )
+
+    #define _wpi_freewndprocinstance( proc ) FreeProcInstance_WND( proc )
+
+    #define _wpi_freelineddaprocinstance( proc ) FreeProcInstance_LINEDDA( proc )
+
+    #define _wpi_freefontprocinstance( proc ) FreeProcInstance_ENUMFONT( proc )
 
     #define _wpi_freeprocinstance( proc ) FreeProcInstance( (FARPROC)proc )
 
@@ -451,7 +465,7 @@ extern void _wpi_getintwrectvalues( WPI_RECT rect, int *left, int *top,
 
     #define _wpi_filecreate( filename, format ) _lcreat( filename, 0 )
 
-    #define _wpi_fileclose( file_hdl ) _lclose( file_hdl )
+    #define _wpi_fileclose( hfile ) _lclose( hfile )
 
     #define _wpi_filewrite( hfile, buf, size ) _lwrite( hfile, buf, size )
 

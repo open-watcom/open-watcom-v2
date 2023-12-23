@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2022 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -31,7 +31,6 @@
 
 extern char             SamplePath[];
 extern char             *HelpPathList;
-extern system_config    DefSysConfig;
 
 extern sio_data         *SIOData;
 extern sio_data         *CurrSIOData;

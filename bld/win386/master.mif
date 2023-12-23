@@ -49,10 +49,10 @@ objs_exe = $(objs_common) &
 objs_vxd = wdebug.obj &
     $(fpuemu_dir)/386/win386/emu387.obj
 
-.asm : ../conv/win386;../asm
-.c : ../conv/win386;../c
+.asm : $(win386_dir)/conv/win386;$(win386_dir)/asm
+.c : $(win386_dir)/conv/win386;$(win386_dir)/c
 
-inc_dirs = -I"../h" -I"$(lib_misc_dir)/h" -I"$(clib_dir)/_dos/h" -I"$(clib_dir)/intel/h"
+inc_dirs = -I"$(win386_dir)/h" -I"$(lib_misc_dir)/h" -I"$(clib_dir)/_dos/h" -I"$(clib_dir)/intel/h" -I"$(clib_dir)/h"
 
 # cflags stuff
 ###############
@@ -84,7 +84,7 @@ extra_c_flags_toolhelp = -zu
 # aflags stuff
 ###############
 extra_a_flags_wdebug   = -mf
-extra_a_flags_winglue  = -I"../conv/win386"
+extra_a_flags_winglue  = -I"$(win386_dir)/conv/win386"
 !ifeq fmt dll
 extra_a_flags_wincall  = -DDLL32
 extra_a_flags_dllthunk = -DDLL32
@@ -154,7 +154,7 @@ vxdlink : .PROCEDURE
     $(noecho)%create $(LNK)
     @%append $(LNK) system win_vxd
     @%append $(LNK) name $^&.386
-    @%append $(LNK) option desc 'Win386 $($^&_name) Device (Version 1.1 Open Watcom)'
+    @%append $(LNK) option desc 'Win386 $($^&_name) Device (Version $(bld_ver_str) Open Watcom)'
     @%append $(LNK) option modname=WDEBUG
     @%append $(LNK) option map
     @%append $(LNK) segment '_LTEXT'  preload nondiscardable
@@ -173,6 +173,7 @@ dllexelink : .PROCEDURE
     $(noecho)%create $(LNK)
     @%append $(LNK) debug all
     @%append $(LNK) name $^&.ext
+    @%append $(LNK) library pc98s
     @%append $(LNK) library clibs
     @%append $(LNK) option modname=win38600
     @%append $(LNK) option desc '                                                                                '
@@ -188,12 +189,12 @@ dllexelink : .PROCEDURE
     @for %i in ($(objs_$(fmt))) do @%append $(LNK) file %i
     @%append $(LNK) @imports.lnk
 !ifeq fmt exe
-    @%append $(LNK) sys windows mem font
+    @%append $(LNK) sys windows_pc98 mem font
     @%append $(LNK) option rwr
     @%append $(LNK) option stack=12K
     @%append $(LNK) segment CLASS 'STACK' PRELOAD
 !else
-    @%append $(LNK) sys windows dll initinstance memory
+    @%append $(LNK) sys windows_pc98 dll initinstance memory
     @%append $(LNK) option stack=8K
     @%append $(LNK) segment CLASS 'EMU' PRELOAD MOVEABLE
     @%append $(LNK) @exports.lnk

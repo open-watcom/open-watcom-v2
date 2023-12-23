@@ -1,0 +1,31 @@
+name: dosbox-instalation
+description: 'Install DOSBOX run-time if necessary'
+inputs:
+  arch:
+    description: 'run-time platform'
+    required: false
+    default: ''
+    type: string
+runs:
+  using: composite
+  steps:
+  - if: inputs.arch == 'lnx'
+    name: Install DOSBOX
+    run: |
+      for i in {1..3}
+      do
+        sudo apt update --fix-missing
+        sudo apt-get install -y dosbox
+        if [ $? = 0 ]; then
+          break
+        fi
+      done
+    shell: bash
+  - if: inputs.arch == 'osx'
+    name: Install DOSBOX
+    run: brew install dosbox
+    shell: bash
+  - if: inputs.arch == 'osx'
+    name: Install DOSBOX-X
+    run: brew install dosbox-x
+    shell: bash

@@ -1,3 +1,5 @@
+tree_depth = 5
+
 proj_name = flib
 
 !ifndef flib_autodepends
@@ -33,23 +35,27 @@ flib_host_os_netware = nov
 flib_host_os_linux   = linux
 host_os = $(flib_host_os_$(system))
 
+!ifdef lib_debug
+debug = 1
+!endif
+
 !include cproj.mif
 !include deftarg.mif
 
-!include ../../flags.mif
-!include ../../objects.mif
-!include ../../librules.mif
+!include $(f77lib_dir)/flags.mif
+!include $(f77lib_dir)/objects.mif
+!include $(f77lib_dir)/librules.mif
 
 #-------------------------------------------------------------------------------
 
-asm_src_i86 = ../../asmi86;../../../asmi86
-asm_src_386 = ../../asm386;../../../asm386
-asm_src_axp = ../../asmaxp;../../../asmaxp
-asm_src_ppc = ../../asmppc;../../../asmppc
+asm_src_i86 = $(f77lib_dir)/asmi86
+asm_src_386 = $(f77lib_dir)/asm386
+asm_src_axp = $(f77lib_dir)/asmaxp
+asm_src_ppc = $(f77lib_dir)/asmppc
 
 .asm: $(asm_src_$(host_cpu))
 
-.c: ../../c;../../c/math;../../c/ifns;../../c/ufns
+.c: $(f77lib_dir)/c;$(f77lib_dir)/c/math;$(f77lib_dir)/c/ifns;$(f77lib_dir)/c/ufns
 
 #-------------------------------------------------------------------------------
 
@@ -59,14 +65,14 @@ $(libname).lib : errcod.gh $(files) $(__MAKEFILES__)
     @%make echo_lib
     $(librarian) $(flib_lib_flags) $@ @$(libname).lbc
 
-errmsg.grc errgrp.gc errcod.gh: ../../../h/error.msg
+errmsg.grc errgrp.gc errcod.gh: $(f77_dir)/h/error.msg
     errsrc $[@ eo r
 
-jerrmsg.grc:  ../../../h/error.msg
+jerrmsg.grc:  $(f77_dir)/h/error.msg
     errsrc $[@ jo r
 
-rcui_inc_dirs = -I. -I.. -I"../../h" -I"../../../h" $(asminline_inc_dirs) -I"$(comp_cfg_dir)/h" -I"$(fe_misc_dir)/h"
+rcui_inc_dirs = -I. -I.. -I"$(f77lib_dir)/h" -I"$(f77_dir)/h" $(asminline_inc_dirs) -I"$(comp_cfg_dir)/h" -I"$(fe_misc_dir)/h"
 
-errmsg.res : ../../h/errmsg.rc errmsg.grc jerrmsg.grc ../../../h/errcod.h errcod.gh
+errmsg.res : $(f77lib_dir)/h/errmsg.rc errmsg.grc jerrmsg.grc $(f77_dir)/h/errcod.h errcod.gh
     @%make echo_rc
     $(rcui8)

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,67 +34,66 @@
 #include "symdbg.h"
 #include "targproc.h"
 
-#define ROUTINE_LOADS_DS                  0x8000
 
 typedef enum {
-        GENERATED_PROLOG                = 0x01,
-        GENERATED_EPILOG                = 0x02,
-#include "targprol.h"
-        _GENERATED__LAST                = 0x8000        // force to 2 bytes
+    #define pick(e,v)   e = v,
+    #include "targprol.h"
+    #undef pick
+    PST__LAST           = 0x8000,   // force to unsigned short type if possible
 } prolog_state_def;
 
 typedef struct var_set {
-        type_length     size;
-        type_length     base;   /*  base offset from frame pointer */
+    type_length         size;
+    type_length         base;   /*  base offset from frame pointer */
 } var_set;
 
 typedef struct parm_state {
-        hw_reg_set              used;
-        hw_reg_set              *table;
-        hw_reg_set              *curr_entry;
-        type_length              offset;
+    hw_reg_set          used;
+    hw_reg_set          *table;
+    hw_reg_set          *curr_entry;
+    type_length         offset;
 #if _TARGET & _TARG_PPC
-        uint_32                 gr;
-        uint_32                 fr;
+    int                 gr;
+    int                 fr;
 #endif
 } parm_state;
 
 
 typedef struct call_state {
-        parm_state              parm;
-        hw_reg_set              used;
-        hw_reg_set              modify;
-        hw_reg_set              unalterable;
-        hw_reg_set              return_reg;
-        call_attributes         attr;
-        call_registers          regs;
+    parm_state          parm;
+    hw_reg_set          used;
+    hw_reg_set          modify;
+    hw_reg_set          unalterable;
+    hw_reg_set          return_reg;
+    call_attributes     attr;
+    call_registers      regs;
 } call_state;
 
 typedef struct label_id {
-        struct label_id         *next;
-        label_handle            label;
-        block_num               block_id;
+    struct label_id     *next;
+    label_handle        label;
+    block_num           block_id;
 } label_id;
 
 typedef struct proc_def {
-        target_proc_def         targ;
-        struct var_set          parms;
-        struct var_set          locals;
-        struct call_state       state;
-        struct block            *head_block;
-        struct block            *tail_block;
-        struct proc_def         *next_proc;
-        union  name             *names[N_CLASS_MAX];
-        struct block            *curr_block;
-        pointer                 frame_index;
-        pointer                 label;
-        int                     ins_id;
-        bool                    block_by_block;
-        bool                    untrimmed;
-        bool                    contains_call;
-        level_depth             lex_level;
-        prolog_state_def        prolog_state;
-        union  name             *lasttemp;
-        union  name             *dummy_index;
-        instruction             *parms_list;
+    target_proc_def     targ;
+    struct var_set      parms;
+    struct var_set      locals;
+    struct call_state   state;
+    struct block        *head_block;
+    struct block        *tail_block;
+    struct proc_def     *next_proc;
+    union  name         *names[N_CLASS_MAX];
+    struct block        *curr_block;
+    pointer             frame_index;
+    pointer             label;
+    int                 ins_id;
+    bool                block_by_block;
+    bool                untrimmed;
+    bool                contains_call;
+    level_depth         lex_level;
+    prolog_state_def    prolog_state;
+    union  name         *lasttemp;
+    union  name         *dummy_index;
+    instruction         *parms_list;
 } proc_def;

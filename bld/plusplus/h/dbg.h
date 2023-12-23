@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 
 #include "dbgzap.h"
 #include "iosupp.h"

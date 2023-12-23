@@ -1,9 +1,10 @@
 #
 # WATCOM Presentation Graphics (PGCHART.LIB)
 #
-proj_name = pgchart
 
-subdir_v2 = v2objs
+tree_depth = 4
+
+proj_name = pgchart
 
 crwatpro_gsp = crwatpro.gsp
 
@@ -28,6 +29,11 @@ memory_model_i86 = l
 
 !include cproj.mif
 !include defrule.mif
+defrule_key = v2
+subdir_v2 = v2objs
+extra_cpp_v2_flags = -DVERSION2
+extra_a_v2_flags = -DVERSION2
+!include defrule.mif
 !include deftarg.mif
 
 #
@@ -35,7 +41,7 @@ memory_model_i86 = l
 #
 .c: ../c
 
-inc_dirs = -I. -I"../h" -I"../../h" -I"$(mathlib_dir)/h" -I"$(watcom_dir)/h" $(inc_dirs_lang_dos)
+inc_dirs = -I. -I"../h" -I"$(graphlib_dir)/h" -I"$(mathlib_dir)/h" -I"$(watcom_dir)/h" $(inc_dirs_lang_dos)
 
 extra_cpp_flags = -D_ENABLE_AUTODEPEND -D_FARD=
 
@@ -108,9 +114,3 @@ wsplice_opts_qnx = -kQNX -u
 wsplice_opts_win = -kDOS
 
 !include $(graphlib_dir)/headers.mif
-
-extra_cpp_v2_flags = -DVERSION2
-extra_a_v2_flags = -DVERSION2
-
-defrule_key = v2
-!include defrule.mif

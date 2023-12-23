@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -210,7 +211,7 @@ mad_status MADIMPENTRY( TypeToString )( mad_radix radix, const mad_type_info *mt
     default:
         return( MS_UNSUPPORTED );
     }
-    ms = DoConvert( mti, data, new_mti, &temp );
+    ms = DoConvert( mti, data, new_mti, temp );
     if( ms != MS_OK )
         return( ms );
     return( MCTypeToString( radix, new_mti, temp, buff, buff_size_p ) );

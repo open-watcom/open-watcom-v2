@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -55,7 +55,7 @@ typedef struct WStringNode {
     WResID              *block_name;
     WResLangType        lang;
     size_t              data_size;
-    void                *data;
+    char                *data;
     uint_16             MemFlags;
     struct WStringNode  *next;
 } WStringNode;
@@ -82,7 +82,7 @@ WRESEDLLENTRY void                    WRESEAPI WStrFreeStringInfo( WStringInfo *
 WRESEDLLENTRY extern void             WRESEAPI WStringInit( void );
 WRESEDLLENTRY extern void             WRESEAPI WStringFini( void );
 WRESEDLLENTRY extern int              WRESEAPI WStringCloseSession( WStringHandle, int );
-WRESEDLLENTRY extern WStringHandle    WRESEAPI WRStringStartEdit( WStringInfo * );
+WRESEDLLENTRY extern WStringHandle    WRESEAPI WStringStartEdit( WStringInfo * );
 WRESEDLLENTRY extern WStringInfo *    WRESEAPI WStringEndEdit( WStringHandle );
 WRESEDLLENTRY extern WStringInfo *    WRESEAPI WStringGetEditInfo( WStringHandle );
 WRESEDLLENTRY extern bool             WRESEAPI WStringIsModified( WStringHandle );

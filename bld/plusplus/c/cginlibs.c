@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,59 +43,67 @@ enum {
 
 typedef struct lib_list {
     struct lib_list *next;
-    char            libname[2]; // first char is priority '1'-'9', next is library name
+    char            priority;   // priority '1'-'9'
+    char            libname[1]; // library name
 } lib_list;
 
 static lib_list *libHead;
 
-static void addNewLib( char *name, char priority )
-/************************************************/
+static void addNewLib( const char *libname, char priority )
+/*********************************************************/
 {
-    lib_list    **next_owner;
-    lib_list    **new_owner;
-    lib_list    **old_owner;
+    lib_list    **owner;
     lib_list    *lib;
-    int         len;
 
-    new_owner = &libHead;
-    old_owner = NULL;
-    for( next_owner = &libHead; (lib = *next_owner) != NULL; next_owner = &lib->next ) {
-        if( lib->libname[0] < priority ) {
-            if( old_owner == NULL && strcmp( lib->libname + 1, name ) == 0 ) {
-                old_owner = next_owner;
+    for( owner = &libHead; (lib = *owner) != NULL; owner = &lib->next ) {
+        if( lib->priority < priority ) {
+            lib_list    **tmp_owner;
+            /*
+             * search library entry with lower priority
+             */
+            for( tmp_owner = owner; (lib = *tmp_owner) != NULL; tmp_owner = &lib->next ) {
+                if( strcmp( lib->libname, libname ) == 0 ) {
+                    /*
+                     * remove library entry from linked list
+                     */
+                    *tmp_owner = lib->next;
+                    break;
+                }
             }
-        } else {
-            new_owner = &lib->next;
-            if( strcmp( lib->libname + 1, name ) == 0 ) {
-                new_owner = NULL;
-                break;
-            }
+            break;
+        }
+        if( strcmp( lib->libname, libname ) == 0 ) {
+            /*
+             * library already exists with higher or equal priority
+             * no change required
+             */
+            return;
         }
     }
-    if( old_owner != NULL ) {
-        lib = *old_owner;
-        *old_owner = lib->next;
-    } else if( new_owner != NULL ) {
-        len = strlen( name );
-        lib = CMemAlloc( offsetof( lib_list, libname ) + len + 2 );
-        memcpy( lib->libname + 1, name, len + 1 );
+    /*
+     * if library entry not found then create new one
+     */
+    if( lib == NULL ) {
+        lib = CMemAlloc( sizeof( lib_list ) + strlen( libname ) );
+        strcpy( lib->libname, libname );
     }
-    if( new_owner != NULL ) {
-        lib->libname[0] = priority;
-        lib->next = *new_owner;
-        *new_owner = lib;
-    }
+    /*
+     * set priority and insert library entry to proper position
+     */
+    lib->priority = priority;
+    lib->next = *owner;
+    *owner = lib;
 }
 
-void CgInfoAddUserLib( char *name )
-/*********************************/
+void CgInfoAddUserLib( const char *libname )
+/******************************************/
 {
-    addNewLib( name, LIB_USER_PRIORITY );
+    addNewLib( libname, LIB_USER_PRIORITY );
 }
 
 
-void CgInfoAddCompLib( char *name )
-/*********************************/
+void CgInfoAddCompLib( const char *name )
+/***************************************/
 {
     addNewLib( name + 1, name[0] );
 }

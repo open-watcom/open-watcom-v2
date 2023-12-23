@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,7 +31,7 @@
 ****************************************************************************/
 
 
-#if defined ( __NW40__ )
+#if defined( __NW40__ )
 extern int      ImportCLIBSymbols( void );
 #endif
 extern int      ValidatePID( T_ProcessID *pPID );
@@ -39,3 +40,5 @@ extern void     UnBoobyTrapPID( T_ProcessID *pPID );
 extern char     *GetPIDName( T_ProcessID *pPID );
 extern struct   LoadDefinitionStructure *GetNLMFromPID( T_ProcessID *pPID );
 extern void     SetupPIDForACleanExit( T_ProcessID *pPID );
+extern int      WriteStdErr( char *buff, int len );
+

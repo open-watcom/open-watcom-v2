@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -50,7 +50,6 @@ trap_retval TRAP_ENV( set_var )( void )
     var = GetInPtr( sizeof( *req ) );
     value = GetInPtr( sizeof( *req ) + strlen( var ) + 1 );
     ret = GetOutPtr( 0 );
-
     ret->err = 0;
 
     if( value[0] == '\0' )
@@ -78,8 +77,8 @@ trap_retval TRAP_ENV( get_var )( void )
     req = GetInPtr( 0 );
     var = GetInPtr( sizeof( *req ) );
     ret = GetOutPtr( 0 );
-    value = GetOutPtr( sizeof( *ret ) );
     ret->err = 0;
+    value = GetOutPtr( sizeof( *ret ) );
 
     handle = RdosOpenProcessEnv();
     RdosDeleteEnvVar( handle, var );

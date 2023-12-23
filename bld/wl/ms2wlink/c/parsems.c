@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -60,15 +60,18 @@ bool InitParsing( void )
 // initialize the parsing stuff, and see if there is anything on the command
 // line.
 {
+    int     cmd_len;
+
     CmdFile = MemAlloc( sizeof( cmdfilelist ) );
+    cmd_len = _bgetcmd( NULL, 0 ) + 1;
+    CmdFile->buffer = MemAlloc( cmd_len );
+    _bgetcmd( CmdFile->buffer, cmd_len );
     CmdFile->next = NULL;
-    CmdFile->buffer = MemAlloc( MAX_LINE );   // maximum size of a command line.
     CmdFile->how = COMMANDLINE;
     CmdFile->oldhow = COMMANDLINE;
     CmdFile->where = MIDST;
     CmdFile->name = NULL;
     CmdFile->fp = NULL;
-    getcmd( CmdFile->buffer );
     CmdFile->current = CmdFile->buffer;
     EatWhite();
     return( true );

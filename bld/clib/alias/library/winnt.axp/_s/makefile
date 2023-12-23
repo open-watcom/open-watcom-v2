@@ -3,4 +3,4 @@ processor=axp
 system=winnt
 linkage=dynamic
 
-!include $(clib_dir)/mklib.mif
+!include ../../../../mklib.mif

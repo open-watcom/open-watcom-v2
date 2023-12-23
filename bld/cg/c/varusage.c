@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -203,7 +203,7 @@ static void TransferTempBlockUsage( block *blk )
     instruction *ins;
     opcnt       i;
 
-    for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+    for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
         for( i = ins->num_operands; i-- > 0; ) {
             TransferOneTempBlockUsage( ins->operands[i] );
         }
@@ -251,7 +251,7 @@ static  void    TransferMemBlockUsage( block *blk )
     instruction *ins;
     opcnt       i;
 
-    for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+    for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
         for( i = ins->num_operands; i-- > 0; ) {
             TransferOneMemBlockUsage( ins->operands[i] );
         }
@@ -304,7 +304,7 @@ void    TransferTempFlags( void )
     opcnt       i;
 
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+        for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             for( i = ins->num_operands; i-- > 0; ) {
                 TransferOneTempFlag( ins->operands[i] );
             }
@@ -371,7 +371,7 @@ static  void    SearchDefUse( void )
 
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         touched_non_op = false;
-        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+        for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             if( ( ins->head.opcode == OP_CALL
                || ins->head.opcode == OP_CALL_INDIRECT )
              && ( ( ins->flags.call_flags & CALL_READS_NO_MEMORY ) == 0

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -83,38 +83,38 @@ dis_return DisInit( dis_cpu cpu, dis_handle *h, bool swap_bytes )
 {
     h->cpu = cpu;
     switch( cpu ) {
-#if DISCPU & DISCPU_axp
-    case DISCPU_axp:
+#if DISCPU & DISCPU_AXP
+    case DISCPU_AXP:
         h->d = &AXPData;
         break;
 #endif
-#if DISCPU & DISCPU_ppc
-    case DISCPU_ppc:
+#if DISCPU & DISCPU_PPC
+    case DISCPU_PPC:
         h->d = &PPCData;
         break;
 #endif
-#if DISCPU & DISCPU_x86
-    case DISCPU_x86:
+#if DISCPU & DISCPU_X86
+    case DISCPU_X86:
         h->d = &X86Data;
         break;
 #endif
-#if DISCPU & DISCPU_x64
-    case DISCPU_x64:
+#if DISCPU & DISCPU_X64
+    case DISCPU_X64:
         h->d = &X64Data;
         break;
 #endif
-#if DISCPU & DISCPU_jvm
-    case DISCPU_jvm:
+#if DISCPU & DISCPU_JVM
+    case DISCPU_JVM:
         h->d = &JVMData;
         break;
 #endif
-#if DISCPU & DISCPU_sparc
-    case DISCPU_sparc:
+#if DISCPU & DISCPU_SPARC
+    case DISCPU_SPARC:
         h->d = &SPARCData;
         break;
 #endif
-#if DISCPU & DISCPU_mips
-    case DISCPU_mips:
+#if DISCPU & DISCPU_MIPS
+    case DISCPU_MIPS:
         h->d = &MIPSData;
         break;
 #endif
@@ -139,10 +139,10 @@ void DisDecodeInit( dis_handle *h, dis_dec_ins *ins )
     memset( ins, 0, sizeof( *ins ) );
     ins->num_ops = MAX_NUM_OPERANDS + 1;
     switch( h->cpu ) {
-    case DISCPU_axp:
-    case DISCPU_ppc:
-    case DISCPU_sparc:
-    case DISCPU_mips:
+    case DISCPU_AXP:
+    case DISCPU_PPC:
+    case DISCPU_SPARC:
+    case DISCPU_MIPS:
         ins->size = sizeof( unsigned_32 );
         break;
     }
@@ -230,8 +230,8 @@ char *DisAddReg( dis_register reg, char *dst, dis_format_flags flags )
 char *DisOpFormat( dis_handle *h, void *d, dis_dec_ins *ins, dis_format_flags flags,
                         unsigned i, char *p, size_t buff_len )
 {
-    const char chLbrac = ( h->cpu == DISCPU_sparc ) ? '[' : '(';
-    const char chRbrac = ( h->cpu == DISCPU_sparc ) ? ']' : ')';
+    const char chLbrac = ( h->cpu == DISCPU_SPARC ) ? '[' : '(';
+    const char chRbrac = ( h->cpu == DISCPU_SPARC ) ? ']' : ')';
     char       *end = p + buff_len;
 
 
@@ -241,12 +241,12 @@ char *DisOpFormat( dis_handle *h, void *d, dis_dec_ins *ins, dis_format_flags fl
     //   [ %reg + offset ]
     // not like x86:
     //   offset[reg]
-    if( h->cpu != DISCPU_sparc ) {
+    if( h->cpu != DISCPU_SPARC ) {
         p += DisCliValueString( d, ins, i, p, end - p );
     }
     switch( ins->op[i].type & DO_MASK ) {
     case DO_IMMED:
-        if( h->cpu == DISCPU_sparc ) {
+        if( h->cpu == DISCPU_SPARC ) {
             p += DisCliValueString( d, ins, i, p, end - p );
         }
         break;
@@ -255,7 +255,7 @@ char *DisOpFormat( dis_handle *h, void *d, dis_dec_ins *ins, dis_format_flags fl
         break;
     case DO_ABSOLUTE:
     case DO_RELATIVE:
-        if( h->cpu == DISCPU_sparc ) {
+        if( h->cpu == DISCPU_SPARC ) {
             p += DisCliValueString( d, ins, i, p, end - p );
             break;
         }
@@ -264,7 +264,7 @@ char *DisOpFormat( dis_handle *h, void *d, dis_dec_ins *ins, dis_format_flags fl
         if( ins->op[i].base != DR_NONE || ins->op[i].index != DR_NONE ) {
             *p++ = chLbrac;
             p = DisAddReg( ins->op[i].base, p, flags );
-            if( h->cpu != DISCPU_sparc ) {
+            if( h->cpu != DISCPU_SPARC ) {
                 if( ins->op[i].index != DR_NONE ) {
                     *p++ = ',';
                     p = DisAddReg( ins->op[i].index, p, flags );

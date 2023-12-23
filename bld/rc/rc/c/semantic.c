@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,20 +35,23 @@
 #include "global.h"
 #include "rcerrors.h"
 #include "semantic.h"
-#include "tmpctl.h"
 #include "rcrtns.h"
 #include "rccore.h"
 #include "wres.h"
 
 
-/* used in the work around for MS format RES files */
+/*
+ * used in the work around for MS format RES files
+ */
 static FILE         *tmpResFile = NULL;     /* holding place for the RES file handle */
-static char         *tmpResFileName = "Temporary file 1 (res)";
+static char         *tmpResFileName = TMPFILE1;
 
 static FILE         *save_fp;               /* holding place for the RES file handle */
 static char         *save_name;
 
-/* Modified from WINNT.H */
+/*
+ * Modified from WINNT.H
+ */
 #ifndef MAKELANGID
 #define MAKELANGID(p, s)       ((((uint_16)(s)) << 10) | (uint_16)(p))
 #endif
@@ -61,10 +65,12 @@ SemOffset SemStartResource( void )
     if( !CurrResFile.IsWatcomRes ) {
         tmpResFile = ResOpenFileTmp( NULL );
         if( tmpResFile == NULL ) {
-            ResCloseFile( CurrResFile.fp );
+            RCCloseFile( &(CurrResFile.fp) );
             RcFatalError( ERR_OPENING_TMP, tmpResFileName, LastWresErrStr() );
         } else {
-            /* save current values */
+            /*
+             * save current values
+             */
             save_fp = CurrResFile.fp;
             save_name = CurrResFile.filename;
             CurrResFile.fp = tmpResFile;
@@ -79,10 +85,14 @@ SemLength SemEndResource( SemOffset start )
 {
     SemLength   len;
 
-    /* the length of the resource */
+    /*
+     * the length of the resource
+     */
     len = ResTell( CurrResFile.fp ) - start;
     if( !CurrResFile.IsWatcomRes ) {
-        /* restore previous values */
+        /*
+         * restore previous values
+         */
         CurrResFile.fp = save_fp;
         CurrResFile.filename = save_name;
     }
@@ -106,17 +116,20 @@ static void copyMSFormatRes( WResID *name, WResID *type, ResMemFlags flags,
     uint_8              cur_byte;
     bool                error;
 
-    /* fill in and output a MS format resource header */
-    ms_head.Type = WResIDToNameOrOrd( type );
-    ms_head.Name = WResIDToNameOrOrd( name );
+    /*
+     * fill in and output a MS format resource header
+     */
+    ms_head.Type = WResIDToNameOrOrdinal( type );
+    ms_head.Name = WResIDToNameOrOrdinal( name );
     ms_head.MemoryFlags = flags;
     ms_head.Size = loc.len;
     ms_head.LanguageId = MAKELANGID( lang->lang, lang->sublang );
     ms_head.Version = 0L; /* Currently Unsupported */
     ms_head.DataVersion = 0L;
     ms_head.Characteristics = 0L; /* Currently Unsupported */
-
-    /* OS/2 resource header happens to be identical to Win16 */
+    /*
+     * OS/2 resource header happens to be identical to Win16
+     */
     if( CmdLineParms.TargetOS == RC_TARGET_OS_WIN16 ||
         CmdLineParms.TargetOS == RC_TARGET_OS_OS2 ) {
         error = MResWriteResourceHeader( &ms_head, CurrResFile.fp, false );
@@ -132,12 +145,16 @@ static void copyMSFormatRes( WResID *name, WResID *type, ResMemFlags flags,
         if( tmpResFile == NULL ) {
             RcError( ERR_READING_TMP, tmpResFileName, LastWresErrStr() );
         } else {
-            /* copy the data from the temporary file to the RES file */
+            /*
+             * copy the data from the temporary file to the RES file
+             */
             if( ResSeek( tmpResFile, loc.start, SEEK_SET ) ) {
                 RcError( ERR_READING_TMP, tmpResFileName, LastWresErrStr() );
             } else {
-                /* this is very inefficient but hopefully the buffering in layer0.c */
-                /* will make it tolerable */
+                /*
+                 * this is very inefficient but hopefully the buffering in layer0.c
+                 * will make it tolerable
+                 */
                 ErrorHasOccured = false;
                 for( cur_byte_num = 0; cur_byte_num < loc.len; cur_byte_num++ ) {
                     error = ResReadUint8( &cur_byte, tmpResFile );
@@ -145,13 +162,12 @@ static void copyMSFormatRes( WResID *name, WResID *type, ResMemFlags flags,
                         RcError( ERR_READING_TMP, tmpResFileName, LastWresErrStr() );
                         ErrorHasOccured = true;
                         break;
-                    } else {
-                        error = ResWriteUint8( cur_byte, CurrResFile.fp );
-                        if( error ) {
-                            RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename, LastWresErrStr() );
-                            ErrorHasOccured = true;
-                            break;
-                        }
+                    }
+                    error = ResWriteUint8( cur_byte, CurrResFile.fp );
+                    if( error ) {
+                        RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename, LastWresErrStr() );
+                        ErrorHasOccured = true;
+                        break;
                     }
                 }
             }
@@ -159,8 +175,8 @@ static void copyMSFormatRes( WResID *name, WResID *type, ResMemFlags flags,
     }
 }
 
-void SemAddResource( WResID * name, WResID * type, ResMemFlags flags, ResLocation loc )
-/*************************************************************************************/
+void SemAddResource( WResID *name, WResID *type, ResMemFlags flags, ResLocation loc )
+/***********************************************************************************/
 {
     SemAddResource2( name, type, flags, loc, NULL );
 }
@@ -199,10 +215,12 @@ void SemAddResource2( WResID *name, WResID *type, ResMemFlags flags,
         } else {
             ReportDupResource( name, type, filename, CmdLineParms.InFileName, true );
         }
-        /* The resource has already been written but we can't add it to */
-        /* directory. This will make the .RES file larger but will otherwise */
-        /* not affect it since there will be no references to the resource in */
-        /* the directory. */
+        /*
+         * The resource has already been written but we can't add it to
+         * directory. This will make the .RES file larger but will otherwise
+         * not affect it since there will be no references to the resource in
+         * the directory.
+         */
     } else if( error ) {
         RcError( ERR_OUT_OF_MEMORY );
         ErrorHasOccured = true;
@@ -212,9 +230,10 @@ void SemAddResource2( WResID *name, WResID *type, ResMemFlags flags,
         if( !duplicate ) {
             copyMSFormatRes( name, type, flags, loc, lang );
         }
-        /* erase the temporary RES file */
-        ResCloseFile( tmpResFile );
-        tmpResFile = NULL;
+        /*
+         * erase the temporary RES file
+         */
+        RCCloseFile( &tmpResFile );
     }
 }
 

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,7 +36,6 @@
 #include "cgstd.h"
 #include "cgaux.h"
 #include "cmemmgr.h"
-#include "strsave.h"
 #include "callinfo.h"
 
 
@@ -82,6 +81,8 @@ global aux_info         STOSBInfo;
 
 #define MAXIMUM_BYTESEQ         4096
 #define MAXIMUM_PARMSETS        32
+#define ASM_BLOCK               64
+#define REG_BUFF_SIZE           20
 
 #if _CPU == 386
 #define DEFAULT_PCH_NAME        "wcc386.pch"

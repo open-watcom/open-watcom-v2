@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -69,7 +69,7 @@ bool                    BlocksUnTrimmed;
 an                      AddrList;
 segment_id              DbgLocals;
 segment_id              DbgTypes;
-unsigned_16             TypeIdx;
+uint_16                 TypeIdx;
 int                     InOptimizer;
 byte                    OptForSize;
 bool                    HaveLiveInfo;

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,13 +34,12 @@
 #include "cp.h"
 #include <stdint.h>
 #include "getopt.h"
+#include "argvenv.h"
 #include "iopath.h"
 #include "filerx.h"
 
 #include "clibext.h"
 
-
-char *OptEnvVar="cp";
 
 static void parseTD( char *, char, unsigned *, unsigned *, unsigned * );
 static void doneCP( void );
@@ -88,6 +87,8 @@ int main( int argc, char *argv[] )
      */
     MemInit();
     StartPrint();
+
+    argv = ExpandEnv( &argc, argv, "CP" );
 
     /*
      * get options
@@ -202,6 +203,8 @@ int main( int argc, char *argv[] )
     CopyOneFile( argv[2], argv[1] );
     DropALine();
     doneCP();
+    MemFree( argv );
+
     return( 0 );
 } /* main */
 

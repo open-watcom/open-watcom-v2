@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -140,7 +140,7 @@ static  name    *GetGenericTLSDataRef( instruction *ins, name *op, type_class_de
              * startup sequence. So keep call in first block, but make it
              * before next instruction of last one  (== after last one).
              */
-            DropCall( HeadBlock->ins.hd.prev->head.next, tls );
+            DropCall( HeadBlock->ins.head.prev->head.next, tls );
         }
     }
     if( BlockByBlock ) {
@@ -156,7 +156,7 @@ static  name    *GetGenericTLSDataRef( instruction *ins, name *op, type_class_de
 static  name    *GetTLSDataRef( instruction *ins, name *op, type_class_def type_class )
 /*************************************************************************************/
 {
-    if( _IsTargetModel( GENERIC_TLS ) ) {
+    if( _IsTargetModel( CGSW_X86_GENERIC_TLS ) ) {
         return( GetNTTLSDataRef( ins, op, type_class ) );
     } else {
         return( GetGenericTLSDataRef( ins, op, type_class ) );
@@ -210,7 +210,7 @@ static  void    ExpandTlsOp( instruction *ins, name **pop )
             PrefixIns( ins, new_ins );
             index = op->i.index;
             if( op->i.scale != 0 ) {
-                const signed_32 values[] = { 1, 2, 4, 8, 16 };
+                const int_32 values[] = { 1, 2, 4, 8, 16 };
                 if( op->i.scale > 4 ) _Zoiks( ZOIKS_134 );
                 index = AllocTemp( WD );
                 new_ins = MakeBinary( OP_MUL, op->i.index,

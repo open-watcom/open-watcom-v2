@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -124,13 +124,14 @@ void    Wait8087( void )
     /* Prior to 386, FWAITs are always needed. On 386 and up, only when
      * user explicitly asked for them.
      */
-    if( _CPULevel( CPU_386 ) && _IsntTargetModel( GEN_FWAIT_386 ) )
+    if( _CPULevel( CPU_386 )
+      && _IsntTargetModel( CGSW_X86_GEN_FWAIT_386 ) )
         return;
 
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         last_fpins = NULL;
         past_jump = false;
-        for( ins = blk->ins.hd.next; ; ins = ins->head.next ) {
+        for( ins = blk->ins.head.next; ; ins = ins->head.next ) {
             for( ; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
                 if( _OpIsCall( ins->head.opcode ) )
                     break;

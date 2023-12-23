@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -150,7 +150,6 @@ int main( int argc, char **argv )
                 count = &data->d.old_info.count[0];
                 l -= offsetof( samp_block, d.old_info.count );
             } else {
-                COND_SWAP_16( data->d.info.config.arch );
                 printf( "  cpu=%d, fpu=%d, os_maj=%d, os_min=%d, os=%d, arch=%d\n",
                         data->d.info.config.cpu, data->d.info.config.fpu,
                         data->d.info.config.osmajor, data->d.info.config.osminor,
@@ -264,7 +263,7 @@ int main( int argc, char **argv )
             } else {
                 sptr = &data->d.cgraph.sample[0];
                 for( i = 0; i < j; i++ ) {
-                    if( sptr->push_n != (uint_16)-1 || sptr->pop_n != (uint_16)-1 ) {
+                    if( sptr->push_n != CGRAPH_NO_ENTRY || sptr->pop_n != CGRAPH_NO_ENTRY ) {
                         length -= sptr->pop_n;
                         if( length < 0 ) {
                             printf( "\n** Error: stack exhausted!\n\n" );

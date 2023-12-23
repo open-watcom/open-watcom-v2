@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -165,7 +165,7 @@ static  int  EndSub( cv_out *out )
 
     AlignBuff( out );
     len = out->ptr - out->buff;
-    if( _IsModel( DBG_TYPES ) ) {
+    if( _IsModel( CGSW_GEN_DBG_TYPES ) ) {
         old_segid = SetOP( CVTypes );
 //        here = AskBigLocation();
         DataBytes( len, out->buff );
@@ -182,7 +182,7 @@ static  long_offset   EndTypeString( cv_out *out )
     unsigned        len;
     long_offset     here = 0;
 
-    if( _IsModel( DBG_TYPES ) ) {
+    if( _IsModel( CGSW_GEN_DBG_TYPES ) ) {
         AlignBuff( out );
         len = out->ptr - out->buff;
         *((u2 *)&out->buff[0]) = len - sizeof( u2 );  /* set type rec len*/
@@ -225,8 +225,8 @@ static  void PutFld2( cv_out *out, short num )
     out->ptr += sizeof( short );
 }
 
-static void PutFldSized( cv_out *out, int size, unsigned_32 val )
-/***************************************************************/
+static void PutFldSized( cv_out *out, int size, uint_32 val )
+/***********************************************************/
 {
     switch( size ) {
     case 1:
@@ -244,8 +244,8 @@ static void PutFldSized( cv_out *out, int size, unsigned_32 val )
     }
 }
 
-static void PutLFInt( cv_out *out, cv_psize size, unsigned_32 val )
-/*****************************************************************/
+static void PutLFInt( cv_out *out, cv_psize size, uint_32 val )
+/*************************************************************/
 {
     switch( size ) {
     case CV_IB1:
@@ -285,12 +285,12 @@ static lf_values   LFIntType( int size )
     return( itipe );
 }
 
-void CVPutINum( cv_out *out, signed_32 num )
-/******************************************/
+void CVPutINum( cv_out *out, int_32 num )
+/***************************************/
 {
     byte       *ptr;
 #define LC( what, to )   *((to *)&what)
-    if( num >= 0 && num < 0x00008000 ){
+    if( num >= 0 && num < 0x00008000 ) {
         *((u2*)out->ptr) = num;  /* out num as is */
         out->ptr += sizeof( u2 );
         return;
@@ -300,11 +300,11 @@ void CVPutINum( cv_out *out, signed_32 num )
         LC( ptr[0],u2 ) = LF_CHAR;
         LC( ptr[2],u1 ) = num;
         ptr += sizeof(u2) + sizeof( u1 );
-    }else if( num >= -32768 && num <= 32767 ) {
+    } else if( num >= -32768 && num <= 32767 ) {
         LC( ptr[0],u2 ) = LF_SHORT;
         LC( ptr[2],u2 ) = num;
         ptr += sizeof(u2) + sizeof( u2 );
-    }else if( num > 0 && num <= 0x0000ffff ){
+    } else if( num > 0 && num <= 0x0000ffff ) {
         LC( ptr[0],u2 ) = LF_USHORT;
         LC( ptr[2],u2 ) = num;
         ptr += sizeof(u2) + sizeof( u2 );
@@ -355,8 +355,8 @@ void        CVPutNullStr( cv_out *out )
 }
 
 
-static  lf_values   LFSignedSize( signed_32 num )
-/***********************************************/
+static  lf_values   LFSignedSize( int_32 num )
+/********************************************/
 {
     cv_primitive    index;
 
@@ -373,8 +373,8 @@ static  lf_values   LFSignedSize( signed_32 num )
     return( index.s );
 }
 
-static  lf_values    LFSignedRange( signed_32 lo, signed_32 hi )
-/**************************************************************/
+static  lf_values    LFSignedRange( int_32 lo, int_32 hi )
+/********************************************************/
 {
     cv_primitive    index;
 
@@ -403,9 +403,9 @@ dbg_type    CVFtnType( const char *name, dbg_ftn_type tipe )
     index.f.mode = CV_DIRECT;
     index.f.type = CV_COMPLEX;
     size = (tipe & 0x0f)+1;
-    if( size == 4 ){
+    if( size == 4 ) {
         index.f.size = CV_RC32;
-    }else if( size == 8 ){
+    } else if( size == 8 ) {
         index.f.size = CV_RC32;
     }
     return( index.s );
@@ -431,9 +431,9 @@ dbg_type    CVScalar( const char *name, cg_type tipe )
     int                count;
 
     index.s = 0;  /* set bits to 0 */
-    if( strcmp( name, "__segment" ) == 0 ){
+    if( strcmp( name, "__segment" ) == 0 ) {
         index.s = LF_TSEGMENT;
-    }else if( strcmp( name, "void" ) == 0 ){
+    } else if( strcmp( name, "void" ) == 0 ) {
         index.s = LF_TVOID;
     } else {
         tipe_addr = TypeAddress( tipe );
@@ -534,7 +534,7 @@ void    CVDumpName( dbg_name name, dbg_type tipe )
         NewTypeString( out );
         tipe = ++TypeIdx;
         name->refno = tipe;
-        if( _IsModel( DBG_TYPES ) ) {
+        if( _IsModel( CGSW_GEN_DBG_TYPES ) ) {
             mod = StartType( out, LFG_MODIFIER );
             mod->attr.s = 0;
             mod->index = tipe;
@@ -579,8 +579,8 @@ dbg_type    CVArray( dbg_type dims, dbg_type base )
     return( ret );
 }
 
-dbg_type    CVArraySize( offset size, unsigned_32 hi, dbg_type base )
-/*******************************************************************/
+dbg_type    CVArraySize( offset size, uint_32 hi, dbg_type base )
+/***************************************************************/
 {
     cv_out      out[1];
     ct_array    *array;
@@ -598,8 +598,10 @@ dbg_type    CVArraySize( offset size, unsigned_32 hi, dbg_type base )
     return( ret );
 }
 
-static  lf_values   ArrayDim( unsigned_32  hi )
-/************ Make 1 dim array bound *********/
+static  lf_values   ArrayDim( uint_32 hi )
+/*****************************************
+ * Make 1 dim array bound
+ */
 {
     cv_out          out[1];
     ct_dimconu      *dim;
@@ -617,8 +619,8 @@ static  lf_values   ArrayDim( unsigned_32  hi )
     return( ret );
 }
 
-dbg_type    CVCharBlock( unsigned_32 len )
-/****************************************/
+dbg_type    CVCharBlock( uint_32 len )
+/************************************/
 {
     return( CVArraySize( len, len, LF_TRCHAR ) );
 }
@@ -706,7 +708,7 @@ static  void    DoLocFold( dbg_loc loc, fold_expr *what )
         return;
     }
     stk = what->stk;
-    if( stk <= what->ops ){
+    if( stk <= what->ops ) {
         what->error = true;
         return;
     }
@@ -737,7 +739,7 @@ static  void    DoLocFold( dbg_loc loc, fold_expr *what )
                 what->error = true;
                 return;
             }
-            if( stk[1].state & EXPR_VAR  ){
+            if( stk[1].state & EXPR_VAR ) {
                 stk[0].v = stk[1].v;
                 stk[0].state |= stk[1].state;
             }
@@ -845,8 +847,8 @@ dbg_type    CVFtnArray( back_handle dims, cg_type lo_bound_tipe,
 
 
 
-dbg_type    CVIntArray( unsigned_32 hi, dbg_type base )
-/*****************************************************/
+dbg_type    CVIntArray( uint_32 hi, dbg_type base )
+/*************************************************/
 {
     cv_out          out[1];
     ct_dimarray     *array;
@@ -867,8 +869,8 @@ dbg_type    CVIntArray( unsigned_32 hi, dbg_type base )
 
 
 
-static  lf_values   ArrayDimL( signed_32 low, signed_32 hi )
-/************ Make 1 dim array bound **********************/
+static  lf_values   ArrayDimL( int_32 low, int_32 hi )
+/************ Make 1 dim array bound ****************/
 {
     cv_out          out[1];
     ct_dimconlu     *dim;
@@ -908,7 +910,7 @@ static  dbg_type    CVDimVarLU( dbg_array ar )
         next = dim->entry.next;
         switch( dim->entry.kind ) {
         case DIM_VAR:
-            if( tipe_addr == NULL ){
+            if( tipe_addr == NULL ) {
                 tipe_addr = TypeAddress( dim->var.lo_bound_tipe );
                 itipe = LFIntType( tipe_addr->length );
             }
@@ -979,9 +981,10 @@ dbg_type    CVEndArray( dbg_array ar )
     return( CVArray( dims, ar->base ) );
 }
 
-dbg_type   CVSubRange( signed_32 lo, signed_32 hi, dbg_type base )
-/****************************************************************/
-/* not supported by CV */
+dbg_type   CVSubRange( int_32 lo, int_32 hi, dbg_type base )
+/***********************************************************
+ * not supported by CV
+ */
 {
     /* unused parameters */ (void)base;
 
@@ -1102,7 +1105,7 @@ static  dbg_type    CVBasedPtrK( cg_type ptr_type, dbg_type base,
     cvptr->attr.s = 0;
     cvptr->attr.f.mode = CV_PTR;
     cvptr->type = base;
-    switch( kind ){
+    switch( kind ) {
     case BASED_SELF:
         cvptr->attr.f.type = CV_BASESELF;
         CVEndType( out );
@@ -1196,7 +1199,7 @@ static  void    DoLocBase( dbg_loc loc, based_expr *what )
                 stk[0].kind = SYM_SYM;
             } else {
                 disp = loc->u.val;
-                if( disp == 0 ){
+                if( disp == 0 ) {
                     stk[0].kind = SYM_ZERO;
                 } else {
                     what->state = IS_ERROR;
@@ -1248,13 +1251,13 @@ static  void    DoLocBase( dbg_loc loc, based_expr *what )
                break;
             case SYM_IND:
                 what->sym= stk[0].s;
-                if( what->count == 2 ){
-                    if( stk[1].kind == SYM_SYM ){
+                if( what->count == 2 ) {
+                    if( stk[1].kind == SYM_SYM ) {
                         what->state = IS_VALUE;
                     } else {
                         what->state = IS_ERROR;
                     }
-                }else if( what->count != 1 ){
+                } else if( what->count != 1 ) {
                    what->state = IS_ERROR;
                 }
                break;
@@ -1264,7 +1267,7 @@ static  void    DoLocBase( dbg_loc loc, based_expr *what )
             }
             break;
         case LOP_XCHG:
-            if( what->count >= 2 ){
+            if( what->count >= 2 ) {
                 tmp = stk[0];
                 stk[0] = stk[1];
                 stk[1] = tmp;
@@ -1291,7 +1294,7 @@ dbg_type    CVBasedPtr( cg_type ptr_type, dbg_type base, dbg_loc loc_segment )
     expr.sym = NULL;;
     DoLocBase( loc_segment, &expr );
     based_kind = 0;
-    switch( expr.state ){
+    switch( expr.state ) {
     case IS_ERROR:
         expr.sym = NULL;
         /* fall through */
@@ -1340,7 +1343,7 @@ static cv_access WVCVAccess( uint attr )
 {
     cv_access ret = 0;
 
-    switch( attr ){
+    switch( attr ) {
     case FIELD_PUBLIC:
         ret = CV_PUBLIC;
         break;
@@ -1358,7 +1361,7 @@ static cv_mprop WVCVMProp( uint kind )
 {
     cv_mprop ret = 0;
 
-    switch( kind ){
+    switch( kind ) {
     case METHOD_VANILLA:
         ret = CV_VANILLA;
         break;
@@ -1388,7 +1391,7 @@ static   cv_vtshape   CVVTShape( cg_type ptr_type )
         break;
     case TY_LONG_POINTER:
     case TY_LONG_CODE_PTR:
-        if( tipe_addr->length == 6 ){
+        if( tipe_addr->length == 6 ) {
             ret = CV_VTFAR32;
         } else {
             ret = CV_VTFAR;
@@ -1396,7 +1399,7 @@ static   cv_vtshape   CVVTShape( cg_type ptr_type )
         break;
     case TY_NEAR_POINTER:
     case TY_NEAR_CODE_PTR:
-        if( tipe_addr->length == 4 ){
+        if( tipe_addr->length == 4 ) {
             ret = CV_VTNEAR32;
         } else {
             ret = CV_VTNEAR;
@@ -1421,7 +1424,7 @@ static lf_values MkVTShape( cv_out *out, field_vfunc *vf )
     shape = CVVTShape( vf->vft_cgtype );
     val = 0;
     for( count = 0; count < vf->vft_size; ++count ) {
-        if( (count & 1) == 0 ){
+        if( (count & 1) == 0 ) {
             val = shape << 4;
         } else {
             val |= shape;
@@ -1474,7 +1477,7 @@ static int  MkFlist( dbg_struct st )
                     break;
                 case INHERIT_VBASE:
                 case INHERIT_IVBASE:
-                    if( field->bclass.kind == INHERIT_VBASE ){
+                    if( field->bclass.kind == INHERIT_VBASE ) {
                         fld.a_vbclass = StartType( out, LFG_VBCLASS );
                     } else {
                         fld.a_vbclass = StartType( out, LFG_IVBCLASS );
@@ -1518,22 +1521,21 @@ static int  MkFlist( dbg_struct st )
             len += EndSub( out );  /* write out subfield accum length */
             break;
         case FIELD_VFUNC:
-            if( field->vfunc.vfptr_off == 0 ){
+            if( field->vfunc.vfptr_off == 0 ) {
                 fld.a_vfunctab = StartType( out, LFG_VFUNCTAB );
                 fld.a_vfunctab->type = field->vfunc.base;
-            }
 #if 0   // till cvpack is fixed
-            else{
+            } else {
                 fld.a_vfuncoff = StartType( out, LFG_VFUNCOFF );
                 fld.a_vfuncoff->type = field->vfunc.base;
                 fld.a_vfuncoff->offset = field->vfunc.vfptr_off;
-            }
 #endif
+            }
             len += EndSub( out );  /* write out subfield accum length */
             break;
         case FIELD_LOC:
             disp = LocSimpField( field->member.u.loc );
-            if( disp != NO_OFFSET ){
+            if( disp != NO_OFFSET ) {
                 ++count;
                 fld.a_member = StartType( out, LFG_MEMBER );
                 fld.a_member->type = field->member.base;
@@ -1595,11 +1597,11 @@ static int  MkFlist( dbg_struct st )
                 if( strcmp( curr->method.name, field->method.name ) != 0 )
                     break;
                 field = curr;
-                curr = curr->entry.next;
+//                curr = curr->entry.next; // it looks like useless code
                 a_mlist = BuffInc( out, sizeof( *a_mlist ) );
             }
             EndTypeString( out );
-         }
+        }
     }
     for( ; old != NULL; old = field ) {
         field = old->entry.next;
@@ -1614,8 +1616,8 @@ static  field_any  *UnLinkMethod( field_any **owner, const char *name )
     field_any    *curr;
 
     for( ; (curr = *owner) != NULL; owner = &(*owner)->entry.next ) {
-        if( curr->entry.field_type == FIELD_METHOD ){
-            if( strcmp( curr->method.name, name ) == 0 ){
+        if( curr->entry.field_type == FIELD_METHOD ) {
+            if( strcmp( curr->method.name, name ) == 0 ) {
                 *owner = curr->entry.next;
                 break;
             }
@@ -1636,7 +1638,7 @@ static  int   SortMethods( dbg_struct st )
     for( curr = st->list; curr != NULL; curr = curr->entry.next ) {
         if( curr->entry.field_type == FIELD_METHOD ) {
             add = UnLinkMethod( &curr->entry.next, curr->method.name );
-            if( add != NULL ){
+            if( add != NULL ) {
                 overops = 1;
                 next = curr->entry.next;
                 curr->entry.next = add;
@@ -1665,12 +1667,12 @@ static int  FlistCount( field_any *field )
             break;
         case FIELD_LOC:
             disp = LocSimpField( field->member.u.loc );
-            if( disp != NO_OFFSET ){
+            if( disp != NO_OFFSET ) {
                 ++count;
             }
             break;
         case FIELD_VFUNC:
-            if( field->vfunc.vfptr_off == 0 ){
+            if( field->vfunc.vfptr_off == 0 ) {
                 ++count;
             }
             break;
@@ -1692,7 +1694,7 @@ dbg_type    CVEndStruct( dbg_struct st )
     int             count;
     cv_out          out[1];
 
-    if( st->vtbl_type != DBG_NIL_TYPE ){
+    if( st->vtbl_type != DBG_NIL_TYPE ) {
         lf_values   vtbl_type;
 
         vtbl_type  = CVArraySize( 0, 0, st->vtbl_type ); /* fake p@[0] vtbl */
@@ -1790,7 +1792,7 @@ dbg_type    CVEndEnum( dbg_enum en )
     head->property.s = 0;
     CVPutNullStr( out );
     EndTypeString( out );
-    if( en->is_nested ){
+    if( en->is_nested ) {
         for( cons = en->list; cons != NULL; cons = cons->next ) {
             CVSymIConst64( cons->name, cons->val, headi );
         }
@@ -1828,7 +1830,7 @@ dbg_type    CVEndProc( dbg_proc pr )
         CGFree( parm );
     }
     EndTypeString( out );
-#if _TARGET & ( _TARG_8086 | _TARG_80386 )
+#if _TARGET_INTEL
     if( pr->call == TY_NEAR_CODE_PTR ) {
         call = CV_NEARC;
     } else {
@@ -1839,8 +1841,8 @@ dbg_type    CVEndProc( dbg_proc pr )
 #else
     call = CV_GENERIC;
 #endif
-    if( pr->cls != DBG_NIL_TYPE ){
-        if( pr->this == DBG_NIL_TYPE ){
+    if( pr->cls != DBG_NIL_TYPE ) {
+        if( pr->this == DBG_NIL_TYPE ) {
             pr->this = LF_TVOID;
         }
         NewTypeString( out );

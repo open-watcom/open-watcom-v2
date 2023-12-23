@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,6 +35,9 @@
 #include "walloca.h"
 #include "parsecl.h"
 #include "ex.h"
+#include "tokenize.h"
+#include "parse.h"
+
 
 static char pDelims[] = " /!";
 static char pkwDelims[] = " /";

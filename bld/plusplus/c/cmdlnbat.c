@@ -83,7 +83,7 @@ static int nextChar(            // GET NEXT CHARACTER
 {
     int retn;                   // - next character
 
-    for( ; ; ) {
+    for( ;; ) {
         if( batch_bytes == 0 ) {
             batchReadBuffer();
         }
@@ -114,7 +114,7 @@ static void cmdLnBatchFlushCrap(// FLUSH CARRIAGE-RETURNS, ETC
     int chr;                    // - next char
 
     if( !CompFlags.batch_file_eof ) {
-        for( ; ; ) {
+        for( ;; ) {
             chr = nextChar();
             if( CompFlags.batch_file_eof )
                 break;
@@ -155,7 +155,7 @@ bool CmdLnBatchRead(            // READ NEXT LINE IN COMMAND BUFFER
     VBUF *buf )                 // - virtual buffer
 {
     VbufInit( buf );
-    for(;;) {
+    for( ;; ) {
         int c = nextChar();
         if( CompFlags.batch_file_eof )
             break;

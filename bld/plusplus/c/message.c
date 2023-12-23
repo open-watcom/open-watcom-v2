@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -55,7 +55,7 @@
 #include "intlload.h"
 #include "ideentry.h"
 #include "cbanner.h"
-#ifndef NDEBUG
+#ifdef DEVBUILD
 #include "enterdb.h"
 #endif
 
@@ -92,6 +92,10 @@ static SUICIDE_CALLBACK *suicideCallbacks;
 #define INTL_NAME   "wppi86"
 #elif _CPU == _AXP
 #define INTL_NAME   "wppaxp"
+#elif _CPU == _MIPS
+#define INTL_NAME   "wppmps"
+#elif _CPU == _PPC
+#define INTL_NAME   "wppppc"
 #else
 #error missing _CPU check
 #endif
@@ -651,7 +655,7 @@ static msg_status_t doError(    // ISSUE ERROR
         unsigned too_many   : 1;    // - true ==> too many messages
     } flag;
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
     fflush(stdout);
     fflush(stderr);
 #endif
@@ -875,6 +879,8 @@ void WarnEnableDisable(     // ENABLE/DISABLE A MESSAGE
     bool enabled,           // - new status
     MSG_NUM msgnum )        // - message number
 {
+    if( msgnum == 0 )
+        return;
     if( msgnum >= ARRAY_SIZE( msg_level ) ) {
         CErr2( ERR_PRAG_WARNING_BAD_MESSAGE, msgnum );
         return;
@@ -897,6 +903,8 @@ void WarnChangeLevel(           // CHANGE WARNING LEVEL FOR A MESSAGE
     unsigned level,             // - new level
     MSG_NUM msgnum )            // - message number
 {
+    if( msgnum == 0 )
+        return;
     if( msgnum >= ARRAY_SIZE( msg_level ) ) {
         CErr2( ERR_PRAG_WARNING_BAD_MESSAGE, msgnum );
         return;
@@ -1078,7 +1086,7 @@ pch_status PCHReadErrWarnData( void )
     msg_level_info  *orig_levels;
     MSG_NUM         msgnum;
 
-    PCHReadVar( pch_levels );
+    PCHReadArray( pch_levels );
     if( NULL != orig_msg_level ) {
         orig_levels = orig_msg_level;
     } else {
@@ -1100,7 +1108,7 @@ pch_status PCHWriteErrWarnData( void )
     // so that we can write out a msg_level that indicates the
     // changes made by the header file
 
-    PCHWriteVar( msg_level );
+    PCHWriteArray( msg_level );
     return( PCHCB_OK );
 }
 

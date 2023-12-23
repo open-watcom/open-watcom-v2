@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -389,23 +390,23 @@ IOPM *IOPM_saved = 0;
 // the newly copied map is actually used.  Otherwise, the IOPM offset
 // points beyond the end of the TSS segment limit, causing any I/O
 // access by the user mode process to generate an exception.
-void PORTSTDCALL Ke386SetIoAccessMap(int, IOPM *);
-void PORTSTDCALL Ke386QueryIoAccessMap(int, IOPM *);
-void PORTSTDCALL Ke386IoSetAccessProcess(PEPROCESS, int);
+void PORTSTDCALL Ke386SetIoAccessMap( int, IOPM * );
+void PORTSTDCALL Ke386QueryIoAccessMap( int, IOPM * );
+void PORTSTDCALL Ke386IoSetAccessProcess( PEPROCESS, int );
 
-void NTAPI ZwYieldExecution(void);
+void NTAPI ZwYieldExecution( void );
 
-static void NothingToDo(void)
+static void NothingToDo( void )
 {
     ZwYieldExecution();
 }
 
-static unsigned long Ticks(void)
+static unsigned long Ticks( void )
 {
     _int64 ticks;
 
-    KeQueryTickCount((PLARGE_INTEGER)&ticks);
-    return (unsigned long)(ticks / 10);
+    KeQueryTickCount( (PLARGE_INTEGER)&ticks );
+    return( (unsigned long)( ticks / 10 ) );
 }
 
 /*
@@ -591,13 +592,15 @@ static unsigned RemoteGet(
     unsigned    get_len;
     unsigned    i;
 
+    /* unused parameters */ (void)len;
+
     get_len = DataGet( ext, RELINQUISH );
     if( get_len & 0x80 ) {
         get_len = ((get_len & 0x7f) << 8) | DataGet( ext, KEEP );
     }
     i = get_len;
-    for( ; i != 0; --i, ++data ) {
-        *data = DataGet( ext, KEEP );
+    while( i-- > 0 ) {
+        *data++ = DataGet( ext, KEEP );
     }
     return( get_len );
 }
@@ -613,8 +616,9 @@ static unsigned RemotePut(
         DataPut( ext, ((len >> 8) | 0x80), RELINQUISH );
     }
     DataPut( ext, (len & 0xff), RELINQUISH );
-    for( count = len; count != 0; --count, ++data ) {
-        DataPut( ext, *data, KEEP );
+    count = len;
+    while( count-- > 0 ) {
+        DataPut( ext, *data++, KEEP );
     }
     return( len );
 }
@@ -634,10 +638,12 @@ static bool Synch(
         }
         break;
     case LAPLINK_VAL:
-        if( LL_Ctl1Lo() ) return( TRUE );
+        if( LL_Ctl1Lo() )
+            return( TRUE );
         break;
     case DUTCHMAN_VAL:
-        if( FD_Ctl1Lo() ) return( TRUE );
+        if( FD_Ctl1Lo() )
+            return( TRUE );
         break;
     }
     return( FALSE );
@@ -664,7 +670,9 @@ static bool CountTwidle(
         if( type != ext->CableType )  {
             ext->TwidleCount ++;
             ext->TwidleOn = FALSE;
-            if( ext->TwidleCount == TWIDLE_NUM ) return( TRUE );
+            if( ext->TwidleCount == TWIDLE_NUM ) {
+                return( TRUE );
+            }
         }
     }
     return( FALSE );
@@ -682,29 +690,29 @@ static bool Twidle(
     unsigned            i;
     unsigned long       time;
 
-    for( i = 20; i != 0; i-- ) {
+    for( i = 20; i > 0; i-- ) {
         WriteData( TWIDLE_ON );
         time = Ticks() + TWIDLE_TIME;
-        while( time > Ticks() ){
+        while( time > Ticks() ) {
             if( check ) {
-                if( CountTwidle(ext) ) {
+                if( CountTwidle( ext ) ) {
                     return( TRUE );
                 }
             } else {
-                if( Synch(ext) ) {
+                if( Synch( ext ) ) {
                     return( TRUE );
                 }
             }
         }
         WriteData( TWIDLE_OFF );
         time = Ticks() + TWIDLE_TIME;
-        while( time > Ticks() ){
+        while( time > Ticks() ) {
             if( check ) {
-                if( CountTwidle(ext) ) {
+                if( CountTwidle( ext ) ) {
                     return( TRUE );
                 }
             } else {
-                if( Synch(ext) ) {
+                if( Synch( ext ) ) {
                     return( TRUE );
                 }
             }
@@ -726,24 +734,33 @@ static bool LineTestServer(
 
     for( send = 1; send != 256; send *= 2 ) {
         time = Ticks() + LINE_TEST_WAIT;
-        if( time == RELINQUISH ) time ++;
-        if( time == KEEP ) time ++;
+        if( time == RELINQUISH )
+            time++;
+        if( time == KEEP )
+            time++;
         ret = DataPut( ext, send, time );
-        if( ret == TIMEOUT ) return( FALSE );
+        if( ret == TIMEOUT )
+            return( FALSE );
         time = Ticks() + LINE_TEST_WAIT;
-        if( time == RELINQUISH ) time ++;
-        if( time == KEEP ) time ++;
+        if( time == RELINQUISH )
+            time++;
+        if( time == KEEP )
+            time++;
         ret = DataGet( ext, time );
-        if( ret == TIMEOUT ) return( FALSE );
+        if( ret == TIMEOUT )
+            return( FALSE );
         if( ret != send ) {
             return( FALSE );
         }
     }
     time = Ticks() + LINE_TEST_WAIT;
-    if( time == RELINQUISH ) time ++;
-    if( time == KEEP ) time ++;
+    if( time == RELINQUISH )
+        time++;
+    if( time == KEEP )
+        time++;
     ret = DataPut( ext, DONE_LINE_TEST, time );
-    if( ret == TIMEOUT ) return( FALSE );
+    if( ret == TIMEOUT )
+        return( FALSE );
     return( TRUE );
 }
 
@@ -760,16 +777,24 @@ static bool LineTestClient(
     send = 0;
     for( ;; ) {
         time = Ticks() + LINE_TEST_WAIT;
-        if( time == RELINQUISH ) time ++;
-        if( time == KEEP ) time ++;
+        if( time == RELINQUISH )
+            time++;
+        if( time == KEEP )
+            time++;
         send = DataGet( ext, time );
-        if( send == TIMEOUT ) return( FALSE );
-        if( send == DONE_LINE_TEST ) break;
+        if( send == TIMEOUT )
+            return( FALSE );
+        if( send == DONE_LINE_TEST )
+            break;
         time = Ticks() + LINE_TEST_WAIT;
-        if( time == RELINQUISH ) time ++;
-        if( time == KEEP ) time ++;
+        if( time == RELINQUISH )
+            time++;
+        if( time == KEEP )
+            time++;
         DataPut( ext, send, time );
-        if( send == TIMEOUT ) return( FALSE );
+        if( send == TIMEOUT ) {
+            return( FALSE );
+        }
     }
     return( TRUE );
 }
@@ -780,15 +805,18 @@ static int RemoteConnectServer(
     unsigned long       time;
     bool                got_twidles;
 
-    if( !CountTwidle(ext) ) return( 0 );
+    if( !CountTwidle( ext ) )
+        return( 0 );
     got_twidles = Twidle( ext, FALSE );
     switch( ext->CableType ) {
     case WATCOM_VAL:
         LowerCtl1();
         LowerCtl2();
+        /* fall through */
     case FMR_VAL:
         LowerCtl1();
         LowerCtl2();
+        /* fall through */
     case LAPLINK_VAL:
         LL_LowerCtl1();
         break;
@@ -799,14 +827,15 @@ static int RemoteConnectServer(
     if( !got_twidles ) {
         time = Ticks() + SYNCH_WAIT;
         for( ;; ) {
-            if( Synch(ext) ) {
+            if( Synch( ext ) ) {
                 break;
             } else if( time < Ticks() ) {
                 return( 0 );
             }
         }
     }
-    if( !LineTestServer(ext) ) return( FALSE );
+    if( !LineTestServer( ext ) )
+        return( FALSE );
     return( TRUE );
 }
 
@@ -821,9 +850,11 @@ static int RemoteConnectClient(
     case WATCOM_VAL:
         LowerCtl1();
         LowerCtl2();
+        /* fall through */
     case FMR_VAL:
         LowerCtl1();
         LowerCtl2();
+        /* fall through */
     case LAPLINK_VAL:
         LL_LowerCtl1();
         break;
@@ -833,13 +864,14 @@ static int RemoteConnectClient(
     }
     time = Ticks() + SYNCH_WAIT;
     for( ;; ) {
-        if( Synch(ext) ) {
+        if( Synch( ext ) ) {
             break;
         } else if( time < Ticks() ) {
             return( 0 );
         }
     }
-    if( !LineTestClient(ext) ) return( FALSE );
+    if( !LineTestClient( ext ) )
+        return( FALSE );
     return( TRUE );
 }
 
@@ -1050,7 +1082,7 @@ static VOID ParInitializeDeviceObject(
     ext->DeviceObject->StackSize = ext->PortDeviceObject->StackSize + 1;
 
     // Get the port information from the port device object.
-    status = ParGetPortInfoFromPortDevice(ext);
+    status = ParGetPortInfoFromPortDevice( ext );
     if (!NT_SUCCESS(status)) {
         IoDeleteDevice(deviceObject);
         ExFreePool(linkName.Buffer);
@@ -1150,6 +1182,7 @@ VOID ParCancel(
     IN  PDEVICE_OBJECT  DeviceObject,
     IN  PIRP            Irp)
 {
+    /* unused parameters */ (void)DeviceObject; (void)Irp;
 }
 
 /****************************************************************************
@@ -1178,7 +1211,7 @@ NTSTATUS ParIOCTL(
 
     // NT copies inbuf here before entry and copies this to outbuf after
     // return, for METHOD_BUFFERED IOCTL's.
-    switch (irpSp->Parameters.DeviceIoControl.IoControlCode) {
+    switch( irpSp->Parameters.DeviceIoControl.IoControlCode ) {
     case IOCTL_DBG_READ_PORT_U8:
         IOBuffer->data.u8 = _inp(IOBuffer->port);
         break;
@@ -1204,16 +1237,16 @@ NTSTATUS ParIOCTL(
         IOBuffer->status = RemotePut(ext,IOBuffer->buffer,IOBuffer->len);
         break;
     case IOCTL_DBG_REMOTE_CONNECT_SERV:
-        IOBuffer->status = RemoteConnectServer(ext);
+        IOBuffer->status = RemoteConnectServer( ext );
         break;
     case IOCTL_DBG_REMOTE_CONNECT_CLIENT:
-        IOBuffer->status = RemoteConnectClient(ext);
+        IOBuffer->status = RemoteConnectClient( ext );
         break;
     case IOCTL_DBG_REMOTE_DISCO:
-        RemoteDisco(ext);
+        RemoteDisco( ext );
         break;
     case IOCTL_DBG_REMOTE_LINK:
-        RemoteLink(ext);
+        RemoteLink( ext );
         break;
     default:
         Irp->IoStatus.Information = 0;
@@ -1238,6 +1271,8 @@ NTSTATUS ParCleanup(
     IN  PDEVICE_OBJECT  DeviceObject,
     IN  PIRP            Irp)
 {
+    /* unused parameters */ (void)DeviceObject;
+
     Irp->IoStatus.Status = STATUS_CANCELLED;
     Irp->IoStatus.Information = 0;
     IoCompleteRequest(Irp, IO_NO_INCREMENT);
@@ -1317,6 +1352,8 @@ NTSTATUS DriverEntry(
     IN  PUNICODE_STRING RegistryPath)
 {
     ULONG       i;
+
+    /* unused parameters */ (void)RegistryPath;
 
     // TODO: We should be able to re-code this driver to use a call-gate
     //               to give the calling process full IOPL access, without needing

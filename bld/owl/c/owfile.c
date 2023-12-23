@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -118,7 +119,7 @@ static void doReloc( owl_section_handle section, owl_reloc_info *reloc ) {
         displacement += reloc->location;
     }
     if( section->file->format == OWL_FORMAT_ELF &&
-        section->file->info->cpu == OWL_CPU_INTEL &&
+        section->file->info->cpu == OWL_CPU_X86 &&
         reloc->type == OWL_RELOC_BRANCH_REL ) {
         // ugly kludge for 386 ELF objects
         displacement += 4;

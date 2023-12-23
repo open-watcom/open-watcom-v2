@@ -2,6 +2,6 @@
 host_os  = nt
 host_cpu = x64
 
-commonui_release = 0
+commonui_debug = 1
 
 !include ../master.mif

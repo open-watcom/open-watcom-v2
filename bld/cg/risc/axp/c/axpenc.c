@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,11 +34,11 @@
 #include <stdio.h>
 #include "coderep.h"
 #include "optmain.h"
-#include "axpencod.h"
 #include "reloc.h"
 #include "zoiks.h"
 #include "coff.h"
 #include "encode.h"
+#include "cgauxcc.h"
 #include "cgauxinf.h"
 #include "data.h"
 #include "rtrtn.h"
@@ -60,128 +60,186 @@
 #include "feprotos.h"
 
 
-#define _NameReg( op )                  ( (op)->r.arch_index )
+#define _NameRegTrans( op )         ((reg_idx)(op)->r.arch_index)
 
-#define _BinaryOpcode( a, b )           { { a, b }, { a, b } }
-#define _SignedOpcode( a, b, c, d )     { { a, b }, { c, d } }
+#define _BinaryOpcode( a, b )       { { a, b }, { a, b } }
+#define _SignedOpcode( a, b, c, d ) { { a, b }, { c, d } }
 
-// Our table for opcode values is really a list of pairs of
-// primary opcode / function code pairs. Their is two entries
-// for each opcode in case the sign of the instruction matters;
-// for example, for OP_RSHIFT we need to generate either sra or
-// srl. If the sign of the type of the instruction doesn't
-// matter, we can just use the _BinaryOpcode macro to create
-// identical cases, otherwise we give each pair explicitly.
+#define RDTEB_ENCODING              0x000000ab
+#define RDTEB_MAGIC_CONST           0x2c
 
+/*
+ * Our table for opcode values is really a list of pairs of
+ * primary opcode / function code pairs. Their is two entries
+ * for each opcode in case the sign of the instruction matters;
+ * for example, for OP_RSHIFT we need to generate either sra or
+ * srl. If the sign of the type of the instruction doesn't
+ * matter, we can just use the _BinaryOpcode macro to create
+ * identical cases, otherwise we give each pair explicitly.
+ */
 
 static  uint_8  BinaryOpcodes4[][2][2] = {
-        _BinaryOpcode( 0x10, 0x00 ),                    /* OP_ADD */
-        _BinaryOpcode( 0x10, 0x00 ),                    /* OP_EXT_ADD */
-        _BinaryOpcode( 0x10, 0x09 ),                    /* OP_SUB */
-        _BinaryOpcode( 0x10, 0x09 ),                    /* OP_EXT_SUB */
-        _BinaryOpcode( 0x13, 0x00 ),                    /* OP_MUL */
-        _BinaryOpcode( 0x13, 0x00 ),                    /* OP_EXT_MUL */
-        _BinaryOpcode( 0x00, 0x00 ),                    /* OP_DIV */
-        _BinaryOpcode( 0x00, 0x00 ),                    /* OP_MOD */
-        _BinaryOpcode( 0x11, 0x00 ),                    /* OP_AND */
-        _BinaryOpcode( 0x11, 0x20 ),                    /* OP_OR */
-        _BinaryOpcode( 0x11, 0x40 ),                    /* OP_XOR */
-        _SignedOpcode( 0x12, 0x34, 0x12, 0x3c ),        /* OP_RSHIFT */
-        _BinaryOpcode( 0x12, 0x39 ),                    /* OP_LSHIFT */
-        _BinaryOpcode( 0x00, 0x00 ),                    /* OP_POW */
-        _BinaryOpcode( 0x00, 0x00 ),                    /* OP_ATAN2 */
-        _BinaryOpcode( 0x00, 0x00 ),                    /* OP_FMOD */
+    _BinaryOpcode( 0x10, 0x00 ),                /* OP_ADD */
+    _BinaryOpcode( 0x10, 0x00 ),                /* OP_EXT_ADD */
+    _BinaryOpcode( 0x10, 0x09 ),                /* OP_SUB */
+    _BinaryOpcode( 0x10, 0x09 ),                /* OP_EXT_SUB */
+    _BinaryOpcode( 0x13, 0x00 ),                /* OP_MUL */
+    _BinaryOpcode( 0x13, 0x00 ),                /* OP_EXT_MUL */
+    _BinaryOpcode( 0x00, 0x00 ),                /* OP_DIV */
+    _BinaryOpcode( 0x00, 0x00 ),                /* OP_MOD */
+    _BinaryOpcode( 0x11, 0x00 ),                /* OP_AND */
+    _BinaryOpcode( 0x11, 0x20 ),                /* OP_OR */
+    _BinaryOpcode( 0x11, 0x40 ),                /* OP_XOR */
+    _SignedOpcode( 0x12, 0x34, 0x12, 0x3c ),    /* OP_RSHIFT */
+    _BinaryOpcode( 0x12, 0x39 ),                /* OP_LSHIFT */
+    _BinaryOpcode( 0x00, 0x00 ),                /* OP_POW */
+    _BinaryOpcode( 0x00, 0x00 ),                /* OP_ATAN2 */
+    _BinaryOpcode( 0x00, 0x00 ),                /* OP_FMOD */
 };
 
 static  uint_8  BinaryOpcodes8[][2][2] = {
-        _BinaryOpcode( 0x10, 0x20 ),                    /* OP_ADD */
-        _BinaryOpcode( 0x10, 0x20 ),                    /* OP_EXT_ADD */
-        _BinaryOpcode( 0x10, 0x29 ),                    /* OP_SUB */
-        _BinaryOpcode( 0x10, 0x29 ),                    /* OP_EXT_SUB */
-        _BinaryOpcode( 0x13, 0x20 ),                    /* OP_MUL */
-        _BinaryOpcode( 0x13, 0x20 ),                    /* OP_EXT_MUL */
-        _BinaryOpcode( 0x00, 0x00 ),                    /* OP_DIV */
-        _BinaryOpcode( 0x00, 0x00 ),                    /* OP_MOD */
-        _BinaryOpcode( 0x11, 0x00 ),                    /* OP_AND */
-        _BinaryOpcode( 0x11, 0x20 ),                    /* OP_OR */
-        _BinaryOpcode( 0x11, 0x40 ),                    /* OP_XOR */
-        _SignedOpcode( 0x12, 0x34, 0x12, 0x3c ),        /* OP_RSHIFT */
-        _BinaryOpcode( 0x12, 0x39 ),                    /* OP_LSHIFT */
-        _BinaryOpcode( 0x00, 0x00 ),                    /* OP_POW */
-        _BinaryOpcode( 0x00, 0x00 ),                    /* OP_ATAN2 */
-        _BinaryOpcode( 0x00, 0x00 ),                    /* OP_FMOD */
+    _BinaryOpcode( 0x10, 0x20 ),                /* OP_ADD */
+    _BinaryOpcode( 0x10, 0x20 ),                /* OP_EXT_ADD */
+    _BinaryOpcode( 0x10, 0x29 ),                /* OP_SUB */
+    _BinaryOpcode( 0x10, 0x29 ),                /* OP_EXT_SUB */
+    _BinaryOpcode( 0x13, 0x20 ),                /* OP_MUL */
+    _BinaryOpcode( 0x13, 0x20 ),                /* OP_EXT_MUL */
+    _BinaryOpcode( 0x00, 0x00 ),                /* OP_DIV */
+    _BinaryOpcode( 0x00, 0x00 ),                /* OP_MOD */
+    _BinaryOpcode( 0x11, 0x00 ),                /* OP_AND */
+    _BinaryOpcode( 0x11, 0x20 ),                /* OP_OR */
+    _BinaryOpcode( 0x11, 0x40 ),                /* OP_XOR */
+    _SignedOpcode( 0x12, 0x34, 0x12, 0x3c ),    /* OP_RSHIFT */
+    _BinaryOpcode( 0x12, 0x39 ),                /* OP_LSHIFT */
+    _BinaryOpcode( 0x00, 0x00 ),                /* OP_POW */
+    _BinaryOpcode( 0x00, 0x00 ),                /* OP_ATAN2 */
+    _BinaryOpcode( 0x00, 0x00 ),                /* OP_FMOD */
 };
 
 static  uint_8  SetOpcodes[][2][2] = {
-        _BinaryOpcode( 0x10, 0x2d ),                    /* OP_SET_EQUAL */
-        _BinaryOpcode( 0x00, 0x00 ),                    /* OP_SET_NOT_EQUAL */
-        _BinaryOpcode( 0x00, 0x00 ),                    /* OP_SET_GREATER */
-        _SignedOpcode( 0x10, 0x3d, 0x10, 0x6d ),        /* OP_SET_LESS_EQUAL */
-        _SignedOpcode( 0x10, 0x1d, 0x10, 0x4d ),        /* OP_SET_LESS */
-        _BinaryOpcode( 0x00, 0x00 ),                    /* OP_SET_GREATER_EQUAL */
+    _BinaryOpcode( 0x10, 0x2d ),                /* OP_SET_EQUAL */
+    _BinaryOpcode( 0x00, 0x00 ),                /* OP_SET_NOT_EQUAL */
+    _BinaryOpcode( 0x00, 0x00 ),                /* OP_SET_GREATER */
+    _SignedOpcode( 0x10, 0x3d, 0x10, 0x6d ),    /* OP_SET_LESS_EQUAL */
+    _SignedOpcode( 0x10, 0x1d, 0x10, 0x4d ),    /* OP_SET_LESS */
+    _BinaryOpcode( 0x00, 0x00 ),                /* OP_SET_GREATER_EQUAL */
 };
 
-// For floating point operate format instructions, the size of the
-// instruction type (not the sign) is what determines the opcode. So
-// we have a pair of function code values for each codegen logical
-// opcode. We don't need the primary opcode since it is always 0x16.
-// Note that we are in for some minor discomfort if we need to start
-// enabling different trap bits on instructions.
+/*
+ * For floating point operate format instructions, the size of the
+ * instruction type (not the sign) is what determines the opcode. So
+ * we have a pair of function code values for each codegen logical
+ * opcode. We don't need the primary opcode since it is always 0x16.
+ * Note that we are in for some minor discomfort if we need to start
+ * enabling different trap bits on instructions.
+ */
 
 static  uint_16 FloatingBinaryOpcodes[][2] = {
-        { 0x080, 0x0a0 },                               /* OP_ADD */
-        { 0x080, 0x0a0 },                               /* OP_EXT_ADD */
-        { 0x581, 0x5a1 },                               /* OP_SUB */
-        { 0x581, 0x5a1 },                               /* OP_EXT_SUB */
-        { 0x582, 0x5a2 },                               /* OP_MUL */
-        { 0x582, 0x5a2 },                               /* OP_EXT_MUL */
-        { 0x583, 0x5a3 },                               /* OP_DIV */
+    { 0x080, 0x0a0 },           /* OP_ADD */
+    { 0x080, 0x0a0 },           /* OP_EXT_ADD */
+    { 0x581, 0x5a1 },           /* OP_SUB */
+    { 0x581, 0x5a1 },           /* OP_EXT_SUB */
+    { 0x582, 0x5a2 },           /* OP_MUL */
+    { 0x582, 0x5a2 },           /* OP_EXT_MUL */
+    { 0x583, 0x5a3 },           /* OP_DIV */
 };
 
 static  uint_16 FloatingSetOpcodes[][1] = {
-        { 0xa5 },                                       /* OP_SET_EQUAL */
-        { 0x00 },                                       /* OP_SET_NOT_EQUAL */
-        { 0x00 },                                       /* OP_SET_GREATER */
-        { 0xa7 },                                       /* OP_SET_LESS_EQUAL */
-        { 0xa6 },                                       /* OP_SET_LESS */
-        { 0x00 },                                       /* OP_SET_GREATER_EQUAL */
+    { 0xa5 },                   /* OP_SET_EQUAL */
+    { 0x00 },                   /* OP_SET_NOT_EQUAL */
+    { 0x00 },                   /* OP_SET_GREATER */
+    { 0xa7 },                   /* OP_SET_LESS_EQUAL */
+    { 0xa6 },                   /* OP_SET_LESS */
+    { 0x00 },                   /* OP_SET_GREATER_EQUAL */
 };
 
 static  uint_8  AlphaByteOpcodes[][2] = {
-        { 0x12, 0x06 },                                 /* OP_EXTRACT_LOW */
-        { 0x12, 0x4a },                                 /* OP_EXTRACT_HIGH */
-        { 0x12, 0x0b },                                 /* OP_INSERT_LOW */
-        { 0x12, 0x47 },                                 /* OP_INSERT_HIGH */
-        { 0x12, 0x02 },                                 /* OP_MASK_LOW */
-        { 0x12, 0x42 },                                 /* OP_MASK_HIGH */
-        { 0x12, 0x30 },                                 /* OP_ZAP */
-        { 0x12, 0x31 },                                 /* OP_ZAP_NOT */
+    { 0x12, 0x06 },             /* OP_EXTRACT_LOW */
+    { 0x12, 0x4a },             /* OP_EXTRACT_HIGH */
+    { 0x12, 0x0b },             /* OP_INSERT_LOW */
+    { 0x12, 0x47 },             /* OP_INSERT_HIGH */
+    { 0x12, 0x02 },             /* OP_MASK_LOW */
+    { 0x12, 0x42 },             /* OP_MASK_HIGH */
+    { 0x12, 0x30 },             /* OP_ZAP */
+    { 0x12, 0x31 },             /* OP_ZAP_NOT */
 };
 
-// This is the bit pattern to OR into the function opcode when encoding
-// an Alpha byte manipulation instruction. Note that it depends only upon
-// the size of the register subset to be acted upon. Some of these
-// combination can yield invalid instructions, but hopefully these will
-// never be combined together.
+/*
+ * This is the bit pattern to OR into the function opcode when encoding
+ * an Alpha byte manipulation instruction. Note that it depends only upon
+ * the size of the register subset to be acted upon. Some of these
+ * combination can yield invalid instructions, but hopefully these will
+ * never be combined together.
+ */
+
 static  uint_8  AlphaByteInsSizeBits[] = {
-        0x00,                                           /* U1 */
-        0x00,                                           /* I1 */
-        0x10,                                           /* U2 */
-        0x10,                                           /* I2 */
-        0x20,                                           /* U4 */
-        0x20,                                           /* I4 */
-        0x30,                                           /* U8 */
-        0x30,                                           /* I8 */
-        0x20,                                           /* CP */
-        0x20,                                           /* PT */
-        0x20,                                           /* FS */
-        0x30,                                           /* FD */
-        0x30,                                           /* FL */
-        0x00,                                           /* XX */
+    0x00,                       /* U1 */
+    0x00,                       /* I1 */
+    0x10,                       /* U2 */
+    0x10,                       /* I2 */
+    0x20,                       /* U4 */
+    0x20,                       /* I4 */
+    0x30,                       /* U8 */
+    0x30,                       /* I8 */
+    0x20,                       /* CP */
+    0x20,                       /* PT */
+    0x20,                       /* FS */
+    0x30,                       /* FD */
+    0x30,                       /* FL */
+    0x00,                       /* XX */
 };
 
-// Used for faking up a set of opcodes for an instruction when
-// including an exhaustive table would have been too painful.
+#if 0
+static  uint_8  BranchOpcodes[][2] = {
+    { 0x39, 0x31 },             /* OP_CMP_EQUAL */
+    { 0x3d, 0x35 },             /* OP_CMP_NOT_EQUAL */
+    { 0x3f, 0x37 },             /* OP_CMP_GREATER */
+    { 0x3b, 0x33 },             /* OP_CMP_LESS_EQUAL */
+    { 0x3a, 0x32 },             /* OP_CMP_LESS */
+    { 0x3e, 0x36 },             /* OP_CMP_GREATER_EQUAL */
+};
+#endif
+
+static  uint_8  loadOpcodes[] = {
+    0x28,                       /* U1 */
+    0x28,                       /* I1 */
+    0x28,                       /* U2 */
+    0x28,                       /* I2 */
+    0x28,                       /* U4 */
+    0x28,                       /* I4 */
+    0x29,                       /* U8 */
+    0x29,                       /* I8 */
+    0x28,                       /* CP */
+    0x28,                       /* PT */
+    0x22,                       /* FS */
+    0x23,                       /* FD */
+    0x23,                       /* FL */
+};
+
+static  uint_8  storeOpcodes[] = {
+    0x00,                       /* U1 */
+    0x00,                       /* I1 */
+    0x00,                       /* U2 */
+    0x00,                       /* I2 */
+    0x2c,                       /* U4 */
+    0x2c,                       /* I4 */
+    0x2d,                       /* U8 */
+    0x2d,                       /* I8 */
+    0x2c,                       /* CP */
+    0x2c,                       /* PT */
+    0x26,                       /* FS */
+    0x27,                       /* FD */
+    0x27,                       /* FL */
+};
+
+static uint_8 zapMask[] = {
+    0x00, 0x01, 0x03, 0x07, 0x0f, 0x1f, 0x3f, 0x7f, 0xff
+};
+
+/*
+ * Used for faking up a set of opcodes for an instruction when
+ * including an exhaustive table would have been too painful.
+ */
 static  uint_8  ScratchOpcodes[2];
 
 static axp_ins  ins_encoding = 0;
@@ -225,57 +283,63 @@ static  void EmitIns( axp_ins ins )
     EmitInsReloc( &ins, NULL, 0 );
 }
 
-static  void GenFPOPINS( uint_8 opcode, uint_16 function, uint_8 reg_a, uint_8 reg_b, uint_8 reg_c )
-/**************************************************************************************************/
+static void GenFPOPINS( uint_8 opcode, uint_16 function, reg_idx ra, reg_idx rb, reg_idx rc )
+/*******************************************************************************************/
 {
-    ins_encoding = _Opcode( opcode ) | _A( reg_a ) | _B( reg_b ) | _C( reg_c ) | _FPFunction( function );
+    ins_encoding = _Opcode( opcode ) | _Ra( ra ) | _Rb( rb ) | _Rc( rc ) | _FPFunction( function );
     EmitIns( ins_encoding );
 }
 
-void GenOPINS( uint_8 opcode, uint_8 function, uint_8 reg_a, uint_8 reg_b, uint_8 reg_c )
-/***************************************************************************************/
+void GenOPINS( uint_8 opcode, uint_8 function, reg_idx ra, reg_idx rb, reg_idx rc )
+/*********************************************************************************/
 {
-    ins_encoding = _Opcode( opcode ) | _A( reg_a ) | _B( reg_b ) | _C( reg_c ) | _Function( function );
+    ins_encoding = _Opcode( opcode ) | _Ra( ra ) | _Rb( rb ) | _Rc( rc ) | _Function( function );
     EmitIns( ins_encoding );
 }
 
-static  void    GenOPIMM( uint_8 opcode, uint_8 function, uint_8 reg_a, uint_8 imm, uint_8 reg_c )
-/************************************************************************************************/
+static void GenOPIMM8( uint_8 opcode, uint_8 function, reg_idx ra, uint_8 imm, reg_idx rc )
+/*****************************************************************************************/
 {
-    ins_encoding = _Opcode( opcode ) | _A( reg_a ) | _LIT( imm ) | ( 1 << 12 ) | _C( reg_c ) | _Function( function );
+    ins_encoding = _Opcode( opcode ) | _Ra( ra ) | _LIT( imm ) | _LIT_bit | _Rc( rc ) | _Function( function );
     EmitIns( ins_encoding );
 }
 
-void    GenLOADS32( signed_32 value, uint_8 reg )
-/***********************************************/
+void    GenLOADS32( int_32 value, reg_idx reg )
+/*********************************************/
 {
-    signed_16           high;
-    signed_16           extra;
-    signed_16           low;
-    uint_8              curr;
+    int_16          high;
+    int_16          extra;
+    int_16          low;
+    reg_idx         curr;
 
-    curr = AXP_ZERO_SINK;
+    curr = ZERO_REG_IDX;
     FactorInt32( value, &high, &extra, &low );
     if( low != 0 ) {
-        // la low(curr) -> reg
+        /*
+         * la low(curr) -> reg
+         */
         GenMEMINS( 0x08, reg, curr, low );
         curr = reg;
     }
     if( extra != 0 ) {
-        // lah extra(curr) -> reg
+        /*
+         * lah extra(curr) -> reg
+         */
         GenMEMINS( 0x09, reg, curr, extra );
         curr = reg;
     }
     if( high != 0 ) {
-        // lah high(curr) -> reg
+        /*
+         * lah high(curr) -> reg
+         */
         GenMEMINS( 0x09, reg, curr, high );
         curr = reg;
     }
 }
 
-static  uint_8  *FindOpcodes( instruction *ins ) {
-/************************************************/
-
+static  uint_8  *FindOpcodes( instruction *ins )
+/**********************************************/
+{
     uint_8      *opcodes;
 
     if( _OpIsBinary( ins->head.opcode ) ) {
@@ -287,7 +351,9 @@ static  uint_8  *FindOpcodes( instruction *ins ) {
     } else if( _OpIsSet( ins->head.opcode ) ) {
         opcodes = &SetOpcodes[ins->head.opcode - FIRST_SET_OP][_IsSigned( ins->type_class ) ? 1 : 0][0];
     } else if( _OpIsAlphaByteIns( ins->head.opcode ) ) {
-        // WARNING: must use these values before calling FindOpcodes again
+        /*
+         * WARNING: must use these values before calling FindOpcodes again
+         */
         opcodes = &ScratchOpcodes[0];
         opcodes[0] = AlphaByteOpcodes[ins->head.opcode - FIRST_ALPHA_BYTE_INS][0];
         opcodes[1] = AlphaByteOpcodes[ins->head.opcode - FIRST_ALPHA_BYTE_INS][1];
@@ -301,9 +367,9 @@ static  uint_8  *FindOpcodes( instruction *ins ) {
     return( opcodes );
 }
 
-static  uint_16 FindFloatingOpcodes( instruction *ins ) {
-/*******************************************************/
-
+static  uint_16 FindFloatingOpcodes( instruction *ins )
+/*****************************************************/
+{
     uint_16     opcode;
 
     assert( _IsFloating( ins->type_class ) );
@@ -318,70 +384,65 @@ static  uint_16 FindFloatingOpcodes( instruction *ins ) {
     return( opcode );
 }
 
-void GenMEMINSRELOC( uint_8 opcode, uint_8 a, uint_8 b, signed_16 displacement, pointer lbl, owl_reloc_type type )
-/****************************************************************************************************************/
+static void GenMEMINSRELOC( uint_8 opcode, reg_idx ra, reg_idx rb, int_16 displacement, pointer lbl, owl_reloc_type type )
+/************************************************************************************************************************/
 {
-    ins_encoding = _Opcode( opcode ) | _A( a ) | _B( b ) | _SignedImmed( displacement );
+    ins_encoding = _Opcode( opcode ) | _Ra( ra ) | _Rb( rb ) | _SignedImmed( displacement );
     EmitInsReloc( &ins_encoding, lbl, type );
 }
 
-void GenMEMINS( uint_8 opcode, uint_8 a, uint_8 b, signed_16 displacement )
-/*************************************************************************/
+void GenMEMINS( uint_8 opcode, reg_idx ra, reg_idx rb, int_16 displacement )
+/**************************************************************************/
 {
-    ins_encoding = _Opcode( opcode ) | _A( a ) | _B( b ) | _SignedImmed( displacement );
+    ins_encoding = _Opcode( opcode ) | _Ra( ra ) | _Rb( rb ) | _SignedImmed( displacement );
     EmitIns( ins_encoding );
 }
 
-#if 0
-static  uint_8  BranchOpcodes[][2] = {
-    { 0x39, 0x31 },                     /* OP_CMP_EQUAL */
-    { 0x3d, 0x35 },                     /* OP_CMP_NOT_EQUAL */
-    { 0x3f, 0x37 },                     /* OP_CMP_GREATER */
-    { 0x3b, 0x33 },                     /* OP_CMP_LESS_EQUAL */
-    { 0x3a, 0x32 },                     /* OP_CMP_LESS */
-    { 0x3e, 0x36 },                     /* OP_CMP_GREATER_EQUAL */
-};
-#endif
-
-static  void    GenBRANCH( uint_8 opcode, uint_8 reg, pointer label )
-/*******************************************************************/
+static void GenBRANCH( uint_8 opcode, reg_idx reg, pointer label )
+/****************************************************************/
 {
-    ins_encoding = _Opcode( opcode ) | _A( reg );
+    ins_encoding = _Opcode( opcode ) | _Ra( reg );
     EmitInsReloc( &ins_encoding, label, OWL_RELOC_BRANCH_REL );
 }
 
-// move disp(Rs) -> Rd
+/*
+ * move disp(Rs) -> Rd
+ */
 
-void    GenLOAD( hw_reg_set dst, hw_reg_set src, signed_16 displacement )
-/***********************************************************************/
+void    GenLOAD( hw_reg_set dst, hw_reg_set src, int_16 displacement )
+/********************************************************************/
 {
     GenMEMINS( 0x29, RegTrans( dst ), RegTrans( src ), displacement );
 }
 
-void    GenFLOAD( hw_reg_set dst, hw_reg_set src, signed_16 displacement )
-/************************************************************************/
+void    GenFLOAD( hw_reg_set dst, hw_reg_set src, int_16 displacement )
+/*********************************************************************/
 {
     GenMEMINS( 0x23, RegTrans( dst ), RegTrans( src ), displacement );
 }
 
-// move Rs -> disp(Rd)
+/*
+ * move Rs -> disp(Rd)
+ */
 
-void    GenSTORE( hw_reg_set dst, signed_16 displacement, hw_reg_set src )
-/************************************************************************/
+void    GenSTORE( hw_reg_set dst, int_16 displacement, hw_reg_set src )
+/*********************************************************************/
 {
     GenMEMINS( 0x2d, RegTrans( src ), RegTrans( dst ), displacement );
 }
 
-// move Fs -> disp(Rd)
+/*
+ * move Fs -> disp(Rd)
+ */
 
-void    GenFSTORE( hw_reg_set dst, signed_16 displacement, hw_reg_set src )
-/*************************************************************************/
+void    GenFSTORE( hw_reg_set dst, int_16 displacement, hw_reg_set src )
+/**********************************************************************/
 {
     GenMEMINS( 0x27, RegTrans( src ), RegTrans( dst ), displacement );
 }
 
-void    GenRET( void )
-/********************/
+void    GenReturn( void )
+/***********************/
 {
     any_oc      oc;
 
@@ -389,47 +450,15 @@ void    GenRET( void )
     oc.oc_ret.hdr.reclen = sizeof( oc_ret );
     oc.oc_ret.hdr.objlen = 4;
     oc.oc_ret.ref = NULL;
-    oc.oc_ret.pops = false;            /* not used */
+    oc.oc_ret.pops = 0;         /* not used */
     InputOC( &oc );
 }
 
-static  pointer symLabel( name *mem ) {
-/*************************************/
-
+static  pointer symLabel( name *mem )
+/***********************************/
+{
     return( AskForSymLabel( mem->v.symbol, mem->m.memory_type ) );
 }
-
-static  uint_8  loadOpcodes[] = {
-    0x28,                       /* U1 */
-    0x28,                       /* I1 */
-    0x28,                       /* U2 */
-    0x28,                       /* I2 */
-    0x28,                       /* U4 */
-    0x28,                       /* I4 */
-    0x29,                       /* U8 */
-    0x29,                       /* I8 */
-    0x28,                       /* CP */
-    0x28,                       /* PT */
-    0x22,                       /* FS */
-    0x23,                       /* FD */
-    0x23,                       /* FL */
-};
-
-static  uint_8  storeOpcodes[] = {
-    0x00,                       /* U1 */
-    0x00,                       /* I1 */
-    0x00,                       /* U2 */
-    0x00,                       /* I2 */
-    0x2c,                       /* U4 */
-    0x2c,                       /* I4 */
-    0x2d,                       /* U8 */
-    0x2d,                       /* I8 */
-    0x2c,                       /* CP */
-    0x2c,                       /* PT */
-    0x26,                       /* FS */
-    0x27,                       /* FD */
-    0x27,                       /* FL */
-};
 
 type_length     TempLocation( name *temp )
 /****************************************/
@@ -449,8 +478,8 @@ type_length     TempLocation( name *temp )
     return( offset + base->t.location + temp->v.offset - base->v.offset );
 }
 
-void    GenCallLabelReg( pointer label, uint reg )
-/************************************************/
+void    GenCallLabelReg( pointer label, reg_idx reg )
+/***************************************************/
 {
     GenBRANCH( 0x34, reg, label );
 }
@@ -461,96 +490,103 @@ void    GenCallLabel( pointer label )
     CodeHandle( OC_CALL, 4, label );
 }
 
-static  void    GenNoReturn( void ) {
-/************************************
-    Generate a noreturn instruction (pseudo instruction)
-*/
-
+static  void    GenNoReturn( void )
+/**********************************
+ * Generate a noreturn instruction (pseudo instruction)
+ */
+{
     any_oc      oc;
 
-    oc.oc_ret.hdr.class = OC_RET | ATTR_NORET;
-    oc.oc_ret.hdr.reclen = sizeof( oc_ret );
-    oc.oc_ret.hdr.objlen = 0;
-    oc.oc_ret.ref = NULL;
-    oc.oc_ret.pops = 0;
+    oc.oc_entry.hdr.class = OC_NORET;
+    oc.oc_entry.hdr.reclen = offsetof( oc_entry, data );
+    oc.oc_entry.hdr.objlen = 0;
     InputOC( &oc );
 }
 
-static  void    doCall( instruction *ins ) {
-/******************************************/
-
+static  void    doCall( instruction *ins )
+/****************************************/
+{
     cg_sym_handle       sym;
     byte_seq            *code;
     label_handle        lbl;
+    name                *op;
+    call_class          cclass;
 
+    op = ins->operands[CALL_OP_ADDR];
+    sym = op->v.symbol;
+    cclass = (call_class)(pointer_uint)FindAuxInfoSym( sym, FEINF_CALL_CLASS );
+    lbl = symLabel( op );
     code = NULL;
-    sym = ins->operands[CALL_OP_ADDR]->v.symbol;
-    lbl = symLabel( ins->operands[CALL_OP_ADDR] );
     if( !AskIfRTLabel( lbl ) ) {
-        code = FindAuxInfoSym( sym, CALL_BYTES );
+        code = FindAuxInfoSym( sym, FEINF_CALL_BYTES );
     }
     if( code != NULL ) {
         ObjEmitSeq( code );
-        if( *(call_class *)FindAuxInfoSym( sym, CALL_CLASS ) & SUICIDAL ) {
+        if( cclass & FECALL_GEN_ABORTS ) {
             GenNoReturn();
         }
     } else {
-        GenCallLabel( symLabel( ins->operands[CALL_OP_ADDR] ) );
+        GenCallLabel( lbl );
+    }
+    if( cclass & FECALL_GEN_NORETURN ) {
+        GenNoReturn();
     }
 }
 
-static  void    addressTemp( name *temp, uint_8 *reg, int_16 *offset ) {
-/**********************************************************************/
-
+static void addressTemp( name *temp, reg_idx *reg_mem, int_16 *offset )
+/*********************************************************************/
+{
     type_length         temp_offset;
 
     temp_offset = TempLocation( temp );
     if( temp_offset > AXP_MAX_OFFSET ) {
-        // gen some code to load temp address into SCRATCH_REG
-        GenLOADS32( temp_offset, AXP_GPR_SCRATCH );
-        GenOPINS( 0x10, 0x00, AXP_STACK_REG, AXP_GPR_SCRATCH, AXP_GPR_SCRATCH );
+        /*
+         * gen some code to load temp address into scratch register
+         */
+        GenLOADS32( temp_offset, AT_REG_IDX );
+        GenOPINS( 0x10, 0x00, SP_REG_IDX, AT_REG_IDX, AT_REG_IDX );
         *offset = 0;
-        *reg = AXP_GPR_SCRATCH;
+        *reg_mem = AT_REG_IDX;
     } else {
-        *offset = temp_offset;
-        *reg = AXP_STACK_REG;
+        *offset = (int_16)temp_offset;
+        *reg_mem = SP_REG_IDX;
         if( CurrProc->targ.base_is_fp ) {
-            *reg = AXP_FRAME_REG;
+            *reg_mem = FP_REG_IDX;
         }
     }
 }
 
-static  void    getMemEncoding( name *mem, uint_8 *reg_index, int_16 *offset ) {
-/******************************************************************************/
-
+static void getMemEncoding( name *mem, reg_idx *reg_mem, int_16 *offset )
+/***********************************************************************/
+{
     switch( mem->n.class ) {
     case N_INDEXED:
         assert( mem->i.index->n.class == N_REGISTER );
         assert( mem->i.scale == 0 );
-        assert( mem->i.constant == (type_length)((signed_16)mem->i.constant) );
+        assert( mem->i.constant == (type_length)((int_16)mem->i.constant) );
         assert( ( mem->i.index_flags & X_LOW_ADDR_BASE ) == 0 );
-        *reg_index = _NameReg( mem->i.index );
+        *reg_mem = _NameRegTrans( mem->i.index );
         *offset = (int_16)mem->i.constant;
         break;
     case N_TEMP:
-        addressTemp( mem, reg_index, offset );
+        addressTemp( mem, reg_mem, offset );
         break;
     case N_MEMORY:
     default:
-        *reg_index = AXP_ZERO_SINK;
+        *reg_mem = ZERO_REG_IDX;
         *offset = 0;
         _Zoiks( ZOIKS_078 );
         break;
     }
 }
 
-static  void    doLoadStore( instruction *ins, bool load ) {
-/**********************************************************/
-
+static void doLoadStore( instruction *ins, bool load )
+/****************************************************/
+{
     name        *mem;
     name        *reg;
     uint_8      opcode;
-    uint_8      index;
+    reg_idx     reg_mem;
     int_16      offset;
 
     if( load ) {
@@ -569,35 +605,31 @@ static  void    doLoadStore( instruction *ins, bool load ) {
         }
     }
     assert( reg->n.class == N_REGISTER );
-    getMemEncoding( mem, &index, &offset );
-    GenMEMINS( opcode, _NameReg( reg ), index, offset );
+    getMemEncoding( mem, &reg_mem, &offset );
+    GenMEMINS( opcode, _NameRegTrans( reg ), reg_mem, offset );
 }
 
-static uint_8 zapMask[] = {
-    0x00, 0x01, 0x03, 0x07, 0x0f, 0x1f, 0x3f, 0x7f, 0xff
-};
-
-static  void    GenCallIndirect( instruction *call ) {
-/****************************************************/
-
-    uint_8      reg_index;
-    uint_8      mem_index;
+static  void    GenCallIndirect( instruction *call )
+/**************************************************/
+{
+    reg_idx     reg_addr;
+    reg_idx     reg_mem;
     int_16      mem_offset;
     name        *addr;
 
-    reg_index = AXP_GPR_SCRATCH;        /* use the volatile scratch reg if possible */
+    reg_addr = AT_REG_IDX;        /* use the volatile scratch reg if possible */
     addr = call->operands[CALL_OP_ADDR];
     switch( addr->n.class ) {
     case N_REGISTER:
-        reg_index = _NameReg( addr );
+        reg_addr = _NameRegTrans( addr );
         break;
     case N_TEMP:
     case N_INDEXED:
-        getMemEncoding( addr, &mem_index, &mem_offset );
-        GenMEMINS( 0x28, reg_index, mem_index, mem_offset );
+        getMemEncoding( addr, &reg_mem, &mem_offset );
+        GenMEMINS( 0x28, reg_addr, reg_mem, mem_offset );
         break;
     }
-    GenMEMINS( 0x1a, AXP_RETURN_ADDR, reg_index, 0x4000 );
+    GenMEMINS( 0x1a, RA_REG_IDX, reg_addr, 0x4000 );
 }
 
 static  void    doChop( instruction *ins, type_class_def type_class )
@@ -622,39 +654,37 @@ static  void    doChop( instruction *ins, type_class_def type_class )
         _Zoiks( ZOIKS_078 );
     }
     /* zapnot */
-    GenOPIMM( 0x12, 0x31, _NameReg( ins->operands[0] ), zap_mask, _NameReg( ins->result ) );
+    GenOPIMM8( 0x12, 0x31, _NameRegTrans( ins->operands[0] ),
+        (uint_8)zap_mask,
+        _NameRegTrans( ins->result ) );
 }
 
 static  void    doSignExtend( instruction *ins, type_class_def type_class )
 /*************************************************************************/
 {
     unsigned    from_size;
-    int         res_index;
-    int         src_index;
+    reg_idx     reg_res;
+    reg_idx     reg_src;
     int         shift_amt;
 
-    res_index = _NameReg( ins->result );
-    src_index = _NameReg( ins->operands[0] );
+    reg_res = _NameRegTrans( ins->result );
+    reg_src = _NameRegTrans( ins->operands[0] );
     from_size = TypeClassSize[type_class];
     if( from_size == 4 ) {
         /* addl r31, src -> dst */
-        GenOPINS( 0x10, 0x00, AXP_ZERO_SINK, src_index, res_index );
+        GenOPINS( 0x10, 0x00, ZERO_REG_IDX, reg_src, reg_res );
     } else {
         shift_amt = ( REG_SIZE - from_size ) * 8;
         /* shl */
-        GenOPIMM( 0x12, 0x39, src_index, shift_amt, res_index );
+        GenOPIMM8( 0x12, 0x39, reg_src, (uint_8)shift_amt, reg_res );
         /* sra */
-        GenOPIMM( 0x12, 0x3c, res_index, shift_amt, res_index );
+        GenOPIMM8( 0x12, 0x3c, reg_res, (uint_8)shift_amt, reg_res );
     }
 }
 
-#define RDTEB_ENCODING          0x000000ab
-#define RDTEB_MAGIC_CONST       0x2c
-#define V0                      0
-
-static  bool    encodeThreadDataRef( instruction *ins ) {
-/*******************************************************/
-
+static  bool    encodeThreadDataRef( instruction *ins )
+/*****************************************************/
+{
     name                *op;
     label_handle        tls_index;
 
@@ -668,44 +698,42 @@ static  bool    encodeThreadDataRef( instruction *ins ) {
 
     /*
      * Put out a sequence that looks like:
-                ldah    at, h^__tls_index(zero)
-                lda     at, l^__tls_index(at)
-                rdteb
-                ldl     v0, 0x2c(v0)
-                s4addl  at, v0, v0
-                ldl     v0, (v0)
-                lda     rn, l^variable(v0)
-
-        In order to be able to zap v0 (which rdteb does),
-        we always set the zap set on a LEA foo -> rn instruction
-        to be v0 when foo is a piece of thread-local storage.
-        This is done in FixMemRefs.
-    */
+     *          ldah    at, h^__tls_index(zero)
+     *          lda     at, l^__tls_index(at)
+     *          rdteb
+     *          ldl     v0, 0x2c(v0)
+     *          s4addl  at, v0, v0
+     *          ldl     v0, (v0)
+     *          lda     rn, l^variable(v0)
+     *
+     * In order to be able to zap v0 (which rdteb does),
+     * we always set the zap set on a LEA foo -> rn instruction
+     * to be v0 when foo is a piece of thread-local storage.
+     * This is done in FixMemRefs.
+     */
     tls_index = RTLabel( RT_TLS_INDEX );
-    GenMEMINSRELOC( 0x09, AXP_GPR_SCRATCH, AXP_ZERO_SINK, 0,
-                tls_index, OWL_RELOC_HALF_HI );
-    GenMEMINSRELOC( 0x08, AXP_GPR_SCRATCH, AXP_GPR_SCRATCH, 0,
-                tls_index, OWL_RELOC_HALF_LO );
+    GenMEMINSRELOC( 0x09, AT_REG_IDX, ZERO_REG_IDX, 0, tls_index, OWL_RELOC_HALF_HI );
+    GenMEMINSRELOC( 0x08, AT_REG_IDX, AT_REG_IDX, 0, tls_index, OWL_RELOC_HALF_LO );
     EmitIns( RDTEB_ENCODING );
-    GenMEMINS( loadOpcodes[I4], V0, V0, RDTEB_MAGIC_CONST );
-    GenOPINS( 0x0010, 0x0002, AXP_GPR_SCRATCH, V0, V0 );
-    GenMEMINS( loadOpcodes[I4], V0, V0, 0 );
-    GenMEMINSRELOC( 0x08, _NameReg( ins->result ),
-                V0, 0, symLabel( op ), OWL_RELOC_HALF_LO );
+    GenMEMINS( loadOpcodes[I4], RT_RET_REG_IDX, RT_RET_REG_IDX, RDTEB_MAGIC_CONST );
+    GenOPINS( 0x0010, 0x0002, AT_REG_IDX, RT_RET_REG_IDX, RT_RET_REG_IDX );
+    GenMEMINS( loadOpcodes[I4], RT_RET_REG_IDX, RT_RET_REG_IDX, 0 );
+    GenMEMINSRELOC( 0x08, _NameRegTrans( ins->result ),
+                RT_RET_REG_IDX, 0, symLabel( op ), OWL_RELOC_HALF_LO );
     return( true );
 }
 
-static  void    Encode( instruction *ins ) {
-/******************************************/
-
-    uint_8              *opcodes;
-    uint_16             function;
-    uint_8              reg_index;
-    uint_8              mem_index;
-    int_16              mem_offset;
-    signed_16           high;
-    signed_16           extra;
-    signed_16           low;
+static  void    Encode( instruction *ins )
+/****************************************/
+{
+    uint_8          *opcodes;
+    uint_16         function;
+    reg_idx         reg_addr;
+    reg_idx         reg_mem;
+    int_16          mem_offset;
+    int_16          high;
+    int_16          extra;
+    int_16          low;
 
     switch( G( ins ) ) {
     case G_CALL:
@@ -723,27 +751,27 @@ static  void    Encode( instruction *ins ) {
             /* NEG Ra => Rb  ...becomes... SUB R31,Ra => Rb */
             switch( ins->type_class ) {
             case FS:
-                GenFPOPINS( 0x16, 0x81, AXP_ZERO_SINK,
-                    _NameReg( ins->operands[0] ),
-                    _NameReg( ins->result ) );
+                GenFPOPINS( 0x16, 0x81, ZERO_REG_IDX,
+                    _NameRegTrans( ins->operands[0] ),
+                    _NameRegTrans( ins->result ) );
                 break;
             case FD:
             case FL:
-                GenFPOPINS( 0x16, 0xa1, AXP_ZERO_SINK,
-                    _NameReg( ins->operands[0] ),
-                    _NameReg( ins->result ) );
+                GenFPOPINS( 0x16, 0xa1, ZERO_REG_IDX,
+                    _NameRegTrans( ins->operands[0] ),
+                    _NameRegTrans( ins->result ) );
                 break;
             default:
-                GenOPINS( 0x10, 0x09, AXP_ZERO_SINK,
-                    _NameReg( ins->operands[0] ),
-                    _NameReg( ins->result ) );
+                GenOPINS( 0x10, 0x09, ZERO_REG_IDX,
+                    _NameRegTrans( ins->operands[0] ),
+                    _NameRegTrans( ins->result ) );
             }
             break;
         case OP_COMPLEMENT:
             /* NOT Ra => Rb  ...becomes... ORNOT R31,Ra => Rb */
-            GenOPINS( 0x11, 0x28, AXP_ZERO_SINK,
-                _NameReg( ins->operands[0] ),
-                _NameReg( ins->result ) );
+            GenOPINS( 0x11, 0x28, ZERO_REG_IDX,
+                _NameRegTrans( ins->operands[0] ),
+                _NameRegTrans( ins->result ) );
             break;
         default:
             _Zoiks( ZOIKS_028 );
@@ -751,9 +779,8 @@ static  void    Encode( instruction *ins ) {
         break;
     case G_MOVE_FP:
         /* CPYS r1,r1,r2 */
-        GenFPOPINS( 0x17, 0x20,
-                _NameReg( ins->operands[0] ), _NameReg( ins->operands[0] ),
-                _NameReg( ins->result ) );
+        GenFPOPINS( 0x17, 0x20, _NameRegTrans( ins->operands[0] ),
+            _NameRegTrans( ins->operands[0] ), _NameRegTrans( ins->result ) );
         break;
     case G_ZERO:
         assert( ins->operands[0]->n.class == N_REGISTER );
@@ -771,24 +798,24 @@ static  void    Encode( instruction *ins ) {
         assert( ins->operands[0]->n.class == N_REGISTER );
         assert( ins->result->n.class == N_REGISTER );
         GenFPOPINS( 0x16, 0xac,
-                31, _NameReg( ins->operands[0] ),
-                _NameReg( ins->result ) );
+            ZERO_REG_IDX, _NameRegTrans( ins->operands[0] ),
+            _NameRegTrans( ins->result ) );
         break;
     case G_FREGTOMI8:
         assert( ins->operands[0]->n.class == N_REGISTER );
         assert( ins->result->n.class != N_REGISTER );
-        reg_index = _NameReg( ins->operands[0] );
-        GenFPOPINS( 0x16, 0x2f, AXP_ZERO_SINK, reg_index, AXP_FLOAT_SCRATCH );
-        getMemEncoding( ins->result, &mem_index, &mem_offset );
-        GenMEMINS( 0x27, AXP_FLOAT_SCRATCH, mem_index, mem_offset );
+        reg_addr = _NameRegTrans( ins->operands[0] );
+        GenFPOPINS( 0x16, 0x2f, ZERO_REG_IDX, reg_addr, AT_FP_REG_IDX );
+        getMemEncoding( ins->result, &reg_mem, &mem_offset );
+        GenMEMINS( 0x27, AT_FP_REG_IDX, reg_mem, mem_offset );
         break;
     case G_MI8TOFREG:
         assert( ins->operands[0]->n.class != N_REGISTER );
         assert( ins->result->n.class == N_REGISTER );
-        reg_index = _NameReg( ins->result );
-        getMemEncoding( ins->operands[0], &mem_index, &mem_offset );
-        GenMEMINS( 0x23, reg_index, mem_index, mem_offset );
-        GenFPOPINS( 0x16, 0xbe, AXP_ZERO_SINK, reg_index, reg_index );
+        reg_addr = _NameRegTrans( ins->result );
+        getMemEncoding( ins->operands[0], &reg_mem, &mem_offset );
+        GenMEMINS( 0x23, reg_addr, reg_mem, mem_offset );
+        GenFPOPINS( 0x16, 0xbe, ZERO_REG_IDX, reg_addr, reg_addr );
         break;
     case G_BINARY_FP:
         assert( ins->operands[0]->n.class == N_REGISTER );
@@ -796,8 +823,8 @@ static  void    Encode( instruction *ins ) {
         assert( ins->result->n.class == N_REGISTER );
         function = FindFloatingOpcodes( ins );
         GenFPOPINS( 0x16, function,
-                _NameReg( ins->operands[0] ), _NameReg( ins->operands[1] ),
-                _NameReg( ins->result ) );
+            _NameRegTrans( ins->operands[0] ), _NameRegTrans( ins->operands[1] ),
+            _NameRegTrans( ins->result ) );
         break;
     case G_BINARY:
         assert( ins->operands[0]->n.class == N_REGISTER );
@@ -805,56 +832,63 @@ static  void    Encode( instruction *ins ) {
         assert( ins->result->n.class == N_REGISTER );
         opcodes = FindOpcodes( ins );
         GenOPINS( opcodes[0], opcodes[1],
-                        _NameReg( ins->operands[0] ), _NameReg( ins->operands[1] ),
-                        _NameReg( ins->result ) );
+            _NameRegTrans( ins->operands[0] ), _NameRegTrans( ins->operands[1] ),
+            _NameRegTrans( ins->result ) );
         break;
     case G_BINARY_IMM:
         assert( ins->operands[0]->n.class == N_REGISTER );
         assert( ins->operands[1]->n.class == N_CONSTANT );
         assert( ins->result->n.class == N_REGISTER );
         opcodes = FindOpcodes( ins );
-        GenOPIMM( opcodes[0], opcodes[1],
-                        _NameReg( ins->operands[0] ), ins->operands[1]->c.lo.int_value,
-                        _NameReg( ins->result ) );
+        GenOPIMM8( opcodes[0], opcodes[1], _NameRegTrans( ins->operands[0] ),
+            (uint_8)ins->operands[1]->c.lo.int_value,
+            _NameRegTrans( ins->result ) );
         break;
     case G_BYTE_CONST:
-        // generate an "add R31,byte -> Rn to do an unsigned 8-bit constant
+        /*
+         * generate an "add R31,byte -> Rn to do an unsigned 8-bit constant
+         */
         assert( ins->operands[0]->n.class == N_CONSTANT );
         assert( ins->result->n.class == N_REGISTER );
-        GenOPIMM( 0x10, 0x00,
-                        AXP_ZERO_SINK, (uint_8)ins->operands[0]->c.lo.int_value,
-                        _NameReg( ins->result ) );
+        GenOPIMM8( 0x10, 0x00, ZERO_REG_IDX,
+            (uint_8)ins->operands[0]->c.lo.int_value,
+            _NameRegTrans( ins->result ) );
         break;
     case G_MOVE:
         assert( ins->operands[0]->n.class == N_REGISTER );
         assert( ins->result->n.class == N_REGISTER );
-        // generate a "BIS R31,Rn,Rm" instruction
+        /*
+         * generate a "BIS R31,Rn,Rm" instruction
+         */
         GenOPINS( 0x11, 0x20,
-                        AXP_ZERO_SINK, _NameReg( ins->operands[0] ),
-                        _NameReg( ins->result ) );
+            ZERO_REG_IDX, _NameRegTrans( ins->operands[0] ),
+            _NameRegTrans( ins->result ) );
         break;
     case G_ZAP:
         assert( ins->operands[0]->n.class == N_REGISTER );
         assert( ins->result->n.class == N_REGISTER );
         assert( ins->flags.zap_value <= 8 );
-        // generate a "ZAPNOT Ra,#i,Rb" instruction
-        GenOPIMM( 0x12, 0x31,
-                        _NameReg( ins->operands[0] ),
-                        zapMask[ins->flags.zap_value],
-                        _NameReg( ins->result ) );
+        /*
+         * generate a "ZAPNOT Ra,#i,Rb" instruction
+         */
+        GenOPIMM8( 0x12, 0x31, _NameRegTrans( ins->operands[0] ),
+            zapMask[ins->flags.zap_value],
+            _NameRegTrans( ins->result ) );
         break;
     case G_LEA_HIGH:
         assert( ins->operands[0]->n.class == N_CONSTANT );
         assert( ins->operands[0]->c.const_type == CONS_HIGH_ADDR );
         assert( ins->result->n.class == N_REGISTER );
-        GenMEMINS( 0x09, _NameReg( ins->result ), AXP_ZERO_SINK, ins->operands[0]->c.lo.int_value & 0xffff );
+        GenMEMINS( 0x09, _NameRegTrans( ins->result ), ZERO_REG_IDX,
+            (int_16)ins->operands[0]->c.lo.int_value );
         break;
     case G_LEA:
         assert( ins->operands[0]->n.class == N_CONSTANT );
         assert( ins->result->n.class == N_REGISTER );
         switch( ins->operands[0]->c.const_type ) {
         case CONS_ABSOLUTE:
-            GenMEMINS( 0x08, _NameReg( ins->result ), AXP_ZERO_SINK, ins->operands[0]->c.lo.int_value );
+            GenMEMINS( 0x08, _NameRegTrans( ins->result ), ZERO_REG_IDX,
+                (int_16)ins->operands[0]->c.lo.int_value );
             break;
         case CONS_LOW_ADDR:
         case CONS_HIGH_ADDR:
@@ -869,8 +903,8 @@ static  void    Encode( instruction *ins ) {
         case N_INDEXED:
         case N_TEMP:
             assert( ins->result->n.class == N_REGISTER );
-            getMemEncoding( ins->operands[0], &mem_index, &mem_offset );
-            GenMEMINS( 0x08, _NameReg( ins->result ), mem_index, mem_offset );
+            getMemEncoding( ins->operands[0], &reg_mem, &mem_offset );
+            GenMEMINS( 0x08, _NameRegTrans( ins->result ), reg_mem, mem_offset );
             break;
         case N_MEMORY:
             assert( ins->result->n.class == N_REGISTER );
@@ -879,10 +913,11 @@ static  void    Encode( instruction *ins ) {
                 _Zoiks( ZOIKS_132 );
             }
             if( !encodeThreadDataRef( ins ) ) {
-                GenMEMINSRELOC( 0x09, _NameReg( ins->result ), AXP_ZERO_SINK, high,
-                            symLabel( ins->operands[0] ), OWL_RELOC_HALF_HI );
-                GenMEMINSRELOC( 0x08, _NameReg( ins->result ), _NameReg( ins->result ), low,
-                            symLabel( ins->operands[0] ), OWL_RELOC_HALF_LO );
+                GenMEMINSRELOC( 0x09, _NameRegTrans( ins->result ), ZERO_REG_IDX,
+                    high, symLabel( ins->operands[0] ), OWL_RELOC_HALF_HI );
+                GenMEMINSRELOC( 0x08, _NameRegTrans( ins->result ),
+                    _NameRegTrans( ins->result ), low, symLabel( ins->operands[0] ),
+                    OWL_RELOC_HALF_LO );
             }
             break;
         default:
@@ -915,8 +950,8 @@ static  void    Encode( instruction *ins ) {
         _Zoiks( ZOIKS_028 );
         break;
     }
-#ifndef NDEBUG
-    if( _IsTargetModel( ASM_OUTPUT ) ) {
+#ifdef DEVBUILD
+    if( _IsTargetModel( CGSW_RISC_ASM_OUTPUT ) ) {
         DumpLiteral( "        " );
         DumpGen( ins->u.gen_table );
         DumpLiteral( " - " );
@@ -926,9 +961,9 @@ static  void    Encode( instruction *ins ) {
 #endif
 }
 
-void    GenObjCode( instruction *ins )  {
-/***************************************/
-
+void    GenObjCode( instruction *ins )
+/************************************/
+{
     _AlignmentCheck( ins, 8 );
     Encode( ins );
 }
@@ -938,9 +973,9 @@ void    GenJumpIf( instruction *ins, pointer label )
 /**************************************************/
 {
     GenBRANCH( BranchOpcodes[ins->head.opcode - FIRST_COMPARISON][_IsFloating( ins->type_class )],
-                _NameReg( ins->operands[0] ), label );
-#ifndef NDEBUG
-    if( _IsTargetModel( ASM_OUTPUT ) ) {
+        _NameRegTrans( ins->operands[0] ), label );
+#ifdef DEVBUILD
+    if( _IsTargetModel( CGSW_RISC_ASM_OUTPUT ) ) {
         DumpLiteral( "Jcc L" );
         DumpPtr( label );
         DumpNL();
@@ -949,10 +984,10 @@ void    GenJumpIf( instruction *ins, pointer label )
 }
 #endif
 
-void    GenLabelReturn( void ) {
-/******************************/
-
-    GenRET();
+void    GenLabelReturn( void )
+/****************************/
+{
+    GenReturn();
 }
 
 

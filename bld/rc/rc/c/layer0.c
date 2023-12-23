@@ -56,31 +56,32 @@ typedef struct RcBuffer {
     bool        IsDirty;
     char        Buffer[RC_BUFFER_SIZE];
 } RcBuffer;
-/* The buffer is layed out as follows:
-
-    if IsDirty is true last operation was a write
-        <----------Count--------->
-      Buffer                  NextChar
-        |                         |
-        +---------------------------------------------------------+
-        |////////////////////////|                                |
-        |////////////////////////|                                |
-        +---------------------------------------------------------+
-        ^
-       DOS (where dos thinks the file is)
-
-    if IsDirty is false last operation was a read (or the buffer is empty if
-    Count == 0)
-                                 <--------------Count------------->
-      Buffer                   NextChar
-        |                         |
-        +---------------------------------------------------------+
-        |                        |////////////////////////////////|
-        |                        |////////////////////////////////|
-        +---------------------------------------------------------+
-                                                                  ^
-                                                                 DOS
-*/
+/*
+ * The buffer is layed out as follows:
+ *
+ * if IsDirty is true last operation was a write
+ *     <----------Count--------->
+ *   Buffer                  NextChar
+ *     |                         |
+ *     +---------------------------------------------------------+
+ *     |////////////////////////|                                |
+ *     |////////////////////////|                                |
+ *     +---------------------------------------------------------+
+ *     ^
+ *    DOS (where dos thinks the file is)
+ *
+ * if IsDirty is false last operation was a read (or the buffer is empty if
+ * Count == 0)
+ *                              <--------------Count------------->
+ *   Buffer                   NextChar
+ *     |                         |
+ *     +---------------------------------------------------------+
+ *     |                        |////////////////////////////////|
+ *     |                        |////////////////////////////////|
+ *     +---------------------------------------------------------+
+ *                                                               ^
+ *                                                              DOS
+ */
 
 typedef struct RcFileEntry {
     bool        HasRcBuffer;
@@ -98,7 +99,7 @@ static RcFileEntry      RcFileList[RC_MAX_FILES];
 static RcBuffer *NewRcBuffer( void )
 /**********************************/
 {
-    RcBuffer *  new_buff;
+    RcBuffer    *new_buff;
 
     new_buff = RcMemMalloc( sizeof( RcBuffer ) );
     new_buff->IsDirty = false;
@@ -136,11 +137,11 @@ static void UnRegisterOpenFile( FILE *fp )
     }
 }
 
-/* Find index in RcFileList table of given file handle.
-*  Return: RC_MAX_FILES if not found, else index
-*/
 static int RcFindIndex( FILE *fp )
-/********************************/
+/*********************************
+ * Find index in RcFileList table of given file handle.
+ * Return: RC_MAX_FILES if not found, else index
+ */
 {
     int     i;
 
@@ -252,8 +253,9 @@ size_t res_write( FILE *fp, const void *out_buff, size_t size )
     }
 
     buff = RcFileList[i].Buffer;
-
-    /* this is in case we have just read from the file */
+    /*
+     * this is in case we have just read from the file
+     */
     if( !buff->IsDirty ) {
         if( FlushRcBuffer( fp, buff ) ) {
             return( RESIOERROR );
@@ -345,10 +347,11 @@ size_t res_read( FILE *fp, void *in_buff, size_t size )
 }
 
 bool res_seek( FILE *fp, long amount, int where )
-/***********************************************/
-/* Note: Don't seek backwards in a buffer that has been writen to without */
-/* flushing the buffer and doing an lseek since moving the NextChar pointer */
-/* back will make it look like less data has been writen */
+/************************************************
+ * Note: Don't seek backwards in a buffer that has been writen to without
+ * flushing the buffer and doing an lseek since moving the NextChar pointer
+ * back will make it look like less data has been writen
+ */
 {
     RcBuffer        *buff;
     long            currpos;
@@ -377,16 +380,20 @@ bool res_seek( FILE *fp, long amount, int where )
             where = SEEK_SET;
             /* FALL THROUGH */
         case SEEK_SET:
-            /* if we are seeking backwards any amount or forwards past the */
-            /* end of the buffer */
+            /*
+             * if we are seeking backwards any amount or forwards past the
+             * end of the buffer
+             */
             if( amount < currpos || amount >= currpos + ( RC_BUFFER_SIZE - buff->Count ) ) {
                 if( FlushRcBuffer( fp, buff ) )
                     return( true );
                 return( fseek( fp, amount, SEEK_SET ) != 0 );
             } else {
                 diff = amount - currpos;
-                /* add here because Count is chars to left of NextChar */
-                /* for writing */
+                /*
+                 * add here because Count is chars to left of NextChar
+                 * for writing
+                 */
                 buff->NextChar += diff;
                 buff->Count += diff;
             }
@@ -405,15 +412,19 @@ bool res_seek( FILE *fp, long amount, int where )
             where = SEEK_SET;
             /* FALL THROUGH */
         case SEEK_SET:
-            /* if the new pos is outside the buffer */
+            /*
+             * if the new pos is outside the buffer
+             */
             if( amount < currpos + buff->Count - buff->BytesRead || amount >= currpos + buff->Count ) {
                 if( FlushRcBuffer( fp, buff ) )
                     return( true );
                 return( fseek( fp, amount, SEEK_SET ) != 0 );
             } else {
                 diff = amount - currpos;
-                /* subtract here because Count is chars to right of NextChar */
-                /* for reading */
+                /*
+                 * subtract here because Count is chars to right of NextChar
+                 * for reading
+                 */
                 buff->Count -= diff;
                 buff->NextChar += diff;
             }
@@ -432,7 +443,7 @@ bool res_seek( FILE *fp, long amount, int where )
 long res_tell( FILE *fp )
 /***********************/
 {
-    RcBuffer *  buff;
+    RcBuffer    *buff;
     int         i;
 
     if( hInstance.fp == fp ) {

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,6 +32,7 @@
 
 
 #include "vi.h"
+#include "parse.h"
 #ifdef __WIN__
     #include "utils.h"
 #endif
@@ -55,7 +57,7 @@ vi_rc ReadAFile( linenum afterwhich, const char *name )
     if( rc != ERR_NO_ERR ) {
         return( rc );
     }
-    fn = MemAlloc( FILENAME_MAX );
+    fn = _MemAllocArray( char, FILENAME_MAX );
     GetNextWord1( name, fn );
     if( *fn == '\0' || IsDirectory( fn ) ) {
         if( *fn != '\0' ) {
@@ -64,12 +66,12 @@ vi_rc ReadAFile( linenum afterwhich, const char *name )
             dir = CurrentDirectory;
         }
         if( EditFlags.ExMode ) {
-            MemFree( fn );
+            _MemFreeArray( fn );
             return( ERR_INVALID_IN_EX_MODE );
         }
         rc = SelectFileOpen( dir, &fn, "*", false );
         if( rc != ERR_NO_ERR || fn[0] == '\0' ) {
-            MemFree( fn );
+            _MemFreeArray( fn );
             return( rc );
         }
     }
@@ -106,7 +108,7 @@ vi_rc ReadAFile( linenum afterwhich, const char *name )
         UpdateCurrentStatus( lastst );
         if( rc != ERR_NO_ERR && rc != END_OF_FILE ) {
             FreeEntireFile( cfile );
-            MemFree( fn );
+            _MemFreeArray( fn );
             return( rc );
         }
         bytecnt += lnecnt;
@@ -126,7 +128,7 @@ vi_rc ReadAFile( linenum afterwhich, const char *name )
         }
     }
     FileFree( cfile );
-    MemFree( fn );
+    _MemFreeArray( fn );
     return( ERR_NO_ERR );
 
 } /* ReadAFile */

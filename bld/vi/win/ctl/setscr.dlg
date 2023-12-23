@@ -1,3 +1,5 @@
+/* UTF-8 encoding, ¥ */
+
 #include "setscr.rh"
 
 SETSCR DIALOG 50, 20, 184, 123

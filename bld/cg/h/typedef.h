@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,22 +38,22 @@
 
 
 #if _TARGET & _TARG_8086
-    typedef signed_16     type_length;
+    typedef int_16      type_length;
     #define MAX_TYPE_LENGTH 0x7fff
 #elif _TARGET & _TARG_80386
-    typedef signed_32     type_length;
+    typedef int_32      type_length;
     #define MAX_TYPE_LENGTH 0x7fffffff
 #elif _TARGET & _TARG_370
-    typedef signed_32     type_length;
+    typedef int_32      type_length;
     #define MAX_TYPE_LENGTH 0x7fffffff
 #elif _TARGET & _TARG_PPC
-    typedef signed_32     type_length;
+    typedef int_32      type_length;
     #define MAX_TYPE_LENGTH 0x7fffffff
 #elif _TARGET & _TARG_AXP
-    typedef signed_32     type_length;
+    typedef int_32      type_length;
     #define MAX_TYPE_LENGTH 0x7fffffff
 #elif _TARGET & _TARG_MIPS
-    typedef signed_32     type_length;
+    typedef int_32      type_length;
     #define MAX_TYPE_LENGTH 0x7fffffff
 #else
     #error Unknown target
@@ -70,7 +70,7 @@ typedef struct type_def {
         cg_type         refno;
         type_length     length;
         type_attr       attr;
-#if _TARGET & _TARG_RISC
+#if _TARGET_RISC
         type_length     align;
 #endif
 } type_def;

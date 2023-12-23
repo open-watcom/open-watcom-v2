@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -52,7 +52,7 @@
     #define _OFFSET_PATCH           WORD_PATCH
     #define _NEAR_PATCH             (ADD_PATCH | WORD_PATCH)
 #else
-    #define _OutOpndSize            if( _IsntTargetModel( USE_32 ) ) { \
+    #define _OutOpndSize            if( _IsntTargetModel( CGSW_X86_USE_32 ) ) { \
                                         OutDataByte( 0x66 ); \
                                     }
     #define _OutFarOff( off )       OutDataLong( off );

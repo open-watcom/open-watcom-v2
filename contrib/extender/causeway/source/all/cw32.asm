@@ -75,7 +75,7 @@ cwOpen  proc    near
         mov     es:Real_EAX[edi],4a00h
         mov     bl,21h
         mov     ErrorNumber,1
-        sys     IntXX
+        Sys     IntXX
         test    es:w[edi+Real_Flags],1
         jnz     @@9
         mov     ErrorNumber,0   ;clear error number.
@@ -83,7 +83,7 @@ cwOpen  proc    near
 ;Force accurate memory values.
 ;
         or      ecx,-1
-        sys     GetMemLinear32
+        Sys     GetMemLinear32
 ;
 ;Enable resource tracking and MCB allocations.
 ;
@@ -95,7 +95,7 @@ cwOpen  proc    near
         mov     esi,80h
         mov     es,PSPSegment
         xor     cx,cx
-        sys     cwExec          ;run the bugger.
+        Sys     cwExec          ;run the bugger.
         jnc     @@8
         add     ax,10-1         ;convert error number.
         mov     ErrorNumber,ax
@@ -3091,7 +3091,7 @@ medpre2:
 ;
         mov     IErrorNumber,5
         mov     ecx,(size PSP_Struc)+(size EPSP_Struc)
-        sys     GetMem32
+        Sys     GetMem32
         jc      InitError
         push    ds
         mov     ds,mDataSegment
@@ -3145,17 +3145,17 @@ medpre2:
         mov     es:w[EPSP_PSPSel],es
         mov     BasePSP,es
         mov     bx,es
-        sys     GetSelDet32
+        Sys     GetSelDet32
         mov     BasePSPAddress,edx
         ;
-        sys     GetSel
+        Sys     GetSel
         jc      InitError
         movzx   edx,es:w[PSP_HandlePtr+2]
         shl     edx,4
         movzx   ecx,es:w[PSP_Handles]
         movzx   eax,es:w[PSP_HandlePtr]
         add     edx,eax
-        sys     SetSelDet32
+        Sys     SetSelDet32
         mov     dx,bx
 @@normal:       mov     es:w[PSP_HandlePtr+2],dx
         mov     es:w[PSP_HandlePtr],0
@@ -3166,7 +3166,7 @@ medpre2:
 ;Setup transfer buffer and selector.
 ;
         mov     IErrorNumber,8
-        sys     GetSel
+        Sys     GetSel
         jc      InitError
         push    ds
         mov     ds,mDataSegment
@@ -3174,7 +3174,7 @@ medpre2:
         movzx   edx,TransferReal
         shl     edx,4
         mov     ecx,TransferSize
-        sys     SetSelDet32
+        Sys     SetSelDet32
         jc      InitError
         push    es
         mov     es,PSPSegment
@@ -3190,7 +3190,7 @@ medpre2:
 ;Setup internaly EXPORT'ed symbols.
 ;
         mov     bx,dpmiDataSel
-        sys     GetSelDet32
+        Sys     GetSelDet32
         mov     edi,edx
         add     edi,offset apiExports
         push    ds
@@ -3240,7 +3240,7 @@ medpre2:
         jz      @@e9
         mov     bp,[di]         ;get pointer to details.
         movzx   ecx,ds:w[bp+4]  ;get patch size.
-        sys     GetMemLinear32  ;get some memory.
+        Sys     GetMemLinear32  ;get some memory.
         push    ds
         mov     ds,DataSegmenti
         assume ds:_cwInit
@@ -3248,9 +3248,9 @@ medpre2:
         assume ds:_cwMain
         pop     ds
         jc      InitError
-        sys     LockMem32               ;lock the memory.
+        Sys     LockMem32               ;lock the memory.
         jc      InitError
-        sys     GetSel          ;get a selector to use for
+        Sys     GetSel          ;get a selector to use for
         push    ds
         mov     ds,DataSegmenti
         assume ds:_cwInit
@@ -3259,18 +3259,18 @@ medpre2:
         pop     ds
         jc      InitError
         mov     edx,esi
-        sys     SetSelDet32             ;set it's base and limit.
+        Sys     SetSelDet32             ;set it's base and limit.
         jc      InitError
         push    ecx
         mov     cx,ds:[bp+2]            ;Get code seg size.
-        sys     CodeSel         ;convert to executable.
+        Sys     CodeSel         ;convert to executable.
         pop     ecx
         mov     ds:[bp+8+4],bx  ;store it for now.
         mov     ds:[bp+16+4],bx
         mov     ds:[bp+24],bx
-        sys     GetSel          ;get a selector to use for data.
+        Sys     GetSel          ;get a selector to use for data.
         jc      InitError
-        sys     SetSelDet32             ;set it's base and limit.
+        Sys     SetSelDet32             ;set it's base and limit.
         jc      InitError
         mov     ds:[bp+28],bx   ;store it for now.
         pushm   di,ds,es

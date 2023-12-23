@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,7 +38,7 @@
 #include "vstk.h"
 #include "context.h"
 #include "initdefs.h"
-#ifndef NDEBUG
+#ifdef DEVBUILD
     #include "dbg.h"
 #endif
 #include "dumpapi.h"
@@ -108,8 +108,7 @@ FN_CTL *FnCtlPush(              // PUSH FILE CONTROL
     fctl->ctor_test      = false;
     fctl->dtor_reg_reqd  = false;
     fctl->debug_info     = ( 0 == CgBackInlinedDepth() )
-                         && ( GenSwitches
-                            & ( DBG_NUMBERS | DBG_TYPES | DBG_LOCALS ) );
+                         && (GenSwitches & (CGSW_GEN_DBG_NUMBERS | CGSW_GEN_DBG_TYPES | CGSW_GEN_DBG_LOCALS));
     if( has_cdtor ) {
         fctl->cdtor_val = cd_arg;
         fctl->has_cdtor_val = true;
@@ -217,7 +216,7 @@ static void fnCtlFini(          // COMPLETION FOR CGBKFCTL
 INITDEFN( fn_ctl, fnCtlInit, fnCtlFini )
 
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 
 #include "module.h"
 

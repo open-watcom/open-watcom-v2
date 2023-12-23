@@ -35,7 +35,8 @@
 
 typedef struct default_lib {
     struct default_lib  *link;
-    char                lib[2]; // 1 for priority and 1 for NULLCHAR
+    char                priority;   // priority
+    char                libname[1]; // library name
 } default_lib;
 
 typedef struct arr_info {
@@ -69,4 +70,3 @@ extern bool             CurrToken( const char *tok );
 extern void             ScanToken( void );
 extern bool             RecToken( const char *tok );
 extern void             SymbolId( void );
-

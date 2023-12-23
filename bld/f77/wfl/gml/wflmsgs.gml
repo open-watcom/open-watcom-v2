@@ -2,7 +2,7 @@
 :cmt *
 :cmt *                            Open Watcom Project
 :cmt *
-:cmt * Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+:cmt * Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 :cmt *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 :cmt *
 :cmt *  ========================================================================
@@ -42,6 +42,7 @@
 :cmt        :ansi <n>   warning if extensions enabled, error otherwise
 :cmt        :ansierr    ignored if extensions enabled, error otherwise
 :cmt        :ansiwarn <n>   ignored if extensions enabled, warn otherwise
+:cmt        :error <n>  (default) message is a error with a specific level
 :cmt        :warning <n>    message is a warning with a specific level
 :cmt        :info       informational message
 :cmt
@@ -77,6 +78,8 @@
 :cmt    then the error message must also be translated.  This has
 :cmt    been found to be easier when searching for messages that
 :cmt    still need to be translated.
+
+:include file='msgmacs'.
 
 :cmt -------------------------------------------------------------------
 :MSGGRP. CL

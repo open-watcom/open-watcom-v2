@@ -31,7 +31,7 @@
 
 
 #include "gdefn.h"
-#include "gbios.h"
+#include "realmod.h"
 
 
 void _WCI86FAR _L2clearscreen( short area )
@@ -147,7 +147,7 @@ void _TxtClear( short r1, short c1, short r2, short c2 )
         seg = _CgaSeg;
         offset = _CgaOff;
     }
-    offset += 2 * ( r1 * _CurrState->vc.numtextcols + c1 ) + _CurrActivePage * _BIOS_data( CRT_LEN, short );
+    offset += 2 * ( r1 * _CurrState->vc.numtextcols + c1 ) + _CurrActivePage * BIOSData( BDATA_REGEN_LEN, unsigned short );
     len = c2 - c1 + 1;
     blank = ( _CharAttr << 8 ) + ' ';
     for( ; r1 <= r2; ++r1 ) {

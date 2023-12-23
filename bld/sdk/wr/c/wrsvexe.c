@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,7 +35,7 @@
 #include <stdarg.h>
 #include "global.h"     /* this is a WRC header file */
 #include "rcspawn.h"    /* this is a WRC header file */
-#include "rccore.h"     /* this is a WRC header file */
+#include "rccore_2.h"     /* this is a WRC header file */
 #include "wresset2.h"
 #include "wrsvres.h"
 #include "wrmsg.h"
@@ -57,22 +57,20 @@
 /****************************************************************************/
 /* external variables                                                       */
 /****************************************************************************/
+jmp_buf     jmpbuf_RCFatalError;
 
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
 static int  WRExecRCPass2( void );
-static int  WRPass2( void );
-static bool WRSaveResourceToEXE( WRInfo *, bool, WRFileType );
+static bool WRSaveResourceToEXE( WRInfo *, bool backup, WRFileType );
 
 /****************************************************************************/
 /* static variables                                                         */
 /****************************************************************************/
 
-jmp_buf     jmpbuf_RCFatalError;
-
 /* this function duplicates Pass2 in rc.c of the WRC project */
-int WRPass2( void )
+static void WRPass2( void )
 {
     int rc;
 
@@ -81,33 +79,20 @@ int WRPass2( void )
     if( rc ) {
         switch( Pass2Info.OldFile.Type ) {
         case EXE_TYPE_NE_WIN:
-            rc = MergeResExeWINNE();
+            rc = MergeResExeWINNE( &Pass2Info.OldFile, &Pass2Info.TmpFile, Pass2Info.ResFile );
             break;
         case EXE_TYPE_PE:
-            rc = MergeResExePE();
+            rc = MergeResExePE( &Pass2Info.OldFile, &Pass2Info.TmpFile, Pass2Info.ResFile );
             break;
         }
 
         RcPass2IoShutdown( rc );
     }
-
-    return( rc );
 }
 
-int WRExecRCPass2( void )
+static int WRExecRCPass2( void )
 {
-    int ret;
-    int rc;
-
-    ret = setjmp( jmpbuf_RCFatalError );
-
-    if( ret ) {
-        rc = 0;
-    } else {
-        rc = WRPass2();
-    }
-
-    return( rc );
+    return( RCSpawn( WRPass2 ) );
 }
 
 bool WRSaveResourceToWin16EXE( WRInfo *info, bool backup )

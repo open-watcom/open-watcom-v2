@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -147,10 +147,10 @@ static char *MemGetTitle( mem_window *mem )
 {
     char        *p;
 
-    p = StrCopy( LIT_DUI( WindowMemory ), TxtBuff );
-    p = StrCopy( " (", p );
+    p = StrCopyDst( LIT_DUI( WindowMemory ), TxtBuff );
+    p = StrCopyDst( " (", p );
     p = AddrToString( &mem->u.m.home, MAF_FULL, p, TXT_LEN - ( p - TxtBuff ) );
-    p = StrCopy( ")", p );
+    p = StrCopyDst( ")", p );
     return( TxtBuff );
 }
 
@@ -192,7 +192,7 @@ static gui_ord MemHeader( a_window wnd, wnd_piece piece )
     AddrToString( &addr, MAF_FULL, buff, sizeof( buff ) );
     switch( piece ) {
     case 0:
-        StrCopy( buff, TxtBuff );
+        StrCopyDst( buff, TxtBuff );
         return( 0 );
     case 1:
         StrAddr( &addr, TxtBuff, TXT_LEN );
@@ -674,7 +674,7 @@ static  bool    MemGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line
         offset *= mem->item_size;
         if( mem->file ) {
             p = CnvULong( mem->u.f.offset + offset, TxtBuff, TXT_LEN );
-            StrCopy( ":", p );
+            StrCopyDst( ":", p );
             return( true );
         }
         if( mem->stack ) {
@@ -692,7 +692,7 @@ static  bool    MemGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line
         }
         addr = AddrAddWrap( mem->u.m.addr, offset );
         p = AddrToString( &addr, MAF_OFFSET, TxtBuff, TXT_LEN );
-        StrCopy( ":", p );
+        StrCopyDst( ":", p );
         return( true );
     }
     if( row == mem->cursor_row && piece == mem->shadow_piece ) {
@@ -739,7 +739,7 @@ static  bool    MemGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line
         new_radix = MemData.info[mem->piece_type].piece_radix;
         old_radix = NewCurrRadix( new_radix );
         max = TXT_LEN;
-        MADTypeHandleToString( new_radix, MemData.info[mem->piece_type].mth, &buff, TxtBuff, &max );
+        MADTypeHandleToString( new_radix, MemData.info[mem->piece_type].mth, buff, TxtBuff, &max );
         NewCurrRadix( old_radix );
     }
     return( true );

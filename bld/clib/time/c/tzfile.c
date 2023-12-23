@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,105 +47,179 @@ static long pntohl( const unsigned char *p )
 
 static unsigned char *tzfile = NULL;
 
-void __check_tzfile( time_t t, struct tm *timep )
+void __check_tzfile( unsigned char *tzdata, time_t t, struct tm *timep )
 {
+//    long                tzh_ttisutccnt;
+//    long                tzh_ttisstdcnt;
+//    long                tzh_leapcnt;
     long                tzh_timecnt;
     long                tzh_typecnt;
-#if 0
-    long                tzh_ttisgmtcnt;
-    long                tzh_ttisstdcnt;
-    long                tzh_leapcnt;
-    long                tzh_charcnt;
-#endif
-    const char          *dstname;
+//    long                tzh_charcnt;
     long                timidx;
     long                stdzon;
     long                dstzon;
     long                i;
     const unsigned char *tzp;
     int                 isdst;
+    char                version;
 
-    if( tzfile == NULL )
-        return;
-    tzp = tzfile + 16 + 4;
-#if 0
-    tzh_ttisgmtcnt = pntohl( tzp );
-    tzh_ttisstdcnt = pntohl( tzp + 4 );
-    tzh_leapcnt    = pntohl( tzp + 8 );
-    tzh_charcnt    = pntohl( tzp + 20 );
-#endif
-    tzh_timecnt    = pntohl( tzp + 12 );
-    tzh_typecnt    = pntohl( tzp + 16 );
-    tzp += 24;
+    tzp = tzdata;
+    if( tzp == NULL ) {
+        tzp = tzfile;
+        if( tzp == NULL ) {
+            return;
+        }
+    }
+    /*
+     * process header
+     */
+//    signature      = pntohl( tzp );
+    version        = *( tzp + 4 );
+    if( version == 0 ) {
+        version = '1';
+    }
+//    tzh_ttisutccnt = pntohl( tzp + 20);
+//    tzh_ttisstdcnt = pntohl( tzp + 24 );
+//    tzh_leapcnt    = pntohl( tzp + 28 );
+    tzh_timecnt    = pntohl( tzp + 32 );
+    tzh_typecnt    = pntohl( tzp + 36 );
+//    tzh_charcnt    = pntohl( tzp + 40 );
+    tzp += 44;
+    /*
+     * Version 1 data
+     *
+     * // transition times
+     * tzp += tzh_timecnt * 4;
+     * // transition types
+     * tzp += tzh_timecnt;
+     * // local time types
+     * tzp += tzh_typecnt * 6;
+     * // time zone designations
+     * tzp += tzh_charcnt;
+     * // ignore leap seconds for now
+     * tzp += tzh_leapcnt * 8;
+     * // ignore standard/wall indicators for now
+     * tzp += tzh_ttisstdcnt;
+     * // ignore UTC/local indicators for now
+     * tzp += tzh_ttisutcnt;
+     */
+
+    /*
+     * find time in transition times table
+     */
     timidx = 0;
     for( i = 0; i < tzh_timecnt; i++ ) {
         if( t >= (time_t)pntohl( tzp ) )
             timidx = i;
         tzp += 4;
     }
+    /*
+     * get timezone info
+     */
     stdzon = tzh_timecnt + tzp[timidx] * 6;
     isdst = tzp[stdzon + 4];
     if( timep != NULL )
         timep->tm_isdst = isdst;
-    dstname = "\0";
-    dstzon = stdzon;
-    if( timidx > 0 ) {
-        if( isdst )
-            stdzon = tzh_timecnt + tzp[timidx - 1] * 6;
-        else
-            dstzon = tzh_timecnt + tzp[timidx - 1] * 6;
-        dstname = (char *)&tzp[tzp[dstzon + 5] + tzh_timecnt + tzh_typecnt * 6];
-        _RWD_dst_adjust = pntohl( &tzp[dstzon] ) - pntohl( &tzp[stdzon] );
-    } else {
-        _RWD_daylight = 0;  // daylight savings not supported
-        _RWD_dst_adjust = 0;
+    /*
+     * update current timezone data
+     */
+    if( tzdata != NULL ) {
+        /*
+         * save new timezone data
+         */
+        if( tzfile != NULL )
+            free( tzfile );
+        tzfile = tzdata;
+        /*
+         * update current timezone data by new one
+         */
+        dstzon = stdzon;
+        if( timidx > 0 ) {
+            if( isdst ) {
+                stdzon = tzh_timecnt + tzp[timidx - 1] * 6;
+            } else {
+                dstzon = tzh_timecnt + tzp[timidx - 1] * 6;
+            }
+        }
+        if( dstzon != stdzon ) {
+            _RWD_daylight = 1;
+            _RWD_dst_adjust = pntohl( &tzp[dstzon] ) - pntohl( &tzp[stdzon] );
+        } else {
+            _RWD_daylight = 0;
+            _RWD_dst_adjust = 0;
+        }
+        _RWD_timezone = -pntohl( &tzp[stdzon] );
+        strcpy( _RWD_tzname[0], (char *)&tzp[tzp[stdzon + 5] + tzh_timecnt + tzh_typecnt * 6] );
+        strcpy( _RWD_tzname[1], (char *)&tzp[tzp[dstzon + 5] + tzh_timecnt + tzh_typecnt * 6] );
     }
-    _RWD_timezone = -pntohl( &tzp[stdzon] );
-    strcpy( _RWD_tzname[0], (char *)&tzp[tzp[stdzon + 5] + tzh_timecnt + tzh_typecnt * 6] );
-    strcpy( _RWD_tzname[1], dstname );
-#if 0
-    tzp += tzh_timecnt;
-    tzp += tzh_typecnt * 6;
-    tzp += tzh_charcnt;
-    /* ignore leap seconds for now */
-    tzp += tzh_leapcnt * 8;
-    /* ignore standard/wall indicators for now */
-    tzp += tzh_ttisstdcnt;
-    /* ignore UTC/local indicators for now */
-    tzp += tzh_ttisgmtcnt;
-#endif
 }
 
+#define DEFAULT_ZONEFILE    "/etc/localtime"
+#define DEFAULT_ZONEDIR     "/usr/share/zoneinfo/"
+
 int __read_tzfile( const char *tz )
+/**********************************
+ * - if no file name specified in TZ then
+ * use system default file "/etc/localtime"
+ * - if file name is specified with absolute path
+ * then use it
+ * - otherwise location "/usr/share/zoneinfo/"
+ * is used for specified file
+ */
 {
-    long        fsize;
-    int         fd;
-    char        *filename = ( char * ) "/etc/localtime";
+    long            fsize;
+    int             fd;
+    char            *filename = DEFAULT_ZONEFILE;
+    size_t          filenamelen;
+    int             rc;
+    unsigned char   *tzdata;
 
+    rc = 0;
     if( tz != NULL ) {
-        size_t const filenamelen = 21 + strlen( tz ) + 1;
-        filename = alloca( filenamelen );
-        if( filename == NULL )
-            return( 0 );
-        strcpy( filename, "/usr/share/zoneinfo/" );
-        strcat( filename, tz );
+        if( *tz == ':' )
+            tz++;
+        if( *tz != '\0' ) {
+            filenamelen = strlen( tz ) + 1;
+            if( *tz != '/' ) {
+                /*
+                 * relative path, add DEFAULT_ZONEDIR
+                 */
+                filenamelen += sizeof( DEFAULT_ZONEDIR ) - 1;
+            }
+            filename = alloca( filenamelen );
+            if( filename != NULL ) {
+                *filename = '\0';
+                if( *tz != '/' ) {
+                    /*
+                     * relative path, add DEFAULT_ZONEDIR
+                     */
+                    strcpy( filename, DEFAULT_ZONEDIR );
+                }
+                strcat( filename, tz );
+            }
+        }
     }
 
-    fd = open( filename, O_RDONLY );
-    fsize = lseek( fd, 0, SEEK_END );
-    if( fsize == -1 )
-        return( 0 );
-    if( tzfile != NULL )
-        free( tzfile );
-    tzfile = malloc( (size_t)fsize );
-    lseek( fd, 0, SEEK_SET );
-    read( fd, tzfile, (unsigned int)fsize );
-    close( fd );
-    if( pntohl( tzfile ) != TZif ) {
-        free( tzfile );
-        tzfile = NULL;
-        return( 0 );
+    if( filename != NULL ) {
+        fd = open( filename, O_RDONLY );
+        if( fd != -1 ) {
+            fsize = lseek( fd, 0, SEEK_END );
+            if( fsize != -1 ) {
+                tzdata = malloc( (size_t)fsize );
+                if( tzdata != NULL ) {
+                    lseek( fd, 0, SEEK_SET );
+                    *tzdata = '\0';
+                    read( fd, tzdata, (size_t)fsize );
+                    if( pntohl( tzdata ) == TZif ) {
+                        __check_tzfile( tzdata, time( NULL ), NULL );
+                        rc = 1;
+                    } else {
+                        free( tzdata );
+                    }
+                }
+            }
+            close( fd );
+        }
     }
-    __check_tzfile( time( NULL ), NULL );
-    return( 1 );
+    return( rc );
 }

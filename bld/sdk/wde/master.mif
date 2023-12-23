@@ -1,3 +1,5 @@
+tree_depth = 4
+
 proj_name = wde
 
 !ifndef wde_autodepends
@@ -27,7 +29,7 @@ memory_model_i86 = l
 .c : ../$(host_os)/c;../c;$(cpp_c_dirs);$(watcom_dir)/c
 
 inc_dirs = -I. -I"../$(host_os)/h" -I"../h" -I"$(fmedit_dir)/dev" $(commonui_inc_dirs) &
-    $(wr_inc_dirs) $(wres_inc_dirs) $(cpp_inc_dirs) $(wpi_inc_dirs)
+    $(wr_inc_dirs) $(wres_inc_dirs) -I"$(wre_dir)/h" $(cpp_inc_dirs) $(wpi_inc_dirs)
 
 extra_cpp_flags   = -DWDE
 
@@ -60,7 +62,6 @@ extra_l_flags_win  = op stack=32k, rwr library commdlg, ddeml
 # EXE
 #
 exetarg_prebuild_objs = rcstr.grh
-exetarg_cpp_objs      = preproc.obj ppexpr.obj ppmacro.obj ppenv.obj
 exetarg_objs = &
     wde_wres.obj wdealign.obj wdecsize.obj wdecust.obj  wdedebug.obj &
     wdedefin.obj wdeedit.obj  wdefbase.obj wdefbutt.obj wdefcbox.obj &
@@ -72,15 +73,17 @@ exetarg_objs = &
     wderes.obj   wderesin.obj wdesdlg.obj  wdesdup.obj  &
     wdestat.obj  wdestyle.obj &
     wdesym.obj   wdetest.obj  &
-    wdetfile.obj wdetoolb.obj &
+    wdetoolb.obj &
     wdemem.obj wdewait.obj wdedefsz.obj wdetxtsz.obj &
     wdetmenu.obj wdectool.obj wdezordr.obj wderibbn.obj &
-    wdeselft.obj wdei2mem.obj wdeldres.obj wdesvres.obj wdesvobj.obj &
+    wdeselft.obj wde2data.obj wdeldres.obj wdesvres.obj wdesvobj.obj &
     wdestken.obj wdectl3d.obj wdesvdlg.obj wdedde.obj &
     wdeclear.obj wdecurr.obj wdegoto.obj &
     wdefsbar.obj wdeflvw.obj wdeftvw.obj wdefhdr.obj wdeftabc.obj &
     wdefani.obj wdefupdn.obj wdeftrak.obj wdefprog.obj wdefhtky.obj &
-    windlg.obj windlg32.obj pathlist.obj $(exetarg_cpp_objs) $(objs_$(host_os))
+    windlg.obj windlg32.obj &
+    $(cpp_objs) ppenv.obj &
+    $(objs_$(host_os))
 exetarg_libs          = $(fmedit_dir)/$(objs_subdir)/fmedit.lib &
     $(wr_lib) $(wpi_lib) $(commonui_lib) $(wres_lib)
 exetarg_res_version_nt_386 = exever.res
@@ -99,11 +102,11 @@ rc_inc_dirs = -I"../res" -I"$(fmedit_dir)/dev" $(commonui_inc_dirs)
 
 $(proj_name).res: ../res/wde.rc $(__MAKEFILES__) .AUTODEPEND
     @%make echo_rc
-    $(rc) $(rc_flags) -ad -zk0 $(cppflags) $(rc_inc_path) $[@ -fo=$@
+    $(rc) $(rc_ui8_flags) $(rc_flags) -ad $(cppflags) $(rc_inc_path) $[@ -fo=$@
 
 ntmanif.res : ../res/ntmanif.rc
     @%make echo_rc
-    $(rc) $(rc_flags) -I"../res" $(inc_dirs_sys_nt) $< -fo=$@
+    $(rc) $(rc_ui8_flags) $(rc_flags) -I"../res" $(inc_dirs_sys_nt) $< -fo=$@
 
 rcstr.grh: rcstrmsg.gh $(__MAKEFILES__)
     @%make echo_awk
@@ -111,4 +114,4 @@ rcstr.grh: rcstrmsg.gh $(__MAKEFILES__)
 
 rcstrmsg.gh : ../res/wde.msg $(__MAKEFILES__)
     @%make echo_cpp
-    $(cpp) $(rc_ui_flags) -o$@ $[@
+    $(cpp) $(rc_ui8_flags) -o$@ $[@

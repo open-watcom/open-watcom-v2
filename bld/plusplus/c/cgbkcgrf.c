@@ -62,14 +62,14 @@
 #include "rtti.h"
 #include "dumpapi.h"
 #include "compinfo.h"
-#ifndef NDEBUG
+#ifdef DEVBUILD
     #include "dbg.h"
     #include "pragdefn.h"
     #include "togglesd.h"
 #endif
 
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
     static void _DUMP_CGRF( char *msg, SYMBOL sym ) {
         if( TOGGLEDBG( callgraph ) ) {
             VBUF vbuf;
@@ -147,7 +147,7 @@ static void forceGeneration(    // FORCE CODE FILE TO BE GENERATED
     CALLNODE *node );           // - function in graph
 
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
     void CallGraphDump( void )
     {
         CgrfDump( call_graph );
@@ -952,7 +952,7 @@ static void markAsGen(          // MARK CODE FILE TO BE GENERATED
             if( NULL != func ) {
                 SegmentMarkUsed( func->segid );
             }
-        #ifndef NDEBUG
+        #ifdef DEVBUILD
             if( TOGGLEDBG( dump_emit_ic ) ) {
                 VBUF vbuf;
                 printf( "Selected code file: %s\n", DbgSymNameFull( func, &vbuf ) );
@@ -1149,7 +1149,7 @@ static void removeCodeFile(     // REMOVE CODE FILE FOR FUNCTION
     func = node->base.object;
     cgfile = nodeCgFile( node );
     if( node->inline_fun ) {
-#ifndef NDEBUG
+#ifdef DEVBUILD
         if( TOGGLEDBG( dump_emit_ic ) || TOGGLEDBG( callgraph ) ) {
             VBUF vbuf;
             printf( "Removed inline code file: %s\n", DbgSymNameFull( func, &vbuf ) );
@@ -1160,7 +1160,7 @@ static void removeCodeFile(     // REMOVE CODE FILE FOR FUNCTION
         // inlines that aren't going to be generated aren't really referenced
         func->flag &= ~SYMF_REFERENCED;
     } else if ( SymIsRegularStaticFunc( func ) ) {
-#ifndef NDEBUG
+#ifdef DEVBUILD
         if( TOGGLEDBG( dump_emit_ic ) || TOGGLEDBG( callgraph ) ) {
             VBUF vbuf;
             printf( "Removed static code file: %s\n", DbgSymNameFull( func, &vbuf ) );
@@ -1311,7 +1311,7 @@ static bool setFunctionStab(    // SET STATE-TABLE INFO. FOR FUNCTION
             cgfile->u.s.state_table = state_table;
             cgfile->u.s.stab_gen = stab_gen;
             cgfile->cond_flags = max_cond_flags;
-#ifndef NDEBUG
+#ifdef DEVBUILD
             if( TOGGLEDBG( dump_emit_ic ) || TOGGLEDBG( callgraph ) || TOGGLEDBG( dump_stab ) ) {
                 VBUF vbuf;
                 SYMBOL func = cgfile->symbol;
@@ -1339,7 +1339,7 @@ void MarkFuncsToGen(            // DETERMINE FUNCTIONS TO BE GENERATED
     SYMBOL *pfunc;              // - ptr[ stacked inline ]
     CGFILE *vfcg;               // - current VFTDefn CGFILE
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
     bool dbg_dump_exec;
 
     dbg_dump_exec = TOGGLEDBG( dump_exec_ic );
@@ -1447,7 +1447,7 @@ void MarkFuncsToGen(            // DETERMINE FUNCTIONS TO BE GENERATED
         CgrfWalkFunctions( &ctl, &procFunction );
     }
     VstkClose( &ctl.calls );
-#ifndef NDEBUG
+#ifdef DEVBUILD
     TOGGLEDBG( dump_exec_ic ) = dbg_dump_exec;
     if( TOGGLEDBG( callgraph ) ) {
         CgrfDump( &ctl );
@@ -1518,7 +1518,7 @@ CALLNODE* CgrfDtorAddr(         // DTOR ADDR-OF HAS BEEN ESTABLISHED
     return( owner );
 }
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 
 void* DbgCallGraph( void )
 {

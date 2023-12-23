@@ -1,4 +1,7 @@
 #pmake: build lcl os_win cpu_i86 cpu_386 support x86
+
+tree_depth = 5
+
 host_cpu = i86
 host_os  = win
 

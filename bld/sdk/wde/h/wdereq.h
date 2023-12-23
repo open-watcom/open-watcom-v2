@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,7 +37,6 @@
 /****************************************************************************/
 /* type definitions                                                         */
 /****************************************************************************/
-#define USER_REQ 128
 
 typedef enum {
     AT_POINT = USER_REQ

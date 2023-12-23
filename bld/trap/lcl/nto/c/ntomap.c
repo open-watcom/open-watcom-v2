@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -61,8 +61,9 @@ lib_load_info *FindLib( addr_off dynsection )
     unsigned    i;
 
     for( i = 0; i < ModuleTop; ++i ) {
-        if( moduleInfo[i].dbg_dyn_sect == dynsection )
+        if( moduleInfo[i].dbg_dyn_sect == dynsection ) {
             return( &moduleInfo[i] );
+        }
     }
     return( NULL );
 }
@@ -74,7 +75,8 @@ addr_off FindLibInLinkMap( pid_handle pid, addr_off first_lmap, addr_off dyn_bas
 
     dbg_lmap = first_lmap;
     while( dbg_lmap ) {
-        if( !GetLinkMap( pid, dbg_lmap, &lmap ) ) break;
+        if( !GetLinkMap( pid, dbg_lmap, &lmap ) )
+            break;
         if( (addr_off)lmap.l_ld == dyn_base )
             return( dbg_lmap );
         dbg_lmap = (addr_off)lmap.l_next;
@@ -181,7 +183,8 @@ int AddLibs( pid_handle pid, addr_off first_lmap )
 
     dbg_lmap = first_lmap;
     while( dbg_lmap ) {
-        if( !GetLinkMap( pid, dbg_lmap, &lmap ) ) break;
+        if( !GetLinkMap( pid, dbg_lmap, &lmap ) )
+            break;
         lli = FindLib( (addr_off)lmap.l_ld );
         if( lli == NULL ) {
             AddLib( pid, &lmap );
@@ -222,7 +225,7 @@ void ProcessLdBreakpoint( pid_handle pid, addr_off rdebug_va )
     static int      ld_state;
     struct r_debug  rdebug;
 
-    ReadMem( pid, &rdebug, rdebug_va, sizeof( rdebug ) );
+    ReadMemory( pid, rdebug_va, &rdebug, sizeof( rdebug ) );
 
 #if 0
     dbg_print(( "  r_map     = %p", rdebug.r_map ));
@@ -312,7 +315,7 @@ trap_retval TRAP_CORE( Get_lib_name )( void )
     char                *name;
     unsigned            i;
     unsigned            ret_len;
-    size_t              max_len;
+    size_t              name_maxlen;
 #ifdef DEBUG_OUT
     char                *p = "";
 #endif
@@ -341,10 +344,10 @@ trap_retval TRAP_CORE( Get_lib_name )( void )
             dbg_print(( "(lib loaded, '%s')\n", name ));
             moduleInfo[i].newly_loaded = FALSE;
             ret->mod_handle = i;
-            max_len = GetTotalSizeOut() - 1 - sizeof( *ret );
+            name_maxlen = GetTotalSizeOut() - sizeof( *ret ) - 1;
             name = GetOutPtr( sizeof( *ret ) );
-            strncpy( name, moduleInfo[i].filename, max_len );
-            name[max_len] = '\0';
+            strncpy( name, moduleInfo[i].filename, name_maxlen );
+            name[name_maxlen] = '\0';
             ret_len += strlen( name ) + 1;
 #ifdef DEBUG_OUT
             p = name;

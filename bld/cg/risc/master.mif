@@ -1,0 +1,25 @@
+risc_objs = &
+        rtcall.obj   &
+        rscmul.obj   &
+        rscregsv.obj &
+        rscsplit.obj &
+        rscver.obj   &
+        rscilen.obj  &
+        rscobj.obj   &
+        rscscore.obj &
+        rscstubs.obj &
+        rsccvsup.obj &
+        rscdfsup.obj &
+        rscopt.obj   &
+        rscsel.obj   &
+        rsctemps.obj &
+        rscdata.obj  &
+        rscindex.obj &
+        rscsib.obj   &
+        rsctype.obj  &
+        rscqueue.obj
+
+src_path        = $(cg_dir)/$(target_cls)/$(target_cpu)/c;$(cg_dir)/$(target_cls)/c
+inc_dirs_targ   = -I"$(cg_dir)/$(target_cls)/$(target_cpu)/h" -I"$(cg_dir)/$(target_cls)/h" -I"$(owl_dir)/h"
+
+!include $(cg_dir)/mif/master.mif

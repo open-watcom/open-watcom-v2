@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,13 +32,13 @@
 
 
 #include "global.h"
+#include <errno.h>
 #include "yydriver.h"
 #include "rcerrors.h"
 #include "depend.h"
 #include "rcldstr.h"
 #include "preproc.h"
 #include "dbtable.h"
-#include "tmpctl.h"
 #include "loadstr.h"
 #include "rcspawn.h"
 #include "semantic.h"
@@ -61,12 +62,10 @@ void InitGlobs( void )
     ErrorHasOccured = false;
     memset( CharSetLen, 0, sizeof( CharSetLen ) );
     memset( &hInstance, 0, sizeof( HANDLE_INFO ) );
-    TmpCtlInitStatics();
     Layer0InitStatics();
     SemanticInitStatics();
     SemanticInitStaticsWIN();
     SemanticInitStaticsOS2();
-    ErrorInitStatics();
     SharedIOInitStatics();
     ScanInitStaticsWIN();
     ScanInitStaticsOS2();
@@ -138,12 +137,12 @@ static bool Pass1( void )
     return( noerror );
 }
 
-/* Please note that this function is vital to the resource editors. Thusly
+static bool Pass2( void )
+/************************
+ * Please note that this function is vital to the resource editors. Thusly
  * any changes made to Pass2 should cause the notification of the
  * resource editor dude.
  */
-static bool Pass2( void )
-/**********************/
 {
     bool     noerror;
 
@@ -151,24 +150,24 @@ static bool Pass2( void )
     if( noerror ) {
         switch( Pass2Info.OldFile.Type ) {
         case EXE_TYPE_NE_WIN:
-            noerror = MergeResExeWINNE();
+            noerror = MergeResExeWINNE( &Pass2Info.OldFile, &Pass2Info.TmpFile, Pass2Info.ResFile );
             break;
         case EXE_TYPE_NE_OS2:
-            noerror = MergeResExeOS2NE();
+            noerror = MergeResExeOS2NE( &Pass2Info.OldFile, &Pass2Info.TmpFile, Pass2Info.ResFile );
             break;
         case EXE_TYPE_PE:
-            noerror = MergeResExePE();
+            noerror = MergeResExePE( &Pass2Info.OldFile, &Pass2Info.TmpFile, Pass2Info.ResFile );
             break;
         case EXE_TYPE_LX:
-            noerror = MergeResExeLX();
+            noerror = MergeResExeLX( &Pass2Info.OldFile, &Pass2Info.TmpFile, Pass2Info.ResFile );
             break;
-        default: //EXE_TYPE_UNKNOWN
+        default: /* EXE_TYPE_UNKNOWN */
             RcError( ERR_INTERNAL, INTERR_UNKNOWN_RCSTATUS );
             noerror = false;
             break;
         }
-        RcPass2IoShutdown( noerror );
     }
+    RcPass2IoShutdown( noerror );
     return( noerror );
 }
 

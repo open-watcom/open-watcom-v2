@@ -226,6 +226,10 @@ STATIC bool fillBuffer( void )
     return( max > 0 );
 }
 
+static bool needQuotes( const char *name )
+{
+	return( strchr( name, ' ' ) != NULL );
+}
 
 #ifdef __WATCOMC__
 #pragma on (check_stack);
@@ -255,7 +259,13 @@ bool InsFile( const char *name, bool envsearch )
 
             if( !Glob.overide ) {
                 UnGetCHR( '\n' );
-                InsString( path, false );
+                if( needQuotes( path ) ) {
+                    UnGetCHR( '\"' );
+                    InsString( path, false );
+                    UnGetCHR( '\"' );
+                } else {
+                    InsString( path, false );
+                }
                 InsString( "$+$(__MAKEFILES__)$- ", false );
                 DefMacro( "__MAKEFILES__" );
             }

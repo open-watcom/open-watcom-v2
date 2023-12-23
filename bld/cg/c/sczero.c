@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,9 +45,9 @@
 #include "insdead.h"
 
 
-static  bool    CheckIns( instruction **pins ) {
-/**********************************************/
-
+static  bool    CheckIns( instruction **pins )
+/********************************************/
+{
     bool                ok;
     const opcode_entry  *try;
     instruction         *ins;
@@ -104,9 +104,9 @@ static  name    *NonZeroPart( name *op, zero_bits z, type_class_def type_class )
 }
 
 
-static  zero_bits       AZeroHalf( zero_bits l, zero_bits r ) {
-/*************************************************************/
-
+static  zero_bits       AZeroHalf( zero_bits l, zero_bits r )
+/***********************************************************/
+{
     zero_bits   zhalf;
 
     zhalf = l & LO_HALF;

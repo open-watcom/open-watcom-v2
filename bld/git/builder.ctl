@@ -5,23 +5,23 @@ set PROJNAME=git
 
 set PROJDIR=<CWD>
 
-[ INCLUDE <OWROOT>/build/prolog.ctl ]
+[ INCLUDE "<OWROOT>/build/prolog.ctl" ]
 
-[ INCLUDE <OWROOT>/build/defrule.ctl ]
+[ INCLUDE "<OWROOT>/build/defrule.ctl" ]
 
 [ BLOCK <BINTOOL> build ]
 #========================
-    cdsay <PROJDIR>
-    <CPCMD> <OWOBJDIR>/cpyright.exe <OWBINDIR>/<OWOBJDIR>/cpyright<CMDEXT>
-    <CPCMD> <OWOBJDIR>/cvtutf8.exe  <OWBINDIR>/<OWOBJDIR>/cvtutf8<CMDEXT>
+    cdsay "<PROJDIR>"
+    <CPCMD> <OWOBJDIR>/cpyright.exe "<OWROOT>/build/<OWOBJDIR>/cpyright<CMDEXT>"
+    <CPCMD> <OWOBJDIR>/cvtutf8.exe  "<OWROOT>/build/<OWOBJDIR>/cvtutf8<CMDEXT>"
 
 [ BLOCK <BINTOOL> clean ]
 #========================
-    echo rm -f <OWBINDIR>/<OWOBJDIR>/cpyright<CMDEXT>
-    rm -f <OWBINDIR>/<OWOBJDIR>/cpyright<CMDEXT>
-    echo rm -f <OWBINDIR>/<OWOBJDIR>/cvtutf8<CMDEXT>
-    rm -f <OWBINDIR>/<OWOBJDIR>/cvtutf8<CMDEXT>
+    echo rm -f "<OWROOT>/build/<OWOBJDIR>/cpyright<CMDEXT>"
+    rm -f "<OWROOT>/build/<OWOBJDIR>/cpyright<CMDEXT>"
+    echo rm -f "<OWROOT>/build/<OWOBJDIR>/cvtutf8<CMDEXT>"
+    rm -f "<OWROOT>/build/<OWOBJDIR>/cvtutf8<CMDEXT>"
 
 [ BLOCK . . ]
 
-[ INCLUDE <OWROOT>/build/epilog.ctl ]
+[ INCLUDE "<OWROOT>/build/epilog.ctl" ]

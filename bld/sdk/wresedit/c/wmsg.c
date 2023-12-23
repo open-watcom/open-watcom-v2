@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,6 +35,7 @@
 #include "ldstr.h"
 #include "rcstr.grh"
 #include "wmsg.h"
+#include "wrglbl.h"
 
 
 /* routine to create a message box */
@@ -45,7 +46,7 @@ void WDisplayErrorMsg( msg_id msg )
     title = AllocRCString( W_ERRMSG );
 
     if( !RCMessageBox( (HWND)NULL, msg, title, MB_ICONEXCLAMATION | MB_OK | MB_TASKMODAL ) ) {
-        MessageBeep( (UINT)-1 );
+        MessageBeep( MB_SINGLE_BEEP );
     }
 
     if( title != NULL ) {

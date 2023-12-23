@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,11 +36,9 @@
 #define __NO_STACK_CHECKING__
 #endif
 
-#if 0 || defined( TEST ) || defined( DUMP )
-#include <stdio.h>
-#endif
 #include <assert.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 #include <ctype.h>
 #include "watcom.h"
@@ -579,15 +577,23 @@ static void demangleEmit( void **cookie, dm_pts dp, pointer_uint value, char con
         {
             char buff[12];
 
+#if defined( __WATCOMC__ )
             ltoa( (long)value, buff, 10 );
+#else
+            sprintf( buff, "%ld", (long)value );
+#endif
             emitStr( data, buff );
         }
         break;
     case DM_ARRAY_SIZE:
         if( value != 0 ) {
-            char buff[12];
+            char buff[24];
 
+#if defined( __WATCOMC__ )
             ultoa( (unsigned long)value, buff, 10 );
+#else
+            sprintf( buff, "%lu", (unsigned long)value );
+#endif
             emitStr( data, buff );
         }
         break;

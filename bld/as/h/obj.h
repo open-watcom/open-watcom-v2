@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,7 +36,7 @@
 
 typedef enum {
     #define PICK( a, b, c, d ) AS_SECTION_##a,
-    #include "sections.inc"
+    #include "_section.h"
     #undef PICK
 } reserved_section;
 
@@ -48,7 +49,7 @@ extern bool ObjLabelDefined( sym_handle );
 extern void ObjEmitLabel( sym_handle );
 extern void ObjEmitNumericLabel( uint_32 );
 extern void ObjFlushLabels( void );
-extern void ObjEmitData( owl_section_handle section, void *buffer, int size, bool do_align );
+extern void ObjEmitData( owl_section_handle section, void *buffer, size_t size, bool do_align );
 extern void ObjNopPad( owl_section_handle section, uint_8 count );
 extern void ObjNullPad( owl_section_handle section, uint_8 count );
 extern owl_offset ObjAlign( owl_section_handle section, uint_8 alignment );
@@ -67,8 +68,8 @@ extern bool AsiObjLabelDefined( sym_handle );
 extern void AsiObjEmitLabel( sym_handle );
 extern void AsiObjEmitNumericLabel( uint_32 );
 extern void AsiObjFlushLabels( void );
-extern void AsiObjEmitData( void *buffer, int size, bool do_align );
-extern void AsiObjDirectEmitData( void *buffer, int size );
+extern void AsiObjEmitData( void *buffer, size_t size, bool do_align );
+extern void AsiObjDirectEmitData( void *buffer, size_t size );
 extern void AsiObjNopPad( uint_8 count );
 extern void AsiObjNullPad( uint_8 count );
 extern owl_offset AsiObjAlign( uint_8 alignment );

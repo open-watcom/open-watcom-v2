@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -54,7 +54,7 @@ enum {
 /****************************************************************************/
 extern bool WdeResourceHashTableAction( WdeResInfo *, int );
 extern bool WdeFindAndLoadSymbols( WdeResInfo * );
-extern bool WdeWriteSymbols( WdeHashTable *, char **, bool );
+extern bool WdeSaveSymbols( WRHashTable *, char **, bool prompt_name );
 extern bool WdeDeleteDLGInclude( WdeResInfo *rinfo );
 extern bool WdeCreateDLGInclude( WdeResInfo *rinfo, char *include );
 extern char *WdeCreateSymName( const char *fname );

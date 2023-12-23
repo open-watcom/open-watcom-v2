@@ -40,40 +40,10 @@ include xinit.inc
         extrn   __RdosMain              : near
         extrn   __FiniRtns              : near
 
+        extrn   ___begtext              : near
+
         assume  nothing
 
-DGROUP group _NULL,_AFTERNULL,CONST,_DATA,DATA,XIB,XI,XIE,YIB,YI,YIE
-
-BEGTEXT segment use32 word public 'CODE'
-        assume  cs:BEGTEXT
-forever label   near
-        int     3h
-        jmp short forever
-        ; NOTE that ___begtext needs to be at offset 3
-        ; don't move it.  i.e. don't change any code before here.
-        public ___begtext
-___begtext label byte
-        nop
-        nop
-        nop
-        nop
-        assume  cs:nothing
-BEGTEXT ends
-
-_NULL   segment para public 'DATA'
-__nullarea label word
-        db      01h,01h,01h,00h
-        public  __nullarea
-
-_NULL   ends
-
-_AFTERNULL segment word public 'DATA'
-end_null dw      0                       ; nullchar for string at address 0
-_AFTERNULL ends
-
-CONST   segment word public 'DATA'
-NullAssign      db      '*** NULL assignment detected',0
-CONST   ends
 
 _DATA   segment use32 public 'DATA'
 
@@ -81,10 +51,6 @@ ExitSs          dw 0
 ExitEsp         dd 0
 
 _DATA   ends
-
-DATA    segment word public 'DATA'
-DATA    ends
-
 _TEXT   segment use32 word public 'CODE'
 
         assume  cs:_TEXT

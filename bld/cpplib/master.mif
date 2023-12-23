@@ -13,6 +13,8 @@ plib_host_cpu_086 = i86
 plib_host_cpu_286 = i86
 plib_host_cpu_386 = 386
 plib_host_cpu_axp = axp
+plib_host_cpu_mps = mps
+plib_host_cpu_ppc = ppc
 host_cpu = $(plib_host_cpu_$(plib_$(processor)))
 
 plib_host_os_generic = generic
@@ -42,6 +44,10 @@ plib_suffix_387      = 7$(plib_suffix_$(convention))
 suffix = mt$(plib_suffix_$(processor))
 !else
 suffix = $(plib_suffix_$(processor))
+!endif
+
+!ifdef lib_debug
+debug = 1
 !endif
 
 !include cproj.mif

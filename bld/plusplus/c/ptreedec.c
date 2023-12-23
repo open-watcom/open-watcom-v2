@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,7 +37,7 @@
 #include "initdefs.h"
 #include "fnbody.h"
 #include "pcheader.h"
-#ifndef NDEBUG
+#ifdef DEVBUILD
     #include "dbg.h"
     #include "fmttype.h"
 #endif
@@ -631,7 +631,7 @@ static target_offset_t getOffset // SEARCH FOR OFFSET IN DECORATION
     ( PTREE expr                // - expression
     , PTD_KIND kind )           // - decoration kind
 {
-#ifndef NDEBUG
+#ifdef DEVBUILD
     bool found = false;         // - checks for found
 #endif
     PTD* ptd;                   // - current entry
@@ -641,7 +641,7 @@ static target_offset_t getOffset // SEARCH FOR OFFSET IN DECORATION
     RingIterBeg( expr->decor, ptd ) {
         if( kind == ptd->base.kind ) {
             retn = ptd->off.offset;
-#ifndef NDEBUG
+#ifdef DEVBUILD
             DbgVerify( ! found, "Ptd::getOffset -- two decorations" );
             found = true;
 #else
@@ -1003,7 +1003,7 @@ pch_status PCHFiniPtds( bool writing )
 }
 
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 
 static char const *name_kind[] =    // names
 {

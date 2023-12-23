@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -322,8 +323,8 @@ IDEDLLENTRY IDEBool  IDEAPI IDEInitDLL( IDECBHdl cbhdl, IDECallBacks *cb, IDEDll
 IDEDLLENTRY IDEBool  IDEAPI IDEPassInitInfo( IDEDllHdl hdl, IDEInitInfo *info );
 IDEDLLENTRY void     IDEAPI IDEFiniDLL( IDEDllHdl hdl );
 IDEDLLENTRY IDEBool  IDEAPI IDEDetermineBuildStatus( IDEDllHdl hdl, const char *opts, IDEBool *status );
-IDEDLLENTRY IDEBool  IDEAPI IDERunYourSelf( IDEDllHdl hdl, const char *opts, IDEBool *fatalerr );
-IDEDLLENTRY IDEBool  IDEAPI IDERunYourSelfArgv( IDEDllHdl hdl, int argc, char **argv, IDEBool *fatalerr );
+IDEDLLENTRY int      IDEAPI IDERunYourSelf( IDEDllHdl hdl, const char *opts, IDEBool *fatalerr );
+IDEDLLENTRY int      IDEAPI IDERunYourSelfArgv( IDEDllHdl hdl, int argc, char **argv, IDEBool *fatalerr );
 IDEDLLENTRY void     IDEAPI IDEStopRunning( void );
 IDEDLLENTRY void     IDEAPI IDEFreeHeap( void );
 

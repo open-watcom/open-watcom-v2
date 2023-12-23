@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -52,10 +52,11 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
 {
     trap_version        ver;
 
+    /* unused parameters */ (void)remote; (void)parms;
+
     MSJMemInit();
-    remote = remote; parms = parms;
-    ver.major = TRAP_MAJOR_VERSION;
-    ver.minor = TRAP_MINOR_VERSION;
+    ver.major = TRAP_VERSION_MAJOR;
+    ver.minor = TRAP_VERSION_MINOR;
     ver.remote = FALSE;
     TaskLoaded = FALSE;
     if( InitProc() ) {
@@ -64,7 +65,7 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
         strcpy( err, "unable to connect to debug manager" );
     }
     FakeHandle = (HANDLE)&TrapInit;
-    return ver;
+    return( ver );
 }
 
 void TRAPENTRY TrapFini( void )
@@ -79,21 +80,21 @@ trap_retval TRAP_CORE( Get_sys_config )( void )
 {
     get_sys_config_ret *ret;
 
-    ret = GetOutPtr(0);
-    ret->sys.cpu = 0;
-    ret->sys.fpu = 0;
-    ret->sys.arch = DIG_ARCH_MSJ;
-    ret->sys.huge_shift = 3;
+    ret = GetOutPtr( 0 );
+    ret->cpu = 0;
+    ret->fpu = 0;
+    ret->arch = DIG_ARCH_MSJ;
+    ret->huge_shift = 3;
     if( !TaskLoaded ) {
-        ret->sys.os = DIG_OS_IDUNNO;
-        ret->sys.osmajor = 0;
-        ret->sys.osminor = 0;
+        ret->os = DIG_OS_IDUNNO;
+        ret->osmajor = 0;
+        ret->osminor = 0;
     } else {
-        ret->sys.os = DIG_OS_NT;
-        ret->sys.osmajor = 1;
-        ret->sys.osminor = 0;
+        ret->os = DIG_OS_NT;
+        ret->osmajor = 1;
+        ret->osminor = 0;
     }
-    return sizeof( *ret );
+    return( sizeof( *ret ) );
 }
 
 trap_retval TRAP_CORE( Map_addr )( void )
@@ -102,39 +103,37 @@ trap_retval TRAP_CORE( Map_addr )( void )
     map_addr_req *      acc;
     map_addr_ret *      ret;
 
-    acc = GetInPtr(0);
-    ret = GetOutPtr(0);
+    acc = GetInPtr( 0 );
+    ret = GetOutPtr( 0 );
     ret->out_addr = acc->in_addr;
     ret->lo_bound = 0;
     ret->hi_bound = ~(addr48_off)0;
-    return sizeof( *ret );
+    return( sizeof( *ret ) );
 }
 
 trap_retval TRAP_CORE( Checksum_mem )( void )
 /*******************************************/
 {
-    unsigned_8 *        buffer;
-    checksum_mem_req *  acc;
-    checksum_mem_ret *  ret;
-    unsigned            actual;
-    unsigned            sum;
+    unsigned char       *buffer;
+    checksum_mem_req    *acc;
+    checksum_mem_ret    *ret;
+    size_t              got;
+    unsigned long       sum;
 
-    ret = GetOutPtr( 0 );
-    ret->result = 0;
+    sum = 0;
     if( TaskLoaded ) {
-        acc = GetInPtr(0);
-        buffer = (unsigned_8 *) alloca( acc->len );
+        acc = GetInPtr( 0 );
+        buffer = (unsigned char *)alloca( acc->len );
         if( buffer != NULL ) {
-            sum = 0;
-            actual = ReadMemory( &acc->in_addr, buffer, acc->len );
-            while( actual > 0 ) {
-                sum += *buffer;
-                buffer++;
-                actual--;
+            got = ReadMemory( &acc->in_addr, buffer, acc->len );
+            while( got-- > 0 ) {
+                sum += *buffer++;
             }
             ret->result = sum;
         }
     }
+    ret = GetOutPtr( 0 );
+    ret->result = sum;
     return sizeof( *ret );
 }
 
@@ -143,8 +142,7 @@ unsigned DoRead( int addr, char *buff, unsigned length )
 {
     DWORD               bytes;
 
-    ReadProcessMemory( GetCurrentProcess(), (LPVOID)addr, buff,
-                        length, (LPDWORD) &bytes );
+    ReadProcessMemory( GetCurrentProcess(), (LPVOID)addr, buff, length, (LPDWORD)&bytes );
     return( bytes );
 }
 
@@ -153,25 +151,26 @@ trap_retval TRAP_CORE( Read_mem )( void )
 {
     read_mem_req *acc;
 
-    if( !TaskLoaded ) return 0;
-    acc = GetInPtr(0);
+    if( !TaskLoaded )
+        return( 0 );
+    acc = GetInPtr( 0 );
     switch( acc->mem_addr.segment ) {
     case JVM_DIP_GETCUE_SELECTOR:
-        return( DipCue( acc->mem_addr.offset, GetOutPtr(0) ) );
+        return( DipCue( acc->mem_addr.offset, GetOutPtr( 0 ) ) );
     case JVM_DIP_GETFILE_SELECTOR:
-        return( DipFileName( acc->mem_addr.offset, GetOutPtr(0) ) );
+        return( DipFileName( acc->mem_addr.offset, GetOutPtr( 0 ) ) );
     case JVM_DIP_GETMODNAME_SELECTOR:
-        return( DipModName( acc->mem_addr.offset, GetOutPtr(0) ) );
+        return( DipModName( acc->mem_addr.offset, GetOutPtr( 0 ) ) );
     case JVM_DIP_GETMODBASE_SELECTOR:
-        return( DipModBase( acc->mem_addr.offset, GetOutPtr(0) ) );
+        return( DipModBase( acc->mem_addr.offset, GetOutPtr( 0 ) ) );
     case JVM_DIP_GETMODEND_SELECTOR:
-        return( DipModEnd( acc->mem_addr.offset, GetOutPtr(0) ) );
+        return( DipModEnd( acc->mem_addr.offset, GetOutPtr( 0 ) ) );
     case JVM_MAD_UPSTACK_SELECTOR:
-        return( MadUpStack( &acc->mem_addr, GetOutPtr(0) ) );
+        return( MadUpStack( &acc->mem_addr, GetOutPtr( 0 ) ) );
     case JVM_DIP_READMEM_SELECTOR:
-        return( DoRead( acc->mem_addr.offset, GetOutPtr(0), acc->len ) );
+        return( DoRead( acc->mem_addr.offset, GetOutPtr( 0 ), acc->len ) );
     default:
-        return( ReadMemory( &acc->mem_addr, GetOutPtr(0), acc->len ) );
+        return( ReadMemory( &acc->mem_addr, GetOutPtr( 0 ), acc->len ) );
     }
 }
 
@@ -181,34 +180,34 @@ unsigned DoWrite( int addr, char *buff, unsigned length )
     DWORD               bytes;
 
     WriteProcessMemory( GetCurrentProcess(), (LPVOID)addr, buff,
-                        length, (LPDWORD) &bytes );
+                        length, (LPDWORD)&bytes );
     return( bytes );
 }
 
 trap_retval TRAP_CORE( Write_mem )( void )
 /****************************************/
 {
-    write_mem_ret *     ret;
-    write_mem_req *     acc;
-    unsigned            length;
-    void *              data;
+    write_mem_ret   *ret;
+    write_mem_req   *acc;
+    size_t          len;
+    void            *data;
 
     ret = GetOutPtr( 0 );
     ret->len = 0;
     if( TaskLoaded ) {
-        acc = GetInPtr(0);
-        length = GetTotalSizeIn() - sizeof(*acc);
-        data = GetInPtr( sizeof(*acc) );
+        acc = GetInPtr( 0 );
+        len = GetTotalSizeIn() - sizeof( *acc );
+        data = GetInPtr( sizeof( *acc ) );
         switch( acc->mem_addr.segment ) {
         case JVM_DIP_READMEM_SELECTOR:
-            ret->len = DoRead( acc->mem_addr.offset, GetOutPtr(0), length );
+            ret->len = DoRead( acc->mem_addr.offset, GetOutPtr( 0 ), len );
             break;
         default:
-            ret->len = WriteMemory( &acc->mem_addr, data, length );
+            ret->len = WriteMemory( &acc->mem_addr, data, len );
             break;
         }
     }
-    return sizeof( *ret );
+    return( sizeof( *ret ) );
 }
 
 trap_retval TRAP_CORE( Read_io )( void )
@@ -223,9 +222,9 @@ trap_retval TRAP_CORE( Write_io )( void )
 {
     write_io_ret *ret;
 
-    ret = GetOutPtr(0);
+    ret = GetOutPtr( 0 );
     ret->len = 0;
-    return sizeof( *ret );
+    return( sizeof( *ret ) );
 }
 
 static unsigned runProg( bool single_step )
@@ -235,9 +234,8 @@ static unsigned runProg( bool single_step )
 
     ret = GetOutPtr( 0 );
     if( !TaskLoaded ) {
-        ret = GetOutPtr( 0 );
         ret->conditions = COND_TERMINATE;
-        return sizeof( *ret );
+        return( sizeof( *ret ) );
     }
     if( single_step ) {
         TraceProc( &ret->program_counter );
@@ -247,89 +245,98 @@ static unsigned runProg( bool single_step )
     ret->conditions = ReadFlags() | COND_LIBRARIES;
     ret->stack_pointer.segment = 0;
     ret->stack_pointer.offset = 0;
-    return sizeof( *ret );
+    return( sizeof( *ret ) );
 }
 
 trap_retval TRAP_CORE( Prog_go )( void )
 /**************************************/
 {
-    return runProg( FALSE );
+    return( runProg( FALSE ) );
 }
 
 trap_retval TRAP_CORE( Prog_step )( void )
 /****************************************/
 {
-    return runProg( TRUE );
+    return( runProg( TRUE ) );
 }
 
 static char * TrimName( char * name )
 /***********************************/
 {
-    char * endptr;
+    char    *endptr;
 
     while( isspace( *name ) ) {
         name++;
     }
-    endptr = name + strlen(name) - 1;
-    while( isspace(*endptr) ) {
+    endptr = name + strlen( name ) - 1;
+    while( isspace( *endptr ) ) {
         *endptr = '\0';
         endptr--;
     }
-    return name;
+    return( name );
+}
+
+static size_t MergeArgvArray( const char *src, char *dst, size_t len )
+{
+    char    ch;
+    char    *start = dst;
+
+    while( len-- > 0 ) {
+        ch = *src++;
+        if( ch == '\0' ) {
+            if( len == 0 )
+                break;
+            ch = ' ';
+        }
+        *dst++ = ch;
+    }
+    *dst = '\0';
+    return( dst - start );
 }
 
 trap_retval TRAP_CORE( Prog_load )( void )
 /****************************************/
 {
-    prog_load_ret *     ret;
-    prog_load_req *     acc;
-    char *              parm;
-    char *              clname;
-    unsigned            len;
-    char                buff[_MAX_PATH*2];
-    char                *dst,*src,ch;
+    prog_load_ret       *ret;
+    prog_load_req       *acc;
+    char                *parm;
+    char                *clname;
+    size_t              len;
+    char                buff[_MAX_PATH * 2];
+    char                *dst;
+    char                *src;
     char                *name;
 
     ret = GetOutPtr( 0 );
     acc = GetInPtr( 0 );
     parm = GetInPtr( sizeof( prog_load_req ) );
     ret->err = ERR_MSJ_CANT_LOAD;
-    if( parm == NULL ) return sizeof( *ret );
-    strcpy( buff, parm );
-    dst = &buff[strlen(buff)];
+    if( parm == NULL )
+        return sizeof( *ret );
+    dst = StrCopyDst( parm, buff ) + 1;
     src = parm;
-    while( *src != 0 ) {
-        ++src;
-    }
-    len = &parm[ GetTotalSizeIn() - sizeof( *acc ) ] - src;
-    for( ;; ) {
-        if( len == 0 ) break;
-        ch = *src;
-        if( ch == 0 ) {
-            ch = ' ';
-        }
-        *dst = ch;
-        ++dst;
-        ++src;
-        --len;
-    }
-    *dst = 0;
+    while( *src++ != '\0' )
+        {}
+    MergeArgvArray( src, dst, GetTotalSizeIn() - sizeof( *acc ) - ( src - parm ) );
     name = buff;
-    len = strlen(name);
+    len = strlen( name );
     name = strtok( name, "@" );
     clname = strtok( NULL, "@" );
-    if( clname == NULL ) return sizeof(*ret);
+    if( clname == NULL )
+        return( sizeof( *ret ) );
     clname = TrimName( clname );
-    if( *clname == '\0' ) return sizeof(*ret);
+    if( *clname == '\0' )
+        return( sizeof( *ret ) );
     TaskLoaded = StartProc( name, clname );
     InitMappings();
     if( TaskLoaded ) {
-        if( DebuggerWindow != NULL ) SetForegroundWindow( DebuggerWindow );
+        if( DebuggerWindow != NULL )
+            SetForegroundWindow( DebuggerWindow );
         ret->err = 0;
         ret->task_id = 0;
         ret->flags = LD_FLAG_IS_BIG | LD_FLAG_IS_PROT | LD_FLAG_HAVE_RUNTIME_DLLS;
     }
-    return sizeof( *ret );
+    return( sizeof( *ret ) );
 }
 
 trap_retval TRAP_CORE( Prog_kill )( void )
@@ -341,7 +348,7 @@ trap_retval TRAP_CORE( Prog_kill )( void )
     EndProc();
     ret = GetOutPtr( 0 );
     ret->err = 0;
-    return sizeof( *ret );
+    return( sizeof( *ret ) );
 }
 
 static void SetBreak( void )
@@ -369,16 +376,16 @@ trap_retval TRAP_CORE( Set_watch )( void )
 
     SetBreak();
     ret = GetOutPtr( 0 );
-    ret->err = 0;
+    ret->err = 0;   // OK
     ret->multiplier = USING_DEBUG_REG;
-    return sizeof( *ret );
+    return( sizeof( *ret ) );
 }
 
 trap_retval TRAP_CORE( Clear_watch )( void )
 /******************************************/
 {
     ClearBreak();
-    return 0;
+    return( 0 );
 }
 
 trap_retval TRAP_CORE( Set_break )( void )
@@ -389,14 +396,14 @@ trap_retval TRAP_CORE( Set_break )( void )
     SetBreak();
     ret = GetOutPtr( 0 );
     ret->old = 0;
-    return sizeof(*ret);
+    return( sizeof( *ret ) );
 }
 
 trap_retval TRAP_CORE( Clear_break )( void )
 /******************************************/
 {
     ClearBreak();
-    return 0;
+    return( 0 );
 }
 
 trap_retval TRAP_CORE( Get_next_alias )( void )
@@ -407,7 +414,7 @@ trap_retval TRAP_CORE( Get_next_alias )( void )
     ret = GetOutPtr( 0 );
     ret->seg = 0;
     ret->alias = 0;
-    return sizeof( *ret );
+    return( sizeof( *ret ) );
 }
 
 trap_retval TRAP_CORE( Set_user_screen )( void )
@@ -434,7 +441,7 @@ trap_retval TRAP_CORE( Get_lib_name )( void )
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
     name = GetOutPtr( sizeof( *ret ) );
-    max_len = GetTotalSizeOut() - 1 - sizeof( *ret );
+    max_len = GetTotalSizeOut() - sizeof( *ret ) - 1;
     ret->mod_handle = GetLibName( acc->mod_handle, name, max_len );
     if( ret->mod_handle )
         return( sizeof( *ret ) + strlen( name ) + 1 );
@@ -451,8 +458,10 @@ static DWORD DoFmtMsg( LPTSTR *p, DWORD err, ... )
     len = FormatMessage( FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
         NULL, err, MAKELANGID( LANG_NEUTRAL, SUBLANG_DEFAULT ),
         (LPSTR) p, 0, &args );
-    while( ( q = strchr( *p, '\r' ) ) != NULL ) *q = ' ';
-    while( ( q = strchr( *p, '\n' ) ) != NULL ) *q = ' ';
+    while( ( q = strchr( *p, '\r' ) ) != NULL )
+        *q = ' ';
+    while( ( q = strchr( *p, '\n' ) ) != NULL )
+        *q = ' ';
     va_end( args );
     return( len );
 }
@@ -481,7 +490,7 @@ trap_retval TRAP_CORE( Get_err_text )( void )
     } else
 #endif
     if( IsUserErr( acc->err ) ) {
-        strcpy( err_txt, Errors[ ErrIndex( acc->err ) ] );
+        strcpy( err_txt, Errors[ErrIndex( acc->err )] );
     } else {
         len = DoFmtMsg( &lpMessageBuffer, acc->err, "%1","%2","%3","%4" );
         if( len > 0 ) {
@@ -495,41 +504,39 @@ trap_retval TRAP_CORE( Get_err_text )( void )
 trap_retval TRAP_CORE( Get_message_text )( void )
 /***********************************************/
 {
-    return 0;
+    return( 0 );
 }
 
 trap_retval TRAP_CORE( Redirect_stdin )( void )
 /*********************************************/
 {
-    return 0;
+    return( 0 );
 }
 
 trap_retval TRAP_CORE( Redirect_stdout )( void )
 /**********************************************/
 {
-    return 0;
+    return( 0 );
 }
 
 trap_retval TRAP_CORE( Split_cmd )( void )
 /****************************************/
 {
-    char                *cmd;
-    char                *start;
+    const char          *cmd;
+    const char          *start;
     split_cmd_ret       *ret;
-    unsigned            len;
+    size_t              len;
 
     cmd = GetInPtr( sizeof( split_cmd_req ) );
     ret = GetOutPtr( 0 );
     ret->parm_start = 0;
     start = cmd;
     len = GetTotalSizeIn() - sizeof( split_cmd_req );
-    while( len != 0 ) {
+    while( len > 0 ) {
         switch( *cmd ) {
-        case '\0':
-        case ' ':
-        case '\t':
+        CASE_SEPS
             ret->parm_start = 1;
-            /* fall down */
+            /* fall through */
         case '/':
         case '=':
         case '(':
@@ -572,14 +579,14 @@ trap_retval TRAP_CORE( Machine_data )( void )
 /*******************************************/
 // NYI: what the hell does this do?
 {
-    machine_data_req *  acc;
-    machine_data_ret *  ret;
-    unsigned_8 *        data;
+//    machine_data_req    *acc;
+    machine_data_ret    *ret;
+//    machine_data_spec   *data;
 
-    acc = GetInPtr( 0 );
+//    acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    data = GetOutPtr( sizeof( *ret ) );
-    return sizeof( *ret );
+//    data = GetOutPtr( sizeof( *ret ) );
+    return( sizeof( *ret ) );
 }
 
 trap_retval TRAP_THREAD( get_next )( void )
@@ -591,7 +598,7 @@ trap_retval TRAP_THREAD( get_next )( void )
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
     ret->thread = GetNextThread( acc->thread, &ret->state );
-    return sizeof( *ret );
+    return( sizeof( *ret ) );
 }
 
 trap_retval TRAP_THREAD( set )( void )
@@ -604,7 +611,7 @@ trap_retval TRAP_THREAD( set )( void )
     ret = GetOutPtr( 0 );
     ret->err = 0;
     ret->old_thread = SetThread( acc->thread );
-    return sizeof( *ret );
+    return( sizeof( *ret ) );
 }
 
 trap_retval TRAP_THREAD( freeze )( void )
@@ -620,7 +627,7 @@ trap_retval TRAP_THREAD( freeze )( void )
     // freeze the thread associated with acc->thread
 
     ret->err = ERR_MSJ_THREADS_NOT_SUPPORTED;
-    return sizeof( *ret );
+    return( sizeof( *ret ) );
 }
 
 trap_retval TRAP_THREAD( thaw )( void )
@@ -634,7 +641,7 @@ trap_retval TRAP_THREAD( thaw )( void )
     ret = GetOutPtr( 0 );
     // thaw the thread associated with acc->thread
     ret->err = ERR_MSJ_THREADS_NOT_SUPPORTED;
-    return sizeof( *ret );
+    return( sizeof( *ret ) );
 }
 
 trap_retval TRAP_THREAD( get_extra )( void )

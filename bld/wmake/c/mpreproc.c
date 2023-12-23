@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -657,15 +658,14 @@ static char *skipUntilWS( const char *p )
 
 STATIC void bangInject( void )
 /*****************************
- * !inject <text> <mac-name1> <mac-name2> ... <mac-nameN>
+ * !inject ["]<text>["] <mac-name1> <mac-name2> ... <mac-nameN>
  * post:    atStartOfLine == EOL
  * errors:  none
  */
 {
     char    *text;
     char    *contents;
-    char    *end_contents;
-    char    *curr;
+    char    *p;
     char    *mac_name;
     char    *value;
 
@@ -677,21 +677,24 @@ STATIC void bangInject( void )
         FreeSafe( text );
         return;
     }
-    end_contents = skipUntilWS( contents );
-    if( *end_contents == NULLCHAR ) {
+    p = FindNextWS( contents );
+    if( *p == NULLCHAR ) {
         FreeSafe( text );
         return;
     }
-    *end_contents++ = NULLCHAR;
-    curr = end_contents;
+    if( *contents == '\"' ) {
+        contents++;
+        p[-1] = NULLCHAR;
+    }
+    *p++ = NULLCHAR;
     for( ;; ) {
-        curr = SkipWS( curr );
-        if( *curr == NULLCHAR )
+        p = SkipWS( p );
+        if( *p == NULLCHAR )
             break;
-        mac_name = curr;
-        curr = skipUntilWS( curr );
-        if( *curr != NULLCHAR ) {
-            *curr++ = NULLCHAR;
+        mac_name = p;
+        p = skipUntilWS( p );
+        if( *p != NULLCHAR ) {
+            *p++ = NULLCHAR;
         }
         if( !IsMacroName( mac_name ) ) {
             break;
@@ -711,58 +714,54 @@ STATIC void bangInject( void )
 
 STATIC void bangLoadDLL( void )
 /******************************
- * !loaddll <cmd-name> <dll-name> [<entry-pt>]
+ * !loaddll ["]<cmd-name>["] ["]<dll-name>["] [<entry-pt>]
  * post:    atStartOfLine == EOL
  * errors:  none
  */
 {
     char    *text;
+    char    *p;
     char    *cmd_name;
-    char    *end_cmd_name;
     char    *dll_name;
-    char    *end_dll_name;
     char    *ent_name;
-    char    *end_ent_name;
 
     assert( !curNest.skip );
     text = DeMacro( TOK_EOL );
     eatToEOL();
-    cmd_name = SkipWS( text );
-    if( *cmd_name == NULLCHAR ) {
+    p = SkipWS( text );
+    if( *p == NULLCHAR ) {
         FreeSafe( text );
         return;
     }
-    end_cmd_name = skipUntilWS( cmd_name );
-    if( *end_cmd_name == NULLCHAR ) {
+    p = CmdGetFileName( p, &cmd_name, true );
+    if( *p == NULLCHAR ) {
         FreeSafe( text );
         return;
     }
-    *end_cmd_name++ = NULLCHAR;
-    dll_name = SkipWS( end_cmd_name );
-    if( *dll_name == NULLCHAR ) {
+    p = SkipWS( p );
+    if( *p == NULLCHAR ) {
         FreeSafe( text );
         return;
     }
-    end_dll_name = skipUntilWS( dll_name );
-    if( *end_dll_name == NULLCHAR ) {
+    p = CmdGetFileName( p, &dll_name, true );
+    if( *p == NULLCHAR ) {
         OSLoadDLL( cmd_name, dll_name, NULL );
         FreeSafe( text );
         return;
     }
-    *end_dll_name++ = NULLCHAR;
-    ent_name = SkipWS( end_dll_name );
+    ent_name = SkipWS( p );
     if( *ent_name == NULLCHAR ) {
         OSLoadDLL( cmd_name, dll_name, NULL );
         FreeSafe( text );
         return;
     }
-    end_ent_name = skipUntilWS( ent_name );
-    if( *end_ent_name == NULLCHAR ) {
+    p = skipUntilWS( ent_name );
+    if( *p == NULLCHAR ) {
         OSLoadDLL( cmd_name, dll_name, ent_name );
         FreeSafe( text );
         return;
     }
-    *end_ent_name = NULLCHAR;
+    *p = NULLCHAR;
     OSLoadDLL( cmd_name, dll_name, ent_name );
     FreeSafe( text );
 }
@@ -795,8 +794,9 @@ STATIC void bangUnDef( void )
     }
 
     UnDefMacro( name );
-    FreeSafe( name );
+
     FreeSafe( value );
+    FreeSafe( name );
 }
 
 

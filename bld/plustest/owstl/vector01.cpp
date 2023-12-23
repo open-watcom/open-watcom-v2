@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2013 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2022 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -279,6 +279,7 @@ bool insert_single_test( )
 bool insert_multiple_test( )
 {
     // This test considers vector's initial capacity of 16.
+    
     typedef std::vector< int >::size_type size_type;
     typedef std::vector< int >::iterator iterator;
 
@@ -311,6 +312,9 @@ bool insert_multiple_test( )
         if( i < 8 && v3[i] != -1 ) FAIL;
         if( i >= 8 && v3[i] != i - 7 ) FAIL;
     }
+    // Checking insert at the end using the end() iterator. See issue #197.
+    v3.insert( v3.end( ), 5 );
+    if( v3[12] != 5 || INSANE( v3 ) ) FAIL;
 
     // Insertion at the end, no reallocation.
     std::vector< int > v4;
@@ -343,6 +347,11 @@ bool insert_multiple_test( )
         if( i < 4 && v6[i] != i + 1 ) FAIL;
         if( i >= 4 && v6[i] != -1 ) FAIL;
     }
+    // Checking insert at the end using the end() iterator. See issue #197.
+    v6.erase( v6.begin( ), v6.end( ) );
+    v6.insert( v6.begin( ), 16, -1 );   // Fill with 16 items so the next insert reallocates.
+    v6.insert( v6.end( ), 1 );
+    if( v6[16] != 1 || INSANE( v6 ) ) FAIL;
 
     // Insertion in the middle, reallocation necessary.
     std::vector< int > v7;
@@ -360,16 +369,31 @@ bool insert_multiple_test( )
 
 bool insert_range_test( )
 {
+    // This test considers vector's initial capacity of 16.
+    
     typedef std::vector< int >::size_type size_type;
     typedef std::vector< int >::iterator iterator;
 
-    int array[4] = { 1, 2, 3, 4 };
+    // No reallocation.
+    int array1[4] = { 1, 2, 3, 4 };
     std::vector< int > v1;
-    v1.insert( v1.begin( ), array, array + 4 );
+    v1.insert( v1.begin( ), array1, array1 + 4 );
     if( v1.size( ) != 4 || INSANE( v1 ) ) FAIL;
     for( size_type i = 0; i < v1.size( ); ++i ) {
         if( v1[i] != i + 1 ) FAIL;
     }
+
+    // Reallocation necessary.
+    int array2[20] = {
+         1,  2,  3,  4,  5,  6,  7,  8,  9, 10,
+        11, 12, 13, 14, 15, 16, 17, 18, 19, 20 };
+    std::vector< int > v2;
+    v2.insert( v2.begin( ), array2, array2 + 20 );
+    if( v2.size( ) != 20 || INSANE( v2 ) ) FAIL;
+    for( size_type i = 0; i < v2.size( ); ++i ) {
+        if( v2[i] != i + 1 ) FAIL;
+    }
+    
     return( true );
 }
 

@@ -4,7 +4,16 @@
 # 'RSIHELP' or 'WSAMPRSI'. The full DOS/4G does not have this restriction.
 #
 
-D16INC = -I"../../../d16api/include"
+tree_depth = 4
+
+host_os  = dos
+host_cpu = i86
+
+proj_name = testd16m
+
+!include cproj.mif
+
+D16INC = -I"$(d16api_dir)/include"
 
 all : atest.exp ctest.exp wsamprsi.exe
 

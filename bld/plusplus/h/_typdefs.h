@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2018-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2018-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -25,7 +25,7 @@
 *
 *  ========================================================================
 *
-* Description:  C++ type related data 
+* Description:  C++ type related data
 *
 ****************************************************************************/
 
@@ -38,46 +38,46 @@
 #define picke(id,prom,prom_asm,type_text) pick(id,prom,prom_asm,type_text)
 #endif
 
-/*    id                prom            prom_asm        type_text     */
-pick(  ERROR,           ERROR,          0,              "<error> " )
-pick(  BOOL,            SINT,           SYM_INT1,       "bool " )
-pick(  CHAR,            SINT,           SYM_INT1,       "char " )
-pick(  SCHAR,           SINT,           SYM_INT1,       "signed char " )
-pick(  UCHAR,           SINT,           SYM_INT1,       "unsigned char " )
+/*      id                  prom                prom_asm        type_text     */
+pick(  TYP_ERROR,           TYP_ERROR,          0,              "<error> " )
+pick(  TYP_BOOL,            TYP_SINT,           SYM_INT1,       "bool " )
+pick(  TYP_CHAR,            TYP_SINT,           SYM_INT1,       "char " )
+pick(  TYP_SCHAR,           TYP_SINT,           SYM_INT1,       "signed char " )
+pick(  TYP_UCHAR,           TYP_SINT,           SYM_INT1,       "unsigned char " )
 #if _CPU == 8086
-pick(  WCHAR,           UINT,           SYM_INT2,       "wchar_t " )
+pick(  TYP_WCHAR,           TYP_UINT,           SYM_INT2,       "wchar_t " )
 #else
-pick(  WCHAR,           SINT,           SYM_INT2,       "wchar_t " )
+pick(  TYP_WCHAR,           TYP_SINT,           SYM_INT2,       "wchar_t " )
 #endif
-pick(  SSHORT,          SINT,           SYM_INT2,       "short " )
+pick(  TYP_SSHORT,          TYP_SINT,           SYM_INT2,       "short " )
 #if _CPU == 8086
-pick(  USHORT,          UINT,           SYM_INT2,       "unsigned short " )
+pick(  TYP_USHORT,          TYP_UINT,           SYM_INT2,       "unsigned short " )
 #else
-pick(  USHORT,          SINT,           SYM_INT2,       "unsigned short " )
+pick(  TYP_USHORT,          TYP_SINT,           SYM_INT2,       "unsigned short " )
 #endif
-pick(  SINT,            SINT,           SYM_INT,        "int " )
-pick(  UINT,            UINT,           SYM_INT,        "unsigned " )
-pick(  SLONG,           SLONG,          SYM_INT4,       "long " )
-pick(  ULONG,           ULONG,          SYM_INT4,       "unsigned long " )
-pick(  SLONG64,         SLONG64,        SYM_INT8,       "__int64 " )
-pick(  ULONG64,         ULONG64,        SYM_INT8,       "unsigned __int64 " )
-pick(  FLOAT,           FLOAT,          SYM_FLOAT4,     "float " )
-pick(  DOUBLE,          DOUBLE,         SYM_FLOAT8,     "double " )
-pick(  LONG_DOUBLE,     LONG_DOUBLE,    SYM_FLOAT8,     "long double " )
-picke( ENUM,            ERROR,          0,              "<enum> " )
-picke( POINTER,         ERROR,          0,              "* " )
-picke( TYPEDEF,         ERROR,          0,              "<typedef> " )
-picke( CLASS,           ERROR,          0,              "<class> " )
-picke( BITFIELD,        ERROR,          0,              "<bitfield> " )
-picke( FUNCTION,        ERROR,          0,              "<function> " )
-picke( ARRAY,           ERROR,          0,              "<array> " )
-pick(  DOT_DOT_DOT,     ERROR,          0,              "... " )
-pick(  VOID,            ERROR,          SYM_INT1,       "void " )
-picke( MODIFIER,        ERROR,          0,              "<modifier> " )
-picke( MEMBER_POINTER,  ERROR,          0,              "::* " )
-picke( GENERIC,         ERROR,          0,              "? " )
+pick(  TYP_SINT,            TYP_SINT,           SYM_INT,        "int " )
+pick(  TYP_UINT,            TYP_UINT,           SYM_INT,        "unsigned " )
+pick(  TYP_SLONG,           TYP_SLONG,          SYM_INT4,       "long " )
+pick(  TYP_ULONG,           TYP_ULONG,          SYM_INT4,       "unsigned long " )
+pick(  TYP_SLONG64,         TYP_SLONG64,        SYM_INT8,       "__int64 " )
+pick(  TYP_ULONG64,         TYP_ULONG64,        SYM_INT8,       "unsigned __int64 " )
+pick(  TYP_FLOAT,           TYP_FLOAT,          SYM_FLOAT4,     "float " )
+pick(  TYP_DOUBLE,          TYP_DOUBLE,         SYM_FLOAT8,     "double " )
+pick(  TYP_LONG_DOUBLE,     TYP_LONG_DOUBLE,    SYM_FLOAT8,     "long double " )
+picke( TYP_ENUM,            TYP_ERROR,          0,              "<enum> " )
+picke( TYP_POINTER,         TYP_ERROR,          0,              "* " )
+picke( TYP_TYPEDEF,         TYP_ERROR,          0,              "<typedef> " )
+picke( TYP_CLASS,           TYP_ERROR,          0,              "<class> " )
+picke( TYP_BITFIELD,        TYP_ERROR,          0,              "<bitfield> " )
+picke( TYP_FUNCTION,        TYP_ERROR,          0,              "<function> " )
+picke( TYP_ARRAY,           TYP_ERROR,          0,              "<array> " )
+pick(  TYP_DOT_DOT_DOT,     TYP_ERROR,          0,              "... " )
+pick(  TYP_VOID,            TYP_ERROR,          SYM_INT1,       "void " )
+picke( TYP_MODIFIER,        TYP_ERROR,          0,              "<modifier> " )
+picke( TYP_MEMBER_POINTER,  TYP_ERROR,          0,              "::* " )
+picke( TYP_GENERIC,         TYP_ERROR,          0,              "? " )
 // extended types C++11
-pick(  NULLPTR,         ERROR,          0,              "<nullptr> " )
-picke( TYPENAME,        ERROR,          0,              "<typename> " )
+pick(  TYP_NULLPTR,         TYP_ERROR,          0,              "<nullptr> " )
+picke( TYP_TYPENAME,        TYP_ERROR,          0,              "<typename> " )
 
 #undef picke

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,46 +32,37 @@
 
 #include <stdlib.h>
 #include <string.h>
-
+#include <errno.h>
 #define INCL_DOSPROCESS
 #define INCL_DOSMISC
 #define INCL_DOSERRORS
 #define INCL_KBD
 #include <os2.h>
 #include "mon.h"
-#include "trpimp.h"
+#include "os2v2acc.h"
 #include "trpcomm.h"
-#include "dosdebug.h"
 #include "softmode.h"
-#include "os2trap.h"
 #include "trperr.h"
 #include "os2err.h"
 #include "doserr.h"
-#include "os2extx.h"
-#include "os2v2acc.h"
+#include "os22path.h"
+#include "accmisc.h"
 
 
 #define TRPH2LH(th)     (HFILE)((th)->handle.u._32[0])
 #define LH2TRPH(th,lh)  (th)->handle.u._32[0]=(unsigned_32)lh;(th)->handle.u._32[1]=0
 
-extern  void    DebugSession( void );
-extern  void    AppSession( void );
-
 /*
  * globals
  */
 PID             Pid = 0;
-bool            AtEnd = FALSE;
+bool            AtEnd = false;
 ULONG           SID;                   /* Session ID */
 bool            Remote;
 char            UtilBuff[BUFF_SIZE];
 HFILE           SaveStdIn;
 HFILE           SaveStdOut;
 bool            CanExecTask;
-HMODULE         *ModHandles = NULL;
-unsigned        NumModHandles = 0;
-unsigned        CurrModHandle = 0;
-ULONG           ExceptNum;
 scrtype         Screen;
 
 static const ULONG      local_seek_method[] = { FILE_BEGIN, FILE_CURRENT, FILE_END };
@@ -132,7 +123,7 @@ long OpenFile( char *name, USHORT mode, int flags )
                 openmode,       /* deny-none, inheritance */
                 0 );            /* reserved */
     if( rc != 0 )
-        return( 0xFFFF0000 | rc );
+        return( (-1L << 16) | rc );
     return( hdl );
 }
 
@@ -146,24 +137,28 @@ trap_retval TRAP_FILE( open )( void )
     file_open_ret       *ret;
     unsigned_8          flags;
     long                retval;
-    static int MapAcc[] = { READONLY, WRITEONLY, READWRITE };
+    int                 mode;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    if( acc->mode & TF_CREATE ) {
-        flags = OPEN_PRIVATE | OPEN_CREATE;
-        acc->mode &= ~TF_CREATE;
-    } else {
-        flags = OPEN_PRIVATE;
+    ret->err = 0;
+    mode = READONLY;
+    if( acc->mode & DIG_OPEN_WRITE ) {
+        mode = WRITEONLY;
+        if( acc->mode & DIG_OPEN_READ ) {
+            mode = READWRITE;
+        }
     }
-    retval = OpenFile( GetInPtr( sizeof( file_open_req ) ), MapAcc[acc->mode - 1], flags );
+    flags = OPEN_PRIVATE;
+    if( acc->mode & DIG_OPEN_CREATE ) {
+        flags |= OPEN_CREATE;
+    }
+    retval = OpenFile( GetInPtr( sizeof( file_open_req ) ), mode, flags );
     if( retval < 0 ) {
         ret->err = retval;
-        LH2TRPH( ret, 0 );
-    } else {
-        ret->err = 0;
-        LH2TRPH( ret, retval );
+        retval = 0;
     }
+    LH2TRPH( ret, retval );
     return( sizeof( *ret ) );
 }
 
@@ -186,28 +181,22 @@ trap_retval TRAP_FILE( read )( void )
     ULONG               read_len;
     file_read_req       *acc;
     file_read_ret       *ret;
-    char                *buff;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    buff = GetOutPtr( sizeof( *ret ) );
-    ret->err = DosRead( TRPH2LH( acc ), buff, acc->len, &read_len );
+    ret->err = DosRead( TRPH2LH( acc ), GetOutPtr( sizeof( *ret ) ), acc->len, &read_len );
     return( sizeof( *ret ) + read_len );
 }
 
 trap_retval TRAP_FILE( write )( void )
 {
-    ULONG               len;
     ULONG               written_len;
-    char                *ptr;
     file_write_req      *acc;
     file_write_ret      *ret;
 
     acc = GetInPtr( 0 );
-    ptr = GetInPtr( sizeof( *acc ) );
-    len = GetTotalSizeIn() - sizeof( *acc );
     ret = GetOutPtr( 0 );
-    ret->err = DosWrite( TRPH2LH( acc ), ptr, len, &written_len );
+    ret->err = DosWrite( TRPH2LH( acc ), GetInPtr( sizeof( *acc ) ), GetTotalSizeIn() - sizeof( *acc ), &written_len );
     ret->len = written_len;
     return( sizeof( *ret ) );
 }
@@ -228,7 +217,7 @@ trap_retval TRAP_FILE( erase )( void )
     file_erase_ret      *ret;
 
     ret = GetOutPtr( 0 );
-    ret->err = DosDelete( (char *)GetInPtr( sizeof( file_erase_req ) ) );
+    ret->err = DosDelete( GetInPtr( sizeof( file_erase_req ) ) );
     return( sizeof( *ret ) );
 }
 
@@ -299,7 +288,7 @@ trap_retval TRAP_CORE( Read_user_keyboard )( void )
     ibuff.length = sizeof( ibuff );
     obuff.length = sizeof( obuff );
     /* Register monitor for debuggee's session */
-    if( DosMonReg( mon, (void *)&ibuff, (void *)&obuff, 1, SID) != 0 ) {
+    if( DosMonReg( mon, (void *)&ibuff, (void *)&obuff, 1, SID ) != 0 ) {
         DosMonClose(mon);
         if( delay == 0 )
             delay = 5000;
@@ -322,7 +311,7 @@ trap_retval TRAP_CORE( Read_user_keyboard )( void )
             break;
         }
         DosQuerySysInfo( QSV_MS_COUNT, QSV_MS_COUNT, &msecs, sizeof( msecs ) );
-        if( delay != 0 && (msecs - starttime) > delay ) {
+        if( delay != 0 && ( msecs - starttime ) > delay ) {
             DosMonClose( mon );
             return( sizeof( *ret ) );
         }
@@ -377,14 +366,12 @@ trap_retval TRAP_CORE( Get_err_text )( void )
         }
         while( *s == ' ' )
             ++s;
-        for( ;; ) {
-            ch = *s++;
-            if( ch == '\0' )
-                break;
+        while( (ch = *s++) != '\0' ) {
             if( ch == '\n' )
                 ch = ' ';
-            if( ch != '\r' )
+            if( ch != '\r' ) {
                 *d++ = ch;
+            }
         }
         while( d > err_txt && d[-1] == ' ' )
             --d;
@@ -407,8 +394,8 @@ static trap_elen Redirect( bool input )
     char                    *file_name;
 
     ret = GetOutPtr( 0 );
-    file_name = GetInPtr( sizeof( redirect_stdout_req ) );
     ret->err = 0;
+    file_name = GetInPtr( sizeof( redirect_stdout_req ) );
     if( input ) {
         std_hndl = 0;
         var = &SaveStdIn;
@@ -447,12 +434,12 @@ static trap_elen Redirect( bool input )
 
 trap_retval TRAP_CORE( Redirect_stdin )( void )
 {
-    return( Redirect( TRUE ) );
+    return( Redirect( true ) );
 }
 
 trap_retval TRAP_CORE( Redirect_stdout )( void )
 {
-    return( Redirect( FALSE ) );
+    return( Redirect( false ) );
 }
 
 static char *DOSEnvFind( char *src )
@@ -477,18 +464,12 @@ static void DOSEnvLkup( char *src, char *dst )
     }
 }
 
-char *StrCopy( const char *src, char *dst )
-{
-    strcpy( dst, src );
-    return( strlen( dst ) + dst );
-}
-
 trap_retval TRAP_FILE( run_cmd )( void )
 {
     char                *dst;
     char                *src;
     char                *args;
-    int                 length;
+    size_t              len;
     HFILE               savestdin;
     HFILE               savestdout;
     HFILE               console;
@@ -502,22 +483,19 @@ trap_retval TRAP_FILE( run_cmd )( void )
 
     src = GetInPtr( sizeof( file_run_cmd_req ) );
     ret = GetOutPtr( 0 );
-    length = GetTotalSizeIn() - sizeof( file_run_cmd_req );
-    while( length != 0 && *src == ' ' ) {
+    len = GetTotalSizeIn() - sizeof( file_run_cmd_req );
+    while( len > 0 && *src == ' ' ) {
         ++src;
-        --length;
+        --len;
     }
-    if( length == 0 ) {
-        args = NULL;
-    } else {
+    args = NULL;
+    if( len > 0 ) {
         args = UtilBuff + strlen( UtilBuff ) + 1;
-        // StrCopy return a ptr pointing to the end of string at dst
-        dst = StrCopy( UtilBuff, args ) + 1;
-        dst = StrCopy( "/C ", dst );
-        while( --length >= 0 ) {
-            *dst = *src;
-            ++dst;
-            ++src;
+        // StrCopyDst return a ptr pointing to the end of string at dst
+        dst = StrCopyDst( UtilBuff, args ) + 1;
+        dst = StrCopyDst( "/C ", dst );
+        while( len-- > 0 ) {
+            *dst++ = *src++;
         }
         *dst++ = '\0';
         *dst   = '\0';
@@ -558,89 +536,8 @@ trap_retval TRAP_FILE( run_cmd )( void )
 }
 
 
-static long TryPath( const char *name, char *end, const char *ext_list )
+trap_retval TRAP_FILE( file_to_fullpath )( void )
 {
-    long         rc;
-    char         *p;
-    int          done;
-    FILEFINDBUF3 info;
-    HDIR         hdl = HDIR_SYSTEM;
-    ULONG        count = 1;
-
-    done = 0;
-    do {
-        if( *ext_list == '\0' )
-            done = 1;
-        for( p = end; *p = *ext_list; ++p, ++ext_list )
-            ;
-        count = 1;
-        rc = DosFindFirst( name, &hdl, FILE_NORMAL, &info, sizeof( info ), &count, FIL_STANDARD );
-        if( rc == 0 ) {
-            return( 0 );
-        }
-    } while( !done );
-    return( 0xffff0000 | rc );
-}
-
-unsigned long FindProgFile( const char *pgm, char *buffer, const char *ext_list )
-{
-    const char      *p;
-    char            *p2;
-    const char      *p3;
-    unsigned long   rc;
-    int             have_ext;
-    int             have_path;
-
-    have_ext = 0;
-    have_path = 0;
-    for( p = pgm, p2 = buffer; *p2 = *p; ++p, ++p2 ) {
-        switch( *p ) {
-        case '\\':
-        case '/':
-        case ':':
-            have_path = 1;
-            have_ext = 0;
-            break;
-        case '.':
-            have_ext = 1;
-            break;
-        }
-    }
-    if( have_ext )
-        ext_list = "";
-    rc = TryPath( buffer, p2, ext_list );
-    if( rc == 0 || have_path )
-        return( rc );
-    if( DosScanEnv( "PATH", &p2 ) != 0 )
-        return( rc );
-    p = p2;
-    for( ;; ) {
-        if( *p == '\0' )
-            break;
-        p2 = buffer;
-        while( *p ) {
-            if( *p == ';' )
-                break;
-            *p2++ = *p++;
-        }
-        if( (p2[-1] != '\\') && (p2[-1] != '/') ) {
-            *p2++ = '\\';
-        }
-        for( p3 = pgm; *p2 = *p3; ++p2, ++p3 )
-            ;
-        rc = TryPath( buffer, p2, ext_list );
-        if( rc == 0 )
-            break;
-        if( *p == '\0' )
-            break;
-        ++p;
-    }
-    return( rc );
-}
-
-trap_retval TRAP_FILE( string_to_fullpath )( void )
-{
-    const char                  *ext_list;
     char                        *name;
     char                        *fullname;
     file_string_to_fullpath_req *acc;
@@ -650,43 +547,43 @@ trap_retval TRAP_FILE( string_to_fullpath )( void )
     name = GetInPtr( sizeof( *acc ) );
     ret  = GetOutPtr( 0 );
     fullname = GetOutPtr( sizeof( *ret ) );
-    if( acc->file_type != TF_TYPE_EXE ) {
-        ext_list = "";
-    } else {
-        ext_list = OS2ExtList;
-    }
-    ret->err = FindProgFile( name, fullname, ext_list );
-    if( ret->err != 0 ) {
-        *fullname = '\0';
+    ret->err = 0;
+    if( FindFilePath( acc->file_type, name, fullname ) == 0 ) {
+        ret->err = ENOENT;
     }
     return( sizeof( *ret ) + strlen( fullname ) + 1 );
 }
 
 trap_retval TRAP_CORE( Split_cmd )( void )
 {
-    char            *cmd;
-    char            *start;
+    const char      *cmd;
+    const char      *start;
     split_cmd_ret   *ret;
-    trap_elen       len;
+    size_t          len;
 
     cmd = GetInPtr( sizeof( split_cmd_req ) );
     len = GetTotalSizeIn() - sizeof( split_cmd_req );
     start = cmd;
     ret = GetOutPtr( 0 );
     ret->parm_start = 0;
-    while( len != 0 ) {
+    while( len > 0 ) {
         switch( *cmd ) {
         case '\"':
-            while( --len && (*++cmd != '\"') )
-                ;
-            if( len != 0 )
+            cmd++;
+            while( --len > 0 && ( *cmd++ != '\"' ) )
+                {}
+            if( len == 0 )
+                continue;
+            switch( *cmd ) {
+            CASE_SEPS
+                ret->parm_start = 1;
                 break;
-            /* fall down */
-        case '\0':
-        case ' ':
-        case '\t':
+            }
+            len = 0;
+            continue;
+        CASE_SEPS
             ret->parm_start = 1;
-            /* fall down */
+            /* fall through */
         case '/':
         case '=':
         case '(':
@@ -703,18 +600,16 @@ trap_retval TRAP_CORE( Split_cmd )( void )
     return( sizeof( *ret ) );
 }
 
-char *AddDriveAndPath( char *exe_name, char *buff )
+char *AddDriveAndPath( const char *src, char *buff )
 {
     ULONG       drive;
     ULONG       map;
-    char        *src;
     char        *dst;
     ULONG       len;
 
-    src = exe_name;
     dst = buff;
     DosQueryCurrentDisk( &drive, &map );
-    if( src[0] == '\0' || src[1] == '\0' || src[1] != ':' ) {
+    if( src[0] == '\0' || src[1] != ':' ) {
         *dst++ = drive - 1 + 'A';
         *dst++ = ':';
     } else {
@@ -735,28 +630,21 @@ char *AddDriveAndPath( char *exe_name, char *buff )
             *dst++ = '\\';
         }
     }
-    return( StrCopy( src, dst ) + 1 );
+    return( StrCopyDst( src, dst ) );
 }
 
-void MergeArgvArray( char *argv, char *dst, unsigned len )
+void MergeArgvArray( const char *src, char *dst, size_t len )
 {
     char    ch;
-    bool    have_extra;
 
-    have_extra = FALSE;
-    for( ;; ) {
-        if( len == 0 )
-            break;
-        ch = *argv;
-        if( ch == '\0' )
+    while( len-- > 0 ) {
+        ch = *src++;
+        if( ch == '\0' ) {
+            if( len == 0 )
+                break;
             ch = ' ';
-        *dst = *argv;
-        ++dst;
-        ++argv;
-        --len;
-        have_extra = TRUE;
+        }
+        *dst++ = ch;
     }
-    if( have_extra )
-        --dst;
     *dst = '\0';
 }

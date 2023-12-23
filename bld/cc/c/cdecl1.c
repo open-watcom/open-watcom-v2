@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -90,14 +90,13 @@ void ParsePgm( void )
 static void FuncDefn( SYMPTR sym )
 {
     SYM_NAMEPTR sym_name;
-    size_t      sym_len;
     TYPEPTR     typ;
 
-    /* duplicate name in near space */
+    /*
+     * duplicate name in near space
+     */
     sym_name = SymName( sym, CurFuncHandle );
-    sym_len = strlen( sym_name ) + 1;
-    sym->name = CMemAlloc( sym_len );
-    memcpy( sym->name, sym_name, sym_len );
+    sym->name = CMemStrDup( sym_name );
     if( sym->flags & SYM_DEFINED ) {
         CErr2p( ERR_SYM_ALREADY_DEFINED, sym->name );
     }
@@ -111,7 +110,7 @@ static void FuncDefn( SYMPTR sym )
     }
     sym->flags |= SYM_DEFINED /* | SYM_REFERENCED */;
 
-    if( (GenSwitches & NO_OPTIMIZATION) == 0 ) {
+    if( (GenSwitches & CGSW_GEN_NO_OPTIMIZATION) == 0 ) {
         sym->flags |= SYM_OK_TO_RECURSE;
     }
 
@@ -123,14 +122,17 @@ static void FuncDefn( SYMPTR sym )
     if( TOGGLE( check_stack ) )
         sym->flags |= SYM_CHECK_STACK;
 
+#if _INTEL_CPU
     if( !CompFlags.zu_switch_used ) {
         if( sym->mods & FLAG_FARSS ) {          /* function use far stack */
-            TargetSwitches |= FLOATING_SS;
+            TargetSwitches |= CGSW_X86_FLOATING_SS;
         } else {
-            TargetSwitches &= ~FLOATING_SS;
+            TargetSwitches &= ~CGSW_X86_FLOATING_SS;
         }
     }
-    if( CMPLIT( CurFunc->name, "main" ) == 0 || CMPLIT( CurFunc->name, "wmain" ) == 0 ) {
+#endif
+    if( strcmp( CurFunc->name, "main" ) == 0
+      || strcmp( CurFunc->name, "wmain" ) == 0 ) {
         sym->mods &= ~MASK_LANGUAGES;  // Turn off any language flags
         sym->mods |= LANG_WATCALL;     // Turn on __watcall calling convention for main
     }
@@ -170,7 +172,7 @@ static enum main_names checkMain( const char *name )
     enum main_names     main_entry;
 
     for( main_entry = MAIN_WMAIN; main_entry < MAIN_NUM; ++main_entry ) {
-       if( memcmp( name, MainNames[main_entry].name, MainNames[main_entry].len ) == 0 ) {
+       if( strcmp( name, MainNames[main_entry].name ) == 0 ) {
            break;
        }
     }
@@ -187,8 +189,10 @@ static void BeginFunc( void )
         if( CurFunc->seginfo == NULL ) {
             if( CompFlags.zm_switch_used ) {
                 name = "";
-                if( TargetSwitches & BIG_CODE )
+#if _INTEL_CPU
+                if( TargetSwitches & CGSW_X86_BIG_CODE )
                     name = CurFunc->name;
+#endif
                 segname = TS_SEG_CODE; /* "_TEXT" */
                 if( TextSegName[0] != '\0' ) {
                     segname = TextSegName;
@@ -200,7 +204,7 @@ static void BeginFunc( void )
     switch( checkMain( CurFunc->name ) ) {
     case MAIN_WMAIN:
         CompFlags.has_wchar_entry = true;
-        // fall through!
+        /* fall through */
     case MAIN_MAIN:
         if( CurFunc->u.func.parms != SYM_NULL ) {
             CompFlags.main_has_parms = true;
@@ -212,9 +216,9 @@ static void BeginFunc( void )
 
     case MAIN_WWINMAIN:
         CompFlags.has_wchar_entry = true;
-        // fall through!
+        /* fall through */
     case MAIN_WINMAIN:
-        if( TargSys == TS_WINDOWS || TargSys == TS_CHEAP_WINDOWS || TargSys == TS_NT ) {
+        if( TargetSystem == TS_WINDOWS || TargetSystem == TS_CHEAP_WINDOWS || TargetSystem == TS_NT ) {
             CompFlags.has_winmain = true;
         } else {
             CompFlags.has_wchar_entry = false;
@@ -224,7 +228,7 @@ static void BeginFunc( void )
     case MAIN_WLIBMAIN:
     case MAIN_WDLLMAIN:
         CompFlags.has_wchar_entry = true;
-        // fall through!
+        /* fall through */
     case MAIN_LIBMAIN:
     case MAIN_DLLMAIN:
         CompFlags.has_libmain = true;
@@ -260,7 +264,9 @@ static void  ArgPromotion( SYMPTR sym )
 
     AdjParmType( sym );
     arg_typ = sym->sym_type;
-    /* perform default argument promotions */
+    /*
+     * perform default argument promotions
+     */
     typ = arg_typ;
     SKIP_TYPEDEFS( typ );
 
@@ -296,7 +302,6 @@ static void ParmDeclList( void )     /* process old style function definitions *
     decl_state          state;
     SYM_ENTRY           sym;
     decl_info           info;
-    size_t              len;
 
     while( CurToken != T_LEFT_BRACE ) {
         FullDeclSpecifier( &info );
@@ -327,10 +332,9 @@ static void ParmDeclList( void )     /* process old style function definitions *
                 if( sym.name == NULL || sym.name[0] == '\0' ) {
                     InvDecl();
                 } else {
-                    len = strlen( sym.name ) + 1;
                     for( parm = ParmList; parm != NULL; parm = parm->next_parm ) {
                         if( parm->sym.name != NULL ) {
-                            if( memcmp( parm->sym.name, sym.name, len ) == 0 ) {
+                            if( strcmp( parm->sym.name, sym.name ) == 0 ) {
                                 break;
                             }
                         }
@@ -421,7 +425,7 @@ static void AddParms( void )
     SYM_HANDLE          new_sym_handle;
     TYPEPTR             typ = NULL;
     int                 parm_count;
-    id_hash_idx         h;
+    id_hash_idx         hash;
     parm_list           *parmlist;
     SYM_ENTRY           new_sym;
 
@@ -435,20 +439,22 @@ static void AddParms( void )
         new_sym_handle = SYM_NULL;
         parm->sym.flags |= SYM_DEFINED | SYM_ASSIGNED;
         parm->sym.attribs.is_parm = true;
-        h = parm->sym.info.hash;
+        hash = parm->sym.info.hash;
         if( parm->sym.name[0] == '\0' ) {
-            /* no name ==> ... */
+            /*
+             * no name ==> ...
+             */
             parm->sym.sym_type = GetType( TYP_DOT_DOT_DOT );
             parm->sym.attribs.stg_class = SC_AUTO;
         } else if( parm->sym.sym_type == NULL ) {
             parm->sym.sym_type = TypeDefault();
             parm->sym.attribs.stg_class = SC_AUTO;
         } else {
-/*
-        go through ParmList again, looking for FLOAT parms
-        change the name to ".P" and duplicate the symbol with type
-        float and generate an assignment statement.
-*/
+            /*
+             * go through ParmList again, looking for FLOAT parms
+             * change the name to ".P" and duplicate the symbol with type
+             * float and generate an assignment statement.
+             */
             typ = parm->sym.sym_type;
             SKIP_TYPEDEFS( typ );
 
@@ -474,7 +480,7 @@ static void AddParms( void )
             case TYP_FLOAT:
                 memcpy( &new_sym, &parm->sym, sizeof( SYM_ENTRY ) );
                 new_sym.handle = CurFunc->u.func.locals;
-                new_sym_handle = SymAdd( h, &new_sym );
+                new_sym_handle = SymAdd( hash, &new_sym );
                 CurFunc->u.func.locals = new_sym_handle;
                 SymReplace( &new_sym, new_sym_handle );
                 parm->sym.name = ".P";
@@ -486,7 +492,7 @@ static void AddParms( void )
                 break;
             }
         }
-        sym_handle = SymAdd( h, &parm->sym );
+        sym_handle = SymAdd( hash, &parm->sym );
         if( new_sym_handle != SYM_NULL ) {
             TREEPTR         tree;
 
@@ -515,7 +521,9 @@ static void AddParms( void )
         CMemFree( prev_parm );
     }
     typ = CurFunc->sym_type;
-    // TODO not following my scheme
+    /*
+     * TODO not following my scheme
+     */
     CurFunc->sym_type = FuncNode( typ->object, FLAG_NONE,
         MakeParmList( parmlist, ParmsToBeReversed( CurFunc->mods, NULL ) ) );
 
@@ -552,7 +560,9 @@ static void ChkParms( void )
             if( parm->sym.sym_type == NULL ) {
                 parm->sym.sym_type = TypeDefault();
             }
-            /* make sure name not already defined in this SymLevel */
+            /*
+             * make sure name not already defined in this SymLevel
+             */
             sym_handle = SymAdd( parm->sym.info.hash, &parm->sym );
             if( prev_parm == NULL ) {
                 CurFunc->u.func.parms = sym_handle;

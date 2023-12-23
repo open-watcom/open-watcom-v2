@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,10 +34,10 @@
 #include "_cgstd.h"
 #include "coderep.h"
 #include "symdbg.h"
-#include "axpencod.h"
 #include "reloc.h"
 #include "rscenc2.h"
 #include "rscobj.h"
+#include "axpenc.h"
 
 
 void EncodeRet( oc_ret *oc ) {
@@ -52,19 +52,19 @@ void EncodeRet( oc_ret *oc ) {
 
 static void doBranch( axp_ins opcode, pointer lbl, uint reg ) {
 
-    opcode = _Opcode( opcode ) | _A( reg );
+    opcode = _Opcode( opcode ) | _Ra( reg );
     OutReloc( lbl, OWL_RELOC_BRANCH_REL, 0 );
     ObjBytes( &opcode, sizeof( opcode ) );
 }
 
 void EncodeJump( oc_handle *oc ) {
 
-    doBranch( 0x30, oc->handle, AXP_ZERO_SINK );
+    doBranch( 0x30, oc->handle, ZERO_REG_IDX );
 }
 
 void EncodeCall( oc_handle *oc ) {
 
-    doBranch( 0x34, oc->handle, AXP_RETURN_ADDR );
+    doBranch( 0x34, oc->handle, RA_REG_IDX );
 }
 
 static  uint_8  BranchOpcodes[][2] = {
@@ -82,7 +82,7 @@ void EncodeCond( oc_jcond *oc ) {
     int         floating;
 
     floating = 0;
-    if( oc->hdr.class & ATTR_FLOAT ) {
+    if( oc->hdr.class & OC_ATTR_FLOAT ) {
         floating = 1;
     }
     opcode = BranchOpcodes[oc->cond - FIRST_COMPARISON][floating];

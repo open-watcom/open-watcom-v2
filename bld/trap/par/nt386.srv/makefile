@@ -1,9 +1,11 @@
 #pmake: build serv remote os_nt cpu_386 par
+
+tree_depth = 4
+
 host_cpu = 386
 host_os  = nt
 
 target_cpu = x86
-target_os  = nt
 
 srv = par
 which = SERVER

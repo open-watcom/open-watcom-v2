@@ -5,5 +5,5 @@ system=linux
 convention=register
 linkage=static
 
-!include $(mathlib_dir)/mrglib.mif
 
+!include ../../../mrglib.mif

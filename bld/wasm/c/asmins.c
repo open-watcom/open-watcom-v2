@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -68,7 +68,7 @@ operand_idx             Opnd_Count;
 
 static void             SizeString( unsigned op_size );
 static bool             check_size( void );
-static bool             segm_override_jumps( expr_list *opndx );
+static bool             segm_override_jumps( token_buffer *tokbuf, expr_list *opndx );
 
 
 #if defined( _STANDALONE_ )
@@ -84,7 +84,7 @@ struct asm_sym          *SegOverride;
 
 #else
 
-#define     directive( i, value )   cpu_directive( value )
+#define directive( buff, i, value )   cpu_directive( value )
 
 #endif
 
@@ -94,12 +94,10 @@ static bool             ConstantOnly;
 
 static bool             mem2code( unsigned char, asm_token, asm_token, asm_sym * );
 
-asm_tok                 AsmBuffer[MAX_TOKEN + 1];   // buffer to store token
-
 #if defined( _STANDALONE_ )
 
 void find_frame( struct asm_sym *sym )
-/*******************************************/
+/************************************/
 {
     if( SegOverride != NULL ) {
         sym = SegOverride;
@@ -237,6 +235,7 @@ static void seg_override( asm_token seg_reg, asm_sym *sym )
                 assume_seg = ASSUME_SS;
                 break;
             case PREFIX_DS:
+            default:
                 assume_seg = ASSUME_DS;
                 break;
             case PREFIX_FS:
@@ -244,9 +243,6 @@ static void seg_override( asm_token seg_reg, asm_sym *sym )
                 break;
             case PREFIX_GS:
                 assume_seg = ASSUME_GS;
-                break;
-            default:
-                assume_seg = 0;
                 break;
             }
             if( GetPrefixAssume( sym, assume_seg ) == ASSUME_NOTHING ) {
@@ -340,43 +336,6 @@ static void check_assume( struct asm_sym *sym, prefix_reg default_reg )
     }
 }
 
-bool check_override( token_idx *i )
-/*********************************/
-/* Check if there is a register, segment or group override */
-{
-    token_idx   index;
-
-    index = *i;
-
-    if( ( index + 2 ) < Token_Count ) {
-        if( AsmBuffer[index+1].class == TC_COLON ) {
-            switch( AsmBuffer[index].class ) {
-            case TC_REG:
-                Code->prefix.seg =
-                    AsmOpTable[AsmOpcode[AsmBuffer[index].u.token].position].opcode;
-                (*i) += 2;
-                if( *i >= Token_Count ) {
-                    AsmError( LABEL_EXPECTED_AFTER_COLON );
-                    return( RC_ERROR );
-                }
-                break;
-            case TC_ID:      // Segment or Group override
-                if( FixOverride(*i) ) {
-                    return( RC_ERROR );
-                }
-                (*i) += 2;
-                if( *i >= Token_Count ) {
-                    AsmError( LABEL_EXPECTED_AFTER_COLON );
-                    return( RC_ERROR );
-                }
-                break;
-            default:
-                break;
-            }
-        }
-    }
-    return( RC_OK );
-}
 #endif
 
 static unsigned char Reg386( asm_token reg_token )
@@ -941,22 +900,23 @@ static unsigned char get_sr_rm_byte( prefix_reg seg_prefix )
 
 #if defined( _STANDALONE_ )
 
-static bool proc_check( const char *curline, bool *prolog )
-/*********************************************************/
-/* Check if we are inside a procedure and write prologue statements if the
-   current line is the first instruction line following the procedure
-   declaration */
+static bool proc_check( token_buffer *tokbuf, const char *curline, bool *prolog )
+/********************************************************************************
+ * Check if we are inside a procedure and write prologue statements if the
+ * current line is the first instruction line following the procedure
+ * declaration
+ */
 {
     *prolog = false;
-    if( ( CurrProc == NULL ) || ( Token_Count == 0 ) || !DefineProc )
+    if( ( CurrProc == NULL ) || ( tokbuf->count == 0 ) || !DefineProc )
         return( RC_OK );
 
-    if( AsmBuffer[0].class == TC_DIRECTIVE )
+    if( tokbuf->tokens[0].class == TC_DIRECTIVE )
         return( RC_OK );
 
-    if( Token_Count > 1 ) {
-        if( ( AsmBuffer[1].class == TC_DIRECTIVE )
-          || ( AsmBuffer[1].class == TC_DIRECT_EXPR ) ) {
+    if( tokbuf->count > 1 ) {
+        if( ( tokbuf->tokens[1].class == TC_DIRECTIVE )
+          || ( tokbuf->tokens[1].class == TC_DIRECT_EXPR ) ) {
             return( RC_OK );
         }
     }
@@ -974,7 +934,7 @@ const char * const regs[3][4]= {
     { "eax", "edx", "ebx ", "ecx" },
 };
 
-static bool get_register_argument( token_idx index, char *buffer, int *register_count, bool *on_stack )
+static bool get_register_argument( token_buffer *tokbuf, token_idx index, char *buffer, int *register_count, bool *on_stack )
 {
     token_idx   i;
     int         size, j;
@@ -990,10 +950,10 @@ static bool get_register_argument( token_idx index, char *buffer, int *register_
         } else {
             size = 2;
         }
-        if( AsmBuffer[i].class == TC_OP_SQ_BRACKET ) {
+        if( tokbuf->tokens[i].class == TC_OP_SQ_BRACKET ) {
             i++;
-            if( AsmBuffer[i].class == TC_RES_ID ) {
-                switch( AsmBuffer[i].u.token ) {
+            if( tokbuf->tokens[i].class == TC_RES_ID ) {
+                switch( tokbuf->tokens[i].u.token ) {
                 case T_BYTE:
                     size = 1;
                     break;
@@ -1021,30 +981,30 @@ static bool get_register_argument( token_idx index, char *buffer, int *register_
                 }
                 i++;
             }
-            if( ( AsmBuffer[i].class != TC_ID ) && ( AsmBuffer[i+1].class != TC_CL_SQ_BRACKET ) ) {
+            if( ( tokbuf->tokens[i].class != TC_ID ) && ( tokbuf->tokens[i+1].class != TC_CL_SQ_BRACKET ) ) {
                 AsmError( SYNTAX_ERROR );
                 return( RC_ERROR );
             }
             if( Use32 ) {
                 switch( size ) {
                 case 1:
-                    sprintf( buffer, "movzx %s,[byte %s]", regs[A_DWORD][j], AsmBuffer[i].string_ptr );
+                    sprintf( buffer, "movzx %s,[byte %s]", regs[A_DWORD][j], tokbuf->tokens[i].string_ptr );
                     break;
                 case 2:
-                    sprintf( buffer, "movzx %s,[word %s]", regs[A_DWORD][j], AsmBuffer[i].string_ptr );
+                    sprintf( buffer, "movzx %s,[word %s]", regs[A_DWORD][j], tokbuf->tokens[i].string_ptr );
                     break;
                 case 4:
-                    sprintf( buffer, "mov %s,[dword %s]", regs[A_DWORD][j], AsmBuffer[i].string_ptr );
+                    sprintf( buffer, "mov %s,[dword %s]", regs[A_DWORD][j], tokbuf->tokens[i].string_ptr );
                     break;
                 case 6:
                     if( j > 2 ) {
                         *on_stack = true;
                         return( RC_OK );
                     }
-                    sprintf( buffer, "mov %s,[dword %s]", regs[A_DWORD][j], AsmBuffer[i].string_ptr );
+                    sprintf( buffer, "mov %s,[dword %s]", regs[A_DWORD][j], tokbuf->tokens[i].string_ptr );
                     InputQueueLine( buffer );
                     j++;
-                    sprintf( buffer, "movzx %s,[word %s+4]", regs[A_DWORD][j], AsmBuffer[i].string_ptr );
+                    sprintf( buffer, "movzx %s,[word %s+4]", regs[A_DWORD][j], tokbuf->tokens[i].string_ptr );
                     *register_count = j;
                     break;
                 case 8:
@@ -1052,10 +1012,10 @@ static bool get_register_argument( token_idx index, char *buffer, int *register_
                         *on_stack = true;
                         return( RC_OK );
                     }
-                    sprintf( buffer, "mov %s,[dword %s]", regs[A_DWORD][j], AsmBuffer[i].string_ptr );
+                    sprintf( buffer, "mov %s,[dword %s]", regs[A_DWORD][j], tokbuf->tokens[i].string_ptr );
                     InputQueueLine( buffer );
                     j++;
-                    sprintf( buffer, "movzx %s,[dword %s+4]", regs[A_DWORD][j], AsmBuffer[i].string_ptr );
+                    sprintf( buffer, "movzx %s,[dword %s+4]", regs[A_DWORD][j], tokbuf->tokens[i].string_ptr );
                     *register_count = j;
                     break;
                 default:
@@ -1068,20 +1028,20 @@ static bool get_register_argument( token_idx index, char *buffer, int *register_
                     ch = regs[A_BYTE][j][0];
                     sprintf( buffer, "xor %ch,%ch", ch, ch );
                     InputQueueLine( buffer );
-                    sprintf( buffer, "mov %s,[byte %s]", regs[A_BYTE][j], AsmBuffer[i].string_ptr );
+                    sprintf( buffer, "mov %s,[byte %s]", regs[A_BYTE][j], tokbuf->tokens[i].string_ptr );
                     break;
                 case 2:
-                    sprintf( buffer, "mov %s,[word %s]", regs[A_WORD][j], AsmBuffer[i].string_ptr );
+                    sprintf( buffer, "mov %s,[word %s]", regs[A_WORD][j], tokbuf->tokens[i].string_ptr );
                     break;
                 case 4:
                     if( j > 2 ) {
                         *on_stack = true;
                         return( RC_OK );
                     }
-                    sprintf( buffer, "mov %s,[word %s]", regs[A_WORD][j], AsmBuffer[i].string_ptr );
+                    sprintf( buffer, "mov %s,[word %s]", regs[A_WORD][j], tokbuf->tokens[i].string_ptr );
                     InputQueueLine( buffer );
                     j++;
-                    sprintf( buffer, "movzx %s,[word %s+2]", regs[A_WORD][j], AsmBuffer[i].string_ptr );
+                    sprintf( buffer, "movzx %s,[word %s+2]", regs[A_WORD][j], tokbuf->tokens[i].string_ptr );
                     *register_count = j;
                     break;
                 default:
@@ -1089,10 +1049,10 @@ static bool get_register_argument( token_idx index, char *buffer, int *register_
                     return( RC_ERROR );
                 }
             }
-        } else if( ( AsmBuffer[i].class == TC_REG ) &&
-                   ( ( AsmBuffer[i+1].class == TC_COMMA ) ||
-                     ( AsmBuffer[i+1].class == TC_FINAL ) ) ) {
-            switch( AsmBuffer[i].u.token ) {
+        } else if( ( tokbuf->tokens[i].class == TC_REG ) &&
+                   ( ( tokbuf->tokens[i+1].class == TC_COMMA ) ||
+                     ( tokbuf->tokens[i+1].class == TC_FINAL ) ) ) {
+            switch( tokbuf->tokens[i].u.token ) {
             case T_EAX:
             case T_EBX:
             case T_ECX:
@@ -1139,21 +1099,21 @@ static bool get_register_argument( token_idx index, char *buffer, int *register_
             switch( size ) {
             case 1:
                 if( Use32 ) {
-                    sprintf( buffer, "movzx %s,%s", regs[A_DWORD][j], AsmBuffer[i].string_ptr );
+                    sprintf( buffer, "movzx %s,%s", regs[A_DWORD][j], tokbuf->tokens[i].string_ptr );
                 } else {
-                    sprintf( buffer, "mov %s,%s", regs[A_BYTE][j], AsmBuffer[i].string_ptr );
+                    sprintf( buffer, "mov %s,%s", regs[A_BYTE][j], tokbuf->tokens[i].string_ptr );
                 }
                 break;
             case 2:
                 if( Use32 ) {
-                    sprintf( buffer, "movzx %s,%s", regs[A_DWORD][j], AsmBuffer[i].string_ptr );
+                    sprintf( buffer, "movzx %s,%s", regs[A_DWORD][j], tokbuf->tokens[i].string_ptr );
                 } else {
-                    sprintf( buffer, "mov %s,%s", regs[A_WORD][j], AsmBuffer[i].string_ptr );
+                    sprintf( buffer, "mov %s,%s", regs[A_WORD][j], tokbuf->tokens[i].string_ptr );
                 }
                 break;
             case 4:
                 if( Use32 ) {
-                    sprintf( buffer, "mov %s,%s", regs[A_DWORD][j], AsmBuffer[i].string_ptr );
+                    sprintf( buffer, "mov %s,%s", regs[A_DWORD][j], tokbuf->tokens[i].string_ptr );
                     break;
                 }
                 /* fall through */
@@ -1161,16 +1121,16 @@ static bool get_register_argument( token_idx index, char *buffer, int *register_
                 AsmError( SYNTAX_ERROR );
                 return( RC_ERROR );
             }
-        } else if( AsmBuffer[i].class == TC_QUESTION_MARK ) {
+        } else if( tokbuf->tokens[i].class == TC_QUESTION_MARK ) {
             return( RC_OK );
         } else {
             if( Use32 )
                 sprintf( buffer, "mov %s,", regs[A_DWORD][j] );
             else
                 sprintf( buffer, "mov %s,", regs[A_WORD][j] );
-            while( ( AsmBuffer[i].class != TC_FINAL ) &&
-                   ( AsmBuffer[i].class != TC_COMMA ) ) {
-                strcat( buffer, AsmBuffer[i++].string_ptr );
+            while( ( tokbuf->tokens[i].class != TC_FINAL ) &&
+                   ( tokbuf->tokens[i].class != TC_COMMA ) ) {
+                strcat( buffer, tokbuf->tokens[i++].string_ptr );
             }
         }
         InputQueueLine( buffer );
@@ -1178,7 +1138,7 @@ static bool get_register_argument( token_idx index, char *buffer, int *register_
     return( RC_OK );
 }
 
-static bool get_stack_argument( token_idx idx, char *buffer )
+static bool get_stack_argument( token_buffer *tokbuf, token_idx idx, char *buffer )
 {
     int         size;
 
@@ -1187,10 +1147,10 @@ static bool get_stack_argument( token_idx idx, char *buffer )
     } else {
         size = 2;
     }
-    if( AsmBuffer[idx].class == TC_OP_SQ_BRACKET ) {
+    if( tokbuf->tokens[idx].class == TC_OP_SQ_BRACKET ) {
         idx++;
-        if( AsmBuffer[idx].class == TC_RES_ID ) {
-            switch( AsmBuffer[idx].u.token ) {
+        if( tokbuf->tokens[idx].class == TC_RES_ID ) {
+            switch( tokbuf->tokens[idx].u.token ) {
             case T_BYTE:
                 size = 1;
                 break;
@@ -1203,7 +1163,7 @@ static bool get_stack_argument( token_idx idx, char *buffer )
             case T_FWORD:
             case T_QWORD:
                 if( Use32 ) {
-                    if( AsmBuffer[idx].u.token == T_FWORD ) {
+                    if( tokbuf->tokens[idx].u.token == T_FWORD ) {
                         size = 6;
                     } else {
                         size = 8;
@@ -1217,36 +1177,36 @@ static bool get_stack_argument( token_idx idx, char *buffer )
             }
             idx++;
         }
-        if( ( AsmBuffer[idx].class != TC_ID ) || ( AsmBuffer[idx + 1].class != TC_CL_SQ_BRACKET ) ) {
+        if( ( tokbuf->tokens[idx].class != TC_ID ) || ( tokbuf->tokens[idx + 1].class != TC_CL_SQ_BRACKET ) ) {
             AsmError( SYNTAX_ERROR );
             return( RC_ERROR );
         }
         if( Use32 ) {
             switch( size ) {
             case 1:
-                sprintf( buffer, "movzx eax,[byte %s]", AsmBuffer[idx].string_ptr );
+                sprintf( buffer, "movzx eax,[byte %s]", tokbuf->tokens[idx].string_ptr );
                 InputQueueLine( buffer );
                 sprintf( buffer, "push eax" );
                 break;
             case 2:
-                sprintf( buffer, "movzx eax,[word %s]", AsmBuffer[idx].string_ptr );
+                sprintf( buffer, "movzx eax,[word %s]", tokbuf->tokens[idx].string_ptr );
                 InputQueueLine( buffer );
                 sprintf( buffer, "push eax" );
                 break;
             case 4:
-                sprintf( buffer, "push [dword %s]", AsmBuffer[idx].string_ptr );
+                sprintf( buffer, "push [dword %s]", tokbuf->tokens[idx].string_ptr );
                 break;
             case 6:
-                sprintf( buffer, "movzx eax,[word %s+4]", AsmBuffer[idx].string_ptr );
+                sprintf( buffer, "movzx eax,[word %s+4]", tokbuf->tokens[idx].string_ptr );
                 InputQueueLine( buffer );
                 sprintf( buffer, "push eax" );
                 InputQueueLine( buffer );
-                sprintf( buffer, "push [dword %s]", AsmBuffer[idx].string_ptr );
+                sprintf( buffer, "push [dword %s]", tokbuf->tokens[idx].string_ptr );
                 break;
             case 8:
-                sprintf( buffer, "push [dword %s+4]", AsmBuffer[idx].string_ptr );
+                sprintf( buffer, "push [dword %s+4]", tokbuf->tokens[idx].string_ptr );
                 InputQueueLine( buffer );
-                sprintf( buffer, "push [dword %s]", AsmBuffer[idx].string_ptr );
+                sprintf( buffer, "push [dword %s]", tokbuf->tokens[idx].string_ptr );
                 break;
             }
         } else {
@@ -1254,31 +1214,31 @@ static bool get_stack_argument( token_idx idx, char *buffer )
             case 1:
                 sprintf( buffer, "xor ah,ah" );
                 InputQueueLine( buffer );
-                sprintf( buffer, "mov al,[%s]", AsmBuffer[idx].string_ptr );
+                sprintf( buffer, "mov al,[%s]", tokbuf->tokens[idx].string_ptr );
                 InputQueueLine( buffer );
                 sprintf( buffer, "push ax" );
                 break;
             case 2:
-                sprintf( buffer, "push [%s]", AsmBuffer[idx].string_ptr );
+                sprintf( buffer, "push [%s]", tokbuf->tokens[idx].string_ptr );
                 break;
             case 4:
-                sprintf( buffer, "push [word %s+2]", AsmBuffer[idx].string_ptr );
+                sprintf( buffer, "push [word %s+2]", tokbuf->tokens[idx].string_ptr );
                 InputQueueLine( buffer );
-                sprintf( buffer, "push [word %s]", AsmBuffer[idx].string_ptr );
+                sprintf( buffer, "push [word %s]", tokbuf->tokens[idx].string_ptr );
                 break;
             }
         }
     } else {
         sprintf( buffer, "push " );
-        while( ( AsmBuffer[idx].class != TC_FINAL ) && ( AsmBuffer[idx].class != TC_COMMA ) ) {
-            strcat( buffer, AsmBuffer[idx++].string_ptr );
+        while( ( tokbuf->tokens[idx].class != TC_FINAL ) && ( tokbuf->tokens[idx].class != TC_COMMA ) ) {
+            strcat( buffer, tokbuf->tokens[idx++].string_ptr );
         }
     }
     InputQueueLine( buffer );
     return( RC_OK );
 }
 
-static bool expand_call( token_idx index, int lang_type )
+static bool expand_call( token_buffer *tokbuf, token_idx index, int lang_type )
 {
     token_idx   i, j;
     token_idx   arglist[16];
@@ -1310,14 +1270,14 @@ static bool expand_call( token_idx index, int lang_type )
     case WASM_LANG_BASIC:
         break;
     case WASM_LANG_NONE:
-        if( AsmBuffer[index].class == TC_FINAL )
+        if( tokbuf->tokens[index].class == TC_FINAL )
             break;
         AsmError( SYNTAX_ERROR );
         return( RC_ERROR );
     }
-    for( i = index; AsmBuffer[i].class != TC_FINAL; ) {
-        if( ( AsmBuffer[i].class != TC_COMMA ) ||
-            ( AsmBuffer[i + 1].class == TC_FINAL ) ) {
+    for( i = index; tokbuf->tokens[i].class != TC_FINAL; ) {
+        if( ( tokbuf->tokens[i].class != TC_COMMA ) ||
+            ( tokbuf->tokens[i + 1].class == TC_FINAL ) ) {
             AsmError( SYNTAX_ERROR );
             return( RC_ERROR );
         }
@@ -1326,8 +1286,8 @@ static bool expand_call( token_idx index, int lang_type )
             return( RC_ERROR );
         }
         for( j = ++i; ; j++ ) {
-            if( ( AsmBuffer[j].class == TC_FINAL ) ||
-                ( AsmBuffer[j].class == TC_COMMA ) ) {
+            if( ( tokbuf->tokens[j].class == TC_FINAL ) ||
+                ( tokbuf->tokens[j].class == TC_COMMA ) ) {
                 break;
             }
         }
@@ -1336,7 +1296,7 @@ static bool expand_call( token_idx index, int lang_type )
     }
     if( !parameter_on_stack ) {
         for( k = 0; k < argcount; k++ ) {
-            if( get_register_argument( arglist[k], buffer, &register_count, &parameter_on_stack ) )
+            if( get_register_argument( tokbuf, arglist[k], buffer, &register_count, &parameter_on_stack ) )
                 return( RC_ERROR );
             if( parameter_on_stack )
                 break;
@@ -1349,14 +1309,14 @@ static bool expand_call( token_idx index, int lang_type )
         k = argcount;
         while( k > register_arguments ) {
             j = arglist[--k];
-            if( get_stack_argument( j, buffer ) ) {
+            if( get_stack_argument( tokbuf, j, buffer ) ) {
                 return( RC_ERROR );
             }
         }
     } else {
         for( k = 0; k < argcount; k++ ) {
             j = arglist[k];
-            if( get_stack_argument( j, buffer ) ) {
+            if( get_stack_argument( tokbuf, j, buffer ) ) {
                 return( RC_ERROR );
             }
         }
@@ -1364,15 +1324,16 @@ static bool expand_call( token_idx index, int lang_type )
     *buffer = 0;
     /* add original line up to before language */
     for( i = 0; i < index - 1; i++ ) {
-        sprintf( buffer + strlen( buffer ), "%s ", AsmBuffer[i].string_ptr );
+        sprintf( buffer + strlen( buffer ), "%s ", tokbuf->tokens[i].string_ptr );
     }
     InputQueueLine( buffer );
     /* add cleanup after call */
     if( cleanup && argcount ) {
-        if( Code->use32 )
+        if( Code->use32 ) {
             sprintf( buffer, "add esp,%d", argcount << 2 );
-        else
+        } else {
             sprintf( buffer, "add sp,%d", argcount << 1 );
+        }
         InputQueueLine( buffer );
     }
     return( RC_OK );
@@ -1380,13 +1341,12 @@ static bool expand_call( token_idx index, int lang_type )
 
 #endif
 
-static bool process_jumps( expr_list *opndx, int *jmp_flags )
-/**********************************************************/
-/*
-  parse the jumps instructions operands
-*/
+static bool process_jumps( token_buffer *tokbuf, expr_list *opndx, int *jmp_flags )
+/**********************************************************************************
+ * parse the jumps instructions operands
+ */
 {
-    segm_override_jumps( opndx );
+    segm_override_jumps( tokbuf, opndx );
 
     if( ptr_operator( opndx->mem_type, opndx->explicit ) )
         return( RC_ERROR );
@@ -1400,18 +1360,18 @@ static bool process_jumps( expr_list *opndx, int *jmp_flags )
             return( RC_ERROR );
         }
     }
-    return( jmp( opndx, jmp_flags ) );
+    return( jmp( tokbuf, opndx, jmp_flags ) );
 }
 
-static bool segm_override_jumps( expr_list *opndx )
-/*************************************************/
+static bool segm_override_jumps( token_buffer *tokbuf, expr_list *opndx )
+/***********************************************************************/
 {
-    if( opndx->override != INVALID_IDX ) {
-        if( AsmBuffer[opndx->override].class == TC_REG ) {
-            Code->prefix.seg = AsmOpTable[AsmOpcode[AsmBuffer[opndx->override].u.token].position].opcode;
+    if( ISVALID_IDX( opndx->override ) ) {
+        if( tokbuf->tokens[opndx->override].class == TC_REG ) {
+            Code->prefix.seg = AsmOpTable[AsmOpcode[tokbuf->tokens[opndx->override].u.token].position].opcode;
         } else {
 #if defined( _STANDALONE_ )
-            if( FixOverride( opndx->override ) ) {
+            if( FixOverride( tokbuf, opndx->override ) ) {
                 return( RC_ERROR );
             }
 #endif
@@ -1420,15 +1380,15 @@ static bool segm_override_jumps( expr_list *opndx )
     return( RC_OK );
 }
 
-static bool segm_override_idata( expr_list *opndx )
-/*************************************************/
+static bool segm_override_idata( token_buffer *tokbuf, expr_list *opndx )
+/***********************************************************************/
 {
-    if( opndx->override != INVALID_IDX ) {
-        if( AsmBuffer[opndx->override].class == TC_REG ) {
-            Code->prefix.seg = AsmOpTable[AsmOpcode[AsmBuffer[opndx->override].u.token].position].opcode;
+    if( ISVALID_IDX( opndx->override ) ) {
+        if( tokbuf->tokens[opndx->override].class == TC_REG ) {
+            Code->prefix.seg = AsmOpTable[AsmOpcode[tokbuf->tokens[opndx->override].u.token].position].opcode;
         } else {
 #if defined( _STANDALONE_ )
-            if( FixOverride( opndx->override ) ) {
+            if( FixOverride( tokbuf, opndx->override ) ) {
                 return( RC_ERROR );
             }
 #endif
@@ -1437,15 +1397,15 @@ static bool segm_override_idata( expr_list *opndx )
     return( RC_OK );
 }
 
-static bool segm_override_memory( expr_list *opndx )
-/**************************************************/
+static bool segm_override_memory( token_buffer *tokbuf, expr_list *opndx )
+/************************************************************************/
 {
-    if( opndx->override != INVALID_IDX ) {
-        if( AsmBuffer[opndx->override].class == TC_REG ) {
-            Code->prefix.seg = AsmOpTable[AsmOpcode[AsmBuffer[opndx->override].u.token].position].opcode;
+    if( ISVALID_IDX( opndx->override ) ) {
+        if( tokbuf->tokens[opndx->override].class == TC_REG ) {
+            Code->prefix.seg = AsmOpTable[AsmOpcode[tokbuf->tokens[opndx->override].u.token].position].opcode;
         } else {
 #if defined( _STANDALONE_ )
-            if( FixOverride( opndx->override ) ) {
+            if( FixOverride( tokbuf, opndx->override ) ) {
                 return( RC_ERROR );
             }
 #endif
@@ -1674,8 +1634,8 @@ static bool idata_nofixup( expr_list *opndx )
     return( RC_OK );
 }
 
-static bool idata_fixup( expr_list *opndx )
-/*****************************************/
+static bool idata_fixup( token_buffer *tokbuf, expr_list *opndx )
+/***************************************************************/
 {
     struct asmfixup     *fixup;
     enum fixup_types    fixup_type;
@@ -1683,7 +1643,7 @@ static bool idata_fixup( expr_list *opndx )
     bool                sym32;
 
     Code->data[Opnd_Count] = opndx->value;
-    segm_override_idata( opndx );
+    segm_override_idata( tokbuf, opndx );
 
 #if defined( _STANDALONE_ )
     if( ( opndx->sym->state == SYM_SEG )
@@ -1699,8 +1659,8 @@ static bool idata_fixup( expr_list *opndx )
     sym32 = Code->use32;
 #endif
     if( opndx->instr != T_NULL ) {
-        if( ( opndx->base_reg != INVALID_IDX )
-            || ( opndx->idx_reg != INVALID_IDX ) ) {
+        if( ISVALID_IDX( opndx->base_reg )
+            || ISVALID_IDX( opndx->idx_reg ) ) {
             AsmError( INVALID_MEMORY_POINTER );
             return( RC_ERROR );
         }
@@ -1814,18 +1774,18 @@ static bool idata_fixup( expr_list *opndx )
     return( RC_OK );
 }
 
-static bool idata_operand( expr_list *opndx )
-/*******************************************/
+static bool idata_operand( token_buffer *tokbuf, expr_list *opndx )
+/*****************************************************************/
 {
     if( opndx->sym == NULL ) {
         return( idata_nofixup( opndx ) );
     } else {
-        return( idata_fixup( opndx ) );
+        return( idata_fixup( tokbuf, opndx ) );
     }
 }
 
-static bool memory_operand( expr_list *opndx )
-/********************************************/
+static bool memory_operand( token_buffer *tokbuf, expr_list *opndx )
+/******************************************************************/
 {
     unsigned char       ss = SCALE_FACTOR_1;
     asm_token           index = T_NULL;
@@ -1840,7 +1800,7 @@ static bool memory_operand( expr_list *opndx )
     Code->data[Opnd_Count] = opndx->value;
     Code->info.opnd_type[Opnd_Count] = OP_M;
 
-    segm_override_memory( opndx );
+    segm_override_memory( tokbuf, opndx );
 
     if( ptr_operator( opndx->mem_type, opndx->explicit ) )
         return( RC_ERROR );
@@ -1854,8 +1814,8 @@ static bool memory_operand( expr_list *opndx )
             return( RC_ERROR );
         }
     }
-    if( opndx->base_reg != INVALID_IDX ) {
-        base = AsmBuffer[opndx->base_reg].u.token;
+    if( ISVALID_IDX( opndx->base_reg ) ) {
+        base = tokbuf->tokens[opndx->base_reg].u.token;
         switch( base ) {     // check for base registers
         case T_EAX:
         case T_EBX:
@@ -1883,8 +1843,8 @@ static bool memory_operand( expr_list *opndx )
             return( RC_ERROR );
         }
     }
-    if( opndx->idx_reg != INVALID_IDX ) {
-        index = AsmBuffer[opndx->idx_reg].u.token;
+    if( ISVALID_IDX( opndx->idx_reg ) ) {
+        index = tokbuf->tokens[opndx->idx_reg].u.token;
         switch( index ) {     // check for index registers
         case T_EAX:
         case T_EBX:
@@ -1911,10 +1871,10 @@ static bool memory_operand( expr_list *opndx )
             AsmError( INVALID_MEMORY_POINTER );
             return( RC_ERROR );
         }
-        if( AsmBuffer[opndx->idx_reg].u.token == T_ESP ) {
+        if( tokbuf->tokens[opndx->idx_reg].u.token == T_ESP ) {
             if( opndx->scale == 1 ) {
                 index = base;
-                base = AsmBuffer[opndx->idx_reg].u.token;
+                base = tokbuf->tokens[opndx->idx_reg].u.token;
             } else {
                 AsmError( ESP_CANNOT_BE_USED_AS_INDEX );
                 return( RC_ERROR );
@@ -2009,7 +1969,7 @@ static bool memory_operand( expr_list *opndx )
         } else {
             sym32 = SymIs32( sym );
         }
-        if( ( opndx->base_reg == INVALID_IDX ) && ( opndx->idx_reg == INVALID_IDX ) ) {
+        if( ISINVALID_IDX( opndx->base_reg ) && ISINVALID_IDX( opndx->idx_reg ) ) {
             SET_ADRSIZ( Code, sym32 );
             fixup_type = ( sym32 ) ? FIX_OFF32 : FIX_OFF16;
         } else {
@@ -2059,33 +2019,32 @@ static bool memory_operand( expr_list *opndx )
     return( RC_OK );
 }
 
-static bool process_address( expr_list *opndx, int *jmp_flags )
-/*************************************************************/
-/*
-  parse the memory reference operand
-*/
+static bool process_address( token_buffer *tokbuf, expr_list *opndx, int *jmp_flags )
+/************************************************************************************
+ * parse the memory reference operand
+ */
 {
     memtype     mem_type;
 
     *jmp_flags = 0;
     if( opndx->indirect ) {           // indirect operand
-        return( memory_operand( opndx ) );
+        return( memory_operand( tokbuf, opndx ) );
     } else {                          // direct operand
         if( opndx->instr != T_NULL ) { // OFFSET ..., SEG ...
             if( IS_ANY_BRANCH( Code->info.token ) ) {  // jumps/call processing
-                return( process_jumps( opndx, jmp_flags ) );
+                return( process_jumps( tokbuf, opndx, jmp_flags ) );
             } else {
-                return( idata_operand( opndx ) );
+                return( idata_operand( tokbuf, opndx ) );
             }
         } else {                      // direct operand only
             if( opndx->sym == NULL ) {       // without symbol
-                if( opndx->override != INVALID_IDX ) {
+                if( ISVALID_IDX( opndx->override ) ) {
                     // direct absolute memory without fixup ... DS:[0]
-                    return( memory_operand( opndx ) );
+                    return( memory_operand( tokbuf, opndx ) );
                 } else if( IS_ANY_BRANCH( Code->info.token ) ) {  // jumps/call processing
-                    return( process_jumps( opndx, jmp_flags ) );
+                    return( process_jumps( tokbuf, opndx, jmp_flags ) );
                 } else {
-                    return( idata_operand( opndx ) );  // error ????
+                    return( idata_operand( tokbuf, opndx ) );  // error ????
                 }
             } else {                  // with symbol
                 if( ( opndx->sym->state == SYM_UNDEFINED ) && !opndx->explicit ) {
@@ -2098,7 +2057,7 @@ static bool process_address( expr_list *opndx, int *jmp_flags )
                     // undefined symbol, it is not possible to determine
                     // operand type and size
                     if( IS_ANY_BRANCH( Code->info.token ) ) {  // jumps/call processing
-                        return( process_jumps( opndx, jmp_flags ) );
+                        return( process_jumps( tokbuf, opndx, jmp_flags ) );
                     } else {
                         switch( Code->info.token ) {
                         case T_PUSH:
@@ -2107,7 +2066,7 @@ static bool process_address( expr_list *opndx, int *jmp_flags )
                             return( idata_nofixup( opndx ) );
                             break;
                         default:
-                            return( memory_operand( opndx ) );
+                            return( memory_operand( tokbuf, opndx ) );
                             break;
                         }
                     }
@@ -2118,9 +2077,9 @@ static bool process_address( expr_list *opndx, int *jmp_flags )
                     // for next prrocessing
                     opndx->instr = T_SEG;
                     if( IS_ANY_BRANCH( Code->info.token ) ) {  // jumps/call processing
-                        return( process_jumps( opndx, jmp_flags ) );
+                        return( process_jumps( tokbuf, opndx, jmp_flags ) );
                     }
-                    return( idata_operand( opndx ) );
+                    return( idata_operand( tokbuf, opndx ) );
 #endif
                 } else {
                     // CODE location is converted to OFFSET symbol
@@ -2128,9 +2087,9 @@ static bool process_address( expr_list *opndx, int *jmp_flags )
 #if defined( _STANDALONE_ )
                     if( opndx->abs ) {
                         if( IS_ANY_BRANCH( Code->info.token ) ) {  // jumps/call processing
-                            return( process_jumps( opndx, jmp_flags ) );
+                            return( process_jumps( tokbuf, opndx, jmp_flags ) );
                         }
-                        return( idata_operand( opndx ) );
+                        return( idata_operand( tokbuf, opndx ) );
                     }
 #endif
                     switch( mem_type ) {
@@ -2141,26 +2100,26 @@ static bool process_address( expr_list *opndx, int *jmp_flags )
                     case MT_PROC:
 #endif
                         if( Code->info.token == T_LEA ) {
-                            return( memory_operand( opndx ) );
+                            return( memory_operand( tokbuf, opndx ) );
 #if defined( _STANDALONE_ )
                         } else if( IS_SYM_COUNTER( opndx->sym->name ) ) {
                             if( IS_ANY_BRANCH( Code->info.token ) ) {  // jumps/call processing
-                                return( process_jumps( opndx, jmp_flags ) );
+                                return( process_jumps( tokbuf, opndx, jmp_flags ) );
                             }
-                            return( idata_operand( opndx ) );
+                            return( idata_operand( tokbuf, opndx ) );
 #endif
                         } else if( opndx->mbr != NULL ) { // structure or structure member
-                            return( memory_operand( opndx ) );
+                            return( memory_operand( tokbuf, opndx ) );
                         } else {
                             if( IS_ANY_BRANCH( Code->info.token ) ) {  // jumps/call processing
-                                return( process_jumps( opndx, jmp_flags ) );
+                                return( process_jumps( tokbuf, opndx, jmp_flags ) );
                             }
-                            return( idata_operand( opndx ) );
+                            return( idata_operand( tokbuf, opndx ) );
                         }
                         break;
                     default:
                         // direct memory with fixup
-                        return( memory_operand( opndx ) );
+                        return( memory_operand( tokbuf, opndx ) );
                         break;
                     }
                 }
@@ -2170,11 +2129,11 @@ static bool process_address( expr_list *opndx, int *jmp_flags )
 //    return( RC_OK );
 }
 
-static bool process_const( expr_list *opndx, int *jmp_flags )
-/***********************************************************/
+static bool process_const( token_buffer *tokbuf, expr_list *opndx, int *jmp_flags )
+/*********************************************************************************/
 {
     if( IS_ANY_BRANCH( Code->info.token ) )    // jumps/call processing
-        return( process_jumps( opndx, jmp_flags ) );
+        return( process_jumps( tokbuf, opndx, jmp_flags ) );
     if( ( Code->info.token == T_IMUL )
         && ( Code->info.opnd_type[OPND1] & OP_R ) ) {
         if( Opnd_Count == OPND2 ) {
@@ -2190,11 +2149,11 @@ static bool process_const( expr_list *opndx, int *jmp_flags )
             Opnd_Count = OPND2;
         }
     }
-    return( idata_operand( opndx ) );
+    return( idata_operand( tokbuf, opndx ) );
 }
 
-static bool process_reg( expr_list *opndx, int *jmp_flags )
-/*********************************************************/
+static bool process_reg( token_buffer *tokbuf, expr_list *opndx, int *jmp_flags )
+/*******************************************************************************/
 /*
 - parse and encode the register operand;
 */
@@ -2204,8 +2163,8 @@ static bool process_reg( expr_list *opndx, int *jmp_flags )
     const asm_ins       ASMI86FAR *ins;
 
     if( opndx->indirect )  // simple register indirect operand ... [EBX]
-        return( process_address( opndx, jmp_flags ) );
-    ins = AsmOpTable + AsmOpcode[AsmBuffer[opndx->base_reg].u.token].position;
+        return( process_address( tokbuf, opndx, jmp_flags ) );
+    ins = AsmOpTable + AsmOpcode[tokbuf->tokens[opndx->base_reg].u.token].position;
     reg = ins->opcode;
     Code->info.opnd_type[Opnd_Count] = ins->opnd_type2;
     switch( ins->opnd_type2 ) {
@@ -2241,7 +2200,7 @@ static bool process_reg( expr_list *opndx, int *jmp_flags )
         /* fall through */
     case OP_SR:                                 // any seg reg
     case OP_SR2:                                // 8086 segment register
-        if( AsmBuffer[opndx->base_reg].u.token == T_CS ) {
+        if( tokbuf->tokens[opndx->base_reg].u.token == T_CS ) {
             // POP CS is not allowed
             if( Code->info.token == T_POP ) {
                 AsmError( POP_CS_IS_NOT_ALLOWED );
@@ -2262,7 +2221,7 @@ static bool process_reg( expr_list *opndx, int *jmp_flags )
             SET_OPSIZ_ON( Code );
         break;
     case OP_TR:                 // Test registers
-        switch( AsmBuffer[opndx->base_reg].u.token ) {
+        switch( tokbuf->tokens[opndx->base_reg].u.token ) {
         case T_TR3:
         case T_TR4:
         case T_TR5:
@@ -2315,13 +2274,12 @@ static bool process_reg( expr_list *opndx, int *jmp_flags )
     return( RC_OK );
 }
 
-bool AsmParse( const char *curline )
-/**********************************/
-/*
-- co-ordinate the parsing process;
-- it is a basically a big loop to loop through all the tokens and identify them
-  with the switch statement;
-*/
+bool AsmParse( token_buffer *tokbuf, const char *curline )
+/*********************************************************
+ * - co-ordinate the parsing process;
+ * - it is a basically a big loop to loop through all the tokens and identify them
+ *   with the switch statement;
+ */
 {
     token_idx           i;
     bool                cur_opnd_label = false;
@@ -2339,7 +2297,7 @@ bool AsmParse( const char *curline )
 
 #if defined( _STANDALONE_ )
     Code->use32 = Use32;
-    if( proc_check( curline, &flag ) )
+    if( proc_check( tokbuf, curline, &flag ) )
         return( RC_ERROR );
     if( flag )
         return( RC_OK );
@@ -2368,7 +2326,7 @@ bool AsmParse( const char *curline )
     Opnd_Count = 0;
 
     // check if continue initializing array
-    if( NextArrayElement( &flag ) )
+    if( NextArrayElement( tokbuf, &flag ) )
         return( RC_ERROR );
     if( flag )
         return( RC_OK );
@@ -2379,12 +2337,12 @@ bool AsmParse( const char *curline )
     SegOverride = NULL;
 #endif
 
-    for( i = 0; i < Token_Count; i++ ) {
-        switch( AsmBuffer[i].class ) {
+    for( i = 0; i < tokbuf->count; i++ ) {
+        switch( tokbuf->tokens[i].class ) {
         case TC_INSTR:
 //            ExpandTheWorld( i, false, true );
 #if defined( _STANDALONE_ )
-            if( ExpandAllConsts( i, false ) )
+            if( ExpandAllConsts( tokbuf, i, false ) )
                 return( RC_ERROR );
 #endif
             if( last_opnd_label ) {
@@ -2394,15 +2352,15 @@ bool AsmParse( const char *curline )
             }
             cur_opnd_label = false;
 #if defined( _STANDALONE_ )
-            if( ( AsmBuffer[i+1].class == TC_DIRECTIVE )
-                || ( AsmBuffer[i+1].class == TC_COLON ) ) {
+            if( ( tokbuf->tokens[i+1].class == TC_DIRECTIVE )
+                || ( tokbuf->tokens[i+1].class == TC_COLON ) ) {
                 // instruction name is label
-                AsmBuffer[i].class = TC_ID;
+                tokbuf->tokens[i].class = TC_ID;
                 i--;
                 continue;
             }
 #endif
-            switch( AsmBuffer[i].u.token ) {
+            switch( tokbuf->tokens[i].u.token ) {
             // prefix
             case T_LOCK:
             case T_REP:
@@ -2410,9 +2368,9 @@ bool AsmParse( const char *curline )
             case T_REPNE:
             case T_REPNZ:
             case T_REPZ:
-                rCode->prefix.ins = AsmBuffer[i].u.token;
+                rCode->prefix.ins = tokbuf->tokens[i].u.token;
                 // prefix has to be followed by an instruction
-                if( AsmBuffer[i+1].class != TC_INSTR ) {
+                if( tokbuf->tokens[i+1].class != TC_INSTR ) {
                     AsmError( PREFIX_MUST_BE_FOLLOWED_BY_AN_INSTRUCTION );
                     return( RC_ERROR );
                 }
@@ -2421,49 +2379,49 @@ bool AsmParse( const char *curline )
             case T_RET:
                 if( ( CurrProc != NULL ) && !in_epilogue ) {
                     in_epilogue = true;
-                    return( Ret( i, Token_Count, false ) );
+                    return( Ret( tokbuf, i, false ) );
                 }
                 /* fall through */
             case T_RETN:
             case T_RETF:
                 in_epilogue = false;
-                rCode->info.token = AsmBuffer[i].u.token;
+                rCode->info.token = tokbuf->tokens[i].u.token;
                 break;
             case T_IRET:
             case T_IRETD:
                 if( ( CurrProc != NULL ) && !in_epilogue ) {
                     in_epilogue = true;
-                    return( Ret( i, Token_Count, true ) );
+                    return( Ret( tokbuf, i, true ) );
                 }
                 /* fall through */
             case T_IRETF:
             case T_IRETDF:
                 in_epilogue = false;
-                rCode->info.token = AsmBuffer[i].u.token;
+                rCode->info.token = tokbuf->tokens[i].u.token;
                 break;
             case T_CALL:
                 if( Options.mode & MODE_IDEAL ) {
-                    for( n = i + 2; n < Token_Count; n++ ) {
-                        if( !CheckForLang( n, &temp ) ) {
-                            return( expand_call( n + 1, temp ) );
+                    for( n = i + 2; n < tokbuf->count; n++ ) {
+                        if( !CheckForLang( tokbuf, n, &temp ) ) {
+                            return( expand_call( tokbuf, n + 1, temp ) );
                         }
                     }
                 }
                 /* fall through */
 #endif
             default:
-                rCode->info.token = AsmBuffer[i].u.token;
+                rCode->info.token = tokbuf->tokens[i].u.token;
                 break;
             }
             i++;
-            if( EvalOperand( &i, Token_Count, &opndx, true ) ) {
+            if( EvalOperand( tokbuf, &i, tokbuf->count, &opndx, true ) ) {
                 return( RC_ERROR );
             }
             if( opndx.empty )
                 break;
             switch( opndx.type ) {
             case EXPR_ADDR:
-                if( process_address( &opndx, &jmp_flags ) )
+                if( process_address( tokbuf, &opndx, &jmp_flags ) )
                     return( RC_ERROR );
 //                if( jmp_flags == INDIRECT_JUMP )
 //                    return( RC_ERROR );
@@ -2471,10 +2429,10 @@ bool AsmParse( const char *curline )
                     return( RC_OK );
                 break;
             case EXPR_CONST:
-                process_const( &opndx, &jmp_flags );
+                process_const( tokbuf, &opndx, &jmp_flags );
                 break;
             case EXPR_REG:
-                process_reg( &opndx, &jmp_flags );
+                process_reg( tokbuf, &opndx, &jmp_flags );
                 break;
             case EXPR_UNDEF:
                 return( RC_ERROR );
@@ -2486,35 +2444,35 @@ bool AsmParse( const char *curline )
         case TC_RES_ID:
             if( rCode->info.token == T_NULL ) {
                 n = ( i == 0 ) ? INVALID_IDX : 0;
-                return( data_init( n, i ) );
+                return( data_init( tokbuf, n, i ) );
             }
             AsmError( SYNTAX_ERROR );
             return( RC_ERROR );
         case TC_DIRECTIVE:
-            return( directive( i, AsmBuffer[i].u.token ) );
+            return( directive( tokbuf, i, tokbuf->tokens[i].u.token ) );
 #if defined( _STANDALONE_ )
         case TC_DIRECT_EXPR:
             if( Parse_Pass != PASS_1 ) {
                 Modend = true;
                 n = i + 1;
-                if( EvalOperand( &n, Token_Count, &opndx, true ) ) {
+                if( EvalOperand( tokbuf, &n, tokbuf->count, &opndx, true ) ) {
                     return( RC_ERROR );
                 }
                 if( !opndx.empty && ( opndx.type == EXPR_ADDR ) ) {
-                    process_address( &opndx, &jmp_flags );
+                    process_address( tokbuf, &opndx, &jmp_flags );
                 }
             }
-            return( directive( i, AsmBuffer[i].u.token ) );
+            return( directive( tokbuf, i, tokbuf->tokens[i].u.token ) );
             break;
 #endif
         case TC_ID:
 #if defined( _STANDALONE_ )
-            if( !( ( AsmBuffer[i+1].class == TC_DIRECTIVE )
-                && ( ( AsmBuffer[i+1].u.token == T_EQU )
-                || ( AsmBuffer[i+1].u.token == T_EQU2 )
-                || ( AsmBuffer[i+1].u.token == T_TEXTEQU ) ) ) ) {
+            if( !( ( tokbuf->tokens[i+1].class == TC_DIRECTIVE )
+                && ( ( tokbuf->tokens[i+1].u.token == T_EQU )
+                || ( tokbuf->tokens[i+1].u.token == T_EQU2 )
+                || ( tokbuf->tokens[i+1].u.token == T_TEXTEQU ) ) ) ) {
                 bool expanded;
-                if( ExpandSymbol( i, false, &expanded ) )
+                if( ExpandSymbol( tokbuf, i, false, &expanded ) )
                     return( RC_ERROR );
                 if( expanded ) {
                     // restart token processing
@@ -2532,16 +2490,16 @@ bool AsmParse( const char *curline )
             if( i == 0 ) {   // a new label
 #if ALLOW_STRUCT_INIT
 #if defined( _STANDALONE_ )
-                if( IsLabelStruct( AsmBuffer[i].string_ptr )
-                    && ( AsmBuffer[i+1].class != TC_DIRECTIVE ) ) {
-                    AsmBuffer[i].class = TC_DIRECTIVE;
-                    AsmBuffer[i].u.token = T_STRUCT;
-                    return( data_init( INVALID_IDX, 0 ) );
+                if( IsLabelStruct( tokbuf->tokens[i].string_ptr )
+                    && ( tokbuf->tokens[i+1].class != TC_DIRECTIVE ) ) {
+                    tokbuf->tokens[i].class = TC_DIRECTIVE;
+                    tokbuf->tokens[i].u.token = T_STRUCT;
+                    return( data_init( tokbuf, INVALID_IDX, 0 ) );
                 }
 #endif
 #endif
 
-                switch( AsmBuffer[i+1].class ) {
+                switch( tokbuf->tokens[i+1].class ) {
                 case TC_COLON:
                     cur_opnd_label = true;
                     break;
@@ -2549,9 +2507,9 @@ bool AsmParse( const char *curline )
 #if defined( _STANDALONE_ )
                 case TC_ID:
                     /* structure declaration */
-                    if( IsLabelStruct( AsmBuffer[i+1].string_ptr ) ) {
-                        AsmBuffer[i+1].class = TC_DIRECTIVE;
-                        AsmBuffer[i+1].u.token = T_STRUCT;
+                    if( IsLabelStruct( tokbuf->tokens[i+1].string_ptr ) ) {
+                        tokbuf->tokens[i+1].class = TC_DIRECTIVE;
+                        tokbuf->tokens[i+1].u.token = T_STRUCT;
                     } else {
                         AsmError( SYNTAX_ERROR );
                         return( RC_ERROR );
@@ -2560,11 +2518,11 @@ bool AsmParse( const char *curline )
 #endif
 #endif
                 case TC_RES_ID:
-                    return( data_init( i, i+1 ) );
+                    return( data_init( tokbuf, i, i+1 ) );
                     break;
 #if defined( _STANDALONE_ )
                 case TC_DIRECTIVE:
-                    return( directive( i+1, AsmBuffer[i+1].u.token ) );
+                    return( directive( tokbuf, i+1, tokbuf->tokens[i+1].u.token ) );
                     break;
 #endif
                 default:
@@ -2584,14 +2542,14 @@ bool AsmParse( const char *curline )
             Frame = NULL;
             SegOverride = NULL;
 #endif
-            if( EvalOperand( &i, Token_Count, &opndx, true ) ) {
+            if( EvalOperand( tokbuf, &i, tokbuf->count, &opndx, true ) ) {
                 return( RC_ERROR );
             }
             Opnd_Count++;
             if( opndx.empty ) {
-                if( AsmBuffer[i].class == TC_FLOAT
-                    || AsmBuffer[i].class == TC_MINUS
-                    || AsmBuffer[i].class == TC_PLUS ) {
+                if( tokbuf->tokens[i].class == TC_FLOAT
+                    || tokbuf->tokens[i].class == TC_MINUS
+                    || tokbuf->tokens[i].class == TC_PLUS ) {
                     i--;
                     continue;
                 }
@@ -2603,7 +2561,7 @@ bool AsmParse( const char *curline )
                     if( opndx.type == EXPR_CONST ) {
                         Opnd_Count--;
                     } else if( opndx.type == EXPR_REG ) {
-                        if( AsmBuffer[opndx.base_reg].u.token == T_CL ) {
+                        if( tokbuf->tokens[opndx.base_reg].u.token == T_CL ) {
                             Opnd_Count--;
                             i--;
                             break;
@@ -2613,7 +2571,7 @@ bool AsmParse( const char *curline )
             }
             switch( opndx.type ) {
             case EXPR_ADDR:
-                if( process_address( &opndx, &jmp_flags ) )
+                if( process_address( tokbuf, &opndx, &jmp_flags ) )
                     return( RC_ERROR );
 //                if( jmp_flags == INDIRECT_JUMP )
 //                    return( RC_ERROR );
@@ -2621,10 +2579,10 @@ bool AsmParse( const char *curline )
                     return( RC_OK );
                 break;
             case EXPR_CONST:
-                process_const( &opndx, &jmp_flags );
+                process_const( tokbuf, &opndx, &jmp_flags );
                 break;
             case EXPR_REG:
-                process_reg( &opndx, &jmp_flags );
+                process_reg( tokbuf, &opndx, &jmp_flags );
                 break;
             case EXPR_UNDEF:
                 return( RC_ERROR );
@@ -2635,8 +2593,8 @@ bool AsmParse( const char *curline )
             break;
         case TC_COLON:
             if( last_opnd_label ) {
-                if( AsmBuffer[i+1].class != TC_RES_ID ) {
-                    if( MakeLabel( AsmBuffer[i-1].string_ptr, MT_NEAR ) ) {
+                if( tokbuf->tokens[i+1].class != TC_RES_ID ) {
+                    if( MakeLabel( tokbuf, i - 1, MT_NEAR ) ) {
                          return( RC_ERROR );
                     }
                 }
@@ -2650,10 +2608,10 @@ bool AsmParse( const char *curline )
         case TC_MINUS:
             break;
         case TC_FLOAT:
-            if( idata_float( AsmBuffer[i].u.value ) ) {
+            if( idata_float( tokbuf->tokens[i].u.value ) ) {
                 return( RC_ERROR );
             }
-            if( AsmBuffer[i-1].class == TC_MINUS ) {
+            if( tokbuf->tokens[i-1].class == TC_MINUS ) {
                 rCode->data[Opnd_Count] ^= 0x80000000;
             }
 #if defined( _STANDALONE_ )
@@ -3091,8 +3049,8 @@ static bool check_size( void )
 
 #if !defined( _STANDALONE_ )
 
-void AsmInit( int use32, int cpu, int fpu, bool fpu_emu )
-/*******************************************************/
+void AsmEnvInit( int use32, int cpu, int fpu, bool fpu_emu )
+/**********************************************************/
 {
     Code->use32 = ( use32 != 0 );
     switch( cpu ) {
@@ -3104,9 +3062,9 @@ void AsmInit( int use32, int cpu, int fpu, bool fpu_emu )
     case 5: Code->info.cpu = P_586p | P_K3D | P_MMX; break;
     case 6: Code->info.cpu = P_686p | P_K3D | P_MMX | P_SSE | P_SSE2 | P_SSE3; break;
     }
-    floating_point = ( fpu_emu ) ? DO_FP_EMULATION : NO_FP_EMULATION;
+    SWData.fpt = ( fpu_emu ) ? DO_FP_EMULATION : NO_FP_EMULATION;
     switch( fpu ) {
-    case 0: floating_point = NO_FP_ALLOWED; break;
+    case 0: SWData.fpt = NO_FP_ALLOWED; break;
     case 1: Code->info.cpu |= P_87;  break;
     case 2: Code->info.cpu |= P_287; break;
     case 3: Code->info.cpu |= P_387; break;
@@ -3115,13 +3073,17 @@ void AsmInit( int use32, int cpu, int fpu, bool fpu_emu )
 
 static enum asm_cpu CPUinfo;
 
-void AsmSaveCPUInfo( void )
+void AsmInit( void )
+/******************/
 {
     CPUinfo = Code->info.cpu;
+    AsmSymInit();
 }
 
-void AsmRestoreCPUInfo( void )
+void AsmFini( void )
+/******************/
 {
+    AsmSymFini();
     Code->info.cpu = CPUinfo;
 }
 

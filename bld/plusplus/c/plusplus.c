@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -55,21 +55,19 @@
 #include "cgback.h"
 #include "cusage.h"
 #include "brinfo.h"
-#include "errout.h"
 #include "autodep.h"
 #include "swchar.h"
 #include "ialias.h"
 #include "ideentry.h"
 #include "pathgrp2.h"
-#ifndef NDEBUG
+#ifdef DEVBUILD
     #include "dbg.h"
     #include "pragdefn.h"
-    #include "enterdb.h"
     #include "togglesd.h"
 #endif
 
-#include "clibext.h"
 #include "clibint.h"
+#include "clibext.h"
 
 
 #define DEFAULT_PREINCLUDE_FILE     "_preincl.h"
@@ -125,7 +123,7 @@ static void MakePgmName(        // MAKE CANONICAL FILE NAME
     _splitpath2( argv, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
     SrcFName = FNameAdd( pg.fname );
     if( ModuleName == NULL ) {
-        ModuleName = strsave( SrcFName );
+        ModuleName = CMemStrDup( SrcFName );
     }
 }
 
@@ -219,11 +217,7 @@ static void setForceIncludeFromEnv( void )
     const char  *force;
 
     force = CppGetEnv( "FORCE" );
-    if( force != NULL ) {
-        ForceInclude = strsave( force );
-    } else {
-        ForceInclude = NULL;
-    }
+    ForceInclude = CMemStrDup( force );
 }
 
 static bool openForcePreIncludeFile( void )
@@ -242,7 +236,7 @@ static bool openForcePreIncludeFile( void )
 
 static void setForcePreInclude( void )
 {
-    ForcePreInclude = strsave( DEFAULT_PREINCLUDE_FILE );
+    ForcePreInclude = CMemStrDup( DEFAULT_PREINCLUDE_FILE );
 }
 
 static int doCCompile(          // COMPILE C++ PROGRAM
@@ -353,7 +347,7 @@ static int doCCompile(          // COMPILE C++ PROGRAM
                 CtxSetCurrContext( CTX_ENDFILE );
                 ModuleInitFini();
                 ScopeEndFileScope();
-#ifndef NDEBUG
+#ifdef DEVBUILD
                 if( TOGGLEDBG( dump_scopes ) ) {
                     DumpScopes();
                 }
@@ -405,7 +399,6 @@ static void initCompFlags( void )
         boolbit     ignore_current_dir      : 1;
         boolbit     ide_cmd_line_has_files  : 1;
         boolbit     ide_console_output      : 1;
-        boolbit     dll_active              : 1;
     } xfer_flags;
 
     #define __save_flag( x ) xfer_flags.x = CompFlags.x;
@@ -415,13 +408,11 @@ static void initCompFlags( void )
     __save_flag( ignore_current_dir );
     __save_flag( ide_cmd_line_has_files );
     __save_flag( ide_console_output );
-    __save_flag( dll_active );
     memset( &CompFlags, 0, sizeof( CompFlags ) );
     __restore_flag( ignore_environment );
     __restore_flag( ignore_current_dir );
     __restore_flag( ide_cmd_line_has_files );
     __restore_flag( ide_console_output );
-    __restore_flag( dll_active );
     CompFlags.dll_subsequent = true;
     CompFlags.banner_printed = true;
 
@@ -452,7 +443,7 @@ static int front_end(           // FRONT-END PROCESSING
         ExitPointAcquire( cpp );
         if( CompFlags.ide_console_output ) {
             IoSuppSetLineBuffering( stdout, 256 );
-            IoSuppSetLineBuffering( errout, 256 );
+            IoSuppSetLineBuffering( stderr, 256 );
 #if defined(__DOS__)
             if( !CompFlags.dll_subsequent ) {
                 SrcFileFClose( stdaux );
@@ -471,9 +462,10 @@ static int front_end(           // FRONT-END PROCESSING
     } else {
         exit_status = makeExitStatus( WPP_FATAL );
     }
-#if defined( __WATCOMC__ )
-    DbgStmt( if( DEBUG_PRESENT_NAME ) \
-                 __trap() );
+#ifdef DEVBUILD
+  #if defined( __WATCOMC__ )
+    CheckEnterDebugger();
+  #endif
 #endif
     return( exit_status );
 }
@@ -535,7 +527,7 @@ static int compilePrimaryCmd(   // COMPILE PRIMARY CMD LINE
 }
 
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 #define ZAP_NUM 20
 #define ZAP_SIZE 1024
 #define ZAP_CHAR 0xA7
@@ -579,7 +571,7 @@ int WppCompile(                 // MAIN-LINE (DLL)
     stackZap();
     InitFiniStartup( &exitPointStart );
     ExitPointAcquire( mem_management );
-#ifndef NDEBUG
+#ifdef DEVBUILD
     DbgHeapInit();
 #endif
     if( dll_data->cmd_line != NULL ) {
@@ -631,7 +623,7 @@ int WppCompile(                 // MAIN-LINE (DLL)
             exit_status = WPP_FATAL;
         }
     }
-#ifndef NDEBUG
+#ifdef DEVBUILD
     DbgHeapFini();
 #endif
     ExitPointRelease( mem_management );

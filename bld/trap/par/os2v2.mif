@@ -1,4 +1,0 @@
-
-extra_linker = &
-    imp OUTPUT_PORT wdio.OUTPORT, INPUT_PORT wdio.INPORT &
-    imp DOSPORTACCESS DOSCALLS.69

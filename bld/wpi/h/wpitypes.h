@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2016-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2016-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -747,7 +747,6 @@ typedef struct {
     #define WPI_VERT_MULT               1
     #define ULONG                       unsigned long
     #define NULLHANDLE                  ((HANDLE)0)
-    #define HFILE                       int
     #define HFILE_FORMAT                int
     #define HMQ                         HANDLE
     #define DLGID_OK                    IDOK

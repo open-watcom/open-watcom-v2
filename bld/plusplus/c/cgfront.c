@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,7 +48,7 @@
 #include "fnbody.h"
 #include "tgtenv.h"
 #include "compinfo.h"
-#ifndef NDEBUG
+#ifdef DEVBUILD
     #include "pragdefn.h"
     #include "togglesd.h"
 #endif
@@ -77,7 +77,7 @@ static struct {                  // FLAGS FOR CGFRONT
     unsigned init_data_end   :1; // - init-data-end required
 } flags;
 
-#ifndef NDEBUG
+#ifdef DEVBUILD
 static void cgfront_debug(      // DEBUGGING ROUTINE
     char *str )                 // - prefix
 {
@@ -94,7 +94,7 @@ static void cgfront_debug(      // DEBUGGING ROUTINE
 
 
 // function macros
-#ifndef NDEBUG
+#ifdef DEVBUILD
 static void cgWriteIC( CGFILE *f, CGINTER *i )
 {
     CgioWriteIC( f, i );
@@ -311,7 +311,7 @@ void CgFrontDbgLine(            // SET LINE FOR DEBUGGING
 
     gen = getGenData();
     emitSourcePosn( gen, posn );
-#ifndef NDEBUG
+#ifdef DEVBUILD
     if( TOGGLEDBG( dump_tokens ) || TOGGLEDBG( dump_emit_ic ) ) {
         printf( "CgFrontDbgLine: %d\n", posn->line );
     }
@@ -862,13 +862,17 @@ static void cgfrontInit(        // INITIALIZE FOR FRONT-END CODE GENERATION
     /* unused parameters */ (void)defn;
 
     if( *TextSegName == '\0' ) {
+#if _INTEL_CPU
         if( IsBigCode() ) {
             stxpcpy( stxpcpy( seg_name, ModuleName ), TS_SEG_CODE );
         } else {
             stxpcpy( seg_name, TS_SEG_CODE );
         }
+#else /* _RISC_CPU */
+        stxpcpy( seg_name, TS_SEG_CODE );
+#endif
         CMemFree( TextSegName );
-        TextSegName = strsave( seg_name );
+        TextSegName = CMemStrDup( seg_name );
     }
     SegmentInit( TextSegName );
     codeCGFILE = NULL;
