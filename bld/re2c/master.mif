@@ -43,4 +43,4 @@ yacc_options = -d -db -de
 
 ytab.c ytab.h : ../h/parser.y ../c/yydriver.c
     @%make echo_yacc
-    $(yacc) $(yacc_options) $< >y.out
+    $(noecho)yacc $(yacc_options) $< >y.out

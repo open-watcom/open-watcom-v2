@@ -95,7 +95,7 @@ ntmanif.res : ../res/ntmanif.rc
 
 rcstr.grh : rcstrmsg.gh $(__MAKEFILES__)
     @%make echo_awk
-    $(awk) -f $(build_dir)/msgtoh.awk -v OUTFILE=$^. $[@
+    $(noecho)*awk -f $(build_dir)/msgtoh.awk -v OUTFILE=$^. $[@
 
 rcstrmsg.gh : $(vi_dir)/res/vi.msg $(vi_dir)/res/tooltips.msg ../h/langdef.h $(msgfiles) $(__MAKEFILES__)
     @%make echo_cpp
@@ -120,7 +120,7 @@ setfs.gdh setgen.gdh: $(__MAKEFILES__)
 
 $(error_dat) : ../h/_errs1.h ../h/_errs.h
     @%make echo_awk
-    $(awk) -f ../makedat.awk -v OUTFILE=$(error_dat) $< $<
+    $(noecho)*awk -f ../makedat.awk -v OUTFILE=$(error_dat) $< $<
 
 edbind_data : .PROCEDURE .EXPLICIT
     $(noecho)%create edbind.tmp

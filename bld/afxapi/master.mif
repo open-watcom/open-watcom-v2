@@ -333,7 +333,7 @@ afx.h: afx.mh $(crwatpro_gsp)
     @%make echo_wsplice
     $(noecho)*wsplice -i"$(hdr_dir)" $[@ tmp.h
     @%make echo_awk
-    $(awk) -f ../dobldver.awk -v bld_ver=$(bld_ver) -v OUTFILE=afx.h tmp.h
+    $(noecho)*awk -f ../dobldver.awk -v bld_ver=$(bld_ver) -v OUTFILE=afx.h tmp.h
     @rm tmp.h
 
 $(libname).lib: $(objs) $(static_objs) $(__MAKEFILES__)
@@ -343,7 +343,8 @@ $(libname).lib: $(objs) $(static_objs) $(__MAKEFILES__)
 $(intname).lib: $(objs) $(__MAKEFILES__)
     @%make echo_lib
     $(librarian) -z=tmp.gdf $(libflags) $(objs)
-    $(sed) -f $(lib_misc_dir)/sed/export.sed tmp.gdf > tmp2.gdf
+    @%make echo_sed
+    $(noecho)sed -f $(lib_misc_dir)/sed/export.sed tmp.gdf > tmp2.gdf
     sort < tmp2.gdf > tmp3.gdf
     uniq tmp3.gdf > export.gdf
     @rm tmp.gdf
@@ -376,4 +377,5 @@ $(dllname).res: ../h/owf.rc $(__MAKEFILES__) .AUTODEPEND
     $(rc) $(rc_flags) -ad -zk0 $(inc_path) -I"../include" $[@ -fo=$@
 
 .sp.gsp:
-    $(awk) -f $(hdr_dir)/cpyyear.awk -v CPYYEAR=$(curr_year) -v OUTFILE=$@ $[@
+    @%make echo_awk
+    $(noecho)*awk -f $(hdr_dir)/cpyyear.awk -v CPYYEAR=$(curr_year) -v OUTFILE=$@ $[@

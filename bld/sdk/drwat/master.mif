@@ -119,7 +119,7 @@ ntmanif.res : ../res/nt/ntmanif.rc
 
 rcstr.grh : rcstrmsg.gh
     @%make echo_awk
-    $(awk) -f $(build_dir)/msgtoh.awk -v OUTFILE=$^. $[@
+    $(noecho)*awk -f $(build_dir)/msgtoh.awk -v OUTFILE=$^. $[@
 
 rcstrmsg.gh : ../res/$(host_os)/drwatcom.msg
     @%make echo_cpp

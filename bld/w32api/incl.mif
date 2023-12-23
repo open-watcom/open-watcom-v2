@@ -488,7 +488,8 @@ h/winresrc.h: winresrc.mh
     $(noecho)*wsplice $(wsplice_opts_r)
 
 .sp.gsp:
-    $(awk) -f $(hdr_dir)/cpyyear.awk -v CPYYEAR=$(curr_year) -v OUTFILE=$@ $[@
+    @%make echo_awk
+    $(noecho)*awk -f $(hdr_dir)/cpyyear.awk -v CPYYEAR=$(curr_year) -v OUTFILE=$@ $[@
 
 $(dirs):
     mkdir $@

@@ -68,14 +68,7 @@ bld_cc          = $(bcc) $(bld_cc_sys) $(bld_incs)
 bld_cl          = $(bcl) $(bld_cc_sys) $(bld_cl_sys) $(bld_incs)
 bld_lib         = $(blib) $(bld_libflags)
 
-awk             = $(noecho)*awk
 cpp             = $(noecho)*wcpp $(ppflags_bldver)
-msgencod        = $(noecho)*msgencod -q
-optencod        = $(noecho)*optencod -q
-re2c            = $(noecho)re2c
-sed             = $(noecho)sed
-yacc            = $(noecho)yacc
-tr              = $(noecho)tr
 
 echo_as : .PROCEDURE .EXPLICIT
 !ifeq verbose 0

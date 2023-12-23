@@ -106,4 +106,4 @@ libtarg_libs = $(wpi_lib) $(commonui_lib)
 #
 guimsgs.grh : ../../h/gui.msg
     @%make echo_awk
-    $(awk) -v prefix=GUI_LITERAL_ -v base=GUI_LITERAL_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@
+    $(noecho)*awk -v prefix=GUI_LITERAL_ -v base=GUI_LITERAL_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@

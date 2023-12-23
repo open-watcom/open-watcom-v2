@@ -77,7 +77,7 @@ $(proj_name).res: ../res/$(proj_name).rc $(__MAKEFILES__) .AUTODEPEND
 
 rcstr.grh: rcstrmsg.gh $(__MAKEFILES__)
     @%make echo_awk
-    $(awk) -f $(build_dir)/msgtoh.awk -v OUTFILE=$^. $[@
+    $(noecho)*awk -f $(build_dir)/msgtoh.awk -v OUTFILE=$^. $[@
 
 rcstrmsg.gh: ../res/$(proj_name).msg $(__MAKEFILES__)
     @%make echo_cpp

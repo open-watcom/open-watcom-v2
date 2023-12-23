@@ -47,4 +47,4 @@ dtparse.obj : msg.gh
 
 msg.gh : $(wtouch_dir)/wtouch.msg
     @%make echo_awk
-    $(awk) -v base=MSG_RC_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@
+    $(noecho)*awk -v base=MSG_RC_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@

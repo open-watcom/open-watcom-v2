@@ -81,7 +81,7 @@ wresui.res : ../h/$(proj_name).rc
 
 wompmsg.gh : ../womp.msg
     @%make echo_awk
-    $(awk) -v base=MSG_RC_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@
+    $(noecho)*awk -v base=MSG_RC_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@
 
 usage.gh : ../usage.sp
     @%make echo_wsplice

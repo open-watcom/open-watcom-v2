@@ -17,4 +17,5 @@ pgchart.gh : $(pgchart_deps)
     $(noecho)*wsplice -i$(hdr_dir) -kINTERNAL $(wsplice_opts) common.sp $[@ $@
 
 {$(hdr_dir)}.sp.gsp:
-    $(awk) -f $(hdr_dir)/cpyyear.awk -v CPYYEAR=$(curr_year) -v OUTFILE=$@ $[@
+    @%make echo_awk
+    $(noecho)*awk -f $(hdr_dir)/cpyyear.awk -v CPYYEAR=$(curr_year) -v OUTFILE=$@ $[@

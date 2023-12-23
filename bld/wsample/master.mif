@@ -197,7 +197,7 @@ wsample.gh : ../h/wsample.msg $(__MAKEFILES__)
 
 wsample.grh : wsample.gh $(__MAKEFILES__)
     @%make echo_awk
-    $(awk) -v base=MSG_RC_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@
+    $(noecho)*awk -v base=MSG_RC_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@
 
 except.gh : ../h/except.msg $(__MAKEFILES__)
     @%make echo_cpp
@@ -205,7 +205,7 @@ except.gh : ../h/except.msg $(__MAKEFILES__)
 
 except.grh : except.gh $(__MAKEFILES__)
     @%make echo_awk
-    $(awk) -v base=MSG_EXC_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@
+    $(noecho)*awk -v base=MSG_EXC_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@
 
 ./mknver.exe: $(watcom_dir)/c/mknver.c $(watcom_dir)/h/banner.h $(__MAKEFILES__)
     @%make echo_bldcl
@@ -225,4 +225,4 @@ optencod_targets += dbg
 
 usage.gh $(exetarg_$(host_os)_res) : ../h/options.gml $(__MAKEFILES__)
     @%make echo_optencod
-    $(optencod) -rc=MSG_USAGE_BASE -utf8 $(optencod_opt_$(host_os)) $[@ . . $@ $(optencod_targets)
+    $(noecho)*optencod -q -rc=MSG_USAGE_BASE -utf8 $(optencod_opt_$(host_os)) $[@ . . $@ $(optencod_targets)

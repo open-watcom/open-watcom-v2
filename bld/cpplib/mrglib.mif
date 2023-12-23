@@ -19,7 +19,8 @@ $(target_lib) : $(libs) $(__MAKEFILES__)
     @%make echo_lib
     $(librarian) $(plib_lib_flags) $(plib_linkage_flags) $@ @$^&.lbc
 !ifeq linkage dynamic
-    $(sed) -f $(lib_misc_dir)/sed/export.sed export.tmp > export.gdf
+    @%make echo_sed
+    $(noecho)sed -f $(lib_misc_dir)/sed/export.sed export.tmp > export.gdf
 !endif
 
 $(target_lib_x) : $(libsx) $(__MAKEFILES__)
@@ -30,5 +31,6 @@ $(target_lib_x) : $(libsx) $(__MAKEFILES__)
     @%make echo_lib
     $(librarian) $(plib_lib_flags) $(plibx_linkage_flags) $@ @$^&.lbc
 !ifeq linkage dynamic
-    $(sed) -f $(lib_misc_dir)/sed/export.sed exportx.tmp > exportx.gdf
+    @%make echo_sed
+    $(noecho)sed -f $(lib_misc_dir)/sed/export.sed exportx.tmp > exportx.gdf
 !endif

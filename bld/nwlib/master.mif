@@ -177,7 +177,7 @@ wresui.res : ../wlib.rc ../wlib.msg msg.grh $(__MAKEFILES__)
 
 msg.grh :  ../wlib.msg $(__MAKEFILES__)
     @%make echo_awk
-    $(awk) -v base=MSG_RC_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@
+    $(noecho)*awk -v base=MSG_RC_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@
 
 !ifdef exetarg_qnx_res
 optencod_opt_qnx    = -u=$(exetarg_qnx_res)
@@ -189,8 +189,8 @@ optencod_targets += dbg
 
 usagew.gh $(exetarg_qnx_res) : ../optionsw.gml $(__MAKEFILES__)
     @%make echo_optencod
-    $(optencod) -rc=MSG_USAGE_WLIB_BASE -utf8 $(optencod_opt_$(host_os)) $[@ . . $@ $(optencod_targets)
+    $(noecho)*optencod -q -rc=MSG_USAGE_WLIB_BASE -utf8 $(optencod_opt_$(host_os)) $[@ . . $@ $(optencod_targets)
 
 usagea.gh : ../optionsa.gml $(__MAKEFILES__)
     @%make echo_optencod
-    $(optencod) -rc=MSG_USAGE_AR_BASE -utf8 $[@ . . $@ $(optencod_targets)
+    $(noecho)*optencod -q -rc=MSG_USAGE_AR_BASE -utf8 $[@ . . $@ $(optencod_targets)

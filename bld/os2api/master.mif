@@ -86,10 +86,12 @@ all : $(dirs) $(hdrs$(targ_cpu)) $(libs$(targ_cpu)) .SYMBOLIC
     $(noecho)*wsplice $(wsplice_opts)
 
 .sp.gsp:
-    $(awk) -f $(hdr_dir)/cpyyear.awk -v CPYYEAR=$(curr_year) -v OUTFILE=$@ $[@
+    @%make echo_awk
+    $(noecho)*awk -f $(hdr_dir)/cpyyear.awk -v CPYYEAR=$(curr_year) -v OUTFILE=$@ $[@
 
 .def.lbc: $(__MAKEFILES__)
-    $(sed) -f ../def2lbc.sed $(lib_dir_$(targ_cpu))/$[. > $@
+    @%make echo_sed
+    $(noecho)sed -f ../def2lbc.sed $(lib_dir_$(targ_cpu))/$[. > $@
 
 .lbc.lib: $(__MAKEFILES__)
     @%make echo_lib

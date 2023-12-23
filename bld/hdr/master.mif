@@ -126,7 +126,8 @@ all : $($(system)_dirs) $($(system)_files) .symbolic
     $(noecho)*wsplice $(wsplice_opts)
 
 .sp.gsp:
-    $(awk) -f $(hdr_dir)/cpyyear.awk -v CPYYEAR=$(curr_year) -v OUTFILE=$@ $[@
+    @%make echo_awk
+    $(noecho)*awk -f $(hdr_dir)/cpyyear.awk -v CPYYEAR=$(curr_year) -v OUTFILE=$@ $[@
 
 #
 # Handle C++ and cname style headers (files without extension)

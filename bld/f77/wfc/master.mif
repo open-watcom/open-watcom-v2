@@ -119,7 +119,7 @@ xcode$(target_cpu).tmp: $(f77wfc_dir)/a/code$(target_cpu).asm
 
 wfcmsgs.gh wfcmsgs.grh wfcgrps.gh wfcattrs.gh : $(f77wfc_dir)/gml/wfcmsgs.gml
     @%make echo_msgencod
-    $(msgencod) -s -ip -rc=MSG_LANG_BASE -utf8 $(msgencod_enc_$(host_os)) $[@ wfcmsgs.gh wfcmsgs.grh wfcgrps.gh wfcattrs.gh
+    $(noecho)*msgencod -q -s -ip -rc=MSG_LANG_BASE -utf8 $(msgencod_enc_$(host_os)) $[@ wfcmsgs.gh wfcmsgs.grh wfcgrps.gh wfcattrs.gh
 
 # .gh options and targets for various hosts
 !ifdef exetarg_qnx_res
@@ -133,4 +133,4 @@ optencod_targets += dbg
 
 usage.gh $(exetarg_$(host_os)_res) : $(f77_dir)/gml/wfxopts.gml $(__MAKEFILES__)
     @%make echo_optencod
-    $(optencod) -rc=MSG_USAGE_BASE -utf8 $(optencod_opt_$(host_os)) $[@ . . $@ $(optencod_targets)
+    $(noecho)*optencod -q -rc=MSG_USAGE_BASE -utf8 $(optencod_opt_$(host_os)) $[@ . . $@ $(optencod_targets)

@@ -104,7 +104,7 @@ libtarg_name = $(name)
 #
 uistr.grh : uistrmsg.gh
     @%make echo_awk
-    $(awk) -f $(build_dir)/msgtoh.awk -v rcbase=10000 -v basename=MSG_CUI_BASE -v OUTFILE=$^. $[@
+    $(noecho)*awk -f $(build_dir)/msgtoh.awk -v rcbase=10000 -v basename=MSG_CUI_BASE -v OUTFILE=$^. $[@
 
 uistrmsg.gh : ../res/commonui.msg
     @%make echo_cpp

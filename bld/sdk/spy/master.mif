@@ -112,7 +112,7 @@ ntmanif.res : ../res/ntmanif.rc
 
 rcstr.grh : rcstrmsg.gh $(__MAKEFILES__)
     @%make echo_awk
-    $(awk) -f $(build_dir)/msgtoh.awk -v OUTFILE=$^. $[@
+    $(noecho)*awk -f $(build_dir)/msgtoh.awk -v OUTFILE=$^. $[@
 
 rcstrmsg.gh : ../res/spy.msg $(__MAKEFILES__)
     @%make echo_cpp

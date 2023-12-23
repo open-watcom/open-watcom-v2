@@ -206,7 +206,7 @@ xcode$(target_cpu).tmp: ../../a/code$(target_cpu).asm
 
 msgtxt.gh msgdefs.gh msgattr.gh errors01.int : ../../gml/cerrs.gml
     @%make echo_msgencod
-    $(msgencod) -s -i -ip -g $(msgencod_enc_$(host_os)) ../../gml/cerrs.gml msgtxt.gh msgdefs.gh msgattr.gh .
+    $(noecho)*msgencod -q -s -i -ip -g $(msgencod_enc_$(host_os)) ../../gml/cerrs.gml msgtxt.gh msgdefs.gh msgattr.gh .
 
 ./intlbin.exe: $(fe_misc_dir)/c/intlbin.c
     @%make echo_bldcl
@@ -233,4 +233,4 @@ optencod_targets += dbg
 
 cmdlnprs.gh cmdlnprs.gc usage.gh usage01.int $(exetarg_$(host_os)_res): ../../gml/options.gml
     @%make echo_optencod
-    $(optencod) -i -n $(optencod_opt_$(host_os)) $(optencod_enc_$(host_os)) $]@ cmdlnprs.gh cmdlnprs.gc usage.gh $(optencod_targets)
+    $(noecho)*optencod -q -i -n $(optencod_opt_$(host_os)) $(optencod_enc_$(host_os)) $]@ cmdlnprs.gh cmdlnprs.gc usage.gh $(optencod_targets)

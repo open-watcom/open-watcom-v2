@@ -123,9 +123,9 @@ graph.lib : $(clibdir) tmp.lib $(__MAKEFILES__)
     $(noecho)objfind -i=ref.tmp $(clibdir) >modc.tmp
   # extract all modules from clib which are referenced from graph.lib
 !ifdef __UNIX__
-    $(awk) -v host=unix -f ../fix1.awk -v OUTFILE=clibget.lbc modc.tmp
+    $(noecho)*awk -v host=unix -f ../fix1.awk -v OUTFILE=clibget.lbc modc.tmp
 !else
-    $(awk) -v host= -f ../fix1.awk -v OUTFILE=clibget.lbc modc.tmp
+    $(noecho)*awk -v host= -f ../fix1.awk -v OUTFILE=clibget.lbc modc.tmp
 !endif
     $(librarian) -b $(clibdir) @clibget.lbc
   # get all public symbols in extracted modules from clib, fsmath and dummy
@@ -146,9 +146,9 @@ graph.lib : $(clibdir) tmp.lib $(__MAKEFILES__)
   # extract all modules from graph.lib library, use alias for 8.3 format
     $(noecho)objlist tmp.lib >modg.tmp
 !ifdef __UNIX__
-    $(awk) -v host=unix -f ../fix2.awk -v OUTFILE=extract.lbc modg.tmp
+    $(noecho)*awk -v host=unix -f ../fix2.awk -v OUTFILE=extract.lbc modg.tmp
 !else
-    $(awk) -v host= -f ../fix2.awk -v OUTFILE=extract.lbc modg.tmp
+    $(noecho)*awk -v host= -f ../fix2.awk -v OUTFILE=extract.lbc modg.tmp
 !endif
     $(librarian) -b tmp.lib @extract.lbc
   # modify modules as needed
@@ -173,9 +173,9 @@ graph2.lib : $(clibdir) tmp2.lib
     $(noecho)objfind -i=ref2.tmp $(clibdir) >modc2.tmp
   # extract all modules from clib which are referenced from graph.lib
 !ifdef __UNIX__
-    $(awk) -v host=unix -f ../fix1.awk -v OUTFILE=clibget2.lbc modc2.tmp
+    $(noecho)*awk -v host=unix -f ../fix1.awk -v OUTFILE=clibget2.lbc modc2.tmp
 !else
-    $(awk) -v host= -f ../fix1.awk -v OUTFILE=clibget2.lbc modc2.tmp
+    $(noecho)*awk -v host= -f ../fix1.awk -v OUTFILE=clibget2.lbc modc2.tmp
 !endif
     $(librarian) -b $(clibdir) @clibget2.lbc
   # get all public symbols in extracted modules from clib, fsmath and dummy
@@ -196,9 +196,9 @@ graph2.lib : $(clibdir) tmp2.lib
   # extract all modules from graph.lib library, use alias for 8.3 format
     $(noecho)objlist tmp2.lib >modg2.tmp
 !ifdef __UNIX__
-    $(awk) -v host=unix -f ../fix2.awk -v OUTFILE=extract2.lbc modg2.tmp
+    $(noecho)*awk -v host=unix -f ../fix2.awk -v OUTFILE=extract2.lbc modg2.tmp
 !else
-    $(awk) -v host= -f ../fix2.awk -v OUTFILE=extract2.lbc modg2.tmp
+    $(noecho)*awk -v host= -f ../fix2.awk -v OUTFILE=extract2.lbc modg2.tmp
 !endif
     $(librarian) -b tmp2.lib @extract2.lbc
   # modify modules as needed

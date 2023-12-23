@@ -106,13 +106,13 @@ $(proj_name).res: ../res/wr.rc $(__MAKEFILES__) .AUTODEPEND
 
 rcmsg.grh :  $(wrc_dir)/h/rc.msg $(__MAKEFILES__)
     @%make echo_awk
-    $(awk) -v base=MSG_RC_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@
+    $(noecho)*awk -v base=MSG_RC_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@
 
 wrmsg.grh: ../res/wr.msg $(__MAKEFILES__)
-    @%make echo_cpp
-    $(awk) -v base=MSG_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@
+    @%make echo_awk
+    $(noecho)*awk -v base=MSG_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@
 
 $(win_yacc_file).h : $(wrc_dir)/y/rcwin.y $(wrc_dir)/y/yydrivrw.c $(wrc_dir)/h/rcmem.h $(__MAKEFILES__)
     @%make echo_yacc
-    $(yacc) -b $(win_yacc_prefix) -d -db -dd $[@ $(wrc_dir)/y/yydrivrw.c >$(nulldevice)
+    $(noecho)yacc -b $(win_yacc_prefix) -d -db -dd $[@ $(wrc_dir)/y/yydrivrw.c >$(nulldevice)
     @rm -f $(win_yacc_file).c # C code isn't used
