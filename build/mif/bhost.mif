@@ -77,9 +77,7 @@ msgencod        = $(noecho)*msgencod -q
 optencod        = $(noecho)*optencod -q
 re2c            = $(noecho)re2c
 sed             = $(noecho)sed
-wbind           = $(noecho)bwbind
 wsplice         = $(noecho)*wsplice
-wstrip          = $(noecho)bwstrip
 yacc            = $(noecho)yacc
 tr              = $(noecho)tr
 
@@ -194,4 +192,4 @@ bind_res : .PROCEDURE .EXPLICIT
 !ifeq verbose 0
     @echo bind res $@
 !endif
-    $(rcbnd) $^&.res $@
+    $(rcbind) -q -k $^&.res $@

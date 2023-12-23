@@ -44,20 +44,20 @@ $(dlltarg_name)$(dlltarg_ext) : $+$(dlltarg_prebuild_objs) $(dlltarg_objs) $(dll
 !ifeq verbose 0
     @echo bind res $@ ver+appl
 !endif
-    $(rcbnd) $+$(dlltarg_res)$- $@ -fr=$(dlltarg_res_version_$(host_os)_$(host_cpu))
+    $(rcbind) -q -k $+$(dlltarg_res)$- $@ -fr=$(dlltarg_res_version_$(host_os)_$(host_cpu))
 !else
 # version only
 !ifeq verbose 0
     @echo bind res $@ ver
 !endif
-    $(rcbnd) $(dlltarg_res_version_$(host_os)_$(host_cpu)) $@
+    $(rcbind) -q -k $(dlltarg_res_version_$(host_os)_$(host_cpu)) $@
 !endif
 !else ifdef dlltarg_res
 # application only
 !ifeq verbose 0
     @echo bind res $@ appl
 !endif
-    $(rcbnd) $+$(dlltarg_res)$- $@
+    $(rcbind) -q -k $+$(dlltarg_res)$- $@
 !endif
 #########################
 # Windows 3.x resources

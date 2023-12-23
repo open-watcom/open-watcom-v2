@@ -810,8 +810,6 @@ rcui8           = $(rc_ui) $(rc_flags_all) -bt=windows $(rc_ui8_flags) $[@ -fo=$
 rcui8           = $(rc_ui) $(rc_flags_all) -x -bt=windows $(rc_ui8_flags) $[@ -fo=$@ $(rc_ui_inc_path)
 !endif
 
-rcbnd           = $(rc_bnd) -k
-
 #####################################
 # GLOBAL MACROS SETINGS FOR OW TOOLS
 #####################################
@@ -838,7 +836,6 @@ as              = $(noecho)$(as_$(host_cpu)) -q $(bldver_cppflags) $(as_outfmt_$
 
 rc              = $(noecho)*bwrc -q $(bldver_cppflags)
 rc_ui           = $(noecho)*bwrc -q $(bldver_cppflags)
-rc_bnd          = $(noecho)*bwrc -q
 
 # current project setup
 !ifeq sys_dll 1
@@ -857,6 +854,10 @@ lflags  = $(lflags_gen)
 
 # options for include source code file
 incl_file_opts  = -fi
+
+rcbind  = $(noecho)*bwrc
+wstrip  = $(noecho)bwstrip
+wbind   = $(noecho)bwbind
 
 !include bhost.mif
 !include local.mif
