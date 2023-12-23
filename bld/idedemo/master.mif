@@ -2,6 +2,8 @@ tree_depth = 4
 
 projname = src_idedemo
 
+ide2make = bide2mak
+
 !include cproj.mif
 
 ide_cfg_dir_nt  = $(idecfg_dir)/nt386/

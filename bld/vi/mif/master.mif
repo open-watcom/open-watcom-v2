@@ -19,6 +19,8 @@ vi_trmem = 1
 
 vi_dos_extender = causeway
 
+edbind = bedbind
+
 .EXTENSIONS: .vi .dat
 
 error_dat = ../dat/error.dat
@@ -126,4 +128,4 @@ edbind_data : .PROCEDURE .EXPLICIT
 !ifeq verbose 0
     @echo edbind edbind.tmp $(name).exe $@
 !endif
-    $(edbind) -dedbind.tmp -q $(name).exe $@
+    $(noecho)$(edbind) -dedbind.tmp -q $(name).exe $@
