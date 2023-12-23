@@ -547,59 +547,81 @@ typedef SIZE FAR    *LPSIZE;
 
 /* OEM bitmap resource identifiers */
 #ifdef OEMRESOURCE
-    #define OBM_CLOSE           32754
-    #define OBM_UPARROW         32753
-    #define OBM_DNARROW         32752
-    #define OBM_RGARROW         32751
-    #define OBM_LFARROW         32750
-    #define OBM_REDUCE          32749
-    #define OBM_ZOOM            32748
-    #define OBM_RESTORE         32747
-    #define OBM_REDUCED         32746
-    #define OBM_ZOOMD           32745
-    #define OBM_RESTORED        32744
-    #define OBM_UPARROWD        32743
-    #define OBM_DNARROWD        32742
-    #define OBM_RGARROWD        32741
-    #define OBM_LFARROWD        32740
-    #define OBM_MNARROW         32739
-    #define OBM_COMBO           32738
-    #if (WINVER >= 0x030A)
-        #define OBM_UPARROWI    32737
-        #define OBM_DNARROWI    32736
-        #define OBM_RGARROWI    32735
-        #define OBM_LFARROWI    32734
+    #if (WINVER >= 0x0300)
+        #define OBM_CLOSE           32754
+        #define OBM_UPARROW         32753
+        #define OBM_DNARROW         32752
+        #define OBM_RGARROW         32751
+        #define OBM_LFARROW         32750
+        #define OBM_REDUCE          32749
+        #define OBM_ZOOM            32748
+        #define OBM_RESTORE         32747
+        #define OBM_REDUCED         32746
+        #define OBM_ZOOMD           32745
+        #define OBM_RESTORED        32744
+        #define OBM_UPARROWD        32743
+        #define OBM_DNARROWD        32742
+        #define OBM_RGARROWD        32741
+        #define OBM_LFARROWD        32740
+        #define OBM_MNARROW         32739
+        #define OBM_COMBO           32738
+        #if (WINVER >= 0x030A)
+            #define OBM_UPARROWI    32737
+            #define OBM_DNARROWI    32736
+            #define OBM_RGARROWI    32735
+            #define OBM_LFARROWI    32734
+        #endif
+        #define OBM_OLD_CLOSE       32767
+        #define OBM_SIZE            32766
+        #define OBM_OLD_UPARROW     32765
+        #define OBM_OLD_DNARROW     32764
+        #define OBM_OLD_RGARROW     32763
+        #define OBM_OLD_LFARROW     32762
+        #define OBM_BTSIZE          32761
+        #define OBM_CHECK           32760
+        #define OBM_CHECKBOXES      32759
+        #define OBM_BTNCORNERS      32758
+        #define OBM_OLD_REDUCE      32757
+        #define OBM_OLD_ZOOM        32756
+        #define OBM_OLD_RESTORE     32755
+    #else /* WINVER < 0x300 */
+        #define OBM_CLOSE           32767
+        #define OBM_SIZE            32766
+        #define OBM_UPARROW         32765
+        #define OBM_DNARROW         32764
+        #define OBM_RGARROW         32763
+        #define OBM_LFARROW         32762
+        #define OBM_BTSIZE          32761
+        #define OBM_CHECK           32760
+        #define OBM_CHECKBOXES      32759
+        #define OBM_BTNCORNERS      32758
+        #if (WINVER >= 0x0200)
+            #define OBM_REDUCE      32757
+            #define OBM_ZOOM        32756
+            #define OBM_RESTORE     32755
+        #endif
     #endif
-    #define OBM_OLD_CLOSE       32767
-    #define OBM_SIZE            32766
-    #define OBM_OLD_UPARROW     32765
-    #define OBM_OLD_DNARROW     32764
-    #define OBM_OLD_RGARROW     32763
-    #define OBM_OLD_LFARROW     32762
-    #define OBM_BTSIZE          32761
-    #define OBM_CHECK           32760
-    #define OBM_CHECKBOXES      32759
-    #define OBM_BTNCORNERS      32758
-    #define OBM_OLD_REDUCE      32757
-    #define OBM_OLD_ZOOM        32756
-    #define OBM_OLD_RESTORE     32755
 #endif
 
 /* OEM cursor resource identifiers */
 #ifdef OEMRESOURCE
-    #define OCR_NORMAL      32512
-    #define OCR_IBEAM       32513
-    #define OCR_WAIT        32514
-    #define OCR_CROSS       32515
-    #define OCR_UP          32516
-    #define OCR_SIZE        32640
-    #define OCR_ICON        32641
-    #define OCR_SIZENWSE    32642
-    #define OCR_SIZENESW    32643
-    #define OCR_SIZEWE      32644
-    #define OCR_SIZENS      32645
-    #define OCR_SIZEALL     32646
-    #define OCR_ICOCUR      32647
+    #define OCR_NORMAL              32512
+    #define OCR_IBEAM               32513
+    #define OCR_WAIT                32514
+    #define OCR_CROSS               32515
+    #define OCR_UP                  32516
+    #define OCR_SIZE                32640
+    #define OCR_ICON                32641
+    #if (WINVER >= 0x0200)
+        #define OCR_SIZENWSE        32642
+        #define OCR_SIZENESW        32643
+        #define OCR_SIZEWE          32644
+        #define OCR_SIZENS          32645
+        #define OCR_SIZEALL         32646
+    #endif
+    #if (WINVER >= 0x0300)
+        #define OCR_ICOCUR          32647
+    #endif
 #endif
 
 /* OEM icon resource identifiers */
@@ -2665,18 +2687,20 @@ HBITMAP WINAPI  LoadBitmap( HINSTANCE, LPCSTR );
 
 /* ShowWindow() commands */
 #ifndef NOSHOWWINDOW
-    #define SW_HIDE             0
-    #define SW_SHOWNORMAL       1
-    #define SW_NORMAL           1
-    #define SW_SHOWMINIMIZED    2
-    #define SW_SHOWMAXIMIZED    3
-    #define SW_MAXIMIZE         3
-    #define SW_SHOWNOACTIVATE   4
-    #define SW_SHOW             5
-    #define SW_MINIMIZE         6
-    #define SW_SHOWMINNOACTIVE  7
-    #define SW_SHOWNA           8
-    #define SW_RESTORE          9
+    #if (WINVER >= 0x0200)
+        #define SW_HIDE             0
+        #define SW_SHOWNORMAL       1
+        #define SW_NORMAL           1
+        #define SW_SHOWMINIMIZED    2
+        #define SW_SHOWMAXIMIZED    3
+        #define SW_MAXIMIZE         3
+        #define SW_SHOWNOACTIVATE   4
+        #define SW_SHOW             5
+        #define SW_MINIMIZE         6
+        #define SW_SHOWMINNOACTIVE  7
+        #define SW_SHOWNA           8
+        #define SW_RESTORE          9
+    #endif
 #endif
 
 /* Old names for ShowWindow() commands */
@@ -4639,32 +4663,48 @@ HDWP WINAPI     DeferWindowPos( HDWP, HWND, HWND, int, int, int, int, UINT );
 BOOL WINAPI     EndDeferWindowPos( HDWP );
 #endif
 #ifndef NOMENUS
+# if (WINVER >= 0x0300)
 BOOL WINAPI     AppendMenu( HMENU, UINT, UINT, LPCSTR );
+# endif
 BOOL WINAPI     ChangeMenu( HMENU, UINT, LPCSTR, UINT, UINT );
 BOOL WINAPI     CheckMenuItem( HMENU, UINT, UINT );
 HMENU WINAPI    CreateMenu( void );
+# if (WINVER >= 0x0300)
 HMENU WINAPI    CreatePopupMenu( void );
+# endif
 BOOL WINAPI     DeleteMenu( HMENU, UINT, UINT );
 BOOL WINAPI     DestroyMenu( HMENU );
 void WINAPI     DrawMenuBar( HWND );
 BOOL WINAPI     EnableMenuItem( HMENU, UINT, UINT );
 HMENU WINAPI    GetMenu( HWND );
+# if (WINVER >= 0x0300)
 DWORD WINAPI    GetMenuCheckMarkDimensions( void );
+# endif
+# if (WINVER >= 0x0200)
 int WINAPI      GetMenuItemCount( HMENU );
 UINT WINAPI     GetMenuItemID( HMENU, int );
 UINT WINAPI     GetMenuState( HMENU, UINT, UINT );
+# endif
 int WINAPI      GetMenuString( HMENU, UINT, LPSTR, int, UINT );
 HMENU WINAPI    GetSubMenu( HMENU, int );
 HMENU WINAPI    GetSystemMenu( HWND, BOOL );
 BOOL WINAPI     HiliteMenuItem( HWND, HMENU, UINT, UINT );
+# if (WINVER >= 0x0300)
 BOOL WINAPI     InsertMenu( HMENU, UINT, UINT, UINT, LPCSTR );
+# endif
 HMENU WINAPI    LoadMenu( HINSTANCE, LPCSTR );
+# if (WINVER >= 0x0200)
 HMENU WINAPI    LoadMenuIndirect( const void FAR * );
+# endif
+# if (WINVER >= 0x0300)
 BOOL WINAPI     ModifyMenu( HMENU, UINT, UINT, UINT, LPCSTR );
 BOOL WINAPI     RemoveMenu( HMENU, UINT, UINT );
+# endif
 BOOL WINAPI     SetMenu( HWND, HMENU );
+# if (WINVER >= 0x0300)
 BOOL WINAPI     SetMenuItemBitmaps( HMENU, UINT, UINT, HBITMAP, HBITMAP );
 BOOL WINAPI     TrackPopupMenu( HMENU, UINT, int, int, int, HWND, const RECT FAR * );
+# endif
 #endif
 #ifndef NOSCROLL
 BOOL WINAPI     EnableScrollBar( HWND, int, UINT );

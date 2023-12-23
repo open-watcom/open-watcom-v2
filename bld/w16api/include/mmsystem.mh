@@ -13,8 +13,9 @@
     #include <windows.h>
 #endif
 
-#if (WINVER < 0x30A)
-    #error Multimedia APIs require Windows 3.1
+/* The multimedia API first appeared in a "Multimedia Edition" of Windows 3.0, then came built-in to Windows 3.1 */
+#if (WINVER < 0x300)
+    #error Multimedia APIs require Windows 3.0
 #endif
 
 :include cpluspro.sp
@@ -919,7 +920,11 @@ typedef MMTIME NEAR *NPMMTIME;
 typedef MMTIME FAR  *LPMMTIME;
 
 /* Driver callback */
+#if (WINVER >= 0x30A)
 typedef void (CALLBACK DRVCALLBACK)( HDRVR, UINT, DWORD, DWORD, DWORD );
+#else
+typedef void (CALLBACK DRVCALLBACK)( HANDLE, UINT, DWORD, DWORD, DWORD ); /* HDRVR type did not appear until Windows 3.1 */
+#endif
 typedef DRVCALLBACK     *LPDRVCALLBACK;
 typedef DRVCALLBACK     WAVECALLBACK;
 typedef WAVECALLBACK    *LPWAVECALLBACK;
