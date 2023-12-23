@@ -70,14 +70,10 @@ bld_lib         = $(blib) $(bld_libflags)
 
 awk             = $(noecho)*awk
 cpp             = $(noecho)*wcpp $(ppflags_bldver)
-cwc             = bcwc
-edbind          = $(noecho)bedbind
-ide2make        = bide2mak
 msgencod        = $(noecho)*msgencod -q
 optencod        = $(noecho)*optencod -q
 re2c            = $(noecho)re2c
 sed             = $(noecho)sed
-wsplice         = $(noecho)*wsplice
 yacc            = $(noecho)yacc
 tr              = $(noecho)tr
 

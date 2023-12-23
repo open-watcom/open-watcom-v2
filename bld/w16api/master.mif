@@ -110,7 +110,7 @@ all : $(dirs) $(headers) $(libs) .SYMBOLIC
 
 .mh{h}.h:
     @%make echo_wsplice
-    $(wsplice) $(wsplice_opts)
+    $(noecho)*wsplice $(wsplice_opts)
 
 .sp.gsp:
     $(awk) -f $(hdr_dir)/cpyyear.awk -v CPYYEAR=$(curr_year) -v OUTFILE=$@ $[@

@@ -122,4 +122,4 @@ wresui.res : ../res/wprofui.rc $(rcfiles) $(__MAKEFILES__) .AUTODEPEND
 
 usage.u : ../h/usage.sp $(__MAKEFILES__)
     @%make echo_wsplice
-    $(wsplice) -u $[@ $@
+    $(noecho)*wsplice -u $[@ $@

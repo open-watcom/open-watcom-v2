@@ -55,35 +55,35 @@ all : $(dirs) $(hdrs$(targ_cpu)) $(libs$(targ_cpu)) .SYMBOLIC
 
 .mh{h}.h:
     @%make echo_wsplice
-    $(wsplice) $(wsplice_opts)
+    $(noecho)*wsplice $(wsplice_opts)
 
 {arpa}.mh{h/arpa}.h:
     @%make echo_wsplice
-    $(wsplice) $(wsplice_opts)
+    $(noecho)*wsplice $(wsplice_opts)
 
 {GL}.mh{h/GL}.h:
     @%make echo_wsplice
-    $(wsplice) $(wsplice_opts)
+    $(noecho)*wsplice $(wsplice_opts)
 
 {machine}.mh{h/machine}.h:
     @%make echo_wsplice
-    $(wsplice) $(wsplice_opts)
+    $(noecho)*wsplice $(wsplice_opts)
 
 {net}.mh{h/net}.h:
     @%make echo_wsplice
-    $(wsplice) $(wsplice_opts)
+    $(noecho)*wsplice $(wsplice_opts)
 
 {netinet}.mh{h/netinet}.h:
     @%make echo_wsplice
-    $(wsplice) $(wsplice_opts)
+    $(noecho)*wsplice $(wsplice_opts)
 
 {protocol}.mh{h/protocol}.h:
     @%make echo_wsplice
-    $(wsplice) $(wsplice_opts)
+    $(noecho)*wsplice $(wsplice_opts)
 
 {sys}.mh{h/sys}.h:
     @%make echo_wsplice
-    $(wsplice) $(wsplice_opts)
+    $(noecho)*wsplice $(wsplice_opts)
 
 .sp.gsp:
     $(awk) -f $(hdr_dir)/cpyyear.awk -v CPYYEAR=$(curr_year) -v OUTFILE=$@ $[@

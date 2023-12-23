@@ -19,13 +19,15 @@ wsplice_opts_win = -k FOR_WIN -k C_FOR_PB
 
 .sp.cfg:
     @%make echo_wsplice
-    $(wsplice) $(wsplice_opts_$(host_os)) $[@ $@
+    $(noecho)*wsplice $(wsplice_opts_$(host_os)) $[@ $@
 
 pbidex.cfg : idex.sp
-    $(wsplice) $(wsplice_opts_$(host_os)) $[@ $@
+    @%make echo_wsplice
+    $(noecho)*wsplice $(wsplice_opts_$(host_os)) $[@ $@
 
 pbide.cfg : ide.sp
-    $(wsplice) $(wsplice_opts_$(host_os)) $[@ $@
+    @%make echo_wsplice
+    $(noecho)*wsplice $(wsplice_opts_$(host_os)) $[@ $@
 
 clean : .symbolic
     rm -f *.cfg

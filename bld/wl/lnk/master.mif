@@ -6,7 +6,7 @@ proj_name = wlink_lnk
 
 wlink.lnk : ../wlink.sp ../specs.sp
     @%make echo_wsplice
-    $(wsplice) -k Pwlsystem -k $(host_os) -k $(host_cpu) $< $@
+    $(noecho)*wsplice -k Pwlsystem -k $(host_os) -k $(host_cpu) $< $@
 
 clean : .symbolic
     rm -f *.lnk

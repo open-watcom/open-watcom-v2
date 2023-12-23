@@ -51,79 +51,79 @@ all : $($(system)_dirs) $($(system)_files) .symbolic
 
 .mhp{h}.hpp:
     @%make echo_wsplice
-    $(wsplice) $(wsplice_opts)
+    $(noecho)*wsplice $(wsplice_opts)
 
 .mh{h}.h:
     @%make echo_wsplice
-    $(wsplice) $(wsplice_opts_c)
+    $(noecho)*wsplice $(wsplice_opts_c)
 
 {dos}.mh{h}.h:
     @%make echo_wsplice
-    $(wsplice) $(wsplice_opts)
+    $(noecho)*wsplice $(wsplice_opts)
 
 {linux}.mh{h}.h:
     @%make echo_wsplice
-    $(wsplice) $(wsplice_opts)
+    $(noecho)*wsplice $(wsplice_opts)
 
 {rdos}.mh{h}.h:
     @%make echo_wsplice
-    $(wsplice) $(wsplice_opts)
+    $(noecho)*wsplice $(wsplice_opts)
 
 {qnx}.mh{h}.h:
     @%make echo_wsplice
-    $(wsplice) $(wsplice_opts)
+    $(noecho)*wsplice $(wsplice_opts)
 
 {sys}.mh{h/sys}.h:
     @%make echo_wsplice
-    $(wsplice) $(wsplice_opts)
+    $(noecho)*wsplice $(wsplice_opts)
 
 {arpa}.mh{h/arpa}.h:
     @%make echo_wsplice
-    $(wsplice) $(wsplice_opts)
+    $(noecho)*wsplice $(wsplice_opts)
 
 {netinet}.mh{h/netinet}.h:
     @%make echo_wsplice
-    $(wsplice) $(wsplice_opts)
+    $(noecho)*wsplice $(wsplice_opts)
 
 {dos/sys}.mh{h/sys}.h:
     @%make echo_wsplice
-    $(wsplice) $(wsplice_opts)
+    $(noecho)*wsplice $(wsplice_opts)
 
 {linux/sys}.mh{h/sys}.h:
     @%make echo_wsplice
-    $(wsplice) $(wsplice_opts)
+    $(noecho)*wsplice $(wsplice_opts)
 
 {linux/netinet}.mh{h/netinet}.h:
     @%make echo_wsplice
-    $(wsplice) $(wsplice_opts)
+    $(noecho)*wsplice $(wsplice_opts)
 
 {linux/arch/i386}.mh{h/arch/i386}.h:
     @%make echo_wsplice
-    $(wsplice) $(wsplice_opts_i386)
+    $(noecho)*wsplice $(wsplice_opts_i386)
 
 {linux/arch/i386/sys}.mh{h/arch/i386/sys}.h:
     @%make echo_wsplice
-    $(wsplice) $(wsplice_opts_i386)
+    $(noecho)*wsplice $(wsplice_opts_i386)
 
 {linux/arch/mips}.mh{h/arch/mips}.h:
     @%make echo_wsplice
-    $(wsplice) $(wsplice_opts_mips)
+    $(noecho)*wsplice $(wsplice_opts_mips)
 
 {linux/arch/mips/sys}.mh{h/arch/mips/sys}.h:
     @%make echo_wsplice
-    $(wsplice) $(wsplice_opts_mips)
+    $(noecho)*wsplice $(wsplice_opts_mips)
 
 {linux/arch/ppc}.mh{h/arch/ppc}.h:
     @%make echo_wsplice
-    $(wsplice) $(wsplice_opts_ppc)
+    $(noecho)*wsplice $(wsplice_opts_ppc)
 
 {linux/arch/ppc/sys}.mh{h/arch/ppc/sys}.h:
     @%make echo_wsplice
-    $(wsplice) $(wsplice_opts_ppc)
+    $(noecho)*wsplice $(wsplice_opts_ppc)
 
 .mh.cnv:
     @%make echo_wsplice
-    $(wsplice) $(wsplice_opts)
+    $(noecho)*wsplice $(wsplice_opts)
 
 .sp.gsp:
     $(awk) -f $(hdr_dir)/cpyyear.awk -v CPYYEAR=$(curr_year) -v OUTFILE=$@ $[@
@@ -133,7 +133,7 @@ all : $($(system)_dirs) $($(system)_files) .symbolic
 #
 .mh.:
     @%make echo_wsplice
-    $(wsplice) $(wsplice_opts_p)
+    $(noecho)*wsplice $(wsplice_opts_p)
 
 #
 # Special case for cname style headers

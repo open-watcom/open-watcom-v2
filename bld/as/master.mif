@@ -212,11 +212,13 @@ wsplice_opts_ppc = -kAS_PPC
 wsplice_opts     = $(wsplice_opts_$(target_cpu))
 
 as_in.y : $(yacc_src) $(yacc_driver) $(__MAKEFILES__)
-    $(wsplice) $(wsplice_opts) -k_STANDALONE_ $[@ $^&.tmp
+    @%make echo_wsplice
+    $(noecho)*wsplice $(wsplice_opts) -k_STANDALONE_ $[@ $^&.tmp
     $(sed) -e "s/ytab.h/asytab.h/g" $^&.tmp > $@
 
 asi_in.y : $(yacc_src) $(yacc_driver) $(__MAKEFILES__)
-    $(wsplice) $(wsplice_opts) $[@ $^&.tmp
+    @%make echo_wsplice
+    $(noecho)*wsplice $(wsplice_opts) $[@ $^&.tmp
     $(sed) -e "s/ytab.h/asiytab.h/g" $^&.tmp > $@
 
 $(as_yacc_out).c : as_in.y $(__MAKEFILES__)
@@ -228,11 +230,13 @@ $(asi_yacc_out).c : asi_in.y $(__MAKEFILES__)
     $(yacc) $(asi_yacc_flags) asi_in.y $(yacc_driver) > $(nulldevice)
 
 scan_in.re : $(lex_src) $(__MAKEFILES__)
-    $(wsplice) $(wsplice_opts) -k_STANDALONE_ $[@ $^&.tmp
+    @%make echo_wsplice
+    $(noecho)*wsplice $(wsplice_opts) -k_STANDALONE_ $[@ $^&.tmp
     $(sed) -e "s/ytab.h/asytab.h/g" $^&.tmp > $@
 
 scani_in.re : $(lex_src) $(__MAKEFILES__)
-    $(wsplice) $(wsplice_opts) $[@ $^&.tmp
+    @%make echo_wsplice
+    $(noecho)*wsplice $(wsplice_opts) $[@ $^&.tmp
     $(sed) -e "s/ytab.h/asiytab.h/g" $^&.tmp > $@
 
 $(as_lex_out).c : scan_in.re $(__MAKEFILES__)

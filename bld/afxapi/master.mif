@@ -319,19 +319,19 @@ all : $($(what_to_build)) .SYMBOLIC
 
 .mh.h:
     @%make echo_wsplice
-    $(wsplice) $(wsplice_opts)
+    $(noecho)*wsplice $(wsplice_opts)
 
 .mnl.inl:
     @%make echo_wsplice
-    $(wsplice) $(wsplice_opts)
+    $(noecho)*wsplice $(wsplice_opts)
 
 .mrc.rc:
     @%make echo_wsplice
-    $(wsplice) $(wsplice_opts)
+    $(noecho)*wsplice $(wsplice_opts)
 
 afx.h: afx.mh $(crwatpro_gsp)
     @%make echo_wsplice
-    $(wsplice) -i"$(hdr_dir)" $[@ tmp.h
+    $(noecho)*wsplice -i"$(hdr_dir)" $[@ tmp.h
     @%make echo_awk
     $(awk) -f ../dobldver.awk -v bld_ver=$(bld_ver) -v OUTFILE=afx.h tmp.h
     @rm tmp.h

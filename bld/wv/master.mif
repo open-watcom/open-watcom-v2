@@ -466,12 +466,12 @@ wsplice_keys = -kHIDDEN
 
 usage.gh : ../../h/usage.sp $(__MAKEFILES__)
     @%make echo_wsplice
-    $(wsplice) -kENGLISH -k$(host_os) $(wsplice_keys) -t8 -f "pick((MSG_USAGE_BASE+%$#%+), \"%s\", \"\")" $[@ $@
+    $(noecho)*wsplice -kENGLISH -k$(host_os) $(wsplice_keys) -t8 -f "pick((MSG_USAGE_BASE+%$#%+), \"%s\", \"\")" $[@ $@
 
 usagej.gh : ../../h/usage.sp $(__MAKEFILES__)
     @%make echo_wsplice
-    $(wsplice) -kJAPANESE -k$(host_os) $(wsplice_keys) -t8 -f "pick((MSG_USAGE_BASE+%$#%+), \"\", \"%s\")" $[@ $@
+    $(noecho)*wsplice -kJAPANESE -k$(host_os) $(wsplice_keys) -t8 -f "pick((MSG_USAGE_BASE+%$#%+), \"\", \"%s\")" $[@ $@
 
 usage.u : ../../h/usage.sp $(__MAKEFILES__)
     @%make echo_wsplice
-    $(wsplice) -u -kENGLISH -k$(host_os) -kLINKRES $[@ $@
+    $(noecho)*wsplice -u -kENGLISH -k$(host_os) -kLINKRES $[@ $@

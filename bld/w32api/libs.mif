@@ -160,7 +160,8 @@ all : $(dirs) $(libs) .SYMBOLIC
 .mh: ../lib
 
 .mh.gdf:
-    $(wsplice) -k$(host_cpu) $[@ $@
+    @%make echo_wsplice
+    $(noecho)*wsplice -k$(host_cpu) $[@ $@
 
 .gdf.lbc:
     $(awk) -v cpu=$(host_cpu) -f ../def2lbc.awk -v OUTFILE=$^. $[@

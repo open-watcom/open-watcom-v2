@@ -137,4 +137,4 @@ rcmsg.grh : $(wrc_dir)/h/rc.msg $(__MAKEFILES__)
 
 usage.u : $(wlink_dir)/h/usage.sp $(__MAKEFILES__)
     @%make echo_wsplice
-    $(wsplice) -u $[@ $@
+    $(noecho)*wsplice -u $[@ $@

@@ -453,39 +453,39 @@ all : $(dirs) $(headers) .SYMBOLIC
 
 .mh.h:
     @%make echo_wsplice
-    $(wsplice) $(wsplice_opts)
+    $(noecho)*wsplice $(wsplice_opts)
 
 .mh{h}.h:
     @%make echo_wsplice
-    $(wsplice) $(wsplice_opts)
+    $(noecho)*wsplice $(wsplice_opts)
 
 {ddk}.mh{h/ddk}.h:
     @%make echo_wsplice
-    $(wsplice) $(wsplice_opts)
+    $(noecho)*wsplice $(wsplice_opts)
 
 {directx}.mh{h/directx}.h:
     @%make echo_wsplice
-    $(wsplice) $(wsplice_opts)
+    $(noecho)*wsplice $(wsplice_opts)
 
 {GL}.mh{h/GL}.h:
     @%make echo_wsplice
-    $(wsplice) $(wsplice_opts)
+    $(noecho)*wsplice $(wsplice_opts)
 
 .mh.rh:
     @%make echo_wsplice
-    $(wsplice) $(wsplice_opts_r)
+    $(noecho)*wsplice $(wsplice_opts_r)
 
 .mh{h}.rh:
     @%make echo_wsplice
-    $(wsplice) $(wsplice_opts_r)
+    $(noecho)*wsplice $(wsplice_opts_r)
 
 h/winsock2.h: winsock.mh
     @%make echo_wsplice
-    $(wsplice) $(wsplice_opts_ws2)
+    $(noecho)*wsplice $(wsplice_opts_ws2)
 
 h/winresrc.h: winresrc.mh
     @%make echo_wsplice
-    $(wsplice) $(wsplice_opts_r)
+    $(noecho)*wsplice $(wsplice_opts_r)
 
 .sp.gsp:
     $(awk) -f $(hdr_dir)/cpyyear.awk -v CPYYEAR=$(curr_year) -v OUTFILE=$@ $[@
