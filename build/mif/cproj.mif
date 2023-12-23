@@ -379,12 +379,12 @@ checkstack_dll_i86 = -s
 !endif
 !endif
 
-cppflags_all    = $(ppflags_mode)
+ppflags_all     = $(ppflags_mode)
 !ifdef __WATCOM_TOOLS__
-cppflags_all    += -D_ENABLE_AUTODEPEND
+ppflags_all     += -D_ENABLE_AUTODEPEND
 !endif
 !ifdef bootstrap
-cppflags_all    += -DBOOTSTRAP
+ppflags_all     += -DBOOTSTRAP
 !endif
 
 cppflags_win    = -DSTRICT
