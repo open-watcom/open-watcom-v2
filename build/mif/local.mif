@@ -574,6 +574,43 @@ incl_file_opts = -include
 
 ##############################################################################
 #
+# definitions for WATCOM toolchain
+#
+##############################################################################
+!else if defined("__WATCOM_TOOLS__")
+
+!if defined("__LINUX__") || defined("__DOS__") || defined("__OS2__") || defined("__NT__")
+
+!ifdef __LINUX__
+! if "$(bld_cpu)" == "386" || "$(bld_cpu)" == "axp" || "$(bld_cpu)" == "ppc" || "$(bld_cpu)" == "mps"
+use_for_build = 1
+! endif
+!else ifdef __DOS__
+! if "$(bld_cpu)" == "386"
+use_for_build = 1
+! endif
+!else ifdef __OS2__
+! if "$(bld_cpu)" == "386"
+use_for_build = 1
+! endif
+!else ifdef __NT__
+! if "$(bld_cpu)" == "386" || "$(bld_cpu)" == "axp" || "$(bld_cpu)" == "ppc" || "$(bld_cpu)" == "mps"
+use_for_build = 1
+! endif
+!endif
+
+!ifdef use_for_build
+
+!include bhost.mif
+
+!endif  # use_for_build
+
+!else
+!error "OS is unsupported by OW build system for this toolchain"
+!endif
+
+##############################################################################
+#
 # Unknown toolchain
 #
 ##############################################################################
@@ -582,4 +619,71 @@ incl_file_opts = -include
 !endif
 
 ##############################################################################
+
+bld_cc          = $(bcc) $(bld_cc_sys) $(bld_incs)
+bld_cl          = $(bcl) $(bld_cc_sys) $(bld_cl_sys) $(bld_incs)
+bld_lib         = $(blib) $(bld_libflags)
+
+cpp             = $(noecho)*wcpp $(bldver_cppflags)
+
+echo_optencod : .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo optencod $@
+!endif
+
+echo_awk : .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo awk $@
+!endif
+
+echo_yacc : .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo yacc $@
+!endif
+
+echo_findhash : .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo findhash $@
+!endif
+
+echo_bldcl : .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo bld_cl $@
+!endif
+
+echo_execute : .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo $[@ $@
+!endif
+
+echo_cpp : .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo cpp $@
+!endif
+
+echo_sed : .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo sed $@
+!endif
+
+echo_wsplice : .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo wsplice $@
+!endif
+
+echo_re2c : .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo re2c $@
+!endif
+
+echo_msgencod : .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo msgencod $@
+!endif
+
+echo_aslink : .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo bld_as $^&.obj
+    @echo bld_link $^&.tmp
+!endif
 

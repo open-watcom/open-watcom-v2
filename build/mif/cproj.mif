@@ -863,5 +863,56 @@ rcbind  = $(noecho)*bwrc
 wstrip  = $(noecho)bwstrip
 wbind   = $(noecho)bwbind
 
-!include bhost.mif
 !include local.mif
+
+bind_res : .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo bind res $@
+!endif
+    $(rcbind) -q -k $^&.res $@
+
+bind_res_wresui : .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo bind wresui $@
+!endif
+    $(wstrip) -q -a -r $@ . wresui.res
+
+echo_as : .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo as $@
+!endif
+
+echo_cc : .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo cc $@
+!endif
+
+echo_cxx : .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo c++ $@
+!endif
+
+echo_xcxx : .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo xc++ $@
+!endif
+
+echo_cl : .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo cl $@
+!endif
+
+echo_lib : .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo lib $@
+!endif
+
+echo_link : .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo link $@
+!endif
+
+echo_rc : .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo rc $@
+!endif
