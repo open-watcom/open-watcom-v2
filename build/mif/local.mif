@@ -169,14 +169,14 @@ cl_extra_libs = $(cl_extra_libs_gen)
 # bld settings
 ############################
 !ifdef __INTEL_TOOLS__
-bcc  = icl -nologo -c $(bldver_cppflags)
-bcxx = icl -nologo -c $(bldver_cppflags)
-bcl  = $(noecho)icl -nologo $(bldver_cppflags)
+bcc  = icl -nologo -c $(ppflags_bldver)
+bcxx = icl -nologo -c $(ppflags_bldver)
+bcl  = $(noecho)icl -nologo $(ppflags_bldver)
 blib = $(noecho)xilib -nologo
 !else
-bcc  = cl -nologo -c $(bldver_cppflags)
-bcxx = cl -nologo -c $(bldver_cppflags)
-bcl  = $(noecho)cl -nologo $(bldver_cppflags)
+bcc  = cl -nologo -c $(ppflags_bldver)
+bcxx = cl -nologo -c $(ppflags_bldver)
+bcl  = $(noecho)cl -nologo $(ppflags_bldver)
 blib = $(noecho)lib -nologo
 !endif
 
@@ -224,13 +224,13 @@ bld_libflags = -out:$@
 # standard settings
 ############################
 !ifdef __INTEL_TOOLS__
-cc  = $(noecho)icl -nologo -c $(bldver_cppflags)
-cxx = $(noecho)icl -nologo -c $(bldver_cppflags)
-cl  = $(noecho)icl -nologo $(bldver_cppflags)
+cc  = $(noecho)icl -nologo -c $(ppflags_bldver)
+cxx = $(noecho)icl -nologo -c $(ppflags_bldver)
+cl  = $(noecho)icl -nologo $(ppflags_bldver)
 !else
-cc   = $(noecho)cl -nologo -c $(bldver_cppflags)
-cxx  = $(noecho)cl -nologo -c $(bldver_cppflags)
-cl   = $(noecho)cl -nologo $(bldver_cppflags)
+cc   = $(noecho)cl -nologo -c $(ppflags_bldver)
+cxx  = $(noecho)cl -nologo -c $(ppflags_bldver)
+cl   = $(noecho)cl -nologo $(ppflags_bldver)
 !endif
 
 cppflags_nt  = $(common_cppflags) $(common_cppflags_nt)
@@ -434,13 +434,13 @@ cl_extra_libs = $(cl_extra_libs_gen)
 # bld settings
 ############################
 !ifdef __CLANG_TOOLS__
-bcc  = clang -pipe -c $(bldver_cppflags)
-bcxx = clang++ -pipe -c $(bldver_cppflags)
-bcl  = $(noecho)clang -pipe $(bldver_cppflags)
+bcc  = clang -pipe -c $(ppflags_bldver)
+bcxx = clang++ -pipe -c $(ppflags_bldver)
+bcl  = $(noecho)clang -pipe $(ppflags_bldver)
 !else
-bcc  = gcc -pipe -c $(bldver_cppflags)
-bcxx = g++ -pipe -c $(bldver_cppflags)
-bcl  = $(noecho)gcc -pipe $(bldver_cppflags)
+bcc  = gcc -pipe -c $(ppflags_bldver)
+bcxx = g++ -pipe -c $(ppflags_bldver)
+bcl  = $(noecho)gcc -pipe $(ppflags_bldver)
 !endif
 
 bld_cl_extra_objs_gen =
@@ -508,13 +508,13 @@ bld_libflags = crs $@
 # standard settings
 ############################
 !ifdef __CLANG_TOOLS__
-cc   = $(noecho)clang -pipe -c $(bldver_cppflags)
-cxx  = $(noecho)clang++ -pipe -c $(bldver_cppflags)
-cl   = $(noecho)clang -pipe $(bldver_cppflags)
+cc   = $(noecho)clang -pipe -c $(ppflags_bldver)
+cxx  = $(noecho)clang++ -pipe -c $(ppflags_bldver)
+cl   = $(noecho)clang -pipe $(ppflags_bldver)
 !else
-cc   = $(noecho)gcc -pipe -c $(bldver_cppflags)
-cxx  = $(noecho)g++ -pipe -c $(bldver_cppflags)
-cl   = $(noecho)gcc -pipe $(bldver_cppflags)
+cc   = $(noecho)gcc -pipe -c $(ppflags_bldver)
+cxx  = $(noecho)g++ -pipe -c $(ppflags_bldver)
+cl   = $(noecho)gcc -pipe $(ppflags_bldver)
 !endif
 
 cppflags_linux  = $(common_cppflags) $(common_cppflags_linux)
