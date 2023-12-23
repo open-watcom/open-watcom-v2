@@ -20,9 +20,9 @@ bas_ppc         = *wasppc
 bas_mps         = *wasmps
 
 blib            = $(noecho)$(blibrarian_$(bld_cpu)) -q
-bcc             = $(bcc_$(bld_cpu)) -zq $(bldver_cppflags)
-bcl             = $(noecho)$(bcl_$(bld_cpu)) -zq $(bldver_cppflags)
-bas             = $(bas_$(bld_cpu)) -q $(bldver_cppflags)
+bcc             = $(bcc_$(bld_cpu)) -zq $(ppflags_bldver)
+bcl             = $(noecho)$(bcl_$(bld_cpu)) -zq $(ppflags_bldver)
+bas             = $(bas_$(bld_cpu)) -q $(ppflags_bldver)
 blink           = *wlink op q
 
 bld_cc_sys      = $(cflags_$(bld_os))
@@ -69,7 +69,7 @@ bld_cl          = $(bcl) $(bld_cc_sys) $(bld_cl_sys) $(bld_incs)
 bld_lib         = $(blib) $(bld_libflags)
 
 awk             = $(noecho)*awk
-cpp             = $(noecho)*wcpp $(bldver_cppflags)
+cpp             = $(noecho)*wcpp $(ppflags_bldver)
 cwc             = bcwc
 edbind          = $(noecho)bedbind
 ide2make        = bide2mak

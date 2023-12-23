@@ -13,7 +13,7 @@ f77lib_cpp_flags += -D__SHARE__ -DIN_SLIB -D_NO_SLIB
 f77lib_cpp_msdos       = -D__WATCOM_LFN__
 f77lib_cpp_windows     = -DSTRICT
 f77lib_cpp_windows_386 = -D__CALL21__
-f77lib_cpp_winnt       = $(win32ver)
+f77lib_cpp_winnt       = $(ppflags_win32ver)
 f77lib_cpp_winnt_axp   = -DWIN32 -D_WIN32
 f77lib_cpp_winnt_ppc   = -DWIN32 -D_WIN32
 
@@ -178,7 +178,7 @@ sw_a_netware    = -bt=netware
 sw_a_os2        = -bt=os2
 sw_a_qnx        = -bt=qnx
 sw_a_windows    = -bt=windows
-sw_a_winnt      = -bt=nt $(win32ver)
+sw_a_winnt      = -bt=nt $(ppflags_win32ver)
 sw_a_linux      = -bt=linux
 
 #make bug
