@@ -104,7 +104,8 @@ MenuFlags SemWINAddMenuOption( MenuFlags oldflags, YYTOKENTYPE token )
         oldflags |= MENU_MENUBREAK;
         break;
     case Y_OWNERDRAW:
-        oldflags |= MENU_OWNERDRAWN;
+        if ( !CmdLineParms.VersionStamp20 )
+            oldflags |= MENU_OWNERDRAWN;
         break;
     case Y_HELP:
         oldflags |= MENU_HELP;
@@ -204,8 +205,14 @@ static bool SemWriteMenuItem( FullMenuItem *item, int islastitem,
             item->item.popup.item.menuData.ItemFlags |= MENU_ENDMENU;
         }
         if( tokentype == Y_MENU ) {
-            error = ResWriteMenuItemPopup( &(item->item.popup.item.menuData),
+            if ( CmdLineParms.VersionStamp20 ) {
+                error = ResWriteMenuItemPopupOldWin( &(item->item.popup.item.menuData),
                             item->UseUnicode, CurrResFile.fp );
+	    }
+	    else {
+                error = ResWriteMenuItemPopup( &(item->item.popup.item.menuData),
+                            item->UseUnicode, CurrResFile.fp );
+	    }
         } else if( tokentype == Y_MENU_EX ) {
             error = ResWriteMenuExItemPopup( &(item->item.popup.item.menuData),
                       &(item->item.popup.item.menuExData), item->UseUnicode,
@@ -217,8 +224,14 @@ static bool SemWriteMenuItem( FullMenuItem *item, int islastitem,
             item->item.normal.menuData.ItemFlags |= MENU_ENDMENU;
         }
         if( tokentype == Y_MENU ) {
-            error = ResWriteMenuItemNormal( &(item->item.normal.menuData),
-                        item->UseUnicode, CurrResFile.fp );
+            if ( CmdLineParms.VersionStamp20 ) {
+                error = ResWriteMenuItemNormalOldWin( &(item->item.normal.menuData),
+                            item->UseUnicode, CurrResFile.fp );
+	    }
+	    else {
+                error = ResWriteMenuItemNormal( &(item->item.normal.menuData),
+                            item->UseUnicode, CurrResFile.fp );
+	    }
         } else if( tokentype == Y_MENU_EX ) {
             error = ResWriteMenuExItemNormal( &(item->item.normal.menuData),
                          &(item->item.normal.menuExData), item->UseUnicode,
@@ -303,7 +316,8 @@ void SemWINWriteMenu( WResID *name, ResMemFlags flags, FullMenu *menu,
             head.Version = 0;    /* currently these fields are both 0 */
             head.Size = 0;
             loc.start = SemStartResource();
-            error = ResWriteMenuHeader( &head, CurrResFile.fp );
+            if ( !CmdLineParms.VersionStamp20 ) /* Windows 2.x menus do not have a header */
+                error = ResWriteMenuHeader( &head, CurrResFile.fp );
         } else if( tokentype == Y_MENU_EX ) {
             head.Version = RES_HEADER_VERSION;
             head.Size = RES_HEADER_SIZE;

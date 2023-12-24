@@ -74,6 +74,17 @@ bool ResWriteMenuItemPopup( const MenuItemPopup *curritem, bool use_unicode, FIL
     return( WRES_ERROR( WRS_BAD_PARAMETER ) );
 }
 
+bool ResWriteMenuItemPopupOldWin( const MenuItemPopup *curritem, bool use_unicode, FILE *fp )
+/*************************************************************************************/
+{
+    if( curritem->ItemFlags & MENU_POPUP ) {
+        if( ResWriteUint8( curritem->ItemFlags, fp ) )
+            return( true );
+        return( ResWriteString( curritem->ItemText, use_unicode, fp ) );
+    }
+    return( WRES_ERROR( WRS_BAD_PARAMETER ) );
+}
+
 bool ResWriteMenuExItemPopup( const MenuItemPopup *curritem, const MenuExItemPopup *exdata,
                              bool use_unicode, FILE *fp )
 /*****************************************************************************************/
@@ -120,6 +131,21 @@ bool ResWriteMenuItemNormal( const MenuItemNormal *curritem, bool use_unicode, F
     return( error );
 }
 
+bool ResWriteMenuItemNormalOldWin( const MenuItemNormal *curritem, bool use_unicode, FILE *fp )
+/***************************************************************************************/
+{
+    bool        error;
+
+    if( curritem->ItemFlags & MENU_POPUP )
+        return( WRES_ERROR( WRS_BAD_PARAMETER ) );
+    error = ResWriteUint8( curritem->ItemFlags, fp );
+    if( !error )
+        error = ResWriteUint16( (uint_16)curritem->ItemID, fp );
+    if( !error )
+        error = ResWriteString( curritem->ItemText, use_unicode, fp );
+    return( error );
+}
+
 bool ResWriteMenuExItemNormal( const MenuItemNormal *curritem, const MenuExItemNormal *exdata,
                               bool use_unicode, FILE *fp )
 /*******************************************************************************************/
@@ -156,6 +182,20 @@ bool ResWriteMenuItem( const MenuItem *curritem, bool use_unicode, FILE *fp )
         error = ResWriteMenuItemPopup( &(curritem->Item.Popup), use_unicode, fp );
     } else {
         error = ResWriteMenuItemNormal( &(curritem->Item.Normal), use_unicode, fp );
+    }
+
+    return( error );
+}
+
+bool ResWriteMenuItemOldWin( const MenuItem *curritem, bool use_unicode, FILE *fp )
+/***************************************************************************/
+{
+    bool    error;
+
+    if( curritem->IsPopup ) {
+        error = ResWriteMenuItemPopupOldWin( &(curritem->Item.Popup), use_unicode, fp );
+    } else {
+        error = ResWriteMenuItemNormalOldWin( &(curritem->Item.Normal), use_unicode, fp );
     }
 
     return( error );

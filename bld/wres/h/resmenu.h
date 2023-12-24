@@ -110,8 +110,11 @@ typedef struct MenuExItem {
 
 extern bool     ResWriteMenuHeader( MenuHeader *currhead, FILE *fp );
 extern bool     ResWriteMenuItemNormal( const MenuItemNormal *curritem, bool use_unicode, FILE *fp );
+extern bool     ResWriteMenuItemNormalOldWin( const MenuItemNormal *curritem, bool use_unicode, FILE *fp );
 extern bool     ResWriteMenuItemPopup( const MenuItemPopup *curritem, bool use_unicode, FILE *fp );
+extern bool     ResWriteMenuItemPopupOldWin( const MenuItemPopup *curritem, bool use_unicode, FILE *fp );
 extern bool     ResWriteMenuItem( const MenuItem *curritem, bool use_unicode, FILE *fp );
+extern bool     ResWriteMenuItemOldWin( const MenuItem *curritem, bool use_unicode, FILE *fp );
 extern bool     ResWriteMenuExHeader( MenuHeader *currhead, FILE *fp, uint_8 *data );
 extern bool     ResWriteMenuExItemPopup( const MenuItemPopup *curritem, const MenuExItemPopup *exdata, bool use_unicode, FILE *fp );
 extern bool     ResWriteMenuExItemNormal( const MenuItemNormal *, const MenuExItemNormal *, bool use_unicode, FILE *fp );
