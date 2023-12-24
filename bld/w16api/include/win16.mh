@@ -3145,10 +3145,14 @@ HBITMAP WINAPI  LoadBitmap( HINSTANCE, LPCSTR );
     #define MF_DISABLED         0x0002
     #define MF_UNCHECKED        0x0000
     #define MF_CHECKED          0x0008
-    #define MF_USECHECKBITMAPS  0x0200
+    #if (WINVER >= 0x0300)
+        #define MF_USECHECKBITMAPS  0x0200
+    #endif
     #define MF_STRING           0x0000
     #define MF_BITMAP           0x0004
-    #define MF_OWNERDRAW        0x0100
+    #if (WINVER >= 0x0300)
+        #define MF_OWNERDRAW        0x0100
+    #endif
     #define MF_POPUP            0x0010
     #define MF_MENUBARBREAK     0x0020
     #define MF_MENUBREAK        0x0040
@@ -3335,9 +3339,17 @@ HBITMAP WINAPI  LoadBitmap( HINSTANCE, LPCSTR );
     #define DS_ABSALIGN     0x0001L
     #define DS_SYSMODAL     0x0002L
     #define DS_LOCALEDIT    0x0020L
-    #define DS_SETFONT      0x0040L
-    #define DS_MODALFRAME   0x0080L
-    #define DS_NOIDLEMSG    0x0100L
+
+    /* WARNING: DS_SETFONT defines an additional field in RT_DIALOG resources
+                that defines the font and font size to use with the dialog box
+                resource. Windows prior to 3.0 does not understand that extension
+                and will often Divide By Zero crash attempting to load it. */
+
+    #if (WINVER >= 0x0300)
+        #define DS_SETFONT      0x0040L
+        #define DS_MODALFRAME   0x0080L
+        #define DS_NOIDLEMSG    0x0100L
+    #endif
 #endif
 
 /* Dialog box messages */
