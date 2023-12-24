@@ -115,6 +115,11 @@
 :usage.  operate quietly
 :jusage.
 
+:option. 20
+:target. any
+:usage.  stamp file as requiring Windows 2.0
+:jusage.
+
 :option. 30
 :target. any
 :usage.  stamp file as requiring Windows 3.0

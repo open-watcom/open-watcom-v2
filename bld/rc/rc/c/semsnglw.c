@@ -90,7 +90,7 @@ void SemWINAddSingleLineResource( WResID *name, YYTOKENTYPE type, FullMemFlags *
         RESFREE( filename );
         return;
     }
-    if( CmdLineParms.VersionStamp30 ) {
+    if( CmdLineParms.VersionStamp30 || CmdLineParms.VersionStamp20 ) {
         purity_option = CUR_ICON_PURITY_30;
     } else {
         purity_option = CUR_ICON_PURITY_31;

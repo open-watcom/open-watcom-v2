@@ -253,6 +253,18 @@ static bool ScanOptionsArg( const char *arg )
             contok = false;
         }
         break;
+    case '2':
+        arg++;
+        switch( tolower( *arg ) ) {
+        case '0':
+            CmdLineParms.VersionStamp20 = true;
+            break;
+        default:
+            RcError( ERR_UNKNOWN_MULT_OPTION, arg - 1 );
+            contok = false;
+            break;
+        }
+        break;
     case '3':
         arg++;
         switch( tolower( *arg ) ) {
