@@ -317,3 +317,6 @@ pick(   ERR_SYMBOL_NOT_DEFINED,
 pick(   ERR_DELETING_FILE,
         "Error deleting file \"%s\": %s.",
         "Error deleting file \"%s\": %s." )
+pick(   WARN_DLGFONT_WIN2X,
+        "FONT not valid for Windows 2.x DIALOG, ignored.",
+        "FONT not valid for Windows 2.x DIALOG, ignored." )
