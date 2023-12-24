@@ -92,5 +92,8 @@ export OWDISTRBUILD=0
 # Invoke the script for the common environment setup
 . "$OWROOT/cmnvars.sh"
 
+# "c99", what the fuck?
+PATH=$OWROOT/tool.bin:$PATH
+
 cd "$OWROOT"
 
