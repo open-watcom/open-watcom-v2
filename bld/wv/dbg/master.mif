@@ -40,7 +40,7 @@ all: $(objs) .symbolic
 
 .sp.dbg:
     @%make echo_wsplice
-    $(wsplice) $< $@
+    $(noecho)*wsplice $< $@
 
 clean : .symbolic
     rm -f *.dbg

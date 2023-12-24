@@ -60,7 +60,7 @@ exetarg_name     = emu387
 
 usage.u : $(fpuemu_dir)/usage.sp
     @%make echo_wsplice
-    $(wsplice) -u $< $@
+    $(noecho)*wsplice -u $< $@
 
 !else ifeq host_os win
 

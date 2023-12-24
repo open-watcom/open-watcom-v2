@@ -142,15 +142,15 @@ rcui_inc_dirs = -I..
 
 ppusage.gh : ../gml/patcopts.gml $(__MAKEFILES__)
     @%make echo_optencod
-    $(optencod) -rc=MSG_USAGE_BASE -utf8 $(optencod_opt_$(host_os)) $[@ . . $@
+    $(noecho)*optencod -q -rc=MSG_USAGE_BASE -utf8 $(optencod_opt_$(host_os)) $[@ . . $@
 
 pdusage.gh : ../gml/dumpopts.gml $(__MAKEFILES__)
     @%make echo_optencod
-    $(optencod) -rc=MSG_USAGE_BASE -utf8 $(optencod_opt_$(host_os)) $[@ . . $@
+    $(noecho)*optencod -q -rc=MSG_USAGE_BASE -utf8 $(optencod_opt_$(host_os)) $[@ . . $@
 
 dusage.gh : ../gml/diffopts.gml $(__MAKEFILES__)
     @%make echo_optencod
-    $(optencod) -rc=MSG_USAGE_BASE -utf8 $(optencod_opt_$(host_os)) $[@ . . $@
+    $(noecho)*optencod -q -rc=MSG_USAGE_BASE -utf8 $(optencod_opt_$(host_os)) $[@ . . $@
 
 bpatch.res : ../bpatch.rc ../h/bpatch.h ppusage.gh
     @%make echo_rc

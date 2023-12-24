@@ -52,8 +52,8 @@ wresui.res: ../res/wic.rc usagee.gh usagej.gh #../res/messages.rc
 
 usagee.gh:  ../res/usage.sp
     @%make echo_wsplice
-    $(wsplice) -kENGLISH -t8 -f "pick((MSG_USAGE_BASE+%$#%+), \"%s\", \"\")" $< $@
+    $(noecho)*wsplice -kENGLISH -t8 -f "pick((MSG_USAGE_BASE+%$#%+), \"%s\", \"\")" $< $@
 
 usagej.gh:  ../res/usage.sp
     @%make echo_wsplice
-    $(wsplice) -kJAPANESE -t8 -f "pick((MSG_USAGE_BASE+%$#%+), \"\", \"%s\")" $< $@
+    $(noecho)*wsplice -kJAPANESE -t8 -f "pick((MSG_USAGE_BASE+%$#%+), \"\", \"%s\")" $< $@

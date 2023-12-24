@@ -6,15 +6,16 @@ pgchart_deps = $(hdr_dir)/watcom/pgchart.mh $(crwat_sp) $(hdr_dir)/readonly.sp $
 
 graph.gh : $(graph_deps)
     @%make echo_wsplice
-    $(wsplice) -i$(hdr_dir) -kINTERNAL $(wsplice_opts) common.sp $[@ $@
+    $(noecho)*wsplice -i$(hdr_dir) -kINTERNAL $(wsplice_opts) common.sp $[@ $@
 
 graph2.gh : $(hdr_dir)/watcom/graph2.mh $(graph_deps)
     @%make echo_wsplice
-    $(wsplice) -i$(hdr_dir) -kINTERNAL $(wsplice_opts) common.sp $[@ $@
+    $(noecho)*wsplice -i$(hdr_dir) -kINTERNAL $(wsplice_opts) common.sp $[@ $@
 
 pgchart.gh : $(pgchart_deps)
     @%make echo_wsplice
-    $(wsplice) -i$(hdr_dir) -kINTERNAL $(wsplice_opts) common.sp $[@ $@
+    $(noecho)*wsplice -i$(hdr_dir) -kINTERNAL $(wsplice_opts) common.sp $[@ $@
 
 {$(hdr_dir)}.sp.gsp:
-    $(awk) -f $(hdr_dir)/cpyyear.awk -v CPYYEAR=$(curr_year) -v OUTFILE=$@ $[@
+    @%make echo_awk
+    $(noecho)*awk -f $(hdr_dir)/cpyyear.awk -v CPYYEAR=$(curr_year) -v OUTFILE=$@ $[@

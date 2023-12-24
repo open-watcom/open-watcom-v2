@@ -1,3 +1,12 @@
+# librarian settings
+############################
+blibrarian_386  = *wlib
+blibrarian_axp  = *wlib
+blibrarian_ppc  = *wlib
+blibrarian_mps  = *wlib
+
+bld_lib         = $(noecho)$(blibrarian_$(bld_cpu)) -q-b-c-n-pa $@
+
 # build host specific macros
 bcc_386         = *wcc386
 bcc_axp         = *wccaxp
@@ -9,17 +18,11 @@ bcl_axp         = *wclaxp
 bcl_ppc         = *wclppc
 bcl_mps         = *wclmps
 
-blibrarian_386  = *wlib
-blibrarian_axp  = *wlib
-blibrarian_ppc  = *wlib
-blibrarian_mps  = *wlib
-
 bas_386         = *wasm
 bas_axp         = *wasaxp
 bas_ppc         = *wasppc
 bas_mps         = *wasmps
 
-blib            = $(noecho)$(blibrarian_$(bld_cpu)) -q
 bcc             = $(bcc_$(bld_cpu)) -zq $(ppflags_bldver)
 bcl             = $(noecho)$(bcl_$(bld_cpu)) -zq $(ppflags_bldver)
 bas             = $(bas_$(bld_cpu)) -q $(ppflags_bldver)
@@ -61,135 +64,3 @@ bld_clflags     = $(bld_gen_cflags) -fe=$@
 
 # options for linking
 bld_ldflags     =
-
-bld_libflags    = -b-c-n-pa $@
-
-bld_cc          = $(bcc) $(bld_cc_sys) $(bld_incs)
-bld_cl          = $(bcl) $(bld_cc_sys) $(bld_cl_sys) $(bld_incs)
-bld_lib         = $(blib) $(bld_libflags)
-
-awk             = $(noecho)*awk
-cpp             = $(noecho)*wcpp $(ppflags_bldver)
-cwc             = bcwc
-edbind          = $(noecho)bedbind
-ide2make        = bide2mak
-msgencod        = $(noecho)*msgencod -q
-optencod        = $(noecho)*optencod -q
-re2c            = $(noecho)re2c
-sed             = $(noecho)sed
-wsplice         = $(noecho)*wsplice
-yacc            = $(noecho)yacc
-tr              = $(noecho)tr
-
-echo_as : .PROCEDURE .EXPLICIT
-!ifeq verbose 0
-    @echo as $@
-!endif
-
-echo_cc : .PROCEDURE .EXPLICIT
-!ifeq verbose 0
-    @echo cc $@
-!endif
-
-echo_cxx : .PROCEDURE .EXPLICIT
-!ifeq verbose 0
-    @echo c++ $@
-!endif
-
-echo_xcxx : .PROCEDURE .EXPLICIT
-!ifeq verbose 0
-    @echo xc++ $@
-!endif
-
-echo_cl : .PROCEDURE .EXPLICIT
-!ifeq verbose 0
-    @echo cl $@
-!endif
-
-echo_bldcl : .PROCEDURE .EXPLICIT
-!ifeq verbose 0
-    @echo bld_cl $@
-!endif
-
-echo_link : .PROCEDURE .EXPLICIT
-!ifeq verbose 0
-    @echo link $@
-!endif
-
-echo_lib : .PROCEDURE .EXPLICIT
-!ifeq verbose 0
-    @echo lib $@
-!endif
-
-echo_cpp : .PROCEDURE .EXPLICIT
-!ifeq verbose 0
-    @echo cpp $@
-!endif
-
-echo_awk : .PROCEDURE .EXPLICIT
-!ifeq verbose 0
-    @echo awk $@
-!endif
-
-echo_rc : .PROCEDURE .EXPLICIT
-!ifeq verbose 0
-    @echo rc $@
-!endif
-
-echo_sed : .PROCEDURE .EXPLICIT
-!ifeq verbose 0
-    @echo sed $@
-!endif
-
-echo_wsplice : .PROCEDURE .EXPLICIT
-!ifeq verbose 0
-    @echo wsplice $@
-!endif
-
-echo_yacc : .PROCEDURE .EXPLICIT
-!ifeq verbose 0
-    @echo yacc $@
-!endif
-
-echo_optencod : .PROCEDURE .EXPLICIT
-!ifeq verbose 0
-    @echo optencod $@
-!endif
-
-echo_msgencod : .PROCEDURE .EXPLICIT
-!ifeq verbose 0
-    @echo msgencod $@
-!endif
-
-echo_re2c : .PROCEDURE .EXPLICIT
-!ifeq verbose 0
-    @echo re2c $@
-!endif
-
-echo_findhash : .PROCEDURE .EXPLICIT
-!ifeq verbose 0
-    @echo findhash $@
-!endif
-
-echo_aslink : .PROCEDURE .EXPLICIT
-!ifeq verbose 0
-    @echo bld_as $^&.obj
-    @echo bld_link $^&.tmp
-!endif
-
-echo_execute : .PROCEDURE .EXPLICIT
-!ifeq verbose 0
-    @echo $[@ $@
-!endif
-
-bind_res_wresui : .PROCEDURE .EXPLICIT
-!ifeq verbose 0
-    @echo bind wresui $@
-!endif
-    $(wstrip) -q -a -r $@ . wresui.res
-
-bind_res : .PROCEDURE .EXPLICIT
-!ifeq verbose 0
-    @echo bind res $@
-!endif
-    $(rcbind) -q -k $^&.res $@

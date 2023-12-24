@@ -62,8 +62,8 @@ wresui.res : ../h/wgml.rc wgmlmsgs.gh ../h/wgmlmsg.h $(msgfiles) $(__MAKEFILES__
 
 wgmlmsgs.gh : $(msgfiles) $(__MAKEFILES__)
     @%make echo_awk
-    $(awk) -v base=000 -f ../makemdef.awk -v OUTFILE=$^. $(msgfiles)
+    $(noecho)*awk -v base=000 -f ../makemdef.awk -v OUTFILE=$^. $(msgfiles)
 
 wgmlmsge.gh : $(msgfiles) $(__MAKEFILES__)
     @%make echo_awk
-    $(awk) -v base=000 -f ../msgtoenm.awk -v OUTFILE=$^. $(msgfiles)
+    $(noecho)*awk -v base=000 -f ../msgtoenm.awk -v OUTFILE=$^. $(msgfiles)

@@ -84,4 +84,4 @@ rcstrmsg.gh : ../res/heapwalk.msg
 
 rcstr.grh : rcstrmsg.gh
     @%make echo_awk
-    $(awk) -f $(build_dir)/msgtoh.awk -v OUTFILE=$^. $[@
+    $(noecho)*awk -f $(build_dir)/msgtoh.awk -v OUTFILE=$^. $[@

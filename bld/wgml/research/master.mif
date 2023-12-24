@@ -114,8 +114,8 @@ wresui.res : ../../h/wgml.rc wgmlmsgs.gh ../../h/wgml.msg ../../h/wgmlmsg.h ../.
 
 wgmlmsgs.gh : ../../h/wgmlerr.msg ../../h/wgml.msg $(__MAKEFILES__)
     @%make echo_awk
-    $(awk) -v base=000 -f ../../makemdef.awk -v OUTFILE=$^. $<
+    $(noecho)*awk -v base=000 -f ../../makemdef.awk -v OUTFILE=$^. $<
 
 wgmlmsge.gh : ../../h/wgmlerr.msg ../../h/wgml.msg $(__MAKEFILES__)
     @%make echo_awk
-    $(awk) -v rcbase=000 -f ../../msgtoenm.awk -v OUTFILE=$^. $<
+    $(noecho)*awk -v rcbase=000 -f ../../msgtoenm.awk -v OUTFILE=$^. $<

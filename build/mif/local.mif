@@ -82,6 +82,14 @@ skip_build: .SYMBOLIC
 
 additional_clean_sys = *.pdb
 
+# librarian settings
+############################
+!ifdef __INTEL_TOOLS__
+bld_lib = $(noecho)xilib -nologo -out:$@
+!else
+bld_lib = $(noecho)lib -nologo -out:$@
+!endif
+
 # common settings
 ############################
 common_cppflags = -D__FLAT__
@@ -172,12 +180,10 @@ cl_extra_libs = $(cl_extra_libs_gen)
 bcc  = icl -nologo -c $(ppflags_bldver)
 bcxx = icl -nologo -c $(ppflags_bldver)
 bcl  = $(noecho)icl -nologo $(ppflags_bldver)
-blib = $(noecho)xilib -nologo
 !else
 bcc  = cl -nologo -c $(ppflags_bldver)
 bcxx = cl -nologo -c $(ppflags_bldver)
 bcl  = $(noecho)cl -nologo $(ppflags_bldver)
-blib = $(noecho)lib -nologo
 !endif
 
 # extra objects for linking via cl
@@ -216,8 +222,6 @@ bld_ldflags  =  $(bld_cl_extra_libs_gen) -link -nologo &
 
 # options for linking via cl
 bld_clflags  = $(bld_cppflags) $(common_cflags) $(common_flags) -Fe$@ $(bld_ldflags1)
-
-bld_libflags = -out:$@
 
 !ifndef __WATCOM_TOOLS__
 
@@ -307,6 +311,10 @@ use_for_build = 1
 !endif
 
 !ifdef use_for_build
+
+# librarian settings
+############################
+bld_lib = $(noecho)ar crs $@
 
 # common settings
 ############################
@@ -456,8 +464,6 @@ bld_cl_extra_objs = $(bld_cl_extra_objs_gen)
 bld_cl_extra_libs = $(bld_cl_extra_libs_gen)
 !endif
 
-blib = $(noecho)ar
-
 bld_cc_sys = -fno-asm -fno-common -fsigned-char
 bld_cl_sys =
 
@@ -500,8 +506,6 @@ bld_ldflags  = $(bld_cl_extra_libs_gen) $(bld_extra_ldflags) $(bld_ldflags_$(pro
 
 # options for linking via cl
 bld_clflags  = $(bld_cppflags) $(common_cflags) $(common_flags) -o $@ $(bld_ldflags1)
-
-bld_libflags = crs $@
 
 !ifndef __WATCOM_TOOLS__
 
@@ -574,6 +578,43 @@ incl_file_opts = -include
 
 ##############################################################################
 #
+# definitions for WATCOM toolchain
+#
+##############################################################################
+!else if defined("__WATCOM_TOOLS__")
+
+!if defined("__LINUX__") || defined("__DOS__") || defined("__OS2__") || defined("__NT__")
+
+!ifdef __LINUX__
+! if "$(bld_cpu)" == "386" || "$(bld_cpu)" == "axp" || "$(bld_cpu)" == "ppc" || "$(bld_cpu)" == "mps"
+use_for_build = 1
+! endif
+!else ifdef __DOS__
+! if "$(bld_cpu)" == "386"
+use_for_build = 1
+! endif
+!else ifdef __OS2__
+! if "$(bld_cpu)" == "386"
+use_for_build = 1
+! endif
+!else ifdef __NT__
+! if "$(bld_cpu)" == "386" || "$(bld_cpu)" == "axp" || "$(bld_cpu)" == "ppc" || "$(bld_cpu)" == "mps"
+use_for_build = 1
+! endif
+!endif
+
+!ifdef use_for_build
+
+!include bhost.mif
+
+!endif  # use_for_build
+
+!else
+!error "OS is unsupported by OW build system for this toolchain"
+!endif
+
+##############################################################################
+#
 # Unknown toolchain
 #
 ##############################################################################
@@ -582,4 +623,70 @@ incl_file_opts = -include
 !endif
 
 ##############################################################################
+
+bld_cc          = $(bcc) $(bld_cc_sys) $(bld_incs)
+bld_cl          = $(bcl) $(bld_cc_sys) $(bld_cl_sys) $(bld_incs)
+
+cpp             = $(noecho)*wcpp $(bldver_cppflags)
+
+echo_optencod : .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo optencod $@
+!endif
+
+echo_awk : .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo awk $@
+!endif
+
+echo_yacc : .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo yacc $@
+!endif
+
+echo_findhash : .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo findhash $@
+!endif
+
+echo_bldcl : .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo bld_cl $@
+!endif
+
+echo_execute : .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo $[@ $@
+!endif
+
+echo_cpp : .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo cpp $@
+!endif
+
+echo_sed : .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo sed $@
+!endif
+
+echo_wsplice : .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo wsplice $@
+!endif
+
+echo_re2c : .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo re2c $@
+!endif
+
+echo_msgencod : .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo msgencod $@
+!endif
+
+echo_aslink : .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo bld_as $^&.obj
+    @echo bld_link $^&.tmp
+!endif
 

@@ -105,4 +105,4 @@ rcstrmsg.gh : ../res/wre.msg $(__MAKEFILES__)
 
 rcstr.grh : rcstrmsg.gh $(__MAKEFILES__)
     @%make echo_awk
-    $(awk) -f $(build_dir)/msgtoh.awk -v OUTFILE=$^. $[@
+    $(noecho)*awk -f $(build_dir)/msgtoh.awk -v OUTFILE=$^. $[@

@@ -338,4 +338,4 @@ rc_inc_dirs = -I"$(trap_dir)/common"
 
 usage.u : ../$(srv_prefix).sp $(__MAKEFILES__)
     @%make echo_wsplice
-    $(wsplice) -u $[@ $@
+    $(noecho)*wsplice -u $[@ $@

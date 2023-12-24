@@ -107,11 +107,11 @@ wresui.res : ../h/wmake.rc ../h/mrcmsg.h usage.gh usagej.gh $(__MAKEFILES__)
 
 usage.gh : ../h/usage.sp $(__MAKEFILES__)
     @%make echo_wsplice
-    $(wsplice) -kENGLISH -f "pick((MSG_USAGE_BASE + %$#%+), \"%s\", \"\")" $[@ $@
+    $(noecho)*wsplice -kENGLISH -f "pick((MSG_USAGE_BASE + %$#%+), \"%s\", \"\")" $[@ $@
 
 usagej.gh : ../h/usage.sp $(__MAKEFILES__)
     @%make echo_wsplice
-    $(wsplice) -kJAPANESE -f "pick((MSG_USAGE_BASE + %$#%+), \"\", \"%s\")" $[@ $@
+    $(noecho)*wsplice -kJAPANESE -f "pick((MSG_USAGE_BASE + %$#%+), \"\", \"%s\")" $[@ $@
 
 isarray.gh : ./cretype.exe $(__MAKEFILES__)
     @%make echo_execute

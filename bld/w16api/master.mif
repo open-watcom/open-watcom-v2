@@ -98,7 +98,8 @@ all : $(dirs) $(headers) $(libs) .SYMBOLIC
 .sp: $(hdr_dir)
 
 .def.lbc:
-    $(awk) -f ../def16lbc.awk -v OUTFILE=$^. $[@
+    @%make echo_awk
+    $(noecho)*awk -f ../def16lbc.awk -v OUTFILE=$^. $[@
 
 .lbc.lib: $(__MAKEFILES__)
     @%make echo_lib
@@ -110,10 +111,11 @@ all : $(dirs) $(headers) $(libs) .SYMBOLIC
 
 .mh{h}.h:
     @%make echo_wsplice
-    $(wsplice) $(wsplice_opts)
+    $(noecho)*wsplice $(wsplice_opts)
 
 .sp.gsp:
-    $(awk) -f $(hdr_dir)/cpyyear.awk -v CPYYEAR=$(curr_year) -v OUTFILE=$@ $[@
+    @%make echo_awk
+    $(noecho)*awk -f $(hdr_dir)/cpyyear.awk -v CPYYEAR=$(curr_year) -v OUTFILE=$@ $[@
 
 windows.lbc : $(winlibs)
     @for %i in ($(winlibs)) do @%append $@ @ %i

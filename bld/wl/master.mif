@@ -133,8 +133,8 @@ wresui.res : $(wlink_dir)/h/wlink.rc rcmsg.grh $(wlink_dir)/h/wlink.msg &
 
 rcmsg.grh : $(wrc_dir)/h/rc.msg $(__MAKEFILES__)
     @%make echo_awk
-    $(awk) -v base=MSG_RC_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@
+    $(noecho)*awk -v base=MSG_RC_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@
 
 usage.u : $(wlink_dir)/h/usage.sp $(__MAKEFILES__)
     @%make echo_wsplice
-    $(wsplice) -u $[@ $@
+    $(noecho)*wsplice -u $[@ $@

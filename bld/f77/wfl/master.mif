@@ -70,7 +70,7 @@ wresui.res : $(f77wfl_dir)/h/wfl.rc wflmsgs.gh wflmsgs.grh
 
 wflmsgs.gh wflmsgs.grh : $(f77wfl_dir)/gml/wflmsgs.gml
     @%make echo_msgencod
-    $(msgencod) -s -ip -rc=MSG_LANG_BASE -utf8 $(msgencod_enc_$(host_os)) $[@ wflmsgs.gh wflmsgs.grh . .
+    $(noecho)*msgencod -q -s -ip -rc=MSG_LANG_BASE -utf8 $(msgencod_enc_$(host_os)) $[@ wflmsgs.gh wflmsgs.grh . .
 
 
 # optencod options and targets for various hosts
@@ -86,4 +86,4 @@ optencod_targets += dbg
 
 usage.gh $(exetarg_$(host_os)_res) : $(f77_dir)/gml/wfxopts.gml $(__MAKEFILES__)
     @%make echo_optencod
-    $(optencod) -rc=MSG_USAGE_BASE -utf8 $(optencod_opt_$(host_os)) $[@ . . $@ $(optencod_targets)
+    $(noecho)*optencod -q -rc=MSG_USAGE_BASE -utf8 $(optencod_opt_$(host_os)) $[@ . . $@ $(optencod_targets)

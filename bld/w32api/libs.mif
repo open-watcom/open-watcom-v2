@@ -160,13 +160,16 @@ all : $(dirs) $(libs) .SYMBOLIC
 .mh: ../lib
 
 .mh.gdf:
-    $(wsplice) -k$(host_cpu) $[@ $@
+    @%make echo_wsplice
+    $(noecho)*wsplice -k$(host_cpu) $[@ $@
 
 .gdf.lbc:
-    $(awk) -v cpu=$(host_cpu) -f ../def2lbc.awk -v OUTFILE=$^. $[@
+    @%make echo_awk
+    $(noecho)*awk -v cpu=$(host_cpu) -f ../def2lbc.awk -v OUTFILE=$^. $[@
 
 .def.lbc:
-    $(awk) -v cpu=$(host_cpu) -f ../def2lbc.awk -v OUTFILE=$^. $[@
+    @%make echo_awk
+    $(noecho)*awk -v cpu=$(host_cpu) -f ../def2lbc.awk -v OUTFILE=$^. $[@
 
 .lbc.lib: $(__MAKEFILES__)
     @%make echo_lib
@@ -185,7 +188,8 @@ all : $(dirs) $(libs) .SYMBOLIC
     $(librarian) $(libflags) $[@
 
 {ddk}.def{ddk}.lbc:
-    $(awk) -v cpu=$(host_cpu) -f ../def2lbc.awk -v OUTFILE=ddk/$^. $[@
+    @%make echo_awk
+    $(noecho)*awk -v cpu=$(host_cpu) -f ../def2lbc.awk -v OUTFILE=ddk/$^. $[@
 
 {ddk}.lbc{lib/ddk}.lib: $(__MAKEFILES__)
     @%make echo_lib
@@ -196,7 +200,8 @@ all : $(dirs) $(libs) .SYMBOLIC
     $(librarian) $(libflags) $[@
 
 {directx}.def{directx}.lbc:
-    $(awk) -v cpu=$(host_cpu) -f ../def2lbc.awk -v OUTFILE=directx/$^. $[@
+    @%make echo_awk
+    $(noecho)*awk -v cpu=$(host_cpu) -f ../def2lbc.awk -v OUTFILE=directx/$^. $[@
 
 {directx}.lbc{lib/directx}.lib: $(__MAKEFILES__)
     @%make echo_lib
@@ -211,15 +216,18 @@ vfw32.lbc: $(vfw32_lbcs) vfwuuid.obj
     @%append $@ +vfwuuid.obj
 
 ws2_32.lbc: ws2_32.def ws2_cons.obj
-    $(awk) -v cpu=$(host_cpu) -f ../def2lbc.awk -v OUTFILE=$^. $[@
+    @%make echo_awk
+    $(noecho)*awk -v cpu=$(host_cpu) -f ../def2lbc.awk -v OUTFILE=$^. $[@
     @%append $@ +ws2_cons.obj
 
 directx/dinput.lbc: directx/dinput.def directx/dinpstat.obj
-    $(awk) -v cpu=$(host_cpu) -f ../def2lbc.awk -v OUTFILE=directx/$^. $[@
+    @%make echo_awk
+    $(noecho)*awk -v cpu=$(host_cpu) -f ../def2lbc.awk -v OUTFILE=directx/$^. $[@
     @%append $@ +directx/dinpstat.obj
 
 directx/dinput8.lbc: directx/dinput8.def directx/dinpstat.obj
-    $(awk) -v cpu=$(host_cpu) -f ../def2lbc.awk -v OUTFILE=directx/$^. $[@
+    @%make echo_awk
+    $(noecho)*awk -v cpu=$(host_cpu) -f ../def2lbc.awk -v OUTFILE=directx/$^. $[@
     @%append $@ +directx/dinpstat.obj
 
 ddk/rtlver.obj: ddk/rtlver.c

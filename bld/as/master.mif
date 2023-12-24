@@ -198,13 +198,13 @@ msg.grh : $(as_dir)/h/as.msg $(__MAKEFILES__)
     @%make echo_cpp
     $(cpp) -zku8 $(rc_cppflags) $(cppflags) -D_STANDALONE_ -omsg.tmp $[@
     @%make echo_awk
-    $(awk) -v base=MSG_AS_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. msg.tmp
+    $(noecho)*awk -v base=MSG_AS_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. msg.tmp
 
 asi_msg.grh : $(as_dir)/h/as.msg $(__MAKEFILES__)
     @%make echo_cpp
     $(cpp) -zku8 $(rc_cppflags) $(cppflags) -oasi_msg.tmp $[@
     @%make echo_awk
-    $(awk) -v base=MSG_AS_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. asi_msg.tmp
+    $(noecho)*awk -v base=MSG_AS_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. asi_msg.tmp
 
 wsplice_opts_axp = -kAS_ALPHA
 wsplice_opts_mps = -kAS_MIPS
@@ -212,36 +212,44 @@ wsplice_opts_ppc = -kAS_PPC
 wsplice_opts     = $(wsplice_opts_$(target_cpu))
 
 as_in.y : $(yacc_src) $(yacc_driver) $(__MAKEFILES__)
-    $(wsplice) $(wsplice_opts) -k_STANDALONE_ $[@ $^&.tmp
-    $(sed) -e "s/ytab.h/asytab.h/g" $^&.tmp > $@
+    @%make echo_wsplice
+    $(noecho)*wsplice $(wsplice_opts) -k_STANDALONE_ $[@ $^&.tmp
+    @%make echo_sed
+    $(noecho)sed -e "s/ytab.h/asytab.h/g" $^&.tmp > $@
 
 asi_in.y : $(yacc_src) $(yacc_driver) $(__MAKEFILES__)
-    $(wsplice) $(wsplice_opts) $[@ $^&.tmp
-    $(sed) -e "s/ytab.h/asiytab.h/g" $^&.tmp > $@
+    @%make echo_wsplice
+    $(noecho)*wsplice $(wsplice_opts) $[@ $^&.tmp
+    @%make echo_sed
+    $(noecho)sed -e "s/ytab.h/asiytab.h/g" $^&.tmp > $@
 
 $(as_yacc_out).c : as_in.y $(__MAKEFILES__)
     @%make echo_yacc
-    $(yacc) $(as_yacc_flags) as_in.y $(yacc_driver) > $(nulldevice)
+    $(noecho)yacc $(as_yacc_flags) as_in.y $(yacc_driver) > $(nulldevice)
 
 $(asi_yacc_out).c : asi_in.y $(__MAKEFILES__)
     @%make echo_yacc
-    $(yacc) $(asi_yacc_flags) asi_in.y $(yacc_driver) > $(nulldevice)
+    $(noecho)yacc $(asi_yacc_flags) asi_in.y $(yacc_driver) > $(nulldevice)
 
 scan_in.re : $(lex_src) $(__MAKEFILES__)
-    $(wsplice) $(wsplice_opts) -k_STANDALONE_ $[@ $^&.tmp
-    $(sed) -e "s/ytab.h/asytab.h/g" $^&.tmp > $@
+    @%make echo_wsplice
+    $(noecho)*wsplice $(wsplice_opts) -k_STANDALONE_ $[@ $^&.tmp
+    @%make echo_sed
+    $(noecho)sed -e "s/ytab.h/asytab.h/g" $^&.tmp > $@
 
 scani_in.re : $(lex_src) $(__MAKEFILES__)
-    $(wsplice) $(wsplice_opts) $[@ $^&.tmp
-    $(sed) -e "s/ytab.h/asiytab.h/g" $^&.tmp > $@
+    @%make echo_wsplice
+    $(noecho)*wsplice $(wsplice_opts) $[@ $^&.tmp
+    @%make echo_sed
+    $(noecho)sed -e "s/ytab.h/asiytab.h/g" $^&.tmp > $@
 
 $(as_lex_out).c : scan_in.re $(__MAKEFILES__)
     @%make echo_re2c
-    $(re2c) $(lex_flags) $[@ > $@
+    $(noecho)re2c $(lex_flags) $[@ > $@
 
 $(asi_lex_out).c : scani_in.re $(__MAKEFILES__)
     @%make echo_re2c
-    $(re2c) $(lex_flags) $[@ > $@
+    $(noecho)re2c $(lex_flags) $[@ > $@
 
 !ifdef exetarg_qnx_res
 optencod_opt_qnx    = -u=$(exetarg_qnx_res)
@@ -253,4 +261,4 @@ optencod_targets += dbg
 
 usage.gh $(exetarg_$(host_os)_res) : ../../h/options.gml $(__MAKEFILES__)
     @%make echo_optencod
-    $(optencod) -rc=MSG_USAGE_BASE -utf8 $(optencod_opt_$(host_os)) $[@ . . $@ $(optencod_targets)
+    $(noecho)*optencod -q -rc=MSG_USAGE_BASE -utf8 $(optencod_opt_$(host_os)) $[@ . . $@ $(optencod_targets)

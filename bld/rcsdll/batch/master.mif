@@ -29,7 +29,7 @@ all: $(objs) .symbolic
 
 .sp.bat .sp.cmd :
     @%make echo_wsplice
-    $(wsplice) -k $(host_os) -k $(host_cpu) $[@ $@
+    $(noecho)*wsplice -k $(host_os) -k $(host_cpu) $[@ $@
 
 clean: .symbolic
     rm -f *.bat *.cmd

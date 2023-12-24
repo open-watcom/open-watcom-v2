@@ -19,7 +19,8 @@ $(libname).lib : $(objs) $(libs) $(__MAKEFILES__)
     @%make echo_lib
     $(librarian) $(clib_lib_flags) $(clib_linkage_flags) $@ @$^&.lbc
 !ifeq linkage dynamic
-    $(sed) -f $(lib_misc_dir)/sed/export.sed export.tmp > export.gdf
+    @%make echo_sed
+    $(noecho)sed -f $(lib_misc_dir)/sed/export.sed export.tmp > export.gdf
 !endif
 
 !include ../../deps.mif
