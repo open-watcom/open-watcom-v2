@@ -1,3 +1,12 @@
+# librarian settings
+############################
+blibrarian_386  = *wlib
+blibrarian_axp  = *wlib
+blibrarian_ppc  = *wlib
+blibrarian_mps  = *wlib
+
+bld_lib         = $(noecho)$(blibrarian_$(bld_cpu)) -q-b-c-n-pa $@
+
 # build host specific macros
 bcc_386         = *wcc386
 bcc_axp         = *wccaxp
@@ -9,17 +18,11 @@ bcl_axp         = *wclaxp
 bcl_ppc         = *wclppc
 bcl_mps         = *wclmps
 
-blibrarian_386  = *wlib
-blibrarian_axp  = *wlib
-blibrarian_ppc  = *wlib
-blibrarian_mps  = *wlib
-
 bas_386         = *wasm
 bas_axp         = *wasaxp
 bas_ppc         = *wasppc
 bas_mps         = *wasmps
 
-blib            = $(noecho)$(blibrarian_$(bld_cpu)) -q
 bcc             = $(bcc_$(bld_cpu)) -zq $(ppflags_bldver)
 bcl             = $(noecho)$(bcl_$(bld_cpu)) -zq $(ppflags_bldver)
 bas             = $(bas_$(bld_cpu)) -q $(ppflags_bldver)
@@ -61,5 +64,3 @@ bld_clflags     = $(bld_gen_cflags) -fe=$@
 
 # options for linking
 bld_ldflags     =
-
-bld_libflags    = -b-c-n-pa $@
