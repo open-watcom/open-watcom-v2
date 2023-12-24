@@ -122,7 +122,7 @@ along the
 directory should be placed at or near the start of your
 .id PATH
 environment variable.
-.note build/bin
+.note build/binbuild
 contains binaries created during first build phase (bootstrap) and used during
 main building process (second build phase).
 .note build/mif
@@ -154,7 +154,8 @@ Following is a brief description of all subdirectories of bld. Each subdirectory
 roughly corresponds to one "project". There's a lot of projects!
 .begnote
 .note as
-the Alpha AXP and PowerPC assembler. The x86 assembler lives separately.
+the Alpha AXP, the PowerPC and the MIPS assemblers.
+(The x86 assembler lives separately.)
 .note aui
 user interface library employed by the debugger and profiler.
 .note bdiff
@@ -179,7 +180,8 @@ utility function for conversion between various floating point binary formats.
 .note cg
 Open Watcom code generators, the heart of the compilers. These are shared by
 all languages (C, C++, FORTRAN). Currently supported targets are 16-bit and
-32-bit x86 as well as Alpha AXP.
+32-bit x86 as well as Alpha AXP. There are also code generators build for
+PowerPC and MIPS. A very old code generator for s370 is present, but unused.
 .note clib
 the C runtime library. Pretty big project in itself.
 .note cmdedit
