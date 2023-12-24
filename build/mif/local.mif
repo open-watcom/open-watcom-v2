@@ -605,7 +605,72 @@ use_for_build = 1
 
 !ifdef use_for_build
 
-!include bhost.mif
+# librarian settings
+############################
+blibrarian_386  = *wlib
+blibrarian_axp  = *wlib
+blibrarian_ppc  = *wlib
+blibrarian_mps  = *wlib
+
+bld_lib         = $(noecho)$(blibrarian_$(bld_cpu)) -q-b-c-n-pa $@
+
+# build host specific macros
+bcc_386         = *wcc386
+bcc_axp         = *wccaxp
+bcc_ppc         = *wccppc
+bcc_mps         = *wccmps
+
+bcl_386         = *wcl386
+bcl_axp         = *wclaxp
+bcl_ppc         = *wclppc
+bcl_mps         = *wclmps
+
+bas_386         = *wasm
+bas_axp         = *wasaxp
+bas_ppc         = *wasppc
+bas_mps         = *wasmps
+
+bcc             = $(bcc_$(bld_cpu)) -zq $(ppflags_bldver)
+bcl             = $(noecho)$(bcl_$(bld_cpu)) -zq $(ppflags_bldver)
+bas             = $(bas_$(bld_cpu)) -q $(ppflags_bldver)
+blink           = *wlink op q
+
+bld_cc_sys      = $(cflags_$(bld_os))
+bld_cl_sys      = $(clflags_$(bld_os)_$(bld_cpu))
+bld_incs        = $(bld_extra_incs) -I"$(watcom_dir)/h"
+
+bld_watcom_ver = 0
+!ifeq %OWTOOLS WATCOM
+bld_watcom_ver = $+$(%OWTOOLSVER)$-
+!endif
+!if $(bld_watcom_ver) >= 1300 && 0
+bld_new_cflags             =-xx-zam
+bld_std_cflags             =-zastd=c99
+bld_watcom_common_cflags   =-wx-wce=C310
+bld_watcom_common_cxxflags =-w8-wce=P579
+!else
+bld_std_cflags             =-za99
+bld_watcom_common_cflags   =-wx-wce=310
+bld_watcom_common_cxxflags =-w8-wce=579
+!endif
+bld_dft_oflags = -ox
+
+!ifeq debug 1
+bld_gen_cflags  = $(bld_watcom_common_cflags)$(bld_std_cflags)-j-d2$(bld_new_cflags)-fo=.obj
+!else ifeq debug 2
+bld_gen_cflags  = $(bld_watcom_common_cflags)$(bld_std_cflags)-j-d2-DDEVBUILD $(bld_new_cflags)-fo=.obj
+!else
+bld_gen_cflags  = $(bld_watcom_common_cflags)$(bld_std_cflags)-j-s$(bld_dft_oflags)$(bld_new_cflags)-fo=.obj
+!endif
+
+# options for source compilations
+bld_cflags      = $(bld_gen_cflags)
+
+# options for single source utility compilations
+bld_clflags     = $(bld_gen_cflags) -fe=$@
+
+# options for linking
+bld_ldflags     =
 
 !endif  # use_for_build
 

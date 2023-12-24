@@ -345,7 +345,9 @@ static RcStatus writeHeadAndTables( ExeFileInfo *src, ExeFileInfo *dst, int *err
     /* |= the next one since the WIN_GANGLOAD_PRESENT flag may be set */
     dst->u.NEInfo.WinHead.otherflags |= src->u.NEInfo.WinHead.otherflags;
     dst->u.NEInfo.WinHead.swaparea =   0;      /* What is this field for? */
-    if( CmdLineParms.VersionStamp30 ) {
+    if( CmdLineParms.VersionStamp20 ) {
+        dst->u.NEInfo.WinHead.expver = VERSION_20_STAMP;
+    } else if( CmdLineParms.VersionStamp30 ) {
         dst->u.NEInfo.WinHead.expver = VERSION_30_STAMP;
     } else {
         dst->u.NEInfo.WinHead.expver = VERSION_31_STAMP;

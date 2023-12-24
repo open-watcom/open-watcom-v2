@@ -76,6 +76,7 @@ typedef struct RCParams {
     boolbit     PreprocessOnly  : 1;
 //    boolbit     WritableRes     : 1;
     boolbit     VersionStamp30  : 1;
+    boolbit     VersionStamp20  : 1;
     boolbit     NoProtectCC     : 1;    /* if set, don't invoke prot. mode comp */
     boolbit     NoPreprocess    : 1;    /* if set won't attemp any preprocessing */
     boolbit     GenAutoDep      : 1;    /* generate autodependency info for wmake */
@@ -95,6 +96,7 @@ typedef struct RCParams {
     FRStrings   *FindReplaceStrings;
 } RCParams;
 
+#define VERSION_20_STAMP 0x0200
 #define VERSION_30_STAMP 0x0300
 #define VERSION_31_STAMP 0x030a     /* This is what the MS rc uses */
 
