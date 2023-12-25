@@ -34,6 +34,7 @@
 #include "resiccu.h"
 #include "reserr.h"
 #include "wresrtns.h"
+#include "write.h"
 
 bool ResWriteIconCurDirHeader( const IconCurDirHeader *head, FILE *fp )
 /*********************************************************************/
@@ -96,3 +97,30 @@ bool ResWriteCurHotspot( const CurHotspot *hotspot, FILE *fp )
         return( WRES_ERROR( WRS_WRITE_FAILED ) );
     return( false );
 }
+
+bool ResWriteWinOldIconHeader( const IconDirEntry *entry, FILE *fp )
+/************************************************************/
+{
+    bool error;
+
+    error = ResWriteUint8( 0x01, fp ); // rnType
+    if( !error )
+        error = ResWriteUint8( 0x01, fp ); // rnFlags. Magic undocumented bit 0 must be set or Windows 2.x shows the icon at full scale and randomly corrupts it.
+    if( !error )
+        error = ResWriteUint16( 0x0000, fp ); // rnZero
+    if( !error )
+        error = ResWriteUint16( 0x0000, fp ); // bmType
+    if( !error )
+        error = ResWriteUint16( entry->Info.Width, fp ); // bmWidth
+    if( !error )
+        error = ResWriteUint16( entry->Info.Height, fp ); // bmHeight
+    if( !error )
+        error = ResWriteUint16( (((entry->Info.Width*entry->Info.BitCount+15u)&(~15u))/8u)/*WORD align*/, fp ); // bmWidthBytes
+    if( !error )
+        error = ResWriteUint8( entry->Info.BitCount != 1 ? 1 : 0, fp ); // bmPlanes
+    if( !error )
+        error = ResWriteUint8( entry->Info.BitCount != 1 ? entry->Info.BitCount : 0, fp ); // bmBitsPixel
+
+    return( error );
+}
+

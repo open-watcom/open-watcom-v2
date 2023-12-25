@@ -365,6 +365,97 @@ static bool writeIconDir( FullIconDir *dir, WResID *name, ResMemFlags flags, int
     return( error );
 } /* writeIconDir */
 
+static bool CopyTranslateIcoWin2x( FullIconDirEntry *entry, FILE *fp )
+{
+    /* Windows 2.x bitmaps are top-down, not bottom up. Some translation needed. */
+    unsigned int dst_stride = (((entry->Entry.Res.Info.Width*entry->Entry.Res.Info.BitCount+15u)&(~15u))/8u)/*WORD align*/;
+    unsigned int src_stride = (((entry->Entry.Res.Info.Width*entry->Entry.Res.Info.BitCount+31u)&(~31u))/8u)/*DWORD align*/;
+    unsigned int dstm_stride = (((entry->Entry.Res.Info.Width+15u)&(~15u))/8u)/*WORD align*/;
+    unsigned int srcm_stride = (((entry->Entry.Res.Info.Width+31u)&(~31u))/8u)/*DWORD align*/;
+
+    unsigned char *newbmp;
+    unsigned int mask_sz;
+    unsigned int img_sz;
+    unsigned int y;
+
+    /* This code assumes the caller has already read past the DIB header */
+
+    /* Order of storage:
+     * [header]
+     * [icon mask]
+     * [icon image] */
+    img_sz = dst_stride * entry->Entry.Res.Info.Height;
+    mask_sz = dstm_stride * entry->Entry.Res.Info.Height;
+    newbmp = malloc( img_sz + mask_sz );
+    if( !newbmp )
+        return( true );
+
+    memset( newbmp, 0, img_sz + mask_sz );
+
+    /* icon image */
+    for (y=0;y < entry->Entry.Res.Info.Height;y++) {
+        if( RESREAD( fp, newbmp + mask_sz + ((entry->Entry.Res.Info.Height - 1 - y) * dst_stride), src_stride ) != dst_stride ) {
+            free( newbmp );
+            return( true );
+        }
+    }
+
+    /* icon mask */
+    for (y=0;y < entry->Entry.Res.Info.Height;y++) {
+        if( RESREAD( fp, newbmp + ((entry->Entry.Res.Info.Height - 1 - y) * dstm_stride), srcm_stride ) != dstm_stride ) {
+            free( newbmp );
+            return( true );
+        }
+    }
+
+    if( RESWRITE( CurrResFile.fp, newbmp, img_sz + mask_sz ) != (img_sz + mask_sz)) {
+        free( newbmp );
+        return( true );
+    }
+
+    free( newbmp );
+    return( false );
+}
+
+static bool writeTheWindows2xIcon( FullIconDirEntry *entry, WResID *name, ResMemFlags flags, int *err_code, FILE *fp )
+/******************************************************************************************/
+{
+    bool                error;
+    ResLocation         loc;
+
+    loc.start = SemStartResource();
+    error = ResWriteWinOldIconHeader( &(entry->Entry.Res), CurrResFile.fp );
+    if( !error )
+        error = CopyTranslateIcoWin2x( entry, fp );
+    if( error ) {
+        *err_code = LastWresErr();
+    } else {
+        loc.len = SemEndResource( loc.start );
+        SemAddResourceFree( name, WResIDFromNum( RESOURCE2INT( RT_ICON ) ), flags, loc );
+    }
+
+    return( error );
+} /* writeTheWindows2xIcon */
+
+static bool IconIsWin2xCompatible( FullIconDirEntry *entry ) {
+    if( entry->Entry.Res.Info.Width == 64 && entry->Entry.Res.Info.Height == 64 &&
+        entry->Entry.Res.Info.Planes == 1 && entry->Entry.Res.Info.BitCount == 1 )
+        return true;
+    else
+        return false;
+}
+
+static FullIconDirEntry *FindWindows2xCompatibleIcon( FullIconDir *dir ) {
+    FullIconDirEntry    *entry;
+
+    for( entry = dir->Head; entry != NULL; entry = entry->Next ) {
+        if( IconIsWin2xCompatible( entry ) )
+            return entry;
+    }
+
+    return NULL;
+}
+
 static void AddIconResource( WResID *name, ResMemFlags flags, ResMemFlags group_flags, const char *filename )
 /***********************************************************************************************************/
 {
@@ -385,13 +476,58 @@ static void AddIconResource( WResID *name, ResMemFlags flags, ResMemFlags group_
     if( ret != RS_OK )
         goto READ_DIR_ERROR;
 
-    ret = copyIcons( &dir, fp, flags, &err_code );
-    if( ret != RS_OK )
-        goto COPY_ICONS_ERROR;
+    if ( CmdLineParms.VersionStamp20 ) {
+        /* Windows 2.0 has a more strict requirement of icon resources:
+         * It must be 64x64 1bpp monochrome. No exceptions. There is no
+         * "icon directory" to pick multiple versions. The RT_ICON resource
+         * is THE icon.
+         *
+         * If the icon directory does not offer a 64x64x1bpp icon, then
+         * pick the first one and print a warning. */
+        FullIconDirEntry *entry = FindWindows2xCompatibleIcon( &dir );
+        if( !entry ) {
+            RcWarning( WARN_ICON_WIN2X );
+            entry = dir.Head;
+            if( !entry )
+                goto COPY_ICONS_ERROR;
+        }
 
-    error = writeIconDir( &dir, name, group_flags, &err_code );
-    if( error)
-        goto WRITE_DIR_ERROR;
+        {
+            /* need more information like biPlanes, biBitCount */
+            unsigned int palbytes = 0;
+            BitmapInfoHeader dibhead;
+
+            if( RESSEEK( fp, entry->Entry.Ico.Offset, SEEK_SET ) )
+                goto COPY_ICONS_ERROR;
+            if( ReadBitmapInfoHeader( &dibhead, fp ) != RS_OK )
+                goto COPY_ICONS_ERROR;
+
+            entry->Entry.Res.Info.Planes = dibhead.Planes;
+            entry->Entry.Res.Info.BitCount = dibhead.BitCount;
+
+            /* seek to the bitmap bits directly */
+            if (dibhead.BitCount <= 8) {
+                if (dibhead.ClrUsed != 0)
+                    palbytes = 4 * dibhead.ClrUsed;
+                else
+                    palbytes = 4 << dibhead.BitCount;
+            }
+
+            if( RESSEEK( fp, entry->Entry.Ico.Offset + dibhead.Size + palbytes, SEEK_SET ) )
+                goto COPY_ICONS_ERROR;
+        }
+
+        error = writeTheWindows2xIcon( entry, name, group_flags, &err_code, fp );
+    }
+    else {
+        ret = copyIcons( &dir, fp, flags, &err_code );
+        if( ret != RS_OK )
+            goto COPY_ICONS_ERROR;
+
+        error = writeIconDir( &dir, name, group_flags, &err_code );
+        if( error)
+            goto WRITE_DIR_ERROR;
+    }
 
     FreeIconDir( &dir );
     RcIoCloseInputBin( fp );

@@ -323,3 +323,6 @@ pick(   WARN_DLGFONT_WIN2X,
 pick(   WARN_SUBMEN_WIN2X,
         "MENU resources cannot have submenus in Windows 2.x.",
         "MENU resources cannot have submenus in Windows 2.x." )
+pick(   WARN_ICON_WIN2X,
+        "ICON resource is incompatible with Windows 2.x. Please add a compatible size and depth version to your ICO file.",
+        "ICON resource is incompatible with Windows 2.x. Please add a compatible size and depth version to your ICO file." )
