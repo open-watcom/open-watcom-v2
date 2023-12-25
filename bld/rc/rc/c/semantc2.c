@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -133,7 +134,8 @@ void SemOS2CheckResFlags( FullOptFlagsOS2 *currflags, ResMemFlags loadopts,
      * If the user set the resource to be IMPURE but doesn't give a mem option
      * set the resource to be non-discardable.
      */
-    if( currflags->purityOptGiven && !currflags->memOptGiven ) {
+    if( currflags->purityOptGiven
+      && !currflags->memOptGiven ) {
         if( !(currflags->flags & MEMFLAG_PURE) ) {
             currflags->flags &= ~MEMFLAG_DISCARDABLE;
         }

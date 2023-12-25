@@ -90,7 +90,8 @@ void SemWINAddSingleLineResource( WResID *name, YYTOKENTYPE type, FullMemFlags *
         RESFREE( filename );
         return;
     }
-    if( CmdLineParms.VersionStamp30 || CmdLineParms.VersionStamp20 ) {
+    if( CmdLineParms.VersionStamp30
+      || CmdLineParms.VersionStamp20 ) {
         purity_option = CUR_ICON_PURITY_30;
     } else {
         purity_option = CUR_ICON_PURITY_31;
@@ -108,32 +109,32 @@ void SemWINAddSingleLineResource( WResID *name, YYTOKENTYPE type, FullMemFlags *
     case Y_ICON:
         if( fullflags != NULL ) {
             SemWINCheckMemFlags( fullflags, 0,
-                                MEMFLAG_MOVEABLE|MEMFLAG_DISCARDABLE,
+                                MEMFLAG_MOVEABLE | MEMFLAG_DISCARDABLE,
                                 purity_option );
             flags = fullflags->flags;
             SemWINCheckMemFlags( fullflags, 0,
-                                MEMFLAG_MOVEABLE|MEMFLAG_DISCARDABLE,
+                                MEMFLAG_MOVEABLE | MEMFLAG_DISCARDABLE,
                                 MEMFLAG_PURE );
             group_flags = fullflags->flags;
         } else {
-            flags = MEMFLAG_MOVEABLE|MEMFLAG_DISCARDABLE| purity_option;
-            group_flags = MEMFLAG_MOVEABLE|MEMFLAG_DISCARDABLE|MEMFLAG_PURE;
+            flags = MEMFLAG_MOVEABLE | MEMFLAG_DISCARDABLE | purity_option;
+            group_flags = MEMFLAG_MOVEABLE | MEMFLAG_DISCARDABLE | MEMFLAG_PURE;
         }
         AddIconResource( name, flags, group_flags, full_filename );
         break;
     case Y_CURSOR:
         if( fullflags != NULL ) {
             SemWINCheckMemFlags( fullflags, 0,
-                                MEMFLAG_MOVEABLE|MEMFLAG_DISCARDABLE,
+                                MEMFLAG_MOVEABLE | MEMFLAG_DISCARDABLE,
                                 purity_option );
             flags = fullflags->flags;
             SemWINCheckMemFlags( fullflags, 0,
-                                MEMFLAG_MOVEABLE|MEMFLAG_DISCARDABLE,
+                                MEMFLAG_MOVEABLE | MEMFLAG_DISCARDABLE,
                                 MEMFLAG_PURE );
             group_flags = fullflags->flags;
         } else {
-            flags = MEMFLAG_MOVEABLE|MEMFLAG_DISCARDABLE| purity_option;
-            group_flags = MEMFLAG_MOVEABLE|MEMFLAG_DISCARDABLE|MEMFLAG_PURE;
+            flags = MEMFLAG_MOVEABLE | MEMFLAG_DISCARDABLE | purity_option;
+            group_flags = MEMFLAG_MOVEABLE | MEMFLAG_DISCARDABLE | MEMFLAG_PURE;
         }
         AddCursorResource( name, flags, group_flags, full_filename );
         break;
@@ -142,18 +143,18 @@ void SemWINAddSingleLineResource( WResID *name, YYTOKENTYPE type, FullMemFlags *
             SemWINCheckMemFlags( fullflags, 0, MEMFLAG_MOVEABLE, MEMFLAG_PURE );
             flags = fullflags->flags;
         } else {
-            flags = MEMFLAG_MOVEABLE|MEMFLAG_PURE;
+            flags = MEMFLAG_MOVEABLE | MEMFLAG_PURE;
         }
         AddBitmapResource( name, flags, full_filename );
         break;
     case Y_FONT:
         if( fullflags != NULL ) {
             SemWINCheckMemFlags( fullflags, 0,
-                                MEMFLAG_MOVEABLE|MEMFLAG_DISCARDABLE,
+                                MEMFLAG_MOVEABLE | MEMFLAG_DISCARDABLE,
                                 MEMFLAG_PURE );
             flags = fullflags->flags;
         } else {
-            flags = MEMFLAG_MOVEABLE|MEMFLAG_DISCARDABLE|MEMFLAG_PURE;
+            flags = MEMFLAG_MOVEABLE | MEMFLAG_DISCARDABLE | MEMFLAG_PURE;
         }
         AddFontResources( name, flags, full_filename );
         break;
@@ -224,7 +225,8 @@ static RcStatus readIcoFileDir( FILE *fp, FullIconDir *dir, int *err_code )
     /*
      * type 1 is a icon file
      */
-    if( ret == RS_OK && dir->Header.Type != 1 ) {
+    if( ret == RS_OK
+      && dir->Header.Type != 1 ) {
         return( RS_INVALID_RESOURCE );
     }
 
@@ -393,16 +395,16 @@ static bool CopyTranslateIcoWin2x( FullIconDirEntry *entry, FILE *fp )
     memset( newbmp, 0, img_sz + mask_sz );
 
     /* icon image */
-    for (y=0;y < entry->Entry.Res.Info.Height;y++) {
-        if( RESREAD( fp, newbmp + mask_sz + ((entry->Entry.Res.Info.Height - 1 - y) * dst_stride), src_stride ) != dst_stride ) {
+    for( y = 0; y < entry->Entry.Res.Info.Height; y++ ) {
+        if( RESREAD( fp, newbmp + mask_sz + ( (entry->Entry.Res.Info.Height - 1 - y ) * dst_stride ), src_stride ) != dst_stride ) {
             free( newbmp );
             return( true );
         }
     }
 
     /* icon mask */
-    for (y=0;y < entry->Entry.Res.Info.Height;y++) {
-        if( RESREAD( fp, newbmp + ((entry->Entry.Res.Info.Height - 1 - y) * dstm_stride), srcm_stride ) != dstm_stride ) {
+    for( y = 0; y < entry->Entry.Res.Info.Height; y++ ) {
+        if( RESREAD( fp, newbmp + ( ( entry->Entry.Res.Info.Height - 1 - y ) * dstm_stride ), srcm_stride ) != dstm_stride ) {
             free( newbmp );
             return( true );
         }
@@ -438,22 +440,26 @@ static bool writeTheWindows2xIcon( FullIconDirEntry *entry, WResID *name, ResMem
 } /* writeTheWindows2xIcon */
 
 static bool IconIsWin2xCompatible( FullIconDirEntry *entry ) {
-    if( entry->Entry.Res.Info.Width == 64 && entry->Entry.Res.Info.Height == 64 &&
-        entry->Entry.Res.Info.Planes == 1 && entry->Entry.Res.Info.BitCount == 1 )
-        return true;
-    else
-        return false;
+    if( entry->Entry.Res.Info.Width == 64
+      && entry->Entry.Res.Info.Height == 64
+      && entry->Entry.Res.Info.Planes == 1
+      && entry->Entry.Res.Info.BitCount == 1 ) {
+        return( true );
+    } else {
+        return( false );
+    }
 }
 
 static FullIconDirEntry *FindWindows2xCompatibleIcon( FullIconDir *dir ) {
     FullIconDirEntry    *entry;
 
     for( entry = dir->Head; entry != NULL; entry = entry->Next ) {
-        if( IconIsWin2xCompatible( entry ) )
-            return entry;
+        if( IconIsWin2xCompatible( entry ) ) {
+            return( entry );
+        }
     }
 
-    return NULL;
+    return( NULL );
 }
 
 static void AddIconResource( WResID *name, ResMemFlags flags, ResMemFlags group_flags, const char *filename )
@@ -476,7 +482,7 @@ static void AddIconResource( WResID *name, ResMemFlags flags, ResMemFlags group_
     if( ret != RS_OK )
         goto READ_DIR_ERROR;
 
-    if ( CmdLineParms.VersionStamp20 ) {
+    if( CmdLineParms.VersionStamp20 ) {
         FullIconDirEntry *entry;
 
         /* More info needed */
@@ -518,27 +524,29 @@ static void AddIconResource( WResID *name, ResMemFlags flags, ResMemFlags group_
                 goto COPY_ICONS_ERROR;
 
             /* seek to the bitmap bits directly */
-            if (dibhead.BitCount <= 8) {
-                if (dibhead.ClrUsed != 0)
+            if( dibhead.BitCount <= 8 ) {
+                if( dibhead.ClrUsed != 0 ) {
                     palbytes = 4 * dibhead.ClrUsed;
-                else
+                } else {
                     palbytes = 4 << dibhead.BitCount;
+                }
             }
 
-            if( RESSEEK( fp, entry->Entry.Ico.Offset + dibhead.Size + palbytes, SEEK_SET ) )
+            if( RESSEEK( fp, entry->Entry.Ico.Offset + dibhead.Size + palbytes, SEEK_SET ) ) {
                 goto COPY_ICONS_ERROR;
+            }
         }
 
         error = writeTheWindows2xIcon( entry, name, group_flags, &err_code, fp );
-    }
-    else {
+    } else {
         ret = copyIcons( &dir, fp, flags, &err_code );
         if( ret != RS_OK )
             goto COPY_ICONS_ERROR;
 
         error = writeIconDir( &dir, name, group_flags, &err_code );
-        if( error)
+        if( error ) {
             goto WRITE_DIR_ERROR;
+        }
     }
 
     FreeIconDir( &dir );
@@ -735,7 +743,8 @@ static RcStatus readCurFileDir( FILE *fp, FullCurDir *dir, int *err_code )
     /*
      * type 2 is a cursor file
      */
-    if( ret == RS_OK && dir->Header.Type != 2 ) {
+    if( ret == RS_OK
+      && dir->Header.Type != 2 ) {
         return( RS_INVALID_RESOURCE );
     }
 
@@ -1176,7 +1185,7 @@ static void FreeFontDir( FullFontDir *olddir )
  * name and memory flags of the font directory resource
  */
 #define FONT_DIR_NAME   "FONTDIR"
-#define FONT_DIR_FLAGS  MEMFLAG_MOVEABLE|MEMFLAG_PRELOAD   /* not PURE */
+#define FONT_DIR_FLAGS  MEMFLAG_MOVEABLE | MEMFLAG_PRELOAD  /* not PURE */
 
 void SemWINWriteFontDir( void )
 /*****************************/

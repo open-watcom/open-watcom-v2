@@ -89,7 +89,8 @@ FullAccelEntry SemWINMakeAccItem( AccelEvent event, unsigned long idval,
 
     entry.Win32 = false;
     entry.startoftable = 0;
-    if( event.strevent || flags.typegiven ) {
+    if( event.strevent
+      || flags.typegiven ) {
         CheckAccelFlags( &flags.flags, idval );
         if( CmdLineParms.TargetOS == RC_TARGET_OS_WIN16 ) {
             entry.u.entry.Ascii = event.event;

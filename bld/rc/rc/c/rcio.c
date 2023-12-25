@@ -128,7 +128,9 @@ static bool checkCurrentFileType( const char *filename )
     /*
      * if this is a c or h file ext will be '.', '[ch]', '\0'
      */
-    if( pg.ext[0] == '.' && pg.ext[1] != '\0' && pg.ext[2] == '\0' ) {
+    if( pg.ext[0] == '.'
+      && pg.ext[1] != '\0'
+      && pg.ext[2] == '\0' ) {
         switch( pg.ext[1] ) {
         case 'c':
         case 'C':
@@ -147,7 +149,8 @@ static file_loc *addLocation( file_loc *prev, const char *filename )
 {
     file_loc    *loc;
 
-    if( prev == NULL || strcmp( prev->Filename, filename ) != 0 ) {
+    if( prev == NULL
+      || strcmp( prev->Filename, filename ) != 0 ) {
         loc = RESALLOC( sizeof( file_loc ) );
         if( loc != NULL ) {
             loc->prev = prev;
@@ -343,7 +346,8 @@ void RcIoSetCurrentFileInfo( unsigned lineno, const char *filename )
     file_loc    *loc;
 
     loc = InStack.Location;
-    if( loc == NULL || lineno == 1 ) {
+    if( loc == NULL
+      || lineno == 1 ) {
         loc = addLocation( loc, filename );
     } else if( strcmp( loc->Filename, filename ) != 0 ) {
         loc = removeLocation( loc );

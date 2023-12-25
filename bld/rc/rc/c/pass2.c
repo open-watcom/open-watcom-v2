@@ -764,7 +764,8 @@ static RcStatus updateDebugDirectory( ExeFileInfo *src, ExeFileInfo *dst )
         return( RS_OK );
     src_offset = OffsetFromRVA( src, src_rva );
     dst_offset = OffsetFromRVA( dst, dst_rva );
-    if( src_offset == 0xFFFFFFFF || dst_offset == 0xFFFFFFFF ) {
+    if( src_offset == 0xFFFFFFFF
+      || dst_offset == 0xFFFFFFFF ) {
         return( RS_BAD_FILE_FMT );
     }
     if( RESSEEK( dst->fp, dst_offset, SEEK_SET ) )

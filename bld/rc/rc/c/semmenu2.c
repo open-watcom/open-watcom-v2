@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -91,7 +92,8 @@ static bool ResOS2WriteMenuItemNormal( const MenuItemOS2 *curritem, FILE *fp )
         error = ResWriteUint16( curritem->ItemCmd, fp );
     }
     if( !error ) {
-        if( !(curritem->ItemStyle & OS2_MIS_SEPARATOR) && curritem->ItemText != NULL ) {
+        if( !(curritem->ItemStyle & OS2_MIS_SEPARATOR)
+          && curritem->ItemText != NULL ) {
             error = ResWriteString( curritem->ItemText, false, fp );
         }
     }
@@ -128,7 +130,8 @@ FullMenuOS2 *SemOS2NewMenu( FullMenuItemOS2 firstitem )
     newmenu = RESALLOC( sizeof( FullMenuOS2 ) );
     newitem = RESALLOC( sizeof( FullMenuItemOS2 ) );
 
-    if( newmenu == NULL || newitem == NULL ) {
+    if( newmenu == NULL
+      || newitem == NULL ) {
         RcError( ERR_OUT_OF_MEMORY );
         ErrorHasOccured = true;
         return( NULL );
@@ -189,7 +192,8 @@ static size_t SemOS2CalcSubMenuSize( FullMenuOS2 *submenu, unsigned *count )
     for( curritem = submenu->head; curritem != NULL; curritem = curritem->next ) {
         *count += 1;
         size += 3 * sizeof( uint_16 );
-        if( !(curritem->item.ItemStyle & OS2_MIS_SEPARATOR) && curritem->item.ItemText != NULL )
+        if( !(curritem->item.ItemStyle & OS2_MIS_SEPARATOR)
+          && curritem->item.ItemText != NULL )
             size += strlen( curritem->item.ItemText ) + 1;
         if( curritem->item.ItemStyle & OS2_MIS_SUBMENU ) {
             size += SemOS2CalcSubMenuSize( curritem->submenu, &dummycount );
@@ -230,7 +234,8 @@ static bool SemOS2WriteSubMenu( FullMenuOS2 *submenu, int *err_code, uint_32 cod
     for( curritem = submenu->head; curritem != NULL && !error; curritem = curritem->next ) {
         if( !ErrorHasOccured ) {
             error = SemOS2WriteMenuItem( curritem, err_code );
-            if( !error && (curritem->item.ItemStyle & OS2_MIS_SUBMENU) ) {
+            if( !error
+              && (curritem->item.ItemStyle & OS2_MIS_SUBMENU) ) {
                 error = SemOS2WriteSubMenu( curritem->submenu, err_code, codepage );
             }
         }

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -146,7 +147,8 @@ static int RcFindIndex( FILE *fp )
     int     i;
 
     for( i = 0; i < RC_MAX_FILES; i++ ) {
-        if( RcFileList[i].fp == fp && RcFileList[i].HasRcBuffer ) {
+        if( RcFileList[i].fp == fp
+          && RcFileList[i].HasRcBuffer ) {
             break;
         }
     }
@@ -384,7 +386,8 @@ bool res_seek( FILE *fp, long amount, int where )
              * if we are seeking backwards any amount or forwards past the
              * end of the buffer
              */
-            if( amount < currpos || amount >= currpos + ( RC_BUFFER_SIZE - buff->Count ) ) {
+            if( amount < currpos
+              || amount >= currpos + ( RC_BUFFER_SIZE - buff->Count ) ) {
                 if( FlushRcBuffer( fp, buff ) )
                     return( true );
                 return( fseek( fp, amount, SEEK_SET ) != 0 );
@@ -415,7 +418,8 @@ bool res_seek( FILE *fp, long amount, int where )
             /*
              * if the new pos is outside the buffer
              */
-            if( amount < currpos + buff->Count - buff->BytesRead || amount >= currpos + buff->Count ) {
+            if( amount < currpos + buff->Count - buff->BytesRead
+              || amount >= currpos + buff->Count ) {
                 if( FlushRcBuffer( fp, buff ) )
                     return( true );
                 return( fseek( fp, amount, SEEK_SET ) != 0 );

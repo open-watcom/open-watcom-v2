@@ -152,7 +152,8 @@ const char *RcGetEnv( const char *name )
 {
     const char  *val;
 
-    if( IdeCbs != NULL && !initInfo->ignore_env ) {
+    if( IdeCbs != NULL
+      && !initInfo->ignore_env ) {
         if( !IDEFN( GetInfo )( IdeHdl, IDE_GET_ENV_VAR, (IDEGetInfoWParam)name, (IDEGetInfoLParam)&val ) ) {
             return( val );
         }
@@ -199,7 +200,8 @@ static void RcIoPrintUsage( void )
     char        buf[256];
 
     RcIoPrintBanner();
-    if( console_tty && !CmdLineParms.Quiet ) {
+    if( console_tty
+      && !CmdLineParms.Quiet ) {
         ConsoleMessage( "\n" );
     }
     for( index = MSG_USAGE_BASE; index < MSG_USAGE_BASE + MSG_USAGE_COUNT; index++ ) {
@@ -245,12 +247,15 @@ static int RCMainLine( const char *opts, int argc, char **argv )
                 ParseEnvVar( str, argv, cmdbuf );
                 pass1 = false;
                 for( i = 0; i < argc; i++ ) {
-                    if( argv[i] != NULL && stricmp( argv[i], "-r" ) == 0 ) {
+                    if( argv[i] != NULL
+                      && stricmp( argv[i], "-r" ) == 0 ) {
                         pass1 = true;
                         break;
                     }
                 }
-                if( initInfo != NULL && initInfo->ver > 1 && !initInfo->cmd_line_has_files ) {
+                if( initInfo != NULL
+                  && initInfo->ver > 1
+                  && !initInfo->cmd_line_has_files ) {
                     p = infile + 1;
                     if( !IDEFN( GetInfo )( IdeHdl, IDE_GET_SOURCE_FILE, (IDEGetInfoWParam)NULL, (IDEGetInfoLParam)&p ) ) {
                         infile[0] = '\"';
@@ -358,7 +363,8 @@ int IDEAPI IDERunYourSelf( IDEDllHdl hdl, const char *opts, IDEBool *fatalerr )
     if( fatalerr != NULL )
         *fatalerr = false;
     rc = RCMainLine( opts, 0, NULL );
-    if( rc == -1 && fatalerr != NULL )
+    if( rc == -1
+      && fatalerr != NULL )
         *fatalerr = true;
     return( rc );
 }
@@ -379,7 +385,8 @@ int IDEAPI IDERunYourSelfArgv( IDEDllHdl hdl, int argc, char **argv, IDEBool *fa
     if( fatalerr != NULL )
         *fatalerr = false;
     rc = RCMainLine( NULL, argc, argv );
-    if( rc == -1 && fatalerr != NULL )
+    if( rc == -1
+      && fatalerr != NULL )
         *fatalerr = true;
     return( rc );
 }

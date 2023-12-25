@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -88,7 +89,8 @@ static void CheckAccelFlags( uint_16 *flags, unsigned long idval )
     /*
      * CHAR is the default
      */
-    if( !( *flags & OS2_ACCEL_VIRTUALKEY ) && !( *flags & OS2_ACCEL_CHAR ) )
+    if( !( *flags & OS2_ACCEL_VIRTUALKEY )
+      && !( *flags & OS2_ACCEL_CHAR ) )
         *flags |= OS2_ACCEL_CHAR;
 #if 0
     if( !( *flags & OS2_ACCEL_VIRTUALKEY ) ) {
@@ -111,7 +113,8 @@ FullAccelEntryOS2 SemOS2MakeAccItem( AccelEvent event, unsigned long idval,
     FullAccelEntryOS2      entry;
 
     memset( &entry, 0, sizeof( entry ) );
-//    if( event.strevent || flags.typegiven ) {
+//    if( event.strevent
+//      || flags.typegiven ) {
         CheckAccelFlags( &flags.flags, idval );
         entry.entry.Ascii = event.event;
         entry.entry.Flags = flags.flags;
@@ -141,7 +144,8 @@ FullAccelTableOS2 *SemOS2NewAccelTable( FullAccelEntryOS2 firstentry )
     newtable = RESALLOC( sizeof( FullAccelTableOS2 ) );
     newentry = RESALLOC( sizeof( FullAccelEntryOS2 ) );
 
-    if( newtable == NULL || newentry == NULL ) {
+    if( newtable == NULL
+      || newentry == NULL ) {
         RcError( ERR_OUT_OF_MEMORY );
         ErrorHasOccured = true;
         return( NULL );

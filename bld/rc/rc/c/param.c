@@ -136,7 +136,8 @@ static char *scanString( char *buf, const char *str, unsigned len )
     have_quote = false;
     while( isspace( *str ) )
         ++str;
-    while( (c = *str++) != '\0' && len > 0 ) {
+    while( (c = *str++) != '\0'
+      && len > 0 ) {
         if( c == '\"' ) {
             have_quote = !have_quote;
         } else {
@@ -286,7 +287,8 @@ static bool ScanOptionsArg( const char *arg )
             arg++;
             if( *arg == '=' )
                 arg++;
-            if( stricmp( arg, "windows" ) == 0 || stricmp( arg, "win" ) == 0 ) {
+            if( stricmp( arg, "windows" ) == 0
+              || stricmp( arg, "win" ) == 0 ) {
                 CmdLineParms.TargetOS = RC_TARGET_OS_WIN16;
             } else if( stricmp( arg, "nt" ) == 0 ) {
                 CmdLineParms.TargetOS = RC_TARGET_OS_WIN32;
@@ -579,7 +581,8 @@ static void CheckPass2Only( void )
     char        **check_ext;
 
     _splitpath2( CmdLineParms.InFileName, pg.buffer, NULL, NULL, NULL, &pg.ext );
-    if( pg.ext[0] == '.' && stricmp( pg.ext + 1, "res" ) == 0 ) {
+    if( pg.ext[0] == '.'
+      && stricmp( pg.ext + 1, "res" ) == 0 ) {
         CmdLineParms.Pass2Only = true;
     } else {
         /*
@@ -587,7 +590,8 @@ static void CheckPass2Only( void )
          * and there is no resource file to merge
          */
         for( check_ext = (char **)ExeExt; *check_ext != NULL; check_ext++ ) {
-            if( pg.ext[0] == '.' && stricmp( pg.ext + 1, *check_ext ) == 0 ) {
+            if( pg.ext[0] == '.'
+              && stricmp( pg.ext + 1, *check_ext ) == 0 ) {
                 CmdLineParms.Pass2Only = true;
                 CmdLineParms.NoResFile = true;
             }
@@ -639,21 +643,25 @@ static void CheckParms( void )
     /*
      * check for the existance of the input files
      */
-    if( !( CmdLineParms.Pass2Only && CmdLineParms.NoResFile ) ) {
+    if( !( CmdLineParms.Pass2Only
+      && CmdLineParms.NoResFile ) ) {
         if( access( CmdLineParms.InFileName, F_OK ) != 0 ) {
             RcFatalError( ERR_CANT_FIND_FILE, CmdLineParms.InFileName );
         }
     }
-    if( !CmdLineParms.Pass1Only && !CmdLineParms.PreprocessOnly ) {
+    if( !CmdLineParms.Pass1Only
+      && !CmdLineParms.PreprocessOnly ) {
         if( access( CmdLineParms.InExeFileName, F_OK ) != 0 ) {
             RcFatalError( ERR_CANT_FIND_FILE, CmdLineParms.InExeFileName );
         }
     }
 
-    if( CmdLineParms.GenAutoDep && CmdLineParms.MSResFormat ) {
+    if( CmdLineParms.GenAutoDep
+      && CmdLineParms.MSResFormat ) {
         RcFatalError( ERR_OPT_NOT_VALID_TOGETHER, "-ad", "-zm" );
     }
-    if( CmdLineParms.PreprocessOnly && CmdLineParms.NoPreprocess ) {
+    if( CmdLineParms.PreprocessOnly
+      && CmdLineParms.NoPreprocess ) {
         RcFatalError( ERR_OPT_NOT_VALID_TOGETHER, "-o", "-zn" );
     }
 
@@ -840,7 +848,8 @@ static bool doScanParams( int argc, char *argv[], int *nofilenames )
     switchchar = _dos_switch_char();
     for( currarg = 1; currarg < argc && contok; currarg++ ) {
         arg = argv[currarg];
-        if( *arg == switchchar || *arg == '-' ) {
+        if( *arg == switchchar
+          || *arg == '-' ) {
             contok = ScanOptionsArg( arg + 1 ) && contok;
         } else if( *arg == '@' ) {
             contok = scanEnvVar( arg + 1, nofilenames ) && contok;
@@ -889,20 +898,25 @@ int ParseEnvVar( const char *env, char **argv, char *buf )
         argv[0] = ""; //fill in the program name
     for( ;; ) {
         got_quote = false;
-        while( isspace( *env ) && *env != '\0' )
+        while( isspace( *env )
+          && *env != '\0' ) {
             env++;
+        }
         start = env;
         if( buf != NULL ) {
             argv[argc] = bufend;
         }
-        if( *env == switchchar || *env == '-' ) {
+        if( *env == switchchar
+          || *env == '-' ) {
             if( buf != NULL ) {
                 *bufend = *env;
                 bufend++;
             }
             env ++;
         }
-        while( ( got_quote || !isspace( *env ) ) && *env != '\0' ) {
+        while( ( got_quote
+          || !isspace( *env ) )
+          && *env != '\0' ) {
             if( *env == '\"' ) {
                 got_quote = !got_quote;
             }
@@ -1126,7 +1140,8 @@ char *FindAndReplace( char *stringFromFile, FRStrings *frStrings )
                 noOfInstances++;
             }
         }
-        if( replacedString != NULL && frStrings->next != NULL ) {
+        if( replacedString != NULL
+          && frStrings->next != NULL ) {
             stringFromFile = RcMemRealloc( stringFromFile, strlen( replacedString ) + 1 );
             strcpy( stringFromFile, replacedString );
             RcMemFree( replacedString );

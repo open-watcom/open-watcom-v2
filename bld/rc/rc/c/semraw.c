@@ -88,7 +88,8 @@ RcStatus SemCopyDataUntilEOF( long offset, FILE *fp,
     }
 
     while( (numread = RESREAD( fp, buff, buffsize )) != 0 ) {
-        if( numread != buffsize && RESIOERR( fp, numread ) ) {
+        if( numread != buffsize
+          && RESIOERR( fp, numread ) ) {
             *err_code = errno;
             return( RS_READ_ERROR );
         }
@@ -235,7 +236,8 @@ ResLocation SemFlushDataElemList( DataElemList *head, bool call_startend )
     }
     if( call_startend ) {
         resLoc.len = SemEndResource( resLoc.start );
-        if( CmdLineParms.MSResFormat && CmdLineParms.TargetOS == RC_TARGET_OS_WIN32 ) {
+        if( CmdLineParms.MSResFormat
+          && CmdLineParms.TargetOS == RC_TARGET_OS_WIN32 ) {
             ResWritePadDWord( CurrResFile.fp );
         }
     }

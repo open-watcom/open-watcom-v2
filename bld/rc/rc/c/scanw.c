@@ -50,7 +50,8 @@
 
 static void PutScanString( const char *string )
 {
-    if( CmdLineParms.DebugScanner && string != NULL ) {
+    if( CmdLineParms.DebugScanner
+      && string != NULL ) {
         RcMsgFprintf( NULL, "%s\n", string );
     }
 } /* PutScanString */
@@ -79,7 +80,8 @@ static void GetNextChar( void )
         LookAhead = _next;
         if( LookAhead != EOF ) {
             _next = RcIoGetChar();
-            if( LookAhead == '\\' && _next == '\n' ) {
+            if( LookAhead == '\\'
+              && _next == '\n' ) {
                 _next = RcIoGetChar();
                 continue;
             }
@@ -169,7 +171,8 @@ static YYTOKENTYPE ScanCPPDirective( ScanValue *value )
         unsigned        i;
 
         i = 0;
-        while( LookAhead != '\n' && LookAhead != EOF ) {
+        while( LookAhead != '\n'
+          && LookAhead != EOF ) {
             buf[i] = LookAhead;
             i ++;
             GetNextChar();
@@ -217,10 +220,12 @@ static YYTOKENTYPE ScanDFA( ScanValue *value )
             } else {
                 do_transition( S_DECIMAL );
             }
-        } else if( isalpha( LookAhead ) || LookAhead == '_' ) {
+        } else if( isalpha( LookAhead )
+          || LookAhead == '_' ) {
             newstring = VarStringStart();
             VarStringAddChar( newstring, LookAhead );
-            if( LookAhead == 'l' || LookAhead == 'L' ) {
+            if( LookAhead == 'l'
+              || LookAhead == 'L' ) {
                 do_transition( S_L_STRING );
             }
             do_transition( S_NAME );
@@ -281,7 +286,8 @@ static YYTOKENTYPE ScanDFA( ScanValue *value )
         return( Y_SCAN_ERROR );
 
     state( S_COMMENT ):
-        if( LookAhead == '\n' || LookAhead == EOF ) {
+        if( LookAhead == '\n'
+          || LookAhead == EOF ) {
             do_transition( S_START );
         } else {
             do_transition( S_COMMENT );
@@ -488,7 +494,9 @@ static YYTOKENTYPE ScanDFA( ScanValue *value )
         }
 
     state( S_ESCAPE_CHAR ):
-        if( isdigit( LookAhead ) && LookAhead != '8' && LookAhead != '9' ) {
+        if( isdigit( LookAhead )
+          && LookAhead != '8'
+          && LookAhead != '9' ) {
             newint = LookAhead - '0';
             do_transition( S_OCTAL_ESCAPE_1 );
         } else switch( LookAhead ) {
@@ -552,7 +560,9 @@ static YYTOKENTYPE ScanDFA( ScanValue *value )
         }
 
     state( S_OCTAL_ESCAPE_1 ):
-        if( isdigit( LookAhead ) && LookAhead != '8' && LookAhead != '9' ) {
+        if( isdigit( LookAhead )
+          && LookAhead != '8'
+          && LookAhead != '9' ) {
             AddDigitToInt( &newint, 8, LookAhead );
             do_transition( S_OCTAL_ESCAPE_2 );
         } else {
@@ -561,7 +571,9 @@ static YYTOKENTYPE ScanDFA( ScanValue *value )
         }
 
     state( S_OCTAL_ESCAPE_2 ):
-        if( isdigit( LookAhead ) && LookAhead != '8' && LookAhead != '9' ) {
+        if( isdigit( LookAhead )
+          && LookAhead != '8'
+          && LookAhead != '9' ) {
             AddDigitToInt( &newint, 8, LookAhead );
             do_transition( S_OCTAL_ESCAPE_3 );
         } else {
@@ -601,7 +613,8 @@ static YYTOKENTYPE ScanDFA( ScanValue *value )
             }
 #endif
             value->string.lstring = longString;
-            if( longString && CmdLineParms.TargetOS == RC_TARGET_OS_WIN16 ) {
+            if( longString
+              && CmdLineParms.TargetOS == RC_TARGET_OS_WIN16 ) {
                 RcWarning( ERR_LSTRING_IGNORED_FOR_WINDOWS );
                 value->string.lstring = false;
             }
@@ -618,8 +631,10 @@ static YYTOKENTYPE ScanDFA( ScanValue *value )
             do_transition( S_LONGSUFFIX );
         } else if( toupper( LookAhead ) == 'U' ) {
             do_transition( S_UNSIGNEDSUFFIX );
-        } else if( isalpha( LookAhead ) || LookAhead == '.'
-                   || LookAhead == '\\' || LookAhead == '_' ) {
+        } else if( isalpha( LookAhead )
+          || LookAhead == '.'
+          || LookAhead == '\\'
+          || LookAhead == '_' ) {
             do_transition( S_DOS_FILENAME );
         } else {
             value->intinfo.val = newint;
@@ -634,8 +649,10 @@ static YYTOKENTYPE ScanDFA( ScanValue *value )
         if( toupper( LookAhead ) == 'U' ) {
             value->intinfo.type |= SCAN_INT_TYPE_UNSIGNED;
             do_transition( S_ENDINT );
-        } else if( isalpha( LookAhead ) || LookAhead == '.'
-                   || LookAhead == '\\' || LookAhead == '_' ) {
+        } else if( isalpha( LookAhead )
+          || LookAhead == '.'
+          || LookAhead == '\\'
+          || LookAhead == '_' ) {
             do_transition( S_DOS_FILENAME );
         } else {
             value->intinfo.val = newint;
@@ -650,8 +667,10 @@ static YYTOKENTYPE ScanDFA( ScanValue *value )
         if( toupper( LookAhead ) == 'L' ) {
             value->intinfo.type |= SCAN_INT_TYPE_LONG;
             do_transition( S_ENDINT );
-        } else if( isalpha( LookAhead ) || LookAhead == '.'
-                   || LookAhead == '\\' || LookAhead == '_' ) {
+        } else if( isalpha( LookAhead )
+          || LookAhead == '.'
+          || LookAhead == '\\'
+          || LookAhead == '_' ) {
             do_transition( S_DOS_FILENAME );
         } else {
             value->intinfo.val = newint;
@@ -661,8 +680,10 @@ static YYTOKENTYPE ScanDFA( ScanValue *value )
         }
 
     state( S_ENDINT ):
-        if( isalpha( LookAhead ) || LookAhead == '.'
-               || LookAhead == '\\' || LookAhead == '_' ) {
+        if( isalpha( LookAhead )
+          || LookAhead == '.'
+          || LookAhead == '\\'
+          || LookAhead == '_' ) {
             VarStringAddChar( newstring, LookAhead );
             do_transition( S_DOS_FILENAME );
         } else {
@@ -675,7 +696,8 @@ static YYTOKENTYPE ScanDFA( ScanValue *value )
     state( S_HEXSTART ):
         VarStringAddChar( newstring, LookAhead );
         if( isdigit( LookAhead ) ) {
-            if( LookAhead == '8' || LookAhead == '9' ) {
+            if( LookAhead == '8'
+              || LookAhead == '9' ) {
                 do_transition( S_DOS_FILENAME );
             } else {
                 AddDigitToInt( &newint, 8, LookAhead );
@@ -687,8 +709,10 @@ static YYTOKENTYPE ScanDFA( ScanValue *value )
             do_transition( S_LONGSUFFIX );
         } else if( toupper( LookAhead ) == 'U' ) {
             do_transition( S_UNSIGNEDSUFFIX );
-        } else if( isalpha( LookAhead ) || LookAhead == '.'
-                   || LookAhead == '\\' || LookAhead == '_' ) {
+        } else if( isalpha( LookAhead )
+          || LookAhead == '.'
+          || LookAhead == '\\'
+          || LookAhead == '_' ) {
             do_transition( S_DOS_FILENAME );
         } else {
             value->intinfo.val = newint;
@@ -700,7 +724,8 @@ static YYTOKENTYPE ScanDFA( ScanValue *value )
     state( S_OCT ):
         VarStringAddChar( newstring, LookAhead );
         if( isdigit( LookAhead ) ) {
-            if( LookAhead == '8' || LookAhead == '9' ) {
+            if( LookAhead == '8'
+              || LookAhead == '9' ) {
                 do_transition( S_DOS_FILENAME );
             } else {
                 AddDigitToInt( &newint, 8, LookAhead );
@@ -710,8 +735,10 @@ static YYTOKENTYPE ScanDFA( ScanValue *value )
             do_transition( S_LONGSUFFIX );
         } else if( toupper( LookAhead ) == 'U' ) {
             do_transition( S_UNSIGNEDSUFFIX );
-        } else if( isalpha( LookAhead ) || LookAhead == '.'
-                   || LookAhead == '\\' || LookAhead == '_' ) {
+        } else if( isalpha( LookAhead )
+          || LookAhead == '.'
+          || LookAhead == '\\'
+          || LookAhead == '_' ) {
             do_transition( S_DOS_FILENAME );
         } else {
             value->intinfo.val = newint;
@@ -729,8 +756,10 @@ static YYTOKENTYPE ScanDFA( ScanValue *value )
             do_transition( S_LONGSUFFIX );
         } else if( toupper( LookAhead ) == 'U' ) {
             do_transition( S_UNSIGNEDSUFFIX );
-        } else if( isalpha( LookAhead ) || LookAhead == '.'
-                   || LookAhead == '\\' || LookAhead == '_' ) {
+        } else if( isalpha( LookAhead )
+          || LookAhead == '.'
+          || LookAhead == '\\'
+          || LookAhead == '_' ) {
             do_transition( S_DOS_FILENAME );
         } else {
             value->intinfo.val = newint;
@@ -740,10 +769,13 @@ static YYTOKENTYPE ScanDFA( ScanValue *value )
         }
 
     state( S_NAME ):
-        if( isalnum( LookAhead ) || LookAhead == '_' ) {
+        if( isalnum( LookAhead )
+          || LookAhead == '_' ) {
             VarStringAddChar( newstring, LookAhead );
             do_transition( S_NAME );
-        } else if( LookAhead == ':' || LookAhead == '\\' || LookAhead == '.' ) {
+        } else if( LookAhead == ':'
+          || LookAhead == '\\'
+          || LookAhead == '.' ) {
             VarStringAddChar( newstring, LookAhead );
             do_transition( S_DOS_FILENAME );
         } else {
@@ -767,8 +799,11 @@ static YYTOKENTYPE ScanDFA( ScanValue *value )
         }
 
     state( S_DOS_FILENAME ):
-        if( isalnum( LookAhead ) || LookAhead == ':' || LookAhead == '\\'
-                || LookAhead == '.' || LookAhead == '_' ) {
+        if( isalnum( LookAhead )
+          || LookAhead == ':'
+          || LookAhead == '\\'
+          || LookAhead == '.'
+          || LookAhead == '_' ) {
             VarStringAddChar( newstring, LookAhead );
             do_transition( S_DOS_FILENAME );
         } else {

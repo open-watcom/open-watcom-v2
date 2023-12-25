@@ -118,7 +118,8 @@ void *RcMemRealloc( void *old_ptr, size_t newsize )
     ptr = RCMemLayer1Realloc( old_ptr, newsize );
 #endif
 
-    if( ptr == NULL && newsize != 0 ) {
+    if( ptr == NULL
+      && newsize != 0 ) {
         RcFatalError( ERR_OUT_OF_MEMORY );
     }
 

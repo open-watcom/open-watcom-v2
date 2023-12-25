@@ -161,8 +161,7 @@ static void AddDiagOption( DialogBoxHeader *head, FullDialogOptions *opt )
     case Y_FONT:
         if( CmdLineParms.VersionStamp20 ) {
             RcWarning( WARN_DLGFONT_WIN2X );
-        }
-        else {
+        } else {
             head->Style |= DS_SETFONT;
             head->PointSize = opt->Opt.Font.PointSize;
             if( head->FontName != NULL ) {
@@ -658,9 +657,11 @@ static void SemCheckDialogBox( FullDialogBoxHeader *head, YYTOKENTYPE tokentype,
     FullDialogBoxControl    *travptr;
 
     if( head->Win32 ) {
-        if( tokentype == Y_DIALOG && dlghelp.HelpIdDefined ) {
+        if( tokentype == Y_DIALOG
+          && dlghelp.HelpIdDefined ) {
             RcError( ERR_DIALOG_HELPID );
-        } else if( tokentype == Y_DIALOG_EX && dlghelp.HelpIdDefined ) {
+        } else if( tokentype == Y_DIALOG_EX
+          && dlghelp.HelpIdDefined ) {
             head->u.Head32.ExHead.HelpId = dlghelp.HelpId;
         }
         if( tokentype == Y_DIALOG ) {
@@ -738,7 +739,8 @@ void SemWINWriteDialogBox( WResID *name, ResMemFlags flags,
             head->u.Head.SizeInfo = sizeinfo;
         }
     }
-    if( !error && !ErrorHasOccured ) {
+    if( !error
+      && !ErrorHasOccured ) {
         loc.start = SemStartResource();
         if( head->Win32 ) {
             if( tokentype == Y_DIALOG ) {
@@ -755,7 +757,8 @@ void SemWINWriteDialogBox( WResID *name, ResMemFlags flags,
                 error = 1;
             }
         }
-        if( !error && ctrls->head != NULL ) {
+        if( !error
+          && ctrls->head != NULL ) {
             error = SemWriteDiagCtrlList( ctrls, &err_code, tokentype );
         }
         if( !error ) {

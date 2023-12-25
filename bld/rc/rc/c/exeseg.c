@@ -270,7 +270,8 @@ static CpSegRc copyOneSegment( const segment_record *src_seg,
             error = myCopyExeData( src, dst, seg_len );
         }
 
-        if( (src_seg->info & SEG_RELOC) && !error ) {
+        if( (src_seg->info & SEG_RELOC)
+          && !error ) {
             /*
              * read the number of relocation items
              */
@@ -299,7 +300,9 @@ static CpSegRc copyOneSegment( const segment_record *src_seg,
             }
         }
 
-        if( pad_end && ret != CPSEG_SEG_TOO_BIG && !error ) {
+        if( pad_end
+          && ret != CPSEG_SEG_TOO_BIG
+          && !error ) {
             align_amount = AlignAmount( RESTELL( dst->fp ), dst_shift_count );
             /*
              * make sure there is room for the memory arena header

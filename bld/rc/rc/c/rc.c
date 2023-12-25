@@ -184,7 +184,9 @@ void RCmain( void )
     if( !CmdLineParms.Pass2Only ) {
         noerror = Pass1();
     }
-    if( noerror && !CmdLineParms.Pass1Only && !CmdLineParms.PreprocessOnly ) {
+    if( noerror
+      && !CmdLineParms.Pass1Only
+      && !CmdLineParms.PreprocessOnly ) {
         noerror = Pass2();
     }
     if( !noerror ) {
