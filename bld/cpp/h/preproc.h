@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -78,22 +78,23 @@ typedef struct preproc_value {
 typedef void        (* pp_walk_func)( const MACRO_ENTRY *me, const PREPROC_VALUE *val, void *cookie );
 typedef const char  *(* pp_parent_func)( void **cookie );
 
-extern  void        PPENTRY PP_Init( char c );
-extern  int         PPENTRY PP_Fini( void );
-extern  int         PPENTRY PP_FileInit( const char *filename, pp_flags ppflags, const char *incpath );
-extern  void        PPENTRY PP_FileFini( void );
-extern  void        PPENTRY PP_IncludePathInit( void );
-extern  void        PPENTRY PP_IncludePathFini( void );
-extern  void        PPENTRY PP_IncludePathAdd( const char *path_list );
-extern  int         PPENTRY PP_IncludePathFind( const char *filename, size_t len, char *fullfilename, incl_type incltype, pp_parent_func fn );
-extern  int         PPENTRY PP_Char( void );
-extern  void        PPENTRY PP_Define( const char *p );
-extern  void        PPENTRY PP_MacrosWalk( pp_walk_func fn, void *cookie );
+extern void         PPENTRY PP_Init( char c );
+extern int          PPENTRY PP_Fini( void );
+extern int          PPENTRY PP_FileInit( const char *filename, pp_flags ppflags, const char *incpath );
+extern void         PPENTRY PP_FileFini( void );
+extern void         PPENTRY PP_IncludePathInit( void );
+extern void         PPENTRY PP_IncludePathFini( void );
+extern void         PPENTRY PP_IncludePathAdd( const char *path_list );
+extern int          PPENTRY PP_IncludePathFind( const char *filename, size_t len, char *fullfilename, incl_type incltype, pp_parent_func fn );
+extern int          PPENTRY PP_Char( void );
+extern void         PPENTRY PP_Define( const char *ptr );
+extern void         PPENTRY PP_Define_1( const char *ptr );
+extern void         PPENTRY PP_MacrosWalk( pp_walk_func fn, void *cookie );
 
 // Application defined functions
 
-extern  int         PPENTRY PP_MBCharLen( const char *p );
-extern  const char  * PPENTRY PP_GetEnv( const char *__name );
-extern  void        * PPENTRY PP_Malloc( size_t __size );
-extern  void        PPENTRY PP_Free( void *__ptr );
-extern  void        PPENTRY PP_OutOfMemory( void );
+extern int          PPENTRY PP_MBCharLen( const char *p );
+extern const char   * PPENTRY PP_GetEnv( const char *__name );
+extern void         * PPENTRY PP_Malloc( size_t __size );
+extern void         PPENTRY PP_Free( void *__ptr );
+extern void         PPENTRY PP_OutOfMemory( void );

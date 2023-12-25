@@ -888,6 +888,24 @@ void PPENTRY PP_Define( const char *ptr )
     }
 }
 
+void PPENTRY PP_Define_1( const char *ptr )
+{
+    MACRO_ENTRY *me;
+    const char  *macro_name;
+    bool        white_space;
+
+    macro_name = PP_SkipWhiteSpace( ptr, &white_space );
+    ptr = PP_ScanName( macro_name );
+    me = PP_AddMacro( macro_name, ptr - macro_name );
+    if( me != NULL ) {
+        me->parmcount = 0;
+        me->replacement_list = PP_Malloc( sizeof( "1" ) );
+        strcpy( me->replacement_list, "1" );
+    } else {
+        PP_OutOfMemory();
+    }
+}
+
 MACRO_ENTRY *PP_MacroLookup( const char *macro_name, size_t len )
 {
     MACRO_ENTRY *me;
