@@ -367,13 +367,12 @@ static bool writeIconDir( FullIconDir *dir, WResID *name, ResMemFlags flags, int
     return( error );
 } /* writeIconDir */
 
-static bool CopyTranslateIcoWin2x( FullIconDirEntry *entry, FILE *fp )
-{
+static bool CopyTranslateBitmapAndMaskWin2x( unsigned int Width, unsigned int Height, unsigned int BitCount, FILE *fp) {
     /* Windows 2.x bitmaps are top-down, not bottom up. Some translation needed. */
-    unsigned int dst_stride = (((entry->Entry.Res.Info.Width*entry->Entry.Res.Info.BitCount+15u)&(~15u))/8u)/*WORD align*/;
-    unsigned int src_stride = (((entry->Entry.Res.Info.Width*entry->Entry.Res.Info.BitCount+31u)&(~31u))/8u)/*DWORD align*/;
-    unsigned int dstm_stride = (((entry->Entry.Res.Info.Width+15u)&(~15u))/8u)/*WORD align*/;
-    unsigned int srcm_stride = (((entry->Entry.Res.Info.Width+31u)&(~31u))/8u)/*DWORD align*/;
+    unsigned int dst_stride = (((Width*BitCount+15u)&(~15u))/8u)/*WORD align*/;
+    unsigned int src_stride = (((Width*BitCount+31u)&(~31u))/8u)/*DWORD align*/;
+    unsigned int dstm_stride = (((Width+15u)&(~15u))/8u)/*WORD align*/;
+    unsigned int srcm_stride = (((Width+31u)&(~31u))/8u)/*DWORD align*/;
 
     unsigned char *newbmp;
     unsigned int mask_sz;
@@ -386,8 +385,8 @@ static bool CopyTranslateIcoWin2x( FullIconDirEntry *entry, FILE *fp )
      * [header]
      * [icon mask]
      * [icon image] */
-    img_sz = dst_stride * entry->Entry.Res.Info.Height;
-    mask_sz = dstm_stride * entry->Entry.Res.Info.Height;
+    img_sz = dst_stride * Height;
+    mask_sz = dstm_stride * Height;
     newbmp = malloc( img_sz + mask_sz );
     if( !newbmp )
         return( true );
@@ -395,16 +394,16 @@ static bool CopyTranslateIcoWin2x( FullIconDirEntry *entry, FILE *fp )
     memset( newbmp, 0, img_sz + mask_sz );
 
     /* icon image */
-    for( y = 0; y < entry->Entry.Res.Info.Height; y++ ) {
-        if( RESREAD( fp, newbmp + mask_sz + ( (entry->Entry.Res.Info.Height - 1 - y ) * dst_stride ), src_stride ) != dst_stride ) {
+    for( y = 0; y < Height; y++ ) {
+        if( RESREAD( fp, newbmp + mask_sz + ( (Height - 1 - y ) * dst_stride ), src_stride ) != dst_stride ) {
             free( newbmp );
             return( true );
         }
     }
 
     /* icon mask */
-    for( y = 0; y < entry->Entry.Res.Info.Height; y++ ) {
-        if( RESREAD( fp, newbmp + ( ( entry->Entry.Res.Info.Height - 1 - y ) * dstm_stride ), srcm_stride ) != dstm_stride ) {
+    for( y = 0; y < Height; y++ ) {
+        if( RESREAD( fp, newbmp + ( ( Height - 1 - y ) * dstm_stride ), srcm_stride ) != dstm_stride ) {
             free( newbmp );
             return( true );
         }
@@ -417,6 +416,11 @@ static bool CopyTranslateIcoWin2x( FullIconDirEntry *entry, FILE *fp )
 
     free( newbmp );
     return( false );
+}
+
+static bool CopyTranslateIcoWin2x( FullIconDirEntry *entry, FILE *fp )
+{
+    return CopyTranslateBitmapAndMaskWin2x( entry->Entry.Res.Info.Width, entry->Entry.Res.Info.Height, entry->Entry.Res.Info.BitCount, fp);
 }
 
 static bool writeTheWindows2xIcon( FullIconDirEntry *entry, WResID *name, ResMemFlags flags, int *err_code, FILE *fp )
