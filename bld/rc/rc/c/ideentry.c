@@ -235,6 +235,7 @@ static int RCMainLine( const char *opts, int argc, char **argv )
     if( InitRcMsgs() ) {
         rc = setjmp( jmpbuf_RCFatalError );
         if( rc == 0 ) {
+            PP_Init( '#' );
             if( opts != NULL ) {
                 str = opts;
                 argc = ParseEnvVar( str, NULL, NULL );
@@ -279,6 +280,7 @@ static int RCMainLine( const char *opts, int argc, char **argv )
                 RcMemFree( argv );
                 RcMemFree( cmdbuf );
             }
+            PP_Fini();
         }
     }
     flushPrintf();

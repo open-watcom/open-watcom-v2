@@ -114,7 +114,6 @@ static bool Pass1( void )
 {
     bool    noerror;
 
-    PP_Init( '#' );
     noerror = RcPass1IoInit();
     if( noerror ) {
         if( !CmdLineParms.PreprocessOnly ) {
@@ -133,7 +132,6 @@ static bool Pass1( void )
         RcPass1IoShutdown();
         noerror = !ErrorHasOccured;
     }
-    PP_Fini();
     return( noerror );
 }
 
