@@ -438,12 +438,6 @@ static bool writeTheWindows2xIcon( FullIconDirEntry *entry, WResID *name, ResMem
 } /* writeTheWindows2xIcon */
 
 static bool IconIsWin2xCompatible( FullIconDirEntry *entry ) {
-    fprintf(stderr,"%ux%u %u-plane %ubpp\n",
-        entry->Entry.Res.Info.Width,
-        entry->Entry.Res.Info.Height,
-        entry->Entry.Res.Info.Planes,
-        entry->Entry.Res.Info.BitCount);
-
     if( entry->Entry.Res.Info.Width == 64 && entry->Entry.Res.Info.Height == 64 &&
         entry->Entry.Res.Info.Planes == 1 && entry->Entry.Res.Info.BitCount == 1 )
         return true;
