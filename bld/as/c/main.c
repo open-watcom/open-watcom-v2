@@ -78,7 +78,7 @@ int main( int argc, char **argv )
             AsOutMessage( stderr, NO_FILENAME_SPECIFIED );
             fputc( '\n', stderr );
         }
-        PP_Init( '#' );
+        PP_Init( '#', true );
         while( *argv != NULL ) {
             fname = MakeAsmFilename( *argv );
             if( PP_FileInit( fname, PPFLAG_ASM_COMMENT | PPFLAG_EMIT_LINE | PPFLAG_TRUNCATE_FILE_NAME, NULL ) != 0 ) {

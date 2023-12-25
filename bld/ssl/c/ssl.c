@@ -400,7 +400,7 @@ int main( int argc, char *argv[] )
             break;
         }
     }
-    PP_Init( '!' );
+    PP_Init( '!', false );
     OpenFiles( verbose, file, argv[1] );
     Scan();
     Parse();

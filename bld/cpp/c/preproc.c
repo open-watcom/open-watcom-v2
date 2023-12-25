@@ -85,6 +85,7 @@ static int          SkipLevel;
 static MACRO_ENTRY  *PPHashTable[HASH_SIZE];
 
 static char         PPPreProcChar;                  // preprocessor line intro
+static bool         PPSpecMacros = false;
 
 static const char   *PPBufPtr;                      // block buffer pointer
 static char         *PPLineBuf;                     // line buffer
@@ -434,12 +435,14 @@ int PPENTRY PP_FileInit( const char *filename, pp_flags ppflags, const char *inc
     if( (PPFlags & PPFLAG_IGNORE_INCLUDE) == 0 ) {
         IncludePath2 = AddIncludePath( IncludePath2, PP_GetEnv( "INCLUDE" ) );
     }
-    PP_AddMacro( "__LINE__", 8 );
-    PP_AddMacro( "__FILE__", 8 );
-    PP_AddMacro( "__DATE__", 8 );
-    PP_AddMacro( "__TIME__", 8 );
-    PP_AddMacro( "__STDC__", 8 );
-    PP_TimeInit();
+    if( PPSpecMacros ) {
+        PP_AddMacro( "__LINE__", 8 );
+        PP_AddMacro( "__FILE__", 8 );
+        PP_AddMacro( "__DATE__", 8 );
+        PP_AddMacro( "__TIME__", 8 );
+        PP_AddMacro( "__STDC__", 8 );
+        PP_TimeInit();
+    }
 
     handle = PP_Open( filename );
     if( handle == NULL )
@@ -1467,15 +1470,13 @@ int PPENTRY PP_Char( void )
     return( (unsigned char)*PPTokenPtr++ );
 }
 
-void PPENTRY PP_Init( char c )
-/****************************/
+void PPENTRY PP_Init( char c, bool spec_macros )
+/**********************************************/
 {
     PP_File = NULL;
     PPStack = NULL;
     PPErrorCount = 0;
     PPLineNumber = 0;
-    strcpy( PP__DATE__, "\"Dec 31 2005\"" );
-    strcpy( PP__TIME__, "\"12:00:00\"" );
     PPBufPtr = NULL;
     PPNextTokenPtr = NULL;
     PPTokenList = NULL;
@@ -1485,6 +1486,11 @@ void PPENTRY PP_Init( char c )
     PPLineBuf[0] = '\0';
     PPLineBuf[1] = '\0';
     PPPreProcChar = c;
+    PPSpecMacros = spec_macros;
+    if( PPSpecMacros ) {
+        strcpy( PP__DATE__, "\"Dec 31 2005\"" );
+        strcpy( PP__TIME__, "\"12:00:00\"" );
+    }
     PPMacroVarInit();
 }
 
