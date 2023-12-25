@@ -49,6 +49,7 @@
 #include "rccore.h"
 #include "usage.h"
 #include "pathgrp2.h"
+#include "preproc.h"
 
 #include "clibint.h"
 #include "clibext.h"
