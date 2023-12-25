@@ -438,6 +438,12 @@ static bool writeTheWindows2xIcon( FullIconDirEntry *entry, WResID *name, ResMem
 } /* writeTheWindows2xIcon */
 
 static bool IconIsWin2xCompatible( FullIconDirEntry *entry ) {
+    fprintf(stderr,"%ux%u %u-plane %ubpp\n",
+        entry->Entry.Res.Info.Width,
+        entry->Entry.Res.Info.Height,
+        entry->Entry.Res.Info.Planes,
+        entry->Entry.Res.Info.BitCount);
+
     if( entry->Entry.Res.Info.Width == 64 && entry->Entry.Res.Info.Height == 64 &&
         entry->Entry.Res.Info.Planes == 1 && entry->Entry.Res.Info.BitCount == 1 )
         return true;
@@ -477,6 +483,23 @@ static void AddIconResource( WResID *name, ResMemFlags flags, ResMemFlags group_
         goto READ_DIR_ERROR;
 
     if ( CmdLineParms.VersionStamp20 ) {
+        /* More info needed */
+        {
+            FullIconDirEntry *entry;
+
+            for( entry = dir.Head; entry != NULL; entry = entry->Next ) {
+                BitmapInfoHeader dibhead;
+
+                if( RESSEEK( fp, entry->Entry.Ico.Offset, SEEK_SET ) )
+                    goto COPY_ICONS_ERROR;
+                if( ReadBitmapInfoHeader( &dibhead, fp ) != RS_OK )
+                    goto COPY_ICONS_ERROR;
+
+                entry->Entry.Res.Info.Planes = dibhead.Planes;
+                entry->Entry.Res.Info.BitCount = dibhead.BitCount;
+            }
+        }
+
         /* Windows 2.0 has a more strict requirement of icon resources:
          * It must be 64x64 1bpp monochrome. No exceptions. There is no
          * "icon directory" to pick multiple versions. The RT_ICON resource
@@ -501,9 +524,6 @@ static void AddIconResource( WResID *name, ResMemFlags flags, ResMemFlags group_
                 goto COPY_ICONS_ERROR;
             if( ReadBitmapInfoHeader( &dibhead, fp ) != RS_OK )
                 goto COPY_ICONS_ERROR;
-
-            entry->Entry.Res.Info.Planes = dibhead.Planes;
-            entry->Entry.Res.Info.BitCount = dibhead.BitCount;
 
             /* seek to the bitmap bits directly */
             if (dibhead.BitCount <= 8) {
