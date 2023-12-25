@@ -320,3 +320,6 @@ pick(   ERR_DELETING_FILE,
 pick(   WARN_DLGFONT_WIN2X,
         "FONT not valid for Windows 2.x DIALOG, ignored.",
         "FONT not valid for Windows 2.x DIALOG, ignored." )
+pick(   WARN_SUBMEN_WIN2X,
+        "MENU resources cannot have submenus in Windows 2.x.",
+        "MENU resources cannot have submenus in Windows 2.x." )

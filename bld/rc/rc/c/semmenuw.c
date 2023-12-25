@@ -271,6 +271,21 @@ static bool SemWriteSubMenu( FullMenu *submenu, int *err_code, YYTOKENTYPE token
     return( error );
 }
 
+static void SemWarnIfSubmenus( FullMenu *submenu ) {
+    /* Windows 2.x does not support submenus, though submenus are parsed correctly.
+     * So it is valid to have top level MF_POPUP, but MF_POPUP within the menus is ignored. */
+    FullMenuItem *curritem,*currsubitem;
+
+    for( curritem = submenu->head; curritem != NULL; curritem = curritem->next ) { // top level menu bar
+        if( curritem->IsPopup ) {
+            for( currsubitem = curritem->item.popup.submenu->head; currsubitem != NULL; currsubitem = currsubitem->next ) { // menu appearing below menu bar
+                if( currsubitem->IsPopup )
+                    RcWarning( WARN_SUBMEN_WIN2X );
+            }
+        }
+    }
+}
+
 static void SemFreeMenuItem( FullMenuItem *curritem )
 /****************************************************/
 {
@@ -331,6 +346,8 @@ void SemWINWriteMenu( WResID *name, ResMemFlags flags, FullMenu *menu,
         if( error ) {
             err_code = LastWresErr();
         } else {
+            if ( CmdLineParms.VersionStamp20 )
+                SemWarnIfSubmenus( menu );
             error = SemWriteSubMenu( menu, &err_code, tokentype );
         }
         if( !error && CmdLineParms.MSResFormat && CmdLineParms.TargetOS == RC_TARGET_OS_WIN32 ) {
