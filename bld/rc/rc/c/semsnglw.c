@@ -781,6 +781,67 @@ static void FreeCurDir( FullCurDir *dir )
     }
 } /* FreeCurDir */
 
+static bool CopyTranslateCursorWin2x( FullCurDirEntry *entry, FILE *fp )
+{
+    return CopyTranslateBitmapAndMaskWin2x( entry->Entry.Cur.Width, entry->Entry.Cur.Height, entry->Entry.Cur.ColourCount/*BitCount see hack below*/, fp);
+}
+
+static bool writeTheWindows2xCursor( FullCurDirEntry *entry, WResID *name, ResMemFlags flags, int *err_code, FILE *fp )
+/******************************************************************************************/
+{
+    bool                error;
+    CurDirEntry         Res;
+    ResLocation         loc;
+    CurHotspot          hotspot;
+
+    /* Remember the AddCursorResource() hack also sets ColourCount == 0xFF if the Planes member was not 1 */
+    if (entry->Entry.Cur.ColourCount == 0xFF)
+        return( false );
+
+    /* translate CurFileDirEntry to CurDirEntry to overcome consequences of union of CurDirEntry and CurFileDirEntry */
+    hotspot.X = entry->Entry.Cur.XHotspot;
+    hotspot.Y = entry->Entry.Cur.YHotspot;
+    Res.Width = entry->Entry.Cur.Width;
+    Res.Height = entry->Entry.Cur.Height;
+    Res.BitCount = entry->Entry.Cur.ColourCount; /* Remember our hack below in AddCursorResource */
+    Res.Planes = 1;
+
+    loc.start = SemStartResource();
+    error = ResWriteWinOldCursorHeader( &Res, &hotspot, CurrResFile.fp );
+    if( !error )
+        error = CopyTranslateCursorWin2x( entry, fp );
+    if( error ) {
+        *err_code = LastWresErr();
+    } else {
+        loc.len = SemEndResource( loc.start );
+        SemAddResourceFree( name, WResIDFromNum( RESOURCE2INT( RT_CURSOR ) ), flags, loc );
+    }
+
+    return( error );
+} /* writeTheWindows2xCur */
+
+static bool CursorIsWin2xCompatible( FullCurDirEntry *entry ) {
+    if( entry->Entry.Cur.Width == 32
+      && entry->Entry.Cur.Height == 32
+      && entry->Entry.Cur.ColourCount/*BitCount, see hack in AddCursorResource*/ == 1 ) {
+        return( true );
+    } else {
+        return( false );
+    }
+}
+
+static FullCurDirEntry *FindWindows2xCompatibleCursor( FullCurDir *dir ) {
+    FullCurDirEntry    *entry;
+
+    for( entry = dir->Head; entry != NULL; entry = entry->Next ) {
+        if( CursorIsWin2xCompatible( entry ) ) {
+            return( entry );
+        }
+    }
+
+    return( NULL );
+}
+
 static void AddCursorResource( WResID *name, ResMemFlags flags, ResMemFlags group_flags, const char *filename )
 /*************************************************************************************************************/
 {
@@ -801,13 +862,81 @@ static void AddCursorResource( WResID *name, ResMemFlags flags, ResMemFlags grou
     if( ret != RS_OK)
         goto READ_DIR_ERROR;
 
-    ret = copyCursors( &dir, fp, flags, &err_code );
-    if( ret != RS_OK )
-        goto COPY_CURSORS_ERROR;
+    if( CmdLineParms.VersionStamp20 ) {
+        FullCurDirEntry *entry;
 
-    error = writeCurDir( &dir, name, group_flags, &err_code );
-    if( error)
-        goto WRITE_DIR_ERROR;
+        /* More info needed */
+        for( entry = dir.Head; entry != NULL; entry = entry->Next ) {
+            BitmapInfoHeader dibhead;
+
+            if( RESSEEK( fp, entry->Entry.Cur.Offset, SEEK_SET ) )
+                goto COPY_CURSORS_ERROR;
+            if( ReadBitmapInfoHeader( &dibhead, fp ) != RS_OK )
+                goto COPY_CURSORS_ERROR;
+
+            /* HACK: Cur (the struct read from disk) does not have BitCount, but has
+             *       ColourCount, except ColourCount == 0 in most CUR files I've
+             *       tested against, so we'll just use that to store it.
+             *
+             *       Cur and Res are two structures in a union and the structures
+             *       overlap each other, threfore attempts to patch in values to Res
+             *       will corrupt Cur including the hotspot information. */
+            if (dibhead.Planes == 1)
+                entry->Entry.Cur.ColourCount = dibhead.BitCount;
+            else
+                entry->Entry.Cur.ColourCount = 0xFF; /* not supported, must ignore */
+        }
+
+        /* Windows 2.0 has a more strict requirement of cursor resources:
+         * It must be 32x32 1bpp monochrome. No exceptions. There is no
+         * "cursor directory" to pick multiple versions. The RT_CURSOR resource
+         * is THE icon.
+         *
+         * If the icon directory does not offer a 32x32x1bpp icon, then
+         * pick the first one and print a warning. Fortunately most Windows 3.0
+         * and later .CUR files are 32x32x1bpp monochrome anyway. */
+        entry = FindWindows2xCompatibleCursor( &dir );
+        if( !entry ) {
+            RcWarning( WARN_CURSOR_WIN2X );
+            entry = dir.Head;
+            if( !entry )
+                goto COPY_CURSORS_ERROR;
+        }
+
+        {
+            /* need more information like biPlanes, biBitCount */
+            unsigned int palbytes = 0;
+            BitmapInfoHeader dibhead;
+
+            if( RESSEEK( fp, entry->Entry.Cur.Offset, SEEK_SET ) )
+                goto COPY_CURSORS_ERROR;
+            if( ReadBitmapInfoHeader( &dibhead, fp ) != RS_OK )
+                goto COPY_CURSORS_ERROR;
+
+            /* seek to the bitmap bits directly */
+            if( dibhead.BitCount <= 8 ) {
+                if( dibhead.ClrUsed != 0 ) {
+                    palbytes = 4 * dibhead.ClrUsed;
+                } else {
+                    palbytes = 4 << dibhead.BitCount;
+                }
+            }
+
+            if( RESSEEK( fp, entry->Entry.Cur.Offset + dibhead.Size + palbytes, SEEK_SET ) ) {
+                goto COPY_CURSORS_ERROR;
+            }
+        }
+
+        error = writeTheWindows2xCursor( entry, name, group_flags, &err_code, fp );
+    } else {
+        ret = copyCursors( &dir, fp, flags, &err_code );
+        if( ret != RS_OK )
+            goto COPY_CURSORS_ERROR;
+
+        error = writeCurDir( &dir, name, group_flags, &err_code );
+        if( error)
+            goto WRITE_DIR_ERROR;
+    }
 
     FreeCurDir( &dir );
     RcIoCloseInputBin( fp );

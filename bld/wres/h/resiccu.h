@@ -79,5 +79,6 @@ extern bool ResReadIconCurDirHeader( IconCurDirHeader *, FILE *fp );
 extern bool ResReadIconDirEntry( IconDirEntry * entry, FILE *fp );
 extern bool ResReadCurDirEntry( CurDirEntry * entry, FILE *fp );
 extern bool ResWriteWinOldIconHeader( const IconDirEntry *entry, FILE *fp );
+extern bool ResWriteWinOldCursorHeader( const CurDirEntry *entry, const CurHotspot *hotspot, FILE *fp );
 
 #endif
