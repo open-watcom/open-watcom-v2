@@ -477,21 +477,19 @@ static void AddIconResource( WResID *name, ResMemFlags flags, ResMemFlags group_
         goto READ_DIR_ERROR;
 
     if ( CmdLineParms.VersionStamp20 ) {
+        FullIconDirEntry *entry;
+
         /* More info needed */
-        {
-            FullIconDirEntry *entry;
+        for( entry = dir.Head; entry != NULL; entry = entry->Next ) {
+            BitmapInfoHeader dibhead;
 
-            for( entry = dir.Head; entry != NULL; entry = entry->Next ) {
-                BitmapInfoHeader dibhead;
+            if( RESSEEK( fp, entry->Entry.Ico.Offset, SEEK_SET ) )
+                goto COPY_ICONS_ERROR;
+            if( ReadBitmapInfoHeader( &dibhead, fp ) != RS_OK )
+                goto COPY_ICONS_ERROR;
 
-                if( RESSEEK( fp, entry->Entry.Ico.Offset, SEEK_SET ) )
-                    goto COPY_ICONS_ERROR;
-                if( ReadBitmapInfoHeader( &dibhead, fp ) != RS_OK )
-                    goto COPY_ICONS_ERROR;
-
-                entry->Entry.Res.Info.Planes = dibhead.Planes;
-                entry->Entry.Res.Info.BitCount = dibhead.BitCount;
-            }
+            entry->Entry.Res.Info.Planes = dibhead.Planes;
+            entry->Entry.Res.Info.BitCount = dibhead.BitCount;
         }
 
         /* Windows 2.0 has a more strict requirement of icon resources:
@@ -501,7 +499,7 @@ static void AddIconResource( WResID *name, ResMemFlags flags, ResMemFlags group_
          *
          * If the icon directory does not offer a 64x64x1bpp icon, then
          * pick the first one and print a warning. */
-        FullIconDirEntry *entry = FindWindows2xCompatibleIcon( &dir );
+        entry = FindWindows2xCompatibleIcon( &dir );
         if( !entry ) {
             RcWarning( WARN_ICON_WIN2X );
             entry = dir.Head;
