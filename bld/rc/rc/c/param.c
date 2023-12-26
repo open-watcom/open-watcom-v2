@@ -718,13 +718,39 @@ static void defaultParms( void )
 #endif
 } /* defaultParms */
 
-
-static void initMBCodePage( void )
-/********************************/
+static void LoadCodePageFile( const char *cpfile )
 {
     RcStatus            ret;
     char                path[_MAX_PATH];
 
+    ret = LoadCharTable( cpfile, path );
+    switch( ret ) {
+    case RS_FILE_NOT_FOUND:
+        RcFatalError( ERR_CANT_FIND_CHAR_FILE, cpfile );
+        break;
+    case RS_READ_ERROR:
+        RcFatalError( ERR_READING_CHAR_FILE, path, strerror( errno ) );
+        break;
+    case RS_READ_INCMPLT:
+    case RS_BAD_FILE_FMT:
+        RcFatalError( ERR_BAD_CHAR_FILE, path );
+        break;
+    case RS_WRONG_VER:
+        RcFatalError( ERR_WRONG_CHAR_FILE_VER, path );
+        break;
+    case RS_OPEN_ERROR:
+        RcFatalError( ERR_CANT_OPEN_CHAR_FILE, path, strerror( errno ) );
+        break;
+    case RS_OK:
+        SetMBChars( GetLeadBytes() );
+        ConvToUnicode = DBStringToUnicode;
+        break;
+    }
+}
+
+static void initMBCodePage( void )
+/********************************/
+{
     /*
      * Lead-byte and trail-byte ranges for code pages used in Far East
      * editions of Windows 95.
@@ -759,16 +785,24 @@ static void initMBCodePage( void )
     switch( CmdLineParms.MBCharSupport ) {
     case DB_TRADITIONAL_CHINESE:
         SetMBRange( 0x81, 0xfe, 1 );
+        if( CmdLineParms.TargetOS == RC_TARGET_OS_WIN32 )
+            LoadCodePageFile( "950.uni" );
         break;
     case DB_WANSUNG_KOREAN:
         SetMBRange( 0x81, 0xfe, 1 );
+        if( CmdLineParms.TargetOS == RC_TARGET_OS_WIN32 )
+            LoadCodePageFile( "949.uni" );
         break;
     case DB_SIMPLIFIED_CHINESE:
         SetMBRange( 0xA1, 0xfe, 1 );
+        if( CmdLineParms.TargetOS == RC_TARGET_OS_WIN32 )
+            LoadCodePageFile( "936.uni" );
         break;
     case DB_KANJI:
         SetMBRange( 0x81, 0x9f, 1 );
         SetMBRange( 0xe0, 0xfc, 1 );
+        if( CmdLineParms.TargetOS == RC_TARGET_OS_WIN32 )
+            LoadCodePageFile( "kanji.uni" );
         break;
     case MB_UTF8:
     case MB_UTF8_KANJI:
@@ -777,61 +811,25 @@ static void initMBCodePage( void )
         SetMBRange( 0xf0, 0xf7, 3 );
         SetMBRange( 0xf8, 0xfb, 4 );
         SetMBRange( 0xfc, 0xfd, 5 );
+        SetUTF8toUnicode();
+        if( CmdLineParms.MBCharSupport == MB_UTF8_KANJI ) {
+            SetUTF8toCP932();
+        } else {
+            SetUTF8toUTF8();
+        }
         break;
-    }
-    if( CmdLineParms.TargetOS == RC_TARGET_OS_WIN32 ) {
-        switch( CmdLineParms.MBCharSupport ) {
-        case DB_SIMPLIFIED_CHINESE:
-            setCodePageFile( "936.uni" );
-            break;
-        case DB_TRADITIONAL_CHINESE:
-            setCodePageFile( "950.uni" );
-            break;
-        case DB_KANJI:
-            setCodePageFile( "kanji.uni" );
-            break;
-        case DB_WANSUNG_KOREAN:
-            setCodePageFile( "949.uni" );
-            break;
-        }
-    }
-    if( CmdLineParms.MBCharSupport == MB_UTF8 ) {
-        SetUTF8toUnicode();
-        SetUTF8toUTF8();
-    } else if( CmdLineParms.MBCharSupport == MB_UTF8_KANJI ) {
-        SetUTF8toUnicode();
-        SetUTF8toCP932();
-    } else if( CmdLineParms.CodePageFile != NULL ) {
-        ret = LoadCharTable( CmdLineParms.CodePageFile, path );
-        switch( ret ) {
-        case RS_FILE_NOT_FOUND:
-            RcFatalError( ERR_CANT_FIND_CHAR_FILE, CmdLineParms.CodePageFile );
-            break;
-        case RS_READ_ERROR:
-            RcFatalError( ERR_READING_CHAR_FILE, path, strerror( errno ) );
-            break;
-        case RS_READ_INCMPLT:
-        case RS_BAD_FILE_FMT:
-            RcFatalError( ERR_BAD_CHAR_FILE, path );
-            break;
-        case RS_WRONG_VER:
-            RcFatalError( ERR_WRONG_CHAR_FILE_VER, path );
-            break;
-        case RS_OPEN_ERROR:
-            RcFatalError( ERR_CANT_OPEN_CHAR_FILE, path, strerror( errno ) );
-            break;
-        case RS_OK:
-            SetMBChars( GetLeadBytes() );
-            ConvToUnicode = DBStringToUnicode;
-            break;
-        }
+    case MB_NONE:
+        if( CmdLineParms.CodePageFile != NULL ) {
+            LoadCodePageFile( CmdLineParms.CodePageFile );
 #ifdef __NT__
-    } else {
-        if( MB_NONE == CmdLineParms.MBCharSupport ) {
+        } else {
             SetNativeLeadBytes();
             ConvToUnicode = NativeDBStringToUnicode;
-        }
 #endif
+        }
+        break;
+    default:
+        break;
     }
 }
 
