@@ -310,8 +310,8 @@ static void newParseStack( parse_stack *stack )
     /*
      * get new stack
      */
-    stack->vstack = RcMemMalloc( STACK_MAX * sizeof( YYSTYPE ) );
-    stack->sstack = RcMemMalloc( STACK_MAX * sizeof( YYACTTYPE ) );
+    stack->vstack = RcMemAlloc( STACK_MAX * sizeof( YYSTYPE ) );
+    stack->sstack = RcMemAlloc( STACK_MAX * sizeof( YYACTTYPE ) );
     initParseStack( stack );
 }
 

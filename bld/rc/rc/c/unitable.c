@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2020-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2020-2023 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -273,7 +273,7 @@ RcStatus SetUTF8toCP932( void )
                 ret = ( feof( fh ) ) ? RS_READ_INCMPLT : RS_READ_ERROR;
             } else {
                 cvt_table_len = u16;
-                cvt_table = RcMemMalloc( sizeof( cvt_chr ) * cvt_table_len );
+                cvt_table = RcMemAlloc( sizeof( cvt_chr ) * cvt_table_len );
                 if( cvt_table_len != fread( cvt_table, sizeof( cvt_chr ), cvt_table_len , fh ) ) {
                     ret = ( feof( fh ) ) ? RS_READ_INCMPLT : RS_READ_ERROR;
                 }

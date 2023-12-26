@@ -51,7 +51,7 @@
 
 extern HANDLE_INFO  hInstance;
 
-WResSetRtns(res_open,res_close,res_read,res_write,res_seek,res_tell,res_ioerr,RcMemMalloc,RcMemFree);
+WResSetRtns(res_open,res_close,res_read,res_write,res_seek,res_tell,res_ioerr,RcMemAlloc,RcMemFree);
 
 void InitGlobs( void )
 /********************/

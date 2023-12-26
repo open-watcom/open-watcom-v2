@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,7 +43,7 @@
 #define RESTELL         res_tell
 #define RESIOERR        res_ioerr
 
-#define RESALLOC        RcMemMalloc
+#define RESALLOC        RcMemAlloc
 #define RESFREE         RcMemFree
 
 #define RCREALLOC       RcMemRealloc

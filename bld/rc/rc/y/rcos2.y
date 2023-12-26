@@ -1487,7 +1487,7 @@ string-group
         {
             $$.lstring = ( $1.lstring | $2.lstring );
             $$.length = $1.length + $2.length;
-            $$.string = RcMemMalloc( $$.length + 1 );
+            $$.string = RcMemAlloc( $$.length + 1 );
             strcpy( $$.string, $1.string );
             strcat( $$.string, $2.string );
             RcMemFree( $1.string );

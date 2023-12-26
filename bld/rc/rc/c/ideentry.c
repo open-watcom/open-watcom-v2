@@ -242,8 +242,8 @@ static int RCMainLine( const char *opts, int argc, char **argv )
             if( opts != NULL ) {
                 str = opts;
                 argc = ParseEnvVar( str, NULL, NULL );
-                argv = RcMemMalloc( ( argc + 4 ) * sizeof( char * ) );
-                cmdbuf = RcMemMalloc( strlen( str ) + argc + 1 );
+                argv = RcMemAlloc( ( argc + 4 ) * sizeof( char * ) );
+                cmdbuf = RcMemAlloc( strlen( str ) + argc + 1 );
                 ParseEnvVar( str, argv, cmdbuf );
                 pass1 = false;
                 for( i = 0; i < argc; i++ ) {

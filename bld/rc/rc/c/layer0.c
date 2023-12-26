@@ -102,7 +102,7 @@ static RcBuffer *NewRcBuffer( void )
 {
     RcBuffer    *new_buff;
 
-    new_buff = RcMemMalloc( sizeof( RcBuffer ) );
+    new_buff = RcMemAlloc( sizeof( RcBuffer ) );
     new_buff->IsDirty = false;
     new_buff->Count = 0;
     new_buff->BytesRead = 0;

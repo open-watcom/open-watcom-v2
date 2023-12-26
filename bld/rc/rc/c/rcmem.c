@@ -79,8 +79,8 @@ void RcMemShutdown( void )
 #endif
 }
 
-void *RcMemMalloc( size_t size )
-/******************************/
+void *RcMemAlloc( size_t size )
+/*****************************/
 {
     void    *ptr;
 

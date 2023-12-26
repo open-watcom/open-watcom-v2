@@ -62,7 +62,7 @@ void RcAddCPPArg( char *newarg )
          * 2 is 1 for newarg, 1 for NULL
          */
         numargs = 2;
-        cppargs = RcMemMalloc( numargs * sizeof( char * ) );
+        cppargs = RcMemAlloc( numargs * sizeof( char * ) );
     } else {
         arg = cppargs = CmdLineParms.CPPArgs;
         while( *arg != NULL ) {
@@ -74,7 +74,7 @@ void RcAddCPPArg( char *newarg )
         numargs = ( arg - CmdLineParms.CPPArgs ) + 2;
         cppargs = RcMemRealloc( cppargs, numargs * sizeof( char * ) );
     }
-    cppargs[numargs - 2] = RcMemMalloc( strlen( newarg ) + 1 );
+    cppargs[numargs - 2] = RcMemAlloc( strlen( newarg ) + 1 );
     strcpy( cppargs[numargs - 2], newarg );
     cppargs[numargs - 1] = NULL;
 
@@ -210,7 +210,7 @@ static void setCodePageFile( const char *fname )
         CmdLineParms.CodePageFile = NULL;
     }
     if( fname != NULL ) {
-        CmdLineParms.CodePageFile = RcMemMalloc( strlen( fname ) + 1 );
+        CmdLineParms.CodePageFile = RcMemAlloc( strlen( fname ) + 1 );
         strcpy( CmdLineParms.CodePageFile, fname );
     }
 }
@@ -246,7 +246,7 @@ static bool ScanOptionsArg( const char *arg )
             if( scanStringCheck( arg, &len ) ) {
                 RcError( ERR_UNMATCHED_QUOTE_ON_CMD_LINE );
             }
-            CmdLineParms.PrependString = scanString( RcMemMalloc( len + 1 ), arg, len );
+            CmdLineParms.PrependString = scanString( RcMemAlloc( len + 1 ), arg, len );
             CmdLineParms.Prepend = true;
             break;
         } else {
@@ -310,7 +310,7 @@ static bool ScanOptionsArg( const char *arg )
         if( scanStringCheck( arg, &len ) ) {
             RcError( ERR_UNMATCHED_QUOTE_ON_CMD_LINE );
         }
-        p = scanString( RcMemMalloc( len + 1 ), arg, len  );
+        p = scanString( RcMemAlloc( len + 1 ), arg, len  );
         setCodePageFile( p );
         RcMemFree( p );
         break;
@@ -332,7 +332,7 @@ static bool ScanOptionsArg( const char *arg )
             if( scanStringCheck( arg, &len ) ) {
                 RcError( ERR_UNMATCHED_QUOTE_ON_CMD_LINE );
             }
-            CmdLineParms.OutResFileName = scanString( RcMemMalloc( len + 1 ), arg, len );
+            CmdLineParms.OutResFileName = scanString( RcMemAlloc( len + 1 ), arg, len );
             break;
         case 'r':
             arg++;
@@ -341,7 +341,7 @@ static bool ScanOptionsArg( const char *arg )
             if( scanStringCheck( arg, &len ) ) {
                 RcError( ERR_UNMATCHED_QUOTE_ON_CMD_LINE );
             } else {
-                resfile = RcMemMalloc( sizeof( ExtraRes ) + len + 1 );
+                resfile = RcMemAlloc( sizeof( ExtraRes ) + len + 1 );
                 scanString( resfile->name, arg, len );
                 resfile->next = CmdLineParms.ExtraResFiles;
                 CmdLineParms.ExtraResFiles = resfile;
@@ -354,7 +354,7 @@ static bool ScanOptionsArg( const char *arg )
             if( scanStringCheck( arg, &len ) ) {
                 RcError( ERR_UNMATCHED_QUOTE_ON_CMD_LINE );
             }
-            CmdLineParms.OutExeFileName = scanString( RcMemMalloc( len + 1 ), arg, len );
+            CmdLineParms.OutExeFileName = scanString( RcMemAlloc( len + 1 ), arg, len );
             break;
         default:
             RcError( ERR_UNKNOWN_MULT_OPTION, arg - 1 );
@@ -369,8 +369,8 @@ static bool ScanOptionsArg( const char *arg )
         if( scanStringCheck( arg, &len ) ) {
             RcError( ERR_UNMATCHED_QUOTE_ON_CMD_LINE );
         }
-        temp = scanString( RcMemMalloc( len + 1 ), arg, len );
-        frStrings = RcMemMalloc( sizeof( FRStrings ) + len + 2 );
+        temp = scanString( RcMemAlloc( len + 1 ), arg, len );
+        frStrings = RcMemAlloc( sizeof( FRStrings ) + len + 2 );
         p = strtok( temp, delims );
         if( p != NULL ) {
             findlen = strlen( p );
@@ -401,7 +401,7 @@ static bool ScanOptionsArg( const char *arg )
         if( scanStringCheck( arg, &len ) ) {
             RcError( ERR_UNMATCHED_QUOTE_ON_CMD_LINE );
         }
-        temp = scanString( RcMemMalloc( len + 1 ), arg, len );
+        temp = scanString( RcMemAlloc( len + 1 ), arg, len );
         PP_IncludePathAdd( temp );
         RcMemFree( temp );
         break;
@@ -537,11 +537,11 @@ static char *MakeFileName( const char *infilename, const char *ext )
 
     len = strlen( infilename ) + 1;
     if( ext == NULL ) {
-        out = RcMemMalloc( len );
+        out = RcMemAlloc( len );
         strcpy( out, infilename );
     } else {
         _splitpath2( infilename, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
-        out = RcMemMalloc( len + ( 1 + strlen( ext ) - strlen( pg.ext ) ) );
+        out = RcMemAlloc( len + ( 1 + strlen( ext ) - strlen( pg.ext ) ) );
         _makepath( out, pg.drive, pg.dir, pg.fname, ext );
     }
     return( out );
@@ -557,7 +557,7 @@ static void CheckExtension( char **filename, const char *defext )
     if( pg.ext[0] == '\0' ) {
         len = strlen( *filename ) + ( 1 + strlen( defext ) ) + 1;
         RcMemFree( *filename );
-        *filename = RcMemMalloc( len );
+        *filename = RcMemAlloc( len );
         _makepath( *filename, pg.drive, pg.dir, pg.fname, defext );
     }
 } /* CheckExtension */
@@ -860,13 +860,13 @@ static bool doScanParams( int argc, char *argv[], int *nofilenames )
             if( scanStringCheck( arg, &len ) ) {
                 RcError( ERR_UNMATCHED_QUOTE_ON_CMD_LINE );
             }
-            CmdLineParms.InFileName = scanString( RcMemMalloc( len + 1 ), arg, len );
+            CmdLineParms.InFileName = scanString( RcMemAlloc( len + 1 ), arg, len );
             (*nofilenames)++;
         } else if( *nofilenames == 1 ) {
             if( scanStringCheck( arg, &len ) ) {
                 RcError( ERR_UNMATCHED_QUOTE_ON_CMD_LINE );
             }
-            CmdLineParms.InExeFileName = scanString( RcMemMalloc( len + 1 ), arg, len );
+            CmdLineParms.InExeFileName = scanString( RcMemAlloc( len + 1 ), arg, len );
             (*nofilenames)++;
         } else {
             RcError( ERR_TOO_MANY_ARGS, arg );
@@ -989,7 +989,7 @@ static bool scanEnvVar( const char *varname, int *nofilenames )
     argbufsize = strlen( env ) + 1 + argc;  // inter-parameter spaces map to 0
     argvsize = ( argc + 1 ) * sizeof( char * ); // sizeof argv[argc+1]
     varlen = strlen( varname ) + 1;         // Copy taken to detect recursion.
-    info = RcMemMalloc( sizeof( *info ) + argbufsize + argvsize + varlen );
+    info = RcMemAlloc( sizeof( *info ) + argbufsize + argvsize + varlen );
     info->next = stack;
     stack = info;                           // push info on stack
     info->argv = (char **)info->buf;
@@ -1108,7 +1108,7 @@ char *FindAndReplace( char *stringFromFile, FRStrings *frStrings )
             /*
              * checking if a replacement is to be done, then allocating memory
              */
-            replacedString = RcMemMalloc( lenOfStringFromFile+1 );
+            replacedString = RcMemAlloc( lenOfStringFromFile+1 );
             for( k = 0; k < lenOfStringFromFile; k++ ) {
                 replacedString[k] = '\0';
             }
