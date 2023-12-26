@@ -599,11 +599,15 @@ static bool PreprocessInputFile( void )
         for( cppargs = CmdLineParms.CPPArgs; (p = *cppargs) != NULL; ++cppargs ) {
             for( ; *p != '\0'; ++p ) {
                 if( *p == '=' ) {
-                    *p = ' ';
                     break;
                 }
             }
-            PP_Define( *cppargs + 2 );         // skip over -d
+            if( *p == '=' ) {
+                *p = ' ';
+                PP_Define( *cppargs + 2 );      // skip over -d
+            } else {
+                PP_Define_1( *cppargs + 2 );    // skip over -d
+            }
         }
     }
     return( false );                    // indicate no error
