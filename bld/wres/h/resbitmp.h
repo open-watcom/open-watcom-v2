@@ -41,6 +41,7 @@ typedef struct BitmapInfoHeader {
     uint_16     Planes;
     uint_16     BitCount;
     uint_32     Compression;
+    uint_32     SizeImage;
     uint_32     XPelsPerMeter;
     uint_32     YPelsPerMeter;
     uint_32     ClrUsed;
@@ -49,5 +50,6 @@ typedef struct BitmapInfoHeader {
 #include "poppck.h"
 
 extern bool ResWriteBitmapInfoHeader( BitmapInfoHeader *, FILE *fp );
+extern bool ResWriteWinOldBitmapHeader( BitmapInfoHeader *, FILE *fp );
 
 #endif
