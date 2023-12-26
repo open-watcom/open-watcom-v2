@@ -86,7 +86,7 @@ typedef struct preproc_value {
 typedef void        (* pp_walk_func)( const MACRO_ENTRY *me, const PREPROC_VALUE *val, void *cookie );
 typedef const char  *(* pp_parent_func)( void **cookie );
 
-extern void         PPENTRY PP_Init( char c, bool spec_macros );
+extern void         PPENTRY PP_Init( char c, unsigned char spec_macros );
 extern int          PPENTRY PP_Fini( void );
 extern int          PPENTRY PP_FileInit( const char *filename, pp_flags ppflags, const char *incpath );
 extern void         PPENTRY PP_FileFini( void );

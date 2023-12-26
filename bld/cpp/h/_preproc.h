@@ -99,11 +99,8 @@ extern  MACRO_TOKEN *NextMToken( void );
 extern  void        DeleteNestedMacro( void );
 extern  void        DoMacroExpansion( MACRO_ENTRY *__me );
 
-extern  void        PPMacroVarInit( void );
-extern  void        PPMacroVarFini( void );
-
-extern  char        PP__DATE__[14];
-extern  char        PP__TIME__[11];
+extern  void        PPMacroInit( unsigned char spec_macros );
+extern  void        PPMacroFini( void );
 
 extern  FILELIST    *PP_File;
 extern  unsigned    PPLineNumber;

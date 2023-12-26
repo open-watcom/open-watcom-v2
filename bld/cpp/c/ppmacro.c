@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,6 +31,8 @@
 
 
 #include "_preproc.h"
+#include "ppfmttm.h"
+
 
 #define END_OF_MACRO_STR    "Z-<end of macro>"
 
@@ -51,10 +54,29 @@ typedef struct nested_macros {
 extern void DumpMTokens( MACRO_TOKEN *mtok );
 extern void DumpNestedMacros( void );
 
-NESTED_MACRO *NestedMacros;
-int           MacroDepth;
-MACRO_TOKEN  *MacroExpansion( MACRO_ENTRY *, bool );
-MACRO_TOKEN  *NestedMacroExpansion( MACRO_ENTRY * );
+static NESTED_MACRO *NestedMacros;
+static int          MacroDepth;
+static MACRO_TOKEN  *MacroExpansion( MACRO_ENTRY *, bool );
+static MACRO_TOKEN  *NestedMacroExpansion( MACRO_ENTRY * );
+
+static char         PP__DATE__[14];                 // value for __DATE__ macro
+static char         PP__TIME__[11];                 // value for __TIME__ macro
+
+static MACRO_ENTRY  *PPHashTable[HASH_SIZE];
+
+#define _rotl( a, b )   ( ( a << b ) | ( a >> ( 16 - b ) ) )
+
+static unsigned PP_Hash( const char *name, size_t len )
+{
+    unsigned    hash;
+
+    hash = 0;
+    while( len-- > 0 ) {
+        hash = (hash << 4) + *name++;
+        hash = (hash ^ _rotl( hash & 0xF000, 4 )) & 0x0FFF;
+    }
+    return( hash % HASH_SIZE );
+}
 
 static void FreeTokenList( MACRO_TOKEN *head )
 {
@@ -870,14 +892,106 @@ void DoMacroExpansion( MACRO_ENTRY *me )
     // when the PPTokenList is exhausted, then revert back to normal scanning
 }
 
-void PPMacroVarInit( void )
-/*************************/
+MACRO_ENTRY *PP_MacroLookup( const char *macro_name, size_t len )
 {
-    NestedMacros = NULL;
-    MacroDepth = 0;
+    MACRO_ENTRY *me;
+    unsigned    hash;
+
+    hash = PP_Hash( macro_name, len );
+    for( me = PPHashTable[hash]; me != NULL; me = me->next ) {
+        if( memcmp( me->name, macro_name, len ) == 0 && me->name[len] == '\0' ) {
+            break;
+        }
+    }
+    return( me );
 }
 
-void PPMacroVarFini( void )
-/*************************/
+MACRO_ENTRY *PP_AddMacro( const char *macro_name, size_t len )
 {
+    MACRO_ENTRY     *me;
+    unsigned int    hash;
+
+    me = PP_MacroLookup( macro_name, len );
+    if( me == NULL ) {
+        me = (MACRO_ENTRY *)PP_Malloc( sizeof( MACRO_ENTRY ) + len );
+        if( me != NULL ) {
+            hash = PP_Hash( macro_name, len );
+            me->next = PPHashTable[hash];
+            PPHashTable[hash] = me;
+            memcpy( me->name, macro_name, len );
+            me->name[len] = '\0';
+            me->parmcount = PP_SPECIAL_MACRO;
+            me->replacement_list = NULL;
+        }
+    }
+    return( me );
+}
+
+void PPENTRY PP_MacrosWalk( pp_walk_func fn, void *cookies )
+{
+    int             hash;
+    const char      *endptr;
+    MACRO_ENTRY     *me;
+    PREPROC_VALUE   val;
+
+    for( hash = 0; hash < HASH_SIZE; hash++ ) {
+        for( me = PPHashTable[hash]; me != NULL; me = me->next ) {
+            if( me->parmcount == 0 && me->replacement_list != NULL ) {
+                if( PPEvalExpr( me->replacement_list, &endptr, &val ) ) {
+                    if( *endptr == '\0' ) {
+                        fn( me, &val, cookies );
+                    }
+                }
+            }
+        }
+    }
+}
+
+static void PP_TimeInit( void )
+{
+    struct tm   *tod;
+    time_t      time_of_day;
+
+    time_of_day = time( &time_of_day );
+    tod = localtime( &time_of_day );
+    FormatTime_tm( PP__TIME__ + 1, tod );
+    FormatDate_tm( PP__DATE__ + 1, tod );
+}
+
+void PPMacroInit( unsigned char spec_macros )
+/*******************************************/
+{
+    int         hash;
+
+    NestedMacros = NULL;
+    MacroDepth = 0;
+    for( hash = 0; hash < HASH_SIZE; hash++ ) {
+        PPHashTable[hash] = NULL;
+    }
+    if( spec_macros == PPSPEC_C ) {
+        strcpy( PP__DATE__, "\"Dec 31 2005\"" );
+        strcpy( PP__TIME__, "\"12:00:00\"" );
+        PP_AddMacro( "__LINE__", 8 );
+        PP_AddMacro( "__FILE__", 8 );
+        PP_AddMacro( "__DATE__", 8 );
+        PP_AddMacro( "__TIME__", 8 );
+        PP_AddMacro( "__STDC__", 8 );
+        PP_TimeInit();
+    }
+}
+
+void PPMacroFini( void )
+/**********************/
+{
+    int         hash;
+    MACRO_ENTRY *me;
+
+    for( hash = 0; hash < HASH_SIZE; hash++ ) {
+        for( ; (me = PPHashTable[hash]) != NULL; ) {
+            PPHashTable[hash] = me->next;
+            if( me->replacement_list != NULL )
+                PP_Free( me->replacement_list );
+            PP_Free( me );
+        }
+    }
 }
