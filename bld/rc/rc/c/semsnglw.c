@@ -367,7 +367,7 @@ static bool writeIconDir( FullIconDir *dir, WResID *name, ResMemFlags flags, int
     return( error );
 } /* writeIconDir */
 
-static bool CopyTranslateBitmapWin2x( unsigned int Width, unsigned int Height, unsigned int BitCount, FILE *fp) {
+static bool CopyTranslateBitmapWin2x( unsigned int Width, unsigned int Height, unsigned int BitCount, FILE *fp, bool invert) {
     /* Windows 2.x bitmaps are top-down, not bottom up. Some translation needed. */
     unsigned int dst_stride = (((Width*BitCount+15u)&(~15u))/8u)/*WORD align*/;
     unsigned int src_stride = (((Width*BitCount+31u)&(~31u))/8u)/*DWORD align*/;
@@ -398,6 +398,13 @@ static bool CopyTranslateBitmapWin2x( unsigned int Width, unsigned int Height, u
         if ( copy_stride < src_stride ) {
             RESSEEK( fp, src_stride - copy_stride, SEEK_CUR );
         }
+    }
+
+    /* some programs (Adobe Photoshop 2.5) like to write 1bpp bitmaps
+     * with white as the first color instead of black */
+    if( invert ) {
+        for (y=0;y < img_sz;y++)
+            newbmp[y] ^= 0xFF;
     }
 
     if( RESWRITE( CurrResFile.fp, newbmp, img_sz ) != img_sz) {
@@ -1076,7 +1083,7 @@ static RcStatus copyBitmap( BitmapFileHeader *head, FILE *fp,
     return( ret );
 } /* copyBitmap */
 
-static bool writeTheWindows2xBitmap( BitmapInfoHeader *dibhead, WResID *name, ResMemFlags flags, int *err_code, FILE *fp )
+static bool writeTheWindows2xBitmap( BitmapInfoHeader *dibhead, WResID *name, ResMemFlags flags, int *err_code, FILE *fp, bool invert )
 /******************************************************************************************/
 {
     bool                error;
@@ -1085,7 +1092,7 @@ static bool writeTheWindows2xBitmap( BitmapInfoHeader *dibhead, WResID *name, Re
     loc.start = SemStartResource();
     error = ResWriteWinOldBitmapHeader( dibhead, CurrResFile.fp );
     if( !error )
-        error = CopyTranslateBitmapWin2x( dibhead->Width, dibhead->Height, dibhead->BitCount, fp );
+        error = CopyTranslateBitmapWin2x( dibhead->Width, dibhead->Height, dibhead->BitCount, fp, invert );
     if( error ) {
         *err_code = LastWresErr();
     } else {
@@ -1118,6 +1125,7 @@ static void AddBitmapResource( WResID *name, ResMemFlags flags, const char *file
 
     if( CmdLineParms.VersionStamp20 ) {
         BitmapInfoHeader dibhead;
+        bool monoinvert = false;
 
         if( ReadBitmapInfoHeader( &dibhead, fp ) != RS_OK )
             goto COPY_BITMAP_ERROR;
@@ -1133,10 +1141,25 @@ static void AddBitmapResource( WResID *name, ResMemFlags flags, const char *file
         if( dibhead.BitCount != 1 || dibhead.Planes != 1 )
             RcWarning( WARN_BITMAP_WIN2X );
 
+        /* Invert the bits on convert if the BMP image is monochrome but the
+         * white color is first (Adobe Photoshop 2.5 insists on writing 1bpp
+         * BMP files this way) */
+        if( dibhead.BitCount == 1 ) {
+            unsigned char color0[4];
+
+            if( RESSEEK( fp, 14 + dibhead.Size, SEEK_SET ) )
+                goto COPY_BITMAP_ERROR;
+            if( RESREAD( fp, color0, 4) != 4 )
+                goto COPY_BITMAP_ERROR;
+
+            if( color0[0] == 0xFF && color0[1] == 0xFF && color0[2] == 0xFF)
+                monoinvert = true;
+        }
+
         if( RESSEEK( fp, head.Offset, SEEK_SET ) )
             goto COPY_BITMAP_ERROR;
 
-        ret = writeTheWindows2xBitmap( &dibhead, name, flags, &err_code, fp );
+        ret = writeTheWindows2xBitmap( &dibhead, name, flags, &err_code, fp, monoinvert );
     }
     else {
         ret = copyBitmap( &head, fp, name, flags, &err_code );
