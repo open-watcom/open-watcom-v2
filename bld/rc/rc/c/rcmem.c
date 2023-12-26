@@ -126,6 +126,15 @@ void *RcMemRealloc( void *old_ptr, size_t newsize )
     return( ptr );
 }
 
+char *RcMemStrDup( const char *buf )
+/**********************************/
+{
+    if( buf != NULL ) {
+        return( strcpy( RcMemAlloc( strlen( buf ) + 1 ), buf ) );
+    }
+    return( NULL );
+}
+
 #ifdef RC_USE_TRMEM
 void RcPrintMemUsage( void )
 /**************************/
