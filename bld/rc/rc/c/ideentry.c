@@ -238,7 +238,7 @@ static int RCMainLine( const char *opts, int argc, char **argv )
     if( InitRcMsgs() ) {
         rc = setjmp( jmpbuf_RCFatalError );
         if( rc == 0 ) {
-            PP_Init( '#', false );
+            PP_Init( '#', PPSPEC_RC );
             if( opts != NULL ) {
                 str = opts;
                 argc = ParseEnvVar( str, NULL, NULL );

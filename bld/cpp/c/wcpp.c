@@ -436,7 +436,7 @@ int main( int argc, char *argv[] )
             SetRange( MBCharLen, 0xfc, 0xfd, 5 );
             break;
         }
-        PP_Init( '#', true );
+        PP_Init( '#', PPSPEC_C );
         fo = stdout;
         if( out_filename != NULL ) {
             fo = fopen( out_filename, "wt" );

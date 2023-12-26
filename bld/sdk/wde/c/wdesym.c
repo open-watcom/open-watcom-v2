@@ -514,7 +514,7 @@ char *WdeLoadSymbols( WRHashTable **table, char *file_name, bool prompt_name )
     pop_env = false;
     name = NULL;
 
-    PP_Init( '#', false );
+    PP_Init( '#', PPSPEC_RC );
 
     ok = ( table != NULL );
 

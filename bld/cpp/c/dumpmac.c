@@ -89,7 +89,7 @@ int main( int argc, char *argv[] )
         printf( "Usage: dumpmac filename\n" );
         exit( 1 );
     }
-    PP_Init( ( argv[2] != NULL ) ? argv[2][0] : '#', true );
+    PP_Init( ( argv[2] != NULL ) ? argv[2][0] : '#', PPSPEC_C );
     if( PP_FileInit( argv[1], PPFLAG_NONE | PPFLAG_TRUNCATE_FILE_NAME, NULL ) != 0 ) {
         PP_Fini();
         printf( "Unable to open '%s'\n", argv[1] );

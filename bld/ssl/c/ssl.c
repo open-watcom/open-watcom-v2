@@ -400,7 +400,7 @@ int main( int argc, char *argv[] )
             break;
         }
     }
-    PP_Init( '!', false );
+    PP_Init( '!', PPSPEC_SSL );
     OpenFiles( verbose, file, argv[1] );
     Scan();
     Parse();

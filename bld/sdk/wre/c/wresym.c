@@ -211,7 +211,7 @@ static char *WRELoadSymbols( WRHashTable **table, char *file_name, bool prompt_n
 
     name = NULL;
 
-    PP_Init( '#', false );
+    PP_Init( '#', PPSPEC_RC );
 
     ok = (table != NULL);
 

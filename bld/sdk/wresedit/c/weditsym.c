@@ -126,7 +126,7 @@ char *WLoadSymbols( WRHashTable **table, char *file_name, HWND parent, bool prom
 
     name = NULL;
 
-    PP_Init( '#', false );
+    PP_Init( '#', PPSPEC_RC );
 
     ok = (table != NULL);
 

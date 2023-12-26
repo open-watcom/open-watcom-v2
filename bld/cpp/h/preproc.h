@@ -36,6 +36,11 @@
 
 #define PPENTRY
 
+#define PPSPEC_AS       1
+#define PPSPEC_C        1
+#define PPSPEC_RC       0
+#define PPSPEC_SSL      0
+
 typedef enum {
     PPINCLUDE_USR,
     PPINCLUDE_SYS,
