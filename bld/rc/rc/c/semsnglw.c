@@ -367,12 +367,56 @@ static bool writeIconDir( FullIconDir *dir, WResID *name, ResMemFlags flags, int
     return( error );
 } /* writeIconDir */
 
+static bool CopyTranslateBitmapWin2x( unsigned int Width, unsigned int Height, unsigned int BitCount, FILE *fp) {
+    /* Windows 2.x bitmaps are top-down, not bottom up. Some translation needed. */
+    unsigned int dst_stride = (((Width*BitCount+15u)&(~15u))/8u)/*WORD align*/;
+    unsigned int src_stride = (((Width*BitCount+31u)&(~31u))/8u)/*DWORD align*/;
+    unsigned int copy_stride = min( dst_stride, src_stride );
+
+    unsigned char *newbmp;
+    unsigned int img_sz;
+    unsigned int y;
+
+    /* This code assumes the caller has already read past the DIB header */
+
+    /* Order of storage:
+     * [header]
+     * [bitmap image] */
+    img_sz = dst_stride * Height;
+    newbmp = malloc( img_sz );
+    if( !newbmp )
+        return( true );
+
+    memset( newbmp, 0, img_sz );
+
+    /* bitmap image */
+    for( y = 0; y < Height; y++ ) {
+        if( RESREAD( fp, newbmp + ( (Height - 1 - y ) * dst_stride ), copy_stride ) != copy_stride ) {
+            free( newbmp );
+            return( true );
+        }
+        if ( copy_stride < src_stride ) {
+            RESSEEK( fp, src_stride - copy_stride, SEEK_CUR );
+        }
+    }
+
+    if( RESWRITE( CurrResFile.fp, newbmp, img_sz ) != img_sz) {
+        free( newbmp );
+        return( true );
+    }
+
+    free( newbmp );
+    return( false );
+}
+
 static bool CopyTranslateBitmapAndMaskWin2x( unsigned int Width, unsigned int Height, unsigned int BitCount, FILE *fp) {
     /* Windows 2.x bitmaps are top-down, not bottom up. Some translation needed. */
     unsigned int dst_stride = (((Width*BitCount+15u)&(~15u))/8u)/*WORD align*/;
     unsigned int src_stride = (((Width*BitCount+31u)&(~31u))/8u)/*DWORD align*/;
     unsigned int dstm_stride = (((Width+15u)&(~15u))/8u)/*WORD align*/;
     unsigned int srcm_stride = (((Width+31u)&(~31u))/8u)/*DWORD align*/;
+    unsigned int copy_stride = min( dst_stride, src_stride );
+    unsigned int copym_stride = min( dstm_stride, srcm_stride );
 
     unsigned char *newbmp;
     unsigned int mask_sz;
@@ -395,17 +439,23 @@ static bool CopyTranslateBitmapAndMaskWin2x( unsigned int Width, unsigned int He
 
     /* icon image */
     for( y = 0; y < Height; y++ ) {
-        if( RESREAD( fp, newbmp + mask_sz + ( (Height - 1 - y ) * dst_stride ), src_stride ) != dst_stride ) {
+        if( RESREAD( fp, newbmp + mask_sz + ( (Height - 1 - y ) * dst_stride ), copy_stride ) != copy_stride ) {
             free( newbmp );
             return( true );
+        }
+        if ( copy_stride < src_stride ) {
+            RESSEEK( fp, src_stride - copy_stride, SEEK_CUR );
         }
     }
 
     /* icon mask */
     for( y = 0; y < Height; y++ ) {
-        if( RESREAD( fp, newbmp + ( ( Height - 1 - y ) * dstm_stride ), srcm_stride ) != dstm_stride ) {
+        if( RESREAD( fp, newbmp + ( ( Height - 1 - y ) * dstm_stride ), copym_stride ) != copym_stride ) {
             free( newbmp );
             return( true );
+        }
+        if ( copym_stride < srcm_stride ) {
+            RESSEEK( fp, srcm_stride - copym_stride, SEEK_CUR );
         }
     }
 
@@ -1026,6 +1076,27 @@ static RcStatus copyBitmap( BitmapFileHeader *head, FILE *fp,
     return( ret );
 } /* copyBitmap */
 
+static bool writeTheWindows2xBitmap( BitmapInfoHeader *dibhead, WResID *name, ResMemFlags flags, int *err_code, FILE *fp )
+/******************************************************************************************/
+{
+    bool                error;
+    ResLocation         loc;
+
+    loc.start = SemStartResource();
+    error = ResWriteWinOldBitmapHeader( dibhead, CurrResFile.fp );
+    if( !error )
+        error = CopyTranslateBitmapWin2x( dibhead->Width, dibhead->Height, dibhead->BitCount, fp );
+    if( error ) {
+        *err_code = LastWresErr();
+    } else {
+        loc.len = SemEndResource( loc.start );
+        SemAddResourceFree( name, WResIDFromNum( RESOURCE2INT( RT_BITMAP ) ), flags, loc );
+    }
+
+    return( error );
+} /* writeTheWindows2xIcon */
+
+
 static void AddBitmapResource( WResID *name, ResMemFlags flags, const char *filename )
 /************************************************************************************/
 {
@@ -1045,9 +1116,33 @@ static void AddBitmapResource( WResID *name, ResMemFlags flags, const char *file
     if( head.Type != BITMAP_MAGIC )
         goto NOT_BITMAP_ERROR;
 
-    ret = copyBitmap( &head, fp, name, flags, &err_code );
-    if( ret != RS_OK )
-        goto COPY_BITMAP_ERROR;
+    if( CmdLineParms.VersionStamp20 ) {
+        BitmapInfoHeader dibhead;
+
+        if( ReadBitmapInfoHeader( &dibhead, fp ) != RS_OK )
+            goto COPY_BITMAP_ERROR;
+
+        /* Windows 2.0 does not support compression, at all.
+         * Bitmaps must be monochrome, even though the header
+         * suggests you could do color. No top-down negative
+	 * height bitmaps. */
+        if( dibhead.Compression != 0 || dibhead.Size < 40 || (int)dibhead.Height <= 0 ) {
+            RcWarning( WARN_BITMAP_WIN2X );
+            goto COPY_BITMAP_ERROR;
+        }
+        if( dibhead.BitCount != 1 || dibhead.Planes != 1 )
+            RcWarning( WARN_BITMAP_WIN2X );
+
+        if( RESSEEK( fp, head.Offset, SEEK_SET ) )
+            goto COPY_BITMAP_ERROR;
+
+        ret = writeTheWindows2xBitmap( &dibhead, name, flags, &err_code, fp );
+    }
+    else {
+        ret = copyBitmap( &head, fp, name, flags, &err_code );
+        if( ret != RS_OK )
+            goto COPY_BITMAP_ERROR;
+    }
 
     RcIoCloseInputBin( fp );
 

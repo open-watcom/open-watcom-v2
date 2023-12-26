@@ -329,3 +329,6 @@ pick(   WARN_ICON_WIN2X,
 pick(   WARN_CURSOR_WIN2X,
         "CURSOR resource is incompatible with Windows 2.x. Please add a compatible size and depth version to your CUR file.",
         "CURSOR resource is incompatible with Windows 2.x. Please add a compatible size and depth version to your CUR file." )
+pick(   WARN_BITMAP_WIN2X,
+        "BITMAP resource is incompatible with Windows 2.x. Please provide a compatible BMP file.",
+        "BITMAP resource is incompatible with Windows 2.x. Please provide a compatible BMP file." )

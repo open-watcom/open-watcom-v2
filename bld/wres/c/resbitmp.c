@@ -34,6 +34,7 @@
 #include "resbitmp.h"
 #include "reserr.h"
 #include "wresrtns.h"
+#include "write.h"
 
 bool ResWriteBitmapInfoHeader( BitmapInfoHeader *head, FILE *fp )
 /***************************************************************/
@@ -42,3 +43,28 @@ bool ResWriteBitmapInfoHeader( BitmapInfoHeader *head, FILE *fp )
         return( WRES_ERROR( WRS_WRITE_FAILED ) );
     return( false );
 }
+
+bool ResWriteWinOldBitmapHeader( BitmapInfoHeader *head, FILE *fp ) {
+    bool error;
+
+    error = ResWriteUint8( 0x02, fp ); // rnType
+    if( !error )
+        error = ResWriteUint8( 0x00, fp );
+    if( !error )
+        error = ResWriteUint16( 0x0000, fp ); // bmType
+    if( !error )
+        error = ResWriteUint16( head->Width, fp ); // bmWidth
+    if( !error )
+        error = ResWriteUint16( head->Height, fp ); // bmHeight
+    if( !error )
+        error = ResWriteUint16( (((head->Width*head->BitCount+15u)&(~15u))/8u)/*WORD align*/, fp ); // bmWidthBytes
+    if( !error )
+        error = ResWriteUint8( 1, fp ); // bmPlanes
+    if( !error )
+        error = ResWriteUint8( head->BitCount, fp ); // bmBitsPixel
+    if( !error )
+        error = ResWriteUint32( 0, fp ); // unknown zero field
+
+    return( error );
+}
+
