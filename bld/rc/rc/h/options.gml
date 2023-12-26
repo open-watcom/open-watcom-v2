@@ -2,7 +2,7 @@
 :cmt.*
 :cmt.*                            Open Watcom Project
 :cmt.*
-:cmt.* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+:cmt.* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 :cmt.*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 :cmt.*
 :cmt.*  ========================================================================
@@ -105,7 +105,7 @@
 :chain. zk Multi-byte characters support
 :jusage.
 
-:option. ? h
+:option. h ?
 :target. any
 :usage.  print this message
 :jusage. このメッセージを表示します
@@ -143,9 +143,8 @@
 
 :option. bt
 :target. any
-:id. . <os>
-:enumerate. x windows nt os2
-:usage.  set the build target to <os> [windows|nt|os2]
+:id. . <target> [windows|nt|os2]
+:usage.  set the build <target> [windows|nt|os2]
 :jusage.
 
 :option. c
@@ -159,16 +158,22 @@
 :usage.  for a DLL, global memory above EMS line
 :jusage.
 
+:option. fe
+:target. any
+:file.
+:usage.  set the output executable file to name
+:jusage.
+
 :option. fo
 :target. any
 :file.
 :usage.  set the output resource file to name
 :jusage.
 
-:option. fe
+:option. fr
 :target. any
 :file.
-:usage.  set the output executable file to name
+:usage.  specify an additional input resource file
 :jusage.
 
 :option. i
@@ -227,33 +232,49 @@
 :usage.  protected mode only
 :jusage.
 
-:option. v1
+:option. v
 :target. any
 :internal.
 :usage.  print tokens as they are scanned
 :jusage.
 
-:option. v2
+:option. v1
 :target. any
 :internal.
 :usage.  print grammar rules as they are reduced
 :jusage.
 
-:option. v3
+:option. v2
 :target. any
 :internal.
 :usage.  print both tokens and grammar rules
 :jusage.
 
-:option. v4
+:option. v3
 :target. any
 :internal.
 :usage.  print tokens as they are scanned
 :jusage.
 
+:option. v4
+:target. any
+:internal.
+:usage.  print grammar rules as they are reduced
+:jusage.
+
 :option. x
 :target. any
 :usage.  ignore the INCLUDE environment variable
+:jusage.
+
+:option. xb
+:target. any
+:usage.  don't create the __<target>__ macro
+:jusage.
+
+:option. xc
+:target. any
+:usage.  ignore the current working directory
 :jusage.
 
 :option. zk0
