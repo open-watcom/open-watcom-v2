@@ -117,16 +117,19 @@
 
 :option. 20
 :target. any
+:enumerate. win16_ver
 :usage.  stamp file as requiring Windows 2.0
 :jusage.
 
 :option. 30
 :target. any
+:enumerate. win16_ver
 :usage.  stamp file as requiring Windows 3.0
 :jusage.
 
 :option. 31
 :target. any
+:enumerate. win16_ver
 :usage.  (*) stamp file as requiring Windows 3.1
 :jusage.
 
@@ -139,6 +142,11 @@
 :option. ad
 :target. any
 :usage.  generate auto dependency information for use by wmake
+:jusage.
+
+:option. ap
+:target. unused
+:usage.  prepend string
 :jusage.
 
 :option. bt
@@ -176,6 +184,11 @@
 :usage.  specify an additional input resource file
 :jusage.
 
+:option. g
+:target. unused
+:usage.  find/replace string
+:jusage.
+
 :option. i
 :target. any
 :path.
@@ -184,6 +197,7 @@
 
 :option. k
 :target. any
+:enumerate. segm_sort
 :usage.  don't sort segments (same as -s0)
 :jusage.
 
@@ -194,6 +208,11 @@
 
 :option. m
 :target. any
+:usage.  each instance of program has its own EMS bank
+:jusage.
+
+:option. n
+:target. unused
 :usage.  each instance of program has its own EMS bank
 :jusage.
 
@@ -214,16 +233,19 @@
 
 :option. s0
 :target. any
+:enumerate. segm_sort
 :usage.  no sorting, leave segments in the linker order
 :jusage.
 
 :option. s1
 :target. any
+:enumerate. segm_sort
 :usage.  move preload segments to front and mark for fast load
 :jusage.
 
 :option. s2
 :target. any
+:enumerate. segm_sort
 :usage.  (*) move preload, data, non-discard. segments to front
 :jusage.
 
@@ -277,33 +299,39 @@
 :usage.  ignore the current working directory
 :jusage.
 
-:option. zk0
+:option. zk0 zk
 :target. any
+:enumerate. charset
 :usage.  (*) Japanese (Kanji, CP 932)
 :jusage.
 
 :option. zk1
 :target. any
+:enumerate. charset
 :usage.  Chinese (Traditional, CP 950)
 :jusage.
 
 :option. zk2
 :target. any
+:enumerate. charset
 :usage.  Korean (Wansung, CP 949)
 :jusage.
 
 :option. zk3
 :target. any
+:enumerate. charset
 :usage.  Chinese (Simplified, CP 936)
 :jusage.
 
 :option. zku8
 :target. any
+:enumerate. charset
 :usage.  Unicode(NT)/UTF-8(Windows,OS2), UTF-8 source
 :jusage.
 
 :option. zku0
 :target. any
+:enumerate. charset
 :usage.  Japanese (Kanji, CP 932), UTF-8 source
 :jusage.
 
