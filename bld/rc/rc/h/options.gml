@@ -77,7 +77,7 @@
 :cmt.   :argequal. <char>                           args use <char> instead of '='
 :cmt.
 :cmt. where <targ>:
-:cmt.   default - any, dbg
+:cmt.   default - any, dbg, unused
 :cmt.   architecture - i86, 386, x64, axp, ppc, mps, sparc
 :cmt.   host OS - bsd, dos, linux, nt, os2, osx, qnx, haiku, rdos, win
 :cmt.   extra - targ1, targ2
@@ -98,7 +98,7 @@
 :target. any
 :ntarget. bsd linux osx qnx haiku
 
-:chain. s Segment and resource sorting method
+:usageogrp. s Segment and resource sorting method
 :jusage.
 :chain. v Verbose output
 :jusage.

@@ -50,7 +50,7 @@ typedef struct FRStrings {
     char                *findString; /* points to the string to find */
     char                *replaceString; /* points to the string to replace */
     char                buf[1]; /* dynamic buffer contains both strings */
-}FRStrings;
+} FRStrings;
 
 typedef struct RCParams {
 #ifdef SCANDEBUG
