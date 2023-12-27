@@ -142,17 +142,44 @@ extern void __frstor( _87state * );
 
 #else   /* !_M_I86 */
 
-#pragma aux __fsave =   \
-        "fsave [eax]"   \
-    __parm __routine    [__eax] \
-    __value             \
-    __modify __exact    []
+  #if defined( __BIG_DATA__ )
+    #pragma aux __fsave =   \
+            "push    ds"    \
+            "mov     ds,edx" \
+            "fsave   [ebx]"  \
+            "fwait"         \
+            "pop     ds"    \
+        __parm __routine    [__dx __ebx] \
+        __value             \
+        __modify __exact    []
 
-#pragma aux __frstor =  \
-        "frstor [eax]"  \
-    __parm __routine    [__eax] \
-    __value             \
-    __modify __exact    []
+    #pragma aux __frstor =  \
+            "push    ds"    \
+            "mov     ds,edx" \
+            "frstor  [ebx]"  \
+            "fwait"         \
+            "pop     ds"    \
+        __parm __routine    [__dx __ebx] \
+        __value             \
+        __modify __exact    []
+
+  #else
+    #pragma aux __fsave =   \
+            "fsave   [ebx]"  \
+            "fwait"         \
+        __parm __routine    [__ebx] \
+        __value             \
+        __modify __exact    []
+
+    #pragma aux __frstor =  \
+            "frstor  [ebx]"  \
+            "fwait"         \
+        __parm __routine    [__ebx] \
+        __value             \
+        __modify __exact    []
+
+  #endif
+
 
 #endif
 
