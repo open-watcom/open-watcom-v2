@@ -303,7 +303,6 @@ bool OPT_GET_OPTION             // PARSE: OPTION TEXT
         addString( p, option, len );
         StripQuotes( (*p)->data );
     }
-    CmdScanInit( option + len );
     return( true );
 }
 

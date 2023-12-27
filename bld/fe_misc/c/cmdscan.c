@@ -211,18 +211,13 @@ void CmdScanSwitchBackup(       // BACK UP SCANNER TO START OF SWITCH
 size_t CmdScanOption(           // SCAN AN OPTION
     char const **option )       // - addr( option pointer )
 {
-    char const *str;            // - scan position
+    char const *str_beg;        // - start of string
 
-    str = cmd.curr_ptr;
-    *option = str;
-    for( ; ; ++str ) {
-        int ch;
-        ch = *(unsigned char *)str;
-        if( ch == '\0' ) break;
-        if( _IS_SWITCH_CHAR( ch ) ) break;
-        if( isspace( ch ) ) break;
+    *option = str_beg = cmd.curr_ptr;
+    while( !CmdScanSwEnd() ) {
+        cmd.curr_ptr++;
     }
-    return( str - cmd.curr_ptr );
+    return( cmd.curr_ptr - str_beg );
 }
 
 

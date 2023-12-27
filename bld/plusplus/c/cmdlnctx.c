@@ -223,8 +223,8 @@ void CmdLnCtxInfo( void )
         }
         if( entry->base.sw_ptr != NULL ) {
             size_t size;
-            char const * not_used;
-            char const* old = CmdScanAddr();
+            char const *not_used;
+            char const *old = CmdScanAddr();
             CmdScanInit( entry->base.sw_ptr );
             CmdScanChar();
             size = CmdScanOption( &not_used ) + 1;
