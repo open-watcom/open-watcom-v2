@@ -567,7 +567,6 @@ static bool PreprocessInputFile( void )
 /*************************************/
 {
     pp_flags    ppflags;
-    char        rcdefine[13];
     char        **cppargs;
     char        *p;
     int         rc;
