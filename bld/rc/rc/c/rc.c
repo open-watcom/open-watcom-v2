@@ -73,7 +73,6 @@ void InitGlobs( void )
     DbtableInitStatics();
     LoadstrInitStatics();
     WriteInitStatics();
-    PP_IncludePathInit();
     ParseInitStaticsWIN();
     ParseInitStaticsOS2();
 }

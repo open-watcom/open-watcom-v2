@@ -111,7 +111,6 @@ void OptionsFini( void )
         }
         MemFree( ppDefines );
     }
-    PP_IncludePathFini();
 }
 
 bool OptionsInit( int argc, char **argv )
@@ -119,7 +118,6 @@ bool OptionsInit( int argc, char **argv )
 {
     char        *s;
 
-    PP_IncludePathInit();
 #ifdef AS_ALPHA
     s = "__WASAXP__=" _MACROSTR( _BLDVER );
 #elif defined( AS_PPC )

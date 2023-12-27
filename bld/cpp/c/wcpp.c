@@ -411,7 +411,7 @@ int main( int argc, char *argv[] )
     }
     PPErrorCallback = myErrorMsg;
 
-    PP_IncludePathInit();
+    PP_Init( '#', PPSPEC_C );
 
     rc = 0;
     memset( MBCharLen, 0, 256 );
@@ -436,7 +436,6 @@ int main( int argc, char *argv[] )
             SetRange( MBCharLen, 0xfc, 0xfd, 5 );
             break;
         }
-        PP_Init( '#', PPSPEC_C );
         fo = stdout;
         if( out_filename != NULL ) {
             fo = fopen( out_filename, "wt" );
@@ -463,7 +462,6 @@ int main( int argc, char *argv[] )
         } else if( fo != NULL ) {
             fclose( fo );
         }
-        rc = PP_Fini() | rc;
     }
 
     if( out_filename != NULL ) {
@@ -478,7 +476,7 @@ int main( int argc, char *argv[] )
     }
     free( (void *)defines );
 
-    PP_IncludePathFini();
+    rc = PP_Fini() | rc;
 
     if( rc == 0 && nofilenames == 0 ) {
         wcpp_quit( usageMsg, "No filename specified" );

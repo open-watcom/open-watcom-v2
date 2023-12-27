@@ -1049,7 +1049,6 @@ void ScanParamShutdown( void )
         RcMemFree( CmdLineParms.CPPArgs );
         CmdLineParms.CPPArgs = NULL;
     }
-    PP_IncludePathFini();
     while( (tmpres = CmdLineParms.ExtraResFiles) != NULL ) {
         CmdLineParms.ExtraResFiles = CmdLineParms.ExtraResFiles->next;
         RcMemFree( tmpres );

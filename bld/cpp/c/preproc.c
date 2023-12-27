@@ -1379,11 +1379,13 @@ void PPENTRY PP_Init( char c, unsigned char spec_macros )
     PPPreProcChar = c;
     PPSpecMacros = spec_macros;
     PPMacroInit( PPSpecMacros );
+    PP_IncludePathInit();
 }
 
 int PPENTRY PP_Fini( void )
 /*************************/
 {
+    PP_IncludePathFini();
     PPMacroFini();
     PP_Free( PPLineBuf );
     PPLineBuf = NULL;

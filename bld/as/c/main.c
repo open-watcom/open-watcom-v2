@@ -68,55 +68,57 @@ int main( int argc, char **argv )
     if( argc == 1 ) {
         Banner();
         Usage();
-    } else if( OptionsInit( --argc, ++argv ) ) {
-        Banner();
-        if( _IsOption( PRINT_HELP ) ) {
-            Usage();
-            *argv = NULL;
-        } else if( !*argv ) {
-            AsOutMessage( stderr, AS_MSG_ERROR );
-            AsOutMessage( stderr, NO_FILENAME_SPECIFIED );
-            fputc( '\n', stderr );
-        }
+    } else {
         PP_Init( '#', PPSPEC_AS );
-        while( *argv != NULL ) {
-            fname = MakeAsmFilename( *argv );
-            if( PP_FileInit( fname, PPFLAG_ASM_COMMENT | PPFLAG_EMIT_LINE | PPFLAG_TRUNCATE_FILE_NAME, NULL ) != 0 ) {
-                AsOutMessage( stderr, UNABLE_TO_OPEN, fname );
+        if( OptionsInit( --argc, ++argv ) ) {
+            Banner();
+            if( _IsOption( PRINT_HELP ) ) {
+                Usage();
+                *argv = NULL;
+            } else if( !*argv ) {
+                AsOutMessage( stderr, AS_MSG_ERROR );
+                AsOutMessage( stderr, NO_FILENAME_SPECIFIED );
                 fputc( '\n', stderr );
-            } else {
-                OptionsPPDefine();
-                SymInit();
-                InsInit();
-                DirInit();
-                if( ObjInit( fname ) ) {
-                    if( setjmp( AsmParse ) == 0 ) {
-                        ErrorCountsReset();
-                        DoReport = true;
-                        if( !yyparse() ) {
-                            CurrLineno--;    // This is the total # of lines
-                            ObjRelocsFini(); // Must be done before ErrorReport
-                                             // and other finis
-                        } else {
+            }
+            while( *argv != NULL ) {
+                fname = MakeAsmFilename( *argv );
+                if( PP_FileInit( fname, PPFLAG_ASM_COMMENT | PPFLAG_EMIT_LINE | PPFLAG_TRUNCATE_FILE_NAME, NULL ) != 0 ) {
+                    AsOutMessage( stderr, UNABLE_TO_OPEN, fname );
+                    fputc( '\n', stderr );
+                } else {
+                    OptionsPPDefine();
+                    SymInit();
+                    InsInit();
+                    DirInit();
+                    if( ObjInit( fname ) ) {
+                        if( setjmp( AsmParse ) == 0 ) {
+                            ErrorCountsReset();
+                            DoReport = true;
+                            if( !yyparse() ) {
+                                CurrLineno--;    // This is the total # of lines
+                                ObjRelocsFini(); // Must be done before ErrorReport
+                                                 // and other finis
+                            } else {
+                                DoReport = false;
+                            }
+                        } else { // AbortParse() was invoked
                             DoReport = false;
                         }
-                    } else { // AbortParse() was invoked
-                        DoReport = false;
+                        ErrorReport();
+                        AsLexerFini();
+                        ObjFini();
                     }
-                    ErrorReport();
-                    AsLexerFini();
-                    ObjFini();
+                    DirFini();
+                    InsFini();
+                    SymFini();
                 }
-                DirFini();
-                InsFini();
-                SymFini();
+                PP_FileFini();
+                ++argv;
             }
-            PP_FileFini();
-            ++argv;
         }
+        OptionsFini();
         PP_Fini();
     }
-    OptionsFini();
     AsMsgFini();
     MemFini();
     return( ExitStatus );
