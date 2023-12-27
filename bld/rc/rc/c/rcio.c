@@ -581,18 +581,14 @@ static bool PreprocessInputFile( void )
         RcError( ERR_CANT_OPEN_FILE, CmdLineParms.InFileName, strerror(errno) );
         return( true );
     }
-    strcpy( rcdefine, "RC_INVOKED 1" );
-    PP_Define( rcdefine );
+    PP_Define_1( "RC_INVOKED" );
     if( !CmdLineParms.NoTargetDefine ) {
         if( CmdLineParms.TargetOS == RC_TARGET_OS_WIN16 ) {
-            strcpy( rcdefine, "__WINDOWS__" );
-            PP_Define( rcdefine );
+            PP_Define_1( "__WINDOWS__" );
         } else if( CmdLineParms.TargetOS == RC_TARGET_OS_WIN32 ) {
-            strcpy( rcdefine, "__NT__" );
-            PP_Define( rcdefine );
+            PP_Define_1( "__NT__" );
         } else if( CmdLineParms.TargetOS == RC_TARGET_OS_OS2 ) {
-            strcpy( rcdefine, "__OS2__" );
-            PP_Define( rcdefine );
+            PP_Define_1( "__OS2__" );
         }
     }
     if( CmdLineParms.CPPArgs != NULL ) {
