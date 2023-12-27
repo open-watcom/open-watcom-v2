@@ -239,6 +239,7 @@ static int RCMainLine( const char *opts, int argc, char **argv )
         rc = setjmp( jmpbuf_RCFatalError );
         if( rc == 0 ) {
             PP_Init( '#', PPSPEC_RC );
+            ScanParamInit();
             if( opts != NULL ) {
                 str = opts;
                 argc = ParseEnvVar( str, NULL, NULL );
@@ -286,6 +287,7 @@ static int RCMainLine( const char *opts, int argc, char **argv )
                 RcMemFree( argv );
                 RcMemFree( cmdbuf );
             }
+            ScanParamFini();
             PP_Fini();
         }
     }

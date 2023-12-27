@@ -80,8 +80,6 @@ void InitGlobs( void )
 void FiniGlobs( void )
 /********************/
 {
-    FreeCharTable();
-    ScanParamShutdown();
 }
 
 static bool CreatePreprocFile( void )

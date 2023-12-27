@@ -1009,7 +1009,6 @@ bool ScanParams( int argc, char *argv[] )
     bool    contok;         /* continue with main execution */
 
     nofilenames = 0;
-    ScanParamInit();
     contok = doScanParams( argc, argv, &nofilenames );
     if( argc < 2 ) {
         CmdLineParms.PrintHelp = true;
@@ -1035,12 +1034,14 @@ void ScanParamInit( void )
 
 } /* ScanParamInit */
 
-void ScanParamShutdown( void )
-/****************************/
+void ScanParamFini( void )
+/************************/
 {
     ExtraRes            *tmpres;
     FRStrings           *strings;
     char                **cppargs;
+
+    FreeCharTable();
 
     if( CmdLineParms.CPPArgs != NULL ) {
         for( cppargs = CmdLineParms.CPPArgs; *cppargs != NULL; ++cppargs ) {
@@ -1072,7 +1073,7 @@ void ScanParamShutdown( void )
     CmdLineParms.OutExeFileName = NULL;
     CmdLineParms.CodePageFile = NULL;
     CmdLineParms.PrependString = NULL;
-} /* ScanParamShutdown */
+} /* ScanParamFini */
 
 char *FindAndReplace( char *stringFromFile, FRStrings *frStrings )
 /****************************************************************/
