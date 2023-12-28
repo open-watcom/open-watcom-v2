@@ -573,7 +573,7 @@ static bool ScanOptionsArg( const char *arg )
             RcError( ERR_UNMATCHED_QUOTE_ON_CMD_LINE );
         }
         temp = scanString( RcMemAlloc( len + 1 ), arg, len );
-        PP_IncludePathAdd( temp );
+        PP_IncludePathAdd( PPINCLUDE_USR, temp );
         RcMemFree( temp );
         break;
     case 'o':

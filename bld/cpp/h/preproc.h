@@ -53,14 +53,13 @@ typedef enum {
     PPFLAG_EMIT_LINE            = 0x0002,
     PPFLAG_SKIP_COMMENT         = 0x0004,
     PPFLAG_KEEP_COMMENTS        = 0x0008,
-    PPFLAG_IGNORE_INCLUDE       = 0x0010,
-    PPFLAG_DEPENDENCIES         = 0x0020,
-    PPFLAG_ASM_COMMENT          = 0x0040,
-    PPFLAG_IGNORE_CWD           = 0x0080,
-    PPFLAG_IGNORE_DEFDIRS       = 0x0100,
-    PPFLAG_DONT_READ            = 0x0200,
-    PPFLAG_UNDEFINED_VAR        = 0x0400,
-    PPFLAG_TRUNCATE_FILE_NAME   = 0x0800
+    PPFLAG_DEPENDENCIES         = 0x0010,
+    PPFLAG_ASM_COMMENT          = 0x0020,
+    PPFLAG_IGNORE_CWD           = 0x0040,
+    PPFLAG_IGNORE_DEFDIRS       = 0x0080,
+    PPFLAG_DONT_READ            = 0x0100,
+    PPFLAG_UNDEFINED_VAR        = 0x0200,
+    PPFLAG_TRUNCATE_FILE_NAME   = 0x0400
 } pp_flags;
 
 #define PP_SPECIAL_MACRO    255
@@ -88,11 +87,11 @@ typedef const char  *(* pp_parent_func)( void **cookie );
 
 extern void         PPENTRY PP_Init( char c, unsigned char spec_macros );
 extern int          PPENTRY PP_Fini( void );
-extern int          PPENTRY PP_FileInit( const char *filename, pp_flags ppflags, const char *incpath );
+extern int          PPENTRY PP_FileInit( const char *filename, pp_flags ppflags );
 extern void         PPENTRY PP_FileFini( void );
-extern void         PPENTRY PP_IncludePathInit( void );
-extern void         PPENTRY PP_IncludePathFini( void );
-extern void         PPENTRY PP_IncludePathAdd( const char *path_list );
+extern void         PPENTRY PP_IncludePathInit( incl_type incltype );
+extern void         PPENTRY PP_IncludePathFini( incl_type incltype );
+extern void         PPENTRY PP_IncludePathAdd( incl_type incltype, const char *path_list );
 extern int          PPENTRY PP_IncludePathFind( const char *filename, size_t len, char *fullfilename, incl_type incltype, pp_parent_func fn );
 extern int          PPENTRY PP_Char( void );
 extern void         PPENTRY PP_Define( const char *ptr );

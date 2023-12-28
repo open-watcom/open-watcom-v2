@@ -172,7 +172,7 @@ bool OptionsInit( int argc, char **argv )
                 if( *s == '=' )
                     ++s;
                 if( *s != '\0' ) {
-                    PP_IncludePathAdd( s );
+                    PP_IncludePathAdd( PPINCLUDE_USR, s );
                 }
                 break;
             case 'o':

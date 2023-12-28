@@ -145,15 +145,25 @@ static FILELIST *PP_Close( void )
     return( PP_File );
 }
 
-static char *AddIncludePath( char *old_list, const char *path_list )
+void PPENTRY PP_IncludePathAdd( incl_type incltype, const char *path_list )
 {
     size_t  len;
     size_t  old_len;
     char    *new_list;
     char    *p;
+    char    *old_list;
 
-    new_list = old_list;
     if( path_list != NULL && *path_list != '\0' ) {
+        switch( incltype ) {
+        case PPINCLUDE_SYS:
+            new_list = old_list = IncludePath2;
+            break;
+        case PPINCLUDE_USR:
+        case PPINCLUDE_SRC:
+        default:
+            new_list = old_list = IncludePath1;
+            break;
+        }
         len = strlen( path_list );
         if( old_list == NULL ) {
             p = new_list = PP_Malloc( len + 1 );
@@ -170,24 +180,47 @@ static char *AddIncludePath( char *old_list, const char *path_list )
             path_list = GetPathElement( path_list, NULL, &p );
         }
         *p = '\0';
+        switch( incltype ) {
+        case PPINCLUDE_SYS:
+            IncludePath2 = new_list;
+            break;
+        case PPINCLUDE_USR:
+        case PPINCLUDE_SRC:
+        default:
+            IncludePath1 = new_list;
+            break;
+        }
     }
-    return( new_list );
 }
 
-void PPENTRY PP_IncludePathAdd( const char *path_list )
+void PPENTRY PP_IncludePathInit( incl_type incltype )
 {
-    IncludePath1 = AddIncludePath( IncludePath1, path_list );
+    switch( incltype ) {
+    case PPINCLUDE_SYS:
+        IncludePath2 = PP_Malloc( 1 );
+        *IncludePath2 = '\0';
+        break;
+    case PPINCLUDE_USR:
+    case PPINCLUDE_SRC:
+    default:
+        IncludePath1 = PP_Malloc( 1 );
+        *IncludePath1 = '\0';
+        break;
+    }
 }
 
-void PPENTRY PP_IncludePathInit( void )
+void PPENTRY PP_IncludePathFini( incl_type incltype )
 {
-    IncludePath1 = PP_Malloc( 1 );
-    *IncludePath1 = '\0';
-}
-
-void PPENTRY PP_IncludePathFini( void )
-{
-    PP_Free( IncludePath1 );
+    switch( incltype ) {
+    case PPINCLUDE_SYS:
+        PP_Free( IncludePath2 );
+        break;
+    case PPINCLUDE_USR:
+    case PPINCLUDE_SRC:
+    default:
+        PP_Free( IncludePath1 );
+        break;
+    }
 }
 
 static int checkfullpath( const char *filename, char *fullfilename )
@@ -402,20 +435,13 @@ static void PP_GenError( const char *msg )
     PPNextTokenPtr = PPLineBuf + 1;
 }
 
-int PPENTRY PP_FileInit( const char *filename, pp_flags ppflags, const char *include_path )
+int PPENTRY PP_FileInit( const char *filename, pp_flags ppflags )
 {
     FILE        *handle;
 
     PPFlags = ppflags;
     NestLevel = 0;
     SkipLevel = 0;
-    IncludePath2 = PP_Malloc( 1 );
-    *IncludePath2 = '\0';
-    IncludePath2 = AddIncludePath( IncludePath2, include_path );
-    if( (PPFlags & PPFLAG_IGNORE_INCLUDE) == 0 ) {
-        IncludePath2 = AddIncludePath( IncludePath2, PP_GetEnv( "INCLUDE" ) );
-    }
-
     handle = PP_Open( filename );
     if( handle == NULL )
         return( -1 );
@@ -465,7 +491,6 @@ void PPENTRY PP_FileFini( void )
 {
     free_macro_buf();
     PP_CloseAllFiles();
-    PP_Free( IncludePath2 );
 }
 
 static size_t PP_ReadBuf( size_t line_len )
@@ -1379,13 +1404,15 @@ void PPENTRY PP_Init( char c, unsigned char spec_macros )
     PPPreProcChar = c;
     PPSpecMacros = spec_macros;
     PPMacroInit( PPSpecMacros );
-    PP_IncludePathInit();
+    PP_IncludePathInit( PPINCLUDE_USR );
+    PP_IncludePathInit( PPINCLUDE_SYS );
 }
 
 int PPENTRY PP_Fini( void )
 /*************************/
 {
-    PP_IncludePathFini();
+    PP_IncludePathFini( PPINCLUDE_SYS );
+    PP_IncludePathFini( PPINCLUDE_USR );
     PPMacroFini();
     PP_Free( PPLineBuf );
     PPLineBuf = NULL;

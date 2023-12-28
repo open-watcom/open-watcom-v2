@@ -163,7 +163,7 @@ static bool ScanOptionsArg( const char * arg, pp_flags *ppflags )
             len = strlen( arg );
             p = malloc( len + 1 );
             scanString( p, arg, len );
-            PP_IncludePathAdd( p );
+            PP_IncludePathAdd( PPINCLUDE_USR, p );
             free( p );
         }
         break;
@@ -441,7 +441,8 @@ int main( int argc, char *argv[] )
             fo = fopen( out_filename, "wt" );
         }
         for( i = 0; i < nofilenames; ++i ) {
-            if( PP_FileInit( filenames[i], ppflags, NULL ) != 0 ) {
+            PP_IncludePathAdd( PPINCLUDE_SYS, PP_GetEnv( "INCLUDE" ) );
+            if( PP_FileInit( filenames[i], ppflags ) != 0 ) {
                 fprintf( stderr, "Unable to open '%s'\n", filenames[i] );
                 rc = 1;
                 break;
@@ -456,6 +457,7 @@ int main( int argc, char *argv[] )
                 fputc( ch, fo );
             }
             PP_FileFini();
+            PP_IncludePathInit( PPINCLUDE_SYS );
         }
         if( fo == stdout ) {
             fflush( fo );

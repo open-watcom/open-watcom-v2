@@ -571,11 +571,11 @@ static bool PreprocessInputFile( void )
     char        *p;
     int         rc;
 
-    ppflags = PPFLAG_EMIT_LINE | PPFLAG_IGNORE_INCLUDE | PPFLAG_TRUNCATE_FILE_NAME;
+    ppflags = PPFLAG_EMIT_LINE | PPFLAG_TRUNCATE_FILE_NAME;
     if( CmdLineParms.IgnoreCWD ) {
         ppflags |= PPFLAG_IGNORE_CWD;
     }
-    rc = PP_FileInit( CmdLineParms.InFileName, ppflags, NULL );
+    rc = PP_FileInit( CmdLineParms.InFileName, ppflags );
     if( rc != 0 ) {
         RcError( ERR_CANT_OPEN_FILE, CmdLineParms.InFileName, strerror(errno) );
         return( true );
@@ -627,11 +627,11 @@ bool RcPass1IoInit( void )
             includepath = RcGetEnv( "OS2_INCLUDE" );
         }
         if( includepath != NULL ) {
-            PP_IncludePathAdd( includepath );
+            PP_IncludePathAdd( PPINCLUDE_SYS, includepath );
         }
         includepath = RcGetEnv( "INCLUDE" );
         if( includepath != NULL ) {
-            PP_IncludePathAdd( includepath );
+            PP_IncludePathAdd( PPINCLUDE_SYS, includepath );
         }
     }
     if( !CmdLineParms.NoPreprocess ) {

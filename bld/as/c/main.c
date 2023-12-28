@@ -82,7 +82,8 @@ int main( int argc, char **argv )
             }
             while( *argv != NULL ) {
                 fname = MakeAsmFilename( *argv );
-                if( PP_FileInit( fname, PPFLAG_ASM_COMMENT | PPFLAG_EMIT_LINE | PPFLAG_TRUNCATE_FILE_NAME, NULL ) != 0 ) {
+                PP_IncludePathAdd( PPINCLUDE_SYS, PP_GetEnv( "INCLUDE" ) );
+                if( PP_FileInit( fname, PPFLAG_ASM_COMMENT | PPFLAG_EMIT_LINE | PPFLAG_TRUNCATE_FILE_NAME ) != 0 ) {
                     AsOutMessage( stderr, UNABLE_TO_OPEN, fname );
                     fputc( '\n', stderr );
                 } else {
@@ -113,6 +114,7 @@ int main( int argc, char **argv )
                     SymFini();
                 }
                 PP_FileFini();
+                PP_IncludePathInit( PPINCLUDE_SYS );
                 ++argv;
             }
         }

@@ -90,7 +90,8 @@ int main( int argc, char *argv[] )
         exit( 1 );
     }
     PP_Init( ( argv[2] != NULL ) ? argv[2][0] : '#', PPSPEC_C );
-    if( PP_FileInit( argv[1], PPFLAG_NONE | PPFLAG_TRUNCATE_FILE_NAME, NULL ) != 0 ) {
+    PP_IncludePathAdd( PPINCLUDE_SYS, PP_GetEnv( "INCLUDE" ) );
+    if( PP_FileInit( argv[1], PPFLAG_NONE | PPFLAG_TRUNCATE_FILE_NAME ) != 0 ) {
         PP_Fini();
         printf( "Unable to open '%s'\n", argv[1] );
         exit( 1 );

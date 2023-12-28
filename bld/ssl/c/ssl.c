@@ -190,7 +190,7 @@ static void OpenFiles( bool verbose, char *path, char *out_file )
     if( pg.ext[0] == '\0' )
         pg.ext = "ssl";
     _makepath( file_name, pg.drive, pg.dir, pg.fname, pg.ext );
-    if( PP_FileInit( file_name, PPFLAG_EMIT_LINE | PPFLAG_TRUNCATE_FILE_NAME, NULL ) != 0 ) {
+    if( PP_FileInit( file_name, PPFLAG_EMIT_LINE | PPFLAG_TRUNCATE_FILE_NAME ) != 0 ) {
         Error( "Unable to open '%s'", file_name );
     }
     given = true;
@@ -401,6 +401,7 @@ int main( int argc, char *argv[] )
         }
     }
     PP_Init( '!', PPSPEC_SSL );
+    PP_IncludePathAdd( PPINCLUDE_SYS, PP_GetEnv( "INCLUDE" ) );
     OpenFiles( verbose, file, argv[1] );
     Scan();
     Parse();
