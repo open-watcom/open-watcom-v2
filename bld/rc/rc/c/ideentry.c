@@ -258,13 +258,13 @@ static int RCMainLine( const char *opts, int argc, char **argv )
                   && initInfo->ver > 1
                   && !initInfo->cmd_line_has_files ) {
                     p = infile + 1;
-                    if( !IDEFN( GetInfo )( IdeHdl, IDE_GET_SOURCE_FILE, (IDEGetInfoWParam)NULL, (IDEGetInfoLParam)&p ) ) {
+                    if( !IDEFN( GetInfo )( IdeHdl, IDE_GET_SOURCE_FILE, (IDEGetInfoWParam)NULL, (IDEGetInfoLParam)p ) ) {
                         infile[0] = '\"';
                         strcat( infile, "\"" );
                         argv[argc++] = infile;
                     }
                     p = outfile + 5;
-                    if( !IDEFN( GetInfo )( IdeHdl, IDE_GET_TARGET_FILE, (IDEGetInfoWParam)NULL, (IDEGetInfoLParam)&p ) ) {
+                    if( !IDEFN( GetInfo )( IdeHdl, IDE_GET_TARGET_FILE, (IDEGetInfoWParam)NULL, (IDEGetInfoLParam)p ) ) {
                         if( pass1 ) {
                             strcpy( outfile, "-fo=\"" );
                         } else {

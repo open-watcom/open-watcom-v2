@@ -297,11 +297,11 @@ static void getFrontEndArgv( char **argv, char *infile, char *outfile )
 
     if( !GlobalCompFlags.ide_cmd_line_has_files ) {
         infile[0] = '\0';
-        IDEFN( GetInfo )( IdeHdl, IDE_GET_SOURCE_FILE, (IDEGetInfoWParam)NULL, (IDEGetInfoLParam)&infile );
+        IDEFN( GetInfo )( IdeHdl, IDE_GET_SOURCE_FILE, (IDEGetInfoWParam)NULL, (IDEGetInfoLParam)infile );
         *argv++ = infile;
         outfile[0] = '\0';
         p = outfile + 4;
-        if( !IDEFN( GetInfo )( IdeHdl, IDE_GET_TARGET_FILE, (IDEGetInfoWParam)NULL, (IDEGetInfoLParam)&p ) ) {
+        if( !IDEFN( GetInfo )( IdeHdl, IDE_GET_TARGET_FILE, (IDEGetInfoWParam)NULL, (IDEGetInfoLParam)p ) ) {
             outfile[0] = '-';
             outfile[1] = 'f';
             outfile[2] = 'o';
