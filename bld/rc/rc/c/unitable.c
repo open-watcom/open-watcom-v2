@@ -18,7 +18,6 @@
 #include <limits.h>
 #include "global.h"
 #include "rccore.h"
-#include "param.h"
 #include "rcvars.h"
 #include "rcmem.h"
 #include "cvttable.h"

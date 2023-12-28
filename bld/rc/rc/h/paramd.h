@@ -29,8 +29,8 @@
 *
 ****************************************************************************/
 
-#ifndef PARAM_INCLUDED
-#define PARAM_INCLUDED
+#ifndef PARAMD_INCLUDED
+#define PARAMD_INCLUDED
 
 #include "rctypes.h"
 
