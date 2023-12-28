@@ -29,8 +29,11 @@
 *
 ****************************************************************************/
 
-#include "wio.h"
 #include <errno.h>
+#include "wio.h"
+#ifdef __NT__
+#include "windows.h"
+#endif
 #include "global.h"
 #include "preproc.h"
 #include "rcerrors.h"
@@ -38,7 +41,6 @@
 #include "swchar.h"
 #include "dbtable.h"
 #include "unitable.h"
-#include "leadbyte.h"
 #include "rccore.h"
 #include "pathgrp2.h"
 
@@ -50,40 +52,20 @@
  */
 static bool scanEnvVar( const char *varname, int *nofilenames );
 
-void RcAddCPPArg( char *newarg )
-/******************************/
-{
-    size_t  numargs;    /* number of args in list at end of this function */
-    char    **arg;
-    char    **cppargs;
+/*
+ * extensions for Windows executables
+ * The strings are in the format of the _splitpath function
+ */
+static const char *ExeExt[] =   {
+    "exe",
+    "dll",
+    "drv",
+    "scr",                     /* Windows 3.1 screen saver apps */
+    NULL
+};
 
-    if( CmdLineParms.CPPArgs == NULL ) {
-        /*
-         * 2 is 1 for newarg, 1 for NULL
-         */
-        numargs = 2;
-        cppargs = RcMemAlloc( numargs * sizeof( char * ) );
-    } else {
-        arg = cppargs = CmdLineParms.CPPArgs;
-        while( *arg != NULL ) {
-            arg++;
-        }
-        /*
-         * + 2 for the NULL arg and the new arg
-         */
-        numargs = ( arg - CmdLineParms.CPPArgs ) + 2;
-        cppargs = RcMemRealloc( cppargs, numargs * sizeof( char * ) );
-    }
-    cppargs[numargs - 2] = RcMemAlloc( strlen( newarg ) + 1 );
-    strcpy( cppargs[numargs - 2], newarg );
-    cppargs[numargs - 1] = NULL;
-
-    CmdLineParms.CPPArgs = cppargs;
-} /* RcAddCPPArg */
-
-
-void SetMBRange( unsigned from, unsigned to, char data )
-/*******************************************************
+static void SetMBRange( unsigned from, unsigned to, char data )
+/**************************************************************
  * set the CharSetLen array up to recognize multi-byte character
  * sequences
  */
@@ -104,6 +86,41 @@ static void SetMBChars( const char *bytes )
         CharSetLen[i] = bytes[i];
     }
 }
+
+#ifdef __NT__
+
+static void SetNativeLeadBytes( void )
+/************************************/
+{
+    CPINFO      info;
+    unsigned    i;
+
+    GetCPInfo( CP_ACP, &info );
+    for( i = 0; info.LeadByte[i] != 0 && info.LeadByte[i + 1] != 0; i += 2 ) {
+        SetMBRange( info.LeadByte[i], info.LeadByte[i + 1], 1 );
+    }
+}
+
+static size_t NativeDBStringToUnicode( size_t len, const char *str, char *buf )
+/*****************************************************************************/
+{
+    size_t      ret;
+    size_t      outlen;
+
+    if( len > 0 ) {
+        if( buf == NULL ) {
+            outlen = 0;
+        } else {
+            outlen = len * 2;
+        }
+        ret = (unsigned)MultiByteToWideChar( CP_ACP, 0, str, (int)len, (LPWSTR)buf, (int)outlen );
+    } else {
+        ret = 0;
+    }
+    return( ret * 2 );
+}
+
+#endif
 
 static bool scanStringCheck( const char *str, unsigned *len )
 /***********************************************************/
@@ -214,6 +231,37 @@ static void setCodePageFile( const char *fname )
         strcpy( CmdLineParms.CodePageFile, fname );
     }
 }
+
+static void RcAddCPPArg( char *newarg )
+/*************************************/
+{
+    size_t  numargs;    /* number of args in list at end of this function */
+    char    **arg;
+    char    **cppargs;
+
+    if( CmdLineParms.CPPArgs == NULL ) {
+        /*
+         * 2 is 1 for newarg, 1 for NULL
+         */
+        numargs = 2;
+        cppargs = RcMemAlloc( numargs * sizeof( char * ) );
+    } else {
+        arg = cppargs = CmdLineParms.CPPArgs;
+        while( *arg != NULL ) {
+            arg++;
+        }
+        /*
+         * + 2 for the NULL arg and the new arg
+         */
+        numargs = ( arg - CmdLineParms.CPPArgs ) + 2;
+        cppargs = RcMemRealloc( cppargs, numargs * sizeof( char * ) );
+    }
+    cppargs[numargs - 2] = RcMemAlloc( strlen( newarg ) + 1 );
+    strcpy( cppargs[numargs - 2], newarg );
+    cppargs[numargs - 1] = NULL;
+
+    CmdLineParms.CPPArgs = cppargs;
+} /* RcAddCPPArg */
 
 static bool ScanOptionsArg( const char *arg )
 /*******************************************/
@@ -561,18 +609,6 @@ static void CheckExtension( char **filename, const char *defext )
         _makepath( *filename, pg.drive, pg.dir, pg.fname, defext );
     }
 } /* CheckExtension */
-
-/*
- * extensions for Windows executables
- * The strings are in the format of the _splitpath function
- */
-static const char *ExeExt[] =   {
-    "exe",
-    "dll",
-    "drv",
-    "scr",                     /* Windows 3.1 screen saver apps */
-    NULL
-};
 
 static void CheckPass2Only( void )
 /********************************/

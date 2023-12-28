@@ -113,11 +113,9 @@ enum RCTargetOS {
 };
 
 extern bool ScanParams( int argc, char *argv[] );
-extern void RcAddCPPArg( char *newarg );
 extern void ScanParamInit( void );
 extern void ScanParamFini( void );
 extern int  ParseEnvVar( const char *env, char **argv, char *buf );
-extern void SetMBRange( unsigned from, unsigned to, char data );
 extern char *FindAndReplace( char *stringFromFile, FRStrings *frStrings );
 
 #endif
