@@ -667,57 +667,6 @@ static void CheckParms( void )
 
 } /* CheckParms */
 
-
-static void defaultParms( void )
-/******************************/
-{
-#ifdef SCANDEBUG
-    CmdLineParms.DebugScanner = false;
-#endif
-#ifdef YYDEBUG
-    CmdLineParms.DebugParser = false;
-#endif
-    CmdLineParms.MBCharSupport = MB_NONE;
-    CmdLineParms.PrintHelp = false;
-    CmdLineParms.Quiet = false;
-    CmdLineParms.Pass1Only = false;
-    CmdLineParms.Pass2Only = false;
-    CmdLineParms.NoResFile = false;
-    CmdLineParms.IgnoreCWD = IgnoreCWD;
-    CmdLineParms.IgnoreINCLUDE = IgnoreINCLUDE;
-    CmdLineParms.NoTargetDefine = false;
-    CmdLineParms.PrivateDLL = false;
-    CmdLineParms.GlobalMemEMS = false;
-    CmdLineParms.EMSInstance = false;
-    CmdLineParms.EMSDirect = false;
-    CmdLineParms.ProtModeOnly = false;
-    CmdLineParms.SegmentSorting = SEG_SORT_MANY;
-    CmdLineParms.FindAndReplace = false;
-    CmdLineParms.Prepend = false;
-//    CmdLineParms.WritableRes = false;
-    CmdLineParms.InFileName = NULL;
-    CmdLineParms.InExeFileName = NULL;
-    CmdLineParms.OutResFileName = NULL;
-    CmdLineParms.OutExeFileName = NULL;
-    CmdLineParms.CodePageFile = NULL;
-    CmdLineParms.PrependString = NULL;
-    CmdLineParms.CPPArgs = NULL;
-    CmdLineParms.VersionStamp30 = false;
-    CmdLineParms.NoProtectCC = false;
-    CmdLineParms.NoPreprocess = false;
-    CmdLineParms.GenAutoDep = false;
-    CmdLineParms.PreprocessOnly = false;
-    CmdLineParms.ExtraResFiles = NULL;
-    CmdLineParms.FindReplaceStrings = NULL;
-#if defined( __NT__ )
-    CmdLineParms.TargetOS = RC_TARGET_OS_WIN32;
-#elif defined( __OS2__ )
-    CmdLineParms.TargetOS = RC_TARGET_OS_OS2;
-#else
-    CmdLineParms.TargetOS = RC_TARGET_OS_WIN16;
-#endif
-} /* defaultParms */
-
 static void LoadCodePageFile( const char *cpfile )
 {
     RcStatus            ret;
@@ -1030,7 +979,18 @@ void ScanParamInit( void )
 /************************/
 {
     memset( &CmdLineParms, 0, sizeof( RCParams ) );
-    defaultParms();
+
+    CmdLineParms.MBCharSupport = MB_NONE;
+    CmdLineParms.IgnoreCWD = IgnoreCWD;
+    CmdLineParms.IgnoreINCLUDE = IgnoreINCLUDE;
+    CmdLineParms.SegmentSorting = SEG_SORT_MANY;
+#if defined( __NT__ )
+    CmdLineParms.TargetOS = RC_TARGET_OS_WIN32;
+#elif defined( __OS2__ )
+    CmdLineParms.TargetOS = RC_TARGET_OS_OS2;
+#else
+    CmdLineParms.TargetOS = RC_TARGET_OS_WIN16;
+#endif
 
 } /* ScanParamInit */
 
