@@ -1323,7 +1323,7 @@ void FiniPELoadFile( void )
         //      seems to interpret a zero size as a signal not to allocate any heap
         //      whatsoever, but LocalAlloc() doesn't check for that case properly.
         //
-        //      Windows NT/2000/XP and Windows 3.1 Win32s do not have this program and
+        //      Windows NT/2000/XP and Windows 3.1 Win32s do not have this problem and
         //      will always allocate some default heap for LocalAlloc() to work properly.
         //
         //      TODO: This fix should only apply if the target OS version major is 4 or less.
