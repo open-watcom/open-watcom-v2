@@ -38,6 +38,8 @@
 #include "cmdlnprs.h"
 
 
+#define ISNOT_BLANK_QUOTES(o,l) ((l) > 0 && ((l) != 2 || (o)[0] != '\"' || (o)[1] != '\"'))
+
 static void addString           // STORE A STRING
     ( OPT_STRING **h            // - addr[ storage ]
     , char const *s             // - string
@@ -222,7 +224,7 @@ bool OPT_GET_FILE               // PARSE: FILE NAME
 
     CmdRecogEquals();
     len = CmdScanFilename( &fname );
-    if( len != 0 ) {
+    if( ISNOT_BLANK_QUOTES( fname, len ) ) {
         addString( p, fname, len );
         StripQuotes( (*p)->data );
         return( true );
@@ -241,7 +243,7 @@ bool OPT_GET_FILE_OPT           // PARSE: OPTIONAL FILE NAME
     if( CmdRecogEquals() || !CmdScanSwEnd() ) {
         // specified an '=' so accept -this-is-a-file-name.fil or /tmp/ack.tmp
         len = CmdScanFilename( &fname );
-        if( len != 0 ) {
+        if( ISNOT_BLANK_QUOTES( fname, len ) ) {
             addString( p, fname, len );
             StripQuotes( (*p)->data );
         } else {
@@ -261,7 +263,7 @@ bool OPT_GET_PATH               // PARSE: PATH
 //    CmdPathDelim();
     CmdRecogEquals();
     len = CmdScanFilename( &path );
-    if( len != 0 ) {
+    if( ISNOT_BLANK_QUOTES( path, len ) ) {
         addString( p, path, len );
         StripQuotes( (*p)->data );
         return( true );
@@ -280,7 +282,7 @@ bool OPT_GET_PATH_OPT           // PARSE: OPTIONAL PATH
     if( CmdRecogEquals() || !CmdScanSwEnd() ) {
         // specified an '=' so accept -this-is-a-path-name.fil or /tmp/ack.tmp
         len = CmdScanFilename( &fname );
-        if( len != 0 ) {
+        if( ISNOT_BLANK_QUOTES( fname, len ) ) {
             addString( p, fname, len );
             StripQuotes( (*p)->data );
         } else {
@@ -299,11 +301,13 @@ bool OPT_GET_OPTION             // PARSE: OPTION TEXT
 
     CmdRecogEquals();
     len = CmdScanOption( &option );
-    if( len > 0 && ( len != 2 || option[0] != '\"' || option[1] != '\"' ) ) {
+    if( ISNOT_BLANK_QUOTES( option, len ) ) {
         addString( p, option, len );
         StripQuotes( (*p)->data );
+        return( true );
     }
-    return( true );
+    BadCmdLineOption();
+    return( false );
 }
 
 

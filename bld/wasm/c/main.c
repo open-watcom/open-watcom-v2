@@ -161,6 +161,11 @@ void BadCmdLineFile( void )
 {
     BadCmdLine( MSG_UNKNOWN_OPTION );
 }
+// BAD TEXT DETECTED
+void BadCmdLineOption( void )
+{
+    BadCmdLine( MSG_UNKNOWN_OPTION );
+}
 
 static char *SetTargetName( char *target_name, const char *name )
 /***************************************************************/
