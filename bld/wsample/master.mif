@@ -42,7 +42,7 @@ dig_arch = $(host_cpu)
 !endif
 
 !ifeq target nov
-inc_dirs = -I. -I"../h" -I"$(nwoss_dir)/common/h" -I"$(nwoss_dir)/nw4/h" -I"$(nwsrc)" -I"$(dig_dir)/h"
+inc_dirs = -I. -I"../h" -I"$(nwoss_dir)/common/h" -I"$(nwoss_dir)/nw4/h" -I"$(dig_dir)/h"
 !else ifeq target win
 inc_dirs = -I. -I"../h" $(windbg_inc_dirs) -I"$(dig_dir)/h"
 !else ifeq target rsi
