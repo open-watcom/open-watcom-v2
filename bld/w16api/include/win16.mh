@@ -2829,24 +2829,31 @@ HBITMAP WINAPI  LoadBitmap( HINSTANCE, LPCSTR );
 #define WM_ACTIVATEAPP              0x001C
 #define WM_TIMECHANGE               0x001E
 #define WM_CANCELMODE               0x001F
-#define WM_SETCURSOR                0x0020
-#define WM_MOUSEACTIVATE            0x0021
-#define WM_CHILDACTIVATE            0x0022
-#define WM_QUEUESYNC                0x0023
-#define WM_GETMINMAXINFO            0x0024
-#define WM_ICONERASEBKGND           0x0027
-#define WM_NEXTDLGCTL               0x0028
-#define WM_DRAWITEM                 0x002B
-#define WM_MEASUREITEM              0x002C
-#define WM_DELETEITEM               0x002D
-#ifndef NOCTLMGR
-    #define WM_VKEYTOITEM           0x002E
-    #define WM_CHARTOITEM           0x002F
-    #define WM_SETFONT              0x0030
-    #define WM_GETFONT              0x0031
+#if (WINVER >= 0x0200)
+    #define WM_SETCURSOR            0x0020
+    #define WM_MOUSEACTIVATE        0x0021
+    #define WM_CHILDACTIVATE        0x0022
+    #define WM_QUEUESYNC            0x0023
+    #define WM_GETMINMAXINFO        0x0024
+    #define WM_PAINTICON            0x0026
+    #define WM_ICONERASEBKGND       0x0027
+    #define WM_NEXTDLGCTL           0x0028
+    #define WM_ALTTABACTIVE         0x0029          /* for Windows 2.0 win386 only */
+    #define WM_SPOOLERSTATUS        0x002A
 #endif
-#define WM_QUERYDRAGICON            0x0037
-#define WM_COMPAREITEM              0x0039
+#if (WINVER >= 0x0300)
+    #define WM_DRAWITEM             0x002B
+    #define WM_MEASUREITEM          0x002C
+    #define WM_DELETEITEM           0x002D
+    #ifndef NOCTLMGR
+        #define WM_VKEYTOITEM       0x002E
+        #define WM_CHARTOITEM       0x002F
+        #define WM_SETFONT          0x0030
+        #define WM_GETFONT          0x0031
+    #endif
+    #define WM_QUERYDRAGICON        0x0037
+    #define WM_COMPAREITEM          0x0039
+#endif
 #if (WINVER >= 0x030A)
     #ifndef NOCOMM
         #define WM_COMMNOTIFY       0x0044
@@ -2863,6 +2870,10 @@ HBITMAP WINAPI  LoadBitmap( HINSTANCE, LPCSTR );
 #define WM_NCACTIVATE               0x0086
 #ifndef NOCTLMGR
     #define WM_GETDLGCODE           0x0087
+#endif
+#if (WINVER >= 0x0200)
+    #define WM_SYNCPAINT            0x0088
+    #define WM_SYNCTASK             0x0089
 #endif
 #define WM_NCMOUSEMOVE              0x00A0
 #define WM_NCLBUTTONDOWN            0x00A1
@@ -2883,7 +2894,21 @@ HBITMAP WINAPI  LoadBitmap( HINSTANCE, LPCSTR );
 #define WM_SYSKEYUP                 0x0105
 #define WM_SYSCHAR                  0x0106
 #define WM_SYSDEADCHAR              0x0107
-#define WM_KEYLAST                  0x0108
+#if (WINVER >= 0x0200)
+    #define WM_KEYLAST              0x0108
+#else
+    #define WM_KEYLAST              0x0107
+#endif
+#if (WINVER < 0x0300)
+    #define WM_YOMICHAR             0x0108
+#endif
+#if (WINVER < 0x0200)
+    #define WM_MOVECONVERTWINDOW    0x0109
+#endif
+#if (WINVER < 0x0300)
+    #define WM_CONVERTREQUEST       0x010A
+    #define WM_CONVERTRESULT        0x010B
+#endif
 #define WM_INITDIALOG               0x0110
 #define WM_COMMAND                  0x0111
 #define WM_SYSCOMMAND               0x0112
@@ -2894,11 +2919,14 @@ HBITMAP WINAPI  LoadBitmap( HINSTANCE, LPCSTR );
 #endif
 #define WM_INITMENU                 0x0116
 #define WM_INITMENUPOPUP            0x0117
-#ifndef NOMENUS
-    #define WM_MENUSELECT           0x011F
-    #define WM_MENUCHAR             0x0120
+#define WM_SYSTIMER                 0x0118
+#if (WINVER >= 0x0200)
+    #ifndef NOMENUS
+        #define WM_MENUSELECT       0x011F
+        #define WM_MENUCHAR         0x0120
+    #endif
+    #define WM_ENTERIDLE            0x0121
 #endif
-#define WM_ENTERIDLE                0x0121
 #define WM_MOUSEFIRST               0x0200
 #define WM_MOUSEMOVE                0x0200
 #define WM_LBUTTONDOWN              0x0201
@@ -2912,20 +2940,28 @@ HBITMAP WINAPI  LoadBitmap( HINSTANCE, LPCSTR );
 #define WM_MBUTTONDBLCLK            0x0209
 #define WM_MOUSELAST                0x0209
 #define WM_PARENTNOTIFY             0x0210
-#ifndef NOMDI
-    #define WM_MDICREATE            0x0220
-    #define WM_MDIDESTROY           0x0221
-    #define WM_MDIACTIVATE          0x0222
-    #define WM_MDIRESTORE           0x0223
-    #define WM_MDINEXT              0x0224
-    #define WM_MDIMAXIMIZE          0x0225
-    #define WM_MDITILE              0x0226
-    #define WM_MDICASCADE           0x0227
-    #define WM_MDIICONARRANGE       0x0228
-    #define WM_MDIGETACTIVE         0x0229
-    #define WM_MDISETMENU           0x0230
+#if (WINVER >= 0x0300)
+    #ifndef NOMDI
+        #define WM_MDICREATE        0x0220
+        #define WM_MDIDESTROY       0x0221
+        #define WM_MDIACTIVATE      0x0222
+        #define WM_MDIRESTORE       0x0223
+        #define WM_MDINEXT          0x0224
+        #define WM_MDIMAXIMIZE      0x0225
+        #define WM_MDITILE          0x0226
+        #define WM_MDICASCADE       0x0227
+        #define WM_MDIICONARRANGE   0x0228
+        #define WM_MDIGETACTIVE     0x0229
+        #define WM_MDISETMENU       0x0230
+    #endif
 #endif
 #define WM_DROPFILES                0x0233
+
+#if (WINVER >= 0x0200)
+    #define WM_KANJIFIRST           0x0280
+    #define WM_KANJILAST            0x029f
+#endif
+
 #ifndef NOCLIPBOARD
     #define WM_CUT                  0x0300
     #define WM_COPY                 0x0301
