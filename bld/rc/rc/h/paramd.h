@@ -32,6 +32,8 @@
 #ifndef PARAMD_INCLUDED
 #define PARAMD_INCLUDED
 
+#define NO_REPLACE
+
 #include "rctypes.h"
 
 
@@ -45,12 +47,14 @@
 #define MB_UTF8                 5
 #define MB_UTF8_KANJI           6
 
+#ifndef NO_REPLACE
 typedef struct FRStrings {
     struct FRStrings    *next;
     char                *findString; /* points to the string to find */
     char                *replaceString; /* points to the string to replace */
     char                buf[1]; /* dynamic buffer contains both strings */
 } FRStrings;
+#endif
 
 typedef struct RCParams {
 #ifdef SCANDEBUG
@@ -80,8 +84,10 @@ typedef struct RCParams {
     boolbit     NoProtectCC     : 1;    /* if set, don't invoke prot. mode comp */
     boolbit     NoPreprocess    : 1;    /* if set won't attemp any preprocessing */
     boolbit     GenAutoDep      : 1;    /* generate autodependency info for wmake */
+#ifndef NO_REPLACE
     boolbit     FindAndReplace  : 1;    /* a check to see whether for this option */
     boolbit     Prepend         : 1;
+#endif
     unsigned    SegmentSorting  : 2;    /* which segment sorting method to use */
     unsigned    TargetOS        : 2;
     char        MBCharSupport;          /* which of the zk switches is set */
@@ -93,7 +99,9 @@ typedef struct RCParams {
     char        *PrependString;
     char        **CPPArgs;    /* temporary until preprocessing done inline */
     ExtraRes    *ExtraResFiles;
+#ifndef NO_REPLACE
     FRStrings   *FindReplaceStrings;
+#endif
 } RCParams;
 
 #define VERSION_20_STAMP 0x0200
@@ -111,11 +119,5 @@ enum RCTargetOS {
     RC_TARGET_OS_WIN32,
     RC_TARGET_OS_OS2,
 };
-
-extern bool ScanParams( int argc, char *argv[] );
-extern void ScanParamInit( void );
-extern void ScanParamFini( void );
-extern int  ParseEnvVar( const char *env, char **argv, char *buf );
-extern char *FindAndReplace( char *stringFromFile, FRStrings *frStrings );
 
 #endif

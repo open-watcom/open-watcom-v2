@@ -43,6 +43,7 @@
 #include "unitable.h"
 #include "rccore.h"
 #include "pathgrp2.h"
+#include "param.h"
 
 #include "clibext.h"
 
@@ -383,13 +384,9 @@ static bool ScanOptionsArg( const char *arg )
 {
     bool        contok;
     ExtraRes    *resfile;
-    FRStrings   *frStrings;
     char        *temp=NULL;
     char        *p;
-    char        *delims = ",";
-    size_t      findlen = 0;
     unsigned    len;
-//    size_t      replen = 0;
 
     contok = true;
 
@@ -402,6 +399,7 @@ static bool ScanOptionsArg( const char *arg )
         arg++;
         if( tolower( *arg ) == 'd' ) {
             CmdLineParms.GenAutoDep = true;
+#ifndef NO_REPLACE
         } else if( tolower( *arg ) == 'p' ) {
             arg++;
             if( *arg == '=' )
@@ -412,6 +410,7 @@ static bool ScanOptionsArg( const char *arg )
             CmdLineParms.PrependString = scanString( RcMemAlloc( len + 1 ), arg, len );
             CmdLineParms.Prepend = true;
             break;
+#endif
         } else {
             RcError( ERR_UNKNOWN_MULT_OPTION, arg - 1 );
             contok = false;
@@ -525,7 +524,14 @@ static bool ScanOptionsArg( const char *arg )
             break;
         }
         break;
+#ifndef NO_REPLACE
     case 'g':
+      {
+        FRStrings   *frStrings;
+        size_t      findlen = 0;
+        char        *delims = ",";
+//        size_t      replen = 0;
+
         arg++;
         if( *arg == '=' )
             arg++;
@@ -556,7 +562,9 @@ static bool ScanOptionsArg( const char *arg )
         CmdLineParms.FindReplaceStrings = frStrings;
         CmdLineParms.FindAndReplace = true;
         RcMemFree( temp );
+      }
         break;
+#endif
     case 'i':
         arg++;
         if( *arg == '=' )
@@ -1034,8 +1042,10 @@ void ScanParamFini( void )
 /************************/
 {
     ExtraRes            *tmpres;
-    FRStrings           *strings;
     char                **cppargs;
+#ifndef NO_REPLACE
+    FRStrings           *strings;
+#endif
 
     FreeCharTable();
 
@@ -1050,27 +1060,32 @@ void ScanParamFini( void )
         CmdLineParms.ExtraResFiles = CmdLineParms.ExtraResFiles->next;
         RcMemFree( tmpres );
     }
+    RcMemFree( CmdLineParms.InFileName );
+    CmdLineParms.InFileName = NULL;
+    RcMemFree( CmdLineParms.InExeFileName );
+    CmdLineParms.InExeFileName = NULL;
+    RcMemFree( CmdLineParms.OutResFileName );
+    CmdLineParms.OutResFileName = NULL;
+    RcMemFree( CmdLineParms.OutExeFileName );
+    CmdLineParms.OutExeFileName = NULL;
+    if( CmdLineParms.CodePageFile != NULL ) {
+        RcMemFree( CmdLineParms.CodePageFile );
+        CmdLineParms.CodePageFile = NULL;
+    }
+#ifndef NO_REPLACE
     while( (strings = CmdLineParms.FindReplaceStrings) != NULL ) {
         CmdLineParms.FindReplaceStrings = CmdLineParms.FindReplaceStrings->next;
         RcMemFree( strings );
     }
-    RcMemFree( CmdLineParms.InFileName );
-    RcMemFree( CmdLineParms.InExeFileName );
-    RcMemFree( CmdLineParms.OutResFileName );
-    RcMemFree( CmdLineParms.OutExeFileName );
-    if( CmdLineParms.CodePageFile != NULL )
-        RcMemFree( CmdLineParms.CodePageFile );
-    if( CmdLineParms.PrependString != NULL )
+    if( CmdLineParms.PrependString != NULL ) {
         RcMemFree( CmdLineParms.PrependString );
+        CmdLineParms.PrependString = NULL;
+    }
+#endif
 
-    CmdLineParms.InFileName = NULL;
-    CmdLineParms.InExeFileName = NULL;
-    CmdLineParms.OutResFileName = NULL;
-    CmdLineParms.OutExeFileName = NULL;
-    CmdLineParms.CodePageFile = NULL;
-    CmdLineParms.PrependString = NULL;
 } /* ScanParamFini */
 
+#ifndef NO_REPLACE
 char *FindAndReplace( char *stringFromFile, FRStrings *frStrings )
 /****************************************************************/
 {
@@ -1151,3 +1166,33 @@ char *FindAndReplace( char *stringFromFile, FRStrings *frStrings )
         return( stringFromFile );
     }
 }
+
+void PrependToString( ScanValue *value, char *stringFromFile )
+/************************************************************/
+{
+
+    int     lenOfPrependString = 0;
+    int     lenOfStringFromFile;
+
+    lenOfStringFromFile = value->string.length;
+    if( CmdLineParms.Prepend ) {
+        if( strcmp( stringFromFile, "" ) != 0 ) {
+            lenOfPrependString =  strlen( CmdLineParms.PrependString );
+            value->string.string = RcMemAlloc( lenOfStringFromFile
+                                   + lenOfPrependString + 1);
+            strcpy( value->string.string, CmdLineParms.PrependString );
+        } else {
+            // in this case the lenOfPrependString is zero, so the
+            // strcpy will not fail.
+            value->string.string = RcMemAlloc( lenOfStringFromFile + 1 );
+        }
+        strcpy( &value->string.string[ lenOfPrependString ], stringFromFile );
+        value->string.length = lenOfStringFromFile + lenOfPrependString;
+    } else {
+        value->string.string = RcMemAlloc( ( lenOfStringFromFile+1 ) );
+        strcpy( value->string.string, stringFromFile );
+        value->string.length = lenOfStringFromFile;
+    }
+    RcMemFree( stringFromFile );
+}
+#endif

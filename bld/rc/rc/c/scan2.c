@@ -39,6 +39,7 @@
 #include "errprt.h"
 #include "rcrtns.h"
 #include "rccore.h"
+#include "param.h"
 
 #include "clibext.h"
 
@@ -594,7 +595,7 @@ static YYTOKENTYPE scanDFA( ScanValue *value )
         } else {
             stringFromFile = VarStringEnd( newstring, &(value->string.length) );
             value->string.string = stringFromFile;
-#if 0
+#ifndef NO_REPLACE
             /*
              * DRW - this code truncates trailing null chars in resources
              *          like user data.  It is commented until I fix it.
@@ -609,9 +610,9 @@ static YYTOKENTYPE scanDFA( ScanValue *value )
                  * once and the string might have been changed by find and
                  * replace, this is needed here
                  */
-                prependToString( value, temp );
+                PrependToString( value, temp );
             } else if( CmdLineParms.Prepend ) {
-                prependToString( value, stringFromFile );
+                PrependToString( value, stringFromFile );
             }
 #endif
             value->string.lstring = longString;
