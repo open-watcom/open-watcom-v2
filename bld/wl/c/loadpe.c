@@ -1317,6 +1317,36 @@ void FiniPELoadFile( void )
         }
         PE32( pehdr ).heap_commit_size = size;
 
+        // Issue #852 "Programs using LocalAlloc crash on Windows 9x"
+        // NTS: Win32 programs will crash under Windows 95 if the local heap reserve size
+        //      is zero and any code within the program attempts to use LocalAlloc(). It
+        //      seems to interpret a zero size as a signal not to allocate any heap
+        //      whatsoever, but LocalAlloc() doesn't check for that case properly.
+        //
+        //      Windows NT/2000/XP and Windows 3.1 Win32s do not have this program and
+        //      will always allocate some default heap for LocalAlloc() to work properly.
+        //
+        //      TODO: This fix should only apply if the target OS version major is 4 or less.
+        //            Windows 2000/XP (version 5.x) do not have this issue.
+        //            Windows 95/98/ME are all version 4.x (ME is 4.90.3000).
+        //            Windows 3.1 Win32s is version 3.
+        //
+        //            It was common at the time in the 1990s for Windows 95 users to also
+        //            use programs originally targeted for Windows 3.1 Win32s, as well as
+        //            commercial software that was also compatible with Windows NT. When
+        //            it comes to this issue, the original intended target of the program
+        //            does not matter. All that matters is that a call to LocalAlloc() when
+        //            the PE header has a zero value for "local heap reserve size" causes
+        //            a crash.
+        //
+        //      TODO: This should be a linker option. If a developer is REALLY REALLY SURE
+        //            that their Windows 95/98/ME targeted program is NEVER EVER going to
+        //            call LocalAlloc() and any DLL they link to isn't going to either,
+        //            they should have the option to set this to zero. And of course, to any
+        //            other value they wish.
+        size = 0x00100000; /* Microsoft C++ Win32 compiler default (1MB) (TODO: Linker option to set this?) */
+        PE32( pehdr ).heap_reserve_size = size;
+
         PE32( pehdr ).num_tables = PE_TBL_NUMBER;
         CurrSect = Root;
         SeekLoad( 0 );
