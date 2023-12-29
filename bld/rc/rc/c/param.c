@@ -420,7 +420,7 @@ static bool ScanOptionsArg( const char *arg )
         arg++;
         switch( tolower( *arg ) ) {
         case '0':
-            CmdLineParms.VersionStamp20 = true;
+            CmdLineParms.Win16VerStamp = VERSION_20_STAMP;
             break;
         default:
             RcError( ERR_UNKNOWN_MULT_OPTION, arg - 1 );
@@ -432,10 +432,10 @@ static bool ScanOptionsArg( const char *arg )
         arg++;
         switch( tolower( *arg ) ) {
         case '0':
-            CmdLineParms.VersionStamp30 = true;
+            CmdLineParms.Win16VerStamp = VERSION_30_STAMP;
             break;
         case '1':
-            CmdLineParms.VersionStamp30 = false;
+            CmdLineParms.Win16VerStamp = VERSION_31_STAMP;
             break;
         default:
             RcError( ERR_UNKNOWN_MULT_OPTION, arg - 1 );
@@ -1069,6 +1069,7 @@ void ScanParamInit( void )
 {
     memset( &CmdLineParms, 0, sizeof( RCParams ) );
 
+    CmdLineParms.Win16VerStamp = VERSION_31_STAMP;
     CmdLineParms.MBCharSupport = MB_NONE;
     CmdLineParms.IgnoreCWD = IgnoreCWD;
     CmdLineParms.IgnoreINCLUDE = IgnoreINCLUDE;

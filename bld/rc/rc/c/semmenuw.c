@@ -105,7 +105,7 @@ MenuFlags SemWINAddMenuOption( MenuFlags oldflags, YYTOKENTYPE token )
         oldflags |= MENU_MENUBREAK;
         break;
     case Y_OWNERDRAW:
-        if( !CmdLineParms.VersionStamp20 )
+        if( CmdLineParms.Win16VerStamp != VERSION_20_STAMP )
             oldflags |= MENU_OWNERDRAWN;
         break;
     case Y_HELP:
@@ -207,7 +207,7 @@ static bool SemWriteMenuItem( FullMenuItem *item, int islastitem,
             item->item.popup.item.menuData.ItemFlags |= MENU_ENDMENU;
         }
         if( tokentype == Y_MENU ) {
-            if( CmdLineParms.VersionStamp20 ) {
+            if( CmdLineParms.Win16VerStamp == VERSION_20_STAMP ) {
                 error = ResWriteMenuItemPopupOldWin( &(item->item.popup.item.menuData),
                             item->UseUnicode, CurrResFile.fp );
             } else {
@@ -225,7 +225,7 @@ static bool SemWriteMenuItem( FullMenuItem *item, int islastitem,
             item->item.normal.menuData.ItemFlags |= MENU_ENDMENU;
         }
         if( tokentype == Y_MENU ) {
-            if( CmdLineParms.VersionStamp20 ) {
+            if( CmdLineParms.Win16VerStamp == VERSION_20_STAMP ) {
                 error = ResWriteMenuItemNormalOldWin( &(item->item.normal.menuData),
                             item->UseUnicode, CurrResFile.fp );
             } else {
@@ -272,9 +272,13 @@ static bool SemWriteSubMenu( FullMenu *submenu, int *err_code, YYTOKENTYPE token
     return( error );
 }
 
-static void SemWarnIfSubmenus( FullMenu *submenu ) {
-    /* Windows 2.x does not support submenus, though submenus are parsed correctly.
-     * So it is valid to have top level MF_POPUP, but MF_POPUP within the menus is ignored. */
+static void SemWarnIfSubmenus( FullMenu *submenu )
+/*************************************************
+ * Windows 2.x does not support submenus, though submenus are parsed
+ * correctly.  So it is valid to have top level MF_POPUP, but MF_POPUP
+ * within the menus is ignored.
+ */
+{
     FullMenuItem *curritem,*currsubitem;
 
     for( curritem = submenu->head; curritem != NULL; curritem = curritem->next ) { // top level menu bar
@@ -333,7 +337,7 @@ void SemWINWriteMenu( WResID *name, ResMemFlags flags, FullMenu *menu,
             head.Version = 0;    /* currently these fields are both 0 */
             head.Size = 0;
             loc.start = SemStartResource();
-            if( !CmdLineParms.VersionStamp20 ) { /* Windows 2.x menus do not have a header */
+            if( CmdLineParms.Win16VerStamp != VERSION_20_STAMP ) { /* Windows 2.x menus do not have a header */
                 error = ResWriteMenuHeader( &head, CurrResFile.fp );
             }
         } else if( tokentype == Y_MENU_EX ) {
@@ -349,7 +353,7 @@ void SemWINWriteMenu( WResID *name, ResMemFlags flags, FullMenu *menu,
         if( error ) {
             err_code = LastWresErr();
         } else {
-            if( CmdLineParms.VersionStamp20 )
+            if( CmdLineParms.Win16VerStamp == VERSION_20_STAMP )
                 SemWarnIfSubmenus( menu );
             error = SemWriteSubMenu( menu, &err_code, tokentype );
         }

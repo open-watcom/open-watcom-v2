@@ -90,11 +90,10 @@ void SemWINAddSingleLineResource( WResID *name, YYTOKENTYPE type, FullMemFlags *
         RESFREE( filename );
         return;
     }
-    if( CmdLineParms.VersionStamp30
-      || CmdLineParms.VersionStamp20 ) {
-        purity_option = CUR_ICON_PURITY_30;
-    } else {
+    if( CmdLineParms.Win16VerStamp == VERSION_31_STAMP ) {
         purity_option = CUR_ICON_PURITY_31;
+    } else {
+        purity_option = CUR_ICON_PURITY_30;
     }
 
     if( RcFindSourceFile( filename, full_filename ) == -1 ) {
@@ -367,8 +366,12 @@ static bool writeIconDir( FullIconDir *dir, WResID *name, ResMemFlags flags, int
     return( error );
 } /* writeIconDir */
 
-static bool CopyTranslateBitmapWin2x( unsigned int Width, unsigned int Height, unsigned int BitCount, FILE *fp, bool invert) {
-    /* Windows 2.x bitmaps are top-down, not bottom up. Some translation needed. */
+static bool CopyTranslateBitmapWin2x( unsigned int Width, unsigned int Height, unsigned int BitCount, FILE *fp, bool invert)
+/***************************************************************************************************************************
+ * Windows 2.x bitmaps are top-down, not bottom up.
+ * Some translation needed.
+ */
+{
     unsigned int dst_stride = (((Width*BitCount+15u)&(~15u))/8u)/*WORD align*/;
     unsigned int src_stride = (((Width*BitCount+31u)&(~31u))/8u)/*DWORD align*/;
     unsigned int copy_stride = min( dst_stride, src_stride );
@@ -377,21 +380,24 @@ static bool CopyTranslateBitmapWin2x( unsigned int Width, unsigned int Height, u
     unsigned int img_sz;
     unsigned int y;
 
-    /* This code assumes the caller has already read past the DIB header */
-
-    /* Order of storage:
+    /*
+     * This code assumes the caller has already read past the DIB header
+     *
+     * Order of storage:
      * [header]
-     * [bitmap image] */
+     * [bitmap image]
+     */
     img_sz = dst_stride * Height;
     newbmp = malloc( img_sz );
     if( !newbmp )
         return( true );
 
     memset( newbmp, 0, img_sz );
-
-    /* bitmap image */
+    /*
+     * bitmap image
+     */
     for( y = 0; y < Height; y++ ) {
-        if( RESREAD( fp, newbmp + ( (Height - 1 - y ) * dst_stride ), copy_stride ) != copy_stride ) {
+        if( RESREAD( fp, newbmp + ( ( Height - 1 - y ) * dst_stride ), copy_stride ) != copy_stride ) {
             free( newbmp );
             return( true );
         }
@@ -399,12 +405,14 @@ static bool CopyTranslateBitmapWin2x( unsigned int Width, unsigned int Height, u
             RESSEEK( fp, src_stride - copy_stride, SEEK_CUR );
         }
     }
-
-    /* some programs (Adobe Photoshop 2.5) like to write 1bpp bitmaps
-     * with white as the first color instead of black */
+    /*
+     * some programs (Adobe Photoshop 2.5) like to write 1bpp bitmaps
+     * with white as the first color instead of black
+     */
     if( invert ) {
-        for (y=0;y < img_sz;y++)
+        for( y = 0; y < img_sz; y++ ) {
             newbmp[y] ^= 0xFF;
+        }
     }
 
     if( RESWRITE( CurrResFile.fp, newbmp, img_sz ) != img_sz) {
@@ -416,8 +424,12 @@ static bool CopyTranslateBitmapWin2x( unsigned int Width, unsigned int Height, u
     return( false );
 }
 
-static bool CopyTranslateBitmapAndMaskWin2x( unsigned int Width, unsigned int Height, unsigned int BitCount, FILE *fp) {
-    /* Windows 2.x bitmaps are top-down, not bottom up. Some translation needed. */
+static bool CopyTranslateBitmapAndMaskWin2x( unsigned int Width, unsigned int Height, unsigned int BitCount, FILE *fp )
+/**********************************************************************************************************************
+ * Windows 2.x bitmaps are top-down, not bottom up.
+ * Some translation needed.
+ */
+{
     unsigned int dst_stride = (((Width*BitCount+15u)&(~15u))/8u)/*WORD align*/;
     unsigned int src_stride = (((Width*BitCount+31u)&(~31u))/8u)/*DWORD align*/;
     unsigned int dstm_stride = (((Width+15u)&(~15u))/8u)/*WORD align*/;
@@ -430,12 +442,14 @@ static bool CopyTranslateBitmapAndMaskWin2x( unsigned int Width, unsigned int He
     unsigned int img_sz;
     unsigned int y;
 
-    /* This code assumes the caller has already read past the DIB header */
-
-    /* Order of storage:
+    /*
+     * This code assumes the caller has already read past the DIB header
+     *
+     * Order of storage:
      * [header]
      * [icon mask]
-     * [icon image] */
+     * [icon image]
+     */
     img_sz = dst_stride * Height;
     mask_sz = dstm_stride * Height;
     newbmp = malloc( img_sz + mask_sz );
@@ -446,7 +460,7 @@ static bool CopyTranslateBitmapAndMaskWin2x( unsigned int Width, unsigned int He
 
     /* icon image */
     for( y = 0; y < Height; y++ ) {
-        if( RESREAD( fp, newbmp + mask_sz + ( (Height - 1 - y ) * dst_stride ), copy_stride ) != copy_stride ) {
+        if( RESREAD( fp, newbmp + mask_sz + ( ( Height - 1 - y ) * dst_stride ), copy_stride ) != copy_stride ) {
             free( newbmp );
             return( true );
         }
@@ -511,7 +525,8 @@ static bool IconIsWin2xCompatible( FullIconDirEntry *entry ) {
     }
 }
 
-static FullIconDirEntry *FindWindows2xCompatibleIcon( FullIconDir *dir ) {
+static FullIconDirEntry *FindWindows2xCompatibleIcon( FullIconDir *dir )
+{
     FullIconDirEntry    *entry;
 
     for( entry = dir->Head; entry != NULL; entry = entry->Next ) {
@@ -543,10 +558,12 @@ static void AddIconResource( WResID *name, ResMemFlags flags, ResMemFlags group_
     if( ret != RS_OK )
         goto READ_DIR_ERROR;
 
-    if( CmdLineParms.VersionStamp20 ) {
+    if( CmdLineParms.Win16VerStamp == VERSION_20_STAMP ) {
         FullIconDirEntry *entry;
 
-        /* More info needed */
+        /*
+         * More info needed
+         */
         for( entry = dir.Head; entry != NULL; entry = entry->Next ) {
             BitmapInfoHeader dibhead;
 
@@ -558,14 +575,15 @@ static void AddIconResource( WResID *name, ResMemFlags flags, ResMemFlags group_
             entry->Entry.Res.Info.Planes = dibhead.Planes;
             entry->Entry.Res.Info.BitCount = dibhead.BitCount;
         }
-
-        /* Windows 2.0 has a more strict requirement of icon resources:
+        /*
+         * Windows 2.0 has a more strict requirement of icon resources:
          * It must be 64x64 1bpp monochrome. No exceptions. There is no
          * "icon directory" to pick multiple versions. The RT_ICON resource
          * is THE icon.
          *
          * If the icon directory does not offer a 64x64x1bpp icon, then
-         * pick the first one and print a warning. */
+         * pick the first one and print a warning.
+         */
         entry = FindWindows2xCompatibleIcon( &dir );
         if( !entry ) {
             RcWarning( WARN_ICON_WIN2X );
@@ -575,7 +593,9 @@ static void AddIconResource( WResID *name, ResMemFlags flags, ResMemFlags group_
         }
 
         {
-            /* need more information like biPlanes, biBitCount */
+            /*
+             * need more information like biPlanes, biBitCount
+             */
             unsigned int palbytes = 0;
             BitmapInfoHeader dibhead;
 
@@ -583,8 +603,9 @@ static void AddIconResource( WResID *name, ResMemFlags flags, ResMemFlags group_
                 goto COPY_ICONS_ERROR;
             if( ReadBitmapInfoHeader( &dibhead, fp ) != RS_OK )
                 goto COPY_ICONS_ERROR;
-
-            /* seek to the bitmap bits directly */
+            /*
+             * seek to the bitmap bits directly
+             */
             if( dibhead.BitCount <= 8 ) {
                 if( dibhead.ClrUsed != 0 ) {
                     palbytes = 4 * dibhead.ClrUsed;
@@ -877,7 +898,8 @@ static bool writeTheWindows2xCursor( FullCurDirEntry *entry, WResID *name, ResMe
     return( error );
 } /* writeTheWindows2xCur */
 
-static bool CursorIsWin2xCompatible( FullCurDirEntry *entry ) {
+static bool CursorIsWin2xCompatible( FullCurDirEntry *entry )
+{
     if( entry->Entry.Cur.Width == 32
       && entry->Entry.Cur.Height == 32
       && entry->Entry.Cur.ColourCount/*BitCount, see hack in AddCursorResource*/ == 1 ) {
@@ -887,7 +909,8 @@ static bool CursorIsWin2xCompatible( FullCurDirEntry *entry ) {
     }
 }
 
-static FullCurDirEntry *FindWindows2xCompatibleCursor( FullCurDir *dir ) {
+static FullCurDirEntry *FindWindows2xCompatibleCursor( FullCurDir *dir )
+{
     FullCurDirEntry    *entry;
 
     for( entry = dir->Head; entry != NULL; entry = entry->Next ) {
@@ -919,7 +942,7 @@ static void AddCursorResource( WResID *name, ResMemFlags flags, ResMemFlags grou
     if( ret != RS_OK)
         goto READ_DIR_ERROR;
 
-    if( CmdLineParms.VersionStamp20 ) {
+    if( CmdLineParms.Win16VerStamp == VERSION_20_STAMP ) {
         FullCurDirEntry *entry;
 
         /* More info needed */
@@ -930,28 +953,30 @@ static void AddCursorResource( WResID *name, ResMemFlags flags, ResMemFlags grou
                 goto COPY_CURSORS_ERROR;
             if( ReadBitmapInfoHeader( &dibhead, fp ) != RS_OK )
                 goto COPY_CURSORS_ERROR;
-
-            /* HACK: Cur (the struct read from disk) does not have BitCount, but has
+            /*
+             * HACK: Cur (the struct read from disk) does not have BitCount, but has
              *       ColourCount, except ColourCount == 0 in most CUR files I've
              *       tested against, so we'll just use that to store it.
              *
              *       Cur and Res are two structures in a union and the structures
              *       overlap each other, threfore attempts to patch in values to Res
-             *       will corrupt Cur including the hotspot information. */
+             *       will corrupt Cur including the hotspot information.
+             */
             if (dibhead.Planes == 1)
                 entry->Entry.Cur.ColourCount = dibhead.BitCount;
             else
                 entry->Entry.Cur.ColourCount = 0xFF; /* not supported, must ignore */
         }
-
-        /* Windows 2.0 has a more strict requirement of cursor resources:
+        /*
+         * Windows 2.0 has a more strict requirement of cursor resources:
          * It must be 32x32 1bpp monochrome. No exceptions. There is no
          * "cursor directory" to pick multiple versions. The RT_CURSOR resource
          * is THE icon.
          *
          * If the icon directory does not offer a 32x32x1bpp icon, then
          * pick the first one and print a warning. Fortunately most Windows 3.0
-         * and later .CUR files are 32x32x1bpp monochrome anyway. */
+         * and later .CUR files are 32x32x1bpp monochrome anyway.
+         */
         entry = FindWindows2xCompatibleCursor( &dir );
         if( !entry ) {
             RcWarning( WARN_CURSOR_WIN2X );
@@ -961,7 +986,9 @@ static void AddCursorResource( WResID *name, ResMemFlags flags, ResMemFlags grou
         }
 
         {
-            /* need more information like biPlanes, biBitCount */
+            /*
+             * need more information like biPlanes, biBitCount
+             */
             unsigned int palbytes = 0;
             BitmapInfoHeader dibhead;
 
@@ -969,8 +996,9 @@ static void AddCursorResource( WResID *name, ResMemFlags flags, ResMemFlags grou
                 goto COPY_CURSORS_ERROR;
             if( ReadBitmapInfoHeader( &dibhead, fp ) != RS_OK )
                 goto COPY_CURSORS_ERROR;
-
-            /* seek to the bitmap bits directly */
+            /*
+             * seek to the bitmap bits directly
+             */
             if( dibhead.BitCount <= 8 ) {
                 if( dibhead.ClrUsed != 0 ) {
                     palbytes = 4 * dibhead.ClrUsed;
@@ -1123,27 +1151,29 @@ static void AddBitmapResource( WResID *name, ResMemFlags flags, const char *file
     if( head.Type != BITMAP_MAGIC )
         goto NOT_BITMAP_ERROR;
 
-    if( CmdLineParms.VersionStamp20 ) {
+    if( CmdLineParms.Win16VerStamp == VERSION_20_STAMP ) {
         BitmapInfoHeader dibhead;
         bool monoinvert = false;
 
         if( ReadBitmapInfoHeader( &dibhead, fp ) != RS_OK )
             goto COPY_BITMAP_ERROR;
-
-        /* Windows 2.0 does not support compression, at all.
+        /*
+         * Windows 2.0 does not support compression, at all.
          * Bitmaps must be monochrome, even though the header
          * suggests you could do color. No top-down negative
-	 * height bitmaps. */
+         * height bitmaps.
+         */
         if( dibhead.Compression != 0 || dibhead.Size < 40 || (int)dibhead.Height <= 0 ) {
             RcWarning( WARN_BITMAP_WIN2X );
             goto COPY_BITMAP_ERROR;
         }
         if( dibhead.BitCount != 1 || dibhead.Planes != 1 )
             RcWarning( WARN_BITMAP_WIN2X );
-
-        /* Invert the bits on convert if the BMP image is monochrome but the
+        /*
+         * Invert the bits on convert if the BMP image is monochrome but the
          * white color is first (Adobe Photoshop 2.5 insists on writing 1bpp
-         * BMP files this way) */
+         * BMP files this way)
+         */
         if( dibhead.BitCount == 1 ) {
             unsigned char color0[4];
 

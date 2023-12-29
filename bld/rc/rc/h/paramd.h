@@ -79,8 +79,6 @@ typedef struct RCParams {
     boolbit     ProtModeOnly    : 1;
     boolbit     PreprocessOnly  : 1;
 //    boolbit     WritableRes     : 1;
-    boolbit     VersionStamp30  : 1;
-    boolbit     VersionStamp20  : 1;
     boolbit     NoProtectCC     : 1;    /* if set, don't invoke prot. mode comp */
     boolbit     NoPreprocess    : 1;    /* if set won't attemp any preprocessing */
     boolbit     GenAutoDep      : 1;    /* generate autodependency info for wmake */
@@ -90,6 +88,7 @@ typedef struct RCParams {
 #endif
     unsigned    SegmentSorting  : 2;    /* which segment sorting method to use */
     unsigned    TargetOS        : 2;
+    unsigned    Win16VerStamp;
     char        MBCharSupport;          /* which of the zk switches is set */
     char        *InFileName;
     char        *InExeFileName;
