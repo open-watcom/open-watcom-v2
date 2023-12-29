@@ -35,7 +35,6 @@
 #include <stddef.h>
 #include <sys/ioctl.h>
 #include <termios.h>
-#include "seterrno.h"
 #include "linuxsys.h"
 
 
@@ -44,7 +43,8 @@ _WCRTLINK int tcgetattr( int fd, struct termios *t )
     syscall_res res;
 
     if( t == NULL ) {
-        return( __set_EINVAL() );
+        _RWD_errno = EINVAL;
+        return( -1 );
     }
 
     /* OW's struct termios is the same (basically) as the kernel's

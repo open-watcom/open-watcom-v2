@@ -33,7 +33,6 @@
 #include <termios.h>
 #include <sys/ioctl.h>
 #include "rterrno.h"
-#include "seterrno.h"
 #include "thread.h"
 
 
@@ -47,7 +46,8 @@ _WCRTLINK int tcsetattr( int __fd, int __optional_actions, const struct termios 
     case TCSAFLUSH:
         return( ioctl( __fd, TCSETSF, __termios_p ) );
     default:
-        return( __set_EINVAL() );
+        _RWD_errno = EINVAL;
+        return( -1 );
     }
 }
 

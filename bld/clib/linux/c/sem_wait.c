@@ -36,7 +36,6 @@
 #include "futex.h"
 #include "atomic.h"
 #include "rterrno.h"
-#include "seterrno.h"
 #include "thread.h"
 #include "linuxsys.h"
 
@@ -58,7 +57,8 @@ int res;
 struct timespec timer;
 
     if( sem == NULL ) {
-        return( __set_EINVAL() );
+        _RWD_errno = EINVAL;
+        return( -1 );
     }
 
     timer.tv_sec = 0;
@@ -83,7 +83,8 @@ _WCRTLINK int sem_timedwait( sem_t *sem, const struct timespec *abstime )
     struct timespec reltime;
 
     if( sem == NULL ) {
-        return( __set_EINVAL() );
+        _RWD_errno = EINVAL;
+        return( -1 );
     }
 
     while( !__decrement_if_positive( &sem->value ) ) {
@@ -119,7 +120,8 @@ _WCRTLINK int sem_trywait( sem_t *sem )
     int             ret;
 
     if( sem == NULL ) {
-        return( __set_EINVAL() );
+        _RWD_errno = EINVAL;
+        return( -1 );
     }
     timer.tv_sec = 0;
     timer.tv_nsec = 0;

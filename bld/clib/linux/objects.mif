@@ -139,5 +139,3 @@
 !inject writev.obj                                                                          l32 lpc lmp
 
 !include ../../../../objlist.mif
-
-#vfork_postopts   =-pcl -P -fo=.i

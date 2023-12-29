@@ -35,7 +35,6 @@
 #include <stddef.h>
 #include <sys/ioctl.h>
 #include <termios.h>
-#include "seterrno.h"
 #include "linuxsys.h"
 
 
@@ -44,7 +43,8 @@ _WCRTLINK int tcsetattr( int fd, int actions, const struct termios *t )
     int cmd;
 
     if( t == NULL ) {
-        return( __set_EINVAL() );
+        _RWD_errno = EINVAL;
+        return( -1 );
     }
 
     switch( actions ) {
@@ -58,7 +58,8 @@ _WCRTLINK int tcsetattr( int fd, int actions, const struct termios *t )
         cmd = TCSETSF;
         break;
     default:
-        return( __set_EINVAL() );
+        _RWD_errno = EINVAL;
+        return( -1 );
     }
 
     return( ioctl( fd, cmd, t ) );

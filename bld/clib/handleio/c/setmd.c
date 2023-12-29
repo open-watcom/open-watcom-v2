@@ -45,7 +45,6 @@
 #endif
 #include "rtdata.h"
 #include "rterrno.h"
-#include "seterrno.h"
 #include "fileacc.h"
 #include "rtcheck.h"
 #include "iomode.h"
@@ -67,7 +66,7 @@ _WCRTLINK int _setmode( int handle, int mode )
     }
     old_mode = (iomode_flags & _BINARY) ? O_BINARY : O_TEXT;
     if( mode != old_mode ) {
-        if( mode == O_BINARY || mode == O_TEXT ) {
+        if( mode == O_BINARY  ||  mode == O_TEXT ) {
             iomode_flags &= ~ _BINARY;
             if( mode == O_BINARY ) {
                 iomode_flags |= _BINARY;
@@ -88,7 +87,8 @@ _WCRTLINK int _setmode( int handle, int mode )
             }
             _ReleaseFileH( handle );
         } else {
-            return( __set_EINVAL() );
+            _RWD_errno = EINVAL;
+            old_mode = -1;
         }
     }
     return( old_mode );

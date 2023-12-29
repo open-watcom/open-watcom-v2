@@ -42,9 +42,7 @@
     #include "nw_lib.h"
 #endif
 #include "rterrno.h"
-#include "seterrno.h"
 #include "thread.h"
-
 
 #ifndef SIZE_MAX
 #define SIZE_MAX ((size_t)-1)
@@ -62,7 +60,8 @@ _WCRTLINK ssize_t getdelim( char **s, size_t *n, int delim, FILE *fp )
     char    *buff;
 
     if( n == NULL || s == NULL ) {
-        return( __set_EINVAL() );
+        _RWD_errno = EINVAL;
+        return( -1 );
     }
 
     buff = *s;

@@ -32,7 +32,6 @@
 #include "variety.h"
 #include <signal.h>
 #include "rterrno.h"
-#include "seterrno.h"
 #include "thread.h"
 
 
@@ -40,7 +39,8 @@ _WCRTLINK int sigdelset( sigset_t *__set, int signum )
 /****************************************************/
 {
     if( signum < 1 || signum > _NSIG ) {
-        return( __set_EINVAL() );
+        _RWD_errno = EINVAL;
+        return( -1 );
     }
     --signum;
     __set->sig[signum / _NSIG_BPW] &= ~( 1 << ( signum % _NSIG_BPW ) );

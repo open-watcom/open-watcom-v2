@@ -204,7 +204,6 @@ extra_c_flags_i86 = -zu
 extra_c_flags_win_i86 = -bd
 !endif
 !endif
-#extra_c_flags_serv = -pcl
 
 # aflags stuff
 ###############

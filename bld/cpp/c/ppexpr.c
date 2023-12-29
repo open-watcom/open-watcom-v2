@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -111,7 +111,7 @@ static void PP_CharConst( PREPROC_VALUE *val )
     if( PPTokenPtr[0] == '\'' ) {
         ++PPTokenPtr;
     }
-    val->type = PPTYPE_SIGNED;
+    val->type = 0;
     val->val.ivalue = value;
 }
 
@@ -121,7 +121,7 @@ static void PP_Constant( PREPROC_VALUE *val )
     char        c;
 
     value = 0;
-    val->type = PPTYPE_SIGNED;                              // assume signed value
+    val->type = 0;                              // assume signed value
     c = PPTokenPtr[0];
     if( c == '0' ) {                            // octal or hex number
         ++PPTokenPtr;
@@ -144,21 +144,21 @@ static void PP_Constant( PREPROC_VALUE *val )
         }
     }
     if( (unsigned long)value > 0x7fffffff )
-        val->type = PPTYPE_UNSIGNED;                          // mark as unsigned
+        val->type = 1;                          // mark as unsigned
     c = PPTokenPtr[0];
     if( c == 'u' || c == 'U' ) {
         ++PPTokenPtr;
         c = PPTokenPtr[0];
         if( c == 'l' || c == 'L' ) {
             ++PPTokenPtr;
-            val->type = PPTYPE_UNSIGNED;
+            val->type = 1;
         }
     } else if( c == 'l' || c == 'L' ) {
         ++PPTokenPtr;
         c = PPTokenPtr[0];
         if( c == 'u' || c == 'U' ) {
             ++PPTokenPtr;
-            val->type = PPTYPE_UNSIGNED;
+            val->type = 1;
         }
     }
     val->val.ivalue = value;
@@ -172,7 +172,7 @@ static void PP_Identifier( PREPROC_VALUE *val )
     bool        white_space;
     size_t      len;
 
-    val->type = PPTYPE_SIGNED;
+    val->type = 0;
     value = 0;
     ptr = PP_ScanName( PPTokenPtr );
     len = ptr - PPTokenPtr;
@@ -207,7 +207,7 @@ static void PP_Identifier( PREPROC_VALUE *val )
             PPSavedChar = *ptr;
             DoMacroExpansion( me );
             PPCurToken = NextMToken();
-            val->type = PPTYPE_MACRO;      // indicate macro
+            val->type = 1;      // indicate macro
         } else {
             PPTokenPtr = ptr;
             PPFlags |= PPFLAG_UNDEFINED_VAR;
@@ -223,7 +223,7 @@ static void PP_AdvanceToken( void )
 
     for( ;; ) {
         PPTokenPtr = PP_SkipWhiteSpace( PPTokenPtr, &white_space );
-        if( PPTokenPtr[0] != '\0' )
+        if( PPTokenPtr[0] != '\0' ) 
             break;
         if( PPCurToken != NULL ) {
             PP_Free( PPCurToken );
@@ -286,11 +286,8 @@ static void PP_Expr11( PREPROC_VALUE *val )
                 break;
             case CC_ALPHA:
                 PP_Identifier( val );
-                if( val->type == PPTYPE_MACRO )    // was a macro; must rescan
+                if( val->type != 0 )    // was a macro; must rescan
                     continue;
-                break;
-            default:
-                val->type = PPTYPE_SIGNED;
                 break;
             }
             break;
@@ -315,7 +312,7 @@ static void PP_Expr10( PREPROC_VALUE *val )
             ++PPTokenPtr;
             PP_Expr11( &val2 );
             val->type |= val2.type;
-            if( val->type == PPTYPE_SIGNED ) {
+            if( val->type == 0 ) {
                 val->val.ivalue /= val2.val.ivalue;
             } else {
                 val->val.uvalue /= val2.val.uvalue;
@@ -324,7 +321,7 @@ static void PP_Expr10( PREPROC_VALUE *val )
             ++PPTokenPtr;
             PP_Expr11( &val2 );
             val->type |= val2.type;
-            if( val->type == PPTYPE_SIGNED ) {
+            if( val->type == 0 ) {
                 val->val.ivalue %= val2.val.ivalue;
             } else {
                 val->val.uvalue %= val2.val.uvalue;
@@ -367,7 +364,7 @@ static void PP_Expr8( PREPROC_VALUE *val )
             PPTokenPtr += 2;
             PP_Expr9( &val2 );
             val->type |= val2.type;
-            if( val->type == PPTYPE_SIGNED ) {
+            if( val->type == 0 ) {
                 val->val.ivalue >>= val2.val.uvalue;
             } else {
                 val->val.uvalue >>= val2.val.uvalue;
@@ -391,39 +388,27 @@ static void PP_Expr7( PREPROC_VALUE *val )
     for( ;; ) {
         if( PPTokenPtr[0] == '<' ) {
             ++PPTokenPtr;
+            PP_Expr8( &val2 );
+            val->type |= val2.type;
             if( PPTokenPtr[0] == '=' ) {
                 ++PPTokenPtr;
-                PP_Expr8( &val2 );
-                val->type |= val2.type;
-                if( val->type == PPTYPE_SIGNED ) {
-                    val->val.ivalue = val->val.ivalue <= val2.val.ivalue;
-                } else {
-                    val->val.uvalue = val->val.uvalue <= val2.val.uvalue;
-                }
+                val->val.ivalue = val->val.ivalue <= val2.val.ivalue;
             } else {
-                PP_Expr8( &val2 );
-                val->type |= val2.type;
-                if( val->type == PPTYPE_SIGNED ) {
-                    val->val.ivalue = val->val.ivalue < val2.val.ivalue;
-                } else {
-                    val->val.uvalue = val->val.uvalue < val2.val.uvalue;
-                }
+                val->val.ivalue = val->val.ivalue < val2.val.ivalue;
             }
         } else if( PPTokenPtr[0] == '>' ) {
             ++PPTokenPtr;
+            PP_Expr8( &val2 );
+            val->type |= val2.type;
             if( PPTokenPtr[0] == '=' ) {
                 ++PPTokenPtr;
-                PP_Expr8( &val2 );
-                val->type |= val2.type;
-                if( val->type == PPTYPE_SIGNED ) {
+                if( val->type == 0 ) {
                     val->val.ivalue = val->val.ivalue >= val2.val.ivalue;
                 } else {
                     val->val.uvalue = val->val.uvalue >= val2.val.uvalue;
                 }
             } else {
-                PP_Expr8( &val2 );
-                val->type |= val2.type;
-                if( val->type == PPTYPE_SIGNED ) {
+                if( val->type == 0 ) {
                     val->val.ivalue = val->val.ivalue > val2.val.ivalue;
                 } else {
                     val->val.uvalue = val->val.uvalue > val2.val.uvalue;
@@ -444,13 +429,13 @@ static void PP_Expr6( PREPROC_VALUE *val )
         if( PPTokenPtr[0] == '=' && PPTokenPtr[1] == '=' ) {
             PPTokenPtr += 2;
             PP_Expr7( &val2 );
-            val->val.ivalue = ( val->val.ivalue == val2.val.ivalue );
-            val->type = PPTYPE_SIGNED;
+            val->val.ivalue = val->val.ivalue == val2.val.ivalue;
+            val->type = 0;
         } else if( PPTokenPtr[0] == '!' && PPTokenPtr[1] == '=' ) {
             PPTokenPtr += 2;
             PP_Expr7( &val2 );
-            val->val.ivalue = ( val->val.ivalue != val2.val.ivalue );
-            val->type = PPTYPE_SIGNED;
+            val->val.ivalue = val->val.ivalue != val2.val.ivalue;
+            val->type = 0;
         } else {
             break;
         }
@@ -505,7 +490,7 @@ static void PP_Expr2( PREPROC_VALUE *val )
         PPTokenPtr += 2;
         PP_Expr3( &val2 );
         val->val.ivalue &= val2.val.ivalue;
-        val->type = PPTYPE_SIGNED;
+        val->type = 0;
     }
 }
 
@@ -518,7 +503,7 @@ static void PP_Expr1( PREPROC_VALUE *val )
         PPTokenPtr += 2;
         PP_Expr2( &val2 );
         val->val.ivalue |= val2.val.ivalue;
-        val->type = PPTYPE_SIGNED;
+        val->type = 0;
     }
 }
 
@@ -540,10 +525,10 @@ void PP_ConstExpr( PREPROC_VALUE *val )
 /*          value = value ? value1 : value2;  */
         if( val->val.ivalue != 0 ) {
             val->val.ivalue = value1.val.ivalue;
-            val->type = value1.type;
+            val->type   = value1.type;
         } else {
             val->val.ivalue = value2.val.ivalue;
-            val->type = value2.type;
+            val->type   = value2.type;
         }
     }
 }

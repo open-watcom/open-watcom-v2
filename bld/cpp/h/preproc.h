@@ -74,7 +74,6 @@ typedef struct macro_entry {
 
 #define PPTYPE_SIGNED       0
 #define PPTYPE_UNSIGNED     1
-#define PPTYPE_MACRO        1
 
 typedef struct preproc_value {
     int                 type;   // PPTYPE_SIGNED or PPTYPE_UNSIGNED

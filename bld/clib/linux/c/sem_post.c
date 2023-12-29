@@ -38,14 +38,14 @@
 #include "futex.h"
 #include "atomic.h"
 #include "rterrno.h"
-#include "seterrno.h"
 #include "thread.h"
 
 
 _WCRTLINK int sem_post( sem_t *sem )
 {
     if( sem == NULL ) {
-        return( __set_EINVAL() );
+        _RWD_errno = EINVAL;
+        return( -1 );
     }
 
     while(sem->value < 0) __atomic_increment( &sem->value );

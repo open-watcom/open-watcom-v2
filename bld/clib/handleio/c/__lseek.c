@@ -81,7 +81,8 @@ _WCRTLINK __int64 __lseeki64( int handle, __int64 offset, int origin )
         } else {
     #endif
             if( offset > LONG_MAX || offset < LONG_MIN ) {
-                return( __set_EINVAL() );
+                _RWD_errno = EINVAL;
+                return( -1LL );
             }
             pos = (unsigned long)__lseek( handle, offset, origin );
             if( pos == INVALID_SET_FILE_POINTER ) {
@@ -117,7 +118,8 @@ _WCRTLINK __int64 __lseeki64( int handle, __int64 offset, int origin )
     long            pos;
 
     if( offset > LONG_MAX || offset < LONG_MIN ) {
-        return( __set_EINVAL() );
+        _RWD_errno = EINVAL;
+        return( -1LL );
     }
     pos = __lseek( handle, offset, origin );
     if( pos == INVALID_SET_FILE_POINTER ) {

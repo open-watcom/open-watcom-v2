@@ -50,7 +50,6 @@
 #endif
 #include "rtdata.h"
 #include "rterrno.h"
-#include "seterrno.h"
 #ifdef __NT__
     #include "libwin32.h"
 #endif
@@ -109,7 +108,8 @@ _WCRTLINK int __F_NAME(setenv,_wsetenv)( const CHAR_TYPE *name, const CHAR_TYPE 
     int                 rc;
 
     if( name == NULL || *name == NULLCHAR || __F_NAME(strchr,wcschr)( name, STRING( '=' ) ) != NULL ) {
-        return( __set_EINVAL() );
+        _RWD_errno = EINVAL;
+        return( -1 );
     }
 
     /*** Ensure variable is deleted if value == "" ***/
