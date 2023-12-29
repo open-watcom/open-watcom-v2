@@ -567,8 +567,6 @@ static bool PreprocessInputFile( void )
 /*************************************/
 {
     pp_flags    ppflags;
-    char        **cppargs;
-    char        *p;
     int         rc;
 
     ppflags = PPFLAG_EMIT_LINE | PPFLAG_TRUNCATE_FILE_NAME;
@@ -579,31 +577,6 @@ static bool PreprocessInputFile( void )
     if( rc != 0 ) {
         RcError( ERR_CANT_OPEN_FILE, CmdLineParms.InFileName, strerror(errno) );
         return( true );
-    }
-    PP_Define_1( "RC_INVOKED" );
-    if( !CmdLineParms.NoTargetDefine ) {
-        if( CmdLineParms.TargetOS == RC_TARGET_OS_WIN16 ) {
-            PP_Define_1( "__WINDOWS__" );
-        } else if( CmdLineParms.TargetOS == RC_TARGET_OS_WIN32 ) {
-            PP_Define_1( "__NT__" );
-        } else if( CmdLineParms.TargetOS == RC_TARGET_OS_OS2 ) {
-            PP_Define_1( "__OS2__" );
-        }
-    }
-    if( CmdLineParms.CPPArgs != NULL ) {
-        for( cppargs = CmdLineParms.CPPArgs; (p = *cppargs) != NULL; ++cppargs ) {
-            for( ; *p != '\0'; ++p ) {
-                if( *p == '=' ) {
-                    break;
-                }
-            }
-            if( *p == '=' ) {
-                *p = ' ';
-                PP_Define( *cppargs + 2 );      // skip over -d
-            } else {
-                PP_Define_1( *cppargs + 2 );    // skip over -d
-            }
-        }
     }
     return( false );                    // indicate no error
 }
@@ -616,24 +589,7 @@ bool RcPass1IoInit( void )
  */
 {
     bool        error;
-    const char  *includepath = NULL;
 
-    if( !CmdLineParms.IgnoreINCLUDE ) {
-        if( CmdLineParms.TargetOS == RC_TARGET_OS_WIN16 ) {
-            includepath = RcGetEnv( "WINDOWS_INCLUDE" );
-        } else if( CmdLineParms.TargetOS == RC_TARGET_OS_WIN32 ) {
-            includepath = RcGetEnv( "NT_INCLUDE" );
-        } else if( CmdLineParms.TargetOS == RC_TARGET_OS_OS2 ) {
-            includepath = RcGetEnv( "OS2_INCLUDE" );
-        }
-        if( includepath != NULL ) {
-            PP_IncludePathAdd( PPINCLUDE_SYS, includepath );
-        }
-        includepath = RcGetEnv( "INCLUDE" );
-        if( includepath != NULL ) {
-            PP_IncludePathAdd( PPINCLUDE_SYS, includepath );
-        }
-    }
     if( !CmdLineParms.NoPreprocess ) {
         if( PreprocessInputFile() ) {
             return( false );
