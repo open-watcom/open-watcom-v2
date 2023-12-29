@@ -83,30 +83,28 @@ typedef struct  file_list {
 
 typedef void        pp_callback( const char *, size_t len, const char *, incl_type );
 
-extern  void        PP_Dependency_List( pp_callback * );
-extern  int         PP_Class( char __c );
-extern  MACRO_ENTRY *PP_AddMacro( const char *__name, size_t len );
-extern  MACRO_ENTRY *PP_MacroLookup( const char *__name, size_t len );
-extern  MACRO_ENTRY *PP_ScanMacroLookup( const char *__name );
-extern  const char  *PP_ScanToken( const char *__p, ppt_token *__token );
-extern  int         PP_ScanNextToken( ppt_token *__token );
-extern  const char  *PP_SkipWhiteSpace( const char *__p, bool *__white_space );
-extern  const char  *PP_ScanName( const char *__p );
-extern  int         PPEvalExpr( const char *__p, const char **__endptr, PREPROC_VALUE *__val );
-extern  void        PP_ConstExpr( PREPROC_VALUE * );
-extern  MACRO_TOKEN *PPNextToken( void );
-extern  MACRO_TOKEN *NextMToken( void );
-extern  void        DeleteNestedMacro( void );
-extern  void        DoMacroExpansion( MACRO_ENTRY *__me );
+extern void         PP_Dependency_List( pp_callback * );
+extern int          PP_Class( char __c );
+extern MACRO_ENTRY  *PP_AddMacro( const char *__name, size_t len );
+extern MACRO_ENTRY  *PP_MacroLookup( const char *__name, size_t len );
+extern MACRO_ENTRY  *PP_ScanMacroLookup( const char *__name );
+extern const char   *PP_ScanToken( const char *__p, ppt_token *__token );
+extern int          PP_ScanNextToken( ppt_token *__token );
+extern const char   *PP_SkipWhiteSpace( const char *__p, bool *__white_space );
+extern const char   *PP_ScanName( const char *__p );
+extern int          PPEvalExpr( const char *__p, const char **__endptr, PREPROC_VALUE *__val );
+extern void         PP_ConstExpr( PREPROC_VALUE * );
+extern MACRO_TOKEN  *PPNextToken( void );
+extern MACRO_TOKEN  *NextMToken( void );
+extern void         DeleteNestedMacro( void );
+extern void         DoMacroExpansion( MACRO_ENTRY *__me );
 
-extern  void        PPMacroInit( unsigned char spec_macros );
-extern  void        PPMacroFini( void );
-
-extern  FILELIST    *PP_File;
-extern  unsigned    PPLineNumber;
-extern  const char  *PPTokenPtr;
-extern  const char  *PPNextTokenPtr;
-extern  MACRO_TOKEN *PPTokenList;
-extern  MACRO_TOKEN *PPCurToken;
-extern  pp_flags    PPFlags;
-extern  char        PPSavedChar;    // saved char at end of token
+extern FILELIST         *PP_File;
+extern unsigned         PPLineNumber;
+extern const char       *PPTokenPtr;
+extern const char       *PPNextTokenPtr;
+extern MACRO_TOKEN      *PPTokenList;
+extern MACRO_TOKEN      *PPCurToken;
+extern pp_flags         PPFlags;
+extern char             PPSavedChar;    // saved char at end of token
+extern unsigned char    PPSpecMacros;

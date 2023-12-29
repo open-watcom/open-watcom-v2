@@ -36,6 +36,7 @@
 
 #define PPENTRY
 
+#define PPSPEC_NONE     0
 #define PPSPEC_AS       1
 #define PPSPEC_C        1
 #define PPSPEC_RC       1
@@ -97,6 +98,8 @@ extern int          PPENTRY PP_Char( void );
 extern void         PPENTRY PP_Define( const char *ptr );
 extern void         PPENTRY PP_Define_1( const char *ptr );
 extern void         PPENTRY PP_MacrosWalk( pp_walk_func fn, void *cookie );
+extern void         PPENTRY PP_MacrosInit( void );
+extern void         PPENTRY PP_MacrosFini( void );
 
 // Application defined functions
 

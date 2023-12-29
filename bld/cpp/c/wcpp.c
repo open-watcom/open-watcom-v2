@@ -440,8 +440,9 @@ int main( int argc, char *argv[] )
         if( out_filename != NULL ) {
             fo = fopen( out_filename, "wt" );
         }
-        for( i = 0; i < nofilenames; ++i ) {
-            PP_IncludePathAdd( PPINCLUDE_SYS, PP_GetEnv( "INCLUDE" ) );
+        PP_IncludePathAdd( PPINCLUDE_SYS, PP_GetEnv( "INCLUDE" ) );
+        i = 0;
+        while( i < nofilenames ) {
             if( PP_FileInit( filenames[i], ppflags ) != 0 ) {
                 fprintf( stderr, "Unable to open '%s'\n", filenames[i] );
                 rc = 1;
@@ -457,7 +458,11 @@ int main( int argc, char *argv[] )
                 fputc( ch, fo );
             }
             PP_FileFini();
-            PP_IncludePathInit( PPINCLUDE_SYS );
+            i++;
+            if( i < nofilenames ) {
+                PP_MacrosFini();
+                PP_MacrosInit();
+            }
         }
         if( fo == stdout ) {
             fflush( fo );

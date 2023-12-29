@@ -80,7 +80,6 @@ static int              NestLevel;
 static int              SkipLevel;
 
 static char             PPPreProcChar;                  // preprocessor line intro
-static unsigned char    PPSpecMacros = 0;
 
 static const char       *PPBufPtr;                      // block buffer pointer
 static char             *PPLineBuf;                     // line buffer
@@ -1403,7 +1402,7 @@ void PPENTRY PP_Init( char c, unsigned char spec_macros )
     PPLineBuf[1] = '\0';
     PPPreProcChar = c;
     PPSpecMacros = spec_macros;
-    PPMacroInit( PPSpecMacros );
+    PP_MacrosInit();
     PP_IncludePathInit( PPINCLUDE_USR );
     PP_IncludePathInit( PPINCLUDE_SYS );
 }
@@ -1413,7 +1412,7 @@ int PPENTRY PP_Fini( void )
 {
     PP_IncludePathFini( PPINCLUDE_SYS );
     PP_IncludePathFini( PPINCLUDE_USR );
-    PPMacroFini();
+    PP_MacrosFini();
     PP_Free( PPLineBuf );
     PPLineBuf = NULL;
     return( PPErrorCount > 0 );

@@ -54,6 +54,8 @@ typedef struct nested_macros {
 extern void DumpMTokens( MACRO_TOKEN *mtok );
 extern void DumpNestedMacros( void );
 
+unsigned char       PPSpecMacros = PPSPEC_NONE;
+
 static NESTED_MACRO *NestedMacros;
 static int          MacroDepth;
 static MACRO_TOKEN  *MacroExpansion( MACRO_ENTRY *, bool );
@@ -958,8 +960,8 @@ static void PP_TimeInit( void )
     FormatDate_tm( PP__DATE__ + 1, tod );
 }
 
-void PPMacroInit( unsigned char spec_macros )
-/*******************************************/
+void PPENTRY PP_MacrosInit( void )
+/********************************/
 {
     int         hash;
 
@@ -968,7 +970,7 @@ void PPMacroInit( unsigned char spec_macros )
     for( hash = 0; hash < HASH_SIZE; hash++ ) {
         PPHashTable[hash] = NULL;
     }
-    if( spec_macros == PPSPEC_C ) {
+    if( PPSpecMacros == PPSPEC_C ) {
         strcpy( PP__DATE__, "\"Dec 31 2005\"" );
         strcpy( PP__TIME__, "\"12:00:00\"" );
         PP_AddMacro( "__LINE__", 8 );
@@ -980,8 +982,8 @@ void PPMacroInit( unsigned char spec_macros )
     }
 }
 
-void PPMacroFini( void )
-/**********************/
+void PPENTRY PP_MacrosFini( void )
+/********************************/
 {
     int         hash;
     MACRO_ENTRY *me;
