@@ -212,14 +212,31 @@ size_t CmdScanOption(           // SCAN AN OPTION
     char const **option )       // - addr( option pointer )
 {
     char const *str_beg;        // - start of string
+    int ch;
 
     *option = str_beg = cmd.curr_ptr;
-    while( !CmdScanSwEnd() ) {
-        cmd.curr_ptr++;
+    if( *cmd.curr_ptr == '"' ) {
+        for( cmd.curr_ptr++; (ch = *(unsigned char *)cmd.curr_ptr) != '\0'; cmd.curr_ptr++ ) {
+            if( ch == '"' ) {
+                cmd.curr_ptr++;
+                break;
+            }
+            // '"\\"' means '\', not '\"'
+            if( ch == '\\' ) {
+                if( cmd.curr_ptr[1] == '\\' ) {
+                    cmd.curr_ptr++;
+                } else if( cmd.curr_ptr[1] == '"' ) {
+                    cmd.curr_ptr++;
+                }
+            }
+        }
+    } else {
+        while( !CmdScanSwEnd() ) {
+            cmd.curr_ptr++;
+        }
     }
     return( cmd.curr_ptr - str_beg );
 }
-
 
 char const *CmdScanUngetChar(   // UNGET THE LAST CMD SCAN CHARACTER
     void )
