@@ -40,6 +40,7 @@
 #include <i86.h>
 #include "rtdata.h"
 #include "rterrno.h"
+#include "seterrno.h"
 #include "owqnx.h"
 
 
@@ -118,8 +119,7 @@ _WCRTLINK int sigaction(
     }
 
     if( (sig < _SIGMIN) || (sig > _SIGMAX) ) {
-        _RWD_errno = EINVAL;
-        return( -1 );
+        return( __set_EINVAL() );
     }
 
     /*

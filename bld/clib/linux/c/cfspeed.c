@@ -35,6 +35,7 @@
 #include <stddef.h>
 #include <termios.h>
 #include "rterrno.h"
+#include "seterrno.h"
 #include "thread.h"
 
 
@@ -71,8 +72,7 @@ static int __valid_speed(speed_t speed)
 _WCRTLINK int cfsetispeed(struct termios *tios, speed_t speed)
 {
     if(tios == NULL || !__valid_speed( speed )) {
-        _RWD_errno = EINVAL;
-        return( -1 );
+        return( __set_EINVAL() );
     }
 
     tios->c_ispeed = speed;
@@ -83,8 +83,7 @@ _WCRTLINK int cfsetispeed(struct termios *tios, speed_t speed)
 _WCRTLINK int cfsetospeed(struct termios *tios, speed_t speed)
 {
     if(tios == NULL || !__valid_speed( speed )) {
-        _RWD_errno = EINVAL;
-        return( -1 );
+        return( __set_EINVAL() );
     }
 
     tios->c_ospeed = speed;

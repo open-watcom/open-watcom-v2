@@ -232,8 +232,7 @@ _WCRTLINK int __F_NAME(utime,_wutime)( CHAR_TYPE const *fname, struct utimbuf co
     _dos_tms    dostms;
 
     if( _get_dos_tms( times, &dostms ) ) {
-        _RWD_errno = EINVAL;
-        return( -1 );
+        return( __set_EINVAL() );
     }
   #ifdef __WATCOM_LFN__
     if( _RWD_uselfn ) {

@@ -32,15 +32,21 @@
 #ifndef PARAM_INCLUDED
 #define PARAM_INCLUDED
 
-#include "scan.h"
-
-extern bool ScanParams( int argc, char *argv[] );
-extern void ScanParamInit( void );
-extern void ScanParamFini( void );
-extern int  ParseEnvVar( const char *env, char **argv, char *buf );
+#include "cmdlnprs.gh"
+#include "cmdlnprs.h"
+#include "cmdscan.h"
 #ifndef NO_REPLACE
-extern char *FindAndReplace( char *stringFromFile, FRStrings *frStrings );
-extern void PrependToString( ScanValue *value, char *stringFromFile );
+#include "scan.h"
+#endif
+
+
+extern void     ScanParamInit( void );
+extern void     ScanParamFini( void );
+extern int      ProcOptions( OPT_STORAGE *data, const char *str );
+extern void     SetOptions( OPT_STORAGE *data, const char *infile, const char *outfile );
+#ifndef NO_REPLACE
+extern char     *FindAndReplace( char *stringFromFile, FRStrings *frStrings );
+extern void     PrependToString( ScanValue *value, char *stringFromFile );
 #endif
 
 #endif

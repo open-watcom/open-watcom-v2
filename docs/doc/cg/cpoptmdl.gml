@@ -19,7 +19,16 @@
 :cmt. .*
 :cmt. :OPTLIST.
 .*
-.if &e'&$SWmf ne 0 .do begin
+.if &e'&$SWmfsmclh ne 0 .do begin
+:OPT refid='SWmfsmclh' name='m{f|s|m|c|l|h}'.
+Memory models are described in the
+chapters entitled :HDREF refid='mdl86'. and :HDREF refid='mdl386'..
+Other architectural aspects of the Intel 86 family such as pointer
+size are discussed in the sections entitled :HDREF refid='cal86s'. in
+the chapter entitled :HDREF refid='cal86' page=no.
+or :HDREF refid='cal386s'. in the
+chapter entitled :HDREF refid='cal386' page=no..
+.np
 :OPT refid='SWmf' name='mf'.
 .ix 'options' 'mf'
 (32-bit only)
@@ -178,12 +187,4 @@ The following macros will be predefined.
 .illust end
 .*
 :cmt. :eOPTLIST.
-.np
-Memory models are described in the
-chapters entitled :HDREF refid='mdl86'. and :HDREF refid='mdl386'..
-Other architectural aspects of the Intel 86 family such as pointer
-size are discussed in the sections entitled :HDREF refid='cal86s'. in
-the chapter entitled :HDREF refid='cal86' page=no.
-or :HDREF refid='cal386s'. in the
-chapter entitled :HDREF refid='cal386' page=no..
 .do end

@@ -1,3 +1,4 @@
+:include file='cpoptmac'.
 .chap *refid=cpopts &product Compiler Options
 .*
 .np
@@ -58,20 +59,6 @@ the &cmppname compiler for DEC Alpha AXP platforms.
 .endnote
 .do end
 .*
-.if &e'&dohelp ne 0 .do begin
-.*
-.section Compiler Options - Indexed
-.*
-.np
-.ix 'compiling options'
-In this section, we present an index of all compiler options.
-.* .begnote $compact $setptnt 10
-.* .notehd1 Option:
-.* .notehd2 See description:
-.im CPOPTLST
-.* .endnote
-.do end
-.*
 .section Compiler Options - Summarized Alphabetically
 .*
 .np
@@ -102,78 +89,20 @@ options organized into categories.
 .ix 'options' 'target specific'
 .notehd1 Option:
 .notehd2 Description:
-.if &e'&$SWbc ne 0 .do begin
-.note bc
-build target is a console application
-:optref refid='SWbc'.
-.do end
-.if &e'&$SWbd ne 0 .do begin
-.note bd
-build target is a Dynamic Link Library (DLL)
-:optref refid='SWbd'.
-.do end
-.if &e'&$SWbg ne 0 .do begin
-.note bg
-build target is a GUI application
-:optref refid='SWbg'.
-.do end
-.if &e'&$SWbm ne 0 .do begin
-.note bm
-build target is a multi-threaded environment
-:optref refid='SWbm'.
-.do end
-.if &e'&$SWbr ne 0 .do begin
-.note br
-build target uses DLL version of C/C++ run-time library
-:optref refid='SWbr'.
-.do end
-.if &e'&$SWbt ne 0 .do begin
-.note bt[=<os>]
-build target for operating system <os>
-:optref refid='SWbt'.
-.do end
-.if &e'&$SWbw ne 0 .do begin
-.note bw
-build target uses default windowing support
-:optref refid='SWbw'.
-.do end
-.if &e'&$SWof ne 0 .do begin
-.note of
-generate traceable stack frames as needed
-:optref refid='SWof'.
-.do end
-.if &e'&$SWofpls ne 0 .do begin
-.note of+
-always generate traceable stack frames
-:optref refid='SWofpls'.
-.do end
-.if &e'&$SWsg ne 0 .do begin
-.note sg
-generate calls to grow the stack
-:optref refid='SWsg'.
-.do end
-.if &e'&$SWst ne 0 .do begin
-.note st
-touch stack through SS first
-:optref refid='SWst'.
-.do end
-.if &e'&$SWzw ne 0 .do begin
-.note zw
-generate code for Microsoft Windows
-:optref refid='SWzw'.
-.do end
-.if &e'&$SWzW86 ne 0 .do begin
-.note zW
-&286only.
-Microsoft Windows optimized prologue/epilogue code sequences
-:optref refid='SWzW86'.
-.do end
-.if &e'&$SWzWs ne 0 .do begin
-.note zWs
-&286only.
-Microsoft Windows smart callback sequences
-:optref refid='SWzWs'.
-.do end
+.optdsp bc
+.optdsp bd
+.optdsp bg
+.optdsp bm
+.optdsp br
+.optdsp bt
+.optdsp bw
+.optdsp of
+.optdsp ofpls
+.optdsp sg
+.optdsp st
+.optdsp zw
+.optdsp zW
+.optdsp zWs
 .endnote
 .*
 .section Debugging/Profiling
@@ -182,100 +111,23 @@ Microsoft Windows smart callback sequences
 .ix 'options' 'debugging/profiling'
 .notehd1 Option:
 .notehd2 Description:
-.if &e'&$SWd0 ne 0 .do begin
-.note d0
-(C++ only)
-no debugging information
-:optref refid='SWd0'.
-.do end
-.if &e'&$SWd1 ne 0 .do begin
-.note d1
-line number debugging information
-:optref refid='SWd1'.
-.do end
-.if &e'&$SWd1pls ne 0 .do begin
-.note d1+
-(C only)
-line number debugging information plus typing information for global
-symbols and local structs and arrays
-:optref refid='SWd1pls'.
-.do end
-.if &e'&$SWd2 ne 0 .do begin
-.note d2
-full symbolic debugging information
-:optref refid='SWd2'.
-.do end
-.if &e'&$SWd2i ne 0 .do begin
-.note d2i
-(C++ only)
-d2 and debug inlines; emit inlines as external out-of-line functions
-:optref refid='SWd2i'.
-.do end
-.if &e'&$SWd2s ne 0 .do begin
-.note d2s
-(C++ only)
-d2 and debug inlines; emit inlines as static out-of-line functions
-:optref refid='SWd2s'.
-.do end
-.if &e'&$SWd2t ne 0 .do begin
-.note d2t
-(C++ only)
-d2 but without type names
-:optref refid='SWd2t'.
-.do end
-.if &e'&$SWd3 ne 0 .do begin
-.note d3
-full symbolic debugging with unreferenced type names
-:optref refid='SWd3'.
-.do end
-.if &e'&$SWd3i ne 0 .do begin
-.note d3i
-(C++ only)
-d3 plus debug inlines; emit inlines as external out-of-line functions
-:optref refid='SWd3i'.
-.do end
-.if &e'&$SWd3s ne 0 .do begin
-.note d3s
-(C++ only)
-d3 plus debug inlines; emit inlines as static out-of-line functions
-:optref refid='SWd3s'.
-.do end
-.if &e'&$SWee ne 0 .do begin
-.note ee
-call epilogue hook routine
-:optref refid='SWee'.
-.do end
-.if &e'&$SWen ne 0 .do begin
-.note en
-emit routine names in the code segment
-:optref refid='SWen'.
-.do end
-.if &e'&$SWep ne 0 .do begin
-.note ep[<number>]
-call prologue hook routine with number stack bytes available
-:optref refid='SWep'.
-.do end
-.if &e'&$SWet ne 0 .do begin
-.note et
-Pentium profiling
-:optref refid='SWet'.
-.do end
-.if &e'&$SWhwdc ne 0 .do begin
-.note h{w,d,c}
-set debug output format (&company, DWARF, Codeview)
-:optref refid='SWhwdc'
-.do end
-.if &e'&$SWs ne 0 .do begin
-.note s
-remove stack overflow checks
-:optref refid='SWs'.
-.do end
-.if &e'&$SWsi ne 0 .do begin
-.note si
-&AXPonly.
-initialize stack frame storage with pattern
-:optref refid='SWsi'.
-.do end
+.optdsp d0
+.optdsp d1
+.optdsp d1pls
+.optdsp d2
+.optdsp d2i
+.optdsp d2s
+.optdsp d2t
+.optdsp d3
+.optdsp d3i
+.optdsp d3s
+.optdsp ee
+.optdsp en
+.optdsp ep
+.optdsp et
+.optdsp hwdc
+.optdsp s
+.optdsp si
 .endnote
 .*
 .section Preprocessor
@@ -284,47 +136,12 @@ initialize stack frame storage with pattern
 .ix 'options' 'preprocessor'
 .notehd1 Option:
 .notehd2 Description:
-.if &e'&$SWd ne 0 .do begin
-.note d<name>[=text]
-precompilation #define name [text]
-:optref refid='SWd'.
-.do end
-.if &e'&$SWdpls ne 0 .do begin
-.note d+
-allow extended "d" macro definitions on command line
-:optref refid='SWdpls'.
-.do end
-.if &e'&$SWfo ne 0 .do begin
-.note fo[=<file_name>]
-set preprocessor output file name
-:optref refid='SWfo'.
-.do end
-.if &e'&$SWpil ne 0 .do begin
-.note pil
-preprocessor ignores #line directives
-:optref refid='SWpil'.
-.do end
-.if &e'&$SWp ne 0 .do begin
-.note p{e,l,c,w=<num>}
-preprocess file
-.begnote $compact
-.note c
-preserve comments
-.note e
-encrypt identifiers (C++ only)
-.note l
-insert #line directives
-.note w=<num>
-wrap output lines at <num> columns. Zero means no wrap.
-.endnote
-.np
-:optref refid='SWp'.
-.do end
-.if &e'&$SWu ne 0 .do begin
-.note u<name>
-undefine macro name
-:optref refid='SWu'.
-.do end
+.optdsp d
+.optdsp dpls
+.optdsp fo
+.optdsp pil
+.optdsp p
+.optdsp u
 .endnote
 .*
 .section Diagnostics
@@ -333,94 +150,22 @@ undefine macro name
 .ix 'options' 'diagnostics'
 .notehd1 Option:
 .notehd2 Description:
-.if &e'&$SWe ne 0 .do begin
-.note e<number>
-set error limit number
-:optref refid='SWe'.
-.do end
-.if &e'&$SWef ne 0 .do begin
-.note ef
-use full path names in error messages
-:optref refid='SWef'.
-.do end
-.if &e'&$SWeq ne 0 .do begin
-.note eq
-do not display error messages (they are still written to a file)
-:optref refid='SWeq'.
-.do end
-.if &e'&$SWer ne 0 .do begin
-.note er
-(C++ only)
-do not recover from undefined symbol errors
-:optref refid='SWer'.
-.do end
-.if &e'&$SWew ne 0 .do begin
-.note ew
-(C++ only)
-alternate error message formatting
-:optref refid='SWew'.
-.do end
-.if &e'&$SWq ne 0 .do begin
-.note q
-operate quietly
-:optref refid='SWq'.
-.do end
-.if &e'&$SWt ne 0 .do begin
-.note t=<num>
-set tab stop multiplier
-:optref refid='SWt'.
-.do end
-.if &e'&$SWw ne 0 .do begin
-.note w<number>
-set warning level number
-:optref refid='SWw'.
-.do end
-.if &e'&$SWwcd ne 0 .do begin
-.note wcd=<num>
-warning control: disable warning message <num>
-:optref refid='SWwcd'.
-.do end
-.if &e'&$SWwce ne 0 .do begin
-.note wce=<num>
-warning control: enable warning message <num>
-:optref refid='SWwce'.
-.do end
-.if &e'&$SWwe ne 0 .do begin
-.note we
-treat all warnings as errors
-:optref refid='SWwe'.
-.do end
-.if &e'&$SWwx ne 0 .do begin
-.note wx
-set warning level to maximum setting
-:optref refid='SWwx'.
-.do end
-.if &e'&$SWza ne 0 .do begin
-.note z{a,e}
-disable/enable language extensions
-:optref refid='SWza'.
-:optref refid='SWze'.
-.do end
-.if &e'&$SWzastd ne 0 .do begin
-.note zastd=<standard>
-use specified ISO/ANSI language standard
-:optref refid='SWzastd'.
-.do end
-.if &e'&$SWza99 ne 0 .do begin
-.note za99
-use ISO/ANSI C99 language standard; deprecated, use zastd=c99
-:optref refid='SWzastd'.
-.do end
-.if &e'&$SWzq ne 0 .do begin
-.note zq
-operate quietly
-:optref refid='SWzq'.
-.do end
-.if &e'&$SWzs ne 0 .do begin
-.note zs
-syntax check only
-:optref refid='SWzs'.
-.do end
+.optdsp e
+.optdsp ef
+.optdsp eq
+.optdsp er
+.optdsp ew
+.optdsp q
+.optdsp t
+.optdsp w
+.optdsp wcd
+.optdsp wce
+.optdsp we
+.optdsp wx
+.optdsp za
+.optdsp ze
+.optdsp zq
+.optdsp zs
 .endnote
 .*
 .section Source/Output Control
@@ -429,301 +174,70 @@ syntax check only
 .ix 'options' 'source/output control'
 .notehd1 Option:
 .notehd2 Description:
-.if &e'&$SWad ne 0 .do begin
-.note ad[=<file_name>]
-generate make style auto-dependency file
-:optref refid='SWad'.
-.do end
-.if &e'&$SWadbs ne 0 .do begin
-.note adbs
-force path separators generated in make style auto-dependency file to
-backslashes
-:optref refid='SWadbs'.
-.do end
-.if &e'&$SWadd ne 0 .do begin
-.note add[=<file_name>]
-set source name (the first dependency) for make style auto-dependency file
-:optref refid='SWadd'.
-.do end
-.if &e'&$SWadhp ne 0 .do begin
-.note adhp[=<path prefix>]
-set default path for header dependencies which result in filename only
-:optref refid='SWadhp'.
-.do end
-.if &e'&$SWadfs ne 0 .do begin
-.note adfs
-force path separators generated in make style auto-dependency file to
-forward slashes
-:optref refid='SWadfs'.
-.do end
-.if &e'&$SWadt ne 0 .do begin
-.note adt[=<target_name>]
-specify target name generated in make style auto-dependency file
-:optref refid='SWadt'.
-.do end
-.if &e'&$SWdb ne 0 .do begin
-.note db
-generate browsing information
-:optref refid='SWdb'.
-.do end
-.if &e'&$SWez ne 0 .do begin
-.note ez
-generate PharLap EZ-OMF object files
-:optref refid='SWez'.
-.do end
-.if &e'&$SWfc ne 0 .do begin
-.note fc=<file_name>
-(C++ only)
-specify file of command lines to be batch processed
-:optref refid='SWfc'.
-.do end
-.if &e'&$SWfh ne 0 .do begin
-.note fh[q][=<file_name>]
-use precompiled headers
-:optref refid='SWfh'.
-.do end
-.if &e'&$SWfhd ne 0 .do begin
-.note fhd
-store debug info for pre-compiled header once (DWARF only)
-:optref refid='SWfhd'.
-.do end
-.if &e'&$SWfhr ne 0 .do begin
-.note fhr
-(C++ only)
-force compiler to read pre-compiled header (will never write)
-:optref refid='SWfhr'.
-.do end
-.if &e'&$SWfhw ne 0 .do begin
-.note fhw
-(C++ only)
-force compiler to write pre-compiled header (will never read)
-:optref refid='SWfhw'.
-.do end
-.if &e'&$SWfhwe ne 0 .do begin
-.note fhwe
-(C++ only)
-don't include pre-compiled header warnings when "we" is used
-:optref refid='SWfhwe'.
-.do end
-.if &e'&$SWfi ne 0 .do begin
-.note fi=<file_name>
-force file_name to be included
-:optref refid='SWfi'.
-.do end
-.if &e'&$SWfo ne 0 .do begin
-.note fo[=<file_name>]
-set object or preprocessor output file name
-:optref refid='SWfo2'.
-.do end
-.if &e'&$SWfr ne 0 .do begin
-.note fr[=<file_name>]
-set error file name
-:optref refid='SWfr'.
-.do end
-.if &e'&$SWft ne 0 .do begin
-.note ft
-try truncated (8.3) header file specification
-:optref refid='SWft'.
-.do end
-.if &e'&$SWfti ne 0 .do begin
-.note fti
-(C only)
-track include file opens
-:optref refid='SWfti'.
-.do end
-.if &e'&$SWfx ne 0 .do begin
-.note fx
-do not try truncated (8.3) header file specification
-:optref refid='SWfx'.
-.do end
-.if &e'&$SWfzh ne 0 .do begin
-.note fzh
-(C++ only)
-do not automatically append extensions for include files
-:optref refid='SWfzh'.
-.do end
-.if &e'&$SWfzs ne 0 .do begin
-.note fzs
-(C++ only)
-do not automatically append extensions for source files
-:optref refid='SWfzs'.
-.do end
-.if &e'&$SWi ne 0 .do begin
-.note i=<directory>
-another include directory
-:optref refid='SWi'.
-.do end
-.if &e'&$SWk ne 0 .do begin
-.note k
-continue processing files (ignore errors)
-:optref refid='SWk'.
-.do end
-.if &e'&$SWv ne 0 .do begin
-.note v
-output function declarations to .def
-:optref refid='SWv'.
-.do end
-.if &e'&$SWx ne 0 .do begin
-.note x
-ignore environment variables when searching for include files
-:optref refid='SWx'.
-.do end
-.if &e'&$SWxx ne 0 .do begin
-.note xx
-ignore default directories for file search (.,../h,../c,...)
-:optref refid='SWxx'.
-.do end
-.if &e'&$SWzam ne 0 .do begin
-.note zam
-disable all predefined old extension macros (keyword macros, non-ISO names)
-:optref refid='SWzam'.
-.do end
-.if &e'&$SWzat ne 0 .do begin
-.note zat
-(C++ only) disable alternative tokens
-:optref refid='SWzat'.
-.do end
-.if &e'&$SWzf ne 0 .do begin
-.note zf
-(C++ only) let scope of for loop initialization extend beyond loop
-:optref refid='SWzf'.
-.do end
-.if &e'&$SWzg ne 0 .do begin
-.note zg
-generate function prototypes using base types
-:optref refid='SWzg'.
-.do end
-.if &e'&$SWzl ne 0 .do begin
-.note zl
-remove default library information
-:optref refid='SWzl'.
-.do end
-.if &e'&$SWzld ne 0 .do begin
-.note zld
-remove file dependency information
-:optref refid='SWzld'.
-.do end
-.if &e'&$SWzlf ne 0 .do begin
-.note zlf
-add default library information to object files
-:optref refid='SWzlf'.
-.do end
-.if &e'&$SWzls ne 0 .do begin
-.note zls
-remove automatically generated symbols references
-:optref refid='SWzls'.
-.do end
+.optdsp ad
+.optdsp adbs
+.optdsp add
+.optdsp adhp
+.optdsp adfs
+.optdsp adt
+.optdsp db
+.optdsp ez
+.optdsp fc
+.optdsp fh
+.optdsp fhd
+.optdsp fhr
+.optdsp fhw
+.optdsp fhwe
+.optdsp fi
+.optdsp fo2
+.optdsp fr
+.optdsp ft
+.optdsp fti
+.optdsp fx
+.optdsp fzh
+.optdsp fzs
+.optdsp i
+.optdsp k
+.optdsp v
+.optdsp x
+.optdsp xx
+.optdsp zam
+.optdsp zat
+.optdsp zf
+.optdsp zg
+.optdsp zl
+.optdsp zld
+.optdsp zlf
+.optdsp zls
 .endnote
+.*
 .section Code Generation
 .*
 .begnote $compact $setptnt 10
 .ix 'options' 'code generation'
 .notehd1 Option:
 .notehd2 Description:
-.if &e'&$SWas ne 0 .do begin
-.note as
-&AXPonly.
-assume short integers are aligned
-:optref refid='SWas'.
-.do end
-.if &e'&$SWecc ne 0 .do begin
-.note ecc
-set default calling convention to __cdecl
-:optref refid='SWecc'.
-.do end
-.if &e'&$SWecd ne 0 .do begin
-.note ecd
-set default calling convention to __stdcall
-:optref refid='SWecd'.
-.do end
-.if &e'&$SWecf ne 0 .do begin
-.note ecf
-set default calling convention to __fastcall
-:optref refid='SWecf'.
-.do end
-:CMT. .if &e'&$SWeco ne 0 .do begin
-:CMT. .note eco
-:CMT. set default calling convention to _Optlink
-:CMT. :optref refid='SWeco'.
-:CMT. .do end
-.if &e'&$SWecp ne 0 .do begin
-.note ecp
-set default calling convention to __pascal
-:optref refid='SWecp'.
-.do end
-.if &e'&$SWecr ne 0 .do begin
-.note ecr
-set default calling convention to __fortran
-:optref refid='SWecr'.
-.do end
-.if &e'&$SWecs ne 0 .do begin
-.note ecs
-set default calling convention to __syscall
-:optref refid='SWecs'.
-.do end
-.if &e'&$SWecw ne 0 .do begin
-.note ecw
-set default calling convention to __watcall (default)
-:optref refid='SWecw'.
-.do end
-.if &e'&$SWei ne 0 .do begin
-.note ei
-force enum base type to use at least an int
-:optref refid='SWei'.
-.do end
-.if &e'&$SWem ne 0 .do begin
-.note em
-force enum base type to use minimum
-:optref refid='SWem'.
-.do end
-.if &e'&$SWj ne 0 .do begin
-.note j
-change char default from unsigned to signed
-:optref refid='SWj'.
-.do end
-.if &e'&$SWri ne 0 .do begin
-.note ri
-return chars and shorts as ints
-:optref refid='SWri'.
-.do end
-.if &e'&$SWxr ne 0 .do begin
-.note xr
-(C++ only)
-enable RTTI
-:optref refid='SWxr'.
-.do end
-.if &e'&$SWzc ne 0 .do begin
-.note zc
-place literal strings in the code segment
-:optref refid='SWzc'.
-.do end
-.if &e'&$SWzp ne 0 .do begin
-.note zp{1,2,4,8,16}
-pack structure members
-:optref refid='SWzp'.
-.do end
-.if &e'&$SWzps ne 0 .do begin
-.note zps
-&AXPonly.
-always align structs on qword boundaries
-:optref refid='SWzps'.
-.do end
-.if &e'&$SWzpw ne 0 .do begin
-.note zpw
-output warning when padding is added in a struct/class
-:optref refid='SWzpw'.
-.do end
-.if &e'&$SWzt ne 0 .do begin
-.note zt<number>
-set data threshold
-:optref refid='SWzt'.
-.do end
-.if &e'&$SWzv ne 0 .do begin
-.note zv
-(C++ only)
-enable virtual function removal optimization
-:optref refid='SWzv'.
-.do end
+.optdsp as
+.optdsp ecc
+.optdsp ecd
+.optdsp ecf
+:CMT. .optdsp eco
+.optdsp ecp
+.optdsp ecr
+.optdsp ecs
+.optdsp ecw
+.optdsp ei
+.optdsp em
+.optdsp j
+.optdsp ri
+.optdsp xr
+.optdsp zc
+.optdsp zp
+.optnote zp1 zp2 zp4 zp8 zp16
+.optdsp zps
+.optdsp zpw
+.optdsp zt
+.optdsp zv
 .endnote
 .*
 .section 80x86 Floating Point
@@ -732,46 +246,16 @@ enable virtual function removal optimization
 .ix 'options' 'floating point'
 .notehd1 Option:
 .notehd2 Description:
-.if &e'&$SWfpc ne 0 .do begin
-.note fpc
-calls to floating-point library
-:optref refid='SWfpc'.
-.do end
-.if &e'&$SWfpi ne 0 .do begin
-.note fpi
-in-line 80x87 instructions with emulation
-:optref refid='SWfpi'.
-.do end
-.if &e'&$SWfpi87 ne 0 .do begin
-.note fpi87
-in-line 80x87 instructions
-:optref refid='SWfpi87'.
-.do end
-.if &e'&$SWfp2 ne 0 .do begin
-.note fp2
-generate floating-point for 80x87
-:optref refid='SWfp2'.
-.do end
-.if &e'&$SWfp3 ne 0 .do begin
-.note fp3
-generate floating-point for 387
-:optref refid='SWfp3'.
-.do end
-.if &e'&$SWfp5 ne 0 .do begin
-.note fp5
-optimize floating-point for Pentium
-:optref refid='SWfp5'.
-.do end
-.if &e'&$SWfp6 ne 0 .do begin
-.note fp6
-optimize floating-point for Pentium Pro
-:optref refid='SWfp6'.
-.do end
-.if &e'&$SWfpd ne 0 .do begin
-.note fpd
-enable generation of Pentium FDIV bug check code
-:optref refid='SWfpd'.
-.do end
+.optdsp fpc
+.optdsp fpi
+.optdsp fpix
+.optdsp fpi87
+.optdsp fpi87x
+.optdsp fp2
+.optdsp fp3
+.optdsp fp5
+.optdsp fp6
+.optdsp fpd
 .if &e'&$SW7 ne 0 .do begin
 .note 7
 in-line 80x87 instructions
@@ -785,42 +269,13 @@ in-line 80x87 instructions
 .ix 'options' 'segments/modules'
 .notehd1 Option:
 .notehd2 Description:
-.if &e'&$SWg ne 0 .do begin
-.note g=<codegroup>
-set code group name
-:optref refid='SWg'.
-.do end
-.if &e'&$SWnc ne 0 .do begin
-.note nc=<name>
-set code class name
-:optref refid='SWnc'.
-.do end
-.if &e'&$SWnd ne 0 .do begin
-.note nd=<name>
-set data segment name
-:optref refid='SWnd'.
-.do end
-.if &e'&$SWnm ne 0 .do begin
-.note nm=<name>
-set module name
-:optref refid='SWnm'.
-.do end
-.if &e'&$SWnt ne 0 .do begin
-.note nt=<name>
-set name of text segment
-:optref refid='SWnt'.
-.do end
-.if &e'&$SWzm ne 0 .do begin
-.note zm
-place each function in separate segment (near functions not allowed)
-:optref refid='SWzm'.
-.do end
-.if &e'&$SWzmf ne 0 .do begin
-.note zmf
-(C++ only)
-place each function in separate segment (near functions allowed)
-:optref refid='SWzmf'.
-.do end
+.optdsp g
+.optdsp nc
+.optdsp nd
+.optdsp nm
+.optdsp nt
+.optdsp zm
+.optdsp zmf
 .endnote
 .*
 .section 80x86 Run-time Conventions
@@ -829,139 +284,29 @@ place each function in separate segment (near functions allowed)
 .ix 'options' 'run-time conventions'
 .notehd1 Option:
 .notehd2 Description:
-.if &e'&$SW0 ne 0 .do begin
-.note 0
-&286only.
-8088 and 8086 instructions
-:optref refid='SW0'.
-.do end
-.if &e'&$SW1 ne 0 .do begin
-.note 1
-&286only.
-188 and 186 instructions
-:optref refid='SW1'.
-.do end
-.if &e'&$SW2 ne 0 .do begin
-.note 2
-&286only.
-286 instructions
-:optref refid='SW2'.
-.do end
-.if &e'&$SW3 ne 0 .do begin
-.note 3
-&286only.
-386 instructions
-:optref refid='SW3'.
-.do end
-.if &e'&$SW4 ne 0 .do begin
-.note 4
-&286only.
-486 instructions
-:optref refid='SW4'.
-.do end
-.if &e'&$SW5 ne 0 .do begin
-.note 5
-&286only.
-Pentium instructions
-:optref refid='SW5'.
-.do end
-.if &e'&$SW6 ne 0 .do begin
-.note 6
-&286only.
-Pentium Pro instructions
-:optref refid='SW6'.
-.do end
-.if &e'&$SW3RS ne 0 .do begin
-.note 3r
-&386only.
-386 register calling conventions
-:optref refid='SW3RS'.
-.note 3s
-&386only.
-386 stack calling conventions
-:optref refid='SW3RS'.
-.do end
-.if &e'&$SW4RS ne 0 .do begin
-.note 4r
-&386only.
-486 register calling conventions
-:optref refid='SW4RS'.
-.note 4s
-&386only.
-486 stack calling conventions
-:optref refid='SW4RS'.
-.do end
-.if &e'&$SW5RS ne 0 .do begin
-.note 5r
-&386only.
-Pentium register calling conventions
-:optref refid='SW5RS'.
-.note 5s
-&386only.
-Pentium stack calling conventions
-:optref refid='SW5RS'.
-.do end
-.if &e'&$SW6RS ne 0 .do begin
-.note 6r
-&386only.
-Pentium Pro register calling conventions
-:optref refid='SW6RS'.
-.note 6s
-&386only.
-Pentium Pro stack calling conventions
-:optref refid='SW6RS'.
-.do end
-.if &e'&$SWmf ne 0 .do begin
-.note m{f,s,m,c,l,h}
-memory model (Flat,Small,Medium,Compact,Large,Huge)
-:optref refid='SWmf'.
-.do end
-.if &e'&$SWzdfp ne 0 .do begin
-.note zdf
-DS floats i.e. not fixed to DGROUP
-:optref refid='SWzdfp'.
-.do end
-.if &e'&$SWzdfp ne 0 .do begin
-.note zdp
-DS is pegged to DGROUP
-:optref refid='SWzdfp'.
-.do end
-.if &e'&$SWzdl ne 0 .do begin
-.note zdl
-Load DS directly from DGROUP
-:optref refid='SWzdl'.
-.do end
-.if &e'&$SWzffp ne 0 .do begin
-.note zff
-FS floats i.e. not fixed to a segment
-:optref refid='SWzffp'.
-.note zfp
-FS is pegged to a segment
-:optref refid='SWzffp'.
-.do end
-.if &e'&$SWzfp ne 0 .do begin
-.note zfp
-Generate FWAIT instructions on 386 and later
-:optref refid='SWzfp'.
-.do end
-.if &e'&$SWzgfp ne 0 .do begin
-.note zgf
-GS floats i.e. not fixed to a segment
-:optref refid='SWzgfp'.
-.note zgp
-GS is pegged to a segment
-:optref refid='SWzgfp'.
-.do end
-.if &e'&$SWzri ne 0 .do begin
-.note zri
-Inline floating point rounding code
-:optref refid='SWzri'.
-.do end
-.if &e'&$SWzro ne 0 .do begin
-.note zro
-Omit floating point rounding code
-:optref refid='SWzro'.
-.do end
+.optdsp 0
+.optdsp 1
+.optdsp 2
+.optdsp 3
+.optdsp 4
+.optdsp 5
+.optdsp 6
+.optdsp 3rs
+.optdsp 4rs
+.optdsp 5rs
+.optdsp 6rs
+.optdsp mfsmclh
+(default is "ms" for 16-bit and Netware, "mf" for 32-bit)
+.optdsp zdfp
+.optnote zdf zdp
+.optdsp zdl
+.optdsp zffp
+.optnote zff zfp
+.optdsp zfw
+.optdsp zgfp
+.optnote zgf zgp
+.optdsp zri
+.optdsp zro
 .if &e'&$SWzu ne 0 .do begin
 .note zu
 SS != DGROUP
@@ -1126,8 +471,6 @@ enable exception handling (direct calls for destruction)
 enable exception handling (table-driven destructors)
 :optref refid='SWxss'.
 .do end
-.*
-.*
 .endnote
 .*
 .section Double-Byte/Unicode Characters
@@ -1175,22 +518,9 @@ allow alloca() or _alloca() in a parameter list
 .ix 'options' 'compatibility with older versions'
 .notehd1 Option:
 .notehd2 Description:
-.if &e'&$SWr ne 0 .do begin
-.note r
-save/restore segment registers across calls
-:optref refid='SWr'.
-.do end
-.if &e'&$SWfpr ne 0 .do begin
-.note fpr
-generate backward compatible 80x87 code
-:optref refid='SWfpr'.
-.do end
-.if &e'&$SWzz ne 0 .do begin
-.note zz
-generate backward compatible __stdcall conventions by removing the
-"@size" from __stdcall function names (10.0 compatible)
-:optref refid='SWzz'.
-.do end
+.optdsp r
+.optdsp fpr
+.optdsp zz
 .endnote
 .*
 .helppref

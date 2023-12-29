@@ -37,6 +37,7 @@
 #include <stdio.h>
 #include <stddef.h>
 #include <time.h>
+#include "seterrno.h"
 #include "linuxsys.h"
 
 
@@ -57,8 +58,7 @@ _WCRTLINK int timer_create( clockid_t __clk, struct sigevent *__sevp, timer_t *_
     timer_t id;
 
     if( __tmr == NULL ) {
-        _RWD_errno = EINVAL;
-        return( -1 );
+        return( __set_EINVAL() );
     }
 
     memset( &ksev, 0, sizeof( struct ksigevent ) );

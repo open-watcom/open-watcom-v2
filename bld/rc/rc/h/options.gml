@@ -145,13 +145,15 @@
 :jusage.
 
 :option. ap
-:target. unused
+:target. any
+:internal.
 :usage.  prepend string
 :jusage.
 
 :option. bt
 :target. any
-:id. . <target> [windows|nt|os2]
+:special. scanTarget <target> [windows|nt|os2]
+:number.
 :usage.  set the build <target> [windows|nt|os2]
 :jusage.
 
@@ -185,7 +187,9 @@
 :jusage.
 
 :option. g
-:target. unused
+:target. any
+:internal.
+:special. scanSearchReplace
 :usage.  find/replace string
 :jusage.
 

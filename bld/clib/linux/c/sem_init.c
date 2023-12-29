@@ -36,6 +36,7 @@
 #include "rtinit.h"
 #include "exitwmsg.h"
 #include "rterrno.h"
+#include "seterrno.h"
 #include "thread.h"
 
 
@@ -72,8 +73,7 @@ _WCRTLINK int sem_init( sem_t *sem, int pshared, unsigned int value )
         return( -1 );
     }
     if( value > SEM_VALUE_MAX ) {
-        _RWD_errno = EINVAL;
-        return( -1 );
+        return( __set_EINVAL() );
     }
 
     // Debugging...

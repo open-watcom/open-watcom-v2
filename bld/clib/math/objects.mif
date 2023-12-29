@@ -15,3 +15,5 @@
 !inject rand.obj        d16 d32     nt  nta ntp ntm nvc nvl o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
 
 !include ../../../../objlist.mif
+
+rand_postopts = -od
