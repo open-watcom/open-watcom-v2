@@ -90,10 +90,13 @@ void SemWINAddSingleLineResource( WResID *name, YYTOKENTYPE type, FullMemFlags *
         RESFREE( filename );
         return;
     }
-    if( CmdLineParms.Win16VerStamp == VERSION_31_STAMP ) {
+    switch( CmdLineParms.Win16VerStamp ) {
+    case VERSION_31_STAMP:
         purity_option = CUR_ICON_PURITY_31;
-    } else {
+        break;
+    default:
         purity_option = CUR_ICON_PURITY_30;
+        break;
     }
 
     if( RcFindSourceFile( filename, full_filename ) == -1 ) {
@@ -558,9 +561,11 @@ static void AddIconResource( WResID *name, ResMemFlags flags, ResMemFlags group_
     if( ret != RS_OK )
         goto READ_DIR_ERROR;
 
-    if( CmdLineParms.Win16VerStamp == VERSION_20_STAMP ) {
+    switch( CmdLineParms.Win16VerStamp ) {
+    case VERSION_10_STAMP:
+    case VERSION_20_STAMP:
+      {
         FullIconDirEntry *entry;
-
         /*
          * More info needed
          */
@@ -620,7 +625,8 @@ static void AddIconResource( WResID *name, ResMemFlags flags, ResMemFlags group_
         }
 
         error = writeTheWindows2xIcon( entry, name, group_flags, &err_code, fp );
-    } else {
+      } break;
+    default:
         ret = copyIcons( &dir, fp, flags, &err_code );
         if( ret != RS_OK )
             goto COPY_ICONS_ERROR;
@@ -629,6 +635,7 @@ static void AddIconResource( WResID *name, ResMemFlags flags, ResMemFlags group_
         if( error ) {
             goto WRITE_DIR_ERROR;
         }
+        break;
     }
 
     FreeIconDir( &dir );
@@ -942,7 +949,10 @@ static void AddCursorResource( WResID *name, ResMemFlags flags, ResMemFlags grou
     if( ret != RS_OK)
         goto READ_DIR_ERROR;
 
-    if( CmdLineParms.Win16VerStamp == VERSION_20_STAMP ) {
+    switch( CmdLineParms.Win16VerStamp ) {
+    case VERSION_10_STAMP:
+    case VERSION_20_STAMP:
+      {
         FullCurDirEntry *entry;
 
         /* More info needed */
@@ -1013,14 +1023,17 @@ static void AddCursorResource( WResID *name, ResMemFlags flags, ResMemFlags grou
         }
 
         error = writeTheWindows2xCursor( entry, name, group_flags, &err_code, fp );
-    } else {
+      } break;
+    default:
         ret = copyCursors( &dir, fp, flags, &err_code );
         if( ret != RS_OK )
             goto COPY_CURSORS_ERROR;
 
         error = writeCurDir( &dir, name, group_flags, &err_code );
-        if( error)
+        if( error ) {
             goto WRITE_DIR_ERROR;
+        }
+        break;
     }
 
     FreeCurDir( &dir );
@@ -1151,7 +1164,10 @@ static void AddBitmapResource( WResID *name, ResMemFlags flags, const char *file
     if( head.Type != BITMAP_MAGIC )
         goto NOT_BITMAP_ERROR;
 
-    if( CmdLineParms.Win16VerStamp == VERSION_20_STAMP ) {
+    switch( CmdLineParms.Win16VerStamp ) {
+    case VERSION_10_STAMP:
+    case VERSION_20_STAMP:
+      {
         BitmapInfoHeader dibhead;
         bool monoinvert = false;
 
@@ -1190,11 +1206,13 @@ static void AddBitmapResource( WResID *name, ResMemFlags flags, const char *file
             goto COPY_BITMAP_ERROR;
 
         ret = writeTheWindows2xBitmap( &dibhead, name, flags, &err_code, fp, monoinvert );
-    }
-    else {
+      } break;
+    default:
         ret = copyBitmap( &head, fp, name, flags, &err_code );
-        if( ret != RS_OK )
+        if( ret != RS_OK ) {
             goto COPY_BITMAP_ERROR;
+        }
+        break;
     }
 
     RcIoCloseInputBin( fp );

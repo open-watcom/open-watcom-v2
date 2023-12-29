@@ -103,6 +103,7 @@ typedef struct RCParams {
 #endif
 } RCParams;
 
+#define VERSION_10_STAMP 0x0100
 #define VERSION_20_STAMP 0x0200
 #define VERSION_30_STAMP 0x0300
 #define VERSION_31_STAMP 0x030a     /* This is what the MS rc uses */
