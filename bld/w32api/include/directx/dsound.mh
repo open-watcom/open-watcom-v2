@@ -1402,16 +1402,28 @@ DECLARE_INTERFACE_( IDirectSoundFullDuplex, IUnknown ) {
 };
 #endif
 
-/* C/C++ object macros */
+/* C/C++ object member lookup macro to reduce copy-pasta and improve maintainability.
+   P has parameters in the function (not counting the "this" pointer), N does not. */
+/* TODO: Eventually move this into a header seen by all DirectX and COM/OLE headers where C-style macros are defined. */
 #if !defined( __cplusplus ) || defined( CINTERFACE )
-    #define IDirectSound_QueryInterface( x, p1, p2 ) \
-        (x)->lpVtbl->QueryInterface( x, p1, p2 )
-    #define IDirectSound_AddRef( x ) \
-        (x)->lpVtbl->AddRef( x )
-    #define IDirectSound_Release( x ) \
-        (x)->lpVtbl->Release( x )
-    #define IDirectSound_CreateSoundBuffer( x, p1, p2, p3 ) \
-        (x)->lpVtbl->CreateSoundBuffer( x, p1, p2, p3 )
+    #define _INTRFMEMBP( x, y, ... )   ( (x)->lpVtbl->y( x, __VA_ARGS__ ) )
+    #define _INTRFMEMBN( x, y )        ( (x)->lpVtbl->y( x ) )
+#else
+    #define _INTRFMEMBP( x, y, ... )   ( (x)->y( __VA_ARGS__ ) )
+    #define _INTRFMEMBN( x, y )        ( (x)->y( ) )
+#endif
+
+/* C/C++ object macros */
+#define IDirectSound_QueryInterface( x, p1, p2 ) \
+    _INTRFMEMBP( x, QueryInterface, p1, p2 )
+#define IDirectSound_AddRef( x ) \
+    _INTRFMEMBN( x, AddRef )
+#define IDirectSound_Release( x ) \
+    _INTRFMEMBN( x, Release )
+#define IDirectSound_CreateSoundBuffer( x, p1, p2, p3 ) \
+    _INTRFMEMBP( x, CreateSoundBuffer, p1, p2, p3 )
+
+#if !defined( __cplusplus ) || defined( CINTERFACE )
     #define IDirectSound_GetCaps( x, p ) \
         (x)->lpVtbl->GetCaps( x, p )
     #define IDirectSound_DuplicateSoundBuffer( x, p1, p2 ) \
@@ -1825,14 +1837,6 @@ DECLARE_INTERFACE_( IDirectSoundFullDuplex, IUnknown ) {
             (x)->lpVtbl->Initialize( x, p1, p2, p3, p4, p5, p6, p7, p8 )
     #endif
 #else
-    #define IDirectSound_QueryInterface( x, p1, p2 ) \
-        (x)->QueryInterface( p1, p2 )
-    #define IDirectSound_AddRef( x ) \
-        (x)->AddRef()
-    #define IDirectSound_Release( x ) \
-        (x)->Release()
-    #define IDirectSound_CreateSoundBuffer( x, p1, p2, p3 ) \
-        (x)->CreateSoundBuffer( p1, p2, p3 )
     #define IDirectSound_GetCaps( x, p ) \
         (x)->GetCaps( p )
     #define IDirectSound_DuplicateSoundBuffer( x, p1, p2 ) \
