@@ -92,10 +92,16 @@ msg(MIN_ALLOC,          "%W allocation of %T less than minimum size" );
 #elif defined( _M_I86LM ) || defined( _M_I86HM )
     msg(PRT_LIST_1,     "   Who      Addr    Size   Call   Contents" );
     msg(PRT_LIST_2,     "========= ========= ==== ======== ===========================================" );
+#elif defined( __SIZEOF_POINTER__ ) && ( __SIZEOF_POINTER__ == 8) && (__SIZEOF_LONG__ == 8 )
+/* Building OW on a 64bit Host with gcc/clang and similar compiler: a long is 64bit width */
+    msg(PRT_LIST_1,     "  Who              Addr             Size     Call             Contents" );
+    msg(PRT_LIST_2,     "================ ================ ======== ================ ===========================" );
 #elif defined( _WIN64 )
+/* Building OW on Win64: a long is only 32bit width */
     msg(PRT_LIST_1,     "  Who              Addr             Size     Call     Contents" );
     msg(PRT_LIST_2,     "================ ================ ======== ======== ===========================" );
 #else
+/* Default: Building OW on a 32bit Host */
     msg(PRT_LIST_1,     "  Who      Addr     Size     Call     Contents" );
     msg(PRT_LIST_2,     "======== ======== ======== ======== ===========================================" );
 #endif
