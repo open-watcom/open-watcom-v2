@@ -1317,6 +1317,11 @@ void FiniPELoadFile( void )
         }
         PE32( pehdr ).heap_commit_size = size;
 
+        /* Heap reserve must be nonzero for the executable to run properly under Windows 95.
+         * A zero reserve will cause a crash when any code calls LocalAlloc(). [Issue #852] */
+        size = 0x00100000; /* Microsoft C++ Win32 compiler default (1MB) (TODO: Linker option to set this?) */
+        PE32( pehdr ).heap_reserve_size = size;
+
         PE32( pehdr ).num_tables = PE_TBL_NUMBER;
         CurrSect = Root;
         SeekLoad( 0 );
