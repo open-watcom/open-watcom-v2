@@ -242,7 +242,7 @@ static int RCMainLine( const char *opts, int argc, char **argv )
             if( opts != NULL ) {
                 ProcOptions( &data, opts );
             }
-            for( i = 1; i < argc; argc-- ) {
+            for( i = 1; i < argc; i++ ) {
                 rc = ProcOptions( &data, argv[i] );
             }
             *infile = '\0';
