@@ -12,6 +12,8 @@ target = $(host_os)
 memory_model_i86 = c
 !endif
 
+additional_clean = *.gh *.grh *.grc
+
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
@@ -128,11 +130,6 @@ exetarg_name_win_i86   = wsamplew
 exetarg_name = $(exetarg_name_$(target)_$(host_cpu))
 !else
 exetarg_name = wsample
-!endif
-
-!ifeq target pls
-exetarg_ext = .exp
-additional_clean_sys = *.exp
 !endif
 
 #

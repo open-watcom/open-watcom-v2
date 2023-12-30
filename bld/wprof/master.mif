@@ -4,6 +4,8 @@ wprof_autodepends = .AUTODEPEND
 
 wprof_trmem = 1
 
+additional_clean = *.grc
+
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif

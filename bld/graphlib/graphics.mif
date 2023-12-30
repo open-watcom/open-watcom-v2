@@ -2,7 +2,7 @@ proj_name = graph
 
 crwatpro_gsp = crwatpro.gsp
 
-additional_clean = $(crwatpro_gsp)
+additional_clean = *.gh $(crwatpro_gsp)
 
 graph_autodepends = .AUTODEPEND
 

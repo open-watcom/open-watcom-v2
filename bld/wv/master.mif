@@ -29,6 +29,11 @@ wv_trmem = 1
 
 wv_dos_extender = dos4g	#causeway
 
+additional_clean = *.gh *.grc
+!ifdef gui_os2pm
+additional_clean += *.dlg
+!endif
+
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
@@ -165,7 +170,7 @@ exetarg_nt_manif_386  = ntmanif.res
 exetarg_nt_manif_x64  = ntmanif.res
 exetarg_qnx_res       = usage.u
 exetarg_name          = $(name)
-exetarg_ext           = .exe
+#exetarg_ext           = .exe
 !include exetarg.mif
 !endif
 
@@ -281,8 +286,6 @@ bitmaps = &
 !endif
 
 !ifdef gui_os2pm
-
-additional_clean = *.dlg
 
 wv_dialogs = &
     dlgayn.dlg &

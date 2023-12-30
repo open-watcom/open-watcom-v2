@@ -25,7 +25,7 @@ edbind = bedbind
 
 error_dat = ../dat/error.dat
 
-additional_clean = *.rex *.gdh *.gch $(bind_compiled) $(error_dat)
+additional_clean = *.gh *.grh *.grc *.rex *.gdh *.gch $(bind_compiled) $(error_dat)
 additional_clean_subdirs = $(bin_subdir)
 
 !include cproj.mif

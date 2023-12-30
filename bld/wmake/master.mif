@@ -18,6 +18,8 @@ wmake_trmem = 1
 #!endif
 #!endif
 
+additional_clean = *.gh *.grc
+
 !include idedlls.mif
 !include cproj.mif
 !include defrule.mif

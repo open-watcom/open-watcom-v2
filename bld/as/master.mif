@@ -6,7 +6,7 @@ was_autodepends = .AUTODEPEND
 
 was_trmem = 1
 
-additional_clean = *.c *.h *.re *.y
+additional_clean = *.c *.h *.re *.y *.gh *.grh *.grc
 
 !include cproj.mif
 !include defrule.mif

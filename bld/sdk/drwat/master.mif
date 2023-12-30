@@ -8,6 +8,8 @@ sys_windowed = 1
 drwatcom_autodepends = .AUTODEPEND
 !endif
 
+additional_clean = *.gh *.grh *.grc
+
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif

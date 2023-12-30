@@ -13,6 +13,8 @@ nmpbind_autodepends = .AUTODEPEND
 
 #memory_model_i86 = s
 
+additional_clean = *.gh
+
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif

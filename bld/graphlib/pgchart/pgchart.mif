@@ -8,7 +8,7 @@ proj_name = pgchart
 
 crwatpro_gsp = crwatpro.gsp
 
-additional_clean = $(crwatpro_gsp)
+additional_clean = *.gh $(crwatpro_gsp)
 
 pgchart_autodepends = .AUTODEPEND
 pgchart_nofpu = 1

@@ -16,6 +16,8 @@ wdpmhelp_autodepends = .AUTODEPEND
 
 wdpmhelp_nocheckstack_dll = 1
 
+additional_clean = *.gh
+
 !include cproj.mif
 !include defrule.mif
 !include dllrule.mif

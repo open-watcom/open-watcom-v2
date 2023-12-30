@@ -8,8 +8,9 @@ browser_trmem = 1
 
 docs_host_dir = $(docs_dir)/$(host_os)
 
+additional_clean = *.grc
 !ifneq nowgml 1
-additional_clean = $(docs_host_dir)/wbrw.gh
+additional_clean += $(docs_host_dir)/wbrw.gh
 !endif
 
 .extensions: .gpp

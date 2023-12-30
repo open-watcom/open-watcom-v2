@@ -6,6 +6,8 @@ proj_name = dwarfw
 dwarfw_autodepends = .AUTODEPEND
 !endif
 
+additional_clean = *.gh
+
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif

@@ -8,6 +8,8 @@ wzoom_autodepends = .AUTODEPEND
 
 sys_windowed = 1
 
+additional_clean = *.gh *.grh *.grc
+
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif

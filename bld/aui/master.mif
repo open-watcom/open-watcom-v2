@@ -6,6 +6,11 @@ aui_autodepends = .AUTODEPEND
 
 suppress_zc = 1
 
+additional_clean = *.grh
+!ifdef gui_os2pm
+additional_clean += *.dlg
+!endif
+
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
@@ -125,8 +130,6 @@ libtarg_objs = &
 # rc and others
 #
 !ifdef gui_os2pm
-
-additional_clean = *.dlg
 
 dlg_opts  = -font=10.Helv
 dlgj_opts =

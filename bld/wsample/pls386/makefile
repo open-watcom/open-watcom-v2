@@ -3,6 +3,8 @@
 host_os  = dos
 host_cpu = 386
 
+exetarg_ext = .exp
+
 target = pls
 
 !include ../master.mif

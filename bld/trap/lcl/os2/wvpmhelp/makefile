@@ -14,6 +14,8 @@ proj_name = wvpmhelp
 wvpmhelp_autodepends = .AUTODEPEND
 !endif
 
+additional_clean = *.gh
+
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif

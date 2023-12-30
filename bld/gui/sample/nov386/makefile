@@ -2,4 +2,6 @@
 host_cpu = 386
 host_os  = nov
 
+exetarg_ext = .nlm
+
 !include ../master.mif

@@ -8,6 +8,8 @@ sys_dll = 1
 
 suppress_bd = 1
 
+additional_clean = *.grc
+
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif

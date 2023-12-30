@@ -9,7 +9,7 @@ wasm_nofpu = 1
 wasm_trmem = 1
 
 # Extra files to delete on clean
-additional_clean = *.gc
+additional_clean = *.gh *.grh *.grc *.gc
 
 !include cproj.mif
 !include defrule.mif

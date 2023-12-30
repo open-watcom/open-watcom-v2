@@ -3,6 +3,8 @@
 host_os  = nov
 host_cpu = 386
 
+exetarg_ext = .nlm
+
 STACK =
 suppress_zc = 1
 

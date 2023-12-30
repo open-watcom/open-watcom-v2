@@ -8,7 +8,7 @@ plusplus_autodepends = .autodepend
 #suppress_zc = 1
 
 # Extra files to delete on clean
-additional_clean = *.int y.out ytab.* *.mbr *.gc
+additional_clean = *.int y.out ytab.* *.mbr *.gh *.grh *.grc *.gc
 
 !include cproj.mif
 !include defrule.mif

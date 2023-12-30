@@ -4,6 +4,8 @@ proj_name = cwc
 
 cwc_autodepends = .AUTODEPEND
 
+additional_clean = *.gh
+
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif

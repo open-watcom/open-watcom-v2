@@ -31,7 +31,7 @@ dlltarg_name = $(bin_subdir)/$(dllname)
 bin_intname  = $(bin_subdir)/$(intname)
 !endif
 
-additional_clean = *.int *.gc
+additional_clean = *.int *.gh *.grh *.gc *.grc
 !ifndef bootstrap
 additional_clean_subdirs = $(bin_subdir)
 !endif

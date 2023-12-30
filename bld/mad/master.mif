@@ -20,6 +20,8 @@ mad_nocheckstack = 1
 sys_dll = 1
 !endif
 
+additional_clean = *.gh *.grc
+
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
@@ -77,7 +79,7 @@ dlltarg_ext = $(ext_lib_shared)
 !endif
 !endif
 !ifdef dlltarg_ext
-additional_clean = *$(dlltarg_ext)
+additional_clean += *$(dlltarg_ext)
 !endif
 
 # explicit rules

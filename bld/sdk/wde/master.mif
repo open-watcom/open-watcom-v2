@@ -12,6 +12,8 @@ sys_windowed = 1
 
 memory_model_i86 = l
 
+additional_clean = *.gh *.grh *.grc
+
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif

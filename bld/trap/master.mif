@@ -56,7 +56,7 @@ suppress_zc = 1
 memory_model_i86 = c
 !endif
 
-additional_clean = $(target)
+additional_clean = $(target) *.gh
 
 additional_clean_qnx = usage.u
 

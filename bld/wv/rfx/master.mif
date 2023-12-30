@@ -8,6 +8,8 @@ proj_name = rfx
 
 rfx_autodepends = .AUTODEPEND
 
+additional_clean = *.gh
+
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif

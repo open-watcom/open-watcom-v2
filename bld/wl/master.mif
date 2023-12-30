@@ -24,6 +24,8 @@ dlltarg_name = wlinkd
 # get rid of the -zc
 suppress_zc = 1
 
+additional_clean = *.grh *.grc
+
 !ifndef bootstrap
 !include idedlls.mif
 !endif

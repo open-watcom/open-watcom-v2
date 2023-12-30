@@ -1,5 +1,7 @@
 tree_depth = 4
 
+additional_clean = *.gh *.grh *.grc specs.owc
+
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif

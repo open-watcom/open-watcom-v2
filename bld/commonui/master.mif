@@ -10,6 +10,8 @@ commonui_autodepends = .autodepend
 
 sys_windowed = 1
 
+additional_clean = *.gh *.grh
+
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
