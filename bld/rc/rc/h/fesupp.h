@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -25,28 +25,27 @@
 *
 *  ========================================================================
 *
-* Description:  command line parameter handling interface routines
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
-#ifndef PARAM_INCLUDED
-#define PARAM_INCLUDED
 
-#include "cmdlnprs.gh"
-#include "cmdlnprs.h"
-#include "cmdscan.h"
-#ifndef NO_REPLACE
-#include "scan.h"
-#endif
+// FESUPP.H -- front-end independent support
+//
+// This provides macro definitions for the front-end independent support
+//
+//
+#ifndef __FESUPP_H__
+#define __FESUPP_H__
+
+#include <string.h>
+#include "rcmem.h"
 
 
-extern void     ScanParamInit( void );
-extern void     ScanParamFini( void );
-extern int      ProcOptions( OPT_STORAGE *data, const char *str );
-extern void     SetOptions( OPT_STORAGE *data, const char *infile, const char *outfile );
-#ifndef NO_REPLACE
-extern char     *FindAndReplace( char *stringFromFile, FRStrings *frStrings );
-extern void     PrependToString( ScanValue *value, char *stringFromFile );
-#endif
+// MACRO DEFINITIONS
+
+#define _MemoryAllocate( size )     RcMemAlloc( size )
+#define _MemoryFree( ptr )          RcMemFree( ptr )
 
 #endif

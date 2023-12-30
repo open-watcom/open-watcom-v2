@@ -115,6 +115,13 @@
 :usage.  operate quietly
 :jusage.
 
+:option. 10
+:target. any
+:enumerate. win16_ver
+:internal.
+:usage.  stamp file as requiring Windows 1.0
+:jusage.
+
 :option. 20
 :target. any
 :enumerate. win16_ver
@@ -151,7 +158,8 @@
 
 :option. bt
 :target. any
-:id. . <target> [windows|nt|os2]
+:special. scanTarget =<target> [windows|nt|os2]
+:number.
 :usage.  set the build <target> [windows|nt|os2]
 :jusage.
 
@@ -186,6 +194,7 @@
 
 :option. g
 :target. unused
+:special. scanSearchReplace
 :usage.  find/replace string
 :jusage.
 

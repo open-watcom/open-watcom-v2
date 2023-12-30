@@ -39,7 +39,7 @@ additional_clean = $(os2_yacc_file).* $(win_yacc_file).* *.uni yw.out y2.out
 #
 # cflags
 #
-.c : .;../c;$(cpp_c_dirs);$(trmem_dir);$(watcom_dir)/c
+.c : .;../c;$(cpp_c_dirs);$(fe_misc_dir)/c;$(trmem_dir);$(watcom_dir)/c
 
 inc_dirs = -I. -I"../h" $(wres_inc_dirs) -I"$(fe_misc_dir)/h" $(cpp_inc_dirs)
 
@@ -64,6 +64,7 @@ extra_cpp_flags_idedrv   = -DSTATIC_LINKAGE
 extra_cpp_flags_maindrv  = -DDLL_NAME=$(dlltarg_name)
 
 extra_c_flags_rcmem    = $(trmem_cover_cflags)
+extra_c_flags_cmdlnprs = $(incl_file_opts)fesupp.h
 
 #
 # lflags
@@ -132,6 +133,8 @@ common_objs = &
     $(_subdir_)ideentry.obj &
     $(_subdir_)idemsgpr.obj &
     $(_subdir_)rcspawn.obj &
+    $(_subdir_)cmdlnprs.obj &
+    $(_subdir_)cmdscan.obj &
     $(cpp_objs)
 
 misc_objs = &

@@ -223,14 +223,11 @@ static void print_banner_usage( void )
 static int RCMainLine( const char *opts, int argc, char **argv )
 /**************************************************************/
 {
-    char        *cmdbuf = NULL;
-    const char  *str;
-    char        infile[_MAX_PATH + 2];  // +2 for quotes
-    char        outfile[_MAX_PATH + 6]; // +6 for -fo="" or -fe=""
-    bool        pass1;
+    char        infile[_MAX_PATH];
+    char        outfile[_MAX_PATH];
     int         i;
     int         rc;
-    char        *p;
+    OPT_STORAGE data;
 
     rc = 1;
     curBufPos = formatBuffer;
@@ -240,55 +237,29 @@ static int RCMainLine( const char *opts, int argc, char **argv )
         rc = setjmp( jmpbuf_RCFatalError );
         if( rc == 0 ) {
             PP_Init( '#', PPSPEC_RC );
+            OPT_INIT( &data );
             ScanParamInit();
             if( opts != NULL ) {
-                str = opts;
-                argc = ParseEnvVar( str, NULL, NULL );
-                argv = RcMemAlloc( ( argc + 4 ) * sizeof( char * ) );
-                cmdbuf = RcMemAlloc( strlen( str ) + argc + 1 );
-                ParseEnvVar( str, argv, cmdbuf );
-                pass1 = false;
-                for( i = 0; i < argc; i++ ) {
-                    if( argv[i] != NULL
-                      && stricmp( argv[i], "-r" ) == 0 ) {
-                        pass1 = true;
-                        break;
-                    }
-                }
-                if( initInfo != NULL
-                  && initInfo->ver > 1
-                  && !initInfo->cmd_line_has_files ) {
-                    p = infile + 1;
-                    if( !IDEFN( GetInfo )( IdeHdl, IDE_GET_SOURCE_FILE, (IDEGetInfoWParam)NULL, (IDEGetInfoLParam)p ) ) {
-                        infile[0] = '\"';
-                        strcat( infile, "\"" );
-                        argv[argc++] = infile;
-                    }
-                    p = outfile + 5;
-                    if( !IDEFN( GetInfo )( IdeHdl, IDE_GET_TARGET_FILE, (IDEGetInfoWParam)NULL, (IDEGetInfoLParam)p ) ) {
-                        if( pass1 ) {
-                            strcpy( outfile, "-fo=\"" );
-                        } else {
-                            strcpy( outfile, "-fe=\"" );
-                        }
-                        strcat( outfile, "\"" );
-                        argv[argc++] = outfile;
-                    }
-                }
-                argv[argc] = NULL;        // last element of the array must be NULL
+                ProcOptions( &data, opts );
             }
-            if( !ScanParams( argc, argv ) ) {
-                rc = 1;
+            for( i = 1; i < argc; argc-- ) {
+                rc = ProcOptions( &data, argv[i] );
             }
+            *infile = '\0';
+            *outfile = '\0';
+            if( initInfo != NULL
+              && initInfo->ver > 1
+              && !initInfo->cmd_line_has_files ) {
+                IDEFN( GetInfo )( IdeHdl, IDE_GET_SOURCE_FILE, (IDEGetInfoWParam)NULL, (IDEGetInfoLParam)infile );
+                IDEFN( GetInfo )( IdeHdl, IDE_GET_TARGET_FILE, (IDEGetInfoWParam)NULL, (IDEGetInfoLParam)outfile );
+            }
+            SetOptions( &data, infile, outfile );
             print_banner_usage();
             if( rc == 0 ) {
                 rc = RCSpawn( RCmain );
             }
-            if( opts != NULL ) {
-                RcMemFree( argv );
-                RcMemFree( cmdbuf );
-            }
             ScanParamFini();
+            OPT_FINI( &data );
             PP_Fini();
         }
     }
