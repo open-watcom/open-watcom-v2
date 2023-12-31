@@ -529,7 +529,7 @@ void AllocClasses( section *sect )
             CurrSect->size = size;
             CurrLoc = save;
         } else {
-            if( FmtData.type & (MK_PE | MK_QNX_FLAT | MK_OS2_FLAT | MK_ELF) ) {
+            if( FmtData.type & (MK_PE | MK_QNX_FLAT | MK_OS2_FLAT | MK_WIN_VXD | MK_ELF) ) {
                 // flat addresses
                 if( class->flags & CLASS_FIXED ) {
                     class->segs->group->grp_addr.off = class->BaseAddr.off;
@@ -578,7 +578,7 @@ static void FindFloatSyms( void )
         if( FloatPatches[index].name != NULL ) {
             sym = FindISymbol( FloatPatches[index].name );
             if( sym != NULL ) {
-                if( FmtData.type & MK_WINDOWS ) {
+                if( FmtData.type & MK_WIN_NE ) {
                     SET_SYM_FPP( sym, FloatPatches[index].win_fpp );
                 } else {
                     SET_SYM_FPP( sym, FloatPatches[index].fpp );
@@ -824,7 +824,7 @@ static void setDefBase( void )
         FmtData.base = PE_DEFAULT_BASE;
         return;
     }
-    if( FmtData.type & MK_OS2_FLAT ) {
+    if( FmtData.type & (MK_OS2_FLAT | MK_WIN_VXD) ) {
         FmtData.base = FLAT_GRANULARITY;
         return;
     }
@@ -888,7 +888,7 @@ static void setDefObjAlign( void )
     } else if( FmtData.type & MK_WIN_VXD ) {
         FmtData.objalign = _4K;
         return;
-    } else if( FmtData.type & MK_OS2 ) {
+    } else if( FmtData.type & (MK_OS2 | MK_WIN_NE) ) {
 #if 0
         if( (LinkState & LS_HAVE_PPC_CODE) ) {
             // Development temporarly on hold:
@@ -977,7 +977,7 @@ void CalcAddresses( void )
     } else if( FmtData.type & MK_DOS16M ) {
         CalcGrpSegs();
 #endif
-    } else if( FmtData.type & (MK_PE | MK_OS2_FLAT | MK_QNX_FLAT | MK_ELF) ) {
+    } else if( FmtData.type & (MK_PE | MK_OS2_FLAT | MK_WIN_VXD | MK_QNX_FLAT | MK_ELF) ) {
         flat = getFlatOffset();
         for( grp = Groups; grp != NULL; grp = grp->next_group ) {
             size = grp->totalsize;
@@ -996,7 +996,7 @@ void CalcAddresses( void )
             flat = __ROUND_UP_SIZE( flat + size, FmtData.objalign );
         }
         ReallocFileSegs();
-    } else if( FmtData.type & (MK_QNX_16 | MK_OS2_16BIT) ) {
+    } else if( FmtData.type & (MK_QNX_16 | MK_OS2_NE | MK_WIN_NE) ) {
         ReallocFileSegs();
     }
     DBIAddrStart();

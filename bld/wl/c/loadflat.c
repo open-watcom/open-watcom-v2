@@ -568,7 +568,7 @@ void FiniOS2FlatLoadFile( void )
             exe_head.flags |= OSF_LINK_ERROR;
         }
         if( (FmtData.type & MK_OS2_LX)
-            && (FmtData.u.os2fam.toggle_relocs ^ FmtData.u.os2fam.gen_int_relocs) ) {
+          && (FmtData.u.os2fam.toggle_relocs ^ FmtData.u.os2fam.gen_int_relocs) ) {
             exe_head.flags |= OSF_INTERNAL_FIXUPS_DONE;
         }
         exe_head.heapsize  = FmtData.u.os2fam.heapsize;

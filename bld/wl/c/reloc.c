@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -127,7 +127,7 @@ static void *OS2PagedRelocInit( offset size, int unitsize )
 
 static void *OS2FlatRelocInit( offset size )
 /*******************************************
- * initialize relocations for OS2 flat memory manager. 
+ * initialize relocations for OS2 flat memory manager.
  */
 {
     return( OS2PagedRelocInit( size, sizeof( os2_reloc_header ) ) );
@@ -191,7 +191,7 @@ void WriteReloc( group_entry *group, offset off, void *reloc, size_t size )
         group->section->relocs++;
         return;
     }
-    if( FmtData.type & MK_OS2_FLAT ) {
+    if( FmtData.type & (MK_OS2_FLAT | MK_WIN_VXD) ) {
         pagelist = group->g.grp_relocs;
         if( pagelist == NULL ) {
             pagelist = OS2FlatRelocInit( group->totalsize );
@@ -216,7 +216,7 @@ void WriteReloc( group_entry *group, offset off, void *reloc, size_t size )
         group->section->relocs++;
         return;
     }
-    if( FmtData.type & MK_OS2_16BIT ) {
+    if( FmtData.type & (MK_OS2_NE | MK_WIN_NE) ) {
         DoWriteReloc( &group->g.grp_relocs, reloc, size );
         group->section->relocs++;
         return;
@@ -273,7 +273,7 @@ static bool TraverseRelocBlock( reloc_info ** reloclist, unsigned num,
     while( num-- > 0 ) {
         if( fn( *reloclist++ ) )
             return( true );
-        if( FmtData.type & MK_OS2_FLAT ) {
+        if( FmtData.type & (MK_OS2_FLAT | MK_WIN_VXD) ) {
             if( fn( *reloclist++ ) ) {
                 return( true );
             }
@@ -325,7 +325,7 @@ static void FreeGroupRelocs( group_entry *group )
         return;
     }
 #ifdef _OS2
-    if( FmtData.type & (MK_OS2_FLAT | MK_PE) ) {
+    if( FmtData.type & (MK_OS2_FLAT | MK_WIN_VXD | MK_PE) ) {
         TraverseOS2RelocList( group, FreeRelocList );
         reloclist = group->g.grp_relocs;
         if( reloclist != NULL ) {
@@ -340,7 +340,7 @@ static void FreeGroupRelocs( group_entry *group )
             }
         }
         return;
-    } else if( FmtData.type & MK_OS2_16BIT ) {
+    } else if( FmtData.type & (MK_OS2_NE | MK_WIN_NE) ) {
         FreeRelocList( group->g.grp_relocs );
         return;
     }
@@ -361,7 +361,7 @@ void FreeRelocInfo( void )
 
     if( (LinkState & LS_MAKE_RELOCS) == 0 )
         return;
-    if( FmtData.type & (MK_ELF | MK_OS2_FLAT | MK_PE | MK_OS2_16BIT | MK_QNX) ) {
+    if( FmtData.type & (MK_ELF | MK_OS2_FLAT | MK_WIN_VXD | MK_PE | MK_OS2_NE | MK_WIN_NE | MK_QNX) ) {
         for( group = Groups; group != NULL; group = group->next_group ) {
             FreeGroupRelocs( group );
         }
@@ -458,7 +458,7 @@ void SetRelocSize( void )
 /***********************/
 {
 #ifdef _OS2
-    if( FmtData.type & ( MK_OS2 | MK_WIN_VXD ) ) {
+    if( FmtData.type & ( MK_OS2 | MK_WIN_NE | MK_WIN_VXD ) ) {
         FmtRelocSize = sizeof( os2_reloc_item );
         return;
     }
@@ -566,13 +566,13 @@ bool SwapOutRelocs( void )
 
     if( (LinkState & LS_FMT_DECIDED) == 0 )
         return( false );
-    if( FmtData.type & (MK_OS2_FLAT | MK_PE) ) {
+    if( FmtData.type & (MK_OS2_FLAT | MK_WIN_VXD | MK_PE) ) {
         for( group = Groups; group != NULL; group = group->next_group ) {
             if( TraverseOS2RelocList( group, SpillRelocList ) ) {
                 return( true );
             }
         }
-    } else if( FmtData.type & (MK_OS2_16BIT | MK_QNX) ) {
+    } else if( FmtData.type & (MK_OS2_NE | MK_WIN_NE | MK_QNX) ) {
         for( group = Groups; group != NULL; group = group->next_group ) {
             if( SpillRelocList( group->g.grp_relocs ) ) {
                 return( true );

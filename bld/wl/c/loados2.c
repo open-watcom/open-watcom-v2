@@ -570,7 +570,7 @@ static unsigned long ModRefTable( void )
     unsigned long       nodenum;
     unsigned long       off;
 
-    if( FmtData.type & MK_OS2_16BIT ) {
+    if( FmtData.type & (MK_OS2_NE | MK_WIN_NE) ) {
         off = 1;
         for( inode = FmtData.u.os2fam.imp_tab_list; inode != NULL; inode = inode->next ) {
             off += inode->len + 1;
@@ -627,7 +627,7 @@ unsigned long ResNonResNameTable( bool dores )
     } else {     /* in non-resident names table */
         if( FmtData.description != NULL ) {
             name = FmtData.description;
-        } else if( FmtData.type & MK_OS2_16BIT ) {
+        } else if( FmtData.type & (MK_OS2_NE | MK_WIN_NE) ) {
             name = Root->outfile->fname;
         } else {
             name = "";
@@ -868,7 +868,7 @@ void ChkOS2Exports( void )
         } else {
             exp->addr = sym->addr;
             if( sym->p.seg == NULL || IS_SYM_IMPORTED( sym ) ) {
-                if( FmtData.type & MK_OS2_FLAT ) {
+                if( FmtData.type & (MK_OS2_FLAT | MK_WIN_VXD) ) {
                     // MN: Create a forwarder - add a special flag?
                     // Currently WriteFlatEntryTable() in loadflat.c will
                     // recognize a forwarder by segment == 0xFFFF
@@ -877,7 +877,7 @@ void ChkOS2Exports( void )
                 }
             } else {
                 group = sym->p.seg->u.leader->group;
-                if( FmtData.type & MK_OS2_FLAT ) {
+                if( FmtData.type & (MK_OS2_FLAT | MK_WIN_VXD) ) {
                     exp->addr.off -= group->grp_addr.off;
                     if( (group->segflags & SEG_LEVEL_MASK) == SEG_LEVEL_2 ) {
                         exp->isiopl = true; // Conforming or not doesn't matter!
@@ -1096,7 +1096,7 @@ void FiniOS2LoadFile( void )
     exe_head.version = 0x0105;          /* version 5.1 */
     exe_head.chk_sum = 0L;
     exe_head.info = 0;
-    if( FmtData.type & MK_WINDOWS ) {
+    if( FmtData.type & MK_WIN_NE ) {
         exe_head.target = TARGET_WINDOWS;
     } else {
         exe_head.target = TARGET_OS2;
@@ -1180,7 +1180,7 @@ void FiniOS2LoadFile( void )
         exe_head.otherflags |= WIN_GANGLOAD_PRESENT;
     }
     exe_head.swaparea = 0;
-    if( FmtData.type & MK_WINDOWS ) {
+    if( FmtData.type & MK_WIN_NE ) {
         if( FmtData.ver_specified ) {
             exe_head.expver = (FmtData.major << 8) | (FmtData.minor & 0xFF);
         } else {
@@ -1194,7 +1194,7 @@ void FiniOS2LoadFile( void )
      * tweak the default heap/stack size so this check isn't bulletproof.
      */
     dgroup_total = dgroup_size + exe_head.stack + exe_head.heap;
-    if( FmtData.type & MK_WINDOWS ) {
+    if( FmtData.type & MK_WIN_NE ) {
         if( dgroup_total > (MAX_DGROUP_SIZE - 3) ) {
             LnkMsg( FTL+MSG_DEFDATA_TOO_BIG, "l",
                     dgroup_total - MAX_DGROUP_SIZE + 3 );

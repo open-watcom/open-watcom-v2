@@ -106,7 +106,7 @@ void BinOutput( void )
 #endif
 
 #if defined( _OS2 ) || defined( _QNX ) || defined( _ELF )
-    if( FmtData.type & (MK_PE | MK_QNX_FLAT | MK_OS2_FLAT | MK_ELF) ) {
+    if( FmtData.type & (MK_PE | MK_QNX_FLAT | MK_OS2_FLAT | MK_WIN_VXD | MK_ELF) ) {
         CurrSect = Root;        // needed for WriteInfo.
         Root->sect_addr = Groups->grp_addr;
         fnode = Root->outfile;
@@ -341,7 +341,7 @@ void HexOutput( void )
     buf_offset    = 0;
 
 #if defined( _OS2 ) || defined( _QNX ) || defined( _ELF )
-    if( FmtData.type & (MK_PE | MK_QNX_FLAT | MK_OS2_FLAT | MK_ELF) ) {
+    if( FmtData.type & (MK_PE | MK_QNX_FLAT | MK_OS2_FLAT | MK_WIN_VXD | MK_ELF) ) {
         CurrSect = Root;    // needed for WriteInfo.
         Root->sect_addr = Groups->grp_addr;
         fnode = Root->outfile;

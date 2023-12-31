@@ -374,7 +374,7 @@ static void WriteModSegHead( void )
 static void WriteImports( void )
 /******************************/
 {
-    if( FmtData.type & (MK_NOVELL | MK_OS2 | MK_PE) ) {
+    if( FmtData.type & (MK_NOVELL | MK_OS2 | MK_WIN_NE | MK_PE) ) {
         WriteBox( MSG_MAP_BOX_IMP_SYM );
         if( FmtData.type & (MK_NOVELL | MK_ELF) ) {
             Msg_Write_Map( MSG_MAP_TITLE_IMP_SYM_0 );
@@ -868,7 +868,7 @@ static const char *getStubName( void )
     if( FmtData.u.os2fam.no_stub ) {
         return( "none" );
     }
-    if( FmtData.type & (MK_OS2 | MK_PE | MK_WIN_VXD) ) {
+    if( FmtData.type & (MK_OS2 | MK_WIN_NE | MK_PE | MK_WIN_VXD) ) {
         return( FmtData.u.os2fam.stub_file_name );
     }
 #endif

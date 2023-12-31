@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -187,7 +187,7 @@ static size_t fmtAddr( char *dest, size_t len, targ_addr *addr, bool offs_32 )
     }
 #endif
     /* segmented formats 16:16 or 16:32 */
-    if( !offs_32 && (FmtData.type & (MK_DOS | MK_OS2_16BIT | MK_DOS16M | MK_QNX_16 | MK_RDOS_16)) ) {
+    if( !offs_32 && (FmtData.type & (MK_DOS | MK_OS2_NE | MK_WIN_NE | MK_DOS16M | MK_QNX_16 | MK_RDOS_16)) ) {
         return( FmtStr( dest, len, "%x:%x", addr->seg, (unsigned short)addr->off ) );
     } else {
         return( FmtStr( dest, len, "%x:%h", addr->seg, addr->off ) );
