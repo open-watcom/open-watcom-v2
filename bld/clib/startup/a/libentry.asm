@@ -2,7 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
-;* Copyright (c) 2017-2022 The Open Watcom Contributors. All Rights Reserved.
+;* Copyright (c) 2017-2024 The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -97,7 +97,10 @@ assume ss:nothing
 assume ds:DGROUP
 assume cs:_TEXT
 
+ifdef WINDOWS10
+else
         extrn   __AHSHIFT                   : word
+endif
         extrn   "C",__win_alloc_flags       : dword
         extrn   "C",__win_realloc_flags     : dword
 
@@ -188,7 +191,11 @@ __DLLstart_ proc far
 
 callc:  or      word ptr __win_alloc_flags, GMEM_SHARE
         or      word ptr __win_realloc_flags, GMEM_SHARE
+ifdef WINDOWS10
+        mov     ax,12                   ; get huge shift value
+else
         mov     ax,offset __AHSHIFT     ; get huge shift value
+endif
         mov     _HShift,al              ; ...
         cmp     al,12                   ; real mode?
         je      notprot                 ; yes, so leave osmode alone

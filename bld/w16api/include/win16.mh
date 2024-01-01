@@ -4931,6 +4931,8 @@ int WINAPI          WaitSoundState( int );
 
 #ifndef RC_INVOKED
 :include poppack.sp
+
+:include win10lib.sp
 #endif
 
 :include cplusepi.sp
