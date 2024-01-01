@@ -337,10 +337,13 @@ static void GenPETransferTable( void )
     group->size = group->totalsize;
 }
 
-unsigned_32 DefStackSizePE( void )
-/********************************/
+unsigned DefStackSizePE( void )
+/*****************************/
 {
-    return( PE_DEF_STACK_SIZE );
+    if( FmtData.dll ) {
+        return( PE_DLL_DEF_STACK_SIZE );
+    }
+    return( PE_EXE_DEF_STACK_SIZE );
 }
 
 static unsigned_32 WriteDataPages( pe_exe_header *pehdr, pe_object *object, unsigned_32 file_align )
@@ -1014,6 +1017,57 @@ static unsigned long CalcPEChecksum( unsigned long dwInitialCount, unsigned shor
     return( __wCrc & 0x0000FFFF );
 }
 
+static unsigned get_stack_commit_size( unsigned size )
+{
+    if( FmtData.u.pe.stackcommit == DEF_VALUE ) {
+        if( FmtData.dll ) {
+            if( size > PE_DLL_DEF_STACK_COMMIT ) {
+                size = PE_DLL_DEF_STACK_COMMIT;
+            }
+        } else {
+            if( size > PE_EXE_DEF_STACK_COMMIT ) {
+                size = PE_EXE_DEF_STACK_COMMIT;
+            }
+        }
+    } else if( size > FmtData.u.pe.stackcommit ) {
+        size = FmtData.u.pe.stackcommit;
+    }
+    return( size );
+}
+
+static unsigned get_heap_reserve_size( void )
+{
+    unsigned    size;
+
+    size = FmtData.u.os2fam.heapsize;
+    if( size == DEF_VALUE ) {
+        if( FmtData.dll ) {
+            size = PE_DLL_DEF_HEAP_SIZE;
+        } else {
+            size = PE_EXE_DEF_HEAP_SIZE;
+        }
+    }
+    return( size );
+}
+
+static unsigned get_heap_commit_size( unsigned size )
+{
+    if( FmtData.u.pe.heapcommit == DEF_VALUE ) {
+        if( FmtData.dll ) {
+            if( size > PE_DLL_DEF_HEAP_COMMIT ) {
+                size = PE_DLL_DEF_HEAP_COMMIT;
+            }
+        } else {
+            if( size > PE_EXE_DEF_HEAP_COMMIT ) {
+                size = PE_EXE_DEF_HEAP_COMMIT;
+            }
+        }
+    } else if( size > FmtData.u.pe.heapcommit ) {
+        size = FmtData.u.pe.heapcommit;
+    }
+    return( size );
+}
+
 void FiniPELoadFile( void )
 /*************************/
 /* make a PE executable file */
@@ -1114,35 +1168,25 @@ void FiniPELoadFile( void )
             PE64( pehdr ).subsystem = PE_SS_WINDOWS_GUI;
         }
         /*
-         * set stack reserved and committed size for executable
+         * set stack reserved size for executable
          * zero for DLL (StackSize is already set to zero)
          */
-        size = StackSize;
-        PE64( pehdr ).stack_reserve_size.u._32[0] = size;
+        PE64( pehdr ).stack_reserve_size.u._32[0] = size = StackSize;
         PE64( pehdr ).stack_reserve_size.u._32[1] = 0;
-        if( FmtData.u.pe.stackcommit == DEF_VALUE ) {
-            if( size > PE_DEF_STACK_COMMIT ) {
-                size = PE_DEF_STACK_COMMIT;
-            }
-        } else if( size > FmtData.u.pe.stackcommit ) {
-            size = FmtData.u.pe.stackcommit;
-        }
-        PE64( pehdr ).stack_commit_size.u._32[0] = size;
+        /*
+         * set committed size for executable
+         */
+        PE64( pehdr ).stack_commit_size.u._32[0] = get_stack_commit_size( size );
         PE64( pehdr ).stack_commit_size.u._32[1] = 0;
         /*
-         * set heap reserved and committed size for executable
-         * zero for DLL
+         * set initial heap reserved size, if not setup use default value
          */
-        size = FmtData.u.os2fam.heapsize;
-        if( FmtData.dll ) {
-            size = 0;
-        }
-        PE64( pehdr ).heap_reserve_size.u._32[0] = size;
+        PE64( pehdr ).heap_reserve_size.u._32[0] = size = get_heap_reserve_size();
         PE64( pehdr ).heap_reserve_size.u._32[1] = 0;
-        if( size > FmtData.u.pe.heapcommit ) {
-            size = FmtData.u.pe.heapcommit;
-        }
-        PE64( pehdr ).heap_commit_size.u._32[0] = size;
+        /*
+         * set initial heap commited size, if not setup use default value
+         */
+        PE64( pehdr ).heap_commit_size.u._32[0] = get_heap_commit_size( size );
         PE64( pehdr ).heap_commit_size.u._32[1] = 0;
 
         PE64( pehdr ).num_tables = PE_TBL_NUMBER;
@@ -1301,36 +1345,22 @@ void FiniPELoadFile( void )
             PE32( pehdr ).subsystem = PE_SS_WINDOWS_GUI;
         }
         /*
-         * set stack reserved and committed size for executable
+         * set stack reserved size for executable
          * zero for DLL (StackSize is already set to zero)
          */
-        size = StackSize;
-        PE32( pehdr ).stack_reserve_size = size;
-        if( FmtData.u.pe.stackcommit == DEF_VALUE ) {
-            if( size > PE_DEF_STACK_COMMIT ) {
-                size = PE_DEF_STACK_COMMIT;
-            }
-        } else if( size > FmtData.u.pe.stackcommit ) {
-            size = FmtData.u.pe.stackcommit;
-        }
-        PE32( pehdr ).stack_commit_size = size;
+        PE32( pehdr ).stack_reserve_size = size = StackSize;
         /*
-         * set heap reserved and committed size for executable
-         * zero for DLL
+         * set committed size for executable
          */
-        size = FmtData.u.os2fam.heapsize;
-        if( FmtData.dll ) {
-            size = 0;
-        }
-        if( size > FmtData.u.pe.heapcommit ) {
-            size = FmtData.u.pe.heapcommit;
-        }
-        PE32( pehdr ).heap_commit_size = size;
-
-        /* Heap reserve must be nonzero for the executable to run properly under Windows 95.
-         * A zero reserve will cause a crash when any code calls LocalAlloc(). [Issue #852] */
-        size = 0x00100000; /* Microsoft C++ Win32 compiler default (1MB) (TODO: Linker option to set this?) */
-        PE32( pehdr ).heap_reserve_size = size;
+        PE32( pehdr ).stack_commit_size = get_stack_commit_size( size );
+        /*
+         * set initial heap reserved size, if not setup use default value
+         */
+        PE32( pehdr ).heap_reserve_size = size = get_heap_reserve_size();
+        /*
+         * set initial heap commited size, if not setup use default value
+         */
+        PE32( pehdr ).heap_commit_size = get_heap_commit_size( size );
 
         PE32( pehdr ).num_tables = PE_TBL_NUMBER;
         CurrSect = Root;

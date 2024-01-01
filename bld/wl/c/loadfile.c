@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -549,7 +549,7 @@ void GetBSSSize( void )
 void SetStkSize( void )
 /**********************
  * Stack size calculation:
- * - DLLs have no stack
+ * - DLLs have no stack, size is 0
  * - for executables, warn if stack size is tiny
  * - if stack size was given, use it directly unless target is Novell
  * - else use the actual stack segment size if it is > 512 bytes

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,13 +35,35 @@
 
 #include "exepe.h"
 
-#define DEF_VALUE               CONSTU32( 0xFFFFFFFF )
+#define DEF_VALUE                   CONSTU32( 0xFFFFFFFF )
+#define PE_DEFAULT_BASE             CONSTU32( 0x400000 )
 
-#define PE_DEFAULT_BASE         CONSTU32( 0x400000 )
-#define PE_DEF_STACK_SIZE       _1M
-#define PE_DEF_STACK_COMMIT     _64K
-#define PE_DEF_HEAP_SIZE        _8K
-#define PE_DEF_HEAP_COMMIT      _4K
+/*
+ * NOTE for initial heap setup:
+ * The application and DLL which run on Windows 9x
+ * requires for initial heap reserve size at minimum single memory page
+ * otherwise executable crash if call LocalAlloc etc.
+ * To prevent this problem for 32-bit Windows we set initial heap reserve
+ * size to two pages and initial heap commit size to one page.
+ * It is minimal memory overhead to safe work.
+ * For 64-bit executable is used the same rule even if there is no problem
+ * with size 0 for both.
+ *
+ * NOTE for initial stack setup:
+ * stack size is defined by appropriate wlink directive.
+ * if stack size is not defined by this directive then default value is used.
+ * default stack size for DLL is always 0 for both 32-bit and 64-bit
+ * executable.
+ */
+#define PE_EXE_DEF_STACK_SIZE       _1M
+#define PE_EXE_DEF_STACK_COMMIT     _64K
+#define PE_DLL_DEF_STACK_SIZE       0
+#define PE_DLL_DEF_STACK_COMMIT     0
+
+#define PE_EXE_DEF_HEAP_SIZE        (2 * _4K)
+#define PE_EXE_DEF_HEAP_COMMIT      (_4K)
+#define PE_DLL_DEF_HEAP_SIZE        (2 * _4K)
+#define PE_DLL_DEF_HEAP_COMMIT      (_4K)
 
 extern void             DoAddResource( char * );
 extern void             FiniPELoadFile( void );
@@ -68,6 +90,6 @@ typedef struct module_import {
     unsigned                    num_entries;
 } module_import;
 
-extern unsigned_32 DefStackSizePE( void );
+extern unsigned     DefStackSizePE( void );
 
 #endif

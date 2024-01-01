@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -372,25 +372,25 @@ static bool ProcMixed1632( void )
 }
 
 static parse_entry  MainOptions[] = {
-    "NOSTUB",               ProcNoStub,                 MK_OS2 | MK_WIN_NE | MK_PE | MK_WIN_VXD,        0,
-    "ONEautodata",          ProcSingle,                 MK_OS2 | MK_WIN_NE,                             CF_AUTO_SEG_FLAG,
-    "MANYautodata",         ProcMultiple,               MK_OS2 | MK_WIN_NE,                             CF_AUTO_SEG_FLAG,
-    "NOAutodata",           ProcNone,                   MK_OS2_NE | MK_WIN_NE,              CF_AUTO_SEG_FLAG,
-    "OLDlibrary",           ProcOldLibrary,             MK_OS2 | MK_WIN_NE | MK_PE,                     0,
-    "MODName",              ProcModName,                MK_OS2 | MK_WIN_NE | MK_PE | MK_WIN_VXD,        0,
-    "NEWFiles",             ProcNewFiles,               MK_OS2_NE,                          0,
-    "PROTmode",             ProcProtMode,               MK_OS2_NE | MK_WIN_NE,              0,
-    "NOSTDCall",            ProcNoStdCall,              MK_PE,                              0,
-    "RWReloccheck",         ProcRWRelocCheck,           MK_WIN_NE,                          0,
-    "SELFrelative",         ProcSelfRelative,           MK_OS2_LX,                          0,
-    "INTernalrelocs",       ProcInternalRelocs,         MK_OS2_LX,                          0,
-    "TOGglerelocsflag",     ProcToggleRelocsFlag,       MK_OS2_LX,                          0,
-    "LINKVersion",          ProcLinkVersion,            MK_PE,                              0,
-    "OSVersion",            ProcOsVersion,              MK_PE,                              0,
-    "CHECKSUM",             ProcChecksum,               MK_PE,                              0,
-    "LARGEaddressaware",    ProcLargeAddressAware,      MK_PE,                              0,
-    "NOLARGEaddressaware",  ProcNoLargeAddressAware,    MK_PE,                              0,
-    "MIXed1632",            ProcMixed1632,              MK_OS2_FLAT | MK_WIN_VXD,           0,
+    "NOSTUB",               ProcNoStub,                 MK_OS2 | MK_WIN_NE | MK_PE | MK_WIN_VXD,    0,
+    "ONEautodata",          ProcSingle,                 MK_OS2 | MK_WIN_NE,                         CF_AUTO_SEG_FLAG,
+    "MANYautodata",         ProcMultiple,               MK_OS2 | MK_WIN_NE,                         CF_AUTO_SEG_FLAG,
+    "NOAutodata",           ProcNone,                   MK_OS2_NE | MK_WIN_NE,                      CF_AUTO_SEG_FLAG,
+    "OLDlibrary",           ProcOldLibrary,             MK_OS2 | MK_WIN_NE | MK_PE,                 0,
+    "MODName",              ProcModName,                MK_OS2 | MK_WIN_NE | MK_PE | MK_WIN_VXD,    0,
+    "NEWFiles",             ProcNewFiles,               MK_OS2_NE,                                  0,
+    "PROTmode",             ProcProtMode,               MK_OS2_NE | MK_WIN_NE,                      0,
+    "NOSTDCall",            ProcNoStdCall,              MK_PE,                                      0,
+    "RWReloccheck",         ProcRWRelocCheck,           MK_WIN_NE,                                  0,
+    "SELFrelative",         ProcSelfRelative,           MK_OS2_LX,                                  0,
+    "INTernalrelocs",       ProcInternalRelocs,         MK_OS2_LX,                                  0,
+    "TOGglerelocsflag",     ProcToggleRelocsFlag,       MK_OS2_LX,                                  0,
+    "LINKVersion",          ProcLinkVersion,            MK_PE,                                      0,
+    "OSVersion",            ProcOsVersion,              MK_PE,                                      0,
+    "CHECKSUM",             ProcChecksum,               MK_PE,                                      0,
+    "LARGEaddressaware",    ProcLargeAddressAware,      MK_PE,                                      0,
+    "NOLARGEaddressaware",  ProcNoLargeAddressAware,    MK_PE,                                      0,
+    "MIXed1632",            ProcMixed1632,              MK_OS2_FLAT | MK_WIN_VXD,                   0,
     NULL
 };
 
@@ -1222,9 +1222,9 @@ static bool ProcPE( void )
 /************************/
 {
     ProcOne( PESubFormats, SEP_NO );
-    FmtData.u.os2fam.heapsize = PE_DEF_HEAP_SIZE;   // another arbitrary non-zero default
-    FmtData.u.os2fam.segment_shift = 9;             // 512 byte arbitrary rounding
-    FmtData.u.pe.heapcommit = PE_DEF_HEAP_COMMIT;   // arbitrary non-zero default.
+    FmtData.u.os2fam.heapsize = DEF_VALUE;      // another arbitrary non-zero default
+    FmtData.u.os2fam.segment_shift = 9;         // 512 byte arbitrary rounding
+    FmtData.u.pe.heapcommit = DEF_VALUE;        // arbitrary non-zero default.
     FmtData.u.pe.stackcommit = DEF_VALUE;
     return( true );
 }
