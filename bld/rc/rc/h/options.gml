@@ -118,7 +118,6 @@
 :option. 10
 :target. any
 :enumerate. win16_ver
-:internal.
 :usage.  stamp file as requiring Windows 1.0
 :jusage.
 
