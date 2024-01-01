@@ -168,7 +168,7 @@ system begin windows1
     ARCH i86 -bt=windows -dWINVER=0x100
 :elsesegment Pwlsystem
     option osname='Windows 1.0'
-    version=1.0
+    option version=1.0
     libpath '%WATCOM%/lib286'
     libpath '%WATCOM%/lib286/win'
     library windows
@@ -182,7 +182,7 @@ system begin windows2
     ARCH i86 -bt=windows -dWINVER=0x200
 :elsesegment Pwlsystem
     option osname='Windows 2.0'
-    version=2.0
+    option version=2.0
     libpath '%WATCOM%/lib286'
     libpath '%WATCOM%/lib286/win'
     library windows
@@ -212,7 +212,7 @@ system begin windows1_dll
 :: FIXME: need bd?
 :elsesegment Pwlsystem
     option osname='Windows 1.0'
-    version=1.0
+    option version=1.0
     libpath '%WATCOM%/lib286'
     libpath '%WATCOM%/lib286/win'
     library windows
@@ -228,7 +228,7 @@ system begin windows2_dll
 :: FIXME: need bd?
 :elsesegment Pwlsystem
     option osname='Windows 2.0'
-    version=2.0
+    option version=2.0
     libpath '%WATCOM%/lib286'
     libpath '%WATCOM%/lib286/win'
     library windows
