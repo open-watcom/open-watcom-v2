@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -520,9 +520,15 @@ void FiniOS2FlatLoadFile( void )
     } else {
         exe_head.os_type = OSF_OS_LEVEL;
     }
-    if( FmtData.minor < 10 )
-        FmtData.minor *= 10;
-    exe_head.version = FmtData.major * 100 + FmtData.minor;
+    if( FmtData.ver_specified ) {
+        if( FmtData.minor < 10 ) {
+            exe_head.version = FmtData.major * 100 + FmtData.minor * 10;
+        } else {
+            exe_head.version = FmtData.major * 100 + FmtData.minor;
+        }
+    } else {
+        exe_head.version = 0;
+    }
     if( FmtData.type & MK_WIN_VXD ) { // VxD flags settings
         if( FmtData.u.os2fam.flags & VIRT_DEVICE ) {
             exe_head.flags |= VXD_DEVICE_DRIVER_DYNAMIC;

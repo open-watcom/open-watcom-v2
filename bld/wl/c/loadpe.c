@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1091,11 +1091,16 @@ void FiniPELoadFile( void )
             PE64( pehdr ).os_minor = FmtData.u.pe.osminor;
         } else {
             PE64( pehdr ).os_major = PE_OS_MAJOR;
-            PE64( pehdr ).os_minor = PE_OS_MINOR + 0xb;      // KLUDGE!
+            PE64( pehdr ).os_minor = PE_OS_MINOR + 0xb;      // KLUDGE! ????
         }
 
-        PE64( pehdr ).user_major = FmtData.major;
-        PE64( pehdr ).user_minor = FmtData.minor;
+        if( FmtData.ver_specified ) {
+            PE64( pehdr ).user_major = FmtData.major;
+            PE64( pehdr ).user_minor = FmtData.minor;
+        } else {
+            PE64( pehdr ).user_major = 0;
+            PE64( pehdr ).user_minor = 0;
+        }
         if( FmtData.u.pe.sub_specd ) {
             PE64( pehdr ).subsys_major = FmtData.u.pe.submajor;
             PE64( pehdr ).subsys_minor = FmtData.u.pe.subminor;
@@ -1272,8 +1277,13 @@ void FiniPELoadFile( void )
             PE32( pehdr ).os_minor = PE_OS_MINOR + 0xb;      // KLUDGE!
         }
 
-        PE32( pehdr ).user_major = FmtData.major;
-        PE32( pehdr ).user_minor = FmtData.minor;
+        if( FmtData.ver_specified ) {
+            PE32( pehdr ).user_major = FmtData.major;
+            PE32( pehdr ).user_minor = FmtData.minor;
+        } else {
+            PE32( pehdr ).user_major = 0;
+            PE32( pehdr ).user_minor = 0;
+        }
         if( FmtData.u.pe.sub_specd ) {
             PE32( pehdr ).subsys_major = FmtData.u.pe.submajor;
             PE32( pehdr ).subsys_minor = FmtData.u.pe.subminor;

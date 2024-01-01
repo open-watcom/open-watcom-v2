@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -554,8 +554,10 @@ void FiniNovellLoadFile( void )
     } else {
         file_size += len;
     }
-    if( ( FmtData.major != 0 ) || ( FmtData.minor != 0 ) ) {
-        file_size += sizeof( fixed_hdr_2 );
+    if( FmtData.ver_specified ) {
+        if( ( FmtData.major != 0 ) || ( FmtData.minor != 0 ) ) {
+            file_size += sizeof( fixed_hdr_2 );
+        }
     }
     if( FmtData.u.nov.copyright != NULL ) {
         file_size += sizeof( fixed_hdr_3 ) + strlen( FmtData.u.nov.copyright );
@@ -619,19 +621,20 @@ void FiniNovellLoadFile( void )
     } else {
         NovNameWrite( module_name );      // use module name as a default
     }
-    if( ( FmtData.major != 0 ) || ( FmtData.minor != 0 ) ) {
-        memcpy( second_header.versionSignature, VERSION_SIGNATURE, VERSION_SIGNATURE_LENGTH );
-        second_header.majorVersion = FmtData.major;
-        second_header.minorVersion = FmtData.minor;
-        second_header.revision = FmtData.revision;
-        thetime = time( NULL );
-        currtime = localtime( &thetime );
-        second_header.year = currtime->tm_year + 1900;
-        second_header.month = currtime->tm_mon + 1;
-        second_header.day = currtime->tm_mday;
-        WriteLoad( &second_header, sizeof( second_header ) );
+    if( FmtData.ver_specified ) {
+        if( ( FmtData.major != 0 ) || ( FmtData.minor != 0 ) ) {
+            memcpy( second_header.versionSignature, VERSION_SIGNATURE, VERSION_SIGNATURE_LENGTH );
+            second_header.majorVersion = FmtData.major;
+            second_header.minorVersion = FmtData.minor;
+            second_header.revision = FmtData.revision;
+            thetime = time( NULL );
+            currtime = localtime( &thetime );
+            second_header.year = currtime->tm_year + 1900;
+            second_header.month = currtime->tm_mon + 1;
+            second_header.day = currtime->tm_mday;
+            WriteLoad( &second_header, sizeof( second_header ) );
+        }
     }
-
     if( FmtData.u.nov.copyright != NULL ) {
         memcpy( third_header.copyrightSignature, COPYRIGHT_SIGNATURE, COPYRIGHT_SIGNATURE_LENGTH);
         WriteLoad( &third_header, sizeof( third_header ) );
