@@ -1,6 +1,14 @@
 tree_depth = 4
 
-additional_clean = *.gh *.grh *.grc specs.owc
+!ifdef target_cpu
+!else
+owcc_specs = specs.owc
+!ifdef bootstrap
+owcc_specs = b$(owcc_specs)
+!endif
+!endif
+
+additional_clean = *.gh *.grh *.grc $(owcc_specs)
 
 !include cproj.mif
 !include defrule.mif
@@ -39,11 +47,6 @@ extra_l_flags_dos_i86 = option stack=4k
 
 # explicit rules
 #################
-
-owcc_specs = specs.owc
-!ifdef bootstrap
-owcc_specs = b$(owcc_specs)
-!endif
 
 #
 # EXE
