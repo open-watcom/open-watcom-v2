@@ -3293,656 +3293,329 @@ typedef IDirectInput8           *LPDIRECTINPUT8;
 #endif
 
 /* C/C++ object macros */
-#if !defined( __cplusplus ) || defined( CINTERFACE )
-    #if (DIRECTINPUT_VERSION >= 0x0500)
-        #define IDirectInputEffect_QueryInterface( x, p1, p2 ) \
-            (x)->lpVtbl->QueryInterface( x, p1, p2 )
-        #define IDirectInputEffect_AddRef( x ) \
-            (x)->lpVtbl->AddRef( x )
-        #define IDirectInputEffect_Release( x ) \
-            (x)->lpVtbl->Release( x )
-        #define IDirectInputEffect_Initialize( x, p1, p2, p3 ) \
-            (x)->lpVtbl->Initialize( x, p1, p2, p3 )
-        #define IDirectInputEffect_GetEffectGuid( x, p ) \
-            (x)->lpVtbl->GetEffectGuid( x, p )
-        #define IDirectInputEffect_GetParameters( x, p1, p2 ) \
-            (x)->lpVtbl->GetParameters( x, p1, p2 )
-        #define IDirectInputEffect_SetParameters( x, p1, p2 ) \
-            (x)->lpVtbl->SetParameters( x, p1, p2 )
-        #define IDirectInputEffect_Start( x, p1, p2 ) \
-            (x)->lpVtbl->Start( x, p1, p2 )
-        #define IDirectInputEffect_Stop( x ) \
-            (x)->lpVtbl->Stop( x )
-        #define IDirectInputEffect_GetEffectStatus( x, p ) \
-            (x)->lpVtbl->GetEffectStatus( x, p )
-        #define IDirectInputEffect_Download( x ) \
-            (x)->lpVtbl->Download( x )
-        #define IDirectInputEffect_Unload( x ) \
-            (x)->lpVtbl->Unload( x )
-        #define IDirectInputEffect_Escape( x, p ) \
-            (x)->lpVtbl->Escape( x, p )
-    #endif
-    #define IDirectInputDevice_QueryInterface( x, p1, p2 ) \
-        (x)->lpVtbl->QueryInterface( x, p1, p2 )
-    #define IDirectInputDevice_AddRef( x ) \
-        (x)->lpVtbl->AddRef( x )
-    #define IDirectInputDevice_Release( x ) \
-        (x)->lpVtbl->Release( x )
-    #define IDirectInputDevice_GetCapabilities( x, p ) \
-        (x)->lpVtbl->GetCapabilities( x, p )
-    #define IDirectInputDevice_EnumObjects( x, p1, p2, p3 ) \
-        (x)->lpVtbl->EnumObjects( x, p1, p2, p3 )
-    #define IDirectInputDevice_GetProperty( x, p1, p2 ) \
-        (x)->lpVtbl->GetProperty( x, p1, p2 )
-    #define IDirectInputDevice_SetProperty( x, p1, p2 ) \
-        (x)->lpVtbl->SetProperty( x, p1, p2 )
-    #define IDirectInputDevice_Acquire( x ) \
-        (x)->lpVtbl->Acquire( x )
-    #define IDirectInputDevice_Unacquire( x ) \
-        (x)->lpVtbl->Unacquire( x )
-    #define IDirectInputDevice_GetDeviceState( x, p1, p2 ) \
-        (x)->lpVtbl->GetDeviceState( x, p1, p2 )
-    #define IDirectInputDevice_GetDeviceData( x, p1, p2, p3, p4 ) \
-        (x)->lpVtbl->GetDeviceData( x, p1, p2, p3, p4 )
-    #define IDirectInputDevice_SetDataFormat( x, p ) \
-        (x)->lpVtbl->SetDataFormat( x, p )
-    #define IDirectInputDevice_SetEventNotification( x, p ) \
-        (x)->lpVtbl->SetEventNotification( x, p )
-    #define IDirectInputDevice_SetCooperativeLevel( x, p1, p2 ) \
-        (x)->lpVtbl->SetCooperativeLevel( x, p1, p2 )
-    #define IDirectInputDevice_GetObjectInfo( x, p1, p2, p3 ) \
-        (x)->lpVtbl->GetObjectInfo( x, p1, p2, p3 )
-    #define IDirectInputDevice_GetDeviceInfo( x, p ) \
-        (x)->lpVtbl->GetDeviceInfo( x, p )
-    #define IDirectInputDevice_RunControlPanel( x, p1, p2 ) \
-        (x)->lpVtbl->RunControlPanel( x, p1, p2 )
-    #define IDirectInputDevice_Initialize( x, p1, p2, p3 ) \
-        (x)->lpVtbl->Initialize( x, p1, p2, p3 )
-    #if (DIRECTINPUT_VERSION >= 0x0500)
-        #define IDirectInputDevice2_QueryInterface( x, p1, p2 ) \
-            (x)->lpVtbl->QueryInterface( x, p1, p2 )
-        #define IDirectInputDevice2_AddRef( x ) \
-            (x)->lpVtbl->AddRef( x )
-        #define IDirectInputDevice2_Release( x ) \
-            (x)->lpVtbl->Release( x )
-        #define IDirectInputDevice2_GetCapabilities( x, p ) \
-            (x)->lpVtbl->GetCapabilities( x, p )
-        #define IDirectInputDevice2_EnumObjects( x, p1, p2, p3 ) \
-            (x)->lpVtbl->EnumObjects( x, p1, p2, p3 )
-        #define IDirectInputDevice2_GetProperty( x, p1, p2 ) \
-            (x)->lpVtbl->GetProperty( x, p1, p2 )
-        #define IDirectInputDevice2_SetProperty( x, p1, p2 ) \
-            (x)->lpVtbl->SetProperty( x, p1, p2 )
-        #define IDirectInputDevice2_Acquire( x ) \
-            (x)->lpVtbl->Acquire( x )
-        #define IDirectInputDevice2_Unacquire( x ) \
-            (x)->lpVtbl->Unacquire( x )
-        #define IDirectInputDevice2_GetDeviceState( x, p1, p2 ) \
-            (x)->lpVtbl->GetDeviceState( x, p1, p2 )
-        #define IDirectInputDevice2_GetDeviceData( x, p1, p2, p3, p4 ) \
-            (x)->lpVtbl->GetDeviceData( x, p1, p2, p3, p4 )
-        #define IDirectInputDevice2_SetDataFormat( x, p ) \
-            (x)->lpVtbl->SetDataFormat( x, p )
-        #define IDirectInputDevice2_SetEventNotification( x, p ) \
-            (x)->lpVtbl->SetEventNotification( x, p )
-        #define IDirectInputDevice2_SetCooperativeLevel( x, p1, p2 ) \
-            (x)->lpVtbl->SetCooperativeLevel( x, p1, p2 )
-        #define IDirectInputDevice2_GetObjectInfo( x, p1, p2, p3 ) \
-            (x)->lpVtbl->GetObjectInfo( x, p1, p2, p3 )
-        #define IDirectInputDevice2_GetDeviceInfo( x, p ) \
-            (x)->lpVtbl->GetDeviceInfo( x, p )
-        #define IDirectInputDevice2_RunControlPanel( x, p1, p2 ) \
-            (x)->lpVtbl->RunControlPanel( x, p1, p2 )
-        #define IDirectInputDevice2_Initialize( x, p1, p2, p3 ) \
-            (x)->lpVtbl->Initialize( x, p1, p2, p3 )
-        #define IDirectInputDevice2_CreateEffect( x, p1, p2, p3, p4 ) \
-            (x)->lpVtbl->CreateEffect( x, p1, p2, p3, p4 )
-        #define IDirectInputDevice2_EnumEffects( x, p1, p2, p3 ) \
-            (x)->lpVtbl->EnumEffects( x, p1, p2, p3 )
-        #define IDirectInputDevice2_GetEffectInfo( x, p1, p2 ) \
-            (x)->lpVtbl->GetEffectInfo( x, p1, p2 )
-        #define IDirectInputDevice2_GetForceFeedbackState( x, p ) \
-            (x)->lpVtbl->GetForceFeedbackState( x, p )
-        #define IDirectInputDevice2_SendForceFeedbackCommand( x, p ) \
-            (x)->lpVtbl->SendForceFeedbackCommand( x, p )
-        #define IDirectInputDevice2_EnumCreatedEffectObjects( x, p1, p2, p3 ) \
-            (x)->lpVtbl->EnumCreatedEffectObjects( x, p1, p2, p3 )
-        #define IDirectInputDevice2_Escape( x, p ) \
-            (x)->lpVtbl->Escape( x, p )
-        #define IDirectInputDevice2_Poll( x ) \
-            (x)->lpVtbl->Poll( x )
-        #define IDirectInputDevice2_SendDeviceData( x, p1, p2, p3, p4 ) \
-            (x)->lpVtbl->SendDeviceData( x, p1, p2, p3, p4 )
-    #endif
-    #if (DIRECTINPUT_VERSION >= 0x0700)
-        #define IDirectInputDevice7_QueryInterface( x, p1, p2 ) \
-            (x)->lpVtbl->QueryInterface( x, p1, p2 )
-        #define IDirectInputDevice7_AddRef( x ) \
-            (x)->lpVtbl->AddRef( x )
-        #define IDirectInputDevice7_Release( x ) \
-            (x)->lpVtbl->Release( x )
-        #define IDirectInputDevice7_GetCapabilities( x, p ) \
-            (x)->lpVtbl->GetCapabilities( x, p )
-        #define IDirectInputDevice7_EnumObjects( x, p1, p2, p3 ) \
-            (x)->lpVtbl->EnumObjects( x, p1, p2, p3 )
-        #define IDirectInputDevice7_GetProperty( x, p1, p2 ) \
-            (x)->lpVtbl->GetProperty( x, p1, p2 )
-        #define IDirectInputDevice7_SetProperty( x, p1, p2 ) \
-            (x)->lpVtbl->SetProperty( x, p1, p2 )
-        #define IDirectInputDevice7_Acquire( x ) \
-            (x)->lpVtbl->Acquire( x )
-        #define IDirectInputDevice7_Unacquire( x ) \
-            (x)->lpVtbl->Unacquire( x )
-        #define IDirectInputDevice7_GetDeviceState( x, p1, p2 ) \
-            (x)->lpVtbl->GetDeviceState( x, p1, p2 )
-        #define IDirectInputDevice7_GetDeviceData( x, p1, p2, p3, p4 ) \
-            (x)->lpVtbl->GetDeviceData( x, p1, p2, p3, p4 )
-        #define IDirectInputDevice7_SetDataFormat( x, p ) \
-            (x)->lpVtbl->SetDataFormat( x, p )
-        #define IDirectInputDevice7_SetEventNotification( x, p ) \
-            (x)->lpVtbl->SetEventNotification( x, p )
-        #define IDirectInputDevice7_SetCooperativeLevel( x, p1, p2 ) \
-            (x)->lpVtbl->SetCooperativeLevel( x, p1, p2 )
-        #define IDirectInputDevice7_GetObjectInfo( x, p1, p2, p3 ) \
-            (x)->lpVtbl->GetObjectInfo( x, p1, p2, p3 )
-        #define IDirectInputDevice7_GetDeviceInfo( x, p ) \
-            (x)->lpVtbl->GetDeviceInfo( x, p )
-        #define IDirectInputDevice7_RunControlPanel( x, p1, p2 ) \
-            (x)->lpVtbl->RunControlPanel( x, p1, p2 )
-        #define IDirectInputDevice7_Initialize( x, p1, p2, p3 ) \
-            (x)->lpVtbl->Initialize( x, p1, p2, p3 )
-        #define IDirectInputDevice7_CreateEffect( x, p1, p2, p3, p4 ) \
-            (x)->lpVtbl->CreateEffect( x, p1, p2, p3, p4 )
-        #define IDirectInputDevice7_EnumEffects( x, p1, p2, p3 ) \
-            (x)->lpVtbl->EnumEffects( x, p1, p2, p3 )
-        #define IDirectInputDevice7_GetEffectInfo( x, p1, p2 ) \
-            (x)->lpVtbl->GetEffectInfo( x, p1, p2 )
-        #define IDirectInputDevice7_GetForceFeedbackState( x, p ) \
-            (x)->lpVtbl->GetForceFeedbackState( x, p )
-        #define IDirectInputDevice7_SendForceFeedbackCommand( x, p ) \
-            (x)->lpVtbl->SendForceFeedbackCommand( x, p )
-        #define IDirectInputDevice7_EnumCreatedEffectObjects( x, p1, p2, p3 ) \
-            (x)->lpVtbl->EnumCreatedEffectObjects( x, p1, p2, p3 )
-        #define IDirectInputDevice7_Escape( x, p ) \
-            (x)->lpVtbl->Escape( x, p )
-        #define IDirectInputDevice7_Poll( x ) \
-            (x)->lpVtbl->Poll( x )
-        #define IDirectInputDevice7_SendDeviceData( x, p1, p2, p3, p4 ) \
-            (x)->lpVtbl->SendDeviceData( x, p1, p2, p3, p4 )
-        #define IDirectInputDevice7_EnumEffectsInFile( x, p1, p2, p3, p4 ) \
-            (x)->lpVtbl->EnumEffectsInFile( x, p1, p2, p3, p4 )
-        #define IDirectInputDevice7_WriteEffectToFile( x, p1, p2, p3, p4 ) \
-            (x)->lpVtbl->WriteEffectToFile( x, p1, p2, p3, p4 )
-    #endif
-    #if (DIRECTINPUT_VERSION >= 0x0800)
-        #define IDirectInputDevice8_QueryInterface( x, p1, p2 ) \
-            (x)->lpVtbl->QueryInterface( x, p1, p2 )
-        #define IDirectInputDevice8_AddRef( x ) \
-            (x)->lpVtbl->AddRef( x )
-        #define IDirectInputDevice8_Release( x ) \
-            (x)->lpVtbl->Release( x )
-        #define IDirectInputDevice8_GetCapabilities( x, p ) \
-            (x)->lpVtbl->GetCapabilities( x, p )
-        #define IDirectInputDevice8_EnumObjects( x, p1, p2, p3 ) \
-            (x)->lpVtbl->EnumObjects( x, p1, p2, p3 )
-        #define IDirectInputDevice8_GetProperty( x, p1, p2 ) \
-            (x)->lpVtbl->GetProperty( x, p1, p2 )
-        #define IDirectInputDevice8_SetProperty( x, p1, p2 ) \
-            (x)->lpVtbl->SetProperty( x, p1, p2 )
-        #define IDirectInputDevice8_Acquire( x ) \
-            (x)->lpVtbl->Acquire( x )
-        #define IDirectInputDevice8_Unacquire( x ) \
-            (x)->lpVtbl->Unacquire( x )
-        #define IDirectInputDevice8_GetDeviceState( x, p1, p2 ) \
-            (x)->lpVtbl->GetDeviceState( x, p1, p2 )
-        #define IDirectInputDevice8_GetDeviceData( x, p1, p2, p3, p4 ) \
-            (x)->lpVtbl->GetDeviceData( x, p1, p2, p3, p4 )
-        #define IDirectInputDevice8_SetDataFormat( x, p ) \
-            (x)->lpVtbl->SetDataFormat( x, p )
-        #define IDirectInputDevice8_SetEventNotification( x, p ) \
-            (x)->lpVtbl->SetEventNotification( x, p )
-        #define IDirectInputDevice8_SetCooperativeLevel( x, p1, p2 ) \
-            (x)->lpVtbl->SetCooperativeLevel( x, p1, p2 )
-        #define IDirectInputDevice8_GetObjectInfo( x, p1, p2, p3 ) \
-            (x)->lpVtbl->GetObjectInfo( x, p1, p2, p3 )
-        #define IDirectInputDevice8_GetDeviceInfo( x, p ) \
-            (x)->lpVtbl->GetDeviceInfo( x, p )
-        #define IDirectInputDevice8_RunControlPanel( x, p1, p2 ) \
-            (x)->lpVtbl->RunControlPanel( x, p1, p2 )
-        #define IDirectInputDevice8_Initialize( x, p1, p2, p3 ) \
-            (x)->lpVtbl->Initialize( x, p1, p2, p3 )
-        #define IDirectInputDevice8_CreateEffect( x, p1, p2, p3, p4 ) \
-            (x)->lpVtbl->CreateEffect( x, p1, p2, p3, p4 )
-        #define IDirectInputDevice8_EnumEffects( x, p1, p2, p3 ) \
-            (x)->lpVtbl->EnumEffects( x, p1, p2, p3 )
-        #define IDirectInputDevice8_GetEffectInfo( x, p1, p2 ) \
-            (x)->lpVtbl->GetEffectInfo( x, p1, p2 )
-        #define IDirectInputDevice8_GetForceFeedbackState( x, p ) \
-            (x)->lpVtbl->GetForceFeedbackState( x, p )
-        #define IDirectInputDevice8_SendForceFeedbackCommand( x, p ) \
-            (x)->lpVtbl->SendForceFeedbackCommand( x, p )
-        #define IDirectInputDevice8_EnumCreatedEffectObjects( x, p1, p2, p3 ) \
-            (x)->lpVtbl->EnumCreatedEffectObjects( x, p1, p2, p3 )
-        #define IDirectInputDevice8_Escape( x, p ) \
-            (x)->lpVtbl->Escape( x, p )
-        #define IDirectInputDevice8_Poll( x ) \
-            (x)->lpVtbl->Poll( x )
-        #define IDirectInputDevice8_SendDeviceData( x, p1, p2, p3, p4 ) \
-            (x)->lpVtbl->SendDeviceData( x, p1, p2, p3, p4 )
-        #define IDirectInputDevice8_EnumEffectsInFile( x, p1, p2, p3, p4 ) \
-            (x)->lpVtbl->EnumEffectsInFile( x, p1, p2, p3, p4 )
-        #define IDirectInputDevice8_WriteEffectToFile( x, p1, p2, p3, p4 ) \
-            (x)->lpVtbl->WriteEffectToFile( x, p1, p2, p3, p4 )
-        #define IDirectInputDevice8_BuildActionMap( x, p1, p2, p3 ) \
-            (x)->lpVtbl->BuildActionMap( x, p1, p2, p3 )
-        #define IDirectInputDevice8_SetActionMap( x, p1, p2, p3 ) \
-            (x)->lpVtbl->SetActionMap( x, p1, p2, p3 )
-        #define IDirectInputDevice8_GetImageInfo( x, p ) \
-            (x)->lpVtbl->GetImageInfo( x, p )
-    #endif
-    #define IDirectInput_QueryInterface( x, p1, p2 ) \
-        (x)->lpVtbl->QueryInterface( x, p1, p2 )
-    #define IDirectInput_AddRef( x ) \
-        (x)->lpVtbl->AddRef( x )
-    #define IDirectInput_Release( x ) \
-        (x)->lpVtbl->Release( x )
-    #define IDirectInput_CreateDevice( x, p1, p2, p3 ) \
-        (x)->lpVtbl->CreateDevice( x, p1, p2, p3 )
-    #define IDirectInput_EnumDevices( x, p1, p2, p3, p4 ) \
-        (x)->lpVtbl->EnumDevices( x, p1, p2, p3, p4 )
-    #define IDirectInput_GetDeviceStatus( x, p ) \
-        (x)->lpVtbl->GetDeviceStatus( x, p )
-    #define IDirectInput_RunControlPanel( x, p1, p2 ) \
-        (x)->lpVtbl->RunControlPanel( x, p1, p2 )
-    #define IDirectInput_Initialize( x, p1, p2 ) \
-        (x)->lpVtbl->Initialize( x, p1, p2 )
-    #define IDirectInput2_QueryInterface( x, p1, p2 ) \
-        (x)->lpVtbl->QueryInterface( x, p1, p2 )
-    #define IDirectInput2_AddRef( x ) \
-        (x)->lpVtbl->AddRef( x )
-    #define IDirectInput2_Release( x ) \
-        (x)->lpVtbl->Release( x )
-    #define IDirectInput2_CreateDevice( x, p1, p2, p3 ) \
-        (x)->lpVtbl->CreateDevice( x, p1, p2, p3 )
-    #define IDirectInput2_EnumDevices( x, p1, p2, p3, p4 ) \
-        (x)->lpVtbl->EnumDevices( x, p1, p2, p3, p4 )
-    #define IDirectInput2_GetDeviceStatus( x, p ) \
-        (x)->lpVtbl->GetDeviceStatus( x, p )
-    #define IDirectInput2_RunControlPanel( x, p1, p2 ) \
-        (x)->lpVtbl->RunControlPanel( x, p1, p2 )
-    #define IDirectInput2_Initialize( x, p1, p2 ) \
-        (x)->lpVtbl->Initialize( x, p1, p2 )
-    #define IDirectInput2_FindDevice( x, p1, p2, p3 ) \
-        (x)->lpVtbl->FindDevice( x, p1, p2, p3 )
-    #define IDirectInput7_QueryInterface( x, p1, p2 ) \
-        (x)->lpVtbl->QueryInterface( x, p1, p2 )
-    #define IDirectInput7_AddRef( x ) \
-        (x)->lpVtbl->AddRef( x )
-    #define IDirectInput7_Release( x ) \
-        (x)->lpVtbl->Release( x )
-    #define IDirectInput7_CreateDevice( x, p1, p2, p3 ) \
-        (x)->lpVtbl->CreateDevice( x, p1, p2, p3 )
-    #define IDirectInput7_EnumDevices( x, p1, p2, p3, p4 ) \
-        (x)->lpVtbl->EnumDevices( x, p1, p2, p3, p4 )
-    #define IDirectInput7_GetDeviceStatus( x, p ) \
-        (x)->lpVtbl->GetDeviceStatus( x, p )
-    #define IDirectInput7_RunControlPanel( x, p1, p2 ) \
-        (x)->lpVtbl->RunControlPanel( x, p1, p2 )
-    #define IDirectInput7_Initialize( x, p1, p2 ) \
-        (x)->lpVtbl->Initialize( x, p1, p2 )
-    #define IDirectInput7_FindDevice( x, p1, p2, p3 ) \
-        (x)->lpVtbl->FindDevice( x, p1, p2, p3 )
-    #define IDirectInput7_CreateDeviceEx( x, p1, p2, p3, p4 ) \
-        (x)->lpVtbl->CreateDeviceEx( x, p1, p2, p3, p4 )
-    #if (DIRECTINPUT_VERSION >= 0x0800)
-        #define IDirectInput8_QueryInterface( x, p1, p2 ) \
-            (x)->lpVtbl->QueryInterface( x, p1, p2 )
-        #define IDirectInput8_AddRef( x ) \
-            (x)->lpVtbl->AddRef( x )
-        #define IDirectInput8_Release( x ) \
-            (x)->lpVtbl->Release( x )
-        #define IDirectInput8_CreateDevice( x, p1, p2, p3 ) \
-            (x)->lpVtbl->CreateDevice( x, p1, p2, p3 )
-        #define IDirectInput8_EnumDevices( x, p1, p2, p3, p4 ) \
-            (x)->lpVtbl->EnumDevices( x, p1, p2, p3, p4 )
-        #define IDirectInput8_GetDeviceStatus( x, p ) \
-            (x)->lpVtbl->GetDeviceStatus( x, p )
-        #define IDirectInput8_RunControlPanel( x, p1, p2 ) \
-            (x)->lpVtbl->RunControlPanel( x, p1, p2 )
-        #define IDirectInput8_Initialize( x, p1, p2 ) \
-            (x)->lpVtbl->Initialize( x, p1, p2 )
-        #define IDirectInput8_FindDevice( x, p1, p2, p3 ) \
-            (x)->lpVtbl->FindDevice( x, p1, p2, p3 )
-        #define IDirectInput8_EnumDevicesBySemantics( x, p1, p2, p3, p4, p5 ) \
-            (x)->lpVtbl->EnumDevicesBySemantics( x, p1, p2, p3, p4, p5 )
-        #define IDirectInput8_ConfigureDevices( x, p1, p2, p3, p4 ) \
-            (x)->lpVtbl->ConfigureDevices( x, p1, p2, p3, p4 )
-    #endif
-#else
-    #if (DIRECTINPUT_VERSION >= 0x0500)
-        #define IDirectInputEffect_QueryInterface( x, p1, p2 ) \
-            (x)->QueryInterface( p1, p2 )
-        #define IDirectInputEffect_AddRef( x ) \
-            (x)->AddRef()
-        #define IDirectInputEffect_Release( x ) \
-            (x)->Release()
-        #define IDirectInputEffect_Initialize( x, p1, p2, p3 ) \
-            (x)->Initialize( p1, p2, p3 )
-        #define IDirectInputEffect_GetEffectGuid( x, p ) \
-            (x)->GetEffectGuid( p )
-        #define IDirectInputEffect_GetParameters( x, p1, p2 ) \
-            (x)->GetParameters( p1, p2 )
-        #define IDirectInputEffect_SetParameters( x, p1, p2 ) \
-            (x)->SetParameters( p1, p2 )
-        #define IDirectInputEffect_Start( x, p1, p2 ) \
-            (x)->Start( p1, p2 )
-        #define IDirectInputEffect_Stop( x ) \
-            (x)->Stop()
-        #define IDirectInputEffect_GetEffectStatus( x, p ) \
-            (x)->GetEffectStatus( p )
-        #define IDirectInputEffect_Download( x ) \
-            (x)->Download()
-        #define IDirectInputEffect_Unload( x ) \
-            (x)->Unload()
-        #define IDirectInputEffect_Escape( x, p ) \
-            (x)->Escape( p )
-    #endif
-    #define IDirectInputDevice_QueryInterface( x, p1, p2 ) \
-        (x)->QueryInterface( p1, p2 )
-    #define IDirectInputDevice_AddRef( x ) \
-        (x)->AddRef()
-    #define IDirectInputDevice_Release( x ) \
-        (x)->Release()
-    #define IDirectInputDevice_GetCapabilities( x, p ) \
-        (x)->GetCapabilities( p )
-    #define IDirectInputDevice_EnumObjects( x, p1, p2, p3 ) \
-        (x)->EnumObjects( p1, p2, p3 )
-    #define IDirectInputDevice_GetProperty( x, p1, p2 ) \
-        (x)->GetProperty( p1, p2 )
-    #define IDirectInputDevice_SetProperty( x, p1, p2 ) \
-        (x)->SetProperty( p1, p2 )
-    #define IDirectInputDevice_Acquire( x ) \
-        (x)->Acquire()
-    #define IDirectInputDevice_Unacquire( x ) \
-        (x)->Unacquire()
-    #define IDirectInputDevice_GetDeviceState( x, p1, p2 ) \
-        (x)->GetDeviceState( p1, p2 )
-    #define IDirectInputDevice_GetDeviceData( x, p1, p2, p3, p4 ) \
-        (x)->GetDeviceData( p1, p2, p3, p4 )
-    #define IDirectInputDevice_SetDataFormat( x, p ) \
-        (x)->SetDataFormat( p )
-    #define IDirectInputDevice_SetEventNotification( x, p ) \
-        (x)->SetEventNotification( p )
-    #define IDirectInputDevice_SetCooperativeLevel( x, p1, p2 ) \
-        (x)->SetCooperativeLevel( p1, p2 )
-    #define IDirectInputDevice_GetObjectInfo( x, p1, p2, p3 ) \
-        (x)->GetObjectInfo( p1, p2, p3 )
-    #define IDirectInputDevice_GetDeviceInfo( x, p ) \
-        (x)->GetDeviceInfo( p )
-    #define IDirectInputDevice_RunControlPanel( x, p1, p2 ) \
-        (x)->RunControlPanel( p1, p2 )
-    #define IDirectInputDevice_Initialize( x, p1, p2, p3 ) \
-        (x)->Initialize( p1, p2, p3 )
-    #if (DIRECTINPUT_VERSION >= 0x0500)
-        #define IDirectInputDevice2_QueryInterface( x, p1, p2 ) \
-            (x)->QueryInterface( p1, p2 )
-        #define IDirectInputDevice2_AddRef( x ) \
-            (x)->AddRef()
-        #define IDirectInputDevice2_Release( x ) \
-            (x)->Release()
-        #define IDirectInputDevice2_GetCapabilities( x, p ) \
-            (x)->GetCapabilities( p )
-        #define IDirectInputDevice2_EnumObjects( x, p1, p2, p3 ) \
-            (x)->EnumObjects( p1, p2, p3 )
-        #define IDirectInputDevice2_GetProperty( x, p1, p2 ) \
-            (x)->GetProperty( p1, p2 )
-        #define IDirectInputDevice2_SetProperty( x, p1, p2 ) \
-            (x)->SetProperty( p1, p2 )
-        #define IDirectInputDevice2_Acquire( x ) \
-            (x)->Acquire()
-        #define IDirectInputDevice2_Unacquire( x ) \
-            (x)->Unacquire()
-        #define IDirectInputDevice2_GetDeviceState( x, p1, p2 ) \
-            (x)->GetDeviceState( p1, p2 )
-        #define IDirectInputDevice2_GetDeviceData( x, p1, p2, p3, p4 ) \
-            (x)->GetDeviceData( p1, p2, p3, p4 )
-        #define IDirectInputDevice2_SetDataFormat( x, p ) \
-            (x)->SetDataFormat( p )
-        #define IDirectInputDevice2_SetEventNotification( x, p ) \
-            (x)->SetEventNotification( p )
-        #define IDirectInputDevice2_SetCooperativeLevel( x, p1, p2 ) \
-            (x)->SetCooperativeLevel( p1, p2 )
-        #define IDirectInputDevice2_GetObjectInfo( x, p1, p2, p3 ) \
-            (x)->GetObjectInfo( p1, p2, p3 )
-        #define IDirectInputDevice2_GetDeviceInfo( x, p ) \
-            (x)->GetDeviceInfo( p )
-        #define IDirectInputDevice2_RunControlPanel( x, p1, p2 ) \
-            (x)->RunControlPanel( p1, p2 )
-        #define IDirectInputDevice2_Initialize( x, p1, p2, p3 ) \
-            (x)->Initialize( p1, p2, p3 )
-        #define IDirectInputDevice2_CreateEffect( x, p1, p2, p3, p4 ) \
-            (x)->CreateEffect( p1, p2, p3, p4 )
-        #define IDirectInputDevice2_EnumEffects( x, p1, p2, p3 ) \
-            (x)->EnumEffects( p1, p2, p3 )
-        #define IDirectInputDevice2_GetEffectInfo( x, p1, p2 ) \
-            (x)->GetEffectInfo( p1, p2 )
-        #define IDirectInputDevice2_GetForceFeedbackState( x, p ) \
-            (x)->GetForceFeedbackState( p )
-        #define IDirectInputDevice2_SendForceFeedbackCommand( x, p ) \
-            (x)->SendForceFeedbackCommand( p )
-        #define IDirectInputDevice2_EnumCreatedEffectObjects( x, p1, p2, p3 ) \
-            (x)->EnumCreatedEffectObjects( p1, p2, p3 )
-        #define IDirectInputDevice2_Escape( x, p ) \
-            (x)->Escape( p )
-        #define IDirectInputDevice2_Poll( x ) \
-            (x)->Poll()
-        #define IDirectInputDevice2_SendDeviceData( x, p1, p2, p3, p4 ) \
-            (x)->SendDeviceData( p1, p2, p3, p4 )
-    #endif
-    #if (DIRECTINPUT_VERSION >= 0x0500)
-        #define IDirectInputDevice7_QueryInterface( x, p1, p2 ) \
-            (x)->QueryInterface( p1, p2 )
-        #define IDirectInputDevice7_AddRef( x ) \
-            (x)->AddRef()
-        #define IDirectInputDevice7_Release( x ) \
-            (x)->Release()
-        #define IDirectInputDevice7_GetCapabilities( x, p ) \
-            (x)->GetCapabilities( p )
-        #define IDirectInputDevice7_EnumObjects( x, p1, p2, p3 ) \
-            (x)->EnumObjects( p1, p2, p3 )
-        #define IDirectInputDevice7_GetProperty( x, p1, p2 ) \
-            (x)->GetProperty( p1, p2 )
-        #define IDirectInputDevice7_SetProperty( x, p1, p2 ) \
-            (x)->SetProperty( p1, p2 )
-        #define IDirectInputDevice7_Acquire( x ) \
-            (x)->Acquire()
-        #define IDirectInputDevice7_Unacquire( x ) \
-            (x)->Unacquire()
-        #define IDirectInputDevice7_GetDeviceState( x, p1, p2 ) \
-            (x)->GetDeviceState( p1, p2 )
-        #define IDirectInputDevice7_GetDeviceData( x, p1, p2, p3, p4 ) \
-            (x)->GetDeviceData( p1, p2, p3, p4 )
-        #define IDirectInputDevice7_SetDataFormat( x, p ) \
-            (x)->SetDataFormat( p )
-        #define IDirectInputDevice7_SetEventNotification( x, p ) \
-            (x)->SetEventNotification( p )
-        #define IDirectInputDevice7_SetCooperativeLevel( x, p1, p2 ) \
-            (x)->SetCooperativeLevel( p1, p2 )
-        #define IDirectInputDevice7_GetObjectInfo( x, p1, p2, p3 ) \
-            (x)->GetObjectInfo( p1, p2, p3 )
-        #define IDirectInputDevice7_GetDeviceInfo( x, p ) \
-            (x)->GetDeviceInfo( p )
-        #define IDirectInputDevice7_RunControlPanel( x, p1, p2 ) \
-            (x)->RunControlPanel( p1, p2 )
-        #define IDirectInputDevice7_Initialize( x, p1, p2, p3 ) \
-            (x)->Initialize( p1, p2, p3 )
-        #define IDirectInputDevice7_CreateEffect( x, p1, p2, p3, p4 ) \
-            (x)->CreateEffect( p1, p2, p3, p4 )
-        #define IDirectInputDevice7_EnumEffects( x, p1, p2, p3 ) \
-            (x)->EnumEffects( p1, p2, p3 )
-        #define IDirectInputDevice7_GetEffectInfo( x, p1, p2 ) \
-            (x)->GetEffectInfo( p1, p2 )
-        #define IDirectInputDevice7_GetForceFeedbackState( x, p ) \
-            (x)->GetForceFeedbackState( p )
-        #define IDirectInputDevice7_SendForceFeedbackCommand( x, p ) \
-            (x)->SendForceFeedbackCommand( p )
-        #define IDirectInputDevice7_EnumCreatedEffectObjects( x, p1, p2, p3 ) \
-            (x)->EnumCreatedEffectObjects( p1, p2, p3 )
-        #define IDirectInputDevice7_Escape( x, p ) \
-            (x)->Escape( p )
-        #define IDirectInputDevice7_Poll( x ) \
-            (x)->Poll()
-        #define IDirectInputDevice7_SendDeviceData( x, p1, p2, p3, p4 ) \
-            (x)->SendDeviceData( p1, p2, p3, p4 )
-        #define IDirectInputDevice7_EnumEffectsInFile( x, p1, p2, p3, p4 ) \
-            (x)->EnumEffectsInFile( p1, p2, p3, p4 )
-        #define IDirectInputDevice7_WriteEffectToFile( x, p1, p2, p3, p4 ) \
-            (x)->WriteEffectToFile( p1, p2, p3, p4 )
-    #endif
-    #if (DIRECTINPUT_VERSION >= 0x0800)
-        #define IDirectInputDevice8_QueryInterface( x, p1, p2 ) \
-            (x)->QueryInterface( p1, p2 )
-        #define IDirectInputDevice8_AddRef( x ) \
-            (x)->AddRef()
-        #define IDirectInputDevice8_Release( x ) \
-            (x)->Release()
-        #define IDirectInputDevice8_GetCapabilities( x, p ) \
-            (x)->GetCapabilities( p )
-        #define IDirectInputDevice8_EnumObjects( x, p1, p2, p3 ) \
-            (x)->EnumObjects( p1, p2, p3 )
-        #define IDirectInputDevice8_GetProperty( x, p1, p2 ) \
-            (x)->GetProperty( p1, p2 )
-        #define IDirectInputDevice8_SetProperty( x, p1, p2 ) \
-            (x)->SetProperty( p1, p2 )
-        #define IDirectInputDevice8_Acquire( x ) \
-            (x)->Acquire()
-        #define IDirectInputDevice8_Unacquire( x ) \
-            (x)->Unacquire()
-        #define IDirectInputDevice8_GetDeviceState( x, p1, p2 ) \
-            (x)->GetDeviceState( p1, p2 )
-        #define IDirectInputDevice8_GetDeviceData( x, p1, p2, p3, p4 ) \
-            (x)->GetDeviceData( p1, p2, p3, p4 )
-        #define IDirectInputDevice8_SetDataFormat( x, p ) \
-            (x)->SetDataFormat( p )
-        #define IDirectInputDevice8_SetEventNotification( x, p ) \
-            (x)->SetEventNotification( p )
-        #define IDirectInputDevice8_SetCooperativeLevel( x, p1, p2 ) \
-            (x)->SetCooperativeLevel( p1, p2 )
-        #define IDirectInputDevice8_GetObjectInfo( x, p1, p2, p3 ) \
-            (x)->GetObjectInfo( p1, p2, p3 )
-        #define IDirectInputDevice8_GetDeviceInfo( x, p ) \
-            (x)->GetDeviceInfo( p )
-        #define IDirectInputDevice8_RunControlPanel( x, p1, p2 ) \
-            (x)->RunControlPanel( p1, p2 )
-        #define IDirectInputDevice8_Initialize( x, p1, p2, p3 ) \
-            (x)->Initialize( p1, p2, p3 )
-        #define IDirectInputDevice8_CreateEffect( x, p1, p2, p3, p4 ) \
-            (x)->CreateEffect( p1, p2, p3, p4 )
-        #define IDirectInputDevice8_EnumEffects( x, p1, p2, p3 ) \
-            (x)->EnumEffects( p1, p2, p3 )
-        #define IDirectInputDevice8_GetEffectInfo( x, p1, p2 ) \
-            (x)->GetEffectInfo( p1, p2 )
-        #define IDirectInputDevice8_GetForceFeedbackState( x, p ) \
-            (x)->GetForceFeedbackState( p )
-        #define IDirectInputDevice8_SendForceFeedbackCommand( x, p ) \
-            (x)->SendForceFeedbackCommand( p )
-        #define IDirectInputDevice8_EnumCreatedEffectObjects( x, p1, p2, p3 ) \
-            (x)->EnumCreatedEffectObjects( p1, p2, p3 )
-        #define IDirectInputDevice8_Escape( x, p ) \
-            (x)->Escape( p )
-        #define IDirectInputDevice8_Poll( x ) \
-            (x)->Poll()
-        #define IDirectInputDevice8_SendDeviceData( x, p1, p2, p3, p4 ) \
-            (x)->SendDeviceData( p1, p2, p3, p4 )
-        #define IDirectInputDevice8_EnumEffectsInFile( x, p1, p2, p3, p4 ) \
-            (x)->EnumEffectsInFile( p1, p2, p3, p4 )
-        #define IDirectInputDevice8_WriteEffectToFile( x, p1, p2, p3, p4 ) \
-            (x)->WriteEffectToFile( p1, p2, p3, p4 )
-        #define IDirectInputDevice8_BuildActionMap( x, p1, p2, p3 ) \
-            (x)->BuildActionMap( p1, p2, p3 )
-        #define IDirectInputDevice8_SetActionMap( x, p1, p2, p3 ) \
-            (x)->SetActionMap( p1, p2, p3 )
-        #define IDirectInputDevice8_GetImageInfo( x, p ) \
-            (x)->GetImageInfo( p )
-    #endif
-    #define IDirectInput_QueryInterface( x, p1, p2 ) \
-        (x)->QueryInterface( p1, p2 )
-    #define IDirectInput_AddRef( x ) \
-        (x)->AddRef()
-    #define IDirectInput_Release( x ) \
-        (x)->Release()
-    #define IDirectInput_CreateDevice( x, p1, p2, p3 ) \
-        (x)->CreateDevice( p1, p2, p3 )
-    #define IDirectInput_EnumDevices( x, p1, p2, p3, p4 ) \
-        (x)->EnumDevices( p1, p2, p3, p4 )
-    #define IDirectInput_GetDeviceStatus( x, p ) \
-        (x)->GetDeviceStatus( p )
-    #define IDirectInput_RunControlPanel( x, p1, p2 ) \
-        (x)->RunControlPanel( p1, p2 )
-    #define IDirectInput_Initialize( x, p1, p2 ) \
-        (x)->Initialize( p1, p2 )
-    #define IDirectInput2_QueryInterface( x, p1, p2 ) \
-        (x)->QueryInterface( p1, p2 )
-    #define IDirectInput2_AddRef( x ) \
-        (x)->AddRef()
-    #define IDirectInput2_Release( x ) \
-        (x)->Release()
-    #define IDirectInput2_CreateDevice( x, p1, p2, p3 ) \
-        (x)->CreateDevice( p1, p2, p3 )
-    #define IDirectInput2_EnumDevices( x, p1, p2, p3, p4 ) \
-        (x)->EnumDevices( p1, p2, p3, p4 )
-    #define IDirectInput2_GetDeviceStatus( x, p ) \
-        (x)->GetDeviceStatus( p )
-    #define IDirectInput2_RunControlPanel( x, p1, p2 ) \
-        (x)->RunControlPanel( p1, p2 )
-    #define IDirectInput2_Initialize( x, p1, p2 ) \
-        (x)->Initialize( p1, p2 )
-    #define IDirectInput2_FindDevice( x, p1, p2, p3 ) \
-        (x)->FindDevice( p1, p2, p3 )
-    #define IDirectInput7_QueryInterface( x, p1, p2 ) \
-        (x)->QueryInterface( p1, p2 )
-    #define IDirectInput7_AddRef( x ) \
-        (x)->AddRef()
-    #define IDirectInput7_Release( x ) \
-        (x)->Release()
-    #define IDirectInput7_CreateDevice( x, p1, p2, p3 ) \
-        (x)->CreateDevice( p1, p2, p3 )
-    #define IDirectInput7_EnumDevices( x, p1, p2, p3, p4 ) \
-        (x)->EnumDevices( p1, p2, p3, p4 )
-    #define IDirectInput7_GetDeviceStatus( x, p ) \
-        (x)->GetDeviceStatus( p )
-    #define IDirectInput7_RunControlPanel( x, p1, p2 ) \
-        (x)->RunControlPanel( p1, p2 )
-    #define IDirectInput7_Initialize( x, p1, p2 ) \
-        (x)->Initialize( p1, p2 )
-    #define IDirectInput7_FindDevice( x, p1, p2, p3 ) \
-        (x)->FindDevice( p1, p2, p3 )
-    #define IDirectInput7_CreateDeviceEx( x, p1, p2, p3, p4 ) \
-        (x)->CreateDeviceEx( p1, p2, p3, p4 )
-    #if (DIRECTINPUT_VERSION >= 0x0800)
-        #define IDirectInput8_QueryInterface( x, p1, p2 ) \
-            (x)->QueryInterface( p1, p2 )
-        #define IDirectInput8_AddRef( x ) \
-            (x)->AddRef()
-        #define IDirectInput8_Release( x ) \
-            (x)->Release()
-        #define IDirectInput8_CreateDevice( x, p1, p2, p3 ) \
-            (x)->CreateDevice( p1, p2, p3 )
-        #define IDirectInput8_EnumDevices( x, p1, p2, p3, p4 ) \
-            (x)->EnumDevices( p1, p2, p3, p4 )
-        #define IDirectInput8_GetDeviceStatus( x, p ) \
-            (x)->GetDeviceStatus( p )
-        #define IDirectInput8_RunControlPanel( x, p1, p2 ) \
-            (x)->RunControlPanel( p1, p2 )
-        #define IDirectInput8_Initialize( x, p1, p2 ) \
-            (x)->Initialize( p1, p2 )
-        #define IDirectInput8_FindDevice( x, p1, p2, p3 ) \
-            (x)->FindDevice( p1, p2, p3 )
-        #define IDirectInput8_EnumDevicesBySemantics( x, p1, p2, p3, p4, p5 ) \
-            (x)->EnumDevicesBySemantics( p1, p2, p3, p4, p5 )
-        #define IDirectInput8_ConfigureDevices( x, p1, p2, p3, p4 ) \
-            (x)->ConfigureDevices( p1, p2, p3, p4 )
-    #endif
+#if (DIRECTINPUT_VERSION >= 0x0500)
+    #define IDirectInputEffect_QueryInterface( x, p1, p2 ) \
+        _INTRFMEMBP( x, QueryInterface, p1, p2 )
+    #define IDirectInputEffect_AddRef( x ) \
+        _INTRFMEMBP( x, AddRef )
+    #define IDirectInputEffect_Release( x ) \
+        _INTRFMEMBP( x, Release )
+    #define IDirectInputEffect_Initialize( x, p1, p2, p3 ) \
+        _INTRFMEMBP( x, Initialize, p1, p2, p3 )
+    #define IDirectInputEffect_GetEffectGuid( x, p ) \
+        _INTRFMEMBP( x, GetEffectGuid, p )
+    #define IDirectInputEffect_GetParameters( x, p1, p2 ) \
+        _INTRFMEMBP( x, GetParameters, p1, p2 )
+    #define IDirectInputEffect_SetParameters( x, p1, p2 ) \
+        _INTRFMEMBP( x, SetParameters, p1, p2 )
+    #define IDirectInputEffect_Start( x, p1, p2 ) \
+        _INTRFMEMBP( x, Start, p1, p2 )
+    #define IDirectInputEffect_Stop( x ) \
+        _INTRFMEMBP( x, Stop )
+    #define IDirectInputEffect_GetEffectStatus( x, p ) \
+        _INTRFMEMBP( x, GetEffectStatus, p )
+    #define IDirectInputEffect_Download( x ) \
+        _INTRFMEMBP( x, Download )
+    #define IDirectInputEffect_Unload( x ) \
+        _INTRFMEMBP( x, Unload )
+    #define IDirectInputEffect_Escape( x, p ) \
+        _INTRFMEMBP( x, Escape, p )
+#endif
+#define IDirectInputDevice_QueryInterface( x, p1, p2 ) \
+    _INTRFMEMBP( x, QueryInterface, p1, p2 )
+#define IDirectInputDevice_AddRef( x ) \
+    _INTRFMEMBP( x, AddRef )
+#define IDirectInputDevice_Release( x ) \
+    _INTRFMEMBP( x, Release )
+#define IDirectInputDevice_GetCapabilities( x, p ) \
+    _INTRFMEMBP( x, GetCapabilities, p )
+#define IDirectInputDevice_EnumObjects( x, p1, p2, p3 ) \
+    _INTRFMEMBP( x, EnumObjects, p1, p2, p3 )
+#define IDirectInputDevice_GetProperty( x, p1, p2 ) \
+    _INTRFMEMBP( x, GetProperty, p1, p2 )
+#define IDirectInputDevice_SetProperty( x, p1, p2 ) \
+    _INTRFMEMBP( x, SetProperty, p1, p2 )
+#define IDirectInputDevice_Acquire( x ) \
+    _INTRFMEMBP( x, Acquire )
+#define IDirectInputDevice_Unacquire( x ) \
+    _INTRFMEMBP( x, Unacquire )
+#define IDirectInputDevice_GetDeviceState( x, p1, p2 ) \
+    _INTRFMEMBP( x, GetDeviceState, p1, p2 )
+#define IDirectInputDevice_GetDeviceData( x, p1, p2, p3, p4 ) \
+    _INTRFMEMBP( x, GetDeviceData, p1, p2, p3, p4 )
+#define IDirectInputDevice_SetDataFormat( x, p ) \
+    _INTRFMEMBP( x, SetDataFormat, p )
+#define IDirectInputDevice_SetEventNotification( x, p ) \
+    _INTRFMEMBP( x, SetEventNotification, p )
+#define IDirectInputDevice_SetCooperativeLevel( x, p1, p2 ) \
+    _INTRFMEMBP( x, SetCooperativeLevel, p1, p2 )
+#define IDirectInputDevice_GetObjectInfo( x, p1, p2, p3 ) \
+    _INTRFMEMBP( x, GetObjectInfo, p1, p2, p3 )
+#define IDirectInputDevice_GetDeviceInfo( x, p ) \
+    _INTRFMEMBP( x, GetDeviceInfo, p )
+#define IDirectInputDevice_RunControlPanel( x, p1, p2 ) \
+    _INTRFMEMBP( x, RunControlPanel, p1, p2 )
+#define IDirectInputDevice_Initialize( x, p1, p2, p3 ) \
+    _INTRFMEMBP( x, Initialize, p1, p2, p3 )
+#if (DIRECTINPUT_VERSION >= 0x0500)
+    #define IDirectInputDevice2_QueryInterface( x, p1, p2 ) \
+        _INTRFMEMBP( x, QueryInterface, p1, p2 )
+    #define IDirectInputDevice2_AddRef( x ) \
+        _INTRFMEMBP( x, AddRef )
+    #define IDirectInputDevice2_Release( x ) \
+        _INTRFMEMBP( x, Release )
+    #define IDirectInputDevice2_GetCapabilities( x, p ) \
+        _INTRFMEMBP( x, GetCapabilities, p )
+    #define IDirectInputDevice2_EnumObjects( x, p1, p2, p3 ) \
+        _INTRFMEMBP( x, EnumObjects, p1, p2, p3 )
+    #define IDirectInputDevice2_GetProperty( x, p1, p2 ) \
+        _INTRFMEMBP( x, GetProperty, p1, p2 )
+    #define IDirectInputDevice2_SetProperty( x, p1, p2 ) \
+        _INTRFMEMBP( x, SetProperty, p1, p2 )
+    #define IDirectInputDevice2_Acquire( x ) \
+        _INTRFMEMBP( x, Acquire )
+    #define IDirectInputDevice2_Unacquire( x ) \
+        _INTRFMEMBP( x, Unacquire )
+    #define IDirectInputDevice2_GetDeviceState( x, p1, p2 ) \
+        _INTRFMEMBP( x, GetDeviceState, p1, p2 )
+    #define IDirectInputDevice2_GetDeviceData( x, p1, p2, p3, p4 ) \
+        _INTRFMEMBP( x, GetDeviceData, p1, p2, p3, p4 )
+    #define IDirectInputDevice2_SetDataFormat( x, p ) \
+        _INTRFMEMBP( x, SetDataFormat, p )
+    #define IDirectInputDevice2_SetEventNotification( x, p ) \
+        _INTRFMEMBP( x, SetEventNotification, p )
+    #define IDirectInputDevice2_SetCooperativeLevel( x, p1, p2 ) \
+        _INTRFMEMBP( x, SetCooperativeLevel, p1, p2 )
+    #define IDirectInputDevice2_GetObjectInfo( x, p1, p2, p3 ) \
+        _INTRFMEMBP( x, GetObjectInfo, p1, p2, p3 )
+    #define IDirectInputDevice2_GetDeviceInfo( x, p ) \
+        _INTRFMEMBP( x, GetDeviceInfo, p )
+    #define IDirectInputDevice2_RunControlPanel( x, p1, p2 ) \
+        _INTRFMEMBP( x, RunControlPanel, p1, p2 )
+    #define IDirectInputDevice2_Initialize( x, p1, p2, p3 ) \
+        _INTRFMEMBP( x, Initialize, p1, p2, p3 )
+    #define IDirectInputDevice2_CreateEffect( x, p1, p2, p3, p4 ) \
+        _INTRFMEMBP( x, CreateEffect, p1, p2, p3, p4 )
+    #define IDirectInputDevice2_EnumEffects( x, p1, p2, p3 ) \
+        _INTRFMEMBP( x, EnumEffects, p1, p2, p3 )
+    #define IDirectInputDevice2_GetEffectInfo( x, p1, p2 ) \
+        _INTRFMEMBP( x, GetEffectInfo, p1, p2 )
+    #define IDirectInputDevice2_GetForceFeedbackState( x, p ) \
+        _INTRFMEMBP( x, GetForceFeedbackState, p )
+    #define IDirectInputDevice2_SendForceFeedbackCommand( x, p ) \
+        _INTRFMEMBP( x, SendForceFeedbackCommand, p )
+    #define IDirectInputDevice2_EnumCreatedEffectObjects( x, p1, p2, p3 ) \
+        _INTRFMEMBP( x, EnumCreatedEffectObjects, p1, p2, p3 )
+    #define IDirectInputDevice2_Escape( x, p ) \
+        _INTRFMEMBP( x, Escape, p )
+    #define IDirectInputDevice2_Poll( x ) \
+        _INTRFMEMBP( x, Poll )
+    #define IDirectInputDevice2_SendDeviceData( x, p1, p2, p3, p4 ) \
+        _INTRFMEMBP( x, SendDeviceData, p1, p2, p3, p4 )
+#endif
+#if (DIRECTINPUT_VERSION >= 0x0700)
+    #define IDirectInputDevice7_QueryInterface( x, p1, p2 ) \
+        _INTRFMEMBP( x, QueryInterface, p1, p2 )
+    #define IDirectInputDevice7_AddRef( x ) \
+        _INTRFMEMBP( x, AddRef )
+    #define IDirectInputDevice7_Release( x ) \
+        _INTRFMEMBP( x, Release )
+    #define IDirectInputDevice7_GetCapabilities( x, p ) \
+        _INTRFMEMBP( x, GetCapabilities, p )
+    #define IDirectInputDevice7_EnumObjects( x, p1, p2, p3 ) \
+        _INTRFMEMBP( x, EnumObjects, p1, p2, p3 )
+    #define IDirectInputDevice7_GetProperty( x, p1, p2 ) \
+        _INTRFMEMBP( x, GetProperty, p1, p2 )
+    #define IDirectInputDevice7_SetProperty( x, p1, p2 ) \
+        _INTRFMEMBP( x, SetProperty, p1, p2 )
+    #define IDirectInputDevice7_Acquire( x ) \
+        _INTRFMEMBP( x, Acquire )
+    #define IDirectInputDevice7_Unacquire( x ) \
+        _INTRFMEMBP( x, Unacquire )
+    #define IDirectInputDevice7_GetDeviceState( x, p1, p2 ) \
+        _INTRFMEMBP( x, GetDeviceState, p1, p2 )
+    #define IDirectInputDevice7_GetDeviceData( x, p1, p2, p3, p4 ) \
+        _INTRFMEMBP( x, GetDeviceData, p1, p2, p3, p4 )
+    #define IDirectInputDevice7_SetDataFormat( x, p ) \
+        _INTRFMEMBP( x, SetDataFormat, p )
+    #define IDirectInputDevice7_SetEventNotification( x, p ) \
+        _INTRFMEMBP( x, SetEventNotification, p )
+    #define IDirectInputDevice7_SetCooperativeLevel( x, p1, p2 ) \
+        _INTRFMEMBP( x, SetCooperativeLevel, p1, p2 )
+    #define IDirectInputDevice7_GetObjectInfo( x, p1, p2, p3 ) \
+        _INTRFMEMBP( x, GetObjectInfo, p1, p2, p3 )
+    #define IDirectInputDevice7_GetDeviceInfo( x, p ) \
+        _INTRFMEMBP( x, GetDeviceInfo, p )
+    #define IDirectInputDevice7_RunControlPanel( x, p1, p2 ) \
+        _INTRFMEMBP( x, RunControlPanel, p1, p2 )
+    #define IDirectInputDevice7_Initialize( x, p1, p2, p3 ) \
+        _INTRFMEMBP( x, Initialize, p1, p2, p3 )
+    #define IDirectInputDevice7_CreateEffect( x, p1, p2, p3, p4 ) \
+        _INTRFMEMBP( x, CreateEffect, p1, p2, p3, p4 )
+    #define IDirectInputDevice7_EnumEffects( x, p1, p2, p3 ) \
+        _INTRFMEMBP( x, EnumEffects, p1, p2, p3 )
+    #define IDirectInputDevice7_GetEffectInfo( x, p1, p2 ) \
+        _INTRFMEMBP( x, GetEffectInfo, p1, p2 )
+    #define IDirectInputDevice7_GetForceFeedbackState( x, p ) \
+        _INTRFMEMBP( x, GetForceFeedbackState, p )
+    #define IDirectInputDevice7_SendForceFeedbackCommand( x, p ) \
+        _INTRFMEMBP( x, SendForceFeedbackCommand, p )
+    #define IDirectInputDevice7_EnumCreatedEffectObjects( x, p1, p2, p3 ) \
+        _INTRFMEMBP( x, EnumCreatedEffectObjects, p1, p2, p3 )
+    #define IDirectInputDevice7_Escape( x, p ) \
+        _INTRFMEMBP( x, Escape, p )
+    #define IDirectInputDevice7_Poll( x ) \
+        _INTRFMEMBP( x, Poll )
+    #define IDirectInputDevice7_SendDeviceData( x, p1, p2, p3, p4 ) \
+        _INTRFMEMBP( x, SendDeviceData, p1, p2, p3, p4 )
+    #define IDirectInputDevice7_EnumEffectsInFile( x, p1, p2, p3, p4 ) \
+        _INTRFMEMBP( x, EnumEffectsInFile, p1, p2, p3, p4 )
+    #define IDirectInputDevice7_WriteEffectToFile( x, p1, p2, p3, p4 ) \
+        _INTRFMEMBP( x, WriteEffectToFile, p1, p2, p3, p4 )
+#endif
+#if (DIRECTINPUT_VERSION >= 0x0800)
+    #define IDirectInputDevice8_QueryInterface( x, p1, p2 ) \
+        _INTRFMEMBP( x, QueryInterface, p1, p2 )
+    #define IDirectInputDevice8_AddRef( x ) \
+        _INTRFMEMBP( x, AddRef )
+    #define IDirectInputDevice8_Release( x ) \
+        _INTRFMEMBP( x, Release )
+    #define IDirectInputDevice8_GetCapabilities( x, p ) \
+        _INTRFMEMBP( x, GetCapabilities, p )
+    #define IDirectInputDevice8_EnumObjects( x, p1, p2, p3 ) \
+        _INTRFMEMBP( x, EnumObjects, p1, p2, p3 )
+    #define IDirectInputDevice8_GetProperty( x, p1, p2 ) \
+        _INTRFMEMBP( x, GetProperty, p1, p2 )
+    #define IDirectInputDevice8_SetProperty( x, p1, p2 ) \
+        _INTRFMEMBP( x, SetProperty, p1, p2 )
+    #define IDirectInputDevice8_Acquire( x ) \
+        _INTRFMEMBP( x, Acquire )
+    #define IDirectInputDevice8_Unacquire( x ) \
+        _INTRFMEMBP( x, Unacquire )
+    #define IDirectInputDevice8_GetDeviceState( x, p1, p2 ) \
+        _INTRFMEMBP( x, GetDeviceState, p1, p2 )
+    #define IDirectInputDevice8_GetDeviceData( x, p1, p2, p3, p4 ) \
+        _INTRFMEMBP( x, GetDeviceData, p1, p2, p3, p4 )
+    #define IDirectInputDevice8_SetDataFormat( x, p ) \
+        _INTRFMEMBP( x, SetDataFormat, p )
+    #define IDirectInputDevice8_SetEventNotification( x, p ) \
+        _INTRFMEMBP( x, SetEventNotification, p )
+    #define IDirectInputDevice8_SetCooperativeLevel( x, p1, p2 ) \
+        _INTRFMEMBP( x, SetCooperativeLevel, p1, p2 )
+    #define IDirectInputDevice8_GetObjectInfo( x, p1, p2, p3 ) \
+        _INTRFMEMBP( x, GetObjectInfo, p1, p2, p3 )
+    #define IDirectInputDevice8_GetDeviceInfo( x, p ) \
+        _INTRFMEMBP( x, GetDeviceInfo, p )
+    #define IDirectInputDevice8_RunControlPanel( x, p1, p2 ) \
+        _INTRFMEMBP( x, RunControlPanel, p1, p2 )
+    #define IDirectInputDevice8_Initialize( x, p1, p2, p3 ) \
+        _INTRFMEMBP( x, Initialize, p1, p2, p3 )
+    #define IDirectInputDevice8_CreateEffect( x, p1, p2, p3, p4 ) \
+        _INTRFMEMBP( x, CreateEffect, p1, p2, p3, p4 )
+    #define IDirectInputDevice8_EnumEffects( x, p1, p2, p3 ) \
+        _INTRFMEMBP( x, EnumEffects, p1, p2, p3 )
+    #define IDirectInputDevice8_GetEffectInfo( x, p1, p2 ) \
+        _INTRFMEMBP( x, GetEffectInfo, p1, p2 )
+    #define IDirectInputDevice8_GetForceFeedbackState( x, p ) \
+        _INTRFMEMBP( x, GetForceFeedbackState, p )
+    #define IDirectInputDevice8_SendForceFeedbackCommand( x, p ) \
+        _INTRFMEMBP( x, SendForceFeedbackCommand, p )
+    #define IDirectInputDevice8_EnumCreatedEffectObjects( x, p1, p2, p3 ) \
+        _INTRFMEMBP( x, EnumCreatedEffectObjects, p1, p2, p3 )
+    #define IDirectInputDevice8_Escape( x, p ) \
+        _INTRFMEMBP( x, Escape, p )
+    #define IDirectInputDevice8_Poll( x ) \
+        _INTRFMEMBP( x, Poll )
+    #define IDirectInputDevice8_SendDeviceData( x, p1, p2, p3, p4 ) \
+        _INTRFMEMBP( x, SendDeviceData, p1, p2, p3, p4 )
+    #define IDirectInputDevice8_EnumEffectsInFile( x, p1, p2, p3, p4 ) \
+        _INTRFMEMBP( x, EnumEffectsInFile, p1, p2, p3, p4 )
+    #define IDirectInputDevice8_WriteEffectToFile( x, p1, p2, p3, p4 ) \
+        _INTRFMEMBP( x, WriteEffectToFile, p1, p2, p3, p4 )
+    #define IDirectInputDevice8_BuildActionMap( x, p1, p2, p3 ) \
+        _INTRFMEMBP( x, BuildActionMap, p1, p2, p3 )
+    #define IDirectInputDevice8_SetActionMap( x, p1, p2, p3 ) \
+        _INTRFMEMBP( x, SetActionMap, p1, p2, p3 )
+    #define IDirectInputDevice8_GetImageInfo( x, p ) \
+        _INTRFMEMBP( x, GetImageInfo, p )
+#endif
+#define IDirectInput_QueryInterface( x, p1, p2 ) \
+    _INTRFMEMBP( x, QueryInterface, p1, p2 )
+#define IDirectInput_AddRef( x ) \
+    _INTRFMEMBP( x, AddRef )
+#define IDirectInput_Release( x ) \
+    _INTRFMEMBP( x, Release )
+#define IDirectInput_CreateDevice( x, p1, p2, p3 ) \
+    _INTRFMEMBP( x, CreateDevice, p1, p2, p3 )
+#define IDirectInput_EnumDevices( x, p1, p2, p3, p4 ) \
+    _INTRFMEMBP( x, EnumDevices, p1, p2, p3, p4 )
+#define IDirectInput_GetDeviceStatus( x, p ) \
+    _INTRFMEMBP( x, GetDeviceStatus, p )
+#define IDirectInput_RunControlPanel( x, p1, p2 ) \
+    _INTRFMEMBP( x, RunControlPanel, p1, p2 )
+#define IDirectInput_Initialize( x, p1, p2 ) \
+    _INTRFMEMBP( x, Initialize, p1, p2 )
+#define IDirectInput2_QueryInterface( x, p1, p2 ) \
+    _INTRFMEMBP( x, QueryInterface, p1, p2 )
+#define IDirectInput2_AddRef( x ) \
+    _INTRFMEMBP( x, AddRef )
+#define IDirectInput2_Release( x ) \
+    _INTRFMEMBP( x, Release )
+#define IDirectInput2_CreateDevice( x, p1, p2, p3 ) \
+    _INTRFMEMBP( x, CreateDevice, p1, p2, p3 )
+#define IDirectInput2_EnumDevices( x, p1, p2, p3, p4 ) \
+    _INTRFMEMBP( x, EnumDevices, p1, p2, p3, p4 )
+#define IDirectInput2_GetDeviceStatus( x, p ) \
+    _INTRFMEMBP( x, GetDeviceStatus, p )
+#define IDirectInput2_RunControlPanel( x, p1, p2 ) \
+    _INTRFMEMBP( x, RunControlPanel, p1, p2 )
+#define IDirectInput2_Initialize( x, p1, p2 ) \
+    _INTRFMEMBP( x, Initialize, p1, p2 )
+#define IDirectInput2_FindDevice( x, p1, p2, p3 ) \
+    _INTRFMEMBP( x, FindDevice, p1, p2, p3 )
+#define IDirectInput7_QueryInterface( x, p1, p2 ) \
+    _INTRFMEMBP( x, QueryInterface, p1, p2 )
+#define IDirectInput7_AddRef( x ) \
+    _INTRFMEMBP( x, AddRef )
+#define IDirectInput7_Release( x ) \
+    _INTRFMEMBP( x, Release )
+#define IDirectInput7_CreateDevice( x, p1, p2, p3 ) \
+    _INTRFMEMBP( x, CreateDevice, p1, p2, p3 )
+#define IDirectInput7_EnumDevices( x, p1, p2, p3, p4 ) \
+    _INTRFMEMBP( x, EnumDevices, p1, p2, p3, p4 )
+#define IDirectInput7_GetDeviceStatus( x, p ) \
+    _INTRFMEMBP( x, GetDeviceStatus, p )
+#define IDirectInput7_RunControlPanel( x, p1, p2 ) \
+    _INTRFMEMBP( x, RunControlPanel, p1, p2 )
+#define IDirectInput7_Initialize( x, p1, p2 ) \
+    _INTRFMEMBP( x, Initialize, p1, p2 )
+#define IDirectInput7_FindDevice( x, p1, p2, p3 ) \
+    _INTRFMEMBP( x, FindDevice, p1, p2, p3 )
+#define IDirectInput7_CreateDeviceEx( x, p1, p2, p3, p4 ) \
+    _INTRFMEMBP( x, CreateDeviceEx, p1, p2, p3, p4 )
+#if (DIRECTINPUT_VERSION >= 0x0800)
+    #define IDirectInput8_QueryInterface( x, p1, p2 ) \
+        _INTRFMEMBP( x, QueryInterface, p1, p2 )
+    #define IDirectInput8_AddRef( x ) \
+        _INTRFMEMBP( x, AddRef )
+    #define IDirectInput8_Release( x ) \
+        _INTRFMEMBP( x, Release )
+    #define IDirectInput8_CreateDevice( x, p1, p2, p3 ) \
+        _INTRFMEMBP( x, CreateDevice, p1, p2, p3 )
+    #define IDirectInput8_EnumDevices( x, p1, p2, p3, p4 ) \
+        _INTRFMEMBP( x, EnumDevices, p1, p2, p3, p4 )
+    #define IDirectInput8_GetDeviceStatus( x, p ) \
+        _INTRFMEMBP( x, GetDeviceStatus, p )
+    #define IDirectInput8_RunControlPanel( x, p1, p2 ) \
+        _INTRFMEMBP( x, RunControlPanel, p1, p2 )
+    #define IDirectInput8_Initialize( x, p1, p2 ) \
+        _INTRFMEMBP( x, Initialize, p1, p2 )
+    #define IDirectInput8_FindDevice( x, p1, p2, p3 ) \
+        _INTRFMEMBP( x, FindDevice, p1, p2, p3 )
+    #define IDirectInput8_EnumDevicesBySemantics( x, p1, p2, p3, p4, p5 ) \
+        _INTRFMEMBP( x, EnumDevicesBySemantics, p1, p2, p3, p4, p5 )
+    #define IDirectInput8_ConfigureDevices( x, p1, p2, p3, p4 ) \
+        _INTRFMEMBP( x, ConfigureDevices, p1, p2, p3, p4 )
 #endif
 
 /* Global variables in DINPUT.LIB and DINPUT8.LIB */
