@@ -1,6 +1,7 @@
-/* Macros to declare interfaces - these macros can be used for both C and C++. Define
+/*
+ * Macros to declare interfaces - these macros can be used for both C and C++. Define
  * CINTERFACE to have these macros expand in C++ code as if they were in C code.
- * Define CONST_VTABLE to have constant vtables in C.
+ * Define CONST_VTABLE to have constant vtables in C. 
  */
 #if defined( __cplusplus ) && !defined( CINTERFACE )
     #define __STRUCT__                              struct
@@ -44,3 +45,20 @@
 #define IFACEMETHOD_( x, f )                        STDMETHOD_( x, f )
 #define IFACEMETHODV( f )                           STDMETHODV( f )
 #define IFACEMETHODV_( x, f )                       STDMETHODV_( x, f )
+::
+:: Header internal macros to reduce copy-past errors and improve maintainability.
+::
+:: C/C++ object member lookup macros
+:: _INTRFMEMBP has parameters in the function (not counting the "this" pointer)
+:: _INTRFMEMBN does not.
+::
+/*
+ * header files internal macros used to simplify complexity
+ */
+#if defined( __cplusplus ) && !defined( CINTERFACE )
+    #define _INTRFMEMBP( x, y, ... )                ((x)->y( __VA_ARGS__ ))
+    #define _INTRFMEMBN( x, y )                     ((x)->y())
+#else
+    #define _INTRFMEMBP( x, y, ... )                ((x)->lpVtbl->y( x, __VA_ARGS__ ))
+    #define _INTRFMEMBN( x, y )                     ((x)->lpVtbl->y( x ))
+#endif
