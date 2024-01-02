@@ -297,9 +297,9 @@ DECLARE_INTERFACE_( IDirectDrawVideoPortNotify, IUnknown ) {
 #define IVideoPortContainer_QueryInterface( x, p1, p2 ) \
     _INTRFMEMBP( x, QueryInterface, p1, p2 )
 #define IVideoPortContainer_AddRef( x ) \
-    _INTRFMEMBP( x, AddRef )
+    _INTRFMEMBN( x, AddRef )
 #define IVideoPortContainer_Release( x ) \
-    _INTRFMEMBP( x, Release )
+    _INTRFMEMBN( x, Release )
 #define IVideoPortContainer_CreateVideoPort( x, p1, p2, p3, p4 ) \
     _INTRFMEMBP( x, CreateVideoPort, p1, p2, p, p4 )
 #define IVideoPortContainer_EnumVideoPorts( x, p1, p2, p3, p4 ) \
@@ -311,9 +311,9 @@ DECLARE_INTERFACE_( IDirectDrawVideoPortNotify, IUnknown ) {
 #define IVideoPort_QueryInterface( x, p1, p2 ) \
     _INTRFMEMBP( x, QueryInterface, p1, p2 )
 #define IVideoPort_AddRef( x ) \
-    _INTRFMEMBP( x, AddRef )
+    _INTRFMEMBN( x, AddRef )
 #define IVideoPort_Release( x ) \
-    _INTRFMEMBP( x, Release )
+    _INTRFMEMBN( x, Release )
 #define IVideoPort_Flip( x, p1, p2 ) \
     _INTRFMEMBP( x, Flip, p1, p2 )
 #define IVideoPort_GetBandwidthInfo( x, p1, p2, p3, p4, p5 ) \
@@ -337,7 +337,7 @@ DECLARE_INTERFACE_( IDirectDrawVideoPortNotify, IUnknown ) {
 #define IVideoPort_StartVideo( x, p ) \
     _INTRFMEMBP( x, StartVideo, p )
 #define IVideoPort_StopVideo( x ) \
-    _INTRFMEMBP( x, StopVideo )
+    _INTRFMEMBN( x, StopVideo )
 #define IVideoPort_UpdateVideo( x, p ) \
     _INTRFMEMBP( x, UpdateVideo, p )
 #define IVideoPort_WaitForSync( x, p1, p2, p3 ) \
@@ -345,9 +345,9 @@ DECLARE_INTERFACE_( IDirectDrawVideoPortNotify, IUnknown ) {
 #define IVideoPortNotify_QueryInterface( x, p1, p2 ) \
     _INTRFMEMBP( x, QueryInterface, p1, p2 )
 #define IVideoPortNotify_AddRef( x ) \
-    _INTRFMEMBP( x, AddRef )
+    _INTRFMEMBN( x, AddRef )
 #define IVideoPortNotify_Release( x ) \
-    _INTRFMEMBP( x, Release )
+    _INTRFMEMBN( x, Release )
 #define IVideoPortNotify_AcquireNotification( x, p1, p2 ) \
     _INTRFMEMBP( x, AcquireNotification, p1, p2 )
 #define IVideoPortNotify_ReleaseNotification( x, p ) \

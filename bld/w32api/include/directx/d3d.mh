@@ -694,9 +694,9 @@ DECLARE_INTERFACE_( IDirect3DVertexBuffer7, IUnknown ) {
 #define IDirect3D_QueryInterface( x, p1, p2 ) \
     _INTRFMEMBP( x, QueryInterface, p1, p2 )
 #define IDirect3D_AddRef( x ) \
-    _INTRFMEMBP( x, AddRef )
+    _INTRFMEMBN( x, AddRef )
 #define IDirect3D_Release( x ) \
-    _INTRFMEMBP( x, Release )
+    _INTRFMEMBN( x, Release )
 #define IDirect3D_Initialize( x, p ) \
     _INTRFMEMBP( x, Initialize, p )
 #define IDirect3D_EnumDevices( x, p1, p2 ) \
@@ -712,9 +712,9 @@ DECLARE_INTERFACE_( IDirect3DVertexBuffer7, IUnknown ) {
 #define IDirect3DDevice_QueryInterface( x, p1, p2 ) \
     _INTRFMEMBP( x, QueryInterface, p1, p2 )
 #define IDirect3DDevice_AddRef( x ) \
-    _INTRFMEMBP( x, AddRef )
+    _INTRFMEMBN( x, AddRef )
 #define IDirect3DDevice_Release( x ) \
-    _INTRFMEMBP( x, Release )
+    _INTRFMEMBN( x, Release )
 #define IDirect3DDevice_Initialize( x, p1, p2, p3 ) \
     _INTRFMEMBP( x, Initialize, p1, p2, p3 )
 #define IDirect3DDevice_GetCaps( x, p1, p2 ) \
@@ -748,23 +748,23 @@ DECLARE_INTERFACE_( IDirect3DVertexBuffer7, IUnknown ) {
 #define IDirect3DDevice_DeleteMatrix( x, p ) \
     _INTRFMEMBP( x, DeleteMatrix, p )
 #define IDirect3DDevice_BeginScene( x ) \
-    _INTRFMEMBP( x, BeginScene )
+    _INTRFMEMBN( x, BeginScene )
 #define IDirect3DDevice_EndScene( x ) \
-    _INTRFMEMBP( x, EndScene )
+    _INTRFMEMBN( x, EndScene )
 #define IDirect3DDevice_GetDirect3D( x, p ) \
     _INTRFMEMBP( x, GetDirect3D, p )
 #define IDirect3DExecuteBuffer_QueryInterface( x, p1, p2 ) \
     _INTRFMEMBP( x, QueryInterface, p1, p2 )
 #define IDirect3DExecuteBuffer_AddRef( x ) \
-    _INTRFMEMBP( x, AddRef )
+    _INTRFMEMBN( x, AddRef )
 #define IDirect3DExecuteBuffer_Release( x ) \
-    _INTRFMEMBP( x, Release )
+    _INTRFMEMBN( x, Release )
 #define IDirect3DExecuteBuffer_Initialize( x, p1, p2 ) \
     _INTRFMEMBP( x, Initialize, p1, p2 )
 #define IDirect3DExecuteBuffer_Lock( x, p ) \
     _INTRFMEMBP( x, Lock, p )
 #define IDirect3DExecuteBuffer_Unlock( x ) \
-    _INTRFMEMBP( x, Unlock )
+    _INTRFMEMBN( x, Unlock )
 #define IDirect3DExecuteBuffer_SetExecuteData( x, p ) \
     _INTRFMEMBP( x, SetExecuteData, p )
 #define IDirect3DExecuteBuffer_GetExecuteData( x, p ) \
@@ -776,9 +776,9 @@ DECLARE_INTERFACE_( IDirect3DVertexBuffer7, IUnknown ) {
 #define IDirect3DLight_QueryInterface( x, p1, p2 ) \
     _INTRFMEMBP( x, QueryInterface, p1, p2 )
 #define IDirect3DLight_AddRef( x ) \
-    _INTRFMEMBP( x, AddRef )
+    _INTRFMEMBN( x, AddRef )
 #define IDirect3DLight_Release( x ) \
-    _INTRFMEMBP( x, Release )
+    _INTRFMEMBN( x, Release )
 #define IDirect3DLight_Initialize( x, p ) \
     _INTRFMEMBP( x, Initialize, p )
 #define IDirect3DLight_SetLight( x, p ) \
@@ -788,9 +788,9 @@ DECLARE_INTERFACE_( IDirect3DVertexBuffer7, IUnknown ) {
 #define IDirect3DMaterial_QueryInterface( x, p1, p2 ) \
     _INTRFMEMBP( x, QueryInterface, p1, p2 )
 #define IDirect3DMaterial_AddRef( x ) \
-    _INTRFMEMBP( x, AddRef )
+    _INTRFMEMBN( x, AddRef )
 #define IDirect3DMaterial_Release( x ) \
-    _INTRFMEMBP( x, Release )
+    _INTRFMEMBN( x, Release )
 #define IDirect3DMaterial_Initialize( x, p ) \
     _INTRFMEMBP( x, Initialize, p )
 #define IDirect3DMaterial_SetMaterial( x, p ) \
@@ -800,15 +800,15 @@ DECLARE_INTERFACE_( IDirect3DVertexBuffer7, IUnknown ) {
 #define IDirect3DMaterial_GetHandle( x, p1, p2 ) \
     _INTRFMEMBP( x, GetHandle, p1, p2 )
 #define IDirect3DMaterial_Reserve( x ) \
-    _INTRFMEMBP( x, Reserve )
+    _INTRFMEMBN( x, Reserve )
 #define IDirect3DMaterial_Unreserve( x ) \
-    _INTRFMEMBP( x, Unreserve )
+    _INTRFMEMBN( x, Unreserve )
 #define IDirect3DTexture_QueryInterface( x, p1, p2 ) \
     _INTRFMEMBP( x, QueryInterface, p1, p2 )
 #define IDirect3DTexture_AddRef( x ) \
-    _INTRFMEMBP( x, AddRef )
+    _INTRFMEMBN( x, AddRef )
 #define IDirect3DTexture_Release( x ) \
-    _INTRFMEMBP( x, Release )
+    _INTRFMEMBN( x, Release )
 #define IDirect3DTexture_Initialize( x, p1, p2 ) \
     _INTRFMEMBP( x, Initialize, p1, p2 )
 #define IDirect3DTexture_GetHandle( x, p1, p2 ) \
@@ -818,13 +818,13 @@ DECLARE_INTERFACE_( IDirect3DVertexBuffer7, IUnknown ) {
 #define IDirect3DTexture_Load( x, p ) \
     _INTRFMEMBP( x, Load, p )
 #define IDirect3DTexture_Unload( x ) \
-    _INTRFMEMBP( x, Unload )
+    _INTRFMEMBN( x, Unload )
 #define IDirect3DViewport_QueryInterface( x, p1, p2 ) \
     _INTRFMEMBP( x, QueryInterface, p1, p2 )
 #define IDirect3DViewport_AddRef( x ) \
-    _INTRFMEMBP( x, AddRef )
+    _INTRFMEMBN( x, AddRef )
 #define IDirect3DViewport_Release( x ) \
-    _INTRFMEMBP( x, Release )
+    _INTRFMEMBN( x, Release )
 #define IDirect3DViewport_Initialize( x, p ) \
     _INTRFMEMBP( x, Initialize, p )
 #define IDirect3DViewport_GetViewport( x, p ) \
@@ -855,9 +855,9 @@ DECLARE_INTERFACE_( IDirect3DVertexBuffer7, IUnknown ) {
     #define IDirect3D2_QueryInterface( x, p1, p2 ) \
         _INTRFMEMBP( x, QueryInterface, p1, p2 )
     #define IDirect3D2_AddRef( x ) \
-        _INTRFMEMBP( x, AddRef )
+        _INTRFMEMBN( x, AddRef )
     #define IDirect3D2_Release( x ) \
-        _INTRFMEMBP( x, Release )
+        _INTRFMEMBN( x, Release )
     #define IDirect3D2_EnumDevices( x, p1, p2 ) \
         _INTRFMEMBP( x, EnumDevices, p1, p2 )
     #define IDirect3D2_CreateLight( x, p1, p2 ) \
@@ -873,9 +873,9 @@ DECLARE_INTERFACE_( IDirect3DVertexBuffer7, IUnknown ) {
     #define IDirect3DDevice2_QueryInterface( x, p1, p2 ) \
         _INTRFMEMBP( x, QueryInterface, p1, p2 )
     #define IDirect3DDevice2_AddRef( x ) \
-        _INTRFMEMBP( x, AddRef )
+        _INTRFMEMBN( x, AddRef )
     #define IDirect3DDevice2_Release( x ) \
-        _INTRFMEMBP( x, Release )
+        _INTRFMEMBN( x, Release )
     #define IDirect3DDevice2_GetCaps( x, p1, p2 ) \
         _INTRFMEMBP( x, GetCaps, p1, p2 )
     #define IDirect3DDevice2_SwapTextureHandles( x, p1, p2 ) \
@@ -891,9 +891,9 @@ DECLARE_INTERFACE_( IDirect3DVertexBuffer7, IUnknown ) {
     #define IDirect3DDevice2_EnumTextureFormats( x, p1, p2 ) \
         _INTRFMEMBP( x, EnumTextureFormats, p1, p2 )
     #define IDirect3DDevice2_BeginScene( x ) \
-        _INTRFMEMBP( x, BeginScene )
+        _INTRFMEMBN( x, BeginScene )
     #define IDirect3DDevice2_EndScene( x ) \
-        _INTRFMEMBP( x, EndScene )
+        _INTRFMEMBN( x, EndScene )
     #define IDirect3DDevice2_GetDirect3D( x, p ) \
         _INTRFMEMBP( x, GetDirect3D, p )
     #define IDirect3DDevice2_SetCurrentViewport( x, p ) \
@@ -939,9 +939,9 @@ DECLARE_INTERFACE_( IDirect3DVertexBuffer7, IUnknown ) {
     #define IDirect3DMaterial2_QueryInterface( x, p1, p2 ) \
         _INTRFMEMBP( x, QueryInterface, p1, p2 )
     #define IDirect3DMaterial2_AddRef( x ) \
-        _INTRFMEMBP( x, AddRef )
+        _INTRFMEMBN( x, AddRef )
     #define IDirect3DMaterial2_Release( x ) \
-        _INTRFMEMBP( x, Release )
+        _INTRFMEMBN( x, Release )
     #define IDirect3DMaterial2_SetMaterial( x, p ) \
         _INTRFMEMBP( x, SetMaterial, p )
     #define IDirect3DMaterial2_GetMaterial( x, p ) \
@@ -951,9 +951,9 @@ DECLARE_INTERFACE_( IDirect3DVertexBuffer7, IUnknown ) {
     #define IDirect3DTexture2_QueryInterface( x, p1, p2 ) \
         _INTRFMEMBP( x, QueryInterface, p1, p2 )
     #define IDirect3DTexture2_AddRef( x ) \
-        _INTRFMEMBP( x, AddRef )
+        _INTRFMEMBN( x, AddRef )
     #define IDirect3DTexture2_Release( x ) \
-        _INTRFMEMBP( x, Release )
+        _INTRFMEMBN( x, Release )
     #define IDirect3DTexture2_GetHandle( x, p1, p2 ) \
         _INTRFMEMBP( x, GetHandle, p1, p2 )
     #define IDirect3DTexture2_PaletteChanged( x, p1, p2 ) \
@@ -963,9 +963,9 @@ DECLARE_INTERFACE_( IDirect3DVertexBuffer7, IUnknown ) {
     #define IDirect3DViewport2_QueryInterface( x, p1, p2 ) \
         _INTRFMEMBP( x, QueryInterface, p1, p2 )
     #define IDirect3DViewport2_AddRef( x ) \
-        _INTRFMEMBP( x, AddRef )
+        _INTRFMEMBN( x, AddRef )
     #define IDirect3DViewport2_Release( x ) \
-        _INTRFMEMBP( x, Release )
+        _INTRFMEMBN( x, Release )
     #define IDirect3DViewport2_Initialize( x, p ) \
         _INTRFMEMBP( x, Initialize, p )
     #define IDirect3DViewport2_GetViewport( x, p ) \
@@ -1001,9 +1001,9 @@ DECLARE_INTERFACE_( IDirect3DVertexBuffer7, IUnknown ) {
     #define IDirect3D3_QueryInterface( x, p1, p2 ) \
         _INTRFMEMBP( x, QueryInterface, p1, p2 )
     #define IDirect3D3_AddRef( x ) \
-        _INTRFMEMBP( x, AddRef )
+        _INTRFMEMBN( x, AddRef )
     #define IDirect3D3_Release( x ) \
-        _INTRFMEMBP( x, Release )
+        _INTRFMEMBN( x, Release )
     #define IDirect3D3_EnumDevices( x, p1, p2 ) \
         _INTRFMEMBP( x, EnumDevices, p1, p2 )
     #define IDirect3D3_CreateLight( x, p1, p2 ) \
@@ -1021,13 +1021,13 @@ DECLARE_INTERFACE_( IDirect3DVertexBuffer7, IUnknown ) {
     #define IDirect3D3_EnumZBufferFormats( x, p1, p2, p3 ) \
         _INTRFMEMBP( x, EnumZBufferFormats, p1, p2, p3 )
     #define IDirect3D3_EvictManagedTextures( x ) \
-        _INTRFMEMBP( x, EvictManagedTextures )
+        _INTRFMEMBN( x, EvictManagedTextures )
     #define IDirect3DDevice3_QueryInterface( x, p1, p2 ) \
         _INTRFMEMBP( x, QueryInterface, p1, p2 )
     #define IDirect3DDevice3_AddRef( x ) \
-        _INTRFMEMBP( x, AddRef )
+        _INTRFMEMBN( x, AddRef )
     #define IDirect3DDevice3_Release( x ) \
-        _INTRFMEMBP( x, Release )
+        _INTRFMEMBN( x, Release )
     #define IDirect3DDevice3_GetCaps( x, p1, p2 ) \
         _INTRFMEMBP( x, GetCaps, p1, p2 )
     #define IDirect3DDevice3_GetStats( x, p ) \
@@ -1041,9 +1041,9 @@ DECLARE_INTERFACE_( IDirect3DVertexBuffer7, IUnknown ) {
     #define IDirect3DDevice3_EnumTextureFormats( x, p1, p2 ) \
         _INTRFMEMBP( x, EnumTextureFormats, p1, p2 )
     #define IDirect3DDevice3_BeginScene( x ) \
-        _INTRFMEMBP( x, BeginScene )
+        _INTRFMEMBN( x, BeginScene )
     #define IDirect3DDevice3_EndScene( x ) \
-        _INTRFMEMBP( x, EndScene )
+        _INTRFMEMBN( x, EndScene )
     #define IDirect3DDevice3_GetDirect3D( x, p ) \
         _INTRFMEMBP( x, GetDirect3D, p )
     #define IDirect3DDevice3_SetCurrentViewport( x, p ) \
@@ -1109,9 +1109,9 @@ DECLARE_INTERFACE_( IDirect3DVertexBuffer7, IUnknown ) {
     #define IDirect3DMaterial3_QueryInterface( x, p1, p2 ) \
         _INTRFMEMBP( x, QueryInterface, p1, p2 )
     #define IDirect3DMaterial3_AddRef( x ) \
-        _INTRFMEMBP( x, AddRef )
+        _INTRFMEMBN( x, AddRef )
     #define IDirect3DMaterial3_Release( x ) \
-        _INTRFMEMBP( x, Release )
+        _INTRFMEMBN( x, Release )
     #define IDirect3DMaterial3_SetMaterial( x, p ) \
         _INTRFMEMBP( x, SetMaterial, p )
     #define IDirect3DMaterial3_GetMaterial( x, p ) \
@@ -1121,9 +1121,9 @@ DECLARE_INTERFACE_( IDirect3DVertexBuffer7, IUnknown ) {
     #define IDirect3DViewport3_QueryInterface( x, p1, p2 ) \
         _INTRFMEMBP( x, QueryInterface, p1, p2 )
     #define IDirect3DViewport3_AddRef( x ) \
-        _INTRFMEMBP( x, AddRef )
+        _INTRFMEMBN( x, AddRef )
     #define IDirect3DViewport3_Release( x ) \
-        _INTRFMEMBP( x, Release )
+        _INTRFMEMBN( x, Release )
     #define IDirect3DViewport3_Initialize( x, p ) \
         _INTRFMEMBP( x, Initialize, p )
     #define IDirect3DViewport3_GetViewport( x, p ) \
@@ -1163,13 +1163,13 @@ DECLARE_INTERFACE_( IDirect3DVertexBuffer7, IUnknown ) {
     #define IDirect3DVertexBuffer_QueryInterface( x, p1, p2 ) \
         _INTRFMEMBP( x, QueryInterface, p1, p2 )
     #define IDirect3DVertexBuffer_AddRef( x ) \
-        _INTRFMEMBP( x, AddRef )
+        _INTRFMEMBN( x, AddRef )
     #define IDirect3DVertexBuffer_Release( x ) \
-        _INTRFMEMBP( x, Release )
+        _INTRFMEMBN( x, Release )
     #define IDirect3DVertexBuffer_Lock( x, p1, p2, p3 ) \
         _INTRFMEMBP( x, Lock, p1, p2, p3 )
     #define IDirect3DVertexBuffer_Unlock( x ) \
-        _INTRFMEMBP( x, Unlock )
+        _INTRFMEMBN( x, Unlock )
     #define IDirect3DVertexBuffer_ProcessVertices( x, p1, p2, p3, p4, p5, p6, p7 ) \
         _INTRFMEMBP( x, ProcessVertices, p1, p2, p3, p4, p5, p6, p7 )
     #define IDirect3DVertexBuffer_GetVertexBufferDesc( x, p ) \
@@ -1181,9 +1181,9 @@ DECLARE_INTERFACE_( IDirect3DVertexBuffer7, IUnknown ) {
     #define IDirect3D7_QueryInterface( x, p1, p2 ) \
         _INTRFMEMBP( x, QueryInterface, p1, p2 )
     #define IDirect3D7_AddRef( x ) \
-        _INTRFMEMBP( x, AddRef )
+        _INTRFMEMBN( x, AddRef )
     #define IDirect3D7_Release( x ) \
-        _INTRFMEMBP( x, Release )
+        _INTRFMEMBN( x, Release )
     #define IDirect3D7_EnumDevices( x, p1, p2 ) \
         _INTRFMEMBP( x, EnumDevices, p1, p2 )
     #define IDirect3D7_CreateDevice( x, p1, p2, p3 ) \
@@ -1193,21 +1193,21 @@ DECLARE_INTERFACE_( IDirect3DVertexBuffer7, IUnknown ) {
     #define IDirect3D7_EnumZBufferFormats( x, p1, p2, p3 ) \
         _INTRFMEMBP( x, EnumZBufferFormats, p1, p2, p3 )
     #define IDirect3D7_EvictManagedTextures( x ) \
-        _INTRFMEMBP( x, EvictManagedTextures )
+        _INTRFMEMBN( x, EvictManagedTextures )
     #define IDirect3DDevice7_QueryInterface( x, p1, p2 ) \
         _INTRFMEMBP( x, QueryInterface, p1, p2 )
     #define IDirect3DDevice7_AddRef( x ) \
-        _INTRFMEMBP( x, AddRef )
+        _INTRFMEMBN( x, AddRef )
     #define IDirect3DDevice7_Release( x ) \
-        _INTRFMEMBP( x, Release )
+        _INTRFMEMBN( x, Release )
     #define IDirect3DDevice7_GetCaps( x, p ) \
         _INTRFMEMBP( x, GetCaps, p )
     #define IDirect3DDevice7_EnumTextureFormats( x, p1, p2 ) \
         _INTRFMEMBP( x, EnumTextureFormats, p1, p2 )
     #define IDirect3DDevice7_BeginScene( x ) \
-        _INTRFMEMBP( x, BeginScene )
+        _INTRFMEMBN( x, BeginScene )
     #define IDirect3DDevice7_EndScene( x ) \
-        _INTRFMEMBP( x, EndScene )
+        _INTRFMEMBN( x, EndScene )
     #define IDirect3DDevice7_GetDirect3D( x, p ) \
         _INTRFMEMBP( x, GetDirect3D, p )
     #define IDirect3DDevice7_SetRenderTarget( x, p1, p2 ) \
@@ -1239,7 +1239,7 @@ DECLARE_INTERFACE_( IDirect3DVertexBuffer7, IUnknown ) {
     #define IDirect3DDevice7_GetRenderState( x, p1, p2 ) \
         _INTRFMEMBP( x, GetRenderState, p1, p2 )
     #define IDirect3DDevice7_BeginStateBlock( x ) \
-        _INTRFMEMBP( x, BeginStateBlock )
+        _INTRFMEMBN( x, BeginStateBlock )
     #define IDirect3DDevice7_EndStateBlock( x, p ) \
         _INTRFMEMBP( x, EndStateBlock, p )
     #define IDirect3DDevice7_PreLoad( x, p ) \
@@ -1295,13 +1295,13 @@ DECLARE_INTERFACE_( IDirect3DVertexBuffer7, IUnknown ) {
     #define IDirect3DVertexBuffer7_QueryInterface( x, p1, p2 ) \
         _INTRFMEMBP( x, QueryInterface, p1, p2 )
     #define IDirect3DVertexBuffer7_AddRef( x ) \
-        _INTRFMEMBP( x, AddRef )
+        _INTRFMEMBN( x, AddRef )
     #define IDirect3DVertexBuffer7_Release( x ) \
-        _INTRFMEMBP( x, Release )
+        _INTRFMEMBN( x, Release )
     #define IDirect3DVertexBuffer7_Lock( x, p1, p2, p3 ) \
         _INTRFMEMBP( x, Lock, p1, p2, p3 )
     #define IDirect3DVertexBuffer7_Unlock( x ) \
-        _INTRFMEMBP( x, Unlock )
+        _INTRFMEMBN( x, Unlock )
     #define IDirect3DVertexBuffer7_ProcessVertices( x, p1, p2, p3, p4, p5, p6, p7 ) \
         _INTRFMEMBP( x, ProcessVertices, p1, p2, p3, p4, p5, p6, p7 )
     #define IDirect3DVertexBuffer7_GetVertexBufferDesc( x, p ) \

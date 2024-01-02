@@ -980,13 +980,13 @@ typedef IDirect3DCryptoSession9 *PDIRECT3DCRYPTOSESSION;
 #define IDirect3D9_QueryInterface( x, p1, p2 ) \
     _INTRFMEMBP( x, QueryInterface, p1, p2 )
 #define IDirect3D9_AddRef( x ) \
-    _INTRFMEMBP( x, AddRef )
+    _INTRFMEMBN( x, AddRef )
 #define IDirect3D9_Release( x ) \
-    _INTRFMEMBP( x, Release )
+    _INTRFMEMBN( x, Release )
 #define IDirect3D9_RegisterSoftwareDevice( x, p ) \
     _INTRFMEMBP( x, RegisterSoftwareDevice, p )
 #define IDirect3D9_GetAdapterCount( x ) \
-    _INTRFMEMBP( x, GetAdapterCount )
+    _INTRFMEMBN( x, GetAdapterCount )
 #define IDirect3D9_GetAdapterIdentifier( x, p1, p2, p3 ) \
     _INTRFMEMBP( x, GetAdapterIdentifier, p1, p2, p3 )
 #define IDirect3D9_GetAdapterModeCount( x, p1, p2 ) \
@@ -1014,15 +1014,15 @@ typedef IDirect3DCryptoSession9 *PDIRECT3DCRYPTOSESSION;
 #define IDirect3DDevice9_QueryInterface( x, p1, p2 ) \
     _INTRFMEMBP( x, QueryInterface, p1, p2 )
 #define IDirect3DDevice9_AddRef( x ) \
-    _INTRFMEMBP( x, AddRef )
+    _INTRFMEMBN( x, AddRef )
 #define IDirect3DDevice9_Release( x ) \
-    _INTRFMEMBP( x, Release )
+    _INTRFMEMBN( x, Release )
 #define IDirect3DDevice9_TestCooperativeLevel( x ) \
-    _INTRFMEMBP( x, TestCooperativeLevel )
+    _INTRFMEMBN( x, TestCooperativeLevel )
 #define IDirect3DDevice9_GetAvailableTextureMem( x ) \
-    _INTRFMEMBP( x, GetAvailableTextureMem )
+    _INTRFMEMBN( x, GetAvailableTextureMem )
 #define IDirect3DDevice9_EvictManagedResources( x ) \
-    _INTRFMEMBP( x, EvictManagedResources )
+    _INTRFMEMBN( x, EvictManagedResources )
 #define IDirect3DDevice9_GetDirect3D( x, p ) \
     _INTRFMEMBP( x, GetDirect3D, p )
 #define IDirect3DDevice9_GetDeviceCaps( x, p ) \
@@ -1042,7 +1042,7 @@ typedef IDirect3DCryptoSession9 *PDIRECT3DCRYPTOSESSION;
 #define IDirect3DDevice9_GetSwapChain( x, p1, p2 ) \
     _INTRFMEMBP( x, GetSwapChain, p1, p2 )
 #define IDirect3DDevice9_GetNumberOfSwapChains( x ) \
-    _INTRFMEMBP( x, GetNumberOfSwapChains )
+    _INTRFMEMBN( x, GetNumberOfSwapChains )
 #define IDirect3DDevice9_Reset( x, p ) \
     _INTRFMEMBP( x, Reset, p )
 #define IDirect3DDevice9_Present( x, p1, p2, p3, p4 ) \
@@ -1094,9 +1094,9 @@ typedef IDirect3DCryptoSession9 *PDIRECT3DCRYPTOSESSION;
 #define IDirect3DDevice9_GetDepthStencilSurface( x, p ) \
     _INTRFMEMBP( x, GetDepthStencilSurface, p )
 #define IDirect3DDevice9_BeginScene( x ) \
-    _INTRFMEMBP( x, BeginScene )
+    _INTRFMEMBN( x, BeginScene )
 #define IDirect3DDevice9_EndScene( x ) \
-    _INTRFMEMBP( x, EndScene )
+    _INTRFMEMBN( x, EndScene )
 #define IDirect3DDevice9_Clear( x, p1, p2, p3, p4, p5, p6 ) \
     _INTRFMEMBP( x, Clear, p1, p2, p3, p4, p5, p6 )
 #define IDirect3DDevice9_SetTransform( x, p1, p2 ) \
@@ -1132,7 +1132,7 @@ typedef IDirect3DCryptoSession9 *PDIRECT3DCRYPTOSESSION;
 #define IDirect3DDevice9_CreateStateBlock( x, p1, p2 ) \
     _INTRFMEMBP( x, CreateStateBlock, p1, p2 )
 #define IDirect3DDevice9_BeginStateBlock( x ) \
-    _INTRFMEMBP( x, BeginStateBlock )
+    _INTRFMEMBN( x, BeginStateBlock )
 #define IDirect3DDevice9_EndStateBlock( x, p ) \
     _INTRFMEMBP( x, EndStateBlock, p )
 #define IDirect3DDevice9_SetClipStatus( x, p ) \
@@ -1168,11 +1168,11 @@ typedef IDirect3DCryptoSession9 *PDIRECT3DCRYPTOSESSION;
 #define IDirect3DDevice9_SetSoftwareVertexProcessing( x, p ) \
     _INTRFMEMBP( x, SetSoftwareVertexProcessing, p )
 #define IDirect3DDevice9_GetSoftwareVertexProcessing( x ) \
-    _INTRFMEMBP( x, GetSoftwareVertexProcessing )
+    _INTRFMEMBN( x, GetSoftwareVertexProcessing )
 #define IDirect3DDevice9_SetNPatchMode( x, p ) \
     _INTRFMEMBP( x, SetNPatchMode, p )
 #define IDirect3DDevice9_GetNPatchMode( x ) \
-    _INTRFMEMBP( x, GetNPatchMode )
+    _INTRFMEMBN( x, GetNPatchMode )
 #define IDirect3DDevice9_DrawPrimitive( x, p1, p2, p3 ) \
     _INTRFMEMBP( x, DrawPrimitive, p1, p2, p3 )
 #define IDirect3DDevice9_DrawIndexedPrimitive( x, p1, p2, p3, p4, p5, p6 ) \
@@ -1252,21 +1252,21 @@ typedef IDirect3DCryptoSession9 *PDIRECT3DCRYPTOSESSION;
 #define IDirect3DStateBlock9_QueryInterface( x, p1, p2 ) \
     _INTRFMEMBP( x, QueryInterface, p1, p2 )
 #define IDirect3DStateBlock9_AddRef( x ) \
-    _INTRFMEMBP( x, AddRef )
+    _INTRFMEMBN( x, AddRef )
 #define IDirect3DStateBlock9_Release( x ) \
-    _INTRFMEMBP( x, Release )
+    _INTRFMEMBN( x, Release )
 #define IDirect3DStateBlock9_GetDevice( x, p ) \
     _INTRFMEMBP( x, GetDevice, p )
 #define IDirect3DStateBlock9_Capture( x ) \
-    _INTRFMEMBP( x, Capture )
+    _INTRFMEMBN( x, Capture )
 #define IDirect3DStateBlock9_Apply( x ) \
-    _INTRFMEMBP( x, Apply )
+    _INTRFMEMBN( x, Apply )
 #define IDirect3DSwapChain9_QueryInterface( x, p1, p2 ) \
     _INTRFMEMBP( x, QueryInterface, p1, p2 )
 #define IDirect3DSwapChain9_AddRef( x ) \
-    _INTRFMEMBP( x, AddRef )
+    _INTRFMEMBN( x, AddRef )
 #define IDirect3DSwapChain9_Release( x ) \
-    _INTRFMEMBP( x, Release )
+    _INTRFMEMBN( x, Release )
 #define IDirect3DSwapChain9_Present( x, p1, p2, p3, p4, p5 ) \
     _INTRFMEMBP( x, Present, p1, p2, p3, p4, p5 )
 #define IDirect3DSwapChain9_GetFrontBufferData( x, p ) \
@@ -1284,9 +1284,9 @@ typedef IDirect3DCryptoSession9 *PDIRECT3DCRYPTOSESSION;
 #define IDirect3DResource9_QueryInterface( x, p1, p2 ) \
     _INTRFMEMBP( x, QueryInterface, p1, p2 )
 #define IDirect3DResource9_AddRef( x ) \
-    _INTRFMEMBP( x, AddRef )
+    _INTRFMEMBN( x, AddRef )
 #define IDirect3DResource9_Release( x ) \
-    _INTRFMEMBP( x, Release )
+    _INTRFMEMBN( x, Release )
 #define IDirect3DResource9_GetDevice( x, p ) \
     _INTRFMEMBP( x, GetDevice, p )
 #define IDirect3DResource9_SetPrivateData( x, p1, p2, p3 ) \
@@ -1298,17 +1298,17 @@ typedef IDirect3DCryptoSession9 *PDIRECT3DCRYPTOSESSION;
 #define IDirect3DResource9_SetPriority( x, p ) \
     _INTRFMEMBP( x, SetPriority, p )
 #define IDirect3DResource9_GetPriority( x ) \
-    _INTRFMEMBP( x, GetPriority )
+    _INTRFMEMBN( x, GetPriority )
 #define IDirect3DResource9_PreLoad( x ) \
-    _INTRFMEMBP( x, PreLoad )
+    _INTRFMEMBN( x, PreLoad )
 #define IDirect3DResource9_GetType( x ) \
-    _INTRFMEMBP( x, GetType )
+    _INTRFMEMBN( x, GetType )
 #define IDirect3DVertexDeclaration9_QueryInterface( x, p1, p2 ) \
     _INTRFMEMBP( x, QueryInterface, p1, p2 )
 #define IDirect3DVertexDeclaration9_AddRef( x ) \
-    _INTRFMEMBP( x, AddRef )
+    _INTRFMEMBN( x, AddRef )
 #define IDirect3DVertexDeclaration9_Release( x ) \
-    _INTRFMEMBP( x, Release )
+    _INTRFMEMBN( x, Release )
 #define IDirect3DVertexDeclaration9_GetDevice( x, p ) \
     _INTRFMEMBP( x, GetDevice, p )
 #define IDirect3DVertexDeclaration9_GetDeclaration( x, p1, p2 ) \
@@ -1316,9 +1316,9 @@ typedef IDirect3DCryptoSession9 *PDIRECT3DCRYPTOSESSION;
 #define IDirect3DVertexShader9_QueryInterface( x, p1, p2 ) \
     _INTRFMEMBP( x, QueryInterface, p1, p2 )
 #define IDirect3DVertexShader9_AddRef( x ) \
-    _INTRFMEMBP( x, AddRef )
+    _INTRFMEMBN( x, AddRef )
 #define IDirect3DVertexShader9_Release( x ) \
-    _INTRFMEMBP( x, Release )
+    _INTRFMEMBN( x, Release )
 #define IDirect3DVertexShader9_GetDevice( x, p ) \
     _INTRFMEMBP( x, GetDevice, p )
 #define IDirect3DVertexShader9_GetFunction( x, p1, p2 ) \
@@ -1326,9 +1326,9 @@ typedef IDirect3DCryptoSession9 *PDIRECT3DCRYPTOSESSION;
 #define IDirect3DPixelShader9_QueryInterface( x, p1, p2 ) \
     _INTRFMEMBP( x, QueryInterface, p1, p2 )
 #define IDirect3DPixelShader9_AddRef( x ) \
-    _INTRFMEMBP( x, AddRef )
+    _INTRFMEMBN( x, AddRef )
 #define IDirect3DPixelShader9_Release( x ) \
-    _INTRFMEMBP( x, Release )
+    _INTRFMEMBN( x, Release )
 #define IDirect3DPixelShader9_GetDevice( x, p ) \
     _INTRFMEMBP( x, GetDevice, p )
 #define IDirect3DPixelShader9_GetFunction( x, p1, p2 ) \
@@ -1336,9 +1336,9 @@ typedef IDirect3DCryptoSession9 *PDIRECT3DCRYPTOSESSION;
 #define IDirect3DBaseTexture9_QueryInterface( x, p1, p2 ) \
     _INTRFMEMBP( x, QueryInterface, p1, p2 )
 #define IDirect3DBaseTexture9_AddRef( x ) \
-    _INTRFMEMBP( x, AddRef )
+    _INTRFMEMBN( x, AddRef )
 #define IDirect3DBaseTexture9_Release( x ) \
-    _INTRFMEMBP( x, Release )
+    _INTRFMEMBN( x, Release )
 #define IDirect3DBaseTexture9_GetDevice( x, p ) \
     _INTRFMEMBP( x, GetDevice, p )
 #define IDirect3DBaseTexture9_SetPrivateData( x, p1, p2, p3 ) \
@@ -1350,29 +1350,29 @@ typedef IDirect3DCryptoSession9 *PDIRECT3DCRYPTOSESSION;
 #define IDirect3DBaseTexture9_SetPriority( x, p ) \
     _INTRFMEMBP( x, SetPriority, p )
 #define IDirect3DBaseTexture9_GetPriority( x ) \
-    _INTRFMEMBP( x, GetPriority )
+    _INTRFMEMBN( x, GetPriority )
 #define IDirect3DBaseTexture9_PreLoad( x ) \
-    _INTRFMEMBP( x, PreLoad )
+    _INTRFMEMBN( x, PreLoad )
 #define IDirect3DBaseTexture9_GetType( x ) \
-    _INTRFMEMBP( x, GetType )
+    _INTRFMEMBN( x, GetType )
 #define IDirect3DBaseTexture9_SetLOD( x, p ) \
     _INTRFMEMBP( x, SetLOD, p )
 #define IDirect3DBaseTexture9_GetLOD( x ) \
-    _INTRFMEMBP( x, GetLOD )
+    _INTRFMEMBN( x, GetLOD )
 #define IDirect3DBaseTexture9_GetLevelCount( x ) \
-    _INTRFMEMBP( x, GetLevelCount )
+    _INTRFMEMBN( x, GetLevelCount )
 #define IDirect3DBaseTexture9_SetAutoGenFilterType( x, p ) \
     _INTRFMEMBP( x, SetAutoGenFilterType, p )
 #define IDirect3DBaseTexture9_GetAutoGenFilterType( x ) \
-    _INTRFMEMBP( x, GetAutoGenFilterType )
+    _INTRFMEMBN( x, GetAutoGenFilterType )
 #define IDirect3DBaseTexture9_GenerateMipSubLevels( x ) \
-    _INTRFMEMBP( x, GenerateMipSubLevels )
+    _INTRFMEMBN( x, GenerateMipSubLevels )
 #define IDirect3DTexture9_QueryInterface( x, p1, p2 ) \
     _INTRFMEMBP( x, QueryInterface, p1, p2 )
 #define IDirect3DTexture9_AddRef( x ) \
-    _INTRFMEMBP( x, AddRef )
+    _INTRFMEMBN( x, AddRef )
 #define IDirect3DTexture9_Release( x ) \
-    _INTRFMEMBP( x, Release )
+    _INTRFMEMBN( x, Release )
 #define IDirect3DTexture9_GetDevice( x, p ) \
     _INTRFMEMBP( x, GetDevice, p )
 #define IDirect3DTexture9_SetPrivateData( x, p1, p2, p3 ) \
@@ -1384,23 +1384,23 @@ typedef IDirect3DCryptoSession9 *PDIRECT3DCRYPTOSESSION;
 #define IDirect3DTexture9_SetPriority( x, p ) \
     _INTRFMEMBP( x, SetPriority, p )
 #define IDirect3DTexture9_GetPriority( x ) \
-    _INTRFMEMBP( x, GetPriority )
+    _INTRFMEMBN( x, GetPriority )
 #define IDirect3DTexture9_PreLoad( x ) \
-    _INTRFMEMBP( x, PreLoad )
+    _INTRFMEMBN( x, PreLoad )
 #define IDirect3DTexture9_GetType( x ) \
-    _INTRFMEMBP( x, GetType )
+    _INTRFMEMBN( x, GetType )
 #define IDirect3DTexture9_SetLOD( x, p ) \
     _INTRFMEMBP( x, SetLOD, p )
 #define IDirect3DTexture9_GetLOD( x ) \
-    _INTRFMEMBP( x, GetLOD )
+    _INTRFMEMBN( x, GetLOD )
 #define IDirect3DTexture9_GetLevelCount( x ) \
-    _INTRFMEMBP( x, GetLevelCount )
+    _INTRFMEMBN( x, GetLevelCount )
 #define IDirect3DTexture9_SetAutoGenFilterType( x, p ) \
     _INTRFMEMBP( x, SetAutoGenFilterType, p )
 #define IDirect3DTexture9_GetAutoGenFilterType( x ) \
-    _INTRFMEMBP( x, GetAutoGenFilterType )
+    _INTRFMEMBN( x, GetAutoGenFilterType )
 #define IDirect3DTexture9_GenerateMipSubLevels( x ) \
-    _INTRFMEMBP( x, GenerateMipSubLevels )
+    _INTRFMEMBN( x, GenerateMipSubLevels )
 #define IDirect3DTexture9_GetLevelDesc( x, p1, p2 ) \
     _INTRFMEMBP( x, GetLevelDesc, p1, p2 )
 #define IDirect3DTexture9_GetSurfaceLevel( x, p1, p2 ) \
@@ -1414,9 +1414,9 @@ typedef IDirect3DCryptoSession9 *PDIRECT3DCRYPTOSESSION;
 #define IDirect3DVolumeTexture9_QueryInterface( x, p1, p2 ) \
     _INTRFMEMBP( x, QueryInterface, p1, p2 )
 #define IDirect3DVolumeTexture9_AddRef( x ) \
-    _INTRFMEMBP( x, AddRef )
+    _INTRFMEMBN( x, AddRef )
 #define IDirect3DVolumeTexture9_Release( x ) \
-    _INTRFMEMBP( x, Release )
+    _INTRFMEMBN( x, Release )
 #define IDirect3DVolumeTexture9_GetDevice( x, p ) \
     _INTRFMEMBP( x, GetDevice, p )
 #define IDirect3DVolumeTexture9_SetPrivateData( x, p1, p2, p3 ) \
@@ -1428,23 +1428,23 @@ typedef IDirect3DCryptoSession9 *PDIRECT3DCRYPTOSESSION;
 #define IDirect3DVolumeTexture9_SetPriority( x, p ) \
     _INTRFMEMBP( x, SetPriority, p )
 #define IDirect3DVolumeTexture9_GetPriority( x ) \
-    _INTRFMEMBP( x, GetPriority )
+    _INTRFMEMBN( x, GetPriority )
 #define IDirect3DVolumeTexture9_PreLoad( x ) \
-    _INTRFMEMBP( x, PreLoad )
+    _INTRFMEMBN( x, PreLoad )
 #define IDirect3DVolumeTexture9_GetType( x ) \
-    _INTRFMEMBP( x, GetType )
+    _INTRFMEMBN( x, GetType )
 #define IDirect3DVolumeTexture9_SetLOD( x, p ) \
     _INTRFMEMBP( x, SetLOD, p )
 #define IDirect3DVolumeTexture9_GetLOD( x ) \
-    _INTRFMEMBP( x, GetLOD )
+    _INTRFMEMBN( x, GetLOD )
 #define IDirect3DVolumeTexture9_GetLevelCount( x ) \
-    _INTRFMEMBP( x, GetLevelCount )
+    _INTRFMEMBN( x, GetLevelCount )
 #define IDirect3DVolumeTexture9_SetAutoGenFilterType( x, p ) \
     _INTRFMEMBP( x, SetAutoGenFilterType, p )
 #define IDirect3DVolumeTexture9_GetAutoGenFilterType( x ) \
-    _INTRFMEMBP( x, GetAutoGenFilterType )
+    _INTRFMEMBN( x, GetAutoGenFilterType )
 #define IDirect3DVolumeTexture9_GenerateMipSubLevels( x ) \
-    _INTRFMEMBP( x, GenerateMipSubLevels )
+    _INTRFMEMBN( x, GenerateMipSubLevels )
 #define IDirect3DVolumeTexture9_GetLevelDesc( x, p1, p2 ) \
     _INTRFMEMBP( x, GetLevelDesc, p1, p2 )
 #define IDirect3DVolumeTexture9_GetVolumeLevel( x, p1, p2 ) \
@@ -1458,9 +1458,9 @@ typedef IDirect3DCryptoSession9 *PDIRECT3DCRYPTOSESSION;
 #define IDirect3DCubeTexture9_QueryInterface( x, p1, p2 ) \
     _INTRFMEMBP( x, QueryInterface, p1, p2 )
 #define IDirect3DCubeTexture9_AddRef( x ) \
-    _INTRFMEMBP( x, AddRef )
+    _INTRFMEMBN( x, AddRef )
 #define IDirect3DCubeTexture9_Release( x ) \
-    _INTRFMEMBP( x, Release )
+    _INTRFMEMBN( x, Release )
 #define IDirect3DCubeTexture9_GetDevice( x, p ) \
     _INTRFMEMBP( x, GetDevice, p )
 #define IDirect3DCubeTexture9_SetPrivateData( x, p1, p2, p3 ) \
@@ -1472,23 +1472,23 @@ typedef IDirect3DCryptoSession9 *PDIRECT3DCRYPTOSESSION;
 #define IDirect3DCubeTexture9_SetPriority( x, p ) \
     _INTRFMEMBP( x, SetPriority, p )
 #define IDirect3DCubeTexture9_GetPriority( x ) \
-    _INTRFMEMBP( x, GetPriority )
+    _INTRFMEMBN( x, GetPriority )
 #define IDirect3DCubeTexture9_PreLoad( x ) \
-    _INTRFMEMBP( x, PreLoad )
+    _INTRFMEMBN( x, PreLoad )
 #define IDirect3DCubeTexture9_GetType( x ) \
-    _INTRFMEMBP( x, GetType )
+    _INTRFMEMBN( x, GetType )
 #define IDirect3DCubeTexture9_SetLOD( x, p ) \
     _INTRFMEMBP( x, SetLOD, p )
 #define IDirect3DCubeTexture9_GetLOD( x ) \
-    _INTRFMEMBP( x, GetLOD )
+    _INTRFMEMBN( x, GetLOD )
 #define IDirect3DCubeTexture9_GetLevelCount( x ) \
-    _INTRFMEMBP( x, GetLevelCount )
+    _INTRFMEMBN( x, GetLevelCount )
 #define IDirect3DCubeTexture9_SetAutoGenFilterType( x, p ) \
     _INTRFMEMBP( x, SetAutoGenFilterType, p )
 #define IDirect3DCubeTexture9_GetAutoGenFilterType( x ) \
-    _INTRFMEMBP( x, GetAutoGenFilterType )
+    _INTRFMEMBN( x, GetAutoGenFilterType )
 #define IDirect3DCubeTexture9_GenerateMipSubLevels( x ) \
-    _INTRFMEMBP( x, GenerateMipSubLevels )
+    _INTRFMEMBN( x, GenerateMipSubLevels )
 #define IDirect3DCubeTexture9_GetLevelDesc( x, p1, p2 ) \
     _INTRFMEMBP( x, GetLevelDesc, p1, p2 )
 #define IDirect3DCubeTexture9_GetCubeMapSurface( x, p1, p2, p3 ) \
@@ -1502,9 +1502,9 @@ typedef IDirect3DCryptoSession9 *PDIRECT3DCRYPTOSESSION;
 #define IDirect3DVertexBuffer9_QueryInterface( x, p1, p2 ) \
     _INTRFMEMBP( x, QueryInterface, p1, p2 )
 #define IDirect3DVertexBuffer9_AddRef( x ) \
-    _INTRFMEMBP( x, AddRef )
+    _INTRFMEMBN( x, AddRef )
 #define IDirect3DVertexBuffer9_Release( x ) \
-    _INTRFMEMBP( x, Release )
+    _INTRFMEMBN( x, Release )
 #define IDirect3DVertexBuffer9_GetDevice( x, p ) \
     _INTRFMEMBP( x, GetDevice, p )
 #define IDirect3DVertexBuffer9_SetPrivateData( x, p1, p2, p3 ) \
@@ -1516,23 +1516,23 @@ typedef IDirect3DCryptoSession9 *PDIRECT3DCRYPTOSESSION;
 #define IDirect3DVertexBuffer9_SetPriority( x, p ) \
     _INTRFMEMBP( x, SetPriority, p )
 #define IDirect3DVertexBuffer9_GetPriority( x ) \
-    _INTRFMEMBP( x, GetPriority )
+    _INTRFMEMBN( x, GetPriority )
 #define IDirect3DVertexBuffer9_PreLoad( x ) \
-    _INTRFMEMBP( x, PreLoad )
+    _INTRFMEMBN( x, PreLoad )
 #define IDirect3DVertexBuffer9_GetType( x ) \
-    _INTRFMEMBP( x, GetType )
+    _INTRFMEMBN( x, GetType )
 #define IDirect3DVertexBuffer9_Lock( x, p1, p2, p3, p4 ) \
     _INTRFMEMBP( x, Lock, p1, p2, p3, p4 )
 #define IDirect3DVertexBuffer9_Unlock( x ) \
-    _INTRFMEMBP( x, Unlock )
+    _INTRFMEMBN( x, Unlock )
 #define IDirect3DVertexBuffer9_GetDesc( x, p ) \
     _INTRFMEMBP( x, GetDesc, p )
 #define IDirect3DIndexBuffer9_QueryInterface( x, p1, p2 ) \
     _INTRFMEMBP( x, QueryInterface, p1, p2 )
 #define IDirect3DIndexBuffer9_AddRef( x ) \
-    _INTRFMEMBP( x, AddRef )
+    _INTRFMEMBN( x, AddRef )
 #define IDirect3DIndexBuffer9_Release( x ) \
-    _INTRFMEMBP( x, Release )
+    _INTRFMEMBN( x, Release )
 #define IDirect3DIndexBuffer9_GetDevice( x, p ) \
     _INTRFMEMBP( x, GetDevice, p )
 #define IDirect3DIndexBuffer9_SetPrivateData( x, p1, p2, p3 ) \
@@ -1544,23 +1544,23 @@ typedef IDirect3DCryptoSession9 *PDIRECT3DCRYPTOSESSION;
 #define IDirect3DIndexBuffer9_SetPriority( x, p ) \
     _INTRFMEMBP( x, SetPriority, p )
 #define IDirect3DIndexBuffer9_GetPriority( x ) \
-    _INTRFMEMBP( x, GetPriority )
+    _INTRFMEMBN( x, GetPriority )
 #define IDirect3DIndexBuffer9_PreLoad( x ) \
-    _INTRFMEMBP( x, PreLoad )
+    _INTRFMEMBN( x, PreLoad )
 #define IDirect3DIndexBuffer9_GetType( x ) \
-    _INTRFMEMBP( x, GetType )
+    _INTRFMEMBN( x, GetType )
 #define IDirect3DIndexBuffer9_Lock( x, p1, p2, p3, p4 ) \
     _INTRFMEMBP( x, Lock, p1, p2, p3, p4 )
 #define IDirect3DIndexBuffer9_Unlock( x ) \
-    _INTRFMEMBP( x, Unlock )
+    _INTRFMEMBN( x, Unlock )
 #define IDirect3DIndexBuffer9_GetDesc( x, p ) \
     _INTRFMEMBP( x, GetDesc, p )
 #define IDirect3DSurface9_QueryInterface( x, p1, p2 ) \
     _INTRFMEMBP( x, QueryInterface, p1, p2 )
 #define IDirect3DSurface9_AddRef( x ) \
-    _INTRFMEMBP( x, AddRef )
+    _INTRFMEMBN( x, AddRef )
 #define IDirect3DSurface9_Release( x ) \
-    _INTRFMEMBP( x, Release )
+    _INTRFMEMBN( x, Release )
 #define IDirect3DSurface9_GetDevice( x, p ) \
     _INTRFMEMBP( x, GetDevice, p )
 #define IDirect3DSurface9_SetPrivateData( x, p1, p2, p3 ) \
@@ -1572,11 +1572,11 @@ typedef IDirect3DCryptoSession9 *PDIRECT3DCRYPTOSESSION;
 #define IDirect3DSurface9_SetPriority( x, p ) \
     _INTRFMEMBP( x, SetPriority, p )
 #define IDirect3DSurface9_GetPriority( x ) \
-    _INTRFMEMBP( x, GetPriority )
+    _INTRFMEMBN( x, GetPriority )
 #define IDirect3DSurface9_PreLoad( x ) \
-    _INTRFMEMBP( x, PreLoad )
+    _INTRFMEMBN( x, PreLoad )
 #define IDirect3DSurface9_GetType( x ) \
-    _INTRFMEMBP( x, GetType )
+    _INTRFMEMBN( x, GetType )
 #define IDirect3DSurface9_GetContainer( x, p1, p2 ) \
     _INTRFMEMBP( x, GetContainer, p1, p2 )
 #define IDirect3DSurface9_GetDesc( x, p ) \
@@ -1584,7 +1584,7 @@ typedef IDirect3DCryptoSession9 *PDIRECT3DCRYPTOSESSION;
 #define IDirect3DSurface9_LockRect( x, p1, p2, p3 ) \
     _INTRFMEMBP( x, LockRect, p1, p2, p3 )
 #define IDirect3DSurface9_UnlockRect( x ) \
-    _INTRFMEMBP( x, UnlockRect )
+    _INTRFMEMBN( x, UnlockRect )
 #define IDirect3DSurface9_GetDC( x, p ) \
     _INTRFMEMBP( x, GetDC, p )
 #define IDirect3DSurface9_ReleaseDC( x, p ) \
@@ -1592,9 +1592,9 @@ typedef IDirect3DCryptoSession9 *PDIRECT3DCRYPTOSESSION;
 #define IDirect3DVolume9_QueryInterface( x, p1, p2 ) \
     _INTRFMEMBP( x, QueryInterface, p1, p2 )
 #define IDirect3DVolume9_AddRef( x ) \
-    _INTRFMEMBP( x, AddRef )
+    _INTRFMEMBN( x, AddRef )
 #define IDirect3DVolume9_Release( x ) \
-    _INTRFMEMBP( x, Release )
+    _INTRFMEMBN( x, Release )
 #define IDirect3DVolume9_GetDevice( x, p ) \
     _INTRFMEMBP( x, GetDevice, p )
 #define IDirect3DVolume9_SetPrivateData( x, p1, p2, p3, p4 ) \
@@ -1610,19 +1610,19 @@ typedef IDirect3DCryptoSession9 *PDIRECT3DCRYPTOSESSION;
 #define IDirect3DVolume9_LockBox( x, p1, p2, p3 ) \
     _INTRFMEMBP( x, LockBox, p1, p2, p3 )
 #define IDirect3DVolume9_UnlockBox( x ) \
-    _INTRFMEMBP( x, UnlockBox )
+    _INTRFMEMBN( x, UnlockBox )
 #define IDirect3DQuery9_QueryInterface( x, p1, p2 ) \
     _INTRFMEMBP( x, QueryInterface, p1, p2 )
 #define IDirect3DQuery9_AddRef( x ) \
-    _INTRFMEMBP( x, AddRef )
+    _INTRFMEMBN( x, AddRef )
 #define IDirect3DQuery9_Release( x ) \
-    _INTRFMEMBP( x, Release )
+    _INTRFMEMBN( x, Release )
 #define IDirect3DQuery9_GetDevice( x, p ) \
     _INTRFMEMBP( x, GetDevice, p )
 #define IDirect3DQuery9_GetType( x ) \
-    _INTRFMEMBP( x, GetType )
+    _INTRFMEMBN( x, GetType )
 #define IDirect3DQuery9_GetDataSize( x ) \
-    _INTRFMEMBP( x, GetDataSize )
+    _INTRFMEMBN( x, GetDataSize )
 #define IDirect3DQuery9_Issue( x, p ) \
     _INTRFMEMBP( x, Issue, p )
 #define IDirect3DQuery9_GetData( x, p1, p2, p3 ) \
@@ -1631,13 +1631,13 @@ typedef IDirect3DCryptoSession9 *PDIRECT3DCRYPTOSESSION;
     #define IDirect3D9Ex_QueryInterface( x, p1, p2 ) \
         _INTRFMEMBP( x, QueryInterface, p1, p2 )
     #define IDirect3D9Ex_AddRef( x ) \
-        _INTRFMEMBP( x, AddRef )
+        _INTRFMEMBN( x, AddRef )
     #define IDirect3D9Ex_Release( x ) \
-        _INTRFMEMBP( x, Release )
+        _INTRFMEMBN( x, Release )
     #define IDirect3D9Ex_RegisterSoftwareDevice( x, p ) \
         _INTRFMEMBP( x, RegisterSoftwareDevice, p )
     #define IDirect3D9Ex_GetAdapterCount( x ) \
-        _INTRFMEMBP( x, GetAdapterCount )
+        _INTRFMEMBN( x, GetAdapterCount )
     #define IDirect3D9Ex_GetAdapterIdentifier( x, p1, p2, p3 ) \
         _INTRFMEMBP( x, GetAdapterIdentifier, p1, p2, p3 )
     #define IDirect3D9Ex_GetAdapterModeCount( x, p1, p2 ) \
@@ -1675,15 +1675,15 @@ typedef IDirect3DCryptoSession9 *PDIRECT3DCRYPTOSESSION;
     #define IDirect3DDevice9Ex_QueryInterface( x, p1, p2 ) \
         _INTRFMEMBP( x, QueryInterface, p1, p2 )
     #define IDirect3DDevice9Ex_AddRef( x ) \
-        _INTRFMEMBP( x, AddRef )
+        _INTRFMEMBN( x, AddRef )
     #define IDirect3DDevice9Ex_Release( x ) \
-        _INTRFMEMBP( x, Release )
+        _INTRFMEMBN( x, Release )
     #define IDirect3DDevice9Ex_TestCooperativeLevel( x ) \
-        _INTRFMEMBP( x, TestCooperativeLevel )
+        _INTRFMEMBN( x, TestCooperativeLevel )
     #define IDirect3DDevice9Ex_GetAvailableTextureMem( x ) \
-        _INTRFMEMBP( x, GetAvailableTextureMem )
+        _INTRFMEMBN( x, GetAvailableTextureMem )
     #define IDirect3DDevice9Ex_EvictManagedResources( x ) \
-        _INTRFMEMBP( x, EvictManagedResources )
+        _INTRFMEMBN( x, EvictManagedResources )
     #define IDirect3DDevice9Ex_GetDirect3D( x, p ) \
         _INTRFMEMBP( x, GetDirect3D, p )
     #define IDirect3DDevice9Ex_GetDeviceCaps( x, p ) \
@@ -1703,7 +1703,7 @@ typedef IDirect3DCryptoSession9 *PDIRECT3DCRYPTOSESSION;
     #define IDirect3DDevice9Ex_GetSwapChain( x, p1, p2 ) \
         _INTRFMEMBP( x, GetSwapChain, p1, p2 )
     #define IDirect3DDevice9Ex_GetNumberOfSwapChains( x ) \
-        _INTRFMEMBP( x, GetNumberOfSwapChains )
+        _INTRFMEMBN( x, GetNumberOfSwapChains )
     #define IDirect3DDevice9Ex_Reset( x, p ) \
         _INTRFMEMBP( x, Reset, p )
     #define IDirect3DDevice9Ex_Present( x, p1, p2, p3, p4 ) \
@@ -1755,9 +1755,9 @@ typedef IDirect3DCryptoSession9 *PDIRECT3DCRYPTOSESSION;
     #define IDirect3DDevice9Ex_GetDepthStencilSurface( x, p ) \
         _INTRFMEMBP( x, GetDepthStencilSurface, p )
     #define IDirect3DDevice9Ex_BeginScene( x ) \
-        _INTRFMEMBP( x, BeginScene )
+        _INTRFMEMBN( x, BeginScene )
     #define IDirect3DDevice9Ex_EndScene( x ) \
-        _INTRFMEMBP( x, EndScene )
+        _INTRFMEMBN( x, EndScene )
     #define IDirect3DDevice9Ex_Clear( x, p1, p2, p3, p4, p5, p6 ) \
         _INTRFMEMBP( x, Clear, p1, p2, p3, p4, p5, p6 )
     #define IDirect3DDevice9Ex_SetTransform( x, p1, p2 ) \
@@ -1793,7 +1793,7 @@ typedef IDirect3DCryptoSession9 *PDIRECT3DCRYPTOSESSION;
     #define IDirect3DDevice9Ex_CreateStateBlock( x, p1, p2 ) \
         _INTRFMEMBP( x, CreateStateBlock, p1, p2 )
     #define IDirect3DDevice9Ex_BeginStateBlock( x ) \
-        _INTRFMEMBP( x, BeginStateBlock )
+        _INTRFMEMBN( x, BeginStateBlock )
     #define IDirect3DDevice9Ex_EndStateBlock( x, p ) \
         _INTRFMEMBP( x, EndStateBlock, p )
     #define IDirect3DDevice9Ex_SetClipStatus( x, p ) \
@@ -1829,11 +1829,11 @@ typedef IDirect3DCryptoSession9 *PDIRECT3DCRYPTOSESSION;
     #define IDirect3DDevice9Ex_SetSoftwareVertexProcessing( x, p ) \
         _INTRFMEMBP( x, SetSoftwareVertexProcessing, p )
     #define IDirect3DDevice9Ex_GetSoftwareVertexProcessing( x ) \
-        _INTRFMEMBP( x, GetSoftwareVertexProcessing )
+        _INTRFMEMBN( x, GetSoftwareVertexProcessing )
     #define IDirect3DDevice9Ex_SetNPatchMode( x, p ) \
         _INTRFMEMBP( x, SetNPatchMode, p )
     #define IDirect3DDevice9Ex_GetNPatchMode( x ) \
-        _INTRFMEMBP( x, GetNPatchMode )
+        _INTRFMEMBN( x, GetNPatchMode )
     #define IDirect3DDevice9Ex_DrawPrimitive( x, p1, p2, p3 ) \
         _INTRFMEMBP( x, DrawPrimitive, p1, p2, p3 )
     #define IDirect3DDevice9Ex_DrawIndexedPrimitive( x, p1, p2, p3, p4, p5, p6 ) \
@@ -1943,9 +1943,9 @@ typedef IDirect3DCryptoSession9 *PDIRECT3DCRYPTOSESSION;
     #define IDirect3DSwapChain9Ex_QueryInterface( x, p1, p2 ) \
         _INTRFMEMBP( x, QueryInterface, p1, p2 )
     #define IDirect3DSwapChain9Ex_AddRef( x ) \
-        _INTRFMEMBP( x, AddRef )
+        _INTRFMEMBN( x, AddRef )
     #define IDirect3DSwapChain9Ex_Release( x ) \
-        _INTRFMEMBP( x, Release )
+        _INTRFMEMBN( x, Release )
     #define IDirect3DSwapChain9Ex_Present( x, p1, p2, p3, p4, p5 ) \
         _INTRFMEMBP( x, Present, p1, p2, p3, p4, p5 )
     #define IDirect3DSwapChain9Ex_GetFrontBufferData( x, p ) \
@@ -1969,17 +1969,17 @@ typedef IDirect3DCryptoSession9 *PDIRECT3DCRYPTOSESSION;
     #define IDirect3D9ExOverlayExtension_QueryInterface( x, p1, p2 ) \
         _INTRFMEMBP( x, QueryInterface, p1, p2 )
     #define IDirect3D9ExOverlayExtension_AddRef( x ) \
-        _INTRFMEMBP( x, AddRef )
+        _INTRFMEMBN( x, AddRef )
     #define IDirect3D9ExOverlayExtension_Release( x ) \
-        _INTRFMEMBP( x, Release )
+        _INTRFMEMBN( x, Release )
     #define IDirect3D9ExOverlayExtension_CheckDeviceOverlayType( x, p1, p2, p3, p4, p5, p6, p7, p8 ) \
         _INTRFMEMBP( x, CheckDeviceOverlayType, p1, p2, p3, p4, p5, p6, p7, p8 )
     #define IDirect3DDevice9Video_QueryInterface( x, p1, p2 ) \
         _INTRFMEMBP( x, QueryInterface, p1, p2 )
     #define IDirect3DDevice9Video_AddRef( x ) \
-        _INTRFMEMBP( x, AddRef )
+        _INTRFMEMBN( x, AddRef )
     #define IDirect3DDevice9Video_Release( x ) \
-        _INTRFMEMBP( x, Release )
+        _INTRFMEMBN( x, Release )
     #define IDirect3DDevice9Video_GetContentProtectionCaps( x, p1, p2, p3 ) \
         _INTRFMEMBP( x, GetContentProtectionCaps, p1, p2, p3 )
     #define IDirect3DDevice9Video_CreateAuthenticatedChannel( x, p1, p2, p3 ) \
@@ -1989,9 +1989,9 @@ typedef IDirect3DCryptoSession9 *PDIRECT3DCRYPTOSESSION;
     #define IDirect3DAuthenticatedChannel9_QueryInterface( x, p1, p2 ) \
         _INTRFMEMBP( x, QueryInterface, p1, p2 )
     #define IDirect3DAuthenticatedChannel9_AddRef( x ) \
-        _INTRFMEMBP( x, AddRef )
+        _INTRFMEMBN( x, AddRef )
     #define IDirect3DAuthenticatedChannel9_Release( x ) \
-        _INTRFMEMBP( x, Release )
+        _INTRFMEMBN( x, Release )
     #define IDirect3DAuthenticatedChannel9_GetCertificateSize( x, p ) \
         _INTRFMEMBP( x, GetCertificateSize, p )
     #define IDirect3DAuthenticatedChannel9_GetCertificate( x, p1, p2 ) \
@@ -2005,9 +2005,9 @@ typedef IDirect3DCryptoSession9 *PDIRECT3DCRYPTOSESSION;
     #define IDirect3DCryptoSession9_QueryInterface( x, p1, p2 ) \
         _INTRFMEMBP( x, QueryInterface, p1, p2 )
     #define IDirect3DCryptoSession9_AddRef( x ) \
-        _INTRFMEMBP( x, AddRef )
+        _INTRFMEMBN( x, AddRef )
     #define IDirect3DCryptoSession9_Release( x ) \
-        _INTRFMEMBP( x, Release )
+        _INTRFMEMBN( x, Release )
     #define IDirect3DCryptoSession9_GetCertificateSize( x, p ) \
         _INTRFMEMBP( x, GetCertificateSize, p )
     #define IDirect3DCryptoSession9_GetCertificate( x, p1, p2 ) \
@@ -2023,7 +2023,7 @@ typedef IDirect3DCryptoSession9 *PDIRECT3DCRYPTOSESSION;
     #define IDirect3DCryptoSession9_StartSessionKeyRefresh( x, p1, p2 ) \
         _INTRFMEMBP( x, StartSessionKeyRefresh, p1, p2 )
     #define IDirect3DCryptoSession9_FinishSessionKeyRefresh( x ) \
-        _INTRFMEMBP( x, FinishSessionKeyRefresh )
+        _INTRFMEMBN( x, FinishSessionKeyRefresh )
     #define IDirect3DCryptoSession9_GetEncryptionBltKey( x, p1, p2 ) \
         _INTRFMEMBP( x, GetEncryptionBltKey, p1, p2 )
 #endif

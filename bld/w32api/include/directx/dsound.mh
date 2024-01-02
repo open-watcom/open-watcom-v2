@@ -1428,9 +1428,9 @@ DECLARE_INTERFACE_( IDirectSoundFullDuplex, IUnknown ) {
 #define IDirectSoundBuffer_QueryInterface( x, p1, p2 ) \
     _INTRFMEMBP( x, QueryInterface, p1, p2 )
 #define IDirectSoundBuffer_AddRef( x ) \
-    _INTRFMEMBP( x, AddRef )
+    _INTRFMEMBN( x, AddRef )
 #define IDirectSoundBuffer_Release( x ) \
-    _INTRFMEMBP( x, Release )
+    _INTRFMEMBN( x, Release )
 #define IDirectSoundBuffer_GetCaps( x, p ) \
     _INTRFMEMBP( x, GetCaps, p )
 #define IDirectSoundBuffer_GetCurrentPosition( x, p1, p2 ) \
@@ -1462,17 +1462,17 @@ DECLARE_INTERFACE_( IDirectSoundFullDuplex, IUnknown ) {
 #define IDirectSoundBuffer_SetFrequency( x, p ) \
     _INTRFMEMBP( x, SetFrequency, p )
 #define IDirectSoundBuffer_Stop( x ) \
-    _INTRFMEMBP( x, Stop )
+    _INTRFMEMBN( x, Stop )
 #define IDirectSoundBuffer_Unlock( x, p1, p2, p3, p4 ) \
     _INTRFMEMBP( x, Unlock, p1, p2, p3, p4 )
 #define IDirectSoundBuffer_Restore( x ) \
-    _INTRFMEMBP( x, Restore )
+    _INTRFMEMBN( x, Restore )
 #define IDirectSound3DListener_QueryInterface( x, p1, p2 ) \
     _INTRFMEMBP( x, QueryInterface, p1, p2 )
 #define IDirectSound3DListener_AddRef( x ) \
-    _INTRFMEMBP( x, AddRef )
+    _INTRFMEMBN( x, AddRef )
 #define IDirectSound3DListener_Release( x ) \
-    _INTRFMEMBP( x, Release )
+    _INTRFMEMBN( x, Release )
 #define IDirectSound3DListener_GetAllParameters( x, p ) \
     _INTRFMEMBP( x, GetAllParameters, p )
 #define IDirectSound3DListener_GetDistanceFactor( x, p ) \
@@ -1502,13 +1502,13 @@ DECLARE_INTERFACE_( IDirectSoundFullDuplex, IUnknown ) {
 #define IDirectSound3DListener_SetVelocity( x, p1, p2, p3, p4 ) \
     _INTRFMEMBP( x, SetVelocity, p1, p2, p3, p4 )
 #define IDirectSound3DListener_CommitDeferredSettings( x ) \
-    _INTRFMEMBP( x, CommitDeferredSettings )
+    _INTRFMEMBN( x, CommitDeferredSettings )
 #define IDirectSound3DBuffer_QueryInterface( x, p1, p2 ) \
     _INTRFMEMBP( x, QueryInterface, p1, p2 )
 #define IDirectSound3DBuffer_AddRef( x ) \
-    _INTRFMEMBP( x, AddRef )
+    _INTRFMEMBN( x, AddRef )
 #define IDirectSound3DBuffer_Release( x ) \
-    _INTRFMEMBP( x, Release )
+    _INTRFMEMBN( x, Release )
 #define IDirectSound3DBuffer_GetAllParameters( x, p ) \
     _INTRFMEMBP( x, GetAllParameters, p )
 #define IDirectSound3DBuffer_GetConeAngles( x, p1, p2 ) \
@@ -1548,9 +1548,9 @@ DECLARE_INTERFACE_( IDirectSoundFullDuplex, IUnknown ) {
 #define IDirectSoundCapture_QueryInterface( x, p1, p2 ) \
     _INTRFMEMBP( x, QueryInterface, p1, p2 )
 #define IDirectSoundCapture_AddRef( x ) \
-    _INTRFMEMBP( x, AddRef )
+    _INTRFMEMBN( x, AddRef )
 #define IDirectSoundCapture_Release( x ) \
-    _INTRFMEMBP( x, Release )
+    _INTRFMEMBN( x, Release )
 #define IDirectSoundCapture_CreateCaptureBuffer( x, p1, p2, p3 ) \
     _INTRFMEMBP( x, CreateCaptureBuffer, p1, p2, p3 )
 #define IDirectSoundCapture_GetCaps( x, p ) \
@@ -1560,9 +1560,9 @@ DECLARE_INTERFACE_( IDirectSoundFullDuplex, IUnknown ) {
 #define IDirectSoundCaptureBuffer_QueryInterface( x, p1, p2 ) \
     _INTRFMEMBP( x, QueryInterface, p1, p2 )
 #define IDirectSoundCaptureBuffer_AddRef( x ) \
-    _INTRFMEMBP( x, AddRef )
+    _INTRFMEMBN( x, AddRef )
 #define IDirectSoundCaptureBuffer_Release( x ) \
-    _INTRFMEMBP( x, Release )
+    _INTRFMEMBN( x, Release )
 #define IDirectSoundCaptureBuffer_GetCaps( x, p ) \
     _INTRFMEMBP( x, GetCaps, p )
 #define IDirectSoundCaptureBuffer_GetCurrentPosition( x, p1, p2 ) \
@@ -1578,24 +1578,24 @@ DECLARE_INTERFACE_( IDirectSoundFullDuplex, IUnknown ) {
 #define IDirectSoundCaptureBuffer_Start( x, p ) \
     _INTRFMEMBP( x, Start, p )
 #define IDirectSoundCaptureBuffer_Stop( x ) \
-    _INTRFMEMBP( x, Stop )
+    _INTRFMEMBN( x, Stop )
 #define IDirectSoundCaptureBuffer_Unlock( x, p1, p2, p3, p4 ) \
     _INTRFMEMBP( x, Unlock, p1, p2, p3, p4 )
 #define IDirectSoundNotify_QueryInterface( x, p1, p2 ) \
     _INTRFMEMBP( x, QueryInterface, p1, p2 )
 #define IDirectSoundNotify_AddRef( x ) \
-    _INTRFMEMBP( x, AddRef )
+    _INTRFMEMBN( x, AddRef )
 #define IDirectSoundNotify_Release( x ) \
-    _INTRFMEMBP( x, Release )
+    _INTRFMEMBN( x, Release )
 #define IDirectSoundNotify_SetNotificationPositions( x, p1, p2 ) \
     _INTRFMEMBP( x, SetNotificationPositions, p1, p2 )
 #if (DIRECTSOUND_VERSION >= 0x0800)
     #define IDirectSound8_QueryInterface( x, p1, p2 ) \
         _INTRFMEMBP( x, QueryInterface, p1, p2 )
     #define IDirectSound8_AddRef( x ) \
-        _INTRFMEMBP( x, AddRef )
+        _INTRFMEMBN( x, AddRef )
     #define IDirectSound8_Release( x ) \
-        _INTRFMEMBP( x, Release )
+        _INTRFMEMBN( x, Release )
     #define IDirectSound8_CreateSoundBuffer( x, p1, p2, p3 ) \
         _INTRFMEMBP( x, CreateSoundBuffer, p1, p2, p3 )
     #define IDirectSound8_GetCaps( x, p ) \
@@ -1605,7 +1605,7 @@ DECLARE_INTERFACE_( IDirectSoundFullDuplex, IUnknown ) {
     #define IDirectSound8_SetCooperativeLevel( x, p1, p2 ) \
         _INTRFMEMBP( x, SetCooperativeLevel, p1, p2 )
     #define IDirectSound8_Compact( x ) \
-        _INTRFMEMBP( x, Compact )
+        _INTRFMEMBN( x, Compact )
     #define IDirectSound8_GetSpeakerConfig( x, p ) \
         _INTRFMEMBP( x, GetSpeakerConfig, p )
     #define IDirectSound8_SetSpeakerConfig( x, p ) \
@@ -1617,9 +1617,9 @@ DECLARE_INTERFACE_( IDirectSoundFullDuplex, IUnknown ) {
     #define IDirectSoundBuffer8_QueryInterface( x, p1, p2 ) \
         _INTRFMEMBP( x, QueryInterface, p1, p2 )
     #define IDirectSoundBuffer8_AddRef( x ) \
-        _INTRFMEMBP( x, AddRef )
+        _INTRFMEMBN( x, AddRef )
     #define IDirectSoundBuffer8_Release( x ) \
-        _INTRFMEMBP( x, Release )
+        _INTRFMEMBN( x, Release )
     #define IDirectSoundBuffer8_GetCaps( x, p ) \
         _INTRFMEMBP( x, GetCaps, p )
     #define IDirectSoundBuffer8_GetCurrentPosition( x, p1, p2 ) \
@@ -1651,11 +1651,11 @@ DECLARE_INTERFACE_( IDirectSoundFullDuplex, IUnknown ) {
     #define IDirectSoundBuffer8_SetFrequency( x, p ) \
         _INTRFMEMBP( x, SetFrequency, p )
     #define IDirectSoundBuffer8_Stop( x ) \
-        _INTRFMEMBP( x, Stop )
+        _INTRFMEMBN( x, Stop )
     #define IDirectSoundBuffer8_Unlock( x, p1, p2, p3, p4 ) \
         _INTRFMEMBP( x, Unlock, p1, p2, p3, p4 )
     #define IDirectSoundBuffer8_Restore( x ) \
-        _INTRFMEMBP( x, Restore )
+        _INTRFMEMBN( x, Restore )
     #define IDirectSoundBuffer8_SetFX( x, p1, p2, p3 ) \
         _INTRFMEMBP( x, SetFX, p1, p2, p3 )
     #define IDirectSoundBuffer8_AcquireResources( x, p1, p2, p3 ) \
@@ -1665,9 +1665,9 @@ DECLARE_INTERFACE_( IDirectSoundFullDuplex, IUnknown ) {
     #define IDirectSoundCaptureBuffer8_QueryInterface( x, p1, p2 ) \
         _INTRFMEMBP( x, QueryInterface, p1, p2 )
     #define IDirectSoundCaptureBuffer8_AddRef( x ) \
-        _INTRFMEMBP( x, AddRef )
+        _INTRFMEMBN( x, AddRef )
     #define IDirectSoundCaptureBuffer8_Release( x ) \
-        _INTRFMEMBP( x, Release )
+        _INTRFMEMBN( x, Release )
     #define IDirectSoundCaptureBuffer8_GetCaps( x, p ) \
         _INTRFMEMBP( x, GetCaps, p )
     #define IDirectSoundCaptureBuffer8_GetCurrentPosition( x, p1, p2 ) \
@@ -1683,7 +1683,7 @@ DECLARE_INTERFACE_( IDirectSoundFullDuplex, IUnknown ) {
     #define IDirectSoundCaptureBuffer8_Start( x, p ) \
         _INTRFMEMBP( x, Start, p )
     #define IDirectSoundCaptureBuffer8_Stop( x ) \
-        _INTRFMEMBP( x, Stop )
+        _INTRFMEMBN( x, Stop )
     #define IDirectSoundCaptureBuffer8_Unlock( x, p1, p2, p3, p4 ) \
         _INTRFMEMBP( x, Unlock, p1, p2, p3, p4 )
     #define IDirectSoundCaptureBuffer8_GetObjectInPath( x, p1, p2, p3, p4 ) \
@@ -1693,9 +1693,9 @@ DECLARE_INTERFACE_( IDirectSoundFullDuplex, IUnknown ) {
     #define IDirectSoundFXGargle_QueryInterface( x, p1, p2 ) \
         _INTRFMEMBP( x, QueryInterface, p1, p2 )
     #define IDirectSoundFXGargle_AddRef( x ) \
-        _INTRFMEMBP( x, AddRef )
+        _INTRFMEMBN( x, AddRef )
     #define IDirectSoundFXGargle_Release( x ) \
-        _INTRFMEMBP( x, Release )
+        _INTRFMEMBN( x, Release )
     #define IDirectSoundFXGargle_SetAllParameters( x, p ) \
         _INTRFMEMBP( x, SetAllParameters, p )
     #define IDirectSoundFXGargle_GetAllParameters( x, p ) \
@@ -1703,9 +1703,9 @@ DECLARE_INTERFACE_( IDirectSoundFullDuplex, IUnknown ) {
     #define IDirectSoundFXChorus_QueryInterface( x, p1, p2 ) \
         _INTRFMEMBP( x, QueryInterface, p1, p2 )
     #define IDirectSoundFXChorus_AddRef( x ) \
-        _INTRFMEMBP( x, AddRef )
+        _INTRFMEMBN( x, AddRef )
     #define IDirectSoundFXChorus_Release( x ) \
-        _INTRFMEMBP( x, Release )
+        _INTRFMEMBN( x, Release )
     #define IDirectSoundFXChorus_SetAllParameters( x, p ) \
         _INTRFMEMBP( x, SetAllParameters, p )
     #define IDirectSoundFXChorus_GetAllParameters( x, p ) \
@@ -1713,9 +1713,9 @@ DECLARE_INTERFACE_( IDirectSoundFullDuplex, IUnknown ) {
     #define IDirectSoundFXFlanger_QueryInterface( x, p1, p2 ) \
         _INTRFMEMBP( x, QueryInterface, p1, p2 )
     #define IDirectSoundFXFlanger_AddRef( x ) \
-        _INTRFMEMBP( x, AddRef )
+        _INTRFMEMBN( x, AddRef )
     #define IDirectSoundFXFlanger_Release( x ) \
-        _INTRFMEMBP( x, Release )
+        _INTRFMEMBN( x, Release )
     #define IDirectSoundFXFlanger_SetAllParameters( x, p ) \
         _INTRFMEMBP( x, SetAllParameters, p )
     #define IDirectSoundFXFlanger_GetAllParameters( x, p ) \
@@ -1723,9 +1723,9 @@ DECLARE_INTERFACE_( IDirectSoundFullDuplex, IUnknown ) {
     #define IDirectSoundFXEcho_QueryInterface( x, p1, p2 ) \
         _INTRFMEMBP( x, QueryInterface, p1, p2 )
     #define IDirectSoundFXEcho_AddRef( x ) \
-        _INTRFMEMBP( x, AddRef )
+        _INTRFMEMBN( x, AddRef )
     #define IDirectSoundFXEcho_Release( x ) \
-        _INTRFMEMBP( x, Release )
+        _INTRFMEMBN( x, Release )
     #define IDirectSoundFXEcho_SetAllParameters( x, p ) \
         _INTRFMEMBP( x, SetAllParameters, p )
     #define IDirectSoundFXEcho_GetAllParameters( x, p ) \
@@ -1733,9 +1733,9 @@ DECLARE_INTERFACE_( IDirectSoundFullDuplex, IUnknown ) {
     #define IDirectSoundFXDistortion_QueryInterface( x, p1, p2 ) \
         _INTRFMEMBP( x, QueryInterface, p1, p2 )
     #define IDirectSoundFXDistortion_AddRef( x ) \
-        _INTRFMEMBP( x, AddRef )
+        _INTRFMEMBN( x, AddRef )
     #define IDirectSoundFXDistortion_Release( x ) \
-        _INTRFMEMBP( x, Release )
+        _INTRFMEMBN( x, Release )
     #define IDirectSoundFXDistortion_SetAllParameters( x, p ) \
         _INTRFMEMBP( x, SetAllParameters, p )
     #define IDirectSoundFXDistortion_GetAllParameters( x, p ) \
@@ -1743,9 +1743,9 @@ DECLARE_INTERFACE_( IDirectSoundFullDuplex, IUnknown ) {
     #define IDirectSoundFXCompressor_QueryInterface( x, p1, p2 ) \
         _INTRFMEMBP( x, QueryInterface, p1, p2 )
     #define IDirectSoundFXCompressor_AddRef( x ) \
-        _INTRFMEMBP( x, AddRef )
+        _INTRFMEMBN( x, AddRef )
     #define IDirectSoundFXCompressor_Release( x ) \
-        _INTRFMEMBP( x, Release )
+        _INTRFMEMBN( x, Release )
     #define IDirectSoundFXCompressor_SetAllParameters( x, p ) \
         _INTRFMEMBP( x, SetAllParameters, p )
     #define IDirectSoundFXCompressor_GetAllParameters( x, p ) \
@@ -1753,9 +1753,9 @@ DECLARE_INTERFACE_( IDirectSoundFullDuplex, IUnknown ) {
     #define IDirectSoundFXParamEq_QueryInterface( x, p1, p2 ) \
         _INTRFMEMBP( x, QueryInterface, p1, p2 )
     #define IDirectSoundFXParamEq_AddRef( x ) \
-        _INTRFMEMBP( x, AddRef )
+        _INTRFMEMBN( x, AddRef )
     #define IDirectSoundFXParamEq_Release( x ) \
-        _INTRFMEMBP( x, Release )
+        _INTRFMEMBN( x, Release )
     #define IDirectSoundFXParamEq_SetAllParameters( x, p ) \
         _INTRFMEMBP( x, SetAllParameters, p )
     #define IDirectSoundFXParamEq_GetAllParameters( x, p ) \
@@ -1763,9 +1763,9 @@ DECLARE_INTERFACE_( IDirectSoundFullDuplex, IUnknown ) {
     #define IDirectSoundFXI3DL2Reverb_QueryInterface( x, p1, p2 ) \
         _INTRFMEMBP( x, QueryInterface, p1, p2 )
     #define IDirectSoundFXI3DL2Reverb_AddRef( x ) \
-        _INTRFMEMBP( x, AddRef )
+        _INTRFMEMBN( x, AddRef )
     #define IDirectSoundFXI3DL2Reverb_Release( x ) \
-        _INTRFMEMBP( x, Release )
+        _INTRFMEMBN( x, Release )
     #define IDirectSoundFXI3DL2Reverb_SetAllParameters( x, p ) \
         _INTRFMEMBP( x, SetAllParameters, p )
     #define IDirectSoundFXI3DL2Reverb_GetAllParameters( x, p ) \
@@ -1781,9 +1781,9 @@ DECLARE_INTERFACE_( IDirectSoundFullDuplex, IUnknown ) {
     #define IDirectSoundFXWavesReverb_QueryInterface( x, p1, p2 ) \
         _INTRFMEMBP( x, QueryInterface, p1, p2 )
     #define IDirectSoundFXWavesReverb_AddRef( x ) \
-        _INTRFMEMBP( x, AddRef )
+        _INTRFMEMBN( x, AddRef )
     #define IDirectSoundFXWavesReverb_Release( x ) \
-        _INTRFMEMBP( x, Release )
+        _INTRFMEMBN( x, Release )
     #define IDirectSoundFXWavesReverb_SetAllParameters( x, p ) \
         _INTRFMEMBP( x, SetAllParameters, p )
     #define IDirectSoundFXWavesReverb_GetAllParameters( x, p ) \
@@ -1791,9 +1791,9 @@ DECLARE_INTERFACE_( IDirectSoundFullDuplex, IUnknown ) {
     #define IDirectSoundCaptureFXAec_QueryInterface( x, p1, p2 ) \
         _INTRFMEMBP( x, QueryInterface, p1, p2 )
     #define IDirectSoundCaptureFXAec_AddRef( x ) \
-        _INTRFMEMBP( x, AddRef )
+        _INTRFMEMBN( x, AddRef )
     #define IDirectSoundCaptureFXAec_Release( x ) \
-        _INTRFMEMBP( x, Release )
+        _INTRFMEMBN( x, Release )
     #define IDirectSoundCaptureFXAec_SetAllParameters( x, p ) \
         _INTRFMEMBP( x, SetAllParameters, p )
     #define IDirectSoundCaptureFXAec_GetAllParameters( x, p ) \
@@ -1801,25 +1801,25 @@ DECLARE_INTERFACE_( IDirectSoundFullDuplex, IUnknown ) {
     #define IDirectSoundCaptureFXAec_GetStatus( x, p ) \
         _INTRFMEMBP( x, GetStatus, p )
     #define IDirectSoundCaptureFXAec_Reset( x ) \
-        _INTRFMEMBP( x, Reset )
+        _INTRFMEMBN( x, Reset )
     #define IDirectSoundCaptureFXNoiseSuppress_QueryInterface( x, p1, p2 ) \
         _INTRFMEMBP( x, QueryInterface, p1, p2 )
     #define IDirectSoundCaptureFXNoiseSuppress_AddRef( x ) \
-        _INTRFMEMBP( x, AddRef )
+        _INTRFMEMBN( x, AddRef )
     #define IDirectSoundCaptureFXNoiseSuppress_Release( x ) \
-        _INTRFMEMBP( x, Release )
+        _INTRFMEMBN( x, Release )
     #define IDirectSoundCaptureFXNoiseSuppress_SetAllParameters( x, p ) \
         _INTRFMEMBP( x, SetAllParameters, p )
     #define IDirectSoundCaptureFXNoiseSuppress_GetAllParameters( x, p ) \
         _INTRFMEMBP( x, GetAllParameters, p )
     #define IDirectSoundCaptureFXNoiseSuppress_Reset( x ) \
-        _INTRFMEMBP( x, Reset )
+        _INTRFMEMBN( x, Reset )
     #define IDirectSoundFullDuplex_QueryInterface( x, p1, p2 ) \
         _INTRFMEMBP( x, QueryInterface, p1, p2 )
     #define IDirectSoundFullDuplex_AddRef( x ) \
-        _INTRFMEMBP( x, AddRef )
+        _INTRFMEMBN( x, AddRef )
     #define IDirectSoundFullDuplex_Release( x ) \
-        _INTRFMEMBP( x, Release )
+        _INTRFMEMBN( x, Release )
     #define IDirectSoundFullDuplex_Initialize( x, p1, p2, p3, p4, p5, p6, p7, p8 ) \
         _INTRFMEMBP( x, Initialize, p1, p2, p3, p4, p5, p6, p7, p8 )
 #endif

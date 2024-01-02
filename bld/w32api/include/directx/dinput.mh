@@ -3297,9 +3297,9 @@ typedef IDirectInput8           *LPDIRECTINPUT8;
     #define IDirectInputEffect_QueryInterface( x, p1, p2 ) \
         _INTRFMEMBP( x, QueryInterface, p1, p2 )
     #define IDirectInputEffect_AddRef( x ) \
-        _INTRFMEMBP( x, AddRef )
+        _INTRFMEMBN( x, AddRef )
     #define IDirectInputEffect_Release( x ) \
-        _INTRFMEMBP( x, Release )
+        _INTRFMEMBN( x, Release )
     #define IDirectInputEffect_Initialize( x, p1, p2, p3 ) \
         _INTRFMEMBP( x, Initialize, p1, p2, p3 )
     #define IDirectInputEffect_GetEffectGuid( x, p ) \
@@ -3311,22 +3311,22 @@ typedef IDirectInput8           *LPDIRECTINPUT8;
     #define IDirectInputEffect_Start( x, p1, p2 ) \
         _INTRFMEMBP( x, Start, p1, p2 )
     #define IDirectInputEffect_Stop( x ) \
-        _INTRFMEMBP( x, Stop )
+        _INTRFMEMBN( x, Stop )
     #define IDirectInputEffect_GetEffectStatus( x, p ) \
         _INTRFMEMBP( x, GetEffectStatus, p )
     #define IDirectInputEffect_Download( x ) \
-        _INTRFMEMBP( x, Download )
+        _INTRFMEMBN( x, Download )
     #define IDirectInputEffect_Unload( x ) \
-        _INTRFMEMBP( x, Unload )
+        _INTRFMEMBN( x, Unload )
     #define IDirectInputEffect_Escape( x, p ) \
         _INTRFMEMBP( x, Escape, p )
 #endif
 #define IDirectInputDevice_QueryInterface( x, p1, p2 ) \
     _INTRFMEMBP( x, QueryInterface, p1, p2 )
 #define IDirectInputDevice_AddRef( x ) \
-    _INTRFMEMBP( x, AddRef )
+    _INTRFMEMBN( x, AddRef )
 #define IDirectInputDevice_Release( x ) \
-    _INTRFMEMBP( x, Release )
+    _INTRFMEMBN( x, Release )
 #define IDirectInputDevice_GetCapabilities( x, p ) \
     _INTRFMEMBP( x, GetCapabilities, p )
 #define IDirectInputDevice_EnumObjects( x, p1, p2, p3 ) \
@@ -3336,9 +3336,9 @@ typedef IDirectInput8           *LPDIRECTINPUT8;
 #define IDirectInputDevice_SetProperty( x, p1, p2 ) \
     _INTRFMEMBP( x, SetProperty, p1, p2 )
 #define IDirectInputDevice_Acquire( x ) \
-    _INTRFMEMBP( x, Acquire )
+    _INTRFMEMBN( x, Acquire )
 #define IDirectInputDevice_Unacquire( x ) \
-    _INTRFMEMBP( x, Unacquire )
+    _INTRFMEMBN( x, Unacquire )
 #define IDirectInputDevice_GetDeviceState( x, p1, p2 ) \
     _INTRFMEMBP( x, GetDeviceState, p1, p2 )
 #define IDirectInputDevice_GetDeviceData( x, p1, p2, p3, p4 ) \
@@ -3361,9 +3361,9 @@ typedef IDirectInput8           *LPDIRECTINPUT8;
     #define IDirectInputDevice2_QueryInterface( x, p1, p2 ) \
         _INTRFMEMBP( x, QueryInterface, p1, p2 )
     #define IDirectInputDevice2_AddRef( x ) \
-        _INTRFMEMBP( x, AddRef )
+        _INTRFMEMBN( x, AddRef )
     #define IDirectInputDevice2_Release( x ) \
-        _INTRFMEMBP( x, Release )
+        _INTRFMEMBN( x, Release )
     #define IDirectInputDevice2_GetCapabilities( x, p ) \
         _INTRFMEMBP( x, GetCapabilities, p )
     #define IDirectInputDevice2_EnumObjects( x, p1, p2, p3 ) \
@@ -3373,9 +3373,9 @@ typedef IDirectInput8           *LPDIRECTINPUT8;
     #define IDirectInputDevice2_SetProperty( x, p1, p2 ) \
         _INTRFMEMBP( x, SetProperty, p1, p2 )
     #define IDirectInputDevice2_Acquire( x ) \
-        _INTRFMEMBP( x, Acquire )
+        _INTRFMEMBN( x, Acquire )
     #define IDirectInputDevice2_Unacquire( x ) \
-        _INTRFMEMBP( x, Unacquire )
+        _INTRFMEMBN( x, Unacquire )
     #define IDirectInputDevice2_GetDeviceState( x, p1, p2 ) \
         _INTRFMEMBP( x, GetDeviceState, p1, p2 )
     #define IDirectInputDevice2_GetDeviceData( x, p1, p2, p3, p4 ) \
@@ -3409,7 +3409,7 @@ typedef IDirectInput8           *LPDIRECTINPUT8;
     #define IDirectInputDevice2_Escape( x, p ) \
         _INTRFMEMBP( x, Escape, p )
     #define IDirectInputDevice2_Poll( x ) \
-        _INTRFMEMBP( x, Poll )
+        _INTRFMEMBN( x, Poll )
     #define IDirectInputDevice2_SendDeviceData( x, p1, p2, p3, p4 ) \
         _INTRFMEMBP( x, SendDeviceData, p1, p2, p3, p4 )
 #endif
@@ -3417,9 +3417,9 @@ typedef IDirectInput8           *LPDIRECTINPUT8;
     #define IDirectInputDevice7_QueryInterface( x, p1, p2 ) \
         _INTRFMEMBP( x, QueryInterface, p1, p2 )
     #define IDirectInputDevice7_AddRef( x ) \
-        _INTRFMEMBP( x, AddRef )
+        _INTRFMEMBN( x, AddRef )
     #define IDirectInputDevice7_Release( x ) \
-        _INTRFMEMBP( x, Release )
+        _INTRFMEMBN( x, Release )
     #define IDirectInputDevice7_GetCapabilities( x, p ) \
         _INTRFMEMBP( x, GetCapabilities, p )
     #define IDirectInputDevice7_EnumObjects( x, p1, p2, p3 ) \
@@ -3429,9 +3429,9 @@ typedef IDirectInput8           *LPDIRECTINPUT8;
     #define IDirectInputDevice7_SetProperty( x, p1, p2 ) \
         _INTRFMEMBP( x, SetProperty, p1, p2 )
     #define IDirectInputDevice7_Acquire( x ) \
-        _INTRFMEMBP( x, Acquire )
+        _INTRFMEMBN( x, Acquire )
     #define IDirectInputDevice7_Unacquire( x ) \
-        _INTRFMEMBP( x, Unacquire )
+        _INTRFMEMBN( x, Unacquire )
     #define IDirectInputDevice7_GetDeviceState( x, p1, p2 ) \
         _INTRFMEMBP( x, GetDeviceState, p1, p2 )
     #define IDirectInputDevice7_GetDeviceData( x, p1, p2, p3, p4 ) \
@@ -3465,7 +3465,7 @@ typedef IDirectInput8           *LPDIRECTINPUT8;
     #define IDirectInputDevice7_Escape( x, p ) \
         _INTRFMEMBP( x, Escape, p )
     #define IDirectInputDevice7_Poll( x ) \
-        _INTRFMEMBP( x, Poll )
+        _INTRFMEMBN( x, Poll )
     #define IDirectInputDevice7_SendDeviceData( x, p1, p2, p3, p4 ) \
         _INTRFMEMBP( x, SendDeviceData, p1, p2, p3, p4 )
     #define IDirectInputDevice7_EnumEffectsInFile( x, p1, p2, p3, p4 ) \
@@ -3477,9 +3477,9 @@ typedef IDirectInput8           *LPDIRECTINPUT8;
     #define IDirectInputDevice8_QueryInterface( x, p1, p2 ) \
         _INTRFMEMBP( x, QueryInterface, p1, p2 )
     #define IDirectInputDevice8_AddRef( x ) \
-        _INTRFMEMBP( x, AddRef )
+        _INTRFMEMBN( x, AddRef )
     #define IDirectInputDevice8_Release( x ) \
-        _INTRFMEMBP( x, Release )
+        _INTRFMEMBN( x, Release )
     #define IDirectInputDevice8_GetCapabilities( x, p ) \
         _INTRFMEMBP( x, GetCapabilities, p )
     #define IDirectInputDevice8_EnumObjects( x, p1, p2, p3 ) \
@@ -3489,9 +3489,9 @@ typedef IDirectInput8           *LPDIRECTINPUT8;
     #define IDirectInputDevice8_SetProperty( x, p1, p2 ) \
         _INTRFMEMBP( x, SetProperty, p1, p2 )
     #define IDirectInputDevice8_Acquire( x ) \
-        _INTRFMEMBP( x, Acquire )
+        _INTRFMEMBN( x, Acquire )
     #define IDirectInputDevice8_Unacquire( x ) \
-        _INTRFMEMBP( x, Unacquire )
+        _INTRFMEMBN( x, Unacquire )
     #define IDirectInputDevice8_GetDeviceState( x, p1, p2 ) \
         _INTRFMEMBP( x, GetDeviceState, p1, p2 )
     #define IDirectInputDevice8_GetDeviceData( x, p1, p2, p3, p4 ) \
@@ -3525,7 +3525,7 @@ typedef IDirectInput8           *LPDIRECTINPUT8;
     #define IDirectInputDevice8_Escape( x, p ) \
         _INTRFMEMBP( x, Escape, p )
     #define IDirectInputDevice8_Poll( x ) \
-        _INTRFMEMBP( x, Poll )
+        _INTRFMEMBN( x, Poll )
     #define IDirectInputDevice8_SendDeviceData( x, p1, p2, p3, p4 ) \
         _INTRFMEMBP( x, SendDeviceData, p1, p2, p3, p4 )
     #define IDirectInputDevice8_EnumEffectsInFile( x, p1, p2, p3, p4 ) \
@@ -3542,9 +3542,9 @@ typedef IDirectInput8           *LPDIRECTINPUT8;
 #define IDirectInput_QueryInterface( x, p1, p2 ) \
     _INTRFMEMBP( x, QueryInterface, p1, p2 )
 #define IDirectInput_AddRef( x ) \
-    _INTRFMEMBP( x, AddRef )
+    _INTRFMEMBN( x, AddRef )
 #define IDirectInput_Release( x ) \
-    _INTRFMEMBP( x, Release )
+    _INTRFMEMBN( x, Release )
 #define IDirectInput_CreateDevice( x, p1, p2, p3 ) \
     _INTRFMEMBP( x, CreateDevice, p1, p2, p3 )
 #define IDirectInput_EnumDevices( x, p1, p2, p3, p4 ) \
@@ -3558,9 +3558,9 @@ typedef IDirectInput8           *LPDIRECTINPUT8;
 #define IDirectInput2_QueryInterface( x, p1, p2 ) \
     _INTRFMEMBP( x, QueryInterface, p1, p2 )
 #define IDirectInput2_AddRef( x ) \
-    _INTRFMEMBP( x, AddRef )
+    _INTRFMEMBN( x, AddRef )
 #define IDirectInput2_Release( x ) \
-    _INTRFMEMBP( x, Release )
+    _INTRFMEMBN( x, Release )
 #define IDirectInput2_CreateDevice( x, p1, p2, p3 ) \
     _INTRFMEMBP( x, CreateDevice, p1, p2, p3 )
 #define IDirectInput2_EnumDevices( x, p1, p2, p3, p4 ) \
@@ -3576,9 +3576,9 @@ typedef IDirectInput8           *LPDIRECTINPUT8;
 #define IDirectInput7_QueryInterface( x, p1, p2 ) \
     _INTRFMEMBP( x, QueryInterface, p1, p2 )
 #define IDirectInput7_AddRef( x ) \
-    _INTRFMEMBP( x, AddRef )
+    _INTRFMEMBN( x, AddRef )
 #define IDirectInput7_Release( x ) \
-    _INTRFMEMBP( x, Release )
+    _INTRFMEMBN( x, Release )
 #define IDirectInput7_CreateDevice( x, p1, p2, p3 ) \
     _INTRFMEMBP( x, CreateDevice, p1, p2, p3 )
 #define IDirectInput7_EnumDevices( x, p1, p2, p3, p4 ) \
@@ -3597,9 +3597,9 @@ typedef IDirectInput8           *LPDIRECTINPUT8;
     #define IDirectInput8_QueryInterface( x, p1, p2 ) \
         _INTRFMEMBP( x, QueryInterface, p1, p2 )
     #define IDirectInput8_AddRef( x ) \
-        _INTRFMEMBP( x, AddRef )
+        _INTRFMEMBN( x, AddRef )
     #define IDirectInput8_Release( x ) \
-        _INTRFMEMBP( x, Release )
+        _INTRFMEMBN( x, Release )
     #define IDirectInput8_CreateDevice( x, p1, p2, p3 ) \
         _INTRFMEMBP( x, CreateDevice, p1, p2, p3 )
     #define IDirectInput8_EnumDevices( x, p1, p2, p3, p4 ) \
