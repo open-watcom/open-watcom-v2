@@ -49,6 +49,11 @@
 
 typedef unsigned long   ulong;
 typedef unsigned        uint;
+#if defined( _M_I86 )
+typedef unsigned long   uint32;
+#else
+typedef unsigned        uint32;
+#endif
 
 #define MEMSET(p,c,l)   memset(p,c,l)
 
@@ -71,7 +76,7 @@ typedef unsigned        uint;
 msg(OUT_OF_MEMORY,      "Tracker out of memory" );
 msg(CHUNK_BYTE_UNFREED, "%U chunks (%Z bytes) unfreed" );
 msg(SIZE_ZERO,          "%W size zero" );
-msg(OVERRUN_ALLOCATION, "%W %D(%L) overrun allocation by %C of %T bytes" );
+msg(OVERRUN_ALLOCATION, "%W %D(%3) overrun allocation by %C of %T bytes" );
 //msg(UNDERRUN_ALLOCATION,"%W %D underrun allocation by %C of %U bytes" );
 msg(UNOWNED_CHUNK,      "%W unowned chunk %D" );
 msg(NULL_PTR,           "%W NULL pointer" );
@@ -92,14 +97,14 @@ msg(MIN_ALLOC,          "%W allocation of %T less than minimum size" );
 #elif defined( _M_I86LM ) || defined( _M_I86HM )
     msg(PRT_LIST_1,     "   Who      Addr    Size   Call   Contents" );
     msg(PRT_LIST_2,     "========= ========= ==== ======== ===========================================" );
-#elif defined( _WIN64 )
+#elif defined( _M_X64 )
     msg(PRT_LIST_1,     "  Who              Addr             Size     Call     Contents" );
     msg(PRT_LIST_2,     "================ ================ ======== ======== ===========================" );
 #else
     msg(PRT_LIST_1,     "  Who      Addr     Size     Call     Contents" );
     msg(PRT_LIST_2,     "======== ======== ======== ======== ===========================================" );
 #endif
-msg(PRT_LIST_3,         "%C %D %U %L %X" );
+msg(PRT_LIST_3,         "%C %D %U %3 %X" );
 
 #undef msg
 
@@ -123,14 +128,14 @@ struct Entry {
     void            *mem;
     _trmem_who      who;
     size_t          size;       // real size = tr ^ mem ^ who ^ size
-    ulong           when;
+    uint32          when;
 };
 
 struct _trmem_internal {
     entry_ptr   alloc_list;
     memsize     mem_used;
     memsize     max_mem;
-    ulong       alloc_no;
+    uint32      alloc_no;
     void *      (*alloc)( size_t );
     void        (*free)( void * );
     void *      (*realloc)( void *, size_t );
@@ -228,6 +233,7 @@ static void trPrt( _trmem_hdl hdl, const char *fmt, ... )
     char        ch;
     uint        ui;
     ulong       ul;
+    uint32      u32;
     memsize     msize;
     void        *dp;
     _trmem_who  who;
@@ -265,6 +271,10 @@ static void trPrt( _trmem_hdl hdl, const char *fmt, ... )
 #else
                 ptr = formHex( ptr, (memsize)dp, sizeof( dp ) );
 #endif
+                break;
+            case '3':
+                u32 = va_arg( args, uint32 );
+                ptr = formHex( ptr, u32, sizeof( u32 ) );
                 break;
             case 'L':   /* unsigned long */
                 ul = va_arg( args, ulong );
@@ -747,7 +757,7 @@ unsigned _trmem_prt_list( _trmem_hdl hdl )
                  , MSG_PRT_LIST_3
                  , tr->who
                  , tr->mem
-                 , size
+                 , (unsigned)size
                  , tr->when
                  , tr->mem
                  , size );
