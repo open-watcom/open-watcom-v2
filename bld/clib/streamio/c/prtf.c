@@ -420,6 +420,54 @@ static void float_format( CHAR_TYPE *buffer, va_list *pargs, PTR_PRTF_SPECS spec
 #endif
 }
 
+static void floathex_format( CHAR_TYPE *buffer, va_list *pargs, PTR_PRTF_SPECS specs )
+{
+    uint64_t fltraw = va_arg( *pargs, unsigned long long );
+    CHAR_TYPE *arg = &buffer[ specs->_n0 ];
+    CHAR_TYPE *wp = arg;
+
+#define EXP (int)(((fltraw >> 52ull) & 0x7FFul) - 1023)
+
+    if (fltraw & 0x8000000000000000ull) {
+	    fltraw &= 0x7FFFFFFFFFFFFFFFull;
+	    *wp++ = '-';
+    }
+
+    *wp++ = '0';
+    *wp++ = 'x';
+    if (EXP == -1023) *wp++ = '0';/*subnormal*/
+    else *wp++ = '1';
+
+    {
+        uint64_t m = fltraw & 0xFFFFFFFFFFFFFull; /* low 52 bits */
+        if (m != 0ull) {
+            *wp++ = '.';
+            while ((m & 0xFull) == 0) m >>= 4ull;
+            __F_NAME(ulltoa,_ulltow)( m, wp, 16 );
+            wp += far_strlen( wp, -1 );
+        }
+
+        *wp++ = 'p';
+        if (EXP != -1023) {
+            if (EXP >= 0) *wp++ = '+';
+            __F_NAME(ltoa,_ltow)( EXP, wp, 10 );
+        }
+        else {
+            *wp++ = '+';
+            __F_NAME(ltoa,_ltow)( 0, wp, 10 );
+        }
+        wp += far_strlen( wp, -1 );
+    }
+
+    if( specs->_character == STRING( 'A' ) ) {
+        __F_NAME(_strupr,_wcsupr)( buffer );
+    }
+
+#undef EXP
+
+    specs->_n1 = (size_t)(wp - arg);
+}
+
 static void SetZeroPad( PTR_PRTF_SPECS specs )
 {
     int         n;
@@ -589,6 +637,11 @@ static FAR_STRING formstring( CHAR_TYPE *buffer, va_list *pargs, PTR_PRTF_SPECS 
     case STRING( 'E' ):
         float_format( buffer, pargs, specs );
         arg++; // = &buffer[1];
+        break;
+
+    case STRING( 'a' ):
+    case STRING( 'A' ):
+        floathex_format( buffer, pargs, specs );
         break;
 
     case STRING( 's' ):
