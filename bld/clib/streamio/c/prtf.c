@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -158,6 +158,12 @@ static const CHAR_TYPE *getprintspecs( const CHAR_TYPE *ctl, va_list *pargs, PTR
 //      if( specs->_prec != -1 )  specs->_pad_char = STRING( ' ' ); /* 30-jul-95 *//*removed by JBS*/
     }
     switch( *ctl ) {
+#ifdef JSPEC_IS_LLONG
+    JSPEC_CASE_LLONG
+        specs->_flags |= SPF_LONG_LONG;
+        ctl++;
+        break;
+#endif
     case STRING( 'l' ):
         if( ctl[1] == STRING( 'l' ) ) {
             specs->_flags |= SPF_LONG_LONG;
@@ -186,10 +192,8 @@ static const CHAR_TYPE *getprintspecs( const CHAR_TYPE *ctl, va_list *pargs, PTR
             ctl += 3;
         }
         break;
-    JSPEC_CASE_LLONG
-        /* fall through */
     case STRING( 'L' ):
-        specs->_flags |= SPF_LONG_DOUBLE | SPF_LONG_LONG;
+        specs->_flags |= SPF_LONG_DOUBLE;
         ctl++;
         break;
 #if defined( __FAR_SUPPORT__ )
