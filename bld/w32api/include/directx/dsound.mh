@@ -1422,22 +1422,22 @@ DECLARE_INTERFACE_( IDirectSoundFullDuplex, IUnknown ) {
     _INTRFMEMBN( x, Release )
 #define IDirectSound_CreateSoundBuffer( x, p1, p2, p3 ) \
     _INTRFMEMBP( x, CreateSoundBuffer, p1, p2, p3 )
+#define IDirectSound_GetCaps( x, p ) \
+    _INTRFMEMBP( x, GetCaps, p )
+#define IDirectSound_DuplicateSoundBuffer( x, p1, p2 ) \
+    _INTRFMEMBP( x, DuplicateSoundBuffer, p1, p2 )
+#define IDirectSound_SetCooperativeLevel( x, p1, p2 ) \
+    _INTRFMEMBP( x, SetCooperativeLevel, p1, p2 )
+#define IDirectSound_Compact( x ) \
+    _INTRFMEMBN( x, Compact )
+#define IDirectSound_GetSpeakerConfig( x, p ) \
+    _INTRFMEMBP( x, GetSpeakerConfig, p )
+#define IDirectSound_SetSpeakerConfig( x, p ) \
+    _INTRFMEMBP( x, SetSpeakerConfig, p )
+#define IDirectSound_Initialize( x, p ) \
+    _INTRFMEMBP( x, Initialize, p )
 
 #if !defined( __cplusplus ) || defined( CINTERFACE )
-    #define IDirectSound_GetCaps( x, p ) \
-        (x)->lpVtbl->GetCaps( x, p )
-    #define IDirectSound_DuplicateSoundBuffer( x, p1, p2 ) \
-        (x)->lpVtbl->DuplicateSoundBuffer( x, p1, p2 )
-    #define IDirectSound_SetCooperativeLevel( x, p1, p2 ) \
-        (x)->lpVtbl->SetCooperativeLevel( x, p1, p2 )
-    #define IDirectSound_Compact( x ) \
-        (x)->lpVtbl->Compact( x )
-    #define IDirectSound_GetSpeakerConfig( x, p ) \
-        (x)->lpVtbl->GetSpeakerConfig( x, p )
-    #define IDirectSound_SetSpeakerConfig( x, p ) \
-        (x)->lpVtbl->SetSpeakerConfig( x, p )
-    #define IDirectSound_Initialize( x, p ) \
-        (x)->lpVtbl->Initialize( x, p )
     #define IDirectSoundBuffer_QueryInterface( x, p1, p2 ) \
         (x)->lpVtbl->QueryInterface( x, p1, p2 )
     #define IDirectSoundBuffer_AddRef( x ) \
@@ -1837,20 +1837,6 @@ DECLARE_INTERFACE_( IDirectSoundFullDuplex, IUnknown ) {
             (x)->lpVtbl->Initialize( x, p1, p2, p3, p4, p5, p6, p7, p8 )
     #endif
 #else
-    #define IDirectSound_GetCaps( x, p ) \
-        (x)->GetCaps( p )
-    #define IDirectSound_DuplicateSoundBuffer( x, p1, p2 ) \
-        (x)->DuplicateSoundBuffer( p1, p2 )
-    #define IDirectSound_SetCooperativeLevel( x, p1, p2 ) \
-        (x)->SetCooperativeLevel( p1, p2 )
-    #define IDirectSound_Compact( x ) \
-        (x)->Compact()
-    #define IDirectSound_GetSpeakerConfig( x, p ) \
-        (x)->GetSpeakerConfig( p )
-    #define IDirectSound_SetSpeakerConfig( x, p ) \
-        (x)->SetSpeakerConfig( p )
-    #define IDirectSound_Initialize( x, p ) \
-        (x)->Initialize( p )
     #define IDirectSoundBuffer_QueryInterface( x, p1, p2 ) \
         (x)->QueryInterface( p1, p2 )
     #define IDirectSoundBuffer_AddRef( x ) \
