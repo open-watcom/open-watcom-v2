@@ -426,48 +426,49 @@ static void float_format( CHAR_TYPE *buffer, va_list *pargs, PTR_PRTF_SPECS spec
 
 static void floathex_format( CHAR_TYPE *buffer, va_list *pargs, PTR_PRTF_SPECS specs )
 {
-    uint64_t fltraw = va_arg( *pargs, unsigned long long );
+    uint64_t mantissa;
+    int16_t exponent;
+
     CHAR_TYPE *arg = &buffer[ specs->_n0 ];
     CHAR_TYPE *wp = arg;
 
-#define EXP (int)(((fltraw >> 52ull) & 0x7FFul) - 1023)
+    {
+        uint64_t fltraw = va_arg( *pargs, unsigned long long );
 
-    if (fltraw & 0x8000000000000000ull) {
-	    fltraw &= 0x7FFFFFFFFFFFFFFFull;
-	    *wp++ = '-';
+        if( fltraw & 0x8000000000000000ull ) { /* test and clear sign bit */
+            fltraw &= 0x7FFFFFFFFFFFFFFFull;
+            *wp++ = '-';
+        }
+
+        exponent = (int16_t)(((fltraw >> 52ull) & 0x7FFul) - 1023);
+        mantissa = fltraw & 0xFFFFFFFFFFFFFull; /* low 52 bits */
     }
 
-    *wp++ = '0';
-    *wp++ = 'x';
-    if (EXP == -1023) *wp++ = '0';/*subnormal*/
+    *wp++ = '0'; *wp++ = 'x';
+    if( exponent == -1023 ) *wp++ = '0';/*subnormal*/
     else *wp++ = '1';
 
-    {
-        uint64_t m = fltraw & 0xFFFFFFFFFFFFFull; /* low 52 bits */
-        if (m != 0ull) {
-            *wp++ = '.';
-            while ((m & 0xFull) == 0) m >>= 4ull;
-            __F_NAME(ulltoa,_ulltow)( m, wp, 16 );
-            wp += far_strlen( wp, -1 );
-        }
-
-        *wp++ = 'p';
-        if (EXP != -1023) {
-            if (EXP >= 0) *wp++ = '+';
-            __F_NAME(ltoa,_ltow)( EXP, wp, 10 );
-        }
-        else {
-            *wp++ = '+';
-            __F_NAME(ltoa,_ltow)( 0, wp, 10 );
-        }
+    if( mantissa != 0ull ) {
+        *wp++ = '.';
+        while ( (mantissa & 0xFull) == 0 ) mantissa >>= 4ull;
+        __F_NAME(ulltoa,_ulltow)( mantissa, wp, 16 );
         wp += far_strlen( wp, -1 );
     }
+
+    *wp++ = 'p';
+    if( exponent == -1023 ) {
+        *wp++ = '+';
+        __F_NAME(ltoa,_ltow)( 0, wp, 10 );
+    }
+    else {
+        if( exponent >= 0 ) *wp++ = '+';
+        __F_NAME(ltoa,_ltow)( exponent, wp, 10 );
+    }
+    wp += far_strlen( wp, -1 );
 
     if( specs->_character == STRING( 'A' ) ) {
         __F_NAME(_strupr,_wcsupr)( buffer );
     }
-
-#undef EXP
 
     specs->_n1 = (size_t)(wp - arg);
 }
