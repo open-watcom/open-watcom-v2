@@ -50,5 +50,5 @@ decstub.gh : ./mkcode.exe decstub.tmp
     $(noecho)$[@ -b $]@ $@
 
 ./mkcode.exe: mkcode.c
-    @%make echo_bldcl
-    $(bld_cl) $[@ $(bld_clflags) $(bld_ldflags)
+    @%make echo_bldccl
+    $(bld_ccl) $[@ $(bld_cclflags) $(bld_ldflags)

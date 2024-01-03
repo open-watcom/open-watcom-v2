@@ -205,8 +205,8 @@ except.grh : except.gh $(__MAKEFILES__)
     $(noecho)*awk -v base=MSG_EXC_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@
 
 ./mknver.exe: $(watcom_dir)/c/mknver.c $(watcom_dir)/h/banner.h $(__MAKEFILES__)
-    @%make echo_bldcl
-    $(bld_cl) $[@ $(bld_clflags) $(bld_ldflags)
+    @%make echo_bldccl
+    $(bld_ccl) $[@ $(bld_cclflags) $(bld_ldflags)
 
 nversion.tmp: ./mknver.exe $(__MAKEFILES__)
     @%make echo_execute

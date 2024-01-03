@@ -102,5 +102,5 @@ distbls.gh : ./disbuild.exe
     $(noecho)$[@
 
 ./disbuild.exe : $(disasm_dir)/core/c/disbuild.c $(disbuild_headers)
-    @%make echo_bldcl
-    $(bld_cl) $[@ $(dig_arch_cpp_flags) -I"../h" $(dis_includes) $(bld_clflags) $(bld_ldflags)
+    @%make echo_bldccl
+    $(bld_ccl) $[@ $(dig_arch_cpp_flags) -I"../h" $(dis_includes) $(bld_cclflags) $(bld_ldflags)

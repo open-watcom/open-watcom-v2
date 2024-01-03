@@ -26,16 +26,16 @@ wasmcmsg.grh : $(wasm_dir)/h/wasmc.msg $(__MAKEFILES__) .EXPLICIT
     $(noecho)*awk -v base=MSG_SHARE_BASE -f "$(build_dir)/makemsg.awk" -v OUTFILE=$^. $[@
 
 ./mkopcod1.exe: $(wasm_dir)/mkopcod1.c $(wasm_dir)/mkopcode.h $(__MAKEFILES__) .EXPLICIT
-    @%make echo_bldcl
-    $(bld_cl) $[@ $(wasm_client_extra_defines) -I. -I"$(wasm_dir)/h" $(bld_clflags) $(bld_ldflags)
+    @%make echo_bldccl
+    $(bld_ccl) $[@ $(wasm_client_extra_defines) -I. -I"$(wasm_dir)/h" $(bld_cclflags) $(bld_ldflags)
 
 asmops.gh: ./mkopcod1.exe $(wasm_client_extra_files) $(wasm_dir)/inlnops.tok .EXPLICIT
     @%make echo_execute
     $(noecho)$< $@
 
 ./mkopcode.exe: $(wasm_dir)/mkopcode.c $(wasm_dir)/mkopcode.h asmops.gh $(__MAKEFILES__) .EXPLICIT
-    @%make echo_bldcl
-    $(bld_cl) $[@ $(wasm_client_extra_defines) -I. -I"$(wasm_dir)/h" $(bld_clflags) $(bld_ldflags)
+    @%make echo_bldccl
+    $(bld_ccl) $[@ $(wasm_client_extra_defines) -I. -I"$(wasm_dir)/h" $(bld_cclflags) $(bld_ldflags)
 
 asmopsd.gh: ./mkopcode.exe $(wasm_client_extra_files) $(wasm_dir)/inlnops.tok .EXPLICIT
     @%make echo_execute

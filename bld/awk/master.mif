@@ -52,4 +52,4 @@ proctab.c : ./maketab.exe ../h/ytab.h
 
 ./maketab.exe : ../c/maketab.c
     @%make echo_bldcl
-    $(bld_cl) $[@ -I"../h" $(bld_clflags) $(bld_ldflags)
+    $(bld_ccl) $[@ -I"../h" $(bld_cclflags) $(bld_ldflags)

@@ -179,11 +179,13 @@ cl_extra_libs = $(cl_extra_libs_gen)
 !ifdef __INTEL_TOOLS__
 bcc  = icl -nologo -c $(ppflags_bldver)
 bcxx = icl -nologo -c $(ppflags_bldver)
-bcl  = $(noecho)icl -nologo $(ppflags_bldver)
+bccl = $(noecho)icl -nologo $(ppflags_bldver)
+bcl  = $(noecho)icl -nologo
 !else
 bcc  = cl -nologo -c $(ppflags_bldver)
 bcxx = cl -nologo -c $(ppflags_bldver)
-bcl  = $(noecho)cl -nologo $(ppflags_bldver)
+bccl = $(noecho)cl -nologo $(ppflags_bldver)
+bcl  = $(noecho)cl -nologo
 !endif
 
 # extra objects for linking via cl
@@ -221,7 +223,8 @@ bld_ldflags  =  $(bld_cl_extra_libs_gen) -link -nologo &
     $(bld_extra_ldflags) $(bld_ldflags_$(proj_type))
 
 # options for linking via cl
-bld_clflags  = $(bld_cppflags) $(common_cflags) $(common_flags) -Fe$@ $(bld_ldflags1)
+bld_cclflags = $(bld_cppflags) $(common_cflags) $(common_flags) -Fe$@ $(bld_ldflags1)
+bld_clflags  = -Fe$@ $(bld_ldflags1)
 
 !ifndef __WATCOM_TOOLS__
 
@@ -444,11 +447,13 @@ cl_extra_libs = $(cl_extra_libs_gen)
 !ifdef __CLANG_TOOLS__
 bcc  = clang -pipe -c $(ppflags_bldver)
 bcxx = clang++ -pipe -c $(ppflags_bldver)
-bcl  = $(noecho)clang -pipe $(ppflags_bldver)
+bccl = $(noecho)clang -pipe $(ppflags_bldver)
+bcl  = $(noecho)clang -pipe
 !else
 bcc  = gcc -pipe -c $(ppflags_bldver)
 bcxx = g++ -pipe -c $(ppflags_bldver)
-bcl  = $(noecho)gcc -pipe $(ppflags_bldver)
+bccl = $(noecho)gcc -pipe $(ppflags_bldver)
+bcl  = $(noecho)gcc -pipe
 !endif
 
 bld_cl_extra_objs_gen =
@@ -505,7 +510,8 @@ bld_ldflags1 = $(common_ldflags) -Wl,-Map,$^&.map
 bld_ldflags  = $(bld_cl_extra_libs_gen) $(bld_extra_ldflags) $(bld_ldflags_$(proj_type))
 
 # options for linking via cl
-bld_clflags  = $(bld_cppflags) $(common_cflags) $(common_flags) -o $@ $(bld_ldflags1)
+bld_cclflags = $(bld_cppflags) $(common_cflags) $(common_flags) -o $@ $(bld_ldflags1)
+bld_clflags  = -o $@ $(bld_ldflags1)
 
 !ifndef __WATCOM_TOOLS__
 
@@ -631,7 +637,8 @@ bas_ppc         = *wasppc
 bas_mps         = *wasmps
 
 bcc             = $(bcc_$(bld_cpu)) -zq $(ppflags_bldver)
-bcl             = $(noecho)$(bcl_$(bld_cpu)) -zq $(ppflags_bldver)
+bccl            = $(noecho)$(bcl_$(bld_cpu)) -zq $(ppflags_bldver)
+bcl             = $(noecho)$(bcl_$(bld_cpu)) -zq
 bas             = $(bas_$(bld_cpu)) -q $(ppflags_bldver)
 blink           = *wlink op q
 
@@ -667,7 +674,8 @@ bld_gen_cflags  = $(bld_watcom_common_cflags)$(bld_std_cflags)-j-s$(bld_dft_ofla
 bld_cflags      = $(bld_gen_cflags)
 
 # options for single source utility compilations
-bld_clflags     = $(bld_gen_cflags) -fe=$@
+bld_cclflags    = $(bld_gen_cflags) -fe=$@
+bld_clflags     = -fe=$@
 
 # options for linking
 bld_ldflags     =
@@ -690,7 +698,8 @@ bld_ldflags     =
 ##############################################################################
 
 bld_cc          = $(bcc) $(bld_cc_sys) $(bld_incs)
-bld_cl          = $(bcl) $(bld_cc_sys) $(bld_cl_sys) $(bld_incs)
+bld_ccl         = $(bccl) $(bld_cc_sys) $(bld_cl_sys) $(bld_incs)
+bld_cl          = $(bcl) $(bld_cl_sys)
 
 cpp             = $(noecho)*wcpp $(bldver_cppflags)
 
@@ -712,6 +721,11 @@ echo_yacc : .PROCEDURE .EXPLICIT
 echo_findhash : .PROCEDURE .EXPLICIT
 !ifeq verbose 0
     @echo findhash $@
+!endif
+
+echo_bldccl : .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo bld_ccl $@
 !endif
 
 echo_bldcl : .PROCEDURE .EXPLICIT
