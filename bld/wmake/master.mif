@@ -120,8 +120,8 @@ isarray.gh : ./cretype.exe $(__MAKEFILES__)
     $(noecho)$[@ $@
 
 ./cretype.exe : cretype.c $(__MAKEFILES__)
-    @%make echo_bldcl
-    $(bld_cl) $[@ $(bld_clflags) $(bld_ldflags)
+    @%make echo_bldccl
+    $(bld_ccl) $[@ $(bld_cclflags) $(bld_ldflags)
 
 # special targets
 ##################

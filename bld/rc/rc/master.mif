@@ -252,8 +252,8 @@ cmdlnprs.gh cmdlnprs.gc usage.gh $(exetarg_$(host_os)_res) : ../h/options.gml $(
     $(noecho)*optencod -q -rc=MSG_USAGE_BASE -utf8 $(optencod_opt_$(host_os)) $[@ cmdlnprs.gh cmdlnprs.gc $@ $(optencod_targets)
 
 ./cvttable.exe: ../c/cvttable.c $(__MAKEFILES__)
-    @%make echo_bldcl
-    $(bld_cl) $[@ -D_STANDALONE_ -I"../h" $(bld_clflags) $(bld_ldflags)
+    @%make echo_bldccl
+    $(bld_ccl) $[@ -D_STANDALONE_ -I"../h" $(bld_cclflags) $(bld_ldflags)
 
 to932.uni : ./cvttable.exe $(__MAKEFILES__)
     $[@ $@

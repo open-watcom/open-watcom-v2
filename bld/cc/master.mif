@@ -199,8 +199,8 @@ xcode$(target_cpu).tmp: ../../a/code$(target_cpu).asm
     $(noecho)*bwlink system bin op quiet file code$(target_cpu).obj name $@
 
 ./mkcode.exe: mkcode.c
-    @%make echo_bldcl
-    $(bld_cl) $[@ $(bld_clflags) $(bld_ldflags)
+    @%make echo_bldccl
+    $(bld_ccl) $[@ $(bld_cclflags) $(bld_ldflags)
 
 #msgencod_enc_linux = -utf8
 
@@ -209,8 +209,8 @@ msgtxt.gh msgdefs.gh msgattr.gh errors01.int : ../../gml/cerrs.gml
     $(noecho)*msgencod -q -s -i -ip -g $(msgencod_enc_$(host_os)) ../../gml/cerrs.gml msgtxt.gh msgdefs.gh msgattr.gh .
 
 ./intlbin.exe: $(fe_misc_dir)/c/intlbin.c
-    @%make echo_bldcl
-    $(bld_cl) $[@ -I"$(fe_misc_dir)/h" $(bld_clflags) $(bld_ldflags)
+    @%make echo_bldccl
+    $(bld_ccl) $[@ -I"$(fe_misc_dir)/h" $(bld_cclflags) $(bld_ldflags)
 
 $(bin_intname)01.int : ./intlbin.exe errors01.int usage01.int
     $[@ $@

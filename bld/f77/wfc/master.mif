@@ -114,8 +114,8 @@ xcode$(target_cpu).tmp: $(f77wfc_dir)/a/code$(target_cpu).asm
     $(noecho)*bwlink system bin op quiet file code$(target_cpu).obj name $@
 
 ./mkcode.exe: mkcode.c
-    @%make echo_bldcl
-    $(bld_cl) $[@ $(bld_clflags) $(bld_ldflags)
+    @%make echo_bldccl
+    $(bld_ccl) $[@ $(bld_cclflags) $(bld_ldflags)
 
 wfcmsgs.gh wfcmsgs.grh wfcgrps.gh wfcattrs.gh : $(f77wfc_dir)/gml/wfcmsgs.gml
     @%make echo_msgencod
