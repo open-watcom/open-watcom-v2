@@ -112,6 +112,7 @@ typedef enum    type_modifiers {    /* type   leaf   sym   */
     FLAG_ABORTS     = 0x40000,      /* Y40000              __declspec(aborts) */
     FLAG_NORETURN   = 0x80000,      /* Y80000              __declspec(noreturn) */
     FLAG_FARSS      = 0x100000,     /* Y100000             use far ss for auto variables (-zu) */
+    FLAG_FLD        = 0x200000,     /* Y200000             force enable long double */
 } type_modifiers;
 
 #define MASK_CV_QUALIFIERS  (FLAG_CONST|FLAG_VOLATILE)

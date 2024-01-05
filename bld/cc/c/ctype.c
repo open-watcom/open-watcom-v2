@@ -311,7 +311,7 @@ static TYPEPTR GetScalarType( bool *plain_int, type_mask bmask, type_modifiers f
         data_type = TYP_FLOAT;
         break;
     case M_LONG | M_DOUBLE:
-        if( CompFlags.use_long_double ) {
+        if( CompFlags.use_long_double || (flags & FLAG_FLD) ) {
             data_type = TYP_LONG_DOUBLE;
             break;
         }
@@ -323,7 +323,7 @@ static TYPEPTR GetScalarType( bool *plain_int, type_mask bmask, type_modifiers f
         data_type = TYP_FCOMPLEX;
         break;
     case M_COMPLEX | M_LONG | M_DOUBLE:
-        if( CompFlags.use_long_double ) {
+        if( CompFlags.use_long_double || (flags & FLAG_FLD) ) {
             data_type = TYP_LDCOMPLEX;
             break;
         }
@@ -335,7 +335,7 @@ static TYPEPTR GetScalarType( bool *plain_int, type_mask bmask, type_modifiers f
         data_type = TYP_FIMAGINARY;
         break;
     case M_IMAGINARY | M_LONG | M_DOUBLE:
-        if( CompFlags.use_long_double ) {
+        if( CompFlags.use_long_double || (flags & FLAG_FLD) ) {
             data_type = TYP_LDIMAGINARY;
             break;
         }
@@ -555,6 +555,8 @@ static void DeclSpecifiers( bool *plain_int, decl_info *info )
                         modifier = FLAG_NORETURN;
                     } else if( strcmp( Buffer, "farss" ) == 0 ) {
                         modifier = FLAG_FARSS;
+                    } else if( strcmp( Buffer, "fld" ) == 0 ) {
+                        modifier = FLAG_FLD;
                     } else {
                         CErr1( ERR_INVALID_DECLSPEC );
                     }
@@ -596,6 +598,14 @@ static void DeclSpecifiers( bool *plain_int, decl_info *info )
                         CErr1( ERR_INVALID_DECLSPEC );
                     } else {
                         info->decl_mod |= modifier;
+                    }
+                }
+                if( modifier & FLAG_FLD ) {
+                    if( info->decl_mod & FLAG_FLD ) {
+                        CErr1( ERR_INVALID_DECLSPEC );
+                    } else {
+                        info->decl_mod |= modifier;
+                        flags |= FLAG_FLD;
                     }
                 }
                 NextToken();
@@ -652,6 +662,7 @@ static void DeclSpecifiers( bool *plain_int, decl_info *info )
                     info->naked = true;
                 }
             }
+            flags |= info->decl_mod & FLAG_FLD;
             AdvanceToken();
             continue;
         default:
