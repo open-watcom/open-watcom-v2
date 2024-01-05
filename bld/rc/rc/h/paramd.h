@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -63,6 +63,7 @@ typedef struct RCParams {
 #ifdef YYDEBUG
     boolbit     DebugParser     : 1;
 #endif
+    boolbit     ConsoleTTY      : 1;
     boolbit     PrintHelp       : 1;
     boolbit     Quiet           : 1;
     boolbit     Pass1Only       : 1;

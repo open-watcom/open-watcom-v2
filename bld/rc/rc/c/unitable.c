@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2020-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2020-2024 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -297,4 +297,12 @@ RcStatus SetUTF8toUTF8( void )
 {
     ConvToMultiByte = UTF8StringToUTF8;
     return( RS_OK );
+}
+
+void FreeCvtTable( void )
+{
+    if( cvt_table != NULL ) {
+        RcMemFree( cvt_table );
+        cvt_table = NULL;
+    }
 }

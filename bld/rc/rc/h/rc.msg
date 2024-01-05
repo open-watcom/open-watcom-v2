@@ -114,9 +114,9 @@ pick(   ERR_RUNAWAY_STRING,
 pick(   ERR_EXPECTING_CHAR,
         "Expecting '%s' but found '%c'",
         "'%s' ではなく '%c'が見つかりました" )
-pick(   ERR_TOO_MANY_ARGS,
-        "Too many arguments: %s",
-        "引数が多過ぎます: %s" )
+pick(   ERR_TOO_MANY_FILENAMES,
+        "Too many filenames on command line.",
+        "Too many filenames on command line." )
 pick(   ERR_FILENAME_NEEDED,
         "Filename required on command line.",
         "コマンド行でファイル名が必要です." )

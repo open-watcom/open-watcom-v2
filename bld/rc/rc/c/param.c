@@ -35,7 +35,10 @@
 #include "windows.h"
 #endif
 #include "global.h"
+#include "errprt.h"
+#include "idedll.h"
 #include "preproc.h"
+#include "rcldstr.h"
 #include "rcerrors.h"
 #include "rcmem.h"
 #include "swchar.h"
@@ -44,6 +47,8 @@
 #include "rccore.h"
 #include "pathgrp2.h"
 #include "param.h"
+#include "banner.h"
+#include "usage.h"
 
 #include "clibext.h"
 
@@ -57,6 +62,7 @@
 
 static int          nofilenames = 0;
 static const char   *switch_start = "";
+static bool         banner_printed = false;
 
 /*
  * extensions for executables supported by OW resource compiler
@@ -69,6 +75,56 @@ static const char *ExeExt[] =   {
     "scr",          /* Windows 3.1 screen saver apps */
     NULL
 };
+
+static void ConsoleMessage( const char *str, ... )
+{
+    OutPutInfo          errinfo;
+    va_list             args;
+    char                *parm;
+
+    va_start( args, str );
+    parm = va_arg( args, char * );
+    InitOutPutInfo( &errinfo );
+    errinfo.severity = SEV_BANNER;
+    RcMsgFprintf( &errinfo, str, parm );
+    va_end( args );
+}
+
+static void PrintBanner( void )
+/*****************************/
+{
+    if( !banner_printed ) {
+        if( !CmdLineParms.Quiet ) {
+            ConsoleMessage(
+                banner1t( "Windows and OS/2 Resource Compiler" ) "\n"
+                banner1v( _WRC_VERSION_ ) "\n"
+                banner2 "\n"
+                banner2a( 1993 ) "\n"
+                banner3 "\n"
+                banner3a "\n"
+            );
+
+        }
+        banner_printed = true;
+    }
+}
+
+static void PrintUsage( void )
+/****************************/
+{
+    int         index;
+    char        buf[256];
+
+    PrintBanner();
+    if( CmdLineParms.ConsoleTTY
+      && !CmdLineParms.Quiet ) {
+        ConsoleMessage( "\n" );
+    }
+    for( index = MSG_USAGE_BASE; index < MSG_USAGE_BASE + MSG_USAGE_COUNT; index++ ) {
+        GetRcMsg( index, buf, sizeof( buf ) );
+        ConsoleMessage( "%s\n", buf );
+    }
+}
 
 static void BadCmdLine( int error_code )
 /***************************************
@@ -354,10 +410,18 @@ static void CheckPass2Only( void )
 } /* CheckPass2Only */
 
 
-static void SetParms( void )
-/**************************/
+static int SetParms( void )
+/*************************/
 {
     const char  *defext;
+
+    if( nofilenames == 0 ) {
+        RcError( ERR_FILENAME_NEEDED );
+        return( 1 );
+    }
+    if( nofilenames > 2 ) {
+        RcError( ERR_TOO_MANY_FILENAMES );
+    }
 
     CheckExtension( &CmdLineParms.InFileName, "rc" );
     CheckPass2Only();
@@ -400,24 +464,29 @@ static void SetParms( void )
     if( !( CmdLineParms.Pass2Only
       && CmdLineParms.NoResFile ) ) {
         if( access( CmdLineParms.InFileName, F_OK ) != 0 ) {
-            RcFatalError( ERR_CANT_FIND_FILE, CmdLineParms.InFileName );
+            RcError( ERR_CANT_FIND_FILE, CmdLineParms.InFileName );
+            return( 1 );
         }
     }
     if( !CmdLineParms.Pass1Only
       && !CmdLineParms.PreprocessOnly ) {
         if( access( CmdLineParms.InExeFileName, F_OK ) != 0 ) {
-            RcFatalError( ERR_CANT_FIND_FILE, CmdLineParms.InExeFileName );
+            RcError( ERR_CANT_FIND_FILE, CmdLineParms.InExeFileName );
+            return( 1 );
         }
     }
 
     if( CmdLineParms.GenAutoDep
       && CmdLineParms.MSResFormat ) {
-        RcFatalError( ERR_OPT_NOT_VALID_TOGETHER, "-ad", "-zm" );
+        RcError( ERR_OPT_NOT_VALID_TOGETHER, "-ad", "-zm" );
+        return( 1 );
     }
     if( CmdLineParms.PreprocessOnly
       && CmdLineParms.NoPreprocess ) {
-        RcFatalError( ERR_OPT_NOT_VALID_TOGETHER, "-o", "-zn" );
+        RcError( ERR_OPT_NOT_VALID_TOGETHER, "-o", "-zn" );
+        return( 1 );
     }
+    return( 0 );
 
 } /* SetParms */
 
@@ -439,6 +508,7 @@ void ScanParamFini( void )
     FRStrings           *strings;
 #endif
 
+    FreeCvtTable();
     FreeCharTable();
 
     while( (tmpres = CmdLineParms.ExtraResFiles) != NULL ) {
@@ -696,8 +766,12 @@ static void AddInpFileName( const char *infile )
         case 1:
             CmdLineParms.InExeFileName = RcMemStrDup( infile );
             break;
+        case 2:
+            /*
+             * set nofilenames to overflow
+             */
+            break;
         default:
-            RcError( ERR_TOO_MANY_ARGS, infile );
             return;
         }
         nofilenames++;
@@ -809,22 +883,23 @@ static char *SetStringOption( char **o, OPT_STRING **h )
     return( p );
 }
 
-void SetOptions( OPT_STORAGE *data, const char *infile, const char *outfile )
-/***************************************************************************/
+int SetOptions( OPT_STORAGE *data, const char *infile, const char *outfile )
+/**************************************************************************/
 {
     const char  *p;
 
+    if( data->h ) {
+        CmdLineParms.PrintHelp = true;
+        PrintUsage();
+        return( 1 );
+    }
     if( data->q ) {
         CmdLineParms.Quiet = true;
     }
-    if( data->h ) {
-        CmdLineParms.PrintHelp = true;
-    }
-    AddInpFileName( infile );
 
-    if( nofilenames == 0 ) {
-        RcError( ERR_FILENAME_NEEDED );
-    }
+    PrintBanner();
+
+    AddInpFileName( infile );
 
     if( data->bt ) {
         CmdLineParms.TargetOS = data->bt_value;
@@ -926,12 +1001,14 @@ void SetOptions( OPT_STORAGE *data, const char *infile, const char *outfile )
             strcpy( frStrings->buf, s->data );
             frStrings->findString = strtok( frStrings->buf, "," );
             if( frStrings->findString == NULL ) {
+                PrintBanner();
                 RcError( ERR_SYNTAX_STR, "-g=" );
                 RcMemFree( frStrings );
                 continue;
             }
             frStrings->replaceString = strtok( NULL, "," );
             if( frStrings->replaceString == NULL ) {
+                PrintBanner();
                 RcError( ERR_SYNTAX_STR, "-g=" );
                 RcMemFree( frStrings );
                 continue;
@@ -1065,8 +1142,6 @@ void SetOptions( OPT_STORAGE *data, const char *infile, const char *outfile )
         break;
     }
 
-    SetParms();
-
     /*
      * define target macros
      */
@@ -1105,5 +1180,7 @@ void SetOptions( OPT_STORAGE *data, const char *infile, const char *outfile )
      * initialize character input/output encoding
      */
     initMBCodePage();
+
+    return( SetParms() );
 
 }

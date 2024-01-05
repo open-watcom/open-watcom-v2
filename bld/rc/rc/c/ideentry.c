@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,10 +44,8 @@
 #include "rcspawn.h"
 #include "rcldstr.h"
 #include "rcerrors.h"
-#include "banner.h"
 #include "rc.h"
 #include "rccore.h"
-#include "usage.h"
 #include "pathgrp2.h"
 #include "preproc.h"
 #include "param.h"
@@ -162,64 +160,6 @@ const char *RcGetEnv( const char *name )
     return( NULL );
 }
 
-static void ConsoleMessage( const char *str, ... )
-{
-    OutPutInfo          errinfo;
-    va_list             args;
-    char                *parm;
-
-    va_start( args, str );
-    parm = va_arg( args, char * );
-    InitOutPutInfo( &errinfo );
-    errinfo.severity = SEV_BANNER;
-    RcMsgFprintf( &errinfo, str, parm );
-    va_end( args );
-}
-
-static void RcIoPrintBanner( void )
-/*********************************/
-{
-    if( !CmdLineParms.Quiet ) {
-        ConsoleMessage(
-            banner1t( "Windows and OS/2 Resource Compiler" ) "\n"
-            banner1v( _WRC_VERSION_ ) "\n"
-            banner2 "\n"
-            banner2a( 1993 ) "\n"
-            banner3 "\n"
-            banner3a
-        );
-
-    }
-}
-
-static bool console_tty = false;
-
-static void RcIoPrintUsage( void )
-/********************************/
-{
-    int         index;
-    char        buf[256];
-
-    RcIoPrintBanner();
-    if( console_tty
-      && !CmdLineParms.Quiet ) {
-        ConsoleMessage( "\n" );
-    }
-    for( index = MSG_USAGE_BASE; index < MSG_USAGE_BASE + MSG_USAGE_COUNT; index++ ) {
-        GetRcMsg( index, buf, sizeof( buf ) );
-        ConsoleMessage( "%s\n", buf );
-    }
-}
-
-static void print_banner_usage( void )
-{
-    if( CmdLineParms.PrintHelp ) {
-        RcIoPrintUsage();
-    } else {
-        RcIoPrintBanner();
-    }
-}
-
 static int RCMainLine( const char *opts, int argc, char **argv )
 /**************************************************************/
 {
@@ -243,7 +183,7 @@ static int RCMainLine( const char *opts, int argc, char **argv )
                 ProcOptions( &data, opts );
             }
             for( i = 1; i < argc; i++ ) {
-                rc = ProcOptions( &data, argv[i] );
+                ProcOptions( &data, argv[i] );
             }
             *infile = '\0';
             *outfile = '\0';
@@ -253,8 +193,7 @@ static int RCMainLine( const char *opts, int argc, char **argv )
                 IDEFN( GetInfo )( IdeHdl, IDE_GET_SOURCE_FILE, (IDEGetInfoWParam)NULL, (IDEGetInfoLParam)infile );
                 IDEFN( GetInfo )( IdeHdl, IDE_GET_TARGET_FILE, (IDEGetInfoWParam)NULL, (IDEGetInfoLParam)outfile );
             }
-            SetOptions( &data, infile, outfile );
-            print_banner_usage();
+            rc = SetOptions( &data, infile, outfile );
             if( rc == 0 ) {
                 rc = RCSpawn( RCmain );
             }
@@ -308,7 +247,7 @@ IDEBool IDEAPI IDEPassInitInfo( IDEDllHdl hdl, IDEInitInfo *info )
     }
     if( info->ver > 2 ) {
         if( info->console_output ) {
-            console_tty = true;
+            CmdLineParms.ConsoleTTY = true;
         }
         if( info->ver > 3 ) {
             if( info->progress_messages ) {
