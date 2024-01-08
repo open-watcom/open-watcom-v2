@@ -84,7 +84,7 @@ usage.u : $(fpuemu_dir)/usage.sp
     @%make echo_wsplice
     $(noecho)*wsplice -u $< $@
 
-!else ifeq host_os stub
+!else ifdef stub
 
 all : emu87.lib noemu87.lib .SYMBOLIC
 

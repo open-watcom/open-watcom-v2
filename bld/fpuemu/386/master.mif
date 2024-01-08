@@ -38,16 +38,7 @@ extra_a_flags_emu387 = -I"../inc" -I"$(fpuemu_dir)/inc" -I"$(mathlib_dir)/h"
 # explicit rules
 #################
 
-!ifeq host_os dos
-
-#
-# LIB
-#
-libtarg_objs = emu387.obj 386inite.obj
-libtarg_name = emu387
-!include libtarg.mif
-
-!else ifeq host_os qnx
+!ifeq host_os qnx
 
 #
 # EXE
@@ -62,9 +53,7 @@ usage.u : $(fpuemu_dir)/usage.sp
     @%make echo_wsplice
     $(noecho)*wsplice -u $< $@
 
-!else ifeq host_os win
-
-!else
+!else ifdef stub
 
 all : emu387.lib noemu387.lib .SYMBOLIC
 
@@ -77,6 +66,19 @@ libtarg_name = emu387
 
 libtarg_name = noemu387
 !include libtarg.mif
+
+!else ifeq host_os dos
+
+#
+# LIB
+#
+libtarg_objs = emu387.obj 386inite.obj
+libtarg_name = emu387
+!include libtarg.mif
+
+!else ifeq host_os win
+
+!else
 
 !endif
 
