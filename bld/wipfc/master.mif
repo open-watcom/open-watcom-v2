@@ -3,6 +3,8 @@ proj_type = cxx
 
 wipfc_autodepends = .autodepend
 
+additional_clean = *.grc
+
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif

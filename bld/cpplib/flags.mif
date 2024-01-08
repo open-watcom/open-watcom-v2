@@ -126,7 +126,7 @@ sw_a_linux   = -bt=linux
 # PREPROCESSOR SETINGS
 ######
 # Include system headers in dependency lists
-plib_cpp_flags=-D_ENABLE_AUTODEPEND
+plib_cpp_flags =
 !ifeq debug 0
 plib_cpp_flags += -D__OBSCURE_STREAM_INTERNALS
 !endif
@@ -172,9 +172,6 @@ plib_a_flags =$(sw_a_common) $(sw_a_$(plib_$(processor))_$(model)) $(sw_a_$(proc
 !ifneq debug 0
 c_dbg_flags = -d2
 a_dbg_flags = -d1
-!else
-c_dbg_flags = -DNDEBUG
-a_dbg_flags = -DNDEBUG
 !endif
 
 plib_c_inc_dirs_generic =$(inc_dirs_lang_dos)

@@ -481,7 +481,8 @@ static RcStatus copyDataEntry( PEResEntry *entry, void *_copy_info )
 //    closefile = false;
     if( !entry->IsDirEntry ) {
         info = WResGetFileInfo( entry->u.Data.Wind );
-        if( copy_info->curres == NULL || copy_info->curres == info ) {
+        if( copy_info->curres == NULL
+          || copy_info->curres == info ) {
             langinfo = WResGetLangInfo( entry->u.Data.Wind );
             if( RESSEEK( info->fp, langinfo->Offset, SEEK_SET ) )
                 return( RS_READ_ERROR );
@@ -598,7 +599,8 @@ static RcStatus setDataEntry( PEResEntry *entry, void *_info )
 
     if( !entry->IsDirEntry ) {
         fileinfo = WResGetFileInfo( entry->u.Data.Wind );
-        if( info->curfile == NULL || info->curfile == fileinfo ) {
+        if( info->curfile == NULL
+          || info->curfile == fileinfo ) {
             langinfo = WResGetLangInfo( entry->u.Data.Wind );
             entry->u.Data.Entry.data_rva = *info->rva;
             entry->u.Data.Entry.size = langinfo->Length;

@@ -25,7 +25,7 @@ edbind = bedbind
 
 error_dat = ../dat/error.dat
 
-additional_clean = *.rex *.gdh *.gch $(bind_compiled) $(error_dat)
+additional_clean = *.gh *.grh *.grc *.rex *.gdh *.gch $(bind_compiled) $(error_dat)
 additional_clean_subdirs = $(bin_subdir)
 
 !include cproj.mif
@@ -87,11 +87,11 @@ exetarg_name          = $(name)
 
 $(name).res : $(vi_dir)/res/viw.rc $(__MAKEFILES__) $(vi_autodepends)
     @%make echo_rc
-    $(rc) $(rc_ui8_flags) $(rc_flags) -ad $(rc_inc_path) $[@ -fo=$@
+    $(rc) $(ppflags_common) $(rc_ui8_flags) $(rc_flags) -ad $(rc_inc_path) $[@ -fo=$@
 
 ntmanif.res : ../res/ntmanif.rc
     @%make echo_rc
-    $(rc) $(rc_ui8_flags) $(rc_flags) -I"../res" $(inc_dirs_sys_nt) $< -fo=$@
+    $(rc) $(ppflags_common) $(rc_ui8_flags) $(rc_flags) -I"../res" $(inc_dirs_sys_nt) $< -fo=$@
 
 rcstr.grh : rcstrmsg.gh $(__MAKEFILES__)
     @%make echo_awk
@@ -99,7 +99,7 @@ rcstr.grh : rcstrmsg.gh $(__MAKEFILES__)
 
 rcstrmsg.gh : $(vi_dir)/res/vi.msg $(vi_dir)/res/tooltips.msg ../h/langdef.h $(msgfiles) $(__MAKEFILES__)
     @%make echo_cpp
-    $(cpp) $(rc_ui8_flags) -o$@ $[@
+    $(cpp) $(ppflags_common) $(rc_ui8_flags) -o$@ $[@
 
 setfs.obj : setfs.c setfs.gch setfs.gdh
 setgen.obj : setgen.c setgen.gch setgen.gdh

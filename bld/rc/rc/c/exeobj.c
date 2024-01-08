@@ -95,7 +95,8 @@ static int copyObjectTable( ExeFileInfo *src, ExeFileInfo *dst )
     src_resource_rva = PE_DIRECTORY( *src_pehdr, PE_TBL_RESOURCE ).rva;
     dst_num_objects = src_num_objects = src_pehdr->fheader.num_objects;
     for( obj_num = 0; obj_num < src_num_objects; obj_num++ ) {
-        if( src_resource_rva != 0 && src->u.PEInfo.Objects[obj_num].rva == src_resource_rva ) {
+        if( src_resource_rva != 0
+          && src->u.PEInfo.Objects[obj_num].rva == src_resource_rva ) {
             /*
              * there already was a resource object
              */
@@ -170,7 +171,8 @@ static RcStatus copyOneObject( FILE *src_fp, pe_object *src_obj,
  * then don't copy it
  */
 {
-    if( (src_obj->flags & PE_OBJ_UNINIT_DATA) && ( src_obj->physical_offset == 0 ) ) {
+    if( (src_obj->flags & PE_OBJ_UNINIT_DATA)
+      && ( src_obj->physical_offset == 0 ) ) {
         return( RS_OK );
     }
     if( RESSEEK( src_fp, src_obj->physical_offset, SEEK_SET ) )

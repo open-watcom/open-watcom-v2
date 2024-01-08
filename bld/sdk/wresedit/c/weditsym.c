@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -118,15 +118,13 @@ char *WLoadSymbols( WRHashTable **table, char *file_name, HWND parent, bool prom
 {
     char                *name;
     int                 c;
-    pp_flags            ppflags;
-    char                *inc_path;
     WGetFileStruct      gf;
     bool                ret;
     bool                ok;
 
     name = NULL;
 
-    PP_Init( '#' );
+    PP_Init( '#', PPSPEC_RC );
 
     ok = (table != NULL);
 
@@ -152,8 +150,6 @@ char *WLoadSymbols( WRHashTable **table, char *file_name, HWND parent, bool prom
     WSetWaitCursor( parent, true );
 
     if( ok ) {
-        ppflags = PPFLAG_IGNORE_INCLUDE | PPFLAG_EMIT_LINE | PPFLAG_TRUNCATE_FILE_NAME;
-        inc_path = NULL;
         ret = setjmp( SymEnv ) != 0;
         if( ret ) {
             PP_FileFini();
@@ -163,7 +159,7 @@ char *WLoadSymbols( WRHashTable **table, char *file_name, HWND parent, bool prom
     }
 
     if( ok ) {
-        ok = !PP_FileInit( name, ppflags, inc_path );
+        ok = !PP_FileInit( name, PPFLAG_EMIT_LINE | PPFLAG_TRUNCATE_FILE_NAME );
         if( !ok ) {
             WDisplayErrorMsg( W_NOOPENSYMFILE );
         }

@@ -74,7 +74,8 @@ bool AddDependency( const char *fname )
                 break;
             }
         }
-        if( *cur == NULL || cmp != 0 ) {
+        if( *cur == NULL
+          || cmp != 0 ) {
             len = strlen( name ) + 1;
             new = RESALLOC( sizeof( DepNode ) - 1 + len );
             new->next = *cur;

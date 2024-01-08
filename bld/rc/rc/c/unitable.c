@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2020-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2020-2024 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -18,7 +18,6 @@
 #include <limits.h>
 #include "global.h"
 #include "rccore.h"
-#include "param.h"
 #include "rcvars.h"
 #include "rcmem.h"
 #include "cvttable.h"
@@ -273,7 +272,7 @@ RcStatus SetUTF8toCP932( void )
                 ret = ( feof( fh ) ) ? RS_READ_INCMPLT : RS_READ_ERROR;
             } else {
                 cvt_table_len = u16;
-                cvt_table = RcMemMalloc( sizeof( cvt_chr ) * cvt_table_len );
+                cvt_table = RcMemAlloc( sizeof( cvt_chr ) * cvt_table_len );
                 if( cvt_table_len != fread( cvt_table, sizeof( cvt_chr ), cvt_table_len , fh ) ) {
                     ret = ( feof( fh ) ) ? RS_READ_INCMPLT : RS_READ_ERROR;
                 }
@@ -298,4 +297,12 @@ RcStatus SetUTF8toUTF8( void )
 {
     ConvToMultiByte = UTF8StringToUTF8;
     return( RS_OK );
+}
+
+void FreeCvtTable( void )
+{
+    if( cvt_table != NULL ) {
+        RcMemFree( cvt_table );
+        cvt_table = NULL;
+    }
 }

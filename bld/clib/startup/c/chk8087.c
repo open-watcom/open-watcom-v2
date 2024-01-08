@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -142,17 +142,44 @@ extern void __frstor( _87state * );
 
 #else   /* !_M_I86 */
 
-#pragma aux __fsave =   \
-        "fsave [eax]"   \
-    __parm __routine    [__eax] \
-    __value             \
-    __modify __exact    []
+  #if defined( __BIG_DATA__ )
+    #pragma aux __fsave =   \
+            "push    ds"    \
+            "mov     ds,edx" \
+            "fsave   [eax]"  \
+            "fwait"         \
+            "pop     ds"    \
+        __parm __routine    [__dx __eax] \
+        __value             \
+        __modify __exact    []
 
-#pragma aux __frstor =  \
-        "frstor [eax]"  \
-    __parm __routine    [__eax] \
-    __value             \
-    __modify __exact    []
+    #pragma aux __frstor =  \
+            "push    ds"    \
+            "mov     ds,edx" \
+            "frstor  [eax]"  \
+            "fwait"         \
+            "pop     ds"    \
+        __parm __routine    [__dx __eax] \
+        __value             \
+        __modify __exact    []
+
+  #else
+    #pragma aux __fsave =   \
+            "fsave   [eax]" \
+            "fwait"         \
+        __parm __routine    [__eax] \
+        __value             \
+        __modify __exact    []
+
+    #pragma aux __frstor =  \
+            "frstor  [eax]" \
+            "fwait"         \
+        __parm __routine    [__eax] \
+        __value             \
+        __modify __exact    []
+
+  #endif
+
 
 #endif
 

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,8 +34,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include "bool.h"
 #include "preproc.h"
+
 
 #define PPBUFSIZE           8192
 #define HASH_SIZE           211
@@ -83,33 +83,28 @@ typedef struct  file_list {
 
 typedef void        pp_callback( const char *, size_t len, const char *, incl_type );
 
-extern  void        PP_Dependency_List( pp_callback * );
-extern  int         PP_Class( char __c );
-extern  MACRO_ENTRY *PP_AddMacro( const char *__name, size_t len );
-extern  MACRO_ENTRY *PP_MacroLookup( const char *__name, size_t len );
-extern  MACRO_ENTRY *PP_ScanMacroLookup( const char *__name );
-extern  const char  *PP_ScanToken( const char *__p, ppt_token *__token );
-extern  int         PP_ScanNextToken( ppt_token *__token );
-extern  const char  *PP_SkipWhiteSpace( const char *__p, bool *__white_space );
-extern  const char  *PP_ScanName( const char *__p );
-extern  int         PPEvalExpr( const char *__p, const char **__endptr, PREPROC_VALUE *__val );
-extern  void        PP_ConstExpr( PREPROC_VALUE * );
-extern  MACRO_TOKEN *PPNextToken( void );
-extern  MACRO_TOKEN *NextMToken( void );
-extern  void        DeleteNestedMacro( void );
-extern  void        DoMacroExpansion( MACRO_ENTRY *__me );
+extern void         PP_Dependency_List( pp_callback * );
+extern int          PP_Class( char __c );
+extern MACRO_ENTRY  *PP_AddMacro( const char *__name, size_t len );
+extern MACRO_ENTRY  *PP_MacroLookup( const char *__name, size_t len );
+extern MACRO_ENTRY  *PP_ScanMacroLookup( const char *__name );
+extern const char   *PP_ScanToken( const char *__p, ppt_token *__token );
+extern int          PP_ScanNextToken( ppt_token *__token );
+extern const char   *PP_SkipWhiteSpace( const char *__p, bool *__white_space );
+extern const char   *PP_ScanName( const char *__p );
+extern int          PPEvalExpr( const char *__p, const char **__endptr, PREPROC_VALUE *__val );
+extern void         PP_ConstExpr( PREPROC_VALUE * );
+extern MACRO_TOKEN  *PPNextToken( void );
+extern MACRO_TOKEN  *NextMToken( void );
+extern void         DeleteNestedMacro( void );
+extern void         DoMacroExpansion( MACRO_ENTRY *__me );
 
-extern  void        PPMacroVarInit( void );
-extern  void        PPMacroVarFini( void );
-
-extern  char        PP__DATE__[14];
-extern  char        PP__TIME__[11];
-
-extern  FILELIST    *PP_File;
-extern  unsigned    PPLineNumber;
-extern  const char  *PPTokenPtr;
-extern  const char  *PPNextTokenPtr;
-extern  MACRO_TOKEN *PPTokenList;
-extern  MACRO_TOKEN *PPCurToken;
-extern  pp_flags    PPFlags;
-extern  char        PPSavedChar;    // saved char at end of token
+extern FILELIST         *PP_File;
+extern unsigned         PPLineNumber;
+extern const char       *PPTokenPtr;
+extern const char       *PPNextTokenPtr;
+extern MACRO_TOKEN      *PPTokenList;
+extern MACRO_TOKEN      *PPCurToken;
+extern pp_flags         PPFlags;
+extern char             PPSavedChar;    // saved char at end of token
+extern unsigned char    PPSpecMacros;

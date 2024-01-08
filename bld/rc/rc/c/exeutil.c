@@ -72,7 +72,8 @@ RcStatus CopyExeDataTilEOF( FILE *src_fp, FILE *dst_fp )
     size_t      numread;
 
     while( (numread = RESREAD( src_fp, Pass2Info.IoBuffer, IO_BUFFER_SIZE )) != 0 ) {
-        if( numread != IO_BUFFER_SIZE && RESIOERR( src_fp, numread ) ) {
+        if( numread != IO_BUFFER_SIZE
+          && RESIOERR( src_fp, numread ) ) {
             return( RS_READ_ERROR );
         }
         if( RESWRITE( dst_fp, Pass2Info.IoBuffer, numread ) != numread ) {

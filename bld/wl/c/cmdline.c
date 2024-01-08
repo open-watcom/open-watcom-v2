@@ -104,7 +104,7 @@ static const select_format PossibleFmt[] = {
     MK_ELF,         "LIBELF",       SetELFFmt,      FreeELFFmt,
 #endif
 #ifdef _OS2
-    MK_WINDOWS,     "LIBWIN",       SetOS2Fmt,      FreeOS2Fmt,
+    MK_WIN_NE,      "LIBWIN",       SetOS2Fmt,      FreeOS2Fmt,
     MK_OS2_NE,      "LIBOS2",       SetOS2Fmt,      FreeOS2Fmt,
     MK_OS2_LE,      "LIBOS2FLAT",   SetOS2Fmt,      FreeOS2Fmt,
     MK_OS2_LX,      "LIBOS2FLAT",   SetOS2Fmt,      FreeOS2Fmt,
@@ -327,17 +327,17 @@ void DoCmdFile( const char *fname )
     if( (LinkState & LS_FMT_DECIDED) == 0 ) {
         /* restrict set to automatically decided ones */
 #if defined( __QNX__ )
-#define LAST_CHANCE ( MK_OS2_LX | MK_OS2_LE | MK_OS2_NE | MK_QNX )
+#define LAST_CHANCE ( MK_OS2 | MK_QNX )
 #elif defined( __LINUX__ )
-#define LAST_CHANCE ( MK_OS2_LX | MK_OS2_LE | MK_OS2_NE | MK_ELF )
+#define LAST_CHANCE ( MK_OS2 | MK_ELF )
 #elif defined( __BSD__ )
-#define LAST_CHANCE ( MK_OS2_LX | MK_OS2_LE | MK_OS2_NE | MK_ELF )
+#define LAST_CHANCE ( MK_OS2 | MK_ELF )
 #elif defined( __NT__ )
-#define LAST_CHANCE ( MK_OS2_LX             | MK_OS2_NE | MK_WINDOWS | MK_PE | MK_DOS_EXE | MK_WIN_VXD )
+#define LAST_CHANCE ( MK_OS2_LX | MK_OS2_NE | MK_WIN_NE | MK_PE | MK_DOS_EXE | MK_WIN_VXD )
 #elif defined( __RDOS__ )
 #define LAST_CHANCE ( MK_RDOS | MK_PE | MK_DOS_EXE)
 #else
-#define LAST_CHANCE ( MK_OS2_LX | MK_OS2_LE | MK_OS2_NE | MK_DOS_EXE | MK_PHAR_SIMPLE )
+#define LAST_CHANCE ( MK_OS2 | MK_DOS_EXE | MK_PHAR_SIMPLE )
 #endif
         HintFormat( LAST_CHANCE );
     } else {
@@ -492,7 +492,7 @@ bool HintFormat( exe_format hint )
     }
     if( possible == 0 ) {
 #ifdef _OS2
-        if( (~(MK_OS2 | MK_PE | MK_WIN_VXD) & FmtData.type) == 0 ) {
+        if( (~(MK_OS2 | MK_WIN_NE | MK_PE | MK_WIN_VXD) & FmtData.type) == 0 ) {
             /* Windows, OS/2 V1.x, OS/2 V2.x, PE, VxD all
                 want the same structure */
             InitFmt( SetOS2Fmt );

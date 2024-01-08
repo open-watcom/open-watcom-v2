@@ -151,7 +151,8 @@ static FullTypeRecord *findExeTypeRecord( ResTable *restab,
     StringItem16        *exe_type_name;
 
     for( exe_type = restab->Dir.Head; exe_type != NULL; exe_type = exe_type->Next ) {
-        if( typeinfo->TypeName.IsName && (exe_type->Info.type & 0x8000) == 0 ) {
+        if( typeinfo->TypeName.IsName
+          && (exe_type->Info.type & 0x8000) == 0 ) {
             /*
              * if they are both names
              */
@@ -161,7 +162,8 @@ static FullTypeRecord *findExeTypeRecord( ResTable *restab,
               && strnicmp( exe_type_name->Name, typeinfo->TypeName.ID.Name.Name, exe_type_name->NumChars ) == 0 ) {
                 break;
             }
-        } else if( !(typeinfo->TypeName.IsName) && (exe_type->Info.type & 0x8000) ) {
+        } else if( !(typeinfo->TypeName.IsName)
+          && (exe_type->Info.type & 0x8000) ) {
             /*
              * if they are both numbers
              */

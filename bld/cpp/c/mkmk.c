@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -64,8 +64,9 @@ int main( int argc, char *argv[] )
         printf( "Usage: mkmk filename\n" );
         exit( 1 );
     }
-    PP_Init( ( argv[2] != NULL ) ? argv[2][0] : '#' );
-    if( PP_FileInit( argv[1], PPFLAG_DEPENDENCIES | PPFLAG_TRUNCATE_FILE_NAME, NULL ) != 0 ) {
+    PP_Init( ( argv[2] != NULL ) ? argv[2][0] : '#', PPSPEC_C );
+    PP_IncludePathAdd( PPINCLUDE_SYS, PP_GetEnv( "INCLUDE" ) );
+    if( PP_FileInit( argv[1], PPFLAG_DEPENDENCIES | PPFLAG_TRUNCATE_FILE_NAME ) != 0 ) {
         PP_Fini();
         printf( "Unable to open '%s'\n", argv[1] );
         exit( 1 );

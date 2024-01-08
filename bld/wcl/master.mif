@@ -1,5 +1,15 @@
 tree_depth = 4
 
+!ifdef target_cpu
+!else
+owcc_specs = specs.owc
+!ifdef bootstrap
+owcc_specs = b$(owcc_specs)
+!endif
+!endif
+
+additional_clean = *.gh *.grh *.grc $(owcc_specs)
+
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
@@ -38,11 +48,6 @@ extra_l_flags_dos_i86 = option stack=4k
 # explicit rules
 #################
 
-owcc_specs = specs.owc
-!ifdef bootstrap
-owcc_specs = b$(owcc_specs)
-!endif
-
 #
 # EXE
 #
@@ -64,9 +69,11 @@ exetarg_res_version_nt_x64 = exever.res
 verrc_exe_skel = $(wcl_dir)/exever.rc
 !include verrc.mif
 
+!ifdef owcc_specs
 $(owcc_specs): $(wlink_dir)/lnk/specs.sp $(__MAKEFILES__)
     @%make echo_wsplice
     $(noecho)*wsplice -k Pspecs $[@ $@
+!endif
 
 # optencod options and targets for various hosts
 !ifdef target_cpu

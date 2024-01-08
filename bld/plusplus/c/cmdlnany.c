@@ -1192,6 +1192,10 @@ void BadCmdLineFile( void )             // BAD FILE DETECTED
 {
     BadCmdLine( ERR_INVALID_OPTION_FILE );
 }
+void BadCmdLineOption( void )           // BAD TEXT DETECTED
+{
+    BadCmdLine( ERR_INVALID_OPTION_FILE );
+}
 
 static void postOptions( void )
 {

@@ -20,10 +20,8 @@ merge_trmem = 1
 inc_dirs = -I"../h" -I"$(browser_dir)/h" -I"$(dwarfr_dir)/h" -I"$(posix_dir)/h"
 
 extra_cpp_flags     = -DSTANDALONE_MERGER
-!ifndef NDEBUG
-extra_cpp_flags     += -DDEBUG=1 -DINSTRUMENTS=1
-!else
-extra_cpp_flags     += -DDEBUG=0 -DINSTRUMENTS=0
+!ifeq debug 2
+extra_cpp_flags     += -DDEBUG -DINSTRUMENTS
 !endif
 
 extra_cpp_flags_brmem = $(trmem_cpp_flags)
@@ -44,7 +42,7 @@ extra_l_flags_nt_axp = op undefsok
 #
 # EXE
 #
-!ifndef NDEBUG
+!ifeq debug 2
 exetarg_objs_debug = debuglog.obj
 !endif
 exetarg_objs = &

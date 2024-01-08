@@ -339,7 +339,7 @@ static void PrepSymbol( void *_sym, void *info )
             _LnkFree( save );
         }
     } else if( IS_SYM_IMPORTED( sym ) ) {
-        if( FmtData.type & (MK_OS2 | MK_PE) ) {
+        if( FmtData.type & (MK_OS2 | MK_WIN_NE | MK_PE) ) {
             sym->p.import = CarveGetIndex( CarveDLLInfo, sym->p.import );
         }
     } else if( (sym->info & SYM_IS_ALTDEF) == 0 || IS_SYM_COMDAT( sym ) ) {
@@ -347,7 +347,7 @@ static void PrepSymbol( void *_sym, void *info )
         sym->u.altdefs = CarveGetIndex( CarveSymbol, sym->u.altdefs );
     }
     if( sym->info & SYM_EXPORTED ) {
-        if( FmtData.type & (MK_OS2 | MK_PE | MK_WIN_VXD) ) {
+        if( FmtData.type & (MK_OS2 | MK_WIN_NE | MK_PE | MK_WIN_VXD) ) {
             sym->e.export = CarveGetIndex( CarveExportInfo, sym->e.export );
         }
     } else if( sym->e.def != NULL ) {
@@ -549,7 +549,7 @@ void WritePermData( void )
     hdr.numgroups = WriteGroupsList( &info );
     hdr.numuserlibs = WriteLibList( &info, true );
     hdr.numdeflibs = WriteLibList( &info, false );
-    if( FmtData.type & (MK_OS2 | MK_PE | MK_WIN_VXD) ) {
+    if( FmtData.type & (MK_OS2 | MK_WIN_NE | MK_PE | MK_WIN_VXD) ) {
         PrepNameTable( FmtData.u.os2fam.mod_ref_list, &info );
         PrepNameTable( FmtData.u.os2fam.imp_tab_list, &info );
         hdr.numdllsyms = WriteSmallCarve( CarveDLLInfo, MarkDLLInfo, WriteDLLInfo, &info );
@@ -733,7 +733,7 @@ static void RebuildSymbol( void *_sym, void *info )
     if( IS_SYM_ALIAS( sym ) ) {
         sym->p.alias.u.ptr = MapString( sym->p.alias.u.offs );
     } else if( IS_SYM_IMPORTED( sym ) ) {
-        if( FmtData.type & (MK_OS2 | MK_PE) ) {
+        if( FmtData.type & (MK_OS2 | MK_WIN_NE | MK_PE) ) {
             sym->p.import = CarveMapIndex( CarveDLLInfo, sym->p.import );
         }
     } else if( (sym->info & SYM_IS_ALTDEF) == 0 || IS_SYM_COMDAT( sym ) ) {
@@ -741,7 +741,7 @@ static void RebuildSymbol( void *_sym, void *info )
         sym->u.altdefs = CarveMapIndex( CarveSymbol, sym->u.altdefs );
     }
     if( sym->info & SYM_EXPORTED ) {
-        if( FmtData.type & (MK_OS2 | MK_PE | MK_WIN_VXD) ) {
+        if( FmtData.type & (MK_OS2 | MK_WIN_NE | MK_PE | MK_WIN_VXD) ) {
             sym->e.export = CarveMapIndex( CarveExportInfo, sym->e.export );
         }
     } else if( sym->e.def != NULL ) {
@@ -792,7 +792,7 @@ static void PurgeRead( perm_read_info *info )
     CarvePurge( CarveModEntry );
     CarvePurge( CarveSegData );
     CarvePurge( CarveSymbol );
-    if( FmtData.type & (MK_OS2 | MK_PE | MK_WIN_VXD) ) {
+    if( FmtData.type & (MK_OS2 | MK_WIN_NE | MK_PE | MK_WIN_VXD) ) {
         CarvePurge( CarveDLLInfo );
         CarvePurge( CarveExportInfo );
     }
@@ -875,7 +875,7 @@ void ReadPermData( void )
     CarveRestart( CarveModEntry, hdr->mods.num );
     CarveRestart( CarveSegData, hdr->segdatas.num );
     CarveRestart( CarveSymbol, hdr->symbols.num );
-    if( FmtData.type & (MK_OS2 | MK_PE | MK_WIN_VXD) ) {
+    if( FmtData.type & (MK_OS2 | MK_WIN_NE | MK_PE | MK_WIN_VXD) ) {
         CarveRestart( CarveDLLInfo, hdr->numdllsyms );
         CarveRestart( CarveExportInfo, hdr->numexports );
     }
@@ -907,7 +907,7 @@ void ReadPermData( void )
     ReadGroupsList( hdr->numgroups, &info );
     ReadLibList( hdr->numuserlibs, &SavedUserLibs, &info );
     ReadLibList( hdr->numdeflibs, &SavedDefLibs, &info );
-    if( FmtData.type & (MK_OS2 | MK_PE | MK_WIN_VXD) ) {
+    if( FmtData.type & (MK_OS2 | MK_WIN_NE | MK_PE | MK_WIN_VXD) ) {
         RebuildSmallCarve( CarveDLLInfo, hdr->numdllsyms, RebuildDLLInfo, &info );
         RebuildSmallCarve( CarveExportInfo, hdr->numexports, RebuildExportInfo, &info );
     }

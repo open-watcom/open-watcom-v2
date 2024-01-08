@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -97,9 +98,9 @@ public:
 
     virtual BTreeNodeBase< Key_T, Obj_T> * getRoot() { return _root; }
 
-            #if INSTRUMENTS
+#ifdef INSTRUMENTS
             void    print();
-            #endif
+#endif
 
 protected:
             void    update( Obj_T * obj );
@@ -109,10 +110,10 @@ private:
     uint                            _keyOrder;
     uint                            _objOrder;
 
-    #if INSTRUMENTS
+#ifdef INSTRUMENTS
     int                 _locks;
     int                 _unlocks;
-    #endif
+#endif
 };
 
 #define __BTREE_H_INCLUDED__

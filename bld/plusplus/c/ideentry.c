@@ -218,14 +218,14 @@ static void fillInputOutput( char *input, char *output )
     output[0] = '\0';
     if( !CompFlags.ide_cmd_line_has_files ) {
         p = input + 1;
-        if( ! IDEFN( GetInfo )( CompInfo.idehdl, IDE_GET_SOURCE_FILE, (IDEGetInfoWParam)NULL, (IDEGetInfoLParam)&p ) ) {
+        if( ! IDEFN( GetInfo )( CompInfo.idehdl, IDE_GET_SOURCE_FILE, (IDEGetInfoWParam)NULL, (IDEGetInfoLParam)p ) ) {
             input[0] = '"';
             len = strlen( &input[1] );
             input[1 + len] = '"';
             input[1 + len + 1] = '\0';
         }
         p = output + 5;
-        if( ! IDEFN( GetInfo )( CompInfo.idehdl, IDE_GET_TARGET_FILE, (IDEGetInfoWParam)NULL, (IDEGetInfoLParam)&p ) ) {
+        if( ! IDEFN( GetInfo )( CompInfo.idehdl, IDE_GET_TARGET_FILE, (IDEGetInfoWParam)NULL, (IDEGetInfoLParam)p ) ) {
             output[0] = '-';
             output[1] = 'f';
             output[2] = 'o';

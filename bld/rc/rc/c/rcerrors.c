@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -114,7 +114,7 @@ static void RcMsgV( unsigned errornum, OutputSeverity sev, va_list args )
     case ERR_OUT_OF_MEMORY:
     case ERR_PARSER_INTERNAL:
     case ERR_RENAMING_TMP_FILE:
-    case ERR_TOO_MANY_ARGS:
+    case ERR_TOO_MANY_FILENAMES:
     case ERR_UNKNOWN_MULT_OPTION:
     case ERR_UNKNOWN_OPTION:
     case ERR_NONNT_RES_TO_NT_EXE:

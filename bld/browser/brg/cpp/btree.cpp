@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -84,10 +85,10 @@ BTree<Key_T, Obj_T>::BTree( uint keyOrder, uint objOrder,
     setPrimary( primary );      // also puts us in indicies
     BTreeNodeBase<Key_T,Obj_T>::setKeyObjOrder( keyOrder, objOrder );
 
-    #if INSTRUMENTS
+#ifdef INSTRUMENTS
     _locks = 0;
     _unlocks = 0;
-    #endif
+#endif
 }
 
 template < class Key_T, class Obj_T >
@@ -96,12 +97,12 @@ BTree<Key_T, Obj_T>::~BTree()
 {
     _root->ragnarok();
 
-    #if INSTRUMENTS
+#ifdef INSTRUMENTS
     Log.printf( "BTree - %d locks, %d unlocks\n", _locks, _unlocks );
-    #endif
+#endif
 }
 
-#if INSTRUMENTS
+#ifdef INSTRUMENTS
 template < class Key_T, class Obj_T >
 void BTree<Key_T, Obj_T>::print()
 //-----------------------------------
@@ -127,11 +128,11 @@ Obj_T * BTree<Key_T, Obj_T>::find( const Key_T & key )
         res = NULL;
     }
 
-    #if INSTRUMENTS
+#ifdef INSTRUMENTS
     if( res ) {
         lock( res );
     }
-    #endif
+#endif
 
     return res;
 }
@@ -145,9 +146,9 @@ bool BTree<Key_T, Obj_T>::unlock( Obj_T * obj )
         if( _primary ) {
             return _primary->unlock( obj );
         } else {
-            #if INSTRUMENTS
+#ifdef INSTRUMENTS
             _unlocks += 1;
-            #endif
+#endif
 
             return true;
         }
@@ -165,16 +166,16 @@ bool BTree<Key_T, Obj_T>::lock( Obj_T * obj )
         if( _primary ) {
             return _primary->lock( obj );
         } else {
-            #if INSTRUMENTS
+#ifdef INSTRUMENTS
             _locks += 1;
-            #endif
+#endif
 
             return true;
         }
     } else {
-        #if INSTRUMENTS
+#ifdef INSTRUMENTS
         Log.printf( "lock NULL!!\n" );
-        #endif
+#endif
     }
 
     return false;
@@ -230,9 +231,9 @@ void BTree<Key_T, Obj_T>::insert( Obj_T * obj )
         }
     }
 
-    #if ( INSTRUMENTS == INSTRUMENTS_FULL_LOGGING )
-        print();
-    #endif
+#ifdef INSTRUMENTS_FULL_LOGGING
+    print();
+#endif
 }
 
 

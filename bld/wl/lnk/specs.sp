@@ -163,12 +163,72 @@ system begin windows
     format windows ^
 :endsegment
 end
+system begin windows1
+:segment Pspecs
+    ARCH i86 -bt=windows -dWINVER=0x100
+:elsesegment Pwlsystem
+    option osname='Windows 1.0'
+    option version=1.0
+    libpath '%WATCOM%/lib286'
+    libpath '%WATCOM%/lib286/win'
+    library windows
+    option nocaseexact
+    option stack=8k, heapsize=1k
+    format windows ^
+:endsegment
+end
+system begin windows2
+:segment Pspecs
+    ARCH i86 -bt=windows -dWINVER=0x200
+:elsesegment Pwlsystem
+    option osname='Windows 2.0'
+    option version=2.0
+    libpath '%WATCOM%/lib286'
+    libpath '%WATCOM%/lib286/win'
+    library windows
+    option nocaseexact
+    option stack=8k, heapsize=1k
+    format windows ^
+:endsegment
+end
 system begin windows_dll
 :segment Pspecs
     ARCH i86 -bt=windows -bd
 :: FIXME: need bd?
 :elsesegment Pwlsystem
     option osname='Windows 16-bit'
+    libpath '%WATCOM%/lib286'
+    libpath '%WATCOM%/lib286/win'
+    library windows
+    option nocaseexact
+    option stack=8k, heapsize=1k
+    libfile libentry.obj
+    format windows dll ^
+:endsegment
+end
+system begin windows1_dll
+:segment Pspecs
+    ARCH i86 -bt=windows -dWINVER=0x100 -bd
+:: FIXME: need bd?
+:elsesegment Pwlsystem
+    option osname='Windows 1.0'
+    option version=1.0
+    libpath '%WATCOM%/lib286'
+    libpath '%WATCOM%/lib286/win'
+    library windows
+    option nocaseexact
+    option stack=8k, heapsize=1k
+    libfile libent10.obj
+    format windows dll ^
+:endsegment
+end
+system begin windows2_dll
+:segment Pspecs
+    ARCH i86 -bt=windows -dWINVER=0x200 -bd
+:: FIXME: need bd?
+:elsesegment Pwlsystem
+    option osname='Windows 2.0'
+    option version=2.0
     libpath '%WATCOM%/lib286'
     libpath '%WATCOM%/lib286/win'
     library windows

@@ -32,7 +32,6 @@
 
 #include "_preproc.h"
 #include <ctype.h>
-#include <time.h>
 #include "wio.h"
 #include "watcom.h"
 #include "iopath.h"
@@ -63,39 +62,35 @@ enum cpp_types {
     PP_ELSE
 };
 
-FILELIST            *PP_File = NULL;
-unsigned            PPLineNumber;                   // current line number
-pp_flags            PPFlags;                        // pre-processor flags
-char                PP__DATE__[14];                 // value for __DATE__ macro
-char                PP__TIME__[11];                 // value for __TIME__ macro
-const char          *PPNextTokenPtr;                // next character after token end pointer
-const char          *PPTokenPtr;                    // pointer to next char in token
-MACRO_TOKEN         *PPTokenList;                   // pointer to list of tokens
-MACRO_TOKEN         *PPCurToken;                    // pointer to current token
-char                PPSavedChar;                    // saved char at end of token
+FILELIST                *PP_File = NULL;
+unsigned                PPLineNumber;                   // current line number
+pp_flags                PPFlags;                        // pre-processor flags
+const char              *PPNextTokenPtr;                // next character after token end pointer
+const char              *PPTokenPtr;                    // pointer to next char in token
+MACRO_TOKEN             *PPTokenList;                   // pointer to list of tokens
+MACRO_TOKEN             *PPCurToken;                    // pointer to current token
+char                    PPSavedChar;                    // saved char at end of token
 
-void                (* PPErrorCallback)( const char * ) = NULL;
+void                    (* PPErrorCallback)( const char * ) = NULL;
 
-static pp_callback  *PP_CallBack;                   // mkmk dependency callback function
+static pp_callback      *PP_CallBack;                   // mkmk dependency callback function
 
-static CPP_INFO     *PPStack;
-static int          NestLevel;
-static int          SkipLevel;
+static CPP_INFO         *PPStack;
+static int              NestLevel;
+static int              SkipLevel;
 
-static MACRO_ENTRY  *PPHashTable[HASH_SIZE];
+static char             PPPreProcChar;                  // preprocessor line intro
 
-static char         PPPreProcChar;                  // preprocessor line intro
+static const char       *PPBufPtr;                      // block buffer pointer
+static char             *PPLineBuf;                     // line buffer
+static size_t           PPLineBufSize;                  // line buffer size
+static unsigned         PPErrorCount = 0;
 
-static const char   *PPBufPtr;                      // block buffer pointer
-static char         *PPLineBuf;                     // line buffer
-static size_t       PPLineBufSize;                  // line buffer size
-static unsigned     PPErrorCount = 0;
+static char             *IncludePath1 = NULL;           // include path from cmdl
+static char             *IncludePath2 = NULL;           // include path from env
 
-static char         *IncludePath1 = NULL;           // include path from cmdl
-static char         *IncludePath2 = NULL;           // include path from env
-
-static char         *macro_buf = NULL;
-static size_t       macro_buf_size = 0;
+static char             *macro_buf = NULL;
+static size_t           macro_buf_size = 0;
 
 static char *str_dup( const char *str )
 {
@@ -149,15 +144,25 @@ static FILELIST *PP_Close( void )
     return( PP_File );
 }
 
-static char *AddIncludePath( char *old_list, const char *path_list )
+void PPENTRY PP_IncludePathAdd( incl_type incltype, const char *path_list )
 {
     size_t  len;
     size_t  old_len;
     char    *new_list;
     char    *p;
+    char    *old_list;
 
-    new_list = old_list;
     if( path_list != NULL && *path_list != '\0' ) {
+        switch( incltype ) {
+        case PPINCLUDE_SYS:
+            new_list = old_list = IncludePath2;
+            break;
+        case PPINCLUDE_USR:
+        case PPINCLUDE_SRC:
+        default:
+            new_list = old_list = IncludePath1;
+            break;
+        }
         len = strlen( path_list );
         if( old_list == NULL ) {
             p = new_list = PP_Malloc( len + 1 );
@@ -174,24 +179,47 @@ static char *AddIncludePath( char *old_list, const char *path_list )
             path_list = GetPathElement( path_list, NULL, &p );
         }
         *p = '\0';
+        switch( incltype ) {
+        case PPINCLUDE_SYS:
+            IncludePath2 = new_list;
+            break;
+        case PPINCLUDE_USR:
+        case PPINCLUDE_SRC:
+        default:
+            IncludePath1 = new_list;
+            break;
+        }
     }
-    return( new_list );
 }
 
-void PPENTRY PP_IncludePathAdd( const char *path_list )
+void PPENTRY PP_IncludePathInit( incl_type incltype )
 {
-    IncludePath1 = AddIncludePath( IncludePath1, path_list );
+    switch( incltype ) {
+    case PPINCLUDE_SYS:
+        IncludePath2 = PP_Malloc( 1 );
+        *IncludePath2 = '\0';
+        break;
+    case PPINCLUDE_USR:
+    case PPINCLUDE_SRC:
+    default:
+        IncludePath1 = PP_Malloc( 1 );
+        *IncludePath1 = '\0';
+        break;
+    }
 }
 
-void PPENTRY PP_IncludePathInit( void )
+void PPENTRY PP_IncludePathFini( incl_type incltype )
 {
-    IncludePath1 = PP_Malloc( 1 );
-    *IncludePath1 = '\0';
-}
-
-void PPENTRY PP_IncludePathFini( void )
-{
-    PP_Free( IncludePath1 );
+    switch( incltype ) {
+    case PPINCLUDE_SYS:
+        PP_Free( IncludePath2 );
+        break;
+    case PPINCLUDE_USR:
+    case PPINCLUDE_SRC:
+    default:
+        PP_Free( IncludePath1 );
+        break;
+    }
 }
 
 static int checkfullpath( const char *filename, char *fullfilename )
@@ -406,41 +434,13 @@ static void PP_GenError( const char *msg )
     PPNextTokenPtr = PPLineBuf + 1;
 }
 
-static void PP_TimeInit( void )
-{
-    struct tm   *tod;
-    time_t      time_of_day;
-
-    time_of_day = time( &time_of_day );
-    tod = localtime( &time_of_day );
-    FormatTime_tm( PP__TIME__ + 1, tod );
-    FormatDate_tm( PP__DATE__ + 1, tod );
-}
-
-int PPENTRY PP_FileInit( const char *filename, pp_flags ppflags, const char *include_path )
+int PPENTRY PP_FileInit( const char *filename, pp_flags ppflags )
 {
     FILE        *handle;
-    int         hash;
 
-    for( hash = 0; hash < HASH_SIZE; hash++ ) {
-        PPHashTable[hash] = NULL;
-    }
     PPFlags = ppflags;
     NestLevel = 0;
     SkipLevel = 0;
-    IncludePath2 = PP_Malloc( 1 );
-    *IncludePath2 = '\0';
-    IncludePath2 = AddIncludePath( IncludePath2, include_path );
-    if( (PPFlags & PPFLAG_IGNORE_INCLUDE) == 0 ) {
-        IncludePath2 = AddIncludePath( IncludePath2, PP_GetEnv( "INCLUDE" ) );
-    }
-    PP_AddMacro( "__LINE__", 8 );
-    PP_AddMacro( "__FILE__", 8 );
-    PP_AddMacro( "__DATE__", 8 );
-    PP_AddMacro( "__TIME__", 8 );
-    PP_AddMacro( "__STDC__", 8 );
-    PP_TimeInit();
-
     handle = PP_Open( filename );
     if( handle == NULL )
         return( -1 );
@@ -488,20 +488,8 @@ static void free_macro_buf( void )
 
 void PPENTRY PP_FileFini( void )
 {
-    int         hash;
-    MACRO_ENTRY *me;
-
-    for( hash = 0; hash < HASH_SIZE; hash++ ) {
-        for( ; (me = PPHashTable[hash]) != NULL; ) {
-            PPHashTable[hash] = me->next;
-            if( me->replacement_list != NULL )
-                PP_Free( me->replacement_list );
-            PP_Free( me );
-        }
-    }
     free_macro_buf();
     PP_CloseAllFiles();
-    PP_Free( IncludePath2 );
 }
 
 static size_t PP_ReadBuf( size_t line_len )
@@ -585,21 +573,6 @@ static size_t PP_ReadLine( bool *line_generated )
     PPNextTokenPtr = PPLineBuf + 1;
     return( line_len );
 }
-
-#define _rotl( a, b )   ( ( a << b ) | ( a >> ( 16 - b ) ) )
-
-static unsigned PP_Hash( const char *name, size_t len )
-{
-    unsigned    hash;
-
-    hash = 0;
-    while( len-- > 0 ) {
-        hash = (hash << 4) + *name++;
-        hash = (hash ^ _rotl( hash & 0xF000, 4 )) & 0x0FFF;
-    }
-    return( hash % HASH_SIZE );
-}
-
 
 int PP_Class( char c )
 {
@@ -724,27 +697,6 @@ static void PP_RCInclude( const char *ptr )
         }
     }
     open_include_file( filename, ptr, PPINCLUDE_USR );
-}
-
-MACRO_ENTRY *PP_AddMacro( const char *macro_name, size_t len )
-{
-    MACRO_ENTRY     *me;
-    unsigned int    hash;
-
-    me = PP_MacroLookup( macro_name, len );
-    if( me == NULL ) {
-        me = (MACRO_ENTRY *)PP_Malloc( sizeof( MACRO_ENTRY ) + len );
-        if( me != NULL ) {
-            hash = PP_Hash( macro_name, len );
-            me->next = PPHashTable[hash];
-            PPHashTable[hash] = me;
-            memcpy( me->name, macro_name, len );
-            me->name[len] = '\0';
-            me->parmcount = PP_SPECIAL_MACRO;
-            me->replacement_list = NULL;
-        }
-    }
-    return( me );
 }
 
 static const char *PP_SkipSpace( const char *p, bool *white_space )
@@ -888,18 +840,22 @@ void PPENTRY PP_Define( const char *ptr )
     }
 }
 
-MACRO_ENTRY *PP_MacroLookup( const char *macro_name, size_t len )
+void PPENTRY PP_Define_1( const char *ptr )
 {
     MACRO_ENTRY *me;
-    unsigned    hash;
+    const char  *macro_name;
+    bool        white_space;
 
-    hash = PP_Hash( macro_name, len );
-    for( me = PPHashTable[hash]; me != NULL; me = me->next ) {
-        if( memcmp( me->name, macro_name, len ) == 0 && me->name[len] == '\0' ) {
-            break;
-        }
+    macro_name = PP_SkipWhiteSpace( ptr, &white_space );
+    ptr = PP_ScanName( macro_name );
+    me = PP_AddMacro( macro_name, ptr - macro_name );
+    if( me != NULL ) {
+        me->parmcount = 0;
+        me->replacement_list = PP_Malloc( sizeof( "1" ) );
+        strcpy( me->replacement_list, "1" );
+    } else {
+        PP_OutOfMemory();
     }
-    return( me );
 }
 
 MACRO_ENTRY *PP_ScanMacroLookup( const char *ptr )
@@ -914,26 +870,6 @@ MACRO_ENTRY *PP_ScanMacroLookup( const char *ptr )
     me = PP_MacroLookup( macro_name, ptr - macro_name );
     PPNextTokenPtr = ptr;
     return( me );
-}
-
-void PPENTRY PP_MacrosWalk( pp_walk_func fn, void *cookies )
-{
-    int             hash;
-    const char      *endptr;
-    MACRO_ENTRY     *me;
-    PREPROC_VALUE   val;
-
-    for( hash = 0; hash < HASH_SIZE; hash++ ) {
-        for( me = PPHashTable[hash]; me != NULL; me = me->next ) {
-            if( me->parmcount == 0 && me->replacement_list != NULL ) {
-                if( PPEvalExpr( me->replacement_list, &endptr, &val ) ) {
-                    if( *endptr == '\0' ) {
-                        fn( me, &val, cookies );
-                    }
-                }
-            }
-        }
-    }
 }
 
 static void IncLevel( int value )
@@ -1449,15 +1385,13 @@ int PPENTRY PP_Char( void )
     return( (unsigned char)*PPTokenPtr++ );
 }
 
-void PPENTRY PP_Init( char c )
-/****************************/
+void PPENTRY PP_Init( char c, unsigned char spec_macros )
+/*******************************************************/
 {
     PP_File = NULL;
     PPStack = NULL;
     PPErrorCount = 0;
     PPLineNumber = 0;
-    strcpy( PP__DATE__, "\"Dec 31 2005\"" );
-    strcpy( PP__TIME__, "\"12:00:00\"" );
     PPBufPtr = NULL;
     PPNextTokenPtr = NULL;
     PPTokenList = NULL;
@@ -1467,13 +1401,18 @@ void PPENTRY PP_Init( char c )
     PPLineBuf[0] = '\0';
     PPLineBuf[1] = '\0';
     PPPreProcChar = c;
-    PPMacroVarInit();
+    PPSpecMacros = spec_macros;
+    PP_MacrosInit();
+    PP_IncludePathInit( PPINCLUDE_USR );
+    PP_IncludePathInit( PPINCLUDE_SYS );
 }
 
 int PPENTRY PP_Fini( void )
 /*************************/
 {
-    PPMacroVarFini();
+    PP_IncludePathFini( PPINCLUDE_SYS );
+    PP_IncludePathFini( PPINCLUDE_USR );
+    PP_MacrosFini();
     PP_Free( PPLineBuf );
     PPLineBuf = NULL;
     return( PPErrorCount > 0 );

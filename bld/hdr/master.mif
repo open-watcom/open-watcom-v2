@@ -1,5 +1,9 @@
 proj_name=hdr
 
+crwatpro_gsp = crwatpro.gsp
+
+additional_clean = $(crwatpro_gsp)
+ 
 !include cproj.mif
 !include ../hfiles.mif
 
@@ -36,8 +40,6 @@ rdos_dirs  = h h/sys h/netinet h/arpa
 
 mh_dir = ../watcom
 qnx_mh_dir = ../quantum
-
-crwatpro_gsp = crwatpro.gsp
 
 .EXTENSIONS
 .EXTENSIONS : . .h .hpp .cnv .gsp .sp .mh .mhp
@@ -183,5 +185,5 @@ $($(system)_dirs): .EXPLICIT
 !include $(mh_dir)/deps.mif
 
 clean: .SYMBOLIC
-    rm -f $(crwatpro_gsp)
+    rm -f $(additional_clean)
     rm -rf h

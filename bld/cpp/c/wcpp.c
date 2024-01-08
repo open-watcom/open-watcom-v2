@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -163,7 +163,7 @@ static bool ScanOptionsArg( const char * arg, pp_flags *ppflags )
             len = strlen( arg );
             p = malloc( len + 1 );
             scanString( p, arg, len );
-            PP_IncludePathAdd( p );
+            PP_IncludePathAdd( PPINCLUDE_USR, p );
             free( p );
         }
         break;
@@ -411,7 +411,7 @@ int main( int argc, char *argv[] )
     }
     PPErrorCallback = myErrorMsg;
 
-    PP_IncludePathInit();
+    PP_Init( '#', PPSPEC_C );
 
     rc = 0;
     memset( MBCharLen, 0, 256 );
@@ -436,13 +436,14 @@ int main( int argc, char *argv[] )
             SetRange( MBCharLen, 0xfc, 0xfd, 5 );
             break;
         }
-        PP_Init( '#' );
         fo = stdout;
         if( out_filename != NULL ) {
             fo = fopen( out_filename, "wt" );
         }
-        for( i = 0; i < nofilenames; ++i ) {
-            if( PP_FileInit( filenames[i], ppflags, NULL ) != 0 ) {
+        PP_IncludePathAdd( PPINCLUDE_SYS, PP_GetEnv( "INCLUDE" ) );
+        i = 0;
+        while( i < nofilenames ) {
+            if( PP_FileInit( filenames[i], ppflags ) != 0 ) {
                 fprintf( stderr, "Unable to open '%s'\n", filenames[i] );
                 rc = 1;
                 break;
@@ -457,13 +458,17 @@ int main( int argc, char *argv[] )
                 fputc( ch, fo );
             }
             PP_FileFini();
+            i++;
+            if( i < nofilenames ) {
+                PP_MacrosFini();
+                PP_MacrosInit();
+            }
         }
         if( fo == stdout ) {
             fflush( fo );
         } else if( fo != NULL ) {
             fclose( fo );
         }
-        rc = PP_Fini() | rc;
     }
 
     if( out_filename != NULL ) {
@@ -478,7 +483,7 @@ int main( int argc, char *argv[] )
     }
     free( (void *)defines );
 
-    PP_IncludePathFini();
+    rc = PP_Fini() | rc;
 
     if( rc == 0 && nofilenames == 0 ) {
         wcpp_quit( usageMsg, "No filename specified" );

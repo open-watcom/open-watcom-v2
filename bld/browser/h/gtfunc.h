@@ -81,9 +81,9 @@ class TreeFuncNode : public TreeCycleNode
                 TreeFuncWindow* parentWin;
                 KeySymbol *     key;
 
-                #if DEBUG
+#ifdef DEBUG
                 int             funcsFound;
-                #endif
+#endif
             };
 
 public:

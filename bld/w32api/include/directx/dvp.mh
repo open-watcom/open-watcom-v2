@@ -294,125 +294,64 @@ DECLARE_INTERFACE_( IDirectDrawVideoPortNotify, IUnknown ) {
 };
 
 /* C/C++ object macros */
-#if !defined( __cplusplus ) || defined( CINTERFACE )
-    #define IVideoPortContainer_QueryInterface( x, p1, p2 ) \
-        (x)->lpVtbl->QueryInterface( x, p1, p2 )
-    #define IVideoPortContainer_AddRef( x ) \
-        (x)->lpVtbl->AddRef( x )
-    #define IVideoPortContainer_Release( x ) \
-        (x)->lpVtbl->Release( x )
-    #define IVideoPortContainer_CreateVideoPort( x, p1, p2, p3, p4 ) \
-        (x)->lpVtbl->CreateVideoPort( x, p1, p2, p, p4 )
-    #define IVideoPortContainer_EnumVideoPorts( x, p1, p2, p3, p4 ) \
-        (x)->lpVtbl->EnumVideoPorts( x, p1, p2, p3, p4 )
-    #define IVideoPortContainer_GetVideoPortConnectInfo( x, p1, p2, p3 ) \
-        (x)->lpVtbl->GetVideoPortConnectInfo( x, p1, p2, p3 )
-    #define IVideoPortContainer_QueryVideoPortStatus( x, p1, p2 ) \
-        (x)->lpVtbl->QueryVideoPortStatus( x, p1, p2 )
-    #define IVideoPort_QueryInterface( x, p1, p2 ) \
-        (x)->lpVtbl->QueryInterface( x, p1, p2 )
-    #define IVideoPort_AddRef( x ) \
-        (x)->lpVtbl->AddRef( x )
-    #define IVideoPort_Release( x ) \
-        (x)->lpVtbl->Release( x )
-    #define IVideoPort_Flip( x, p1, p2 ) \
-        (x)->lpVtbl->Flip( x, p1, p2 )
-    #define IVideoPort_GetBandwidthInfo( x, p1, p2, p3, p4, p5 ) \
-        (x)->lpVtbl->GetBandwidthInfo( x, p1, p2, p3, p4, p5 )
-    #define IVideoPort_GetColorControls( x, p ) \
-        (x)->lpVtbl->GetColorControls( x, p )
-    #define IVideoPort_GetInputFormats( x, p1, p2, p3 ) \
-        (x)->lpVtbl->GetInputFormats( x, p1, p2, p3 )
-    #define IVideoPort_GetOutputFormats( x, p1, p2, p3, p4 ) \
-        (x)->lpVtbl->GetOutputFormats( x, p1, p2, p3, p4 )
-    #define IVideoPort_GetFieldPriority( x, p ) \
-        (x)->lpVtbl->GetFieldPriority( x, p )
-    #define IVideoPort_GetVideoLine( x, p ) \
-        (x)->lpVtbl->GetVideoLine( x, p )
-    #define IVideoPort_GetVideoSignalStatus( x, p ) \
-        (x)->lpVtbl->GetVideoSignalStatus( x, p )
-    #define IVideoPort_SetColorControls( x, p ) \
-        (x)->lpVtbl->SetColorControls( x, p )
-    #define IVideoPort_SetTargetSurface( x, p1, p2 ) \
-        (x)->lpVtbl->SetTargetSurface( x, p1, p2 )
-    #define IVideoPort_StartVideo( x, p ) \
-        (x)->lpVtbl->StartVideo( x, p )
-    #define IVideoPort_StopVideo( x ) \
-        (x)->lpVtbl->StopVideo( x )
-    #define IVideoPort_UpdateVideo( x, p ) \
-        (x)->lpVtbl->UpdateVideo( x, p )
-    #define IVideoPort_WaitForSync( x, p1, p2, p3 ) \
-        (x)->lpVtbl->WaitForSync( x, p1, p2, p3 )
-    #define IVideoPortNotify_QueryInterface( x, p1, p2 ) \
-        (x)->lpVtbl->QueryInterface( x, p1, p2 )
-    #define IVideoPortNotify_AddRef( x ) \
-        (x)->lpVtbl->AddRef( x )
-    #define IVideoPortNotify_Release( x ) \
-        (x)->lpVtbl->Release( x )
-    #define IVideoPortNotify_AcquireNotification( x, p1, p2 ) \
-        (x)->lpVtbl->AcquireNotification( x, p1, p2 )
-    #define IVideoPortNotify_ReleaseNotification( x, p ) \
-        (x)->lpVtbl->ReleaseNotification( x, p )
-#else
-    #define IVideoPortContainer_QueryInterface( x, p1, p2 ) \
-        (x)->QueryInterface( p1, p2 )
-    #define IVideoPortContainer_AddRef( x ) \
-        (x)->AddRef()
-    #define IVideoPortContainer_Release( x ) \
-        (x)->Release()
-    #define IVideoPortContainer_CreateVideoPort( x, p1, p2, p3, p4 ) \
-        (x)->CreateVideoPort( p1, p2, p, p4 )
-    #define IVideoPortContainer_EnumVideoPorts( x, p1, p2, p3, p4 ) \
-        (x)->EnumVideoPorts( p1, p2, p3, p4 )
-    #define IVideoPortContainer_GetVideoPortConnectInfo( x, p1, p2, p3 ) \
-        (x)->GetVideoPortConnectInfo( p1, p2, p3 )
-    #define IVideoPortContainer_QueryVideoPortStatus( x, p1, p2 ) \
-        (x)->QueryVideoPortStatus( p1, p2 )
-    #define IVideoPort_QueryInterface( x, p1, p2 ) \
-        (x)->QueryInterface( p1, p2 )
-    #define IVideoPort_AddRef( x ) \
-        (x)->AddRef()
-    #define IVideoPort_Release( x ) \
-        (x)->Release()
-    #define IVideoPort_Flip( x, p1, p2 ) \
-        (x)->Flip( p1, p2 )
-    #define IVideoPort_GetBandwidthInfo( x, p1, p2, p3, p4, p5 ) \
-        (x)->GetBandwidthInfo( p1, p2, p3, p4, p5 )
-    #define IVideoPort_GetColorControls( x, p ) \
-        (x)->GetColorControls( p )
-    #define IVideoPort_GetInputFormats( x, p1, p2, p3 ) \
-        (x)->GetInputFormats( p1, p2, p3 )
-    #define IVideoPort_GetOutputFormats( x, p1, p2, p3, p4 ) \
-        (x)->GetOutputFormats( p1, p2, p3, p4 )
-    #define IVideoPort_GetFieldPriority( x, p ) \
-        (x)->GetFieldPriority( p )
-    #define IVideoPort_GetVideoLine( x, p ) \
-        (x)->GetVideoLine( p )
-    #define IVideoPort_GetVideoSignalStatus( x, p ) \
-        (x)->GetVideoSignalStatus( p )
-    #define IVideoPort_SetColorControls( x, p ) \
-        (x)->SetColorControls( p )
-    #define IVideoPort_SetTargetSurface( x, p1, p2 ) \
-        (x)->SetTargetSurface( p1, p2 )
-    #define IVideoPort_StartVideo( x, p ) \
-        (x)->StartVideo( p )
-    #define IVideoPort_StopVideo( x ) \
-        (x)->StopVideo()
-    #define IVideoPort_UpdateVideo( x, p ) \
-        (x)->UpdateVideo( p )
-    #define IVideoPort_WaitForSync( x, p1, p2, p3 ) \
-        (x)->WaitForSync( p1, p2, p3 )
-    #define IVideoPortNotify_QueryInterface( x, p1, p2 ) \
-        (x)->QueryInterface( p1, p2 )
-    #define IVideoPortNotify_AddRef( x ) \
-        (x)->AddRef()
-    #define IVideoPortNotify_Release( x ) \
-        (x)->Release()
-    #define IVideoPortNotify_AcquireNotification( x, p1, p2 ) \
-        (x)->AcquireNotification( p1, p2 )
-    #define IVideoPortNotify_ReleaseNotification( x, p ) \
-        (x)->ReleaseNotification( p )
-#endif
+#define IVideoPortContainer_QueryInterface( x, p1, p2 ) \
+    _INTRFMEMBP( x, QueryInterface, p1, p2 )
+#define IVideoPortContainer_AddRef( x ) \
+    _INTRFMEMBN( x, AddRef )
+#define IVideoPortContainer_Release( x ) \
+    _INTRFMEMBN( x, Release )
+#define IVideoPortContainer_CreateVideoPort( x, p1, p2, p3, p4 ) \
+    _INTRFMEMBP( x, CreateVideoPort, p1, p2, p, p4 )
+#define IVideoPortContainer_EnumVideoPorts( x, p1, p2, p3, p4 ) \
+    _INTRFMEMBP( x, EnumVideoPorts, p1, p2, p3, p4 )
+#define IVideoPortContainer_GetVideoPortConnectInfo( x, p1, p2, p3 ) \
+    _INTRFMEMBP( x, GetVideoPortConnectInfo, p1, p2, p3 )
+#define IVideoPortContainer_QueryVideoPortStatus( x, p1, p2 ) \
+    _INTRFMEMBP( x, QueryVideoPortStatus, p1, p2 )
+#define IVideoPort_QueryInterface( x, p1, p2 ) \
+    _INTRFMEMBP( x, QueryInterface, p1, p2 )
+#define IVideoPort_AddRef( x ) \
+    _INTRFMEMBN( x, AddRef )
+#define IVideoPort_Release( x ) \
+    _INTRFMEMBN( x, Release )
+#define IVideoPort_Flip( x, p1, p2 ) \
+    _INTRFMEMBP( x, Flip, p1, p2 )
+#define IVideoPort_GetBandwidthInfo( x, p1, p2, p3, p4, p5 ) \
+    _INTRFMEMBP( x, GetBandwidthInfo, p1, p2, p3, p4, p5 )
+#define IVideoPort_GetColorControls( x, p ) \
+    _INTRFMEMBP( x, GetColorControls, p )
+#define IVideoPort_GetInputFormats( x, p1, p2, p3 ) \
+    _INTRFMEMBP( x, GetInputFormats, p1, p2, p3 )
+#define IVideoPort_GetOutputFormats( x, p1, p2, p3, p4 ) \
+    _INTRFMEMBP( x, GetOutputFormats, p1, p2, p3, p4 )
+#define IVideoPort_GetFieldPriority( x, p ) \
+    _INTRFMEMBP( x, GetFieldPriority, p )
+#define IVideoPort_GetVideoLine( x, p ) \
+    _INTRFMEMBP( x, GetVideoLine, p )
+#define IVideoPort_GetVideoSignalStatus( x, p ) \
+    _INTRFMEMBP( x, GetVideoSignalStatus, p )
+#define IVideoPort_SetColorControls( x, p ) \
+    _INTRFMEMBP( x, SetColorControls, p )
+#define IVideoPort_SetTargetSurface( x, p1, p2 ) \
+    _INTRFMEMBP( x, SetTargetSurface, p1, p2 )
+#define IVideoPort_StartVideo( x, p ) \
+    _INTRFMEMBP( x, StartVideo, p )
+#define IVideoPort_StopVideo( x ) \
+    _INTRFMEMBN( x, StopVideo )
+#define IVideoPort_UpdateVideo( x, p ) \
+    _INTRFMEMBP( x, UpdateVideo, p )
+#define IVideoPort_WaitForSync( x, p1, p2, p3 ) \
+    _INTRFMEMBP( x, WaitForSync, p1, p2, p3 )
+#define IVideoPortNotify_QueryInterface( x, p1, p2 ) \
+    _INTRFMEMBP( x, QueryInterface, p1, p2 )
+#define IVideoPortNotify_AddRef( x ) \
+    _INTRFMEMBN( x, AddRef )
+#define IVideoPortNotify_Release( x ) \
+    _INTRFMEMBN( x, Release )
+#define IVideoPortNotify_AcquireNotification( x, p1, p2 ) \
+    _INTRFMEMBP( x, AcquireNotification, p1, p2 )
+#define IVideoPortNotify_ReleaseNotification( x, p ) \
+    _INTRFMEMBP( x, ReleaseNotification, p )
 
 :include cplusepi.sp
 

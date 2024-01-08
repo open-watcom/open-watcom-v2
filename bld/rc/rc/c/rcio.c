@@ -128,7 +128,9 @@ static bool checkCurrentFileType( const char *filename )
     /*
      * if this is a c or h file ext will be '.', '[ch]', '\0'
      */
-    if( pg.ext[0] == '.' && pg.ext[1] != '\0' && pg.ext[2] == '\0' ) {
+    if( pg.ext[0] == '.'
+      && pg.ext[1] != '\0'
+      && pg.ext[2] == '\0' ) {
         switch( pg.ext[1] ) {
         case 'c':
         case 'C':
@@ -147,7 +149,8 @@ static file_loc *addLocation( file_loc *prev, const char *filename )
 {
     file_loc    *loc;
 
-    if( prev == NULL || strcmp( prev->Filename, filename ) != 0 ) {
+    if( prev == NULL
+      || strcmp( prev->Filename, filename ) != 0 ) {
         loc = RESALLOC( sizeof( file_loc ) );
         if( loc != NULL ) {
             loc->prev = prev;
@@ -343,7 +346,8 @@ void RcIoSetCurrentFileInfo( unsigned lineno, const char *filename )
     file_loc    *loc;
 
     loc = InStack.Location;
-    if( loc == NULL || lineno == 1 ) {
+    if( loc == NULL
+      || lineno == 1 ) {
         loc = addLocation( loc, filename );
     } else if( strcmp( loc->Filename, filename ) != 0 ) {
         loc = removeLocation( loc );
@@ -563,44 +567,16 @@ static bool PreprocessInputFile( void )
 /*************************************/
 {
     pp_flags    ppflags;
-    char        rcdefine[13];
-    char        **cppargs;
-    char        *p;
     int         rc;
 
-    ppflags = PPFLAG_EMIT_LINE | PPFLAG_IGNORE_INCLUDE | PPFLAG_TRUNCATE_FILE_NAME;
+    ppflags = PPFLAG_EMIT_LINE | PPFLAG_TRUNCATE_FILE_NAME;
     if( CmdLineParms.IgnoreCWD ) {
         ppflags |= PPFLAG_IGNORE_CWD;
     }
-    rc = PP_FileInit( CmdLineParms.InFileName, ppflags, NULL );
+    rc = PP_FileInit( CmdLineParms.InFileName, ppflags );
     if( rc != 0 ) {
         RcError( ERR_CANT_OPEN_FILE, CmdLineParms.InFileName, strerror(errno) );
         return( true );
-    }
-    strcpy( rcdefine, "RC_INVOKED 1" );
-    PP_Define( rcdefine );
-    if( !CmdLineParms.NoTargetDefine ) {
-        if( CmdLineParms.TargetOS == RC_TARGET_OS_WIN16 ) {
-            strcpy( rcdefine, "__WINDOWS__" );
-            PP_Define( rcdefine );
-        } else if( CmdLineParms.TargetOS == RC_TARGET_OS_WIN32 ) {
-            strcpy( rcdefine, "__NT__" );
-            PP_Define( rcdefine );
-        } else if( CmdLineParms.TargetOS == RC_TARGET_OS_OS2 ) {
-            strcpy( rcdefine, "__OS2__" );
-            PP_Define( rcdefine );
-        }
-    }
-    if( CmdLineParms.CPPArgs != NULL ) {
-        for( cppargs = CmdLineParms.CPPArgs; (p = *cppargs) != NULL; ++cppargs ) {
-            for( ; *p != '\0'; ++p ) {
-                if( *p == '=' ) {
-                    *p = ' ';
-                    break;
-                }
-            }
-            PP_Define( *cppargs + 2 );         // skip over -d
-        }
     }
     return( false );                    // indicate no error
 }
@@ -613,24 +589,7 @@ bool RcPass1IoInit( void )
  */
 {
     bool        error;
-    const char  *includepath = NULL;
 
-    if( !CmdLineParms.IgnoreINCLUDE ) {
-        if( CmdLineParms.TargetOS == RC_TARGET_OS_WIN16 ) {
-            includepath = RcGetEnv( "WINDOWS_INCLUDE" );
-        } else if( CmdLineParms.TargetOS == RC_TARGET_OS_WIN32 ) {
-            includepath = RcGetEnv( "NT_INCLUDE" );
-        } else if( CmdLineParms.TargetOS == RC_TARGET_OS_OS2 ) {
-            includepath = RcGetEnv( "OS2_INCLUDE" );
-        }
-        if( includepath != NULL ) {
-            PP_IncludePathAdd( includepath );
-        }
-        includepath = RcGetEnv( "INCLUDE" );
-        if( includepath != NULL ) {
-            PP_IncludePathAdd( includepath );
-        }
-    }
     if( !CmdLineParms.NoPreprocess ) {
         if( PreprocessInputFile() ) {
             return( false );

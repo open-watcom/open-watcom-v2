@@ -83,7 +83,7 @@ static void DoSavedImport( symbol *sym )
     length_name         modname;
     length_name         extname;
 
-    if( FmtData.type & (MK_OS2 | MK_PE) ) {
+    if( FmtData.type & (MK_OS2 | MK_WIN_NE | MK_PE) ) {
         dll = sym->p.import;
         sym->p.import = NULL;
         sym->info &= ~SYM_DEFINED;
@@ -106,7 +106,7 @@ static void DoSavedExport( symbol *sym )
     /* unused parameters */ (void)sym;
 
 #ifdef _OS2
-    if( FmtData.type & (MK_OS2 | MK_PE | MK_WIN_VXD) ) {
+    if( FmtData.type & (MK_OS2 | MK_WIN_NE | MK_PE | MK_WIN_VXD) ) {
         entry_export    *exp;
 
         exp = sym->e.export;
@@ -665,7 +665,7 @@ void AddSegment( segdata *sd, class_entry *class )
 
         leader = FindALeader( sd, class, info );
         if( ( (leader->info & USE_32) != (info & USE_32) ) &&
-            !( (FmtData.type & MK_OS2_FLAT) && FmtData.u.os2fam.mixed1632 ) &&
+            !( (FmtData.type & (MK_OS2_FLAT | MK_WIN_VXD)) && FmtData.u.os2fam.mixed1632 ) &&
             (FmtData.type & MK_RAW) == 0 ) {
             const char  *segname_16;
             const char  *segname_32;
@@ -730,7 +730,7 @@ void AddToGroup( group_entry *group, seg_leader *seg )
     }
     if( ( group->leaders != NULL ) &&
         ( (group->leaders->info & USE_32) != (seg->info & USE_32) ) &&
-        !( (FmtData.type & MK_OS2_FLAT) && FmtData.u.os2fam.mixed1632 ) &&
+        !( (FmtData.type & (MK_OS2_FLAT | MK_WIN_VXD)) && FmtData.u.os2fam.mixed1632 ) &&
         (FmtData.type & MK_RAW) == 0 ) {
 
         const char  *segname_16;
@@ -1258,7 +1258,7 @@ bool SeenDLLRecord( void )
 /*******************************/
 {
     LinkState |= LS_FMT_SEEN_IMPORT_CMT;
-    if( !HintFormat( MK_OS2 | MK_PE | MK_ELF | MK_NOVELL ) ) {
+    if( !HintFormat( MK_OS2 | MK_WIN_NE | MK_PE | MK_ELF | MK_NOVELL ) ) {
         LnkMsg( LOC+WRN+MSG_DLL_WITH_386, NULL );
         return( false );    /* Not OK to process import/export records. */
     } else {
@@ -1284,7 +1284,7 @@ void HandleImport( const length_name *intname, const length_name *modname,
             sym->mod = CurrMod;
         }
 #ifdef _OS2
-        if( FmtData.type & (MK_OS2 | MK_PE | MK_WIN_VXD) ) {
+        if( FmtData.type & (MK_OS2 | MK_WIN_NE | MK_PE | MK_WIN_VXD) ) {
             MSImportKeyword( sym, modname, extname, ordinal );
         } else {
 #endif
@@ -1334,7 +1334,7 @@ void HandleExport( const length_name *expname, const length_name *intname,
 #endif
 
 #ifdef _OS2
-    if( FmtData.type & (MK_OS2 | MK_PE | MK_WIN_VXD) ) {
+    if( FmtData.type & (MK_OS2 | MK_WIN_NE | MK_PE | MK_WIN_VXD) ) {
         MSExportKeyword( expname, intname, flags, ordinal );
     } else {
 #endif

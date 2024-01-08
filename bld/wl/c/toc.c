@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -218,7 +219,7 @@ void PrepareToc( void )
     WalkHTable( Toc, ConvertTocEntry );
     RehashHTable( Toc );
 #if 0
-    if( (LinkState & LS_HAVE_PPC_CODE) && (FmtData.type & MK_OS2) ) {
+    if( (LinkState & LS_HAVE_PPC_CODE) && (FmtData.type & (MK_OS2 | MK_WIN_NE)) ) {
         // Development temporarly on hold
         offset middle = ( TocSize / 2 ) & ~0x3;
         WalkHTableCookie( Toc, AdjustGotEntry, &middle );
@@ -320,7 +321,7 @@ void WriteToc( virt_mem buf )
         return;
     WalkHTableCookie( Toc, WriteOutTokElem, &buf );
 #if 0
-    if( (LinkState & LS_HAVE_PPC_CODE) && (FmtData.type & MK_OS2) ) {
+    if( (LinkState & LS_HAVE_PPC_CODE) && (FmtData.type & (MK_OS2 | MK_WIN_NE)) ) {
         // Development temporarly on hold
         offset res[GOT_RESERVED_SIZE / sizeof( offset )] = { 0 };
         enum { zero = GOT_RESERVED_NEG_SIZE / sizeof( offset ) };

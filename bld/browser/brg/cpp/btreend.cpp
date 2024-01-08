@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -131,7 +131,7 @@ setKeyOrder( uint keyOrder )
                        BTreeSearchNodeNodePoolSize );
 }
 
-#if INSTRUMENTS
+#ifdef INSTRUMENTS
 template < class Key_T, class Obj_T >
 void BTreeSearchNode<Key_T,Obj_T>::
 print( int indent )
@@ -228,10 +228,10 @@ insert( Obj_T * obj, bool & needsSplit, Key_T & key,
     bool            splitOccurred;
     Obj_T *         res = NULL;
 
-    #if ( INSTRUMENTS == INSTRUMENTS_FULL_LOGGING )
+#ifdef INSTRUMENTS_FULL_LOGGING
     Log.printf( "inserting in searchnode -- %s\n",
                                     ((const Key_T &)(*obj)).getString() );
-    #endif
+#endif
 
     needsSplit = false;
     idx = privSearch( (const Key_T&)(*obj), 0, _degree - 1 );
@@ -295,10 +295,10 @@ split( Key_T & key, BTreeNodeBase *& newNode )
     children = new BTreeNodeBasePtr [ _keyOrder * 2 + 2 ];
     seps = new Key_T [ _keyOrder * 2 + 1 ];
 
-    #if ( INSTRUMENTS == INSTRUMENTS_FULL_LOGGING )
+#ifdef INSTRUMENTS_FULL_LOGGING
     Log.printf( "splitting searchnode -- key %s, newNode is\n", key.getString() );
     newNode->print( 0 );
-    #endif
+#endif
 
     InternalAssert( _degree == _keyOrder * 2 + 1 );
 
@@ -335,9 +335,9 @@ split( Key_T & key, BTreeNodeBase *& newNode )
         other->_nodes[ i ]._child = children[ i + _keyOrder + 1 ];
     }
 
-    #if ( INSTRUMENTS == INSTRUMENTS_FULL_LOGGING )
+#ifdef INSTRUMENTS_FULL_LOGGING
     Log.printf( "splitting searchnode -- about to assign key %s\n", seps[ _keyOrder ].getString() );
-    #endif
+#endif
 
     newNode = other;
     key.operator= ( seps[ _keyOrder ] );
@@ -352,10 +352,10 @@ BTreeNodeBase< Key_T, Obj_T > * BTreeSearchNode<Key_T,Obj_T>::
 nextNode( int_16 & idx)
 //---------------------------------------------------------------
 {
-    #if ( INSTRUMENTS == INSTRUMENTS_FULL_LOGGING )
+#ifdef INSTRUMENTS_FULL_LOGGING
     Log.printf( "SearchNode %p, idx = %d, _degree = %d, return = %p\n",
                                     this, idx + 1, _degree, (idx + 1 < _degree) ? _nodes[ idx + 1 ]._child : NULL );
-    #endif
+#endif
 
     idx += 1;
     if( idx >= _degree ) return NULL;
@@ -368,9 +368,9 @@ Obj_T * BTreeSearchNode<Key_T,Obj_T>::
 nextObj( int_16 & )
 //------------------------------------
 {
-    #if ( INSTRUMENTS == INSTRUMENTS_FULL_LOGGING )
+#ifdef INSTRUMENTS_FULL_LOGGING
     Log.printf( "SearchNode nextObj == NULL\n" );
-    #endif
+#endif
 
     return NULL;    // no objects in search node
 }
@@ -439,7 +439,7 @@ setObjOrder( uint objOrder )
                        BTreeBucketNodeNodePoolSize );
 }
 
-#if INSTRUMENTS
+#ifdef INSTRUMENTS
 template < class Key_T, class Obj_T >
 void BTreeBucketNode<Key_T,Obj_T>::
 print( int indent )
@@ -520,10 +520,10 @@ remove( const Key_T & key )
 
         _degree -= 1;
     } else {
-        #if INSTRUMENTS
+#ifdef INSTRUMENTS
         Log.printf( "NOT FOUND FOR REMOVE!\n", key.getString() );
         print( 0 );
-        #endif
+#endif
 
         BTreeExcept a( "Element Not Found for Remove",
                         BTreeExcept::NotFoundForRemove );
@@ -568,11 +568,11 @@ privInsert( Obj_T * obj )
             return obj;
         }
 
-        #if INSTRUMENTS
+#ifdef INSTRUMENTS
         Log.printf( "DUPLICATE! %s = \n", (const char *) (*obj) );
         Log.printf( "           %s\n", (const char *) (*_nodes[ idx ]) );
         print( 0 );
-        #endif
+#endif
 
         BTreeExcept a( "Duplicate", BTreeExcept::Duplicate );
         throw( a );
@@ -598,9 +598,9 @@ split( Key_T & key, Obj_T * obj, BTreeNodeBase *& newNode )
     BTreeBucketNode *   right;
     Obj_T *             ret;
 
-    #if ( INSTRUMENTS == INSTRUMENTS_FULL_LOGGING )
+#ifdef INSTRUMENTS_FULL_LOGGING
     Log.printf( "splitting bucketnode -- obj %s\n", (const char *)(*obj) );
-    #endif
+#endif
 
     right = new BTreeBucketNode();
 
@@ -618,11 +618,11 @@ split( Key_T & key, Obj_T * obj, BTreeNodeBase *& newNode )
             if( ((const Key_T &)(*obj)).operator== (
                                 (const Key_T &)(*_nodes[ _objOrder ]) ) ) {
 
-                #if INSTRUMENTS
+#ifdef INSTRUMENTS
                 Log.printf( "DUPLICATE! %s =\n", (const char *) (*obj) );
                 Log.printf( "           %s\n", (const char *) (*_nodes[ _objOrder ] ) );
                 print( 0 );
-                #endif
+#endif
 
                 BTreeExcept a( "Duplicate", BTreeExcept::Duplicate );
                 throw( a );
@@ -651,11 +651,11 @@ split( Key_T & key, Obj_T * obj, BTreeNodeBase *& newNode )
     }
     newNode = right;
 
-    #if ( INSTRUMENTS == INSTRUMENTS_FULL_LOGGING )
+#ifdef INSTRUMENTS_FULL_LOGGING
     Log.printf( "split bucketnode -- key, %s, oldnode, newnode\n", key.getString() );
     print(0);
     newNode->print(0);
-    #endif
+#endif
 
     return ret;
 }
@@ -666,9 +666,9 @@ BTreeBucketNode<Key_T,Obj_T>::
 nextNode( int_16 & )
 //-----------------------------------
 {
-    #if ( INSTRUMENTS == INSTRUMENTS_FULL_LOGGING )
+#ifdef INSTRUMENTS_FULL_LOGGING
     Log.printf( "BucketNode nextNode == NULL\n" );
-    #endif
+#endif
 
     return NULL;    // no nodes in buckets
 }
@@ -678,10 +678,10 @@ Obj_T * BTreeBucketNode<Key_T,Obj_T>::
 nextObj( int_16 & idx)
 //------------------------------------
 {
-    #if ( INSTRUMENTS == INSTRUMENTS_FULL_LOGGING )
+#ifdef INSTRUMENTS_FULL_LOGGING
     Log.printf( "BucketNode %p, idx = %d, _degree = %d, return = %p\n",
                                     this, idx + 1, _degree, (idx +1 < _degree) ? _nodes[ idx + 1 ] : NULL );
-    #endif
+#endif
 
     idx += 1;
     if( idx >= _degree ) return NULL;

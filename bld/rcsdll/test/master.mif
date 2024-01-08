@@ -33,4 +33,4 @@ rc_inc_dirs = -I..
 
 rcstest.res: ../rcstest.rc $(__MAKEFILES__) .AUTODEPEND
     @%make echo_rc
-    $(rc) $(rc_flags) -ad -zk0 $(rc_inc_path) $[@ -fo=$@
+    $(rc) $(ppflags_common) $(rc_flags) -ad -zk0 $(rc_inc_path) $[@ -fo=$@

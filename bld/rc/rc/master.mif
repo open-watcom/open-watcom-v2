@@ -24,7 +24,7 @@ os2_yacc_prefix = os2y
 win_yacc_file = $(win_yacc_prefix)tab
 os2_yacc_file = $(os2_yacc_prefix)tab
 
-additional_clean = $(os2_yacc_file).* $(win_yacc_file).* *.uni yw.out y2.out
+additional_clean = *.gh *.grh *.grc *.gc $(os2_yacc_file).* $(win_yacc_file).* *.uni yw.out y2.out
 
 !include cproj.mif
 !include defrule.mif
@@ -39,7 +39,7 @@ additional_clean = $(os2_yacc_file).* $(win_yacc_file).* *.uni yw.out y2.out
 #
 # cflags
 #
-.c : .;../c;$(cpp_c_dirs);$(trmem_dir);$(watcom_dir)/c
+.c : .;../c;$(cpp_c_dirs);$(fe_misc_dir)/c;$(trmem_dir);$(watcom_dir)/c
 
 inc_dirs = -I. -I"../h" $(wres_inc_dirs) -I"$(fe_misc_dir)/h" $(cpp_inc_dirs)
 
@@ -64,6 +64,7 @@ extra_cpp_flags_idedrv   = -DSTATIC_LINKAGE
 extra_cpp_flags_maindrv  = -DDLL_NAME=$(dlltarg_name)
 
 extra_c_flags_rcmem    = $(trmem_cover_cflags)
+extra_c_flags_cmdlnprs = $(incl_file_opts)fesupp.h
 
 #
 # lflags
@@ -129,10 +130,11 @@ common_objs = &
     $(_subdir_)sharedio.obj &
     $(_subdir_)semresfl.obj &
     $(_subdir_)semutil.obj &
-    $(_subdir_)leadbyte.obj &
     $(_subdir_)ideentry.obj &
     $(_subdir_)idemsgpr.obj &
     $(_subdir_)rcspawn.obj &
+    $(_subdir_)cmdlnprs.obj &
+    $(_subdir_)cmdscan.obj &
     $(cpp_objs)
 
 misc_objs = &
@@ -160,10 +162,10 @@ objs_exe = $+$(rc_template)$- $(objs_drv)
 # EXE
 #
 !ifdef bootstrap
-prebuild_objs = usage.gh rcmsg.grh $(os2_yacc_file).c $(win_yacc_file).c &
+prebuild_objs = usage.gh rcmsg.grh cmdlnprs.gh $(os2_yacc_file).c $(win_yacc_file).c &
     keyword2.gh keywordw.gh to932.uni
 !else
-prebuild_objs = usage.gh rcmsg.grh $(os2_yacc_file).c &
+prebuild_objs = usage.gh rcmsg.grh cmdlnprs.gh $(os2_yacc_file).c &
     $(win_yacc_file).c keyword2.gh keywordw.gh to932.uni
 !endif
 !ifdef wrc_dll
@@ -245,13 +247,13 @@ optencod_targets = $(host_os)
 optencod_targets += dbg
 !endif
 
-usage.gh $(exetarg_$(host_os)_res) : ../h/options.gml $(__MAKEFILES__)
+cmdlnprs.gh cmdlnprs.gc usage.gh $(exetarg_$(host_os)_res) : ../h/options.gml $(__MAKEFILES__)
     @%make echo_optencod
-    $(noecho)*optencod -q -rc=MSG_USAGE_BASE -utf8 $(optencod_opt_$(host_os)) $[@ . . $@ $(optencod_targets)
+    $(noecho)*optencod -q -rc=MSG_USAGE_BASE -utf8 $(optencod_opt_$(host_os)) $[@ cmdlnprs.gh cmdlnprs.gc $@ $(optencod_targets)
 
 ./cvttable.exe: ../c/cvttable.c $(__MAKEFILES__)
-    @%make echo_bldcl
-    $(bld_cl) $[@ -D_STANDALONE_ -I"../h" $(bld_clflags) $(bld_ldflags)
+    @%make echo_bldccl
+    $(bld_ccl) $(ppflags_common) $(ppflags_autodep) $[@ -D_STANDALONE_ -I"../h" $(bld_cclflags) $(bld_ldflags)
 
 to932.uni : ./cvttable.exe $(__MAKEFILES__)
     $[@ $@

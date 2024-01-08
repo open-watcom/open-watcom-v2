@@ -90,6 +90,6 @@ exetarg_name = wininte
 
 winint.res wininte.res : ../winint.rc
     @%make echo_rc
-    $(rc) $(rc_flags) $(inc_dirs) $[@ -fo=$@
+    $(rc) $(ppflags_common) $(rc_flags) $(inc_dirs) $[@ -fo=$@
 
 !endif

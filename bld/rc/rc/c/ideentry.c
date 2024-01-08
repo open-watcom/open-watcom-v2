@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,11 +44,11 @@
 #include "rcspawn.h"
 #include "rcldstr.h"
 #include "rcerrors.h"
-#include "banner.h"
 #include "rc.h"
 #include "rccore.h"
-#include "usage.h"
 #include "pathgrp2.h"
+#include "preproc.h"
+#include "param.h"
 
 #include "clibint.h"
 #include "clibext.h"
@@ -151,7 +151,8 @@ const char *RcGetEnv( const char *name )
 {
     const char  *val;
 
-    if( IdeCbs != NULL && !initInfo->ignore_env ) {
+    if( IdeCbs != NULL
+      && !initInfo->ignore_env ) {
         if( !IDEFN( GetInfo )( IdeHdl, IDE_GET_ENV_VAR, (IDEGetInfoWParam)name, (IDEGetInfoLParam)&val ) ) {
             return( val );
         }
@@ -159,74 +160,14 @@ const char *RcGetEnv( const char *name )
     return( NULL );
 }
 
-static void ConsoleMessage( const char *str, ... )
-{
-    OutPutInfo          errinfo;
-    va_list             args;
-    char                *parm;
-
-    va_start( args, str );
-    parm = va_arg( args, char * );
-    InitOutPutInfo( &errinfo );
-    errinfo.severity = SEV_BANNER;
-    RcMsgFprintf( &errinfo, str, parm );
-    va_end( args );
-}
-
-static void RcIoPrintBanner( void )
-/*********************************/
-{
-    if( !CmdLineParms.Quiet ) {
-        ConsoleMessage(
-            banner1t( "Windows and OS/2 Resource Compiler" ) "\n"
-            banner1v( _WRC_VERSION_ ) "\n"
-            banner2 "\n"
-            banner2a( 1993 ) "\n"
-            banner3 "\n"
-            banner3a
-        );
-
-    }
-}
-
-static bool console_tty = false;
-
-static void RcIoPrintUsage( void )
-/********************************/
-{
-    int         index;
-    char        buf[256];
-
-    RcIoPrintBanner();
-    if( console_tty && !CmdLineParms.Quiet ) {
-        ConsoleMessage( "\n" );
-    }
-    for( index = MSG_USAGE_BASE; index < MSG_USAGE_BASE + MSG_USAGE_COUNT; index++ ) {
-        GetRcMsg( index, buf, sizeof( buf ) );
-        ConsoleMessage( "%s\n", buf );
-    }
-}
-
-static void print_banner_usage( void )
-{
-    if( CmdLineParms.PrintHelp ) {
-        RcIoPrintUsage();
-    } else {
-        RcIoPrintBanner();
-    }
-}
-
 static int RCMainLine( const char *opts, int argc, char **argv )
 /**************************************************************/
 {
-    char        *cmdbuf = NULL;
-    const char  *str;
-    char        infile[_MAX_PATH + 2];  // +2 for quotes
-    char        outfile[_MAX_PATH + 6]; // +6 for -fo="" or -fe=""
-    bool        pass1;
+    char        infile[_MAX_PATH];
+    char        outfile[_MAX_PATH];
     int         i;
     int         rc;
-    char        *p;
+    OPT_STORAGE data;
 
     rc = 1;
     curBufPos = formatBuffer;
@@ -235,50 +176,30 @@ static int RCMainLine( const char *opts, int argc, char **argv )
     if( InitRcMsgs() ) {
         rc = setjmp( jmpbuf_RCFatalError );
         if( rc == 0 ) {
+            PP_Init( '#', PPSPEC_RC );
+            OPT_INIT( &data );
+            ScanParamInit();
             if( opts != NULL ) {
-                str = opts;
-                argc = ParseEnvVar( str, NULL, NULL );
-                argv = RcMemMalloc( ( argc + 4 ) * sizeof( char * ) );
-                cmdbuf = RcMemMalloc( strlen( str ) + argc + 1 );
-                ParseEnvVar( str, argv, cmdbuf );
-                pass1 = false;
-                for( i = 0; i < argc; i++ ) {
-                    if( argv[i] != NULL && stricmp( argv[i], "-r" ) == 0 ) {
-                        pass1 = true;
-                        break;
-                    }
-                }
-                if( initInfo != NULL && initInfo->ver > 1 && !initInfo->cmd_line_has_files ) {
-                    p = infile + 1;
-                    if( !IDEFN( GetInfo )( IdeHdl, IDE_GET_SOURCE_FILE, (IDEGetInfoWParam)NULL, (IDEGetInfoLParam)&p ) ) {
-                        infile[0] = '\"';
-                        strcat( infile, "\"" );
-                        argv[argc++] = infile;
-                    }
-                    p = outfile + 5;
-                    if( !IDEFN( GetInfo )( IdeHdl, IDE_GET_TARGET_FILE, (IDEGetInfoWParam)NULL, (IDEGetInfoLParam)&p ) ) {
-                        if( pass1 ) {
-                            strcpy( outfile, "-fo=\"" );
-                        } else {
-                            strcpy( outfile, "-fe=\"" );
-                        }
-                        strcat( outfile, "\"" );
-                        argv[argc++] = outfile;
-                    }
-                }
-                argv[argc] = NULL;        // last element of the array must be NULL
+                ProcOptions( &data, opts );
             }
-            if( !ScanParams( argc, argv ) ) {
-                rc = 1;
+            for( i = 1; i < argc; i++ ) {
+                ProcOptions( &data, argv[i] );
             }
-            print_banner_usage();
+            *infile = '\0';
+            *outfile = '\0';
+            if( initInfo != NULL
+              && initInfo->ver > 1
+              && !initInfo->cmd_line_has_files ) {
+                IDEFN( GetInfo )( IdeHdl, IDE_GET_SOURCE_FILE, (IDEGetInfoWParam)NULL, (IDEGetInfoLParam)infile );
+                IDEFN( GetInfo )( IdeHdl, IDE_GET_TARGET_FILE, (IDEGetInfoWParam)NULL, (IDEGetInfoLParam)outfile );
+            }
+            rc = SetOptions( &data, infile, outfile );
             if( rc == 0 ) {
                 rc = RCSpawn( RCmain );
             }
-            if( opts != NULL ) {
-                RcMemFree( argv );
-                RcMemFree( cmdbuf );
-            }
+            ScanParamFini();
+            OPT_FINI( &data );
+            PP_Fini();
         }
     }
     flushPrintf();
@@ -326,7 +247,7 @@ IDEBool IDEAPI IDEPassInitInfo( IDEDllHdl hdl, IDEInitInfo *info )
     }
     if( info->ver > 2 ) {
         if( info->console_output ) {
-            console_tty = true;
+            CmdLineParms.ConsoleTTY = true;
         }
         if( info->ver > 3 ) {
             if( info->progress_messages ) {
@@ -355,7 +276,8 @@ int IDEAPI IDERunYourSelf( IDEDllHdl hdl, const char *opts, IDEBool *fatalerr )
     if( fatalerr != NULL )
         *fatalerr = false;
     rc = RCMainLine( opts, 0, NULL );
-    if( rc == -1 && fatalerr != NULL )
+    if( rc == -1
+      && fatalerr != NULL )
         *fatalerr = true;
     return( rc );
 }
@@ -376,7 +298,8 @@ int IDEAPI IDERunYourSelfArgv( IDEDllHdl hdl, int argc, char **argv, IDEBool *fa
     if( fatalerr != NULL )
         *fatalerr = false;
     rc = RCMainLine( NULL, argc, argv );
-    if( rc == -1 && fatalerr != NULL )
+    if( rc == -1
+      && fatalerr != NULL )
         *fatalerr = true;
     return( rc );
 }

@@ -49,9 +49,9 @@ public:
     const char *        insert( const char * str );
     static void         ragnarok();
 
-    #if INSTRUMENTS
+#ifdef INSTRUMENTS
     void                print( int level );
-    #endif
+#endif
 
 private:
                         PatriciaNode( int_16 bitPos, char * key,
@@ -105,11 +105,11 @@ static inline uint_8 PatriciaNode::getBit( const char * str, size_t len,
                                          uint_16 bitPos )
 //--------------------------------------------------------------------
 {
-    #if (INSTRUMENTS == INSTRUMENTS_FULL_LOGGING)
-        Log.printf( "\"%s\", bitPos=%d, %#x, %d, %#x = %#x\n", str, bitPos, *(str + (bitPos / 8)),
-                                    bitPos % 8, (0x80 >> (bitPos % 8)),
-                                    *(str + (bitPos / 8)) & (0x80 >> (bitPos % 8)) );
-    #endif
+#ifdef INSTRUMENTS_FULL_LOGGING
+    Log.printf( "\"%s\", bitPos=%d, %#x, %d, %#x = %#x\n", str, bitPos, *(str + (bitPos / 8)),
+                                bitPos % 8, (0x80 >> (bitPos % 8)),
+                                *(str + (bitPos / 8)) & (0x80 >> (bitPos % 8)) );
+#endif
 
     uint_8 res;
 
@@ -150,9 +150,9 @@ const char * PatriciaNode::insert( const char * str )
     }
 
     if( strcmp( str, curr->_key ) == 0 ) {   // already in tree
-        #if ( INSTRUMENTS == INSTRUMENTS_FULL_LOGGING )
-            Log.printf( "\"%s\" has been seen - returning \"%s\"\n", str, curr->_key );
-        #endif
+#ifdef INSTRUMENTS_FULL_LOGGING
+        Log.printf( "\"%s\" has been seen - returning \"%s\"\n", str, curr->_key );
+#endif
 
         return curr->_key;
     }
@@ -181,9 +181,9 @@ const char * PatriciaNode::insert( const char * str )
                                 getBit( str, len, sameBits ) ? other : NULL,
                                 getBit( str, len, sameBits ) ? NULL : other );
 
-    #if ( INSTRUMENTS == INSTRUMENTS_FULL_LOGGING )
-        Log.printf( "\"%s\" is new - inserting\n", strCopy );
-    #endif
+#ifdef INSTRUMENTS_FULL_LOGGING
+    Log.printf( "\"%s\" is new - inserting\n", strCopy );
+#endif
 
     if( getBit( str, len, prev->_bitPos ) ) {
         prev->_right = curr;
@@ -194,7 +194,7 @@ const char * PatriciaNode::insert( const char * str )
     return strCopy;
 }
 
-#if INSTRUMENTS
+#ifdef INSTRUMENTS
 void PatriciaNode::print( int level )
 //-----------------------------------
 {
@@ -225,10 +225,10 @@ PatriciaTree::PatriciaTree()
 PatriciaTree::~PatriciaTree()
 //---------------------------
 {
-    #if ( INSTRUMENTS == INSTRUMENTS_FULL_LOGGING )
-        Log.printf( "End of tree -- result is :\n\n" );
-        _head->print( 0 );
-    #endif
+#ifdef INSTRUMENTS_FULL_LOGGING
+    Log.printf( "End of tree -- result is :\n\n" );
+    _head->print( 0 );
+#endif
 
     ragnarok();
     delete _head;
@@ -245,10 +245,10 @@ void PatriciaTree::ragnarok()
 const char * PatriciaTree::insert( const char * str )
 //---------------------------------------------------
 {
-    #if ( INSTRUMENTS == INSTRUMENTS_FULL_LOGGING )
-        Log.printf( "About to insert \"%s\" in tree -- tree is currently:\n", str ? str : "NULL" );
-        _head->print( 0 );
-    #endif
+#ifdef INSTRUMENTS_FULL_LOGGING
+    Log.printf( "About to insert \"%s\" in tree -- tree is currently:\n", str ? str : "NULL" );
+    _head->print( 0 );
+#endif
 
     return (str) ? _head->insert( str ) : str;
 }

@@ -4,6 +4,8 @@ proj_name = cg
 cg_autodepends = .AUTODEPEND
 !endif
 
+additional_clean = *.gh
+
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif

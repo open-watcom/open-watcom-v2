@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,7 +42,7 @@
 #include "mrline.h"
 #include "mrfile.h"
 
-#if INSTRUMENTS
+#ifdef INSTRUMENTS
 #  include "dwmerger.h"
 #endif
 
@@ -126,15 +126,15 @@ MergeLineSection::MergeLineSection()
 MergeLineSection::~MergeLineSection()
 //-----------------------------------
 {
-    #if INSTRUMENTS
-        Log.printf( "\nMergeLineSection\n----------------\n" );
-        Log.printf( "MergeLineSection::_directoriesByName:  %5u entries, loaded %3.1f%%\n", _directoriesByName->entries(), 100.0 * ((double)_directoriesByName->entries() / (double)_directoriesByName->buckets()) );
-        Log.printf( "MergeLineSection::_directoriesReloc:   %5u entries, loaded %3.1f%%\n", _directoriesReloc->entries(), 100.0 * ((double)_directoriesReloc->entries() / (double)_directoriesReloc->buckets()) );
-        Log.printf( "MergeLineSection::_directories:        %5u entries\n", _directories->entries() );
-        Log.printf( "MergeLineSection::_filesByName:        %5u entries, loaded %3.1f%%\n", _filesByName->entries(), 100.0 * ((double)_filesByName->entries() / (double)_filesByName->buckets()) );
-        Log.printf( "MergeLineSection::_filesReloc:         %5u entries, loaded %3.1f%%\n", _filesReloc->entries(), 100.0 * ((double)_filesReloc->entries() / (double)_filesReloc->buckets()) );
-        Log.printf( "MergeLineSection::_files:              %5u entries\n", _files->entries() );
-    #endif
+#ifdef INSTRUMENTS
+    Log.printf( "\nMergeLineSection\n----------------\n" );
+    Log.printf( "MergeLineSection::_directoriesByName:  %5u entries, loaded %3.1f%%\n", _directoriesByName->entries(), 100.0 * ((double)_directoriesByName->entries() / (double)_directoriesByName->buckets()) );
+    Log.printf( "MergeLineSection::_directoriesReloc:   %5u entries, loaded %3.1f%%\n", _directoriesReloc->entries(), 100.0 * ((double)_directoriesReloc->entries() / (double)_directoriesReloc->buckets()) );
+    Log.printf( "MergeLineSection::_directories:        %5u entries\n", _directories->entries() );
+    Log.printf( "MergeLineSection::_filesByName:        %5u entries, loaded %3.1f%%\n", _filesByName->entries(), 100.0 * ((double)_filesByName->entries() / (double)_filesByName->buckets()) );
+    Log.printf( "MergeLineSection::_filesReloc:         %5u entries, loaded %3.1f%%\n", _filesReloc->entries(), 100.0 * ((double)_filesReloc->entries() / (double)_filesReloc->buckets()) );
+    Log.printf( "MergeLineSection::_files:              %5u entries\n", _files->entries() );
+#endif
 
     delete _directoriesByName;
     delete _directoriesReloc;
@@ -157,15 +157,15 @@ void MergeLineSection::mergeLine( WCPtrOrderedVector<MergeFile>& files )
         drSizes = files[ i ]->getDRSizes();
         scanFile( files[ i ], i, drSizes[ DR_DEBUG_LINE ] );
 
-        #if INSTRUMENTS
+#ifdef INSTRUMENTS
         Log.printf( "    File %s - %ld bytes\n", files[i]->getFileName(), drSizes[ DR_DEBUG_LINE ] );
         totLen += drSizes[ DR_DEBUG_LINE ];
-        #endif
+#endif
     }
 
-    #if INSTRUMENTS
-        Log.printf( "    %d files, %ld bytes\n", i, totLen );
-    #endif
+#ifdef INSTRUMENTS
+    Log.printf( "    %d files, %ld bytes\n", i, totLen );
+#endif
 
     _outFile->startWriteSect( DR_DEBUG_LINE );
     writePrologue();
@@ -185,9 +185,9 @@ void MergeLineSection::scanFile( MergeFile * file, uint_8 idx )
         readLineSect( file, moff );
     }
 
-    #if INSTRUMENTS
+#ifdef INSTRUMENTS
     Log.printf( "    %s .debug_line - %ld bytes\n", file->getFileName(), len );
-    #endif
+#endif
 }
 void MergeLineSection::readLineSect( MergeFile * file, MergeOffset& moff )
 //------------------------------------------------------------------------
@@ -345,7 +345,7 @@ uint_16 MergeLineSection::getNewFileIdx( uint_8 mbrFile, uint_16 oldIdx )
 {
     MergeFileRelocKey key( mbrFile, oldIdx );
 
-    #if INSTRUMENTS
+#ifdef INSTRUMENTS
     if( !_filesReloc->contains( key ) ) {
         Log.printf( "Could not find a relocation record for <%d, %d>\n", mbrFile, oldIdx );
         Log.printf( "_fileReloc:\n" );
@@ -359,7 +359,7 @@ uint_16 MergeLineSection::getNewFileIdx( uint_8 mbrFile, uint_16 oldIdx )
             Log.printf( "<%d|%s, %d>\n", i, (*_files)[i].name.getString(), (*_files)[i].directoryIdx );
         }
     }
-    #endif
+#endif
 
     InfoAssert( _filesReloc->contains( key ) );
     return (*_filesReloc)[ key ];

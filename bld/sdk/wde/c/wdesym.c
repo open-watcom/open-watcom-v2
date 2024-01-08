@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -501,8 +501,6 @@ char *WdeLoadSymbols( WRHashTable **table, char *file_name, bool prompt_name )
 {
     char                *name;
     int                 c;
-    pp_flags            ppflags;
-    char                *inc_path;
     WdeGetFileStruct    gf;
     bool                ret;
     bool                ok;
@@ -514,7 +512,7 @@ char *WdeLoadSymbols( WRHashTable **table, char *file_name, bool prompt_name )
     pop_env = false;
     name = NULL;
 
-    PP_Init( '#' );
+    PP_Init( '#', PPSPEC_RC );
 
     ok = ( table != NULL );
 
@@ -538,12 +536,10 @@ char *WdeLoadSymbols( WRHashTable **table, char *file_name, bool prompt_name )
     WdeSetWaitCursor( true );
 
     if( ok ) {
-        ppflags = PPFLAG_EMIT_LINE | PPFLAG_TRUNCATE_FILE_NAME;
-        if( WdeGetOption( WdeOptIgnoreInc ) ) {
-            ppflags |= PPFLAG_IGNORE_INCLUDE;
+        PP_IncludePathAdd( PPINCLUDE_SYS, WdeGetIncPathOption() );
+        if( !WdeGetOption( WdeOptIgnoreInc ) ) {
+            PP_IncludePathAdd( PPINCLUDE_SYS, PP_GetEnv( "INCLUDE" ) );
         }
-        inc_path = WdeGetIncPathOption();
-
         ret = setjmp( SymEnv );
         if( ret ) {
             ok = false;
@@ -554,7 +550,7 @@ char *WdeLoadSymbols( WRHashTable **table, char *file_name, bool prompt_name )
     }
 
     if( ok ) {
-        ok = !PP_FileInit( name, ppflags, inc_path );
+        ok = !PP_FileInit( name, PPFLAG_EMIT_LINE | PPFLAG_TRUNCATE_FILE_NAME );
         if( !ok ) {
             WdeWriteTrail( "WdeLoadSymbols: Unable to open header file!" );
             WdeDisplayErrorMsg( WDE_NOLOADHEADERFILE );

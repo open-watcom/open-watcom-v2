@@ -6,5 +6,5 @@ host_cpu = 386
 !include deftarg.mif
 
 smpdump.exe : smpdump.c
-    @%make echo_bldcl
-    $(bld_cl) -I"$(dig_dir)/h" -I"$(wsample_dir)/h" $(bld_clflags) $[@ $(bld_ldflags)
+    @%make echo_bldccl
+    $(bld_ccl) $(ppflags_common) $(ppflags_autodep) -I"$(dig_dir)/h" -I"$(wsample_dir)/h" $(bld_cclflags) $[@ $(bld_ldflags)

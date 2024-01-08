@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -184,9 +184,9 @@ void MergeFile::skipForm( dr_section sect, uint_32& off, uint_32 form,
         skipForm( sect, off, value, addrSize );
         break;
     default:
-        #if DEBUG
+#ifdef DEBUG
         printf( "ACK -- form %#x\n", form );
-        #endif
+#endif
         InternalAssert( 0 );
     }
 }
@@ -272,9 +272,9 @@ void MergeFile::copyFormTo( MergeFile& out, dr_section sect,
         copyFormTo( out, sect, off, num, addrSize );
         break;
     default:
-        #if DEBUG
+#ifdef DEBUG
         printf( "ACK -- form %#x\n", form );
-        #endif
+#endif
         InternalAssert( 0 );
     }
 }
@@ -333,12 +333,12 @@ void MergeFile::writeSLEB128( int_32 sleb )
             if( sleb == -1 && ( b & 0x40 ) ) break;
             *buf++ = (uint_8) (b | 0x80);
 
-            #if INSTRUMENTS
+#ifdef INSTRUMENTS
                 if( (buf - buffer) > MaxULEBLen ) {
                     Log.printf( "** WriteSLEB128 buffer overrun! **\n" );
                     InternalAssert( 0 );
                 }
-            #endif
+#endif
         }
     }
     *buf++ = b;

@@ -18,6 +18,8 @@ wmake_trmem = 1
 #!endif
 #!endif
 
+additional_clean = *.gh *.grc
+
 !include idedlls.mif
 !include cproj.mif
 !include defrule.mif
@@ -118,8 +120,8 @@ isarray.gh : ./cretype.exe $(__MAKEFILES__)
     $(noecho)$[@ $@
 
 ./cretype.exe : cretype.c $(__MAKEFILES__)
-    @%make echo_bldcl
-    $(bld_cl) $[@ $(bld_clflags) $(bld_ldflags)
+    @%make echo_bldccl
+    $(bld_ccl) $(ppflags_common) $(ppflags_autodep) $[@ $(bld_cclflags) $(bld_ldflags)
 
 # special targets
 ##################

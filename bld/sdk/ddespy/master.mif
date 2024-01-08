@@ -8,6 +8,8 @@ wddespy_autodepends = .AUTODEPEND
 
 sys_windowed = 1
 
+additional_clean = *.gh *.grh *.grc
+
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
@@ -68,11 +70,11 @@ rc_inc_dirs = $(commonui_inc_dirs) $(wpi_inc_dirs)
 
 $(proj_name).res : ../res/wddespy.rc .AUTODEPEND $(__MAKEFILES__)
     @%make echo_rc
-    $(rc) $(rc_ui8_flags) $(rc_flags) -ad -I"../res" $(rc_inc_path) $[@ -fo=$@
+    $(rc) $(ppflags_common) $(rc_ui8_flags) $(rc_flags) -ad -I"../res" $(rc_inc_path) $[@ -fo=$@
 
 ntmanif.res : ../res/ntmanif.rc
     @%make echo_rc
-    $(rc) $(rc_flags) -I"../res" $(inc_dirs_sys_nt) $< -fo=$@
+    $(rc) $(ppflags_common) $(rc_flags) -I"../res" $(inc_dirs_sys_nt) $< -fo=$@
 
 rcstr.grh : rcstrmsg.gh $(__MAKEFILES__)
     @%make echo_awk
@@ -80,4 +82,4 @@ rcstr.grh : rcstrmsg.gh $(__MAKEFILES__)
 
 rcstrmsg.gh : ../res/ddespy.msg $(__MAKEFILES__)
     @%make echo_cpp
-    $(cpp) $(rc_ui8_flags) $(rc_ui_flags) -o$@ $[@
+    $(cpp) $(ppflags_common) $(rc_ui8_flags) $(rc_ui_flags) -o$@ $[@

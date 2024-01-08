@@ -294,6 +294,7 @@ static size_t       maxUsageLen;
 static targmask     targetMask = 0;
 static targmask     targetAnyMask;
 static targmask     targetDbgMask;
+static targmask     targetUnusedMask;
 
 static tag_id getsUsage = TAG_NULL;
 
@@ -325,6 +326,7 @@ static const char *validTargets[] = {
 /* default targets */
     "any",
     "dbg",
+    "unused",
 /* architecture targets */
     "i86",
     "386",
@@ -349,7 +351,7 @@ static const char *validTargets[] = {
     "win",
 /* extra targets */
     "targ1",
-    "targ2"
+    "targ2",
 };
 
 static const char * const langName[] = {
@@ -3066,6 +3068,10 @@ static bool ProcessOptions( char *str )
                 }
                 p = "dbg";
                 if( (targetDbgMask = findTarget( p )) == 0 ) {
+                    fail( "invalid target name '%s'\n", p );
+                }
+                p = "unused";
+                if( (targetUnusedMask = findTarget( p )) == 0 ) {
                     fail( "invalid target name '%s'\n", p );
                 }
                 targetMask |= targetAnyMask;

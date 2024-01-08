@@ -6,6 +6,8 @@ rcsdll_autodepends = .AUTODEPEND
 
 suppress_zc = 1
 
+additional_clean = *.grc
+
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif

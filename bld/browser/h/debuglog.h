@@ -50,7 +50,7 @@
 template <class Type> class              WCValSList;
 template <class Type, class FType> class WCStack;
 
-#if DEBUG
+#ifdef DEBUG
 
 class DebuggingLog {
 public:

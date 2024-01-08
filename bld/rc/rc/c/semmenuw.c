@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -104,8 +105,14 @@ MenuFlags SemWINAddMenuOption( MenuFlags oldflags, YYTOKENTYPE token )
         oldflags |= MENU_MENUBREAK;
         break;
     case Y_OWNERDRAW:
-        if ( !CmdLineParms.VersionStamp20 )
+        switch( CmdLineParms.Win16VerStamp ) {
+        case VERSION_10_STAMP:
+        case VERSION_20_STAMP:
+            break;
+        default:
             oldflags |= MENU_OWNERDRAWN;
+            break;
+        }
         break;
     case Y_HELP:
         oldflags |= MENU_HELP;
@@ -124,7 +131,8 @@ FullMenu *SemWINNewMenu( FullMenuItem firstitem )
     newmenu = RESALLOC( sizeof( FullMenu ) );
     newitem = RESALLOC( sizeof( FullMenuItem ) );
 
-    if( newmenu == NULL || newitem == NULL ) {
+    if( newmenu == NULL
+      || newitem == NULL ) {
         RcError( ERR_OUT_OF_MEMORY );
         ErrorHasOccured = true;
         return( NULL );
@@ -205,14 +213,17 @@ static bool SemWriteMenuItem( FullMenuItem *item, int islastitem,
             item->item.popup.item.menuData.ItemFlags |= MENU_ENDMENU;
         }
         if( tokentype == Y_MENU ) {
-            if ( CmdLineParms.VersionStamp20 ) {
+            switch( CmdLineParms.Win16VerStamp ) {
+            case VERSION_10_STAMP:
+            case VERSION_20_STAMP:
                 error = ResWriteMenuItemPopupOldWin( &(item->item.popup.item.menuData),
                             item->UseUnicode, CurrResFile.fp );
-	    }
-	    else {
+                break;
+            default:
                 error = ResWriteMenuItemPopup( &(item->item.popup.item.menuData),
                             item->UseUnicode, CurrResFile.fp );
-	    }
+                break;
+            }
         } else if( tokentype == Y_MENU_EX ) {
             error = ResWriteMenuExItemPopup( &(item->item.popup.item.menuData),
                       &(item->item.popup.item.menuExData), item->UseUnicode,
@@ -224,14 +235,17 @@ static bool SemWriteMenuItem( FullMenuItem *item, int islastitem,
             item->item.normal.menuData.ItemFlags |= MENU_ENDMENU;
         }
         if( tokentype == Y_MENU ) {
-            if ( CmdLineParms.VersionStamp20 ) {
+            switch( CmdLineParms.Win16VerStamp ) {
+            case VERSION_10_STAMP:
+            case VERSION_20_STAMP:
                 error = ResWriteMenuItemNormalOldWin( &(item->item.normal.menuData),
                             item->UseUnicode, CurrResFile.fp );
-	    }
-	    else {
+                break;
+            default:
                 error = ResWriteMenuItemNormal( &(item->item.normal.menuData),
                             item->UseUnicode, CurrResFile.fp );
-	    }
+                break;
+            }
         } else if( tokentype == Y_MENU_EX ) {
             error = ResWriteMenuExItemNormal( &(item->item.normal.menuData),
                          &(item->item.normal.menuExData), item->UseUnicode,
@@ -259,7 +273,8 @@ static bool SemWriteSubMenu( FullMenu *submenu, int *err_code, YYTOKENTYPE token
         islastitem = (curritem == submenu->tail);
         if( !ErrorHasOccured ) {
             error = SemWriteMenuItem( curritem, islastitem, err_code, tokentype );
-            if( !error && curritem->IsPopup ) {
+            if( !error
+              && curritem->IsPopup ) {
                 error = SemWriteSubMenu( curritem->item.popup.submenu, err_code, tokentype );
             }
         }
@@ -269,6 +284,26 @@ static bool SemWriteSubMenu( FullMenu *submenu, int *err_code, YYTOKENTYPE token
         ErrorHasOccured = true;
     }
     return( error );
+}
+
+static void SemWarnIfSubmenus( FullMenu *submenu )
+/*************************************************
+ * Windows 2.x does not support submenus, though submenus are parsed
+ * correctly.  So it is valid to have top level MF_POPUP, but MF_POPUP
+ * within the menus is ignored.
+ */
+{
+    FullMenuItem *curritem,*currsubitem;
+
+    for( curritem = submenu->head; curritem != NULL; curritem = curritem->next ) { // top level menu bar
+        if( curritem->IsPopup ) {
+            for( currsubitem = curritem->item.popup.submenu->head; currsubitem != NULL; currsubitem = currsubitem->next ) { // menu appearing below menu bar
+                if( currsubitem->IsPopup ) {
+                    RcWarning( WARN_SUBMEN_WIN2X );
+                }
+            }
+        }
+    }
 }
 
 static void SemFreeMenuItem( FullMenuItem *curritem )
@@ -316,8 +351,15 @@ void SemWINWriteMenu( WResID *name, ResMemFlags flags, FullMenu *menu,
             head.Version = 0;    /* currently these fields are both 0 */
             head.Size = 0;
             loc.start = SemStartResource();
-            if ( !CmdLineParms.VersionStamp20 ) /* Windows 2.x menus do not have a header */
+            switch( CmdLineParms.Win16VerStamp ) {
+            case VERSION_10_STAMP:
+            case VERSION_20_STAMP:
+                /* Windows 2.x menus do not have a header */
+                break;
+            default:
                 error = ResWriteMenuHeader( &head, CurrResFile.fp );
+                break;
+            }
         } else if( tokentype == Y_MENU_EX ) {
             head.Version = RES_HEADER_VERSION;
             head.Size = RES_HEADER_SIZE;
@@ -331,12 +373,22 @@ void SemWINWriteMenu( WResID *name, ResMemFlags flags, FullMenu *menu,
         if( error ) {
             err_code = LastWresErr();
         } else {
+            switch( CmdLineParms.Win16VerStamp ) {
+            case VERSION_10_STAMP:
+            case VERSION_20_STAMP:
+                SemWarnIfSubmenus( menu );
+                break;
+            default:
+                break;
+            }
             error = SemWriteSubMenu( menu, &err_code, tokentype );
         }
-        if( !error && CmdLineParms.MSResFormat && CmdLineParms.TargetOS == RC_TARGET_OS_WIN32 ) {
+        if( !error
+          && CmdLineParms.MSResFormat
+          && CmdLineParms.TargetOS == RC_TARGET_OS_WIN32 ) {
             error = ResWritePadDWord( CurrResFile.fp );
         }
-        if( error) {
+        if( error ) {
             RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename, strerror( err_code ) );
             ErrorHasOccured = true;
         } else {

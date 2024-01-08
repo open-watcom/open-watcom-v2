@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,7 +35,7 @@ typedef enum {          // there is a corresp. table in MSG.C
     MK_OS2_NE           = CONSTU32( 0x00000001 ),
     MK_OS2_LE           = CONSTU32( 0x00000002 ),
     MK_OS2_LX           = CONSTU32( 0x00000004 ),
-    MK_WINDOWS          = CONSTU32( 0x00000008 ),
+    MK_WIN_NE           = CONSTU32( 0x00000008 ),
     MK_PE               = CONSTU32( 0x00000010 ),
     MK_DOS_EXE          = CONSTU32( 0x00000020 ),
     MK_COM              = CONSTU32( 0x00000040 ),
@@ -58,28 +58,24 @@ typedef enum {          // there is a corresp. table in MSG.C
 } exe_format;
 
 #define MK_DOS          (MK_OVERLAYS | MK_DOS_EXE | MK_COM)
-#define MK_ONLY_OS2_16  MK_OS2_NE
-#define MK_OS2_FLAT     (MK_OS2_LE | MK_OS2_LX | MK_WIN_VXD)
-#define MK_ONLY_OS2     (MK_ONLY_OS2_16 | MK_OS2_LE | MK_OS2_LX)
-#define MK_OS2_16BIT    (MK_ONLY_OS2_16 | MK_WINDOWS)
-/* MK_WIN_VXD is not included into MK_OS2 */
-#define MK_OS2          (MK_OS2_16BIT | MK_OS2_LE | MK_OS2_LX)
+#define MK_OS2_FLAT     (MK_OS2_LE | MK_OS2_LX)
+#define MK_OS2          (MK_OS2_NE | MK_OS2_FLAT)
 #define MK_PHAR_LAP     (MK_PHAR_SIMPLE | MK_PHAR_FLAT | MK_PHAR_REX | MK_PHAR_MULTISEG)
 #define MK_QNX          (MK_QNX_16 | MK_QNX_FLAT)
 #define MK_RDOS         (MK_RDOS_16 | MK_RDOS_32)
 #define MK_64BIT        (MK_PE | MK_ELF)
-#define MK_32BIT        (MK_PHAR_LAP | MK_NOVELL | MK_QNX | MK_OS2_LE | MK_OS2_LX | MK_PE | MK_ELF | MK_WIN_VXD | MK_ZDOS | MK_RAW | MK_RDOS_32)
-#define MK_16BIT        (MK_DOS | MK_OS2_16BIT | MK_DOS16M | MK_RDOS_16)
+#define MK_32BIT        (MK_PHAR_LAP | MK_NOVELL | MK_QNX | MK_OS2_FLAT | MK_PE | MK_ELF | MK_WIN_VXD | MK_ZDOS | MK_RAW | MK_RDOS_32)
+#define MK_16BIT        (MK_DOS | MK_OS2_NE | MK_WIN_NE | MK_DOS16M | MK_RDOS_16)
 /* MK_OS2_LE, MK_OS2_LX, MK_WIN_VXD and MK_PE are not treated as FLAT internally */
 #define MK_FLAT_OFFS    (MK_PHAR_SIMPLE | MK_PHAR_FLAT | MK_PHAR_REX | MK_ZDOS | MK_RAW)
 #define MK_ALLOW_64     (MK_64BIT)
 #define MK_ALLOW_32     (MK_32BIT)
-#define MK_ALLOW_16     (MK_16BIT | MK_PHAR_FLAT | MK_OS2 | MK_QNX | MK_PE | MK_WIN_VXD | MK_RAW)
+#define MK_ALLOW_16     (MK_16BIT | MK_PHAR_FLAT | MK_OS2_FLAT | MK_QNX | MK_PE | MK_WIN_VXD | MK_RAW)
 #define MK_ID_SPLIT     (MK_NOVELL)
 #define MK_REAL_MODE    (MK_DOS)
 #define MK_PROT_MODE    (~MK_REAL_MODE)
-#define MK_SEGMENTED    (MK_16BIT | MK_OS2 | MK_PHAR_MULTISEG | MK_RDOS_16)
-#define MK_IMPORTS      (MK_NOVELL | MK_OS2 | MK_PE | MK_ELF)
+#define MK_SEGMENTED    (MK_16BIT | MK_OS2_FLAT | MK_PHAR_MULTISEG)
+#define MK_IMPORTS      (MK_NOVELL | MK_OS2 | MK_WIN_NE | MK_PE | MK_ELF)
 #define MK_SPLIT_DATA   (MK_ELF | MK_PE)
 #define MK_LINEARIZE    (MK_ELF | MK_PE)
 #define MK_END_PAD      (MK_DOS)

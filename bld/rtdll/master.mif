@@ -2,7 +2,7 @@ proj_name = rtdll
 
 rtdll_autodepends = .AUTODEPEND
 
-additional_clean = *.ilb
+additional_clean = *.ilb *.grc
 
 rtdll_host_cpu_086=i86
 rtdll_host_cpu_286=i86

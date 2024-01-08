@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,7 +36,7 @@
 #include "mempool.h"
 #include "assure.h"
 
-#if DEBUG
+#ifdef DEBUG
     static  DebuggingLog MemoryPool::_log( "mempool" );
 #endif
 
@@ -49,18 +50,17 @@ MemoryPool::MemoryPool( const char * owner )
     , _currElement( NULL )
     , _currBlock( NULL )
     , _freeList( NULL )
-
-    #if DEBUG
+#ifdef DEBUG
     , _poolOwner( owner )
     , _numAllocs( 0 )
     , _numFrees( 0 )
-    #endif
+#endif
 
 //------------------------------------------
 {
-    #if !DEBUG
+#ifndef DEBUG
     /* unused parameters */ (void)owner;
-    #endif
+#endif
 }
 
 
@@ -71,18 +71,17 @@ MemoryPool::MemoryPool( size_t elemSize, const char * owner, int elemsPerBlock )
     , _currElement( NULL )
     , _currBlock( NULL )
     , _freeList( NULL )
-
-    #if DEBUG
+#ifdef DEBUG
     , _poolOwner( owner )
     , _numAllocs( 0 )
     , _numFrees( 0 )
-    #endif
+#endif
 
 //----------------------------------------------------------
 {
-    #if !DEBUG
+#ifndef DEBUG
     /* unused parameters */ (void)owner;
-    #endif
+#endif
 
     setSize( elemSize, elemsPerBlock );
 }
@@ -90,12 +89,12 @@ MemoryPool::MemoryPool( size_t elemSize, const char * owner, int elemsPerBlock )
 MemoryPool::~MemoryPool()
 //-----------------------
 {
-    #if DEBUG
-        if( _numAllocs > 0 && _numAllocs != _numFrees ) {
-            _log.printf( "    <%d unfreed>\n", _poolOwner, _numAllocs - _numFrees );
-            // NYI -- something to walk through and print like trmem
-        }
-    #endif
+#ifdef DEBUG
+    if( _numAllocs > 0 && _numAllocs != _numFrees ) {
+        _log.printf( "    <%d unfreed>\n", _poolOwner, _numAllocs - _numFrees );
+        // NYI -- something to walk through and print like trmem
+    }
+#endif
 
     ragnarok();
 }
@@ -128,15 +127,15 @@ void MemoryPool::ragnarok()
         _currBlock = ( char * )next;
     }
 
-    #if DEBUG
-        if( _poolOwner && _numAllocs >= 0 ) {
-            _log.printf( "%s: %d allocated; ", _poolOwner, _numAllocs );
-            _log.printf( "%d %d-byte elms/block\n", _elemsPerBlock, _elemSize );
-            _log.printf( "    %d blocks of size %d giving %d\n", count, _blockSize, _blockSize * count );
-        }
-        _numAllocs = -1;
-        _numFrees = 0;
-    #endif
+#ifdef DEBUG
+    if( _poolOwner && _numAllocs >= 0 ) {
+        _log.printf( "%s: %d allocated; ", _poolOwner, _numAllocs );
+        _log.printf( "%d %d-byte elms/block\n", _elemsPerBlock, _elemSize );
+        _log.printf( "    %d blocks of size %d giving %d\n", count, _blockSize, _blockSize * count );
+    }
+    _numAllocs = -1;
+    _numFrees = 0;
+#endif
 
     _currBlock = NULL;
     _lastElement = NULL;
@@ -149,9 +148,9 @@ void * MemoryPool::alloc()
 {
     ASSERTION( _elemSize > 0 && _blockSize > 0 );
 
-    #if DEBUG
-        _numAllocs += 1;
-    #endif
+#ifdef DEBUG
+    _numAllocs += 1;
+#endif
 
     if( _freeList != NULL ) {
         char * tmp;
@@ -167,9 +166,9 @@ void * MemoryPool::alloc()
 
     _currElement -= _elemSize;
 
-    #if DEBUG
-        memset( _currElement, ALLOCSIG, _elemSize );
-    #endif
+#ifdef DEBUG
+    memset( _currElement, ALLOCSIG, _elemSize );
+#endif
 
     return( _currElement );
 }
@@ -181,10 +180,10 @@ void MemoryPool::free( void * mem )
         return;
     }
 
-    #if DEBUG
-        memset( mem, FREESIG, _elemSize );
-        _numFrees += 1;
-    #endif
+#ifdef DEBUG
+    memset( mem, FREESIG, _elemSize );
+    _numFrees += 1;
+#endif
 
 
     *( void ** ) mem = _freeList;

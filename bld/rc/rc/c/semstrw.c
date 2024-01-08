@@ -220,7 +220,8 @@ static FullStringTable *findTableFromLang( FullStringTable *tables,
     FullStringTable     *cur;
 
     for( cur = tables; cur != NULL; cur = cur->next ) {
-        if( cur->lang.lang == lang->lang && cur->lang.sublang == lang->sublang ) {
+        if( cur->lang.lang == lang->lang
+          && cur->lang.sublang == lang->sublang ) {
             break;
         }
     }
@@ -280,7 +281,9 @@ void SemWINWriteStringTable( FullStringTable *currtable, WResID *type )
             loc.start = SemStartResource();
 
             error = ResWriteStringTableBlock( &(currblock->Block), currblock->UseUnicode, CurrResFile.fp );
-            if( !error && CmdLineParms.MSResFormat && CmdLineParms.TargetOS == RC_TARGET_OS_WIN32 ) {
+            if( !error
+              && CmdLineParms.MSResFormat
+              && CmdLineParms.TargetOS == RC_TARGET_OS_WIN32 ) {
                 error = ResWritePadDWord( CurrResFile.fp );
             }
             if( error ) {

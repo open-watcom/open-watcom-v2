@@ -114,9 +114,9 @@ pick(   ERR_RUNAWAY_STRING,
 pick(   ERR_EXPECTING_CHAR,
         "Expecting '%s' but found '%c'",
         "'%s' ではなく '%c'が見つかりました" )
-pick(   ERR_TOO_MANY_ARGS,
-        "Too many arguments: %s",
-        "引数が多過ぎます: %s" )
+pick(   ERR_TOO_MANY_FILENAMES,
+        "Too many filenames on command line.",
+        "Too many filenames on command line." )
 pick(   ERR_FILENAME_NEEDED,
         "Filename required on command line.",
         "コマンド行でファイル名が必要です." )
@@ -320,3 +320,15 @@ pick(   ERR_DELETING_FILE,
 pick(   WARN_DLGFONT_WIN2X,
         "FONT not valid for Windows 2.x DIALOG, ignored.",
         "FONT not valid for Windows 2.x DIALOG, ignored." )
+pick(   WARN_SUBMEN_WIN2X,
+        "MENU resources cannot have submenus in Windows 2.x.",
+        "MENU resources cannot have submenus in Windows 2.x." )
+pick(   WARN_ICON_WIN2X,
+        "ICON resource is incompatible with Windows 2.x. Please add a compatible size and depth version to your ICO file.",
+        "ICON resource is incompatible with Windows 2.x. Please add a compatible size and depth version to your ICO file." )
+pick(   WARN_CURSOR_WIN2X,
+        "CURSOR resource is incompatible with Windows 2.x. Please add a compatible size and depth version to your CUR file.",
+        "CURSOR resource is incompatible with Windows 2.x. Please add a compatible size and depth version to your CUR file." )
+pick(   WARN_BITMAP_WIN2X,
+        "BITMAP resource is incompatible with Windows 2.x. Please provide a compatible BMP file.",
+        "BITMAP resource is incompatible with Windows 2.x. Please provide a compatible BMP file." )

@@ -71,8 +71,8 @@ static offset GetSegGroupPackLimit( seg_leader *seg )
     }
     if( seg->info & USE_32 ) {
         limit = 0xFFFFFFFF;
-    } else if( FmtData.type & MK_WINDOWS ) {   /* windows doesn't like */
-        limit = 0xFFF0;                        /* large code segments */
+    } else if( FmtData.type & MK_WIN_NE ) { /* windows doesn't like */
+        limit = 0xFFF0;                     /* large code segments */
     } else {
         limit = 0xFFFF;
     }

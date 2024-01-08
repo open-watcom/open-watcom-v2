@@ -205,9 +205,9 @@ void TreeFuncNode::loadModule( TreeFuncWindow * prt, Module * mod,
     data.parentWin = prt;
     data.key = key;
 
-    #if DEBUG
+#ifdef DEBUG
     data.funcsFound = 0;
-    #endif
+#endif
 
     DRReferencedSymbols( DR_SYM_FUNCTION, &data, TreeFuncHook );
 
@@ -232,7 +232,7 @@ bool TreeFuncNode::TreeFuncHook( drmem_hdl owner, dr_ref_info * ref,
     char *          depName;
     bool            accept;
 
-    #if DEBUG
+#ifdef DEBUG
     data->funcsFound += 1;
 
     if( !(data->funcsFound % 10) ) {
@@ -240,7 +240,7 @@ bool TreeFuncNode::TreeFuncHook( drmem_hdl owner, dr_ref_info * ref,
         stat.printf( "Loading - %d found", data->funcsFound );
         browseTop->statusText( stat.gets() );
     }
-    #endif
+#endif
 
     // find if the symbol matches the filter
 

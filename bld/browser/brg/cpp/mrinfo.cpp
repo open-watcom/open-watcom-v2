@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -62,9 +62,9 @@ MergeInfoSection::MergeInfoSection( int numFiles, MergeAbbrevSection& ab,
 MergeInfoSection::~MergeInfoSection()
 //-----------------------------------
 {
-    #if INSTRUMENTS
+#ifdef INSTRUMENTS
     print();
-    #endif
+#endif
 
     MergeDIE::ragnarok();
 
@@ -79,7 +79,7 @@ uint_8 MergeInfoSection::getAddrSize()
     return _compunitHdr->_addressSize;
 }
 
-#if INSTRUMENTS
+#ifdef INSTRUMENTS
 void MergeInfoSection::print()
 //----------------------------
 {
@@ -167,11 +167,11 @@ void MergeInfoSection::readCompUnitHdr( MergeFile * file, MergeOffset& moff )
     file->readBlock( DR_DEBUG_INFO, moff.offset, _compunitHdr,
                         sizeof( MergeCompunitHdr ) );
 
-    #if INSTRUMENTS
+#ifdef INSTRUMENTS
     Log.printf( "%s:  length = %lx, version = %d, abbrev = %lx, address size = %hx\n",
     file->getFileName(), _compunitHdr->_infoLength, _compunitHdr->_version, _compunitHdr->_abbrevIdx,
     _compunitHdr->_addressSize );
-    #endif
+#endif
 
     // read the compunit and all its children
     startOff = moff;
@@ -214,22 +214,22 @@ void MergeInfoSection::readDIE( MergeFile * file, MergeOffset startOff,
 
         die = die->collision( _diesByName );
 
-        #if INSTRUMENTS
+#ifdef INSTRUMENTS
         if( abbrev == NULL ) {
             Log.printf( "zoiks! %s\n", startOff.getString() );
         }
-        #endif
+#endif
 
         return;     //<------------------- early return
     }
 
     abbrev = _abbrevs.getAbbrev( abbCode );
 
-    #if INSTRUMENTS
+#ifdef INSTRUMENTS
     if( abbrev == NULL ) {
         Log.printf( "ABBREV == NULL!  offset is %s, %s\n", startOff.getString(), moff.getString() );
     }
-    #endif
+#endif
 
     InfoAssert( abbrev != NULL );       // NYI throw
 
@@ -317,9 +317,9 @@ int MergeInfoSection::getFileLenDelta( MergeFile * file,
     delta = MergeFile::ULEB128Len( newIdx );
     delta -= MergeFile::ULEB128Len( oldIdx );
 
-    #if ( INSTRUMENTS == INSTRUMENTS_FULL_LOGGING )
+#ifdef INSTRUMENTS_FULL_LOGGING
     Log.printf( "FileLenDelta from %x to %x -- %d\n", oldIdx, newIdx, delta );
-    #endif
+#endif
 
     return (DIELen_T) delta;
 }

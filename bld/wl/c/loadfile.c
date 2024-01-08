@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -178,7 +178,7 @@ static void SetupImpLib( void )
          * increase length to restore full extension if not OS2
          * sometimes the extension of the output name is important
          */
-        if( (FmtData.type & MK_OS2_16BIT) == 0 )
+        if( (FmtData.type & (MK_OS2_NE | MK_WIN_NE)) == 0 )
             ImpLib.module_name_len += strlen( fname + namelen );
         _ChkAlloc( ImpLib.module_name, ImpLib.module_name_len );
         memcpy( ImpLib.module_name, fname, ImpLib.module_name_len );
@@ -281,19 +281,19 @@ static void finiLoad( void )
 #endif
 #ifdef _OS2
   #if 0
-    if( (FmtData.type & MK_OS2) && (LinkState & LS_HAVE_PPC_CODE) ) {
+    if( (FmtData.type & (MK_OS2 | MK_WIN_NE)) && (LinkState & LS_HAVE_PPC_CODE) ) {
         // development temporarly on hold:
         FiniELFLoadFile();
         return;
     }
   #endif
-    if( FmtData.type & MK_OS2_FLAT ) {
+    if( FmtData.type & (MK_OS2_FLAT | MK_WIN_VXD) ) {
         FiniOS2FlatLoadFile();
         return;
     } else if( FmtData.type & MK_PE ) {
         FiniPELoadFile();
         return;
-    } else if( FmtData.type & MK_OS2_16BIT ) {
+    } else if( FmtData.type & (MK_OS2_NE | MK_WIN_NE) ) {
         FiniOS2LoadFile();
         return;
     }
@@ -407,7 +407,7 @@ void GetStkAddr( void )
             StackAddr.off = StackSegPtr->seg_addr.off + StackSegPtr->size;
         } else {
 #ifdef _OS2
-            if( (FmtData.type & MK_WINDOWS) && (LinkFlags & LF_STK_SIZE_FLAG) ) {
+            if( (FmtData.type & MK_WIN_NE) && (LinkFlags & LF_STK_SIZE_FLAG) ) {
                 PhoneyStack();
             } else {
 #endif
@@ -549,7 +549,7 @@ void GetBSSSize( void )
 void SetStkSize( void )
 /**********************
  * Stack size calculation:
- * - DLLs have no stack
+ * - DLLs have no stack, size is 0
  * - for executables, warn if stack size is tiny
  * - if stack size was given, use it directly unless target is Novell
  * - else use the actual stack segment size if it is > 512 bytes

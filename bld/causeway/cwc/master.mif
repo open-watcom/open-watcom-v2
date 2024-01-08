@@ -4,6 +4,8 @@ proj_name = cwc
 
 cwc_autodepends = .AUTODEPEND
 
+additional_clean = *.gh
+
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
@@ -48,5 +50,5 @@ decstub.gh : ./mkcode.exe decstub.tmp
     $(noecho)$[@ -b $]@ $@
 
 ./mkcode.exe: mkcode.c
-    @%make echo_bldcl
-    $(bld_cl) $[@ $(bld_clflags) $(bld_ldflags)
+    @%make echo_bldccl
+    $(bld_ccl) $(ppflags_common) $(ppflags_autodep) $[@ $(bld_cclflags) $(bld_ldflags)

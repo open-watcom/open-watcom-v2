@@ -20,6 +20,8 @@ sys_dll = 1
 
 dllname = $(dip_format)
 
+additional_clean = *.grc
+
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif

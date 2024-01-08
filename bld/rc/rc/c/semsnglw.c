@@ -90,10 +90,13 @@ void SemWINAddSingleLineResource( WResID *name, YYTOKENTYPE type, FullMemFlags *
         RESFREE( filename );
         return;
     }
-    if( CmdLineParms.VersionStamp30 || CmdLineParms.VersionStamp20 ) {
-        purity_option = CUR_ICON_PURITY_30;
-    } else {
+    switch( CmdLineParms.Win16VerStamp ) {
+    case VERSION_31_STAMP:
         purity_option = CUR_ICON_PURITY_31;
+        break;
+    default:
+        purity_option = CUR_ICON_PURITY_30;
+        break;
     }
 
     if( RcFindSourceFile( filename, full_filename ) == -1 ) {
@@ -108,32 +111,32 @@ void SemWINAddSingleLineResource( WResID *name, YYTOKENTYPE type, FullMemFlags *
     case Y_ICON:
         if( fullflags != NULL ) {
             SemWINCheckMemFlags( fullflags, 0,
-                                MEMFLAG_MOVEABLE|MEMFLAG_DISCARDABLE,
+                                MEMFLAG_MOVEABLE | MEMFLAG_DISCARDABLE,
                                 purity_option );
             flags = fullflags->flags;
             SemWINCheckMemFlags( fullflags, 0,
-                                MEMFLAG_MOVEABLE|MEMFLAG_DISCARDABLE,
+                                MEMFLAG_MOVEABLE | MEMFLAG_DISCARDABLE,
                                 MEMFLAG_PURE );
             group_flags = fullflags->flags;
         } else {
-            flags = MEMFLAG_MOVEABLE|MEMFLAG_DISCARDABLE| purity_option;
-            group_flags = MEMFLAG_MOVEABLE|MEMFLAG_DISCARDABLE|MEMFLAG_PURE;
+            flags = MEMFLAG_MOVEABLE | MEMFLAG_DISCARDABLE | purity_option;
+            group_flags = MEMFLAG_MOVEABLE | MEMFLAG_DISCARDABLE | MEMFLAG_PURE;
         }
         AddIconResource( name, flags, group_flags, full_filename );
         break;
     case Y_CURSOR:
         if( fullflags != NULL ) {
             SemWINCheckMemFlags( fullflags, 0,
-                                MEMFLAG_MOVEABLE|MEMFLAG_DISCARDABLE,
+                                MEMFLAG_MOVEABLE | MEMFLAG_DISCARDABLE,
                                 purity_option );
             flags = fullflags->flags;
             SemWINCheckMemFlags( fullflags, 0,
-                                MEMFLAG_MOVEABLE|MEMFLAG_DISCARDABLE,
+                                MEMFLAG_MOVEABLE | MEMFLAG_DISCARDABLE,
                                 MEMFLAG_PURE );
             group_flags = fullflags->flags;
         } else {
-            flags = MEMFLAG_MOVEABLE|MEMFLAG_DISCARDABLE| purity_option;
-            group_flags = MEMFLAG_MOVEABLE|MEMFLAG_DISCARDABLE|MEMFLAG_PURE;
+            flags = MEMFLAG_MOVEABLE | MEMFLAG_DISCARDABLE | purity_option;
+            group_flags = MEMFLAG_MOVEABLE | MEMFLAG_DISCARDABLE | MEMFLAG_PURE;
         }
         AddCursorResource( name, flags, group_flags, full_filename );
         break;
@@ -142,18 +145,18 @@ void SemWINAddSingleLineResource( WResID *name, YYTOKENTYPE type, FullMemFlags *
             SemWINCheckMemFlags( fullflags, 0, MEMFLAG_MOVEABLE, MEMFLAG_PURE );
             flags = fullflags->flags;
         } else {
-            flags = MEMFLAG_MOVEABLE|MEMFLAG_PURE;
+            flags = MEMFLAG_MOVEABLE | MEMFLAG_PURE;
         }
         AddBitmapResource( name, flags, full_filename );
         break;
     case Y_FONT:
         if( fullflags != NULL ) {
             SemWINCheckMemFlags( fullflags, 0,
-                                MEMFLAG_MOVEABLE|MEMFLAG_DISCARDABLE,
+                                MEMFLAG_MOVEABLE | MEMFLAG_DISCARDABLE,
                                 MEMFLAG_PURE );
             flags = fullflags->flags;
         } else {
-            flags = MEMFLAG_MOVEABLE|MEMFLAG_DISCARDABLE|MEMFLAG_PURE;
+            flags = MEMFLAG_MOVEABLE | MEMFLAG_DISCARDABLE | MEMFLAG_PURE;
         }
         AddFontResources( name, flags, full_filename );
         break;
@@ -224,7 +227,8 @@ static RcStatus readIcoFileDir( FILE *fp, FullIconDir *dir, int *err_code )
     /*
      * type 1 is a icon file
      */
-    if( ret == RS_OK && dir->Header.Type != 1 ) {
+    if( ret == RS_OK
+      && dir->Header.Type != 1 ) {
         return( RS_INVALID_RESOURCE );
     }
 
@@ -365,6 +369,178 @@ static bool writeIconDir( FullIconDir *dir, WResID *name, ResMemFlags flags, int
     return( error );
 } /* writeIconDir */
 
+static bool CopyTranslateBitmapWin2x( unsigned int Width, unsigned int Height, unsigned int BitCount, FILE *fp, bool invert)
+/***************************************************************************************************************************
+ * Windows 2.x bitmaps are top-down, not bottom up.
+ * Some translation needed.
+ */
+{
+    unsigned int dst_stride = (((Width*BitCount+15u)&(~15u))/8u)/*WORD align*/;
+    unsigned int src_stride = (((Width*BitCount+31u)&(~31u))/8u)/*DWORD align*/;
+    unsigned int copy_stride = min( dst_stride, src_stride );
+
+    unsigned char *newbmp;
+    unsigned int img_sz;
+    unsigned int y;
+
+    /*
+     * This code assumes the caller has already read past the DIB header
+     *
+     * Order of storage:
+     * [header]
+     * [bitmap image]
+     */
+    img_sz = dst_stride * Height;
+    newbmp = malloc( img_sz );
+    if( !newbmp )
+        return( true );
+
+    memset( newbmp, 0, img_sz );
+    /*
+     * bitmap image
+     */
+    for( y = 0; y < Height; y++ ) {
+        if( RESREAD( fp, newbmp + ( ( Height - 1 - y ) * dst_stride ), copy_stride ) != copy_stride ) {
+            free( newbmp );
+            return( true );
+        }
+        if ( copy_stride < src_stride ) {
+            RESSEEK( fp, src_stride - copy_stride, SEEK_CUR );
+        }
+    }
+    /*
+     * some programs (Adobe Photoshop 2.5) like to write 1bpp bitmaps
+     * with white as the first color instead of black
+     */
+    if( invert ) {
+        for( y = 0; y < img_sz; y++ ) {
+            newbmp[y] ^= 0xFF;
+        }
+    }
+
+    if( RESWRITE( CurrResFile.fp, newbmp, img_sz ) != img_sz) {
+        free( newbmp );
+        return( true );
+    }
+
+    free( newbmp );
+    return( false );
+}
+
+static bool CopyTranslateBitmapAndMaskWin2x( unsigned int Width, unsigned int Height, unsigned int BitCount, FILE *fp )
+/**********************************************************************************************************************
+ * Windows 2.x bitmaps are top-down, not bottom up.
+ * Some translation needed.
+ */
+{
+    unsigned int dst_stride = (((Width*BitCount+15u)&(~15u))/8u)/*WORD align*/;
+    unsigned int src_stride = (((Width*BitCount+31u)&(~31u))/8u)/*DWORD align*/;
+    unsigned int dstm_stride = (((Width+15u)&(~15u))/8u)/*WORD align*/;
+    unsigned int srcm_stride = (((Width+31u)&(~31u))/8u)/*DWORD align*/;
+    unsigned int copy_stride = min( dst_stride, src_stride );
+    unsigned int copym_stride = min( dstm_stride, srcm_stride );
+
+    unsigned char *newbmp;
+    unsigned int mask_sz;
+    unsigned int img_sz;
+    unsigned int y;
+
+    /*
+     * This code assumes the caller has already read past the DIB header
+     *
+     * Order of storage:
+     * [header]
+     * [icon mask]
+     * [icon image]
+     */
+    img_sz = dst_stride * Height;
+    mask_sz = dstm_stride * Height;
+    newbmp = malloc( img_sz + mask_sz );
+    if( !newbmp )
+        return( true );
+
+    memset( newbmp, 0, img_sz + mask_sz );
+
+    /* icon image */
+    for( y = 0; y < Height; y++ ) {
+        if( RESREAD( fp, newbmp + mask_sz + ( ( Height - 1 - y ) * dst_stride ), copy_stride ) != copy_stride ) {
+            free( newbmp );
+            return( true );
+        }
+        if ( copy_stride < src_stride ) {
+            RESSEEK( fp, src_stride - copy_stride, SEEK_CUR );
+        }
+    }
+
+    /* icon mask */
+    for( y = 0; y < Height; y++ ) {
+        if( RESREAD( fp, newbmp + ( ( Height - 1 - y ) * dstm_stride ), copym_stride ) != copym_stride ) {
+            free( newbmp );
+            return( true );
+        }
+        if ( copym_stride < srcm_stride ) {
+            RESSEEK( fp, srcm_stride - copym_stride, SEEK_CUR );
+        }
+    }
+
+    if( RESWRITE( CurrResFile.fp, newbmp, img_sz + mask_sz ) != (img_sz + mask_sz)) {
+        free( newbmp );
+        return( true );
+    }
+
+    free( newbmp );
+    return( false );
+}
+
+static bool CopyTranslateIcoWin2x( FullIconDirEntry *entry, FILE *fp )
+{
+    return CopyTranslateBitmapAndMaskWin2x( entry->Entry.Res.Info.Width, entry->Entry.Res.Info.Height, entry->Entry.Res.Info.BitCount, fp);
+}
+
+static bool writeTheWindows2xIcon( FullIconDirEntry *entry, WResID *name, ResMemFlags flags, int *err_code, FILE *fp )
+/******************************************************************************************/
+{
+    bool                error;
+    ResLocation         loc;
+
+    loc.start = SemStartResource();
+    error = ResWriteWinOldIconHeader( &(entry->Entry.Res), CurrResFile.fp );
+    if( !error )
+        error = CopyTranslateIcoWin2x( entry, fp );
+    if( error ) {
+        *err_code = LastWresErr();
+    } else {
+        loc.len = SemEndResource( loc.start );
+        SemAddResourceFree( name, WResIDFromNum( RESOURCE2INT( RT_ICON ) ), flags, loc );
+    }
+
+    return( error );
+} /* writeTheWindows2xIcon */
+
+static bool IconIsWin2xCompatible( FullIconDirEntry *entry ) {
+    if( entry->Entry.Res.Info.Width == 64
+      && entry->Entry.Res.Info.Height == 64
+      && entry->Entry.Res.Info.Planes == 1
+      && entry->Entry.Res.Info.BitCount == 1 ) {
+        return( true );
+    } else {
+        return( false );
+    }
+}
+
+static FullIconDirEntry *FindWindows2xCompatibleIcon( FullIconDir *dir )
+{
+    FullIconDirEntry    *entry;
+
+    for( entry = dir->Head; entry != NULL; entry = entry->Next ) {
+        if( IconIsWin2xCompatible( entry ) ) {
+            return( entry );
+        }
+    }
+
+    return( NULL );
+}
+
 static void AddIconResource( WResID *name, ResMemFlags flags, ResMemFlags group_flags, const char *filename )
 /***********************************************************************************************************/
 {
@@ -385,13 +561,82 @@ static void AddIconResource( WResID *name, ResMemFlags flags, ResMemFlags group_
     if( ret != RS_OK )
         goto READ_DIR_ERROR;
 
-    ret = copyIcons( &dir, fp, flags, &err_code );
-    if( ret != RS_OK )
-        goto COPY_ICONS_ERROR;
+    switch( CmdLineParms.Win16VerStamp ) {
+    case VERSION_10_STAMP:
+    case VERSION_20_STAMP:
+      {
+        FullIconDirEntry *entry;
+        /*
+         * More info needed
+         */
+        for( entry = dir.Head; entry != NULL; entry = entry->Next ) {
+            BitmapInfoHeader dibhead;
 
-    error = writeIconDir( &dir, name, group_flags, &err_code );
-    if( error)
-        goto WRITE_DIR_ERROR;
+            if( RESSEEK( fp, entry->Entry.Ico.Offset, SEEK_SET ) )
+                goto COPY_ICONS_ERROR;
+            if( ReadBitmapInfoHeader( &dibhead, fp ) != RS_OK )
+                goto COPY_ICONS_ERROR;
+
+            entry->Entry.Res.Info.Planes = dibhead.Planes;
+            entry->Entry.Res.Info.BitCount = dibhead.BitCount;
+        }
+        /*
+         * Windows 2.0 has a more strict requirement of icon resources:
+         * It must be 64x64 1bpp monochrome. No exceptions. There is no
+         * "icon directory" to pick multiple versions. The RT_ICON resource
+         * is THE icon.
+         *
+         * If the icon directory does not offer a 64x64x1bpp icon, then
+         * pick the first one and print a warning.
+         */
+        entry = FindWindows2xCompatibleIcon( &dir );
+        if( !entry ) {
+            RcWarning( WARN_ICON_WIN2X );
+            entry = dir.Head;
+            if( !entry )
+                goto COPY_ICONS_ERROR;
+        }
+
+        {
+            /*
+             * need more information like biPlanes, biBitCount
+             */
+            unsigned int palbytes = 0;
+            BitmapInfoHeader dibhead;
+
+            if( RESSEEK( fp, entry->Entry.Ico.Offset, SEEK_SET ) )
+                goto COPY_ICONS_ERROR;
+            if( ReadBitmapInfoHeader( &dibhead, fp ) != RS_OK )
+                goto COPY_ICONS_ERROR;
+            /*
+             * seek to the bitmap bits directly
+             */
+            if( dibhead.BitCount <= 8 ) {
+                if( dibhead.ClrUsed != 0 ) {
+                    palbytes = 4 * dibhead.ClrUsed;
+                } else {
+                    palbytes = 4 << dibhead.BitCount;
+                }
+            }
+
+            if( RESSEEK( fp, entry->Entry.Ico.Offset + dibhead.Size + palbytes, SEEK_SET ) ) {
+                goto COPY_ICONS_ERROR;
+            }
+        }
+
+        error = writeTheWindows2xIcon( entry, name, group_flags, &err_code, fp );
+      } break;
+    default:
+        ret = copyIcons( &dir, fp, flags, &err_code );
+        if( ret != RS_OK )
+            goto COPY_ICONS_ERROR;
+
+        error = writeIconDir( &dir, name, group_flags, &err_code );
+        if( error ) {
+            goto WRITE_DIR_ERROR;
+        }
+        break;
+    }
 
     FreeIconDir( &dir );
     RcIoCloseInputBin( fp );
@@ -587,7 +832,8 @@ static RcStatus readCurFileDir( FILE *fp, FullCurDir *dir, int *err_code )
     /*
      * type 2 is a cursor file
      */
-    if( ret == RS_OK && dir->Header.Type != 2 ) {
+    if( ret == RS_OK
+      && dir->Header.Type != 2 ) {
         return( RS_INVALID_RESOURCE );
     }
 
@@ -620,6 +866,69 @@ static void FreeCurDir( FullCurDir *dir )
     }
 } /* FreeCurDir */
 
+static bool CopyTranslateCursorWin2x( FullCurDirEntry *entry, FILE *fp )
+{
+    return CopyTranslateBitmapAndMaskWin2x( entry->Entry.Cur.Width, entry->Entry.Cur.Height, entry->Entry.Cur.ColourCount/*BitCount see hack below*/, fp);
+}
+
+static bool writeTheWindows2xCursor( FullCurDirEntry *entry, WResID *name, ResMemFlags flags, int *err_code, FILE *fp )
+/******************************************************************************************/
+{
+    bool                error;
+    CurDirEntry         Res;
+    ResLocation         loc;
+    CurHotspot          hotspot;
+
+    /* Remember the AddCursorResource() hack also sets ColourCount == 0xFF if the Planes member was not 1 */
+    if (entry->Entry.Cur.ColourCount == 0xFF)
+        return( false );
+
+    /* translate CurFileDirEntry to CurDirEntry to overcome consequences of union of CurDirEntry and CurFileDirEntry */
+    hotspot.X = entry->Entry.Cur.XHotspot;
+    hotspot.Y = entry->Entry.Cur.YHotspot;
+    Res.Width = entry->Entry.Cur.Width;
+    Res.Height = entry->Entry.Cur.Height;
+    Res.BitCount = entry->Entry.Cur.ColourCount; /* Remember our hack below in AddCursorResource */
+    Res.Planes = 1;
+
+    loc.start = SemStartResource();
+    error = ResWriteWinOldCursorHeader( &Res, &hotspot, CurrResFile.fp );
+    if( !error )
+        error = CopyTranslateCursorWin2x( entry, fp );
+    if( error ) {
+        *err_code = LastWresErr();
+    } else {
+        loc.len = SemEndResource( loc.start );
+        SemAddResourceFree( name, WResIDFromNum( RESOURCE2INT( RT_CURSOR ) ), flags, loc );
+    }
+
+    return( error );
+} /* writeTheWindows2xCur */
+
+static bool CursorIsWin2xCompatible( FullCurDirEntry *entry )
+{
+    if( entry->Entry.Cur.Width == 32
+      && entry->Entry.Cur.Height == 32
+      && entry->Entry.Cur.ColourCount/*BitCount, see hack in AddCursorResource*/ == 1 ) {
+        return( true );
+    } else {
+        return( false );
+    }
+}
+
+static FullCurDirEntry *FindWindows2xCompatibleCursor( FullCurDir *dir )
+{
+    FullCurDirEntry    *entry;
+
+    for( entry = dir->Head; entry != NULL; entry = entry->Next ) {
+        if( CursorIsWin2xCompatible( entry ) ) {
+            return( entry );
+        }
+    }
+
+    return( NULL );
+}
+
 static void AddCursorResource( WResID *name, ResMemFlags flags, ResMemFlags group_flags, const char *filename )
 /*************************************************************************************************************/
 {
@@ -640,13 +949,92 @@ static void AddCursorResource( WResID *name, ResMemFlags flags, ResMemFlags grou
     if( ret != RS_OK)
         goto READ_DIR_ERROR;
 
-    ret = copyCursors( &dir, fp, flags, &err_code );
-    if( ret != RS_OK )
-        goto COPY_CURSORS_ERROR;
+    switch( CmdLineParms.Win16VerStamp ) {
+    case VERSION_10_STAMP:
+    case VERSION_20_STAMP:
+      {
+        FullCurDirEntry *entry;
 
-    error = writeCurDir( &dir, name, group_flags, &err_code );
-    if( error)
-        goto WRITE_DIR_ERROR;
+        /* More info needed */
+        for( entry = dir.Head; entry != NULL; entry = entry->Next ) {
+            BitmapInfoHeader dibhead;
+
+            if( RESSEEK( fp, entry->Entry.Cur.Offset, SEEK_SET ) )
+                goto COPY_CURSORS_ERROR;
+            if( ReadBitmapInfoHeader( &dibhead, fp ) != RS_OK )
+                goto COPY_CURSORS_ERROR;
+            /*
+             * HACK: Cur (the struct read from disk) does not have BitCount, but has
+             *       ColourCount, except ColourCount == 0 in most CUR files I've
+             *       tested against, so we'll just use that to store it.
+             *
+             *       Cur and Res are two structures in a union and the structures
+             *       overlap each other, threfore attempts to patch in values to Res
+             *       will corrupt Cur including the hotspot information.
+             */
+            if (dibhead.Planes == 1)
+                entry->Entry.Cur.ColourCount = dibhead.BitCount;
+            else
+                entry->Entry.Cur.ColourCount = 0xFF; /* not supported, must ignore */
+        }
+        /*
+         * Windows 2.0 has a more strict requirement of cursor resources:
+         * It must be 32x32 1bpp monochrome. No exceptions. There is no
+         * "cursor directory" to pick multiple versions. The RT_CURSOR resource
+         * is THE icon.
+         *
+         * If the icon directory does not offer a 32x32x1bpp icon, then
+         * pick the first one and print a warning. Fortunately most Windows 3.0
+         * and later .CUR files are 32x32x1bpp monochrome anyway.
+         */
+        entry = FindWindows2xCompatibleCursor( &dir );
+        if( !entry ) {
+            RcWarning( WARN_CURSOR_WIN2X );
+            entry = dir.Head;
+            if( !entry )
+                goto COPY_CURSORS_ERROR;
+        }
+
+        {
+            /*
+             * need more information like biPlanes, biBitCount
+             */
+            unsigned int palbytes = 0;
+            BitmapInfoHeader dibhead;
+
+            if( RESSEEK( fp, entry->Entry.Cur.Offset, SEEK_SET ) )
+                goto COPY_CURSORS_ERROR;
+            if( ReadBitmapInfoHeader( &dibhead, fp ) != RS_OK )
+                goto COPY_CURSORS_ERROR;
+            /*
+             * seek to the bitmap bits directly
+             */
+            if( dibhead.BitCount <= 8 ) {
+                if( dibhead.ClrUsed != 0 ) {
+                    palbytes = 4 * dibhead.ClrUsed;
+                } else {
+                    palbytes = 4 << dibhead.BitCount;
+                }
+            }
+
+            if( RESSEEK( fp, entry->Entry.Cur.Offset + dibhead.Size + palbytes, SEEK_SET ) ) {
+                goto COPY_CURSORS_ERROR;
+            }
+        }
+
+        error = writeTheWindows2xCursor( entry, name, group_flags, &err_code, fp );
+      } break;
+    default:
+        ret = copyCursors( &dir, fp, flags, &err_code );
+        if( ret != RS_OK )
+            goto COPY_CURSORS_ERROR;
+
+        error = writeCurDir( &dir, name, group_flags, &err_code );
+        if( error ) {
+            goto WRITE_DIR_ERROR;
+        }
+        break;
+    }
 
     FreeCurDir( &dir );
     RcIoCloseInputBin( fp );
@@ -736,6 +1124,27 @@ static RcStatus copyBitmap( BitmapFileHeader *head, FILE *fp,
     return( ret );
 } /* copyBitmap */
 
+static bool writeTheWindows2xBitmap( BitmapInfoHeader *dibhead, WResID *name, ResMemFlags flags, int *err_code, FILE *fp, bool invert )
+/******************************************************************************************/
+{
+    bool                error;
+    ResLocation         loc;
+
+    loc.start = SemStartResource();
+    error = ResWriteWinOldBitmapHeader( dibhead, CurrResFile.fp );
+    if( !error )
+        error = CopyTranslateBitmapWin2x( dibhead->Width, dibhead->Height, dibhead->BitCount, fp, invert );
+    if( error ) {
+        *err_code = LastWresErr();
+    } else {
+        loc.len = SemEndResource( loc.start );
+        SemAddResourceFree( name, WResIDFromNum( RESOURCE2INT( RT_BITMAP ) ), flags, loc );
+    }
+
+    return( error );
+} /* writeTheWindows2xIcon */
+
+
 static void AddBitmapResource( WResID *name, ResMemFlags flags, const char *filename )
 /************************************************************************************/
 {
@@ -755,9 +1164,56 @@ static void AddBitmapResource( WResID *name, ResMemFlags flags, const char *file
     if( head.Type != BITMAP_MAGIC )
         goto NOT_BITMAP_ERROR;
 
-    ret = copyBitmap( &head, fp, name, flags, &err_code );
-    if( ret != RS_OK )
-        goto COPY_BITMAP_ERROR;
+    switch( CmdLineParms.Win16VerStamp ) {
+    case VERSION_10_STAMP:
+    case VERSION_20_STAMP:
+      {
+        BitmapInfoHeader dibhead;
+        bool monoinvert = false;
+
+        if( ReadBitmapInfoHeader( &dibhead, fp ) != RS_OK )
+            goto COPY_BITMAP_ERROR;
+        /*
+         * Windows 2.0 does not support compression, at all.
+         * Bitmaps must be monochrome, even though the header
+         * suggests you could do color. No top-down negative
+         * height bitmaps.
+         */
+        if( dibhead.Compression != 0 || dibhead.Size < 40 || (int)dibhead.Height <= 0 ) {
+            RcWarning( WARN_BITMAP_WIN2X );
+            goto COPY_BITMAP_ERROR;
+        }
+        if( dibhead.BitCount != 1 || dibhead.Planes != 1 )
+            RcWarning( WARN_BITMAP_WIN2X );
+        /*
+         * Invert the bits on convert if the BMP image is monochrome but the
+         * white color is first (Adobe Photoshop 2.5 insists on writing 1bpp
+         * BMP files this way)
+         */
+        if( dibhead.BitCount == 1 ) {
+            unsigned char color0[4];
+
+            if( RESSEEK( fp, 14 + dibhead.Size, SEEK_SET ) )
+                goto COPY_BITMAP_ERROR;
+            if( RESREAD( fp, color0, 4) != 4 )
+                goto COPY_BITMAP_ERROR;
+
+            if( color0[0] == 0xFF && color0[1] == 0xFF && color0[2] == 0xFF)
+                monoinvert = true;
+        }
+
+        if( RESSEEK( fp, head.Offset, SEEK_SET ) )
+            goto COPY_BITMAP_ERROR;
+
+        ret = writeTheWindows2xBitmap( &dibhead, name, flags, &err_code, fp, monoinvert );
+      } break;
+    default:
+        ret = copyBitmap( &head, fp, name, flags, &err_code );
+        if( ret != RS_OK ) {
+            goto COPY_BITMAP_ERROR;
+        }
+        break;
+    }
 
     RcIoCloseInputBin( fp );
 
@@ -1028,7 +1484,7 @@ static void FreeFontDir( FullFontDir *olddir )
  * name and memory flags of the font directory resource
  */
 #define FONT_DIR_NAME   "FONTDIR"
-#define FONT_DIR_FLAGS  MEMFLAG_MOVEABLE|MEMFLAG_PRELOAD   /* not PURE */
+#define FONT_DIR_FLAGS  MEMFLAG_MOVEABLE | MEMFLAG_PRELOAD  /* not PURE */
 
 void SemWINWriteFontDir( void )
 /*****************************/

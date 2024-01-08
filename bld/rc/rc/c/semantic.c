@@ -130,8 +130,8 @@ static void copyMSFormatRes( WResID *name, WResID *type, ResMemFlags flags,
     /*
      * OS/2 resource header happens to be identical to Win16
      */
-    if( CmdLineParms.TargetOS == RC_TARGET_OS_WIN16 ||
-        CmdLineParms.TargetOS == RC_TARGET_OS_OS2 ) {
+    if( CmdLineParms.TargetOS == RC_TARGET_OS_WIN16
+      || CmdLineParms.TargetOS == RC_TARGET_OS_OS2 ) {
         error = MResWriteResourceHeader( &ms_head, CurrResFile.fp, false );
     } else {
         error = MResWriteResourceHeader( &ms_head, CurrResFile.fp, true );
@@ -196,12 +196,14 @@ void SemAddResource2( WResID *name, WResID *type, ResMemFlags flags,
     // with numeric type or numeric identifier greater than 0x7FFF
     // so we warn the user
     if( CmdLineParms.TargetOS == RC_TARGET_OS_WIN32 ) {
-        if( !type->IsName && type->ID.Num > 0x7FFF ) {
+        if( !type->IsName
+          && type->ID.Num > 0x7FFF ) {
             namestr = WResIDToStr( type );
             RcWarning( ERR_TYPE_GT_7FFF, namestr );
             RESFREE( namestr );
         }
-        if( !name->IsName && name->ID.Num > 0x7FFF ) {
+        if( !name->IsName
+          && name->ID.Num > 0x7FFF ) {
             namestr = WResIDToStr( name );
             RcWarning( ERR_NAME_GT_7FFF, namestr );
             RESFREE( namestr );

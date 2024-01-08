@@ -2,7 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
-;* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+;* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -63,7 +63,10 @@ pStackBot       equ     000EH
         extrn   INITAPP             : far
         extrn   WAITEVENT           : far
 
+ifdef WINDOWS10
+else
         extrn   __AHSHIFT           : word
+endif
 
         extrn   _edata              : byte          ; end of DATA (start of BSS)
         extrn   _end                : byte          ; end of BSS (start of STACK)
@@ -259,7 +262,11 @@ endif
         sub     cx,di                   ; calc # of bytes in _BSS segment
         xor     al,al                   ; zero the _BSS segment
         rep     stosb                   ; . . .
+ifdef WINDOWS10
+        mov     ax,12                   ; get huge shift value
+else
         mov     ax,offset __AHSHIFT     ; get huge shift value
+endif
         mov     _HShift,al              ; ...
         cmp     al,12                   ; real mode?
         je      notprot                 ; yes, so leave osmode alone

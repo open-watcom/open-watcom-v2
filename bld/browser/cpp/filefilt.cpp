@@ -346,16 +346,16 @@ bool FileFilter::enabled( const char * file )
 
     entry = _entries->find( &search );
 
-    #if DEBUG
-        if( entry == NULL ) {
-            WString msg;
-            msg.printf( "No file found for \"%s\" -- files are:\n", file ? file : "NULL" );
-            for( int i = 0; i < _entries->entries(); i += 1 ) {
-                msg.concatf( " %s", (const char *) (*_entries)[i]->_name );
-            }
-            errMessage( msg );
+#ifdef DEBUG
+    if( entry == NULL ) {
+        WString msg;
+        msg.printf( "No file found for \"%s\" -- files are:\n", file ? file : "NULL" );
+        for( int i = 0; i < _entries->entries(); i += 1 ) {
+            msg.concatf( " %s", (const char *) (*_entries)[i]->_name );
         }
-    #endif
+        errMessage( msg );
+    }
+#endif
 
     if( entry == NULL ) {
         throw( DEATH_BY_BAD_FILE );

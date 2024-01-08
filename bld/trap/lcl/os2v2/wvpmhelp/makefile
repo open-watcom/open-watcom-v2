@@ -16,6 +16,8 @@ wdpmhelp_autodepends = .AUTODEPEND
 
 wdpmhelp_nocheckstack_dll = 1
 
+additional_clean = *.gh
+
 !include cproj.mif
 !include defrule.mif
 !include dllrule.mif
@@ -73,12 +75,12 @@ rcui_inc_dirs = -I"$(trap_dir)/h"
 
 wdpmhelp.res: ../h/pmhelp.rc ../h/wdpmhelp.rh
     @%make echo_rc
-    $(rc) $(rc_flags) $(rc_inc_path) -fo=$@ $[@
+    $(rc) $(ppflags_common) $(rc_flags) $(rc_inc_path) -fo=$@ $[@
 
 _err.gh : $(trap_dir)/h/trapmsg.h $(trap_dir)/h/trap.msg
     @%make echo_cpp
-    $(cpp) $(rc_ui_flags) $(rc_ui_inc_path) -o$@ $[@
+    $(cpp) $(ppflags_common) $(rc_ui_flags) $(rc_ui_inc_path) -o$@ $[@
 
 _jerr.gh : $(trap_dir)/h/trapmsg.h $(trap_dir)/h/trap.msg
     @%make echo_cpp
-    $(cpp) $(rc_ui_flags) -DJAPANESE $(rc_ui_inc_path) -o$@ $[@
+    $(cpp) $(ppflags_common) $(rc_ui_flags) -DJAPANESE $(rc_ui_inc_path) -o$@ $[@

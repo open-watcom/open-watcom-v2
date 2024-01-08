@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -164,6 +164,12 @@ static const CHAR_TYPE *get_opt( const CHAR_TYPE *opt_str, PTR_SCNF_SPECS specs 
         specs->short_var = 1;
         ++opt_str;
         break;
+#ifdef JSPEC_IS_LLONG
+    JSPEC_CASE_LLONG
+        specs->long_long_var = 1;
+        ++opt_str;
+        break;
+#endif
     case STRING( 'l' ):
         if( opt_str[1] == STRING( 'l' ) ) {
             specs->long_long_var = 1;
@@ -177,11 +183,8 @@ static const CHAR_TYPE *get_opt( const CHAR_TYPE *opt_str, PTR_SCNF_SPECS specs 
         specs->long_var = 1;
         ++opt_str;
         break;
-    JSPEC_CASE_LLONG
-        /* fall through */
     case STRING( 'L' ):
         specs->long_double_var = 1;
-        specs->long_long_var = 1;
         ++opt_str;
         break;
     case STRING( 'I' ):

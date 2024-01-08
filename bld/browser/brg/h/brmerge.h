@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,18 +42,22 @@
 #include "mrdeath.h"
 #include "mempool.h"
 
+#ifndef INSTRUMENTS
+    #if defined( INSTRUMENTS_STATISTICS )
+        #define INSTRUMENTS 1
+    #elif defined( INSTRUMENTS_PROG_END_LOG )
+        #define INSTRUMENTS 1
+    #elif defined( INSTRUMENTS_FULL_LOGGING )
+        #define INSTRUMENTS 1
+    #endif
+#endif
+
 typedef int_32  fileidx_t;
 
-#if INSTRUMENTS
+#ifdef INSTRUMENTS
 #include "debuglog.h"
 extern DebuggingLog Log;   // log all activity
 #endif
-
-#define INSTRUMENTS_NONE            0
-#define INSTRUMENTS_STATISTICS      1
-#define INSTRUMENTS_PROG_END_LOG    2
-#define INSTRUMENTS_FULL_LOGGING    10
-
 
 template <class Type> class WCValVector;
 template <class Type> class WCPtrVector;

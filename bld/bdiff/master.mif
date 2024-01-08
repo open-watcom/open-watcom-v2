@@ -2,6 +2,8 @@ proj_name = bdiff
 
 bdiff_autodepend = .AUTODEPENDS
 
+additional_clean = *.gh
+
 subdir_wcpatch  = wcpatch
 subdir_wpatch   = wpatch
 subdir_bpatch   = bpatch
@@ -171,5 +173,5 @@ wpatch.res wcpatch.res : ../bpatch.rc ../h/bpatch.h
 !ifdef exetarg_$(host_os)_manif_$(host_cpu)
 $(exetarg_$(host_os)_manif_$(host_cpu)) : ../ntmanif.rc .EXPLICIT
     @%make echo_rc
-    $(rc) $(rc_flags) -I.. $(inc_dirs_sys_nt) -I"$(watcom_dir)/h" $< -fo=$@
+    $(rc) $(ppflags_common) $(rc_flags) -I.. $(inc_dirs_sys_nt) -I"$(watcom_dir)/h" $< -fo=$@
 !endif

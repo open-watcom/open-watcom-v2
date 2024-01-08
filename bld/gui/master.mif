@@ -10,6 +10,8 @@ gui_trmem = 1
 gui_autodepends = .AUTODEPEND
 !endif
 
+additional_clean = *.grh
+
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif

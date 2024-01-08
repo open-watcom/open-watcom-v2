@@ -10,6 +10,8 @@ sys_windowed = 1
 
 memory_model_i86 = l
 
+additional_clean = *.gh *.grh *.grc
+
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
@@ -89,20 +91,20 @@ rc_inc_dirs = -I"../res" $(commonui_inc_dirs) -Ih
 !ifeq host_os os2
 $(proj_name).res : ../res/os2/wimgedit.rc rcstr.grh $(__MAKEFILES__)
     @%make echo_rc
-    $(rc) $(rc_ui8_flags) $(rc_flags) -ad -I"../res/os2" $(cppflags) $(rc_inc_path) $[@ -fo=$@
+    $(rc) $(ppflags_common) $(rc_ui8_flags) $(rc_flags) -ad -I"../res/os2" $(cppflags) $(rc_inc_path) $[@ -fo=$@
 !else
 $(proj_name).res : ../res/wimgedit.rc rcstr.grh $(__MAKEFILES__)
     @%make echo_rc
-    $(rc) $(rc_ui8_flags) $(rc_flags) -ad $(cppflags) $(rc_inc_path) $[@ -fo=$@
+    $(rc) $(ppflags_common) $(rc_ui8_flags) $(rc_flags) -ad $(cppflags) $(rc_inc_path) $[@ -fo=$@
 !endif
 
 ntmanif.res : ../res/ntmanif.rc
     @%make echo_rc
-    $(rc) $(rc_ui8_flags) $(rc_flags) -I"../res" $(inc_dirs_sys_nt) $< -fo=$@
+    $(rc) $(ppflags_common) $(rc_ui8_flags) $(rc_flags) -I"../res" $(inc_dirs_sys_nt) $< -fo=$@
 
 rcstrmsg.gh : ../res/wimgedit.msg $(__MAKEFILES__)
     @%make echo_cpp
-    $(cpp) $(rc_ui8_flags) -o$@ $[@
+    $(cpp) $(ppflags_common) $(rc_ui8_flags) -o$@ $[@
 
 rcstr.grh : rcstrmsg.gh $(__MAKEFILES__)
     @%make echo_awk

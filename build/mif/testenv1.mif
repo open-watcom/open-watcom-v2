@@ -1373,5 +1373,4 @@ echo_clean : .PROCEDURE .EXPLICIT
 !endif
 
 common_clean : .PROCEDURE .EXPLICIT
-    -$(noecho)rm -f *.obj *.err *.lnk *.exp *.out *.sym *.dmp *.map *.lst
-    -$(noecho)rm -f *.tmp *.lbc *.gdf *.dll *.pdb *.pch *.lib *.res *.exe
+    -$(noecho)rm -f *.obj *.err *.lnk *.exp *.out *.sym *.dmp *.map *.lst *.tmp *.lbc *.gdf *.dll *.pdb *.pch *.lib *.res *.exe

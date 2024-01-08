@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -66,7 +67,7 @@ MergeInfoPP::MergeInfoPP( int numFiles )
 MergeInfoPP::~MergeInfoPP()
 //-------------------------
 {
-    #if INSTRUMENTS
+#ifdef INSTRUMENTS
     int i;
 
     Log.printf( "\nMergeInfoPP\n-----------\n" );
@@ -74,7 +75,7 @@ MergeInfoPP::~MergeInfoPP()
     for( i = 0; i < _numFiles; i += 1 ) {
         Log.printf( "         [ %3d ]: %5u entries\n", i, _reqCount[ i ] );
     }
-    #endif
+#endif
 
     delete[] _requests;
     delete[] _reqCount;
@@ -234,12 +235,12 @@ void MergeInfoPP::doFile( MergeInfoSection * sect,
                     } else {
                         referredTo = reloc.getReloc( ref );
 
-                        #if INSTRUMENTS
-                            if( referredTo == NULL ) {
-                                Log.printf( "Ack -- can't find a replacement" );
-                                Log.printf( " for %#x %s!\n", att.attrib(), ref.getString() );
-                            }
-                        #endif
+#ifdef INSTRUMENTS
+                        if( referredTo == NULL ) {
+                            Log.printf( "Ack -- can't find a replacement" );
+                            Log.printf( " for %#x %s!\n", att.attrib(), ref.getString() );
+                        }
+#endif
 
                         outFile.writeForm( att.form(), referredTo->getNewOff(), addrSize );
                     }

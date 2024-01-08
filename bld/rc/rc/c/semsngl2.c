@@ -89,7 +89,10 @@ void SemOS2AddSingleLineResource( WResID *name, YYTOKENTYPE type,
                      * Duplicate the first icon encountered as the default icon IFF it
                      * has resource ID equal to 1
                      */
-                    if( firstIcon && !name->IsName && (name->ID.Num == 999 || name->ID.Num == 1) ) {
+                    if( firstIcon
+                      && !name->IsName
+                      && (name->ID.Num == 999
+                      || name->ID.Num == 1) ) {
                         WResID      *id;
 
                         id = RESALLOC( sizeof( WResID ) );

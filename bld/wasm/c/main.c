@@ -161,6 +161,11 @@ void BadCmdLineFile( void )
 {
     BadCmdLine( MSG_UNKNOWN_OPTION );
 }
+// BAD TEXT DETECTED
+void BadCmdLineOption( void )
+{
+    BadCmdLine( MSG_UNKNOWN_OPTION );
+}
 
 static char *SetTargetName( char *target_name, const char *name )
 /***************************************************************/
@@ -445,49 +450,38 @@ static char *ReadIndirectFile( char *name )
     return( env );
 }
 
-static bool scanValues( const char *s, size_t len, unsigned *p )
+static bool scanMode( unsigned *p )
 {
-    char        buff[32];
+    const char  *str;
+    size_t      len;
+    char        buff[16];
 
+    CmdRecogEquals();
+    len = CmdScanId( &str );
     if( len > sizeof( buff ) - 1 ) {
         len = sizeof( buff ) - 1;
     }
-    strncpy( buff, s, len );
+    strncpy( buff, str, len );
     buff[len] = '\0';
     strupr( buff );
     if( strcmp( buff, "MASM5" ) == 0 ) {
 #if 0
         *p = MODE_MASM5;
-        return( true );
 #else
         return( false );
 #endif
     } else if( strcmp( buff, "MASM" ) == 0 ) {
         *p = MODE_MASM6;
-        return( true );
     } else if( strcmp( buff, "WATCOM" ) == 0 ) {
         *p = MODE_WATCOM;
-        return( true );
     } else if( strcmp( buff, "TASM" ) == 0 ) {
         *p = MODE_TASM | MODE_MASM5;
-        return( true );
     } else if( strcmp( buff, "IDEAL" ) == 0 ) {
         *p = MODE_TASM | MODE_IDEAL;
-        return( true );
+    } else {
+        return( false );
     }
-    return( false );
-}
-static bool scanMode( unsigned *p )
-{
-    const char  *s;
-    size_t      len;
-    bool        rc;
-
-    CmdRecogEquals();
-    len = CmdScanOption( &s );
-    rc = scanValues( s, len, p );
-    CmdScanInit( s + len );
-    return( rc );
+    return( true );
 }
 
 static bool scanDefine( OPT_STRING **h )

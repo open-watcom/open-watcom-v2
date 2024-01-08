@@ -6,6 +6,8 @@ proj_name = dwarfw
 dwarfw_autodepends = .AUTODEPEND
 !endif
 
+additional_clean = *.gh
+
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
@@ -51,8 +53,8 @@ libtarg_objs = &
 # rc and others
 #
 ./dwmakeab.exe : dwmakeab.c
-    @%make echo_bldcl
-    $(bld_cl) $[@ -I"$(dwarfw_dir)/h" $(bld_clflags) $(bld_ldflags)
+    @%make echo_bldccl
+    $(bld_ccl) $(ppflags_common) $(ppflags_autodep) $[@ -I"$(dwarfw_dir)/h" $(bld_cclflags) $(bld_ldflags)
 
 dwabenum.gh dwabinfo.gh : ./dwmakeab.exe
     @%make echo_execute

@@ -1886,7 +1886,7 @@ value-string-list
         {
             $$.IsNum = false;
             $$.strlen = strlen( $1.Value.String ) + strlen( $2.string );
-            $$.Value.String = RcMemMalloc( $$.strlen + 1 );
+            $$.Value.String = RcMemAlloc( $$.strlen + 1 );
             strcpy( $$.Value.String, $1.Value.String );
             strcat( $$.Value.String, $2.string );
             RcMemFree( $1.Value.String );
@@ -1908,7 +1908,7 @@ string-group
         {
             $$.lstring = ( $1.lstring | $2.lstring );
             $$.length = $1.length + $2.length;
-            $$.string = RcMemMalloc( $$.length + 1 );
+            $$.string = RcMemAlloc( $$.length + 1 );
             strcpy( $$.string, $1.string );
             strcat( $$.string, $2.string );
             RcMemFree( $1.string );

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -128,11 +129,11 @@ static SubMenuInfo TreeMenuInfo[ TMNumTreeMenus ] = {
     { MMTree, TMExpandAll,       "Expand All\tCtrl *",       "Expand all nodes in the display." },
     { MMTree, TMCollapseBranch,  "Collapse Branch\t-",       "Collapse all the descendants of the selected node." },
     { MMTree, TMCollapseAll,     "Collapse All\tCtrl -",     "Collapse all nodes, showing only root nodes." },
-    #ifdef DEBUGTREE
+#ifdef DEBUGTREE
     { MMTree, TMSep1,            NULL,                       NULL },
     { MMTree, TMDebugInfo,       "Debug Info",               "Show debugging info for selected node." },
     { MMTree, TMSibWidth,        "Sib Width",                "Show sibling width." },
-    #endif
+#endif
 };
 
 static SubMenuInfo LocateMenuInfo[ LMNumLocateMenus ] = {

@@ -88,7 +88,8 @@ bool CopyFileToOutFile( FILE *inp_fp, const char *out_name, bool isexe )
         RcError( ERR_CANT_OPEN_FILE, out_name, "unknown error" );
     } else {
         while( (numread = RESREAD( inp_fp, buffer, BUFFER_SIZE )) != 0 ) {
-            if( numread != BUFFER_SIZE && RESIOERR( inp_fp, numread ) ) {
+            if( numread != BUFFER_SIZE
+              && RESIOERR( inp_fp, numread ) ) {
                 status = RS_READ_ERROR;
                 break;
             }
@@ -115,8 +116,9 @@ static bool OpenResFileInfo( ExeType type )
     char            *name;
 
 
-    if( ( type == EXE_TYPE_NE_WIN || type == EXE_TYPE_NE_OS2 )
-        && CmdLineParms.ExtraResFiles != NULL ) {
+    if( ( type == EXE_TYPE_NE_WIN
+      || type == EXE_TYPE_NE_OS2 )
+      && CmdLineParms.ExtraResFiles != NULL ) {
         RcError( ERR_FR_NOT_VALID_FOR_WIN );
         return( false );
     }
@@ -270,7 +272,8 @@ bool RcPass2IoInit( void )
             dst->u.PEInfo.WinHead = &dst->u.PEInfo.WinHeadData;
             *dst->u.PEInfo.WinHead = *src->u.PEInfo.WinHead;
         }
-        if( ( src->Type == EXE_TYPE_NE_WIN || src->Type == EXE_TYPE_NE_OS2 )
+        if( ( src->Type == EXE_TYPE_NE_WIN
+          || src->Type == EXE_TYPE_NE_OS2 )
           && CmdLineParms.ExtraResFiles != NULL ) {
             RcError( ERR_FR_NOT_VALID_FOR_WIN );
             noerror = false;

@@ -12,6 +12,8 @@ target = $(host_os)
 memory_model_i86 = c
 !endif
 
+additional_clean = *.gh *.grh *.grc
+
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
@@ -42,7 +44,7 @@ dig_arch = $(host_cpu)
 !endif
 
 !ifeq target nov
-inc_dirs = -I. -I"../h" -I"$(nwoss_dir)/common/h" -I"$(nwoss_dir)/nw4/h" -I"$(nwsrc)" -I"$(dig_dir)/h"
+inc_dirs = -I. -I"../h" -I"$(nwoss_dir)/common/h" -I"$(nwoss_dir)/nw4/h" -I"$(dig_dir)/h"
 !else ifeq target win
 inc_dirs = -I. -I"../h" $(windbg_inc_dirs) -I"$(dig_dir)/h"
 !else ifeq target rsi
@@ -130,11 +132,6 @@ exetarg_name = $(exetarg_name_$(target)_$(host_cpu))
 exetarg_name = wsample
 !endif
 
-!ifeq target pls
-exetarg_ext = .exp
-additional_clean_sys = *.exp
-!endif
-
 #
 # EXE
 #
@@ -193,7 +190,7 @@ wresui.res : ../h/wsample.rc ../h/wmsg.h ../h/wsample.msg usage.gh $(__MAKEFILES
 
 wsample.gh : ../h/wsample.msg $(__MAKEFILES__)
     @%make echo_cpp
-    $(cpp) -zku8 $(rc_cppflags) $(cppflags) -o$^. $[@
+    $(cpp) $(ppflags_common) -zku8 $(rc_cppflags) $(cppflags) -o$^. $[@
 
 wsample.grh : wsample.gh $(__MAKEFILES__)
     @%make echo_awk
@@ -201,15 +198,15 @@ wsample.grh : wsample.gh $(__MAKEFILES__)
 
 except.gh : ../h/except.msg $(__MAKEFILES__)
     @%make echo_cpp
-    $(cpp) -zku8 $(rc_cppflags) $(cppflags) -o$^. $[@
+    $(cpp) $(ppflags_common) -zku8 $(rc_cppflags) $(cppflags) -o$^. $[@
 
 except.grh : except.gh $(__MAKEFILES__)
     @%make echo_awk
     $(noecho)*awk -v base=MSG_EXC_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@
 
 ./mknver.exe: $(watcom_dir)/c/mknver.c $(watcom_dir)/h/banner.h $(__MAKEFILES__)
-    @%make echo_bldcl
-    $(bld_cl) $[@ $(bld_clflags) $(bld_ldflags)
+    @%make echo_bldccl
+    $(bld_ccl) $(ppflags_common) $(ppflags_autodep) $[@ $(bld_cclflags) $(bld_ldflags)
 
 nversion.tmp: ./mknver.exe $(__MAKEFILES__)
     @%make echo_execute

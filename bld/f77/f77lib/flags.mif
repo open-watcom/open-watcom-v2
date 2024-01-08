@@ -2,7 +2,7 @@
 # C PREPROCESSOR SETINGS
 ######
 # Include system headers in dependency lists
-f77lib_cpp_flags = -D__RT__ -D_ENABLE_AUTODEPEND
+f77lib_cpp_flags = -D__RT__
 !ifeq linkage dynamic
 f77lib_cpp_flags += -D__DLL__
 !endif
@@ -198,9 +198,6 @@ flib_a_flags =$(sw_a_common) $(sw_a_$(linkage)) $(sw_a_$(flib_$(processor))_$(mo
 !ifneq debug 0
 c_dbg_flags = -d2
 a_dbg_flags = -d1
-!else
-c_dbg_flags = -DNDEBUG
-a_dbg_flags = -dNDEBUG
 !endif
 
 # libname_(model)

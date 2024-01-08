@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -157,7 +157,7 @@ static bool searchHook( dr_sym_context * symctxt, void *data )
                                     symctxt->name );
         info->data->add( sym );
 
-#if DEBUG
+#ifdef DEBUG
         if( !(info->data->count() % 10) ) {
             WString stat;
             stat.printf( "Loading - %d found", info->data->count() );

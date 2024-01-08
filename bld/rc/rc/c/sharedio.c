@@ -135,7 +135,8 @@ bool OpenResFiles( ExtraRes *resnames, ResFileInfo **presfiles, bool *allopen,
              * No way to tell MS and IBM resource files apart, and I can't find
              * a good way to figure out if this is a Watcom .res file
              */
-            if( res_os != WRES_OS_WIN16 && res_os != WRES_OS_OS2 ) {
+            if( res_os != WRES_OS_WIN16
+              && res_os != WRES_OS_OS2 ) {
                 RcError( ERR_NONWIN_RES_TO_WIN_EXE, resfile->name, exename );
                 goto HANDLE_ERROR;
             }
@@ -150,7 +151,8 @@ bool OpenResFiles( ExtraRes *resnames, ResFileInfo **presfiles, bool *allopen,
             /*
              * Same problem as with EXE_TYPE_NE_OS2
              */
-            if( res_os != WRES_OS_OS2 && res_os != WRES_OS_WIN16 ) {
+            if( res_os != WRES_OS_OS2
+              && res_os != WRES_OS_WIN16 ) {
                 RcError( ERR_NONOS2_RES_TO_OS2_EXE, resfile->name, exename );
                 goto HANDLE_ERROR;
             }
@@ -294,9 +296,11 @@ void ReportDupResource( WResID *nameid, WResID *typeid, const char *file1,
         name = namebuf;
         sprintf( name, "%u", (unsigned)nameid->ID.Num );
     }
-    if( !typeid->IsName && typeid->ID.Num == RESOURCE2INT( RT_STRING ) ) {
+    if( !typeid->IsName
+      && typeid->ID.Num == RESOURCE2INT( RT_STRING ) ) {
         strbase = ( nameid->ID.Num - 1 ) * 16;
-        if( file1 != NULL && file2 != NULL ) {
+        if( file1 != NULL
+          && file2 != NULL ) {
             if( warn ) {
                 RcWarning( ERR_DUPLICATE_STR_TABLE_FILE,
                                 strbase, strbase + 15, file1, file2 );
@@ -311,7 +315,8 @@ void ReportDupResource( WResID *nameid, WResID *typeid, const char *file1,
                 RcError( ERR_DUPLICATE_STR_TABLE, strbase, strbase + 15 );
             }
         }
-    } else if( file1 != NULL && file2 != NULL ) {
+    } else if( file1 != NULL
+      && file2 != NULL ) {
         if( warn ) {
             RcWarning( ERR_DUPLICATE_RES_FILE, type, name, file1, file2 );
         } else {

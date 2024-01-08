@@ -392,7 +392,6 @@
 :option. i
 :target. any
 :path.
-:optional.
 :usage. add directory to list of include directories
 :jusage. インクルード・ディレクトリのリストを追加します
 
@@ -497,7 +496,7 @@
 :option. zcm
 :target. any
 :special. scanMode [=<mode>]
-:number. . 0
+:number.
 :usage. set compatibility mode - watcom (default), masm, tasm or ideal
 :jusage. set compatibility mode - watcom (default), masm, tasm or ideal
 

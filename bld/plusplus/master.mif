@@ -8,7 +8,7 @@ plusplus_autodepends = .autodepend
 #suppress_zc = 1
 
 # Extra files to delete on clean
-additional_clean = *.int y.out ytab.* *.mbr *.gc
+additional_clean = *.int y.out ytab.* *.mbr *.gh *.grh *.grc *.gc
 
 !include cproj.mif
 !include defrule.mif
@@ -176,8 +176,8 @@ verrc_exe = $(exetarg_name)
 !include verrc.mif
 
 ./intlbin.exe: $(fe_misc_dir)/c/intlbin.c
-    @%make echo_bldcl
-    $(bld_cl) $[@ $(bld_clflags) -I"$(fe_misc_dir)/h" $(bld_ldflags)
+    @%make echo_bldccl
+    $(bld_ccl) $(ppflags_common) $(ppflags_autodep) $[@ $(bld_cclflags) -I"$(fe_misc_dir)/h" $(bld_ldflags)
 
 $(intname)01.int : ./intlbin.exe errors01.int usage01.int
     $[@ $(intname)
@@ -193,16 +193,16 @@ keywords.gh weights.gh : ../../hash/plusplus.key ../../hash/pc.key
     $(noecho)findhash -q -e ",-1" ../../hash/plusplus.key ../../hash/pc.key
 
 ./umktable.exe: ../../c/umktable.c xlat.gh
-    @%make echo_bldcl
-    $(bld_cl) $[@ $(bld_clflags) -I. -I"../../h" $(bld_ldflags)
+    @%make echo_bldccl
+    $(bld_ccl) $(ppflags_common) $(ppflags_autodep) $[@ $(bld_cclflags) -I. -I"../../h" $(bld_ldflags)
 
 yylex.gh : ./umktable.exe
     @%make echo_execute
     $(noecho)$[@ $@
 
 ./mktrans.exe: ../../c/mktrans.c
-    @%make echo_bldcl
-    $(bld_cl) $[@ $(bld_clflags) $(bld_ldflags)
+    @%make echo_bldccl
+    $(bld_ccl) $(ppflags_common) $(ppflags_autodep) $[@ $(bld_cclflags) $(bld_ldflags)
 
 xlat.gh : ./mktrans.exe ../../h/ctokens.h keywords.gh ytab.h
     @%make echo_execute
@@ -233,8 +233,8 @@ cmdlnprs.gh cmdlnprs.gc cmdlnusg.gh usage01.int $(exetarg_qnx_res) : ../../gml/o
     $(noecho)*optencod -q -i -n $(optencod_opt_$(host_os)) $(optencod_enc_$(host_os)) $[@ cmdlnprs.gh cmdlnprs.gc cmdlnusg.gh $(optencod_targets)
 
 ./icmask.exe : ../../c/icmask.c
-    @%make echo_bldcl
-    $(bld_cl) $[@ $(bld_clflags) -I"../../h" $(bld_ldflags)
+    @%make echo_bldccl
+    $(bld_ccl) $(ppflags_common) $(ppflags_autodep) $[@ $(bld_cclflags) -I"../../h" $(bld_ldflags)
 
 ic_mask.gh : ./icmask.exe ../../h/ic.h ../../c/dwarf.c ../../c/cgbkcgrf.c ../../c/cgio.c ../../c/brmwrite.c
     @%make echo_execute
@@ -275,5 +275,5 @@ xcode$(target_cpu).tmp: $(cc_dir)/a/code$(target_cpu).asm
 bld_extra_incs = -I. -I"$(fe_misc_dir)/h" -I"../../h" -I"$(wasm_dir)/h"
 
 ./mkcode.exe: mkcode.c
-    @%make echo_bldcl
-    $(bld_cl) $[@ $(bld_clflags) $(bld_ldflags)
+    @%make echo_bldccl
+    $(bld_ccl) $(ppflags_common) $(ppflags_autodep) $[@ $(bld_cclflags) $(bld_ldflags)

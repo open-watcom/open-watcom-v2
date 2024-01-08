@@ -6,6 +6,8 @@ weditviw_autodepends = .AUTODEPEND
 
 weditviw_distrib_lib = 1
 
+additional_clean = *.grc
+
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif

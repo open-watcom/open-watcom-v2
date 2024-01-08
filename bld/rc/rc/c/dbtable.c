@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -58,8 +58,8 @@ static RcStatus readDBHeader( FILE *fh )
     if( numread != sizeof( DBTableHeader ) ) {
         return( feof( fh ) ? RS_READ_INCMPLT : RS_READ_ERROR );
     }
-    if( charInfo.header.sig[0] != DB_TABLE_SIG_1 ||
-        charInfo.header.sig[1] != DB_TABLE_SIG_2 ) {
+    if( charInfo.header.sig[0] != DB_TABLE_SIG_1
+      || charInfo.header.sig[1] != DB_TABLE_SIG_2 ) {
         return( RS_BAD_FILE_FMT );
     }
     if( charInfo.header.ver != DB_TABLE_VER ) {
@@ -144,7 +144,8 @@ static uint_16 lookUpDBChar( uint_16 ch )
     int         index;
 
     for( i = 0; i < charInfo.header.num_indices; i++ ) {
-        if( ch >= charInfo.index[i].min && ch <= charInfo.index[i].max ) {
+        if( ch >= charInfo.index[i].min
+          && ch <= charInfo.index[i].max ) {
             index = charInfo.index[i].base + ch - charInfo.index[i].min;
             return( charInfo.entries[index] );
         }

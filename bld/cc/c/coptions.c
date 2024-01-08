@@ -109,6 +109,11 @@ void BadCmdLineFile( void )
 {
     BadCmdLine( ERR_INVALID_OPTION );
 }
+// BAD TEXT DETECTED
+void BadCmdLineOption( void )
+{
+    BadCmdLine( ERR_INVALID_OPTION );
+}
 
 static bool debugOptionAfterOptOption( OPT_STORAGE *data )
 {

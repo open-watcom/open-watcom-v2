@@ -47,7 +47,7 @@ void OPT_FINI
     ( OPT_STORAGE *data )
 ;
 bool OPT_PROCESS
-	( OPT_STORAGE *data )
+    ( OPT_STORAGE *data )
 ;
 void OPT_CLEAN_NUMBER           // CLEAN UP NUMBERS
     ( OPT_NUMBER **h )          // - list
@@ -128,6 +128,9 @@ void BadCmdLinePath             // BAD PATH DETECTED
     ( void )
 ;
 void BadCmdLineFile             // BAD FILE DETECTED
+    ( void )
+;
+void BadCmdLineOption           // BAD TEXT DETECTED
     ( void )
 ;
 

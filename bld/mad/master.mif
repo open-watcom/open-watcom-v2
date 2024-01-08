@@ -20,6 +20,8 @@ mad_nocheckstack = 1
 sys_dll = 1
 !endif
 
+additional_clean = *.gh *.grc
+
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
@@ -77,7 +79,7 @@ dlltarg_ext = $(ext_lib_shared)
 !endif
 !endif
 !ifdef dlltarg_ext
-additional_clean = *$(dlltarg_ext)
+additional_clean += *$(dlltarg_ext)
 !endif
 
 # explicit rules
@@ -100,5 +102,5 @@ distbls.gh : ./disbuild.exe
     $(noecho)$[@
 
 ./disbuild.exe : $(disasm_dir)/core/c/disbuild.c $(disbuild_headers)
-    @%make echo_bldcl
-    $(bld_cl) $[@ $(dig_arch_cpp_flags) -I"../h" $(dis_includes) $(bld_clflags) $(bld_ldflags)
+    @%make echo_bldccl
+    $(bld_ccl) $(ppflags_common) $(ppflags_autodep) $[@ $(dig_arch_cpp_flags) -I"../h" $(dis_includes) $(bld_cclflags) $(bld_ldflags)

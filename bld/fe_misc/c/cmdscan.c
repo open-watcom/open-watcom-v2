@@ -211,20 +211,32 @@ void CmdScanSwitchBackup(       // BACK UP SCANNER TO START OF SWITCH
 size_t CmdScanOption(           // SCAN AN OPTION
     char const **option )       // - addr( option pointer )
 {
-    char const *str;            // - scan position
+    char const *str_beg;        // - start of string
+    int ch;
 
-    str = cmd.curr_ptr;
-    *option = str;
-    for( ; ; ++str ) {
-        int ch;
-        ch = *(unsigned char *)str;
-        if( ch == '\0' ) break;
-        if( _IS_SWITCH_CHAR( ch ) ) break;
-        if( isspace( ch ) ) break;
+    *option = str_beg = cmd.curr_ptr;
+    if( *cmd.curr_ptr == '"' ) {
+        for( cmd.curr_ptr++; (ch = *(unsigned char *)cmd.curr_ptr) != '\0'; cmd.curr_ptr++ ) {
+            if( ch == '"' ) {
+                cmd.curr_ptr++;
+                break;
+            }
+            // '"\\"' means '\', not '\"'
+            if( ch == '\\' ) {
+                if( cmd.curr_ptr[1] == '\\' ) {
+                    cmd.curr_ptr++;
+                } else if( cmd.curr_ptr[1] == '"' ) {
+                    cmd.curr_ptr++;
+                }
+            }
+        }
+    } else {
+        while( !CmdScanSwEnd() ) {
+            cmd.curr_ptr++;
+        }
     }
-    return( str - cmd.curr_ptr );
+    return( cmd.curr_ptr - str_beg );
 }
-
 
 char const *CmdScanUngetChar(   // UNGET THE LAST CMD SCAN CHARACTER
     void )

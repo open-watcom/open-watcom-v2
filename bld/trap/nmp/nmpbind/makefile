@@ -13,6 +13,8 @@ nmpbind_autodepends = .AUTODEPEND
 
 #memory_model_i86 = s
 
+additional_clean = *.gh
+
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
@@ -66,8 +68,8 @@ rcui_inc_dirs = -I"$(trap_dir)/h"
 
 _err.gh : $(trap_dir)/h/trapmsg.h $(trap_dir)/h/trap.msg
     @%make echo_cpp
-    $(cpp) $(rc_ui_flags) $(rc_ui_inc_path) -o$@ $[@
+    $(cpp) $(ppflags_common) $(rc_ui_flags) $(rc_ui_inc_path) -o$@ $[@
 
 _jerr.gh : $(trap_dir)/h/trapmsg.h $(trap_dir)/h/trap.msg
     @%make echo_cpp
-    $(cpp) $(rc_ui_flags) -DJAPANESE $(rc_ui_inc_path) -o$@ $[@
+    $(cpp) $(ppflags_common) $(rc_ui_flags) -DJAPANESE $(rc_ui_inc_path) -o$@ $[@

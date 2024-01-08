@@ -2,7 +2,7 @@
 :cmt.*
 :cmt.*                            Open Watcom Project
 :cmt.*
-:cmt.* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+:cmt.* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 :cmt.*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 :cmt.*
 :cmt.*  ========================================================================
@@ -77,7 +77,7 @@
 :cmt.   :argequal. <char>                           args use <char> instead of '='
 :cmt.
 :cmt. where <targ>:
-:cmt.   default - any, dbg
+:cmt.   default - any, dbg, unused
 :cmt.   architecture - i86, 386, x64, axp, ppc, mps, sparc
 :cmt.   host OS - bsd, dos, linux, nt, os2, osx, qnx, haiku, rdos, win
 :cmt.   extra - targ1, targ2
@@ -98,14 +98,14 @@
 :target. any
 :ntarget. bsd linux osx qnx haiku
 
-:chain. s Segment and resource sorting method
+:usageogrp. s Segment and resource sorting method
 :jusage.
 :chain. v Verbose output
 :jusage.
 :chain. zk Multi-byte characters support
 :jusage.
 
-:option. ? h
+:option. h ?
 :target. any
 :usage.  print this message
 :jusage. このメッセージを表示します
@@ -115,18 +115,27 @@
 :usage.  operate quietly
 :jusage.
 
+:option. 10
+:target. any
+:enumerate. win16_ver
+:usage.  stamp file as requiring Windows 1.0
+:jusage.
+
 :option. 20
 :target. any
+:enumerate. win16_ver
 :usage.  stamp file as requiring Windows 2.0
 :jusage.
 
 :option. 30
 :target. any
+:enumerate. win16_ver
 :usage.  stamp file as requiring Windows 3.0
 :jusage.
 
 :option. 31
 :target. any
+:enumerate. win16_ver
 :usage.  (*) stamp file as requiring Windows 3.1
 :jusage.
 
@@ -141,11 +150,16 @@
 :usage.  generate auto dependency information for use by wmake
 :jusage.
 
+:option. ap
+:target. unused
+:usage.  prepend string
+:jusage.
+
 :option. bt
 :target. any
-:id. . <os>
-:enumerate. x windows nt os2
-:usage.  set the build target to <os> [windows|nt|os2]
+:special. scanTarget =<target> [windows|nt|os2]
+:number.
+:usage.  set the build <target> [windows|nt|os2]
 :jusage.
 
 :option. c
@@ -159,16 +173,28 @@
 :usage.  for a DLL, global memory above EMS line
 :jusage.
 
+:option. fe
+:target. any
+:file.
+:usage.  set the output executable file to name
+:jusage.
+
 :option. fo
 :target. any
 :file.
 :usage.  set the output resource file to name
 :jusage.
 
-:option. fe
+:option. fr
 :target. any
 :file.
-:usage.  set the output executable file to name
+:usage.  specify an additional input resource file
+:jusage.
+
+:option. g
+:target. unused
+:special. scanSearchReplace
+:usage.  find/replace string
 :jusage.
 
 :option. i
@@ -179,6 +205,7 @@
 
 :option. k
 :target. any
+:enumerate. segm_sort
 :usage.  don't sort segments (same as -s0)
 :jusage.
 
@@ -189,6 +216,11 @@
 
 :option. m
 :target. any
+:usage.  each instance of program has its own EMS bank
+:jusage.
+
+:option. n
+:target. unused
 :usage.  each instance of program has its own EMS bank
 :jusage.
 
@@ -209,16 +241,19 @@
 
 :option. s0
 :target. any
+:enumerate. segm_sort
 :usage.  no sorting, leave segments in the linker order
 :jusage.
 
 :option. s1
 :target. any
+:enumerate. segm_sort
 :usage.  move preload segments to front and mark for fast load
 :jusage.
 
 :option. s2
 :target. any
+:enumerate. segm_sort
 :usage.  (*) move preload, data, non-discard. segments to front
 :jusage.
 
@@ -227,28 +262,34 @@
 :usage.  protected mode only
 :jusage.
 
-:option. v1
+:option. v
 :target. any
 :internal.
 :usage.  print tokens as they are scanned
 :jusage.
 
-:option. v2
+:option. v1
 :target. any
 :internal.
 :usage.  print grammar rules as they are reduced
 :jusage.
 
-:option. v3
+:option. v2
 :target. any
 :internal.
 :usage.  print both tokens and grammar rules
 :jusage.
 
-:option. v4
+:option. v3
 :target. any
 :internal.
 :usage.  print tokens as they are scanned
+:jusage.
+
+:option. v4
+:target. any
+:internal.
+:usage.  print grammar rules as they are reduced
 :jusage.
 
 :option. x
@@ -256,33 +297,49 @@
 :usage.  ignore the INCLUDE environment variable
 :jusage.
 
-:option. zk0
+:option. xb
 :target. any
+:usage.  don't create the __<target>__ macro
+:jusage.
+
+:option. xc
+:target. any
+:usage.  ignore the current working directory
+:jusage.
+
+:option. zk0 zk
+:target. any
+:enumerate. charset
 :usage.  (*) Japanese (Kanji, CP 932)
 :jusage.
 
 :option. zk1
 :target. any
+:enumerate. charset
 :usage.  Chinese (Traditional, CP 950)
 :jusage.
 
 :option. zk2
 :target. any
+:enumerate. charset
 :usage.  Korean (Wansung, CP 949)
 :jusage.
 
 :option. zk3
 :target. any
+:enumerate. charset
 :usage.  Chinese (Simplified, CP 936)
 :jusage.
 
 :option. zku8
 :target. any
+:enumerate. charset
 :usage.  Unicode(NT)/UTF-8(Windows,OS2), UTF-8 source
 :jusage.
 
 :option. zku0
 :target. any
+:enumerate. charset
 :usage.  Japanese (Kanji, CP 932), UTF-8 source
 :jusage.
 

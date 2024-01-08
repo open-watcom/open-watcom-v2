@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -71,7 +71,7 @@ void SetOS2Fmt( void )
     FmtData.description = NULL;
     FmtData.u.os2fam.exports = NULL;
     FmtData.u.os2fam.old_lib_name = NULL;
-    if( FmtData.type & MK_WINDOWS ) {
+    if( FmtData.type & MK_WIN_NE ) {
         FmtData.def_seg_flags |= SEG_PRELOAD;
     }
     ChkBase( _64K );
@@ -372,25 +372,25 @@ static bool ProcMixed1632( void )
 }
 
 static parse_entry  MainOptions[] = {
-    "NOSTUB",               ProcNoStub,                 MK_OS2 | MK_PE | MK_WIN_VXD,        0,
-    "ONEautodata",          ProcSingle,                 MK_OS2,                             CF_AUTO_SEG_FLAG,
-    "MANYautodata",         ProcMultiple,               MK_OS2,                             CF_AUTO_SEG_FLAG,
-    "NOAutodata",           ProcNone,                   MK_OS2_16BIT,                       CF_AUTO_SEG_FLAG,
-    "OLDlibrary",           ProcOldLibrary,             MK_OS2 | MK_PE,                     0,
-    "MODName",              ProcModName,                MK_OS2 | MK_PE | MK_WIN_VXD,        0,
-    "NEWFiles",             ProcNewFiles,               MK_ONLY_OS2_16,                     0,
-    "PROTmode",             ProcProtMode,               MK_OS2_16BIT,                       0,
-    "NOSTDCall",            ProcNoStdCall,              MK_PE,                              0,
-    "RWReloccheck",         ProcRWRelocCheck,           MK_WINDOWS,                         0,
-    "SELFrelative",         ProcSelfRelative,           MK_OS2_LX,                          0,
-    "INTernalrelocs",       ProcInternalRelocs,         MK_OS2_LX,                          0,
-    "TOGglerelocsflag",     ProcToggleRelocsFlag,       MK_OS2_LX,                          0,
-    "LINKVersion",          ProcLinkVersion,            MK_PE,                              0,
-    "OSVersion",            ProcOsVersion,              MK_PE,                              0,
-    "CHECKSUM",             ProcChecksum,               MK_PE,                              0,
-    "LARGEaddressaware",    ProcLargeAddressAware,      MK_PE,                              0,
-    "NOLARGEaddressaware",  ProcNoLargeAddressAware,    MK_PE,                              0,
-    "MIXed1632",            ProcMixed1632,              MK_OS2_FLAT,                        0,
+    "NOSTUB",               ProcNoStub,                 MK_OS2 | MK_WIN_NE | MK_PE | MK_WIN_VXD,    0,
+    "ONEautodata",          ProcSingle,                 MK_OS2 | MK_WIN_NE,                         CF_AUTO_SEG_FLAG,
+    "MANYautodata",         ProcMultiple,               MK_OS2 | MK_WIN_NE,                         CF_AUTO_SEG_FLAG,
+    "NOAutodata",           ProcNone,                   MK_OS2_NE | MK_WIN_NE,                      CF_AUTO_SEG_FLAG,
+    "OLDlibrary",           ProcOldLibrary,             MK_OS2 | MK_WIN_NE | MK_PE,                 0,
+    "MODName",              ProcModName,                MK_OS2 | MK_WIN_NE | MK_PE | MK_WIN_VXD,    0,
+    "NEWFiles",             ProcNewFiles,               MK_OS2_NE,                                  0,
+    "PROTmode",             ProcProtMode,               MK_OS2_NE | MK_WIN_NE,                      0,
+    "NOSTDCall",            ProcNoStdCall,              MK_PE,                                      0,
+    "RWReloccheck",         ProcRWRelocCheck,           MK_WIN_NE,                                  0,
+    "SELFrelative",         ProcSelfRelative,           MK_OS2_LX,                                  0,
+    "INTernalrelocs",       ProcInternalRelocs,         MK_OS2_LX,                                  0,
+    "TOGglerelocsflag",     ProcToggleRelocsFlag,       MK_OS2_LX,                                  0,
+    "LINKVersion",          ProcLinkVersion,            MK_PE,                                      0,
+    "OSVersion",            ProcOsVersion,              MK_PE,                                      0,
+    "CHECKSUM",             ProcChecksum,               MK_PE,                                      0,
+    "LARGEaddressaware",    ProcLargeAddressAware,      MK_PE,                                      0,
+    "NOLARGEaddressaware",  ProcNoLargeAddressAware,    MK_PE,                                      0,
+    "MIXed1632",            ProcMixed1632,              MK_OS2_FLAT | MK_WIN_VXD,                   0,
     NULL
 };
 
@@ -535,8 +535,8 @@ static bool ProcPrivate( void )
 }
 
 static parse_entry  Exp_Keywords[] = {
-    "RESident",     ProcExpResident,    MK_OS2, 0,
-    "PRIVATE",      ProcPrivate,        MK_OS2 | MK_PE, 0,
+    "RESident",     ProcExpResident,    MK_OS2 | MK_WIN_NE, 0,
+    "PRIVATE",      ProcPrivate,        MK_OS2 | MK_WIN_NE | MK_PE, 0,
     NULL
 };
 
@@ -578,7 +578,7 @@ static bool getexport( void )
     }
     FmtData.u.os2fam.exports = exp->next;   // take it off the list
     exp->iopl_words = 0;
-    if( (FmtData.type & (MK_WINDOWS | MK_PE)) == 0 && GetToken( SEP_NO, TOK_INCLUDE_DOT ) ) {
+    if( (FmtData.type & (MK_WIN_NE | MK_PE)) == 0 && GetToken( SEP_NO, TOK_INCLUDE_DOT ) ) {
         if( getatoi( &val16 ) == ST_IS_ORDINAL ) {
             if( val16 > 63 ) {
                 LnkMsg( LOC+LINE+MSG_TOO_MANY_IOPL_WORDS+ ERR, NULL );
@@ -653,8 +653,8 @@ static bool ProcSegData( void )
 }
 
 static parse_entry  SegTypeDesc[] = {
-    "CODE",         ProcSegCode,        MK_OS2 | MK_PE | MK_WIN_VXD, 0,
-    "DATA",         ProcSegData,        MK_OS2 | MK_PE | MK_WIN_VXD, 0,
+    "CODE",         ProcSegCode,        MK_OS2 | MK_WIN_NE | MK_PE | MK_WIN_VXD, 0,
+    "DATA",         ProcSegData,        MK_OS2 | MK_WIN_NE | MK_PE | MK_WIN_VXD, 0,
     NULL
 };
 
@@ -902,34 +902,34 @@ static bool ProcNonPageable( void )
 }
 
 static parse_entry  SegDesc[] = {
-    "Class",            ProcOS2Class,       MK_OS2 | MK_PE | MK_WIN_VXD, 0,
-    "TYpe",             ProcSegType,        MK_OS2 | MK_PE | MK_WIN_VXD, 0,
+    "Class",            ProcOS2Class,       MK_OS2 | MK_WIN_NE | MK_PE | MK_WIN_VXD, 0,
+    "TYpe",             ProcSegType,        MK_OS2 | MK_WIN_NE | MK_PE | MK_WIN_VXD, 0,
     NULL
 };
 
 static parse_entry  SegModel[] = {
-    "PReload",          ProcPreload,        MK_OS2 | MK_WIN_VXD, 0,
-    "LOadoncall",       ProcLoadoncall,     MK_OS2 | MK_WIN_VXD, 0,
-    "Iopl",             ProcIopl,           MK_ONLY_OS2 | MK_WIN_VXD, 0,
-    "NOIopl",           ProcNoIopl,         MK_ONLY_OS2 | MK_WIN_VXD, 0,
-    "EXECUTEOnly",      ProcExecuteonly,    MK_OS2, 0,
-    "EXECUTERead",      ProcExecuteread,    MK_OS2, 0,
-    "SHared",           ProcShared,         MK_OS2 | MK_PE | MK_WIN_VXD, 0,
-    "NONShared",        ProcNonShared,      MK_OS2 | MK_PE | MK_WIN_VXD, 0,
-    "READOnly",         ProcReadOnly,       MK_OS2, 0,
-    "READWrite",        ProcReadWrite,      MK_OS2, 0,
-    "CONforming",       ProcConforming,     MK_ONLY_OS2 | MK_WIN_VXD, 0,
-    "NONConforming",    ProcNonConforming,  MK_ONLY_OS2 | MK_WIN_VXD, 0,
-    "MOVeable",         ProcMovable,        MK_OS2_16BIT, 0,
-    "FIXed",            ProcFixed,          MK_WINDOWS, 0,
-    "DIScardable",      ProcDiscardable,    MK_WINDOWS | MK_WIN_VXD, 0,
+    "PReload",          ProcPreload,        MK_OS2 | MK_WIN_NE | MK_WIN_VXD, 0,
+    "LOadoncall",       ProcLoadoncall,     MK_OS2 | MK_WIN_NE | MK_WIN_VXD, 0,
+    "Iopl",             ProcIopl,           MK_OS2 | MK_WIN_VXD, 0,
+    "NOIopl",           ProcNoIopl,         MK_OS2 | MK_WIN_VXD, 0,
+    "EXECUTEOnly",      ProcExecuteonly,    MK_OS2 | MK_WIN_NE, 0,
+    "EXECUTERead",      ProcExecuteread,    MK_OS2 | MK_WIN_NE, 0,
+    "SHared",           ProcShared,         MK_OS2 | MK_WIN_NE | MK_PE | MK_WIN_VXD, 0,
+    "NONShared",        ProcNonShared,      MK_OS2 | MK_WIN_NE | MK_PE | MK_WIN_VXD, 0,
+    "READOnly",         ProcReadOnly,       MK_OS2 | MK_WIN_NE, 0,
+    "READWrite",        ProcReadWrite,      MK_OS2 | MK_WIN_NE, 0,
+    "CONforming",       ProcConforming,     MK_OS2 | MK_WIN_VXD, 0,
+    "NONConforming",    ProcNonConforming,  MK_OS2 | MK_WIN_VXD, 0,
+    "MOVeable",         ProcMovable,        MK_OS2_NE | MK_WIN_NE, 0,
+    "FIXed",            ProcFixed,          MK_WIN_NE, 0,
+    "DIScardable",      ProcDiscardable,    MK_WIN_NE | MK_WIN_VXD, 0,
     "NONDiscardable",   ProcNonDiscardable, MK_WIN_VXD, 0,
-    "INValid",          ProcInvalid,        MK_OS2_LE | MK_OS2_LX, 0,
-    "RESident",         ProcPermanent,      MK_OS2_LE | MK_OS2_LX | MK_WIN_VXD, 0,
-    "CONTiguous",       ProcContiguous,     MK_OS2_LE | MK_OS2_LX, 0,
-    "DYNamic",          ProcOS2Dynamic,     MK_OS2_LE | MK_OS2_LX, 0,
-    "PERManent",        ProcPermanent,      MK_OS2_LE | MK_OS2_LX, 0,
-    "NONPERManent",     ProcNonPermanent,   MK_OS2_LE | MK_OS2_LX, 0,
+    "INValid",          ProcInvalid,        MK_OS2_FLAT, 0,
+    "RESident",         ProcPermanent,      MK_OS2_FLAT | MK_WIN_VXD, 0,
+    "CONTiguous",       ProcContiguous,     MK_OS2_FLAT, 0,
+    "DYNamic",          ProcOS2Dynamic,     MK_OS2_FLAT, 0,
+    "PERManent",        ProcPermanent,      MK_OS2_FLAT, 0,
+    "NONPERManent",     ProcNonPermanent,   MK_OS2_FLAT, 0,
     "PAGEable",         ProcPageable,       MK_PE, 0,
     "NONPageable",      ProcNonPageable,    MK_PE, 0,
     NULL
@@ -1161,15 +1161,15 @@ static bool ProcTermThread( void )
 }
 
 static parse_entry  Init_Keywords[] = {
-    "INITGlobal",   ProcInitGlobal,     MK_OS2 | MK_PE, 0,
-    "INITInstance", ProcInitInstance,   MK_OS2 | MK_PE, 0,
+    "INITGlobal",   ProcInitGlobal,     MK_OS2 | MK_WIN_NE | MK_PE, 0,
+    "INITInstance", ProcInitInstance,   MK_OS2 | MK_WIN_NE | MK_PE, 0,
     "INITThread",   ProcInitThread,     MK_PE, 0,
     NULL
 };
 
 static parse_entry  Term_Keywords[] = {
-    "TERMGlobal",   ProcTermGlobal,     MK_OS2_LE | MK_OS2_LX | MK_PE, 0,
-    "TERMInstance", ProcTermInstance,   MK_OS2_LE | MK_OS2_LX | MK_PE, 0,
+    "TERMGlobal",   ProcTermGlobal,     MK_OS2_FLAT | MK_PE, 0,
+    "TERMInstance", ProcTermInstance,   MK_OS2_FLAT | MK_PE, 0,
     "TERMThread",   ProcTermThread,     MK_PE, 0,
     NULL
 };
@@ -1179,7 +1179,7 @@ static bool ProcOS2DLL( void )
 {
     FmtData.def_ext = E_DLL;
     FmtData.dll = true;
-    if( FmtData.type & MK_WINDOWS ) {
+    if( FmtData.type & MK_WIN_NE ) {
         FmtData.u.os2fam.flags &= ~MULTIPLE_AUTO_DATA;
         FmtData.u.os2fam.flags |= SINGLE_AUTO_DATA;
         FmtData.def_seg_flags |= SEG_PURE | SEG_MOVABLE;
@@ -1222,9 +1222,9 @@ static bool ProcPE( void )
 /************************/
 {
     ProcOne( PESubFormats, SEP_NO );
-    FmtData.u.os2fam.heapsize = PE_DEF_HEAP_SIZE;   // another arbitrary non-zero default
-    FmtData.u.os2fam.segment_shift = 9;             // 512 byte arbitrary rounding
-    FmtData.u.pe.heapcommit = PE_DEF_HEAP_COMMIT;   // arbitrary non-zero default.
+    FmtData.u.os2fam.heapsize = DEF_VALUE;      // another arbitrary non-zero default
+    FmtData.u.os2fam.segment_shift = 9;         // 512 byte arbitrary rounding
+    FmtData.u.pe.heapcommit = DEF_VALUE;        // arbitrary non-zero default.
     FmtData.u.pe.stackcommit = DEF_VALUE;
     return( true );
 }
@@ -1311,13 +1311,13 @@ static bool ProcVirtDevice( void )
 }
 
 static parse_entry  WindowsFormatOptions[] = {
-    "MEMory",       ProcMemory,         MK_WINDOWS,             0,
-    "FOnt",         ProcFont,           MK_WINDOWS,             0,
+    "MEMory",       ProcMemory,         MK_WIN_NE,              0,
+    "FOnt",         ProcFont,           MK_WIN_NE,              0,
     NULL
 };
 
 static parse_entry  WindowsSubFormats[] = {
-    "DLl",          ProcOS2DLL,         MK_WINDOWS | MK_PE,     0,
+    "DLl",          ProcOS2DLL,         MK_WIN_NE | MK_PE,      0,
     NULL
 };
 
@@ -1329,12 +1329,12 @@ static parse_entry  WindowsFormats[] = {
 };
 
 static parse_entry  OS2SubFormats[] = {
-    "DLl",          ProcOS2DLL,         MK_ONLY_OS2,            0,
-    "PHYSdevice",   ProcPhysDevice,     MK_OS2_LE | MK_OS2_LX,  0,
-    "VIRTdevice",   ProcVirtDevice,     MK_OS2_LE | MK_OS2_LX,  0,
-    "PM",           ProcPM,             MK_ONLY_OS2,            0,
-    "PMCompatible", ProcPMCompatible,   MK_ONLY_OS2,            0,
-    "FULLscreen",   ProcPMFullscreen,   MK_ONLY_OS2,            0,
+    "DLl",          ProcOS2DLL,         MK_OS2,                 0,
+    "PHYSdevice",   ProcPhysDevice,     MK_OS2_FLAT,            0,
+    "VIRTdevice",   ProcVirtDevice,     MK_OS2_FLAT,            0,
+    "PM",           ProcPM,             MK_OS2,                 0,
+    "PMCompatible", ProcPMCompatible,   MK_OS2,                 0,
+    "FULLscreen",   ProcPMFullscreen,   MK_OS2,                 0,
     NULL
 };
 
@@ -1358,8 +1358,8 @@ bool ProcOS2Format( void )
             FmtData.u.os2fam.gen_int_relocs = true;
         }
     }
-    if( FmtData.type & MK_ONLY_OS2_16 ) {   // if no 32-bit thing specd
-        HintFormat( MK_ONLY_OS2_16 );       // make sure 16-bit is what we get
+    if( FmtData.type & MK_OS2_NE ) {    // if no 32-bit thing specd
+        HintFormat( MK_OS2_NE );        // make sure 16-bit is what we get
         if( FmtData.dll ) {
             FmtData.u.os2fam.flags &= ~MULTIPLE_AUTO_DATA;
             FmtData.u.os2fam.flags |= SINGLE_AUTO_DATA;
@@ -1376,7 +1376,7 @@ bool ProcWindowsFormat( void )
     FmtData.def_ext = E_LOAD;
     ProcOne( WindowsFormats, SEP_NO );
     ProcOne( WindowsSubFormats, SEP_NO );
-    if( FmtData.type & MK_WINDOWS ) {
+    if( FmtData.type & MK_WIN_NE ) {
         while( ProcOne( WindowsFormatOptions, SEP_NO ) ) {
             // loop all options
         }

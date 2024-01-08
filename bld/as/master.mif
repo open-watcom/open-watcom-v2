@@ -6,7 +6,7 @@ was_autodepends = .AUTODEPEND
 
 was_trmem = 1
 
-additional_clean = *.c *.h *.re *.y
+additional_clean = *.c *.h *.re *.y *.gh *.grh *.grc
 
 !include cproj.mif
 !include defrule.mif
@@ -196,13 +196,13 @@ wresui.res : $(as_dir)/h/as.rc msg.grh usage.gh $(__MAKEFILES__)
 
 msg.grh : $(as_dir)/h/as.msg $(__MAKEFILES__)
     @%make echo_cpp
-    $(cpp) -zku8 $(rc_cppflags) $(cppflags) -D_STANDALONE_ -omsg.tmp $[@
+    $(cpp) $(ppflags_common) -zku8 $(rc_cppflags) $(cppflags) -D_STANDALONE_ -omsg.tmp $[@
     @%make echo_awk
     $(noecho)*awk -v base=MSG_AS_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. msg.tmp
 
 asi_msg.grh : $(as_dir)/h/as.msg $(__MAKEFILES__)
     @%make echo_cpp
-    $(cpp) -zku8 $(rc_cppflags) $(cppflags) -oasi_msg.tmp $[@
+    $(cpp) $(ppflags_common) -zku8 $(rc_cppflags) $(cppflags) -oasi_msg.tmp $[@
     @%make echo_awk
     $(noecho)*awk -v base=MSG_AS_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. asi_msg.tmp
 

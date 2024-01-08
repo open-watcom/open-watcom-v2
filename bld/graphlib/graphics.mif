@@ -2,7 +2,7 @@ proj_name = graph
 
 crwatpro_gsp = crwatpro.gsp
 
-additional_clean = $(crwatpro_gsp)
+additional_clean = *.gh $(crwatpro_gsp)
 
 graph_autodepends = .AUTODEPEND
 
@@ -50,7 +50,7 @@ inc_dirs_dos = -I"$(clib_dir)/mbyte/h"
 inc_dirs_os2 = -I"$(clib_dir)/h" -I"$(clib_dir)/defwin/h" -I"$(lib_misc_dir)/h" -I"$(wpi_dir)/h"
 inc_dirs_win = -I"$(clib_dir)/h" -I"$(clib_dir)/defwin/h" -I"$(lib_misc_dir)/h" -I"$(wpi_dir)/h"
 
-extra_cpp_flags = -D_ENABLE_AUTODEPEND $(supervga_support) -D_FARD=
+extra_cpp_flags = $(supervga_support) -D_FARD=
 
 extra_cpp_flags_i86 = -D_CGRAPH=__loadds
 extra_cpp_flags_386 = -D_CGRAPH=

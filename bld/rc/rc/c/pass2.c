@@ -345,13 +345,7 @@ static RcStatus writeHeadAndTables( ExeFileInfo *src, ExeFileInfo *dst, int *err
     /* |= the next one since the WIN_GANGLOAD_PRESENT flag may be set */
     dst->u.NEInfo.WinHead.otherflags |= src->u.NEInfo.WinHead.otherflags;
     dst->u.NEInfo.WinHead.swaparea =   0;      /* What is this field for? */
-    if( CmdLineParms.VersionStamp20 ) {
-        dst->u.NEInfo.WinHead.expver = VERSION_20_STAMP;
-    } else if( CmdLineParms.VersionStamp30 ) {
-        dst->u.NEInfo.WinHead.expver = VERSION_30_STAMP;
-    } else {
-        dst->u.NEInfo.WinHead.expver = VERSION_31_STAMP;
-    }
+    dst->u.NEInfo.WinHead.expver = CmdLineParms.Win16VerStamp;
     /*
      * seek to the start of the os2_exe_header in dst
      */
@@ -764,7 +758,8 @@ static RcStatus updateDebugDirectory( ExeFileInfo *src, ExeFileInfo *dst )
         return( RS_OK );
     src_offset = OffsetFromRVA( src, src_rva );
     dst_offset = OffsetFromRVA( dst, dst_rva );
-    if( src_offset == 0xFFFFFFFF || dst_offset == 0xFFFFFFFF ) {
+    if( src_offset == 0xFFFFFFFF
+      || dst_offset == 0xFFFFFFFF ) {
         return( RS_BAD_FILE_FMT );
     }
     if( RESSEEK( dst->fp, dst_offset, SEEK_SET ) )

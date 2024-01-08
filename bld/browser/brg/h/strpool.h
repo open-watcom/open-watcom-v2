@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -55,13 +56,11 @@ private:
     StringBlock *           _firstBlock;
     size_t                  _blockSize;
 
-    #if DEBUG
-
+#ifdef DEBUG
     const   char *          _owner;
             int             _numAllocs;
             int             _numGrows;
-
-    #endif
+#endif
 };
 
 #endif

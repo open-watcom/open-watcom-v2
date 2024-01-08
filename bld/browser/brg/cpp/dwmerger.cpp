@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -50,7 +51,7 @@
 #include "mrref.h"
 #include "util.h"
 
-#if INSTRUMENTS
+#ifdef INSTRUMENTS
 extern DebuggingLog Log( "WBRG" );
 #endif
 
@@ -150,14 +151,14 @@ void DwarfFileMerger::doMerge( bool quiet )
     BlipCount *         blip;
 
     try {
-    #if INSTRUMENTS
+#ifdef INSTRUMENTS
         Log.printf( "Merging %d files:\n", _inputFiles->entries() );
         for( i = 0; i < _inputFiles->entries(); i += 1 ) {
             Log.printf( "%s\n", (*_inputFiles)[ i ]->getFileName() );
         }
         Log.printf( "\n%s", Log.timeStamp() );
         Log.startTiming();
-    #endif
+#endif
 
     if( !quiet ) {
         blip = new BlipCount( "reading:" );
@@ -217,30 +218,30 @@ void DwarfFileMerger::doMerge( bool quiet )
         (*_inputFiles)[ i ]->endRead();
     }
 
-    #if INSTRUMENTS
+#ifdef INSTRUMENTS
         Log.printf( "\nMerging end - %.2f seconds.\n", Log.endTiming() );
-    #endif
+#endif
 
     } catch( FileExcept oops ) {
         const char * const actions[] = { "open", "clos", "read", "writ", "seek", "tell", "stat'", };
 
         errMessage( "\n\n%s: %s\n", oops._fileName, oops._message );
 
-        #if INSTRUMENTS
+#ifdef INSTRUMENTS
         Log.printf( "Error %sing file %s -- %d: %s\n", actions[ oops._action ],
                         oops._fileName, oops._error, oops._message );
-        #endif
+#endif
     } catch( CauseOfDeath cause ) {
-        #ifdef STANDALONE_MERGER
+#ifdef STANDALONE_MERGER
             fputs( "\n", stderr );
-        #endif
+#endif
 
         IdentifyAssassin( cause );
         throw;
     } catch( MergeExcept oops ) {
-        #if INSTRUMENTS
+#ifdef INSTRUMENTS
         Log.printf( "Merger Error - %d, %s\n", oops._death, oops._message );
-        #endif
+#endif
 
         errMessage( "\n\nMerging Halted: %s", oops._message );
     }

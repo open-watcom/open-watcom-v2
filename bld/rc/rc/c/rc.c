@@ -51,7 +51,7 @@
 
 extern HANDLE_INFO  hInstance;
 
-WResSetRtns(res_open,res_close,res_read,res_write,res_seek,res_tell,res_ioerr,RcMemMalloc,RcMemFree);
+WResSetRtns(res_open,res_close,res_read,res_write,res_seek,res_tell,res_ioerr,RcMemAlloc,RcMemFree);
 
 void InitGlobs( void )
 /********************/
@@ -73,7 +73,6 @@ void InitGlobs( void )
     DbtableInitStatics();
     LoadstrInitStatics();
     WriteInitStatics();
-    PP_IncludePathInit();
     ParseInitStaticsWIN();
     ParseInitStaticsOS2();
 }
@@ -81,8 +80,6 @@ void InitGlobs( void )
 void FiniGlobs( void )
 /********************/
 {
-    FreeCharTable();
-    ScanParamShutdown();
 }
 
 static bool CreatePreprocFile( void )
@@ -114,7 +111,6 @@ static bool Pass1( void )
 {
     bool    noerror;
 
-    PP_Init( '#' );
     noerror = RcPass1IoInit();
     if( noerror ) {
         if( !CmdLineParms.PreprocessOnly ) {
@@ -133,7 +129,6 @@ static bool Pass1( void )
         RcPass1IoShutdown();
         noerror = !ErrorHasOccured;
     }
-    PP_Fini();
     return( noerror );
 }
 
@@ -186,7 +181,9 @@ void RCmain( void )
     if( !CmdLineParms.Pass2Only ) {
         noerror = Pass1();
     }
-    if( noerror && !CmdLineParms.Pass1Only && !CmdLineParms.PreprocessOnly ) {
+    if( noerror
+      && !CmdLineParms.Pass1Only
+      && !CmdLineParms.PreprocessOnly ) {
         noerror = Pass2();
     }
     if( !noerror ) {

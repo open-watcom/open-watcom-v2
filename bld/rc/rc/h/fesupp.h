@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,5 +31,21 @@
 ****************************************************************************/
 
 
-extern void     SetNativeLeadBytes( void );
-extern size_t   NativeDBStringToUnicode( size_t len, const char *str, char *buf );
+// FESUPP.H -- front-end independent support
+//
+// This provides macro definitions for the front-end independent support
+//
+//
+#ifndef __FESUPP_H__
+#define __FESUPP_H__
+
+#include <string.h>
+#include "rcmem.h"
+
+
+// MACRO DEFINITIONS
+
+#define _MemoryAllocate( size )     RcMemAlloc( size )
+#define _MemoryFree( ptr )          RcMemFree( ptr )
+
+#endif

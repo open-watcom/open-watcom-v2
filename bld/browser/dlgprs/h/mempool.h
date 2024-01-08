@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,7 +37,7 @@
 #include <stddef.h>
 #include <string.h>
 
-#if DEBUG
+#ifdef DEBUG
 #  include "debuglog.h"
 #endif
 
@@ -77,12 +78,12 @@ protected:
             void *      _freeList;
 
 
-            #if DEBUG
+#ifdef DEBUG
             const char *    _poolOwner; // name of owner
             int             _numAllocs;
             int             _numFrees;
     static  DebuggingLog    _log;
-            #endif
+#endif
 };
 
 #endif // __MEMPOOL_H__

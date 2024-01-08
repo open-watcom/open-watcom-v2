@@ -6,6 +6,8 @@ uninstal_autodepends = .AUTODEPEND
 
 sys_windowed = 1
 
+additional_clean = *.gh *.grh *.grc
+
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
@@ -42,11 +44,11 @@ exetarg_nt_manif_x64  = ntmanif.res
 
 $(proj_name).res : ../uninstal.rc $(__MAKEFILES__) .AUTODEPEND
     @%make echo_rc
-    $(rc) $(rc_flags) -ad -zku8 $(inc_path) $[@ -fo=$@
+    $(rc) $(ppflags_common) $(rc_flags) -ad -zku8 $(inc_path) $[@ -fo=$@
 
 ntmanif.res : ../ntmanif.rc
     @%make echo_rc
-    $(rc) $(rc_flags) -I.. $(inc_dirs_sys_nt) $< -fo=$@
+    $(rc) $(ppflags_common) $(rc_flags) -I.. $(inc_dirs_sys_nt) $< -fo=$@
 
 rcstr.grh : rcstrmsg.gh $(__MAKEFILES__)
     @%make echo_awk
@@ -54,4 +56,4 @@ rcstr.grh : rcstrmsg.gh $(__MAKEFILES__)
 
 rcstrmsg.gh : $(uninstal_dir)/uninstal.msg $(__MAKEFILES__)
     @%make echo_cpp
-    $(cpp) -zku8 $(rc_cppflags) $(inc_path) -o$@ $[@
+    $(cpp) $(ppflags_common) -zku8 $(rc_cppflags) $(inc_path) -o$@ $[@

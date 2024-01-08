@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -80,7 +81,8 @@ FullHelpTableOS2 *SemOS2NewHelpTable( FullHelpEntryOS2 firstentry )
     newtable = RESALLOC( sizeof( FullHelpTableOS2 ) );
     newentry = RESALLOC( sizeof( FullHelpEntryOS2 ) );
 
-    if( newtable == NULL || newentry == NULL ) {
+    if( newtable == NULL
+      || newentry == NULL ) {
         RcError( ERR_OUT_OF_MEMORY );
         ErrorHasOccured = true;
         return( NULL );
@@ -184,7 +186,8 @@ FullHelpSubTableOS2 *SemOS2NewHelpSubTable( DataElemList *data )
     newtable = RESALLOC( sizeof( FullHelpSubTableOS2 ) );
     newentry = RESALLOC( sizeof( FullHelpSubEntryOS2 ) );
 
-    if( newtable == NULL || newentry == NULL ) {
+    if( newtable == NULL
+      || newentry == NULL ) {
         RcError( ERR_OUT_OF_MEMORY );
         ErrorHasOccured = true;
         return( NULL );

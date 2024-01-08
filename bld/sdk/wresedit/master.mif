@@ -5,6 +5,8 @@ sys_dll = 1
 
 memory_model_i86 = l
 
+additional_clean = *.gh *.grh *.grc
+
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
@@ -73,7 +75,7 @@ rc_inc_dirs = -I"../res" -I"../../res" -I"../../h" $(commonui_inc_dirs)
 
 $(proj_name).res: ../res/$(proj_name).rc $(__MAKEFILES__) .AUTODEPEND
     @%make echo_rc
-    $(rc) $(rc_ui8_flags) $(rc_flags) -ad $(rc_inc_path) $[@ -fo=$@
+    $(rc) $(ppflags_common) $(rc_ui8_flags) $(rc_flags) -ad $(rc_inc_path) $[@ -fo=$@
 
 rcstr.grh: rcstrmsg.gh $(__MAKEFILES__)
     @%make echo_awk
@@ -81,4 +83,4 @@ rcstr.grh: rcstrmsg.gh $(__MAKEFILES__)
 
 rcstrmsg.gh: ../res/$(proj_name).msg $(__MAKEFILES__)
     @%make echo_cpp
-    $(cpp) $(rc_ui8_flags) -I"../../res" -o$@ $[@
+    $(cpp) $(ppflags_common) $(rc_ui8_flags) -I"../../res" -o$@ $[@

@@ -14,5 +14,5 @@ all : smpsync.exe mergehlp.exe smpmt.exe .symbolic
     @%null
 
 .c.exe :
-    @%make echo_bldcl
-    $(bld_cl) -fm -I"$(wprof_dir)/h" -I"$(dig_dir)/h" -I"$(wsample_dir)/h" $(bld_clflags) $[@ $(bld_ldflags)
+    @%make echo_bldccl
+    $(bld_ccl) $(ppflags_common) $(ppflags_autodep) -fm -I"$(wprof_dir)/h" -I"$(dig_dir)/h" -I"$(wsample_dir)/h" $(bld_cclflags) $[@ $(bld_ldflags)

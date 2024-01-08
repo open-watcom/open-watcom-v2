@@ -8,6 +8,8 @@ sys_dll = 1
 
 suppress_bd = 1
 
+additional_clean = *.grc
+
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
@@ -78,4 +80,4 @@ extra_rc_flags_win = -30
 
 $(proj_name).res: ../res/fmedit.rc $(__MAKEFILES__) .AUTODEPEND
     @%make echo_rc
-    $(rc) $(rc_flags) $(rc_inc_path) $[@ -fo=$@
+    $(rc) $(ppflags_common) $(rc_flags) $(rc_inc_path) $[@ -fo=$@

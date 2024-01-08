@@ -170,7 +170,7 @@ void GetExtraCommands( void )
             for( ;; ) {
                 memcpy( buff, cmd->prefix, PREFIX_SIZE );
                 p = buff + PREFIX_SIZE;
-                if( IDEFN( GetInfo )( IdeHdl, cmd->type, (IDEGetInfoWParam)NULL, (IDEGetInfoLParam)&p ) )
+                if( IDEFN( GetInfo )( IdeHdl, cmd->type, (IDEGetInfoWParam)NULL, (IDEGetInfoLParam)p ) )
                     break;
                 if( DoBuffCmdParse( buff ) )
                     break;
