@@ -57,16 +57,16 @@ __CLANG_TOOLS__ = $+$(%OWTOOLSVER)$-
 !else ifeq %OWTOOLS INTEL
 __INTEL_TOOLS__ = $+$(%OWTOOLSVER)$-
 !else
-# if WATCOM or not defined or unknow value, default to WATCOM
+# if OWTOOLS is WATCOM or not defined or unknow value, default to WATCOM
 __WATCOM_TOOLS__ = 0
 !endif
 
 # setup run-time WATCOM tools version
 !ifndef bootstrap
-# if it is not bootstrap then use current build version
+# if it is not bootstrap then set to new OW build version
 __WATCOM_TOOLS__ = $(bld_ver_tool)
 !else ifeq %OWTOOLS WATCOM
-# if bootstrap and WATCOM tools then use tools version
+# if bootstrap and use WATCOM tools then set to WATCOM tools version
 __WATCOM_TOOLS__ = $+$(%OWTOOLSVER)$-
 !endif
 
@@ -85,7 +85,7 @@ bld_os = nt
 !else ifdef __NTX64__
 bld_cpu = x64
 bld_os = nt
-bldonly_nt = 1
+bldonly_nt = x64
 !else ifdef __NTAXP__
 bld_cpu = axp
 bld_os = nt
@@ -98,7 +98,7 @@ bld_os = linux
 !else ifdef __LINUXX64__
 bld_cpu = x64
 bld_os = linux
-bldonly_linux = 1
+bldonly_linux = x64
 !else ifdef __LINUXMIPS__
 bld_cpu = mps
 bld_os = linux
@@ -108,18 +108,18 @@ bld_os = linux
 !else ifdef __LINUXARM__
 bld_cpu = arm
 bld_os = linux
-bldonly_linux = 1
+bldonly_linux = arm
 !else ifdef __LINUXARM64__
 bld_cpu = a64
 bld_os = linux
-bldonly_linux = 1
+bldonly_linux = a64
 !else ifdef __BSD386__
 bld_cpu = 386
 bld_os = bsd
 !else ifdef __BSDX64__
 bld_cpu = x64
 bld_os = bsd
-bldonly_bsd = 1
+bldonly_bsd = x64
 !else ifdef __BSDPPC__
 bld_cpu = ppc
 bld_os = bsd
@@ -129,7 +129,7 @@ bld_os = haiku
 !else ifdef __HAIKUX64__
 bld_cpu = x64
 bld_os = haiku
-bldonly_haiku = 1
+bldonly_haiku = x64
 !else ifdef __HAIKUPPC__
 bld_cpu = ppc
 bld_os = haiku
@@ -139,18 +139,18 @@ bld_os = osx
 !else ifdef __OSXX64__
 bld_cpu = x64
 bld_os = osx
-bldonly_osx = 1
+bldonly_osx = x64
 !else ifdef __OSXPPC__
 bld_cpu = ppc
 bld_os = osx
 !else ifdef __OSXARM__
 bld_cpu = arm
 bld_os = osx
-bldonly_osx = 1
+bldonly_osx = arm
 !else ifdef __OSXARM64__
 bld_cpu = a64
 bld_os = osx
-bldonly_osx = 1
+bldonly_osx = a64
 !endif
 
 nested_wmake = wmake

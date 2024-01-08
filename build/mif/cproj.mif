@@ -6,9 +6,9 @@
 !error The host_cpu macro must be defined!
 !endif
 
-!ifdef bldonly_$(bld_os)
-!ifeq bld_cpu $(host_cpu)
 !ifndef bootstrap
+!ifdef bldonly_$(host_os)
+!ifeq bldonly_$(host_os) $(host_cpu)
 !undef __WATCOM_TOOLS__
 !endif
 !endif
@@ -814,6 +814,8 @@ rcui8           = $(noecho)*bwrc -q  $(ppflags_common) $(rc_flags_all) -bt=windo
 rcui8           = $(noecho)*bwrc -q  $(ppflags_common) $(rc_flags_all) -x -bt=windows $(rc_ui8_flags) $[@ -fo=$@ $(rc_ui_inc_path)
 !endif
 
+rc              = $(noecho)*bwrc -q
+
 #####################################
 # GLOBAL MACROS SETINGS FOR OW TOOLS
 #####################################
@@ -837,9 +839,6 @@ cxx             = $(noecho)$(cxx_$(host_cpu)) -zq
 linker          = $(noecho)$(linker_$(host_cpu)) op q
 librarian       = $(noecho)$(librarian_$(host_cpu)) -q
 as              = $(noecho)$(as_$(host_cpu)) -q $(as_outfmt_$(host_os)$(host_cpu))
-
-rc              = $(noecho)*bwrc -q
-#rc_ui           = $(noecho)*bwrc -q  $(ppflags_common)
 
 # current project setup
 !ifeq sys_dll 1
