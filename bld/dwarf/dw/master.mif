@@ -54,7 +54,7 @@ libtarg_objs = &
 #
 ./dwmakeab.exe : dwmakeab.c
     @%make echo_bldccl
-    $(bld_ccl) $[@ -I"$(dwarfw_dir)/h" $(bld_cclflags) $(bld_ldflags)
+    $(bld_ccl) $(ppflags_common) $(ppflags_autodep) $[@ -I"$(dwarfw_dir)/h" $(bld_cclflags) $(bld_ldflags)
 
 dwabenum.gh dwabinfo.gh : ./dwmakeab.exe
     @%make echo_execute

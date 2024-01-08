@@ -104,7 +104,7 @@ rc_inc_dirs = -I"$(wrc_dir)/h" #$(wres_inc_dirs) -I"$(wrc_dir)/h" $(commonui_inc
 
 $(proj_name).res: ../res/wr.rc $(__MAKEFILES__) .AUTODEPEND
     @%make echo_rc
-    $(rc) $(rc_flags) -zku0 -ad $(rc_inc_path) $[@ -fo=$@
+    $(rc) $(ppflags_common) $(rc_flags) -zku0 -ad $(rc_inc_path) $[@ -fo=$@
 
 rcmsg.grh :  $(wrc_dir)/h/rc.msg $(__MAKEFILES__)
     @%make echo_awk

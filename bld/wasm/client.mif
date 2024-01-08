@@ -27,7 +27,7 @@ wasmcmsg.grh : $(wasm_dir)/h/wasmc.msg $(__MAKEFILES__) .EXPLICIT
 
 ./mkopcod1.exe: $(wasm_dir)/mkopcod1.c $(wasm_dir)/mkopcode.h $(__MAKEFILES__) .EXPLICIT
     @%make echo_bldccl
-    $(bld_ccl) $[@ $(wasm_client_extra_defines) -I. -I"$(wasm_dir)/h" $(bld_cclflags) $(bld_ldflags)
+    $(bld_ccl) $(ppflags_common) $(ppflags_autodep) $[@ $(wasm_client_extra_defines) -I. -I"$(wasm_dir)/h" $(bld_cclflags) $(bld_ldflags)
 
 asmops.gh: ./mkopcod1.exe $(wasm_client_extra_files) $(wasm_dir)/inlnops.tok .EXPLICIT
     @%make echo_execute
@@ -35,7 +35,7 @@ asmops.gh: ./mkopcod1.exe $(wasm_client_extra_files) $(wasm_dir)/inlnops.tok .EX
 
 ./mkopcode.exe: $(wasm_dir)/mkopcode.c $(wasm_dir)/mkopcode.h asmops.gh $(__MAKEFILES__) .EXPLICIT
     @%make echo_bldccl
-    $(bld_ccl) $[@ $(wasm_client_extra_defines) -I. -I"$(wasm_dir)/h" $(bld_cclflags) $(bld_ldflags)
+    $(bld_ccl) $(ppflags_common) $(ppflags_autodep) $[@ $(wasm_client_extra_defines) -I. -I"$(wasm_dir)/h" $(bld_cclflags) $(bld_ldflags)
 
 asmopsd.gh: ./mkopcode.exe $(wasm_client_extra_files) $(wasm_dir)/inlnops.tok .EXPLICIT
     @%make echo_execute

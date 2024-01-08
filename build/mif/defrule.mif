@@ -9,25 +9,25 @@ defrule_obj_target = .obj
 .c$(defrule_obj_target): $(__MAKEFILES__) $($(proj_name)_autodepends)
     @%make echo_cc
 !ifdef defrule_key
-    $(cc) $(cflags) $(c_flags) $(cppflags) $(extra_cpp_$+$(defrule_key)$-_flags) $(extra_cpp_flags_$[&) $(extra_c_flags_$[&) $(inc_path) $[@
+    $(cc) $(ppflags_common) $(ppflags_autodep) $(cflags) $(c_flags) $(cppflags) $(extra_cpp_$+$(defrule_key)$-_flags) $(extra_cpp_flags_$[&) $(extra_c_flags_$[&) $(inc_path) $[@
 !else
-    $(cc) $(cflags) $(c_flags) $(cppflags) $(extra_cpp_flags_$[&) $(extra_c_flags_$[&) $(inc_path) $[@
+    $(cc) $(ppflags_common) $(ppflags_autodep) $(cflags) $(c_flags) $(cppflags) $(extra_cpp_flags_$[&) $(extra_c_flags_$[&) $(inc_path) $[@
 !endif
 
 .cpp$(defrule_obj_target): $(__MAKEFILES__) $($(proj_name)_autodepends)
     @%make echo_cxx
 !ifdef defrule_key
-    $(cxx) $(cflags) $(cxx_flags) $(cppflags) $(extra_cpp_$+$(defrule_key)$-_flags) $(extra_cpp_flags_$[&) $(extra_c_flags_$[&) $(inc_path) $[@
+    $(cxx) $(ppflags_common) $(ppflags_autodep) $(cflags) $(cxx_flags) $(cppflags) $(extra_cpp_$+$(defrule_key)$-_flags) $(extra_cpp_flags_$[&) $(extra_c_flags_$[&) $(inc_path) $[@
 !else
-    $(cxx) $(cflags) $(cxx_flags) $(cppflags) $(extra_cpp_flags_$[&) $(extra_c_flags_$[&) $(inc_path) $[@
+    $(cxx) $(ppflags_common) $(ppflags_autodep) $(cflags) $(cxx_flags) $(cppflags) $(extra_cpp_flags_$[&) $(extra_c_flags_$[&) $(inc_path) $[@
 !endif
 
 .asm$(defrule_obj_target): $(__MAKEFILES__) $($(proj_name)_autodepends)
     @%make echo_as
 !ifdef defrule_key
-    $(as) $(aflags) $(extra_app_$+$(defrule_key)$-_flags) $(extra_a_flags_$[&) $(inc_path) $[@
+    $(as) $(ppflags_common) $(aflags) $(extra_app_$+$(defrule_key)$-_flags) $(extra_a_flags_$[&) $(inc_path) $[@
 !else
-    $(as) $(aflags) $(extra_a_flags_$[&) $(inc_path) $[@
+    $(as) $(ppflags_common) $(aflags) $(extra_a_flags_$[&) $(inc_path) $[@
 !endif
 !undef defrule_obj_target
 !undef defrule_key

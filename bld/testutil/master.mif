@@ -18,4 +18,4 @@ all: chk_exec.exe chktest.exe catfile.exe .symbolic
 
 .c.exe :
     @%make echo_bldccl
-    $(bld_ccl) $(bld_cclflags) $< $(bld_ldflags)
+    $(bld_ccl) $(ppflags_common) $(ppflags_autodep) $(bld_cclflags) $< $(bld_ldflags)

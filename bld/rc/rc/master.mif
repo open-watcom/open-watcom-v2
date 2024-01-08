@@ -253,7 +253,7 @@ cmdlnprs.gh cmdlnprs.gc usage.gh $(exetarg_$(host_os)_res) : ../h/options.gml $(
 
 ./cvttable.exe: ../c/cvttable.c $(__MAKEFILES__)
     @%make echo_bldccl
-    $(bld_ccl) $[@ -D_STANDALONE_ -I"../h" $(bld_cclflags) $(bld_ldflags)
+    $(bld_ccl) $(ppflags_common) $(ppflags_autodep) $[@ -D_STANDALONE_ -I"../h" $(bld_cclflags) $(bld_ldflags)
 
 to932.uni : ./cvttable.exe $(__MAKEFILES__)
     $[@ $@

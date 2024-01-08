@@ -31,7 +31,7 @@ $(name).lib: ..\owindll\$(name).dll
 
 
 driver.res : driver.rc driver.dlg
-        $(rc) $(rc_flags) driver.rc -fo=$@
+        $(rc) $(ppflags_common) $(rc_flags) driver.rc -fo=$@
 
 driver.obj : driver.c
         wcc $[* -bt=windows  -d2 -zW -zq -zq -fpc -w4 -ml -fo=obj\.obj

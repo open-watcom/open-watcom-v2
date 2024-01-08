@@ -139,4 +139,4 @@ conesc.gh : ./buildesc.exe ../tix/qnx.tix
 
 ./buildesc.exe : ../c/buildesc.c ../../unix/c/_doparse.c
     @%make echo_bldccl
-    $(bld_ccl) $[@ -DBUILDDESC -I"../h" -I"../../unix/c" -I"../../unix/h" $(ui_inc_dirs) $(bld_cclflags) $(bld_ldflags)
+    $(bld_ccl) $(ppflags_common) $(ppflags_autodep) $[@ -DBUILDDESC -I"../h" -I"../../unix/c" -I"../../unix/h" $(ui_inc_dirs) $(bld_cclflags) $(bld_ldflags)

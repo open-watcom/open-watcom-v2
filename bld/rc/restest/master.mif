@@ -47,4 +47,4 @@ exetarg_res = $(proj_name).res
 #
 $(proj_name).res : ../restest.rc $(__MAKEFILES__)
     @%make echo_rc
-    $(rc) $(inc_dirs) $(inc_dirs_sys) -bt=$(host_os) -r $[@ -fo=$@
+    $(rc) $(ppflags_common) $(inc_dirs) $(inc_dirs_sys) -bt=$(host_os) -r $[@ -fo=$@

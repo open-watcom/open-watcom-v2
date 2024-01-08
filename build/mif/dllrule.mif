@@ -1,10 +1,10 @@
 .c{$(dll_subdir)}.obj: $(__MAKEFILES__) $($(proj_name)_autodepends)
     @%make echo_cc
-    $(cc) $(cflags_dll) $(c_flags) $(cppflags) $(extra_cpp_dll_flags) $(extra_cpp_flags_$[&) $(extra_c_flags_$[&) $(inc_path) $[@
+    $(cc) $(ppflags_common) $(ppflags_autodep) $(cflags_dll) $(c_flags) $(cppflags) $(extra_cpp_dll_flags) $(extra_cpp_flags_$[&) $(extra_c_flags_$[&) $(inc_path) $[@
 
 .cpp{$(dll_subdir)}.obj: $(__MAKEFILES__) $($(proj_name)_autodepends)
     @%make echo_cxx
-    $(cxx) $(cflags_dll) $(cxx_flags) $(cppflags) $(extra_cpp_dll_flags) $(extra_cpp_flags_$[&) $(extra_c_flags_$[&) $(inc_path) $[@
+    $(cxx) $(ppflags_common) $(ppflags_autodep) $(cflags_dll) $(cxx_flags) $(cppflags) $(extra_cpp_dll_flags) $(extra_cpp_flags_$[&) $(extra_c_flags_$[&) $(inc_path) $[@
 
 $(dll_subdir) : .EXPLICIT
     mkdir $@

@@ -14,9 +14,9 @@ x_subdir = xobjs
 #   objs_cpp:       C++
 #
 _subdir_ = $(x_subdir)/
-xobjs = $+ $(objs_asm) $(objs_c) $(objs_cpp) $-
+target_xobjs = $+ $(objs_asm) $(objs_c) $(objs_cpp) $-
 _subdir_ =
-objs = $+ $(objs_asm) $(objs_c) $(objs_cpp) $-
+target_objs = $+ $(objs_asm) $(objs_c) $(objs_cpp) $-
 files = $+ $(static_objs) $-
 
 .cpp : ../../cpp
@@ -24,16 +24,8 @@ files = $+ $(static_objs) $-
 .asm : ../../a;../../inc
 
 !ifneq debug 0
-objs += $(dbg_objs_c)
-xobjs += $(dbg_objs_c)
-!endif
-
-!ifndef target_objs
-target_objs = $(objs)
-!endif
-
-!ifndef target_xobjs
-target_xobjs = $(xobjs)
+target_objs += $(dbg_objs_c)
+target_xobjs += $(dbg_objs_c)
 !endif
 
 libs : .symbolic $(target_lib) $(target_lib_x) $(files)

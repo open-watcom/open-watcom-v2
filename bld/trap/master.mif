@@ -242,15 +242,15 @@ rcui_inc_dirs = -I"$(trap_dir)/h"
 
 $(trperr_h) : $(trap_dir)/h/trapmsg.h $(trap_dir)/h/trap.msg $(__MAKEFILES__)
     @%make echo_cpp
-    $(cpp) $(rc_ui8_flags) $(rc_ui_inc_path) $[@ -o$@
+    $(cpp) $(ppflags_common) $(rc_ui8_flags) $(rc_ui_inc_path) $[@ -o$@
 
 $(jtrperr_h) : $(trap_dir)/h/trapmsg.h $(trap_dir)/h/trap.msg $(__MAKEFILES__)
     @%make echo_cpp
-    $(cpp) $(rc_ui8_flags) -DJAPANESE $(rc_ui_inc_path) $[@ -o$@
+    $(cpp) $(ppflags_common) $(rc_ui8_flags) -DJAPANESE $(rc_ui_inc_path) $[@ -o$@
 
 ./mknver.exe: $(watcom_dir)/c/mknver.c $(watcom_dir)/h/banner.h $(__MAKEFILES__)
     @%make echo_bldccl
-    $(bld_ccl) $[@ $(bld_cclflags) $(bld_ldflags)
+    $(bld_ccl) $(ppflags_common) $(ppflags_autodep) $[@ $(bld_cclflags) $(bld_ldflags)
 
 nversion.tmp: ./mknver.exe $(__MAKEFILES__)
     @%make echo_execute
@@ -310,7 +310,7 @@ libtarg_name = dbgstr
 !ifdef resource_file
 $(resource_file) : $(trap_dir)/common/servw.rc
     @%make echo_rc
-    $(rc) $(rc_ui8_encoding) $(rc_flags) $(inc_path) $[@ -fo=$@
+    $(rc) $(ppflags_common) $(rc_ui8_encoding) $(rc_flags) $(inc_path) $[@ -fo=$@
 !endif
 
 inc_subdir_nwsdk_nlm5 = &

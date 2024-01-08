@@ -96,7 +96,7 @@ distbls.gh : ./disbuild.exe $(__MAKEFILES__)
 
 ./disbuild.exe : $(disasm_dir)/core/c/disbuild.c $(disbuild_headers) $(__MAKEFILES__)
     @%make echo_bldccl
-    $(bld_ccl) $[@ $(dig_arch_cpp_flags) -I"../h" $(dis_includes) $(bld_cclflags) $(bld_ldflags)
+    $(bld_ccl) $(ppflags_common) $(ppflags_autodep) $[@ $(dig_arch_cpp_flags) -I"../h" $(dis_includes) $(bld_cclflags) $(bld_ldflags)
 
 msg.grh : ../stand/wdis.msg $(__MAKEFILES__)
     @%make echo_awk

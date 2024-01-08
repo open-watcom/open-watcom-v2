@@ -177,14 +177,14 @@ cl_extra_libs = $(cl_extra_libs_gen)
 # bld settings
 ############################
 !ifdef __INTEL_TOOLS__
-bcc  = icl -nologo -c $(ppflags_bldver)
-bcxx = icl -nologo -c $(ppflags_bldver)
-bccl = $(noecho)icl -nologo $(ppflags_bldver)
+bcc  = icl -nologo -c
+bcxx = icl -nologo -c
+bccl = $(noecho)icl -nologo
 bcl  = $(noecho)icl -nologo
 !else
-bcc  = cl -nologo -c $(ppflags_bldver)
-bcxx = cl -nologo -c $(ppflags_bldver)
-bccl = $(noecho)cl -nologo $(ppflags_bldver)
+bcc  = cl -nologo -c
+bcxx = cl -nologo -c
+bccl = $(noecho)cl -nologo
 bcl  = $(noecho)cl -nologo
 !endif
 
@@ -231,13 +231,13 @@ bld_clflags  = -Fe$@ $(bld_ldflags1)
 # standard settings
 ############################
 !ifdef __INTEL_TOOLS__
-cc  = $(noecho)icl -nologo -c $(ppflags_bldver)
-cxx = $(noecho)icl -nologo -c $(ppflags_bldver)
-cl  = $(noecho)icl -nologo $(ppflags_bldver)
+cc  = $(noecho)icl -nologo -c
+cxx = $(noecho)icl -nologo -c
+cl  = $(noecho)icl -nologo
 !else
-cc   = $(noecho)cl -nologo -c $(ppflags_bldver)
-cxx  = $(noecho)cl -nologo -c $(ppflags_bldver)
-cl   = $(noecho)cl -nologo $(ppflags_bldver)
+cc   = $(noecho)cl -nologo -c
+cxx  = $(noecho)cl -nologo -c
+cl   = $(noecho)cl -nologo
 !endif
 
 cppflags_nt  = $(common_cppflags) $(common_cppflags_nt)
@@ -445,14 +445,14 @@ cl_extra_libs = $(cl_extra_libs_gen)
 # bld settings
 ############################
 !ifdef __CLANG_TOOLS__
-bcc  = clang -pipe -c $(ppflags_bldver)
-bcxx = clang++ -pipe -c $(ppflags_bldver)
-bccl = $(noecho)clang -pipe $(ppflags_bldver)
+bcc  = clang -pipe -c
+bcxx = clang++ -pipe -c
+bccl = $(noecho)clang -pipe
 bcl  = $(noecho)clang -pipe
 !else
-bcc  = gcc -pipe -c $(ppflags_bldver)
-bcxx = g++ -pipe -c $(ppflags_bldver)
-bccl = $(noecho)gcc -pipe $(ppflags_bldver)
+bcc  = gcc -pipe -c
+bcxx = g++ -pipe -c
+bccl = $(noecho)gcc -pipe
 bcl  = $(noecho)gcc -pipe
 !endif
 
@@ -518,13 +518,13 @@ bld_clflags  = -o $@ $(bld_ldflags1)
 # standard settings
 ############################
 !ifdef __CLANG_TOOLS__
-cc   = $(noecho)clang -pipe -c $(ppflags_bldver)
-cxx  = $(noecho)clang++ -pipe -c $(ppflags_bldver)
-cl   = $(noecho)clang -pipe $(ppflags_bldver)
+cc   = $(noecho)clang -pipe -c
+cxx  = $(noecho)clang++ -pipe -c
+cl   = $(noecho)clang -pipe
 !else
-cc   = $(noecho)gcc -pipe -c $(ppflags_bldver)
-cxx  = $(noecho)g++ -pipe -c $(ppflags_bldver)
-cl   = $(noecho)gcc -pipe $(ppflags_bldver)
+cc   = $(noecho)gcc -pipe -c
+cxx  = $(noecho)g++ -pipe -c
+cl   = $(noecho)gcc -pipe
 !endif
 
 cppflags_linux  = $(common_cppflags) $(common_cppflags_linux)
@@ -636,45 +636,35 @@ bas_axp         = *wasaxp
 bas_ppc         = *wasppc
 bas_mps         = *wasmps
 
-bcc             = $(bcc_$(bld_cpu)) -zq $(ppflags_bldver)
-bccl            = $(noecho)$(bcl_$(bld_cpu)) -zq $(ppflags_bldver)
+bcc             = $(bcc_$(bld_cpu)) -zq
+bccl            = $(noecho)$(bcl_$(bld_cpu)) -zq
 bcl             = $(noecho)$(bcl_$(bld_cpu)) -zq
-bas             = $(bas_$(bld_cpu)) -q $(ppflags_bldver)
+bas             = $(bas_$(bld_cpu)) -q
 blink           = *wlink op q
 
 bld_cc_sys      = $(cflags_$(bld_os))
 bld_cl_sys      = $(clflags_$(bld_os)_$(bld_cpu))
 bld_incs        = $(bld_extra_incs) -I"$(watcom_dir)/h"
 
-bld_watcom_ver = 0
-!ifeq %OWTOOLS WATCOM
-bld_watcom_ver = $+$(%OWTOOLSVER)$-
-!endif
-!if $(bld_watcom_ver) >= 1300 && 0
-bld_new_cflags             =-xx-zam
-bld_std_cflags             =-zastd=c99
-bld_watcom_common_cflags   =-wx-wce=C310
-bld_watcom_common_cxxflags =-w8-wce=P579
+!if $(%OWTOOLSVER) >= 1300
+bld_watcom_common_cflags   =-wx-wce=C310-xx-zam-zastd=c99
+bld_watcom_common_cxxflags =-w8-wce=P579-xx-zam
 !else
-bld_std_cflags             =-za99
-bld_watcom_common_cflags   =-wx-wce=310
+bld_watcom_common_cflags   =-wx-wce=310-za99
 bld_watcom_common_cxxflags =-w8-wce=579
 !endif
-bld_dft_oflags = -ox
 
-!ifeq debug 1
-bld_gen_cflags  = $(bld_watcom_common_cflags)$(bld_std_cflags)-j-d2$(bld_new_cflags)-fo=.obj
-!else ifeq debug 2
-bld_gen_cflags  = $(bld_watcom_common_cflags)$(bld_std_cflags)-j-d2-DDEVBUILD $(bld_new_cflags)-fo=.obj
+!ifeq debug 0
+bld_debug_cflags  = -s-ox
 !else
-bld_gen_cflags  = $(bld_watcom_common_cflags)$(bld_std_cflags)-j-s$(bld_dft_oflags)$(bld_new_cflags)-fo=.obj
+bld_debug_cflags  = -d2
 !endif
 
 # options for source compilations
-bld_cflags      = $(bld_gen_cflags)
+bld_cflags      = $(bld_debug_cflags)$(bld_watcom_common_cflags)-j-fo=.obj
 
 # options for single source utility compilations
-bld_cclflags    = $(bld_gen_cflags) -fe=$@
+bld_cclflags    = $(bld_debug_cflags)$(bld_watcom_common_cflags)-j-fo=.obj -fe=$@
 bld_clflags     = -fe=$@
 
 # options for linking

@@ -133,16 +133,16 @@ rc_inc_dirs = -I"../res/bmp" -I"../res/dlg" -I"../res/cur" -I"../res" -I"../h"
 !ifeq host_os os2
 $(exetarg_name).res : ../res/wbrwpm.rc
     @%make echo_rc
-    $(rc) $(rc_flags) -I"../res/ico_pm" $(rc_inc_path) $< -fo=$@
+    $(rc) $(ppflags_common) $(rc_flags) -I"../res/ico_pm" $(rc_inc_path) $< -fo=$@
 !else
 $(exetarg_name).res : ../res/wbrw.rc
     @%make echo_rc
-    $(rc) $(rc_flags) -I"../res/ico" $(rc_inc_path) $< -fo=$@
+    $(rc) $(ppflags_common) $(rc_flags) -I"../res/ico" $(rc_inc_path) $< -fo=$@
 !endif
 
 ntmanif.res : ../res/ntmanif.rc
     @%make echo_rc
-    $(rc) $(rc_flags) -I"../res" $(inc_dirs_sys_nt) $< -fo=$@
+    $(rc) $(ppflags_common) $(rc_flags) -I"../res" $(inc_dirs_sys_nt) $< -fo=$@
 
 curr_dir=$+$(%__CWD__)$-
 

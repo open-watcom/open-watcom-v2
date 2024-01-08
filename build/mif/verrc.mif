@@ -123,37 +123,37 @@ verrc_inc_path = $(extra_verrc_inc_path) $(inc_dirs_sys) -I"$(watcom_dir)/h"
 $(verrc_exe_out): $(verrc_exe_skel) .EXPLICIT
     $(noecho)genverrc $]@ $(verrc_exe_int) $$ $(verrc_exe) $(patch_level)
     @%make echo_rc
-    $(rc) $(rc_flags) $(verrc_inc_path) $(verrc_exe_int) -fo=$@
+    $(rc) $(ppflags_common) $(rc_flags) $(verrc_inc_path) $(verrc_exe_int) -fo=$@
 
 $(verrc386_exe_out): $(verrc386_exe_skel) .EXPLICIT
     $(noecho)genverrc $]@ $(verrc386_exe_int) $$ $(verrc386_exe) $(patch_level)
     @%make echo_rc
-    $(rc) $(rc_flags) $(verrc_inc_path) $(verrc386_exe_int) -fo=$@
+    $(rc) $(ppflags_common) $(rc_flags) $(verrc_inc_path) $(verrc386_exe_int) -fo=$@
 
 $(verrcx64_exe_out): $(verrcx64_exe_skel) .EXPLICIT
     $(noecho)genverrc $]@ $(verrcx64_exe_int) $$ $(verrcx64_exe) $(patch_level)
     @%make echo_rc
-    $(rc) $(rc_flags) $(verrc_inc_path) $(verrcx64_exe_int) -fo=$@
+    $(rc) $(ppflags_common) $(rc_flags) $(verrc_inc_path) $(verrcx64_exe_int) -fo=$@
 
 $(verrcaxp_exe_out): $(verrcaxp_exe_skel) .EXPLICIT
     $(noecho)genverrc $]@ $(verrcaxp_exe_int) $$ $(verrcaxp_exe) $(patch_level)
     @%make echo_rc
-    $(rc) $(rc_flags) $(verrc_inc_path) $(verrcaxp_exe_int) -fo=$@
+    $(rc) $(ppflags_common) $(rc_flags) $(verrc_inc_path) $(verrcaxp_exe_int) -fo=$@
 
 $(verrcmps_exe_out): $(verrcmps_exe_skel) .EXPLICIT
     $(noecho)genverrc $]@ $(verrcmps_exe_int) $$ $(verrcmps_exe) $(patch_level)
     @%make echo_rc
-    $(rc) $(rc_flags) $(verrc_inc_path) $(verrcmps_exe_int) -fo=$@
+    $(rc) $(ppflags_common) $(rc_flags) $(verrc_inc_path) $(verrcmps_exe_int) -fo=$@
 
 $(verrcppc_exe_out): $(verrcppc_exe_skel) .EXPLICIT
     $(noecho)genverrc $]@ $(verrcppc_exe_int) $$ $(verrcppc_exe) $(patch_level)
     @%make echo_rc
-    $(rc) $(rc_flags) $(verrc_inc_path) $(verrcppc_exe_int) -fo=$@
+    $(rc) $(ppflags_common) $(rc_flags) $(verrc_inc_path) $(verrcppc_exe_int) -fo=$@
 
 $(verrc_dll_out): $(verrc_dll_skel) .EXPLICIT
     $(noecho)genverrc $]@ $(verrc_dll_int) $$ $(verrc_dll) $(patch_level)
     @%make echo_rc
-    $(rc) $(rc_flags) $(verrc_inc_path) $(verrc_dll_int) -fo=$@
+    $(rc) $(ppflags_common) $(rc_flags) $(verrc_inc_path) $(verrc_dll_int) -fo=$@
 
 #
 # Macros to bind version resource (for PE images)

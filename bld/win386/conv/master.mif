@@ -58,4 +58,4 @@ winobjs.lbc : ./conv.exe $(def_files) $(__MAKEFILES__)
 
 ./conv.exe : conv.c $(__MAKEFILES__)
     @%make echo_bldccl
-    $(bld_ccl) $[@ $(bld_cclflags) $(bld_ldflags)
+    $(bld_ccl) $(ppflags_common) $(ppflags_autodep) $[@ $(bld_cclflags) $(bld_ldflags) -fm
