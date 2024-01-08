@@ -799,19 +799,19 @@ rc_ui_inc_path  = $(rcui_inc_dirs) $(rcui_inc_dirs_$(host_os)) $(inc_dirs_sys_wi
 #
 
 !ifdef bootstrap
-rcui            = $(noecho)*bwrc -q  $(ppflags_common) $(rc_flags_all) -bt=windows $(rc_ui_flags) $[@ -fo=$@ $(rc_ui_inc_path)
+rcui            = $(noecho)*bwrc -q $(ppflags_common) $(rc_flags_all) -bt=windows $(rc_ui_flags) $[@ -fo=$@ $(rc_ui_inc_path)
 !else ifndef __WATCOM_TOOLS__
-rcui            = $(noecho)*bwrc -q  $(ppflags_common) $(rc_flags_all) -bt=windows $(rc_ui_flags) $[@ -fo=$@ $(rc_ui_inc_path)
+rcui            = $(noecho)*bwrc -q $(ppflags_common) $(rc_flags_all) -bt=windows $(rc_ui_flags) $[@ -fo=$@ $(rc_ui_inc_path)
 !else
-rcui            = $(noecho)*bwrc -q  $(ppflags_common) $(rc_flags_all) -x -bt=windows $(rc_ui_flags) $[@ -fo=$@ $(rc_ui_inc_path)
+rcui            = $(noecho)*bwrc -q $(ppflags_common) $(rc_flags_all) -x -bt=windows $(rc_ui_flags) $[@ -fo=$@ $(rc_ui_inc_path)
 !endif
 
 !ifdef bootstrap
-rcui8           = $(noecho)*bwrc -q  $(ppflags_common) $(rc_flags_all) -bt=windows $(rc_ui8_flags) $[@ -fo=$@ $(rc_ui_inc_path)
+rcui8           = $(noecho)*bwrc -q $(ppflags_common) $(rc_flags_all) -bt=windows $(rc_ui8_flags) $[@ -fo=$@ $(rc_ui_inc_path)
 !else ifndef __WATCOM_TOOLS__
-rcui8           = $(noecho)*bwrc -q  $(ppflags_common) $(rc_flags_all) -bt=windows $(rc_ui8_flags) $[@ -fo=$@ $(rc_ui_inc_path)
+rcui8           = $(noecho)*bwrc -q $(ppflags_common) $(rc_flags_all) -bt=windows $(rc_ui8_flags) $[@ -fo=$@ $(rc_ui_inc_path)
 !else
-rcui8           = $(noecho)*bwrc -q  $(ppflags_common) $(rc_flags_all) -x -bt=windows $(rc_ui8_flags) $[@ -fo=$@ $(rc_ui_inc_path)
+rcui8           = $(noecho)*bwrc -q $(ppflags_common) $(rc_flags_all) -x -bt=windows $(rc_ui8_flags) $[@ -fo=$@ $(rc_ui_inc_path)
 !endif
 
 rc              = $(noecho)*bwrc -q

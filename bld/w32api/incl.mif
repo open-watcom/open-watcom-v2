@@ -497,6 +497,5 @@ $(dirs):
 !include $(mh_dir)/deps.mif
 
 clean: .SYMBOLIC
-    rm -f *.h *.rh *.tmp *.lst *.err
-    rm -f $(additional_clean)
+    rm -f *.h *.rh *.tmp *.lst *.err $(additional_clean)
     rm -rf $(dirs)
