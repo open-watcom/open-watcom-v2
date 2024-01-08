@@ -42,7 +42,7 @@
 #include "mrreloc.h"
 #include "mrfile.h"
 
-#if INSTRUMENTS
+#ifdef INSTRUMENTS
 #include <stdio.h>
 #endif
 
@@ -104,10 +104,10 @@ void MergeRefSection::mergeRefs( WCPtrOrderedVector<MergeFile>& files )
     for( i = 0; i < files.entries(); i += 1 ) {
         drSizes = files[ i ]->getDRSizes();
 
-        #if INSTRUMENTS
+#ifdef INSTRUMENTS
         Log.printf( "    File %s - %ld bytes\n", files[i]->getFileName(), drSizes[ DR_DEBUG_REF ] );
         totLen += drSizes[ DR_DEBUG_REF ];
-        #endif
+#endif
 
         scanFile( files[ i ], i, lnCol );
     }
@@ -116,9 +116,9 @@ void MergeRefSection::mergeRefs( WCPtrOrderedVector<MergeFile>& files )
     _outFile->seek( DR_DEBUG_REF, 0 );
     _outFile->writeDWord( offset - sizeof(uint_32) );
 
-    #if INSTRUMENTS
-        Log.printf( "    %d files, %ld bytes\n", i, totLen );
-    #endif
+#ifdef INSTRUMENTS
+    Log.printf( "    %d files, %ld bytes\n", i, totLen );
+#endif
 
     _outFile->endWriteSect();
 }
@@ -152,11 +152,11 @@ void MergeRefSection::scanFile( MergeFile * file, uint_8 indx,
             keyOff.offset = user;
             die = _info.getReloc().getReloc( keyOff );
 
-            #if INSTRUMENTS
+#ifdef INSTRUMENTS
             if( die == NULL ) {
                 Log.printf( "Could not find user DIE <Target: %hd, source: %#lx>!\n", indx, user );
             }
-            #endif
+#endif
 
             InfoAssert( die != NULL );
 
@@ -235,7 +235,7 @@ void MergeRefSection::scanFile( MergeFile * file, uint_8 indx,
             }
 #endif
 
-            #if INSTRUMENTS
+#ifdef INSTRUMENTS
             if( die == NULL ) {
                 Log.printf( "Could not find dependant die <Target: %hd, dependent: %#lx>!\n", indx, dependant );
                 Log.printf( "   user == <Target: %hd, source: %#lx>!", indx, user );
@@ -256,7 +256,7 @@ void MergeRefSection::scanFile( MergeFile * file, uint_8 indx,
                 fprintf( stderr, "Could not find dependant die!\n" );
                 continue;
             }
-            #endif
+#endif
 
             InfoAssert( die != NULL );
 
@@ -302,9 +302,9 @@ void MergeRefSection::skipDeadScope( MergeFile * file,
     uint_32 linecol;
     int_32  delta;
 
-    #if INSTRUMENTS
+#ifdef INSTRUMENTS
     uint_32 startOff = off;
-    #endif
+#endif
 
     while( scopeLevel > 0 && off < maxOff ) {
         opcode = file->readByte( DR_DEBUG_REF, off );
@@ -353,12 +353,12 @@ void MergeRefSection::skipDeadScope( MergeFile * file,
         }
     }
 
-    #if INSTRUMENTS
+#ifdef INSTRUMENTS
     if( scopeLevel != 0 ) {
         Log.printf( "Tried to skip past the end of ref section -- level is %d\n", scopeLevel );
         Log.printf( "  I was _trying_ to skip from %lx, but I hit %lx!\n", startOff, maxOff );
     }
-    #endif
+#endif
 
     InfoAssert( scopeLevel == 0 );      // ie we didn't hit EOF
 }

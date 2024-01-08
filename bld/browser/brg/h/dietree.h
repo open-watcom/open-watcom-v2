@@ -80,9 +80,9 @@ public:
     DIETreeBucket * allocBucket( DIETreeBucket * next );
     DIETreeSearch * allocSearch( void );
 
-    #if INSTRUMENTS
+#ifdef INSTRUMENTS
     void            print( DIETreeNode * node, uint indent );
-    #endif
+#endif
 
 private:
 

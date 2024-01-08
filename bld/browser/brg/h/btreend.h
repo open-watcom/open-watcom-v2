@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -55,9 +55,9 @@ public:
     static  void                ragnarok();
     static  void                setKeyObjOrder( uint keyOrd, uint objOrd );
 
-    #if INSTRUMENTS
+#ifdef INSTRUMENTS
     virtual void                print( int indent ) = 0;
-    #endif
+#endif
 
 };
 
@@ -82,9 +82,9 @@ public:
     static  void    setKeyOrder( uint KeyOrder );
 
 
-    #if INSTRUMENTS
+#ifdef INSTRUMENTS
     virtual void        print( int indent );
-    #endif
+#endif
 
 protected:
     struct NodeStore {
@@ -127,9 +127,9 @@ public:
     static  void        ragnarok();
     static  void        setObjOrder( uint objOrder );
 
-    #if INSTRUMENTS
+#ifdef INSTRUMENTS
     virtual void        print( int indent );
-    #endif
+#endif
 
 protected:
     Obj_T *             privInsert( Obj_T * obj );

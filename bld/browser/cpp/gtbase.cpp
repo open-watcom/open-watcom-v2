@@ -151,9 +151,9 @@ void TreeNode::setBounding( OutputDevice *dev )
     bool sepIncluded = false;
 
     if( !_flags.boundSet ) {
-        #if DEBUG
+#ifdef DEBUG
         _nm = name();
-        #endif
+#endif
 
         _flags.boundSet = true;
 

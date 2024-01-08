@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,25 +40,24 @@ StringPool::StringPool( size_t size, const char * owner )
                 , _endOfCurrBlock( NULL )
                 , _firstBlock( NULL )
                 , _blockSize( size )
-
-                #if DEBUG
+#ifdef DEBUG
                 , _owner( owner )
                 , _numAllocs( 0 )
                 , _numGrows( 0 )
-                #endif
+#endif
 //--------------------------------------------------------
 {
-    owner = owner;  // disable warning if DEBUG is off
+    (void)owner;  // disable warning if DEBUG is off
 }
 
 StringPool::~StringPool()
 //-----------------------
 {
-    #if INSTRUMENTS
-        Log.printf( "strpool: %s: %d allocated, %d grows, %d bytes used\n",
-                    _owner, _numAllocs, _numGrows,
-                    _numGrows * (_blockSize + sizeof( StringBlock ) - 1) );
-    #endif
+#ifdef INSTRUMENTS
+    Log.printf( "strpool: %s: %d allocated, %d grows, %d bytes used\n",
+                _owner, _numAllocs, _numGrows,
+                _numGrows * (_blockSize + sizeof( StringBlock ) - 1) );
+#endif
 
     ragnarok();
 }
@@ -67,9 +67,9 @@ char * StringPool::alloc( size_t len )
 {
     char * ret;
 
-    #if DEBUG
-        _numAllocs += 1;
-    #endif
+#ifdef DEBUG
+    _numAllocs += 1;
+#endif
 
     if( _currPos + len >= _endOfCurrBlock ) {
         grow();
@@ -86,9 +86,9 @@ char * StringPool::alloc( size_t len )
 void StringPool::grow()
 //---------------------
 {
-    #if DEBUG
-        _numGrows += 1;
-    #endif
+#ifdef DEBUG
+    _numGrows += 1;
+#endif
 
     _currBlock = (StringBlock *) new char [_blockSize + sizeof( StringBlock )];
     _endOfCurrBlock = (char *) _currBlock + _blockSize + sizeof( StringBlock ) - 1;

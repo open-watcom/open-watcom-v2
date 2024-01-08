@@ -205,11 +205,11 @@ void DIETree::insert( MergeDIE * die )
 
         if( die->name() == lhn->_nodes[ middle ]->name() ) {
             // we've got a match
-            #if INSTRUMENTS
-                Log.printf( "!DUPLICATE! -- %s already in table\n",
-                            lhn->_nodes[ middle ]->name().getString() );
-                print( NULL, 0 );
-            #endif
+#ifdef INSTRUMENTS
+            Log.printf( "!DUPLICATE! -- %s already in table\n",
+                        lhn->_nodes[ middle ]->name().getString() );
+            print( NULL, 0 );
+#endif
             InternalAssert( 0 /* duplicate */ );
             break;
         }
@@ -359,7 +359,7 @@ void DIETree::freeDirectory( void )
     _searchPool.ragnarok();
 }
 
-#if INSTRUMENTS
+#ifdef INSTRUMENTS
 
 void DIETree::print( DIETreeNode * node, uint indent )
 //----------------------------------------------------
@@ -392,7 +392,7 @@ void DIETree::print( DIETreeNode * node, uint indent )
 }
 #endif
 
-#if defined( DEBUG_DIETREE )
+#ifdef DEBUG_DIETREE
 
 void main() {
     char        buf[ 512 ];

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -112,7 +112,7 @@ MergeDIE::operator const MergeOffset&() const
     return _offset;
 }
 
-#if INSTRUMENTS
+#ifdef INSTRUMENTS
 MergeDIE::operator const char*() const
 //------------------------------------
 {
@@ -172,10 +172,10 @@ MergeDIE * MergeDIE::collision( DIETree * tree )
         }
 
         if( _parent != other->_parent ) {
-            #if (INSTRUMENTS == INSTRUMENTS_FULL_LOGGING)
+#ifdef INSTRUMENTS_FULL_LOGGING
             Log.printf( "  Not joined because parents are not equal -- %p != %p\n",
                         _parent, other->_parent );
-            #endif
+#endif
             continue;
         }
 
@@ -233,9 +233,9 @@ void MergeDIE::setNewOff( MergeInfoSection * sect, uint_32 & newOffset,
         }
     }
 
-    #if (INSTRUMENTS == INSTRUMENTS_FULL_LOGGING)
+#ifdef INSTRUMENTS_FULL_LOGGING
         Log.printf( "Old offset %s now at %lx\n", offset().getString(), newOffset );
-    #endif
+#endif
 
     _flags._assigned = 1;
     _newOffset = newOffset;
@@ -245,13 +245,13 @@ void MergeDIE::setNewOff( MergeInfoSection * sect, uint_32 & newOffset,
     if( _nameKey._tag != DW_TAG_compile_unit ) {
         child = sect->getReloc().getReloc( firstChild() );
         while( child != NULL ) {
-            #if INSTRUMENTS
+#ifdef INSTRUMENTS
             if( child->assigned() ) {
                 Log.printf( "%s: child", (const char *)(*this) );
                 Log.printf( " %s already Assigned!\n", (const char *)(*child) );
                 break;
             }
-            #endif
+#endif
             child->setNewOff( sect, newOffset, pp );
             child = sect->getReloc().getReloc( child->sibling() );
         }
@@ -345,11 +345,11 @@ void MergeDIE::writeSelf( MergeInfoSection * sect, MergeFile & outFile,
     bool            updateRef;      // update a reference?
     int             i;
 
-    #if INSTRUMENTS
+#ifdef INSTRUMENTS
     if( _newOffset != outFile.tell( DR_DEBUG_INFO ) ) {
         Log.printf( "DIE not at correct new offset! Is actually %lx, should be %lx, %s\n", outFile.tell( DR_DEBUG_INFO ), _newOffset, (const char *)(*this) );
     }
-    #endif
+#endif
     InternalAssert( _newOffset == outFile.tell( DR_DEBUG_INFO ) );
 
     abbcode = in->readULEB128( DR_DEBUG_INFO, offset );
@@ -395,12 +395,12 @@ void MergeDIE::writeSelf( MergeInfoSection * sect, MergeFile & outFile,
                 referredTo = sect->find( ref );
             }
 
-            #if INSTRUMENTS
+#ifdef INSTRUMENTS
                 if( referredTo == NULL ) {
                     Log.printf( "Ack -- can't find a replacement %s", _offset.getString() );
                     Log.printf( " for %#x %s!\n", att.attrib(), ref.getString() );
                 }
-            #endif
+#endif
             InfoAssert( referredTo != NULL );
 
             switch( att.form() ) {

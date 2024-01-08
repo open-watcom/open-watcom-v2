@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -116,11 +117,11 @@ enum TreeSubMenus {
     TMExpandAll,
     TMCollapseBranch,
     TMCollapseAll,
-    #ifdef DEBUGTREE
+#ifdef DEBUGTREE
     TMSep1,
     TMDebugInfo,
     TMSibWidth,
-    #endif
+#endif
     TMNumTreeMenus
 };
 

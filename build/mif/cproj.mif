@@ -103,6 +103,8 @@ as_mps          = *bwasmps
 debug = 0
 !else ifeq %OWDEVBUILD 1
 debug = 2
+!else ifeq %OWDEBUGBUILD 2
+debug = 2
 !else ifeq %OWDEBUGBUILD 1
 debug = 1
 !else ifeq $(proj_name)_debug 1

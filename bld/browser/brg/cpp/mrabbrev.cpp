@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -173,10 +174,10 @@ MergeAbbrevSection::~MergeAbbrevSection()
 {
     WCValHashDictIter<uint_32, MergeAbbrev *>   iter( *_abbrevs );
 
-    #if INSTRUMENTS
+#ifdef INSTRUMENTS
         Log.printf( "\nMergeAbbrevSection\n------------------\n" );
         Log.printf( "MergeAbbrevSection::_abbrevs:          %5u entries, loaded %3.1f%%\n", _abbrevs->entries(), 100.0 * ((double)_abbrevs->entries() / (double)_abbrevs->buckets()) );
-    #endif
+#endif
 
     while( ++ iter ) {
         delete iter.value();
@@ -209,9 +210,9 @@ void MergeAbbrevSection::scanFile( MergeFile * file, uint_8 )
         }
     }
 
-    #if INSTRUMENTS
+#ifdef INSTRUMENTS
     Log.printf( "    %s .debug_abbrev - %ld bytes\n", file->getFileName(), file->getDRSizes()[ DR_DEBUG_ABBREV ] );
-    #endif
+#endif
 }
 
 void MergeAbbrevSection::writePass( MergeFile * outFile )
@@ -238,12 +239,12 @@ MergeAbbrev * MergeAbbrevSection::getAbbrev( uint_32 code )
 
     found = _abbrevs->find( code, abb );
 
-    #if INSTRUMENTS
+#ifdef INSTRUMENTS
     if( !found ) {
         Log.printf( "MergeAbbrevSection::getAbbrev -- bad code %lu!\n", code );
         return NULL;
     }
-    #endif
+#endif
 
     InfoAssert( found );
 

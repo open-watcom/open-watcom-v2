@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -382,10 +383,10 @@ void TreeCycleNode::assignLevels( void )
     for( i = _flatNodes->count(); i > 0; i -= 1 ) {
         (*_flatNodes)[ i - 1 ]->_entered = false;
 
-        #if DEBUG
+#ifdef DEBUG
         #define MAGIC_NUMBER 21212
         (*_flatNodes)[ i - 1 ]->_level = MAGIC_NUMBER;
-        #endif
+#endif
     }
 
     for( i = _flatNodes->count(); i > 0; i -= 1 ) {
@@ -406,9 +407,9 @@ void TreeCycleNode::assignLevels( void )
     int minLevel = _level;
 
     for( i = _flatNodes->count(); i > 0; i -= 1 ) {
-        #if DEBUG
+#ifdef DEBUG
         REQUIRE( (*_flatNodes)[ i - 1 ]->_level != MAGIC_NUMBER, "TreeCycleNode::assignLevels()" );
-        #endif
+#endif
 
         minLevel = minInt( minLevel, (*_flatNodes)[ i - 1 ]->_level );
     }
@@ -435,20 +436,20 @@ void TreeCycleNode::levelAdjust( TreeCycleList & seen,
     _level = seenAt;
     _entered = true;
 
-    #if DEBUG
+#ifdef DEBUG
     char * myName = name();
     char * pName;
 
     TreeCycleList * snL = &seen;
     TreeCycleRelList * relL = &relatives;
-    #endif
+#endif
 
     for( int i = _parents.count(); i > 0; i -= 1 ) {
         TreeCycleNode * prt = (TreeCycleNode *)_parents[ i - 1 ]->getTo();
 
-        #if DEBUG
+#ifdef DEBUG
         pName = prt->name();
-        #endif
+#endif
 
         if( prt->_entered ) {
             TreeCycleRelative * rel = new TreeCycleRelative;
@@ -473,27 +474,27 @@ TreeCycleList * TreeCycleNode::joinTrees( TreeCycleListList & roots,
     bool deltaSet;
     int  tstDelta;
 
-    #if DEBUG
+#ifdef DEBUG
     char * myName = name();
     char * rName;
     char * rrName;
-    #endif
+#endif
 
     for( int i = roots.count(); i > 0 && relatives.count() > 0; i -= 1 ) {
         deltaSet = false;
         for( int j = relatives.count(); j > 0; j -= 1 ) {
             TreeCycleRelative * relNode = relatives[ j - 1 ];
 
-            #if DEBUG
+#ifdef DEBUG
             rrName = relNode->node->name();
-            #endif
+#endif
 
             for( int k = roots[ i - 1 ]->count(); k > 0; k -= 1 ) {
                 TreeCycleNode * rootNode = (*roots[ i - 1 ])[ k - 1 ];
 
-                #if DEBUG
+#ifdef DEBUG
                 rName = rootNode->name();
-                #endif
+#endif
 
                 if( rootNode->getHandle() == relNode->node->getHandle() ) {
                     tstDelta = rootNode->_level - relNode->levelAt;

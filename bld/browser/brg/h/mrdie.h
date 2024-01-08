@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -98,7 +99,7 @@ public:
     const MergeOffset&  sibling() const { return _sibling; }
     uint_32             getNewOff() const { return _newOffset; }
 
-    #if 0
+#if 0
     void            writeDIE( MergeInfoSection * sect, MergeFile & out,
                                  WCPtrOrderedVector<MergeFile>& inFiles );
     void            writeSelf( MergeInfoSection * sect, MergeFile & out,
@@ -107,10 +108,10 @@ public:
                                 MergeAttrib & att, uint_32 & offset,
                                 MergeFile & out,
                                 WCPtrOrderedVector<MergeFile>& inFiles );
-    #endif
-                    #if INSTRUMENTS
-                    operator const char*() const;
-                    #endif
+#endif
+#ifdef INSTRUMENTS
+    operator const char*() const;
+#endif
 
 private:
     MergeDIE *          _parent;        // parent die

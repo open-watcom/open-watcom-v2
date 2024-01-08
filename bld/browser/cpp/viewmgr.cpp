@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -241,11 +241,11 @@ void ViewManager::showDetailView( const Symbol * sym, DetailView::ViewType vt )
     if( !dtv ) {
         dtv = DetailView::createView( sym, vt );
 
-        #if DEBUG   // FIXME -- TAKE OUT AS SOON AS TEXTREE, STRUCVIEW ARE VIEWS
+#ifdef DEBUG   // FIXME -- TAKE OUT AS SOON AS TEXTREE, STRUCVIEW ARE VIEWS
         if( dtv == NULL ) {
             return;
         }
-        #endif
+#endif
 
         _detailViews->append( dtv );
 

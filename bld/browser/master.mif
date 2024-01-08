@@ -40,9 +40,9 @@ sys_windowed = 1
 inc_dirs = -I"../h" -I"../brg/h" -I"../gen" $(wclass_inc_dirs) -I"$(docs_host_dir)" &
     $(dwarfr_inc_dirs) -I"$(posix_dir)/h" -I"$(editdll_dir)"
 
-extra_cpp_flags = -DNOPERSIST=1
-!ifneq debug 0
-extra_cpp_flags += -DDEBUG=1 -DDEBUG_ASSERT=1 -DDEBUGTREE=1
+extra_cpp_flags = -DNOPERSIST
+!ifeq debug 2
+extra_cpp_flags += -DDEBUG -DDEBUG_ASSERT -DDEBUGTREE
 !endif
 !ifeq use_virtmem 1
 extra_cpp_flags += -DUSE_VIRTMEM
@@ -97,7 +97,7 @@ mbr_files = $+$(template)$-
 ext = obj
 objs      = $+$(template)$- rxwrap.obj brmem.obj $(trmem_objs)
 
-!ifneq debug 0
+!ifeq debug 2
 objs_dbg  = debuglog.obj
 !endif
 
@@ -158,4 +158,4 @@ $(docs_host_dir)/wbrw.gh : $(docs_host_dir) .ALWAYS
 
 .gpp.obj: .AUTODEPEND
     @%make echo_cxx
-    $(cxx) $(cflags) $(extra_cxx_flags) $(extra_cpp_flags_$[&) $(extra_c_flags_$[&) $(inc_path) $[@
+    $(cxx) $(ppflags_common) $(ppflags_autodep) $(cflags) $(extra_cxx_flags) $(extra_cpp_flags_$[&) $(extra_c_flags_$[&) $(inc_path) $[@

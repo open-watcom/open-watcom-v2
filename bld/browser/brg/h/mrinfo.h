@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -67,9 +68,9 @@ public:
     void            writePass( MergeFile * outFile,
                                WCPtrOrderedVector<MergeFile> & inFiles );
 
-    #if INSTRUMENTS
+#ifdef INSTRUMENTS
     void            print();
-    #endif
+#endif
 
 private:
     void            relocPass( MergeInfoPP & pp );

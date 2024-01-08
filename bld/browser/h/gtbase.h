@@ -173,10 +173,10 @@ public:
             TreeNode*       hitTest( TreeCoord x, TreeCoord y );
             bool            isVisible( void );
 
-            #ifdef DEBUGTREE
+#ifdef DEBUGTREE
             void        debugInfo( TreeRoot * );
             void        sibWidth();
-            #endif
+#endif
 
     static  void            arrangeAll( TreeDirection dir, TreeRootList& roots,
                                         TreeRect& world, OutputDevice *dev );
@@ -192,9 +192,9 @@ protected:
             TreeWindow*     _parent;
             TreeRect        _bounding;
 
-            #if DEBUG
+#ifdef DEBUG
             char*           _nm;
-            #endif
+#endif
 
 private:
             void            getFirstNonContend( TreeCoord& sibOff, TreeCoord& width );

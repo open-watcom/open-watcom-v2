@@ -66,14 +66,14 @@ MergeRelocate::~MergeRelocate()
 {
     int i;
 
-    #if INSTRUMENTS
+#ifdef INSTRUMENTS
     Log.printf( "\nMergeRelocate\n--------------\n" );
     Log.printf( "   _replacedDies: %5u entries\n", _numFiles );
     for( i = 0; i < _numFiles; i += 1 ) {
         WCValHashDict<uint_32,MergeDIE *> * dict( _replacedDies[ i ] );
         Log.printf( "         [ %3d ]: %5u entries, loaded %3.1f%%\n", i, dict->entries(), 100.0 * ((double)dict->entries() / (double)dict->buckets()) );
     }
-    #endif
+#endif
 
     for( i = 0; i < _numFiles; i += 1 ) {
         delete _replacedDies[ i ];
@@ -88,19 +88,19 @@ void MergeRelocate::addReloc( MergeOffset & off, MergeDIE * replacer )
 {
 //    _replacedDies[ off.fileIdx ]->insert( off.offset, replacer );
 
-    #if ( INSTRUMENTS == INSTRUMENTS_FULL_LOGGING )
-        MergeDIE * replaced = getReloc( off );
-        Log.printf( "    reloc from %s %s to ",
-//                        ((const MergeNameKey&)(*replaced)).getString(),
-//                        ((const MergeOffset&)(*replaced)).getString() );
-                        ( replaced != NULL ) ? replaced->name().getString() : "NULL",
-                        ( replaced != NULL ) ? replaced->offset().getString() : "NULL" );
-//        Log.printf( "%s %s\n", ((const MergeNameKey&)(*replacer)).getString(),
-//                        ((const MergeOffset&)(*replacer)).getString() );
-        Log.printf( "%s %s\n",
-                        ( replacer != NULL ) ? replacer->name().getString() : "NULL",
-                        ( replacer != NULL ) ? replacer->offset().getString() : "NULL" );
-    #endif
+#ifdef INSTRUMENTS_FULL_LOGGING
+    MergeDIE * replaced = getReloc( off );
+    Log.printf( "    reloc from %s %s to ",
+//                    ((const MergeNameKey&)(*replaced)).getString(),
+//                    ((const MergeOffset&)(*replaced)).getString() );
+                    ( replaced != NULL ) ? replaced->name().getString() : "NULL",
+                    ( replaced != NULL ) ? replaced->offset().getString() : "NULL" );
+//    Log.printf( "%s %s\n", ((const MergeNameKey&)(*replacer)).getString(),
+//                    ((const MergeOffset&)(*replacer)).getString() );
+    Log.printf( "%s %s\n",
+                    ( replacer != NULL ) ? replacer->name().getString() : "NULL",
+                    ( replacer != NULL ) ? replacer->offset().getString() : "NULL" );
+#endif
     _replacedDies[ off.fileIdx ]->insert( off.offset, replacer );
 }
 

@@ -93,9 +93,9 @@ bool CheckUpToDate( FileInfo & inf, WCValSList<String> & en,
 
     if( ( en.entries() + dis.entries() ) != components->entries() ) {
         // not same # of files
-            #if INSTRUMENTS
-                Log.printf( "\ndifferent number of .mbr's than req'ed\n\n" );
-            #endif
+#ifdef INSTRUMENTS
+        Log.printf( "\ndifferent number of .mbr's than req'ed\n\n" );
+#endif
         dict.clear();
         return false;
     }
@@ -106,10 +106,10 @@ bool CheckUpToDate( FileInfo & inf, WCValSList<String> & en,
         found = dict.findKeyAndValue( String(file->name), key, compFile );
         if( !found ) {
             // database has a file that is not wanted
-            #if INSTRUMENTS
-                Log.printf( "\n%s: .mbr file in database, not requested\n\n",
-                            file->name );
-            #endif
+#ifdef INSTRUMENTS
+            Log.printf( "\n%s: .mbr file in database, not requested\n\n",
+                        file->name );
+#endif
             dict.clear();
             return false;
         }
@@ -117,22 +117,22 @@ bool CheckUpToDate( FileInfo & inf, WCValSList<String> & en,
         if( (file->enabled && !compFile._enabled) ||
             (!file->enabled && compFile._enabled) ) {
             // file enabling is different
-            #if INSTRUMENTS
-                Log.printf( "\n%s: .mbr file in database %s, requested %s\n\n",
-                            file->name, file->enabled ? "enabled" : "disabled",
-                            compFile._enabled ? "enabled" : "disabled" );
-            #endif
+#ifdef INSTRUMENTS
+            Log.printf( "\n%s: .mbr file in database %s, requested %s\n\n",
+                        file->name, file->enabled ? "enabled" : "disabled",
+                        compFile._enabled ? "enabled" : "disabled" );
+#endif
             dict.clear();
             return false;
         }
 
         if( file->time != compFile._time ) {
             // different time stamps on files
-            #if INSTRUMENTS
-                Log.printf( "\n%s: .mbr in database different time: (database, disk)\n", file->name );
-                Log.printf( "%s", ctime( &file->time ) );
-                Log.printf( "%s\n\n", ctime( &compFile._time ) );
-            #endif
+#ifdef INSTRUMENTS
+            Log.printf( "\n%s: .mbr in database different time: (database, disk)\n", file->name );
+            Log.printf( "%s", ctime( &file->time ) );
+            Log.printf( "%s\n\n", ctime( &compFile._time ) );
+#endif
             dict.clear();
             return false;
         }
