@@ -158,4 +158,4 @@ $(docs_host_dir)/wbrw.gh : $(docs_host_dir) .ALWAYS
 
 .gpp.obj: .AUTODEPEND
     @%make echo_cxx
-    $(cxx) $(ppflags_common) $(ppflags_autodep) $(cflags) $(extra_cxx_flags) $(extra_cpp_flags_$[&) $(extra_c_flags_$[&) $(inc_path) $[@
+    $(cxx) $(ppflags_common) $(ppflags_autodep) $(extra_cpp_flags_$[&) $(cflags) $(extra_cxx_flags) $(extra_c_flags_$[&) $(inc_path) $[@

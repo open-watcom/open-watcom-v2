@@ -26,15 +26,15 @@ clibexts.lib : clibexts.obj
 clibext.obj: clibext.c $(__MAKEFILES__) $($(proj_name)_autodepends)
     @%make echo_cc
 !ifdef bootstrap
-    $(cc) $(ppflags_common) $(ppflags_autodep) $(cflags) $(c_flags) $(bld_cppflags) $(inc_path) $[@
+    $(cc) $(ppflags_common) $(ppflags_autodep) $(bld_cppflags) $(cflags) $(c_flags) $(inc_path) $[@
 !else
-    $(cc) $(ppflags_common) $(ppflags_autodep) $(cflags) $(c_flags) $(cppflags) $(inc_path) $[@
+    $(cc) $(ppflags_common) $(ppflags_autodep) $(cppflags) $(cflags) $(c_flags) $(inc_path) $[@
 !endif
 
 clibexts.obj: clibext.c $(__MAKEFILES__) $($(proj_name)_autodepends)
     @%make echo_cc
 !ifdef bootstrap
-    $(cc) $(ppflags_common) $(ppflags_autodep) $(cflags_dll) $(c_flags) $(bld_cppflags) $(extra_cpp_dll_flags) $(inc_path) $[@
+    $(cc) $(ppflags_common) $(ppflags_autodep) $(bld_cppflags) $(extra_cpp_dll_flags) $(cflags_dll) $(c_flags) $(inc_path) $[@
 !else
-    $(cc) $(ppflags_common) $(ppflags_autodep) $(cflags_dll) $(c_flags) $(cppflags) $(extra_cpp_dll_flags) $(inc_path) $[@
+    $(cc) $(ppflags_common) $(ppflags_autodep) $(cppflags) $(extra_cpp_dll_flags) $(cflags_dll) $(c_flags) $(inc_path) $[@
 !endif

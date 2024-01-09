@@ -223,7 +223,7 @@ bld_ldflags  =  $(bld_cl_extra_libs_gen) -link -nologo &
     $(bld_extra_ldflags) $(bld_ldflags_$(proj_type))
 
 # options for linking via cl
-bld_cclflags = $(bld_cppflags) $(common_cflags) $(common_flags) -Fe$@ $(bld_ldflags1)
+bld_cclflags = $(common_cflags) $(common_flags) -Fe$@ $(bld_ldflags1)
 bld_clflags  = -Fe$@ $(bld_ldflags1)
 
 !ifndef __WATCOM_TOOLS__
@@ -510,7 +510,7 @@ bld_ldflags1 = $(common_ldflags) -Wl,-Map,$^&.map
 bld_ldflags  = $(bld_cl_extra_libs_gen) $(bld_extra_ldflags) $(bld_ldflags_$(proj_type))
 
 # options for linking via cl
-bld_cclflags = $(bld_cppflags) $(common_cflags) $(common_flags) -o $@ $(bld_ldflags1)
+bld_cclflags = $(common_cflags) $(common_flags) -o $@ $(bld_ldflags1)
 bld_clflags  = -o $@ $(bld_ldflags1)
 
 !ifndef __WATCOM_TOOLS__
@@ -659,6 +659,8 @@ bld_debug_cflags  = -s-ox
 !else
 bld_debug_cflags  = -d2
 !endif
+
+bld_cppflags    =
 
 # options for source compilations
 bld_cflags      = $(bld_debug_cflags)$(bld_watcom_common_cflags)-j-fo=.obj
