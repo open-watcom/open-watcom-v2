@@ -64,8 +64,8 @@ sw_c_mps =
 # sw_c_(system)
 sw_c_generic = -bt=generic
 sw_c_netware = -bt=netware
-sw_c_windows = -bt=windows -DSTRICT -zW
-sw_c_winnt   = -bt=nt $(ppflags_win32ver)
+sw_c_windows = -bt=windows -zW
+sw_c_winnt   = -bt=nt
 sw_c_os2     = -bt=os2
 sw_c_qnx     = -bt=qnx
 sw_c_rdos    = -bt=rdos
@@ -77,9 +77,6 @@ sw_c_linux   = -bt=linux
 sw_a_common =-we
 !ifdef __UNIX__
 sw_a_common += -fo=.obj
-!endif
-!ifdef mthreaded
-sw_a_common += -D__MT__
 !endif
 
 # sw_a_(processor)_(model)
@@ -115,7 +112,7 @@ sw_a_ppc =
 sw_a_generic = -bt=generic
 sw_a_netware = -bt=netware
 sw_a_windows = -bt=windows
-sw_a_winnt   = -bt=nt $(ppflags_win32ver)
+sw_a_winnt   = -bt=nt
 sw_a_os2     = -bt=os2
 sw_a_qnx     = -bt=qnx
 sw_a_rdos    = -bt=rdos
@@ -137,12 +134,27 @@ plib_cpp_flags += -D__USE_PD
 !else ifdef sysind_registration
 plib_cpp_flags += -D__USE_RW
 !endif
-!ifeq ifeq system winnt
+!ifeq system windows
+plib_cpp_flags += -DSTRICT
+!else ifeq system winnt
+plib_cpp_flags += $(ppflags_win32ver)
 !ifeq processor axp
 plib_cpp_flags += -DWIN32 -D_WIN32
 !else ifeq processor ppc
 plib_cpp_flags += -DWIN32 -D_WIN32
 !endif
+!endif
+
+#######################
+# ASSEMBLER
+# PREPROCESSOR SETINGS
+######
+plib_app_flags =
+!ifdef mthreaded
+plib_app_flags += -D__MT__
+!endif
+!ifeq system winnt
+plib_app_flags += $(ppflags_win32ver)
 !endif
 
 ##########################
@@ -151,13 +163,13 @@ plib_cpp_flags += -DWIN32 -D_WIN32
 ######
 !ifeq linkage dynamic
 !ifdef export_only
-br_flags_=-D__MAKE_DLL_WRTLIB
+br_cpp_flags_=-D__MAKE_DLL_WRTLIB
 !else
-br_flags_=-D__MAKE_DLL_CPPLIB
+br_cpp_flags_=-D__MAKE_DLL_CPPLIB
 !endif
-br_flags_yes=-br
+br_cpp_flags_yes=-br
 !else
-br_flags_=
+br_cpp_flags_=
 !endif
 
 !ifdef __UNIX__

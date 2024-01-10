@@ -34,6 +34,37 @@ clib_cpp_flags_nw_libcl    = -D_NETWARE_LIBC -D_THIN_LIB
 
 clib_cpp_flags += $(clib_cpp_flags_$(system)) $(clib_cpp_flags_$(system)_$(processor))
 
+###########################
+# ASM PREPROCESSOR SETINGS
+######
+clib_app_flags =
+!ifdef dll16
+clib_app_flags += -D__MT__
+!else ifdef mthreaded
+clib_app_flags += -D__MT__
+!endif
+!ifdef profile
+clib_app_flags += -D_PROFILE
+!endif
+!ifeq linkage dynamic
+clib_app_flags += -D__MAKE_DLL_CLIB -D_EXPORT
+!endif
+
+clib_app_flags_windows_386  = -D__CALL21__
+clib_app_flags_winnt_axp    = -DWIN32 -D_WIN32
+clib_app_flags_winnt_mps    = -DWIN32 -D_WIN32
+clib_app_flags_winnt_ppc    = -DWIN32 -D_WIN32
+
+# sw_a_(system)
+clib_app_flags_nw_clib    = -D_NETWARE_CLIB
+clib_app_flags_nw_clibl   = -D_NETWARE_CLIB -D_THIN_LIB
+clib_app_flags_nw_libc    = -D_NETWARE_LIBC
+clib_app_flags_nw_libcl   = -D_NETWARE_LIBC -D_THIN_LIB
+clib_app_flags_windows    = -DSTRICT
+clib_app_flags_winnt      = $(ppflags_win32ver)
+
+clib_app_flags = $(clib_app_flags) $(clib_app_flags_$(system)) $(clib_app_flags_$(system)_$(processor))
+
 ##########################
 # C COMPILER SETINGS
 ######
@@ -161,17 +192,6 @@ sw_a_common = -we
 !ifdef __UNIX__
 sw_a_common += -fo=.obj
 !endif
-!ifdef dll16
-sw_a_common += -D__MT__
-!else ifdef mthreaded
-sw_a_common += -D__MT__
-!endif
-!ifdef profile
-sw_a_common += -D_PROFILE
-!endif
-!ifeq linkage dynamic
-sw_a_common += -D__MAKE_DLL_CLIB -D_EXPORT
-!endif
 
 # sw_a_(processor)_(model)
 sw_a_bigcode  = -nt=_TEXT
@@ -221,25 +241,25 @@ sw_a_os2_ppc      =
 sw_a_qnx_286      =
 sw_a_qnx_386      =
 sw_a_windows_086  =
-sw_a_windows_386  = -D__CALL21__
+sw_a_windows_386  =
 sw_a_winnt_386    =
-sw_a_winnt_axp    = -DWIN32 -D_WIN32
-sw_a_winnt_mps    = -DWIN32 -D_WIN32
-sw_a_winnt_ppc    = -oc -DWIN32 -D_WIN32
+sw_a_winnt_axp    =
+sw_a_winnt_mps    =
+sw_a_winnt_ppc    = -oc
 sw_a_linux_386    =
 sw_a_linux_ppc    =
 sw_a_linux_mps    =
 
 # sw_a_(system)
 sw_a_msdos      = -bt=dos
-sw_a_nw_clib    = -bt=netware -D_NETWARE_CLIB
-sw_a_nw_clibl   = -bt=netware -D_NETWARE_CLIB -D_THIN_LIB
-sw_a_nw_libc    = -bt=netware5 -D_NETWARE_LIBC
-sw_a_nw_libcl   = -bt=netware5 -D_NETWARE_LIBC -D_THIN_LIB
+sw_a_nw_clib    = -bt=netware
+sw_a_nw_clibl   = -bt=netware
+sw_a_nw_libc    = -bt=netware5
+sw_a_nw_libcl   = -bt=netware5
 sw_a_os2        = -bt=os2
 sw_a_qnx        = -bt=qnx
-sw_a_windows    = -bt=windows -DSTRICT
-sw_a_winnt      = -bt=nt $(ppflags_win32ver)
+sw_a_windows    = -bt=windows
+sw_a_winnt      = -bt=nt
 sw_a_linux      = -bt=linux
 sw_a_rdos       = -bt=rdos
 sw_a_rdosdev    = -bt=rdosdev
@@ -250,7 +270,7 @@ extra_clib_a_flags =
 !endif
 
 clib_c_flags =$(sw_c_common) $(sw_c_$(processor)_$(model)) $(sw_c_$(processor)) &
-    $(sw_c_$(system)_$(processor)) $(sw_c_$(system)) $(clib_cpp_flags) $(extra_clib_c_flags)
+    $(sw_c_$(system)_$(processor)) $(sw_c_$(system)) $(extra_clib_c_flags)
 clib_a_flags =$(sw_a_common) $(sw_a_$(processor)_$(model)) $(sw_a_$(processor)) &
     $(sw_a_$(system)_$(processor)) $(sw_a_$(system)) $(extra_clib_a_flags)
 

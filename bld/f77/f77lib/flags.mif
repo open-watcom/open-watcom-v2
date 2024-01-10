@@ -190,7 +190,7 @@ extra_flib_a_flags =
 !endif
 
 flib_c_flags =$(sw_c_common) $(sw_c_$(flib_$(processor))_$(model)) $(sw_c_$(processor)) &
-    $(sw_c_$(system)_$(flib_$(processor))) $(sw_c_$(system)) $(f77lib_cpp_flags) $(extra_flib_c_flags)
+    $(sw_c_$(system)_$(flib_$(processor))) $(sw_c_$(system)) $(extra_flib_c_flags)
 flib_a_flags =$(sw_a_common) $(sw_a_$(linkage)) $(sw_a_$(flib_$(processor))_$(model)) &
     $(sw_a_$(processor)) $(sw_a_$(system)_$(flib_$(processor))) $(sw_a_$(system)) $(extra_flib_a_flags)
 
