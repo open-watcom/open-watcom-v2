@@ -69,11 +69,11 @@ rcfiles = &
 
 app.res : ../res/app.rc $(rcfiles)
     @%make echo_rc
-    $(rc) $(ppflags_common) $(rc_flags) $(rc_inc_path) $[@ -fo=$@
+    $(rc) $(ppflags_common) $(rc_cppflags) $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
 appj.res : ../res/app.rc $(rcfiles)
     @%make echo_rc
-    $(rc) $(ppflags_common) -DJAPANESE $(rc_flags) $(rc_inc_path) $[@ -fo=$@
+    $(rc) $(ppflags_common) $(rc_cppflags) -DJAPANESE $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
 wresui.res : ../res/appui.rc ../res/app.rc $(rcfiles)
     @%make echo_rc

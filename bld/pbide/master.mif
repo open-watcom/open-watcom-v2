@@ -34,4 +34,4 @@ exetarg_res  = $(name).res
 
 $(name).res : ../dlldbg.rc ../debugger.ico $(__MAKEFILES__)
     @%make echo_rc
-    $(rc) $(ppflags_common) $(rc_flags) $[@ -fo=$@
+    $(rc) $(ppflags_common) $(rc_cppflags) $(rc_flags) $[@ -fo=$@

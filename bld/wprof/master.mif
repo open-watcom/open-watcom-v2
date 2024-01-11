@@ -112,11 +112,11 @@ rcui_inc_dirs = $(wprof_rc_inc_dirs) $(aui_rc_inc_dirs) $(gui_rc_inc_dirs)
 
 $(proj_name).res : ../res/wprofgui.rc $(rcfiles) $(__MAKEFILES__) .AUTODEPEND
     @%make echo_rc
-    $(rc) $(ppflags_common) $(rc_flags) -ad $(rc_inc_path) $[@ -fo=$@
+    $(rc) $(ppflags_common) $(rc_cppflags) $(rc_flags) -ad $(rc_inc_path) $[@ -fo=$@
 
 ntmanif.res : ../res/ntmanif.rc
     @%make echo_rc
-    $(rc) $(ppflags_common) $(rc_flags) -I"../res" $(inc_dirs_sys_nt) $< -fo=$@
+    $(rc) $(ppflags_common) $(rc_cppflags) $(rc_flags) -I"../res" $(inc_dirs_sys_nt) $< -fo=$@
 
 wresui.res : ../res/wprofui.rc $(rcfiles) $(__MAKEFILES__) .AUTODEPEND
     @%make echo_rc

@@ -57,4 +57,4 @@ exetarg_objs = &
 
 _err.gh : $(trap_dir)/h/trapmsg.h $(trap_dir)/h/trap.msg $(__MAKEFILES__)
     @%make echo_cpp
-    $(cpp) $(ppflags_common) $(rc_ui8_flags) -I"$(trap_dir)/h" $(rc_ui_inc_path) $[@ -o$@
+    $(cpp) $(ppflags_common) $(rc_cppflags) $(rc_ui8_flags) -I"$(trap_dir)/h" $(rc_ui_inc_path) $[@ -o$@

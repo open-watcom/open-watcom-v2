@@ -104,11 +104,11 @@ rc_inc_dirs = -I"../res" -I"$(fmedit_dir)/dev" $(commonui_inc_dirs)
 
 $(proj_name).res: ../res/wde.rc $(__MAKEFILES__) .AUTODEPEND
     @%make echo_rc
-    $(rc) $(ppflags_common) $(rc_ui8_flags) $(rc_flags) -ad $(cppflags) $(rc_inc_path) $[@ -fo=$@
+    $(rc) $(ppflags_common) $(rc_cppflags) $(rc_ui8_flags) $(rc_flags) -ad $(cppflags) $(rc_inc_path) $[@ -fo=$@
 
 ntmanif.res : ../res/ntmanif.rc
     @%make echo_rc
-    $(rc) $(ppflags_common) $(rc_ui8_flags) $(rc_flags) -I"../res" $(inc_dirs_sys_nt) $< -fo=$@
+    $(rc) $(ppflags_common) $(rc_cppflags) $(rc_ui8_flags) $(rc_flags) -I"../res" $(inc_dirs_sys_nt) $< -fo=$@
 
 rcstr.grh: rcstrmsg.gh $(__MAKEFILES__)
     @%make echo_awk
@@ -116,4 +116,4 @@ rcstr.grh: rcstrmsg.gh $(__MAKEFILES__)
 
 rcstrmsg.gh : ../res/wde.msg $(__MAKEFILES__)
     @%make echo_cpp
-    $(cpp) $(ppflags_common) $(rc_ui8_flags) -o$@ $[@
+    $(cpp) $(ppflags_common) $(rc_cppflags) $(rc_ui8_flags) -o$@ $[@
