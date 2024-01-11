@@ -72,4 +72,4 @@ _err.gh : $(trap_dir)/h/trapmsg.h $(trap_dir)/h/trap.msg
 
 _jerr.gh : $(trap_dir)/h/trapmsg.h $(trap_dir)/h/trap.msg
     @%make echo_cpp
-    $(cpp) $(ppflags_common) $(rc_cppflags) $(rc_ui_flags) -DJAPANESE $(rc_ui_inc_path) -o$@ $[@
+    $(cpp) $(ppflags_common) $(rc_cppflags) -DJAPANESE $(rc_ui_flags) $(rc_ui_inc_path) -o$@ $[@

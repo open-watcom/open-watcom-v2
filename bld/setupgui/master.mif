@@ -186,19 +186,19 @@ wresui.res : ../res/setupui.rc $(depend_res) $(__MAKEFILES__)
 # GUI resources
 csetup.res : ../res/$(host_os)/setup.rc $(depend_res) ../res/wcc.bmp $(__MAKEFILES__)
     @%make echo_rc
-    $(rc) $(ppflags_common) $(rc_cppflags) $(rc_ui8_encoding) $(rc_flags) -DCSETUP $(rc_inc_path) $[@ -fo=$@
+    $(rc) $(ppflags_common) $(rc_cppflags) -DCSETUP $(rc_ui8_encoding) $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
 jcsetup.res : ../res/$(host_os)/setup.rc $(depend_res) ../res/wcc.bmp $(__MAKEFILES__)
     @%make echo_rc
-    $(rc) $(ppflags_common) $(rc_cppflags) $(rc_ui8_encoding) $(rc_flags) -DJCSETUP -DJAPANESE -zk0 $(rc_inc_path) $[@ -fo=$@
+    $(rc) $(ppflags_common) $(rc_cppflags) -DJCSETUP -DJAPANESE $(rc_ui8_encoding) $(rc_flags) -zk0 $(rc_inc_path) $[@ -fo=$@
 
 f77setup.res : ../res/$(host_os)/setup.rc $(depend_res) ../res/f77.bmp $(__MAKEFILES__)
     @%make echo_rc
-    $(rc) $(ppflags_common) $(rc_cppflags) $(rc_ui8_encoding) $(rc_flags) -DF77SETUP $(rc_inc_path) $[@ -fo=$@
+    $(rc) $(ppflags_common) $(rc_cppflags) -DF77SETUP $(rc_ui8_encoding) $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
 jfsetup.res : ../res/$(host_os)/setup.rc $(depend_res) ../res/f77.bmp $(__MAKEFILES__)
     @%make echo_rc
-    $(rc) $(ppflags_common) $(rc_cppflags) $(rc_ui8_encoding) $(rc_flags) -DJFSETUP -DJAPANESE -zk0 $(rc_inc_path) $[@ -fo=$@
+    $(rc) $(ppflags_common) $(rc_cppflags) -DJFSETUP -DJAPANESE $(rc_ui8_encoding) $(rc_flags) -zk0 $(rc_inc_path) $[@ -fo=$@
 
 # manifest resource for NT
 ntmanif.res : ../res/nt/ntmanif.rc .EXPLICIT

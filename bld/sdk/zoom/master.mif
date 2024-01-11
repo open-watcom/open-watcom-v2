@@ -74,7 +74,7 @@ $(proj_name).res : ../res/wzoom.rc $(__MAKEFILES__) .AUTODEPEND
 
 $(proj_name)j.res : ../res/wzoom.rc $(__MAKEFILES__) .AUTODEPEND
     @%make echo_rc
-    $(rc) $(ppflags_common) $(rc_cppflags) $(rc_ui8_flags) $(rc_flags) -DJAPANESE -ad -I"../res/kanji" $(rc_inc_path) $[@ -fo=$@
+    $(rc) $(ppflags_common) $(rc_cppflags) -DJAPANESE $(rc_ui8_flags) $(rc_flags) -ad -I"../res/kanji" $(rc_inc_path) $[@ -fo=$@
 
 ntmanif.res : ../res/ntmanif.rc
     @%make echo_rc

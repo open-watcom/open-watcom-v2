@@ -1,7 +1,7 @@
 !ifdef manifest_$(host_os)_$(host_cpu)
 $(manifest_$(host_os)_$(host_cpu)) : ../ntmanif.rc .EXPLICIT
     @%make echo_rc
-    $(rc) $(ppflags_common) $(rc_flags) -I.. $(inc_dirs_sys) -I"$(watcom_dir)/h" $< -fo=$@
+    $(rc) $(ppflags_common) $(rc_cppflags) $(rc_flags) -I.. $(inc_dirs_sys) -I"$(watcom_dir)/h" $< -fo=$@
 !endif
 
 bind_res_manifest: .PROCEDURE .EXPLICIT

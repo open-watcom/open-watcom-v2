@@ -246,7 +246,7 @@ $(trperr_h) : $(trap_dir)/h/trapmsg.h $(trap_dir)/h/trap.msg $(__MAKEFILES__)
 
 $(jtrperr_h) : $(trap_dir)/h/trapmsg.h $(trap_dir)/h/trap.msg $(__MAKEFILES__)
     @%make echo_cpp
-    $(cpp) $(ppflags_common) $(rc_cppflags) $(rc_ui8_flags) -DJAPANESE $(rc_ui_inc_path) $[@ -o$@
+    $(cpp) $(ppflags_common) $(rc_cppflags) -DJAPANESE $(rc_ui8_flags) $(rc_ui_inc_path) $[@ -o$@
 
 ./mknver.exe: $(watcom_dir)/c/mknver.c $(watcom_dir)/h/banner.h $(__MAKEFILES__)
     @%make echo_bldccl

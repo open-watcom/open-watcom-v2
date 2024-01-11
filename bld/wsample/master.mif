@@ -190,7 +190,7 @@ wresui.res : ../h/wsample.rc ../h/wmsg.h ../h/wsample.msg usage.gh $(__MAKEFILES
 
 wsample.gh : ../h/wsample.msg $(__MAKEFILES__)
     @%make echo_cpp
-    $(cpp) $(ppflags_common) -zku8 $(rc_cppflags) $(cppflags) -o$^. $[@
+    $(cpp) $(ppflags_common) $(rc_cppflags) $(cppflags) -zku8 -o$^. $[@
 
 wsample.grh : wsample.gh $(__MAKEFILES__)
     @%make echo_awk
@@ -198,7 +198,7 @@ wsample.grh : wsample.gh $(__MAKEFILES__)
 
 except.gh : ../h/except.msg $(__MAKEFILES__)
     @%make echo_cpp
-    $(cpp) $(ppflags_common) -zku8 $(rc_cppflags) $(cppflags) -o$^. $[@
+    $(cpp) $(ppflags_common) $(rc_cppflags) $(cppflags) -zku8 -o$^. $[@
 
 except.grh : except.gh $(__MAKEFILES__)
     @%make echo_awk

@@ -56,4 +56,4 @@ rcstr.grh : rcstrmsg.gh $(__MAKEFILES__)
 
 rcstrmsg.gh : $(uninstal_dir)/uninstal.msg $(__MAKEFILES__)
     @%make echo_cpp
-    $(cpp) $(ppflags_common) -zku8 $(rc_cppflags) $(inc_path) -o$@ $[@
+    $(cpp) $(ppflags_common) $(rc_cppflags) -zku8 $(inc_path) -o$@ $[@

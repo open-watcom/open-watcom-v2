@@ -77,7 +77,7 @@ samplepm.res : ../res/samplepm.rc ../res/samplepm.dlg
         $(rc) $(ppflags_common) $(rc_cppflags) $(rc_flags) -ad $(rc_inc_path) $[@ -fo=$@
 
 sample.res : ../res/sample.rc ../res/sample.dlg
-        $(rc) $(ppflags_common) $(rc_cppflags) $(rc_flags) -ad -DWINRC $(rc_inc_path) $[@ -fo=$@
+        $(rc) $(ppflags_common) $(rc_cppflags) -DWINRC $(rc_flags) -ad $(rc_inc_path) $[@ -fo=$@
 
 wresui.res : ../res/sample.rc ../res/sample.dlg
         $(rcui) -ad

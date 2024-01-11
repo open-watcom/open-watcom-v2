@@ -125,4 +125,4 @@ rcstr.grh : rcstrmsg.gh
 
 rcstrmsg.gh : ../res/$(host_os)/drwatcom.msg
     @%make echo_cpp
-    $(cpp) $(ppflags_common) $(rc_cppflags) $(rc_ui8_flags) $(cppflags) -I"$(dig_dir)/h" $(commonui_inc_dirs) -o$@ $[@
+    $(cpp) $(ppflags_common) $(rc_cppflags) $(cppflags) $(rc_ui8_flags) -I"$(dig_dir)/h" $(commonui_inc_dirs) -o$@ $[@
