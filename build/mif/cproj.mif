@@ -132,6 +132,8 @@ ppflags_common += -DBOOTSTRAP
 ppflags_autodep = -D_ENABLE_AUTODEPEND
 !endif
 
+ppflags_sys =
+
 ###################################
 # define OW build windows version for Win32 platform
 # Now it is setup to 0x400

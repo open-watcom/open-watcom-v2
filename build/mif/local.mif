@@ -92,7 +92,7 @@ bld_lib = $(noecho)lib -nologo -out:$@
 
 # common settings
 ############################
-common_cppflags = -D__FLAT__
+common_ppflags      = -D__FLAT__ -D_CRT_SECURE_NO_WARNINGS -D_CRT_NONSTDC_NO_WARNINGS
 
 common_cppflags_nt  = -D__NT__
 
@@ -188,6 +188,8 @@ bccl = $(noecho)cl -nologo
 bcl  = $(noecho)cl -nologo
 !endif
 
+bld_ppflags_sys = $(common_ppflags)
+
 # extra objects for linking via cl
 bld_cl_extra_objs_gen =
 bld_cl_extra_objs_dll =
@@ -202,12 +204,12 @@ bld_cl_extra_objs = $(bld_cl_extra_objs_gen)
 bld_cl_extra_libs = $(bld_cl_extra_libs_gen)
 !endif
 
-bld_cc_sys = -D_CRT_SECURE_NO_WARNINGS -D_CRT_NONSTDC_NO_WARNINGS
+bld_cc_sys =
 bld_cl_sys =
 
 bld_incs = $(bld_extra_incs) -I"$(watcom_dir)/h"
 
-bld_cppflags = $(common_cppflags) $(common_cppflags_$(bld_os)) $(common_cppflags_$(bld_cpu)) $(common_cppflags_$(bld_os)_$(bld_cpu))
+bld_cppflags = $(common_cppflags_$(bld_os)) $(common_cppflags_$(bld_cpu)) $(common_cppflags_$(bld_os)_$(bld_cpu))
 
 bld_cflags   = $(common_cflags) $(common_flags) -Fo$@
 
@@ -240,8 +242,9 @@ cxx  = $(noecho)cl -nologo -c
 cl   = $(noecho)cl -nologo
 !endif
 
-cppflags_nt  = $(common_cppflags) $(common_cppflags_nt)
-cppflags_osi = $(common_cppflags) $(common_cppflags_$(host_os))
+ppflags_sys = $(common_ppflags)
+
+cppflags_nt  = $(common_cppflags_nt)
 
 cppflags_386 = $(common_cppflags_386) $(common_cppflags_$(host_os)_386)
 !ifdef bootstrap
@@ -321,7 +324,7 @@ bld_lib = $(noecho)ar crs $@
 
 # common settings
 ############################
-common_cppflags         = -D__UNIX__ -D__FLAT__
+common_ppflags          = -D__UNIX__ -D__FLAT__
 
 common_cppflags_linux   = -D__LINUX__
 common_cppflags_bsd     = -D__BSD__
@@ -456,6 +459,8 @@ bccl = $(noecho)gcc -pipe
 bcl  = $(noecho)gcc -pipe
 !endif
 
+bld_ppflags_sys = $(common_ppflags)
+
 bld_cl_extra_objs_gen =
 bld_cl_extra_objs_dll =
 bld_cl_extra_libs_gen = $(watcom_dir)/$(bin_subdir)/clibext.lib
@@ -474,7 +479,7 @@ bld_cl_sys =
 
 bld_incs = $(bld_extra_incs) -I"$(watcom_dir)/h"
 
-bld_cppflags = $(common_cppflags) $(common_cppflags_$(bld_os)) $(common_cppflags_$(bld_cpu)) $(common_cppflags_$(bld_os)_$(bld_cpu))
+bld_cppflags = $(common_cppflags_$(bld_os)) $(common_cppflags_$(bld_cpu)) $(common_cppflags_$(bld_os)_$(bld_cpu))
 
 bld_cflags   = $(common_cflags) $(common_flags) -o $@
 
@@ -527,11 +532,13 @@ cxx  = $(noecho)g++ -pipe -c
 cl   = $(noecho)gcc -pipe
 !endif
 
-cppflags_linux  = $(common_cppflags) $(common_cppflags_linux)
-cppflags_bsd    = $(common_cppflags) $(common_cppflags_bsd)
-cppflags_haiku  = $(common_cppflags) $(common_cppflags_haiku)
-cppflags_osx    = $(common_cppflags) $(common_cppflags_osx)
-cppflags_osi    = $(common_cppflags) $(common_cppflags_$(host_os))
+ppflags_sys = $(common_ppflags)
+
+cppflags_linux  = $(common_cppflags_linux)
+cppflags_bsd    = $(common_cppflags_bsd)
+cppflags_haiku  = $(common_cppflags_haiku)
+cppflags_osx    = $(common_cppflags_osx)
+cppflags_osi    = $(common_cppflags_$(host_os))
 
 cppflags_386    = $(common_cppflags_386) $(common_cppflags_$(host_os)_386)
 cppflags_ppc    = $(common_cppflags_ppc) $(common_cppflags_$(host_os)_ppc)
@@ -641,6 +648,8 @@ bccl            = $(noecho)$(bcl_$(bld_cpu)) -zq
 bcl             = $(noecho)$(bcl_$(bld_cpu)) -zq
 bas             = $(bas_$(bld_cpu)) -q
 blink           = *wlink op q
+
+bld_ppflags_sys =
 
 bld_cc_sys      = $(cflags_$(bld_os))
 bld_cl_sys      = $(clflags_$(bld_os)_$(bld_cpu))
