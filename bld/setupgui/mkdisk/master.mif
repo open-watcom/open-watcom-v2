@@ -28,12 +28,12 @@ all : $(commands) .SYMBOLIC
 
 .c.exe:
     @%make echo_bldccl
-    $(bld_ccl) $(ppflags_common) $(ppflags_autodep) $(bld_cppflags) $[@ $(bld_cclflags) $(bld_ldflags)
+    $(bld_ccl) $(ppflags_common) $(ppflags_autodep) $(bld_ppflags_sys) $(bld_cppflags) $[@ $(bld_cclflags) $(bld_ldflags)
 
 langdat.exe : langdat.c $(builder_dir)/c/utils.c $(trmem_objs)
     @%make echo_bldccl
-    $(bld_ccl) $(ppflags_common) $(ppflags_autodep) $(bld_cppflags) $< $(bld_cclflags) $(bld_ldflags)
+    $(bld_ccl) $(ppflags_common) $(ppflags_autodep) $(bld_ppflags_sys) $(bld_cppflags) $< $(bld_cclflags) $(bld_ldflags)
 
 uzip.exe: uzip.c
     @%make echo_bldccl
-    $(bld_ccl) $(ppflags_common) $(ppflags_autodep) $(bld_cppflags) $[@ $(bld_cclflags) $(ziplib) $(zlib) $(bld_ldflags)
+    $(bld_ccl) $(ppflags_common) $(ppflags_autodep) $(bld_ppflags_sys) $(bld_cppflags) $[@ $(bld_cclflags) $(ziplib) $(zlib) $(bld_ldflags)

@@ -200,7 +200,7 @@ xcode$(target_cpu).tmp: ../../a/code$(target_cpu).asm
 
 ./mkcode.exe: mkcode.c
     @%make echo_bldccl
-    $(bld_ccl) $(ppflags_common) $(ppflags_autodep) $(bld_cppflags) $[@ $(bld_cclflags) $(bld_ldflags)
+    $(bld_ccl) $(ppflags_common) $(ppflags_autodep) $(bld_ppflags_sys) $(bld_cppflags) $[@ $(bld_cclflags) $(bld_ldflags)
 
 #msgencod_enc_linux = -utf8
 
@@ -210,7 +210,7 @@ msgtxt.gh msgdefs.gh msgattr.gh errors01.int : ../../gml/cerrs.gml
 
 ./intlbin.exe: $(fe_misc_dir)/c/intlbin.c
     @%make echo_bldccl
-    $(bld_ccl) $(ppflags_common) $(ppflags_autodep) $(bld_cppflags) $[@ -I"$(fe_misc_dir)/h" $(bld_cclflags) $(bld_ldflags)
+    $(bld_ccl) $(ppflags_common) $(ppflags_autodep) $(bld_ppflags_sys) $(bld_cppflags) $[@ -I"$(fe_misc_dir)/h" $(bld_cclflags) $(bld_ldflags)
 
 $(bin_intname)01.int : ./intlbin.exe errors01.int usage01.int
     $[@ $@

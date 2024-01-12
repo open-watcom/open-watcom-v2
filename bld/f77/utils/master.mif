@@ -16,5 +16,5 @@ all: errsrc.exe errdoc.exe .symbolic
 
 .c.exe :
     @%make echo_bldccl
-    $(bld_ccl) $(ppflags_common) $(ppflags_autodep) $(bld_cppflags) $(bld_cclflags) $< $(bld_ldflags)
+    $(bld_ccl) $(ppflags_common) $(ppflags_autodep) $(bld_ppflags_sys) $(bld_cppflags) $(bld_cclflags) $< $(bld_ldflags)
 

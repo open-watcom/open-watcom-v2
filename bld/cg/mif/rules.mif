@@ -19,7 +19,7 @@ inc_dirs = -I. $(inc_dirs_targ) -I"$(cg_dir)/h" $(cfloat_inc_dirs) $(dwarfw_inc_
 
 ./bitset.exe : $(watcom_dir)/c/bitset.c
     @%make echo_bldccl
-    $(bld_ccl) $(ppflags_common) $(ppflags_autodep) $(bld_cppflags) $[@ $(bld_cclflags) $(bld_ldflags)
+    $(bld_ccl) $(ppflags_common) $(ppflags_autodep) $(bld_ppflags_sys) $(bld_cppflags) $[@ $(bld_cclflags) $(bld_ldflags)
 
 gbit.gh : ./bitset.exe $(cg_dir)/mif/cg.mif
     @%make echo_execute

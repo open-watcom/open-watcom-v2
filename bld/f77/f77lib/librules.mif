@@ -1,6 +1,6 @@
 .c.obj : .autodepend $(__MAKEFILES__)
     @%make echo_cc
-    $(cc) $(ppflags_common) $(ppflags_autodep) $(f77lib_cpp_flags) $[@ $($[&_opts) $(flib_c_flags) $($[&_postopts) $(c_dbg_flags) $(include_c_path)
+    $(cc) $(ppflags_common) $(ppflags_autodep) $(ppflags_sys) $(f77lib_cpp_flags) $[@ $($[&_opts) $(flib_c_flags) $($[&_postopts) $(c_dbg_flags) $(include_c_path)
 
 .asm.obj : .autodepend $(__MAKEFILES__)
     @%make echo_as
