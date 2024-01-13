@@ -321,18 +321,6 @@ incl_file_opts = -FI
 
 !if defined("__LINUX__") || defined("__BSD__") || defined("__HAIKU__") || defined("__OSX__")
 
-!ifdef __LINUX__
-! if !defined( "__WATCOM_TOOLS__" ) || "$(bld_cpu)" == "x64" || "$(bld_cpu)" == "arm" || "$(bld_cpu)" == "a64"
-use_for_build = 1
-! endif
-!else ifdef __BSD__
-use_for_build = 1
-!else ifdef __HAIKU__
-use_for_build = 1
-!else ifdef __OSX__
-use_for_build = 1
-!endif
-
 !ifeq use_for_build_$(bld_os)$(bld_cpu) clang_gcc
 
 # librarian settings
@@ -616,24 +604,6 @@ incl_file_opts = -include
 !else if defined("__WATCOM_TOOLS__")
 
 !if defined("__LINUX__") || defined("__DOS__") || defined("__OS2__") || defined("__NT__")
-
-!ifdef __LINUX__
-! if "$(bld_cpu)" == "386" || "$(bld_cpu)" == "axp" || "$(bld_cpu)" == "ppc" || "$(bld_cpu)" == "mps"
-use_for_build = 1
-! endif
-!else ifdef __DOS__
-! if "$(bld_cpu)" == "386"
-use_for_build = 1
-! endif
-!else ifdef __OS2__
-! if "$(bld_cpu)" == "386"
-use_for_build = 1
-! endif
-!else ifdef __NT__
-! if "$(bld_cpu)" == "386" || "$(bld_cpu)" == "axp" || "$(bld_cpu)" == "ppc" || "$(bld_cpu)" == "mps"
-use_for_build = 1
-! endif
-!endif
 
 !ifndef use_for_build_$(bld_os)$(bld_cpu)
 
