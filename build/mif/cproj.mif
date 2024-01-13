@@ -383,8 +383,9 @@ checkstack_dll_i86 = -s
 !endif
 !endif
 
-cppflags_win    = -DSTRICT
 cppflags_dos    = $(cppflags_doslfn) $(cppflags_dospc98)
+cppflags_nt     = $(ppflags_win32ver)
+cppflags_win    = -DSTRICT
 
 ##########################
 # C/C++ COMPILERS SETINGS
@@ -401,7 +402,7 @@ cflags_mps      =
 cflags_386      += -zc
 !endif
 
-cflags_nt       = -bt=nt $(ppflags_win32ver)
+cflags_nt       = -bt=nt
 cflags_win      = -bt=windows
 cflags_os2      = -bt=os2
 cflags_qnx      = -bt=qnx
@@ -742,14 +743,14 @@ inc_path        = $(inc_dirs) $(inc_dirs_$(host_os)) $(inc_dirs_all)
 ############################
 # RESOURCE COMPILER SETINGS
 ######
-rc_cpp_bsd      = -D__UNIX__ -D__BSD__
+rc_cpp_bsd      = -D__BSD__ -D__UNIX__
 rc_cpp_dos      = -D__DOS__
-rc_cpp_linux    = -D__UNIX__ -D__LINUX__
+rc_cpp_linux    = -D__LINUX__ -D__UNIX__
 rc_cpp_nov      = -D__NETWARE__
-rc_cpp_nt       = -D__NT__ -D_WIN32
+rc_cpp_nt       = -D__NT__ -D_WIN32 $(ppflags_win32ver)
 rc_cpp_os2      = -D__OS2__
-rc_cpp_osx      = -D__UNIX__ -D__OSX__
-rc_cpp_qnx      = -D__UNIX__ -D__QNX__
+rc_cpp_osx      = -D__OSX__ -D__UNIX__
+rc_cpp_qnx      = -D__QNX__ -D__UNIX__
 rc_cpp_win      = -D__WINDOWS__
 
 rc_cpp_386      = -D_M_IX86
@@ -763,7 +764,7 @@ rc_cppflags     = $(rc_cpp_$(host_os)) $(rc_cpp_$(host_cpu))
 
 rc_flags_all    = -xb -r
 
-rc_flags_nt     = -bt=nt $(ppflags_win32ver)
+rc_flags_nt     = -bt=nt
 rc_flags_win    = -bt=windows
 rc_flags_os2    = -bt=os2
 

@@ -92,7 +92,7 @@ bld_lib = $(noecho)lib -nologo -out:$@
 
 # common settings
 ############################
-common_ppflags      = -D__FLAT__ -D_CRT_SECURE_NO_WARNINGS -D_CRT_NONSTDC_NO_WARNINGS
+common_ppflags      = -D__FLAT__ -D_CRT_SECURE_NO_WARNINGS -D_CRT_NONSTDC_NO_WARNINGS -D_STATIC_CPPLIB
 
 common_cppflags_nt  = -D__NT__
 
@@ -125,7 +125,7 @@ common_flags = $(common_flags_dbg)
 # -wd4702 "unreachable code"
 #common_cflags_wng = -wd4068 -wd4102 -wd4127 -wd4214 -wd4244 -wd4306 -wd4702
 common_cflags_wng = -W4 -wd4214
-common_cflags = $(common_cflags_wng) -D_STATIC_CPPLIB
+common_cflags = $(common_cflags_wng)
 
 common_ldflags_rel =
 common_ldflags_dbg =
@@ -177,15 +177,15 @@ cl_extra_libs = $(cl_extra_libs_gen)
 # bld settings
 ############################
 !ifdef __INTEL_TOOLS__
-bcc  = icl -nologo -c
-bcxx = icl -nologo -c
-bccl = $(noecho)icl -nologo
-bcl  = $(noecho)icl -nologo
+bld_cc  = icl -nologo -c
+bld_cxx = icl -nologo -c
+bld_ccl = $(noecho)icl -nologo
+bld_cl  = $(noecho)icl -nologo
 !else
-bcc  = cl -nologo -c
-bcxx = cl -nologo -c
-bccl = $(noecho)cl -nologo
-bcl  = $(noecho)cl -nologo
+bld_cc  = cl -nologo -c
+bld_cxx = cl -nologo -c
+bld_ccl = $(noecho)cl -nologo
+bld_cl  = $(noecho)cl -nologo
 !endif
 
 bld_ppflags_sys = $(common_ppflags)
@@ -207,26 +207,28 @@ bld_cl_extra_libs = $(bld_cl_extra_libs_gen)
 bld_cc_sys =
 bld_cl_sys =
 
+bld_c_flags   =
+bld_cxx_flags = -EHsc
+
 bld_incs = $(bld_extra_incs) -I"$(watcom_dir)/h"
 
 bld_cppflags = $(common_cppflags_$(bld_os)) $(common_cppflags_$(bld_cpu)) $(common_cppflags_$(bld_os)_$(bld_cpu))
 
-bld_cflags   = $(common_cflags) $(common_flags) -Fo$@
-
-bld_c_flags   =
-bld_cxx_flags = -EHsc
+bld_cflags   = $(bld_cc_sys) $(common_cflags) $(common_flags) $(bld_incs) #-Fo$@
 
 bld_ldflags1 = $(common_ldflags) -Fm
+
+# options for linking only
+bld_clflags  = $(bld_cl_sys) -Fe$@ $(bld_ldflags1)
+
+# options for single source compile and link
+bld_cclflags = $(bld_cflags) $(bld_clflags)
 
 bld_ldflags  =  $(bld_cl_extra_libs_gen) -link -nologo &
     -MAPINFO:EXPORTS -INCREMENTAL:NO -DEFAULTLIB:user32.lib -DEFAULTLIB:ole32.lib &
     -DEFAULTLIB:advapi32.lib -DEFAULTLIB:shell32.lib -DEFAULTLIB:gdi32.lib -DEFAULTLIB:comdlg32.lib &
     -NODEFAULTLIB:libucrt.lib -DEFAULTLIB:ucrt.lib &
     $(bld_extra_ldflags) $(bld_ldflags_$(proj_type))
-
-# options for linking via cl
-bld_cclflags = $(common_cflags) $(common_flags) -Fe$@ $(bld_ldflags1)
-bld_clflags  = -Fe$@ $(bld_ldflags1)
 
 !ifndef __WATCOM_TOOLS__
 
@@ -448,15 +450,15 @@ cl_extra_libs = $(cl_extra_libs_gen)
 # bld settings
 ############################
 !ifdef __CLANG_TOOLS__
-bcc  = clang -pipe -c
-bcxx = clang++ -pipe -c
-bccl = $(noecho)clang -pipe
-bcl  = $(noecho)clang -pipe
+bld_cc  = clang -pipe -c
+bld_cxx = clang++ -pipe -c
+bld_ccl = $(noecho)clang -pipe
+bld_cl  = $(noecho)clang -pipe
 !else
-bcc  = gcc -pipe -c
-bcxx = g++ -pipe -c
-bccl = $(noecho)gcc -pipe
-bcl  = $(noecho)gcc -pipe
+bld_cc  = gcc -pipe -c
+bld_cxx = g++ -pipe -c
+bld_ccl = $(noecho)gcc -pipe
+bld_cl  = $(noecho)gcc -pipe
 !endif
 
 bld_ppflags_sys = $(common_ppflags)
@@ -477,14 +479,26 @@ bld_cl_extra_libs = $(bld_cl_extra_libs_gen)
 bld_cc_sys = -fno-asm -fno-common -fsigned-char
 bld_cl_sys =
 
+bld_c_flags   =
+bld_cxx_flags = -std=c++98
+
 bld_incs = $(bld_extra_incs) -I"$(watcom_dir)/h"
 
 bld_cppflags = $(common_cppflags_$(bld_os)) $(common_cppflags_$(bld_cpu)) $(common_cppflags_$(bld_os)_$(bld_cpu))
 
-bld_cflags   = $(common_cflags) $(common_flags) -o $@
+bld_cflags   = $(bld_cc_sys) $(common_cflags) $(common_flags) $(bld_incs) #-o $@
 
-bld_c_flags   =
-bld_cxx_flags = -std=c++98
+!ifdef __OSX__
+bld_ldflags1 = $(common_ldflags) -Wl,-map,$^&.map
+!else
+bld_ldflags1 = $(common_ldflags) -Wl,-Map,$^&.map
+!endif
+
+# options for linking only
+bld_clflags  = $(bld_cl_sys) -o $@ $(bld_ldflags1)
+
+# options for single source compile and link
+bld_cclflags = $(bld_cflags) $(bld_clflags)
 
 # options for linking
 !ifdef __OSX__
@@ -506,17 +520,7 @@ bld_ldflags_cxx = -lsupc++ -lstdc++
 bld_ldflags_dll_cxx = -lsupc++ -lstdc++
 !endif
 
-!ifdef __OSX__
-bld_ldflags1 = $(common_ldflags) -Wl,-map,$^&.map
-!else
-bld_ldflags1 = $(common_ldflags) -Wl,-Map,$^&.map
-!endif
-
 bld_ldflags  = $(bld_cl_extra_libs_gen) $(bld_extra_ldflags) $(bld_ldflags_$(proj_type))
-
-# options for linking via cl
-bld_cclflags = $(common_cflags) $(common_flags) -o $@ $(bld_ldflags1)
-bld_clflags  = -o $@ $(bld_ldflags1)
 
 !ifndef __WATCOM_TOOLS__
 
@@ -633,6 +637,11 @@ bcc_axp         = *wccaxp
 bcc_ppc         = *wccppc
 bcc_mps         = *wccmps
 
+bcxx_386        = *wpp386
+bcxx_axp        = *wppaxp
+bcxx_ppc        = *wppppc
+bcxx_mps        = *wppmps
+
 bcl_386         = *wcl386
 bcl_axp         = *wclaxp
 bcl_ppc         = *wclppc
@@ -643,9 +652,10 @@ bas_axp         = *wasaxp
 bas_ppc         = *wasppc
 bas_mps         = *wasmps
 
-bcc             = $(bcc_$(bld_cpu)) -zq
-bccl            = $(noecho)$(bcl_$(bld_cpu)) -zq
-bcl             = $(noecho)$(bcl_$(bld_cpu)) -zq
+bld_cc          = $(bcc_$(bld_cpu)) -zq
+bld_cxx         = $(bcxx_$(bld_cpu)) -zq
+bld_ccl         = $(noecho)$(bcl_$(bld_cpu)) -zq
+bld_cl          = $(noecho)$(bcl_$(bld_cpu)) -zq
 bas             = $(bas_$(bld_cpu)) -q
 blink           = *wlink op q
 
@@ -653,6 +663,10 @@ bld_ppflags_sys =
 
 bld_cc_sys      = $(cflags_$(bld_os))
 bld_cl_sys      = $(clflags_$(bld_os)_$(bld_cpu))
+
+bld_c_flags     =
+bld_cxx_flags   = #-zastd=c++98
+
 bld_incs        = $(bld_extra_incs) -I"$(watcom_dir)/h"
 
 !if $(%OWTOOLSVER) >= 1300
@@ -672,11 +686,13 @@ bld_debug_cflags  = -d2
 bld_cppflags    =
 
 # options for source compilations
-bld_cflags      = $(bld_debug_cflags)$(bld_watcom_common_cflags)-j-fo=.obj
+bld_cflags      = $(bld_cc_sys) $(bld_debug_cflags)$(bld_watcom_common_cflags)-j-fo=.obj $(bld_incs)
 
-# options for single source utility compilations
-bld_cclflags    = $(bld_debug_cflags)$(bld_watcom_common_cflags)-j-fo=.obj -fe=$@
-bld_clflags     = -fe=$@
+# options for linking only via cl
+bld_clflags     = $(bld_cl_sys) -fe=$@
+
+# options for single source compile and link
+bld_cclflags    = $(bld_cflags) $(bld_clflags)
 
 # options for linking
 bld_ldflags     =
@@ -697,10 +713,6 @@ bld_ldflags     =
 !endif
 
 ##############################################################################
-
-bld_cc          = $(bcc) $(bld_cc_sys) $(bld_incs)
-bld_ccl         = $(bccl) $(bld_cc_sys) $(bld_cl_sys) $(bld_incs)
-bld_cl          = $(bcl) $(bld_cl_sys)
 
 cpp             = $(noecho)*wcpp $(bldver_cppflags)
 
