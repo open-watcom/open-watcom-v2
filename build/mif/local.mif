@@ -3,6 +3,21 @@
 # HANDLING OF NON-WATCOM COMPILERS/PLATFORMS
 #
 ##############################################################################
+
+# toolchains definitions
+# for non-watcom platfoms
+####################################
+use_for_build_bsdx64    = clang_gcc
+use_for_build_haikux64  = clang_gcc
+use_for_build_linuxarm	= clang_gcc
+use_for_build_linuxa64	= clang_gcc
+use_for_build_linuxx64	= clang_gcc
+use_for_build_ntx64     = msvc_intel
+use_for_build_osxarm	= clang_gcc
+use_for_build_osxa64	= clang_gcc
+use_for_build_osxx64	= clang_gcc
+
+##################################
 #
 # x64 CPU (64-bit)
 #
@@ -78,7 +93,7 @@ skip_build: .SYMBOLIC
 
 !if defined("__NT__")
 
-!if !defined( "__WATCOM_TOOLS__" ) || "$(bld_cpu)" == "x64"
+!ifeq use_for_build_$(bld_os)$(bld_cpu) msvc_intel
 
 additional_clean_sys = *.pdb
 
@@ -230,7 +245,7 @@ bld_ldflags  =  $(bld_cl_extra_libs_gen) -link -nologo &
     -NODEFAULTLIB:libucrt.lib -DEFAULTLIB:ucrt.lib &
     $(bld_extra_ldflags) $(bld_ldflags_$(proj_type))
 
-!ifndef __WATCOM_TOOLS__
+!ifeq use_for_build_$(host_os)$(host_cpu) msvc_intel
 
 # standard settings
 ############################
@@ -318,7 +333,7 @@ use_for_build = 1
 use_for_build = 1
 !endif
 
-!ifdef use_for_build
+!ifeq use_for_build_$(bld_os)$(bld_cpu) clang_gcc
 
 # librarian settings
 ############################
@@ -522,7 +537,7 @@ bld_ldflags_dll_cxx = -lsupc++ -lstdc++
 
 bld_ldflags  = $(bld_cl_extra_libs_gen) $(bld_extra_ldflags) $(bld_ldflags_$(proj_type))
 
-!ifndef __WATCOM_TOOLS__
+!ifeq use_for_build_$(host_os)$(host_cpu) clang_gcc
 
 # standard settings
 ############################
@@ -620,7 +635,7 @@ use_for_build = 1
 ! endif
 !endif
 
-!ifdef use_for_build
+!ifndef use_for_build_$(bld_os)$(bld_cpu)
 
 # librarian settings
 ############################
