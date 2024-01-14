@@ -216,6 +216,7 @@ bld_incs = $(bld_extra_incs) -I"$(watcom_dir)/h"
 
 bld_cppflags = $(common_cppflags_$(bld_os)) $(common_cppflags_$(bld_cpu)) $(common_cppflags_$(bld_os)_$(bld_cpu))
 
+# options for source compilation only
 bld_cflags   = $(bld_cc_sys) $(common_cflags) $(common_flags) $(bld_incs) #-Fo$@
 
 bld_ldflags1 = $(common_ldflags) -Fm
@@ -226,6 +227,7 @@ bld_clflags  = $(bld_cl_sys) -Fe$@ $(bld_ldflags1)
 # options for single source compile and link
 bld_cclflags = $(bld_cflags) $(bld_clflags)
 
+# options for linking
 bld_ldflags  =  $(bld_cl_extra_libs_gen) -link -nologo &
     -MAPINFO:EXPORTS -INCREMENTAL:NO -DEFAULTLIB:user32.lib -DEFAULTLIB:ole32.lib &
     -DEFAULTLIB:advapi32.lib -DEFAULTLIB:shell32.lib -DEFAULTLIB:gdi32.lib -DEFAULTLIB:comdlg32.lib &
@@ -470,6 +472,7 @@ bld_incs = $(bld_extra_incs) -I"$(watcom_dir)/h"
 
 bld_cppflags = $(common_cppflags_$(bld_os)) $(common_cppflags_$(bld_cpu)) $(common_cppflags_$(bld_os)_$(bld_cpu))
 
+# options for source compilation only
 bld_cflags   = $(bld_cc_sys) $(common_cflags) $(common_flags) $(bld_incs) #-o $@
 
 ! ifdef __OSX__
@@ -484,7 +487,6 @@ bld_clflags  = $(bld_cl_sys) -o $@ $(bld_ldflags1)
 # options for single source compile and link
 bld_cclflags = $(bld_cflags) $(bld_clflags)
 
-# options for linking
 ! ifdef __OSX__
 bld_ldflags_cxx = -lc++
 bld_ldflags_dll_cxx = -lc++
@@ -504,6 +506,7 @@ bld_ldflags_cxx = -lsupc++ -lstdc++
 bld_ldflags_dll_cxx = -lsupc++ -lstdc++
 ! endif
 
+# options for linking
 bld_ldflags  = $(bld_cl_extra_libs_gen) $(bld_extra_ldflags) $(bld_ldflags_$(proj_type))
 
 #
@@ -649,10 +652,10 @@ bld_debug_cflags  = -d2
 
 bld_cppflags    =
 
-# options for source compilations
+# options for source compilation only
 bld_cflags      = $(bld_cc_sys) $(bld_debug_cflags)$(bld_watcom_common_cflags)-j-fo=.obj $(bld_incs)
 
-# options for linking only via cl
+# options for linking only
 bld_clflags     = $(bld_cl_sys) -fe=$@
 
 # options for single source compile and link
