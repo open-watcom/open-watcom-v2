@@ -9,68 +9,50 @@
 ##################################################
 !ifeq use_for_build_$(bld_os)$(bld_cpu) msvc_intel
 ! if !( defined( __MSVC_TOOLS__ ) || defined( __INTEL_TOOLS__ ) )
-#
 # skip, configuration mismatch
-#
-skip_1: .SYMBOLIC
-!  ifeq verbose 1
-    @echo $@ : host_os=$(host_os)/host_cpu=$(host_cpu)/bld_os=$(bld_os)/bld_cpu=$(bld_cpu)
+skip = 1
+! else ifeq use_for_target_$(host_os)$(host_cpu) msvc_intel
+!  if "$(bld_os)$(bld_cpu)" != "$(host_os)$(host_cpu)"
+# skip, target mismatch
+skip = 2
 !  endif
 ! else ifdef use_for_target_$(host_os)$(host_cpu)
-!  ifneq use_for_target_$(host_os)$(host_cpu) msvc_intel
-#
 # skip, current target requires toolchain other then configured
-#
-skip_2: .SYMBOLIC
-!   ifeq verbose 1
-    @echo $@ : host_os=$(host_os)/host_cpu=$(host_cpu)/bld_os=$(bld_os)/bld_cpu=$(bld_cpu)
-!   endif
-!  endif
+skip = 3
 ! endif
 ##################################################
 # check for Clang and GCC toolchains
 ##################################################
 !else ifeq use_for_build_$(bld_os)$(bld_cpu) clang_gcc
 ! if !( defined( __CLANG_TOOLS__ ) || defined( __GCC_TOOLS__ ) )
-#
 # skip, configuration mismatch
-#
-skip_3: .SYMBOLIC
-!  ifeq verbose 1
-    @echo $@ : host_os=$(host_os)/host_cpu=$(host_cpu)/bld_os=$(bld_os)/bld_cpu=$(bld_cpu)
+skip = 4
+! else ifeq use_for_target_$(host_os)$(host_cpu) clang_gcc
+!  if "$(bld_os)$(bld_cpu)" != "$(host_os)$(host_cpu)"
+# skip, target mismatch
+skip = 5
 !  endif
 ! else ifdef use_for_target_$(host_os)$(host_cpu)
-!  ifneq use_for_target_$(host_os)$(host_cpu) clang_gcc
-#
 # skip, current target requires toolchain other then configured
-#
-skip_4: .SYMBOLIC
-!   ifeq verbose 1
-    @echo $@ : host_os=$(host_os)/host_cpu=$(host_cpu)/bld_os=$(bld_os)/bld_cpu=$(bld_cpu)
-!   endif
-!  endif
+skip = 6
 ! endif
 ##################################################
 # check for WATCOM toolchain
 ##################################################
 !else ifdef use_for_build_$(bld_os)$(bld_cpu)
-#
 # skip, current host requires toolchain other then configured
-#
-skip_5: .SYMBOLIC
-!  ifeq verbose 1
-    @echo $@ : host_os=$(host_os)/host_cpu=$(host_cpu)/bld_os=$(bld_os)/bld_cpu=$(bld_cpu)
-!  endif
+skip = 7
 !else ifdef use_for_target_$(host_os)$(host_cpu)
-#
 # skip, current target requires toolchain other then configured
-#
-skip_6: .SYMBOLIC
-!  ifeq verbose 1
-    @echo $@ : host_os=$(host_os)/host_cpu=$(host_cpu)/bld_os=$(bld_os)/bld_cpu=$(bld_cpu)
-!  endif
+skip = 8
 !endif
 ##############################################################################
+!ifdef skip
+skip_build: .SYMBOLIC
+!  ifeq verbose 1
+    @echo skip ($(skip)) : host_os=$(host_os)/host_cpu=$(host_cpu)/bld_os=$(bld_os)/bld_cpu=$(bld_cpu)
+!  endif
+!endif
 
 # bootstrap overrides
 ######################
