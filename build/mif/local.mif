@@ -99,10 +99,8 @@ common_ppflags      = -D__FLAT__ -D_CRT_SECURE_NO_WARNINGS -D_CRT_NONSTDC_NO_WAR
 
 common_cppflags_nt  = -D__NT__
 
-common_cppflags_386 = -D__386__
 common_cppflags_x64 =
 
-common_cppflags_nt_386  = -D__NT_386__
 common_cppflags_nt_x64  = -D__NT_X64__
 
 # common release/debug options
@@ -152,7 +150,6 @@ common_cflags_lib_shared  = -LD
 common_clflags_lib_shared = -LD
 
 # Target specific options
-target_cflags_386   =
 target_cflags_x64   =
 
 # DLL/shared library file extension
@@ -256,7 +253,6 @@ ppflags_sys = $(common_ppflags)
 
 cppflags_nt  = $(common_cppflags_nt)
 
-cppflags_386 = $(common_cppflags_386) $(common_cppflags_$(host_os)_386)
 !  ifdef bootstrap
 cppflags_x64 = $(common_cppflags_x64) $(common_cppflags_$(host_os)_x64)
 !  else
