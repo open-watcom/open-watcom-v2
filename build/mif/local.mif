@@ -59,8 +59,8 @@ skip_build: .SYMBOLIC
 ######################
 
 !ifdef bootstrap
-!ifdef __WATCOM_TOOLS__
-!ifdef __LOADDLL__
+! ifdef __WATCOM_TOOLS__
+!  ifdef __LOADDLL__
 !loaddll wcc    wccd.dll
 !loaddll wcc386 wccd386.dll
 !loaddll wccaxp wccdaxp.dll
@@ -70,8 +70,8 @@ skip_build: .SYMBOLIC
 !loaddll wpp386 wppd386.dll
 !loaddll wppaxp wppdaxp.dll
 !loaddll wrc    wrcd.dll
-!endif
-!endif
+!  endif
+! endif
 !endif
 
 !ifeq use_for_build_$(bld_os)$(bld_cpu) msvc_intel
