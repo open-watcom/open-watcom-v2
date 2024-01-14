@@ -6,18 +6,18 @@
 !error The host_cpu macro must be defined!
 !endif
 
-use_for_host_bsdx64     = clang_gcc
-use_for_host_haikux64   = clang_gcc
-use_for_host_linuxarm   = clang_gcc
-use_for_host_linuxa64   = clang_gcc
-use_for_host_linuxx64   = clang_gcc
-use_for_host_ntx64      = msvc_intel
-use_for_host_osxarm     = clang_gcc
-use_for_host_osxa64     = clang_gcc
-use_for_host_osxx64     = clang_gcc
+use_for_target_bsdx64	= clang_gcc
+use_for_target_haikux64 = clang_gcc
+use_for_target_linuxarm = clang_gcc
+use_for_target_linuxa64 = clang_gcc
+use_for_target_linuxx64 = clang_gcc
+use_for_target_ntx64	= msvc_intel
+use_for_target_osxarm	= clang_gcc
+use_for_target_osxa64	= clang_gcc
+use_for_target_osxx64	= clang_gcc
 
 !ifndef bootstrap
-!ifdef use_for_host_$(host_os)$(host_cpu)
+!ifdef use_for_target_$(host_os)$(host_cpu)
 !undef __WATCOM_TOOLS__
 !endif
 !endif
