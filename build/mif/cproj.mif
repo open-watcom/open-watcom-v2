@@ -6,15 +6,15 @@
 !error The host_cpu macro must be defined!
 !endif
 
-use_for_target_bsdx64	= clang_gcc
+use_for_target_bsdx64   = clang_gcc
 use_for_target_haikux64 = clang_gcc
 use_for_target_linuxarm = clang_gcc
 use_for_target_linuxa64 = clang_gcc
 use_for_target_linuxx64 = clang_gcc
-use_for_target_ntx64	= msvc_intel
-use_for_target_osxarm	= clang_gcc
-use_for_target_osxa64	= clang_gcc
-use_for_target_osxx64	= clang_gcc
+use_for_target_ntx64    = msvc_intel
+use_for_target_osxarm   = clang_gcc
+use_for_target_osxa64   = clang_gcc
+use_for_target_osxx64   = clang_gcc
 
 !ifndef bootstrap
 !ifdef use_for_target_$(host_os)$(host_cpu)
@@ -831,15 +831,15 @@ rc              = $(noecho)*bwrc -q
 # GLOBAL MACROS SETINGS FOR OW TOOLS
 #####################################
 # output format setup for RISC architecture
-cc_outfmt_ntaxp	   = -eoc
-cc_outfmt_ntmps	   = -eoc
-cc_outfmt_ntppc	   = -eoc
+cc_outfmt_ntaxp    = -eoc
+cc_outfmt_ntmps    = -eoc
+cc_outfmt_ntppc    = -eoc
 cc_outfmt_linuxaxp = -eoe
 cc_outfmt_linuxmps = -eoe
 cc_outfmt_linuxppc = -eoe
-as_outfmt_ntaxp	   = -oc
-as_outfmt_ntmps	   = -oc
-as_outfmt_ntppc	   = -oc
+as_outfmt_ntaxp    = -oc
+as_outfmt_ntmps    = -oc
+as_outfmt_ntppc    = -oc
 as_outfmt_linuxaxp = -oe
 as_outfmt_linuxmps = -oe
 as_outfmt_linuxppc = -oe
