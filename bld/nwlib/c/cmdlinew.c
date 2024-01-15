@@ -35,6 +35,8 @@
 #include "wio.h"
 #include "cmdlinew.h"
 
+#include "clibext.h"
+
 
 #define MAX_TOKEN_LEN   260
 

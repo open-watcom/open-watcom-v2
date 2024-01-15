@@ -38,9 +38,6 @@
 #include "cmdlinea.h"
 #include "cmdlinew.h"
 
-#include "clibint.h"
-#include "clibext.h"
-
 
 #define AR_MODE_ENV     "WLIB_AR"
 #define MAX_TOKEN_LEN   260
