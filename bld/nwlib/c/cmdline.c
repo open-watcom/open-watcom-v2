@@ -139,39 +139,32 @@ static const char *getWlibModeInfo( void )
 
 void ProcessCmdLine( char *argv[] )
 {
-    char        *parse;
-    const char  *env;
+    const char  *p;
     lib_cmd     *cmd;
     operation   ar_mode;
 
-    env = getWlibModeInfo();
+    p = getWlibModeInfo();
 
-    if( ( env == NULL || *env == '\0' ) && ( argv[1] == NULL || *argv[1] == '\0' ) ) {
+    if( ( p == NULL || *p == '\0' ) && ( argv[1] == NULL || *argv[1] == '\0' ) ) {
         Usage();
     }
 
     ar_mode = OP_NONE;
-    if( env != NULL && *env != '\0' ) {
-        parse = DupStr( env );
+    if( p != NULL && *p != '\0' ) {
         if( Options.ar ) {
-            ParseOneLineAr( parse, &ar_mode );
+            ParseOneLineAr( p, &ar_mode );
         } else {
-            ParseOneLineWlib( parse );
+            ParseOneLineWlib( p );
         }
-        MemFree( parse );
     }
-    argv++;
-    while( *argv != NULL ) {
-        if( **argv != '\0' ) {
-            parse = DupStr( *argv );
+    for( argv++; (p = *argv) != NULL; argv++ ) {
+        if( *p != '\0' ) {
             if( Options.ar ) {
-                ParseOneLineAr( parse, &ar_mode );
+                ParseOneLineAr( p, &ar_mode );
             } else {
-                ParseOneLineWlib( parse );
+                ParseOneLineWlib( p );
             }
-            MemFree( parse );
         }
-        argv++;
     }
     if( Options.ar && CmdList != NULL && Options.explode ) {
         Options.explode = false;
