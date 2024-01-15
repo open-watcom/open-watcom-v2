@@ -86,6 +86,8 @@ common_objs = &
     $(_subdir_)libwalk.obj &
     $(_subdir_)symlist.obj &
     $(_subdir_)proclib.obj &
+    $(_subdir_)cmdlinea.obj &
+    $(_subdir_)cmdlinew.obj &
     $(_subdir_)cmdline.obj &
     $(_subdir_)error.obj &
     $(_subdir_)implib.obj &

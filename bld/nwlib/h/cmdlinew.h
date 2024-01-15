@@ -25,17 +25,12 @@
 *
 *  ========================================================================
 *
-* Description:  Library manager command line processing.
+* Description:  Library manager command line processing (WLIB mode).
 *
 ****************************************************************************/
 
 
-extern void         InitCmdLine( void );
-extern void         ProcessCmdLine( char *argv[] );
-extern void         FiniCmdLine( void );
-extern const char   *GetString( const char *c, char *token_buff, bool singlequote, bool ignoreSpaceInQuotes );
-extern void         AddCommand( operation ops, const char *name );
+extern void ParseOneLineWlib( const char *c );
 
-extern lib_cmd      *CmdList;
-extern options_def  Options;
+
 
