@@ -82,6 +82,29 @@ const char *GetString( const char *c, char *token_buff, bool singlequote, bool i
     return( c );
 }
 
+const char *GetFilenameExt( const char *c, bool equal, char *token_buff, const char *ext, char **ret )
+{
+    const char  *start = c;
+
+    eatwhite( c );
+    if( equal && *c == '=' ) {
+        ++c;
+        eatwhite( c );
+    } else {
+        c = start;
+    }
+    if( *c == ' ' || *c == '\0' ) {
+        *ret = NULL;
+    } else {
+        c = GetString( c, token_buff, false, false );
+        if( ext != NULL && *ext != '\0' ) {
+            DefaultExtension( token_buff, ext );
+        }
+        *ret = DupStr( token_buff );
+    }
+    return( c );
+}
+
 void AddCommand( operation ops, const char *name )
 {
     lib_cmd         *new;

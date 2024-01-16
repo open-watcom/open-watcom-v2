@@ -34,6 +34,7 @@ extern void         InitCmdLine( void );
 extern void         ProcessCmdLine( char *argv[] );
 extern void         FiniCmdLine( void );
 extern const char   *GetString( const char *c, char *token_buff, bool singlequote, bool ignoreSpaceInQuotes );
+extern const char   *GetFilenameExt( const char *c, bool equal, char *token_buff, const char *ext, char **ret );
 extern void         AddCommand( operation ops, const char *name );
 
 extern lib_cmd      *CmdList;

@@ -135,13 +135,11 @@ void ParseOneLineAr( const char *c, operation *ar_mode )
                 c = ParseArOption( c, ar_mode );
                 break;
             }
-            c = GetString( c, token_buff, true, false );
-            if( Options.input_name != NULL ) {
-                AddCommand( *ar_mode, token_buff );
-                break;
+            if( Options.input_name == NULL ) {
+                c = GetFilenameExt( c, false, token_buff, EXT_LIB, &Options.input_name );
             } else {
-                DefaultExtension( token_buff, EXT_LIB );
-                Options.input_name = DupStr( token_buff );
+                c = GetString( c, token_buff, true, false );
+                AddCommand( *ar_mode, token_buff );
             }
             break;
         }

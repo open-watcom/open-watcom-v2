@@ -50,29 +50,6 @@ typedef struct {
 } getline_data;
 
 
-static const char *GetEqualString( const char *c, char *token_buff, const char *ext, char **ret )
-{
-    const char  *start = c;
-
-    eatwhite( c );
-    if( *c == '=' ) {
-        ++c;
-        eatwhite( c );
-    } else {
-        c = start;
-    }
-    if( *c == ' ' || *c == '\0' ) {
-        *ret = NULL;
-    } else {
-        c = GetString( c, token_buff, false, false );
-        if( ext != NULL && *ext != '\0' ) {
-            DefaultExtension( token_buff, ext );
-        }
-        *ret = DupStr( token_buff );
-    }
-    return( c );
-}
-
 static void SetPageSize( unsigned_16 new_size )
 {
     unsigned int i;
@@ -180,7 +157,7 @@ static const char *ParseOption( const char *c, char *token_buff )
         if( Options.output_directory != NULL ) {
             FatalError( ERR_DUPLICATE_OPTION, start );
         }
-        c = GetEqualString( c, token_buff, NULL, &Options.output_directory );
+        c = GetFilenameExt( c, true, token_buff, NULL, &Options.output_directory );
         if( access( Options.output_directory, F_OK ) != 0 ) {
             FatalError( ERR_DIR_NOT_EXIST, Options.output_directory );
         }
@@ -278,7 +255,7 @@ static const char *ParseOption( const char *c, char *token_buff )
             FatalError( ERR_DUPLICATE_OPTION, start );
         }
         Options.list_contents = true;
-        c = GetEqualString( c, token_buff, EXT_LST, &Options.list_file );
+        c = GetFilenameExt( c, true, token_buff, EXT_LST, &Options.list_file );
         break;
     case 'm': //                       (display C++ mangled names)
         Options.mangled = true;
@@ -287,7 +264,7 @@ static const char *ParseOption( const char *c, char *token_buff )
         if( Options.output_name != NULL ) {
             FatalError( ERR_DUPLICATE_OPTION, start );
         }
-        c = GetEqualString( c, token_buff, EXT_LIB, &Options.output_name );
+        c = GetFilenameExt( c, true, token_buff, EXT_LIB, &Options.output_name );
         break;
     case 'q': //                       (don't print header)
         Options.quiet = true;
@@ -303,16 +280,14 @@ static const char *ParseOption( const char *c, char *token_buff )
             Options.explode_count = 1;
             ++c;
         }
-        c = GetEqualString( c, token_buff, NULL, &Options.explode_ext );
-        if( Options.explode_ext == NULL )
-            Options.explode_ext = "." EXT_OBJ;
+        c = GetFilenameExt( c, true, token_buff, EXT_OBJ, &Options.explode_ext );
         if( Options.explode_count ) {
             char    cn[20] = FILE_TEMPLATE_MASK;
             strcpy( cn + sizeof( FILE_TEMPLATE_MASK ) - 1, Options.explode_ext );
             Options.explode_ext = DupStr( cn );
         }
 #else
-        c = GetEqualString( c, token_buff, NULL, &Options.explode_ext );
+        c = GetFilenameExt( c, true, token_buff, NULL, &Options.explode_ext );
 #endif
         break;
     case 'z':
@@ -334,7 +309,7 @@ static const char *ParseOption( const char *c, char *token_buff )
             FatalError( ERR_DUPLICATE_OPTION, start );
         }
         Options.strip_expdef = true;       // JBS 99/07/09
-        c = GetEqualString( c, token_buff, NULL, &Options.export_list_file );
+        c = GetFilenameExt( c, true, token_buff, NULL, &Options.export_list_file );
         break;
     case 't':
         if( my_tolower( *c ) == 'l' ) {
@@ -402,7 +377,7 @@ static const char *ParseOption( const char *c, char *token_buff )
             if( Options.page_size ) {
                 FatalError( ERR_DUPLICATE_OPTION, start );
             }
-            c = GetEqualString( c, token_buff, NULL, &page );
+            c = GetFilenameExt( c, true, token_buff, NULL, &page );
             errno = 0;
             page_size = strtoul( page, &endptr, 0 );
             if( *endptr != '\0' ) {
@@ -552,16 +527,15 @@ void ParseOneLineWlib( const char *c )
         case '#':
             // comment - blow away line
             return;
+        case '?':
+            Usage();
+            return;
         default:
-            c = GetString( c, token_buff, true, false );
-            if( strcmp( token_buff, "?" ) == 0 ) {
-                Usage();
-            }
-            if( Options.input_name != NULL ) {
-                AddCommand( OP_ADD|OP_DELETE, token_buff );
+            if( Options.input_name == NULL ) {
+                c = GetFilenameExt( c, false, token_buff, EXT_LIB, &Options.input_name );
             } else {
-                DefaultExtension( token_buff, EXT_LIB );
-                Options.input_name = DupStr( token_buff );
+                c = GetString( c, token_buff, true, false );
+                AddCommand( OP_ADD|OP_DELETE, token_buff );
             }
             break;
         }
