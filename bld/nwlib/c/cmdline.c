@@ -50,32 +50,59 @@ lib_cmd         *CmdList;
 
 static lib_cmd  **CmdListEnd;
 
-const char *GetString( const char *c, char *token_buff, bool singlequote, bool ignoreSpaceInQuotes )
+const char *GetString( const char *c, char *token_buff, bool singlequote )
 {
-    char    quote;
+    int     quote;
+    int     ch;
 
     eatwhite(c);
     if( (*c == '\"') || ( singlequote && (*c == '\'') ) ) {
-        quote = *c;
-        c++;
-        while( (*c != '\0') && (*c != quote) ) {
-            *token_buff++ = *c++;
+        quote = *(unsigned char *)c;
+        for( c++; (ch = *(unsigned char *)c) != '\0'; c++ ) {
+            if( ch == quote ) {
+                c++;
+                break;
+            }
+            *token_buff++ = ch;
         }
-        if( *c == quote ) {
-            c++;
+    } else {
+        for( ; (ch = *(unsigned char *)c) != '\0'; c++ ) {
+            if( isspace( ch ) ) {
+                break;
+            }
+            *token_buff++ = ch;
+        }
+    }
+    *token_buff = '\0';
+    return( c );
+}
+
+const char *GetImportSymbol( const char *c, char *token_buff )
+{
+    int     quote;
+    int     ch;
+
+    eatwhite(c);
+    if( *c == '\"' ) {
+        quote = *(unsigned char *)c;
+        for( c++; (ch = *(unsigned char *)c) != '\0'; c++ ) {
+            if( ch == quote ) {
+                c++;
+                break;
+            }
+            *token_buff++ = ch;
         }
     } else {
         bool inquote = false;
 
-        while( inquote || notwhite( *c ) ) {
-            if( ignoreSpaceInQuotes ) {
-                if( *c == '\0' ) {
-                    break;
-                } else if( (*c == '\"') || (*c == '\'') ) {
-                    inquote = !inquote;
-                }
+        for( ; (ch = *(unsigned char *)c) != '\0'; c++ ) {
+            if( !inquote && isspace( ch ) ) {
+                break;
             }
-            *token_buff++ = *c++;
+            if( ch == '\"' || ch == '\'' ) {
+                inquote = !inquote;
+            }
+            *token_buff++ = ch;
         }
     }
     *token_buff = '\0';
@@ -96,7 +123,7 @@ const char *GetFilenameExt( const char *c, bool equal, char *token_buff, const c
     if( *c == ' ' || *c == '\0' ) {
         *ret = NULL;
     } else {
-        c = GetString( c, token_buff, false, false );
+        c = GetString( c, token_buff, false );
         if( ext != NULL && *ext != '\0' ) {
             DefaultExtension( token_buff, ext );
         }

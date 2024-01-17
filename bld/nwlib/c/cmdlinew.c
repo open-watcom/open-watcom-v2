@@ -68,7 +68,6 @@ static void SetPageSize( unsigned_16 new_size )
 static const char *ParseCommand( const char *c )
 {
     bool            doquotes = true;
-    bool            ignoreSpacesInQuotes = false;
     const char      *start;
     operation       ops = 0;
     //char        buff[_MAX_PATH];
@@ -98,18 +97,18 @@ static const char *ParseCommand( const char *c )
         break;
     case '+':
         ops = OP_ADD;
-        switch( *c ) {
-        case '-':
+        if( *c == '+' ) {
+            ops |= OP_IMPORT;
+            ++c;
+            eatwhite( c );
+            c = GetImportSymbol( c, buff );
+            AddCommand( ops, buff );
+            return( c );
+        }
+        if( *c == '-' ) {
             ops |= OP_DELETE;
             doquotes = false;
             ++c;
-            break;
-        case '+':
-            ops |= OP_IMPORT;
-            doquotes = false;
-            ignoreSpacesInQuotes = true;
-            ++c;
-            break;
         }
         break;
 #if defined(__UNIX__)
@@ -128,7 +127,7 @@ static const char *ParseCommand( const char *c )
         FatalError( ERR_BAD_CMDLINE, start );
     }
     eatwhite( c );
-    c = GetString( c, buff, doquotes, ignoreSpacesInQuotes );
+    c = GetString( c, buff, doquotes );
     AddCommand( ops, buff );
     return( c );
 }
@@ -503,7 +502,7 @@ void ParseOneLineWlib( const char *c )
             break;
         case '@':
             ++c;
-            c = GetString( c, token_buff, true, false );
+            c = GetString( c, token_buff, true );
             {
                 const char *env;
 
@@ -534,7 +533,7 @@ void ParseOneLineWlib( const char *c )
             if( Options.input_name == NULL ) {
                 c = GetFilenameExt( c, false, token_buff, EXT_LIB, &Options.input_name );
             } else {
-                c = GetString( c, token_buff, true, false );
+                c = GetString( c, token_buff, true );
                 AddCommand( OP_ADD|OP_DELETE, token_buff );
             }
             break;
