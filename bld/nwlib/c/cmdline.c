@@ -141,6 +141,8 @@ char *GetFilenameExt( const char **s, bool equal, char *dst, const char *ext )
     c = *s;
     if( equal ) {
         c = SkipEqual( c );
+    } else {
+        eatwhite(c);
     }
     if( isspace( *c ) || *c == '\0' ) {
         d = NULL;
