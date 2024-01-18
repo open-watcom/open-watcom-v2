@@ -72,6 +72,7 @@ static const char *ParseCommand( const char *c )
     operation       ops = 0;
     //char        buff[_MAX_PATH];
     char            buff[MAX_IMPORT_STRING];
+    char            *p;
 
     start = c;
     eatwhite( c );
@@ -101,8 +102,8 @@ static const char *ParseCommand( const char *c )
             ops |= OP_IMPORT;
             ++c;
             eatwhite( c );
-            c = GetImportSymbol( c, buff );
-            AddCommand( ops, buff );
+            p = GetImportSymbol( &c, buff );
+            AddCommand( ops, p );
             return( c );
         }
         if( *c == '-' ) {
@@ -127,8 +128,8 @@ static const char *ParseCommand( const char *c )
         FatalError( ERR_BAD_CMDLINE, start );
     }
     eatwhite( c );
-    c = GetString( c, buff, doquotes );
-    AddCommand( ops, buff );
+    p = GetString( &c, buff, doquotes );
+    AddCommand( ops, p );
     return( c );
 }
 
@@ -155,7 +156,7 @@ static const char *ParseOption( const char *c, char *token_buff )
         if( Options.output_directory != NULL ) {
             FatalError( ERR_DUPLICATE_OPTION, start );
         }
-        c = GetFilenameExt( c, true, token_buff, NULL, &Options.output_directory );
+        Options.output_directory = GetFilenameExt( &c, true, token_buff, NULL );
         if( access( Options.output_directory, F_OK ) != 0 ) {
             FatalError( ERR_DIR_NOT_EXIST, Options.output_directory );
         }
@@ -253,7 +254,7 @@ static const char *ParseOption( const char *c, char *token_buff )
             FatalError( ERR_DUPLICATE_OPTION, start );
         }
         Options.list_contents = true;
-        c = GetFilenameExt( c, true, token_buff, EXT_LST, &Options.list_file );
+        Options.list_file = GetFilenameExt( &c, true, token_buff, EXT_LST );
         break;
     case 'm': //                       (display C++ mangled names)
         Options.mangled = true;
@@ -262,7 +263,7 @@ static const char *ParseOption( const char *c, char *token_buff )
         if( Options.output_name != NULL ) {
             FatalError( ERR_DUPLICATE_OPTION, start );
         }
-        c = GetFilenameExt( c, true, token_buff, EXT_LIB, &Options.output_name );
+        Options.output_name = GetFilenameExt( &c, true, token_buff, EXT_LIB );
         break;
     case 'q': //                       (don't print header)
         Options.quiet = true;
@@ -278,14 +279,14 @@ static const char *ParseOption( const char *c, char *token_buff )
             Options.explode_count = 1;
             ++c;
         }
-        c = GetFilenameExt( c, true, token_buff, EXT_OBJ, &Options.explode_ext );
+        Options.explode_ext = GetFilenameExt( &c, true, token_buff, EXT_OBJ );
         if( Options.explode_count ) {
             char    cn[20] = FILE_TEMPLATE_MASK;
             strcpy( cn + sizeof( FILE_TEMPLATE_MASK ) - 1, Options.explode_ext );
             Options.explode_ext = DupStr( cn );
         }
 #else
-        c = GetFilenameExt( c, true, token_buff, NULL, &Options.explode_ext );
+        Options.explode_ext = GetFilenameExt( &c, true, token_buff, NULL );
 #endif
         break;
     case 'z':
@@ -306,8 +307,8 @@ static const char *ParseOption( const char *c, char *token_buff )
         } else if( Options.strip_expdef ) {
             FatalError( ERR_DUPLICATE_OPTION, start );
         }
-        Options.strip_expdef = true;       // JBS 99/07/09
-        c = GetFilenameExt( c, true, token_buff, NULL, &Options.export_list_file );
+        Options.strip_expdef = true;
+        Options.export_list_file = GetFilenameExt( &c, true, token_buff, NULL );
         break;
     case 't':
         if( my_tolower( *c ) == 'l' ) {
@@ -474,6 +475,7 @@ void ParseOneLineWlib( const char *c )
 {
     char        token_buff[MAX_TOKEN_LEN];
     const char  *start;
+    char        *p;
 
     for( ;; ) {
         eatwhite( c );
@@ -503,20 +505,19 @@ void ParseOneLineWlib( const char *c )
             c = ParseCommand( c );
             break;
         case '@':
-            ++c;
-            c = GetString( c, token_buff, true );
             {
-                const char *env;
+                const char  *env;
 
-                env = WlibGetEnv( token_buff );
+                ++c;
+                p = GetString( &c, token_buff, true );
+                env = WlibGetEnv( p );
                 if( env != NULL ) {
                     ParseOneLineWlib( env );
                 } else {
                     getline_data    fd;
-                    char            *p;
 
-                    DefaultExtension( token_buff, EXT_CMD );
-                    my_getline_init( token_buff, &fd );
+                    DefaultExtension( p, EXT_CMD );
+                    my_getline_init( p, &fd );
                     while( (p = my_getline( &fd )) != NULL ) {
                         ParseOneLineWlib( p );
                     }
@@ -533,10 +534,10 @@ void ParseOneLineWlib( const char *c )
             return;
         default:
             if( Options.input_name == NULL ) {
-                c = GetFilenameExt( c, false, token_buff, EXT_LIB, &Options.input_name );
+                Options.input_name = GetFilenameExt( &c, false, token_buff, EXT_LIB );
             } else {
-                c = GetString( c, token_buff, true );
-                AddCommand( OP_ADD|OP_DELETE, token_buff );
+                p = GetString( &c, token_buff, true );
+                AddCommand( OP_ADD|OP_DELETE, p );
             }
             break;
         }

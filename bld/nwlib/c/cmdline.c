@@ -64,11 +64,15 @@ const char *SkipEqual( const char *c )
     return( c );
 }
 
-const char *GetString( const char *c, char *token_buff, bool singlequote )
+char *GetString( const char **s, char *dst, bool singlequote )
 {
-    int     quote;
-    int     ch;
+    int         quote;
+    int         ch;
+    const char  *c;
+    char        *d;
 
+    d = dst;
+    c = *s;
     eatwhite(c);
     if( (*c == '\"') || ( singlequote && (*c == '\'') ) ) {
         quote = *(unsigned char *)c;
@@ -77,25 +81,30 @@ const char *GetString( const char *c, char *token_buff, bool singlequote )
                 c++;
                 break;
             }
-            *token_buff++ = ch;
+            *d++ = ch;
         }
     } else {
         for( ; (ch = *(unsigned char *)c) != '\0'; c++ ) {
             if( isspace( ch ) ) {
                 break;
             }
-            *token_buff++ = ch;
+            *d++ = ch;
         }
     }
-    *token_buff = '\0';
-    return( c );
+    *d = '\0';
+    *s = c;
+    return( dst );
 }
 
-const char *GetImportSymbol( const char *c, char *token_buff )
+char *GetImportSymbol( const char **s, char *dst )
 {
-    int     quote;
-    int     ch;
+    int         quote;
+    int         ch;
+    const char  *c;
+    char        *d;
 
+    d = dst;
+    c = *s;
     eatwhite(c);
     if( *c == '\"' ) {
         quote = *(unsigned char *)c;
@@ -104,7 +113,7 @@ const char *GetImportSymbol( const char *c, char *token_buff )
                 c++;
                 break;
             }
-            *token_buff++ = ch;
+            *d++ = ch;
         }
     } else {
         bool inquote = false;
@@ -116,28 +125,34 @@ const char *GetImportSymbol( const char *c, char *token_buff )
             if( ch == '\"' || ch == '\'' ) {
                 inquote = !inquote;
             }
-            *token_buff++ = ch;
+            *d++ = ch;
         }
     }
-    *token_buff = '\0';
-    return( c );
+    *d = '\0';
+    *s = c;
+    return( dst );
 }
 
-const char *GetFilenameExt( const char *c, bool equal, char *token_buff, const char *ext, char **ret )
+char *GetFilenameExt( const char **s, bool equal, char *dst, const char *ext )
 {
+    const char  *c;
+    char        *d;
+
+    c = *s;
     if( equal ) {
         c = SkipEqual( c );
     }
     if( isspace( *c ) || *c == '\0' ) {
-        *ret = NULL;
+        d = NULL;
     } else {
-        c = GetString( c, token_buff, false );
+        GetString( &c, dst, false );
         if( ext != NULL && *ext != '\0' ) {
-            DefaultExtension( token_buff, ext );
+            DefaultExtension( dst, ext );
         }
-        *ret = DupStr( token_buff );
+        d = DupStr( dst );
     }
-    return( c );
+    *s = c;
+    return( d );
 }
 
 void AddCommand( operation ops, const char *name )
