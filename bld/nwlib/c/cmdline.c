@@ -145,24 +145,24 @@ char *GetFilenameExt( const char **s, scan_ctrl sctrl, char *dst, const char *ex
 
 void AddCommand( operation ops, const char *name )
 {
-    lib_cmd         *new;
+    lib_cmd         *cmd;
 
-    new = MemAllocGlobal( sizeof( lib_cmd ) + strlen( name ) );
-    strcpy( new->name, name );
-    new->fname = NULL;
+    cmd = MemAllocGlobal( sizeof( lib_cmd ) + strlen( name ) );
+    strcpy( cmd->name, name );
+    cmd->fname = NULL;
     if( ops == OP_EXTRACT ) {
         char    *p;
 
-        p = strchr( new->name, '=' );
+        p = strchr( cmd->name, '=' );
         if( p != NULL ) {
             *p = '\0';
-            new->fname = p + 1;
+            cmd->fname = p + 1;
         }
     }
-    new->ops = ops;
-    new->next = *CmdListEnd;
-    *CmdListEnd = new;
-    CmdListEnd = &new->next;
+    cmd->ops = ops;
+    cmd->next = *CmdListEnd;
+    *CmdListEnd = cmd;
+    CmdListEnd = &cmd->next;
 }
 
 static void FreeCommands( void )
