@@ -50,6 +50,20 @@ lib_cmd         *CmdList;
 
 static lib_cmd  **CmdListEnd;
 
+const char *SkipEqual( const char *c )
+{
+    const char  *start = c;
+
+    eatwhite( c );
+    if( *c == '=' ) {
+        ++c;
+        eatwhite( c );
+    } else {
+        c = start;
+    }
+    return( c );
+}
+
 const char *GetString( const char *c, char *token_buff, bool singlequote )
 {
     int     quote;
@@ -111,16 +125,10 @@ const char *GetImportSymbol( const char *c, char *token_buff )
 
 const char *GetFilenameExt( const char *c, bool equal, char *token_buff, const char *ext, char **ret )
 {
-    const char  *start = c;
-
-    eatwhite( c );
-    if( equal && *c == '=' ) {
-        ++c;
-        eatwhite( c );
-    } else {
-        c = start;
+    if( equal ) {
+        c = SkipEqual( c );
     }
-    if( *c == ' ' || *c == '\0' ) {
+    if( isspace( *c ) || *c == '\0' ) {
         *ret = NULL;
     } else {
         c = GetString( c, token_buff, false );

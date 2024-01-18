@@ -33,6 +33,7 @@
 extern void         InitCmdLine( void );
 extern void         ProcessCmdLine( char *argv[] );
 extern void         FiniCmdLine( void );
+extern const char   *SkipEqual( const char *c );
 extern const char   *GetString( const char *c, char *token_buff, bool singlequote );
 extern const char   *GetImportSymbol( const char *c, char *token_buff );
 extern const char   *GetFilenameExt( const char *c, bool equal, char *token_buff, const char *ext, char **ret );

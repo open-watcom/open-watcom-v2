@@ -136,8 +136,7 @@ static const char *ParseOption( const char *c, char *token_buff )
 {
     unsigned long   page_size;
     const char      *start;
-    char            *page;
-    char            *endptr;
+    const char      *endptr;
     ar_format       libformat;
 
     start = c++;
@@ -376,15 +375,18 @@ static const char *ParseOption( const char *c, char *token_buff )
             if( Options.page_size ) {
                 FatalError( ERR_DUPLICATE_OPTION, start );
             }
-            c = GetFilenameExt( c, true, token_buff, NULL, &page );
+            c = SkipEqual( c );
+            endptr = c;
             errno = 0;
-            page_size = strtoul( page, &endptr, 0 );
-            if( *endptr != '\0' ) {
+            page_size = 0;
+            if( isdigit( *(unsigned char *)c ) ) {
+                page_size = strtoul( c, (char **)&endptr, 0 );
+            }
+            if( endptr == c || *endptr != '\0' ) {
                 FatalError( ERR_BAD_CMDLINE, start );
-            } else if( errno == ERANGE || page_size > MAX_PAGE_SIZE ) {
+            } else if( errno == ERANGE || page_size == 0 || page_size > MAX_PAGE_SIZE ) {
                 FatalError( ERR_PAGE_RANGE );
             }
-            MemFree( page );
             SetPageSize( (unsigned_16)page_size );
         }
         break;
