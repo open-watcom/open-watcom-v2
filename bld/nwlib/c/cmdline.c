@@ -64,97 +64,83 @@ const char *SkipEqual( const char *c )
     return( c );
 }
 
-char *GetString( const char **s, char *dst, bool singlequote )
+static size_t cmdScanString( const char **s, const char **start, scan_ctrl sctrl )
 {
     int         quote;
     int         ch;
     const char  *c;
-    char        *d;
+    unsigned    offset;
 
-    d = dst;
     c = *s;
-    eatwhite(c);
-    if( (*c == '\"') || ( singlequote && (*c == '\'') ) ) {
-        quote = *(unsigned char *)c;
-        for( c++; (ch = *(unsigned char *)c) != '\0'; c++ ) {
-            if( ch == quote ) {
-                c++;
-                break;
-            }
-            *d++ = ch;
-        }
+    if( sctrl == SCTRL_EQUAL ) {
+        c = SkipEqual( c );
     } else {
-        for( ; (ch = *(unsigned char *)c) != '\0'; c++ ) {
-            if( isspace( ch ) ) {
-                break;
-            }
-            *d++ = ch;
-        }
+        eatwhite( c );
     }
-    *d = '\0';
-    *s = c;
-    return( dst );
-}
-
-char *GetImportSymbol( const char **s, char *dst )
-{
-    int         quote;
-    int         ch;
-    const char  *c;
-    char        *d;
-
-    d = dst;
-    c = *s;
-    eatwhite(c);
-    if( *c == '\"' ) {
-        quote = *(unsigned char *)c;
-        for( c++; (ch = *(unsigned char *)c) != '\0'; c++ ) {
+    offset = ( ( *c == '\"' ) || ( sctrl == SCTRL_SINGLE ) && ( *c == '\'' ) ) ? 1 : 0;
+    *start = c + offset;
+    if( offset > 0 ) {
+        quote = *(unsigned char *)c++;
+        for( ; (ch = *(unsigned char *)c) != '\0'; c++ ) {
             if( ch == quote ) {
                 c++;
                 break;
             }
-            *d++ = ch;
         }
-    } else {
+    } else if( sctrl == SCTRL_IMPORT ){
         bool inquote = false;
 
         for( ; (ch = *(unsigned char *)c) != '\0'; c++ ) {
             if( !inquote && isspace( ch ) ) {
                 break;
             }
-            if( ch == '\"' || ch == '\'' ) {
+            if( ( *c == '\"' ) || ( *c == '\'' ) ) {
                 inquote = !inquote;
             }
-            *d++ = ch;
+        }
+    } else {
+        for( ; (ch = *(unsigned char *)c) != '\0'; c++ ) {
+            if( isspace( ch ) ) {
+                break;
+            }
         }
     }
-    *d = '\0';
     *s = c;
+    return( c - *start - offset );
+}
+
+char *GetString( const char **s, char *dst, scan_ctrl sctrl )
+{
+    const char  *src;
+    size_t      len;
+
+    len = cmdScanString( s, &src, sctrl );
+    if( len > 0 ) {
+        strncpy( dst, src, len );
+        dst[len] = '\0';
+    } else {
+        dst = NULL;
+    }
     return( dst );
 }
 
-char *GetFilenameExt( const char **s, bool equal, char *dst, const char *ext )
+char *GetFilenameExt( const char **s, scan_ctrl sctrl, char *dst, const char *ext )
 {
-    const char  *c;
-    char        *d;
+    const char  *src;
+    size_t      len;
 
-    c = *s;
-    if( equal ) {
-        c = SkipEqual( c );
-    } else {
-        eatwhite(c);
-    }
-    if( isspace( *c ) || *c == '\0' ) {
-        d = NULL;
-    } else {
-        GetString( &c, dst, false );
+    len = cmdScanString( s, &src, sctrl );
+    if( len > 0 ) {
+        strncpy( dst, src, len );
+        dst[len] = '\0';
         if( ext != NULL && *ext != '\0' ) {
             DefaultExtension( dst, ext );
         }
-        d = DupStr( dst );
+        dst = DupStr( dst );
+    } else {
+        dst = NULL;
     }
-    *s = c;
-    return( d );
+    return( dst );
 }
 
 void AddCommand( operation ops, const char *name )

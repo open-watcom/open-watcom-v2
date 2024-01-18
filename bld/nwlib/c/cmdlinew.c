@@ -67,7 +67,7 @@ static void SetPageSize( unsigned_16 new_size )
 
 static const char *ParseCommand( const char *c )
 {
-    bool            doquotes = true;
+    scan_ctrl       sctrl = SCTRL_SINGLE;
     const char      *start;
     operation       ops = 0;
     //char        buff[_MAX_PATH];
@@ -82,7 +82,7 @@ static const char *ParseCommand( const char *c )
         switch( *c ) {
         case '+':
             ops |= OP_ADD;
-            doquotes = false;
+            sctrl = SCTRL_NORMAL;
             ++c;
             break;
 #if defined(__UNIX__)
@@ -91,7 +91,7 @@ static const char *ParseCommand( const char *c )
         case '*':
 #endif
             ops |= OP_EXTRACT;
-            doquotes = false;
+            sctrl = SCTRL_NORMAL;
             ++c;
             break;
         }
@@ -102,13 +102,13 @@ static const char *ParseCommand( const char *c )
             ops |= OP_IMPORT;
             ++c;
             eatwhite( c );
-            p = GetImportSymbol( &c, buff );
+            p = GetString( &c, buff, SCTRL_IMPORT );
             AddCommand( ops, p );
             return( c );
         }
         if( *c == '-' ) {
             ops |= OP_DELETE;
-            doquotes = false;
+            sctrl = SCTRL_NORMAL;
             ++c;
         }
         break;
@@ -120,7 +120,7 @@ static const char *ParseCommand( const char *c )
         ops |= OP_EXTRACT;
         if( *c == '-' ) {
             ops |= OP_DELETE;
-            doquotes = false;
+            sctrl = SCTRL_NORMAL;
             ++c;
         }
         break;
@@ -128,7 +128,7 @@ static const char *ParseCommand( const char *c )
         FatalError( ERR_BAD_CMDLINE, start );
     }
     eatwhite( c );
-    p = GetString( &c, buff, doquotes );
+    p = GetString( &c, buff, sctrl );
     AddCommand( ops, p );
     return( c );
 }
@@ -156,7 +156,7 @@ static const char *ParseOption( const char *c, char *token_buff )
         if( Options.output_directory != NULL ) {
             FatalError( ERR_DUPLICATE_OPTION, start );
         }
-        Options.output_directory = GetFilenameExt( &c, true, token_buff, NULL );
+        Options.output_directory = GetFilenameExt( &c, SCTRL_EQUAL, token_buff, NULL );
         if( access( Options.output_directory, F_OK ) != 0 ) {
             FatalError( ERR_DIR_NOT_EXIST, Options.output_directory );
         }
@@ -254,7 +254,7 @@ static const char *ParseOption( const char *c, char *token_buff )
             FatalError( ERR_DUPLICATE_OPTION, start );
         }
         Options.list_contents = true;
-        Options.list_file = GetFilenameExt( &c, true, token_buff, EXT_LST );
+        Options.list_file = GetFilenameExt( &c, SCTRL_EQUAL, token_buff, EXT_LST );
         break;
     case 'm': //                       (display C++ mangled names)
         Options.mangled = true;
@@ -263,7 +263,7 @@ static const char *ParseOption( const char *c, char *token_buff )
         if( Options.output_name != NULL ) {
             FatalError( ERR_DUPLICATE_OPTION, start );
         }
-        Options.output_name = GetFilenameExt( &c, true, token_buff, EXT_LIB );
+        Options.output_name = GetFilenameExt( &c, SCTRL_EQUAL, token_buff, EXT_LIB );
         break;
     case 'q': //                       (don't print header)
         Options.quiet = true;
@@ -279,14 +279,14 @@ static const char *ParseOption( const char *c, char *token_buff )
             Options.explode_count = 1;
             ++c;
         }
-        Options.explode_ext = GetFilenameExt( &c, true, token_buff, EXT_OBJ );
+        Options.explode_ext = GetFilenameExt( &c, SCTRL_EQUAL, token_buff, EXT_OBJ );
         if( Options.explode_count ) {
             char    cn[20] = FILE_TEMPLATE_MASK;
             strcpy( cn + sizeof( FILE_TEMPLATE_MASK ) - 1, Options.explode_ext );
             Options.explode_ext = DupStr( cn );
         }
 #else
-        Options.explode_ext = GetFilenameExt( &c, true, token_buff, NULL );
+        Options.explode_ext = GetFilenameExt( &c, SCTRL_EQUAL, token_buff, NULL );
 #endif
         break;
     case 'z':
@@ -308,7 +308,7 @@ static const char *ParseOption( const char *c, char *token_buff )
             FatalError( ERR_DUPLICATE_OPTION, start );
         }
         Options.strip_expdef = true;
-        Options.export_list_file = GetFilenameExt( &c, true, token_buff, NULL );
+        Options.export_list_file = GetFilenameExt( &c, SCTRL_EQUAL, token_buff, NULL );
         break;
     case 't':
         if( my_tolower( *c ) == 'l' ) {
@@ -509,7 +509,7 @@ void ParseOneLineWlib( const char *c )
                 const char  *env;
 
                 ++c;
-                p = GetString( &c, token_buff, true );
+                p = GetString( &c, token_buff, SCTRL_SINGLE );
                 env = WlibGetEnv( p );
                 if( env != NULL ) {
                     ParseOneLineWlib( env );
@@ -534,9 +534,9 @@ void ParseOneLineWlib( const char *c )
             return;
         default:
             if( Options.input_name == NULL ) {
-                Options.input_name = GetFilenameExt( &c, false, token_buff, EXT_LIB );
+                Options.input_name = GetFilenameExt( &c, SCTRL_NORMAL, token_buff, EXT_LIB );
             } else {
-                p = GetString( &c, token_buff, true );
+                p = GetString( &c, token_buff, SCTRL_SINGLE );
                 AddCommand( OP_ADD|OP_DELETE, p );
             }
             break;

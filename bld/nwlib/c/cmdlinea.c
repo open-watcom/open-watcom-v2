@@ -136,7 +136,7 @@ void ParseOneLineAr( const char *c, operation *ar_mode )
                 break;
             }
             if( Options.input_name == NULL ) {
-                Options.input_name = GetFilenameExt( &c, false, token_buff, EXT_LIB );
+                Options.input_name = GetFilenameExt( &c, SCTRL_NORMAL, token_buff, EXT_LIB );
             } else {
                 char    *p;
 

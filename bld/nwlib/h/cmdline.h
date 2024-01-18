@@ -30,15 +30,20 @@
 ****************************************************************************/
 
 
+typedef enum {
+    SCTRL_NORMAL = 0x00,
+    SCTRL_SINGLE = 0x01,
+    SCTRL_IMPORT = 0x02,
+    SCTRL_EQUAL  = 0x04,
+} scan_ctrl;
+
 extern void         InitCmdLine( void );
 extern void         ProcessCmdLine( char *argv[] );
 extern void         FiniCmdLine( void );
 extern const char   *SkipEqual( const char *c );
-extern char         *GetString( const char **c, char *token_buff, bool singlequote );
-extern char         *GetImportSymbol( const char **c, char *token_buff );
-extern char         *GetFilenameExt( const char **c, bool equal, char *token_buff, const char *ext );
+extern char         *GetString( const char **c, char *token_buff, scan_ctrl sctrl );
+extern char         *GetFilenameExt( const char **c, scan_ctrl sctrl, char *token_buff, const char *ext );
 extern void         AddCommand( operation ops, const char *name );
 
 extern lib_cmd      *CmdList;
 extern options_def  Options;
-
