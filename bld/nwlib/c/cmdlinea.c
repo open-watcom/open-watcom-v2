@@ -138,10 +138,7 @@ void ParseOneLineAr( const char *c, operation *ar_mode )
             if( Options.input_name == NULL ) {
                 Options.input_name = GetFilenameExt( &c, SCTRL_NORMAL, token_buff, EXT_LIB );
             } else {
-                char    *p;
-
-                p = GetString( &c, token_buff, true );
-                AddCommand( *ar_mode, p );
+                AddCommand( *ar_mode, &c, token_buff, true );
             }
             break;
         }

@@ -77,10 +77,10 @@ static size_t cmdScanString( const char **s, const char **start, scan_ctrl sctrl
     } else {
         eatwhite( c );
     }
-    offset = ( ( *c == '\"' ) || ( sctrl == SCTRL_SINGLE ) && ( *c == '\'' ) ) ? 1 : 0;
-    *start = c + offset;
+    quote = *(unsigned char *)c;
+    offset = ( ( quote == '\"' ) || ( sctrl == SCTRL_SINGLE ) && ( quote == '\'' ) ) ? 1 : 0;
+    *start = c = c + offset;
     if( offset > 0 ) {
-        quote = *(unsigned char *)c++;
         for( ; (ch = *(unsigned char *)c) != '\0'; c++ ) {
             if( ch == quote ) {
                 c++;
@@ -94,7 +94,7 @@ static size_t cmdScanString( const char **s, const char **start, scan_ctrl sctrl
             if( !inquote && isspace( ch ) ) {
                 break;
             }
-            if( ( *c == '\"' ) || ( *c == '\'' ) ) {
+            if( ( ch == '\"' ) || ( ch == '\'' ) ) {
                 inquote = !inquote;
             }
         }
@@ -143,26 +143,30 @@ char *GetFilenameExt( const char **s, scan_ctrl sctrl, char *dst, const char *ex
     return( dst );
 }
 
-void AddCommand( operation ops, const char *name )
+void AddCommand( operation ops, const char **c, char *token_buff, scan_ctrl sctrl )
 {
     lib_cmd         *cmd;
+    char            *name;
 
-    cmd = MemAllocGlobal( sizeof( lib_cmd ) + strlen( name ) );
-    strcpy( cmd->name, name );
-    cmd->fname = NULL;
-    if( ops == OP_EXTRACT ) {
-        char    *p;
+    name = GetString( c, token_buff, sctrl );
+    if( name != NULL ) {
+        cmd = MemAllocGlobal( sizeof( lib_cmd ) + strlen( name ) );
+        strcpy( cmd->name, name );
+        cmd->fname = NULL;
+        if( ops == OP_EXTRACT ) {
+            char    *p;
 
-        p = strchr( cmd->name, '=' );
-        if( p != NULL ) {
-            *p = '\0';
-            cmd->fname = p + 1;
+            p = strchr( cmd->name, '=' );
+            if( p != NULL ) {
+                *p = '\0';
+                cmd->fname = p + 1;
+            }
         }
+        cmd->ops = ops;
+        cmd->next = *CmdListEnd;
+        *CmdListEnd = cmd;
+        CmdListEnd = &cmd->next;
     }
-    cmd->ops = ops;
-    cmd->next = *CmdListEnd;
-    *CmdListEnd = cmd;
-    CmdListEnd = &cmd->next;
 }
 
 static void FreeCommands( void )

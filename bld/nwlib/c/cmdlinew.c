@@ -72,7 +72,6 @@ static const char *ParseCommand( const char *c )
     operation       ops = 0;
     //char        buff[_MAX_PATH];
     char            buff[MAX_IMPORT_STRING];
-    char            *p;
 
     start = c;
     eatwhite( c );
@@ -101,9 +100,7 @@ static const char *ParseCommand( const char *c )
         if( *c == '+' ) {
             ops |= OP_IMPORT;
             ++c;
-            eatwhite( c );
-            p = GetString( &c, buff, SCTRL_IMPORT );
-            AddCommand( ops, p );
+            AddCommand( ops, &c, buff, SCTRL_IMPORT );
             return( c );
         }
         if( *c == '-' ) {
@@ -127,9 +124,7 @@ static const char *ParseCommand( const char *c )
     default:
         FatalError( ERR_BAD_CMDLINE, start );
     }
-    eatwhite( c );
-    p = GetString( &c, buff, sctrl );
-    AddCommand( ops, p );
+    AddCommand( ops, &c, buff, sctrl );
     return( c );
 }
 
@@ -475,7 +470,6 @@ void ParseOneLineWlib( const char *c )
 {
     char        token_buff[MAX_TOKEN_LEN];
     const char  *start;
-    char        *p;
 
     for( ;; ) {
         eatwhite( c );
@@ -507,21 +501,24 @@ void ParseOneLineWlib( const char *c )
         case '@':
             {
                 const char  *env;
+                char        *p;
 
                 ++c;
                 p = GetString( &c, token_buff, SCTRL_SINGLE );
-                env = WlibGetEnv( p );
-                if( env != NULL ) {
-                    ParseOneLineWlib( env );
-                } else {
-                    getline_data    fd;
+                if( p != NULL ) {
+                    env = WlibGetEnv( p );
+                    if( env != NULL ) {
+                        ParseOneLineWlib( env );
+                    } else {
+                        getline_data    fd;
 
-                    DefaultExtension( p, EXT_CMD );
-                    my_getline_init( p, &fd );
-                    while( (p = my_getline( &fd )) != NULL ) {
-                        ParseOneLineWlib( p );
+                        DefaultExtension( p, EXT_CMD );
+                        my_getline_init( p, &fd );
+                        while( (p = my_getline( &fd )) != NULL ) {
+                            ParseOneLineWlib( p );
+                        }
+                        my_getline_fini( &fd );
                     }
-                    my_getline_fini( &fd );
                 }
             }
             break;
@@ -536,8 +533,7 @@ void ParseOneLineWlib( const char *c )
             if( Options.input_name == NULL ) {
                 Options.input_name = GetFilenameExt( &c, SCTRL_NORMAL, token_buff, EXT_LIB );
             } else {
-                p = GetString( &c, token_buff, SCTRL_SINGLE );
-                AddCommand( OP_ADD|OP_DELETE, p );
+                AddCommand( OP_ADD | OP_DELETE, &c, token_buff, SCTRL_SINGLE );
             }
             break;
         }
