@@ -37,7 +37,7 @@
 #define eatwhite( c ) while( *(c) != '\0' && isspace( *(unsigned char *)(c) ) ) ++(c);
 #define my_tolower( c ) tolower( (unsigned char)(c) )
 
-static const char *ParseArOption( const char *c, operation *ar_mode )
+static const char *ParseOption( const char *c, operation *ar_mode )
 {
     const char  *start = c;
     int         ch;
@@ -123,14 +123,14 @@ void ParseOneLineAr( const char *c, operation *ar_mode )
                     c += 2;
                     done_options = true;
                 } else {
-                    c = ParseArOption( c, ar_mode );
+                    c = ParseOption( c, ar_mode );
                 }
                 break;
             }
             //fall to default
         default:
             if( *ar_mode == OP_NONE ) {
-                c = ParseArOption( c, ar_mode );
+                c = ParseOption( c, ar_mode );
                 break;
             }
             if( Options.input_name == NULL ) {

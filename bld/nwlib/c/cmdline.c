@@ -177,12 +177,14 @@ char *GetFilenameExt( const char **s, scan_ctrl sctrl, const char *ext )
 void AddCommand( operation ops, const char **c, scan_ctrl sctrl )
 {
     lib_cmd         *cmd;
-    char            *name;
+    const char      *src;
+    size_t          len;
 
-    name = GetString( c, sctrl );
-    if( name != NULL ) {
-        cmd = MemAllocGlobal( sizeof( lib_cmd ) + strlen( name ) );
-        strcpy( cmd->name, name );
+    len = cmdScanString( c, &src, sctrl );
+    if( len > 0 ) {
+        cmd = MemAllocGlobal( sizeof( lib_cmd ) + len );
+        strncpy( cmd->name, src, len );
+        cmd->name[len] = '\0';
         cmd->fname = NULL;
         if( ops == OP_EXTRACT ) {
             char    *p;
@@ -197,7 +199,6 @@ void AddCommand( operation ops, const char **c, scan_ctrl sctrl )
         cmd->next = *CmdListEnd;
         *CmdListEnd = cmd;
         CmdListEnd = &cmd->next;
-        MemFree( name );
     }
 }
 
