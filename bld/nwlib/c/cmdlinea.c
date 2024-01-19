@@ -35,15 +35,17 @@
 
 
 #define eatwhite( c ) while( *(c) != '\0' && isspace( *(unsigned char *)(c) ) ) ++(c);
-#define notwhite( c ) ( (c) != '\0' && !isspace( (unsigned char)(c) ) )
 #define my_tolower( c ) tolower( (unsigned char)(c) )
 
 static const char *ParseArOption( const char *c, operation *ar_mode )
 {
     const char  *start = c;
+    int         ch;
 
-    while( notwhite( *c ) ) {
-        switch( my_tolower( *c ) ) {
+    for( ; (ch = *c) != '\0'; c++ ) {
+        if( isspace( ch ) )
+            break;
+        switch( my_tolower( ch ) ) {
         case '?':
             Usage();
             break;
@@ -55,7 +57,7 @@ static const char *ParseArOption( const char *c, operation *ar_mode )
             break;
         case 'd':
             if( *ar_mode != OP_NONE ) {
-                FatalError( ERR_BAD_OPTION, c[0] );
+                FatalError( ERR_BAD_OPTION, ch );
             }
             *ar_mode = OP_DELETE;
             break;
@@ -64,13 +66,13 @@ static const char *ParseArOption( const char *c, operation *ar_mode )
             break;
         case 'r':
             if( *ar_mode != OP_NONE ) {
-                FatalError( ERR_BAD_OPTION, c[0] );
+                FatalError( ERR_BAD_OPTION, ch );
             }
             *ar_mode = OP_ADD | OP_DELETE;
             break;
         case 't':
             if( *ar_mode != OP_NONE ) {
-                FatalError( ERR_BAD_OPTION, c[0] );
+                FatalError( ERR_BAD_OPTION, ch );
             }
             *ar_mode = OP_TABLE;
             Options.list_contents = true;
@@ -89,16 +91,15 @@ static const char *ParseArOption( const char *c, operation *ar_mode )
             break;
         case 'x':
             if( *ar_mode != OP_NONE ) {
-                FatalError( ERR_BAD_OPTION, c[0] );
+                FatalError( ERR_BAD_OPTION, ch );
             }
             *ar_mode = OP_EXTRACT;
             break;
         case '-':
             break;
         default:
-            FatalError( ERR_BAD_OPTION, c[0] );
+            FatalError( ERR_BAD_OPTION, ch );
         }
-        c++;
     }
     return( c );
 }

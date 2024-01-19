@@ -42,7 +42,6 @@
 #define AR_MODE_ENV     "WLIB_AR"
 
 #define eatwhite( c ) while( *(c) != '\0' && isspace( *(unsigned char *)(c) ) ) ++(c);
-#define notwhite( c ) ( (c) != '\0' && !isspace( (unsigned char)(c) ) )
 
 options_def     Options;
 lib_cmd         *CmdList;

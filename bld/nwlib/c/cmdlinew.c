@@ -261,7 +261,7 @@ static const char *ParseOption( const char *c )
     case 'q': //                       (don't print header)
         Options.quiet = true;
         break;
-    case 'v': //                       (don't print header)
+    case 'v': //                       (print header)
         Options.quiet = false;
         break;
     case 'x': //                       (explode all objects in library)
