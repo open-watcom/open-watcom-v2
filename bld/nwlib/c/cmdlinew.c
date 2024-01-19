@@ -500,26 +500,34 @@ void ParseOneLineWlib( const char *c )
             break;
         case '@':
             {
-                const char  *env;
+                const char  *old_cmd;
                 char        *p;
 
                 ++c;
+                old_cmd = c;
                 p = GetString( &c, token_buff, SCTRL_SINGLE );
                 if( p != NULL ) {
+                    const char  *env;
+
                     env = WlibGetEnv( p );
                     if( env != NULL ) {
                         ParseOneLineWlib( env );
-                    } else {
-                        getline_data    fd;
-
-                        DefaultExtension( p, EXT_CMD );
-                        my_getline_init( p, &fd );
-                        while( (p = my_getline( &fd )) != NULL ) {
-                            ParseOneLineWlib( p );
-                        }
-                        my_getline_fini( &fd );
+                        break;
                     }
                 }
+                c = old_cmd;
+                p = GetFilenameExt( &c, SCTRL_NORMAL, token_buff, EXT_CMD );
+                if( p != NULL ) {
+                    getline_data    fd;
+
+                    my_getline_init( p, &fd );
+                    while( (p = my_getline( &fd )) != NULL ) {
+                        ParseOneLineWlib( p );
+                    }
+                    my_getline_fini( &fd );
+                    break;
+                }
+                c = old_cmd;
             }
             break;
         case '\0':
