@@ -34,8 +34,6 @@
 #include "cmdlinea.h"
 
 
-#define MAX_TOKEN_LEN   260
-
 #define eatwhite( c ) while( *(c) != '\0' && isspace( *(unsigned char *)(c) ) ) ++(c);
 #define notwhite( c ) ( (c) != '\0' && !isspace( (unsigned char)(c) ) )
 #define my_tolower( c ) tolower( (unsigned char)(c) )
@@ -107,7 +105,6 @@ static const char *ParseArOption( const char *c, operation *ar_mode )
 
 void ParseOneLineAr( const char *c, operation *ar_mode )
 {
-    char        token_buff[MAX_TOKEN_LEN];
     bool        done_options;
 
     done_options = false;
@@ -136,9 +133,9 @@ void ParseOneLineAr( const char *c, operation *ar_mode )
                 break;
             }
             if( Options.input_name == NULL ) {
-                Options.input_name = GetFilenameExt( &c, SCTRL_NORMAL, token_buff, EXT_LIB );
+                Options.input_name = GetFilenameExt( &c, SCTRL_NORMAL, EXT_LIB );
             } else {
-                AddCommand( *ar_mode, &c, token_buff, SCTRL_SINGLE );
+                AddCommand( *ar_mode, &c, SCTRL_SINGLE );
             }
             break;
         }

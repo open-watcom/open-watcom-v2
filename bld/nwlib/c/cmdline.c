@@ -40,7 +40,6 @@
 
 
 #define AR_MODE_ENV     "WLIB_AR"
-#define MAX_TOKEN_LEN   260
 
 #define eatwhite( c ) while( *(c) != '\0' && isspace( *(unsigned char *)(c) ) ) ++(c);
 #define notwhite( c ) ( (c) != '\0' && !isspace( (unsigned char)(c) ) )
@@ -109,13 +108,15 @@ static size_t cmdScanString( const char **s, const char **start, scan_ctrl sctrl
     return( c - *start - offset );
 }
 
-char *GetString( const char **s, char *dst, scan_ctrl sctrl )
+char *GetString( const char **s, scan_ctrl sctrl )
 {
     const char  *src;
     size_t      len;
+    char        *dst;
 
     len = cmdScanString( s, &src, sctrl );
     if( len > 0 ) {
+        dst = MemAlloc( len + 1 );
         strncpy( dst, src, len );
         dst[len] = '\0';
     } else {
@@ -124,31 +125,62 @@ char *GetString( const char **s, char *dst, scan_ctrl sctrl )
     return( dst );
 }
 
-char *GetFilenameExt( const char **s, scan_ctrl sctrl, char *dst, const char *ext )
+static size_t checkExt( const char *fname, size_t len, const char *ext )
 {
-    const char  *src;
-    size_t      len;
+    bool        has_ext;
+    bool        has_path;
+    size_t      i;
 
-    len = cmdScanString( s, &src, sctrl );
-    if( len > 0 ) {
-        strncpy( dst, src, len );
-        dst[len] = '\0';
-        if( ext != NULL && *ext != '\0' ) {
-            DefaultExtension( dst, ext );
+    if( fname == NULL || len == 0 || ext == NULL || *ext == '\0' )
+        return( 0 );
+    has_ext = false;
+    has_path = false;
+    for( i = 0; i < len; i++ ) {
+        switch( fname[i] ) {
+        case '\\':
+        case '/':
+        case ':':
+            has_path = true;
+            has_ext = false;
+            break;
+        case '.':
+            has_ext = true;
+            break;
         }
-        dst = DupStr( dst );
+    }
+    if( has_ext )
+        return( 0 );
+    return( strlen( ext ) );
+}
+
+char *GetFilenameExt( const char **s, scan_ctrl sctrl, const char *ext )
+{
+    const char  *src;
+    size_t      len;
+    size_t      len2;
+    char        *dst;
+
+    len = cmdScanString( s, &src, sctrl );
+    if( len > 0 ) {
+        len2 = checkExt( src, len, ext );
+        dst = MemAlloc( len + len2 + 1 );
+        strncpy( dst, src, len );
+        if( len2 > 0 ) {
+            strncpy( dst + len, ext, len2 );
+        }
+        dst[len + len2] = '\0';
     } else {
         dst = NULL;
     }
     return( dst );
 }
 
-void AddCommand( operation ops, const char **c, char *token_buff, scan_ctrl sctrl )
+void AddCommand( operation ops, const char **c, scan_ctrl sctrl )
 {
     lib_cmd         *cmd;
     char            *name;
 
-    name = GetString( c, token_buff, sctrl );
+    name = GetString( c, sctrl );
     if( name != NULL ) {
         cmd = MemAllocGlobal( sizeof( lib_cmd ) + strlen( name ) );
         strcpy( cmd->name, name );
@@ -166,6 +198,7 @@ void AddCommand( operation ops, const char **c, char *token_buff, scan_ctrl sctr
         cmd->next = *CmdListEnd;
         *CmdListEnd = cmd;
         CmdListEnd = &cmd->next;
+        MemFree( name );
     }
 }
 
@@ -296,6 +329,10 @@ void FiniCmdLine( void )
     if( Options.ar_name != NULL ) {
         MemFree( Options.ar_name );
         Options.ar_name = NULL;
+    }
+    if( Options.explode_ext != NULL ) {
+        MemFree( Options.explode_ext );
+        Options.explode_ext = NULL;
     }
     FreeCommands();
 }

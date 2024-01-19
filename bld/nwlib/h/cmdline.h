@@ -41,9 +41,9 @@ extern void         InitCmdLine( void );
 extern void         ProcessCmdLine( char *argv[] );
 extern void         FiniCmdLine( void );
 extern const char   *SkipEqual( const char *c );
-extern char         *GetString( const char **c, char *token_buff, scan_ctrl sctrl );
-extern char         *GetFilenameExt( const char **c, scan_ctrl sctrl, char *token_buff, const char *ext );
-extern void         AddCommand( operation ops, const char **c, char *token_buff, scan_ctrl sctrl );
+extern char         *GetString( const char **c, scan_ctrl sctrl );
+extern char         *GetFilenameExt( const char **c, scan_ctrl sctrl, const char *ext );
+extern void         AddCommand( operation ops, const char **c, scan_ctrl sctrl );
 
 extern lib_cmd      *CmdList;
 extern options_def  Options;
