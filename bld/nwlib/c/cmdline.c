@@ -155,7 +155,7 @@ static size_t checkExt( const char *fname, size_t len, const char *ext )
     }
     if( has_ext )
         return( 0 );
-    return( strlen( ext ) );
+    return( strlen( ext ) + 1 );
 }
 
 char *GetFilenameExt( const char **s, scan_ctrl sctrl, const char *ext )
@@ -171,7 +171,8 @@ char *GetFilenameExt( const char **s, scan_ctrl sctrl, const char *ext )
         dst = MemAlloc( len + len2 + 1 );
         strncpy( dst, src, len );
         if( len2 > 0 ) {
-            strncpy( dst + len, ext, len2 );
+            dst[len] = '.';
+            strncpy( dst + len + 1, ext, len2 - 1 );
         }
         dst[len + len2] = '\0';
     } else {
