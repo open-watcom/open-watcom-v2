@@ -34,18 +34,15 @@
 #include "cmdlinea.h"
 
 
-#define eatwhite( c ) while( *(c) != '\0' && isspace( *(unsigned char *)(c) ) ) ++(c);
-#define my_tolower( c ) tolower( (unsigned char)(c) )
-
 static const char *ParseOption( const char *c, operation *ar_mode )
 {
     const char  *start = c;
     int         ch;
 
-    for( ; (ch = *c) != '\0'; c++ ) {
+    for( ; (ch = *(unsigned char *)c) != '\0'; c++ ) {
         if( isspace( ch ) )
             break;
-        switch( my_tolower( ch ) ) {
+        switch( tolower( ch ) ) {
         case '?':
             Usage();
             break;
@@ -110,7 +107,7 @@ void ParseOneLineAr( const char *c, operation *ar_mode )
 
     done_options = false;
     for( ;; ) {
-        eatwhite( c );
+        c = SkipWhite( c );
         switch( *c ) {
         case '\0':
             if( *ar_mode == OP_EXTRACT ) {

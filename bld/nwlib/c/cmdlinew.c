@@ -40,9 +40,6 @@
 
 #define READ_BUFFER_SIZE    512
 
-#define eatwhite( c ) while( *(c) != '\0' && isspace( *(unsigned char *)(c) ) ) ++(c);
-#define my_tolower( c ) tolower( (unsigned char)(c) )
-
 typedef struct {
     FILE    *fp;
     char    *buffer;
@@ -72,7 +69,7 @@ static const char *ParseCommand( const char *c )
     operation       ops = 0;
 
     start = c;
-    eatwhite( c );
+    c = SkipWhite( c );
     switch( *c++ ) {
     case '-':
         ops = OP_DELETE;
@@ -134,8 +131,8 @@ static const char *ParseOption( const char *c )
     ar_format       libformat;
 
     start = c++;
-    eatwhite( c );
-    switch( my_tolower( *c++ ) ) {
+    c = SkipWhite( c );
+    switch( tolower( *(unsigned char *)c++ ) ) {
     case '?':
         Usage();
         break;
@@ -155,9 +152,9 @@ static const char *ParseOption( const char *c )
         }
         break;
     case 'i':
-        switch( my_tolower( *c++ ) ) {
+        switch( tolower( *(unsigned char *)c++ ) ) {
         case 'n':
-            switch( my_tolower( *c++ ) ) {
+            switch( tolower( *(unsigned char *)c++ ) ) {
             case 'n':
                 Options.nr_ordinal = false;
                 break;
@@ -170,7 +167,7 @@ static const char *ParseOption( const char *c )
             }
             break;
         case 'r':
-            switch( my_tolower( *c++ ) ) {
+            switch( tolower( *(unsigned char *)c++ ) ) {
             case 'n':
                 Options.r_ordinal = false;
                 break;
@@ -219,7 +216,7 @@ static const char *ParseOption( const char *c )
             Options.filetype = WL_FTYPE_ELF;
             break;
         case 'c':
-            if( ( my_tolower( *c ) == 'l' ) ) {
+            if( tolower( *(unsigned char *)c ) == 'l' ) {
                 Options.coff_import_long = true;
                 ++c;
             }
@@ -268,7 +265,7 @@ static const char *ParseOption( const char *c )
         Options.explode = true;
 #ifdef DEVBUILD
         Options.explode_count = 0;
-        if( my_tolower( *c ) == 'n' ) {
+        if( tolower( *(unsigned char *)c ) == 'n' ) {
             Options.explode_count = 1;
             ++c;
         }
@@ -283,14 +280,14 @@ static const char *ParseOption( const char *c )
 #endif
         break;
     case 'z':
-        if( ( my_tolower( *c ) == 'l' ) && ( my_tolower( *(c + 1) ) == 'd' ) ) {
+        if( ( tolower( *(unsigned char *)c ) == 'l' ) && ( tolower( *(unsigned char *)( c + 1 ) ) == 'd' ) ) {
             c += 2;
             if( Options.strip_dependency ) {
                 FatalError( ERR_DUPLICATE_OPTION, start );
             }
             Options.strip_dependency = true; //(strip dependency info)
             break;
-        } else if( ( my_tolower( *c ) == 'l' ) && ( my_tolower( *(c + 1) ) == 'l' ) ) {
+        } else if( ( tolower( *(unsigned char *)c ) == 'l' ) && ( tolower( *(unsigned char *)( c + 1 ) ) == 'l' ) ) {
             c += 2;
             if( Options.strip_library ) {
                 FatalError( ERR_DUPLICATE_OPTION, start );
@@ -304,7 +301,7 @@ static const char *ParseOption( const char *c )
         Options.export_list_file = GetFilenameExt( &c, SCTRL_EQUAL, NULL );
         break;
     case 't':
-        if( my_tolower( *c ) == 'l' ) {
+        if( tolower( *(unsigned char *)c ) == 'l' ) {
             ++c;
             Options.list_contents = true;
             Options.terse_listing = true; // (internal terse listing option)
@@ -313,7 +310,7 @@ static const char *ParseOption( const char *c )
         }
         break;
     case 'f':
-        switch( my_tolower( *c++ ) ) {
+        switch( tolower( *(unsigned char *)c++ ) ) {
         case 'm':
             if( Options.libtype != WL_LTYPE_NONE ) {
                 FatalError( ERR_DUPLICATE_OPTION, start );
@@ -322,7 +319,7 @@ static const char *ParseOption( const char *c )
             Options.elf_found = true;
             break;
         case 'a':
-            switch( my_tolower( *c++ ) ) {
+            switch( tolower( *(unsigned char *)c++ ) ) {
             case 'b':
                 libformat = AR_FMT_BSD;
                 break;
@@ -357,9 +354,11 @@ static const char *ParseOption( const char *c )
             break;
         }
         break;
-// following only used by OMF libary format
     case 'p':
-        if( my_tolower( *c ) == 'a' ) {
+        /*
+         * following only used by OMF libary format
+         */
+        if( tolower( *(unsigned char *)c++ ) == 'a' ) {
             c++;
             if( Options.page_size ) {
                 FatalError( ERR_DUPLICATE_OPTION, start );
@@ -470,7 +469,7 @@ void ParseOneLineWlib( const char *c )
     const char  *start;
 
     for( ;; ) {
-        eatwhite( c );
+        c = SkipWhite( c );
         start = c;
         switch( *c ) {
 #if !defined(__UNIX__)

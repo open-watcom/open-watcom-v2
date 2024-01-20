@@ -41,21 +41,27 @@
 
 #define AR_MODE_ENV     "WLIB_AR"
 
-#define eatwhite( c ) while( *(c) != '\0' && isspace( *(unsigned char *)(c) ) ) ++(c);
-
 options_def     Options;
 lib_cmd         *CmdList;
 
 static lib_cmd  **CmdListEnd;
 
+const char *SkipWhite( const char *c )
+{
+    while( isspace( *(unsigned char *)c ) )
+        ++c;
+    return( c );
+}
+
 const char *SkipEqual( const char *c )
 {
-    const char  *start = c;
+    const char  *start;
 
-    eatwhite( c );
+    start = c;
+    c = SkipWhite( c );
     if( *c == '=' ) {
         ++c;
-        eatwhite( c );
+        c = SkipWhite( c );
     } else {
         c = start;
     }
@@ -73,7 +79,7 @@ static size_t cmdScanString( const char **s, const char **start, scan_ctrl sctrl
     if( sctrl == SCTRL_EQUAL ) {
         c = SkipEqual( c );
     } else {
-        eatwhite( c );
+        c = SkipWhite( c );
     }
     quote = *(unsigned char *)c;
     offset = ( ( quote == '\"' ) || ( sctrl == SCTRL_SINGLE ) && ( quote == '\'' ) ) ? 1 : 0;
