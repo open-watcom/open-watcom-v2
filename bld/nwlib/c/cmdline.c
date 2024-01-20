@@ -225,13 +225,12 @@ char *GetString( const char **s, scan_ctrl sctrl )
     size_t      len;
     char        *dst;
 
+    dst = NULL;
     len = cmdScanString( s, &src, sctrl );
     if( len > 0 ) {
         dst = MemAlloc( len + 1 );
         strncpy( dst, src, len );
         dst[len] = '\0';
-    } else {
-        dst = NULL;
     }
     return( dst );
 }
@@ -243,6 +242,7 @@ char *GetFilenameExt( const char **s, scan_ctrl sctrl, const char *ext )
     size_t      len2;
     char        *dst;
 
+    dst = NULL;
     len = cmdScanString( s, &src, sctrl );
     if( len > 0 ) {
         len2 = checkExt( src, len, ext );
@@ -253,8 +253,6 @@ char *GetFilenameExt( const char **s, scan_ctrl sctrl, const char *ext )
             strncpy( dst + len + 1, ext, len2 - 1 );
         }
         dst[len + len2] = '\0';
-    } else {
-        dst = NULL;
     }
     return( dst );
 }
