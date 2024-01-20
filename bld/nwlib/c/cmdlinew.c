@@ -358,7 +358,7 @@ static const char *ParseOption( const char *c )
         /*
          * following only used by OMF libary format
          */
-        if( tolower( *(unsigned char *)c++ ) == 'a' ) {
+        if( tolower( *(unsigned char *)c ) == 'a' ) {
             c++;
             if( Options.page_size ) {
                 FatalError( ERR_DUPLICATE_OPTION, start );
