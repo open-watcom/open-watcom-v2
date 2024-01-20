@@ -124,6 +124,34 @@ void CmdSkipEqual( void )
     }
 }
 
+static size_t checkExt( const char *fname, size_t len, const char *ext )
+{
+    bool        has_ext;
+//    bool        has_path;
+    size_t      i;
+
+    if( fname == NULL || len == 0 || ext == NULL || *ext == '\0' )
+        return( 0 );
+    has_ext = false;
+//    has_path = false;
+    for( i = 0; i < len; i++ ) {
+        switch( fname[i] ) {
+        case '\\':
+        case '/':
+        case ':':
+//            has_path = true;
+            has_ext = false;
+            break;
+        case '.':
+            has_ext = true;
+            break;
+        }
+    }
+    if( has_ext )
+        return( 0 );
+    return( strlen( ext ) + 1 );
+}
+
 const char *SkipWhite( const char *c )
 {
     while( isspace( *(unsigned char *)c ) )
@@ -206,34 +234,6 @@ char *GetString( const char **s, scan_ctrl sctrl )
         dst = NULL;
     }
     return( dst );
-}
-
-static size_t checkExt( const char *fname, size_t len, const char *ext )
-{
-    bool        has_ext;
-    bool        has_path;
-    size_t      i;
-
-    if( fname == NULL || len == 0 || ext == NULL || *ext == '\0' )
-        return( 0 );
-    has_ext = false;
-    has_path = false;
-    for( i = 0; i < len; i++ ) {
-        switch( fname[i] ) {
-        case '\\':
-        case '/':
-        case ':':
-            has_path = true;
-            has_ext = false;
-            break;
-        case '.':
-            has_ext = true;
-            break;
-        }
-    }
-    if( has_ext )
-        return( 0 );
-    return( strlen( ext ) + 1 );
 }
 
 char *GetFilenameExt( const char **s, scan_ctrl sctrl, const char *ext )
