@@ -509,7 +509,7 @@ void ProcessImport( char *name )
         FatalError( ERR_BAD_CMDLINE, namecopy );
     }
 
-    exportedName = symName;     // JBS 99/07/01 give it a default value
+    exportedName = symName;     // give it a default value
 
     if( *name != '\0' ) {
         ordString = GetImportString( &name, namecopy );
@@ -526,15 +526,14 @@ void ProcessImport( char *name )
          * of the line.
          */
         if( ordinal ) {
-            while( *name != '\0' && isdigit( *(unsigned char *)name ) )
+            while( isspace( *(unsigned char *)name ) )
                 ++name;
-
             if( *name != '\0' ) {
                 FatalError( ERR_BAD_CMDLINE, namecopy );
             }
         } else if( *name != '\0' ) {
             exportedName = GetImportString( &name, namecopy );
-            if( !exportedName || !*exportedName ) {
+            if( exportedName == NULL || *exportedName == '\0' ) {
                 exportedName = symName;
             } else if( isdigit( *(unsigned char *)exportedName ) ) {
                 ordinal      = strtoul( exportedName, NULL, 0 );
