@@ -47,5 +47,17 @@ extern void         AddCommand( operation ops, const char **c, scan_ctrl sctrl )
 extern const char   *SkipEqual( const char *c );
 extern const char   *SkipWhite( const char *c );
 
+extern const char   *CmdSetPos( const char *new_cmd );
+extern const char   *CmdGetPos( void );
+extern void         CmdSkipWhite( void );
+extern void         CmdSkipEqual( void );
+extern int          CmdPeekChar( void );
+extern int          CmdPeekLowerChar( void );
+extern int          CmdGetChar( void );
+extern int          CmdGetLowerChar( void );
+extern bool         CmdRecogChar( int );
+extern bool         CmdRecogLowerChar( int );
+extern void         CmdUngetChar( void );
+
 extern lib_cmd      *CmdList;
 extern options_def  Options;

@@ -41,10 +41,88 @@
 
 #define AR_MODE_ENV     "WLIB_AR"
 
-options_def     Options;
-lib_cmd         *CmdList;
+options_def         Options;
+lib_cmd             *CmdList;
 
-static lib_cmd  **CmdListEnd;
+static lib_cmd      **CmdListEnd;
+static const char   *cmd_ptr = NULL;
+
+const char *CmdSetPos( const char *new_cmd )
+{
+    const char  *old_cmd;
+
+    old_cmd = cmd_ptr;
+    cmd_ptr = new_cmd;
+    return( old_cmd );
+}
+
+const char *CmdGetPos( void )
+{
+    return( cmd_ptr );
+}
+
+int CmdPeekChar( void )
+{
+    return( *(unsigned char *)cmd_ptr );
+}
+
+int CmdPeekLowerChar( void )
+{
+    return( tolower( *(unsigned char *)cmd_ptr ) );
+}
+
+int CmdGetChar( void )
+{
+    return( *(unsigned char *)cmd_ptr++ );
+}
+
+int CmdGetLowerChar( void )
+{
+    return( tolower( *(unsigned char *)cmd_ptr++ ) );
+}
+
+bool CmdRecogChar( int ch )
+{
+    if( *(unsigned char *)cmd_ptr == ch ) {
+        ++cmd_ptr;
+        return( true );
+    }
+    return( false );
+}
+
+bool CmdRecogLowerChar( int ch )
+{
+    if( tolower( *(unsigned char *)cmd_ptr ) == ch ) {
+        ++cmd_ptr;
+        return( true );
+    }
+    return( false );
+}
+
+void CmdUngetChar( void )
+{
+    --cmd_ptr;
+}
+
+void CmdSkipWhite( void )
+{
+    while( isspace( *(unsigned char *)cmd_ptr ) ) {
+        ++cmd_ptr;
+    }
+}
+
+void CmdSkipEqual( void )
+{
+    const char  *start;
+
+    start = cmd_ptr;
+    CmdSkipWhite();
+    if( CmdRecogChar( '=' ) ) {
+        CmdSkipWhite();
+    } else {
+        cmd_ptr = start;
+    }
+}
 
 const char *SkipWhite( const char *c )
 {
