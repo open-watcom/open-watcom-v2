@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -514,7 +514,7 @@ void ProcessImport( char *name )
     if( *name != '\0' ) {
         ordString = GetImportString( &name, namecopy );
         if( *ordString != '\0' ) {
-            if( isdigit( *ordString ) ) {
+            if( isdigit( *(unsigned char *)ordString ) ) {
                 ordinal = strtoul( ordString, NULL, 0 );
             } else {
                 symName = ordString;
@@ -526,7 +526,7 @@ void ProcessImport( char *name )
          * of the line.
          */
         if( ordinal ) {
-            while( *name != '\0' && isspace( *name ) )
+            while( *name != '\0' && isdigit( *(unsigned char *)name ) )
                 ++name;
 
             if( *name != '\0' ) {
@@ -536,13 +536,13 @@ void ProcessImport( char *name )
             exportedName = GetImportString( &name, namecopy );
             if( !exportedName || !*exportedName ) {
                 exportedName = symName;
-            } else if( isdigit( *exportedName ) ) {
+            } else if( isdigit( *(unsigned char *)exportedName ) ) {
                 ordinal      = strtoul( exportedName, NULL, 0 );
                 exportedName = symName;
             } else if( *name != '\0' ) {
                 ordString = GetImportString( &name, namecopy );
                 if( *ordString != '\0' ) {
-                    if( isdigit( *ordString ) ) {
+                    if( isdigit( *(unsigned char *)ordString ) ) {
                         ordinal = strtoul( ordString, NULL, 0 );
                     } else {
                         FatalError( ERR_BAD_CMDLINE, namecopy );

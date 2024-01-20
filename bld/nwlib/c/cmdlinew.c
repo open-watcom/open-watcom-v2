@@ -381,6 +381,7 @@ static const char *ParseOption( const char *c )
             } else if( errno == ERANGE || page_size == 0 || page_size > MAX_PAGE_SIZE ) {
                 FatalError( ERR_PAGE_RANGE );
             }
+            c = endptr;
             SetPageSize( (unsigned_16)page_size );
         }
         break;
