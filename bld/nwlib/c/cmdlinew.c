@@ -62,46 +62,43 @@ static void SetPageSize( unsigned_16 new_size )
     }
 }
 
-static const char *ParseCommand( const char *c )
+static void ParseCommand( void )
 {
     scan_ctrl       sctrl = SCTRL_SINGLE;
     const char      *start;
     operation       ops = 0;
 
-    start = c;
-    c = SkipWhite( c );
-    switch( *c++ ) {
+    start = CmdGetPos();
+    CmdSkipWhite();
+    switch( CmdGetChar() ) {
     case '-':
         ops = OP_DELETE;
-        switch( *c ) {
-        case '+':
+        if( CmdRecogChar( '+' ) ) {
             ops |= OP_ADD;
             sctrl = SCTRL_NORMAL;
-            ++c;
             break;
+        }
 #if defined(__UNIX__)
-        case ':':
+        if( CmdRecogChar( ':' ) ) {
 #else
-        case '*':
+        if( CmdRecogChar( '*' ) ) {
 #endif
             ops |= OP_EXTRACT;
             sctrl = SCTRL_NORMAL;
-            ++c;
             break;
         }
         break;
     case '+':
         ops = OP_ADD;
-        if( *c == '+' ) {
+        if( CmdRecogChar( '+' ) ) {
             ops |= OP_IMPORT;
-            ++c;
-            AddCommand( ops, &c, SCTRL_IMPORT );
-            return( c );
+            AddCommand( ops, SCTRL_IMPORT );
+            return;
         }
-        if( *c == '-' ) {
+        if( CmdRecogChar( '-' ) ) {
             ops |= OP_DELETE;
             sctrl = SCTRL_NORMAL;
-            ++c;
+            break;
         }
         break;
 #if defined(__UNIX__)
@@ -110,29 +107,32 @@ static const char *ParseCommand( const char *c )
     case '*':
 #endif
         ops |= OP_EXTRACT;
-        if( *c == '-' ) {
+        if( CmdRecogChar( '-' ) ) {
             ops |= OP_DELETE;
             sctrl = SCTRL_NORMAL;
-            ++c;
+            break;
         }
         break;
     default:
         FatalError( ERR_BAD_CMDLINE, start );
     }
-    AddCommand( ops, &c, sctrl );
-    return( c );
+    AddCommand( ops, sctrl );
 }
 
-static const char *ParseOption( const char *c )
+static bool ParseOption( void )
 {
     unsigned long   page_size;
     const char      *start;
+    const char      *begptr;
     const char      *endptr;
     ar_format       libformat;
+    bool            ok;
 
-    start = c++;
-    c = SkipWhite( c );
-    switch( tolower( *(unsigned char *)c++ ) ) {
+    ok = true;
+    start = CmdGetPos();
+    CmdGetChar();                       /* skip '-' or '/' option character */
+    CmdSkipWhite();
+    switch( CmdGetLowerChar() ) {
     case '?':
         Usage();
         break;
@@ -146,15 +146,15 @@ static const char *ParseOption( const char *c )
         if( Options.output_directory != NULL ) {
             FatalError( ERR_DUPLICATE_OPTION, start );
         }
-        Options.output_directory = GetFilenameExt( &c, SCTRL_EQUAL, NULL );
+        Options.output_directory = GetFilenameExt( SCTRL_EQUAL, NULL );
         if( access( Options.output_directory, F_OK ) != 0 ) {
             FatalError( ERR_DIR_NOT_EXIST, Options.output_directory );
         }
         break;
     case 'i':
-        switch( tolower( *(unsigned char *)c++ ) ) {
+        switch( CmdGetLowerChar() ) {
         case 'n':
-            switch( tolower( *(unsigned char *)c++ ) ) {
+            switch( CmdGetLowerChar() ) {
             case 'n':
                 Options.nr_ordinal = false;
                 break;
@@ -162,12 +162,12 @@ static const char *ParseOption( const char *c )
                 Options.nr_ordinal = true;
                 break;
             default:
-                c = start;
+                ok = false;
                 break;
             }
             break;
         case 'r':
-            switch( tolower( *(unsigned char *)c++ ) ) {
+            switch( CmdGetLowerChar() ) {
             case 'n':
                 Options.r_ordinal = false;
                 break;
@@ -175,7 +175,7 @@ static const char *ParseOption( const char *c )
                 Options.r_ordinal = true;
                 break;
             default:
-                c = start;
+                ok = false;
                 break;
             }
             break;
@@ -216,9 +216,8 @@ static const char *ParseOption( const char *c )
             Options.filetype = WL_FTYPE_ELF;
             break;
         case 'c':
-            if( tolower( *(unsigned char *)c ) == 'l' ) {
+            if( CmdRecogLowerChar( 'l' ) ) {
                 Options.coff_import_long = true;
-                ++c;
             }
             if( Options.filetype != WL_FTYPE_NONE ) {
                 FatalError( ERR_DUPLICATE_OPTION, start );
@@ -232,7 +231,7 @@ static const char *ParseOption( const char *c )
             Options.filetype = WL_FTYPE_OMF;
             break;
         default:
-            c = start;
+            ok = false;
             break;
         }
         break;
@@ -244,7 +243,7 @@ static const char *ParseOption( const char *c )
             FatalError( ERR_DUPLICATE_OPTION, start );
         }
         Options.list_contents = true;
-        Options.list_file = GetFilenameExt( &c, SCTRL_EQUAL, EXT_LST );
+        Options.list_file = GetFilenameExt( SCTRL_EQUAL, EXT_LST );
         break;
     case 'm': //                       (display C++ mangled names)
         Options.mangled = true;
@@ -253,7 +252,7 @@ static const char *ParseOption( const char *c )
         if( Options.output_name != NULL ) {
             FatalError( ERR_DUPLICATE_OPTION, start );
         }
-        Options.output_name = GetFilenameExt( &c, SCTRL_EQUAL, EXT_LIB );
+        Options.output_name = GetFilenameExt( SCTRL_EQUAL, EXT_LIB );
         break;
     case 'q': //                       (don't print header)
         Options.quiet = true;
@@ -265,52 +264,53 @@ static const char *ParseOption( const char *c )
         Options.explode = true;
 #ifdef DEVBUILD
         Options.explode_count = 0;
-        if( tolower( *(unsigned char *)c ) == 'n' ) {
+        if( CmdRecogLowerChar( 'n' ) ) {
             Options.explode_count = 1;
-            ++c;
         }
-        Options.explode_ext = GetFilenameExt( &c, SCTRL_EQUAL, EXT_OBJ );
+        Options.explode_ext = GetFilenameExt( SCTRL_EQUAL, EXT_OBJ );
         if( Options.explode_count ) {
             char    cn[20] = FILE_TEMPLATE_MASK;
             strcpy( cn + sizeof( FILE_TEMPLATE_MASK ) - 1, Options.explode_ext );
             Options.explode_ext = DupStr( cn );
         }
 #else
-        Options.explode_ext = GetFilenameExt( &c, SCTRL_EQUAL, NULL );
+        Options.explode_ext = GetFilenameExt( SCTRL_EQUAL, NULL );
 #endif
         break;
     case 'z':
-        if( ( tolower( *(unsigned char *)c ) == 'l' ) && ( tolower( *(unsigned char *)( c + 1 ) ) == 'd' ) ) {
-            c += 2;
-            if( Options.strip_dependency ) {
-                FatalError( ERR_DUPLICATE_OPTION, start );
+        if( CmdRecogLowerChar( 'l' ) ) {
+            if( CmdRecogLowerChar( 'd' ) ) {
+                if( Options.strip_dependency ) {
+                    FatalError( ERR_DUPLICATE_OPTION, start );
+                }
+                Options.strip_dependency = true; //(strip dependency info)
+                break;
             }
-            Options.strip_dependency = true; //(strip dependency info)
-            break;
-        } else if( ( tolower( *(unsigned char *)c ) == 'l' ) && ( tolower( *(unsigned char *)( c + 1 ) ) == 'l' ) ) {
-            c += 2;
-            if( Options.strip_library ) {
-                FatalError( ERR_DUPLICATE_OPTION, start );
+            if( CmdRecogLowerChar( 'l' ) ) {
+                if( Options.strip_library ) {
+                    FatalError( ERR_DUPLICATE_OPTION, start );
+                }
+                Options.strip_library = true;  //(strip library info)
+                break;
             }
-            Options.strip_library = true;  //(strip library info)
-            break;
-        } else if( Options.strip_expdef ) {
+            CmdUngetChar();
+        }
+        if( Options.strip_expdef ) {
             FatalError( ERR_DUPLICATE_OPTION, start );
         }
         Options.strip_expdef = true;
-        Options.export_list_file = GetFilenameExt( &c, SCTRL_EQUAL, NULL );
+        Options.export_list_file = GetFilenameExt( SCTRL_EQUAL, NULL );
         break;
     case 't':
-        if( tolower( *(unsigned char *)c ) == 'l' ) {
-            ++c;
+        if( CmdRecogLowerChar( 'l' ) ) {
             Options.list_contents = true;
             Options.terse_listing = true; // (internal terse listing option)
-        } else {
-            Options.trim_path = true; //(trim THEADR pathnames)
+            break;
         }
+        Options.trim_path = true; //(trim THEADR pathnames)
         break;
     case 'f':
-        switch( tolower( *(unsigned char *)c++ ) ) {
+        switch( CmdGetLowerChar() ) {
         case 'm':
             if( Options.libtype != WL_LTYPE_NONE ) {
                 FatalError( ERR_DUPLICATE_OPTION, start );
@@ -319,7 +319,7 @@ static const char *ParseOption( const char *c )
             Options.elf_found = true;
             break;
         case 'a':
-            switch( tolower( *(unsigned char *)c++ ) ) {
+            switch( CmdGetLowerChar() ) {
             case 'b':
                 libformat = AR_FMT_BSD;
                 break;
@@ -330,13 +330,14 @@ static const char *ParseOption( const char *c )
                 libformat = AR_FMT_GNU;
                 break;
             default:
-                --c;
+                CmdUngetChar();
                 libformat = AR_FMT_NONE;
                 break;
             }
             if( Options.libtype != WL_LTYPE_NONE ) {
                 FatalError( ERR_DUPLICATE_OPTION, start );
-            } else if( libformat != AR_FMT_NONE ) {
+            }
+            if( libformat != AR_FMT_NONE ) {
                 Options.ar_libformat = libformat;
             }
             Options.libtype = WL_LTYPE_AR;
@@ -350,7 +351,7 @@ static const char *ParseOption( const char *c )
             Options.omf_found = true;
             break;
         default:
-            c = start;
+            ok = false;
             break;
         }
         break;
@@ -358,31 +359,31 @@ static const char *ParseOption( const char *c )
         /*
          * following only used by OMF libary format
          */
-        if( tolower( *(unsigned char *)c ) == 'a' ) {
-            c++;
+        if( CmdRecogLowerChar( 'a' ) ) {
             if( Options.page_size ) {
                 FatalError( ERR_DUPLICATE_OPTION, start );
             }
             Options.page_size = (unsigned_16)-1;
-        } else {
-            if( Options.page_size ) {
-                FatalError( ERR_DUPLICATE_OPTION, start );
-            }
-            c = SkipEqual( c );
-            endptr = c;
-            errno = 0;
-            page_size = 0;
-            if( isdigit( *(unsigned char *)c ) ) {
-                page_size = strtoul( c, (char **)&endptr, 0 );
-            }
-            if( endptr == c || *endptr != '\0' ) {
-                FatalError( ERR_BAD_CMDLINE, start );
-            } else if( errno == ERANGE || page_size == 0 || page_size > MAX_PAGE_SIZE ) {
-                FatalError( ERR_PAGE_RANGE );
-            }
-            c = endptr;
-            SetPageSize( (unsigned_16)page_size );
+            break;
         }
+        if( Options.page_size > 0 ) {
+            FatalError( ERR_DUPLICATE_OPTION, start );
+        }
+        CmdSkipEqual();
+        begptr = endptr = CmdGetPos();
+        errno = 0;
+        page_size = 0;
+        if( isdigit( *(unsigned char *)begptr ) ) {
+            page_size = strtoul( begptr, (char **)&endptr, 0 );
+        }
+        if( endptr == begptr || *endptr != '\0' ) {
+            FatalError( ERR_BAD_CMDLINE, start );
+        }
+        if( errno == ERANGE || page_size == 0 || page_size > MAX_PAGE_SIZE ) {
+            FatalError( ERR_PAGE_RANGE );
+        }
+        CmdSetPos( endptr );
+        SetPageSize( (unsigned_16)page_size );
         break;
     case 'n': //                       (always create a new library)
         Options.new_library = true;
@@ -391,10 +392,13 @@ static const char *ParseOption( const char *c )
         Options.strip_line = true;
         break;
     default:
-        c = start;
+        ok = false;
         break;
     }
-    return( c );
+    if( !ok ) {
+        CmdSetPos( start );
+    }
+    return( ok );
 }
 
 static void my_getline_init( const char *name, getline_data *fd )
@@ -464,83 +468,81 @@ static void my_getline_fini( getline_data *fd )
     MemFree( fd->buffer );
 }
 
-void ParseOneLineWlib( const char *c )
+void ParseOneLineWlib( const char *cmd )
 {
+    const char  *old_cmd;
     const char  *start;
+    const char  *begcmd;
+    char        *p;
 
+    old_cmd = CmdSetPos( cmd );
     for( ;; ) {
-        c = SkipWhite( c );
-        start = c;
-        switch( *c ) {
+        CmdSkipWhite();
+        start = CmdGetPos();
+        switch( CmdPeekChar() ) {
 #if !defined(__UNIX__)
         case '/':
-            c = ParseOption( c );
-            if( c == start )
-                FatalError( ERR_BAD_OPTION, c[1] );
+            if( !ParseOption() )
+                FatalError( ERR_BAD_OPTION, start[1] );
             break;
 #endif
-
         case '-':
             if( CmdList == NULL && Options.input_name == NULL ) {
-                c = ParseOption( c );
-                if( c != start ) {
+                if( ParseOption() ) {
                     break;
                 }
             }
+            /* fall through */
 #if !defined(__UNIX__)
         case '*':
 #else
         case ':':
 #endif
         case '+':
-            c = ParseCommand( c );
+            ParseCommand();
             break;
         case '@':
-            {
-                const char  *old_cmd;
-                char        *p;
+            CmdGetChar();               /* skip '@' character */
+            begcmd = CmdGetPos();
+            p = GetString( SCTRL_SINGLE );
+            if( p != NULL ) {
+                const char  *env;
 
-                ++c;
-                old_cmd = c;
-                p = GetString( &c, SCTRL_SINGLE );
-                if( p != NULL ) {
-                    const char  *env;
-
-                    env = WlibGetEnv( p );
-                    MemFree( p );
-                    if( env != NULL ) {
-                        ParseOneLineWlib( env );
-                        break;
-                    }
-                }
-                c = old_cmd;
-                p = GetFilenameExt( &c, SCTRL_NORMAL, EXT_CMD );
-                if( p != NULL ) {
-                    getline_data    fd;
-
-                    my_getline_init( p, &fd );
-                    MemFree( p );
-                    while( (p = my_getline( &fd )) != NULL ) {
-                        ParseOneLineWlib( p );
-                    }
-                    my_getline_fini( &fd );
+                env = WlibGetEnv( p );
+                MemFree( p );
+                if( env != NULL ) {
+                    ParseOneLineWlib( env );
                     break;
                 }
-                c = old_cmd;
             }
+            CmdSetPos( begcmd );
+            p = GetFilenameExt( SCTRL_NORMAL, EXT_CMD );
+            if( p != NULL ) {
+                getline_data    fd;
+
+                my_getline_init( p, &fd );
+                MemFree( p );
+                while( (p = my_getline( &fd )) != NULL ) {
+                    ParseOneLineWlib( p );
+                }
+                my_getline_fini( &fd );
+                break;
+            }
+            CmdSetPos( begcmd );
             break;
         case '\0':
         case '#':
             // comment - blow away line
+            CmdSetPos( old_cmd );
             return;
         case '?':
             Usage();
-            return;
+            break;
         default:
             if( Options.input_name == NULL ) {
-                Options.input_name = GetFilenameExt( &c, SCTRL_NORMAL, EXT_LIB );
+                Options.input_name = GetFilenameExt( SCTRL_NORMAL, EXT_LIB );
             } else {
-                AddCommand( OP_ADD | OP_DELETE, &c, SCTRL_SINGLE );
+                AddCommand( OP_ADD | OP_DELETE, SCTRL_SINGLE );
             }
             break;
         }

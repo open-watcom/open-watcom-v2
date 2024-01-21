@@ -34,14 +34,13 @@
 #include "cmdlinea.h"
 
 
-static const char *ParseOption( const char *c, operation *ar_mode )
+static bool ParseOption( operation *ar_mode )
 {
-    const char  *start = c;
+    const char  *start;
     int         ch;
 
-    for( ; (ch = *(unsigned char *)c) != '\0'; c++ ) {
-        if( isspace( ch ) )
-            break;
+    start = CmdGetPos();
+    for( ; (ch = CmdPeekChar()) != '\0' && !isspace( ch ); CmdGetChar() ) {
         switch( tolower( ch ) ) {
         case '?':
             Usage();
@@ -98,45 +97,47 @@ static const char *ParseOption( const char *c, operation *ar_mode )
             FatalError( ERR_BAD_OPTION, ch );
         }
     }
-    return( c );
+    return( CmdGetPos() != start );
 }
 
-void ParseOneLineAr( const char *c, operation *ar_mode )
+void ParseOneLineAr( const char *cmd, operation *ar_mode )
 {
+    const char  *old_cmd;
     bool        done_options;
 
+    old_cmd = CmdSetPos( cmd );
     done_options = false;
     for( ;; ) {
-        c = SkipWhite( c );
-        switch( *c ) {
+        CmdSkipWhite();
+        switch( CmdPeekChar() ) {
         case '\0':
             if( *ar_mode == OP_EXTRACT ) {
                 Options.explode = true;
             }
+            CmdSetPos( old_cmd );
             return;
         case '-':
             if( !done_options ) {
-                if( *(c + 1) == '-' ) {
-                    c += 2;
+                CmdGetChar();           /* skip '-' character */
+                if( CmdRecogChar( '-' ) ) {
                     done_options = true;
-                } else {
-                    c = ParseOption( c, ar_mode );
+                    break;
                 }
+                ParseOption( ar_mode );
                 break;
             }
-            //fall to default
+            /* fall through */
         default:
             if( *ar_mode == OP_NONE ) {
-                c = ParseOption( c, ar_mode );
+                ParseOption( ar_mode );
                 break;
             }
             if( Options.input_name == NULL ) {
-                Options.input_name = GetFilenameExt( &c, SCTRL_NORMAL, EXT_LIB );
+                Options.input_name = GetFilenameExt( SCTRL_NORMAL, EXT_LIB );
             } else {
-                AddCommand( *ar_mode, &c, SCTRL_SINGLE );
+                AddCommand( *ar_mode, SCTRL_SINGLE );
             }
             break;
         }
     }
 }
-

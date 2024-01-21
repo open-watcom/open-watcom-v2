@@ -152,55 +152,31 @@ static size_t checkExt( const char *fname, size_t len, const char *ext )
     return( strlen( ext ) + 1 );
 }
 
-const char *SkipWhite( const char *c )
-{
-    while( isspace( *(unsigned char *)c ) )
-        ++c;
-    return( c );
-}
-
-const char *SkipEqual( const char *c )
-{
-    const char  *start;
-
-    start = c;
-    c = SkipWhite( c );
-    if( *c == '=' ) {
-        ++c;
-        c = SkipWhite( c );
-    } else {
-        c = start;
-    }
-    return( c );
-}
-
-static size_t cmdScanString( const char **s, const char **start, scan_ctrl sctrl )
+static size_t cmdScanString( const char **start, scan_ctrl sctrl )
 {
     int         quote;
     int         ch;
-    const char  *c;
     unsigned    offset;
 
-    c = *s;
     if( sctrl == SCTRL_EQUAL ) {
-        c = SkipEqual( c );
+        CmdSkipEqual();
     } else {
-        c = SkipWhite( c );
+        CmdSkipWhite();
     }
-    quote = *(unsigned char *)c;
+    quote = *(unsigned char *)cmd_ptr;
     offset = ( ( quote == '\"' ) || ( sctrl == SCTRL_SINGLE ) && ( quote == '\'' ) ) ? 1 : 0;
-    *start = c = c + offset;
+    *start = cmd_ptr = cmd_ptr + offset;
     if( offset > 0 ) {
-        for( ; (ch = *(unsigned char *)c) != '\0'; c++ ) {
+        for( ; (ch = *(unsigned char *)cmd_ptr) != '\0'; cmd_ptr++ ) {
             if( ch == quote ) {
-                c++;
+                cmd_ptr++;
                 break;
             }
         }
     } else if( sctrl == SCTRL_IMPORT ){
         bool inquote = false;
 
-        for( ; (ch = *(unsigned char *)c) != '\0'; c++ ) {
+        for( ; (ch = *(unsigned char *)cmd_ptr) != '\0'; cmd_ptr++ ) {
             if( !inquote && isspace( ch ) ) {
                 break;
             }
@@ -209,24 +185,23 @@ static size_t cmdScanString( const char **s, const char **start, scan_ctrl sctrl
             }
         }
     } else {
-        for( ; (ch = *(unsigned char *)c) != '\0'; c++ ) {
+        for( ; (ch = *(unsigned char *)cmd_ptr) != '\0'; cmd_ptr++ ) {
             if( isspace( ch ) ) {
                 break;
             }
         }
     }
-    *s = c;
-    return( c - *start - offset );
+    return( cmd_ptr - *start - offset );
 }
 
-char *GetString( const char **s, scan_ctrl sctrl )
+char *GetString( scan_ctrl sctrl )
 {
     const char  *src;
     size_t      len;
     char        *dst;
 
     dst = NULL;
-    len = cmdScanString( s, &src, sctrl );
+    len = cmdScanString( &src, sctrl );
     if( len > 0 ) {
         dst = MemAlloc( len + 1 );
         strncpy( dst, src, len );
@@ -235,7 +210,7 @@ char *GetString( const char **s, scan_ctrl sctrl )
     return( dst );
 }
 
-char *GetFilenameExt( const char **s, scan_ctrl sctrl, const char *ext )
+char *GetFilenameExt( scan_ctrl sctrl, const char *ext )
 {
     const char  *src;
     size_t      len;
@@ -243,7 +218,7 @@ char *GetFilenameExt( const char **s, scan_ctrl sctrl, const char *ext )
     char        *dst;
 
     dst = NULL;
-    len = cmdScanString( s, &src, sctrl );
+    len = cmdScanString( &src, sctrl );
     if( len > 0 ) {
         len2 = checkExt( src, len, ext );
         dst = MemAlloc( len + len2 + 1 );
@@ -257,13 +232,13 @@ char *GetFilenameExt( const char **s, scan_ctrl sctrl, const char *ext )
     return( dst );
 }
 
-void AddCommand( operation ops, const char **c, scan_ctrl sctrl )
+void AddCommand( operation ops, scan_ctrl sctrl )
 {
     lib_cmd         *cmd;
     const char      *src;
     size_t          len;
 
-    len = cmdScanString( c, &src, sctrl );
+    len = cmdScanString( &src, sctrl );
     if( len > 0 ) {
         cmd = MemAllocGlobal( sizeof( lib_cmd ) + len );
         strncpy( cmd->name, src, len );

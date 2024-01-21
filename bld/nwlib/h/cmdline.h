@@ -40,12 +40,9 @@ typedef enum {
 extern void         InitCmdLine( void );
 extern void         ProcessCmdLine( char *argv[] );
 extern void         FiniCmdLine( void );
-extern char         *GetString( const char **c, scan_ctrl sctrl );
-extern char         *GetFilenameExt( const char **c, scan_ctrl sctrl, const char *ext );
-extern void         AddCommand( operation ops, const char **c, scan_ctrl sctrl );
-
-extern const char   *SkipEqual( const char *c );
-extern const char   *SkipWhite( const char *c );
+extern char         *GetString( scan_ctrl sctrl );
+extern char         *GetFilenameExt( scan_ctrl sctrl, const char *ext );
+extern void         AddCommand( operation ops, scan_ctrl sctrl );
 
 extern const char   *CmdSetPos( const char *new_cmd );
 extern const char   *CmdGetPos( void );
