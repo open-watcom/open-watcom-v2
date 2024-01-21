@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -207,4 +207,3 @@ void CreateARHeader( ar_header *ar, arch_header * arch )
     PutARValue( ar->size, arch->size, AR_SIZE_LEN );
     memcpy( ar->header_ident, AR_HEADER_IDENT, AR_HEADER_IDENT_LEN );
 }
-

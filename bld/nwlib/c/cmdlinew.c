@@ -134,6 +134,7 @@ static bool ParseOption( void )
     CmdSkipWhite();
     switch( CmdGetLowerChar() ) {
     case '?':
+    case 'h':
         Usage();
         break;
     case 'b': //                       (don't create .bak file)
@@ -234,9 +235,6 @@ static bool ParseOption( void )
             ok = false;
             break;
         }
-        break;
-    case 'h':
-        Usage();
         break;
     case 'l': // [ = <list_file_name> ]
         if( Options.list_contents ) {
@@ -548,4 +546,3 @@ void ParseOneLineWlib( const char *cmd )
         }
     }
 }
-
