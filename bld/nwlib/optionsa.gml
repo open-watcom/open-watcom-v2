@@ -2,7 +2,7 @@
 :cmt.*
 :cmt.*                            Open Watcom Project
 :cmt.*
-:cmt.* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+:cmt.* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 :cmt.*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 :cmt.*
 :cmt.*  ========================================================================
@@ -90,52 +90,59 @@
 :jtitle. 使用法： %s <command> [<modifiers>] <archive> [modules]
 :titleu.  Usage: %C <command> [<modifiers>] <archive> [modules]
 :jtitleu. 使用法： %C <command> [<modifiers>] <archive> [modules]
-:target. any
 
 :title.
 :jtitle.
-:target. any
 
 :title.  Modifiers:
 :jtitle. 修飾子：
-:target. any
 
 :title.  . -c     create archive
 :jtitle. . -c     アーカイブを作成
-:target. any
 
 :title.  . -u     update (only with -r command)
 :jtitle. . -u     更新（-rコマンドのみ）
-:target. any
 
 :title.  . -v     verbose output
 :jtitle. . -v     詳細な出力
-:target. any
 
 :title.
 :jtitle.
-:target. any
 
 :title.  Commands:
 :jtitle. コマンド：
-:target. any
+
+:option. c
+:internal.
+:usage.  .     create archive
+:jusage. .     アーカイブを作成
 
 :option. d
-:target. any
 :usage.  .     delete modules from archive
 :jusage. .     アーカイブからモジュールを削除する
 
+:option. p
+:target. unused
+:usage.  unused
+
 :option. r
-:target. any
 :usage.  .     insert or replace modules
 :jusage. .     モジュールの挿入または交換
 
 :option. t
-:target. any
 :usage.  .     display modules or content
 :jusage. .     モジュールまたはコンテンツを表示する
 
+:option. u
+:internal.
+:usage.  .     update (only with -r command)
+:jusage. .     更新（-rコマンドのみ）
+
+:option. v
+:internal.
+:usage.  .     verbose output
+:jusage. .     詳細な出力
+
 :option. x
-:target. any
 :usage.  .     extract modules
 :jusage. .     モジュールを抽出する
