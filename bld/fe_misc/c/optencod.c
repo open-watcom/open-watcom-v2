@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -216,6 +216,7 @@ typedef struct chain {
 typedef struct group {
     struct group    *next;
     lang_data       Usage;
+    boolbit         usage_used : 1;
     char            pattern[1];
 } GROUP;
 
@@ -252,6 +253,7 @@ typedef struct option {
     boolbit         is_prefix         : 1;
     boolbit         is_timestamp      : 1;
     boolbit         is_negate         : 1;
+    boolbit         usage_used        : 1;
     char            equal_char;
     CHAIN           *chain;
     GROUP           *group;
@@ -772,13 +774,17 @@ static GROUP *addGroup( const char *pattern )
 static CHAIN *findChain( const char *pattern )
 {
     CHAIN *cn;
+    CHAIN *cnx;
 
+    cnx = NULL;
     for( cn = chainList; cn != NULL; cn = cn->next ) {
         if( cmpChainPattern( cn->pattern, pattern, cn->pattern_len ) ) {
-            return( cn );
+            if( cnx == NULL || cnx->pattern_len < cn->pattern_len ) {
+                cnx = cn;
+            }
         }
     }
-    return( NULL );
+    return( cnx );
 }
 
 static CHAIN *addChain( char *pattern, bool chain )
@@ -1504,11 +1510,12 @@ static void doJFOOTERU( const char *p )
     t->is_titleu = true;
 }
 
-// :group. <num>
+// :group. <num> <chain>
 static void doGROUP( const char *p )
 {
     OPTION *o;
     GROUP  *gr;
+    CHAIN  *cn;
 
     if( *p != '\0' ) {
         p = nextWord( p, tokbuff );
@@ -1516,6 +1523,15 @@ static void doGROUP( const char *p )
         if( gr != NULL ) {
             for( o = optionList; o != NULL; o = o->synonym ) {
                  o->group = gr;
+            }
+        }
+        if( *p != '\0' ) {
+            p = nextWord( p, tokbuff );
+            cn = findChain( tokbuff );
+            if( cn != NULL ) {
+                for( o = optionList; o != NULL; o = o->synonym ) {
+                     o->chain = cn;
+                }
             }
         }
     }
@@ -2299,19 +2315,27 @@ static void outputFN_INIT( void )
 static void outputFN_FINI( void )
 {
     OPTION *o;
-    unsigned depth = 0;
+    unsigned depth;
+    bool no_data;
 
+    depth = 0;
     emitPrintf( depth, "void " FN_FINI "( OPT_STORAGE *data )\n" );
     emitPrintf( depth, "{\n" );
+    no_data = true;
     ++depth;
     for( o = optionList; o != NULL; o = o->next ) {
         if( o->synonym == NULL ) {
             if( HAS_OPT_STRING( o ) ) {
                 emitPrintf( depth, FN_CLEAN_STRING "( &(data->%s) );\n", o->value_field_name );
+                no_data = false;
             } else if( HAS_OPT_NUMBER( o ) ) {
                 emitPrintf( depth, FN_CLEAN_NUMBER "( &(data->%s) );\n", o->value_field_name );
+                no_data = false;
             }
         }
+    }
+    if( no_data ) {
+        emitPrintf( depth, "(void)data;\n" );
     }
     --depth;
     emitPrintf( depth, "}\n" );
@@ -2463,8 +2487,15 @@ static char *genOptionUsageStart( OPTION *o, char *buf, bool no_prefix )
 
 static bool usageValid( OPTION *o, GROUP *gr )
 {
-    if( o->group != gr )
-        return( false );
+    if( gr != NULL ) {
+        if( o->group != gr || o->chain != NULL ) {
+            return( false );
+        }
+    } else {
+        if( o->group != gr && o->chain == NULL ) {
+            return( false );
+        }
+    }
     if( o->synonym != NULL )
         return( false );
     if( o->is_internal
@@ -2640,20 +2671,31 @@ static void clearChainUsage( void )
     }
 }
 
+static void clearGroupUsage( void )
+{
+    GROUP   *gr;
+
+    for( gr = groupList; gr != NULL; gr = gr->next ) {
+        gr->usage_used = false;
+    }
+}
+
 static bool createChainHeaderPrefix( OPTION **o, char *buf, size_t max )
 {
     size_t      len;
     CHAIN       *cn;
+    GROUP       *gr;
     char        *stop;
 
     stop = buf + max;
     cn = (*o)->chain;
+    gr = (*o)->group;
     *buf++ = '-';
     buf = cvtOptionSpec( buf, cn->pattern, CVT_NAME );
     *buf++ = '{';
     len = 0;
-    for( ; *o != NULL && (*o)->chain == cn; o++ ) {
-        if( (*o)->chain != NULL ) {
+    for( ; *o != NULL && (*o)->chain != NULL && (*o)->chain->pattern[0] == cn->pattern[0]; o++ ) {
+        if( (*o)->chain == cn && (*o)->group == gr ) {
             if( len > 0 ) {
                 *buf++ = ',';
             }
@@ -2686,7 +2728,11 @@ static void outputChainHeader( OPTION **o, process_line_fn *process_line, size_t
             buf = GET_OUTPUT_BUF( lang );
             for( len = max / 2; len-- > 0; )
                 *buf++ = ' ';
-            strcpy( buf, getLangData( (*o)->chain->Usage, lang ) );
+            if( (*o)->group != NULL ) {
+                strcpy( buf, getLangData( (*o)->group->Usage, lang ) );
+            } else {
+                strcpy( buf, getLangData( (*o)->chain->Usage, lang ) );
+            }
         }
         process_output( process_line );
         for( lang = 0; lang < LANG_MAX; lang++ ) {
@@ -2718,6 +2764,7 @@ static void outputOption( OPTION *o, process_line_fn *process_line, size_t max )
     size_t      len;
     language_id lang;
 
+    o->usage_used = true;
     len = createOptionPrefix( o, hdrbuff, max ) - hdrbuff;
     for( lang = 0; lang < LANG_MAX; lang++ ) {
         buf = GET_OUTPUT_BUF( lang );
@@ -2725,6 +2772,41 @@ static void outputOption( OPTION *o, process_line_fn *process_line, size_t max )
         strcpy( buf + len, getLangData( o->lang_usage, lang ) );
     }
     process_output( process_line );
+}
+
+static void outputChain( OPTION **oo, size_t i, size_t count, process_line_fn *process_line, size_t max )
+{
+    CHAIN       *cn;
+
+    cn = oo[i]->chain;
+    cn->usage_used = true;
+    outputChainHeader( &oo[i], process_line, max );
+    for( ; i < count; i++ ) {
+        if( !oo[i]->usage_used && oo[i]->chain == cn ) {
+            outputOption( oo[i], process_line, max );
+        }
+    }
+}
+
+static void outputGroup( OPTION **oo, size_t i, size_t count, process_line_fn *process_line, size_t max )
+{
+    CHAIN       *cn;
+    GROUP       *gr;
+
+    cn = oo[i]->chain;
+    gr = oo[i]->group;
+    outputChainHeader( &oo[i], process_line, max );
+    for( ; i < count; i++ ) {
+        if( oo[i]->usage_used )
+            continue;
+        if( oo[i]->chain == cn && oo[i]->group == gr ) {
+            outputOption( oo[i], process_line, max );
+        }
+    }
+    if( cn != NULL ) {
+        cn->usage_used = true;
+    }
+    gr->usage_used = true;
 }
 
 static bool checkUsageLength( size_t len )
@@ -2766,13 +2848,22 @@ static void processUsage( process_line_fn *process_line, GROUP *gr )
     qsort( oo, count, sizeof( OPTION * ), usageCmp );
 
     clearChainUsage();
+    clearGroupUsage();
     for( i = 0; i < count; ++i ) {
-        if( oo[i]->chain != NULL
+        oo[i]->usage_used = false;
+    }
+    for( i = 0; i < count; ++i ) {
+        if( oo[i]->usage_used )
+            continue;
+        if( oo[i]->group != NULL
+          && !oo[i]->group->usage_used ) {
+            outputGroup( oo, i, count, process_line, max );
+        } else if( oo[i]->chain != NULL
           && !oo[i]->chain->usage_used ) {
-            oo[i]->chain->usage_used = true;
-            outputChainHeader( &oo[i], process_line, max );
+            outputChain( oo, i, count, process_line, max );
+        } else {
+            outputOption( oo[i], process_line, max );
         }
-        outputOption( oo[i], process_line, max );
     }
     free( oo );
     if( checkUsageLength( maxUsageLen ) ) {
