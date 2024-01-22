@@ -237,6 +237,7 @@ typedef struct option {
     targmask        target_mask;
     targmask        ntarget_mask;
     boolbit         default_specified : 1;
+    boolbit         any_target        : 1;
     boolbit         is_simple         : 1;
     boolbit         is_immediate      : 1;
     boolbit         is_code           : 1;
@@ -274,7 +275,6 @@ typedef struct codeseq {
     boolbit         sel        : 1;
 } CODESEQ;
 
-static char         *id = "";
 static unsigned     line;
 static FILE         *gfp;
 static FILE         *ofp;
@@ -396,6 +396,7 @@ static const char *usageMsg[] = {
     "  -rc=<macro-name> generate files for resource compiler",
     "  -u=<usage-u> is the output file for the QNX usage file",
     "  -utf8 output text use UTF-8 encoding",
+    "  -x=<id> use id to extend symbols to be unique for more instances",
     "",
     "    <gml-file> is the tagged input GML file",
     "    <parser-h> is the output file for the command line parser data declaration",
@@ -911,6 +912,8 @@ static OPTION *pushNewOption( char *pattern, OPTION *o )
     newo->is_simple = true;
     newo->next = optionList;
     newo->equal_char = '\0';
+    newo->target_mask = targetAnyMask;
+    newo->any_target = true;
     optionList = newo;
     return( newo );
 }
@@ -1026,7 +1029,12 @@ static void doTARGET( const char *p )
             targetFooter->target_mask |= mask;
         } else {
             for( o = optionList; o != NULL; o = o->synonym ) {
-                o->target_mask |= mask;
+                if( o->any_target ) {
+                    o->target_mask = mask;
+                    o->any_target = false;
+                } else {
+                    o->target_mask |= mask;
+                }
             }
         }
     }
@@ -2796,7 +2804,9 @@ static void outputChain( OPTION **oo, size_t i, size_t count, process_line_fn *p
     cn->usage_used = true;
     outputChainHeader( &oo[i], process_line, max );
     for( ; i < count; i++ ) {
-        if( !oo[i]->usage_used && oo[i]->chain == cn ) {
+        if( oo[i]->usage_used )
+            continue;
+        if( oo[i]->chain == cn ) {
             outputOption( oo[i], process_line, max );
         }
     }
@@ -3113,7 +3123,7 @@ static char *ProcessOption( char *s, char *option_start )
         break;
     case 'x':
         if( *s == '=' ) {
-            optFlag.rc = true;
+            s++;
             SKIP_SPACES( s );
             optFlag.sid = option_start;
             while( *s != '\0' ) {
@@ -3274,4 +3284,3 @@ int main( int argc, char **argv )
         return( EXIT_SUCCESS );
     return( EXIT_FAILURE );
 }
-
