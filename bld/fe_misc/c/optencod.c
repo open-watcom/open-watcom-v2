@@ -198,6 +198,7 @@ typedef struct title {
     struct title    *next;
     targmask        target_mask;
     targmask        ntarget_mask;
+    boolbit         any_target  : 1;
     boolbit         is_titleu   : 1;
     lang_data       lang_title;
     lang_data       lang_titleu;
@@ -1024,9 +1025,19 @@ static void doTARGET( const char *p )
             fail( "invalid target name '%s'\n", tokbuff );
         }
         if( targetTitle != NULL ) {
-            targetTitle->target_mask |= mask;
+            if( targetTitle->any_target ) {
+                targetTitle->target_mask = mask;
+                targetTitle->any_target = false;
+            } else {
+                targetTitle->target_mask |= mask;
+            }
         } else if( targetFooter != NULL ) {
-            targetFooter->target_mask |= mask;
+            if( targetFooter->any_target ) {
+                targetFooter->target_mask = mask;
+                targetFooter->any_target = false;
+            } else {
+                targetFooter->target_mask |= mask;
+            }
         } else {
             for( o = optionList; o != NULL; o = o->synonym ) {
                 if( o->any_target ) {
@@ -1423,6 +1434,8 @@ static void doTITLE( const char *p )
     t->next = *i;
     *i = t;
     t->lang_title[LANG_English] = pickUpRest( p );
+    t->target_mask = targetAnyMask;
+    t->any_target = true;
     targetTitle = t;
     targetFooter = NULL;
 }
@@ -1479,6 +1492,8 @@ static void doFOOTER( const char *p )
     t->next = *i;
     *i = t;
     t->lang_title[LANG_English] = pickUpRest( p );
+    t->target_mask = targetAnyMask;
+    t->any_target = true;
     targetFooter = t;
     targetTitle = NULL;
 }
