@@ -2,7 +2,7 @@
 :cmt.*
 :cmt.*                            Open Watcom Project
 :cmt.*
-:cmt.* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+:cmt.* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 :cmt.*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 :cmt.*
 :cmt.*  ========================================================================
@@ -39,7 +39,7 @@
 :cmt.						    	-oa -ox -ot => -oaxt
 :cmt.	:target. <targ1> <targ2> ...                valid for these targets
 :cmt.	:ntarget. <targ1> <targ2> ...               not valid for these targets
-:cmt.	:usageogrp. <option> <usage text>           group of options that start with <option>
+:cmt.	:usagechain. <option> <usage text>          group of options that start with <option>
 :cmt.                                                	are chained together in usage
 :cmt.	:usagegrp. <num> <usage text>               group of options that have group <num>
 :cmt.                                                	are chained together in usage

@@ -39,7 +39,7 @@
 :cmt.                                                   -oa -ox -ot => -oaxt
 :cmt.   :target. <targ1> <targ2> ...                valid for these targets
 :cmt.   :ntarget. <targ1> <targ2> ...               not valid for these targets
-:cmt.   :usageogrp. <option> <usage text>           group of options that start with <option>
+:cmt.   :usagechain. <option> <usage text>          group of options that start with <option>
 :cmt.                                                   are chained together in usage
 :cmt.   :usagegrp. <num> <usage text>               group of options that have group <num>
 :cmt.                                                   are chained together in usage
@@ -182,6 +182,10 @@
 :jtitle. .         ( /ｵﾌﾟｼｮﾝ でも指定できます )
 :ntarget. bsd linux osx qnx haiku
 
+:option. ?
+:usage.  display this screen
+:jusage. この画面を表示します
+
 :option. b
 :usage.  don't create .bak file
 :jusage. .bakファイルを作成しません
@@ -195,7 +199,7 @@
 :usage.  object output directory
 :jusage. オブジェクト出力ディレクトリ
 
-:usageogrp. f Output Library format
+:usagechain. f Output Library format
 :jusage. 出力ライブラリ形式
 
 :option. fa
@@ -228,11 +232,11 @@
 :usage.  output OMF format library
 :jusage. OMF形式ライブラリを出力します
 
-:option. h ?
+:option. h
 :usage.  display this screen
 :jusage. この画面を表示します
 
-:usageogrp. i
+:usagechain. i
 
 :usagegrp. 1 Import records architecture
 :jusage. インポートレコードのアーキテクチャ
@@ -281,7 +285,7 @@
 :usage.  generate MIPS import records
 :jusage. MIPSインポート･レコードを生成します
 
-:usageogrp. in Non-resident table imports
+:usagechain. in Non-resident table imports
 
 :option. inn
 :enumerate. non_resident
@@ -305,7 +309,7 @@
 :usage.  generate PPC import records
 :jusage. PPCインポート･レコードを生成します
 
-:usageogrp. ir Resident table imports
+:usagechain. ir Resident table imports
 
 :option. irn
 :enumerate. resident

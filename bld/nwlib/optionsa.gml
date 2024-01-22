@@ -39,7 +39,7 @@
 :cmt.                                                   -oa -ox -ot => -oaxt
 :cmt.   :target. <targ1> <targ2> ...                valid for these targets
 :cmt.   :ntarget. <targ1> <targ2> ...               not valid for these targets
-:cmt.   :usageogrp. <option> <usage text>           group of options that start with <option>
+:cmt.   :usagechain. <option> <usage text>          group of options that start with <option>
 :cmt.                                                   are chained together in usage
 :cmt.   :usagegrp. <num> <usage text>               group of options that have group <num>
 :cmt.                                                   are chained together in usage
@@ -112,6 +112,10 @@
 :title.  Commands:
 :jtitle. コマンド：
 
+:option. ?
+:usage.  .     display this screen
+:jusage. .     この画面を表示します
+
 :option. c
 :internal.
 :usage.  .     create archive
@@ -120,6 +124,10 @@
 :option. d
 :usage.  .     delete modules from archive
 :jusage. .     アーカイブからモジュールを削除する
+
+:option. h
+:usage.  .     display this screen
+:jusage. .     この画面を表示します
 
 :option. p
 :target. unused

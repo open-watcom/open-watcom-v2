@@ -2,7 +2,7 @@
 :cmt.*
 :cmt.*                            Open Watcom Project
 :cmt.*
-:cmt.* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+:cmt.* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 :cmt.*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 :cmt.*
 :cmt.*  ========================================================================
@@ -39,7 +39,7 @@
 :cmt.                                                   -oa -ox -ot => -oaxt
 :cmt.   :target. <targ1> <targ2> ...                valid for these targets
 :cmt.   :ntarget. <targ1> <targ2> ...               not valid for these targets
-:cmt.   :usageogrp. <option> <usage text>           group of options that start with <option>
+:cmt.   :usagechain. <option> <usage text>          group of options that start with <option>
 :cmt.                                                   are chained together in usage
 :cmt.   :usagegrp. <num> <usage text>               group of options that have group <num>
 :cmt.                                                   are chained together in usage
@@ -211,7 +211,7 @@
 :usage.  Pentium Pro stack calling conventions
 :jusage. Pentium Pro スタック呼び出し規約
 
-:usageogrp. ad Make Dependency info
+:usagechain. ad Make Dependency info
 
 :option. ad
 :target. any
@@ -264,7 +264,7 @@
 :usage.  build target is operating system <os>
 :jusage. 構築ターゲットはオペレーティング･システム <os>
 
-:usageogrp. b Application type
+:usagechain. b Application type
 
 :option. bc
 :target. any
@@ -310,7 +310,7 @@
 :usage.  allow extended -d macro definitions
 :jusage. 拡張された -d マクロ定義を許可します
 
-:usageogrp. d Debugging information
+:usagechain. d Debugging information
 
 :option. d0
 :target. any
@@ -381,7 +381,7 @@
 :usage.  generate browsing information
 :jusage. ブラウズ情報を生成します
 
-:usageogrp. ec Default calling convention
+:usagechain. ec Default calling convention
 
 :option. ecc
 :target. i86 386
@@ -634,7 +634,7 @@
 :usage.  inline 80x87 instructions with specified depth
 :jusage. 指定した深さのインライン80x87命令
 
-:usageogrp. fp Generate Floating-point code
+:usagechain. fp Generate Floating-point code
 
 :option. fpc
 :target. i86 386
@@ -694,7 +694,7 @@
 :usage.  set code group name
 :jusage. コード･グループ名を設定します
 
-:usageogrp. h Debugging Information Format
+:usagechain. h Debugging Information Format
 
 :option. hw
 :target. i86 386
@@ -755,7 +755,7 @@
 :jusage. OWLリストを出力します
 :internal.
 
-:usageogrp. m Memory model
+:usagechain. m Memory model
 :jusage. メモリ・モデル
 
 :option. mc
@@ -1069,7 +1069,7 @@
 :usage.  VC++ compatibility: alloca allowed in argument lists
 :jusage. VC++ 互換性: 引数リストの中でallocaを使用できます
 
-:usageogrp. w Warning control
+:usagechain. w Warning control
 
 :option. w
 :target. any
@@ -1322,7 +1322,7 @@
 :usage.  dump informational statistics to stdout
 :jusage. 情報として統計値をstdoutに出力します
 
-:usageogrp. zk Multi-byte/Unicode character support
+:usagechain. zk Multi-byte/Unicode character support
 
 :option. zk0 zk
 :target. any

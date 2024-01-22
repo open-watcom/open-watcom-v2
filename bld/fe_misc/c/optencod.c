@@ -83,7 +83,7 @@ TAG( TITLE ) \
 TAG( TITLEU ) \
 TAG( USAGE ) \
 TAG( USAGEGRP ) \
-TAG( USAGEOGRP )
+TAG( USAGECHAIN )
 
 #define NEXT_ARG() \
         --argc1; ++argv1
@@ -803,7 +803,7 @@ static CHAIN *addChain( char *pattern, bool chain )
             if( cn->code_used ) {
                 fail( "CHAIN: option '%s' already defined\n", pattern );
             } else {
-                fail( "USAGEOGRP: option '%s' already defined\n", pattern );
+                fail( "USAGECHAIN: option '%s' already defined\n", pattern );
             }
         }
     }
@@ -1580,16 +1580,16 @@ static void doTIMESTAMP( const char *p )
     }
 }
 
-// :usageogrp. <option> <usage>
+// :usagechain. <option> <usage>
 //
 // mark options that start with <option> as group in usage text
 // i.e., -fp0 -fp1 ==> -fp{0,1}
-static void doUSAGEOGRP( const char *p )
+static void doUSAGECHAIN( const char *p )
 {
     CHAIN *cn;
 
     if( *p == '\0' ) {
-        fail( "missing <option> in :usageogrp. tag\n" );
+        fail( "missing <option> in :usagechain. tag\n" );
     }
     p = nextWord( p, tokbuff );
     cn = addChain( tokbuff, false );

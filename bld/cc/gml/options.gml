@@ -2,7 +2,7 @@
 :cmt.*
 :cmt.*                            Open Watcom Project
 :cmt.*
-:cmt.* Copyright (c) 2022-2023 The Open Watcom Contributors. All Rights Reserved.
+:cmt.* Copyright (c) 2022-2024 The Open Watcom Contributors. All Rights Reserved.
 :cmt.*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 :cmt.*
 :cmt.*  ========================================================================
@@ -39,7 +39,7 @@
 :cmt.                                                   -oa -ox -ot => -oaxt
 :cmt.   :target. <targ1> <targ2> ...                valid for these targets
 :cmt.   :ntarget. <targ1> <targ2> ...               not valid for these targets
-:cmt.   :usageogrp. <option> <usage text>           group of options that start with <option>
+:cmt.   :usagechain. <option> <usage text>          group of options that start with <option>
 :cmt.                                                   are chained together in usage
 :cmt.   :usagegrp. <num> <usage text>               group of options that have group <num>
 :cmt.                                                   are chained together in usage
@@ -127,7 +127,13 @@
 :chain. o Optimization
 :jusage. o 最適化
 
-:option. h ?
+:option. ?
+:target. any
+:nochain.
+:usage. print this message
+:jusage. このメッセージを表示します
+
+:option. h
 :target. any
 :nochain.
 :usage. print this message
@@ -228,7 +234,7 @@
 :usage. allow non const initializers for local aggregates or unions
 :jusage.
 
-:usageogrp. ad Make Dependency Information
+:usagechain. ad Make Dependency Information
 
 :option. ad
 :target. any
@@ -283,7 +289,7 @@
 :usage. assume short integers are aligned
 :jusage. short 整数が整列していると仮定します
 
-:usageogrp. b Application type
+:usagechain. b Application type
 
 :option. bc
 :target. any
@@ -323,7 +329,7 @@
 :usage. build target is a default windowing application
 :jusage. 構築ターゲットはデフォルト･ウィンドウ･アプリケーションです
 
-:usageogrp. d Debugging Information
+:usagechain. d Debugging Information
 
 :option. d0
 :target. any
@@ -403,7 +409,7 @@
 :usage. emit code coverage gear
 :jusage.
 
-:usageogrp. ec Default calling convention
+:usagechain. ec Default calling convention
 
 :option. ecc
 :target. i86 386
@@ -612,7 +618,7 @@
 :usage. do not check for truncated versions of file names
 :jusage. 切り詰めたファイル名をチェックしません
 
-:usageogrp. fp Generate Floating-point code
+:usagechain. fp Generate Floating-point code
 
 :option. fpc
 :target. i86 386
@@ -684,7 +690,7 @@
 :usage. set code group name
 :jusage. コード･グループ名を設定します
 
-:usageogrp. h Debugging Information format
+:usagechain. h Debugging Information format
 
 :option. hw
 :target. i86 386
@@ -746,7 +752,7 @@
 :usage. enable OWL logging
 :jusage. enable OWL logging
 
-:usageogrp. m Memory model
+:usagechain. m Memory model
 :jusage. メモリ・モデル
 
 :option. mc
@@ -1039,7 +1045,7 @@
 :usage. VC++ compatibility: alloca allowed in argument lists
 :jusage. VC++ 互換性: 引数リストの中でallocaを使用できます
 
-:usageogrp. w Warning control
+:usagechain. w Warning control
 
 :option. w
 :target. any
@@ -1226,7 +1232,7 @@
 :usage. generate function prototypes using base types
 :jusage. 基本型を使用した関数プロトタイプを生成します
 
-:usageogrp. zk Multi-byte/Unicode character support
+:usagechain. zk Multi-byte/Unicode character support
 
 :option. zk0 zk
 :target. any
