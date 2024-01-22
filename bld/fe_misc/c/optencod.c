@@ -82,8 +82,8 @@ TAG( TIMESTAMP ) \
 TAG( TITLE ) \
 TAG( TITLEU ) \
 TAG( USAGE ) \
-TAG( USAGEGRP ) \
-TAG( USAGECHAIN )
+TAG( USAGECHAIN ) \
+TAG( USAGEGRP )
 
 #define NEXT_ARG() \
         --argc1; ++argv1
