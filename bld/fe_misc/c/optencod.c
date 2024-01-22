@@ -2856,7 +2856,8 @@ static void processUsage( process_line_fn *process_line, GROUP *gr )
         if( oo[i]->usage_used )
             continue;
         if( oo[i]->group != NULL
-          && !oo[i]->group->usage_used ) {
+          && !oo[i]->group->usage_used
+          && oo[i]->chain != NULL ) {
             outputGroup( oo, i, count, process_line, max );
         } else if( oo[i]->chain != NULL
           && !oo[i]->chain->usage_used ) {
