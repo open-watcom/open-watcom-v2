@@ -133,4 +133,4 @@ optencod_targets += dbg
 
 cmdlnprs.gh cmdlnprs.gc usage.gh $(exetarg_$(host_os)_res) : ../h/options.gml $(__MAKEFILES__)
     @%make echo_optencod
-    $(noecho)*optencod -q -rc=MSG_USAGE_BASE -utf8 $(optencod_opt_$(host_os)) $[@ cmdlnprs.gh cmdlnprs.gc $@ $(optencod_targets)
+    $(noecho)*optencod -q -rc=MSG_USAGE_BASE -utf8 $(optencod_opt_$(host_os)) $[@ cmdlnprs.gh cmdlnprs.gc $@ . $(optencod_targets)

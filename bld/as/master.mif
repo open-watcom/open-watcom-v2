@@ -261,4 +261,4 @@ optencod_targets += dbg
 
 usage.gh $(exetarg_$(host_os)_res) : ../../h/options.gml $(__MAKEFILES__)
     @%make echo_optencod
-    $(noecho)*optencod -q -rc=MSG_USAGE_BASE -utf8 $(optencod_opt_$(host_os)) $[@ . . $@ $(optencod_targets)
+    $(noecho)*optencod -q -rc=MSG_USAGE_BASE -utf8 $(optencod_opt_$(host_os)) $[@ . . $@ . $(optencod_targets)

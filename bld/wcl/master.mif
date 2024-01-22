@@ -94,4 +94,4 @@ optencod_targets += dbg
 
 usage.gh $(exetarg_$(host_os)_res) : $(optencod_src) $(__MAKEFILES__)
     @%make echo_optencod
-    $(noecho)*optencod -q $(optencod_opt) $(optencod_opt_$(host_os)) $[@ . . $@ $(optencod_targets)
+    $(noecho)*optencod -q $(optencod_opt) $(optencod_opt_$(host_os)) $[@ . . $@ . $(optencod_targets)

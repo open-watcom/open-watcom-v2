@@ -274,6 +274,7 @@ typedef struct codeseq {
     boolbit         sel        : 1;
 } CODESEQ;
 
+static char         *id = "";
 static unsigned     line;
 static FILE         *gfp;
 static FILE         *ofp;
@@ -281,6 +282,7 @@ static FILE         *pfp;
 static FILE         *ufp;
 static FILE         *mfp;
 static FILE         *bfp;
+static FILE         *ofpg;
 
 static char         ibuff[BUFF_SIZE];
 static char         tagbuff[BUFF_SIZE];
@@ -413,6 +415,7 @@ static struct {
     char        *rc_macro;
     char        *line_term;
     char        *list_sep;
+    char        *sid;
     language_id lang;
 } optFlag;
 
@@ -1810,20 +1813,28 @@ static void startParserH( void )
 {
     OPTION *o;
     ENAME *en;
+    FILE *fp;
 
+    if( optFlag.sid != NULL && *optFlag.sid != '\0' ) {
+        fp = ofpg;
+    } else {
+        fp = ofp;
+    }
+    if( fp != NULL ) {
+        fprintf( fp, "typedef struct opt_string OPT_STRING;\n" );
+        fprintf( fp, "struct opt_string {\n" );
+        fprintf( fp, "    OPT_STRING *next;\n" );
+        fprintf( fp, "    char data[1];\n" );
+        fprintf( fp, "};\n" );
+        fprintf( fp, "typedef struct opt_number OPT_NUMBER;\n" );
+        fprintf( fp, "struct opt_number {\n" );
+        fprintf( fp, "    OPT_NUMBER *next;\n" );
+        fprintf( fp, "    unsigned number;\n" );
+        fprintf( fp, "};\n" );
+    }
     if( ofp != NULL ) {
-        fprintf( ofp, "typedef struct opt_string OPT_STRING;\n" );
-        fprintf( ofp, "struct opt_string {\n" );
-        fprintf( ofp, "    OPT_STRING *next;\n" );
-        fprintf( ofp, "    char data[1];\n" );
-        fprintf( ofp, "};\n" );
-        fprintf( ofp, "typedef struct opt_number OPT_NUMBER;\n" );
-        fprintf( ofp, "struct opt_number {\n" );
-        fprintf( ofp, "    OPT_NUMBER *next;\n" );
-        fprintf( ofp, "    unsigned number;\n" );
-        fprintf( ofp, "};\n" );
-        fprintf( ofp, "typedef struct opt_storage OPT_STORAGE;\n" );
-        fprintf( ofp, "struct opt_storage {\n" );
+        fprintf( ofp, "typedef struct opt_storage%s OPT_STORAGE%s;\n", optFlag.sid, optFlag.sid );
+        fprintf( ofp, "struct opt_storage%s {\n", optFlag.sid );
         fprintf( ofp, "    unsigned     timestamp;\n" );
         for( o = optionList; o != NULL; o = o->next ) {
             if( o->synonym == NULL ) {
@@ -1870,6 +1881,9 @@ static void startParserH( void )
             }
         }
         fprintf( ofp, "};\n" );
+        fprintf( ofp, "extern void " FN_INIT "%s( OPT_STORAGE%s *data );\n", optFlag.sid, optFlag.sid );
+        fprintf( ofp, "extern void " FN_FINI "%s( OPT_STORAGE%s *data );\n", optFlag.sid, optFlag.sid );
+        fprintf( ofp, "extern bool " FN_PROCESS "%s( OPT_STORAGE%s *data );\n", optFlag.sid, optFlag.sid );
     }
 }
 
@@ -1886,7 +1900,7 @@ static void finishParserH( void )
                 continue;
             for( ei = en->items; ei != NULL; ei = ei->next ) {
                 ++value;
-                fprintf( ofp, "#define OPT_ENUM_%s %u\n", ei->name, value );
+                fprintf( ofp, "#define OPT_ENUM%s_%s %u\n", optFlag.sid, ei->name, value );
             }
         }
     }
@@ -2119,7 +2133,7 @@ static void emitAcceptCode( CODESEQ *c, unsigned depth, flow_control control )
         if( o->is_timestamp ) {
             emitPrintf( depth, "data->%s_timestamp = ++(data->timestamp);\n", o->enumerate->name );
         }
-        emitPrintf( depth, "data->%s = OPT_ENUM_%s;\n", o->enumerate->name, ei->name );
+        emitPrintf( depth, "data->%s = OPT_ENUM%s_%s;\n", o->enumerate->name, optFlag.sid, ei->name );
         if( o->is_immediate ) {
             emitPrintf( depth, "%s( data, true );\n", o->immediate_func );
         }
@@ -2274,7 +2288,7 @@ static void outputFN_PROCESS( void )
     unsigned depth = 0;
     CODESEQ *codeseq;
 
-    emitPrintf( depth, "bool " FN_PROCESS "( OPT_STORAGE *data )\n" );
+    emitPrintf( depth, "bool " FN_PROCESS "%s( OPT_STORAGE%s *data )\n", optFlag.sid, optFlag.sid );
     emitPrintf( depth, "{\n" );
     ++depth;
     codeseq = genCode( optionList );
@@ -2291,7 +2305,7 @@ static void outputFN_INIT( void )
     INAME *ei;
     unsigned depth = 0;
 
-    emitPrintf( depth, "void " FN_INIT "( OPT_STORAGE *data )\n" );
+    emitPrintf( depth, "void " FN_INIT "%s( OPT_STORAGE%s *data )\n", optFlag.sid, optFlag.sid );
     emitPrintf( depth, "{\n" );
     ++depth;
     emitPrintf( depth, "memset( data, 0, sizeof( *data ) );\n" );
@@ -2306,7 +2320,7 @@ static void outputFN_INIT( void )
         if( !en->used )
             continue;
         ei = addEnumerator( en, "default" );
-        emitPrintf( depth, "data->%s = OPT_ENUM_%s;\n", en->name, ei->name );
+        emitPrintf( depth, "data->%s = OPT_ENUM%s_%s;\n", en->name, optFlag.sid, ei->name );
     }
     --depth;
     emitPrintf( depth, "}\n" );
@@ -2319,7 +2333,7 @@ static void outputFN_FINI( void )
     bool no_data;
 
     depth = 0;
-    emitPrintf( depth, "void " FN_FINI "( OPT_STORAGE *data )\n" );
+    emitPrintf( depth, "void " FN_FINI "%s( OPT_STORAGE%s *data )\n", optFlag.sid, optFlag.sid );
     emitPrintf( depth, "{\n" );
     no_data = true;
     ++depth;
@@ -2964,6 +2978,8 @@ static void closeFiles( void )
         fclose( pfp );
     if( ufp != NULL ) {
         fclose( ufp );
+    if( ofpg != NULL )
+        fclose( ofpg );
     }
 }
 
@@ -3095,6 +3111,22 @@ static char *ProcessOption( char *s, char *option_start )
             return( s );
         }
         break;
+    case 'x':
+        if( *s == '=' ) {
+            optFlag.rc = true;
+            SKIP_SPACES( s );
+            optFlag.sid = option_start;
+            while( *s != '\0' ) {
+                if( myisspace( *s ) ) {
+                    s++;
+                    break;
+                }
+                *option_start++ = *s++;
+            }
+            *option_start = '\0';
+            return( s );
+        }
+        break;
     }
     printf( "Unknown option: %s\n", option_start );
     return( NULL );
@@ -3105,6 +3137,7 @@ static void initOptions( void )
 {
      optFlag.line_term = "";
      optFlag.list_sep = "";
+     optFlag.sid = "";
 }
 
 static bool ProcessOptions( char *str )
@@ -3168,6 +3201,10 @@ static bool ProcessOptions( char *str )
                 }
                 targetMask |= targetAnyMask;
                 break;
+            case 4:
+                str = getFileName( str, name );
+                ofpg = initFILE( name, "w+" );
+                break;
             default:
                 p = name;
                 while( *str != '\0' ) {
@@ -3190,7 +3227,7 @@ static bool ProcessOptions( char *str )
     return( rc );
 }
 
-#define NUM_FILES   4
+#define NUM_FILES   5
 
 int main( int argc, char **argv )
 {

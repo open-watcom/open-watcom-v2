@@ -230,7 +230,7 @@ optencod_targets += dbg
 
 cmdlnprs.gh cmdlnprs.gc cmdlnusg.gh usage01.int $(exetarg_qnx_res) : ../../gml/options.gml
     @%make echo_optencod
-    $(noecho)*optencod -q -i -n $(optencod_opt_$(host_os)) $(optencod_enc_$(host_os)) $[@ cmdlnprs.gh cmdlnprs.gc cmdlnusg.gh $(optencod_targets)
+    $(noecho)*optencod -q -i -n $(optencod_opt_$(host_os)) $(optencod_enc_$(host_os)) $[@ cmdlnprs.gh cmdlnprs.gc cmdlnusg.gh . $(optencod_targets)
 
 ./icmask.exe : ../../c/icmask.c
     @%make echo_bldccl
