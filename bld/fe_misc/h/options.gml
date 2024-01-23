@@ -25,7 +25,8 @@
 :cmt.*
 :cmt.*  ========================================================================
 :cmt.*
-:cmt.* Description:  disassembler wdis command line options.
+:cmt.* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+:cmt.*               DESCRIBE IT HERE!
 :cmt.*
 :cmt.*****************************************************************************
 :cmt.
@@ -88,91 +89,4 @@
 :cmt. Translations are required for the :jtitle. and :jusage. tags
 :cmt.   if there is no text associated with the tag.
 :cmt.
-
-:title. Usage:  wdis [options] obj_file [options]
-:jtitle. 使用方法:  wdis [options] obj_file [options]
-:target. any
-
-:title. Options:
-:jtitle. オプション:
-:target. any
-:title.  .         ( /option is also accepted )
-:jtitle. .         ( /optionも使用できます )
-:target. any
-:ntarget. bsd linux osx qnx haiku
-
-:chain. f
-
-:option. ? h
-:target. any
-:usage. print this message
-:jusage. このメッセージを表示します
-
-:option. a
-:target. any
-:usage. generate assembleable output
-:jusage. ャAセンブルできる出力を生成します
-
-:option. e
-:target. any
-:usage. generate lists of externs
-:jusage. テxternのリストを生成します
-
-:usagechain. f Instruction format
-:jusage.
-
-:option. ff
-:target. any
-:usage. FPU emulator fixups as comment [80(x)86 only]
-:jusage. FPU emulator fixups as comment [80(x)86 only]
-
-:option. fi
-:target. any
-:usage. use alternate indexing format [80(x)86 only]
-:jusage. 別のインデクシング形式を使用する[80(x)86のみ]
-
-:option. fp
-:target. any
-:usage. do not use instruction name pseudonyms
-:jusage. 命令名として擬似ニーモニックを使用しない
-
-:option. fr
-:target. any
-:usage. do not use register name pseudonyms [RISC only]
-:jusage. レジスタ名として擬似ニーモニックを使用しない[RISCのみ]
-
-:option. fu
-:target. any
-:usage. instructions/registers in upper case
-:jusage. 命令/レジスタを大文字にする
-
-:option. i
-:target. any
-:char.
-:usage. initial character of internal labels
-:jusage. 内部ラベルの先頭文字
-
-:option. l
-:target. any
-:file.
-:optional.
-:usage. generate listing file
-:jusage. リスト･ファイルを生成します
-
-:option. m
-:target. any
-:usage. leave C++ names mangled
-:jusage. C++のマングルド名を残す
-
-:option. p
-:target. any
-:usage. generate list of publics
-:jusage. パブリックのリストを生成する
-
-:option. s
-:target. any
-:file.
-:optional.
-:usage. include source lines
-:jusage. ソース行を含めて表示する
 

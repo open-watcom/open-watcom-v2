@@ -27,17 +27,19 @@
 :cmt.*
 :cmt.* Description:  x86 assembler wasm command line options.
 :cmt.*
-:cmt.*     UTF-8 encoding, ¥
-:cmt.*
 :cmt.*****************************************************************************
 :cmt.
+:cmt. Source file uses UTF-8 encoding, ¥
+:cmt.
+:cmt. Definition of command line options to use by optencod utility to generate
+:cmt.  	appropriate command line parser.
 :cmt.
 :cmt. GML Macros used:
 :cmt.
 :cmt.	:chain. <option> <option> ...               options that start with <option>
 :cmt.                                                   can be chained together i.e.,
 :cmt.                                                   -oa -ox -ot => -oaxt
-:cmt.   :target. <targ1> <targ2> ...                valid for these targets
+:cmt.   :target. <targ1> <targ2> ...                valid for these targets (default is 'any')
 :cmt.   :ntarget. <targ1> <targ2> ...               not valid for these targets
 :cmt.   :usagechain. <option> <usage text>          group of options that start with <option>
 :cmt.                                                   are chained together in usage
@@ -69,7 +71,8 @@
 :cmt.                                                   is set so that dependencies
 :cmt.                                                   between options can be simulated
 :cmt.   :negate.                                    negate option value
-:cmt.   :group. <num>                               group <num> to which option is included
+:cmt.   :group. <num> [<chain>]                     group <num> to which option is included
+:cmt.                                                   optionaly <chain> can be specified
 :cmt.
 :cmt. Global macros
 :cmt.
@@ -77,45 +80,43 @@
 :cmt.   :argequal. <char>                           args use <char> instead of '='
 :cmt.
 :cmt. where <targ>:
-:cmt.   default - any, dbg
+:cmt.   default - any, dbg, unused
 :cmt.   architecture - i86, 386, x64, axp, ppc, mps, sparc
-:cmt.   host OS - bsd, dos, linux, nt, os2, osx, qnx, haiku, rdos, win
+:cmt.   host OS - bsd, dos, linux, nov, nt, os2, osx, pls, qnx, rsi, haiku, rdos, win
 :cmt.   extra - targ1, targ2
 :cmt.
 :cmt. Translations are required for the :jtitle. and :jusage. tags
 :cmt.   if there is no text associated with the tag.
-
+:cmt.
 
 :title.  Usage: wasm [options] asm_file [options] [@env_var]
 :jtitle. 使用方法: wasm [options] file [options] [@env_var]
 :titleu.  Usage: %C [options] asm_file [options] [@env_var]
 :jtitleu. 使用方法: %C [options] file [options] [@env_var]
-:target. any
 
 :title.  Options:
 :jtitle. オプション:
-:target. any
 :title.  .         ( /option is also accepted )
 :jtitle. .         ( /ｵﾌﾟｼｮﾝ でも指定できます )
-:target. any
 :ntarget. bsd linux osx qnx haiku
 
 :chain. 2 3 4 5 6
 :cmt.:chain. m
 
-:option. h ?
-:target. any
+:option. ?
+:usage. print this message
+:jusage. このメッセージを表示します
+
+:option. h
 :usage. print this message
 :jusage. このメッセージを表示します
 
 :option. 0
-:target. any
 :enumerate. cpu_info
 :usage. 8086 instructions
 :jusage. 8086 命令
 
 :option. 1
-:target. any
 :enumerate. cpu_info
 :usage. 80186 instructions
 :jusage. 80186 命令
@@ -124,13 +125,11 @@
 :jusage. 80286 命令
 
 :option. 2
-:target. any
 :enumerate. cpu_info
 :usage. real mode instructions
 :jusage. real mode instructions
 
 :option. 2p
-:target. any
 :usage. protected mode instructions
 :jusage. protected mode instructions
 
@@ -138,23 +137,19 @@
 :jusage. 80386 命令
 
 :option. 3
-:target. any
 :enumerate. cpu_info
 :usage. real mode instructions
 :jusage. real mode instructions
 
 :option. 3r
-:target. any
 :usage. register calling conventions
 :jusage. レジスタ呼び出し規約
 
 :option. 3s
-:target. any
 :usage. stack calling conventions
 :jusage. スタック呼び出し規約
 
 :option. 3p
-:target. any
 :usage. protected mode instructions
 :jusage. protected mode instructions
 
@@ -162,23 +157,19 @@
 :jusage. 80486 命令
 
 :option. 4
-:target. any
 :enumerate. cpu_info
 :usage. real mode instructions
 :jusage. real mode instructions
 
 :option. 4r
-:target. any
 :usage. register calling conventions
 :jusage. レジスタ呼び出し規約
 
 :option. 4s
-:target. any
 :usage. stack calling conventions
 :jusage. スタック呼び出し規約
 
 :option. 4p
-:target. any
 :usage. protected mode instructions
 :jusage. protected mode instructions
 
@@ -186,23 +177,19 @@
 :jusage. Pentium 命令
 
 :option. 5
-:target. any
 :enumerate. cpu_info
 :usage. real mode instructions
 :jusage. real mode instructions
 
 :option. 5r
-:target. any
 :usage. register calling conventions
 :jusage. レジスタ呼び出し規約
 
 :option. 5s
-:target. any
 :usage. stack calling conventions
 :jusage. スタック呼び出し規約
 
 :option. 5p
-:target. any
 :usage. protected mode instructions
 :jusage. protected mode instructions
 
@@ -210,196 +197,164 @@
 :jusage. 6 Pentium Pro 命令
 
 :option. 6
-:target. any
 :enumerate. cpu_info
 :usage. real mode instructions
 :jusage. real mode instructions
 
 :option. 6r
-:target. any
 :usage. register calling conventions
 :jusage. レジスタ呼び出し規約
 
 :option. 6s
-:target. any
 :usage. stack calling conventions
 :jusage. スタック呼び出し規約
 
 :option. 6p
-:target. any
 :usage. protected mode instructions
 :jusage. protected mode instructions
 
 :option. bt
-:target. any
 :id. . <os>
 :optional.
 :usage. set the build target to <os>
 :jusage. set the build target to <os>
 
 :option. c
-:target. any
 :usage. disable output OMF COMMENT record about data in code
 :jusage. disable output OMF COMMENT record about data in code
 
 :option. cx
-:target. any
 :usage. symbols are not case-sensitive
 :jusage. symbols are not case-sensitive
 
 :option. d
-:target. any
 :special. scanDefine <name>[=text]
 :usage. define text macro <name>[=text]
 :jusage. テキストマクロを定義します <name>[=text]
 
 :option. d+
-:target. any
 :internal.
 :enumerate ignore
 :usage. define extended text macro <name>[=text]
 :jusage. define extended text macro <name>[=text]
 
 :option. d0
-:target. any
 :enumerate. debug_info
 :usage. 
 :jusage. 
 
 :option. d1
-:target. any
 :enumerate. debug_info
 :usage. line number debugging support
 :jusage. 行番号デバッグ情報を出力します
 
 :option. d2
-:target. any
 :enumerate. debug_info
 :internal.
 :usage. 
 :jusage. 
 
 :option. d3
-:target. any
 :enumerate. debug_info
 :internal.
 :usage. 
 :jusage. 
 
 :option. ee
-:target. any
 :usage. stop reading ASM file at END directive
 :jusage. ENDディレクティブでASMファイルの読み込みを止めます
 
 :option. e
-:target. any
 :number.
 :usage. set error limit number
 :jusage. set error limit number
 
 :option. fi
-:target. any
 :file.
 :usage. force <file> to be included
 :jusage. force <file> to be included
 
 :option. fl
-:target. any
 :file.
 :usage. listing file
 :jusage. listing file
 
 :option. fo
-:target. any
 :file.
 :optional.
 :usage. set object file name
 :jusage. オブジェクトファイルを設定します
 
 :option. fp0
-:target. any
 :enumerate. fpu_info
 :usage. floating-point for 8087
 :jusage. floating-point for 8087
 
 :option. fp2
-:target. any
 :enumerate. fpu_info
 :usage. floating-point for 287
 :jusage. floating-point for 287
 
 :option. fp3
-:target. any
 :enumerate. fpu_info
 :usage. floating-point for 387
 :jusage. floating-point for 387
 
 :option. fp5
-:target. any
 :enumerate. fpu_info
 :usage. floating-point for Pentium
 :jusage. floating-point for Pentium
 
 :option. fp6
-:target. any
 :enumerate. fpu_info
 :usage. floating-point for Pentium Pro
 :jusage. floating-point for Pentium Pro
 
 :option. fpc
-:target. any
 :enumerate. fpu_type
 :usage. calls to floating-point library
 :jusage. calls to floating-point library
 
 :option. fpi
-:target. any
 :enumerate. fpu_type
 :usage. inline 80x87 instructions with emulation
 :jusage. inline 80x87 instructions with emulation
 
 :option. fpi87
-:target. any
 :enumerate. fpu_type
 :usage. inline 80x87 instructions
 :jusage. inline 80x87 instructions
 
 :option. fr fe
-:target. any
 :file.
 :optional.
 :usage. set error file name
 :jusage. エラーファイル名を指定します
 
 :option. hc
-:target. any
 :internal.
 :enumerate ignore
 :usage. debug info format CodeView
 :jusage. debug info format CodeView
 
 :option. hd
-:target. any
 :internal.
 :enumerate ignore
 :usage. debug info format DWARF
 :jusage. debug info format DWARF
 
 :option. hw
-:target. any
 :internal.
 :enumerate ignore
 :usage. debug info format WATCOM
 :jusage. debug info format WATCOM
 
 :option. i
-:target. any
 :path.
 :usage. add directory to list of include directories
 :jusage. インクルード・ディレクトリのリストを追加します
 
 :option. j s
-:target. any
 :usage. force signed types to be used for signed values
 :jusage. 符号付き型を符号付き値のために使用するようにします
 
@@ -407,134 +362,111 @@
 :jusage. メモリ・モデル
 
 :option. mc
-:target. any
 :enumerate. mem_model
 :usage. Compact
 :jusage. Compact
 
 :option. mf
-:target. any
 :enumerate. mem_model
 :usage. Flat
 :jusage. Flat
 
 :option. mh
-:target. any
 :enumerate. mem_model
 :usage. Huge
 :jusage. Huge
 
 :option. ml
-:target. any
 :enumerate. mem_model
 :usage. Large
 :jusage. Large
 
 :option. mm
-:target. any
 :enumerate. mem_model
 :usage. Medium
 :jusage. Medium
 
 :option. ms
-:target. any
 :enumerate. mem_model
 :usage. Small
 :jusage. Small
 
 :option. mt
-:target. any
 :enumerate. mem_model
 :usage. Tiny
 :jusage. Tiny
 
 :option. nc
-:target. any
 :id. . <name>
 :internal.
 :usage. set code class name
 :jusage. set code class name
 
 :option. nd
-:target. any
 :id. . <name>
 :usage. set data segment name
 :jusage. set data segment name
 
 :option. nm
-:target. any
 :file. . <name>
 :usage. set module name
 :jusage. set module name
 
 :option. nt
-:target. any
 :id. . <name>
 :usage. set name of text segment
 :jusage. set name of text segment
 
 :option. o
-:target. any
 :usage. allow C form of octal constants
 :jusage. allow C form of octal constants
 
 :option. od
-:target. any
 :internal.
 :usage. disable all optimization
 :jusage. disable all optimization
 
 :option. of
-:target. any
 :enumerate. trace_stack
 :usage. generate traceable stack frames as needed
 :jusage. generate traceable stack frames as needed
 
 :option. of+
-:target. any
 :enumerate. trace_stack
 :usage. always generate traceable stack frames
 :jusage. always generate traceable stack frames
 
 :option. zcm
-:target. any
 :special. scanMode [=<mode>]
 :number.
 :usage. set compatibility mode - watcom (default), masm, tasm or ideal
 :jusage. set compatibility mode - watcom (default), masm, tasm or ideal
 
 :option. zld
-:target. any
 :usage. suppress file dependency info in object file
 :jusage. suppress file dependency info in object file
 
 :option. zq q
-:target. any
 :usage. operate quietly
 :jusage. メッセージ等の出力をしません
 
 :option. zz
-:target. any
 :usage. remove '@size' from STDCALL function names
 :jusage. remove '@size' from STDCALL function names
 
 :option. zzo
-:target. any
 :usage. don't mangle STDCALL symbols (backward compatible)
 :jusage. don't mangle STDCALL symbols (backward compatible)
 
 :option. w
-:target. any
 :number.
 :usage. set warning level number
 :jusage. set warning level number
 
 :option. we
-:target. any
 :usage. treat all warnings as errors
 :jusage. treat all warnings as errors
 
 :option. wx
-:target. any
 :usage. set warning level to the highest level
 :jusage. set warning level to the highest level

@@ -131,6 +131,6 @@ optencod_targets = $(target_cpu) $(host_os)
 optencod_targets += dbg
 !endif
 
-usage.gh $(exetarg_$(host_os)_res) : $(f77_dir)/gml/wfxopts.gml $(__MAKEFILES__)
+usage.gh $(exetarg_$(host_os)_res) : $(f77_dir)/gml/options.gml $(__MAKEFILES__)
     @%make echo_optencod
     $(noecho)*optencod -q -rc=MSG_USAGE_BASE -utf8 $(optencod_opt_$(host_os)) $[@ . . $@ . $(optencod_targets)

@@ -27,17 +27,19 @@
 :cmt.*
 :cmt.* Description:  BDIFF utility command line options.
 :cmt.*
-:cmt.*     UTF-8 encoding, ¥
-:cmt.*
 :cmt.*****************************************************************************
 :cmt.
+:cmt. Source file uses UTF-8 encoding, ¥
+:cmt.
+:cmt. Definition of command line options to use by optencod utility to generate
+:cmt.  	appropriate command line parser.
 :cmt.
 :cmt. GML Macros used:
 :cmt.
 :cmt.	:chain. <option> <option> ...               options that start with <option>
 :cmt.                                                   can be chained together i.e.,
 :cmt.                                                   -oa -ox -ot => -oaxt
-:cmt.   :target. <targ1> <targ2> ...                valid for these targets
+:cmt.   :target. <targ1> <targ2> ...                valid for these targets (default is 'any')
 :cmt.   :ntarget. <targ1> <targ2> ...               not valid for these targets
 :cmt.   :usagechain. <option> <usage text>          group of options that start with <option>
 :cmt.                                                   are chained together in usage
@@ -69,7 +71,8 @@
 :cmt.                                                   is set so that dependencies
 :cmt.                                                   between options can be simulated
 :cmt.   :negate.                                    negate option value
-:cmt.   :group. <num>                               group <num> to which option is included
+:cmt.   :group. <num> [<chain>]                     group <num> to which option is included
+:cmt.                                                   optionaly <chain> can be specified
 :cmt.
 :cmt. Global macros
 :cmt.
@@ -77,13 +80,14 @@
 :cmt.   :argequal. <char>                           args use <char> instead of '='
 :cmt.
 :cmt. where <targ>:
-:cmt.               default - any, dbg
-:cmt.               architecture - i86, 386, x64, axp, ppc, mps, sparc
-:cmt.               host OS - bsd, dos, linux, nt, os2, osx, qnx, haiku, rdos, win
-:cmt.               extra - targ1, targ2
+:cmt.   default - any, dbg, unused
+:cmt.   architecture - i86, 386, x64, axp, ppc, mps, sparc
+:cmt.   host OS - bsd, dos, linux, nov, nt, os2, osx, pls, qnx, rsi, haiku, rdos, win
+:cmt.   extra - targ1, targ2
 :cmt.
-:cmt.   Translations are required for the :jtitle. and :jusage. tags
+:cmt. Translations are required for the :jtitle. and :jusage. tags
 :cmt.   if there is no text associated with the tag.
+:cmt.
 
 
 :noequal.
