@@ -142,15 +142,15 @@ exetarg_name        = bdiff
 #
 rcui_inc_dirs = -I..
 
-ppusage.gh : ../gml/patcopts.gml $(__MAKEFILES__)
+ppusage.gh : ../gml/optionsp.gml $(__MAKEFILES__)
     @%make echo_optencod
     $(noecho)*optencod -q -rc=MSG_USAGE_BASE -utf8 $(optencod_opt_$(host_os)) $[@ . . $@ .
 
-pdusage.gh : ../gml/dumpopts.gml $(__MAKEFILES__)
+pdusage.gh : ../gml/optionsu.gml $(__MAKEFILES__)
     @%make echo_optencod
     $(noecho)*optencod -q -rc=MSG_USAGE_BASE -utf8 $(optencod_opt_$(host_os)) $[@ . . $@ .
 
-dusage.gh : ../gml/diffopts.gml $(__MAKEFILES__)
+dusage.gh : ../gml/optionsi.gml $(__MAKEFILES__)
     @%make echo_optencod
     $(noecho)*optencod -q -rc=MSG_USAGE_BASE -utf8 $(optencod_opt_$(host_os)) $[@ . . $@ .
 

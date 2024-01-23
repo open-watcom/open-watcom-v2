@@ -77,10 +77,10 @@ $(owcc_specs): $(wlink_dir)/lnk/specs.sp $(__MAKEFILES__)
 
 # optencod options and targets for various hosts
 !ifdef target_cpu
-optencod_src = $(wcl_dir)/h/wclopts.gml
+optencod_src = $(wcl_dir)/h/optionsw.gml
 optencod_opt = -n
 !else
-optencod_src = $(wcl_dir)/h/owccopts.gml
+optencod_src = $(wcl_dir)/h/optionso.gml
 optencod_opt = -c
 !endif
 !ifdef exetarg_qnx_res
