@@ -34,14 +34,14 @@
 :cmt.
 :cmt. GML Macros used:
 :cmt.
-:cmt.   :chain. <option> <usage text>               options that start with <option>
+:cmt.	:chain. <option> <option> ...               options that start with <option>
 :cmt.                                                   can be chained together i.e.,
 :cmt.                                                   -oa -ox -ot => -oaxt
 :cmt.   :target. <targ1> <targ2> ...                valid for these targets
 :cmt.   :ntarget. <targ1> <targ2> ...               not valid for these targets
 :cmt.   :usagechain. <option> <usage text>          group of options that start with <option>
 :cmt.                                                   are chained together in usage
-:cmt.   :usagegrp. <num> <usage text>               group of options that have group <num>
+:cmt.   :usagegroup. <num> <usage text>             group of options that have group <num>
 :cmt.                                                   are chained together in usage
 :cmt.   :title. <text>                              English title usage text
 :cmt.   :jtitle. <text>                             Japanese title usage text
@@ -147,7 +147,7 @@
 :cmt.
 :cmt.   Compile and Link Options
 :cmt.
-:usagegrp. 1 *Compile and Link Options*
+:usagegroup. 1 *Compile and Link Options*
 :jusage. *ｺﾝﾊﾟｲﾙ/ﾘﾝｸｵﾌﾟｼｮﾝ*
 
 :option. C
@@ -235,7 +235,7 @@
 :cmt.
 :cmt.   File Management Options
 :cmt.
-:usagegrp. 2 *File Management Options*
+:usagegroup. 2 *File Management Options*
 :jusage. *ﾌｧｲﾙﾏﾈｰｼﾞﾒﾝﾄｵﾌﾟｼｮﾝ*
 
 :option. LISt
@@ -289,7 +289,7 @@
 :cmt.
 :cmt.   Diagnostic Options
 :cmt.
-:usagegrp. 3 *Diagnostic Options*
+:usagegroup. 3 *Diagnostic Options*
 :jusage. *診断ｵﾌﾟｼｮﾝ*
 
 :option. EXtensions
@@ -343,7 +343,7 @@
 :cmt.
 :cmt.   Debugging Options
 :cmt.
-:usagegrp. 4 *Debugging Options*
+:usagegroup. 4 *Debugging Options*
 :jusage. *ﾃﾞﾊﾞｯｸﾞｵﾌﾟｼｮﾝ*
 
 :option. D1
@@ -386,7 +386,7 @@
 :cmt.
 :cmt.   Floating-Point Options
 :cmt.
-:usagegrp. 5 *Floating-Point Options*
+:usagegroup. 5 *Floating-Point Options*
 :jusage. *浮動小数点ｵﾌﾟｼｮﾝ*
 
 :option. FPC
@@ -446,7 +446,7 @@
 :cmt.
 :cmt.   Optimization Options
 :cmt.
-:usagegrp. 6 *Optimizations*
+:usagegroup. 6 *Optimizations*
 :jusage. *最適化*
 
 :option. OB
@@ -573,7 +573,7 @@
 :cmt.
 :cmt.   Memory Models
 :cmt.
-:usagegrp. 7 *Memory Models*
+:usagegroup. 7 *Memory Models*
 :jusage. *ﾒﾓﾘﾓﾃﾞﾙ*
 
 :option. MF
@@ -615,7 +615,7 @@
 :cmt.
 :cmt.   CPU Targets
 :cmt.
-:usagegrp. 8 *CPU Targets*
+:usagegroup. 8 *CPU Targets*
 :jusage. *CPU ﾀｰｹﾞｯﾄ*
 
 :option. 0
@@ -664,7 +664,7 @@
 :cmt.
 :cmt.   Application Type
 :cmt.
-:usagegrp. 9 *Application Type*
+:usagegroup. 9 *Application Type*
 :jusage. *ｱﾌﾟﾘｹｰｼｮﾝﾀｲﾌﾟ*
 
 :option. BW
@@ -695,7 +695,7 @@
 :cmt.
 :cmt.   Character set
 :cmt.
-:usagegrp. 10 *Character Set Options*
+:usagegroup. 10 *Character Set Options*
 :jusage. *文字ｾｯﾄｵﾌﾟｼｮﾝ*
 
 :option. CHInese
@@ -720,7 +720,7 @@
 :cmt.
 :cmt.   Miscellaneous Options
 :cmt.
-:usagegrp. 11 *Miscellaneous Options*
+:usagegroup. 11 *Miscellaneous Options*
 :jusage. *その他のｵﾌﾟｼｮﾝ*
 
 :option. SHort

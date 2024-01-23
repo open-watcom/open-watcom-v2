@@ -34,14 +34,14 @@
 :cmt.
 :cmt. GML Macros used:
 :cmt.
-:cmt.   :chain. <option> <usage text>               options that start with <option>
+:cmt.	:chain. <option> <option> ...               options that start with <option>
 :cmt.                                                   can be chained together i.e.,
 :cmt.                                                   -oa -ox -ot => -oaxt
 :cmt.   :target. <targ1> <targ2> ...                valid for these targets
 :cmt.   :ntarget. <targ1> <targ2> ...               not valid for these targets
 :cmt.   :usagechain. <option> <usage text>          group of options that start with <option>
 :cmt.                                                   are chained together in usage
-:cmt.   :usagegrp. <num> <usage text>               group of options that have group <num>
+:cmt.   :usagegroup. <num> <usage text>             group of options that have group <num>
 :cmt.                                                   are chained together in usage
 :cmt.   :title. <text>                              English title usage text
 :cmt.   :jtitle. <text>                             Japanese title usage text
@@ -98,12 +98,7 @@
 :target. any
 :ntarget. bsd linux osx qnx haiku
 
-:usagechain. s Segment and resource sorting method
-:jusage.
-:chain. v Verbose output
-:jusage.
-:chain. zk Multi-byte characters support
-:jusage.
+:chain. v zk
 
 :option. h ?
 :target. any
@@ -239,6 +234,9 @@
 :usage.  only build the resource file
 :jusage.
 
+:usagechain. s Segment and resource sorting method
+:jusage.
+
 :option. s0
 :target. any
 :enumerate. segm_sort
@@ -260,6 +258,9 @@
 :option. t
 :target. any
 :usage.  protected mode only
+:jusage.
+
+:usagechain. v Verbose output
 :jusage.
 
 :option. v
@@ -305,6 +306,9 @@
 :option. xc
 :target. any
 :usage.  ignore the current working directory
+:jusage.
+
+:usagechain. zk Multi-byte characters support
 :jusage.
 
 :option. zk0 zk

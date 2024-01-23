@@ -34,14 +34,14 @@
 :cmt.
 :cmt. GML Macros used:
 :cmt.
-:cmt.   :chain. <option> <usage text>               options that start with <option>
+:cmt.	:chain. <option> <option> ...               options that start with <option>
 :cmt.                                                   can be chained together i.e.,
 :cmt.                                                   -oa -ox -ot => -oaxt
 :cmt.   :target. <targ1> <targ2> ...                valid for these targets
 :cmt.   :ntarget. <targ1> <targ2> ...               not valid for these targets
 :cmt.   :usagechain. <option> <usage text>          group of options that start with <option>
 :cmt.                                                   are chained together in usage
-:cmt.   :usagegrp. <num> <usage text>               group of options that have group <num>
+:cmt.   :usagegroup. <num> <usage text>             group of options that have group <num>
 :cmt.                                                   are chained together in usage
 :cmt.   :title. <text>                              English title usage text
 :cmt.   :jtitle. <text>                             Japanese title usage text
@@ -114,12 +114,7 @@
 :jtitle. .         ( '='は常に省略可能です。つまり -w4 -zp4 )
 :target. any
 
-:chain. fh Precompiled Header Files (PCH)
-:jusage. プリコンパイル済みヘッダーファイル（PCH）
-:chain. p Preprocess source file
-:jusage. p ソースファイルを前処理します
-:chain. o Optimization
-:jusage. o 最適化
+:chain. fh p o
 
 :option. 0
 :target. i86
@@ -536,6 +531,9 @@
 :usage.  specify file of command lines to be batch processed
 :jusage. バッチ処理するコマンドラインのファイルを指定します
 
+:usagechain. fh Precompiled Header Files (PCH)
+:jusage. プリコンパイル済みヘッダーファイル（PCH）
+
 :option. fh
 :target. any
 :file.
@@ -824,6 +822,9 @@
 :usage.  set name of text segment
 :jusage. テキスト･セグメント名を設定します
 
+:usagechain. o Optimization
+:jusage. o 最適化
+
 :option. oa
 :target. any
 :usage.  relax aliasing constraints
@@ -947,6 +948,9 @@
 :target. any
 :usage.  NULL points to valid memory in the target environment
 :jusage. NULLは、ターゲット環境内の有効なメモリを指します
+
+:usagechain. p Preprocess source file
+:jusage. p ソースファイルを前処理します
 
 :option. pil
 :target. any

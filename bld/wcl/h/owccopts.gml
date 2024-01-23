@@ -34,14 +34,14 @@
 :cmt.
 :cmt. GML Macros used:
 :cmt.
-:cmt.   :chain. <option> <usage text>               options that start with <option>
+:cmt.	:chain. <option> <option> ...               options that start with <option>
 :cmt.                                                   can be chained together i.e.,
 :cmt.                                                   -oa -ox -ot => -oaxt
 :cmt.   :target. <targ1> <targ2> ...                valid for these targets
 :cmt.   :ntarget. <targ1> <targ2> ...               not valid for these targets
 :cmt.   :usagechain. <option> <usage text>          group of options that start with <option>
 :cmt.                                                   are chained together in usage
-:cmt.   :usagegrp. <num> <usage text>               group of options that have group <num>
+:cmt.   :usagegroup. <num> <usage text>             group of options that have group <num>
 :cmt.                                                   are chained together in usage
 :cmt.   :title. <text>                              English title usage text
 :cmt.   :jtitle. <text>                             Japanese title usage text
@@ -86,9 +86,6 @@
 :cmt.   if there is no text associated with the tag.
 
 
-:chain. mabi= set calling convention
-:chain. mcmodel= memory model
-
 :title. Usage:  owcc [options] file ...
 :jtitle.
 :target. any
@@ -110,6 +107,8 @@
 :cmt.Description:  Usage help for owcc.
 :cmt.
 :cmt.*************************************************************************
+
+:chain. mabi= mcmodel=
 
 :option. b
 :usage. compile and link for <target>
@@ -140,7 +139,7 @@
 :cmt
 :cmt Processor options
 :cmt
-:usagegrp. 1 [Processor options]
+:usagegroup. 1 [Processor options]
 
 :option. march
 :usage. generate code for this architecture
@@ -163,7 +162,7 @@
 :cmt
 :cmt x86 Floating-point processor options
 :cmt
-:usagegrp. 2 [x86 Floating-point processor options]
+:usagegroup. 2 [x86 Floating-point processor options]
 
 :option. fpmath
 :usage. hardware floating-point code
@@ -190,7 +189,7 @@
 :cmt
 :cmt Compiler options
 :cmt
-:usagegrp. 3 [Compiler options]
+:usagegroup. 3 [Compiler options]
 
 :option. fbrowser
 :usage. generate browsing information
@@ -312,6 +311,8 @@
 :group. 3
 :target. any
 
+:usagechain. mabi= set calling convention
+
 :option. mabi=cdecl
 :usage. set calling conv. to __cdecl
 :group. 3
@@ -352,6 +353,8 @@
 :usage. set calling conv. to __watcall
 :group. 3
 :target. any
+
+:usagechain. mcmodel= memory model
 
 :option. mcmodel=c
 :usage. memory model compact
@@ -462,7 +465,7 @@
 :cmt
 :cmt Debugging options
 :cmt
-:usagegrp. 4 [Debugging options]
+:usagegroup. 4 [Debugging options]
 
 :option. g0
 :usage. no debugging information
@@ -527,7 +530,7 @@
 :cmt
 :cmt Optimization options
 :cmt
-:usagegrp. 5 [Optimization options]
+:usagegroup. 5 [Optimization options]
 
 :option. feh{,=s,=t}
 :usage. exception handling: balanced, space, time
@@ -648,7 +651,7 @@
 :cmt
 :cmt Preprocessor options
 :cmt
-:usagegrp. 6 [Preprocessor options]
+:usagegroup. 6 [Preprocessor options]
 
 :option. C
 :usage. preserve comments
@@ -747,7 +750,7 @@
 :cmt
 :cmt Linker options
 :cmt
-:usagegrp. 7 [Linker options]
+:usagegroup. 7 [Linker options]
 
 :option. fd
 :usage. save WLINK directives to file

@@ -34,14 +34,14 @@
 :cmt.
 :cmt. GML Macros used:
 :cmt.
-:cmt.	:chain. <option> <usage text>               options that start with <option>
+:cmt.	:chain. <option> <option> ...               options that start with <option>
 :cmt.						    	can be chained together i.e.,
 :cmt.						    	-oa -ox -ot => -oaxt
 :cmt.	:target. <targ1> <targ2> ...                valid for these targets
 :cmt.	:ntarget. <targ1> <targ2> ...               not valid for these targets
 :cmt.	:usagechain. <option> <usage text>          group of options that start with <option>
 :cmt.                                                	are chained together in usage
-:cmt.	:usagegrp. <num> <usage text>               group of options that have group <num>
+:cmt.	:usagegroup. <num> <usage text>             group of options that have group <num>
 :cmt.                                                	are chained together in usage
 :cmt.	:title. <text>                              English title usage text
 :cmt.	:jtitle. <text>                             Japanese title usage text
@@ -85,6 +85,8 @@
 :cmt.	Translations are required for the :jtitle. and :jusage. tags
 :cmt.	if there is no text associated with the tag.
 
+
+:chain. o v
 
 :title. Usage: wasaxp {options} {asm_files}
 :jtitle.
@@ -137,7 +139,7 @@
 :usage. set include path
 :jusage.
 
-:chain. o Output object file format
+:usagechain. o Output object file format
 :jusage.
 
 :option. oc
@@ -162,7 +164,7 @@
 :usage. treat all warnings as errors
 :jusage.
 
-:chain. v Debug verbose output
+:usagechain. v Debug verbose output
 :jusage.
 
 :option. vi

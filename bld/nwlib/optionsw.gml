@@ -34,14 +34,14 @@
 :cmt.
 :cmt. GML Macros used:
 :cmt.
-:cmt.   :chain. <option> <usage text>               options that start with <option>
+:cmt.	:chain. <option> <option> ...               options that start with <option>
 :cmt.                                                   can be chained together i.e.,
 :cmt.                                                   -oa -ox -ot => -oaxt
 :cmt.   :target. <targ1> <targ2> ...                valid for these targets
 :cmt.   :ntarget. <targ1> <targ2> ...               not valid for these targets
 :cmt.   :usagechain. <option> <usage text>          group of options that start with <option>
 :cmt.                                                   are chained together in usage
-:cmt.   :usagegrp. <num> <usage text>               group of options that have group <num>
+:cmt.   :usagegroup. <num> <usage text>             group of options that have group <num>
 :cmt.                                                   are chained together in usage
 :cmt.   :title. <text>                              English title usage text
 :cmt.   :jtitle. <text>                             Japanese title usage text
@@ -238,9 +238,9 @@
 
 :usagechain. i
 
-:usagegrp. 1 Import records architecture
+:usagegroup. 1 Import records architecture
 :jusage. インポートレコードのアーキテクチャ
-:usagegrp. 2 Import records format
+:usagegroup. 2 Import records format
 :jusage. インポートレコード形式
 
 :option. i6

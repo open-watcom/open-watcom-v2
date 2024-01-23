@@ -34,14 +34,14 @@
 :cmt.
 :cmt. GML Macros used:
 :cmt.
-:cmt.   :chain. <option> <usage text>               options that start with <option>
+:cmt.	:chain. <option> <option> ...               options that start with <option>
 :cmt.                                                   can be chained together i.e.,
 :cmt.                                                   -oa -ox -ot => -oaxt
 :cmt.   :target. <targ1> <targ2> ...                valid for these targets
 :cmt.   :ntarget. <targ1> <targ2> ...               not valid for these targets
 :cmt.   :usagechain. <option> <usage text>          group of options that start with <option>
 :cmt.                                                   are chained together in usage
-:cmt.   :usagegrp. <num> <usage text>               group of options that have group <num>
+:cmt.   :usagegroup. <num> <usage text>             group of options that have group <num>
 :cmt.                                                   are chained together in usage
 :cmt.   :title. <text>                              English title usage text
 :cmt.   :jtitle. <text>                             Japanese title usage text
@@ -100,6 +100,9 @@
 :target. any
 :ntarget. bsd linux osx qnx haiku
 
+:chain. 2 3 4 5 6
+:cmt.:chain. m
+
 :option. h ?
 :target. any
 :usage. print this message
@@ -117,7 +120,7 @@
 :usage. 80186 instructions
 :jusage. 80186 命令
 
-:chain. 2 80286 instructions
+:usagechain. 2 80286 instructions
 :jusage. 80286 命令
 
 :option. 2
@@ -131,7 +134,7 @@
 :usage. protected mode instructions
 :jusage. protected mode instructions
 
-:chain. 3 80386 instructions
+:usagechain. 3 80386 instructions
 :jusage. 80386 命令
 
 :option. 3
@@ -155,7 +158,7 @@
 :usage. protected mode instructions
 :jusage. protected mode instructions
 
-:chain. 4 80486 instructions
+:usagechain. 4 80486 instructions
 :jusage. 80486 命令
 
 :option. 4
@@ -179,7 +182,7 @@
 :usage. protected mode instructions
 :jusage. protected mode instructions
 
-:chain. 5 Pentium instructions
+:usagechain. 5 Pentium instructions
 :jusage. Pentium 命令
 
 :option. 5
@@ -203,7 +206,7 @@
 :usage. protected mode instructions
 :jusage. protected mode instructions
 
-:chain. 6 Pentium Pro instructions
+:usagechain. 6 Pentium Pro instructions
 :jusage. 6 Pentium Pro 命令
 
 :option. 6
@@ -400,7 +403,7 @@
 :usage. force signed types to be used for signed values
 :jusage. 符号付き型を符号付き値のために使用するようにします
 
-:chain. m Memory model
+:usagechain. m Memory model
 :jusage. メモリ・モデル
 
 :option. mc

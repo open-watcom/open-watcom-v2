@@ -34,14 +34,14 @@
 :cmt.
 :cmt. GML Macros used:
 :cmt.
-:cmt.	:chain. <option> <usage text>               options that start with <option>
+:cmt.	:chain. <option> <option> ...               options that start with <option>
 :cmt.						    	can be chained together i.e.,
 :cmt.						    	-oa -ox -ot => -oaxt
 :cmt.	:target. <targ1> <targ2> ...                valid for these targets
 :cmt.	:ntarget. <targ1> <targ2> ...               not valid for these targets
 :cmt.	:usagechain. <option> <usage text>          group of options that start with <option>
 :cmt.                                                	are chained together in usage
-:cmt.	:usagegrp. <num> <usage text>               group of options that have group <num>
+:cmt.	:usagegroup. <num> <usage text>             group of options that have group <num>
 :cmt.                                                	are chained together in usage
 :cmt.	:title. <text>                              English title usage text
 :cmt.	:jtitle. <text>                             Japanese title usage text
@@ -96,10 +96,7 @@
 
 :noequal.
 
-:chain. F file options
-:chain. G code generation options
-:chain. O optimization options
-:chain. Z language options
+:chain. F G O Z
 
 :option. 10x
 :target. any
@@ -161,6 +158,8 @@
 :option. \E\P
 :target. any
 :usage. preprocess without #line directives to stdout
+
+:usagechain. F file options
 
 :option. \F
 :target. any
@@ -237,6 +236,8 @@
 :target. any
 :internal.
 :usage. generate SBR file without local variables
+
+:usagechain. G code generation options
 
 :option. \G3
 :target. 386
@@ -381,6 +382,8 @@
 :option. \n\o\l\o\g\o
 :target. any
 :usage. operate quietly
+
+:usagechain. O optimization options
 
 :option. \O1
 :target. any
@@ -613,6 +616,8 @@
 :file.
 :optional.
 :usage. use pre-compiled header file
+
+:usagechain. Z language options
 
 :option. \Z7
 :target. any

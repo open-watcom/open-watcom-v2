@@ -34,14 +34,14 @@
 :cmt.
 :cmt. GML Macros used:
 :cmt.
-:cmt.   :chain. <option> <usage text>               options that start with <option>
+:cmt.	:chain. <option> <option> ...               options that start with <option>
 :cmt.                                                   can be chained together i.e.,
 :cmt.                                                   -oa -ox -ot => -oaxt
 :cmt.   :target. <targ1> <targ2> ...                valid for these targets
 :cmt.   :ntarget. <targ1> <targ2> ...               not valid for these targets
 :cmt.   :usagechain. <option> <usage text>          group of options that start with <option>
 :cmt.                                                   are chained together in usage
-:cmt.   :usagegrp. <num> <usage text>               group of options that have group <num>
+:cmt.   :usagegroup. <num> <usage text>             group of options that have group <num>
 :cmt.                                                   are chained together in usage
 :cmt.   :title. <text>                              English title usage text
 :cmt.   :jtitle. <text>                             Japanese title usage text
@@ -109,6 +109,8 @@
 :target. any
 :ntarget. bsd linux osx qnx haiku
 
+:chain. p
+
 :option. c
 :usage. compile only, no link
 :target. any
@@ -137,7 +139,7 @@
 :usage. ignore the WCL environment variable
 :target. i86
 
-:usagegrp. 1 [Processor options]
+:usagegroup. 1 [Processor options]
 
 :option. 3r
 :usage. 386 register calling conventions
@@ -201,7 +203,7 @@
 :target. i86
 :group. 1
 
-:usagegrp. 2 [Floating-point processor options]
+:usagegroup. 2 [Floating-point processor options]
 
 :option. fpc
 :usage. calls to floating-point library
@@ -240,7 +242,7 @@
 :target. i86 386
 :group. 2
 
-:usagegrp. 3 [Compiler options]
+:usagegroup. 3 [Compiler options]
 
 :option. bcl
 :usage. compile and link for <os>
@@ -597,7 +599,7 @@
 :target. 386
 :group. 3
 
-:usagegrp. 4 [Debugging options]
+:usagegroup. 4 [Debugging options]
 
 :option. d0
 :usage. no debugging information
@@ -640,7 +642,7 @@
 :target. any
 :group. 4
 
-:usagegrp. 5 [Optimization options]
+:usagegroup. 5 [Optimization options]
 
 :option. oa
 :usage. relax alias checking
@@ -733,7 +735,7 @@
 :target. i86 386
 :group. 5
 
-:usagegrp. 6 [C++ exception handling options]
+:usagegroup. 6 [C++ exception handling options]
 
 :option. xd
 :usage. no exception handling
@@ -760,9 +762,9 @@
 :target. any
 :group. 6
 
-:usagegrp. 7 [Preprocessor options]
+:usagegroup. 7 [Preprocessor options]
 
-:chain. p Preprocess source file
+:usagechain. p Preprocess source file
 :jusage. p ソースファイルを前処理します
 
 :option. d<name>[=text]
@@ -817,7 +819,7 @@
 :target. any
 :group. 7
 
-:usagegrp. 8 [Linker options]
+:usagegroup. 8 [Linker options]
 
 :option. bd
 :usage. build Dynamic link library
