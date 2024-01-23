@@ -199,13 +199,13 @@ typedef struct title {
     targmask        ntarget_mask;
     boolbit         any_target  : 1;
     boolbit         is_titleu   : 1;
-    lang_data       lang_title;
-    lang_data       lang_titleu;
+    lang_data       lang_usage;
+    lang_data       lang_usageu;
 } TITLE;
 
 typedef struct chain {
     struct chain    *next;
-    lang_data       Usage;
+    lang_data       lang_usage;
     size_t          name_len;
     size_t          pattern_len;
     boolbit         usage_used : 1;
@@ -215,7 +215,7 @@ typedef struct chain {
 
 typedef struct group {
     struct group    *next;
-    lang_data       Usage;
+    lang_data       lang_usage;
     boolbit         usage_used : 1;
     char            pattern[1];
 } GROUP;
@@ -397,6 +397,7 @@ static const char *usageMsg[] = {
     "  -nn '\n' terminated items",
     "  -q quiet operation",
     "  -rc=<macro-name> generate files for resource compiler",
+    "  -t report missing non-english data",
     "  -u=<usage-u> is the output file for the QNX usage file",
     "  -utf8 output text use UTF-8 encoding",
     "  -x=<id> use id to extend symbols to be unique for more instances",
@@ -410,12 +411,13 @@ static const char *usageMsg[] = {
 };
 
 static struct {
-    boolbit     international   : 1;
-    boolbit     quiet           : 1;
-    boolbit     no_equal        : 1;
-    boolbit     alternate_equal : 1;
-    boolbit     rc              : 1;
-    boolbit     out_utf8        : 1;
+    boolbit     international       : 1;
+    boolbit     quiet               : 1;
+    boolbit     no_equal            : 1;
+    boolbit     alternate_equal     : 1;
+    boolbit     rc                  : 1;
+    boolbit     out_utf8            : 1;
+    boolbit     report_missing_data : 1;
     char        *rc_macro;
     char        *line_term;
     char        *list_sep;
@@ -1431,10 +1433,10 @@ static void doJUSAGE( const char *p )
 
     switch( getsUsage ) {
     case TAG_USAGECHAIN:
-        lastUsageChain->Usage[LANG_Japanese] = pickUpRest( p );
+        lastUsageChain->lang_usage[LANG_Japanese] = pickUpRest( p );
         break;
     case TAG_USAGEGROUP:
-        lastUsageGroup->Usage[LANG_Japanese] = pickUpRest( p );
+        lastUsageGroup->lang_usage[LANG_Japanese] = pickUpRest( p );
         break;
     case TAG_OPTION:
         for( o = optionList; o != NULL; o = o->synonym ) {
@@ -1624,7 +1626,7 @@ static void doUSAGECHAIN( const char *p )
     }
     p = nextWord( p, tokbuff );
     cn = addUsageChain( tokbuff );
-    cn->Usage[LANG_English] = pickUpRest( p );
+    cn->lang_usage[LANG_English] = pickUpRest( p );
     lastUsageChain = cn;
     getsUsage = TAG_USAGECHAIN;
 }
@@ -1642,7 +1644,7 @@ static void doUSAGEGROUP( const char *p )
     }
     p = nextWord( p, tokbuff );
     gr = addUsageGroup( tokbuff );
-    gr->Usage[LANG_English] = pickUpRest( p );
+    gr->lang_usage[LANG_English] = pickUpRest( p );
     lastUsageGroup = gr;
     getsUsage = TAG_USAGEGROUP;
 }
@@ -1728,9 +1730,13 @@ static void readInputFile( void )
 static void checkForMissingUsages( void )
 {
     OPTION *o;
+    TITLE *t;
+    CHAIN *cn;
+    GROUP *gr;
     int start_lang;
     int end_lang;
     int i;
+    int j;
 
     if( optFlag.international ) {
         start_lang = 0;
@@ -1743,9 +1749,41 @@ static void checkForMissingUsages( void )
         if( o->usageChain == NULL
           || cmpOptPattern( o->pattern, o->usageChain->pattern ) ) {
             for( i = start_lang; i < end_lang; ++i ) {
-                if( o->lang_usage[i] == NULL ) {
+                if( ( i == LANG_English || optFlag.report_missing_data ) && o->lang_usage[i] == NULL ) {
                     fail( "option '%s' has no %s usage\n", o->pattern, langName[i] );
                 }
+            }
+        }
+    }
+    j = 1;
+    for( t = titleList; t != NULL; t = t->next ) {
+        for( i = start_lang; i < end_lang; ++i ) {
+            if( ( i == LANG_English || optFlag.report_missing_data ) && t->lang_usage[i] == NULL ) {
+                fail( "title(%d) has no %s text\n", j, langName[i] );
+            }
+        }
+        j++;
+    }
+    j = 1;
+    for( t = footerList; t != NULL; t = t->next ) {
+        for( i = start_lang; i < end_lang; ++i ) {
+            if( ( i == LANG_English || optFlag.report_missing_data ) && t->lang_usage[i] == NULL ) {
+                fail( "footer(%d) has no %s text\n", j, langName[i] );
+            }
+        }
+        j++;
+    }
+    for( cn = usageChainList; cn != NULL; cn = cn->next ) {
+        for( i = start_lang; i < end_lang; ++i ) {
+            if( ( i == LANG_English || optFlag.report_missing_data ) && cn->lang_usage[i] == NULL ) {
+                fail( "chain '%s' has no %s text\n", cn->parrent, langName[i] );
+            }
+        }
+    }
+    for( gr = usageGroupList; gr != NULL; gr = gr->next ) {
+        for( i = start_lang; i < end_lang; ++i ) {
+            if( ( i == LANG_English || optFlag.report_missing_data ) && gr->lang_usage[i] == NULL ) {
+                fail( "group '%s' has no %s text\n", gr->Usage, langName[i] );
             }
         }
     }
@@ -3177,6 +3215,9 @@ static char *ProcessOption( char *s, char *option_start )
             return( s );
         }
         break;
+    case 't':
+        optFlag.report_missing_data = true;
+        return( s );
     case 'u':
         if( *s == '=' ) {
             s = getFileName( s + 1, option_start );
