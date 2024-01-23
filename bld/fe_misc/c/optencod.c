@@ -129,7 +129,6 @@ TAG( USAGENOCHAIN )
 #define HAS_OPT_STRING(o)       ((o)->is_id || (o)->is_file || (o)->is_path || (o)->is_text)
 #define HAS_OPT_NUMBER(o)       ((o)->is_number && (o)->is_multiple)
 
-#define NOCHAIN                 ((CHAIN *)(pointer_uint)-1)
 #define NOSENSITIVE             ' '
 
 #define IS_SENSITIVE(c)         ((c)->s != NOSENSITIVE)
@@ -239,6 +238,9 @@ typedef struct option {
     targmask        ntarget_mask;
     boolbit         default_specified : 1;
     boolbit         any_target        : 1;
+    boolbit         usage_used        : 1;
+    boolbit         nochain           : 1;
+    boolbit         usage_nochain     : 1;
     boolbit         is_simple         : 1;
     boolbit         is_immediate      : 1;
     boolbit         is_code           : 1;
@@ -255,7 +257,6 @@ typedef struct option {
     boolbit         is_prefix         : 1;
     boolbit         is_timestamp      : 1;
     boolbit         is_negate         : 1;
-    boolbit         usage_used        : 1;
     char            equal_char;
     CHAIN           *chain;
     CHAIN           *usageChain;
@@ -1162,7 +1163,7 @@ static void doNOCHAIN( const char *p )
     /* unused parameters */ (void)p;
 
     for( o = optionList; o != NULL; o = o->synonym ) {
-        o->chain = NOCHAIN;
+        o->nochain = true;
     }
 }
 
@@ -1446,7 +1447,7 @@ static void doJUSAGE( const char *p )
         }
         break;
     default:
-        fail( ":jusage. must follow :chain., :group., or :option.\n" );
+        fail( ":jusage. must follow :usagechain., :usagegroup., or :option.\n" );
     }
 }
 
@@ -1654,7 +1655,7 @@ static void doUSAGENOCHAIN( const char *p )
     /* unused parameters */ (void)p;
 
     for( o = optionList; o != NULL; o = o->synonym ) {
-        o->usageChain = NOCHAIN;
+        o->usage_nochain = true;
     }
 }
 
@@ -1755,7 +1756,7 @@ static void assignChainToOptions( void )
     OPTION *o;
 
     for( o = optionList; o != NULL; o = o->next ) {
-        if( o->chain == NOCHAIN ) {
+        if( o->nochain ) {
             o->chain = NULL;
         } else {
             o->chain = findChain( o->pattern );
@@ -1768,7 +1769,7 @@ static void assignUsageChainToOptions( void )
     OPTION *o;
 
     for( o = optionList; o != NULL; o = o->next ) {
-        if( o->usageChain == NOCHAIN ) {
+        if( o->usage_nochain ) {
             o->usageChain = NULL;
         } else {
             o->usageChain = findUsageChain( o->pattern );
@@ -2686,7 +2687,7 @@ static void expand_tab( const char *s, char *buf )
 
 #define HEADER_LEFT_MARGIN   8
 
-static void procBlockHeader( lang_data langdata, language_id lang )
+static void procUsageBlockHeader( lang_data langdata, language_id lang )
 {
     const char  *s;
     size_t      len;
@@ -2706,17 +2707,17 @@ static void procBlockHeader( lang_data langdata, language_id lang )
     strcpy( buf, s );
 }
 
-static void outputBlockHeader( lang_data langdata, process_line_fn *process_line )
+static void outputUsageBlockHeader( lang_data langdata, process_line_fn *process_line )
 {
     language_id lang;
 
     for( lang = 0; lang < LANG_MAX; lang++ ) {
-        procBlockHeader( langdata, lang );
+        procUsageBlockHeader( langdata, lang );
     }
     process_output( process_line );
 }
 
-static void outputTitle( lang_data langdata, process_line_fn *process_line )
+static void outputUsageTitle( lang_data langdata, process_line_fn *process_line )
 {
     language_id lang;
 
@@ -2732,9 +2733,9 @@ static void outputUsageHeader( process_line_fn *process_line )
 
     for( t = titleList; t != NULL; t = t->next ) {
         if( IS_SELECTED( t ) ) {
-            outputTitle( t->lang_title, process_line );
+            outputUsageTitle( t->lang_title, process_line );
             if( process_line == emitUsageH ) {
-                outputTitle( ( t->is_titleu ) ? t->lang_titleu : t->lang_title, emitUsageHQNX );
+                outputUsageTitle( ( t->is_titleu ) ? t->lang_titleu : t->lang_title, emitUsageHQNX );
             }
         }
     }
@@ -2746,9 +2747,9 @@ static void outputUsageFooter( process_line_fn *process_line )
 
     for( t = footerList; t != NULL; t = t->next ) {
         if( IS_SELECTED( t ) ) {
-            outputTitle( t->lang_title, process_line );
+            outputUsageTitle( t->lang_title, process_line );
             if( process_line == emitUsageH ) {
-                outputTitle( ( t->is_titleu ) ? t->lang_titleu : t->lang_title, emitUsageHQNX );
+                outputUsageTitle( ( t->is_titleu ) ? t->lang_titleu : t->lang_title, emitUsageHQNX );
             }
         }
     }
@@ -2850,7 +2851,7 @@ static char *createOptionPrefix( OPTION *o, char *buf, size_t max )
     return( buf );
 }
 
-static void outputOption( OPTION *o, process_line_fn *process_line, size_t max )
+static void outputUsageOption( OPTION *o, process_line_fn *process_line, size_t max )
 {
     char        *buf;
     size_t      len;
@@ -2877,7 +2878,7 @@ static void outputUsageChain( OPTION **oo, size_t i, size_t count, process_line_
         if( oo[i]->usage_used )
             continue;
         if( oo[i]->usageChain == cn ) {
-            outputOption( oo[i], process_line, max );
+            outputUsageOption( oo[i], process_line, max );
         }
     }
 }
@@ -2894,7 +2895,7 @@ static void outputUsageGroup( OPTION **oo, size_t i, size_t count, process_line_
         if( oo[i]->usage_used )
             continue;
         if( oo[i]->usageChain == cn && oo[i]->usageGroup == gr ) {
-            outputOption( oo[i], process_line, max );
+            outputUsageOption( oo[i], process_line, max );
         }
     }
     if( cn != NULL ) {
@@ -2957,7 +2958,7 @@ static void processUsage( process_line_fn *process_line, GROUP *gr )
           && !oo[i]->usageChain->usage_used ) {
             outputUsageChain( oo, i, count, process_line, max );
         } else {
-            outputOption( oo[i], process_line, max );
+            outputUsageOption( oo[i], process_line, max );
         }
     }
     free( oo );
@@ -2988,7 +2989,7 @@ static void outputUsage( process_line_fn *process_line )
     processUsage( process_line, gr );
     for( gr = usageGroupList; gr != NULL; gr = gr->next ) {
         if( checkUsageGroupUsed( gr ) ) {
-            outputBlockHeader( gr->Usage, process_line );
+            outputUsageBlockHeader( gr->Usage, process_line );
             processUsage( process_line, gr );
         }
     }
