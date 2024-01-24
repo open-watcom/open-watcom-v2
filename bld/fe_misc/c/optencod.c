@@ -198,7 +198,7 @@ typedef struct title {
     targmask        target_mask;
     targmask        ntarget_mask;
     boolbit         any_target  : 1;
-    boolbit         is_titleu   : 1;
+    boolbit         is_u        : 1;
     lang_data       lang_usage;
     lang_data       lang_usageu;
 } TITLE;
@@ -1466,7 +1466,7 @@ static void doTITLE( const char *p )
     t = calloc( 1, sizeof( *t ) );
     t->next = *i;
     *i = t;
-    t->lang_title[LANG_English] = pickUpRest( p );
+    t->lang_usage[LANG_English] = pickUpRest( p );
     t->target_mask = targetAnyMask;
     t->any_target = true;
     targetTitle = t;
@@ -1482,8 +1482,8 @@ static void doTITLEU( const char *p )
     if( t == NULL ) {
         fail( ":titleu. must follow a :title.\n" );
     }
-    t->lang_titleu[LANG_English] = pickUpRest( p );
-    t->is_titleu = true;
+    t->lang_usageu[LANG_English] = pickUpRest( p );
+    t->is_u = true;
 }
 
 // :jtitle. <text>
@@ -1495,7 +1495,7 @@ static void doJTITLE( const char *p )
     if( t == NULL ) {
         fail( ":jtitle. must follow a :title.\n" );
     }
-    t->lang_title[LANG_Japanese] = pickUpRest( p );
+    t->lang_usage[LANG_Japanese] = pickUpRest( p );
 }
 
 // :jtitleu. <text>
@@ -1507,8 +1507,8 @@ static void doJTITLEU( const char *p )
     if( t == NULL ) {
         fail( ":jtitleu. must follow a :title.\n" );
     }
-    t->lang_titleu[LANG_Japanese] = pickUpRest( p );
-    t->is_titleu = true;
+    t->lang_usageu[LANG_Japanese] = pickUpRest( p );
+    t->is_u = true;
 }
 
 // :footer. <text>
@@ -1524,7 +1524,7 @@ static void doFOOTER( const char *p )
     t = calloc( 1, sizeof( *t ) );
     t->next = *i;
     *i = t;
-    t->lang_title[LANG_English] = pickUpRest( p );
+    t->lang_usage[LANG_English] = pickUpRest( p );
     t->target_mask = targetAnyMask;
     t->any_target = true;
     targetFooter = t;
@@ -1540,8 +1540,8 @@ static void doFOOTERU( const char *p )
     if( t == NULL ) {
         fail( ":footeru. must follow a :footer.\n" );
     }
-    t->lang_titleu[LANG_English] = pickUpRest( p );
-    t->is_titleu = true;
+    t->lang_usageu[LANG_English] = pickUpRest( p );
+    t->is_u = true;
 }
 
 // :jfooter. <text>
@@ -1553,7 +1553,7 @@ static void doJFOOTER( const char *p )
     if( t == NULL ) {
         fail( ":jfooter. must follow a :footer.\n" );
     }
-    t->lang_title[LANG_Japanese] = pickUpRest( p );
+    t->lang_usage[LANG_Japanese] = pickUpRest( p );
 }
 
 // :jfooteru. <text>
@@ -1565,8 +1565,8 @@ static void doJFOOTERU( const char *p )
     if( t == NULL ) {
         fail( ":jfooteru. must follow a :footer.\n" );
     }
-    t->lang_titleu[LANG_Japanese] = pickUpRest( p );
-    t->is_titleu = true;
+    t->lang_usageu[LANG_Japanese] = pickUpRest( p );
+    t->is_u = true;
 }
 
 // :group. <num> <usagechain>
@@ -1776,14 +1776,14 @@ static void checkForMissingUsages( void )
     for( cn = usageChainList; cn != NULL; cn = cn->next ) {
         for( i = start_lang; i < end_lang; ++i ) {
             if( ( i == LANG_English || optFlag.report_missing_data ) && cn->lang_usage[i] == NULL ) {
-                fail( "chain '%s' has no %s text\n", cn->parrent, langName[i] );
+                fail( "chain '%s' has no %s text\n", cn->pattern, langName[i] );
             }
         }
     }
     for( gr = usageGroupList; gr != NULL; gr = gr->next ) {
         for( i = start_lang; i < end_lang; ++i ) {
             if( ( i == LANG_English || optFlag.report_missing_data ) && gr->lang_usage[i] == NULL ) {
-                fail( "group '%s' has no %s text\n", gr->Usage, langName[i] );
+                fail( "group '%s' has no %s text\n", gr->pattern, langName[i] );
             }
         }
     }
@@ -2771,9 +2771,9 @@ static void outputUsageHeader( process_line_fn *process_line )
 
     for( t = titleList; t != NULL; t = t->next ) {
         if( IS_SELECTED( t ) ) {
-            outputUsageTitle( t->lang_title, process_line );
+            outputUsageTitle( t->lang_usage, process_line );
             if( process_line == emitUsageH ) {
-                outputUsageTitle( ( t->is_titleu ) ? t->lang_titleu : t->lang_title, emitUsageHQNX );
+                outputUsageTitle( ( t->is_u ) ? t->lang_usageu : t->lang_usage, emitUsageHQNX );
             }
         }
     }
@@ -2785,9 +2785,9 @@ static void outputUsageFooter( process_line_fn *process_line )
 
     for( t = footerList; t != NULL; t = t->next ) {
         if( IS_SELECTED( t ) ) {
-            outputUsageTitle( t->lang_title, process_line );
+            outputUsageTitle( t->lang_usage, process_line );
             if( process_line == emitUsageH ) {
-                outputUsageTitle( ( t->is_titleu ) ? t->lang_titleu : t->lang_title, emitUsageHQNX );
+                outputUsageTitle( ( t->is_u ) ? t->lang_usageu : t->lang_usage, emitUsageHQNX );
             }
         }
     }
@@ -2852,7 +2852,7 @@ static void outputUsageChainHeader( OPTION **o, process_line_fn *process_line, s
         for( lang = 0; lang < LANG_MAX; lang++ ) {
             buf = GET_OUTPUT_BUF( lang );
             strcpy( buf, hdrbuff );
-            strcpy( buf + max, getLangData( (*o)->usageChain->Usage, lang ) );
+            strcpy( buf + max, getLangData( (*o)->usageChain->lang_usage, lang ) );
         }
     } else {
         for( lang = 0; lang < LANG_MAX; lang++ ) {
@@ -2860,9 +2860,9 @@ static void outputUsageChainHeader( OPTION **o, process_line_fn *process_line, s
             for( len = max / 2; len-- > 0; )
                 *buf++ = ' ';
             if( (*o)->usageGroup != NULL ) {
-                strcpy( buf, getLangData( (*o)->usageGroup->Usage, lang ) );
+                strcpy( buf, getLangData( (*o)->usageGroup->lang_usage, lang ) );
             } else {
-                strcpy( buf, getLangData( (*o)->usageChain->Usage, lang ) );
+                strcpy( buf, getLangData( (*o)->usageChain->lang_usage, lang ) );
             }
         }
         process_output( process_line );
@@ -3027,7 +3027,7 @@ static void outputUsage( process_line_fn *process_line )
     processUsage( process_line, gr );
     for( gr = usageGroupList; gr != NULL; gr = gr->next ) {
         if( checkUsageGroupUsed( gr ) ) {
-            outputUsageBlockHeader( gr->Usage, process_line );
+            outputUsageBlockHeader( gr->lang_usage, process_line );
             processUsage( process_line, gr );
         }
     }
