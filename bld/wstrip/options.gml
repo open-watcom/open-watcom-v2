@@ -32,7 +32,8 @@
 :cmt. Source file uses UTF-8 encoding, ¥
 :cmt.
 :cmt. Definition of command line options to use by optencod utility to generate
-:cmt.  	appropriate command line parser.
+:cmt.  	appropriate command line parser and usage text.
+:cmt.
 :cmt.
 :cmt. GML Macros used:
 :cmt.
@@ -42,9 +43,9 @@
 :cmt.   :target. <targ1> <targ2> ...                valid for these targets (default is 'any')
 :cmt.   :ntarget. <targ1> <targ2> ...               not valid for these targets
 :cmt.   :usagechain. <option> <usage text>          group of options that start with <option>
-:cmt.                                                   are chained together in usage
+:cmt.                                                   are chained together in usage text
 :cmt.   :usagegroup. <num> <usage text>             group of options that have group <num>
-:cmt.                                                   are chained together in usage
+:cmt.                                                   are chained together in usage text
 :cmt.   :title. <text>                              English title usage text
 :cmt.   :jtitle. <text>                             Japanese title usage text
 :cmt.   :titleu. <text>                             English title usage text for QNX resource file
@@ -67,6 +68,9 @@
 :cmt.   :internal.                                  option is undocumented
 :cmt.   :prefix.                                    prefix of a :special. option
 :cmt.   :nochain.                                   option isn't chained with other options
+:cmt.                                                   in parser code
+:cmt.   :usagenochain.                              option isn't chained with other options
+:cmt.                                                   in usage text
 :cmt.   :timestamp.                                 kludge to record "when" an option
 :cmt.                                                   is set so that dependencies
 :cmt.                                                   between options can be simulated
@@ -85,75 +89,57 @@
 :cmt.   host OS - bsd, dos, linux, nov, nt, os2, osx, pls, qnx, rsi, haiku, rdos, win
 :cmt.   extra - targ1, targ2
 :cmt.
-:cmt. Translations are required for the :jtitle. and :jusage. tags
-:cmt.   if there is no text associated with the tag.
+:cmt. The :jtitle. or :jusage. tag is required if no text is associated with the tag.
+:cmt. Otherwise, English text defined with :title. or :use. tag will be used instead.
 :cmt.
+
 
 :title.  Usage: wstrip [options] input_file [output_file] [info_file]
 :jtitle. 使用方法: wstrip [options] input_file [output_file] [info_file]
-:target. any
 
 :title.
-:jtitle.
-:target. any
 
 :title.  .   input_file:  executable file
 :jtitle. .   input_file:  実行可能ファイル
-:target. any
 
 :title.  .   output_file: optional output executable or '.'
 :jtitle. .   output_file: オプションで出力実行可能ファイルまたは '.'を指定可能
-:target. any
 
 :title.  .   info_file:   optional output debugging or resource information file
 :jtitle. .   info_file:   オプションでデバッグまたはリソース情報ファイルの出力又は
-:target. any
 
 :title.  .                or input debugging or resource information file
 :jtitle. .                入力を指定可能
-:target. any
 
 :title.
-:jtitle.
-:target. any
 
 :title.  Options:
 :jtitle. オプション:
-:target. any
 :title.
-:jtitle.
 :target. bsd linux osx qnx haiku
 :title.  .         ( /option is also accepted )
 :jtitle. .         ( /optionも使用できます )
-:target. any
 :ntarget. bsd linux osx qnx haiku
 
 :option. ? h
-:target. any
 :usage.  display this screen
 :jusage. この画面を表示します
 
 :option. a
-:target. any
 :usage.  add information rather than delete information
 :jusage. 情報削除ではなく、情報付加をします
 
 :option. b
-:target. any
 :usage.  create backup file (.bak) for input executable
-:jusage. create backup file (.bak) for input executable
 
 :option. n
-:target. any
 :usage.  don't print warning messages
 :jusage. 警告メッセージを表示しません
 
 :option. q
-:target. any
 :usage.  don't print informational messages
 :jusage. メッセージを表示しません
 
 :option. r
-:target. any
 :usage.  process resource information rather than debugging information
 :jusage. デバッグ情報ではなく、リソース情報を処理します

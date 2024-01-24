@@ -32,7 +32,8 @@
 :cmt. Source file uses UTF-8 encoding, ¥
 :cmt.
 :cmt. Definition of command line options to use by optencod utility to generate
-:cmt.  	appropriate command line parser.
+:cmt.  	appropriate command line parser and usage text.
+:cmt.
 :cmt.
 :cmt. GML Macros used:
 :cmt.
@@ -42,9 +43,9 @@
 :cmt.   :target. <targ1> <targ2> ...                valid for these targets (default is 'any')
 :cmt.   :ntarget. <targ1> <targ2> ...               not valid for these targets
 :cmt.   :usagechain. <option> <usage text>          group of options that start with <option>
-:cmt.                                                   are chained together in usage
+:cmt.                                                   are chained together in usage text
 :cmt.   :usagegroup. <num> <usage text>             group of options that have group <num>
-:cmt.                                                   are chained together in usage
+:cmt.                                                   are chained together in usage text
 :cmt.   :title. <text>                              English title usage text
 :cmt.   :jtitle. <text>                             Japanese title usage text
 :cmt.   :titleu. <text>                             English title usage text for QNX resource file
@@ -67,6 +68,9 @@
 :cmt.   :internal.                                  option is undocumented
 :cmt.   :prefix.                                    prefix of a :special. option
 :cmt.   :nochain.                                   option isn't chained with other options
+:cmt.                                                   in parser code
+:cmt.   :usagenochain.                              option isn't chained with other options
+:cmt.                                                   in usage text
 :cmt.   :timestamp.                                 kludge to record "when" an option
 :cmt.                                                   is set so that dependencies
 :cmt.                                                   between options can be simulated
@@ -85,9 +89,10 @@
 :cmt.   host OS - bsd, dos, linux, nov, nt, os2, osx, pls, qnx, rsi, haiku, rdos, win
 :cmt.   extra - targ1, targ2
 :cmt.
-:cmt. Translations are required for the :jtitle. and :jusage. tags
-:cmt.   if there is no text associated with the tag.
+:cmt. The :jtitle. or :jusage. tag is required if no text is associated with the tag.
+:cmt. Otherwise, English text defined with :title. or :use. tag will be used instead.
 :cmt.
+
 
 :title. Usage: wfc [options] <file-spec> [options]
 :jtitle. 使用方法: wfc [options] <file-spec> [options]
@@ -141,10 +146,8 @@
 
 :title. Options:
 :jtitle. オプション:
-:target. any
 :title.  .         ( /option is also accepted )
 :jtitle. .         ( /option も使用できます )
-:target. any
 :ntarget. bsd linux osx qnx haiku
 
 :cmt.
@@ -242,49 +245,41 @@
 :jusage. *ﾌｧｲﾙﾏﾈｰｼﾞﾒﾝﾄｵﾌﾟｼｮﾝ*
 
 :option. LISt
-:target. any
 :group. 2
 :usage. generate a listing file
 :jusage. ﾘｽﾄﾌｧｲﾙの生成
 
 :option. PRint
-:target. any
 :group. 2
 :usage. listing file to printer
 :jusage. ﾘｽﾄﾌｧｲﾙをﾌﾟﾘﾝﾀｰに出力
 
 :option. TYpe
-:target. any
 :group. 2
 :usage. listing file to terminal
 :jusage. ﾘｽﾄﾌｧｲﾙを画面に出力
 
 :option. DIsk
-:target. any
 :group. 2
 :usage. listing file to disk
 :jusage. ﾘｽﾄﾌｧｲﾙをﾃﾞｨｽｸに出力
 
 :option. INCList
-:target. any
 :group. 2
 :usage. list INCLUDE files
 :jusage. INCLUDE ﾌｧｲﾙのﾘｽﾄ
 
 :option. ERrorfile FR
-:target. any
 :group. 2
 :usage. generate an error file
 :jusage. ｴﾗｰﾌｧｲﾙの生成
 
 :option. INCPath I
-:target. any
 :group. 2
 :usage. path for INCLUDE files
 :jusage. INCLUDEﾌｧｲﾙ用のﾊﾟｽ
 
 :option. FO
-:target. any
 :group. 2
 :usage. name object file
 :jusage. ｵﾌﾞｼﾞｪｸﾄﾌｧｲﾙ名の指定
@@ -296,49 +291,40 @@
 :jusage. *診断ｵﾌﾟｼｮﾝ*
 
 :option. EXtensions
-:target. any
 :group. 3
 :usage. issue extension messages
 :jusage. 拡張ﾒｯｾｰｼﾞの出力
 
 :option. Reference
-:target. any
 :group. 3
 :usage. issue unreferenced warning
 :jusage. 未参照警告ｴﾗｰの出力
 
 :option. WArnings
-:target. any
 :group. 3
 :usage. issue warning messages
 :jusage. 警告ｴﾗｰﾒｯｾｰｼﾞの出力
 
 :option. EXPlicit
-:target. any
 :group. 3
 :usage. explicit typing required
 :jusage. 明示的な型が必要
 
 :option. DEBug
-:target. any
 :group. 3
 :usage. -trace -bounds
-:jusage. -trace -bounds
 
 :option. TRace
-:target. any
 :group. 3
 :usage. generate run-time traceback
 :jusage. ﾗﾝﾀｲﾑﾄﾚｰｽﾊﾞｯｸの生成
 
 :option. BOunds
-:target. any
 :group. 3
 :usage. generate bounds checking
 :jusage. 境界ﾁｪｯｸの生成
 
 :option. STack
-:target. any
 :group. 3
 :usage. stack checking
 :jusage. ｽﾀｯｸﾁｪｯｸ
@@ -350,37 +336,31 @@
 :jusage. *ﾃﾞﾊﾞｯｸﾞｵﾌﾟｼｮﾝ*
 
 :option. D1
-:target. any
 :group. 4
 :usage. line # debugging information
 :jusage. line # ﾃﾞﾊﾞｯｸﾞ情報
 
 :option. D2
-:target. any
 :group. 4
 :usage. full debugging information
 :jusage. 全てのﾃﾞﾊﾞｯｸﾞ情報
 
 :option. HC
-:target. any
 :group. 4
 :usage. Codeview debugging info.
 :jusage. Codeviewﾃﾞﾊﾞｯｸﾞ情報
 
 :option. HD
-:target. any
 :group. 4
 :usage. DWARF debugging information
 :jusage. DWARFﾃﾞﾊﾞｯｸﾞ情報
 
 :option. HW
-:target. any
 :group. 4
 :usage. WATCOM debugging information
 :jusage. WATCOMﾃﾞﾊﾞｯｸﾞ情報
 
 :option. DB
-:target. any
 :group. 4
 :internal.
 :usage. generate browse information
@@ -459,19 +439,16 @@
 :jusage. ﾍﾞｰｽﾎﾟｲﾝﾀの最適化
 
 :option. OBP
-:target. any
 :group. 6
 :usage. branch prediction
 :jusage. 分岐予測
 
 :option. OC
-:target. any
 :group. 6
 :usage. no call-ret optimizations
 :jusage. call-retの最適化なし
 
 :option. OD
-:target. any
 :group. 6
 :usage. disable optimizations
 :jusage. 最適化の禁止
@@ -483,80 +460,67 @@
 :jusage. ｽﾀｯｸﾌﾚｰﾑの最適化なし
 
 :option. OH
-:target. any
 :group. 6
 :usage. optimize at expense of compile-time
 :jusage. ｺﾝﾊﾟｲﾙ時間が長引いても最適化を強化します
 
 :option. OI
-:target. any
 :group. 6
 :usage. statement functions in-line
 :jusage. ｲﾝﾗｲﾝ文関数
 
 :option. OK
-:target. any
 :group. 6
 :usage. move register saves into flow graph
 :jusage. ﾚｼﾞｽﾀ保存をﾌﾛｰｸﾞﾗﾌに移動します
 
 :option. OL
-:target. any
 :group. 6
 :usage. loop optimizations
 :jusage. ﾙｰﾌﾟの最適化
 
 :option. OL+
-:target. any
 :group. 6
 :usage. loop optimizations/unrolling
 :jusage. ﾙｰﾌﾟ最適化/ｱﾝﾛｰﾘﾝｸﾞ
 
 :option. OLF
-:target. any
 :group. 6
 :internal.
 :usage. loop optimizations/assume loop invariant float-pt. variables are init.
 :jusage. ﾙｰﾌﾟ最適化/ﾙｰﾌﾟ内で浮動小数点数が不変であると仮定します。変数は初期化されます
 
 :option. OM
-:target. any
 :group. 6
 :usage. math optimizations
 :jusage. 数学的最適化
 
 :option. ON
-:target. any
 :group. 6
 :usage. numerical optimizations
 :jusage. 数値の最適化
 
 :option. OP
-:target. any
 :group. 6
 :usage. precision optimizations
 :jusage. 精度の最適化
 
 :option. OR
-:target. any
 :group. 6
 :usage. instruction scheduling
 :jusage. 命令ｽｹｼﾞｭｰﾘﾝｸﾞ
 
 :option. OS
-:target. any
 :group. 6
 :usage. space optimizations
 :jusage. ｻｲｽﾞの最適化
 
 :option. OT
-:target. any
 :group. 6
 :usage. time optimizations
 :jusage. 時間の最適化
 
 :option. ODO
-:target. any
 :group. 6
 :usage. DO-variables do not overflow
 :jusage. DO変数がｵｰﾊﾞｰﾌﾛｰしません
@@ -565,13 +529,11 @@
 :target. 386
 :group. 6
 :usage. -o[b,bp,i,k,l,m,r,t,do]
-:jusage.
 
 :option. OX
 :target. i86 axp ppc
 :group. 6
 :usage. -o[bp,i,k,l,m,r,t,do]
-:jusage.
 
 :cmt.
 :cmt.   Memory Models
@@ -648,21 +610,20 @@
 :option. 4
 :target. i86 386
 :group. 8
-:usage. -3 optimized for 80486
-:jusage. 80486用最適化をする-3ｵﾌﾟｼｮﾝ
+:usage. optimized for 80486
+:jusage. 80486 用に最適化
 
 :option. 5
 :target. i86 386
 :group. 8
-:usage. -3 optimized for Pentium
-:jusage. Pentium用最適化をする-3ｵﾌﾟｼｮﾝ
+:usage. optimized for Pentium
+:jusage. Pentium 用に最適化された
 
 :option. 6
 :target. i86 386
 :group. 8
-:usage. -3 optimized for Pentium Pro
-:jusage. Pentium Pro用に最適化された-3
-
+:usage. optimized for Pentium Pro
+:jusage. Pentium Pro 用に最適化
 
 :cmt.
 :cmt.   Application Type
@@ -671,7 +632,6 @@
 :jusage. *ｱﾌﾟﾘｹｰｼｮﾝﾀｲﾌﾟ*
 
 :option. BW
-:target. any
 :group. 9
 :usage. default windowed application
 :jusage. ﾃﾞﾌｫﾙﾄｳｨﾝﾄﾞｳｱﾌﾟﾘｹｰｼｮﾝ
@@ -702,19 +662,16 @@
 :jusage. *文字ｾｯﾄｵﾌﾟｼｮﾝ*
 
 :option. CHInese
-:target. any
 :group. 10
 :usage. Chinese character set
 :jusage. 中国語文字ｾｯﾄ
 
 :option. Japanese
-:target. any
 :group. 10
 :usage. Japanese character set
 :jusage. 日本語文字ｾｯﾄ
 
 :option. KOrean
-:target. any
 :group. 10
 :usage. Korean character set
 :jusage. 韓国語文字ｾｯﾄ
@@ -727,73 +684,61 @@
 :jusage. *その他のｵﾌﾟｼｮﾝ*
 
 :option. SHort
-:target. any
 :group. 11
 :usage. INTEGER/LOGICAL size 2/1
 :jusage. INTEGER/LOGICAL の大きさは 2/1
 
 :option. XFloat
-:target. any
 :group. 11
 :usage. extend float-pt. precision
 :jusage. 拡張浮動小数点数精度
 
 :option. XLine
-:target. any
 :group. 11
 :usage. extend line length
 :jusage. 行の長さを拡張
 
 :option. DEFine
-:target. any
 :group. 11
 :usage. define macro
 :jusage. ﾏｸﾛ定義
 
 :option. FORmat
-:target. any
 :group. 11
 :usage. relax FORMAT type checking
 :jusage. FORMAT ﾀｲﾌﾟﾁｪｯｸの緩和
 
 :option. WILd
-:target. any
 :group. 11
 :usage. relax wild branch checking
 :jusage. ﾜｲﾙﾄﾞﾌﾞﾗﾝﾁﾁｪｯｸの緩和
 
 :option. TErminal
-:target. any
 :group. 11
 :usage. display diagnostic messages
 :jusage. 診断ﾒｯｾｰｼﾞの表示
 
 :option. Quiet ZQ
-:target. any
 :group. 11
 :usage. operate quietly
 :jusage. 起動ﾒｯｾｰｼﾞを表示しない
 
 :option. RESources
-:target. any
 :group. 11
 :usage. messages in resource file
 :jusage. ﾘｿｰｽﾌｧｲﾙ内のﾒｯｾｰｼﾞ
 
 :option. CC
-:target. any
 :group. 11
 :usage. devices are carriage control
 :jusage. 装置はｷｬﾘｯｼﾞ制御されます
 
 :option. LFwithFF
-:target. any
 :group. 11
 :usage. LF with FF
 :jusage. FF付きLF
 
 :option. DEPendency
-:target. any
 :group. 11
 :usage. generate file dependencies
 :jusage. ﾌｧｲﾙ依存性情報の生成
@@ -841,37 +786,31 @@
 :jusage. ｽﾀｯｸの自動伸張
 
 :option. SYntax
-:target. any
 :group. 11
 :usage. syntax check only
 :jusage. 文法ﾁｪｯｸのみ
 
 :option. LIBinfo
-:target. any
 :group. 11
 :usage. generate default libraries
 :jusage. ﾃﾞﾌｫﾙﾄﾗｲﾌﾞﾗﾘの生成
 
 :option. DT
-:target. any
 :group. 11
 :usage. set data threshold
 :jusage. ﾃﾞｰﾀｽﾚｯｼｮﾙﾄﾞの設定
 
 :option. AUtomatic
-:target. any
 :group. 11
 :usage. local variables on the stack
 :jusage. ｽﾀｯｸ上のﾛｰｶﾙ変数
 
 :option. DEScriptor
-:target. any
 :group. 11
 :usage. pass character descriptors
 :jusage. 文字指示子渡し
 
 :option. SAve
-:target. any
 :group. 11
 :usage. SAVE local variables
 :jusage. ﾛｰｶﾙ変数を待避(SAVE文と同じ)
@@ -883,25 +822,21 @@
 :jusage. ｺｰﾄﾞｾｸﾞﾒﾝﾄ内の定数
 
 :option. ALign
-:target. any
 :group. 11
 :usage. align COMMON segments
 :jusage. COMMONｾｸﾞﾒﾝﾄの整合
 
 :option. MAngle
-:target. any
 :group. 11
 :usage. mangle COMMON segment names
 :jusage. COMMONｾｸﾞﾒﾝﾄ名をﾏﾝｸﾞﾙ化します
 
 :option. IPromote
-:target. any
 :group. 11
 :usage. promote intrinsic arguments
 :jusage. 組込み引数を格上げします
 
 :option. SEpcomma
-:target. any
 :group. 11
 :usage. allow comma separator
 :jusage. ｺﾝﾏ区切りを有効にします
@@ -919,7 +854,6 @@
 :usage.
 
 :option. LGC
-:target. any
 :group. 11
 :internal.
 :usage.

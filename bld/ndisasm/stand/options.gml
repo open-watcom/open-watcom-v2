@@ -32,7 +32,8 @@
 :cmt. Source file uses UTF-8 encoding, ¥
 :cmt.
 :cmt. Definition of command line options to use by optencod utility to generate
-:cmt.  	appropriate command line parser.
+:cmt.  	appropriate command line parser and usage text.
+:cmt.
 :cmt.
 :cmt. GML Macros used:
 :cmt.
@@ -42,9 +43,9 @@
 :cmt.   :target. <targ1> <targ2> ...                valid for these targets (default is 'any')
 :cmt.   :ntarget. <targ1> <targ2> ...               not valid for these targets
 :cmt.   :usagechain. <option> <usage text>          group of options that start with <option>
-:cmt.                                                   are chained together in usage
+:cmt.                                                   are chained together in usage text
 :cmt.   :usagegroup. <num> <usage text>             group of options that have group <num>
-:cmt.                                                   are chained together in usage
+:cmt.                                                   are chained together in usage text
 :cmt.   :title. <text>                              English title usage text
 :cmt.   :jtitle. <text>                             Japanese title usage text
 :cmt.   :titleu. <text>                             English title usage text for QNX resource file
@@ -67,6 +68,9 @@
 :cmt.   :internal.                                  option is undocumented
 :cmt.   :prefix.                                    prefix of a :special. option
 :cmt.   :nochain.                                   option isn't chained with other options
+:cmt.                                                   in parser code
+:cmt.   :usagenochain.                              option isn't chained with other options
+:cmt.                                                   in usage text
 :cmt.   :timestamp.                                 kludge to record "when" an option
 :cmt.                                                   is set so that dependencies
 :cmt.                                                   between options can be simulated
@@ -85,94 +89,77 @@
 :cmt.   host OS - bsd, dos, linux, nov, nt, os2, osx, pls, qnx, rsi, haiku, rdos, win
 :cmt.   extra - targ1, targ2
 :cmt.
-:cmt. Translations are required for the :jtitle. and :jusage. tags
-:cmt.   if there is no text associated with the tag.
+:cmt. The :jtitle. or :jusage. tag is required if no text is associated with the tag.
+:cmt. Otherwise, English text defined with :title. or :use. tag will be used instead.
 :cmt.
+
 
 :title. Usage:  wdis [options] obj_file [options]
 :jtitle. 使用方法:  wdis [options] obj_file [options]
-:target. any
 
 :title. Options:
 :jtitle. オプション:
-:target. any
 :title.  .         ( /option is also accepted )
 :jtitle. .         ( /optionも使用できます )
-:target. any
 :ntarget. bsd linux osx qnx haiku
+
 
 :chain. f
 
 :option. ? h
-:target. any
 :usage. print this message
 :jusage. このメッセージを表示します
 
 :option. a
-:target. any
 :usage. generate assembleable output
 :jusage. ャAセンブルできる出力を生成します
 
 :option. e
-:target. any
 :usage. generate lists of externs
 :jusage. テxternのリストを生成します
 
 :usagechain. f Instruction format
-:jusage.
 
 :option. ff
-:target. any
 :usage. FPU emulator fixups as comment [80(x)86 only]
-:jusage. FPU emulator fixups as comment [80(x)86 only]
 
 :option. fi
-:target. any
 :usage. use alternate indexing format [80(x)86 only]
 :jusage. 別のインデクシング形式を使用する[80(x)86のみ]
 
 :option. fp
-:target. any
 :usage. do not use instruction name pseudonyms
 :jusage. 命令名として擬似ニーモニックを使用しない
 
 :option. fr
-:target. any
 :usage. do not use register name pseudonyms [RISC only]
 :jusage. レジスタ名として擬似ニーモニックを使用しない[RISCのみ]
 
 :option. fu
-:target. any
 :usage. instructions/registers in upper case
 :jusage. 命令/レジスタを大文字にする
 
 :option. i
-:target. any
 :char.
 :usage. initial character of internal labels
 :jusage. 内部ラベルの先頭文字
 
 :option. l
-:target. any
 :file.
 :optional.
 :usage. generate listing file
 :jusage. リスト･ファイルを生成します
 
 :option. m
-:target. any
 :usage. leave C++ names mangled
 :jusage. C++のマングルド名を残す
 
 :option. p
-:target. any
 :usage. generate list of publics
 :jusage. パブリックのリストを生成する
 
 :option. s
-:target. any
 :file.
 :optional.
 :usage. include source lines
 :jusage. ソース行を含めて表示する
-

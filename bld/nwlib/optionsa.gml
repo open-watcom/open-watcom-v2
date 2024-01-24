@@ -32,7 +32,8 @@
 :cmt. Source file uses UTF-8 encoding, ¥
 :cmt.
 :cmt. Definition of command line options to use by optencod utility to generate
-:cmt.  	appropriate command line parser.
+:cmt.  	appropriate command line parser and usage text.
+:cmt.
 :cmt.
 :cmt. GML Macros used:
 :cmt.
@@ -42,9 +43,9 @@
 :cmt.   :target. <targ1> <targ2> ...                valid for these targets (default is 'any')
 :cmt.   :ntarget. <targ1> <targ2> ...               not valid for these targets
 :cmt.   :usagechain. <option> <usage text>          group of options that start with <option>
-:cmt.                                                   are chained together in usage
+:cmt.                                                   are chained together in usage text
 :cmt.   :usagegroup. <num> <usage text>             group of options that have group <num>
-:cmt.                                                   are chained together in usage
+:cmt.                                                   are chained together in usage text
 :cmt.   :title. <text>                              English title usage text
 :cmt.   :jtitle. <text>                             Japanese title usage text
 :cmt.   :titleu. <text>                             English title usage text for QNX resource file
@@ -67,6 +68,9 @@
 :cmt.   :internal.                                  option is undocumented
 :cmt.   :prefix.                                    prefix of a :special. option
 :cmt.   :nochain.                                   option isn't chained with other options
+:cmt.                                                   in parser code
+:cmt.   :usagenochain.                              option isn't chained with other options
+:cmt.                                                   in usage text
 :cmt.   :timestamp.                                 kludge to record "when" an option
 :cmt.                                                   is set so that dependencies
 :cmt.                                                   between options can be simulated
@@ -85,9 +89,10 @@
 :cmt.   host OS - bsd, dos, linux, nov, nt, os2, osx, pls, qnx, rsi, haiku, rdos, win
 :cmt.   extra - targ1, targ2
 :cmt.
-:cmt. Translations are required for the :jtitle. and :jusage. tags
-:cmt.   if there is no text associated with the tag.
+:cmt. The :jtitle. or :jusage. tag is required if no text is associated with the tag.
+:cmt. Otherwise, English text defined with :title. or :use. tag will be used instead.
 :cmt.
+
 
 :title.  Usage: %s <command> [<modifiers>] <archive> [modules]
 :jtitle. 使用法： %s <command> [<modifiers>] <archive> [modules]

@@ -32,7 +32,8 @@
 :cmt. Source file uses UTF-8 encoding, ¥
 :cmt.
 :cmt. Definition of command line options to use by optencod utility to generate
-:cmt.  	appropriate command line parser.
+:cmt.  	appropriate command line parser and usage text.
+:cmt.
 :cmt.
 :cmt. GML Macros used:
 :cmt.
@@ -42,9 +43,9 @@
 :cmt.   :target. <targ1> <targ2> ...                valid for these targets (default is 'any')
 :cmt.   :ntarget. <targ1> <targ2> ...               not valid for these targets
 :cmt.   :usagechain. <option> <usage text>          group of options that start with <option>
-:cmt.                                                   are chained together in usage
+:cmt.                                                   are chained together in usage text
 :cmt.   :usagegroup. <num> <usage text>             group of options that have group <num>
-:cmt.                                                   are chained together in usage
+:cmt.                                                   are chained together in usage text
 :cmt.   :title. <text>                              English title usage text
 :cmt.   :jtitle. <text>                             Japanese title usage text
 :cmt.   :titleu. <text>                             English title usage text for QNX resource file
@@ -67,6 +68,9 @@
 :cmt.   :internal.                                  option is undocumented
 :cmt.   :prefix.                                    prefix of a :special. option
 :cmt.   :nochain.                                   option isn't chained with other options
+:cmt.                                                   in parser code
+:cmt.   :usagenochain.                              option isn't chained with other options
+:cmt.                                                   in usage text
 :cmt.   :timestamp.                                 kludge to record "when" an option
 :cmt.                                                   is set so that dependencies
 :cmt.                                                   between options can be simulated
@@ -85,9 +89,10 @@
 :cmt.   host OS - bsd, dos, linux, nov, nt, os2, osx, pls, qnx, rsi, haiku, rdos, win
 :cmt.   extra - targ1, targ2
 :cmt.
-:cmt. Translations are required for the :jtitle. and :jusage. tags
-:cmt.   if there is no text associated with the tag.
+:cmt. The :jtitle. or :jusage. tag is required if no text is associated with the tag.
+:cmt. Otherwise, English text defined with :title. or :use. tag will be used instead.
 :cmt.
+
 
 :title. Usage: wccaxp [options] file [options]
 :jtitle. 使用方法: wccaxp [options] file [options]
@@ -125,17 +130,11 @@
 :target. any
 :ntarget. bsd linux osx qnx haiku
 
+
 :chain. o p
 
 :option. ?
 :target. any
-:nochain.
-:usage. print this message
-:jusage. このメッセージを表示します
-
-:option. h
-:target. any
-:nochain.
 :usage. print this message
 :jusage. このメッセージを表示します
 
@@ -318,7 +317,7 @@
 
 :option. bt
 :target. any
-:nochain.
+:usagenochain.
 :id. . <os>
 :optional.
 :usage. build target is operating system <os>
@@ -383,28 +382,28 @@
 
 :option. d+
 :target. any
-:nochain.
+:usagenochain.
 :special. scanDefinePlus
 :usage. allow extended -d macro definitions
 :jusage. 拡張された -d マクロ定義を許可します
 
 :option. db
 :target. any
-:nochain.
+:usagenochain.
 :prefix.
 :usage. generate browsing information
 :jusage. ブラウズ情報を生成します
 
 :option. d
 :target. any
-:nochain.
+:usagenochain.
 :special. scanDefine <name>[=text]
 :usage. same as #define name [text] before compilation
 :jusage. コンパイル前の #define name [text] と同じ
 
 :option. ec
 :target. any
-:nochain.
+:usagenochain.
 :internal.
 :usage. emit code coverage gear
 :jusage.
@@ -622,21 +621,21 @@
 
 :option. fpc
 :target. i86 386
-:nochain.
+:usagenochain.
 :enumerate. intel_fpu_model
 :usage. calls to floating-point library
 :jusage. 浮動小数点ライブラリを呼び出します
 
 :option. fpi
 :target. i86 386
-:nochain.
+:usagenochain.
 :enumerate. intel_fpu_model
 :usage. inline 80x87 instructions with emulation
 :jusage. エミュレーション付きインライン80x87命令
 
 :option. fpi87
 :target. i86 386
-:nochain.
+:usagenochain.
 :enumerate. intel_fpu_model
 :usage. inline 80x87 instructions
 :jusage. インライン80x87命令
@@ -667,19 +666,19 @@
 
 :option. fpr
 :target. i86 386
-:nochain.
+:usagenochain.
 :usage. generate backward compatible 80x87 code
 :jusage. バージョン9.0以前と互換の80x87コードを生成します
 
 :option. fpd
 :target. i86 386
-:nochain.
+:usagenochain.
 :usage. enable Pentium FDIV bug check
 :jusage. Pentium FDIVチェックをします
 
 :option. fld
 :target. i86 386
-:nochain.
+:usagenochain.
 :internal.
 :usage. enable 10-byte long double
 :jusage. enable 10-byte long double
@@ -690,13 +689,19 @@
 :usage. set code group name
 :jusage. コード･グループ名を設定します
 
+:option. h
+:target. any
+:usagenochain.
+:usage. print this message
+:jusage. このメッセージを表示します
+
 :usagechain. h Debugging Information format
 
-:option. hw
-:target. i86 386
+:option. hc
+:target. any
 :enumerate. dbg_output
-:usage. generate Watcom debugging information
-:jusage. Watcomデバッグ情報を生成します
+:usage. generate Codeview debugging information
+:jusage. Codeviewデバッグ情報を生成します
 
 :option. hd
 :target. any
@@ -718,11 +723,11 @@
 :usage. generate DWARF debugging information
 :jusage. DWARFデバッグ情報を生成します
 
-:option. hc
-:target. any
+:option. hw
+:target. i86 386
 :enumerate. dbg_output
-:usage. generate Codeview debugging information
-:jusage. Codeviewデバッグ情報を生成します
+:usage. generate Watcom debugging information
+:jusage. Watcomデバッグ情報を生成します
 
 :option. i
 :target. any
@@ -735,16 +740,16 @@
 :usage. change char default from unsigned to signed
 :jusage. char型のデフォルトをunsignedからsignedに変更します
 
-:option. lc
-:target. dbg
-:usage. enable API logging
-:jusage. enable API logging
-
 :option. la
 :target. dbg
 :ntarget. i86 386
 :usage. enable Asm listing
 :jusage. enable Asm listing
+
+:option. lc
+:target. dbg
+:usage. enable API logging
+:jusage. enable API logging
 
 :option. lo
 :target. dbg
@@ -950,6 +955,7 @@
 :option. pil
 :target. any
 :nochain.
+:usagenochain.
 :usage. preprocessor ignores #line directives
 :jusage.
 
@@ -1090,7 +1096,7 @@
 
 :option. wpx
 :target. any
-:nochain.
+:usagenochain.
 :internal.
 :usage. warn about global prototypes not defined in header file
 :jusage.
@@ -1103,20 +1109,20 @@
 
 :option. x
 :target. any
-:nochain.
+:usagenochain.
 :usage. ignore all ..INCLUDE environment variables
 :jusage. ignore all ..INCLUDE environment variables
 
 :option. xgv
 :target. 386
-:nochain.
+:usagenochain.
 :internal.
 :usage. indexed global variables
 :jusage. インデックス付きグローバル変数
 
 :option. xbsa
 :target. any
-:nochain.
+:usagenochain.
 :internal.
 :usage. do not align segments if at all possible
 :jusage.
@@ -1130,7 +1136,7 @@
 
 :option. xx
 :target. any
-:nochain.
+:usagenochain.
 :usage. ignore default directories for file search (.,../h,../c,...)
 :jusage. ignore default directories for file search (.,../h,../c,...)
 
@@ -1221,6 +1227,11 @@
 :usage. FS is pegged to a segment
 :jusage. FSを1つのセグメントに固定します
 
+:option. zg
+:target. any
+:usage. generate function prototypes using base types
+:jusage. 基本型を使用した関数プロトタイプを生成します
+
 :option. zgf
 :target. i86 386
 :enumerate. gs_peg
@@ -1232,11 +1243,6 @@
 :enumerate. gs_peg
 :usage. GS is pegged to a segment
 :jusage. GSを1つのセグメントに固定します
-
-:option. zg
-:target. any
-:usage. generate function prototypes using base types
-:jusage. 基本型を使用した関数プロトタイプを生成します
 
 :usagechain. zk Multi-byte/Unicode character support
 

@@ -32,7 +32,8 @@
 :cmt. Source file uses UTF-8 encoding, ¥
 :cmt.
 :cmt. Definition of command line options to use by optencod utility to generate
-:cmt.  	appropriate command line parser.
+:cmt.  	appropriate command line parser and usage text.
+:cmt.
 :cmt.
 :cmt. GML Macros used:
 :cmt.
@@ -42,9 +43,9 @@
 :cmt.   :target. <targ1> <targ2> ...                valid for these targets (default is 'any')
 :cmt.   :ntarget. <targ1> <targ2> ...               not valid for these targets
 :cmt.   :usagechain. <option> <usage text>          group of options that start with <option>
-:cmt.                                                   are chained together in usage
+:cmt.                                                   are chained together in usage text
 :cmt.   :usagegroup. <num> <usage text>             group of options that have group <num>
-:cmt.                                                   are chained together in usage
+:cmt.                                                   are chained together in usage text
 :cmt.   :title. <text>                              English title usage text
 :cmt.   :jtitle. <text>                             Japanese title usage text
 :cmt.   :titleu. <text>                             English title usage text for QNX resource file
@@ -67,6 +68,9 @@
 :cmt.   :internal.                                  option is undocumented
 :cmt.   :prefix.                                    prefix of a :special. option
 :cmt.   :nochain.                                   option isn't chained with other options
+:cmt.                                                   in parser code
+:cmt.   :usagenochain.                              option isn't chained with other options
+:cmt.                                                   in usage text
 :cmt.   :timestamp.                                 kludge to record "when" an option
 :cmt.                                                   is set so that dependencies
 :cmt.                                                   between options can be simulated
@@ -85,277 +89,190 @@
 :cmt.   host OS - bsd, dos, linux, nov, nt, os2, osx, pls, qnx, rsi, haiku, rdos, win
 :cmt.   extra - targ1, targ2
 :cmt.
-:cmt. Translations are required for the :jtitle. and :jusage. tags
-:cmt.   if there is no text associated with the tag.
+:cmt. The :jtitle. or :jusage. tag is required if no text is associated with the tag.
+:cmt. Otherwise, English text defined with :title. or :use. tag will be used instead.
 :cmt.
+
 
 :title.  Usage: wrc {options} input-filename {options} [output-filename] {options}
 :jtitle. 使用方法: wrc {options} input-filename {options} [output-filename] {options}
-:target. any
 
 :title.  Options:
 :jtitle. オプション:
-:target. any
 :title.  .         ( /option is also accepted )
 :jtitle. .         ( /ｵﾌﾟｼｮﾝ でも指定できます )
-:target. any
 :ntarget. bsd linux osx qnx haiku
+
 
 :chain. v zk
 
 :option. h ?
-:target. any
 :usage.  print this message
 :jusage. このメッセージを表示します
 
 :option. q
-:target. any
 :usage.  operate quietly
-:jusage.
 
 :option. 10
-:target. any
 :enumerate. win16_ver
 :usage.  stamp file as requiring Windows 1.0
-:jusage.
 
 :option. 20
-:target. any
 :enumerate. win16_ver
 :usage.  stamp file as requiring Windows 2.0
-:jusage.
 
 :option. 30
-:target. any
 :enumerate. win16_ver
 :usage.  stamp file as requiring Windows 3.0
-:jusage.
 
 :option. 31
-:target. any
 :enumerate. win16_ver
 :usage.  (*) stamp file as requiring Windows 3.1
-:jusage.
 
 :option. d
-:target. any
 :special. scanDefine <name>[=text]
 :usage.  define text macro <name>[=text]
 :jusage. テキストマクロを定義します <name>[=text]
 
 :option. ad
-:target. any
 :usage.  generate auto dependency information for use by wmake
-:jusage.
 
 :option. ap
 :target. unused
 :usage.  prepend string
-:jusage.
 
 :option. bt
-:target. any
 :special. scanTarget =<target> [windows|nt|os2]
 :number.
 :usage.  set the build <target> [windows|nt|os2]
-:jusage.
 
 :option. c
-:target. any
 :file.
 :usage.  set code page conversion file
-:jusage.
 
 :option. e
-:target. any
 :usage.  for a DLL, global memory above EMS line
-:jusage.
 
 :option. fe
-:target. any
 :file.
 :usage.  set the output executable file to name
-:jusage.
 
 :option. fo
-:target. any
 :file.
 :usage.  set the output resource file to name
-:jusage.
 
 :option. fr
-:target. any
 :file.
 :usage.  specify an additional input resource file
-:jusage.
 
 :option. g
 :target. unused
 :special. scanSearchReplace
 :usage.  find/replace string
-:jusage.
 
 :option. i
-:target. any
 :path.
 :usage.  look in path for include files
-:jusage.
 
 :option. k
-:target. any
 :enumerate. segm_sort
 :usage.  don't sort segments (same as -s0)
-:jusage.
 
 :option. l
-:target. any
 :usage.  program uses LIM 3.2 EMS directly
-:jusage.
 
 :option. m
-:target. any
 :usage.  each instance of program has its own EMS bank
-:jusage.
 
 :option. n
 :target. unused
 :usage.  each instance of program has its own EMS bank
-:jusage.
 
 :option. o
-:target. any
 :usage.  preprocess only
-:jusage.
 
 :option. p
-:target. any
 :usage.  private DLL
-:jusage.
 
 :option. r
-:target. any
 :usage.  only build the resource file
-:jusage.
 
 :usagechain. s Segment and resource sorting method
-:jusage.
 
 :option. s0
-:target. any
 :enumerate. segm_sort
 :usage.  no sorting, leave segments in the linker order
-:jusage.
 
 :option. s1
-:target. any
 :enumerate. segm_sort
 :usage.  move preload segments to front and mark for fast load
-:jusage.
 
 :option. s2
-:target. any
 :enumerate. segm_sort
 :usage.  (*) move preload, data, non-discard. segments to front
-:jusage.
 
 :option. t
-:target. any
 :usage.  protected mode only
-:jusage.
 
 :usagechain. v Verbose output
-:jusage.
 
 :option. v
-:target. any
 :internal.
 :usage.  print tokens as they are scanned
-:jusage.
 
 :option. v1
-:target. any
 :internal.
 :usage.  print grammar rules as they are reduced
-:jusage.
 
 :option. v2
-:target. any
 :internal.
 :usage.  print both tokens and grammar rules
-:jusage.
 
 :option. v3
-:target. any
 :internal.
 :usage.  print tokens as they are scanned
-:jusage.
 
 :option. v4
-:target. any
 :internal.
 :usage.  print grammar rules as they are reduced
-:jusage.
 
 :option. x
-:target. any
 :usage.  ignore the INCLUDE environment variable
-:jusage.
 
 :option. xb
-:target. any
 :usage.  don't create the __<target>__ macro
-:jusage.
 
 :option. xc
-:target. any
 :usage.  ignore the current working directory
-:jusage.
 
 :usagechain. zk Multi-byte characters support
-:jusage.
 
 :option. zk0 zk
-:target. any
 :enumerate. charset
 :usage.  (*) Japanese (Kanji, CP 932)
-:jusage.
 
 :option. zk1
-:target. any
 :enumerate. charset
 :usage.  Chinese (Traditional, CP 950)
-:jusage.
 
 :option. zk2
-:target. any
 :enumerate. charset
 :usage.  Korean (Wansung, CP 949)
-:jusage.
 
 :option. zk3
-:target. any
 :enumerate. charset
 :usage.  Chinese (Simplified, CP 936)
-:jusage.
 
 :option. zku8
-:target. any
 :enumerate. charset
 :usage.  Unicode(NT)/UTF-8(Windows,OS2), UTF-8 source
-:jusage.
 
 :option. zku0
-:target. any
 :enumerate. charset
 :usage.  Japanese (Kanji, CP 932), UTF-8 source
-:jusage.
 
 :option. zm
-:target. any
 :usage.  output Microsoft/IBM format .res files
-:jusage.
 
 :option. zn
-:target. any
 :usage.  don't preprocess the file
-:jusage.
