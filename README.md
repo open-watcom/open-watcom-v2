@@ -5,8 +5,7 @@
 |![Build Status](https://github.com/open-watcom/open-watcom-v2/actions/workflows/release.yml/badge.svg)|Current Release Build|[Github Release](https://github.com/open-watcom/open-watcom-v2/releases/tag/Current-build) , [GitHub Actions Build](https://github.com/open-watcom/open-watcom-v2/actions/workflows/release.yml)|
 |![Build Status](https://github.com/open-watcom/open-watcom-v2/actions/workflows/coverity.yml/badge.svg) ![Coverity Scan](https://scan.coverity.com/projects/2647/badge.svg?flat=1)|Coverity Scan|[Analysis Results](https://scan.coverity.com/projects/open-watcom-open-watcom-v2) , [GitHub Actions Build](https://github.com/open-watcom/open-watcom-v2/actions/workflows/coverity.yml)|
 ||Releases Archive|[**All Github Releases**](https://github.com/open-watcom/open-watcom-v2/releases)
-###
-![WikiDocs](https://github.com/open-watcom/open-watcom-v2/workflows/WikiDocs/badge.svg)[](https://github.com/open-watcom/open-watcom-v2/actions?query=workflow%3AWikiDocs)
+|![WikiDocs](https://github.com/open-watcom/open-watcom-v2/workflows/WikiDocs/badge.svg)[](https://github.com/open-watcom/open-watcom-v2/actions?query=workflow%3AWikiDocs)|Wiki Documentation||
 ###
 ## Welcome to the Open Watcom v2 Project! 
 
