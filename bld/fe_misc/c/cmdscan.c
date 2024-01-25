@@ -208,33 +208,47 @@ void CmdScanSwitchBackup(       // BACK UP SCANNER TO START OF SWITCH
 #endif
 
 
-size_t CmdScanOption(           // SCAN AN OPTION
+size_t CmdScanQuotedString(     // SCAN AN OPTION
     char const **option )       // - addr( option pointer )
 {
     char const *str_beg;        // - start of string
     int ch;
+    int quote;
 
+    quote = *(unsigned char *)cmd.curr_ptr++;
     *option = str_beg = cmd.curr_ptr;
-    if( *cmd.curr_ptr == '"' ) {
-        for( cmd.curr_ptr++; (ch = *(unsigned char *)cmd.curr_ptr) != '\0'; cmd.curr_ptr++ ) {
-            if( ch == '"' ) {
-                cmd.curr_ptr++;
-                break;
-            }
-            // '"\\"' means '\', not '\"'
-            if( ch == '\\' ) {
-                if( cmd.curr_ptr[1] == '\\' ) {
-                    cmd.curr_ptr++;
-                } else if( cmd.curr_ptr[1] == '"' ) {
-                    cmd.curr_ptr++;
-                }
-            }
+    while( (ch = *(unsigned char *)cmd.curr_ptr) != '\0' ) {
+        cmd.curr_ptr++;
+        if( ch == quote ) {
+            str_beg++;
+            break;
         }
-    } else {
-        while( !CmdScanSwEnd() ) {
-            cmd.curr_ptr++;
+        // '"\\"' means '\', not '\"'
+        if( ch == '\\' ) {
+            ch = *(unsigned char *)cmd.curr_ptr;
+            if( ch == '\\' || ch == '"' ) {
+                cmd.curr_ptr++;
+            }
         }
     }
+    return( cmd.curr_ptr - str_beg );
+}
+
+size_t CmdScanOption(           // SCAN AN OPTION
+    char const **option,        // - addr( option pointer )
+    bool *quoted )              // - addr( quoted )
+{
+    char const *str_beg;        // - start of string
+
+    if( *cmd.curr_ptr == '"' ) {
+        *quoted = true;
+        return( CmdScanQuotedString( option ) );
+    }
+    *option = str_beg = cmd.curr_ptr;
+    while( !CmdScanSwEnd() ) {
+        cmd.curr_ptr++;
+    }
+    *quoted = false;
     return( cmd.curr_ptr - str_beg );
 }
 
@@ -276,7 +290,8 @@ size_t CmdScanId(               // SCAN AN IDENTIFIER
 
 
 size_t CmdScanFilename(         // SCAN A FILE NAME
-    char const **option )       // - addr( option pointer )
+    char const **option,        // - addr( option pointer )
+    bool *quoted )              // - addr( quoted )
 {
     char const *str_beg;        // - start of string
     int ch;
@@ -287,20 +302,8 @@ size_t CmdScanFilename(         // SCAN A FILE NAME
             cmd.curr_ptr++;
         }
     } else if( *cmd.curr_ptr == '"' ) {
-        for( cmd.curr_ptr++; (ch = *(unsigned char *)cmd.curr_ptr) != '\0'; cmd.curr_ptr++ ) {
-            if( ch == '"' ) {
-                cmd.curr_ptr++;
-                break;
-            }
-            // '"\\"' means '\', not '\"'
-            if( ch == '\\' ) {
-                if( cmd.curr_ptr[1] == '\\' ) {
-                    cmd.curr_ptr++;
-                } else if( cmd.curr_ptr[1] == '"' ) {
-                    cmd.curr_ptr++;
-                }
-            }
-        }
+        *quoted = true;
+        return( CmdScanQuotedString( option ) );
     } else {
         for( ; (ch = *(unsigned char *)cmd.curr_ptr) != '\0'; cmd.curr_ptr++ ) {
             if( isspace( ch ) ) {
@@ -308,6 +311,7 @@ size_t CmdScanFilename(         // SCAN A FILE NAME
             }
         }
     }
+    *quoted = false;
     return( cmd.curr_ptr - str_beg );
 }
 

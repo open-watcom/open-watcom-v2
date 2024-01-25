@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -108,9 +108,6 @@ bool OPT_RECOG_LOWER            // RECOGNIZE LOWERCASE CHAR
 ;
 void OPT_UNGET                  // UNGET A CHARACTER
     ( void )
-;
-void StripQuotes                // STRIP QUOTES FROM A STRING
-    ( char *fname )             // - the string
 ;
 
 // The following are required to be supplied by the front end

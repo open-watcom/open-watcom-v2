@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,7 +46,7 @@ typedef struct ctx_cl_env       CTX_CL_ENV;
 typedef union  ctx_cl           CTX_CL;
 
 /*
- * CTX_CL_BASE -- base for all contexts¨
+ * CTX_CL_BASE -- base for all contextsï¿½
  */
 struct ctx_cl_base
 {   CTX_CLTYPE ctx_type;        // - type of context
@@ -224,15 +224,15 @@ void CmdLnCtxInfo( void )
         if( entry->base.sw_ptr != NULL ) {
             size_t size;
             char const *not_used;
+            bool quoted;
             char const *old = CmdScanAddr();
             CmdScanInit( entry->base.sw_ptr );
             CmdScanChar();
-            size = CmdScanOption( &not_used ) + 1;
+            CmdScanOption( &not_used, &quoted );
+            size = CmdScanAddr() - entry->base.sw_ptr;
             CmdScanInit( old );
             VbufConcStr( &buf, ", switch: " );
-            for( old = entry->base.sw_ptr; size > 0; ++old, --size ) {
-                VbufConcChr( &buf, *old );
-            }
+            VbufConcVector( &buf, size, entry->base.sw_ptr );
         }
         InfMsgPtr( INF_SWITCH, VbufString( &buf ) );
     }

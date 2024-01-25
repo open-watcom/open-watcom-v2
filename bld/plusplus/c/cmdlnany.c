@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -449,50 +449,33 @@ static void handleOptionEW( OPT_STORAGE *data, bool value )
 #include "cmdlnprs.gc"
 
 static bool openCmdFile(        // OPEN A COMMAND FILE
-    char const *filename,       // - file name
-    size_t size )               // - size of name
+    char const *filename )      // - file name
 {
-    char fnm[_MAX_PATH];        // - buffer for name
-
-    stxvcpy( fnm, filename, size );
-    StripQuotes( fnm );
-    return( IoSuppOpenSrc( fnm, FT_CMD ) );
+    return( IoSuppOpenSrc( filename, FT_CMD ) );
 }
 
 static const char *get_env(     // GET ENVIRONMENT VAR
-    const char *var,            // - variable name
-    size_t len )                // - length of name
+    const char *var )           // - variable name
 {
-    char        buf[128];       // - used to make a string
-    const char  *env;           // - environment name
-
-    if( len >= sizeof( buf ) ) {
-        env = NULL;
-    } else {
-        stxvcpy( buf, var, len );
-        env = CppGetEnv( buf );
-    }
-    return( env );
+    return( CppGetEnv( var ) );
 }
 
 static void scanInputFile(       // PROCESS NAME OF INPUT FILE
     void )
 {
-    char filename[_MAX_PATH];   // - scanned file name
-    size_t len;                 // - length of file name
-    char const *fnm;            // - file name in command line
+    OPT_STRING *fname;
 
-    len = CmdScanFilename( &fnm );
+    fname = NULL;
+    OPT_GET_FILE( &fname );
     ++CompInfo.compfile_max;
     if( CompInfo.compfile_max == CompInfo.compfile_cur ) {
         if( WholeFName == NULL ) {
-            stxvcpy( filename, fnm, len );
-            StripQuotes( filename );
-            WholeFName = FNameAdd( filename );
+            WholeFName = FNameAdd( fname->data );
         } else {
             CErr1( ERR_CAN_ONLY_COMPILE_ONE_FILE );
         }
     }
+    OPT_CLEAN_STRING( &fname );
 }
 
 
@@ -529,9 +512,8 @@ static void procOptions(        // PROCESS AN OPTIONS LINE
     const char *str )           // - scan position in command line
 {
     int c;                      // - next character
-    char const *fnm;            // - scanned @ name
     const char *env;            // - environment name
-    size_t len;                 // - length of file name
+    OPT_STRING *fname;
 
     if( indirectionLevel >= MAX_INDIRECTION ) {
         BadCmdLine( ERR_MAX_CMD_INDIRECTION );
@@ -551,24 +533,26 @@ static void procOptions(        // PROCESS AN OPTIONS LINE
                     BadCmdLine( ERR_INVALID_OPTION );
                 }
             } else if( c == '@' ) {
+                fname = NULL;
                 CmdScanSkipWhiteSpace();
-                len = CmdScanFilename( &fnm );
-                env = get_env( fnm, len );
+                OPT_GET_FILE( &fname );
+                env = get_env( fname->data );
                 if( NULL == env ) {
-                    if( openCmdFile( fnm, len ) ) {
+                    if( openCmdFile( fname->data ) ) {
                         CmdLnCtxPushCmdFile( SrcFileCurrent() );
                         processCmdFile( data );
                         CmdLnCtxPop();
                     } else {
-                        CmdLnCtxPushEnv( fnm );
+                        CmdLnCtxPushEnv( fname->data );
                         BadCmdLine( ERR_BAD_CMD_INDIRECTION );
                         CmdLnCtxPop();
                     }
                 } else {
-                    CmdLnCtxPushEnv( fnm );
+                    CmdLnCtxPushEnv( fname->data );
                     procOptions( data, env );
                     CmdLnCtxPop();
                 }
+                OPT_CLEAN_STRING( &fname );
             } else {
                 CmdScanUngetChar();
                 scanInputFile();
