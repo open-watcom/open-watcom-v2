@@ -51,6 +51,9 @@ The directory layout is as follows:
         *.ctl files which are scripts for the builder tool (see below)
         and make files (makeint et al.).
 
+    build\binbuild
+      - This is where all build tools created during phase one are placed.
+
     docs
       - Here is everything related to documentation, sources and tools.
 
@@ -61,9 +64,6 @@ The directory layout is as follows:
     contrib
       - Third party source code which is not integral part of Open Watcom.
         This directory contains especially several DOS extenders.
-
-    build\bin
-      - This is where all build tools created during phase one are placed.
 
     rel
       - This is default location where the software we actually ship gets
