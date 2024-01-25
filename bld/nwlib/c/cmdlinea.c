@@ -46,10 +46,10 @@ static bool ParseOption( operation *ar_mode )
             Usage();
             break;
         case 'c':
-            if( Options.no_c_warn ) {
+            if( Options.no_create_warn ) {
                 FatalError( ERR_DUPLICATE_OPTION, start );
             }
-            Options.no_c_warn = true;
+            Options.no_create_warn = true;
             break;
         case 'd':
             if( *ar_mode != OP_NONE ) {

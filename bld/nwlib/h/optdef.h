@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -91,7 +91,7 @@ typedef struct {
     boolbit         strip_library    :1;
     boolbit         verbose          :1;
     boolbit         update           :1; //update older files only
-    boolbit         no_c_warn        :1; //no create lib warning
+    boolbit         no_create_warn   :1; //no create lib warning
     boolbit         ar               :1;
     boolbit         coff_import_long :1; // generate old long format of coff import library
     // flags
