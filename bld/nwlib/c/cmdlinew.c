@@ -374,7 +374,7 @@ static bool ParseOption( void )
         if( isdigit( *(unsigned char *)begptr ) ) {
             page_size = strtoul( begptr, (char **)&endptr, 0 );
         }
-        if( endptr == begptr || *endptr != '\0' ) {
+        if( endptr == begptr ) {
             FatalError( ERR_BAD_CMDLINE, start );
         }
         if( errno == ERANGE || page_size == 0 || page_size > MAX_PAGE_SIZE ) {
