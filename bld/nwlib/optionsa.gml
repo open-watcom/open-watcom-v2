@@ -94,40 +94,23 @@
 :cmt.
 
 
-:title.  Usage: %s <command> [<modifiers>] <archive> [modules]
-:jtitle. 使用法： %s <command> [<modifiers>] <archive> [modules]
-:titleu.  Usage: %C <command> [<modifiers>] <archive> [modules]
-:jtitleu. 使用法： %C <command> [<modifiers>] <archive> [modules]
+:title.  Usage: %s <options> <archive> [modules]
+:jtitle. 使用法： %s <options> <archive> [modules]
+:titleu.  Usage: %C <options> <archive> [modules]
+:jtitleu. 使用法： %C <options> <archive> [modules]
 
 :title.
-:jtitle.
 
-:title.  Modifiers:
-:jtitle. 修飾子：
-
-:title.  . -c     create archive
-:jtitle. . -c     アーカイブを作成
-
-:title.  . -u     update (only with -r command)
-:jtitle. . -u     更新（-rコマンドのみ）
-
-:title.  . -v     verbose output
-:jtitle. . -v     詳細な出力
-
-:title.
-:jtitle.
-
-:title.  Commands:
-:jtitle. コマンド：
+:title.  Options:
+:jtitle. オプション：
 
 :option. ?
 :usage.  .     display this screen
 :jusage. .     この画面を表示します
 
 :option. c
-:internal.
-:usage.  .     create archive
-:jusage. .     アーカイブを作成
+:usage.  .     suppress create archive message
+:jusage. .     アーカイブ作成メッセージを抑制する
 
 :option. d
 :usage.  .     delete modules from archive
@@ -137,25 +120,31 @@
 :usage.  .     display this screen
 :jusage. .     この画面を表示します
 
+:option. m
+:target. unused
+:usage.  option m
+
 :option. p
 :target. unused
-:usage.  unused
+:usage.  option p
 
 :option. r
 :usage.  .     insert or replace modules
 :jusage. .     モジュールの挿入または交換
+
+:option. q
+:target. unused
+:usage.  option q
 
 :option. t
 :usage.  .     display modules or content
 :jusage. .     モジュールまたはコンテンツを表示する
 
 :option. u
-:internal.
 :usage.  .     update (only with -r command)
 :jusage. .     更新（-rコマンドのみ）
 
 :option. v
-:internal.
 :usage.  .     verbose output
 :jusage. .     詳細な出力
 
