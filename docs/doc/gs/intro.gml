@@ -24,8 +24,9 @@ Novell NLMs,
 Windows 3.x,
 Windows 95/98/Me,
 Win32s,
+Windows NT/2000/XP upto Windows 11 (Win32)
 and
-Windows NT/2000/XP (Win32).
+Linux.
 .np
 You should read the entire contents of this booklet, as it contains
 information on new programs and modifications that have been made
@@ -50,13 +51,14 @@ been demanding:
 The IDE allows you to easily edit, compile, link, debug and build
 applications for 16-bit systems like DOS, OS/2 1.x, and Windows 3.x
 and 32-bit systems like extended DOS, Novell NLMs, OS/2,
-Windows 3.x (Win32s), Windows 95/98/Me, and Windows NT/2000/XP.
+Windows 3.x (Win32s), Windows 95/98/Me, Windows NT/2000/XP upto Windows 11 and Linux.
 Projects can be made up of multiple targets which permit a project to
 include EXEs and DLLs.
 The IDE produces makefiles for the project which can be viewed and
 edited with a text editor.
-The IDE is hosted under Windows 3.x, Windows 95/98/Me, Windows NT/2000/XP,
-and 32-bit OS/2.
+The IDE is hosted under Windows 3.x, Windows 95/98/Me,
+Windows NT/2000/XP upto Windows 11 and 32-bit OS/2.
+(There is no IDE on Linux yet).
 .cp 10
 .point The Widest Range of Intel x86 Platforms
 .begnote
@@ -73,7 +75,9 @@ Windows 3.x (IDE)
 .bull
 Windows 95/98/Me (IDE and command line)
 .bull
-Windows NT/2000/XP (IDE and command line)
+Windows NT/2000/XP upto Windows 11 (IDE and command line)
+.bull
+Linux (command line)
 .endbull
 .note 16-bit Target Platforms
 .ix 'target platforms supported'
@@ -81,7 +85,7 @@ Windows NT/2000/XP (IDE and command line)
 .bull
 DOS
 .bull
-Windows 3.x
+Windows 1 upto Windows 3.x
 .bull
 OS/2 1.x
 .endbull
@@ -94,7 +98,7 @@ Win32s
 .bull
 Windows 95/98/Me
 .bull
-Windows NT/2000/XP
+Windows NT/2000/XP upto Windows 11
 .bull
 32-bit OS/2
 .bull
@@ -104,18 +108,20 @@ Novell NLMs
 .point Cross-Platform Development Tools
 .ix 'cross-platform'
 The core tools in the package permit cross-platform development that
-allows developers to exploit the advanced features of today's popular
-32-bit operating systems, including Windows 95/98/Me, Windows NT/2000/XP,
-and OS/2. Cross-platform support allows you to develop on a host development
+allows developers to exploit the advanced features of many well known
+32-bit operating systems, including Windows 95/98/Me,
+Windows NT/2000/XP upto Windows 11, OS/2 and Linux.
+Cross-platform support allows you to develop on a host development
 environment for execution on a different target system.
 .point Multi-Platform Debugger
 The new debugger advances developer productivity. New features include
 redesigned interface, ability to set breakpoints on nested function
 calls, improved C++ and DLL debugging, reverse execution, and
 configurable interface. Graphical versions of the debugger are
-available under Windows 3.x, Windows 95/98/Me, Windows NT/2000/XP, and
-32-bit OS/2. Character versions of the debugger are available under DOS,
-Windows 3.x, Windows NT/2000/XP, and 32-bit OS/2.
+available under Windows 3.x, Windows 95/98/Me,
+Windows NT/2000/XP upto Windows 11, and 32-bit OS/2.
+Character versions of the debugger are available under DOS,
+Windows 3.x, Windows NT/2000/XP upto Windows 11, 32-bit OS/2 and Linux.
 For VIDEO fans, we have kept the command line compatibility from the
 original debugger.
 .if '&lang' eq 'FORTRAN 77' .do begin
@@ -137,11 +143,12 @@ efforts on these areas and improve your application's performance.
 .point Editor
 .ix 'editor'
 The &edname is a context sensitive source editor, integrated into the
-Windows 3.x, Windows 95/98/Me and Windows NT/2000/XP version of the IDE.
+Windows 3.x, Windows 95/98/Me and Windows NT/2000/XP (upto Wondows 11)
+version of the IDE.
 .point Graphical Development Tools
 .ix 'GUI tools'
-&product includes a suite of graphical development tools to aid
-development of Windows 3.x, Windows 95/98/Me and Windows NT/2000/XP
+&product includes a suite of graphical development tools to aid development
+of Windows 3.x, Windows 95/98/Me and Windows NT/2000/XP upto Windows 11
 applications. The development tools include:
 .begnote $setptnt 12
 .note Resource Editors
@@ -170,8 +177,8 @@ Monitors all DDE activity occurring in the system.
 .note &drwc
 .ix '&drwc'
 Enables you to debug your program by examining both the program and
-the system after an exception occurs; monitors native applications
-running under Windows 3.x, Windows 95/98/Me or Windows NT/2000/XP.
+the system after an exception occurs; monitors native applications running
+under Windows 3.x, Windows 95/98/Me or Windows NT/2000/XP upto Windows 11.
 .endnote
 .point Assembler
 An assembler is included in the package.
@@ -260,8 +267,7 @@ and offer a resolution. Here is a list of information that will help
 technical support solve the problem:
 .begpoint $break
 .point Contact information
-We would like your name, as well as telephone and fax numbers where
-you can be reached during the day.
+We would like your name, as well as your email adress, where you can be reached.
 .point Product information
 Please tell us the product name and exact version number.
 .point Hardware configuration
@@ -280,7 +286,7 @@ link options is ideal.
 .*
 .np
 There are a number of good books and references that can help you
-answer your questions. Following is a list of some of the books and
+answer your questions. Following is an old list of some of the books and
 documents we feel might be helpful. This is by no means an exhaustive
 list. Contact your local bookstore for additional information.
 .*
