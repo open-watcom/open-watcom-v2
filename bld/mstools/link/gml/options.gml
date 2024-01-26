@@ -93,6 +93,10 @@
 :cmt. Otherwise, English text defined with :title. or :use. tag will be used instead.
 :cmt.
 
+:cmt.
+:cmt. MS Linker LINK options are not case-sensitive
+:cmt.
+
 
 :argequal. :
 

@@ -93,6 +93,10 @@
 :cmt. Otherwise, English text defined with :title. or :use. tag will be used instead.
 :cmt.
 
+:cmt.
+:cmt. MS Make NMAKE options are not case-sensitive
+:cmt.
+
 
 :argequal. :
 
@@ -109,40 +113,40 @@
 :usage. a way to reserve storage space for tagets and macros in OPT_STORAGE
 
 :cmt     A
-:option. A
+:option. a
 :immediate. parse_combining
 :usage. build all evaluated targets
 
 :cmt     B
-:option. B
+:option. b
 :immediate. parse_combining
 :internal.
 :usage. forces build even if timestamps are equal
 
 :cmt     C
-:option. C
+:option. c
 :immediate. parse_combining
 :internal.
 :usage. suppress output messages
 
 :cmt     D
-:option. D
+:option. d
 :immediate. parse_combining
 :usage. display build information
 
 :cmt     E
-:option. E
+:option. e
 :immediate. parse_combining
 :internal.
 :usage. override env-var macros
 
 :cmt     F
-:option. F
+:option. f
 :special. parse_F <filename>
 :usage. specifies filename as a makefile
 
 :cmt     HELP
-:option. HELP
+:option. help
 :usage. display brief usage message
 
 :cmt     \?
@@ -150,23 +154,23 @@
 :usage. display brief usage message
 
 :cmt     I
-:option. I
+:option. i
 :immediate. parse_combining
 :usage. ignore exit codes from commands
 
 :cmt     K
-:option. K
+:option. k
 :immediate. parse_combining
 :usage. build unrelated targets on error
 
 :cmt     L
-:option. L
+:option. l
 :immediate. parse_combining
 :internal.
 :usage. don't display copyright banner
 
 :cmt     N
-:option. N
+:option. n
 :immediate. parse_combining
 :usage. display commands but do not execute
 
@@ -174,49 +178,49 @@
 :usage. don't invoke the Watcom tool
 
 :cmt     NOLOGO
-:option. NOLOGO
+:option. nologo
 :usage. don't display copyright banner
 
 :cmt     P
-:option. P
+:option. p
 :immediate. parse_combining
 :usage. display MAKE information
 
 :cmt     Q
-:option. Q
+:option. q
 :immediate. parse_combining
 :usage. check time stamps but do not build
 
 :cmt     R
-:option. R
+:option. r
 :immediate. parse_combining
 :internal.
 :usage. ignore predefined rules/macros
 
 :cmt     S
-:option. S
+:option. s
 :immediate. parse_combining
 :usage. suppress executed-commands display
 
 :cmt     T
-:option. T
+:option. t
 :immediate. parse_combining
 :usage. change time stamps but do not build
 
 :cmt     U
-:option. U
+:option. u
 :immediate. parse_combining
 :internal.
 :usage. dump inline files
 
 :cmt     Y
-:option. Y
+:option. y
 :immediate. parse_combining
 :internal.
 :usage. disable batch-mode
 
 :cmt     X
-:option. X
+:option. x
 :special. parse_X <filename>
 :internal.
 :usage. sends NMAKE error output to filename

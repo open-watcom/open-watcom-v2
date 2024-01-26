@@ -93,6 +93,10 @@
 :cmt. Otherwise, English text defined with :title. or :use. tag will be used instead.
 :cmt.
 
+:cmt.
+:cmt. MS Compiler CL options are case-sensitive except /HELP
+:cmt.
+
 
 :noequal.
 
@@ -289,7 +293,10 @@
 :internal.
 :usage. set maximum identifier length
 
-:option. help HELP ?
+:option. help
+:usage. get help
+
+:option. ?
 :usage. get help
 
 :option. \I

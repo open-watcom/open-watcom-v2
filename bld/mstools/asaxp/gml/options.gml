@@ -93,6 +93,13 @@
 :cmt. Otherwise, English text defined with :title. or :use. tag will be used instead.
 :cmt.
 
+:cmt.
+:cmt. MS Assembler ASAXP options are probably case-sensitive
+:cmt.  I am not able to search any source which confirm it
+:cmt.
+:cmt. OW ASAXP clone use non case-sensitive options
+:cmt.
+
 
 :argequal. :
 

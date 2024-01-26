@@ -111,7 +111,7 @@
 
 :chain. o v
 
-:option. ?
+:option. ? h
 :usage. print this message
 
 :option. d
@@ -126,9 +126,6 @@
 :option. fo
 :file.
 :usage. set output filename (applies to the first asm_file)
-
-:option. h
-:usage. print this message
 
 :option. i
 :path.
