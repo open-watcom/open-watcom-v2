@@ -320,6 +320,12 @@ void ProcessCmdLine( char *argv[] )
             }
         }
     }
+    if( Options.ar ) {
+        while( (cmd = CmdList) != NULL ) {
+            cmd->ops = ar_mode;
+            cmd = cmd->next;
+        }
+    }
     if( Options.ar && CmdList != NULL && Options.explode ) {
         Options.explode = false;
     } else if( CmdList == NULL && !Options.list_contents && !Options.explode && !Options.new_library ) {
