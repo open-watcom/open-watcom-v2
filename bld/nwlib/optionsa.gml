@@ -93,6 +93,11 @@
 :cmt. Otherwise, English text defined with :title. or :use. tag will be used instead.
 :cmt.
 
+:cmt. dmpqrtx options must use '-' option character (latest POSIX standard)
+:cmt. for backward compatibility they can be used without '-' option character
+:cmt. it is control by targ1 target, if targ1 is defined then it uses full set
+:cmt. of options with '-' option character otherwise only dmpqrtx options are selected 
+:cmt. to use it without '-' option character
 
 :title.  Usage: %s <options> <archive> [modules]
 :jtitle. 使用法： %s <options> <archive> [modules]
@@ -105,10 +110,12 @@
 :jtitle. オプション：
 
 :option. ?
+:target. targ1
 :usage.  .     display this screen
 :jusage. .     この画面を表示します
 
 :option. c
+:target. targ1
 :usage.  .     suppress create archive message
 :jusage. .     アーカイブ作成メッセージを抑制する
 
@@ -117,34 +124,40 @@
 :jusage. .     アーカイブからモジュールを削除する
 
 :option. h
+:target. targ1
 :usage.  .     display this screen
 :jusage. .     この画面を表示します
 
 :option. m
 :target. unused
+:internal.
 :usage.  option m
 
 :option. p
 :target. unused
+:internal.
 :usage.  option p
+
+:option. q
+:target. unused
+:internal.
+:usage.  option q
 
 :option. r
 :usage.  .     insert or replace modules
 :jusage. .     モジュールの挿入または交換
-
-:option. q
-:target. unused
-:usage.  option q
 
 :option. t
 :usage.  .     display modules or content
 :jusage. .     モジュールまたはコンテンツを表示する
 
 :option. u
+:target. targ1
 :usage.  .     update (only with -r command)
 :jusage. .     更新（-rコマンドのみ）
 
 :option. v
+:target. targ1
 :usage.  .     verbose output
 :jusage. .     詳細な出力
 

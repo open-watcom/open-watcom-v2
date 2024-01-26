@@ -379,6 +379,8 @@
 :jusage.
 
 :option. x
+:file.
+:optional.
 :usage.  explode all objects in library
 :jusage. ライブラリからすべてのオブジェクトを取り出します
 

@@ -197,4 +197,4 @@ usagew.gh $(exetarg_qnx_res) : ../optionsw.gml $(__MAKEFILES__)
 
 usagea.gh : ../optionsa.gml $(__MAKEFILES__)
     @%make echo_optencod
-    $(noecho)*optencod -q -rc=MSG_USAGE_AR_BASE -utf8 $[@ . . $@ . $(optencod_targets)
+    $(noecho)*optencod -q -rc=MSG_USAGE_AR_BASE -utf8 $[@ . . $@ . targ1 $(optencod_targets)
