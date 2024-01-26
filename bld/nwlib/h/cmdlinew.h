@@ -30,5 +30,9 @@
 ****************************************************************************/
 
 
-extern void     ParseOneLineWlib( const char *c );
-extern void     SetOptionsWlib( void );
+#include "cmdlnprs.gh"
+#include "cmdlprsw.gh"
+
+
+extern void     ParseOneLineWlib( const char *c, OPT_STORAGE_W *data, bool comment );
+extern void     SetOptionsWlib( OPT_STORAGE_W *data );

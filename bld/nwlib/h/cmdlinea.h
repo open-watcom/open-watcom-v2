@@ -30,5 +30,9 @@
 ****************************************************************************/
 
 
-extern void     ParseOneLineAr( const char *c, operation *ar_mode );
-extern void     SetOptionsAr( operation ar_mode );
+#include "cmdlnprs.gh"
+#include "cmdlprsa.gh"
+
+
+extern void     ParseOneLineAr( const char *c, OPT_STORAGE_A *data, bool comment );
+extern void     SetOptionsAr( OPT_STORAGE_A *data );

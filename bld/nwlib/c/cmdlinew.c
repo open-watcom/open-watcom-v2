@@ -35,6 +35,8 @@
 #include "wio.h"
 #include "cmdlinew.h"
 #include "cmdline.h"
+#include "cmdlnprs.h"
+#include "cmdscan.h"
 
 #include "clibext.h"
 
@@ -47,6 +49,7 @@ typedef struct {
     size_t  size;
 } getline_data;
 
+#include "cmdlprsw.gc"
 
 static void SetPageSize( unsigned_16 new_size )
 {
@@ -65,18 +68,14 @@ static void SetPageSize( unsigned_16 new_size )
 
 static void ParseCommand( void )
 {
-    scan_ctrl       sctrl = SCTRL_SINGLE;
-    const char      *start;
     operation       ops = 0;
 
-    start = CmdGetPos();
-    CmdSkipWhite();
-    switch( CmdGetChar() ) {
+    CmdScanSkipWhiteSpace();
+    switch( CmdScanChar() ) {
     case '-':
         ops = OP_DELETE;
         if( CmdRecogChar( '+' ) ) {
             ops |= OP_ADD;
-            sctrl = SCTRL_NORMAL;
             break;
         }
 #if defined(__UNIX__)
@@ -85,7 +84,6 @@ static void ParseCommand( void )
         if( CmdRecogChar( '*' ) ) {
 #endif
             ops |= OP_EXTRACT;
-            sctrl = SCTRL_NORMAL;
             break;
         }
         break;
@@ -93,12 +91,10 @@ static void ParseCommand( void )
         ops = OP_ADD;
         if( CmdRecogChar( '+' ) ) {
             ops |= OP_IMPORT;
-            AddCommand( ops, SCTRL_IMPORT );
-            return;
+            break;
         }
         if( CmdRecogChar( '-' ) ) {
             ops |= OP_DELETE;
-            sctrl = SCTRL_NORMAL;
             break;
         }
         break;
@@ -110,294 +106,13 @@ static void ParseCommand( void )
         ops |= OP_EXTRACT;
         if( CmdRecogChar( '-' ) ) {
             ops |= OP_DELETE;
-            sctrl = SCTRL_NORMAL;
             break;
         }
         break;
     default:
-        FatalError( ERR_BAD_CMDLINE, start );
+        BadCmdLineOption();
     }
-    AddCommand( ops, sctrl );
-}
-
-static bool ParseOption( void )
-{
-    unsigned long   page_size;
-    const char      *start;
-    const char      *begptr;
-    const char      *endptr;
-    ar_format       libformat;
-    bool            ok;
-
-    ok = true;
-    start = CmdGetPos();
-    CmdGetChar();                       /* skip '-' or '/' option character */
-    CmdSkipWhite();
-    switch( CmdGetLowerChar() ) {
-    case '?':
-    case 'h':
-        Usage();
-        break;
-    case 'b': //                       (don't create .bak file)
-        Options.no_backup = true;
-        break;
-    case 'c': //                       (case sensitive)
-        Options.respect_case = true;
-        break;
-    case 'd': // = <object_output_directory>
-        if( Options.output_directory != NULL ) {
-            FatalError( ERR_DUPLICATE_OPTION, start );
-        }
-        Options.output_directory = GetFilenameExt( SCTRL_EQUAL, NULL );
-        if( access( Options.output_directory, F_OK ) != 0 ) {
-            FatalError( ERR_DIR_NOT_EXIST, Options.output_directory );
-        }
-        break;
-    case 'i':
-        switch( CmdGetLowerChar() ) {
-        case 'n':
-            switch( CmdGetLowerChar() ) {
-            case 'n':
-                Options.nr_ordinal = false;
-                break;
-            case 'o':
-                Options.nr_ordinal = true;
-                break;
-            default:
-                ok = false;
-                break;
-            }
-            break;
-        case 'r':
-            switch( CmdGetLowerChar() ) {
-            case 'n':
-                Options.r_ordinal = false;
-                break;
-            case 'o':
-                Options.r_ordinal = true;
-                break;
-            default:
-                ok = false;
-                break;
-            }
-            break;
-        case 'a':
-            if( Options.processor != WL_PROC_NONE ) {
-                FatalError( ERR_DUPLICATE_OPTION, start );
-            }
-            Options.processor = WL_PROC_AXP;
-            break;
-        case 'm':
-            if( Options.processor != WL_PROC_NONE ) {
-                FatalError( ERR_DUPLICATE_OPTION, start );
-            }
-            Options.processor = WL_PROC_MIPS;
-            break;
-        case 'p':
-            if( Options.processor != WL_PROC_NONE ) {
-                FatalError( ERR_DUPLICATE_OPTION, start );
-            }
-            Options.processor = WL_PROC_PPC;
-            break;
-        case 'i':
-            if( Options.processor != WL_PROC_NONE ) {
-                FatalError( ERR_DUPLICATE_OPTION, start );
-            }
-            Options.processor = WL_PROC_X86;
-            break;
-        case '6':
-            if( Options.processor != WL_PROC_NONE ) {
-                FatalError( ERR_DUPLICATE_OPTION, start );
-            }
-            Options.processor = WL_PROC_X64;
-            break;
-        case 'e':
-            if( Options.filetype != WL_FTYPE_NONE ) {
-                FatalError( ERR_DUPLICATE_OPTION, start );
-            }
-            Options.filetype = WL_FTYPE_ELF;
-            break;
-        case 'c':
-            if( CmdRecogLowerChar( 'l' ) ) {
-                Options.coff_import_long = true;
-            }
-            if( Options.filetype != WL_FTYPE_NONE ) {
-                FatalError( ERR_DUPLICATE_OPTION, start );
-            }
-            Options.filetype = WL_FTYPE_COFF;
-            break;
-        case 'o':
-            if( Options.filetype != WL_FTYPE_NONE ) {
-                FatalError( ERR_DUPLICATE_OPTION, start );
-            }
-            Options.filetype = WL_FTYPE_OMF;
-            break;
-        default:
-            ok = false;
-            break;
-        }
-        break;
-    case 'l': // [ = <list_file_name> ]
-        if( Options.list_contents ) {
-            FatalError( ERR_DUPLICATE_OPTION, start );
-        }
-        Options.list_contents = true;
-        Options.list_file = GetFilenameExt( SCTRL_EQUAL, EXT_LST );
-        break;
-    case 'm': //                       (display C++ mangled names)
-        Options.mangled = true;
-        break;
-    case 'o': // = <out_library_name>
-        if( Options.output_name != NULL ) {
-            FatalError( ERR_DUPLICATE_OPTION, start );
-        }
-        Options.output_name = GetFilenameExt( SCTRL_EQUAL, EXT_LIB );
-        break;
-    case 'q': //                       (don't print header)
-        Options.quiet = true;
-        break;
-    case 'v': //                       (print header)
-        Options.quiet = false;
-        break;
-    case 'x': //                       (explode all objects in library)
-        Options.explode = true;
-#ifdef DEVBUILD
-        Options.explode_count = 0;
-        if( CmdRecogLowerChar( 'n' ) ) {
-            Options.explode_count = 1;
-        }
-        Options.explode_ext = GetFilenameExt( SCTRL_EQUAL, EXT_OBJ );
-        if( Options.explode_count ) {
-            char    cn[20] = FILE_TEMPLATE_MASK;
-            strcpy( cn + sizeof( FILE_TEMPLATE_MASK ) - 1, Options.explode_ext );
-            Options.explode_ext = DupStr( cn );
-        }
-#else
-        Options.explode_ext = GetFilenameExt( SCTRL_EQUAL, NULL );
-#endif
-        break;
-    case 'z':
-        if( CmdRecogLowerChar( 'l' ) ) {
-            if( CmdRecogLowerChar( 'd' ) ) {
-                if( Options.strip_dependency ) {
-                    FatalError( ERR_DUPLICATE_OPTION, start );
-                }
-                Options.strip_dependency = true; //(strip dependency info)
-                break;
-            }
-            if( CmdRecogLowerChar( 'l' ) ) {
-                if( Options.strip_library ) {
-                    FatalError( ERR_DUPLICATE_OPTION, start );
-                }
-                Options.strip_library = true;  //(strip library info)
-                break;
-            }
-            CmdUngetChar();
-        }
-        if( Options.strip_expdef ) {
-            FatalError( ERR_DUPLICATE_OPTION, start );
-        }
-        Options.strip_expdef = true;
-        Options.export_list_file = GetFilenameExt( SCTRL_EQUAL, NULL );
-        break;
-    case 't':
-        if( CmdRecogLowerChar( 'l' ) ) {
-            Options.list_contents = true;
-            Options.terse_listing = true; // (internal terse listing option)
-            break;
-        }
-        Options.trim_path = true; //(trim THEADR pathnames)
-        break;
-    case 'f':
-        switch( CmdGetLowerChar() ) {
-        case 'm':
-            if( Options.libtype != WL_LTYPE_NONE ) {
-                FatalError( ERR_DUPLICATE_OPTION, start );
-            }
-            Options.libtype = WL_LTYPE_MLIB;
-            Options.elf_found = true;
-            break;
-        case 'a':
-            switch( CmdGetLowerChar() ) {
-            case 'b':
-                libformat = AR_FMT_BSD;
-                break;
-            case 'c':
-                libformat = AR_FMT_COFF;
-                break;
-            case 'g':
-                libformat = AR_FMT_GNU;
-                break;
-            default:
-                CmdUngetChar();
-                libformat = AR_FMT_NONE;
-                break;
-            }
-            if( Options.libtype != WL_LTYPE_NONE ) {
-                FatalError( ERR_DUPLICATE_OPTION, start );
-            }
-            if( libformat != AR_FMT_NONE ) {
-                Options.ar_libformat = libformat;
-            }
-            Options.libtype = WL_LTYPE_AR;
-            Options.coff_found = true;
-            break;
-        case 'o':
-            if( Options.libtype != WL_LTYPE_NONE ) {
-                FatalError( ERR_DUPLICATE_OPTION, start );
-            }
-            Options.libtype = WL_LTYPE_OMF;
-            Options.omf_found = true;
-            break;
-        default:
-            ok = false;
-            break;
-        }
-        break;
-    case 'p':
-        /*
-         * following only used by OMF libary format
-         */
-        if( CmdRecogLowerChar( 'a' ) ) {
-            if( Options.page_size ) {
-                FatalError( ERR_DUPLICATE_OPTION, start );
-            }
-            Options.page_size = (unsigned_16)-1;
-            break;
-        }
-        if( Options.page_size > 0 ) {
-            FatalError( ERR_DUPLICATE_OPTION, start );
-        }
-        CmdSkipEqual();
-        begptr = endptr = CmdGetPos();
-        errno = 0;
-        page_size = 0;
-        if( isdigit( *(unsigned char *)begptr ) ) {
-            page_size = strtoul( begptr, (char **)&endptr, 0 );
-        }
-        if( endptr == begptr ) {
-            FatalError( ERR_BAD_CMDLINE, start );
-        }
-        if( errno == ERANGE || page_size == 0 || page_size > MAX_PAGE_SIZE ) {
-            FatalError( ERR_PAGE_RANGE );
-        }
-        CmdSetPos( endptr );
-        SetPageSize( (unsigned_16)page_size );
-        break;
-    case 'n': //                       (always create a new library)
-        Options.new_library = true;
-        break;
-    case 's':
-        Options.strip_line = true;
-        break;
-    default:
-        ok = false;
-        break;
-    }
-    if( !ok ) {
-        CmdSetPos( start );
-    }
-    return( ok );
+    AddCommand( ops );
 }
 
 static void my_getline_init( const char *name, getline_data *fd )
@@ -467,29 +182,31 @@ static void my_getline_fini( getline_data *fd )
     MemFree( fd->buffer );
 }
 
-void ParseOneLineWlib( const char *cmd )
+void ParseOneLineWlib( const char *cmd, OPT_STORAGE_W *data, bool comment )
 {
     const char  *old_cmd;
-    const char  *start;
     const char  *begcmd;
     char        *p;
 
-    old_cmd = CmdSetPos( cmd );
+    old_cmd = CmdScanInit( cmd );
     for( ;; ) {
-        CmdSkipWhite();
-        start = CmdGetPos();
+        CmdScanSkipWhiteSpace();
+        option_start = CmdScanAddr();
         switch( CmdPeekChar() ) {
 #if !defined(__UNIX__)
         case '/':
-            if( !ParseOption() )
-                FatalError( ERR_BAD_OPTION, start[1] );
+            CmdScanChar();              /* skip '/' character */
+            if( OPT_PROCESS_W( data ) )
+                FatalError( ERR_BAD_OPTION, option_start[1] );
             break;
 #endif
         case '-':
             if( CmdList == NULL && Options.input_name == NULL ) {
-                if( ParseOption() ) {
+                CmdScanChar();          /* skip '-' character */
+                if( !OPT_PROCESS_W( data ) ) {
                     break;
                 }
+                CmdScanInit( option_start );
             }
             /* fall through */
 #if !defined(__UNIX__)
@@ -501,55 +218,210 @@ void ParseOneLineWlib( const char *cmd )
             ParseCommand();
             break;
         case '@':
-            CmdGetChar();               /* skip '@' character */
-            begcmd = CmdGetPos();
-            p = GetString( SCTRL_SINGLE );
+            CmdScanChar();              /* skip '@' character */
+            CmdScanSkipWhiteSpace();
+            begcmd = CmdScanAddr();
+            p = GetFilename();
             if( p != NULL ) {
                 const char  *env;
 
                 env = WlibGetEnv( p );
                 MemFree( p );
                 if( env != NULL ) {
-                    ParseOneLineWlib( env );
+                    ParseOneLineWlib( env, data, false );
                     break;
                 }
             }
-            CmdSetPos( begcmd );
-            p = GetFilenameExt( SCTRL_NORMAL, EXT_CMD );
+            CmdScanInit( begcmd );
+            p = GetFilenameExt( EXT_CMD );
             if( p != NULL ) {
                 getline_data    fd;
 
                 my_getline_init( p, &fd );
                 MemFree( p );
                 while( (p = my_getline( &fd )) != NULL ) {
-                    ParseOneLineWlib( p );
+                    ParseOneLineWlib( p, data, true );
                 }
                 my_getline_fini( &fd );
                 break;
             }
-            CmdSetPos( begcmd );
+            CmdScanInit( begcmd );
             break;
-        case '\0':
-        case '#':
-            // comment - blow away line
-            CmdSetPos( old_cmd );
-            return;
         case '?':
             Usage();
             break;
+        case '\0':
+            CmdScanInit( old_cmd );
+            return;
+        case '#':
+            if( comment ) {
+                // comment - blow away line
+                CmdScanInit( old_cmd );
+                return;
+            }
+            /* fall through */
         default:
             if( Options.input_name == NULL ) {
-                Options.input_name = GetFilenameExt( SCTRL_NORMAL, EXT_LIB );
+                Options.input_name = GetFilenameExt( EXT_LIB );
             } else {
-                AddCommand( OP_ADD | OP_DELETE, SCTRL_SINGLE );
+                AddCommand( OP_ADD | OP_DELETE );
             }
             break;
         }
     }
 }
 
-void     SetOptionsWlib( void )
+void SetOptionsWlib( OPT_STORAGE_W *data )
 {
+    if( data->b ) { //                       (don't create .bak file)
+        Options.no_backup = true;
+    }
+    if( data->c ) { //                       (case sensitive)
+        Options.respect_case = true;
+    }
+    if( data->d ) { // = <object_output_directory>
+        Options.output_directory = DupStr( data->d_value->data );
+        OPT_CLEAN_STRING( &(data->d_value) );
+        if( access( Options.output_directory, F_OK ) != 0 ) {
+            FatalError( ERR_DIR_NOT_EXIST, Options.output_directory );
+        }
+    }
+    switch( data->libformat ) {
+    case OPT_ENUM_W_libformat_fab:
+        Options.ar_libformat = AR_FMT_BSD;
+        data->libtype = OPT_ENUM_W_libtype_fa;
+        break;
+    case OPT_ENUM_W_libformat_fac:
+        Options.ar_libformat = AR_FMT_COFF;
+        data->libtype = OPT_ENUM_W_libtype_fa;
+        break;
+    case OPT_ENUM_W_libformat_fag:
+        Options.ar_libformat = AR_FMT_GNU;
+        data->libtype = OPT_ENUM_W_libtype_fa;
+        break;
+    }
+    switch( data->libtype ) {
+    case OPT_ENUM_W_libtype_fa:
+        Options.libtype = WL_LTYPE_AR;
+        Options.coff_found = true;
+        break;
+    case OPT_ENUM_W_libtype_fm:
+        Options.libtype = WL_LTYPE_MLIB;
+        Options.elf_found = true;
+        break;
+    case OPT_ENUM_W_libtype_fo:
+        Options.libtype = WL_LTYPE_OMF;
+        Options.omf_found = true;
+        break;
+    }
+    switch( data->processor ) {
+    case OPT_ENUM_W_processor_i6:
+        Options.processor = WL_PROC_X64;
+        break;
+    case OPT_ENUM_W_processor_ia:
+        Options.processor = WL_PROC_AXP;
+        break;
+    case OPT_ENUM_W_processor_ii:
+        Options.processor = WL_PROC_X86;
+        break;
+    case OPT_ENUM_W_processor_im:
+        Options.processor = WL_PROC_MIPS;
+        break;
+    case OPT_ENUM_W_processor_ip:
+        Options.processor = WL_PROC_PPC;
+        break;
+    }
+    switch( data->filetype ) {
+    case OPT_ENUM_W_filetype_icl:
+        Options.coff_import_long = true;
+        /* fall through */
+    case OPT_ENUM_W_filetype_ic:
+        Options.filetype = WL_FTYPE_COFF;
+        break;
+    case OPT_ENUM_W_filetype_ie:
+        Options.filetype = WL_FTYPE_ELF;
+        break;
+    case OPT_ENUM_W_filetype_io:
+        Options.filetype = WL_FTYPE_OMF;
+        break;
+    }
+    if( data->non_resident == OPT_ENUM_W_non_resident_ino ) {
+        Options.nr_ordinal = true;
+    }
+    if( data->resident == OPT_ENUM_W_resident_iro ) {
+        Options.r_ordinal = true;
+    }
+    if( data->l ) { // [ = <list_file_name> ]
+        Options.list_contents = true;
+        Options.list_file = CopyFilenameExt( data->l_value, EXT_LST );
+        OPT_CLEAN_STRING( &(data->l_value) );
+    }
+    if( data->m ) { //                       (display C++ mangled names)
+        Options.mangled = true;
+    }
+    if( data->n ) { //                       (always create a new library)
+        Options.new_library = true;
+    }
+    if( data->o ) { // = <out_library_name>
+        Options.output_name = CopyFilenameExt( data->o_value, EXT_LIB );
+        OPT_CLEAN_STRING( &(data->o_value) );
+    }
+    switch( data->page_size ) {
+    case OPT_ENUM_W_page_size_pa:
+        Options.page_size = (unsigned_16)-1;
+        break;
+    case OPT_ENUM_W_page_size_p:
+        SetPageSize( (unsigned_16)data->p_value );
+        break;
+    }
+    if( data->q ) { //                       (don't print header)
+        Options.quiet = true;
+    }
+    if( data->s ) {
+        Options.strip_line = true;
+    }
+    if( data->t ) {
+        Options.trim_path = true; //(trim THEADR pathnames)
+    }
+    if( data->tl ) {
+        Options.list_contents = true;
+        Options.terse_listing = true; // (internal terse listing option)
+    }
+    if( data->v ) { //                       (print header)
+        Options.quiet = false;
+    }
+    if( data->x ) { //                       (explode all objects in library)
+        Options.explode = true;
+#ifdef DEVBUILD
+        Options.explode_count = 0;
+        if( CmdRecogLowerChar( 'n' ) ) {
+            Options.explode_count = 1;
+        }
+        if( Options.explode_count ) {
+            char    cn[20] = FILE_TEMPLATE_MASK;
+            strcpy( cn + sizeof( FILE_TEMPLATE_MASK ) - 1, data->x_value->data );
+            Options.explode_ext = DupStr( cn );
+        } else {
+            Options.explode_ext = CopyFilenameExt( data->x_value, EXT_OBJ );
+        }
+        OPT_CLEAN_STRING( &(data->x_value) );
+#else
+        Options.explode_ext = CopyFilename( data->x_value );
+        OPT_CLEAN_STRING( &(data->x_value) );
+#endif
+    }
+    if( data->z ) {
+        Options.strip_expdef = true;
+        Options.export_list_file = CopyFilename( data->z_value );
+        OPT_CLEAN_STRING( &(data->z_value) );
+    }
+    if( data->zld ) {
+        Options.strip_dependency = true; //(strip dependency info)
+    }
+    if( data->zll ) {
+        Options.strip_library = true;  //(strip library info)
+    }
+
     if( CmdList == NULL ) {
         if( !Options.list_contents && !Options.explode && !Options.new_library ) {
             /* Default action: List the input lib */

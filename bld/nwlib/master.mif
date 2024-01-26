@@ -17,7 +17,7 @@ exetarg_name = wlib
 dlltarg_name = wlibd
 !endif
 
-additional_clean = *.gh *.grh *.grc
+additional_clean = *.gh *.grh *.grc *.gc
 
 !include cproj.mif
 !include defrule.mif
@@ -36,12 +36,12 @@ additional_clean = *.gh *.grh *.grc
 #
 # cflags
 #
-.c: ../c;$(lib_misc_dir)/c;$(watcom_dir)/c;$(trmem_dir)
+.c: ../c;$(lib_misc_dir)/c;$(fe_misc_dir)/c;$(watcom_dir)/c;$(trmem_dir)
 !ifdef bootstrap
 .c: $(orl_dir)/c;$(orl_dir)/elf/c;$(orl_dir)/coff/c;$(orl_dir)/omf/c;
 !endif
 
-inc_dirs =  -I. -I.. -I"../h" -I"$(orl_dir)/h" -I"$(lib_misc_dir)/h"
+inc_dirs =  -I. -I.. -I"../h" -I"$(orl_dir)/h" -I"$(lib_misc_dir)/h" -I"$(fe_misc_dir)/h"
 !ifdef bootstrap
 inc_dirs += -I"$(orl_dir)/elf/h" -I"$(orl_dir)/coff/h" -I"$(orl_dir)/omf/h"
 !endif
@@ -59,6 +59,7 @@ extra_cpp_flags_maindrv  = -DDLL_NAME=$(dlltarg_name)
 extra_cpp_flags_memfuncs = $(trmem_cpp_flags)
 
 extra_c_flags_memfuncs = $(trmem_cover_cflags)
+extra_c_flags_cmdlnprs = $(incl_file_opts)fesupp.h
 
 #
 # lflags
@@ -89,6 +90,8 @@ common_objs = &
     $(_subdir_)cmdlinea.obj &
     $(_subdir_)cmdlinew.obj &
     $(_subdir_)cmdline.obj &
+    $(_subdir_)cmdlnprs.obj &
+    $(_subdir_)cmdscan.obj &
     $(_subdir_)error.obj &
     $(_subdir_)implib.obj &
     $(_subdir_)elfobjs.obj &
@@ -193,8 +196,9 @@ optencod_targets += dbg
 
 usagew.gh $(exetarg_qnx_res) : ../optionsw.gml $(__MAKEFILES__)
     @%make echo_optencod
-    $(noecho)*optencod -q -rc=MSG_USAGE_WLIB_BASE -utf8 $(optencod_opt_$(host_os)) $[@ . . $@ . $(optencod_targets)
+    $(noecho)*optencod -q -rc=MSG_USAGE_WLIB_BASE -x=_W -utf8 $(optencod_opt_$(host_os)) $[@ cmdlprsw.gh cmdlprsw.gc $@ cmdlnprs.gh $(optencod_targets)
 
 usagea.gh : ../optionsa.gml $(__MAKEFILES__)
     @%make echo_optencod
-    $(noecho)*optencod -q -rc=MSG_USAGE_AR_BASE -utf8 $[@ . . $@ . targ1 $(optencod_targets)
+    $(noecho)*optencod -q -p -x=_B -utf8 $[@ cmdlprsb.gh cmdlprsb.gc . . $(optencod_targets)
+    $(noecho)*optencod -q -rc=MSG_USAGE_AR_BASE -x=_A -utf8 $[@ cmdlprsa.gh cmdlprsa.gc $@ cmdlnprs.gh targ1 $(optencod_targets)

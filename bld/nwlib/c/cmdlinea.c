@@ -32,123 +32,106 @@
 
 #include "wlib.h"
 #include "cmdlinea.h"
+#include "cmdlineb.h"
 #include "cmdline.h"
+#include "cmdlnprs.h"
+#include "cmdscan.h"
 
 
-static bool ParseOption( operation *ar_mode )
+#include "cmdlprsa.gc"
+#include "cmdlprsb.gc"
+
+
+static bool check_ar_mode( OPT_STORAGE_A *data )
 {
-    const char  *start;
-    int         ch;
-
-    start = CmdGetPos();
-    for( ; (ch = CmdPeekChar()) != '\0' && !isspace( ch ); CmdGetChar() ) {
-        switch( tolower( ch ) ) {
-        case '?':
-            Usage();
-            break;
-        case 'c':
-            if( Options.no_create_warn ) {
-                FatalError( ERR_DUPLICATE_OPTION, start );
-            }
-            Options.no_create_warn = true;
-            break;
-        case 'd':
-            if( *ar_mode != OP_NONE ) {
-                FatalError( ERR_BAD_OPTION, ch );
-            }
-            *ar_mode = OP_DELETE;
-            break;
-        case 'p':
-            //ignore not implemented
-            break;
-        case 'r':
-            if( *ar_mode != OP_NONE ) {
-                FatalError( ERR_BAD_OPTION, ch );
-            }
-            *ar_mode = OP_ADD | OP_DELETE;
-            break;
-        case 't':
-            if( *ar_mode != OP_NONE ) {
-                FatalError( ERR_BAD_OPTION, ch );
-            }
-            *ar_mode = OP_TABLE;
-            Options.list_contents = true;
-            break;
-        case 'u':
-            if( Options.update ) {
-                FatalError( ERR_DUPLICATE_OPTION, start );
-            }
-            Options.update = true;
-            break;
-        case 'v':
-            if( Options.verbose ) {
-                FatalError( ERR_DUPLICATE_OPTION, start );
-            }
-            Options.verbose = true;
-            break;
-        case 'x':
-            if( *ar_mode != OP_NONE ) {
-                FatalError( ERR_BAD_OPTION, ch );
-            }
-            *ar_mode = OP_EXTRACT;
-            break;
-        case '-':
-            break;
-        default:
-            FatalError( ERR_BAD_OPTION, ch );
-        }
-    }
-    return( CmdGetPos() != start );
+    return( data->d || data->r || data->t || data->x );
 }
 
-void ParseOneLineAr( const char *cmd, operation *ar_mode )
+void ParseOneLineAr( const char *cmd, OPT_STORAGE_A *data, bool comment )
 {
     const char  *old_cmd;
     bool        done_options;
 
-    old_cmd = CmdSetPos( cmd );
+    /* unused parameters */ (void)comment;
+
+    old_cmd = CmdScanInit( cmd );
     done_options = false;
     for( ;; ) {
-        CmdSkipWhite();
+        CmdScanSkipWhiteSpace();
+        option_start = CmdScanAddr();
         switch( CmdPeekChar() ) {
         case '\0':
-            CmdSetPos( old_cmd );
+            CmdScanInit( old_cmd );
             return;
         case '-':
             if( !done_options ) {
-                CmdGetChar();           /* skip '-' character */
+                CmdScanChar();           /* skip '-' character */
                 if( CmdRecogChar( '-' ) ) {
                     done_options = true;
                     break;
                 }
-                ParseOption( ar_mode );
+                OPT_PROCESS_A( data );
                 break;
             }
             /* fall through */
         default:
-            if( *ar_mode == OP_NONE ) {
-                ParseOption( ar_mode );
+            if( !check_ar_mode( data ) ) {
+                OPT_PROCESS_B( data );
                 break;
             }
             if( Options.input_name == NULL ) {
-                Options.input_name = GetFilenameExt( SCTRL_NORMAL, EXT_LIB );
+                Options.input_name = GetFilenameExt( EXT_LIB );
             } else {
-                AddCommand( OP_NONE, SCTRL_SINGLE );
+                AddCommand( OP_NONE );
             }
             break;
         }
     }
 }
 
-void     SetOptionsAr( operation ar_mode )
+void SetOptionsAr( OPT_STORAGE_A *data )
 {
-    lib_cmd *cmd;
+    operation   ar_mode;
+    int         cmd_count;
 
-    while( (cmd = CmdList) != NULL ) {
-        cmd->ops = ar_mode;
-        cmd = cmd->next;
+    if( data->c ) {
+        Options.no_create_warn = true;
     }
+    cmd_count = 0;
+    ar_mode = OP_NONE;
+    if( data->d ) {
+        ar_mode |= OP_DELETE;
+        cmd_count++;
+    }
+    if( data->r ) {
+        ar_mode |= OP_ADD | OP_DELETE;
+        cmd_count++;
+    }
+    if( data->t ) {
+        ar_mode |= OP_TABLE;
+        cmd_count++;
+        Options.list_contents = true;
+    }
+    if( data->x ) {
+        ar_mode |= OP_EXTRACT;
+        cmd_count++;
+    }
+    if( cmd_count > 1 ) {
+        FatalError( ERR_BAD_CMDLINE, "commands mixing" );
+    } else {
+        lib_cmd     *cmd;
 
+        while( (cmd = CmdList) != NULL ) {
+            cmd->ops = ar_mode;
+            cmd = cmd->next;
+        }
+    }
+    if( data->u ) {
+        Options.update = true;
+    }
+    if( data->v ) {
+        Options.verbose = true;
+    }
     if( CmdList == NULL ) {
         if( ar_mode == OP_EXTRACT ) {
             Options.explode = true;

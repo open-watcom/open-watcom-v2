@@ -25,23 +25,12 @@
 *
 *  ========================================================================
 *
-* Description:  Library manager command line processing.
+* Description:  Library manager command line processing (AR mode).
+*                backward compatible non-dash commands
 *
 ****************************************************************************/
 
 
-#include "cmdlnprs.gh"
-#include "cmdscan.h"
+#define OPT_STORAGE_B   OPT_STORAGE_A
 
-
-extern lib_cmd      *CmdList;
-extern const char   *option_start;
-
-extern void         InitCmdLine( void );
-extern void         ProcessCmdLine( char *argv[] );
-extern void         FiniCmdLine( void );
-extern char         *CopyFilenameExt( OPT_STRING *src, const char *ext );
-extern char         *GetFilenameExt( const char *ext );
-extern char         *CopyFilename( OPT_STRING *src );
-extern char         *GetFilename( void );
-extern void         AddCommand( operation ops );
+#include "cmdlprsb.gh"

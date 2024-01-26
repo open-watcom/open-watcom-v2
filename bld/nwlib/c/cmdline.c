@@ -38,109 +38,69 @@
 #include "cmdlinea.h"
 #include "cmdlinew.h"
 #include "cmdline.h"
+#include "cmdlnprs.h"
 
 
 #define AR_MODE_ENV     "WLIB_AR"
 
 options_def         Options;
 lib_cmd             *CmdList;
+const char          *option_start = "";
 
 static lib_cmd      **CmdListEnd;
-static const char   *cmd_ptr = NULL;
 
-const char *CmdSetPos( const char *new_cmd )
+static void BadCmdLine( int error_code )
+/***************************************
+ * SIGNAL CMD-LINE ERROR
+ */
 {
-    const char  *old_cmd;
-
-    old_cmd = cmd_ptr;
-    cmd_ptr = new_cmd;
-    return( old_cmd );
+    FatalError( error_code, option_start );
 }
 
-const char *CmdGetPos( void )
+// BAD CHAR DETECTED
+void BadCmdLineChar( void )
 {
-    return( cmd_ptr );
+    BadCmdLine( ERR_BAD_CMDLINE );
 }
-
-int CmdPeekChar( void )
+// BAD ID DETECTED
+void BadCmdLineId( void )
 {
-    return( *(unsigned char *)cmd_ptr );
+    BadCmdLine( ERR_BAD_CMDLINE );
 }
-
-int CmdPeekLowerChar( void )
+// BAD NUMBER DETECTED
+void BadCmdLineNumber( void )
 {
-    return( tolower( *(unsigned char *)cmd_ptr ) );
+    BadCmdLine( ERR_BAD_CMDLINE );
 }
-
-int CmdGetChar( void )
+// BAD PATH DETECTED
+void BadCmdLinePath( void )
 {
-    return( *(unsigned char *)cmd_ptr++ );
+    BadCmdLine( ERR_BAD_CMDLINE );
 }
-
-int CmdGetLowerChar( void )
+// BAD FILE DETECTED
+void BadCmdLineFile( void )
 {
-    return( tolower( *(unsigned char *)cmd_ptr++ ) );
+    BadCmdLine( ERR_BAD_CMDLINE );
 }
-
-bool CmdRecogChar( int ch )
+// BAD TEXT DETECTED
+void BadCmdLineOption( void )
 {
-    if( *(unsigned char *)cmd_ptr == ch ) {
-        ++cmd_ptr;
-        return( true );
-    }
-    return( false );
-}
-
-bool CmdRecogLowerChar( int ch )
-{
-    if( tolower( *(unsigned char *)cmd_ptr ) == ch ) {
-        ++cmd_ptr;
-        return( true );
-    }
-    return( false );
-}
-
-void CmdUngetChar( void )
-{
-    --cmd_ptr;
-}
-
-void CmdSkipWhite( void )
-{
-    while( isspace( *(unsigned char *)cmd_ptr ) ) {
-        ++cmd_ptr;
-    }
-}
-
-void CmdSkipEqual( void )
-{
-    const char  *start;
-
-    start = cmd_ptr;
-    CmdSkipWhite();
-    if( CmdRecogChar( '=' ) ) {
-        CmdSkipWhite();
-    } else {
-        cmd_ptr = start;
-    }
+    BadCmdLine( ERR_BAD_CMDLINE );
 }
 
 static size_t checkExt( const char *fname, size_t len, const char *ext )
 {
     bool        has_ext;
-//    bool        has_path;
     size_t      i;
 
     if( fname == NULL || len == 0 || ext == NULL || *ext == '\0' )
         return( 0 );
     has_ext = false;
-//    has_path = false;
     for( i = 0; i < len; i++ ) {
         switch( fname[i] ) {
         case '\\':
         case '/':
         case ':':
-//            has_path = true;
             has_ext = false;
             break;
         case '.':
@@ -153,112 +113,101 @@ static size_t checkExt( const char *fname, size_t len, const char *ext )
     return( strlen( ext ) + 1 );
 }
 
-static size_t cmdScanString( const char **start, scan_ctrl sctrl )
+char *CopyFilenameExt( OPT_STRING *src, const char *ext )
 {
-    int         quote;
-    int         ch;
-    unsigned    offset;
-
-    if( sctrl == SCTRL_EQUAL ) {
-        CmdSkipEqual();
-    } else {
-        CmdSkipWhite();
-    }
-    quote = *(unsigned char *)cmd_ptr;
-    offset = ( ( quote == '\"' ) || ( sctrl == SCTRL_SINGLE ) && ( quote == '\'' ) ) ? 1 : 0;
-    *start = cmd_ptr = cmd_ptr + offset;
-    if( offset > 0 ) {
-        for( ; (ch = *(unsigned char *)cmd_ptr) != '\0'; cmd_ptr++ ) {
-            if( ch == quote ) {
-                cmd_ptr++;
-                break;
-            }
-        }
-    } else if( sctrl == SCTRL_IMPORT ){
-        bool inquote = false;
-
-        for( ; (ch = *(unsigned char *)cmd_ptr) != '\0'; cmd_ptr++ ) {
-            if( !inquote && isspace( ch ) ) {
-                break;
-            }
-            if( ( ch == '\"' ) || ( ch == '\'' ) ) {
-                inquote = !inquote;
-            }
-        }
-    } else {
-        for( ; (ch = *(unsigned char *)cmd_ptr) != '\0'; cmd_ptr++ ) {
-            if( isspace( ch ) ) {
-                break;
-            }
-        }
-    }
-    return( cmd_ptr - *start - offset );
-}
-
-char *GetString( scan_ctrl sctrl )
-{
-    const char  *src;
-    size_t      len;
-    char        *dst;
-
-    dst = NULL;
-    len = cmdScanString( &src, sctrl );
-    if( len > 0 ) {
-        dst = MemAlloc( len + 1 );
-        strncpy( dst, src, len );
-        dst[len] = '\0';
-    }
-    return( dst );
-}
-
-char *GetFilenameExt( scan_ctrl sctrl, const char *ext )
-{
-    const char  *src;
     size_t      len;
     size_t      len2;
     char        *dst;
 
     dst = NULL;
-    len = cmdScanString( &src, sctrl );
-    if( len > 0 ) {
-        len2 = checkExt( src, len, ext );
-        dst = MemAlloc( len + len2 + 1 );
-        strncpy( dst, src, len );
-        if( len2 > 0 ) {
-            dst[len] = '.';
-            strncpy( dst + len + 1, ext, len2 - 1 );
+    if( src != NULL ) {
+        len = strlen( src->data );
+        if( len > 0 ) {
+            len2 = checkExt( src->data, len, ext );
+            dst = MemAlloc( len + len2 + 1 );
+            strncpy( dst, src->data, len );
+            if( len2 > 0 ) {
+                dst[len] = '.';
+                strncpy( dst + len + 1, ext, len2 - 1 );
+            }
+            dst[len + len2] = '\0';
         }
-        dst[len + len2] = '\0';
     }
     return( dst );
 }
 
-void AddCommand( operation ops, scan_ctrl sctrl )
+char *GetFilenameExt( const char *ext )
+{
+    char        *dst;
+    OPT_STRING  *src;
+
+    src = NULL;
+    OPT_GET_FILE( &src );
+    dst = CopyFilenameExt( src, ext );
+    OPT_CLEAN_STRING( &src );
+    return( dst );
+}
+
+char *CopyFilename( OPT_STRING *src )
+{
+    size_t      len;
+    char        *dst;
+
+    dst = NULL;
+    if( src != NULL ) {
+        len = strlen( src->data );
+        if( len > 0 ) {
+            dst = MemAlloc( len + 1 );
+            strncpy( dst, src->data, len );
+            dst[len] = '\0';
+        }
+    }
+    return( dst );
+}
+
+char *GetFilename( void )
+{
+    char        *dst;
+    OPT_STRING  *src;
+
+    src = NULL;
+    OPT_GET_FILE( &src );
+    dst = CopyFilename( src );
+    OPT_CLEAN_STRING( &src );
+    return( dst );
+}
+
+void AddCommand( operation ops )
 {
     lib_cmd         *cmd;
-    const char      *src;
+    OPT_STRING      *src;
     size_t          len;
 
-    len = cmdScanString( &src, sctrl );
-    if( len > 0 ) {
-        cmd = MemAllocGlobal( sizeof( lib_cmd ) + len );
-        strncpy( cmd->name, src, len );
-        cmd->name[len] = '\0';
-        cmd->fname = NULL;
-        if( ops == OP_EXTRACT ) {
-            char    *p;
+    src = NULL;
+    OPT_GET_FILE( &src );
+    if( src != NULL ) {
+        len = strlen( src->data );
+        if( len > 0 ) {
+            cmd = MemAllocGlobal( sizeof( lib_cmd ) + len );
+            strncpy( cmd->name, src->data, len );
+            cmd->name[len] = '\0';
+            cmd->fname = NULL;
+            if( ops == OP_EXTRACT ) {
+                char    *p;
 
-            p = strchr( cmd->name, '=' );
-            if( p != NULL ) {
-                *p = '\0';
-                cmd->fname = p + 1;
+                p = strchr( cmd->name, '=' );
+                if( p != NULL ) {
+                    *p = '\0';
+                    cmd->fname = p + 1;
+                }
             }
+            cmd->ops = ops;
+            cmd->next = *CmdListEnd;
+            *CmdListEnd = cmd;
+            CmdListEnd = &cmd->next;
         }
-        cmd->ops = ops;
-        cmd->next = *CmdListEnd;
-        *CmdListEnd = cmd;
-        CmdListEnd = &cmd->next;
     }
+    OPT_CLEAN_STRING( &src );
 }
 
 static void FreeCommands( void )
@@ -295,7 +244,8 @@ void ProcessCmdLine( char *argv[] )
 {
     const char  *p;
     lib_cmd     *cmd;
-    operation   ar_mode;
+    OPT_STORAGE_A   dataa;
+    OPT_STORAGE_W   dataw;
 
     p = getWlibModeInfo();
 
@@ -303,28 +253,35 @@ void ProcessCmdLine( char *argv[] )
         Usage();
     }
 
-    ar_mode = OP_NONE;
+    if( Options.ar ) {
+        OPT_INIT_A( &dataa );
+    } else {
+        OPT_INIT_W( &dataw );
+    }
+
     if( p != NULL && *p != '\0' ) {
         if( Options.ar ) {
-            ParseOneLineAr( p, &ar_mode );
+            ParseOneLineAr( p, &dataa, false );
         } else {
-            ParseOneLineWlib( p );
+            ParseOneLineWlib( p, &dataw, false );
         }
     }
     for( argv++; (p = *argv) != NULL; argv++ ) {
         if( *p != '\0' ) {
             if( Options.ar ) {
-                ParseOneLineAr( p, &ar_mode );
+                ParseOneLineAr( p, &dataa, false );
             } else {
-                ParseOneLineWlib( p );
+                ParseOneLineWlib( p, &dataw, false );
             }
         }
     }
 
     if( Options.ar ) {
-        SetOptionsAr( ar_mode );
+        SetOptionsAr( &dataa );
+        OPT_FINI_A( &dataa );
     } else {
-        SetOptionsWlib();
+        SetOptionsWlib( &dataw );
+        OPT_FINI_W( &dataw );
     }
 
     if( !Options.ar ) {
