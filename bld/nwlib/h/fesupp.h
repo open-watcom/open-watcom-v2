@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,27 +31,21 @@
 ****************************************************************************/
 
 
-typedef enum {
-    OP_NONE =           0x0000,
-    OP_DELETE =         0x0001,
-    OP_ADD =            0x0002,
-    OP_EXTRACT =        0x0004,
-    OP_TABLE =          0x0008,
+// FESUPP.H -- front-end independent support
+//
+// This provides macro definitions for the front-end independent support
+//
+//
+#ifndef __FESUPP_H__
+#define __FESUPP_H__
 
-    OP_IMPORT =         0x0010,
-    OP_PRINT =          0x0020,
+#include <string.h>
+#include "memfuncs.h"
 
-    OP_DELETED =        0x0100,
-    OP_ADDED =          0x0200,
-    OP_EXTRACTED =      0x0400,
-    OP_FOUND =          0x0800,
-} operation;
 
-typedef struct lib_cmd {
-    struct      lib_cmd *next;
-    operation   ops;
-    char        *fname;
-    char        name[1];
-} lib_cmd;
+// MACRO DEFINITIONS
 
-extern lib_cmd *CmdList;
+#define _MemoryAllocate( size )     MemAlloc( size )
+#define _MemoryFree( ptr )          MemFree( ptr )
+
+#endif
