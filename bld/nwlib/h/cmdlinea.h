@@ -30,5 +30,5 @@
 ****************************************************************************/
 
 
-extern void ParseOneLineAr( const char *c, operation *ar_mode );
-
+extern void     ParseOneLineAr( const char *c, operation *ar_mode );
+extern void     SetOptionsAr( operation ar_mode );

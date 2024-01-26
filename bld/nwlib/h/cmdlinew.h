@@ -30,7 +30,5 @@
 ****************************************************************************/
 
 
-extern void ParseOneLineWlib( const char *c );
-
-
-
+extern void     ParseOneLineWlib( const char *c );
+extern void     SetOptionsWlib( void );

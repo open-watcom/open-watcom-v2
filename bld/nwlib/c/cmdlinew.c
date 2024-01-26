@@ -547,3 +547,18 @@ void ParseOneLineWlib( const char *cmd )
         }
     }
 }
+
+void     SetOptionsWlib( void )
+{
+    if( CmdList == NULL ) {
+        if( !Options.list_contents && !Options.explode && !Options.new_library ) {
+            /* Default action: List the input lib */
+            if( Options.output_name == NULL ) {
+                Options.list_contents = true;
+                Options.list_file = DupStr( "" );
+            } else { /* Or copy it to the output lib */
+                Options.modified = true;
+            }
+        }
+    }
+}

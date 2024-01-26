@@ -320,22 +320,11 @@ void ProcessCmdLine( char *argv[] )
             }
         }
     }
+
     if( Options.ar ) {
-        while( (cmd = CmdList) != NULL ) {
-            cmd->ops = ar_mode;
-            cmd = cmd->next;
-        }
-    }
-    if( Options.ar && CmdList != NULL && Options.explode ) {
-        Options.explode = false;
-    } else if( CmdList == NULL && !Options.list_contents && !Options.explode && !Options.new_library ) {
-        /* Default action: List the input lib */
-        if( Options.output_name == NULL ) {
-            Options.list_contents = true;
-            Options.list_file = DupStr( "" );
-        } else { /* Or copy it to the output lib */
-            Options.modified = true;
-        }
+        SetOptionsAr( ar_mode );
+    } else {
+        SetOptionsWlib();
     }
 
     if( !Options.ar ) {

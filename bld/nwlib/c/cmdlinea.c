@@ -112,9 +112,6 @@ void ParseOneLineAr( const char *cmd, operation *ar_mode )
         CmdSkipWhite();
         switch( CmdPeekChar() ) {
         case '\0':
-            if( *ar_mode == OP_EXTRACT ) {
-                Options.explode = true;
-            }
             CmdSetPos( old_cmd );
             return;
         case '-':
@@ -139,6 +136,28 @@ void ParseOneLineAr( const char *cmd, operation *ar_mode )
                 AddCommand( OP_NONE, SCTRL_SINGLE );
             }
             break;
+        }
+    }
+}
+
+void     SetOptionsAr( operation ar_mode )
+{
+    lib_cmd *cmd;
+
+    while( (cmd = CmdList) != NULL ) {
+        cmd->ops = ar_mode;
+        cmd = cmd->next;
+    }
+
+    if( CmdList == NULL ) {
+        if( ar_mode == OP_EXTRACT ) {
+            Options.explode = true;
+        } else {
+            if( !Options.list_contents ) {
+                /* Default action: List the input lib */
+                Options.list_contents = true;
+                Options.list_file = DupStr( "" );
+            }
         }
     }
 }
