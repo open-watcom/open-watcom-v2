@@ -40,15 +40,6 @@ extern "C" {
 
 // Standard Command-Line Parsing Routines
 
-void OPT_INIT
-    ( OPT_STORAGE *data )
-;
-void OPT_FINI
-    ( OPT_STORAGE *data )
-;
-bool OPT_PROCESS
-    ( OPT_STORAGE *data )
-;
 void OPT_CLEAN_NUMBER           // CLEAN UP NUMBERS
     ( OPT_NUMBER **h )          // - list
 ;

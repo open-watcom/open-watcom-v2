@@ -144,7 +144,7 @@ bool OPT_GET_ID                 // PARSE: ID
 
     CmdRecogEquals();
     len = CmdScanId( &id );
-    if( len != 0 ) {
+    if( len > 0 ) {
         addString( p, id, len );
         return( true );
     }
