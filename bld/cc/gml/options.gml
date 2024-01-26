@@ -133,8 +133,9 @@
 
 :chain. o p
 
-:option. ?
+:option. ? h
 :target. any
+:usagenochain.
 :usage. print this message
 :jusage. このメッセージを表示します
 
@@ -688,12 +689,6 @@
 :id. . <name>
 :usage. set code group name
 :jusage. コード･グループ名を設定します
-
-:option. h
-:target. any
-:usagenochain.
-:usage. print this message
-:jusage. このメッセージを表示します
 
 :usagechain. h Debugging Information format
 

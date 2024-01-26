@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -848,6 +848,9 @@ static void set_options( OPT_STORAGE *data )
     if( data->zq ) {
         Options.quiet = true;
     }
+    if( data->_question ) {
+        usage_msg();
+    }
 
     switch( data->mem_model ) {
     case OPT_ENUM_mem_model_mt:
@@ -1100,10 +1103,6 @@ static void set_options( OPT_STORAGE *data )
     if( data->fi ) {
         SetStringOption( &ForceInclude, &(data->fi_value) );
     }
-    if( data->h ) {
-        usage_msg();
-    }
-
 }
 
 static void do_init_stuff( char **cmdline )

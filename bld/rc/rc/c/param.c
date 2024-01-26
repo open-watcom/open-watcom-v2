@@ -888,7 +888,7 @@ int SetOptions( OPT_STORAGE *data, const char *infile, const char *outfile )
 {
     const char  *p;
 
-    if( data->h ) {
+    if( data->_question ) {
         CmdLineParms.PrintHelp = true;
         PrintUsage();
         return( 1 );

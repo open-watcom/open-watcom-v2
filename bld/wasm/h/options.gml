@@ -107,13 +107,9 @@
 
 
 :chain. 2 3 4 5 6
-:cmt.:chain. m
 
-:option. ?
-:usage. print this message
-:jusage. このメッセージを表示します
-
-:option. h
+:option. ? h
+:usagenochain.
 :usage. print this message
 :jusage. このメッセージを表示します
 

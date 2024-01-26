@@ -106,7 +106,8 @@
 
 :chain. v zk
 
-:option. h ?
+:option. ? h
+:usagenochain.
 :usage.  print this message
 :jusage. このメッセージを表示します
 
