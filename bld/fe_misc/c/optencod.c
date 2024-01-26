@@ -209,7 +209,6 @@ typedef struct chain {
     size_t          name_len;
     size_t          pattern_len;
     boolbit         usage_used : 1;
-//    boolbit         code_used  : 1;
     char            pattern[1];
 } CHAIN;
 
@@ -395,6 +394,7 @@ static const char *usageMsg[] = {
     "  -l=<lang-n> is the language(number) used for output data",
     "  -n '\0' terminated items",
     "  -nn '\n' terminated items",
+    "  -p generate only parser code",
     "  -q quiet operation",
     "  -rc=<macro-name> generate files for resource compiler",
     "  -t report missing non-english data",
@@ -418,6 +418,7 @@ static struct {
     boolbit     rc                  : 1;
     boolbit     out_utf8            : 1;
     boolbit     report_missing_data : 1;
+    boolbit     parser_only         : 1;
     char        *rc_macro;
     char        *line_term;
     char        *list_sep;
@@ -1932,74 +1933,82 @@ static void startParserH( void )
     ENAME *en;
     FILE *fp;
 
-    if( optFlag.sid != NULL && *optFlag.sid != '\0' ) {
-        fp = ofpg;
-    } else {
-        fp = ofp;
-    }
-    if( fp != NULL ) {
-        fprintf( fp, "typedef struct opt_string OPT_STRING;\n" );
-        fprintf( fp, "struct opt_string {\n" );
-        fprintf( fp, "    OPT_STRING *next;\n" );
-        fprintf( fp, "    char data[1];\n" );
-        fprintf( fp, "};\n" );
-        fprintf( fp, "typedef struct opt_number OPT_NUMBER;\n" );
-        fprintf( fp, "struct opt_number {\n" );
-        fprintf( fp, "    OPT_NUMBER *next;\n" );
-        fprintf( fp, "    unsigned number;\n" );
-        fprintf( fp, "};\n" );
+    if( !optFlag.parser_only ) {
+        if( optFlag.sid != NULL && *optFlag.sid != '\0' ) {
+            fp = ofpg;
+        } else {
+            fp = ofp;
+        }
+        if( fp != NULL ) {
+            fprintf( fp, "#ifndef OPT_STRING\n" );
+            fprintf( fp, "#define OPT_STRING opt_string\n" );
+            fprintf( fp, "typedef struct opt_string {\n" );
+            fprintf( fp, "    struct opt_string *next;\n" );
+            fprintf( fp, "    char data[1];\n" );
+            fprintf( fp, "} opt_string;\n" );
+            fprintf( fp, "#endif\n" );
+            fprintf( fp, "#ifndef OPT_NUMBER\n" );
+            fprintf( fp, "#define OPT_NUMBER opt_number\n" );
+            fprintf( fp, "typedef struct opt_number {\n" );
+            fprintf( fp, "    struct opt_number *next;\n" );
+            fprintf( fp, "    unsigned number;\n" );
+            fprintf( fp, "} opt_number;\n" );
+            fprintf( fp, "#endif\n" );
+        }
+        if( ofp != NULL ) {
+            fprintf( ofp, "typedef struct opt_storage%s OPT_STORAGE%s;\n", optFlag.sid, optFlag.sid );
+            fprintf( ofp, "struct opt_storage%s {\n", optFlag.sid );
+            fprintf( ofp, "    unsigned     timestamp;\n" );
+            for( o = optionList; o != NULL; o = o->next ) {
+                if( o->synonym == NULL ) {
+                    if( o->is_number ) {
+                        if( HAS_OPT_NUMBER( o ) ) {
+                            fprintf( ofp, "    OPT_NUMBER   *%s;\n", o->value_field_name );
+                        } else {
+                            fprintf( ofp, "    unsigned     %s;\n", o->value_field_name );
+                        }
+                    } else if( o->is_char ) {
+                        fprintf( ofp, "    int          %s;\n", o->value_field_name );
+                    } else if( HAS_OPT_STRING( o ) ) {
+                        fprintf( ofp, "    OPT_STRING   *%s;\n", o->value_field_name );
+                    }
+                    /*
+                     * the enumeration is shared by several options that
+                     * require enumeration timestamp to be processed instead
+                     * of option simple timestamp
+                     * in case of enumeration it is skiped and processed in next code
+                     */
+                    if( o->enumerate == NULL ) {
+                        if( o->is_timestamp ) {
+                            fprintf( ofp, "    unsigned     %s_timestamp;\n", o->field_name );
+                        }
+                    }
+                }
+            }
+            /*
+             * this section process only enumerations (field + timestamp)
+             */
+            for( en = enumList; en != NULL; en = en->next ) {
+                if( !en->used )
+                    continue;
+                fprintf( ofp, "    unsigned     %s;\n", en->name );
+                if( en->is_timestamp ) {
+                    fprintf( ofp, "    unsigned     %s_timestamp;\n", en->name );
+                }
+            }
+            for( o = optionList; o != NULL; o = o->next ) {
+                if( o->synonym == NULL ) {
+                    if( o->enumerate == NULL ) {
+                        fprintf( ofp, "    boolbit      %s : 1;\n", o->field_name );
+                    }
+                }
+            }
+            fprintf( ofp, "};\n" );
+            fprintf( ofp, "extern void " FN_INIT "%s( OPT_STORAGE%s *data );\n", optFlag.sid, optFlag.sid );
+            fprintf( ofp, "extern void " FN_FINI "%s( OPT_STORAGE%s *data );\n", optFlag.sid, optFlag.sid );
+        }
     }
     if( ofp != NULL ) {
-        fprintf( ofp, "typedef struct opt_storage%s OPT_STORAGE%s;\n", optFlag.sid, optFlag.sid );
-        fprintf( ofp, "struct opt_storage%s {\n", optFlag.sid );
-        fprintf( ofp, "    unsigned     timestamp;\n" );
-        for( o = optionList; o != NULL; o = o->next ) {
-            if( o->synonym == NULL ) {
-                if( o->is_number ) {
-                    if( HAS_OPT_NUMBER( o ) ) {
-                        fprintf( ofp, "    OPT_NUMBER   *%s;\n", o->value_field_name );
-                    } else {
-                        fprintf( ofp, "    unsigned     %s;\n", o->value_field_name );
-                    }
-                } else if( o->is_char ) {
-                    fprintf( ofp, "    int          %s;\n", o->value_field_name );
-                } else if( HAS_OPT_STRING( o ) ) {
-                    fprintf( ofp, "    OPT_STRING   *%s;\n", o->value_field_name );
-                }
-                /*
-                 * the enumeration is shared by several options that
-                 * require enumeration timestamp to be processed instead
-                 * of option simple timestamp
-                 * in case of enumeration it is skiped and processed in next code
-                 */
-                if( o->enumerate == NULL ) {
-                    if( o->is_timestamp ) {
-                        fprintf( ofp, "    unsigned     %s_timestamp;\n", o->field_name );
-                    }
-                }
-            }
-        }
-        /*
-         * this section process only enumerations (field + timestamp)
-         */
-        for( en = enumList; en != NULL; en = en->next ) {
-            if( !en->used )
-                continue;
-            fprintf( ofp, "    unsigned     %s;\n", en->name );
-            if( en->is_timestamp ) {
-                fprintf( ofp, "    unsigned     %s_timestamp;\n", en->name );
-            }
-        }
-        for( o = optionList; o != NULL; o = o->next ) {
-            if( o->synonym == NULL ) {
-                if( o->enumerate == NULL ) {
-                    fprintf( ofp, "    boolbit      %s : 1;\n", o->field_name );
-                }
-            }
-        }
-        fprintf( ofp, "};\n" );
-        fprintf( ofp, "extern void " FN_INIT "%s( OPT_STORAGE%s *data );\n", optFlag.sid, optFlag.sid );
-        fprintf( ofp, "extern void " FN_FINI "%s( OPT_STORAGE%s *data );\n", optFlag.sid, optFlag.sid );
         fprintf( ofp, "extern bool " FN_PROCESS "%s( OPT_STORAGE%s *data );\n", optFlag.sid, optFlag.sid );
     }
 }
@@ -3195,6 +3204,9 @@ static char *ProcessOption( char *s, char *option_start )
             optFlag.line_term = "\\0";
         }
         return( s );
+    case 'p':
+        optFlag.parser_only = true;
+        return( s );
     case 'q':
         optFlag.quiet = true;
         return( s );
@@ -3384,8 +3396,10 @@ int main( int argc, char **argv )
         outputInit();
         startParserH();
         outputFN_PROCESS();
-        outputFN_INIT();
-        outputFN_FINI();
+        if( !optFlag.parser_only ) {
+            outputFN_INIT();
+            outputFN_FINI();
+        }
         finishParserH();
         outputUsageH();
         dumpInternational();
