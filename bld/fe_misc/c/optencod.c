@@ -1856,6 +1856,8 @@ static char *special_char( char *f, char c )
         f = strpcpy( f, "_exclamation" );
     } else if( c == '#' ) {
         f = strpcpy( f, "_sharp" );
+    } else if( c == '?' ) {
+        f = strpcpy( f, "_question" );
     } else {
         *f++ = '_';
     }
