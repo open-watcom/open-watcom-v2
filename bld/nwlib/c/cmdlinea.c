@@ -32,6 +32,7 @@
 
 #include "wlib.h"
 #include "cmdlinea.h"
+#include "cmdline.h"
 
 
 static bool ParseOption( operation *ar_mode )

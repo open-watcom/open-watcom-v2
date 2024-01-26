@@ -57,4 +57,3 @@ extern bool         CmdRecogLowerChar( int );
 extern void         CmdUngetChar( void );
 
 extern lib_cmd      *CmdList;
-extern options_def  Options;

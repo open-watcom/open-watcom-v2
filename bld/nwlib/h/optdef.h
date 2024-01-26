@@ -118,3 +118,5 @@ typedef struct {
 #define WL_OS_WIN16     1
 #define WL_OS_WIN32     2
 #define WL_OS_OS2       3
+
+extern options_def  Options;

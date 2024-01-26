@@ -37,6 +37,7 @@
 #include "wio.h"
 #include "cmdlinea.h"
 #include "cmdlinew.h"
+#include "cmdline.h"
 
 
 #define AR_MODE_ENV     "WLIB_AR"

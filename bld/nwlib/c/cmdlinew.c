@@ -34,6 +34,7 @@
 #include <errno.h>
 #include "wio.h"
 #include "cmdlinew.h"
+#include "cmdline.h"
 
 #include "clibext.h"
 
