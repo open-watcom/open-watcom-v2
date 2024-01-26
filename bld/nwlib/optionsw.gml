@@ -190,7 +190,7 @@
 :jtitle. .         ( /ｵﾌﾟｼｮﾝ でも指定できます )
 :ntarget. bsd linux osx qnx haiku
 
-:option. ?
+:option. ? h
 :usage.  display this screen
 :jusage. この画面を表示します
 
@@ -240,10 +240,6 @@
 :usage.  output OMF format library
 :jusage. OMF形式ライブラリを出力します
 
-:option. h
-:usage.  display this screen
-:jusage. この画面を表示します
-
 :usagechain. i
 
 :usagegroup. 1 Import records architecture
@@ -267,13 +263,11 @@
 :group. 2 i
 :enumerate. filetype
 :usage.  generate COFF imp. records (short)
-:jusage.
 
 :option. icl
 :group. 2 i
 :enumerate. filetype
 :usage.  generate COFF imp. records (long)
-:jusage.
 
 :option. ie
 :group. 2 i
@@ -361,10 +355,10 @@
 :option. q
 :usage.  don't print header
 :jusage. 起動メッセージを表示しません
+:timestamp.
 
 :option. s
 :usage.  strip line number debug info
-:jusage.
 
 :option. t
 :usage.  trim THEADR pathnames
@@ -372,11 +366,10 @@
 
 :option. tl
 :usage.  internal terse listing
-:jusage.
 
 :option. v
 :usage.  print header
-:jusage.
+:timestamp.
 
 :option. x
 :file.
@@ -388,12 +381,9 @@
 :file.
 :optional.
 :usage.  strip exported symbols info
-:jusage.
 
 :option. zld
 :usage.  strip file dependency info
-:jusage.
 
 :option. zll
 :usage.  strip library dependency info
-:jusage.

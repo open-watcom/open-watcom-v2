@@ -94,11 +94,15 @@ void SetOptionsAr( OPT_STORAGE_A *data )
     operation   ar_mode;
     int         cmd_count;
 
+    cmd_count = 0;
+    ar_mode = OP_NONE;
+
+    if( data->_question ) {
+        Usage();
+    }
     if( data->c ) {
         Options.no_create_warn = true;
     }
-    cmd_count = 0;
-    ar_mode = OP_NONE;
     if( data->d ) {
         ar_mode |= OP_DELETE;
         cmd_count++;
@@ -112,10 +116,17 @@ void SetOptionsAr( OPT_STORAGE_A *data )
         cmd_count++;
         Options.list_contents = true;
     }
+    if( data->u ) {
+        Options.update = true;
+    }
+    if( data->v ) {
+        Options.verbose = true;
+    }
     if( data->x ) {
         ar_mode |= OP_EXTRACT;
         cmd_count++;
     }
+
     if( cmd_count > 1 ) {
         FatalError( ERR_BAD_CMDLINE, "commands mixing" );
     } else {
@@ -126,12 +137,7 @@ void SetOptionsAr( OPT_STORAGE_A *data )
             cmd = cmd->next;
         }
     }
-    if( data->u ) {
-        Options.update = true;
-    }
-    if( data->v ) {
-        Options.verbose = true;
-    }
+
     if( CmdList == NULL ) {
         if( ar_mode == OP_EXTRACT ) {
             Options.explode = true;

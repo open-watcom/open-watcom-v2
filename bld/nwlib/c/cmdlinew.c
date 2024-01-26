@@ -247,9 +247,6 @@ void ParseOneLineWlib( const char *cmd, OPT_STORAGE_W *data, bool comment )
             }
             CmdScanInit( begcmd );
             break;
-        case '?':
-            Usage();
-            break;
         case '\0':
             CmdScanInit( old_cmd );
             return;
@@ -273,6 +270,20 @@ void ParseOneLineWlib( const char *cmd, OPT_STORAGE_W *data, bool comment )
 
 void SetOptionsWlib( OPT_STORAGE_W *data )
 {
+    /*
+     * q - don't print header
+     * v - print header        (default)
+     */
+    if( data->q && data->v ) {
+        if( data->q_timestamp > data->v_timestamp ) {
+            Options.quiet = true;
+        }
+    } else if( data->q ) {
+        Options.quiet = true;
+    }
+    if( data->_question ) {
+        Usage();
+    }
     if( data->b ) { //                       (don't create .bak file)
         Options.no_backup = true;
     }
@@ -374,9 +385,6 @@ void SetOptionsWlib( OPT_STORAGE_W *data )
         SetPageSize( (unsigned_16)data->p_value );
         break;
     }
-    if( data->q ) { //                       (don't print header)
-        Options.quiet = true;
-    }
     if( data->s ) {
         Options.strip_line = true;
     }
@@ -386,9 +394,6 @@ void SetOptionsWlib( OPT_STORAGE_W *data )
     if( data->tl ) {
         Options.list_contents = true;
         Options.terse_listing = true; // (internal terse listing option)
-    }
-    if( data->v ) { //                       (print header)
-        Options.quiet = false;
     }
     if( data->x ) { //                       (explode all objects in library)
         Options.explode = true;

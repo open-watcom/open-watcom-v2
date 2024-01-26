@@ -109,7 +109,7 @@
 :title.  Options:
 :jtitle. オプション：
 
-:option. ?
+:option. ? h
 :target. targ1
 :usage.  .     display this screen
 :jusage. .     この画面を表示します
@@ -122,11 +122,6 @@
 :option. d
 :usage.  .     delete modules from archive
 :jusage. .     アーカイブからモジュールを削除する
-
-:option. h
-:target. targ1
-:usage.  .     display this screen
-:jusage. .     この画面を表示します
 
 :option. m
 :target. unused
