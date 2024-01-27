@@ -205,7 +205,7 @@ typedef struct title {
 
 typedef struct chain {
     struct chain    *next;
-    size_t          name_len;
+    size_t          len;
     size_t          pattern_len;
     char            pattern[1];
 } CHAIN;
@@ -213,7 +213,7 @@ typedef struct chain {
 typedef struct usagechain {
     struct usagechain *next;
     lang_data       lang_usage;
-    size_t          name_len;
+    size_t          len;
     size_t          pattern_len;
     boolbit         usage_used : 1;
     char            pattern[1];
@@ -850,7 +850,7 @@ static CHAIN *addChain( char *pattern )
     cn = calloc( 1, sizeof( *cn ) + pattern_len );
     cn->pattern_len = pattern_len;
     memcpy( cn->pattern, pattern, pattern_len + 1 );
-    cn->name_len = cvtOptionSpec( pattern, pattern, CVT_NAME ) - pattern;
+    cn->len = cvtOptionSpec( pattern, pattern, CVT_NAME ) - pattern;
     cn->next = chainList;
     chainList = cn;
     return( cn );
@@ -870,7 +870,7 @@ static USAGECHAIN *addUsageChain( char *pattern )
     ucn = calloc( 1, sizeof( *ucn ) + pattern_len );
     ucn->pattern_len = pattern_len;
     memcpy( ucn->pattern, pattern, pattern_len + 1 );
-    ucn->name_len = cvtOptionSpec( pattern, pattern, CVT_NAME ) - pattern;
+    ucn->len = cvtOptionSpec( pattern, pattern, CVT_NAME ) - pattern;
     ucn->next = usageChainList;
     usageChainList = ucn;
     return( ucn );
@@ -2184,13 +2184,13 @@ static bool markChainCode( CODESEQ *head, size_t level )
     for( c = head; c != NULL; c = c->sibling ) {
         if( c->option->chain != NULL ) {
             if( c->children != NULL
-              && level <= c->option->chain->name_len ) {
+              && level <= c->option->chain->len ) {
                 if( markChainCode( c->children, level + 1 ) ) {
-                    if( level == c->option->chain->name_len ) {
+                    if( level == c->option->chain->len ) {
                         c->is_chain_root = true;
                     }
                 }
-            } else if( c->option->name_len == c->option->chain->name_len + 1 ) {
+            } else if( c->option->name_len == c->option->chain->len + 1 ) {
                 c->is_chain = true;
                 rc = true;
                 /*
@@ -2527,7 +2527,7 @@ static void outputFN_FINI( void )
 static int usageCmp( const void *v1, const void *v2 )
 {
     int     res;
-    size_t  name_len;
+    size_t  chain_len;
     OPTION  *o1 = *(OPTION **)v1;
     OPTION  *o2 = *(OPTION **)v2;
     char    *n1 = o1->name;
@@ -2536,17 +2536,17 @@ static int usageCmp( const void *v1, const void *v2 )
     res = 0;
     if( o1->usageChain != o2->usageChain ) {
         if( o1->usageChain == NULL ) {
-            name_len = o2->usageChain->name_len;
+            chain_len = o2->usageChain->len;
         } else if( o2->usageChain == NULL ) {
-            name_len = o1->usageChain->name_len;
-        } else if( o1->usageChain->name_len > o2->usageChain->name_len ) {
-            name_len = o1->usageChain->name_len;
+            chain_len = o1->usageChain->len;
+        } else if( o1->usageChain->len > o2->usageChain->len ) {
+            chain_len = o1->usageChain->len;
         } else {
-            name_len = o2->usageChain->name_len;
+            chain_len = o2->usageChain->len;
         }
-        res = strnicmp( n1, n2, name_len );
+        res = strnicmp( n1, n2, chain_len );
         if( res == 0 ) {
-            res = strncmp( n1, n2, name_len );
+            res = strncmp( n1, n2, chain_len );
             if( res == 0 ) {
                 if( o1->usageChain == NULL ) {
                     return( 1 );
@@ -2554,8 +2554,8 @@ static int usageCmp( const void *v1, const void *v2 )
                 if( o2->usageChain == NULL ) {
                     return( -1 );
                 }
-                n1 += name_len;
-                n2 += name_len;
+                n1 += chain_len;
+                n2 += chain_len;
             }
         }
     }
@@ -2606,7 +2606,7 @@ static char *genOptionUsageStart( OPTION *o, char *buf, bool no_prefix )
             *buf++ = ' ';
             *buf++ = ' ';
         }
-        strcpy( buf, o->name + o->usageChain->name_len );
+        strcpy( buf, o->name + o->usageChain->len );
         buf += strlen( buf );
     } else {
         *buf++ = '-';
