@@ -2713,7 +2713,8 @@ static void emitUsageH( void )
     if( optFlag.rc ) {
         if( ufp != NULL ) {
             fprintf( ufp, "pick((%s+%d), ", optFlag.rc_macro, line_offs++ );
-            emitQuotedString( ufp, getLangData( outputdata, LANG_English ), "", "" );
+            str = getLangData( outputdata, LANG_English );
+            emitQuotedString( ufp, str, "", "" );
             fprintf( ufp, ", " );
             str = getLangData( outputdata, LANG_Japanese );
             if( !optFlag.out_utf8 ) {
@@ -2779,13 +2780,13 @@ static void expand_tab( const char *s, char *buf )
 
 static void procUsageBlockHeader( lang_data langdata, language_id lang )
 {
-    const char  *s;
+    const char  *str;
     size_t      len;
     char        *buf;
 
     buf = GET_OUTPUT_BUF( lang );
-    s = getLangData( langdata, lang );
-    len = strlen( s );
+    str = getLangData( langdata, lang );
+    len = strlen( str );
     if( len < 80 ) {
         len = ( 80 - len ) / 2;
         if( len > HEADER_LEFT_MARGIN )
@@ -2794,7 +2795,7 @@ static void procUsageBlockHeader( lang_data langdata, language_id lang )
             *buf++ = ' ';
         }
     }
-    strcpy( buf, s );
+    strcpy( buf, str );
 }
 
 static void outputUsageBlockHeader( lang_data langdata, process_line_fn *process_line )
@@ -2807,25 +2808,27 @@ static void outputUsageBlockHeader( lang_data langdata, process_line_fn *process
     process_output( process_line );
 }
 
-static void outputUsageTitle( lang_data langdata, process_line_fn *process_line )
+static void outputUsageLangdata( lang_data langdata, process_line_fn *process_line )
 {
     language_id lang;
+    const char  *str;
 
     for( lang = 0; lang < LANG_MAX; lang++ ) {
-        expand_tab( getLangData( langdata, lang ), GET_OUTPUT_BUF( lang ) );
+        str = getLangData( langdata, lang );
+        expand_tab( str, GET_OUTPUT_BUF( lang ) );
     }
     process_line();
 }
 
-static void outputUsageHeader( process_line_fn *process_line )
+static void outputUsageTitle( process_line_fn *process_line )
 {
     TITLE       *t;
 
     for( t = titleList; t != NULL; t = t->next ) {
         if( IS_SELECTED( t ) ) {
-            outputUsageTitle( t->lang_usage, process_line );
+            outputUsageLangdata( t->lang_usage, process_line );
             if( process_line == emitUsageH ) {
-                outputUsageTitle( ( t->is_u ) ? t->lang_usageu : t->lang_usage, emitUsageHQNX );
+                outputUsageLangdata( ( t->is_u ) ? t->lang_usageu : t->lang_usage, emitUsageHQNX );
             }
         }
     }
@@ -2837,9 +2840,9 @@ static void outputUsageFooter( process_line_fn *process_line )
 
     for( t = footerList; t != NULL; t = t->next ) {
         if( IS_SELECTED( t ) ) {
-            outputUsageTitle( t->lang_usage, process_line );
+            outputUsageLangdata( t->lang_usage, process_line );
             if( process_line == emitUsageH ) {
-                outputUsageTitle( ( t->is_u ) ? t->lang_usageu : t->lang_usage, emitUsageHQNX );
+                outputUsageLangdata( ( t->is_u ) ? t->lang_usageu : t->lang_usage, emitUsageHQNX );
             }
         }
     }
@@ -2894,17 +2897,36 @@ static bool createUsageChainHeaderPrefix( OPTION **o, char *buf, size_t max )
     return( buf == stop );
 }
 
+#if 0
+static const char *getHeaderUsage( OPTION *o, language_id lang )
+{
+    const char  *str;
+
+    if( o->usageGroup != NULL ) {
+        str = getLangData( o->usageGroup->lang_usage, lang );
+        if( str == NULL && o->usageChain != NULL ) {
+            str = getLangData( o->usageChain->lang_usage, lang );
+        }
+    } else {
+        str = getLangData( o->usageChain->lang_usage, lang );
+    }
+    return( str );
+}
+#endif
+
 static void outputUsageChainHeader( OPTION **o, process_line_fn *process_line, size_t max )
 {
     char        *buf;
     size_t      len;
     language_id lang;
+    const char  *str;
 
     if( createUsageChainHeaderPrefix( o, hdrbuff, max ) ) {
         for( lang = 0; lang < LANG_MAX; lang++ ) {
             buf = GET_OUTPUT_BUF( lang );
             strcpy( buf, hdrbuff );
-            strcpy( buf + max, getLangData( (*o)->usageChain->lang_usage, lang ) );
+            str = getLangData( (*o)->usageChain->lang_usage, lang );
+            strcpy( buf + max, str );
         }
     } else {
         for( lang = 0; lang < LANG_MAX; lang++ ) {
@@ -2912,10 +2934,11 @@ static void outputUsageChainHeader( OPTION **o, process_line_fn *process_line, s
             for( len = max / 2; len-- > 0; )
                 *buf++ = ' ';
             if( (*o)->usageGroup != NULL ) {
-                strcpy( buf, getLangData( (*o)->usageGroup->lang_usage, lang ) );
+                str = getLangData( (*o)->usageGroup->lang_usage, lang );
             } else {
-                strcpy( buf, getLangData( (*o)->usageChain->lang_usage, lang ) );
+                str = getLangData( (*o)->usageChain->lang_usage, lang );
             }
+            strcpy( buf, str );
         }
         process_output( process_line );
         for( lang = 0; lang < LANG_MAX; lang++ ) {
@@ -2946,13 +2969,15 @@ static void outputUsageOption( OPTION *o, process_line_fn *process_line, size_t 
     char        *buf;
     size_t      len;
     language_id lang;
+    const char  *str;
 
     o->usage_used = true;
     len = createOptionPrefix( o, hdrbuff, max ) - hdrbuff;
     for( lang = 0; lang < LANG_MAX; lang++ ) {
         buf = GET_OUTPUT_BUF( lang );
         strcpy( buf, hdrbuff );
-        strcpy( buf + len, getLangData( o->lang_usage, lang ) );
+        str = getLangData( o->lang_usage, lang );
+        strcpy( buf + len, str );
     }
     process_output( process_line );
 }
@@ -3073,7 +3098,7 @@ static void outputUsage( process_line_fn *process_line )
 {
     GROUP       *gr;
 
-    outputUsageHeader( process_line );
+    outputUsageTitle( process_line );
 
     gr = NULL;
     processUsage( process_line, gr );
