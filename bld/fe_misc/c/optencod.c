@@ -216,7 +216,7 @@ typedef struct group {
     struct group    *next;
     lang_data       lang_usage;
     boolbit         usage_used : 1;
-    char            pattern[1];
+    char            id[1];
 } GROUP;
 
 
@@ -271,13 +271,15 @@ typedef struct codeseq {
     OPTION          *option;
     char            c;
     char            s;
-    boolbit         accept     : 1;
-    boolbit         chain      : 1;
-    boolbit         chain_root : 1;
-    boolbit         sel        : 1;
+    boolbit         accept        : 1;
+    boolbit         is_chain      : 1;
+    boolbit         is_chain_root : 1;
+    boolbit         sel           : 1;
 } CODESEQ;
 
 static unsigned     line;
+static unsigned     errcount = 0;
+
 static FILE         *gfp;
 static FILE         *ofp;
 static FILE         *pfp;
@@ -541,6 +543,19 @@ static void outputFini( void )
     free( outputbuff );
 }
 
+static void error( const char *msg, ... )
+{
+    va_list args;
+
+    if( line > 0 ) {
+        fprintf( stderr, "error on line %u\n", line );
+    }
+    va_start( args, msg );
+    vfprintf( stderr, msg, args );
+    va_end( args );
+    errcount++;
+}
+
 #if defined( __WATCOMC__ )
 #pragma abort   fail
 #endif
@@ -750,29 +765,29 @@ static INAME *addEnumerator( ENAME *en, const char *field_name )
     return( ei );
 }
 
-static GROUP *findUsageGroup( const char *pattern )
+static GROUP *findUsageGroup( const char *id )
 {
     GROUP *gr;
 
     for( gr = usageGroupList; gr != NULL; gr = gr->next ) {
-        if( strcmp( gr->pattern, pattern ) == 0 ) {
+        if( strcmp( gr->id, id ) == 0 ) {
             break;
         }
     }
     return( gr );
 }
 
-static GROUP *addUsageGroup( const char *pattern )
+static GROUP *addUsageGroup( const char *id )
 {
-    size_t  pattern_len;
+    size_t  id_len;
     GROUP   *gr;
 
-    if( findUsageGroup( pattern ) != NULL ) {
-        fail( "USAGEGROUP: option '%s' already defined\n", pattern );
+    if( findUsageGroup( id ) != NULL ) {
+        error( "USAGEGROUP: id '%s' already defined\n", id );
     }
-    pattern_len = strlen( pattern );
-    gr = calloc( 1, sizeof( *gr ) + pattern_len );
-    memcpy( gr->pattern, pattern, pattern_len + 1 );
+    id_len = strlen( id );
+    gr = calloc( 1, sizeof( *gr ) + id_len );
+    memcpy( gr->id, id, id_len + 1 );
     if( usageGroupList == NULL ) {
         usageGroupList = gr;
     } else {
@@ -822,7 +837,7 @@ static CHAIN *addChain( char *pattern )
     pattern_len = cvtOptionSpec( pattern, pattern, CVT_PATTERN ) - pattern;
     for( cn = chainList; cn != NULL; cn = cn->next ) {
         if( strcmp( pattern, cn->pattern ) == 0 ) {
-            fail( "CHAIN: option '%s' already defined\n", pattern );
+            error( "CHAIN: pattern '%s' already defined\n", pattern );
         }
     }
     cn = calloc( 1, sizeof( *cn ) + pattern_len );
@@ -842,7 +857,7 @@ static CHAIN *addUsageChain( char *pattern )
     pattern_len = cvtOptionSpec( pattern, pattern, CVT_PATTERN ) - pattern;
     for( cn = usageChainList; cn != NULL; cn = cn->next ) {
         if( strcmp( pattern, cn->pattern ) == 0 ) {
-            fail( "USAGECHAIN: option '%s' already defined\n", pattern );
+            error( "USAGECHAIN: pattern '%s' already defined\n", pattern );
         }
     }
     cn = calloc( 1, sizeof( *cn ) + pattern_len );
@@ -927,7 +942,7 @@ static tag_id isTag( const char **eot )
     if( *p++ == ':' ) {
         p = nextTag( p, tagbuff );
         if( (tag = findTag( tagbuff )) == TAG_UNKNOWN )
-            fail( "unknown tag: %s\n", tagbuff );
+            error( "unknown tag: %s\n", tagbuff );
         *eot = p;
         return( tag );
     }
@@ -996,7 +1011,7 @@ static void doARGEQUAL( const char *p )
     char    c;
 
     if( *p == '\0' ) {
-        fail( ":argequal. must have <char> specified\n" );
+        error( ":argequal. must have <char> specified\n" );
     } else {
         if( p[0] == '.'
           && p[1] == '.' ) {
@@ -1059,9 +1074,8 @@ static void doTARGET( const char *p )
     while( *p != '\0' ) {
         p = nextWord( p, tokbuff );
         if( (mask = findTarget( tokbuff )) == 0 ) {
-            fail( "invalid target name '%s'\n", tokbuff );
-        }
-        if( targetTitle != NULL ) {
+            error( "invalid target name '%s'\n", tokbuff );
+        } else if( targetTitle != NULL ) {
             if( targetTitle->any_target ) {
                 targetTitle->target_mask = mask;
                 targetTitle->any_target = false;
@@ -1097,9 +1111,8 @@ static void doNTARGET( const char *p )
     while( *p != '\0' ) {
         p = nextWord( p, tokbuff );
         if( (mask = findTarget( tokbuff )) == 0 ) {
-            fail( "invalid target name '%s'\n", tokbuff );
-        }
-        if( targetTitle != NULL ) {
+            error( "invalid target name '%s'\n", tokbuff );
+        } else if( targetTitle != NULL ) {
             targetTitle->ntarget_mask |= mask;
         } else if( targetFooter != NULL ) {
             targetFooter->ntarget_mask |= mask;
@@ -1225,17 +1238,17 @@ static void doIMMEDIATE( const char *p )
 {
     OPTION *o;
 
+    if( *p == '\0' ) {
+        error( ":immediate. must have <fn> specified\n" );
+        return;
+    }
     for( o = optionList; o != NULL; o = o->synonym ) {
         o->is_immediate = true;
         o->is_simple = false;
     }
-    if( *p != '\0' ) {
-        p = nextWord( p, tokbuff );
-        for( o = optionList; o != NULL; o = o->synonym ) {
-            o->immediate_func = strdup( tokbuff );
-        }
-    } else {
-        fail( ":immediate. must have <fn> specified\n" );
+    p = nextWord( p, tokbuff );
+    for( o = optionList; o != NULL; o = o->synonym ) {
+        o->immediate_func = strdup( tokbuff );
     }
     if( *p != '\0' ) {
         p = nextWord( p, tokbuff );
@@ -1250,6 +1263,10 @@ static void doCODE( const char *p )
 {
     OPTION *o;
 
+    if( *p == '\0' ) {
+        error( ":code. must have <source-code> specified\n" );
+        return;
+    }
     for( o = optionList; o != NULL; o = o->synonym ) {
         o->is_code = true;
         o->is_simple = false;
@@ -1258,8 +1275,6 @@ static void doCODE( const char *p )
         for( o = optionList; o != NULL; o = o->synonym ) {
             o->code = strdup( p );
         }
-    } else {
-        fail( ":code. must have <source-code> specified\n" );
     }
 }
 
@@ -1303,7 +1318,7 @@ static void doNEGATE( const char *p )
     for( o = optionList; o != NULL; o = o->synonym ) {
         o->is_negate = true;
         if( o->enumerate != NULL ){
-            fail( "must be non-enumeration switch for negate tag\n" );
+            error( ":negate. must be non-enumeration switch for negate tag\n" );
         }
     }
 }
@@ -1343,7 +1358,8 @@ static void doPATH( const char *p )
 static void doCHAIN( const char *p )
 {
     if( *p == '\0' ) {
-        fail( "missing <option> in :chain. tag\n" );
+        error( ":chain. missing <option> parameter\n" );
+        return;
     }
     while( *p != '\0' ) {
         p = nextWord( p, tokbuff );
@@ -1358,7 +1374,8 @@ static void doENUMERATE( const char *p )
     OPTION *o;
 
     if( *p == '\0' ) {
-        fail( "missing <name> in :enumerate. tag\n" );
+        error( ":enumerate. missing <name> parameter\n" );
+        return;
     }
     p = nextWord( p, tokbuff );
     en = addEnumName( &enumList, tokbuff );
@@ -1383,13 +1400,14 @@ static void doSPECIAL( const char *p )
 {
     OPTION *o;
 
+    if( *p == '\0' ) {
+        error( ":special. missing <fn> parameter\n" );
+        return;
+    }
     for( o = optionList; o != NULL; o = o->synonym ) {
         o->is_special = true;
         o->is_text = true;
         o->is_simple = false;
-    }
-    if( *p == '\0' ) {
-        fail( "missing <fn> in :special. tag\n" );
     }
     p = nextWord( p, tokbuff );
     for( o = optionList; o != NULL; o = o->synonym ) {
@@ -1450,7 +1468,7 @@ static void doJUSAGE( const char *p )
         }
         break;
     default:
-        fail( ":jusage. must follow :usagechain., :usagegroup., or :option.\n" );
+        error( ":jusage. must follow :usagechain., :usagegroup., or :option.\n" );
     }
 }
 
@@ -1481,7 +1499,8 @@ static void doTITLEU( const char *p )
 
     t = targetTitle;
     if( t == NULL ) {
-        fail( ":titleu. must follow a :title.\n" );
+        error( ":titleu. must follow a :title.\n" );
+        return;
     }
     t->lang_usageu[LANG_English] = pickUpRest( p );
     t->is_u = true;
@@ -1494,7 +1513,8 @@ static void doJTITLE( const char *p )
 
     t = targetTitle;
     if( t == NULL ) {
-        fail( ":jtitle. must follow a :title.\n" );
+        error( ":jtitle. must follow a :title.\n" );
+        return;
     }
     t->lang_usage[LANG_Japanese] = pickUpRest( p );
 }
@@ -1506,7 +1526,8 @@ static void doJTITLEU( const char *p )
 
     t = targetTitle;
     if( t == NULL ) {
-        fail( ":jtitleu. must follow a :title.\n" );
+        error( ":jtitleu. must follow a :title.\n" );
+        return;
     }
     t->lang_usageu[LANG_Japanese] = pickUpRest( p );
     t->is_u = true;
@@ -1539,7 +1560,8 @@ static void doFOOTERU( const char *p )
 
     t = targetFooter;
     if( t == NULL ) {
-        fail( ":footeru. must follow a :footer.\n" );
+        error( ":footeru. must follow a :footer.\n" );
+        return;
     }
     t->lang_usageu[LANG_English] = pickUpRest( p );
     t->is_u = true;
@@ -1552,7 +1574,8 @@ static void doJFOOTER( const char *p )
 
     t = targetFooter;
     if( t == NULL ) {
-        fail( ":jfooter. must follow a :footer.\n" );
+        error( ":jfooter. must follow a :footer.\n" );
+        return;
     }
     t->lang_usage[LANG_Japanese] = pickUpRest( p );
 }
@@ -1564,34 +1587,41 @@ static void doJFOOTERU( const char *p )
 
     t = targetFooter;
     if( t == NULL ) {
-        fail( ":jfooteru. must follow a :footer.\n" );
+        error( ":jfooteru. must follow a :footer.\n" );
+        return;
     }
     t->lang_usageu[LANG_Japanese] = pickUpRest( p );
     t->is_u = true;
 }
 
-// :group. <num> <usagechain>
+// :group. <id> <usagechain>
 static void doGROUP( const char *p )
 {
     OPTION *o;
     GROUP  *gr;
     CHAIN  *cn;
 
+    if( *p == '\0' ) {
+        error( ":group. missing <id> parameter\n" );
+        return;
+    }
+    p = nextWord( p, tokbuff );
+    gr = findUsageGroup( tokbuff );
+    if( gr == NULL ) {
+        error( ":group. <id> is not found.\n" );
+    } else {
+        for( o = optionList; o != NULL; o = o->synonym ) {
+            o->usageGroup = gr;
+        }
+    }
     if( *p != '\0' ) {
         p = nextWord( p, tokbuff );
-        gr = findUsageGroup( tokbuff );
-        if( gr != NULL ) {
+        cn = findUsageChain( tokbuff );
+        if( cn == NULL ) {
+            error( ":group. <usagechain> is not found.\n" );
+        } else {
             for( o = optionList; o != NULL; o = o->synonym ) {
-                 o->usageGroup = gr;
-            }
-        }
-        if( *p != '\0' ) {
-            p = nextWord( p, tokbuff );
-            cn = findUsageChain( tokbuff );
-            if( cn != NULL ) {
-                for( o = optionList; o != NULL; o = o->synonym ) {
-                     o->usageChain = cn;
-                }
+                o->usageChain = cn;
             }
         }
     }
@@ -1623,7 +1653,8 @@ static void doUSAGECHAIN( const char *p )
     CHAIN *cn;
 
     if( *p == '\0' ) {
-        fail( "missing <option> in :usagechain. tag\n" );
+        error( "missing <option> in :usagechain. tag\n" );
+        return;
     }
     p = nextWord( p, tokbuff );
     cn = addUsageChain( tokbuff );
@@ -1632,20 +1663,23 @@ static void doUSAGECHAIN( const char *p )
     getsUsage = TAG_USAGECHAIN;
 }
 
-// :usagegroup. <num> <usage text>
+// :usagegroup. <id> [<usage text>]
 //
-// define group <num> with usage text for block of options
+// define group <id> with usage text for block of options
 //
 static void doUSAGEGROUP( const char *p )
 {
     GROUP *gr;
 
     if( *p == '\0' ) {
-        fail( "missing <num> in :usagegroup. tag\n" );
+        error( "missing <id> in :usagegroup. tag\n" );
+        return;
     }
     p = nextWord( p, tokbuff );
     gr = addUsageGroup( tokbuff );
-    gr->lang_usage[LANG_English] = pickUpRest( p );
+    if( *p != '\0' ) {
+        gr->lang_usage[LANG_English] = pickUpRest( p );
+    }
     lastUsageGroup = gr;
     getsUsage = TAG_USAGEGROUP;
 }
@@ -1683,7 +1717,7 @@ static void checkForGMLEscape( const char *p )
         is_escape = true;
     }
     if( is_escape ) {
-        fail( "possible GML escape sequence: &%c%c\n", c1, c2 );
+        error( "possible GML escape sequence: &%c%c\n", c1, c2 );
     }
 }
 
@@ -1751,7 +1785,7 @@ static void checkForMissingUsages( void )
           || cmpOptPattern( o->pattern, o->usageChain->pattern ) ) {
             for( i = start_lang; i < end_lang; ++i ) {
                 if( ( i == LANG_English || optFlag.report_missing_data ) && o->lang_usage[i] == NULL ) {
-                    fail( "option '%s' has no %s usage\n", o->pattern, langName[i] );
+                    error( "option '%s' has no %s usage\n", o->pattern, langName[i] );
                 }
             }
         }
@@ -1760,7 +1794,7 @@ static void checkForMissingUsages( void )
     for( t = titleList; t != NULL; t = t->next ) {
         for( i = start_lang; i < end_lang; ++i ) {
             if( ( i == LANG_English || optFlag.report_missing_data ) && t->lang_usage[i] == NULL ) {
-                fail( "title(%d) has no %s text\n", j, langName[i] );
+                error( "title(%d) has no %s text\n", j, langName[i] );
             }
         }
         j++;
@@ -1769,7 +1803,7 @@ static void checkForMissingUsages( void )
     for( t = footerList; t != NULL; t = t->next ) {
         for( i = start_lang; i < end_lang; ++i ) {
             if( ( i == LANG_English || optFlag.report_missing_data ) && t->lang_usage[i] == NULL ) {
-                fail( "footer(%d) has no %s text\n", j, langName[i] );
+                error( "footer(%d) has no %s text\n", j, langName[i] );
             }
         }
         j++;
@@ -1777,14 +1811,14 @@ static void checkForMissingUsages( void )
     for( cn = usageChainList; cn != NULL; cn = cn->next ) {
         for( i = start_lang; i < end_lang; ++i ) {
             if( ( i == LANG_English || optFlag.report_missing_data ) && cn->lang_usage[i] == NULL ) {
-                fail( "chain '%s' has no %s text\n", cn->pattern, langName[i] );
+                error( "chain '%s' has no %s text\n", cn->pattern, langName[i] );
             }
         }
     }
     for( gr = usageGroupList; gr != NULL; gr = gr->next ) {
         for( i = start_lang; i < end_lang; ++i ) {
             if( ( i == LANG_English || optFlag.report_missing_data ) && gr->lang_usage[i] == NULL ) {
-                fail( "group '%s' has no %s text\n", gr->pattern, langName[i] );
+                error( "group '%s' has no %s text\n", gr->id, langName[i] );
             }
         }
     }
@@ -2146,11 +2180,11 @@ static bool markChainCode( CODESEQ *head, size_t level )
               && level <= c->option->chain->name_len ) {
                 if( markChainCode( c->children, level + 1 ) ) {
                     if( level == c->option->chain->name_len ) {
-                        c->chain_root = true;
+                        c->is_chain_root = true;
                     }
                 }
             } else if( c->option->name_len == c->option->chain->name_len + 1 ) {
-                c->chain = true;
+                c->is_chain = true;
                 rc = true;
                 /*
                  * this is an extension, you can use two forms of input
@@ -2159,7 +2193,7 @@ static bool markChainCode( CODESEQ *head, size_t level )
                  */
                 if( c->children != NULL
                   && c->children->c == '+' ) {
-                    c->children->chain = true;
+                    c->children->is_chain = true;
                 }
             }
         }
@@ -2305,15 +2339,15 @@ static void emitAcceptCode( CODESEQ *c, unsigned depth, flow_control control )
 
 static void emitCodeTree( CODESEQ *c, unsigned depth, flow_control control )
 {
-    if( c->children ) {
-        if( c->chain ) {
+    if( c->children != NULL ) {
+        if( c->is_chain ) {
             emitCode( c->children, depth, (control & ~EC_CHAIN) | EC_CONTINUE );
             if( c->accept ) {
                 emitAcceptCode( c, depth, control );
             } else {
                 emitPrintf( depth, "return( true );\n" );
             }
-        } else if( c->chain_root ) {
+        } else if( c->is_chain_root ) {
             emitCode( c->children, depth, control | EC_CHAIN | EC_CONTINUE );
             if( c->accept ) {
                 emitAcceptCode( c, depth, control & ~EC_CONTINUE );
@@ -2396,7 +2430,7 @@ static void emitCode( CODESEQ *head, unsigned depth, flow_control control )
         if( count == 0
           && ( IS_SENSITIVE( c )
           || (control & EC_CHAIN)
-          && !c->chain ) ) {
+          && !c->is_chain ) ) {
             emitIfCode( c, depth, control );
             c->sel = false;
         } else {
@@ -3395,17 +3429,21 @@ int main( int argc, char **argv )
         stripUselessOptions();
         initOptionFields();
 
-        outputInit();
-        startParserH();
-        outputFN_PROCESS();
-        if( !optFlag.parser_only ) {
-            outputFN_INIT();
-            outputFN_FINI();
+        if( errcount > 0 ) {
+            ok = false;
+        } else {
+            outputInit();
+            startParserH();
+            outputFN_PROCESS();
+            if( !optFlag.parser_only ) {
+                outputFN_INIT();
+                outputFN_FINI();
+            }
+            finishParserH();
+            outputUsageH();
+            dumpInternational();
+            outputFini();
         }
-        finishParserH();
-        outputUsageH();
-        dumpInternational();
-        outputFini();
     }
     closeFiles();
     finiTargets();
