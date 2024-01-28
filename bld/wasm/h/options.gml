@@ -123,7 +123,8 @@
 :usage. 80186 instructions
 :jusage. 80186 命令
 
-:usagechain. 2 80286 instructions
+:usagechain. 2
+:usage. 80286 instructions
 :jusage. 80286 命令
 
 :option. 2
@@ -135,7 +136,8 @@
 :usage. protected mode instructions
 :jusage. protected mode instructions
 
-:usagechain. 3 80386 instructions
+:usagechain. 3
+:usage. 80386 instructions
 :jusage. 80386 命令
 
 :option. 3
@@ -155,7 +157,8 @@
 :usage. protected mode instructions
 :jusage. protected mode instructions
 
-:usagechain. 4 80486 instructions
+:usagechain. 4
+:usage. 80486 instructions
 :jusage. 80486 命令
 
 :option. 4
@@ -175,7 +178,8 @@
 :usage. protected mode instructions
 :jusage. protected mode instructions
 
-:usagechain. 5 Pentium instructions
+:usagechain. 5
+:usage. Pentium instructions
 :jusage. Pentium 命令
 
 :option. 5
@@ -195,7 +199,8 @@
 :usage. protected mode instructions
 :jusage. protected mode instructions
 
-:usagechain. 6 Pentium Pro instructions
+:usagechain. 6
+:usage. Pentium Pro instructions
 :jusage. 6 Pentium Pro 命令
 
 :option. 6
@@ -360,7 +365,8 @@
 :usage. force signed types to be used for signed values
 :jusage. 符号付き型を符号付き値のために使用するようにします
 
-:usagechain. m Memory model
+:usagechain. m
+:usage. Memory model
 :jusage. メモリ・モデル
 
 :option. mc

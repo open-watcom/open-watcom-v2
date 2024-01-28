@@ -118,7 +118,8 @@
 :usage. generate lists of externs
 :jusage. テxternのリストを生成します
 
-:usagechain. f Instruction format
+:usagechain. f
+:usage. Instruction format
 
 :option. ff
 :usage. FPU emulator fixups as comment [80(x)86 only]

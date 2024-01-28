@@ -131,7 +131,8 @@
 :path.
 :usage. set include path
 
-:usagechain. o Output object file format
+:usagechain. o
+:usage. Output object file format
 
 :option. oc
 :path.
@@ -144,7 +145,8 @@
 :option. q
 :usage. operate quietly
 
-:usagechain. v Debug verbose output
+:usagechain. v
+:usage. Debug verbose output
 
 :option. vi
 :internal.

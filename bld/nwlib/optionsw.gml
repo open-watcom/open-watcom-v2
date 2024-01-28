@@ -207,7 +207,8 @@
 :usage.  object output directory
 :jusage. オブジェクト出力ディレクトリ
 
-:usagechain. f Output Library format
+:usagechain. f
+:usage. Output Library format
 :jusage. 出力ライブラリ形式
 
 :option. fa
@@ -242,9 +243,11 @@
 
 :usagechain. i
 
-:usagegroup. 1 Import records architecture
+:usagegroup. 1
+:usage. Import records architecture
 :jusage. インポートレコードのアーキテクチャ
-:usagegroup. 2 Import records format
+:usagegroup. 2
+:usage. Import records format
 :jusage. インポートレコード形式
 
 :option. i6
@@ -287,7 +290,8 @@
 :usage.  generate MIPS import records
 :jusage. MIPSインポート･レコードを生成します
 
-:usagechain. in Non-resident table imports
+:usagechain. in
+:usage. Non-resident table imports
 
 :option. inn
 :enumerate. non_resident
@@ -311,7 +315,8 @@
 :usage.  generate PPC import records
 :jusage. PPCインポート･レコードを生成します
 
-:usagechain. ir Resident table imports
+:usagechain. ir
+:usage. Resident table imports
 
 :option. irn
 :enumerate. resident

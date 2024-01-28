@@ -198,7 +198,8 @@
 :option. r
 :usage.  only build the resource file
 
-:usagechain. s Segment and resource sorting method
+:usagechain. s
+:usage. Segment and resource sorting method
 
 :option. s0
 :enumerate. segm_sort
@@ -215,7 +216,8 @@
 :option. t
 :usage.  protected mode only
 
-:usagechain. v Verbose output
+:usagechain. v
+:usage. Verbose output
 
 :option. v
 :internal.
@@ -246,7 +248,8 @@
 :option. xc
 :usage.  ignore the current working directory
 
-:usagechain. zk Multi-byte characters support
+:usagechain. zk
+:usage. Multi-byte characters support
 
 :option. zk0 zk
 :enumerate. charset

@@ -86,6 +86,49 @@ TAG( USAGECHAIN ) \
 TAG( USAGEGROUP ) \
 TAG( USAGENOCHAIN )
 
+/*
+ *******************************************
+ * TAG        * sub-TAG
+ *******************************************
+ * ARGEQUAL
+ * CHAIN
+ * NOEQUAL
+ *
+ * FOOTER       FOOTERU, JFOOTER, JFOOTERU
+ * TITLE        TITLEU, JTITLE, JTITLEU
+ *
+ * OPTION
+ * USAGECHAIN
+ * USAGEGROUP
+ *              JUSAGE, USAGE
+ *
+ *******************************************
+ * OPTION attributes sub-TAG
+ *******************************************
+ * CHAR
+ * CMT
+ * CODE
+ * ENUMERATE
+ * FILE
+ * GROUP
+ * ID
+ * IMMEDIATE
+ * INTERNAL
+ * MULTIPLE
+ * NEGATE
+ * NOCHAIN
+ * NTARGET
+ * NUMBER
+ * OPTIONAL
+ * PATH
+ * PREFIX
+ * SPECIAL
+ * TARGET
+ * TIMESTAMP
+ * USAGENOCHAIN
+ *******************************************
+ */
+
 #define NEXT_ARG() \
         --argc1; ++argv1
 
@@ -311,7 +354,7 @@ static targmask     targetAnyMask;
 static targmask     targetDbgMask;
 static targmask     targetUnusedMask;
 
-static tag_id getsUsage = TAG_NULL;
+static tag_id       getsUsage = TAG_NULL;
 
 static char         *outputbuff = NULL;
 static lang_data    outputdata;
@@ -1026,16 +1069,19 @@ static void doARGEQUAL( const char *p )
         } else {
             c = *p;
         }
-        if( getsUsage == TAG_NULL ) {
-            alternateEqual = c;
-            optFlag.alternate_equal = true;
-        } else if( getsUsage == TAG_OPTION ) {
+        if( getsUsage == TAG_OPTION ) {
             OPTION *o;
 
             for( o = optionList; o != NULL; o = o->synonym ) {
                 o->equal_char = c;
             }
+        } else {
+            alternateEqual = c;
+            optFlag.alternate_equal = true;
         }
+    }
+    if( getsUsage != TAG_OPTION ) {
+        getsUsage = TAG_ARGEQUAL;
     }
 }
 
@@ -1337,6 +1383,7 @@ static void doNOEQUAL( const char *p )
     /* unused parameters */ (void)p;
 
     optFlag.no_equal = true;
+    getsUsage = TAG_NOEQUAL;
 }
 
 // :path. [<usage argid>]
@@ -1364,6 +1411,7 @@ static void doPATH( const char *p )
 // i.e., -oa -ox == -oax
 static void doCHAIN( const char *p )
 {
+    getsUsage = TAG_CHAIN;
     if( *p == '\0' ) {
         error( ":chain. missing <option> parameter\n" );
         return;
@@ -1446,8 +1494,20 @@ static void doUSAGE( const char *p )
 {
     OPTION *o;
 
-    for( o = optionList; o != NULL; o = o->synonym ) {
-        o->lang_usage[LANG_English] = pickUpRest( p );
+    switch( getsUsage ) {
+    case TAG_USAGECHAIN:
+        lastUsageChain->lang_usage[LANG_English] = pickUpRest( p );
+        break;
+    case TAG_USAGEGROUP:
+        lastUsageGroup->lang_usage[LANG_English] = pickUpRest( p );
+        break;
+    case TAG_OPTION:
+        for( o = optionList; o != NULL; o = o->synonym ) {
+            o->lang_usage[LANG_English] = pickUpRest( p );
+        }
+        break;
+    default:
+        error( ":usage. must follow :usagechain., :usagegroup., or :option.\n" );
     }
 }
 
@@ -1497,47 +1557,39 @@ static void doTITLE( const char *p )
     t->any_target = true;
     targetTitle = t;
     targetFooter = NULL;
+    getsUsage = TAG_TITLE;
 }
 
 // :titleu. <text>
 static void doTITLEU( const char *p )
 {
-    TITLE *t;
-
-    t = targetTitle;
-    if( t == NULL ) {
+    if( getsUsage != TAG_TITLE || targetTitle == NULL ) {
         error( ":titleu. must follow a :title.\n" );
         return;
     }
-    t->lang_usageu[LANG_English] = pickUpRest( p );
-    t->is_u = true;
+    targetTitle->lang_usageu[LANG_English] = pickUpRest( p );
+    targetTitle->is_u = true;
 }
 
 // :jtitle. <text>
 static void doJTITLE( const char *p )
 {
-    TITLE *t;
-
-    t = targetTitle;
-    if( t == NULL ) {
+    if( getsUsage != TAG_TITLE || targetTitle == NULL ) {
         error( ":jtitle. must follow a :title.\n" );
         return;
     }
-    t->lang_usage[LANG_Japanese] = pickUpRest( p );
+    targetTitle->lang_usage[LANG_Japanese] = pickUpRest( p );
 }
 
 // :jtitleu. <text>
 static void doJTITLEU( const char *p )
 {
-    TITLE *t;
-
-    t = targetTitle;
-    if( t == NULL ) {
+    if( getsUsage != TAG_TITLE || targetTitle == NULL ) {
         error( ":jtitleu. must follow a :title.\n" );
         return;
     }
-    t->lang_usageu[LANG_Japanese] = pickUpRest( p );
-    t->is_u = true;
+    targetTitle->lang_usageu[LANG_Japanese] = pickUpRest( p );
+    targetTitle->is_u = true;
 }
 
 // :footer. <text>
@@ -1558,47 +1610,39 @@ static void doFOOTER( const char *p )
     t->any_target = true;
     targetFooter = t;
     targetTitle = NULL;
+    getsUsage = TAG_FOOTER;
 }
 
 // :footeru. <text>
 static void doFOOTERU( const char *p )
 {
-    TITLE *t;
-
-    t = targetFooter;
-    if( t == NULL ) {
+    if( getsUsage != TAG_FOOTER || targetFooter == NULL ) {
         error( ":footeru. must follow a :footer.\n" );
         return;
     }
-    t->lang_usageu[LANG_English] = pickUpRest( p );
-    t->is_u = true;
+    targetFooter->lang_usageu[LANG_English] = pickUpRest( p );
+    targetFooter->is_u = true;
 }
 
 // :jfooter. <text>
 static void doJFOOTER( const char *p )
 {
-    TITLE *t;
-
-    t = targetFooter;
-    if( t == NULL ) {
+    if( getsUsage != TAG_FOOTER || targetFooter == NULL ) {
         error( ":jfooter. must follow a :footer.\n" );
         return;
     }
-    t->lang_usage[LANG_Japanese] = pickUpRest( p );
+    targetFooter->lang_usage[LANG_Japanese] = pickUpRest( p );
 }
 
 // :jfooteru. <text>
 static void doJFOOTERU( const char *p )
 {
-    TITLE *t;
-
-    t = targetFooter;
-    if( t == NULL ) {
+    if( getsUsage != TAG_FOOTER || targetFooter == NULL ) {
         error( ":jfooteru. must follow a :footer.\n" );
         return;
     }
-    t->lang_usageu[LANG_Japanese] = pickUpRest( p );
-    t->is_u = true;
+    targetFooter->lang_usageu[LANG_Japanese] = pickUpRest( p );
+    targetFooter->is_u = true;
 }
 
 // :group. <id> <usagechain>
@@ -1651,43 +1695,33 @@ static void doTIMESTAMP( const char *p )
     }
 }
 
-// :usagechain. <option> <usage>
+// :usagechain. <option>
 //
 // mark options that start with <option> as group in usage text
 // i.e., -fp0 -fp1 ==> -fp{0,1}
 static void doUSAGECHAIN( const char *p )
 {
-    USAGECHAIN  *ucn;
-
     if( *p == '\0' ) {
         error( "missing <option> in :usagechain. tag\n" );
         return;
     }
-    p = nextWord( p, tokbuff );
-    ucn = addUsageChain( tokbuff );
-    ucn->lang_usage[LANG_English] = pickUpRest( p );
-    lastUsageChain = ucn;
+    nextWord( p, tokbuff );
+    lastUsageChain = addUsageChain( tokbuff );
     getsUsage = TAG_USAGECHAIN;
 }
 
-// :usagegroup. <id> [<usage text>]
+// :usagegroup. <id>
 //
-// define group <id> with usage text for block of options
+// define group <id> for block of options
 //
 static void doUSAGEGROUP( const char *p )
 {
-    GROUP *gr;
-
     if( *p == '\0' ) {
         error( "missing <id> in :usagegroup. tag\n" );
         return;
     }
-    p = nextWord( p, tokbuff );
-    gr = addUsageGroup( tokbuff );
-    if( *p != '\0' ) {
-        gr->lang_usage[LANG_English] = pickUpRest( p );
-    }
-    lastUsageGroup = gr;
+    nextWord( p, tokbuff );
+    lastUsageGroup = addUsageGroup( tokbuff );
     getsUsage = TAG_USAGEGROUP;
 }
 
@@ -1817,14 +1851,14 @@ static void checkForMissingUsages( void )
     }
     for( ucn = usageChainList; ucn != NULL; ucn = ucn->next ) {
         for( i = start_lang; i < end_lang; ++i ) {
-            if( ( i == LANG_English || optFlag.report_missing_data ) && ucn->lang_usage[i] == NULL ) {
+            if( optFlag.report_missing_data && ucn->lang_usage[i] == NULL ) {
                 error( "chain '%s' has no %s text\n", ucn->pattern, langName[i] );
             }
         }
     }
     for( gr = usageGroupList; gr != NULL; gr = gr->next ) {
         for( i = start_lang; i < end_lang; ++i ) {
-            if( ( i == LANG_English || optFlag.report_missing_data ) && gr->lang_usage[i] == NULL ) {
+            if( optFlag.report_missing_data && gr->lang_usage[i] == NULL ) {
                 error( "group '%s' has no %s text\n", gr->id, langName[i] );
             }
         }
@@ -2801,11 +2835,15 @@ static void procUsageBlockHeader( lang_data langdata, language_id lang )
 static void outputUsageBlockHeader( lang_data langdata, process_line_fn *process_line )
 {
     language_id lang;
+    const char  *str;
 
-    for( lang = 0; lang < LANG_MAX; lang++ ) {
-        procUsageBlockHeader( langdata, lang );
+    str = getLangData( langdata, LANG_English );
+    if( str != NULL ) {
+        for( lang = 0; lang < LANG_MAX; lang++ ) {
+            procUsageBlockHeader( langdata, lang );
+        }
+        process_output( process_line );
     }
-    process_output( process_line );
 }
 
 static void outputUsageLangdata( lang_data langdata, process_line_fn *process_line )
@@ -2926,7 +2964,9 @@ static void outputUsageChainHeader( OPTION **o, process_line_fn *process_line, s
             buf = GET_OUTPUT_BUF( lang );
             strcpy( buf, hdrbuff );
             str = getLangData( (*o)->usageChain->lang_usage, lang );
-            strcpy( buf + max, str );
+            if( str != NULL ) {
+                strcpy( buf + max, str );
+            }
         }
     } else {
         for( lang = 0; lang < LANG_MAX; lang++ ) {
@@ -2938,7 +2978,9 @@ static void outputUsageChainHeader( OPTION **o, process_line_fn *process_line, s
             } else {
                 str = getLangData( (*o)->usageChain->lang_usage, lang );
             }
-            strcpy( buf, str );
+            if( str != NULL ) {
+                strcpy( buf, str );
+            }
         }
         process_output( process_line );
         for( lang = 0; lang < LANG_MAX; lang++ ) {

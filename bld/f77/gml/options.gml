@@ -153,7 +153,8 @@
 :cmt.
 :cmt.   Compile and Link Options
 :cmt.
-:usagegroup. 1 *Compile and Link Options*
+:usagegroup. 1
+:usage. *Compile and Link Options*
 :jusage. *ｺﾝﾊﾟｲﾙ/ﾘﾝｸｵﾌﾟｼｮﾝ*
 
 :option. C
@@ -241,7 +242,8 @@
 :cmt.
 :cmt.   File Management Options
 :cmt.
-:usagegroup. 2 *File Management Options*
+:usagegroup. 2
+:usage. *File Management Options*
 :jusage. *ﾌｧｲﾙﾏﾈｰｼﾞﾒﾝﾄｵﾌﾟｼｮﾝ*
 
 :option. LISt
@@ -287,7 +289,8 @@
 :cmt.
 :cmt.   Diagnostic Options
 :cmt.
-:usagegroup. 3 *Diagnostic Options*
+:usagegroup. 3
+:usage. *Diagnostic Options*
 :jusage. *診断ｵﾌﾟｼｮﾝ*
 
 :option. EXtensions
@@ -332,7 +335,8 @@
 :cmt.
 :cmt.   Debugging Options
 :cmt.
-:usagegroup. 4 *Debugging Options*
+:usagegroup. 4
+:usage. *Debugging Options*
 :jusage. *ﾃﾞﾊﾞｯｸﾞｵﾌﾟｼｮﾝ*
 
 :option. D1
@@ -369,7 +373,8 @@
 :cmt.
 :cmt.   Floating-Point Options
 :cmt.
-:usagegroup. 5 *Floating-Point Options*
+:usagegroup. 5
+:usage. *Floating-Point Options*
 :jusage. *浮動小数点ｵﾌﾟｼｮﾝ*
 
 :option. FPC
@@ -429,7 +434,8 @@
 :cmt.
 :cmt.   Optimization Options
 :cmt.
-:usagegroup. 6 *Optimizations*
+:usagegroup. 6
+:usage. *Optimizations*
 :jusage. *最適化*
 
 :option. OB
@@ -538,7 +544,8 @@
 :cmt.
 :cmt.   Memory Models
 :cmt.
-:usagegroup. 7 *Memory Models*
+:usagegroup. 7
+:usage. *Memory Models*
 :jusage. *ﾒﾓﾘﾓﾃﾞﾙ*
 
 :option. MF
@@ -580,7 +587,8 @@
 :cmt.
 :cmt.   CPU Targets
 :cmt.
-:usagegroup. 8 *CPU Targets*
+:usagegroup. 8
+:usage. *CPU Targets*
 :jusage. *CPU ﾀｰｹﾞｯﾄ*
 
 :option. 0
@@ -628,7 +636,8 @@
 :cmt.
 :cmt.   Application Type
 :cmt.
-:usagegroup. 9 *Application Type*
+:usagegroup. 9
+:usage. *Application Type*
 :jusage. *ｱﾌﾟﾘｹｰｼｮﾝﾀｲﾌﾟ*
 
 :option. BW
@@ -658,7 +667,8 @@
 :cmt.
 :cmt.   Character set
 :cmt.
-:usagegroup. 10 *Character Set Options*
+:usagegroup. 10
+:usage. *Character Set Options*
 :jusage. *文字ｾｯﾄｵﾌﾟｼｮﾝ*
 
 :option. CHInese
@@ -680,7 +690,8 @@
 :cmt.
 :cmt.   Miscellaneous Options
 :cmt.
-:usagegroup. 11 *Miscellaneous Options*
+:usagegroup. 11
+:usage. *Miscellaneous Options*
 :jusage. *その他のｵﾌﾟｼｮﾝ*
 
 :option. SHort

@@ -141,7 +141,8 @@
 :usage. ignore the WCL environment variable
 :target. i86
 
-:usagegroup. 1 [Processor options]
+:usagegroup. 1
+:usage. [Processor options]
 
 :option. 3r
 :usage. 386 register calling conventions
@@ -205,7 +206,8 @@
 :target. i86
 :group. 1
 
-:usagegroup. 2 [Floating-point processor options]
+:usagegroup. 2
+:usage. [Floating-point processor options]
 
 :option. fpc
 :usage. calls to floating-point library
@@ -244,7 +246,8 @@
 :target. i86 386
 :group. 2
 
-:usagegroup. 3 [Compiler options]
+:usagegroup. 3
+:usage. [Compiler options]
 
 :option. bcl
 :usage. compile and link for <os>
@@ -550,7 +553,8 @@
 :target. 386
 :group. 3
 
-:usagegroup. 4 [Debugging options]
+:usagegroup. 4
+:usage. [Debugging options]
 
 :option. d0
 :usage. no debugging information
@@ -583,7 +587,8 @@
 :usage. (C++) -d3 and inlines as statics
 :group. 4
 
-:usagegroup. 5 [Optimization options]
+:usagegroup. 5
+:usage. [Optimization options]
 
 :option. oa
 :usage. relax alias checking
@@ -661,7 +666,8 @@
 :target. i86 386
 :group. 5
 
-:usagegroup. 6 [C++ exception handling options]
+:usagegroup. 6
+:usage. [C++ exception handling options]
 
 :option. xd
 :usage. no exception handling
@@ -682,9 +688,11 @@
 :usage. exception handling: time
 :group. 6
 
-:usagegroup. 7 [Preprocessor options]
+:usagegroup. 7
+:usage. [Preprocessor options]
 
-:usagechain. p Preprocess source file
+:usagechain. p
+:usage. Preprocess source file
 :jusage. p ソースファイルを前処理します
 
 :option. d<name>[=text]
@@ -729,7 +737,8 @@
 :number.
 :group. 7
 
-:usagegroup. 8 [Linker options]
+:usagegroup. 8
+:usage. [Linker options]
 
 :option. bd
 :usage. build Dynamic link library

@@ -106,8 +106,6 @@
 :ntarget. qnx linux osx bsd haiku
 
 
-:chain. F G O Z
-
 :option. 10x
 :internal.
 :usage. use 10.x options
@@ -156,7 +154,8 @@
 :option. \E\P
 :usage. preprocess without #line directives to stdout
 
-:usagechain. F file options
+:usagechain. \F
+:usage. file options
 
 :option. \F
 :special. parse_F <size>
@@ -220,7 +219,8 @@
 :internal.
 :usage. generate SBR file without local variables
 
-:usagechain. G code generation options
+:usagechain. \G
+:usage. code generation options
 
 :option. \G3
 :target. 386
@@ -346,7 +346,8 @@
 :option. \n\o\l\o\g\o
 :usage. operate quietly
 
-:usagechain. O optimization options
+:usagechain. \O
+:usage. optimization options
 
 :option. \O1
 :immediate. handle_opt_level
@@ -537,7 +538,8 @@
 :optional.
 :usage. use pre-compiled header file
 
-:usagechain. Z language options
+:usagechain. \Z
+:usage. language options
 
 :option. \Z7
 :immediate. handle_debug_info

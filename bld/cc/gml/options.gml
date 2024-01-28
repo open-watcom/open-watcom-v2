@@ -234,7 +234,8 @@
 :usage. allow non const initializers for local aggregates or unions
 :jusage.
 
-:usagechain. ad Make Dependency Information
+:usagechain. ad
+:usage. Make Dependency Information
 
 :option. ad
 :target. any
@@ -289,7 +290,8 @@
 :usage. assume short integers are aligned
 :jusage. short 整数が整列していると仮定します
 
-:usagechain. b Application type
+:usagechain. b
+:usage. Application type
 
 :option. bc
 :target. any
@@ -329,7 +331,8 @@
 :usage. build target is a default windowing application
 :jusage. 構築ターゲットはデフォルト･ウィンドウ･アプリケーションです
 
-:usagechain. d Debugging Information
+:usagechain. d
+:usage. Debugging Information
 
 :option. d0
 :target. any
@@ -409,7 +412,8 @@
 :usage. emit code coverage gear
 :jusage.
 
-:usagechain. ec Default calling convention
+:usagechain. ec
+:usage. Default calling convention
 
 :option. ecc
 :target. i86 386
@@ -618,7 +622,8 @@
 :usage. do not check for truncated versions of file names
 :jusage. 切り詰めたファイル名をチェックしません
 
-:usagechain. fp Generate Floating-point code
+:usagechain. fp
+:usage. Generate Floating-point code
 
 :option. fpc
 :target. i86 386
@@ -690,7 +695,8 @@
 :usage. set code group name
 :jusage. コード･グループ名を設定します
 
-:usagechain. h Debugging Information format
+:usagechain. h
+:usage. Debugging Information format
 
 :option. hc
 :target. any
@@ -752,7 +758,8 @@
 :usage. enable OWL logging
 :jusage. enable OWL logging
 
-:usagechain. m Memory model
+:usagechain. m
+:usage. Memory model
 :jusage. メモリ・モデル
 
 :option. mc
@@ -815,7 +822,8 @@
 :usage. set name of text segment
 :jusage. テキスト･セグメント名を設定します
 
-:usagechain. o Optimization
+:usagechain. o
+:usage. Optimization
 :jusage. o 最適化
 
 :option. oa
@@ -944,7 +952,8 @@
 :usage. NULL points to valid memory in the target environment
 :jusage. NULLは、ターゲット環境内の有効なメモリを指します
 
-:usagechain. p Preprocess source file
+:usagechain. p
+:usage. Preprocess source file
 :jusage. p ソースファイルを前処理します
 
 :option. pil
@@ -1052,7 +1061,8 @@
 :usage. VC++ compatibility: alloca allowed in argument lists
 :jusage. VC++ 互換性: 引数リストの中でallocaを使用できます
 
-:usagechain. w Warning control
+:usagechain. w
+:usage. Warning control
 
 :option. w
 :target. any
@@ -1239,7 +1249,8 @@
 :usage. GS is pegged to a segment
 :jusage. GSを1つのセグメントに固定します
 
-:usagechain. zk Multi-byte/Unicode character support
+:usagechain. zk
+:usage. Multi-byte/Unicode character support
 
 :option. zk0 zk
 :target. any

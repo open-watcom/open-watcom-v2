@@ -136,7 +136,8 @@
 :cmt
 :cmt Processor options
 :cmt
-:usagegroup. 1 [Processor options]
+:usagegroup. 1
+:usage. [Processor options]
 
 :option. march
 :usage. generate code for this architecture
@@ -156,7 +157,8 @@
 :cmt
 :cmt x86 Floating-point processor options
 :cmt
-:usagegroup. 2 [x86 Floating-point processor options]
+:usagegroup. 2
+:usage. [x86 Floating-point processor options]
 
 :option. fpmath
 :usage. hardware floating-point code
@@ -179,7 +181,8 @@
 :cmt
 :cmt Compiler options
 :cmt
-:usagegroup. 3 [Compiler options]
+:usagegroup. 3
+:usage. [Compiler options]
 
 :option. fbrowser
 :usage. generate browsing information
@@ -278,7 +281,8 @@
 :usage. same, but skip typedef names
 :group. 3
 
-:usagechain. mabi= set calling convention
+:usagechain. mabi=
+:usage. set calling convention
 
 :option. mabi=cdecl
 :usage. set calling conv. to __cdecl
@@ -313,7 +317,8 @@
 :usage. set calling conv. to __watcall
 :group. 3
 
-:usagechain. mcmodel= memory model
+:usagechain. mcmodel=
+:usage. memory model
 
 :option. mcmodel=c
 :usage. memory model compact
@@ -404,7 +409,8 @@
 :cmt
 :cmt Debugging options
 :cmt
-:usagegroup. 4 [Debugging options]
+:usagegroup. 4
+:usage. [Debugging options]
 
 :option. g0
 :usage. no debugging information
@@ -457,7 +463,8 @@
 :cmt
 :cmt Optimization options
 :cmt
-:usagegroup. 5 [Optimization options]
+:usagegroup. 5
+:usage. [Optimization options]
 
 :option. feh{,=s,=t}
 :usage. exception handling: balanced, space, time
@@ -555,7 +562,8 @@
 :cmt
 :cmt Preprocessor options
 :cmt
-:usagegroup. 6 [Preprocessor options]
+:usagegroup. 6
+:usage. [Preprocessor options]
 
 :option. C
 :usage. preserve comments
@@ -638,7 +646,8 @@
 :cmt
 :cmt Linker options
 :cmt
-:usagegroup. 7 [Linker options]
+:usagegroup. 7
+:usage. [Linker options]
 
 :option. fd
 :usage. save WLINK directives to file

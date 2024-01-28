@@ -215,7 +215,8 @@
 :usage.  Pentium Pro stack calling conventions
 :jusage. Pentium Pro スタック呼び出し規約
 
-:usagechain. ad Make Dependency info
+:usagechain. ad
+:usage. Make Dependency info
 
 :option. ad
 :target. any
@@ -268,7 +269,8 @@
 :usage.  build target is operating system <os>
 :jusage. 構築ターゲットはオペレーティング･システム <os>
 
-:usagechain. b Application type
+:usagechain. b
+:usage. Application type
 
 :option. bc
 :target. any
@@ -314,7 +316,8 @@
 :usage.  allow extended -d macro definitions
 :jusage. 拡張された -d マクロ定義を許可します
 
-:usagechain. d Debugging information
+:usagechain. d
+:usage. Debugging information
 
 :option. d0
 :target. any
@@ -385,7 +388,8 @@
 :usage.  generate browsing information
 :jusage. ブラウズ情報を生成します
 
-:usagechain. ec Default calling convention
+:usagechain. ec
+:usage. Default calling convention
 
 :option. ecc
 :target. i86 386
@@ -540,7 +544,8 @@
 :usage.  specify file of command lines to be batch processed
 :jusage. バッチ処理するコマンドラインのファイルを指定します
 
-:usagechain. fh Precompiled Header Files (PCH)
+:usagechain. fh
+:usage. Precompiled Header Files (PCH)
 :jusage. プリコンパイル済みヘッダーファイル（PCH）
 
 :option. fh
@@ -641,7 +646,8 @@
 :usage.  inline 80x87 instructions with specified depth
 :jusage. 指定した深さのインライン80x87命令
 
-:usagechain. fp Generate Floating-point code
+:usagechain. fp
+:usage. Generate Floating-point code
 
 :option. fpc
 :target. i86 386
@@ -701,7 +707,8 @@
 :usage.  set code group name
 :jusage. コード･グループ名を設定します
 
-:usagechain. h Debugging Information Format
+:usagechain. h
+:usage. Debugging Information Format
 
 :option. hw
 :target. i86 386
@@ -762,7 +769,8 @@
 :jusage. OWLリストを出力します
 :internal.
 
-:usagechain. m Memory model
+:usagechain. m
+:usage. Memory model
 :jusage. メモリ・モデル
 
 :option. mc
@@ -831,7 +839,8 @@
 :usage.  set name of text segment
 :jusage. テキスト･セグメント名を設定します
 
-:usagechain. o Optimization
+:usagechain. o
+:usage. Optimization
 :jusage. o 最適化
 
 :option. oa
@@ -958,7 +967,8 @@
 :usage.  NULL points to valid memory in the target environment
 :jusage. NULLは、ターゲット環境内の有効なメモリを指します
 
-:usagechain. p Preprocess source file
+:usagechain. p
+:usage. Preprocess source file
 :jusage. p ソースファイルを前処理します
 
 :option. pil
@@ -1083,7 +1093,8 @@
 :usage.  VC++ compatibility: alloca allowed in argument lists
 :jusage. VC++ 互換性: 引数リストの中でallocaを使用できます
 
-:usagechain. w Warning control
+:usagechain. w
+:usage. Warning control
 
 :option. w
 :target. any
@@ -1336,7 +1347,8 @@
 :usage.  dump informational statistics to stdout
 :jusage. 情報として統計値をstdoutに出力します
 
-:usagechain. zk Multi-byte/Unicode character support
+:usagechain. zk
+:usage. Multi-byte/Unicode character support
 
 :option. zk0 zk
 :target. any
