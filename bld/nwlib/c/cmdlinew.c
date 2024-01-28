@@ -70,7 +70,6 @@ static void ParseCommand( void )
 {
     operation       ops = 0;
 
-    CmdScanSkipWhiteSpace();
     switch( CmdScanChar() ) {
     case '-':
         ops = OP_DELETE;
@@ -112,6 +111,7 @@ static void ParseCommand( void )
     default:
         BadCmdLineOption();
     }
+    CmdScanSkipWhiteSpace();
     AddCommand( ops );
 }
 
