@@ -310,8 +310,6 @@ $(bmroot_cl)/clr.bmp
 root_cmn = ../doc/cmn
 incs_cmn = $(root_cmn)
 objs_cmn = &
-$(root_cmn)/386arch.gml &
-$(root_cmn)/86arch.gml &
 $(root_cmn)/about.gml &
 $(root_cmn)/bpatch.gml &
 $(root_cmn)/cmpenv.gml &
