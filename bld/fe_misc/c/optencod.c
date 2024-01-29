@@ -346,8 +346,6 @@ static char         hdrbuff[BUFF_SIZE];
 static char         maxusgbuff[BUFF_SIZE];
 
 static char         alternateEqual;
-static USAGECHAIN   *lastUsageChain;
-static USAGEGROUP   *lastUsageGroup;
 static size_t       maxUsageLen;
 static targmask     targetMask = 0;
 static targmask     targetAnyMask;
@@ -485,8 +483,11 @@ static OPTION       *uselessOptionList;
 static TITLE        *titleList;
 static TITLE        *footerList;
 static CHAIN        *chainList;
-static USAGECHAIN   *usageChainList;
-static USAGEGROUP   *usageGroupList = NULL;
+static USAGECHAIN   *usageChainList = NULL;
+static USAGECHAIN   *lastUsageChain = NULL;
+static USAGEGROUP   blankUsageGroup;
+static USAGEGROUP   *usageGroupList;
+static USAGEGROUP   *lastUsageGroup;
 static TITLE        *targetTitle;
 static TITLE        *targetFooter;
 
@@ -827,6 +828,13 @@ static USAGEGROUP *findUsageGroup( const char *id )
     return( ugr );
 }
 
+static void initUsageGroup( void )
+{
+    memset( &blankUsageGroup, 0, sizeof( blankUsageGroup ) );
+    usageGroupList = &blankUsageGroup;
+    lastUsageGroup = NULL;
+}
+
 static USAGEGROUP *addUsageGroup( const char *id )
 {
     size_t      id_len;
@@ -838,8 +846,8 @@ static USAGEGROUP *addUsageGroup( const char *id )
     id_len = strlen( id );
     ugr = calloc( 1, sizeof( *ugr ) + id_len );
     memcpy( ugr->id, id, id_len + 1 );
-    if( usageGroupList == NULL ) {
-        usageGroupList = ugr;
+    if( lastUsageGroup == NULL ) {
+        usageGroupList->next = ugr;
     } else {
         lastUsageGroup->next = ugr;
     }
@@ -1017,6 +1025,7 @@ static OPTION *pushNewOption( char *pattern, OPTION *o )
     newo->equal_char = '\0';
     newo->target_mask = targetAnyMask;
     newo->any_target = true;
+    newo->usageGroup = usageGroupList;
     optionList = newo;
     return( newo );
 }
@@ -1856,7 +1865,7 @@ static void checkForMissingUsages( void )
             }
         }
     }
-    for( ugr = usageGroupList; ugr != NULL; ugr = ugr->next ) {
+    for( ugr = usageGroupList->next; ugr != NULL; ugr = ugr->next ) {
         for( i = start_lang; i < end_lang; ++i ) {
             if( optFlag.report_missing_data && ugr->lang_usage[i] == NULL ) {
                 error( "group '%s' has no %s text\n", ugr->id, langName[i] );
@@ -2704,7 +2713,7 @@ static char *genOptionUsageStart( OPTION *o, char *buf, bool no_prefix )
 
 static bool usageValid( OPTION *o, USAGEGROUP *ugr )
 {
-    if( ugr != NULL ) {
+    if( ugr != usageGroupList ) {
         if( o->usageGroup != ugr || o->usageChain != NULL ) {
             return( false );
         }
@@ -2940,7 +2949,7 @@ static const char *getHeaderUsage( OPTION *o, language_id lang )
 {
     const char  *str;
 
-    if( o->usageGroup != NULL ) {
+    if( o->usageGroup != usageGroupList ) {
         str = getLangData( o->usageGroup->lang_usage, lang );
         if( str == NULL && o->usageChain != NULL ) {
             str = getLangData( o->usageChain->lang_usage, lang );
@@ -2973,7 +2982,7 @@ static void outputUsageChainHeader( OPTION **o, process_line_fn *process_line, s
             buf = GET_OUTPUT_BUF( lang );
             for( len = max / 2; len-- > 0; )
                 *buf++ = ' ';
-            if( (*o)->usageGroup != NULL ) {
+            if( (*o)->usageGroup != usageGroupList ) {
                 str = getLangData( (*o)->usageGroup->lang_usage, lang );
             } else {
                 str = getLangData( (*o)->usageChain->lang_usage, lang );
@@ -3107,7 +3116,7 @@ static void processUsage( process_line_fn *process_line, USAGEGROUP *ugr )
     for( i = 0; i < count; ++i ) {
         if( oo[i]->usage_used )
             continue;
-        if( oo[i]->usageGroup != NULL
+        if( oo[i]->usageGroup != usageGroupList
           && !oo[i]->usageGroup->usage_used
           && oo[i]->usageChain != NULL ) {
             outputUsageGroup( oo, i, count, process_line, max );
@@ -3142,10 +3151,10 @@ static void outputUsage( process_line_fn *process_line )
 
     outputUsageTitle( process_line );
 
-    ugr = NULL;
-    processUsage( process_line, ugr );
     for( ugr = usageGroupList; ugr != NULL; ugr = ugr->next ) {
-        if( checkUsageGroupUsed( ugr ) ) {
+        if( ugr == usageGroupList ) {
+            processUsage( process_line, ugr );
+        } else if( checkUsageGroupUsed( ugr ) ) {
             outputUsageBlockHeader( ugr->lang_usage, process_line );
             processUsage( process_line, ugr );
         }
@@ -3496,6 +3505,7 @@ int main( int argc, char **argv )
         dumpUsage();
     } else {
         initUTF8();
+        initUsageGroup();
         readInputFile();
         assignChainToOptions();
         assignUsageChainToOptions();
