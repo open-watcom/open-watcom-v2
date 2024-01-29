@@ -1070,7 +1070,7 @@ static void doARGEQUAL( const char *p )
     char    c;
 
     if( *p == '\0' ) {
-        error( ":argequal. must have <char> specified\n" );
+        error( ":argequal. tag requires <char> parameter\n" );
     } else {
         if( p[0] == '.'
           && p[1] == '.' ) {
@@ -1301,7 +1301,7 @@ static void doIMMEDIATE( const char *p )
     OPTION *o;
 
     if( *p == '\0' ) {
-        error( ":immediate. must have <fn> specified\n" );
+        error( ":immediate. tag requires <fn> parameter\n" );
         return;
     }
     for( o = optionList; o != NULL; o = o->synonym ) {
@@ -1326,7 +1326,7 @@ static void doCODE( const char *p )
     OPTION *o;
 
     if( *p == '\0' ) {
-        error( ":code. must have <source-code> specified\n" );
+        error( ":code. tag requires <source-code> parameter\n" );
         return;
     }
     for( o = optionList; o != NULL; o = o->synonym ) {
@@ -1380,7 +1380,7 @@ static void doNEGATE( const char *p )
     for( o = optionList; o != NULL; o = o->synonym ) {
         o->is_negate = true;
         if( o->enumerate != NULL ){
-            error( ":negate. must be non-enumeration switch for negate tag\n" );
+            error( ":negate. tag can be used with non-enumeration option for negate tag\n" );
         }
     }
 }
@@ -1422,7 +1422,7 @@ static void doCHAIN( const char *p )
 {
     getsUsage = TAG_CHAIN;
     if( *p == '\0' ) {
-        error( ":chain. missing <option> parameter\n" );
+        error( ":chain. tag requires <option> parameter\n" );
         return;
     }
     while( *p != '\0' ) {
@@ -1438,7 +1438,7 @@ static void doENUMERATE( const char *p )
     OPTION *o;
 
     if( *p == '\0' ) {
-        error( ":enumerate. missing <name> parameter\n" );
+        error( ":enumerate. tag requires <name> parameter\n" );
         return;
     }
     p = nextWord( p, tokbuff );
@@ -1465,7 +1465,7 @@ static void doSPECIAL( const char *p )
     OPTION *o;
 
     if( *p == '\0' ) {
-        error( ":special. missing <fn> parameter\n" );
+        error( ":special. tag requires <fn> parameter\n" );
         return;
     }
     for( o = optionList; o != NULL; o = o->synonym ) {
@@ -1516,7 +1516,7 @@ static void doUSAGE( const char *p )
         }
         break;
     default:
-        error( ":usage. must follow :usagechain., :usagegroup., or :option.\n" );
+        error( ":usage. tag must follow :usagechain., :usagegroup., or :option.\n" );
     }
 }
 
@@ -1528,9 +1528,15 @@ static void doJUSAGE( const char *p )
 
     switch( getsUsage ) {
     case TAG_USAGECHAIN:
+        if( lastUsageChain->lang_usage[LANG_English] == NULL ) {
+            error( ":jusage. tag last :usagechain. hasn't define English text.\n" );
+        }
         lastUsageChain->lang_usage[LANG_Japanese] = pickUpRest( p );
         break;
     case TAG_USAGEGROUP:
+        if( lastUsageGroup->lang_usage[LANG_English] == NULL ) {
+            error( ":jusage. tag last :usagegroup. hasn't define English text.\n" );
+        }
         lastUsageGroup->lang_usage[LANG_Japanese] = pickUpRest( p );
         break;
     case TAG_OPTION:
@@ -1544,7 +1550,7 @@ static void doJUSAGE( const char *p )
         }
         break;
     default:
-        error( ":jusage. must follow :usagechain., :usagegroup., or :option.\n" );
+        error( ":jusage. tag must follow :usagechain., :usagegroup., or :option. tag\n" );
     }
 }
 
@@ -1573,7 +1579,7 @@ static void doTITLE( const char *p )
 static void doTITLEU( const char *p )
 {
     if( getsUsage != TAG_TITLE || targetTitle == NULL ) {
-        error( ":titleu. must follow a :title.\n" );
+        error( ":titleu. tag must follow a :title. tag\n" );
         return;
     }
     targetTitle->lang_usageu[LANG_English] = pickUpRest( p );
@@ -1584,7 +1590,7 @@ static void doTITLEU( const char *p )
 static void doJTITLE( const char *p )
 {
     if( getsUsage != TAG_TITLE || targetTitle == NULL ) {
-        error( ":jtitle. must follow a :title.\n" );
+        error( ":jtitle. tag must follow a :title. tag\n" );
         return;
     }
     targetTitle->lang_usage[LANG_Japanese] = pickUpRest( p );
@@ -1594,7 +1600,7 @@ static void doJTITLE( const char *p )
 static void doJTITLEU( const char *p )
 {
     if( getsUsage != TAG_TITLE || targetTitle == NULL ) {
-        error( ":jtitleu. must follow a :title.\n" );
+        error( ":jtitleu. tag must follow a :title. tag\n" );
         return;
     }
     targetTitle->lang_usageu[LANG_Japanese] = pickUpRest( p );
@@ -1626,7 +1632,7 @@ static void doFOOTER( const char *p )
 static void doFOOTERU( const char *p )
 {
     if( getsUsage != TAG_FOOTER || targetFooter == NULL ) {
-        error( ":footeru. must follow a :footer.\n" );
+        error( ":footeru. tag must follow a :footer. tag\n" );
         return;
     }
     targetFooter->lang_usageu[LANG_English] = pickUpRest( p );
@@ -1637,7 +1643,7 @@ static void doFOOTERU( const char *p )
 static void doJFOOTER( const char *p )
 {
     if( getsUsage != TAG_FOOTER || targetFooter == NULL ) {
-        error( ":jfooter. must follow a :footer.\n" );
+        error( ":jfooter. tag must follow a :footer. tag\n" );
         return;
     }
     targetFooter->lang_usage[LANG_Japanese] = pickUpRest( p );
@@ -1647,14 +1653,14 @@ static void doJFOOTER( const char *p )
 static void doJFOOTERU( const char *p )
 {
     if( getsUsage != TAG_FOOTER || targetFooter == NULL ) {
-        error( ":jfooteru. must follow a :footer.\n" );
+        error( ":jfooteru. tag must follow a :footer. tag\n" );
         return;
     }
     targetFooter->lang_usageu[LANG_Japanese] = pickUpRest( p );
     targetFooter->is_u = true;
 }
 
-// :group. <id> <usagechain>
+// :group. <group_id> <usagechain>
 static void doGROUP( const char *p )
 {
     OPTION      *o;
@@ -1662,13 +1668,13 @@ static void doGROUP( const char *p )
     USAGECHAIN  *ucn;
 
     if( *p == '\0' ) {
-        error( ":group. missing <id> parameter\n" );
+        error( ":group. tag requires <group_id> parameter\n" );
         return;
     }
     p = nextWord( p, tokbuff );
     ugr = findUsageGroup( tokbuff );
     if( ugr == NULL ) {
-        error( ":group. <id> is not found.\n" );
+        error( ":group. tag <group_id> value '%s' is not found.\n", tokbuff );
     } else {
         for( o = optionList; o != NULL; o = o->synonym ) {
             o->usageGroup = ugr;
@@ -1678,7 +1684,7 @@ static void doGROUP( const char *p )
         p = nextWord( p, tokbuff );
         ucn = findUsageChain( tokbuff );
         if( ucn == NULL ) {
-            error( ":group. <usagechain> is not found.\n" );
+            error( ":group. tag <usagechain> value '%s' is not found.\n", tokbuff );
         } else {
             for( o = optionList; o != NULL; o = o->synonym ) {
                 o->usageChain = ucn;
@@ -1711,7 +1717,7 @@ static void doTIMESTAMP( const char *p )
 static void doUSAGECHAIN( const char *p )
 {
     if( *p == '\0' ) {
-        error( "missing <option> in :usagechain. tag\n" );
+        error( ":usagechain. tag requires <option> parameter\n" );
         return;
     }
     nextWord( p, tokbuff );
@@ -1719,14 +1725,14 @@ static void doUSAGECHAIN( const char *p )
     getsUsage = TAG_USAGECHAIN;
 }
 
-// :usagegroup. <id>
+// :usagegroup. <group_id>
 //
-// define group <id> for block of options
+// define group <group_id> for block of options
 //
 static void doUSAGEGROUP( const char *p )
 {
     if( *p == '\0' ) {
-        error( "missing <id> in :usagegroup. tag\n" );
+        error( ":usagegroup. tag requires <group_id> parameter\n" );
         return;
     }
     nextWord( p, tokbuff );
@@ -1874,7 +1880,7 @@ static void checkForMissingUsages( void )
     }
 }
 
-static void assignChainToOptions( void )
+static void assignCodeChainToOptions( void )
 {
     OPTION *o;
 
@@ -3507,7 +3513,7 @@ int main( int argc, char **argv )
         initUTF8();
         initUsageGroup();
         readInputFile();
-        assignChainToOptions();
+        assignCodeChainToOptions();
         assignUsageChainToOptions();
         checkForMissingUsages();
         stripUselessOptions();
