@@ -1516,7 +1516,7 @@ static void doUSAGE( const char *p )
         }
         break;
     default:
-        error( ":usage. tag must follow :usagechain., :usagegroup., or :option.\n" );
+        error( ":usage. tag can follow only :usagechain., :usagegroup., or :option.\n" );
     }
 }
 
@@ -1550,7 +1550,7 @@ static void doJUSAGE( const char *p )
         }
         break;
     default:
-        error( ":jusage. tag must follow :usagechain., :usagegroup., or :option. tag\n" );
+        error( ":jusage. tag can follow only :usagechain., :usagegroup., or :option. tag\n" );
     }
 }
 
