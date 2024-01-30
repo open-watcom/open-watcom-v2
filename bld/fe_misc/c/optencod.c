@@ -2832,35 +2832,28 @@ static void expand_tab( const char *s, char *buf )
 
 #define HEADER_LEFT_MARGIN   8
 
-static void procUsageBlockHeader( lang_data langdata, language_id lang )
+static void outputUsageGroupHeader( lang_data langdata, process_line_fn *process_line )
 {
+    language_id lang;
     const char  *str;
     size_t      len;
     char        *buf;
 
-    buf = GET_OUTPUT_BUF( lang );
-    str = getLangData( langdata, lang );
-    len = strlen( str );
-    if( len < 80 ) {
-        len = ( 80 - len ) / 2;
-        if( len > HEADER_LEFT_MARGIN )
-            len = HEADER_LEFT_MARGIN;
-        while( len-- > 0 ) {
-            *buf++ = ' ';
-        }
-    }
-    strcpy( buf, str );
-}
-
-static void outputUsageBlockHeader( lang_data langdata, process_line_fn *process_line )
-{
-    language_id lang;
-    const char  *str;
-
     str = getLangData( langdata, LANG_English );
     if( str != NULL ) {
         for( lang = 0; lang < LANG_MAX; lang++ ) {
-            procUsageBlockHeader( langdata, lang );
+            buf = GET_OUTPUT_BUF( lang );
+            str = getLangData( langdata, lang );
+            len = strlen( str );
+            if( len < 80 ) {
+                len = ( 80 - len ) / 2;
+                if( len > HEADER_LEFT_MARGIN )
+                    len = HEADER_LEFT_MARGIN;
+                while( len-- > 0 ) {
+                    *buf++ = ' ';
+                }
+            }
+            strcpy( buf, str );
         }
         process_output( process_line );
     }
@@ -2878,31 +2871,16 @@ static void outputUsageLangdata( lang_data langdata, process_line_fn *process_li
     process_line();
 }
 
-static void outputUsageTitle( process_line_fn *process_line )
+static void outputUsageCommon( TITLE *t, process_line_fn *process_line )
 {
-    TITLE       *t;
-
-    for( t = titleList; t != NULL; t = t->next ) {
+    while( t != NULL ) {
         if( IS_SELECTED( t ) ) {
             outputUsageLangdata( t->lang_usage, process_line );
             if( process_line == emitUsageH ) {
                 outputUsageLangdata( ( t->is_u ) ? t->lang_usageu : t->lang_usage, emitUsageHQNX );
             }
         }
-    }
-}
-
-static void outputUsageFooter( process_line_fn *process_line )
-{
-    TITLE       *t;
-
-    for( t = footerList; t != NULL; t = t->next ) {
-        if( IS_SELECTED( t ) ) {
-            outputUsageLangdata( t->lang_usage, process_line );
-            if( process_line == emitUsageH ) {
-                outputUsageLangdata( ( t->is_u ) ? t->lang_usageu : t->lang_usage, emitUsageHQNX );
-            }
-        }
+        t = t->next;
     }
 }
 
@@ -3107,40 +3085,46 @@ static void processUsage( process_line_fn *process_line, USAGEGROUP *ugr )
         }
     }
     ++max;
-    oo = calloc( count + 1, sizeof( OPTION * ) );
-    c = oo;
-    for( o = optionList; o != NULL; o = o->next ) {
-        if( usageOptionValid( o, ugr ) ) {
-            *c++ = o;
+    if( count > 0 ) {
+        oo = calloc( count + 1, sizeof( OPTION * ) );
+        c = oo;
+        for( o = optionList; o != NULL; o = o->next ) {
+            if( usageOptionValid( o, ugr ) ) {
+                *c++ = o;
+            }
         }
-    }
-    *c = NULL;
-    qsort( oo, count, sizeof( OPTION * ), usageCmp );
+        *c = NULL;
+        qsort( oo, count, sizeof( OPTION * ), usageCmp );
 
-    clearUsageChainUsage();
-    clearUsageGroupUsage();
-    for( i = 0; i < count; ++i ) {
-        oo[i]->usage_used = false;
-    }
-    for( i = 0; i < count; ++i ) {
-        if( oo[i]->usage_used )
-            continue;
-        if( oo[i]->usageGroup != usageGroupList
-          && !oo[i]->usageGroup->usage_used
-          && oo[i]->usageChain != NULL ) {
-            outputUsageChainHeader( &oo[i], process_line, max );
-            outputUsageGroup( oo, i, count, process_line, max );
-        } else if( oo[i]->usageChain != NULL
-          && !oo[i]->usageChain->usage_used ) {
-            outputUsageChainHeader( &oo[i], process_line, max );
-            outputUsageChain( oo, i, count, process_line, max );
-        } else {
-            outputUsageOption( oo[i], process_line, max );
+        clearUsageChainUsage();
+        clearUsageGroupUsage();
+        for( i = 0; i < count; ++i ) {
+            oo[i]->usage_used = false;
         }
-    }
-    free( oo );
-    if( checkUsageLength( maxUsageLen ) ) {
-        fprintf( stderr, "usage message exceeds %u chars\n%s\n", CONSOLE_WIDTH, maxusgbuff );
+
+        if( ugr != usageGroupList ) {
+            outputUsageGroupHeader( ugr->lang_usage, process_line );
+        }
+        for( i = 0; i < count; ++i ) {
+            if( oo[i]->usage_used )
+                continue;
+            if( oo[i]->usageGroup != usageGroupList
+              && !oo[i]->usageGroup->usage_used
+              && oo[i]->usageChain != NULL ) {
+                outputUsageChainHeader( &oo[i], process_line, max );
+                outputUsageGroup( oo, i, count, process_line, max );
+            } else if( oo[i]->usageChain != NULL
+              && !oo[i]->usageChain->usage_used ) {
+                outputUsageChainHeader( &oo[i], process_line, max );
+                outputUsageChain( oo, i, count, process_line, max );
+            } else {
+                outputUsageOption( oo[i], process_line, max );
+            }
+        }
+        free( oo );
+        if( checkUsageLength( maxUsageLen ) ) {
+            fprintf( stderr, "usage message exceeds %u chars\n%s\n", CONSOLE_WIDTH, maxusgbuff );
+        }
     }
 }
 
@@ -3160,18 +3144,13 @@ static void outputUsage( process_line_fn *process_line )
 {
     USAGEGROUP  *ugr;
 
-    outputUsageTitle( process_line );
+    outputUsageCommon( titleList, process_line );
 
     for( ugr = usageGroupList; ugr != NULL; ugr = ugr->next ) {
-        if( ugr == usageGroupList ) {
-            processUsage( process_line, ugr );
-        } else if( checkUsageGroupUsed( ugr ) ) {
-            outputUsageBlockHeader( ugr->lang_usage, process_line );
-            processUsage( process_line, ugr );
-        }
+        processUsage( process_line, ugr );
     }
 
-    outputUsageFooter( process_line );
+    outputUsageCommon( footerList, process_line );
 }
 
 static void outputUsageH( void )
