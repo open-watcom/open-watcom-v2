@@ -2723,7 +2723,7 @@ static char *genOptionUsageStart( OPTION *o, char *buf, bool no_prefix )
     return( buf );
 }
 
-static bool usageValid( OPTION *o, USAGEGROUP *ugr )
+static bool usageOptionValid( OPTION *o, USAGEGROUP *ugr )
 {
     if( ugr != usageGroupList ) {
         if( o->usageGroup != ugr || o->usageChain != NULL ) {
@@ -3099,7 +3099,7 @@ static void processUsage( process_line_fn *process_line, USAGEGROUP *ugr )
     max = 0;
     count = 0;
     for( o = optionList; o != NULL; o = o->next ) {
-        if( usageValid( o, ugr ) ) {
+        if( usageOptionValid( o, ugr ) ) {
             ++count;
             len = genOptionUsageStart( o, tmpbuff, false ) - tmpbuff;
             if( max < len ) {
@@ -3111,7 +3111,7 @@ static void processUsage( process_line_fn *process_line, USAGEGROUP *ugr )
     oo = calloc( count + 1, sizeof( OPTION * ) );
     c = oo;
     for( o = optionList; o != NULL; o = o->next ) {
-        if( usageValid( o, ugr ) ) {
+        if( usageOptionValid( o, ugr ) ) {
             *c++ = o;
         }
     }
@@ -3150,7 +3150,7 @@ static bool checkUsageGroupUsed( USAGEGROUP *ugr )
     OPTION  *o;
 
     for( o = optionList; o != NULL; o = o->next ) {
-        if( usageValid( o, ugr ) ) {
+        if( usageOptionValid( o, ugr ) ) {
             return( true );
         }
     }
