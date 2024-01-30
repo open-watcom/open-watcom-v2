@@ -38,7 +38,7 @@
 #include "mrule.hpp"
 #include "mcompon.hpp"
 
-#ifndef PRODUCTION
+#ifdef DEVBUILD
     #include "mstate.hpp"
 #endif
 
@@ -76,7 +76,7 @@ void MWorkFile::makeCommand( WString& s, WVList* workFiles )
     rule->makeCommand( s, &f, workFiles, mask, &states, _component->mode(), &_browseable );
 }
 
-#ifndef PRODUCTION
+#ifdef DEVBUILD
 void MWorkFile::dump( WFile& fil )
 {
     MRule* rule = _item->rule();

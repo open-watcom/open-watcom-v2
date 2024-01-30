@@ -557,9 +557,11 @@ bool MComponent::makeMakeFile( bool long_lines )
         } else {
             tmak.puts( "!define BLANK \"\"\n" );
             initWorkFiles();
-//          for( int i=0; i<_workFiles.count(); i++ ) {
-//              ((MWorkFile*)_workFiles[i])->dump( tmak );
-//          }
+#ifdef DEVBUILD
+            for( int i=0; i<_workFiles.count(); i++ ) {
+                ((MWorkFile*)_workFiles[i])->dump( tmak );
+            }
+#endif
             writeRule( tmak );
             finiWorkFiles();
             tmak.close();
