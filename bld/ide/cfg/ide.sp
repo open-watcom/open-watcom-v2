@@ -2055,8 +2055,8 @@ Rule OEXE, OS2LINK, o??e?
   Symbol LIBR, *.lib
   Symbol DLL, *.dll
   Symbol RES, *.res
-  Command " @%write $*.lk1 $<FIL,>"
-  Command " @%append $*.lk1 $<LIBR,>"
+  Command " @%write $*.lk1 $<FIL',>"
+  Command " @%append $*.lk1 $<LIBR',>"
   Command "!ifneq BLANK \"$<DLL!>\""
   Command " *wlib -q -n -b $*.imp $<DLL!>"
   Command " @%append $*.lk1 LIBR $'.imp"
@@ -2111,8 +2111,8 @@ Rule WEXE, WINLINK, w??e?
   Symbol LIBR, *.lib
   Symbol DLL, *.dll
   Symbol RES, *.res
-  Command " @%write $*.lk1 $<FIL,>"
-  Command " @%append $*.lk1 $<LIBR,>"
+  Command " @%write $*.lk1 $<FIL',>"
+  Command " @%append $*.lk1 $<LIBR',>"
   Command "!ifneq BLANK \"$<DLL!>\""
   Command " *wlib -q -n -b $*.imp $<DLL!>"
   Command " @%append $*.lk1 LIBR $'.imp"
@@ -2134,8 +2134,8 @@ Rule NEXE, WINLINK, n??e?
   Symbol LIBR, *.lib
   Symbol DLL, *.dll
   Symbol RES, *.res
-  Command " @%write $*.lk1 $<FIL,>"
-  Command " @%append $*.lk1 $<LIBR,>"
+  Command " @%write $*.lk1 $<FIL',>"
+  Command " @%append $*.lk1 $<LIBR',>"
   Command "!ifneq BLANK \"$<DLL!>\""
   Command " *wlib -q -n -b $*.imp $<DLL!>"
   Command " @%append $*.lk1 LIBR $'.imp"
@@ -2156,8 +2156,8 @@ Rule REXE, RDOSLINK, rp?e?
   Symbol LIBR, *.lib
   Symbol DLL, *.dll
   Symbol RES, *.res
-  Command " @%write $*.lk1 $<FIL,>"
-  Command " @%append $*.lk1 $<LIBR,>"
+  Command " @%write $*.lk1 $<FIL',>"
+  Command " @%append $*.lk1 $<LIBR',>"
   Command "!ifneq BLANK \"$<DLL!>\""
   Command " *wlib -q -n -b $*.imp $<DLL!>"
   Command " @%append $*.lk1 LIBR $'.imp"
@@ -2175,8 +2175,8 @@ Rule RDEXE, RDEVLINK, rk?e?
   Autodepend
   Symbol FIL, *.obj
   Symbol LIBR, *.lib
-  Command " @%write $*.lk1 $<FIL,>"
-  Command " @%append $*.lk1 $<LIBR,>"
+  Command " @%write $*.lk1 $<FIL',>"
+  Command " @%append $*.lk1 $<LIBR',>"
   Command " *$<#WLINK> @$'.lk1"
 
 Tool RBINLINK "RDOS Binary Linking"
@@ -2187,8 +2187,8 @@ Rule RBEXE, RBINLINK, rb?e?
   Autodepend
   Symbol FIL, *.obj
   Symbol LIBR, *.lib
-  Command " @%write $*.lk1 $<FIL,>"
-  Command " @%append $*.lk1 $<LIBR,>"
+  Command " @%write $*.lk1 $<FIL',>"
+  Command " @%append $*.lk1 $<LIBR',>"
   Command " *$<#WLINK> @$'.lk1"
 
 Tool RMBOOTLINK "RDOS Multiboot Stub Linking"
@@ -2199,8 +2199,8 @@ Rule RMEXE, RMBOOTLINK, rm6e?
   Autodepend
   Symbol FIL, *.obj
   Symbol LIBR, *.lib
-  Command " @%write $*.lk1 $<FIL,>"
-  Command " @%append $*.lk1 $<LIBR,>"
+  Command " @%write $*.lk1 $<FIL',>"
+  Command " @%append $*.lk1 $<LIBR',>"
   Command " *$<#WLINK> @$'.lk1"
 
 Rule NMEXEACTIONS, ,nm???
@@ -2246,8 +2246,8 @@ Rule NLM, NLMLINK, l?2e?
   Autodepend
   Symbol FIL, *.obj
   Symbol LIBR, *.lib
-  Command " @%write $*.lk1 $<FIL,>"
-  Command " @%append $*.lk1 $<LIBR,>"
+  Command " @%write $*.lk1 $<FIL',>"
+  Command " @%append $*.lk1 $<LIBR',>"
   Command " *$<#WLINK> @$'.lk1"
   Command " $<#COPYFILE>"
 
@@ -2257,8 +2257,8 @@ Rule LNX, WLINK, x?2e?
   Autodepend
   Symbol FIL, *.obj
   Symbol LIBR, *.lib
-  Command " @%write $*.lk1 $<FIL,>"
-  Command " @%append $*.lk1 $<LIBR,>"
+  Command " @%write $*.lk1 $<FIL',>"
+  Command " @%append $*.lk1 $<LIBR',>"
   Command " *$<#> @$'.lk1"
 
 rem --All Other Executables--
@@ -2267,8 +2267,8 @@ Rule EXE, WLINK, ???e?
   Autodepend
   Symbol FIL, *.obj
   Symbol LIBR, *.lib
-  Command " @%write $*.lk1 $<FIL,>"
-  Command " @%append $*.lk1 $<LIBR,>"
+  Command " @%write $*.lk1 $<FIL',>"
+  Command " @%append $*.lk1 $<LIBR',>"
   Command " *$<#> @$'.lk1"
 
 rem --DLLs--
@@ -2287,8 +2287,8 @@ Rule WPBDLL, WLINK, wp6d?
   Symbol LIBR, *.lib
   Symbol RES, *.res
   Symbol DLL, *.dll
-  Command " @%write $*.lk1 $<FIL,>"
-  Command " @%append $*.lk1 $<LIBR,>"
+  Command " @%write $*.lk1 $<FIL',>"
+  Command " @%append $*.lk1 $<LIBR',>"
   Command "!ifneq BLANK \"$<DLL!>\""
   Command " *wlib -q -n -b $*.imp $<DLL!>"
   Command " @%append $*.lk1 LIBR $'.imp"
@@ -2318,8 +2318,8 @@ Rule WDLL, WLINK, w??d?
   Symbol LIBR, *.lib
   Symbol RES, *.res
   Symbol DLL, *.dll
-  Command " @%write $*.lk1 $<FIL,>"
-  Command " @%append $*.lk1 $<LIBR,>"
+  Command " @%write $*.lk1 $<FIL',>"
+  Command " @%append $*.lk1 $<LIBR',>"
   Command "!ifneq BLANK \"$<DLL!>\""
   Command " *wlib -q -n -b $*.imp $<DLL!>"
   Command " @%append $*.lk1 LIBR $'.imp"
@@ -2343,8 +2343,8 @@ Rule ODLL, WLINK, o??d?
   Symbol LIBR, *.lib
   Symbol RES, *.res
   Symbol DLL, *.dll
-  Command " @%write $*.lk1 $<FIL,>"
-  Command " @%append $*.lk1 $<LIBR,>"
+  Command " @%write $*.lk1 $<FIL',>"
+  Command " @%append $*.lk1 $<LIBR',>"
   Command "!ifneq BLANK \"$<DLL!>\""
   Command " *wlib -q -n -b $*.imp $<DLL!>"
   Command " @%append $*.lk1 LIBR $'.imp"
@@ -2362,8 +2362,8 @@ Rule NDLL, WLINK, n??d?
   Symbol LIBR, *.lib
   Symbol RES, *.res
   Symbol DLL, *.dll
-  Command " @%write $*.lk1 $<FIL,>"
-  Command " @%append $*.lk1 $<LIBR,>"
+  Command " @%write $*.lk1 $<FIL',>"
+  Command " @%append $*.lk1 $<LIBR',>"
   Command "!ifneq BLANK \"$<DLL!>\""
   Command " *wlib -q -n -b $*.imp $<DLL!>"
   Command " @%append $*.lk1 LIBR $'.imp"
@@ -2381,12 +2381,12 @@ Rule RDLL, WLINK, rp?d?
   Symbol LIBR, *.lib
   Symbol RES, *.res
   Symbol DLL, *.dll
-  Command "!ifneq BLANK \"$<FIL!>\""
-  Command " @%write $*.lk1 $<FIL,>"
+  Command "!ifneq BLANK \"$<FIL'!>\""
+  Command " @%write $*.lk1 $<FIL',>"
   Command "!else"
   Command " @%write $*.lk1 FIL $(%watcom)/lib386/rdos/resstub.obj"
   Command "!endif"
-  Command " @%append $*.lk1 $<LIBR,>"
+  Command " @%append $*.lk1 $<LIBR',>"
   Command "!ifneq BLANK \"$<DLL!>\""
   Command " *wlib -q -n -b $*.imp $<DLL!>"
   Command " @%append $*.lk1 LIBR $'.imp"
@@ -2395,7 +2395,7 @@ Rule RDLL, WLINK, rp?d?
   Command " @%append $*.lk1 $<RES,>"
   Command "!endif"
   Command " *$<#> @$'.lk1"
-  Command "!ifneq BLANK \"$<FIL!>\""
+  Command "!ifneq BLANK \"$<FIL'!>\""
   Command " *wlib -q -n -b $*.lib +$*.dll"
   Command "!endif"
 
@@ -2406,8 +2406,8 @@ Rule REFI, WLINK, ru?d?
   Symbol LIBR, *.lib
   Symbol RES, *.res
   Symbol EFI, *.efi
-  Command " @%write $*.lk1 $<FIL,>"
-  Command " @%append $*.lk1 $<LIBR,>"
+  Command " @%write $*.lk1 $<FIL',>"
+  Command " @%append $*.lk1 $<LIBR',>"
   Command " *$<#> @$'.lk1"
 
 rem Rule LNXDLL, WLINK, x??d?
@@ -2416,8 +2416,8 @@ rem   Autodepend
 rem   Symbol FIL, *.obj
 rem   Symbol LIBR, *.lib
 rem   Symbol DLL, *.dll
-rem   Command " @%write $*.lk1 $<FIL,>"
-rem   Command " @%append $*.lk1 $<LIBR,>"
+rem   Command " @%write $*.lk1 $<FIL',>"
+rem   Command " @%append $*.lk1 $<LIBR',>"
 rem   Command " *$<#> @$'.lk1"
 
 Rule CWDLL, WLINK, d?2d?
@@ -2425,8 +2425,8 @@ Rule CWDLL, WLINK, d?2d?
   Autodepend
   Symbol FIL, *.obj
   Symbol LIBR, *.lib
-  Command " @%write $*.lk1 $<FIL,>"
-  Command " @%append $*.lk1 $<LIBR,>"
+  Command " @%write $*.lk1 $<FIL',>"
+  Command " @%append $*.lk1 $<LIBR',>"
   Command " *$<#> @$'.lk1"
 
 rem --Static Libraries--
@@ -2435,13 +2435,8 @@ Rule LIB, WLIB, ???s?
   Autodepend
   Symbol  OBJ, *.obj
   Symbol  LIB, *.lib
-  Command " %create $*.lb1"
-  Command "!ifneq BLANK \"$<OBJ!>\""
-  Command " @for %i in ($<OBJ!>) do @%append $*.lb1 +'%i'"
-  Command "!endif"
-  Command "!ifneq BLANK \"$<LIB!>\""
-  Command " @for %i in ($<LIB!>) do @%append $*.lb1 +'%i'"
-  Command "!endif"
+  Command " @%write $*.lb1 $<OBJ!>"
+  Command " @%append $*.lb1 $<LIB!>"
   Command " *$<#> $*.lib @$*.lb1"
 ::
 :endsegment

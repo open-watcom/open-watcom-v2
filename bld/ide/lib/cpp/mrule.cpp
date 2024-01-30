@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -221,6 +221,7 @@ MSymbol* MRule::expandSymbol( WString& v, const char* s, WVList* workFiles )
     if( found && workFiles ) {
         bool incName = true;
         char afterName = ' ';
+        char quoteChar = '"';
         char sep[2]; strcpy( sep, " " );
         for( bool done=false; !done; ) {
             char ch = s[len];
@@ -239,6 +240,10 @@ MSymbol* MRule::expandSymbol( WString& v, const char* s, WVList* workFiles )
                 sep[0] = ch;
                 len += 1;
                 break;
+            case '\'':
+                quoteChar = ch;
+                len += 1;
+                break;
             default:
                 done = true;
             }
@@ -249,15 +254,13 @@ MSymbol* MRule::expandSymbol( WString& v, const char* s, WVList* workFiles )
             MWorkFile* f = (MWorkFile*)(*workFiles)[j];
             f->removeQuotes();
             if( !f->isMask() && f->match( o->mask() ) ) {
-                char ch = ( oName == "FIL" || oName == "LIBR" ) ? '\'' : '\"';
-
                 if( vv.size() > 0 )
                     vv.concat( sep );
-                if( f->needQuotes( ch ) ) {
-                    f->addQuotes( ch );
+                if( f->needQuotes( quoteChar ) ) {
+                    f->addQuotes( quoteChar );
                 }
                 vv.concat( *f );
-                f->removeQuotes( ch );
+                f->removeQuotes( quoteChar );
             }
         }
         if( vv.size() > 0 ) {
