@@ -3051,7 +3051,6 @@ static void outputUsageChain( OPTION **oo, size_t i, size_t count, process_line_
 
     ucn = oo[i]->usageChain;
     ucn->usage_used = true;
-    outputUsageChainHeader( &oo[i], process_line, max );
     for( ; i < count; i++ ) {
         if( oo[i]->usage_used )
             continue;
@@ -3068,7 +3067,6 @@ static void outputUsageGroup( OPTION **oo, size_t i, size_t count, process_line_
 
     ucn = oo[i]->usageChain;
     ugr = oo[i]->usageGroup;
-    outputUsageChainHeader( &oo[i], process_line, max );
     for( ; i < count; i++ ) {
         if( oo[i]->usage_used )
             continue;
@@ -3131,9 +3129,11 @@ static void processUsage( process_line_fn *process_line, USAGEGROUP *ugr )
         if( oo[i]->usageGroup != usageGroupList
           && !oo[i]->usageGroup->usage_used
           && oo[i]->usageChain != NULL ) {
+            outputUsageChainHeader( &oo[i], process_line, max );
             outputUsageGroup( oo, i, count, process_line, max );
         } else if( oo[i]->usageChain != NULL
           && !oo[i]->usageChain->usage_used ) {
+            outputUsageChainHeader( &oo[i], process_line, max );
             outputUsageChain( oo, i, count, process_line, max );
         } else {
             outputUsageOption( oo[i], process_line, max );
