@@ -1733,12 +1733,11 @@ static void doUSAGEGROUP( const char *p )
         return;
     }
     nextWord( p, tokbuff );
-    lastUsageGroup = findUsageGroup( tokbuff );
-    if( lastUsageGroup != NULL ) {
+    if( findUsageGroup( tokbuff ) != NULL ) {
         error( ":usagegroup. <group_id> '%s' already defined\n", tokbuff );
-    } else {
-        lastUsageGroup = addUsageGroup( tokbuff );
+        return;
     }
+    addUsageGroup( tokbuff );
     getsUsage = TAG_USAGEGROUP;
 }
 
