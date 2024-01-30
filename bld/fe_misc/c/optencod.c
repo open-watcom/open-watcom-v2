@@ -840,9 +840,6 @@ static USAGEGROUP *addUsageGroup( const char *id )
     size_t      id_len;
     USAGEGROUP  *ugr;
 
-    if( findUsageGroup( id ) != NULL ) {
-        error( "USAGEGROUP: id '%s' already defined\n", id );
-    }
     id_len = strlen( id );
     ugr = calloc( 1, sizeof( *ugr ) + id_len );
     memcpy( ugr->id, id, id_len + 1 );
@@ -1516,7 +1513,7 @@ static void doUSAGE( const char *p )
         }
         break;
     default:
-        error( ":usage. tag can follow only :usagechain., :usagegroup., or :option.\n" );
+        error( ":usage. tag can follow only :usagechain., :usagegroup., or :option. tag\n" );
     }
 }
 
@@ -1736,7 +1733,12 @@ static void doUSAGEGROUP( const char *p )
         return;
     }
     nextWord( p, tokbuff );
-    lastUsageGroup = addUsageGroup( tokbuff );
+    lastUsageGroup = findUsageGroup( tokbuff );
+    if( lastUsageGroup != NULL ) {
+        error( ":usagegroup. <group_id> '%s' already defined\n", tokbuff );
+    } else {
+        lastUsageGroup = addUsageGroup( tokbuff );
+    }
     getsUsage = TAG_USAGEGROUP;
 }
 
@@ -1948,6 +1950,10 @@ static char *special_char( char *f, char c )
         f = strpcpy( f, "_sharp" );
     } else if( c == '?' ) {
         f = strpcpy( f, "_question" );
+    } else if( c == '@' ) {
+        f = strpcpy( f, "_at" );
+    } else if( c == '"' ) {
+        f = strpcpy( f, "_dquote" );
     } else {
         *f++ = '_';
     }
