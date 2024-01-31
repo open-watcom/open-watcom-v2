@@ -258,14 +258,13 @@ typedef struct usagechain {
     lang_data       lang_usage;
     size_t          len;
     size_t          pattern_len;
-    boolbit         usage_used : 1;
     char            pattern[1];
 } USAGECHAIN;
 
 typedef struct usagegroup {
     struct usagegroup *next;
     lang_data       lang_usage;
-    boolbit         usage_used : 1;
+    USAGECHAIN      *usageChainList;
     char            id[1];
 } USAGEGROUP;
 
@@ -483,11 +482,10 @@ static OPTION       *uselessOptionList;
 static TITLE        *titleList;
 static TITLE        *footerList;
 static CHAIN        *chainList;
-static USAGECHAIN   *usageChainList = NULL;
-static USAGECHAIN   *lastUsageChain = NULL;
 static USAGEGROUP   blankUsageGroup;
 static USAGEGROUP   *usageGroupList;
 static USAGEGROUP   *lastUsageGroup;
+static USAGECHAIN   *lastUsageChain = NULL;
 static TITLE        *targetTitle;
 static TITLE        *targetFooter;
 
@@ -835,7 +833,7 @@ static void initUsageGroup( void )
     lastUsageGroup = NULL;
 }
 
-static USAGEGROUP *addUsageGroup( const char *id )
+static void addUsageGroup( const char *id )
 {
     size_t      id_len;
     USAGEGROUP  *ugr;
@@ -849,42 +847,45 @@ static USAGEGROUP *addUsageGroup( const char *id )
         lastUsageGroup->next = ugr;
     }
     lastUsageGroup = ugr;
-    return( ugr );
 }
 
-static CHAIN *findChain( const char *pattern )
+static CHAIN *findChain( OPTION *o )
 {
     CHAIN *cn;
     CHAIN *cnx;
 
     cnx = NULL;
-    for( cn = chainList; cn != NULL; cn = cn->next ) {
-        if( cmpChainPattern( cn->pattern, pattern, cn->pattern_len ) ) {
-            if( cnx == NULL || cnx->pattern_len < cn->pattern_len ) {
-                cnx = cn;
+    if( !o->nochain ) {
+        for( cn = chainList; cn != NULL; cn = cn->next ) {
+            if( cmpChainPattern( cn->pattern, o->pattern, cn->pattern_len ) ) {
+                if( cnx == NULL || cnx->pattern_len < cn->pattern_len ) {
+                    cnx = cn;
+                }
             }
         }
     }
     return( cnx );
 }
 
-static USAGECHAIN *findUsageChain( const char *pattern )
+static USAGECHAIN *findUsageChain( OPTION *o )
 {
     USAGECHAIN  *ucn;
     USAGECHAIN  *ucnx;
 
     ucnx = NULL;
-    for( ucn = usageChainList; ucn != NULL; ucn = ucn->next ) {
-        if( cmpChainPattern( ucn->pattern, pattern, ucn->pattern_len ) ) {
-            if( ucnx == NULL || ucnx->pattern_len < ucn->pattern_len ) {
-                ucnx = ucn;
+    if( !o->usage_nochain ) {
+        for( ucn = o->usageGroup->usageChainList; ucn != NULL; ucn = ucn->next ) {
+            if( cmpChainPattern( ucn->pattern, o->pattern, ucn->pattern_len ) ) {
+                if( ucnx == NULL || ucnx->pattern_len < ucn->pattern_len ) {
+                    ucnx = ucn;
+                }
             }
         }
     }
     return( ucnx );
 }
 
-static CHAIN *addChain( char *pattern )
+static void addChain( char *pattern )
 {
     size_t pattern_len;
     CHAIN *cn;
@@ -893,6 +894,7 @@ static CHAIN *addChain( char *pattern )
     for( cn = chainList; cn != NULL; cn = cn->next ) {
         if( strcmp( pattern, cn->pattern ) == 0 ) {
             error( "CHAIN: pattern '%s' already defined\n", pattern );
+            return;
         }
     }
     cn = calloc( 1, sizeof( *cn ) + pattern_len );
@@ -901,27 +903,27 @@ static CHAIN *addChain( char *pattern )
     cn->len = cvtOptionSpec( pattern, pattern, CVT_NAME ) - pattern;
     cn->next = chainList;
     chainList = cn;
-    return( cn );
 }
 
-static USAGECHAIN *addUsageChain( char *pattern )
+static void addUsageChain( USAGEGROUP *ugr, char *pattern )
 {
     size_t      pattern_len;
     USAGECHAIN  *ucn;
 
     pattern_len = cvtOptionSpec( pattern, pattern, CVT_PATTERN ) - pattern;
-    for( ucn = usageChainList; ucn != NULL; ucn = ucn->next ) {
+    for( ucn = ugr->usageChainList; ucn != NULL; ucn = ucn->next ) {
         if( strcmp( pattern, ucn->pattern ) == 0 ) {
             error( "USAGECHAIN: pattern '%s' already defined\n", pattern );
+            return;
         }
     }
     ucn = calloc( 1, sizeof( *ucn ) + pattern_len );
     ucn->pattern_len = pattern_len;
     memcpy( ucn->pattern, pattern, pattern_len + 1 );
     ucn->len = cvtOptionSpec( pattern, pattern, CVT_NAME ) - pattern;
-    ucn->next = usageChainList;
-    usageChainList = ucn;
-    return( ucn );
+    ucn->next = ugr->usageChainList;
+    ugr->usageChainList = ucn;
+    lastUsageChain = ucn;
 }
 
 static FILE *initFILE( const char *fnam, const char *fmod )
@@ -1657,12 +1659,11 @@ static void doJFOOTERU( const char *p )
     targetFooter->is_u = true;
 }
 
-// :group. <group_id> <usagechain>
+// :group. <group_id>
 static void doGROUP( const char *p )
 {
     OPTION      *o;
     USAGEGROUP  *ugr;
-    USAGECHAIN  *ucn;
 
     if( *p == '\0' ) {
         error( ":group. tag requires <group_id> parameter\n" );
@@ -1675,17 +1676,6 @@ static void doGROUP( const char *p )
     } else {
         for( o = optionList; o != NULL; o = o->synonym ) {
             o->usageGroup = ugr;
-        }
-    }
-    if( *p != '\0' ) {
-        p = nextWord( p, tokbuff );
-        ucn = findUsageChain( tokbuff );
-        if( ucn == NULL ) {
-            error( ":group. tag <usagechain> value '%s' is not found.\n", tokbuff );
-        } else {
-            for( o = optionList; o != NULL; o = o->synonym ) {
-                o->usageChain = ucn;
-            }
         }
     }
 }
@@ -1707,18 +1697,29 @@ static void doTIMESTAMP( const char *p )
     }
 }
 
-// :usagechain. <option>
+// :usagechain. <option> [<group_id>]
 //
 // mark options that start with <option> as group in usage text
 // i.e., -fp0 -fp1 ==> -fp{0,1}
 static void doUSAGECHAIN( const char *p )
 {
+    USAGEGROUP  *ugr;
+
     if( *p == '\0' ) {
         error( ":usagechain. tag requires <option> parameter\n" );
         return;
     }
-    nextWord( p, tokbuff );
-    lastUsageChain = addUsageChain( tokbuff );
+    p = nextWord( p, tokbuff );
+    ugr = usageGroupList;
+    if( *p != '\0' ) {
+        nextWord( p, tmpbuff );
+        ugr = findUsageGroup( tmpbuff );
+        if( ugr == NULL ) {
+            error( ":usagechain. tag <group_id> value '%s' is not found.\n", tmpbuff );
+            return;
+        }
+    }
+    addUsageChain( ugr, tokbuff );
     getsUsage = TAG_USAGECHAIN;
 }
 
@@ -1865,17 +1866,17 @@ static void checkForMissingUsages( void )
         }
         j++;
     }
-    for( ucn = usageChainList; ucn != NULL; ucn = ucn->next ) {
-        for( i = start_lang; i < end_lang; ++i ) {
-            if( optFlag.report_missing_data && ucn->lang_usage[i] == NULL ) {
-                error( "chain '%s' has no %s text\n", ucn->pattern, langName[i] );
-            }
-        }
-    }
     for( ugr = usageGroupList->next; ugr != NULL; ugr = ugr->next ) {
         for( i = start_lang; i < end_lang; ++i ) {
             if( optFlag.report_missing_data && ugr->lang_usage[i] == NULL ) {
                 error( "group '%s' has no %s text\n", ugr->id, langName[i] );
+            }
+        }
+        for( ucn = ugr->usageChainList; ucn != NULL; ucn = ucn->next ) {
+            for( i = start_lang; i < end_lang; ++i ) {
+                if( optFlag.report_missing_data && ucn->lang_usage[i] == NULL ) {
+                    error( "chain '%s' has no %s text\n", ucn->pattern, langName[i] );
+                }
             }
         }
     }
@@ -1886,11 +1887,7 @@ static void assignCodeChainToOptions( void )
     OPTION *o;
 
     for( o = optionList; o != NULL; o = o->next ) {
-        if( o->nochain ) {
-            o->chain = NULL;
-        } else {
-            o->chain = findChain( o->pattern );
-        }
+        o->chain = findChain( o );
     }
 }
 
@@ -1899,11 +1896,7 @@ static void assignUsageChainToOptions( void )
     OPTION *o;
 
     for( o = optionList; o != NULL; o = o->next ) {
-        if( o->usage_nochain ) {
-            o->usageChain = NULL;
-        } else {
-            o->usageChain = findUsageChain( o->pattern );
-        }
+        o->usageChain = findUsageChain( o );
     }
 }
 
@@ -2724,15 +2717,6 @@ static char *genOptionUsageStart( OPTION *o, char *buf, bool no_prefix )
 
 static bool usageOptionValid( OPTION *o, USAGEGROUP *ugr )
 {
-    if( ugr != usageGroupList ) {
-        if( o->usageGroup != ugr || o->usageChain != NULL ) {
-            return( false );
-        }
-    } else {
-        if( o->usageGroup != ugr && o->usageChain == NULL ) {
-            return( false );
-        }
-    }
     if( o->synonym != NULL )
         return( false );
     if( o->is_internal
@@ -2884,40 +2868,20 @@ static void outputUsageCommon( TITLE *t, process_line_fn *process_line )
     }
 }
 
-static void clearUsageChainUsage( void )
-{
-    USAGECHAIN  *ucn;
-
-    for( ucn = usageChainList; ucn != NULL; ucn = ucn->next ) {
-        ucn->usage_used = false;
-    }
-}
-
-static void clearUsageGroupUsage( void )
-{
-    USAGEGROUP  *ugr;
-
-    for( ugr = usageGroupList; ugr != NULL; ugr = ugr->next ) {
-        ugr->usage_used = false;
-    }
-}
-
 static bool createUsageChainHeaderPrefix( OPTION **o, char *buf, size_t max )
 {
     size_t      len;
     USAGECHAIN  *ucn;
-    USAGEGROUP  *ugr;
     char        *stop;
 
     stop = buf + max;
     ucn = (*o)->usageChain;
-    ugr = (*o)->usageGroup;
     *buf++ = '-';
     buf = cvtOptionSpec( buf, ucn->pattern, CVT_NAME );
     *buf++ = '{';
     len = 0;
-    for( ; *o != NULL && (*o)->usageChain != NULL && (*o)->usageChain->pattern[0] == ucn->pattern[0]; o++ ) {
-        if( (*o)->usageChain == ucn && (*o)->usageGroup == ugr ) {
+    for( ; *o != NULL; o++ ) {
+        if( (*o)->usageChain == ucn ) {
             if( len > 0 ) {
                 *buf++ = ',';
             }
@@ -2932,23 +2896,6 @@ static bool createUsageChainHeaderPrefix( OPTION **o, char *buf, size_t max )
     *buf = '\0';
     return( buf == stop );
 }
-
-#if 0
-static const char *getHeaderUsage( OPTION *o, language_id lang )
-{
-    const char  *str;
-
-    if( o->usageGroup != usageGroupList ) {
-        str = getLangData( o->usageGroup->lang_usage, lang );
-        if( str == NULL && o->usageChain != NULL ) {
-            str = getLangData( o->usageChain->lang_usage, lang );
-        }
-    } else {
-        str = getLangData( o->usageChain->lang_usage, lang );
-    }
-    return( str );
-}
-#endif
 
 static void outputUsageChainHeader( OPTION **o, process_line_fn *process_line, size_t max )
 {
@@ -2967,20 +2914,19 @@ static void outputUsageChainHeader( OPTION **o, process_line_fn *process_line, s
             }
         }
     } else {
-        for( lang = 0; lang < LANG_MAX; lang++ ) {
-            buf = GET_OUTPUT_BUF( lang );
-            for( len = max / 2; len-- > 0; )
-                *buf++ = ' ';
-            if( (*o)->usageGroup != usageGroupList ) {
-                str = getLangData( (*o)->usageGroup->lang_usage, lang );
-            } else {
+        str = getLangData( (*o)->usageChain->lang_usage, LANG_English );
+        if( str != NULL ) {
+            for( lang = 0; lang < LANG_MAX; lang++ ) {
+                buf = GET_OUTPUT_BUF( lang );
+                for( len = max / 2; len-- > 0; )
+                    *buf++ = ' ';
                 str = getLangData( (*o)->usageChain->lang_usage, lang );
+                if( str != NULL ) {
+                    strcpy( buf, str );
+                }
             }
-            if( str != NULL ) {
-                strcpy( buf, str );
-            }
+            process_output( process_line );
         }
-        process_output( process_line );
         for( lang = 0; lang < LANG_MAX; lang++ ) {
             strcpy( GET_OUTPUT_BUF( lang ), hdrbuff );
         }
@@ -3027,7 +2973,7 @@ static void outputUsageChain( OPTION **oo, size_t i, size_t count, process_line_
     USAGECHAIN  *ucn;
 
     ucn = oo[i]->usageChain;
-    ucn->usage_used = true;
+    outputUsageChainHeader( &oo[i], process_line, max );
     for( ; i < count; i++ ) {
         if( oo[i]->usage_used )
             continue;
@@ -3035,26 +2981,6 @@ static void outputUsageChain( OPTION **oo, size_t i, size_t count, process_line_
             outputUsageOption( oo[i], process_line, max );
         }
     }
-}
-
-static void outputUsageGroup( OPTION **oo, size_t i, size_t count, process_line_fn *process_line, size_t max )
-{
-    USAGECHAIN  *ucn;
-    USAGEGROUP  *ugr;
-
-    ucn = oo[i]->usageChain;
-    ugr = oo[i]->usageGroup;
-    for( ; i < count; i++ ) {
-        if( oo[i]->usage_used )
-            continue;
-        if( oo[i]->usageChain == ucn && oo[i]->usageGroup == ugr ) {
-            outputUsageOption( oo[i], process_line, max );
-        }
-    }
-    if( ucn != NULL ) {
-        ucn->usage_used = true;
-    }
-    ugr->usage_used = true;
 }
 
 static bool checkUsageLength( size_t len )
@@ -3076,6 +3002,8 @@ static void processUsage( process_line_fn *process_line, USAGEGROUP *ugr )
     max = 0;
     count = 0;
     for( o = optionList; o != NULL; o = o->next ) {
+        if( o->usageGroup != ugr )
+            continue;
         if( usageOptionValid( o, ugr ) ) {
             ++count;
             len = genOptionUsageStart( o, tmpbuff, false ) - tmpbuff;
@@ -3089,6 +3017,8 @@ static void processUsage( process_line_fn *process_line, USAGEGROUP *ugr )
         oo = calloc( count + 1, sizeof( OPTION * ) );
         c = oo;
         for( o = optionList; o != NULL; o = o->next ) {
+            if( o->usageGroup != ugr )
+                continue;
             if( usageOptionValid( o, ugr ) ) {
                 *c++ = o;
             }
@@ -3096,8 +3026,6 @@ static void processUsage( process_line_fn *process_line, USAGEGROUP *ugr )
         *c = NULL;
         qsort( oo, count, sizeof( OPTION * ), usageCmp );
 
-        clearUsageChainUsage();
-        clearUsageGroupUsage();
         for( i = 0; i < count; ++i ) {
             oo[i]->usage_used = false;
         }
@@ -3108,14 +3036,7 @@ static void processUsage( process_line_fn *process_line, USAGEGROUP *ugr )
         for( i = 0; i < count; ++i ) {
             if( oo[i]->usage_used )
                 continue;
-            if( oo[i]->usageGroup != usageGroupList
-              && !oo[i]->usageGroup->usage_used
-              && oo[i]->usageChain != NULL ) {
-                outputUsageChainHeader( &oo[i], process_line, max );
-                outputUsageGroup( oo, i, count, process_line, max );
-            } else if( oo[i]->usageChain != NULL
-              && !oo[i]->usageChain->usage_used ) {
-                outputUsageChainHeader( &oo[i], process_line, max );
+            if( oo[i]->usageChain != NULL ) {
                 outputUsageChain( oo, i, count, process_line, max );
             } else {
                 outputUsageOption( oo[i], process_line, max );
@@ -3126,18 +3047,6 @@ static void processUsage( process_line_fn *process_line, USAGEGROUP *ugr )
             fprintf( stderr, "usage message exceeds %u chars\n%s\n", CONSOLE_WIDTH, maxusgbuff );
         }
     }
-}
-
-static bool checkUsageGroupUsed( USAGEGROUP *ugr )
-{
-    OPTION  *o;
-
-    for( o = optionList; o != NULL; o = o->next ) {
-        if( usageOptionValid( o, ugr ) ) {
-            return( true );
-        }
-    }
-    return( false );
 }
 
 static void outputUsage( process_line_fn *process_line )
