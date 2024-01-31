@@ -17,7 +17,7 @@ jobs:
       runit: ${{ steps.check_tag.outputs.old }}
     steps:
     - name: checkout
-      uses: actions/checkout@v3.5.0
+      uses: actions/checkout@v4.1.1
     - name: Check tag reference
       id: check_tag
       uses: "./.github/actions/ghtagchk"
@@ -106,7 +106,7 @@ jobs:
           insttype: snapshot
     steps:
     - name: checkout
-      uses: actions/checkout@v3.5.0
+      uses: actions/checkout@v4.1.1
     - name: Installer
       uses: "./.github/actions/install"
       with:
@@ -126,7 +126,7 @@ jobs:
       mrelid: ${{ steps.rel_rel.outputs.mrelid }}
     steps:
     - name: checkout
-      uses: actions/checkout@v3.5.0
+      uses: actions/checkout@v4.1.1
     - name: GitHub Release
       id: rel_rel
       uses: "./.github/actions/release"
@@ -161,7 +161,7 @@ jobs:
           asset: snapshot
     steps:
     - name: checkout
-      uses: actions/checkout@v3.5.0
+      uses: actions/checkout@v4.1.1
     - run: echo "drelid=${{ needs.release.outputs.drelid }};mrelid=${{ needs.release.outputs.mrelid }}"
       shell: bash
     - name: Upload ${{ matrix.display }} Asset
@@ -178,7 +178,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: checkout
-      uses: actions/checkout@v3.5.0
+      uses: actions/checkout@v4.1.1
     - name: Call to delete Artifacs
       uses: "./.github/actions/artfdelc"
       with:

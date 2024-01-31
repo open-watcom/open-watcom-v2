@@ -27,7 +27,7 @@ jobs:
     runs-on: ${{ inputs.image }}
     steps:
     - name: checkout
-      uses: actions/checkout@v3.5.0
+      uses: actions/checkout@v4.1.1
     - name: Bootstrap
       uses: "./.github/actions/boot"
       with:
@@ -43,7 +43,7 @@ jobs:
     timeout-minutes: 120
     steps:
     - name: checkout
-      uses: actions/checkout@v3.5.0
+      uses: actions/checkout@v4.1.1
     - name: Build
       uses: "./.github/actions/build"
       with:
@@ -74,7 +74,7 @@ jobs:
           doctype: docwin
     steps:
     - name: checkout
-      uses: actions/checkout@v3.5.0
+      uses: actions/checkout@v4.1.1
     - name: Docs Build
       uses: "./.github/actions/docbuild"
       with:
@@ -89,7 +89,7 @@ jobs:
     runs-on: ${{ inputs.image }}
     steps:
     - name: checkout
-      uses: actions/checkout@v3.5.0
+      uses: actions/checkout@v4.1.1
     - name: Tests
       uses: "./.github/actions/tests"
       with:
@@ -102,7 +102,7 @@ jobs:
     runs-on: ${{ inputs.image }}
     steps:
     - name: checkout
-      uses: actions/checkout@v3.5.0
+      uses: actions/checkout@v4.1.1
     - name: Load Artifact
       uses: "./.github/actions/artfload"
       with:

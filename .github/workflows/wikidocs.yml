@@ -47,7 +47,7 @@ jobs:
     runs-on: windows-2019
     steps:
     - name: checkout
-      uses: actions/checkout@v3.5.0
+      uses: actions/checkout@v4.1.1
     - name: Bootstrap
       uses: "./.github/actions/boot"
       with:
@@ -74,7 +74,7 @@ jobs:
           owtarget: '.and wikipdf .or -- -- docset=wikipdf -i'
     steps:
     - name: checkout
-      uses: actions/checkout@v3.5.0
+      uses: actions/checkout@v4.1.1
     - name: Docs Build
       uses: "./.github/actions/docbuild"
       with:
@@ -125,7 +125,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: checkout
-      uses: actions/checkout@v3.5.0
+      uses: actions/checkout@v4.1.1
     - name: Call to delete Artifacts
       uses: "./.github/actions/artfdelc"
       with:
