@@ -37,51 +37,58 @@
 :cmt.
 :cmt. GML Macros used:
 :cmt.
-:cmt.	:chain. <option> <option> ...               options that start with <option>
-:cmt.                                                   can be chained together i.e.,
-:cmt.                                                   -oa -ox -ot => -oaxt
-:cmt.   :target. <targ1> <targ2> ...                valid for these targets (default is 'any')
-:cmt.   :ntarget. <targ1> <targ2> ...               not valid for these targets
-:cmt.   :usagechain. <option> <usage text>          group of options that start with <option>
-:cmt.                                                   are chained together in usage text
-:cmt.   :usagegroup. <num> <usage text>             group of options that have group <num>
-:cmt.                                                   are chained together in usage text
-:cmt.   :title. <text>                              English title usage text
-:cmt.   :jtitle. <text>                             Japanese title usage text
-:cmt.   :titleu. <text>                             English title usage text for QNX resource file
-:cmt.   :jtitleu. <text>                            Japanese title usage text for QNX resource file
+:cmt.	:chain. <option> <option> ...	options that start with <option>
+:cmt.					    can be chained together i.e.,
+:cmt.					    -oa -ox -ot => -oaxt
+:cmt.	:option. <option> <synonym> ... define an option
+:cmt.	:title. <text>			English title usage text
+:cmt.	:jtitle. <text>			Japanese title usage text
+:cmt.	:titleu. <text>			English title usage text for QNX resource file
+:cmt.	:jtitleu. <text>		Japanese title usage text for QNX resource file
+:cmt.	:usagegroup. <group_id>		define group of options that have group
+:cmt.					    <group_id> are grouped together in
+:cmt.					    usage text
+:cmt.	:usagechain. <group_id> <option>    
+:cmt.                                   group of options that start with <option>
+:cmt.					    are chained together in usage text for
+:cmt.					    defined group <group_id>
 :cmt.
-:cmt.   :option. <option> <synonym> ...             define an option
-:cmt.   :immediate. <fn> [<usage argid>]            <fn> is called when option parsed
-:cmt.   :code. <source-code>                        <source-code> is executed when option parsed
-:cmt.   :enumerate. <name> [<option>]               option is one value in <name> enumeration
-:cmt.   :number. [<fn>] [<default>] [<usage argid>] =<num> allowed; call <fn> to check
-:cmt.   :id. [<fn>] [<usage argid>]                 =<id> req'd; call <fn> to check
-:cmt.   :char. [<fn>] [<usage argid>]               =<char> req'd; call <fn> to check
-:cmt.   :file. [<usage argid>]                      =<file> req'd
-:cmt.   :path. [<usage argid>]                      =<path> req'd
-:cmt.   :special. <fn> [<usage argid>]              call <fn> to parse option
-:cmt.   :usage. <text>                              English usage text
-:cmt.   :jusage. <text>                             Japanese usage text
+:cmt.	:target. <targ1> <targ2> ...	valid for these targets (default is 'any')
+:cmt.	:ntarget. <targ1> <targ2> ...	not valid for these targets
+:cmt.	:immediate. <fn> [<usage argid>]
+:cmt.					<fn> is called when option parsed
+:cmt.	:code. <source-code>		<source-code> is executed when option parsed
+:cmt.	:enumerate. <name> [<option>]	option is one value in <name> enumeration
+:cmt.   :number. [<fn>] [<default>] [<usage argid>]
+:cmt.					=<num> allowed; call <fn> to check
+:cmt.	:id. [<fn>] [<usage argid>]	=<id> req'd; call <fn> to check
+:cmt.	:char. [<fn>] [<usage argid>]	=<char> req'd; call <fn> to check
+:cmt.	:file. [<usage argid>]		=<file> req'd
+:cmt.	:path. [<usage argid>]		=<path> req'd
+:cmt.	:special. <fn> [<usage argid>]	call <fn> to parse option
 :cmt.
-:cmt.   :optional.                                  value is optional
-:cmt.   :internal.                                  option is undocumented
-:cmt.   :prefix.                                    prefix of a :special. option
-:cmt.   :nochain.                                   option isn't chained with other options
-:cmt.                                                   in parser code
-:cmt.   :usagenochain.                              option isn't chained with other options
-:cmt.                                                   in usage text
-:cmt.   :timestamp.                                 kludge to record "when" an option
-:cmt.                                                   is set so that dependencies
-:cmt.                                                   between options can be simulated
-:cmt.   :negate.                                    negate option value
-:cmt.   :group. <num> [<chain>]                     group <num> to which option is included
-:cmt.                                                   optionaly <chain> can be specified
+:cmt.	:optional.			value is optional
+:cmt.	:internal.			option is undocumented
+:cmt.	:prefix.			prefix of a :special. option
+:cmt.	:nochain.			option isn't chained with other options
+:cmt.					    in parser code
+:cmt.	:timestamp.			kludge to record "when" an option
+:cmt.					    is set so that dependencies
+:cmt.					    between options can be simulated
+:cmt.	:negate.			negate option value
+:cmt.
+:cmt.	:usage. <text>			English usage text
+:cmt.	:jusage. <text>			Japanese usage text
+:cmt.
+:cmt.	:usagenochain.			option isn't chained with other options
+:cmt.					    in usage text
+:cmt.	:group. <group_id>		group <group_id> to which option is
+:cmt.					    included
 :cmt.
 :cmt. Global macros
 :cmt.
-:cmt.   :noequal.                                   args can't have option '='
-:cmt.   :argequal. <char>                           args use <char> instead of '='
+:cmt.	:noequal.			args can't have option '='
+:cmt.	:argequal. <char>		args use <char> instead of '='
 :cmt.
 :cmt. where <targ>:
 :cmt.   default - any, dbg, unused
@@ -91,6 +98,8 @@
 :cmt.
 :cmt. The :jtitle. or :jusage. tag is required if no text is associated with the tag.
 :cmt. Otherwise, English text defined with :title. or :use. tag will be used instead.
+:cmt.
+:cmt. If any required argument is blank then use '.' (dot) character as placeholder.
 :cmt.
 
 
@@ -207,7 +216,7 @@
 :usage.  object output directory
 :jusage. オブジェクト出力ディレクトリ
 
-:usagechain. f
+:usagechain. . f
 :usage. Output Library format
 :jusage. 出力ライブラリ形式
 
@@ -241,56 +250,59 @@
 :usage.  output OMF format library
 :jusage. OMF形式ライブラリを出力します
 
-:usagechain. i
-
 :usagegroup. 1
 :usage. Import records architecture
 :jusage. インポートレコードのアーキテクチャ
+
+:usagechain. 1 i
+
 :usagegroup. 2
 :usage. Import records format
 :jusage. インポートレコード形式
 
+:usagechain. 2 i
+
 :option. i6
-:group. 1 i
+:group. 1
 :enumerate. processor
 :usage.  generate X64 import records
 :jusage. X64インポート･レコードを生成します
 
 :option. ia
-:group. 1 i
+:group. 1
 :enumerate. processor
 :usage.  generate AXP import records
 :jusage. AXPｲﾝﾎﾟｰﾄ･ﾚｺｰﾄﾞを生成します
 
 :option. ic
-:group. 2 i
+:group. 2
 :enumerate. filetype
 :usage.  generate COFF imp. records (short)
 
 :option. icl
-:group. 2 i
+:group. 2
 :enumerate. filetype
 :usage.  generate COFF imp. records (long)
 
 :option. ie
-:group. 2 i
+:group. 2
 :enumerate. filetype
 :usage.  generate ELF import records
 :jusage. ELFインポート･レコードを生成します
 
 :option. ii
-:group. 1 i
+:group. 1
 :enumerate. processor
 :usage.  generate X86 import records
 :jusage. X86インポート･レコードを生成します
 
 :option. im
-:group. 1 i
+:group. 1
 :enumerate. processor
 :usage.  generate MIPS import records
 :jusage. MIPSインポート･レコードを生成します
 
-:usagechain. in
+:usagechain. . in
 :usage. Non-resident table imports
 
 :option. inn
@@ -304,18 +316,18 @@
 :jusage. 序数による非常駐テーブルシンボル
 
 :option. io
-:group. 2 i
+:group. 2
 :enumerate. filetype
 :usage.  generate OMF import records
 :jusage. OMFインポート･レコードを生成します
 
 :option. ip
-:group. 1 i
+:group. 1
 :enumerate. processor
 :usage.  generate PPC import records
 :jusage. PPCインポート･レコードを生成します
 
-:usagechain. ir
+:usagechain. . ir
 :usage. Resident table imports
 
 :option. irn

@@ -135,7 +135,7 @@ TAG( USAGENOCHAIN )
 #define NEXT_ARG_CHECK() \
         --argc1; ++argv1; if( argc1 < NUM_FILES ) { return( true ); }
 
-#define NOSKIP( s )     (s[0] != '.' || s[1] != '\0')
+#define BLANKARG( s )       (s[0] == '.' && s[1] == '\0')
 
 // functions that are supplied by the host environment
 #define FN_UNGET            "OPT_UNGET"                 // void ( void )
@@ -849,40 +849,16 @@ static void addUsageGroup( const char *id )
     lastUsageGroup = ugr;
 }
 
-static CHAIN *findChain( OPTION *o )
+static CHAIN *findChain( const char *pattern )
 {
     CHAIN *cn;
-    CHAIN *cnx;
 
-    cnx = NULL;
-    if( !o->nochain ) {
-        for( cn = chainList; cn != NULL; cn = cn->next ) {
-            if( cmpChainPattern( cn->pattern, o->pattern, cn->pattern_len ) ) {
-                if( cnx == NULL || cnx->pattern_len < cn->pattern_len ) {
-                    cnx = cn;
-                }
-            }
+    for( cn = chainList; cn != NULL; cn = cn->next ) {
+        if( strcmp( pattern, cn->pattern ) == 0 ) {
+            break;
         }
     }
-    return( cnx );
-}
-
-static USAGECHAIN *findUsageChain( OPTION *o )
-{
-    USAGECHAIN  *ucn;
-    USAGECHAIN  *ucnx;
-
-    ucnx = NULL;
-    if( !o->usage_nochain ) {
-        for( ucn = o->usageGroup->usageChainList; ucn != NULL; ucn = ucn->next ) {
-            if( cmpChainPattern( ucn->pattern, o->pattern, ucn->pattern_len ) ) {
-                if( ucnx == NULL || ucnx->pattern_len < ucn->pattern_len ) {
-                    ucnx = ucn;
-                }
-            }
-        }
-    }
-    return( ucnx );
+    return( cn );
 }
 
 static void addChain( char *pattern )
@@ -891,12 +867,6 @@ static void addChain( char *pattern )
     CHAIN *cn;
 
     pattern_len = cvtOptionSpec( pattern, pattern, CVT_PATTERN ) - pattern;
-    for( cn = chainList; cn != NULL; cn = cn->next ) {
-        if( strcmp( pattern, cn->pattern ) == 0 ) {
-            error( "CHAIN: pattern '%s' already defined\n", pattern );
-            return;
-        }
-    }
     cn = calloc( 1, sizeof( *cn ) + pattern_len );
     cn->pattern_len = pattern_len;
     memcpy( cn->pattern, pattern, pattern_len + 1 );
@@ -905,18 +875,24 @@ static void addChain( char *pattern )
     chainList = cn;
 }
 
+static USAGECHAIN *findUsageChain( USAGEGROUP *ugr, const char *pattern )
+{
+    USAGECHAIN  *ucn;
+
+    for( ucn = ugr->usageChainList; ucn != NULL; ucn = ucn->next ) {
+        if( strcmp( pattern, ucn->pattern ) == 0 ) {
+            break;
+        }
+    }
+    return( ucn );
+}
+
 static void addUsageChain( USAGEGROUP *ugr, char *pattern )
 {
     size_t      pattern_len;
     USAGECHAIN  *ucn;
 
     pattern_len = cvtOptionSpec( pattern, pattern, CVT_PATTERN ) - pattern;
-    for( ucn = ugr->usageChainList; ucn != NULL; ucn = ucn->next ) {
-        if( strcmp( pattern, ucn->pattern ) == 0 ) {
-            error( "USAGECHAIN: pattern '%s' already defined\n", pattern );
-            return;
-        }
-    }
     ucn = calloc( 1, sizeof( *ucn ) + pattern_len );
     ucn->pattern_len = pattern_len;
     memcpy( ucn->pattern, pattern, pattern_len + 1 );
@@ -932,10 +908,8 @@ static FILE *initFILE( const char *fnam, const char *fmod )
     bool        open_read;
 
     fp = NULL;
-    open_read = ( strchr( fmod, 'r' ) != NULL );
-    if( open_read
-      || fnam[0] != '.'
-      || fnam[1] != '\0' ) {
+    if( *fnam != '\0' && !BLANKARG( fnam ) ) {
+        open_read = ( strchr( fmod, 'r' ) != NULL );
         fp = fopen( fnam, fmod );
         if( fp == NULL ) {
             fail( "cannot open '%s' for %s", fnam, ( open_read ) ? "input" : "output" );
@@ -946,12 +920,18 @@ static FILE *initFILE( const char *fnam, const char *fmod )
 
 static const char *nextWord( const char *s, char *o )
 {
+    char    *start;
+
+    start = o;
     while( *s != '\0' ) {
         if( myisspace( *s ) )
             break;
         *o++ = *s++;
     }
     *o = '\0';
+    if( BLANKARG( start ) ) {
+        *start = '\0';
+    }
     SKIP_SPACES( s );
     return( s );
 }
@@ -1041,8 +1021,7 @@ static char *pickUpRest( const char *p )
     // if only two '.' character than it is single space text
     len = strlen( p );
     out = dst = malloc( len + 1 );
-    if( p[0] == '.'
-      && p[1] == '\0' ) {
+    if( BLANKARG( p ) ) {
         len = 0;
     } else if( p[0] == '.'
       && p[1] == '.'
@@ -1197,7 +1176,7 @@ static void doNUMBER( const char *p )
     }
     if( *p != '\0' ) {
         p = nextWord( p, tokbuff );
-        if( NOSKIP( tokbuff ) ) {
+        if( *tokbuff != '\0' ) {
             for( o = optionList; o != NULL; o = o->synonym ) {
                 o->check_func = strdup( tokbuff );
             }
@@ -1205,7 +1184,7 @@ static void doNUMBER( const char *p )
     }
     if( *p != '\0' ) {
         p = nextWord( p, tokbuff );
-        if( NOSKIP( tokbuff ) ) {
+        if( *tokbuff != '\0' ) {
             for( o = optionList; o != NULL; o = o->synonym ) {
                 o->number_default = atoi( tokbuff );
                 o->default_specified = true;
@@ -1255,7 +1234,7 @@ static void doID( const char *p )
     }
     if( *p != '\0' ) {
         p = nextWord( p, tokbuff );
-        if( NOSKIP( tokbuff ) ) {
+        if( *tokbuff != '\0' ) {
             for( o = optionList; o != NULL; o = o->synonym ) {
                 o->check_func = strdup( tokbuff );
             }
@@ -1280,7 +1259,7 @@ static void doCHAR( const char *p )
     }
     if( *p != '\0' ) {
         p = nextWord( p, tokbuff );
-        if( NOSKIP( tokbuff ) ) {
+        if( *tokbuff != '\0' ) {
             for( o = optionList; o != NULL; o = o->synonym ) {
                 o->check_func = strdup( tokbuff );
             }
@@ -1426,7 +1405,11 @@ static void doCHAIN( const char *p )
     }
     while( *p != '\0' ) {
         p = nextWord( p, tokbuff );
-        addChain( tokbuff );
+        if( findChain( tokbuff ) != NULL ) {
+            error( ":chain. tag <option> value '%s' is already defined\n", tokbuff );
+        } else {
+            addChain( tokbuff );
+        }
     }
 }
 
@@ -1697,7 +1680,7 @@ static void doTIMESTAMP( const char *p )
     }
 }
 
-// :usagechain. <option> [<group_id>]
+// :usagechain. <group_id> <option>
 //
 // mark options that start with <option> as group in usage text
 // i.e., -fp0 -fp1 ==> -fp{0,1}
@@ -1706,18 +1689,23 @@ static void doUSAGECHAIN( const char *p )
     USAGEGROUP  *ugr;
 
     if( *p == '\0' ) {
-        error( ":usagechain. tag requires <option> parameter\n" );
+        error( ":usagechain. tag requires <group_id> parameter\n" );
         return;
     }
     p = nextWord( p, tokbuff );
-    ugr = usageGroupList;
-    if( *p != '\0' ) {
-        nextWord( p, tmpbuff );
-        ugr = findUsageGroup( tmpbuff );
-        if( ugr == NULL ) {
-            error( ":usagechain. tag <group_id> value '%s' is not found.\n", tmpbuff );
-            return;
-        }
+    if( *p == '\0' ) {
+        error( ":usagechain. tag requires <option> parameter\n" );
+        return;
+    }
+    ugr = findUsageGroup( tokbuff );
+    if( ugr == NULL ) {
+        error( ":usagechain. tag <group_id> value '%s' is not found.\n", tokbuff );
+        return;
+    }
+    nextWord( p, tokbuff );
+    if( findUsageChain( ugr, tokbuff ) != NULL ) {
+        error( ":usagechain. tag <option> value '%s' is already defined for <group_id> '%s'.\n", tokbuff, ugr->id );
+        return;
     }
     addUsageChain( ugr, tokbuff );
     getsUsage = TAG_USAGECHAIN;
@@ -1843,7 +1831,7 @@ static void checkForMissingUsages( void )
           || cmpOptPattern( o->pattern, o->usageChain->pattern ) ) {
             for( i = start_lang; i < end_lang; ++i ) {
                 if( ( i == LANG_English || optFlag.report_missing_data ) && o->lang_usage[i] == NULL ) {
-                    error( "option '%s' has no %s usage\n", o->pattern, langName[i] );
+                    error( "option '%s' has no %s usage text\n", o->pattern, langName[i] );
                 }
             }
         }
@@ -1852,7 +1840,7 @@ static void checkForMissingUsages( void )
     for( t = titleList; t != NULL; t = t->next ) {
         for( i = start_lang; i < end_lang; ++i ) {
             if( ( i == LANG_English || optFlag.report_missing_data ) && t->lang_usage[i] == NULL ) {
-                error( "title(%d) has no %s text\n", j, langName[i] );
+                error( "title(%d) has no %s usage text\n", j, langName[i] );
             }
         }
         j++;
@@ -1861,7 +1849,7 @@ static void checkForMissingUsages( void )
     for( t = footerList; t != NULL; t = t->next ) {
         for( i = start_lang; i < end_lang; ++i ) {
             if( ( i == LANG_English || optFlag.report_missing_data ) && t->lang_usage[i] == NULL ) {
-                error( "footer(%d) has no %s text\n", j, langName[i] );
+                error( "footer(%d) has no %s usage text\n", j, langName[i] );
             }
         }
         j++;
@@ -1869,13 +1857,13 @@ static void checkForMissingUsages( void )
     for( ugr = usageGroupList->next; ugr != NULL; ugr = ugr->next ) {
         for( i = start_lang; i < end_lang; ++i ) {
             if( optFlag.report_missing_data && ugr->lang_usage[i] == NULL ) {
-                error( "group '%s' has no %s text\n", ugr->id, langName[i] );
+                error( "group '%s' has no %s usage text\n", ugr->id, langName[i] );
             }
         }
         for( ucn = ugr->usageChainList; ucn != NULL; ucn = ucn->next ) {
             for( i = start_lang; i < end_lang; ++i ) {
                 if( optFlag.report_missing_data && ucn->lang_usage[i] == NULL ) {
-                    error( "chain '%s' has no %s text\n", ucn->pattern, langName[i] );
+                    error( "chain '%s' has no %s usage text\n", ucn->pattern, langName[i] );
                 }
             }
         }
@@ -1884,19 +1872,43 @@ static void checkForMissingUsages( void )
 
 static void assignCodeChainToOptions( void )
 {
-    OPTION *o;
+    OPTION  *o;
+    CHAIN   *cn;
+    CHAIN   *cnx;
 
     for( o = optionList; o != NULL; o = o->next ) {
-        o->chain = findChain( o );
+        cnx = NULL;
+        if( !o->nochain ) {
+            for( cn = chainList; cn != NULL; cn = cn->next ) {
+                if( cmpChainPattern( cn->pattern, o->pattern, cn->pattern_len ) ) {
+                    if( cnx == NULL || cnx->pattern_len < cn->pattern_len ) {
+                        cnx = cn;
+                    }
+                }
+            }
+        }
+        o->chain = cnx;
     }
 }
 
 static void assignUsageChainToOptions( void )
 {
-    OPTION *o;
+    OPTION      *o;
+    USAGECHAIN  *ucn;
+    USAGECHAIN  *ucnx;
 
     for( o = optionList; o != NULL; o = o->next ) {
-        o->usageChain = findUsageChain( o );
+        ucnx = NULL;
+        if( !o->usage_nochain ) {
+            for( ucn = o->usageGroup->usageChainList; ucn != NULL; ucn = ucn->next ) {
+                if( cmpChainPattern( ucn->pattern, o->pattern, ucn->pattern_len ) ) {
+                    if( ucnx == NULL || ucnx->pattern_len < ucn->pattern_len ) {
+                        ucnx = ucn;
+                    }
+                }
+            }
+        }
+        o->usageChain = ucnx;
     }
 }
 
@@ -2715,7 +2727,7 @@ static char *genOptionUsageStart( OPTION *o, char *buf, bool no_prefix )
     return( buf );
 }
 
-static bool usageOptionValid( OPTION *o, USAGEGROUP *ugr )
+static bool usageOptionValid( OPTION *o )
 {
     if( o->synonym != NULL )
         return( false );
@@ -3004,7 +3016,7 @@ static void processUsage( process_line_fn *process_line, USAGEGROUP *ugr )
     for( o = optionList; o != NULL; o = o->next ) {
         if( o->usageGroup != ugr )
             continue;
-        if( usageOptionValid( o, ugr ) ) {
+        if( usageOptionValid( o ) ) {
             ++count;
             len = genOptionUsageStart( o, tmpbuff, false ) - tmpbuff;
             if( max < len ) {
@@ -3019,7 +3031,7 @@ static void processUsage( process_line_fn *process_line, USAGEGROUP *ugr )
         for( o = optionList; o != NULL; o = o->next ) {
             if( o->usageGroup != ugr )
                 continue;
-            if( usageOptionValid( o, ugr ) ) {
+            if( usageOptionValid( o ) ) {
                 *c++ = o;
             }
         }
