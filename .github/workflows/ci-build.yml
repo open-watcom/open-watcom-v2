@@ -139,7 +139,7 @@ jobs:
         gitpath:    'rel'
         owdebug:    ${{ vars.OWDEBUG }}
     - name: Upload Artifact owsnapshot
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name:           'owsnapshot'
         path:           ${{ steps.owsnapshot.outputs.fullname }}

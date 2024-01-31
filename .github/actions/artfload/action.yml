@@ -51,7 +51,7 @@ runs:
       }
     shell: pwsh
   - name: Restore Artifact ${{ steps.artifact_name.outputs.id }}
-    uses: actions/download-artifact@v3
+    uses: actions/download-artifact@v4
     with:
       name: ${{ steps.artifact_name.outputs.id }}
       path: ${{ steps.dstpath.outputs.path }}

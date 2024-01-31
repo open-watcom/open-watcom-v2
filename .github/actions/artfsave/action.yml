@@ -70,7 +70,7 @@ runs:
       }
     shell: pwsh
   - name: Upload Artifact ${{ steps.artifact_name.outputs.id }}
-    uses: actions/upload-artifact@v3
+    uses: actions/upload-artifact@v4
     with:
       name:             ${{ steps.artifact_name.outputs.id }}
       path:             ${{ steps.srcpath.outputs.path }}
