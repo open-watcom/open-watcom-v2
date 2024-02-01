@@ -28,6 +28,6 @@ runs:
     run: |
       $response = ${{ steps.curlcmd.outputs.gh }} -H "Authorization: Bearer ${{ github.token }}" `
       -X POST "https://api.github.com/repos/${{ github.repository }}/dispatches" `
-      -d "{\"event_type\":\"delete_artifacts\",\"client_payload\":{\"runid\":\"${{ github.run_id }}\"}}"
+      -d '{\"event_type\":\"delete_artifacts\",\"client_payload\":{\"runid\":\"${{ github.run_id }}\"}}'
       if( '${{ inputs.owdebug }}' -eq '1' ) { $response }
     shell: pwsh
