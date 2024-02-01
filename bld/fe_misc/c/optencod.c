@@ -2867,7 +2867,7 @@ static void outputUsageLangdata( lang_data langdata, process_line_fn *process_li
     process_line();
 }
 
-static void outputUsageCommon( TITLE *t, process_line_fn *process_line )
+static void outputUsageCommon( TEXT *t, process_line_fn *process_line )
 {
     while( t != NULL ) {
         if( IS_SELECTED( t ) ) {
