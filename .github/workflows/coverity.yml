@@ -133,7 +133,7 @@ jobs:
       run: |
         $response = ${{ steps.curlcmd.outputs.gh }} -H "Authorization: Bearer ${{ github.token }}" `
         -X POST "https://api.github.com/repos/${{ github.repository }}/git/refs" `
-        -d '{\"ref\":\"refs/tags/${{ env.OWCOV_TAG }}\",\"sha\":\"${{ steps.last_commit.outputs.sha }}\"}'
+        -d '{"ref":"refs/tags/${{ env.OWCOV_TAG }}","sha":"${{ steps.last_commit.outputs.sha }}"}'
         if( '${{ vars.OWDEBUG }}' -eq '1' ) { $response }
       shell: pwsh
     - if: steps.check_tag.outputs.sha != ''
@@ -141,7 +141,7 @@ jobs:
       run: |
         $response = ${{ steps.curlcmd.outputs.gh }} -H "Authorization: Bearer ${{ github.token }}" `
         -X PATCH "https://api.github.com/repos/${{ github.repository }}/git/refs/tags/${{ env.OWCOV_TAG }}" `
-        -d '{\"sha\":\"${{ steps.last_commit.outputs.sha }}\"}'
+        -d '{"sha":"${{ steps.last_commit.outputs.sha }}"}'
         if( '${{ vars.OWDEBUG }}' -eq '1' ) { $response }
       shell: pwsh
 
@@ -245,7 +245,7 @@ jobs:
 #      run: |
 #        $response = ${{ steps.curlcmd.outputs.gh }} -H "Authorization: Bearer ${{ github.token }}" `
 #        -X POST "https://api.github.com/repos/${{ github.repository }}/git/refs" `
-#        -d '{\"ref\":\"refs/tags/${{ env.OWCOV_TAG }}\",\"sha\":\"${{ steps.last_commit.outputs.sha }}\"}'
+#        -d '{"ref":"refs/tags/${{ env.OWCOV_TAG }}","sha":"${{ steps.last_commit.outputs.sha }}"}'
 #        if( '${{ vars.OWDEBUG }}' -eq '1' ) { $response }
 #      shell: pwsh
 #    - if: steps.check_tag.outputs.sha != ''
@@ -253,6 +253,6 @@ jobs:
 #      run: |
 #        $response = ${{ steps.curlcmd.outputs.gh }} -H "Authorization: Bearer ${{ github.token }}" `
 #        -X PATCH "https://api.github.com/repos/${{ github.repository }}/git/refs/tags/${{ env.OWCOV_TAG }}" `
-#        -d '{\"sha\":\"${{ steps.last_commit.outputs.sha }}\"}'
+#        -d '{"sha":"${{ steps.last_commit.outputs.sha }}"}'
 #        if( '${{ vars.OWDEBUG }}' -eq '1' ) { $response }
 #      shell: pwsh
