@@ -11,6 +11,11 @@ inputs:
     required: false
     default: ''
     type: string
+  owcurlopts:
+    description: 'additional curl options for GH Actions scripts development'
+    required: false
+    default: ''
+    type: string
 outputs:
   sha:
     description: 'SHA of git tag commit'
@@ -24,6 +29,8 @@ runs:
   - name: Setup curl options
     id: curlcmd
     uses: "./.github/actions/curlcmd"
+    with:
+      owcurlopts: ${{ inputs.owcurlopts }}
   - id: last_commit
     run: |
       $sha = git rev-parse HEAD

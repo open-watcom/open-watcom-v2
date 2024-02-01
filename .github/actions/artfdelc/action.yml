@@ -11,12 +11,19 @@ inputs:
     required: false
     default: ''
     type: string
+  owcurlopts:
+    description: 'additional curl options for GH Actions scripts development'
+    required: false
+    default: ''
+    type: string
 runs:
   using: composite
   steps:
   - name: Setup curl options
     id: curlcmd
     uses: "./.github/actions/curlcmd"
+    with:
+      owcurlopts: ${{ inputs.owcurlopts }}
   - name: Call to delete Artifacts
     run: |
       $response = ${{ steps.curlcmd.outputs.gh }} -H "Authorization: Bearer ${{ github.token }}" `

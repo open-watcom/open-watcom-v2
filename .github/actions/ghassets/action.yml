@@ -31,6 +31,11 @@ inputs:
     required: false
     default: ''
     type: string
+  owcurlopts:
+    description: 'additional curl options for GH Actions scripts development'
+    required: false
+    default: ''
+    type: string
 runs:
   using: composite
   steps:
@@ -43,6 +48,8 @@ runs:
   - name: Setup curl options
     id: curlcmd
     uses: "./.github/actions/curlcmd"
+    with:
+      owcurlopts: ${{ inputs.owcurlopts }}
   - run: |
       Join-Path ${{ github.workspace }} temp | Get-ChildItem -File | Foreach-Object {
         $response = ${{ steps.curlcmd.outputs.gh }} -H "Authorization: Bearer ${{ github.token }}" `

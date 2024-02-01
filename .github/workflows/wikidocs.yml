@@ -130,3 +130,4 @@ jobs:
       uses: "./.github/actions/artfdelc"
       with:
         owdebug:    ${{ vars.OWDEBUG }}
+        owcurlopts: ${{ vars.OWCURLOPTS }}

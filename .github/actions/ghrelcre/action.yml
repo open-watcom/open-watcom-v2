@@ -26,6 +26,11 @@ inputs:
     required: false
     default: ''
     type: string
+  owcurlopts:
+    description: 'additional curl options for GH Actions scripts development'
+    required: false
+    default: ''
+    type: string
 outputs:
   id:
     description: 'new release ID'
@@ -36,6 +41,8 @@ runs:
   - name: Setup curl options
     id: curlcmd
     uses: "./.github/actions/curlcmd"
+    with:
+      owcurlopts: ${{ inputs.owcurlopts }}
   - id: last_commit
     run: git rev-parse HEAD | Join-String -OutputPrefix 'sha=' | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
     shell: pwsh

@@ -15,3 +15,4 @@ jobs:
         runid: ${{ github.event.client_payload.runid  }}
         exclude: ${{ github.event.client_payload.exclude }}
         owdebug: ${{ vars.OWDEBUG }}
+        owcurlopts: ${{ vars.OWCURLOPTS }}

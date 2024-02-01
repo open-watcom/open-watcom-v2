@@ -6,8 +6,6 @@ on:
     - cron:  '30 0 * * *'
   workflow_dispatch:
 
-env:
-  OWCURLOPTS:       ${{ vars.OWCURLOPTS }}
 jobs:
   check_run:
     if: github.repository == 'open-watcom/open-watcom-v2'
@@ -24,6 +22,7 @@ jobs:
       with:
         tag:     'Current-build'
         owdebug: ${{ vars.OWDEBUG }}
+        owcurlopts: ${{ vars.OWCURLOPTS }}
   workflow-lnx:
     needs: check_run
     if: needs.check_run.outputs.runit
@@ -134,6 +133,7 @@ jobs:
         arch:    'lnx'
         tools:   'gcc'
         owdebug: ${{ vars.OWDEBUG }}
+        owcurlopts: ${{ vars.OWCURLOPTS }}
     - run: echo "drelid=${{ steps.rel_rel.outputs.drelid }};mrelid=${{ steps.rel_rel.outputs.mrelid }}"
       shell: bash
   assets:
@@ -172,6 +172,7 @@ jobs:
         mrelid:     ${{ needs.release.outputs.mrelid }}
         arch:       'lnx'
         owdebug:    ${{ vars.OWDEBUG }}
+        owcurlopts: ${{ vars.OWCURLOPTS }}
   end-end:
     needs: assets
     name: Call to delete Artifacts
@@ -183,3 +184,4 @@ jobs:
       uses: "./.github/actions/artfdelc"
       with:
         owdebug:    ${{ vars.OWDEBUG }}
+        owcurlopts: ${{ vars.OWCURLOPTS }}
