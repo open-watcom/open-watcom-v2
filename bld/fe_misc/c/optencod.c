@@ -236,15 +236,15 @@ typedef struct ename {
     char            name[1];
 } ENAME;
 
-typedef struct title {
-    struct title    *next;
+typedef struct text {
+    struct text     *next;
     targmask        target_mask;
     targmask        ntarget_mask;
     boolbit         any_target  : 1;
     boolbit         is_u        : 1;
     lang_data       lang_usage;
     lang_data       lang_usageu;
-} TITLE;
+} TEXT;
 
 typedef struct chain {
     struct chain    *next;
@@ -479,15 +479,15 @@ static TARGET       *targetList;
 static ENAME        *enumList;
 static OPTION       *optionList;
 static OPTION       *uselessOptionList;
-static TITLE        *titleList;
-static TITLE        *footerList;
+static TEXT         *titleList;
+static TEXT         *footerList;
 static CHAIN        *chainList;
 static USAGEGROUP   blankUsageGroup;
 static USAGEGROUP   *usageGroupList;
 static USAGEGROUP   *lastUsageGroup;
 static USAGECHAIN   *lastUsageChain = NULL;
-static TITLE        *targetTitle;
-static TITLE        *targetFooter;
+static TEXT         *targetTitle;
+static TEXT         *targetFooter;
 
 static void emitCode( CODESEQ *head, unsigned depth, flow_control control );
 
@@ -1539,8 +1539,8 @@ static void doJUSAGE( const char *p )
 // :title. <text>
 static void doTITLE( const char *p )
 {
-    TITLE **i;
-    TITLE *t;
+    TEXT    **i;
+    TEXT    *t;
 
     i = &titleList;
     for( t = *i; t != NULL; t = *i ) {
@@ -1592,8 +1592,8 @@ static void doJTITLEU( const char *p )
 // :footer. <text>
 static void doFOOTER( const char *p )
 {
-    TITLE **i;
-    TITLE *t;
+    TEXT    **i;
+    TEXT    *t;
 
     i = &footerList;
     for( t = *i; t != NULL; t = *i ) {
@@ -1811,7 +1811,7 @@ static void readInputFile( void )
 static void checkForMissingUsages( void )
 {
     OPTION      *o;
-    TITLE       *t;
+    TEXT        *t;
     USAGECHAIN  *ucn;
     USAGEGROUP  *ugr;
     int         start_lang;
