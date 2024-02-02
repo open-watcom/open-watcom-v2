@@ -1,4 +1,4 @@
-[ DEFAULT type="s" cond="samples" where="c jc ac" desc="DLL Samples"
+[ DEFAULT type="s" cond="samples" where="c jc ac" descr="DLL Samples"
 dir="samples/dll"	usr="cover16.c"
 dir="samples/dll"	usr="dll16.c"
 dir="samples/dll"	usr="dll16.lnk"

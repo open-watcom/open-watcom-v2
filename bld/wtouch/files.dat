@@ -1,9 +1,9 @@
 # WTOUCH component of install manifest
 
-[ DEFAULT type="e" where="c jc f77 jf77" desc="Wtouch utility" ]
+[ DEFAULT type="e" where="c jc f77 jf77" descr="Wtouch utility" ]
 dir="binw"      usr="wtouch.exe"        cond="doshost winhost |"
 dir="binp"      usr="wtouch.exe"        cond="os2host"
-dir="binnt"     usr="wtouch.exe"        cond="wnthost"      wherea="ac"
+dir="binnt"     usr="wtouch.exe"        cond="wnthost"      where+="ac"
 dir="binnt64"   usr="wtouch.exe"        cond="wnt64host"                    keys="ntx64"
 dir="axpnt"     usr="wtouch.exe"        cond="alphahost"    where="ac"
 dir="binl"      usr="wtouch"            cond="lnxhost"

@@ -3,14 +3,14 @@
 [ DEFAULT type="d" where="c f77 jc jf77" ]
 dir="binw"      usr="weditviw.dll"  cond="winhost"      where="c jc"
 dir="binw"      usr="weditcw.dll"   cond="winhost"
-dir="binnt"     usr="weditviw.dll"  cond="wnthost"      wherea="ac"
-dir="binnt"     usr="weditcw.dll"   cond="wnthost"      wherea="ac"
+dir="binnt"     usr="weditviw.dll"  cond="wnthost"      where+="ac"
+dir="binnt"     usr="weditcw.dll"   cond="wnthost"      where+="ac"
 dir="axpnt"     usr="weditviw.dll"  cond="alphahost"    where="ac"
 dir="binnt64"   usr="weditviw.dll"  cond="wnt64host"                    keys="ntx64"
 
-dir="binp/dll"  usr="epmlink.dll"   cond="os2host"      desc="EPM editor interface DLL for IDE and source browser"
+dir="binp/dll"  usr="epmlink.dll"   cond="os2host"      descr="EPM editor interface DLL for IDE and source browser"
 
-[ DEFAULT type="s" dir="src/editdll" cond="samples" where="c f77 jc jf77" desc="CodeWright editor DLL source code" ]
+[ DEFAULT type="s" dir="src/editdll" cond="samples" where="c f77 jc jf77" descr="CodeWright editor DLL source code" ]
 usr="wedit.doc"
 usr="wedit.h"
 #usr="weditcw.c"

@@ -1,4 +1,4 @@
-[ DEFAULT type="s" where="f77 jf77" desc="src/fortran" ]
+[ DEFAULT type="s" where="f77 jf77" descr="src/fortran" ]
 dir="src/fortran"		usr="blackjac.for"
 dir="src/fortran"		usr="blackjac.jpn"
 dir="src/fortran"		usr="fsignal.fi"
@@ -14,7 +14,7 @@ dir="src/fortran"		usr="thread.fi"
 dir="src/fortran"		usr="wc.fi"
 dir="src/fortran"		usr="_mark_.fi"
 dir="src/fortran"		usr="_matherr.for"
-[ DEFAULT type="s" cond="dostarg" where="f77 jf77" desc="src/fortran" ]
+[ DEFAULT type="s" cond="dostarg" where="f77 jf77" descr="src/fortran" ]
 dir="src/fortran/dos"		usr="ansi.for"
 dir="src/fortran/dos"		usr="calendar.for"
 dir="src/fortran/dos"		usr="dos.fi"
@@ -26,7 +26,7 @@ dir="src/fortran/dos"		usr="pg.fi"
 dir="src/fortran/dos"		usr="pgapi.fi"
 dir="src/fortran/dos"		usr="pgdemo.fi"
 dir="src/fortran/dos"		usr="pgdemo.for"
-[ DEFAULT type="s" cond="os2targ" where="f77 jf77" desc="src/fortran" ]
+[ DEFAULT type="s" cond="os2targ" where="f77 jf77" descr="src/fortran" ]
 dir="src/fortran/os2"		usr="basedef.fi"
 dir="src/fortran/os2"		usr="basemid.fi"
 dir="src/fortran/os2"		usr="bse.fap"
@@ -95,7 +95,7 @@ dir="src/fortran/os2"		usr="rexxsaa.fap"
 dir="src/fortran/os2"		usr="rexxsaa.fi"
 dir="src/fortran/os2"		usr="rexxsaa.for"
 dir="src/fortran/os2"		usr="rxstring.fi"
-[ DEFAULT type="s" cond="wintarg" where="f77 jf77" desc="src/fortran" ]
+[ DEFAULT type="s" cond="wintarg" where="f77 jf77" descr="src/fortran" ]
 dir="src/fortran/win"		usr="commdlg.fi"
 dir="src/fortran/win"		usr="win386.fi"
 dir="src/fortran/win"		usr="win3api.fi"

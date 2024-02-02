@@ -1,7 +1,7 @@
-[ DEFAULT desc="Debugger information strip utility" type="e" where="c jc f77 jf77" ]
+[ DEFAULT descr="Debugger information strip utility" type="e" where="c jc f77 jf77" ]
 dir="binw"      usr="wstrip.exe"    cond="doshost winhost |"            old="binb"
 dir="binp"      usr="wstrip.exe"    cond="os2host"
-dir="binnt"     usr="wstrip.exe"    cond="wnthost"      wherea="ac"
+dir="binnt"     usr="wstrip.exe"    cond="wnthost"      where+="ac"
 dir="binnt64"   usr="wstrip.exe"    cond="wnt64host"                    keys="ntx64"
 dir="axpnt"     usr="wstrip.exe"    cond="alphahost"    where="ac"
 dir="binl"      usr="wstrip"        cond="lnxhost"

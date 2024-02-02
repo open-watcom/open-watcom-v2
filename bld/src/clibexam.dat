@@ -1,4 +1,4 @@
-[ DEFAULT type="s" cond="samples" where="c jc ac" desc="Clib Examples" ]
+[ DEFAULT type="s" cond="samples" where="c jc ac" descr="Clib Examples" ]
 dir="samples/clibexam"	usr="abort.c"
 dir="samples/clibexam"	usr="abrt_hnd.c"
 dir="samples/clibexam"	usr="abs.c"

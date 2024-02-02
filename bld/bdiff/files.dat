@@ -1,4 +1,4 @@
-[ DEFAULT rel="." where="c jc f77 jf77 ac" desc="Patch utility" ]
+[ DEFAULT rel="." where="c jc f77 jf77 ac" descr="Patch utility" ]
 type="e" dir="binw"	usr="bpatch.exe" cond="doshost winhost |"  old="binb"
 type="e" dir="binp"	usr="bpatch.exe" cond="os2host"
 type="e" dir="binnt"	usr="bpatch.exe" cond="wnthost"

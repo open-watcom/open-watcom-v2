@@ -1,4 +1,4 @@
-[ default type="s" cond="samples" where="c jc ac" desc="Advanced C++ Usage Sample Code" ]
+[ default type="s" cond="samples" where="c jc ac" descr="Advanced C++ Usage Sample Code" ]
 dir="samples/cppexamp"	usr="cppexamp.mif"
 dir="samples/cppexamp"	usr="local.mif"
 dir="samples/cppexamp"	usr="readme.txt"

@@ -3,8 +3,8 @@
 #
 # DOS
 [ DEFAULT type="s" dir="binw" cond="doshost" where="c f77 jc jf77" ]
-usr="net.trp"   old="bin" keys="!newdbg"      desc="NETBIOS trap file"
-usr="net??.trp"           keys="newdbg"       desc="NETBIOS trap file"
+usr="net.trp"   old="bin" keys="!newdbg"      descr="NETBIOS trap file"
+usr="net??.trp"           keys="newdbg"       descr="NETBIOS trap file"
 usr="nmp.trp"   old="bin" keys="!newdbg"
 usr="nmp??.trp"           keys="newdbg"
 usr="nov.trp"   old="bin" keys="!newdbg"
@@ -16,30 +16,30 @@ usr="ser??.trp"           keys="newdbg"
 usr="win.trp"   old="bin" keys="!newdbg"
 usr="win??.trp"           keys="newdbg"
 [ DEFAULT type="s" dir="binw" cond="dostarg" where="c f77 jc jf77" ]
-usr="cw.trp"    old="bin" keys="!newdbg"      desc="Debugging trap file for CauseWay"
-usr="cw??.trp"            keys="newdbg"       desc="Debugging trap file for CauseWay"
-usr="pls.trp"   old="bin" keys="!newdbg"      desc="Debugging trap file for Phar Lap"
-usr="pls??.trp"           keys="newdbg"       desc="Debugging trap file for Phar Lap"
-usr="rsi.trp"   old="bin" keys="!newdbg"      desc="Debugging trap file for DOS/4GW"
-usr="rsi??.trp"           keys="newdbg"       desc="Debugging trap file for DOS/4GW"
-usr="hx.trp"              keys="!newdbg"      desc="Debugging trap file for HX"
-usr="hx??.trp"            keys="newdbg"       desc="Debugging trap file for HX"
-usr="std.trp"   old="bin" keys="!newdbg"      desc="Debugging trap file for 16-bit DOS debugging"
-usr="std??.trp"           keys="newdbg"       desc="Debugging trap file for 16-bit DOS debugging"
+usr="cw.trp"    old="bin" keys="!newdbg"      descr="Debugging trap file for CauseWay"
+usr="cw??.trp"            keys="newdbg"       descr="Debugging trap file for CauseWay"
+usr="pls.trp"   old="bin" keys="!newdbg"      descr="Debugging trap file for Phar Lap"
+usr="pls??.trp"           keys="newdbg"       descr="Debugging trap file for Phar Lap"
+usr="rsi.trp"   old="bin" keys="!newdbg"      descr="Debugging trap file for DOS/4GW"
+usr="rsi??.trp"           keys="newdbg"       descr="Debugging trap file for DOS/4GW"
+usr="hx.trp"              keys="!newdbg"      descr="Debugging trap file for HX"
+usr="hx??.trp"            keys="newdbg"       descr="Debugging trap file for HX"
+usr="std.trp"   old="bin" keys="!newdbg"      descr="Debugging trap file for 16-bit DOS debugging"
+usr="std??.trp"           keys="newdbg"       descr="Debugging trap file for 16-bit DOS debugging"
 [ DEFAULT dir="binw" cond="dostarg" where="c f77 jc jf77" ]
 type="e" usr="netserv.exe"       old="bin"
 type="e" usr="nmpserv.exe"       old="bin"
 type="e" usr="novserv.exe"       old="bin"
 type="e" usr="parserv.exe"       old="bin"
 type="e" usr="serserv.exe"       old="bin"
-type="e" usr="tcpserv.exe"                       desc="TCP/IP trap file"
+type="e" usr="tcpserv.exe"                       descr="TCP/IP trap file"
 type="e" usr="vdmserv.exe"       old="bin"
 type="e" usr="winserv.exe"       old="bin"
-type="e" usr="cwhelp.exe"        old="bin"       desc="Debugger help file for CauseWay"
+type="e" usr="cwhelp.exe"        old="bin"       descr="Debugger help file for CauseWay"
 type="s" usr="cwhelp.cfg"        old="bin"
-#type="e" usr="plshelp.exp"       old="bin"       desc="Debugger help file for Phar Lap"
+#type="e" usr="plshelp.exp"       old="bin"       descr="Debugger help file for Phar Lap"
 #type="e" usr="pedhelp.exp"       old="bin"
-type="e" usr="rsihelp.exp"       old="bin"       desc="Debugger help file for DOS/4GW"
+type="e" usr="rsihelp.exp"       old="bin"       descr="Debugger help file for DOS/4GW"
 [ DEFAULT dir="binw" cond="winhost" where="c jc f77 jf77" ]
 type="s" usr="wsrv.pif"
 
@@ -146,16 +146,16 @@ usr="tcpserv.exe"
 # Windows NT - X64
 #
 [ DEFAULT type="d" dir="binnt64" cond="wnt64host" where="c f77 jc jf77" keys="no_ntx64" ]
-usr="nov.dll"   keysa="!newdbg"
-usr="nov??.dll" keysa="newdbg"
-#usr="par.dll"   keysa="!newdbg"
-#usr="par??.dll" keysa="newdbg"
-usr="ser.dll"   keysa="!newdbg"
-usr="ser??.dll" keysa="newdbg"
-usr="tcp.dll"   keysa="!newdbg"
-usr="tcp??.dll" keysa="newdbg"
-#usr="vdm.dll"   keysa="!newdbg"
-#usr="vdm??.dll" keysa="newdbg"
+usr="nov.dll"   keys+="!newdbg"
+usr="nov??.dll" keys+="newdbg"
+#usr="par.dll"   keys+="!newdbg"
+#usr="par??.dll" keys+="newdbg"
+usr="ser.dll"   keys+="!newdbg"
+usr="ser??.dll" keys+="newdbg"
+usr="tcp.dll"   keys+="!newdbg"
+usr="tcp??.dll" keys+="newdbg"
+#usr="vdm.dll"   keys+="!newdbg"
+#usr="vdm??.dll" keys+="newdbg"
 
 #######################
 # Linux - 386
@@ -179,12 +179,12 @@ usr="serserv"
 # Linux - X64
 #
 [ DEFAULT type="e" dir="binl64" cond="lnx64host" where="c f77 jc jf77" keys="no_lx64" ]
-usr="tcp.so"   keysa="!newdbg"
-usr="tcp??.so" keysa="newdbg"
-usr="par.so"   keysa="!newdbg"
-usr="par??.so" keysa="newdbg"
-usr="ser.so"   keysa="!newdbg"
-usr="ser??.so" keysa="newdbg"
+usr="tcp.so"   keys+="!newdbg"
+usr="tcp??.so" keys+="newdbg"
+usr="par.so"   keys+="!newdbg"
+usr="par??.so" keys+="newdbg"
+usr="ser.so"   keys+="!newdbg"
+usr="ser??.so" keys+="newdbg"
 
 #######################
 # Novell - 386

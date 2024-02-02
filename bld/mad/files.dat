@@ -67,14 +67,14 @@ usr="madmps??.dll"  keys="newdbg"
 # Windows NT - X64
 #
 [ DEFAULT type="d" dir="binnt64" cond="wnt64host" where="c f77 jc jf77" keys="no_ntx64" ]
-usr="madx86.dll"    keysa="!newdbg"
-usr="madx86??.dll"  keysa="newdbg"
-usr="madaxp.dll"    keysa="!newdbg"
-usr="madaxp??.dll"  keysa="newdbg"
-usr="madppc.dll"    keysa="!newdbg"
-usr="madppc??.dll"  keysa="newdbg"
-usr="madmps.dll"    keysa="!newdbg"
-usr="madmps??.dll"  keysa="newdbg"
+usr="madx86.dll"    keys+="!newdbg"
+usr="madx86??.dll"  keys+="newdbg"
+usr="madaxp.dll"    keys+="!newdbg"
+usr="madaxp??.dll"  keys+="newdbg"
+usr="madppc.dll"    keys+="!newdbg"
+usr="madppc??.dll"  keys+="newdbg"
+usr="madmps.dll"    keys+="!newdbg"
+usr="madmps??.dll"  keys+="newdbg"
 
 #######################
 # Linux - 386
@@ -93,14 +93,14 @@ usr="madmps??.mad"  keys="newdbg"
 # Linux - x64
 #
 [ DEFAULT type="s" dir="binl64" cond="lnx64host" where="c f77 jc jf77" keys="no_lx64" ]
-usr="madx86.mad"    keysa="!newdbg"
-usr="madx86??.mad"  keysa="newdbg"
-usr="madaxp.mad"    keysa="!newdbg"
-usr="madaxp??.mad"  keysa="newdbg"
-usr="madppc.mad"    keysa="!newdbg"
-usr="madppc??.mad"  keysa="newdbg"
-usr="madmps.mad"    keysa="!newdbg"
-usr="madmps??.mad"  keysa="newdbg"
+usr="madx86.mad"    keys+="!newdbg"
+usr="madx86??.mad"  keys+="newdbg"
+usr="madaxp.mad"    keys+="!newdbg"
+usr="madaxp??.mad"  keys+="newdbg"
+usr="madppc.mad"    keys+="!newdbg"
+usr="madppc??.mad"  keys+="newdbg"
+usr="madmps.mad"    keys+="!newdbg"
+usr="madmps??.mad"  keys+="newdbg"
 
 #######################
 # RDOS - 386
