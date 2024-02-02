@@ -125,10 +125,12 @@ static bool checkSTD( unsigned *value )
         if( CmdRecogChar( 'c' )
           && CmdRecogChar( '+' )
           && CmdRecogChar( '+' ) ) {
-            if( CmdRecogChar( '9' ) && CmdRecogChar( '8' ) ) {
+            if( CmdRecogChar( '9' )
+              && CmdRecogChar( '8' ) ) {
                 cxxstd = STD_CXX98;
                 fail = false;
-            } else if( CmdRecogChar( '0' ) && CmdRecogChar( 'x' ) ) {
+            } else if( CmdRecogChar( '0' )
+              && CmdRecogChar( 'x' ) ) {
                 cxxstd = STD_CXX0X;
                 fail = false;
             }
@@ -877,16 +879,21 @@ static void analyseAnyTargetOptions( OPT_STORAGE *data )
         CompFlags.use_pcheaders = true;
         CompFlags.fhwe_switch_used = true;
     }
-    if( data->fh || data->fhq ) {
+    if( data->fh
+      || data->fhq ) {
         if( data->fhq ) {
             CompFlags.no_pch_warnings = true;
         }
         CompFlags.use_pcheaders = true;
 
-        if( data->fh && ( !data->fhq || data->fh_timestamp > data->fhq_timestamp ) ) {
+        if( data->fh
+          && ( !data->fhq
+          || data->fh_timestamp > data->fhq_timestamp ) ) {
             SetStringOption( PCHFileNamePtr(), &(data->fh_value) );
             OPT_CLEAN_STRING( &(data->fhq_value) );
-        } else if( data->fhq && ( !data->fh || data->fhq_timestamp > data->fh_timestamp ) ) {
+        } else if( data->fhq
+          && ( !data->fh
+          || data->fhq_timestamp > data->fh_timestamp ) ) {
             SetStringOption( PCHFileNamePtr(), &(data->fhq_value) );
             OPT_CLEAN_STRING( &(data->fh_value) );
         }
