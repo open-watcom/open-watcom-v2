@@ -112,6 +112,8 @@ def_msg_type( JCK, "JCK_" ) \
 
 #define SKIP_SPACES(s)  while( isspace( *s ) ) s++
 
+#define BLANKARG( s )   ((s)[0] == '.' && (s)[1] == '\0')
+
 typedef enum {
 #define def_tag( e ) TAG_##e,
     ALL_TAGS
@@ -305,7 +307,7 @@ static void error( const char *f, ... )
 
     ++errors;
     va_start( args, f );
-    if( line ) {
+    if( line > 0 ) {
         printf( "%s(%u): Error! E000: ", ifname, line );
     }
     vprintf( f, args );
@@ -319,7 +321,7 @@ static void warn( const char *f, ... )
     ++warnings;
     va_start( args, f );
     if( !flags.no_warn ) {
-        if( line ) {
+        if( line > 0 ) {
             printf( "%s(%u): Warning! W000: ", ifname, line );
         }
         vprintf( f, args );
@@ -327,14 +329,14 @@ static void warn( const char *f, ... )
     va_end( args );
 }
 
-static void errorLocn( const char *fn, unsigned ln, const char *f, ... )
+static void errorLocn( const char *fn, unsigned line, const char *f, ... )
 {
     va_list args;
 
     ++errors;
     va_start( args, f );
-    if( ln ) {
-        printf( "%s(%u): Error! E000: ", fn, ln );
+    if( line > 0 ) {
+        printf( "%s(%u): Error! E000: ", fn, line );
     }
     vprintf( f, args );
     va_end( args );
@@ -358,8 +360,9 @@ static FILE *initFILE( const char *fnam, const char *fmod )
     bool        open_read;
 
     fp = NULL;
-    open_read = ( strchr( fmod, 'r' ) != NULL );
-    if( open_read || fnam[0] != '.' || fnam[1] != '\0' ) {
+    if( *fnam != '\0'
+      && !BLANKARG( fnam ) ) {
+        open_read = ( strchr( fmod, 'r' ) != NULL );
         fp = fopen( fnam, fmod );
         if( fp == NULL ) {
             printf( "fatal: cannot open '%s' for %s\n", fnam, ( open_read ) ? "input" : "output" );
@@ -438,7 +441,8 @@ static unsigned pickUpLevel( const char *p )
     unsigned long   level;
 
     level = pickUpNum( p );
-    if( level == 0 || level > 15 ) {
+    if( level == 0
+      || level > 15 ) {
         error( "<level> can only be in the range 1-15\n" );
     }
     return( level );
@@ -592,7 +596,9 @@ static void do_msggrp( const char *p )
     flags.grouped = true;
     nextWord( group, p );
     len = strlen( group );
-    if( !flags.rc && !flags.gen_gpick && len != 2 ) {
+    if( !flags.rc
+      && !flags.gen_gpick
+      && len != 2 ) {
         error( ":msggroup code '%s' not two characters\n", group );
         switch( len ) {
         case 0 :
@@ -622,7 +628,8 @@ static void do_msggrp( const char *p )
             *end = grp;
             break;
         } else {
-            if( (strcmp( cur->name, group ) == 0) && !saw_dup ) {
+            if( (strcmp( cur->name, group ) == 0)
+              && !saw_dup ) {
                 error( "msggroup code '%s' same as previous code\n", group );
                 saw_dup = true;
             }
@@ -684,7 +691,7 @@ static void do_msgjtxt( const char *p )
 
     m->lang_txt[LANG_RLE_JAPANESE] = strdup( p );
     commonTxt( p );
-    if( p[0] ) {
+    if( p[0] != '\0' ) {
         langTextCount[LANG_RLE_JAPANESE]++;
     }
 }
@@ -785,15 +792,18 @@ static void checkForGMLEscape( const char *p )
 
     ++p;
     c1 = *p++;
-    if( c1 == '\0' || ! isalpha( c1 ) ) {
+    if( c1 == '\0'
+      || ! isalpha( c1 ) ) {
         return;
     }
     c2 = *p++;
-    if( c2 == '\0' || ! isalpha( c2 ) ) {
+    if( c2 == '\0'
+      || ! isalpha( c2 ) ) {
         return;
     }
     is_escape = false;
-    if( *p == '\0' || ! isalpha( *p ) ) {
+    if( *p == '\0'
+      || ! isalpha( *p ) ) {
         is_escape = true;
     }
     if( is_escape ) {
@@ -820,7 +830,8 @@ static char *inputIO( void )
         }
         if( c == '\n' )
             break;
-        if( c == '\r' && p[1] == '\n' ) {
+        if( c == '\r'
+          && p[1] == '\n' ) {
             *p++ = '\0';
             break;
         }
@@ -1106,7 +1117,8 @@ static void splitIntoWords( void )
         p = m->lang_txt[LANG_RLE_ENGLISH];
         a = &(m->words);
         for( ;; ) {
-            if( isspace( p[0] ) && isspace( p[1] ) ) {
+            if( isspace( p[0] )
+              && isspace( p[1] ) ) {
                 errorLocn( m->fname, m->line, "MSGSYM %s text has too many blanks '%s'\n", m->name, p );
             }
             SKIP_SPACES( p );
@@ -1620,7 +1632,8 @@ static char *ProcessOption( char *p, char *option_start )
             flags.international = true;
             return( p );
         }
-        if( *p++ == 'p' && ISSEP( p[0] ) ) { // 'ip'
+        if( *p++ == 'p'
+          && ISSEP( p[0] ) ) { // 'ip'
             flags.ignore_prefix = true;
             return( p );
         }
@@ -1641,18 +1654,23 @@ static char *ProcessOption( char *p, char *option_start )
         flags.gen_gpick = true;
         return( p );
     case 'u':   // 'utf8'
-        if( *p++ == 't' && *p++ == 'f' && *p++ == '8' && ISSEP( p[0] ) ) {
+        if( *p++ == 't'
+          && *p++ == 'f'
+          && *p++ == '8'
+          && ISSEP( p[0] ) ) {
             flags.out_utf8 = true;
             return( p );
         }
         break;
     case 'r':   // 'rc='
-        if( *p++ == 'c' && *p++ == '=' ) {
+        if( *p++ == 'c'
+          && *p++ == '=' ) {
             int i;
 
             i = 0;
-            while( *p != '\0' && !isspace( *p ) ) {
-                if( i < sizeof( flags.rc_macro ) - 1 ) {
+            while( *p != '\0'
+              && !isspace( *p ) ) {
+                if( i < ( sizeof( flags.rc_macro ) - 1 ) ) {
                     flags.rc_macro[i++] = *p;
                 }
                 p++;
@@ -1663,7 +1681,9 @@ static char *ProcessOption( char *p, char *option_start )
         }
         break;
     case 'l':   // 'len='
-        if( *p++ == 'e' && *p++ == 'n' && *p++ == '=' ) {
+        if( *p++ == 'e'
+          && *p++ == 'n'
+          && *p++ == '=' ) {
             long    val;
             char    *end;
 
@@ -1693,13 +1713,15 @@ static char *getFileName( char *str, char *name )
             if( ch == '"' ) {
                 break;
             }
-            if( ch == '\\' && *str == '"' ) {
+            if( ch == '\\'
+              && *str == '"' ) {
                 ch = *str++;
             }
             *name++ = ch;
         }
     } else {
-        while( *str != '\0' && !isspace( *str ) ) {
+        while( *str != '\0'
+          && !isspace( *str ) ) {
             *name++ = *str++;
         }
     }
@@ -1731,7 +1753,8 @@ static char *ReadIndirectFile( char *name )
                 *str = '\0';        // - mark end of str
                 break;
             }
-            if( ch != ' ' && isspace( ch ) ) {
+            if( ch != ' '
+              && isspace( ch ) ) {
                 *str = ' ';
             }
         }
@@ -1796,11 +1819,9 @@ static bool ProcessOptions( char *str )
 
 int main( int argc, char **argv )
 {
-    bool    langs_ok;
     int     i;
 
     flags.max_len = 127;
-    langs_ok = true;
     for( i = 1; i < argc; i++ ) {
         if( ProcessOptions( argv[i] ) ) {
             closeFiles();
@@ -1823,7 +1844,8 @@ int main( int argc, char **argv )
         qsort( cvt_table_932, sizeof( cvt_table_932 ) / sizeof( cvt_table_932[0] ), sizeof( cvt_table_932[0] ), (comp_fn)compare_utf8 );
     }
     readGML();
-    if( !flags.rc && !flags.gen_gpick ) {
+    if( !flags.rc
+      && !flags.gen_gpick ) {
         compressMsgs();
     }
     writeMsgH();
