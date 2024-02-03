@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,7 +46,7 @@
 #endif
 #include "bool.h"
 #include "iopath.h"
-#include "encodlng.h"
+#include "wreslang.h"
 #include "cvttable.h"
 
 #include "clibext.h"
@@ -110,10 +110,10 @@ enum {
 };
 
 enum {
-    MKINF_LANG_NULL = 0,
-    #define LANG_DEF( id, dbcs )        MKINF_LANG_ ## id ,
-    LANG_DEFS
-    #undef LANG_DEF
+    MKINF_LANG_RLE_NONE = 0,
+    #define LANG_RLE_DEF( id, val, dbcs )   MKINF_LANG_ ## val ,
+    LANG_RLE_DEFS
+    #undef LANG_RLE_DEF
 };
 
 static char                 *Product;
@@ -143,7 +143,7 @@ static LIST                 *ForceDLLInstallList = NULL;
 static LIST                 *AssociationList = NULL;
 static LIST                 *ErrMsgList = NULL;
 static LIST                 *SetupErrMsgList = NULL;
-static int                  Lang = MKINF_LANG_English;
+static int                  Lang = MKINF_LANG_RLE_ENGLISH;
 static bool                 Utf8 = false;
 static bool                 Upgrade = false;
 static bool                 Verbose = false;
@@ -243,7 +243,7 @@ static char *mygets( char *buf, int max_len_buf, FILE *fp )
 {
     char        *p,*q,*start;
     char        *d;
-    static int  last_lang = MKINF_LANG_NULL;
+    static int  last_lang = MKINF_LANG_RLE_NONE;
     size_t      got;
     size_t      len;
     size_t      max_len = SECTION_BUF_SIZE;
@@ -293,13 +293,13 @@ static char *mygets( char *buf, int max_len_buf, FILE *fp )
             start = p;
             last_lang = p[2] - '0';
             p += 3;
-            if( last_lang != MKINF_LANG_NULL ) {
+            if( last_lang != MKINF_LANG_RLE_NONE ) {
                 /* search next end */
                 while( p[0] != '/' || p[1] != '/' || !isdigit( p[2] ) ) {
                     ++p;
                 }
                 if( last_lang == Lang ) {
-                    if( !Utf8 && last_lang == MKINF_LANG_Japanese ) {
+                    if( !Utf8 && last_lang == MKINF_LANG_RLE_JAPANESE ) {
                         utf8_to_cp932( start + 3, p - ( start + 3 ), d );
                         d += strlen( d );
                     } else {
@@ -408,7 +408,7 @@ bool CheckParms( int *pargc, char **pargv[] )
         printf( "\nDirectory '%s' does not exist\n", RelRoot );
         return( false );
     }
-    if( Lang == MKINF_LANG_Japanese ) {
+    if( Lang == MKINF_LANG_RLE_JAPANESE ) {
         if( !Utf8 ) {
             qsort( cvt_table_932, sizeof( cvt_table_932 ) / sizeof( cvt_table_932[0] ), sizeof( cvt_table_932[0] ), (comp_fn)compare_utf8 );
         }
