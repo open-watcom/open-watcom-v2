@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,7 +45,6 @@
 #include "sopen.h"
 #include "wreslang.h"
 #include "lsspec.h"
-#include "encodlng.h"
 #include "intlload.h"
 #include "pathgrp2.h"
 
@@ -189,14 +188,14 @@ IntlData *LoadInternationalData(
 {
     IntlData *data;
     int fh;
-    res_language_enumeration language;
+    wres_lang_id lang;
     size_t len;
     pgroup2 pg;
     char cmd_name[_MAX_PATH];
     char base[16];
 
-    language = _WResLanguage();
-    if( language == RLE_ENGLISH ) {
+    lang = _WResLanguage();
+    if( lang == LANG_RLE_ENGLISH ) {
         return( NULL );
     }
     if( imageName( cmd_name ) == NULL ) {
@@ -208,9 +207,7 @@ IntlData *LoadInternationalData(
         len = 6;
     }
     memcpy( base, file_prefix, len );
-    base[len++] = '0';
-    base[len++] = '0' + language;
-    base[len] = '\0';
+    sprintf( base + len, "%02d", lang );
     _makepath( cmd_name, pg.drive, pg.dir, base, LOCALE_DATA_EXT );
     fh = _sopen3( cmd_name, O_RDONLY | O_BINARY, SH_DENYWR );
     if( fh == -1 ) {

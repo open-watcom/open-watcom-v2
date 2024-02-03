@@ -40,7 +40,7 @@
 #include <limits.h>
 #include "bool.h"
 #include "lsspec.h"
-#include "encodlng.h"
+#include "wreslang.h"
 #include "cvttable.h"
 
 #include "clibext.h"
@@ -189,7 +189,7 @@ TAG( USAGENOCHAIN )
 
 #define SKIP_SPACES(s)          while( myisspace( *s ) ) s++
 
-typedef const char              *lang_data[LANG_MAX];
+typedef const char              *lang_data[LANG_RLE_MAX];
 
 typedef unsigned long           targmask;
 
@@ -410,15 +410,15 @@ static const char *validTargets[] = {
 };
 
 static const char * const langName[] = {
-    #define LANG_DEF( id, dbcs )        #id ,
-    LANG_DEFS
-    #undef LANG_DEF
+    #define LANG_RLE_DEF( id, val, dbcs )   #id ,
+    LANG_RLE_DEFS
+    #undef LANG_RLE_DEF
 };
 
 static uint_8 const langMaxChar[] = {
-    #define LANG_DEF( id, dbcs )        dbcs ,
-    LANG_DEFS
-    #undef LANG_DEF
+    #define LANG_RLE_DEF( id, val, dbcs )   dbcs ,
+    LANG_RLE_DEFS
+    #undef LANG_RLE_DEF
 };
 
 /*
@@ -472,7 +472,7 @@ static struct {
     char        *line_term;
     char        *list_sep;
     char        *sid;
-    language_id lang;
+    wres_lang_id lang;
 } optFlag;
 
 static TARGET       *targetList;
@@ -563,26 +563,26 @@ static size_t utf8_to_cp932( const char *src, char *dst )
     return( o );
 }
 
-static const char *getLangData( lang_data langdata, language_id lang )
+static const char *getLangData( lang_data langdata, wres_lang_id lang )
 {
     const char *p;
 
     p = langdata[lang];
     if( p == NULL
       || *p == '\0' ) {
-        p = langdata[LANG_English];
+        p = langdata[LANG_RLE_ENGLISH];
     }
     return( p );
 }
 
 static void outputInit( void )
 {
-    int i;
+    wres_lang_id lang;
     char *p;
 
-    p = outputbuff = calloc( LANG_MAX, BUFF_SIZE );
-    for( i = 0; i < LANG_MAX; i++ ) {
-        outputdata[i] = p;
+    p = outputbuff = calloc( LANG_RLE_MAX, BUFF_SIZE );
+    for( lang = 0; lang < LANG_RLE_MAX; lang++ ) {
+        outputdata[lang] = p;
         p += BUFF_SIZE;
     }
 }
@@ -1487,14 +1487,14 @@ static void doUSAGE( const char *p )
 
     switch( getsUsage ) {
     case TAG_USAGECHAIN:
-        lastUsageChain->lang_usage[LANG_English] = pickUpRest( p );
+        lastUsageChain->lang_usage[LANG_RLE_ENGLISH] = pickUpRest( p );
         break;
     case TAG_USAGEGROUP:
-        lastUsageGroup->lang_usage[LANG_English] = pickUpRest( p );
+        lastUsageGroup->lang_usage[LANG_RLE_ENGLISH] = pickUpRest( p );
         break;
     case TAG_OPTION:
         for( o = optionList; o != NULL; o = o->synonym ) {
-            o->lang_usage[LANG_English] = pickUpRest( p );
+            o->lang_usage[LANG_RLE_ENGLISH] = pickUpRest( p );
         }
         break;
     default:
@@ -1510,25 +1510,25 @@ static void doJUSAGE( const char *p )
 
     switch( getsUsage ) {
     case TAG_USAGECHAIN:
-        if( lastUsageChain->lang_usage[LANG_English] == NULL ) {
+        if( lastUsageChain->lang_usage[LANG_RLE_ENGLISH] == NULL ) {
             error( ":jusage. tag last :usagechain. hasn't define English text.\n" );
         }
-        lastUsageChain->lang_usage[LANG_Japanese] = pickUpRest( p );
+        lastUsageChain->lang_usage[LANG_RLE_JAPANESE] = pickUpRest( p );
         break;
     case TAG_USAGEGROUP:
-        if( lastUsageGroup->lang_usage[LANG_English] == NULL ) {
+        if( lastUsageGroup->lang_usage[LANG_RLE_ENGLISH] == NULL ) {
             error( ":jusage. tag last :usagegroup. hasn't define English text.\n" );
         }
-        lastUsageGroup->lang_usage[LANG_Japanese] = pickUpRest( p );
+        lastUsageGroup->lang_usage[LANG_RLE_JAPANESE] = pickUpRest( p );
         break;
     case TAG_OPTION:
         for( o = optionList; o != NULL; o = o->synonym ) {
             usage = pickUpRest( p );
             if( *usage == '\0' ) {
                 free( usage );
-                usage = strdup( o->lang_usage[LANG_English] );
+                usage = strdup( o->lang_usage[LANG_RLE_ENGLISH] );
             }
-            o->lang_usage[LANG_Japanese] = usage;
+            o->lang_usage[LANG_RLE_JAPANESE] = usage;
         }
         break;
     default:
@@ -1549,7 +1549,7 @@ static void doTITLE( const char *p )
     t = calloc( 1, sizeof( *t ) );
     t->next = *i;
     *i = t;
-    t->lang_usage[LANG_English] = pickUpRest( p );
+    t->lang_usage[LANG_RLE_ENGLISH] = pickUpRest( p );
     t->target_mask = targetAnyMask;
     t->any_target = true;
     targetTitle = t;
@@ -1564,7 +1564,7 @@ static void doTITLEU( const char *p )
         error( ":titleu. tag must follow a :title. tag\n" );
         return;
     }
-    targetTitle->lang_usageu[LANG_English] = pickUpRest( p );
+    targetTitle->lang_usageu[LANG_RLE_ENGLISH] = pickUpRest( p );
     targetTitle->is_u = true;
 }
 
@@ -1575,7 +1575,7 @@ static void doJTITLE( const char *p )
         error( ":jtitle. tag must follow a :title. tag\n" );
         return;
     }
-    targetTitle->lang_usage[LANG_Japanese] = pickUpRest( p );
+    targetTitle->lang_usage[LANG_RLE_JAPANESE] = pickUpRest( p );
 }
 
 // :jtitleu. <text>
@@ -1585,7 +1585,7 @@ static void doJTITLEU( const char *p )
         error( ":jtitleu. tag must follow a :title. tag\n" );
         return;
     }
-    targetTitle->lang_usageu[LANG_Japanese] = pickUpRest( p );
+    targetTitle->lang_usageu[LANG_RLE_JAPANESE] = pickUpRest( p );
     targetTitle->is_u = true;
 }
 
@@ -1602,7 +1602,7 @@ static void doFOOTER( const char *p )
     t = calloc( 1, sizeof( *t ) );
     t->next = *i;
     *i = t;
-    t->lang_usage[LANG_English] = pickUpRest( p );
+    t->lang_usage[LANG_RLE_ENGLISH] = pickUpRest( p );
     t->target_mask = targetAnyMask;
     t->any_target = true;
     targetFooter = t;
@@ -1617,7 +1617,7 @@ static void doFOOTERU( const char *p )
         error( ":footeru. tag must follow a :footer. tag\n" );
         return;
     }
-    targetFooter->lang_usageu[LANG_English] = pickUpRest( p );
+    targetFooter->lang_usageu[LANG_RLE_ENGLISH] = pickUpRest( p );
     targetFooter->is_u = true;
 }
 
@@ -1628,7 +1628,7 @@ static void doJFOOTER( const char *p )
         error( ":jfooter. tag must follow a :footer. tag\n" );
         return;
     }
-    targetFooter->lang_usage[LANG_Japanese] = pickUpRest( p );
+    targetFooter->lang_usage[LANG_RLE_JAPANESE] = pickUpRest( p );
 }
 
 // :jfooteru. <text>
@@ -1638,7 +1638,7 @@ static void doJFOOTERU( const char *p )
         error( ":jfooteru. tag must follow a :footer. tag\n" );
         return;
     }
-    targetFooter->lang_usageu[LANG_Japanese] = pickUpRest( p );
+    targetFooter->lang_usageu[LANG_RLE_JAPANESE] = pickUpRest( p );
     targetFooter->is_u = true;
 }
 
@@ -1814,56 +1814,56 @@ static void checkForMissingUsages( void )
     TEXT        *t;
     USAGECHAIN  *ucn;
     USAGEGROUP  *ugr;
-    int         start_lang;
-    int         end_lang;
-    int         i;
+    wres_lang_id start_lang;
+    wres_lang_id end_lang;
+    wres_lang_id lang;
     int         j;
 
     if( optFlag.international ) {
         start_lang = 0;
-        end_lang = LANG_MAX;
+        end_lang = LANG_RLE_MAX;
     } else {
-        start_lang = LANG_English;
+        start_lang = LANG_RLE_ENGLISH;
         end_lang = start_lang + 1;
     }
     for( o = optionList; o != NULL; o = o->next ) {
         if( o->usageChain == NULL
           || cmpOptPattern( o->pattern, o->usageChain->pattern ) ) {
-            for( i = start_lang; i < end_lang; ++i ) {
-                if( ( i == LANG_English || optFlag.report_missing_data ) && o->lang_usage[i] == NULL ) {
-                    error( "option '%s' has no %s usage text\n", o->pattern, langName[i] );
+            for( lang = start_lang; lang < end_lang; ++lang ) {
+                if( ( lang == LANG_RLE_ENGLISH || optFlag.report_missing_data ) && o->lang_usage[lang] == NULL ) {
+                    error( "option '%s' has no %s usage text\n", o->pattern, langName[lang] );
                 }
             }
         }
     }
     j = 1;
     for( t = titleList; t != NULL; t = t->next ) {
-        for( i = start_lang; i < end_lang; ++i ) {
-            if( ( i == LANG_English || optFlag.report_missing_data ) && t->lang_usage[i] == NULL ) {
-                error( "title(%d) has no %s usage text\n", j, langName[i] );
+        for( lang = start_lang; lang < end_lang; ++lang ) {
+            if( ( lang == LANG_RLE_ENGLISH || optFlag.report_missing_data ) && t->lang_usage[lang] == NULL ) {
+                error( "title(%d) has no %s usage text\n", j, langName[lang] );
             }
         }
         j++;
     }
     j = 1;
     for( t = footerList; t != NULL; t = t->next ) {
-        for( i = start_lang; i < end_lang; ++i ) {
-            if( ( i == LANG_English || optFlag.report_missing_data ) && t->lang_usage[i] == NULL ) {
-                error( "footer(%d) has no %s usage text\n", j, langName[i] );
+        for( lang = start_lang; lang < end_lang; ++lang ) {
+            if( ( lang == LANG_RLE_ENGLISH || optFlag.report_missing_data ) && t->lang_usage[lang] == NULL ) {
+                error( "footer(%d) has no %s usage text\n", j, langName[lang] );
             }
         }
         j++;
     }
     for( ugr = usageGroupList->next; ugr != NULL; ugr = ugr->next ) {
-        for( i = start_lang; i < end_lang; ++i ) {
-            if( optFlag.report_missing_data && ugr->lang_usage[i] == NULL ) {
-                error( "group '%s' has no %s usage text\n", ugr->id, langName[i] );
+        for( lang = start_lang; lang < end_lang; ++lang ) {
+            if( optFlag.report_missing_data && ugr->lang_usage[lang] == NULL ) {
+                error( "group '%s' has no %s usage text\n", ugr->id, langName[lang] );
             }
         }
         for( ucn = ugr->usageChainList; ucn != NULL; ucn = ucn->next ) {
-            for( i = start_lang; i < end_lang; ++i ) {
-                if( optFlag.report_missing_data && ucn->lang_usage[i] == NULL ) {
-                    error( "chain '%s' has no %s usage text\n", ucn->pattern, langName[i] );
+            for( lang = start_lang; lang < end_lang; ++lang ) {
+                if( optFlag.report_missing_data && ucn->lang_usage[lang] == NULL ) {
+                    error( "chain '%s' has no %s usage text\n", ucn->pattern, langName[lang] );
                 }
             }
         }
@@ -2763,10 +2763,10 @@ static void emitUsageH( void )
     if( optFlag.rc ) {
         if( ufp != NULL ) {
             fprintf( ufp, "pick((%s+%d), ", optFlag.rc_macro, line_offs++ );
-            str = getLangData( outputdata, LANG_English );
+            str = getLangData( outputdata, LANG_RLE_ENGLISH );
             emitQuotedString( ufp, str, "", "" );
             fprintf( ufp, ", " );
-            str = getLangData( outputdata, LANG_Japanese );
+            str = getLangData( outputdata, LANG_RLE_JAPANESE );
             if( !optFlag.out_utf8 ) {
                 utf8_to_cp932( str, tmpbuff );
                 str = tmpbuff;
@@ -2830,14 +2830,14 @@ static void expand_tab( const char *s, char *buf )
 
 static void outputUsageGroupHeader( lang_data langdata, process_line_fn *process_line )
 {
-    language_id lang;
-    const char  *str;
-    size_t      len;
-    char        *buf;
+    wres_lang_id    lang;
+    const char      *str;
+    size_t          len;
+    char            *buf;
 
-    str = getLangData( langdata, LANG_English );
+    str = getLangData( langdata, LANG_RLE_ENGLISH );
     if( str != NULL ) {
-        for( lang = 0; lang < LANG_MAX; lang++ ) {
+        for( lang = 0; lang < LANG_RLE_MAX; lang++ ) {
             buf = GET_OUTPUT_BUF( lang );
             str = getLangData( langdata, lang );
             len = strlen( str );
@@ -2857,10 +2857,10 @@ static void outputUsageGroupHeader( lang_data langdata, process_line_fn *process
 
 static void outputUsageLangdata( lang_data langdata, process_line_fn *process_line )
 {
-    language_id lang;
-    const char  *str;
+    wres_lang_id    lang;
+    const char      *str;
 
-    for( lang = 0; lang < LANG_MAX; lang++ ) {
+    for( lang = 0; lang < LANG_RLE_MAX; lang++ ) {
         str = getLangData( langdata, lang );
         expand_tab( str, GET_OUTPUT_BUF( lang ) );
     }
@@ -2911,13 +2911,13 @@ static bool createUsageChainHeaderPrefix( OPTION **o, char *buf, size_t max )
 
 static void outputUsageChainHeader( OPTION **o, process_line_fn *process_line, size_t max )
 {
-    char        *buf;
-    size_t      len;
-    language_id lang;
-    const char  *str;
+    char            *buf;
+    size_t          len;
+    wres_lang_id    lang;
+    const char      *str;
 
     if( createUsageChainHeaderPrefix( o, hdrbuff, max ) ) {
-        for( lang = 0; lang < LANG_MAX; lang++ ) {
+        for( lang = 0; lang < LANG_RLE_MAX; lang++ ) {
             buf = GET_OUTPUT_BUF( lang );
             strcpy( buf, hdrbuff );
             str = getLangData( (*o)->usageChain->lang_usage, lang );
@@ -2926,9 +2926,9 @@ static void outputUsageChainHeader( OPTION **o, process_line_fn *process_line, s
             }
         }
     } else {
-        str = getLangData( (*o)->usageChain->lang_usage, LANG_English );
+        str = getLangData( (*o)->usageChain->lang_usage, LANG_RLE_ENGLISH );
         if( str != NULL ) {
-            for( lang = 0; lang < LANG_MAX; lang++ ) {
+            for( lang = 0; lang < LANG_RLE_MAX; lang++ ) {
                 buf = GET_OUTPUT_BUF( lang );
                 for( len = max / 2; len-- > 0; )
                     *buf++ = ' ';
@@ -2939,7 +2939,7 @@ static void outputUsageChainHeader( OPTION **o, process_line_fn *process_line, s
             }
             process_output( process_line );
         }
-        for( lang = 0; lang < LANG_MAX; lang++ ) {
+        for( lang = 0; lang < LANG_RLE_MAX; lang++ ) {
             strcpy( GET_OUTPUT_BUF( lang ), hdrbuff );
         }
     }
@@ -2964,14 +2964,14 @@ static char *createOptionPrefix( OPTION *o, char *buf, size_t max )
 
 static void outputUsageOption( OPTION *o, process_line_fn *process_line, size_t max )
 {
-    char        *buf;
-    size_t      len;
-    language_id lang;
-    const char  *str;
+    char            *buf;
+    size_t          len;
+    wres_lang_id    lang;
+    const char      *str;
 
     o->usage_used = true;
     len = createOptionPrefix( o, hdrbuff, max ) - hdrbuff;
-    for( lang = 0; lang < LANG_MAX; lang++ ) {
+    for( lang = 0; lang < LANG_RLE_MAX; lang++ ) {
         buf = GET_OUTPUT_BUF( lang );
         strcpy( buf, hdrbuff );
         str = getLangData( o->lang_usage, lang );
@@ -3085,7 +3085,7 @@ static void emitUsageB( void )
     const char *str;
 
     str = getLangData( outputdata, optFlag.lang );
-    if( optFlag.lang == LANG_Japanese ) {
+    if( optFlag.lang == LANG_RLE_JAPANESE ) {
         if( !optFlag.out_utf8 ) {
             utf8_to_cp932( str, tmpbuff );
             str = tmpbuff;
@@ -3105,7 +3105,7 @@ static void dumpInternational( void )
     LocaleUsage usage_header;
 
     if( optFlag.international ) {
-        for( optFlag.lang = LANG_FIRST_INTERNATIONAL; optFlag.lang < LANG_MAX; optFlag.lang++ ) {
+        for( optFlag.lang = LANG_RLE_FIRST_INTERNATIONAL; optFlag.lang < LANG_RLE_MAX; optFlag.lang++ ) {
             sprintf( fname, "usage%02u." LOCALE_DATA_EXT, optFlag.lang );
             bfp = fopen( fname, "wb" );
             if( bfp == NULL ) {
@@ -3399,9 +3399,7 @@ int main( int argc, char **argv )
     int     i;
 
     setlocale( LC_ALL, "C" );
-    ok = _LANG_DEFS_OK();
-    if( !ok )
-        fail( "language index mismatch\n" );
+    ok = true;
     initTargets();
     initOptions();
     for( i = 1; i < argc; i++ ) {
