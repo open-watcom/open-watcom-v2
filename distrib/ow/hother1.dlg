@@ -1,30 +1,30 @@
 # UTF-8 encoding, ¥
 static_text=\
-        //1"Select other options you want to install. They are:"\
-        //2"インストールしたいその他のオプションを選択してください:"\
-        //0
+        //0"Select other options you want to install. They are:"\
+        //1"インストールしたいその他のオプションを選択してください:"\
+        //-1
 static_text=
 static_text=\
-        //1"C++ compiler components"\
-        //2"C++ コンパイラ・コンポーネント"\
-        //0
+        //0"C++ compiler components"\
+        //1"C++ コンパイラ・コンポーネント"\
+        //-1
 static_text=\
-        //1"	- choose whether you want to program in C++ in addition to C"\
-        //2"	- C ではなく､ C++でプログラムするかどうかを選択してください"\
-        //0
+        //0"	- choose whether you want to program in C++ in addition to C"\
+        //1"	- C ではなく､ C++でプログラムするかどうかを選択してください"\
+        //-1
 static_text=\
-        //1"Sample Programs"\
-        //2"サンプル・プログラム"\
-        //0
+        //0"Sample Programs"\
+        //1"サンプル・プログラム"\
+        //-1
 static_text=\
-        //1"	- example programs for various operating systems"\
-        //2"	- 各OS用のサンプルプログラム"\
-        //0
+        //0"	- example programs for various operating systems"\
+        //1"	- 各OS用のサンプルプログラム"\
+        //-1
 static_text=\
-        //1"Run-time Startup Source Code"\
-        //2"ランタイム・スタートアップ・ソースコード"\
-        //0
+        //0"Run-time Startup Source Code"\
+        //1"ランタイム・スタートアップ・ソースコード"\
+        //-1
 static_text=\
-        //1"	- startup code for the run-time library"\
-        //2"	- ランタイム・ライブラリ用のスタートアップ・コード"\
-        //0
+        //0"	- startup code for the run-time library"\
+        //1"	- ランタイム・ライブラリ用のスタートアップ・コード"\
+        //-1

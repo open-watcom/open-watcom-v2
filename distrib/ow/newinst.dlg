@@ -2,9 +2,9 @@
 name=NewInstall
 condition=PreviousInstall !
 dynamic_text=targ_1,\
-        //1"%AppName% will be installed in '%DstDir%'"\
-        //2"%AppName% は '%DstDir%' にインストールされます"\
-        //0
+        //0"%AppName% will be installed in '%DstDir%'"\
+        //1"%AppName% は '%DstDir%' にインストールされます"\
+        //-1
 static_text=
 include=full.dlg
 include=sel.dlg

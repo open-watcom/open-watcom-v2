@@ -65,6 +65,8 @@
 
 #define IS_ASCII(c)     (c < 0x80)
 
+#define IS_LANG_TAG(s)  ((s)[0] == '/' && (s)[1] == '/' && (isdigit( (s)[2] ) || (s)[2] == '-' && isdigit( (s)[3] )))
+
 typedef int (*comp_fn)(const void *,const void *);
 
 typedef struct path_info {
@@ -109,13 +111,6 @@ enum {
     DELETE_DIR
 };
 
-enum {
-    MKINF_LANG_RLE_NONE = 0,
-    #define LANG_RLE_DEF( id, val, dbcs )   MKINF_LANG_ ## val ,
-    LANG_RLE_DEFS
-    #undef LANG_RLE_DEF
-};
-
 static char                 *Product;
 static char                 *RelRoot;
 static char                 *Setup = NULL;
@@ -143,7 +138,7 @@ static LIST                 *ForceDLLInstallList = NULL;
 static LIST                 *AssociationList = NULL;
 static LIST                 *ErrMsgList = NULL;
 static LIST                 *SetupErrMsgList = NULL;
-static int                  Lang = MKINF_LANG_RLE_ENGLISH;
+static wres_lang_id         Lang = LANG_RLE_ENGLISH;
 static bool                 Utf8 = false;
 static bool                 Upgrade = false;
 static bool                 Verbose = false;
@@ -236,17 +231,19 @@ static void ConcatDirElem( char *dir, const char *elem )
     strcpy( dir + len, elem );
 }
 
-static char     lines_buffer[SECTION_BUF_SIZE];
+static char         lines_buffer[SECTION_BUF_SIZE];
+static wres_lang_id last_lang = LANG_RLE_NONE;
 
 static char *mygets( char *buf, int max_len_buf, FILE *fp )
 /*********************************************************/
 {
     char        *p,*q,*start;
     char        *d;
-    static int  last_lang = MKINF_LANG_RLE_NONE;
     size_t      got;
     size_t      len;
     size_t      max_len = SECTION_BUF_SIZE;
+    char        *endlang;
+    long        val;
 
     /* unused parameters */ (void)max_len_buf;
 
@@ -289,22 +286,21 @@ static char *mygets( char *buf, int max_len_buf, FILE *fp )
     p = lines_buffer;
     d = buf;
     while( *p != '\0' ) {
-        if( p[0] == '/' && p[1] == '/' && isdigit( p[2] ) ) {
-            start = p;
-            last_lang = p[2] - '0';
-            p += 3;
-            if( last_lang != MKINF_LANG_RLE_NONE ) {
+        if( IS_LANG_TAG( p ) ) {
+            last_lang = strtol( p + 2, &endlang, 10 );
+            p = endlang;
+            if( last_lang != LANG_RLE_NONE ) {
                 /* search next end */
-                while( p[0] != '/' || p[1] != '/' || !isdigit( p[2] ) ) {
+                while( !IS_LANG_TAG( p ) ) {
                     ++p;
                 }
                 if( last_lang == Lang ) {
-                    if( !Utf8 && last_lang == MKINF_LANG_RLE_JAPANESE ) {
-                        utf8_to_cp932( start + 3, p - ( start + 3 ), d );
+                    len = p - endlang;
+                    if( !Utf8 && last_lang == LANG_RLE_JAPANESE ) {
+                        utf8_to_cp932( endlang, len, d );
                         d += strlen( d );
                     } else {
-                        len = p - ( start + 3 );
-                        memcpy( d, start + 3, len );
+                        memcpy( d, endlang, len );
                         d += len;
                     }
                 }
@@ -353,7 +349,7 @@ bool CheckParms( int *pargc, char **pargv[] )
     if( *pargc > 1 ) {
         while( ((*pargv)[1] != NULL) && ((*pargv)[1][0] == '-') ) {
             if( tolower( (*pargv)[1][1] ) == 'l' ) {
-                Lang = (*pargv)[1][2] - '0';
+                Lang = strtol( (*pargv)[1] + 2, NULL, 10 );
             } else if( tolower( (*pargv)[1][1] ) == 'd' ) {
                 new = malloc( sizeof( LIST ) );
                 if( new == NULL ) {
@@ -396,7 +392,9 @@ bool CheckParms( int *pargc, char **pargv[] )
         printf( "Supported options (case insensitive):\n" );
         printf( "-v         verbose operation\n" );
         printf( "-i<path>   include path for setup scripts\n" );
+        printf( "-l<num>    generate installer for <num> language\n" );
         printf( "-u         create upgrade setup script\n" );
+        printf( "-utf8      input files are in UTF-8 encoding\n" );
         printf( "-d<string> specify string to add to Application section\n" );
         printf( "-f         force script creation if files missing (testing only)\n" );
         printf( "-x         force creation of missing files (testing only)\n" );
@@ -408,7 +406,7 @@ bool CheckParms( int *pargc, char **pargv[] )
         printf( "\nDirectory '%s' does not exist\n", RelRoot );
         return( false );
     }
-    if( Lang == MKINF_LANG_RLE_JAPANESE ) {
+    if( Lang == LANG_RLE_JAPANESE ) {
         if( !Utf8 ) {
             qsort( cvt_table_932, sizeof( cvt_table_932 ) / sizeof( cvt_table_932[0] ), sizeof( cvt_table_932[0] ), (comp_fn)compare_utf8 );
         }
@@ -1071,7 +1069,7 @@ static bool processLine( const char *line, LIST **list )
         new->type = DELETE_DIR;
         AddToList( new, &DeleteList );
     } else if( STRING_IS( line, new, STRING_language ) ) {
-        Lang = new->item[0] - '0';
+        Lang = strtol( new->item, NULL, 10 );
         free( new->item );
         free( new );
     } else if( STRING_IS( line, new, STRING_forcedll ) ) {

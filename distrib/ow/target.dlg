@@ -1,9 +1,9 @@
 # UTF-8 encoding, ¥
 name=Target
 static_text=\
-        //1"Select the target operating systems:"\
-        //2"ターゲットOSを選択してください:"\
-        //0
+        //0"Select the target operating systems:"\
+        //1"ターゲットOSを選択してください:"\
+        //-1
 static_text=
 check_box=dostarg,,"&DOS"
 check_box=wintarg,,"W&indows 3.x"

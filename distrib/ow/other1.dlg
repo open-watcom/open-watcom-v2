@@ -1,26 +1,26 @@
 # UTF-8 encoding, ¥
 static_text=\
-        //1"Select other options:"\
-        //2"その他のオプションを選択してください:"\
-        //0
+        //0"Select other options:"\
+        //1"その他のオプションを選択してください:"\
+        //-1
 static_text=
 check_box=cplusplus,,\
-        //1"&Include C++ compiler components"\
-        //2"C++コンパイラ・コンポーネントを含みます (&I)"\
-        //0,IsFortranInstall !
+        //0"&Include C++ compiler components"\
+        //1"C++コンパイラ・コンポーネントを含みます (&I)"\
+        //-1,IsFortranInstall !
 check_box=samples,,\
-        //1"Sample &programs"\
-        //2"サンプル・プログラム (&p)"\
-        //0
+        //0"Sample &programs"\
+        //1"サンプル・プログラム (&p)"\
+        //-1
 check_box=rtsource,,\
-        //1"&Run-time startup source code"\
-        //2"ランタイム・スタートアップ・ソースコード (&R)"\
-        //0
+        //0"&Run-time startup source code"\
+        //1"ランタイム・スタートアップ・ソースコード (&R)"\
+        //-1
 static_text=
 other_button=\
+        //0"&Helpfiles..."\
         //1"&Helpfiles..."\
-        //2"&Helpfiles..."\
-        //0,Helpfile,\
+        //-1,Helpfile,\
+        //0"Helpfiles to Install:"\
         //1"Helpfiles to Install:"\
-        //2"Helpfiles to Install:"\
-        //0
+        //-1

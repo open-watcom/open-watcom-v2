@@ -10,12 +10,12 @@ include=ccommon.inf
 include=fcommon.inf
 
 [jc]
-language=2
+language=1
 IsJapanese=1
 include=ccommon.inf
 
 [jf77]
-language=2
+language=1
 IsJapanese=1
 include=fcommon.inf
 

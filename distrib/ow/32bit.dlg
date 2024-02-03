@@ -1,18 +1,18 @@
 # UTF-8 encoding, ¥
 name=32Bit
 static_text=\
-        //1"Select the 32-bit calling conventions you wish to use:"\
-        //2"使用する32ビット呼出規約の選択:"\
-        //0
+        //0"Select the 32-bit calling conventions you wish to use:"\
+        //1"使用する32ビット呼出規約の選択:"\
+        //-1
 static_text=
 check_box=3r,,\
-        //1"&Register based calling"\
-        //2"レジスタ・ベース呼び出し(&R)"\
-        //0
+        //0"&Register based calling"\
+        //1"レジスタ・ベース呼び出し(&R)"\
+        //-1
 check_box=3s,,\
-        //1"&Stack based calling"\
-        //2"スタックベース呼び出し(&S)"\
-        //0
+        //0"&Stack based calling"\
+        //1"スタックベース呼び出し(&S)"\
+        //-1
 static_text=
 include=space.dlg
 static_text=
