@@ -633,7 +633,9 @@ bld_cxx_flags   = #-zastd=c++98
 
 bld_incs        = $(bld_extra_incs) -I"$(watcom_dir)/h"
 
-! if $(%OWTOOLSVER) >= 1300
+! if $(%OWTOOLSVER) > 1300
+# this can be used for OW 2.1 because older versions of OW 2.0
+# not support these new options
 bld_watcom_common_cflags   =-wx-wce=C310-xx-zam-zastd=c99
 bld_watcom_common_cxxflags =-w8-wce=P579-xx-zam
 ! else
