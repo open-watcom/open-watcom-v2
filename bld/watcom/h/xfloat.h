@@ -89,32 +89,34 @@ enum    ld_classification {
 };
 
 enum    ldcvt_flags {
-    E_FMT       = 0x0001,       // 'E' format
-    F_FMT       = 0x0002,       // 'F' format
-    G_FMT       = 0x0004,       // 'G' format
-    F_CVT       = 0x0008,       // __cvt routine format rules
-    F_DOT       = 0x0010,       // always put '.' in result
-    LONG_DOUBLE = 0x0020,       // number is true long double
-    NO_TRUNC    = 0x0040,       // always provide ndigits in buffer
-    IN_CAPS     = 0x0080,       // 'inf'/'nan' is uppercased
-    IS_INF_NAN  = 0x0100,       // number is inf/nan (output flag)
+    A_FMT       = 0x0001,       // 'A' format
+    E_FMT       = 0x0002,       // 'E' format
+    F_FMT       = 0x0004,       // 'F' format
+    G_FMT       = 0x0008,       // 'G' format
+    F_CVT       = 0x0010,       // __cvt routine format rules
+    F_DOT       = 0x0020,       // always put '.' in result
+    LONG_DOUBLE = 0x0040,       // number is true long double
+    NO_TRUNC    = 0x0080,       // always provide ndigits in buffer
+    IN_CAPS     = 0x0100,       // 'inf'/'nan' is uppercased
+    IS_INF_NAN  = 0x0200,       // number is inf/nan (output flag)
 };
 
 typedef struct cvt_info {
-      int       ndigits;        // INPUT: number of digits
-      int       scale;          // INPUT: FORTRAN scale factor
-      int       flags;          // INPUT/OUTPUT: flags (see ldcvt_flags)
-      int       expchar;        // INPUT: exponent character to use
-      int       expwidth;       // INPUT/OUTPUT: number of exponent digits
-      int       sign;           // OUTPUT: 0 => +ve; otherwise -ve
-      int       decimal_place;  // OUTPUT: position of '.'
-      int       n1;             // OUTPUT: number of leading characters
-      int       nz1;            // OUTPUT: followed by this many '0's
-      int       n2;             // OUTPUT: followed by these characters
-      int       nz2;            // OUTPUT: followed by this many '0's
+    int         ndigits;        // INPUT: number of digits
+    int         scale;          // INPUT: FORTRAN scale factor
+    int         flags;          // INPUT/OUTPUT: flags (see ldcvt_flags)
+    int         expchar;        // INPUT: exponent character to use
+    int         expwidth;       // INPUT/OUTPUT: number of exponent digits
+    int         sign;           // OUTPUT: 0 => +ve; otherwise -ve
+    int         decimal_place;  // OUTPUT: position of '.'
+    int         n1;             // OUTPUT: number of leading characters
+    int         nz1;            // OUTPUT: followed by this many '0's
+    int         n2;             // OUTPUT: followed by these characters
+    int         nz2;            // OUTPUT: followed by this many '0's
 } CVT_INFO;
 
-/* Depending on the target, some functions expect near pointer arguments
+/*
+ * Depending on the target, some functions expect near pointer arguments
  * to be pointing into the stack segment, while in other cases they must
  * point into the data segment.
  */
@@ -137,17 +139,17 @@ typedef void        __based( __segname( "_STACK" ) )    *u8_stk_ptr;
 
 #if defined( __WATCOMC__ )
 _WMRTLINK extern void __LDcvt(
-                         long_double *pld,      // pointer to long_double
-                         CVT_INFO  *cvt,        // conversion info
-                         char      *buf );      // buffer
+                        long_double *pld,       // pointer to long_double
+                        CVT_INFO    *cvt,       // conversion info
+                        char        *buf );     // buffer
 _WMRTLINK extern int __Strtold(
-                        const char *bufptr,
+                        const char  *bufptr,
                         long_double *pld,
-                        char **endptr );
+                        char        **endptr );
 _WMRTLINK extern int __wStrtold(
                         const wchar_t *bufptr,
                         long_double *pld,
-                        wchar_t **endptr );
+                        wchar_t     **endptr );
 #endif
 extern  int     __LDClass( long_double * );
 extern  void    __ZBuf2LD( buf_stk_ptr, ld_stk_ptr );
@@ -583,10 +585,11 @@ extern  int     __FLDC( ld_stk_ptr, ld_stk_ptr );
 #endif
 #endif
 
-// define number of significant digits for long double numbers (80-bit)
-// it will be defined in float.h as soon as OW support long double
-// used in mathlib/c/ldcvt.c
-
+/*
+ * define number of significant digits for long double numbers (80-bit)
+ * it will be defined in float.h as soon as OW support long double
+ * used in mathlib/c/ldcvt.c
+ */
 #ifdef _LONG_DOUBLE_
 #if LDBL_DIG == 15
 #undef LDBL_DIG
@@ -596,14 +599,15 @@ extern  int     __FLDC( ld_stk_ptr, ld_stk_ptr );
 #endif
 #endif
 
-// floating point conversion buffer length definition
-// is defined in lib_misc/h/cvtbuf.h
-// used by various floating point conversion routines
-// used in clib/startup/c/cvtbuf.c, lib_misc/h/thread.h
-// and mathlib/c/efcvt.c
-// it must be equal maximum FP precision ( LDBL_DIG )
-// hold lib_misc/h/cvtbuf.h in sync with LDBL_DIG
-
+/*
+ * floating point conversion buffer length definition
+ * is defined in lib_misc/h/cvtbuf.h
+ * used by various floating point conversion routines
+ * used in clib/startup/c/cvtbuf.c, lib_misc/h/thread.h
+ * and mathlib/c/efcvt.c
+ * it must be equal maximum FP precision ( LDBL_DIG )
+ * hold lib_misc/h/cvtbuf.h in sync with LDBL_DIG
+ */
 #ifdef __cplusplus
 };
 #endif
