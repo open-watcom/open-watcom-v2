@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -135,11 +135,11 @@ typedef void        __based( __segname( "_STACK" ) )    *i8_stk_ptr;
 typedef void        __based( __segname( "_STACK" ) )    *u8_stk_ptr;
 #endif
 
+#if defined( __WATCOMC__ )
 _WMRTLINK extern void __LDcvt(
                          long_double *pld,      // pointer to long_double
                          CVT_INFO  *cvt,        // conversion info
                          char      *buf );      // buffer
-#if defined( __WATCOMC__ )
 _WMRTLINK extern int __Strtold(
                         const char *bufptr,
                         long_double *pld,
