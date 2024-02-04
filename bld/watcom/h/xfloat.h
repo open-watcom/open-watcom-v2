@@ -36,10 +36,6 @@
 #include <stddef.h>     // for wchar_t
 #include <float.h>      // for LDBL_DIG
 
-#ifndef _WMRTLINK
-    #define _WMRTLINK   // This SUCKS!
-#endif
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -48,7 +44,7 @@ extern "C" {
  #define _LONG_DOUBLE_
 #endif
 
-#if defined( __WATCOMC__ )
+#if defined( _M_I86 )
 typedef unsigned long   u4;
 typedef long            i4;
 #else
