@@ -142,12 +142,6 @@ jobs:
         name:           'owsnapshot'
         path:           ${{ steps.owsnapshot.outputs.fullname }}
         retention-days: 10
-    - name: Call to delete Artifacs
-      uses: "./.github/actions/artfdelc"
-      with:
-        exclude:    'owsnapshot'
-        owdebug:    ${{ vars.OWDEBUG }}
-        owcurlopts: ${{ vars.OWCURLOPTS }}
   snapshot-push:
     needs:
     - workflow-lnx
@@ -181,7 +175,24 @@ jobs:
         fullname:   ${{ steps.owsnapshot.outputs.fullname }}
         owdebug:    ${{ vars.OWDEBUG }}
         owcurlopts: ${{ vars.OWCURLOPTS }}
-    - name: Call to delete Artifacs
+  end-end:
+    needs: 
+    - snapshot-pull
+    - snapshot-push
+    name: Call to delete Artifacts
+    runs-on: ubuntu-latest
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.1
+    - if: github.event_name == 'PullRequest'
+      name: Call to delete Artifacs
+      uses: "./.github/actions/artfdelc"
+      with:
+        exclude:    'owsnapshot'
+        owdebug:    ${{ vars.OWDEBUG }}
+        owcurlopts: ${{ vars.OWCURLOPTS }}
+    - if: github.event_name != 'PullRequest'
+      name: Call to delete Artifacs
       uses: "./.github/actions/artfdelc"
       with:
         owdebug:    ${{ vars.OWDEBUG }}
