@@ -20,7 +20,7 @@ jobs:
       runit: ${{ steps.check_tag.outputs.old }}
     steps:
     - name: Checkout Actions
-      uses: actions/checkout@v4.1.1
+      uses: actions/checkout@v4
     - name: Check tag reference
       id: check_tag
       uses: "./.github/actions/ghtagchk"
@@ -39,7 +39,7 @@ jobs:
       OWCOV_RESULTS_ARCHIVE: 'open-watcom-v2.tgz'
     steps:
     - name: Checkout Actions
-      uses: actions/checkout@v4.1.1
+      uses: actions/checkout@v4
     - name: Install DOSBOX
       uses: "./.github/actions/dosboxin"
       with:
@@ -156,7 +156,7 @@ jobs:
 #      OWCOV_RESULTS_ARCHIVE: 'open-watcom-v2.zip'
 #    steps:
 #    - name: Checkout Actions
-#      uses: actions/checkout@v4.1.1
+#      uses: actions/checkout@v4
 #    - name: Install DOSBOX
 #      uses: "./.github/actions/dosboxin"
 #      with:

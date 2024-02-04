@@ -27,7 +27,7 @@ jobs:
     runs-on: ${{ inputs.image }}
     steps:
     - name: checkout
-      uses: actions/checkout@v4.1.1
+      uses: actions/checkout@v4
     - name: Bootstrap Linux
       uses: "./.github/actions/boot"
       with:
@@ -43,7 +43,7 @@ jobs:
     timeout-minutes: 120
     steps:
     - name: checkout
-      uses: actions/checkout@v4.1.1
+      uses: actions/checkout@v4
     - name: Build
       uses: "./.github/actions/build"
       with:
@@ -58,7 +58,7 @@ jobs:
     runs-on: ${{ inputs.image }}
     steps:
     - name: checkout
-      uses: actions/checkout@v4.1.1
+      uses: actions/checkout@v4
     - name: Tests
       uses: "./.github/actions/tests"
       with:
