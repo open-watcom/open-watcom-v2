@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -557,15 +557,18 @@ FLTSUPPFUNC void __cvtld( long_double *pld, CVT_INFO *cvt, char *buf )
     cvt->decimal_place = 0;
     value = 0;
     switch( __LDClass( &ld ) ) {
-    case __ZERO:
-    case __DENORMAL:
+    case FP_ZERO:
         cvt->sign = 0;                  // force sign to +0.0
         xexp = 0;
         break;
-    case __NAN:
+    case FP_SUBNORMAL:
+        cvt->sign = 0;                  // force sign to +0.0
+        xexp = 0;
+        break;
+    case FP_NAN:
         buf[0] = 'n'; buf[1] = 'a'; buf[2] = 'n'; buf[3] = '\0';
         goto nan_inf;
-    case __INFINITY:
+    case FP_INFINITE:
         buf[0] = 'i'; buf[1] = 'n'; buf[2] = 'f'; buf[3] = '\0';
 nan_inf:
         if( cvt->flags & IN_CAPS ) {
@@ -578,7 +581,7 @@ nan_inf:
         cvt->flags |= IS_INF_NAN;   /* may need special handling */
         cvt->n1 = 3;
         goto end_cvt;
-    case __NONZERO:
+    case FP_NORMAL:
         // what if number is denormal?  should normalize it
 /*
     Estimate the position of the decimal point by estimating 1 + log10(x).

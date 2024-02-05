@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,31 +41,31 @@ int __LDClass( long_double *ld )
 #ifdef _LONG_DOUBLE_
     if( (ld->exponent & 0x7FFF) == 0x7FFF ) {    /* NaN or Inf */
         if( ld->high_word == 0x80000000  &&  ld->low_word == 0 ) {
-            return( __INFINITY );
+            return( FP_INFINITE );
         }
-        return( __NAN );
+        return( FP_NAN );
     }
     if( (ld->exponent & 0x7FFF) == 0 ) {
         if( ld->high_word == 0 && ld->low_word == 0 ) {
-            return( __ZERO );
+            return( FP_ZERO );
         }
-        return( __DENORMAL );
+        return( FP_SUBNORMAL );
     }
-    return( __NONZERO );
+    return( FP_NORMAL );
 #else
     if( (ld->u.word[1] & 0x7FF00000) == 0x7FF00000 ) {/* NaN or Inf */
         if( (ld->u.word[1] & 0x7FFFFFFF) == 0x7FF00000 && ld->u.word[0] == 0 ) {
-            return( __INFINITY );
+            return( FP_INFINITE );
         }
-        return( __NAN );
+        return( FP_NAN );
     }
     if( (ld->u.word[1] & 0x7FFFFFFF) == 0 && ld->u.word[0] == 0 ) {
-        return( __ZERO );
+        return( FP_ZERO );
     }
     if( (ld->u.word[1] & 0x7FF00000) == 0 ) {
-        return( __DENORMAL );
+        return( FP_SUBNORMAL );
     }
-    return( __NONZERO );
+    return( FP_NORMAL );
 #endif
 }
 

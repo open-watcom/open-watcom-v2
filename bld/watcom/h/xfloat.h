@@ -79,15 +79,6 @@ typedef struct {                // Layout of IEEE 754 single (FS)
     } u;
 } float_single;
 
-/* NB: The following values *must* match FP_ macros in math.h! */
-enum    ld_classification {
-    __ZERO      = 0,
-    __DENORMAL  = 1,
-    __NONZERO   = 2,
-    __NAN       = 3,
-    __INFINITY  = 4
-};
-
 enum    ldcvt_flags {
     A_FMT       = 0x0001,       // 'A' format
     E_FMT       = 0x0002,       // 'E' format

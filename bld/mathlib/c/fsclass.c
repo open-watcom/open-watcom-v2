@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,15 +43,15 @@ _WMRTLINK int _FSClass( float x )
     fs.u.value = x;
     if( (fs.u.word & 0x7F800000) == 0x7F800000 ) {   /* NaN or Inf */
         if( (fs.u.word & 0x7FFFFFFF) == 0x7F800000 ) {
-            return( __INFINITY );
+            return( FP_INFINITE );
         }
-        return( __NAN );
+        return( FP_NAN );
     }
     if( (fs.u.word & 0x7FFFFFFF) == 0 ) {
-        return( __ZERO );
+        return( FP_ZERO );
     }
     if( (fs.u.word & 0x7F800000) == 0 ) {
-        return( __DENORMAL );
+        return( FP_SUBNORMAL );
     }
-    return( __NONZERO );
+    return( FP_NORMAL );
 }
