@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,28 +44,31 @@
 FLTSUPPFUNC FAR_STRING _EFG_Format( char *buffer, va_list *pargs, PTR_MBCS_PRTF_SPECS specs )
 {
     int         digits;
-    int         fmt;
     CVT_INFO    cvt;
     double      double_value;
     long_double ld;
 
-    cvt.expchar = specs->_character;    /* 'e', 'g' exponent character */
+    cvt.expchar = 'e';
     digits = specs->_prec;
-    fmt = specs->_character & 0x5F;
-    if( fmt == 'G' ) {
-        if( digits == 0 )  digits = 1;  /* 27-oct-88 */
-        cvt.expchar -= 2;               /* change exponent to 'e' or 'E' */
-        cvt.flags = G_FMT;
-        cvt.scale = 1;
-    } else if( fmt == 'E' ) {
-        cvt.flags = E_FMT;
-        cvt.scale = 1;
-    } else {
-        cvt.flags = F_FMT;
-        cvt.scale = 0;
-    }
+    cvt.scale = 1;
+    cvt.flags = 0;
     if( !(specs->_character & 0x20) ) { /* test for 'E', 'F', or 'G' */
-        cvt.flags |= IN_CAPS;           /* INF/NAN needs to be uppercase */
+        cvt.flags = IN_CAPS;            /* INF/NAN needs to be uppercase */
+        cvt.expchar = 'E';
+    }
+    switch( specs->_character & 0x5F ) {
+    case 'E':
+        cvt.flags |= E_FMT;
+        break;
+    case 'F':
+        cvt.flags |= F_FMT;
+        cvt.scale = 0;
+        break;
+    case 'G':
+        if( digits == 0 )
+            digits = 1;
+        cvt.flags |= G_FMT;
+        break;
     }
     if( specs->_flags & SPF_ALT ) {
         cvt.flags |= F_DOT;
