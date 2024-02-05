@@ -550,6 +550,7 @@ FLTSUPPFUNC void __cvtld( long_double *pld, CVT_INFO *cvt, char *buf )
     long_double ld;
     char        stkbuf[STK_BUF_SIZE];
     int         maxsize;
+    int         fpclass;
 #if defined( _LONG_DOUBLE_ ) && defined( __FPI__ )
     unsigned short _8087cw = __Get87CW();
     __Set87CW( _8087cw | _PC_64 );  // make sure extended precision is used
@@ -562,14 +563,14 @@ FLTSUPPFUNC void __cvtld( long_double *pld, CVT_INFO *cvt, char *buf )
     ld.low_word  = pld->low_word;
     if( ld.exponent & 0x8000 ) {
         cvt->sign = -1;
+        ld.exponent &= 0x7FFF;      // make number positive
     }
-    ld.exponent &= 0x7FFF;          // make number positive
 #else
     ld.u.value = pld->u.value;
     if( ld.u.word[1] & 0x80000000 ) {
         cvt->sign = -1;
+        ld.u.word[1] &= 0x7FFFFFFF; // make number positive
     }
-    ld.u.word[1] &= 0x7FFFFFFF;     // make number positive
 #endif
     cvt->n1  = 0;
     cvt->nz1 = 0;
@@ -577,7 +578,33 @@ FLTSUPPFUNC void __cvtld( long_double *pld, CVT_INFO *cvt, char *buf )
     cvt->nz2 = 0;
     cvt->decimal_place = 0;
     value = 0;
-    switch( __LDClass( &ld ) ) {
+    fpclass = __LDClass( &ld );
+    if( fpclass == FP_NAN || fpclass == FP_INFINITE ) {
+        if( fpclass == FP_NAN ) {
+            buf[0] = 'n'; buf[1] = 'a'; buf[2] = 'n';
+        } else {
+            buf[0] = 'i'; buf[1] = 'n'; buf[2] = 'f';
+        }
+        if( cvt->flags & IN_CAPS ) {
+            unsigned long _WCUNALIGNED  *text;
+            /*
+             * Uppercase entire four-char ASCII string in one go
+             */
+            text = (unsigned long *)buf;
+            *text &= ~0x20202020;
+        }
+        buf[3] = '\0';
+        /*
+         * may need special handling
+         */
+        cvt->flags |= IS_INF_NAN;
+        cvt->n1 = 3;
+        goto end_cvt;
+    }
+    if( cvt->flags & A_FMT ) {
+        goto end_cvt;
+    }
+    switch( fpclass ) {
     case FP_ZERO:
         cvt->sign = 0;              // force sign to +0.0
         xexp = 0;
@@ -589,26 +616,6 @@ FLTSUPPFUNC void __cvtld( long_double *pld, CVT_INFO *cvt, char *buf )
         cvt->sign = 0;              // force sign to +0.0
         xexp = 0;
         break;
-    case FP_NAN:
-        buf[0] = 'n'; buf[1] = 'a'; buf[2] = 'n'; buf[3] = '\0';
-        goto nan_inf;
-    case FP_INFINITE:
-        buf[0] = 'i'; buf[1] = 'n'; buf[2] = 'f'; buf[3] = '\0';
-nan_inf:
-        if( cvt->flags & IN_CAPS ) {
-            unsigned long _WCUNALIGNED  *text;
-            /*
-             * Uppercase entire four-char ASCII string in one go
-             */
-            text = (unsigned long *)buf;
-            *text &= ~0x20202020;
-        }
-        /*
-         * may need special handling
-         */
-        cvt->flags |= IS_INF_NAN;
-        cvt->n1 = 3;
-        goto end_cvt;
     case FP_NORMAL:
         /*
          * Estimate the position of the decimal point by estimating 1 + log10(x).
@@ -619,7 +626,7 @@ nan_inf:
 #ifdef _LONG_DOUBLE_
         xexp = ld.exponent - 0x3FFE;
 #else
-        xexp = (ld.u.word[1] >> 20) - 0x3FE;
+        xexp = ( ld.u.word[1] >> 20 ) - 0x3FE;
 #endif
         xexp = xexp * 30103L / 100000L;
         xexp -= NDIG / 2;

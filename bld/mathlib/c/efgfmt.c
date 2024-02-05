@@ -52,6 +52,11 @@ FLTSUPPFUNC FAR_STRING _EFG_Format( char *buffer, va_list *pargs, PTR_MBCS_PRTF_
     cvt.scale = 1;
     cvt.flags = 0;
     switch( specs->_character ) {
+    case 'A':
+        cvt.flags |= IN_CAPS;
+    case 'a':
+        cvt.flags |= A_FMT;
+        break;
     case 'E':
         cvt.flags |= IN_CAPS;
     case 'e':
@@ -71,7 +76,11 @@ FLTSUPPFUNC FAR_STRING _EFG_Format( char *buffer, va_list *pargs, PTR_MBCS_PRTF_
         cvt.flags |= G_FMT;
         break;
     }
-    cvt.expchar = ( cvt.flags & IN_CAPS ) ? 'E' : 'e';
+    if( cvt.flags & A_FMT ) {
+        cvt.expchar = ( cvt.flags & IN_CAPS ) ? 'P' : 'p';
+    } else {
+        cvt.expchar = ( cvt.flags & IN_CAPS ) ? 'E' : 'e';
+    }
     if( specs->_flags & SPF_ALT ) {
         cvt.flags |= F_DOT;
     }
