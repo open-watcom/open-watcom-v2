@@ -48,28 +48,30 @@ FLTSUPPFUNC FAR_STRING _EFG_Format( char *buffer, va_list *pargs, PTR_MBCS_PRTF_
     double      double_value;
     long_double ld;
 
-    cvt.expchar = 'e';
     digits = specs->_prec;
     cvt.scale = 1;
     cvt.flags = 0;
-    if( !(specs->_character & 0x20) ) { /* test for 'E', 'F', or 'G' */
-        cvt.flags = IN_CAPS;            /* INF/NAN needs to be uppercase */
-        cvt.expchar = 'E';
-    }
-    switch( specs->_character & 0x5F ) {
+    switch( specs->_character ) {
     case 'E':
+        cvt.flags |= IN_CAPS;
+    case 'e':
         cvt.flags |= E_FMT;
         break;
     case 'F':
+        cvt.flags |= IN_CAPS;
+    case 'f':
         cvt.flags |= F_FMT;
         cvt.scale = 0;
         break;
     case 'G':
+        cvt.flags |= IN_CAPS;
+    case 'g':
         if( digits == 0 )
             digits = 1;
         cvt.flags |= G_FMT;
         break;
     }
+    cvt.expchar = ( cvt.flags & IN_CAPS ) ? 'E' : 'e';
     if( specs->_flags & SPF_ALT ) {
         cvt.flags |= F_DOT;
     }
