@@ -237,13 +237,12 @@ static wres_lang_id last_lang = LANG_RLE_NONE;
 static char *mygets( char *buf, int max_len_buf, FILE *fp )
 /*********************************************************/
 {
-    char        *p,*q,*start;
+    char        *p,*q;
     char        *d;
     size_t      got;
     size_t      len;
     size_t      max_len = SECTION_BUF_SIZE;
     char        *endlang;
-    long        val;
 
     /* unused parameters */ (void)max_len_buf;
 
