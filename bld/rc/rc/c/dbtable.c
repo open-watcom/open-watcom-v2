@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -73,7 +73,7 @@ static RcStatus readDBRanges( FILE *fh )
 {
     size_t      numread;
 
-    numread = fread( &charInfo.begchars, 1, 256, fh );
+    numread = fread( charInfo.begchars, 1, 256, fh );
     if( numread != 256 ) {
         return( feof( fh ) ? RS_READ_INCMPLT : RS_READ_ERROR );
     }
