@@ -32,9 +32,11 @@
 
 #include "variety.h"
 #include <stdio.h>
+#include <stdlib.h>
 #include <math.h>
 #include <string.h>
 #include "fltsupp.h"
+#include "watcom.h"
 
 
 #define NDIG            8
@@ -551,6 +553,10 @@ FLTSUPPFUNC void __cvtld( long_double *pld, CVT_INFO *cvt, char *buf )
     char        stkbuf[STK_BUF_SIZE];
     int         maxsize;
     int         fpclass;
+    union {
+        unsigned_64 u64;
+        double      dbl;
+    }           m;
 #if defined( _LONG_DOUBLE_ ) && defined( __FPI__ )
     unsigned short _8087cw = __Get87CW();
     __Set87CW( _8087cw | _PC_64 );  // make sure extended precision is used
@@ -602,7 +608,82 @@ FLTSUPPFUNC void __cvtld( long_double *pld, CVT_INFO *cvt, char *buf )
         goto end_cvt;
     }
     if( cvt->flags & A_FMT ) {
+        char int_char;
+
+#define GET_HEX(c)  (((((c)>>4) & 0x0fU) > 9)? (((c)>>4) & 0x0fU) + ((cvt->flags & IN_CAPS) ? 'A' - 10: 'a' - 10) : (((c)>>4) & 0x0fU) + '0')
+
+        int_char = '0';
+        switch( fpclass ) {
+        case FP_ZERO:
+            cvt->sign = 0;                  // force sign to +0.0
+            xexp = 0;
+            m.u64.u._64[0] = 0;
+            break;
+        case FP_NORMAL:
+            int_char = '1';
+            /* fall through */
+        case FP_SUBNORMAL:
+#ifdef _LONG_DOUBLE_
+            m.u64.u._32[I64LO32] = ld.low_word;
+            m.u64.u._32[I64HI32] = ld.high_word;
+            if( cvt->flags & LONG_DOUBLE ) {
+                /*
+                 * number is long double
+                 */
+                xexp = ld.exponent - 0x3FFF;
+                int_char = GET_HEX( m.u64.u._8[I64HI8] );
+            	m.u64.u._64[0] <<= 4U;
+                xexp -= 4;
+            } else {
+                __iLDFD( &ld, &m.dbl );
+                /*
+                 * number is double
+                 */
+                xexp = ( m.u64.u._32[I64HI32] >> 20 ) - 0x3FF;
+                m.u64.u._64[0] <<= 12U;
+            }
+#else
+            m.u64.u._32[I64LO32] = ld.u.word[I64LO32];
+            m.u64.u._32[I64HI32] = ld.u.word[I64HI32];
+            xexp = ( m.u64.u._32[I64HI32] >> 20 ) - 0x3FF;
+            m.u64.u._64[0] <<= 12U;
+#endif
+            break;
+        }
+
+        /*
+         * output hexa prefix
+         */
+        p = buf;
+        *p++ = '0';
+        *p++ = (cvt->flags & IN_CAPS) ? 'X' : 'x';
+        /*
+         * output integer part
+         */
+        *p++ = int_char;
+        /*
+         * output fraction part
+         */
+        if( m.u64.u._64[0] != 0 ) {
+            *p++ = '.';
+            while( m.u64.u._64[0] != 0 ) {
+                *p++ = GET_HEX( m.u64.u._8[I64HI8] );
+                m.u64.u._64[0] <<= 4U;
+            }
+        }
+        /*
+         * output exponent
+         */
+        *p++ = cvt->expchar;
+        if( xexp >= 0 ) {
+            *p++ = '+';
+        }
+        ltoa( xexp, p, 10 );
+        p += strlen( p );
+        cvt->n1 = (size_t)( p - buf );
         goto end_cvt;
+
+#undef GET_HEX
     }
     switch( fpclass ) {
     case FP_ZERO:
