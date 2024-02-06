@@ -778,7 +778,7 @@ static TREEPTR AddrOp( TREEPTR tree )
         sym.flags |= SYM_ADDR_TAKEN | SYM_REFERENCED;
         SymReplace( &sym, leaf->op.u2.sym_handle );
     }
-    if( tree->op.opr == OPR_PUSHADDR ) {
+    if( leaf->op.opr == OPR_PUSHADDR ) {
         CheckAddrOfArray( typ );
         SymGet( &sym, leaf->op.u2.sym_handle );
         modifiers = sym.mods;
