@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,6 +38,7 @@
 #include "exeelf.h"
 #include "browsio.h"
 #include "dwarfid.h"
+#include "jmpbuf.h"
 
 
 #define C_DWARF_BUFSIZE 4096
@@ -438,7 +439,7 @@ dw_client DwarfInit( void )
     info.language = DWLANG_C;
     info.compiler_options = DW_CM_BROWSER;
     info.producer_name = DWARF_PRODUCER_ID " V1";
-    memcpy( &info.exception_handler, Environment, sizeof( jmp_buf ) );
+    memcpy( JMPBUF_PTR( info.exception_handler ), Environment, sizeof( jmp_buf ) );
     info.funcs = cli_funcs;
     info.abbrev_sym = NULL;
 
