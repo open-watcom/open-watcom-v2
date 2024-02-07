@@ -11,8 +11,6 @@
     @%make echo_xcxx
     $(cxx) $(ppflags_common) $(ppflags_autodep) $(ppflags_sys) $(plib_cpp_flags) $(br_cpp_flags_$(sw_br_$[&)) $[@ $(plibx_cxx_flags) $(plib_c_flags) $(plib_inc_dirs) -nm=$[& $(pchflags_x) $(c_dbg_flags)
 
-additional_clean_subdirs = $(x_subdir)
-
 $(x_subdir) : .EXPLICIT
     mkdir $@
 !endif
