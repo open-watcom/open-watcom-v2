@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -56,10 +57,10 @@ char *__cvt( double value,
     ld.u.value = value;
 #endif
     if( fmt == 'F' ) {          // fcvt passes in 'F'
-        cvt.flags = F_FMT + F_CVT;
+        cvt.flags = FPCVT_F_FMT | FPCVT_F_CVT;
         cvt.scale = 0;
     } else {                    // ecvt passes in 'G'
-        cvt.flags = G_FMT + F_CVT;
+        cvt.flags = FPCVT_G_FMT | FPCVT_F_CVT;
         cvt.scale = 1;
     }
     cvt.ndigits = ndigits;

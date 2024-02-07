@@ -321,9 +321,9 @@ static void DoFFormat( CVT_INFO *cvt, char *p, int nsig, int xexp, char *buf )
     ndigits = cvt->ndigits;
     ++xexp;
     i = 0;
-    if( cvt->flags & G_FMT ) {
+    if( cvt->flags & FPCVT_G_FMT ) {
         if( nsig < ndigits
-          && (cvt->flags & F_DOT) == 0 ) {
+          && (cvt->flags & FPCVT_F_DOT) == 0 ) {
             ndigits = nsig;
         }
         ndigits -= xexp;
@@ -332,10 +332,10 @@ static void DoFFormat( CVT_INFO *cvt, char *p, int nsig, int xexp, char *buf )
         }
     }
     if( xexp <= 0 ) {   // digits only to right of '.'
-        if( (cvt->flags & F_CVT) == 0 ) {
+        if( (cvt->flags & FPCVT_F_CVT) == 0 ) {
             buf[i++] = '0';
             if( ndigits > 0
-              || (cvt->flags & F_DOT) ) {
+              || (cvt->flags & FPCVT_F_DOT) ) {
                 buf[i++] = '.';
             }
         }
@@ -362,9 +362,9 @@ static void DoFFormat( CVT_INFO *cvt, char *p, int nsig, int xexp, char *buf )
         cvt->nz1 = xexp - nsig;
         cvt->decimal_place = xexp;
 //        for( n = xexp - nsig; n > 0; --n ) buf[i++] = '0';
-        if( (cvt->flags & F_CVT) == 0 ) {
+        if( (cvt->flags & FPCVT_F_CVT) == 0 ) {
             if( ndigits > 0
-              || (cvt->flags & F_DOT) ) {
+              || (cvt->flags & FPCVT_F_DOT) ) {
                 buf[i++] = '.';
                 cvt->n2 = 1;
             }
@@ -376,9 +376,9 @@ static void DoFFormat( CVT_INFO *cvt, char *p, int nsig, int xexp, char *buf )
         cvt->decimal_place = xexp;
         i += xexp;
         nsig -= xexp;
-        if( (cvt->flags & F_CVT) == 0 ) {
+        if( (cvt->flags & FPCVT_F_CVT) == 0 ) {
             if( ndigits > 0
-              || (cvt->flags & F_DOT) ) {
+              || (cvt->flags & FPCVT_F_DOT) ) {
                 buf[i++] = '.';
             }
         } else if( buf[0] == '0' ) {    // ecvt or fcvt with 0.0
@@ -411,7 +411,7 @@ static void DoEFormat( CVT_INFO *cvt, char *p, int nsig, int xexp, char *buf )
         ndigits++;
     }
     i = 0;
-    if( cvt->flags & G_FMT ) {  // fixup for 'G'
+    if( cvt->flags & FPCVT_G_FMT ) {  // fixup for 'G'
         /*
          * for 'G' format, ndigits is the number of significant digits
          * cvt->scale should be 1 indicating 1 digit before decimal place
@@ -420,7 +420,7 @@ static void DoEFormat( CVT_INFO *cvt, char *p, int nsig, int xexp, char *buf )
          */
 //        if( nsig < ndigits )  ndigits = nsig;
         if( nsig < ndigits
-          && (cvt->flags & F_DOT) == 0 ) {
+          && (cvt->flags & FPCVT_F_DOT) == 0 ) {
             ndigits = nsig;
         }
         --ndigits;
@@ -446,9 +446,9 @@ static void DoEFormat( CVT_INFO *cvt, char *p, int nsig, int xexp, char *buf )
         }
     }
     cvt->decimal_place = i;
-    if( (cvt->flags & F_CVT) == 0 ) {
+    if( (cvt->flags & FPCVT_F_CVT) == 0 ) {
         if( ndigits > 0
-          || (cvt->flags & F_DOT) ) {
+          || (cvt->flags & FPCVT_F_DOT) ) {
             buf[i++] = '.';
         }
     }
@@ -586,31 +586,28 @@ FLTSUPPFUNC void __cvtld( long_double *pld, CVT_INFO *cvt, char *buf )
     value = 0;
     fpclass = __LDClass( &ld );
     if( fpclass == FP_NAN || fpclass == FP_INFINITE ) {
+
+#define GET_CHAR(c)  ((cvt->flags & FPCVT_IN_CAPS) ? (c) - 'a' + 'A': (c))
+
         if( fpclass == FP_NAN ) {
-            buf[0] = 'n'; buf[1] = 'a'; buf[2] = 'n';
+            buf[0] = GET_CHAR( 'n' ); buf[1] = GET_CHAR( 'a' ); buf[2] = GET_CHAR( 'n' );
         } else {
-            buf[0] = 'i'; buf[1] = 'n'; buf[2] = 'f';
-        }
-        if( cvt->flags & IN_CAPS ) {
-            unsigned long _WCUNALIGNED  *text;
-            /*
-             * Uppercase entire four-char ASCII string in one go
-             */
-            text = (unsigned long *)buf;
-            *text &= ~0x20202020;
+            buf[0] = GET_CHAR( 'i' ); buf[1] = GET_CHAR( 'n' ); buf[2] = GET_CHAR( 'f' );
         }
         buf[3] = '\0';
         /*
          * may need special handling
          */
-        cvt->flags |= IS_INF_NAN;
+        cvt->flags |= FPCVT_IS_INF_NAN;
         cvt->n1 = 3;
         goto end_cvt;
+
+#undef GET_CHAR
     }
-    if( cvt->flags & A_FMT ) {
+    if( cvt->flags & FPCVT_A_FMT ) {
         char int_char;
 
-#define GET_HEX(c)  (((((c)>>4) & 0x0fU) > 9)? (((c)>>4) & 0x0fU) + ((cvt->flags & IN_CAPS) ? 'A' - 10: 'a' - 10) : (((c)>>4) & 0x0fU) + '0')
+#define GET_HEX(c)  (((((c)>>4) & 0x0fU) > 9)? (((c)>>4) & 0x0fU) + ((cvt->flags & FPCVT_IN_CAPS) ? 'A' - 10: 'a' - 10) : (((c)>>4) & 0x0fU) + '0')
 
         int_char = '0';
         switch( fpclass ) {
@@ -626,13 +623,13 @@ FLTSUPPFUNC void __cvtld( long_double *pld, CVT_INFO *cvt, char *buf )
 #ifdef _LONG_DOUBLE_
             m.u64.u._32[I64LO32] = ld.low_word;
             m.u64.u._32[I64HI32] = ld.high_word;
-            if( cvt->flags & LONG_DOUBLE ) {
+            if( cvt->flags & FPCVT_LONG_DOUBLE ) {
                 /*
                  * number is long double
                  */
                 xexp = ld.exponent - 0x3FFF;
                 int_char = GET_HEX( m.u64.u._8[I64HI8] );
-            	m.u64.u._64[0] <<= 4U;
+                m.u64.u._64[0] <<= 4U;
                 xexp -= 4;
             } else {
                 __iLDFD( &ld, &m.dbl );
@@ -656,7 +653,7 @@ FLTSUPPFUNC void __cvtld( long_double *pld, CVT_INFO *cvt, char *buf )
          */
         p = buf;
         *p++ = '0';
-        *p++ = (cvt->flags & IN_CAPS) ? 'X' : 'x';
+        *p++ = (cvt->flags & FPCVT_IN_CAPS) ? 'X' : 'x';
         /*
          * output integer part
          */
@@ -756,7 +753,7 @@ FLTSUPPFUNC void __cvtld( long_double *pld, CVT_INFO *cvt, char *buf )
         }
         break;
     }
-    if( cvt->flags & F_FMT ) {
+    if( cvt->flags & FPCVT_F_FMT ) {
         n = cvt->ndigits + xexp + 2 + NDIG;
         if( cvt->scale > 0 ) {
             n += cvt->scale;
@@ -767,11 +764,11 @@ FLTSUPPFUNC void __cvtld( long_double *pld, CVT_INFO *cvt, char *buf )
 
     maxsize = DBL_CVT_DIGITS;
 #ifdef _LONG_DOUBLE_
-    if( cvt->flags & LONG_DOUBLE ) {        // number is long double
+    if( cvt->flags & FPCVT_LONG_DOUBLE ) {        // number is long double
         maxsize = LDBL_CVT_DIGITS;
     }
 #endif
-    if( cvt->flags & NO_TRUNC ) {
+    if( cvt->flags & FPCVT_NO_TRUNC ) {
         maxsize *= 2;
     }
     maxsize += (NDIG / 2);
@@ -825,10 +822,10 @@ FLTSUPPFUNC void __cvtld( long_double *pld, CVT_INFO *cvt, char *buf )
         ++p;
     }
     nsig = cvt->ndigits;
-    if( cvt->flags & F_FMT ) {
+    if( cvt->flags & FPCVT_F_FMT ) {
         xexp += cvt->scale;
         nsig += xexp + 1;
-    } else if( cvt->flags & E_FMT ) {
+    } else if( cvt->flags & FPCVT_E_FMT ) {
         if( cvt->scale > 0 ) {
             ++nsig;
         } else {
@@ -843,11 +840,11 @@ FLTSUPPFUNC void __cvtld( long_double *pld, CVT_INFO *cvt, char *buf )
 
         maxsize = DBL_CVT_DIGITS;
 #ifdef _LONG_DOUBLE_
-        if( cvt->flags & LONG_DOUBLE ) {    // number is long double
+        if( cvt->flags & FPCVT_LONG_DOUBLE ) {    // number is long double
             maxsize = LDBL_CVT_DIGITS;
         }
 #endif
-        if( cvt->flags & NO_TRUNC ) {
+        if( cvt->flags & FPCVT_NO_TRUNC ) {
             maxsize *= 2;
         }
         if( nsig > maxsize ) {
@@ -879,10 +876,10 @@ FLTSUPPFUNC void __cvtld( long_double *pld, CVT_INFO *cvt, char *buf )
         cvt->sign = 0;
         p = stkbuf;
     }
-    if( (cvt->flags & F_FMT)
-      || ((cvt->flags & G_FMT)
+    if( (cvt->flags & FPCVT_F_FMT)
+      || ((cvt->flags & FPCVT_G_FMT)
       && ((xexp >= -4 && xexp < cvt->ndigits)
-      || (cvt->flags & F_CVT))) ) {
+      || (cvt->flags & FPCVT_F_CVT))) ) {
         DoFFormat( cvt, p, nsig, xexp, buf );
     } else {
         DoEFormat( cvt, p, nsig, xexp, buf );

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -57,7 +57,7 @@ void    R_F2E( extended val, char *buff, int fld_width, int digs, bool plus,
 #else
     ld.u.value = val;
 #endif
-    cvt.flags    = E_FMT + F_DOT;
+    cvt.flags    = FPCVT_E_FMT | FPCVT_F_DOT;
     cvt.ndigits  = digs;
     cvt.scale    = scale;
     cvt.expwidth = exp_width;
@@ -122,11 +122,11 @@ void    R_F2F( extended val, char *buff, int fld_width, int digs, bool plus,
 #else
     ld.u.value = val;
 #endif
-    cvt.flags = F_FMT + F_DOT;
-    cvt.ndigits = digs;
-    cvt.scale = scale;
+    cvt.flags    = FPCVT_F_FMT | FPCVT_F_DOT;
+    cvt.ndigits  = digs;
+    cvt.scale    = scale;
     cvt.expwidth = 0;
-    cvt.expchar = 0;
+    cvt.expchar  = 0;
     __LDcvt( &ld, &cvt, stkbuf );
     width = cvt.n1 + cvt.nz1 + cvt.n2 + cvt.nz2;
     if( cvt.sign < 0 || plus ) ++width;

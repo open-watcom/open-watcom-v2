@@ -80,16 +80,17 @@ typedef struct {                // Layout of IEEE 754 single (FS)
 } float_single;
 
 enum    ldcvt_flags {
-    A_FMT       = 0x0001,       // 'A' format
-    E_FMT       = 0x0002,       // 'E' format
-    F_FMT       = 0x0004,       // 'F' format
-    G_FMT       = 0x0008,       // 'G' format
-    F_CVT       = 0x0010,       // __cvt routine format rules
-    F_DOT       = 0x0020,       // always put '.' in result
-    LONG_DOUBLE = 0x0040,       // number is true long double
-    NO_TRUNC    = 0x0080,       // always provide ndigits in buffer
-    IN_CAPS     = 0x0100,       // 'inf'/'nan' is uppercased
-    IS_INF_NAN  = 0x0200,       // number is inf/nan (output flag)
+    FPCVT_NONE          = 0x0000,
+    FPCVT_E_FMT         = 0x0001,   // 'E' format
+    FPCVT_F_FMT         = 0x0002,   // 'F' format
+    FPCVT_G_FMT         = 0x0004,   // 'G' format
+    FPCVT_F_CVT         = 0x0008,   // __cvt routine format rules
+    FPCVT_F_DOT         = 0x0010,   // always put '.' in result
+    FPCVT_LONG_DOUBLE   = 0x0020,   // number is true long double
+    FPCVT_NO_TRUNC      = 0x0040,   // always provide ndigits in buffer
+    FPCVT_IN_CAPS       = 0x0080,   // alpha characters are output uppercased
+    FPCVT_IS_INF_NAN    = 0x0100,   // number is inf/nan (output flag)
+    FPCVT_A_FMT         = 0x0200,   // 'A' format
 };
 
 typedef struct cvt_info {

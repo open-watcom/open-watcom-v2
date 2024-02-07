@@ -76,7 +76,7 @@ void DumpALD( long_double *pld )
 
     cvt.ndigits = 20;
     cvt.scale = 0;
-    cvt.flags = G_FMT | NO_TRUNC;
+    cvt.flags = FPCVT_G_FMT | FPCVT_NO_TRUNC;
     cvt.expchar = 'e';
     cvt.expwidth = 8;
     __LDcvt( pld, &cvt, buf );

@@ -50,44 +50,44 @@ FLTSUPPFUNC FAR_STRING _EFG_Format( char *buffer, va_list *pargs, PTR_MBCS_PRTF_
 
     digits = specs->_prec;
     cvt.scale = 1;
-    cvt.flags = 0;
+    cvt.flags = FPCVT_NONE;
     switch( specs->_character ) {
     case 'A':
-        cvt.flags |= IN_CAPS;
+        cvt.flags |= FPCVT_IN_CAPS;
     case 'a':
-        cvt.flags |= A_FMT;
+        cvt.flags |= FPCVT_A_FMT;
         break;
     case 'E':
-        cvt.flags |= IN_CAPS;
+        cvt.flags |= FPCVT_IN_CAPS;
     case 'e':
-        cvt.flags |= E_FMT;
+        cvt.flags |= FPCVT_E_FMT;
         break;
     case 'F':
-        cvt.flags |= IN_CAPS;
+        cvt.flags |= FPCVT_IN_CAPS;
     case 'f':
-        cvt.flags |= F_FMT;
+        cvt.flags |= FPCVT_F_FMT;
         cvt.scale = 0;
         break;
     case 'G':
-        cvt.flags |= IN_CAPS;
+        cvt.flags |= FPCVT_IN_CAPS;
     case 'g':
         if( digits == 0 )
             digits = 1;
-        cvt.flags |= G_FMT;
+        cvt.flags |= FPCVT_G_FMT;
         break;
     }
-    if( cvt.flags & A_FMT ) {
-        cvt.expchar = ( cvt.flags & IN_CAPS ) ? 'P' : 'p';
+    if( cvt.flags & FPCVT_A_FMT ) {
+        cvt.expchar = ( cvt.flags & FPCVT_IN_CAPS ) ? 'P' : 'p';
     } else {
-        cvt.expchar = ( cvt.flags & IN_CAPS ) ? 'E' : 'e';
+        cvt.expchar = ( cvt.flags & FPCVT_IN_CAPS ) ? 'E' : 'e';
     }
     if( specs->_flags & SPF_ALT ) {
-        cvt.flags |= F_DOT;
+        cvt.flags |= FPCVT_F_DOT;
     }
     if( (specs->_flags & SPF_LONG_DOUBLE)
       && !_LDisDouble() ) {
         ld = va_arg( *pargs, long_double );
-        cvt.flags |= LONG_DOUBLE;
+        cvt.flags |= FPCVT_LONG_DOUBLE;
     } else {
         double_value = va_arg( *pargs, double );
 #ifdef _LONG_DOUBLE_
@@ -107,7 +107,7 @@ FLTSUPPFUNC FAR_STRING _EFG_Format( char *buffer, va_list *pargs, PTR_MBCS_PRTF_
     specs->_nz1 = cvt.nz1;
     specs->_n2  = cvt.n2;
     specs->_nz2 = cvt.nz2;
-    if( cvt.flags & IS_INF_NAN ) {
+    if( cvt.flags & FPCVT_IS_INF_NAN ) {
         specs->_pad_char = ' '; /* No zero padding for inf/nan! */
     }
     if( cvt.sign < 0 ) {

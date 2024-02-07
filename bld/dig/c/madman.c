@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1309,7 +1309,7 @@ static char *__xcvt( long_double *value, int ndigits, int *dec, int *sign, char 
 {
     CVT_INFO    cvt;
 
-    cvt.flags = G_FMT + F_CVT + NO_TRUNC + LONG_DOUBLE;
+    cvt.flags = FPCVT_G_FMT | FPCVT_F_CVT | FPCVT_NO_TRUNC | FPCVT_LONG_DOUBLE;
     cvt.scale = 1;
     cvt.ndigits = ndigits;
     cvt.expwidth = 0;

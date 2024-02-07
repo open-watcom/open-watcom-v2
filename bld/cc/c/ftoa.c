@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,7 +44,7 @@ char *ftoa( FLOATVAL *flt )
     CVT_INFO    cvt;
     char        mant[MAX_DIGIT + 1];
 
-    cvt.flags = G_FMT + F_CVT + NO_TRUNC + LONG_DOUBLE;
+    cvt.flags = FPCVT_G_FMT | FPCVT_F_CVT | FPCVT_NO_TRUNC | FPCVT_LONG_DOUBLE;
     cvt.scale = 1;
     cvt.ndigits = MAX_DIGIT;
     cvt.expwidth = 0;
