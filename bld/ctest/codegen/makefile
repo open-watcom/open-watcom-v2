@@ -67,9 +67,9 @@ alt_error = 00
 !include testenv.mif
 !include ../codegen.mif
 
-test_flags_386 += -I"$(codegen_dir)" $(run_quietly)
-test_flags_i86 += -I"$(codegen_dir)" $(run_quietly)
-test_flags_axp += -I"$(codegen_dir)" $(run_quietly)
+test_flags_386 += $(run_quietly)
+test_flags_i86 += $(run_quietly)
+test_flags_axp += $(run_quietly)
 
 !ifeq alt_error 00
 add_br_ = $(targ_br_$(targ_env_$(arch)))

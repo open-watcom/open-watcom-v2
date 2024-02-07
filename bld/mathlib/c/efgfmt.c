@@ -76,11 +76,17 @@ FLTSUPPFUNC FAR_STRING _EFG_Format( char *buffer, va_list *pargs, PTR_MBCS_PRTF_
         cvt.flags |= FPCVT_G_FMT;
         break;
     }
+
+#define GET_CHAR(c)  ((cvt.flags & FPCVT_IN_CAPS) ? (c) - 'a' + 'A': (c))
+
     if( cvt.flags & FPCVT_A_FMT ) {
-        cvt.expchar = ( cvt.flags & FPCVT_IN_CAPS ) ? 'P' : 'p';
+        cvt.expchar = GET_CHAR( 'p' );
     } else {
-        cvt.expchar = ( cvt.flags & FPCVT_IN_CAPS ) ? 'E' : 'e';
+        cvt.expchar = GET_CHAR( 'e' );
     }
+
+#undef GET_CHAR
+
     if( specs->_flags & SPF_ALT ) {
         cvt.flags |= FPCVT_F_DOT;
     }

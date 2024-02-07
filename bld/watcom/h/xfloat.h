@@ -112,7 +112,6 @@ typedef struct cvt_info {
  * to be pointing into the stack segment, while in other cases they must
  * point into the data segment.
  */
-
 #if !defined( _M_IX86 ) || defined( __FLAT__ )
 typedef long_double                                     *ld_stk_ptr;
 typedef double                                          *dbl_stk_ptr;

@@ -601,13 +601,11 @@ FLTSUPPFUNC void __cvtld( long_double *pld, CVT_INFO *cvt, char *buf )
         cvt->flags |= FPCVT_IS_INF_NAN;
         cvt->n1 = 3;
         goto end_cvt;
-
-#undef GET_CHAR
     }
     if( cvt->flags & FPCVT_A_FMT ) {
         char int_char;
 
-#define GET_HEX(c)  (((((c)>>4) & 0x0fU) > 9)? (((c)>>4) & 0x0fU) + ((cvt->flags & FPCVT_IN_CAPS) ? 'A' - 10: 'a' - 10) : (((c)>>4) & 0x0fU) + '0')
+#define GET_HEX(c)  (((((c)>>4) & 0x0fU) > 9)? (((c)>>4) & 0x0fU) - 10 + GET_CHAR( 'a' ) : (((c)>>4) & 0x0fU) + '0')
 
         int_char = '0';
         switch( fpclass ) {
@@ -653,7 +651,7 @@ FLTSUPPFUNC void __cvtld( long_double *pld, CVT_INFO *cvt, char *buf )
          */
         p = buf;
         *p++ = '0';
-        *p++ = (cvt->flags & FPCVT_IN_CAPS) ? 'X' : 'x';
+        *p++ = GET_CHAR( 'x' );
         /*
          * output integer part
          */
@@ -681,6 +679,7 @@ FLTSUPPFUNC void __cvtld( long_double *pld, CVT_INFO *cvt, char *buf )
         goto end_cvt;
 
 #undef GET_HEX
+#undef GET_CHAR
     }
     switch( fpclass ) {
     case FP_ZERO:
