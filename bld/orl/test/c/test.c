@@ -240,7 +240,7 @@ static orl_return PrintSecInfo( orl_sec_handle section )
             printf( "note or comment" );
             break;
         default:
-            printf( "unknown type? %s", sec_type );
+            printf( "unknown type? %d", sec_type );
             break;
         }
         printf( ") " );
