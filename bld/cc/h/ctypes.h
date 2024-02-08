@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -208,7 +208,7 @@ typedef enum BASED_KIND {
 
 typedef enum DATA_TYPE {
     TYP_UNDEFINED = -1,
-    #define pick1(enum,cgtype,asmtype,name,size)    TYP_##enum,
+    #define pick1(type,dtype,cgtype,asmtype,name,size)  type,
     #include "cdatatyp.h"
     #undef pick1
     TYP_ERROR,          /* make sure this is always last */
@@ -437,7 +437,7 @@ enum quad_flags {           /* code data */
 };
 
 enum quad_type {
-    #define pick1(enum,cgtype,asmtype,name,size) QDT_##enum,
+    #define pick1(type,dtype,cgtype,asmtype,name,size)  dtype,
     #include "cdatatyp.h"
     #undef pick1
     QDT_STATIC,

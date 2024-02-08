@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -93,7 +93,7 @@ struct func_save {
  * matches table of type in ctypes.h
  */
 static  char    CGDataType[] = {
-    #define pick1(enum,cgtype,x86asmtype,name,size) cgtype,
+    #define pick1(type,dtype,cgtype,x86asmtype,name,size) cgtype,
     #include "cdatatyp.h"
     #undef  pick1
 };
