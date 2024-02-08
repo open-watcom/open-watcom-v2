@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -270,7 +270,7 @@ HWND DoPickDialog( ctl_id cmdid )
     Cancelled = false;
 
     dlgproc = MakeProcInstance_DLG( PickDialogDlgProc, Instance );
-    if( cmdid == SPY_PEEK_WINDOW ) {
+    if( pickProcCmdId == SPY_PEEK_WINDOW ) {
         JDialogBox( ResInstance, "PEEKMSGS", SpyMainWindow, dlgproc );
     } else {
         JDialogBox( ResInstance, "WINDOWPICK", SpyMainWindow, dlgproc );
@@ -283,4 +283,3 @@ HWND DoPickDialog( ctl_id cmdid )
     return( NULL );
 
 } /* DoPickDialog */
-
