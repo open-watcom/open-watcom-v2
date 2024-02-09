@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -139,7 +139,7 @@ bool WdeSBNoodleSize( OBJPTR obj, bool recreate )
         if( rinfo != NULL ) {
             RECT                rect;
             GetWindowRect( hWnd, &rect );
-            MapWindowPoints( (HWND)NULL, rinfo->forms_win, (POINT *)&rect, 2 );
+            MapWindowRect( (HWND)NULL, rinfo->forms_win, &rect );
             HideSelectBoxes();
             Resize( sb_obj->control, &rect, false );
             WdeUpdateCDialogUnits( sb_obj->control, &rect, NULL );

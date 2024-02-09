@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -554,7 +554,7 @@ bool WdeChangeControlSize( WdeControlObject *obj, bool widths_only, bool snap_to
         size.top = (int_16)GETCTL_SIZEY( obj->control_info );
         size.bottom = size.top + (int_16)GETCTL_SIZEH( obj->control_info );
         MapDialogRect( obj->parent_handle, &size );
-        WdeMapWindowRect( obj->parent_handle, obj->res_info->edit_win, &size );
+        MapWindowRect( obj->parent_handle, obj->res_info->edit_win, &size );
         OffsetRect( &size, origin.x, origin.y );
     } else {
         WdeDialogToScreen( obj->object_handle, NULL, GETCTL_PSIZE( obj->control_info ), &size );
@@ -636,7 +636,7 @@ bool WdeControlDraw( WdeControlObject *obj, RECT *area, HDC *dc )
 
     if( dc != NULL && IntersectRect( &trect, area, &rect ) ) {
         OffsetRect( &trect, -origin.x, -origin.y );
-        MapWindowPoints( obj->res_info->edit_win, obj->window_handle, (POINT *)&trect, 2 );
+        MapWindowRect( obj->res_info->edit_win, obj->window_handle, &trect );
         RedrawWindow( obj->window_handle, (RECT *)&trect, (HRGN)NULL, RDW_INTERNALPAINT | RDW_UPDATENOW );
     }
 
@@ -1382,7 +1382,7 @@ bool WdeControlResize( WdeControlObject *obj, RECT *new_pos, bool *flag )
 
     OffsetRect( &rect, -origin.x, -origin.y );
 
-    WdeMapWindowRect( obj->res_info->edit_win, obj->parent_handle, &rect );
+    MapWindowRect( obj->res_info->edit_win, obj->parent_handle, &rect );
 
     if( obj->clear_interior ) {
         WdeSetClearObjectPos( obj );
@@ -1483,7 +1483,7 @@ bool WdeControlMove( WdeControlObject *obj, POINT *off, bool *forms_called )
             if( ok ) {
                 if( obj->parent != obj->base_obj ) {
                     OffsetRect( &object_rect, -origin.x, -origin.y );
-                    WdeMapWindowRect( obj->res_info->edit_win,
+                    MapWindowRect( obj->res_info->edit_win,
                                       obj->parent_handle, &object_rect );
                 }
                 SETCTL_SIZEX( obj->control_info, MulDiv( object_rect.left, 4, resizer.xmap ) );
@@ -1595,7 +1595,7 @@ bool WdeControlSetObjectInfo( WdeControlObject *obj, void *_info, void *s )
 
             OffsetRect( &size, -origin.x, -origin.y );
 
-            WdeMapWindowRect( obj->res_info->edit_win, obj->parent_handle, &size );
+            MapWindowRect( obj->res_info->edit_win, obj->parent_handle, &size );
         }
 
         if( !Forward( obj->parent, GET_RESIZER, &resizer, NULL ) ) {
