@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -101,7 +101,7 @@ static bool getLogName( char *buf, HWND hwnd )
     OPENFILENAME        of;
     int                 rc;
     static char         fname[LOG_MAX_FNAME];
-    static char         filterList[] = "File (*.*)" \
+    static const char   filterList[] = "File (*.*)" \
                                        "\0" \
                                        "*.*" \
                                        "\0\0";
@@ -110,7 +110,7 @@ static bool getLogName( char *buf, HWND hwnd )
     memset( &of, 0, sizeof( OPENFILENAME ) );
     of.lStructSize = sizeof( OPENFILENAME );
     of.hwndOwner = hwnd;
-    of.lpstrFilter = (LPSTR)filterList;
+    of.lpstrFilter = filterList;
     of.lpstrDefExt = NULL;
     of.nFilterIndex = 1L;
     of.lpstrFile = fname;

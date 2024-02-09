@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -93,7 +93,7 @@ INT_PTR CALLBACK AboutDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
             SetDlgItemText( hwnd, ABOUT_INFO1, info );
             kfree = GetFreeSpace( 0 ) / 1024L;
             ltoa( kfree, work, 10 );
-            RCsprintf( buff, ABT_MEM_X_KB_FREE, (LPSTR)work );
+            RCsprintf( buff, ABT_MEM_X_KB_FREE, work );
             SetDlgItemText( hwnd, ABOUT_INFO2, buff );
 
             shi.dwSize = sizeof( shi );

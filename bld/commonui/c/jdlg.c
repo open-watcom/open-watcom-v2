@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -569,7 +570,7 @@ INT_PTR JDialogBox( HINSTANCE hinst, LPCSTR lpszDlgTemp, HWND hwndOwner, DLGPROC
     return( ret );
 
 JDB_DEFAULT_ACTION:
-    return( DialogBox( hinst, (LPSTR)lpszDlgTemp, hwndOwner, dlgproc ) );
+    return( DialogBox( hinst, lpszDlgTemp, hwndOwner, dlgproc ) );
 
 } /* JDialogBox */
 
@@ -597,7 +598,7 @@ INT_PTR JDialogBoxParam( HINSTANCE hinst, LPCSTR lpszDlgTemp, HWND hwndOwner, DL
     return( ret );
 
 JDBP_DEFAULT_ACTION:
-    return( DialogBoxParam( hinst, (LPSTR)lpszDlgTemp, hwndOwner, dlgproc, lParamInit ) );
+    return( DialogBoxParam( hinst, lpszDlgTemp, hwndOwner, dlgproc, lParamInit ) );
 
 } /* JDialogBoxParam */
 
@@ -625,7 +626,7 @@ HWND JCreateDialog( HINSTANCE hinst, LPCSTR lpszDlgTemp, HWND hwndOwner, DLGPROC
     return( ret );
 
 JCD_DEFAULT_ACTION:
-    return( CreateDialog( hinst, (LPSTR)lpszDlgTemp, hwndOwner, dlgproc ) );
+    return( CreateDialog( hinst, lpszDlgTemp, hwndOwner, dlgproc ) );
 
 } /* JCreateDialog */
 
@@ -653,7 +654,7 @@ HWND JCreateDialogParam( HINSTANCE hinst, LPCSTR lpszDlgTemp, HWND hwndOwner, DL
     return( ret );
 
 JCDP_DEFAULT_ACTION:
-    return( CreateDialogParam( hinst, (LPSTR)lpszDlgTemp, hwndOwner, dlgproc, lParamInit ) );
+    return( CreateDialogParam( hinst, lpszDlgTemp, hwndOwner, dlgproc, lParamInit ) );
 
 } /* JCreateDialogParam */
 
