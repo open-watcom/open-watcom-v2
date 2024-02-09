@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -191,11 +191,11 @@ static void _OldBrush( WPI_PRES pres, WPI_OBJECT *brush )
          * The following functions have Windows equivalents
          *---------------------------------------------------------*/
 
-void GetWindowRect( HWND hwnd, WPI_RECT *rect )
+void GetWindowRect( HWND hwnd, WPI_RECT *prect )
 /**********************************************************************/
 {
-    WinQueryWindowRect( hwnd, rect );
-    WinMapWindowPoints( hwnd, HWND_DESKTOP, (WPI_POINT *)rect, 2L );
+    WinQueryWindowRect( hwnd, prect );
+    WinMapWindowPoints( hwnd, HWND_DESKTOP, (PPOINTL)prect, 2L );
 } /* GetWindowRect */
 
 void GetClientRect( HWND hwnd, WPI_RECT *prect )
@@ -204,7 +204,7 @@ void GetClientRect( HWND hwnd, WPI_RECT *prect )
     BOOL        ret;
 
     WinQueryWindowRect( hwnd, prect );
-    WinMapWindowPoints( hwnd, HWND_DESKTOP, (POINTL *)prect, 2 );
+    WinMapWindowPoints( hwnd, HWND_DESKTOP, (PPOINTL)prect, 2 );
     screen = *prect;
     ret = WinCalcFrameRect( hwnd, prect, TRUE );
     prect->xRight   = prect->xRight - prect->xLeft;

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -250,6 +250,9 @@ extern void _wpi_getbitmapdim( WPI_HBITMAP hbitmap, int *pwidth, int *pheight );
 
     #define _wpi_mapwindowpoints( hfrom, hto, ppts, num ) \
                                 MapWindowPoints( hfrom, hto, ppts, num )
+
+    #define _wpi_mapwindowrect( hfrom, hto, prect ) \
+                                MapWindowPoints( hfrom, hto, (LPPOINT)prect, 2 )
 
     #define _wpi_getcursorpos( pt ) GetCursorPos( pt )
 
