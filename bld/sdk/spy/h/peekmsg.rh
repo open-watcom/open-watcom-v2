@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,13 +30,13 @@
 ****************************************************************************/
 
 
-#define PEEKMSG_HWND                102
-#define PEEKMSG_TITLE               103
-#define PEEKMSG_CLASS               104
-#define PEEKMSG_PARENT              105
-#define PEEKMSG_STYLE               106
-#define PEEKMSG_SIZE                108
-#define PEEKMSG_STYLECLASS          101
-#define PEEKMSG_STYLECB             107
-#define PEEKMSG_STYLECLASSCB        110
-#define PEEKMSG_ICON                111         // unused in PEEKWIN dialog
+#define PEEKMSG_HWND                302
+#define PEEKMSG_TITLE               303
+#define PEEKMSG_CLASS               304
+#define PEEKMSG_PARENT              305
+#define PEEKMSG_STYLE               306
+#define PEEKMSG_SIZE                308
+#define PEEKMSG_STYLECLASS          301
+#define PEEKMSG_STYLECB             307
+#define PEEKMSG_STYLECLASSCB        310
+#define PEEKMSG_ICON                311         // unused in PEEKWIN dialog
