@@ -157,8 +157,8 @@ static void GetWindowID( HWND hwnd, HWND *who, LPARAM lparam )
 INT_PTR CALLBACK PickDialogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     RECT    rect;
-    RECT    client_rect;
     POINT   point;
+    POINT   point2;
     HWND    who;
 
     switch( msg ) {
@@ -170,12 +170,16 @@ INT_PTR CALLBACK PickDialogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM l
             PickDialogIcon = GetDlgItem( hwnd, WINSEL_ICON );
         }
         GetWindowRect( PickDialogIcon, &rect );
-        ScreenToClient( hwnd, (POINT *)&rect );
-        ScreenToClient( hwnd, (POINT *)&rect + 1 );
-        GetClientRect( hwnd, &client_rect );
-        rect.left = (client_rect.left + client_rect.right) / 2 -
-                    (rect.right - rect.left) / 2;
-        SetWindowPos( PickDialogIcon, NULL, rect.left, rect.top, 0, 0,
+        point.x = rect.left;
+        point.y = rect.top;
+        ScreenToClient( hwnd, &point );
+        point2.x = rect.right;
+        point2.y = rect.bottom;
+        ScreenToClient( hwnd, &point2 );
+        GetClientRect( hwnd, &rect );
+        point.x = (rect.left + rect.right) / 2 -
+                    (point2.x - point.x) / 2;
+        SetWindowPos( PickDialogIcon, NULL, point.x, point.y, 0, 0,
                       SWP_NOACTIVATE | SWP_NOSIZE | SWP_NOZORDER );
         SetWindowPos( hwnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE );
         UpdateFramedInfo( hwnd, NULL, (pickProcCmdId == SPY_PEEK_WINDOW) );
