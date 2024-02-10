@@ -68,6 +68,12 @@
 #define __ROUND_DOWN_SIZE_EVEN(__x)         __ROUND_DOWN_SIZE(__x,2)
 #define __ROUND_UP_SIZE_EVEN(__x)           __ROUND_UP_SIZE(__x,2)
 
+#define __ROUND_DOWN_SIZE_WORD(__x)         __ROUND_DOWN_SIZE(__x,2)
+#define __ROUND_UP_SIZE_WORD(__x)           __ROUND_UP_SIZE(__x,2)
+#define __ROUND_DOWN_SIZE_DWORD(__x)        __ROUND_DOWN_SIZE(__x,4)
+#define __ROUND_UP_SIZE_DWORD(__x)          __ROUND_UP_SIZE(__x,4)
+#define __ROUND_DOWN_SIZE_QWORD(__x)        __ROUND_DOWN_SIZE(__x,8)
+#define __ROUND_UP_SIZE_QWORD(__x)          __ROUND_UP_SIZE(__x,8)
 #define __ROUND_DOWN_SIZE_PARA(__x)         __ROUND_DOWN_SIZE(__x,16)
 #define __ROUND_UP_SIZE_PARA(__x)           __ROUND_UP_SIZE(__x,16)
 #define __ROUND_DOWN_SIZE_PAGE(__x)         __ROUND_DOWN_SIZE(__x,256)
@@ -82,3 +88,5 @@
 
 #define __ROUND_DOWN_SIZE_TO_4K(__x)        __ROUND_DOWN_SIZE_TO((__x),_4K)
 #define __ROUND_UP_SIZE_TO_4K(__x)          __ROUND_UP_SIZE_TO((__x),_4K)
+
+#define __ROUND_UP_SIZE_PWROF2(__x,__pwr)   __ROUND_UP_SIZE(__x,PWROF2(__pwr))
