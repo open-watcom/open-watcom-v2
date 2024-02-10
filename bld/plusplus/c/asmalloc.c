@@ -41,8 +41,8 @@ void *AsmAlloc( size_t amount )
     return( CMemAlloc( amount ) );
 }
 
-char *AsmStrDup( char *str )
-/**************************/
+char *AsmStrDup( const char *str )
+/********************************/
 {
     return( CMemStrDup( str ) );
 }
