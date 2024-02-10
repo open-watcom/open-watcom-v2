@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -172,7 +172,7 @@ typedef struct global_options {
     bool        use_stdcall_at_number;
     bool        mangle_stdcall;
     bool        write_listing;
-    bool        watcom_parms_passed_by_regs;
+    bool        watcom_params_passed_by_regs;
     smode       mode_init;
     smode       mode;
     int         locals_len;

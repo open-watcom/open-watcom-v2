@@ -74,6 +74,12 @@ typedef struct {
 } typeinfo;
 
 typedef struct {
+    int     param_number;
+    int     unused_stack_space;
+    bool    on_stack;
+} paramsinfo;
+
+typedef struct {
     asm_sym         *symbol;    // segment or group that is to be associated with the register
     bool            error;      // the register is assumed to ERROR
     bool            flat;       // the register is assumed to FLAT
@@ -328,16 +334,14 @@ static bool AddPredefinedConstant( char *name, const_info *info )
     return( RC_OK );
 }
 
-static bool get_watcom_argument( int size, int *parm_number, bool *on_stack )
-/****************************************************************************
+static bool get_watcom_argument( int size, paramsinfo *params )
+/**************************************************************
  * returns status for a parameter using the watcom register parm passing
  * conventions ( A D B C )
  */
 {
-    int parm = *parm_number;
-
-    if( parm > 3 ) {
-        *on_stack = true;
+    if( params->param_number > 3 ) {
+        params->on_stack = true;
     } else {
         switch( size ) {
         case 1:
@@ -345,11 +349,11 @@ static bool get_watcom_argument( int size, int *parm_number, bool *on_stack )
             break;
         case 4:
             if( !Use32 ) {
-                if( parm > 2 ) {
-                    *on_stack = true;
+                if( params->param_number > 2 ) {
+                    params->on_stack = true;
                     break;
                 }
-                *parm_number = ++parm;
+                params->param_number++;
             }
             break;
         case 10:
@@ -358,11 +362,11 @@ static bool get_watcom_argument( int size, int *parm_number, bool *on_stack )
         case 6:
         case 8:
             if( Use32 ) {
-                if( parm > 2 ) {
-                    *on_stack = true;
+                if( params->param_number > 2 ) {
+                    params->on_stack = true;
                     break;
                 }
-                *parm_number = ++parm;
+                params->param_number++;
                 break;
             }
         default:
@@ -376,34 +380,32 @@ static bool get_watcom_argument( int size, int *parm_number, bool *on_stack )
     return( RC_OK );
 }
 
-static bool get_watcom_argument_string( char *buffer, int size, int *parm_number, bool *on_stack )
-/*************************************************************************************************
- * get the register for parms 0 to 3,
+static bool get_watcom_argument_string( char *buffer, int size, paramsinfo *params )
+/***********************************************************************************
+ * get the register for params 0 to 3,
  * using the watcom register parm passing conventions ( A D B C )
  */
 {
-    int parm = *parm_number;
-
-    if( parm > 3 ) {
-        *on_stack = true;
+    if( params->param_number > 3 ) {
+        params->on_stack = true;
     } else {
         switch( size ) {
         case 1:
-            sprintf( buffer, "%s", regs[A_BYTE][parm] );
+            sprintf( buffer, "%s", regs[A_BYTE][params->param_number] );
             break;
         case 2:
-            sprintf( buffer, "%s", regs[A_WORD][parm] );
+            sprintf( buffer, "%s", regs[A_WORD][params->param_number] );
             break;
         case 4:
             if( Use32 ) {
-                sprintf( buffer, "%s", regs[A_DWORD][parm] );
+                sprintf( buffer, "%s", regs[A_DWORD][params->param_number] );
             } else {
-                if( parm > 2 ) {
-                    *on_stack = true;
+                if( params->param_number > 2 ) {
+                    params->on_stack = true;
                     break;
                 }
-                sprintf( buffer, " %s %s", regs[A_WORD][parm], regs[A_WORD][parm + 1] );
-                *parm_number = ++parm;
+                sprintf( buffer, " %s %s", regs[A_WORD][params->param_number], regs[A_WORD][params->param_number + 1] );
+                params->param_number++;
             }
             break;
         case 10:
@@ -412,16 +414,16 @@ static bool get_watcom_argument_string( char *buffer, int size, int *parm_number
         case 6:
         case 8:
             if( Use32 ) {
-                if( parm > 2 ) {
-                    *on_stack = true;
+                if( params->param_number > 2 ) {
+                    params->on_stack = true;
                     break;
                 }
                 if( size == 6 ) {
-                    sprintf( buffer, " %s %s", regs[A_DWORD][parm], regs[A_WORD][parm + 1] );
+                    sprintf( buffer, " %s %s", regs[A_DWORD][params->param_number], regs[A_WORD][params->param_number + 1] );
                 } else {
-                    sprintf( buffer, " %s %s", regs[A_DWORD][parm], regs[A_DWORD][parm + 1] );
+                    sprintf( buffer, " %s %s", regs[A_DWORD][params->param_number], regs[A_DWORD][params->param_number + 1] );
                 }
-                *parm_number = ++parm;
+                params->param_number++;
                 break;
             }
             /* fall down */
@@ -3038,27 +3040,27 @@ bool ArgDef( token_buffer *tokbuf, token_idx i )
     proc_info       *info;
     label_list      *paranode;
     label_list      *paracurr;
-    int             type, register_count, parameter_size, unused_stack_space;
-    bool            parameter_on_stack = true;
-
+    int             type, parameter_size;
     struct asm_sym  *param;
     struct asm_sym  *tmp = NULL;
+    paramsinfo      params;
 
     if( !DefineProc ) {
         AsmError( ARG_MUST_FOLLOW_PROC );
         return( RC_ERROR );
     }
 
-    register_count = 0;
-    unused_stack_space = 0;
+    params.param_number = 0;
+    params.unused_stack_space = 0;
+    params.on_stack = true;
 
     /**/myassert( CurrProc != NULL );
 
     info = CurrProc->e.procinfo;
 
     if( ( CurrProc->sym.langtype == WASM_LANG_WATCOM_C )
-      && ( Options.watcom_parms_passed_by_regs || !Use32 ) ) {
-        parameter_on_stack = false;
+      && ( Options.watcom_params_passed_by_regs || !Use32 ) ) {
+        params.on_stack = false;
     }
     for( i++; i < tokbuf->count; i++ ) {
         if( tokbuf->tokens[i].class != TC_ID ) {
@@ -3106,8 +3108,8 @@ bool ArgDef( token_buffer *tokbuf, token_idx i )
                     AsmError( VARARG_REQUIRES_C_CALLING_CONVENTION );
                     return( RC_ERROR );
                 case WASM_LANG_WATCOM_C:
-                    info->parasize += unused_stack_space;
-                    parameter_on_stack = true;
+                    info->parasize += params.unused_stack_space;
+                    params.on_stack = true;
                     break;
                 default:
                     break;
@@ -3127,13 +3129,13 @@ bool ArgDef( token_buffer *tokbuf, token_idx i )
         }
         if( type == MT_STRUCT ) {
             parameter_size = ( ( dir_node *)tmp)->e.structinfo->size;
-            parameter_on_stack = true;
+            params.on_stack = true;
         } else {
             parameter_size = find_size( type );
             tmp = NULL;
         }
-        if( !parameter_on_stack ) {
-            if( get_watcom_argument( parameter_size, &register_count, &parameter_on_stack ) ) {
+        if( !params.on_stack ) {
+            if( get_watcom_argument( parameter_size, &params ) ) {
                 return( RC_ERROR );
             }
         }
@@ -3143,7 +3145,7 @@ bool ArgDef( token_buffer *tokbuf, token_idx i )
         paranode->label = AsmStrDup( token );
         paranode->replace = NULL;
         paranode->sym = tmp;
-        if( parameter_on_stack ) {
+        if( params.on_stack ) {
             paranode->is_register = false;
             if( Use32 ) {
                 info->parasize += __ROUND_UP_SIZE( parameter_size, 4 );
@@ -3152,11 +3154,11 @@ bool ArgDef( token_buffer *tokbuf, token_idx i )
             }
         } else {
             paranode->is_register = true;
-            register_count++;
+            params.param_number++;
             if( Use32 ) {
-                unused_stack_space += __ROUND_UP_SIZE( parameter_size, 4 );
+                params.unused_stack_space += __ROUND_UP_SIZE( parameter_size, 4 );
             } else {
-                unused_stack_space += __ROUND_UP_SIZE( parameter_size, 2 );
+                params.unused_stack_space += __ROUND_UP_SIZE( parameter_size, 2 );
             }
         }
 
@@ -3370,9 +3372,11 @@ static bool proc_exam( dir_node *proc, token_buffer *tokbuf, token_idx i )
     regs_list       *temp_regist;
     label_list      *paranode;
     label_list      *paracurr;
-    int             type, register_count, parameter_size, unused_stack_space;
-    bool            parameter_on_stack = true;
+    int             type, parameter_size;
     struct asm_sym  *param;
+    paramsinfo      params;
+
+    params.on_stack = true;
 
     info = proc->e.procinfo;
 
@@ -3425,8 +3429,8 @@ static bool proc_exam( dir_node *proc, token_buffer *tokbuf, token_idx i )
             }
             break;
         case TOK_LANG_WATCOM_C:
-            if( Options.watcom_parms_passed_by_regs || !Use32 ) {
-                parameter_on_stack = false;
+            if( Options.watcom_params_passed_by_regs || !Use32 ) {
+                params.on_stack = false;
             }
             // fall through
         case TOK_LANG_BASIC:
@@ -3492,10 +3496,10 @@ parms:
     /*
      * reset register count and unused stack space counter
      */
-    register_count = 0;
-    unused_stack_space = 0;
+    params.unused_stack_space = 0;
+    params.param_number = 0;
     /*
-     * now parse parms
+     * now parse params
      */
     for( ; i < tokbuf->count; i++ ) {
         /*
@@ -3530,8 +3534,8 @@ parms:
                     AsmError( VARARG_REQUIRES_C_CALLING_CONVENTION );
                     return( RC_ERROR );
                 case WASM_LANG_WATCOM_C:
-                    info->parasize += unused_stack_space;
-                    parameter_on_stack = true;
+                    info->parasize += params.unused_stack_space;
+                    params.on_stack = true;
                     break;
                 default:
                     break;
@@ -3552,8 +3556,8 @@ parms:
         }
 
         parameter_size = find_size( type );
-        if( !parameter_on_stack ) {
-            if( get_watcom_argument( parameter_size, &register_count, &parameter_on_stack ) ) {
+        if( !params.on_stack ) {
+            if( get_watcom_argument( parameter_size, &params ) ) {
                 return( RC_ERROR );
             }
         }
@@ -3562,7 +3566,7 @@ parms:
         paranode->size = parameter_size;
         paranode->label = AsmStrDup( token );
         paranode->replace = NULL;
-        if( parameter_on_stack ) {
+        if( params.on_stack ) {
             paranode->is_register = false;
             if( Use32 ) {
                 info->parasize += __ROUND_UP_SIZE( parameter_size, 4 );
@@ -3571,11 +3575,11 @@ parms:
             }
         } else {
             paranode->is_register = true;
-            register_count++;
+            params.param_number++;
             if( Use32 ) {
-                unused_stack_space += __ROUND_UP_SIZE( parameter_size, 4 );
+                params.unused_stack_space += __ROUND_UP_SIZE( parameter_size, 4 );
             } else {
-                unused_stack_space += __ROUND_UP_SIZE( parameter_size, 2 );
+                params.unused_stack_space += __ROUND_UP_SIZE( parameter_size, 2 );
             }
         }
 
@@ -3799,10 +3803,12 @@ bool WritePrologue( const char *curline )
     label_list          *curr;
     unsigned long       offset;
     unsigned long       size;
-    int                 register_count = 0;
-    bool                parameter_on_stack = true;
     int                 align = ( Use32 ) ? 4 : 2;
     char                *p;
+    paramsinfo          params;
+
+    params.param_number = 0;
+    params.on_stack = true;
 
     /**/myassert( CurrProc != NULL );
     info = CurrProc->e.procinfo;
@@ -3849,17 +3855,17 @@ bool WritePrologue( const char *curline )
         if( Use32 )
             offset *= 2;
         if( ( CurrProc->sym.langtype == WASM_LANG_WATCOM_C )
-          && ( Options.watcom_parms_passed_by_regs || !Use32 )
+          && ( Options.watcom_params_passed_by_regs || !Use32 )
           && !info->is_vararg ) {
-            parameter_on_stack = false;
+            params.on_stack = false;
         }
         for( curr = info->paralist; curr != NULL; curr = curr->next ) {
-            if( !parameter_on_stack ) {
-                if( get_watcom_argument_string( buffer, curr->size, &register_count, &parameter_on_stack ) ) {
+            if( !params.on_stack ) {
+                if( get_watcom_argument_string( buffer, curr->size, &params ) ) {
                     return( RC_ERROR );
                 }
             }
-            if( parameter_on_stack ) {
+            if( params.on_stack ) {
                 size_override( buffer, curr->size );
                 if( Use32 ) {
                     if( Options.mode & MODE_IDEAL ) {
@@ -3890,7 +3896,7 @@ bool WritePrologue( const char *curline )
                 }
                 offset += __ROUND_UP_SIZE( curr->size, align );
             } else {
-                register_count++;
+                params.param_number++;
             }
             curr->replace = AsmStrDup( buffer );
             if( curr->replace[0] == ' ' ) {
@@ -4144,7 +4150,7 @@ bool Ret( token_buffer *tokbuf, token_idx i, bool flag_iret )
                 }
                 break;
             case WASM_LANG_WATCOM_C:
-                if( ( Options.watcom_parms_passed_by_regs || !Use32 )
+                if( ( Options.watcom_params_passed_by_regs || !Use32 )
                   && !info->is_vararg
                   && ( info->parasize != 0 ) ) {
                     sprintf( p, "%lu", info->parasize );

@@ -657,7 +657,7 @@ static void set_cpu_mode( void )
 {
     // set parameters passing convention macro
     if( SWData.cpu >= 3 ) {
-        if( Options.watcom_parms_passed_by_regs ) {
+        if( Options.watcom_params_passed_by_regs ) {
             add_constant( "REGISTER", true );
         } else {
             add_constant( "STACK", true );
@@ -880,57 +880,57 @@ static void set_options( OPT_STORAGE *data )
     switch( data->cpu_info ) {
     case OPT_ENUM_cpu_info__0:
         SWData.cpu = 0;
-        Options.watcom_parms_passed_by_regs = true;
+        Options.watcom_params_passed_by_regs = true;
         break;
     case OPT_ENUM_cpu_info__1:
         SWData.cpu = 1;
-        Options.watcom_parms_passed_by_regs = true;
+        Options.watcom_params_passed_by_regs = true;
         break;
     case OPT_ENUM_cpu_info__2:
         SWData.cpu = 2;
-        Options.watcom_parms_passed_by_regs = true;
+        Options.watcom_params_passed_by_regs = true;
         if( data->_2p ) {
             SWData.protect_mode = true;
         }
         break;
     case OPT_ENUM_cpu_info__3:
         SWData.cpu = 3;
-        Options.watcom_parms_passed_by_regs = true;
+        Options.watcom_params_passed_by_regs = true;
         if( data->_3p ) {
             SWData.protect_mode = true;
         }
         if( data->_3s ) {
-            Options.watcom_parms_passed_by_regs = false;
+            Options.watcom_params_passed_by_regs = false;
         }
         break;
     case OPT_ENUM_cpu_info__4:
         SWData.cpu = 4;
-        Options.watcom_parms_passed_by_regs = true;
+        Options.watcom_params_passed_by_regs = true;
         if( data->_4p ) {
             SWData.protect_mode = true;
         }
         if( data->_4s ) {
-            Options.watcom_parms_passed_by_regs = false;
+            Options.watcom_params_passed_by_regs = false;
         }
         break;
     case OPT_ENUM_cpu_info__5:
         SWData.cpu = 5;
-        Options.watcom_parms_passed_by_regs = true;
+        Options.watcom_params_passed_by_regs = true;
         if( data->_5p ) {
             SWData.protect_mode = true;
         }
         if( data->_5s ) {
-            Options.watcom_parms_passed_by_regs = false;
+            Options.watcom_params_passed_by_regs = false;
         }
         break;
     case OPT_ENUM_cpu_info__6:
         SWData.cpu = 6;
-        Options.watcom_parms_passed_by_regs = true;
+        Options.watcom_params_passed_by_regs = true;
         if( data->_6p ) {
             SWData.protect_mode = true;
         }
         if( data->_6s ) {
-            Options.watcom_parms_passed_by_regs = false;
+            Options.watcom_params_passed_by_regs = false;
         }
         break;
     case OPT_ENUM_cpu_info_default:

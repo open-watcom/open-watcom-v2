@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1256,7 +1256,7 @@ static bool expand_call( token_buffer *tokbuf, token_idx index, int lang_type )
         reversed++;
         break;
     case WASM_LANG_WATCOM_C:
-        if( Options.watcom_parms_passed_by_regs || !Use32 ) {
+        if( Options.watcom_params_passed_by_regs || !Use32 ) {
             parameter_on_stack = false;
         } else {
             cleanup++;
