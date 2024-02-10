@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -51,50 +52,36 @@ typedef char *(*mangle_func)( struct asm_sym *, char * );
 static char *AsmMangler( struct asm_sym *sym, char *buffer )
 /**********************************************************/
 {
-    char        *name;
-    size_t      len;
-
-    len = strlen( sym->name ) + 1;
-    if( buffer == NULL ) {
-        name = AsmAlloc( len );
-    } else {
-        name = buffer;
-    }
-    memcpy( name, sym->name, len );
-    return( name );
+    if( buffer != NULL )
+        return( strcpy( buffer, sym->name ) );
+    return( AsmStrDup( sym->name ) );
 }
 
 static char *UCaseMangler( struct asm_sym *sym, char *buffer )
 /************************************************************/
 {
     char        *name;
-    size_t      len;
 
-    len = strlen( sym->name ) + 1;
-    if( buffer == NULL ) {
-        name = AsmAlloc( len );
+    if( buffer != NULL ) {
+        name = strcpy( buffer, sym->name );
     } else {
-        name = buffer;
+        name = AsmStrDup( sym->name );
     }
-    memcpy( name, sym->name, len );
-    strupr( name );
-    return( name );
+    return( strupr( name ) );
 }
 
 static char *UScoreMangler( struct asm_sym *sym, char *buffer )
 /*************************************************************/
 {
     char        *name;
-    size_t      len;
 
-    len = strlen( sym->name ) + 1;
     if( buffer == NULL ) {
-        name = AsmAlloc( len + 1 );
+        name = AsmAlloc( strlen( sym->name ) + 1 );
     } else {
         name = buffer;
     }
     name[0] = '_';
-    memcpy( name + 1, sym->name, len );
+    strcpy( name + 1, sym->name );
     return( name );
 }
 
@@ -176,8 +163,8 @@ static char *CMangler( struct asm_sym *sym, char *buffer )
     return( UScoreMangler( sym, buffer ) );
 }
 
-static mangle_func GetMangler( char *mangle_type )
-/************************************************/
+static mangle_func GetMangler( const char *mangle_type )
+/******************************************************/
 {
     mangle_func         mangler;
 
@@ -230,8 +217,8 @@ char *Mangle( struct asm_sym *sym, char *buffer )
     return( mangler( sym, buffer ) );
 }
 
-void SetMangler( struct asm_sym *sym, char *mangle_type, int langtype )
-/*********************************************************************/
+void SetMangler( struct asm_sym *sym, const char *mangle_type, int langtype )
+/***************************************************************************/
 {
     mangle_func mangler;
 

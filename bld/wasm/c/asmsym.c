@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -83,19 +83,10 @@ static char *InitAsmSym( struct asm_sym *sym, const char *name )
 {
 #if !defined( _STANDALONE_ )
     void        *handle;
-    size_t      len;
 #endif
 
-#if defined( _STANDALONE_ )
     sym->name = AsmStrDup( name );
-#else
-    len = strlen( name ) + 1;
-    sym->name = AsmAlloc( len );
-#endif
     if( sym->name != NULL ) {
-#if !defined( _STANDALONE_ )
-        memcpy( sym->name, name, len );
-#endif
         sym->next = NULL;
         sym->fixup = NULL;
 #if defined( _STANDALONE_ )

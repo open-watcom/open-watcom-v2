@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -354,7 +354,6 @@ static bool createconstant( const char *name, bool value, token_buffer *tokbuf, 
     token_idx           counta;
     bool                can_be_redefine;
     bool                new_constant;
-    size_t              len;
 
     new_constant = false;
     dir = (dir_node *)AsmGetSymbol( name );
@@ -459,13 +458,7 @@ static bool createconstant( const char *name, bool value, token_buffer *tokbuf, 
         }
         new[i].class = tokbuf->tokens[start + i].class;
         memcpy( new[i].u.bytes, tokbuf->tokens[start + i].u.bytes, sizeof( new[i].u.bytes ) );
-        if( tokbuf->tokens[start + i].string_ptr == NULL ) {
-            new[i].string_ptr = NULL;
-        } else {
-            len = strlen( tokbuf->tokens[start + i].string_ptr ) + 1;
-            new[i].string_ptr = AsmAlloc( len );
-            memcpy( new[i].string_ptr, tokbuf->tokens[start + i].string_ptr, len );
-        }
+        new[i].string_ptr = AsmStrDup( tokbuf->tokens[start + i].string_ptr );
     }
     if( new_constant && can_be_redefine )
         dir->e.constinfo->redefine = true;
