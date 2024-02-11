@@ -98,7 +98,7 @@ Sections
 
    <ext>        file extension, which is associated with program/icon
    <key>        name of registry key for file extension
-   <desc>       description for file extension
+   <descr>      description for file extension
    <prog>       program name used for open files with file extension
    <iconfile>   icon file, if not specified then program file is used
    <iconidx>    icon index in icon file
