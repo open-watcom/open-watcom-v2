@@ -445,8 +445,8 @@ void AsmSymFini( void )
 {
     struct asm_sym      *sym;
 #if defined( _STANDALONE_ )
-    dir_node            *dir;
     unsigned            i;
+    struct asm_sym      *next;
 
 #if defined( DEBUG_OUT )
     DumpASym();
@@ -456,25 +456,16 @@ void AsmSymFini( void )
 
     /* now free the symbol table */
     for( i = 0; i < HASH_TABLE_SIZE; i++ ) {
-        struct asm_sym  *next;
-        next = sym_table[i];
-        for( ;; ) {
-            sym = next;
-            if( sym == NULL )
-                break;
-            dir = (dir_node *)sym;
+        for( sym = sym_table[i]; sym != NULL; sym = next ) {
             next = sym->next;
-            FreeInfo( dir );
+            FreeInfo( (dir_node *)sym );
             FreeASym( sym );
         }
     }
     myassert( AsmSymCount == 0 );
 
 #else
-    for( ;; ) {
-        sym = AsmSymHead;
-        if( sym == NULL )
-            break;
+    for( ; (sym = AsmSymHead) != NULL; ) {
         AsmSymHead = sym->next;
         FreeASym( sym );
     }
@@ -500,17 +491,10 @@ static struct asm_sym **SortAsmSyms( void )
     unsigned            i, j;
 
     syms = AsmAlloc( AsmSymCount * sizeof( struct asm_sym * ) );
-    if( syms ) {
+    if( syms != NULL ) {
         /* copy symbols to table */
         for( i = j = 0; i < HASH_TABLE_SIZE; i++ ) {
-            struct asm_sym  *next;
-
-            next = sym_table[i];
-            for( ;; ) {
-                sym = next;
-                if( sym == NULL )
-                    break;
-                next = sym->next;
+            for( sym = sym_table[i]; sym != NULL; sym = sym->next ) {
                 syms[j++] = sym;
             }
         }
@@ -868,13 +852,7 @@ void DumpASym( void )
 
     LstMsg( "\n" );
     for( i = 0; i < HASH_TABLE_SIZE; i++ ) {
-        struct asm_sym  *next;
-        next = sym_table[i];
-        for( ;; ) {
-            sym = next;
-            if( sym == NULL )
-                break;
-            next = sym->next;
+        for( sym = sym_table[i]; sym != NULL; sym = sym->next ) {
             DumpSymbol( sym );
         }
     }

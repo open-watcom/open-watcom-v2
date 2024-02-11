@@ -780,15 +780,9 @@ void FreeInfo( dir_node *dir )
             seg_list    *segcurr;
             seg_list    *segnext;
 
-            segcurr = dir->e.grpinfo->seglist;
-            if( segcurr != NULL ) {
-                for( ;; ) {
-                    segnext = segcurr->next;
-                    AsmFree( segcurr );
-                    if( segnext == NULL )
-                        break;
-                    segcurr = segnext;
-                }
+            for( segcurr = dir->e.grpinfo->seglist; segcurr != NULL; segcurr = segnext ) {
+                segnext = segcurr->next;
+                AsmFree( segcurr );
             }
             AsmFree( dir->e.grpinfo );
         }
@@ -834,57 +828,33 @@ void FreeInfo( dir_node *dir )
             regs_list   *regcurr;
             regs_list   *regnext;
 
-            labelcurr = dir->e.procinfo->paralist;
-            if( labelcurr != NULL ) {
-                for( ;; ) {
-                    labelnext = labelcurr->next;
-                    AsmFree( labelcurr->label );
-                    AsmFree( labelcurr->replace );
-                    AsmFree( labelcurr );
-                    if( labelnext == NULL )
-                        break;
-                    labelcurr = labelnext;
-                }
+            for( labelcurr = dir->e.procinfo->paralist; labelcurr != NULL; labelcurr = labelnext ) {
+                labelnext = labelcurr->next;
+                AsmFree( labelcurr->label );
+                AsmFree( labelcurr->replace );
+                AsmFree( labelcurr );
             }
 
-            labelcurr = dir->e.procinfo->locallist;
-            if( labelcurr != NULL ) {
-                for( ;; ) {
-                    labelnext = labelcurr->next;
-                    AsmFree( labelcurr->label );
-                    AsmFree( labelcurr->replace );
-                    AsmFree( labelcurr );
-                    if( labelnext == NULL )
-                        break;
-                    labelcurr = labelnext;
-                }
+            for( labelcurr = dir->e.procinfo->locallist; labelcurr != NULL; labelcurr = labelnext ) {
+                labelnext = labelcurr->next;
+                AsmFree( labelcurr->label );
+                AsmFree( labelcurr->replace );
+                AsmFree( labelcurr );
             }
 
-            labelcurr = dir->e.procinfo->labellist;
-            if( labelcurr != NULL ) {
-                for( ;; ) {
-                    labelnext = labelcurr->next;
-                    AsmFree( labelcurr->label );
-                    AsmFree( labelcurr->replace );
-                    if( labelcurr->sym != NULL )
-                        FreeASym( labelcurr->sym );
-                    AsmFree( labelcurr );
-                    if( labelnext == NULL )
-                        break;
-                    labelcurr = labelnext;
-                }
+            for( labelcurr = dir->e.procinfo->labellist; labelcurr != NULL; labelcurr = labelnext ) {
+                labelnext = labelcurr->next;
+                AsmFree( labelcurr->label );
+                AsmFree( labelcurr->replace );
+                if( labelcurr->sym != NULL )
+                    FreeASym( labelcurr->sym );
+                AsmFree( labelcurr );
             }
 
-            regcurr = dir->e.procinfo->regslist;
-            if( regcurr != NULL ) {
-                for( ;; ) {
-                    regnext = regcurr->next;
-                    AsmFree( regcurr->reg );
-                    AsmFree( regcurr );
-                    if( regnext == NULL )
-                        break;
-                    regcurr = regnext;
-                }
+            for( regcurr = dir->e.procinfo->regslist; regcurr != NULL; regcurr = regnext ) {
+                regnext = regcurr->next;
+                AsmFree( regcurr->reg );
+                AsmFree( regcurr );
             }
             AsmFree( dir->e.procinfo );
         }
