@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -55,8 +56,8 @@ static void AllocFFNameTab( const char *name, libfile io, arch_header *arch )
 }
 
 
-void LibWalk( libfile io, const char *name, void (*rtn)( arch_header *, libfile io ) )
-/************************************************************************************/
+void LibWalk( libfile io, arch_header *parch, void (*rtn)( arch_header *, libfile io ) )
+/**************************************************************************************/
 {
     ar_header           ar;
     arch_header         arch;
@@ -69,10 +70,10 @@ void LibWalk( libfile io, const char *name, void (*rtn)( arch_header *, libfile 
     arch.ffnametab = NULL;
     while( (bytes_read = LibRead( io, &ar, AR_HEADER_SIZE )) != 0 ) {
         if( bytes_read != AR_HEADER_SIZE ) {
-            BadLibrary( name );
+            BadLibrary( parch->name );
         }
         if( strncmp( ar.header_ident, AR_HEADER_IDENT, AR_HEADER_IDENT_LEN ) ) {
-            BadLibrary( name );
+            BadLibrary( parch->name );
         }
         GetARHeaderValues( &ar, &arch );
         pos = LibTell( io );
@@ -88,9 +89,9 @@ void LibWalk( libfile io, const char *name, void (*rtn)( arch_header *, libfile 
             }
 */
         } else if( ar.name[0] == '/' && ar.name[1] == '/' && ar.name[2] == ' ' ) {
-            AllocFNameTab( name, io, &arch );
+            AllocFNameTab( parch->name, io, &arch );
         } else if( ar.name[0] == '/' && ar.name[1] == '/' && ar.name[2] == '/' ) {
-            AllocFFNameTab( name, io, &arch );
+            AllocFFNameTab( parch->name, io, &arch );
         } else {
             arch.name = GetARName( io, &ar, &arch );
             arch.ffname = GetFFName( &arch );
@@ -105,8 +106,8 @@ void LibWalk( libfile io, const char *name, void (*rtn)( arch_header *, libfile 
     MemFree( arch.ffnametab );
 }
 
-void OMFLibWalk( libfile io, char *name, void (*rtn)( arch_header *arch, libfile io ) )
-/*************************************************************************************/
+void OMFLibWalk( libfile io, arch_header *parch, void (*rtn)( arch_header *arch, libfile io ) )
+/*********************************************************************************************/
 {
     unsigned_16     pagelen;
     long            offset;
@@ -127,7 +128,7 @@ void OMFLibWalk( libfile io, char *name, void (*rtn)( arch_header *arch, libfile
         Options.page_size = pagelen;
     }
     LibSeek( io, offset, SEEK_CUR );
-    NewArchHeader( &arch, name );
+    arch = *parch;
     offset = LibTell( io );
     while( LibRead( io, &type, sizeof( type ) ) == sizeof( type ) && ( type == CMD_THEADR ) ) {
         LibSeek( io, 2, SEEK_CUR );

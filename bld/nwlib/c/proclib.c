@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -139,27 +139,27 @@ static void ProcessLibOrObj( char *name, objproc obj, void (*process)( arch_head
     arch_header arch;
 
     NewArchHeader( &arch, name );
-    io = LibOpen( name, LIBOPEN_READ );
+    io = LibOpen( arch.name, LIBOPEN_READ );
     if( LibRead( io, buff, sizeof( buff ) ) != sizeof( buff ) ) {
-        FatalError( ERR_CANT_READ, name, strerror( errno ) );
+        FatalError( ERR_CANT_READ, arch.name, strerror( errno ) );
     }
     if( memcmp( buff, AR_IDENT, sizeof( buff ) ) == 0 ) {
         // AR format
-        AddInputLib( io, name );
-        LibWalk( io, name, process );
+        AddInputLib( io, &arch );
+        LibWalk( io, &arch, process );
         if( Options.libtype == WL_LTYPE_NONE ) {
             Options.libtype = WL_LTYPE_AR;
         }
     } else if( memcmp( buff, LIBMAG, LIBMAG_LEN ) == 0 ) {
         // MLIB format
         if( LibRead( io, buff, sizeof( buff ) ) != sizeof( buff ) ) {
-            FatalError( ERR_CANT_READ, name, strerror( errno ) );
+            FatalError( ERR_CANT_READ, arch.name, strerror( errno ) );
         }
         if( memcmp( buff, LIB_CLASS_DATA_SHOULDBE, LIB_CLASS_LEN + LIB_DATA_LEN ) ) {
-            BadLibrary( name );
+            BadLibrary( arch.name );
         }
-        AddInputLib( io, name );
-        LibWalk( io, name, process );
+        AddInputLib( io, &arch );
+        LibWalk( io, &arch, process );
         if( Options.libtype == WL_LTYPE_NONE ) {
             Options.libtype = WL_LTYPE_MLIB;
         }
@@ -176,19 +176,19 @@ static void ProcessLibOrObj( char *name, objproc obj, void (*process)( arch_head
           beaten up with large blunt objects.
          */
         // OMF format
-        AddInputLib( io, name );
+        AddInputLib( io, &arch );
         LibSeek( io, 0, SEEK_SET );
         if( Options.libtype == WL_LTYPE_NONE ) {
             Options.libtype = WL_LTYPE_OMF;
         }
-        OMFLibWalk( io, name, process );
+        OMFLibWalk( io, &arch, process );
     } else if( obj == OBJ_PROCESS ) {
         // Object
         LibSeek( io, 0, SEEK_SET );
         AddObjectSymbols( &arch, io, 0 );
         LibClose( io );
     } else if( obj == OBJ_ERROR ) {
-        BadLibrary( name );
+        BadLibrary( arch.name );
     } else {
         LibClose( io );
     }

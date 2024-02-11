@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,15 +38,15 @@
 
 static input_lib *InputLibs;
 
-void AddInputLib( libfile io, const char *name )
+void AddInputLib( libfile io, arch_header *arch )
 {
     input_lib   *new;
 
-    new = MemAllocGlobal( sizeof( *new ) + strlen( name ) );
+    new = MemAllocGlobal( sizeof( *new ) + strlen( arch->name ) );
     new->next = InputLibs;
     InputLibs = new;
     new->io = io;
-    strcpy( new->name, name );
+    strcpy( new->name, arch->name );
 }
 
 void CloseOneInputLib( void )

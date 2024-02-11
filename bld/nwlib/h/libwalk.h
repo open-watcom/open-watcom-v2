@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,5 +31,5 @@
 ****************************************************************************/
 
 
-extern void LibWalk( libfile io, const char *name, void (*rtn)( arch_header *arch, libfile io ) );
-extern void OMFLibWalk( libfile io, char *name, void (*rtn)( arch_header *arch, libfile io ) );
+extern void LibWalk( libfile io, arch_header *arch, void (*rtn)( arch_header *arch, libfile io ) );
+extern void OMFLibWalk( libfile io, arch_header *arch, void (*rtn)( arch_header *arch, libfile io ) );
