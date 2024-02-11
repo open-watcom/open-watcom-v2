@@ -84,6 +84,9 @@ void NewArchHeader( arch_header *arch, char *name )
     arch->gid = buf.st_gid;
     arch->mode = buf.st_mode;
     arch->size = buf.st_size;
+    arch->libtype = WL_LTYPE_NONE;
+    arch->fnametab = NULL;
+    arch->ffnametab = NULL;
 }
 
 static void CopyBytes( char *buffer, libfile source, libfile dest, size_t len )

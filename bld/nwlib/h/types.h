@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,6 +40,13 @@ typedef uint_16         arch_gid;
 typedef uint_32         arch_mode;
 typedef uint_32         arch_file_size;
 
+typedef enum {
+    WL_LTYPE_NONE,
+    WL_LTYPE_AR,
+    WL_LTYPE_MLIB,
+    WL_LTYPE_OMF
+} lib_type;
+
 typedef struct arch_header {
     char                *name;
     char                *ffname; // Full filename
@@ -47,6 +55,7 @@ typedef struct arch_header {
     arch_gid            gid;
     arch_mode           mode;
     arch_file_size      size;
+    lib_type            libtype;
     char                *fnametab;
     char                *ffnametab;
     char                *nextffname;

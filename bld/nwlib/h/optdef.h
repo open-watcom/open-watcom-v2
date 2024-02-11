@@ -53,13 +53,6 @@ typedef enum {
 } file_type;
 
 typedef enum {
-    WL_LTYPE_NONE,
-    WL_LTYPE_AR,
-    WL_LTYPE_MLIB,
-    WL_LTYPE_OMF
-} lib_type;
-
-typedef enum {
     AR_FMT_NONE,
     AR_FMT_COFF,
     AR_FMT_GNU,

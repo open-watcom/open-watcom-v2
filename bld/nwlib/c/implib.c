@@ -490,7 +490,7 @@ void ProcessImport( char *name )
 {
     char            *DLLName, *symName, *exportedName, *ordString;
     long            ordinal = 0;
-    arch_header     *arch;
+    arch_header     arch;
     char            *buffer;
     Elf32_Export    export_table[2];
     Elf32_Sym       sym_table[3];
@@ -552,18 +552,6 @@ void ProcessImport( char *name )
     }
 
     MemFree( namecopy );
-
-    arch = MemAlloc( sizeof( arch_header ) );
-
-    arch->name = DupStr( DLLName );
-    arch->ffname = NULL;
-    arch->date = time( NULL );
-    arch->uid = 0;
-    arch->gid = 0;
-    arch->mode = AR_S_IFREG | (AR_S_IRUSR | AR_S_IWUSR | AR_S_IRGRP | AR_S_IWGRP | AR_S_IROTH | AR_S_IWOTH);
-    arch->size = 0;
-    arch->fnametab = NULL;
-    arch->ffnametab = NULL;
 
     if( Options.filetype == WL_FTYPE_NONE ) {
         if( Options.omf_found ) {
@@ -677,6 +665,17 @@ void ProcessImport( char *name )
         }
     }
 
+    arch.name = DupStr( DLLName );
+    arch.ffname = NULL;
+    arch.date = time( NULL );
+    arch.uid = 0;
+    arch.gid = 0;
+    arch.mode = AR_S_IFREG | (AR_S_IRUSR | AR_S_IWUSR | AR_S_IRGRP | AR_S_IWGRP | AR_S_IROTH | AR_S_IWOTH);
+    arch.size = 0;
+    arch.libtype = WL_LTYPE_NONE;
+    arch.fnametab = NULL;
+    arch.ffnametab = NULL;
+
     switch( Options.filetype ) {
     case WL_FTYPE_ELF:
         sym_len = strlen( symName ) + 1;
@@ -697,7 +696,7 @@ void ProcessImport( char *name )
         memcpy( buffer, symName, sym_len );
         strcpy( buffer + sym_len, exportedName );
 
-        ElfMKImport( arch, ELFRENAMED, 2, DLLName, buffer, export_table, sym_table, Options.processor );
+        ElfMKImport( &arch, ELFRENAMED, 2, DLLName, buffer, export_table, sym_table, Options.processor );
 
         if( ordinal == 0 ) {
             AddSym( symName, SYM_STRONG, ELF_IMPORT_NAMED_SYM_INFO );
@@ -710,12 +709,12 @@ void ProcessImport( char *name )
         if( Options.libtype != WL_LTYPE_AR ) {
             FatalError( ERR_NOT_LIB, "COFF", LibFormat() );
         }
-        coffAddImportOverhead( arch, DLLName, Options.processor );
+        coffAddImportOverhead( &arch, DLLName, Options.processor );
 
         if( ordinal == 0 ) {
-            CoffMKImport( arch, NAMED, ordinal, DLLName, symName, exportedName, Options.processor );
+            CoffMKImport( &arch, NAMED, ordinal, DLLName, symName, exportedName, Options.processor );
         } else {
-            CoffMKImport( arch, ORDINAL, ordinal, DLLName, symName, NULL, Options.processor );
+            CoffMKImport( &arch, ORDINAL, ordinal, DLLName, symName, NULL, Options.processor );
         }
         AddSymWithPrefix( "__imp_", symName, SYM_WEAK, 0 );
         if( Options.processor == WL_PROC_PPC ) {
@@ -727,15 +726,14 @@ void ProcessImport( char *name )
             FatalError( ERR_NOT_LIB, "OMF", LibFormat() );
         }
         if( ordinal == 0 ) {
-            OmfMKImport( arch, NAMED, ordinal, DLLName, symName, exportedName, WL_PROC_X86 );
+            OmfMKImport( &arch, NAMED, ordinal, DLLName, symName, exportedName, WL_PROC_X86 );
         } else {
-            OmfMKImport( arch, ORDINAL, ordinal, DLLName, symName, NULL, WL_PROC_X86 );
+            OmfMKImport( &arch, ORDINAL, ordinal, DLLName, symName, NULL, WL_PROC_X86 );
         }
         //AddSymWithPrefix( "__imp_", symName, SYM_WEAK, 0 );
         break;
     }
-    MemFree( arch->name );
-    MemFree( arch );
+    MemFree( arch.name );
 }
 
 size_t ElfImportSize( import_sym *import )

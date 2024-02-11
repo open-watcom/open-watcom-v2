@@ -193,13 +193,15 @@ static void NewSymFile( arch_header *arch )
     sfile->arch = *arch;
     sfile->import = NULL;
     sfile->inlib_offset = 0;
-    sfile->full_name = DupStrGlobal( sfile->arch.name );
-    sfile->arch.name = DupStrGlobal( sfile->arch.name );
-    if( Options.trim_path )
-        TrimPathInPlace( sfile->arch.name );
+    sfile->full_name = DupStrGlobal( arch->name );
+    if( Options.trim_path ) {
+        sfile->arch.name = DupStrGlobal( TrimPath( arch->name ) );
+    } else {
+        sfile->arch.name = DupStrGlobal( arch->name );
+    }
     sfile->name_length = strlen( sfile->arch.name );
     if( sfile->arch.ffname != NULL ) {
-        sfile->arch.ffname = DupStrGlobal( sfile->arch.ffname );
+        sfile->arch.ffname = DupStrGlobal( arch->ffname );
         sfile->ffname_length = strlen( sfile->arch.ffname );
     } else {
         sfile->ffname_length = 0;
