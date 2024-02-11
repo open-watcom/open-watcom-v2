@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,7 +36,7 @@ extern char *MakeObjOutputName( const char *src, const char *new );
 extern char *MakeListName( void );
 extern char *MakeFName( const char *a );
 extern char *MakeBakName( void );
-extern bool IsSameFNameCase( const char *a, const char *b );
+extern bool IsSameModuleCase( arch_header *arch, const char *b );
 extern int  SymbolNameCmp( const char *s1, const char *s2);
 extern bool IsExt( const char *a, const char *b );
 extern void NewArchHeader( arch_header *arch, char *name );
