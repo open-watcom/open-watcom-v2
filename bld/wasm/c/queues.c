@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -170,7 +170,7 @@ bool GetPublicData( void )
         NameArray = AsmAlloc( objr->d.pubdef.num_pubs * sizeof( char * ) );
         for( i = 0, curr = start; curr != last; curr = curr->next, ++i ) {
             dir = (dir_node *)curr->data;
-            NameArray[i] = Mangle( &dir->sym, NULL );
+            NameArray[i] = Mangle( &dir->sym );
             d->name = i;
             if( dir->sym.state != SYM_CONST ) {
                 d->offset = dir->sym.offset;

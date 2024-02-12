@@ -71,7 +71,7 @@ typedef enum {
     WASM_LANG_WATCOM_C
 } lang_type;
 
-typedef char *(*mangle_func)( struct asm_sym *, char * );
+typedef char *(*mangle_func)( struct asm_sym * );
 #endif
 
 typedef struct asm_sym {
@@ -87,7 +87,7 @@ typedef struct asm_sym {
         uint_32         total_size;     /* total number of bytes (sizeof) */
         uint_32         total_length;   /* total number of elements (lengthof) */
         uint_32         count;
-        char            *(*mangler)( struct asm_sym *sym, char *buffer );
+        mangle_func     mangler;
         bool            public;
         bool            referenced;
         lang_type       langtype;

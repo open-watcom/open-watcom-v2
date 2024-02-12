@@ -283,7 +283,7 @@ static void write_one_export( dir_node *dir )
         objr->d.coment.attr = 0x00;
         objr->d.coment.class = CMT_DLL_ENTRY;
 
-        name = Mangle( &dir->sym, NULL );
+        name = Mangle( &dir->sym );
         len = strlen( name );
         if( len > 255 )
             len = 255;
@@ -480,7 +480,7 @@ static void write_external( void )
             if( first == NULL ) {
                 first = curr;
             }
-            name = Mangle( &curr->sym, NULL );
+            name = Mangle( &curr->sym );
             len = strlen( name );
             AsmFree( name );
             if( len > 255 )
@@ -517,7 +517,7 @@ static void write_external( void )
             ext_idx++;
             objr->d.extdef.num_names++;
             curr->e.extinfo->idx = ext_idx;
-            name = Mangle( &curr->sym, NULL );
+            name = Mangle( &curr->sym );
             len = strlen( name );
             if( len > 255 )
                 len = 255;
