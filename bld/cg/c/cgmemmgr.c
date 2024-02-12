@@ -98,7 +98,7 @@ extern short    __psp;
 #define MEMPTR_SIZE     8
 #define TAG_SIZE        8
 #else
-#define MEM_WORD_SIZE   4
+#define MEM_WORD_SIZE   8
 #define MEMPTR_SIZE     4
 #define TAG_SIZE        4
 #endif
