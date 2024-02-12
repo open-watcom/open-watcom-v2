@@ -76,7 +76,7 @@ static char *UScoreMangler( struct asm_sym *sym, char *buffer )
     char        *name;
 
     if( buffer == NULL ) {
-        name = AsmAlloc( strlen( sym->name ) + 1 );
+        name = AsmAlloc( strlen( sym->name ) + 1 + 1 );
     } else {
         name = buffer;
     }
@@ -101,7 +101,7 @@ static char *StdUScoreMangler( struct asm_sym *sym, char *buffer )
 
             for( count = 2; parasize > 9; count++ )
                 parasize /= 10;
-            name = AsmAlloc( strlen( sym->name ) + 2 + count );
+            name = AsmAlloc( strlen( sym->name ) + 1 + 1 + count + 1 );
             parasize = ((dir_node *)sym)->e.procinfo->parasize;
         } else {
             name = buffer;
@@ -141,7 +141,7 @@ static char *WatcomCMangler( struct asm_sym *sym, char *buffer )
 
     len = strlen( ptr );
     if( buffer == NULL ) {
-        name = AsmAlloc( len + 3 );
+        name = AsmAlloc( len + 2 + 1 );
     } else {
         name = buffer;
     }
