@@ -181,7 +181,7 @@ static void ProcessLibOrObj( char *name, objproc obj, libwalk_fn *process )
         arch.libtype = WL_LTYPE_OMF;
         AddInputLib( io, &arch );
         LibSeek( io, 0, SEEK_SET );
-        OMFLibWalk( io, &arch, process );
+        LibWalk( io, &arch, process );
         if( Options.libtype == WL_LTYPE_NONE ) {
             Options.libtype = WL_LTYPE_OMF;
         }

@@ -34,4 +34,4 @@
 typedef void libwalk_fn( arch_header *arch, libfile io );
 
 extern void LibWalk( libfile io, arch_header *arch, libwalk_fn *rtn );
-extern void OMFLibWalk( libfile io, arch_header *arch, libwalk_fn *rtn );
+

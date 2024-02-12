@@ -59,89 +59,86 @@ static void AllocFFNameTab( const char *name, libfile io, arch_header *arch )
 void LibWalk( libfile io, arch_header *parch, libwalk_fn *rtn )
 /*************************************************************/
 {
-    ar_header           ar;
     arch_header         arch;
-    size_t              bytes_read;
-//    int                 dict_count;
     long                pos;
 
-//    dict_count = 0;
-    arch.fnametab = NULL;
-    arch.ffnametab = NULL;
-    while( (bytes_read = LibRead( io, &ar, AR_HEADER_SIZE )) != 0 ) {
-        if( bytes_read != AR_HEADER_SIZE ) {
-            BadLibrary( parch->name );
-        }
-        if( strncmp( ar.header_ident, AR_HEADER_IDENT, AR_HEADER_IDENT_LEN ) ) {
-            BadLibrary( parch->name );
-        }
-        GetARHeaderValues( &ar, &arch );
-        pos = LibTell( io );
-        if( ar.name[0] == '/' && ar.name[1] == ' ' && ar.name[2] == ' ' ) {
-            // Ignore symbol table.
-/*
-            dict_count++;
-            if( dict_count == 2 ) {
-                error = readDict( &arch );
-            } else {
-                error = MoveAheadFrom( &arch );
-                updateNewArchive( &arch );
+    if( parch->libtype != WL_LTYPE_OMF ) {
+        ar_header           ar;
+        size_t              bytes_read;
+//        int                 dict_count;
+
+//        dict_count = 0;
+        arch.fnametab = NULL;
+        arch.ffnametab = NULL;
+        while( (bytes_read = LibRead( io, &ar, AR_HEADER_SIZE )) != 0 ) {
+            if( bytes_read != AR_HEADER_SIZE ) {
+                BadLibrary( parch->name );
             }
+            if( strncmp( ar.header_ident, AR_HEADER_IDENT, AR_HEADER_IDENT_LEN ) ) {
+                BadLibrary( parch->name );
+            }
+            GetARHeaderValues( &ar, &arch );
+            pos = LibTell( io );
+            if( ar.name[0] == '/' && ar.name[1] == ' ' && ar.name[2] == ' ' ) {
+                // Ignore symbol table.
+/*
+                dict_count++;
+                if( dict_count == 2 ) {
+                    error = readDict( &arch );
+                } else {
+                    error = MoveAheadFrom( &arch );
+                    updateNewArchive( &arch );
+                }
 */
-        } else if( ar.name[0] == '/' && ar.name[1] == '/' && ar.name[2] == ' ' ) {
-            AllocFNameTab( parch->name, io, &arch );
-        } else if( ar.name[0] == '/' && ar.name[1] == '/' && ar.name[2] == '/' ) {
-            AllocFFNameTab( parch->name, io, &arch );
-        } else {
-            arch.name = GetARName( io, &ar, &arch );
-            arch.ffname = GetFFName( &arch );
-            rtn( &arch, io );
-            MemFree( arch.name );
-            MemFree( arch.ffname );
+            } else if( ar.name[0] == '/' && ar.name[1] == '/' && ar.name[2] == ' ' ) {
+                AllocFNameTab( parch->name, io, &arch );
+            } else if( ar.name[0] == '/' && ar.name[1] == '/' && ar.name[2] == '/' ) {
+                AllocFFNameTab( parch->name, io, &arch );
+            } else {
+                arch.name = GetARName( io, &ar, &arch );
+                arch.ffname = GetFFName( &arch );
+                rtn( &arch, io );
+                MemFree( arch.name );
+                MemFree( arch.ffname );
+            }
+            arch.size = __ROUND_UP_SIZE_EVEN( arch.size );
+            LibSeek( io, pos + arch.size, SEEK_SET );
         }
-        arch.size = __ROUND_UP_SIZE_EVEN( arch.size );
-        LibSeek( io, pos + arch.size, SEEK_SET );
-    }
-    MemFree( arch.fnametab );
-    MemFree( arch.ffnametab );
-}
+        MemFree( arch.fnametab );
+        MemFree( arch.ffnametab );
+    } else {
+        unsigned_16     pagelen;
+        char            buff[MAX_IMPORT_STRING];
+        unsigned_8      len;
+        unsigned_16     rec_len;
+        unsigned_8      type;
 
-void OMFLibWalk( libfile io, arch_header *parch, libwalk_fn *rtn )
-/****************************************************************/
-{
-    unsigned_16     pagelen;
-    long            offset;
-    arch_header     arch;
-    char            buff[MAX_IMPORT_STRING];
-    unsigned_8      len;
-    unsigned_16     rec_len;
-    unsigned_8      type;
-
-    if( LibRead( io, &type, sizeof( type ) ) != sizeof( type ) )
-        return; // nyi - FALSE?
-    if( LibRead( io, &rec_len, sizeof( rec_len ) ) != sizeof( rec_len ) )
-        return;
-    pagelen = GET_LE_16( rec_len );
-    offset = pagelen;
-    pagelen += 3;
-    if( Options.page_size == 0 ) {
-        Options.page_size = pagelen;
-    }
-    LibSeek( io, offset, SEEK_CUR );
-    arch = *parch;
-    offset = LibTell( io );
-    while( LibRead( io, &type, sizeof( type ) ) == sizeof( type ) && ( type == CMD_THEADR ) ) {
-        LibSeek( io, 2, SEEK_CUR );
-        if( LibRead( io, &len, sizeof( len ) ) != sizeof( len ) )
-            break;
-        if( LibRead( io, buff, len ) != len )
-            break;
-        buff[len] = '\0';
-        arch.name = buff;
-        LibSeek( io, offset, SEEK_SET );
-        rtn( &arch, io );
-        offset = LibTell( io );
-        offset = __ROUND_UP_SIZE( offset, pagelen );
-        LibSeek( io, offset, SEEK_SET );
+        if( LibRead( io, &type, sizeof( type ) ) != sizeof( type ) )
+            return; // nyi - FALSE?
+        if( LibRead( io, &rec_len, sizeof( rec_len ) ) != sizeof( rec_len ) )
+            return;
+        pagelen = GET_LE_16( rec_len );
+        pos = pagelen;
+        pagelen += 3;
+        if( Options.page_size == 0 ) {
+            Options.page_size = pagelen;
+        }
+        LibSeek( io, pos, SEEK_CUR );
+        arch = *parch;
+        pos = LibTell( io );
+        while( LibRead( io, &type, sizeof( type ) ) == sizeof( type ) && ( type == CMD_THEADR ) ) {
+            LibSeek( io, 2, SEEK_CUR );
+            if( LibRead( io, &len, sizeof( len ) ) != sizeof( len ) )
+                break;
+            if( LibRead( io, buff, len ) != len )
+                break;
+            buff[len] = '\0';
+            arch.name = buff;
+            LibSeek( io, pos, SEEK_SET );
+            rtn( &arch, io );
+            pos = LibTell( io );
+            pos = __ROUND_UP_SIZE( pos, pagelen );
+            LibSeek( io, pos, SEEK_SET );
+        }
     }
 }
