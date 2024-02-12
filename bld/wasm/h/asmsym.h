@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -69,6 +70,8 @@ typedef enum {
     WASM_LANG_BASIC,
     WASM_LANG_WATCOM_C
 } lang_type;
+
+typedef char *(*mangle_func)( struct asm_sym *, char * );
 #endif
 
 typedef struct asm_sym {

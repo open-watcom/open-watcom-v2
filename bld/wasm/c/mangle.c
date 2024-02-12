@@ -47,8 +47,6 @@ enum changes {
 
 #define USCORE "_"
 
-typedef char *(*mangle_func)( struct asm_sym *, char * );
-
 static char *AsmMangler( struct asm_sym *sym, char *buffer )
 /**********************************************************/
 {
