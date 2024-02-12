@@ -200,7 +200,7 @@ static void NewSymFile( arch_header *arch )
         sfile->arch.name = DupStrGlobal( arch->name );
     }
     sfile->name_length = strlen( sfile->arch.name );
-    if( sfile->arch.ffname != NULL ) {
+    if( arch->ffname != NULL ) {
         sfile->arch.ffname = DupStrGlobal( arch->ffname );
         sfile->ffname_length = strlen( sfile->arch.ffname );
     } else {
