@@ -182,15 +182,16 @@ static void RemoveFromHashTable( sym_entry *sym )
 }
 
 
-static void NewSymFile( arch_header *arch )
-/*****************************************/
+static sym_file *NewSymFile( arch_header *arch, file_type obj_type )
+/******************************************************************/
 {
     sym_file    *sfile;
 
     sfile = MemAllocGlobal( sizeof( sym_file ) );
+    sfile->obj_type = obj_type;
+    sfile->arch = *arch;
     sfile->first = NULL;
     sfile->next = NULL;
-    sfile->arch = *arch;
     sfile->import = NULL;
     sfile->inlib_offset = 0;
     sfile->full_name = DupStrGlobal( arch->name );
@@ -208,7 +209,7 @@ static void NewSymFile( arch_header *arch )
     }
     *(FileTable.add_to) = sfile;
     FileTable.add_to = &sfile->next;
-    CurrFile = sfile;
+    return( sfile );
 }
 
 
@@ -926,8 +927,7 @@ void AddObjectSymbols( arch_header *arch, libfile io, long offset )
         Options.omf_found = true;
         obj_type = WL_FTYPE_OMF;
     }
-    NewSymFile( arch );
-    CurrFile->obj_type = obj_type;
+    CurrFile = NewSymFile( arch, obj_type );
     CurrFile->inlib_offset = offset;
     CurrFile->inlib = FindInLib( io );
     ObjWalkSymList( ofile, CurrFile );
@@ -942,8 +942,7 @@ void OmfMKImport( arch_header *arch, importType type,
         FatalError( ERR_MIXED_OBJ, "ELF", "OMF" );
     }
     Options.omf_found = true;
-    NewSymFile( arch );
-    CurrFile->obj_type = WL_FTYPE_OMF;
+    CurrFile = NewSymFile( arch, WL_FTYPE_OMF );
     CurrFile->import = MemAllocGlobal( sizeof( import_sym ) );
     CurrFile->import->DLLName = DupStrGlobal( DLLname );
     CurrFile->import->u.sym.ordinal = ordinal;
@@ -971,8 +970,7 @@ void CoffMKImport( arch_header *arch, importType type,
         FatalError( ERR_MIXED_OBJ, "ELF", "COFF" );
     }
     Options.coff_found = true;
-    NewSymFile( arch );
-    CurrFile->obj_type = WL_FTYPE_COFF;
+    CurrFile = NewSymFile( arch, WL_FTYPE_COFF );
     CurrFile->import = MemAllocGlobal( sizeof( import_sym ) );
     CurrFile->import->type = type;
     CurrFile->import->u.sym.ordinal = ordinal;
@@ -1016,8 +1014,7 @@ void ElfMKImport( arch_header *arch, importType type, long export_size,
         FatalError( ERR_MIXED_OBJ, "ELF", "OMF" );
     }
     Options.elf_found = true;
-    NewSymFile( arch );
-    CurrFile->obj_type = WL_FTYPE_ELF;
+    CurrFile = NewSymFile( arch, WL_FTYPE_ELF );
     CurrFile->import = MemAllocGlobal( sizeof( import_sym ) );
     CurrFile->import->type = type;
     CurrFile->import->DLLName = DupStrGlobal( DLLname );

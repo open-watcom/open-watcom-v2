@@ -37,16 +37,16 @@
 #include "clibext.h"
 
 
-static void SkipObject( libfile io )
+static void SkipObject( libfile io, arch_header *arch )
 {
-    if( Options.libtype == WL_LTYPE_OMF ) {
+    if( arch->libtype == WL_LTYPE_OMF ) {
         OmfSkipObject( io );
     }
 }
 
 static void CopyObj( libfile io, libfile out, arch_header *arch )
 {
-    if( Options.libtype == WL_LTYPE_OMF ) {
+    if( arch->libtype == WL_LTYPE_OMF ) {
         OmfExtract( io, out );
     } else {
         Copy( io, out, arch->size );
@@ -108,7 +108,7 @@ static void ProcessOneObject( arch_header *arch, libfile io )
     }
 
     if( deleted ) {
-        SkipObject( io );
+        SkipObject( io, arch );
         Options.modified = true;
     } else {
         AddObjectSymbols( arch, io, LibTell( io ) );
@@ -123,7 +123,7 @@ static void AddOneObject( arch_header *arch, libfile io )
 static void DelOneObject( arch_header *arch, libfile io )
 {
     RemoveObjectSymbols( arch );
-    SkipObject( io );
+    SkipObject( io, arch );
 }
 
 typedef enum {
@@ -132,7 +132,7 @@ typedef enum {
     OBJ_PROCESS,
 } objproc;
 
-static void ProcessLibOrObj( char *name, objproc obj, void (*process)( arch_header *arch, libfile io ) )
+static void ProcessLibOrObj( char *name, objproc obj, libwalk_fn *process )
 {
     libfile     io;
     unsigned char   buff[AR_IDENT_LEN];
@@ -145,6 +145,7 @@ static void ProcessLibOrObj( char *name, objproc obj, void (*process)( arch_head
     }
     if( memcmp( buff, AR_IDENT, sizeof( buff ) ) == 0 ) {
         // AR format
+        arch.libtype = WL_LTYPE_AR;
         AddInputLib( io, &arch );
         LibWalk( io, &arch, process );
         if( Options.libtype == WL_LTYPE_NONE ) {
@@ -158,6 +159,7 @@ static void ProcessLibOrObj( char *name, objproc obj, void (*process)( arch_head
         if( memcmp( buff, LIB_CLASS_DATA_SHOULDBE, LIB_CLASS_LEN + LIB_DATA_LEN ) ) {
             BadLibrary( arch.name );
         }
+        arch.libtype = WL_LTYPE_MLIB;
         AddInputLib( io, &arch );
         LibWalk( io, &arch, process );
         if( Options.libtype == WL_LTYPE_NONE ) {
@@ -176,12 +178,13 @@ static void ProcessLibOrObj( char *name, objproc obj, void (*process)( arch_head
           beaten up with large blunt objects.
          */
         // OMF format
+        arch.libtype = WL_LTYPE_OMF;
         AddInputLib( io, &arch );
         LibSeek( io, 0, SEEK_SET );
+        OMFLibWalk( io, &arch, process );
         if( Options.libtype == WL_LTYPE_NONE ) {
             Options.libtype = WL_LTYPE_OMF;
         }
-        OMFLibWalk( io, &arch, process );
     } else if( obj == OBJ_PROCESS ) {
         // Object
         LibSeek( io, 0, SEEK_SET );

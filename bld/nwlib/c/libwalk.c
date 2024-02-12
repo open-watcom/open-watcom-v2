@@ -56,8 +56,8 @@ static void AllocFFNameTab( const char *name, libfile io, arch_header *arch )
 }
 
 
-void LibWalk( libfile io, arch_header *parch, void (*rtn)( arch_header *, libfile io ) )
-/**************************************************************************************/
+void LibWalk( libfile io, arch_header *parch, libwalk_fn *rtn )
+/*************************************************************/
 {
     ar_header           ar;
     arch_header         arch;
@@ -106,8 +106,8 @@ void LibWalk( libfile io, arch_header *parch, void (*rtn)( arch_header *, libfil
     MemFree( arch.ffnametab );
 }
 
-void OMFLibWalk( libfile io, arch_header *parch, void (*rtn)( arch_header *arch, libfile io ) )
-/*********************************************************************************************/
+void OMFLibWalk( libfile io, arch_header *parch, libwalk_fn *rtn )
+/****************************************************************/
 {
     unsigned_16     pagelen;
     long            offset;
