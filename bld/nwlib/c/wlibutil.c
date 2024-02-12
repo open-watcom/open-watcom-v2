@@ -124,9 +124,11 @@ bool IsSameFile( const char *a, const char *b )
     return( FNCMP( pg1.buffer, pg2.buffer ) == 0 );
 }
 
-bool IsSameModuleCase( arch_header *arch, const char *b )
+bool IsSameModuleCase( const char *a, const char *b, int cmp_mode )
 {
-    _splitpath2( arch->name, pg1.buffer, NULL, NULL, &pg1.fname, NULL );
+    /* unused parameters */ (void)cmp_mode;
+
+    _splitpath2( a, pg1.buffer, NULL, NULL, &pg1.fname, NULL );
     _splitpath2( b, pg2.buffer, NULL, NULL, &pg2.fname, NULL );
     if( Options.respect_case ) {
         return( strcmp( pg1.fname, pg2.fname ) == 0 );

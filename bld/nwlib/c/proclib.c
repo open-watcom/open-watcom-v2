@@ -87,7 +87,7 @@ static void ProcessOneObject( arch_header *arch, libfile io )
     }
     deleted = false;
     for( cmd = CmdList; cmd != NULL; cmd = cmd->next ) {
-        if( IsSameModuleCase( arch, cmd->name ) ) {
+        if( IsSameModuleCase( arch->name, cmd->name, ( arch->libtype == WL_LTYPE_OMF ) ) ) {
             if( !Options.explode ) {
                 if( (cmd->ops & OP_EXTRACT) && (cmd->ops & OP_EXTRACTED) == 0 ) {
                     if( cmd->fname != NULL ) {

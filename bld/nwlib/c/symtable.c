@@ -882,7 +882,9 @@ bool RemoveObjectSymbols( arch_header *arch )
                     FileTable.first = sfile->next;
                 }
             }
-
+            /*
+             * remove all module symbols
+             */
             for( sym = sfile->first; sym != NULL; sym = sym->next ) {
                 RemoveFromHashTable( sym );
             }
@@ -1165,7 +1167,7 @@ void ListContents( void )
                 if( cmd->ops & OP_FOUND ) {
                     if( Options.verbose ) {
                         for( sfile = FileTable.first; sfile != NULL; sfile = sfile->next ) {
-                            if( IsSameModuleCase( &(sfile->arch), cmd->name ) ) {
+                            if( IsSameModuleCase( sfile->arch.name, cmd->name, ( sfile->obj_type == WL_FTYPE_OMF ) ) ) {
                                 if( Options.terse_listing ) {
                                     Message( sfile->arch.name );
                                 } else {

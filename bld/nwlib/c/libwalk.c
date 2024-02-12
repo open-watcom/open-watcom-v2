@@ -62,6 +62,7 @@ void LibWalk( libfile io, arch_header *parch, libwalk_fn *rtn )
     arch_header         arch;
     long                pos;
 
+    arch = *parch;
     if( parch->libtype != WL_LTYPE_OMF ) {
         ar_header           ar;
         size_t              bytes_read;
@@ -124,7 +125,6 @@ void LibWalk( libfile io, arch_header *parch, libwalk_fn *rtn )
             Options.page_size = pagelen;
         }
         LibSeek( io, pos, SEEK_CUR );
-        arch = *parch;
         pos = LibTell( io );
         while( LibRead( io, &type, sizeof( type ) ) == sizeof( type ) && ( type == CMD_THEADR ) ) {
             LibSeek( io, 2, SEEK_CUR );

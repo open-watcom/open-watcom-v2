@@ -36,7 +36,7 @@ extern char *MakeObjOutputName( const char *src, const char *new );
 extern char *MakeListName( void );
 extern char *MakeFName( const char *a );
 extern char *MakeBakName( void );
-extern bool IsSameModuleCase( arch_header *arch, const char *b );
+extern bool IsSameModuleCase( const char *a, const char *b, int cmp_mode );
 extern int  SymbolNameCmp( const char *s1, const char *s2);
 extern bool IsExt( const char *a, const char *b );
 extern void NewArchHeader( arch_header *arch, char *name );
