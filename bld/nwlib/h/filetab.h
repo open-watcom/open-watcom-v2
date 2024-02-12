@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -120,7 +120,7 @@ extern void ResetFileTab( void );
 extern void CleanFileTab( void );
 extern void ListContents( void );
 extern void AddObjectSymbols( arch_header *arch, libfile io, long offset );
-extern bool RemoveObjectSymbols( const char *name );
+extern bool RemoveObjectSymbols( arch_header *arch );
 extern void SymCalcNewOffsets( void );
 extern void WriteFileTable( void );
 extern void WriteFileBody( sym_file *sfile );

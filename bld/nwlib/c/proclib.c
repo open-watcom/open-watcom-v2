@@ -122,7 +122,7 @@ static void AddOneObject( arch_header *arch, libfile io )
 
 static void DelOneObject( arch_header *arch, libfile io )
 {
-    RemoveObjectSymbols( arch->name );
+    RemoveObjectSymbols( arch );
     SkipObject( io );
 }
 

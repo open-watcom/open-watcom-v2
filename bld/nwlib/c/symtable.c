@@ -857,8 +857,8 @@ void DumpHashTable( void )
 #endif // DEVBUILD
 
 
-bool RemoveObjectSymbols( const char *name )
-/******************************************/
+bool RemoveObjectSymbols( arch_header *arch )
+/*******************************************/
 {
     sym_file    *sfile;
     sym_file    *prev_sfile;
@@ -866,7 +866,7 @@ bool RemoveObjectSymbols( const char *name )
 
     prev_sfile = NULL;
     for( sfile = FileTable.first; sfile != NULL; sfile = sfile->next ) {
-        if( SymbolNameCmp( sfile->full_name, name ) == 0 ) {
+        if( SymbolNameCmp( sfile->full_name, arch->name ) == 0 ) {
             if( prev_sfile != NULL ) {    /* Not deleting from head of list */
                 prev_sfile->next = sfile->next;
 
