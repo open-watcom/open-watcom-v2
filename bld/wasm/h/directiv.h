@@ -278,8 +278,9 @@ union entry {
 typedef struct dir_node {
     struct asm_sym      sym;
     union entry         e;
-    unsigned long       line_num;     // line number of the directive in source file
-    struct dir_node     *next, *prev; // linked list of this type of symbol
+    unsigned long       line_num;   // line number of the directive in source file
+    struct dir_node     *next;      // linked list of this type of symbol
+    struct dir_node     *prev;      // linked list of this type of symbol
 } dir_node;         // List of grpdef, segdef, pubdef, externdef, included lib
                     // and symbolic integer constants.
 
@@ -340,6 +341,8 @@ extern module_info      ModuleInfo;
 extern seg_list         *CurrSeg;       // points to stack of opened segments
 
 /*---------------------------------------------------------------------------*/
+
+extern dir_node         *AllocD( const char * );
 
 extern dir_node         *dir_insert( const char *, int );
 extern void             dir_to_sym( dir_node * );

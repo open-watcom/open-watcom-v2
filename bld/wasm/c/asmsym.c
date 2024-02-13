@@ -383,23 +383,36 @@ static struct asm_sym *AsmSymAdd( struct asm_sym *sym )
     return( sym );
 }
 
-struct asm_sym *AllocDSym( const char *name, bool add_symbol )
-/************************************************************/
-/* Create directive symbol and insert it into the symbol table */
+dir_node *AllocD( const char *name )
+/***********************************
+ * Create directive symbol
+ */
+{
+    dir_node    *dir;
+
+    dir = (dir_node *)AllocASym( name );
+    if( dir == NULL )
+        AsmError( NO_MEMORY );
+    return( dir );
+}
+
+struct asm_sym *AllocDSym( const char *name )
+/********************************************
+ * Create directive symbol and insert it into
+ * the global symbol table
+ */
 {
     struct asm_sym      *new;
 
     new = AllocASym( name );
-    if( new == NULL ) {
-        AsmError( NO_MEMORY );
-        return( NULL );
-    }
-    /* add it into the symbol table */
-    if( add_symbol ) {
+    if( new != NULL ) {
+        /*
+         * add it into the global symbol table
+         */
         return( AsmSymAdd( new ) );
-    } else {
-        return( new );
     }
+    AsmError( NO_MEMORY );
+    return( new );
 }
 
 struct asm_sym *AsmGetSymbol( const char *name )

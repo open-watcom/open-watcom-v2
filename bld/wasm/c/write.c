@@ -251,10 +251,10 @@ static void write_dosseg( void )
 static void write_lib( void )
 /***************************/
 {
-    obj_rec             *objr;
-    struct dir_node     *curr;
-    char                *name;
-    size_t                              len;
+    obj_rec         *objr;
+    dir_node        *curr;
+    char            *name;
+    size_t          len;
 
     for( curr = Tables[TAB_LIB].head; curr != NULL; curr = curr->next ) {
         name = curr->sym.name;
@@ -1024,7 +1024,7 @@ static void write_ledata( void )
 static void put_private_proc_in_public_table( void )
 /**************************************************/
 {
-    dir_node            *proc;
+    dir_node    *proc;
 
     /* put private PROC into the pub table */
     for( proc = Tables[TAB_PROC].head; proc != NULL; proc = proc->next ) {

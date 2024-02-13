@@ -753,7 +753,7 @@ dir_node *dir_insert( const char *name, int tab )
     /*
      * don't put class lnames into the symbol table - separate name space
      */
-    new = (dir_node *)AllocDSym( name, ( tab != TAB_CLASS_LNAME ) );
+    new = (dir_node *)AllocDSym( name );
     if( new != NULL )
         dir_init( new, tab );
     return( new );
@@ -940,9 +940,10 @@ static struct asm_sym *InsertClassLname( const char *name )
             return( &dir->sym );
         }
     }
-    dir = dir_insert( name, TAB_CLASS_LNAME );
+    dir = (dir_node *)AllocD( name );
     if( dir == NULL )
         return( NULL );
+    dir_init( dir, TAB_CLASS_LNAME );
     AddLnameData( dir );
     return( &dir->sym );
 }
@@ -1202,7 +1203,7 @@ bool PubDef( token_buffer *tokbuf, token_idx i )
          */
         dir = (dir_node *)AsmGetSymbol( token );
         if( dir == NULL ) {
-            dir = (dir_node *)AllocDSym( token, true );
+            dir = (dir_node *)AllocDSym( token );
             AddPublicData( dir );
         } else if( dir->sym.state == SYM_CONST ) {
             /*
