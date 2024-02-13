@@ -157,6 +157,8 @@ static void FreeFlist( void )
 static void write_init( void )
 /****************************/
 {
+    dir_node    *dir;
+
     BufSize       = 0;
     FixupListHead = NULL;
     FixupListTail = NULL;
@@ -165,7 +167,11 @@ static void write_init( void )
     Use32         = false;
     write_to_file = true;
 
-    AddLnameData( dir_insert( "", TAB_CLASS_LNAME ) );
+    dir = AllocD( "" );
+    if( dir != NULL ) {
+        dir_init( dir, TAB_CLASS_LNAME )
+        AddLnameData( dir );
+    }
     ModuleInit();
     FixInit();      /* OMF output init */
 }
