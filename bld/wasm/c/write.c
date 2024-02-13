@@ -72,7 +72,6 @@
 
 extern void             CmdlParamsInit( void );
 
-extern symbol_queue     Tables[];       // tables of definitions
 extern unsigned         BufSize;
 
 extern bool             in_prologue;
@@ -475,7 +474,22 @@ static void write_external( void )
 
     last = NULL;
     ext_idx = 0;
-    for( start = Tables[TAB_EXT].head; start != NULL; start = last ) {
+    if( Tables[TAB_EXT].head == NULL ) {
+        /*
+         * no externals list, try FPPATCH externals list
+         */
+        start = Tables[TAB_FPPATCH].head;
+    } else {
+        /*
+         * concatenate externals with FPPATCH externals
+         */
+        start = Tables[TAB_EXT].head;
+        Tables[TAB_EXT].tail->next = Tables[TAB_FPPATCH].head;
+    }
+    /*
+     * process concatenated externals list
+     */
+    for( ; start != NULL; start = last ) {
         first = NULL;
         total_size = 0;
         for( curr = start;
@@ -575,6 +589,13 @@ static void write_external( void )
         } else {
             ObjKillRec( objr );
         }
+    }
+    if( Tables[TAB_EXT].head != NULL ) {
+        /*
+         * divide concatenated externals list
+         * to original lists
+         */
+        Tables[TAB_EXT].tail->next = NULL;
     }
 }
 

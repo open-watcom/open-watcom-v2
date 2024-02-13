@@ -594,6 +594,7 @@ void dir_init( dir_node *dir, int tab )
         dir->e.grpinfo->numseg = 0;
         break;
     case TAB_EXT:
+    case TAB_FPPATCH:
         dir->sym.state = SYM_EXTERNAL;
         dir->e.extinfo = AsmAlloc( sizeof( ext_info ) );
         dir->e.extinfo->idx = 0;
@@ -940,7 +941,7 @@ static struct asm_sym *InsertClassLname( const char *name )
             return( &dir->sym );
         }
     }
-    dir = (dir_node *)AllocD( name );
+    dir = AllocD( name );
     if( dir == NULL )
         return( NULL );
     dir_init( dir, TAB_CLASS_LNAME );

@@ -85,6 +85,7 @@ enum {
     TAB_MACRO,
     TAB_CLASS_LNAME,
     TAB_STRUCT,
+    TAB_FPPATCH,
     TAB_LAST,
     TAB_COMM             // TAB_COMM is not included in tables, it is assigned to TAB_EXT
 };                       // tables for definitions
@@ -338,7 +339,9 @@ extern module_info      ModuleInfo;
 
 #define IS_PROC_FAR()   ( ModuleInfo.model == MOD_MEDIUM || ModuleInfo.model == MOD_LARGE || ModuleInfo.model == MOD_HUGE )
 
-extern seg_list         *CurrSeg;       // points to stack of opened segments
+extern seg_list         *CurrSeg;           // points to stack of opened segments
+
+extern symbol_queue     Tables[TAB_LAST];   // tables of definitions
 
 /*---------------------------------------------------------------------------*/
 

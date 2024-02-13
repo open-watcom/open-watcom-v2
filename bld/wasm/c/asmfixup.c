@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -381,10 +381,15 @@ static bool MakeFpFixup( const char *patch_name )
     dir_node            *dir;
     struct asmfixup     *fixup;
 
-    dir = (dir_node *)AsmGetSymbol( patch_name );
+    for( dir = Tables[TAB_FPPATCH].head; dir != NULL; dir = dir->next ) {
+        if( stricmp( dir->sym.name, patch_name ) == 0 ) {
+            break;
+        }
+    }
     if( dir == NULL ) {
-        dir = dir_insert( patch_name, TAB_EXT );
+        dir = AllocD( patch_name );
         if( dir != NULL ) {
+            dir_init( dir, TAB_FPPATCH );
             GetSymInfo( &dir->sym );
             dir->sym.offset = 0;
             dir->sym.referenced = true;
