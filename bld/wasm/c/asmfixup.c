@@ -382,7 +382,7 @@ static bool MakeFpFixup( const char *patch_name )
     struct asmfixup     *fixup;
 
     for( dir = Tables[TAB_FPPATCH].head; dir != NULL; dir = dir->next ) {
-        if( stricmp( dir->sym.name, patch_name ) == 0 ) {
+        if( strcmp( dir->sym.name, patch_name ) == 0 ) {
             break;
         }
     }
