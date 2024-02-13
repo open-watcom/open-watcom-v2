@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -673,7 +674,7 @@ void OMFWalkSymList( obj_file *ofile, sym_file *sfile )
     LName_Head = NULL;
     LName_Owner = &LName_Head;
 
-    sfile->arch.size = OmfProc( ofile->hdl, sfile, OMF_SYMS );
+    sfile->arch.size = OmfProc( ofile->io, sfile, OMF_SYMS );
 
     FreeCommonBlk();
     FreeLNames();

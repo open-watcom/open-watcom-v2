@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,7 +47,7 @@ static void *ObjRead( FILE *fp, size_t len )
     buf_list    *buf;
 
     buf = MemAlloc( len + sizeof( buf_list ) - 1 );
-    if( LibRead( FP2OF( fp )->hdl, buf->buf, len ) != len ) {
+    if( LibRead( FP2OF( fp )->io, buf->buf, len ) != len ) {
         MemFree( buf );
         return( NULL );
     }
@@ -66,7 +66,7 @@ static int ObjSeek( FILE *fp, long pos, int where )
     case SEEK_CUR:
         break;
     }
-    LibSeek( FP2OF( fp )->hdl, pos, where );
+    LibSeek( FP2OF( fp )->io, pos, where );
     return( 0 );
 }
 
@@ -101,14 +101,14 @@ void InitObj( void )
     }
 }
 
-static obj_file *DoOpenObjFile( const char *name, libfile hdl, long offset )
+static obj_file *DoOpenObjFile( const char *name, libfile io, long offset )
 /**************************************************************************/
 {
     obj_file            *ofile;
     orl_file_format     format;
 
     ofile = MemAlloc( sizeof( *ofile ) );
-    ofile->hdl = hdl;
+    ofile->io = io;
     ofile->buflist = NULL;
     ofile->offset = offset;
     format = ORLFileIdentify( ORLHnd, OF2FP( ofile ) );
@@ -136,16 +136,16 @@ static obj_file *DoOpenObjFile( const char *name, libfile hdl, long offset )
 obj_file *OpenObjFile( const char *name )
 /***************************************/
 {
-    libfile     hdl;
+    libfile     io;
 
-    hdl = LibOpen( name, LIBOPEN_READ );
-    return( DoOpenObjFile( name, hdl, 0 ) );
+    io = LibOpen( name, LIBOPEN_READ );
+    return( DoOpenObjFile( name, io, 0 ) );
 }
 
-obj_file *OpenLibFile( const char *name, libfile hdl )
+obj_file *OpenLibFile( const char *name, libfile io )
 /****************************************************/
 {
-    return( DoOpenObjFile( name, hdl, LibTell( hdl ) ) );
+    return( DoOpenObjFile( name, io, LibTell( io ) ) );
 }
 
 static void DoCloseObjFile( obj_file *ofile )
@@ -167,11 +167,11 @@ static void DoCloseObjFile( obj_file *ofile )
 void CloseObjFile( obj_file *ofile )
 /**********************************/
 {
-    libfile     hdl;
+    libfile     io;
 
-    hdl = ofile->hdl;
+    io = ofile->io;
     DoCloseObjFile( ofile );
-    LibClose( hdl );
+    LibClose( io );
 }
 
 void CloseLibFile( obj_file *ofile )

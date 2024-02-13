@@ -31,7 +31,7 @@
 
 
 extern void GetFileContents( const char *name, libfile io, arch_header *arch, char **contents );
-extern void Copy( libfile source, libfile dest, file_offset size );
+extern void Copy( libfile src, libfile dst, file_offset size );
 extern char *MakeObjOutputName( const char *src, const char *new );
 extern char *MakeListName( void );
 extern char *MakeFName( const char *a );

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,7 +39,7 @@ typedef file_struct * file;
 
 struct archive_struct {
     char *              name;
-    libfile             handle;
+    libfile             io;
     file_offset         initial_offset; // AR_IDENT_LEN + (AR_HEADER_LEN + contents of symbol table -> if s.t. present)
     file_offset         current_offset;
 };

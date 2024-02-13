@@ -97,14 +97,14 @@ static orl_sec_handle FindSec( obj_file *ofile, char *name )
             export_table_rva = ORLExportTableRVA( ofile->orl );
 
             if( export_table_rva == 0 ) {
-                FatalError( ERR_NO_EXPORTS, ofile->hdl->name );
+                FatalError( ERR_NO_EXPORTS, ofile->io->name );
             }
 
             ORLFileScan( ofile->orl, NULL, FindExportTableHelper );
         }
 
         if( found_sec_handle == ORL_NULL_HANDLE ) {
-            FatalError( ERR_NO_EXPORTS, ofile->hdl->name );
+            FatalError( ERR_NO_EXPORTS, ofile->io->name );
         }
     }
 

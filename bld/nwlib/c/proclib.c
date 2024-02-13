@@ -44,28 +44,28 @@ static void SkipObject( libfile io, arch_header *arch )
     }
 }
 
-static void CopyObj( libfile io, libfile out, arch_header *arch )
+static void CopyObj( libfile src, libfile dst, arch_header *arch )
 {
     if( arch->libtype == WL_LTYPE_OMF ) {
-        OmfExtract( io, out );
+        OmfExtract( src, dst );
     } else {
-        Copy( io, out, arch->size );
+        Copy( src, dst, arch->size );
     }
 }
 
-static void ExtractObj( libfile io, const char *name, arch_header *arch, const char *newname )
+static void ExtractObj( libfile src, const char *name, arch_header *arch, const char *newname )
 {
     long        pos;
-    libfile     out;
+    libfile     dst;
     char        *obj_name;
 
     obj_name = MakeObjOutputName( name, newname );
     remove( obj_name );
-    out = LibOpen( obj_name, LIBOPEN_WRITE );
-    pos = LibTell( io );
-    CopyObj( io, out, arch );
-    LibSeek( io, pos, SEEK_SET );
-    LibClose( out );
+    dst = LibOpen( obj_name, LIBOPEN_WRITE );
+    pos = LibTell( src );
+    CopyObj( src, dst, arch );
+    LibSeek( src, pos, SEEK_SET );
+    LibClose( dst );
     if( Options.ar && Options.verbose ) {
         Message( "x - %s", obj_name );
     }

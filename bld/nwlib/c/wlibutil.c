@@ -89,26 +89,26 @@ void NewArchHeader( arch_header *arch, char *name )
     arch->ffnametab = NULL;
 }
 
-static void CopyBytes( char *buffer, libfile source, libfile dest, size_t len )
+static void CopyBytes( char *buffer, libfile src, libfile dst, size_t len )
 {
-    if( LibRead( source, buffer, len ) == len ) {
-        LibWrite( dest, buffer, len );
+    if( LibRead( src, buffer, len ) == len ) {
+        LibWrite( dst, buffer, len );
     } else {
-        LibReadError( source );
+        LibReadError( src );
     }
 }
 
-void Copy( libfile source, libfile dest, file_offset size )
+void Copy( libfile src, libfile dst, file_offset size )
 {
     char        buffer[4096];
 
 
     while( size > sizeof( buffer ) ) {
-        CopyBytes( buffer, source, dest, sizeof( buffer ) );
+        CopyBytes( buffer, src, dst, sizeof( buffer ) );
         size -= sizeof( buffer );
     }
     if( size != 0 ) {
-        CopyBytes( buffer, source, dest, size );
+        CopyBytes( buffer, src, dst, size );
     }
 }
 
