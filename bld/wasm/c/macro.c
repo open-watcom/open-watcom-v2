@@ -335,8 +335,7 @@ static bool macro_exam( token_buffer *tokbuf, token_idx i )
     macro_info          *info;
     char                *string;
     char                *name;
-    parm_list           *paranode;
-    parm_list           *paracurr;
+    parm_list           *paramnode;
     asmlines            *linestruct;
     char                buffer[ MAX_LINE_LEN ];
     dir_node            *dir;
@@ -360,14 +359,15 @@ static bool macro_exam( token_buffer *tokbuf, token_idx i )
 
     if( store_data ) {
         for( ; i < tokbuf->count ; ) {
-            paranode = AsmAlloc( sizeof( parm_list ) );
-            paranode->def = NULL;
-            paranode->replace = NULL;
-            paranode->required = false;
+            paramnode = AsmAlloc( sizeof( parm_list ) );
+            paramnode->next = NULL;
+            paramnode->def = NULL;
+            paramnode->replace = NULL;
+            paramnode->required = false;
             /*
              * first get the parm. name
              */
-            paranode->label = AsmStrDup( tokbuf->tokens[i].string_ptr );
+            paramnode->label = AsmStrDup( tokbuf->tokens[i].string_ptr );
             i++;
             /*
              * now see if it has a default value or is required
@@ -380,13 +380,13 @@ static bool macro_exam( token_buffer *tokbuf, token_idx i )
                         AsmError( SYNTAX_ERROR );
                         return( RC_ERROR );
                     }
-                    paranode->def = AsmStrDup( tokbuf->tokens[i].string_ptr );
+                    paramnode->def = AsmStrDup( tokbuf->tokens[i].string_ptr );
                     i++;
                 } else if( CMPLIT( tokbuf->tokens[i].string_ptr, "REQ" ) == 0 ) {
                     /*
                      * required parameter
                      */
-                    paranode->required = true;
+                    paramnode->required = true;
                     i++;
                 }
             }
@@ -400,20 +400,14 @@ static bool macro_exam( token_buffer *tokbuf, token_idx i )
             i++;
             /*
              * add this parm node to the list
-             *
-             * FIXME
+             * new parameter is added to end of list
              */
-            paranode->next = NULL;
-            if( info->parmlist == NULL ) {
-                info->parmlist = paranode;
+            if( info->params.head == NULL ) {
+                info->params.head = paramnode;
             } else {
-                for( paracurr = info->parmlist;; paracurr = paracurr->next ) {
-                    if( paracurr->next == NULL ) {
-                        break;
-                    }
-                }
-                paracurr->next = paranode;
+                info->params.tail->next = paramnode;
             }
+            info->params.tail = paramnode;
 
         } /* looping through parameters */
     }
@@ -472,7 +466,7 @@ static bool macro_exam( token_buffer *tokbuf, token_idx i )
             /*
              * make info->data point at the LAST line in the struct
              */
-            replace_items_in_line( linestruct, info->parmlist, replace_parm );
+            replace_items_in_line( linestruct, info->params.head, replace_parm );
         }
         string = ReadTextLine( buffer );
         if( string == NULL ) {
@@ -535,12 +529,12 @@ static char *fill_in_parms_and_labels( char *line, macro_info *info )
     int                 count = 0;
     asmlines            lnode;
 
-    for( parm = info->parmlist; parm != NULL; parm = parm->next ) {
+    for( parm = info->params.head; parm != NULL; parm = parm->next ) {
         count ++;
     }
     parm_array = AsmTmpAlloc( count * sizeof( char * ) );
     count = 0;
-    for( parm = info->parmlist; parm != NULL; parm = parm->next ) {
+    for( parm = info->params.head; parm != NULL; parm = parm->next ) {
         parm_array[count] = parm->replace;
         count++;
     }
@@ -566,8 +560,8 @@ static char *fill_in_parms_and_labels( char *line, macro_info *info )
     return( new_line );
 }
 
-static void free_parmlist( parm_list *head )
-/******************************************/
+static void reset_parmlist( parm_list *head )
+/*******************************************/
 {
     parm_list *parm;
 
@@ -653,7 +647,7 @@ bool ExpandMacro( token_buffer *tokbuf )
     dir = (dir_node *)sym;
     info = dir->e.macroinfo;
 
-    for( parm = info->parmlist; parm != NULL; parm = parm->next ) {
+    for( parm = info->params.head; parm != NULL; parm = parm->next ) {
         p = buffer;
         if( i < tokbuf->count ) {
             if( tokbuf->tokens[i].class == TC_COMMA
@@ -728,7 +722,7 @@ bool ExpandMacro( token_buffer *tokbuf )
                     } else {
                         bool expanded;
                         if( ExpandSymbol( tokbuf, i, false, &expanded ) ) {
-                            free_parmlist( info->parmlist );
+                            reset_parmlist( info->params.head );
                             return( RC_ERROR );
                         }
                         if( expanded ) {
@@ -775,11 +769,11 @@ bool ExpandMacro( token_buffer *tokbuf )
      */
     PushMacro( sym->name, info->hidden );
     /*
-     * free the parm replace strings
+     * reset the parm replace strings
      */
-    free_parmlist( info->parmlist );
+    reset_parmlist( info->params.head );
     /*
-     * free the local label replace strings, if exists
+     * reset the local label replace strings, if exists
      */
     for( loclab = info->locallist; loclab != NULL; loclab = loclab->next ) {
         if( loclab->label_len > 0 ) {

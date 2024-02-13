@@ -623,14 +623,16 @@ void dir_init( dir_node *dir, int tab )
         dir->sym.state = SYM_PROC;
         dir->e.procinfo = AsmAlloc( sizeof( proc_info ) );
         dir->e.procinfo->regslist = NULL;
-        dir->e.procinfo->paralist = NULL;
+        dir->e.procinfo->params.head = NULL;
+        dir->e.procinfo->params.tail = NULL;
         dir->e.procinfo->locallist = NULL;
         dir->e.procinfo->labellist = NULL;
         break;
     case TAB_MACRO:
         dir->sym.state = SYM_MACRO;
         dir->e.macroinfo = AsmAlloc( sizeof( macro_info ) );
-        dir->e.macroinfo->parmlist = NULL;
+        dir->e.macroinfo->params.head = NULL;
+        dir->e.macroinfo->params.tail = NULL;
         dir->e.macroinfo->locallist = NULL;
         dir->e.macroinfo->data = NULL;
         dir->e.macroinfo->srcfile = NULL;
@@ -829,7 +831,7 @@ void FreeInfo( dir_node *dir )
             regs_list   *regcurr;
             regs_list   *regnext;
 
-            for( labelcurr = dir->e.procinfo->paralist; labelcurr != NULL; labelcurr = labelnext ) {
+            for( labelcurr = dir->e.procinfo->params.head; labelcurr != NULL; labelcurr = labelnext ) {
                 labelnext = labelcurr->next;
                 AsmFree( labelcurr->label );
                 AsmFree( labelcurr->replace );
@@ -872,7 +874,7 @@ void FreeInfo( dir_node *dir )
             /*
              * free the parm list
              */
-            for( labelcurr = dir->e.macroinfo->parmlist; labelcurr != NULL; labelcurr = labelnext ) {
+            for( labelcurr = dir->e.macroinfo->params.head; labelcurr != NULL; labelcurr = labelnext ) {
                 labelnext = labelcurr->next;
                 AsmFree( labelcurr->label );
                 if( labelcurr->replace != NULL ) {
@@ -3020,7 +3022,6 @@ bool LocalDef( token_buffer *tokbuf, token_idx i )
 static bool GetArgType( proc_info *info, const char *token, const char *typetoken, paramsinfo *params )
 {
     label_list      *paramnode;
-    label_list      *paramcurr;
     int             type;
     int             parameter_size;
     int             parameter_size_aligned;
@@ -3113,23 +3114,27 @@ static bool GetArgType( proc_info *info, const char *token, const char *typetoke
     case WASM_LANG_FORTRAN:
     case WASM_LANG_PASCAL:
         /*
-         * Parameters are stored in reverse order
+         * for these calling conventions parameters are stored in reverse order
+         * new parameter is added to beginig of list
          */
-        paramnode->next = info->paralist;
-        info->paralist = paramnode;
+        paramnode->next = info->params.head;
+        if( info->params.head == NULL ) {
+            info->params.tail = paramnode;
+        }
+        info->params.head = paramnode;
         break;
     default:
+        /*
+         * for others calling conventions parameters are stored in native order
+         * new parameter is added to end of list
+         */
         paramnode->next = NULL;
-        if( info->paralist == NULL ) {
-            info->paralist = paramnode;
+        if( info->params.head == NULL ) {
+            info->params.head = paramnode;
         } else {
-            for( paramcurr = info->paralist;; paramcurr = paramcurr->next ) {
-                if( paramcurr->next == NULL ) {
-                    break;
-                }
-            }
-            paramcurr->next = paramnode;
+            info->params.tail->next = paramnode;
         }
+        info->params.tail = paramnode;
         break;
     }
     return( RC_OK );
@@ -3620,7 +3625,7 @@ static void ProcFini( void )
     CurrProc->sym.total_size = GetCurrAddr() - CurrProc->sym.offset;
 
     if( Parse_Pass == PASS_1 ) {
-        for( curr = info->paralist; curr != NULL; curr = curr->next ) {
+        for( curr = info->params.head; curr != NULL; curr = curr->next ) {
             AsmTakeOut( curr->label );
         }
         for( curr = info->locallist; curr != NULL; curr = curr->next ) {
@@ -3784,7 +3789,7 @@ bool WritePrologue( const char *curline )
           && !info->is_vararg ) {
             params.on_stack = false;
         }
-        for( curr = info->paralist; curr != NULL; curr = curr->next ) {
+        for( curr = info->params.head; curr != NULL; curr = curr->next ) {
             if( !params.on_stack ) {
                 if( get_watcom_argument_string( buffer, curr->size, &params ) ) {
                     return( RC_ERROR );

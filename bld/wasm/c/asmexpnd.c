@@ -137,7 +137,7 @@ bool ExpandProcString( token_buffer *tokbuf, token_idx index, bool *expanded )
         count++;
 
         /**/myassert( CurrProc != NULL );
-        label = label_cmp( word, info->paralist );
+        label = label_cmp( word, info->params.head );
         if( label == NULL ) {
             label = label_cmp( word, info->locallist );
         }

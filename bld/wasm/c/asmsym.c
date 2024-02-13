@@ -795,13 +795,15 @@ static void DumpSymbol( struct asm_sym *sym )
         type = "PROCEDURE";
 //        dir->e.procinfo = AsmAlloc( sizeof( proc_info ) );
 //        dir->e.procinfo->regslist = NULL;
-//        dir->e.procinfo->paralist = NULL;
+//        dir->e.procinfo->params.head = NULL;
+//        dir->e.procinfo->params.tail = NULL;
 //        dir->e.procinfo->locallist = NULL;
         break;
     case SYM_MACRO:
         type = "MACRO";
 //        dir->e.macroinfo = AsmAlloc( sizeof( macro_info ) );
-//        dir->e.macroinfo->parmlist = NULL;
+//        dir->e.macroinfo->params.head = NULL;
+//        dir->e.macroinfo->params.tail = NULL;
 //        dir->e.macroinfo->locallist = NULL;
 //        dir->e.macroinfo->data = NULL;
 //        dir->e.macroinfo->filename = NULL;

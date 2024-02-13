@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -191,7 +191,10 @@ typedef struct label_list {
 
 typedef struct {
     regs_list           *regslist;      // list of registers to be saved
-    label_list          *paralist;      // list of parameters
+    struct {
+        label_list      *head;          // head of parameters list
+        label_list      *tail;          // tail of parameters list
+    }                   params;         // list of parameters
     label_list          *locallist;     // list of local variables
     label_list          *labellist;     // list of local labels
     unsigned long       parasize;       // total no. of bytes used by parameters
@@ -232,7 +235,10 @@ typedef struct local_label {
 } local_label;
 
 typedef struct {
-    parm_list           *parmlist;  // list of parameters
+    struct {
+        parm_list       *head;      // head of parameters list
+        parm_list       *tail;      // tail of parameters list
+    }                   params;     // list of parameters
     local_label         *locallist; // list of local labels
     asmlines            *data;      // the guts of the macro - LL of strings
     const FNAME         *srcfile;
