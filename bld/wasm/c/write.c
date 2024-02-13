@@ -169,7 +169,7 @@ static void write_init( void )
 
     dir = AllocD( "" );
     if( dir != NULL ) {
-        dir_init( dir, TAB_CLASS_LNAME )
+        dir_init( dir, TAB_CLASS_LNAME );
         AddLnameData( dir );
     }
     ModuleInit();
