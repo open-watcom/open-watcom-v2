@@ -125,16 +125,53 @@ bool IsSameFile( const char *a, const char *b )
 }
 
 bool IsSameModuleCase( const char *a, const char *b, int cmp_mode )
+/*
+ * for COFF/ELF objects the real file name is hold in library
+ *   the comparision is transparent for file name with extension
+ *
+ * for OMF objects comparision is not transparen because in object
+ *   file is available source file name or module name (THEADR record)
+ *   the comparision is possible only for source file base name or
+ *   module name
+ *   for OMF files is the object file name is derived from source
+ *   file name that only comparision of file base name is possible
+ *   we use following logic:
+ *   - remove first level of extension and compare base name
+ *   - remove second level of extension and compare base name again
+ */
 {
-    /* unused parameters */ (void)cmp_mode;
-
-    _splitpath2( a, pg1.buffer, NULL, NULL, &pg1.fname, NULL );
-    _splitpath2( b, pg2.buffer, NULL, NULL, &pg2.fname, NULL );
-    if( Options.respect_case ) {
-        return( strcmp( pg1.fname, pg2.fname ) == 0 );
+    _splitpath2( a, pg1.buffer, NULL, NULL, &pg1.fname, &pg1.ext );
+    _splitpath2( b, pg2.buffer, NULL, NULL, &pg2.fname, &pg2.ext );
+    if( cmp_mode == 1 ) {
+        /*
+         * OMF format
+         * compare only base name and try to remove second level of extension
+         */
+        if( FNCMP( pg1.fname, pg2.fname ) ) {
+            /*
+             * remove second level of extension and compare base name again
+             */
+            strcpy( path, pg1.fname );
+            _splitpath2( path, pg1.buffer, NULL, NULL, &pg1.fname, NULL );
+            strcpy( path, pg2.fname );
+            _splitpath2( pg2.fname, pg2.buffer, NULL, NULL, &pg2.fname, NULL );
+            if( FNCMP( pg1.fname, pg2.fname ) ) {
+                return( false );
+            }
+        }
     } else {
-        return( FNCMP( pg1.fname, pg2.fname ) == 0 );
+        /*
+         * AR formats
+         * compare base name and extension
+         */
+        if( FNCMP( pg1.fname, pg2.fname ) ) {
+            return( false );
+        }
+        if( FNCMP( pg1.ext, pg2.ext ) ) {
+            return( false );
+        }
     }
+    return( true );
 }
 
 char *MakeFName( const char *a )
