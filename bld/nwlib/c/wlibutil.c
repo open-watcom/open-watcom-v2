@@ -133,7 +133,7 @@ bool IsSameModuleCase( const char *a, const char *b, int cmp_mode )
  *   file is available source file name or module name (THEADR record)
  *   the comparision is possible only for source file base name or
  *   module name
- *   for OMF files is the object file name is derived from source
+ *   for OMF files is the object file name derived from source
  *   file name that only comparision of file base name is possible
  *   we use following logic:
  *   - remove first level of extension and compare base name
@@ -154,7 +154,7 @@ bool IsSameModuleCase( const char *a, const char *b, int cmp_mode )
             strcpy( path, pg1.fname );
             _splitpath2( path, pg1.buffer, NULL, NULL, &pg1.fname, NULL );
             strcpy( path, pg2.fname );
-            _splitpath2( pg2.fname, pg2.buffer, NULL, NULL, &pg2.fname, NULL );
+            _splitpath2( path, pg2.buffer, NULL, NULL, &pg2.fname, NULL );
             if( FNCMP( pg1.fname, pg2.fname ) ) {
                 return( false );
             }
