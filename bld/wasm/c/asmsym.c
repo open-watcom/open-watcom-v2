@@ -818,7 +818,8 @@ static void DumpSymbol( struct asm_sym *sym )
 //        dir->e.macroinfo->params.head = NULL;
 //        dir->e.macroinfo->params.tail = NULL;
 //        dir->e.macroinfo->locallist = NULL;
-//        dir->e.macroinfo->data = NULL;
+//        dir->e.macroinfo->lines.head = NULL;
+//        dir->e.macroinfo->lines.tail = NULL;
 //        dir->e.macroinfo->filename = NULL;
         break;
     case SYM_CLASS_LNAME:

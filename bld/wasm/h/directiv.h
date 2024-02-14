@@ -214,17 +214,22 @@ typedef struct parm_list {
     char                *def;           // is there a default parm?
 } parm_list;
 
-typedef struct asmlines {
-    struct asmlines     *next;
+typedef struct asmline {
+    struct asmline      *next;
     char                *line;
     char                parmcount;
+} asmline;
+
+typedef struct asmlines {
+    struct asmline      *head;
+    struct asmline      *tail;
 } asmlines;
 
 typedef struct  fname_list {
-        struct  fname_list *next;
-        time_t  mtime;
-        char    *name;
-        char    *fullname;
+    struct fname_list   *next;
+    time_t              mtime;
+    char                *name;
+    char                *fullname;
 } FNAME;
 
 typedef struct local_label {
@@ -241,7 +246,7 @@ typedef struct {
         parm_list       *tail;      // tail of parameters list
     }                   params;     // list of parameters
     local_label         *locallist; // list of local labels
-    asmlines            *data;      // the guts of the macro - LL of strings
+    asmlines            lines;      // the guts of the macro - LL of strings
     const FNAME         *srcfile;
     bool                hidden;     // if true don't print error messages
 } macro_info;

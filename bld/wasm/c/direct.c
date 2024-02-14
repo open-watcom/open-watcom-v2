@@ -635,7 +635,8 @@ void dir_init( dir_node *dir, int tab )
         dir->e.macroinfo->params.head = NULL;
         dir->e.macroinfo->params.tail = NULL;
         dir->e.macroinfo->locallist = NULL;
-        dir->e.macroinfo->data = NULL;
+        dir->e.macroinfo->lines.head = NULL;
+        dir->e.macroinfo->lines.tail = NULL;
         dir->e.macroinfo->srcfile = NULL;
         break;
     case TAB_CLASS_LNAME:
@@ -867,8 +868,8 @@ void FreeInfo( dir_node *dir )
         {
             parm_list       *labelcurr;
             parm_list       *labelnext;
-            asmlines        *datacurr;
-            asmlines        *datanext;
+            asmline         *linecurr;
+            asmline         *linenext;
             local_label     *localcurr;
             local_label     *localnext;
 
@@ -897,10 +898,10 @@ void FreeInfo( dir_node *dir )
             /*
              * free the lines list
              */
-            for( datacurr = dir->e.macroinfo->data; datacurr != NULL; datacurr = datanext ) {
-                datanext = datacurr->next;
-                AsmFree( datacurr->line );
-                AsmFree( datacurr );
+            for( linecurr = dir->e.macroinfo->lines.head; linecurr != NULL; linecurr = linenext ) {
+                linenext = linecurr->next;
+                AsmFree( linecurr->line );
+                AsmFree( linecurr );
             }
 
             AsmFree( dir->e.macroinfo );
