@@ -74,9 +74,9 @@ typedef struct {
 } typeinfo;
 
 typedef struct {
-    int     param_number;
-    int     unused_stack_space;
-    bool    on_stack;
+    int             param_number;
+    int             unused_stack_space;
+    bool            on_stack;
 } paramsinfo;
 
 typedef struct {
@@ -1056,7 +1056,7 @@ bool CheckForLang( token_buffer *tokbuf, token_idx i, int *lang )
     const char  *token;
     int         lang_idx;
 
-    if( tokbuf->tokens[i].class == TC_ID) {
+    if( tokbuf->tokens[i].class == TC_ID ) {
         token = tokbuf->tokens[i].string_ptr;
         /*
          * look up the type of token
@@ -2485,7 +2485,7 @@ bool SetAssume( token_buffer *tokbuf, token_idx i )
             AsmError( INVALID_REGISTER );
             return( RC_ERROR );
         }
-        if( ( ( Code->info.cpu & P_CPU_MASK ) < P_386 )
+        if( ( (Code->info.cpu & P_CPU_MASK) < P_386 )
           && ( ( reg == TOK_FS )
           || ( reg == TOK_GS ) ) ) {
             AsmError( INVALID_REGISTER );
@@ -3408,7 +3408,7 @@ static bool proc_exam( dir_node *proc, token_buffer *tokbuf, token_idx i )
     info->localsize = 0;
     info->export = false;
     info->is_vararg = false;
-    info->pe_type = ( ( Code->info.cpu & P_CPU_MASK ) == P_286 ) || ( ( Code->info.cpu & P_CPU_MASK ) == P_386 );
+    info->pe_type = ( (Code->info.cpu & P_CPU_MASK) == P_286 ) || ( (Code->info.cpu & P_CPU_MASK) == P_386 );
     /*
      * Parse the definition line, except the parameters
      */

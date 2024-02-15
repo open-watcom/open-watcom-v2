@@ -196,7 +196,8 @@ static bool AddLocalLabel( asm_sym *sym )
     label_list  *label;
     proc_info   *info;
 
-    if( ( sym->state != SYM_UNDEFINED ) && ( Parse_Pass == PASS_1 ) ) {
+    if( ( sym->state != SYM_UNDEFINED )
+      && ( Parse_Pass == PASS_1 ) ) {
         AsmErr( SYMBOL_PREVIOUSLY_DEFINED, sym->name );
         return( RC_ERROR );
     } else {
@@ -209,9 +210,9 @@ static bool AddLocalLabel( asm_sym *sym )
     label->size = 0;
     label->replace = NULL;
     label->factor = 0;
-    label->next = NULL;
     label->sym = sym;
     label->is_register = false;
+    label->next = NULL;
     if( info->labels.head == NULL ) {
         info->labels.head = label;
     } else {
@@ -238,7 +239,7 @@ struct asm_sym *AsmLookup( const char *name )
     if( Options.mode & MODE_TASM ) {
         if( Options.locals_len ) {
             if( strncmp( name, Options.locals_prefix, Options.locals_len ) == 0
-                && name[Options.locals_len] != '\0' ) {
+              && name[Options.locals_len] != '\0' ) {
                 if( CurrProc == NULL ) {
                     AsmError( LOCAL_LABEL_OUTSIDE_PROC );
                     return( NULL );
@@ -306,10 +307,7 @@ void FreeASym( struct asm_sym *sym )
     struct asmfixup     *fixup;
 
     --AsmSymCount;
-    for( ;; ) {
-        fixup = sym->fixup;
-        if( fixup == NULL )
-            break;
+    for( ; (fixup = sym->fixup) != NULL; ) {
         sym->fixup = fixup->next;
         AsmFree( fixup );
     }
@@ -417,7 +415,8 @@ struct asm_sym *AsmGetSymbol( const char *name )
 
 #if defined( _STANDALONE_ )
     if( Options.mode & MODE_IDEAL ) {
-        if( name[0] == '@' && name[1] == '@' ) {
+        if( name[0] == '@'
+          && name[1] == '@' ) {
             if( CurrProc == NULL ) {
                 AsmError( LOCAL_LABEL_OUTSIDE_PROC );
                 return( NULL );
@@ -432,7 +431,8 @@ struct asm_sym *AsmGetSymbol( const char *name )
 #endif
     sym_ptr = AsmFind( name );
 #if defined( _STANDALONE_ )
-    if( ( *sym_ptr != NULL ) && IS_SYM_COUNTER( name ) )
+    if( ( *sym_ptr != NULL )
+      && IS_SYM_COUNTER( name ) )
         GetSymInfo( *sym_ptr );
 #endif
     return( *sym_ptr );
@@ -645,7 +645,7 @@ static const char *get_sym_lang( struct asm_sym *sym )
 static const char *get_sym_seg_name( struct asm_sym *sym )
 /********************************************************/
 {
-    if( sym->segment ) {
+    if( sym->segment != NULL ) {
         return( sym->segment->name );
     } else {
         return( "No Seg" );
@@ -665,7 +665,8 @@ static void log_symbol( struct asm_sym *sym )
         } else {
             LstMsg( "Number   %04Xh\n", ( cst->count ) ? cst->tokens[0].u.value : 0 );
         }
-    } else if( sym->state == SYM_INTERNAL && !IS_SYM_COUNTER( sym->name ) ) {
+    } else if( sym->state == SYM_INTERNAL
+      && !IS_SYM_COUNTER( sym->name ) ) {
         LstMsg( "%s %s        ", sym->name, dots + strlen( sym->name ) + 1 );
         LstMsg( "%s  %04X     ", get_sym_type( sym ), sym->offset );
         LstMsg( "%s\t", get_sym_seg_name( sym ) );
@@ -712,7 +713,7 @@ void WriteListing( void )
         return; // no point going through the motions if lst file isn't open
     }
     syms = SortAsmSyms();
-    if( syms ) {
+    if( syms != NULL ) {
         /* first write out the segments */
         LstMsg( "\n\nSegments and Groups:\n\n" );
         LstMsg( "                N a m e                 Size" );
