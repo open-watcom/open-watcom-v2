@@ -301,8 +301,15 @@ static bool process_local( token_buffer *tokbuf, macro_info *info )
         locallabel->local_len = strlen( locallabel->local );
         locallabel->label = NULL;
         locallabel->label_len = 0;
+        /*
+         * add to the begining of list
+         */
         locallabel->next = info->labels.head;
+        if( info->labels.head == NULL ) {
+            info->labels.tail = locallabel;
+        }
         info->labels.head = locallabel;
+
         tok++;
         if( tok->class != TC_COMMA ) {
             if( tok->class != TC_FINAL ) {
@@ -390,6 +397,9 @@ static bool macro_exam( token_buffer *tokbuf, token_idx i )
             paramnode->label = AsmStrDup( name );
             paramnode->def = AsmStrDup( start );
             paramnode->required = required;
+            /*
+             * add to the end of list
+             */
             paramnode->next = NULL;
             if( info->params.head == NULL ) {
                 info->params.head = paramnode;
