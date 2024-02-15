@@ -443,14 +443,12 @@ cflags_dll_win  = -bd
 cflags_dll_os2  = -bd
 !endif
 
-!ifeq __WATCOM_TOOLS__ $(bld_ver_tool)
+!if !defined( bootstrap ) || ( $(%OWTOOLSVER) > 1300 )
+# this can be used for OW 2.1 because older versions of OW 2.0
+# not support these new options
 watcom_common_cflags   = -wx-wce=C310
 watcom_common_cxxflags = -w8-wce=P579
-!ifdef bootstrap
-c_flags          = $(watcom_common_cflags)
-!else
 c_flags          = $(watcom_common_cflags) -zastd=c99
-!endif
 !else
 watcom_common_cflags   = -wx-wce=310
 watcom_common_cxxflags = -w8-wce=579
