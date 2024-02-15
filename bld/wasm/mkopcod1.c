@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,18 +47,18 @@ int main( int argc, char *argv[] )
     unsigned int    count;
     int             idx;
     sword           *Words;
-    char            buf[ KEY_MAX_LEN ];
+    char            buf[KEY_MAX_LEN];
     size_t          max_len;
 
-    out_name = argv[ argc - 1 ];
+    out_name = argv[argc - 1];
     --argc;
 
     // Count the words in all the input files
     count = 0;
     for( idx = 1; idx < argc; ++idx ) {
-        in = fopen( argv[ idx ], "r" );
+        in = fopen( argv[idx], "r" );
         if( in == NULL ) {
-            printf( "Unable to open '%s'\n", argv[ idx ] );
+            printf( "Unable to open '%s'\n", argv[idx] );
             exit( EXIT_FAILURE );
         }
         for( ; fgets( buf, sizeof( buf ), in ) != NULL; ) {
@@ -71,23 +71,24 @@ int main( int argc, char *argv[] )
         printf( "Unable to allocate Words array\n" );
         exit( EXIT_FAILURE );
     }
-    Words[ count ].word = NULL;
+    Words[count].word = NULL;
     index = 0;
     for( idx = 1; idx < argc; ++idx ) {
-        in = fopen( argv[ idx ], "r" );
+        in = fopen( argv[idx], "r" );
         if( in == NULL ) {
-            printf( "Unable to open '%s'\n", argv[ idx ] );
+            printf( "Unable to open '%s'\n", argv[idx] );
             exit( EXIT_FAILURE );
         }
         for( ; fgets( buf, sizeof( buf ), in ) != NULL; ) {
-            for( i = 0; buf[ i ] && !isspace( buf[ i ] ); i++ )
+            for( i = 0; buf[i] != '\0' && !isspace( buf[i] ); i++ )
                 ;
-            buf[ i ] = '\0';
-            Words[ index ].word = strdup( buf );
-            if( Words[ index ].word == NULL ) {
+            buf[i] = '\0';
+            Words[index].word = malloc( i + 1 );
+            if( Words[index].word == NULL ) {
                 printf( "Out of memory\n" );
                 exit( EXIT_FAILURE );
             }
+            strcpy( Words[index].word, buf );
             ++index;
         }
         fclose( in );

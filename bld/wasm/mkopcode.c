@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -154,11 +154,12 @@ int main( int argc, char *argv[] )
             for( i2 = 0; buf[i2] != '\0' && !isspace( buf[i2] ); i2++ )
                 ;
             buf[i2] = '\0';
-            Words[words_count].word = strdup( buf );
+            Words[words_count].word = malloc( i2 + 1 );
             if( Words[words_count].word == NULL ) {
                 printf( "Out of memory\n" );
                 exit( EXIT_FAILURE );
             }
+            strcpy( Words[words_count].word, buf );
             ++words_count;
         }
         fclose( in );
