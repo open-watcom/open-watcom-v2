@@ -497,35 +497,36 @@ static size_t my_sprintf( char *dest, char *format, int argc, char *argv[] )
     char buffer[3];
     char *start;
     char *end;
-    int  parmno = 0;
+    int  parmno;
 
     /* unused parameters */ (void)argc;
 
     *dest = '\0';
     start = format;
-    for( end = start ;*end != '\0'; start = end + PLACEHOLDER_SIZE ) {
+    for( end = start ; *end != '\0'; start = end + PLACEHOLDER_SIZE ) {
         /*
          * scan till we hit a placeholdr ( #dd ) or the end of the string
          */
-        for( end = start;
-             !( ( *end == '#' ) && isdigit( *(end + 1) ) && isdigit( *(end + 2) ) )
-             && ( *end != '\0' ); end++ );
-
+        for( end = start; *end != '\0'; end++ ) {
+            if( end[0] == '#' && isdigit( end[1] ) && isdigit( end[2] ) ) {
+                break;
+            }
+        }
         if( *end == '\0' ) {
-            strncat( dest, start, end-start );
-            return( strlen( dest ) );
+            strncat( dest, start, end - start );
+            break;
         }
         /*
          * we have a placeholder ( #dd )
          */
-        buffer[0] = *(end+1);
-        buffer[1] = *(end+2);
+        buffer[0] = end[1];
+        buffer[1] = end[2];
         buffer[2] = '\0';
         parmno = atoi( buffer );
-        strncat( dest, start, (end-start) );
-        /**/myassert( parmno <= argc );
+        strncat( dest, start, end - start );
+        /**/myassert( parmno < argc );
         if( argv[parmno] != NULL ) {
-            strcat( dest, argv[parmno++] );
+            strcat( dest, argv[parmno] );
         }
     }
     return( strlen( dest ) );
@@ -543,6 +544,20 @@ static char *fill_in_parms_and_labels( char *line, macro_info *info )
     bool                quote;
     char                *start;
 
+    if( info->labels.head != NULL ) {
+        /*
+         * replace macro local labels by internal symbols
+         */
+        linestruct.line = line = AsmStrDup( line );
+        quote = false;
+        for( ; *line != '\0'; ) {
+            start = find_replacement_items( &line, &quote );
+            if( start != NULL ) {
+                line = replace_label( info->labels.head, start, line - start, &linestruct );
+            }
+        }
+        line = linestruct.line;
+    }
     count = 0;
     for( parm = info->params.head; parm != NULL; parm = parm->next ) {
         count++;
@@ -554,35 +569,16 @@ static char *fill_in_parms_and_labels( char *line, macro_info *info )
             parm_array[count] = parm->replace;
             count++;
         }
-        if( info->labels.head != NULL ) {
-            /*
-             * replace macro local labels by internal symbols
-             */
-            linestruct.line = line = AsmStrDup( line );
-            quote = false;
-            for( ; *line != '\0'; ) {
-                start = find_replacement_items( &line, &quote );
-                if( start != NULL ) {
-                    line = replace_label( info->labels.head, start, line - start, &linestruct );
-                }
-            }
-            /*
-             * replace parameters by actual values
-             */
-            my_sprintf( buffer, linestruct.line, count - 1, parm_array );
-            /*
-             * free temporary line used by local labels replacement
-             */
-            AsmFree( linestruct.line );
-        } else {
-            /*
-             * replace parameters by actual values
-             */
-            my_sprintf( buffer, line, count - 1, parm_array );
-        }
+        /*
+         * replace parameters by actual values
+         */
+        my_sprintf( buffer, line, count, parm_array );
         new_line = AsmStrDup( buffer );
     } else {
         new_line = AsmStrDup( line );
+    }
+    if( info->labels.head != NULL ) {
+        AsmFree( linestruct.line );
     }
     return( new_line );
 }
