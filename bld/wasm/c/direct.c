@@ -2040,9 +2040,8 @@ bool SimSeg( token_buffer *tokbuf, token_idx i )
             if( tokbuf->tokens[i].class != TC_NUM ) {
                 AsmError( CONSTANT_EXPECTED );
                 return( RC_ERROR );
-            } else {
-                lastseg.stack_size = (int_16)tokbuf->tokens[i].u.value;
             }
+            lastseg.stack_size = (int_16)tokbuf->tokens[i].u.value;
         } else {
             lastseg.stack_size = DEFAULT_STACK_SIZE;
         }
@@ -2360,9 +2359,8 @@ bool Model( token_buffer *tokbuf, token_idx i )
         if( initstate & TypeInfo[type].init ) {
             AsmError( MODEL_PARA_DEFINED ); // initialized already
             return( RC_ERROR );
-        } else {
-            initstate |= TypeInfo[type].init; // mark it initialized
         }
+        initstate |= TypeInfo[type].init; // mark it initialized
         switch( type ) {
         case TOK_FLAT:
             DefFlatGroup();
@@ -2553,17 +2551,15 @@ bool SymIs32( struct asm_sym *sym )
     dir_node            *curr;
 
     curr = GetSeg( sym );
-    if( curr == NULL ) {
-        if( sym->state == SYM_EXTERNAL ) {
-            if( ModuleInfo.mseg ) {
-                curr = (dir_node *)sym;
-                return( curr->e.extinfo->use32 );
-            } else {
-                return( ModuleInfo.use32 );
-            }
-        }
-    } else {
+    if( curr != NULL ) {
         return( curr->e.seginfo->use32 );
+    }
+    if( sym->state == SYM_EXTERNAL ) {
+        if( ModuleInfo.mseg ) {
+            curr = (dir_node *)sym;
+            return( curr->e.extinfo->use32 );
+        }
+        return( ModuleInfo.use32 );
     }
     return( RC_OK );
 }
@@ -2676,9 +2672,8 @@ enum assume_reg GetPrefixAssume( struct asm_sym *sym, enum assume_reg prefix )
             Frame_Datum = type;
 #endif
             return( prefix );
-        } else {
-            return( ASSUME_NOTHING );
         }
+        return( ASSUME_NOTHING );
     }
 
     if( sym_assume->state == SYM_SEG ) {
@@ -2690,9 +2685,8 @@ enum assume_reg GetPrefixAssume( struct asm_sym *sym, enum assume_reg prefix )
       || ( GetGrp( sym ) == sym_assume )
       || ( sym->state == SYM_EXTERNAL ) ) {
         return( prefix );
-    } else {
-        return( ASSUME_NOTHING );
     }
+    return( ASSUME_NOTHING );
 }
 
 enum assume_reg GetAssume( struct asm_sym *sym, enum assume_reg def )
@@ -2926,10 +2920,9 @@ bool LocalDef( token_buffer *tokbuf, token_idx i )
         if( sym->state != SYM_UNDEFINED ) {
             AsmErr( SYMBOL_PREVIOUSLY_DEFINED, sym->name );
             return( RC_ERROR );
-        } else {
-            sym->state = SYM_INTERNAL;
-            sym->mem_type = MT_WORD;
         }
+        sym->state = SYM_INTERNAL;
+        sym->mem_type = MT_WORD;
 
         local = AsmAlloc( sizeof( label_list ) );
         local->label = AsmStrDup( tokbuf->tokens[i++].string_ptr );
@@ -3028,6 +3021,7 @@ static bool GetArgType( proc_info *info, const char *token, const char *typetoke
     int             parameter_size_aligned;
     struct asm_sym  *param;
     struct asm_sym  *tmp = NULL;
+    bool            is_vararg;
 
     /*
      * now read qualified type
@@ -3043,27 +3037,29 @@ static bool GetArgType( proc_info *info, const char *token, const char *typetoke
             }
         }
     }
+    is_vararg = false;
     if( type == TOK_INVALID ) {
         type = token_cmp( typetoken, TOK_PROC_VARARG, TOK_PROC_VARARG );
         if( type == TOK_INVALID ) {
             AsmError( INVALID_QUALIFIED_TYPE );
             return( RC_ERROR );
-        } else {
-            switch( CurrProc->sym.langtype ) {
-            case WASM_LANG_NONE:
-            case WASM_LANG_BASIC:
-            case WASM_LANG_FORTRAN:
-            case WASM_LANG_PASCAL:
-                AsmError( VARARG_REQUIRES_C_CALLING_CONVENTION );
-                return( RC_ERROR );
-            case WASM_LANG_WATCOM_C:
-                info->parasize += params->unused_stack_space;
-                params->on_stack = true;
-                break;
-            default:
-                break;
-            }
         }
+        switch( CurrProc->sym.langtype ) {
+        case WASM_LANG_NONE:
+        case WASM_LANG_BASIC:
+        case WASM_LANG_FORTRAN:
+        case WASM_LANG_PASCAL:
+            AsmError( VARARG_REQUIRES_C_CALLING_CONVENTION );
+            return( RC_ERROR );
+        case WASM_LANG_WATCOM_C:
+            info->parasize += params->unused_stack_space;
+            params->on_stack = true;
+            break;
+        default:
+            break;
+        }
+        is_vararg = true;
+        info->is_vararg = true;
     }
     param = AsmLookup( token );
     if( param == NULL )
@@ -3072,10 +3068,9 @@ static bool GetArgType( proc_info *info, const char *token, const char *typetoke
     if( param->state != SYM_UNDEFINED ) {
         AsmErr( SYMBOL_PREVIOUSLY_DEFINED, param->name );
         return( RC_ERROR );
-    } else {
-        param->state = SYM_INTERNAL;
-        param->mem_type = TypeInfo[type].value;
     }
+    param->state = SYM_INTERNAL;
+    param->mem_type = TypeInfo[type].value;
     if( type == MT_STRUCT ) {
         parameter_size = ( ( dir_node *)tmp)->e.structinfo->size;
         params->on_stack = true;
@@ -3089,7 +3084,7 @@ static bool GetArgType( proc_info *info, const char *token, const char *typetoke
         }
     }
     paramnode = AsmAlloc( sizeof( label_list ) );
-    paramnode->u.is_vararg = ( type == TOK_PROC_VARARG );
+    paramnode->u.is_vararg = is_vararg;
     paramnode->size = parameter_size;
     paramnode->label = AsmStrDup( token );
     paramnode->replace = NULL;
@@ -3107,8 +3102,6 @@ static bool GetArgType( proc_info *info, const char *token, const char *typetoke
         params->param_number++;
         params->unused_stack_space += parameter_size_aligned;
     }
-
-    info->is_vararg |= paramnode->u.is_vararg;
 
     switch( CurrProc->sym.langtype ) {
     case WASM_LANG_BASIC:
@@ -3259,8 +3252,9 @@ bool UsesDef( token_buffer *tokbuf, token_idx i )
             }
             temp_regist->next = regist;
         }
-        if( tokbuf->tokens[++i].class != TC_COMMA )
+        if( tokbuf->tokens[++i].class != TC_COMMA ) {
             break;
+        }
     }
     if( tokbuf->tokens[i].class != TC_FINAL ) {
         AsmError( SYNTAX_ERROR );

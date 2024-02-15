@@ -59,13 +59,13 @@ extern int              MacroLocalVarCounter;
 
 macro_state             MacroIntState = MACSTATE_NONE;
 
-static asmline *asmline_insert( asmlines *lines, char *line )
+static asmline *asmline_append( asmlines *lines, char *line )
 /***********************************************************/
 {
     asmline *entry;
 
     /*
-     * get a pointer to the last next ptr ( or Head if empty )
+     * add macro line to the end of macro lines list
      */
     entry = AsmAlloc( sizeof( asmline ) );
     entry->parmcount = 0;
@@ -132,8 +132,8 @@ static char *replace_parm( parm_list *parm, char *start, size_t len, asmline *li
     return( start + len );
 }
 
-static char *replace_label( local_label *loclab, char *start, size_t len, asmline *linestruct )
-/**********************************************************************************************
+static char *replace_label( local_label *locallabel, char *start, size_t len, asmline *linestruct )
+/**************************************************************************************************
  * search through local label list for word pointed at by start,
  * if you find it, replace it by real label in the line string
  * this allows up to 100 parameters - lots :)
@@ -145,15 +145,15 @@ static char *replace_label( local_label *loclab, char *start, size_t len, asmlin
     size_t          before;             // length of text before word
 
     old_line = linestruct->line;
-    for( ; loclab != NULL; loclab = loclab->next ) {
-        if( ( loclab->local_len == len )
-          && ( strncmp( start, loclab->local, len ) == 0 ) ) {
+    for( ; locallabel != NULL; locallabel = locallabel->next ) {
+        if( ( locallabel->local_len == len )
+          && ( strncmp( start, locallabel->local, len ) == 0 ) ) {
             /*
              * hey! it matches!
              *
              * check internal symbol
              */
-            if( loclab->label_len == 0 ) {
+            if( locallabel->label_len == 0 ) {
                 /*
                  * if the internal symbol does not exist, it is created
                  * and saved for further use
@@ -161,27 +161,27 @@ static char *replace_label( local_label *loclab, char *start, size_t len, asmlin
                 char    label[10];
 
                 sprintf( label, "??%04d", MacroLocalVarCounter++ );
-                loclab->label = AsmStrDup( label );
-                loclab->label_len = strlen( loclab->label );
+                locallabel->label = AsmStrDup( label );
+                locallabel->label_len = strlen( locallabel->label );
             }
-            new_line = AsmAlloc( strlen( old_line ) - len + loclab->label_len + 1 );
+            new_line = AsmAlloc( strlen( old_line ) - len + locallabel->label_len + 1 );
             before = start - old_line;
             if( before > 0 ) {
                 if( *(start - 1) == '&' )
                     before--;
                 strncpy( new_line, old_line, before );
             }
-            strcpy( new_line + before, loclab->label );
+            strcpy( new_line + before, locallabel->label );
             if( *(start + len) == '&' )
                 len++;
-            strcpy( new_line + before + loclab->label_len, start + len );
+            strcpy( new_line + before + locallabel->label_len, start + len );
             linestruct->line = new_line;
 
             AsmFree( old_line );
             /*
              * ptr to char after new label
              */
-            return( new_line + before + loclab->label_len );
+            return( new_line + before + locallabel->label_len );
         }
     }
     return( start + len );
@@ -294,15 +294,15 @@ static bool process_local( token_buffer *tokbuf, macro_info *info )
 
     tok = tokbuf->tokens + 1;
     while( tok->class == TC_ID ) {
-        local_label *loclab;
+        local_label *locallabel;
 
-        loclab = AsmAlloc( sizeof( local_label ) );
-        loclab->local = AsmStrDup( tok->string_ptr );
-        loclab->local_len = strlen( loclab->local );
-        loclab->label = NULL;
-        loclab->label_len = 0;
-        loclab->next = info->labels.head;
-        info->labels.head = loclab;
+        locallabel = AsmAlloc( sizeof( local_label ) );
+        locallabel->local = AsmStrDup( tok->string_ptr );
+        locallabel->local_len = strlen( locallabel->local );
+        locallabel->label = NULL;
+        locallabel->label_len = 0;
+        locallabel->next = info->labels.head;
+        info->labels.head = locallabel;
         tok++;
         if( tok->class != TC_COMMA ) {
             if( tok->class != TC_FINAL ) {
@@ -333,6 +333,7 @@ static bool macro_exam( token_buffer *tokbuf, token_idx i )
     bool                store_data;
     char                *start;
     bool                quote;
+    bool                required;
 
     if( Options.mode & MODE_IDEAL ) {
         name = tokbuf->tokens[i+1].string_ptr;
@@ -351,19 +352,16 @@ static bool macro_exam( token_buffer *tokbuf, token_idx i )
 
     if( store_data ) {
         for( ; i < tokbuf->count ; ) {
-            paramnode = AsmAlloc( sizeof( parm_list ) );
-            paramnode->next = NULL;
-            paramnode->def = NULL;
-            paramnode->replace = NULL;
-            paramnode->required = false;
             /*
              * first get the parm. name
              */
-            paramnode->label = AsmStrDup( tokbuf->tokens[i].string_ptr );
+            name = tokbuf->tokens[i].string_ptr;
             i++;
             /*
              * now see if it has a default value or is required
              */
+            start = NULL;
+            required = false;
             if( tokbuf->tokens[i].class == TC_COLON ) {
                 i++;
                 if( *tokbuf->tokens[i].string_ptr == '=' ) {
@@ -372,16 +370,34 @@ static bool macro_exam( token_buffer *tokbuf, token_idx i )
                         AsmError( SYNTAX_ERROR );
                         return( RC_ERROR );
                     }
-                    paramnode->def = AsmStrDup( tokbuf->tokens[i].string_ptr );
+                    start = tokbuf->tokens[i].string_ptr;
                     i++;
                 } else if( CMPLIT( tokbuf->tokens[i].string_ptr, "REQ" ) == 0 ) {
                     /*
                      * required parameter
                      */
-                    paramnode->required = true;
+                    required = true;
                     i++;
                 }
             }
+            /*
+             * add parameter to the end of list
+             */
+            paramnode = AsmAlloc( sizeof( parm_list ) );
+            paramnode->def = NULL;
+            paramnode->replace = NULL;
+            paramnode->required = false;
+            paramnode->label = AsmStrDup( name );
+            paramnode->def = AsmStrDup( start );
+            paramnode->required = required;
+            paramnode->next = NULL;
+            if( info->params.head == NULL ) {
+                info->params.head = paramnode;
+            } else {
+                info->params.tail->next = paramnode;
+            }
+            info->params.tail = paramnode;
+
             if( i < tokbuf->count && tokbuf->tokens[i].class != TC_COMMA ) {
                 AsmError( EXPECTING_COMMA );
                 return( RC_ERROR );
@@ -390,16 +406,6 @@ static bool macro_exam( token_buffer *tokbuf, token_idx i )
              * go past comma
              */
             i++;
-            /*
-             * add this parm node to the list
-             * new parameter is added to end of list
-             */
-            if( info->params.head == NULL ) {
-                info->params.head = paramnode;
-            } else {
-                info->params.tail->next = paramnode;
-            }
-            info->params.tail = paramnode;
 
         } /* looping through parameters */
     }
@@ -454,10 +460,7 @@ static bool macro_exam( token_buffer *tokbuf, token_idx i )
         }
 
         if( store_data ) {
-            linestruct = asmline_insert( &(info->lines), line );
-            /*
-             * make info->lines.tail point at the LAST line in the struct
-             */
+            linestruct = asmline_append( &(info->lines), line );
             line = linestruct->line;
             quote = false;
             for( ; *line != '\0'; ) {
@@ -525,46 +528,52 @@ static char *fill_in_parms_and_labels( char *line, macro_info *info )
     parm_list           *parm;
     char                *new_line;
     char                **parm_array; /* array of ptrs to parm replace str's */
-    int                 count = 0;
+    int                 count;
     asmline             linestruct;
     bool                quote;
     char                *start;
 
-    for( parm = info->params.head; parm != NULL; parm = parm->next ) {
-        count ++;
-    }
-    parm_array = AsmTmpAlloc( count * sizeof( char * ) );
     count = 0;
     for( parm = info->params.head; parm != NULL; parm = parm->next ) {
-        parm_array[count] = parm->replace;
         count++;
     }
-    if( info->labels.head != NULL ) {
-        /*
-         * replace macro local labels by internal symbols
-         */
-        linestruct.line = AsmStrDup( line );
-        line = linestruct.line;
-        quote = false;
-        for( ; *line != '\0'; ) {
-            start = find_replacement_items( &line, &quote );
-            if( start != NULL ) {
-                line = replace_label( info->labels.head, start, line - start, &linestruct );
-            }
+    if( count > 0 ) {
+        parm_array = AsmTmpAlloc( count * sizeof( char * ) );
+        count = 0;
+        for( parm = info->params.head; parm != NULL; parm = parm->next ) {
+            parm_array[count] = parm->replace;
+            count++;
         }
-        line = linestruct.line;
+        if( info->labels.head != NULL ) {
+            /*
+             * replace macro local labels by internal symbols
+             */
+            linestruct.line = line = AsmStrDup( line );
+            quote = false;
+            for( ; *line != '\0'; ) {
+                start = find_replacement_items( &line, &quote );
+                if( start != NULL ) {
+                    line = replace_label( info->labels.head, start, line - start, &linestruct );
+                }
+            }
+            /*
+             * replace parameters by actual values
+             */
+            my_sprintf( buffer, linestruct.line, count - 1, parm_array );
+            /*
+             * free temporary line used by local labels replacement
+             */
+            AsmFree( linestruct.line );
+        } else {
+            /*
+             * replace parameters by actual values
+             */
+            my_sprintf( buffer, line, count - 1, parm_array );
+        }
+        new_line = AsmStrDup( buffer );
+    } else {
+        new_line = AsmStrDup( line );
     }
-    /*
-     * replace parameters by actual values
-     */
-    my_sprintf( buffer, line, count - 1, parm_array );
-    /*
-     * free temporary line used by local labels replacement
-     */
-    if( info->labels.head != NULL ) {
-        AsmFree( line );
-    }
-    new_line = AsmStrDup( buffer );
     return( new_line );
 }
 
@@ -596,7 +605,7 @@ bool ExpandMacro( token_buffer *tokbuf )
     token_idx   expr_start = 0;
     char        *p;
     size_t      len;
-    local_label *loclab;
+    local_label *locallabel;
 
     if( tokbuf->tokens[0].class == TC_FINAL )
         return( RC_OK );
@@ -660,7 +669,7 @@ bool ExpandMacro( token_buffer *tokbuf )
         if( i < tokbuf->count ) {
             if( tokbuf->tokens[i].class == TC_COMMA
               || ( tokbuf->tokens[i].class == TC_STRING
-                && strlen( tokbuf->tokens[i].string_ptr ) == 0 ) ) {
+              && strlen( tokbuf->tokens[i].string_ptr ) == 0 ) ) {
                 /*
                  * blank parm
                  */
@@ -676,21 +685,21 @@ bool ExpandMacro( token_buffer *tokbuf )
                 }
                 if( tokbuf->tokens[i].class != TC_COMMA ) {
                     i++;
-                    if( i < tokbuf->count &&
-                        tokbuf->tokens[i].class != TC_COMMA ) {
+                    if( i < tokbuf->count
+                      && tokbuf->tokens[i].class != TC_COMMA ) {
                         AsmError( EXPECTING_COMMA );
                         return( RC_ERROR );
                     }
                 }
                 /*
-                 * go past comma
+                 * go past the comma
                  */
                 i++;
             } else {
                 /*
                  * we have a parm! :)
                  */
-                for( ; ; ) {
+                for( ;; ) {
                     if( tokbuf->tokens[i].class == TC_FINAL )
                         break;
                     if( *(tokbuf->tokens[i].string_ptr) == '%' ) {
@@ -749,12 +758,12 @@ bool ExpandMacro( token_buffer *tokbuf )
                     }
                     i++;
                 }
+                *p = '\0';
+                parm->replace = AsmStrDup( buffer );
                 /*
                  * go past the comma
                  */
                 i++;
-                *p = '\0';
-                parm->replace = AsmStrDup( buffer );
             }
         } else {
             if( parm->required ) {
@@ -783,11 +792,11 @@ bool ExpandMacro( token_buffer *tokbuf )
     /*
      * reset the local label replace strings, if exists
      */
-    for( loclab = info->labels.head; loclab != NULL; loclab = loclab->next ) {
-        if( loclab->label_len > 0 ) {
-            loclab->label_len = 0;
-            AsmFree( loclab->label );
-            loclab->label = NULL;
+    for( locallabel = info->labels.head; locallabel != NULL; locallabel = locallabel->next ) {
+        if( locallabel->label_len > 0 ) {
+            locallabel->label_len = 0;
+            AsmFree( locallabel->label );
+            locallabel->label = NULL;
         }
     }
     /*
