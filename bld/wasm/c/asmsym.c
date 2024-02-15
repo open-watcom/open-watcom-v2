@@ -212,6 +212,9 @@ static bool AddLocalLabel( asm_sym *sym )
     label->factor = 0;
     label->sym = sym;
     label->is_register = false;
+    /*
+     * add to the end of list
+     */
     label->next = NULL;
     if( info->labels.head == NULL ) {
         info->labels.head = label;
@@ -219,6 +222,7 @@ static bool AddLocalLabel( asm_sym *sym )
         info->labels.tail->next = label;
     }
     info->labels.tail = label;
+
     return( RC_OK );
 }
 #endif
