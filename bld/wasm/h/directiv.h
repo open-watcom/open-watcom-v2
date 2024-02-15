@@ -196,8 +196,14 @@ typedef struct {
         label_list      *head;          // head of parameters list
         label_list      *tail;          // tail of parameters list
     }                   params;         // list of parameters
-    label_list          *locallist;     // list of local variables
-    label_list          *labellist;     // list of local labels
+    struct {
+        label_list      *head;          // head of local variables list
+        label_list      *tail;          // tail of local variables list
+    }                   locals;         // list of local variables
+    struct {
+        label_list      *head;          // head of local labels list
+        label_list      *tail;          // tail of local labels list
+    }                   labels;         // list of local labels
     unsigned long       parasize;       // total no. of bytes used by parameters
     unsigned long       localsize;      // total no. of bytes used by local variables
     memtype             mem_type;       // distance of procedure: near or far
@@ -245,7 +251,10 @@ typedef struct {
         parm_list       *head;      // head of parameters list
         parm_list       *tail;      // tail of parameters list
     }                   params;     // list of parameters
-    local_label         *locallist; // list of local labels
+    struct {
+        local_label     *head;      // head of local labels list
+        local_label     *tail;      // tail of local labels list
+    }                   labels;     // list of local labels
     asmlines            lines;      // the guts of the macro - LL of strings
     const FNAME         *srcfile;
     bool                hidden;     // if true don't print error messages

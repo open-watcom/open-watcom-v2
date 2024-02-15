@@ -626,15 +626,18 @@ void dir_init( dir_node *dir, int tab )
         dir->e.procinfo->regslist = NULL;
         dir->e.procinfo->params.head = NULL;
         dir->e.procinfo->params.tail = NULL;
-        dir->e.procinfo->locallist = NULL;
-        dir->e.procinfo->labellist = NULL;
+        dir->e.procinfo->locals.head = NULL;
+        dir->e.procinfo->locals.tail = NULL;
+        dir->e.procinfo->labels.head = NULL;
+        dir->e.procinfo->labels.tail = NULL;
         break;
     case TAB_MACRO:
         dir->sym.state = SYM_MACRO;
         dir->e.macroinfo = AsmAlloc( sizeof( macro_info ) );
         dir->e.macroinfo->params.head = NULL;
         dir->e.macroinfo->params.tail = NULL;
-        dir->e.macroinfo->locallist = NULL;
+        dir->e.macroinfo->labels.head = NULL;
+        dir->e.macroinfo->labels.tail = NULL;
         dir->e.macroinfo->lines.head = NULL;
         dir->e.macroinfo->lines.tail = NULL;
         dir->e.macroinfo->srcfile = NULL;
@@ -840,14 +843,14 @@ void FreeInfo( dir_node *dir )
                 AsmFree( labelcurr );
             }
 
-            for( labelcurr = dir->e.procinfo->locallist; labelcurr != NULL; labelcurr = labelnext ) {
+            for( labelcurr = dir->e.procinfo->locals.head; labelcurr != NULL; labelcurr = labelnext ) {
                 labelnext = labelcurr->next;
                 AsmFree( labelcurr->label );
                 AsmFree( labelcurr->replace );
                 AsmFree( labelcurr );
             }
 
-            for( labelcurr = dir->e.procinfo->labellist; labelcurr != NULL; labelcurr = labelnext ) {
+            for( labelcurr = dir->e.procinfo->labels.head; labelcurr != NULL; labelcurr = labelnext ) {
                 labelnext = labelcurr->next;
                 AsmFree( labelcurr->label );
                 AsmFree( labelcurr->replace );
@@ -890,7 +893,7 @@ void FreeInfo( dir_node *dir )
             /*
              * free the labels list
              */
-            for( localcurr = dir->e.macroinfo->locallist; localcurr != NULL; localcurr = localnext ) {
+            for( localcurr = dir->e.macroinfo->labels.head; localcurr != NULL; localcurr = localnext ) {
                 localnext = localcurr->next;
                 AsmFree( localcurr->label );
                 AsmFree( localcurr );
@@ -2987,16 +2990,12 @@ bool LocalDef( token_buffer *tokbuf, token_idx i )
 
         info->localsize += ( local->size * local->factor );
 
-        if( info->locallist == NULL ) {
-            info->locallist = local;
+        if( info->locals.head == NULL ) {
+            info->locals.head = local;
         } else {
-            for( curr = info->locallist;; curr = curr->next ) {
-                if( curr->next == NULL ) {
-                    break;
-                }
-            }
-            curr->next = local;
+            info->locals.tail->next = local;
         }
+        info->locals.tail = local;
 
         switch( tokbuf->tokens[++i].class ) {
         case TC_DIRECTIVE:
@@ -3631,7 +3630,7 @@ static void ProcFini( void )
         for( curr = info->params.head; curr != NULL; curr = curr->next ) {
             AsmTakeOut( curr->label );
         }
-        for( curr = info->locallist; curr != NULL; curr = curr->next ) {
+        for( curr = info->locals.head; curr != NULL; curr = curr->next ) {
             AsmTakeOut( curr->label );
         }
     }
@@ -3750,7 +3749,7 @@ bool WritePrologue( const char *curline )
          * Figure out the replacing string for local variables
          */
         offset = 0;
-        for( curr = info->locallist; curr != NULL; curr = curr->next ) {
+        for( curr = info->locals.head; curr != NULL; curr = curr->next ) {
             size = curr->size * curr->factor;
             if( Use32 ) {
                 offset += __ROUND_UP_SIZE_DWORD( size );

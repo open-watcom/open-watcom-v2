@@ -308,12 +308,12 @@ static bool process_local( token_buffer *tokbuf, macro_info *info )
         local_label *loclab;
 
         loclab = AsmAlloc( sizeof( local_label ) );
-        loclab->next = info->locallist;
-        info->locallist = loclab;
         loclab->local = AsmStrDup( tok->string_ptr );
         loclab->local_len = strlen( loclab->local );
         loclab->label = NULL;
         loclab->label_len = 0;
+        loclab->next = info->labels.head;
+        info->labels.head = loclab;
         tok++;
         if( tok->class != TC_COMMA ) {
             if( tok->class != TC_FINAL ) {
@@ -539,12 +539,12 @@ static char *fill_in_parms_and_labels( char *line, macro_info *info )
         parm_array[count] = parm->replace;
         count++;
     }
-    if( info->locallist != NULL ) {
+    if( info->labels.head != NULL ) {
         /*
          * replace macro local labels by internal symbols
          */
         linestruct.line = AsmStrDup( line );
-        replace_items_in_line( &linestruct, info->locallist, replace_label );
+        replace_items_in_line( &linestruct, info->labels.head, replace_label );
         line = linestruct.line;
     }
     /*
@@ -554,7 +554,7 @@ static char *fill_in_parms_and_labels( char *line, macro_info *info )
     /*
      * free temporary line used by local labels replacement
      */
-    if( info->locallist != NULL ) {
+    if( info->labels.head != NULL ) {
         AsmFree( line );
     }
     new_line = AsmStrDup( buffer );
@@ -776,7 +776,7 @@ bool ExpandMacro( token_buffer *tokbuf )
     /*
      * reset the local label replace strings, if exists
      */
-    for( loclab = info->locallist; loclab != NULL; loclab = loclab->next ) {
+    for( loclab = info->labels.head; loclab != NULL; loclab = loclab->next ) {
         if( loclab->label_len > 0 ) {
             loclab->label_len = 0;
             AsmFree( loclab->label );

@@ -182,7 +182,7 @@ static struct asm_sym *FindLocalLabel( const char *name )
 {
     label_list  *curr;
 
-    for( curr = CurrProc->e.procinfo->labellist; curr != NULL; curr = curr->next ) {
+    for( curr = CurrProc->e.procinfo->labels.head; curr != NULL; curr = curr->next ) {
         if( strcmp( curr->sym->name, name ) == 0 ) {
             return( curr->sym );
         }
@@ -194,7 +194,6 @@ static bool AddLocalLabel( asm_sym *sym )
 /***************************************/
 {
     label_list  *label;
-    label_list  *curr;
     proc_info   *info;
 
     if( ( sym->state != SYM_UNDEFINED ) && ( Parse_Pass == PASS_1 ) ) {
@@ -213,16 +212,12 @@ static bool AddLocalLabel( asm_sym *sym )
     label->next = NULL;
     label->sym = sym;
     label->is_register = false;
-    if( info->labellist == NULL ) {
-        info->labellist = label;
+    if( info->labels.head == NULL ) {
+        info->labels.head = label;
     } else {
-        for( curr = info->labellist;; curr = curr->next ) {
-            if( curr->next == NULL ) {
-                break;
-            }
-        }
-        curr->next = label;
+        info->labels.tail->next = label;
     }
+    info->labels.tail = label;
     return( RC_OK );
 }
 #endif
@@ -810,7 +805,8 @@ static void DumpSymbol( struct asm_sym *sym )
 //        dir->e.procinfo->regslist = NULL;
 //        dir->e.procinfo->params.head = NULL;
 //        dir->e.procinfo->params.tail = NULL;
-//        dir->e.procinfo->locallist = NULL;
+//        dir->e.procinfo->locals.head = NULL;
+//        dir->e.procinfo->locals.tail = NULL;
         break;
     case SYM_MACRO:
         type = "MACRO";
