@@ -2900,7 +2900,6 @@ bool LocalDef( token_buffer *tokbuf, token_idx i )
 {
     int             type;
     label_list      *local;
-    label_list      *curr;
     proc_info       *info;
     struct asm_sym  *sym;
     struct asm_sym  *tmp = NULL;

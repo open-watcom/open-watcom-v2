@@ -54,8 +54,6 @@
  * expand it if that is the case
  */
 
-typedef char *replace_func( void *data, char *start, size_t len, asmline *linestruct );
-
 extern bool             DefineProc;     // true if the definition of procedure has not ended
 extern int              MacroLocalVarCounter;
 
@@ -82,8 +80,8 @@ static asmline *asmline_insert( asmlines *lines, char *line )
     return( entry );
 }
 
-static char *replace_parm( void *data, char *start, size_t len, asmline *linestruct )
-/************************************************************************************
+static char *replace_parm( parm_list *parm, char *start, size_t len, asmline *linestruct )
+/*****************************************************************************************
  * search through parm list for word pointed at by start,
  * if you find it, set up the line string
  * this is similar to a printf format string
@@ -93,14 +91,13 @@ static char *replace_parm( void *data, char *start, size_t len, asmline *linestr
  */
 {
     char            buffer[10];
-    parm_list       *parm;
     char            *new_line;
     char            *old_line;
     size_t          before;             // length of text before placeholder
     char            count = 0;
 
     old_line = linestruct->line;
-    for( parm = (parm_list *)data; parm != NULL; parm = parm->next ) {
+    for( ; parm != NULL; parm = parm->next ) {
         if( ( parm->label != NULL ) && ( strlen( parm->label ) == len )
           && ( strncmp( start, parm->label, len ) == 0 ) ) {
             /*
@@ -135,8 +132,8 @@ static char *replace_parm( void *data, char *start, size_t len, asmline *linestr
     return( start + len );
 }
 
-static char *replace_label( void *data, char *start, size_t len, asmline *linestruct )
-/*************************************************************************************
+static char *replace_label( local_label *loclab, char *start, size_t len, asmline *linestruct )
+/**********************************************************************************************
  * search through local label list for word pointed at by start,
  * if you find it, replace it by real label in the line string
  * this allows up to 100 parameters - lots :)
@@ -146,10 +143,9 @@ static char *replace_label( void *data, char *start, size_t len, asmline *linest
     char            *new_line;
     char            *old_line;
     size_t          before;             // length of text before word
-    local_label     *loclab;
 
     old_line = linestruct->line;
-    for( loclab = (local_label *)data; loclab != NULL; loclab = loclab->next ) {
+    for( ; loclab != NULL; loclab = loclab->next ) {
         if( ( loclab->local_len == len )
           && ( strncmp( start, loclab->local, len ) == 0 ) ) {
             /*
@@ -191,85 +187,78 @@ static char *replace_label( void *data, char *start, size_t len, asmline *linest
     return( start + len );
 }
 
-static void replace_items_in_line( asmline *linestruct, void *data, replace_func *replace_fn )
-/*********************************************************************************************/
+static char *find_replacement_items( char **pline, bool *pquote )
 {
-    char    *line;
-    char    *tmp;
     char    *start;
+    char    *line;
     bool    quote;
-    size_t  len;
     int     c;
 
+    start = line = *pline;
+    quote = *pquote;
     /*
-     * handle the substitution operator ( & )
+     * scan across the string for space, &, " - to start a word
      */
-    line = linestruct->line;
-    quote = false;
-    for( tmp = line; *tmp != '\0'; ) {
-        /*
-         * scan across the string for space, &, " - to start a word
-         */
-        line = tmp;
-        while( (c = *(unsigned char *)tmp) != '\0' ) {
-            if( IS_VALID_ID_CHAR( c ) ) {
-                if( tmp == line ) {
-                    /*
-                     * ok to start at beginning of line
-                     */
-                    break;
-                }
-            } else {
-                if( isspace( c ) ) {
-                    /*
-                     * find 1st non blank char
-                     */
-                    while( isspace( *tmp ) ) {
-                        tmp++;
-                    }
-                } else {
-                    if( c == '"' ) {
-                        /*
-                         * toggle the quote flag
-                         */
-                        quote = !quote;
-                    }
-                    tmp++;
-                }
+    while( (c = *(unsigned char *)line) != '\0' ) {
+        if( IS_VALID_ID_CHAR( c ) ) {
+            if( line == start ) {
+                /*
+                 * ok to start at beginning of line
+                 */
                 break;
             }
-            tmp++;
-        }
-        start = tmp;
-        /*
-         * scan across the string for space, &, " - to end the word
-         */
-        while( (c = *(unsigned char *)tmp) != '\0' ) {
-            if( !IS_VALID_ID_CHAR( c ) ) {
+        } else {
+            if( isspace( c ) ) {
+                /*
+                 * find 1st non blank char
+                 */
+                while( isspace( *line ) ) {
+                    line++;
+                }
+            } else {
                 if( c == '"' ) {
                     /*
                      * toggle the quote flag
                      */
                     quote = !quote;
                 }
-                break;
+                line++;
             }
-            tmp++;
+            break;
         }
-        len = tmp - start;
-        /*
-         * look for this word in the replacement data
-         * and replace it if it is found
-         *
-         * !!! IMPORTANT !!!
-         * this would change line - it will have to be reallocated
-         */
-        if( !quote || *start == '&' || *(start - 1) == '&' || *(start + len + 1) == '&' ) {
-            if( *start != '\0' && len > 0 ) {
-                tmp = replace_fn( data, start, len, linestruct );
+        line++;
+    }
+    start = line;
+    /*
+     * scan across the string for space, &, " - to end the word
+     */
+    while( (c = *(unsigned char *)line) != '\0' ) {
+        if( !IS_VALID_ID_CHAR( c ) ) {
+            if( c == '"' ) {
+                /*
+                 * toggle the quote flag
+                 */
+                quote = !quote;
             }
+            break;
+        }
+        line++;
+    }
+    *pline = line;
+    *pquote = quote;
+    /*
+     * look for this word in the replacement data
+     * and replace it if it is found
+     *
+     * !!! IMPORTANT !!!
+     * this would change line - it will have to be reallocated
+     */
+    if( !quote || *start == '&' || *(start - 1) == '&' || *(line + 1) == '&' ) {
+        if( *start != '\0' && line != start ) {
+            return( start );
         }
     }
+    return( NULL );
 }
 
 static bool lineis( char *str, char *substr )
@@ -342,6 +331,8 @@ static bool macro_exam( token_buffer *tokbuf, token_idx i )
     dir_node            *dir;
     uint                nesting_depth = 0;
     bool                store_data;
+    char                *start;
+    bool                quote;
 
     if( Options.mode & MODE_IDEAL ) {
         name = tokbuf->tokens[i+1].string_ptr;
@@ -467,7 +458,14 @@ static bool macro_exam( token_buffer *tokbuf, token_idx i )
             /*
              * make info->lines.tail point at the LAST line in the struct
              */
-            replace_items_in_line( linestruct, info->params.head, replace_parm );
+            line = linestruct->line;
+            quote = false;
+            for( ; *line != '\0'; ) {
+                start = find_replacement_items( &line, &quote );
+                if( start != NULL ) {
+                    line = replace_parm( info->params.head, start, line - start, linestruct );
+                }
+            }
         }
         line = ReadTextLine( buffer );
         if( line == NULL ) {
@@ -529,6 +527,8 @@ static char *fill_in_parms_and_labels( char *line, macro_info *info )
     char                **parm_array; /* array of ptrs to parm replace str's */
     int                 count = 0;
     asmline             linestruct;
+    bool                quote;
+    char                *start;
 
     for( parm = info->params.head; parm != NULL; parm = parm->next ) {
         count ++;
@@ -544,7 +544,14 @@ static char *fill_in_parms_and_labels( char *line, macro_info *info )
          * replace macro local labels by internal symbols
          */
         linestruct.line = AsmStrDup( line );
-        replace_items_in_line( &linestruct, info->labels.head, replace_label );
+        line = linestruct.line;
+        quote = false;
+        for( ; *line != '\0'; ) {
+            start = find_replacement_items( &line, &quote );
+            if( start != NULL ) {
+                line = replace_label( info->labels.head, start, line - start, &linestruct );
+            }
+        }
         line = linestruct.line;
     }
     /*
