@@ -26,7 +26,7 @@ start:
 	and		si,0fH
 	push		ds
 	push		si
-	mov		cx,word ptr [si+6]
+	mov		cx,word ptr 6[si]
 	add		si,1bH
 L$1:
 	or		cx,cx
@@ -34,7 +34,7 @@ L$1:
 	push		si
 	push		ds
 	push		es
-	mov		ax,word ptr [si+2]
+	mov		ax,word ptr 2[si]
 	mov		si,word ptr [si]
 	mov		bx,es
 	add		ax,bx
@@ -54,14 +54,14 @@ L$2:
 	pop		si
 	pop		ds
 	mov		bx,es
-	mov		ax,word ptr [si+0eH]
+	mov		ax,word ptr 0eH[si]
 	add		ax,bx
 	mov		dx,ax
-	mov		bp,word ptr [si+10H]
-	mov		ax,word ptr [si+16H]
+	mov		bp,word ptr 10H[si]
+	mov		ax,word ptr 16H[si]
 	add		ax,bx
 	mov		word ptr cs:L$23,ax
-	mov		ax,word ptr [si+14H]
+	mov		ax,word ptr 14H[si]
 	mov		word ptr cs:L$22,ax
 	mov		es,word ptr ss:[3fcH]
 	mov		ds,word ptr ss:[3fcH]
@@ -70,7 +70,7 @@ L$2:
 	jmp		dword ptr cs:L$22
 Decode:
 	xor		ch,ch
-	mov		cl,byte ptr [si+3]
+	mov		cl,byte ptr 3[si]
 	mov		ax,1
 	shl		ax,cl
 	dec		ax
@@ -173,7 +173,7 @@ L$12:
 	jns		L$9
 	jmp		L$10
 L$13:
-	mov		ax,word ptr [si+1]
+	mov		ax,word ptr 1[si]
 	mov		ch,al
     DB	0b1H
 L$14:
