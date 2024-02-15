@@ -18,6 +18,7 @@ cmps.dis &
 comm.dis &
 current.dis &
 data.dis &
+decstub.dis &
 dos16m.dis &
 dosinite.dis &
 dosstart.dis &
