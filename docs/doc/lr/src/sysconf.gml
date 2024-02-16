@@ -35,6 +35,8 @@ The release year and month of the POSIX.1 standard attempting to be supported, i
 The maximum number of per-process streams supported
 .term _SC_TZNAME_MAX
 The maximum length of a time zone name
+.term _SC_PAGE_SIZE
+The size, in bytes, of one page of memory
 .term _SC_PAGESIZE
 The size, in bytes, of one page of memory
 .term _SC_NPROCESSORS_CONF
@@ -52,6 +54,7 @@ For the socket
 .reffunc listen
 function, retrieve the largest supported backlog of listen requests
 .endterm
+In this implementation, _SC_PAGE_SIZE and _SC_PAGESIZE have the same value.
 In this implementation, requesting either _SC_NPROCESSORS_CONF or
 _SC_NPROCESSORS_ONLN will return the same value.
 .np
