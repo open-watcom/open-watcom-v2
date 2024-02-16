@@ -62,7 +62,7 @@
 #endif
 
 /* Symbolic constants for sysconf */
-/* caution: the module sysconf.c bound checks _SC_ARG_MAX ... _SC_PAGESIZE */
+/* caution: the module sysconf.c bound checks _SC_ARG_MAX ... _SC_THREAD_STACK_MIN */
 #define _SC_ARG_MAX                         1
 #define _SC_CHILD_MAX                       2
 #define _SC_CLK_TCK                         3
@@ -73,6 +73,7 @@
 #define _SC_VERSION                         8
 #define _SC_STREAM_MAX                      9
 #define _SC_TZNAME_MAX                      10
+#define _SC_PAGE_SIZE                       11
 #define _SC_PAGESIZE                        11
 #define _SC_NPROCESSORS_CONF                12
 #define _SC_NPROCESSORS_ONLN                13

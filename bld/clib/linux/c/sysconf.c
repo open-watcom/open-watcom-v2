@@ -159,6 +159,7 @@ _WCRTLINK long sysconf( int name )
         ret = TZNAME_MAX;
         break;
     case _SC_PAGESIZE:
+        /* Also used for _SC_PAGE_SIZE */
 #ifdef PAGE_SIZE
         ret = PAGE_SIZE;
 #else
