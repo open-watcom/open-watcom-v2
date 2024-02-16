@@ -62,7 +62,10 @@
 #endif
 
 /* Symbolic constants for sysconf */
-/* caution: the module sysconf.c bound checks _SC_ARG_MAX ... _SC_THREAD_STACK_MIN */
+
+::
+:: caution: the module sysconf.c bound checks _SC_ARG_MAX ... _SC_THREAD_STACK_MIN
+::
 #define _SC_ARG_MAX                         1
 #define _SC_CHILD_MAX                       2
 #define _SC_CLK_TCK                         3
