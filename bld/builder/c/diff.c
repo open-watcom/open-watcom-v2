@@ -414,7 +414,8 @@ static SLONG newcand( SLONG a, SLONG b, SLONG pred )
     CANDIDATE   *new;
 
     clength++;
-    if( ++clength >= csize ) {
+    clength++;
+    if( clength >= csize ) {
         csize += CSIZE_INC;
         clist = MYCOMPACT( CANDIDATE, clist, csize, "extending clist" );
     }
@@ -1177,7 +1178,7 @@ int main( int argc, char **argv )
             case 'c':
                 if( *ap > '0'
                   && *ap <= '9' ) {
-                    cflag = *ap++ -'0';
+                    cflag = *ap++ - '0';
                 } else {
                     cflag = 3;
                 }
