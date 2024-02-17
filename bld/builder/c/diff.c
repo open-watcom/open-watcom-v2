@@ -286,9 +286,11 @@ void sort( LINE *vector, SLONG vecsize )
                 aim = &ai[mid];
                 if( aim < ai )
                     break;      /* ?? Why ??     */
-                if( aim->hash > ai->hash ||
-                    ( aim->hash == ai->hash &&
-                     aim->serial > ai->serial ) ) break;
+                if( aim->hash > ai->hash
+                  || ( aim->hash == ai->hash
+                  && aim->serial > ai->serial ) ) {
+                    break;
+                }
                 work.hash = ai->hash;
                 ai->hash = aim->hash;
                 aim->hash = work.hash;
@@ -468,7 +470,8 @@ SLONG subseq( void )
         /*
          * For each non-zero element in fileA ...
          */
-        if( ( i = class[a] ) == 0 )
+        i = class[a];
+        if( i == 0 )
             continue;
         cand = klist[0];        /* No candidate now  */
         r = 0;                  /* Current r-candidate  */
@@ -479,14 +482,16 @@ SLONG subseq( void )
             /*
              * Perform the merge algorithm
              */
-            if( ( b = member[i] ) < 0 ) {
+            b = member[i];
+            if( b < 0 ) {
                 b = -b;
             }
 #ifdef DEBUG
             printf( "search(%d, %d, %d) -> %d\n",
                     r, ktop, b, search( r, ktop, b ) );
 #endif
-            if( ( s = search( r, ktop, b ) ) != 0 ) {
+            s = search( r, ktop, b );
+            if( s != 0 ) {
                 if( clist[klist[s]].b > b ) {
                     klist[r] = cand;
                     r = s;
@@ -529,12 +534,13 @@ ULONG search( ULONG low, ULONG high, SLONG b )
 
     if( clist[klist[low]].b >= b )
         return( 0 );
-    while( ( mid = ( low + high ) / 2 ) > low ) {
-        if( ( temp = clist[klist[mid]].b ) > b )
+    while( (mid = ( low + high ) / 2) > low ) {
+        temp = clist[klist[mid]].b;
+        if( temp > b ) {
             high = mid;
-        else if( temp < b )
+        } else if( temp < b ) {
             low = mid;
-        else {
+        } else {
             return( mid );
         }
     }
@@ -565,7 +571,8 @@ void unravel( SLONG k )
     while( k != -1 ) {
         cp = &clist[k];
 #ifdef DEBUG
-        if( k < 0 || k >= clength )
+        if( k < 0
+          || k >= clength )
             error( "Illegal link -> %d", k );
         printf( "match[%d] := %d\n", cp->a + prefix, cp->b + prefix );
 #endif
@@ -675,10 +682,12 @@ INT check( char *fileAname, char *fileBname )
 static void range( SLONG from, SLONG to, SLONG w )
 {
     if( cflag ) {
-        if( ( from -= cflag ) <= 0 ) {
+        from -= cflag;
+        if( from <= 0 ) {
             from = 1;
         }
-        if( ( to += cflag ) > len[w] ) {
+        to += cflag;
+        if( to > len[w] ) {
             to = len[w];
         }
     }
@@ -702,7 +711,8 @@ static void change( SLONG astart, SLONG aend, SLONG bstart, SLONG bend )
     /*
      * This catches a "dummy" last entry
      */
-    if( astart > aend && bstart > bend )
+    if( astart > aend
+      && bstart > bend )
         return;
     havediffs = true;
     c = ( astart > aend ) ? 'a' : ( bstart > bend ) ? 'd' : 'c';
@@ -723,7 +733,8 @@ static void change( SLONG astart, SLONG aend, SLONG bstart, SLONG bend )
         fputs( "**************\n*** ", stdout );
     }
 
-    if( c == 'a' && !cflag ) {
+    if( c == 'a'
+      && !cflag ) {
         range( astart - 1, astart - 1, 0 );       /* Addition: just print one
                                                    * odd # */
     } else {
@@ -741,22 +752,26 @@ static void change( SLONG astart, SLONG aend, SLONG bstart, SLONG bend )
         }
     }
     putchar( '\n' );
-    if( ( !eflag && c != 'a' ) || cflag ) {
+    if( ( !eflag
+      && c != 'a' )
+      || cflag ) {
         fetch( oldseek, astart, aend, lenA, infd[0],
                cflag ? ( c == 'd' ? "- " : "! " ) : "< " );
         if( cflag ) {
             fputs( "--- ", stdout );
             range( bstart, bend, 1 );
             fputs( " -----\n", stdout );
-        } else if( astart <= aend && bstart <= bend ) {
+        } else if( astart <= aend
+          && bstart <= bend ) {
             printf( "---\n" );
         }
     }
     if( bstart <= bend ) {
         fetch( newseek, bstart, bend, lenB, infd[1],
                cflag ? ( c == 'a' ? "+ " : "! " ) : ( eflag ? "" : "> " ) );
-        if( eflag )
+        if( eflag ) {
             printf( ".\n" );
+        }
     }
 }
 
@@ -843,10 +858,12 @@ void fetch( long *seekvec, SLONG start, SLONG end, SLONG trueend, FILE *fd, char
     SLONG       last;
 
     if( cflag ) {
-        if( ( first = start - cflag ) <= 0 ) {
+        first = start - cflag;
+        if( first <= 0 ) {
             first = 1;
         }
-        if( ( last = end + cflag ) > trueend ) {
+        last = end + cflag;
+        if( last > trueend ) {
             last = trueend;
         }
     } else {
@@ -894,21 +911,26 @@ INT getinpline( FILE *fd, char *buffer, int max_len )
     if( fd == stdin ) {
         fputss( buffer, tempfd );
     }
-    if( bflag || iflag ) {
+    if( bflag
+      || iflag ) {
         top = buffer;
         fromp = buffer;
         while( ( c = *fromp++ ) != EOS ) {
-            if( bflag && ( c == ' ' || c == '\t' ) ) {
+            if( bflag
+              && ( c == ' '
+              || c == '\t' ) ) {
                 c = ' ';
-                while( *fromp == ' ' || *fromp == '\t' )
+                while( *fromp == ' ' || *fromp == '\t' ) {
                     fromp++;
+                }
             }
             if( iflag ) {
                 c = tolower( c );
             }
             *top++ = c;
         }
-        if( bflag && top[ -1] == ' ' ) {
+        if( bflag
+          && top[ -1] == ' ' ) {
             top--;
         }
         *top = EOS;
@@ -962,7 +984,8 @@ char *myalloc( ULONG amount, char *why )
     if( amount > UINT_MAX )
         noroom( why );
 #endif
-    if( ( pointer = malloc( amount ) ) == NULL )
+    pointer = malloc( amount );
+    if( pointer == NULL )
         noroom( why );
     return( pointer );
 }
@@ -981,9 +1004,8 @@ char *compact( char *pointer, ULONG new_amount, char *why )
     if( new_amount > UINT_MAX )
         noroom( why );
 #endif
-    //    if (new_pointer = (char *)realloc((void *)pointer, (size_t)new_amount) == NULL)
-    if( new_pointer = realloc( pointer, ( size_t ) new_amount ),
-        new_pointer == NULL )
+    new_pointer = realloc( pointer, (size_t)new_amount );
+    if( new_pointer == NULL )
         noroom( why );
 
 #ifdef DEBUG
@@ -1035,7 +1057,7 @@ void rdump( SLONG *pointer, char *why )
              why, pointer, last, last - pointer );
     last = ( SLONG *) ( ( ( SLONG ) last ) & ~1 );
     for( count = 0; pointer < last; ++count ) {
-        if( ( count & 07 ) == 0 ) {
+        if( (count & 07) == 0 ) {
             fprintf( stderr, "\n%06o", pointer );
         }
         fprintf( stderr, "\t%06o", *pointer );
@@ -1072,12 +1094,14 @@ void dumpklist( SLONG kmax, char *why )
     for( i = 0; i <= kmax; i++ ) {
         cp = &clist[klist[i]];
         printf( "%2d %2d", i, klist[i] );
-        if( cp >= &clist[0] && cp < &clist[clength] )
+        if( cp >= &clist[0]
+          && cp < &clist[clength] ) {
             printf( " (%2d %2d -> %2d)\n", cp->a, cp->b, cp->link );
-        else if( klist[i] == -1 )
+        } else if( klist[i] == -1 ) {
             printf( " End of chain\n" );
-        else
+        } else {
             printf( " illegal klist element\n" );
+        }
     }
     for( i = 0; i <= kmax; i++ ) {
         count = -1;
@@ -1103,8 +1127,9 @@ void dumpklist( SLONG kmax, char *why )
 INT streq( char *s1, char *s2 )
 {
     while( *s1++ == *s2 ) {
-        if( *s2++ == EOS )
+        if( *s2++ == EOS ) {
             return( true );
+        }
     }
     return( false );
 }
@@ -1176,7 +1201,8 @@ char *my_fgets( char *s, int max_len, FILE *iop )
         *cs = '\0';
     }
     --cs;
-    if( len1 > 1 && *cs == '\r' ) {
+    if( len1 > 1
+      && *cs == '\r' ) {
         *cs = '\0';
     }
     return( s );
@@ -1202,10 +1228,12 @@ INT main( int argc, char **argv )
                 break;
 
             case 'c':
-                if( *ap > '0' && *ap <= '9' )
+                if( *ap > '0'
+                  && *ap <= '9' ) {
                     cflag = *ap++ -'0';
-                else
+                } else {
                     cflag = 3;
+                }
                 break;
 
             case 'e':
@@ -1257,14 +1285,17 @@ INT main( int argc, char **argv )
     }
     argv++;
     for( i = 0; i <= 1; i++ ) {
-        if( argv[i][0] == '-' && argv[i][1] == EOS ) {
+        if( argv[i][0] == '-'
+          && argv[i][1] == EOS ) {
             infd[i] = stdin;
             if( ( tempfd = fopen( TEMPFILE, "w" ) ) == NULL ) {
                 cant( TEMPFILE, "work", 1 );
             }
         } else {
             strcpy( path, argv[i] );
-            if( i == 1 && stat( argv[i], &st ) == 0 && S_ISDIR( st.st_mode ) ) {
+            if( i == 1
+              && stat( argv[i], &st ) == 0
+              && S_ISDIR( st.st_mode ) ) {
                 _splitpath2( argv[i - 1], pg.buffer, NULL, NULL, &pg.fname, &pg.ext );
                 _makepath( path, NULL, argv[i], pg.fname, pg.ext );
             }
@@ -1275,11 +1306,13 @@ INT main( int argc, char **argv )
         }
     }
 
-    if( infd[0] == stdin && infd[1] == stdin ) {
+    if( infd[0] == stdin
+      && infd[1] == stdin ) {
         error( "Can't diff two things both on standard input." );
         return( xflag + DIFF_NOT_COMPARED );
     }
-    if( infd[0] == NULL && infd[1] == NULL ) {
+    if( infd[0] == NULL
+      && infd[1] == NULL ) {
         cant( argv[0], "input", 0 );
         cant( argv[1], "input", 1 );
     }
