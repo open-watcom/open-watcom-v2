@@ -39,19 +39,26 @@
 #include "bool.h"
 #include "wio.h"
 #include "watcom.h"
-#include "diff.h"
 #include "pathgrp2.h"
 
 #include "clibext.h"
 
 
+
+#define EOS             0
+#define TEMPFILE        "diff.tmp"
+
+typedef enum {
+    DIFF_NO_DIFFS = 0,
+    DIFF_HAVE_DIFFS,
+    DIFF_NOT_COMPARED,
+    DIFF_NO_MEMORY,
+}       diff_returns;
+
 typedef unsigned long   ULONG;
 typedef long            SLONG;
 typedef unsigned short  USHORT;
 typedef int             INT;
-
-#define EOS             0
-#define TEMPFILE        "diff.tmp"
 
 typedef struct candidate {
     SLONG       b;          /* Line in fileB     */
@@ -119,7 +126,6 @@ static INT          bflag = false;  /* Blank supress requested  */
 static INT          cflag = false;  /* Context printout      */
 static INT          iflag = false;  /* Ignore case requested  */
 static INT          tflag = false;  /* Test for enough memory flag */
-static INT          xflag = 0;      /* Test for enough memory flag */
 static INT          havediffs = false;
 
 #define BUFSIZE     1025
@@ -139,36 +145,7 @@ static char         *cmdusage =
 "        -c[n]        print n context line (defaults to 3)\n"
 "        -i           ignore case\n"
 "        -t           quiet mode. return 3 if not enough memory\n"
-"        -x           shift return codes by 100\n"
 ;
-
-#if 0
-/* forward declarations */
-static SLONG   subseq( void );
-static ULONG   search( ULONG, ULONG, SLONG );
-static USHORT  hash( char * );
-static char    *myalloc( ULONG, char * );
-static char    *compact( char *, ULONG, char * );
-static char    *my_fgets( char *, int, FILE * );
-static void    cant( char *, char *, SLONG );
-static void    input( SLONG );
-static void    squish( void );
-static void    myfree( void *what );
-static void    noroom( char *why );
-static void    fputss( char *s, FILE *iop );
-static INT     streq( char *s1, char *s2 );
-static void    fatal( char *format, ... );
-static void    equiv( void );
-static void    unsort( void );
-static void    unravel( SLONG k );
-static void    sort( LINE *vector, SLONG vecsize );
-static void    error( char *format, ... );
-static INT     check( char *fileAname, char *fileBname );
-static void    output( char *fileAname, char *fileBname );
-static INT     getinpline( FILE *fd, char *buffer, int max_len );
-static void    fetch( long *seekvec, SLONG start, SLONG end, SLONG trueend, FILE *fd, char *pfx );
-#endif
-
 
 /*
  * Sort hash entries
@@ -335,7 +312,7 @@ static void error( char *format, ... )
 static void noroom( char *why )
 {
     if( tflag ) {
-        exit( xflag + DIFF_NO_MEMORY );
+        exit( DIFF_NO_MEMORY );
     } else if( Hflag ) {
         #define freeup( x ) if( x ) myfree( &x );
         freeup( klist );
@@ -350,10 +327,10 @@ static void noroom( char *why )
         fseek( infd[1], 0, 0 );
         while( my_fgets( text, sizeof( text ), infd[1] ) != NULL )
             printf( "%s\n", text );
-        exit( xflag + DIFF_HAVE_DIFFS );
+        exit( DIFF_HAVE_DIFFS );
     } else {
         error( "Out of memory when %s\n", why );
-        exit( xflag + DIFF_NOT_COMPARED );
+        exit( DIFF_NOT_COMPARED );
     }
 }
 
@@ -798,7 +775,7 @@ static void fatal( char *format, ... )
     vfprintf( stderr, format, args );
     va_end( args );
     putc( '\n', stderr );
-    exit( xflag + DIFF_NOT_COMPARED );
+    exit( DIFF_NOT_COMPARED );
 }
 
 /*
@@ -1112,7 +1089,7 @@ static void cant( char *filename, char *what, SLONG fatalflag )
     fprintf( stderr, "Can't open %s file \"%s\": ", what, filename );
     perror( NULL );
     if( fatalflag ) {
-        exit( xflag + DIFF_NOT_COMPARED );
+        exit( DIFF_NOT_COMPARED );
     }
 }
 
@@ -1265,13 +1242,9 @@ INT main( int argc, char **argv )
                 tflag++;
                 break;
 
-            case 'x':
-                xflag = DIFF_X_RETURN_ADD;
-                break;
-
             default:
                 error( "bad option '-%c'\n", ap[ -1] );
-                return( xflag + DIFF_NOT_COMPARED );
+                return( DIFF_NOT_COMPARED );
             }
         }
         argc--;
@@ -1280,11 +1253,11 @@ INT main( int argc, char **argv )
 
     if( argc != 3 ) {
         error( cmdusage );
-        return( xflag + DIFF_NOT_COMPARED );
+        return( DIFF_NOT_COMPARED );
     }
     if( nflag + ( cflag != 0 ) + eflag > 1 ) {
         error( " -c, -n and -e are incompatible.\n" );
-        return( xflag + DIFF_NOT_COMPARED );
+        return( DIFF_NOT_COMPARED );
     }
     argv++;
     for( i = 0; i <= 1; i++ ) {
@@ -1312,7 +1285,7 @@ INT main( int argc, char **argv )
     if( infd[0] == stdin
       && infd[1] == stdin ) {
         error( "Can't diff two things both on standard input." );
-        return( xflag + DIFF_NOT_COMPARED );
+        return( DIFF_NOT_COMPARED );
     }
     if( infd[0] == NULL
       && infd[1] == NULL ) {
@@ -1405,5 +1378,5 @@ INT main( int argc, char **argv )
     myfree( &fileA );
     myfree( &fileB );
 
-    return( xflag + ( havediffs ? DIFF_HAVE_DIFFS : DIFF_NO_DIFFS ) );
+    return( ( havediffs ) ? DIFF_HAVE_DIFFS : DIFF_NO_DIFFS );
 }
