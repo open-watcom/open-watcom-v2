@@ -555,6 +555,7 @@ static char *fill_in_parms_and_labels( char *line, macro_info *info )
     bool                quote;
     char                *start;
 
+    linestruct.line = NULL;
     if( info->labels.head != NULL ) {
         /*
          * replace macro local labels by internal symbols
