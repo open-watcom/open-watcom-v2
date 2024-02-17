@@ -142,6 +142,7 @@ static char         *cmdusage =
 "        -x           shift return codes by 100\n"
 ;
 
+#if 0
 /* forward declarations */
 static SLONG   subseq( void );
 static ULONG   search( ULONG, ULONG, SLONG );
@@ -166,108 +167,14 @@ static INT     check( char *fileAname, char *fileBname );
 static void    output( char *fileAname, char *fileBname );
 static INT     getinpline( FILE *fd, char *buffer, int max_len );
 static void    fetch( long *seekvec, SLONG start, SLONG end, SLONG trueend, FILE *fd, char *pfx );
+#endif
 
-
-/*
- * Read the file, building hash table
- */
-
-void input( SLONG which )
-    /* 0 or 1 to redefine infd[]  */
-{
-    LINE        *lentry;
-    SLONG       linect = 0;
-    FILE        *fd;
-#define LSIZE_INC 200           /* # of line entries to alloc at once */
-    SLONG       lsize = LSIZE_INC;
-
-    lentry = (LINE *)myalloc( sizeof( LINE ) * ( lsize + 3 ), "line" );
-    fd = infd[which];
-    while( !getinpline( fd, text, sizeof( text ) ) ) {
-        if( ++linect >= lsize ) {
-            lsize += 200;
-            lentry = (LINE *)compact( (char *)lentry,
-                                         ( lsize + 3 ) * sizeof( LINE ),
-                                         "extending line vector" );
-        }
-        lentry[linect].hash = hash( text );
-    }
-
-    /*
-     * If input was from stdin ("-" command), finish off the temp file.
-     */
-    if( fd == stdin ) {
-        fclose( tempfd );
-        tempfd = infd[which] = fopen( TEMPFILE, "r" );
-    }
-
-    /*
-     * If we wanted to be stingy with memory, we could realloc lentry down to
-     * its exact size (+3 for some odd reason) here.  No need?
-     */
-    len[which] = linect;
-    file[which] = lentry;
-}
-
-/*
- * Look for initial and trailing sequences that have identical hash values.
- * Don't bother building them into the candidate vector.
- */
-
-void squish( void )
-{
-    SLONG       i;
-    LINE        *ap;
-    LINE        *bp;
-    SLONG       j;
-    SLONG       k;
-
-    /*
-     * prefix -> first line (from start) that doesn't hash identically
-     */
-    i = 0;
-    ap = &fileA[1];
-    bp = &fileB[1];
-    while( i < lenA && i < lenB && ap->hash == bp->hash ) {
-        i++;
-        ap++;
-        bp++;
-    }
-    prefix = i;
-
-    /*
-     * suffix -> first line (from end) that doesn't hash identically
-     */
-    j = lenA - i;
-    k = lenB - i;
-    ap = &fileA[lenA];
-    bp = &fileB[lenB];
-    i = 0;
-    while( i < j && i < k && ap->hash == bp->hash ) {
-        i++;
-        ap--;
-        bp--;
-    }
-    suffix = i;
-
-    /*
-     * Tuck the counts away
-     */
-    for( k = 0; k <= 1; k++ ) {
-        sfile[k] = file[k] + prefix;
-        j = slen[k] = len[k] - prefix - suffix;
-
-        for( i = 0, ap = sfile[k]; i <= slen[k]; i++, ap++ ) {
-            ap->serial = i;
-        }
-    }
-}
 
 /*
  * Sort hash entries
  */
 
-void sort( LINE *vector, SLONG vecsize )
+static void sort( LINE *vector, SLONG vecsize )
 {
     SLONG       j;
     LINE        *aim;
@@ -306,7 +213,7 @@ void sort( LINE *vector, SLONG vecsize )
  * Build equivalence class vector
  */
 
-void equiv( void )
+static void equiv( void )
 {
     LINE        *ap;
     union {
@@ -379,11 +286,100 @@ void equiv( void )
 #endif
 }
 
+static void myfree( void *what )
+{
+    free( *(char **)what );
+    *(char **)what = NULL;
+}
+
+/*
+ * my_fgets() is like fgets() except that the terminating newline
+ * is removed.
+ */
+
+static char *my_fgets( char *s, int max_len, FILE *iop )
+{
+    char    *cs;
+    size_t  len1;
+
+    if( fgets( s, max_len, iop ) == NULL )
+        return( NULL );
+    len1 = strlen( s );
+    cs = s + len1 - 1;
+    if( *cs == '\n' ) {
+        *cs = '\0';
+    }
+    --cs;
+    if( len1 > 1
+      && *cs == '\r' ) {
+        *cs = '\0';
+    }
+    return( s );
+}
+
+/*
+ * Error message before retiring.
+ */
+
+static void error( char *format, ... )
+{
+    va_list args;
+
+    va_start( args, format );
+    vfprintf( stderr, format, args );
+    va_end( args );
+    putc( '\n', stderr );
+    fflush( stderr );
+}
+
+static void noroom( char *why )
+{
+    if( tflag ) {
+        exit( xflag + DIFF_NO_MEMORY );
+    } else if( Hflag ) {
+        #define freeup( x ) if( x ) myfree( &x );
+        freeup( klist );
+        freeup( clist );
+        freeup( match );
+        freeup( oldseek );
+        freeup( newseek );
+        freeup( fileA );
+        freeup( fileB );
+        printf( "d1 %ld\n", lenA );
+        printf( "a1 %ld\n", lenB );
+        fseek( infd[1], 0, 0 );
+        while( my_fgets( text, sizeof( text ), infd[1] ) != NULL )
+            printf( "%s\n", text );
+        exit( xflag + DIFF_HAVE_DIFFS );
+    } else {
+        error( "Out of memory when %s\n", why );
+        exit( xflag + DIFF_NOT_COMPARED );
+    }
+}
+
+/*
+ * Allocate or crash.
+ */
+
+static char *myalloc( ULONG amount, char *why )
+{
+    char        *pointer;
+
+#if defined( _M_I86 )
+    if( amount > UINT_MAX )
+        noroom( why );
+#endif
+    pointer = malloc( amount );
+    if( pointer == NULL )
+        noroom( why );
+    return( pointer );
+}
+
 /*
  * Build class vector
  */
 
-void unsort( void )
+static void unsort( void )
 {
     SLONG       *temp;
     SLONG       *tp;
@@ -426,6 +422,27 @@ void unsort( void )
 #endif
 }
 
+static char *compact( char *pointer, ULONG new_amount, char *why )
+{
+    char        *new_pointer;
+
+#if defined( _M_I86 )
+    if( new_amount > UINT_MAX )
+        noroom( why );
+#endif
+    new_pointer = realloc( pointer, (size_t)new_amount );
+    if( new_pointer == NULL )
+        noroom( why );
+
+#ifdef DEBUG
+    if( new_pointer != pointer ) {
+        fprintf( stderr, "moved from %06o to %06o\n",
+                 pointer, new_pointer );
+    }
+#endif
+    return( new_pointer );
+}
+
 /*
  * Generate maximum common subsequence chain in clist[]
  */
@@ -452,7 +469,34 @@ newcand(    SLONG a,        /* Line in fileA      */
 }
 
 
-SLONG subseq( void )
+/*
+ * Search klist[low..top] (inclusive) for b.  If klist[low]->b >= b,
+ * return zero.  Else return s such that klist[s-1]->b < b and
+ * klist[s]->b >= b.  Note that the algorithm presupposes the two
+ * preset "fence" elements, (0, 0) and (slenA, slenB).
+ */
+
+static ULONG search( ULONG low, ULONG high, SLONG b )
+{
+    SLONG       temp;
+    ULONG       mid;
+
+    if( clist[klist[low]].b >= b )
+        return( 0 );
+    while( (mid = ( low + high ) / 2) > low ) {
+        temp = clist[klist[mid]].b;
+        if( temp > b ) {
+            high = mid;
+        } else if( temp < b ) {
+            low = mid;
+        } else {
+            return( mid );
+        }
+    }
+    return( mid + 1 );
+}
+
+static SLONG subseq( void )
 {
     SLONG       a;
     ULONG       ktop;
@@ -520,34 +564,7 @@ SLONG subseq( void )
 }
 
 
-/*
- * Search klist[low..top] (inclusive) for b.  If klist[low]->b >= b,
- * return zero.  Else return s such that klist[s-1]->b < b and
- * klist[s]->b >= b.  Note that the algorithm presupposes the two
- * preset "fence" elements, (0, 0) and (slenA, slenB).
- */
-
-ULONG search( ULONG low, ULONG high, SLONG b )
-{
-    SLONG       temp;
-    ULONG       mid;
-
-    if( clist[klist[low]].b >= b )
-        return( 0 );
-    while( (mid = ( low + high ) / 2) > low ) {
-        temp = clist[klist[mid]].b;
-        if( temp > b ) {
-            high = mid;
-        } else if( temp < b ) {
-            low = mid;
-        } else {
-            return( mid );
-        }
-    }
-    return( mid + 1 );
-}
-
-void unravel( SLONG k )
+static void unravel( SLONG k )
 {
     SLONG       i;
     CANDIDATE   *cp;
@@ -582,6 +599,78 @@ void unravel( SLONG k )
 }
 
 /*
+ * true if strings are identical
+ */
+
+static INT streq( char *s1, char *s2 )
+{
+    while( *s1++ == *s2 ) {
+        if( *s2++ == EOS ) {
+            return( true );
+        }
+    }
+    return( false );
+}
+
+/*
+ * Like fput() except that it puts a newline at the end of the line.
+ */
+
+static void fputss( char *s, FILE *iop )
+{
+    fputs( s, iop );
+    putc( '\n', iop );
+}
+
+/*
+ * Input routine, read one line to buffer[], return true on eof, else false.
+ * The terminating newline is always removed.  If "-b" was given, trailing
+ * whitespace (blanks and tabs) are removed and strings of blanks and
+ * tabs are replaced by a single blank.  getinpline() does all hacking for
+ * redirected input files.
+ */
+
+static INT getinpline( FILE *fd, char *buffer, int max_len )
+{
+    char     *top;
+    char     *fromp;
+    char      c;
+
+    if( my_fgets( buffer, max_len, fd ) == NULL ) {
+        *buffer = EOS;
+        return( true );
+    }
+    if( fd == stdin ) {
+        fputss( buffer, tempfd );
+    }
+    if( bflag
+      || iflag ) {
+        top = buffer;
+        fromp = buffer;
+        while( ( c = *fromp++ ) != EOS ) {
+            if( bflag
+              && ( c == ' '
+              || c == '\t' ) ) {
+                c = ' ';
+                while( *fromp == ' ' || *fromp == '\t' ) {
+                    fromp++;
+                }
+            }
+            if( iflag ) {
+                c = tolower( c );
+            }
+            *top++ = c;
+        }
+        if( bflag
+          && top[ -1] == ' ' ) {
+            top--;
+        }
+        *top = EOS;
+    }
+    return( false );
+}
+
+/*
  * Check for hash matches (jackpots) and collect random access indices to
  * the two files.
  *
@@ -591,7 +680,7 @@ void unravel( SLONG k )
  * file position.  FIXME.
  */
 
-INT check( char *fileAname, char *fileBname )
+static INT check( char *fileAname, char *fileBname )
 {
     SLONG       a;          /* Current line in file A  */
     SLONG       b;          /* Current line in file B  */
@@ -700,6 +789,61 @@ static void range( SLONG from, SLONG to, SLONG w )
     }
 }
 
+static void fatal( char *format, ... )
+{
+    va_list args;
+
+    va_start( args, format );
+    fprintf( stderr, "Internal error: " );
+    vfprintf( stderr, format, args );
+    va_end( args );
+    putc( '\n', stderr );
+    exit( xflag + DIFF_NOT_COMPARED );
+}
+
+/*
+ * Print the appropriate text
+ */
+
+static void fetch( long *seekvec, SLONG start, SLONG end, SLONG trueend, FILE *fd, char *pfx )
+{
+    SLONG       i;
+    SLONG       first;
+    SLONG       last;
+
+    if( cflag ) {
+        first = start - cflag;
+        if( first <= 0 ) {
+            first = 1;
+        }
+        last = end + cflag;
+        if( last > trueend ) {
+            last = trueend;
+        }
+    } else {
+        first = start;
+        last = end;
+    }
+    if( fseek( fd, seekvec[first], 0 ) != 0 ) {
+        fatal( "?Can't read line %d at %08lx (hex) in file%c\n", start,
+            seekvec[first], ( fd == infd[0] ) ? 'A' : 'B' );
+    } else {
+        for( i = first; i <= last; i++ ) {
+            if( my_fgets( text, sizeof( text ), fd ) == NULL ) {
+                fatal( "** Unexpected end of file\n" );
+                break;
+            }
+#ifdef DEBUG
+            printf( "%5d: %s%s\n", i, pfx, text );
+#else
+            fputs( ( cflag && ( i < start || i > end ) ) ? "  " : pfx, stdout );
+            fputs( text, stdout );
+            putchar( '\n' );
+#endif
+        }
+    }
+}
+
 /*
  * Output a change entry: fileA[astart..aend] changed to fileB[bstart..bend]
  */
@@ -775,7 +919,7 @@ static void change( SLONG astart, SLONG aend, SLONG bstart, SLONG bend )
     }
 }
 
-void output( char *fileAname, char *fileBname )
+static void output( char *fileAname, char *fileBname )
 {
     SLONG       astart;
     SLONG       aend = 0;
@@ -847,97 +991,6 @@ void output( char *fileAname, char *fileBname )
     }
 }
 
-/*
- * Print the appropriate text
- */
-
-void fetch( long *seekvec, SLONG start, SLONG end, SLONG trueend, FILE *fd, char *pfx )
-{
-    SLONG       i;
-    SLONG       first;
-    SLONG       last;
-
-    if( cflag ) {
-        first = start - cflag;
-        if( first <= 0 ) {
-            first = 1;
-        }
-        last = end + cflag;
-        if( last > trueend ) {
-            last = trueend;
-        }
-    } else {
-        first = start;
-        last = end;
-    }
-    if( fseek( fd, seekvec[first], 0 ) != 0 ) {
-        fatal( "?Can't read line %d at %08lx (hex) in file%c\n", start,
-            seekvec[first], ( fd == infd[0] ) ? 'A' : 'B' );
-    } else {
-        for( i = first; i <= last; i++ ) {
-            if( my_fgets( text, sizeof( text ), fd ) == NULL ) {
-                fatal( "** Unexpected end of file\n" );
-                break;
-            }
-#ifdef DEBUG
-            printf( "%5d: %s%s\n", i, pfx, text );
-#else
-            fputs( ( cflag && ( i < start || i > end ) ) ? "  " : pfx, stdout );
-            fputs( text, stdout );
-            putchar( '\n' );
-#endif
-        }
-    }
-}
-
-/*
- * Input routine, read one line to buffer[], return true on eof, else false.
- * The terminating newline is always removed.  If "-b" was given, trailing
- * whitespace (blanks and tabs) are removed and strings of blanks and
- * tabs are replaced by a single blank.  getinpline() does all hacking for
- * redirected input files.
- */
-
-INT getinpline( FILE *fd, char *buffer, int max_len )
-{
-    char     *top;
-    char     *fromp;
-    char      c;
-
-    if( my_fgets( buffer, max_len, fd ) == NULL ) {
-        *buffer = EOS;
-        return( true );
-    }
-    if( fd == stdin ) {
-        fputss( buffer, tempfd );
-    }
-    if( bflag
-      || iflag ) {
-        top = buffer;
-        fromp = buffer;
-        while( ( c = *fromp++ ) != EOS ) {
-            if( bflag
-              && ( c == ' '
-              || c == '\t' ) ) {
-                c = ' ';
-                while( *fromp == ' ' || *fromp == '\t' ) {
-                    fromp++;
-                }
-            }
-            if( iflag ) {
-                c = tolower( c );
-            }
-            *top++ = c;
-        }
-        if( bflag
-          && top[ -1] == ' ' ) {
-            top--;
-        }
-        *top = EOS;
-    }
-    return( false );
-}
-
 static USHORT    crc16a[] = {
     0000000, 0140301, 0140601, 0000500,
     0141401, 0001700, 0001200, 0141101,
@@ -957,7 +1010,7 @@ static USHORT    crc16b[] = {
  * Algorithm from Stu Wecker (Digital memo 130-959-002-00).
  */
 
-USHORT hash( char *buffer )
+static USHORT hash( char *buffer )
 {
     USHORT      crc;
     char        *tp;
@@ -972,82 +1025,12 @@ USHORT hash( char *buffer )
     return( ( crc == 0 ) ? ( USHORT ) 1 : crc );
 }
 
-/*
- * Allocate or crash.
- */
-
-char *myalloc( ULONG amount, char *why )
-{
-    char        *pointer;
-
-#if defined( _M_I86 )
-    if( amount > UINT_MAX )
-        noroom( why );
-#endif
-    pointer = malloc( amount );
-    if( pointer == NULL )
-        noroom( why );
-    return( pointer );
-}
-
-void myfree( void *what )
-{
-    free( *(char **)what );
-    *(char **)what = NULL;
-}
-
-char *compact( char *pointer, ULONG new_amount, char *why )
-{
-    char        *new_pointer;
-
-#if defined( _M_I86 )
-    if( new_amount > UINT_MAX )
-        noroom( why );
-#endif
-    new_pointer = realloc( pointer, (size_t)new_amount );
-    if( new_pointer == NULL )
-        noroom( why );
-
-#ifdef DEBUG
-    if( new_pointer != pointer ) {
-        fprintf( stderr, "moved from %06o to %06o\n",
-                 pointer, new_pointer );
-    }
-#endif
-    return( new_pointer );
-}
-
-void noroom( char *why )
-{
-    if( tflag ) {
-        exit( xflag + DIFF_NO_MEMORY );
-    } else if( Hflag ) {
-        #define freeup( x ) if( x ) myfree( &x );
-        freeup( klist );
-        freeup( clist );
-        freeup( match );
-        freeup( oldseek );
-        freeup( newseek );
-        freeup( fileA );
-        freeup( fileB );
-        printf( "d1 %ld\n", lenA );
-        printf( "a1 %ld\n", lenB );
-        fseek( infd[1], 0, 0 );
-        while( my_fgets( text, sizeof( text ), infd[1] ) != NULL )
-            printf( "%s\n", text );
-        exit( xflag + DIFF_HAVE_DIFFS );
-    } else {
-        error( "Out of memory when %s\n", why );
-        exit( xflag + DIFF_NOT_COMPARED );
-    }
-}
-
 #ifdef DEBUG
 /*
  * Dump memory block
  */
 
-void rdump( SLONG *pointer, char *why )
+static void rdump( SLONG *pointer, char *why )
 {
     SLONG       *last;
     SLONG       count;
@@ -1068,7 +1051,7 @@ void rdump( SLONG *pointer, char *why )
 #endif
 
 #ifdef DEBUG
-void dump( LINE *d_linep, SLONG d_len, SLONG d_which )
+static void dump( LINE *d_linep, SLONG d_len, SLONG d_which )
 {
     SLONG       i;
 
@@ -1084,7 +1067,7 @@ void dump( LINE *d_linep, SLONG d_len, SLONG d_which )
  * Dump klist
  */
 
-void dumpklist( SLONG kmax, char *why )
+static void dumpklist( SLONG kmax, char *why )
 {
     SLONG    i;
     CANDIDATE *cp;
@@ -1121,24 +1104,10 @@ void dumpklist( SLONG kmax, char *why )
 #endif
 
 /*
- * true if strings are identical
- */
-
-INT streq( char *s1, char *s2 )
-{
-    while( *s1++ == *s2 ) {
-        if( *s2++ == EOS ) {
-            return( true );
-        }
-    }
-    return( false );
-}
-
-/*
  * Can't open file message
  */
 
-void cant( char *filename, char *what, SLONG fatalflag )
+static void cant( char *filename, char *what, SLONG fatalflag )
 {
     fprintf( stderr, "Can't open %s file \"%s\": ", what, filename );
     perror( NULL );
@@ -1147,65 +1116,99 @@ void cant( char *filename, char *what, SLONG fatalflag )
     }
 }
 
-void fatal( char *format, ... )
-{
-    va_list args;
-
-    va_start( args, format );
-    fprintf( stderr, "Internal error: " );
-    vfprintf( stderr, format, args );
-    va_end( args );
-    putc( '\n', stderr );
-    exit( xflag + DIFF_NOT_COMPARED );
-}
 /*
- * Error message before retiring.
+ * Look for initial and trailing sequences that have identical hash values.
+ * Don't bother building them into the candidate vector.
  */
 
-void error( char *format, ... )
+static void squish( void )
 {
-    va_list args;
+    SLONG       i;
+    LINE        *ap;
+    LINE        *bp;
+    SLONG       j;
+    SLONG       k;
 
-    va_start( args, format );
-    vfprintf( stderr, format, args );
-    va_end( args );
-    putc( '\n', stderr );
-    fflush( stderr );
-}
-
-/*
- * Like fput() except that it puts a newline at the end of the line.
- */
-
-void fputss( char *s, FILE *iop )
-{
-    fputs( s, iop );
-    putc( '\n', iop );
-}
-
-/*
- * my_fgets() is like fgets() except that the terminating newline
- * is removed.
- */
-
-char *my_fgets( char *s, int max_len, FILE *iop )
-{
-    char    *cs;
-    size_t  len1;
-
-    if( fgets( s, max_len, iop ) == NULL )
-        return( NULL );
-    len1 = strlen( s );
-    cs = s + len1 - 1;
-    if( *cs == '\n' ) {
-        *cs = '\0';
+    /*
+     * prefix -> first line (from start) that doesn't hash identically
+     */
+    i = 0;
+    ap = &fileA[1];
+    bp = &fileB[1];
+    while( i < lenA && i < lenB && ap->hash == bp->hash ) {
+        i++;
+        ap++;
+        bp++;
     }
-    --cs;
-    if( len1 > 1
-      && *cs == '\r' ) {
-        *cs = '\0';
+    prefix = i;
+
+    /*
+     * suffix -> first line (from end) that doesn't hash identically
+     */
+    j = lenA - i;
+    k = lenB - i;
+    ap = &fileA[lenA];
+    bp = &fileB[lenB];
+    i = 0;
+    while( i < j && i < k && ap->hash == bp->hash ) {
+        i++;
+        ap--;
+        bp--;
     }
-    return( s );
+    suffix = i;
+
+    /*
+     * Tuck the counts away
+     */
+    for( k = 0; k <= 1; k++ ) {
+        sfile[k] = file[k] + prefix;
+        j = slen[k] = len[k] - prefix - suffix;
+
+        for( i = 0, ap = sfile[k]; i <= slen[k]; i++, ap++ ) {
+            ap->serial = i;
+        }
+    }
+}
+
+/*
+ * Read the file, building hash table
+ */
+
+static void input( SLONG which )
+    /* 0 or 1 to redefine infd[]  */
+{
+    LINE        *lentry;
+    SLONG       linect = 0;
+    FILE        *fd;
+#define LSIZE_INC 200           /* # of line entries to alloc at once */
+    SLONG       lsize = LSIZE_INC;
+
+    lentry = (LINE *)myalloc( sizeof( LINE ) * ( lsize + 3 ), "line" );
+    fd = infd[which];
+    while( !getinpline( fd, text, sizeof( text ) ) ) {
+        if( ++linect >= lsize ) {
+            lsize += 200;
+            lentry = (LINE *)compact( (char *)lentry,
+                                         ( lsize + 3 ) * sizeof( LINE ),
+                                         "extending line vector" );
+        }
+        lentry[linect].hash = hash( text );
+    }
+
+    /*
+     * If input was from stdin ("-" command), finish off the temp file.
+     */
+    if( fd == stdin ) {
+        fclose( tempfd );
+        tempfd = infd[which] = fopen( TEMPFILE, "r" );
+    }
+
+    /*
+     * If we wanted to be stingy with memory, we could realloc lentry down to
+     * its exact size (+3 for some odd reason) here.  No need?
+     */
+    len[which] = linect;
+    file[which] = lentry;
 }
 
 /*
