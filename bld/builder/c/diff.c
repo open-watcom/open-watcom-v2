@@ -353,7 +353,7 @@ static void unsort( void )
         SSHORT  *cp;
     }           u;
     LINE        *evec;
-    SSHOR       *eclass;
+    SSHORT      *eclass;
 #ifdef DEVBUILD
     SLONG       i;
 #endif
@@ -967,7 +967,7 @@ static USHORT hash( const char *buffer )
 {
     USHORT      crc;
     const char  *tp;
-    SSHOR       temp;
+    SSHORT      temp;
 
     crc = 0;
     for( tp = buffer; *tp != EOS; ) {
