@@ -48,6 +48,10 @@
 #define EOS             0
 #define TEMPFILE        "diff.tmp"
 
+#define MYALLOC(t,s,w)      (t *)myalloc( (s) * sizeof( t ), w )
+#define MYCOMPACT(t,p,s,w)  (t *)compact( (p), (s) * sizeof( t ), w )
+#define MYFREE(p)           if( p != NULL ) { free( p ); p = NULL; }
+
 typedef enum {
     DIFF_NO_DIFFS = 0,
     DIFF_HAVE_DIFFS,
@@ -263,12 +267,6 @@ static void equiv( void )
 #endif
 }
 
-static void myfree( void *what )
-{
-    free( *(char **)what );
-    *(char **)what = NULL;
-}
-
 /*
  * my_fgets() is like fgets() except that the terminating newline
  * is removed.
@@ -309,19 +307,18 @@ static void error( char *format, ... )
     fflush( stderr );
 }
 
-static void noroom( char *why )
+static void noroom( const char *why )
 {
     if( tflag ) {
         exit( DIFF_NO_MEMORY );
     } else if( Hflag ) {
-        #define freeup( x ) if( x ) myfree( &x );
-        freeup( klist );
-        freeup( clist );
-        freeup( match );
-        freeup( oldseek );
-        freeup( newseek );
-        freeup( fileA );
-        freeup( fileB );
+        MYFREE( klist );
+        MYFREE( clist );
+        MYFREE( match );
+        MYFREE( oldseek );
+        MYFREE( newseek );
+        MYFREE( fileA );
+        MYFREE( fileB );
         printf( "d1 %ld\n", lenA );
         printf( "a1 %ld\n", lenB );
         fseek( infd[1], 0, 0 );
@@ -338,18 +335,14 @@ static void noroom( char *why )
  * Allocate or crash.
  */
 
-static char *myalloc( ULONG amount, char *why )
+static void *myalloc( size_t size, const char *why )
 {
-    char        *pointer;
+    void    *ptr;
 
-#if defined( _M_I86 )
-    if( amount > UINT_MAX )
+    ptr = malloc( size );
+    if( ptr == NULL )
         noroom( why );
-#endif
-    pointer = malloc( amount );
-    if( pointer == NULL )
-        noroom( why );
-    return( pointer );
+    return( ptr );
 }
 
 /*
@@ -370,7 +363,7 @@ static void unsort( void )
     SLONG       i;
 #endif
 
-    temp = (SLONG *)myalloc( ( slenA + 1 ) * sizeof( SLONG ), "unsort scratch" );
+    temp = MYALLOC( SLONG, slenA + 1, "unsort scratch" );
     u.ap = &sfileA[1];
     evec = &sfileA[slenA];
     while( u.ap <= evec ) {
@@ -390,7 +383,7 @@ static void unsort( void )
     while( u.cp <= eclass ) {
         *u.cp++ = *tp++;
     }
-    myfree( &temp );
+    MYFREE( temp );
 #ifdef DEBUG
     printf( "unsort exit\n" );
     for( i = 1; i <= slenA; i++ ) {
@@ -399,25 +392,20 @@ static void unsort( void )
 #endif
 }
 
-static char *compact( char *pointer, ULONG new_amount, char *why )
+static void *compact( void *ptr, size_t size, const char *why )
 {
-    char        *new_pointer;
+    char        *new_ptr;
 
-#if defined( _M_I86 )
-    if( new_amount > UINT_MAX )
-        noroom( why );
-#endif
-    new_pointer = realloc( pointer, (size_t)new_amount );
-    if( new_pointer == NULL )
+    new_ptr = realloc( ptr, size );
+    if( new_ptr == NULL )
         noroom( why );
 
 #ifdef DEBUG
-    if( new_pointer != pointer ) {
-        fprintf( stderr, "moved from %06o to %06o\n",
-                 pointer, new_pointer );
+    if( new_ptr != ptr ) {
+        fprintf( stderr, "moved from %06o to %06o\n", ptr, new_ptr );
     }
 #endif
-    return( new_pointer );
+    return( new_ptr );
 }
 
 /*
@@ -434,9 +422,7 @@ newcand(    SLONG a,        /* Line in fileA      */
     clength++;
     if( ++clength >= csize ) {
         csize += CSIZE_INC;
-        clist = (CANDIDATE *)compact( (char *)clist,
-                                         csize * sizeof( CANDIDATE ),
-                                         "extending clist" );
+        clist = MYCOMPACT( CANDIDATE, clist, csize, "extending clist" );
     }
     new = &clist[clength - 1];
     new->a = a;
@@ -1160,14 +1146,12 @@ static void input( SLONG which )
 #define LSIZE_INC 200           /* # of line entries to alloc at once */
     SLONG       lsize = LSIZE_INC;
 
-    lentry = (LINE *)myalloc( sizeof( LINE ) * ( lsize + 3 ), "line" );
+    lentry = MYALLOC( LINE, lsize + 3, "line" );
     fd = infd[which];
     while( !getinpline( fd, text, sizeof( text ) ) ) {
         if( ++linect >= lsize ) {
             lsize += 200;
-            lentry = (LINE *)compact( (char *)lentry,
-                                         ( lsize + 3 ) * sizeof( LINE ),
-                                         "extending line vector" );
+            lentry = MYCOMPACT( LINE, lentry, lsize + 3, "extending line vector" );
         }
         lentry[linect].hash = hash( text );
     }
@@ -1329,8 +1313,7 @@ INT main( int argc, char **argv )
      */
     member = (short *)fileB;
     equiv();
-    member = (short *)compact( (char *)member, ( slenB + 2 ) * sizeof( SLONG ),
-                                 "squeezing member vector" );
+    member = (short *)MYCOMPACT( SLONG, member, slenB + 2, "squeezing member vector" );
     fileB = (LINE *)member;
 
     /*
@@ -1338,29 +1321,28 @@ INT main( int argc, char **argv )
      */
     class = (short *)fileA;
     unsort();
-    class = (short *)compact( (char *)class, ( slenA + 2 ) * sizeof( SLONG ),
-                                "compacting class vector" );
+    class = (short *)MYCOMPACT( SLONG, class, slenA + 2, "compacting class vector" );
     fileA = (LINE *)class;
     /*
      * Find longest subsequences
      */
-    klist = (SLONG *)myalloc( ( slenA + 2 ) * sizeof( SLONG ), "klist" );
-    clist = (CANDIDATE *)myalloc( csize * sizeof( CANDIDATE ), "clist" );
+    klist = MYALLOC( SLONG, slenA + 2, "klist" );
+    clist = MYALLOC( CANDIDATE, csize, "clist" );
     i = subseq();
-    myfree( &member );
+    MYFREE( member );
     fileB = NULL;
-    myfree( &class );
+    MYFREE( class );
     fileA = NULL;
-    match = (SLONG *)myalloc( ( lenA + 2 ) * sizeof( SLONG ), "match" );
+    match = MYALLOC( SLONG, lenA + 2, "match" );
     unravel( klist[i] );
-    myfree( &clist );
-    myfree( &klist );
+    MYFREE( clist );
+    MYFREE( klist );
 
     /*
      * Check for fortuitous matches and output differences
      */
-    oldseek = (long *)myalloc( ( lenA + 2 ) * sizeof( *oldseek ), "oldseek" );
-    newseek = (long *)myalloc( ( lenB + 2 ) * sizeof( *newseek ), "newseek" );
+    oldseek = MYALLOC( long, lenA + 2, "oldseek" );
+    newseek = MYALLOC( long, lenB + 2, "newseek" );
     if( check( argv[0], argv[1] ) ) {
 #ifdef DEBUG
         fprintf( stderr, "Spurious match, output is not optimal\n" );
@@ -1373,10 +1355,10 @@ INT main( int argc, char **argv )
         fclose( tempfd );
         remove( TEMPFILE );
     }
-    myfree( &oldseek );
-    myfree( &newseek );
-    myfree( &fileA );
-    myfree( &fileB );
+    MYFREE( oldseek );
+    MYFREE( newseek );
+    MYFREE( fileA );
+    MYFREE( fileB );
 
     return( ( havediffs ) ? DIFF_HAVE_DIFFS : DIFF_NO_DIFFS );
 }
