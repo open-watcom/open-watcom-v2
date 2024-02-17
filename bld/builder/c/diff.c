@@ -93,14 +93,14 @@ static SLONG        suffix;             /* Identical lenes at end    */
  * The following vectors overlay the area defined by fileA
  */
 
-static SSHORT       *class;             /* Unsorted line numbers  */
-static SLONG        *klist;             /* Index of element in clist  */
+static SSHORT       *class;             /* Unsorted line numbers        */
+static SLONG        *klist;             /* Index of element in clist    */
 static CANDIDATE    *clist;             /* Storage pool for candidates  */
 static SLONG        clength = 0;        /* Number of active candidates  */
 #define CSIZE_INC   50                  /* How many to allocate each time we have to */
 static SLONG        csize = CSIZE_INC;  /* Current size of storage pool */
 
-static SLONG        *match;             /* Longest subsequence       */
+static SLONG        *match;             /* Longest subsequence          */
 
 /*
  * The following vectors overlay the area defined by fileB
@@ -111,8 +111,8 @@ static SSHORT       *member;            /* Concatenated equiv. classes  */
 /*
  * Files IO related variables
  */
-static long         *oldseek;           /* Seek position in file A  */
-static long         *newseek;           /* Seek position in file B  */
+static long         *oldseek;           /* Seek position in file A      */
+static long         *newseek;           /* Seek position in file B      */
 
 static FILE         *infd[FIL_SIZE];    /* Input files A and B handles  */
 static FILE         *tempfd;            /* Temp file for input redirection handle */
@@ -121,20 +121,20 @@ static FILE         *tempfd;            /* Temp file for input redirection handl
  * Global variables
  */
 
-static char         *Dflag = NULL;      /* output #ifdef code */
-static bool         Hflag = false;      /* half hearted algorithm */
-static bool         nflag = false;      /* Edit script requested  */
-static bool         eflag = false;      /* Edit script requested  */
-static bool         bflag = false;      /* Blank supress requested  */
-static bool         cflag = false;      /* Context printout      */
-static bool         iflag = false;      /* Ignore case requested  */
-static bool         tflag = false;      /* Test for enough memory flag */
+static char         *Dflag = NULL;      /* output #ifdef code           */
+static bool         Hflag = false;      /* half hearted algorithm       */
+static bool         nflag = false;      /* Edit script requested        */
+static bool         eflag = false;      /* Edit script requested        */
+static bool         bflag = false;      /* Blank supress requested      */
+static bool         cflag = false;      /* Context printout             */
+static bool         iflag = false;      /* Ignore case requested        */
+static bool         tflag = false;      /* Test for enough memory flag  */
 static int          diff_rc = DIFF_NO_DIFFS;
 
 #define BUFSIZE     1025
 
-static char         text[BUFSIZE];      /* Input line from file1  */
-static char         textb[BUFSIZE];     /* Input from file2 for check  */
+static char         texta[BUFSIZE];     /* Input line from file1        */
+static char         textb[BUFSIZE];     /* Input line from file2        */
 
 static const char   *cmdusage =
 "usage:\n"
@@ -317,8 +317,8 @@ static void noroom( const char *why )
         printf( "d1 %ld\n", len[FIL_A] );
         printf( "a1 %ld\n", len[FIL_B] );
         fseek( infd[FIL_B], 0, 0 );
-        while( my_fgets( text, sizeof( text ), infd[FIL_B] ) != NULL )
-            printf( "%s\n", text );
+        while( my_fgets( textb, sizeof( textb ), infd[FIL_B] ) != NULL )
+            printf( "%s\n", textb );
         exit( DIFF_HAVE_DIFFS );
     } else {
         error( "Out of memory when %s\n", why );
@@ -668,7 +668,7 @@ static int check( const char *fileAname, const char *fileBname )
         if( match[a] == 0 ) {
             /* Unique line in A */
             oldseek[a + OFFSET] = ftell( infd[FIL_A] );
-            getinpline( infd[FIL_A], text, sizeof( text ) );
+            getinpline( infd[FIL_A], texta, sizeof( texta ) );
             continue;
         }
         while( b < match[a] ) {
@@ -688,12 +688,12 @@ static int check( const char *fileAname, const char *fileBname )
         oldseek[a + OFFSET] = ftell( infd[FIL_A] );
         newseek[b + OFFSET] = ftell( infd[FIL_B] );
         //      }
-        getinpline( infd[FIL_A], text, sizeof( text ) );
+        getinpline( infd[FIL_A], texta, sizeof( texta ) );
         getinpline( infd[FIL_B], textb, sizeof( textb ) );
-        if( !streq( text, textb ) ) {
+        if( !streq( texta, textb ) ) {
 #ifdef DEVBUILD
             fprintf( stderr, "Spurious match:\n" );
-            fprintf( stderr, "line %d in %s, \"%s\"\n", a, fileAname, text );
+            fprintf( stderr, "line %d in %s, \"%s\"\n", a, fileAname, texta );
             fprintf( stderr, "line %d in %s, \"%s\"\n", b, fileBname, textb );
 #endif
             match[a] = 0;
@@ -779,15 +779,15 @@ static void fetch( long *seekvec, SLONG start, SLONG end, int which, const char 
         exit( DIFF_NOT_COMPARED );
     } else {
         for( i = first; i <= last; i++ ) {
-            if( my_fgets( text, sizeof( text ), infd[which] ) == NULL ) {
+            if( my_fgets( texta, sizeof( texta ), infd[which] ) == NULL ) {
                 internal_error( "** Unexpected end of file\n" );
                 exit( DIFF_NOT_COMPARED );
             }
 #ifdef DEVBUILD
-            printf( "%5d: %s%s\n", i, pfx, text );
+            printf( "%5d: %s%s\n", i, pfx, texta );
 #else
             fputs( ( cflag && ( i < start || i > end ) ) ? "  " : pfx, stdout );
-            fputs( text, stdout );
+            fputs( texta, stdout );
             putchar( '\n' );
 #endif
         }
@@ -1131,12 +1131,12 @@ static void input( int which )
 
     lentry = MYALLOC( LINE, lsize + 3, "line" );
     fd = infd[which];
-    while( !getinpline( fd, text, sizeof( text ) ) ) {
+    while( !getinpline( fd, texta, sizeof( texta ) ) ) {
         if( ++linect >= lsize ) {
             lsize += 200;
             lentry = MYCOMPACT( LINE, lentry, lsize + 3, "extending line vector" );
         }
-        lentry[linect].hash = hash( text );
+        lentry[linect].hash = hash( texta );
     }
 
     /*
