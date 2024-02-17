@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,13 +45,13 @@
 #include "clibext.h"
 
 
-typedef unsigned long ULONG;
-typedef long SLONG;
-typedef unsigned short USHORT;
-typedef int INT;
+typedef unsigned long   ULONG;
+typedef long            SLONG;
+typedef unsigned short  USHORT;
+typedef int             INT;
 
-#define  EOS    0
-#define  TEMPFILE  "diff.tmp"
+#define EOS             0
+#define TEMPFILE        "diff.tmp"
 
 typedef struct candidate {
     SLONG       b;          /* Line in fileB     */
@@ -64,70 +64,70 @@ typedef struct line {
     short       serial;     /* Line number        */
 }               LINE;
 
-LINE            *file[2];       /* Hash/line for total file  */
-#define  fileA  file[0]
-#define  fileB  file[1]
+static LINE         *file[2];   /* Hash/line for total file  */
+#define fileA       file[0]
+#define fileB       file[1]
 
-LINE            *sfile[2];      /* Hash/line after prefix  */
-#define  sfileA  sfile[0]
-#define  sfileB  sfile[1]
+static LINE         *sfile[2];  /* Hash/line after prefix  */
+#define sfileA      sfile[0]
+#define sfileB      sfile[1]
 
-SLONG           len[2];         /* Actual lines in each file  */
-#define  lenA  len[0]
-#define  lenB  len[1]
+static SLONG        len[2];     /* Actual lines in each file  */
+#define lenA        len[0]
+#define lenB        len[1]
 
-SLONG           slen[2];        /* Squished lengths      */
-#define  slenA  slen[0]
-#define  slenB  slen[1]
+static SLONG        slen[2];    /* Squished lengths      */
+#define slenA       slen[0]
+#define slenB       slen[1]
 
-SLONG           prefix;         /* Identical lines at start  */
-SLONG           suffix;         /* Identical lenes at end  */
+static SLONG        prefix;     /* Identical lines at start  */
+static SLONG        suffix;     /* Identical lenes at end  */
 
-FILE            *infd[2] = { NULL, NULL}; /* Input file identifiers  */
-FILE            *tempfd;        /* Temp for input redirection  */
+static FILE         *infd[2] = { NULL, NULL}; /* Input file identifiers  */
+static FILE         *tempfd;        /* Temp for input redirection  */
 
 /*
  * The following vectors overlay the area defined by fileA
  */
 
-short           *class;         /* Unsorted line numbers  */
-SLONG           *klist;         /* Index of element in clist  */
-CANDIDATE       *clist;         /* Storage pool for candidates  */
-SLONG           clength = 0;    /* Number of active candidates  */
-#define CSIZE_INC 50            /* How many to allocate each time we have to */
-SLONG           csize = CSIZE_INC;      /* Current size of storage pool */
+static short        *class;         /* Unsorted line numbers  */
+static SLONG        *klist;         /* Index of element in clist  */
+static CANDIDATE    *clist;         /* Storage pool for candidates  */
+static SLONG        clength = 0;    /* Number of active candidates  */
+#define CSIZE_INC   50              /* How many to allocate each time we have to */
+static SLONG        csize = CSIZE_INC;  /* Current size of storage pool */
 
-SLONG           *match;         /* Longest subsequence       */
-long            *oldseek;       /* Seek position in file A  */
+static SLONG        *match;         /* Longest subsequence       */
+static long         *oldseek;       /* Seek position in file A  */
 
 /*
  * The following vectors overlay the area defined by fileB
  */
 
-short           *member;        /* Concatenated equiv. classes  */
-long            *newseek;       /* Seek position in file B  */
+static short        *member;        /* Concatenated equiv. classes  */
+static long         *newseek;       /* Seek position in file B  */
 
 /*
  * Global variables
  */
 
-char            *Dflag = NULL;  /* output #ifdef code */
-INT             Hflag = false;  /* half hearted algorithm */
-INT             nflag = false;  /* Edit script requested  */
-INT             eflag = false;  /* Edit script requested  */
-INT             bflag = false;  /* Blank supress requested  */
-INT             cflag = false;  /* Context printout      */
-INT             iflag = false;  /* Ignore case requested  */
-INT             tflag = false;  /* Test for enough memory flag */
-INT             xflag = 0;      /* Test for enough memory flag */
-INT             havediffs = false;
+static char         *Dflag = NULL;  /* output #ifdef code */
+static INT          Hflag = false;  /* half hearted algorithm */
+static INT          nflag = false;  /* Edit script requested  */
+static INT          eflag = false;  /* Edit script requested  */
+static INT          bflag = false;  /* Blank supress requested  */
+static INT          cflag = false;  /* Context printout      */
+static INT          iflag = false;  /* Ignore case requested  */
+static INT          tflag = false;  /* Test for enough memory flag */
+static INT          xflag = 0;      /* Test for enough memory flag */
+static INT          havediffs = false;
 
 #define BUFSIZE     1025
 
-char            text[BUFSIZE];  /* Input line from file1  */
-char            textb[BUFSIZE]; /* Input from file2 for check  */
+static char         text[BUFSIZE];  /* Input line from file1  */
+static char         textb[BUFSIZE]; /* Input from file2 for check  */
 
-char            *cmdusage =
+static char         *cmdusage =
 "usage:\n"
 "        diff [options] file1 file2\n"
 "\n"
@@ -167,197 +167,6 @@ static void    output( char *fileAname, char *fileBname );
 static INT     getinpline( FILE *fd, char *buffer, int max_len );
 static void    fetch( long *seekvec, SLONG start, SLONG end, SLONG trueend, FILE *fd, char *pfx );
 
-
-
-/*
- * Diff main program
- */
-
-INT main( int argc, char **argv )
-{
-    SLONG           i;
-    char            *ap;
-    struct stat     st;
-    char            path[_MAX_PATH];
-    pgroup2         pg;
-
-    while( argc > 1 && *( ap = argv[1] ) == '-' && *++ap != EOS ) {
-        while( *ap != EOS ) {
-            switch( ( *ap++ ) ) {
-            case 'b':
-                bflag++;
-                break;
-
-            case 'c':
-                if( *ap > '0' && *ap <= '9' )
-                    cflag = *ap++ -'0';
-                else
-                    cflag = 3;
-                break;
-
-            case 'e':
-                eflag++;
-                break;
-
-            case 'd':
-                Dflag = ap;
-                while( *ap != EOS )
-                    ++ap;
-                break;
-
-            case 'H':
-                Hflag++;
-                break;
-
-            case 'n':
-                nflag++;
-                break;
-
-            case 'i':
-                iflag++;
-                break;
-
-            case 't':
-                tflag++;
-                break;
-
-            case 'x':
-                xflag = DIFF_X_RETURN_ADD;
-                break;
-
-            default:
-                error( "bad option '-%c'\n", ap[ -1] );
-                return( xflag + DIFF_NOT_COMPARED );
-            }
-        }
-        argc--;
-        argv++;
-    }
-
-    if( argc != 3 ) {
-        error( cmdusage );
-        return( xflag + DIFF_NOT_COMPARED );
-    }
-    if( nflag + ( cflag != 0 ) + eflag > 1 ) {
-        error( " -c, -n and -e are incompatible.\n" );
-        return( xflag + DIFF_NOT_COMPARED );
-    }
-    argv++;
-    for( i = 0; i <= 1; i++ ) {
-        if( argv[i][0] == '-' && argv[i][1] == EOS ) {
-            infd[i] = stdin;
-            if( ( tempfd = fopen( TEMPFILE, "w" ) ) == NULL ) {
-                cant( TEMPFILE, "work", 1 );
-            }
-        } else {
-            strcpy( path, argv[i] );
-            if( i == 1 && stat( argv[i], &st ) == 0 && S_ISDIR( st.st_mode ) ) {
-                _splitpath2( argv[i - 1], pg.buffer, NULL, NULL, &pg.fname, &pg.ext );
-                _makepath( path, NULL, argv[i], pg.fname, pg.ext );
-            }
-            infd[i] = fopen( path, "r" );
-            if( !infd[i] ) {
-                cant( path, "input", 2 );      /* Fatal error */
-            }
-        }
-    }
-
-    if( infd[0] == stdin && infd[1] == stdin ) {
-        error( "Can't diff two things both on standard input." );
-        return( xflag + DIFF_NOT_COMPARED );
-    }
-    if( infd[0] == NULL && infd[1] == NULL ) {
-        cant( argv[0], "input", 0 );
-        cant( argv[1], "input", 1 );
-    }
-
-    /*
-     * Read input, building hash tables.
-     */
-    input( 0 );
-    input( 1 );
-    squish();
-#ifdef DEBUG
-    printf( "before sort\n" );
-    for( i = 1; i <= slenA; i++ ) {
-        printf( "sfileA[%d] = %6d %06o\n",
-                i, sfileA[i].serial, sfileA[i].hash );
-    }
-    for( i = 1; i <= slenB; i++ ) {
-        printf( "sfileB[%d] = %6d %06o\n",
-                i, sfileB[i].serial, sfileB[i].hash );
-    }
-#endif
-    sort( sfileA, slenA );
-    sort( sfileB, slenB );
-#ifdef DEBUG
-    printf( "after sort\n" );
-    for( i = 1; i <= slenA; i++ ) {
-        printf( "sfileA[%d] = %6d %06o\n",
-                i, sfileA[i].serial, sfileB[i].hash );
-    }
-    for( i = 1; i <= slenB; i++ ) {
-        printf( "sfileB[%d] = %6d %06o\n",
-                i, sfileB[i].serial, sfileB[i].hash );
-    }
-#endif
-
-    /*
-     * Build equivalence classes.
-     */
-    member = (short *)fileB;
-    equiv();
-    member = (short *)compact( (char *)member, ( slenB + 2 ) * sizeof( SLONG ),
-                                 "squeezing member vector" );
-    fileB = (LINE *)member;
-
-    /*
-     * Reorder equivalence classes into array class[]
-     */
-    class = (short *)fileA;
-    unsort();
-    class = (short *)compact( (char *)class, ( slenA + 2 ) * sizeof( SLONG ),
-                                "compacting class vector" );
-    fileA = (LINE *)class;
-    /*
-     * Find longest subsequences
-     */
-    klist = (SLONG *)myalloc( ( slenA + 2 ) * sizeof( SLONG ), "klist" );
-    clist = (CANDIDATE *)myalloc( csize * sizeof( CANDIDATE ), "clist" );
-    i = subseq();
-    myfree( &member );
-    fileB = NULL;
-    myfree( &class );
-    fileA = NULL;
-    match = (SLONG *)myalloc( ( lenA + 2 ) * sizeof( SLONG ), "match" );
-    unravel( klist[i] );
-    myfree( &clist );
-    myfree( &klist );
-
-    /*
-     * Check for fortuitous matches and output differences
-     */
-    oldseek = (long *)myalloc( ( lenA + 2 ) * sizeof( *oldseek ), "oldseek" );
-    newseek = (long *)myalloc( ( lenB + 2 ) * sizeof( *newseek ), "newseek" );
-    if( check( argv[0], argv[1] ) ) {
-#ifdef DEBUG
-        fprintf( stderr, "Spurious match, output is not optimal\n" );
-#else
-        ;
-#endif
-    }
-    output( argv[0], argv[1] );
-    if( tempfd != NULL ) {
-        fclose( tempfd );
-        remove( TEMPFILE );
-    }
-    myfree( &oldseek );
-    myfree( &newseek );
-    myfree( &fileA );
-    myfree( &fileB );
-
-    return( xflag + ( havediffs ? DIFF_HAVE_DIFFS : DIFF_NO_DIFFS ) );
-}
 
 /*
  * Read the file, building hash table
@@ -1371,4 +1180,194 @@ char *my_fgets( char *s, int max_len, FILE *iop )
         *cs = '\0';
     }
     return( s );
+}
+
+/*
+ * Diff main program
+ */
+
+INT main( int argc, char **argv )
+{
+    SLONG           i;
+    char            *ap;
+    struct stat     st;
+    char            path[_MAX_PATH];
+    pgroup2         pg;
+
+    while( argc > 1 && *( ap = argv[1] ) == '-' && *++ap != EOS ) {
+        while( *ap != EOS ) {
+            switch( ( *ap++ ) ) {
+            case 'b':
+                bflag++;
+                break;
+
+            case 'c':
+                if( *ap > '0' && *ap <= '9' )
+                    cflag = *ap++ -'0';
+                else
+                    cflag = 3;
+                break;
+
+            case 'e':
+                eflag++;
+                break;
+
+            case 'd':
+                Dflag = ap;
+                while( *ap != EOS )
+                    ++ap;
+                break;
+
+            case 'H':
+                Hflag++;
+                break;
+
+            case 'n':
+                nflag++;
+                break;
+
+            case 'i':
+                iflag++;
+                break;
+
+            case 't':
+                tflag++;
+                break;
+
+            case 'x':
+                xflag = DIFF_X_RETURN_ADD;
+                break;
+
+            default:
+                error( "bad option '-%c'\n", ap[ -1] );
+                return( xflag + DIFF_NOT_COMPARED );
+            }
+        }
+        argc--;
+        argv++;
+    }
+
+    if( argc != 3 ) {
+        error( cmdusage );
+        return( xflag + DIFF_NOT_COMPARED );
+    }
+    if( nflag + ( cflag != 0 ) + eflag > 1 ) {
+        error( " -c, -n and -e are incompatible.\n" );
+        return( xflag + DIFF_NOT_COMPARED );
+    }
+    argv++;
+    for( i = 0; i <= 1; i++ ) {
+        if( argv[i][0] == '-' && argv[i][1] == EOS ) {
+            infd[i] = stdin;
+            if( ( tempfd = fopen( TEMPFILE, "w" ) ) == NULL ) {
+                cant( TEMPFILE, "work", 1 );
+            }
+        } else {
+            strcpy( path, argv[i] );
+            if( i == 1 && stat( argv[i], &st ) == 0 && S_ISDIR( st.st_mode ) ) {
+                _splitpath2( argv[i - 1], pg.buffer, NULL, NULL, &pg.fname, &pg.ext );
+                _makepath( path, NULL, argv[i], pg.fname, pg.ext );
+            }
+            infd[i] = fopen( path, "r" );
+            if( !infd[i] ) {
+                cant( path, "input", 2 );      /* Fatal error */
+            }
+        }
+    }
+
+    if( infd[0] == stdin && infd[1] == stdin ) {
+        error( "Can't diff two things both on standard input." );
+        return( xflag + DIFF_NOT_COMPARED );
+    }
+    if( infd[0] == NULL && infd[1] == NULL ) {
+        cant( argv[0], "input", 0 );
+        cant( argv[1], "input", 1 );
+    }
+
+    /*
+     * Read input, building hash tables.
+     */
+    input( 0 );
+    input( 1 );
+    squish();
+#ifdef DEBUG
+    printf( "before sort\n" );
+    for( i = 1; i <= slenA; i++ ) {
+        printf( "sfileA[%d] = %6d %06o\n",
+                i, sfileA[i].serial, sfileA[i].hash );
+    }
+    for( i = 1; i <= slenB; i++ ) {
+        printf( "sfileB[%d] = %6d %06o\n",
+                i, sfileB[i].serial, sfileB[i].hash );
+    }
+#endif
+    sort( sfileA, slenA );
+    sort( sfileB, slenB );
+#ifdef DEBUG
+    printf( "after sort\n" );
+    for( i = 1; i <= slenA; i++ ) {
+        printf( "sfileA[%d] = %6d %06o\n",
+                i, sfileA[i].serial, sfileB[i].hash );
+    }
+    for( i = 1; i <= slenB; i++ ) {
+        printf( "sfileB[%d] = %6d %06o\n",
+                i, sfileB[i].serial, sfileB[i].hash );
+    }
+#endif
+
+    /*
+     * Build equivalence classes.
+     */
+    member = (short *)fileB;
+    equiv();
+    member = (short *)compact( (char *)member, ( slenB + 2 ) * sizeof( SLONG ),
+                                 "squeezing member vector" );
+    fileB = (LINE *)member;
+
+    /*
+     * Reorder equivalence classes into array class[]
+     */
+    class = (short *)fileA;
+    unsort();
+    class = (short *)compact( (char *)class, ( slenA + 2 ) * sizeof( SLONG ),
+                                "compacting class vector" );
+    fileA = (LINE *)class;
+    /*
+     * Find longest subsequences
+     */
+    klist = (SLONG *)myalloc( ( slenA + 2 ) * sizeof( SLONG ), "klist" );
+    clist = (CANDIDATE *)myalloc( csize * sizeof( CANDIDATE ), "clist" );
+    i = subseq();
+    myfree( &member );
+    fileB = NULL;
+    myfree( &class );
+    fileA = NULL;
+    match = (SLONG *)myalloc( ( lenA + 2 ) * sizeof( SLONG ), "match" );
+    unravel( klist[i] );
+    myfree( &clist );
+    myfree( &klist );
+
+    /*
+     * Check for fortuitous matches and output differences
+     */
+    oldseek = (long *)myalloc( ( lenA + 2 ) * sizeof( *oldseek ), "oldseek" );
+    newseek = (long *)myalloc( ( lenB + 2 ) * sizeof( *newseek ), "newseek" );
+    if( check( argv[0], argv[1] ) ) {
+#ifdef DEBUG
+        fprintf( stderr, "Spurious match, output is not optimal\n" );
+#else
+        ;
+#endif
+    }
+    output( argv[0], argv[1] );
+    if( tempfd != NULL ) {
+        fclose( tempfd );
+        remove( TEMPFILE );
+    }
+    myfree( &oldseek );
+    myfree( &newseek );
+    myfree( &fileA );
+    myfree( &fileB );
+
+    return( xflag + ( havediffs ? DIFF_HAVE_DIFFS : DIFF_NO_DIFFS ) );
 }
