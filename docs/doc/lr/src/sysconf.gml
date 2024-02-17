@@ -57,10 +57,8 @@ function, retrieve the largest supported backlog of listen requests
 .endterm
 In this implementation, _SC_PAGE_SIZE and _SC_PAGESIZE have the same value,
 and a request to _SC_NPROCESSORS_CONF or _SC_NPROCESSORS_ONLN will return
-the same value.
-.np
-Some inputs, specifically _SC_OPEN_MAX and _SC_CHILD_MAX, are configurable
-via calls to
+the same value. Some inputs, specifically _SC_OPEN_MAX and _SC_CHILD_MAX,
+are configurable via calls to
 .id setrlimit
 and may change between subsequent
 .id &funcb.
