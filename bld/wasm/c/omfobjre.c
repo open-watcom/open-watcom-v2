@@ -38,6 +38,8 @@
 #include "pcobj.h"
 #include "myassert.h"
 #include "omfcarve.h"
+#include "omffixup.h"
+
 
 static carve_t myCarver;
 
