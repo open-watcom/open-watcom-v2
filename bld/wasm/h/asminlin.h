@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -56,22 +56,29 @@ enum sym_state {
 };
 
 /*
- * It must correspond with CvtTable in asmsym.c
+ * This macro definition is used also for CvtTable in asmsym.c
  */
-enum sym_type {
-    SYM_INT1,               /* a byte variable */
-    SYM_INT2,               /* a word variable */
-    SYM_INT4,               /* a dword variable */
-    SYM_INT6,               /* a 32-bit far pointer */
-    SYM_INT8,               /* a qword variable */
-    SYM_FLOAT4,             /* a 4 byte floating point variable */
-    SYM_FLOAT8,             /* an 8 byte floating point variable */
-    SYM_FLOAT10,            /* a 10 byte floating point variable */
-    SYM_NEAR2,              /* a 16-bit near routine */
-    SYM_NEAR4,              /* a 32-bit near routine */
-    SYM_FAR2,               /* a 16-bit far routine */
-    SYM_FAR4                /* a 32-bit far routine */
-};
+#define ASM_TYPES \
+    ASM_TYPE( SYM_NONE,    MT_EMPTY ) /* no type */ \
+    ASM_TYPE( SYM_INT1,    MT_BYTE  ) /* a 8-bit variable */ \
+    ASM_TYPE( SYM_INT2,    MT_WORD  ) /* a 16-bit variable */ \
+    ASM_TYPE( SYM_INT4,    MT_DWORD ) /* a 32-bit variable */ \
+    ASM_TYPE( SYM_INT6,    MT_FWORD ) /* a 32-bit far pointer */ \
+    ASM_TYPE( SYM_INT8,    MT_QWORD ) /* a 64-bit variable */ \
+    ASM_TYPE( SYM_FLOAT4,  MT_DWORD ) /* a 32-bit floating point variable */ \
+    ASM_TYPE( SYM_FLOAT8,  MT_QWORD ) /* a 64-bit floating point variable */ \
+    ASM_TYPE( SYM_FLOAT10, MT_TBYTE ) /* a 80-bit floating point variable */ \
+    ASM_TYPE( SYM_FLOAT16, MT_OWORD ) /* a 128-bit floating point variable */ \
+    ASM_TYPE( SYM_NEAR2,   MT_NEAR  ) /* a 16-bit near routine */ \
+    ASM_TYPE( SYM_NEAR4,   MT_NEAR  ) /* a 32-bit near routine */ \
+    ASM_TYPE( SYM_FAR2,    MT_FAR   ) /* a 16-bit far routine */ \
+    ASM_TYPE( SYM_FAR4,    MT_FAR   ) /* a 32-bit far routine */
+
+typedef enum sym_type {
+    #define ASM_TYPE(c,a)   c,
+    ASM_TYPES
+    #undef ASM_TYPE
+} sym_type;
 
 enum fixup_types {
     FIX_SEG,

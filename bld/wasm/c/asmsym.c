@@ -62,18 +62,9 @@ void    DumpASym( void );   /* Forward declaration */
 static struct asm_sym   *AsmSymHead;
 
 static unsigned short CvtTable[] = {
-    MT_BYTE,   // INT1
-    MT_WORD,   // INT2
-    MT_DWORD,  // INT4
-    MT_FWORD,  // INT6
-    MT_QWORD,  // INT8
-    MT_DWORD,  // FLOAT4
-    MT_QWORD,  // FLOAT8
-    MT_TBYTE,  // FLOAT10
-    MT_NEAR,   // NEAR2
-    MT_NEAR,   // NEAR4
-    MT_FAR,    // FAR2
-    MT_FAR     // FAR4
+    #define ASM_TYPE(c,a)   a,
+    ASM_TYPES
+    #undef ASM_TYPE
 };
 
 #endif
