@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#define     PLACEHOLDER_SIZE 3      /* for #dd - number sign, digit, digit */
+#define PLACEHOLDER_SIZE    3   /* for '#dd' */
 
 #include "asmglob.h"
 #include <ctype.h>
@@ -45,7 +45,8 @@
 #include "clibext.h"
 
 
-/* quick explanation:
+/*
+ * quick explanation:
  *
  * there are 2 entry points into this module:
  * MacroDef & ExpandMacro
@@ -338,15 +339,10 @@ static bool macro_exam( token_buffer *tokbuf, token_idx i )
     macro_info          *info;
     char                *line;
     char                *name;
-    parm_list           *paramnode;
-    asmline             *linestruct;
     char                buffer[ MAX_LINE_LEN ];
     dir_node            *dir;
     uint                nesting_depth = 0;
     bool                store_data;
-    char                *start;
-    bool                quote;
-    bool                required;
 
     if( Options.mode & MODE_IDEAL ) {
         name = tokbuf->tokens[i+1].string_ptr;
@@ -365,6 +361,9 @@ static bool macro_exam( token_buffer *tokbuf, token_idx i )
 
     if( store_data ) {
         for( ; i < tokbuf->count ; ) {
+            parm_list   *paramnode;
+            char        *def_value;
+            bool        required;
             /*
              * first get the parm. name
              */
@@ -373,7 +372,7 @@ static bool macro_exam( token_buffer *tokbuf, token_idx i )
             /*
              * now see if it has a default value or is required
              */
-            start = NULL;
+            def_value = NULL;
             required = false;
             if( tokbuf->tokens[i].class == TC_COLON ) {
                 i++;
@@ -383,7 +382,7 @@ static bool macro_exam( token_buffer *tokbuf, token_idx i )
                         AsmError( SYNTAX_ERROR );
                         return( RC_ERROR );
                     }
-                    start = tokbuf->tokens[i].string_ptr;
+                    def_value = tokbuf->tokens[i].string_ptr;
                     i++;
                 } else if( CMPLIT( tokbuf->tokens[i].string_ptr, "REQ" ) == 0 ) {
                     /*
@@ -399,9 +398,8 @@ static bool macro_exam( token_buffer *tokbuf, token_idx i )
             paramnode = AsmAlloc( sizeof( parm_list ) );
             paramnode->def = NULL;
             paramnode->replace = NULL;
-            paramnode->required = false;
             paramnode->label = AsmStrDup( name );
-            paramnode->def = AsmStrDup( start );
+            paramnode->def = AsmStrDup( def_value );
             paramnode->required = required;
             /*
              * add to the end of list
@@ -455,7 +453,9 @@ static bool macro_exam( token_buffer *tokbuf, token_idx i )
      * now read in all the contents of the macro, and store them
      */
     for( ;; ) {
-        char *ptr;
+        char        *ptr;
+        asmline     *linestruct;
+        bool        quote;
 
         if( lineis( line, "endm" ) ) {
             if( nesting_depth == 0 ) {
@@ -483,6 +483,8 @@ static bool macro_exam( token_buffer *tokbuf, token_idx i )
             line = linestruct->line;
             quote = false;
             for( ; *line != '\0'; ) {
+                char    *start;
+
                 start = find_replacement_items( &line, &quote );
                 if( start != NULL ) {
                     line = replace_parm( info->params.head, start, line - start, linestruct );
