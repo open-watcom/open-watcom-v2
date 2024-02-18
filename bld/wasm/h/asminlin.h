@@ -59,7 +59,7 @@ enum sym_state {
  * This macro definition is used also for CvtTable in asmsym.c
  */
 #define ASM_TYPES \
-    ASM_TYPE( SYM_NONE,    MT_EMPTY ) /* no type */ \
+    ASM_TYPE( SYM_EMPTY,   MT_EMPTY ) /* no type */ \
     ASM_TYPE( SYM_INT1,    MT_BYTE  ) /* a 8-bit variable */ \
     ASM_TYPE( SYM_INT2,    MT_WORD  ) /* a 16-bit variable */ \
     ASM_TYPE( SYM_INT4,    MT_DWORD ) /* a 32-bit variable */ \
