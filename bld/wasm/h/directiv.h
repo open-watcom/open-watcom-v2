@@ -317,7 +317,7 @@ typedef struct a_definition_struct {
 
 extern a_definition_struct      Definition;
 
-enum assume_reg {
+typedef enum assume_reg {
     ASSUME_DS = 0,
     ASSUME_ES,
     ASSUME_SS,
@@ -326,7 +326,7 @@ enum assume_reg {
     ASSUME_CS,
     ASSUME_NOTHING,
     ASSUME_ERROR
-};
+} assume_reg;
 
 #define ASSUME_FIRST    ASSUME_DS
 #define ASSUME_LAST     ASSUME_NOTHING
@@ -433,11 +433,11 @@ extern struct asm_sym   *GetGrp( struct asm_sym * );
 extern void             AssumeInit( void );     // init all assumed-register table
 extern bool             SetAssume( token_buffer *tokbuf, token_idx );       // Assume a register
 
-extern enum assume_reg  GetAssume( struct asm_sym*, enum assume_reg );
+extern assume_reg       GetAssume( struct asm_sym*, assume_reg );
 /* Return the assumed register of the symbol, and determine the frame and
    frame_datum of its fixup */
 
-extern enum assume_reg  GetPrefixAssume( struct asm_sym*, enum assume_reg );
+extern assume_reg       GetPrefixAssume( struct asm_sym*, assume_reg );
 /* Determine the frame and frame_datum of a symbol with a register prefix */
 
 extern bool             FixOverride( token_buffer *tokbuf, token_idx );

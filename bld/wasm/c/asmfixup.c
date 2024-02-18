@@ -41,12 +41,12 @@
 #endif
 
 #if defined( _STANDALONE_ )
-struct asmfixup         *FixupListHead; // head of list of fixups
-struct asmfixup         *FixupListTail;
+asmfixup        *FixupListHead; // head of list of fixups
+asmfixup        *FixupListTail;
 #else
-struct asmfixup         *FixupHead;
+asmfixup        *FixupHead;
 #endif
-struct asmfixup         *InsFixups[OPND_MAX];
+asmfixup        *InsFixups[OPND_MAX];
 
 #if defined( _STANDALONE_ )
 
@@ -67,7 +67,7 @@ void add_frame( void )
  * determine the frame and frame datum for the fixup
  */
 {
-    struct asmfixup     *fixup;
+    asmfixup    *fixup;
 
     if( Parse_Pass != PASS_1 ) {
         fixup = InsFixups[Opnd_Count];
@@ -79,13 +79,13 @@ void add_frame( void )
 
 #endif
 
-struct asmfixup *AddFixup( struct asm_sym *sym, enum fixup_types fixup_type, enum fixup_options fixup_option )
-/*************************************************************************************************************
+asmfixup *AddFixup( struct asm_sym *sym, fixup_types fixup_type, fixup_options fixup_option )
+/********************************************************************************************
  * put the correct target offset into the link list when forward reference of
  * relocatable is resolved;
  */
 {
-    struct asmfixup     *fixup;
+    asmfixup    *fixup;
 
     switch( Code->info.token ) {
     case T_CMPS:
@@ -99,7 +99,7 @@ struct asmfixup *AddFixup( struct asm_sym *sym, enum fixup_types fixup_type, enu
         return( NULL );
     }
 
-    fixup = AsmAlloc( sizeof( struct asmfixup ) );
+    fixup = AsmAlloc( sizeof( asmfixup ) );
     if( fixup != NULL ) {
         fixup->external = false;
         fixup->fixup_loc = AsmCodeAddress;
@@ -139,8 +139,8 @@ struct asmfixup *AddFixup( struct asm_sym *sym, enum fixup_types fixup_type, enu
     fixup->next = FixupHead; \
     FixupHead = fixup
 
-static void PatchCodeBuffer( struct asmfixup *fixup, unsigned size )
-/******************************************************************/
+static void PatchCodeBuffer( asmfixup *fixup, unsigned size )
+/***********************************************************/
 {
     long    disp;
     long    fixup_loc;
@@ -155,8 +155,8 @@ static void PatchCodeBuffer( struct asmfixup *fixup, unsigned size )
 
 #endif
 
-static bool DoPatch( struct asm_sym *sym, struct asmfixup *fixup )
-/****************************************************************/
+static bool DoPatch( struct asm_sym *sym, asmfixup *fixup )
+/*********************************************************/
 {
     long                disp;
     long                max_disp;
@@ -277,8 +277,8 @@ bool BackPatch( struct asm_sym *sym )
  * call only when a new label appears;
  */
 {
-    struct asmfixup     *fixup;
-    struct asmfixup     *next;
+    asmfixup    *fixup;
+    asmfixup    *next;
 
 #if defined( _STANDALONE_ )
     fixup = sym->fixup;
@@ -302,7 +302,7 @@ void mark_fixupp( OPNDTYPE determinant, operand_idx index )
  * FIXUPP record;
  */
 {
-    struct asmfixup     *fixup;
+    asmfixup    *fixup;
 
     fixup = InsFixups[index];
     if( fixup != NULL ) {
@@ -355,7 +355,7 @@ bool store_fixup( operand_idx index )
  * Store the fixup information in a OMF output fixup record
  */
 {
-    struct asmfixup     *fixnode;
+    asmfixup    *fixnode;
 
     if( Parse_Pass == PASS_1 )
         return( RC_OK );
@@ -378,8 +378,8 @@ bool store_fixup( operand_idx index )
 static bool MakeFpFixup( const char *patch_name )
 /***********************************************/
 {
-    dir_node            *dir;
-    struct asmfixup     *fixup;
+    dir_node    *dir;
+    asmfixup    *fixup;
 
     for( dir = Tables[TAB_FPPATCH].head; dir != NULL; dir = dir->next ) {
         if( strcmp( dir->sym.name, patch_name ) == 0 ) {
@@ -399,7 +399,7 @@ static bool MakeFpFixup( const char *patch_name )
     }
     if( dir != NULL ) {
         if( Parse_Pass != PASS_1 ) {
-            fixup = AsmAlloc( sizeof( struct asmfixup ) );
+            fixup = AsmAlloc( sizeof( asmfixup ) );
             if( fixup == NULL )
                 return( RC_ERROR );
             fixup->external = false;
@@ -446,9 +446,9 @@ bool AddFPPatchAndFixups( fp_patches patch )
         }
     }
 #else
-    struct asmfixup     *fixup;
+    asmfixup    *fixup;
 
-    fixup = AsmAlloc( sizeof( struct asmfixup ) );
+    fixup = AsmAlloc( sizeof( asmfixup ) );
     if( fixup == NULL ) {
         return( RC_ERROR );
     }
@@ -473,7 +473,7 @@ bool AddFPPatchAndFixups( fp_patches patch )
 void AsmFiniRelocs( void )
 /************************/
 {
-    struct asmfixup *fixup;
+    asmfixup    *fixup;
 
     while( (fixup = FixupHead) != NULL ) {
         FixupHead = fixup->next;

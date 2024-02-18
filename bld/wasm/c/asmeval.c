@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -52,12 +52,12 @@ static asm_tok          Store[MAX_TOKEN + 1];
 static int              op_sq_bracket_level;
 static bool             error_msg;
 
-enum process_flag {
+typedef enum process_flag {
     PROC_BRACKET,
     PROC_OPERAND
-};
+} process_flag;
 
-static bool evaluate( expr_list *, token_buffer *tokbuf, token_idx *, token_idx, enum process_flag, bool (*)(token_buffer *, token_idx) );
+static bool evaluate( expr_list *, token_buffer *tokbuf, token_idx *, token_idx, process_flag, bool (*)(token_buffer *, token_idx) );
 
 static void init_expr( expr_list *new )
 /*************************************/
@@ -1398,7 +1398,7 @@ static bool evaluate(
     token_buffer *tokbuf,
     token_idx *i,
     token_idx end,
-    enum process_flag proc_flag,
+    process_flag proc_flag,
     bool (*is_expr)(token_buffer *, token_idx) )
 /**********************************************/
 {

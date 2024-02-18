@@ -299,7 +299,7 @@ void FreeASym( struct asm_sym *sym )
 /*****************************************/
 {
 #if defined( _STANDALONE_ )
-    struct asmfixup     *fixup;
+    asmfixup    *fixup;
 
     --AsmSymCount;
     for( ; (fixup = sym->fixup) != NULL; ) {

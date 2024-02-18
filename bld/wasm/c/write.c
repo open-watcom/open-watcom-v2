@@ -91,7 +91,7 @@ bool                    Use32;          // if 32-bit code is use
 unsigned long           PassTotal;      // Total number of ledata bytes generated
 bool                    PhaseError;
 
-struct asmfixup         *ModendFixup = NULL; // start address fixup
+asmfixup                *ModendFixup = NULL; // start address fixup
 
 global_vars             Globals = { 0, 0, 0, 0, 0, 0, 0 };
 
@@ -614,8 +614,8 @@ static void write_header( char *name )
     write_record( objr, true );
 }
 
-static void get_frame( fixuprec *fixnode, struct asmfixup *fixup )
-/****************************************************************/
+static void get_frame( fixuprec *fixnode, asmfixup *fixup )
+/*********************************************************/
 {
     if( fixup->frame == NULL ) {
         if( fixup->fixup_type == FIX_FPPATCH ) {
@@ -640,8 +640,8 @@ static void get_frame( fixuprec *fixnode, struct asmfixup *fixup )
     }
 }
 
-static fixuprec *CreateFixupRecModend( struct asmfixup *fixup )
-/**************************************************************
+static fixuprec *CreateFixupRecModend( asmfixup *fixup )
+/*******************************************************
  * Create a fixup record for OMF output
  */
 {
@@ -800,8 +800,8 @@ static void write_linnum( void )
     }
 }
 
-static fixuprec *CreateFixupRec( unsigned long offset, struct asmfixup *fixup )
-/******************************************************************************
+static fixuprec *CreateFixupRec( unsigned long offset, asmfixup *fixup )
+/***********************************************************************
  * Create a fixup record for OMF output
  */
 {
@@ -906,10 +906,10 @@ static void get_fixup_list( unsigned long start, fixuprec **fl16, fixuprec **fl3
  * divide fixup record list to the 16-bit or 32-bit list of a fixup record
  */
 {
-    struct asmfixup *fixi;
-    fixuprec        *fix;
-    fixuprec        *fix16;
-    fixuprec        *fix32;
+    asmfixup    *fixi;
+    fixuprec    *fix;
+    fixuprec    *fix16;
+    fixuprec    *fix32;
 
     fix16 = NULL;
     fix32 = NULL;
@@ -949,9 +949,9 @@ static void get_fixup_list( unsigned long start, fixuprec **fl16, fixuprec **fl3
 
 int get_fixup_list( unsigned long start, fixuprec **fl )
 {
-    struct asmfixup *fixi;
-    fixuprec        *fix;
-    fixuprec        *fixo;
+    asmfixup    *fixi;
+    fixuprec    *fix;
+    fixuprec    *fixo;
 
     fixo = NULL;
     for( fixi = FixupListHead; fixi != NULL; fixi = fixi->next_loc ) {

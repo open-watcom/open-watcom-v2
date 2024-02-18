@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -200,8 +200,8 @@ bool jmp( token_buffer *tokbuf, expr_list *opndx, int *flags )
 */
 {
     int_32              addr;
-    enum fixup_types    fixup_type;
-    enum fixup_options  fixup_option;
+    fixup_types         fixup_type;
+    fixup_options       fixup_option;
     enum sym_state      state;
     struct asm_sym      *sym;
 #if defined( _STANDALONE_ )

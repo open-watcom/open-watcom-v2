@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -363,11 +363,11 @@ static token_idx array_element( asm_sym *sym, asm_sym *struct_sym, token_buffer 
         case TC_ID:
           {
             token_idx           i;
-            enum fixup_types    fixup_type = 0;
+            fixup_types         fixup_type = 0;
             asm_sym             *init_sym;
             char                *ptr;
             long                data = 0;
-            struct asmfixup     *fixup;
+            asmfixup            *fixup;
 #if defined( _STANDALONE_ )
             bool                expanded;
 #endif
@@ -502,12 +502,12 @@ static token_idx array_element( asm_sym *sym, asm_sym *struct_sym, token_buffer 
         case TC_UNARY_OPERATOR:
           {
             token_idx           i;
-            enum fixup_types    fixup_type = 0;
+            fixup_types         fixup_type = 0;
             token_idx           seg_off_operator_loc = 0;
             asm_sym             *init_sym;
             char                *ptr;
             long                data = 0;
-            struct asmfixup     *fixup;
+            asmfixup            *fixup;
 
             if( tokbuf->tokens[cur_pos].u.token == T_OFFSET ||
                 tokbuf->tokens[cur_pos].u.token == T_SEG ) {

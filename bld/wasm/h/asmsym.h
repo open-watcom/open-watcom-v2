@@ -96,7 +96,7 @@ typedef struct asm_sym {
 #endif
     memtype         mem_type;
     enum sym_state  state;
-    struct asmfixup *fixup;
+    asmfixup        *fixup;
 } asm_sym;
 
 extern asm_sym      *AsmLookup( const char *name );

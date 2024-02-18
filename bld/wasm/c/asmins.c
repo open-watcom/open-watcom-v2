@@ -201,9 +201,9 @@ static void seg_override( asm_token seg_reg, asm_sym *sym )
 - determine if segment override is necessary with the current address mode;
 */
 {
-    prefix_reg          default_seg;
+    prefix_reg      default_seg;
 #if defined( _STANDALONE_ )
-    enum assume_reg     assume_seg;
+    assume_reg      assume_seg;
 
     switch( seg_reg ) {
     case T_SS:
@@ -281,8 +281,8 @@ static void check_assume( struct asm_sym *sym, prefix_reg default_reg )
 /**************************************************************************/
 /* Check if an assumed register is found, and prefix a register if necessary */
 {
-    enum assume_reg     reg;
-    enum assume_reg     def_reg;
+    assume_reg      reg;
+    assume_reg      def_reg;
 
     /**/myassert( sym != NULL );
     if( sym->state == SYM_UNDEFINED )
@@ -1637,10 +1637,10 @@ static bool idata_nofixup( expr_list *opndx )
 static bool idata_fixup( token_buffer *tokbuf, expr_list *opndx )
 /***************************************************************/
 {
-    struct asmfixup     *fixup;
-    enum fixup_types    fixup_type;
-    int                 type;
-    bool                sym32;
+    asmfixup        *fixup;
+    fixup_types     fixup_type;
+    int             type;
+    bool            sym32;
 
     Code->data[Opnd_Count] = opndx->value;
     segm_override_idata( tokbuf, opndx );
@@ -1792,7 +1792,7 @@ static bool memory_operand( token_buffer *tokbuf, expr_list *opndx )
     asm_token           base = T_NULL;
     struct asm_sym      *sym;
     bool                base_lock = false;
-    enum fixup_types    fixup_type;
+    fixup_types         fixup_type;
 #if defined( _STANDALONE_ )
     bool                sym32;
 #endif

@@ -132,7 +132,7 @@ extern unsigned         BufSize;
 extern bool             DefineProc;     // true if the definition of procedure
                                         // has not ended
 extern struct asm_sym   *SegOverride;
-extern struct asmfixup  *ModendFixup;   // start address fixup
+extern asmfixup         *ModendFixup;   // start address fixup
 
 bool                    EndDirectiveFound = false;
 bool                    EndDirectiveProc = false;
@@ -2427,7 +2427,7 @@ bool Model( token_buffer *tokbuf, token_idx i )
 void AssumeInit( void )
 /*********************/
 {
-    enum assume_reg reg;
+    assume_reg  reg;
 
     for( reg = ASSUME_FIRST; reg < ASSUME_LAST; reg++ ) {
         AssumeTable[reg].symbol = NULL;
@@ -2584,9 +2584,9 @@ bool FixOverride( token_buffer *tokbuf, token_idx index )
     return( RC_ERROR );
 }
 
-static enum assume_reg search_assume( struct asm_sym *sym,
-                         enum assume_reg def, int override )
-/**********************************************************/
+static assume_reg search_assume( struct asm_sym *sym,
+                            assume_reg def, int override )
+/********************************************************/
 {
     if( sym == NULL )
         return( ASSUME_NOTHING );
@@ -2620,8 +2620,8 @@ static enum assume_reg search_assume( struct asm_sym *sym,
 }
 
 #if 0
-int Use32Assume( enum assume_reg prefix )
-/***************************************/
+int Use32Assume( assume_reg prefix )
+/**********************************/
 {
     dir_node        *dir;
     seg_list        *seg_l;
@@ -2645,8 +2645,8 @@ int Use32Assume( enum assume_reg prefix )
 }
 #endif
 
-enum assume_reg GetPrefixAssume( struct asm_sym *sym, enum assume_reg prefix )
-/****************************************************************************/
+assume_reg GetPrefixAssume( struct asm_sym *sym, assume_reg prefix )
+/******************************************************************/
 {
     struct asm_sym  *sym_assume;
 
@@ -2689,10 +2689,10 @@ enum assume_reg GetPrefixAssume( struct asm_sym *sym, enum assume_reg prefix )
     return( ASSUME_NOTHING );
 }
 
-enum assume_reg GetAssume( struct asm_sym *sym, enum assume_reg def )
-/*******************************************************************/
+assume_reg GetAssume( struct asm_sym *sym, assume_reg def )
+/*********************************************************/
 {
-    enum assume_reg  reg;
+    assume_reg      reg;
 
     if( ( def < ASSUME_NOTHING )
       && AssumeTable[def].flat ) {
