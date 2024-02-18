@@ -45,19 +45,19 @@ extern void FixFini( void );
     outstanding fixups.
 */
 
-extern fixup *FixNew( void );
+extern fixuprec *FixNew( void );
 /*
     Allocate memory for a new fixup.
 */
 
 
-extern fixup *FixDup( const fixup *fix );
+extern fixuprec *FixDup( const fixuprec *fix );
 /*
     Allocate a new fixup, and copy fix into it.
 */
 
 
-extern void FixKill( fixup *fix );
+extern void FixKill( fixuprec *fix );
 /*
     Free the memory used by fix.
 */
@@ -71,7 +71,7 @@ extern fixinfo *FixBegin( void );
     information to deal with threads.
 */
 
-extern fixup *FixGetFix( fixinfo *info, obj_rec *objr );
+extern fixuprec *FixGetFix( fixinfo *info, obj_rec *objr );
 /*
     Read a fixup.
 */
@@ -103,7 +103,7 @@ extern void FixEnd( fixinfo *info );
 
 /********** the following are used for generating fixups *************/
 
-extern uint_16 FixGenFix( fixup *fix, uint_8 *buf, int type );
+extern uint_16 FixGenFix( fixuprec *fix, uint_8 *buf, int type );
 /*
     Create the binary representation of fix, for the OMF described by
     fixgen_type type, into buf.  Returns the number of bytes written.

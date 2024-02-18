@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,6 +40,7 @@
 #include "omfgen.h"
 #include "queues.h"
 #include "omflifix.h"
+#include "omffixup.h"
 #include "myassert.h"
 
 
@@ -164,7 +165,7 @@ static int writeSegdef( obj_rec *objr )
 static int writeFixup( obj_rec *objr )
 {
     int         is32;
-    fixup       *walk;
+    fixuprec    *walk;
     uint_8      buf[ FIX_GEN_MAX ];
     uint_16     len;
     uint_16     len_written;

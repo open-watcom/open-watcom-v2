@@ -614,8 +614,8 @@ static void write_header( char *name )
     write_record( objr, true );
 }
 
-static void get_frame( fixup *fixnode, struct asmfixup *fixup )
-/*************************************************************/
+static void get_frame( fixuprec *fixnode, struct asmfixup *fixup )
+/****************************************************************/
 {
     if( fixup->frame == NULL ) {
         if( fixup->fixup_type == FIX_FPPATCH ) {
@@ -640,12 +640,13 @@ static void get_frame( fixup *fixnode, struct asmfixup *fixup )
     }
 }
 
-static struct fixup *CreateFixupRecModend( struct asmfixup *fixup )
-/*****************************************************************/
-/* Create a fixup record for OMF output */
+static fixuprec *CreateFixupRecModend( struct asmfixup *fixup )
+/**************************************************************
+ * Create a fixup record for OMF output
+ */
 {
-    struct fixup        *fixnode;       // fixup structure from OMF output
-    struct asm_sym      *sym;
+    fixuprec        *fixnode;       // fixup structure from OMF output
+    struct asm_sym  *sym;
 
     fixnode = FixNew();
     fixnode->next = NULL;
@@ -692,7 +693,7 @@ static bool write_modend( void )
 /******************************/
 {
     obj_rec     *objr;
-    fixup       *fix;
+    fixuprec    *fix;
 
     objr = ObjNewRec( CMD_MODEND );
     if( ModendFixup == NULL ) {
@@ -799,11 +800,12 @@ static void write_linnum( void )
     }
 }
 
-static struct fixup *CreateFixupRec( unsigned long offset, struct asmfixup *fixup )
-/*********************************************************************************/
-/* Create a fixup record for OMF output */
+static fixuprec *CreateFixupRec( unsigned long offset, struct asmfixup *fixup )
+/******************************************************************************
+ * Create a fixup record for OMF output
+ */
 {
-    struct fixup        *fixnode;       // fixup structure from OMF output
+    fixuprec            *fixnode;       // fixup structure from OMF output
     struct asm_sym      *sym;
 
     fixnode = FixNew();
@@ -899,14 +901,15 @@ static struct fixup *CreateFixupRec( unsigned long offset, struct asmfixup *fixu
 
 #ifdef SEPARATE_FIXUPP_16_32
 
-static void get_fixup_list( unsigned long start, struct fixup **fl16, struct fixup **fl32 )
-/*****************************************************************************************/
-/* divide fixup record list to the 16-bit or 32-bit list of a fixup record */
+static void get_fixup_list( unsigned long start, fixuprec **fl16, fixuprec **fl32 )
+/**********************************************************************************
+ * divide fixup record list to the 16-bit or 32-bit list of a fixup record
+ */
 {
-    struct asmfixup     *fixi;
-    struct fixup        *fix;
-    struct fixup        *fix16;
-    struct fixup        *fix32;
+    struct asmfixup *fixi;
+    fixuprec        *fix;
+    fixuprec        *fix16;
+    fixuprec        *fix32;
 
     fix16 = NULL;
     fix32 = NULL;
@@ -944,11 +947,11 @@ static void get_fixup_list( unsigned long start, struct fixup **fl16, struct fix
 
 #else
 
-int get_fixup_list( unsigned long start, struct fixup **fl )
+int get_fixup_list( unsigned long start, fixuprec **fl )
 {
-    struct asmfixup     *fixi;
-    struct fixup        *fix;
-    struct fixup        *fixo;
+    struct asmfixup *fixi;
+    fixuprec        *fix;
+    fixuprec        *fixo;
 
     fixo = NULL;
     for( fixi = FixupListHead; fixi != NULL; fixi = fixi->next_loc ) {
@@ -971,7 +974,7 @@ static void check_need_32bit( obj_rec *objr ) {
 /**********************************************/
 /* figure out if we need the 16-bit or 32-bit form of a fixup record */
 
-    struct fixup        *fix;
+    fixuprec        *fix;
 
     fix = objr->d.fixupp.fixup;
     for( ;; ) {
@@ -997,12 +1000,12 @@ static void check_need_32bit( obj_rec *objr ) {
 static void write_ledata( void )
 /******************************/
 {
-    obj_rec         *objr;
+    obj_rec     *objr;
 #ifdef SEPARATE_FIXUPP_16_32
-    struct fixup    *fl16 = NULL;
-    struct fixup    *fl32 = NULL;
+    fixuprec    *fl16 = NULL;
+    fixuprec    *fl32 = NULL;
 #else
-    struct fixup    *fl = NULL;
+    fixuprec    *fl = NULL;
 #endif
 
     if( BufSize > 0 ) {

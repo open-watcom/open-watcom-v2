@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,7 +45,7 @@ static carve_t  myCarver;
 void FixInit( void )
 /******************/
 {
-    myCarver = CarveCreate( sizeof( fixup ), 64 );
+    myCarver = CarveCreate( sizeof( fixuprec ), 64 );
 }
 
 void FixFini( void )
@@ -54,16 +54,16 @@ void FixFini( void )
     CarveDestroy( myCarver );
 }
 
-fixup *FixNew( void )
-/*******************/
+fixuprec *FixNew( void )
+/**********************/
 {
     return( CarveAlloc( myCarver ) );
 }
 
-fixup *FixDup( const fixup *fix )
-/*******************************/
+fixuprec *FixDup( const fixuprec *fix )
+/*************************************/
 {
-    fixup *new;
+    fixuprec *new;
 
     if( fix == NULL ) {
         return( NULL );
@@ -73,8 +73,8 @@ fixup *FixDup( const fixup *fix )
     return( new );
 }
 
-void FixKill( fixup *fix )
-/************************/
+void FixKill( fixuprec *fix )
+/***************************/
 {
     CarveFree( myCarver, fix );
 }
@@ -183,8 +183,8 @@ uint_16 FixGenRef( logphys *ref, int is_logical, uint_8 *buf, int type )
     return( FixGenPRef( &ref->phys, buf, type ) );
 }
 
-uint_16 FixGenFix( fixup *fix, uint_8 *buf, int type )
-/****************************************************/
+uint_16 FixGenFix( fixuprec *fix, uint_8 *buf, int type )
+/*******************************************************/
 {
     uint_8  *p;
     uint_8  byte;
