@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,83 +33,9 @@
 
 #ifndef OMFFIXUP_H
 #define OMFFIXUP_H
-/*
-    A lot of this file assumes you're familiar with the Intel OMF book...
-*/
 
+#include "omfrec.h"
 
-typedef struct {
-    uint_16 frame;          /* frame number of physical reference       */
-    uint_32 offset;         /* offset into reference                    */
-} physref;
-
-typedef struct {
-    uint_8  frame       :3; /* F_ types from pcobj.h                    */
-    uint_8  target      :3; /* T_ types from pcobj.h (only T0-T3)       */
-    uint_8  is_secondary:1; /* can write target in a secondary manner   */
-
-    uint_16 frame_datum;    /* datum for different frame methods        */
-    uint_16 target_datum;   /* datum for different target methods       */
-    int_32  target_offset;  /* offset of target for target method       */
-} logref;
-
-typedef union {
-    logref  log;
-    physref phys;
-} logphys;
-
-typedef struct fixup fixup;
-typedef struct fixinfo fixinfo;
-
-typedef struct obj_rec obj_rec;
-
-/*
-    The ordering of this enumerated type is depended on in several places.
-*/
-enum {                      /* method of fixing up location:            */
-    FIX_LO_BYTE,            /* relocate lo byte of offset               */
-    FIX_OFFSET,             /* relocate offset (2 bytes)                */
-    FIX_BASE,               /* relocate base (2 bytes)                  */
-    FIX_POINTER,            /* relocate pointer (base:offset 4 bytes)   */
-    FIX_HI_BYTE,            /* relocate hi byte of offset               */
-    FIX_OFFSET386,          /* relocate offset (4 bytes)                */
-    FIX_POINTER386,         /* relocate pointer (base:offset 6 bytes)   */
-    /* don't define more than 8 values without changing bit field */
-};
-
-struct fixup {
-    fixup   *next;          /* useful for placing in linked list        */
-    uint_8  loc_method      :3;
-    uint_8  self_relative   :1; /* self or seg relative                 */
-    uint_8  loader_resolved :1; /* loader resolved relocation           */
-    uint_32 loc_offset;     /* see note below                           */
-    logref  lr;             /* logical reference data                   */
-};
-
-/*
-    fixupp.loc_offset has two purposes:  when the fixup is built by FixGetFix,
-    this field will contain the value of the "data_rec_offset" 10-bit offset
-    into the previous LE/LIDATA.  When the fixup is written, this field must
-    contain a similar value (10-bit number which is offset from beginning of
-    most recent LE/LIDATA).  However, it is a full 32-bit wide field to allow
-    other routines room to play.  i.e., in the WATCOM parser uses the 32-bit
-    field as a full offset into the debugging information segments ($$TYPES or
-    $$SYMBOLS); this is handled by WAT2CAN0.C.
-*/
-
-struct fixinfo {
-    /* caller should not touch these fields */
-    struct {
-        uint_8  method;
-        uint_16 datum;
-    } trd[ 8 ];
-};
-
-enum fixgen_types {
-    FIX_GEN_INTEL,
-    FIX_GEN_MS386
-};
-#define FIX_GEN_MAX     11          /* max number of bytes FixGenFix requires */
 
 extern void FixInit( void );
 extern void FixFini( void );
