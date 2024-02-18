@@ -306,7 +306,7 @@ bool StoreConstantNumber( const char *name, long value, bool redefine )
 {
     asm_tok         *new;
     dir_node        *dir;
-    struct asm_sym  *sym;
+    asm_sym         *sym;
 
     sym = AsmGetSymbol( name );
 

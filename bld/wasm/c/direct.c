@@ -131,7 +131,7 @@ extern bool             write_to_file;  // write if there is no error
 extern unsigned         BufSize;
 extern bool             DefineProc;     // true if the definition of procedure
                                         // has not ended
-extern struct asm_sym   *SegOverride;
+extern asm_sym          *SegOverride;
 extern asmfixup         *ModendFixup;   // start address fixup
 
 bool                    EndDirectiveFound = false;
@@ -931,8 +931,8 @@ void FreeInfo( dir_node *dir )
     }
 }
 
-static struct asm_sym *InsertClassLname( const char *name )
-/*********************************************************/
+static asm_sym *InsertClassLname( const char *name )
+/**************************************************/
 {
     dir_node            *dir;
 
@@ -1771,8 +1771,8 @@ bool Include( token_buffer *tokbuf, token_idx i )
 bool IncludeLib( token_buffer *tokbuf, token_idx i )
 /**************************************************/
 {
-    char *name;
-    struct asm_sym *sym;
+    char            *name;
+    asm_sym         *sym;
 
     name = tokbuf->tokens[i].string_ptr;
     if( name == NULL ) {
@@ -2445,7 +2445,7 @@ bool SetAssume( token_buffer *tokbuf, token_idx i )
     char            *segloc;
     int             reg;
     assume_info     *info;
-    struct asm_sym  *sym;
+    asm_sym         *sym;
 
 
     for( i++; i < tokbuf->count; i++ ) {
@@ -2530,8 +2530,8 @@ bool SetAssume( token_buffer *tokbuf, token_idx i )
     return( RC_OK );
 }
 
-struct asm_sym *GetGrp( struct asm_sym *sym )
-/********************************************
+asm_sym *GetGrp( asm_sym *sym )
+/******************************
  * get ptr to sym's group sym
  */
 {
@@ -2543,8 +2543,8 @@ struct asm_sym *GetGrp( struct asm_sym *sym )
     return( NULL );
 }
 
-bool SymIs32( struct asm_sym *sym )
-/**********************************
+bool SymIs32( asm_sym *sym )
+/***************************
  * get sym's segment size
  */
 {
@@ -2569,7 +2569,7 @@ bool FixOverride( token_buffer *tokbuf, token_idx index )
  * Fix segment or group override
  */
 {
-    struct asm_sym      *sym;
+    asm_sym         *sym;
 
     sym = AsmLookup( tokbuf->tokens[index].string_ptr );
     /**/myassert( sym != NULL );
@@ -2584,7 +2584,7 @@ bool FixOverride( token_buffer *tokbuf, token_idx index )
     return( RC_ERROR );
 }
 
-static assume_reg search_assume( struct asm_sym *sym,
+static assume_reg search_assume( asm_sym *sym,
                             assume_reg def, int override )
 /********************************************************/
 {
@@ -2625,7 +2625,7 @@ int Use32Assume( assume_reg prefix )
 {
     dir_node        *dir;
     seg_list        *seg_l;
-    struct asm_sym  *sym_assume;
+    asm_sym         *sym_assume;
 
     if( AssumeTable[prefix].flat )
         return( 1 );
@@ -2645,10 +2645,10 @@ int Use32Assume( assume_reg prefix )
 }
 #endif
 
-assume_reg GetPrefixAssume( struct asm_sym *sym, assume_reg prefix )
-/******************************************************************/
+assume_reg GetPrefixAssume( asm_sym *sym, assume_reg prefix )
+/***********************************************************/
 {
-    struct asm_sym  *sym_assume;
+    asm_sym         *sym_assume;
 
     if( Parse_Pass == PASS_1 )
         return( prefix );
@@ -2689,8 +2689,8 @@ assume_reg GetPrefixAssume( struct asm_sym *sym, assume_reg prefix )
     return( ASSUME_NOTHING );
 }
 
-assume_reg GetAssume( struct asm_sym *sym, assume_reg def )
-/*********************************************************/
+assume_reg GetAssume( asm_sym *sym, assume_reg def )
+/**************************************************/
 {
     assume_reg      reg;
 
@@ -2895,8 +2895,8 @@ bool LocalDef( token_buffer *tokbuf, token_idx i )
     int             type;
     label_list      *local;
     proc_info       *info;
-    struct asm_sym  *sym;
-    struct asm_sym  *tmp = NULL;
+    asm_sym         *sym;
+    asm_sym         *tmp = NULL;
 
     if( !DefineProc ) {
         AsmError( LOCAL_VAR_MUST_FOLLOW_PROC );
@@ -3019,8 +3019,8 @@ static bool GetArgType( proc_info *info, const char *token, const char *typetoke
     int             type;
     int             parameter_size;
     int             parameter_size_aligned;
-    struct asm_sym  *param;
-    struct asm_sym  *tmp = NULL;
+    asm_sym         *param;
+    asm_sym         *tmp = NULL;
     bool            is_vararg;
 
     /*
@@ -3281,7 +3281,7 @@ bool EnumDef( token_buffer *tokbuf, token_idx i )
     token_idx       n;
     int             enums, in_braces;
     long            count;
-    struct asm_sym  *sym;
+    asm_sym         *sym;
     dir_node        *dir;
 
     if( Options.mode & MODE_IDEAL ) {
@@ -4108,8 +4108,8 @@ bool Ret( token_buffer *tokbuf, token_idx i, bool flag_iret )
     return( RC_OK );
 }
 
-void GetSymInfo( struct asm_sym *sym )
-/************************************/
+void GetSymInfo( asm_sym *sym )
+/*****************************/
 {
     sym->segment = &GetCurrSeg()->sym;
     sym->offset = GetCurrAddr();

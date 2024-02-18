@@ -32,7 +32,7 @@
 #ifndef _MANGLE_H_
 #define _MANGLE_H_
 
-extern char *Mangle( struct asm_sym * );
-extern void SetMangler( struct asm_sym *, const char *, int );
+extern char *Mangle( asm_sym * );
+extern void SetMangler( asm_sym *, const char *, int );
 
 #endif

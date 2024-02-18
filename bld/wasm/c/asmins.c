@@ -76,11 +76,11 @@ static bool             segm_override_jumps( token_buffer *tokbuf, expr_list *op
 extern bool             DefineProc;     // true if the definition of procedure
                                         // has not ended
 
-static void             check_assume( struct asm_sym *, prefix_reg );
+static void             check_assume( asm_sym *, prefix_reg );
 
 bool                    CheckSeg;       // if checking of opened segment is needed
-struct asm_sym          *Frame;         // Frame of current fixup
-struct asm_sym          *SegOverride;
+asm_sym                 *Frame;         // Frame of current fixup
+asm_sym                 *SegOverride;
 
 #else
 
@@ -96,8 +96,8 @@ static bool             mem2code( unsigned char, asm_token, asm_token, asm_sym *
 
 #if defined( _STANDALONE_ )
 
-void find_frame( struct asm_sym *sym )
-/************************************/
+void find_frame( asm_sym *sym )
+/*****************************/
 {
     if( SegOverride != NULL ) {
         sym = SegOverride;
@@ -277,9 +277,10 @@ static void seg_override( asm_token seg_reg, asm_sym *sym )
 
 #if defined( _STANDALONE_ )
 
-static void check_assume( struct asm_sym *sym, prefix_reg default_reg )
-/**************************************************************************/
-/* Check if an assumed register is found, and prefix a register if necessary */
+static void check_assume( asm_sym *sym, prefix_reg default_reg )
+/***************************************************************
+ * Check if an assumed register is found, and prefix a register if necessary
+ */
 {
     assume_reg      reg;
     assume_reg      def_reg;
@@ -1787,14 +1788,14 @@ static bool idata_operand( token_buffer *tokbuf, expr_list *opndx )
 static bool memory_operand( token_buffer *tokbuf, expr_list *opndx )
 /******************************************************************/
 {
-    unsigned char       ss = SCALE_FACTOR_1;
-    asm_token           index = T_NULL;
-    asm_token           base = T_NULL;
-    struct asm_sym      *sym;
-    bool                base_lock = false;
-    fixup_types         fixup_type;
+    unsigned char   ss = SCALE_FACTOR_1;
+    asm_token       index = T_NULL;
+    asm_token       base = T_NULL;
+    asm_sym         *sym;
+    bool            base_lock = false;
+    fixup_types     fixup_type;
 #if defined( _STANDALONE_ )
-    bool                sym32;
+    bool            sym32;
 #endif
 
     Code->data[Opnd_Count] = opndx->value;

@@ -47,8 +47,8 @@ static unsigned   AnonymousCounter = 0;
 void PrepAnonLabels( void )
 /*************************/
 {
-    struct asm_sym *sym;
-    char buffer[20];
+    asm_sym     *sym;
+    char        buffer[20];
 
     sprintf( buffer, "L&_%d", AnonymousCounter );
     AsmChangeName( "@B", buffer  );
@@ -74,13 +74,13 @@ bool IsLabelStruct( const char *name )
 bool MakeLabel( token_buffer *tokbuf, token_idx i, memtype mem_type )
 /*******************************************************************/
 {
-    struct asm_sym      *sym;
-    char                *symbol_name;
+    asm_sym         *sym;
+    char            *symbol_name;
 #if defined( _STANDALONE_ )
-    uint_32             addr = 0;
-    char                buffer[20];
-    struct asm_sym      *newsym;
-//    proc_info           *info;
+    uint_32         addr = 0;
+    char            buffer[20];
+    asm_sym         *newsym;
+//    proc_info       *info;
 #endif
 
     symbol_name = tokbuf->tokens[i].string_ptr;

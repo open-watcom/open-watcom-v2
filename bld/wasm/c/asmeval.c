@@ -594,8 +594,8 @@ static bool calculate( expr_list *token_1, expr_list *token_2, token_buffer *tok
  * Perform the operation between token_1 and token_2
  */
 {
-    struct asm_sym      *sym;
-    asm_token           reg_token;
+    asm_sym         *sym;
+    asm_token       reg_token;
 
     token_1->string = NULL;
 

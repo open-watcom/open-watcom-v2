@@ -47,19 +47,19 @@
 
 #if defined( _STANDALONE_ )
 
-static struct asm_sym   *sym_table[ HASH_TABLE_SIZE ] = { NULL };
-/* initialize the whole table to null pointers */
-static unsigned         AsmSymCount;    /* Number of symbols in table */
-
-static char             const dots[] = " . . . . . . . . . . . . . . . .";
-
 #ifdef DEBUG_OUT
-void    DumpASym( void );   /* Forward declaration */
+void                DumpASym( void );   /* Forward declaration */
 #endif
+
+static asm_sym      *sym_table[ HASH_TABLE_SIZE ] = { NULL };
+/* initialize the whole table to null pointers */
+static unsigned     AsmSymCount;    /* Number of symbols in table */
+
+static char         const dots[] = " . . . . . . . . . . . . . . . .";
 
 #else
 
-static struct asm_sym   *AsmSymHead;
+static asm_sym      *AsmSymHead;
 
 static unsigned short CvtTable[] = {
     #define ASM_TYPE(c,a)   a,
@@ -69,8 +69,8 @@ static unsigned short CvtTable[] = {
 
 #endif
 
-static char *InitAsmSym( struct asm_sym *sym, const char *name )
-/**************************************************************/
+static char *InitAsmSym( asm_sym *sym, const char *name )
+/*******************************************************/
 {
 #if !defined( _STANDALONE_ )
     void        *handle;
@@ -108,15 +108,15 @@ static char *InitAsmSym( struct asm_sym *sym, const char *name )
     return( sym->name );
 }
 
-static struct asm_sym *AllocASym( const char *name )
-/**************************************************/
+static asm_sym *AllocASym( const char *name )
+/*******************************************/
 {
-    struct asm_sym      *sym;
+    asm_sym         *sym;
 
 #if defined( _STANDALONE_ )
     sym = AsmAlloc( sizeof( dir_node ) );
 #else
-    sym = AsmAlloc( sizeof( struct asm_sym ) );
+    sym = AsmAlloc( sizeof( asm_sym ) );
 #endif
     if( sym != NULL ) {
         if( InitAsmSym( sym, name ) == NULL ) {
@@ -133,12 +133,12 @@ static struct asm_sym *AllocASym( const char *name )
     return sym;
 }
 
-static struct asm_sym **AsmFind( const char *name )
-/**************************************************
+static asm_sym **AsmFind( const char *name )
+/*******************************************
  * find a symbol in the symbol table, return NULL if not found
  */
 {
-    struct asm_sym      **sym;
+    asm_sym         **sym;
 
 #if defined( _STANDALONE_ )
     sym = &sym_table[hashpjw( name )];
@@ -168,8 +168,8 @@ static struct asm_sym **AsmFind( const char *name )
 }
 
 #if defined( _STANDALONE_ )
-static struct asm_sym *FindLocalLabel( const char *name )
-/*******************************************************/
+static asm_sym *FindLocalLabel( const char *name )
+/************************************************/
 {
     label_list  *curr;
 
@@ -218,14 +218,15 @@ static bool AddLocalLabel( asm_sym *sym )
 }
 #endif
 
-struct asm_sym *AsmLookup( const char *name )
-/*******************************************/
+asm_sym *AsmLookup( const char *name )
+/************************************/
 {
-    struct asm_sym      **sym_ptr;
-    struct asm_sym      *sym;
+    asm_sym         **sym_ptr;
+    asm_sym         *sym;
 #if defined( _STANDALONE_ )
-    struct asm_sym      *structure;
+    asm_sym         *structure;
 #endif
+
     if( strlen( name ) > MAX_ID_LEN ) {
         AsmError( LABEL_TOO_LONG );
         return NULL;
@@ -295,8 +296,8 @@ struct asm_sym *AsmLookup( const char *name )
     return( sym );
 }
 
-void FreeASym( struct asm_sym *sym )
-/*****************************************/
+void FreeASym( asm_sym *sym )
+/***************************/
 {
 #if defined( _STANDALONE_ )
     asmfixup    *fixup;
@@ -316,8 +317,8 @@ void FreeASym( struct asm_sym *sym )
 bool AsmChangeName( const char *old, const char *new )
 /****************************************************/
 {
-    struct asm_sym      **sym_ptr;
-    struct asm_sym      *sym;
+    asm_sym         **sym_ptr;
+    asm_sym         *sym;
 
     sym_ptr = AsmFind( old );
     if( *sym_ptr != NULL ) {
@@ -338,8 +339,8 @@ bool AsmChangeName( const char *old, const char *new )
 void AsmTakeOut( const char *name )
 /*********************************/
 {
-    struct asm_sym      *sym;
-    struct asm_sym      **sym_ptr;
+    asm_sym         *sym;
+    asm_sym         **sym_ptr;
 
     sym_ptr = AsmFind( name );
     if( *sym_ptr != NULL ) {
@@ -352,10 +353,10 @@ void AsmTakeOut( const char *name )
     return;
 }
 
-static struct asm_sym *AsmSymAdd( struct asm_sym *sym )
-/*****************************************************/
+static asm_sym *AsmSymAdd( asm_sym *sym )
+/***************************************/
 {
-    struct asm_sym  **location;
+    asm_sym         **location;
 
     location = AsmFind( sym->name );
 
@@ -384,13 +385,13 @@ dir_node *AllocD( const char *name )
     return( dir );
 }
 
-struct asm_sym *AllocDSym( const char *name )
-/********************************************
+asm_sym *AllocDSym( const char *name )
+/*************************************
  * Create directive symbol and insert it into
  * the global symbol table
  */
 {
-    struct asm_sym      *new;
+    asm_sym         *new;
 
     new = AllocASym( name );
     if( new != NULL ) {
@@ -403,10 +404,11 @@ struct asm_sym *AllocDSym( const char *name )
     return( new );
 }
 
-struct asm_sym *AsmGetSymbol( const char *name )
-/**********************************************/
+asm_sym *AsmGetSymbol( const char *name )
+/***************************************/
 {
-    struct asm_sym  **sym_ptr, *structure;
+    asm_sym         **sym_ptr;
+    asm_sym         *structure;
 
 #if defined( _STANDALONE_ )
     if( Options.mode & MODE_IDEAL ) {
@@ -446,10 +448,10 @@ void AsmSymInit( void )
 void AsmSymFini( void )
 /*********************/
 {
-    struct asm_sym      *sym;
+    asm_sym         *sym;
 #if defined( _STANDALONE_ )
-    unsigned            i;
-    struct asm_sym      *next;
+    unsigned        i;
+    asm_sym         *next;
 
 #if defined( DEBUG_OUT )
     DumpASym();
@@ -480,20 +482,20 @@ void AsmSymFini( void )
 static int compare_fn( const void *p1, const void *p2 )
 /*****************************************************/
 {
-    const struct asm_sym *sym1 = *(const struct asm_sym **)p1;
-    const struct asm_sym *sym2 = *(const struct asm_sym **)p2;
+    const asm_sym *sym1 = *(const asm_sym **)p1;
+    const asm_sym *sym2 = *(const asm_sym **)p2;
 
     return( strcmp( sym1->name, sym2->name ) );
 }
 
-static struct asm_sym **SortAsmSyms( void )
-/*****************************************/
+static asm_sym **SortAsmSyms( void )
+/**********************************/
 {
-    struct asm_sym      **syms;
-    struct asm_sym      *sym;
-    unsigned            i, j;
+    asm_sym         **syms;
+    asm_sym         *sym;
+    unsigned        i, j;
 
-    syms = AsmAlloc( AsmSymCount * sizeof( struct asm_sym * ) );
+    syms = AsmAlloc( AsmSymCount * sizeof( asm_sym * ) );
     if( syms != NULL ) {
         /* copy symbols to table */
         for( i = j = 0; i < HASH_TABLE_SIZE; i++ ) {
@@ -502,7 +504,7 @@ static struct asm_sym **SortAsmSyms( void )
             }
         }
         /* sort 'em */
-        qsort( syms, AsmSymCount, sizeof( struct asm_sym * ), compare_fn );
+        qsort( syms, AsmSymCount, sizeof( asm_sym * ), compare_fn );
     }
     return( syms );
 }
@@ -544,8 +546,8 @@ static const char *get_seg_combine( seg_info *seg )
     }
 }
 
-static void log_segment( struct asm_sym *sym, struct asm_sym *group )
-/*******************************************************************/
+static void log_segment( asm_sym *sym, asm_sym *group )
+/*****************************************************/
 {
     if( sym->state == SYM_SEG ) {
         dir_node    *dir = (dir_node *)sym;
@@ -564,8 +566,8 @@ static void log_segment( struct asm_sym *sym, struct asm_sym *group )
     }
 }
 
-static void log_group( struct asm_sym **syms, struct asm_sym *sym )
-/*****************************************************************/
+static void log_group( asm_sym **syms, asm_sym *sym )
+/***************************************************/
 {
     unsigned        i;
 
@@ -578,8 +580,8 @@ static void log_group( struct asm_sym **syms, struct asm_sym *sym )
     }
 }
 
-static const char *get_sym_type( struct asm_sym *sym )
-/****************************************************/
+static const char *get_sym_type( asm_sym *sym )
+/*********************************************/
 {
     switch( sym->mem_type ) {
     case MT_BYTE:
@@ -601,8 +603,8 @@ static const char *get_sym_type( struct asm_sym *sym )
     }
 }
 
-static const char *get_proc_type( struct asm_sym *sym )
-/*****************************************************/
+static const char *get_proc_type( asm_sym *sym )
+/**********************************************/
 {
     switch( sym->mem_type ) {
     case MT_NEAR:
@@ -614,8 +616,8 @@ static const char *get_proc_type( struct asm_sym *sym )
     }
 }
 
-static const char *get_sym_lang( struct asm_sym *sym )
-/****************************************************/
+static const char *get_sym_lang( asm_sym *sym )
+/*********************************************/
 {
     switch( sym->langtype ) {
     case WASM_LANG_C:
@@ -637,8 +639,8 @@ static const char *get_sym_lang( struct asm_sym *sym )
     }
 }
 
-static const char *get_sym_seg_name( struct asm_sym *sym )
-/********************************************************/
+static const char *get_sym_seg_name( asm_sym *sym )
+/*************************************************/
 {
     if( sym->segment != NULL ) {
         return( sym->segment->name );
@@ -647,8 +649,8 @@ static const char *get_sym_seg_name( struct asm_sym *sym )
     }
 }
 
-static void log_symbol( struct asm_sym *sym )
-/*******************************************/
+static void log_symbol( asm_sym *sym )
+/************************************/
 {
     if( sym->state == SYM_CONST ) {
         dir_node    *dir = (dir_node *)sym;
@@ -680,8 +682,8 @@ static void log_symbol( struct asm_sym *sym )
     }
 }
 
-static void log_proc( struct asm_sym *sym )
-/*****************************************/
+static void log_proc( asm_sym *sym )
+/**********************************/
 {
     if( sym->state == SYM_PROC ) {
         LstMsg( "%s %s        ", sym->name, dots + strlen( sym->name ) + 1 );
@@ -701,7 +703,7 @@ static void log_proc( struct asm_sym *sym )
 void WriteListing( void )
 /***********************/
 {
-    struct asm_sym  **syms;
+    asm_sym         **syms;
     unsigned        i;
 
     if( AsmFiles.file[LST] == NULL ) {
@@ -748,8 +750,8 @@ void WriteListing( void )
 
 #if defined( DEBUG_OUT )
 
-static void DumpSymbol( struct asm_sym *sym )
-/*******************************************/
+static void DumpSymbol( asm_sym *sym )
+/************************************/
 {
 //    dir_node    *dir;
     char        *type;
@@ -855,8 +857,8 @@ static void DumpSymbol( struct asm_sym *sym )
 void DumpASym( void )
 /*******************/
 {
-    struct asm_sym      *sym;
-    unsigned            i;
+    asm_sym         *sym;
+    unsigned        i;
 
     LstMsg( "\n" );
     for( i = 0; i < HASH_TABLE_SIZE; i++ ) {

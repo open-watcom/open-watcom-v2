@@ -307,19 +307,19 @@ static void FreeLnameQueue( void )
     }
 }
 
-void AddLinnumData( struct line_num_info *data )
+void AddLinnumData( line_num_info *data )
 /**********************************************/
 {
     QAddItem( &LinnumQueue, data );
 }
 
-int GetLinnumData( int limit, struct linnum_data **ldata, bool *need32 )
-/**********************************************************************/
+int GetLinnumData( int limit, linnum_data **ldata, bool *need32 )
+/***************************************************************/
 {
-    queuenode               *node;
-    struct line_num_info    *node_data;
-    long                    count;
-    int                     i;
+    queuenode       *node;
+    line_num_info   *node_data;
+    long            count;
+    int             i;
 
     count = QCount( LinnumQueue );
     if( count <= 0 )
@@ -327,10 +327,10 @@ int GetLinnumData( int limit, struct linnum_data **ldata, bool *need32 )
     if( count < limit )
         limit = (unsigned)count;
     *need32 = false;
-    *ldata = AsmAlloc( limit * sizeof( struct linnum_data ) );
+    *ldata = AsmAlloc( limit * sizeof( linnum_data ) );
     for( i = 0; i < limit; i++ ) {
         node = QDequeue( LinnumQueue );
-        node_data = (struct line_num_info *)(node->data);
+        node_data = (line_num_info *)(node->data);
         if( *ldata != NULL ) {
             (*ldata)[i].number = node_data->number;
             (*ldata)[i].offset = node_data->offset;

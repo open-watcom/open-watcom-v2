@@ -646,7 +646,7 @@ static fixuprec *CreateFixupRecModend( asmfixup *fixup )
  */
 {
     fixuprec        *fixnode;       // fixup structure from OMF output
-    struct asm_sym  *sym;
+    asm_sym         *sym;
 
     fixnode = FixNew();
     fixnode->next = NULL;
@@ -750,8 +750,8 @@ void AddLinnumDataRef( void )
 /***************************/
 /* store a reference for the current line at the current address */
 {
-    struct line_num_info    *curr;
-    unsigned long           line_num;
+    line_num_info   *curr;
+    unsigned long   line_num;
 
     if( in_prologue ) {
         line_num = CurrProc->line_num;
@@ -760,7 +760,7 @@ void AddLinnumDataRef( void )
     }
     if( line_num < 0x8000 ) {
         if( lastLineNumber != line_num ) {
-            curr = AsmAlloc( sizeof( struct line_num_info ) );
+            curr = AsmAlloc( sizeof( line_num_info ) );
             curr->number = (uint_16)line_num;
             curr->offset = AsmCodeAddress;
             curr->srcfile = get_curr_srcfile();
@@ -774,10 +774,10 @@ void AddLinnumDataRef( void )
 static void write_linnum( void )
 /******************************/
 {
-    struct linnum_data  *ldata;
-    int                 count;
-    obj_rec             *objr;
-    bool                need_32;
+    linnum_data     *ldata;
+    int             count;
+    obj_rec         *objr;
+    bool            need_32;
 
     while( (count = GetLinnumData( 0x1000, &ldata, &need_32 )) != 0 ) {
         if( ldata == NULL ) {
@@ -805,8 +805,8 @@ static fixuprec *CreateFixupRec( unsigned long offset, asmfixup *fixup )
  * Create a fixup record for OMF output
  */
 {
-    fixuprec            *fixnode;       // fixup structure from OMF output
-    struct asm_sym      *sym;
+    fixuprec        *fixnode;       // fixup structure from OMF output
+    asm_sym         *sym;
 
     fixnode = FixNew();
     fixnode->next = NULL;

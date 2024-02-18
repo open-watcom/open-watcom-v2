@@ -134,7 +134,7 @@ typedef struct {
 
 typedef struct {
     direct_idx          idx;            // segment lname/order index
-    struct asm_sym      *group;         // its group
+    asm_sym             *group;         // its group
     uint_32             start_loc;      // starting offset of current ledata or lidata
     uint_8              align       :4; // align field (enum segdef_align_values)
     uint_8              combine     :4; // combine field (values in pcobj.h)
@@ -145,7 +145,7 @@ typedef struct {
     uint_32             current_loc;    // current offset in current ledata or lidata
     uint_32             length;         // segment length
     uint_16             abs_frame;      // frame for absolute segment
-    struct asm_sym      *class_name;    // segment class name (lname)
+    asm_sym             *class_name;    // segment class name (lname)
 } seg_info;
 
 typedef struct {
@@ -180,7 +180,7 @@ typedef struct label_list {
     struct label_list   *next;
     char                *label;         // name of parameter
     char                *replace;       // string that replaces the label
-    struct asm_sym      *sym;           // structure definition or local label symbol
+    asm_sym             *sym;           // structure definition or local label symbol
     int                 size;           // size of parameter
     int                 factor;         // for local var only
     bool                is_register;    // for arguments only
@@ -268,7 +268,7 @@ typedef struct field_list {
     struct field_list   *next;
     char                *initializer;
     char                *value;
-    struct asm_sym      *sym;
+    asm_sym             *sym;
 } field_list;
 
 typedef struct {
@@ -291,7 +291,7 @@ union entry {
 };
 
 typedef struct dir_node {
-    struct asm_sym      sym;
+    asm_sym             sym;
     union entry         e;
     unsigned long       line_num;   // line number of the directive in source file
     struct dir_node     *next;      // linked list of this type of symbol
@@ -344,7 +344,7 @@ typedef struct {
     os_type             ostype;         // operating system;
     bool                use32;          // If 32-bit segment is used
     bool                mseg;           // mixed segments (16/32-bit)
-    struct asm_sym      *flat_grp;      // FLAT group symbol
+    asm_sym             *flat_grp;      // FLAT group symbol
     char                *name;          // name of module
     const FNAME         *srcfile;
 } module_info;                          // Information about the module
@@ -414,7 +414,7 @@ extern bool             AlignDirective( asm_token directive, token_buffer *tokbu
 extern bool             ForDirective( token_buffer *tokbuf, token_idx, irp_type );
 
 extern void             DefFlatGroup( void );
-extern bool             SymIs32( struct asm_sym *sym );
+extern bool             SymIs32( asm_sym *sym );
 
 extern bool             directive( token_buffer *tokbuf, token_idx, asm_token );
 
@@ -428,23 +428,23 @@ extern uint_32          GetCurrSegStart(void);
 
 #define SEGISCODE( x )  ( x->seg->e.seginfo->iscode == SEGTYPE_ISCODE )
 
-extern struct asm_sym   *GetGrp( struct asm_sym * );
+extern asm_sym          *GetGrp( asm_sym * );
 
 extern void             AssumeInit( void );     // init all assumed-register table
 extern bool             SetAssume( token_buffer *tokbuf, token_idx );       // Assume a register
 
-extern assume_reg       GetAssume( struct asm_sym*, assume_reg );
+extern assume_reg       GetAssume( asm_sym *, assume_reg );
 /* Return the assumed register of the symbol, and determine the frame and
    frame_datum of its fixup */
 
-extern assume_reg       GetPrefixAssume( struct asm_sym*, assume_reg );
+extern assume_reg       GetPrefixAssume( asm_sym *, assume_reg );
 /* Determine the frame and frame_datum of a symbol with a register prefix */
 
 extern bool             FixOverride( token_buffer *tokbuf, token_idx );
 /* Get the correct frame and frame_datum for a label when there is a segment
    or group override. */
 
-extern void             GetSymInfo( struct asm_sym * );
+extern void             GetSymInfo( asm_sym * );
 /* Store location information about a symbol */
 extern bool             NameDirective( token_buffer *tokbuf, token_idx );
 

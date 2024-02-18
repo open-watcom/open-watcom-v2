@@ -36,9 +36,9 @@
 
 extern asmfixup     *InsFixups[OPND_MAX];
 extern asmfixup     *FixupHead;
-extern asmfixup     *AddFixup( struct asm_sym *sym, fixup_types fixup_type, fixup_options fixup_option );
+extern asmfixup     *AddFixup( asm_sym *sym, fixup_types fixup_type, fixup_options fixup_option );
 extern void         add_frame( void );
-extern bool         BackPatch( struct asm_sym *sym );
+extern bool         BackPatch( asm_sym *sym );
 extern void         mark_fixupp( OPNDTYPE determinant, operand_idx index );
 extern bool         store_fixup( operand_idx index );
 

@@ -47,14 +47,14 @@ enum changes {
 
 #define USCORE "_"
 
-static char *AsmMangler( struct asm_sym *sym )
-/********************************************/
+static char *AsmMangler( asm_sym *sym )
+/*************************************/
 {
     return( AsmStrDup( sym->name ) );
 }
 
-static char *UCaseMangler( struct asm_sym *sym )
-/**********************************************/
+static char *UCaseMangler( asm_sym *sym )
+/***************************************/
 {
     char        *name;
 
@@ -62,8 +62,8 @@ static char *UCaseMangler( struct asm_sym *sym )
     return( strupr( name ) );
 }
 
-static char *UScoreMangler( struct asm_sym *sym )
-/***********************************************/
+static char *UScoreMangler( asm_sym *sym )
+/****************************************/
 {
     char        *name;
 
@@ -73,8 +73,8 @@ static char *UScoreMangler( struct asm_sym *sym )
     return( name );
 }
 
-static char *StdUScoreMangler( struct asm_sym *sym )
-/**************************************************/
+static char *StdUScoreMangler( asm_sym *sym )
+/*******************************************/
 {
     if( !Options.mangle_stdcall )
         return( AsmMangler( sym ) );
@@ -96,8 +96,8 @@ static char *StdUScoreMangler( struct asm_sym *sym )
     }
 }
 
-static char *WatcomCMangler( struct asm_sym *sym )
-/************************************************/
+static char *WatcomCMangler( asm_sym *sym )
+/*****************************************/
 {
     char                *name;
     char                *ptr = sym->name;
@@ -136,8 +136,8 @@ static char *WatcomCMangler( struct asm_sym *sym )
     return( name );
 }
 
-static char *CMangler( struct asm_sym *sym )
-/******************************************/
+static char *CMangler( asm_sym *sym )
+/***********************************/
 {
     return( UScoreMangler( sym ) );
 }
@@ -160,8 +160,8 @@ static mangle_func GetMangler( const char *mangle_type )
     return( mangler );
 }
 
-char *Mangle( struct asm_sym *sym )
-/*********************************/
+char *Mangle( asm_sym *sym )
+/**************************/
 {
     mangle_func mangler;
 
@@ -196,8 +196,8 @@ char *Mangle( struct asm_sym *sym )
     return( mangler( sym ) );
 }
 
-void SetMangler( struct asm_sym *sym, const char *mangle_type, int langtype )
-/***************************************************************************/
+void SetMangler( asm_sym *sym, const char *mangle_type, int langtype )
+/********************************************************************/
 {
     mangle_func mangler;
 

@@ -79,8 +79,8 @@ void add_frame( void )
 
 #endif
 
-asmfixup *AddFixup( struct asm_sym *sym, fixup_types fixup_type, fixup_options fixup_option )
-/********************************************************************************************
+asmfixup *AddFixup( asm_sym *sym, fixup_types fixup_type, fixup_options fixup_option )
+/*************************************************************************************
  * put the correct target offset into the link list when forward reference of
  * relocatable is resolved;
  */
@@ -155,8 +155,8 @@ static void PatchCodeBuffer( asmfixup *fixup, unsigned size )
 
 #endif
 
-static bool DoPatch( struct asm_sym *sym, asmfixup *fixup )
-/*********************************************************/
+static bool DoPatch( asm_sym *sym, asmfixup *fixup )
+/**************************************************/
 {
     long                disp;
     long                max_disp;
@@ -271,8 +271,8 @@ static bool DoPatch( struct asm_sym *sym, asmfixup *fixup )
     return( RC_OK );
 }
 
-bool BackPatch( struct asm_sym *sym )
-/************************************
+bool BackPatch( asm_sym *sym )
+/*****************************
  * patching for forward reference labels in Jmp/Call instructions;
  * call only when a new label appears;
  */

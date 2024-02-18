@@ -44,8 +44,8 @@ bool ptr_operator( memtype mem_type, bool fix_mem_type );
 
 #if defined( _STANDALONE_ )
 
-extern void             check_assume( struct asm_sym *sym, prefix_reg default_reg );
-extern void             find_frame( struct asm_sym *sym );
+extern void             check_assume( asm_sym *sym, prefix_reg default_reg );
+extern void             find_frame( asm_sym *sym );
 
 static int getJumpNegation( asm_token tok, char *buffer )
 /*******************************************************/
@@ -199,13 +199,13 @@ bool jmp( token_buffer *tokbuf, expr_list *opndx, int *flags )
   determine the displacement of jmp;
 */
 {
-    int_32              addr;
-    fixup_types         fixup_type;
-    fixup_options       fixup_option;
-    enum sym_state      state;
-    struct asm_sym      *sym;
+    int_32          addr;
+    fixup_types     fixup_type;
+    fixup_options   fixup_option;
+    enum sym_state  state;
+    asm_sym         *sym;
 #if defined( _STANDALONE_ )
-    dir_node            *seg;
+    dir_node        *seg;
 #endif
 
 #if !defined( _STANDALONE_ )

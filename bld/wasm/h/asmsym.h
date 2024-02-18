@@ -101,7 +101,7 @@ typedef struct asm_sym {
 
 extern asm_sym      *AsmLookup( const char *name );
 extern asm_sym      *AsmGetSymbol( const char *name );
-extern void         FreeASym( struct asm_sym *sym );
+extern void         FreeASym( asm_sym *sym );
 
 #if defined( _STANDALONE_ )
 

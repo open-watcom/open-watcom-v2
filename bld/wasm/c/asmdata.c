@@ -771,13 +771,13 @@ bool data_init( token_buffer *tokbuf, token_idx sym_loc, token_idx initializer_l
  * parse data initialization assembly line;
  */
 {
-    unsigned            no_of_bytes;
-    memtype             mem_type;
-    struct asm_sym      *sym = NULL;
-    struct asm_sym      *struct_sym = NULL;
+    unsigned        no_of_bytes;
+    memtype         mem_type;
+    asm_sym         *sym = NULL;
+    asm_sym         *struct_sym = NULL;
 #if defined( _STANDALONE_ )
-    uint                old_offset = 0;
-    bool                label_dir = false;
+    uint            old_offset = 0;
+    bool            label_dir = false;
 
     struct_field = false;
     first_init = true;
