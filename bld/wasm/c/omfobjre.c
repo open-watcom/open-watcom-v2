@@ -83,7 +83,7 @@ void ObjKillRec( obj_rec *objr )
             fixuprec    *cur;
             fixuprec    *next;
 
-            cur = objr->d.fixupp.fixup;
+            cur = objr->u.fixupp.fixup;
             while( cur != NULL ) {
                 next = cur->next;
                 FixKill( cur );
@@ -96,7 +96,7 @@ void ObjKillRec( obj_rec *objr )
         {
             linnum_data *lines;
 
-            lines = objr->d.linnum.lines;
+            lines = objr->u.linnum.lines;
             if( lines != NULL ) {
                 AsmFree( lines );
             }
@@ -104,9 +104,9 @@ void ObjKillRec( obj_rec *objr )
         break;
     case CMD_PUBDEF:
     case CMD_STATIC_PUBDEF:
-        if( objr->d.pubdef.free_pubs ) {
-/**/        myassert( objr->d.pubdef.pubs != NULL );
-            AsmFree( objr->d.pubdef.pubs );
+        if( objr->u.pubdef.free_pubs ) {
+/**/        myassert( objr->u.pubdef.pubs != NULL );
+            AsmFree( objr->u.pubdef.pubs );
         }
         break;
     }

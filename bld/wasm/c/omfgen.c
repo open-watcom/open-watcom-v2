@@ -100,8 +100,8 @@ static int writeComent( obj_rec *objr )
 /**/myassert( objr != NULL );
 /**/myassert( objr->data != NULL );
     ObjWBegRec( CMD_COMENT );
-    ObjWrite8( objr->d.coment.attr );
-    ObjWrite8( objr->d.coment.class );
+    ObjWrite8( objr->u.coment.attr );
+    ObjWrite8( objr->u.coment.class );
     save = ObjRTell( objr );
     len = ObjRemain( objr );
     ptr = ObjGet( objr, len );
@@ -119,13 +119,13 @@ static int writeSegdef( obj_rec *objr )
 
 /**/myassert( objr != NULL );
 /**/myassert( objr->command == CMD_SEGDEF );
-    is32 = objr->d.segdef.use_32 != 0;
+    is32 = objr->u.segdef.use_32 != 0;
     ObjWBegRec( is32 ? CMD_SEGD32 : CMD_SEGDEF );
-    acbp = objr->d.segdef.combine << 2;
+    acbp = objr->u.segdef.combine << 2;
     if( is32 ) {
         acbp |= 1;
     }
-    align = objr->d.segdef.align;
+    align = objr->u.segdef.align;
     switch( align ) {
     case SEGDEF_ALIGN_ABS:      acbp |= ALIGN_ABS << 5;     break;
     case SEGDEF_ALIGN_BYTE:     acbp |= ALIGN_BYTE << 5;    break;
@@ -139,7 +139,7 @@ static int writeSegdef( obj_rec *objr )
     default:
 /**/    never_reach();
     }
-    if( !is32 && objr->d.segdef.seg_length == 0x10000 ) {
+    if( !is32 && objr->u.segdef.seg_length == 0x10000 ) {
         acbp |= 0x02;   /* BIG bit */ /* FIXME no support for 2**32 */
     }
     ObjWrite8( acbp );
@@ -147,17 +147,17 @@ static int writeSegdef( obj_rec *objr )
         // absolut segment has frame=word and offset=byte
         // it isn't fixupp physical reference
         // and don't depend on segment size (16/32bit)
-        ObjWrite16( objr->d.segdef.abs.frame );
-        ObjWrite8( (uint_8)objr->d.segdef.abs.offset );
+        ObjWrite16( objr->u.segdef.abs.frame );
+        ObjWrite8( (uint_8)objr->u.segdef.abs.offset );
     }
     if( is32 ) {
-        ObjWrite32( objr->d.segdef.seg_length );
+        ObjWrite32( objr->u.segdef.seg_length );
     } else {
-        ObjWrite16( (uint_16)objr->d.segdef.seg_length );
+        ObjWrite16( (uint_16)objr->u.segdef.seg_length );
     }
-    ObjWriteIndex( objr->d.segdef.seg_name_idx );
-    ObjWriteIndex( objr->d.segdef.class_name_idx );
-    ObjWriteIndex( objr->d.segdef.ovl_name_idx );
+    ObjWriteIndex( objr->u.segdef.seg_name_idx );
+    ObjWriteIndex( objr->u.segdef.class_name_idx );
+    ObjWriteIndex( objr->u.segdef.ovl_name_idx );
     ObjWEndRec();
     return( 0 );
 }
@@ -174,7 +174,7 @@ static int writeFixup( obj_rec *objr )
 
 /**/myassert( objr != NULL );
 /**/myassert( objr->command == CMD_FIXUPP );
-    walk = objr->d.fixupp.fixup;
+    walk = objr->u.fixupp.fixup;
     if( walk == NULL ) {
             /* huh? this shouldn't really happen... */
         return( 0 );
@@ -212,11 +212,11 @@ static int writeLedata( obj_rec *objr )
     LifixInit( &lifList );
     is32 = objr->is_32;
     ObjWBegRec( is32 ? CMD_LEDA32 : CMD_LEDATA );
-    ObjWriteIndex( objr->d.ledata.idx );
+    ObjWriteIndex( objr->u.ledata.idx );
     if( is32 ) {
-        ObjWrite32( objr->d.ledata.offset );
+        ObjWrite32( objr->u.ledata.offset );
     } else {
-        ObjWrite16( (uint_16)objr->d.ledata.offset );
+        ObjWrite16( (uint_16)objr->u.ledata.offset );
     }
     save = ObjRTell( objr );
     len = ObjRemain( objr );
@@ -273,11 +273,11 @@ static int writeLidata( obj_rec *objr )
     save = ObjRTell( objr );
     is32 = objr->is_32;
     ObjWBegRec( is32 ? CMD_LIDA32 : CMD_LIDATA );
-    ObjWriteIndex( objr->d.lidata.idx );
+    ObjWriteIndex( objr->u.lidata.idx );
     if( is32 ) {
-        ObjWrite32( objr->d.lidata.offset );
+        ObjWrite32( objr->u.lidata.offset );
     } else {
-        ObjWrite16( (uint_16)objr->d.lidata.offset );
+        ObjWrite16( (uint_16)objr->u.lidata.offset );
     }
     /* ok, already in our format */
     len = ObjRemain( objr );
@@ -309,14 +309,14 @@ static int writeModend( obj_rec *objr )
 /**/myassert( objr->command == CMD_MODEND );
     is32 = objr->is_32;
     len = 1;
-    buf[0] = objr->d.modend.main_module != 0 ? 0x80 : 0;
-    if( objr->d.modend.start_addrs ) {
+    buf[0] = objr->u.modend.main_module != 0 ? 0x80 : 0;
+    if( objr->u.modend.start_addrs ) {
         buf[0] |= 0x40;
-        is_log = objr->d.modend.is_logical != 0;
+        is_log = objr->u.modend.is_logical != 0;
         if( is_log ) {
             buf[0] |= 1;
         }
-        len += FixGenRef( &objr->d.modend.ref, is_log, buf + 1, is32 ? FIX_GEN_MS386 : FIX_GEN_INTEL );
+        len += FixGenRef( &objr->u.modend.ref, is_log, buf + 1, is32 ? FIX_GEN_MS386 : FIX_GEN_INTEL );
     }
     if( buf[0] == 0 ) {
         is32 = 0;       /* no need for MODE32 in this case */
@@ -333,12 +333,12 @@ static void writeBase( obj_rec *objr )
     uint_16 grp_idx;
     uint_16 seg_idx;
 
-    grp_idx = objr->d.base.grp_idx;
-    seg_idx = objr->d.base.seg_idx;
+    grp_idx = objr->u.base.grp_idx;
+    seg_idx = objr->u.base.seg_idx;
     ObjWriteIndex( grp_idx );
     ObjWriteIndex( seg_idx );
     if( grp_idx == 0 && seg_idx == 0 ) {
-        ObjWrite16( objr->d.base.frame );
+        ObjWrite16( objr->u.base.frame );
     }
 }
 
@@ -357,19 +357,19 @@ static int writeComdat( obj_rec *objr )
         objr->command |= 1;
     }
     ObjWBegRec( objr->command );
-    ObjWrite8( objr->d.comdat.flags );
-    ObjWrite8( objr->d.comdat.attributes );
-    ObjWrite8( objr->d.comdat.align );
+    ObjWrite8( objr->u.comdat.flags );
+    ObjWrite8( objr->u.comdat.attributes );
+    ObjWrite8( objr->u.comdat.align );
     if( is32 ) {
-        ObjWrite32( objr->d.comdat.offset );
+        ObjWrite32( objr->u.comdat.offset );
     } else {
-        ObjWrite16( (uint_16)objr->d.comdat.offset );
+        ObjWrite16( (uint_16)objr->u.comdat.offset );
     }
-    ObjWriteIndex( objr->d.comdat.type_idx );
-    if( ( objr->d.comdat.attributes & COMDAT_ALLOC_MASK ) == COMDAT_EXPLICIT ) {
+    ObjWriteIndex( objr->u.comdat.type_idx );
+    if( ( objr->u.comdat.attributes & COMDAT_ALLOC_MASK ) == COMDAT_EXPLICIT ) {
         writeBase( objr );
     }
-    ObjWriteIndex( objr->d.comdat.public_name_idx );
+    ObjWriteIndex( objr->u.comdat.public_name_idx );
     /* record is already in ms omf format */
     len = ObjRemain( objr );
     ptr = ObjGet( objr, len );
@@ -396,9 +396,9 @@ static int writePubdef( obj_rec *objr )
     }
     ObjWBegRec( objr->command );
     writeBase( objr );
-    pubdata = objr->d.pubdef.pubs;
+    pubdata = objr->u.pubdef.pubs;
     if( pubdata != NULL ) {
-        pubstop = pubdata + objr->d.pubdef.num_pubs;
+        pubstop = pubdata + objr->u.pubdef.num_pubs;
         while( pubdata < pubstop ) {
             name = NameGet( pubdata->name );
             name_len = strlen( name );
@@ -427,8 +427,8 @@ static void writeLinnumData( obj_rec *objr )
 
 /**/myassert( objr != NULL );
     is32 = objr->is_32;
-    cur = objr->d.linnum.lines;
-    stop = cur + objr->d.linnum.num_lines;
+    cur = objr->u.linnum.lines;
+    stop = cur + objr->u.linnum.num_lines;
     while( cur < stop ) {
         ObjWrite16( cur->number );
         if( is32 ) {
@@ -463,8 +463,8 @@ static int writeLinsym( obj_rec *objr )
 /**/myassert( objr->command == CMD_LINSYM );
     is32 = objr->is_32;
     ObjWBegRec( is32 ? CMD_LINS32 : CMD_LINSYM );
-    ObjWrite8( objr->d.linsym.d.linsym.flags );
-    ObjWriteIndex( objr->d.linsym.d.linsym.public_name_idx );
+    ObjWrite8( objr->u.linsym.flags );
+    ObjWriteIndex( objr->u.linsym.public_name_idx );
     writeLinnumData( objr );
     ObjWEndRec();
     return( 0 );

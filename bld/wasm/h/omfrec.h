@@ -57,41 +57,41 @@ typedef union {
 } logphys;
 
 
-struct coment_info {
+typedef struct coment_info {
     uint_8  attr;           /* attribute field from coment record       */
     uint_8  class;          /* class field from coment record           */
-};
+} coment_info;
 /*
     A COMENT record is created by filling in the above fields, and attaching
     any appropriate data with the Obj...() functions below.
 */
 
 
-struct modend_info {
+typedef struct modend_info {
     uint_8  main_module :1; /* module is a main module                  */
     uint_8  start_addrs :1; /* module has start address                 */
     uint_8  is_logical  :1; /* is logical or physical reference         */
     logphys ref;            /* a logical or physical reference          */
-};
+} modend_info;
 /*
     A MODEND is described completely by the above information; no data
     should be attached to a MODEND.
 */
 
 
-struct lnames_info {
+typedef struct lnames_info {
     uint_16 first_idx;      /* index of first name in this record       */
     uint_16 num_names;      /* number of names in this record           */
-};
+} lnames_info;
 /*
     LNAMES, EXTDEFs, and COMDEFs all use this structure.  The actual
     LNAMES/etc are in the data attached to the record.
 */
 
 
-struct grpdef_info {
+typedef struct grpdef_info {
     uint_16 idx;            /* index of this grpdef record              */
-};
+} grpdef_info;
 /*
     The data that defines the GRPDEF should be attached to this record.
 */
@@ -108,7 +108,7 @@ enum segdef_align_values {
     /* if more than 16 types then adjust bitfield width in segdef_info */
 };
 
-struct segdef_info {
+typedef struct segdef_info {
     uint_16 idx;            /* index for this segment                   */
     uint_8  align       :4; /* align field (enum segdef_align_values)   */
     uint_8  combine     :4; /* combine field (values in pcobj.h)        */
@@ -120,17 +120,17 @@ struct segdef_info {
     uint_16 seg_name_idx;   /* name index of this segment               */
     uint_16 class_name_idx; /* class name index of this segment         */
     uint_16 ovl_name_idx;   /* overlay name index of this segment       */
-};
+} segdef_info;
 /*
     All data necessary for a SEGDEF is defined in the above structure.  No
     data should be attached to the record.
 */
 
 
-struct ledata_info {
+typedef struct ledata_info {
     uint_16     idx;        /* index of segment the data belongs to     */
     uint_32     offset;     /* offset into segment of start of data     */
-};
+} ledata_info;
 /*
     LEDATAs and LIDATAs both use this structure.  The data that comprises the
     record should be attached.
@@ -148,7 +148,7 @@ typedef struct base_info {
 */
 
 
-struct comdat_info {
+typedef struct comdat_info {
     base_info   base;
     uint_8      flags;
     uint_8      attributes;
@@ -156,7 +156,7 @@ struct comdat_info {
     uint_32     offset;
     uint_16     type_idx;
     uint_16     public_name_idx;
-};
+} comdat_info;
 
 
 /*
@@ -212,10 +212,10 @@ enum fixgen_types {
  */
 typedef struct obj_rec      obj_rec;
 
-struct fixup_info {
+typedef struct fixup_info {
     obj_rec     *data_rec;  /* ptr to the data record this belongs to   */
     fixuprec    *fixup;     /* linked list of processed fixups          */
-};
+} fixup_info;
 /*
     No data should be attached to these records; all information is in
     the linked list of fixup records.
@@ -226,17 +226,18 @@ typedef struct linnum_data {
     uint_32 offset;         /* offset into segment                      */
 } linnum_data;
 
-struct linnum_info {
-    union {
-        base_info   base;       /* base information                         */
-        struct {
-            uint_8  flags;      /* for LINSYM records                       */
-            uint_16 public_name_idx; /* for LINSYM records                  */
-        } linsym;
-    } d;
+typedef struct linnum_info {
+    base_info       base;       /* base information                         */
     uint_16         num_lines;  /* number of elements in following array    */
     linnum_data     *lines;     /* array of size num_lines                  */
-};
+} linnum_info;
+
+typedef struct linsym_info {
+    uint_8          flags;      /* for LINSYM records                       */
+    uint_16         public_name_idx; /* for LINSYM records                  */
+    uint_16         num_lines;  /* number of elements in following array    */
+    linnum_data     *lines;     /* array of size num_lines                  */
+} linsym_info;
 /*
     No data should be attached to these records.  All necessary information
     is in the lines array.
@@ -251,38 +252,38 @@ typedef struct pubdef_data {
     } type;
 } pubdef_data;
 
-struct pubdef_info {
+typedef struct pubdef_info {
     base_info   base;           /* base information                         */
     uint_16     num_pubs;       /* number of publics in following array     */
     pubdef_data *pubs;          /* array of size num_pubs                   */
     uint_8      free_pubs : 1;  /* can we AsmFree the pubs array?           */
     uint_8      processed : 1;  /* for use by dbg_generator (init'd to 0)   */
-};
+} pubdef_info;
 /*
  * (This format for PUBDEFs is probably only useful for OMF output.)
  * No data should be attached to this record.
  * Everything is described by the pubs array.
  */
 
-union objrec_info {
-    struct coment_info  coment;
-    struct modend_info  modend;
-    struct lnames_info  lnames;
-    struct lnames_info  llnames;
-    struct lnames_info  extdef;
-    struct lnames_info  comdef;
-    struct lnames_info  cextdef;
-    struct grpdef_info  grpdef;
-    struct segdef_info  segdef;
-    struct ledata_info  ledata;
-    struct ledata_info  lidata;
-    struct base_info    base;
-    struct fixup_info   fixupp;
-    struct linnum_info  linnum;
-    struct linnum_info  linsym;
-    struct pubdef_info  pubdef;
-    struct comdat_info  comdat;
-};
+typedef union objrec_info {
+    coment_info  coment;
+    modend_info  modend;
+    lnames_info  lnames;
+    lnames_info  llnames;
+    lnames_info  extdef;
+    lnames_info  comdef;
+    lnames_info  cextdef;
+    grpdef_info  grpdef;
+    segdef_info  segdef;
+    ledata_info  ledata;
+    ledata_info  lidata;
+    base_info    base;
+    fixup_info   fixupp;
+    linnum_info  linnum;
+    linsym_info  linsym;
+    pubdef_info  pubdef;
+    comdat_info  comdat;
+} objrec_info;
 
 typedef struct obj_rec {
     obj_rec     *next;
@@ -292,7 +293,7 @@ typedef struct obj_rec {
     uint_8      command;    /* the command field for this record            */
     uint_8      is_32   : 1;/* is this a Microsoft 32bit record             */
     uint_8      free_data:1;/* should we AsmFree( data )??       (PRIVATE)  */
-    union objrec_info d;    /* data depending on record type                */
+    objrec_info u;          /* data depending on record type                */
 } obj_rec;
 
 typedef struct lifix {

@@ -125,20 +125,20 @@ bool GetPublicData( void )
         cmd = ( dir->sym.public ) ? CMD_PUBDEF : CMD_STATIC_PUBDEF;
         objr = ObjNewRec( cmd );
         objr->is_32 = 0;
-        objr->d.pubdef.free_pubs = 1;
-        objr->d.pubdef.num_pubs = 0;
-        objr->d.pubdef.base.frame = 0;
-        objr->d.pubdef.base.grp_idx = 0;
-        objr->d.pubdef.base.seg_idx = 0;
+        objr->u.pubdef.free_pubs = 1;
+        objr->u.pubdef.num_pubs = 0;
+        objr->u.pubdef.base.frame = 0;
+        objr->u.pubdef.base.grp_idx = 0;
+        objr->u.pubdef.base.seg_idx = 0;
         curr_seg = (dir_node *)dir->sym.segment;
         if( curr_seg != NULL ) {
-            objr->d.pubdef.base.seg_idx = curr_seg->e.seginfo->idx;
+            objr->u.pubdef.base.seg_idx = curr_seg->e.seginfo->idx;
             if( curr_seg->e.seginfo->group != NULL ) {
-                objr->d.pubdef.base.grp_idx = ((dir_node *)curr_seg->e.seginfo->group)->e.grpinfo->idx;
+                objr->u.pubdef.base.grp_idx = ((dir_node *)curr_seg->e.seginfo->group)->e.grpinfo->idx;
             }
         }
         for( curr = start; curr != NULL; curr = curr->next ) {
-            if( objr->d.pubdef.num_pubs > MAX_PUB_SIZE )
+            if( objr->u.pubdef.num_pubs > MAX_PUB_SIZE )
                 break;
             dir = (dir_node *)curr->data;
             if( (dir_node *)dir->sym.segment != curr_seg )
@@ -161,13 +161,13 @@ bool GetPublicData( void )
             if( dir->sym.offset > 0xffffUL ) {
                 objr->is_32 = 1;
             }
-            objr->d.pubdef.num_pubs++;
+            objr->u.pubdef.num_pubs++;
         }
         last = curr;
 
-        d = AsmAlloc( objr->d.pubdef.num_pubs * sizeof( struct pubdef_data ) );
-        objr->d.pubdef.pubs = d;
-        NameArray = AsmAlloc( objr->d.pubdef.num_pubs * sizeof( char * ) );
+        d = AsmAlloc( objr->u.pubdef.num_pubs * sizeof( struct pubdef_data ) );
+        objr->u.pubdef.pubs = d;
+        NameArray = AsmAlloc( objr->u.pubdef.num_pubs * sizeof( char * ) );
         for( i = 0, curr = start; curr != last; curr = curr->next, ++i ) {
             dir = (dir_node *)curr->data;
             NameArray[i] = Mangle( &dir->sym );
@@ -185,9 +185,9 @@ bool GetPublicData( void )
             d->type.idx = 0;
             ++d;
         }
-        d = objr->d.pubdef.pubs;
+        d = objr->u.pubdef.pubs;
         write_record( objr, true );
-        for( i = 0; i < objr->d.pubdef.num_pubs; i++ ) {
+        for( i = 0; i < objr->u.pubdef.num_pubs; i++ ) {
             AsmFree( NameArray[i] );
         }
         AsmFree( NameArray );
@@ -270,16 +270,16 @@ bool GetLnameData( obj_rec *objr )
         dir = (dir_node *)curr->data;
         len = strlen( dir->sym.name );
         ObjPutName( objr, dir->sym.name, (uint_8)len );
-        objr->d.lnames.num_names++;
+        objr->u.lnames.num_names++;
         switch( dir->sym.state ) {
         case SYM_GRP:
-            dir->e.grpinfo->idx = objr->d.lnames.num_names;
+            dir->e.grpinfo->idx = objr->u.lnames.num_names;
             break;
         case SYM_SEG:
-            dir->e.seginfo->idx = objr->d.lnames.num_names;
+            dir->e.seginfo->idx = objr->u.lnames.num_names;
             break;
         case SYM_CLASS_LNAME:
-            dir->e.lnameinfo->idx = objr->d.lnames.num_names;
+            dir->e.lnameinfo->idx = objr->u.lnames.num_names;
             break;
         }
     }

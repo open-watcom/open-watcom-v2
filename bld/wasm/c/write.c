@@ -204,8 +204,8 @@ void OutSelect( bool starts )
 
         if( (Parse_Pass > PASS_1) && !PhaseError ) {
             objr = ObjNewRec( CMD_COMENT );
-            objr->d.coment.attr = 0x80;
-            objr->d.coment.class = CMT_DISASM_DIRECTIVE;
+            objr->u.coment.attr = 0x80;
+            objr->u.coment.class = CMT_DISASM_DIRECTIVE;
 
             curr = GetCurrAddr();
             if( (Globals.sel_start > 0xffffUL) || (curr > 0xffffUL) ) {
@@ -235,8 +235,8 @@ static void write_end_of_pass1( void )
     obj_rec     *objr;
 
     objr = ObjNewRec( CMD_COMENT );
-    objr->d.coment.attr = 0x00;
-    objr->d.coment.class = CMT_MS_END_PASS_1;
+    objr->u.coment.attr = 0x00;
+    objr->u.coment.class = CMT_MS_END_PASS_1;
     ObjAttachData( objr, (uint_8 *)"\x001", 1 );
     write_record( objr, true );
 }
@@ -247,8 +247,8 @@ static void write_dosseg( void )
     obj_rec     *objr;
 
     objr = ObjNewRec( CMD_COMENT );
-    objr->d.coment.attr = 0x80;
-    objr->d.coment.class = CMT_DOSSEG;
+    objr->u.coment.attr = 0x80;
+    objr->u.coment.class = CMT_DOSSEG;
     ObjAttachData( objr, (uint_8 *)"", 0 );
     write_record( objr, true );
 }
@@ -267,8 +267,8 @@ static void write_lib( void )
         if( len > 255 )
             len = 255;
         objr = ObjNewRec( CMD_COMENT );
-        objr->d.coment.attr = 0x80;
-        objr->d.coment.class = CMT_DEFAULT_LIBRARY;
+        objr->u.coment.attr = 0x80;
+        objr->u.coment.class = CMT_DEFAULT_LIBRARY;
         ObjAttachData( objr, (uint_8 *)name, (uint_16)len );
         write_record( objr, true );
     }
@@ -285,8 +285,8 @@ static void write_one_export( dir_node *dir )
     info = dir->e.procinfo;
     if( info->export ) {
         objr = ObjNewRec( CMD_COMENT );
-        objr->d.coment.attr = 0x00;
-        objr->d.coment.class = CMT_DLL_ENTRY;
+        objr->u.coment.attr = 0x00;
+        objr->u.coment.class = CMT_DLL_ENTRY;
 
         name = Mangle( &dir->sym );
         len = strlen( name );
@@ -331,7 +331,7 @@ static void write_grp( void )
         objr = ObjNewRec( CMD_GRPDEF );
         /**/myassert( objr != NULL );
         grp_idx++;
-        objr->d.grpdef.idx = grp_idx;
+        objr->u.grpdef.idx = grp_idx;
         /* we might need up to 3 bytes for each seg in dgroup and 2 byte for
            the group name index */
         ObjAllocData( objr, 2 + 3 * grp->e.grpinfo->numseg );
@@ -374,23 +374,23 @@ static void write_seg( void )
         seg_idx++;
         objr = ObjNewRec( CMD_SEGDEF );
         objr->is_32 = 1;
-        objr->d.segdef.ovl_name_idx = 1;
-        objr->d.segdef.seg_name_idx = dir->e.seginfo->idx;
-        objr->d.segdef.class_name_idx = ((dir_node *)dir->e.seginfo->class_name)->e.lnameinfo->idx;
-        objr->d.segdef.seg_length = dir->e.seginfo->length;
-        objr->d.segdef.align = dir->e.seginfo->align;
-        objr->d.segdef.combine = dir->e.seginfo->combine;
-        objr->d.segdef.use_32 = dir->e.seginfo->use32;
-        objr->d.segdef.access_valid = 0;
-        objr->d.segdef.abs.frame = dir->e.seginfo->abs_frame;
-        objr->d.segdef.abs.offset = 0;
-        objr->d.segdef.idx = seg_idx;
+        objr->u.segdef.ovl_name_idx = 1;
+        objr->u.segdef.seg_name_idx = dir->e.seginfo->idx;
+        objr->u.segdef.class_name_idx = ((dir_node *)dir->e.seginfo->class_name)->e.lnameinfo->idx;
+        objr->u.segdef.seg_length = dir->e.seginfo->length;
+        objr->u.segdef.align = dir->e.seginfo->align;
+        objr->u.segdef.combine = dir->e.seginfo->combine;
+        objr->u.segdef.use_32 = dir->e.seginfo->use32;
+        objr->u.segdef.access_valid = 0;
+        objr->u.segdef.abs.frame = dir->e.seginfo->abs_frame;
+        objr->u.segdef.abs.offset = 0;
+        objr->u.segdef.idx = seg_idx;
         write_record( objr, false );
 
         if( dir->e.seginfo->iscode == SEGTYPE_ISCODE ) {
             objr = ObjNewRec( CMD_COMENT );
-            objr->d.coment.attr = CMT_TNP;
-            objr->d.coment.class = CMT_LINKER_DIRECTIVE;
+            objr->u.coment.attr = CMT_TNP;
+            objr->u.coment.class = CMT_LINKER_DIRECTIVE;
             ObjAllocData( objr, 3  );
             ObjPut8( objr, LDIR_OPT_FAR_CALLS );
             ObjPutIndex( objr, seg_idx );
@@ -407,8 +407,8 @@ static void write_lnames( void )
     obj_rec     *objr;
 
     objr = ObjNewRec( CMD_LNAMES );
-    objr->d.lnames.first_idx = 1;
-    objr->d.lnames.num_names = 0;
+    objr->u.lnames.first_idx = 1;
+    objr->u.lnames.num_names = 0;
     if( GetLnameData( objr ) ) {
         write_record( objr, true );
     } else {
@@ -526,8 +526,8 @@ static void write_external( void )
         if( total_size == 0 )
             continue;
         objr = ObjNewRec( ( first->e.extinfo->comm ) ? CMD_COMDEF : CMD_EXTDEF );
-        objr->d.extdef.first_idx = 0;
-        objr->d.extdef.num_names = 0;
+        objr->u.extdef.first_idx = 0;
+        objr->u.extdef.num_names = 0;
         ObjAllocData( objr, (uint_16)total_size );
         for( curr = first;
           ( curr != last ) && ( curr->e.extinfo->comm == first->e.extinfo->comm );
@@ -535,7 +535,7 @@ static void write_external( void )
             if( !curr->sym.referenced )
                 continue;
             ext_idx++;
-            objr->d.extdef.num_names++;
+            objr->u.extdef.num_names++;
             curr->e.extinfo->idx = ext_idx;
             name = Mangle( &curr->sym );
             len = strlen( name );
@@ -584,7 +584,7 @@ static void write_external( void )
                 }
             }
         }
-        if( objr->d.extdef.num_names ) {
+        if( objr->u.extdef.num_names ) {
             write_record( objr, true );
         } else {
             ObjKillRec( objr );
@@ -697,16 +697,16 @@ static bool write_modend( void )
 
     objr = ObjNewRec( CMD_MODEND );
     if( ModendFixup == NULL ) {
-        objr->d.modend.start_addrs = 0;
-        objr->d.modend.is_logical = 0;
-        objr->d.modend.main_module = 0;
+        objr->u.modend.start_addrs = 0;
+        objr->u.modend.is_logical = 0;
+        objr->u.modend.main_module = 0;
     } else {
-        objr->d.modend.start_addrs = 1;
-        objr->d.modend.is_logical = 1;
-        objr->d.modend.main_module = 1;
+        objr->u.modend.start_addrs = 1;
+        objr->u.modend.is_logical = 1;
+        objr->u.modend.main_module = 1;
         fix = CreateFixupRecModend( ModendFixup );
         if( fix != NULL ) {
-            objr->d.modend.ref.log = fix->lr;
+            objr->u.modend.ref.log = fix->lr;
         }
     }
     write_record( objr, true );
@@ -729,8 +729,8 @@ static bool write_autodep( void )
         if( len > 255 )
             len = 255;
         objr = ObjNewRec( CMD_COMENT );
-        objr->d.coment.attr = 0x80;
-        objr->d.coment.class = CMT_DEPENDENCY;
+        objr->u.coment.attr = 0x80;
+        objr->u.coment.class = CMT_DEPENDENCY;
         MPUT_LE_32( buff, _timet2dos( curr->mtime ) );
         buff[4] = (unsigned char)len;
         memcpy( buff + 4 + 1, curr->fullname, len );
@@ -739,8 +739,8 @@ static bool write_autodep( void )
     }
     // one NULL dependency record must be on the end
     objr = ObjNewRec( CMD_COMENT );
-    objr->d.coment.attr = 0x80;
-    objr->d.coment.class = CMT_DEPENDENCY;
+    objr->u.coment.attr = 0x80;
+    objr->u.coment.class = CMT_DEPENDENCY;
     ObjAttachData( objr, (uint_8 *)"", 0 );
     write_record( objr, true );
     return( RC_OK );
@@ -785,15 +785,15 @@ static void write_linnum( void )
         } else {
             objr = ObjNewRec( CMD_LINNUM );
             objr->is_32 = need_32;
-            objr->d.linnum.num_lines = (uint_16)count;
-            objr->d.linnum.lines = ldata;
-            objr->d.linnum.d.base.seg_idx = CurrSeg->seg->e.seginfo->idx;
+            objr->u.linnum.num_lines = (uint_16)count;
+            objr->u.linnum.lines = ldata;
+            objr->u.linnum.base.seg_idx = CurrSeg->seg->e.seginfo->idx;
             if( CurrSeg->seg->e.seginfo->group == NULL ) {
-                objr->d.linnum.d.base.grp_idx = 0;
+                objr->u.linnum.base.grp_idx = 0;
             } else {
-                objr->d.linnum.d.base.grp_idx = ((dir_node *)CurrSeg->seg->e.seginfo->group)->e.grpinfo->idx;
+                objr->u.linnum.base.grp_idx = ((dir_node *)CurrSeg->seg->e.seginfo->group)->e.grpinfo->idx;
             }
-            objr->d.linnum.d.base.frame = 0; // fixme ?
+            objr->u.linnum.base.frame = 0; // fixme ?
 
             write_record( objr, true );
         }
@@ -976,7 +976,7 @@ static void check_need_32bit( obj_rec *objr ) {
 
     fixuprec        *fix;
 
-    fix = objr->d.fixupp.fixup;
+    fix = objr->u.fixupp.fixup;
     for( ;; ) {
         if( fix == NULL )
             break;
@@ -1011,9 +1011,9 @@ static void write_ledata( void )
     if( BufSize > 0 ) {
         objr = ObjNewRec( CMD_LEDATA );
         ObjAttachData( objr, AsmCodeBuffer, (uint_16)BufSize );
-        objr->d.ledata.idx = CurrSeg->seg->e.seginfo->idx;
-        objr->d.ledata.offset = CurrSeg->seg->e.seginfo->start_loc;
-        if( objr->d.ledata.offset > 0xffffUL )
+        objr->u.ledata.idx = CurrSeg->seg->e.seginfo->idx;
+        objr->u.ledata.offset = CurrSeg->seg->e.seginfo->start_loc;
+        if( objr->u.ledata.offset > 0xffffUL )
             objr->is_32 = 1;
         write_record( objr, true );
 
@@ -1025,19 +1025,19 @@ static void write_ledata( void )
             if( fl16 != NULL ) {
                 objr = ObjNewRec( CMD_FIXUPP );
                 objr->is_32 = 0;
-                objr->d.fixupp.fixup = fl16;
+                objr->u.fixupp.fixup = fl16;
                 write_record( objr, true );
             }
             if( fl32 != NULL ) {
                 objr = ObjNewRec( CMD_FIXUPP );
                 objr->is_32 = 1;
-                objr->d.fixupp.fixup = fl32;
+                objr->u.fixupp.fixup = fl32;
                 write_record( objr, true );
             }
 #else
             get_fixup_list( CurrSeg->seg->e.seginfo->start_loc, &fl );
             objr = ObjNewRec( CMD_FIXUPP );
-            objr->d.fixupp.fixup = FixupListHead;
+            objr->u.fixupp.fixup = FixupListHead;
             check_need_32bit( objr );
             write_record( objr, true );
 #endif
