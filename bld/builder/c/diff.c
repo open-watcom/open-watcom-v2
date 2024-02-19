@@ -133,8 +133,7 @@ static int          diff_rc = DIFF_NO_DIFFS;
 
 #define BUFSIZE     1025
 
-static char         texta[BUFSIZE];     /* Input line from file1        */
-static char         textb[BUFSIZE];     /* Input line from file2        */
+static char         text[FIL_SIZE][BUFSIZE]; /* Input line from file */
 
 static const char   *cmdusage =
 "usage:\n"
@@ -317,8 +316,8 @@ static void noroom( const char *why )
         printf( "d1 %ld\n", len[FIL_A] );
         printf( "a1 %ld\n", len[FIL_B] );
         fseek( infd[FIL_B], 0, 0 );
-        while( my_fgets( textb, sizeof( textb ), infd[FIL_B] ) != NULL )
-            printf( "%s\n", textb );
+        while( my_fgets( text[FIL_B], sizeof( text[FIL_B] ), infd[FIL_B] ) != NULL )
+            printf( "%s\n", text[FIL_B] );
         exit( DIFF_HAVE_DIFFS );
     } else {
         error( "Out of memory when %s\n", why );
@@ -669,13 +668,13 @@ static int check( const char *fileAname, const char *fileBname )
         if( match[a] == 0 ) {
             /* Unique line in A */
             oldseek[a + OFFSET] = ftell( infd[FIL_A] );
-            getinpline( infd[FIL_A], texta, sizeof( texta ) );
+            getinpline( infd[FIL_A], text[FIL_A], sizeof( text[FIL_A] ) );
             continue;
         }
         while( b < match[a] ) {
             /* Skip over unique lines in B */
             newseek[b + OFFSET] = ftell( infd[FIL_B] );
-            getinpline( infd[FIL_B], textb, sizeof( textb ) );
+            getinpline( infd[FIL_B], text[FIL_B], sizeof( text[FIL_B] ) );
             b++;
         }
 
@@ -689,13 +688,13 @@ static int check( const char *fileAname, const char *fileBname )
         oldseek[a + OFFSET] = ftell( infd[FIL_A] );
         newseek[b + OFFSET] = ftell( infd[FIL_B] );
         //      }
-        getinpline( infd[FIL_A], texta, sizeof( texta ) );
-        getinpline( infd[FIL_B], textb, sizeof( textb ) );
-        if( !streq( texta, textb ) ) {
+        getinpline( infd[FIL_A], text[FIL_A], sizeof( text[FIL_A] ) );
+        getinpline( infd[FIL_B], text[FIL_B], sizeof( text[FIL_B] ) );
+        if( !streq( text[FIL_A], text[FIL_B] ) ) {
 #ifdef DEVBUILD
             fprintf( stderr, "Spurious match:\n" );
-            fprintf( stderr, "line %d in %s, \"%s\"\n", a, fileAname, texta );
-            fprintf( stderr, "line %d in %s, \"%s\"\n", b, fileBname, textb );
+            fprintf( stderr, "line %d in %s, \"%s\"\n", a, fileAname, text[FIL_A] );
+            fprintf( stderr, "line %d in %s, \"%s\"\n", b, fileBname, text[FIL_B] );
 #endif
             match[a] = 0;
             jackpot++;
@@ -704,7 +703,7 @@ static int check( const char *fileAname, const char *fileBname )
     }
     for( ; b <= len[FIL_B]; b++ ) {
         newseek[b + OFFSET] = ftell( infd[FIL_B] );
-        getinpline( infd[FIL_B], textb, sizeof( textb ) );
+        getinpline( infd[FIL_B], text[FIL_B], sizeof( text[FIL_B] ) );
     }
     /*
      * The logical converse to the code up above, for NON-VMS systems, to
@@ -780,15 +779,15 @@ static void fetch( long *seekvec, SLONG start, SLONG end, int which, const char 
         exit( DIFF_NOT_COMPARED );
     } else {
         for( i = first; i <= last; i++ ) {
-            if( my_fgets( texta, sizeof( texta ), infd[which] ) == NULL ) {
+            if( my_fgets( text[which], sizeof( text[which] ), infd[which] ) == NULL ) {
                 internal_error( "** Unexpected end of file\n" );
                 exit( DIFF_NOT_COMPARED );
             }
 #ifdef DEVBUILD
-            printf( "%5d: %s%s\n", i, pfx, texta );
+            printf( "%5d: %s%s\n", i, pfx, text[which] );
 #else
             fputs( ( cflag && ( i < start || i > end ) ) ? "  " : pfx, stdout );
-            fputs( texta, stdout );
+            fputs( text[which], stdout );
             putchar( '\n' );
 #endif
         }
@@ -1132,12 +1131,12 @@ static void input( int which )
 
     lentry = MYALLOC( LINE, lsize + 3, "line" );
     fd = infd[which];
-    while( !getinpline( fd, texta, sizeof( texta ) ) ) {
+    while( !getinpline( fd, text[which], sizeof( text[which] ) ) ) {
         if( ++linect >= lsize ) {
             lsize += 200;
             lentry = MYCOMPACT( LINE, lentry, lsize + 3, "extending line vector" );
         }
-        lentry[linect].hash = hash( texta );
+        lentry[linect].hash = hash( text[which] );
     }
 
     /*
