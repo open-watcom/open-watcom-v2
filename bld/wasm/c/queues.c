@@ -69,8 +69,8 @@ static int QCount( qdesc *q )
  * count the # of entries in the queue, if the retval is -value we have an error
  */
 {
-    unsigned long	count;
-    queuenode   	*node;
+    unsigned long       count;
+    queuenode           *node;
 
     count = 0;
     if( q != NULL ) {
@@ -355,7 +355,7 @@ static void FreeLinnumQueue( void )
     if( LinnumQueue != NULL ) {
         while( LinnumQueue->head != NULL ) {
             node = QDequeue( LinnumQueue );
-            AsmFree( ((line_num_info *)node)->data );
+            AsmFree( node->data );
             AsmFree( node );
         }
         AsmFree( LinnumQueue );
