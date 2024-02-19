@@ -95,7 +95,7 @@ typedef struct asm_sym {
     long            addr;
 #endif
     memtype         mem_type;
-    enum sym_state  state;
+    sym_state       state;
     asmfixup        *fixup;
 } asm_sym;
 

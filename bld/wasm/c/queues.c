@@ -66,7 +66,8 @@ static void QAddItem( qdesc **queue, void *data )
 
 static int QCount( qdesc *q )
 /****************************
- * count the # of entries in the queue, if the retval is -value we have an error
+ * count the # of entries in the queue
+ * if the retval is -1 we have an error
  */
 {
     unsigned long       count;

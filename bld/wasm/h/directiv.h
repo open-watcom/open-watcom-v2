@@ -227,8 +227,8 @@ typedef struct asmline {
 } asmline;
 
 typedef struct asmlines {
-    struct asmline      *head;
-    struct asmline      *tail;
+    asmline             *head;
+    asmline             *tail;
 } asmlines;
 
 typedef struct  fname_list {
@@ -275,16 +275,16 @@ typedef struct {
     unsigned            size;       // size in bytes ( including alignment )
     unsigned short      alignment;
     struct {
-        field_list      *head;
-        field_list      *tail;
-    }                   fields;
+        field_list      *head;      // head of fields list
+        field_list      *tail;      // tail of fields list
+    }                   fields;     // list of fields
 } struct_info;
 
 union entry {
-    seg_info            *seginfo;       // info about segment definition
-    grp_info            *grpinfo;       // info about group definition
-    ext_info            *extinfo;       // info about external definition
-    const_info          *constinfo;     // info about symbolic integer constants
+    seg_info            *seginfo;   // info about segment definition
+    grp_info            *grpinfo;   // info about group definition
+    ext_info            *extinfo;   // info about external definition
+    const_info          *constinfo; // info about symbolic integer constants
     proc_info           *procinfo;
     macro_info          *macroinfo;
     lname_info          *lnameinfo;

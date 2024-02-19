@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -50,8 +50,6 @@
 
 #if defined( _STANDALONE_ )
 
-extern bool             in_prologue;
-
 typedef struct line_list {
     struct line_list    *next;
     char                *line;
@@ -62,8 +60,10 @@ typedef struct line_list {
  *       thus there is 1 queue on the stack for every level of nesting in macros
  */
 typedef struct input_queue {
-    struct line_list    *head;
-    struct line_list    *tail;
+    struct {
+        line_list       *head;
+        line_list       *tail;
+    } lines;
     struct input_queue  *next;
 } input_queue;
 
@@ -71,7 +71,7 @@ typedef struct file_list {
     struct file_list    *next;
     union {
         FILE            *file;
-        struct input_queue  *lines;
+        input_queue     *data;
     } u;
     const FNAME         *srcfile;   /* name of include file */
     unsigned long       line_num;   /* current line in parent file */
@@ -81,6 +81,7 @@ typedef struct file_list {
 
 extern void             FreeForceInclude( void );
 
+extern bool             in_prologue;
 extern bool             write_to_file;
 extern bool             CheckSeg;
 extern bool             DefineProc;             // true if the definition of procedure
@@ -113,20 +114,24 @@ static bool get_asmline( char *ptr, unsigned max, FILE *fp )
     bool        skip;
     int         c;
     bool        got_something;
-
-    /* blow away any comments -- look for ;'s */
-    /* note that ;'s are ok in quoted strings */
-
+    /*
+     * blow away any comments -- look for ;'s
+     * note that ;'s are ok in quoted strings
+     */
     skip = false;
     got_something = false;
     for( ;; ) {
         c = getc( fp );
-        /* copy the line until we hit a NULL, newline, or ; not in a quote */
+        /*
+         * copy the line until we hit a NULL, newline, or ';' not in a quote
+         */
         switch( c ) {
         case '\t':
         case ' ':
-            if( (Options.mode & MODE_TASM) && ( quote == '\0' )
-                && got_something && ( *(ptr - 1) == '\\' ) ) {
+            if( (Options.mode & MODE_TASM)
+              && ( quote == '\0' )
+              && got_something
+              && ( *(ptr - 1) == '\\' ) ) {
                 skip = true;
             }
             break;
@@ -156,20 +161,31 @@ static bool get_asmline( char *ptr, unsigned max, FILE *fp )
             skip = true;
             break;
         case '\r':
-            continue; /* don't store character in string */
+            /*
+             * don't store character in string
+             */
+            continue;
         case '\n':
-            /* if continuation character found, pass over newline */
-            if( got_something && ( *(ptr - 1) == '\\' ) ) {
+            /*
+             * if continuation character found, pass over newline
+             */
+            if( got_something
+              && ( *(ptr - 1) == '\\' ) ) {
                 ptr--;
                 max++;
                 LineNumber++;
                 skip = false;
-                continue; /* don't store character in string */
+                /*
+                 * don't store character in string
+                 */
+                continue;
             }
             *ptr = '\0';
-            // fall through
+            /* fall through */
         case '\0':
-            /* we have found the end of the line */
+            /*
+             * we have found the end of the line
+             */
             return( true );
         case EOF:
             *ptr = '\0';
@@ -193,17 +209,21 @@ void PushLineQueue( void )
 
     new = AsmAlloc( sizeof( input_queue ) );
     new->next = line_queue;
-    new->head = new->tail = NULL;
+    new->lines.head = NULL;
+    new->lines.tail = NULL;
     line_queue = new;
 }
 
 bool PopLineQueue( void )
-/***********************/
-/* remove a line queue from the top of the stack & throw it away */
+/************************
+ * remove a line queue from the top of the stack & throw it away
+ */
 {
     input_queue *tmp;
 
-    /* pop the line_queue stack */
+    /*
+     * pop the line_queue stack
+     */
     tmp = line_queue;
     in_prologue = false;
     if( tmp == NULL )
@@ -216,7 +236,8 @@ bool PopLineQueue( void )
 bool GetQueueMacroHidden( void )
 /******************************/
 {
-    if(( file_stack != NULL ) && !file_stack->is_a_file ) {
+    if(( file_stack != NULL )
+      && !file_stack->is_a_file ) {
         return( file_stack->hidden );
     } else {
         return( false );
@@ -234,18 +255,19 @@ static line_list *enqueue( void )
     if( line_queue == NULL ) {
         line_queue = AsmAlloc( sizeof( input_queue ) );
         line_queue->next = NULL;
-        line_queue->tail = NULL;
-        line_queue->head = NULL;
+        line_queue->lines.tail = NULL;
+        line_queue->lines.head = NULL;
     }
 
-    if( line_queue->tail == NULL ) {
-        line_queue->head = new;
-        line_queue->tail = new;
+    if( line_queue->lines.head == NULL ) {
+        line_queue->lines.head = new;
     } else {
-        /* insert at the tail */
-        line_queue->tail->next = new;
-        line_queue->tail = new;
+        /*
+         * insert at the tail
+         */
+        line_queue->lines.tail->next = new;
     }
+    line_queue->lines.tail = new;
     return( new );
 }
 
@@ -391,16 +413,17 @@ static char *input_get( char *string )
     line_list   *inputline;
     file_list   *inputfile;
 
-    /* Check the line_queue first; then the file_stack */
-
+    /*
+     * Check the line_queue first; then the file_stack
+     */
     Globals.expand_count = 0;
     while( line_queue != NULL ) {
-        if( line_queue->head != NULL ) {
-            inputline = line_queue->head;
+        if( line_queue->lines.head != NULL ) {
+            inputline = line_queue->lines.head;
             strcpy( string, inputline->line );
-            line_queue->head = inputline->next;
-            if( line_queue->head == NULL )
-                line_queue->tail = NULL;
+            line_queue->lines.head = inputline->next;
+            if( line_queue->lines.head == NULL )
+                line_queue->lines.tail = NULL;
             AsmFree( inputline->line );
             AsmFree( inputline );
             return( string );
@@ -415,18 +438,22 @@ static char *input_get( char *string )
                 LineNumber++;
                 return( string );
             }
-            /* EOF is reached */
+            /*
+             * EOF is reached
+             */
             file_stack = inputfile->next;
             fclose( inputfile->u.file );
             LineNumber = inputfile->line_num;
             AsmFree( inputfile );
         } else {
-            /* this "file" is just a line queue for a macro */
-            inputline = inputfile->u.lines->head;
+            /*
+             * this "file" is just a line queue for a macro
+             */
+            inputline = inputfile->u.data->lines.head;
             LineNumber++;
             if( inputline != NULL ) {
                 strcpy( string, inputline->line );
-                inputfile->u.lines->head = inputline->next;
+                inputfile->u.data->lines.head = inputline->next;
                 AsmFree( inputline->line );
                 AsmFree( inputline );
                 return( string );
@@ -434,7 +461,7 @@ static char *input_get( char *string )
             MacroEnd( false );
 
             file_stack = inputfile->next;
-            AsmFree( inputfile->u.lines );
+            AsmFree( inputfile->u.data );
             LineNumber = inputfile->line_num;
             AsmFree( inputfile );
         }
@@ -443,12 +470,12 @@ static char *input_get( char *string )
 }
 
 char *ReadTextLine( char *string )
-/********************************/
+/*********************************
+ * get a new line, first checking the line queue & the file stack,
+ * then looking in the assembly file itself
+ * put it into string and return a pointer to the front
+ */
 {
-    /* get a new line, first checking the line queue & the file stack,
-     * then looking in the assembly file itself
-     * put it into string and return a pointer to the front
-     */
 
     char *line;
 
@@ -470,9 +497,10 @@ static char *join_multiline_cmds( char *line, size_t max_len )
     size_t  i;
 
     linelen = strlen( line );
-
-    /* if the last non-whitespace character is a comma, join the next line on */
-
+    /*
+     * if the last non-whitespace character is a comma
+     * join the next line on
+     */
     for( i = linelen; i; --i ) {
         if( !isspace( line[ i - 1 ] ) ) {
             if( line[ i - 1 ] == ',' )
@@ -589,7 +617,7 @@ void PushMacro( const char *name, bool hidden )
 
     DebugMsg(( "PUSH_MACRO\n" ));
     new = push_flist( name, false );
-    new->u.lines = line_queue;
+    new->u.data = line_queue;
     new->hidden = hidden;
     line_queue = line_queue->next;
 }
@@ -679,8 +707,9 @@ static void dbg_output( token_buffer *tokbuf )
 #endif
 
 void AsmByte( unsigned char byte )
-/********************************/
-/* Write a byte to the object file */
+/*********************************
+ * Write a byte to the object file
+ */
 {
 #if defined( _STANDALONE_ )
     if( CheckHaveSeg() ) {
@@ -688,7 +717,8 @@ void AsmByte( unsigned char byte )
         if( CurrSeg->seg->e.seginfo->current_loc >= CurrSeg->seg->e.seginfo->length ) {
             CurrSeg->seg->e.seginfo->length = CurrSeg->seg->e.seginfo->current_loc;
         }
-        if( Parse_Pass != PASS_1 && write_to_file ) {
+        if( Parse_Pass != PASS_1
+          && write_to_file ) {
             AsmCodeBuffer[BufSize++] = byte;
             if( BufSize >= MAX_LEDATA_THRESHOLD ) {
                 FlushCurrSeg();
@@ -726,7 +756,8 @@ void AsmLine( const char *string )
                 return;
             }
         }
-        if( CurrProc != NULL && !DefineProc ) {
+        if( CurrProc != NULL
+          && !DefineProc ) {
             for( count = 0; count < tokbuf.count; count++ ) {
                 bool expanded;
                 if( ExpandProcString( &tokbuf, count, &expanded ) ) {

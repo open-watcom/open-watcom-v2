@@ -827,8 +827,8 @@ static void DumpSymbol( asm_sym *sym )
 //        dir->e.structinfo = AsmAlloc( sizeof( struct_info ) );
 //        dir->e.structinfo->size = 0;
 //        dir->e.structinfo->alignment = 0;
-//        dir->e.structinfo->head = NULL;
-//        dir->e.structinfo->tail = NULL;
+//        dir->e.structinfo->fields.head = NULL;
+//        dir->e.structinfo->fields.tail = NULL;
         break;
     case SYM_STRUCT_FIELD:
         type = "STRUCTURE FIELD";
