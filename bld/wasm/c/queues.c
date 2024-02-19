@@ -64,21 +64,24 @@ static void QAddItem( qdesc **queue, void *data )
     QEnqueue( *queue, node );
 }
 
-static long QCount( qdesc *q )
-/****************************/
-/* count the # of entries in the queue, if the retval is -ve we have an error */
+static int QCount( qdesc *q )
+/****************************
+ * count the # of entries in the queue, if the retval is -value we have an error
+ */
 {
-    long        count = 0;
-    queuenode   *node;
+    unsigned long	count;
+    queuenode   	*node;
 
-    if( q == NULL )
-        return( 0 );
-    for( node = q->head; node != NULL; node = node->next ) {
-        if( ++count < 0 ) {
-            return( -1L );
+    count = 0;
+    if( q != NULL ) {
+        for( node = q->head; node != NULL; node = node->next ) {
+            count++;
+            if( count > INT_MAX ) {
+                return( -1 );
+            }
         }
     }
-    return( count );
+    return( (int)count );
 }
 
 static char **NameArray;
@@ -324,8 +327,8 @@ int GetLinnumData( int limit, linnum_data **ldata, bool *need32 )
     count = QCount( LinnumQueue );
     if( count <= 0 )
         return( 0 );
-    if( count < limit )
-        limit = (unsigned)count;
+    if( limit > count )
+        limit = count;
     *need32 = false;
     *ldata = AsmAlloc( limit * sizeof( linnum_data ) );
     for( i = 0; i < limit; i++ ) {
@@ -341,16 +344,28 @@ int GetLinnumData( int limit, linnum_data **ldata, bool *need32 )
         AsmFree( node_data );
         AsmFree( node );
     }
-    if( count - limit == 0 ) {
-        AsmFree( LinnumQueue );
-        LinnumQueue = NULL;
-    }
     return( limit );
+}
+
+static void FreeLinnumQueue( void )
+/*********************************/
+{
+    queuenode *node;
+
+    if( LinnumQueue != NULL ) {
+        while( LinnumQueue->head != NULL ) {
+            node = QDequeue( LinnumQueue );
+            AsmFree( ((line_num_info *)node)->data );
+            AsmFree( node );
+        }
+        AsmFree( LinnumQueue );
+    }
 }
 
 void FreeAllQueues( void )
 /************************/
 {
+    FreeLinnumQueue();
     FreePubQueue();
     FreeAliasQueue();
     FreeLnameQueue();
