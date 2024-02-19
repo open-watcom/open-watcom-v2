@@ -295,7 +295,7 @@ static bool is_repeat_block( char *ptr )
           || lineis( ptr, "repeat" ) );
 }
 
-static bool process_local( token_buffer *tokbuf, macro_info *info )
+static bool macro_local( token_buffer *tokbuf, macro_info *info )
 {
     asm_tok     *tok;
 
@@ -443,7 +443,7 @@ static bool macro_exam( token_buffer *tokbuf, token_idx i )
                 break;
             }
             if( store_data ) {
-                if( process_local( tokbuf, info ) ) {
+                if( macro_local( tokbuf, info ) ) {
                     return( RC_ERROR );
                 }
             }

@@ -652,8 +652,8 @@ void dir_init( dir_node *dir, int tab )
         dir->e.structinfo = AsmAlloc( sizeof( struct_info ) );
         dir->e.structinfo->size = 0;
         dir->e.structinfo->alignment = 0;
-        dir->e.structinfo->head = NULL;
-        dir->e.structinfo->tail = NULL;
+        dir->e.structinfo->fields.head = NULL;
+        dir->e.structinfo->fields.tail = NULL;
         return;
     case TAB_LIB:
         break;
@@ -915,7 +915,7 @@ void FreeInfo( dir_node *dir )
             field_list      *ptr;
             field_list      *next;
 
-            for( ptr = dir->e.structinfo->head; ptr != NULL; ptr = next ) {
+            for( ptr = dir->e.structinfo->fields.head; ptr != NULL; ptr = next ) {
                 next = ptr->next;
                 AsmFree( ptr->initializer );
                 AsmFree( ptr->value );

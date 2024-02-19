@@ -274,8 +274,10 @@ typedef struct field_list {
 typedef struct {
     unsigned            size;       // size in bytes ( including alignment )
     unsigned short      alignment;
-    field_list          *head;
-    field_list          *tail;
+    struct {
+        field_list      *head;
+        field_list      *tail;
+    }                   fields;
 } struct_info;
 
 union entry {

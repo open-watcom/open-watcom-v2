@@ -811,7 +811,8 @@ static void DumpSymbol( asm_sym *sym )
 //        dir->e.macroinfo = AsmAlloc( sizeof( macro_info ) );
 //        dir->e.macroinfo->params.head = NULL;
 //        dir->e.macroinfo->params.tail = NULL;
-//        dir->e.macroinfo->locallist = NULL;
+//        dir->e.macroinfo->labels.head = NULL;
+//        dir->e.macroinfo->labels.tail = NULL;
 //        dir->e.macroinfo->lines.head = NULL;
 //        dir->e.macroinfo->lines.tail = NULL;
 //        dir->e.macroinfo->filename = NULL;

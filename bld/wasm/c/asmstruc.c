@@ -45,7 +45,7 @@ asm_sym *FindStructureMember( asm_sym *symbol, const char *name )
     field_list      *field;
     asm_sym         *sym;
 
-    for( field = ((dir_node *)symbol)->e.structinfo->head; field != NULL; field = field->next ) {
+    for( field = ((dir_node *)symbol)->e.structinfo->fields.head; field != NULL; field = field->next ) {
         if( (sym = field->sym) != NULL ) {
             if( strcmp( name, sym->name ) == 0 ) {
                 return( sym );
@@ -160,7 +160,7 @@ bool InitializeStructure( asm_sym *sym, asm_sym *struct_symbol, token_buffer *to
     }
 
     ptr = tokbuf->tokens[i].string_ptr;
-    for( f = dir->e.structinfo->head; f != NULL; f = f->next ) {
+    for( f = dir->e.structinfo->fields.head; f != NULL; f = f->next ) {
         /* put the lines to define the fields of the structure in,
          * using the values specified ( if any ) or the default ones otherwise
          */
@@ -259,12 +259,12 @@ int AddFieldToStruct( asm_sym *sym, token_buffer *tokbuf, token_idx loc )
     }
 
     f->next = NULL;
-    if( the_struct->head == NULL ) {
-        the_struct->head = the_struct->tail = f;
+    if( the_struct->fields.head == NULL ) {
+        the_struct->fields.head = f;
     } else {
-        the_struct->tail->next = f;
-        the_struct->tail = f;
+        the_struct->fields.tail->next = f;
     }
+    the_struct->fields.tail = f;
 
     return( offset );
 }
