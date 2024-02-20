@@ -103,21 +103,21 @@
 #endif
 
 /* global variables */
-extern struct asm_code  *Code;
-extern asm_sym          *Frame;
-extern char             Parse_Pass;     // phase of parsing
-extern operand_idx      Opnd_Count;
-extern bool             Modend;         // end of module is reached
-extern bool             Use32;          // if 32-bit code is use
+extern asm_code     *Code;
+extern asm_sym      *Frame;
+extern char         Parse_Pass;     // phase of parsing
+extern operand_idx  Opnd_Count;
+extern bool         Modend;         // end of module is reached
+extern bool         Use32;          // if 32-bit code is use
 
-extern void             AsmByte( unsigned char );
-extern bool             AsmScan( token_buffer *tokbuf, const char * );
-extern void             RadixSet( unsigned );
+extern void         AsmByte( unsigned char );
+extern bool         AsmScan( token_buffer *tokbuf, const char * );
+extern void         RadixSet( unsigned );
 
 #if defined( _STANDALONE_ )
 
-extern void             AsmCodeByte( unsigned char );
-extern void             AsmDataByte( unsigned char );
+extern void         AsmCodeByte( unsigned char );
+extern void         AsmDataByte( unsigned char );
 
 #else
 

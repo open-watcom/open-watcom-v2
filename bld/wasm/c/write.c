@@ -158,13 +158,13 @@ static void write_init( void )
 {
     dir_node    *dir;
 
-    BufSize       = 0;
-    FixupListHead = NULL;
-    FixupListTail = NULL;
-    CurrProc      = NULL;
-    DefineProc    = false;
-    Use32         = false;
-    write_to_file = true;
+    BufSize        = 0;
+    FixupList.head = NULL;
+    FixupList.tail = NULL;
+    CurrProc       = NULL;
+    DefineProc     = false;
+    Use32          = false;
+    write_to_file  = true;
 
     dir = AllocD( "" );
     if( dir != NULL ) {
@@ -913,7 +913,7 @@ static void get_fixup_list( unsigned long start, fixuprec **fl16, fixuprec **fl3
 
     fix16 = NULL;
     fix32 = NULL;
-    for( fixi = FixupListHead; fixi != NULL; fixi = fixi->next_loc ) {
+    for( fixi = FixupList.head; fixi != NULL; fixi = fixi->next_loc ) {
         fix = CreateFixupRec( start, fixi );
         if( fix != NULL ) {
             switch( fix->loc_method ) {
@@ -954,7 +954,7 @@ int get_fixup_list( unsigned long start, fixuprec **fl )
     fixuprec    *fixo;
 
     fixo = NULL;
-    for( fixi = FixupListHead; fixi != NULL; fixi = fixi->next_loc ) {
+    for( fixi = FixupList.head; fixi != NULL; fixi = fixi->next_loc ) {
         fix = CreateFixupRec( start, fixi );
         if( fix != NULL ) {
             if( fixo == NULL ) {
@@ -1018,7 +1018,7 @@ static void write_ledata( void )
         write_record( objr, true );
 
         /* Process Fixup, if any */
-        if( FixupListHead != NULL ) {
+        if( FixupList.head != NULL ) {
 #ifdef SEPARATE_FIXUPP_16_32
             get_fixup_list( CurrSeg->seg->e.seginfo->start_loc, &fl16, &fl32 );
             /* Process Fixup, if any */
@@ -1037,11 +1037,12 @@ static void write_ledata( void )
 #else
             get_fixup_list( CurrSeg->seg->e.seginfo->start_loc, &fl );
             objr = ObjNewRec( CMD_FIXUPP );
-            objr->u.fixupp.fixup = FixupListHead;
+            objr->u.fixupp.fixup = FixupList.head;
             check_need_32bit( objr );
             write_record( objr, true );
 #endif
-            FixupListHead = FixupListTail = NULL;
+            FixupList.head = NULL;
+            FixupList.tail = NULL;
         }
         /* add line numbers if debugging info is desired */
         if( Options.debug_info ) {
@@ -1120,8 +1121,8 @@ void FlushCurrSeg( void )
      * if so, wait until we get more bytes output so that it will not
      */
 
-    if( FixupListTail != NULL ) {
-        switch( FixupListTail->fixup_type ) {
+    if( FixupList.tail != NULL ) {
+        switch( FixupList.tail->fixup_type ) {
         case FIX_LOBYTE:
         case FIX_RELOFF8:
             i = 1;
@@ -1141,7 +1142,7 @@ void FlushCurrSeg( void )
             i = 6;
             break;
         }
-        if( FixupListTail->fixup_loc + i - CurrSeg->seg->e.seginfo->start_loc > BufSize ) {
+        if( FixupList.tail->fixup_loc + i - CurrSeg->seg->e.seginfo->start_loc > BufSize ) {
             return; // can't output the ledata record as is
         }
     }

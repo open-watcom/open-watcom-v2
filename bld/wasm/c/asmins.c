@@ -61,8 +61,8 @@
 
 extern bool             ptr_operator( memtype, bool );
 
-static struct asm_code  Code_Info;
-struct asm_code         *Code = &Code_Info;
+static asm_code         Code_Info;
+asm_code                *Code = &Code_Info;
 
 operand_idx             Opnd_Count;
 
@@ -407,8 +407,8 @@ bool InRange( unsigned long val, unsigned bytes )
      Can 'val' be represented in 'bytes' bytes?
 */
 {
-    unsigned long max;
-    unsigned long mask;
+    unsigned long   max;
+    unsigned long   mask;
 
     max = ( 1UL << ( bytes * 8 ) ) - 1;
     if( val <= max ) /* absolute value fits */
@@ -426,9 +426,9 @@ static bool mem2code( unsigned char ss, asm_token index, asm_token base, asm_sym
   encode the memory operand to machine code
 */
 {
-    struct asm_code     *rCode = Code;
-    unsigned char       mod_field;
-    unsigned char       rm_field;
+    asm_code        *rCode = Code;
+    unsigned char   mod_field;
+    unsigned char   rm_field;
 
     // clear mod
     rm_field = 0;
@@ -2282,18 +2282,18 @@ bool AsmParse( token_buffer *tokbuf, const char *curline )
  *   with the switch statement;
  */
 {
-    token_idx           i;
-    bool                cur_opnd_label = false;
-    bool                last_opnd_label = false;
-    struct asm_code     *rCode = Code;
-    expr_list           opndx;
-    token_idx           n;
-    operand_idx         j;
-    int                 jmp_flags;
-    bool                flag;
+    token_idx       i;
+    bool            cur_opnd_label = false;
+    bool            last_opnd_label = false;
+    asm_code        *rCode = Code;
+    expr_list       opndx;
+    token_idx       n;
+    operand_idx     j;
+    int             jmp_flags;
+    bool            flag;
 #if defined( _STANDALONE_ )
-    int                 temp;
-    static bool         in_epilogue = false;
+    int             temp;
+    static bool     in_epilogue = false;
 #endif
 
 #if defined( _STANDALONE_ )
@@ -3072,7 +3072,7 @@ void AsmEnvInit( int use32, int cpu, int fpu, bool fpu_emu )
     }
 }
 
-static enum asm_cpu CPUinfo;
+static asm_cpu  CPUinfo;
 
 void AsmInit( void )
 /******************/

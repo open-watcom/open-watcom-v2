@@ -147,6 +147,13 @@ typedef struct asmfixup {
 
 #if defined( _STANDALONE_ )
 #define AsmCodeAddress  ( GetCurrAddr() )
+
+typedef struct asmfixup_list {
+    asmfixup            *head;
+    asmfixup            *tail;
+} asmfixup_list;
+
+extern asmfixup_list    FixupList;
 #else
 extern uint_32          AsmCodeAddress;
 extern uint_32          AsmCodeLimit;

@@ -42,8 +42,6 @@ extern bool         BackPatch( asm_sym *sym );
 extern void         mark_fixupp( OPNDTYPE determinant, operand_idx index );
 extern bool         store_fixup( operand_idx index );
 
-extern asmfixup     *FixupListHead; // head of list of fixups
-extern asmfixup     *FixupListTail;
 extern bool         AddFPPatchAndFixups( fp_patches patch );
 
 #endif

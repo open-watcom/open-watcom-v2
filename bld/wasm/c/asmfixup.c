@@ -41,8 +41,7 @@
 #endif
 
 #if defined( _STANDALONE_ )
-asmfixup        *FixupListHead; // head of list of fixups
-asmfixup        *FixupListTail;
+asmfixup_list   FixupList;
 #else
 asmfixup        *FixupHead;
 #endif
@@ -77,6 +76,19 @@ void add_frame( void )
     }
 }
 
+static void append_to_fixup_list_end( asmfixup *fixup )
+/******************************************************
+ * add new fixup to the end of list
+ */
+{
+    fixup->next_loc = NULL;
+    if( FixupList.head == NULL ) {
+        FixupList.head = fixup;
+    } else {
+        FixupList.tail->next_loc = fixup;
+    }
+    FixupList.tail = fixup;
+}
 #endif
 
 asmfixup *AddFixup( asm_sym *sym, fixup_types fixup_type, fixup_options fixup_option )
@@ -355,23 +367,19 @@ bool store_fixup( operand_idx index )
  * Store the fixup information in a OMF output fixup record
  */
 {
-    asmfixup    *fixnode;
+    asmfixup    *fixup;
 
     if( Parse_Pass == PASS_1 )
         return( RC_OK );
     if( InsFixups[index] == NULL )
         return( RC_OK );
-    fixnode = InsFixups[index];
-    if( fixnode == NULL )
+    fixup = InsFixups[index];
+    if( fixup == NULL )
         return( RC_ERROR );
-
-    if( FixupListHead == NULL ) {
-        FixupListTail = FixupListHead = fixnode;
-    } else {
-        FixupListTail->next_loc = fixnode;
-        FixupListTail = fixnode;
-    }
-    fixnode->next_loc = NULL;
+    /*
+     * add new fixup to the end of list
+     */
+    append_to_fixup_list_end( fixup );
     return( RC_OK );
 }
 
@@ -412,13 +420,10 @@ static bool MakeFpFixup( const char *patch_name )
             dir->sym.fixup = fixup;
             fixup->fixup_type = FIX_FPPATCH;
             fixup->fixup_option = OPTJ_NONE;
-            if( FixupListHead == NULL ) {
-                FixupListTail = FixupListHead = fixup;
-            } else {
-                FixupListTail->next_loc = fixup;
-                FixupListTail = fixup;
-            }
-            fixup->next_loc = NULL;
+            /*
+             * add new fixup to the end of list
+             */
+            append_to_fixup_list_end( fixup );
         }
         return( RC_OK );
     }

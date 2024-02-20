@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -63,9 +63,9 @@ static bool output( const asm_ins ASMI86FAR *ins )
   , opcode, "mod r/m" byte and "s-i-b" byte;
 */
 {
-    struct asm_code             *rCode = Code;
-    unsigned_8                  tmp;
-    fp_patches                  patch = FPP_NONE;
+    asm_code        *rCode = Code;
+    unsigned_8      tmp;
+    fp_patches      patch = FPP_NONE;
 
 #if defined( _STANDALONE_ )
     /*

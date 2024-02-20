@@ -53,12 +53,12 @@ typedef enum operand_idx {
 
 typedef unsigned short  asmins_idx;
 
-struct AsmCodeName {
+typedef struct AsmCodeName {
     asmins_idx      position;       // starting position in AsmOpTable
     unsigned short  len :4;         // length of command, e.g. "AX" = 2
     unsigned short  index :12;      // index into AsmChars[] in asmops2.h
     unsigned short  next;           // index to next item in hash item list
-};
+} AsmCodeName;
 
 typedef struct asm_ins {
     asm_token           token;                  /* T_ADD, etc */
@@ -138,11 +138,11 @@ typedef struct asm_code {
    OP_R ( without extension ) should follow OP_Rx
    OP_I ( without extension ) should follow OP_Ix  */
 
-extern const asm_ins                ASMI86FAR AsmOpTable[];
-extern const struct AsmCodeName     AsmOpcode[];
-extern const char                   AsmChars[];
+extern const asm_ins        ASMI86FAR AsmOpTable[];
+extern const AsmCodeName    AsmOpcode[];
+extern const char           AsmChars[];
 
-extern const char *                 const regs[3][4];
+extern const char           *const regs[3][4];
 
 #if defined( _STANDALONE_ )
 
