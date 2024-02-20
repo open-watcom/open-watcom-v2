@@ -230,7 +230,8 @@ static bool get_operand( expr_list *new, token_buffer *tokbuf, token_idx *start,
     case TC_NUM:
         new->empty = false;
 #if defined( _STANDALONE_ )
-        if( (Options.mode & MODE_IDEAL) && ( op_sq_bracket_level ) ) {
+        if( (Options.mode & MODE_IDEAL)
+          && ( op_sq_bracket_level ) ) {
             new->type = EXPR_ADDR;
             new->indirect = true;
         } else {
@@ -339,7 +340,8 @@ static bool get_operand( expr_list *new, token_buffer *tokbuf, token_idx *start,
 #if 0
 // FIXME !!!!!
 // problem with aliases and equ directive
-            if( ( new->sym == NULL ) || ( new->sym->state == SYM_UNDEFINED ) ) {
+            if( ( new->sym == NULL )
+              || ( new->sym->state == SYM_UNDEFINED ) ) {
                 if( error_msg )
                     AsmErr( SYMBOL_NOT_DEFINED, tokbuf->tokens[i].string_ptr );
                 new->type = EXPR_UNDEF;
@@ -349,14 +351,16 @@ static bool get_operand( expr_list *new, token_buffer *tokbuf, token_idx *start,
         }
         if( new->sym != NULL ) {
             new->sym->referenced = true;
-            if( ( new->sym->state == SYM_STRUCT  ) ||
-                (Options.mode & MODE_IDEAL) && ( new->sym->mem_type == MT_STRUCT ) ) {
+            if( ( new->sym->state == SYM_STRUCT  )
+              || (Options.mode & MODE_IDEAL)
+              && ( new->sym->mem_type == MT_STRUCT ) ) {
                 new->empty = false;
                 new->value = new->sym->offset;
                 new->mbr = new->sym;
                 new->sym = NULL;
                 new->type = EXPR_ADDR;
-                if( (Options.mode & MODE_IDEAL) && ( op_sq_bracket_level ) ) {
+                if( (Options.mode & MODE_IDEAL)
+                  && ( op_sq_bracket_level ) ) {
                     Definition.struct_depth++;
                     if( new->mbr->state == SYM_STRUCT ) {
                         Definition.curr_struct = (dir_node *)new->mbr;
@@ -369,7 +373,8 @@ static bool get_operand( expr_list *new, token_buffer *tokbuf, token_idx *start,
                 }
                 break;
             } else if( new->sym->state == SYM_STRUCT_FIELD ) {
-                if( (Options.mode & MODE_IDEAL) && ( Definition.struct_depth ) ) {
+                if( (Options.mode & MODE_IDEAL)
+                  && ( Definition.struct_depth ) ) {
                     Definition.struct_depth--;
                     new->indirect = true;
                 }
@@ -500,9 +505,11 @@ static bool check_both( expr_list *tok_1, expr_list *tok_2, exprtype type1, expr
 /******************************************************************************************/
 /* Check if tok_1 == type1 and tok_2 == type2 or vice versa */
 {
-    if( tok_1->type == type1 && tok_2->type == type2 ) {
+    if( tok_1->type == type1
+      && tok_2->type == type2 ) {
         return( true );
-    } else if( tok_1->type == type2 && tok_2->type == type1 ) {
+    } else if( tok_1->type == type2
+      && tok_2->type == type1 ) {
         return( true );
     } else {
         return( false );
@@ -517,7 +524,8 @@ static void index_connect( expr_list *tok_1, expr_list *tok_2 )
         if( ISVALID_IDX( tok_2->base_reg ) ) {
             tok_1->base_reg = tok_2->base_reg;
             tok_2->base_reg = INVALID_IDX;
-        } else if( ISVALID_IDX( tok_2->idx_reg ) && ( tok_2->scale == 1 ) ) {
+        } else if( ISVALID_IDX( tok_2->idx_reg )
+          && ( tok_2->scale == 1 ) ) {
             tok_1->base_reg = tok_2->idx_reg;
             tok_2->idx_reg = INVALID_IDX;
         }
@@ -838,8 +846,8 @@ static bool calculate( expr_list *token_1, expr_list *token_2, token_buffer *tok
 
             token_1->value -= token_2->value;
 
-        } else if( token_1->type == EXPR_ADDR &&
-                   token_2->type == EXPR_CONST ) {
+        } else if( token_1->type == EXPR_ADDR
+          && token_2->type == EXPR_CONST ) {
 
             token_1->value -= token_2->value;
             fix_struct_value( token_1 );
@@ -848,7 +856,8 @@ static bool calculate( expr_list *token_1, expr_list *token_2, token_buffer *tok
 
             fix_struct_value( token_1 );
             fix_struct_value( token_2 );
-            if( ISVALID_IDX( token_2->base_reg ) || ISVALID_IDX( token_2->idx_reg ) ) {
+            if( ISVALID_IDX( token_2->base_reg )
+              || ISVALID_IDX( token_2->idx_reg ) ) {
                 if( error_msg )
                     AsmError( ILLEGAL_USE_OF_REGISTER );
                 token_1->type = EXPR_UNDEF;
@@ -868,7 +877,8 @@ static bool calculate( expr_list *token_1, expr_list *token_2, token_buffer *tok
                 if( sym == NULL )
                     return( RC_ERROR );
 #if defined( _STANDALONE_ )
-                if( Parse_Pass > PASS_1 && sym->state == SYM_UNDEFINED ) {
+                if( Parse_Pass > PASS_1
+                  && sym->state == SYM_UNDEFINED ) {
                     if( error_msg )
                         AsmError( LABEL_NOT_DEFINED );
                     token_1->type = EXPR_UNDEF;
@@ -883,7 +893,8 @@ static bool calculate( expr_list *token_1, expr_list *token_2, token_buffer *tok
                     return( RC_ERROR );
 
 #if defined( _STANDALONE_ )
-                if( Parse_Pass > PASS_1 && sym->state == SYM_UNDEFINED ) {
+                if( Parse_Pass > PASS_1
+                  && sym->state == SYM_UNDEFINED ) {
                     if( error_msg )
                         AsmError( LABEL_NOT_DEFINED );
                     token_1->type = EXPR_UNDEF;
@@ -896,7 +907,8 @@ static bool calculate( expr_list *token_1, expr_list *token_2, token_buffer *tok
                 token_1->value -= token_2->value;
                 token_1->label = INVALID_IDX;
                 token_1->sym = NULL;
-                if( ISINVALID_IDX( token_1->base_reg ) && ISINVALID_IDX( token_1->idx_reg ) ) {
+                if( ISINVALID_IDX( token_1->base_reg )
+                  && ISINVALID_IDX( token_1->idx_reg ) ) {
                     token_1->type = EXPR_CONST;
                     token_1->indirect = false;
                 } else {
@@ -907,8 +919,8 @@ static bool calculate( expr_list *token_1, expr_list *token_2, token_buffer *tok
                 token_1->mem_type = MT_EMPTY;
             }
 
-        } else if( token_1->type == EXPR_REG &&
-                   token_2->type == EXPR_CONST ) {
+        } else if( token_1->type == EXPR_REG
+          && token_2->type == EXPR_CONST ) {
 
             token_1->value = -token_2->value;
             token_1->indirect |= token_2->indirect;
@@ -941,7 +953,8 @@ static bool calculate( expr_list *token_1, expr_list *token_2, token_buffer *tok
 
         if( token_1->type == EXPR_REG ) {
 
-            if( ISVALID_IDX( token_1->base_reg ) && ISVALID_IDX( token_1->idx_reg ) ) {
+            if( ISVALID_IDX( token_1->base_reg )
+              && ISVALID_IDX( token_1->idx_reg ) ) {
                 if( error_msg )
                     AsmError( ILLEGAL_USE_OF_REGISTER );
                 token_1->type = EXPR_UNDEF;
@@ -957,8 +970,10 @@ static bool calculate( expr_list *token_1, expr_list *token_2, token_buffer *tok
             case T_SCAS:
                 if( ISVALID_IDX( token_2->base_reg ) ) {
                     reg_token = tokbuf->tokens[token_2->base_reg].u.token;
-                    if( (reg_token == T_DI) || (reg_token == T_EDI) ) {
-                        if( ISVALID_IDX( token_1->base_reg ) && tokbuf->tokens[token_1->base_reg].u.token == T_ES ) {
+                    if( (reg_token == T_DI)
+                      || (reg_token == T_EDI) ) {
+                        if( ISVALID_IDX( token_1->base_reg )
+                          && tokbuf->tokens[token_1->base_reg].u.token == T_ES ) {
                             token_1->base_reg = token_2->override;
                             break;
                         }
@@ -998,7 +1013,8 @@ static bool calculate( expr_list *token_1, expr_list *token_2, token_buffer *tok
                 /* Kludge for "FLAT" */
                 tokbuf->tokens[token_1->label].class = TC_ID;
             }
-            if( sym->state == SYM_GRP || sym->state == SYM_SEG ) {
+            if( sym->state == SYM_GRP
+              || sym->state == SYM_SEG ) {
                 token_2->override = token_1->label;
                 token_2->indirect |= token_1->indirect;
                 if( token_1->explicit ) {
@@ -1040,12 +1056,12 @@ static bool calculate( expr_list *token_1, expr_list *token_2, token_buffer *tok
         case T_SBYTE:
         case T_SWORD:
         case T_SDWORD:
-            if( ( ( tokbuf->tokens[index + 1].class != TC_RES_ID ) ||
-                  ( tokbuf->tokens[index + 1].u.token != T_PTR ) ) &&
-                  ( (Options.mode & MODE_IDEAL) == 0 ) ) {
+            if( ( ( tokbuf->tokens[index + 1].class != TC_RES_ID )
+              || ( tokbuf->tokens[index + 1].u.token != T_PTR ) )
+              && ( (Options.mode & MODE_IDEAL) == 0 ) ) {
 #else
-            if( ( tokbuf->tokens[index + 1].class != TC_RES_ID ) ||
-                ( tokbuf->tokens[index + 1].u.token != T_PTR ) ) {
+            if( ( tokbuf->tokens[index + 1].class != TC_RES_ID )
+              || ( tokbuf->tokens[index + 1].u.token != T_PTR ) ) {
 #endif
                 // Missing PTR operator
                 if( error_msg )
@@ -1184,7 +1200,8 @@ static bool calculate( expr_list *token_1, expr_list *token_2, token_buffer *tok
         }
         break;
     case TC_UNARY_OPERATOR:
-        if( ( tokbuf->tokens[index].u.token == T_OFFSET ) && ( token_2->type == EXPR_CONST ) ) {
+        if( ( tokbuf->tokens[index].u.token == T_OFFSET )
+          && ( token_2->type == EXPR_CONST ) ) {
         } else if( token_2->type != EXPR_ADDR ) {
             if( error_msg )
                 AsmError( LABEL_IS_EXPECTED );
@@ -1267,7 +1284,8 @@ static bool calculate( expr_list *token_1, expr_list *token_2, token_buffer *tok
                 }
                 break;
             }
-            if( Parse_Pass != PASS_1 && token_1->value == 0 ) {
+            if( Parse_Pass != PASS_1
+              && token_1->value == 0 ) {
                 if( error_msg )
                     AsmError( DATA_LABEL_IS_EXPECTED );
                 token_1->type = EXPR_UNDEF;
@@ -1574,14 +1592,14 @@ static bool evaluate(
         next_operator = false;
         if( *i <= end ) {
             if( !is_optr( tokbuf, *i )
-                || is_unary( tokbuf, *i, false )
-                || cmp_token_cls( tokbuf, *i, TC_OP_BRACKET ) ) {
+              || is_unary( tokbuf, *i, false )
+              || cmp_token_cls( tokbuf, *i, TC_OP_BRACKET ) ) {
                 if( error_msg )
                     AsmError( OPERATOR_EXPECTED );
                 operand1->type = EXPR_UNDEF;
                 return( RC_ERROR );
-            } else if( !cmp_token_cls( tokbuf, *i, TC_CL_BRACKET ) &&
-                       !cmp_token_cls( tokbuf, *i, TC_CL_SQ_BRACKET ) ) {
+            } else if( !cmp_token_cls( tokbuf, *i, TC_CL_BRACKET )
+              && !cmp_token_cls( tokbuf, *i, TC_CL_SQ_BRACKET ) ) {
                 if( cmp_token_cls( tokbuf, *i, TC_OP_SQ_BRACKET ) ) {
                     if( ( PLUS_PRECEDENCE <= get_precedence( tokbuf, curr_operator ) )
                         || ( proc_flag == PROC_BRACKET ) ) {
@@ -1670,7 +1688,7 @@ static bool is_expr1( token_buffer *tokbuf, token_idx i )
     case TC_UNARY_OPERATOR:
 //        case T_SEG:
 //        case T_OFFSET:
-        if( i+1 < TokCnt )
+        if( i + 1 < TokCnt )
             return( true );
         break;
     case TC_ARITH_OPERATOR:
@@ -1702,8 +1720,9 @@ static bool is_expr1( token_buffer *tokbuf, token_idx i )
         return( true );
     case TC_COLON:
 #if defined( _STANDALONE_ )
-        if( i == 1 || ( tokbuf->tokens[i+1].class == TC_DIRECTIVE &&
-                        tokbuf->tokens[i+1].u.token == T_EQU2 ) ) {
+        if( i == 1
+          || ( tokbuf->tokens[i+1].class == TC_DIRECTIVE
+          && tokbuf->tokens[i+1].u.token == T_EQU2 ) ) {
             /* It is the colon following the label or it is a := */
             break;
         } else {
@@ -1842,7 +1861,8 @@ static bool fix_parens( token_buffer *tokbuf )
     store = 0;
     for( i = 0; i < TokCnt; i++ ) {
 
-        if( tokbuf->tokens[i].class == TC_RES_ID && tokbuf->tokens[i].u.token == T_DUP ) {
+        if( tokbuf->tokens[i].class == TC_RES_ID
+          && tokbuf->tokens[i].u.token == T_DUP ) {
             dup_count++;
             if( tokbuf->tokens[++i].class != TC_OP_BRACKET ) {
                 if( error_msg )
@@ -1902,7 +1922,8 @@ static token_idx fix( expr_list *res, token_buffer *tokbuf, token_idx start, tok
             tokbuf->tokens[ start++ ].string_ptr = res->string;
         }
 
-    } else if( res->type == EXPR_REG && !res->indirect ) {
+    } else if( res->type == EXPR_REG
+      && !res->indirect ) {
 
         if( ISVALID_IDX( res->override ) ) {
             tokbuf->tokens[start++] = tokbuf->tokens[res->override];
@@ -1912,7 +1933,8 @@ static token_idx fix( expr_list *res, token_buffer *tokbuf, token_idx start, tok
         tokbuf->tokens[ start ].class = TC_REG;
         tokbuf->tokens[ start ].string_ptr = tokbuf->tokens[ res->base_reg ].string_ptr;
         tokbuf->tokens[ start++ ].u.value = tokbuf->tokens[ res->base_reg ].u.value;
-        if( tokbuf->tokens[ res->base_reg ].u.token == T_ST && (int)res->idx_reg > 0 ) {
+        if( tokbuf->tokens[ res->base_reg ].u.token == T_ST
+          && (int)res->idx_reg > 0 ) {
 //            tokbuf->tokens[start].string_ptr = "(";
 //            tokbuf->tokens[start++].class = TC_OP_BRACKET;
             tokbuf->tokens[start].class = TC_NUM;
@@ -1929,7 +1951,8 @@ static token_idx fix( expr_list *res, token_buffer *tokbuf, token_idx start, tok
 
         if( res->instr != T_NULL ) {
             size++;
-        } else if( res->mbr != NULL && res->mbr->mem_type != MT_EMPTY ) {
+        } else if( res->mbr != NULL
+          && res->mbr->mem_type != MT_EMPTY ) {
             size += 2;
         }
 
@@ -1990,7 +2013,8 @@ static token_idx fix( expr_list *res, token_buffer *tokbuf, token_idx start, tok
         if( res->instr != T_NULL ) {
             tokbuf->tokens[start].class = TC_UNARY_OPERATOR;
             tokbuf->tokens[start++].u.token = res->instr;
-        } else if( res->mbr != NULL && res->mbr->mem_type != MT_EMPTY ) {
+        } else if( res->mbr != NULL
+          && res->mbr->mem_type != MT_EMPTY ) {
             tokbuf->tokens[start].class = TC_RES_ID;
             switch( res->mbr->mem_type ) {
             case MT_BYTE:
@@ -2047,7 +2071,8 @@ static token_idx fix( expr_list *res, token_buffer *tokbuf, token_idx start, tok
             tokbuf->tokens[start++].class = TC_COLON;
         }
 
-        if( ISVALID_IDX( res->label ) && res->type != EXPR_REG ) {
+        if( ISVALID_IDX( res->label )
+          && res->type != EXPR_REG ) {
             tokbuf->tokens[start++] = Store[res->label - old_start];
         }
 
@@ -2104,7 +2129,8 @@ static void fix_final( token_buffer *tokbuf )
     int         dup_count = 0;
 
     for( i = 0;; i++ ) {
-        if( dup_count == 0 && ISINVALID_IDX( TakeOut[i].idx ) )
+        if( dup_count == 0
+          && ISINVALID_IDX( TakeOut[i].idx ) )
             break;
         if( TakeOut[i].close_bracket ) {
             tokbuf->tokens[TakeOut[i].idx].class = TC_CL_BRACKET;
@@ -2119,7 +2145,8 @@ static void fix_final( token_buffer *tokbuf )
     for( start = 0; start < TokCnt; start++ ) {
         if( tokbuf->tokens[start].class == TC_NOOP ) {
             for( end = start + 1;; end++ ) {
-                if( tokbuf->tokens[end].class != TC_NOOP || end == TokCnt ) {
+                if( tokbuf->tokens[end].class != TC_NOOP
+                  || end == TokCnt ) {
                     break;
                 }
             }
@@ -2171,12 +2198,16 @@ token_idx EvalExpr( token_buffer *tokbuf, token_idx start_tok, token_idx end_tok
                 i++;
                 num++;
             }
-            if( num == 1 && tokbuf->tokens[start].class == TC_REG && tokbuf->tokens[start+1].class == TC_COLON ) {
+            if( num == 1
+              && tokbuf->tokens[start].class == TC_REG
+              && tokbuf->tokens[start+1].class == TC_COLON ) {
                 // Massive kludge ahead:
                 // skip register+colon
-            } else if( num == 0 && tokbuf->tokens[start].class == TC_REG ) {
+            } else if( num == 0
+              && tokbuf->tokens[start].class == TC_REG ) {
                 // skip register
-            } else if( num == 0 && tokbuf->tokens[start].class == TC_NUM ) {
+            } else if( num == 0
+              && tokbuf->tokens[start].class == TC_NUM ) {
                 // skip number
             } else {
                 i = start;
@@ -2199,7 +2230,8 @@ token_idx EvalExpr( token_buffer *tokbuf, token_idx start_tok, token_idx end_tok
     }
     fix_final( tokbuf );
 
-    if( tokbuf->tokens[TokCnt].class == TC_NOOP || final ) {
+    if( tokbuf->tokens[TokCnt].class == TC_NOOP
+      || final ) {
         tokbuf->tokens[TokCnt].class = TC_FINAL;
         tokbuf->tokens[TokCnt].string_ptr = NULL;
     }

@@ -79,7 +79,8 @@ static char *StdUScoreMangler( asm_sym *sym )
     if( !Options.mangle_stdcall )
         return( AsmMangler( sym ) );
 
-    if( Options.use_stdcall_at_number && ( sym->state == SYM_PROC ) ) {
+    if( Options.use_stdcall_at_number
+      && ( sym->state == SYM_PROC ) ) {
         int     parasize;
         char    *name;
         int     count;
@@ -91,21 +92,21 @@ static char *StdUScoreMangler( asm_sym *sym )
         parasize = ((dir_node *)sym)->e.procinfo->parasize;
         sprintf( name, "_%s@%d", sym->name, parasize );
         return( name );
-    } else {
-        return( UScoreMangler( sym ) );
     }
+    return( UScoreMangler( sym ) );
 }
 
 static char *WatcomCMangler( asm_sym *sym )
 /*****************************************/
 {
-    char                *name;
-    char                *ptr = sym->name;
-    enum changes        changes;
-    size_t              len;
-    char                *p;
+    char            *name;
+    char            *ptr = sym->name;
+    enum changes    changes;
+    size_t          len;
+    char            *p;
 
-    if( !Options.watcom_params_passed_by_regs && SymIs32( sym ) ) {
+    if( !Options.watcom_params_passed_by_regs
+      && SymIs32( sym ) ) {
         changes = USCORE_NONE;
     } else if( sym->state == SYM_PROC ) {
         changes = USCORE_AFTER;
@@ -145,7 +146,7 @@ static char *CMangler( asm_sym *sym )
 static mangle_func GetMangler( const char *mangle_type )
 /******************************************************/
 {
-    mangle_func         mangler;
+    mangle_func mangler;
 
     mangler = NULL;
     if( mangle_type != NULL ) {
