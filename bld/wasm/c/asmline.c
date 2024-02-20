@@ -55,7 +55,8 @@ typedef struct line_list {
     char                *line;
 } line_list;
 
-/* NOTE: the line queue is now a STACK of line queues
+/*
+ * NOTE: the line queue is now a STACK of line queues
  *       when a macro is being expanded, we push a new line queue on the stack
  *       thus there is 1 queue on the stack for every level of nesting in macros
  */
@@ -63,7 +64,7 @@ typedef struct input_queue {
     struct {
         line_list       *head;
         line_list       *tail;
-    } lines;
+    }                   lines;
     struct input_queue  *next;
 } input_queue;
 
@@ -115,8 +116,9 @@ static bool get_asmline( char *ptr, unsigned max, FILE *fp )
     int         c;
     bool        got_something;
     /*
-     * blow away any comments -- look for ;'s
-     * note that ;'s are ok in quoted strings
+     * blow away any comments
+     * look for ';'
+     * note that ';' are ok in quoted strings
      */
     skip = false;
     got_something = false;
@@ -162,7 +164,7 @@ static bool get_asmline( char *ptr, unsigned max, FILE *fp )
             break;
         case '\r':
             /*
-             * don't store character in string
+             * don't store '\r' character in string
              */
             continue;
         case '\n':
@@ -176,7 +178,8 @@ static bool get_asmline( char *ptr, unsigned max, FILE *fp )
                 LineNumber++;
                 skip = false;
                 /*
-                 * don't store character in string
+                 * does not save the '\n' character after the continuation
+                 * character '\\' in the string
                  */
                 continue;
             }
@@ -216,7 +219,8 @@ void PushLineQueue( void )
 
 bool PopLineQueue( void )
 /************************
- * remove a line queue from the top of the stack & throw it away
+ * remove a line queue from the top of the
+ * stack & throw it away
  */
 {
     input_queue *tmp;
@@ -249,25 +253,24 @@ static line_list *enqueue( void )
 {
     line_list   *new;
 
-    new = AsmAlloc( sizeof( line_list ) );
-    new->next = NULL;
-
     if( line_queue == NULL ) {
         line_queue = AsmAlloc( sizeof( input_queue ) );
         line_queue->next = NULL;
         line_queue->lines.tail = NULL;
         line_queue->lines.head = NULL;
     }
-
+    new = AsmAlloc( sizeof( line_list ) );
+    /*
+     * add new item to the end of list
+     */
+    new->next = NULL;
     if( line_queue->lines.head == NULL ) {
         line_queue->lines.head = new;
     } else {
-        /*
-         * insert at the tail
-         */
         line_queue->lines.tail->next = new;
     }
     line_queue->lines.tail = new;
+
     return( new );
 }
 
@@ -441,10 +444,7 @@ static char *input_get( char *string )
             /*
              * EOF is reached
              */
-            file_stack = inputfile->next;
             fclose( inputfile->u.file );
-            LineNumber = inputfile->line_num;
-            AsmFree( inputfile );
         } else {
             /*
              * this "file" is just a line queue for a macro
@@ -459,12 +459,11 @@ static char *input_get( char *string )
                 return( string );
             }
             MacroEnd( false );
-
-            file_stack = inputfile->next;
             AsmFree( inputfile->u.data );
-            LineNumber = inputfile->line_num;
-            AsmFree( inputfile );
         }
+        file_stack = inputfile->next;
+        LineNumber = inputfile->line_num;
+        AsmFree( inputfile );
     }
     return( NULL );
 }
@@ -714,7 +713,7 @@ void AsmByte( unsigned char byte )
 #if defined( _STANDALONE_ )
     if( CheckHaveSeg() ) {
         (CurrSeg->seg->e.seginfo->current_loc)++;
-        if( CurrSeg->seg->e.seginfo->current_loc >= CurrSeg->seg->e.seginfo->length ) {
+        if( CurrSeg->seg->e.seginfo->length < CurrSeg->seg->e.seginfo->current_loc  ) {
             CurrSeg->seg->e.seginfo->length = CurrSeg->seg->e.seginfo->current_loc;
         }
         if( Parse_Pass != PASS_1

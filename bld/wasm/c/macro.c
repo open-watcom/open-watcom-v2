@@ -65,12 +65,12 @@ static asmline *asmline_append( asmlines *lines, char *line )
 {
     asmline *entry;
 
-    /*
-     * add macro line to the end of macro lines list
-     */
     entry = AsmAlloc( sizeof( asmline ) );
     entry->parmcount = 0;
     entry->line = AsmStrDup( line );
+    /*
+     * add macro line to the end of macro lines list
+     */
     entry->next = NULL;
     if( lines->head == NULL ) {
         lines->head = entry;
@@ -78,6 +78,7 @@ static asmline *asmline_append( asmlines *lines, char *line )
         lines->tail->next = entry;
     }
     lines->tail = entry;
+
     return( entry );
 }
 

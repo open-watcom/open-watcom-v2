@@ -64,8 +64,8 @@ bool StructDef( token_buffer *tokbuf, token_idx i )
 
     if( Options.mode & MODE_IDEAL ) {
         n = i + 1;
-        if( ( tokbuf->tokens[i].u.token == T_STRUC ) &&
-            ( tokbuf->tokens[n].class != TC_ID ) ) {
+        if( ( tokbuf->tokens[i].u.token == T_STRUC )
+          && ( tokbuf->tokens[n].class != TC_ID ) ) {
             AsmError( SYNTAX_ERROR );
             return( RC_ERROR );
         }
@@ -75,7 +75,8 @@ bool StructDef( token_buffer *tokbuf, token_idx i )
         } else {
             n = INVALID_IDX;
         }
-        if( ISINVALID_IDX( n ) || ( tokbuf->tokens[n].class != TC_ID ) ) {
+        if( ISINVALID_IDX( n )
+          || ( tokbuf->tokens[n].class != TC_ID ) ) {
             AsmError( SYNTAX_ERROR );
             return( RC_ERROR );
         }
@@ -90,7 +91,8 @@ bool StructDef( token_buffer *tokbuf, token_idx i )
                 dir = dir_insert( name, TAB_STRUCT );
             } else if( dir->sym.state == SYM_UNDEFINED ) {
                 dir_change( dir, TAB_STRUCT );
-            } else if( ( dir->sym.state == SYM_STRUCT ) && (Options.mode & MODE_IDEAL) ) {
+            } else if( ( dir->sym.state == SYM_STRUCT )
+              && (Options.mode & MODE_IDEAL) ) {
                 /* Redefinition of structure */
                 FreeInfo( dir );
                 dir_init( dir, TAB_STRUCT );
@@ -117,8 +119,8 @@ bool StructDef( token_buffer *tokbuf, token_idx i )
                 return( RC_ERROR );
             }
         }
-        if( Definition.curr_struct != NULL &&
-            strcmp( name, Definition.curr_struct->sym.name ) == 0 ) {
+        if( Definition.curr_struct != NULL
+          && strcmp( name, Definition.curr_struct->sym.name ) == 0 ) {
             /* this is the right struct ... so end it */
             Definition.curr_struct = pop( &Definition.struct_stack );
             Definition.struct_depth--;
@@ -257,7 +259,9 @@ int AddFieldToStruct( asm_sym *sym, token_buffer *tokbuf, token_idx loc )
         }
         strcat( f->value, " " );
     }
-
+    /*
+     * add new field to the end of list
+     */
     f->next = NULL;
     if( the_struct->fields.head == NULL ) {
         the_struct->fields.head = f;
