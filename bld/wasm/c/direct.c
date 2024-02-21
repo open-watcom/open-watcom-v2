@@ -2962,7 +2962,7 @@ bool LocalDef( token_buffer *tokbuf, token_idx i )
             type = token_cmp( tokbuf->tokens[i].string_ptr, TOK_EXT_BYTE, TOK_EXT_TBYTE );
             if( type == TOK_INVALID ) {
                 tmp = AsmGetSymbol( tokbuf->tokens[i].string_ptr );
-                if( tmp == NULL && tmp->state != SYM_STRUCT ) {
+                if( tmp == NULL || tmp->state != SYM_STRUCT ) {
                     AsmError( INVALID_QUALIFIED_TYPE );
                     return( RC_ERROR );
                 }
