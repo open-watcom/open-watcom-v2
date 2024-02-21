@@ -493,7 +493,8 @@ static asm_sym **SortAsmSyms( void )
 {
     asm_sym         **syms;
     asm_sym         *sym;
-    unsigned        i, j;
+    unsigned        i;
+    unsigned        j;
 
     syms = AsmAlloc( AsmSymCount * sizeof( asm_sym * ) );
     if( syms != NULL ) {
@@ -510,7 +511,7 @@ static asm_sym **SortAsmSyms( void )
 }
 
 static const char *get_seg_align( seg_info *seg )
-/****************************************/
+/***********************************************/
 {
     switch( seg->align ) {
     case ALIGN_ABS:
@@ -657,7 +658,8 @@ static void log_symbol( asm_sym *sym )
         const_info  *cst = dir->e.constinfo;
 
         LstMsg( "%s %s        ", sym->name, dots + strlen( sym->name ) + 1 );
-        if( cst->count && cst->tokens[0].class != TC_NUM ) {
+        if( cst->count
+          && cst->tokens[0].class != TC_NUM ) {
             LstMsg( "Text     %s\n", cst->tokens[0].string_ptr );
         } else {
             LstMsg( "Number   %04Xh\n", ( cst->count ) ? cst->tokens[0].u.value : 0 );

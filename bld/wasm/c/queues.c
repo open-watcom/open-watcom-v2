@@ -53,7 +53,7 @@ static qdesc   *LinnumQueue = NULL;   // queue of linnum_data structs
 static void QAddItem( qdesc **queue, void *data )
 /***********************************************/
 {
-    struct queuenode    *node;
+    queuenode   *node;
 
     node = AsmAlloc( sizeof( queuenode ) );
     node->data = data;
@@ -111,15 +111,15 @@ void AddPublicProc( dir_node *dir )
 bool GetPublicData( void )
 /************************/
 {
-    obj_rec             *objr;
-    struct queuenode    *start;
-    struct queuenode    *curr;
-    struct queuenode    *last;
-    dir_node            *curr_seg;
-    dir_node            *dir;
-    struct pubdef_data  *d;
-    unsigned char       cmd;
-    name_handle         i;
+    obj_rec         *objr;
+    queuenode       *start;
+    queuenode       *curr;
+    queuenode       *last;
+    dir_node        *curr_seg;
+    dir_node        *dir;
+    pubdef_data     *d;
+    unsigned char   cmd;
+    name_handle     i;
 
     if( PubQueue == NULL )
         return( false );
@@ -312,7 +312,7 @@ static void FreeLnameQueue( void )
 }
 
 void AddLinnumData( line_num_info *data )
-/**********************************************/
+/***************************************/
 {
     QAddItem( &LinnumQueue, data );
 }

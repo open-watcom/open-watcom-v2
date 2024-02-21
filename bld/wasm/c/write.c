@@ -970,10 +970,11 @@ int get_fixup_list( unsigned long start, fixuprec **fl )
     }
 }
 
-static void check_need_32bit( obj_rec *objr ) {
-/**********************************************/
-/* figure out if we need the 16-bit or 32-bit form of a fixup record */
-
+static void check_need_32bit( obj_rec *objr )
+/********************************************
+ * figure out if we need the 16-bit or 32-bit form of a fixup record
+ */
+{
     fixuprec        *fix;
 
     fix = objr->u.fixupp.fixup;

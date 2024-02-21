@@ -33,7 +33,6 @@
 #include <string.h>
 #include "asmglob.h"
 #include "omfgenio.h"
-#include "pcobj.h"
 #include "asmalloc.h"
 #include "directiv.h"
 #include "omfobjre.h"

@@ -33,7 +33,6 @@
 
 #include <stddef.h>
 #include "asmglob.h"
-#include "pcobj.h"
 #include "asmalloc.h"
 #include "omffixup.h"
 #include "omfcarve.h"
@@ -63,7 +62,7 @@ fixuprec *FixNew( void )
 fixuprec *FixDup( const fixuprec *fix )
 /*************************************/
 {
-    fixuprec *new;
+    fixuprec     *new;
 
     if( fix == NULL ) {
         return( NULL );
@@ -111,14 +110,16 @@ static uint_8 *putFrameDatum( uint_8 *p, uint_8 method, uint_16 datum )
     case FRAME_ABS:
         return( put16( p, datum ) );
     }
-    /* for FRAME_LOC, FRAME_TARG, and FRAME_NONE there is nothing to output */
+    /*
+     * for FRAME_LOC, FRAME_TARG, and FRAME_NONE there is nothing to output
+     */
     return( p );
 }
 
 static uint_8 *putTargetDatum( uint_8 *p, uint_8 method, uint_16 datum )
 {
 /**/myassert( p != NULL );
-    if( ( method & 0x03 ) == TARGET_ABS ) {
+    if( (method & 0x03) == TARGET_ABS ) {
         return( put16( p, datum ) );
     }
     return( putIndex( p, datum ) );
@@ -127,18 +128,18 @@ static uint_8 *putTargetDatum( uint_8 *p, uint_8 method, uint_16 datum )
 uint_16 FixGenLRef( logref *log, uint_8 *buf, int type )
 /******************************************************/
 {
-    uint_8  *p;
-    uint_8  target;
+    uint_8      *p;
+    uint_8      target;
 
 /**/myassert( log != NULL );
 /**/myassert( buf != NULL );
 /**/myassert( type == FIX_GEN_INTEL || type == FIX_GEN_MS386 );
 
     /*
-        According to the discussion on p102 of the Intel OMF document, we
-        cannot just arbitrarily write fixups without a displacment if their
-        displacement field is 0.  So we use the is_secondary field.
-    */
+     * According to the discussion on p102 of the Intel OMF document, we
+     * cannot just arbitrarily write fixups without a displacment if their
+     * displacement field is 0.  So we use the is_secondary field.
+     */
     target = log->target;
     if( log->target_offset == 0 && log->is_secondary ) {
         target |= 0x04;
@@ -147,7 +148,7 @@ uint_16 FixGenLRef( logref *log, uint_8 *buf, int type )
     *p++ = ( log->frame << 4 ) | ( target );
     p = putFrameDatum( p, log->frame, log->frame_datum );
     p = putTargetDatum( p, target, log->target_datum );
-    if( ( target & 0x04 ) == 0 ) {
+    if( (target & 0x04) == 0 ) {
         if( type == FIX_GEN_MS386 ) {
             p = put32( p, (uint_32)log->target_offset );
         } else {
@@ -160,7 +161,7 @@ uint_16 FixGenLRef( logref *log, uint_8 *buf, int type )
 uint_16 FixGenPRef( physref *ref, uint_8 *buf, int type )
 /*******************************************************/
 {
-    uint_8  *p;
+    uint_8      *p;
 
 /**/myassert( ref != NULL );
 /**/myassert( buf != NULL );
@@ -186,9 +187,9 @@ uint_16 FixGenRef( logphys *ref, int is_logical, uint_8 *buf, int type )
 uint_16 FixGenFix( fixuprec *fix, uint_8 *buf, int type )
 /*******************************************************/
 {
-    uint_8  *p;
-    uint_8  byte;
-    uint_16 data_rec_offset;
+    uint_8      *p;
+    uint_8      byte;
+    uint_16     data_rec_offset;
 
 /**/myassert( fix != NULL );
 /**/myassert( buf != NULL );

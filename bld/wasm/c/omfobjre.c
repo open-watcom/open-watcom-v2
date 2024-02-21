@@ -35,7 +35,6 @@
 #include "asmglob.h"
 #include "asmalloc.h"
 #include "omfobjre.h"
-#include "pcobj.h"
 #include "myassert.h"
 #include "omfcarve.h"
 #include "omffixup.h"

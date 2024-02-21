@@ -109,6 +109,11 @@ typedef enum {
     SEGTYPE_ISCODE
 } seg_type;
 
+/*
+ * forward declaration
+ */
+typedef struct dir_node dir_node;
+
 /*---------------------------------------------------------------------------*/
 
 typedef struct stacknode {
@@ -123,7 +128,7 @@ typedef struct stacknode {
 
 typedef struct seg_list {
     struct seg_list     *next;
-    struct dir_node     *seg;
+    dir_node            *seg;
 } seg_list;
 
 typedef struct {

@@ -559,16 +559,16 @@ static void dir_add( dir_node *new, int tab )
     /*
      * note: this is only for those above which do NOT return right away
      * put the new entry into the queue for its type of symbol
+     * add item to the end of linked list
      */
+    new->next = NULL;
+    new->prev = Tables[tab].tail;
     if( Tables[tab].head == NULL ) {
-        Tables[tab].head = Tables[tab].tail = new;
-        new->next = new->prev = NULL;
+        Tables[tab].head = new;
     } else {
-        new->prev = Tables[tab].tail;
         Tables[tab].tail->next = new;
-        Tables[tab].tail = new;
-        new->next = NULL;
     }
+    Tables[tab].tail = new;
 }
 
 void dir_init( dir_node *dir, int tab )
@@ -671,12 +671,11 @@ static void dir_move_to_tail( dir_node *dir, int tab )
 {
     if( dir->next == NULL )
         return;
+    dir->next->prev = dir->prev;
     if( dir->prev == NULL ) {
         Tables[tab].head = dir->next;
-        dir->next->prev = NULL;
     } else {
         dir->prev->next = dir->next;
-        dir->next->prev = dir->prev;
     }
     dir->prev = Tables[tab].tail;
     dir->prev->next = dir;
@@ -3113,7 +3112,8 @@ static bool GetArgType( proc_info *info, const char *token, const char *typetoke
     case WASM_LANG_PASCAL:
         /*
          * for these calling conventions parameters are stored in reverse order
-         * new parameter is added to beginig of list
+         *
+         * add parameter to the begining of linked list
          */
         paramnode->next = info->params.head;
         if( info->params.head == NULL ) {
@@ -3124,7 +3124,8 @@ static bool GetArgType( proc_info *info, const char *token, const char *typetoke
     default:
         /*
          * for others calling conventions parameters are stored in native order
-         * new parameter is added to end of list
+         *
+         * add parameter to the end of linked list
          */
         paramnode->next = NULL;
         if( info->params.head == NULL ) {
