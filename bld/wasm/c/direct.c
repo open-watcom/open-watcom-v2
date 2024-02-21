@@ -1465,8 +1465,8 @@ bool SegDef( token_buffer *tokbuf, token_idx i )
 /**********************************************/
 {
     const char          *token;
-    seg_info            *new;
-    seg_info            *old;
+    seg_info            *new_info;
+    seg_info            *old_info;
     int                 type;       // type of option
     uint                initstate;  // to show if a field is initialized
     dir_node            *seg;
@@ -1505,55 +1505,55 @@ bool SegDef( token_buffer *tokbuf, token_idx i )
              * segment is not defined
              */
             seg = dir_insert( name, TAB_SEG );
-            old = new = seg->e.seginfo;
+            old_info = new_info = seg->e.seginfo;
         } else if ( seg->sym.state == SYM_SEG ) {
             /*
              * segment already defined
              */
-            old = seg->e.seginfo;
+            old_info = seg->e.seginfo;
             if( seg->sym.segment == NULL ) {
                 /*
                  * segment was mentioned in a group statement,
                  * but not really set up
                  */
-                new = old;
+                new_info = old_info;
             } else {
-                new = AsmAlloc( sizeof( seg_info ) );
+                new_info = AsmAlloc( sizeof( seg_info ) );
             }
         } else {
             /*
              * symbol is different kind, change to segment
              */
             dir_change( seg, TAB_SEG );
-            old = new = seg->e.seginfo;
+            old_info = new_info = seg->e.seginfo;
         }
         /*
          * Setting up default values
          */
-        if( new == old ) {
-            new->align = ALIGN_PARA;
-            new->combine = COMB_INVALID;
-            new->use32 = ModuleInfo.def_use32;
-            new->class_name = InsertClassLname( "" );
-            new->readonly = false;
-            new->iscode = SEGTYPE_UNDEF;
+        if( new_info == old_info ) {
+            new_info->align = ALIGN_PARA;
+            new_info->combine = COMB_INVALID;
+            new_info->use32 = ModuleInfo.def_use32;
+            new_info->class_name = InsertClassLname( "" );
+            new_info->readonly = false;
+            new_info->iscode = SEGTYPE_UNDEF;
         } else {
-            new->readonly = old->readonly;
-            new->iscode = old->iscode;
-            new->align = old->align;
-            new->combine = old->combine;
-            if( !old->ignore ) {
-                new->use32 = old->use32;
+            new_info->readonly = old_info->readonly;
+            new_info->iscode = old_info->iscode;
+            new_info->align = old_info->align;
+            new_info->combine = old_info->combine;
+            if( !old_info->ignore ) {
+                new_info->use32 = old_info->use32;
             } else {
-                new->use32 = ModuleInfo.def_use32;
+                new_info->use32 = ModuleInfo.def_use32;
             }
-            new->class_name = old->class_name;
+            new_info->class_name = old_info->class_name;
         }
-        new->ignore = false; // always false unless set explicitly
-        new->length = 0;
+        new_info->ignore = false; // always false unless set explicitly
+        new_info->length = 0;
 
         if( lastseg.stack_size > 0 ) {
-            new->length = lastseg.stack_size;
+            new_info->length = lastseg.stack_size;
             lastseg.stack_size = 0;
         }
 
@@ -1575,8 +1575,8 @@ bool SegDef( token_buffer *tokbuf, token_idx i )
                  * the class name - the only token which is of type STRING
                  */
                 token = tokbuf->tokens[i].string_ptr;
-                new->class_name = InsertClassLname( token );
-                if( new->class_name == NULL ) {
+                new_info->class_name = InsertClassLname( token );
+                if( new_info->class_name == NULL ) {
                     goto error;
                 }
                 continue;
@@ -1611,35 +1611,35 @@ bool SegDef( token_buffer *tokbuf, token_idx i )
             }
             switch( type ) {
             case TOK_READONLY:
-                new->readonly = true;
+                new_info->readonly = true;
                 break;
             case TOK_BYTE:
             case TOK_WORD:
             case TOK_DWORD:
             case TOK_PARA:
             case TOK_PAGE:
-                new->align = (uint_8)TypeInfo[type].value;
+                new_info->align = (uint_8)TypeInfo[type].value;
                 break;
             case TOK_PRIVATE:
             case TOK_PUBLIC:
             case TOK_STACK:
             case TOK_COMMON:
             case TOK_MEMORY:
-                new->combine = (uint_8)TypeInfo[type].value;
+                new_info->combine = (uint_8)TypeInfo[type].value;
                 break;
             case TOK_USE16:
             case TOK_USE32:
-                new->use32 = ( TypeInfo[type].value != 0 );
+                new_info->use32 = ( TypeInfo[type].value != 0 );
                 break;
             case TOK_IGNORE:
-                new->ignore = true;
+                new_info->ignore = true;
                 break;
             case TOK_AT:
-                new->align = SEGDEF_ALIGN_ABS;
+                new_info->align = SEGDEF_ALIGN_ABS;
                 ExpandTheWorld( tokbuf, i + 1, false, true );
                 if( tokbuf->tokens[i + 1].class == TC_NUM ) {
                     i++;
-                    new->abs_frame = (uint_16)tokbuf->tokens[i].u.value;
+                    new_info->abs_frame = (uint_16)tokbuf->tokens[i].u.value;
                 } else {
                     AsmError( UNDEFINED_SEGMENT_OPTION );
                     goto error;
@@ -1650,39 +1650,39 @@ bool SegDef( token_buffer *tokbuf, token_idx i )
                 goto error;
             }
         }
-        token = new->class_name->name;
-        if( new->iscode != SEGTYPE_ISCODE ) {
+        token = new_info->class_name->name;
+        if( new_info->iscode != SEGTYPE_ISCODE ) {
             seg_type res;
 
             res = ClassNameType( token );
             if( res != SEGTYPE_UNDEF ) {
-                new->iscode = res;
+                new_info->iscode = res;
             } else {
                 res = SegmentNameType( name );
-                new->iscode = res;
+                new_info->iscode = res;
             }
         }
 
-        if( new == old ) {
+        if( new_info == old_info ) {
             /*
-             * A new definition
+             * A new_info definition
              */
-            new->start_loc = 0;
-            new->current_loc = 0;
+            new_info->start_loc = 0;
+            new_info->current_loc = 0;
             seg->sym.segment = &seg->sym;
             seg->sym.offset = 0;
             dir_move_to_tail( seg, TAB_SEG );
             AddLnameData( seg );
-        } else if( !old->ignore
-          && !new->ignore ) {
+        } else if( !old_info->ignore
+          && !new_info->ignore ) {
             /*
-             * Check if new definition is different from previous one
+             * Check if new_info definition is different from previous one
              */
-            if( ( old->readonly != new->readonly )
-              || ( old->align != new->align )
-              || ( old->combine != new->combine )
-              || ( old->use32 != new->use32 )
-              || ( old->class_name != new->class_name ) ) {
+            if( ( old_info->readonly != new_info->readonly )
+              || ( old_info->align != new_info->align )
+              || ( old_info->combine != new_info->combine )
+              || ( old_info->use32 != new_info->use32 )
+              || ( old_info->class_name != new_info->class_name ) ) {
                 AsmError( SEGDEF_CHANGED );
                 goto error;
             } else {
@@ -1690,28 +1690,28 @@ bool SegDef( token_buffer *tokbuf, token_idx i )
                  * definition is the same as before
                  */
             }
-        } else if( old->ignore ) {
+        } else if( old_info->ignore ) {
             /*
-             * reset to the new values
+             * reset to the new_info values
              */
-            old->align = new->align;
-            old->combine = new->combine;
-            old->readonly = new->readonly;
-            old->iscode = new->iscode;
-            old->ignore = new->ignore;
-            old->use32 = new->use32;
-            old->class_name = new->class_name;
-        } else {    // new->ignore
+            old_info->align = new_info->align;
+            old_info->combine = new_info->combine;
+            old_info->readonly = new_info->readonly;
+            old_info->iscode = new_info->iscode;
+            old_info->ignore = new_info->ignore;
+            old_info->use32 = new_info->use32;
+            old_info->class_name = new_info->class_name;
+        } else {    // new_info->ignore
             /*
-             * keep the old values
+             * keep the old_info values
              */
-            new->align = old->align;
-            new->combine = old->combine;
-            new->readonly = old->readonly;
-            new->iscode = old->iscode;
-            new->ignore = old->ignore;
-            new->use32 = old->use32;
-            new->class_name = old->class_name;
+            new_info->align = old_info->align;
+            new_info->combine = old_info->combine;
+            new_info->readonly = old_info->readonly;
+            new_info->iscode = old_info->iscode;
+            new_info->ignore = old_info->ignore;
+            new_info->use32 = old_info->use32;
+            new_info->class_name = old_info->class_name;
         }
         if( !ModuleInfo.mseg
           && ( seg->e.seginfo->use32 != ModuleInfo.use32 ) ) {
@@ -1720,8 +1720,8 @@ bool SegDef( token_buffer *tokbuf, token_idx i )
         if( seg->e.seginfo->use32 ) {
             ModuleInfo.use32 = true;
         }
-        if( new != old )
-            AsmFree( new );
+        if( new_info != old_info )
+            AsmFree( new_info );
         if( push_seg( seg ) ) {
             return( RC_ERROR );
         }
@@ -1750,8 +1750,8 @@ bool SegDef( token_buffer *tokbuf, token_idx i )
     return( SetUse32() );
 
 error:
-    if( new != old )
-        AsmFree( new );
+    if( new_info != old_info )
+        AsmFree( new_info );
     return( RC_ERROR );
 }
 
@@ -2897,7 +2897,10 @@ bool LocalDef( token_buffer *tokbuf, token_idx i )
     label_list      *local;
     proc_info       *info;
     asm_sym         *sym;
-    asm_sym         *tmp = NULL;
+    asm_sym         *tmp;
+    char            *name;
+    int             factor;
+    int             size;
 
     if( !DefineProc ) {
         AsmError( LOCAL_VAR_MUST_FOLLOW_PROC );
@@ -2908,32 +2911,28 @@ bool LocalDef( token_buffer *tokbuf, token_idx i )
 
     info = CurrProc->e.procinfo;
     i++;    /* skip LOCAL word */
-    for( ; i < tokbuf->count; i++ ) {
+    for( ; i < tokbuf->count; ) {
         if( tokbuf->tokens[i].class != TC_ID ) {
             AsmError( LABEL_IS_EXPECTED );
             return( RC_ERROR );
         }
 
-        sym = AsmLookup( tokbuf->tokens[i].string_ptr );
+        name = tokbuf->tokens[i].string_ptr;
+        sym = AsmLookup( name );
         if( sym == NULL )
             return( RC_ERROR );
 
         if( sym->state != SYM_UNDEFINED ) {
-            AsmErr( SYMBOL_PREVIOUSLY_DEFINED, sym->name );
+            AsmErr( SYMBOL_PREVIOUSLY_DEFINED, name );
             return( RC_ERROR );
         }
         sym->state = SYM_INTERNAL;
         sym->mem_type = MT_WORD;
-
-        local = AsmAlloc( sizeof( label_list ) );
-        local->label = AsmStrDup( tokbuf->tokens[i].string_ptr );
         i++;
-        local->size = LOCAL_DEFAULT_SIZE;
-        local->replace = NULL;
-        local->sym = NULL;
-        local->factor = 1;
-        local->next = NULL;
-        local->is_register = false;
+
+        size = LOCAL_DEFAULT_SIZE;
+        factor = 1;
+        tmp = NULL;
 
         if( i < tokbuf->count ) {
             if( tokbuf->tokens[i].class == TC_OP_SQ_BRACKET ) {
@@ -2943,7 +2942,7 @@ bool LocalDef( token_buffer *tokbuf, token_idx i )
                     AsmError( SYNTAX_ERROR );
                     return( RC_ERROR );
                 }
-                local->factor = tokbuf->tokens[i].u.value;
+                factor = tokbuf->tokens[i].u.value;
                 i++;
                 if( ( tokbuf->tokens[i].class != TC_CL_SQ_BRACKET )
                   || ( i >= tokbuf->count ) ) {
@@ -2964,27 +2963,30 @@ bool LocalDef( token_buffer *tokbuf, token_idx i )
             type = token_cmp( tokbuf->tokens[i].string_ptr, TOK_EXT_BYTE, TOK_EXT_TBYTE );
             if( type == TOK_INVALID ) {
                 tmp = AsmGetSymbol( tokbuf->tokens[i].string_ptr );
-                if( tmp != NULL ) {
-                    if( tmp->state == SYM_STRUCT ) {
-                        type = MT_STRUCT;
-                        local->sym = tmp;
-                    }
+                if( tmp == NULL && tmp->state != SYM_STRUCT ) {
+                    AsmError( INVALID_QUALIFIED_TYPE );
+                    return( RC_ERROR );
                 }
-            }
-            if( type == TOK_INVALID ) {
-                AsmError( INVALID_QUALIFIED_TYPE );
-                return( RC_ERROR );
-            }
-            sym->mem_type = TypeInfo[type].value;
-            if( type == MT_STRUCT ) {
-                local->size = ( ( dir_node *)tmp)->e.structinfo->size;
+                size = ( ( dir_node *)tmp)->e.structinfo->size;
+                sym->mem_type = MT_STRUCT;
             } else {
-                local->size = find_size( type );
+                size = find_size( type );
+                sym->mem_type = TypeInfo[type].value;
             }
+            i++;
         }
 
-        info->localsize += ( local->size * local->factor );
+        info->localsize += ( size * factor );
 
+        local = AsmAlloc( sizeof( label_list ) );
+        local->label = AsmStrDup( name );
+        local->size = size;
+        local->replace = NULL;
+        local->sym = tmp;
+        local->factor = factor;
+        local->is_register = false;
+
+        local->next = NULL;
         if( info->locals.head == NULL ) {
             info->locals.head = local;
         } else {
@@ -2992,10 +2994,9 @@ bool LocalDef( token_buffer *tokbuf, token_idx i )
         }
         info->locals.tail = local;
 
-        i++;
-        switch( tokbuf->tokens[i].class ) {
-        case TC_DIRECTIVE:
-            if( ( tokbuf->tokens[i].u.token == T_EQU2 )
+        if( tokbuf->tokens[i].class != TC_COMMA ) {
+            if( tokbuf->tokens[i].class == TC_DIRECTIVE
+              && ( tokbuf->tokens[i].u.token == T_EQU2 )
               && ( tokbuf->tokens[i + 1].class == TC_ID )
               && ( tokbuf->tokens[i + 2].class == TC_FINAL ) ) {
                 i++;
@@ -3003,13 +3004,11 @@ bool LocalDef( token_buffer *tokbuf, token_idx i )
                 i++;
             }
             break;
-        case TC_COMMA:
-            continue;
-        case TC_FINAL:
-        default:
-            break;
         }
-        break;
+        /*
+         * skip comma character
+         */
+        i++;
     }
     if( tokbuf->tokens[i].class != TC_FINAL ) {
         AsmError( SYNTAX_ERROR );
@@ -3175,7 +3174,7 @@ bool ArgDef( token_buffer *tokbuf, token_idx i )
         params.on_stack = false;
     }
     i++;    /* skip ARG word */
-    for( ; i < tokbuf->count; i++ ) {
+    for( ; i < tokbuf->count; ) {
         if( tokbuf->tokens[i].class != TC_ID ) {
             AsmError( LABEL_IS_EXPECTED );
             return( RC_ERROR );
@@ -3200,9 +3199,9 @@ bool ArgDef( token_buffer *tokbuf, token_idx i )
             return( RC_ERROR );
         }
         i++;
-        switch( tokbuf->tokens[i].class ) {
-        case TC_DIRECTIVE:
-            if( ( tokbuf->tokens[i].u.token == T_EQU2 )
+        if( tokbuf->tokens[i].class != TC_COMMA ) {
+            if( tokbuf->tokens[i].class == TC_DIRECTIVE
+              && ( tokbuf->tokens[i].u.token == T_EQU2 )
               && ( tokbuf->tokens[i + 1].class == TC_ID )
               && ( tokbuf->tokens[i + 2].class == TC_FINAL ) ) {
                 i++;
@@ -3210,13 +3209,11 @@ bool ArgDef( token_buffer *tokbuf, token_idx i )
                 i++;
             }
             break;
-        case TC_COMMA:
-            continue;
-        case TC_FINAL:
-        default:
-            break;
         }
-        break;
+        /*
+         * skip comma character
+         */
+        i++;
     }
     if( tokbuf->tokens[i].class != TC_FINAL ) {
         AsmError( SYNTAX_ERROR );
