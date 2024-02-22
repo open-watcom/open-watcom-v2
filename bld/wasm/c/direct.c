@@ -697,33 +697,78 @@ static void dir_move_to_tail( dir_node *dir, int tab )
     Tables[tab].tail = dir;
 }
 
-static dir_node *RemoveFromTable( dir_node *dir )
-/***********************************************/
+static int find_dir_tab( dir_node *dir )
 {
-    int tab;
+    int         func;
+    int         tab;
+    dir_node    *d;
 
+    switch( dir->sym.state ) {
+    case SYM_EXTERNAL:
+        tab = TAB_EXT;
+        break;
+    case SYM_SEG:
+        tab = TAB_SEG;
+        break;
+    case SYM_GRP:
+        tab = TAB_GRP;
+        break;
+    case SYM_PROC:
+        tab = TAB_PROC;
+        break;
+    case SYM_MACRO:
+        tab = TAB_MACRO;
+        break;
+    default:
+        if( dir->next != NULL && dir->prev != NULL ) {
+            func = 1;   /* in midle */
+        } else if( dir->next == NULL ) {
+            func = 2;   /* tail */
+        } else {
+            func = 3;   /* head */
+        }
+        for( tab = 0; tab < TAB_SIZE; tab++ ) {
+            switch( tab ) {
+            case TAB_FPPATCH:
+            case TAB_CLASS_LNAME:
+                break;
+            default:
+                if( func == 1 ) {           /* in midle */
+                    for( d = Tables[tab].head; d != NULL; d = d->next ) {
+                        if( d == dir ) {
+                            return( tab );
+                        }
+                    }
+                } else if( func == 2 ) {    /* tail */
+                    if( dir == Tables[tab].tail ) {
+                        return( tab );
+                    }
+                } else if( func == 3 ) {    /* head */
+                    if( dir == Tables[tab].head ) {
+                        return( tab );
+                    }
+                }
+                break;
+            }
+        }
+        tab = -1;
+        break;
+    }
+    return( tab );
+}
+
+static dir_node *dir_reset( dir_node *dir )
+/*****************************************/
+{
     if( dir->prev != NULL
       && dir->next != NULL ) {
         dir->next->prev = dir->prev;
         dir->prev->next = dir->next;
     } else {
-        switch( dir->sym.state ) {
-        case SYM_EXTERNAL:
-            tab = TAB_EXT;
-            break;
-        case SYM_SEG:
-            tab = TAB_SEG;
-            break;
-        case SYM_GRP:
-            tab = TAB_GRP;
-            break;
-        case SYM_PROC:
-            tab = TAB_PROC;
-            break;
-        case SYM_MACRO:
-            tab = TAB_MACRO;
-            break;
-        default:
+        int     tab;
+
+        tab = find_dir_tab( dir );
+        if( tab == -1 ) {
             return( NULL );
         }
         if( dir->next != NULL ) {
@@ -745,7 +790,7 @@ void dir_to_sym( dir_node *dir )
  */
 {
     FreeInfo( dir );
-    RemoveFromTable( dir);
+    dir_reset( dir );
     dir->sym.state = SYM_UNDEFINED;
 }
 
@@ -755,7 +800,7 @@ void dir_change( dir_node *dir, int tab )
  */
 {
     FreeInfo( dir );
-    RemoveFromTable( dir);
+    dir_reset( dir );
     dir_init( dir, tab );
 }
 
