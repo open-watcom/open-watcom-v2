@@ -46,7 +46,7 @@ runs:
       artifact: "build ${{ inputs.arch }}"
       tools:    ${{ inputs.tools }}
       owdebug:  ${{ inputs.owdebug }}
-  - if: inputs.arch == 'lnx' || inputs.arch == 'osx'
+  - if: inputs.arch == 'lnx'
     name: Build
     run: ${{ inputs.bldscript }} ${{ inputs.tools }}
     env:
@@ -69,6 +69,17 @@ runs:
       OWDEBUG:       ${{ inputs.owdebug }}
       OWVERBOSE:     1
     shell: cmd
+  - if: inputs.arch == 'osx'
+    name: Build
+    run: ${{ inputs.bldscript }} ${{ inputs.tools }}
+    env:
+      OWBUILD_STAGE: 'build'
+      OWTOOLS:       ${{ inputs.owtools }}
+      OWROOT:        ${{ github.workspace }}
+      OWDOSBOX:      'dosbox-x'
+      OWDEBUG:       ${{ inputs.owdebug }}
+      OWVERBOSE:     1
+    shell: bash
   - if: inputs.arch == 'lnx' || inputs.arch == 'nt'
     uses: "./.github/actions/artfsave"
     with:
