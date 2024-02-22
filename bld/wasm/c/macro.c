@@ -66,7 +66,7 @@ static asmline *asmline_append( asmlines *lines, char *line )
     asmline *entry;
 
     entry = AsmAlloc( sizeof( asmline ) );
-    entry->parmcount = 0;
+    entry->paramscount = 0;
     entry->line = AsmStrDup( line );
     /*
      * add macro line to the end of macro lines list
@@ -82,9 +82,9 @@ static asmline *asmline_append( asmlines *lines, char *line )
     return( entry );
 }
 
-static char *replace_parm( parm_list *parm, char *start, size_t len, asmline *linestruct )
+static char *replace_param( parm_list *param, char *start, size_t len, asmline *lineinfo )
 /*****************************************************************************************
- * search through parm list for word pointed at by start,
+ * search through params list for word pointed at by start,
  * if you find it, set up the line string
  * this is similar to a printf format string
  * the placeholders are of the form #dd ( #, digit, digit )
@@ -98,11 +98,11 @@ static char *replace_parm( parm_list *parm, char *start, size_t len, asmline *li
     size_t          before;             // length of text before placeholder
     char            count = 0;
 
-    old_line = linestruct->line;
-    for( ; parm != NULL; parm = parm->next ) {
-        if( ( parm->label != NULL )
-          && ( strlen( parm->label ) == len )
-          && ( strncmp( start, parm->label, len ) == 0 ) ) {
+    old_line = lineinfo->line;
+    for( ; param != NULL; param = param->next ) {
+        if( ( param->label != NULL )
+          && ( strlen( param->label ) == len )
+          && ( strncmp( start, param->label, len ) == 0 ) ) {
             /*
              * hey! it matches!
              */
@@ -121,8 +121,8 @@ static char *replace_parm( parm_list *parm, char *start, size_t len, asmline *li
             if( *(start + len) == '&' )
                 len++;
             strcat( new_line, start + len );
-            linestruct->line = new_line;
-            linestruct->parmcount++;
+            lineinfo->line = new_line;
+            lineinfo->paramscount++;
 
             AsmFree( old_line );
             /*
@@ -135,8 +135,8 @@ static char *replace_parm( parm_list *parm, char *start, size_t len, asmline *li
     return( start + len );
 }
 
-static char *replace_label( local_label *locallabel, char *start, size_t len, asmline *linestruct )
-/**************************************************************************************************
+static char *replace_label( local_label *locallabel, char *start, size_t len, asmline *lineinfo )
+/************************************************************************************************
  * search through local label list for word pointed at by start,
  * if you find it, replace it by real label in the line string
  * this allows up to 100 parameters - lots :)
@@ -147,7 +147,7 @@ static char *replace_label( local_label *locallabel, char *start, size_t len, as
     char            *old_line;
     size_t          before;             // length of text before word
 
-    old_line = linestruct->line;
+    old_line = lineinfo->line;
     for( ; locallabel != NULL; locallabel = locallabel->next ) {
         if( ( locallabel->local_len == len )
           && ( strncmp( start, locallabel->local, len ) == 0 ) ) {
@@ -178,7 +178,7 @@ static char *replace_label( local_label *locallabel, char *start, size_t len, as
             if( *(start + len) == '&' )
                 len++;
             strcpy( new_line + before + locallabel->label_len, start + len );
-            linestruct->line = new_line;
+            lineinfo->line = new_line;
 
             AsmFree( old_line );
             /*
@@ -310,7 +310,7 @@ static bool macro_local( token_buffer *tokbuf, macro_info *info )
         locallabel->label = NULL;
         locallabel->label_len = 0;
         /*
-         * add to the begining of list
+         * add to the head of linked list
          */
         locallabel->next = info->labels.head;
         if( info->labels.head == NULL ) {
@@ -366,7 +366,7 @@ static bool macro_exam( token_buffer *tokbuf, token_idx i )
             char        *def_value;
             bool        required;
             /*
-             * first get the parm. name
+             * first get the param name
              */
             name = tokbuf->tokens[i].string_ptr;
             i++;
@@ -403,7 +403,7 @@ static bool macro_exam( token_buffer *tokbuf, token_idx i )
             paramnode->def = AsmStrDup( def_value );
             paramnode->required = required;
             /*
-             * add to the end of list
+             * add to the tail of linked list
              */
             paramnode->next = NULL;
             if( info->params.head == NULL ) {
@@ -455,7 +455,7 @@ static bool macro_exam( token_buffer *tokbuf, token_idx i )
      */
     for( ;; ) {
         char        *ptr;
-        asmline     *linestruct;
+        asmline     *lineinfo;
         bool        quote;
 
         if( lineis( line, "endm" ) ) {
@@ -480,15 +480,15 @@ static bool macro_exam( token_buffer *tokbuf, token_idx i )
         }
 
         if( store_data ) {
-            linestruct = asmline_append( &(info->lines), line );
-            line = linestruct->line;
+            lineinfo = asmline_append( &(info->lines), line );
+            line = lineinfo->line;
             quote = false;
             for( ; *line != '\0'; ) {
                 char    *start;
 
                 start = find_replacement_items( &line, &quote );
                 if( start != NULL ) {
-                    line = replace_parm( info->params.head, start, line - start, linestruct );
+                    line = replace_param( info->params.head, start, line - start, lineinfo );
                 }
             }
         }
@@ -502,14 +502,14 @@ static bool macro_exam( token_buffer *tokbuf, token_idx i )
 
 static size_t my_sprintf( char *dest, char *format, int argc, char *argv[] )
 /***************************************************************************
- * just like sprintf, except take argv & argc for parms
- * so far it only handles string parms
+ * just like sprintf, except take argv & argc for params
+ * so far it only handles string params
  */
 {
     char buffer[3];
     char *start;
     char *end;
-    int  parmno;
+    int  paramno;
 
     /* unused parameters */ (void)argc;
 
@@ -536,77 +536,75 @@ static size_t my_sprintf( char *dest, char *format, int argc, char *argv[] )
         buffer[0] = end[1];
         buffer[1] = end[2];
         buffer[2] = '\0';
-        parmno = atoi( buffer );
+        paramno = atoi( buffer );
         strncat( dest, start, end - start );
-        /**/myassert( parmno < argc );
-        if( argv[parmno] != NULL ) {
-            strcat( dest, argv[parmno] );
+        /**/myassert( paramno < argc );
+        if( argv[paramno] != NULL ) {
+            strcat( dest, argv[paramno] );
         }
     }
     return( strlen( dest ) );
 }
 
-static char *fill_in_parms_and_labels( char *line, macro_info *info )
-/*******************************************************************/
+static char *fill_in_params_and_labels( char *line, macro_info *info )
+/********************************************************************/
 {
     char                buffer[MAX_LINE_LEN];
-    parm_list           *parm;
+    parm_list           *param;
     char                *new_line;
-    char                **parm_array; /* array of ptrs to parm replace str's */
+    char                **param_array; /* array of ptrs to param replace str's */
     int                 count;
-    asmline             linestruct;
+    asmline             lineinfo;
     bool                quote;
     char                *start;
 
-    linestruct.line = NULL;
+    lineinfo.line = NULL;
     if( info->labels.head != NULL ) {
         /*
          * replace macro local labels by internal symbols
          */
-        linestruct.line = line = AsmStrDup( line );
+        lineinfo.line = line = AsmStrDup( line );
         quote = false;
         for( ; *line != '\0'; ) {
             start = find_replacement_items( &line, &quote );
             if( start != NULL ) {
-                line = replace_label( info->labels.head, start, line - start, &linestruct );
+                line = replace_label( info->labels.head, start, line - start, &lineinfo );
             }
         }
-        line = linestruct.line;
+        line = lineinfo.line;
     }
     count = 0;
-    for( parm = info->params.head; parm != NULL; parm = parm->next ) {
+    for( param = info->params.head; param != NULL; param = param->next ) {
         count++;
     }
     if( count > 0 ) {
-        parm_array = AsmAlloc( count * sizeof( char * ) );
+        param_array = AsmAlloc( count * sizeof( char * ) );
         count = 0;
-        for( parm = info->params.head; parm != NULL; parm = parm->next ) {
-            parm_array[count] = parm->replace;
+        for( param = info->params.head; param != NULL; param = param->next ) {
+            param_array[count] = param->replace;
             count++;
         }
         /*
          * replace parameters by actual values
          */
-        my_sprintf( buffer, line, count, parm_array );
+        my_sprintf( buffer, line, count, param_array );
         new_line = AsmStrDup( buffer );
-        AsmFree( parm_array );
+        AsmFree( param_array );
     } else {
         new_line = AsmStrDup( line );
     }
     if( info->labels.head != NULL ) {
-        AsmFree( linestruct.line );
+        AsmFree( lineinfo.line );
     }
     return( new_line );
 }
 
-static void reset_parmlist( parm_list *head )
-/*******************************************/
+static void reset_paramslist( parm_list *param )
+/**********************************************/
 {
-    parm_list *parm;
-
-    for( parm = head; parm != NULL; parm = parm->next ) {
-        AsmFree( parm->replace );
-        parm->replace = NULL;
+    for( ; param != NULL; param = param->next ) {
+        AsmFree( param->replace );
+        param->replace = NULL;
     }
 }
 
@@ -617,8 +615,8 @@ bool ExpandMacro( token_buffer *tokbuf )
     dir_node    *dir;
     asm_sym     *sym = NULL;
     macro_info  *info;
-    parm_list   *parm;
-    asmline     *linestruct;
+    parm_list   *param;
+    asmline     *lineinfo;
     char        *line;
     token_idx   i;
     token_idx   macro_name_loc;
@@ -682,30 +680,30 @@ bool ExpandMacro( token_buffer *tokbuf )
     i = macro_name_loc + 1;
     /*
      * now get all the parameters from asmbuffer
-     * they should alternate: parm /  comma
+     * they should alternate: param /  comma
      */
     DebugMsg(( "Macro expansion:  %s \n", tokbuf->tokens[i - 1].string_ptr ));
     dir = (dir_node *)sym;
     info = dir->e.macroinfo;
 
-    for( parm = info->params.head; parm != NULL; parm = parm->next ) {
+    for( param = info->params.head; param != NULL; param = param->next ) {
         p = buffer;
         if( i < tokbuf->count ) {
             if( tokbuf->tokens[i].class == TC_COMMA
               || ( tokbuf->tokens[i].class == TC_STRING
               && strlen( tokbuf->tokens[i].string_ptr ) == 0 ) ) {
                 /*
-                 * blank parm
+                 * blank param
                  */
-                if( parm->required ) {
+                if( param->required ) {
                     AsmError( PARM_REQUIRED );
                     return( RC_ERROR );
                 }
-                if( parm->def != NULL ) {
+                if( param->def != NULL ) {
                     /*
                      * fill in the default value
                      */
-                    parm->replace = AsmStrDup( parm->def );
+                    param->replace = AsmStrDup( param->def );
                 }
                 if( tokbuf->tokens[i].class != TC_COMMA ) {
                     i++;
@@ -721,7 +719,7 @@ bool ExpandMacro( token_buffer *tokbuf )
                 i++;
             } else {
                 /*
-                 * we have a parm! :)
+                 * we have a param! :)
                  */
                 for( ;; ) {
                     if( tokbuf->tokens[i].class == TC_FINAL )
@@ -763,7 +761,7 @@ bool ExpandMacro( token_buffer *tokbuf )
                     } else {
                         bool expanded;
                         if( ExpandSymbol( tokbuf, i, false, &expanded ) ) {
-                            reset_parmlist( info->params.head );
+                            reset_paramslist( info->params.head );
                             return( RC_ERROR );
                         }
                         if( expanded ) {
@@ -783,25 +781,25 @@ bool ExpandMacro( token_buffer *tokbuf )
                     i++;
                 }
                 *p = '\0';
-                parm->replace = AsmStrDup( buffer );
+                param->replace = AsmStrDup( buffer );
                 /*
                  * go past the comma
                  */
                 i++;
             }
         } else {
-            if( parm->required ) {
+            if( param->required ) {
                 AsmError( PARM_REQUIRED );
                 return( RC_ERROR );
             }
         }
     }
     /*
-     * now actually fill in the actual parms
+     * now actually fill in the actual params
      */
     PushLineQueue();
-    for( linestruct = info->lines.head; linestruct != NULL; linestruct = linestruct->next ) {
-        line = fill_in_parms_and_labels( linestruct->line, info );
+    for( lineinfo = info->lines.head; lineinfo != NULL; lineinfo = lineinfo->next ) {
+        line = fill_in_params_and_labels( lineinfo->line, info );
         InputQueueLine( line );
         AsmFree( line );
     }
@@ -810,9 +808,9 @@ bool ExpandMacro( token_buffer *tokbuf )
      */
     PushMacro( sym->name, info->hidden );
     /*
-     * reset the parm replace strings
+     * reset the param replace strings
      */
-    reset_parmlist( info->params.head );
+    reset_paramslist( info->params.head );
     /*
      * reset the local label replace strings, if exists
      */

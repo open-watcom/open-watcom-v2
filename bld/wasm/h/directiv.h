@@ -227,7 +227,7 @@ typedef struct parm_list {
 typedef struct asmline {
     struct asmline      *next;
     char                *line;
-    char                parmcount;
+    char                paramscount;
 } asmline;
 
 typedef struct asmlines {

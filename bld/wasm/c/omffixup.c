@@ -62,7 +62,7 @@ fixuprec *FixNew( void )
 fixuprec *FixDup( const fixuprec *fix )
 /*************************************/
 {
-    fixuprec     *new;
+    fixuprec    *new;
 
     if( fix == NULL ) {
         return( NULL );

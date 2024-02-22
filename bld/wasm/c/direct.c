@@ -559,7 +559,8 @@ static void dir_add( dir_node *new, int tab )
     /*
      * note: this is only for those above which do NOT return right away
      * put the new entry into the queue for its type of symbol
-     * add item to the end of linked list
+     *
+     * add to the tail of linked list
      */
     new->next = NULL;
     new->prev = Tables[tab].tail;
@@ -689,7 +690,7 @@ static void dir_move_to_tail( dir_node *dir, int tab )
         dir->prev->next = dir->next;
     }
     /*
-     * add it to tail
+     * add it to the tail
      */
     dir->next = NULL;
     dir->prev = Tables[tab].tail;
@@ -778,7 +779,8 @@ static dir_node *dir_reset( dir_node *dir )
             dir->prev->next = NULL;
             Tables[tab].tail = dir->prev;
         } else {
-            Tables[tab].head = Tables[tab].tail = NULL;
+            Tables[tab].head = NULL;
+            Tables[tab].tail = NULL;
         }
     }
     return( dir->next );
@@ -1182,15 +1184,12 @@ bool ExtDef( token_buffer *tokbuf, token_idx i, bool glob_def )
          * get the symbol name
          */
         name = tokbuf->tokens[i].string_ptr;
-        i++;
-        /*
-         * go past the colon
-         */
+        i++;    /* skip symbol name */
         if( tokbuf->tokens[i].class != TC_COLON ) {
             AsmError( COLON_EXPECTED );
             return( RC_ERROR );
         }
-        i++;
+        i++;    /* skip ':' character */
 
         typetoken = tokbuf->tokens[i].string_ptr;
         type = token_cmp( typetoken, TOK_EXT_NEAR, TOK_EXT_ABS );
@@ -3025,7 +3024,7 @@ bool LocalDef( token_buffer *tokbuf, token_idx i )
                     AsmError( INVALID_QUALIFIED_TYPE );
                     return( RC_ERROR );
                 }
-                size = ( ( dir_node *)tmp)->e.structinfo->size;
+                size = ((dir_node *)tmp)->e.structinfo->size;
                 sym->mem_type = MT_STRUCT;
             } else {
                 size = find_size( type );
@@ -3043,7 +3042,9 @@ bool LocalDef( token_buffer *tokbuf, token_idx i )
         local->sym = tmp;
         local->factor = factor;
         local->is_register = false;
-
+        /*
+         * add to the tail of single linked list
+         */
         local->next = NULL;
         if( info->locals.head == NULL ) {
             info->locals.head = local;
@@ -3172,7 +3173,7 @@ static bool GetArgType( proc_info *info, const char *token, const char *typetoke
         /*
          * for these calling conventions parameters are stored in reverse order
          *
-         * add parameter to the begining of linked list
+         * add to the head of linked list
          */
         paramnode->next = info->params.head;
         if( info->params.head == NULL ) {
@@ -3184,7 +3185,7 @@ static bool GetArgType( proc_info *info, const char *token, const char *typetoke
         /*
          * for others calling conventions parameters are stored in native order
          *
-         * add parameter to the end of linked list
+         * add to the tail of linked list
          */
         paramnode->next = NULL;
         if( info->params.head == NULL ) {
