@@ -22,10 +22,6 @@ runs:
       done
     shell: bash
   - if: inputs.arch == 'osx'
-    name: Install DOSBOX
-    run: brew install dosbox
-    shell: bash
-  - if: inputs.arch == 'osx'
     name: Install DOSBOX-X
     run: brew install dosbox-x
     shell: bash
