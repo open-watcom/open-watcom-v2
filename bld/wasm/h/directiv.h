@@ -75,8 +75,7 @@ typedef enum {
 #define NUM_OS 2
 
 enum {
-    TAB_FIRST = 0,
-    TAB_SEG = TAB_FIRST,  // order seg, grp, lname is important
+    TAB_SEG,            // order seg, grp, lname is important
     TAB_GRP,
     TAB_LIB,
     TAB_EXT,
@@ -86,7 +85,7 @@ enum {
     TAB_CLASS_LNAME,
     TAB_STRUCT,
     TAB_FPPATCH,
-    TAB_LAST,
+    TAB_SIZE,
     TAB_COMM             // TAB_COMM is not included in tables, it is assigned to TAB_EXT
 };                       // tables for definitions
 
@@ -362,7 +361,7 @@ extern module_info      ModuleInfo;
 
 extern seg_list         *CurrSeg;           // points to stack of opened segments
 
-extern symbol_queue     Tables[TAB_LAST];   // tables of definitions
+extern symbol_queue     Tables[TAB_SIZE];   // tables of definitions
 
 /*---------------------------------------------------------------------------*/
 

@@ -143,7 +143,7 @@ bool                    in_prologue;
 
 static assume_info      AssumeTable[ASSUME_LAST];
 
-symbol_queue            Tables[TAB_LAST];// tables of definitions
+symbol_queue            Tables[TAB_SIZE];// tables of definitions
 module_info             ModuleInfo;
 
 static seg_list         *ProcStack = NULL;
@@ -577,7 +577,8 @@ void dir_init( dir_node *dir, int tab )
  */
 {
     dir->line_num = LineNumber;
-    dir->next = dir->prev = NULL;
+    dir->next = NULL;
+    dir->prev = NULL;
 
     switch( tab ) {
     case TAB_SEG:
@@ -667,20 +668,33 @@ void dir_init( dir_node *dir, int tab )
 }
 
 static void dir_move_to_tail( dir_node *dir, int tab )
-/****************************************************/
+/*****************************************************
+ * move item which is already in the list to the end of list
+ * expect the item is not last item that the list contains
+ * at minimum two items
+ */
 {
+    /*
+     * already on tail, no action
+     */
     if( dir->next == NULL )
         return;
+    /*
+     * first remove it from list
+     */
     dir->next->prev = dir->prev;
     if( dir->prev == NULL ) {
         Tables[tab].head = dir->next;
     } else {
         dir->prev->next = dir->next;
     }
+    /*
+     * add it to tail
+     */
+    dir->next = NULL;
     dir->prev = Tables[tab].tail;
     dir->prev->next = dir;
     Tables[tab].tail = dir;
-    dir->next = NULL;
 }
 
 static dir_node *RemoveFromTable( dir_node *dir )
