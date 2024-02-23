@@ -86,8 +86,7 @@ enum {
     TAB_STRUCT,
     TAB_FPPATCH,
     TAB_SIZE,
-    TAB_COMM             // TAB_COMM is not included in tables, it is assigned to TAB_EXT
-};                       // tables for definitions
+};
 
 enum {
     QUERY_COMMENT,
@@ -157,15 +156,9 @@ typedef struct {
     boolbit             use32       :1;
     boolbit             comm        :1;
     boolbit             global      :1;
+    unsigned long       comm_size;
+    uint                comm_distance;
 } ext_info;
-
-typedef struct {
-    direct_idx          idx;            // external definition index
-    boolbit             use32       :1;
-    boolbit             comm        :1;
-    unsigned long       size;
-    uint                distance;
-} comm_info;
 
 typedef struct {
     asm_tok             *tokens;        // array of asm_tok's to replace symbol
@@ -293,7 +286,6 @@ union entry {
     macro_info          *macroinfo;
     lname_info          *lnameinfo;
     struct_info         *structinfo;
-    comm_info           *comminfo;
 };
 
 typedef struct dir_node {

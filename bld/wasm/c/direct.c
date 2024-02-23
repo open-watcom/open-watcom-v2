@@ -601,17 +601,10 @@ void dir_init( dir_node *dir, int tab )
         dir->e.extinfo = AsmAlloc( sizeof( ext_info ) );
         dir->e.extinfo->idx = 0;
         dir->e.extinfo->use32 = Use32;
-        dir->e.extinfo->comm = 0;
-        dir->e.extinfo->global = 0;
-        break;
-    case TAB_COMM:
-        dir->sym.state = SYM_EXTERNAL;
-        dir->sym.referenced = true;
-        dir->e.comminfo = AsmAlloc( sizeof( comm_info ) );
-        dir->e.comminfo->idx = 0;
-        dir->e.comminfo->use32 = Use32;
-        dir->e.comminfo->comm = 1;
-        tab = TAB_EXT;
+        dir->e.extinfo->comm = false;
+        dir->e.extinfo->global = false;
+        dir->e.extinfo->comm_size = 0;
+        dir->e.extinfo->comm_distance = 0;
         break;
     case TAB_CONST:
         dir->sym.state = SYM_CONST;
@@ -4351,21 +4344,23 @@ bool CommDef( token_buffer *tokbuf, token_idx i )
         mem_type = TypeInfo[type].value;
         dir = (dir_node *)AsmGetSymbol( token );
         if( dir == NULL ) {
-            dir = dir_insert( token, TAB_COMM );
+            dir = dir_insert( token, TAB_EXT );
             if( dir == NULL ) {
                 return( RC_ERROR );
             }
         } else if( dir->sym.state == SYM_UNDEFINED ) {
-            dir_change( dir, TAB_COMM );
+            dir_change( dir, TAB_EXT );
         } else if( dir->sym.mem_type != mem_type ) {
             AsmError( EXT_DEF_DIFF );
             return( RC_ERROR );
         }
+        dir->sym.referenced = true;
+        dir->e.extinfo->comm = true;
         GetSymInfo( &dir->sym );
         dir->sym.offset = 0;
         dir->sym.mem_type = mem_type;
-        dir->e.comminfo->size = count;
-        dir->e.comminfo->distance = TypeInfo[distance].value;
+        dir->e.extinfo->comm_size = count;
+        dir->e.extinfo->comm_distance = TypeInfo[distance].value;
         SetMangler( &dir->sym, mangle_type, lang_type );
     }
     return( RC_OK );

@@ -783,16 +783,11 @@ static void DumpSymbol( asm_sym *sym )
 //        dir->e.extinfo = AsmAlloc( sizeof( ext_info ) );
 //        dir->e.extinfo->idx = 0;
 //        dir->e.extinfo->use32 = Use32;
-//        dir->e.extinfo->comm = 0;
-//        dir->e.extinfo->global = 0;
+//        dir->e.extinfo->comm = false;
+//        dir->e.extinfo->global = false;
+//        dir->e.extinfo->comm_size = 0;
+//        dir->e.extinfo->comm_distance = 0;
         break;
-//    case TAB_COMM:
-//        sym->state = SYM_EXTERNAL;
-//        dir->e.comminfo = AsmAlloc( sizeof( comm_info ) );
-//        dir->e.comminfo->idx = 0;
-//        dir->e.comminfo->use32 = Use32;
-//        dir->e.comminfo->comm = 1;
-//        break;
     case SYM_CONST:
         type = "CONSTANT";
 //        dir->e.constinfo = AsmAlloc( sizeof( const_info ) );

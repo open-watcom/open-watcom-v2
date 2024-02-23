@@ -511,11 +511,11 @@ static void write_external( void )
                 //  + 1 for data type //
                 len += 1;
                 varsize = opsize( curr->sym.mem_type );
-                if( curr->e.comminfo->distance == T_FAR ) {
+                if( curr->e.extinfo->comm_distance == T_FAR ) {
                     len += get_size_in_commdef( varsize );
-                    len += get_size_in_commdef( curr->e.comminfo->size );
+                    len += get_size_in_commdef( curr->e.extinfo->comm_size );
                 } else {
-                    len += get_size_in_commdef( curr->e.comminfo->size );
+                    len += get_size_in_commdef( curr->e.extinfo->comm_size );
                 }
             }
             if( total_size + len > MAX_REC_LENGTH )
@@ -546,12 +546,12 @@ static void write_external( void )
             ObjPut8( objr, 0 );    // for the type index
             if( first->e.extinfo->comm ) {
                 /* now add the data type & communal length */
-                if( curr->e.comminfo->distance == T_FAR ) {
+                if( curr->e.extinfo->comm_distance == T_FAR ) {
                     ObjPut8( objr, COMDEF_FAR );
                 } else {
                     ObjPut8( objr, COMDEF_NEAR );
                 }
-                value = curr->e.comminfo->size;
+                value = curr->e.extinfo->comm_size;
                 varsize = get_size_in_commdef( value );
                 switch( varsize ) {
                 case 1:
@@ -569,14 +569,14 @@ static void write_external( void )
                 if( varsize > 1 )
                     varsize--; /* we already output 1 byte */
                 symsize = opsize( curr->sym.mem_type );
-                if( curr->e.comminfo->distance != T_FAR ) {
+                if( curr->e.extinfo->comm_distance != T_FAR ) {
                     value *= symsize;
                 }
                 for( i = 0; i < varsize; i++ ) {
                     ObjPut8( objr, value % ( UCHAR_MAX + 1 ) );
                     value >>= 8;
                 }
-                if( curr->e.comminfo->distance == T_FAR ) {
+                if( curr->e.extinfo->comm_distance == T_FAR ) {
                     /* element size for FAR type */
                     /* mem type always needs <= 1 byte */
                     myassert( symsize < UCHAR_MAX );
