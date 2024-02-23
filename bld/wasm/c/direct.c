@@ -683,7 +683,7 @@ static void dir_move_to_tail( dir_node *dir, int tab )
         dir->prev->next = dir->next;
     }
     /*
-     * add it to the tail
+     * add to the tail of linked list
      */
     dir->next = NULL;
     dir->prev = Tables[tab].tail;
