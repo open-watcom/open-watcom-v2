@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -153,21 +153,21 @@ void FatalResError( const char *msg )
     longjmp( Env, 1 );
 }
 
-void FatalError( int str, ... )
+void FatalError( int msgid, ... )
 {
     va_list             arglist;
     char                buff[MAX_ERROR_SIZE];
     char                msg[512];
 
-    MsgGet( str, buff );
-    va_start( arglist, str );
+    MsgGet( msgid, buff );
+    va_start( arglist, msgid );
     vsnprintf( msg, 512, buff, arglist );
     va_end( arglist );
     IdeOutput( msg, IDEMSGSEV_ERROR );
     longjmp( Env, 1 );
 }
 
-void Warning( int str, ... )
+void Warning( int msgid, ... )
 {
     va_list             arglist;
     char                buff[MAX_ERROR_SIZE];
@@ -175,8 +175,8 @@ void Warning( int str, ... )
 
     if( Options.quiet )
         return;
-    MsgGet( str, buff );
-    va_start( arglist, str );
+    MsgGet( msgid, buff );
+    va_start( arglist, msgid );
     vsnprintf( msg, 512, buff, arglist );
     va_end( arglist );
     IdeOutput( msg, IDEMSGSEV_WARNING );
@@ -218,8 +218,8 @@ void Usage( void )
 /****************/
 {
     char                buff[MAX_ERROR_SIZE];
-    int                 str;
-    int                 str_last;
+    int                 msgid;
+    int                 msgid_last;
     bool                console_tty;
 
     Banner();
@@ -229,17 +229,17 @@ void Usage( void )
             ConsolePuts( "" );
         }
         if( Options.ar ) {
-            str = MSG_USAGE_AR_BASE;
-            str_last = MSG_USAGE_AR_BASE + MSG_USAGE_AR_COUNT;
-            MsgGet( str++, buff );
+            msgid = MSG_USAGE_AR_BASE;
+            msgid_last = MSG_USAGE_AR_BASE + MSG_USAGE_AR_COUNT;
+            MsgGet( msgid++, buff );
             ConsolePrintf( buff, Options.ar_name );
-            str_last = MSG_USAGE_AR_BASE + MSG_USAGE_AR_COUNT;
+            msgid_last = MSG_USAGE_AR_BASE + MSG_USAGE_AR_COUNT;
         } else {
-            str = MSG_USAGE_WLIB_BASE;
-            str_last = MSG_USAGE_WLIB_BASE + MSG_USAGE_WLIB_COUNT;
+            msgid = MSG_USAGE_WLIB_BASE;
+            msgid_last = MSG_USAGE_WLIB_BASE + MSG_USAGE_WLIB_COUNT;
         }
-        for( ; str < str_last; ++str ) {
-            MsgGet( str, buff );
+        for( ; msgid < msgid_last; ++msgid ) {
+            MsgGet( msgid, buff );
             ConsolePuts( buff );
         }
     }

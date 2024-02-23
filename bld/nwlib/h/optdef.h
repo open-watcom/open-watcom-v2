@@ -39,6 +39,12 @@
     WL_PROC( WL_PROC_X86,  EM_386,      "X86" ) \
     WL_PROC( WL_PROC_X64,  EM_X86_64,   "X64" )
 
+#define WL_FTYPES \
+    WL_FTYPE( WL_FTYPE_NONE, 0,         "" ) \
+    WL_FTYPE( WL_FTYPE_ELF,  0,         "ELF" ) \
+    WL_FTYPE( WL_FTYPE_COFF, 0,         "COFF" ) \
+    WL_FTYPE( WL_FTYPE_OMF,  0,         "OMF" )
+
 typedef enum {
     #define WL_PROC(p,e,n)  p,
     WL_PROCS
@@ -46,10 +52,9 @@ typedef enum {
 } processor_type;
 
 typedef enum {
-    WL_FTYPE_NONE,
-    WL_FTYPE_ELF,
-    WL_FTYPE_COFF,
-    WL_FTYPE_OMF
+    #define WL_FTYPE(p,e,n)  p,
+    WL_FTYPES
+    #undef WL_FTYPE
 } file_type;
 
 typedef enum {

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,9 +48,9 @@ static char *msg_text_array[] = {
 
 void InitMsg( void ) {}
 
-void MsgGet( int resourceid, char *buffer )
+void MsgGet( int msgid, char *buffer )
 {
-    strcpy( buffer, msg_text_array[resourceid] );
+    strcpy( buffer, msg_text_array[msgid] );
 }
 
 void FiniMsg( void ) {}
@@ -92,9 +92,9 @@ void InitMsg( void )
     FatalResError( NO_RES_MESSAGE "\n" );
 }
 
-void MsgGet( int resourceid, char *buffer )
+void MsgGet( int msgid, char *buffer )
 {
-    if( hInstance.status == 0 || WResLoadString( &hInstance, resourceid + MsgShift, (lpstr)buffer, MAX_ERROR_SIZE ) <= 0 ) {
+    if( hInstance.status == 0 || WResLoadString( &hInstance, msgid + MsgShift, (lpstr)buffer, MAX_ERROR_SIZE ) <= 0 ) {
         buffer[0] = '\0';
     }
 }
