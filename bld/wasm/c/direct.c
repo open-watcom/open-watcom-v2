@@ -691,9 +691,8 @@ static void dir_move_to_tail( dir_node *dir, int tab )
     Tables[tab].tail = dir;
 }
 
-static int find_dir_tab( dir_node *dir )
+static int get_dir_tab( dir_node *dir )
 {
-    int         func;
     int         tab;
     dir_node    *d;
 
@@ -713,38 +712,13 @@ static int find_dir_tab( dir_node *dir )
     case SYM_MACRO:
         tab = TAB_MACRO;
         break;
+    case SYM_STRUCT:
+        tab = TAB_STRUCT;
+        break;
+    case SYM_CONST:
+        tab = TAB_CONST;
+        break;
     default:
-        if( dir->next != NULL && dir->prev != NULL ) {
-            func = 1;   /* in midle */
-        } else if( dir->next == NULL ) {
-            func = 2;   /* tail */
-        } else {
-            func = 3;   /* head */
-        }
-        for( tab = 0; tab < TAB_SIZE; tab++ ) {
-            switch( tab ) {
-            case TAB_FPPATCH:
-            case TAB_CLASS_LNAME:
-                break;
-            default:
-                if( func == 1 ) {           /* in midle */
-                    for( d = Tables[tab].head; d != NULL; d = d->next ) {
-                        if( d == dir ) {
-                            return( tab );
-                        }
-                    }
-                } else if( func == 2 ) {    /* tail */
-                    if( dir == Tables[tab].tail ) {
-                        return( tab );
-                    }
-                } else if( func == 3 ) {    /* head */
-                    if( dir == Tables[tab].head ) {
-                        return( tab );
-                    }
-                }
-                break;
-            }
-        }
         tab = -1;
         break;
     }
@@ -761,7 +735,7 @@ static dir_node *dir_reset( dir_node *dir )
     } else {
         int     tab;
 
-        tab = find_dir_tab( dir );
+        tab = get_dir_tab( dir );
         if( tab == -1 ) {
             return( NULL );
         }
@@ -1834,9 +1808,11 @@ bool IncludeLib( token_buffer *tokbuf, token_idx i )
     sym = AsmGetSymbol( name );
     if( sym == NULL ) {
         // fixme
-        if( dir_insert( name, TAB_LIB ) == NULL ) {
+        dir = AllocD( name );
+        if( dir == NULL ) {
             return( RC_ERROR );
         }
+        dir_init( dir, TAB_LIB );
     }
     return( RC_OK );
 }

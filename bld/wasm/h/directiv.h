@@ -77,16 +77,21 @@ typedef enum {
 enum {
     TAB_SEG,            // order seg, grp, lname is important
     TAB_GRP,
-    TAB_LIB,
     TAB_EXT,
     TAB_CONST,
     TAB_PROC,
     TAB_MACRO,
-    TAB_CLASS_LNAME,
     TAB_STRUCT,
+    /*
+     * following tables are not part of assembler name space
+     */
+    TAB_CLASS_LNAME,
+    TAB_LIB,
     TAB_FPPATCH,
     TAB_SIZE,
 };
+
+#define TAB_SYMSPACE_SIZE   TAB_CLASS_LNAME
 
 enum {
     QUERY_COMMENT,
