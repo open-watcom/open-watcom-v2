@@ -54,7 +54,6 @@ build_proc()
         export PATH=$WATCOM_PATH:$PATH
     fi
     RC=0
-    export OWDOSBOX=dosbox
     export OWGHOSTSCRIPTPATH=:
 
     . $OWROOT/cmnvars.sh
