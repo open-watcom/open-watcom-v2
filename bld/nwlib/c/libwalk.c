@@ -80,7 +80,9 @@ void LibWalk( libfile io, arch_header *parch, libwalk_fn *rtn )
             }
             GetARHeaderValues( &ar, &arch );
             pos = LibTell( io );
-            if( ar.name[0] == '/' && ar.name[1] == ' ' && ar.name[2] == ' ' ) {
+            if( ar.name[0] == '/'
+              && ar.name[1] == ' '
+              && ar.name[2] == ' ' ) {
                 // Ignore symbol table.
 /*
                 dict_count++;
@@ -91,9 +93,13 @@ void LibWalk( libfile io, arch_header *parch, libwalk_fn *rtn )
                     updateNewArchive( &arch );
                 }
 */
-            } else if( ar.name[0] == '/' && ar.name[1] == '/' && ar.name[2] == ' ' ) {
+            } else if( ar.name[0] == '/'
+              && ar.name[1] == '/'
+              && ar.name[2] == ' ' ) {
                 AllocFNameTab( parch->name, io, &arch );
-            } else if( ar.name[0] == '/' && ar.name[1] == '/' && ar.name[2] == '/' ) {
+            } else if( ar.name[0] == '/'
+              && ar.name[1] == '/'
+              && ar.name[2] == '/' ) {
                 AllocFFNameTab( parch->name, io, &arch );
             } else {
                 arch.name = GetARName( io, &ar, &arch );

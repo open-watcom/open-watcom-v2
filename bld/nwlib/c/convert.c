@@ -73,7 +73,8 @@ static size_t   ARstrlen( const char * str )
     const char  *c;
 
     for( c = str; *c != '\0'; c++ ) {
-        if( ( c[0] == '/' ) && ( c[1] == '\n' ) ) {
+        if( ( c[0] == '/' )
+          && ( c[1] == '\n' ) ) {
             break;
         }
     }
@@ -91,7 +92,9 @@ char *GetARName( libfile io, ar_header *header, arch_header *arch )
     if( header->name[0] == '/' ) {
         len = GetARNumeric( header->name + 1, AR_NAME_LEN - 1 );
         buf = arch->fnametab + len;
-    } else if( header->name[0] == '#' && header->name[1] == '1' && header->name[2] == '/') {
+    } else if( header->name[0] == '#'
+      && header->name[1] == '1'
+      && header->name[2] == '/') {
         len = GetARNumeric( header->name + 3, AR_NAME_LEN - 3 );
         name = MemAlloc( len + 1 );
         LibRead( io, name, len );
@@ -114,11 +117,13 @@ char *GetFFName( arch_header *arch )
     char        *name;
 
     name = NULL;
-    if( arch->ffnametab != NULL && arch->nextffname != NULL ) {
+    if( arch->ffnametab != NULL
+      && arch->nextffname != NULL ) {
         name = DupStr( arch->nextffname );
         arch->nextffname += strlen( name ) + 1;
-        if( arch->nextffname >= arch->lastffname || ( arch->nextffname[0] == '\n'
-                && arch->nextffname + 1 >= arch->lastffname ) ) {
+        if( arch->nextffname >= arch->lastffname
+          || ( arch->nextffname[0] == '\n'
+          && arch->nextffname + 1 >= arch->lastffname ) ) {
             arch->nextffname = NULL;
         }
     }
@@ -131,7 +136,8 @@ static void GetARValue( const char *element, ar_len len, char delimiter, char *b
 // that it is null-terminated rather than blank-padded
 {
     for( ; len > 0; --len ) {
-        if( element[len - 1] != ' ' && element[len - 1] != delimiter ) {
+        if( element[len - 1] != ' '
+          && element[len - 1] != delimiter ) {
             break;
         }
     }
