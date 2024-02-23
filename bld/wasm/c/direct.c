@@ -694,7 +694,6 @@ static void dir_move_to_tail( dir_node *dir, int tab )
 static int get_dir_tab( dir_node *dir )
 {
     int         tab;
-    dir_node    *d;
 
     switch( dir->sym.state ) {
     case SYM_EXTERNAL:
@@ -1798,6 +1797,7 @@ bool IncludeLib( token_buffer *tokbuf, token_idx i )
 {
     char            *name;
     asm_sym         *sym;
+    dir_node        *dir;
 
     name = tokbuf->tokens[i].string_ptr;
     if( name == NULL ) {
