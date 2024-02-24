@@ -57,7 +57,7 @@ typedef enum {
     DIFF_HAVE_DIFFS,
     DIFF_NOT_COMPARED,
     DIFF_NO_MEMORY,
-}       diff_returns;
+}       return_code;
 
 typedef enum {
     FIL_A = 0,
