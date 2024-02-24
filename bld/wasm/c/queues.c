@@ -169,7 +169,7 @@ bool GetPublicData( void )
         }
         last = curr;
 
-        d = AsmAlloc( objr->u.pubdef.num_pubs * sizeof( struct pubdef_data ) );
+        d = AsmAlloc( objr->u.pubdef.num_pubs * sizeof( pubdef_data ) );
         objr->u.pubdef.pubs = d;
         NameArray = AsmAlloc( objr->u.pubdef.num_pubs * sizeof( char * ) );
         for( i = 0, curr = start; curr != last; curr = curr->next, ++i ) {
@@ -322,7 +322,7 @@ int GetLinnumData( int limit, linnum_data **ldata, bool *need32 )
 {
     queuenode       *node;
     line_num_info   *node_data;
-    long            count;
+    int             count;
     int             i;
 
     count = QCount( LinnumQueue );
