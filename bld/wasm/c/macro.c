@@ -397,7 +397,6 @@ static bool macro_exam( token_buffer *tokbuf, token_idx i )
              * add parameter to the end of list
              */
             paramnode = AsmAlloc( sizeof( parm_list ) );
-            paramnode->def = NULL;
             paramnode->replace = NULL;
             paramnode->label = AsmStrDup( name );
             paramnode->def = AsmStrDup( def_value );
