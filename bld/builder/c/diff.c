@@ -114,6 +114,7 @@ static SSHORT       *member;            /* Concatenated equiv. classes  */
 static long         *oldseek;           /* Seek position in file A      */
 static long         *newseek;           /* Seek position in file B      */
 
+static int          symbol[FIL_SIZE] = { 'A', 'B' };
 static FILE         *infd[FIL_SIZE];    /* Input files A and B handles  */
 static FILE         *tempfd;            /* Temp file for input redirection handle */
 
@@ -148,6 +149,93 @@ static const char   *cmdusage =
 "        -i           ignore case\n"
 "        -t           quiet mode. return 3 if not enough memory\n"
 ;
+
+#ifdef DEVBUILD
+
+static void dump_sfile_data( int which )
+/***************************************
+ * Dump file sorted data
+ */
+{
+    SLONG   i;
+
+    for( i = 1; i <= slen[which]; i++ ) {
+        printf( "sfile%c[%d] = %6d %06o\n", symbol[which], i, sfile[which][i].serial, sfile[which][i].hash );
+    }
+}
+
+#if 0
+static void rdump( SLONG *pointer, const char *why )
+/***************************************************
+ * Dump memory block
+ */
+{
+    SLONG       *last;
+    SLONG       count;
+
+    last = ( (SLONG **)pointer )[-1];
+    fprintf( stderr, "dump %s of %06o -> %06o, %d words", why, pointer, last, last - pointer );
+    last = (SLONG *)( ((SLONG)last ) & ~1 );
+    for( count = 0; pointer < last; ++count ) {
+        if( (count & 07) == 0 ) {
+            fprintf( stderr, "\n%06o", pointer );
+        }
+        fprintf( stderr, "\t%06o", *pointer );
+        pointer++;
+    }
+    fprintf( stderr, "\n" );
+}
+
+static void dump( LINE *d_linep, SLONG d_len, int d_which )
+{
+    SLONG       i;
+
+    printf( "Dump of file%c, %d elements\n", symbol[d_which], d_len );
+    printf( "linep @ %06o\n", d_linep );
+    for( i = 0; i <= d_len; i++ ) {
+        printf( "%3d  %6d  %06o\n", i, d_linep[i].serial, d_linep[i].hash );
+    }
+}
+#endif
+
+static void dumpklist( SLONG kmax, const char *why )
+/***************************************************
+ * Dump klist
+ */
+{
+    SLONG    i;
+    CANDIDATE *cp;
+    SLONG    count;
+
+    printf( "\nklist[0..%d] %s, clength = %d\n", kmax, why, clength );
+    for( i = 0; i <= kmax; i++ ) {
+        cp = &clist[klist[i]];
+        printf( "%2d %2d", i, klist[i] );
+        if( cp >= &clist[0]
+          && cp < &clist[clength] ) {
+            printf( " (%2d %2d -> %2d)\n", cp->a, cp->b, cp->link );
+        } else if( klist[i] == -1 ) {
+            printf( " End of chain\n" );
+        } else {
+            printf( " illegal klist element\n" );
+        }
+    }
+    for( i = 0; i <= kmax; i++ ) {
+        count = -1;
+        for( cp = (CANDIDATE *)klist[i]; cp > &clist[0];
+             cp = (CANDIDATE *)&cp->link ) {
+            if( ++count >= 6 ) {
+                printf( "\n    " );
+                count = 0;
+            }
+            printf( " (%2d: %2d,%2d -> %d)",
+                    cp - clist, cp->a, cp->b, cp->link );
+        }
+        printf( "\n" );
+    }
+    printf( "*\n" );
+}
+#endif
 
 /*
  * Sort hash entries
@@ -204,12 +292,8 @@ static void equiv( void )
 
 #ifdef DEVBUILD
     printf( "equiv entry\n" );
-    for( j = 1; j <= slen[FIL_A]; j++ ) {
-        printf( "sfileA[%d] = %6d %06o\n", j, sfile[FIL_A][j].serial, sfile[FIL_A][j].hash );
-    }
-    for( j = 1; j <= slen[FIL_B]; j++ ) {
-        printf( "sfileB[%d] = %6d %06o\n", j, sfile[FIL_B][j].serial, sfile[FIL_B][j].hash );
-    }
+    dump_sfile_data( FIL_A );
+    dump_sfile_data( FIL_B );
 #endif
     j = 1;
     ap = &sfile[FIL_A][1];
@@ -234,12 +318,8 @@ static void equiv( void )
     sfile[FIL_B][slen[FIL_B] + 1].hash = 0;
 #ifdef DEVBUILD
     printf( "equiv exit\n" );
-    for( j = 1; j <= slen[FIL_A]; j++ ) {
-        printf( "sfileA[%d] = %6d %06o\n", j, sfile[FIL_A][j].serial, sfile[FIL_A][j].hash );
-    }
-    for( j = 1; j <= slen[FIL_B]; j++ ) {
-        printf( "sfileB[%d] = %6d %06o\n", j, sfile[FIL_B][j].serial, sfile[FIL_B][j].hash );
-    }
+    dump_sfile_data( FIL_A );
+    dump_sfile_data( FIL_B );
 #endif
     ap = &sfile[FIL_B][0];
     atop = &sfile[FIL_B][slen[FIL_B]];
@@ -775,7 +855,7 @@ static void fetch( long *seekvec, SLONG start, SLONG end, int which, const char 
     }
     if( fseek( infd[which], seekvec[first], 0 ) != 0 ) {
         internal_error( "?Can't read line %d at %08lx (hex) in file%c\n", start,
-            seekvec[first], ( which == FIL_A ) ? 'A' : 'B' );
+            seekvec[first], symbol[which] );
         exit( DIFF_NOT_COMPARED );
     } else {
         for( i = first; i <= last; i++ ) {
@@ -977,80 +1057,6 @@ static USHORT hash( const char *buffer )
     }
     return( ( crc == 0 ) ? (USHORT)1 : crc );
 }
-
-#ifdef DEVBUILD
-/*
- * Dump memory block
- */
-
-static void rdump( SLONG *pointer, const char *why )
-{
-    SLONG       *last;
-    SLONG       count;
-
-    last = ( (SLONG **)pointer )[-1];
-    fprintf( stderr, "dump %s of %06o -> %06o, %d words", why, pointer, last, last - pointer );
-    last = (SLONG *)( ((SLONG)last ) & ~1 );
-    for( count = 0; pointer < last; ++count ) {
-        if( (count & 07) == 0 ) {
-            fprintf( stderr, "\n%06o", pointer );
-        }
-        fprintf( stderr, "\t%06o", *pointer );
-        pointer++;
-    }
-    fprintf( stderr, "\n" );
-}
-
-static void dump( LINE *d_linep, SLONG d_len, int d_which )
-{
-    SLONG       i;
-
-    printf( "Dump of file%c, %d elements\n", "AB"[d_which], d_len );
-    printf( "linep @ %06o\n", d_linep );
-    for( i = 0; i <= d_len; i++ ) {
-        printf( "%3d  %6d  %06o\n", i, d_linep[i].serial, d_linep[i].hash );
-    }
-}
-
-/*
- * Dump klist
- */
-
-static void dumpklist( SLONG kmax, const char *why )
-{
-    SLONG    i;
-    CANDIDATE *cp;
-    SLONG    count;
-
-    printf( "\nklist[0..%d] %s, clength = %d\n", kmax, why, clength );
-    for( i = 0; i <= kmax; i++ ) {
-        cp = &clist[klist[i]];
-        printf( "%2d %2d", i, klist[i] );
-        if( cp >= &clist[0]
-          && cp < &clist[clength] ) {
-            printf( " (%2d %2d -> %2d)\n", cp->a, cp->b, cp->link );
-        } else if( klist[i] == -1 ) {
-            printf( " End of chain\n" );
-        } else {
-            printf( " illegal klist element\n" );
-        }
-    }
-    for( i = 0; i <= kmax; i++ ) {
-        count = -1;
-        for( cp = (CANDIDATE *)klist[i]; cp > &clist[0];
-             cp = (CANDIDATE *)&cp->link ) {
-            if( ++count >= 6 ) {
-                printf( "\n    " );
-                count = 0;
-            }
-            printf( " (%2d: %2d,%2d -> %d)",
-                    cp - clist, cp->a, cp->b, cp->link );
-        }
-        printf( "\n" );
-    }
-    printf( "*\n" );
-}
-#endif
 
 /*
  * Can't open file message
@@ -1265,23 +1271,15 @@ int main( int argc, char **argv )
     squish();
 #ifdef DEVBUILD
     printf( "before sort\n" );
-    for( i = 1; i <= slen[FIL_A]; i++ ) {
-        printf( "sfileA[%d] = %6d %06o\n", i, sfile[FIL_A][i].serial, sfile[FIL_A][i].hash );
-    }
-    for( i = 1; i <= slen[FIL_B]; i++ ) {
-        printf( "sfileB[%d] = %6d %06o\n", i, sfile[FIL_B][i].serial, sfile[FIL_B][i].hash );
-    }
+    dump_sfile_data( FIL_A );
+    dump_sfile_data( FIL_B );
 #endif
     sort( sfile[FIL_A], slen[FIL_A] );
     sort( sfile[FIL_B], slen[FIL_B] );
 #ifdef DEVBUILD
     printf( "after sort\n" );
-    for( i = 1; i <= slen[FIL_A]; i++ ) {
-        printf( "sfileA[%d] = %6d %06o\n", i, sfile[FIL_A][i].serial, sfile[FIL_A][i].hash );
-    }
-    for( i = 1; i <= slen[FIL_B]; i++ ) {
-        printf( "sfileB[%d] = %6d %06o\n", i, sfile[FIL_B][i].serial, sfile[FIL_B][i].hash );
-    }
+    dump_sfile_data( FIL_A );
+    dump_sfile_data( FIL_B );
 #endif
 
     /*
