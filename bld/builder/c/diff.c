@@ -164,40 +164,6 @@ static void dump_sfile_data( int which )
     }
 }
 
-#if 0
-static void rdump( SLONG *pointer, const char *why )
-/***************************************************
- * Dump memory block
- */
-{
-    SLONG       *last;
-    SLONG       count;
-
-    last = ( (SLONG **)pointer )[-1];
-    fprintf( stderr, "dump %s of %06o -> %06o, %d words", why, pointer, last, last - pointer );
-    last = (SLONG *)( ((SLONG)last ) & ~1 );
-    for( count = 0; pointer < last; ++count ) {
-        if( (count & 07) == 0 ) {
-            fprintf( stderr, "\n%06o", pointer );
-        }
-        fprintf( stderr, "\t%06o", *pointer );
-        pointer++;
-    }
-    fprintf( stderr, "\n" );
-}
-
-static void dump( LINE *d_linep, SLONG d_len, int d_which )
-{
-    SLONG       i;
-
-    printf( "Dump of file%c, %d elements\n", symbol[d_which], d_len );
-    printf( "linep @ %06o\n", d_linep );
-    for( i = 0; i <= d_len; i++ ) {
-        printf( "%3d  %6d  %06o\n", i, d_linep[i].serial, d_linep[i].hash );
-    }
-}
-#endif
-
 static void dumpklist( SLONG kmax, const char *why )
 /***************************************************
  * Dump klist
@@ -222,26 +188,62 @@ static void dumpklist( SLONG kmax, const char *why )
     }
     for( i = 0; i <= kmax; i++ ) {
         count = -1;
-        for( cp = (CANDIDATE *)klist[i]; cp > &clist[0];
+        for( cp = (CANDIDATE *)&klist[i]; cp > &clist[0];
              cp = (CANDIDATE *)&cp->link ) {
             if( ++count >= 6 ) {
                 printf( "\n    " );
                 count = 0;
             }
             printf( " (%2d: %2d,%2d -> %d)",
-                    cp - clist, cp->a, cp->b, cp->link );
+                    (int)( cp - clist ), cp->a, cp->b, cp->link );
         }
         printf( "\n" );
     }
     printf( "*\n" );
 }
+
+#if 0
+static void rdump( SLONG *pointer, const char *why )
+/***************************************************
+ * Dump memory block
+ */
+{
+    SLONG       *last;
+    SLONG       count;
+
+    last = ( (SLONG **)pointer )[-1];
+    fprintf( stderr, "dump %s of %06o -> %06o, %d words",
+        why, (unsigned)(pointer_int)pointer, (unsigned)(pointer_int)last, (int)( last - pointer ) );
+    last = (SLONG *)( ((pointer_int)last) & ~1 );
+    for( count = 0; pointer < last; ++count ) {
+        if( (count & 07) == 0 ) {
+            fprintf( stderr, "\n%06o", (unsigned)(pointer_int)pointer );
+        }
+        fprintf( stderr, "\t%06o", *pointer );
+        pointer++;
+    }
+    fprintf( stderr, "\n" );
+}
+
+static void dump( int which )
+{
+    SLONG       i;
+
+    printf( "Dump of file%c, %d elements\n", symbol[which], len[which] );
+    printf( "linep @ %06o\n", (unsigned)(pointer_int)file[which] );
+    for( i = 0; i <= len[which]; i++ ) {
+        printf( "%3d  %6d  %06o\n", i, file[which][i].serial, file[which][i].hash );
+    }
+}
+#endif
+
 #endif
 
 /*
  * Sort hash entries
  */
 
-static void sort( LINE *vector, SLONG vecsize )
+static void sort( int which )
 {
     SLONG       j;
     LINE        *aim;
@@ -250,13 +252,13 @@ static void sort( LINE *vector, SLONG vecsize )
     SLONG       k;
     LINE        work;
 
-    for( j = 1; j <= vecsize; j *= 2 )
+    for( j = 1; j <= slen[which]; j *= 2 )
         ;
     mid = ( j - 1 );
     while( ( mid /= 2 ) != 0 ) {
-        k = vecsize - mid;
+        k = slen[which] - mid;
         for( j = 1; j <= k; j++ ) {
-            for( ai = &vector[j]; ai > vector; ai -= mid ) {
+            for( ai = &sfile[which][j]; ai > sfile[which]; ai -= mid ) {
                 aim = &ai[mid];
                 if( aim < ai )
                     break;      /* ?? Why ??     */
@@ -475,7 +477,7 @@ static void *compact( void *ptr, size_t size, const char *why )
 
 #ifdef DEVBUILD
     if( new_ptr != ptr ) {
-        fprintf( stderr, "moved from %06o to %06o\n", ptr, new_ptr );
+        fprintf( stderr, "moved from %06o to %06o\n", (unsigned)(pointer_int)ptr, (unsigned)(pointer_int)new_ptr );
     }
 #endif
     return( new_ptr );
@@ -1274,8 +1276,8 @@ int main( int argc, char **argv )
     dump_sfile_data( FIL_A );
     dump_sfile_data( FIL_B );
 #endif
-    sort( sfile[FIL_A], slen[FIL_A] );
-    sort( sfile[FIL_B], slen[FIL_B] );
+    sort( FIL_A );
+    sort( FIL_B );
 #ifdef DEVBUILD
     printf( "after sort\n" );
     dump_sfile_data( FIL_A );
