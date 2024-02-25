@@ -220,7 +220,6 @@ void Usage( void )
     char                buff[MAX_ERROR_SIZE];
     int                 msgid;
     int                 msgid_last;
-    bool                console_tty;
 
     Banner( true );
     if( Options.ar ) {
