@@ -243,10 +243,14 @@ static void DelModules( void )
             ProcessLibOrObj( buff, OBJ_SKIP, DelOneObject );
             cmd->ops |= OP_DELETED;
         }
-        if( (cmd->ops & OP_DELETED) == 0 && (cmd->ops & OP_ADD) == 0 ) {
-            Warning( ERR_CANT_DELETE, cmd->name );
-        } else if( (cmd->ops & OP_DELETED) && (cmd->ops & OP_ADD) == 0 && Options.ar && Options.verbose ) {
-            Message( "-d %s", cmd->name );
+        if( (cmd->ops & OP_ADD) == 0 ) {
+            if( cmd->ops & OP_DELETED ) {
+                if( Options.ar && Options.verbose ) {
+                    Message( "-d %s", cmd->name );
+                }
+            } else {
+                Warning( ERR_CANT_DELETE, cmd->name );
+            }
         }
     }
 }
