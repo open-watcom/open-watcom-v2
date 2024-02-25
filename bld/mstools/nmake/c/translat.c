@@ -50,9 +50,9 @@ static void append_unsupported( char *optStr, char *opt )
 /*******************************************************/
 {
     if( optStr[0] != '\0' ) {
-        strcat( optStr, " -" );
+        strcat( optStr, " /" );
     } else {
-        strcat( optStr, "-" );
+        strcat( optStr, "/" );
     }
     strcat( optStr, opt );
 }

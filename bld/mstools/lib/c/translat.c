@@ -662,7 +662,7 @@ static void lib_opts( OPT_STORAGE *cmdOpts, CmdLine *cmdLine )
     } else if( cmdOpts->list ) {
         if( cmdOpts->list_value != NULL ) {
             newstr = VerifyDot( cmdOpts->list_value->data );
-            AppendFmtCmdLine( cmdLine, LIB_OPTS_SECTION, "/l=%s", newstr );
+            AppendFmtCmdLine( cmdLine, LIB_OPTS_SECTION, "-l=%s", newstr );
         }
         get_library( cmdOpts, cmdLine );
     } else if( cmdOpts->extract ) {
@@ -705,7 +705,7 @@ static void default_opts( OPT_STORAGE *cmdOpts, CmdLine *cmdLine )
 {
     if( !cmdOpts->list
       && !cmdOpts->nowopts ) {
-        AppendCmdLine( cmdLine, LIB_OPTS_SECTION, "/q/b" );
+        AppendCmdLine( cmdLine, LIB_OPTS_SECTION, "-q-b" );
     }
 }
 
