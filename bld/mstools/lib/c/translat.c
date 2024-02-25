@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -93,13 +93,20 @@ static void unsupported_opts( OPT_STORAGE *cmdOpts )
 
     /*** Build a string listing all unsupported options that were used ***/
     opts[0] = '\0';
-    if( cmdOpts->debugtype    ) append_unsupported( opts, "DEBUGTYPE"   );
-    if( cmdOpts->import       ) append_unsupported( opts, "IMPORT"      );
-    if( cmdOpts->include      ) append_unsupported( opts, "INCLUDE"     );
-    if( cmdOpts->mac          ) append_unsupported( opts, "MAC"         );
-    if( cmdOpts->nodefaultlib ) append_unsupported( opts, "NODEFAULTLIB");
-    if( cmdOpts->subsystem    ) append_unsupported( opts, "SUBSYSTEM"   );
-    if( cmdOpts->verbose      ) append_unsupported( opts, "VERBOSE"     );
+    if( cmdOpts->debugtype )
+        append_unsupported( opts, "DEBUGTYPE"   );
+    if( cmdOpts->import )
+        append_unsupported( opts, "IMPORT"      );
+    if( cmdOpts->include )
+        append_unsupported( opts, "INCLUDE"     );
+    if( cmdOpts->mac )
+        append_unsupported( opts, "MAC"         );
+    if( cmdOpts->nodefaultlib )
+        append_unsupported( opts, "NODEFAULTLIB");
+    if( cmdOpts->subsystem )
+        append_unsupported( opts, "SUBSYSTEM"   );
+    if( cmdOpts->verbose )
+        append_unsupported( opts, "VERBOSE"     );
 
     /*** If an unsupported option was used, give a warning ***/
     if( opts[0] != '\0' ) {
@@ -107,10 +114,10 @@ static void unsupported_opts( OPT_STORAGE *cmdOpts )
     }
 
     if( cmdOpts->machine ) {
-        if( ( stricmp( "IX86", cmdOpts->machine_value->data ) != 0 ) &&
-             ( stricmp( "I386", cmdOpts->machine_value->data ) != 0 ) &&
-             ( stricmp( "APX", cmdOpts->machine_value->data ) != 0 ) &&
-             ( stricmp( "ALPHA", cmdOpts->machine_value->data ) != 0 ) ) {
+        if( ( stricmp( "IX86", cmdOpts->machine_value->data ) != 0 )
+          && ( stricmp( "I386", cmdOpts->machine_value->data ) != 0 )
+          && ( stricmp( "APX", cmdOpts->machine_value->data ) != 0 )
+          && ( stricmp( "ALPHA", cmdOpts->machine_value->data ) != 0 ) ) {
             Warning( "%s target platform is not supported", cmdOpts->machine_value->data );
         }
     }
@@ -201,18 +208,19 @@ static void get_library(OPT_STORAGE *cmdOpts, CmdLine *cmdLine )
     filename = GetNextFile( &fileType, TYPE_LIB_FILE, TYPE_OBJ_FILE, TYPE_INVALID_FILE );
     if( filename != NULL ) {
         if( fileType == TYPE_OBJ_FILE ) {
-            if( (cmdOpts->list) || (cmdOpts->extract) ) {
+            if( ( cmdOpts->list )
+              || ( cmdOpts->extract ) ) {
                 for( ;; ) {
                     if( stristr( filename, ".obj" ) == NULL ) {
                         AppendFmtCmdLine( cmdLine, LIB_OPTS_SECTION, "%s", filename );
-                        FreeMem(filename);
+                        FreeMem( filename );
                         break;
                     } else {
-                        FreeMem(filename);
+                        FreeMem( filename );
                         filename = GetNextFile( &fileType, TYPE_LIB_FILE, TYPE_OBJ_FILE, TYPE_INVALID_FILE );
                     }
                     if( filename == NULL ) {
-                        FatalError("no library or object files specified!");
+                        FatalError( "no library or object files specified!" );
                     }
                 }
             } else {
@@ -241,10 +249,10 @@ static void get_library(OPT_STORAGE *cmdOpts, CmdLine *cmdLine )
             }
         } else {
             AppendFmtCmdLine( cmdLine, LIB_OPTS_SECTION, "%s", filename );
-            FreeMem(filename);
+            FreeMem( filename );
         }
     } else {
-        FatalError("no library or object files specified!");
+        FatalError( "no library or object files specified!" );
     }
 
 }
@@ -407,7 +415,7 @@ static void CreateExp( OPT_STORAGE *cmdOpts, char * name )
         fprintf( exp_file, "OPTION DESCRIPTION %s\n", optStr->data );
         optStr = optStr->next;
     }
-    del_string(&comment); // don't need it any more
+    del_string( &comment ); // don't need it any more
 
     if( cmdOpts->name ) {
         if( *cmdOpts->name_value->data == '\'' ) {
@@ -424,7 +432,7 @@ static void CreateExp( OPT_STORAGE *cmdOpts, char * name )
     if( base ) {
         fprintf( exp_file, "OPTION OFFSET=%s\n", base->data );
     }
-    del_string(&base); // don't need it any more
+    del_string( &base ); // don't need it any more
 
     if( heap ) {
         p = strchr( heap->data, ',' );
@@ -437,7 +445,7 @@ static void CreateExp( OPT_STORAGE *cmdOpts, char * name )
             fprintf( exp_file, "COMMIT HEAP=%s\n", p );
         }
     }
-    del_string(&heap); // don't need it any more
+    del_string( &heap ); // don't need it any more
 
     if( stack ) {
         p = strchr( stack->data, ',' );
@@ -450,14 +458,14 @@ static void CreateExp( OPT_STORAGE *cmdOpts, char * name )
             fprintf( exp_file, "COMMIT STACK=%s\n", p );
         }
     }
-    del_string(&stack); // don't need it any more
+    del_string( &stack ); // don't need it any more
 
     if( internaldllname ) {
         newstr = DupQuoteStrMem( internaldllname->data, '\'' );
-        fprintf( exp_file, "OPTION MODNAME=%s\n",newstr );
+        fprintf( exp_file, "OPTION MODNAME=%s\n", newstr );
         FreeMem( newstr );
     }
-    del_string(&internaldllname); // don't need it any more
+    del_string( &internaldllname ); // don't need it any more
 
     if( stub ) {
         if( *stub->data == '\'' ) {
@@ -470,12 +478,12 @@ static void CreateExp( OPT_STORAGE *cmdOpts, char * name )
         fprintf( exp_file, "OPTION STUB=%s\n", newstr );
         FreeMem( newstr );
     }
-    del_string(&stub); // don't need it any more
+    del_string( &stub ); // don't need it any more
 
     if( version ) {
         fprintf( exp_file, "OPTION VERSION=%s\n", version->data );
     }
-    del_string(&version); // don't need it any more
+    del_string( &version ); // don't need it any more
 }
 
 
@@ -496,45 +504,48 @@ static char *ImportEntry( char *export, char *dll_name )
     len += strlen( dll_name );
     export_copy = DupStrMem( export );
     p = strchr( export_copy + 1, '\'' );
-    if( export_copy[0] != '\'' || p == NULL )
+    if( export_copy[0] != '\''
+      || p == NULL ) {
         Zoinks();       // the entry_name must be in quotes
+    }
     p++;
     if( *p != '\0' ) { /* there is something after the entry_name */
         entry_name = p; // char after the entry_name
-        p=strchr(p,'=');
+        p = strchr( p, '=' );
         if( p != NULL ) { /* internal_name found */
-            *p='\0';
-            internal_name=(p+1);
-            p=strchr(internal_name,' ');
+            *p = '\0';
+            internal_name = ( p + 1 );
+            p = strchr( internal_name, ' ' );
             if( p != NULL ) { /* there is something after the internal_name */
-                *p='\0';
-                the_rest=(p+1);
+                *p = '\0';
+                the_rest = ( p + 1 );
             }
         }
 
-        p=strchr(entry_name,'.');
+        p = strchr( entry_name, '.' );
         if( p != NULL ) { /* ordinal found */
-            *p='\0';
-            ordinal=(p+1);
-            if( internal_name==NULL ) {
-                p=strchr(ordinal,' ');
-                if( p!=NULL ) { /* there is something after the ordinal */
-                    *p='\0';
-                    the_rest=(p+1);
+            *p = '\0';
+            ordinal = ( p + 1 );
+            if( internal_name == NULL ) {
+                p = strchr( ordinal, ' ' );
+                if( p != NULL ) { /* there is something after the ordinal */
+                    *p = '\0';
+                    the_rest = ( p + 1 );
                 }
             }
             len += strlen( ordinal );
         }
 
-        if( (internal_name==NULL) && (ordinal==NULL) ) {
-            p=strchr(entry_name,' ');
-            if( p!=NULL ) { /* there is something after the entry_name */
-                *p='\0';
-                the_rest=(p+1);
+        if( ( internal_name == NULL )
+          && ( ordinal == NULL ) ) {
+            p = strchr( entry_name, ' ' );
+            if( p != NULL ) { /* there is something after the entry_name */
+                *p = '\0';
+                the_rest = ( p + 1 );
             }
         }
 
-        *entry_name='\0'; /* separate the entry name from the rest of the export directive */
+        *entry_name = '\0'; /* separate the entry name from the rest of the export directive */
     }
     entry_name = export_copy;
 
@@ -558,7 +569,7 @@ static char *ImportEntry( char *export, char *dll_name )
         if( the_rest ) {
             fprintf( exp_file, " %s", the_rest );
         }
-        fprintf( exp_file, "\n");
+        fprintf( exp_file, "\n" );
     } else {
         fprintf( exp_file, "EXPORT %s\n", export );
     }
@@ -566,7 +577,8 @@ static char *ImportEntry( char *export, char *dll_name )
 
     /***  do the import library entry ***/
 
-    if( the_rest && strstr( the_rest, "PRIVATE" ) ) {
+    if( the_rest != NULL
+      && strstr( the_rest, "PRIVATE" ) ) {
         FreeMem( export_copy );
         return NULL;
     }
@@ -588,11 +600,11 @@ static char *ImportEntry( char *export, char *dll_name )
     strcat( p, ".'" );
     strcat( p, dll_name );
     strcat( p, "'" );
-    if( internal_name!=NULL ) {
+    if( internal_name != NULL ) {
         strcat( p, ".." );
         strcat( p, entry_name );
     }
-    if( ordinal!=NULL ) {
+    if( ordinal != NULL ) {
         strcat( p, "." );
         strcat( p, ordinal );
     }
@@ -634,14 +646,14 @@ static void lib_opts( OPT_STORAGE *cmdOpts, CmdLine *cmdLine )
             optStr = cmdOpts->export_value;
             while( optStr != NULL ) {
                 p = ImportEntry( optStr->data, dllfilename );
-                if( p ) {
+                if( p != NULL ) {
                     AppendFmtCmdLine( cmdLine, LIB_OPTS_SECTION, "%s", p );
                     FreeMem( p );
                 }
                 optStr = optStr->next;
             }
 
-            if( exp_file )
+            if( exp_file != NULL )
                 fclose( exp_file );
             FiniFuzzy();
         } else {
@@ -649,31 +661,31 @@ static void lib_opts( OPT_STORAGE *cmdOpts, CmdLine *cmdLine )
         }
     } else if( cmdOpts->list ) {
         if( cmdOpts->list_value != NULL ) {
-            newstr = VerifyDot(cmdOpts->list_value->data);
+            newstr = VerifyDot( cmdOpts->list_value->data );
             AppendFmtCmdLine( cmdLine, LIB_OPTS_SECTION, "/l=%s", newstr );
         }
-        get_library(cmdOpts, cmdLine);
+        get_library( cmdOpts, cmdLine );
     } else if( cmdOpts->extract ) {
         get_library(cmdOpts, cmdLine);
         if( cmdOpts->out ) {
             Warning( "Ignoring unsupported option /OUT following /EXTRACT." );
-            Warning( "'%s' will be used as output name.",cmdOpts->extract_value->data );
-            cmdOpts->out=0;
+            Warning( "'%s' will be used as output name.", cmdOpts->extract_value->data );
+            cmdOpts->out = 0;
         }
-        newstr = VerifyDot(cmdOpts->extract_value->data);
+        newstr = VerifyDot( cmdOpts->extract_value->data );
         AppendFmtCmdLine( cmdLine, LIB_OPTS_SECTION, "*%s", newstr );
 
     } else {
         if( cmdOpts->out ) {
-            newstr = VerifyDot(cmdOpts->out_value->data);
+            newstr = VerifyDot( cmdOpts->out_value->data );
             AppendFmtCmdLine( cmdLine, LIB_OPTS_SECTION, "%s", newstr );
         } else {
-            get_library(cmdOpts, cmdLine);
+            get_library( cmdOpts, cmdLine );
         }
-        get_files(cmdLine);
+        get_files( cmdLine );
         optStr = cmdOpts->remove_value;
         while( optStr != NULL ) {
-            newstr = VerifyDot(optStr->data);
+            newstr = VerifyDot( optStr->data );
             AppendFmtCmdLine( cmdLine, LIB_OPTS_SECTION, "-%s", newstr );
             optStr = optStr->next;
         }
@@ -691,7 +703,8 @@ static void lib_opts( OPT_STORAGE *cmdOpts, CmdLine *cmdLine )
 static void default_opts( OPT_STORAGE *cmdOpts, CmdLine *cmdLine )
 /****************************************************************/
 {
-    if( !cmdOpts->list && !cmdOpts->nowopts ) {
+    if( !cmdOpts->list
+      && !cmdOpts->nowopts ) {
         AppendCmdLine( cmdLine, LIB_OPTS_SECTION, "/q/b" );
     }
 }
@@ -706,7 +719,7 @@ static void watcom_opts( OPT_STORAGE *cmdOpts, CmdLine *cmdLine )
     OPT_STRING *        curr;
 
     if( cmdOpts->passwopts ) {
-        for( curr=cmdOpts->passwopts_value; curr!=NULL; curr=curr->next ) {
+        for( curr = cmdOpts->passwopts_value; curr != NULL; curr = curr->next ) {
             AppendCmdLine( cmdLine, LIB_OPTS_SECTION, curr->data );
         }
     }
@@ -734,7 +747,7 @@ static char *stristr( const char *str, const char *substr )
 
     for( i = 0; i < maxi; i++ ) {
         if( str[i] == ch ) {
-            if( !strnicmp( str + i, substr, substrLen ) ) {
+            if( strnicmp( str + i, substr, substrLen ) == 0 ) {
                 return( (char *)( str + i ) );
             }
         }
