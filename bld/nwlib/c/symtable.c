@@ -1122,8 +1122,8 @@ static void printVerboseTableEntryAr( sym_file *sfile )
 }
 
 
-void ListContentsAr( void )
-/*************************/
+static void ListContentsAr( void )
+/********************************/
 {
     sym_file    *sfile;
     lib_cmd     *cmd;
@@ -1201,8 +1201,8 @@ static void fpadchWlib( FILE *fp, char ch, size_t len )
     }
 }
 
-void ListContentsWlib( void )
-/***************************/
+static void ListContentsWlib( void )
+/**********************************/
 {
     sym_file    *sfile;
     sym_entry   *sym;
