@@ -317,7 +317,9 @@ static void SortSymbols( void )
 
     if( NumSymbols == 0 ) {
         SortedSymbols = NULL;
-        Warning( ERR_NO_SYMBOLS );
+        if( !Options.quiet ) {
+            Warning( ERR_NO_SYMBOLS );
+        }
     } else {
         SortedSymbols = MemAllocGlobal( NumSymbols * sizeof( SortedSymbols[0] ) );
     }
@@ -781,7 +783,9 @@ void AddSym( const char *name, symbol_strength strength, unsigned char info )
                 break; //db
             } else if( strength == sym->strength ) {
                 if( strength == SYM_STRONG ) {
-                    Warning( ERR_DUPLICATE_SYMBOL, FormSym( name ) );
+                    if( !Options.quiet ) {
+                        Warning( ERR_DUPLICATE_SYMBOL, FormSym( name ) );
+                    }
                 }
             }
             return;
@@ -1174,7 +1178,9 @@ static void listNewLineWlib( FILE *fp )
     if( fp ) {
         fprintf( fp, "%s\n", listMsg );
     } else {
-        Message( listMsg );
+        if( !Options.quiet ) {
+            Message( listMsg );
+        }
     }
     msgLength = 0;
     listMsg[0] = ' ';
@@ -1211,7 +1217,9 @@ void ListContentsWlib( void )
             sym = SortedSymbols[i];
             name = FormSym( sym->name );
             name_len = strlen( name );
-            Message( name );
+            if( !Options.quiet ) {
+                Message( name );
+            }
         }
         return;
     }

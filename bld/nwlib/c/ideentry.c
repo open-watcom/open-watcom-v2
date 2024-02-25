@@ -173,8 +173,6 @@ void Warning( int msgid, ... )
     char                buff[MAX_ERROR_SIZE];
     char                msg[512];
 
-    if( Options.quiet )
-        return;
     MsgGet( msgid, buff );
     va_start( arglist, msgid );
     vsnprintf( msg, 512, buff, arglist );
@@ -188,8 +186,6 @@ void Message( const char *buff, ... )
     va_list             arglist;
     char                msg[512];
 
-    if( Options.quiet )
-        return;
     va_start( arglist, buff );
     vsnprintf( msg, 512, buff, arglist );
     va_end( arglist );

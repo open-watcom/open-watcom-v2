@@ -214,7 +214,9 @@ static void importOs2Table( libfile io, arch_header *arch, char *dll_name, bool 
         /* Make sure we're not reading past the end of name table */
         total_read += bytes_read;
         if( total_read > length ) {
-            Warning( ERR_BAD_DLL, io->name );
+            if( !Options.quiet ) {
+                Warning( ERR_BAD_DLL, io->name );
+            }
             return;
         }
         /* The resident/non-resident name tables contain more than just exports
@@ -595,7 +597,9 @@ void ProcessImport( char *name )
 #endif
             }
         }
-        Warning( ERR_NO_PROCESSOR, procname[Options.processor] );
+        if( !Options.quiet ) {
+            Warning( ERR_NO_PROCESSOR, procname[Options.processor] );
+        }
     }
     if( Options.filetype == WL_FTYPE_NONE ) {
         switch( Options.libtype ) {
@@ -646,7 +650,9 @@ void ProcessImport( char *name )
                 break;
             }
         }
-        Warning( ERR_NO_TYPE, formatname[Options.filetype] );
+        if( !Options.quiet ) {
+            Warning( ERR_NO_TYPE, formatname[Options.filetype] );
+        }
     }
     if( Options.libtype == WL_LTYPE_NONE ) {
         switch( Options.filetype ) {

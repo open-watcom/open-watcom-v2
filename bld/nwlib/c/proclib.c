@@ -249,7 +249,9 @@ static void DelModules( void )
                     Message( "-d %s", cmd->name );
                 }
             } else {
-                Warning( ERR_CANT_DELETE, cmd->name );
+                if( !Options.quiet ) {
+                    Warning( ERR_CANT_DELETE, cmd->name );
+                }
             }
         }
     }
@@ -266,7 +268,9 @@ static void EmitWarnings( void )
     for( cmd = CmdList; cmd != NULL; cmd = cmd->next ) {
         if( cmd->ops & OP_EXTRACT ) {
             if( ( cmd->ops & OP_FOUND ) == 0 ) {
-                Warning( ERR_CANT_EXTRACT, cmd->name );
+                if( !Options.quiet ) {
+                    Warning( ERR_CANT_EXTRACT, cmd->name );
+                }
             }
         }
     }
