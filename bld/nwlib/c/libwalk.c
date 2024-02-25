@@ -39,18 +39,18 @@
 #include "clibext.h"
 
 
-static void AllocFNameTab( const char *name, libfile io, arch_header *arch )
+static void AllocFNameTab( libfile io, arch_header *arch, const char *name )
 /**************************************************************************/
 {
     MemFree( arch->fnametab );
-    GetFileContents( name, io, arch, &arch->fnametab );
+    GetFileContents( io, arch, &arch->fnametab, name );
 }
 
-static void AllocFFNameTab( const char *name, libfile io, arch_header *arch )
+static void AllocFFNameTab( libfile io, arch_header *arch, const char *name )
 /***************************************************************************/
 {
     MemFree( arch->ffnametab );
-    GetFileContents( name, io, arch, &arch->ffnametab );
+    GetFileContents( io, arch, &arch->ffnametab, name );
     arch->nextffname = arch->ffnametab;
     arch->lastffname = arch->nextffname + arch->size;
 }
@@ -91,7 +91,7 @@ void LibWalk( libfile io, arch_header *parch, libwalk_fn *rtn )
             buff[len] = '\0';
             arch.name = buff;
             LibSeek( io, pos, SEEK_SET );
-            rtn( &arch, io );
+            rtn( io, &arch );
             pos = LibTell( io );
             pos = __ROUND_UP_SIZE( pos, pagelen );
             LibSeek( io, pos, SEEK_SET );
@@ -129,15 +129,15 @@ void LibWalk( libfile io, arch_header *parch, libwalk_fn *rtn )
             } else if( ar.name[0] == '/'
               && ar.name[1] == '/'
               && ar.name[2] == ' ' ) {
-                AllocFNameTab( parch->name, io, &arch );
+                AllocFNameTab( io, &arch, parch->name );
             } else if( ar.name[0] == '/'
               && ar.name[1] == '/'
               && ar.name[2] == '/' ) {
-                AllocFFNameTab( parch->name, io, &arch );
+                AllocFFNameTab( io, &arch, parch->name );
             } else {
                 arch.name = GetARName( io, &ar, &arch );
                 arch.ffname = GetFFName( &arch );
-                rtn( &arch, io );
+                rtn( io, &arch );
                 MemFree( arch.name );
                 MemFree( arch.ffname );
             }

@@ -71,7 +71,7 @@ static void ExtractObj( libfile src, const char *name, arch_header *arch, const 
     }
 }
 
-static void ProcessOneObject( arch_header *arch, libfile io )
+static void ProcessOneObject( libfile io, arch_header *arch )
 {
     lib_cmd  *cmd;
     bool      deleted;
@@ -111,16 +111,16 @@ static void ProcessOneObject( arch_header *arch, libfile io )
         SkipObject( io, arch );
         Options.modified = true;
     } else {
-        AddObjectSymbols( arch, io, LibTell( io ) );
+        AddObjectSymbols( io, LibTell( io ), arch );
     }
 }
 
-static void AddOneObject( arch_header *arch, libfile io )
+static void AddOneObject( libfile io, arch_header *arch )
 {
-    AddObjectSymbols( arch, io, LibTell( io ) );
+    AddObjectSymbols( io, LibTell( io ), arch );
 }
 
-static void DelOneObject( arch_header *arch, libfile io )
+static void DelOneObject( libfile io, arch_header *arch )
 {
     RemoveObjectSymbols( arch );
     SkipObject( io, arch );
@@ -165,7 +165,7 @@ static void ProcessLibOrObj( char *name, objproc obj, libwalk_fn *process )
         if( Options.libtype == WL_LTYPE_NONE ) {
             Options.libtype = WL_LTYPE_MLIB;
         }
-    } else if( AddImport( &arch, io ) ) {
+    } else if( AddImport( io, &arch ) ) {
         LibClose( io );
     } else if( buff[0] == LIB_HEADER_REC && buff[1] != 0x01 ) {
         /*
@@ -188,7 +188,7 @@ static void ProcessLibOrObj( char *name, objproc obj, libwalk_fn *process )
     } else if( obj == OBJ_PROCESS ) {
         // Object
         LibSeek( io, 0, SEEK_SET );
-        AddObjectSymbols( &arch, io, 0 );
+        AddObjectSymbols( io, 0, &arch );
         LibClose( io );
     } else if( obj == OBJ_ERROR ) {
         BadLibrary( arch.name );

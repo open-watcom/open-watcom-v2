@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,7 +35,7 @@ extern void             FiniObj( void );
 extern void             InitObj( void );
 extern obj_file         *OpenObjFile( const char *name );
 extern void             CloseObjFile( obj_file *ofile );
-extern obj_file         *OpenLibFile( const char *name, libfile io );
+extern obj_file         *OpenLibFile( libfile io, const char *name );
 extern void             CloseLibFile( obj_file *ofile );
 
 #define VALID_ORL_FLAGS (ORL_FILE_FLAG_32BIT_MACHINE | ORL_FILE_FLAG_LITTLE_ENDIAN)

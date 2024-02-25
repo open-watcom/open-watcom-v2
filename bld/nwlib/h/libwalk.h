@@ -31,7 +31,7 @@
 ****************************************************************************/
 
 
-typedef void libwalk_fn( arch_header *arch, libfile io );
+typedef void libwalk_fn( libfile io, arch_header *arch );
 
 extern void LibWalk( libfile io, arch_header *arch, libwalk_fn *rtn );
 

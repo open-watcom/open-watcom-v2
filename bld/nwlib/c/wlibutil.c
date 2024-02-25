@@ -55,7 +55,7 @@ int SymbolNameCmp( const char *s1, const char *s2)
 }
 
 
-void GetFileContents( const char *name, libfile io, arch_header *arch, char **contents )
+void GetFileContents( libfile io, arch_header *arch, char **contents, const char *name )
 {
     size_t  size;
 
@@ -89,7 +89,7 @@ void NewArchHeader( arch_header *arch, char *name )
     arch->ffnametab = NULL;
 }
 
-static void CopyBytes( char *buffer, libfile src, libfile dst, size_t len )
+static void CopyBytes( libfile src, libfile dst, char *buffer, size_t len )
 {
     if( LibRead( src, buffer, len ) == len ) {
         LibWrite( dst, buffer, len );
@@ -104,11 +104,11 @@ void Copy( libfile src, libfile dst, file_offset size )
 
 
     while( size > sizeof( buffer ) ) {
-        CopyBytes( buffer, src, dst, sizeof( buffer ) );
+        CopyBytes( src, dst, buffer, sizeof( buffer ) );
         size -= sizeof( buffer );
     }
     if( size != 0 ) {
-        CopyBytes( buffer, src, dst, size );
+        CopyBytes( src, dst, buffer, size );
     }
 }
 

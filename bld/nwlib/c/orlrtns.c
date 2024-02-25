@@ -101,8 +101,8 @@ void InitObj( void )
     }
 }
 
-static obj_file *DoOpenObjFile( const char *name, libfile io, long offset )
-/**************************************************************************/
+static obj_file *DoOpenObjFile( libfile io, long offset, const char *name )
+/*************************************************************************/
 {
     obj_file            *ofile;
     orl_file_format     format;
@@ -139,13 +139,13 @@ obj_file *OpenObjFile( const char *name )
     libfile     io;
 
     io = LibOpen( name, LIBOPEN_READ );
-    return( DoOpenObjFile( name, io, 0 ) );
+    return( DoOpenObjFile( io, 0, name ) );
 }
 
-obj_file *OpenLibFile( const char *name, libfile io )
-/****************************************************/
+obj_file *OpenLibFile( libfile io, const char *name )
+/***************************************************/
 {
-    return( DoOpenObjFile( name, io, LibTell( io ) ) );
+    return( DoOpenObjFile( io, LibTell( io ), name ) );
 }
 
 static void DoCloseObjFile( obj_file *ofile )

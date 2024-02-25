@@ -111,7 +111,7 @@ static orl_sec_handle FindSec( obj_file *ofile, char *name )
     return( found_sec_handle );
 }
 
-static bool elfAddImport( arch_header *parch, libfile io, long header_offset )
+static bool elfAddImport( libfile io, long header_offset, arch_header *parch )
 {
     obj_file        *ofile;
     orl_sec_handle  sym_sec;
@@ -225,7 +225,7 @@ static void importOs2Table( libfile io, arch_header *arch, char *dll_name, bool 
     }
 }
 
-static void os2AddImport( arch_header *arch, libfile io, long header_offset )
+static void os2AddImport( libfile io, long header_offset, arch_header *arch )
 {
     os2_exe_header  os2_header;
     char            dll_name[_MAX_FNAME + _MAX_EXT + 1];
@@ -280,7 +280,7 @@ static void coffAddImportOverhead( arch_header *arch, const char *DLLName, proce
     MemFree( buffer );
 }
 
-static void os2FlatAddImport( arch_header *arch, libfile io, long header_offset )
+static void os2FlatAddImport( libfile io, long header_offset, arch_header *arch )
 {
     os2_flat_header os2_header;
     char            dll_name[256];
@@ -306,7 +306,7 @@ static void os2FlatAddImport( arch_header *arch, libfile io, long header_offset 
     }
 }
 
-static bool nlmAddImport( arch_header *arch, libfile io, long header_offset )
+static bool nlmAddImport( libfile io, long header_offset, arch_header *arch )
 {
     nlm_header  nlm;
     unsigned_8  name_len;
@@ -348,7 +348,7 @@ static bool nlmAddImport( arch_header *arch, libfile io, long header_offset )
     return( true );
 }
 
-static void peAddImport( arch_header *parch, libfile io, long header_offset )
+static void peAddImport( libfile io, long header_offset, arch_header *parch )
 {
     obj_file        *ofile;
     orl_sec_handle  export_sec;
@@ -992,7 +992,7 @@ void ElfWriteImport( libfile io, sym_file *sfile )
     }
 }
 
-bool AddImport( arch_header *arch, libfile io )
+bool AddImport( libfile io, arch_header *arch )
 {
     unsigned_32     ne_header_off;
     long            header_offset;
@@ -1016,19 +1016,19 @@ bool AddImport( arch_header *arch, libfile io )
         }
         if( ok ) {
             if( signature == EXESIGN_LE ) {
-                os2FlatAddImport( arch, io, header_offset );
+                os2FlatAddImport( io, header_offset, arch );
             } else if( signature == EXESIGN_LX ) {
-                os2FlatAddImport( arch, io, header_offset );
+                os2FlatAddImport( io, header_offset, arch );
             } else if( signature == EXESIGN_NE ) {
-                os2AddImport( arch, io, header_offset );
+                os2AddImport( io, header_offset, arch );
             } else if( signature == EXESIGN_PE ) {
-                peAddImport( arch, io, header_offset );
+                peAddImport( io, header_offset, arch );
             } else if( header_offset ) {
                 ok = false;
             } else {
-                ok = elfAddImport( arch, io, header_offset );
+                ok = elfAddImport( io, header_offset, arch );
                 if( !ok ) {
-                    ok = nlmAddImport( arch, io, header_offset );
+                    ok = nlmAddImport( io, header_offset, arch );
                 }
             }
         }

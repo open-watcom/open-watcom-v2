@@ -898,13 +898,13 @@ bool RemoveObjectSymbols( arch_header *arch )
     return( false );
 }
 
-void AddObjectSymbols( arch_header *arch, libfile io, long offset )
+void AddObjectSymbols( libfile io, long offset, arch_header *arch )
 /*****************************************************************/
 {
     obj_file    *ofile;
     file_type   obj_type;
 
-    ofile = OpenLibFile( arch->name, io );
+    ofile = OpenLibFile( io, arch->name );
     if( ofile->orl != NULL ) {
         if( ORLFileGetFormat( ofile->orl ) == ORL_COFF ) {
             if( Options.libtype == WL_LTYPE_MLIB ) {

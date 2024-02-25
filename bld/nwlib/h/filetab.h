@@ -119,7 +119,7 @@ extern void FiniFileTab( void );
 extern void ResetFileTab( void );
 extern void CleanFileTab( void );
 extern void ListContents( void );
-extern void AddObjectSymbols( arch_header *arch, libfile io, long offset );
+extern void AddObjectSymbols( libfile io, long offset, arch_header *arch );
 extern bool RemoveObjectSymbols( arch_header *arch );
 extern void SymCalcNewOffsets( void );
 extern void WriteFileTable( void );
