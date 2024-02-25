@@ -222,37 +222,31 @@ void Usage( void )
     int                 msgid_last;
     bool                console_tty;
 
-    Banner();
-    if( IdeCbs != NULL ) {
-        console_tty = ( ideInfo != NULL && ideInfo->ver > 2 && ideInfo->console_output );
-        if( console_tty && !Options.quiet && !Options.terse_listing ) {
-            ConsolePuts( "" );
-        }
-        if( Options.ar ) {
-            msgid = MSG_USAGE_AR_BASE;
-            msgid_last = MSG_USAGE_AR_BASE + MSG_USAGE_AR_COUNT;
-            MsgGet( msgid++, buff );
-            ConsolePrintf( buff, Options.ar_name );
-            msgid_last = MSG_USAGE_AR_BASE + MSG_USAGE_AR_COUNT;
-        } else {
-            msgid = MSG_USAGE_WLIB_BASE;
-            msgid_last = MSG_USAGE_WLIB_BASE + MSG_USAGE_WLIB_COUNT;
-        }
-        for( ; msgid < msgid_last; ++msgid ) {
-            MsgGet( msgid, buff );
-            ConsolePuts( buff );
-        }
+    Banner( true );
+    if( Options.ar ) {
+        msgid = MSG_USAGE_AR_BASE;
+        msgid_last = MSG_USAGE_AR_BASE + MSG_USAGE_AR_COUNT;
+        MsgGet( msgid++, buff );
+        ConsolePrintf( buff, Options.ar_name );
+        msgid_last = MSG_USAGE_AR_BASE + MSG_USAGE_AR_COUNT;
+    } else {
+        msgid = MSG_USAGE_WLIB_BASE;
+        msgid_last = MSG_USAGE_WLIB_BASE + MSG_USAGE_WLIB_COUNT;
+    }
+    for( ; msgid < msgid_last; ++msgid ) {
+        MsgGet( msgid, buff );
+        ConsolePuts( buff );
     }
     longjmp( Env, 1 );
 }
 
-void Banner( void )
+void Banner( bool force )
 {
     static bool alreadyDone = false;
 
     if( !alreadyDone ) {
         alreadyDone = true;
-        if( !Options.quiet && !Options.terse_listing && IdeCbs != NULL ) {
+        if( force || !Options.quiet && !Options.terse_listing ) {
             ConsolePuts(
                 banner1t( "Library Manager" )
 #ifdef DEVBUILD

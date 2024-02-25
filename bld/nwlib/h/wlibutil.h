@@ -46,6 +46,6 @@ extern void TrimPathInPlace( char * );
 extern bool IsSameFile( const char *a, const char *b );
 extern char *FormSym( const char * );
 extern char *WlibGetEnv( const char *name );
-extern void Banner( void );
+extern void Banner( bool force );
 extern char *LibFormat( void );
 extern char *MakeTmpName( char *buffer );

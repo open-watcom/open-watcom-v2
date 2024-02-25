@@ -285,7 +285,7 @@ void ProcessCmdLine( char *argv[] )
     }
 
     if( !Options.ar ) {
-        Banner();
+        Banner( false );
     }
     if( Options.input_name == NULL ) {
         FatalError( ERR_NO_LIBNAME );
