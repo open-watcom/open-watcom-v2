@@ -35,7 +35,7 @@
 #define ELFBASEIMPORTSIZE 0x14A
 #define ELFBASESTRTABSIZE 0x22
 
-extern const char   *formatname[];
+extern const char   * const formatname[];
 extern char         ElfBase[];
 extern char         ElfOSInfo[];
 

@@ -908,23 +908,23 @@ void AddObjectSymbols( libfile io, long offset, arch_header *arch )
     if( ofile->orl != NULL ) {
         if( ORLFileGetFormat( ofile->orl ) == ORL_COFF ) {
             if( Options.libtype == WL_LTYPE_MLIB ) {
-                FatalError( ERR_NOT_LIB, "COFF", LibFormat() );
+                FatalError( ERR_NOT_LIB, formatname[WL_FTYPE_COFF], LibFormat() );
             }
             Options.coff_found = true;
             obj_type = WL_FTYPE_COFF;
         } else {
             if( Options.omf_found ) {
-                FatalError( ERR_MIXED_OBJ, "ELF", "OMF" );
+                FatalError( ERR_MIXED_OBJ, formatname[WL_FTYPE_ELF], formatname[WL_FTYPE_OMF] );
             }
             Options.elf_found = true;
             obj_type = WL_FTYPE_ELF;
         }
     } else {
         if( Options.libtype == WL_LTYPE_MLIB ) {
-            FatalError( ERR_NOT_LIB, "OMF", LibFormat() );
+            FatalError( ERR_NOT_LIB, formatname[WL_FTYPE_OMF], LibFormat() );
         }
         if( Options.elf_found ) {
-            FatalError( ERR_MIXED_OBJ, "ELF", "OMF" );
+            FatalError( ERR_MIXED_OBJ, formatname[WL_FTYPE_ELF], formatname[WL_FTYPE_OMF] );
         }
         Options.omf_found = true;
         obj_type = WL_FTYPE_OMF;
@@ -941,7 +941,7 @@ void OmfMKImport( arch_header *arch, importType type,
                   char *exportedName, processor_type processor )
 {
     if( Options.elf_found ) {
-        FatalError( ERR_MIXED_OBJ, "ELF", "OMF" );
+        FatalError( ERR_MIXED_OBJ, formatname[WL_FTYPE_ELF], formatname[WL_FTYPE_OMF] );
     }
     Options.omf_found = true;
     CurrFile = NewSymFile( arch, WL_FTYPE_OMF );
@@ -969,7 +969,7 @@ void CoffMKImport( arch_header *arch, importType type,
                    char *exportedName, processor_type processor )
 {
     if( Options.elf_found ) {
-        FatalError( ERR_MIXED_OBJ, "ELF", "COFF" );
+        FatalError( ERR_MIXED_OBJ, formatname[WL_FTYPE_ELF], formatname[WL_FTYPE_COFF] );
     }
     Options.coff_found = true;
     CurrFile = NewSymFile( arch, WL_FTYPE_COFF );
@@ -1010,10 +1010,10 @@ void ElfMKImport( arch_header *arch, importType type, long export_size,
     elf_import_sym      *imp_sym;
 
     if( Options.coff_found ) {
-        FatalError( ERR_MIXED_OBJ, "ELF", "COFF" );
+        FatalError( ERR_MIXED_OBJ, formatname[WL_FTYPE_ELF], formatname[WL_FTYPE_COFF] );
     }
     if( Options.omf_found ) {
-        FatalError( ERR_MIXED_OBJ, "ELF", "OMF" );
+        FatalError( ERR_MIXED_OBJ, formatname[WL_FTYPE_ELF], formatname[WL_FTYPE_OMF] );
     }
     Options.elf_found = true;
     CurrFile = NewSymFile( arch, WL_FTYPE_ELF );
