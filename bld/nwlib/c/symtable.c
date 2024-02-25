@@ -39,6 +39,14 @@
 #include "clibext.h"
 
 
+#define HASH_SIZE                   256
+#define WLIB_LIST_MAX_MESSAGE_LEN   511
+#define WLIB_LIST_LINE_WIDTH        79
+#define WLIB_LIST_OFF_COLUMN        40
+
+static char             listMsg[WLIB_LIST_MAX_MESSAGE_LEN + 1];
+static size_t           msgLength = 0;
+
 static sym_table        FileTable;
 static sym_file         *CurrFile;
 static sym_entry        **HashTable;
@@ -46,8 +54,6 @@ static sym_entry        **SortedSymbols;
 
 static char             *padding_string;
 static size_t           padding_string_len;
-
-#define HASH_SIZE       256
 
 static int Hash( const char *string, unsigned *plen );
 
@@ -1044,22 +1050,126 @@ void ElfMKImport( arch_header *arch, importType type, long export_size,
     CurrFile->arch.size = ElfImportSize( CurrFile->import );
 }
 
-#define MAX_MESSAGE_LEN 511
-static char             listMsg[MAX_MESSAGE_LEN + 1];
-static size_t           msgLength = 0;
+static void printVerboseTableEntryAr( sym_file *sfile )
+{
+    char        member_mode[11];
+    char        date[128];
+    time_t      t;
 
-static void listPrint( FILE *fp, char *str, ... )
+    member_mode[10] = '\0';
+    member_mode[9] = ' ';
+    if( sfile->arch.mode & AR_S_IRUSR ) {
+        member_mode[0] = 'r';
+    } else {
+        member_mode[0] = '-';
+    }
+    if( sfile->arch.mode & AR_S_IWUSR ) {
+        member_mode[1] = 'w';
+    } else {
+        member_mode[1] = '-';
+    }
+    if( (sfile->arch.mode & AR_S_IXUSR) == 0 && (sfile->arch.mode & AR_S_ISUID) ) {
+        member_mode[2] = 'S';
+    } else if( (sfile->arch.mode & AR_S_IXUSR) && (sfile->arch.mode & AR_S_ISUID) ) {
+        member_mode[2] = 's';
+    } else if( sfile->arch.mode & AR_S_IXUSR ) {
+        member_mode[2] = 'x';
+    } else {
+        member_mode[2] = '-';
+    }
+    if( sfile->arch.mode & AR_S_IRGRP ) {
+        member_mode[3] = 'r';
+    } else {
+        member_mode[3] = '-';
+    }
+    if( sfile->arch.mode & AR_S_IWGRP ) {
+        member_mode[4] = 'w';
+    } else {
+        member_mode[4] = '-';
+    }
+    if( (sfile->arch.mode & AR_S_IXGRP) == 0 && (sfile->arch.mode & AR_S_ISGID) ) {
+        member_mode[5] = 'S';
+    } else if( (sfile->arch.mode & AR_S_IXGRP) && (sfile->arch.mode & AR_S_ISGID) ) {
+        member_mode[5] = 's';
+    } else if( sfile->arch.mode & AR_S_IXGRP ) {
+        member_mode[5] = 'x';
+    } else {
+        member_mode[5] = '-';
+    }
+    if( sfile->arch.mode & AR_S_IROTH ) {
+        member_mode[6] = 'r';
+    } else {
+        member_mode[6] = '-';
+    }
+    if( sfile->arch.mode & AR_S_IWOTH ) {
+        member_mode[7] = 'w';
+    } else {
+        member_mode[7] = '-';
+    }
+    if( sfile->arch.mode & AR_S_IXOTH ) {
+        member_mode[8] = 'x';
+    } else {
+        member_mode[8] = '-';
+    }
+    t = (time_t) sfile->arch.date;
+    strftime( date, 127, "%b %d %H:%M %Y", localtime( &t ) );
+    Message( "%s %u/%u %u %s %s", member_mode, sfile->arch.uid, sfile->arch.gid, sfile->arch.size,
+        date, MakeFName( sfile->arch.name ) );
+}
+
+
+void ListContentsAr( void )
+/*************************/
+{
+    sym_file    *sfile;
+    lib_cmd     *cmd;
+
+    if( CmdList != NULL ) {
+        for( cmd = CmdList; cmd != NULL; cmd = cmd->next ) {
+            if( cmd->ops & OP_FOUND ) {
+                if( Options.verbose ) {
+                    for( sfile = FileTable.first; sfile != NULL; sfile = sfile->next ) {
+                        if( IsSameModuleCase( sfile->arch.name, cmd->name, ( sfile->obj_type == WL_FTYPE_OMF ) ) ) {
+                            if( Options.terse_listing ) {
+                                Message( sfile->arch.name );
+                            } else {
+                                printVerboseTableEntryAr( sfile );
+                            }
+                            break;
+                        }
+                    }
+                } else {
+                    Message( MakeFName( cmd->name ) );
+                }
+            }
+        }
+    } else {
+        if( Options.verbose ) {
+            for( sfile = FileTable.first; sfile != NULL; sfile = sfile->next ) {
+                printVerboseTableEntryAr( sfile );
+            }
+        } else {
+            for( sfile = FileTable.first; sfile != NULL; sfile = sfile->next ) {
+                Message( "%s", MakeFName( sfile->arch.name ) );
+            }
+        }
+    }
+}
+
+
+static void listPrintWlib( FILE *fp, char *str, ... )
 {
     va_list             arglist;
 
     /* unused parameters */ (void)fp;
 
     va_start( arglist, str );
-    msgLength += vsnprintf( listMsg + msgLength, MAX_MESSAGE_LEN - msgLength, str, arglist );
+    msgLength += vsnprintf( listMsg + msgLength, WLIB_LIST_MAX_MESSAGE_LEN - msgLength, str, arglist );
     va_end( arglist );
 }
 
-static void listNewLine( FILE *fp )
+
+static void listNewLineWlib( FILE *fp )
 {
     if( fp ) {
         fprintf( fp, "%s\n", listMsg );
@@ -1071,188 +1181,94 @@ static void listNewLine( FILE *fp )
     listMsg[1] = '\0';
 }
 
-#define LINE_WIDTH 79
-#define OFF_COLUMN 40
 
-static void fpadch( FILE *fp, char ch, size_t len )
+static void fpadchWlib( FILE *fp, char ch, size_t len )
 {
     /* unused parameters */ (void)fp;
 
     if( len > 0 ) {
-        if( len > MAX_MESSAGE_LEN - msgLength )
-            len = MAX_MESSAGE_LEN - msgLength;
+        if( len > WLIB_LIST_MAX_MESSAGE_LEN - msgLength )
+            len = WLIB_LIST_MAX_MESSAGE_LEN - msgLength;
         memset( listMsg + msgLength, ch, len );
         msgLength += len;
         listMsg[msgLength] = '\0';
     }
 }
 
-static void printVerboseTableEntry( arch_header *arch )
+void ListContentsWlib( void )
+/***************************/
 {
-    char        member_mode[11];
-    char        date[128];
-    time_t      t;
+    sym_file    *sfile;
+    sym_entry   *sym;
+    int         i;
+    FILE        *fp;
+    char        *name;
+    size_t      name_len;
 
-    member_mode[10] = '\0';
-    member_mode[9] = ' ';
-    if( arch->mode & AR_S_IRUSR ) {
-        member_mode[0] = 'r';
-    } else {
-        member_mode[0] = '-';
+    if( Options.terse_listing ) {
+        SortSymbols();
+        for( i = 0; i < NumSymbols; ++i ) {
+            sym = SortedSymbols[i];
+            name = FormSym( sym->name );
+            name_len = strlen( name );
+            Message( name );
+        }
+        return;
     }
-    if( arch->mode & AR_S_IWUSR ) {
-        member_mode[1] = 'w';
-    } else {
-        member_mode[1] = '-';
+
+    if( Options.list_file == NULL ) {
+        Options.list_file = DupStr( MakeListName() );
     }
-    if( (arch->mode & AR_S_IXUSR) == 0 && (arch->mode & AR_S_ISUID) ) {
-        member_mode[2] = 'S';
-    } else if( (arch->mode & AR_S_IXUSR) && (arch->mode & AR_S_ISUID) ) {
-        member_mode[2] = 's';
-    } else if( arch->mode & AR_S_IXUSR ) {
-        member_mode[2] = 'x';
+    if( Options.list_file[0] != '\0' ) {
+        fp = fopen( Options.list_file, "w" );
+        if( fp == NULL ) {
+            FatalError( ERR_CANT_OPEN, Options.list_file, strerror( errno ) );
+        }
     } else {
-        member_mode[2] = '-';
+        fp = NULL;
     }
-    if( arch->mode & AR_S_IRGRP ) {
-        member_mode[3] = 'r';
-    } else {
-        member_mode[3] = '-';
+    SortSymbols();
+
+    for( i = 0; i < NumSymbols; ++i ) {
+        sym = SortedSymbols[i];
+        name = FormSym( sym->name );
+        name_len = strlen( name );
+        listPrintWlib( fp, "%s..", name );
+        fpadchWlib( fp, '.', WLIB_LIST_LINE_WIDTH - 2 - name_len - sym->file->name_length );
+        listPrintWlib( fp, "%s", sym->file->arch.name );
+        listNewLineWlib( fp );
     }
-    if( arch->mode & AR_S_IWGRP ) {
-        member_mode[4] = 'w';
-    } else {
-        member_mode[4] = '-';
+
+    listNewLineWlib( fp );
+
+    for( sfile = FileTable.first; sfile != NULL; sfile = sfile->next ) {
+        if( sfile->arch.ffname != NULL ) {
+            listPrintWlib( fp, "%s ", sfile->arch.ffname );
+        } else {
+            listPrintWlib( fp, "%s ", sfile->arch.name );
+        }
+        fpadchWlib( fp, ' ', WLIB_LIST_OFF_COLUMN - 1 - sfile->name_length - 16 );
+        listPrintWlib( fp, "Offset=%8.8xH", sfile->inlib_offset );
+        listNewLineWlib( fp );
+        for( sym = sfile->first; sym != NULL; sym = sym->next ) {
+            listPrintWlib( fp, "    %s", FormSym( sym->name ) );
+            listNewLineWlib( fp );
+        }
+        listNewLineWlib( fp );
     }
-    if( (arch->mode & AR_S_IXGRP) == 0 && (arch->mode & AR_S_ISGID) ) {
-        member_mode[5] = 'S';
-    } else if( (arch->mode & AR_S_IXGRP) && (arch->mode & AR_S_ISGID) ) {
-        member_mode[5] = 's';
-    } else if( arch->mode & AR_S_IXGRP ) {
-        member_mode[5] = 'x';
-    } else {
-        member_mode[5] = '-';
+
+    if( fp != NULL ) {
+        fclose( fp );
     }
-    if( arch->mode & AR_S_IROTH ) {
-        member_mode[6] = 'r';
-    } else {
-        member_mode[6] = '-';
-    }
-    if( arch->mode & AR_S_IWOTH ) {
-        member_mode[7] = 'w';
-    } else {
-        member_mode[7] = '-';
-    }
-    if( arch->mode & AR_S_IXOTH ) {
-        member_mode[8] = 'x';
-    } else {
-        member_mode[8] = '-';
-    }
-    t = (time_t) arch->date;
-    strftime( date, 127, "%b %d %H:%M %Y", localtime( &t ) );
-    Message( "%s %u/%u %u %s %s", member_mode, arch->uid, arch->gid, arch->size,
-        date, MakeFName( arch->name ) );
 }
 
 
 void ListContents( void )
 /***********************/
 {
-    sym_file    *sfile;
-    lib_cmd     *cmd;
-
     if( Options.ar ) {
-        if( CmdList != NULL ) {
-            for( cmd = CmdList; cmd != NULL; cmd = cmd->next ) {
-                if( cmd->ops & OP_FOUND ) {
-                    if( Options.verbose ) {
-                        for( sfile = FileTable.first; sfile != NULL; sfile = sfile->next ) {
-                            if( IsSameModuleCase( sfile->arch.name, cmd->name, ( sfile->obj_type == WL_FTYPE_OMF ) ) ) {
-                                if( Options.terse_listing ) {
-                                    Message( sfile->arch.name );
-                                } else {
-                                    printVerboseTableEntry( &( sfile->arch ) );
-                                }
-                                break;
-                            }
-                        }
-                    } else {
-                        Message( MakeFName( cmd->name ) );
-                    }
-                }
-            }
-        } else {
-            if( Options.verbose ) {
-                for( sfile = FileTable.first; sfile != NULL; sfile = sfile->next ) {
-                    printVerboseTableEntry( & ( sfile->arch ) );
-                }
-            } else {
-                for( sfile = FileTable.first; sfile != NULL; sfile = sfile->next ) {
-                    Message( "%s", MakeFName( sfile->arch.name ) );
-                }
-            }
-        }
+        ListContentsAr();
     } else {
-        sym_entry       *sym;
-        int             i;
-        FILE            *fp;
-        char            *name;
-        size_t          name_len;
-
-        if( Options.terse_listing ) {
-            SortSymbols();
-            for( i = 0; i < NumSymbols; ++i ) {
-                sym = SortedSymbols[i];
-                name = FormSym( sym->name );
-                name_len = strlen( name );
-                Message( name );
-            }
-            return;
-        }
-
-        if( Options.list_file == NULL ) {
-            Options.list_file = DupStr( MakeListName() );
-        }
-        if( Options.list_file[0] != 0 ) {
-            fp = fopen( Options.list_file, "w" );
-            if( fp == NULL ) {
-                FatalError( ERR_CANT_OPEN, Options.list_file, strerror( errno ) );
-            }
-        } else {
-            fp = NULL;
-        }
-        SortSymbols();
-
-        for( i = 0; i < NumSymbols; ++i ) {
-            sym = SortedSymbols[i];
-            name = FormSym( sym->name );
-            name_len = strlen( name );
-            listPrint( fp, "%s..", name );
-            fpadch( fp, '.', LINE_WIDTH - 2 - name_len - sym->file->name_length );
-            listPrint( fp, "%s", sym->file->arch.name );
-            listNewLine( fp );
-        }
-
-        listNewLine( fp );
-
-        for( sfile = FileTable.first; sfile != NULL; sfile = sfile->next ) {
-            if( sfile->arch.ffname != NULL ) {
-                listPrint( fp, "%s ", sfile->arch.ffname );
-            } else {
-                listPrint( fp, "%s ", sfile->arch.name );
-            }
-            fpadch( fp, ' ', OFF_COLUMN - 1 - sfile->name_length - 16 );
-            listPrint( fp, "Offset=%8.8xH", sfile->inlib_offset );
-            listNewLine( fp );
-            for( sym = sfile->first; sym != NULL; sym = sym->next ) {
-                listPrint( fp, "    %s", FormSym( sym->name ) );
-                listNewLine( fp );
-            }
-            listNewLine( fp );
-        }
-
-        if( fp != NULL ) {
-            fclose( fp );
-        }
+        ListContentsWlib();
     }
 }
