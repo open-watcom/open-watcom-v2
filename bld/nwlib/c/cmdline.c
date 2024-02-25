@@ -291,8 +291,14 @@ void ProcessCmdLine( char *argv[] )
         FatalError( ERR_NO_LIBNAME );
     }
     if( access( Options.input_name, F_OK ) != 0 && !Options.new_library ) {
-        if( !Options.no_create_warn ) {
-            Warning( ERR_CREATING_LIBRARY, Options.input_name );
+        if( Options.ar ) {
+            if( !Options.no_create_warn ) {
+                Warning( ERR_CREATING_LIBRARY, Options.input_name );
+            }
+        } else {
+            if( !Options.quiet ) {
+                Warning( ERR_CREATING_LIBRARY, Options.input_name );
+            }
         }
         Options.new_library = true;
     }
