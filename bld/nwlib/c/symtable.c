@@ -113,7 +113,6 @@ void CleanFileTab( void )
 
     for( curr = FileTable.first; curr; curr = next ) {
         next = curr->next;
-
         /*
          * If curr->first is NULL then either this file contains no
          * symbols or we are ignoring all of them.  Remove the file.
@@ -269,7 +268,9 @@ static void SortSymbols( void )
         ++NumFiles;
         switch( Options.libtype ) {
         case WL_LTYPE_AR:
-            // Always using "full" filename for AR
+            /*
+             * Always using "full" filename for AR
+             */
             if( sfile->arch.ffname != NULL ) {
                 name_length = sfile->ffname_length;
             } else {
@@ -277,7 +278,9 @@ static void SortSymbols( void )
                 name_length = sfile->name_length;
             }
             if( Options.ar_libformat == AR_FMT_BSD ) {
-                // BSD doesn't use special file name table
+                /*
+                 * BSD doesn't use special file name table
+                 */
                 sfile->name_offset = -1;
                 name_length = 0;
             } else if( Options.ar_libformat == AR_FMT_GNU ) {
@@ -294,8 +297,10 @@ static void SortSymbols( void )
             }
             break;
         case WL_LTYPE_MLIB:
-            // If no full filename, assume name is full, and trim
-            // it to get non-full filename.
+            /*
+             * If no full filename, assume name is full, and trim
+             * it to get non-full filename.
+             */
             if( sfile->arch.ffname == NULL ) {
                 sfile->arch.ffname = sfile->arch.name;
                 sfile->ffname_length = strlen( sfile->arch.ffname );
@@ -333,9 +338,9 @@ static void SortSymbols( void )
     }
 
     qsort( SortedSymbols, NumSymbols, sizeof( sym_entry * ), CompSyms );
-
-    // re-hook symbols onto files in sorted order
-
+    /*
+     * re-hook symbols onto files in sorted order
+     */
     for( sfile = FileTable.first; sfile != NULL; sfile = sfile->next ) {
         sfile->first = NULL;
     }
@@ -397,8 +402,11 @@ static void WriteOmfLibTrailer( void )
 }
 
 static void WriteOmfLibHeader( unsigned_32 dict_offset, unsigned_16 dict_size )
+/******************************************************************************
+ * i didn't use omfRec because page size can be quite big
+ */
 {
-    OmfLibHeader    lib_header; // i didn't use omfRec because page size can be quite big
+    OmfLibHeader    lib_header;
 
     LibSeek( NewLibrary, 0, SEEK_SET );
     lib_header.type = LIB_HEADER_REC;
@@ -477,9 +485,9 @@ static void WriteArMlibFileTable( void )
 
 
     SortSymbols();
-
-    // figure out this dictionary sizes
-
+    /*
+     * figure out this dictionary sizes
+     */
     switch( Options.libtype ) {
     case WL_LTYPE_AR:
         dict1_size = ( NumSymbols + 1 ) * sizeof(unsigned_32) + __ROUND_UP_SIZE_EVEN( TotalSymbolLength );
@@ -534,16 +542,18 @@ static void WriteArMlibFileTable( void )
         padding_string_len = LIB_FILE_PADDING_STRING_LEN;
         break;
     }
-
-    // calculate the object files offsets
-
+    /*
+     * calculate the object files offsets
+     */
     index = 0;
     obj_offset = 0;
     isBSD = ( ( Options.libtype == WL_LTYPE_AR ) && ( Options.ar_libformat == AR_FMT_BSD ) );
     for( sfile = FileTable.first; sfile != NULL; sfile = sfile->next ) {
         sfile->u.new_offset = obj_offset + header_size;
         sfile->index = ++index;
-        if( isBSD && ( sfile->name_length > AR_NAME_LEN || strchr( sfile->arch.name, ' ' ) != NULL ) ) {
+        if( isBSD
+          && ( sfile->name_length > AR_NAME_LEN
+          || strchr( sfile->arch.name, ' ' ) != NULL ) ) {
             obj_offset += __ROUND_UP_SIZE_EVEN( sfile->arch.size + sfile->name_length ) + AR_HEADER_SIZE;
         } else {
             obj_offset += __ROUND_UP_SIZE_EVEN( sfile->arch.size ) + AR_HEADER_SIZE;
@@ -559,9 +569,9 @@ static void WriteArMlibFileTable( void )
         WriteNew( LIB_CLASS_DATA_SHOULDBE, LIB_CLASS_LEN + LIB_DATA_LEN );
         break;
     }
-
-    // write the useless dictionary
-
+    /*
+     * write the useless dictionary
+     */
     arch.date = currenttime;
     arch.uid = 0;
     arch.gid = 0;
@@ -584,9 +594,9 @@ static void WriteArMlibFileTable( void )
         }
         WritePadding( TotalSymbolLength );
     }
-
-    // write the useful dictionary
-
+    /*
+     * write the useful dictionary
+     */
     if( dict2_size > 0 ) {
         arch.size = dict2_size;     // word round size
         arch.name = "/";
@@ -627,9 +637,9 @@ static void WriteArMlibFileTable( void )
             break;
         }
     }
-
-    // write the string table
-
+    /*
+     * write the string table
+     */
     if( TotalNameLength > 0 ) {
         char    *stringpad;
         size_t  stringpadlen;
@@ -653,8 +663,11 @@ static void WriteArMlibFileTable( void )
         for( sfile = FileTable.first; sfile != NULL; sfile = sfile->next ) {
             if( sfile->name_offset == -1 )
                 continue;
-            // Always write the "full" filename for AR
-            if( Options.libtype == WL_LTYPE_AR && sfile->arch.ffname != NULL ) {
+            /*
+             * Always write the "full" filename for AR
+             */
+            if( Options.libtype == WL_LTYPE_AR
+              && sfile->arch.ffname != NULL ) {
                 WriteNew( sfile->arch.ffname, sfile->ffname_length );
             } else {
                 WriteNew( sfile->arch.name, sfile->name_length );
@@ -663,9 +676,9 @@ static void WriteArMlibFileTable( void )
         }
         WritePadding( TotalNameLength );
     }
-
-    // write the full filename table
-
+    /*
+     * write the full filename table
+     */
     if( Options.libtype == WL_LTYPE_MLIB ) {
         arch.size = TotalFFNameLength;      // real size
         arch.name = "///";
@@ -684,9 +697,12 @@ static void WriteArMlibFileTable( void )
         arch = sfile->arch;
         if( sfile->name_offset == -1 ) {
             if( Options.ar_libformat == AR_FMT_BSD ) {
-                // BSD append file name after header and before file image if it is longer then
-                //  max.length or it contains space
-                if( sfile->name_length > AR_NAME_LEN || strchr( sfile->arch.name, ' ' ) != NULL ) {
+                /*
+                 * BSD append file name after header and before file image if it is longer then
+                 *  max.length or it contains space
+                 */
+                if( sfile->name_length > AR_NAME_LEN
+                  || strchr( sfile->arch.name, ' ' ) != NULL ) {
                     append_name = true;
                     arch.size += sfile->name_length;
                     sprintf( buff, AR_NAME_CONTINUED_AFTER "%lu", (unsigned long)sfile->name_length );
@@ -716,20 +732,26 @@ static void WriteArMlibFileTable( void )
 void WriteFileTable( void )
 /*************************/
 {
-    if( Options.libtype == WL_LTYPE_NONE && Options.omf_found ) {
+    if( Options.libtype == WL_LTYPE_NONE
+      && Options.omf_found ) {
         if( Options.coff_found ) {
             Options.libtype = WL_LTYPE_AR;
         } else {
             Options.libtype = WL_LTYPE_OMF;
         }
     }
-    if( Options.coff_found && (Options.libtype == WL_LTYPE_NONE || Options.libtype == WL_LTYPE_OMF) ) {
+    if( Options.coff_found
+      && (Options.libtype == WL_LTYPE_NONE
+      || Options.libtype == WL_LTYPE_OMF) ) {
         Options.libtype = WL_LTYPE_AR;
     }
-    if( Options.elf_found && (Options.libtype == WL_LTYPE_NONE || Options.libtype == WL_LTYPE_OMF) ) {
+    if( Options.elf_found
+      && (Options.libtype == WL_LTYPE_NONE
+      || Options.libtype == WL_LTYPE_OMF) ) {
         Options.libtype = WL_LTYPE_AR;
     }
-    if( Options.libtype == WL_LTYPE_AR || Options.libtype == WL_LTYPE_MLIB ) {
+    if( Options.libtype == WL_LTYPE_AR
+      || Options.libtype == WL_LTYPE_MLIB ) {
         WriteArMlibFileTable();
     } else {
         WriteOmfFileTable();
@@ -851,21 +873,16 @@ void DumpHashTable( void )
     printf( "----------------------------------------------------------\n" );
     printf( "Hash Table Dump\n" );
     printf( "----------------------------------------------------------\n" );
-
     for( i = 0; i < HASH_SIZE; ++i ) {
         length = 0;
-
-        if( HashTable[i] ) {
-            for( hash = HashTable[i]; hash != NULL; hash = hash->next ) {
-                ++length;
-            }
+        for( hash = HashTable[i]; hash != NULL; hash = hash->next ) {
+            ++length;
         }
-
         printf( "Offset %6d: %d\n", i, length );
     }
     printf( "----------------------------------------------------------\n" );
 }
-#endif // DEVBUILD
+#endif /* DEVBUILD */
 
 
 bool RemoveObjectSymbols( arch_header *arch )
@@ -1072,9 +1089,11 @@ static void printVerboseTableEntryAr( sym_file *sfile )
     } else {
         member_mode[1] = '-';
     }
-    if( (sfile->arch.mode & AR_S_IXUSR) == 0 && (sfile->arch.mode & AR_S_ISUID) ) {
+    if( (sfile->arch.mode & AR_S_IXUSR) == 0
+      && (sfile->arch.mode & AR_S_ISUID) ) {
         member_mode[2] = 'S';
-    } else if( (sfile->arch.mode & AR_S_IXUSR) && (sfile->arch.mode & AR_S_ISUID) ) {
+    } else if( (sfile->arch.mode & AR_S_IXUSR)
+      && (sfile->arch.mode & AR_S_ISUID) ) {
         member_mode[2] = 's';
     } else if( sfile->arch.mode & AR_S_IXUSR ) {
         member_mode[2] = 'x';
@@ -1091,9 +1110,11 @@ static void printVerboseTableEntryAr( sym_file *sfile )
     } else {
         member_mode[4] = '-';
     }
-    if( (sfile->arch.mode & AR_S_IXGRP) == 0 && (sfile->arch.mode & AR_S_ISGID) ) {
+    if( (sfile->arch.mode & AR_S_IXGRP) == 0
+      && (sfile->arch.mode & AR_S_ISGID) ) {
         member_mode[5] = 'S';
-    } else if( (sfile->arch.mode & AR_S_IXGRP) && (sfile->arch.mode & AR_S_ISGID) ) {
+    } else if( (sfile->arch.mode & AR_S_IXGRP)
+      && (sfile->arch.mode & AR_S_ISGID) ) {
         member_mode[5] = 's';
     } else if( sfile->arch.mode & AR_S_IXGRP ) {
         member_mode[5] = 'x';
@@ -1175,7 +1196,7 @@ static void listPrintWlib( FILE *fp, char *str, ... )
 
 static void listNewLineWlib( FILE *fp )
 {
-    if( fp ) {
+    if( fp != NULL ) {
         fprintf( fp, "%s\n", listMsg );
     } else {
         if( !Options.quiet ) {

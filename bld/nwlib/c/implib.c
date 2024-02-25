@@ -211,7 +211,9 @@ static void importOs2Table( libfile io, arch_header *arch, char *dll_name, bool 
     unsigned    total_read = 0;
 
     while( getOs2Symbol( io, symbol, &ordinal, &bytes_read ) ) {
-        /* Make sure we're not reading past the end of name table */
+        /*
+         * Make sure we're not reading past the end of name table
+         */
         total_read += bytes_read;
         if( total_read > length ) {
             if( !Options.quiet ) {
@@ -219,9 +221,11 @@ static void importOs2Table( libfile io, arch_header *arch, char *dll_name, bool 
             }
             return;
         }
-        /* The resident/non-resident name tables contain more than just exports
-           (module names, comments etc.). Everything that has ordinal of zero isn't
-           an export but more exports could follow */
+        /*
+         * The resident/non-resident name tables contain more than just exports
+         * (module names, comments etc.). Everything that has ordinal of zero isn't
+         * an export but more exports could follow
+         */
         if( ordinal == 0 )
             continue;
         if( coff_obj ) {
@@ -250,7 +254,9 @@ static void os2AddImport( libfile io, long header_offset, arch_header *arch )
     if( os2_header.nonres_off ) {
         type = Options.nr_ordinal ? ORDINAL : NAMED;
         LibSeek( io, os2_header.nonres_off, SEEK_SET );
-        // The first entry is the module description and should be ignored
+        /*
+         * The first entry is the module description and should be ignored
+         */
         getOs2Symbol( io, junk, &ordinal, &bytes_read );
         importOs2Table( io, arch, dll_name, false, type, os2_header.nonres_size - bytes_read );
     }
@@ -470,7 +476,8 @@ static char *GetImportString( char **rawpntr, char *original )
     result = raw;
 
     while( *raw && (quote || (*raw != '.')) ) {
-        if( quote && (*raw == '\'') ) {
+        if( quote
+          && (*raw == '\'') ) {
             quote  = false;
             *raw++ = '\0';
             break;
@@ -479,7 +486,9 @@ static char *GetImportString( char **rawpntr, char *original )
         ++raw;
     }
 
-    if( *raw == '.' || (!*raw && !quote) ) {
+    if( *raw == '.'
+      || ( *raw == '\0'
+      && !quote ) ) {
         if( *raw == '.' )
             *raw++ = '\0';
 
@@ -506,7 +515,8 @@ void ProcessImport( char *name )
     namecopy = DupStr( name );
 
     symName = GetImportString( &name, namecopy );
-    if( *name == '\0' || *symName == '\0' ) {
+    if( *name == '\0'
+      || *symName == '\0' ) {
         FatalError( ERR_BAD_CMDLINE, namecopy );
     }
 
@@ -526,7 +536,6 @@ void ProcessImport( char *name )
                 symName = ordString;
             }
         }
-
         /*
          * Make sure there is nothing other than white space on the rest
          * of the line.
@@ -539,7 +548,8 @@ void ProcessImport( char *name )
             }
         } else if( *name != '\0' ) {
             exportedName = GetImportString( &name, namecopy );
-            if( exportedName == NULL || *exportedName == '\0' ) {
+            if( exportedName == NULL
+              || *exportedName == '\0' ) {
                 exportedName = symName;
             } else if( isdigit( *(unsigned char *)exportedName ) ) {
                 ordinal      = strtoul( exportedName, NULL, 0 );
@@ -836,11 +846,15 @@ size_t CoffImportSize( import_sym *import )
             switch( import->processor ) {
             case WL_PROC_AXP:
                 if( sym_len > 8 ) {
-                    // Everything goes to symbol table
+                    /*
+                     * Everything goes to symbol table
+                     */
                     ret += sym_len + 1 + sym_len + 7;
                 } else if( sym_len > 2 ) {
-                    // Undecorated symbol can be stored directly, but the
-                    // version with "__imp_" prepended goes to symbol table
+                    /*
+                     * Undecorated symbol can be stored directly, but the
+                     * version with "__imp_" prepended goes to symbol table
+                     */
                     ret += 7 + sym_len;
                 }
                 ret += 0xc + 3 * COFF_RELOC_SIZE;   // .text
@@ -865,7 +879,9 @@ size_t CoffImportSize( import_sym *import )
                     + 0x8  + 2 * COFF_RELOC_SIZE;   // .reldata
                 break;
             case WL_PROC_X64:
-                // See comment for AXP above
+                /*
+                 * See comment for AXP above
+                 */
                 if( sym_len > 8 ) {
                     ret += sym_len + 1 + sym_len + 7;
                 } else if( sym_len > 2 ) {
@@ -874,7 +890,9 @@ size_t CoffImportSize( import_sym *import )
                 ret += 6 + COFF_RELOC_SIZE;     // .text
                 break;
             case WL_PROC_X86:
-                // See comment for AXP above
+                /*
+                 * See comment for AXP above
+                 */
                 if( sym_len > 8 ) {
                     ret += sym_len + 1 + sym_len + 7;
                 } else if( sym_len > 2 ) {

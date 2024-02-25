@@ -167,7 +167,8 @@ static char *my_getline( getline_data *fd )
             len_used--;
             p[len_used] = '\0';
         }
-        if( len_used && p[len_used - 1] == '\r' ) {
+        if( len_used
+          && p[len_used - 1] == '\r' ) {
             len_used--;
             p[len_used] = '\0';
         }
@@ -201,7 +202,8 @@ void ParseOneLineWlib( const char *cmd, OPT_STORAGE_W *data, bool comment )
             break;
 #endif
         case '-':
-            if( CmdList == NULL && Options.input_name == NULL ) {
+            if( CmdList == NULL
+              && Options.input_name == NULL ) {
                 CmdScanChar();          /* skip '-' character */
                 if( !OPT_PROCESS_W( data ) ) {
                     break;
@@ -252,7 +254,9 @@ void ParseOneLineWlib( const char *cmd, OPT_STORAGE_W *data, bool comment )
             return;
         case '#':
             if( comment ) {
-                // comment - blow away line
+                /*
+                 * comment - blow away line
+                 */
                 CmdScanInit( old_cmd );
                 return;
             }
@@ -272,9 +276,10 @@ void SetOptionsWlib( OPT_STORAGE_W *data )
 {
     /*
      * q - don't print header
-     * v - print header        (default)
+     * v - verbosed output      (default)
      */
-    if( data->q && data->v ) {
+    if( data->q
+      && data->v ) {
         if( data->q_timestamp > data->v_timestamp ) {
             Options.quiet = true;
         }
@@ -428,12 +433,19 @@ void SetOptionsWlib( OPT_STORAGE_W *data )
     }
 
     if( CmdList == NULL ) {
-        if( !Options.list_contents && !Options.explode && !Options.new_library ) {
-            /* Default action: List the input lib */
+        if( !Options.list_contents
+          && !Options.explode
+          && !Options.new_library ) {
+            /*
+             * Default action: List the input lib
+             */
             if( Options.output_name == NULL ) {
                 Options.list_contents = true;
                 Options.list_file = DupStr( "" );
-            } else { /* Or copy it to the output lib */
+            } else {
+                /*
+                 * Or copy it to the output lib
+                 */
                 Options.modified = true;
             }
         }

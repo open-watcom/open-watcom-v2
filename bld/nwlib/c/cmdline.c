@@ -57,32 +57,32 @@ static void BadCmdLine( int error_code )
     FatalError( error_code, option_start );
 }
 
-// BAD CHAR DETECTED
+/* BAD CHAR DETECTED */
 void BadCmdLineChar( void )
 {
     BadCmdLine( ERR_BAD_CMDLINE );
 }
-// BAD ID DETECTED
+/* BAD ID DETECTED */
 void BadCmdLineId( void )
 {
     BadCmdLine( ERR_BAD_CMDLINE );
 }
-// BAD NUMBER DETECTED
+/* BAD NUMBER DETECTED */
 void BadCmdLineNumber( void )
 {
     BadCmdLine( ERR_BAD_CMDLINE );
 }
-// BAD PATH DETECTED
+/* BAD PATH DETECTED */
 void BadCmdLinePath( void )
 {
     BadCmdLine( ERR_BAD_CMDLINE );
 }
-// BAD FILE DETECTED
+/* BAD FILE DETECTED */
 void BadCmdLineFile( void )
 {
     BadCmdLine( ERR_BAD_CMDLINE );
 }
-// BAD TEXT DETECTED
+/* BAD TEXT DETECTED */
 void BadCmdLineOption( void )
 {
     BadCmdLine( ERR_BAD_CMDLINE );
@@ -93,8 +93,12 @@ static size_t checkExt( const char *fname, size_t len, const char *ext )
     bool        has_ext;
     size_t      i;
 
-    if( fname == NULL || len == 0 || ext == NULL || *ext == '\0' )
+    if( fname == NULL
+      || len == 0
+      || ext == NULL
+      || *ext == '\0' ) {
         return( 0 );
+    }
     has_ext = false;
     for( i = 0; i < len; i++ ) {
         switch( fname[i] ) {
@@ -242,14 +246,17 @@ static const char *getWlibModeInfo( void )
 
 void ProcessCmdLine( char *argv[] )
 {
-    const char  *p;
-    lib_cmd     *cmd;
+    const char      *p;
+    lib_cmd         *cmd;
     OPT_STORAGE_A   dataa;
     OPT_STORAGE_W   dataw;
 
     p = getWlibModeInfo();
 
-    if( ( p == NULL || *p == '\0' ) && ( argv[1] == NULL || *argv[1] == '\0' ) ) {
+    if( ( p == NULL
+      || *p == '\0' )
+      && ( argv[1] == NULL
+      || *argv[1] == '\0' ) ) {
         Usage();
     }
 
@@ -259,7 +266,8 @@ void ProcessCmdLine( char *argv[] )
         OPT_INIT_W( &dataw );
     }
 
-    if( p != NULL && *p != '\0' ) {
+    if( p != NULL
+      && *p != '\0' ) {
         if( Options.ar ) {
             ParseOneLineAr( p, &dataa, false );
         } else {
@@ -290,7 +298,8 @@ void ProcessCmdLine( char *argv[] )
     if( Options.input_name == NULL ) {
         FatalError( ERR_NO_LIBNAME );
     }
-    if( access( Options.input_name, F_OK ) != 0 && !Options.new_library ) {
+    if( access( Options.input_name, F_OK ) != 0
+      && !Options.new_library ) {
         if( Options.ar ) {
             if( !Options.no_create_warn ) {
                 Warning( ERR_CREATING_LIBRARY, Options.input_name );
