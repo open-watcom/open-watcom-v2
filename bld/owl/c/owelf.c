@@ -68,20 +68,20 @@ static void writeFileHeader( owl_file_handle file )
 {
     Elf32_Ehdr          header;
 
-    memset( &header.e_ident[ 0 ], 0, sizeof( header.e_ident ) );
-    header.e_ident[ EI_MAG0 ] = ELFMAG0;
-    header.e_ident[ EI_MAG1 ] = ELFMAG1;
-    header.e_ident[ EI_MAG2 ] = ELFMAG2;
-    header.e_ident[ EI_MAG3 ] = ELFMAG3;
-    header.e_ident[ EI_CLASS ] = ELFCLASS32;
+    memset( &header.e_ident[0], 0, sizeof( header.e_ident ) );
+    header.e_ident[EI_MAG0] = ELFMAG0;
+    header.e_ident[EI_MAG1] = ELFMAG1;
+    header.e_ident[EI_MAG2] = ELFMAG2;
+    header.e_ident[EI_MAG3] = ELFMAG3;
+    header.e_ident[EI_CLASS] = ELFCLASS32;
 #if defined( __BIG_ENDIAN__ )
-    header.e_ident[ EI_DATA ] = ELFDATA2MSB;
+    header.e_ident[EI_DATA] = ELFDATA2MSB;
 #else
-    header.e_ident[ EI_DATA ] = ELFDATA2LSB;
+    header.e_ident[EI_DATA] = ELFDATA2LSB;
 #endif
-    header.e_ident[ EI_VERSION ] = EV_CURRENT;
+    header.e_ident[EI_VERSION] = EV_CURRENT;
     header.e_type = ET_REL;
-    header.e_machine = machineTypes[ file->info->cpu ];
+    header.e_machine = machineTypes[file->info->cpu];
     header.e_version = EV_CURRENT;
     header.e_entry = 0;                 // fixme - should allow client to set this
     header.e_phoff = 0;
@@ -134,7 +134,7 @@ static void emitElfSymbol( owl_symbol_info *symbol, Elf32_Sym *elf_sym )
     elf_sym->st_name = OWLStringOffset( symbol->name );
     elf_sym->st_value = symbol->offset;
     elf_sym->st_size = 0;
-    elf_sym->st_info = ELF32_ST_INFO( elfBinding[ symbol->linkage ], elfType[ symbol->type ] );
+    elf_sym->st_info = ELF32_ST_INFO( elfBinding[symbol->linkage], elfType[symbol->type] );
     elf_sym->st_other = 0;
     elf_sym->st_shndx = SHN_UNDEF;
     if( symbol->section != NULL ) {
@@ -179,7 +179,7 @@ static void prepareSymbolTable( owl_file_handle file, elf_special_section *sym_s
         } else {
             sym->index = next_global_index--;
         }
-        emitElfSymbol( sym, &elf_syms[ sym->index ] );
+        emitElfSymbol( sym, &elf_syms[sym->index] );
     }
     assert( ( next_global_index + 1 ) == next_local_index );
     assert( next_local_index == ( file->symbol_table->num_local_symbols + 1 ) );
@@ -341,9 +341,9 @@ static void formatUserSectionHeaders( owl_file_handle file, Elf32_Shdr *headers 
     owl_section_handle  curr;
 
     for( curr = file->sections; curr != NULL; curr = curr->next ) {
-        doSectionHeader( curr, &headers[ _OWLIndexToELFIndex( curr->index ) ] );
+        doSectionHeader( curr, &headers[_OWLIndexToELFIndex( curr->index )] );
         if( curr->first_reloc != NULL ) {
-            doSectionRelocsHeader( curr, &headers[ _OWLIndexToELFIndex( curr->x.elf.relocs_index ) ] );
+            doSectionRelocsHeader( curr, &headers[_OWLIndexToELFIndex( curr->x.elf.relocs_index )] );
         }
     }
 }
@@ -357,9 +357,9 @@ static void emitSectionHeaders( owl_file_handle file )
     section_header_table_size = numSections( file ) * sizeof( Elf32_Shdr );
     file->x.elf.next_section = sizeof( Elf32_Ehdr ) + section_header_table_size;
     headers = _ClientAlloc( file, section_header_table_size );
-    formatBogusUndefHeader( file, &headers[ ELF_UNDEF_INDEX ] );
-    formatStringTableHeader( file, &headers[ ELF_STRING_INDEX ] );
-    formatSymbolTableHeader( file, &headers[ ELF_SYMBOL_INDEX ] );
+    formatBogusUndefHeader( file, &headers[ELF_UNDEF_INDEX] );
+    formatStringTableHeader( file, &headers[ELF_STRING_INDEX] );
+    formatSymbolTableHeader( file, &headers[ELF_SYMBOL_INDEX] );
     formatUserSectionHeaders( file, headers );
     _ClientWrite( file, (const char *)headers, section_header_table_size );
     _ClientFree( file, headers );
@@ -483,7 +483,7 @@ static void prepareRelocSections( owl_file_handle file )
  */
 {
     owl_section_handle  curr;
-    char                buffer[ MAX_SECTION_NAME + 5 ];
+    char                buffer[MAX_SECTION_NAME + 5];
 
     switch( file->info->cpu ) {
     case OWL_CPU_X86:
