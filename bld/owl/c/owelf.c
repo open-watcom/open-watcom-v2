@@ -111,21 +111,21 @@ static void prepareStringTable( owl_file_handle file, elf_special_section *str_s
  * must correspond to owl_sym_linkage in owl.h
  */
 static Elf32_Half elfBinding[] = {
-    STB_GLOBAL,
-    STB_LOCAL,
-    STB_LOCAL,
-    STB_GLOBAL,
-    STB_WEAK,
+    STB_GLOBAL,     /* OWL_SYM_UNDEFINED    */
+    STB_LOCAL,      /* OWL_SYM_FUNCTION     */
+    STB_LOCAL,      /* OWL_SYM_STATIC       */
+    STB_GLOBAL,     /* OWL_SYM_GLOBAL       */
+    STB_WEAK,       /* OWL_SYM_WEAK         */
 };
 
 /*
  * must correspond to owl_sym_type in owl.h
  */
 static Elf32_Half elfType[] = {
-    STT_FUNC,
-    STT_OBJECT,
-    STT_SECTION,
-    STT_FILE,
+    STT_FUNC,       /* OWL_TYPE_FUNCTION    */
+    STT_OBJECT,     /* OWL_TYPE_OBJECT      */
+    STT_SECTION,    /* OWL_TYPE_SECTION     internal - should not be used by client */
+    STT_FILE,       /* OWL_TYPE_FILE        internal - ditto */
 };
 
 static void emitElfSymbol( owl_symbol_info *symbol, Elf32_Sym *elf_sym )
