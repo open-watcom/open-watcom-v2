@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -374,18 +374,23 @@ typedef struct {
 
 // symbol info field contents
 
-#define ELF32_ST_BIND(i)        ((i)>>4)        // get the "bind" subfield
-#define ELF32_ST_TYPE(i)        ((i)&0xf)       // get the type subfield
-#define ELF32_ST_INFO(b,t)      (((b)<<4)+((t)&0xf)) // make a new st_info
+#define ELF32_ST_BIND(i)        ((i)>>4)                // get the "bind" subfield
+#define ELF32_ST_TYPE(i)        ((i)&0x0f)              // get the type subfield
+#define ELF32_ST_INFO(b,t)      (((b)<<4)+((t)&0x0f))   // make a new st_info
+
+#define ELF64_ST_BIND(i)        ((i)>>4)                // get the "bind" subfield
+#define ELF64_ST_TYPE(i)        ((i)&0x0f)              // get the type subfield
+#define ELF64_ST_INFO(b,t)      (((b)<<4)+((t)&0x0f))   // make a new st_info
 
 // bind subfield contents
 
 #define STB_LOCAL       0       // symbol has local binding
 #define STB_GLOBAL      1       // symbol has global binding
 #define STB_WEAK        2       // symbol has weak binding
-#define STB_ENTRY       12      // symbol is entry-point for the load module
-#define STB_LOPROC      13      // processor specific semantics
-#define STB_HIPROC      15
+#define STB_LOOS        10      // OS specific semantics (start)
+#define STB_HIOS        12      // OS specific semantics (end)
+#define STB_LOPROC      13      // processor specific semantics (start)
+#define STB_HIPROC      15      // processor specific semantics (end)
 
 // type subfield contents
 
@@ -394,9 +399,12 @@ typedef struct {
 #define STT_FUNC        2       // symbol is a code symbol
 #define STT_SECTION     3       // symbol associated with a section
 #define STT_FILE        4       // symbol gives name of the source file.
-#define STT_IMPORT      11      // reference to a symbol in another module
-#define STT_LOPROC      13      // processor specific semantics
-#define STT_HIPROC      15
+#define STT_COMMON      5       // symbol labels an uninitialized common block
+#define STT_TLS         6       // symbol specifies a thread-local storage entity
+#define STT_LOOS        10      // OS specific semantics (start)
+#define STT_HIOS        12      // OS specific semantics (end)
+#define STT_LOPROC      13      // processor specific semantics (start)
+#define STT_HIPROC      15      // processor specific semantics (end)
 
 // relocation entries
 
