@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,15 +44,15 @@
 
 static bool useRela;                    // Use .rela or .rel
 
-static unsigned numSections( owl_file_handle file ) {
-//***************************************************
-
+static unsigned numSections( owl_file_handle file )
+/*************************************************/
+{
     return( _OWLIndexToELFIndex( file->next_index ) );
 }
 
-static unsigned numSymbols( owl_file_handle file ) {
-//**************************************************
-
+static unsigned numSymbols( owl_file_handle file )
+/************************************************/
+{
     return( file->symbol_table->num_global_symbols +
                 file->symbol_table->num_local_symbols );
 }
@@ -63,9 +63,9 @@ static Elf32_Half machineTypes[] = {
     #undef OWL_CPU
 };
 
-static void writeFileHeader( owl_file_handle file ) {
-//***************************************************
-
+static void writeFileHeader( owl_file_handle file )
+/*************************************************/
+{
     Elf32_Ehdr          header;
 
     memset( &header.e_ident[ 0 ], 0, sizeof( header.e_ident ) );
@@ -96,25 +96,41 @@ static void writeFileHeader( owl_file_handle file ) {
     _ClientWrite( file, (const char *)&header, sizeof( header ) );
 }
 
-static void prepareStringTable( owl_file_handle file, elf_special_section *str_sect ) {
-//*************************************************************************************
-// Before we can use indices for owl_string_handles, we
-// have to write the string table into a temporary buffer
-
+static void prepareStringTable( owl_file_handle file, elf_special_section *str_sect )
+/************************************************************************************
+ * Before we can use indices for owl_string_handles, we
+ * have to write the string table into a temporary buffer
+ */
+{
     str_sect->length = OWLStringTableSize( file->string_table );
     str_sect->buffer = _ClientAlloc( file,  str_sect->length );
     OWLStringEmit( file->string_table, str_sect->buffer );
 }
 
-// must correspond to owl_sym_linkage in owl.h
-static Elf32_Half elfBinding[] = { STB_GLOBAL, STB_LOCAL, STB_LOCAL, STB_GLOBAL, STB_WEAK };
+/*
+ * must correspond to owl_sym_linkage in owl.h
+ */
+static Elf32_Half elfBinding[] = {
+    STB_GLOBAL,
+    STB_LOCAL,
+    STB_LOCAL,
+    STB_GLOBAL,
+    STB_WEAK,
+};
 
-// must correspond to owl_sym_type in owl.h
-static Elf32_Half elfType[] = { STT_FUNC, STT_OBJECT, STT_SECTION, STT_FILE };
+/*
+ * must correspond to owl_sym_type in owl.h
+ */
+static Elf32_Half elfType[] = {
+    STT_FUNC,
+    STT_OBJECT,
+    STT_SECTION,
+    STT_FILE,
+};
 
-static void emitElfSymbol( owl_symbol_info *symbol, Elf32_Sym *elf_sym ) {
-//************************************************************************
-
+static void emitElfSymbol( owl_symbol_info *symbol, Elf32_Sym *elf_sym )
+/**********************************************************************/
+{
     elf_sym->st_name = OWLStringOffset( symbol->name );
     elf_sym->st_value = symbol->offset;
     elf_sym->st_size = 0;
@@ -126,9 +142,9 @@ static void emitElfSymbol( owl_symbol_info *symbol, Elf32_Sym *elf_sym ) {
     }
 }
 
-static void emitBogusSymbol( Elf32_Sym *elf_sym ) {
-//*************************************************
-
+static void emitBogusSymbol( Elf32_Sym *elf_sym ) 
+/***********************************************/
+{
     elf_sym->st_name = 0;
     elf_sym->st_value = 0;
     elf_sym->st_size = 0;
@@ -137,12 +153,13 @@ static void emitBogusSymbol( Elf32_Sym *elf_sym ) {
     elf_sym->st_shndx = SHN_UNDEF;
 }
 
-static void prepareSymbolTable( owl_file_handle file, elf_special_section *sym_sect ) {
-//*************************************************************************************
-// Same as for prepareStringTable, but with symbols instead of strings. Since symbol
-// table entries are format-specific, we don't have a handy OWLSymbol call to do all
-// our work for us, so we just run the table converting everything
-
+static void prepareSymbolTable( owl_file_handle file, elf_special_section *sym_sect )
+/************************************************************************************
+ * Same as for prepareStringTable, but with symbols instead of strings. Since symbol
+ * table entries are format-specific, we don't have a handy OWLSymbol call to do all
+ * our work for us, so we just run the table converting everything
+ */
+{
     owl_symbol_info     *sym;
     unsigned            next_local_index;
     unsigned            next_global_index;
@@ -155,8 +172,9 @@ static void prepareSymbolTable( owl_file_handle file, elf_special_section *sym_s
     next_local_index = 1;
     next_global_index = file->symbol_table->num_global_symbols + file->symbol_table->num_local_symbols;
     for( sym = file->symbol_table->head; sym != NULL; sym = sym->next ) {
-        if( sym->flags & OWL_SYM_DEAD ) continue;
-        if( !(_OwlLinkageGlobal(sym->linkage)) ) {
+        if( sym->flags & OWL_SYM_DEAD )
+            continue;
+        if( !(_OwlLinkageGlobal( sym->linkage )) ) {
             sym->index = next_local_index++;
         } else {
             sym->index = next_global_index--;
@@ -167,9 +185,9 @@ static void prepareSymbolTable( owl_file_handle file, elf_special_section *sym_s
     assert( next_local_index == ( file->symbol_table->num_local_symbols + 1 ) );
 }
 
-static void initSectionHeader( Elf32_Shdr *header, Elf32_Word type, Elf32_Word flags ) {
-//**************************************************************************************
-
+static void initSectionHeader( Elf32_Shdr *header, Elf32_Word type, Elf32_Word flags )
+/************************************************************************************/
+{
     header->sh_name = 0;
     header->sh_type = type;
     header->sh_flags = flags;
@@ -182,17 +200,17 @@ static void initSectionHeader( Elf32_Shdr *header, Elf32_Word type, Elf32_Word f
     header->sh_entsize = 0;
 }
 
-static void formatBogusUndefHeader( owl_file_handle file, Elf32_Shdr *header ) {
-//******************************************************************************
-
+static void formatBogusUndefHeader( owl_file_handle file, Elf32_Shdr *header )
+/****************************************************************************/
+{
     /* unused parameters */ (void)file;
 
     initSectionHeader( header, SHT_NULL, 0 );
 }
 
-static void formatStringTableHeader( owl_file_handle file, Elf32_Shdr *header ) {
-//*******************************************************************************
-
+static void formatStringTableHeader( owl_file_handle file, Elf32_Shdr *header )
+/*****************************************************************************/
+{
     initSectionHeader( header, SHT_STRTAB, 0 );
     header->sh_name = OWLStringOffset( file->x.elf.string_table.name );
     header->sh_offset = file->x.elf.next_section;
@@ -200,9 +218,9 @@ static void formatStringTableHeader( owl_file_handle file, Elf32_Shdr *header ) 
     file->x.elf.next_section += file->x.elf.string_table.length;
 }
 
-static void formatSymbolTableHeader( owl_file_handle file, Elf32_Shdr *header ) {
-//*******************************************************************************
-
+static void formatSymbolTableHeader( owl_file_handle file, Elf32_Shdr *header )
+/*****************************************************************************/
+{
     elf_special_section *sym_tab;
 
     sym_tab = &file->x.elf.symbol_table;
@@ -217,31 +235,40 @@ static void formatSymbolTableHeader( owl_file_handle file, Elf32_Shdr *header ) 
 }
 
 
-static Elf32_Word sectionTypes( owl_section_type type ) {
-//*******************************************************
-
-    if( type & OWL_SEC_ATTR_CODE ) return( SHT_PROGBITS );
-    if( type & OWL_SEC_ATTR_DATA ) return( SHT_PROGBITS );
-    if( type & OWL_SEC_ATTR_BSS ) return( SHT_NOBITS );
-    if( type & OWL_SEC_ATTR_INFO ) return( SHT_NOTE );
+static Elf32_Word sectionTypes( owl_section_type type )
+/*****************************************************/
+{
+    if( type & OWL_SEC_ATTR_CODE )
+        return( SHT_PROGBITS );
+    if( type & OWL_SEC_ATTR_DATA )
+        return( SHT_PROGBITS );
+    if( type & OWL_SEC_ATTR_BSS )
+        return( SHT_NOBITS );
+    if( type & OWL_SEC_ATTR_INFO )
+        return( SHT_NOTE );
     return( SHT_NULL );
 }
 
-static Elf32_Word sectionFlags( owl_section_type type ) {
-//*******************************************************
-
+static Elf32_Word sectionFlags( owl_section_type type )
+/*****************************************************/
+{
     uint_32 flags = 0;
 
-    if( type & OWL_SEC_ATTR_CODE ) flags |= SHF_ALLOC;
-    if( type & OWL_SEC_ATTR_DATA ) flags |= SHF_ALLOC;
-    if( type & OWL_SEC_ATTR_BSS ) flags |= SHF_ALLOC;
-    if( type & OWL_SEC_ATTR_PERM_WRITE ) flags |= SHF_WRITE;
-    if( type & OWL_SEC_ATTR_PERM_EXEC ) flags |= SHF_EXECINSTR;
+    if( type & OWL_SEC_ATTR_CODE )
+        flags |= SHF_ALLOC;
+    if( type & OWL_SEC_ATTR_DATA )
+        flags |= SHF_ALLOC;
+    if( type & OWL_SEC_ATTR_BSS )
+        flags |= SHF_ALLOC;
+    if( type & OWL_SEC_ATTR_PERM_WRITE )
+        flags |= SHF_WRITE;
+    if( type & OWL_SEC_ATTR_PERM_EXEC )
+        flags |= SHF_EXECINSTR;
     return( flags );
 }
 
 static uint_32 sectionAlignment( owl_section_info *section )
-//**********************************************************
+/**********************************************************/
 {
     uint_32     alignment = 0;
 
@@ -263,7 +290,7 @@ static uint_32 sectionAlignment( owl_section_info *section )
 }
 
 static owl_offset sectionPadding( owl_section_handle section, owl_offset offset )
-//*******************************************************************************
+/*******************************************************************************/
 {
     owl_offset          mod;
     owl_offset          padding;
@@ -280,21 +307,21 @@ static owl_offset sectionPadding( owl_section_handle section, owl_offset offset 
 }
 
 static void doSectionHeader( owl_section_handle section, Elf32_Shdr *header )
-//***************************************************************************
+/***************************************************************************/
 {
     initSectionHeader( header, sectionTypes( section->type ), sectionFlags( section->type ) );
     header->sh_name = OWLStringOffset( section->name );
     header->sh_addralign = sectionAlignment( section );
     header->sh_size = section->size + sectionPadding( section, section->size );
-    if( !( section->type & OWL_SEC_ATTR_BSS ) ) {
+    if( (section->type & OWL_SEC_ATTR_BSS) == 0 ) {
         header->sh_offset = section->file->x.elf.next_section;
         section->file->x.elf.next_section += header->sh_size;
     }
 }
 
-static void doSectionRelocsHeader( owl_section_handle section, Elf32_Shdr *header ) {
-//***********************************************************************************
-
+static void doSectionRelocsHeader( owl_section_handle section, Elf32_Shdr *header )
+/*********************************************************************************/
+{
     size_t      reloc_entry_size;
 
     reloc_entry_size = useRela ? sizeof( Elf32_Rela ) : sizeof( Elf32_Rel );
@@ -308,9 +335,9 @@ static void doSectionRelocsHeader( owl_section_handle section, Elf32_Shdr *heade
     section->file->x.elf.next_section += header->sh_size;
 }
 
-static void formatUserSectionHeaders( owl_file_handle file, Elf32_Shdr *headers ) {
-//*********************************************************************************
-
+static void formatUserSectionHeaders( owl_file_handle file, Elf32_Shdr *headers )
+/*******************************************************************************/
+{
     owl_section_handle  curr;
 
     for( curr = file->sections; curr != NULL; curr = curr->next ) {
@@ -321,9 +348,9 @@ static void formatUserSectionHeaders( owl_file_handle file, Elf32_Shdr *headers 
     }
 }
 
-static void emitSectionHeaders( owl_file_handle file ) {
-//******************************************************
-
+static void emitSectionHeaders( owl_file_handle file )
+/****************************************************/
+{
     Elf32_Shdr          *headers;
     Elf32_Word          section_header_table_size;
 
@@ -338,16 +365,16 @@ static void emitSectionHeaders( owl_file_handle file ) {
     _ClientFree( file, headers );
 }
 
-static void emitSpecialSection( owl_file_handle file, elf_special_section *section ) {
-//************************************************************************************
-
+static void emitSpecialSection( owl_file_handle file, elf_special_section *section )
+/**********************************************************************************/
+{
     _ClientWrite( file, section->buffer, section->length );
     _ClientFree( file, section->buffer );
 }
 
-static void emitReloc( owl_section_handle sec, owl_reloc_info *reloc, Elf32_Rela *elf_reloc ) {
-//*********************************************************************************************
-
+static void emitReloc( owl_section_handle sec, owl_reloc_info *reloc, Elf32_Rela *elf_reloc )
+/*******************************************************************************************/
+{
     owl_offset          old_loc;
     unsigned_32         data;
     unsigned_32         bit_mask;
@@ -356,16 +383,21 @@ static void emitReloc( owl_section_handle sec, owl_reloc_info *reloc, Elf32_Rela
     elf_reloc->r_offset = reloc->location;
     elf_reloc->r_info = ELF32_R_INFO( reloc->symbol->index, ElfRelocType( reloc->type, sec->file->info->cpu ) );
     bit_mask = OWLRelocBitMask( sec->file, reloc );
-#ifdef __BIG_ENDIAN__ //TODO check target, not host
-    // When targeting big endian machines, halfword relocs do not start
-    // where the instruction starts because high bits are stored first and
-    // reloc is in the low bits. Adjust the location of the reloc for those.
-    // Bit of a hack really, but this is the easiest place to do it.
-    if( !(bit_mask & 0xffff0000) )
+#ifdef __BIG_ENDIAN__
+    /*
+     *TODO check target, not host
+     * When targeting big endian machines, halfword relocs do not start
+     * where the instruction starts because high bits are stored first and
+     * reloc is in the low bits. Adjust the location of the reloc for those.
+     * Bit of a hack really, but this is the easiest place to do it.
+     */
+    if( (bit_mask & 0xffff0000) == 0 )
         elf_reloc->r_offset += 2;
 #endif
     if( useRela ) {
-        // dig up the embedded addend within the object and put it here
+        /*
+         * dig up the embedded addend within the object and put it here
+         */
         old_loc = OWLBufferTell( sec->buffer );
         OWLBufferSeek( sec->buffer, reloc->location );
         data = 0;
@@ -381,7 +413,7 @@ static void emitReloc( owl_section_handle sec, owl_reloc_info *reloc, Elf32_Rela
 }
 
 static void emitSectionPadding( owl_section_info *curr )
-//******************************************************
+/******************************************************/
 {
     char                *buffer;
     owl_offset          padding;
@@ -395,9 +427,9 @@ static void emitSectionPadding( owl_section_info *curr )
     }
 }
 
-static void emitSectionData( owl_file_handle file ) {
-//***************************************************
-
+static void emitSectionData( owl_file_handle file )
+/*************************************************/
+{
     owl_section_handle  curr;
     owl_reloc_info      *reloc;
     owl_offset          relocs_size;
@@ -405,14 +437,18 @@ static void emitSectionData( owl_file_handle file ) {
     Elf32_Rela          *next_reloc;
     size_t              reloc_entry_size;
 
-    // Depending on useRela, the last field of Elf32_Rela might be unused.
-    // We pass rela ptr around because it works for rel case also.
-    // So be careful: don't do a ++next_reloc etc and expect it to be correct.
+    /*
+     * Depending on useRela, the last field of Elf32_Rela might be unused.
+     * We pass rela ptr around because it works for rel case also.
+     * So be careful: don't do a ++next_reloc etc and expect it to be correct.
+     */
     reloc_entry_size = useRela ? sizeof( Elf32_Rela ) : sizeof( Elf32_Rel );
     for( curr = file->sections; curr != NULL; curr = curr->next ) {
-        // We need to prepare the reloc data before emitting its corresponding
-        // section because we might need to modify the buffer content.
-        // (see emitReloc)
+        /*
+         * We need to prepare the reloc data before emitting its corresponding
+         * section because we might need to modify the buffer content.
+         * (see emitReloc)
+         */
         if( curr->first_reloc != NULL ) {
             relocs_size = reloc_entry_size * curr->num_relocs;
             reloc_buffer = _ClientAlloc( file, relocs_size );
@@ -430,19 +466,22 @@ static void emitSectionData( owl_file_handle file ) {
             emitSectionPadding( curr );
         }
         if( reloc_buffer != NULL ) {
-            // Now write out the prepared reloc_buffer
+            /*
+             * Now write out the prepared reloc_buffer
+             */
             _ClientWrite( file, (const char *)reloc_buffer, relocs_size );
             _ClientFree( file, reloc_buffer );
         }
     }
 }
 
-static void prepareRelocSections( owl_file_handle file ) {
-//********************************************************
-// Run through the user-defined sections noting which ones have
-// relocs and allocate a section index for the section which will
-// hold those relocs - also, alloc names for them in the string table
-
+static void prepareRelocSections( owl_file_handle file )
+/*******************************************************
+ * Run through the user-defined sections noting which ones have
+ * relocs and allocate a section index for the section which will
+ * hold those relocs - also, alloc names for them in the string table
+ */
+{
     owl_section_handle  curr;
     char                buffer[ MAX_SECTION_NAME + 5 ];
 
@@ -466,16 +505,16 @@ static void prepareRelocSections( owl_file_handle file ) {
     }
 }
 
-static void addSpecialStrings( owl_file_handle file ) {
-//*****************************************************
-
+static void addSpecialStrings( owl_file_handle file )
+/***************************************************/
+{
     file->x.elf.string_table.name = OWLStringAdd( file->string_table, ".strtab" );
     file->x.elf.symbol_table.name = OWLStringAdd( file->string_table, ".symtab" );
 }
 
-void ELFFileEmit( owl_file_handle file ) {
-//****************************************
-
+void ELFFileEmit( owl_file_handle file )
+/**************************************/
+{
     prepareRelocSections( file );
     writeFileHeader( file );
     addSpecialStrings( file );
