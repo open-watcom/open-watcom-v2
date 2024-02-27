@@ -568,8 +568,6 @@ void ProcessImportWlib( const char *name )
         }
     }
 
-    MemFree( namecopy );
-
     if( Options.filetype == WL_FTYPE_NONE ) {
         if( Options.omf_found ) {
             Options.filetype = WL_FTYPE_OMF;
@@ -744,6 +742,7 @@ void ProcessImportWlib( const char *name )
         //AddSymWithPrefix( "__imp_", symName, SYM_WEAK, 0 );
         break;
     }
+    MemFree( namecopy );
 }
 
 size_t ElfImportSize( import_sym *import )
