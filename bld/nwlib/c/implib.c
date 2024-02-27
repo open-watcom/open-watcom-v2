@@ -510,25 +510,26 @@ void ProcessImportWlib( const char *name )
     Elf32_Export    export_table[2];
     Elf32_Sym       sym_table[3];
     char            *namecopy;
+    char            *p;
     unsigned        sym_len;
 
-    namecopy = DupStr( name );
+    p = namecopy = DupStr( name );
 
-    symName = GetImportString( &namecopy, name );
-    if( *namecopy == '\0'
+    symName = GetImportString( &p, name );
+    if( *p == '\0'
       || *symName == '\0' ) {
         FatalError( ERR_BAD_CMDLINE, name );
     }
 
-    DLLName = GetImportString( &namecopy, name );
+    DLLName = GetImportString( &p, name );
     if( *DLLName == '\0' ) {
         FatalError( ERR_BAD_CMDLINE, name );
     }
 
     exportedName = symName;     // give it a default value
 
-    if( *namecopy != '\0' ) {
-        ordString = GetImportString( &namecopy, name );
+    if( *p != '\0' ) {
+        ordString = GetImportString( &p, name );
         if( *ordString != '\0' ) {
             if( isdigit( *(unsigned char *)ordString ) ) {
                 ordinal = strtoul( ordString, NULL, 0 );
@@ -541,21 +542,21 @@ void ProcessImportWlib( const char *name )
          * of the line.
          */
         if( ordinal ) {
-            while( isspace( *(unsigned char *)namecopy ) )
-                ++namecopy;
-            if( *namecopy != '\0' ) {
+            while( isspace( *(unsigned char *)p ) )
+                ++p;
+            if( *p != '\0' ) {
                 FatalError( ERR_BAD_CMDLINE, name );
             }
-        } else if( *namecopy != '\0' ) {
-            exportedName = GetImportString( &namecopy, name );
+        } else if( *p != '\0' ) {
+            exportedName = GetImportString( &p, name );
             if( exportedName == NULL
               || *exportedName == '\0' ) {
                 exportedName = symName;
             } else if( isdigit( *(unsigned char *)exportedName ) ) {
                 ordinal      = strtoul( exportedName, NULL, 0 );
                 exportedName = symName;
-            } else if( *namecopy != '\0' ) {
-                ordString = GetImportString( &namecopy, name );
+            } else if( *p != '\0' ) {
+                ordString = GetImportString( &p, name );
                 if( *ordString != '\0' ) {
                     if( isdigit( *(unsigned char *)ordString ) ) {
                         ordinal = strtoul( ordString, NULL, 0 );
