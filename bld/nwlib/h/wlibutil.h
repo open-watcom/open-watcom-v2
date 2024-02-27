@@ -30,6 +30,18 @@
 ****************************************************************************/
 
 
+#define WL_LTYPE(e,p,n) extern const char ctext_ ## e[];
+WL_LTYPES
+#undef WL_LTYPE
+
+#define WL_PROC(e,p,n)  extern const char ctext_ ## e[];
+WL_PROCS
+#undef WL_PROC
+
+#define WL_FTYPE(e,p,n) extern const char ctext_ ## e[];
+WL_FTYPES
+#undef WL_FTYPE
+
 extern void GetFileContents( libfile io, arch_header *arch, char **contents, const char *name );
 extern void Copy( libfile src, libfile dst, file_offset size );
 extern char *MakeObjOutputName( const char *src, const char *new );
@@ -47,5 +59,4 @@ extern bool IsSameFile( const char *a, const char *b );
 extern char *FormSym( const char * );
 extern char *WlibGetEnv( const char *name );
 extern void Banner( bool force );
-extern char *LibFormat( void );
 extern char *MakeTmpName( char *buffer );

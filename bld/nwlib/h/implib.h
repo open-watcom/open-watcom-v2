@@ -35,7 +35,6 @@
 #define ELFBASEIMPORTSIZE 0x14A
 #define ELFBASESTRTABSIZE 0x22
 
-extern const char   * const formatname[];
 extern char         ElfBase[];
 extern char         ElfOSInfo[];
 
@@ -69,8 +68,8 @@ typedef unsigned_16 Coff32_EOrd;
 #include "poppck.h"
 
 extern bool     AddImport( libfile io, arch_header *arch );
-extern void     OmfMKImport( arch_header *, importType, long, const char *, const char *, char *, processor_type );
-extern void     CoffMKImport( arch_header *, importType, long, const char *, const char *, char *, processor_type );
+extern void     OmfMKImport( arch_header *, importType, long, const char *, const char *, const char *, processor_type );
+extern void     CoffMKImport( arch_header *, importType, long, const char *, const char *, const char *, processor_type );
 extern void     ElfMKImport( arch_header *, importType, long, const char *, const char *, Elf32_Export *, Elf32_Sym *, processor_type );
 extern size_t   CoffImportSize( import_sym * );
 extern size_t   ElfImportSize( import_sym * );

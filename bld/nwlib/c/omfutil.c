@@ -125,7 +125,7 @@ static unsigned NextPrime( unsigned maj )
     return( maj );
 }
 
-static bool InsertOmfDict( OmfLibBlock *lib_block, unsigned num_blocks, char *sym, unsigned len, unsigned_16 offset )
+static bool InsertOmfDict( OmfLibBlock *lib_block, unsigned num_blocks, const char *sym, unsigned len, unsigned_16 offset )
 {
     unsigned int    loc;
     unsigned int    entry_len;

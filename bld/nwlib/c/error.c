@@ -38,7 +38,7 @@
 
 #if defined( INCL_MSGTEXT )
 
-static char *msg_text_array[] = {
+static const char * const msg_text_array[] = {
     #define pick(c,e,j) e,
     #include "wlib.msg"
     #include "usagew.gh"

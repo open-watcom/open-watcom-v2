@@ -31,6 +31,26 @@
 ****************************************************************************/
 
 
+#define WL_PROCS \
+    WL_PROC( WL_PROC_NONE, 0,           "" ) \
+    WL_PROC( WL_PROC_AXP,  EM_ALPHA,    "AXP" ) \
+    WL_PROC( WL_PROC_MIPS, EM_MIPS,     "MIPS" ) \
+    WL_PROC( WL_PROC_PPC,  EM_PPC,      "PPC" ) \
+    WL_PROC( WL_PROC_X86,  EM_386,      "X86" ) \
+    WL_PROC( WL_PROC_X64,  EM_X86_64,   "X64" )
+
+#define WL_FTYPES \
+    WL_FTYPE( WL_FTYPE_NONE, 0,         "" ) \
+    WL_FTYPE( WL_FTYPE_ELF,  0,         "ELF" ) \
+    WL_FTYPE( WL_FTYPE_COFF, 0,         "COFF" ) \
+    WL_FTYPE( WL_FTYPE_OMF,  0,         "OMF" )
+
+#define WL_LTYPES \
+    WL_LTYPE( WL_LTYPE_NONE, 0,         "" ) \
+    WL_LTYPE( WL_LTYPE_AR,   0,         "AR" ) \
+    WL_LTYPE( WL_LTYPE_MLIB, 0,         "MLIB" ) \
+    WL_LTYPE( WL_LTYPE_OMF,  0,         "OMF" )
+
 typedef uint_8          ar_len;
 
 // local header types
@@ -41,11 +61,22 @@ typedef uint_32         arch_mode;
 typedef uint_32         arch_file_size;
 
 typedef enum {
-    WL_LTYPE_NONE,
-    WL_LTYPE_AR,
-    WL_LTYPE_MLIB,
-    WL_LTYPE_OMF
+    #define WL_LTYPE(e,p,n) e,
+    WL_LTYPES
+    #undef WL_LTYPE
 } lib_type;
+
+typedef enum {
+    #define WL_PROC(e,p,n)  e,
+    WL_PROCS
+    #undef WL_PROC
+} processor_type;
+
+typedef enum {
+    #define WL_FTYPE(e,p,n) e,
+    WL_FTYPES
+    #undef WL_FTYPE
+} file_type;
 
 typedef struct arch_header {
     char                *name;

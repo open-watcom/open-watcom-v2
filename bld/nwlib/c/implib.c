@@ -39,18 +39,6 @@
 #include "clibext.h"
 
 
-const char * const formatname[] = {
-    #define WL_FTYPE(p,e,n)  n,
-    WL_FTYPES
-    #undef WL_FTYPE
-};
-
-static const char * const procname[] = {
-    #define WL_PROC(p,e,n)  n,
-    WL_PROCS
-    #undef WL_PROC
-};
-
 static void fillInU16( unsigned_16 value, char *out )
 {
     out[0] = value & 255;
@@ -203,7 +191,7 @@ static bool getOs2Symbol( libfile io, char *symbol, unsigned_16 *ordinal, unsign
     return( true );
 }
 
-static void importOs2Table( libfile io, arch_header *arch, char *dll_name, bool coff_obj, importType type, unsigned length )
+static void importOs2Table( libfile io, arch_header *arch, const char *dll_name, bool coff_obj, importType type, unsigned length )
 {
     unsigned_16 ordinal;
     char        symbol[256];
@@ -382,7 +370,7 @@ static void peAddImport( libfile io, long header_offset, arch_header *parch )
 
     LibSeek( io, header_offset, SEEK_SET );
     if( Options.libtype == WL_LTYPE_MLIB ) {
-        FatalError( ERR_NOT_LIB, formatname[WL_FTYPE_COFF], LibFormat() );
+        FatalError( ERR_NOT_LIB, ctext_WL_FTYPE_COFF, ctext_WL_LTYPE_MLIB );
     }
     coff_obj = ( Options.coff_found || ( Options.libtype == WL_LTYPE_AR && !Options.omf_found ) );
 
@@ -607,7 +595,26 @@ void ProcessImportWlib( const char *name )
             }
         }
         if( !Options.quiet ) {
-            Warning( ERR_NO_PROCESSOR, procname[Options.processor] );
+            const char      *ctext;
+
+            switch( Options.processor ) {
+            case WL_PROC_X86:
+                ctext = ctext_WL_PROC_X86;
+                break;
+            case WL_PROC_AXP:
+                ctext = ctext_WL_PROC_AXP;
+                break;
+            case WL_PROC_MIPS:
+                ctext = ctext_WL_PROC_MIPS;
+                break;
+            case WL_PROC_PPC:
+                ctext = ctext_WL_PROC_PPC;
+                break;
+            default:
+                ctext = ctext_WL_PROC_NONE;
+                break;
+            }
+            Warning( ERR_NO_PROCESSOR, ctext );
         }
     }
     if( Options.filetype == WL_FTYPE_NONE ) {
@@ -660,7 +667,23 @@ void ProcessImportWlib( const char *name )
             }
         }
         if( !Options.quiet ) {
-            Warning( ERR_NO_TYPE, formatname[Options.filetype] );
+            const char      *ctext;
+
+            switch( Options.filetype ) {
+            case WL_FTYPE_OMF:
+                ctext = ctext_WL_FTYPE_OMF;
+                break;
+            case WL_FTYPE_COFF:
+                ctext = ctext_WL_FTYPE_COFF;
+                break;
+            case WL_FTYPE_ELF:
+                ctext = ctext_WL_FTYPE_ELF;
+                break;
+            default:
+                ctext = ctext_WL_FTYPE_NONE;
+                break;
+            }
+            Warning( ERR_NO_TYPE, ctext );
         }
     }
     if( Options.libtype == WL_LTYPE_NONE ) {
@@ -715,8 +738,11 @@ void ProcessImportWlib( const char *name )
         MemFree( buffer );
         break;
     case WL_FTYPE_COFF:
-        if( Options.libtype != WL_LTYPE_AR ) {
-            FatalError( ERR_NOT_LIB, formatname[WL_FTYPE_COFF], LibFormat() );
+        if( Options.libtype == WL_LTYPE_OMF ) {
+            FatalError( ERR_NOT_LIB, ctext_WL_FTYPE_COFF, ctext_WL_LTYPE_OMF );
+        }
+        if( Options.libtype == WL_LTYPE_MLIB ) {
+            FatalError( ERR_NOT_LIB, ctext_WL_FTYPE_COFF, ctext_WL_LTYPE_MLIB );
         }
         coffAddImportOverhead( &arch, DLLName, Options.processor );
 
@@ -732,7 +758,7 @@ void ProcessImportWlib( const char *name )
         break;
     case WL_FTYPE_OMF:
         if( Options.libtype == WL_LTYPE_MLIB ) {
-            FatalError( ERR_NOT_LIB, formatname[WL_FTYPE_OMF], LibFormat() );
+            FatalError( ERR_NOT_LIB, ctext_WL_FTYPE_OMF, ctext_WL_LTYPE_MLIB );
         }
         if( ordinal == 0 ) {
             OmfMKImport( &arch, NAMED, ordinal, DLLName, symName, exportedName, WL_PROC_X86 );

@@ -935,23 +935,23 @@ void AddObjectSymbols( libfile io, long offset, arch_header *arch )
     if( ofile->orl != NULL ) {
         if( ORLFileGetFormat( ofile->orl ) == ORL_COFF ) {
             if( Options.libtype == WL_LTYPE_MLIB ) {
-                FatalError( ERR_NOT_LIB, formatname[WL_FTYPE_COFF], LibFormat() );
+                FatalError( ERR_NOT_LIB, ctext_WL_FTYPE_COFF, ctext_WL_LTYPE_MLIB );
             }
             Options.coff_found = true;
             obj_type = WL_FTYPE_COFF;
         } else {
             if( Options.omf_found ) {
-                FatalError( ERR_MIXED_OBJ, formatname[WL_FTYPE_ELF], formatname[WL_FTYPE_OMF] );
+                FatalError( ERR_MIXED_OBJ, ctext_WL_FTYPE_ELF, ctext_WL_FTYPE_OMF );
             }
             Options.elf_found = true;
             obj_type = WL_FTYPE_ELF;
         }
     } else {
         if( Options.libtype == WL_LTYPE_MLIB ) {
-            FatalError( ERR_NOT_LIB, formatname[WL_FTYPE_OMF], LibFormat() );
+            FatalError( ERR_NOT_LIB, ctext_WL_FTYPE_OMF, ctext_WL_LTYPE_MLIB );
         }
         if( Options.elf_found ) {
-            FatalError( ERR_MIXED_OBJ, formatname[WL_FTYPE_ELF], formatname[WL_FTYPE_OMF] );
+            FatalError( ERR_MIXED_OBJ, ctext_WL_FTYPE_ELF, ctext_WL_FTYPE_OMF );
         }
         Options.omf_found = true;
         obj_type = WL_FTYPE_OMF;
@@ -965,26 +965,18 @@ void AddObjectSymbols( libfile io, long offset, arch_header *arch )
 
 void OmfMKImport( arch_header *arch, importType type,
                   long ordinal, const char *DLLname, const char *symName,
-                  char *exportedName, processor_type processor )
+                  const char *exportedName, processor_type processor )
 {
     if( Options.elf_found ) {
-        FatalError( ERR_MIXED_OBJ, formatname[WL_FTYPE_ELF], formatname[WL_FTYPE_OMF] );
+        FatalError( ERR_MIXED_OBJ, ctext_WL_FTYPE_ELF, ctext_WL_FTYPE_OMF );
     }
     Options.omf_found = true;
     CurrFile = NewSymFile( arch, WL_FTYPE_OMF );
     CurrFile->import = MemAllocGlobal( sizeof( import_sym ) );
     CurrFile->import->DLLName = DupStrGlobal( DLLname );
     CurrFile->import->u.sym.ordinal = ordinal;
-    if( symName != NULL ) {
-        CurrFile->import->u.sym.symName = DupStrGlobal( symName );
-    } else {
-        CurrFile->import->u.sym.symName = NULL;
-    }
-    if( exportedName != NULL ) {
-        CurrFile->import->u.sym.exportedName = DupStrGlobal( exportedName );
-    } else {
-        CurrFile->import->u.sym.exportedName = NULL;
-    }
+    CurrFile->import->u.sym.symName = DupStrGlobal( symName );
+    CurrFile->import->u.sym.exportedName = DupStrGlobal( exportedName );
     CurrFile->import->type = type;
     CurrFile->import->processor = processor;
     CurrFile->arch.size = OmfImportSize( CurrFile->import );
@@ -993,10 +985,10 @@ void OmfMKImport( arch_header *arch, importType type,
 
 void CoffMKImport( arch_header *arch, importType type,
                    long ordinal, const char *DLLname, const char *symName,
-                   char *exportedName, processor_type processor )
+                   const char *exportedName, processor_type processor )
 {
     if( Options.elf_found ) {
-        FatalError( ERR_MIXED_OBJ, formatname[WL_FTYPE_ELF], formatname[WL_FTYPE_COFF] );
+        FatalError( ERR_MIXED_OBJ, ctext_WL_FTYPE_ELF, ctext_WL_FTYPE_COFF );
     }
     Options.coff_found = true;
     CurrFile = NewSymFile( arch, WL_FTYPE_COFF );
@@ -1004,16 +996,8 @@ void CoffMKImport( arch_header *arch, importType type,
     CurrFile->import->type = type;
     CurrFile->import->u.sym.ordinal = ordinal;
     CurrFile->import->DLLName = DupStrGlobal( DLLname );
-    if( symName != NULL ) {
-        CurrFile->import->u.sym.symName = DupStrGlobal( symName );
-    } else {
-        CurrFile->import->u.sym.symName = NULL;
-    }
-    if( exportedName != NULL ) {
-        CurrFile->import->u.sym.exportedName = DupStrGlobal( exportedName );
-    } else {
-        CurrFile->import->u.sym.exportedName = NULL;
-    }
+    CurrFile->import->u.sym.symName = DupStrGlobal( symName );
+    CurrFile->import->u.sym.exportedName = DupStrGlobal( exportedName );
     CurrFile->import->processor = processor;
     CurrFile->arch.size = CoffImportSize( CurrFile->import );
     switch( type ) {
@@ -1037,10 +1021,10 @@ void ElfMKImport( arch_header *arch, importType type, long export_size,
     elf_import_sym      *imp_sym;
 
     if( Options.coff_found ) {
-        FatalError( ERR_MIXED_OBJ, formatname[WL_FTYPE_ELF], formatname[WL_FTYPE_COFF] );
+        FatalError( ERR_MIXED_OBJ, ctext_WL_FTYPE_ELF, ctext_WL_FTYPE_COFF );
     }
     if( Options.omf_found ) {
-        FatalError( ERR_MIXED_OBJ, formatname[WL_FTYPE_ELF], formatname[WL_FTYPE_OMF] );
+        FatalError( ERR_MIXED_OBJ, ctext_WL_FTYPE_ELF, ctext_WL_FTYPE_OMF );
     }
     Options.elf_found = true;
     CurrFile = NewSymFile( arch, WL_FTYPE_ELF );
@@ -1182,7 +1166,7 @@ static void ListContentsAr( void )
 }
 
 
-static void listPrintWlib( FILE *fp, char *str, ... )
+static void listPrintWlib( FILE *fp, const char *str, ... )
 {
     va_list             arglist;
 

@@ -45,6 +45,18 @@
 #define FNCMP stricmp
 #endif
 
+#define WL_LTYPE(e,p,n) const char ctext_ ## e[] = n;
+WL_LTYPES
+#undef WL_LTYPE
+
+#define WL_PROC(e,p,n)  const char ctext_ ## e[] = n;
+WL_PROCS
+#undef WL_PROC
+
+#define WL_FTYPE(e,p,n) const char ctext_ ## e[] = n;
+WL_FTYPES
+#undef WL_FTYPE
+
 int SymbolNameCmp( const char *s1, const char *s2)
 {
     if( Options.respect_case ) {
@@ -53,7 +65,6 @@ int SymbolNameCmp( const char *s1, const char *s2)
         return( stricmp( s1, s2 ) );
     }
 }
-
 
 void GetFileContents( libfile io, arch_header *arch, char **contents, const char *name )
 {
@@ -277,18 +288,4 @@ char    *FormSym( const char *name )
         __demangle_l( name, 0, buff, sizeof( buff ) );
     }
     return( buff );
-}
-
-char *LibFormat( void )
-{
-    switch( Options.libtype ) {
-    case WL_LTYPE_AR:
-        return( "AR" );
-    case WL_LTYPE_MLIB:
-        return( "MLIB" );
-    case WL_LTYPE_OMF:
-        return( "LIB" );
-    default:
-        return( "unknown format" );
-    }
 }
