@@ -66,11 +66,11 @@ void LibWalk( libfile io, arch_header *parch, libwalk_fn *rtn )
     if( parch->libtype == WL_LTYPE_OMF ) {
         unsigned_16     pagelen;
         char            buff[MAX_IMPORT_STRING];
-        unsigned_8      len;
+        unsigned_8      rec_type;
         unsigned_16     rec_len;
-        unsigned_8      type;
+        unsigned_8      str_len;
 
-        if( LibRead( io, &type, sizeof( type ) ) != sizeof( type ) )
+        if( LibRead( io, &rec_type, sizeof( rec_type ) ) != sizeof( rec_type ) )
             return; // nyi - FALSE?
         if( LibRead( io, &rec_len, sizeof( rec_len ) ) != sizeof( rec_len ) )
             return;
@@ -82,13 +82,14 @@ void LibWalk( libfile io, arch_header *parch, libwalk_fn *rtn )
         }
         LibSeek( io, pos, SEEK_CUR );
         pos = LibTell( io );
-        while( LibRead( io, &type, sizeof( type ) ) == sizeof( type ) && ( type == CMD_THEADR ) ) {
-            LibSeek( io, 2, SEEK_CUR );
-            if( LibRead( io, &len, sizeof( len ) ) != sizeof( len ) )
+        while( LibRead( io, &rec_type, sizeof( rec_type ) ) == sizeof( rec_type ) && ( rec_type == CMD_THEADR ) ) {
+            if( LibRead( io, &rec_len, sizeof( rec_len ) ) != sizeof( rec_len ) )
                 break;
-            if( LibRead( io, buff, len ) != len )
+            if( LibRead( io, &str_len, sizeof( str_len ) ) != sizeof( str_len ) )
                 break;
-            buff[len] = '\0';
+            if( LibRead( io, buff, str_len ) != str_len )
+                break;
+            buff[str_len] = '\0';
             arch.name = buff;
             LibSeek( io, pos, SEEK_SET );
             rtn( io, &arch );
@@ -97,9 +98,9 @@ void LibWalk( libfile io, arch_header *parch, libwalk_fn *rtn )
             LibSeek( io, pos, SEEK_SET );
         }
     } else {
-        ar_header           ar;
-        size_t              bytes_read;
-//        int                 dict_count;
+        ar_header       ar;
+        size_t          bytes_read;
+//        int             dict_count;
 
 //        dict_count = 0;
         arch.fnametab = NULL;
