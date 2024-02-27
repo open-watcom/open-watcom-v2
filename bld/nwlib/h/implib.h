@@ -76,4 +76,4 @@ extern size_t   CoffImportSize( import_sym * );
 extern size_t   ElfImportSize( import_sym * );
 extern void     CoffWriteImport( libfile, sym_file *, bool );
 extern void     ElfWriteImport( libfile, sym_file * );
-extern void     ProcessImport( char * );
+extern void     ProcessImportWlib( const char * );

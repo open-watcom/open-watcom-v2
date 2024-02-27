@@ -212,7 +212,7 @@ static void AddModules( void )
             continue;
         strcpy( buff, cmd->name );
         if( cmd->ops & OP_IMPORT ) {
-            ProcessImport( buff );
+            ProcessImportWlib( buff );
         } else {
             DefaultExtension( buff, EXT_OBJ );
             ProcessLibOrObj( buff, OBJ_PROCESS, AddOneObject );

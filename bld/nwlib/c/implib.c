@@ -91,7 +91,7 @@ static orl_return FindExportTableHelper( orl_sec_handle sec )
     return( ORL_OKAY );
 }
 
-static orl_sec_handle FindSec( obj_file *ofile, char *name )
+static orl_sec_handle FindSec( obj_file *ofile, const char *name )
 {
     export_table_rva = 0;
     found_sec_handle = ORL_NULL_HANDLE;
@@ -278,7 +278,7 @@ static void AddSymWithPrefix( const char *prefix, const char *name, symbol_stren
 static void coffAddImportOverhead( arch_header *arch, const char *DLLName, processor_type processor )
 {
     char    *buffer;
-    char        *fname;
+    char    *fname;
     size_t  len;
 
     fname = MakeFName( DLLName );
@@ -462,7 +462,7 @@ static void peAddImport( libfile io, long header_offset, arch_header *parch )
 }
 
 
-static char *GetImportString( char **rawpntr, char *original )
+static char *GetImportString( char **rawpntr, const char *original )
 {
     bool    quote = false;
     char    *raw  = *rawpntr;
@@ -501,7 +501,7 @@ static char *GetImportString( char **rawpntr, char *original )
 }
 
 
-void ProcessImport( char *name )
+void ProcessImportWlib( const char *name )
 {
     char            *DLLName, *symName, *exportedName, *ordString;
     long            ordinal = 0;
@@ -514,21 +514,21 @@ void ProcessImport( char *name )
 
     namecopy = DupStr( name );
 
-    symName = GetImportString( &name, namecopy );
-    if( *name == '\0'
+    symName = GetImportString( &namecopy, name );
+    if( *namecopy == '\0'
       || *symName == '\0' ) {
-        FatalError( ERR_BAD_CMDLINE, namecopy );
+        FatalError( ERR_BAD_CMDLINE, name );
     }
 
-    DLLName = GetImportString( &name, namecopy );
+    DLLName = GetImportString( &namecopy, name );
     if( *DLLName == '\0' ) {
-        FatalError( ERR_BAD_CMDLINE, namecopy );
+        FatalError( ERR_BAD_CMDLINE, name );
     }
 
     exportedName = symName;     // give it a default value
 
-    if( *name != '\0' ) {
-        ordString = GetImportString( &name, namecopy );
+    if( *namecopy != '\0' ) {
+        ordString = GetImportString( &namecopy, name );
         if( *ordString != '\0' ) {
             if( isdigit( *(unsigned char *)ordString ) ) {
                 ordinal = strtoul( ordString, NULL, 0 );
@@ -541,26 +541,26 @@ void ProcessImport( char *name )
          * of the line.
          */
         if( ordinal ) {
-            while( isspace( *(unsigned char *)name ) )
-                ++name;
-            if( *name != '\0' ) {
-                FatalError( ERR_BAD_CMDLINE, namecopy );
+            while( isspace( *(unsigned char *)namecopy ) )
+                ++namecopy;
+            if( *namecopy != '\0' ) {
+                FatalError( ERR_BAD_CMDLINE, name );
             }
-        } else if( *name != '\0' ) {
-            exportedName = GetImportString( &name, namecopy );
+        } else if( *namecopy != '\0' ) {
+            exportedName = GetImportString( &namecopy, name );
             if( exportedName == NULL
               || *exportedName == '\0' ) {
                 exportedName = symName;
             } else if( isdigit( *(unsigned char *)exportedName ) ) {
                 ordinal      = strtoul( exportedName, NULL, 0 );
                 exportedName = symName;
-            } else if( *name != '\0' ) {
-                ordString = GetImportString( &name, namecopy );
+            } else if( *namecopy != '\0' ) {
+                ordString = GetImportString( &namecopy, name );
                 if( *ordString != '\0' ) {
                     if( isdigit( *(unsigned char *)ordString ) ) {
                         ordinal = strtoul( ordString, NULL, 0 );
                     } else {
-                        FatalError( ERR_BAD_CMDLINE, namecopy );
+                        FatalError( ERR_BAD_CMDLINE, name );
                     }
                 }
             }
