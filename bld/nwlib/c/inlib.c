@@ -38,15 +38,15 @@
 
 static input_lib *InputLibs;
 
-void AddInputLib( libfile io, arch_header *arch )
+void AddInputLib( libfile io )
 {
     input_lib   *new;
 
-    new = MemAllocGlobal( sizeof( *new ) + strlen( arch->name ) );
+    new = MemAllocGlobal( sizeof( *new ) + strlen( io->name ) );
     new->next = InputLibs;
     InputLibs = new;
     new->io = io;
-    strcpy( new->name, arch->name );
+    strcpy( new->name, io->name );
 }
 
 void CloseOneInputLib( void )

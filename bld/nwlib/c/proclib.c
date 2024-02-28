@@ -132,21 +132,20 @@ typedef enum {
     OBJ_PROCESS,
 } objproc;
 
-static void ProcessLibOrObj( char *name, objproc obj, libwalk_fn *process )
+static void ProcessLibOrObj( const char *filename, objproc obj, libwalk_fn *process )
 {
-    libfile     io;
+    libfile         io;
     unsigned char   buff[AR_IDENT_LEN];
-    arch_header arch;
+    arch_header     arch;
 
-    NewArchHeader( &arch, name );
-    io = LibOpen( arch.name, LIBOPEN_READ );
+    io = NewArchLibOpen( &arch, filename );
     if( LibRead( io, buff, sizeof( buff ) ) != sizeof( buff ) ) {
-        FatalError( ERR_CANT_READ, arch.name, strerror( errno ) );
+        FatalError( ERR_CANT_READ, io->name, strerror( errno ) );
     }
     if( memcmp( buff, AR_IDENT, sizeof( buff ) ) == 0 ) {
         // AR format
         arch.libtype = WL_LTYPE_AR;
-        AddInputLib( io, &arch );
+        AddInputLib( io );
         LibWalk( io, &arch, process );
         if( Options.libtype == WL_LTYPE_NONE ) {
             Options.libtype = WL_LTYPE_AR;
@@ -154,13 +153,13 @@ static void ProcessLibOrObj( char *name, objproc obj, libwalk_fn *process )
     } else if( memcmp( buff, LIBMAG, LIBMAG_LEN ) == 0 ) {
         // MLIB format
         if( LibRead( io, buff, sizeof( buff ) ) != sizeof( buff ) ) {
-            FatalError( ERR_CANT_READ, arch.name, strerror( errno ) );
+            FatalError( ERR_CANT_READ, io->name, strerror( errno ) );
         }
         if( memcmp( buff, LIB_CLASS_DATA_SHOULDBE, LIB_CLASS_LEN + LIB_DATA_LEN ) ) {
-            BadLibrary( arch.name );
+            BadLibrary( io );
         }
         arch.libtype = WL_LTYPE_MLIB;
-        AddInputLib( io, &arch );
+        AddInputLib( io );
         LibWalk( io, &arch, process );
         if( Options.libtype == WL_LTYPE_NONE ) {
             Options.libtype = WL_LTYPE_MLIB;
@@ -179,7 +178,7 @@ static void ProcessLibOrObj( char *name, objproc obj, libwalk_fn *process )
          */
         // OMF format
         arch.libtype = WL_LTYPE_OMF;
-        AddInputLib( io, &arch );
+        AddInputLib( io );
         LibSeek( io, 0, SEEK_SET );
         LibWalk( io, &arch, process );
         if( Options.libtype == WL_LTYPE_NONE ) {
@@ -191,10 +190,11 @@ static void ProcessLibOrObj( char *name, objproc obj, libwalk_fn *process )
         AddObjectSymbols( io, 0, &arch );
         LibClose( io );
     } else if( obj == OBJ_ERROR ) {
-        BadLibrary( arch.name );
+        BadLibrary( io );
     } else {
         LibClose( io );
     }
+    FreeNewArch( &arch );
 }
 
 static void WalkInputLib( void )

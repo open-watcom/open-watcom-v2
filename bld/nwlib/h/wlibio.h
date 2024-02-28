@@ -61,4 +61,4 @@ extern void         LibSeek( libfile io, long where, int whence );
 extern long         LibTell( libfile io );
 extern void         LibReadError( libfile io );
 extern void         LibWriteError( libfile io );
-extern void         BadLibrary( const char *name );
+extern void         BadLibrary( libfile io );

@@ -66,7 +66,7 @@ int SymbolNameCmp( const char *s1, const char *s2)
     }
 }
 
-void GetFileContents( libfile io, arch_header *arch, char **contents, const char *name )
+void GetFileContents( libfile io, arch_header *arch, char **contents )
 {
     size_t  size;
 
@@ -77,18 +77,18 @@ void GetFileContents( libfile io, arch_header *arch, char **contents, const char
     size = __ROUND_UP_SIZE_EVEN( arch->size );
     *contents = MemAlloc( size );
     if( LibRead( io, *contents, size ) != size ) {
-        BadLibrary( name );
+        BadLibrary( io );
     }
 }
 
-void NewArchHeader( arch_header *arch, char *name )
+libfile NewArchLibOpen( arch_header *arch, const char *filename )
 {
     struct stat         buf;
 
-    if( stat( name, &buf ) == -1 ) {
-        FatalError( ERR_CANT_FIND, name );
+    if( stat( filename, &buf ) == -1 ) {
+        FatalError( ERR_CANT_FIND, filename );
     }
-    arch->name = name;
+    arch->name = DupStr( filename );
     arch->ffname = NULL;
     arch->date = buf.st_mtime;
     arch->uid = buf.st_uid;
@@ -98,6 +98,12 @@ void NewArchHeader( arch_header *arch, char *name )
     arch->libtype = WL_LTYPE_NONE;
     arch->fnametab = NULL;
     arch->ffnametab = NULL;
+    return( LibOpen( filename, LIBOPEN_READ ) );
+}
+
+void FreeNewArch( arch_header *arch )
+{
+    MemFree( arch->name );
 }
 
 static void CopyBytes( libfile src, libfile dst, char *buffer, size_t len )

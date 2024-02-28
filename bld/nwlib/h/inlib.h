@@ -36,7 +36,7 @@ typedef struct input_lib {
     char        name[1];
 } input_lib;
 
-extern void AddInputLib( libfile io, arch_header *arch );
+extern void AddInputLib( libfile io );
 extern void CloseOneInputLib( void );
 extern void CloseInputLibs( void );
 extern void FiniInputLibs( void );

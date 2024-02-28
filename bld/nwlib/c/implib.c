@@ -104,7 +104,7 @@ static orl_sec_handle FindSec( obj_file *ofile, const char *name )
     return( found_sec_handle );
 }
 
-static bool elfAddImport( libfile io, long header_offset, arch_header *parch )
+static bool elfAddImport( libfile io, long header_offset, arch_header *arch )
 {
     obj_file        *ofile;
     orl_sec_handle  sym_sec;
@@ -116,7 +116,6 @@ static bool elfAddImport( libfile io, long header_offset, arch_header *parch )
 //    orl_sec_size    sym_size;
     char            *strings;
     processor_type  processor = WL_PROC_NONE;
-    arch_header     arch;
     char            *DLLname;
     Elf32_Word      ElfMagic;
 
@@ -156,14 +155,13 @@ static bool elfAddImport( libfile io, long header_offset, arch_header *parch )
     string_sec = ORLSecGetStringTable( sym_sec );
     ORLSecGetContents( string_sec, (unsigned_8 **)&strings );
 
-    arch = *parch;
-    arch.ffname = parch->name;
-    arch.name = DupStr( TrimPath( parch->name ) );
-    DLLname = DupStr( MakeFName( parch->name ) );
+    arch->ffname = arch->name;
+    arch->name = DupStr( TrimPath( arch->ffname ) );
+    DLLname = DupStr( MakeFName( arch->ffname ) );
 
-    ElfMKImport( &arch, ELF, export_size, DLLname, strings, export_table, sym_table, processor );
+    ElfMKImport( arch, ELF, export_size, DLLname, strings, export_table, sym_table, processor );
 
-    MemFree( arch.name );
+    MemFree( arch->name );
     MemFree( DLLname );
 
     CloseObjFile( ofile );
@@ -349,14 +347,13 @@ static bool nlmAddImport( libfile io, long header_offset, arch_header *arch )
     return( true );
 }
 
-static void peAddImport( libfile io, long header_offset, arch_header *parch )
+static void peAddImport( libfile io, long header_offset, arch_header *arch )
 {
     obj_file        *ofile;
     orl_sec_handle  export_sec;
     orl_sec_base    export_base;
     char            *edata;
     char            *DLLName;
-    arch_header     arch;
     char            *currname;
     Coff32_Export   *export_header;
     Coff32_EName    *name_table;
@@ -423,22 +420,21 @@ static void peAddImport( libfile io, long header_offset, arch_header *parch )
     ord_table = (Coff32_EOrd *)(edata + export_header->OrdTableRVA - export_base.u._32[I64LO32] + adjust);
     ordinal_base = export_header->ordBase;
 
-    arch = *parch;
-    arch.name = edata + export_header->nameRVA - export_base.u._32[I64LO32] + adjust;
-    arch.ffname = NULL;
-    DLLName = arch.name;
+    arch->name = edata + export_header->nameRVA - export_base.u._32[I64LO32] + adjust;
+    arch->ffname = NULL;
+    DLLName = arch->name;
 
     if( coff_obj ) {
-        coffAddImportOverhead( &arch, DLLName, processor );
+        coffAddImportOverhead( arch, DLLName, processor );
     }
     for( i = 0; i < export_header->numNamePointer; i++ ) {
         currname = &(edata[name_table[i] - export_base.u._32[I64LO32] + adjust]);
         if( coff_obj ) {
-            CoffMKImport( &arch, ORDINAL, ord_table[i] + ordinal_base, DLLName, currname, NULL, processor );
+            CoffMKImport( arch, ORDINAL, ord_table[i] + ordinal_base, DLLName, currname, NULL, processor );
             AddSymWithPrefix( "__imp_", currname, SYM_WEAK, 0 );
         } else {
             type = Options.r_ordinal ? ORDINAL : NAMED;
-            OmfMKImport( &arch, type, ord_table[i] + ordinal_base, DLLName, currname, NULL, WL_PROC_X86 );
+            OmfMKImport( arch, type, ord_table[i] + ordinal_base, DLLName, currname, NULL, WL_PROC_X86 );
 //            AddSymWithPrefix( "__imp_", currname, SYM_WEAK, 0 );
         }
         if( processor == WL_PROC_PPC ) {

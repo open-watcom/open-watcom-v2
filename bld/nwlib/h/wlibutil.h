@@ -42,21 +42,22 @@ WL_PROCS
 WL_FTYPES
 #undef WL_FTYPE
 
-extern void GetFileContents( libfile io, arch_header *arch, char **contents, const char *name );
-extern void Copy( libfile src, libfile dst, file_offset size );
-extern char *MakeObjOutputName( const char *src, const char *new );
-extern char *MakeListName( void );
-extern char *MakeFName( const char *a );
-extern char *MakeBakName( void );
-extern bool IsSameModuleCase( const char *a, const char *b, int cmp_mode );
-extern int  SymbolNameCmp( const char *s1, const char *s2);
-extern bool IsExt( const char *a, const char *b );
-extern void NewArchHeader( arch_header *arch, char *name );
-extern void DefaultExtension( char *name, const char *def_ext );
-extern char *TrimPath( const char * );
-extern void TrimPathInPlace( char * );
-extern bool IsSameFile( const char *a, const char *b );
-extern char *FormSym( const char * );
-extern char *WlibGetEnv( const char *name );
-extern void Banner( bool force );
-extern char *MakeTmpName( char *buffer );
+extern void     GetFileContents( libfile io, arch_header *arch, char **contents );
+extern void     Copy( libfile src, libfile dst, file_offset size );
+extern char     *MakeObjOutputName( const char *src, const char *new );
+extern char     *MakeListName( void );
+extern char     *MakeFName( const char *a );
+extern char     *MakeBakName( void );
+extern bool     IsSameModuleCase( const char *a, const char *b, int cmp_mode );
+extern int      SymbolNameCmp( const char *s1, const char *s2);
+extern bool     IsExt( const char *a, const char *b );
+extern libfile  NewArchLibOpen( arch_header *arch, const char *filename );
+extern void     FreeNewArch( arch_header *arch );
+extern void     DefaultExtension( char *name, const char *def_ext );
+extern char     *TrimPath( const char * );
+extern void     TrimPathInPlace( char * );
+extern bool     IsSameFile( const char *a, const char *b );
+extern char     *FormSym( const char * );
+extern char     *WlibGetEnv( const char *name );
+extern void     Banner( bool force );
+extern char     *MakeTmpName( char *buffer );

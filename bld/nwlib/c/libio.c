@@ -109,10 +109,10 @@ void LibWriteError( libfile io )
     FatalError( ERR_CANT_WRITE, io->name, strerror( errno ) );
 }
 
-void BadLibrary( const char *name )
-/*********************************/
+void BadLibrary( libfile io )
+/***************************/
 {
-    FatalError( ERR_BAD_LIBRARY, name );
+    FatalError( ERR_BAD_LIBRARY, io->name );
 }
 
 static void LibFlush( libfile io )
