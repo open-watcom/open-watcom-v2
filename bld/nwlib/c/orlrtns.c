@@ -41,8 +41,8 @@
 
 static orl_handle       ORLHnd;
 
-static void *ObjRead( FILE *fp, size_t len )
-/******************************************/
+static void *ORLObjRead( FILE *fp, size_t len )
+/*********************************************/
 {
     buf_list    *buf;
 
@@ -56,8 +56,8 @@ static void *ObjRead( FILE *fp, size_t len )
     return( buf->buf );
 }
 
-static int ObjSeek( FILE *fp, long pos, int where )
-/*************************************************/
+static int ORLObjSeek( FILE *fp, long pos, int where )
+/****************************************************/
 {
     switch( where ) {
     case SEEK_SET:
@@ -70,30 +70,30 @@ static int ObjSeek( FILE *fp, long pos, int where )
     return( 0 );
 }
 
-static void *ObjAlloc( size_t size )
-/**********************************/
+static void *ORLObjAlloc( size_t size )
+/*************************************/
 {
     if( size == 0 )
         size = 1;
     return( MemAllocGlobal( size ) );
 }
 
-static void ObjFree( void *ptr )
-/******************************/
+static void ORLObjFree( void *ptr )
+/*********************************/
 {
     MemFreeGlobal( ptr );
 }
 
-void FiniObj( void )
-/******************/
+void FiniORLObj( void )
+/*********************/
 {
     ORLFini( ORLHnd );
 }
 
-void InitObj( void )
-/******************/
+void InitORLObj( void )
+/*********************/
 {
-    ORLSetFuncs( orl_cli_funcs, ObjRead, ObjSeek, ObjAlloc, ObjFree );
+    ORLSetFuncs( orl_cli_funcs, ORLObjRead, ORLObjSeek, ORLObjAlloc, ORLObjFree );
 
     ORLHnd = ORLInit( &orl_cli_funcs );
     if( ORLHnd == NULL ) {
@@ -101,8 +101,8 @@ void InitObj( void )
     }
 }
 
-static obj_file *DoOpenObjFile( libfile io, long offset, const char *name )
-/*************************************************************************/
+static obj_file *DoOpenORLObjFile( libfile io, long offset, const char *name )
+/****************************************************************************/
 {
     obj_file            *ofile;
     orl_file_format     format;
@@ -133,23 +133,23 @@ static obj_file *DoOpenObjFile( libfile io, long offset, const char *name )
     return( ofile );
 }
 
-obj_file *OpenObjFile( const char *name )
-/***************************************/
+obj_file *OpenORLObjFile( const char *name )
+/******************************************/
 {
     libfile     io;
 
     io = LibOpen( name, LIBOPEN_READ );
-    return( DoOpenObjFile( io, 0, name ) );
+    return( DoOpenORLObjFile( io, 0, name ) );
 }
 
-obj_file *OpenLibFile( libfile io, const char *name )
-/***************************************************/
+obj_file *OpenORLLibFile( libfile io, const char *name )
+/******************************************************/
 {
-    return( DoOpenObjFile( io, LibTell( io ), name ) );
+    return( DoOpenORLObjFile( io, LibTell( io ), name ) );
 }
 
-static void DoCloseObjFile( obj_file *ofile )
-/*******************************************/
+static void DoCloseORLObjFile( obj_file *ofile )
+/**********************************************/
 {
     buf_list    *list;
     buf_list    *next;
@@ -164,18 +164,18 @@ static void DoCloseObjFile( obj_file *ofile )
     MemFree( ofile );
 }
 
-void CloseObjFile( obj_file *ofile )
-/**********************************/
+void CloseORLObjFile( obj_file *ofile )
+/*************************************/
 {
     libfile     io;
 
     io = ofile->io;
-    DoCloseObjFile( ofile );
+    DoCloseORLObjFile( ofile );
     LibClose( io );
 }
 
-void CloseLibFile( obj_file *ofile )
-/**********************************/
+void CloseORLLibFile( obj_file *ofile )
+/*************************************/
 {
-    DoCloseObjFile( ofile );
+    DoCloseORLObjFile( ofile );
 }

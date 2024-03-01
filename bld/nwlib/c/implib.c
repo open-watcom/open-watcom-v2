@@ -134,7 +134,7 @@ static bool elfAddImport( libfile io, long header_offset, arch_header *arch )
         return( false );
     }
     LibSeek( io, 0, SEEK_SET );
-    ofile = OpenObjFile( io->name );
+    ofile = OpenORLObjFile( io->name );
     if( ofile->orl == NULL ) {
         FatalError( ERR_CANT_READ, io->name, "Unknown error" );
     }
@@ -164,7 +164,7 @@ static bool elfAddImport( libfile io, long header_offset, arch_header *arch )
     MemFree( arch->name );
     MemFree( DLLname );
 
-    CloseObjFile( ofile );
+    CloseORLObjFile( ofile );
     return( true );
 }
 
@@ -371,7 +371,7 @@ static void peAddImport( libfile io, long header_offset, arch_header *arch )
     }
     coff_obj = ( Options.coff_found || ( Options.libtype == WL_LTYPE_AR && !Options.omf_found ) );
 
-    ofile = OpenObjFile( io->name );
+    ofile = OpenORLObjFile( io->name );
     if( ofile->orl == NULL ) {
         FatalError( ERR_CANT_READ, io->name, "Unknown error" );
     }
@@ -442,7 +442,7 @@ static void peAddImport( libfile io, long header_offset, arch_header *arch )
         }
     }
 
-    CloseObjFile( ofile );
+    CloseORLObjFile( ofile );
 }
 
 

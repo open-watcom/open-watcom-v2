@@ -31,11 +31,11 @@
 ****************************************************************************/
 
 
-extern void             FiniObj( void );
-extern void             InitObj( void );
-extern obj_file         *OpenObjFile( const char *name );
-extern void             CloseObjFile( obj_file *ofile );
-extern obj_file         *OpenLibFile( libfile io, const char *name );
-extern void             CloseLibFile( obj_file *ofile );
+extern void             FiniORLObj( void );
+extern void             InitORLObj( void );
+extern obj_file         *OpenORLObjFile( const char *name );
+extern void             CloseORLObjFile( obj_file *ofile );
+extern obj_file         *OpenORLLibFile( libfile io, const char *name );
+extern void             CloseORLLibFile( obj_file *ofile );
 
 #define VALID_ORL_FLAGS (ORL_FILE_FLAG_32BIT_MACHINE | ORL_FILE_FLAG_LITTLE_ENDIAN)

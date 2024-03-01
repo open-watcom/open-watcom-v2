@@ -931,7 +931,7 @@ void AddObjectSymbols( libfile io, long offset, arch_header *arch )
     obj_file    *ofile;
     file_type   obj_type;
 
-    ofile = OpenLibFile( io, arch->name );
+    ofile = OpenORLLibFile( io, arch->name );
     if( ofile->orl != NULL ) {
         if( ORLFileGetFormat( ofile->orl ) == ORL_COFF ) {
             if( Options.libtype == WL_LTYPE_MLIB ) {
@@ -960,7 +960,7 @@ void AddObjectSymbols( libfile io, long offset, arch_header *arch )
     CurrFile->inlib_offset = offset;
     CurrFile->inlib = FindInLib( io );
     ObjWalkSymList( ofile, CurrFile );
-    CloseLibFile( ofile );
+    CloseORLLibFile( ofile );
 }
 
 void OmfMKImport( arch_header *arch, importType type,

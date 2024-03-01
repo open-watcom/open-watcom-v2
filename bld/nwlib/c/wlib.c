@@ -44,7 +44,7 @@ int InitSubSystems( void )
     if( !setjmp( Env ) ) {
         InitMem();
         InitMsg( );
-        InitObj();
+        InitORLObj();
         return( EXIT_SUCCESS );
     } else {
         return( EXIT_FAILURE );
@@ -76,7 +76,7 @@ int WlibMainLine( char *argv[] )
 void FiniSubSystems( void )
 {
     if( !setjmp( Env ) ) {
-        FiniObj();
+        FiniORLObj();
         FiniMsg();
         FiniMem();
     }
