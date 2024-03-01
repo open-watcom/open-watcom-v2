@@ -143,7 +143,9 @@ static void ProcessLibOrObj( const char *filename, objproc obj, libwalk_fn *proc
         FatalError( ERR_CANT_READ, io->name, strerror( errno ) );
     }
     if( memcmp( buff, AR_IDENT, sizeof( buff ) ) == 0 ) {
-        // AR format
+        /*
+         * Library AR format
+         */
         arch.libtype = WL_LTYPE_AR;
         AddInputLib( io );
         LibWalk( io, &arch, process );
@@ -151,7 +153,9 @@ static void ProcessLibOrObj( const char *filename, objproc obj, libwalk_fn *proc
             Options.libtype = WL_LTYPE_AR;
         }
     } else if( memcmp( buff, LIBMAG, LIBMAG_LEN ) == 0 ) {
-        // MLIB format
+        /*
+         * Library MLIB format
+         */
         if( LibRead( io, buff, sizeof( buff ) ) != sizeof( buff ) ) {
             FatalError( ERR_CANT_READ, io->name, strerror( errno ) );
         }
@@ -164,19 +168,20 @@ static void ProcessLibOrObj( const char *filename, objproc obj, libwalk_fn *proc
         if( Options.libtype == WL_LTYPE_NONE ) {
             Options.libtype = WL_LTYPE_MLIB;
         }
-    } else if( AddImport( io, &arch ) ) {
+    } else if( AddImport( io, &arch ) ) {   /* import DLL exported symbols */
         LibClose( io );
     } else if( buff[0] == LIB_HEADER_REC && buff[1] != 0x01 ) {
         /*
-          The buff[1] != 1 bit above is a bad hack to get around
-          the fact that the coff cpu_type for PPC object files is
-          0x1f0.  Really, we should be reading in the first object
-          record and doing the checksum and seeing if it is actually
-          a LIB_HEADER_REC.  All file format designers who are too
-          stupid to recognize the need for a signature should be
-          beaten up with large blunt objects.
+         * Library OMF format
+         *
+         * The buff[1] != 1 bit above is a bad hack to get around
+         * the fact that the coff cpu_type for PPC object files is
+         * 0x1f0.  Really, we should be reading in the first object
+         * record and doing the checksum and seeing if it is actually
+         * a LIB_HEADER_REC.  All file format designers who are too
+         * stupid to recognize the need for a signature should be
+         * beaten up with large blunt objects.
          */
-        // OMF format
         arch.libtype = WL_LTYPE_OMF;
         AddInputLib( io );
         LibSeek( io, 0, SEEK_SET );
@@ -185,7 +190,9 @@ static void ProcessLibOrObj( const char *filename, objproc obj, libwalk_fn *proc
             Options.libtype = WL_LTYPE_OMF;
         }
     } else if( obj == OBJ_PROCESS ) {
-        // Object
+        /*
+         * Object
+         */
         LibSeek( io, 0, SEEK_SET );
         AddObjectSymbols( io, 0, &arch );
         LibClose( io );
@@ -261,10 +268,12 @@ static void EmitWarnings( void )
 {
     lib_cmd     *cmd;
 
-    // give a warning if we couldn't find objects to extract
-    //  - note: deletes which we didn't find have already been taken
-    //    care of by DelModules above (ack :P)
-    //    this might make ordering of warnings a little odd...
+    /*
+     * give a warning if we couldn't find objects to extract
+     *  - note: deletes which we didn't find have already been taken
+     *    care of by DelModules above (ack :P)
+     *    this might make ordering of warnings a little odd...
+     */
     for( cmd = CmdList; cmd != NULL; cmd = cmd->next ) {
         if( cmd->ops & OP_EXTRACT ) {
             if( ( cmd->ops & OP_FOUND ) == 0 ) {
