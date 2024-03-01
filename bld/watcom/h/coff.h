@@ -188,21 +188,37 @@ enum {
     COFF_IMAGE_FILE_MACHINE_R4000            = 0x0166, // MIPS little-endian
     COFF_IMAGE_FILE_MACHINE_R10000           = 0x0168, // MIPS little-endian
     COFF_IMAGE_FILE_MACHINE_WCEMIPSV2        = 0x0169, // MIPS little-endian WCE v2
-    COFF_IMAGE_FILE_MACHINE_I386A            = 0x0175, // Intel 386 (AIX).
+    COFF_IMAGE_FILE_MACHINE_I386A            = 0x0175, // Intel 386 (AIX)
     COFF_IMAGE_FILE_MACHINE_ALPHA            = 0x0184, // Alpha_AXP
-    COFF_IMAGE_FILE_MACHINE_POWERPC          = 0x01F0, // IBM PowerPC Little-Endian
     COFF_IMAGE_FILE_MACHINE_SH3              = 0x01a2, // SH3 little-endian
+    COFF_IMAGE_FILE_MACHINE_SH3DSP           = 0x01a3, // Hitachi SH3 DSP
     COFF_IMAGE_FILE_MACHINE_SH3E             = 0x01a4, // SH3E little-endian
     COFF_IMAGE_FILE_MACHINE_SH4              = 0x01a6, // SH4 little-endian
-    COFF_IMAGE_FILE_MACHINE_ARM              = 0x01c0, // ARM Little-Endian
-    COFF_IMAGE_FILE_MACHINE_THUMB            = 0x01c2,
+    COFF_IMAGE_FILE_MACHINE_SH5              = 0x01a8, // Hitachi SH5
+    COFF_IMAGE_FILE_MACHINE_ARM              = 0x01c0, // ARM little-endian
+    COFF_IMAGE_FILE_MACHINE_THUMB            = 0x01c2, // ARM Thumb
+    COFF_IMAGE_FILE_MACHINE_ARMNT            = 0x01c4, // ARM Thumb-2 little-endian
+    COFF_IMAGE_FILE_MACHINE_AM33             = 0x01d3,
+    COFF_IMAGE_FILE_MACHINE_POWERPC          = 0x01f0, // IBM PowerPC little-endian
+    COFF_IMAGE_FILE_MACHINE_POWERPCFP        = 0x01f1, // PowerPC with floating point
     COFF_IMAGE_FILE_MACHINE_IA64             = 0x0200, // Intel 64
     COFF_IMAGE_FILE_MACHINE_MIPS16           = 0x0266, // MIPS
-    COFF_IMAGE_FILE_MACHINE_MIPSFPU          = 0x0366, // MIPS
-    COFF_IMAGE_FILE_MACHINE_MIPSFPU16        = 0x0466, // MIPS
     COFF_IMAGE_FILE_MACHINE_ALPHA64          = 0x0284, // ALPHA64
     COFF_IMAGE_FILE_MACHINE_AXP64            = COFF_IMAGE_FILE_MACHINE_ALPHA64,
-    COFF_IMAGE_FILE_MACHINE_AMD64            = 0x8664  // AMD64 / Intel EM64T
+    COFF_IMAGE_FILE_MACHINE_MIPSFPU          = 0x0366, // MIPS
+    COFF_IMAGE_FILE_MACHINE_MIPSFPU16        = 0x0466, // MIPS
+    COFF_IMAGE_FILE_MACHINE_TRICORE          = 0x0520,
+    COFF_IMAGE_FILE_MACHINE_CEF              = 0x0CEF,
+    COFF_IMAGE_FILE_MACHINE_EBC              = 0x0EBC, // EFI byte code
+    COFF_IMAGE_FILE_MACHINE_RISCV32          = 0x5032, // RISC-V 32bit little-endian
+    COFF_IMAGE_FILE_MACHINE_RISCV64          = 0x5064, // RISC-V 64bit little-endian
+    COFF_IMAGE_FILE_MACHINE_RISCV128         = 0x5128, // RISC-V 128bit little-endian
+    COFF_IMAGE_FILE_MACHINE_LOONGARCH32      = 0x6232, // LOONGARCH 32bit
+    COFF_IMAGE_FILE_MACHINE_LOONGARCH64      = 0x6264, // LOONGARCH 64bit
+    COFF_IMAGE_FILE_MACHINE_AMD64            = 0x8664, // AMD64 / Intel EM64T
+    COFF_IMAGE_FILE_MACHINE_M32R             = 0x9041,
+    COFF_IMAGE_FILE_MACHINE_ARM64            = 0xAA64, // ARM64 little-endian
+    COFF_IMAGE_FILE_MACHINE_CEE              = 0xC0EE
 };
 
 /*
