@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -59,16 +59,10 @@
  *
  */
 
-typedef struct name_len {
-    size_t      len;
-    char        *name;
-} name_len;
-
 static void InitCoffFile( coff_lib_file *c_file )
 {
     c_file->string_table = MemAlloc( INIT_MAX_SIZE_COFF_STRING_TABLE );
     c_file->max_string_table_size = INIT_MAX_SIZE_COFF_STRING_TABLE;
-
 }
 
 static void SetCoffFile( coff_lib_file *c_file, sym_file *sfile )
@@ -326,14 +320,12 @@ static void WriteCoffOptHeader( libfile io, sym_file *sfile )
     }
 }
 
-static unsigned AddCoffSymbolWithPrefix( coff_lib_file *c_file, unsigned_16 sec_num, const char *prefix, name_len *modName, unsigned_16 type )
+static unsigned AddCoffSymbol2( coff_lib_file *c_file, unsigned_16 sec_num, name_len *n1, name_len *n2, unsigned_16 type )
 {
     char *buffer;
-    size_t len;
 
-    len = strlen( prefix );
-    buffer = alloca( len + modName->len + 1 );
-    strcpy( strcpy( buffer, prefix ) + len, modName->name );
+    buffer = alloca( n1->len + n2->len + 1 );
+    strcpy( strcpy( buffer, n1->name ) + n1->len, n2->name );
     return( AddCoffSymbol( c_file, sec_num, buffer, 0x0, type, COFF_IMAGE_SYM_CLASS_EXTERNAL, 0 ) );
 }
 
@@ -341,9 +333,9 @@ static unsigned AddCoffSymbolNullThunkData( coff_lib_file *c_file, unsigned_16 s
 {
     char *buffer;
 
-    buffer = alloca( 1 + modName->len + sizeof( "_NULL_THUNK_DATA" ) );
+    buffer = alloca( 1 + modName->len + str_null_thunk_data.len + 1 );
     buffer[0] = 0x7f;
-    strcpy( strcpy( buffer + 1, modName->name ) + modName->len, "_NULL_THUNK_DATA" );
+    strcpy( strcpy( buffer + 1, modName->name ) + modName->len, str_null_thunk_data.name );
     return( AddCoffSymbol( c_file, sec_num, buffer, 0x0, COFF_IMAGE_SYM_TYPE_NULL, COFF_IMAGE_SYM_CLASS_EXTERNAL, 0 ) );
 }
 
@@ -361,7 +353,7 @@ static void WriteImportDescriptor( libfile io, sym_file *sfile, coff_lib_file *c
      */
     sec_num = AddCoffSection( c_file, ".idata$2", 0x14, 3, COFF_IMAGE_SCN_ALIGN_4BYTES
         | COFF_IMAGE_SCN_CNT_INITIALIZED_DATA | COFF_IMAGE_SCN_MEM_READ | COFF_IMAGE_SCN_MEM_WRITE );
-    AddCoffSymbolWithPrefix( c_file, sec_num, "__IMPORT_DESCRIPTOR_", modName, COFF_IMAGE_SYM_TYPE_NULL );
+    AddCoffSymbol2( c_file, sec_num, &str_import_descriptor, modName, COFF_IMAGE_SYM_TYPE_NULL );
     AddCoffSymbol( c_file, sec_num, ".idata$2", 0xC0000040, COFF_IMAGE_SYM_TYPE_NULL, COFF_IMAGE_SYM_CLASS_SECTION, 0 );
     /*
      * section no. 2
@@ -667,7 +659,7 @@ static void WriteLongImportEntry( libfile io, sym_file *sfile, coff_lib_file *c_
     }
     AddCoffSymSec( c_file, sec_num, COFF_IMAGE_COMDAT_SELECT_NODUPLICATES );
     if( sfile->import->processor == WL_PROC_PPC ) {
-        symb_name = AddCoffSymbolWithPrefix( c_file, sec_num, "..", symName, COFF_IMAGE_SYM_TYPE_FUNCTION );
+        symb_name = AddCoffSymbol2( c_file, sec_num, &str_ppc_prefix, symName, COFF_IMAGE_SYM_TYPE_FUNCTION );
     } else {
         symb_name = AddCoffSymbol( c_file, sec_num, symName->name, 0x0, COFF_IMAGE_SYM_TYPE_FUNCTION, COFF_IMAGE_SYM_CLASS_EXTERNAL, 0 );
     }
@@ -698,7 +690,7 @@ static void WriteLongImportEntry( libfile io, sym_file *sfile, coff_lib_file *c_
         | COFF_IMAGE_SCN_LNK_COMDAT | COFF_IMAGE_SCN_CNT_INITIALIZED_DATA
         | COFF_IMAGE_SCN_MEM_READ |  COFF_IMAGE_SCN_MEM_WRITE );
     AddCoffSymSec( c_file, sec_num, COFF_IMAGE_COMDAT_SELECT_NODUPLICATES );
-    symb_imp_name = AddCoffSymbolWithPrefix( c_file, sec_num, "__imp_", symName, COFF_IMAGE_SYM_TYPE_NULL );
+    symb_imp_name = AddCoffSymbol2( c_file, sec_num, &str_imp_prefix, symName, COFF_IMAGE_SYM_TYPE_NULL );
     /*
      * section no. 3(5)
      */
@@ -720,7 +712,7 @@ static void WriteLongImportEntry( libfile io, sym_file *sfile, coff_lib_file *c_
     if( sfile->import->processor == WL_PROC_PPC ) {
         symb_toc = AddCoffSymbol( c_file, 0, ".toc", 0x0, COFF_IMAGE_SYM_TYPE_NULL, COFF_IMAGE_SYM_CLASS_EXTERNAL, 0 );
     }
-    AddCoffSymbolWithPrefix( c_file, 0, "__IMPORT_DESCRIPTOR_", modName, COFF_IMAGE_SYM_TYPE_NULL );
+    AddCoffSymbol2( c_file, 0, &str_import_descriptor, modName, COFF_IMAGE_SYM_TYPE_NULL );
     /*
      * write data
      */

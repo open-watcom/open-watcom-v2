@@ -62,10 +62,21 @@ typedef struct {
     unsigned_32         OrdTableRVA;
 } Coff32_Export;
 
+#include "poppck.h"
+
 typedef unsigned_32 Coff32_EName;
 typedef unsigned_16 Coff32_EOrd;
 
-#include "poppck.h"
+typedef struct name_len {
+    size_t      len;
+    char        *name;
+} name_len;
+
+extern name_len str_ppc_prefix;
+extern name_len str_imp_prefix;
+extern name_len str_null_thunk_data;
+extern name_len str_import_descriptor;
+extern name_len str_null_import_descriptor;
 
 extern bool     AddImport( libfile io, arch_header *arch );
 extern void     OmfMKImport( arch_header *, importType, long, const char *, const char *, const char *, processor_type );
