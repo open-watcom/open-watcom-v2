@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -99,9 +99,9 @@ static const char * const intelSkipRefList[] = {
 
 #define NUM_ELEMENTS( a )       (sizeof(a) / sizeof((a)[0]))
 
-static orl_sec_handle           symbolTable = ORL_NULL_HANDLE;
-static orl_sec_handle           dynSymTable = ORL_NULL_HANDLE;
-static orl_sec_handle           drectveSection = ORL_NULL_HANDLE;
+static orl_sec_handle           symbolTable = NULL;
+static orl_sec_handle           dynSymTable = NULL;
+static orl_sec_handle           drectveSection = NULL;
 static section_list_struct      relocSections;
 static char                     *objFileBuf = NULL;
 static long                     objFilePos;
@@ -121,7 +121,7 @@ static orl_return scanTabCallBack( orl_sec_handle shnd, const orl_sec_offset *ps
 
     /* unused parameters */ (void)cookie;
 
-    if( shnd == ORL_NULL_HANDLE )
+    if( shnd == NULL )
         return( ORL_OKAY );
     start = *pstart;
     end = *pend;
@@ -189,7 +189,7 @@ static return_val processDrectveSection( orl_sec_handle shnd )
     orl_return          o_error;
     orl_note_callbacks  cb;
 
-    if( shnd == ORL_NULL_HANDLE )
+    if( shnd == NULL )
         return( RC_OKAY );
 
     cb.export_fn = NULL;
@@ -298,7 +298,7 @@ static return_val createLabelList( orl_sec_handle shnd )
         key_entry.data.u.sec_label_list = list;
         error = HashTableInsert( HandleToLabelListTable, &key_entry );
         if( error == RC_OKAY ) {
-            if( (Options & PRINT_PUBLICS) && shnd != ORL_NULL_HANDLE ) {
+            if( (Options & PRINT_PUBLICS) && shnd != NULL ) {
                 error = addListToPublics( list );
                 if( error != RC_OKAY ) {
                     MemFree( list );
@@ -345,7 +345,7 @@ static return_val textOrDataSectionInit( orl_sec_handle shnd )
         error = createRefList( shnd );
         if( error == RC_OKAY ) {
             reloc_sec = ORLSecGetRelocTable( shnd );
-            if( reloc_sec != ORL_NULL_HANDLE ) {
+            if( reloc_sec != NULL ) {
                 error = addRelocSection( reloc_sec );
             }
         }
@@ -602,14 +602,14 @@ static return_val initORL( void )
     ORLSetFuncs( orl_cli_funcs, objRead, objSeek, MemAlloc, MemFree );
 
     ORLHnd = ORLInit( &orl_cli_funcs );
-    if( ORLHnd != ORL_NULL_HANDLE ) {
+    if( ORLHnd != NULL ) {
         FileFormat = ORLFileIdentify( ORLHnd, NULL );
         if( FileFormat == ORL_UNRECOGNIZED_FORMAT ) {
             PrintErrorMsg( RC_OKAY, WHERE_NOT_COFF_ELF );
             return( RC_ERROR );
         }
         ObjFileHnd = ORLFileInit( ORLHnd, NULL, FileFormat );
-        if( ObjFileHnd != ORL_NULL_HANDLE ) {
+        if( ObjFileHnd != NULL ) {
             // check byte order
             flags = ORLFileGetFlags( ObjFileHnd );
             byte_swap = false;
@@ -721,9 +721,9 @@ static return_val initSectionTables( void )
     error = createLabelList( 0 );
     if( error == RC_OKAY ) {
         o_error = ORLFileScan( ObjFileHnd, NULL, sectionInit );
-        if( o_error == ORL_OKAY && symbolTable != ORL_NULL_HANDLE ) {
+        if( o_error == ORL_OKAY && symbolTable != NULL ) {
             o_error = DealWithSymbolSection( symbolTable );
-            if( o_error == ORL_OKAY && dynSymTable != ORL_NULL_HANDLE ) {
+            if( o_error == ORL_OKAY && dynSymTable != NULL ) {
                 o_error = DealWithSymbolSection( dynSymTable );
             }
             if( o_error == ORL_OKAY ) {

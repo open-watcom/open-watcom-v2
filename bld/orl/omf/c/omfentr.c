@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -292,7 +292,7 @@ orl_sec_handle OMFENTRY OmfSecGetAssociated( omf_sec_handle sh )
     if( _IsSegType( sh->type ) && ( sh->flags & ORL_SEC_FLAG_COMDAT ) ) {
         return( (orl_sec_handle)(sh->assoc.seg.comdat.assoc_seg) );
     }
-    return( ORL_NULL_HANDLE );
+    return( NULL );
 }
 
 
@@ -307,7 +307,7 @@ orl_group_handle OMFENTRY OmfSecGetGroup( omf_sec_handle sh )
             return( (orl_group_handle)(sh->assoc.seg.group) );
         }
     }
-    return( ORL_NULL_HANDLE );
+    return( NULL );
 }
 
 

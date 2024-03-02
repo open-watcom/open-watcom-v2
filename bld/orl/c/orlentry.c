@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -416,7 +416,7 @@ orl_sec_handle ORLENTRY ORLFileGetSymbolTable( orl_file_handle orl_file_hnd )
     default:    // ORL_UNRECOGNIZED_FORMAT
         break;
     }
-    return( ORL_NULL_HANDLE );
+    return( NULL );
 }
 
 const char * ORLENTRY ORLSecGetName( orl_sec_handle orl_sec_hnd )
@@ -529,7 +529,7 @@ orl_sec_handle ORLENTRY ORLSecGetStringTable( orl_sec_handle orl_sec_hnd )
     default:    // ORL_UNRECOGNIZED_FORMAT
         break;
     }
-    return( ORL_NULL_HANDLE );
+    return( NULL );
 }
 
 orl_sec_handle ORLENTRY ORLSecGetSymbolTable( orl_sec_handle orl_sec_hnd )
@@ -544,7 +544,7 @@ orl_sec_handle ORLENTRY ORLSecGetSymbolTable( orl_sec_handle orl_sec_hnd )
     default:    // ORL_UNRECOGNIZED_FORMAT
         break;
     }
-    return( ORL_NULL_HANDLE );
+    return( NULL );
 }
 
 orl_sec_handle ORLENTRY ORLSecGetRelocTable( orl_sec_handle orl_sec_hnd )
@@ -559,7 +559,7 @@ orl_sec_handle ORLENTRY ORLSecGetRelocTable( orl_sec_handle orl_sec_hnd )
     default:    // ORL_UNRECOGNIZED_FORMAT
         break;
     }
-    return( ORL_NULL_HANDLE );
+    return( NULL );
 }
 
 orl_linnum ORLENTRY ORLSecGetLines( orl_sec_handle orl_sec_hnd )
@@ -629,7 +629,7 @@ orl_sec_handle ORLENTRY ORLSecGetAssociated( orl_sec_handle orl_sec_hnd )
     if( LCL_SEC_HND( orl_sec_hnd )->type == ORL_OMF ) {
         return( OmfSecGetAssociated( (omf_sec_handle)orl_sec_hnd ) );
     }
-    return( ORL_NULL_HANDLE );
+    return( NULL );
 }
 
 orl_group_handle ORLENTRY ORLSecGetGroup( orl_sec_handle orl_sec_hnd )
@@ -637,7 +637,7 @@ orl_group_handle ORLENTRY ORLSecGetGroup( orl_sec_handle orl_sec_hnd )
     if( LCL_SEC_HND( orl_sec_hnd )->type == ORL_OMF ) {
         return( OmfSecGetGroup( (omf_sec_handle)orl_sec_hnd ) );
     }
-    return( ORL_NULL_HANDLE );
+    return( NULL );
 }
 
 orl_return ORLENTRY ORLSecGetContents( orl_sec_handle orl_sec_hnd, unsigned char **buffer )
@@ -715,7 +715,7 @@ orl_sec_handle ORLENTRY ORLCvtIdxToSecHdl( orl_file_handle orl_file_hnd, orl_tab
     default:    // ORL_UNRECOGNIZED_FORMAT
         break;
     }
-    return( ORL_NULL_HANDLE );
+    return( NULL );
 }
 
 orl_return ORLENTRY ORLRelocSecScan( orl_sec_handle orl_sec_hnd, orl_reloc_return_func return_func )
@@ -860,7 +860,7 @@ orl_sec_handle ORLENTRY ORLSymbolGetSecHandle( orl_symbol_handle orl_symbol_hnd 
     default:    // ORL_UNRECOGNIZED_FORMAT
         break;
     }
-    return( ORL_NULL_HANDLE );
+    return( NULL );
 }
 
 orl_symbol_handle ORLENTRY ORLSymbolGetAssociated( orl_symbol_handle orl_symbol_hnd )

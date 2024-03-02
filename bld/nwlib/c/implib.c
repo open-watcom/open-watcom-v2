@@ -65,7 +65,7 @@ static orl_sec_handle found_sec_handle;
 
 static orl_return FindHelper( orl_sec_handle sec )
 {
-    if( found_sec_handle == ORL_NULL_HANDLE ) {
+    if( found_sec_handle == NULL ) {
         found_sec_handle = sec;
     }
     return( ORL_OKAY );
@@ -75,7 +75,7 @@ static orl_rva      export_table_rva;
 
 static orl_return FindExportTableHelper( orl_sec_handle sec )
 {
-    if( found_sec_handle == ORL_NULL_HANDLE ) {
+    if( found_sec_handle == NULL ) {
         orl_sec_base    base;
 
         ORLSecGetBase( sec, &base );
@@ -90,10 +90,10 @@ static orl_return FindExportTableHelper( orl_sec_handle sec )
 static orl_sec_handle FindSec( obj_file *ofile, const char *name )
 {
     export_table_rva = 0;
-    found_sec_handle = ORL_NULL_HANDLE;
+    found_sec_handle = NULL;
 
     ORLFileScan( ofile->orl, name, FindHelper );
-    if( found_sec_handle == ORL_NULL_HANDLE ) {
+    if( found_sec_handle == NULL ) {
         if( stricmp( ".edata", name ) == 0 ) {
             export_table_rva = ORLExportTableRVA( ofile->orl );
 
@@ -104,7 +104,7 @@ static orl_sec_handle FindSec( obj_file *ofile, const char *name )
             ORLFileScan( ofile->orl, NULL, FindExportTableHelper );
         }
 
-        if( found_sec_handle == ORL_NULL_HANDLE ) {
+        if( found_sec_handle == NULL ) {
             FatalError( ERR_NO_EXPORTS, ofile->io->name );
         }
     }

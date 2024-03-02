@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,8 +36,6 @@
 #include "watcom.h"
 
 #define ORLENTRY
-
-#define ORL_NULL_HANDLE             NULL
 
 #define ORL_STRUCT(s)               struct s ## _struct
 #define ORL_STRUCT_SIZEOF(s)        sizeof( struct s ## _struct )

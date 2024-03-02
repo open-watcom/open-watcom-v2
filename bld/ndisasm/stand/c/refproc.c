@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -87,9 +87,9 @@ static const char *getFrameModifier( orl_reloc rel )
         typ = ORLSymbolGetType( rel->symbol );
         if( typ & ORL_SYM_TYPE_SECTION ) {
             shnd = ORLSymbolGetSecHandle( rel->symbol );
-            if( shnd != ORL_NULL_HANDLE ) {
+            if( shnd != NULL ) {
                 grp = ORLSecGetGroup( shnd );
-                if( grp != ORL_NULL_HANDLE ) {
+                if( grp != NULL ) {
                     return( ORLGroupName( grp ) );
                 }
             }

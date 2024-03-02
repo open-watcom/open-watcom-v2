@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -73,8 +73,8 @@ hash_table      NameRecognitionTable;
 hash_table      SkipRefTable = NULL;
 
 orl_handle              ORLHnd;
-orl_file_handle         ObjFileHnd = ORL_NULL_HANDLE;
-orl_sec_handle          DebugHnd = ORL_NULL_HANDLE;
+orl_file_handle         ObjFileHnd = NULL;
+orl_sec_handle          DebugHnd = NULL;
 dis_handle              DHnd;
 dis_format_flags        DFormat;
 
@@ -326,8 +326,8 @@ static void printMasmHeader( section_ptr section )
                 astr = "SEGMENT";
                 is_segment = true;
             } else {
-                shnd = ORL_NULL_HANDLE;
-                grp = ORL_NULL_HANDLE;
+                shnd = NULL;
+                grp = NULL;
                 alignment = ORLSecGetAlignment( section->shnd );
                 astr = getAlignment( alignment );
                 is_segment = false;
@@ -342,9 +342,9 @@ static void printMasmHeader( section_ptr section )
             if( is_segment ) {
                 name = NULL;
                 gname = NULL;
-                if( grp != ORL_NULL_HANDLE )
+                if( grp != NULL )
                     gname = ORLGroupName( grp );
-                if( shnd != ORL_NULL_HANDLE )
+                if( shnd != NULL )
                     name = ORLSecGetName( shnd );
                 if( name == NULL ) {
                     if( gname == NULL ) {
@@ -395,7 +395,7 @@ void PrintAssumeHeader( section_ptr section )
 
     if( (DFormat & DFF_ASM) && IsMasmOutput ) {
         grp = ORLSecGetGroup( section->shnd );
-        if( grp != ORL_NULL_HANDLE ) {
+        if( grp != NULL ) {
             name = ORLGroupName( grp );
         } else {
             name = section->name;
@@ -868,7 +868,7 @@ static void emitExtrns( hash_table hash )
             r_list = h_data->u.sec_ref_list;
             if( r_list != NULL ) {
                 for( r_entry = r_list->first; r_entry != NULL; r_entry = r_entry->next ) {
-                    if( r_entry->label->shnd == ORL_NULL_HANDLE ) {
+                    if( r_entry->label->shnd == NULL ) {
                         name = r_entry->label->label.name;
                         if( name == NULL )
                             continue;

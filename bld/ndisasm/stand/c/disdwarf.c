@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -378,7 +379,7 @@ void GetDwarfLines( state_lines *ls, section_ptr section )
     unsigned_8          *contents;
     unsigned_8          *relocContents;
 
-    if( DebugHnd != ORL_NULL_HANDLE ) {
+    if( DebugHnd != NULL ) {
         ORLSecGetContents( DebugHnd, &contents );
         size = ORLSecGetSize( DebugHnd );
         limit = ORLSecGetSize( section->shnd );

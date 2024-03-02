@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -180,7 +180,7 @@ void Fini( void )
 {
     freeSectionList( &Sections );
     freeLabelList( 0 );
-    if( ObjFileHnd != ORL_NULL_HANDLE ) {
+    if( ObjFileHnd != NULL ) {
         ORLFileScan( ObjFileHnd, NULL, SectionFini );
         if( Options & PRINT_PUBLICS ) {
             freePublics();

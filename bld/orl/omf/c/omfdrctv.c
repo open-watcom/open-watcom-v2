@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -70,7 +71,7 @@ orl_return      OmfParseComments( omf_sec_handle sh, orl_note_callbacks *cbs, vo
                 return_val = OmfParseScanTab( comment->data, comment->len, &st_entry );
                 if( return_val == ORL_OKAY ) {
                     csh = (orl_sec_handle)OmfFindSegOrComdat( sh->omf_file_hnd, st_entry.seg, st_entry.lname );
-                    if( csh != ORL_NULL_HANDLE ) {
+                    if( csh != NULL ) {
                         return_val = cbs->scantab_fn( csh, &st_entry.start, &st_entry.end, cookie );
                         if( return_val != ORL_OKAY ) {
                             return( return_val );

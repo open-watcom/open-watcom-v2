@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -528,7 +528,7 @@ static segnode *FindSegNode( orl_sec_handle sechdl )
 {
     orl_table_index     idx;
 
-    if( sechdl == ORL_NULL_HANDLE )
+    if( sechdl == NULL )
         return( NULL );
     idx = ORLCvtSecHdlToIdx( sechdl );
     if( idx == 0 ) {
@@ -661,7 +661,7 @@ static orl_return ProcSymbol( orl_symbol_handle symhdl )
         } else {
             newnode->isdefd = true;
             ORLSymbolGetValue( symhdl, &val64 );
-            if( (type & ORL_SYM_TYPE_COMMON) && (type & ORL_SYM_TYPE_OBJECT) && sechdl == ORL_NULL_HANDLE ) {
+            if( (type & ORL_SYM_TYPE_COMMON) && (type & ORL_SYM_TYPE_OBJECT) && sechdl == NULL ) {
                 sym = MakeCommunalSym( sym, val64.u._32[I64LO32], false, BITS_32 );
             } else if( snode != NULL && snode->entry != NULL && snode->entry->iscdat ) {
                 DefineComdatSym( snode, sym, val64.u._32[I64LO32] );
