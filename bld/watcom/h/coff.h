@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -160,6 +160,10 @@ typedef struct {
     } ir;
     uint_16             line_number;
 } coff_line_num;
+
+#define STR_COFF_IMPORT_DESCRIPTOR          "__IMPORT_DESCRIPTOR_"
+#define STR_COFF_NULL_THUNK_DATA            "_NULL_THUNK_DATA"
+#define STR_COFF_NULL_IMPORT_DESCRIPTOR     "__NULL_IMPORT_DESCRIPTOR"
 
 typedef struct {
     union {
