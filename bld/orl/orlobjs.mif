@@ -17,6 +17,7 @@ coff_objs = $(_subdir_)coffentr.obj &
             $(_subdir_)cofflwlv.obj &
             $(_subdir_)coffflhn.obj &
             $(_subdir_)coffload.obj &
+            $(_subdir_)coffimpc.obj &
             $(_subdir_)coffimpl.obj
 
 orl_objs  = $(_subdir_)orlentry.obj &
