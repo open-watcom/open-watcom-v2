@@ -320,7 +320,7 @@ static void WriteCoffOptHeader( libfile io, sym_file *sfile )
     }
 }
 
-static unsigned AddCoffSymbol2( coff_lib_file *c_file, unsigned_16 sec_num, name_len *n1, name_len *n2, unsigned_16 type )
+static unsigned AddCoffSymbol2( coff_lib_file *c_file, signed_16 sec_num, name_len *n1, name_len *n2, unsigned_16 type )
 {
     char *buffer;
 
@@ -329,7 +329,7 @@ static unsigned AddCoffSymbol2( coff_lib_file *c_file, unsigned_16 sec_num, name
     return( AddCoffSymbol( c_file, sec_num, buffer, 0x0, type, COFF_IMAGE_SYM_CLASS_EXTERNAL, 0 ) );
 }
 
-static unsigned AddCoffSymbolNullThunkData( coff_lib_file *c_file, unsigned_16 sec_num, name_len *modName )
+static unsigned AddCoffSymbolNullThunkData( coff_lib_file *c_file, signed_16 sec_num, name_len *modName )
 {
     char *buffer;
 
