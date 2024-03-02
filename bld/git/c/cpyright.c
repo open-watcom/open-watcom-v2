@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2019-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2019-2024 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -68,7 +68,7 @@ static void output_buffer( void )
     char    *start;
 
     if( status < 2 && line < 30 ) {
-        if( strstr( buffer, "****************************************************************************" ) != NULL ) {
+        if( strstr( buffer, "**************************************************************************" ) != NULL ) {
             start_line = line;
             status = 1;
         } else if( status == 1 && line == start_line + 2 ) {
