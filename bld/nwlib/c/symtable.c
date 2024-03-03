@@ -68,7 +68,8 @@ void InitFileTab( void )
 static void FiniSymFile( sym_file *sfile )
 /****************************************/
 {
-    sym_entry           *sym, *next_sym;
+    sym_entry           *sym;
+    sym_entry           *next_sym;
     elf_import_sym      *temp;
 
     for( sym = sfile->first; sym != NULL; sym = next_sym ) {
@@ -186,21 +187,18 @@ static void RemoveFromHashTable( sym_entry *sym )
     int             hval;
     unsigned        len;
 
+    prev = NULL;
     hval = Hash( sym->name, &len );
-    hash = HashTable[hval];
-
-    if( hash == sym ) {
-        HashTable[hval] = sym->hash;
-    } else if( hash != NULL ) {
-        prev = hash;
-
-        for( hash = hash->hash; hash != NULL; hash = hash->hash ) {
-            if( hash == sym ) {
-                prev->hash = hash->hash;
-                break;
+    for( hash = HashTable[hval]; hash != NULL; hash = hash->hash_next ) {
+        if( hash == sym ) {
+            if( prev == NULL ) {
+                HashTable[hval] = hash->hash_next;
             } else {
-                prev = hash;
+                prev->hash_next = hash->hash_next;
             }
+            break;
+        } else {
+            prev = hash;
         }
     }
 }
@@ -781,11 +779,11 @@ void AddSym( const char *name, symbol_strength strength, unsigned char info )
 /***************************************************************************/
 {
     sym_entry   *sym,**owner;
-    int         hash;
+    int         hval;
     unsigned    name_len;
 
-    hash = Hash( name, &name_len );
-    for( sym = HashTable[hash]; sym != NULL; sym = sym->hash ) {
+    hval = Hash( name, &name_len );
+    for( sym = HashTable[hval]; sym != NULL; sym = sym->hash_next ) {
         if( sym->len != name_len )
             continue;
         if( SymbolNameCmp( sym->name, name ) == 0 ) {
@@ -795,11 +793,11 @@ void AddSym( const char *name, symbol_strength strength, unsigned char info )
                     owner = &(*owner)->next;
                 }
                 *owner = sym->next;
-                owner = HashTable + hash;
+                owner = HashTable + hval;
                 while( *owner != sym ) {
-                    owner = &(*owner)->hash;
+                    owner = &(*owner)->hash_next;
                 }
-                *owner = sym->hash;
+                *owner = sym->hash_next;
                 MemFreeGlobal( sym );
                 break; //db
             } else if( strength == sym->strength ) {
@@ -820,8 +818,8 @@ void AddSym( const char *name, symbol_strength strength, unsigned char info )
     sym->next = CurrFile->first;
     CurrFile->first = sym;
     sym->file = CurrFile;
-    sym->hash = HashTable[hash];
-    HashTable[hash] = sym;
+    sym->hash_next = HashTable[hval];
+    HashTable[hval] = sym;
 }
 
 #ifdef DEVBUILD
@@ -849,7 +847,7 @@ void DumpFileTable( void )
             printf( "\t\"%s\" (%d, %u, \"%s\")", entry->name, hval, len,
                     (HashTable[hval] ? HashTable[hval]->name : "(NULL)") );
 
-            for( hash = entry->hash; hash != NULL; hash = hash->hash ) {
+            for( hash = entry->hash_next; hash != NULL; hash = hash->hash_next ) {
                 printf( " -> \"%s\"", hash->name );
                 fflush( stdout );
             }
@@ -866,15 +864,15 @@ void DumpFileTable( void )
 void DumpHashTable( void )
 {
     sym_entry   *hash;
-    int         i;
+    int         hval;
     int         length;
 
     printf( "----------------------------------------------------------\n" );
     printf( "Hash Table Dump\n" );
     printf( "----------------------------------------------------------\n" );
-    for( i = 0; i < HASH_SIZE; ++i ) {
+    for( hval = 0; hval < HASH_SIZE; hval++ ) {
         length = 0;
-        for( hash = HashTable[i]; hash != NULL; hash = hash->next ) {
+        for( hash = HashTable[hval]; hash != NULL; hash = hash->next ) {
             ++length;
         }
         printf( "Offset %6d: %d\n", i, length );

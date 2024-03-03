@@ -107,7 +107,7 @@ typedef enum {
 struct sym_entry_struct {
     sym_entry           *next;
     sym_file            *file;
-    sym_entry           *hash;
+    sym_entry           *hash_next;
     unsigned short      len;
     unsigned char       info;
     symbol_strength     strength;
