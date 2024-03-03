@@ -161,10 +161,6 @@ typedef struct {
     uint_16             line_number;
 } coff_line_num;
 
-#define STR_COFF_IMPORT_DESCRIPTOR          "__IMPORT_DESCRIPTOR_"
-#define STR_COFF_NULL_THUNK_DATA            "_NULL_THUNK_DATA"
-#define STR_COFF_NULL_IMPORT_DESCRIPTOR     "__NULL_IMPORT_DESCRIPTOR"
-
 typedef struct {
     union {
         uint_32 characteristics;

@@ -877,13 +877,14 @@ size_t CoffImportSize( import_sym *import )
                     /*
                      * Everything goes to symbol table
                      */
-                    ret += sym_len + 1 + sym_len + 7;
+                    ret += sym_len + 1                              // string table
+                        + str_coff_imp_prefix.len + sym_len + 1;    // string table
                 } else if( sym_len > 2 ) {
                     /*
                      * Undecorated symbol can be stored directly, but the
                      * version with "__imp_" prepended goes to symbol table
                      */
-                    ret += 7 + sym_len;
+                    ret += str_coff_imp_prefix.len + sym_len + 1;   // string table
                 }
                 ret += 0xc + 3 * COFF_RELOC_SIZE;   // .text
                 break;
@@ -894,11 +895,14 @@ size_t CoffImportSize( import_sym *import )
                 break;
             case WL_PROC_PPC:
                 if( sym_len > 8 ) {
-                    ret += sym_len + 1 + sym_len + 3 + sym_len + 7;
+                    ret += sym_len + 1                              // string table
+                        + str_coff_ppc_prefix.len + sym_len + 1     // string table
+                        + str_coff_imp_prefix.len + sym_len + 1;    // string table
                 } else if( sym_len > 6 ) {
-                    ret += sym_len + 3 + sym_len + 7;
+                    ret += str_coff_ppc_prefix.len + sym_len + 1    // string table
+                        + str_coff_imp_prefix.len + sym_len + 1;    // string table
                 } else if( sym_len > 2 ) {
-                    ret += sym_len + 7;
+                    ret += str_coff_imp_prefix.len + sym_len + 1;   // string table
                 }
                 ret += 6 * COFF_SYM_SIZE
                     + 2 * COFF_SECTION_HEADER_SIZE
@@ -911,9 +915,10 @@ size_t CoffImportSize( import_sym *import )
                  * See comment for AXP above
                  */
                 if( sym_len > 8 ) {
-                    ret += sym_len + 1 + sym_len + 7;
+                    ret += sym_len + 1                              // string table
+                        + str_coff_imp_prefix.len + sym_len + 1;    // string table
                 } else if( sym_len > 2 ) {
-                    ret += 7 + sym_len;
+                    ret += str_coff_imp_prefix.len + sym_len + 1;   // string table
                 }
                 ret += 6 + COFF_RELOC_SIZE;     // .text
                 break;
@@ -922,15 +927,18 @@ size_t CoffImportSize( import_sym *import )
                  * See comment for AXP above
                  */
                 if( sym_len > 8 ) {
-                    ret += sym_len + 1 + sym_len + 7;
+                    ret += sym_len + 1                              // string table
+                        + str_coff_imp_prefix.len + sym_len + 1;    // string table
                 } else if( sym_len > 2 ) {
-                    ret += 7 + sym_len;
+                    ret += str_coff_imp_prefix.len + sym_len + 1;   // string table
                 }
                 ret += 6 + COFF_RELOC_SIZE;     // .text
                 break;
             }
         } else {
-            ret = sizeof( coff_import_object_header ) + dll_len + 1 + sym_len + 1;
+            ret = sizeof( coff_import_object_header )
+                + dll_len + 1
+                + sym_len + 1;                                      // string table
         }
         return( ret );
     default:
