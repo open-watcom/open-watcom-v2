@@ -55,6 +55,12 @@ static sym_entry        **SortedSymbols;
 static char             *padding_string;
 static size_t           padding_string_len;
 
+static unsigned long    NumFiles;
+static size_t           NumSymbols;
+static file_offset      TotalNameLength;
+static file_offset      TotalFFNameLength;
+static file_offset      TotalSymbolLength;
+
 void InitFileTab( void )
 /**********************/
 {
@@ -182,23 +188,23 @@ static int Hash( const char *string, unsigned *plen )
 static void RemoveFromHashTable( sym_entry *sym )
 /***********************************************/
 {
-    sym_entry       *hash;
-    sym_entry       *prev;
+    sym_entry       *hash_sym;
+    sym_entry       *hash_prev;
     int             hval;
     unsigned        len;
 
-    prev = NULL;
+    hash_prev = NULL;
     hval = Hash( sym->name, &len );
-    for( hash = HashTable[hval]; hash != NULL; hash = hash->hash_next ) {
-        if( hash == sym ) {
-            if( prev == NULL ) {
-                HashTable[hval] = hash->hash_next;
+    for( hash_sym = HashTable[hval]; hash_sym != NULL; hash_sym = hash_sym->hash_next ) {
+        if( hash_sym == sym ) {
+            if( hash_prev == NULL ) {
+                HashTable[hval] = hash_sym->hash_next;
             } else {
-                prev->hash_next = hash->hash_next;
+                hash_prev->hash_next = hash_sym->hash_next;
             }
             break;
         } else {
-            prev = hash;
+            hash_prev = hash_sym;
         }
     }
 }
@@ -260,12 +266,6 @@ static void WritePadding( file_offset size )
         WriteNew( padding_string, padding_string_len );
     }
 }
-
-static unsigned long    NumFiles;
-static size_t           NumSymbols;
-static file_offset      TotalNameLength;
-static file_offset      TotalFFNameLength;
-static file_offset      TotalSymbolLength;
 
 static void SortSymbols( void )
 /*****************************/
@@ -778,29 +778,30 @@ void WriteFileTable( void )
 void AddSym( const char *name, symbol_strength strength, unsigned char info )
 /***************************************************************************/
 {
-    sym_entry   *sym,**owner;
+    sym_entry   *hash_sym;
+    sym_entry   **owner;
     int         hval;
     unsigned    name_len;
 
     hval = Hash( name, &name_len );
-    for( sym = HashTable[hval]; sym != NULL; sym = sym->hash_next ) {
-        if( sym->len != name_len )
+    for( hash_sym = HashTable[hval]; hash_sym != NULL; hash_sym = hash_sym->hash_next ) {
+        if( hash_sym->len != name_len )
             continue;
-        if( SymbolNameCmp( sym->name, name ) == 0 ) {
-            if( strength > sym->strength ) {
-                owner = &sym->file->first;
-                while( *owner != sym ) {
+        if( SymbolNameCmp( hash_sym->name, name ) == 0 ) {
+            if( strength > hash_sym->strength ) {
+                owner = &hash_sym->file->first;
+                while( *owner != hash_sym ) {
                     owner = &(*owner)->next;
                 }
-                *owner = sym->next;
+                *owner = hash_sym->next;
                 owner = HashTable + hval;
-                while( *owner != sym ) {
+                while( *owner != hash_sym ) {
                     owner = &(*owner)->hash_next;
                 }
-                *owner = sym->hash_next;
-                MemFreeGlobal( sym );
+                *owner = hash_sym->hash_next;
+                MemFreeGlobal( hash_sym );
                 break; //db
-            } else if( strength == sym->strength ) {
+            } else if( strength == hash_sym->strength ) {
                 if( strength == SYM_STRONG ) {
                     if( !Options.quiet ) {
                         Warning( ERR_DUPLICATE_SYMBOL, FormSym( name ) );
@@ -810,16 +811,16 @@ void AddSym( const char *name, symbol_strength strength, unsigned char info )
             return;
         }
     }
-    sym = MemAllocGlobal( sizeof( sym_entry ) + name_len );
-    sym->len = name_len;
-    sym->strength = strength;
-    sym->info = info;
-    memcpy( sym->name, name, name_len + 1 );
-    sym->next = CurrFile->first;
-    CurrFile->first = sym;
-    sym->file = CurrFile;
-    sym->hash_next = HashTable[hval];
-    HashTable[hval] = sym;
+    hash_sym = MemAllocGlobal( sizeof( sym_entry ) + name_len );
+    hash_sym->len = name_len;
+    hash_sym->strength = strength;
+    hash_sym->info = info;
+    memcpy( hash_sym->name, name, name_len + 1 );
+    hash_sym->next = CurrFile->first;
+    CurrFile->first = hash_sym;
+    hash_sym->file = CurrFile;
+    hash_sym->hash_next = HashTable[hval];
+    HashTable[hval] = hash_sym;
 }
 
 #ifdef DEVBUILD
@@ -827,7 +828,7 @@ void DumpFileTable( void )
 {
     sym_file    *sfile;
     sym_entry   *entry;
-    sym_entry   *hash;
+    sym_entry   *hash_sym;
     unsigned    len;
     int         hval;
     long        files    = 0L;
@@ -847,8 +848,8 @@ void DumpFileTable( void )
             printf( "\t\"%s\" (%d, %u, \"%s\")", entry->name, hval, len,
                     (HashTable[hval] ? HashTable[hval]->name : "(NULL)") );
 
-            for( hash = entry->hash_next; hash != NULL; hash = hash->hash_next ) {
-                printf( " -> \"%s\"", hash->name );
+            for( hash_sym = entry->hash_next; hash_sym != NULL; hash_sym = hash_sym->hash_next ) {
+                printf( " -> \"%s\"", hash_sym->name );
                 fflush( stdout );
             }
             printf( "\n" );
@@ -863,7 +864,7 @@ void DumpFileTable( void )
 
 void DumpHashTable( void )
 {
-    sym_entry   *hash;
+    sym_entry   *hash_sym;
     int         hval;
     int         length;
 
@@ -872,10 +873,10 @@ void DumpHashTable( void )
     printf( "----------------------------------------------------------\n" );
     for( hval = 0; hval < HASH_SIZE; hval++ ) {
         length = 0;
-        for( hash = HashTable[hval]; hash != NULL; hash = hash->next ) {
+        for( hash_sym = HashTable[hval]; hash_sym != NULL; hash_sym = hash_sym->next ) {
             ++length;
         }
-        printf( "Offset %6d: %d\n", i, length );
+        printf( "Offset %6d: %d\n", hval, length );
     }
     printf( "----------------------------------------------------------\n" );
 }
@@ -886,17 +887,17 @@ bool RemoveObjectSymbols( arch_header *arch )
 /*******************************************/
 {
     sym_file    *sfile;
-    sym_file    *prev_sfile;
+    sym_file    *sfile_prev;
     sym_entry   *sym;
 
-    prev_sfile = NULL;
+    sfile_prev = NULL;
     for( sfile = FileTable.first; sfile != NULL; sfile = sfile->next ) {
         if( SymbolNameCmp( sfile->full_name, arch->name ) == 0 ) {
-            if( prev_sfile != NULL ) {    /* Not deleting from head of list */
-                prev_sfile->next = sfile->next;
+            if( sfile_prev != NULL ) {    /* Not deleting from head of list */
+                sfile_prev->next = sfile->next;
 
                 if( FileTable.add_to == &sfile->next ) { /* Last node in list */
-                    FileTable.add_to = &prev_sfile->next;
+                    FileTable.add_to = &sfile_prev->next;
                 }
             } else {
                 if( FileTable.add_to == &sfile->next ) { /* Only node in list */
@@ -917,7 +918,7 @@ bool RemoveObjectSymbols( arch_header *arch )
             Options.modified = true;
             return( true );
         }
-        prev_sfile = sfile;
+        sfile_prev = sfile;
     }
     return( false );
 }
