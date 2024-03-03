@@ -116,21 +116,21 @@ void CleanFileTab( void )
     sym_file    *curr;
     sym_file    *next;
 
-    for( curr = FileTable.first; curr; curr = next ) {
+    for( curr = FileTable.first; curr != NULL ; curr = next ) {
         next = curr->next;
         /*
          * If curr->first is NULL then either this file contains no
          * symbols or we are ignoring all of them.  Remove the file.
          */
-        if( !curr->first ) {
-            if( last ) {
+        if( curr->first == NULL ) {
+            if( last != NULL ) {
                 last->next = curr->next;
             } else {
                 FileTable.first = curr->next;
             }
 
             if( &(curr->next) == FileTable.add_to ) {
-                if( last ) {
+                if( last != NULL ) {
                     FileTable.add_to = &(last->next);
                 } else {
                     FileTable.add_to = &(FileTable.first);
@@ -841,7 +841,7 @@ void DumpFileTable( void )
     for( sfile = FileTable.first; sfile != NULL; sfile = sfile->next ) {
         ++files;
         printf( "File: \"%s\"\n", sfile->full_name );
-        for( entry = sfile->first; entry; entry = entry->next ) {
+        for( entry = sfile->first; entry != NULL; entry = entry->next ) {
             ++symbols;
 
             hval = Hash( entry->name, &len );
