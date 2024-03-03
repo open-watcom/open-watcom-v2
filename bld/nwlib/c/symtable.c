@@ -55,8 +55,6 @@ static sym_entry        **SortedSymbols;
 static char             *padding_string;
 static size_t           padding_string_len;
 
-static int Hash( const char *string, unsigned *plen );
-
 void InitFileTab( void )
 /**********************/
 {
@@ -156,6 +154,27 @@ void FiniFileTab( void )
     }
     MemFreeGlobal( HashTable );
     HashTable = NULL;
+}
+
+
+static int Hash( const char *string, unsigned *plen )
+/***************************************************/
+{
+    unsigned long       g;
+    unsigned long       h;
+
+    h = 0;
+    *plen = 0;
+    while( *string != 0 ) {
+        h = ( h << 4 ) + *string;
+        if( (g = (h & 0xf0000000)) != 0 ) {
+            h = h ^ ( g >> 24 );
+            h = h ^ g;
+        }
+        ++string;
+        ++*plen;
+    }
+    return( h % HASH_SIZE );
 }
 
 
@@ -756,26 +775,6 @@ void WriteFileTable( void )
     } else {
         WriteOmfFileTable();
     }
-}
-
-static int Hash( const char *string, unsigned *plen )
-/***************************************************/
-{
-    unsigned long       g;
-    unsigned long       h;
-
-    h = 0;
-    *plen = 0;
-    while( *string != 0 ) {
-        h = ( h << 4 ) + *string;
-        if( (g = (h & 0xf0000000)) != 0 ) {
-            h = h ^ ( g >> 24 );
-            h = h ^ g;
-        }
-        ++string;
-        ++*plen;
-    }
-    return( h % HASH_SIZE );
 }
 
 void AddSym( const char *name, symbol_strength strength, unsigned char info )
