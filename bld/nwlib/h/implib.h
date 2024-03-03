@@ -30,22 +30,18 @@
 ****************************************************************************/
 
 
-#define MAX_IMPORT_STRING      (_MAX_PATH + 512 + 80)
+#define MAX_IMPORT_STRING       (_MAX_PATH + 512 + 80)
 
-#define ELFBASEIMPORTSIZE 0x14A
-#define ELFBASESTRTABSIZE 0x22
-
-extern char         ElfBase[];
-extern char         ElfOSInfo[];
+#define ELFBASEIMPORTSIZE       0x14A
+#define ELFBASESTRTABSIZE       0x22
 
 #define ElfBase_SIZE            0x122
 #define ElfOSInfo_SIZE          0x28
 
-#define ELF_IMPORT_SYM_INFO             0x10
-#define ELF_IMPORT_NAMED_SYM_INFO       0x15
+#define ELF_IMPORT_SYM_INFO         0x10
+#define ELF_IMPORT_NAMED_SYM_INFO   0x15
 
 #include "pushpck1.h"
-
 typedef struct {
     unsigned_32         flags;
     unsigned_32         date;
@@ -61,22 +57,13 @@ typedef struct {
     unsigned_32         NamePointerTableRVA;
     unsigned_32         OrdTableRVA;
 } Coff32_Export;
-
 #include "poppck.h"
 
-typedef unsigned_32 Coff32_EName;
-typedef unsigned_16 Coff32_EOrd;
+typedef unsigned_32     Coff32_EName;
+typedef unsigned_16     Coff32_EOrd;
 
-typedef struct name_len {
-    size_t      len;
-    char        *name;
-} name_len;
-
-extern name_len str_ppc_prefix;
-extern name_len str_imp_prefix;
-extern name_len str_null_thunk_data;
-extern name_len str_import_descriptor;
-extern name_len str_null_import_descriptor;
+extern char     ElfBase[];
+extern char     ElfOSInfo[];
 
 extern bool     AddImport( libfile io, arch_header *arch );
 extern void     OmfMKImport( arch_header *, importType, long, const char *, const char *, const char *, processor_type );
