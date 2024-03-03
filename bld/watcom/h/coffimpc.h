@@ -30,6 +30,8 @@
 ****************************************************************************/
 
 
+#ifndef COFFIMPC_H_INCLUDED
+#define COFFIMPC_H_INCLUDED
 
 #define NAME_LEN_STR(s)     sizeof( s ) - 1, s
 
@@ -58,3 +60,4 @@ typedef struct name_len {
 IMPLIB_STRS
 #undef IMPLIB_STR
 
+#endif
