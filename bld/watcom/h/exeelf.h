@@ -161,8 +161,8 @@ typedef struct {
 #define ET_EXEC         2       // executable file
 #define ET_DYN          3       // shared object file
 #define ET_CORE         4       // core file
-#define ET_LOPROC       0xff00  // processor specific file types
-#define ET_HIPROC       0xffff
+#define ET_LOPROC       0xff00  // processor specific (start)
+#define ET_HIPROC       0xffff  // processor specific (end)
 
 // elf machine types
 
@@ -363,12 +363,12 @@ typedef struct {
 
 #define SHN_UNDEF       0
 #define SHN_LORESERVE   0xff00
-#define SHN_LOPROC      0xff00  // reserved for processor-specific semantics
-#define SHN_HIPROC      0xff1f
-#define SHN_LOOS        0xff20  // os specific range
+#define SHN_LOPROC      0xff00  // processor specific (start)
+#define SHN_HIPROC      0xff1f  // processor specific (end)
+#define SHN_LOOS        0xff20  // OS specific (start)
 #define SHN_LOSUNW      0xff3f
 #define SHN_SUNW_IGNORE 0xff3f
-#define SHN_HIOS        0xff3f
+#define SHN_HIOS        0xff3f  // OS specific (end)
 #define SHN_HISUNW      0xff3f
 #define SHN_ABS         0xfff1  // references to this section are absolute
 #define SHN_COMMON      0xfff2  // references to this section are common
@@ -425,7 +425,7 @@ typedef struct {
 #define SHT_GROUP                   17  // section group
 #define SHT_SYMTAB_SHNDX            18  // extended section indicies
 #define SHT_NUM                     19  // number of defined types
-#define SHT_LOOS            0x60000000  // start of os specific section types
+#define SHT_LOOS            0x60000000  // OS specific (start)
 #define SHT_OS              0x60000001  // info to identify target OS
 #define SHT_IMPORTS         0x60000002  // info on refs to external symbols
 #define SHT_EXPORTS         0x60000003  // info on symbols exported by ordinal
@@ -454,12 +454,12 @@ typedef struct {
 #define SHT_GNU_verneed     0x6ffffffe  // version needs section
 #define SHT_GNU_versym      0x6fffffff  // version symbol table
 #define SHT_HISUNW          0x6fffffff  // sun specefic high bound
-#define SHT_HIOS            0x6fffffff  // end of os specific section types
-#define SHT_LOPROC          0x70000000  // processor specific
+#define SHT_HIOS            0x6fffffff  // OS specific (end)
+#define SHT_LOPROC          0x70000000  // processor specific (start)
 #define SHT_X86_64_UNWIND   0x70000001  // contains entries for stack unwinding
-#define SHT_HIPROC          0x7fffffff
-#define SHT_LOUSER          0x80000000  // user defined sections
-#define SHT_HIUSER          0xffffffff
+#define SHT_HIPROC          0x7fffffff  // processor specific (end)
+#define SHT_LOUSER          0x80000000  // user defined (start)
+#define SHT_HIUSER          0xffffffff  // user defined (end)
 
 // Old section types.  Readers should handle these, writers must use the above
 
@@ -825,8 +825,8 @@ typedef struct {
 #define PT_PHDR         6               // address of prog. header in mem (for interp.)
 #define PT_OS           0x60000001      // target os information
 #define PT_RES          0x60000002      // read-only resource information
-#define PT_LOPROC       0x70000000      // processor specific
-#define PT_HIPROC       0x7fffffff
+#define PT_LOPROC       0x70000000      // processor specific (start)
+#define PT_HIPROC       0x7fffffff      // processor specific (end)
 
 // Old segment types.  Readers should handle these, writers must use the above
 
@@ -900,8 +900,8 @@ typedef struct {
 #define DT_PPC_GOT      0x70000001      // address of Global Offset Table
 #define DT_PPC_GOTSZ    0x70000002      // size of Global Offset Table
 #define DT_PPC_PLTSZ    0x70000003      // size of Procedure Linkage Table
-#define DT_LOPROC       0x70000000      // range of processor-defined tags
-#define DT_HIPROC       0x7FFFFFFF
+#define DT_LOPROC       0x70000000      // processor specific (start)
+#define DT_HIPROC       0x7FFFFFFF      // processor specific (end)
 
 // Old dynamic tags.  Readers should handle these, writers must use the above
 
