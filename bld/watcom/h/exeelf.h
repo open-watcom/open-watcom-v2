@@ -137,6 +137,8 @@ typedef struct {
 #define ELFOSABI_HPUX       1   // Hewlett-Packard HP-UX
 #define ELFOSABI_NETBSD     2   // NetBSD
 #define ELFOSABI_LINUX      3   // Linux
+#define ELFOSABI_HURD       4   // GNU-Hurd
+#define ELFOSABI_86OPEN     5   // 86Open common IA32 ABI
 #define ELFOSABI_SOLARIS    6   // Sun Solaris
 #define ELFOSABI_AIX        7   // IBM AIX
 #define ELFOSABI_IRIX       8   // SGI IRIX
@@ -147,6 +149,10 @@ typedef struct {
 #define ELFOSABI_OPENVMS    13  // Open VMS
 #define ELFOSABI_NSK        14  // Hewlett-Packard Non-Stop Kernel
 #define ELFOSABI_AROS       15  // Amiga Research OS
+#define ELFOSABI_ARM_AEABI  64  // ARM EABI
+#define ELFOSABI_ARM        97  // ARM
+#define ELFOSABI_STANDALONE 255 // Standalone (embedded) application
+
 
 // elf object file types
 
@@ -359,8 +365,16 @@ typedef struct {
 #define SHN_LORESERVE   0xff00
 #define SHN_LOPROC      0xff00  // reserved for processor-specific semantics
 #define SHN_HIPROC      0xff1f
+#define SHN_LOOS        0xff20  // os specific range
+#define SHN_LOSUNW      0xff3f
+#define SHN_SUNW_IGNORE 0xff3f
+#define SHN_HIOS        0xff3f
+#define SHN_HISUNW      0xff3f
 #define SHN_ABS         0xfff1  // references to this section are absolute
-#define SHN_COMMON      0xfff2  // references to this section are common.
+#define SHN_COMMON      0xfff2  // references to this section are common
+#define SHN_MACHO_64    0xfffd  // mach-o64 direct string access
+#define SHN_MACHO       0xfffd  // mach-o direct string access
+#define SHN_XINDEX      0xffff  // extended section index
 #define SHN_HIRESERVE   0xffff
 
 // section header
@@ -393,30 +407,59 @@ typedef struct {
 
 // section types
 
-#define SHT_NULL        0               // inactive
-#define SHT_PROGBITS    1               // meaning defined by program
-#define SHT_SYMTAB      2               // symbol table
-#define SHT_STRTAB      3               // string table
-#define SHT_RELA        4               // reloc entries with explicit addends
-#define SHT_HASH        5               // symbol hash table
-#define SHT_DYNAMIC     6               // dynamic linking information
-#define SHT_NOTE        7               // comment information
-#define SHT_NOBITS      8               // like PROGBITS but no space in file.
-#define SHT_REL         9               // as RELA but no explicit addends
-#define SHT_SHLIB       10              // reserved but evil
-#define SHT_DYNSYM      11              // dynamic link symbol table
-#define SHT_OS          0x60000001      // info to identify target OS
-#define SHT_IMPORTS     0x60000002      // info on refs to external symbols
-#define SHT_EXPORTS     0x60000003      // info on symbols exported by ordinal
-#define SHT_RES         0x60000004      // read-only resource data.
-#define SHT_PROGFRAGS   0x60001001      // similar to SHT_PROGBITS
-#define SHT_IDMDLL      0x60001002      // symbol name demangling information
-#define SHT_DEFLIB      0x60001003      // default static libraries
-#define SHT_LOPROC      0x70000000      // processor specific
-#define SHT_X86_64_UNWIND 0x70000001    // contains entries for stack unwinding
-#define SHT_HIPROC      0x7fffffff
-#define SHT_LOUSER      0x80000000      // user defined sections
-#define SHT_HIUSER      0xffffffff
+#define SHT_NULL                     0  // inactive
+#define SHT_PROGBITS                 1  // meaning defined by program
+#define SHT_SYMTAB                   2  // symbol table
+#define SHT_STRTAB                   3  // string table
+#define SHT_RELA                     4  // reloc entries with explicit addends
+#define SHT_HASH                     5  // symbol hash table
+#define SHT_DYNAMIC                  6  // dynamic linking information
+#define SHT_NOTE                     7  // comment information
+#define SHT_NOBITS                   8  // like PROGBITS but no space in file.
+#define SHT_REL                      9  // as RELA but no explicit addends
+#define SHT_SHLIB                   10  // reserved but evil
+#define SHT_DYNSYM                  11  // dynamic link symbol table
+#define SHT_INIT_ARRAY              14  // array of constructors
+#define SHT_FINI_ARRAY              15  // array of destructors
+#define SHT_PREINIT_ARRAY           16  // array of pre-constructors
+#define SHT_GROUP                   17  // section group
+#define SHT_SYMTAB_SHNDX            18  // extended section indicies
+#define SHT_NUM                     19  // number of defined types
+#define SHT_LOOS            0x60000000  // start of os specific section types
+#define SHT_OS              0x60000001  // info to identify target OS
+#define SHT_IMPORTS         0x60000002  // info on refs to external symbols
+#define SHT_EXPORTS         0x60000003  // info on symbols exported by ordinal
+#define SHT_RES             0x60000004  // read-only resource data.
+#define SHT_PROGFRAGS       0x60001001  // similar to SHT_PROGBITS
+#define SHT_IDMDLL          0x60001002  // symbol name demangling information
+#define SHT_DEFLIB          0x60001003  // default static libraries
+#define SHT_LOSUNW          0x6ffffff1  // sun specific low bound
+#define SHT_SUNW_symsort    0x6ffffff1
+#define SHT_SUNW_tlssort    0x6ffffff2
+#define SHT_SUNW_LDYNSYM    0x6ffffff3
+#define SHT_SUNW_dof        0x6ffffff4
+#define SHT_SUNW_cap        0x6ffffff5
+#define SHT_GNU_ATTRIBUTES  0x6ffffff5  // object attributes
+#define SHT_GNU_HASH        0x6ffffff6  // gnu style hash table
+#define SHT_SUNW_SIGNATURE  0x6ffffff6
+#define SHT_GNU_LIBLIST     0x6ffffff7  // prelink library list
+#define SHT_SUNW_ANNOTATE   0x6ffffff7
+#define SHT_SUNW_DEBUGSTR   0x6ffffff8
+#define SHT_CHECKSUM        0x6ffffff8  // checksum for DSO content
+#define SHT_SUNW_DEBUG      0x6ffffff9
+#define SHT_SUNW_move       0x6ffffffa
+#define SHT_SUNW_COMDAT     0x6ffffffb
+#define SHT_SUNW_syminfo    0x6ffffffc
+#define SHT_GNU_verdef      0x6ffffffd  // version definition section
+#define SHT_GNU_verneed     0x6ffffffe  // version needs section
+#define SHT_GNU_versym      0x6fffffff  // version symbol table
+#define SHT_HISUNW          0x6fffffff  // sun specefic high bound
+#define SHT_HIOS            0x6fffffff  // end of os specific section types
+#define SHT_LOPROC          0x70000000  // processor specific
+#define SHT_X86_64_UNWIND   0x70000001  // contains entries for stack unwinding
+#define SHT_HIPROC          0x7fffffff
+#define SHT_LOUSER          0x80000000  // user defined sections
+#define SHT_HIUSER          0xffffffff
 
 // Old section types.  Readers should handle these, writers must use the above
 
@@ -427,16 +470,29 @@ typedef struct {
 
 // sh_flags values
 
-#define SHF_WRITE       0x00000001      // section writable during execution
-#define SHF_ALLOC       0x00000002      // section occupies space during exec.
-#define SHF_EXECINSTR   0x00000004      // section contains code.
-#define SHF_BEGIN       0x01000000      // section to be placed at the beginning
-                                        // of like-named sections by static link
-#define SHF_END         0x02000000      // same, end.
-#define SHF_MASKPROC    0xf0000000      // processor specific flags
+#define SHF_WRITE            0x00000001 // section writable during execution
+#define SHF_ALLOC            0x00000002 // section occupies space during exec
+#define SHF_EXECINSTR        0x00000004 // section contains code
+#define SHF_MERGE            0x00000010 // might be merged
+#define SHF_STRINGS          0x00000020 // contains 0 terminated strings
+#define SHF_INFO_LINK        0x00000040 // sh_info contains SHT index
+#define SHF_LINK_ORDER       0x00000080 // preserve order after combining
+#define SHF_OS_NONCONFORMING 0x00000100 // non-std. os specific handling required
+#define SHF_GROUP            0x00000200 // section is member of a group
+#define SHF_TLS              0x00000400 // section hold thread specific data
+#define SHF_COMPRESSED       0x00000800 // section with compressed data
 
-#define SHF_X86_64_LARGE 0x1000000      // section with more than 2GB
-#define SHF_ALPHA_GPREL 0x10000000
+#define SHF_MASKOS           0x0ff00000 // OS specific values
+#define SHF_BEGIN            0x01000000 // section to be placed at the beginning
+                                        // of like-named sections by static link
+#define SHF_END              0x02000000 // same, end.
+
+#define SHF_MASKPROC         0xf0000000 // processor specific flags
+#define SHF_X86_64_LARGE     0x10000000 // section with more than 2GB
+#define SHF_ALPHA_GPREL      0x10000000
+#define SHF_ORDERED          0x40000000 // solaris: special ordering required
+#define SHF_EXCLUDE          0x80000000 // solaris: section is excluded unless
+                                        // referenced or allocated
 
 // symbol table entry
 
@@ -447,6 +503,8 @@ typedef struct {
     unsigned_8  st_info;        // symbol's type and binding attribs.
     unsigned_8  st_other;       // no meaning yet.
     Elf32_Half  st_shndx;       // section index
+//  ToDo: Field is only available for arm and arm64 targets
+//  uint32_t    st_arch_subinfo;// Needed for arm function info (mach-o)
 } Elf32_Sym;
 
 typedef struct {
@@ -456,6 +514,8 @@ typedef struct {
     Elf64_Half  st_shndx;       // section index
     Elf64_Addr  st_value;       // symbol "value"
     Elf64_Xword st_size;        // symbol size
+//  ToDo: Field is only available for arm and arm64 targets
+//  uint32_t    st_arch_subinfo;// Needed for arm function info (mach-o)
 } Elf64_Sym;
 
 // symbol info field contents
