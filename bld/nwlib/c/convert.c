@@ -167,13 +167,13 @@ static void PutARPadding( char * element, ar_len current_len, ar_len desired_len
 
 static void PutARName( char *ar_name, const char *arch_name )
 {
-    ar_len      name_len;
+    ar_len      namelen;
 
 
-    name_len = strlen( arch_name );
-    strncpy( ar_name, arch_name, name_len );
-    if( name_len < AR_NAME_LEN ) {
-        PutARPadding( ar_name, name_len, AR_NAME_LEN );
+    namelen = strlen( arch_name );
+    strncpy( ar_name, arch_name, namelen );
+    if( namelen < AR_NAME_LEN ) {
+        PutARPadding( ar_name, namelen, AR_NAME_LEN );
     }
 }
 

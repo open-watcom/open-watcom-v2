@@ -171,22 +171,22 @@ static bool elfAddImport( libfile io, long header_offset, arch_header *arch )
 
 static bool getOs2Symbol( libfile io, char *symbol, unsigned_16 *ordinal, unsigned *len )
 {
-    unsigned_8  name_len;
+    unsigned_8  namelen;
 
-    if( LibRead( io, &name_len, sizeof( name_len ) ) != sizeof( name_len ) ) {
+    if( LibRead( io, &namelen, sizeof( namelen ) ) != sizeof( namelen ) ) {
         return( false );
     }
-    if( name_len == 0 ) {
+    if( namelen == 0 ) {
         return( false );
     }
-    if( LibRead( io, symbol, name_len ) != name_len ) {
+    if( LibRead( io, symbol, namelen ) != namelen ) {
         FatalError( ERR_BAD_DLL, io->name );
     }
-    symbol[name_len] = 0;
+    symbol[namelen] = 0;
     if( LibRead( io, ordinal, sizeof( unsigned_16 ) ) != sizeof( unsigned_16 ) ) {
         FatalError( ERR_BAD_DLL, io->name );
     }
-    *len = 1 + name_len + 2;
+    *len = 1 + namelen + 2;
     return( true );
 }
 
@@ -249,13 +249,13 @@ static void os2AddImport( libfile io, long header_offset, arch_header *arch )
     }
 }
 
-static void AddSym2( name_len *prefix, const char *name, symbol_strength strength, unsigned char info )
-/*****************************************************************************************************/
+static void AddSym2( name_len *n1, const char *n2, symbol_strength strength, unsigned char info )
+/***********************************************************************************************/
 {
     char    *buffer;
 
-    buffer = MemAlloc( prefix->len + strlen( name ) + 1 );
-    strcpy( strcpy( buffer, prefix->name ) + prefix->len, name );
+    buffer = MemAlloc( n1->len + strlen( n2 ) + 1 );
+    strcpy( strcpy( buffer, n1->name ) + n1->len, n2 );
     AddSym( buffer, strength, info );
     MemFree( buffer );
 }
@@ -307,7 +307,7 @@ static void os2FlatAddImport( libfile io, long header_offset, arch_header *arch 
 static bool nlmAddImport( libfile io, long header_offset, arch_header *arch )
 {
     nlm_header  nlm;
-    unsigned_8  name_len;
+    unsigned_8  namelen;
     char        dll_name[_MAX_FNAME + _MAX_EXT + 1];
     char        symbol[256];
     unsigned_32 offset;
@@ -318,26 +318,26 @@ static bool nlmAddImport( libfile io, long header_offset, arch_header *arch )
         return( false );
     }
     LibSeek( io, offsetof( nlm_header, moduleName ) , SEEK_SET );
-    if( LibRead( io, &name_len, sizeof( name_len ) ) != sizeof( name_len ) ) {
+    if( LibRead( io, &namelen, sizeof( namelen ) ) != sizeof( namelen ) ) {
         FatalError( ERR_BAD_DLL, io->name );
     }
-    if( name_len == 0 ) {
+    if( namelen == 0 ) {
         FatalError( ERR_BAD_DLL, io->name );
     }
-    if( LibRead( io, dll_name, name_len ) != name_len ) {
+    if( LibRead( io, dll_name, namelen ) != namelen ) {
         FatalError( ERR_BAD_DLL, io->name );
     }
-    symbol[name_len] = '\0';
+    symbol[namelen] = '\0';
     LibSeek( io, nlm.publicsOffset, SEEK_SET  );
     while( nlm.numberOfPublics > 0 ) {
         nlm.numberOfPublics--;
-        if( LibRead( io, &name_len, sizeof( name_len ) ) != sizeof( name_len ) ) {
+        if( LibRead( io, &namelen, sizeof( namelen ) ) != sizeof( namelen ) ) {
             FatalError( ERR_BAD_DLL, io->name );
         }
-        if( LibRead( io, symbol, name_len ) != name_len ) {
+        if( LibRead( io, symbol, namelen ) != namelen ) {
             FatalError( ERR_BAD_DLL, io->name );
         }
-        symbol[name_len] = '\0';
+        symbol[namelen] = '\0';
         if( LibRead( io, &offset, sizeof( offset ) ) != sizeof( offset ) ) {
             FatalError( ERR_BAD_DLL, io->name );
         }

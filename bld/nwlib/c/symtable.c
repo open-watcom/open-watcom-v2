@@ -781,11 +781,11 @@ void AddSym( const char *name, symbol_strength strength, unsigned char info )
     sym_entry   *hash_sym;
     sym_entry   **owner;
     int         hval;
-    unsigned    name_len;
+    unsigned    namelen;
 
-    hval = Hash( name, &name_len );
+    hval = Hash( name, &namelen );
     for( hash_sym = HashTable[hval]; hash_sym != NULL; hash_sym = hash_sym->hash_next ) {
-        if( hash_sym->len != name_len )
+        if( hash_sym->len != namelen )
             continue;
         if( SymbolNameCmp( hash_sym->name, name ) == 0 ) {
             if( strength > hash_sym->strength ) {
@@ -811,11 +811,11 @@ void AddSym( const char *name, symbol_strength strength, unsigned char info )
             return;
         }
     }
-    hash_sym = MemAllocGlobal( sizeof( sym_entry ) + name_len );
-    hash_sym->len = name_len;
+    hash_sym = MemAllocGlobal( sizeof( sym_entry ) + namelen );
+    hash_sym->len = namelen;
     hash_sym->strength = strength;
     hash_sym->info = info;
-    memcpy( hash_sym->name, name, name_len + 1 );
+    strcpy( hash_sym->name, name );
     hash_sym->next = CurrFile->first;
     CurrFile->first = hash_sym;
     hash_sym->file = CurrFile;
@@ -1212,14 +1212,14 @@ static void ListContentsWlib( void )
     int         i;
     FILE        *fp;
     char        *name;
-    size_t      name_len;
+    size_t      namelen;
 
     if( Options.terse_listing ) {
         SortSymbols();
         for( i = 0; i < NumSymbols; ++i ) {
             sym = SortedSymbols[i];
             name = FormSym( sym->name );
-            name_len = strlen( name );
+            namelen = strlen( name );
             if( !Options.quiet ) {
                 Message( name );
             }
@@ -1243,9 +1243,9 @@ static void ListContentsWlib( void )
     for( i = 0; i < NumSymbols; ++i ) {
         sym = SortedSymbols[i];
         name = FormSym( sym->name );
-        name_len = strlen( name );
+        namelen = strlen( name );
         listPrintWlib( fp, "%s..", name );
-        fpadchWlib( fp, '.', WLIB_LIST_LINE_WIDTH - 2 - name_len - sym->file->name_length );
+        fpadchWlib( fp, '.', WLIB_LIST_LINE_WIDTH - 2 - namelen - sym->file->name_length );
         listPrintWlib( fp, "%s", sym->file->arch.name );
         listNewLineWlib( fp );
     }
