@@ -429,6 +429,12 @@ static void AddDataImportTablesNamed( coff_file_handle coff_file_hnd, import_sym
     case COFF_IMAGE_FILE_MACHINE_I386:
         type = COFF_IMAGE_REL_I386_DIR32NB;
         break;
+    default:
+        /*
+         * TODO: should be handled, now no reloc
+         */
+        type = 0;
+        break;
     }
     thunk_size = 4;
     if( import->processor == COFF_IMAGE_FILE_MACHINE_AMD64 ) {
@@ -583,6 +589,7 @@ static int CoffCreateImport( coff_file_handle coff_file_hnd, import_sym *import 
     /*
      * .idata$6 section header
      */
+    symb_hints = 0;
     if( is_named ) {
         sec_num = AddCoffSection( &c_file, str_coff_idata6.name, sizeof( ordinal ) + __ROUND_UP_SIZE_EVEN( dllsymbol_name_len + 1 ), 0, COFF_IMAGE_SCN_ALIGN_2BYTES | COFF_IMAGE_SCN_LNK_COMDAT | COFF_IMAGE_SCN_CNT_INITIALIZED_DATA | COFF_IMAGE_SCN_MEM_READ | COFF_IMAGE_SCN_MEM_WRITE );
         symb_hints = AddCoffSymSec( &c_file, sec_num, COFF_IMAGE_COMDAT_SELECT_ASSOCIATIVE );
