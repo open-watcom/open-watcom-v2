@@ -58,6 +58,11 @@
 #define MAX_NUM_COFF_LIB_SYMBOLS        32
 #define INIT_MAX_SIZE_COFF_STRING_TABLE 1024
 
+#define IMPLIB_HDR_SIZE (sizeof( size_t ) + sizeof( long ))
+#define IMPLIB_LEN      (*(size_t *)coff_file_hnd->implib_data)
+#define IMPLIB_POS      (*(long *)( coff_file_hnd->implib_data + sizeof( size_t ) ))
+#define IMPLIB_DATA     (coff_file_hnd->implib_data + IMPLIB_HDR_SIZE)
+
 typedef struct {
     coff_file_header    header;
     coff_section_header sections[MAX_NUM_COFF_LIB_SECTIONS];
@@ -110,7 +115,10 @@ static void AddCoffString( coff_lib_file *c_file, const char *name, size_t len )
 {
     char    *x;
 
-    len++;  // add space for terminator character
+    /*
+     * add space for terminator character
+     */
+    len++;
     if( ( c_file->string_table_size + len ) >= c_file->max_string_table_size ) {
         c_file->max_string_table_size *= 2;
         x = _ClientAlloc( c_file->coff_file_hnd, c_file->max_string_table_size );
@@ -248,11 +256,6 @@ static coff_quantity AddCoffSymSec( coff_lib_file *c_file, signed_16 sec_num, un
     return( symb_idx );
 }
 
-#define IMPLIB_HDR_SIZE (sizeof( size_t ) + sizeof( long ))
-#define IMPLIB_LEN      (*(size_t *)coff_file_hnd->implib_data)
-#define IMPLIB_POS      (*(long *)( coff_file_hnd->implib_data + sizeof( size_t ) ))
-#define IMPLIB_DATA     (coff_file_hnd->implib_data + IMPLIB_HDR_SIZE)
-
 static int DataImpLibInit( coff_file_handle coff_file_hnd )
 {
     if( coff_file_hnd->implib_data == NULL ) {
@@ -343,7 +346,9 @@ static void CreateCoffSymbols( coff_file_handle coff_file_hnd, coff_lib_file *c_
 
 static void CreateCoffReloc( coff_file_handle coff_file_hnd, coff_sec_offset sec_offset, coff_quantity sym_tab_index, unsigned_16 type )
 {
-    //output is buffered so no point in putting COFF_RELOC struct
+    /*
+     * output is buffered so no point in putting COFF_RELOC struct
+     */
     AddDataImpLib( coff_file_hnd, &sec_offset, sizeof( sec_offset ) );
     AddDataImpLib( coff_file_hnd, &sym_tab_index, sizeof( sym_tab_index ) );
     AddDataImpLib( coff_file_hnd, &type, sizeof( type ) );
@@ -360,23 +365,31 @@ static char *getImportName( char *src, coff_import_object_name_type type )
 {
     char    *end;
 
-/*
-I got following information from Microsoft about name type and name conversion.
-
-    COFF_IMPORT_OBJECT_ORDINAL = 0,          // Import by ordinal
-    COFF_IMPORT_OBJECT_NAME = 1,             // Import name == public symbol name.
-    COFF_IMPORT_OBJECT_NAME_NO_PREFIX = 2,   // Import name == public symbol name skipping leading ?, @, or optionally _.
-    COFF_IMPORT_OBJECT_NAME_UNDECORATE = 3,  // Import name == public symbol name skipping leading ?, @, or optionally _
-                                        // and truncating at first @
-*/
-    // Note:
-    // COFF_IMPORT_OBJECT_NAME_NO_PREFIX is used for C symbols with underscore as prefix
-    // COFF_IMPORT_OBJECT_NAME_UNDECORATE is used for __stdcall and __fastcall name mangling
-    // __stdcall uses underscore as prefix and @nn as suffix
-    // __fastcall uses @ as prefix and @nn as suffix
-
-    // this solution is stupid, probably it needs improvement
-    // there is no more information from Microsoft
+    /*
+     * I got following information from Microsoft about name type and name
+     * conversion.
+     *
+     * Import by ordinal
+     *   COFF_IMPORT_OBJECT_ORDINAL         = 0
+     * Import name == public symbol name
+     *   COFF_IMPORT_OBJECT_NAME            = 1
+     * Import name == public symbol name skipping leading ?, @, or optionally _
+     *   COFF_IMPORT_OBJECT_NAME_NO_PREFIX  = 2
+     * Import name == public symbol name skipping leading ?, @, or optionally _
+     * and truncating at first @
+     *   COFF_IMPORT_OBJECT_NAME_UNDECORATE = 3
+     *
+     * Note:
+     *   COFF_IMPORT_OBJECT_NAME_NO_PREFIX is used for C symbols with
+     *     underscore as prefix
+     *   COFF_IMPORT_OBJECT_NAME_UNDECORATE is used for __stdcall
+     *     and __fastcall name mangling
+     *   __stdcall uses underscore as prefix and @nn as suffix
+     *   __fastcall uses @ as prefix and @nn as suffix
+     *
+     * this solution is simple, probably it needs improvement
+     * no more information from Microsoft
+     */
 
     if( *src != 0 ) {
         switch( type ) {
@@ -384,7 +397,9 @@ I got following information from Microsoft about name type and name conversion.
         case COFF_IMPORT_OBJECT_NAME:
             break;
         case COFF_IMPORT_OBJECT_NAME_UNDECORATE:
-            // remove suffix @nn or @ if any
+            /*
+             * remove suffix @nn or @ if any
+             */
             end = src + strlen( src );
             while( end != src ) {
                 --end;
@@ -395,9 +410,11 @@ I got following information from Microsoft about name type and name conversion.
                     break;
                 }
             }
-            // fall through
+            /* fall through */
         case COFF_IMPORT_OBJECT_NAME_NO_PREFIX:
-            // remove prefix @ or _ if any
+            /*
+             * remove prefix @ or _ if any
+             */
             if(( *src == '@' ) || ( *src == '_' ))
                 src++;
             break;
@@ -724,7 +741,9 @@ int convert_import_library_init( coff_file_handle coff_file_hnd )
     coff_import_object_header   *i_hdr;
     import_sym                  sym;
 
-    // init import library data structure
+    /*
+     * init import library data structure
+     */
     if( DataImpLibInit( coff_file_hnd ) != ORL_OKAY )
         return( ORL_OUT_OF_MEMORY );
 
