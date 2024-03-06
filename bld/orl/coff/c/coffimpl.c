@@ -364,7 +364,7 @@ static void CreateCoffStringTable( coff_file_handle coff_file_hnd, coff_lib_file
     AddDataImpLib( coff_file_hnd, c_file->string_table, c_file->string_table_size - 4 );
 }
 
-static void getImportName( name_len *dst, const char *src, coff_import_object_name_type type )
+static size_t getImportName( char *dst, const char *src, coff_import_object_name_type type )
 {
     const char  *end;
     size_t      len;
@@ -429,12 +429,12 @@ static void getImportName( name_len *dst, const char *src, coff_import_object_na
             break;
         }
     }
-    p = dst->name;
+    p = dst;
     while( len-- > 0 ) {
         *p++ = *src++;
     }
     *p = '\0';
-    dst->len = p - dst->name; 
+    return( p - dst ); 
 }
 
 static void AddDataImportTablesNamed( coff_file_handle coff_file_hnd, import_sym *impsym, unsigned symb_hints )
@@ -539,12 +539,14 @@ static int CoffCreateImport( coff_file_handle coff_file_hnd, import_sym *impsym 
     bool            is_named;
     unsigned_32     thunk_section_align;
     unsigned        thunk_size;
+    char            *p;
 
     c_file.coff_file_hnd = coff_file_hnd;
     InitCoffFile( &c_file );
 
-    DLLSymbolName.name = alloca( strlen( impsym->exportedName ) + 1 );
-    getImportName( &DLLSymbolName, impsym->exportedName, impsym->type );
+    p = alloca( strlen( impsym->exportedName ) + 1 );
+    DLLSymbolName.len = getImportName( p, impsym->exportedName, impsym->type );
+    DLLSymbolName.name = p;
 
     thunk_size = 4;
     thunk_section_align = COFF_IMAGE_SCN_ALIGN_4BYTES;

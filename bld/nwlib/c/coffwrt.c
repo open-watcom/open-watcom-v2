@@ -325,21 +325,23 @@ static void WriteCoffOptHeader( libfile io, sym_file *sfile )
 static unsigned AddCoffSymbol2( coff_lib_file *c_file, signed_16 sec_num, name_len *n1, name_len *n2, unsigned_16 type )
 {
     name_len    symname;
+    char        *p;
 
     symname.len = n1->len + n2->len;
-    symname.name = alloca( symname.len + 1 );
-    strcpy( strcpy( symname.name, n1->name ) + n1->len, n2->name );
+    symname.name = p = alloca( symname.len + 1 );
+    strcpy( strcpy( p, n1->name ) + n1->len, n2->name );
     return( AddCoffSymbol( c_file, sec_num, &symname, 0x0, type, COFF_IMAGE_SYM_CLASS_EXTERNAL, 0 ) );
 }
 
 static unsigned AddCoffSymbolNullThunkData( coff_lib_file *c_file, signed_16 sec_num, name_len *modName )
 {
     name_len    symname;
+    char        *p;
 
     symname.len = 1 + modName->len + str_coff_null_thunk_data.len;
-    symname.name = alloca( symname.len + 1 );
-    symname.name[0] = 0x7f;
-    strcpy( strcpy( symname.name + 1, modName->name ) + modName->len, str_coff_null_thunk_data.name );
+    symname.name = p = alloca( symname.len + 1 );
+    p[0] = 0x7f;
+    strcpy( strcpy( p + 1, modName->name ) + modName->len, str_coff_null_thunk_data.name );
     return( AddCoffSymbol( c_file, sec_num, &symname, 0x0, COFF_IMAGE_SYM_TYPE_NULL, COFF_IMAGE_SYM_CLASS_EXTERNAL, 0 ) );
 }
 
@@ -810,6 +812,7 @@ void CoffWriteImport( libfile io, sym_file *sfile, bool long_format )
     name_len                    symName;
     name_len                    exportedName;
     name_len                    modName;
+    char                        *p;
 
     /*
      * We are being extremely cautious in the following lines of code
@@ -821,9 +824,11 @@ void CoffWriteImport( libfile io, sym_file *sfile, bool long_format )
         dllName.len = strlen( dllName.name );
     }
     modName.len = 0;
-    modName.name = DupStr( MakeFName( sfile->import->DLLName ) );
+    modName.name = MakeFName( sfile->import->DLLName );
     if( modName.name != NULL ) {
         modName.len = strlen( modName.name );
+        p = alloca( modName.len + 1 );
+        modName.name = strcpy( p, modName.name );
     }
     symName.len = 0;
     symName.name = sfile->import->u.sym.symName;
@@ -885,5 +890,4 @@ void CoffWriteImport( libfile io, sym_file *sfile, bool long_format )
         break;
     }
     FiniCoffLibFile( &c_file );
-    MemFree( modName.name );
 }

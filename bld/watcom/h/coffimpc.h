@@ -37,7 +37,7 @@
 
 typedef struct name_len {
     size_t      len;
-    char        *name;
+    const char  *name;
 } name_len;
 
 #define IMPLIB_STRS \
