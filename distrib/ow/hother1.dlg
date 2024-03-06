@@ -20,11 +20,4 @@ static_text=\
         //0"	- example programs for various operating systems"\
         //1"	- 各OS用のサンプルプログラム"\
         //-1
-static_text=\
-        //0"Run-time Startup Source Code"\
-        //1"ランタイム・スタートアップ・ソースコード"\
-        //-1
-static_text=\
-        //0"	- startup code for the run-time library"\
-        //1"	- ランタイム・ライブラリ用のスタートアップ・コード"\
-        //-1
+

@@ -51,7 +51,6 @@ autoset=whtml_helpfiles=IsWin98 IsWin2000 IsWin64 | |
 autoset=whelp_helpfiles=doshost lnxhost lnx64host | |
 autoset=os2_helpfiles=os2host
 autoset=pdf_helpfiles=false
-autoset=rtsource=false
 autoset=3r=true
 autoset=3s=true
 autoset=cplusplus=true

@@ -12,10 +12,6 @@ check_box=samples,,\
         //0"Sample &programs"\
         //1"サンプル・プログラム (&p)"\
         //-1
-check_box=rtsource,,\
-        //0"&Run-time startup source code"\
-        //1"ランタイム・スタートアップ・ソースコード (&R)"\
-        //-1
 static_text=
 other_button=\
         //0"&Helpfiles..."\
