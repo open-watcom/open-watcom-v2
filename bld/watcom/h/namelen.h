@@ -25,35 +25,18 @@
 *
 *  ========================================================================
 *
-* Description:  COFF import library symbols definitions.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
 
-#ifndef COFFIMPC_H_INCLUDED
-#define COFFIMPC_H_INCLUDED
+#ifndef NAMELEN_H_INCLUDED
+#define NAMELEN_H_INCLUDED
 
-#include "namelen.h"
-
-
-#define IMPLIB_STRS \
-    IMPLIB_STR( str_coff_idata2,                 ".idata$2" ) \
-    IMPLIB_STR( str_coff_idata3,                 ".idata$3" ) \
-    IMPLIB_STR( str_coff_idata4,                 ".idata$4" ) \
-    IMPLIB_STR( str_coff_idata5,                 ".idata$5" ) \
-    IMPLIB_STR( str_coff_idata6,                 ".idata$6" ) \
-    IMPLIB_STR( str_coff_text,                   ".text" ) \
-    IMPLIB_STR( str_coff_pdata,                  ".pdata" ) \
-    IMPLIB_STR( str_coff_reldata,                ".reldata" ) \
-    IMPLIB_STR( str_coff_toc,                    ".toc" ) \
-    IMPLIB_STR( str_coff_ppc_prefix,             ".." ) \
-    IMPLIB_STR( str_coff_imp_prefix,             "__imp_" ) \
-    IMPLIB_STR( str_coff_null_thunk_data,        "_NULL_THUNK_DATA" ) \
-    IMPLIB_STR( str_coff_import_descriptor,      "__IMPORT_DESCRIPTOR_" ) \
-    IMPLIB_STR( str_coff_null_import_descriptor, "__NULL_IMPORT_DESCRIPTOR" )
-
-#define IMPLIB_STR(s,t) extern name_len s;
-IMPLIB_STRS
-#undef IMPLIB_STR
+typedef struct name_len {
+    size_t      len;
+    const char  *name;
+} name_len;
 
 #endif
