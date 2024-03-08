@@ -76,7 +76,7 @@ static void FiniSymFile( sym_file *sfile )
 {
     sym_entry           *sym;
     sym_entry           *next_sym;
-    elf_import_sym      *temp;
+    elf_import_sym      *elfimp;
 
     for( sym = sfile->first; sym != NULL; sym = next_sym ) {
         next_sym = sym->next;
@@ -89,11 +89,11 @@ static void FiniSymFile( sym_file *sfile )
         switch( sfile->import->type ) {
         case ELF:
         case ELFRENAMED:
-            for( temp = sfile->import->u.elf.symlist; temp != NULL;
-                         temp = sfile->import->u.elf.symlist ) {
-                sfile->import->u.elf.symlist = temp->next;
-                MemFreeGlobal( temp->name );
-                MemFreeGlobal( temp );
+            for( elfimp = sfile->import->u.elf.symlist; elfimp != NULL;
+                         elfimp = sfile->import->u.elf.symlist ) {
+                sfile->import->u.elf.symlist = elfimp->next;
+                MemFreeGlobal( elfimp->name );
+                MemFreeGlobal( elfimp );
             }
             MemFreeGlobal( sfile->import->DLLName );
             break;
@@ -1015,8 +1015,8 @@ void ElfMKImport( arch_header *arch, importType type, long export_size,
                   Elf32_Sym *sym_table, processor_type processor )
 {
     int                 i;
-    elf_import_sym      **temp;
-    elf_import_sym      *imp_sym;
+    elf_import_sym      **pelfimp;
+    elf_import_sym      *elfimp;
 
     if( Options.coff_found ) {
         FatalError( ERR_MIXED_OBJ, ctext_WL_FTYPE_ELF, ctext_WL_FTYPE_COFF );
@@ -1030,25 +1030,25 @@ void ElfMKImport( arch_header *arch, importType type, long export_size,
     CurrFile->import->type = type;
     CurrFile->import->DLLName = DupStrGlobal( DLLname );
     CurrFile->import->u.elf.numsyms = 0;
-    temp = &(CurrFile->import->u.elf.symlist);
+    pelfimp = &(CurrFile->import->u.elf.symlist);
 
     for( i = 0; i < export_size; i++ ) {
         if( export_table[i].exp_symbol ) {
-            imp_sym = MemAllocGlobal( sizeof( elf_import_sym ) );
-            imp_sym->name = DupStrGlobal( strings + sym_table[export_table[i].exp_symbol].st_name );
-            imp_sym->len = strlen( imp_sym->name );
-            imp_sym->ordinal = export_table[i].exp_ordinal;
+            elfimp = MemAllocGlobal( sizeof( elf_import_sym ) );
+            elfimp->name = DupStrGlobal( strings + sym_table[export_table[i].exp_symbol].st_name );
+            elfimp->len = strlen( elfimp->name );
+            elfimp->ordinal = export_table[i].exp_ordinal;
             if( type == ELF ) {
-                AddSym( imp_sym->name, SYM_STRONG, ELF_IMPORT_SYM_INFO );
+                AddSym( elfimp->name, SYM_STRONG, ELF_IMPORT_SYM_INFO );
             }
 
             CurrFile->import->u.elf.numsyms ++;
 
-            *temp = imp_sym;
-            temp = &(imp_sym->next);
+            *pelfimp = elfimp;
+            pelfimp = &(elfimp->next);
         }
     }
-    *temp = NULL;
+    *pelfimp = NULL;
     CurrFile->import->processor = processor;
     CurrFile->arch.size = ElfImportSize( CurrFile->import );
 }

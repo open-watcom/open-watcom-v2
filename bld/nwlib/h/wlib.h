@@ -41,6 +41,7 @@
 #include "orl.h"
 #include "lib.h"
 #include "demangle.h"
+#include "namelen.h"
 
 #include "wlibio.h"
 #include "types.h"

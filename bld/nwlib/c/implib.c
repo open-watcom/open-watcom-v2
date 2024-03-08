@@ -766,22 +766,22 @@ void ProcessImportWlib( const char *name )
     MemFree( namecopy );
 }
 
-size_t ElfImportSize( import_sym *import )
+size_t ElfImportSize( import_sym *impsym )
 {
     size_t          len;
-    elf_import_sym  *temp;
+    elf_import_sym  *elfimp;
 
-    len = ELFBASEIMPORTSIZE + strlen( import->DLLName ) + 1;
-    switch( import->type ) {
+    len = ELFBASEIMPORTSIZE + strlen( impsym->DLLName ) + 1;
+    switch( impsym->type ) {
     case ELF:
-        len += import->u.elf.numsyms * 0x21;
-        for( temp = import->u.elf.symlist; temp != NULL; temp = temp->next ) {
-            len += temp->len;
+        len += impsym->u.elf.numsyms * 0x21;
+        for( elfimp = impsym->u.elf.symlist; elfimp != NULL; elfimp = elfimp->next ) {
+            len += elfimp->len;
         }
         len = __ROUND_UP_SIZE_EVEN( len );
         break;
     case ELFRENAMED:
-        len += 0x21 + 1 + import->u.elf.symlist->len + import->u.elf.symlist->next->len;
+        len += 0x21 + 1 + impsym->u.elf.symlist->len + impsym->u.elf.symlist->next->len;
         len = __ROUND_UP_SIZE_EVEN( len );
         break;
     default:
@@ -790,7 +790,7 @@ size_t ElfImportSize( import_sym *import )
     return( len );
 }
 
-size_t CoffImportSize( import_sym *import )
+size_t CoffImportSize( import_sym *impsym )
 {
     size_t  dll_len;
     size_t  mod_len;
@@ -799,13 +799,13 @@ size_t CoffImportSize( import_sym *import )
     size_t  exp_len;
     size_t  opt_hdr_len;
 
-    dll_len = strlen( import->DLLName );
-    mod_len = strlen( MakeFName( import->DLLName ) );
+    dll_len = strlen( impsym->DLLName );
+    mod_len = strlen( MakeFName( impsym->DLLName ) );
 
-    switch( import->type ) {
+    switch( impsym->type ) {
     case IMPORT_DESCRIPTOR:
         opt_hdr_len = 0;
-        switch( import->processor ) {
+        switch( impsym->processor ) {
         case WL_PROC_X64:
             if( Options.coff_import_long ) {
                 opt_hdr_len = sizeof( coff_opt_hdr64 );
@@ -847,13 +847,13 @@ size_t CoffImportSize( import_sym *import )
             + 1 + mod_len + str_coff_null_thunk_data.len + 1 );     // string table
     case ORDINAL:
     case NAMED:
-        sym_len = strlen( import->u.omf_coff.symName );
+        sym_len = strlen( impsym->u.omf_coff.symName );
         if( Options.coff_import_long ) {
-            if( import->type == NAMED ) {
-                if( import->u.omf_coff.exportedName == NULL ) {
+            if( impsym->type == NAMED ) {
+                if( impsym->u.omf_coff.exportedName == NULL ) {
                     exp_len = sym_len;
                 } else {
-                    exp_len = strlen( import->u.omf_coff.exportedName );
+                    exp_len = strlen( impsym->u.omf_coff.exportedName );
                 }
                 ret = COFF_FILE_HEADER_SIZE
                     + 4 * COFF_SECTION_HEADER_SIZE
@@ -871,7 +871,7 @@ size_t CoffImportSize( import_sym *import )
                     + 4                                             // string table
                     + str_coff_import_descriptor.len + mod_len + 1; // string table
             }
-            switch( import->processor ) {
+            switch( impsym->processor ) {
             case WL_PROC_AXP:
                 if( sym_len > 8 ) {
                     /*
@@ -955,28 +955,28 @@ static short    ElfProcessors[] = {
 
 void ElfWriteImport( libfile io, sym_file *sfile )
 {
-    elf_import_sym  *temp;
-    import_sym      *import;
+    elf_import_sym  *elfimp;
+    import_sym      *impsym;
     unsigned long   strtabsize;
     unsigned long   numsyms;
     bool            padding;
     unsigned long   offset;
     unsigned long   more;
 
-    import = sfile->import;
-    strtabsize = ELFBASESTRTABSIZE + strlen( import->DLLName ) + 1;
-    for( temp = import->u.elf.symlist; temp != NULL; temp = temp->next ) {
-        strtabsize += temp->len + 1;
+    impsym = sfile->import;
+    strtabsize = ELFBASESTRTABSIZE + strlen( impsym->DLLName ) + 1;
+    for( elfimp = impsym->u.elf.symlist; elfimp != NULL; elfimp = elfimp->next ) {
+        strtabsize += elfimp->len + 1;
     }
     padding = ( (strtabsize & 1) != 0 );
     strtabsize = __ROUND_UP_SIZE_EVEN( strtabsize );
-    fillInU16( ElfProcessors[import->processor], &(ElfBase[0x12]) );
+    fillInU16( ElfProcessors[impsym->processor], &(ElfBase[0x12]) );
     fillInU32( strtabsize, &(ElfBase[0x74]) );
     fillInU32( strtabsize + 0x100, &(ElfBase[0x98]) );
     fillInU32( strtabsize + 0x118, &(ElfBase[0xc0]) );
-    switch( import->type ) {
+    switch( impsym->type ) {
     case ELF:
-        numsyms = import->u.elf.numsyms;
+        numsyms = impsym->u.elf.numsyms;
         break;
     case ELFRENAMED:
         numsyms = 1;
@@ -989,9 +989,9 @@ void ElfWriteImport( libfile io, sym_file *sfile )
     fillInU32( strtabsize + 0x128 + 0x10 * numsyms, &(ElfBase[0xe8]) );
     fillInU32( 0x10 * numsyms, &(ElfBase[0xec]) );
     LibWrite( io, ElfBase, ElfBase_SIZE );
-    LibWrite( io, import->DLLName, strlen( import->DLLName ) + 1);
-    for( temp = import->u.elf.symlist; temp != NULL; temp = temp->next ) {
-        LibWrite( io, temp->name, temp->len + 1 );
+    LibWrite( io, impsym->DLLName, strlen( impsym->DLLName ) + 1);
+    for( elfimp = impsym->u.elf.symlist; elfimp != NULL; elfimp = elfimp->next ) {
+        LibWrite( io, elfimp->name, elfimp->len + 1 );
     }
     if( padding ) {
         LibWrite( io, AR_FILE_PADDING_STRING, AR_FILE_PADDING_STRING_LEN );
@@ -999,43 +999,43 @@ void ElfWriteImport( libfile io, sym_file *sfile )
     LibWrite( io, ElfOSInfo, ElfOSInfo_SIZE );
 
     offset = 0;
-    strtabsize = ELFBASESTRTABSIZE + strlen( import->DLLName ) + 1;
-    for( temp = import->u.elf.symlist; temp != NULL; temp = temp->next ) {
+    strtabsize = ELFBASESTRTABSIZE + strlen( impsym->DLLName ) + 1;
+    for( elfimp = impsym->u.elf.symlist; elfimp != NULL; elfimp = elfimp->next ) {
         LibWrite( io, &strtabsize, 4 );
         LibWrite( io, &offset, 4 );
         more = 0x10;
         LibWrite( io, &more, 4 );
         more = 0x00040010;
-        if( temp->ordinal == -1 ) {
+        if( elfimp->ordinal == -1 ) {
             more |= 0x5;
         }
         LibWrite( io, &more, 4 );
 
         offset += 0x10;
-        strtabsize += temp->len + 1;
+        strtabsize += elfimp->len + 1;
         if( offset >= (numsyms * 0x10) ) {
             break;
         }
     }
     offset = 0;
-    strtabsize = ELFBASESTRTABSIZE + strlen( import->DLLName ) + 1;
-    switch( import->type ) {
+    strtabsize = ELFBASESTRTABSIZE + strlen( impsym->DLLName ) + 1;
+    switch( impsym->type ) {
     case ELF:
-        for( temp = import->u.elf.symlist; temp != NULL; temp = temp->next ) {
-            LibWrite( io, &temp->ordinal, 4 );
+        for( elfimp = impsym->u.elf.symlist; elfimp != NULL; elfimp = elfimp->next ) {
+            LibWrite( io, &elfimp->ordinal, 4 );
             LibWrite( io, &strtabsize, 4 );
             more = 0x01000022;
             LibWrite( io, &more, 4 );
             more = 0;
             LibWrite( io, &more, 4 );
-            strtabsize += temp->len + 1;
+            strtabsize += elfimp->len + 1;
         }
         break;
     case ELFRENAMED:
-        temp = import->u.elf.symlist;
-        strtabsize += temp->len + 1;
-        temp = temp->next;
-        LibWrite( io, &(temp->ordinal), 4 );
+        elfimp = impsym->u.elf.symlist;
+        strtabsize += elfimp->len + 1;
+        elfimp = elfimp->next;
+        LibWrite( io, &(elfimp->ordinal), 4 );
         LibWrite( io, &strtabsize, 4 ) ;
         more = 0x01000022;
         LibWrite( io, &more, 4 );
