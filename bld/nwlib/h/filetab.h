@@ -71,7 +71,7 @@ struct import_sym_struct {
             long        ordinal;
             char        *symName;
             char        *exportedName;
-        } sym;
+        } omf_coff;
         struct {
             elf_import_sym  *symlist;
             long            numsyms;

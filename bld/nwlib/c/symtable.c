@@ -99,8 +99,8 @@ static void FiniSymFile( sym_file *sfile )
             break;
         default:
             MemFreeGlobal( sfile->import->DLLName );
-            MemFreeGlobal( sfile->import->u.sym.symName );
-            MemFreeGlobal( sfile->import->u.sym.exportedName );
+            MemFreeGlobal( sfile->import->u.omf_coff.symName );
+            MemFreeGlobal( sfile->import->u.omf_coff.exportedName );
             break;
         }
         MemFreeGlobal( sfile->import );
@@ -972,9 +972,9 @@ void OmfMKImport( arch_header *arch, importType type,
     CurrFile = NewSymFile( arch, WL_FTYPE_OMF );
     CurrFile->import = MemAllocGlobal( sizeof( import_sym ) );
     CurrFile->import->DLLName = DupStrGlobal( DLLname );
-    CurrFile->import->u.sym.ordinal = ordinal;
-    CurrFile->import->u.sym.symName = DupStrGlobal( symName );
-    CurrFile->import->u.sym.exportedName = DupStrGlobal( exportedName );
+    CurrFile->import->u.omf_coff.ordinal = ordinal;
+    CurrFile->import->u.omf_coff.symName = DupStrGlobal( symName );
+    CurrFile->import->u.omf_coff.exportedName = DupStrGlobal( exportedName );
     CurrFile->import->type = type;
     CurrFile->import->processor = processor;
     CurrFile->arch.size = OmfImportSize( CurrFile->import );
@@ -992,10 +992,10 @@ void CoffMKImport( arch_header *arch, importType type,
     CurrFile = NewSymFile( arch, WL_FTYPE_COFF );
     CurrFile->import = MemAllocGlobal( sizeof( import_sym ) );
     CurrFile->import->type = type;
-    CurrFile->import->u.sym.ordinal = ordinal;
+    CurrFile->import->u.omf_coff.ordinal = ordinal;
     CurrFile->import->DLLName = DupStrGlobal( DLLname );
-    CurrFile->import->u.sym.symName = DupStrGlobal( symName );
-    CurrFile->import->u.sym.exportedName = DupStrGlobal( exportedName );
+    CurrFile->import->u.omf_coff.symName = DupStrGlobal( symName );
+    CurrFile->import->u.omf_coff.exportedName = DupStrGlobal( exportedName );
     CurrFile->import->processor = processor;
     CurrFile->arch.size = CoffImportSize( CurrFile->import );
     switch( type ) {

@@ -847,13 +847,13 @@ size_t CoffImportSize( import_sym *import )
             + 1 + mod_len + str_coff_null_thunk_data.len + 1 );     // string table
     case ORDINAL:
     case NAMED:
-        sym_len = strlen( import->u.sym.symName );
+        sym_len = strlen( import->u.omf_coff.symName );
         if( Options.coff_import_long ) {
             if( import->type == NAMED ) {
-                if( import->u.sym.exportedName == NULL ) {
+                if( import->u.omf_coff.exportedName == NULL ) {
                     exp_len = sym_len;
                 } else {
-                    exp_len = strlen( import->u.sym.exportedName );
+                    exp_len = strlen( import->u.omf_coff.exportedName );
                 }
                 ret = COFF_FILE_HEADER_SIZE
                     + 4 * COFF_SECTION_HEADER_SIZE

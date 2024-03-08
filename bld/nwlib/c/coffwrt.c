@@ -522,7 +522,7 @@ static void WriteShortImportEntry( libfile io, sym_file *sfile, name_len *symNam
             obj_hdr.name_type = COFF_IMPORT_OBJECT_NAME;
         }
     } else {
-        obj_hdr.oh.ordinal = sfile->import->u.sym.ordinal;
+        obj_hdr.oh.ordinal = sfile->import->u.omf_coff.ordinal;
         obj_hdr.name_type = COFF_IMPORT_OBJECT_ORDINAL;
     }
     obj_hdr.size_of_data = symName->len + 1 + dllName->len + 1;
@@ -578,7 +578,7 @@ static void WriteCoffImportTablesOrdinal( libfile io, sym_file *sfile )
 
     switch( sfile->import->processor ) {
     case WL_PROC_X64:
-        import_table_entry.u._64[0] = sfile->import->u.sym.ordinal | COFF_IMAGE_ORDINAL_FLAG64;
+        import_table_entry.u._64[0] = sfile->import->u.omf_coff.ordinal | COFF_IMAGE_ORDINAL_FLAG64;
         /*
          * write data section no. 2(4)
          */
@@ -595,7 +595,7 @@ static void WriteCoffImportTablesOrdinal( libfile io, sym_file *sfile )
     default:
         break;
     }
-    import_table_entry.u._32[0] = sfile->import->u.sym.ordinal | COFF_IMAGE_ORDINAL_FLAG32;
+    import_table_entry.u._32[0] = sfile->import->u.omf_coff.ordinal | COFF_IMAGE_ORDINAL_FLAG32;
     /*
      * write data section no. 2(4)
      */
@@ -796,7 +796,7 @@ static void WriteLongImportEntry( libfile io, sym_file *sfile, coff_lib_file *c_
         /*
          * write data section no. 4(6)
          */
-        ordinal = sfile->import->u.sym.ordinal;
+        ordinal = sfile->import->u.omf_coff.ordinal;
         LibWrite( io, &ordinal, sizeof( ordinal ) );
         WriteStringPadding( io, exportedName->name, exportedName->len + 1 );
     }
@@ -831,12 +831,12 @@ void CoffWriteImport( libfile io, sym_file *sfile, bool long_format )
         modName.name = strcpy( p, modName.name );
     }
     symName.len = 0;
-    symName.name = sfile->import->u.sym.symName;
+    symName.name = sfile->import->u.omf_coff.symName;
     if( symName.name != NULL ) {
         symName.len = strlen( symName.name );
     }
     exportedName.len = 0;
-    exportedName.name = sfile->import->u.sym.exportedName;
+    exportedName.name = sfile->import->u.omf_coff.exportedName;
     if( exportedName.name == NULL ) {
         exportedName.name = symName.name; // use this instead
     }
