@@ -819,12 +819,12 @@ void CoffWriteImport( libfile io, sym_file *sfile, bool long_format )
      * up to the switch statement.
      */
     dllName.len = 0;
-    dllName.name = sfile->import->DLLName;
+    dllName.name = sfile->import->dllName;
     if( dllName.name != NULL ) {
         dllName.len = strlen( dllName.name );
     }
     modName.len = 0;
-    modName.name = MakeFName( sfile->import->DLLName );
+    modName.name = MakeFName( sfile->import->dllName );
     if( modName.name != NULL ) {
         modName.len = strlen( modName.name );
         p = alloca( modName.len + 1 );

@@ -434,7 +434,7 @@ static size_t getImportName( char *dst, const char *src, coff_import_object_name
         *p++ = *src++;
     }
     *p = '\0';
-    return( p - dst ); 
+    return( p - dst );
 }
 
 static void AddDataImportTablesNamed( coff_file_handle coff_file_hnd, import_sym *impsym, unsigned symb_hints )
@@ -462,7 +462,7 @@ static void AddDataImportTablesNamed( coff_file_handle coff_file_hnd, import_sym
         break;
     default:
         /*
-         * TODO: should be handled, now no reloc
+         * TODO: should be handled somehow, now no reloc
          */
         type = 0;
         break;

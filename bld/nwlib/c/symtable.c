@@ -95,14 +95,13 @@ static void FiniSymFile( sym_file *sfile )
                 MemFreeGlobal( (void *)elfimp->sym.name );
                 MemFreeGlobal( elfimp );
             }
-            MemFreeGlobal( sfile->import->DLLName );
             break;
         default:
-            MemFreeGlobal( sfile->import->DLLName );
             MemFreeGlobal( sfile->import->u.omf_coff.symName );
             MemFreeGlobal( sfile->import->u.omf_coff.exportedName );
             break;
         }
+        MemFreeGlobal( sfile->import->dllName );
         MemFreeGlobal( sfile->import );
     }
     MemFreeGlobal( sfile );
@@ -164,14 +163,13 @@ void FiniFileTab( void )
 }
 
 
-static int Hash( const char *string, unsigned *plen )
-/***************************************************/
+static int Hash( const char *string )
+/***********************************/
 {
     unsigned long       g;
     unsigned long       h;
 
     h = 0;
-    *plen = 0;
     while( *string != 0 ) {
         h = ( h << 4 ) + *string;
         if( (g = (h & 0xf0000000)) != 0 ) {
@@ -179,7 +177,6 @@ static int Hash( const char *string, unsigned *plen )
             h = h ^ g;
         }
         ++string;
-        ++*plen;
     }
     return( h % HASH_SIZE );
 }
@@ -191,10 +188,9 @@ static void RemoveFromHashTable( sym_entry *sym )
     sym_entry       *hash_sym;
     sym_entry       *hash_prev;
     int             hval;
-    unsigned        len;
 
     hash_prev = NULL;
-    hval = Hash( sym->name, &len );
+    hval = Hash( sym->name );
     for( hash_sym = HashTable[hval]; hash_sym != NULL; hash_sym = hash_sym->hash_next ) {
         if( hash_sym == sym ) {
             if( hash_prev == NULL ) {
@@ -783,7 +779,8 @@ void AddSym( const char *name, symbol_strength strength, unsigned char info )
     int         hval;
     unsigned    namelen;
 
-    hval = Hash( name, &namelen );
+    namelen = strlen( name );
+    hval = Hash( name );
     for( hash_sym = HashTable[hval]; hash_sym != NULL; hash_sym = hash_sym->hash_next ) {
         if( hash_sym->len != namelen )
             continue;
@@ -829,7 +826,6 @@ void DumpFileTable( void )
     sym_file    *sfile;
     sym_entry   *entry;
     sym_entry   *hash_sym;
-    unsigned    len;
     int         hval;
     long        files    = 0L;
     long        symbols  = 0L;
@@ -844,8 +840,8 @@ void DumpFileTable( void )
         for( entry = sfile->first; entry != NULL; entry = entry->next ) {
             ++symbols;
 
-            hval = Hash( entry->name, &len );
-            printf( "\t\"%s\" (%d, %u, \"%s\")", entry->name, hval, len,
+            hval = Hash( entry->name );
+            printf( "\t\"%s\" (%d, %u, \"%s\")", entry->name, hval, (unsigned)( entry->len ),
                     (HashTable[hval] ? HashTable[hval]->name : "(NULL)") );
 
             for( hash_sym = entry->hash_next; hash_sym != NULL; hash_sym = hash_sym->hash_next ) {
@@ -962,7 +958,7 @@ void AddObjectSymbols( libfile io, long offset, arch_header *arch )
 }
 
 void OmfMKImport( arch_header *arch, importType type,
-                  long ordinal, const char *DLLname, const char *symName,
+                  long ordinal, const char *dllName, const char *symName,
                   const char *exportedName, processor_type processor )
 {
     if( Options.elf_found ) {
@@ -971,7 +967,7 @@ void OmfMKImport( arch_header *arch, importType type,
     Options.omf_found = true;
     CurrFile = NewSymFile( arch, WL_FTYPE_OMF );
     CurrFile->import = MemAllocGlobal( sizeof( import_sym ) );
-    CurrFile->import->DLLName = DupStrGlobal( DLLname );
+    CurrFile->import->dllName = DupStrGlobal( dllName );
     CurrFile->import->u.omf_coff.ordinal = ordinal;
     CurrFile->import->u.omf_coff.symName = DupStrGlobal( symName );
     CurrFile->import->u.omf_coff.exportedName = DupStrGlobal( exportedName );
@@ -982,7 +978,7 @@ void OmfMKImport( arch_header *arch, importType type,
 }
 
 void CoffMKImport( arch_header *arch, importType type,
-                   long ordinal, const char *DLLname, const char *symName,
+                   long ordinal, const char *dllName, const char *symName,
                    const char *exportedName, processor_type processor )
 {
     if( Options.elf_found ) {
@@ -993,7 +989,7 @@ void CoffMKImport( arch_header *arch, importType type,
     CurrFile->import = MemAllocGlobal( sizeof( import_sym ) );
     CurrFile->import->type = type;
     CurrFile->import->u.omf_coff.ordinal = ordinal;
-    CurrFile->import->DLLName = DupStrGlobal( DLLname );
+    CurrFile->import->dllName = DupStrGlobal( dllName );
     CurrFile->import->u.omf_coff.symName = DupStrGlobal( symName );
     CurrFile->import->u.omf_coff.exportedName = DupStrGlobal( exportedName );
     CurrFile->import->processor = processor;
@@ -1011,7 +1007,7 @@ void CoffMKImport( arch_header *arch, importType type,
 }
 
 void ElfMKImport( arch_header *arch, importType type, long export_size,
-                  const char *DLLname, const char *strings, Elf32_Export *export_table,
+                  const char *dllName, const char *strings, Elf32_Export *export_table,
                   Elf32_Sym *sym_table, processor_type processor )
 {
     int                 i;
@@ -1028,7 +1024,7 @@ void ElfMKImport( arch_header *arch, importType type, long export_size,
     CurrFile = NewSymFile( arch, WL_FTYPE_ELF );
     CurrFile->import = MemAllocGlobal( sizeof( import_sym ) );
     CurrFile->import->type = type;
-    CurrFile->import->DLLName = DupStrGlobal( DLLname );
+    CurrFile->import->dllName = DupStrGlobal( dllName );
     CurrFile->import->u.elf.numsyms = 0;
     pelfimp = &(CurrFile->import->u.elf.symlist);
 

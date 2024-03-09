@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2024-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -585,7 +585,7 @@ size_t OmfImportSize( import_sym *import )
     size_t      dll_len;
     size_t      sym_len;
 
-    dll_len = strlen( import->DLLName ) + 1;
+    dll_len = strlen( import->dllName ) + 1;
     sym_len = strlen( import->u.omf_coff.symName ) + 1;
     // THEADR
 #ifdef IMP_MODULENAME_DLL
@@ -618,12 +618,12 @@ void OmfWriteImport( sym_file *sfile )
     unsigned_16 len;
     unsigned_8  *contents;
 
-    file_len = (unsigned_8)strlen( sfile->import->DLLName );
+    file_len = (unsigned_8)strlen( sfile->import->dllName );
     sym_len = (unsigned_8)strlen( sfile->import->u.omf_coff.symName );
 #ifdef IMP_MODULENAME_DLL
     contents = SetOmfRecBuffer( CMD_THEADR, 1 + file_len + 1 );
     *contents++ = file_len;
-    memcpy( contents, sfile->import->DLLName, file_len );
+    memcpy( contents, sfile->import->dllName, file_len );
 #else
     contents = SetOmfRecBuffer( CMD_THEADR, 1 + sym_len + 1 );
     *contents++ = sym_len;
@@ -649,7 +649,7 @@ void OmfWriteImport( sym_file *sfile )
     memcpy( contents, sfile->import->u.omf_coff.symName, sym_len );
     contents += sym_len;
     *contents++ = file_len;
-    memcpy( contents, sfile->import->DLLName, file_len );
+    memcpy( contents, sfile->import->dllName, file_len );
     contents += file_len;
     if( sfile->import->type == ORDINAL ) {
         *(unsigned_16 *)contents = (unsigned_16)sfile->import->u.omf_coff.ordinal;

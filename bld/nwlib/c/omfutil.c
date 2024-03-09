@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2024-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -182,7 +182,7 @@ static bool HashOmfSymbols( OmfLibBlock *lib_block, unsigned num_blocks, sym_fil
             fname = MakeFName( sfile->full_name );
         } else {
 #ifdef IMP_MODULENAME_DLL
-            fname = sfile->import->DLLName;
+            fname = sfile->import->dllName;
 #else
             fname = sfile->import->u.omf_coff.symName;
 #endif
@@ -260,7 +260,7 @@ void WriteOmfFile( sym_file *sfile )
         // this sometime. maybe store page_size as a log
     } else {
 #ifdef IMP_MODULENAME_DLL
-        fname = sfile->import->DLLName;
+        fname = sfile->import->dllName;
 #else
         fname = sfile->import->u.omf_coff.symName;
 #endif
