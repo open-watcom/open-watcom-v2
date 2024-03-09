@@ -209,7 +209,7 @@ static bool elfAddImport( libfile io, long header_offset, arch_header *arch )
 static void importOs2Table( libfile io, arch_header *arch, const char *dll_name, bool coff_obj, importType type, unsigned length )
 {
     unsigned_16 ordinal;
-    char        symbol[256];
+    char        symbol[256];    /* maximum name len is 255 characters */
     unsigned    bytes_read;
     unsigned    total_read;
 
@@ -244,8 +244,8 @@ static void importOs2Table( libfile io, arch_header *arch, const char *dll_name,
 static void os2AddImport( libfile io, long header_offset, arch_header *arch )
 {
     os2_exe_header  os2_header;
-    char            dll_name[_MAX_FNAME + _MAX_EXT + 1];
-    char            junk[256];
+    char            dll_name[256];  /* maximum name len is 255 characters */
+    char            junk[256];      /* maximum name len is 255 characters */
     importType      type;
     unsigned        bytes_read;
 
@@ -265,7 +265,7 @@ static void os2AddImport( libfile io, long header_offset, arch_header *arch )
         bytes_read = getLenSymbol( io, junk );
         getU16( io );
         importOs2Table( io, arch, dll_name, false, type,
-            os2_header.nonres_size - bytes_read - 1 - sizeof( unsigned_16 ) );
+            os2_header.nonres_size - ( bytes_read + 1 + sizeof( unsigned_16 ) ) );
     }
 }
 
@@ -301,7 +301,7 @@ static void coffAddImportOverhead( arch_header *arch, const char *dllName, proce
 static void os2FlatAddImport( libfile io, long header_offset, arch_header *arch )
 {
     os2_flat_header os2_header;
-    char            dll_name[256];
+    char            dll_name[256];  /* maximum name len is 255 characters */
     bool            coff_obj;
     importType      type;
 
@@ -326,8 +326,8 @@ static void os2FlatAddImport( libfile io, long header_offset, arch_header *arch 
 static bool nlmAddImport( libfile io, long header_offset, arch_header *arch )
 {
     nlm_header  nlm;
-    char        dll_name[_MAX_FNAME + _MAX_EXT + 1];
-    char        symbol[256];
+    char        dll_name[256];  /* maximum name len is 255 characters */
+    char        symbol[256];    /* maximum name len is 255 characters */
 
     LibSeek( io, header_offset, SEEK_SET );
     LibRead( io, &nlm, sizeof( nlm ) );

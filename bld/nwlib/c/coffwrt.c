@@ -134,7 +134,7 @@ static signed_16 AddCoffSection( coff_lib_file *c_file, name_len *secname, unsig
     return( c_file->header.num_sections );
 }
 
-static unsigned AddCoffSymbol( coff_lib_file *c_file, signed_16 sec_num, name_len *symname,
+static unsigned AddCoffSymbol( coff_lib_file *c_file, signed_16 sec_num, name_len *symName,
     unsigned_32 value, unsigned_16 type, unsigned_8 class, unsigned_8 num_aux )
 /*****************************************************************************************
  * input sec_num is 1-based
@@ -145,12 +145,12 @@ static unsigned AddCoffSymbol( coff_lib_file *c_file, signed_16 sec_num, name_le
     coff_symbol _WCUNALIGNED    *sym;
 
     sym = c_file->symbols + c_file->header.num_symbols;
-    if( symname->len > COFF_SYM_NAME_LEN ) {
+    if( symName->len > COFF_SYM_NAME_LEN ) {
         sym->name.non_name.zeros = 0;
         sym->name.non_name.offset = c_file->string_table_size + 4;
-        AddCoffString( c_file, symname );
+        AddCoffString( c_file, symName );
     } else {
-        strncpy( sym->name.name_string, symname->name, COFF_SYM_NAME_LEN );
+        strncpy( sym->name.name_string, symName->name, COFF_SYM_NAME_LEN );
     }
     sym->value = value;
     sym->sec_num = sec_num; /* 1-based, 0 is special value */
@@ -171,7 +171,7 @@ static unsigned AddCoffSymSec( coff_lib_file *c_file, signed_16 sec_num, unsigne
     char                            name[COFF_SEC_NAME_LEN + 1];
     coff_section_header             *section;
     unsigned                        symb_idx;
-    name_len                        symname;
+    name_len                        symName;
 
     /*
      * get section name
@@ -180,12 +180,12 @@ static unsigned AddCoffSymSec( coff_lib_file *c_file, signed_16 sec_num, unsigne
     section = c_file->sections + sec_num - 1;
     strncpy( name, section->name, COFF_SEC_NAME_LEN );
     name[COFF_SEC_NAME_LEN] = '\0';
-    symname.name = name;
-    symname.len = strlen( name );
+    symName.name = name;
+    symName.len = strlen( name );
     /*
      * add section symbol record
      */
-    symb_idx = AddCoffSymbol( c_file, sec_num, &symname, 0x0, COFF_IMAGE_SYM_TYPE_NULL, COFF_IMAGE_SYM_CLASS_STATIC, 1 );
+    symb_idx = AddCoffSymbol( c_file, sec_num, &symName, 0x0, COFF_IMAGE_SYM_TYPE_NULL, COFF_IMAGE_SYM_CLASS_STATIC, 1 );
     /*
      * add section auxiliary record
      */
@@ -324,25 +324,25 @@ static void WriteCoffOptHeader( libfile io, sym_file *sfile )
 
 static unsigned AddCoffSymbol2( coff_lib_file *c_file, signed_16 sec_num, name_len *n1, name_len *n2, unsigned_16 type )
 {
-    name_len    symname;
+    name_len    symName;
     char        *p;
 
-    symname.len = n1->len + n2->len;
-    symname.name = p = alloca( symname.len + 1 );
+    symName.len = n1->len + n2->len;
+    symName.name = p = alloca( symName.len + 1 );
     strcpy( strcpy( p, n1->name ) + n1->len, n2->name );
-    return( AddCoffSymbol( c_file, sec_num, &symname, 0x0, type, COFF_IMAGE_SYM_CLASS_EXTERNAL, 0 ) );
+    return( AddCoffSymbol( c_file, sec_num, &symName, 0x0, type, COFF_IMAGE_SYM_CLASS_EXTERNAL, 0 ) );
 }
 
 static unsigned AddCoffSymbolNullThunkData( coff_lib_file *c_file, signed_16 sec_num, name_len *modName )
 {
-    name_len    symname;
+    name_len    symName;
     char        *p;
 
-    symname.len = 1 + modName->len + str_coff_null_thunk_data.len;
-    symname.name = p = alloca( symname.len + 1 );
+    symName.len = 1 + modName->len + str_coff_null_thunk_data.len;
+    symName.name = p = alloca( symName.len + 1 );
     p[0] = 0x7f;
     strcpy( strcpy( p + 1, modName->name ) + modName->len, str_coff_null_thunk_data.name );
-    return( AddCoffSymbol( c_file, sec_num, &symname, 0x0, COFF_IMAGE_SYM_TYPE_NULL, COFF_IMAGE_SYM_CLASS_EXTERNAL, 0 ) );
+    return( AddCoffSymbol( c_file, sec_num, &symName, 0x0, COFF_IMAGE_SYM_TYPE_NULL, COFF_IMAGE_SYM_CLASS_EXTERNAL, 0 ) );
 }
 
 static void WriteImportDescriptor( libfile io, sym_file *sfile, coff_lib_file *c_file, name_len *modName, name_len *dllName, bool long_format )
@@ -825,7 +825,7 @@ void CoffWriteImport( libfile io, sym_file *sfile, bool long_format )
     }
     modName.len = 0;
     modName.name = MakeFName( sfile->import->dllName );
-    if( modName.name != NULL ) {
+    if( *modName.name != '\0' ) {
         modName.len = strlen( modName.name );
         p = alloca( modName.len + 1 );
         modName.name = strcpy( p, modName.name );

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2024-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -172,25 +172,29 @@ static bool InsertOmfDict( OmfLibBlock *lib_block, unsigned num_blocks, const ch
 
 static bool HashOmfSymbols( OmfLibBlock *lib_block, unsigned num_blocks, sym_file *sfile )
 {
-    bool        ret = true;
+    bool        ret;
     sym_entry   *sym;
     unsigned    str_len;
-    char        *fname;
+    const char  *cp;
+    char        fname[256];     /* OMF maximum name len is 255 characters */
 
+    ret = true;
     for( ; sfile != NULL; sfile = sfile->next ) {
         if( sfile->import == NULL ) {
-            fname = MakeFName( sfile->full_name );
+            cp = MakeFName( sfile->full_name );
         } else {
 #ifdef IMP_MODULENAME_DLL
-            fname = sfile->import->dllName;
+            cp = sfile->import->dllName;
 #else
-            fname = sfile->import->u.omf_coff.symName;
+            cp = sfile->import->u.omf_coff.symName;
 #endif
         }
-        str_len = strlen( fname );
-        fname[str_len] ='!';
-        ret = InsertOmfDict( lib_block, num_blocks, fname, str_len + 1, sfile->u.new_offset_omf );
-        fname[str_len] = 0;
+        str_len = 0;
+        while( *cp != '\0' ) {
+            fname[str_len++] = *cp++;
+        }
+        fname[str_len++] = '!';
+        ret = InsertOmfDict( lib_block, num_blocks, fname, str_len, sfile->u.new_offset_omf );
         if( !ret ) {
             return( ret );
         }
