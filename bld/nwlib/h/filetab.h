@@ -56,9 +56,8 @@ typedef enum {
 } importType;
 
 struct elf_import_sym_struct {
-    char            *name;
+    name_len        sym;
     long            ordinal;
-    long            len; // To save some calculations
     elf_import_sym  *next;
 };
 

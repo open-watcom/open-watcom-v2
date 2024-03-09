@@ -92,7 +92,7 @@ static void FiniSymFile( sym_file *sfile )
             for( elfimp = sfile->import->u.elf.symlist; elfimp != NULL;
                          elfimp = sfile->import->u.elf.symlist ) {
                 sfile->import->u.elf.symlist = elfimp->next;
-                MemFreeGlobal( elfimp->name );
+                MemFreeGlobal( (void *)elfimp->sym.name );
                 MemFreeGlobal( elfimp );
             }
             MemFreeGlobal( sfile->import->DLLName );
@@ -1035,11 +1035,11 @@ void ElfMKImport( arch_header *arch, importType type, long export_size,
     for( i = 0; i < export_size; i++ ) {
         if( export_table[i].exp_symbol ) {
             elfimp = MemAllocGlobal( sizeof( elf_import_sym ) );
-            elfimp->name = DupStrGlobal( strings + sym_table[export_table[i].exp_symbol].st_name );
-            elfimp->len = strlen( elfimp->name );
+            elfimp->sym.name = DupStrGlobal( strings + sym_table[export_table[i].exp_symbol].st_name );
+            elfimp->sym.len = strlen( elfimp->sym.name );
             elfimp->ordinal = export_table[i].exp_ordinal;
             if( type == ELF ) {
-                AddSym( elfimp->name, SYM_STRONG, ELF_IMPORT_SYM_INFO );
+                AddSym( elfimp->sym.name, SYM_STRONG, ELF_IMPORT_SYM_INFO );
             }
 
             CurrFile->import->u.elf.numsyms ++;

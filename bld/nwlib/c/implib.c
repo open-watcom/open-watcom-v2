@@ -776,12 +776,12 @@ size_t ElfImportSize( import_sym *impsym )
     case ELF:
         len += impsym->u.elf.numsyms * 0x21;
         for( elfimp = impsym->u.elf.symlist; elfimp != NULL; elfimp = elfimp->next ) {
-            len += elfimp->len;
+            len += elfimp->sym.len;
         }
         len = __ROUND_UP_SIZE_EVEN( len );
         break;
     case ELFRENAMED:
-        len += 0x21 + 1 + impsym->u.elf.symlist->len + impsym->u.elf.symlist->next->len;
+        len += 0x21 + 1 + impsym->u.elf.symlist->sym.len + impsym->u.elf.symlist->next->sym.len;
         len = __ROUND_UP_SIZE_EVEN( len );
         break;
     default:
@@ -966,7 +966,7 @@ void ElfWriteImport( libfile io, sym_file *sfile )
     impsym = sfile->import;
     strtabsize = ELFBASESTRTABSIZE + strlen( impsym->DLLName ) + 1;
     for( elfimp = impsym->u.elf.symlist; elfimp != NULL; elfimp = elfimp->next ) {
-        strtabsize += elfimp->len + 1;
+        strtabsize += elfimp->sym.len + 1;
     }
     padding = ( (strtabsize & 1) != 0 );
     strtabsize = __ROUND_UP_SIZE_EVEN( strtabsize );
@@ -991,7 +991,7 @@ void ElfWriteImport( libfile io, sym_file *sfile )
     LibWrite( io, ElfBase, ElfBase_SIZE );
     LibWrite( io, impsym->DLLName, strlen( impsym->DLLName ) + 1);
     for( elfimp = impsym->u.elf.symlist; elfimp != NULL; elfimp = elfimp->next ) {
-        LibWrite( io, elfimp->name, elfimp->len + 1 );
+        LibWrite( io, elfimp->sym.name, elfimp->sym.len + 1 );
     }
     if( padding ) {
         LibWrite( io, AR_FILE_PADDING_STRING, AR_FILE_PADDING_STRING_LEN );
@@ -1012,7 +1012,7 @@ void ElfWriteImport( libfile io, sym_file *sfile )
         LibWrite( io, &more, 4 );
 
         offset += 0x10;
-        strtabsize += elfimp->len + 1;
+        strtabsize += elfimp->sym.len + 1;
         if( offset >= (numsyms * 0x10) ) {
             break;
         }
@@ -1028,12 +1028,12 @@ void ElfWriteImport( libfile io, sym_file *sfile )
             LibWrite( io, &more, 4 );
             more = 0;
             LibWrite( io, &more, 4 );
-            strtabsize += elfimp->len + 1;
+            strtabsize += elfimp->sym.len + 1;
         }
         break;
     case ELFRENAMED:
         elfimp = impsym->u.elf.symlist;
-        strtabsize += elfimp->len + 1;
+        strtabsize += elfimp->sym.len + 1;
         elfimp = elfimp->next;
         LibWrite( io, &(elfimp->ordinal), 4 );
         LibWrite( io, &strtabsize, 4 ) ;
