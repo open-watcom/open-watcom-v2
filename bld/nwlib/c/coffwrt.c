@@ -42,6 +42,11 @@
 #include "clibext.h"
 
 
+#define PE_EXE_DEF_STACK_SIZE       _1M
+#define PE_EXE_DEF_STACK_COMMIT     _4K
+#define PE_EXE_DEF_HEAP_SIZE        _1M
+#define PE_EXE_DEF_HEAP_COMMIT      _4K
+
 /*
  * Microsoft PE/COFF .idata section description
  *
@@ -103,7 +108,7 @@ static void AddCoffString( coff_lib_file  *c_file, name_len *str )
     size_t  len;
 
     /*
-     * add space for null terminating character
+     * add space for null terminating character to the string length
      */
     len = str->len + 1;
     if( ( c_file->string_table_size + len ) >= c_file->max_string_table_size ) {
@@ -280,13 +285,13 @@ static void WriteCoffOptHeader( libfile io, sym_file *sfile )
         opt_hdr.h64->section_align = 0x1000;
         opt_hdr.h64->file_align = 0x0200;
         opt_hdr.h64->os_major = 1;
-        opt_hdr.h64->stack_reserve.u._32[I64LO32] = 0x00100000;
+        opt_hdr.h64->stack_reserve.u._32[I64LO32] = PE_EXE_DEF_STACK_SIZE;
         opt_hdr.h64->stack_reserve.u._32[I64HI32] = 0;
-        opt_hdr.h64->stack_commit.u._32[I64LO32]  = 0x00001000;
+        opt_hdr.h64->stack_commit.u._32[I64LO32]  = PE_EXE_DEF_STACK_COMMIT;
         opt_hdr.h64->stack_commit.u._32[I64HI32]  = 0;
-        opt_hdr.h64->heap_reserve.u._32[I64LO32]  = 0x00100000;
+        opt_hdr.h64->heap_reserve.u._32[I64LO32]  = PE_EXE_DEF_HEAP_SIZE;
         opt_hdr.h64->heap_reserve.u._32[I64HI32]  = 0;
-        opt_hdr.h64->heap_commit.u._32[I64LO32]   = 0x00001000;
+        opt_hdr.h64->heap_commit.u._32[I64LO32]   = PE_EXE_DEF_HEAP_COMMIT;
         opt_hdr.h64->heap_commit.u._32[I64HI32]   = 0;
         opt_hdr.h64->data_directories = 0x10;
         break;
@@ -301,10 +306,10 @@ static void WriteCoffOptHeader( libfile io, sym_file *sfile )
         opt_hdr.h32->section_align = 0x1000;
         opt_hdr.h32->file_align = 0x0200;
         opt_hdr.h32->os_major = 1;
-        opt_hdr.h32->stack_reserve = 0x00100000;
-        opt_hdr.h32->stack_commit  = 0x00001000;
-        opt_hdr.h32->heap_reserve  = 0x00100000;
-        opt_hdr.h32->heap_commit   = 0x00001000;
+        opt_hdr.h32->stack_reserve = PE_EXE_DEF_STACK_SIZE;
+        opt_hdr.h32->stack_commit  = PE_EXE_DEF_STACK_COMMIT;
+        opt_hdr.h32->heap_reserve  = PE_EXE_DEF_HEAP_SIZE;
+        opt_hdr.h32->heap_commit   = PE_EXE_DEF_HEAP_COMMIT;
         opt_hdr.h32->data_directories = 0x10;
         break;
     }

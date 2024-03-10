@@ -1016,7 +1016,7 @@ void ElfWriteImport( libfile io, sym_file *sfile )
     fillInU32( strtabsize + 0x128 + 0x10 * numsyms, &(ElfBase[0xe8]) );
     fillInU32( 0x10 * numsyms, &(ElfBase[0xec]) );
     LibWrite( io, ElfBase, ElfBase_SIZE );
-    LibWrite( io, impsym->dllName.name, impsym->dllName.len + 1);
+    LibWrite( io, impsym->dllName.name, impsym->dllName.len + 1 );
     for( elfimp = impsym->u.elf.symlist; elfimp != NULL; elfimp = elfimp->next ) {
         LibWrite( io, elfimp->sym.name, elfimp->sym.len + 1 );
     }
