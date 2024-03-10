@@ -77,9 +77,10 @@ void PadOmf( bool force )
     size_t      padding_size;
     char        *tmpbuf;
 
-    // page size is always a power of 2
-    // therefor x % Options.page_size == x & ( Options.page_size - 1 )
-
+    /*
+     * page size is always a power of 2
+     * therefor x % Options.page_size == x & ( Options.page_size - 1 )
+     */
     padding_size = Options.page_size - (LibTell( NewLibrary ) & ( Options.page_size - 1 ));
     if( padding_size != Options.page_size || force ) {
         tmpbuf = MemAlloc( padding_size );
@@ -105,15 +106,18 @@ static int isPrime( unsigned num )
 }
 
 
-/*
+static unsigned NextPrime( unsigned maj )
+/****************************************
  * Find the prime number of dictionary pages
  */
-static unsigned NextPrime( unsigned maj )
 {
     int test;
 
     if( maj > 2 ) {
-        maj |= 1;               /* make it odd */
+        /*
+         * make it odd
+         */
+        maj |= 1;
         do {
             test = isPrime( maj );
             maj += 2;
@@ -180,13 +184,13 @@ static bool HashOmfSymbols( OmfLibBlock *lib_block, unsigned num_blocks, sym_fil
 
     ret = true;
     for( ; sfile != NULL; sfile = sfile->next ) {
-        if( sfile->import == NULL ) {
+        if( sfile->impsym == NULL ) {
             cp = MakeFName( sfile->full_name );
         } else {
 #ifdef IMP_MODULENAME_DLL
-            cp = sfile->import->dllName;
+            cp = sfile->impsym->dllName;
 #else
-            cp = sfile->import->u.omf_coff.symName;
+            cp = sfile->impsym->u.omf_coff.symName;
 #endif
         }
         str_len = 0;
@@ -208,8 +212,10 @@ static bool HashOmfSymbols( OmfLibBlock *lib_block, unsigned num_blocks, sym_fil
     return( ret );
 }
 
-//return size of dict
 unsigned WriteOmfDict( sym_file *first_sfile )
+/*********************************************
+ * return size of dict
+ */
 {
     bool        done;
     unsigned    num_blocks;
@@ -258,15 +264,17 @@ void WriteOmfFile( sym_file *sfile )
 
     ++symCount;
     sfile->u.new_offset_omf = CheckForOverflow( LibTell( NewLibrary ) );
-    if( sfile->import == NULL ) {
+    if( sfile->impsym == NULL ) {
         fname = MakeFName( sfile->full_name );
-        // Options.page_size is always a power of 2 so someone should optimize
-        // this sometime. maybe store page_size as a log
+        /*
+         * Options.page_size is always a power of 2 so someone should optimize
+         * this sometime. maybe store page_size as a log
+         */
     } else {
 #ifdef IMP_MODULENAME_DLL
-        fname = sfile->import->dllName;
+        fname = sfile->impsym->dllName;
 #else
-        fname = sfile->import->u.omf_coff.symName;
+        fname = sfile->impsym->u.omf_coff.symName;
 #endif
     }
     /*

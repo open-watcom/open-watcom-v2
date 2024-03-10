@@ -68,7 +68,7 @@ static void InitCoffFile( coff_lib_file *c_file )
 
 static void SetCoffFile( coff_lib_file *c_file, sym_file *sfile )
 {
-    switch( sfile->import->processor ) {
+    switch( sfile->impsym->processor ) {
     case WL_PROC_AXP:
         c_file->header.cpu_type = COFF_IMAGE_FILE_MACHINE_ALPHA;
         break;
@@ -103,7 +103,10 @@ static void AddCoffString( coff_lib_file  *c_file, name_len *str )
 {
     size_t  len;
 
-    len = str->len + 1;  /* add space for null terminating character */
+    /*
+     * add space for null terminating character
+     */
+    len = str->len + 1;
     if( ( c_file->string_table_size + len ) >= c_file->max_string_table_size ) {
         c_file->max_string_table_size *= 2;
         c_file->string_table = MemRealloc( c_file->string_table, c_file->max_string_table_size );
@@ -245,7 +248,9 @@ static void WriteCoffSymbols( libfile io, coff_lib_file *c_file )
 
 static void WriteCoffReloc( libfile io, unsigned_32 offset, unsigned_32 sym_tab_index, unsigned_16 type )
 {
-    //output is buffered so no point in putting COFF_RELOC struct
+    /*
+     * output is buffered so no point in putting COFF_RELOC struct
+     */
     LibWrite( io, &offset, sizeof( offset ) );
     LibWrite( io, &sym_tab_index, sizeof( sym_tab_index ) );
     LibWrite( io, &type, sizeof( type ) );
@@ -268,7 +273,7 @@ static void WriteCoffOptHeader( libfile io, sym_file *sfile )
 
     opt_hdr.h64 = &_opt_hdr;
     memset( opt_hdr.h64, 0, sizeof( *opt_hdr.h64 ) );
-    switch( sfile->import->processor ) {
+    switch( sfile->impsym->processor ) {
     case WL_PROC_X64:
         opt_hdr.h64->magic = COFF_IMAGE_NT_OPTIONAL_HDR64_MAGIC;
         opt_hdr.h64->l_major = 2;
@@ -304,7 +309,7 @@ static void WriteCoffOptHeader( libfile io, sym_file *sfile )
         opt_hdr.h32->data_directories = 0x10;
         break;
     }
-    switch( sfile->import->processor ) {
+    switch( sfile->impsym->processor ) {
     case WL_PROC_PPC:
         opt_hdr.h32->l_minor = 0x3c;
         break;
@@ -315,7 +320,7 @@ static void WriteCoffOptHeader( libfile io, sym_file *sfile )
     default:
         break;
     }
-    if( sfile->import->processor == WL_PROC_X64 ) {
+    if( sfile->impsym->processor == WL_PROC_X64 ) {
         LibWrite( io, opt_hdr.h64, sizeof( *opt_hdr.h64 ) );
     } else {
         LibWrite( io, opt_hdr.h32, sizeof( *opt_hdr.h32 ) );
@@ -375,7 +380,7 @@ static void WriteImportDescriptor( libfile io, sym_file *sfile, coff_lib_file *c
      * write data
      */
     if( long_format ) {
-        if( sfile->import->processor == WL_PROC_X64 ) {
+        if( sfile->impsym->processor == WL_PROC_X64 ) {
             c_file->header.opt_hdr_size = (unsigned_16)sizeof( coff_opt_hdr64 );
         } else {
             c_file->header.opt_hdr_size = (unsigned_16)sizeof( coff_opt_hdr32 );
@@ -389,7 +394,7 @@ static void WriteImportDescriptor( libfile io, sym_file *sfile, coff_lib_file *c
     /*
      * write data section no. 1
      */
-    switch( sfile->import->processor ) {
+    switch( sfile->impsym->processor ) {
     case WL_PROC_AXP:
         type = COFF_IMAGE_REL_ALPHA_REFLONGNB;
         break;
@@ -454,7 +459,7 @@ static void WriteNullThunkData( libfile io, sym_file *sfile, coff_lib_file *c_fi
 
     thunk_size = 4;
     thunk_section_align = COFF_IMAGE_SCN_ALIGN_4BYTES;
-    if( sfile->import->processor == WL_PROC_X64 ) {
+    if( sfile->impsym->processor == WL_PROC_X64 ) {
         thunk_size = 8;
         thunk_section_align = COFF_IMAGE_SCN_ALIGN_8BYTES;
     }
@@ -493,7 +498,7 @@ static void WriteShortImportEntry( libfile io, sym_file *sfile, name_len *symNam
     obj_hdr.sig1 = COFF_IMPORT_OBJECT_HDR_SIG1;
     obj_hdr.sig2 = COFF_IMPORT_OBJECT_HDR_SIG2;
     obj_hdr.version = 0;
-    switch( sfile->import->processor ) {
+    switch( sfile->impsym->processor ) {
     case WL_PROC_AXP:
         obj_hdr.machine = COFF_IMAGE_FILE_MACHINE_ALPHA;
         break;
@@ -514,15 +519,15 @@ static void WriteShortImportEntry( libfile io, sym_file *sfile, name_len *symNam
     obj_hdr.time_date_stamp = sfile->arch.date;
     obj_hdr.object_type = COFF_IMPORT_OBJECT_CODE;
     obj_hdr.reserved = 0;
-    if( sfile->import->type == NAMED ) {
+    if( sfile->impsym->type == NAMED ) {
         obj_hdr.oh.hint = 0;
-        if( sfile->import->processor == WL_PROC_X86 ) {
+        if( sfile->impsym->processor == WL_PROC_X86 ) {
             obj_hdr.name_type = COFF_IMPORT_OBJECT_NAME_UNDECORATE;
         } else {
             obj_hdr.name_type = COFF_IMPORT_OBJECT_NAME;
         }
     } else {
-        obj_hdr.oh.ordinal = sfile->import->u.omf_coff.ordinal;
+        obj_hdr.oh.ordinal = sfile->impsym->u.omf_coff.ordinal;
         obj_hdr.name_type = COFF_IMPORT_OBJECT_ORDINAL;
     }
     obj_hdr.size_of_data = symName->len + 1 + dllName->len + 1;
@@ -537,7 +542,7 @@ static void WriteCoffImportTablesNamed( libfile io, sym_file *sfile, unsigned sy
     unsigned    thunk_size;
     unsigned_16 type;
 
-    switch( sfile->import->processor ) {
+    switch( sfile->impsym->processor ) {
     case WL_PROC_AXP:
         type = COFF_IMAGE_REL_ALPHA_REFLONGNB;
         break;
@@ -556,7 +561,7 @@ static void WriteCoffImportTablesNamed( libfile io, sym_file *sfile, unsigned sy
         break;
     }
     thunk_size = 4;
-    if( sfile->import->processor == WL_PROC_X64 ) {
+    if( sfile->impsym->processor == WL_PROC_X64 ) {
         thunk_size = 8;
     }
     memset( nulls, 0, sizeof( nulls ) );
@@ -576,9 +581,9 @@ static void WriteCoffImportTablesOrdinal( libfile io, sym_file *sfile )
 {
     unsigned_64 import_table_entry;
 
-    switch( sfile->import->processor ) {
+    switch( sfile->impsym->processor ) {
     case WL_PROC_X64:
-        import_table_entry.u._64[0] = sfile->import->u.omf_coff.ordinal | COFF_IMAGE_ORDINAL_FLAG64;
+        import_table_entry.u._64[0] = sfile->impsym->u.omf_coff.ordinal | COFF_IMAGE_ORDINAL_FLAG64;
         /*
          * write data section no. 2(4)
          */
@@ -595,7 +600,7 @@ static void WriteCoffImportTablesOrdinal( libfile io, sym_file *sfile )
     default:
         break;
     }
-    import_table_entry.u._32[0] = sfile->import->u.omf_coff.ordinal | COFF_IMAGE_ORDINAL_FLAG32;
+    import_table_entry.u._32[0] = sfile->impsym->u.omf_coff.ordinal | COFF_IMAGE_ORDINAL_FLAG32;
     /*
      * write data section no. 2(4)
      */
@@ -625,15 +630,15 @@ static void WriteLongImportEntry( libfile io, sym_file *sfile, coff_lib_file *c_
 
     thunk_size = 4;
     thunk_section_align = COFF_IMAGE_SCN_ALIGN_4BYTES;
-    if( sfile->import->processor == WL_PROC_X64 ) {
+    if( sfile->impsym->processor == WL_PROC_X64 ) {
         thunk_size = 8;
         thunk_section_align = COFF_IMAGE_SCN_ALIGN_8BYTES;
     }
-    is_named = ( sfile->import->type == NAMED );
+    is_named = ( sfile->impsym->type == NAMED );
     /*
      * section no. 1
      */
-    switch( sfile->import->processor ) {
+    switch( sfile->impsym->processor ) {
     case WL_PROC_AXP:
         sec_num = AddCoffSection( c_file, &str_coff_text, sizeof( CoffImportAxpText ), 3, COFF_IMAGE_SCN_ALIGN_16BYTES
             | COFF_IMAGE_SCN_LNK_COMDAT | COFF_IMAGE_SCN_CNT_CODE
@@ -655,7 +660,7 @@ static void WriteLongImportEntry( libfile io, sym_file *sfile, coff_lib_file *c_
             | COFF_IMAGE_SCN_MEM_READ | COFF_IMAGE_SCN_MEM_EXECUTE );
         break;
     default:
-        sfile->import->processor = WL_PROC_X86;
+        sfile->impsym->processor = WL_PROC_X86;
         /* fall through */
     case WL_PROC_X86:
         sec_num = AddCoffSection( c_file, &str_coff_text, sizeof( CoffImportX86Text ), 1, COFF_IMAGE_SCN_ALIGN_2BYTES
@@ -664,12 +669,12 @@ static void WriteLongImportEntry( libfile io, sym_file *sfile, coff_lib_file *c_
         break;
     }
     AddCoffSymSec( c_file, sec_num, COFF_IMAGE_COMDAT_SELECT_NODUPLICATES );
-    if( sfile->import->processor == WL_PROC_PPC ) {
+    if( sfile->impsym->processor == WL_PROC_PPC ) {
         symb_name = AddCoffSymbol2( c_file, sec_num, &str_coff_ppc_prefix, symName, COFF_IMAGE_SYM_TYPE_FUNCTION );
     } else {
         symb_name = AddCoffSymbol( c_file, sec_num, symName, 0x0, COFF_IMAGE_SYM_TYPE_FUNCTION, COFF_IMAGE_SYM_CLASS_EXTERNAL, 0 );
     }
-    if( sfile->import->processor == WL_PROC_PPC ) {
+    if( sfile->impsym->processor == WL_PROC_PPC ) {
         /*
          * section no. 2
          */
@@ -716,7 +721,7 @@ static void WriteLongImportEntry( libfile io, sym_file *sfile, coff_lib_file *c_
         symb_hints = AddCoffSymSec( c_file, sec_num, COFF_IMAGE_COMDAT_SELECT_ASSOCIATIVE );
     }
     symb_toc = 0;
-    if( sfile->import->processor == WL_PROC_PPC ) {
+    if( sfile->impsym->processor == WL_PROC_PPC ) {
         symb_toc = AddCoffSymbol( c_file, 0, &str_coff_toc, 0x0, COFF_IMAGE_SYM_TYPE_NULL, COFF_IMAGE_SYM_CLASS_EXTERNAL, 0 );
     }
     AddCoffSymbol2( c_file, 0, &str_coff_import_descriptor, modName, COFF_IMAGE_SYM_TYPE_NULL );
@@ -725,7 +730,7 @@ static void WriteLongImportEntry( libfile io, sym_file *sfile, coff_lib_file *c_
      */
     WriteCoffFileHeader( io, c_file );
     WriteCoffSections( io, c_file );
-    switch( sfile->import->processor ) {
+    switch( sfile->impsym->processor ) {
     case WL_PROC_AXP:
         /*
          * write data section no. 1
@@ -774,7 +779,7 @@ static void WriteLongImportEntry( libfile io, sym_file *sfile, coff_lib_file *c_
         WriteCoffReloc( io, 0x0002, symb_imp_name, COFF_IMAGE_REL_AMD64_ADDR32 );
         break;
     default:
-        sfile->import->processor = WL_PROC_X86;
+        sfile->impsym->processor = WL_PROC_X86;
         /* fall through */
     case WL_PROC_X86:
         /*
@@ -796,7 +801,7 @@ static void WriteLongImportEntry( libfile io, sym_file *sfile, coff_lib_file *c_
         /*
          * write data section no. 4(6)
          */
-        ordinal = sfile->import->u.omf_coff.ordinal;
+        ordinal = sfile->impsym->u.omf_coff.ordinal;
         LibWrite( io, &ordinal, sizeof( ordinal ) );
         WriteStringPadding( io, exportedName->name, exportedName->len + 1 );
     }
@@ -819,31 +824,31 @@ void CoffWriteImport( libfile io, sym_file *sfile, bool long_format )
      * up to the switch statement.
      */
     dllName.len = 0;
-    dllName.name = sfile->import->dllName;
+    dllName.name = sfile->impsym->dllName;
     if( dllName.name != NULL ) {
         dllName.len = strlen( dllName.name );
     }
     modName.len = 0;
-    modName.name = MakeFName( sfile->import->dllName );
+    modName.name = MakeFName( sfile->impsym->dllName );
     if( *modName.name != '\0' ) {
         modName.len = strlen( modName.name );
         p = alloca( modName.len + 1 );
         modName.name = strcpy( p, modName.name );
     }
     symName.len = 0;
-    symName.name = sfile->import->u.omf_coff.symName;
+    symName.name = sfile->impsym->u.omf_coff.symName;
     if( symName.name != NULL ) {
         symName.len = strlen( symName.name );
     }
     exportedName.len = 0;
-    exportedName.name = sfile->import->u.omf_coff.exportedName;
+    exportedName.name = sfile->impsym->u.omf_coff.exportedName;
     if( exportedName.name == NULL ) {
         exportedName.name = symName.name; // use this instead
     }
     if( exportedName.name != NULL ) {
         exportedName.len = strlen( exportedName.name );
     }
-    switch( sfile->import->type ) {
+    switch( sfile->impsym->type ) {
     case IMPORT_DESCRIPTOR:
         if( modName.len == 0 )
             FatalError( ERR_CANT_DO_IMPORT, "AR", "NO DLL NAME" );
@@ -858,7 +863,7 @@ void CoffWriteImport( libfile io, sym_file *sfile, bool long_format )
             FatalError( ERR_CANT_DO_IMPORT, "AR", "NO DLL NAME" );
         if( symName.len == 0 )
             FatalError( ERR_CANT_DO_IMPORT, "AR", "NO SYMBOL NAME" );
-        if( exportedName.len == 0 && sfile->import->type == NAMED ) {
+        if( exportedName.len == 0 && sfile->impsym->type == NAMED ) {
             FatalError( ERR_CANT_DO_IMPORT, "AR", "NO EXPORTED NAME" );
         }
         break;
@@ -868,7 +873,7 @@ void CoffWriteImport( libfile io, sym_file *sfile, bool long_format )
     }
     InitCoffFile( &c_file );
     SetCoffFile( &c_file, sfile );
-    switch( sfile->import->type ) {
+    switch( sfile->impsym->type ) {
     case IMPORT_DESCRIPTOR:
         WriteImportDescriptor( io, sfile, &c_file, &modName, &dllName, long_format );
         break;

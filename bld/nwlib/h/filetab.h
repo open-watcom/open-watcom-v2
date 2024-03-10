@@ -94,7 +94,7 @@ struct sym_file_struct {
     size_t      name_length;
     size_t      ffname_length;
     char        *full_name;
-    import_sym  *import;
+    import_sym  *impsym;
     file_type   obj_type;
 };
 

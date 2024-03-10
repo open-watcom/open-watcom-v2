@@ -970,7 +970,7 @@ void ElfWriteImport( libfile io, sym_file *sfile )
     unsigned long   offset;
     unsigned long   more;
 
-    impsym = sfile->import;
+    impsym = sfile->impsym;
     strtabsize = ELFBASESTRTABSIZE + strlen( impsym->dllName ) + 1;
     for( elfimp = impsym->u.elf.symlist; elfimp != NULL; elfimp = elfimp->next ) {
         strtabsize += elfimp->sym.len + 1;

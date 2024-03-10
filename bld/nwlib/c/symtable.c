@@ -85,24 +85,24 @@ static void FiniSymFile( sym_file *sfile )
     MemFreeGlobal( sfile->full_name );
     MemFreeGlobal( sfile->arch.name );
     MemFreeGlobal( sfile->arch.ffname );
-    if( sfile->import != NULL ) {
-        switch( sfile->import->type ) {
+    if( sfile->impsym != NULL ) {
+        switch( sfile->impsym->type ) {
         case ELF:
         case ELFRENAMED:
-            for( elfimp = sfile->import->u.elf.symlist; elfimp != NULL;
-                         elfimp = sfile->import->u.elf.symlist ) {
-                sfile->import->u.elf.symlist = elfimp->next;
+            for( elfimp = sfile->impsym->u.elf.symlist; elfimp != NULL;
+                         elfimp = sfile->impsym->u.elf.symlist ) {
+                sfile->impsym->u.elf.symlist = elfimp->next;
                 MemFreeGlobal( (void *)elfimp->sym.name );
                 MemFreeGlobal( elfimp );
             }
             break;
         default:
-            MemFreeGlobal( sfile->import->u.omf_coff.symName );
-            MemFreeGlobal( sfile->import->u.omf_coff.exportedName );
+            MemFreeGlobal( sfile->impsym->u.omf_coff.symName );
+            MemFreeGlobal( sfile->impsym->u.omf_coff.exportedName );
             break;
         }
-        MemFreeGlobal( sfile->import->dllName );
-        MemFreeGlobal( sfile->import );
+        MemFreeGlobal( sfile->impsym->dllName );
+        MemFreeGlobal( sfile->impsym );
     }
     MemFreeGlobal( sfile );
 }
@@ -145,7 +145,7 @@ void CleanFileTab( void )
 
 
 void FiniFileTab( void )
-/***********************/
+/**********************/
 {
     sym_file    *sfile;
 
@@ -216,7 +216,7 @@ static sym_file *NewSymFile( arch_header *arch, file_type obj_type )
     sfile->arch = *arch;
     sfile->first = NULL;
     sfile->next = NULL;
-    sfile->import = NULL;
+    sfile->impsym = NULL;
     sfile->inlib_offset = 0;
     sfile->full_name = DupStrGlobal( arch->name );
     if( Options.trim_path ) {
@@ -370,7 +370,7 @@ void WriteFileBody( sym_file *sfile )
 {
     libfile     io;
 
-    if( sfile->import == NULL ) {
+    if( sfile->impsym == NULL ) {
         if( sfile->inlib_offset == 0 ) {
             io = LibOpen( sfile->full_name, LIBOPEN_READ );
         } else {
@@ -857,7 +857,6 @@ void DumpFileTable( void )
     printf( "----------------------------------------------------------\n" );
 }
 
-
 void DumpHashTable( void )
 {
     sym_entry   *hash_sym;
@@ -966,14 +965,14 @@ void OmfMKImport( arch_header *arch, importType type,
     }
     Options.omf_found = true;
     CurrFile = NewSymFile( arch, WL_FTYPE_OMF );
-    CurrFile->import = MemAllocGlobal( sizeof( import_sym ) );
-    CurrFile->import->dllName = DupStrGlobal( dllName );
-    CurrFile->import->u.omf_coff.ordinal = ordinal;
-    CurrFile->import->u.omf_coff.symName = DupStrGlobal( symName );
-    CurrFile->import->u.omf_coff.exportedName = DupStrGlobal( exportedName );
-    CurrFile->import->type = type;
-    CurrFile->import->processor = processor;
-    CurrFile->arch.size = OmfImportSize( CurrFile->import );
+    CurrFile->impsym = MemAllocGlobal( sizeof( import_sym ) );
+    CurrFile->impsym->dllName = DupStrGlobal( dllName );
+    CurrFile->impsym->u.omf_coff.ordinal = ordinal;
+    CurrFile->impsym->u.omf_coff.symName = DupStrGlobal( symName );
+    CurrFile->impsym->u.omf_coff.exportedName = DupStrGlobal( exportedName );
+    CurrFile->impsym->type = type;
+    CurrFile->impsym->processor = processor;
+    CurrFile->arch.size = OmfImportSize( CurrFile->impsym );
     AddSym( symName, SYM_STRONG, 0 );
 }
 
@@ -986,14 +985,14 @@ void CoffMKImport( arch_header *arch, importType type,
     }
     Options.coff_found = true;
     CurrFile = NewSymFile( arch, WL_FTYPE_COFF );
-    CurrFile->import = MemAllocGlobal( sizeof( import_sym ) );
-    CurrFile->import->type = type;
-    CurrFile->import->u.omf_coff.ordinal = ordinal;
-    CurrFile->import->dllName = DupStrGlobal( dllName );
-    CurrFile->import->u.omf_coff.symName = DupStrGlobal( symName );
-    CurrFile->import->u.omf_coff.exportedName = DupStrGlobal( exportedName );
-    CurrFile->import->processor = processor;
-    CurrFile->arch.size = CoffImportSize( CurrFile->import );
+    CurrFile->impsym = MemAllocGlobal( sizeof( import_sym ) );
+    CurrFile->impsym->type = type;
+    CurrFile->impsym->u.omf_coff.ordinal = ordinal;
+    CurrFile->impsym->dllName = DupStrGlobal( dllName );
+    CurrFile->impsym->u.omf_coff.symName = DupStrGlobal( symName );
+    CurrFile->impsym->u.omf_coff.exportedName = DupStrGlobal( exportedName );
+    CurrFile->impsym->processor = processor;
+    CurrFile->arch.size = CoffImportSize( CurrFile->impsym );
     switch( type ) {
     case IMPORT_DESCRIPTOR:
     case NULL_IMPORT_DESCRIPTOR:
@@ -1022,11 +1021,11 @@ void ElfMKImport( arch_header *arch, importType type, long export_size,
     }
     Options.elf_found = true;
     CurrFile = NewSymFile( arch, WL_FTYPE_ELF );
-    CurrFile->import = MemAllocGlobal( sizeof( import_sym ) );
-    CurrFile->import->type = type;
-    CurrFile->import->dllName = DupStrGlobal( dllName );
-    CurrFile->import->u.elf.numsyms = 0;
-    pelfimp = &(CurrFile->import->u.elf.symlist);
+    CurrFile->impsym = MemAllocGlobal( sizeof( import_sym ) );
+    CurrFile->impsym->type = type;
+    CurrFile->impsym->dllName = DupStrGlobal( dllName );
+    CurrFile->impsym->u.elf.numsyms = 0;
+    pelfimp = &(CurrFile->impsym->u.elf.symlist);
 
     for( i = 0; i < export_size; i++ ) {
         if( export_table[i].exp_symbol ) {
@@ -1038,15 +1037,15 @@ void ElfMKImport( arch_header *arch, importType type, long export_size,
                 AddSym( elfimp->sym.name, SYM_STRONG, ELF_IMPORT_SYM_INFO );
             }
 
-            CurrFile->import->u.elf.numsyms ++;
+            CurrFile->impsym->u.elf.numsyms++;
 
             *pelfimp = elfimp;
             pelfimp = &(elfimp->next);
         }
     }
     *pelfimp = NULL;
-    CurrFile->import->processor = processor;
-    CurrFile->arch.size = ElfImportSize( CurrFile->import );
+    CurrFile->impsym->processor = processor;
+    CurrFile->arch.size = ElfImportSize( CurrFile->impsym );
 }
 
 static void printVerboseTableEntryAr( sym_file *sfile )
