@@ -64,7 +64,7 @@ struct elf_import_sym_struct {
 struct import_sym_struct {
     importType      type;
     processor_type  processor;
-    char            *dllName;
+    name_len        dllName;
     union {
         struct {
             long        ordinal;

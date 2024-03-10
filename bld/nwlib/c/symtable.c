@@ -101,7 +101,7 @@ static void FiniSymFile( sym_file *sfile )
             MemFreeGlobal( sfile->impsym->u.omf_coff.exportedName );
             break;
         }
-        MemFreeGlobal( sfile->impsym->dllName );
+        MemFreeGlobal( (void *)sfile->impsym->dllName.name );
         MemFreeGlobal( sfile->impsym );
     }
     MemFreeGlobal( sfile );
@@ -503,7 +503,7 @@ static void WriteArMlibFileTable( void )
      */
     switch( Options.libtype ) {
     case WL_LTYPE_AR:
-        dict1_size = ( NumSymbols + 1 ) * sizeof(unsigned_32) + __ROUND_UP_SIZE_EVEN( TotalSymbolLength );
+        dict1_size = ( NumSymbols + 1 ) * sizeof( unsigned_32 ) + __ROUND_UP_SIZE_EVEN( TotalSymbolLength );
 
         header_size = AR_IDENT_LEN + AR_HEADER_SIZE + dict1_size;
 
@@ -957,42 +957,50 @@ void AddObjectSymbols( libfile io, long offset, arch_header *arch )
 }
 
 void OmfMKImport( arch_header *arch, importType type,
-                  long ordinal, const char *dllName, const char *symName,
+                  long ordinal, name_len *dllName, const char *symName,
                   const char *exportedName, processor_type processor )
 {
+    import_sym  *impsym;
+
     if( Options.elf_found ) {
         FatalError( ERR_MIXED_OBJ, ctext_WL_FTYPE_ELF, ctext_WL_FTYPE_OMF );
     }
     Options.omf_found = true;
     CurrFile = NewSymFile( arch, WL_FTYPE_OMF );
-    CurrFile->impsym = MemAllocGlobal( sizeof( import_sym ) );
-    CurrFile->impsym->dllName = DupStrGlobal( dllName );
-    CurrFile->impsym->u.omf_coff.ordinal = ordinal;
-    CurrFile->impsym->u.omf_coff.symName = DupStrGlobal( symName );
-    CurrFile->impsym->u.omf_coff.exportedName = DupStrGlobal( exportedName );
-    CurrFile->impsym->type = type;
-    CurrFile->impsym->processor = processor;
-    CurrFile->arch.size = OmfImportSize( CurrFile->impsym );
+    impsym = MemAllocGlobal( sizeof( import_sym ) );
+    impsym->dllName.name = DupStrGlobal( dllName->name );
+    impsym->dllName.len = dllName->len;
+    impsym->u.omf_coff.ordinal = ordinal;
+    impsym->u.omf_coff.symName = DupStrGlobal( symName );
+    impsym->u.omf_coff.exportedName = DupStrGlobal( exportedName );
+    impsym->type = type;
+    impsym->processor = processor;
+    CurrFile->impsym = impsym;
+    CurrFile->arch.size = OmfImportSize( impsym );
     AddSym( symName, SYM_STRONG, 0 );
 }
 
 void CoffMKImport( arch_header *arch, importType type,
-                   long ordinal, const char *dllName, const char *symName,
+                   long ordinal, name_len *dllName, const char *symName,
                    const char *exportedName, processor_type processor )
 {
+    import_sym  *impsym;
+
     if( Options.elf_found ) {
         FatalError( ERR_MIXED_OBJ, ctext_WL_FTYPE_ELF, ctext_WL_FTYPE_COFF );
     }
     Options.coff_found = true;
     CurrFile = NewSymFile( arch, WL_FTYPE_COFF );
-    CurrFile->impsym = MemAllocGlobal( sizeof( import_sym ) );
-    CurrFile->impsym->type = type;
-    CurrFile->impsym->u.omf_coff.ordinal = ordinal;
-    CurrFile->impsym->dllName = DupStrGlobal( dllName );
-    CurrFile->impsym->u.omf_coff.symName = DupStrGlobal( symName );
-    CurrFile->impsym->u.omf_coff.exportedName = DupStrGlobal( exportedName );
-    CurrFile->impsym->processor = processor;
-    CurrFile->arch.size = CoffImportSize( CurrFile->impsym );
+    impsym = MemAllocGlobal( sizeof( import_sym ) );
+    impsym->type = type;
+    impsym->u.omf_coff.ordinal = ordinal;
+    impsym->dllName.name = DupStrGlobal( dllName->name );
+    impsym->dllName.len = dllName->len;
+    impsym->u.omf_coff.symName = DupStrGlobal( symName );
+    impsym->u.omf_coff.exportedName = DupStrGlobal( exportedName );
+    impsym->processor = processor;
+    CurrFile->impsym = impsym;
+    CurrFile->arch.size = CoffImportSize( impsym );
     switch( type ) {
     case IMPORT_DESCRIPTOR:
     case NULL_IMPORT_DESCRIPTOR:
@@ -1006,12 +1014,13 @@ void CoffMKImport( arch_header *arch, importType type,
 }
 
 void ElfMKImport( arch_header *arch, importType type, long export_size,
-                  const char *dllName, const char *strings, Elf32_Export *export_table,
+                  name_len *dllName, const char *strings, Elf32_Export *export_table,
                   Elf32_Sym *sym_table, processor_type processor )
 {
-    int                 i;
-    elf_import_sym      **pelfimp;
-    elf_import_sym      *elfimp;
+    int             i;
+    elf_import_sym  **pelfimp;
+    elf_import_sym  *elfimp;
+    import_sym      *impsym;
 
     if( Options.coff_found ) {
         FatalError( ERR_MIXED_OBJ, ctext_WL_FTYPE_ELF, ctext_WL_FTYPE_COFF );
@@ -1021,12 +1030,15 @@ void ElfMKImport( arch_header *arch, importType type, long export_size,
     }
     Options.elf_found = true;
     CurrFile = NewSymFile( arch, WL_FTYPE_ELF );
-    CurrFile->impsym = MemAllocGlobal( sizeof( import_sym ) );
-    CurrFile->impsym->type = type;
-    CurrFile->impsym->dllName = DupStrGlobal( dllName );
-    CurrFile->impsym->u.elf.numsyms = 0;
-    pelfimp = &(CurrFile->impsym->u.elf.symlist);
+    impsym = MemAllocGlobal( sizeof( import_sym ) );
+    impsym->type = type;
+    impsym->dllName.name = DupStrGlobal( dllName->name );
+    impsym->dllName.len = dllName->len;
+    impsym->u.elf.numsyms = 0;
+    impsym->processor = processor;
+    CurrFile->impsym = impsym;
 
+    pelfimp = &(impsym->u.elf.symlist);
     for( i = 0; i < export_size; i++ ) {
         if( export_table[i].exp_symbol ) {
             elfimp = MemAllocGlobal( sizeof( elf_import_sym ) );
@@ -1037,15 +1049,15 @@ void ElfMKImport( arch_header *arch, importType type, long export_size,
                 AddSym( elfimp->sym.name, SYM_STRONG, ELF_IMPORT_SYM_INFO );
             }
 
-            CurrFile->impsym->u.elf.numsyms++;
+            impsym->u.elf.numsyms++;
 
             *pelfimp = elfimp;
             pelfimp = &(elfimp->next);
         }
     }
     *pelfimp = NULL;
-    CurrFile->impsym->processor = processor;
-    CurrFile->arch.size = ElfImportSize( CurrFile->impsym );
+
+    CurrFile->arch.size = ElfImportSize( impsym );
 }
 
 static void printVerboseTableEntryAr( sym_file *sfile )

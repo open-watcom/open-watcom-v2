@@ -31,7 +31,6 @@
 
 
 #include "wlib.h"
-#include "walloca.h"
 #include <assert.h>
 #include <error.h>
 #include "coff.h"
@@ -330,24 +329,30 @@ static void WriteCoffOptHeader( libfile io, sym_file *sfile )
 static unsigned AddCoffSymbol2( coff_lib_file *c_file, signed_16 sec_num, name_len *n1, name_len *n2, unsigned_16 type )
 {
     name_len    symName;
-    char        *p;
+    char        *sym_name;
+    unsigned    rc;
 
     symName.len = n1->len + n2->len;
-    symName.name = p = alloca( symName.len + 1 );
-    strcpy( strcpy( p, n1->name ) + n1->len, n2->name );
-    return( AddCoffSymbol( c_file, sec_num, &symName, 0x0, type, COFF_IMAGE_SYM_CLASS_EXTERNAL, 0 ) );
+    symName.name = sym_name = MemAlloc( symName.len + 1 );
+    strcpy( strcpy( sym_name, n1->name ) + n1->len, n2->name );
+    rc = AddCoffSymbol( c_file, sec_num, &symName, 0x0, type, COFF_IMAGE_SYM_CLASS_EXTERNAL, 0 );
+    MemFree( sym_name );
+    return( rc );
 }
 
 static unsigned AddCoffSymbolNullThunkData( coff_lib_file *c_file, signed_16 sec_num, name_len *modName )
 {
     name_len    symName;
-    char        *p;
+    char        *sym_name;
+    unsigned    rc;
 
     symName.len = 1 + modName->len + str_coff_null_thunk_data.len;
-    symName.name = p = alloca( symName.len + 1 );
-    p[0] = 0x7f;
-    strcpy( strcpy( p + 1, modName->name ) + modName->len, str_coff_null_thunk_data.name );
-    return( AddCoffSymbol( c_file, sec_num, &symName, 0x0, COFF_IMAGE_SYM_TYPE_NULL, COFF_IMAGE_SYM_CLASS_EXTERNAL, 0 ) );
+    symName.name = sym_name = MemAlloc( symName.len + 1 );
+    sym_name[0] = 0x7f;
+    strcpy( strcpy( sym_name + 1, modName->name ) + modName->len, str_coff_null_thunk_data.name );
+    rc = AddCoffSymbol( c_file, sec_num, &symName, 0x0, COFF_IMAGE_SYM_TYPE_NULL, COFF_IMAGE_SYM_CLASS_EXTERNAL, 0 );
+    MemFree( sym_name );
+    return( rc );
 }
 
 static void WriteImportDescriptor( libfile io, sym_file *sfile, coff_lib_file *c_file, name_len *modName, name_len *dllName, bool long_format )
@@ -812,29 +817,21 @@ static void WriteLongImportEntry( libfile io, sym_file *sfile, coff_lib_file *c_
 void CoffWriteImport( libfile io, sym_file *sfile, bool long_format )
 /*******************************************************************/
 {
-    coff_lib_file               c_file;
-    name_len                    dllName;
-    name_len                    symName;
-    name_len                    exportedName;
-    name_len                    modName;
-    char                        *p;
+    coff_lib_file       c_file;
+    name_len            dllName;
+    name_len            symName;
+    name_len            exportedName;
+    char                *mod_name;
+    name_len            modName;
 
     /*
      * We are being extremely cautious in the following lines of code
      * up to the switch statement.
      */
-    dllName.len = 0;
-    dllName.name = sfile->impsym->dllName;
-    if( dllName.name != NULL ) {
-        dllName.len = strlen( dllName.name );
-    }
-    modName.len = 0;
-    modName.name = MakeFName( sfile->impsym->dllName );
-    if( *modName.name != '\0' ) {
-        modName.len = strlen( modName.name );
-        p = alloca( modName.len + 1 );
-        modName.name = strcpy( p, modName.name );
-    }
+    dllName = sfile->impsym->dllName;
+    modName.name = MakeFName( dllName.name );
+    modName.len = strlen( modName.name );
+    modName.name = mod_name = strcpy( MemAlloc( modName.len + 1 ), modName.name );
     symName.len = 0;
     symName.name = sfile->impsym->u.omf_coff.symName;
     if( symName.name != NULL ) {
@@ -895,4 +892,5 @@ void CoffWriteImport( libfile io, sym_file *sfile, bool long_format )
         break;
     }
     FiniCoffLibFile( &c_file );
+    MemFree( mod_name );
 }

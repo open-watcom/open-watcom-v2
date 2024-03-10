@@ -188,7 +188,7 @@ static bool HashOmfSymbols( OmfLibBlock *lib_block, unsigned num_blocks, sym_fil
             cp = MakeFName( sfile->full_name );
         } else {
 #ifdef IMP_MODULENAME_DLL
-            cp = sfile->impsym->dllName;
+            cp = sfile->impsym->dllName.name;
 #else
             cp = sfile->impsym->u.omf_coff.symName;
 #endif
@@ -272,7 +272,7 @@ void WriteOmfFile( sym_file *sfile )
          */
     } else {
 #ifdef IMP_MODULENAME_DLL
-        fname = sfile->impsym->dllName;
+        fname = sfile->impsym->dllName.name;
 #else
         fname = sfile->impsym->u.omf_coff.symName;
 #endif

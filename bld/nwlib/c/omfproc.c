@@ -306,16 +306,21 @@ static void getlname( bool local )
     }
 }
 
-/*
+static void getalias( void )
+/***************************
  * process an ALIAS record
  */
-static void getalias( void )
-/**************************/
 {
     while( RecPtr < RecEnd ) {
-        GetName();  // alias symbol
+        /*
+         * alias symbol
+         */
+        GetName();
         AddOMFSymbol( S_ALIAS );
-        GetName();  // substitute symbol
+        /*
+         * substitute symbol
+         */
+        GetName();
     }
 }
 
@@ -585,15 +590,19 @@ size_t OmfImportSize( import_sym *impsym )
     size_t      dll_len;
     size_t      sym_len;
 
-    dll_len = strlen( impsym->dllName ) + 1;
+    dll_len = impsym->dllName.len + 1;
     sym_len = strlen( impsym->u.omf_coff.symName ) + 1;
-    // THEADR
+    /*
+     * THEADR OMF record
+     */
 #ifdef IMP_MODULENAME_DLL
     len = 3 + dll_len + 1;
 #else
     len = 3 + sym_len + 1;
 #endif
-    // Comment DLL Entry
+    /*
+     * Comment DLL Entry OMF record
+     */
     len += 3 + 2 + 2 + dll_len + sym_len + 1;
     if( impsym->type == ORDINAL ) {
         len += 2;
@@ -602,9 +611,13 @@ size_t OmfImportSize( import_sym *impsym )
     } else {
         len += strlen( impsym->u.omf_coff.exportedName ) + 1;
     }
-    // Comment timestamp
+    /*
+     * Comment timestamp OMF record
+     */
     len += 3 + 8;
-    // MODEND
+    /*
+     * MODEND OMF record
+     */
     len += 3 + 2;
     return( len );
 }
@@ -618,12 +631,12 @@ void OmfWriteImport( sym_file *sfile )
     unsigned_16 len;
     unsigned_8  *contents;
 
-    file_len = (unsigned_8)strlen( sfile->impsym->dllName );
+    file_len = (unsigned_8)sfile->impsym->dllName.len;
     sym_len = (unsigned_8)strlen( sfile->impsym->u.omf_coff.symName );
 #ifdef IMP_MODULENAME_DLL
     contents = SetOmfRecBuffer( CMD_THEADR, 1 + file_len + 1 );
     *contents++ = file_len;
-    memcpy( contents, sfile->impsym->dllName, file_len );
+    memcpy( contents, sfile->impsym->dllName.name, file_len );
 #else
     contents = SetOmfRecBuffer( CMD_THEADR, 1 + sym_len + 1 );
     *contents++ = sym_len;
@@ -649,7 +662,7 @@ void OmfWriteImport( sym_file *sfile )
     memcpy( contents, sfile->impsym->u.omf_coff.symName, sym_len );
     contents += sym_len;
     *contents++ = file_len;
-    memcpy( contents, sfile->impsym->dllName, file_len );
+    memcpy( contents, sfile->impsym->dllName.name, file_len );
     contents += file_len;
     if( sfile->impsym->type == ORDINAL ) {
         *(unsigned_16 *)contents = (unsigned_16)sfile->impsym->u.omf_coff.ordinal;
@@ -669,7 +682,11 @@ void OmfWriteImport( sym_file *sfile )
 void OMFWalkSymList( obj_file *ofile, sym_file *sfile )
 /*****************************************************/
 {
-    SegDefCount = 0;    // just for FORTRAN 77 common block
+    /*
+     * just for FORTRAN 77 common block
+     */
+    SegDefCount = 0;
+
     CurrSegRef = 0;
     LName_Head = NULL;
     LName_Owner = &LName_Head;

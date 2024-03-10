@@ -66,9 +66,9 @@ extern char     ElfBase[];
 extern char     ElfOSInfo[];
 
 extern bool     AddImport( libfile io, arch_header *arch );
-extern void     OmfMKImport( arch_header *, importType, long, const char *, const char *, const char *, processor_type );
-extern void     CoffMKImport( arch_header *, importType, long, const char *, const char *, const char *, processor_type );
-extern void     ElfMKImport( arch_header *, importType, long, const char *, const char *, Elf32_Export *, Elf32_Sym *, processor_type );
+extern void     OmfMKImport( arch_header *, importType, long, name_len *, const char *, const char *, processor_type );
+extern void     CoffMKImport( arch_header *, importType, long, name_len *, const char *, const char *, processor_type );
+extern void     ElfMKImport( arch_header *, importType, long, name_len *, const char *, Elf32_Export *, Elf32_Sym *, processor_type );
 extern size_t   CoffImportSize( import_sym *impsym );
 extern size_t   ElfImportSize( import_sym *impsym );
 extern void     CoffWriteImport( libfile, sym_file *, bool );
