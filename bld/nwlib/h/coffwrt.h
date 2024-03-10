@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,12 +31,14 @@
 ****************************************************************************/
 
 
-/*note before you use this for anything make sure that the values below
-are large enough for your purposes (particularly the num sections and symbols.
-I put in some saftey code in the string table because if the user declares
-long function names (very long like > 512) it is possible that 1k will not
-suffice for the string table size in import libraries.  the number of sections
-and symbols however are fixed and suffice for import libraries  */
+/*
+ * note before you use this for anything make sure that the values below
+ * are large enough for your purposes (particularly the num sections and symbols.
+ * I put in some safety code in the string table because if the user declares
+ * long function names (very long like > 512) it is possible that 1k will not
+ * suffice for the string table size in import libraries.  the number of sections
+ * and symbols however are fixed and suffice for import libraries
+ */
 
 #define MAX_NUM_COFF_LIB_SECTIONS   8
 #define MAX_NUM_COFF_LIB_SYMBOLS    32
