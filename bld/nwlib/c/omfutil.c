@@ -151,9 +151,9 @@ static bool InsertOmfDict( OmfLibBlock *lib_block, unsigned num_blocks, const ch
                     break;
                 }
                 lib_block[h.block].htab[h.bucket] = lib_block[h.block].fflag;
-                lib_block[h.block].fflag += entry_len / 2;
+                lib_block[h.block].fflag += (unsigned_8)( entry_len / 2 );
                 loc -= NUM_BUCKETS + 1;
-                lib_block[h.block].name[loc] = len;
+                lib_block[h.block].name[loc] = (unsigned_8)len;
                 loc++;
                 memcpy( lib_block[h.block].name + loc, sym, len );
                 loc += len;

@@ -163,12 +163,14 @@ void FiniFileTab( void )
 }
 
 
-static int Hash( const char *string )
-/***********************************/
+static int Hash( const char *string, unsigned *len )
+/**************************************************/
 {
     unsigned long       g;
     unsigned long       h;
+    const char          *start;
 
+    start = string;
     h = 0;
     while( *string != 0 ) {
         h = ( h << 4 ) + *string;
@@ -177,6 +179,9 @@ static int Hash( const char *string )
             h = h ^ g;
         }
         ++string;
+    }
+    if( len != NULL ) {
+        *len = (unsigned)( string - start );
     }
     return( h % HASH_SIZE );
 }
@@ -190,7 +195,7 @@ static void RemoveFromHashTable( sym_entry *sym )
     int             hval;
 
     hash_prev = NULL;
-    hval = Hash( sym->name );
+    hval = Hash( sym->name, NULL );
     for( hash_sym = HashTable[hval]; hash_sym != NULL; hash_sym = hash_sym->hash_next ) {
         if( hash_sym == sym ) {
             if( hash_prev == NULL ) {
@@ -779,8 +784,7 @@ void AddSym( const char *name, symbol_strength strength, unsigned char info )
     int         hval;
     unsigned    namelen;
 
-    namelen = strlen( name );
-    hval = Hash( name );
+    hval = Hash( name, &namelen );
     for( hash_sym = HashTable[hval]; hash_sym != NULL; hash_sym = hash_sym->hash_next ) {
         if( hash_sym->len != namelen )
             continue;
@@ -840,7 +844,7 @@ void DumpFileTable( void )
         for( entry = sfile->first; entry != NULL; entry = entry->next ) {
             ++symbols;
 
-            hval = Hash( entry->name );
+            hval = Hash( entry->name, NULL );
             printf( "\t\"%s\" (%d, %u, \"%s\")", entry->name, hval, (unsigned)( entry->len ),
                     (HashTable[hval] ? HashTable[hval]->name : "(NULL)") );
 

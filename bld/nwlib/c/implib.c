@@ -752,12 +752,13 @@ void ProcessImportWlib( const char *name )
 
         ElfMKImport( &arch, ELFRENAMED, 2, &dllName, buffer, export_table, sym_table, Options.processor );
 
+        MemFree( buffer );
+
         if( ordinal == 0 ) {
             AddSym( symName, SYM_STRONG, ELF_IMPORT_NAMED_SYM_INFO );
         } else {
             AddSym( symName, SYM_STRONG, ELF_IMPORT_SYM_INFO );
         }
-        MemFree( buffer );
         break;
     case WL_FTYPE_COFF:
         if( Options.libtype == WL_LTYPE_OMF ) {
@@ -767,7 +768,6 @@ void ProcessImportWlib( const char *name )
             FatalError( ERR_NOT_LIB, ctext_WL_FTYPE_COFF, ctext_WL_LTYPE_MLIB );
         }
         coffAddImportOverhead( &arch, &dllName, Options.processor );
-
         if( ordinal == 0 ) {
             CoffMKImport( &arch, NAMED, ordinal, &dllName, symName, exportedName, Options.processor );
         } else {
