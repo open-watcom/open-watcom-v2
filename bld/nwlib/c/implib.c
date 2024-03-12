@@ -276,12 +276,12 @@ static void os2AddImport( libfile io, long header_offset, arch_header *arch )
 static void AddSym2( name_len *n1, const char *n2, symbol_strength strength, unsigned char info )
 /***********************************************************************************************/
 {
-    char    *buffer;
+    char    *sym_name;
 
-    buffer = MemAlloc( n1->len + strlen( n2 ) + 1 );
-    strcpy( strcpy( buffer, n1->name ) + n1->len, n2 );
-    AddSym( buffer, strength, info );
-    MemFree( buffer );
+    sym_name = MemAlloc( n1->len + strlen( n2 ) + 1 );
+    strcpy( strcpy( sym_name, n1->name ) + n1->len, n2 );
+    AddSym( sym_name, strength, info );
+    MemFree( sym_name );
 }
 
 static void coffAddImportOverhead( arch_header *arch, name_len *dllName, processor_type processor )

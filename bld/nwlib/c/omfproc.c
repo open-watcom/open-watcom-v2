@@ -71,6 +71,31 @@ static unsigned short   SegDefCount;
 static OmfRecord        *omfRec;
 static size_t           omfRecLen;
 
+
+static void SetOmfBuffer( unsigned_16 len )
+/*****************************************/
+{
+    if( len + 3 > omfRecLen ) {
+        OmfRecord *new;
+
+        omfRecLen = len + 3;
+        new = MemAlloc( omfRecLen );
+        new->basic.len = omfRec->basic.len;
+        new->basic.type = omfRec->basic.type;
+        MemFree( omfRec );
+        omfRec = new;
+    }
+}
+
+static unsigned_8 *SetOmfRecBuffer( unsigned_8 type, unsigned_16 len )
+/********************************************************************/
+{
+    omfRec->basic.type = type;
+    omfRec->basic.len = GET_LE_16( len );
+    SetOmfBuffer( len );
+    return( omfRec->basic.contents );
+}
+
 void InitOmfRec( void )
 /*********************/
 {
@@ -371,30 +396,6 @@ static void CalcOmfRecordCheckSum( OmfRecord *rec )
         sum += rec->chkcalc[i];
     }
     rec->chkcalc[i] = -sum;
-}
-
-static void SetOmfBuffer( unsigned_16 len )
-/*****************************************/
-{
-    if( len + 3 > omfRecLen ) {
-        OmfRecord *new;
-
-        omfRecLen = len + 3;
-        new = MemAlloc( omfRecLen );
-        new->basic.len = omfRec->basic.len;
-        new->basic.type = omfRec->basic.type;
-        MemFree( omfRec );
-        omfRec = new;
-    }
-}
-
-static unsigned_8 *SetOmfRecBuffer( unsigned_8 type, unsigned_16 len )
-/********************************************************************/
-{
-    omfRec->basic.type = type;
-    omfRec->basic.len = GET_LE_16( len );
-    SetOmfBuffer( len );
-    return( omfRec->basic.contents );
 }
 
 static bool ReadOmfRecord( libfile io )
