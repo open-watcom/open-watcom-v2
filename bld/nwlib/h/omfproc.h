@@ -36,5 +36,5 @@ extern file_offset  OmfCopy( libfile io, sym_file *sfile );
 extern file_offset  OmfSkipObject( libfile io );
 extern void         OmfExtract( libfile src, libfile dst );
 extern size_t       OmfImportSize( import_sym *impsym );
-extern void         OmfWriteImport( sym_file *sfile );
+extern void         OmfWriteImport( libfile io, sym_file *sfile );
 extern void         OMFWalkSymList( obj_file *ofile, sym_file *sfile );

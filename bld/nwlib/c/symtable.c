@@ -399,7 +399,7 @@ void WriteFileBody( sym_file *sfile )
             CoffWriteImport( NewLibrary, sfile, Options.coff_import_long );
             break;
         case WL_FTYPE_OMF:
-            OmfWriteImport( sfile );
+            OmfWriteImport( NewLibrary, sfile );
             break;
         }
     }
