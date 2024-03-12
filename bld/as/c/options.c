@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -53,7 +53,7 @@ static bool optionsPredefine( const char *str ) {
     const char          *s;
     bool                got_equal, got_macro;
 
-    if( !*str )
+    if( *str == '\0' )
         return( false );
     if( ppDefines == NULL ) {
         length = maxNumPredefines * sizeof( char * );
@@ -70,14 +70,18 @@ static bool optionsPredefine( const char *str ) {
     i = 0;
     for( ;; ) {
         if( *s == '=' ) {
-            if( got_equal || !got_macro )
+            if( got_equal
+              || !got_macro ) {
                 return( false );
+            }
             got_equal = true;
             ppDefines[idx][i] = ' ';
         } else {
             got_macro = true;
             ppDefines[idx][i] = *s;
-            if( *s == '\0' ) break;
+            if( *s == '\0' ) {
+                break;
+            }
         }
         ++i;
         ++s;
@@ -91,9 +95,10 @@ void OptionsPPDefine( void )
     unsigned    idx = 0;
     char        *str;
 
-    if( !ppDefines ) return;
+    if( ppDefines == NULL )
+        return;
     str = ppDefines[idx++];
-    while( str ) {
+    while( str != NULL ) {
         PP_Define( str );
         str = ppDefines[idx++];
     }
@@ -130,7 +135,8 @@ bool OptionsInit( int argc, char **argv )
         goto errInvalid;
 
     while( *argv ) {
-        if( argv[0][0] == '-' || argv[0][0] == '/' ) {
+        if( argv[0][0] == '-'
+          || argv[0][0] == '/' ) {
             s = &argv[0][2];
             switch( argv[0][1] ) {
             case 'b':
@@ -146,17 +152,21 @@ bool OptionsInit( int argc, char **argv )
                 }
                 break;
             case 'e':
-                if( *s == '\0' ) goto errInvalid;
+                if( *s == '\0' )
+                    goto errInvalid;
                 ErrorLimit = strtoul( s, &s, 10 );
-                if( *s != '\0' ) goto errInvalid;
+                if( *s != '\0' )
+                    goto errInvalid;
                 break;
             case 'f':
             case 'F':
                 switch( *s ) {
                 case 'o':
                     ++s;
-                    if( *s == '=' ) ++s;
-                    if( *s == '\0' ) goto errInvalid;
+                    if( *s == '=' )
+                        ++s;
+                    if( *s == '\0' )
+                        goto errInvalid;
                     ObjSetObjFile( s );
                     break;
                 default:
@@ -188,7 +198,8 @@ bool OptionsInit( int argc, char **argv )
                 default:
                     goto errInvalid;
                 }
-                if( *++s != '\0' ) goto errInvalid;
+                if( *++s != '\0' )
+                    goto errInvalid;
                 break;
             case 'q':
                 _SetOption( BE_QUIET );
