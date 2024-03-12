@@ -264,8 +264,17 @@ static lname *getIdxLName( void )
     unsigned            idx;
     lname               *ln;
 
-    ln = LName_Head;
     idx = GetIndex();
+    if( idx == 0 )		/* no LNAME */
+    	return( NULL );
+    /*
+     * change from 1-based index to O-based
+     */
+    idx--;
+    /*
+     * get LNAME from linked list
+     */
+    ln = LName_Head;
     while( idx-- > 0 ) {
         ln = ln->next;
     }
