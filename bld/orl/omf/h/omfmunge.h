@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -84,7 +84,7 @@ extern orl_return       OmfAddLineNum( omf_sec_handle sh, unsigned_16 line, unsi
 
 extern omf_sec_handle   OmfFindSegOrComdat( omf_file_handle ofh, omf_idx seg, omf_idx comdat_lname );
 
-extern omf_string       OmfGetLName( omf_sec_handle lnames, omf_idx idx );
+extern omf_string       OmfGetLName( omf_file_handle ofh, omf_idx idx );
 
 extern omf_string       OmfGetLastExtName( omf_file_handle ofh );
 

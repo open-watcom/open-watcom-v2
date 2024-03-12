@@ -254,7 +254,7 @@ const char * OMFENTRY OmfSecGetClassName( omf_sec_handle sh )
     assert( sh );
 
     if( _IsSegType( sh->type ) ) {
-        class = OmfGetLName( sh->omf_file_hnd->lnames, sh->assoc.seg.class );
+        class = OmfGetLName( sh->omf_file_hnd, sh->assoc.seg.class );
         if( class != NULL ) {
             return( class->string );
         }
