@@ -283,7 +283,7 @@ void WriteOmfFile( sym_file *sfile )
      * + '!' character and length byte
      */
     charCount += __ROUND_UP_SIZE_EVEN( strlen( fname ) + 1 + 1 );
-    WriteFileBody( sfile );
+    WriteFileBody( NewLibrary, sfile );
     PadOmf( false );
     for( sym = sfile->first; sym != NULL; sym = sym->next ) {
         ++symCount;

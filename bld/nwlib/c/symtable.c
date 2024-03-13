@@ -388,36 +388,36 @@ static void SortSymbols( void )
     }
 }
 
-void WriteFileBody( sym_file *sfile )
-/***********************************/
+void WriteFileBody( libfile dst, sym_file *sfile )
+/************************************************/
 {
-    libfile     io;
+    libfile     src;
 
     if( sfile->impsym == NULL ) {
         if( sfile->inlib_offset == 0 ) {
-            io = LibOpen( sfile->full_name, LIBOPEN_READ );
+            src = LibOpen( sfile->full_name, LIBOPEN_READ );
         } else {
-            io = InLibHandle( sfile->inlib );
-            LibSeek( io, sfile->inlib_offset, SEEK_SET );
+            src = InLibHandle( sfile->inlib );
+            LibSeek( src, sfile->inlib_offset, SEEK_SET );
         }
         if( sfile->obj_type == WL_FTYPE_OMF ) {
-            OmfCopy( io, sfile );
+            OmfCopy( src, dst, sfile );
         } else {
-            Copy( io, NewLibrary, sfile->arch.size );
+            Copy( src, dst, sfile->arch.size );
         }
         if( sfile->inlib_offset == 0 ) {
-            LibClose( io );
+            LibClose( src );
         }
     } else {
         switch( sfile->obj_type ) {
         case WL_FTYPE_ELF:
-            ElfWriteImport( NewLibrary, sfile );
+            ElfWriteImport( dst, sfile );
             break;
         case WL_FTYPE_COFF:
-            CoffWriteImport( NewLibrary, sfile, Options.coff_import_long );
+            CoffWriteImport( dst, sfile, Options.coff_import_long );
             break;
         case WL_FTYPE_OMF:
-            OmfWriteImport( NewLibrary, sfile );
+            OmfWriteImport( dst, sfile );
             break;
         }
     }
@@ -760,7 +760,7 @@ static void WriteArMlibFileTable( void )
         if( append_name ) {
             WriteNew( sfile->arch.name, sfile->name_length );
         }
-        WriteFileBody( sfile );
+        WriteFileBody( NewLibrary, sfile );
         WritePadding( arch.size );
     }
 }

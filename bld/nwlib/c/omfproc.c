@@ -440,7 +440,7 @@ static void WriteOmfRecord( libfile io, OmfRecord *rec )
 }
 
 static void WriteTimeStamp( libfile io, sym_file *sfile )
-/************************************************************/
+/*******************************************************/
 {
     OmfTimeStamp    rec;
 
@@ -453,8 +453,8 @@ static void WriteTimeStamp( libfile io, sym_file *sfile )
     WriteOmfRecord( io, (OmfRecord *)&rec );
 }
 
-static file_offset OmfProc( libfile io, sym_file *sfile, omf_oper oper )
-/**********************************************************************/
+static file_offset OmfProc( libfile src, libfile dst, sym_file *sfile, omf_oper oper )
+/************************************************************************************/
 {
     bool        time_stamp;
     char        new_line[] = { '\n' };
@@ -467,8 +467,8 @@ static file_offset OmfProc( libfile io, sym_file *sfile, omf_oper oper )
     size = 0;
     first = true;
     do {
-        if( !ReadOmfRecord( io ) ) {
-            FatalError( ERR_BAD_OBJECT, io->name );
+        if( !ReadOmfRecord( src ) ) {
+            FatalError( ERR_BAD_OBJECT, src->name );
         }
         if( oper == OMF_ISIZE ) {
             size += omfRec->basic.len + 3;
@@ -578,30 +578,30 @@ static file_offset OmfProc( libfile io, sym_file *sfile, omf_oper oper )
                 if( !time_stamp ) {
                     size += sizeof( OmfTimeStamp );
                     if( oper == OMF_COPY ) {
-                        WriteTimeStamp( NewLibrary, sfile );
+                        WriteTimeStamp( dst, sfile );
                     }
                 }
                 break;
             }
             size += omfRec->basic.len + 3;
             if( oper == OMF_COPY ) {
-                WriteOmfRecord( NewLibrary, omfRec );
+                WriteOmfRecord( dst, omfRec );
             }
         }
     } while( omfRec->basic.type != CMD_MODEND && omfRec->basic.type != CMD_MODE32 );
     return( size );
 }
 
-file_offset OmfCopy( libfile io, sym_file *sfile )
-/************************************************/
+file_offset OmfCopy( libfile src, libfile dst, sym_file *sfile )
+/**************************************************************/
 {
-    return( OmfProc( io, sfile, OMF_COPY ) );
+    return( OmfProc( src, dst, sfile, OMF_COPY ) );
 }
 
 file_offset OmfSkipObject( libfile io )
 /*************************************/
 {
-    return( OmfProc( io, NULL, OMF_ISIZE ) );
+    return( OmfProc( io, NULL, NULL, OMF_ISIZE ) );
 }
 
 void OmfExtract( libfile src, libfile dst )
@@ -721,7 +721,7 @@ void OMFWalkSymList( obj_file *ofile, sym_file *sfile )
     LName_Head = NULL;
     LName_Owner = &LName_Head;
 
-    sfile->arch.size = OmfProc( ofile->io, sfile, OMF_SYMS );
+    sfile->arch.size = OmfProc( ofile->io, NULL, sfile, OMF_SYMS );
 
     FreeCommonBlk();
     FreeLNames();
