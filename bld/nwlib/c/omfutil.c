@@ -85,7 +85,7 @@ void PadOmf( libfile io, bool force )
     if( padding_size != Options.page_size || force ) {
         tmpbuf = MemAlloc( padding_size );
         memset( tmpbuf, 0, padding_size );
-        WriteNew( tmpbuf, padding_size );
+        LibWrite( io, tmpbuf, padding_size );
         MemFree( tmpbuf);
     }
 }

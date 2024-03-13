@@ -61,22 +61,22 @@ static file_offset      TotalNameLength;
 static file_offset      TotalFFNameLength;
 static file_offset      TotalSymbolLength;
 
-static void WriteBigEndian32( unsigned_32 num )
+static void WriteBigEndian32( libfile io, unsigned_32 num )
 {
     CONV_BE_32( num );
-    WriteNew( &num, sizeof( num ) );
+    LibWrite( io, &num, sizeof( num ) );
 }
 
-static void WriteLittleEndian32( unsigned_32 num )
+static void WriteLittleEndian32( libfile io, unsigned_32 num )
 {
     CONV_LE_32( num );
-    WriteNew( &num, sizeof( num ) );
+    LibWrite( io, &num, sizeof( num ) );
 }
 
-static void WriteLittleEndian16( unsigned_16 num )
+static void WriteLittleEndian16( libfile io, unsigned_16 num )
 {
     CONV_LE_16( num );
-    WriteNew( &num, sizeof( num ) );
+    LibWrite( io, &num, sizeof( num ) );
 }
 
 void InitFileTab( void )
@@ -269,20 +269,20 @@ static int CompSyms( const void *ap, const void *bp )
     return( strcmp( a->name, b->name ) );
 }
 
-static void WriteFileHeader( arch_header *arch )
-/**********************************************/
+static void WriteFileHeader( libfile io, arch_header *arch )
+/**********************************************************/
 {
     ar_header   ar;
 
     CreateARHeader( &ar, arch );
-    WriteNew( &ar, AR_HEADER_SIZE );
+    LibWrite( io, &ar, AR_HEADER_SIZE );
 }
 
-static void WritePadding( file_offset size )
-/******************************************/
+static void WritePadding( libfile io, file_offset size )
+/******************************************************/
 {
     if( size & 1 ) {
-        WriteNew( padding_string, padding_string_len );
+        LibWrite( io, padding_string, padding_string_len );
     }
 }
 
@@ -433,7 +433,7 @@ static void WriteOmfLibTrailer( libfile io )
     rec->basic.type = LIB_TRAILER_REC;
     rec->basic.len = GET_LE_16( size - 3 );
     memset( rec->basic.contents, 0, size - 3 );
-    WriteNew( rec, size );
+    LibWrite( io, rec, size );
     MemFree( rec );
 }
 
@@ -454,7 +454,7 @@ static void WriteOmfLibHeader( libfile io, unsigned_32 dict_offset, unsigned_16 
     } else {
         lib_header.flags = 0;
     }
-    WriteNew( &lib_header, sizeof( lib_header ) );
+    LibWrite( io, &lib_header, sizeof( lib_header ) );
 }
 
 static unsigned_16 OptimalPageSize( void )
@@ -598,11 +598,11 @@ static void WriteArMlibFileTable( libfile io )
 
     switch( Options.libtype ) {
     case WL_LTYPE_AR:
-        WriteNew( AR_IDENT, AR_IDENT_LEN );
+        LibWrite( io, AR_IDENT, AR_IDENT_LEN );
         break;
     case WL_LTYPE_MLIB:
-        WriteNew( LIBMAG, LIBMAG_LEN );
-        WriteNew( LIB_CLASS_DATA_SHOULDBE, LIB_CLASS_LEN + LIB_DATA_LEN );
+        LibWrite( io, LIBMAG, LIBMAG_LEN );
+        LibWrite( io, LIB_CLASS_DATA_SHOULDBE, LIB_CLASS_LEN + LIB_DATA_LEN );
         break;
     }
     /*
@@ -615,20 +615,20 @@ static void WriteArMlibFileTable( libfile io )
     if( dict1_size > 0 ) {
         arch.size = dict1_size;     // word round size
         arch.name = "/";
-        WriteFileHeader( &arch );
+        WriteFileHeader( io, &arch );
 
-        WriteBigEndian32( NumSymbols );
+        WriteBigEndian32( io, NumSymbols );
         for( sfile = FileTable.first; sfile != NULL; sfile = sfile->next ) {
             for( sym = sfile->first; sym != NULL; sym = sym->next ) {
-                WriteBigEndian32( sym->file->u.new_offset );
+                WriteBigEndian32( io, sym->file->u.new_offset );
             }
         }
         for( sfile = FileTable.first; sfile != NULL; sfile = sfile->next ) {
             for( sym = sfile->first; sym != NULL; sym = sym->next ) {
-                WriteNew( sym->name, sym->len + 1 );
+                LibWrite( io, sym->name, sym->len + 1 );
             }
         }
-        WritePadding( TotalSymbolLength );
+        WritePadding( io, TotalSymbolLength );
     }
     /*
      * write the useful dictionary
@@ -636,40 +636,40 @@ static void WriteArMlibFileTable( libfile io )
     if( dict2_size > 0 ) {
         arch.size = dict2_size;     // word round size
         arch.name = "/";
-        WriteFileHeader( &arch );
+        WriteFileHeader( io, &arch );
 
         if( Options.libtype == WL_LTYPE_AR ) {
-            WriteLittleEndian32( NumFiles );
+            WriteLittleEndian32( io, NumFiles );
             for( sfile = FileTable.first; sfile != NULL; sfile = sfile->next ) {
-                WriteLittleEndian32( sfile->u.new_offset );
+                WriteLittleEndian32( io, sfile->u.new_offset );
             }
         }
 
-        WriteLittleEndian32( NumSymbols );
+        WriteLittleEndian32( io, NumSymbols );
         switch( Options.libtype ) {
         case WL_LTYPE_AR:
             for( i = 0; i < NumSymbols; ++i ) {
-                WriteLittleEndian16( SortedSymbols[i]->file->index );
+                WriteLittleEndian16( io, SortedSymbols[i]->file->index );
             }
             break;
         case WL_LTYPE_MLIB:
             for( i = 0; i < NumSymbols; ++i ) {
-                WriteLittleEndian32( SortedSymbols[i]->file->index );
+                WriteLittleEndian32( io, SortedSymbols[i]->file->index );
             }
             for( i = 0; i < NumSymbols; ++i ) {
-                WriteNew( &(SortedSymbols[i]->info), 1 );
+                LibWrite( io, &(SortedSymbols[i]->info), 1 );
             }
             break;
         }
         for( i = 0; i < NumSymbols; ++i ) {
-            WriteNew( SortedSymbols[i]->name, SortedSymbols[i]->len + 1 );
+            LibWrite( io, SortedSymbols[i]->name, SortedSymbols[i]->len + 1 );
         }
         switch( Options.libtype ) {
         case WL_LTYPE_AR:
-            WritePadding( TotalSymbolLength );
+            WritePadding( io, TotalSymbolLength );
             break;
         case WL_LTYPE_MLIB:
-            WritePadding( dict2_size );
+            WritePadding( io, dict2_size );
             break;
         }
     }
@@ -695,7 +695,7 @@ static void WriteArMlibFileTable( libfile io )
         }
         arch.size = TotalNameLength;        // real size
         arch.name = "//";
-        WriteFileHeader( &arch );
+        WriteFileHeader( io, &arch );
         for( sfile = FileTable.first; sfile != NULL; sfile = sfile->next ) {
             if( sfile->name_offset == -1 )
                 continue;
@@ -704,13 +704,13 @@ static void WriteArMlibFileTable( libfile io )
              */
             if( Options.libtype == WL_LTYPE_AR
               && sfile->arch.ffname != NULL ) {
-                WriteNew( sfile->arch.ffname, sfile->ffname_length );
+                LibWrite( io, sfile->arch.ffname, sfile->ffname_length );
             } else {
-                WriteNew( sfile->arch.name, sfile->name_length );
+                LibWrite( io, sfile->arch.name, sfile->name_length );
             }
-            WriteNew( stringpad, stringpadlen );
+            LibWrite( io, stringpad, stringpadlen );
         }
-        WritePadding( TotalNameLength );
+        WritePadding( io, TotalNameLength );
     }
     /*
      * write the full filename table
@@ -718,11 +718,11 @@ static void WriteArMlibFileTable( libfile io )
     if( Options.libtype == WL_LTYPE_MLIB ) {
         arch.size = TotalFFNameLength;      // real size
         arch.name = "///";
-        WriteFileHeader( &arch );
+        WriteFileHeader( io, &arch );
         for( sfile = FileTable.first; sfile != NULL; sfile = sfile->next ) {
-            WriteNew( sfile->arch.ffname, sfile->ffname_length + 1 );
+            LibWrite( io, sfile->arch.ffname, sfile->ffname_length + 1 );
         }
-        WritePadding( TotalFFNameLength );
+        WritePadding( io, TotalFFNameLength );
     }
 
     for( sfile = FileTable.first; sfile != NULL; sfile = sfile->next ) {
@@ -756,12 +756,12 @@ static void WriteArMlibFileTable( libfile io )
             sprintf( buff, "/%ld", sfile->name_offset );
             arch.name = buff;
         }
-        WriteFileHeader( &arch );
+        WriteFileHeader( io, &arch );
         if( append_name ) {
-            WriteNew( sfile->arch.name, sfile->name_length );
+            LibWrite( io, sfile->arch.name, sfile->name_length );
         }
         WriteFileBody( io, sfile );
-        WritePadding( arch.size );
+        WritePadding( io, arch.size );
     }
 }
 

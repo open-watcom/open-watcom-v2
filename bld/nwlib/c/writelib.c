@@ -43,17 +43,11 @@ libfile ExportListFile;
 
 char *MakeTmpName( char * );
 
-static libfile NewLibrary;
-
-void WriteNew( const void *buff, size_t len )
-{
-    LibWrite( NewLibrary, buff, len );
-}
-
 void WriteNewLib( void )
 {
     char tmp[_MAX_PATH + 1];
     char *bak,*lib,*out;
+    libfile newlib;
 
     lib = Options.input_name;
     if( Options.output_name != NULL && !IsSameFile( lib, Options.output_name ) ) {
@@ -66,16 +60,16 @@ void WriteNewLib( void )
     } else {
         ExportListFile = NULL;
     }
-    NewLibrary = LibOpen( out, LIBOPEN_WRITE );
-    if( NewLibrary == NULL ) {
+    newlib = LibOpen( out, LIBOPEN_WRITE );
+    if( newlib == NULL ) {
         if( out == tmp ) {
             FatalError( ERR_CANT_OPEN, out, "Cannot create temporary file" );
         } else {
             FatalError( ERR_CANT_OPEN, out, strerror( errno ) );
         }
     }
-    WriteFileTable( NewLibrary );
-    LibClose( NewLibrary );
+    WriteFileTable( newlib );
+    LibClose( newlib );
     if( ExportListFile != NULL ) {
         LibClose( ExportListFile );
     }
