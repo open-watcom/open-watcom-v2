@@ -57,6 +57,11 @@ WL_PROCS
 WL_FTYPES
 #undef WL_FTYPE
 
+static char     path[_MAX_PATH];
+
+static pgroup2  pg1;
+static pgroup2  pg2;
+
 int SymbolNameCmp( const char *s1, const char *s2)
 {
     if( Options.respect_case ) {
@@ -128,11 +133,6 @@ void Copy( libfile src, libfile dst, file_offset size )
         CopyBytes( src, dst, buffer, size );
     }
 }
-
-static char     path[_MAX_PATH];
-
-static pgroup2  pg1;
-static pgroup2  pg2;
 
 bool IsSameFile( const char *a, const char *b )
 {
