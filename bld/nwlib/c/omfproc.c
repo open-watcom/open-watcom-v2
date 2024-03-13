@@ -116,7 +116,7 @@ static unsigned short GetIndex( void )
     index = *RecPtr++;
     if( index > 0x7F ) {
         index &= 0x7f;
-        index = (index << 8) | *RecPtr++;
+        index = ( index << 8 ) | *RecPtr++;
     }
     return( index );
 }
@@ -130,23 +130,25 @@ static void GetOffset( void )
     }
 }
 
-/*
+static void GetIdx( void )
+/*************************
  * throw away a group and segment number and possibly frame number
  */
-static void GetIdx( void )
-/************************/
 {
     unsigned short      grp;
 
     grp = GetIndex();
     CurrSegRef = GetIndex();
-    if( ( grp == 0 ) && ( CurrSegRef == 0 ) ) {
+    if( ( grp == 0 )
+      && ( CurrSegRef == 0 ) ) {
         RecPtr += 2;                    /* skip over frame number */
     }
 }
 
-static bool IsCommonRef( void )      /* dedicated routine for FORTRAN 77 common block */
-/*****************************/
+static bool IsCommonRef( void )
+/******************************
+ * dedicated routine for FORTRAN 77 common block
+ */
 {
     common_blk      *tmpblk;
 
@@ -161,8 +163,10 @@ static bool IsCommonRef( void )      /* dedicated routine for FORTRAN 77 common 
     return( false );
 }
 
-static void FreeCommonBlk( void )   /* dedicated routine for FORTRAN 77 common block */
-/*******************************/
+static void FreeCommonBlk( void )
+/********************************
+ * dedicated routine for FORTRAN 77 common block
+ */
 {
     common_blk          *tmpblk;
 
@@ -173,8 +177,10 @@ static void FreeCommonBlk( void )   /* dedicated routine for FORTRAN 77 common b
     }
 }
 
-static void procsegdef( void )      /* dedicated routine for FORTRAN 77 common block */
-/****************************/
+static void procsegdef( void )
+/*****************************
+ * dedicated routine for FORTRAN 77 common block
+ */
 {
     common_blk          *cmn;
     common_blk          **owner;
@@ -183,9 +189,7 @@ static void procsegdef( void )      /* dedicated routine for FORTRAN 77 common b
 
     SegDefCount++;
     if( tmpbyte == 6 ) {    /* COMBINE == COMMON, record it */
-
         owner = &CurrCommonBlk;
-
         for( ;; ) {
             cmn = *owner;
             if( cmn == NULL )
@@ -202,18 +206,20 @@ static void procsegdef( void )      /* dedicated routine for FORTRAN 77 common b
 static void AddOMFSymbol( sym_type type, const char *symname )
 /************************************************************/
 {
-    if( type == S_COMDEF || type == S_COMDAT || type == S_ALIAS || IsCommonRef() ) {
+    if( type == S_COMDEF
+      || type == S_COMDAT
+      || type == S_ALIAS
+      || IsCommonRef() ) {
         AddSym( symname, SYM_WEAK, 0 );
     } else {
         AddSym( symname, SYM_STRONG, 0 );
     }
 }
 
-/*
+static unsigned_8 GetOMFName( char *name )
+/*****************************************
  * from infl, get a intel name: length and name
  */
-static unsigned_8 GetOMFName( char *name )
-/****************************************/
 {
     unsigned_8  len;
 
@@ -224,11 +230,10 @@ static unsigned_8 GetOMFName( char *name )
     return( len );
 }
 
-/*
+static void getpubdef( void )
+/****************************
  * loop over the publics in the record
  */
-static void getpubdef( void )
-/***************************/
 {
     char        name[256];
 
@@ -259,11 +264,10 @@ static void GetComLen( void )
     }
 }
 
-/*
+static void getcomdef( void )
+/****************************
  * process a COMDEF record
  */
-static void getcomdef( void )
-/***************************/
 {
     char        name[256];
 
@@ -288,8 +292,8 @@ static lname *getIdxLName( void )
     lname               *ln;
 
     idx = GetIndex();
-    if( idx == 0 )		/* no LNAME */
-    	return( NULL );
+    if( idx == 0 )      /* no LNAME */
+        return( NULL );
     /*
      * change from 1-based index to O-based
      */
@@ -304,11 +308,10 @@ static lname *getIdxLName( void )
     return( ln );
 }
 
-/*
+static void getcomdat( void )
+/****************************
  * process a COMDAT record
  */
-static void getcomdat( void )
-/***************************/
 {
     unsigned            alloc;
     lname               *ln;
@@ -324,16 +327,17 @@ static void getcomdat( void )
         GetIdx();
     }
     ln = getIdxLName();
-    if( ln == NULL || ln->local )
+    if( ln == NULL
+      || ln->local ) {
         return;
+    }
     AddOMFSymbol( S_COMDAT, ln->name );
 }
 
-/*
+static void getlname( bool local )
+/*********************************
  * process a LNAMES record
  */
-static void getlname( bool local )
-/********************************/
 {
     unsigned_8          len;
     char                name[256];
@@ -520,8 +524,10 @@ static file_offset OmfProc( libfile src, libfile dst, sym_file *sfile, omf_oper 
             }
             switch( omfRec->basic.type ) {
             case CMD_THEADR:
-                if( Options.strip_line && !first )
+                if( Options.strip_line
+                  && !first ) {
                     continue;
+                }
                 if( Options.trim_path )
                     trimOmfHeader();
                 first = false;
