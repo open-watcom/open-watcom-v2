@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -95,23 +95,4 @@ void WriteNewLib( void )
             remove( bak );
         }
     }
-}
-
-void WriteBigEndian32( unsigned_32 num )
-{
-    CONV_BE_32( num );
-    WriteNew( &num, sizeof( num ) );
-}
-
-void WriteLittleEndian32( unsigned_32 num )
-{
-    CONV_LE_32( num );
-    WriteNew( &num, sizeof( num ) );
-}
-
-
-void WriteLittleEndian16( unsigned_16 num )
-{
-    CONV_LE_16( num );
-    WriteNew( &num, sizeof( num ) );
 }

@@ -61,6 +61,24 @@ static file_offset      TotalNameLength;
 static file_offset      TotalFFNameLength;
 static file_offset      TotalSymbolLength;
 
+static void WriteBigEndian32( unsigned_32 num )
+{
+    CONV_BE_32( num );
+    WriteNew( &num, sizeof( num ) );
+}
+
+static void WriteLittleEndian32( unsigned_32 num )
+{
+    CONV_LE_32( num );
+    WriteNew( &num, sizeof( num ) );
+}
+
+static void WriteLittleEndian16( unsigned_16 num )
+{
+    CONV_LE_16( num );
+    WriteNew( &num, sizeof( num ) );
+}
+
 void InitFileTab( void )
 /**********************/
 {
