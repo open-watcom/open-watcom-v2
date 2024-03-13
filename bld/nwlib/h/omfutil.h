@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -81,7 +82,7 @@ typedef struct{
 #include "poppck.h"
 
 extern void         InitOmfUtil( void );
-extern void         PadOmf( bool force );
-extern unsigned     WriteOmfDict( sym_file *first_sfile );
-extern void         WriteOmfFile( sym_file *sfile );
+extern void         PadOmf( libfile io, bool force );
+extern unsigned     WriteOmfDict( libfile io, sym_file *first_sfile );
+extern void         WriteOmfFile( libfile io, sym_file *sfile );
 extern void         FiniOmfUtil( void );

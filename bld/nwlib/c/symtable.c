@@ -423,12 +423,12 @@ void WriteFileBody( libfile dst, sym_file *sfile )
     }
 }
 
-static void WriteOmfLibTrailer( void )
+static void WriteOmfLibTrailer( libfile io )
 {
     OmfRecord   *rec;
     size_t      size;
 
-    size = DIC_REC_SIZE - (unsigned long)LibTell( NewLibrary ) % DIC_REC_SIZE;
+    size = DIC_REC_SIZE - (unsigned long)LibTell( io ) % DIC_REC_SIZE;
     rec = MemAlloc( size );
     rec->basic.type = LIB_TRAILER_REC;
     rec->basic.len = GET_LE_16( size - 3 );
@@ -437,14 +437,14 @@ static void WriteOmfLibTrailer( void )
     MemFree( rec );
 }
 
-static void WriteOmfLibHeader( unsigned_32 dict_offset, unsigned_16 dict_size )
-/******************************************************************************
+static void WriteOmfLibHeader( libfile io, unsigned_32 dict_offset, unsigned_16 dict_size )
+/******************************************************************************************
  * i didn't use omfRec because page size can be quite big
  */
 {
     OmfLibHeader    lib_header;
 
-    LibSeek( NewLibrary, 0, SEEK_SET );
+    LibSeek( io, 0, SEEK_SET );
     lib_header.type = LIB_HEADER_REC;
     lib_header.page_size = GET_LE_16( Options.page_size - 3 );
     lib_header.dict_offset = GET_LE_32( dict_offset );
@@ -481,8 +481,8 @@ static unsigned_16 OptimalPageSize( void )
     return( page_size );
 }
 
-static void WriteOmfFileTable( void )
-/***********************************/
+static void WriteOmfFileTable( libfile io )
+/*****************************************/
 {
     sym_file    *sfile;
     unsigned    num_blocks;
@@ -493,19 +493,19 @@ static void WriteOmfFileTable( void )
     } else if( Options.page_size == (unsigned_16)-1 ) {
         Options.page_size = OptimalPageSize();
     }
-    PadOmf( true );
+    PadOmf( io, true );
 
     for( sfile = FileTable.first; sfile != NULL; sfile = sfile->next ) {
-        WriteOmfFile( sfile );
+        WriteOmfFile( io, sfile );
     }
-    WriteOmfLibTrailer();
-    dict_offset = LibTell( NewLibrary );
-    num_blocks = WriteOmfDict( FileTable.first );
-    WriteOmfLibHeader( dict_offset, num_blocks );
+    WriteOmfLibTrailer( io );
+    dict_offset = LibTell( io );
+    num_blocks = WriteOmfDict( io, FileTable.first );
+    WriteOmfLibHeader( io, dict_offset, num_blocks );
 }
 
-static void WriteArMlibFileTable( void )
-/**************************************/
+static void WriteArMlibFileTable( libfile io )
+/********************************************/
 {
     arch_header     arch;
     sym_file        *sfile;
@@ -760,13 +760,13 @@ static void WriteArMlibFileTable( void )
         if( append_name ) {
             WriteNew( sfile->arch.name, sfile->name_length );
         }
-        WriteFileBody( NewLibrary, sfile );
+        WriteFileBody( io, sfile );
         WritePadding( arch.size );
     }
 }
 
-void WriteFileTable( void )
-/*************************/
+void WriteFileTable( libfile io )
+/*******************************/
 {
     if( Options.libtype == WL_LTYPE_NONE
       && Options.omf_found ) {
@@ -788,9 +788,9 @@ void WriteFileTable( void )
     }
     if( Options.libtype == WL_LTYPE_AR
       || Options.libtype == WL_LTYPE_MLIB ) {
-        WriteArMlibFileTable();
+        WriteArMlibFileTable( io );
     } else {
-        WriteOmfFileTable();
+        WriteOmfFileTable( io );
     }
 }
 

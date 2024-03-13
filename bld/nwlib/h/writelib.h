@@ -33,5 +33,4 @@
 extern void     WriteNew( const void *buff, size_t len );
 extern void     WriteNewLib( void );
 
-extern libfile  NewLibrary;
 extern libfile  ExportListFile;

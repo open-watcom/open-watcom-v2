@@ -121,7 +121,7 @@ extern void ListContents( void );
 extern void AddObjectSymbols( libfile io, long offset, arch_header *arch );
 extern bool RemoveObjectSymbols( arch_header *arch );
 extern void SymCalcNewOffsets( void );
-extern void WriteFileTable( void );
+extern void WriteFileTable( libfile io );
 extern void WriteFileBody( libfile io, sym_file *sfile );
 extern void AddSym( const char *name, symbol_strength strength, unsigned char info );
 

@@ -72,7 +72,7 @@ static unsigned_16 CheckForOverflow( unsigned long curr_offset )
     return( (unsigned_16)curr_offset );
 }
 
-void PadOmf( bool force )
+void PadOmf( libfile io, bool force )
 {
     size_t      padding_size;
     char        *tmpbuf;
@@ -81,7 +81,7 @@ void PadOmf( bool force )
      * page size is always a power of 2
      * therefor x % Options.page_size == x & ( Options.page_size - 1 )
      */
-    padding_size = Options.page_size - (LibTell( NewLibrary ) & ( Options.page_size - 1 ));
+    padding_size = Options.page_size - (LibTell( io ) & ( Options.page_size - 1 ));
     if( padding_size != Options.page_size || force ) {
         tmpbuf = MemAlloc( padding_size );
         memset( tmpbuf, 0, padding_size );
@@ -212,8 +212,8 @@ static bool HashOmfSymbols( OmfLibBlock *lib_block, unsigned num_blocks, sym_fil
     return( ret );
 }
 
-unsigned WriteOmfDict( sym_file *first_sfile )
-/*********************************************
+unsigned WriteOmfDict( libfile io, sym_file *first_sfile )
+/*********************************************************
  * return size of dict
  */
 {
@@ -252,18 +252,18 @@ unsigned WriteOmfDict( sym_file *first_sfile )
            }
         }
     }
-    WriteNew( lib_block, dict_size );
+    LibWrite( io, lib_block, dict_size );
     MemFree( lib_block );
     return( num_blocks );
 }
 
-void WriteOmfFile( sym_file *sfile )
+void WriteOmfFile( libfile io, sym_file *sfile )
 {
     sym_entry   *sym;
     const char  *fname;
 
     ++symCount;
-    sfile->u.new_offset_omf = CheckForOverflow( LibTell( NewLibrary ) );
+    sfile->u.new_offset_omf = CheckForOverflow( LibTell( io ) );
     if( sfile->impsym == NULL ) {
         fname = MakeFName( sfile->full_name );
         /*
@@ -283,8 +283,8 @@ void WriteOmfFile( sym_file *sfile )
      * + '!' character and length byte
      */
     charCount += __ROUND_UP_SIZE_EVEN( strlen( fname ) + 1 + 1 );
-    WriteFileBody( NewLibrary, sfile );
-    PadOmf( false );
+    WriteFileBody( io, sfile );
+    PadOmf( io, false );
     for( sym = sfile->first; sym != NULL; sym = sym->next ) {
         ++symCount;
         /* + length byte and word align */

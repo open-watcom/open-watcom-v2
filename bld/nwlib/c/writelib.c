@@ -40,9 +40,10 @@
 
 
 libfile ExportListFile;
-libfile NewLibrary;
 
 char *MakeTmpName( char * );
+
+static libfile NewLibrary;
 
 void WriteNew( const void *buff, size_t len )
 {
@@ -73,7 +74,7 @@ void WriteNewLib( void )
             FatalError( ERR_CANT_OPEN, out, strerror( errno ) );
         }
     }
-    WriteFileTable();
+    WriteFileTable( NewLibrary );
     LibClose( NewLibrary );
     if( ExportListFile != NULL ) {
         LibClose( ExportListFile );
