@@ -76,7 +76,9 @@ static void SetOmfBuffer( unsigned_16 len )
 /*****************************************/
 {
     if( len > omfRecLen ) {
-        MemFree( omfRec );
+        if( omfRec != NULL ) {
+            MemFree( omfRec );
+        }
         omfRec = MemAlloc( sizeof( OmfRecord ) + len );
         omfRecLen = len;
     }
@@ -637,7 +639,7 @@ void OmfExtract( libfile src, libfile dst )
 size_t OmfImportSize( import_sym *impsym )
 /****************************************/
 {
-    size_t      len;
+    size_t      size;
     size_t      dll_len;
     size_t      sym_len;
 
@@ -647,31 +649,31 @@ size_t OmfImportSize( import_sym *impsym )
      * THEADR OMF record
      */
 #ifdef IMP_MODULENAME_DLL
-    len = OMFHDRLEN + dll_len + OMFSUMLEN;
+    size = OMFHDRLEN + dll_len + OMFSUMLEN;
 #else
-    len = OMFHDRLEN + sym_len + OMFSUMLEN;
+    size = OMFHDRLEN + sym_len + OMFSUMLEN;
 #endif
     /*
      * Comment DLL Entry OMF record
      */
-    len += OMFHDRLEN + 2 + 2 + dll_len + sym_len;
+    size += OMFHDRLEN + 2 + 2 + dll_len + sym_len;
     if( impsym->type == ORDINAL ) {
-        len += 2;
+        size += 2;
     } else if( impsym->u.omf_coff.exportedName == NULL ) {
-        len += 1;
+        size += 1;
     } else {
-        len += 1 + strlen( impsym->u.omf_coff.exportedName );
+        size += 1 + strlen( impsym->u.omf_coff.exportedName );
     }
-    len += OMFSUMLEN;
+    size += OMFSUMLEN;
     /*
      * Comment timestamp OMF record
      */
-    len += OMFHDRLEN + 7 + OMFSUMLEN;
+    size += OMFHDRLEN + 7 + OMFSUMLEN;
     /*
      * MODEND OMF record
      */
-    len += OMFHDRLEN + 1 + OMFSUMLEN;
-    return( len );
+    size += OMFHDRLEN + 1 + OMFSUMLEN;
+    return( size );
 }
 
 void OmfWriteImport( libfile io, sym_file *sfile )
