@@ -74,8 +74,8 @@ static unsigned_16 CheckForOverflow( unsigned long curr_offset )
 
 void WriteOmfRecHdr( libfile io, unsigned_8 type, unsigned_16 len )
 {
-    LibWrite( io, &type, sizeof( type ) );
-    LibWrite( io, &len, sizeof( len ) );
+    LibWriteU8( io, type );
+    LibWriteU16( io, GET_LE_16( len ) );
 }
 
 void WriteOmfPad( libfile io, bool force )

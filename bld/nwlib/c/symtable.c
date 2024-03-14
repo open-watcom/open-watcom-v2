@@ -61,24 +61,6 @@ static file_offset      TotalNameLength;
 static file_offset      TotalFFNameLength;
 static file_offset      TotalSymbolLength;
 
-static void WriteBigEndian32( libfile io, unsigned_32 num )
-{
-    CONV_BE_32( num );
-    LibWrite( io, &num, sizeof( num ) );
-}
-
-static void WriteLittleEndian32( libfile io, unsigned_32 num )
-{
-    CONV_LE_32( num );
-    LibWrite( io, &num, sizeof( num ) );
-}
-
-static void WriteLittleEndian16( libfile io, unsigned_16 num )
-{
-    CONV_LE_16( num );
-    LibWrite( io, &num, sizeof( num ) );
-}
-
 void InitFileTab( void )
 /**********************/
 {
@@ -447,7 +429,7 @@ static void WriteOmfLibTrailer( libfile io )
     /*
      * output OMF record header
      */
-    WriteOmfRecHdr( io, LIB_TRAILER_REC, GET_LE_16( len ) );
+    WriteOmfRecHdr( io, LIB_TRAILER_REC, len );
     /*
      * output OMF Library trailer data
      */
@@ -475,23 +457,16 @@ static void WriteOmfLibHeader( libfile io, unsigned_32 dict_offset, unsigned_16 
  * and it is used as overlay for already zeroed OMF library full page size
  */
 {
-    unsigned_8  u8;
-    unsigned_16 u16;
-    unsigned_32 u32;
-
     /*
      * output OMF record header
      */
-    WriteOmfRecHdr( io, LIB_HEADER_REC, GET_LE_16( Options.page_size - OMFHDRLEN ) );
+    WriteOmfRecHdr( io, LIB_HEADER_REC, Options.page_size - OMFHDRLEN );
     /*
      * output OMF library header data without trailing zeros
      */
-    u32 = GET_LE_32( dict_offset );
-    LibWrite( io, &u32, sizeof( u32 ) );
-    u16 = GET_LE_16( dict_size );
-    LibWrite( io, &u16, sizeof( u16 ) );
-    u8 = ( Options.respect_case ) ? 1 : 0;
-    LibWrite( io, &u8, sizeof( u8 ) );
+    LibWriteU32( io, GET_LE_32( dict_offset ) );
+    LibWriteU16( io, GET_LE_16( dict_size ) );
+    LibWriteU8( io, ( Options.respect_case ) ? 1 : 0 );
 }
 
 static unsigned_16 OptimalPageSize( void )
@@ -654,10 +629,10 @@ static void WriteArMlibFileTable( libfile io )
         arch.name = "/";
         WriteFileHeader( io, &arch );
 
-        WriteBigEndian32( io, NumSymbols );
+        LibWriteU32( io, GET_BE_32( NumSymbols ) );
         for( sfile = FileTable.first; sfile != NULL; sfile = sfile->next ) {
             for( sym = sfile->first; sym != NULL; sym = sym->next ) {
-                WriteBigEndian32( io, sym->file->u.new_offset );
+                LibWriteU32( io, GET_BE_32( sym->file->u.new_offset ) );
             }
         }
         for( sfile = FileTable.first; sfile != NULL; sfile = sfile->next ) {
@@ -676,25 +651,25 @@ static void WriteArMlibFileTable( libfile io )
         WriteFileHeader( io, &arch );
 
         if( Options.libtype == WL_LTYPE_AR ) {
-            WriteLittleEndian32( io, NumFiles );
+            LibWriteU32( io, GET_LE_32( NumFiles ) );
             for( sfile = FileTable.first; sfile != NULL; sfile = sfile->next ) {
-                WriteLittleEndian32( io, sfile->u.new_offset );
+                LibWriteU32( io, GET_LE_32( sfile->u.new_offset ) );
             }
         }
 
-        WriteLittleEndian32( io, NumSymbols );
+        LibWriteU32( io, GET_LE_32( NumSymbols ) );
         switch( Options.libtype ) {
         case WL_LTYPE_AR:
             for( i = 0; i < NumSymbols; ++i ) {
-                WriteLittleEndian16( io, SortedSymbols[i]->file->index );
+                LibWriteU32( io, GET_LE_16( SortedSymbols[i]->file->index ) );
             }
             break;
         case WL_LTYPE_MLIB:
             for( i = 0; i < NumSymbols; ++i ) {
-                WriteLittleEndian32( io, SortedSymbols[i]->file->index );
+                LibWriteU32( io, GET_LE_32( SortedSymbols[i]->file->index ) );
             }
             for( i = 0; i < NumSymbols; ++i ) {
-                LibWrite( io, &(SortedSymbols[i]->info), 1 );
+                LibWriteU8( io, SortedSymbols[i]->info );
             }
             break;
         }

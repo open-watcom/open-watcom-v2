@@ -1014,15 +1014,14 @@ void ElfWriteImport( libfile io, sym_file *sfile )
     offset = 0;
     strtabsize = ELFBASESTRTABSIZE + impsym->dllName.len + 1;
     for( elfimp = impsym->u.elf.symlist; elfimp != NULL; elfimp = elfimp->next ) {
-        LibWrite( io, &strtabsize, 4 );
-        LibWrite( io, &offset, 4 );
-        more = 0x10;
-        LibWrite( io, &more, 4 );
+        LibWriteU32( io, strtabsize );
+        LibWriteU32( io, offset );
+        LibWriteU32( io, 0x00000010 );
         more = 0x00040010;
         if( elfimp->ordinal == -1 ) {
             more |= 0x5;
         }
-        LibWrite( io, &more, 4 );
+        LibWriteU32( io, more );
 
         offset += 0x10;
         strtabsize += elfimp->sym.len + 1;
@@ -1035,12 +1034,10 @@ void ElfWriteImport( libfile io, sym_file *sfile )
     switch( impsym->type ) {
     case ELF:
         for( elfimp = impsym->u.elf.symlist; elfimp != NULL; elfimp = elfimp->next ) {
-            LibWrite( io, &elfimp->ordinal, 4 );
-            LibWrite( io, &strtabsize, 4 );
-            more = 0x01000022;
-            LibWrite( io, &more, 4 );
-            more = 0;
-            LibWrite( io, &more, 4 );
+            LibWriteU32( io, elfimp->ordinal );
+            LibWriteU32( io, strtabsize );
+            LibWriteU32( io, 0x01000022 );
+            LibWriteU32( io, 0x00000000 );
             strtabsize += elfimp->sym.len + 1;
         }
         break;
@@ -1048,12 +1045,10 @@ void ElfWriteImport( libfile io, sym_file *sfile )
         elfimp = impsym->u.elf.symlist;
         strtabsize += elfimp->sym.len + 1;
         elfimp = elfimp->next;
-        LibWrite( io, &(elfimp->ordinal), 4 );
-        LibWrite( io, &strtabsize, 4 ) ;
-        more = 0x01000022;
-        LibWrite( io, &more, 4 );
-        more = 0;
-        LibWrite( io, &more, 4 );
+        LibWriteU32( io, elfimp->ordinal );
+        LibWriteU32( io, strtabsize ) ;
+        LibWriteU32( io, 0x01000022 );
+        LibWriteU32( io, 0x00000000 );
         break;
     default:
         break;

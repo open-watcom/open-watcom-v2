@@ -438,7 +438,7 @@ static void WriteOmfRecord( libfile io, OmfRecord *rec )
 
     len = rec->len;
     CalcOmfRecordCheckSum( rec, len );
-    WriteOmfRecHdr( io, rec->type, GET_LE_16( len ) );
+    WriteOmfRecHdr( io, rec->type, len );
     LibWrite( io, rec->contents, len );
 }
 
@@ -478,7 +478,6 @@ static file_offset OmfProc( libfile src, libfile dst, sym_file *sfile, omf_oper 
 /************************************************************************************/
 {
     bool        time_stamp;
-    char        new_line[] = { '\n' };
     bool        first;
     file_offset size;
     bool        EasyOMF;
@@ -572,7 +571,7 @@ static file_offset OmfProc( libfile src, libfile dst, sym_file *sfile, omf_oper 
                         if( oper == OMF_COPY ) {
                             if( ExportListFile != NULL ) {
                                 LibWrite( ExportListFile, omfRec->contents + 5, omfRec->contents[4] );
-                                LibWrite( ExportListFile, new_line, sizeof( new_line ) );
+                                LibWriteU8( ExportListFile, '\n' );
                             }
                         }
                         if( Options.strip_expdef ) {

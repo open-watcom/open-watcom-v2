@@ -176,6 +176,8 @@ void LibWrite( libfile io, const void *buff, size_t len )
 {
     size_t  num;
 
+    if( len == 0 )
+        return;
     if( len > WRITE_FILE_BUFFER_SIZE ) {
         LibFlush( io );
         if( fwrite( buff, 1, len, io->fp ) != len ) {
@@ -194,6 +196,21 @@ void LibWrite( libfile io, const void *buff, size_t len )
         memcpy( io->buffer, (char *)buff + num, len );
         io->buf_size = len;
     }
+}
+
+void LibWriteU8( libfile io, unsigned_8 value )
+{
+    LibWrite( io, &value, sizeof( value ) );
+}
+
+void LibWriteU16( libfile io, unsigned_16 value )
+{
+    LibWrite( io, &value, sizeof( value ) );
+}
+
+void LibWriteU32( libfile io, unsigned_32 value )
+{
+    LibWrite( io, &value, sizeof( value ) );
 }
 
 void LibWriteNulls( libfile io, size_t len )
