@@ -444,7 +444,6 @@ static void WriteOmfLibHeader( libfile io, unsigned_32 dict_offset, unsigned_16 
 {
     OmfLibHeader    lib_header;
 
-    LibSeek( io, 0, SEEK_SET );
     lib_header.type = LIB_HEADER_REC;
     lib_header.page_size = GET_LE_16( Options.page_size - 3 );
     lib_header.dict_offset = GET_LE_32( dict_offset );
@@ -493,7 +492,7 @@ static void WriteOmfFileTable( libfile io )
     } else if( Options.page_size == (unsigned_16)-1 ) {
         Options.page_size = OptimalPageSize();
     }
-    PadOmf( io, true );
+    WriteOmfPad( io, true );
 
     for( sfile = FileTable.first; sfile != NULL; sfile = sfile->next ) {
         WriteOmfFile( io, sfile );
@@ -501,6 +500,7 @@ static void WriteOmfFileTable( libfile io )
     WriteOmfLibTrailer( io );
     dict_offset = LibTell( io );
     num_blocks = WriteOmfDict( io, FileTable.first );
+    LibSeek( io, 0, SEEK_SET );
     WriteOmfLibHeader( io, dict_offset, num_blocks );
 }
 

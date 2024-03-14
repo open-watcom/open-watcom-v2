@@ -438,9 +438,9 @@ static void WriteOmfRecord( libfile io, OmfRecord *rec )
     unsigned_16     len;
 
     len = rec->basic.len;
-    rec->basic.len = GET_LE_16( len );
     CalcOmfRecordCheckSum( rec );
-    LibWrite( io, rec, len + 3 );
+    WriteOmfRecHdr( io, rec->basic.type, GET_LE_16( len ) );
+    LibWrite( io, rec->basic.contents, len );
 }
 
 static void WriteTimeStamp( libfile io, sym_file *sfile )

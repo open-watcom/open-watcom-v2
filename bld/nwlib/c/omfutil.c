@@ -72,7 +72,13 @@ static unsigned_16 CheckForOverflow( unsigned long curr_offset )
     return( (unsigned_16)curr_offset );
 }
 
-void PadOmf( libfile io, bool force )
+void WriteOmfRecHdr( libfile io, unsigned_8 type, unsigned_16 len )
+{
+    LibWrite( io, &type, sizeof( type ) );
+    LibWrite( io, &len, sizeof( len ) );
+}
+
+void WriteOmfPad( libfile io, bool force )
 {
     size_t      padding_size;
     char        *tmpbuf;
@@ -284,7 +290,7 @@ void WriteOmfFile( libfile io, sym_file *sfile )
      */
     charCount += __ROUND_UP_SIZE_EVEN( strlen( fname ) + 1 + 1 );
     WriteFileBody( io, sfile );
-    PadOmf( io, false );
+    WriteOmfPad( io, false );
     for( sym = sfile->first; sym != NULL; sym = sym->next ) {
         ++symCount;
         /* + length byte and word align */

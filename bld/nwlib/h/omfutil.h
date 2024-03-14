@@ -82,7 +82,8 @@ typedef struct{
 #include "poppck.h"
 
 extern void         InitOmfUtil( void );
-extern void         PadOmf( libfile io, bool force );
+extern void         WriteOmfRecHdr( libfile io, unsigned_8 type, unsigned_16 len );
+extern void         WriteOmfPad( libfile io, bool force );
 extern unsigned     WriteOmfDict( libfile io, sym_file *first_sfile );
 extern void         WriteOmfFile( libfile io, sym_file *sfile );
 extern void         FiniOmfUtil( void );
