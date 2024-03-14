@@ -661,7 +661,7 @@ static void WriteArMlibFileTable( libfile io )
         switch( Options.libtype ) {
         case WL_LTYPE_AR:
             for( i = 0; i < NumSymbols; ++i ) {
-                LibWriteU32( io, GET_LE_16( SortedSymbols[i]->file->index ) );
+                LibWriteU16( io, GET_LE_16( SortedSymbols[i]->file->index ) );
             }
             break;
         case WL_LTYPE_MLIB:
