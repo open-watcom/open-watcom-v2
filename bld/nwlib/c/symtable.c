@@ -431,8 +431,8 @@ static void WriteOmfLibTrailer( libfile io )
     size = DIC_REC_SIZE - (unsigned long)LibTell( io ) % DIC_REC_SIZE;
     rec = MemAlloc( size );
     rec->basic.type = LIB_TRAILER_REC;
-    rec->basic.len = GET_LE_16( size - 3 );
-    memset( rec->basic.contents, 0, size - 3 );
+    rec->basic.len = GET_LE_16( size - OMFHDRLEN );
+    memset( rec->basic.contents, 0, size - OMFHDRLEN );
     LibWrite( io, rec, size );
     MemFree( rec );
 }
@@ -445,7 +445,7 @@ static void WriteOmfLibHeader( libfile io, unsigned_32 dict_offset, unsigned_16 
     OmfLibHeader    lib_header;
 
     lib_header.type = LIB_HEADER_REC;
-    lib_header.page_size = GET_LE_16( Options.page_size - 3 );
+    lib_header.page_size = GET_LE_16( Options.page_size - OMFHDRLEN );
     lib_header.dict_offset = GET_LE_32( dict_offset );
     lib_header.dict_size = GET_LE_16( dict_size );
     if( Options.respect_case ) {

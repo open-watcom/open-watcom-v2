@@ -34,17 +34,21 @@
 
 #include "omfhash.h"
 
+#define OMFHDRLEN   3
+#define OMFSUMLEN   1
+
+#define OMFRECORD(size)     struct { unsigned_8 type; unsigned_16 len; unsigned_8 contents[size]; }
+
+#define INIT_OMF_REC_SIZE   1024
+#define BLOCK_NAME_LEN      ( DIC_REC_SIZE - NUM_BUCKETS - 1 )
+
 /*
  * Structs
  */
 
 #include "pushpck1.h"
 
-typedef struct {
-    unsigned_8  type;
-    unsigned_16 len;
-    unsigned_8  contents[1];
-} OmfBasic;
+typedef OMFRECORD( 1 ) OmfBasic;
 
 typedef struct {
     unsigned_8  type;
@@ -59,7 +63,6 @@ typedef struct {
 typedef union {
     OmfBasic        basic;
     OmfTimeStamp    time;
-    unsigned_8      chkcalc[1];
 } OmfRecord;
 
 typedef struct {
@@ -69,9 +72,6 @@ typedef struct {
     unsigned_16 dict_size;
     unsigned_8  flags;
 } OmfLibHeader;
-
-#define INIT_OMF_REC_SIZE 1024
-#define BLOCK_NAME_LEN ( DIC_REC_SIZE - NUM_BUCKETS - 1 )
 
 typedef struct{
     unsigned_8  htab[NUM_BUCKETS];

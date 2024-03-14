@@ -295,3 +295,27 @@ char    *FormSym( const char *name )
     }
     return( buff );
 }
+
+unsigned_16 mget_u16( const unsigned_8 *s )
+{
+    return( (unsigned_16)s[1] << 8 + s[0] );
+}
+
+unsigned_32 mget_u32( const unsigned_8 *s )
+{
+    return( (unsigned_32)s[3] << 24 + (unsigned_32)s[2] << 16 + (unsigned_16)s[1] << 8 + s[0] );
+}
+
+void mset_u16( unsigned_8 *out, unsigned_16 value )
+{
+    out[0] = value & 255;
+    out[1] = ( value >> 8 ) & 255;
+}
+
+void mset_u32( unsigned_8 *out, unsigned_32 value )
+{
+    out[0] = value & 255;
+    out[1] = ( value >> 8 ) & 255;
+    out[2] = ( value >> 16 ) & 255;
+    out[3] = ( value >> 24 ) & 255;
+}

@@ -62,8 +62,8 @@ typedef struct {
 typedef unsigned_32     Coff32_EName;
 typedef unsigned_16     Coff32_EOrd;
 
-extern char     ElfBase[];
-extern char     ElfOSInfo[];
+extern unsigned char    ElfBase[];
+extern char             ElfOSInfo[];
 
 extern bool     AddImport( libfile io, arch_header *arch );
 extern void     OmfMKImport( arch_header *, importType, long, name_len *, const char *, const char *, processor_type );
