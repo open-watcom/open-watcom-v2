@@ -81,7 +81,6 @@ void WriteOmfRecHdr( libfile io, unsigned_8 type, unsigned_16 len )
 void WriteOmfPad( libfile io, bool force )
 {
     size_t      padding_size;
-    char        *tmpbuf;
 
     /*
      * page size is always a power of 2
@@ -89,10 +88,7 @@ void WriteOmfPad( libfile io, bool force )
      */
     padding_size = Options.page_size - (LibTell( io ) & ( Options.page_size - 1 ));
     if( padding_size != Options.page_size || force ) {
-        tmpbuf = MemAlloc( padding_size );
-        memset( tmpbuf, 0, padding_size );
-        LibWrite( io, tmpbuf, padding_size );
-        MemFree( tmpbuf);
+        LibWriteNulls( io, padding_size );
     }
 }
 

@@ -196,6 +196,29 @@ void LibWrite( libfile io, const void *buff, size_t len )
     }
 }
 
+void LibWriteNulls( libfile io, size_t len )
+{
+    size_t  num;
+
+    if( len == 0 )
+        return;
+    if( len > WRITE_FILE_BUFFER_SIZE ) {
+        LibWriteNulls( io, len - WRITE_FILE_BUFFER_SIZE );
+        len = WRITE_FILE_BUFFER_SIZE;
+    }
+    num = WRITE_FILE_BUFFER_SIZE - io->buf_size;
+    if( num > len )
+        num = len;
+    memset( io->buffer + io->buf_size, 0, num );
+    len -= num;
+    io->buf_size += num;
+    if( len ) {
+        LibFlush( io );
+        memset( io->buffer, 0, len );
+        io->buf_size = len;
+    }
+}
+
 void LibClose( libfile io )
 {
     if( io->write_to ) {

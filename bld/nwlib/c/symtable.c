@@ -441,7 +441,6 @@ static void WriteOmfLibTrailer( libfile io )
  * and it is filled by zeros up to full size (aligned to 512 bytes)
  */
 {
-    unsigned_8  *contents;
     unsigned_16 len;
 
     len = DIC_REC_SIZE - ( (unsigned long)LibTell( io ) % DIC_REC_SIZE ) - OMFHDRLEN;
@@ -452,10 +451,7 @@ static void WriteOmfLibTrailer( libfile io )
     /*
      * output OMF Library trailer data
      */
-    contents = MemAlloc( len );
-    memset( contents, 0, len );
-    LibWrite( io, contents, len );
-    MemFree( contents );
+    LibWriteNulls( io, len );
 }
 
 static void WriteOmfLibHeader( libfile io, unsigned_32 dict_offset, unsigned_16 dict_size )
