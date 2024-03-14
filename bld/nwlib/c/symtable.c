@@ -424,36 +424,78 @@ void WriteFileBody( libfile dst, sym_file *sfile )
 }
 
 static void WriteOmfLibTrailer( libfile io )
+/*******************************************
+ * output OMF library end page
+ *
+ * struct {
+ *     // OMF record header
+ *     unsigned_8  type;
+ *     unsigned_16 len;
+ *     // OMF Library trailer
+ *     ...
+ *     zeros up to dictionary page size alignment (512 bytes)
+ *     ...
+ * }
+ *
+ * it doesn't use omfRec because it is OMF record without check sum
+ * and it is filled by zeros up to full size (aligned to 512 bytes)
+ */
 {
-    OmfRecord   *rec;
-    size_t      size;
+    unsigned_8  *contents;
+    unsigned_16 len;
 
-    size = DIC_REC_SIZE - (unsigned long)LibTell( io ) % DIC_REC_SIZE;
-    rec = MemAlloc( size );
-    rec->basic.type = LIB_TRAILER_REC;
-    rec->basic.len = GET_LE_16( size - OMFHDRLEN );
-    memset( rec->basic.contents, 0, size - OMFHDRLEN );
-    LibWrite( io, rec, size );
-    MemFree( rec );
+    len = DIC_REC_SIZE - ( (unsigned long)LibTell( io ) % DIC_REC_SIZE ) - OMFHDRLEN;
+    /*
+     * output OMF record header
+     */
+    WriteOmfRecHdr( io, LIB_TRAILER_REC, GET_LE_16( len ) );
+    /*
+     * output OMF Library trailer data
+     */
+    contents = MemAlloc( len );
+    memset( contents, 0, len );
+    LibWrite( io, contents, len );
+    MemFree( contents );
 }
 
 static void WriteOmfLibHeader( libfile io, unsigned_32 dict_offset, unsigned_16 dict_size )
 /******************************************************************************************
- * i didn't use omfRec because page size can be quite big
+ * output OMF library first page
+ *
+ * struct {
+ *     // OMF record header
+ *     unsigned_8  type;
+ *     unsigned_16 page_size;  //really page size - 3
+ *     // OMF Library header
+ *     unsigned_32 dict_offset;
+ *     unsigned_16 dict_size;
+ *     unsigned_8  flags;
+ *     ...
+ *     zeros up to OMF library page size
+ *     ...
+ * }
+ *
+ * it doesn't use omfRec because it is OMF record without check sum
+ * and it is used as overlay for already zeroed OMF library full page size
  */
 {
-    OmfLibHeader    lib_header;
+    unsigned_8  u8;
+    unsigned_16 u16;
+    unsigned_32 u32;
 
-    lib_header.type = LIB_HEADER_REC;
-    lib_header.page_size = GET_LE_16( Options.page_size - OMFHDRLEN );
-    lib_header.dict_offset = GET_LE_32( dict_offset );
-    lib_header.dict_size = GET_LE_16( dict_size );
-    if( Options.respect_case ) {
-        lib_header.flags = 1;
-    } else {
-        lib_header.flags = 0;
-    }
-    LibWrite( io, &lib_header, sizeof( lib_header ) );
+    /*
+     * output OMF record header
+     */
+    WriteOmfRecHdr( io, LIB_HEADER_REC, GET_LE_16( Options.page_size - OMFHDRLEN ) );
+    /*
+     * output OMF library header data without trailing zeros
+     */
+    u32 = GET_LE_32( dict_offset );
+    LibWrite( io, &u32, sizeof( u32 ) );
+    u16 = GET_LE_16( dict_size );
+    LibWrite( io, &u16, sizeof( u16 ) );
+    u8 = ( Options.respect_case ) ? 1 : 0;
+    LibWrite( io, &u8, sizeof( u8 ) );
 }
 
 static unsigned_16 OptimalPageSize( void )
@@ -493,7 +535,6 @@ static void WriteOmfFileTable( libfile io )
         Options.page_size = OptimalPageSize();
     }
     WriteOmfPad( io, true );
-
     for( sfile = FileTable.first; sfile != NULL; sfile = sfile->next ) {
         WriteOmfFile( io, sfile );
     }

@@ -86,9 +86,9 @@ static unsigned_8 *SetOmfRecBuffer( unsigned_8 type, unsigned_16 len )
 /********************************************************************/
 {
     SetOmfBuffer( len );
-    omfRec->basic.type = type;
-    omfRec->basic.len = len;
-    return( omfRec->basic.contents );
+    omfRec->type = type;
+    omfRec->len = len;
+    return( omfRec->contents );
 }
 
 void InitOmfRec( void )
@@ -384,17 +384,17 @@ static void FreeLNames( void )
     }
 }
 
-static void CalcOmfRecordCheckSum( OmfRecord *rec )
-/*************************************************/
+static void CalcOmfRecordCheckSum( OmfRecord *rec, unsigned_16 len )
+/******************************************************************/
 {
     unsigned_8      sum;
     unsigned_16     i;
 
-    sum = rec->basic.type + rec->basic.len + ( rec->basic.len >> 8 );
-    for( i = 0; i < rec->basic.len - 1; ++i ) {
-        sum += rec->basic.contents[i];
+    sum = rec->type + len + ( len >> 8 );
+    for( i = 0; i < len - OMFSUMLEN; ++i ) {
+        sum += rec->contents[i];
     }
-    rec->basic.contents[i] = -sum;
+    rec->contents[i] = -sum;
 }
 
 static bool ReadOmfRecord( libfile io )
@@ -408,11 +408,11 @@ static bool ReadOmfRecord( libfile io )
     if( LibRead( io, &len, sizeof( len ) ) != sizeof( len ) )
         return( false );
     SetOmfRecBuffer( type, GET_LE_16( len ) );
-    if( LibRead( io, omfRec->basic.contents, omfRec->basic.len ) != omfRec->basic.len ) {
+    if( LibRead( io, omfRec->contents, omfRec->len ) != omfRec->len ) {
         return( false );
     }
-    RecPtr = omfRec->basic.contents;
-    RecEnd = RecPtr + omfRec->basic.len - 1;
+    RecPtr = omfRec->contents;
+    RecEnd = RecPtr + omfRec->len - OMFSUMLEN;
     return( true );
 }
 
@@ -421,12 +421,12 @@ static void trimOmfHeader( void )
 {
     unsigned_16 len;
 
-    len = omfRec->basic.len;
-    omfRec->basic.contents[len - 1] = '\0';
-    TrimPathInPlace( (char *)omfRec->basic.contents + 1 );
-    len = (unsigned_8)strlen( (char *)omfRec->basic.contents + 1 );
-    omfRec->basic.contents[0] = (unsigned_8)len;
-    omfRec->basic.len = len + 2;
+    len = omfRec->len;
+    omfRec->contents[len - OMFSUMLEN] = '\0';
+    TrimPathInPlace( (char *)omfRec->contents + 1 );
+    len = (unsigned_8)strlen( (char *)omfRec->contents + 1 );
+    omfRec->contents[0] = (unsigned_8)len;
+    omfRec->len = 1 + len + OMFSUMLEN;
 }
 
 static void WriteOmfRecord( libfile io, OmfRecord *rec )
@@ -434,23 +434,41 @@ static void WriteOmfRecord( libfile io, OmfRecord *rec )
 {
     unsigned_16     len;
 
-    len = rec->basic.len;
-    CalcOmfRecordCheckSum( rec );
-    WriteOmfRecHdr( io, rec->basic.type, GET_LE_16( len ) );
-    LibWrite( io, rec->basic.contents, len );
+    len = rec->len;
+    CalcOmfRecordCheckSum( rec, len );
+    WriteOmfRecHdr( io, rec->type, GET_LE_16( len ) );
+    LibWrite( io, rec->contents, len );
 }
 
 static void WriteOmfTimeStamp( libfile io, sym_file *sfile )
-/**********************************************************/
+/***********************************************************
+ * output OMF timestamp record
+ *
+ * struct {
+ *     // OMF record header
+ *     unsigned_8  type;
+ *     unsigned_16 len;
+ *     // OMF timestamp data
+ *     unsigned_8  attribute;
+ *     unsigned_8  class;
+ *     unsigned_8  subclass;
+ *     unsigned_32 stamp;
+ *     // OMF record checksum
+ *     unsigned_8  chksum;
+ * }
+ *
+ * it does not use omfRec because it is processed in another OMF record
+ * processing and omfRec keeps the data of this record
+ */
 {
-    OmfTimeStamp    rec;
+    OMFRECORD( 7 + OMFSUMLEN )  rec;
 
     rec.type = CMD_COMENT;
-    rec.len = sizeof( rec ) - OMFHDRLEN;
-    rec.attribute = CMT_TNP | CMT_TNL;
-    rec.class = CMT_LINKER_DIRECTIVE;
-    rec.subclass = LDIR_OBJ_TIMESTAMP;
-    rec.stamp = GET_LE_32( sfile->arch.date );
+    rec.len = 7 + OMFSUMLEN;
+    rec.contents[0] = CMT_TNP | CMT_TNL;
+    rec.contents[1] = CMT_LINKER_DIRECTIVE;
+    rec.contents[2] = LDIR_OBJ_TIMESTAMP;
+    mset_u32( rec.contents + 3, GET_LE_32( sfile->arch.date ) );
     WriteOmfRecord( io, (OmfRecord *)&rec );
 }
 
@@ -472,27 +490,27 @@ static file_offset OmfProc( libfile src, libfile dst, sym_file *sfile, omf_oper 
             FatalError( ERR_BAD_OBJECT, src->name );
         }
         if( oper == OMF_ISIZE ) {
-            size += OMFHDRLEN + omfRec->basic.len;
+            size += OMFHDRLEN + omfRec->len;
         } else {
             if( oper == OMF_SYMS ) {
                 /*
                  * check to see if this is an Easy OMF-386 object file
                  * Only need to check the first comment record
                  */
-                if( ( omfRec->basic.type & ~1 ) == CMD_COMENT ) {
-                    if( omfRec->basic.len == 7 + OMFSUMLEN
-                      && omfRec->basic.contents[0] == CMT_TNP
-                      && omfRec->basic.contents[1] == CMT_EASY_OMF
-                      && memcmp( omfRec->basic.contents + 2, "80386", 5 ) == 0 ) {
+                if( ( omfRec->type & ~1 ) == CMD_COMENT ) {
+                    if( omfRec->len == 7 + OMFSUMLEN
+                      && omfRec->contents[0] == CMT_TNP
+                      && omfRec->contents[1] == CMT_EASY_OMF
+                      && memcmp( omfRec->contents + 2, "80386", 5 ) == 0 ) {
                         EasyOMF = true;
                     }
                 }
-                if( omfRec->basic.type & 1 ) {
+                if( omfRec->type & 1 ) {
                     Rec32Bit = true;
                 } else {
                     Rec32Bit = EasyOMF;
                 }
-                switch( omfRec->basic.type ) {
+                switch( omfRec->type ) {
                 case CMD_SEGDEF:
                 case CMD_SEGD32:
                     procsegdef();
@@ -519,7 +537,7 @@ static file_offset OmfProc( libfile src, libfile dst, sym_file *sfile, omf_oper 
                     break;
                 }
             }
-            switch( omfRec->basic.type ) {
+            switch( omfRec->type ) {
             case CMD_THEADR:
                 if( Options.strip_line
                   && !first ) {
@@ -538,30 +556,30 @@ static file_offset OmfProc( libfile src, libfile dst, sym_file *sfile, omf_oper 
                 }
                 break;
             case CMD_COMENT:
-                switch( omfRec->basic.contents[1] ) {
+                switch( omfRec->contents[1] ) {
                 case CMT_LINKER_DIRECTIVE:
-                    if( omfRec->basic.contents[2] == LDIR_OBJ_TIMESTAMP ) {
+                    if( omfRec->contents[2] == LDIR_OBJ_TIMESTAMP ) {
                         time_stamp = true;
                         if( oper == OMF_SYMS ) {
-                            sfile->arch.date = GET_LE_32( mget_u32( omfRec->basic.contents + 3 ) );
+                            sfile->arch.date = GET_LE_32( mget_u32( omfRec->contents + 3 ) );
                         }
                     }
                     break;
                 case CMT_DLL_ENTRY:
-                    if( omfRec->basic.contents[2] == DLL_EXPDEF ) {
+                    if( omfRec->contents[2] == DLL_EXPDEF ) {
                         if( oper == OMF_COPY ) {
                             if( ExportListFile != NULL ) {
-                                LibWrite( ExportListFile, omfRec->basic.contents + 5, omfRec->basic.contents[4] );
+                                LibWrite( ExportListFile, omfRec->contents + 5, omfRec->contents[4] );
                                 LibWrite( ExportListFile, new_line, sizeof( new_line ) );
                             }
                         }
                         if( Options.strip_expdef ) {
                             continue;
                         }
-                    } else if( omfRec->basic.contents[2] == DLL_IMPDEF ) {
+                    } else if( omfRec->contents[2] == DLL_IMPDEF ) {
                         if( oper == OMF_SYMS ) {
-                            omfRec->basic.contents[5 + omfRec->basic.contents[4]] = '\0';
-                            AddSym( (char *)( omfRec->basic.contents + 5 ), SYM_STRONG, 0 );
+                            omfRec->contents[5 + omfRec->contents[4]] = '\0';
+                            AddSym( (char *)( omfRec->contents + 5 ), SYM_STRONG, 0 );
                         }
                     }
                     break;
@@ -586,12 +604,12 @@ static file_offset OmfProc( libfile src, libfile dst, sym_file *sfile, omf_oper 
                 }
                 break;
             }
-            size += OMFHDRLEN + omfRec->basic.len;
+            size += OMFHDRLEN + omfRec->len;
             if( oper == OMF_COPY ) {
                 WriteOmfRecord( dst, omfRec );
             }
         }
-    } while( omfRec->basic.type != CMD_MODEND && omfRec->basic.type != CMD_MODE32 );
+    } while( omfRec->type != CMD_MODEND && omfRec->type != CMD_MODE32 );
     return( size );
 }
 
@@ -613,7 +631,7 @@ void OmfExtract( libfile src, libfile dst )
     do {
         ReadOmfRecord( src );
         WriteOmfRecord( dst, omfRec );
-    } while( omfRec->basic.type != CMD_MODEND && omfRec->basic.type != CMD_MODE32 );
+    } while( omfRec->type != CMD_MODEND && omfRec->type != CMD_MODE32 );
 }
 
 size_t OmfImportSize( import_sym *impsym )

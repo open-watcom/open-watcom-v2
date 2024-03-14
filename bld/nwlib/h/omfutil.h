@@ -46,32 +46,9 @@
  * Structs
  */
 
+typedef OMFRECORD( 1 )  OmfRecord;
+
 #include "pushpck1.h"
-
-typedef OMFRECORD( 1 ) OmfBasic;
-
-typedef struct {
-    unsigned_8  type;
-    unsigned_16 len;
-    unsigned_8  attribute;
-    unsigned_8  class;
-    unsigned_8  subclass;
-    unsigned_32 stamp;
-    unsigned_8  chksum;
-} OmfTimeStamp;
-
-typedef union {
-    OmfBasic        basic;
-    OmfTimeStamp    time;
-} OmfRecord;
-
-typedef struct {
-    unsigned_8  type;
-    unsigned_16 page_size;  //really page size - 3
-    unsigned_32 dict_offset;
-    unsigned_16 dict_size;
-    unsigned_8  flags;
-} OmfLibHeader;
 
 typedef struct{
     unsigned_8  htab[NUM_BUCKETS];
