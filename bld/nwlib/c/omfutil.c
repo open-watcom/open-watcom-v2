@@ -72,13 +72,13 @@ static unsigned_16 CheckForOverflow( unsigned long curr_offset )
     return( (unsigned_16)curr_offset );
 }
 
-void WriteOmfRecHdr( libfile io, unsigned_8 type, unsigned_16 len )
+void WriteOmfRecHeader( libfile io, unsigned_8 type, unsigned_16 len )
 {
     LibWriteU8( io, type );
-    LibWriteU16( io, GET_LE_16( len ) );
+    LibWriteU16LE( io, len );
 }
 
-void WriteOmfPad( libfile io, bool force )
+void WriteOmfPadding( libfile io, bool force )
 {
     size_t      padding_size;
 
@@ -233,7 +233,7 @@ unsigned WriteOmfDict( libfile io, sym_file *first_sfile )
 
     lib_block = NULL;
     do {
-        num_blocks ++;
+        num_blocks++;
         num_blocks = NextPrime( num_blocks );
         if( num_blocks == 0 ) {
             MemFree( lib_block );
@@ -280,16 +280,20 @@ void WriteOmfFile( libfile io, sym_file *sfile )
 #endif
     }
     /*
-     * add one for ! after name and make sure odd so whole name record will
-     * be word aligned
-     * + '!' character and length byte
+     * the first data consists of the length of the name (one byte),
+     * the name characters and '!' character
+     * make sure whole data will be word aligned
      */
-    charCount += __ROUND_UP_SIZE_EVEN( strlen( fname ) + 1 + 1 );
+    charCount += __ROUND_UP_SIZE_EVEN( 1 + strlen( fname ) + 1 );
     WriteFileBody( io, sfile );
-    WriteOmfPad( io, false );
+    WriteOmfPadding( io, false );
     for( sym = sfile->first; sym != NULL; sym = sym->next ) {
         ++symCount;
-        /* + length byte and word align */
-        charCount += __ROUND_UP_SIZE_EVEN( sym->len + 1 );
+        /*
+         * the next data consists of the length of the name (one byte)
+         * and the name characters
+         * make sure whole data will be word aligned
+         */
+        charCount += __ROUND_UP_SIZE_EVEN( 1 + sym->len );
     }
 }

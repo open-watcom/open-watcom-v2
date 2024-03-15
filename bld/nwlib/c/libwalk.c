@@ -74,9 +74,9 @@ void LibWalk( libfile io, arch_header *arch, libwalk_fn *rtn )
             BadLibrary( io );
         if( LibRead( io, &rec_len, sizeof( rec_len ) ) != sizeof( rec_len ) )
             BadLibrary( io );
-        pagelen = GET_LE_16( rec_len );
-        pos = pagelen;
-        pagelen += 3;
+        CONV_LE_16( rec_len );
+        pos = rec_len;
+        pagelen = rec_len + 3;
         if( Options.page_size == 0 ) {
             Options.page_size = pagelen;
         }

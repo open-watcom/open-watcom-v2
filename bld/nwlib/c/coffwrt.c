@@ -255,15 +255,15 @@ static void WriteCoffReloc( libfile io, unsigned_32 offset, unsigned_32 sym_tab_
     /*
      * output is buffered so no point in putting COFF_RELOC struct
      */
-    LibWriteU32( io, offset );
-    LibWriteU32( io, sym_tab_index );
-    LibWriteU16( io, type );
+    LibWriteU32LE( io, offset );
+    LibWriteU32LE( io, sym_tab_index );
+    LibWriteU16LE( io, type );
 }
 
 static void WriteCoffStringTable( libfile io, coff_lib_file *c_file )
 {
     c_file->string_table_size += 4;
-    LibWriteU32( io, c_file->string_table_size );
+    LibWriteU32LE( io, c_file->string_table_size );
     LibWrite( io, c_file->string_table, c_file->string_table_size - 4 );
 }
 
@@ -604,11 +604,11 @@ static void WriteCoffImportTablesOrdinal( libfile io, sym_file *sfile )
     /*
      * write data section no. 2(4)
      */
-    LibWriteU32( io, import_table_entry.u._32[0] );
+    LibWriteU32LE( io, import_table_entry.u._32[0] );
     /*
      * write data section no. 3(5)
      */
-    LibWriteU32( io, import_table_entry.u._32[0] );
+    LibWriteU32LE( io, import_table_entry.u._32[0] );
 }
 
 static void WriteLongImportEntry( libfile io, sym_file *sfile, coff_lib_file *c_file,
@@ -796,7 +796,7 @@ static void WriteLongImportEntry( libfile io, sym_file *sfile, coff_lib_file *c_
         /*
          * write data section no. 4(6)
          */
-        LibWriteU16( io, sfile->impsym->u.omf_coff.ordinal );
+        LibWriteU16LE( io, sfile->impsym->u.omf_coff.ordinal );
         WriteStringPadding( io, exportedName->name, exportedName->len + 1 );
     }
     WriteCoffSymbols( io, c_file );

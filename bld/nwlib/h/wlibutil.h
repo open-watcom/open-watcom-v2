@@ -62,7 +62,7 @@ extern char     *WlibGetEnv( const char *name );
 extern void     Banner( bool force );
 extern char     *MakeTmpName( char *buffer );
 
-extern unsigned_16  mget_u16( const unsigned_8 *s );
-extern unsigned_32  mget_u32( const unsigned_8 *s );
-extern void     mset_u16( unsigned_8 *out, unsigned_16 value );
-extern void     mset_u32( unsigned_8 *out, unsigned_32 value );
+extern unsigned_16  mget_U16LE( const unsigned_8 *s );
+extern unsigned_32  mget_U32LE( const unsigned_8 *s );
+extern void     mset_U16LE( unsigned_8 *out, unsigned_16 value );
+extern void     mset_U32LE( unsigned_8 *out, unsigned_32 value );

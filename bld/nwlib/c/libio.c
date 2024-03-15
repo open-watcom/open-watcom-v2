@@ -203,13 +203,21 @@ void LibWriteU8( libfile io, unsigned_8 value )
     LibWrite( io, &value, sizeof( value ) );
 }
 
-void LibWriteU16( libfile io, unsigned_16 value )
+void LibWriteU16LE( libfile io, unsigned_16 value )
 {
+    CONV_LE_16( value );
     LibWrite( io, &value, sizeof( value ) );
 }
 
-void LibWriteU32( libfile io, unsigned_32 value )
+void LibWriteU32BE( libfile io, unsigned_32 value )
 {
+    CONV_BE_32( value );
+    LibWrite( io, &value, sizeof( value ) );
+}
+
+void LibWriteU32LE( libfile io, unsigned_32 value )
+{
+    CONV_LE_32( value );
     LibWrite( io, &value, sizeof( value ) );
 }
 

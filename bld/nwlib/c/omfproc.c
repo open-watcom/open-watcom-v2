@@ -386,12 +386,14 @@ static void FreeLNames( void )
     }
 }
 
-static void CalcOmfRecordCheckSum( OmfRecord *rec, unsigned_16 len )
-/******************************************************************/
+static void CalcOmfRecordCheckSum( OmfRecord *rec )
+/*************************************************/
 {
     unsigned_8      sum;
+    unsigned_16     len;
     unsigned_16     i;
 
+    len = rec->len;
     sum = rec->type + len + ( len >> 8 );
     for( i = 0; i < len - OMFSUMLEN; ++i ) {
         sum += rec->contents[i];
@@ -409,12 +411,13 @@ static bool ReadOmfRecord( libfile io )
         return( false );
     if( LibRead( io, &len, sizeof( len ) ) != sizeof( len ) )
         return( false );
-    SetOmfRecBuffer( type, GET_LE_16( len ) );
-    if( LibRead( io, omfRec->contents, omfRec->len ) != omfRec->len ) {
+    CONV_LE_16( len );
+    SetOmfRecBuffer( type, len );
+    if( LibRead( io, omfRec->contents, len ) != len ) {
         return( false );
     }
     RecPtr = omfRec->contents;
-    RecEnd = RecPtr + omfRec->len - OMFSUMLEN;
+    RecEnd = RecPtr + len - OMFSUMLEN;
     return( true );
 }
 
@@ -434,12 +437,9 @@ static void trimOmfHeader( void )
 static void WriteOmfRecord( libfile io, OmfRecord *rec )
 /******************************************************/
 {
-    unsigned_16     len;
-
-    len = rec->len;
-    CalcOmfRecordCheckSum( rec, len );
-    WriteOmfRecHdr( io, rec->type, len );
-    LibWrite( io, rec->contents, len );
+    CalcOmfRecordCheckSum( rec );
+    WriteOmfRecHeader( io, rec->type, rec->len );
+    LibWrite( io, rec->contents, rec->len );
 }
 
 static void WriteOmfTimeStamp( libfile io, sym_file *sfile )
@@ -470,7 +470,7 @@ static void WriteOmfTimeStamp( libfile io, sym_file *sfile )
     rec.contents[0] = CMT_TNP | CMT_TNL;
     rec.contents[1] = CMT_LINKER_DIRECTIVE;
     rec.contents[2] = LDIR_OBJ_TIMESTAMP;
-    mset_u32( rec.contents + 3, GET_LE_32( sfile->arch.date ) );
+    mset_U32LE( rec.contents + 3, sfile->arch.date );
     WriteOmfRecord( io, (OmfRecord *)&rec );
 }
 
@@ -562,7 +562,7 @@ static file_offset OmfProc( libfile src, libfile dst, sym_file *sfile, omf_oper 
                     if( omfRec->contents[2] == LDIR_OBJ_TIMESTAMP ) {
                         time_stamp = true;
                         if( oper == OMF_SYMS ) {
-                            sfile->arch.date = GET_LE_32( mget_u32( omfRec->contents + 3 ) );
+                            sfile->arch.date = mget_U32LE( omfRec->contents + 3 );
                         }
                     }
                     break;
@@ -579,6 +579,10 @@ static file_offset OmfProc( libfile src, libfile dst, sym_file *sfile, omf_oper 
                         }
                     } else if( omfRec->contents[2] == DLL_IMPDEF ) {
                         if( oper == OMF_SYMS ) {
+                            /*
+                             * the content of OMF record may be destroyed because
+                             * it is no longer in use (only for symbols list)
+                             */
                             omfRec->contents[5 + omfRec->contents[4]] = '\0';
                             AddSym( (char *)( omfRec->contents + 5 ), SYM_STRONG, 0 );
                         }
@@ -718,7 +722,7 @@ void OmfWriteImport( libfile io, sym_file *sfile )
     memcpy( contents, sfile->impsym->dllName.name, file_len );
     contents += file_len;
     if( sfile->impsym->type == ORDINAL ) {
-        MPUT_LE_16( contents, sfile->impsym->u.omf_coff.ordinal );
+        mset_U16LE( contents, sfile->impsym->u.omf_coff.ordinal );
     } else if( sfile->impsym->u.omf_coff.exportedName == NULL ) {
         *contents = 0;
     } else {

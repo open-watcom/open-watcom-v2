@@ -429,7 +429,7 @@ static void WriteOmfLibTrailer( libfile io )
     /*
      * output OMF record header
      */
-    WriteOmfRecHdr( io, LIB_TRAILER_REC, len );
+    WriteOmfRecHeader( io, LIB_TRAILER_REC, len );
     /*
      * output OMF Library trailer data
      */
@@ -460,12 +460,12 @@ static void WriteOmfLibHeader( libfile io, unsigned_32 dict_offset, unsigned_16 
     /*
      * output OMF record header
      */
-    WriteOmfRecHdr( io, LIB_HEADER_REC, Options.page_size - OMFHDRLEN );
+    WriteOmfRecHeader( io, LIB_HEADER_REC, Options.page_size - OMFHDRLEN );
     /*
      * output OMF library header data without trailing zeros
      */
-    LibWriteU32( io, GET_LE_32( dict_offset ) );
-    LibWriteU16( io, GET_LE_16( dict_size ) );
+    LibWriteU32LE( io, dict_offset );
+    LibWriteU16LE( io, dict_size );
     LibWriteU8( io, ( Options.respect_case ) ? 1 : 0 );
 }
 
@@ -505,7 +505,7 @@ static void WriteOmfFileTable( libfile io )
     } else if( Options.page_size == (unsigned_16)-1 ) {
         Options.page_size = OptimalPageSize();
     }
-    WriteOmfPad( io, true );
+    WriteOmfPadding( io, true );
     for( sfile = FileTable.first; sfile != NULL; sfile = sfile->next ) {
         WriteOmfFile( io, sfile );
     }
@@ -629,10 +629,10 @@ static void WriteArMlibFileTable( libfile io )
         arch.name = "/";
         WriteFileHeader( io, &arch );
 
-        LibWriteU32( io, GET_BE_32( NumSymbols ) );
+        LibWriteU32BE( io, NumSymbols );
         for( sfile = FileTable.first; sfile != NULL; sfile = sfile->next ) {
             for( sym = sfile->first; sym != NULL; sym = sym->next ) {
-                LibWriteU32( io, GET_BE_32( sym->file->u.new_offset ) );
+                LibWriteU32BE( io, sym->file->u.new_offset );
             }
         }
         for( sfile = FileTable.first; sfile != NULL; sfile = sfile->next ) {
@@ -651,22 +651,22 @@ static void WriteArMlibFileTable( libfile io )
         WriteFileHeader( io, &arch );
 
         if( Options.libtype == WL_LTYPE_AR ) {
-            LibWriteU32( io, GET_LE_32( NumFiles ) );
+            LibWriteU32LE( io, NumFiles );
             for( sfile = FileTable.first; sfile != NULL; sfile = sfile->next ) {
-                LibWriteU32( io, GET_LE_32( sfile->u.new_offset ) );
+                LibWriteU32LE( io, sfile->u.new_offset );
             }
         }
 
-        LibWriteU32( io, GET_LE_32( NumSymbols ) );
+        LibWriteU32LE( io, NumSymbols );
         switch( Options.libtype ) {
         case WL_LTYPE_AR:
             for( i = 0; i < NumSymbols; ++i ) {
-                LibWriteU16( io, GET_LE_16( SortedSymbols[i]->file->index ) );
+                LibWriteU16LE( io, SortedSymbols[i]->file->index );
             }
             break;
         case WL_LTYPE_MLIB:
             for( i = 0; i < NumSymbols; ++i ) {
-                LibWriteU32( io, GET_LE_32( SortedSymbols[i]->file->index ) );
+                LibWriteU32LE( io, SortedSymbols[i]->file->index );
             }
             for( i = 0; i < NumSymbols; ++i ) {
                 LibWriteU8( io, SortedSymbols[i]->info );
