@@ -61,8 +61,8 @@ typedef enum omf_oper {
 
 static unsigned short   CurrSegRef = 0;
 static char             Rec32Bit;
-static lname            *LName_Head;
-static lname            **LName_Owner;
+static lname            *LNames;
+static lname            **LNamesEnd;
 static unsigned_8       *RecPtr;
 static unsigned_8       *RecEnd;
 static common_blk       *CurrCommonBlk;
@@ -300,7 +300,7 @@ static lname *getIdxLName( void )
     /*
      * get LNAME from linked list
      */
-    ln = LName_Head;
+    ln = LNames;
     while( idx-- > 0 ) {
         ln = ln->next;
     }
@@ -349,8 +349,8 @@ static void getlname( bool local )
         ln->len = len;
         ln->local = local;
         ln->next = NULL;
-        *LName_Owner = ln;
-        LName_Owner = &ln->next;
+        *LNamesEnd = ln;
+        LNamesEnd = &ln->next;
     }
 }
 
@@ -379,10 +379,10 @@ static void FreeLNames( void )
 {
     lname           *next;
 
-    while( LName_Head != NULL ) {
-        next = LName_Head->next;
-        MemFree( LName_Head );
-        LName_Head = next;
+    while( LNames != NULL ) {
+        next = LNames->next;
+        MemFree( LNames );
+        LNames = next;
     }
 }
 
@@ -745,8 +745,8 @@ void OMFWalkSymList( obj_file *ofile, sym_file *sfile )
     SegDefCount = 0;
 
     CurrSegRef = 0;
-    LName_Head = NULL;
-    LName_Owner = &LName_Head;
+    LNames = NULL;
+    LNamesEnd = &LNames;
 
     sfile->arch.size = OmfProc( ofile->io, NULL, sfile, OMF_SYMS );
 
