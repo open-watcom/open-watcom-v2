@@ -124,7 +124,6 @@ void Copy( libfile src, libfile dst, file_offset size )
 {
     char        buffer[4096];
 
-
     while( size > sizeof( buffer ) ) {
         CopyBytes( src, dst, buffer, sizeof( buffer ) );
         size -= sizeof( buffer );
@@ -298,12 +297,12 @@ char    *FormSym( const char *name )
 
 unsigned_16 mget_U16LE( const unsigned_8 *s )
 {
-    return( (unsigned_16)s[1] << 8 + s[0] );
+    return( ( (unsigned_16)s[1] << 8 ) + s[0] );
 }
 
 unsigned_32 mget_U32LE( const unsigned_8 *s )
 {
-    return( (unsigned_32)s[3] << 24 + (unsigned_32)s[2] << 16 + (unsigned_16)s[1] << 8 + s[0] );
+    return( ( (unsigned_32)s[3] << 24 ) + ( (unsigned_32)s[2] << 16 ) + ( (unsigned_16)s[1] << 8 ) + s[0] );
 }
 
 void mset_U16LE( unsigned_8 *out, unsigned_16 value )

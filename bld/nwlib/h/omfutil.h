@@ -37,7 +37,12 @@
 #define OMFHDRLEN   3
 #define OMFSUMLEN   1
 
-#define OMFRECORD(size)     struct { unsigned_8 type; unsigned_16 len; unsigned_8 contents[size]; }
+#define OMFRECORD(size) \
+    struct { \
+        unsigned_16 len; \
+        unsigned_8  type; \
+        unsigned_8  contents[size]; \
+    }
 
 #define INIT_OMF_REC_SIZE   1024
 #define BLOCK_NAME_LEN      ( DIC_REC_SIZE - NUM_BUCKETS - 1 )
@@ -45,10 +50,7 @@
 /*
  * Structs
  */
-
 typedef OMFRECORD( 1 )  OmfRecord;
-
-#include "pushpck1.h"
 
 typedef struct{
     unsigned_8  htab[NUM_BUCKETS];
@@ -56,11 +58,8 @@ typedef struct{
     unsigned_8  name[BLOCK_NAME_LEN];
 } OmfLibBlock;
 
-#include "poppck.h"
-
 extern void         InitOmfUtil( void );
 extern void         WriteOmfRecHeader( libfile io, unsigned_8 type, unsigned_16 len );
-extern void         WriteOmfPadding( libfile io, bool force );
 extern unsigned     WriteOmfDict( libfile io, sym_file *first_sfile );
 extern void         WriteOmfFile( libfile io, sym_file *sfile );
 extern void         FiniOmfUtil( void );

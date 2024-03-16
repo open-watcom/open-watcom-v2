@@ -62,8 +62,6 @@ struct elf_import_sym_struct {
 };
 
 struct import_sym_struct {
-    importType      type;
-    processor_type  processor;
     name_len        dllName;
     union {
         struct {
@@ -76,6 +74,8 @@ struct import_sym_struct {
             long            numsyms;
         } elf;
     } u;
+    importType      type;
+    processor_type  processor;
 };
 
 struct sym_file_struct {

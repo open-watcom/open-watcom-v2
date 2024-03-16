@@ -86,9 +86,9 @@ typedef struct arch_header {
     arch_gid            gid;
     arch_mode           mode;
     arch_file_size      size;
-    lib_type            libtype;
     char                *fnametab;
     char                *ffnametab;
     char                *nextffname;
     char                *lastffname;
+    lib_type            libtype;
 } arch_header;

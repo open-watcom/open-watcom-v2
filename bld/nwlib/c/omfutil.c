@@ -78,20 +78,6 @@ void WriteOmfRecHeader( libfile io, unsigned_8 type, unsigned_16 len )
     LibWriteU16LE( io, len );
 }
 
-void WriteOmfPadding( libfile io, bool force )
-{
-    size_t      padding_size;
-
-    /*
-     * page size is always a power of 2
-     * therefor x % Options.page_size == x & ( Options.page_size - 1 )
-     */
-    padding_size = Options.page_size - (LibTell( io ) & ( Options.page_size - 1 ));
-    if( padding_size != Options.page_size || force ) {
-        LibWriteNulls( io, padding_size );
-    }
-}
-
 static int isPrime( unsigned num )
 {
     unsigned *test_p;
@@ -286,7 +272,6 @@ void WriteOmfFile( libfile io, sym_file *sfile )
      */
     charCount += __ROUND_UP_SIZE_EVEN( 1 + strlen( fname ) + 1 );
     WriteFileBody( io, sfile );
-    WriteOmfPadding( io, false );
     for( sym = sfile->first; sym != NULL; sym = sym->next ) {
         ++symCount;
         /*

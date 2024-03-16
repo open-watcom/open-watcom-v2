@@ -77,9 +77,9 @@ typedef struct {
     processor_type  processor;
     file_type       filetype;
     lib_type        libtype;
-    ar_format       ar_libformat;
     int             explode_count;
     char            *ar_name;
+    ar_format       ar_libformat;
 } options_def;
 
 

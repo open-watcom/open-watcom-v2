@@ -493,6 +493,21 @@ static unsigned_16 OptimalPageSize( void )
     return( page_size );
 }
 
+static void WriteOmfLibPadding( libfile io, bool force )
+/******************************************************/
+{
+    size_t      padding_size;
+
+    /*
+     * page size is always a power of 2
+     * therefor x % Options.page_size == x & ( Options.page_size - 1 )
+     */
+    padding_size = Options.page_size - (LibTell( io ) & ( Options.page_size - 1 ));
+    if( padding_size != Options.page_size || force ) {
+        LibWriteNulls( io, padding_size );
+    }
+}
+
 static void WriteOmfFileTable( libfile io )
 /*****************************************/
 {
@@ -505,9 +520,10 @@ static void WriteOmfFileTable( libfile io )
     } else if( Options.page_size == (unsigned_16)-1 ) {
         Options.page_size = OptimalPageSize();
     }
-    WriteOmfPadding( io, true );
+    WriteOmfLibPadding( io, true );
     for( sfile = FileTable.first; sfile != NULL; sfile = sfile->next ) {
         WriteOmfFile( io, sfile );
+        WriteOmfLibPadding( io, false );
     }
     WriteOmfLibTrailer( io );
     dict_offset = LibTell( io );

@@ -42,9 +42,9 @@ struct io_struct {
     libfile         prev;
     FILE            *fp;
     long            endpos;
-    bool            write_to;
     size_t          buf_size;
     size_t          buf_pos;
+    bool            write_to;
     char            buffer[1];
 };
 
