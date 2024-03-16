@@ -39,7 +39,6 @@
  #ifdef _WCHUGE
   #error The macro _WCHUGE is reserved for use by the runtime library.
  #endif
-:segment BITS16
  #ifdef _WCI86NEAR
   #error The macro _WCI86NEAR is reserved for use by the runtime library.
  #endif
@@ -49,7 +48,6 @@
  #ifdef _WCI86HUGE
   #error The macro _WCI86HUGE is reserved for use by the runtime library.
  #endif
-:endsegment
  #ifdef _WCINTERRUPT
   #error The macro _WCINTERRUPT is reserved for use by the runtime library.
  #endif
@@ -87,6 +85,10 @@
    #define _WCI86FAR
    #define _WCI86HUGE
   #endif
+:elsesegment
+  #define _WCI86NEAR
+  #define _WCI86FAR
+  #define _WCI86HUGE
 :endsegment
 :segment !INTEL_ONLY
  #elif defined(__AXP__)
@@ -95,11 +97,9 @@
   #define _WCNEAR
   #define _WCFAR
   #define _WCHUGE
-:segment DOS
   #define _WCI86NEAR
   #define _WCI86FAR
   #define _WCI86HUGE
-:endsegment
   #define _WCINTERRUPT
   #define _WCUNALIGNED __unaligned
  #elif defined(__PPC__)
@@ -108,11 +108,9 @@
   #define _WCNEAR
   #define _WCFAR
   #define _WCHUGE
-:segment DOS
   #define _WCI86NEAR
   #define _WCI86FAR
   #define _WCI86HUGE
-:endsegment
   #define _WCINTERRUPT
   #define _WCUNALIGNED __unaligned
  #elif defined(__MIPS__)
@@ -121,11 +119,9 @@
   #define _WCNEAR
   #define _WCFAR
   #define _WCHUGE
-:segment DOS
   #define _WCI86NEAR
   #define _WCI86FAR
   #define _WCI86HUGE
-:endsegment
   #define _WCINTERRUPT
   #define _WCUNALIGNED __unaligned
  #else
@@ -134,11 +130,9 @@
   #define _WCNEAR
   #define _WCFAR
   #define _WCHUGE
-:segment DOS
   #define _WCI86NEAR
   #define _WCI86FAR
   #define _WCI86HUGE
-:endsegment
   #define _WCINTERRUPT
   #define _WCUNALIGNED
  #endif
