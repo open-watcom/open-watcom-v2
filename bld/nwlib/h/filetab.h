@@ -71,7 +71,7 @@ struct import_sym_struct {
         } omf_coff;
         struct {
             elf_import_sym  *symlist;
-            long            numsyms;
+            size_t          numsyms;
         } elf;
     } u;
     importType      type;

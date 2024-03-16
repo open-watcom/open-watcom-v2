@@ -219,12 +219,12 @@ static void importOs2Table( libfile io, arch_header *arch, name_len *dllName, bo
          * (module names, comments etc.). Everything that has ordinal of zero isn't
          * an export but more exports could follow
          */
-        if( ordinal == 0 )
-            continue;
-        if( coff_obj ) {
-            CoffMKImport( arch, ORDINAL, ordinal, dllName, sym_name, NULL, WL_PROC_X86 );
-        } else {
-            OmfMKImport( arch, type, ordinal, dllName, sym_name, NULL, WL_PROC_X86 );
+        if( ordinal ) {
+            if( coff_obj ) {
+                CoffMKImport( arch, ORDINAL, ordinal, dllName, sym_name, NULL, WL_PROC_X86 );
+            } else {
+                OmfMKImport( arch, type, ordinal, dllName, sym_name, NULL, WL_PROC_X86 );
+            }
         }
     }
 }
@@ -492,7 +492,7 @@ void ProcessImportWlib( const char *name )
     char            *symName;
     char            *exportedName;
     char            *ordString;
-    long            ordinal = 0;
+    long            ordinal;
     arch_header     arch;
     char            *buffer;
     Elf32_Export    export_table[2];
@@ -517,6 +517,7 @@ void ProcessImportWlib( const char *name )
 
     exportedName = symName;     // give it a default value
 
+    ordinal = 0;
     if( *p != '\0' ) {
         ordString = GetImportString( &p, name );
         if( *ordString != '\0' ) {
@@ -715,12 +716,12 @@ void ProcessImportWlib( const char *name )
     switch( Options.filetype ) {
     case WL_FTYPE_ELF:
         sym_len = strlen( symName ) + 1;
-        if( ordinal == 0 ) {
-            export_table[0].exp_ordinal = -1;
-            export_table[1].exp_ordinal = -1;
-        } else {
+        if( ordinal ) {
             export_table[0].exp_ordinal = ordinal;
             export_table[1].exp_ordinal = ordinal;
+        } else {
+            export_table[0].exp_ordinal = -1;
+            export_table[1].exp_ordinal = -1;
         }
         export_table[0].exp_symbol = 1;
         export_table[1].exp_symbol = 2;
@@ -740,10 +741,10 @@ void ProcessImportWlib( const char *name )
 
         MemFree( buffer );
 
-        if( ordinal == 0 ) {
-            AddSym( symName, SYM_STRONG, ELF_IMPORT_NAMED_SYM_INFO );
-        } else {
+        if( ordinal ) {
             AddSym( symName, SYM_STRONG, ELF_IMPORT_SYM_INFO );
+        } else {
+            AddSym( symName, SYM_STRONG, ELF_IMPORT_NAMED_SYM_INFO );
         }
         break;
     case WL_FTYPE_COFF:
@@ -754,10 +755,10 @@ void ProcessImportWlib( const char *name )
             FatalError( ERR_NOT_LIB, ctext_WL_FTYPE_COFF, ctext_WL_LTYPE_MLIB );
         }
         coffAddImportOverhead( &arch, &dllName, Options.processor );
-        if( ordinal == 0 ) {
-            CoffMKImport( &arch, NAMED, ordinal, &dllName, symName, exportedName, Options.processor );
-        } else {
+        if( ordinal ) {
             CoffMKImport( &arch, ORDINAL, ordinal, &dllName, symName, NULL, Options.processor );
+        } else {
+            CoffMKImport( &arch, NAMED, ordinal, &dllName, symName, exportedName, Options.processor );
         }
         AddSym2( &str_coff_imp_prefix, symName, SYM_WEAK, 0 );
         if( Options.processor == WL_PROC_PPC ) {
@@ -768,10 +769,10 @@ void ProcessImportWlib( const char *name )
         if( Options.libtype == WL_LTYPE_MLIB ) {
             FatalError( ERR_NOT_LIB, ctext_WL_FTYPE_OMF, ctext_WL_LTYPE_MLIB );
         }
-        if( ordinal == 0 ) {
-            OmfMKImport( &arch, NAMED, ordinal, &dllName, symName, exportedName, WL_PROC_X86 );
-        } else {
+        if( ordinal ) {
             OmfMKImport( &arch, ORDINAL, ordinal, &dllName, symName, NULL, WL_PROC_X86 );
+        } else {
+            OmfMKImport( &arch, NAMED, ordinal, &dllName, symName, exportedName, WL_PROC_X86 );
         }
         //AddSym2( &str_coff_imp_prefix, symName, SYM_WEAK, 0 );
         break;
@@ -970,11 +971,10 @@ void ElfWriteImport( libfile io, sym_file *sfile )
 {
     elf_import_sym  *elfimp;
     import_sym      *impsym;
-    unsigned long   strtabsize;
-    unsigned long   numsyms;
+    size_t          strtabsize;
+    size_t          numsyms;
     bool            padding;
-    unsigned long   offset;
-    unsigned long   more;
+    size_t          offset;
 
     impsym = sfile->impsym;
     strtabsize = ELFBASESTRTABSIZE + impsym->dllName.len + 1;
@@ -1017,12 +1017,7 @@ void ElfWriteImport( libfile io, sym_file *sfile )
         LibWriteU32LE( io, strtabsize );
         LibWriteU32LE( io, offset );
         LibWriteU32LE( io, 0x00000010 );
-        more = 0x00040010;
-        if( elfimp->ordinal == -1 ) {
-            more |= 0x5;
-        }
-        LibWriteU32LE( io, more );
-
+        LibWriteU32LE( io, ( elfimp->ordinal == -1 ) ? 0x00040015 : 0x00040010 );
         offset += 0x10;
         strtabsize += elfimp->sym.len + 1;
         if( offset >= (numsyms * 0x10) ) {
