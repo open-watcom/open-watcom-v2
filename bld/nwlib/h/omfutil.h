@@ -53,9 +53,9 @@
 typedef OMFRECORD( 1 )  OmfRecord;
 
 typedef struct{
-    unsigned_8  htab[NUM_BUCKETS];
-    unsigned_8  fflag;
-    unsigned_8  name[BLOCK_NAME_LEN];
+    unsigned_8      htab[NUM_BUCKETS];
+    unsigned_8      fflag;
+    unsigned_8      name[BLOCK_NAME_LEN];
 } OmfLibBlock;
 
 extern void         InitOmfUtil( void );

@@ -520,14 +520,29 @@ static void WriteOmfFileTable( libfile io )
     } else if( Options.page_size == (unsigned_16)-1 ) {
         Options.page_size = OptimalPageSize();
     }
+    /*
+     * allocate and clean space for OMF Library Header
+     */
     WriteOmfLibPadding( io, true );
+    /*
+     * write all modules to OMF Library
+     */
     for( sfile = FileTable.first; sfile != NULL; sfile = sfile->next ) {
         WriteOmfFile( io, sfile );
         WriteOmfLibPadding( io, false );
     }
+    /*
+     * write OMF Library Trailer
+     */
     WriteOmfLibTrailer( io );
+    /*
+     * write OMF Library Dictionaries
+     */
     dict_offset = LibTell( io );
     num_blocks = WriteOmfDict( io, FileTable.first );
+    /*
+     * rewind file to beggining and write OMF Library Header
+     */
     LibSeek( io, 0, SEEK_SET );
     WriteOmfLibHeader( io, dict_offset, num_blocks );
 }

@@ -354,7 +354,7 @@ static void peAddImport( libfile io, long header_offset, arch_header *arch )
     orl_sec_base    export_base;
     char            *edata;
     name_len        dllName;
-    char            *currname;
+    char            *sym_name;
     Coff32_Export   *export_header;
     Coff32_EName    *name_table;
     Coff32_EOrd     *ord_table;
@@ -429,17 +429,17 @@ static void peAddImport( libfile io, long header_offset, arch_header *arch )
         coffAddImportOverhead( arch, &dllName, processor );
     }
     for( i = 0; i < export_header->numNamePointer; i++ ) {
-        currname = &(edata[name_table[i] - export_base.u._32[I64LO32] + adjust]);
+        sym_name = &(edata[name_table[i] - export_base.u._32[I64LO32] + adjust]);
         if( coff_obj ) {
-            CoffMKImport( arch, ORDINAL, ord_table[i] + ordinal_base, &dllName, currname, NULL, processor );
-            AddSym2( &str_coff_imp_prefix, currname, SYM_WEAK, 0 );
+            CoffMKImport( arch, ORDINAL, ord_table[i] + ordinal_base, &dllName, sym_name, NULL, processor );
+            AddSym2( &str_coff_imp_prefix, sym_name, SYM_WEAK, 0 );
         } else {
             type = Options.r_ordinal ? ORDINAL : NAMED;
-            OmfMKImport( arch, type, ord_table[i] + ordinal_base, &dllName, currname, NULL, WL_PROC_X86 );
-//            AddSym2( &str_coff_imp_prefix, currname, SYM_WEAK, 0 );
+            OmfMKImport( arch, type, ord_table[i] + ordinal_base, &dllName, sym_name, NULL, WL_PROC_X86 );
+//            AddSym2( &str_coff_imp_prefix, sym_name, SYM_WEAK, 0 );
         }
         if( processor == WL_PROC_PPC ) {
-            AddSym2( &str_coff_ppc_prefix, currname, SYM_WEAK, 0 );
+            AddSym2( &str_coff_ppc_prefix, sym_name, SYM_WEAK, 0 );
         }
     }
 

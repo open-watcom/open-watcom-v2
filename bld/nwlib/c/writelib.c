@@ -34,7 +34,6 @@
 #include "wlib.h"
 #include <errno.h>
 #include "wio.h"
-#include "wlibutil.h"
 
 #include "clibext.h"
 
