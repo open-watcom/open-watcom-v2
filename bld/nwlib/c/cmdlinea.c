@@ -132,9 +132,8 @@ void SetOptionsAr( OPT_STORAGE_A *data )
     } else {
         lib_cmd     *cmd;
 
-        while( (cmd = CmdList) != NULL ) {
+        for( cmd = CmdList; cmd != NULL; cmd = cmd->next ) {
             cmd->ops = ar_mode;
-            cmd = cmd->next;
         }
     }
 

@@ -206,7 +206,7 @@ void AddCommand( operation ops )
                 }
             }
             cmd->ops = ops;
-            cmd->next = *CmdListEnd;
+            cmd->next = NULL;
             *CmdListEnd = cmd;
             CmdListEnd = &cmd->next;
         }
