@@ -329,14 +329,14 @@ static void warn( const char *f, ... )
     va_end( args );
 }
 
-static void errorLocn( const char *fn, unsigned line, const char *f, ... )
+static void errorLocn( const char *fn, unsigned lineno, const char *f, ... )
 {
     va_list args;
 
     ++errors;
     va_start( args, f );
-    if( line > 0 ) {
-        printf( "%s(%u): Error! E000: ", fn, line );
+    if( lineno > 0 ) {
+        printf( "%s(%u): Error! E000: ", fn, lineno );
     }
     vprintf( f, args );
     va_end( args );
@@ -913,8 +913,7 @@ static void checkReplacements( MSGSYM *m, wres_lang_id start_lang, wres_lang_id 
             if( intl_text == NULL )
                 continue;
             if( ! percentPresent( c, intl_text ) ) {
-                errorLocn( m->fname, m->line, "MSGSYM %s's %s text has format mismatch for %%%c\n", m->name,
-                langName[lang], c );
+                errorLocn( m->fname, m->line, "MSGSYM %s's %s text has format mismatch for %%%c\n", m->name, langName[lang], c );
             }
         }
     }
@@ -937,14 +936,16 @@ static void checkMessages( void )
         }
         for( lang = start_lang; lang < end_lang; ++lang ) {
             if( m->lang_txt[lang] == NULL ) {
-                errorLocn( m->fname, m->line, "MSGSYM %s has no %s text\n", m->name,
-                langName[lang] );
+                errorLocn( m->fname, m->line, "MSGSYM %s has no %s text\n", m->name, langName[lang] );
             }
         }
         checkReplacements( m, start_lang, end_lang );
         if( !flags.ignore_prefix ) {
             switch( m->mtype ) {
-            #define def_msg_type( e, p ) case MSG_TYPE_##e: if( strPref( m, p ) ) errorLocn( m->fname, m->line, "MSGSYM %s has incorrect prefix (should be " p ")\n", m->name ); break;
+            #define def_msg_type( e, p ) case MSG_TYPE_##e: \
+              if( strPref( m, p ) ) \
+                errorLocn( m->fname, m->line, "MSGSYM %s has incorrect prefix (should be " p ")\n", m->name ); \
+              break;
                 ALL_MSG_TYPES
             #undef def_msg_type
             default:

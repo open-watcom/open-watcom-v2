@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,14 +41,12 @@
 
 
 #if defined( _M_I86 )
-    #define _WCI86FAR    __far
     #define _HUGE   __huge
     #define StringLen   _fstrlen
     #define StringCopy  _fstrcpy
     #define MemorySet   _fmemset
     #define MemoryCopy  _fmemcpy
 #else
-    #define _WCI86FAR
     #define _HUGE
     #define StringLen   strlen
     #define StringCopy  strcpy

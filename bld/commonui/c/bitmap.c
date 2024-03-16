@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,20 +36,15 @@
 #include <string.h>
 #ifdef _M_I86
     #include <malloc.h>
+    #include <i86.h>
 #endif
-#include <dos.h>
 #include "bool.h"
 #include "palette.h"
 #include "bitmap.h"
 #include "cguimem.h"
 
-#ifndef _WCI86HUGE
-    #if defined( _M_I86 )
-        #define _WCI86HUGE __huge
-    #else
-        #define _WCI86HUGE
-    #endif
-#endif
+#include "clibext.h"
+
 
 #define HUGE_SHIFT      8
 #define START_OF_HEADER sizeof( BITMAPFILEHEADER )

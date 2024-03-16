@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,10 +36,10 @@
 #include <string.h>
 #include "grfuncs.h"
 
-#if defined( __386__ ) || defined( __AXP__ ) || defined( __PPC__ )
-    #define FARstrcpy strcpy
-#elif defined( _M_I86 )
+#if defined( _M_I86 )
     #define FARstrcpy _fstrcpy
+#else
+    #define FARstrcpy strcpy
 #endif
 
 
