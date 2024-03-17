@@ -24,8 +24,8 @@ if [ ! -d $OWOBJDIR ]; then mkdir $OWOBJDIR; fi
 cd $OWOBJDIR
 rm -f ../../../build/$OWOBJDIR/wmake
 if [ "$OWTOOLS" = "WATCOM" ]; then
-    output_redirect wmake -f ../wmake clean
-    output_redirect wmake -f ../wmake
+    output_redirect wmake -m -f ../wmake clean
+    output_redirect wmake -m -f ../wmake
 else
     case `uname` in
         FreeBSD)
