@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -245,7 +246,7 @@ enum LexMode {
     LEX_MAC_SUBST,  /* send back all MAC tokens                             */
     LEX_PARSER,     /* send back only TOK tokens - silently do MAC stuff    */
     LEX_PATH,       /* send back only TOK_PATH/TOK_EOL/TOK_END              */
-    LEX_MS_MAC      /* sned back tokens for microsoft demacro               */
+    LEX_MS_MAC      /* send back tokens for microsoft demacro               */
 };
 
 extern void     LexInit( void );
