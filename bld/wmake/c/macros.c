@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -120,7 +120,7 @@ STATIC char *getDirBuf( void )
 }
 
 
-static void massageDollarOctothorpe( char *p )
+STATIC void massageDollarOctothorpe( char *p )
 /********************************************/
 {
     assert( p != NULL );
@@ -479,10 +479,7 @@ char *GetMacroValue( const char *name )
              * recursively expand so $(macro:sub) OK if macro contains another
              */
             if( strchr( beforeSub, '$' ) != NULL ) {
-                UnGetCHR( STRM_MAGIC );
-                InsString( beforeSub, false );
-                beforeSub = line = DeMacro( TOK_MAGIC );
-                GetCHR();   /* eat STRM_MAGIC */
+                beforeSub = line = FullDeMacroText( beforeSub );
             }
             if( beforeSub == NULL ) {
                 afterSub = NULL;
@@ -1097,6 +1094,21 @@ char *DeMacro( MTOKEN_T end1 )
 }
 
 
+char *FullDeMacroText( const char *text )
+/****************************************
+ * fully expand input text
+ */
+{
+    char    *expanded;
+
+    UnGetCHR( STRM_MAGIC );
+    InsString( text, false );
+    expanded = deMacroText( 0, TOK_MAGIC, TOK_END );
+    GetCHR();   /* eat STRM_MAGIC */
+    return( expanded );
+}
+
+
 STATIC char *PartDeMacroProcess( void )
 /**************************************
  * Partially DeMacro until EOL.  Copies verbatim, only expanding
@@ -1350,7 +1362,7 @@ void DefMacro( const char *name )
 }
 
 
-static bool printMac( const void *node, const void *ptr )
+STATIC bool printMac( const void *node, const void *ptr )
 /*******************************************************/
 {
     MACRO const *mac = node;

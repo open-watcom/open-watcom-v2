@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -434,8 +434,8 @@ STATIC bool createFile( const FLIST *head )
 {
     NKLIST  *temp;
     FILE    *fp;
-    char    *fileName = NULL;
-    char    *tmpFileName = NULL;
+    char    *fileName;
+    char    *tmpFileName;
     bool    ok;
 
     assert( head != NULL );
@@ -445,10 +445,7 @@ STATIC bool createFile( const FLIST *head )
         /* Push the filename back into the stream
          * and then get it back out using DeMacro to fully DeMacro
          */
-        UnGetCHR( STRM_MAGIC );
-        InsString( head->fileName, false );
-        fileName = DeMacro( TOK_MAGIC );
-        GetCHR();           /* eat STRM_MAGIC */
+        fileName = FullDeMacroText( head->fileName );
 
         tmpFileName = RemoveBackSlash( fileName );
         fp = fopen( tmpFileName, "w" );
@@ -472,9 +469,9 @@ STATIC bool createFile( const FLIST *head )
             PrtMsg( ERR | ERROR_OPENING_FILE, tmpFileName );
             ok = false;
         }
+        FreeSafe( fileName );
+        FreeSafe( tmpFileName );
     }
-    FreeSafe( fileName );
-    FreeSafe( tmpFileName );
     return( ok );
 }
 
@@ -2453,10 +2450,7 @@ bool ExecCList( CLIST *clist )
         ok = writeInlineFiles( clist->inlineHead, &(clist->text) );
         currentFlist = clist->inlineHead;
         if( ok ) {
-            UnGetCHR( STRM_MAGIC );
-            InsString( clist->text, false );
-            line = DeMacro( TOK_MAGIC );
-            GetCHR();        /* eat STRM_MAGIC */
+            line = FullDeMacroText( clist->text );
             if( Glob.verbose ) {
                 ok = verbosePrintTempFile( currentFlist );
             }
