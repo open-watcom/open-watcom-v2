@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -228,7 +228,7 @@ STATIC bool fillBuffer( void )
 
 static bool needQuotes( const char *name )
 {
-	return( strchr( name, ' ' ) != NULL );
+    return( strchr( name, ' ' ) != NULL || strchr( name, '#' ) != NULL );
 }
 
 #ifdef __WATCOMC__
