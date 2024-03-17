@@ -44,7 +44,7 @@ if "%OWBUILD_STAGE%" == "boot" (
     mkdir %OWROOT%\bld\wmake\%OWOBJDIR%
     cd %OWROOT%\bld\wmake\%OWOBJDIR%
     if "%OWTOOLS%" == "WATCOM" (
-        wmake -f ..\wmake
+        wmake -m -f ..\wmake
     ) else (
         nmake -f ..\nmake
     )

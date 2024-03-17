@@ -19,7 +19,7 @@ bootutil_proc()
     if [ "$OWTOOLS" = "WATCOM" ]; then
         mkdir $OWROOT/bld/wmake/$OWOBJDIR
         cd $OWROOT/bld/wmake/$OWOBJDIR
-        wmake -f ../wmake
+        wmake -m -f ../wmake
         RC=$?
     else
         case `uname` in
