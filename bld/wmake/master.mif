@@ -103,17 +103,21 @@ exetarg_name          = wmk
 #
 !include verrc.mif
 
+wsplice_opts_linux = -kUNIX
+wsplice_opts_qnx   = -kUNIX
+wsplice_opts_osx   = -kUNIX
+
 wresui.res : ../h/wmake.rc ../h/mrcmsg.h usage.gh usagej.gh $(__MAKEFILES__)
     @%make echo_rc
     $(rcui8)
 
 usage.gh : ../h/usage.sp $(__MAKEFILES__)
     @%make echo_wsplice
-    $(noecho)*wsplice -kENGLISH -f "pick((MSG_USAGE_BASE + %$#%+), \"%s\", \"\")" $[@ $@
+    $(noecho)*wsplice -kENGLISH $(wsplice_opts_$(host_os)) -f "pick((MSG_USAGE_BASE + %$#%+), \"%s\", \"\")" $[@ $@
 
 usagej.gh : ../h/usage.sp $(__MAKEFILES__)
     @%make echo_wsplice
-    $(noecho)*wsplice -kJAPANESE -f "pick((MSG_USAGE_BASE + %$#%+), \"\", \"%s\")" $[@ $@
+    $(noecho)*wsplice -kJAPANESE $(wsplice_opts_$(host_os)) -f "pick((MSG_USAGE_BASE + %$#%+), \"\", \"%s\")" $[@ $@
 
 isarray.gh : ./cretype.exe $(__MAKEFILES__)
     @%make echo_execute

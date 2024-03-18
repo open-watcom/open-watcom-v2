@@ -97,8 +97,8 @@ The formal &makname command line syntax is shown below.
 As indicated by the square brackets [ ], all items are optional.
 .begnote
 .note options
-is a list of valid &makname options, each preceded by a slash ("/")
-or a dash ("&minus.").
+is a list of valid &makname options, each preceded by a dash ("&minus.").
+Alternatively, a slash ("/") can be used on non-UNIX systems.
 Options may be specified in any order.
 .note macro_defs
 is a list of valid &makname macro definitions.
@@ -108,8 +108,7 @@ Macro definitions are of the form:
 A=B
 .millust end
 .pc
-and are readily identified by the presence of the "=" (the "#"
-character may be used instead of the "=" character if necessary).
+and are readily identified by the presence of the "=".
 Surround the definition with quotes (") if it contains blanks (e.g.,
 "debug_opt=&wlinkdebug").
 The macro definitions specified on the command line supersede any
