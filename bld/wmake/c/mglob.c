@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -379,9 +379,18 @@ const char FAR POSIXBuiltIn[] = {
 
 /*
  * This is the table indexed by users of the is... functions.
- * The program 'cretype.exe' is used to rebuild this table.
+ * The program 'cretype.exe' is used to create file isarray.gh
+ * used by this table.
+ *
+ * NOTE:
+ *  this code depends on STRM_T definition in mstream.h
+ *
+ *  hold this file in sync with STRM_T definition in mstream.h
  */
 const UINT8 IsArray[] = {
+    0,      /* -4 STRM_TMP_LEX_START    */
+    0,      /* -3 STRM_TMP_EOL          */
+    0,      /* -2 STRM_MAGIC            */
+    0,      /* -1 STRM_END              */
     #include "isarray.gh"
 };
-

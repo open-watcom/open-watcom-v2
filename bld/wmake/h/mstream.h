@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,23 +35,38 @@
 
 /*
  * This is the type which GetCHR returns - this is the stream's data type.
+ *
+ * NOTE:
+ *  the code in the mglob.c and mtypes.h depend on STRM_T definition
+ *
+ *  if you do some change in STRM_T then do
+ *   - update definition of macro STRM_PLACEHOLDERS in mtypes.h
+ *   - update code in mglob.c
  */
-
 typedef enum {
-/*
- * special stream 'characters'
- */
-    STRM_TMP_LEX_START = -4,    /* temporary place holder for lexParser*/
-    STRM_TMP_EOL       = -3,    /* temporary place holder for microsoft eol */
-                                /* to see whether or not we should check for */
-                                /* bang                                      */
-    STRM_MAGIC         = -2,    /* this value is never placed in the stream by
-                                 * the stream routines - someone must do an
-                                 * UnGetCHR( STRM_MAGIC )
-                                 */
-    STRM_END           = -1,    /* no more data in waiting */
+    /*
+     * temporary place holder for lexParser
+     */
+    STRM_TMP_LEX_START = -4,
+    /*
+     * temporary place holder for microsoft EOL to see whether or not
+     * we should check for bang
+     */
+    STRM_TMP_EOL       = -3,
+    /*
+     * this value is never placed in the stream by the stream routines
+     * someone must do an UnGetCHR( STRM_MAGIC )
+     */
+    STRM_MAGIC         = -2,
+    /*
+     * no more data in waiting
+     */
+    STRM_END           = -1,
 
-    STRM_ASCII_MIN     = 0x00,  /* all base and extended ASCII characters */
+    /*
+     * all base and extended ASCII characters
+     */
+    STRM_ASCII_MIN     = 0x00,
     STRM_ASCII_MAX     = 0xFF,
 
 } STRM_T;

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -112,11 +112,6 @@ int main( int argc, char *argv[] )
         fo = stdout;
     }
     /*fprintf( fo, "extern UINT8 IsArray[] = {\n" );*/
-    fprintf( fo, "/*STRM_TMP_LEX_START*/  0,\n" );
-    fprintf( fo, "/*   STRM_TMP_EOL   */  0,\n" );
-    fprintf( fo, "/*    STRM_MAGIC    */  0,\n" );
-    fprintf( fo, "/*     STRM_END     */  0,\n" );
-
     for( i = 0; i <= 255; i++ ) {
         noneyet = true;
 
