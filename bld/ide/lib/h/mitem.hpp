@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -89,7 +90,7 @@ WCLASS MItem : public WFileName
                 MRule*          _rule;
                 WVList          _states;
                 MItem*          _parent;
-                unsigned        _attribs;
+                bool            _writeable;
                 bool            _exists;
                 bool            _isTarget;
                 WVList          _actionStates;

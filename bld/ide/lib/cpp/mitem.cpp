@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -54,7 +54,7 @@ WEXPORT MItem::MItem( const char* name, MComponent* comp, MRule* rule, bool isTa
     , _ruleTag( rule->tag() )
     , _rule( rule )
     , _parent( NULL )
-    , _attribs( 0 )
+    , _writeable( true )
     , _exists( true )
     , _isTarget( isTarget )
     , _owner( MITEM_OWNER_IDE )
@@ -218,9 +218,11 @@ bool MItem::touchResult()
 void MItem::updateAttribs()
 {
     if( _component && size() > 0 ) {
+        unsigned attribs;
         WFileName fn;
         absName( fn );
-        _exists = fn.attribs( &_attribs );
+        _exists = fn.attribs( &attribs );
+        _writeable = ( attribs & attrWriteable ) ? true : false; 
     }
 }
 
@@ -234,11 +236,9 @@ void MItem::addDecorators( WString& n )
     }
     if( !isMask() ) {
         if( _exists ) {
-#ifndef __UNIX__
-            if( (_attribs & _A_RDONLY) ) {
+            if( !_writeable ) {
                 n.concat( " [r/o]" );
             }
-#endif
         } else {
             n.concat( " [n/a]" );
         }
