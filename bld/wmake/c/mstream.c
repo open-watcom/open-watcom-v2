@@ -77,9 +77,9 @@ typedef struct streamEntry {
     union {                         /* data required for each stream type   */
         struct {
             char        *cur;       /* next character to be read            */
+            char        *buf;       /* beginning of buffer                  */
             char        *max;       /* maximum position in buffer           */
             FILE        *fp;        /* file stream handle                   */
-            char        *buf;       /* beginning of buffer                  */
             UINT16      line;       /* current line number                  */
             const char  *name;      /* file name                            */
             nest_level  nestLevel;  /* nest level of the file beginning     */
