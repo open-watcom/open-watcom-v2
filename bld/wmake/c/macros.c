@@ -673,7 +673,6 @@ char *DeMacroSpecial( const char *InString )
         if( *p == SPECIAL_TMP_DOLLAR ) {
             WriteNVec( outString, old, p - old );
             pos = 0;
-            UnGetCHR( STRM_MAGIC );
             buffer[pos++] = *(p++);
             if( cismsspecial( *p ) && !cismsmodifier( *(p + 1) ) ) {
                 buffer[pos++] = *(p++);
@@ -686,9 +685,7 @@ char *DeMacroSpecial( const char *InString )
             }
             old = p;
             buffer[pos] = NULLCHAR;
-            InsString( buffer, false );
-            tempString = DeMacro( TOK_MAGIC );
-            PreGetCHR();   /* eat STRM_MAGIC */
+            tempString = FullDeMacroText( buffer );
             WriteVec( outString, tempString );
             FreeSafe( tempString);
         }
