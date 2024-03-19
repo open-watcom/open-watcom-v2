@@ -1998,7 +1998,7 @@ STATIC bool hasMetas( const char *cmd )
 
     dquote = false;
     for( p = cmd; *p != NULLCHAR; ++p ) {
-        if( *p == '"' ) {
+        if( *p == '\"' ) {
             dquote = !dquote;
         } else if( !dquote && strchr( SHELL_METAS, *p ) != NULL ) {
             return( true );
