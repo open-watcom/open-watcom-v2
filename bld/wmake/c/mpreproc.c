@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -156,7 +156,7 @@ void PreProcFini( void )
 }
 
 
-STATIC STRM_T eatWhite( void )
+STRM_T EatWhite( void )
 /*****************************
  * pre:
  * post:    0 or more ws characters removed from input
@@ -169,12 +169,11 @@ STATIC STRM_T eatWhite( void )
     while( sisws( s ) ) {
         s = PreGetCHR();
     }
-
     return( s );
 }
 
 
-STATIC void eatToEOL( void )
+STRM_T EatToEOL( void )
 /*****************************
  * pre:
  * post:    atStartOfLine == EOL, 0 or more chars removed from input
@@ -187,6 +186,7 @@ STATIC void eatToEOL( void )
     while( s != '\n' && s != STRM_END ) {
         s = PreGetCHR();
     }
+    return( s );
 }
 
 
@@ -207,8 +207,7 @@ STATIC directiveTok getPreTok( void )
     char    **key;
     char    *tmp;               /* to pass tok buf to bsearch */
 
-    s = eatWhite();
-
+    s = EatWhite();
     if( s == '\n' ) {
         UnGetCHR( s );
         return( D_BLANK );
@@ -230,7 +229,7 @@ STATIC directiveTok getPreTok( void )
     tok[pos] = NULLCHAR;
 
     UnGetCHR( s );
-    UnGetCHR( eatWhite() );
+    UnGetCHR( EatWhite() );
 
     tmp = tok;
     key = bsearch( &tmp, directives, NUM_DIRECT, sizeof( char * ), KWCompare );
@@ -266,7 +265,7 @@ STATIC bool ifDef( void )
     assert( !curNest.skip2endif );
 
     name = DeMacro( MAC_PUNC );
-    eatToEOL();
+    EatToEOL();
 
     if( !IsMacroName( name ) ) {
         FreeSafe( name );
@@ -317,7 +316,7 @@ STATIC bool ifOp( void )
     assert( !curNest.skip2endif );
 
     test = DeMacro( TOK_EOL );
-    eatToEOL();
+    EatToEOL();
 
     parseExpr( &temp, test );
 
@@ -345,7 +344,7 @@ STATIC void ifEqProcess( char const **v1, char **v2 )
 
     name = DeMacro( MAC_PUNC );
     test = DeMacro( TOK_EOL );
-    eatToEOL();
+    EatToEOL();
 
     if( !IsMacroName( name ) ) {
         FreeSafe( name );
@@ -365,7 +364,7 @@ STATIC void ifEqProcess( char const **v1, char **v2 )
     UnGetCHR( '\n' );
     InsString( value, true );
     value = DeMacro( TOK_EOL );
-    eatToEOL();
+    EatToEOL();
 
     beg = SkipWS( test );           /* find first non-ws */
     chopTrailWS( beg );             /* chop trailing ws */
@@ -464,7 +463,7 @@ STATIC void bangIf( bool (*logical)(void), directiveTok tok )
     } else {
         // this block is to be skipped, don't interpret args to if
         curNest.skip = true;
-        eatToEOL();
+        EatToEOL();
     }
 
     if( curNest.skip ) {
@@ -491,7 +490,7 @@ STATIC void bangEndIf( void )
     }
     curNest = nest[--nestLevel];
 
-    eatToEOL();
+    EatToEOL();
 }
 
 
@@ -564,7 +563,7 @@ STATIC void doElIf( bool (*logical)(void), directiveTok tok )
         // must set these because we may not have been skipping previous block
         curNest.skip2endif = true;
         curNest.skip = true;
-        eatToEOL();
+        EatToEOL();
         return;
     }
 
@@ -574,13 +573,13 @@ STATIC void doElIf( bool (*logical)(void), directiveTok tok )
             // skip to the end - we've done a block in this nesting
             curNest.skip = true;
             curNest.skip2endif = true;
-            eatToEOL();
+            EatToEOL();
         } else {
             // we still haven't done block in this nesting, try this logical.
             curNest.skip = !logical();
         }
     } else {
-        eatToEOL();
+        EatToEOL();
     }
 
     if( curNest.skip ) {
@@ -606,7 +605,7 @@ STATIC void bangElse( void )
     tok = getPreTok();
     switch( tok ) {
     case D_BLANK:
-        eatToEOL();
+        EatToEOL();
         doElse();
         break;
     case D_IFDEF:   doElIf( ifDef,  D_IFDEF );  break;
@@ -617,7 +616,7 @@ STATIC void bangElse( void )
     case D_IFNEQ:   doElIf( ifNEq,  D_IFNEQ );  break;
     case D_IFNEQI:  doElIf( ifNEqi, D_IFNEQI ); break;
     default:
-        eatToEOL();
+        EatToEOL();
         PrtMsg( FTL | LOC | NOT_ALLOWED_AFTER_ELSE, directives[tok], directives[D_ELSE] );
         ExitFatal();
         // never return
@@ -638,7 +637,7 @@ STATIC void bangDefine( void )
     name = DeMacro( MAC_PUNC );    /* decode name */
 
     if( !IsMacroName( name ) ) {
-        eatToEOL();
+        EatToEOL();
     } else {
         DefMacro( name );
     }
@@ -671,7 +670,7 @@ STATIC void bangInject( void )
 
     assert( !curNest.skip );
     text = DeMacro( TOK_EOL );
-    eatToEOL();
+    EatToEOL();
     contents = SkipWS( text );
     if( *contents == NULLCHAR ) {
         FreeSafe( text );
@@ -727,7 +726,7 @@ STATIC void bangLoadDLL( void )
 
     assert( !curNest.skip );
     text = DeMacro( TOK_EOL );
-    eatToEOL();
+    EatToEOL();
     p = SkipWS( text );
     if( *p == NULLCHAR ) {
         FreeSafe( text );
@@ -779,7 +778,7 @@ STATIC void bangUnDef( void )
     assert( !curNest.skip );
 
     name = DeMacro( MAC_PUNC );
-    eatToEOL();
+    EatToEOL();
 
     if( !IsMacroName( name ) ) {
         FreeSafe( name );
@@ -852,7 +851,7 @@ STATIC void bangInclude( void )
     assert( !curNest.skip );
 
     text = DeMacro( TOK_EOL );
-    eatToEOL();
+    EatToEOL();
 
     chopTrailWS( text );    /* get rid of trailing ws */
 
@@ -918,7 +917,7 @@ STATIC void bangMessage( void )
     assert( !curNest.skip );
 
     text = DeMacro( TOK_EOL );
-    eatToEOL();
+    EatToEOL();
 
     chopTrailWS( text );
 
@@ -937,7 +936,7 @@ STATIC void bangError( void )
     assert( !curNest.skip );
 
     text = DeMacro( TOK_EOL );
-    eatToEOL();
+    EatToEOL();
 
     chopTrailWS( text );
 
@@ -957,7 +956,7 @@ STATIC void handleBang( void )
     tok = getPreTok();
     /* these are executed regardless of skip */
     switch( tok ) {
-    case D_BLANK:   eatToEOL();                 break;
+    case D_BLANK:   EatToEOL();                 break;
     case D_ELSE:    bangElse();                 break;
     case D_ENDIF:   bangEndIf();                break;
     case D_IF:      bangIf( ifOp,   D_IF );     break;
@@ -982,7 +981,7 @@ STATIC void handleBang( void )
                 break;
             }
         } else {
-            eatToEOL(); /* otherwise, we just eat it up */
+            EatToEOL(); /* otherwise, we just eat it up */
         }
     }
 }
@@ -1047,7 +1046,7 @@ STRM_T PreGetCHR( void )
             if( Glob.compat_nmake || Glob.compat_posix ) {
                 /* Check for NMAKE and UNIX compatible 'include' directive */
                 if( s == 'i' && PreTestString( "nclude " ) ) {
-                    UnGetCHR( eatWhite() );
+                    UnGetCHR( EatWhite() );
                     bangInclude();
                     s = GetCHR();
                 }
@@ -1100,72 +1099,64 @@ STRM_T PreGetCHR( void )
                 continue;
             }
             return( s );
-        } else {
-            if( Glob.compat_nmake && s == MS_LINECONT_C ) {
-                s = GetCHR();
-                if( s == '\n' ) {
-                    lastChar = ' ';
-                    if( skip ) {
-                        s = STRM_TMP_EOL;
-                        continue;
-                    }
-                    // place holder for temporary EOL
-                    // this is to be able to implement the
-                    // bang statements after line continues
-                    UnGetCHR( STRM_TMP_EOL );
-                    return( ' ' );
-                } else {
-                    lastChar = MS_LINECONT_C;
-                    if( skip ) {
-                        s = GetCHR();
-                        continue;
-                    }
-                    UnGetCHR( s );
-                    return( MS_LINECONT_C );
-                }
-            }
-
-            if( s != LINECONT_C ) {
-                if( s != UNIX_LINECONT_C || !Glob.compat_unix ) {
-                    lastChar = s;
-                    if( skip ) {
-                        s = GetCHR();   /* must get next char */
-                        continue;
-                    }
-                    return( s );
-                }
-                s = GetCHR();
-                if( s != '\n' ) {
-                    lastChar = UNIX_LINECONT_C;
-                    if( skip ) {
-                        continue;       /* already have next char */
-                    }
-                    UnGetCHR( s );
-                    return( UNIX_LINECONT_C );
-                } else {
-                    if( skip ) {
-                        continue;       /* already have next char */
-                    }
-                    UnGetCHR( STRM_TMP_EOL );
+        }
+        
+        if( Glob.compat_nmake && s == MS_LINECONT_C ) {
+            s = GetCHR();
+            if( s == '\n' ) {
+                lastChar = ' ';
+                // place holder for temporary EOL
+                // this is to be able to implement the
+                // bang statements after line continues
+                s = STRM_TMP_EOL;
+                if( skip ) {
+                    continue;
                 }
             } else {
-                s = GetCHR();           /* check if '&' followed by {nl} */
-                if( s != '\n' || lastChar == '^' || lastChar == '[' || lastChar == ']' ) {
-                                        /* nope... restore state */
-                    lastChar = LINECONT_C;
-                    if( skip ) {
-                        continue;       /* already have next char */
-                    }
-                    UnGetCHR( s );
-                    return( LINECONT_C );
-                } else {
-                    if( skip ) {
-                        continue;       /* already have next char */
-                    }
-                    UnGetCHR( STRM_TMP_EOL );
+                lastChar = MS_LINECONT_C;
+                if( skip ) {
+                    s = GetCHR();
+                    continue;
                 }
             }
+            UnGetCHR( s );
+            return( lastChar );
         }
+
+        if( s != LINECONT_C ) {
+            if( s != UNIX_LINECONT_C || !Glob.compat_unix ) {
+                lastChar = s;
+                if( skip ) {
+                    s = GetCHR();   /* must get next char */
+                    continue;
+                }
+                return( s );
+            }
+            s = GetCHR();
+            if( s != '\n' ) {
+                lastChar = UNIX_LINECONT_C;
+                if( skip ) {
+                    continue;       /* already have next char */
+                }
+                UnGetCHR( s );
+                return( UNIX_LINECONT_C );
+            }
+        } else {
+            s = GetCHR();           /* check if '&' followed by {nl} */
+            if( s != '\n' || lastChar == '^' || lastChar == '[' || lastChar == ']' ) {
+                                    /* nope... restore state */
+                lastChar = LINECONT_C;
+                if( skip ) {
+                    continue;       /* already have next char */
+                }
+                UnGetCHR( s );
+                return( LINECONT_C );
+            }
+        }
+        if( skip ) {
+            continue;       /* already have next char */
+        }
+        UnGetCHR( STRM_TMP_EOL );
         s = GetCHR();
     }
 }
@@ -1608,9 +1599,7 @@ STATIC void nextToken( void )
 {
     if( *currentPtr != NULLCHAR ) {
         currentPtr += ScanToken( currentPtr, &currentToken );
-        while( cisws( *currentPtr ) ) {
-            ++currentPtr;
-        }
+        currentPtr = SkipWS( currentPtr );
     } else {
         currentToken.type = OP_ERROR;  // no more tokens
     }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -488,8 +488,8 @@ STATIC bool checkMacro( STRM_T s )
     }
     mac[pos] = NULLCHAR;
     ws = sisws( s );
-    while( sisws( s ) ) {
-        s = PreGetCHR();
+    if( ws ) {
+        s = EatWhite();
     }
     if( s == '=' ) {
         DefMacro( mac );
@@ -704,10 +704,7 @@ MTOKEN_T LexParser( STRM_T s )
             p = deMacroDoubleQuote( false );  /* expand to next white space */
             if( *p == NULLCHAR ) {  /* already at ws */
                 FreeSafe( p );
-                s = PreGetCHR();    /* eat the ws */
-                while( sisws( s ) ) {
-                    s = PreGetCHR();
-                }
+                s = EatWhite();     /* eat the ws */
                 if( s == '\n' ) {
                     atstart = true;
                     return( TOK_EOL );

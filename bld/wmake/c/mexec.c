@@ -2166,13 +2166,6 @@ STATIC RET_T shellSpawn( char *cmd, shell_flags flags )
         flags |= FLAG_SHELL;
     }
 
-    /*
-     * skip whitespace between the command and the argument
-     */
-    while( cisws( *arg ) ) {
-        arg++;
-    }
-
 #if defined( __DOS__ )
     {
         char    ext_buf[10];
@@ -2202,6 +2195,10 @@ STATIC RET_T shellSpawn( char *cmd, shell_flags flags )
         }
         dumpCommand( cmd );
     }
+    /*
+     * skip whitespace between the command and the argument
+     */
+    arg = SkipWS( arg );
     if( percent_cmd ) {
         if( percentCmd( cmdname, arg ) )
             return( RET_SUCCESS );

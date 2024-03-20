@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,6 +44,8 @@ extern void         PreProcFini( void );
 extern STRM_T       PreGetCHR( void );
 extern bool         ExistFile( char const *inPath );
 extern nest_level   GetNestLevel( void );
+extern STRM_T       EatWhite( void );
+extern STRM_T       EatToEOL( void );
 
 #endif /* !_MPREPROC_H */
 

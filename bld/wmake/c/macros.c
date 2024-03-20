@@ -1194,7 +1194,6 @@ char *PartDeMacro( bool forceDeMacro )
  * forceDeMacro if set true will force full Demacro
  */
 {
-    STRM_T  s;
     char    *temp;
 
     if( Glob.compat_nmake || Glob.compat_posix ) {
@@ -1202,11 +1201,9 @@ char *PartDeMacro( bool forceDeMacro )
     }
     if( forceDeMacro ) {
         /* remove white spaces at the beginning */
-        while( sisws( s = PreGetCHR() ) ) {
-        }
-        UnGetCHR( s );
+        UnGetCHR( EatWhite() );
         temp = DeMacro( TOK_EOL );
-        s = PreGetCHR();
+        PreGetCHR();    /* eat EOL */
         if( Glob.compat_nmake || Glob.compat_posix ) {
             IsPartDeMacro = false;
         }
