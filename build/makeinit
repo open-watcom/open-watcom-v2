@@ -43,9 +43,7 @@ noecho = @
 noecho =
 !endif
 
-mif_path      = $(%OWROOT)/build/mif
-
-.mif: "$(mif_path)"
+.mif: "$(%OWROOT)/build/mif"
 
 # setup non-WATCOM tools macros
 !ifeq %OWTOOLS VISUALC

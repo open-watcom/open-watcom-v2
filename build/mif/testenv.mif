@@ -1,6 +1,6 @@
 .EXTENSIONS:
 .EXTENSIONS: .exp .exe .dis .dib .dum .ls1 .lst .obj .ser .mer .err .i .i0 .i1 .p .gc .gcp .c .cpp .for .asm .src .mif
-.mif: ..;"$(mif_path)"
+.mif: ..;"$(%OWROOT)/build/mif"
 
 !include testenv1.mif
 
