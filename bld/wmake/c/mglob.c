@@ -32,7 +32,8 @@
 
 #include "make.h"
 #if defined( DEVELOPMENT ) || defined( INTERNAL_VERSION )
-    /* just because this is compiled with -d2 - we get all the debugging
+    /*
+     * just because this is compiled with -d2 - we get all the debugging
      * info we'll ever need this way :)
      */
 #   include "macros.h"
@@ -322,9 +323,13 @@ const char FAR UNIXBuiltIn[] = {
      "    move lex.yy.c $@\n"
 };
 
-/* The following definitions are taken from SUSv3 */
+/*
+ * The following definitions are taken from SUSv3
+ */
 const char FAR POSIXBuiltIn[] = {
-    /* Predefined Macros */
+    /*
+     * Predefined Macros
+     */
     "AR=ar\n"
     "ARFLAGS=-rv\n"
     "YACC=yacc\n"
@@ -336,7 +341,9 @@ const char FAR POSIXBuiltIn[] = {
     "CFLAGS=-O\n"
     "FC=fort77\n"
     "FFLAGS=-O 1\n"
-    /* Single suffix rules */
+    /*
+     * Single suffix rules
+     */
 #if 0
     ".c:\n"
     "    $(CC) $(CFLAGS) $(LDFLAGS) -o $@ $<\n"
@@ -346,7 +353,9 @@ const char FAR POSIXBuiltIn[] = {
     "    cp $< $@\n"
     "    chmod a+x $@\n"
 #endif
-    /* Double suffix rules */
+    /*
+     * Double suffix rules
+     */
     ".c.o:\n"
     "    $(CC) $(CFLAGS) -c $<\n"
     ".f.o:\n"

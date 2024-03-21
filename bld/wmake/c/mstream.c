@@ -65,14 +65,18 @@
 
 #define CTRLZ       0x1a
 
-typedef enum {                  /* the different stream types           */
+/*
+ * the different stream types
+ */
+typedef enum {
     SENT_FILE,
     SENT_STR,
     SENT_CHAR
 } STYPE_T;
 
-
-/* the most used items are at the top each union member */
+/*
+ * the most used items are at the top each union member
+ */
 typedef struct streamEntry {
     union {                         /* data required for each stream type   */
         struct {
@@ -211,10 +215,13 @@ STATIC bool fillBuffer( void )
     if( ferror( tmp->data.file.fp ) ) {
         PrtMsg( ERR | READ_ERROR, tmp->data.file.name );
         max = 0;
-    } else if( max > 0 && tmp->data.file.buf[max - 1] == '\r' ) {
-        /* read one more character if it ends in \r (possibly CRLF) */
+    } else if( max > 0
+      && tmp->data.file.buf[max - 1] == '\r' ) {
         size_t  max2;
 
+        /*
+         * read one more character if it ends in \r (possibly CRLF)
+         */
         max2 = fread( &tmp->data.file.buf[max], 1, 1, tmp->data.file.fp );
         if( ferror( tmp->data.file.fp ) ) {
             PrtMsg( ERR | READ_ERROR, tmp->data.file.name );
@@ -227,6 +234,7 @@ STATIC bool fillBuffer( void )
 }
 
 static bool needQuotes( const char *name )
+/****************************************/
 {
     return( strchr( name, ' ' ) != NULL || strchr( name, '#' ) != NULL );
 }
@@ -337,7 +345,9 @@ STRM_T GetCHR( void )
     for( ; (head = headSent) != NULL; ) {
         switch( head->type ) {
         case SENT_FILE:
-            /* GetFileLine() depends on the order of execution here */
+            /*
+             * GetFileLine() depends on the order of execution here
+             */
             if( head->data.file.cur == head->data.file.max ) {
                 if( !fillBuffer() ) {
                     if( head->data.file.nestLevel != GetNestLevel() ) {
@@ -351,19 +361,25 @@ STRM_T GetCHR( void )
             s = *(unsigned char *)head->data.file.cur;
             head->data.file.cur++;
             if( sisbarf( s ) ) {
-                /* ignore \r in \r\n */
-                if( s == '\r' && head->data.file.cur[0] == '\n' ) {
+                /*
+                 * ignore \r in \r\n
+                 */
+                if( s == '\r'
+                  && head->data.file.cur[0] == '\n' ) {
                     s = *(unsigned char *)head->data.file.cur;
                     head->data.file.cur++;
-                } else if( Glob.compat_nmake && s == CTRLZ ) {
-                    /* embedded ^Z terminates stream in MS mode */
+                } else if( Glob.compat_nmake
+                  && s == CTRLZ ) {
+                    /*
+                     * embedded ^Z terminates stream in MS mode
+                     */
                     s = '\n';
                     popSENT();
                     flagEOF = true;
                 } else {
                     PrtMsg( FTL | LOC | BARF_CHARACTER, s );
                     ExitFatal();
-                    // never return
+                    /* never return */
                 }
             }
             if( s == '\f' ) {
@@ -379,14 +395,14 @@ STRM_T GetCHR( void )
                 return( s );
             }
             popSENT();
-            break;              /* try again */
+            break;          /* try again */
         case SENT_CHAR:
             s = head->data.s;
             popSENT();
             return( s );
         }
     }
-    return( STRM_END ); /* the big mama ending! no more stream! */
+    return( STRM_END );     /* the big mama ending! no more stream! */
 }
 
 #ifdef USE_SCARCE
@@ -410,7 +426,7 @@ STATIC bool streamScarce( void )
 #endif
 
 void StreamFini( void )
-/****************************/
+/*********************/
 {
     while( headSent != NULL ) {
         popSENT();
@@ -419,13 +435,14 @@ void StreamFini( void )
 
 
 void StreamInit( void )
-/****************************/
+/*********************/
 {
     int     count;
     SENT    *sent;
 
-    /* preallocate storage to speed things up, and reduce fragmentation */
-
+    /*
+     * preallocate storage to speed things up, and reduce fragmentation
+     */
     freeSent = NULL;
     for( count = 0; count < STREAM_ALLOC_SENT; count++ ) {
         sent = MallocSafe( sizeof( *sent ) );
@@ -458,7 +475,8 @@ bool GetFileLine( const char **pname, UINT16 *pline )
              * evaluate improperly).
              */
             *pline = cur->data.file.line;
-            if( cur->data.file.cur > cur->data.file.buf && cur->data.file.cur[-1] == '\n' ) {
+            if( cur->data.file.cur > cur->data.file.buf
+              && cur->data.file.cur[-1] == '\n' ) {
                 --(*pline);
             }
             *pname = cur->data.file.name;
@@ -475,9 +493,11 @@ bool IsStreamEOF( void )
 }
 
 
-#ifdef DEVELOPMENT      /* code to dump the stack of SENTs */
+#ifdef DEVELOPMENT
 void dispSENT( void )
-/**************************/
+/********************
+ * code to dump the stack of SENTs
+ */
 {
     char    buf[256];
     size_t  pos;
