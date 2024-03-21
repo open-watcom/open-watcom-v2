@@ -281,7 +281,7 @@ void LibSeek( libfile io, long where, int whence )
             io->buf_pos += where;
             return;
         }
-        where -= io->buf_size - io->buf_pos;
+        where -= (long)( io->buf_size - io->buf_pos );
     }
     fseek( io->fp, where, whence );
     io->buf_size = 0;
@@ -291,8 +291,8 @@ void LibSeek( libfile io, long where, int whence )
 long LibTell( libfile io )
 {
     if( io->write_to ) {
-        return( ftell( io->fp ) + io->buf_size );
+        return( (long)( ftell( io->fp ) + io->buf_size ) );
     } else {
-        return( ftell( io->fp ) - io->buf_size + io->buf_pos );
+        return( (long)( ftell( io->fp ) - io->buf_size + io->buf_pos ) );
     }
 }

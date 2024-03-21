@@ -250,7 +250,7 @@ static void WriteCoffSymbols( libfile io, coff_lib_file *c_file )
     LibWrite( io, c_file->symbols, c_file->header.num_symbols * COFF_SYM_SIZE );
 }
 
-static void WriteCoffReloc( libfile io, unsigned_32 offset, unsigned_32 sym_tab_index, unsigned_16 type )
+static void WriteCoffReloc( libfile io, unsigned offset, unsigned sym_tab_index, unsigned_16 type )
 {
     /*
      * output is buffered so no point in putting COFF_RELOC struct
@@ -762,7 +762,7 @@ static void WriteLongImportEntry( libfile io, sym_file *sfile, coff_lib_file *c_
         /*
          * write data section no. 3
          */
-        LibWriteNulls( io, 2 * 4 );
+        LibWriteNulls( io, 8 );
         WriteCoffReloc( io, 0x0000, symb_name, COFF_IMAGE_REL_PPC_ADDR32 );
         WriteCoffReloc( io, 0x0004, symb_toc, COFF_IMAGE_REL_PPC_ADDR32 );
         break;
