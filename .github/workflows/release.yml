@@ -35,7 +35,6 @@ jobs:
           image:   'ubuntu-20.04'
     uses: "./.github/workflows/rel-lnx.yml"
     with:
-      arch:         'lnx'
       bldscript:    'ci/buildx.sh'
       tools:        ${{ matrix.tools }}
       owtools:      ${{ matrix.owtools }}
@@ -53,7 +52,6 @@ jobs:
           image:   'windows-2019'
     uses: "./.github/workflows/rel-nt.yml"
     with:
-      arch:         'nt'
       bldscript:    'ci/buildx.cmd'
       tools:        ${{ matrix.tools }}
       owtools:      ${{ matrix.owtools }}
@@ -71,7 +69,6 @@ jobs:
 #          image:   'macos-11'
 #    uses: "./.github/workflows/rel-osx.yml"
 #    with:
-#      arch:         'osx'
 #      bldscript:    'ci/buildx.sh'
 #      tools:        ${{ matrix.tools }}
 #      owtools:      ${{ matrix.owtools }}
@@ -110,7 +107,7 @@ jobs:
       uses: "./.github/actions/install"
       with:
         target:     ${{ matrix.insttype }}
-        arch:       'lnx'
+        hostos:     'lnx'
         tools_nt:   'vs2019'
         tools_lnx:  'gcc'
         owtools:    'GCC'
@@ -130,7 +127,7 @@ jobs:
       id: rel_rel
       uses: "./.github/actions/release"
       with:
-        arch:    'lnx'
+        hostos:  'lnx'
         tools:   'gcc'
         owdebug: ${{ vars.OWDEBUG }}
         owcurlopts: ${{ vars.OWCURLOPTS }}
@@ -170,7 +167,7 @@ jobs:
         target:     ${{ matrix.asset }}
         drelid:     ${{ needs.release.outputs.drelid }}
         mrelid:     ${{ needs.release.outputs.mrelid }}
-        arch:       'lnx'
+        hostos:     'lnx'
         owdebug:    ${{ vars.OWDEBUG }}
         owcurlopts: ${{ vars.OWCURLOPTS }}
   end-end:

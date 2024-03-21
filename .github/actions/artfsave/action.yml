@@ -1,8 +1,8 @@
 name: artifact-save
 description: 'Upload Artifact (tar file), first create it from git subdirectory'
 inputs:
-  arch:
-    description: 'run-time platform'
+  hostos:
+    description: 'host os'
     required: false
     default: ''
     type: string
@@ -56,7 +56,7 @@ runs:
   - if: inputs.noarchive == ''
     uses: "./.github/actions/tarsave"
     with:
-      arch:     ${{ inputs.arch }}
+      hostos:   ${{ inputs.hostos }}
       gitpath:  ${{ inputs.gitpath }}
       fullname: ${{ steps.tarname.outputs.fullname }}
       owdebug:  ${{ inputs.owdebug }}

@@ -43,7 +43,7 @@ jobs:
     - name: Install DOSBOX
       uses: "./.github/actions/dosboxin"
       with:
-        arch:       'lnx'
+        hostos:     'lnx'
     - name: Setup curl options
       id: curlcmd
       uses: "./.github/actions/curlcmd"
@@ -60,7 +60,7 @@ jobs:
     - name: "Restore Coverity Tools"
       uses: "./.github/actions/tarload"
       with:
-        arch:       'lnx'
+        hostos:     'lnx'
         fullname:   ${{ env.OWCOV_TOOLS_ARCHIVE }}
         gitpath:    ${{ env.OWCOV_TOOLS_GITPATH }}
         format:     'gzip'
@@ -160,7 +160,7 @@ jobs:
 #    - name: Install DOSBOX
 #      uses: "./.github/actions/dosboxin"
 #      with:
-#        arch:       'nt'
+#        hostos:     'nt'
 #    - name: Setup curl options
 #      id: curlcmd
 #      uses: "./.github/actions/curlcmd"
@@ -177,7 +177,7 @@ jobs:
 #    - name: "Restore Coverity Tools"
 #      uses: "./.github/actions/tarload"
 #      with:
-#        arch:       'nt'
+#        hostos:     'nt'
 #        fullname:   ${{ env.OWCOV_TOOLS_ARCHIVE }}
 #        gitpath:    ${{ env.OWCOV_TOOLS_GITPATH }}
 #        format:     'gzip'
@@ -217,7 +217,7 @@ jobs:
 #    - name: "Archive Coverity output data"
 #      uses: "./.github/actions/tarsave"
 #      with:
-#        arch:       'nt'
+#        hostos:     'nt'
 #        fullname:   ${{ steps.tarname.outputs.fullname }}
 #        gitpath:    ${{ env.OWCOV_RESULTS_GITPATH }}
 #        format:     'gzip'

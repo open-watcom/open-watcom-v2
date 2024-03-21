@@ -31,7 +31,8 @@ jobs:
     - name: Bootstrap
       uses: "./.github/actions/boot"
       with:
-        arch:       ${{ inputs.arch }}
+        hostos:     'osx'
+        suffix:     'osx-${{ inputs.arch }}'
         bldscript:  ${{ inputs.bldscript }}
         tools:      ${{ inputs.tools }}
         owtools:    ${{ inputs.owtools }}
@@ -47,7 +48,8 @@ jobs:
     - name: Build
       uses: "./.github/actions/build"
       with:
-        arch:       ${{ inputs.arch }}
+        hostos:     'osx'
+        suffix:     'osx-${{ inputs.arch }}'
         bldscript:  ${{ inputs.bldscript }}
         tools:      ${{ inputs.tools }}
         owtools:    ${{ inputs.owtools }}

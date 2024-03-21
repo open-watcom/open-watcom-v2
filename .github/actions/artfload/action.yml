@@ -1,8 +1,8 @@
 name: artifact-load
 description: 'Download Artifact (tar file) and restore it to git subdirectory'
 inputs:
-  arch:
-    description: 'run-time platform'
+  hostos:
+    description: 'host os'
     required: false
     default: ''
     type: string
@@ -67,7 +67,7 @@ runs:
     name: Restore Artifact
     uses: "./.github/actions/tarload"
     with:
-      arch:     ${{ inputs.arch }}
+      hostos:   ${{ inputs.hostos }}
       gitpath:  ${{ inputs.gitpath }}
       fullname: ${{ steps.tarname.outputs.fullname }}
       owdebug:  ${{ inputs.owdebug }}

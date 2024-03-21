@@ -51,7 +51,8 @@ jobs:
     - name: Bootstrap
       uses: "./.github/actions/boot"
       with:
-        arch:           'nt'
+        hostos:         'nt'
+        suffix:         'nt-x64'
         bldscript:      'ci\buildx.cmd'
         tools:          'vs2019'
         owtools:        'VISUALC'
@@ -81,7 +82,8 @@ jobs:
         target:     ${{ matrix.doctype }}
         gitpath:    'docs wiki'
         owtarget:   ${{ matrix.owtarget }}
-        arch:       'nt'
+        hostos:     'nt'
+        suffix:     'nt-x64'
         tools:      'vs2019'
         owtools:    'VISUALC'
         owdebug:    ${{ vars.OWDEBUG }}

@@ -39,7 +39,7 @@ jobs:
     - name: Bootstrap Linux OW
       uses: "./.github/actions/testboot"
       with:
-        arch:       'lnx'
+        hostos:     'lnx'
         gitpath:    'ci/ow'
         bldscript:  'ci/buildx.sh'
         owdebug:    ${{ vars.OWDEBUG }}
@@ -53,7 +53,7 @@ jobs:
     - name: Bootstrap Windows OW
       uses: "./.github/actions/testboot"
       with:
-        arch:       'nt'
+        hostos:     'nt'
         gitpath:    'ci\ow'
         bldscript:  'ci/buildx.cmd'
         owdebug:    ${{ vars.OWDEBUG }}
@@ -65,17 +65,15 @@ jobs:
         include:
         - owtools: 'GCC'
           tools:   'gcc'
-          image:   'ubuntu-latest'
         - owtools: 'CLANG'
           tools:   'clang'
-          image:   'ubuntu-latest'
     uses: "./.github/workflows/cibldlnx.yml"
     with:
-      arch:         'lnx'
+      arch:         'x64'
       bldscript:    'ci/buildx.sh'
       tools:        ${{ matrix.tools }}
       owtools:      ${{ matrix.owtools }}
-      image:        ${{ matrix.image }}
+      image:        'ubuntu-latest'
       owdebug:      ${{ vars.OWDEBUG }}
   workflow-nt:
     needs: bootow-nt
@@ -85,14 +83,13 @@ jobs:
         include:
         - owtools: 'VISUALC'
           tools:   'vs2019'
-          image:   'windows-2019'
     uses: "./.github/workflows/cibldnt.yml"
     with:
-      arch:         'nt'
+      arch:         'x64'
       bldscript:    'ci/buildx.cmd'
       tools:        ${{ matrix.tools }}
       owtools:      ${{ matrix.owtools }}
-      image:        ${{ matrix.image }}
+      image:        'windows-2019'
       owdebug:      ${{ vars.OWDEBUG }}
   workflow-osx:
     needs: start-start
@@ -103,12 +100,14 @@ jobs:
         - owtools:  'CLANG'
           tools:    'clang'
           image:    'macos-latest'
+          arch:     'x64'
         - owtools:  'CLANG'
           tools:    'clang'
           image:    'macos-14'
+          arch:     'a64'
     uses: "./.github/workflows/cibldosx.yml"
     with:
-      arch:         'osx'
+      arch:         ${{ matrix.arch }}
       bldscript:    'ci/buildx.sh'
       tools:        ${{ matrix.tools }}
       owtools:      ${{ matrix.owtools }}
@@ -127,7 +126,7 @@ jobs:
     - name: Load all release files
       uses: "./.github/actions/relload"
       with:
-        arch:       'lnx'
+        hostos:     'lnx'
         gitpath:    'rel'
         tools_nt:   'vs2019'
         tools_lnx:  'gcc'
@@ -136,7 +135,7 @@ jobs:
       id: owsnapshot
       uses: "./.github/actions/snapshot"
       with:
-        arch:       'lnx'
+        hostos:     'lnx'
         gitpath:    'rel'
         owdebug:    ${{ vars.OWDEBUG }}
     - if: github.event_name == 'PullRequest'
@@ -157,7 +156,7 @@ jobs:
       name: Upload Last CI Build
       uses: "./.github/actions/lastbld"
       with:
-        arch:       'lnx'
+        hostos:     'lnx'
         tools:      'gcc'
         fullname:   ${{ steps.owsnapshot.outputs.fullname }}
         owdebug:    ${{ vars.OWDEBUG }}

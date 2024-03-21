@@ -1,8 +1,8 @@
 name: test-boot
 description: 'Process test bootstrap build by OW (for test compatibility)'
 inputs:
-  arch:
-    description: 'run-time platform'
+  hostos:
+    description: 'host os'
     required: false
     default: ''
     type: string
@@ -24,7 +24,7 @@ inputs:
 runs:
   using: composite
   steps:
-  - if: inputs.arch == 'lnx'
+  - if: inputs.hostos == 'lnx'
     name: Test Bootstrap OW
     run: ${{ inputs.bldscript }}
     env:
@@ -37,7 +37,7 @@ runs:
       OWDEBUG:       ${{ inputs.owdebug }}
       OWVERBOSE:     1
     shell: bash
-  - if: inputs.arch == 'nt'
+  - if: inputs.hostos == 'nt'
     name: Test Bootstrap OW
     run: ${{ inputs.bldscript }}
     env:

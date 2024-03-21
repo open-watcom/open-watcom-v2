@@ -16,7 +16,12 @@ inputs:
     required: false
     default: ''
     type: string
-  arch:
+  hostos:
+    description: 'host os'
+    required: false
+    default: ''
+    type: string
+  suffix:
     description: 'run-time platform'
     required: false
     default: ''
@@ -46,12 +51,12 @@ runs:
   steps:
   - uses: "./.github/actions/dosboxin"
     with:
-      arch:         ${{ inputs.arch }}
+      hostos:       ${{ inputs.hostos }}
   - uses: "./.github/actions/artfload"
     with:
-      arch:         ${{ inputs.arch }}
+      hostos:       ${{ inputs.hostos }}
       gitpath:      'build binbuild'
-      artifact:     "build ${{ inputs.arch }}"
+      artifact:     "build ${{ inputs.suffix }}"
       tools:        ${{ inputs.tools }}
       noarchive:    ${{ inputs.noarchive }}
       owdebug:      ${{ inputs.owdebug }}
@@ -69,7 +74,7 @@ runs:
     shell: cmd
   - uses: "./.github/actions/artfsave"
     with:
-      arch:         ${{ inputs.arch }}
+      hostos:       ${{ inputs.hostos }}
       gitpath:      ${{ inputs.gitpath }}
       artifact:     "rel ${{ inputs.target }}"
       tools:        ${{ inputs.tools }}

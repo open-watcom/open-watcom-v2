@@ -31,7 +31,8 @@ jobs:
     - name: Bootstrap
       uses: "./.github/actions/boot"
       with:
-        arch:       ${{ inputs.arch }}
+        hostos:     'nt'
+        suffix:     'nt-${{ inputs.arch }}'
         bldscript:  ${{ inputs.bldscript }}
         tools:      ${{ inputs.tools }}
         owtools:    ${{ inputs.owtools }}
@@ -47,7 +48,8 @@ jobs:
     - name: Build
       uses: "./.github/actions/build"
       with:
-        arch:       ${{ inputs.arch }}
+        hostos:     'nt'
+        suffix:     'nt-${{ inputs.arch }}'
         bldscript:  ${{ inputs.bldscript }}
         tools:      ${{ inputs.tools }}
         owtools:    ${{ inputs.owtools }}
@@ -79,7 +81,8 @@ jobs:
       uses: "./.github/actions/docbuild"
       with:
         target:     ${{ matrix.doctype }}
-        arch:       ${{ inputs.arch }}
+        hostos:     'nt'
+        suffix:     'nt-${{ inputs.arch }}'
         tools:      ${{ inputs.tools }}
         owtools:    ${{ inputs.owtools }}
         owdebug:    ${{ inputs.owdebug }}
@@ -93,6 +96,7 @@ jobs:
     - name: Tests
       uses: "./.github/actions/tests"
       with:
+        hostos:     'nt'
         arch:       ${{ inputs.arch }}
         bldscript:  ${{ inputs.bldscript }}
         tools:      ${{ inputs.tools }}

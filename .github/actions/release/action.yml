@@ -1,8 +1,8 @@
 name: release
 description: 'Create new day and month Release on GitHub'
 inputs:
-  arch:
-    description: 'run-time platform'
+  hostos:
+    description: 'host os'
     required: false
     default: ''
     type: string

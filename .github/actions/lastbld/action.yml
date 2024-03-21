@@ -1,8 +1,8 @@
 name: last-build
 description: 'Create new OW release on GitHub and upload snapshot archive'
 inputs:
-  arch:
-    description: 'run-time platform'
+  hostos:
+    description: 'host os'
     required: false
     default: ''
     type: string
