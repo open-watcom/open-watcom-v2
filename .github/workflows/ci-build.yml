@@ -103,6 +103,9 @@ jobs:
         - owtools:  'CLANG'
           tools:    'clang'
           image:    'macos-latest'
+        - owtools:  'CLANG'
+          tools:    'clang'
+          image:    'macos-14'
     uses: "./.github/workflows/cibldosx.yml"
     with:
       arch:         'osx'
