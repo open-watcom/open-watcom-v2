@@ -32,7 +32,7 @@ jobs:
       uses: "./.github/actions/boot"
       with:
         hostos:     'osx'
-        suffix:     'osx-${{ inputs.arch }}'
+        suffix:     "osx-${{ inputs.arch }}"
         bldscript:  ${{ inputs.bldscript }}
         tools:      ${{ inputs.tools }}
         owtools:    ${{ inputs.owtools }}
@@ -49,7 +49,7 @@ jobs:
       uses: "./.github/actions/build"
       with:
         hostos:     'osx'
-        suffix:     'osx-${{ inputs.arch }}'
+        suffix:     "osx-${{ inputs.arch }}"
         bldscript:  ${{ inputs.bldscript }}
         tools:      ${{ inputs.tools }}
         owtools:    ${{ inputs.owtools }}

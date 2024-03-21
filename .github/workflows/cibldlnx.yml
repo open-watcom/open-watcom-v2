@@ -32,7 +32,7 @@ jobs:
       uses: "./.github/actions/boot"
       with:
         hostos:     'lnx'
-        suffix:     'lnx-${{ inputs.arch }}'
+        suffix:     "lnx-${{ inputs.arch }}"
         bldscript:  ${{ inputs.bldscript }}
         tools:      ${{ inputs.tools }}
         owtools:    ${{ inputs.owtools }}
@@ -49,7 +49,7 @@ jobs:
       uses: "./.github/actions/build"
       with:
         hostos:     'lnx'
-        suffix:     'lnx-${{ inputs.arch }}'
+        suffix:     "lnx-${{ inputs.arch }}"
         bldscript:  ${{ inputs.bldscript }}
         tools:      ${{ inputs.tools }}
         owtools:    ${{ inputs.owtools }}
@@ -65,7 +65,7 @@ jobs:
       uses: "./.github/actions/tests"
       with:
         hostos:     'lnx'
-        arch:       ${{ inputs.arch }}
+        suffix:     "lnx-${{ inputs.arch }}"
         bldscript:  ${{ inputs.bldscript }}
         tools:      ${{ inputs.tools }}
   testboot-lnx:
@@ -87,7 +87,6 @@ jobs:
       uses: "./.github/actions/testboot"
       with:
         hostos:     'lnx'
-        arch:       ${{ inputs.arch }}
         gitpath:    'rel'
         bldscript:  ${{ inputs.bldscript }}
         owdebug:    ${{ inputs.owdebug }}

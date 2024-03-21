@@ -32,7 +32,7 @@ jobs:
       uses: "./.github/actions/boot"
       with:
         hostos:     'nt'
-        suffix:     'nt-${{ inputs.arch }}'
+        suffix:     "nt-${{ inputs.arch }}"
         bldscript:  ${{ inputs.bldscript }}
         tools:      ${{ inputs.tools }}
         owtools:    ${{ inputs.owtools }}
@@ -49,7 +49,7 @@ jobs:
       uses: "./.github/actions/build"
       with:
         hostos:     'nt'
-        suffix:     'nt-${{ inputs.arch }}'
+        suffix:     "nt-${{ inputs.arch }}"
         bldscript:  ${{ inputs.bldscript }}
         tools:      ${{ inputs.tools }}
         owtools:    ${{ inputs.owtools }}
@@ -82,7 +82,7 @@ jobs:
       with:
         target:     ${{ matrix.doctype }}
         hostos:     'nt'
-        suffix:     'nt-${{ inputs.arch }}'
+        suffix:     "nt-${{ inputs.arch }}"
         tools:      ${{ inputs.tools }}
         owtools:    ${{ inputs.owtools }}
         owdebug:    ${{ inputs.owdebug }}
@@ -97,7 +97,7 @@ jobs:
       uses: "./.github/actions/tests"
       with:
         hostos:     'nt'
-        arch:       ${{ inputs.arch }}
+        suffix:     "nt-${{ inputs.arch }}"
         bldscript:  ${{ inputs.bldscript }}
         tools:      ${{ inputs.tools }}
   testboot-nt:
@@ -119,7 +119,6 @@ jobs:
       uses: "./.github/actions/testboot"
       with:
         hostos:     'nt'
-        arch:       ${{ inputs.arch }}
         gitpath:    'rel'
         bldscript:  ${{ inputs.bldscript }}
         owdebug:    ${{ inputs.owdebug }}
