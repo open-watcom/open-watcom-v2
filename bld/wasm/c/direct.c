@@ -2932,11 +2932,11 @@ bool LocalDef( token_buffer *tokbuf, token_idx i )
         AsmError( LOCAL_VAR_MUST_FOLLOW_PROC );
         return( RC_ERROR );
     }
+    i++;    /* skip LOCAL word */
 
     /**/myassert( CurrProc != NULL );
 
     info = CurrProc->e.procinfo;
-    i++;    /* skip LOCAL word */
     for( ; i < tokbuf->count; ) {
         if( tokbuf->tokens[i].class != TC_ID ) {
             AsmError( LABEL_IS_EXPECTED );
@@ -2952,30 +2952,30 @@ bool LocalDef( token_buffer *tokbuf, token_idx i )
             AsmErr( SYMBOL_PREVIOUSLY_DEFINED, name );
             return( RC_ERROR );
         }
+        i++;    /* skip symbol name */
+
         sym->state = SYM_INTERNAL;
         sym->mem_type = MT_WORD;
-        i++;
-
         size = LOCAL_DEFAULT_SIZE;
         factor = 1;
         tmp = NULL;
 
         if( i < tokbuf->count ) {
             if( tokbuf->tokens[i].class == TC_OP_SQ_BRACKET ) {
-                i++;
+                i++;    /* skip '[' character */
                 if( ( tokbuf->tokens[i].class != TC_NUM )
                   || ( i >= tokbuf->count ) ) {
                     AsmError( SYNTAX_ERROR );
                     return( RC_ERROR );
                 }
                 factor = tokbuf->tokens[i].u.value;
-                i++;
+                i++;    /* skip value */
                 if( ( tokbuf->tokens[i].class != TC_CL_SQ_BRACKET )
                   || ( i >= tokbuf->count ) ) {
                     AsmError( EXPECTED_CL_SQ_BRACKET );
                     return( RC_ERROR );
                 }
-                i++;
+                i++;    /* skip ']' character */
             }
         }
 
@@ -2984,7 +2984,7 @@ bool LocalDef( token_buffer *tokbuf, token_idx i )
                 AsmError( COLON_EXPECTED );
                 return( RC_ERROR );
             }
-            i++;
+            i++;    /* skip ':' character */
 
             type = token_cmp( tokbuf->tokens[i].string_ptr, TOK_EXT_BYTE, TOK_EXT_TBYTE );
             if( type == TOK_INVALID ) {
@@ -2999,7 +2999,7 @@ bool LocalDef( token_buffer *tokbuf, token_idx i )
                 size = find_size( type );
                 sym->mem_type = TypeInfo[type].value;
             }
-            i++;
+            i++;    /* skip type name */
         }
 
         info->localsize += ( size * factor );
@@ -3189,6 +3189,7 @@ bool ArgDef( token_buffer *tokbuf, token_idx i )
         AsmError( ARG_MUST_FOLLOW_PROC );
         return( RC_ERROR );
     }
+    i++;    /* skip ARG word */
 
     params.param_number = 0;
     params.unused_stack_space = 0;
@@ -3203,7 +3204,6 @@ bool ArgDef( token_buffer *tokbuf, token_idx i )
       || !Use32 ) ) {
         params.on_stack = false;
     }
-    i++;    /* skip ARG word */
     for( ; i < tokbuf->count; ) {
         if( tokbuf->tokens[i].class != TC_ID ) {
             AsmError( LABEL_IS_EXPECTED );
