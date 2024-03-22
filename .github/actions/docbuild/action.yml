@@ -6,6 +6,11 @@ inputs:
     required: false
     default: ''
     type: string
+  relpath:
+    description: 'binary release path'
+    required: false
+    default: ''
+    type: string
   owtarget:
     description: 'OW builder additional cmd line arguments'
     required: false
@@ -70,7 +75,7 @@ runs:
   - uses: "./.github/actions/artfsave"
     with:
       hostos:       ${{ inputs.hostos }}
-      gitpath:      'rel'
+      gitpath:      ${{ inputs.relpath }}
       artifact:     "rel ${{ inputs.target }}"
       tools:        ${{ inputs.tools }}
       noarchive:    ${{ inputs.noarchive }}

@@ -82,6 +82,7 @@ jobs:
       with:
         hostos:     'nt'
         target:     ${{ matrix.doctype }}
+        relpath:    'rel'
         suffix:     "nt-${{ inputs.arch }}"
         tools:      ${{ inputs.tools }}
         owtools:    ${{ inputs.owtools }}
