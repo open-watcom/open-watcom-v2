@@ -182,7 +182,8 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v4
-    - name: Call to delete Artifacs
+    - if: vars.OWDELETEARTIFACTS == 1
+      name: Call to delete Artifacs
       uses: "./.github/actions/artfdelc"
       with:
         owdebug:    ${{ vars.OWDEBUG }}
