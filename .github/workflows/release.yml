@@ -35,6 +35,7 @@ jobs:
           image:   'ubuntu-20.04'
     uses: "./.github/workflows/rel-lnx.yml"
     with:
+      arch:         'x64'
       bldscript:    'ci/buildx.sh'
       tools:        ${{ matrix.tools }}
       owtools:      ${{ matrix.owtools }}
@@ -52,6 +53,7 @@ jobs:
           image:   'windows-2019'
     uses: "./.github/workflows/rel-nt.yml"
     with:
+      arch:         'x64'
       bldscript:    'ci/buildx.cmd'
       tools:        ${{ matrix.tools }}
       owtools:      ${{ matrix.owtools }}
@@ -69,6 +71,7 @@ jobs:
 #          image:   'macos-11'
 #    uses: "./.github/workflows/rel-osx.yml"
 #    with:
+#      arch:         'x64'
 #      bldscript:    'ci/buildx.sh'
 #      tools:        ${{ matrix.tools }}
 #      owtools:      ${{ matrix.owtools }}
