@@ -48,4 +48,3 @@ extern STRM_T       EatWhite( void );
 extern STRM_T       EatToEOL( void );
 
 #endif /* !_MPREPROC_H */
-
