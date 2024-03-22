@@ -79,13 +79,13 @@ jobs:
     - name: Docs Build
       uses: "./.github/actions/docbuild"
       with:
-        target:     ${{ matrix.doctype }}
-        gitpath:    'docs wiki'
-        owtarget:   ${{ matrix.owtarget }}
         hostos:     'nt'
+        target:     ${{ matrix.doctype }}
+        relpath:    'docs wiki'
         suffix:     'nt-x64'
         tools:      'vs2019'
         owtools:    'VISUALC'
+        owtarget:   ${{ matrix.owtarget }}
         owdebug:    ${{ vars.OWDEBUG }}
         noarchive:  '1'
   wiki-update:

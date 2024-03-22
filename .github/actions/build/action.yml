@@ -6,6 +6,11 @@ inputs:
     required: false
     default: ''
     type: string
+  relpath:
+    description: 'binary release path'
+    required: false
+    default: ''
+    type: string
   suffix:
     description: 'run-time platform'
     required: false
@@ -90,6 +95,14 @@ runs:
     with:
       hostos:   ${{ inputs.hostos }}
       gitpath:  'rel'
+      artifact: "rel ${{ inputs.suffix }}"
+      tools:    ${{ inputs.tools }}
+      owdebug:  ${{ inputs.owdebug }}
+  - if: inputs.hostos == 'osx'
+    uses: "./.github/actions/artfsave"
+    with:
+      hostos:   ${{ inputs.hostos }}
+      gitpath:  ${{ inputs.relpath }}
       artifact: "rel ${{ inputs.suffix }}"
       tools:    ${{ inputs.tools }}
       owdebug:  ${{ inputs.owdebug }}

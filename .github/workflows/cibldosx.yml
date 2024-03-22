@@ -12,6 +12,9 @@ on:
       tools:
         required: true
         type: string
+      relpath:
+        required: true
+        type: string
       owtools:
         required: true
         type: string
@@ -49,6 +52,7 @@ jobs:
       uses: "./.github/actions/build"
       with:
         hostos:     'osx'
+        relpath:    ${{ inputs.relpath }}
         suffix:     "osx-${{ inputs.arch }}"
         bldscript:  ${{ inputs.bldscript }}
         tools:      ${{ inputs.tools }}

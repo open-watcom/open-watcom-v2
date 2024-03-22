@@ -80,8 +80,8 @@ jobs:
     - name: Documentation
       uses: "./.github/actions/docbuild"
       with:
-        target:     ${{ matrix.doctype }}
         hostos:     'nt'
+        target:     ${{ matrix.doctype }}
         suffix:     "nt-${{ inputs.arch }}"
         tools:      ${{ inputs.tools }}
         owtools:    ${{ inputs.owtools }}

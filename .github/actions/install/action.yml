@@ -73,7 +73,6 @@ runs:
   - uses: "./.github/actions/relload"
     with:
       hostos:       ${{ inputs.hostos }}
-      gitpath:      'rel'
       tools_nt:     ${{ inputs.tools_nt }}
       tools_lnx:    ${{ inputs.tools_lnx }}
       owdebug:      ${{ inputs.owdebug }}

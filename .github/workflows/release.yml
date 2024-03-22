@@ -69,11 +69,13 @@ jobs:
 #        - owtools: 'CLANG'
 #          tools:   'clang'
 #          image:   'macos-11'
+#          relpath: 'rel bino64'
 #    uses: "./.github/workflows/rel-osx.yml"
 #    with:
 #      arch:         'x64'
 #      bldscript:    'ci/buildx.sh'
 #      tools:        ${{ matrix.tools }}
+#      relpath:      ${{ matrix.relpath }}
 #      owtools:      ${{ matrix.owtools }}
 #      image:        ${{ matrix.image }}
 #      owdebug:      ${{ vars.OWDEBUG }}

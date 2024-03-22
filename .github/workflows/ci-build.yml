@@ -100,14 +100,17 @@ jobs:
         - owtools:  'CLANG'
           arch:     'x64'
           image:    'macos-latest'
+          relpath:  'rel bino64'
         - owtools:  'CLANG'
           arch:     'a64'
           image:    'macos-14'
+          relpath:  'rel armo64'
     uses: "./.github/workflows/cibldosx.yml"
     with:
       arch:         ${{ matrix.arch }}
       bldscript:    'ci/buildx.sh'
       tools:        'clang'
+      relpath:      ${{ matrix.relpath }}
       owtools:      ${{ matrix.owtools }}
       image:        ${{ matrix.image }}
       owdebug:      ${{ vars.OWDEBUG }}
@@ -125,7 +128,6 @@ jobs:
       uses: "./.github/actions/relload"
       with:
         hostos:     'lnx'
-        gitpath:    'rel'
         tools_nt:   'vs2019'
         tools_lnx:  'gcc'
         owdebug:    ${{ vars.OWDEBUG }}
