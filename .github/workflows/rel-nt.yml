@@ -45,7 +45,7 @@ jobs:
       uses: "./.github/actions/build"
       with:
         hostos:     'nt'
-        buildcmd:   "ci/buildx.sh ${{ inputs.tools }}"
+        buildcmd:   "ci/buildx.cmd ${{ inputs.tools }}"
         suffix:     "nt ${{ inputs.arch }} ${{ inputs.tools }}"
         owtools:    ${{ inputs.owtools }}
         owdebug:    ${{ inputs.owdebug }}
