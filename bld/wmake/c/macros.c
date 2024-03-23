@@ -129,7 +129,7 @@ STATIC void massageDollarOctothorpe( char *p )
         case '$':
             *p = TMP_DOLLAR;
             break;
-        case '#':
+        case COMMENT_C:
             *p = TMP_COMMENT;
             break;
         }
@@ -301,12 +301,11 @@ STATIC bool getOldNewString( char *inString, const char **oldString, const char 
 
     if( equal == NULL ) {
         return( false );
-    } else {
-        *oldString = inString;
-        *equal     = NULLCHAR;
-        *newString = equal + 1;
-        return( true );
     }
+    *oldString = inString;
+    *equal     = NULLCHAR;
+    *newString = equal + 1;
+    return( true );
 }
 
 
@@ -396,7 +395,8 @@ STATIC const char *GetMacroValueProcess( const char *name )
                 }
             }
             return( dirBuf );
-        } else if( predef & (M_CTIME | M_CDATE | M_CYEAR) ) {
+        }
+        if( predef & (M_CTIME | M_CDATE | M_CYEAR) ) {
             struct tm   *tm;
 
             tm = localtime( &start_time );
@@ -774,7 +774,6 @@ STATIC char *ProcessToken( int depth, MTOKEN_T end1, MTOKEN_T end2, MTOKEN_T t )
             }
             FreeSafe( p );
         } else {
-            pos = 0;
             s = PreGetCHR();
             if( sismsspecial( s ) ) {
                 UnGetCHR( s );
@@ -789,26 +788,26 @@ STATIC char *ProcessToken( int depth, MTOKEN_T end1, MTOKEN_T end2, MTOKEN_T t )
                     break;
                 }
                 return( p );
-            } else {
-                for( ;; ) {
-                    if( s == ')' ) {
-                        break;
-                    } else if( s == STRM_MAGIC ||
-                               s == STRM_END   ||
-                               s == '\n' ) {
-                        UnGetCHR( s );
-                        break;
-                    }
-                    if( pos < MAX_TOK_SIZE -1 ) {
-                        macname[pos++] = s;
-                    }
-                    s = PreGetCHR();
+            }
+            pos = 0;
+            for( ;; ) {
+                if( s == ')' ) {
+                    break;
+                } else if( s == STRM_MAGIC ||
+                           s == STRM_END   ||
+                           s == '\n' ) {
+                    UnGetCHR( s );
+                    break;
                 }
-                macname[pos] = NULLCHAR;
-                if( IsMacroName( macname ) ) {
-                    p2 = WrnGetMacroValue( macname );
-                    return( p2 );
+                if( pos < MAX_TOK_SIZE -1 ) {
+                    macname[pos++] = s;
                 }
+                s = PreGetCHR();
+            }
+            macname[pos] = NULLCHAR;
+            if( IsMacroName( macname ) ) {
+                p2 = WrnGetMacroValue( macname );
+                return( p2 );
             }
         }
         break;
@@ -1208,12 +1207,11 @@ char *PartDeMacro( bool forceDeMacro )
             IsPartDeMacro = false;
         }
         return( temp );
-    } else {
-        if( Glob.compat_nmake || Glob.compat_posix ) {
-            IsPartDeMacro = false;
-        }
-        return( PartDeMacroProcess() );
     }
+    if( Glob.compat_nmake || Glob.compat_posix ) {
+        IsPartDeMacro = false;
+    }
+    return( PartDeMacroProcess() );
 }
 
 
@@ -1222,9 +1220,8 @@ STATIC bool NMacroNameEq( const char *name1, const char *name2, size_t len )
 {
     if( Glob.compat_nmake || Glob.compat_posix ) {
         return( strncmp( name1, name2, len ) == 0 );
-    } else {
-        return( strnicmp( name1, name2, len ) == 0 );
     }
+    return( strnicmp( name1, name2, len ) == 0 );
 }
 
 
