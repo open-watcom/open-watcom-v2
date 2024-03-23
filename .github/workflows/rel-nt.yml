@@ -29,8 +29,8 @@ jobs:
       uses: "./.github/actions/boot"
       with:
         hostos:     'nt'
+        buildcmd:   "ci/buildx.cmd ${{ inputs.tools }}"
         suffix:     "nt ${{ inputs.arch }} ${{ inputs.tools }}"
-        tools:      ${{ inputs.tools }}
         owtools:    ${{ inputs.owtools }}
         owdebug:    ${{ inputs.owdebug }}
   build-nt:

@@ -29,8 +29,8 @@ jobs:
       uses: "./.github/actions/boot"
       with:
         hostos:     'lnx'
+        buildcmd:   "ci/buildx.sh ${{ inputs.tools }}"
         suffix:     "lnx ${{ inputs.arch }} ${{ inputs.tools }}"
-        tools:      ${{ inputs.tools }}
         owtools:    ${{ inputs.owtools }}
         owdebug:    ${{ inputs.owdebug }}
   build-lnx:

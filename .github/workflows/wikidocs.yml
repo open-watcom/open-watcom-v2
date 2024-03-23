@@ -52,8 +52,8 @@ jobs:
       uses: "./.github/actions/boot"
       with:
         hostos:         'nt'
+        buildcmd:       'ci/buildx.sh vs2019'
         suffix:         'nt x64 vs2019'
-        tools:          'vs2019'
         owtools:        'VISUALC'
         noarchive:      '1'
         owdebug:        ${{ vars.OWDEBUG }}

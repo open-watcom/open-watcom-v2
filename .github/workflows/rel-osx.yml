@@ -32,8 +32,8 @@ jobs:
       uses: "./.github/actions/boot"
       with:
         hostos:     'osx'
+        buildcmd:   "ci/buildx.sh ${{ inputs.tools }}"
         suffix:     "osx ${{ inputs.arch }} ${{ inputs.tools }}"
-        tools:      ${{ inputs.tools }}
         owtools:    ${{ inputs.owtools }}
         owdebug:    ${{ inputs.owdebug }}
   build-osx:
