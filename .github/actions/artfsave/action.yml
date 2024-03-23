@@ -70,6 +70,7 @@ runs:
       name:             ${{ steps.artifact_name.outputs.id }}
       path:             ${{ steps.srcpath.outputs.path }}
       retention-days:   ${{ inputs.retention_days }}
+      overwrite:        true
   - if: inputs.noarchive == ''
     name: Delete Temporary Artifact tar file
     run: rm -f ${{ steps.tarname.outputs.fullname }}

@@ -141,6 +141,7 @@ jobs:
         name:           'owsnapshot'
         path:           ${{ steps.owsnapshot.outputs.fullname }}
         retention-days: 14
+        overwrite:      true
     - if: vars.OWDELETEARTIFACTS == 1 && github.event_name == 'PullRequest'
       name: Call to delete Pull Request Artifacs
       uses: "./.github/actions/artfdelc"

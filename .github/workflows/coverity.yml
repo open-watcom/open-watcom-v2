@@ -107,6 +107,7 @@ jobs:
         name:             'coverity'
         path:             ${{ steps.tarname.outputs.fullname }}
         retention-days:   3
+        overwrite:        true
     - id: last_commit
       run: git rev-parse HEAD | Join-String -OutputPrefix 'sha=' | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
       shell: pwsh
