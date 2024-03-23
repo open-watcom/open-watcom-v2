@@ -6,9 +6,6 @@ on:
       arch:
         required: true
         type: string
-      bldscript:
-        required: true
-        type: string
       tools:
         required: true
         type: string
@@ -32,8 +29,7 @@ jobs:
       uses: "./.github/actions/boot"
       with:
         hostos:     'nt'
-        suffix:     "nt-${{ inputs.arch }}"
-        bldscript:  ${{ inputs.bldscript }}
+        suffix:     "nt ${{ inputs.arch }} ${{ inputs.tools }}"
         tools:      ${{ inputs.tools }}
         owtools:    ${{ inputs.owtools }}
         owdebug:    ${{ inputs.owdebug }}
@@ -49,9 +45,8 @@ jobs:
       uses: "./.github/actions/build"
       with:
         hostos:     'nt'
-        suffix:     "nt-${{ inputs.arch }}"
-        bldscript:  ${{ inputs.bldscript }}
-        tools:      ${{ inputs.tools }}
+        buildcmd:   "ci/buildx.sh ${{ inputs.tools }}"
+        suffix:     "nt ${{ inputs.arch }} ${{ inputs.tools }}"
         owtools:    ${{ inputs.owtools }}
         owdebug:    ${{ inputs.owdebug }}
   docsbuild:
@@ -81,10 +76,10 @@ jobs:
       uses: "./.github/actions/docbuild"
       with:
         hostos:     'nt'
+        buildcmd:   "ci/buildx.cmd ${{ inputs.tools }}"
         target:     ${{ matrix.doctype }}
-        relpath:    'rel'
-        suffix:     "nt-${{ inputs.arch }}"
-        tools:      ${{ inputs.tools }}
+        suffixi:    "nt ${{ inputs.arch }} ${{ inputs.tools }}"
+        suffixo:    "${{ matrix.doctype }} ${{ inputs.tools }}"
         owtools:    ${{ inputs.owtools }}
         owdebug:    ${{ inputs.owdebug }}
   tests-nt:
@@ -98,6 +93,4 @@ jobs:
       uses: "./.github/actions/tests"
       with:
         hostos:     'nt'
-        suffix:     "nt-${{ inputs.arch }}"
-        bldscript:  ${{ inputs.bldscript }}
-        tools:      ${{ inputs.tools }}
+        suffix:     "nt ${{ inputs.arch }} ${{ inputs.tools }}"

@@ -21,11 +21,6 @@ inputs:
     required: false
     default: ''
     type: string
-  tools:
-    description: 'used compiler toolchain'
-    required: false
-    default: ''
-    type: string
   owdebug:
     description: 'verbosed/debug output for GH Actions scripts development'
     required: false

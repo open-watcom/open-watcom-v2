@@ -6,9 +6,6 @@ on:
       arch:
         required: true
         type: string
-      bldscript:
-        required: true
-        type: string
       tools:
         required: true
         type: string
@@ -35,8 +32,7 @@ jobs:
       uses: "./.github/actions/boot"
       with:
         hostos:     'osx'
-        suffix:     "osx-${{ inputs.arch }}"
-        bldscript:  ${{ inputs.bldscript }}
+        suffix:     "osx ${{ inputs.arch }} ${{ inputs.tools }}"
         tools:      ${{ inputs.tools }}
         owtools:    ${{ inputs.owtools }}
         owdebug:    ${{ inputs.owdebug }}
@@ -52,9 +48,8 @@ jobs:
       uses: "./.github/actions/build"
       with:
         hostos:     'osx'
+        buildcmd:   "ci/buildx.sh ${{ inputs.tools }}"
         relpath:    ${{ inputs.relpath }}
-        suffix:     "osx-${{ inputs.arch }}"
-        bldscript:  ${{ inputs.bldscript }}
-        tools:      ${{ inputs.tools }}
+        suffix:     "osx ${{ inputs.arch }} ${{ inputs.tools }}"
         owtools:    ${{ inputs.owtools }}
         owdebug:    ${{ inputs.owdebug }}

@@ -16,11 +16,6 @@ inputs:
     required: false
     default: ''
     type: string
-  tools:
-    description: 'used compiler toolchain'
-    required: false
-    default: ''
-    type: string
   noarchive:
     description: 'not use tar archive for artifacts'
     required: false
@@ -37,7 +32,7 @@ runs:
   - name: Get Artifact name
     id: artifact_name
     run: >
-      -Split "${{ inputs.artifact }} ${{ inputs.tools }}"
+      -Split "${{ inputs.artifact }}"
       | Join-String -Separator '-' -OutputPrefix 'id='
       | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
     shell: pwsh

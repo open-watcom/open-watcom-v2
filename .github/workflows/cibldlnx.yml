@@ -6,9 +6,6 @@ on:
       arch:
         required: true
         type: string
-      bldscript:
-        required: true
-        type: string
       tools:
         required: true
         type: string
@@ -32,9 +29,8 @@ jobs:
       uses: "./.github/actions/boot"
       with:
         hostos:     'lnx'
-        suffix:     "lnx-${{ inputs.arch }}"
-        bldscript:  ${{ inputs.bldscript }}
-        tools:      ${{ inputs.tools }}
+        buildcmd:   "ci/buildx.sh ${{ inputs.tools }}"
+        suffix:     "lnx ${{ inputs.arch }} ${{ inputs.tools }}"
         owtools:    ${{ inputs.owtools }}
         owdebug:    ${{ inputs.owdebug }}
   build-lnx:
@@ -49,9 +45,8 @@ jobs:
       uses: "./.github/actions/build"
       with:
         hostos:     'lnx'
-        suffix:     "lnx-${{ inputs.arch }}"
-        bldscript:  ${{ inputs.bldscript }}
-        tools:      ${{ inputs.tools }}
+        buildcmd:   "ci/buildx.sh ${{ inputs.tools }}"
+        suffix:     "lnx ${{ inputs.arch }} ${{ inputs.tools }}"
         owtools:    ${{ inputs.owtools }}
         owdebug:    ${{ inputs.owdebug }}
   tests-lnx:
@@ -65,9 +60,7 @@ jobs:
       uses: "./.github/actions/tests"
       with:
         hostos:     'lnx'
-        suffix:     "lnx-${{ inputs.arch }}"
-        bldscript:  ${{ inputs.bldscript }}
-        tools:      ${{ inputs.tools }}
+        suffix:     "lnx ${{ inputs.arch }} ${{ inputs.tools }}"
   testboot-lnx:
     name: Test Bootstrap
     needs: tests-lnx
@@ -80,13 +73,11 @@ jobs:
       with:
         hostos:   'lnx'
         gitpath:  'rel'
-        artifact: "rel lnx-${{ inputs.arch }}"
-        tools:    ${{ inputs.tools }}
+        artifact: "rel lnx ${{ inputs.arch }} ${{ inputs.tools }}"
         owdebug:  ${{ inputs.owdebug }}
     - name: Test Bootstrap
       uses: "./.github/actions/testboot"
       with:
         hostos:     'lnx'
         gitpath:    'rel'
-        bldscript:  ${{ inputs.bldscript }}
         owdebug:    ${{ inputs.owdebug }}

@@ -1,16 +1,6 @@
 name: release
 description: 'Create new day and month Release on GitHub'
 inputs:
-  hostos:
-    description: 'host os'
-    required: false
-    default: ''
-    type: string
-  tools:
-    description: 'used compiler toolchain'
-    required: false
-    default: ''
-    type: string
   owdebug:
     description: 'verbosed/debug output for GH Actions scripts development'
     required: false

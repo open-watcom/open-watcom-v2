@@ -6,9 +6,6 @@ on:
       arch:
         required: true
         type: string
-      bldscript:
-        required: true
-        type: string
       tools:
         required: true
         type: string
@@ -32,8 +29,7 @@ jobs:
       uses: "./.github/actions/boot"
       with:
         hostos:     'lnx'
-        suffix:     "lnx-${{ inputs.arch }}"
-        bldscript:  ${{ inputs.bldscript }}
+        suffix:     "lnx ${{ inputs.arch }} ${{ inputs.tools }}"
         tools:      ${{ inputs.tools }}
         owtools:    ${{ inputs.owtools }}
         owdebug:    ${{ inputs.owdebug }}
@@ -49,9 +45,8 @@ jobs:
       uses: "./.github/actions/build"
       with:
         hostos:     'lnx'
-        suffix:     "lnx-${{ inputs.arch }}"
-        bldscript:  ${{ inputs.bldscript }}
-        tools:      ${{ inputs.tools }}
+        buildcmd:   "ci/buildx.sh ${{ inputs.tools }}"
+        suffix:     "lnx ${{ inputs.arch }} ${{ inputs.tools }}"
         owtools:    ${{ inputs.owtools }}
         owdebug:    ${{ inputs.owdebug }}
   tests-lnx:
@@ -65,6 +60,4 @@ jobs:
       uses: "./.github/actions/tests"
       with:
         hostos:     'lnx'
-        suffix:     "lnx-${{ inputs.arch }}"
-        bldscript:  ${{ inputs.bldscript }}
-        tools:      ${{ inputs.tools }}
+        suffix:     "lnx ${{ inputs.arch }} ${{ inputs.tools }}"

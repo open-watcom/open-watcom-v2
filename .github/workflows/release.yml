@@ -36,7 +36,6 @@ jobs:
     uses: "./.github/workflows/rel-lnx.yml"
     with:
       arch:         'x64'
-      bldscript:    'ci/buildx.sh'
       tools:        ${{ matrix.tools }}
       owtools:      ${{ matrix.owtools }}
       image:        ${{ matrix.image }}
@@ -54,7 +53,6 @@ jobs:
     uses: "./.github/workflows/rel-nt.yml"
     with:
       arch:         'x64'
-      bldscript:    'ci/buildx.cmd'
       tools:        ${{ matrix.tools }}
       owtools:      ${{ matrix.owtools }}
       image:        ${{ matrix.image }}
@@ -73,7 +71,6 @@ jobs:
 #    uses: "./.github/workflows/rel-osx.yml"
 #    with:
 #      arch:         'x64'
-#      bldscript:    'ci/buildx.sh'
 #      tools:        ${{ matrix.tools }}
 #      relpath:      ${{ matrix.relpath }}
 #      owtools:      ${{ matrix.owtools }}
@@ -112,11 +109,6 @@ jobs:
       uses: "./.github/actions/install"
       with:
         target:     ${{ matrix.insttype }}
-        hostos:     'lnx'
-        tools_nt:   'vs2019'
-        tools_lnx:  'gcc'
-        owtools:    'GCC'
-        bldscript:  'ci/buildx.sh'
         owdebug:    ${{ vars.OWDEBUG }}
   release:
     needs: install
@@ -132,8 +124,6 @@ jobs:
       id: rel_rel
       uses: "./.github/actions/release"
       with:
-        hostos:  'lnx'
-        tools:   'gcc'
         owdebug: ${{ vars.OWDEBUG }}
         owcurlopts: ${{ vars.OWCURLOPTS }}
     - run: echo "drelid=${{ steps.rel_rel.outputs.drelid }};mrelid=${{ steps.rel_rel.outputs.mrelid }}"
@@ -169,10 +159,10 @@ jobs:
     - name: Upload ${{ matrix.display }} Asset
       uses: "./.github/actions/ghassets"
       with:
+        hostos:     'lnx'
         target:     ${{ matrix.asset }}
         drelid:     ${{ needs.release.outputs.drelid }}
         mrelid:     ${{ needs.release.outputs.mrelid }}
-        hostos:     'lnx'
         owdebug:    ${{ vars.OWDEBUG }}
         owcurlopts: ${{ vars.OWCURLOPTS }}
   end-end:

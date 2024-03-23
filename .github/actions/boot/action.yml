@@ -7,17 +7,12 @@ inputs:
     default: ''
     type: string
   suffix:
-    description: 'run-time platform'
+    description: 'run-time artifact suffix'
     required: false
     default: ''
     type: string
-  bldscript:
-    description: 'script to build action'
-    required: false
-    default: ''
-    type: string
-  tools:
-    description: 'used compiler toolchain'
+  buildcmd:
+    description: 'build command'
     required: false
     default: ''
     type: string
@@ -41,7 +36,7 @@ runs:
   steps:
   - if: inputs.hostos == 'lnx' || inputs.hostos == 'osx'
     name: Bootstrap
-    run: ${{ inputs.bldscript }} ${{ inputs.tools }}
+    run: ${{ inputs.buildcmd }}
     env:
       OWBUILD_STAGE: 'boot'
       OWTOOLS:       ${{ inputs.owtools }}
@@ -51,7 +46,7 @@ runs:
     shell: bash
   - if: inputs.hostos == 'nt'
     name: Bootstrap
-    run: ${{ inputs.bldscript }} ${{ inputs.tools }}
+    run: ${{ inputs.buildcmd }}
     env:
       OWBUILD_STAGE: 'boot'
       OWTOOLS:       ${{ inputs.owtools }}
@@ -64,7 +59,6 @@ runs:
       hostos:       ${{ inputs.hostos }}
       gitpath:      'bld watcom binbuild'
       artifact:     "bld watcom ${{ inputs.suffix }}"
-      tools:        ${{ inputs.tools }}
       noarchive:    ${{ inputs.noarchive }}
       owdebug:      ${{ inputs.owdebug }}
   - uses: "./.github/actions/artfsave"
@@ -72,6 +66,5 @@ runs:
       hostos:       ${{ inputs.hostos }}
       gitpath:      'build binbuild'
       artifact:     "build ${{ inputs.suffix }}"
-      tools:        ${{ inputs.tools }}
       noarchive:    ${{ inputs.noarchive }}
       owdebug:      ${{ inputs.owdebug }}

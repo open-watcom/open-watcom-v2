@@ -11,11 +11,6 @@ inputs:
     required: false
     default: ''
     type: string
-  bldscript:
-    description: 'script to build action'
-    required: false
-    default: ''
-    type: string
   owdebug:
     description: 'verbosed/debug output for GH Actions scripts development'
     required: false
@@ -26,7 +21,7 @@ runs:
   steps:
   - if: inputs.hostos == 'lnx'
     name: Test Bootstrap OW
-    run: ${{ inputs.bldscript }}
+    run: ci/buildx.sh
     env:
       OWBUILD_STAGE: 'boot'
       OWTOOLS:       'WATCOM'
@@ -39,7 +34,7 @@ runs:
     shell: bash
   - if: inputs.hostos == 'nt'
     name: Test Bootstrap OW
-    run: ${{ inputs.bldscript }}
+    run: ci/buildx.cmd
     env:
       OWBUILD_STAGE: 'boot'
       OWTOOLS:       'WATCOM'

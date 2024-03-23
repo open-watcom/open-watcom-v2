@@ -52,8 +52,7 @@ jobs:
       uses: "./.github/actions/boot"
       with:
         hostos:         'nt'
-        suffix:         'nt-x64'
-        bldscript:      'ci\buildx.cmd'
+        suffix:         'nt x64 vs2019'
         tools:          'vs2019'
         owtools:        'VISUALC'
         noarchive:      '1'
@@ -80,10 +79,11 @@ jobs:
       uses: "./.github/actions/docbuild"
       with:
         hostos:     'nt'
+        buildcmd:   'ci/buildx.cmd vs2019'
         target:     ${{ matrix.doctype }}
         relpath:    'docs wiki'
-        suffix:     'nt-x64'
-        tools:      'vs2019'
+        suffixi:    'nt x64 vs2019'
+        suffixo:    "${{ matrix.doctype }} vs2019"
         owtools:    'VISUALC'
         owtarget:   ${{ matrix.owtarget }}
         owdebug:    ${{ vars.OWDEBUG }}

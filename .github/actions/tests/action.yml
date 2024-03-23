@@ -7,17 +7,7 @@ inputs:
     default: ''
     type: string
   suffix:
-    description: 'run-time platform'
-    required: false
-    default: ''
-    type: string
-  bldscript:
-    description: 'script to build action'
-    required: false
-    default: ''
-    type: string
-  tools:
-    description: 'used compiler toolchain'
+    description: 'run-time artifact suffix'
     required: false
     default: ''
     type: string
@@ -35,5 +25,4 @@ runs:
       hostos:   ${{ inputs.hostos }}
       gitpath:  'build binbuild'
       artifact: "build ${{ inputs.suffix }}"
-      tools:    ${{ inputs.tools }}
       owdebug:  ${{ inputs.owdebug }}

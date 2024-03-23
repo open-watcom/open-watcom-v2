@@ -9,7 +9,7 @@ inputs:
   relpath:
     description: 'binary release path'
     required: false
-    default: ''
+    default: 'rel'
     type: string
   owtarget:
     description: 'OW builder additional cmd line arguments'
@@ -21,13 +21,18 @@ inputs:
     required: false
     default: ''
     type: string
-  suffix:
-    description: 'run-time platform'
+  suffixi:
+    description: 'run-time artifact suffix'
     required: false
     default: ''
     type: string
-  tools:
-    description: 'used compiler toolchain'
+  suffixo:
+    description: 'documentation artifact suffix'
+    required: false
+    default: ''
+    type: string
+  buildcmd:
+    description: 'build command'
     required: false
     default: ''
     type: string
@@ -56,12 +61,11 @@ runs:
     with:
       hostos:       ${{ inputs.hostos }}
       gitpath:      'build binbuild'
-      artifact:     "build ${{ inputs.suffix }}"
-      tools:        ${{ inputs.tools }}
+      artifact:     "build ${{ inputs.suffixi }}"
       noarchive:    ${{ inputs.noarchive }}
       owdebug:      ${{ inputs.owdebug }}
   - name: Documentation Build
-    run: ci/buildx.cmd ${{ inputs.tools }}
+    run: ${{ inputs.buildcmd }}
     env:
       OWBUILD_STAGE: 'docs'
       OWDOCTARGET:   ${{ inputs.target }} ${{ inputs.owtarget }}
@@ -76,7 +80,6 @@ runs:
     with:
       hostos:       ${{ inputs.hostos }}
       gitpath:      ${{ inputs.relpath }}
-      artifact:     "rel ${{ inputs.target }}"
-      tools:        ${{ inputs.tools }}
+      artifact:     "rel ${{ inputs.suffixo }}"
       noarchive:    ${{ inputs.noarchive }}
       owdebug:      ${{ inputs.owdebug }}
