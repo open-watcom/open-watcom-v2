@@ -1,11 +1,6 @@
 name: release-load-all
 description: 'Load all artifact for OW Release'
 inputs:
-  cibuild:
-    description: 'CI build'
-    required: false
-    default: ''
-    type: string
   tools_nt:
     description: 'used compiler toolchain (for Windows)'
     required: false
@@ -41,15 +36,13 @@ runs:
       gitpath:  'rel'
       artifact: "rel lnx x64 ${{ inputs.tools_lnx }}"
       owdebug:  ${{ inputs.owdebug }}
-  - if: inputs.cibuild == '1'
-    uses: "./.github/actions/artfload"
+  - uses: "./.github/actions/artfload"
     with:
       hostos:   'lnx'
       gitpath:  'rel bino64'
       artifact: "rel osx x64 ${{ inputs.tools_osx }}"
       owdebug:  ${{ inputs.owdebug }}
-  - if: inputs.cibuild == '1'
-    uses: "./.github/actions/artfload"
+  - uses: "./.github/actions/artfload"
     with:
       hostos:   'lnx'
       gitpath:  'rel armo64'
