@@ -37,8 +37,8 @@ jobs:
         owtools:    ${{ inputs.owtools }}
         owdebug:    ${{ inputs.owdebug }}
   build-osx:
-    needs: boot-osx
     name: Build
+    needs: boot-osx
     runs-on: ${{ inputs.image }}
     timeout-minutes: 120
     steps:

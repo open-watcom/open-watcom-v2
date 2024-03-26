@@ -57,30 +57,34 @@ jobs:
       owtools:      ${{ matrix.owtools }}
       image:        ${{ matrix.image }}
       owdebug:      ${{ vars.OWDEBUG }}
-#  workflow-osx:
-#    needs: check_run
-#    if: needs.check_run.outputs.runit
-#    name: OSX
-#    strategy:
-#      matrix:
-#        include:
-#        - owtools: 'CLANG'
-#          tools:   'clang'
-#          image:   'macos-11'
-#          relpath: 'rel bino64'
-#    uses: "./.github/workflows/rel-osx.yml"
-#    with:
-#      arch:         'x64'
-#      tools:        ${{ matrix.tools }}
-#      relpath:      ${{ matrix.relpath }}
-#      owtools:      ${{ matrix.owtools }}
-#      image:        ${{ matrix.image }}
-#      owdebug:      ${{ vars.OWDEBUG }}
+  workflow-osx:
+    needs: check_run
+    if: needs.check_run.outputs.runit
+    name: OSX
+    strategy:
+      matrix:
+        include:
+        - owtools: 'CLANG'
+          arch:    'x64'
+          image:   'macos-1atest'
+          relpath: 'rel bino64'
+        - owtools: 'CLANG'
+          arch:    'a64'
+          image:   'macos-14'
+          relpath: 'rel armo64'
+    uses: "./.github/workflows/rel-osx.yml"
+    with:
+      arch:         ${{ matrix.arch }}
+      tools:        'clang'
+      relpath:      ${{ matrix.relpath }}
+      owtools:      ${{ matrix.owtools }}
+      image:        ${{ matrix.image }}
+      owdebug:      ${{ vars.OWDEBUG }}
   install:
     needs:
     - workflow-lnx
     - workflow-nt
-#    - workflow-osx
+    - workflow-osx
     name: Installers
     runs-on: ubuntu-latest
     strategy:

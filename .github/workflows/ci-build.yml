@@ -122,7 +122,6 @@ jobs:
     - name: Load all release files
       uses: "./.github/actions/relload"
       with:
-        cibuild:    '1'
         tools_nt:   'vs2019'
         tools_lnx:  'gcc'
         tools_osx:  'clang'
