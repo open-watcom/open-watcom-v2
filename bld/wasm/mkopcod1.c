@@ -37,6 +37,17 @@
 
 #include "mkopcode.h"
 
+
+static void fini( sword *Words, unsigned int size )
+{
+    unsigned int    i;
+
+    for( i = 0; i < size; i++ ) {
+        free( Words[i].word );
+    }
+    free( Words );
+}
+
 int main( int argc, char *argv[] )
 {
     FILE            *in;
@@ -77,6 +88,7 @@ int main( int argc, char *argv[] )
         in = fopen( argv[idx], "r" );
         if( in == NULL ) {
             printf( "Unable to open '%s'\n", argv[idx] );
+            fini( Words, index );
             exit( EXIT_FAILURE );
         }
         for( ; fgets( buf, sizeof( buf ), in ) != NULL; ) {
@@ -86,6 +98,7 @@ int main( int argc, char *argv[] )
             Words[index].word = malloc( i + 1 );
             if( Words[index].word == NULL ) {
                 printf( "Out of memory\n" );
+                fini( Words, index );
                 exit( EXIT_FAILURE );
             }
             strcpy( Words[index].word, buf );
@@ -98,6 +111,7 @@ int main( int argc, char *argv[] )
     out = fopen( out_name, "w" );
     if( out == NULL ) {
         printf( "Unable to open '%s'\n", out_name );
+        fini( Words, index );
         exit( EXIT_FAILURE );
     }
     fprintf( out, "typedef enum asm_token {\n" );
@@ -119,5 +133,6 @@ int main( int argc, char *argv[] )
     fprintf( out, "\n" );
     fprintf( out, "#define MAX_KEYWORD_LEN %u\n", (unsigned)max_len );
     fclose( out );
+    fini( Words, index );
     return( EXIT_SUCCESS );
 }
