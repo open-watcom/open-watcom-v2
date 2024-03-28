@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -102,7 +103,7 @@ static SYMBOL rtSymbolCreate(   // CREATE NEW RUN-TIME SYMBOL
 {
     SYMBOL sym;                 // - new symbol
     TYPE sym_type;              // - symbol's type
-    symbol_flag flags;          // - symbol's flags
+    symbol_flags flags;         // - symbol's flags
 
     flags = SYMF_REFERENCED;
     if( rt_type & RTS_FUNCTION ) {
@@ -144,7 +145,7 @@ static SYMBOL rtSymbolCreate(   // CREATE NEW RUN-TIME SYMBOL
 bool RunTimeIsThrow(            // TEST IF FUNCTION IS A C++ THROW
     SYMBOL func )               // - function symbol
 {
-    return( GetInternalScope() == SymScope( func ) && ( func->flag & SYMF_IS_THROW ) != 0 );
+    return( GetInternalScope() == SymScope( func ) && ( func->flags & SYMF_IS_THROW ) != 0 );
 }
 
 

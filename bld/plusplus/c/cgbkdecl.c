@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -58,7 +58,7 @@ static SYMBOL push_inline_sym(  // PUSH AN INLINE SYMBOL
     sym = VstkPush( &stack_inline_args );
     *sym = *model;
     if( model->locn != NULL ) {
-        sym->flag2 &= ~SYMF2_CG_HANDLE;
+        sym->flags2 &= ~SYMF2_CG_HANDLE;
         sym->locn = NULL;
         locn = SymbolLocnAlloc( &sym->locn );
         locn->tl = model->locn->tl;
@@ -232,7 +232,7 @@ void CgDeclSym(                 // PROCESS SYMBOL IN BLOCK-OPEN SCOPE
     sym = inlineSymbol( sym );
     fctl = FnCtlTop();
     if( CgRetnOptIsOptVar( fctl, orig ) ) {
-        sym->flag |= SYMF_RETN_OPT;
+        sym->flags |= SYMF_RETN_OPT;
         return;
     }
     switch( sym->id ) {

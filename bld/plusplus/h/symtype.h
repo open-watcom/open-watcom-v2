@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -790,8 +790,8 @@ typedef enum                            // flags for symbol.flag
 ,   SYMF_FN_LONGJUMP    = ( SYMF_LONGJUMP // - - decidable if function can
                           | SYMF_NO_LONGJUMP ) //throw, longjump, etc
 
-,   SYMF_NULL           = 0x00000000
-} symbol_flag;
+,   SYMF_NONE           = 0x00000000
+} symbol_flags;
 
 typedef enum                            // flags for symbol.flags2
                                         // hdl control flags
@@ -807,8 +807,8 @@ typedef enum                            // flags for symbol.flags2
 ,   SYMF2_HDL_MASK      = ( SYMF2_DW_HANDLE  // - - 'handles' union value
                            | SYMF2_CG_HANDLE )
 
-,   SYMF2_NULL          = 0x00
-} symbol_flag2;
+,   SYMF2_NONE          = 0x00
+} symbol_flags2;
 
 PCH_struct symbol {                     // SYMBOL in symbol table
     SYMBOL              next;           // - next in ring
@@ -842,8 +842,8 @@ PCH_struct symbol {                     // SYMBOL in symbol table
         TYPE            type;
         int             sym_offset;     // - SYMC_AUTO, SYMC_REGISTER -- fast cgen
     } u;
-    symbol_flag         flag;           // - flags
-    symbol_flag2        flag2;          // - flags2
+    symbol_flags        flags;          // - flags
+    symbol_flags2       flags2;         // - flags2
     symbol_class        id;             // - storage class
     fe_seg_id           segid;          // - segment id
 };

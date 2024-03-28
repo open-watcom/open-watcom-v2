@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -2089,7 +2089,7 @@ static bool analyseStaticFunc(  // ANALYSE GOOD REFERENCE TO STATIC FUNC(S)
         ok = true;
     } else {
         SYMBOL funsym = func->u.symcg.symbol;
-//      funsym->flag |= SYMF_REFERENCED;
+//      funsym->flags |= SYMF_REFERENCED;
         if( SymIsThisFuncMember( funsym ) ) {
             if( (func->flags & PTF_COLON_QUALED) || (resolution & ADDRFN_MEMBPTR_KLUGE) ) {
                 ok = true;
@@ -2100,7 +2100,7 @@ static bool analyseStaticFunc(  // ANALYSE GOOD REFERENCE TO STATIC FUNC(S)
                 ok = false;
             }
         } else {
-            funsym->flag |= SYMF_REFERENCED;
+            funsym->flags |= SYMF_REFERENCED;
             prune = root;
             for( ; prune != NULL; ) {
                 expr = *prune;
@@ -2150,8 +2150,8 @@ static bool resolveActualAddrOf(// RESOLVE &func FOR ACTUAL NON-OVERLOAD
     func = ActualNonOverloadedFunc( node->u.symcg.symbol, node->u.symcg.result );
     if( CNV_OK == ConvertOvFunNode( MakePointerTo( func->sym_type )
                                   , node ) ) {
-//      func->flag |= SYMF_ADDR_TAKEN | SYMF_REFERENCED;
-        func->flag |= SYMF_ADDR_TAKEN;
+//      func->flags |= SYMF_ADDR_TAKEN | SYMF_REFERENCED;
+        func->flags |= SYMF_ADDR_TAKEN;
         node->flags |= PTF_PTR_NONZERO;
         ok = true;
     } else {
@@ -3485,7 +3485,7 @@ PTREE AnalyseOperator(          // ANALYSE AN OPERATOR
                     PTreeErrorExprSymInf( expr, ERR_CANT_TAKE_ADDR_OF_RVALUE, sym );
                     break;
                 }
-                sym->flag |= SYMF_ADDR_TAKEN;
+                sym->flags |= SYMF_ADDR_TAKEN;
                 if( ( left->flags & PTF_COLON_QUALED ) && ( SymIsThisMember( sym ) ) ) {
                     type = MakeMemberPointerTo( SymClass(sym )
                                               , sym->sym_type );
@@ -4123,7 +4123,7 @@ PTREE AnalyseOperator(          // ANALYSE AN OPERATOR
                 DbgDefault( "ANALYSE -- invalid throw category" );
                 }
                 if( expr->op == PT_SYMBOL ) {
-                    expr->u.symcg.symbol->flag |= SYMF_ADDR_TAKEN;
+                    expr->u.symcg.symbol->flags |= SYMF_ADDR_TAKEN;
                 }
                 expr = ThrowTypeSig( type, throw_exp );
                 if( expr == NULL ) {

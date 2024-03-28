@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1016,7 +1016,7 @@ PTREE AnalyseCall(              // ANALYSIS FOR CALL
         if( fn_mod & TF1_FAR16 ) {
             /* we are calling a far16 function */
             caller_sym = ScopeFunctionInProgress();
-            caller_sym->flag |= SYMF_FAR16_CALLER;
+            caller_sym->flags |= SYMF_FAR16_CALLER;
         }
         left->type = type;
         if( node_this == NULL ) {
@@ -1089,7 +1089,7 @@ PTREE AnalyseCall(              // ANALYSIS FOR CALL
         if( fn_mod & TF1_FAR16 ) {
             /* we are calling a far16 function */
             caller_sym = ScopeFunctionInProgress();
-            caller_sym->flag |= SYMF_FAR16_CALLER;
+            caller_sym->flags |= SYMF_FAR16_CALLER;
         }
         if( ! TypeHasNumArgs( type, num_args ) ) {
             PTreeErrorExpr( expr, ERR_PARM_COUNT_MISMATCH_POINTER );

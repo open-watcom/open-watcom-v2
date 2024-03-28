@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -60,7 +60,7 @@
         ( 1 << SYMC_ACCESS )
 
 #define symIsDataFunction( s )  ( \
-        ( ((s)->flag & SYMF_ERROR) == 0 ) && \
+        ( ((s)->flags & SYMF_ERROR) == 0 ) && \
         ( ! stgClassInSet( sym, SCM_NOT_DATA_OR_FUNC ) ) \
         )
 
@@ -437,12 +437,12 @@ arg_list *SymFuncArgList(       // GET FUNCTION ARG. LIST
 static SYMBOL symAllocate(      // ALOOCATE A NEW SYMBOL
     TYPE type,                  // - symbol type
     symbol_class id,            // - symbol class
-    symbol_flag flags )         // - symbol flags
+    symbol_flags flags )        // - symbol flags
 {
     SYMBOL sym = AllocSymbol();
     sym->id = id;
     sym->sym_type = type;
-    sym->flag = flags;
+    sym->flags = flags;
     return( sym );
 }
 
@@ -452,7 +452,7 @@ SYMBOL SymMakeDummy(            // MAKE A DUMMY SYMBOL
     NAME *name )                // - gets filled in with the name
 {
     *name = NameDummy();
-    return( symAllocate( type, 0, 0 ) );
+    return( symAllocate( type, SYMC_NULL, SYMF_NONE ) );
 }
 
 
@@ -557,7 +557,7 @@ SYMBOL SymFunctionReturn(       // GET SYMBOL FOR RETURN
         if( ( result->scope == fun_scope )
           ||( result->scope->enclosing == fun_scope ) ) {
             retn = result->sym_name->name_syms;
-            retn->flag |= SYMF_REFERENCED;
+            retn->flags |= SYMF_REFERENCED;
         } else {
             retn = NULL;
         }
@@ -1088,7 +1088,7 @@ bool SymIsThunk(                // DETERMINE IF FUNCTION IS THUNK
         }
     }
     // we should be able to use SYMF_ADDR_THUNK; so we test this...
-    DbgAssert( func == NULL || ( (func->flag & SYMF_ADDR_THUNK) != 0 ) == ok );
+    DbgAssert( func == NULL || ( (func->flags & SYMF_ADDR_THUNK) != 0 ) == ok );
     return( ok );
 }
 
@@ -1125,10 +1125,10 @@ SYMBOL SymMarkRefed(            // MARK SYMBOL AS REFERENCED
         }
         if( SymIsThunk( base ) ) {
             orig = base->u.thunk_calls;
-            orig->flag |= SYMF_REFERENCED;
+            orig->flags |= SYMF_REFERENCED;
         }
     }
-    base->flag |= SYMF_REFERENCED;
+    base->flags |= SYMF_REFERENCED;
     // callers depend on original symbol coming back
     return( sym );
 }
@@ -1137,7 +1137,7 @@ SYMBOL SymMarkRefed(            // MARK SYMBOL AS REFERENCED
 SYMBOL SymCreate(               // CREATE NEW SYMBOL
     TYPE type,                  // - symbol type
     symbol_class id,            // - symbol class
-    symbol_flag flags,          // - symbol flags
+    symbol_flags flags,         // - symbol flags
     NAME name,                  // - symbol name
     SCOPE scope )               // - scope for insertion
 {
@@ -1157,7 +1157,7 @@ SYMBOL SymCreate(               // CREATE NEW SYMBOL
 SYMBOL SymCreateAtLocn(         // CREATE NEW SYMBOL AT LOCATION
     TYPE type,                  // - symbol type
     symbol_class id,            // - symbol class
-    symbol_flag flags,          // - symbol flags
+    symbol_flags flags,         // - symbol flags
     NAME name,                  // - symbol name
     SCOPE scope,                // - scope for insertion
     TOKEN_LOCN* locn )          // - location
@@ -1178,7 +1178,7 @@ SYMBOL SymCreateAtLocn(         // CREATE NEW SYMBOL AT LOCATION
 SYMBOL SymCreateCurrScope(      // CREATE NEW CURR-SCOPE SYMBOL
     TYPE type,                  // - symbol type
     symbol_class id,            // - symbol class
-    symbol_flag flags,          // - symbol flags
+    symbol_flags flags,         // - symbol flags
     NAME name )                 // - symbol name
 {
     return( SymCreate( type, id, flags, name, GetCurrScope() ) );
@@ -1188,7 +1188,7 @@ SYMBOL SymCreateCurrScope(      // CREATE NEW CURR-SCOPE SYMBOL
 SYMBOL SymCreateFileScope(      // CREATE NEW FILE-SCOPE SYMBOL
     TYPE type,                  // - symbol type
     symbol_class id,            // - symbol class
-    symbol_flag flags,          // - symbol flags
+    symbol_flags flags,         // - symbol flags
     NAME name )                 // - symbol name
 {
     return( SymCreate( type, id, flags, name, GetFileScope() ) );
@@ -1198,7 +1198,7 @@ SYMBOL SymCreateFileScope(      // CREATE NEW FILE-SCOPE SYMBOL
 SYMBOL SymCreateTempScope(      // CREATE NEW TEMP-SCOPE SYMBOL
     TYPE type,                  // - symbol type
     symbol_class id,            // - symbol class
-    symbol_flag flags,          // - symbol flags
+    symbol_flags flags,         // - symbol flags
     NAME name )                 // - symbol name
 {
     return( SymCreate( type, id, flags, name, ScopeForTemps() ) );
@@ -1209,30 +1209,30 @@ SYMBOL SymDeriveThrowBits(      // DERIVE SYMF_.._LONGJUMP BITS FROM SOURCE
     SYMBOL tgt,                 // - target symbol
     SYMBOL src )                // - source symbol
 {
-    symbol_flag src_flag        // - source flags
+    symbol_flags src_flags      // - source flags
         = SymThrowFlags( src );
 
 #ifdef DEVBUILD
-    if( src_flag & SYMF_LONGJUMP ) {
-        DbgVerify( (tgt->flag & SYMF_NO_LONGJUMP) == 0
+    if( src_flags & SYMF_LONGJUMP ) {
+        DbgVerify( (tgt->flags & SYMF_NO_LONGJUMP) == 0
                  , "SymDeriveThrowBits -- target has SYMF_NO_LONGJUMP" );
-    } else if( src_flag & SYMF_NO_LONGJUMP ) {
-        DbgVerify( (tgt->flag & SYMF_LONGJUMP) == 0
+    } else if( src_flags & SYMF_NO_LONGJUMP ) {
+        DbgVerify( (tgt->flags & SYMF_LONGJUMP) == 0
                  , "SymDeriveThrowBits -- target has SYMF_LONGJUMP" );
     }
 #endif
 
-    tgt->flag |= src_flag;
+    tgt->flags |= src_flags;
     return( tgt );
 }
 
 
-symbol_flag SymThrowFlags(      // GET SYMBOL'S THROW BITS
+symbol_flags SymThrowFlags(     // GET SYMBOL'S THROW BITS
     SYMBOL sym )                // - the symbol
 {
-    symbol_flag flags;          // - symbol's flags
+    symbol_flags flags;         // - symbol's flags
 
-    flags = ( sym->flag & SYMF_LONGJUMP ) | ( sym->flag & SYMF_NO_LONGJUMP );
+    flags = ( sym->flags & SYMF_LONGJUMP ) | ( sym->flags & SYMF_NO_LONGJUMP );
     DbgVerify( flags != ( SYMF_LONGJUMP | SYMF_NO_LONGJUMP )
              , "SymThrowFlags -- both throw bits computed" );
     return( flags );
@@ -1310,8 +1310,8 @@ SYMBOL SymMakeAlias(            // DECLARE AN ALIAS IN CURRSCOPE
     SYMBOL check;
 
     aliasee = SymDeAlias( aliasee );
-    sym = symAllocate( aliasee->sym_type, aliasee->id, aliasee->flag | SYMF_REFERENCED );
-    sym->flag |= SYMF_ALIAS;
+    sym = symAllocate( aliasee->sym_type, aliasee->id, aliasee->flags | SYMF_REFERENCED );
+    sym->flags |= SYMF_ALIAS;
     sym->u.alias = aliasee;
     SymbolLocnDefine( locn, sym );
     check = ScopeInsert( GetCurrScope(), sym, aliasee->name->name );
@@ -1346,7 +1346,7 @@ SYMBOL SymBindConstant              // BIND A CONSTANT TO A SYMBOL
             sym->u.sval = con.u._32[I64LO32];
         } else {
             sym->u.pval = ConPoolInt64Add( con );
-            sym->flag |= SYMF_CONSTANT_INT64;
+            sym->flags |= SYMF_CONSTANT_INT64;
         }
     }
     return( sym );
@@ -1358,9 +1358,9 @@ SYMBOL SymConstantValue             // GET CONSTANT VALUE FOR SYMBOL
     , INT_CONSTANT* pval )          // - addr[ value ]
 {
     pval->type = sym->sym_type;
-    if( sym->flag & SYMF_CONSTANT_INT64 ) {
+    if( sym->flags & SYMF_CONSTANT_INT64 ) {
         pval->u.value = sym->u.pval->u.int64_constant;
-    } else if( sym->flag & SYMF_ENUM_UINT ) {
+    } else if( sym->flags & SYMF_ENUM_UINT ) {
         Int64FromU32( sym->u.sval, &pval->u.value );
     } else {
         Int64From32( sym->sym_type, sym->u.sval, &pval->u.value );

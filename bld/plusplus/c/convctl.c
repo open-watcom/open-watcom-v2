@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -232,7 +232,7 @@ static void adjustFnAddr        // SET FUNCTION ADDR
     if( SymIsThisFuncMember( sym ) ) {
         errForFunc( func, ERR_ADDR_NONSTAT_MEMBER_FUNC, ctl );
     } else {
-        sym->flag |= SYMF_ADDR_TAKEN;
+        sym->flags |= SYMF_ADDR_TAKEN;
         SymMarkRefed( sym );                                // ok?
         argument = makeRefPtrFunc( ctl, func->type );
         setFunType( addrof, argument );
@@ -251,7 +251,7 @@ static void adjustFnMembPtr     // SET MEMB-PTR TYPE
 //  func = NodeActualNonOverloaded( func );
     sym = func->u.symcg.symbol;
     if( SymIsThisFuncMember( sym ) ) {
-        sym->flag |= SYMF_ADDR_TAKEN;
+        sym->flags |= SYMF_ADDR_TAKEN;
 //      SymMarkRefed( sym );
         argument = MakeMemberPointerTo( SymClass( sym ), sym->sym_type );
 //      ctl->expr->u.subtree[1]->type = argument;
@@ -1365,7 +1365,7 @@ CNV_RETN CastPtrToPtr           // IMPLICIT/EXPLICIT CAST PTR -> PTR
 
     expr = *NodeReturnSrc( &ctl->expr, &dtor );
     if( expr->op == PT_SYMBOL ) {
-        expr->u.symcg.symbol->flag |= SYMF_ADDR_TAKEN;
+        expr->u.symcg.symbol->flags |= SYMF_ADDR_TAKEN;
     }
     expr = NodeSetType( ctl->expr, ctl->tgt.orig, PTF_LV_CHECKED );
     if( ctl->converts ) {

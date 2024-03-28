@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -71,7 +72,7 @@ struct class_data {
     type_flag       tflag;                  /* TF1_STRUCT or TF1_UNION */
     type_flag       fn_flags;               /* function flags for member functions */
     type_flag       mod_flags;              /* modifier flags for members */
-    symbol_flag     perm;                   /* current permissions */
+    symbol_flags    perm;                   /* current permissions */
     uint_8          bit_offset;             /* next bit offset for a bitfield */
     uint_8          bit_available;          /* available bits in current bitfield */
     uint_8          bit_unit_width;         /* total bits in current bitfield */
@@ -129,7 +130,7 @@ typedef enum {                  // state after class name
 extern void ClassInit( void );
 extern void ClassFini( void );
 extern void ClassInitState( type_flag, CLASS_INIT, TYPE );
-extern void ClassPermission( symbol_flag );
+extern void ClassPermission( symbol_flags );
 extern CLNAME_STATE ClassName( PTREE, CLASS_DECL );
 extern void ClassSpecificInstantiation( PTREE, CLASS_DECL, tc_directive );
 extern void ClassMember( SCOPE, SYMBOL );

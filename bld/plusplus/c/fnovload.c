@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1183,11 +1183,11 @@ static OV_RESULT compareFunction(
     }
     if( retn == OV_CMP_SAME ) {
         // prefer non-template functions
-        if( ( first->sym->flag & SYMF_TEMPLATE_FN )
-         && (second->sym->flag & SYMF_TEMPLATE_FN) == 0 ) {
+        if( ( first->sym->flags & SYMF_TEMPLATE_FN )
+         && (second->sym->flags & SYMF_TEMPLATE_FN) == 0 ) {
             retn = OV_CMP_BETTER_SECOND;
-        } else if( (first->sym->flag & SYMF_TEMPLATE_FN) == 0
-                && ( second->sym->flag & SYMF_TEMPLATE_FN ) ) {
+        } else if( (first->sym->flags & SYMF_TEMPLATE_FN) == 0
+                && ( second->sym->flags & SYMF_TEMPLATE_FN ) ) {
             retn = OV_CMP_BETTER_FIRST;
         }
     }
@@ -1309,11 +1309,11 @@ static void resolveOneList( FNOV_LIST **list, FNOV_LIST **match,
                 }
                 if( result == OV_CMP_SAME ) {
                     // prefer non-template functions
-                    if( ( (*match)->sym->flag & SYMF_TEMPLATE_FN )
-                      && (curr->sym->flag & SYMF_TEMPLATE_FN) == 0 ) {
+                    if( ( (*match)->sym->flags & SYMF_TEMPLATE_FN )
+                      && (curr->sym->flags & SYMF_TEMPLATE_FN) == 0 ) {
                         result = OV_CMP_BETTER_SECOND;
-                    } else if( ((*match)->sym->flag & SYMF_TEMPLATE_FN) == 0
-                            && ( curr->sym->flag & SYMF_TEMPLATE_FN ) ) {
+                    } else if( ((*match)->sym->flags & SYMF_TEMPLATE_FN) == 0
+                            && ( curr->sym->flags & SYMF_TEMPLATE_FN ) ) {
                         result = OV_CMP_BETTER_FIRST;
                     }
                 }

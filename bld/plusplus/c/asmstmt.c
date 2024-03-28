@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -219,7 +219,7 @@ PTREE AsmStmt( void )
         fn_type = MakeModifiableFunction( ret_type, NULL );
         fn_type->u.f.pragma = auxinfo;
         fn_type = CheckDupType( fn_type );
-        sym = SymCreateFileScope( fn_type, SYMC_NULL, SYMF_NULL, fn_name );
+        sym = SymCreateFileScope( fn_type, SYMC_NULL, SYMF_NONE, fn_name );
         LinkageSet( sym, "C" );
         expr = genFnCall( fn_name );
     } else {

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -215,7 +215,7 @@ static bool isReposSym          // TEST IF REPOSITORY SYMBOL
 {
     return CompFlags.extra_stats_wanted
         && ! SymIsTemporary( sym )
-        && ( SYMF2_TOKEN_LOCN & sym->flag2 );
+        && ( SYMF2_TOKEN_LOCN & sym->flags2 );
 }
 
 
@@ -248,7 +248,7 @@ static void reportOnType        // SET UP TYPE REFERENCE
     , TYPE type                 // - a type
     , SYMBOL sym )              // - symbol for type
 {
-    if( NULL != sym && ( SYMF2_TOKEN_LOCN & sym->flag2 ) ) {
+    if( NULL != sym && ( SYMF2_TOKEN_LOCN & sym->flags2 ) ) {
         SRCFILE refed = sym->locn->tl.src_file;
         if( curr != refed ) {
             REPO_STAT *repo = reposStat( curr );

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -200,7 +200,7 @@ void ModuleInitInit(            // START MODULE-INITIALIZATION FUNCTION
     fn_type = TypeVoidFunOfVoid();
     module_init = SymCreateFileScope( fn_type
                                     , SYMC_STATIC
-                                    , 0
+                                    , SYMF_NONE
                                     , CppSpecialName( SPECIAL_NAME_INIT_FUNCTION ) );
     module_init_func = module_init;
     SetCurrScope(GetFileScope());
@@ -216,7 +216,7 @@ void ModuleInitUsed(            // FLAG MODULE-INITIALIZATION FUNCTION AS USED
     void )
 {
     module_init_func->id = SYMC_STATIC;
-    module_init_func->flag |= SYMF_INITIALIZED | SYMF_REFERENCED;
+    module_init_func->flags |= SYMF_INITIALIZED | SYMF_REFERENCED;
 }
 
 

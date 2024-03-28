@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -358,7 +358,7 @@ void ClassInitState( type_flag class_variant, CLASS_INIT extra, TYPE class_mod_l
         break;
     }
     if( class_variant & (TF1_STRUCT|TF1_UNION) ) {
-        data->perm = SYMF_NULL;
+        data->perm = SYMF_NONE;
         if( class_variant & TF1_UNION ) {
             data->is_union = true;
         }
@@ -380,8 +380,8 @@ void ClassAddFunctionMods( TYPE fn_declarator )
     }
 }
 
-void ClassPermission( symbol_flag new_perm )
-/******************************************/
+void ClassPermission( symbol_flags new_perm )
+/*******************************************/
 {
     classDataStack->perm = new_perm;
 }
@@ -391,7 +391,7 @@ static void typeError( MSG_NUM msg, TYPE type )
     CErr2p( msg, type );
 }
 
-static bool verifyNoChangePerm( CLASS_DATA *data, symbol_flag perm, NAME name )
+static bool verifyNoChangePerm( CLASS_DATA *data, symbol_flags perm, NAME name )
 {
     if( perm != data->perm ) {
         /* data->perm is 'protected' or 'public' */
@@ -425,8 +425,8 @@ static bool handleAccessDeclaration( PTREE id_tree )
     SYMBOL curr_sym;
     SYMBOL check_sym;
     SYMBOL access_sym;
-    symbol_flag perm;
-    symbol_flag curr_perm;
+    symbol_flags perm;
+    symbol_flags curr_perm;
     bool error_diagnosed;
     TOKEN_LOCN name_locn;
 
@@ -483,7 +483,7 @@ static bool handleAccessDeclaration( PTREE id_tree )
     sym = sym_name->name_syms;
     DbgAssert( sym != NULL );
     check_sym = NULL;
-    perm = SYMF_NULL;
+    perm = SYMF_NONE;
     RingIterBeg( sym, curr_sym ) {
         if( udc_return_type != NULL ) {
             /* filter out user-defined conversions with the wrong return type */
@@ -493,10 +493,10 @@ static bool handleAccessDeclaration( PTREE id_tree )
         }
         if( check_sym == NULL ) {
             check_sym = curr_sym;
-            perm = check_sym->flag & ( SYMF_PROTECTED | SYMF_PRIVATE );
+            perm = check_sym->flags & ( SYMF_PROTECTED | SYMF_PRIVATE );
         } else {
-            curr_perm = curr_sym->flag & ( SYMF_PROTECTED | SYMF_PRIVATE );
-            if(( perm ^ curr_perm ) != SYMF_NULL ) {
+            curr_perm = curr_sym->flags & ( SYMF_PROTECTED | SYMF_PRIVATE );
+            if(( perm ^ curr_perm ) != SYMF_NONE ) {
                 if( ! error_diagnosed ) {
                     CErr2p( ERR_ACCESS_DECL_ALL_SAME, name );
                     error_diagnosed = true;
@@ -518,7 +518,7 @@ static bool handleAccessDeclaration( PTREE id_tree )
     if( verifyNoChangePerm( data, perm, name ) ) {
         return( true );
     }
-    access_sym = SymCreateAtLocn( type, SYMC_ACCESS, SYMF_NULL, name, GetCurrScope(), &name_locn );
+    access_sym = SymCreateAtLocn( type, SYMC_ACCESS, SYMF_NONE, name, GetCurrScope(), &name_locn );
     if( access_sym != NULL ) {
         access_sym->u.udc_type = udc_return_type;
     }
@@ -547,7 +547,7 @@ static bool handleAccessTypeDeclaration( DECL_SPEC *dspec, TOKEN_LOCN *locn )
     SYMBOL_NAME sym_name;
     SYMBOL sym;
     PTREE id;
-    symbol_flag perm;
+    symbol_flags perm;
     bool error_diagnosed;
 
     error_diagnosed = false;
@@ -601,11 +601,11 @@ static bool handleAccessTypeDeclaration( DECL_SPEC *dspec, TOKEN_LOCN *locn )
     if( error_diagnosed ) {
         return( error_diagnosed );
     }
-    perm = sym->flag & (SYMF_PROTECTED | SYMF_PRIVATE);
+    perm = sym->flags & (SYMF_PROTECTED | SYMF_PRIVATE);
     if( verifyNoChangePerm( data, perm, name ) ) {
         return( true );
     }
-    SymCreateAtLocn( type, SYMC_TYPEDEF, SYMF_NULL, name, GetCurrScope(), locn );
+    SymCreateAtLocn( type, SYMC_TYPEDEF, SYMF_NONE, name, GetCurrScope(), locn );
     return( false );
 }
 
@@ -1013,7 +1013,7 @@ CLNAME_STATE ClassName( PTREE id, CLASS_DECL declaration )
                                     newClassSym( data, declaration, id );
                                     PTreeFreeSubtrees( id );
                                     return( CLNAME_NULL );
-                                } else if(( enclosing_data->perm ^ sym->flag ) & SYMF_ACCESS ) {
+                                } else if(( enclosing_data->perm ^ sym->flags ) & SYMF_ACCESS ) {
                                     typeError( ERR_CLASS_ACCESS, type );
                                 }
                             }
@@ -1655,7 +1655,7 @@ DECL_SPEC *ClassEnd( void )
 
     data = classDataStack;
     data->is_explicit = false;
-    ClassPermission( SYMF_NULL );
+    ClassPermission( SYMF_NONE );
     type = data->type;
     scope = data->scope;
     info = data->info;
@@ -2364,7 +2364,7 @@ void ClassMember( SCOPE scope, SYMBOL sym )
         }
         return;
     }
-    sym->flag |= data->perm;
+    sym->flags |= data->perm;
     switch( data->perm ) {
     case SYMF_PRIVATE:
         data->a_private = true;
@@ -3147,7 +3147,7 @@ static void promoteMembers( TYPE class_type, SYMBOL owner )
     }
     stop = ScopeOrderedStart( scope );
     for( curr = NULL; (curr = ScopeOrderedNext( stop, curr )) != NULL; ) {
-        if( curr->flag & SYMF_PRIVATE ) {
+        if( curr->flags & SYMF_PRIVATE ) {
             CErr2p( ERR_UNION_PRIVATE_MEMBER, curr );
             problems = true;
         }
@@ -3164,9 +3164,9 @@ static void promoteMembers( TYPE class_type, SYMBOL owner )
             problems = true;
         }
         if( ! problems ) {
-            curr->flag |= SYMF_ANONYMOUS;
+            curr->flags |= SYMF_ANONYMOUS;
             if( promote_to_class ) {
-                curr->flag |= owner->flag & SYMF_ACCESS;
+                curr->flags |= owner->flags & SYMF_ACCESS;
                 /* looking ahead to anonymous structs */
                 curr->u.member_offset += owner->u.member_offset;
             } else {
@@ -3256,7 +3256,7 @@ bool ClassAnonymousUnion( DECL_SPEC *dspec )
     // when inlining a function with an auto anonymous union multiple
     // times that an inline alias for the anon-union symbol is not
     // created (it checks to make sure the sym is ref'd or init'd) AFS 97/05/16
-    sym->flag |= SYMF_REFERENCED;
+    sym->flags |= SYMF_REFERENCED;
     sym = InsertSymbol( GetCurrScope(), sym, name );
     if( emit_init ) {
         DgSymbol( sym );
@@ -3601,11 +3601,11 @@ static bool genDefaultCtor( TYPE class_type )
     scope = class_type->u.c.scope;
     syms = checkPresence( scope, name );
     sym = findMember( syms, class_type, ClassIsDefaultCtor );
-    if( sym->flag & SYMF_REFERENCED ) {
+    if( sym->flags & SYMF_REFERENCED ) {
         GenerateDefaultCtor( sym );
         return( true );
     }
-    sym->flag &= ~ SYMF_INITIALIZED;
+    sym->flags &= ~ SYMF_INITIALIZED;
     return( false );
 }
 
@@ -3620,11 +3620,11 @@ static bool genDefaultCopy( TYPE class_type )
     scope = class_type->u.c.scope;
     syms = checkPresence( scope, name );
     sym = findMember( syms, class_type, ClassIsDefaultCopy );
-    if( sym->flag & SYMF_REFERENCED ) {
+    if( sym->flags & SYMF_REFERENCED ) {
         GenerateDefaultCopy( sym );
         return( true );
     }
-    sym->flag &= ~ SYMF_INITIALIZED;
+    sym->flags &= ~ SYMF_INITIALIZED;
     return( false );
 }
 
@@ -3640,11 +3640,11 @@ static bool genDefaultDtor( TYPE class_type )
     syms = checkPresence( scope, name );
     /* dtors cannot be overloaded */
     sym = syms;
-    if( sym->flag & SYMF_REFERENCED ) {
+    if( sym->flags & SYMF_REFERENCED ) {
         GenerateDefaultDtor( sym );
         return( true );
     }
-    sym->flag &= ~ SYMF_INITIALIZED;
+    sym->flags &= ~ SYMF_INITIALIZED;
     return( false );
 }
 
@@ -3659,11 +3659,11 @@ static bool genDefaultAssign( TYPE class_type )
     scope = class_type->u.c.scope;
     syms = checkPresence( scope, name );
     sym = findMember( syms, class_type, ClassIsDefaultAssign );
-    if( sym->flag & SYMF_REFERENCED ) {
+    if( sym->flags & SYMF_REFERENCED ) {
         GenerateDefaultAssign( sym );
         return( true );
     }
-    sym->flag &= ~ SYMF_INITIALIZED;
+    sym->flags &= ~ SYMF_INITIALIZED;
     return( false );
 }
 

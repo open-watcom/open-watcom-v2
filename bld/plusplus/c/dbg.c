@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -469,11 +469,11 @@ void DumpSymbol(                // DUMP SYMBOL ENTRY
               , sym->thread
               , sym->sym_type
               , sym->name
-              , ( sym->flag2 & SYMF2_TOKEN_LOCN ) ? sym->locn->u.cg_handle : 0
+              , ( sym->flags2 & SYMF2_TOKEN_LOCN ) ? sym->locn->u.cg_handle : 0
               , sym->u.tinfo
               , ids[sym->id]
-              , sym->flag
-              , sym->flag2
+              , sym->flags
+              , sym->flags2
               , sym->segid
               , FormatSym( sym, &vbuf )
               );
@@ -481,7 +481,7 @@ void DumpSymbol(                // DUMP SYMBOL ENTRY
             DumpFullType( sym->sym_type );
         }
         VbufFree( &vbuf );
-        if( sym->flag2 & SYMF2_TOKEN_LOCN ) {
+        if( sym->flags2 & SYMF2_TOKEN_LOCN ) {
             dumpLocation( &sym->locn->tl );
         }
         switch( sym->id ) {
@@ -1452,7 +1452,7 @@ void DbgGenned(                 // INDICATE SYMBOL GENERATED
         VBUF vbuf;
         printf( "Generated: %s\n"
               , DbgSymNameFull( sym, &vbuf ) );
-        if( sym->flag2 & SYMF2_TOKEN_LOCN ) {
+        if( sym->flags2 & SYMF2_TOKEN_LOCN ) {
             dumpLocation( &sym->locn->tl );
         }
         VbufFree( &vbuf );

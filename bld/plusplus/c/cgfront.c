@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -667,7 +667,7 @@ void CgFrontModInitFini(        // PROCESS MODULE-INIT. AFTER FRONT-END
     if( SymIsReferenced( mod ) && ErrCount == 0 ) {
         ModuleInitConnect();
     } else {
-        mod->flag |= SYMF_REFERENCED;
+        mod->flags |= SYMF_REFERENCED;
         fp = CgioLocateFile( mod );
         CgioFreeFile( fp );
     }
@@ -772,7 +772,7 @@ void CgFrontScopeCall(          // GENERATE IC_SCOPE_CALL, IF REQ'D
         DbgDefault( "CgFrontScopeCall -- bad DTORING_KIND" );
         }
     }
-    if( fun != NULL && ( fun->flag & SYMF_NO_LONGJUMP ) ) {
+    if( fun != NULL && ( fun->flags & SYMF_NO_LONGJUMP ) ) {
         fun = NULL;
     }
     if( fun != NULL || dtor != NULL ) {

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -141,7 +141,7 @@ static void doTypeidGen( RTTI_TYPEID *r )
     if( ! SymIsReferenced( sym ) || SymIsInitialized( sym ) ) {
         return;
     }
-    sym->flag |= SYMF_INITIALIZED;
+    sym->flags |= SYMF_INITIALIZED;
     old_segid = BESetSeg( sym->segid );
     CgBackGenLabel( sym );
     DgInitBytes( CgDataPtrSize(), 0 );

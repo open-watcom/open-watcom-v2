@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,14 +44,14 @@ static SYMBOL makeCgVar(        // MAKE CODEGEN VARIABLE OF A CERTAIN TYPE
     TYPE type,                  // - type
     symbol_class id,            // - SYMC_...
     NAME name,                  // - name to be used
-    symbol_flag flags )         // - flags to be used
+    symbol_flags flags )        // - flags to be used
 {
     SYMBOL var;                 // - new variable
 
     var = AllocSymbol();
     var->sym_type = type;
     var->id = id;
-    var->flag = flags;
+    var->flags = flags;
     if( name == NULL ) {
         name = NameDummy();
     }
@@ -70,7 +71,7 @@ SYMBOL CgVarRw(                 // MAKE R/W CODEGEN VARIABLE
     symbol_class id )           // - SYMC_...
 {
     TYPE type;
-    symbol_flag flags;
+    symbol_flags flags;
 
     type = MakeInternalType( size );
     if( id == SYMC_AUTO ) {

@@ -2634,7 +2634,7 @@ member-declarator
     : member-declaring-declarator constant-initializer
     {
         $$ = $1;
-        $$->sym->flag |= SYMF_IN_CLASS_INIT;
+        $$->sym->flags |= SYMF_IN_CLASS_INIT;
         DataInitSimple( $2 );
         GStackPop( &(state->gstack) );
     }
@@ -2733,7 +2733,7 @@ access-specifier
     | Y_PROTECTED
     { $$ = SYMF_PROTECTED; }
     | Y_PUBLIC
-    { $$ = SYMF_NULL; }
+    { $$ = SYMF_NONE; }
     ;
 
 

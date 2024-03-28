@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1293,7 +1293,7 @@ static SYMBOL makeCatchVar(     // CREATE A CATCH VARIABLE
                                   , SYMC_AUTO
                                   , SYMF_REFERENCED
                                   , name );
-    catch_var->flag |= SYMF_ALIAS | SYMF_CATCH_ALIAS;
+    catch_var->flags |= SYMF_ALIAS | SYMF_CATCH_ALIAS;
     catch_var->u.alias = try_var;
     return( catch_var );
 }
@@ -1696,7 +1696,7 @@ static void doFnStartup( SYMBOL func
     PTREE mem_init;
 
     fdata->fn_scope = GetCurrScope();
-    func->flag |= SYMF_INITIALIZED;
+    func->flags |= SYMF_INITIALIZED;
     if( flags & FUNC_NO_STACK_CHECK ) {
         /* in case the type was derived from a stack-checked function */
         func->sym_type = RemoveFunctionFlag( func->sym_type, TF1_STACK_CHECK );
@@ -1770,9 +1770,9 @@ static void functionShutdown(   // COMMON SHUT-DOWN FOR ALL COMPILED FUNCTIONS
             FunctionBodyDeadCode();
         }
         if( f->does_throw ) {
-            func->flag |= SYMF_LONGJUMP;
+            func->flags |= SYMF_LONGJUMP;
         } else if( ! f->can_throw ) {
-            func->flag |= SYMF_NO_LONGJUMP;
+            func->flags |= SYMF_NO_LONGJUMP;
         }
         if( f->ctor_test ) {
             CgFrontCtorTest();
@@ -2091,7 +2091,7 @@ void FunctionBody( DECL_INFO *dinfo )
     CtxFunction( func );
     fn_control = TemplateFunctionControl();
     if( fn_control & TCF_GEN_FUNCTION ) {
-        func->flag |= SYMF_MUST_GEN;
+        func->flags |= SYMF_MUST_GEN;
     }
     if( SymIsInitialized( func ) ) {
         if( TemplateMemberCanBeIgnored() ) {
@@ -2372,12 +2372,12 @@ PTREE FunctionCalled(           // RECORD A FUNCTION CALL
     PTREE expr,                 // - expression
     SYMBOL called )             // - called function
 {
-    symbol_flag called_flag     // - flags for caller
+    symbol_flags called_flags   // - flags for caller
         = SymThrowFlags( called );
 
-    if( called_flag & SYMF_LONGJUMP ) {
+    if( called_flags & SYMF_LONGJUMP ) {
         expr = FunctionCouldThrow( expr );
-    } else if( (called_flag & SYMF_NO_LONGJUMP) == 0 ) {
+    } else if( (called_flags & SYMF_NO_LONGJUMP) == 0 ) {
         currFunction->can_throw = true;
     }
     return( expr );

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -200,7 +200,7 @@ SYMBOL FormatMsg( VBUF *pbuf, char *fmt, va_list args )
                         VbufConcVbuf( pbuf, &prefix );
                         VbufFree( &prefix );
                     }
-                    if( sym->flag2 & SYMF2_TOKEN_LOCN ) {
+                    if( sym->flags2 & SYMF2_TOKEN_LOCN ) {
                         DbgVerify( retn_symbol == NULL, "too many symbols" );
                         retn_symbol = sym;
                     }
@@ -243,7 +243,7 @@ SYMBOL FormatMsg( VBUF *pbuf, char *fmt, va_list args )
                 FormatTemplateInfo( tinfo, &prefix );
                 VbufConcVbuf( pbuf, &prefix );
                 VbufFree( &prefix );
-                if( sym->flag2 & SYMF2_TOKEN_LOCN ) {
+                if( sym->flags2 & SYMF2_TOKEN_LOCN ) {
                     DbgVerify( retn_symbol == NULL, "too many symbols" );
                     retn_symbol = sym;
                 }

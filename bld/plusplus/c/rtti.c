@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -286,7 +286,7 @@ void TypeidRef( SYMBOL sym )
 /**************************/
 {
     if( sym != NULL ) {
-        sym->flag |= SYMF_REFERENCED;
+        sym->flags |= SYMF_REFERENCED;
         CgSegId( sym );
         SegmentMarkUsed( sym->segid );
     }

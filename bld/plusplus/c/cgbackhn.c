@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -96,7 +96,7 @@ back_handle FEBack(             // GET BACK HANDLE FOR A SYMBOL
     if( check_sym != NULL ) {
         sym = check_sym;
     }
-    if( sym->flag2 & SYMF2_CG_HANDLE ) {
+    if( sym->flags2 & SYMF2_CG_HANDLE ) {
         cg_handle = sym->locn->u.cg_handle;
     } else {
         cg_handle = BENewBack( (cg_sym_handle)sym );
@@ -117,8 +117,8 @@ back_handle FEBack(             // GET BACK HANDLE FOR A SYMBOL
                     break;
                 }
             }
-            sym->flag2 &= ~SYMF2_HDL_MASK;
-            sym->flag2 |= SYMF2_CG_HANDLE;
+            sym->flags2 &= ~SYMF2_HDL_MASK;
+            sym->flags2 |= SYMF2_CG_HANDLE;
         }
     }
 #ifdef DEVBUILD
@@ -133,10 +133,10 @@ back_handle FEBack(             // GET BACK HANDLE FOR A SYMBOL
 void CgBackFreeHandle(          // FREE A BACK HANDLE FOR A SYMBOL
     SYMBOL sym )                // - the symbol
 {
-    if( ( sym->flag2 & SYMF2_CG_HANDLE )
+    if( ( sym->flags2 & SYMF2_CG_HANDLE )
       &&( ! SymIsAnonymous( sym ) )
       &&( ! SymIsAutomatic( sym ) ) ) {     // - only because of RO,RW-DTORS
-        sym->flag2 &= ~SYMF2_CG_HANDLE;
+        sym->flags2 &= ~SYMF2_CG_HANDLE;
         BEFreeBack( sym->locn->u.cg_handle );
     }
 }

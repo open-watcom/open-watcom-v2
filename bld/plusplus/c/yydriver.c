@@ -60,7 +60,7 @@ typedef union {
     inherit_flag        flags_inh;
     type_flag           flags_mod;
     specifier_t         flags_qual;
-    symbol_flag         flags_acc;
+    symbol_flags        flags_acc;
     CLASS_INIT          flags_cls;
     bool                segm_cast;
     CGOP                token;

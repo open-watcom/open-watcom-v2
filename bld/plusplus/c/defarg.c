@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -195,7 +196,7 @@ static PTREE defaultArgSymError( MSG_NUM msg, PTREE expr, SYMBOL sym )
     PTreeSetErrLoc( expr );
     if( sym != NULL ) {
         CErr2p( msg, sym );
-        sym->flag |= SYMF_ERROR;
+        sym->flags |= SYMF_ERROR;
     } else {
         CErr1( msg );
     }
@@ -290,7 +291,7 @@ bool AddDefaultArgs(            // ADD DEFAULT ARGUMENTS, AS REQ'D
                     // copy temps to CurrScope
                     reloc_elem->dest = SymCreateCurrScope( curr->sym_type
                                                          , curr->id
-                                                         , curr->flag
+                                                         , curr->flags
                                                          , NameDummy() );
                     DbgAssert( reloc_elem->dest != NULL );
                 }
@@ -314,7 +315,7 @@ bool AddDefaultArgs(            // ADD DEFAULT ARGUMENTS, AS REQ'D
             defarg_expr = NodeArg( defarg_expr );
             *args = defarg_expr;
             args = &defarg_expr->u.subtree[0]; // used if more than one defarg
-            func->flag |= SYMF_REFERENCED;
+            func->flags |= SYMF_REFERENCED;
             func = func->thread;
         } while( func->id == SYMC_DEFAULT );
         SymSetNvReferenced( func );
