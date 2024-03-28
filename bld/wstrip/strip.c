@@ -484,7 +484,7 @@ int main( int argc, char *argv[] )
     if( argc >= 3 && strcmp( argv[2], "." ) != 0 ) {
         _splitpath2( argv[2], pg_tmp->buffer, &pg->drive, &pg->dir, &pg_tmp->fname, &pg_tmp->ext );
         _makepath( ftmp.name, pg->drive, pg->dir, pg_tmp->fname, pg_tmp->ext );
-        if( stat(x, &statx) != 0 || !S_ISDIR( statx.st_mode ) ) {
+        if( stat( ftmp.name, &statx ) != 0 || !S_ISDIR( statx.st_mode ) ) {
             /*
              * is not DIR
              */
@@ -497,7 +497,7 @@ int main( int argc, char *argv[] )
     if( argc >= 4 ) {
         _splitpath2( argv[3], pg_tmp->buffer, &pg_tmp->drive, &pg_tmp->dir, &pg_tmp->fname, &pg_tmp->ext );
         _makepath( ftmp.name, pg_tmp->drive, pg_tmp->dir, pg_tmp->fname, pg_tmp->ext );
-        if( stat(x, &statx) == 0 && S_ISDIR( statx.st_mode ) ) {
+        if( stat( ftmp.name, &statx ) == 0 && S_ISDIR( statx.st_mode ) ) {
             /*
              * is DIR
              */
