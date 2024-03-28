@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -392,8 +392,6 @@ int main( int argc, char *argv[] )
     const char          *in_ext;
     int                 backup_file;
 
-#define IS_DIR(x,st)    (stat(x, &(st)) == 0 && S_ISDIR( (st).st_mode ))
-
 #ifndef __WATCOMC__
     _argv = argv;
     _argc = argc;
@@ -456,6 +454,7 @@ int main( int argc, char *argv[] )
     _splitpath2( argv[1], pg->buffer, &pg->drive, &pg->dir, &pg->fname, &pg->ext );
     in_ext = pg->ext;
     old_mtime = 0;
+    old_mode = 0;
     if( in_ext[0] == '\0' ) {
         for( i = 0; i < ARRAYSIZE( ExtLst ); ++i ) {
             in_ext = ExtLst[i];
@@ -485,7 +484,10 @@ int main( int argc, char *argv[] )
     if( argc >= 3 && strcmp( argv[2], "." ) != 0 ) {
         _splitpath2( argv[2], pg_tmp->buffer, &pg->drive, &pg->dir, &pg_tmp->fname, &pg_tmp->ext );
         _makepath( ftmp.name, pg->drive, pg->dir, pg_tmp->fname, pg_tmp->ext );
-        if( !IS_DIR( ftmp.name, statx ) ) {
+        if( stat(x, &statx) != 0 || !S_ISDIR( statx.st_mode ) ) {
+            /*
+             * is not DIR
+             */
             pg->fname = pg_tmp->fname;
         }
     }
@@ -495,7 +497,10 @@ int main( int argc, char *argv[] )
     if( argc >= 4 ) {
         _splitpath2( argv[3], pg_tmp->buffer, &pg_tmp->drive, &pg_tmp->dir, &pg_tmp->fname, &pg_tmp->ext );
         _makepath( ftmp.name, pg_tmp->drive, pg_tmp->dir, pg_tmp->fname, pg_tmp->ext );
-        if( IS_DIR( ftmp.name, statx ) ) {
+        if( stat(x, &statx) == 0 && S_ISDIR( statx.st_mode ) ) {
+            /*
+             * is DIR
+             */
             pg_tmp->fname = pg->fname;
         }
         _makepath( finfo.name, pg_tmp->drive, pg_tmp->dir, pg_tmp->fname, (res ? ResExt : SymExt) );
