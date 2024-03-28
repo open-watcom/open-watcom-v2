@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -71,11 +71,11 @@ const arch_reg_info RegsTab[] = {
     #undef pick
 };
 
-static  hw_reg_set      Empty[] = {
+static const hw_reg_set      Empty[] = {
     EMPTY
 };
 
-static  hw_reg_set      Reg64Order[] = {
+static const hw_reg_set      Reg64Order[] = {
     HW_D_1( HW_D2 ),
     HW_D_1( HW_D3 ),
     HW_D_1( HW_D4 ),
@@ -103,7 +103,7 @@ static  hw_reg_set      Reg64Order[] = {
     HW_D_1( HW_EMPTY )
 };
 
-static  hw_reg_set      ByteRegs[] = {
+static const hw_reg_set      ByteRegs[] = {
     HW_D_1( HW_B0 ),
     HW_D_1( HW_B1 ),
     HW_D_1( HW_B2 ),
@@ -139,7 +139,7 @@ static  hw_reg_set      ByteRegs[] = {
     HW_D_1( HW_EMPTY )
 };
 
-static  hw_reg_set      WordRegs[] = {
+static const hw_reg_set      WordRegs[] = {
     HW_D_1( HW_W0 ),
     HW_D_1( HW_W1 ),
     HW_D_1( HW_W2 ),
@@ -175,7 +175,7 @@ static  hw_reg_set      WordRegs[] = {
     HW_D_1( HW_EMPTY )
 };
 
-static  hw_reg_set      DWordRegs[] = {
+static const hw_reg_set      DWordRegs[] = {
     HW_D_1( HW_D0 ),
     HW_D_1( HW_D1 ),
     HW_D_1( HW_D2 ),
@@ -212,7 +212,7 @@ static  hw_reg_set      DWordRegs[] = {
 };
 
 /* 64-bit "double" registers for MIPS32 */
-static  hw_reg_set      QWordRegs[] = {
+static const hw_reg_set      QWordRegs[] = {
     HW_D_1( HW_Q2 ),
     HW_D_1( HW_Q4 ),
     HW_D_1( HW_Q6 ),
@@ -222,7 +222,7 @@ static  hw_reg_set      QWordRegs[] = {
 };
 
 /* These GPRs are 32-bit for MIPS32 and 64-bit for MIPS64 */
-static  hw_reg_set      GeneralRegs[] = {
+static const hw_reg_set      GeneralRegs[] = {
     HW_D_1( HW_R0 ),
     HW_D_1( HW_R1 ),
     HW_D_1( HW_R2 ),
@@ -258,7 +258,7 @@ static  hw_reg_set      GeneralRegs[] = {
     HW_D_1( HW_EMPTY )
 };
 
-static  hw_reg_set      FloatRegs[] = {
+static const hw_reg_set      FloatRegs[] = {
     HW_D_1( HW_F0 ),
     HW_D_1( HW_F1 ),
     HW_D_1( HW_F2 ),
@@ -299,7 +299,7 @@ static  hw_reg_set      FloatRegs[] = {
  * and relating code in ParmReg and CallState.
  */
 
-static  hw_reg_set      AllParmRegs[] = {
+static const hw_reg_set      AllParmRegs[] = {
     HW_D_1( HW_R4 ),
     HW_D_1( HW_R5 ),
     HW_D_1( HW_R6 ),
@@ -312,23 +312,23 @@ static  hw_reg_set      AllParmRegs[] = {
 };
 
 
-static  hw_reg_set      Parm8Regs[] = {
+static const hw_reg_set      Parm8Regs[] = {
     HW_D_1( HW_Q4 ),
     HW_D_1( HW_Q6 ),
     HW_D_1( HW_EMPTY )
 };
 
-static  hw_reg_set      Parm8Regs2[] = {
+static const hw_reg_set      Parm8Regs2[] = {
     HW_D_1( HW_Q6 ),
     HW_D_1( HW_EMPTY )
 };
 
-static  hw_reg_set      Return8[] = {
+static const hw_reg_set      Return8[] = {
     HW_D_1( HW_RT_RET_REG64 ),
     HW_D_1( HW_EMPTY )
 };
 
-static  hw_reg_set      Parm4Regs[] = {
+static const hw_reg_set      Parm4Regs[] = {
     HW_D_1( HW_D4 ),
     HW_D_1( HW_D5 ),
     HW_D_1( HW_D6 ),
@@ -336,51 +336,51 @@ static  hw_reg_set      Parm4Regs[] = {
     HW_D_1( HW_EMPTY )
 };
 
-static  hw_reg_set      Parm4Regs2[] = {
+static const hw_reg_set      Parm4Regs2[] = {
     HW_D_1( HW_D5 ),
     HW_D_1( HW_EMPTY )
 };
 
-static  hw_reg_set      Parm4Regs3[] = {
+static const hw_reg_set      Parm4Regs3[] = {
     HW_D_1( HW_D6 ),
     HW_D_1( HW_EMPTY )
 };
 
-static  hw_reg_set      Return4[] = {
+static const hw_reg_set      Return4[] = {
     HW_D_1( HW_RT_RET_REG32 ),
     HW_D_1( HW_EMPTY )
 };
 
-static  hw_reg_set      ParmFRegs[] = {
+static const hw_reg_set      ParmFRegs[] = {
     HW_D_1( HW_F12 ),
     HW_D_1( HW_F14 ),
     HW_D_1( HW_EMPTY )
 };
 
-static  hw_reg_set      ParmFRegs2[] = {
+static const hw_reg_set      ParmFRegs2[] = {
     HW_D_1( HW_F17 ),
     HW_D_1( HW_EMPTY )
 };
 
-static  hw_reg_set      ReturnD[] = {
+static const hw_reg_set      ReturnD[] = {
     HW_D_1( HW_RT_RET_REGFP ),
     HW_D_1( HW_EMPTY )
 };
 
-hw_reg_set      *RegSets[] = {
+const hw_reg_set * const RegSets[] = {
     #define RL(a,b,c,d) a
     #include "rl.h"
     #undef RL
     NULL
 };
 
-op_regs RegList[] = {
+const op_regs RegList[] = {
     #define RG( a,b,c,d,e,f ) {a,b,c,d,e}
     #include "rg.h"
     #undef RG
 };
 
-static  reg_set_index   IsSets[] = {
+static const reg_set_index   IsSets[] = {
     RL_BYTE,                /* U1 */
     RL_BYTE,                /* I1 */
     RL_WORD,                /* U2 */
@@ -466,8 +466,8 @@ hw_reg_set InLineParm( hw_reg_set regs, hw_reg_set used )
 }
 
 
-hw_reg_set *ParmChoices( type_class_def type_class )
-/**************************************************/
+const hw_reg_set *ParmChoices( type_class_def type_class )
+/********************************************************/
 {
     switch( type_class ) {
     case I4:
@@ -517,8 +517,8 @@ hw_reg_set ReturnReg( type_class_def type_class )
 }
 
 
-hw_reg_set *ParmRegs( void )
-/**************************/
+const hw_reg_set *ParmRegs( void )
+/********************************/
 {
     return( &AllParmRegs[0] );
 }
@@ -587,7 +587,7 @@ bool IsIndexReg( hw_reg_set reg, type_class_def type_class,
                          bool is_temp_index )
 /************************************************************/
 {
-    hw_reg_set          *dregs;
+    const hw_reg_set    *dregs;
 
     /* unused parameters */ (void)type_class; (void)is_temp_index;
 
@@ -622,7 +622,7 @@ type_class_def RegClass( hw_reg_set regs )
 /****************************************/
 {
     hw_reg_set          test;
-    hw_reg_set          *possible;
+    const hw_reg_set    *possible;
 
     if( HW_COvlap( regs, HW_FPR ) )
         return( FD );
@@ -702,8 +702,8 @@ hw_reg_set Low64Reg( hw_reg_set regs )
  * return the low order part of 64 bit register "regs"
  */
 {
-    hw_reg_set  low;
-    hw_reg_set  *order;
+    hw_reg_set          low;
+    const hw_reg_set    *order;
 
     if( HW_CEqual( regs, HW_EMPTY ) )
         return( HW_EMPTY );
@@ -775,7 +775,7 @@ hw_reg_set FullReg( hw_reg_set regs )
 bool IsRegClass( hw_reg_set regs, type_class_def type_class )
 /***********************************************************/
 {
-    hw_reg_set  *list;
+    const hw_reg_set    *list;
 
     for( list = RegSets[IsSets[type_class]]; !HW_CEqual( *list, HW_EMPTY ); ++list ) {
         if( HW_Equal( *list, regs ) ) {
@@ -888,22 +888,22 @@ hw_reg_set AllCacheRegs( void )
 }
 
 
-hw_reg_set *GPRegs( void )
-/************************/
+const hw_reg_set *GPRegs( void )
+/******************************/
 {
     return( GeneralRegs );
 }
 
 
-hw_reg_set *FPRegs( void )
-/************************/
+const hw_reg_set *FPRegs( void )
+/******************************/
 {
     return( FloatRegs );
 }
 
 
-hw_reg_set *IdxRegs( void )
-/*************************/
+const hw_reg_set *IdxRegs( void )
+/*******************************/
 {
     return( DWordRegs );
 }

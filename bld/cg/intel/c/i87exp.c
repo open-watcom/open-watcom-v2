@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -526,7 +526,7 @@ static  instruction     *ExpPush( instruction *ins, operand_type op )
     {
         instruction         *pop_ins;
         hw_reg_set          avail_index;
-        hw_reg_set          *idx;
+        const hw_reg_set    *idx;
 
         HW_CAsgn( avail_index, HW_IDX16 );
         HW_TurnOff( avail_index, ins->head.live.regs );

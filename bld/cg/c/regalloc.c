@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -611,7 +611,7 @@ static  bool    StealsSeg( instruction *ins,
     Does giving "reg" to "conf" steal the last segment away from "ins"?
 */
 {
-    hw_reg_set          *index_needs;
+    const hw_reg_set    *index_needs;
     name                *op;
     conflict_node       *new_conf;
 
@@ -644,7 +644,7 @@ static bool StealsIdx( instruction *ins, hw_reg_set except, name *actual_op )
     "ins" make it impossible to generate an indexed addressing mode?
 */
 {
-    hw_reg_set          *index_needs;
+    const hw_reg_set    *index_needs;
     name                *op;
     conflict_node       *new_conf;
     opcnt               i;
@@ -724,7 +724,7 @@ static  bool_maybe TooGreedy( conflict_node *conf, hw_reg_set reg, name *op )
     block               *blk;
     instruction         *ins;
     instruction         *last;
-    hw_reg_set          *ins_needs;
+    const hw_reg_set    *ins_needs;
     bool_maybe          rc;
     op_reg_set_index    needs;
 

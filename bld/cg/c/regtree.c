@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -163,8 +163,8 @@ static  reg_tree        *NewTree( void )
 static  void    BuildPossible( reg_tree *tree )
 /*********************************************/
 {
-    hw_reg_set  *src;
-    hw_reg_set  *dst;
+    const hw_reg_set    *src;
+    hw_reg_set          *dst;
 
     if( tree != NULL ) {
         BuildPossible( tree->lo );

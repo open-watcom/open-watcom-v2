@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -160,7 +160,7 @@ static  reg_set_index   ResPossible( instruction *ins )
 hw_reg_set      Op1Reg( instruction *ins )
 /****************************************/
 {
-    hw_reg_set  *list;
+    const hw_reg_set    *list;
 
     list = RegSets[Op1Possible( ins )];
     return( *list );
@@ -169,7 +169,7 @@ hw_reg_set      Op1Reg( instruction *ins )
 hw_reg_set      ResultReg( instruction *ins )
 /*******************************************/
 {
-    hw_reg_set  *list;
+    const hw_reg_set    *list;
 
     list = RegSets[ResultPossible( ins )];
     return( *list );
@@ -178,7 +178,7 @@ hw_reg_set      ResultReg( instruction *ins )
 hw_reg_set      ZapReg( instruction *ins )
 /****************************************/
 {
-    hw_reg_set  *list;
+    const hw_reg_set    *list;
 
     list = RegSets[RegList[ins->u.gen_table->reg_set].zap];
     return( *list );

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -143,10 +143,10 @@ static  void    emitLocalEpilog( stack_record *locals )
 }
 
 
-static  uint_32 registerMask( hw_reg_set rs, hw_reg_set *rl )
-/***********************************************************/
+static  uint_32 registerMask( hw_reg_set rs, const hw_reg_set *rl )
+/*****************************************************************/
 {
-    hw_reg_set          *curr;
+    const hw_reg_set    *curr;
     uint_32             result;
 
     result = 0;
