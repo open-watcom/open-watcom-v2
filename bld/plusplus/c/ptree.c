@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -105,6 +105,7 @@ static void ptreeInit(          // INITIALIZATION
     ExtraRptRegisterCtr( &total_frees, "total # of PTreeFreeSubtrees" );
     ExtraRptRegisterCtr( &null_frees, "total # of NULL PTreeFreeSubtrees" );
     ExtraRptRegisterCtr( &simple_frees, "total # of simple PTreeFreeSubtrees" );
+    FloatCheckInit();
 }
 
 static void ptreeFini(          // COMPLETION
@@ -112,6 +113,7 @@ static void ptreeFini(          // COMPLETION
 {
     /* unused parameters */ (void)defn;
 
+    FloatCheckFini();
     DbgStmt( CarveVerifyAllGone( carvePTREE, "PTREE" ) );
     CarveDestroy( carvePTREE );
 }

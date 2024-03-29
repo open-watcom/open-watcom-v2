@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,10 +38,57 @@
 #include "preproc.h"
 #include "codegen.h"
 #include "floatsup.h"
-#include "floatlim.h"
 
+
+static float_handle     MaxPosFloat;
+static float_handle     MinPosFloat;
+static float_handle     MaxPosDbl;
+static float_handle     MinPosDbl;
+static float_handle     MaxNegFloat;
+static float_handle     MinNegFloat;
+static float_handle     MaxNegDbl;
+static float_handle     MinNegDbl;
+static float_handle     _2power32;
+
+void    FloatCheckInit( void )
+/****************************/
+{
+    /*
+     * constants are extracted from ISO C standard 2.2.4.2.2
+     */
+    MaxPosFloat = BFCnvSF( "3.40282347e+38" );
+    MinPosFloat = BFCnvSF( "1.17549435e-38" );
+    MaxPosDbl   = BFCnvSF( "1.7976931348623157e+308" );
+    MinPosDbl   = BFCnvSF( "2.2250738585072014e-308" );
+    MaxNegFloat = BFCnvSF( "-3.40282347e+38" );
+    MinNegFloat = BFCnvSF( "-1.17549435e-38" );
+    MaxNegDbl   = BFCnvSF( "-1.7976931348623157e+308" );
+    MinNegDbl   = BFCnvSF( "-2.2250738585072014e-308" );
+    _2power32   = BFCnvSF( "4294967296" );
+}
+
+void    FloatCheckFini( void )
+/****************************/
+{
+    BFFree( _2power32 );
+    BFFree( MaxPosFloat );
+    BFFree( MinPosFloat );
+    BFFree( MaxPosDbl );
+    BFFree( MinPosDbl );
+    BFFree( MaxNegFloat );
+    BFFree( MinNegFloat );
+    BFFree( MaxNegDbl );
+    BFFree( MinNegDbl );
+}
+
+float_handle TwoTo32( void )
+/**************************/
+{
+    return( _2power32 );
+}
 
 static float_handle makeOK( float_handle f )
+/******************************************/
 {
     BFFree( f );
     f = BFCnvUF( 1 );
@@ -49,7 +97,7 @@ static float_handle makeOK( float_handle f )
 
 
 float_handle BFCheckFloatLimit( float_handle f )
-/************************************/
+/**********************************************/
 {
     int sign;
     bool err;
@@ -57,18 +105,18 @@ float_handle BFCheckFloatLimit( float_handle f )
     err = false;
     sign = BFSign( f );
     if( sign > 0 ) {
-        if( BFCmp( f, (float_handle)&MaxPosFloat ) > 0 ) {
+        if( BFCmp( f, MaxPosFloat ) > 0 ) {
             err = true;
             CErr1( ERR_FLOATING_CONSTANT_OVERFLOW );
-        } else if( BFCmp( f, (float_handle)&MinPosFloat ) < 0 ) {
+        } else if( BFCmp( f, MinPosFloat ) < 0 ) {
             err = true;
             CErr1( ERR_FLOATING_CONSTANT_UNDERFLOW );
         }
     } else if( sign < 0 ) {
-        if( BFCmp( f, (float_handle)&MaxNegFloat ) < 0 ) {
+        if( BFCmp( f, MaxNegFloat ) < 0 ) {
             err = true;
             CErr1( ERR_FLOATING_CONSTANT_OVERFLOW );
-        } else if( BFCmp( f, (float_handle)&MinNegFloat ) > 0 ) {
+        } else if( BFCmp( f, MinNegFloat ) > 0 ) {
             err = true;
             CErr1( ERR_FLOATING_CONSTANT_UNDERFLOW );
         }
@@ -79,7 +127,8 @@ float_handle BFCheckFloatLimit( float_handle f )
     return( f );
 }
 
-extern float_handle BFCheckDblLimit( float_handle f )
+float_handle BFCheckDblLimit( float_handle f )
+/********************************************/
 {
     int sign;
     bool err;
@@ -87,19 +136,19 @@ extern float_handle BFCheckDblLimit( float_handle f )
     err = false;
     sign = BFSign( f );
     if( sign > 0 ) {
-        if( BFCmp( f, (float_handle)&MaxPosDbl ) > 0 ) {
+        if( BFCmp( f, MaxPosDbl ) > 0 ) {
             err = true;
             CErr1( ERR_FLOATING_CONSTANT_OVERFLOW );
-        } else if( BFCmp( f, (float_handle)&MinPosDbl ) == -1 ) {
+        } else if( BFCmp( f, MinPosDbl ) == -1 ) {
             err = true;
             CErr1( ERR_FLOATING_CONSTANT_UNDERFLOW );
 
         }
     } else if( sign < 0 ) {
-        if( BFCmp( f, (float_handle)&MaxNegDbl ) < 0 ) {
+        if( BFCmp( f, MaxNegDbl ) < 0 ) {
             err = true;
             CErr1( ERR_FLOATING_CONSTANT_OVERFLOW );
-        } else if( BFCmp( f, (float_handle)&MinNegDbl ) > 0 ) {
+        } else if( BFCmp( f, MinNegDbl ) > 0 ) {
             err = true;
             CErr1( ERR_FLOATING_CONSTANT_UNDERFLOW );
         }

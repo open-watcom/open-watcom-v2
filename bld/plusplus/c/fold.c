@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,22 +44,13 @@
 
 //-------------- Temporary Stubs -------------------------------
 
-#define TWOTO32_STRING "4294967296"
-
-static float_handle TwoTo32( void )
-{
-    return( BFCnvSF( TWOTO32_STRING ) );
-}
-
 static
 float_handle BFCnvU64F( unsigned_64 val )
 {
     float_handle t0, t1, t2;
 
-    t0 = TwoTo32();
     t1 = BFCnvUF( val.u._32[I64HI32] );
-    t2 = BFMul( t0, t1 );
-    BFFree( t0 );
+    t2 = BFMul( TwoTo32(), t1 );
     BFFree( t1 );
     t0 = BFCnvUF( val.u._32[I64LO32] );
     t1 = BFAdd( t0, t2 );
@@ -73,10 +64,8 @@ float_handle BFCnvI64F( signed_64 val )
 {
     float_handle t0, t1, t2;
 
-    t0 = TwoTo32();
     t1 = BFCnvIF( val.u._32[I64HI32] );
-    t2 = BFMul( t0, t1 );
-    BFFree( t0 );
+    t2 = BFMul( TwoTo32(), t1 );
     BFFree( t1 );
     if( val.u.sign.v ) {
         t0 = BFCnvUF( ( val.u._32[I64LO32] ^ ULONG_MAX ) + 1 );
@@ -118,7 +107,6 @@ signed_64 BFCnvF64( float_handle flt )
     BFFree( t3 );
     t1 = BFCnvUF( result.u._32[I64HI32] );
     t2 = BFMul( t0, t1 );
-    BFFree( t0 );
     BFFree( t1 );
     t0 = BFSub( flt, t2 );
     BFFree( t2 );
