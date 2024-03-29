@@ -103,6 +103,7 @@
         ic_parms[ic_sp++].pvalue = p;
 #define IC_PARM_PUSH_INT( i )           \
         DbgAssert( ic_sp < IC_PARM_STACK_SIZE ); \
+        ic_parms[ic_sp].pvalue = 0; \
         ic_parms[ic_sp++].ivalue = i;
 #define IC_PARM_POP_PTR( p )            \
         DbgAssert( ic_sp != 0 );        \

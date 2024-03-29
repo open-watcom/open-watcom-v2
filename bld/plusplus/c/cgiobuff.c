@@ -336,6 +336,7 @@ static CGIOBUFF *switchToNextBuffer( CGIOBUFF *ctl )
     next = findWrBuffer();
     xfer = pointXfer( ctl );
     xfer->leap_ins.opcode = IC_NEXT;
+    xfer->leap_ins.value.pvalue = 0;
     xfer->leap_ins.value.uvalue = next->disk_addr;
     xfer->offset = next->free_offset;
     ctl->free_offset += sizeof( BUFF_XFER );
@@ -463,8 +464,15 @@ CGIOBUFF *CgioBuffWriteIC(      // WRITE AN IC RECORD
     dest->opcode = ins->opcode;
     dest->value = ins->value;
     ctl->free_offset += sizeof( CGINTER );
-    // we will always be able to write an IC_NEXT so this is OK
-    DbgStmt(( ++dest, dest->opcode = IC_NEXT, dest->value.ivalue = -1 ));
+#ifdef DEVBUILD
+    /*
+     * we will always be able to write an IC_NEXT so this is OK
+     */
+    ++dest;
+    dest->opcode = IC_NEXT;
+    dest->value.pvalue = 0;
+    dest->value.ivalue = -1;
+#endif
     return( ctl );
 }
 
@@ -476,7 +484,7 @@ void CgioBuffWrClose(           // RELEASE BUFFER AFTER WRITING
 
     p = pointXfer( ctl );
     p->opcode = IC_EOF;
-    p->value.uvalue = 0;
+    p->value.pvalue = 0;
     ctl->free_offset += sizeof( CGINTER );
     finishWrBuffer( ctl );
 }

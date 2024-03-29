@@ -1833,6 +1833,7 @@ PTREE NodeBasedStr(             // BUILD EXPRESSION FOR TF1_BASED_STRING TYPE
     PTREE node;                 // - new node
     CGVALUE segop;              // - segment id
 
+    segop.pvalue = 0;
     segop.uvalue = SegmentFindBased( expr_type );
     node = PTreeIc( IC_SEGOP_SEG, segop );
     node->type = TypeSegmentShort();
@@ -2149,6 +2150,7 @@ PTREE NodeIcUnsigned(           // ADD A PTREE-IC NODE, UNSIGNED OPERAND
 {
     CGVALUE val;                // - operand
 
+    val.pvalue = 0;
     val.uvalue = operand;
     return( nodeIcCgValue( opcode, val ) );
 }

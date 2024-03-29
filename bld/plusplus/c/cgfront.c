@@ -211,6 +211,7 @@ static void cgEmitCodeUint(     // EMIT INSTRUCTION TO CODE FILE WITH UINT PARM
     CGINTER ins;                // - instruction
 
     ins.opcode = opcode;
+    ins.value.pvalue = 0;
     ins.value.uvalue = value;
     cgEmitIns( gen, &ins );
 }
@@ -343,6 +344,7 @@ void CgFrontCodeInt(            // EMIT (code,int) TO CODE SEGMENT
     CGINTER ins;                // - instruction
 
     ins.opcode = opcode;
+    ins.value.pvalue = 0;
     ins.value.ivalue = value;
     cgEmit( getGenData(), &ins );
 }
@@ -355,6 +357,7 @@ void CgFrontCodeUint(           // EMIT (code,unsigned) TO CODE SEGMENT
     CGINTER ins;                // - instruction
 
     ins.opcode = opcode;
+    ins.value.pvalue = 0;
     ins.value.uvalue = value;
     cgEmit( getGenData(), &ins );
 }
@@ -389,6 +392,7 @@ void CgFrontDataInt(            // EMIT (code,int) TO DATA SEGMENT
     CGINTER ins;                // - instruction
 
     ins.opcode = opcode;
+    ins.value.pvalue = 0;
     ins.value.ivalue = value;
     cgEmitData( &ins );
 }
@@ -401,6 +405,7 @@ void CgFrontDataUint(           // EMIT (code,unsigned) TO DATA SEGMENT
     CGINTER ins;                // - instruction
 
     ins.opcode = opcode;
+    ins.value.pvalue = 0;
     ins.value.uvalue = value;
     cgEmitData( &ins );
 }
@@ -421,6 +426,7 @@ static void cgSetupSegment(     // SET UP DATA SEGMENT, EMIT INSTRUCTION
     unsigned seg_number )       // - segment number
 {
     if( seg_number != ins_def_seg.value.uvalue ) {
+        ins_def_seg.value.pvalue = 0;
         ins_def_seg.value.uvalue = seg_number;
         cgEmitData( &ins_def_seg );
     }
@@ -462,6 +468,7 @@ void CgFrontZapUint(            // ZAP A WRITTEN RECORD (UNSIGNED OPERAND)
     CGINTER ins;                // - instruction
 
     ins.opcode = opcode;
+    ins.value.pvalue = 0;
     ins.value.uvalue = operand;
     CgioRewriteRecord( location, &ins );
 }

@@ -219,6 +219,7 @@ static void brinfIcBin          // WRITE IC, BINARY OPERAND
     if( canWriteIc() ) {
         CGINTER ins;            // - IC instruction
         ins.opcode = opcode;
+        ins.value.pvalue = 0;
         ins.value.uvalue = bin;
         brinfWriteIns( &ins );
     }

@@ -154,9 +154,9 @@ typedef struct type     *TYPE;      // type pointer
 #define PCH_struct      struct      // use to indicate struct is saved in PCH
 
 typedef union cgvalue {             // CGVALUE: one of
-    target_ulong        uvalue;     // - unsigned integer
-    target_long         ivalue;     // - signed integer
-    void                *pvalue;    // - pointer
+    void                *pvalue;    // - pointer, must be first for proper initialization
+    uint                uvalue;     // - unsigned integer
+    int                 ivalue;     // - signed integer
 } CGVALUE;
 
 #include "icodes.h"
