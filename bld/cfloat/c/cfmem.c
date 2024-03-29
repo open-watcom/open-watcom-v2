@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,6 +38,7 @@
 
 #define DOUBLE_DIGITS   17
 #define FRLSIZE         ( DOUBLE_DIGITS + offsetof( cfloat, mant ) + 1 )
+#define NEXT_BLOCK(x)   (((mem_blk *)(x))->next)
 
 typedef char *pointer;
 
@@ -44,67 +46,69 @@ typedef struct {
     pointer     head;
 } mini_frl;
 
+typedef struct {
+    pointer     next;
+} mem_blk;
+
 static cf_callbacks     cfRtns;
 static mini_frl         cfFrlList;
 
-static  void    miniFrlInit( mini_frl *frl_ptr ) {
-/************************************************/
-
-    frl_ptr->head = NULL;
+static  void    miniFrlInit( void )
+/*********************************/
+{
+    cfFrlList.head = NULL;
 }
 
-static  pointer miniFrlAlloc( mini_frl *frl_ptr ) {
-/*************************************************/
-
+static  pointer miniFrlAlloc( void )
+/**********************************/
+{
     pointer     ptr;
 
-    if( frl_ptr->head != NULL ) {
-        // unhook it and return the first element
-        ptr = frl_ptr->head;
-        frl_ptr->head = *((pointer *)ptr);
+    if( cfFrlList.head != NULL ) {
+        /*
+         * unhook it and return the first element
+         */
+        ptr = cfFrlList.head;
+        cfFrlList.head = NEXT_BLOCK( ptr );
         return( ptr );
     }
     return( cfRtns.alloc( FRLSIZE ) );
 }
 
-static  void    miniFrlFree( mini_frl *frl_ptr, pointer ptr ) {
-/****************&********************************************/
-
-    *(pointer *)ptr = frl_ptr->head;
-    frl_ptr->head = ptr;
+static  void    miniFrlFree( pointer ptr )
+/****************************************/
+{
+    NEXT_BLOCK( ptr ) = cfFrlList.head;
+    cfFrlList.head = ptr;
 }
 
-static  void    miniFrlFini( mini_frl *frl_ptr ) {
-/************************************************/
-
+static  void    miniFrlFini( void )
+/*********************************/
+{
     pointer     ptr;
-    pointer     next;
 
-    ptr = frl_ptr->head;
-    while( ptr != NULL ) {
-        next = *(pointer *)ptr;
+    while( (ptr = cfFrlList.head) != NULL ) {
+        cfFrlList.head = NEXT_BLOCK( ptr );
         cfRtns.free( ptr );
-        ptr = next;
     }
-    frl_ptr->head = NULL;
 }
 
-void    CFInit( cf_callbacks *table ) {
-/*************************************/
-
+void    CFInit( cf_callbacks *table )
+/***********************************/
+{
     cfRtns = *table;
-    miniFrlInit( &cfFrlList );
+    miniFrlInit();
 }
 
 
-cfloat  *CFAlloc( size_t size ) {
-/*******************************/
-
+cfloat  *CFAlloc( size_t size )
+/*****************************/
+{
     cfloat      *number;
 
     if( size <= DOUBLE_DIGITS ) {
         size = FRLSIZE;
-        number = (cfloat *)miniFrlAlloc( &cfFrlList );
+        number = (cfloat *)miniFrlAlloc();
     } else {
         size += offsetof( cfloat, mant ) + 1;
         number = cfRtns.alloc( size );
@@ -119,29 +123,29 @@ cfloat  *CFAlloc( size_t size ) {
 }
 
 
-void    CFFree( cfloat *f ) {
-/***************************/
-
+void    CFFree( cfloat *f )
+/*************************/
+{
     if( f->alloc == FRLSIZE ) {
-        miniFrlFree( &cfFrlList, (pointer)f );
+        miniFrlFree( (pointer)f );
     } else {
         cfRtns.free( f );
     }
 }
 
 
-bool CFFrlFree( void ) {
-/**********************/
-
+bool CFFrlFree( void )
+/********************/
+{
     if( cfFrlList.head != NULL ) {
-        miniFrlFini( &cfFrlList );
+        miniFrlFini();
         return( true );
     }
     return( false );
 }
 
-void    CFFini( void ) {
-/**********************/
-
-    miniFrlFini( &cfFrlList );
+void    CFFini( void )
+/********************/
+{
+    miniFrlFini();
 }

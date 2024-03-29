@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -93,8 +94,8 @@ extern  signed_32   CFCnvF32( cfloat *f );
 extern  signed_64   CFCnvF64( cfloat *f );
 extern  double      CFToF( cfloat *f );
 
-extern  cfloat      *CFAlloc(size_t);
-extern  void        CFFree(cfloat*);
+extern  cfloat      *CFAlloc( size_t );
+extern  void        CFFree( cfloat * );
 extern  bool        CFFrlFree( void );
 
 extern  cfloat      *CFMul( cfloat *op1, cfloat *op2 );
