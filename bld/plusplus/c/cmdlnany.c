@@ -709,19 +709,16 @@ static void analyseAnyTargetOptions( OPT_STORAGE *data )
     switch( data->opt_level ) {
     case OPT_ENUM_opt_level_ox:  /* -ox => -obmiler -s */
         GenSwitches &= ~ CGSW_GEN_NO_OPTIMIZATION;
-        GenSwitches |= CGSW_GEN_BRANCH_PREDICTION;       // -ob
-        GenSwitches |= CGSW_GEN_LOOP_OPTIMIZATION;       // -ol
-        GenSwitches |= CGSW_GEN_INS_SCHEDULING;          // -or
-        CmdSysSetMaxOptimization();             // -om
-        CompFlags.inline_intrinsics = true;     // -oi
-#if 0   // Disabled - introduces too many problems which no one is ready to fix
-        if( ! data->oe ) {
-            data->oe = 1;                       // -oe
-            // keep in sync with options.gml
-            data->oe_value = 100;
-        }
+        GenSwitches |= CGSW_GEN_BRANCH_PREDICTION;  // -ob
+        GenSwitches |= CGSW_GEN_LOOP_OPTIMIZATION;  // -ol
+        GenSwitches |= CGSW_GEN_INS_SCHEDULING;     // -or
+        CmdSysSetMaxOptimization();                 // -om
+        CompFlags.inline_intrinsics = true;         // -oi
+#if 1   // Disabled - introduces too many problems which no one is ready to fix
+        // keep in sync with options.gml
+        CgBackSetOeSize( 20 );                      // -oe
 #endif
-        TOGGLE( check_stack ) = false;         // -s
+        TOGGLE( check_stack ) = false;              // -s
         break;
     case OPT_ENUM_opt_level_od:
         GenSwitches |= CGSW_GEN_NO_OPTIMIZATION;

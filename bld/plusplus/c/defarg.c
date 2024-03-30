@@ -42,6 +42,8 @@
 #include "codegen.h"
 #include "pcheader.h"
 #include "carve.h"
+#include "floatsup.h"
+
 
 static CNV_DIAG diagDefarg =        // diagnosis for def. argument conversion
     {   ERR_DEFARG_IMPOSSIBLE
@@ -149,7 +151,7 @@ static PTREE copyRtn (  // Copy Routine -- pass to PTreeCopyPrefix
 
     switch( curr->op ) {
     case PT_FLOATING_CONSTANT :
-        copy->u.floating_constant = BFCopy( curr->u.floating_constant );
+        copy->u.floating_constant = CFCopy( &cxxh, curr->u.floating_constant );
         break;
     case PT_DUP_EXPR :
         if( curr->flags & PTF_DUP_VISITED ) {

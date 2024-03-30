@@ -1118,7 +1118,7 @@ static void dumpPTreeNode(      // DUMP A PARSE TREE NODE
           {
             char buffer[256];
 
-            BFCnvFS( node->u.floating_constant, buffer, 256 );
+            CFCnvFS( node->u.floating_constant, buffer, 256 );
             printf( "PT_FLOATING_CONSTANT" F_BADDR
                     " flags"        F_HEX_4
                     " float"        F_CPP_FLOAT

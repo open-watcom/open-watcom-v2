@@ -208,7 +208,7 @@ PTREE PTreeFree( PTREE tree )
             fp_val = tree->u.floating_constant;
             tree->u.floating_constant = NULL;
             if( fp_val != NULL ) {
-                BFFree( fp_val );
+                CFFree( &cxxh, fp_val );
             }
         }
         ExtraRptDecrementCtr( nodes_defined );
@@ -426,7 +426,7 @@ PTREE PTreeInt64Constant( signed_64 v, type_id id )
 
 static float_handle makeFPRep( const char *buff )
 {
-    return( BFCnvSF( buff ) );
+    return( CFCnvSF( &cxxh, buff ) );
 }
 
 PTREE PTreeFloatingConstantStr( const char *buff, type_id id )
@@ -1057,8 +1057,8 @@ PTREE PTreeForceIntegral( PTREE cexpr )
         target_long result;
 
         CErr1( ERR_EXPR_MUST_BE_INTEGRAL );
-        sign = BFSign( cexpr->u.floating_constant );
-        result = BFGetLong( &(cexpr->u.floating_constant) );
+        sign = CFTest( cexpr->u.floating_constant );
+        result = CFGetLong( &(cexpr->u.floating_constant) );
         cexpr->op = PT_INT_CONSTANT;
         cexpr->u.int_constant = result;
         cexpr = ptreeSetConstantType( cexpr
@@ -1745,11 +1745,11 @@ PTREE PTreeCheckFloatRepresentation( PTREE tree )
     id = TypedefModifierRemove( tree->type )->id;
     switch( id ) {
     case TYP_FLOAT:
-        tree->u.floating_constant = BFCheckFloatLimit( tree->u.floating_constant );
+        tree->u.floating_constant = CFCheckFloatLimit( tree->u.floating_constant );
         break;
     case TYP_DOUBLE:
     case TYP_LONG_DOUBLE:
-        tree->u.floating_constant = BFCheckDblLimit( tree->u.floating_constant );
+        tree->u.floating_constant = CFCheckDblLimit( tree->u.floating_constant );
         break;
     }
     return( tree );
@@ -1764,7 +1764,7 @@ unsigned PTreeGetFPRaw( PTREE tree, char *buff, unsigned len )
     DbgAssert( tree != NULL && tree->op == PT_FLOATING_CONSTANT );
     DbgAssert( len >= 128 );
     cg_float = tree->u.floating_constant;
-    end = BFCnvFS( cg_float, buff, len );
+    end = CFCnvFS( cg_float, buff, len );
     len = (unsigned)( end - buff );
     DbgAssert( buff[len] == '\0' );
     // returns strlen( buff ) + 1

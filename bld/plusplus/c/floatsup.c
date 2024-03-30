@@ -40,6 +40,8 @@
 #include "floatsup.h"
 
 
+cfstruct    cxxh;
+
 static float_handle     MaxPosFloat;
 static float_handle     MinPosFloat;
 static float_handle     MaxPosDbl;
@@ -48,75 +50,71 @@ static float_handle     MaxNegFloat;
 static float_handle     MinNegFloat;
 static float_handle     MaxNegDbl;
 static float_handle     MinNegDbl;
-static float_handle     _2power32;
 
 void    FloatCheckInit( void )
 /****************************/
 {
+    cxxh.alloc = CMemAlloc;
+    cxxh.free = CMemFree;
+    CFInit( &cxxh );
     /*
      * constants are extracted from ISO C standard 2.2.4.2.2
      */
-    MaxPosFloat = BFCnvSF( "3.40282347e+38" );
-    MinPosFloat = BFCnvSF( "1.17549435e-38" );
-    MaxPosDbl   = BFCnvSF( "1.7976931348623157e+308" );
-    MinPosDbl   = BFCnvSF( "2.2250738585072014e-308" );
-    MaxNegFloat = BFCnvSF( "-3.40282347e+38" );
-    MinNegFloat = BFCnvSF( "-1.17549435e-38" );
-    MaxNegDbl   = BFCnvSF( "-1.7976931348623157e+308" );
-    MinNegDbl   = BFCnvSF( "-2.2250738585072014e-308" );
-    _2power32   = BFCnvSF( "4294967296" );
+    MaxPosFloat = CFCnvSF( &cxxh, "3.40282347e+38" );
+    MinPosFloat = CFCnvSF( &cxxh, "1.17549435e-38" );
+    MaxPosDbl   = CFCnvSF( &cxxh, "1.7976931348623157e+308" );
+    MinPosDbl   = CFCnvSF( &cxxh, "2.2250738585072014e-308" );
+    MaxNegFloat = CFCnvSF( &cxxh, "-3.40282347e+38" );
+    MinNegFloat = CFCnvSF( &cxxh, "-1.17549435e-38" );
+    MaxNegDbl   = CFCnvSF( &cxxh, "-1.7976931348623157e+308" );
+    MinNegDbl   = CFCnvSF( &cxxh, "-2.2250738585072014e-308" );
 }
 
 void    FloatCheckFini( void )
 /****************************/
 {
-    BFFree( _2power32 );
-    BFFree( MaxPosFloat );
-    BFFree( MinPosFloat );
-    BFFree( MaxPosDbl );
-    BFFree( MinPosDbl );
-    BFFree( MaxNegFloat );
-    BFFree( MinNegFloat );
-    BFFree( MaxNegDbl );
-    BFFree( MinNegDbl );
-}
+    CFFree( &cxxh, MaxPosFloat );
+    CFFree( &cxxh, MinPosFloat );
+    CFFree( &cxxh, MaxPosDbl );
+    CFFree( &cxxh, MinPosDbl );
+    CFFree( &cxxh, MaxNegFloat );
+    CFFree( &cxxh, MinNegFloat );
+    CFFree( &cxxh, MaxNegDbl );
+    CFFree( &cxxh, MinNegDbl );
 
-float_handle TwoTo32( void )
-/**************************/
-{
-    return( _2power32 );
+    CFFini( &cxxh );
 }
 
 static float_handle makeOK( float_handle f )
 /******************************************/
 {
-    BFFree( f );
-    f = BFCnvUF( 1 );
+    CFFree( &cxxh, f );
+    f = CFCnvUF( &cxxh, 1 );
     return( f );
 }
 
 
-float_handle BFCheckFloatLimit( float_handle f )
+float_handle CFCheckFloatLimit( float_handle f )
 /**********************************************/
 {
     int sign;
     bool err;
 
     err = false;
-    sign = BFSign( f );
+    sign = CFTest( f );
     if( sign > 0 ) {
-        if( BFCmp( f, MaxPosFloat ) > 0 ) {
+        if( CFCompare( f, MaxPosFloat ) > 0 ) {
             err = true;
             CErr1( ERR_FLOATING_CONSTANT_OVERFLOW );
-        } else if( BFCmp( f, MinPosFloat ) < 0 ) {
+        } else if( CFCompare( f, MinPosFloat ) < 0 ) {
             err = true;
             CErr1( ERR_FLOATING_CONSTANT_UNDERFLOW );
         }
     } else if( sign < 0 ) {
-        if( BFCmp( f, MaxNegFloat ) < 0 ) {
+        if( CFCompare( f, MaxNegFloat ) < 0 ) {
             err = true;
             CErr1( ERR_FLOATING_CONSTANT_OVERFLOW );
-        } else if( BFCmp( f, MinNegFloat ) > 0 ) {
+        } else if( CFCompare( f, MinNegFloat ) > 0 ) {
             err = true;
             CErr1( ERR_FLOATING_CONSTANT_UNDERFLOW );
         }
@@ -127,28 +125,28 @@ float_handle BFCheckFloatLimit( float_handle f )
     return( f );
 }
 
-float_handle BFCheckDblLimit( float_handle f )
+float_handle CFCheckDblLimit( float_handle f )
 /********************************************/
 {
     int sign;
     bool err;
 
     err = false;
-    sign = BFSign( f );
+    sign = CFTest( f );
     if( sign > 0 ) {
-        if( BFCmp( f, MaxPosDbl ) > 0 ) {
+        if( CFCompare( f, MaxPosDbl ) > 0 ) {
             err = true;
             CErr1( ERR_FLOATING_CONSTANT_OVERFLOW );
-        } else if( BFCmp( f, MinPosDbl ) == -1 ) {
+        } else if( CFCompare( f, MinPosDbl ) == -1 ) {
             err = true;
             CErr1( ERR_FLOATING_CONSTANT_UNDERFLOW );
 
         }
     } else if( sign < 0 ) {
-        if( BFCmp( f, MaxNegDbl ) < 0 ) {
+        if( CFCompare( f, MaxNegDbl ) < 0 ) {
             err = true;
             CErr1( ERR_FLOATING_CONSTANT_OVERFLOW );
-        } else if( BFCmp( f, MinNegDbl ) > 0 ) {
+        } else if( CFCompare( f, MinNegDbl ) > 0 ) {
             err = true;
             CErr1( ERR_FLOATING_CONSTANT_UNDERFLOW );
         }
@@ -160,16 +158,16 @@ float_handle BFCheckDblLimit( float_handle f )
 }
 
 
-target_long BFGetLong( float_handle *f )
+target_long CFGetLong( float_handle *f )
 /**************************************/
 {
     float_handle new_f;
     target_long val;
 
-    new_f = BFTrunc( *f );
-    BFFree( *f );
+    new_f = CFTrunc( &cxxh, *f );
+    CFFree( &cxxh, *f );
     *f = NULL;
-    val = BFCnvF32( new_f );
-    BFFree( new_f );
+    val = CFCnvF32( new_f );
+    CFFree( &cxxh, new_f );
     return( val );
 }

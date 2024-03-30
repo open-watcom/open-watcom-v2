@@ -105,7 +105,7 @@ static bool DgStoreScalarValue( TYPE type, PTREE expr, target_size_t offset )
     switch( expr->op ) {
     case PT_FLOATING_CONSTANT:
         CgFrontDataPtr( IC_DATA_FLT, ConPoolFloatAdd( expr ) );
-        ok = ( BFSign( expr->u.floating_constant ) == 0 );
+        ok = ( CFTest( expr->u.floating_constant ) == 0 );
         break;
     case PT_PTR_CONSTANT:
         CgFrontDataPtr( IC_DATA_INT, 0 );

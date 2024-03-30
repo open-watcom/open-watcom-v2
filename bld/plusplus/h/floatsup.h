@@ -34,11 +34,14 @@
 #ifndef _FLOATSUP_H
 #define _FLOATSUP_H
 
+#include "cfloat.h"
+
+extern cfstruct     cxxh;
+
 extern void         FloatCheckInit( void );
 extern void         FloatCheckFini( void );
-extern float_handle TwoTo32( void );
-extern float_handle BFCheckFloatLimit( float_handle f );
-extern float_handle BFCheckDblLimit( float_handle f );
-extern target_long  BFGetLong( float_handle *f );
+extern float_handle CFCheckFloatLimit( float_handle f );
+extern float_handle CFCheckDblLimit( float_handle f );
+extern target_long  CFGetLong( float_handle *f );
 
 #endif
