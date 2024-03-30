@@ -40,7 +40,7 @@
 #include "floatsup.h"
 
 
-cfstruct    cxxh;
+cfstruct                cxxh;
 
 static float_handle     MaxPosFloat;
 static float_handle     MinPosFloat;
