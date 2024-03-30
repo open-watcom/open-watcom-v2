@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -184,13 +184,13 @@ typedef enum {
     FEMSG_ERROR,                    /* cg error message (string) */
     FEMSG_FATAL,                    /* fatal error  (string) */
     FEMSG_INFO_PROC,                /* info message about current proc (string) */
-    FEMSG_BAD_PARM_REGISTER,        /* bad "aux" parm      (parm num) */
-    FEMSG_BAD_RETURN_REGISTER,      /* bad "aux" value     (sym) */
+    FEMSG_BAD_PARM_REGISTER,        /* bad "aux" __parm   (parm num) */
+    FEMSG_BAD_RETURN_REGISTER,      /* bad "aux" __value  (sym) */
     FEMSG_REGALLOC_DIED,            /* register alloc ran out of mem (sym) */
     FEMSG_SCOREBOARD_DIED,          /* scoreboard ran out of mem   (sym) */
     FEMSG_PEEPHOLE_FLUSHED,         /* peep hole optimizer flushed (none) */
     FEMSG_BACK_END_ERROR,           /* back end error (int) */
-    FEMSG_BAD_SAVE,                 /* bad "aux" modify (sym) */
+    FEMSG_BAD_SAVE,                 /* bad "aux" __modify (sym) */
     FEMSG_WANT_MORE_DATA,           /* back end wants more data space (int) */
     FEMSG_BLIP,                     /* blip */
     FEMSG_BAD_LINKAGE,              /* cannot resolve linkage conventions (sym) */
