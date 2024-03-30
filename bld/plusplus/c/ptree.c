@@ -105,7 +105,7 @@ static void ptreeInit(          // INITIALIZATION
     ExtraRptRegisterCtr( &total_frees, "total # of PTreeFreeSubtrees" );
     ExtraRptRegisterCtr( &null_frees, "total # of NULL PTreeFreeSubtrees" );
     ExtraRptRegisterCtr( &simple_frees, "total # of simple PTreeFreeSubtrees" );
-    FloatCheckInit();
+    FloatSupportInit();
 }
 
 static void ptreeFini(          // COMPLETION
@@ -113,7 +113,7 @@ static void ptreeFini(          // COMPLETION
 {
     /* unused parameters */ (void)defn;
 
-    FloatCheckFini();
+    FloatSupportFini();
     DbgStmt( CarveVerifyAllGone( carvePTREE, "PTREE" ) );
     CarveDestroy( carvePTREE );
 }
@@ -1052,19 +1052,19 @@ PTREE PTreeForceIntegral( PTREE cexpr )
     switch( cexpr->op ) {
     case PT_INT_CONSTANT:
         return( cexpr );
-    case PT_FLOATING_CONSTANT: {
+    case PT_FLOATING_CONSTANT:
+      {
         int sign;
         target_long result;
 
         CErr1( ERR_EXPR_MUST_BE_INTEGRAL );
         sign = CFTest( cexpr->u.floating_constant );
-        result = CFGetLong( &(cexpr->u.floating_constant) );
+        result = CFFloat2Long( &(cexpr->u.floating_constant) );
         cexpr->op = PT_INT_CONSTANT;
         cexpr->u.int_constant = result;
-        cexpr = ptreeSetConstantType( cexpr
-                                    , sign < 0 ? TYP_SINT : TYP_UINT );
+        cexpr = ptreeSetConstantType( cexpr, ( sign < 0 ) ? TYP_SINT : TYP_UINT );
         return( cexpr );
-    }
+      }
     }
     if( cexpr->op != PT_ERROR ) {
         PTreeErrorExpr( cexpr, ERR_NOT_A_CONSTANT_EXPR );
@@ -1749,7 +1749,7 @@ PTREE PTreeCheckFloatRepresentation( PTREE tree )
         break;
     case TYP_DOUBLE:
     case TYP_LONG_DOUBLE:
-        tree->u.floating_constant = CFCheckDblLimit( tree->u.floating_constant );
+        tree->u.floating_constant = CFCheckDoubleLimit( tree->u.floating_constant );
         break;
     }
     return( tree );

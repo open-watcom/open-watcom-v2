@@ -38,10 +38,10 @@
 
 extern cfstruct     cxxh;
 
-extern void         FloatCheckInit( void );
-extern void         FloatCheckFini( void );
+extern void         FloatSupportInit( void );
+extern void         FloatSupportFini( void );
 extern float_handle CFCheckFloatLimit( float_handle f );
-extern float_handle CFCheckDblLimit( float_handle f );
-extern target_long  CFGetLong( float_handle *f );
+extern float_handle CFCheckDoubleLimit( float_handle f );
+extern target_long  CFFloat2Long( float_handle *f );
 
 #endif

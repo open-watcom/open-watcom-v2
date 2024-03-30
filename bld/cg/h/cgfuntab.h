@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -60,23 +60,6 @@ CGAPIDEF( BEFiniLabel,  void,           (label_handle) )
 CGAPIDEF( BEPatch,      patch_handle,   (void) )
 CGAPIDEF( BEPatchInteger,void,          (patch_handle,signed_32) )
 CGAPIDEF( BEFiniPatch,  void,           (patch_handle) )
-
-CGAPIDEF( BFCnvFS,      char_ptr,       (float_handle,char_ptr,int) )
-CGAPIDEF( BFCnvSF,      float_handle,   (cchar_ptr) )
-CGAPIDEF( BFCnvTarget,  void,           (float_handle,pointer,int) )
-CGAPIDEF( BFMul,        float_handle,   (float_handle,float_handle) )
-CGAPIDEF( BFDiv,        float_handle,   (float_handle,float_handle) )
-CGAPIDEF( BFAdd,        float_handle,   (float_handle,float_handle) )
-CGAPIDEF( BFSub,        float_handle,   (float_handle,float_handle) )
-CGAPIDEF( BFCmp,        int,            (float_handle,float_handle) )
-CGAPIDEF( BFNegate,     void,           (float_handle) )
-CGAPIDEF( BFTrunc,      float_handle,   (float_handle) )
-CGAPIDEF( BFCopy,       float_handle,   (float_handle) )
-CGAPIDEF( BFSign,       int,            (float_handle) )
-CGAPIDEF( BFCnvUF,      float_handle,   (uint) )
-CGAPIDEF( BFCnvIF,      float_handle,   (int) )
-CGAPIDEF( BFCnvF32,     signed_32,      (float_handle) )
-CGAPIDEF( BFFree,       void,           (float_handle) )
 
 CGAPIDEF( CGBitMask,    cg_name,        (cg_name,byte,byte,cg_type) )
 CGAPIDEF( CGChoose,     cg_name,        (cg_name,cg_name,cg_name,cg_type) )

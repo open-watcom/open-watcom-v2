@@ -371,7 +371,7 @@ static PTREE castFloatingConstant( PTREE expr, TYPE type, bool *happened )
     case TYP_UINT:
     case TYP_ULONG:
     case TYP_WCHAR:
-        value = CFGetLong( &(expr->u.floating_constant) );
+        value = CFFloat2Long( &(expr->u.floating_constant) );
         new_expr = PTreeIntConstant( (target_ulong) value, id );
         new_expr = CastIntConstant( new_expr, type, happened );
         break;

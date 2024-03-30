@@ -51,8 +51,8 @@ static float_handle     MinNegFloat;
 static float_handle     MaxNegDbl;
 static float_handle     MinNegDbl;
 
-void    FloatCheckInit( void )
-/****************************/
+void    FloatSupportInit( void )
+/******************************/
 {
     cxxh.alloc = CMemAlloc;
     cxxh.free = CMemFree;
@@ -70,8 +70,8 @@ void    FloatCheckInit( void )
     MinNegDbl   = CFCnvSF( &cxxh, "-2.2250738585072014e-308" );
 }
 
-void    FloatCheckFini( void )
-/****************************/
+void    FloatSupportFini( void )
+/******************************/
 {
     CFFree( &cxxh, MaxPosFloat );
     CFFree( &cxxh, MinPosFloat );
@@ -125,8 +125,8 @@ float_handle CFCheckFloatLimit( float_handle f )
     return( f );
 }
 
-float_handle CFCheckDblLimit( float_handle f )
-/********************************************/
+float_handle CFCheckDoubleLimit( float_handle f )
+/***********************************************/
 {
     int sign;
     bool err;
@@ -158,8 +158,8 @@ float_handle CFCheckDblLimit( float_handle f )
 }
 
 
-target_long CFGetLong( float_handle *f )
-/**************************************/
+target_long CFFloat2Long( float_handle *f )
+/*****************************************/
 {
     float_handle new_f;
     target_long val;
