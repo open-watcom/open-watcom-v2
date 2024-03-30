@@ -76,7 +76,9 @@
 :include file='&book..kw'
 .do end
 .*
+.***********************************************************
 .chap Introduction
+.***********************************************************
 .*
 .np
 The code generator (back end) interface is a set of procedure calls.
@@ -89,7 +91,9 @@ These are divided into following category of routines.
 :ZLI.Debugger information (DB)
 :ZeSL.
 .*
+.***********************************************************
 .chap General
+.***********************************************************
 .*
 .section cg_init_info BEInit( cg_switches switches, cg_target_switches targ_switches, uint optsize, proc_revision proc )
 .*
@@ -422,7 +426,9 @@ the patch handle.
 This must be called to free up resources used by the given handle.
 After this, the handle must not be used again.
 .*
+.***********************************************************
 .chap Segments
+.***********************************************************
 .*
 .np
 The object file produced by the code generator is composed of
@@ -570,7 +576,9 @@ table which is thrown out at the end of the function).
 The code segment id.
 .endnote
 .*
+.***********************************************************
 .chap Labels
+.***********************************************************
 .*
 .ix label, code
 .np
@@ -606,7 +614,9 @@ This allows the back end to free some memory at some later stage.
 A label_handle
 .endnote
 .*
+.***********************************************************
 .chap *refid=bck Back Handles
+.***********************************************************
 .*
 .ix 'back handle'
 .ix label, data
@@ -706,7 +716,9 @@ back_handle.
 A back_handle.
 .endnote
 .*
+.***********************************************************
 .chap Type definitions
+.***********************************************************
 .*
 .ix typing
 .np
@@ -846,7 +858,9 @@ The alignment requirements of :HP2.type:eHP2. as declared in
 BEDefType, or for a base type, as defined by the machine architecture.
 .endnote
 .*
+.***********************************************************
 .chap Procedure Declarations
+.***********************************************************
 .*
 .section void CGProcDecl( cg_sym_handle name, cg_type type )
 .*
@@ -944,7 +958,9 @@ This will be freed and invalidated by the back end when CGReturn is
 called.
 .endnote
 .*
+.***********************************************************
 .chap Expressions
+.***********************************************************
 .*
 .ix expressions
 .np
@@ -1129,7 +1145,9 @@ are to be added, the back end will automatically convert the operands
 to TY_INT_4 before performing the addition.
 The resulting node will have type TY_INT_4.
 .*
+.***********************************************************
 .chap Leaf Nodes
+.***********************************************************
 .*
 .section cg_name CGInteger( signed_32 val, cg_type type )
 .*
@@ -1226,7 +1244,9 @@ A temp_handle.
 The type to be associated with the :HP2.value:eHP2. of the symbol.
 .endnote
 .*
+.***********************************************************
 .chap Assignment Operations
+.***********************************************************
 .*
 .section cg_name CGAssign( cg_name dest, cg_name src, cg_type type )
 .*
@@ -1310,7 +1330,9 @@ The type of the destination.
 The value of the left hand side before the operation occurs.
 .endnote
 .*
+.***********************************************************
 .chap Arithmetic/logical operations
+.***********************************************************
 .*
 .section cg_name CGBinary( cg_op op, cg_name left, cg_name right, cg_type type )
 .*
@@ -1435,7 +1457,9 @@ A call_handle.
 The address of the function return value.
 .endnote
 .*
+.***********************************************************
 .chap Comparison/short-circuit operations
+.***********************************************************
 .*
 .section cg_name CGCompare( cg_op op, cg_name left, cg_name right, cg_type type )
 .*
@@ -1463,7 +1487,9 @@ A TY_BOOLEAN cg_name, which may be passed to a control flow CG
 routine, or used in an expression as an integral value.
 .endnote
 .*
+.***********************************************************
 .chap Control flow operations
+.***********************************************************
 .*
 .section cg_name CGFlow( cg_op op, cg_name left, cg_name right )
 .*
@@ -1616,7 +1642,9 @@ There must be a front end symbol associated with this back handle.
 The lexical level of the target label.
 .endnote
 .*
+.***********************************************************
 .chap Select and Switch statements.
+.***********************************************************
 .*
 .np
 The select routines are used as follows.
@@ -1755,7 +1783,9 @@ Must be a combination (non-empty) of the following bits:
 :ZeSL.
 .endnote
 .*
+.***********************************************************
 .chap Other
+.***********************************************************
 .*
 .section void CGReturn( cg_name name, cg_type type )
 .*
@@ -1963,7 +1993,9 @@ The actual type of the node.
 Must be an integer type.
 .endnote
 .*
+.***********************************************************
 .chap Data Generation
+.***********************************************************
 .*
 .ix data
 .ix segments
@@ -2187,7 +2219,9 @@ The location of the label within its segment.
 The label must have been previously generated via DGLabel.
 .endnote
 .*
+.***********************************************************
 .chap Front End Routines
+.***********************************************************
 .*
 .section void FEGenProc( cg_sym_handle sym )
 .*
@@ -2822,7 +2856,9 @@ WSL linkage.
 .endnote
 .do end
 .*
+.***********************************************************
 .chap Debugging Information
+.***********************************************************
 .*
 These routines generate information about types, symbols, etc.
 .*
@@ -3226,7 +3262,9 @@ automaticaly during initialization.
 .np
 add source position info for the appropriate source file
 .*
+.***********************************************************
 .chap Registers
+.***********************************************************
 .*
 .ix registers
 .np
@@ -3334,7 +3372,9 @@ HW_CAsgn( reg, HW_FULL );
 HW_CTurnOff( reg, HW_UNUSED );
 :eXMP.
 .*
+.***********************************************************
 .chap Miscellaneous
+.***********************************************************
 .*
 .np
 I apologize for my lack of consistency in this document.
@@ -3492,7 +3532,9 @@ hw_reg_part
 .endnote
 :APPENDIX.
 .*
+.***********************************************************
 .chap Pre-defined macros
+.***********************************************************
 .*
 .np
 The following macros are defined by the code generator include files.
@@ -3598,7 +3640,9 @@ The following macros are defined by the code generator include files.
 :ZLI.offsetof
 :ZeSL.
 .*
+.***********************************************************
 .chap Register constants
+.***********************************************************
 .*
 .np
 The following register constants are defined for x86 targets.
@@ -3706,7 +3750,9 @@ The following registers are defined for the 370 target.
 :ZeSL.
 .do end
 .*
+.***********************************************************
 .chap Debugging Open Watcom Code Generator
+.***********************************************************
 .*
 .np
 If you want to use vc.dbg command, make sure you have a tmp directory in
