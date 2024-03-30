@@ -35,7 +35,7 @@
 #include "tree.h"
 #include "zoiks.h"
 #include "freelist.h"
-#include "cfloat.h"
+#include "_cfloat.h"
 #include "cgauxcc.h"
 #include "cgauxinf.h"
 #include "data.h"
@@ -1077,7 +1077,7 @@ tn  TGDuplicate( tn node )
     if( node != NULL ) {
         switch( node->class ) {
         case TN_CONS:
-            new = TGConst( CFCopy( node->u.name->c.value ), node->tipe );
+            new = TGConst( CFCopy( &cgh, node->u.name->c.value ), node->tipe );
             break;
         case TN_LEAF:
             new = TGLeaf( AddrCopy( node->u.addr ) );

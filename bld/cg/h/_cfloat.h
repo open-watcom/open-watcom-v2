@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2018-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,42 +31,6 @@
 ****************************************************************************/
 
 
-#include "_cgstd.h"
-#include "coderep.h"
-#include "model.h"
-#include "_cfloat.h"
-#include "cgaux.h"
-#include "cgdll.h"
-#include "cgprotos.h"
-#include "feprotos.h"
+#include "cfloat.h"
 
-struct  cg_interface OptCGTable = {
-    #define  CGAPIDEF(a,b,c) a,
-    #include "cgfuntab.h"
-    #undef   CGAPIDEF
-};
-
-cg_interface    *CGFuncTable = &OptCGTable;
-fe_interface    *FEFuncTable;
-
-cg_interface *_CGDLLEXPORT BEDLLInit( fe_interface *func_table )
-/**************************************************************/
-{
-    FEFuncTable = func_table;
-    return( CGFuncTable );
-}
-
-void _CGDLLEXPORT BEDLLFini( cg_interface *func_table )
-/*****************************************************/
-{
-    /* unused parameters */ (void)func_table;
-
-    // nothing yet
-}
-
-int __stdcall LibMain( uint_32 hdll, uint_32 reason, void *reserved )
-{
-    /* unused parameters */ (void)hdll; (void)reason; (void)reserved;
-
-    return( 1 );
-}
+extern cfstruct     cgh;

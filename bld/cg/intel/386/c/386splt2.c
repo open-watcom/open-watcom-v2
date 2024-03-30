@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,7 +36,7 @@
 #include "model.h"
 #include "system.h"
 #include "zoiks.h"
-#include "cfloat.h"
+#include "_cfloat.h"
 #include "confldef.h"
 #include "makeins.h"
 #include "namelist.h"
@@ -87,7 +87,7 @@ name    *LowPart( name *tosplit, type_class_def type_class )
                 _Zoiks( ZOIKS_129 );
             } else { /* FD */
                 floatval = GetFloat( tosplit, FD );
-                new = AllocConst( CFCnvU32F( _TargetLongInt( *(uint_32 *)( floatval->value + 0 ) ) ) );
+                new = AllocConst( CFCnvU32F( &cgh, _TargetLongInt( *(uint_32 *)( floatval->value + 0 ) ) ) );
             }
         } else if( tosplit->c.const_type == CONS_ADDRESS ) {
             new = AddrConst( tosplit->c.value, (segment_id)tosplit->c.lo.int_value, CONS_OFFSET );
@@ -240,7 +240,7 @@ name    *HighPart( name *tosplit, type_class_def type_class )
                 _Zoiks( ZOIKS_129 );
             } else { /* FD */
                 floatval = GetFloat( tosplit, FD );
-                new = AllocConst( CFCnvU32F( _TargetLongInt( *(uint_32 *)( floatval->value + 2 ) ) ) );
+                new = AllocConst( CFCnvU32F( &cgh, _TargetLongInt( *(uint_32 *)( floatval->value + 2 ) ) ) );
             }
         } else if( tosplit->c.const_type == CONS_ADDRESS ) {
             new = AddrConst( tosplit->c.value, (segment_id)tosplit->c.lo.int_value, CONS_SEGMENT );

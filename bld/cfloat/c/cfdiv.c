@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -65,13 +66,13 @@ static void efSet( cfloat *u, char ue[], int i, int val )
     }
 }
 
-static cfloat *scalarMultiply( cfloat *f, int s )
+static cfloat *scalarMultiply( cfhandle h, cfloat *f, int s )
 {
     cfloat      *res;
     div_t       d;
     int         i;
 
-    res = CFAlloc( f->len + 1 );
+    res = CFAlloc( h, f->len + 1 );
 
     res->len  = f->len + 1;
     res->exp  = f->exp;
@@ -87,7 +88,7 @@ static cfloat *scalarMultiply( cfloat *f, int s )
     return( res );
 }
 
-static void expandCF( cfloat **f, int scale )
+static void expandCF( cfhandle h, cfloat **f, int scale )
 {
     cfloat      *new;
     int         new_len;
@@ -95,7 +96,7 @@ static void expandCF( cfloat **f, int scale )
 
     old_len = (*f)->len;
     new_len = old_len + scale;
-    new = CFAlloc( new_len );
+    new = CFAlloc( h, new_len );
     memcpy( new, *f, offsetof( cfloat, mant ) + old_len );
     while( old_len < new_len ) {
         *(new->mant + old_len) = '0';
@@ -104,7 +105,7 @@ static void expandCF( cfloat **f, int scale )
     *(new->mant + old_len) = NULLCHAR;
     new->len  = new_len;
 
-    CFFree( *f );
+    CFFree( h, *f );
 
     *f = new;
 }
@@ -129,7 +130,7 @@ static void roundupCF( cfloat *f )
 /*
  * CFDiv:  Computes  op1 / op2
  */
-cfloat  *CFDiv( cfloat *op1, cfloat *op2 )
+cfloat  *CFDiv( cfhandle h, cfloat *op1, cfloat *op2 )
 {
     cfloat         *result;
     cfloat         *u, *v;
@@ -139,7 +140,7 @@ cfloat  *CFDiv( cfloat *op1, cfloat *op2 )
     char            ue[CF_MAX_PREC];
 
     if( ! op2->sign ) {                         // Attempt to divide by zero.
-        result = CFAlloc( 1 );
+        result = CFAlloc( h, 1 );
         *result->mant   = '1';
         result->sign    = 1;
         result->exp     = CF_ERR_EXP;           // Return error-type.
@@ -148,7 +149,7 @@ cfloat  *CFDiv( cfloat *op1, cfloat *op2 )
 
     efInit( ue );                               // Initialize extended float.
 
-    result  = CFAlloc( CF_MAX_PREC );           // Allocate mem. for result.
+    result  = CFAlloc( h, CF_MAX_PREC );           // Allocate mem. for result.
 
     result->sign = op1->sign * op2->sign;       // Set sign of result.
     result->exp  = op1->exp - op2->exp + 1;     // Set exponent of result.
@@ -160,14 +161,14 @@ cfloat  *CFDiv( cfloat *op1, cfloat *op2 )
         scale = 1;
     }
 
-    u = scalarMultiply( op1, scale );           // Extra digit added.
-    v = scalarMultiply( op2, scale );           // Extra digit added.
+    u = scalarMultiply( h, op1, scale );           // Extra digit added.
+    v = scalarMultiply( h, op2, scale );           // Extra digit added.
 
     if( v->len < 3 ) {                          // Divisor must have at least
-        expandCF( &v, 1 );                      // two digits (ignore leading 0)
+        expandCF( h, &v, 1 );                      // two digits (ignore leading 0)
     }
     if( v->len >= u->len ) {                    // Dividend must have more
-        expandCF( &u, v->len - u->len + 1 );    // digits than divisor.
+        expandCF( h, &u, v->len - u->len + 1 );    // digits than divisor.
     }
 
     /*
@@ -253,8 +254,8 @@ cfloat  *CFDiv( cfloat *op1, cfloat *op2 )
         }
     }
 
-    CFFree( u );                            // Clean up the mess we made.
-    CFFree( v );
+    CFFree( h, u );                            // Clean up the mess we made.
+    CFFree( h, v );
     CFClean( result );                      // Clean up the number we made.
 
     return( result );

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -83,8 +84,8 @@ static  int     Min( int a, int b ) {
     return( a );
 }
 
-static  cfloat  *CSSum( cfloat *op1, cfloat *op2, int (*arith)( int, int ) )
-/***************************************************************************/
+static  cfloat  *CSSum( cfhandle h, cfloat *op1, cfloat *op2, int (*arith)( int, int ) )
+/***************************************************************************************/
 {
     int         carry;
     int         pos;
@@ -105,7 +106,7 @@ static  cfloat  *CSSum( cfloat *op1, cfloat *op2, int (*arith)( int, int ) )
     farright = Min( op1right, op2right );
     length = farleft - farright + 1;           /* result length + extra digit*/
     pos = farright + 1;
-    result = CFAlloc( length );
+    result = CFAlloc( h, length );
     result->exp = farleft + 1;
     result->len = length;
     carry = 0;
@@ -138,40 +139,40 @@ static  cfloat  *CSSum( cfloat *op1, cfloat *op2, int (*arith)( int, int ) )
 
 
 
-cfloat  *CFAdd( cfloat *op1, cfloat *op2 ) {
-/******************************************/
-
+cfloat  *CFAdd( cfhandle h, cfloat *op1, cfloat *op2 )
+/*****************************************************/
+{
     int         ord;
 
     switch( op1->sign + 3 * op2->sign ) {
     case -4:
     case  4:
-        return( CSSum( op1, op2, &Adder ) );
+        return( CSSum( h, op1, op2, &Adder ) );
     case -3:                 /* Op1 is zero*/
     case  3:
-        return( CFCopy( op2 ) );
+        return( CFCopy( h, op2 ) );
     case -2:                 /* different signs*/
     case  2:                 /* different signs*/
         ord = CFOrder( op1, op2 );
         if( ord == -1 ) {
-            return( CSSum( op2, op1, &Suber ) );  /* | op1 | < | op2 |*/
+            return( CSSum( h, op2, op1, &Suber ) );  /* | op1 | < | op2 |*/
         } else if( ord == 1 ) {
-            return( CSSum( op1, op2, &Suber ) );  /* | op1 | > | op2 |*/
+            return( CSSum( h, op1, op2, &Suber ) );  /* | op1 | > | op2 |*/
         } else {
-            return( CFAlloc( 1 ) );
+            return( CFAlloc( h, 1 ) );
         }
     case -1:                 /* Op2 is zero*/
     case  1:                 /* Op2 is zero*/
-        return( CFCopy( op1 ) );
+        return( CFCopy( h, op1 ) );
     case  0:
-        return( CFAlloc( 1 ) );
+        return( CFAlloc( h, 1 ) );
     }
     return( NULL ); // shut up compiler
 }
 
-cfloat  *CFSub( cfloat *op1, cfloat *op2 ) {
-/******************************************/
-
+cfloat  *CFSub( cfhandle h, cfloat *op1, cfloat *op2 )
+/*****************************************************/
+{
     cfloat      *result;
     int         ord;
 
@@ -180,27 +181,27 @@ cfloat  *CFSub( cfloat *op1, cfloat *op2 ) {
     case  4:
         ord = CFOrder( op1, op2 );
         if( ord == -1 ) {
-            result = CSSum( op2, op1, &Suber );        /* | op1 | < | op2 |*/
+            result = CSSum( h, op2, op1, &Suber );        /* | op1 | < | op2 |*/
             CFNegate( result );
             return( result );
         } else if( ord == 1 ) {
-            return( CSSum( op1, op2, &Suber ) );        /* | op1 | > | op2 |*/
+            return( CSSum( h, op1, op2, &Suber ) );        /* | op1 | > | op2 |*/
         } else {
-            return( CFAlloc( 1 ) );
+            return( CFAlloc( h, 1 ) );
         }
     case -3:                 /* Op1 is zero*/
     case  3:                 /* Op1 is zero*/
-        result = CFCopy( op2 );
+        result = CFCopy( h, op2 );
         CFNegate( result );
         return( result );
     case -2:                 /* different signs*/
     case  2:                 /* different signs*/
-        return( CSSum( op1, op2, &Adder ) );
+        return( CSSum( h, op1, op2, &Adder ) );
     case -1:                 /* Op2 is zero*/
     case  1:                 /* Op2 is zero*/
-        return( CFCopy( op1 ) );
+        return( CFCopy( h, op1 ) );
     case  0:
-        return( CFAlloc( 1 ) );
+        return( CFAlloc( h, 1 ) );
     }
     return( NULL ); // shut up compiler
 }

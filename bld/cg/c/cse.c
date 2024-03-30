@@ -34,7 +34,7 @@
 #include "coderep.h"
 #include "zoiks.h"
 #include "tree.h"
-#include "cfloat.h"
+#include "_cfloat.h"
 #include "data.h"
 #include "fpu.h"
 #include "makeins.h"

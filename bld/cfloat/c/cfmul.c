@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,9 +34,9 @@
 #include "cfloati.h"
 
 
-static  cfloat  *SDMul( cfloat *op1, int plyer, int op1left, int op1exp, int byexp ) {
-/************************************************************************************/
-
+static  cfloat  *SDMul( cfhandle h, cfloat *op1, int plyer, int op1left, int op1exp, int byexp )
+/***********************************************************************************************/
+{
     int         sum;
     int         exp;
     cfloat      *result;
@@ -46,7 +47,7 @@ static  cfloat  *SDMul( cfloat *op1, int plyer, int op1left, int op1exp, int bye
     exp = op1exp;
     resexp = op1exp + byexp - 1;
     respos = op1left - op1exp + 1;
-    result = CFAlloc( respos + 1 );
+    result = CFAlloc( h, respos + 1 );
     result->len = respos + 1;
     result->exp = op1left + byexp;
     while( exp <= op1left ) {
@@ -61,9 +62,9 @@ static  cfloat  *SDMul( cfloat *op1, int plyer, int op1left, int op1exp, int bye
     return( result );
 }
 
-cfloat  *CFMul( cfloat *op1, cfloat *op2 ) {
-/******************************************/
-
+cfloat  *CFMul( cfhandle h, cfloat *op1, cfloat *op2 )
+/*****************************************************/
+{
     cfloat      *result;
     cfloat      *temp;
     cfloat      *sum;
@@ -74,18 +75,18 @@ cfloat  *CFMul( cfloat *op1, cfloat *op2 ) {
     signed char sgn;
 
     sgn = op1->sign * op2->sign;
-    result = CFAlloc( 1 );
+    result = CFAlloc( h, 1 );
     if( sgn != 0 ) {
         op1left = op1->exp;
         op1exp = op1left - op1->len + 1;
         op2exp = op2->exp - op2->len + 1;
         op2ptr = op2->len - 1;
         while( op2ptr >= 0 ) {
-            temp = SDMul( op1, CFAccess( op2, op2ptr-- ),
+            temp = SDMul( h, op1, CFAccess( op2, op2ptr-- ),
                 op1left, op1exp, op2exp++ );
-            sum = CFAdd( result, temp );
-            CFFree( temp );
-            CFFree( result );
+            sum = CFAdd( h, result, temp );
+            CFFree( h, temp );
+            CFFree( h, result );
             result = sum;
         }
         result->sign = sgn;

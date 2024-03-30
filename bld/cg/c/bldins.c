@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,7 +34,7 @@
 #include "coderep.h"
 #include "cgmem.h"
 #include "memcheck.h"
-#include "cfloat.h"
+#include "_cfloat.h"
 #include "makeins.h"
 #include "data.h"
 #include "bldins.h"
@@ -81,9 +81,9 @@ an      BGInteger( int_32 value, type_def *tipe )
     float_handle    cf;
 
     if( tipe->attr & TYPE_SIGNED ) {
-        cf = CFCnvI32F( value );
+        cf = CFCnvI32F( &cgh, value );
     } else {
-        cf = CFCnvU32F( value );
+        cf = CFCnvU32F( &cgh, value );
     }
     return( MakeConst( cf, tipe ) );
 }
@@ -104,7 +104,7 @@ an      BGInt64( signed_64 value, type_def *tipe )
 an  BGFloat( const char *value, type_def *tipe )
 /**********************************************/
 {
-    return( MakeConst( CFCnvSF( value ), tipe ) );
+    return( MakeConst( CFCnvSF( &cgh, value ), tipe ) );
 }
 
 

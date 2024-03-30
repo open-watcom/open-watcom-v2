@@ -34,7 +34,7 @@
 #include "coderep.h"
 #include "regset.h"
 #include "confldef.h"
-#include "cfloat.h"
+#include "_cfloat.h"
 #include "makeins.h"
 #include "namelist.h"
 #include "regalloc.h"
@@ -187,7 +187,7 @@ hw_reg_set      ZapReg( instruction *ins )
 instruction *MoveConst( uint_32 value, name *result, type_class_def type_class )
 /******************************************************************************/
 {
-    return( MakeMove( AllocConst( CFCnvU32F( value ) ), result, type_class ) );
+    return( MakeMove( AllocConst( CFCnvU32F( &cgh, value ) ), result, type_class ) );
 }
 
 
@@ -789,7 +789,7 @@ instruction      *rNEGADD( instruction *ins )
 static  void    NegOp2( instruction *ins )
 /****************************************/
 {
-    ins->operands[1] = AllocConst( CFCnvI32F( -ins->operands[1]->c.lo.int_value ) );
+    ins->operands[1] = AllocConst( CFCnvI32F( &cgh, -ins->operands[1]->c.lo.int_value ) );
 }
 
 

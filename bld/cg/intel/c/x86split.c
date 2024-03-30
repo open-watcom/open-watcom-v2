@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,7 +32,7 @@
 
 #include "_cgstd.h"
 #include "coderep.h"
-#include "cfloat.h"
+#include "_cfloat.h"
 #include "system.h"
 #include "zoiks.h"
 #include "makeins.h"
@@ -206,7 +206,7 @@ name    *IntEquivalent( name *name )
     constant_defn       *defn;
 
     defn = GetFloat( name, FS );
-    return( AllocConst( CFCnvU32F( _TargetBigInt( *(uint_32 *)( defn->value + 0 ) ) ) ) );
+    return( AllocConst( CFCnvU32F( &cgh, _TargetBigInt( *(uint_32 *)( defn->value + 0 ) ) ) ) );
 }
 
 name    *Int64Equivalent( name *name )

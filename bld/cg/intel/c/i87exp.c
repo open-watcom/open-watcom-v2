@@ -33,7 +33,7 @@
 #include "_cgstd.h"
 #include "coderep.h"
 #include "zoiks.h"
-#include "cfloat.h"
+#include "_cfloat.h"
 #include "cgaux.h"
 #include "data.h"
 #include "makeins.h"

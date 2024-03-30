@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,7 +37,7 @@
 #include "memcheck.h"
 #include "cgmem.h"
 #include "tree.h"
-#include "cfloat.h"
+#include "_cfloat.h"
 #include "zoiks.h"
 #include "cgauxinf.h"
 #include "data.h"
@@ -73,10 +73,6 @@
 #endif
 
 
-#ifdef QNX_FLAKEY
-unsigned        OrigModel;
-#endif
-
 #define MAX_BCK_INFO    1000    // number of bck_info's per carve block
 
 typedef union uback_info {
@@ -89,9 +85,14 @@ typedef struct bck_info_block {
     uback_info                  bck_infos[MAX_BCK_INFO];
 } bck_info_block;
 
+#ifdef QNX_FLAKEY
+unsigned        OrigModel;
+#endif
+
 uback_info      *BckInfoHead;           // linked list of available bck_info's
 bck_info_block  *BckInfoCarveHead;      // list of big blocks of bck_info's
 
+cfstruct        cgh;
 
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
 /*%                                              %%*/
@@ -104,13 +105,13 @@ static  bool            memStarted = false;
 void _CGAPI     BEMemInit( void )
 /*******************************/
 {
-    cf_callbacks cf_rtns = { CGAlloc, CGFree };
-
     BckInfoHead = NULL;
     BckInfoCarveHead = NULL;
     InitBlip();
     CGMemInit();
-    CFInit( &cf_rtns );
+    cgh.alloc = CGAlloc;
+    cgh.free = CGFree;
+    CFInit( &cgh );
     memStarted = true;
 }
 
@@ -225,7 +226,7 @@ void _CGAPI     BEMemFree( pointer ptr )
 void _CGAPI     BEMemFini( void )
 /*******************************/
 {
-    CFFini();
+    CFFini( &cgh );
     CGMemFini();
 }
 
@@ -1545,9 +1546,9 @@ void _CGAPI     DGFloat( cchar_ptr value, cg_type tipe )
 #ifdef DEVBUILD
     EchoAPI( "DGFloat( %c, %t )\n", value, tipe );
 #endif
-    cf = CFCnvSF( value );
+    cf = CFCnvSF( &cgh, value );
     CFCnvTarget( cf, &buff, TypeLength( tipe ) );
-    CFFree( cf );
+    CFFree( &cgh, cf );
     DGBytes( TypeLength( tipe ), &buff );
 }
 
@@ -1788,7 +1789,7 @@ char * _CGAPI   BFCnvFS( float_handle cf, char_ptr buff, int buff_len )
 float_handle _CGAPI     BFCnvSF( cchar_ptr start )
 /************************************************/
 {
-    return( CFCnvSF( start ) );
+    return( CFCnvSF( &cgh, start ) );
 }
 
 void _CGAPI     BFCnvTarget( float_handle cf, pointer buff, int class )
@@ -1800,25 +1801,25 @@ void _CGAPI     BFCnvTarget( float_handle cf, pointer buff, int class )
 float_handle _CGAPI     BFMul( float_handle c1, float_handle c2 )
 /***************************************************************/
 {
-    return( CFMul( c1, c2 ) );
+    return( CFMul( &cgh, c1, c2 ) );
 }
 
 float_handle _CGAPI     BFAdd( float_handle c1, float_handle c2 )
 /***************************************************************/
 {
-    return( CFAdd( c1, c2 ) );
+    return( CFAdd( &cgh, c1, c2 ) );
 }
 
 float_handle _CGAPI     BFDiv( float_handle c1, float_handle c2 )
 /***************************************************************/
 {
-    return( CFDiv( c1, c2 ) );
+    return( CFDiv( &cgh, c1, c2 ) );
 }
 
 float_handle _CGAPI     BFSub( float_handle c1, float_handle c2 )
 /***************************************************************/
 {
-    return( CFSub( c1, c2 ) );
+    return( CFSub( &cgh, c1, c2 ) );
 }
 
 void _CGAPI             BFNegate( float_handle c1 )
@@ -1830,13 +1831,13 @@ void _CGAPI             BFNegate( float_handle c1 )
 float_handle _CGAPI     BFTrunc( float_handle c1 )
 /************************************************/
 {
-     return( CFTrunc( c1 ) );
+     return( CFTrunc( &cgh, c1 ) );
 }
 
 float_handle _CGAPI     BFCopy( float_handle c1 )
 /***********************************************/
 {
-     return( CFCopy( c1 ) );
+     return( CFCopy( &cgh, c1 ) );
 }
 
 int _CGAPI              BFSign( float_handle c1 )
@@ -1848,13 +1849,13 @@ int _CGAPI              BFSign( float_handle c1 )
 float_handle _CGAPI     BFCnvIF( int data )
 /*****************************************/
 {
-    return( CFCnvIF( data ) );
+    return( CFCnvIF( &cgh, data ) );
 }
 
 float_handle _CGAPI     BFCnvUF( uint data )
 /******************************************/
 {
-    return( CFCnvUF( data ) );
+    return( CFCnvUF( &cgh, data ) );
 }
 
 int_32 _CGAPI        BFCnvF32( float_handle f )
@@ -1872,5 +1873,5 @@ int _CGAPI              BFCmp( float_handle l, float_handle r )
 void _CGAPI             BFFree( float_handle cf )
 /***********************************************/
 {
-    CFFree( cf );
+    CFFree( &cgh, cf );
 }

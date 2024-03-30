@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,7 +33,7 @@
 #include "_cgstd.h"
 #include "coderep.h"
 #include "tree.h"
-#include "cfloat.h"
+#include "_cfloat.h"
 #include "zoiks.h"
 #include "i64.h"
 #include "data.h"
@@ -230,12 +230,12 @@ static signed_64 CFGetInteger64Value( float_handle cf )
     int             neg;
     float_handle    trunc;
 
-    trunc = CFTrunc( cf );
+    trunc = CFTrunc( &cgh, cf );
     neg = CFTest( trunc );
     if( neg < 0 ) CFNegate( trunc );
     value = CFCnvF64( trunc );
     if( neg < 0 ) U64Neg( &value, &value );
-    CFFree( trunc );
+    CFFree( &cgh, trunc );
     return( value );
 }
 
@@ -253,16 +253,16 @@ static  float_handle IntToCF( signed_64 value, type_def *tipe )
         switch( tipe->length ) {
         case 1:
             s8 = value.u._8[I64LO8];
-            return( CFCnvI32F( s8 ) );
+            return( CFCnvI32F( &cgh, s8 ) );
         case 2:
             s16 = value.u._16[I64LO16];
-            return( CFCnvI32F( s16 ) );
+            return( CFCnvI32F( &cgh, s16 ) );
         case 4:
         case 6:
             s32 = value.u._32[I64LO32];
-            return( CFCnvI32F( s32 ) );
+            return( CFCnvI32F( &cgh, s32 ) );
         case 8:
-            return( CFCnvI64F( value.u._32[I64LO32], value.u._32[I64HI32] ) );
+            return( CFCnvI64F( &cgh, value.u._32[I64LO32], value.u._32[I64HI32] ) );
         default:
             _Zoiks( ZOIKS_112 );
             return( NULL );
@@ -271,16 +271,16 @@ static  float_handle IntToCF( signed_64 value, type_def *tipe )
         switch( tipe->length ) {
         case 1:
             u8 = value.u._8[I64LO8];
-            return( CFCnvU32F( u8 ) );
+            return( CFCnvU32F( &cgh, u8 ) );
         case 2:
             u16 = value.u._16[I64LO16];
-            return( CFCnvU32F( u16 ) );
+            return( CFCnvU32F( &cgh, u16 ) );
         case 4:
         case 6:
             u32 = value.u._32[I64LO32];
-            return( CFCnvU32F( u32 ) );
+            return( CFCnvU32F( &cgh, u32 ) );
         case 8:
-            return( CFCnvU64F( value.u._32[I64LO32], value.u._32[I64HI32] ) );
+            return( CFCnvU64F( &cgh, value.u._32[I64LO32], value.u._32[I64HI32] ) );
         default:
             _Zoiks( ZOIKS_112 );
             return( NULL );
@@ -312,7 +312,7 @@ static  tn      CFToType( float_handle cf, type_def *tipe )
 
     if( (tipe->attr & TYPE_FLOAT) == 0 ) {
         result = TGConst( IntToCF( CFGetInteger64Value( cf ), tipe ), tipe );
-        CFFree( cf );
+        CFFree( &cgh, cf );
     } else {
         result = TGConst( cf, tipe );
     }
@@ -378,7 +378,7 @@ tn      FoldTimes( tn left, tn rite, type_def *tipe )
                 li <<= 1;
             }
             BurnTree( left->u2.t.rite );
-            left->u2.t.rite = CFToType( CFCnvU32F( li ), tipe );
+            left->u2.t.rite = CFToType( CFCnvU32F( &cgh, li ), tipe );
             left->u2.t.op = O_TIMES;
             left->u2.t.rite = FoldTimes( left->u2.t.rite, rite, tipe );
             return( left );
@@ -393,7 +393,7 @@ tn      FoldTimes( tn left, tn rite, type_def *tipe )
             ri = li * ri;
             fold = IntToType( ri, tipe );
         } else {
-            fold = CFToType( CFMul( left->u.name->c.value, rv ), tipe );
+            fold = CFToType( CFMul( &cgh, left->u.name->c.value, rv ), tipe );
         }
         BurnTree( left );
         BurnTree( rite );
@@ -440,7 +440,7 @@ float_handle OkToNegate( float_handle value, type_def *tipe )
 
     if( HasBigConst( tipe ) && ( tipe->attr & TYPE_FLOAT ) == 0 )
         return( NULL );
-    neg = CFCopy( value );
+    neg = CFCopy( &cgh, value );
     CFNegate( neg );
     if( HasBigConst( tipe ) )
         return( neg );
@@ -448,7 +448,7 @@ float_handle OkToNegate( float_handle value, type_def *tipe )
         return( neg );
     if( CFIsSize( neg, tipe->length ) )
         return( neg );
-    CFFree( neg );
+    CFFree( &cgh, neg );
     return( NULL );
 }
 
@@ -472,7 +472,7 @@ tn      FoldMinus( tn left, tn rite, type_def *tipe )
                 ri = li - ri;
                 fold = IntToType( ri, tipe );
             } else {
-                fold = CFToType( CFSub( lv, rite->u.name->c.value ),
+                fold = CFToType( CFSub( &cgh, lv, rite->u.name->c.value ),
                                   tipe );
             }
             BurnTree( rite );
@@ -534,7 +534,7 @@ tn      FoldPlus( tn left, tn rite, type_def *tipe )
                 ri = li + ri;
                 fold = IntToType( ri, tipe );
             } else {
-                fold = CFToType( CFAdd( lv, rite->u.name->c.value ),
+                fold = CFToType( CFAdd( &cgh, lv, rite->u.name->c.value ),
                                   tipe );
             }
             BurnTree( rite );
@@ -583,7 +583,7 @@ static  tn      Halve( tn left, type_def *tipe )
 {
 #define ONE_HALF "0.5"
 
-    return( TGBinary( O_TIMES, left, TGConst( CFCnvSF( ONE_HALF ), tipe ), tipe ) );
+    return( TGBinary( O_TIMES, left, TGConst( CFCnvSF( &cgh, ONE_HALF ), tipe ), tipe ) );
 }
 
 tn      FoldPow( tn left, tn rite, type_def *tipe )
@@ -900,7 +900,7 @@ tn      FoldDiv( tn left, tn rite, type_def *tipe )
             lv = left->u.name->c.value;
             if( CFTest( rv ) != 0 && left->class == TN_CONS ) {
                 if( tipe->attr & TYPE_FLOAT ) {
-                    fold = CFToType( CFDiv( lv, rv ), tipe );
+                    fold = CFToType( CFDiv( &cgh, lv, rv ), tipe );
                 } else {    /* Must be a 64-bit integer. */
                     signed_64       div;
                     signed_64       rem;
@@ -925,7 +925,7 @@ tn      FoldDiv( tn left, tn rite, type_def *tipe )
                 ( _IsModel( CGSW_GEN_FP_UNSTABLE_OPTIMIZATION ) ||
                 ( CFIsU32( rv ) && GetLog2( CFConvertByType( rv, tipe ) ) != -1 ) ) ) {
                 if( CFTest( rv ) != 0 ) {
-                    tmp = CFInverse( rv );
+                    tmp = CFInverse( &cgh, rv );
                     if( tmp != NULL ) {
                         fold = TGBinary( O_TIMES, left, TGConst( tmp, tipe ), tipe );
                         BurnTree( rite );
@@ -1037,7 +1037,7 @@ tn      FoldMod( tn left, tn rite, type_def *tipe )
                 }
             }
         } else if( !HasBigConst( tipe ) && rite->u.name->c.lo.int_value == 1 ) {
-            fold = CFToType( CFCnvIF( 0 ), tipe );
+            fold = CFToType( CFCnvIF( &cgh, 0 ), tipe );
             fold = TGBinary( O_COMMA, left, fold, tipe );
             BurnTree( rite );
         } else if( !HasBigConst( tipe ) ) {
@@ -1298,7 +1298,7 @@ float_handle CnvCFToType( float_handle cf, type_def *tipe )
     if( (tipe->attr & TYPE_FLOAT) == 0 ) {
         cf = IntToCF( CFGetInteger64Value( cf ), tipe );
     } else {
-        cf = CFCopy( cf );
+        cf = CFCopy( &cgh, cf );
     }
     return( cf );
 }
@@ -1392,8 +1392,8 @@ tn  FoldCompare( cg_op op, tn left, tn rite, type_def *tipe )
         lv = CnvCFToType( left->u.name->c.value, tipe );
         rv = CnvCFToType( rite->u.name->c.value, tipe );
         compare = CFCompare( lv, rv );
-        CFFree( lv );
-        CFFree( rv );
+        CFFree( &cgh, lv );
+        CFFree( &cgh, rv );
         switch( op ) {
         case O_EQ:
             if( compare == 0 ) {
@@ -1639,14 +1639,14 @@ an FoldConsCompare( cg_op op, tn left, tn rite, type_def *tipe )
     fold = NULL;
     if( rite->class == TN_CONS ) {
         if( left->class == TN_FLOW_OUT ) {
-            f = CFCnvIF( 0 );
-            t = CFCnvIF( FETrue() );
+            f = CFCnvIF( &cgh, 0 );
+            t = CFCnvIF( &cgh, FETrue() );
             rv = CnvCFToType( rite->u.name->c.value, tipe );
             compare = CFCompare( f, rv );
             compare_true = CFCompare( t, rv );
-            CFFree( rv );
-            CFFree( f );
-            CFFree( t );
+            CFFree( &cgh, rv );
+            CFFree( &cgh, f );
+            CFFree( &cgh, t );
             fold = TreeGen( left->u.left );
             switch( op ) {
             case O_EQ:

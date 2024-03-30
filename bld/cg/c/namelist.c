@@ -34,7 +34,7 @@
 #include "coderep.h"
 #include "hwreg.h"
 #include "freelist.h"
-#include "cfloat.h"
+#include "_cfloat.h"
 #include "zoiks.h"
 #include "namelist.h"
 #include "data.h"
@@ -141,11 +141,11 @@ name    *AllocConst( float_handle cf_value )
     int_value = CFCnvF32( cf_value );
     test = CFTest( cf_value );
     if( test == 0 && ConstZero != NULL ) {
-        CFFree( cf_value );
+        CFFree( &cgh, cf_value );
         return( ConstZero );
     }
     if( int_value == 1 && ConstOne != NULL ) {
-        CFFree( cf_value );
+        CFFree( &cgh, cf_value );
         return( ConstOne );
     }
     last = &Names[N_CONSTANT];
@@ -153,7 +153,7 @@ name    *AllocConst( float_handle cf_value )
         if( new_c->c.const_type == CONS_ABSOLUTE ) {
             if( new_c->c.lo.int_value == int_value ) {
                 if( CFCompare( new_c->c.value, cf_value ) == 0 ) {
-                    CFFree( cf_value );
+                    CFFree( &cgh, cf_value );
                     // move constant found to front of list
                     *last = new_c->n.next_name;
                     new_c->n.next_name = Names[N_CONSTANT];
@@ -233,7 +233,7 @@ name    *AllocIntConst( int value )
     konst = FindIntValue( value );
     if( konst != NULL )
         return( konst );
-    return( AllocConst( CFCnvIF( value ) ) );
+    return( AllocConst( CFCnvIF( &cgh, value ) ) );
 }
 
 
@@ -245,7 +245,7 @@ name    *AllocUIntConst( uint value )
     konst = FindIntValue( value );
     if( konst != NULL )
         return( konst );
-    return( AllocConst( CFCnvUF( value ) ) );
+    return( AllocConst( CFCnvUF( &cgh, value ) ) );
 }
 
 
@@ -257,7 +257,7 @@ name    *AllocS32Const( int_32 value )
     konst = FindIntValue( value );
     if( konst != NULL )
         return( konst );
-    return( AllocConst( CFCnvI32F( value ) ) );
+    return( AllocConst( CFCnvI32F( &cgh, value ) ) );
 }
 
 name    *AllocU32Const( uint_32 value )
@@ -268,14 +268,14 @@ name    *AllocU32Const( uint_32 value )
     konst = FindIntValue( value );
     if( konst != NULL )
         return( konst );
-    return( AllocConst( CFCnvU32F( value ) ) );
+    return( AllocConst( CFCnvU32F( &cgh, value ) ) );
 }
 
 name    *AllocS64Const( uint_32 low, uint_32 high )
 /*************************************************/
 {
     name            *new_c;
-    float_handle    cf_value = CFCnvI64F( low, high );
+    float_handle    cf_value = CFCnvI64F( &cgh, low, high );
 
     new_c = findConst64( low, high, cf_value );
     if( new_c == NULL ) {
@@ -286,7 +286,7 @@ name    *AllocS64Const( uint_32 low, uint_32 high )
         new_c->c.static_defn = NULL;
         new_c->c.const_type = CONS_ABSOLUTE;
     } else {
-        CFFree( cf_value );
+        CFFree( &cgh, cf_value );
     }
     return( new_c );
 }
@@ -295,7 +295,7 @@ name    *AllocU64Const( uint_32 low, uint_32 high )
 /*************************************************/
 {
     name            *new_c;
-    float_handle    cf_value = CFCnvU64F( low, high );
+    float_handle    cf_value = CFCnvU64F( &cgh, low, high );
 
     new_c = findConst64( low, high, cf_value );
     if( new_c == NULL ) {
@@ -306,7 +306,7 @@ name    *AllocU64Const( uint_32 low, uint_32 high )
         new_c->c.static_defn = NULL;
         new_c->c.const_type = CONS_ABSOLUTE;
     } else {
-        CFFree( cf_value );
+        CFFree( &cgh, cf_value );
     }
     return( new_c );
 }
@@ -675,7 +675,7 @@ void    FreeAName( name *op )
             ConstOne = NULL;
         }
         if( op->c.const_type == CONS_ABSOLUTE ) {
-            CFFree( op->c.value );
+            CFFree( &cgh, op->c.value );
             for( defn = op->c.static_defn; defn != NULL; defn = next ) {
                 next = defn->next_defn;
                 FrlFreeSize( &ConstDefnFrl, (pointer *)defn, sizeof( constant_defn ) );

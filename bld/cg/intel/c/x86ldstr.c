@@ -32,7 +32,7 @@
 
 #include "_cgstd.h"
 #include "coderep.h"
-#include "cfloat.h"
+#include "_cfloat.h"
 #include "zoiks.h"
 #include "score.h"
 #include "makeins.h"

@@ -40,78 +40,36 @@
 #define FRLSIZE         ( DOUBLE_DIGITS + offsetof( cfloat, mant ) + 1 )
 #define NEXT_BLOCK(x)   (((mem_blk *)(x))->next)
 
-typedef char *pointer;
-
 typedef struct {
-    pointer     head;
-} mini_frl;
-
-typedef struct {
-    pointer     next;
+    void        *next;
 } mem_blk;
 
-static cf_callbacks     cfRtns;
-static mini_frl         cfFrlList;
-
-static  void    miniFrlInit( void )
-/*********************************/
+void    CFInit( cfhandle h )
+/***************************/
 {
-    cfFrlList.head = NULL;
-}
-
-static  pointer miniFrlAlloc( void )
-/**********************************/
-{
-    pointer     ptr;
-
-    if( cfFrlList.head != NULL ) {
-        /*
-         * unhook it and return the first element
-         */
-        ptr = cfFrlList.head;
-        cfFrlList.head = NEXT_BLOCK( ptr );
-        return( ptr );
-    }
-    return( cfRtns.alloc( FRLSIZE ) );
-}
-
-static  void    miniFrlFree( pointer ptr )
-/****************************************/
-{
-    NEXT_BLOCK( ptr ) = cfFrlList.head;
-    cfFrlList.head = ptr;
-}
-
-static  void    miniFrlFini( void )
-/*********************************/
-{
-    pointer     ptr;
-
-    while( (ptr = cfFrlList.head) != NULL ) {
-        cfFrlList.head = NEXT_BLOCK( ptr );
-        cfRtns.free( ptr );
-    }
-}
-
-void    CFInit( cf_callbacks *table )
-/***********************************/
-{
-    cfRtns = *table;
-    miniFrlInit();
+    h->head = NULL;
 }
 
 
-cfloat  *CFAlloc( size_t size )
-/*****************************/
+cfloat  *CFAlloc( cfhandle h, size_t size )
+/******************************************/
 {
     cfloat      *number;
 
     if( size <= DOUBLE_DIGITS ) {
         size = FRLSIZE;
-        number = (cfloat *)miniFrlAlloc();
+        if( h->head != NULL ) {
+            /*
+             * unhook it and return the first element
+             */
+            number = h->head;
+            h->head = NEXT_BLOCK( number );
+        } else {
+            number = h->alloc( size );
+        }
     } else {
         size += offsetof( cfloat, mant ) + 1;
-        number = cfRtns.alloc( size );
+        number = h->alloc( size );
     }
     number->sign = 0;
     number->exp = 1;
@@ -123,29 +81,34 @@ cfloat  *CFAlloc( size_t size )
 }
 
 
-void    CFFree( cfloat *f )
-/*************************/
+void    CFFree( cfhandle h, cfloat *f )
+/**************************************/
 {
     if( f->alloc == FRLSIZE ) {
-        miniFrlFree( (pointer)f );
+        NEXT_BLOCK( f ) = h->head;
+        h->head = f;
     } else {
-        cfRtns.free( f );
+        h->free( f );
     }
 }
 
-
-bool CFFrlFree( void )
-/********************/
+void    CFFini( cfhandle h )
+/***************************/
 {
-    if( cfFrlList.head != NULL ) {
-        miniFrlFini();
+    void    *ptr;
+
+    while( (ptr = h->head) != NULL ) {
+        h->head = NEXT_BLOCK( ptr );
+        h->free( ptr );
+    }
+}
+
+bool CFFrlFree( cfhandle h )
+/***************************/
+{
+    if( h->head != NULL ) {
+        CFFini( h );
         return( true );
     }
     return( false );
-}
-
-void    CFFini( void )
-/********************/
-{
-    miniFrlFini();
 }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,7 +38,7 @@
 #include "treeprot.h"
 #include "treefold.h"
 #include "zoiks.h"
-#include "cfloat.h"
+#include "_cfloat.h"
 #include "utils.h"
 #include "makeaddr.h"
 #include "procdef.h"
@@ -147,7 +147,7 @@ tn      FoldCnvRnd( cg_op op, tn name, type_def *to_tipe )
 
     if( name->class == TN_CONS ) {
         if( name->tipe->refno == TY_DEFAULT ) {
-            cf = CFCopy( name->u.name->c.value );
+            cf = CFCopy( &cgh, name->u.name->c.value );
         } else {
             cf = CnvCFToType( name->u.name->c.value, name->tipe );
         }
@@ -155,22 +155,22 @@ tn      FoldCnvRnd( cg_op op, tn name, type_def *to_tipe )
             new = TGConst( cf, to_tipe );
         } else if( op == O_CONVERT ) {
             junk = cf;
-            cf = CFTrunc( cf );
-            CFFree( junk );
+            cf = CFTrunc( &cgh, cf );
+            CFFree( &cgh, junk );
             if( to_tipe->refno != TY_DEFAULT ) {
                 junk = cf;
                 cf = CnvCFToType( cf, to_tipe );
-                CFFree( junk );
+                CFFree( &cgh, junk );
             }
             new = TGConst( cf, to_tipe );
         } else if( op == O_ROUND ) {
             junk = cf;
-            cf = CFRound( cf );
-            CFFree( junk );
+            cf = CFRound( &cgh, cf );
+            CFFree( &cgh, junk );
             if( to_tipe->refno != TY_DEFAULT ) {
                 junk = cf;
                 cf = CnvCFToType( cf, to_tipe );
-                CFFree( junk );
+                CFFree( &cgh, junk );
             }
             new = TGConst( cf, to_tipe );
         } else {
