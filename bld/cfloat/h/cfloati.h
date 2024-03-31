@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,10 +39,10 @@
 
 #define MAX_SIG_DIGITS  17
 
-#define _IsDigit( ch )  ( ch >= '0' && ch <= '9' )
+#define _IsDigit(ch)    (ch >= '0' && ch <= '9')
 
 extern  unsigned_32     U32ModDiv( unsigned_32 *, unsigned_32 );
-extern  int             CFOrder( cfloat *float1, cfloat *float2 );
+extern  int             CFOrder( cfloat *f1, cfloat *f2 );
 extern  int             CFAccess( cfloat *f, int index );
 extern  void            CFDeposit( cfloat *f, int index, int data );
 extern  void            CFClean( cfloat *f );

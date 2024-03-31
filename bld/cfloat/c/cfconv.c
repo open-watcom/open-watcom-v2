@@ -37,8 +37,11 @@
 #include "machine.h"
 #include "i64.h"
 
-static  signed_64   CFGetDec64( const char *bstart )
-/**************************************************/
+
+#define _HiBitOn( x )   ( ( (x) & 0x80000000 ) != 0 )
+
+static  signed_64   CFGetDec64( const char *str )
+/***********************************************/
 {
     signed_64   number;
     signed_64   ten;
@@ -46,34 +49,34 @@ static  signed_64   CFGetDec64( const char *bstart )
 
     I32ToI64( 0, &number );
     I32ToI64( 10, &ten );
-    while( _IsDigit( *bstart ) ) {
+    while( _IsDigit( *str ) ) {
         U64Mul( &number, &ten, &number );
-        I32ToI64( *bstart++ - '0', &temp );
+        I32ToI64( *str++ - '0', &temp );
         U64Add( &number, &temp, &number );
     }
     return( number );
 }
 
-static  signed_32   CFGetDec32( const char *bstart )
-/**************************************************/
+static  signed_32   CFGetDec32( const char *str )
+/***********************************************/
 {
     signed_32   number;
 
     number = 0;
-    while( _IsDigit( *bstart ) ) {
-        number = number * 10 + *bstart++ - '0';
+    while( _IsDigit( *str ) ) {
+        number = number * 10 + *str++ - '0';
     }
     return( number );
 }
 
-static  signed_16   CFGetDec16( const char *bstart )
-/**************************************************/
+static  signed_16   CFGetDec16( const char *str )
+/***********************************************/
 {
     signed_16   number;
 
     number = 0;
-    while( _IsDigit( *bstart ) ) {
-        number = number * 10 + *bstart++ - '0';
+    while( _IsDigit( *str ) ) {
+        number = number * 10 + *str++ - '0';
     }
     return( number );
 }
@@ -90,9 +93,9 @@ char    *CFCnvFS( cfloat *f, char *buffer, int maxlen )
     if( f->sign == -1 ) {
         *buffer++ = '-';
     }
-    *buffer++ = *f->mant;
+    *buffer++ = f->mant[0];
     *buffer++ = '.';                            /* don't forget decimal point!*/
-    memcpy( buffer, f->mant + 1, len );         /* copy mantissa*/
+    strcpy( buffer, f->mant + 1 );              /* copy mantissa*/
     buffer += len;
     *buffer++ = 'E';
     if( f->exp > 0 ) {
@@ -111,8 +114,8 @@ char    *CFCnvFS( cfloat *f, char *buffer, int maxlen )
     return( buffer );
 }
 
-static  void    DoConvert( cfloat *number, const char *bstart )
-/*************************************************************/
+static  void    DoConvert( cfloat *f, const char *str )
+/*****************************************************/
 {
     int         len;
     char        *fptr;
@@ -120,73 +123,74 @@ static  void    DoConvert( cfloat *number, const char *bstart )
     int         expon;
 
     for(;;) {
-        if( *bstart != ' ' )
+        if( *str != ' ' )
             break;
-        bstart++;
+        str++;
     }
     sgn = 1;
-    if( *bstart  == '-' ) {
+    if( *str  == '-' ) {
         sgn = -1;
-        bstart++;
-    } else if( *bstart == '+' ) {
-        bstart++;
+        str++;
+    } else if( *str == '+' ) {
+        str++;
     }
     expon = 0;
     len = 0;
-    fptr = number->mant;
-    if( _IsDigit( *bstart ) ) {
+    fptr = f->mant;
+    if( _IsDigit( *str ) ) {
         for(;;) {                /* scan before decimal point*/
-            *fptr++ = *bstart++;
+            *fptr++ = *str++;
             len++;
             expon++;
-            if( !_IsDigit( *bstart ) ) {
+            if( !_IsDigit( *str ) ) {
                 break;
             }
         }
-        if( *bstart == '.' ) {
-            bstart++;
+        if( *str == '.' ) {
+            str++;
             for(;;) {            /* scan after decimal point*/
-                if( !_IsDigit( *bstart ) )
+                if( !_IsDigit( *str ) )
                     break;
-                *fptr++ = *bstart++;
+                *fptr++ = *str++;
                 len++;
             }
         }
     } else {
         *fptr = NULLCHAR;
-        if( *bstart != '.' )
+        if( *str != '.' )
             return;
-        ++bstart;
-        if( !_IsDigit( *bstart ) )
+        ++str;
+        if( !_IsDigit( *str ) )
             return;
         for(;;) {                /* scan after decimal point*/
-            *fptr++ = *bstart++;
+            *fptr++ = *str++;
             len++;
-            if( !_IsDigit( *bstart ) ) {
+            if( !_IsDigit( *str ) ) {
                 break;
             }
         }
     }
-    if( *bstart == 'E' || *bstart == 'e' ) {
-        if( *++bstart == '-' ) {
-            expon -= CFGetDec16( ++bstart );
+    if( *str == 'E'
+      || *str == 'e' ) {
+        if( *++str == '-' ) {
+            expon -= CFGetDec16( ++str );
         } else {
-            if( *bstart == '+' ) {
-                bstart++;
+            if( *str == '+' ) {
+                str++;
             }
-            expon += CFGetDec16( bstart );
+            expon += CFGetDec16( str );
         }
     }
     *fptr = NULLCHAR;
-    number->sign = sgn;
-    number->len = len;             /* fill in length*/
-    number->exp = expon;
-    CFClean( number );
+    f->sign = sgn;
+    f->len = len;             /* fill in length*/
+    f->exp = expon;
+    CFClean( f );
 }
 
 
-cfloat  *CFCnvSF( cfhandle h, const char *bstart )
-/**************************************************
+cfloat  *CFCnvSF( cfhandle h, const char *str )
+/**********************************************
  * Syntax accepted by this converter:
  *
  * { at least 0 blanks }  < - | + >
@@ -195,38 +199,38 @@ cfloat  *CFCnvSF( cfhandle h, const char *bstart )
  *               < E | e < - | + > { at least 1 digit } >
  */
 {
-    cfloat      *number;
+    cfloat      *result;
 
-    number = CFAlloc( h, strlen( bstart ) );
-    DoConvert( number, bstart );
-    return( number );
+    result = CFAlloc( h, strlen( str ) );
+    DoConvert( result, str );
+    return( result );
 }
 
-cfloat  *CFCopy( cfhandle h, cfloat *old )
-/****************************************/
+cfloat  *CFCopy( cfhandle h, cfloat *f )
+/**************************************/
 {
-    cfloat      *new;
+    cfloat      *result;
 
-    new = CFAlloc( h, old->len );
-    memcpy( new, old, offsetof( cfloat, mant ) + old->len + 1 );
-    return( new );
+    result = CFAlloc( h, f->len );
+    memcpy( result, f, CFLOAT_SIZE + f->len );
+    return( result );
 }
 
 cfloat  *CFTrunc( cfhandle h, cfloat *f )
 /***************************************/
 {
-    cfloat      *new;
+    cfloat      *result;
     int         len;
 
     if( f->exp <= 0 )
         return( CFAlloc( h, 1 ) );
     len = f->exp;
-    new = CFCopy( h, f );
-    if( new->len <= len )
-        return( new );
-    new->len = len;
-    *(new->mant + len) = NULLCHAR;
-    return( new );
+    result = CFCopy( h, f );
+    if( result->len <= len )
+        return( result );
+    result->len = len;
+    result->mant[len] = NULLCHAR;
+    return( result );
 }
 
 cfloat  *CFRound( cfhandle h, cfloat *f )
@@ -234,7 +238,7 @@ cfloat  *CFRound( cfhandle h, cfloat *f )
 {
     cfloat      *trim;
     cfloat      *addto;
-    cfloat      *new;
+    cfloat      *result;
     int         len;
 
     if( f->exp < 0 )
@@ -243,23 +247,24 @@ cfloat  *CFRound( cfhandle h, cfloat *f )
     if( f->len <= len )
         return( CFCopy( h, f ) );
     trim = CFTrunc( h, f );
-    if( *(f->mant + len) < '5' )
+    if( f->mant[len] < '5' )
         return( trim );
-    if( f->sign < 0 && f->len == ( len + 1 ) )
+    if( f->sign < 0
+      && f->len == ( len + 1 ) )
         return( trim );
     addto = CFAlloc( h, 1 );
     addto->sign = f->sign;
-    *addto->mant = '1';
-    new = CFAdd( h, trim, addto );
+    addto->mant[0] = '1';
+    result = CFAdd( h, trim, addto );
     CFFree( h, trim );
     CFFree( h, addto );
-    return( new );
+    return( result );
 }
 
 static  cfloat  *CFCnvLongToF( cfhandle h, signed_32 data, bool is_signed )
 /*************************************************************************/
 {
-    cfloat              *new;
+    cfloat              *result;
     int                 len;
     signed_8            sign;
     char                *digit;
@@ -268,15 +273,17 @@ static  cfloat  *CFCnvLongToF( cfhandle h, signed_32 data, bool is_signed )
 
     if( data == 0 )
         return( CFAlloc( h, 0 ) );
-    if( is_signed && -data == data ) {
+    if( is_signed
+      && -data == data ) {
         /*
          * Aha! It's  -MaxNegI32
          */
-        new = CFCopy( h, (cfloat *)&MaxNegI32 );
-        return( new );
+        result = CFCopy( h, (cfloat *)&MaxNegI32 );
+        return( result );
     }
     sign = 1;
-    if( data < 0 && is_signed ) {
+    if( data < 0
+      && is_signed ) {
         data = -data;
         sign = -1;
     }
@@ -289,16 +296,16 @@ static  cfloat  *CFCnvLongToF( cfhandle h, signed_32 data, bool is_signed )
         ++len;
     }
     if( len > I16DIGITS ) {
-        new = CFAlloc( h, I32DIGITS );
+        result = CFAlloc( h, I32DIGITS );
     } else {
-        new = CFAlloc( h, I16DIGITS );
+        result = CFAlloc( h, I16DIGITS );
     }
-    memcpy( new->mant, digit, len + 1 );
-    new->sign = sign;
-    new->exp = len;
-    new->len = len;
-    CFClean( new );
-    return( new );
+    memcpy( result->mant, digit, len + 1 );
+    result->sign = sign;
+    result->exp = len;
+    result->len = len;
+    CFClean( result );
+    return( result );
 }
 
 cfloat  *CFCnvI32F( cfhandle h, signed_32 data )
@@ -330,8 +337,6 @@ cfloat  *CFCnvU64F( cfhandle h, unsigned_32 lo32, unsigned_32 hi32 )
     CFFree( h, temp );
     return( result );
 }
-
-#define _HiBitOn( x )   ( ( (x) & 0x80000000 ) != 0 )
 
 cfloat  *CFCnvI64F( cfhandle h, unsigned_32 lo32, unsigned_32 hi32 )
 /******************************************************************/
@@ -380,9 +385,11 @@ static  bool CFIsType( cfloat *f, cfloat *maxval )
 {
     int         ord;
 
-    if( f->exp <= 0 || f->exp > maxval->exp )   /* < 1 or > maxval*/
+    if( f->exp <= 0                 /* < 1 or > maxval*/
+      || f->exp > maxval->exp )
         return( false );
-    if( f->sign == -1 && maxval->sign == 1 )    /* signedness*/
+    if( f->sign == -1               /* signedness*/
+      && maxval->sign == 1 )
         return( false );
     if( f->exp < f->len )                       /* has decimal pt*/
         return( false );
@@ -392,7 +399,9 @@ static  bool CFIsType( cfloat *f, cfloat *maxval )
     /*
      * can't have pos number equal to maxval if signed
      */
-    if( ord == 0 && f->sign == 1 && maxval->sign == -1 )
+    if( ord == 0
+      && f->sign == 1
+      && maxval->sign == -1 )
         return( false );
     return( true );
 }
@@ -554,7 +563,8 @@ signed_16       CFCnvF16( cfloat *f )
     signed_16   exp;
 
     data = 0;
-    if( CFIsI16( f ) || CFIsU16( f ) ) {
+    if( CFIsI16( f )
+      || CFIsU16( f ) ) {
         data = CFGetDec16( f->mant );
         exp = (signed_16)( f->exp - f->len );
         while( exp > 0 ) {
@@ -579,7 +589,8 @@ signed_32       CFCnvF32( cfloat *f )
     int         exp;
 
     data = 0;
-    if( CFIsU32( f ) || CFIsI32( f ) ) {
+    if( CFIsU32( f )
+      || CFIsI32( f ) ) {
         data = CFGetDec32( f->mant );
         exp = f->exp - f->len;
         while( exp > 0 ) {
@@ -606,7 +617,8 @@ signed_64       CFCnvF64( cfloat *f )
     signed_32           exp;
 
     I32ToI64( 0, &data );
-    if( CFIsI64( f ) || CFIsU64( f ) ) {
+    if( CFIsI64( f )
+      || CFIsU64( f ) ) {
         I32ToI64( 10, &ten );
         data = CFGetDec64( f->mant );
         exp = f->exp - f->len;

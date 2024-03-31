@@ -34,7 +34,7 @@
 #include "cfloati.h"
 
 
-static  cfloat  *SDMul( cfhandle h, cfloat *op1, int plyer, int op1left, int op1exp, int byexp )
+static  cfloat  *SDMul( cfhandle h, cfloat *f, int plyer, int fleft, int fexp, int byexp )
 /***********************************************************************************************/
 {
     int         sum;
@@ -44,46 +44,46 @@ static  cfloat  *SDMul( cfhandle h, cfloat *op1, int plyer, int op1left, int op1
     int         respos;
 
     sum = 0;
-    exp = op1exp;
-    resexp = op1exp + byexp - 1;
-    respos = op1left - op1exp + 1;
+    exp = fexp;
+    resexp = fexp + byexp - 1;
+    respos = fleft - fexp + 1;
     result = CFAlloc( h, respos + 1 );
     result->len = respos + 1;
-    result->exp = op1left + byexp;
-    while( exp <= op1left ) {
-        sum += CFAccess( op1, op1->exp - exp++ ) * plyer;
+    result->exp = fleft + byexp;
+    while( exp <= fleft ) {
+        sum += CFAccess( f, f->exp - exp++ ) * plyer;
         CFDeposit( result, respos--, sum % 10 );
         sum /= 10;
         resexp++;
     }
     CFDeposit( result, respos, sum % 10 );
-    result->sign = op1->sign;          /* by convention*/
+    result->sign = f->sign;          /* by convention*/
     CFClean( result );
     return( result );
 }
 
-cfloat  *CFMul( cfhandle h, cfloat *op1, cfloat *op2 )
+cfloat  *CFMul( cfhandle h, cfloat *f1, cfloat *f2 )
 /*****************************************************/
 {
     cfloat      *result;
     cfloat      *temp;
     cfloat      *sum;
-    int         op1left;
-    int         op1exp;
-    int         op2exp;
-    int         op2ptr;
+    int         f1left;
+    int         f1exp;
+    int         f2exp;
+    int         f2ptr;
     signed char sgn;
 
-    sgn = op1->sign * op2->sign;
+    sgn = f1->sign * f2->sign;
     result = CFAlloc( h, 1 );
     if( sgn != 0 ) {
-        op1left = op1->exp;
-        op1exp = op1left - op1->len + 1;
-        op2exp = op2->exp - op2->len + 1;
-        op2ptr = op2->len - 1;
-        while( op2ptr >= 0 ) {
-            temp = SDMul( h, op1, CFAccess( op2, op2ptr-- ),
-                op1left, op1exp, op2exp++ );
+        f1left = f1->exp;
+        f1exp = f1left - f1->len + 1;
+        f2exp = f2->exp - f2->len + 1;
+        f2ptr = f2->len - 1;
+        while( f2ptr >= 0 ) {
+            temp = SDMul( h, f1, CFAccess( f2, f2ptr-- ),
+                f1left, f1exp, f2exp++ );
             sum = CFAdd( h, result, temp );
             CFFree( h, temp );
             CFFree( h, result );

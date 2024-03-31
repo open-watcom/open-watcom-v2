@@ -44,6 +44,8 @@
     char            mant[ x ]; \
 }
 
+#define CFLOAT_SIZE (offsetof( cfloat, mant ) + 1)
+
 #ifdef __cplusplus
 extern "C" {
 #endif

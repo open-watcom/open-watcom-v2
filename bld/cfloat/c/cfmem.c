@@ -37,7 +37,7 @@
 #include "cfloati.h"
 
 #define DOUBLE_DIGITS   17
-#define FRLSIZE         ( DOUBLE_DIGITS + offsetof( cfloat, mant ) + 1 )
+#define FRLSIZE         ( CFLOAT_SIZE + DOUBLE_DIGITS )
 #define NEXT_BLOCK(x)   (((mem_blk *)(x))->next)
 
 typedef struct {
@@ -45,14 +45,14 @@ typedef struct {
 } mem_blk;
 
 void    CFInit( cfhandle h )
-/***************************/
+/**************************/
 {
     h->head = NULL;
 }
 
 
 cfloat  *CFAlloc( cfhandle h, size_t size )
-/******************************************/
+/*****************************************/
 {
     cfloat      *number;
 
@@ -68,21 +68,21 @@ cfloat  *CFAlloc( cfhandle h, size_t size )
             number = h->alloc( size );
         }
     } else {
-        size += offsetof( cfloat, mant ) + 1;
+        size += CFLOAT_SIZE;
         number = h->alloc( size );
     }
     number->sign = 0;
     number->exp = 1;
     number->len = 1;
     number->alloc = size;
-    *number->mant = '0';
-    *(number->mant + 1) = NULLCHAR;
+    number->mant[0] = '0';
+    number->mant[1] = NULLCHAR;
     return( number );
 }
 
 
 void    CFFree( cfhandle h, cfloat *f )
-/**************************************/
+/*************************************/
 {
     if( f->alloc == FRLSIZE ) {
         NEXT_BLOCK( f ) = h->head;
@@ -93,7 +93,7 @@ void    CFFree( cfhandle h, cfloat *f )
 }
 
 void    CFFini( cfhandle h )
-/***************************/
+/**************************/
 {
     void    *ptr;
 
@@ -104,7 +104,7 @@ void    CFFini( cfhandle h )
 }
 
 bool CFFrlFree( cfhandle h )
-/***************************/
+/**************************/
 {
     if( h->head != NULL ) {
         CFFini( h );
