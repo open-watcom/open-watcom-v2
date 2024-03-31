@@ -85,7 +85,6 @@ extra_c_flags_cmdlnprs = $(incl_file_opts)fesupp.h
 !ifeq debug 2
 extra_c_flags_dbgzap   = $(incl_file_opts)fesupp.h
 !endif
-extra_c_flags_floatsup = $(cfloat_inc_dirs)
 extra_c_flags_initfini = $(incl_file_opts)fesupp.h
 extra_c_flags_intlload = $(incl_file_opts)fesupp.h
 extra_c_flags_pstk     = $(incl_file_opts)fesupp.h
