@@ -38,6 +38,7 @@
 
 
 #define _HiBitOn( x )   (((x) & 0x80000000) != 0)
+
 #define I16DIGITS       5
 #define I32DIGITS       10
 //#define I64DIGITS       21
@@ -117,6 +118,54 @@ static struct STRUCT_cfloat( 11 )   High64Mult = {
     { '4','2','9','4','9','6','7','2','9','6',0 }
 };
 
+/*
+ * constants are extracted from ISO C standard 2.2.4.2.2
+ */
+
+/*
+ * MaxPosFloat 3.40282347e+38
+ */
+static struct STRUCT_cfloat( 10 )   MaxPosFloat = {
+    39,         /* exponent ten */
+    9,          /* mantissa length ten */
+    0,          /* allocation length */
+    1,          /* positive */
+    { '3','4','0','2','8','2','3','4','7',0 }
+};
+
+/*
+ * MinPosFloat 1.17549435e-38
+ */
+static struct STRUCT_cfloat( 10 )   MinPosFloat = {
+    -37,        /* exponent ten */
+    9,          /* mantissa length ten */
+    0,          /* allocation length */
+    1,          /* positive */
+    { '1','1','7','5','4','9','4','3','5',0 }
+};
+
+/*
+ * MaxPosDouble 1.7976931348623157e+308
+ */
+static struct STRUCT_cfloat( 18 )   MaxPosDouble = {
+    309,        /* exponent ten */
+    17,         /* mantissa length ten */
+    0,          /* allocation length */
+    1,          /* positive */
+    { '1','7','9','7','6','9','3','1','3','4','8','6','2','3','1','5','7',0 }
+};
+
+/*
+ * MinPosDouble 2.2250738585072014e-308
+ */
+static struct STRUCT_cfloat( 18 )   MinPosDouble = {
+    -307,       /* exponent ten */
+    17,         /* mantissa length ten */
+    0,          /* allocation length */
+    1,          /* positive */
+    { '2','2','2','5','0','7','3','8','5','8','5','0','7','2','0','1','4',0 }
+};
+
 static signed_64    CFGetDec64( const char *str )
 /***********************************************/
 {
@@ -146,7 +195,7 @@ static signed_32    CFGetDec32( const char *str )
     return( number );
 }
 
-static  signed_16   CFGetDec16( const char *str )
+static signed_16    CFGetDec16( const char *str )
 /***********************************************/
 {
     signed_16   number;
@@ -181,12 +230,12 @@ char    *CFCnvFS( cfloat *f, char *buffer, int maxlen )
         *buffer++ = '-';
         len = 1 - f->exp;
     }
-    buffer[ 2 ] = len % 10 + '0';
+    buffer[2] = len % 10 + '0';
     len /= 10;
-    buffer[ 1 ] = len % 10 + '0';
+    buffer[1] = len % 10 + '0';
     len /= 10;
-    buffer[ 0 ] = (char)len + '0';
-    buffer[ 3 ] = NULLCHAR;
+    buffer[0] = (char)len + '0';
+    buffer[3] = NULLCHAR;
     buffer += 3;
     return( buffer );
 }
@@ -202,9 +251,7 @@ static void     DoConvert( cfloat *f, const char *str )
     signed char sgn;
     int         expon;
 
-    for( ;; ) {
-        if( *str != ' ' )
-            break;
+    while( *str == ' ' ) {
         str++;
     }
     sgn = 1;
@@ -216,17 +263,19 @@ static void     DoConvert( cfloat *f, const char *str )
     }
     expon = 0;
     len = 0;
-    for( ;; ) {         /* scan before decimal point */
-        if( !_IsDigit( *str ) )
-            break;
+    /*
+     * scan before decimal point
+     */
+    while( _IsDigit( *str ) ) {
         f->mant[len++] = *str++;
         expon++;
     }
     if( *str == '.' ) {
         str++;
-        for( ;; ) {     /* scan after decimal point */
-            if( !_IsDigit( *str ) )
-                break;
+        /*
+         * scan after decimal point
+         */
+        while( _IsDigit( *str ) ) {
             f->mant[len++] = *str++;
         }
     }
@@ -320,7 +369,7 @@ cfloat  *CFRound( cfhandle h, cfloat *f )
     return( result );
 }
 
-static  cfloat  *CFCnvLongToF( cfhandle h, signed_32 data, bool is_signed )
+static cfloat   *CFCnvLongToF( cfhandle h, signed_32 data, bool is_signed )
 /*************************************************************************/
 {
     cfloat              *result;
@@ -347,7 +396,7 @@ static  cfloat  *CFCnvLongToF( cfhandle h, signed_32 data, bool is_signed )
         sign = -1;
     }
     len = 0;
-    digit = &mant[ I32DIGITS ];
+    digit = &mant[I32DIGITS];
     *digit = NULLCHAR;
     dividend = data;
     while( dividend != 0 ) {
@@ -439,8 +488,8 @@ cfloat  *CFCnvUF( cfhandle h, uint data )
     return( CFCnvLongToF( h, data, false ) );
 }
 
-static  bool CFIsIntType( cfloat *f, cfloat *maxval )
-/*************************************************
+static bool     CFIsIntType( cfloat *f, cfloat *maxval )
+/*******************************************************
  * Assume 2-complement
  * if signed maxval is magnitude of smallest negative number
  */
@@ -618,6 +667,39 @@ bool CFUnSignedSize( cfloat *f, uint size )
     return( false );
 }
 
+bool CFIsFloat( cfloat *f )
+/*************************/
+{
+    int     sign;
+    bool    ok;
+
+    sign = f->sign;
+    f->sign = 1;
+    ok = true;
+    if( CFCompare( f, (cfloat *)&MaxPosFloat ) > 0
+      || CFCompare( f, (cfloat *)&MinPosFloat ) < 0 ) {
+        ok = false;
+    }
+    f->sign = sign;
+    return( ok );
+}
+
+bool CFIsDouble( cfloat *f )
+/**************************/
+{
+    int     sign;
+    bool    ok;
+
+    sign = f->sign;
+    f->sign = 1;
+    ok = true;
+    if( CFCompare( f, (cfloat *)&MaxPosDouble ) > 0
+      || CFCompare( f, (cfloat *)&MinPosDouble ) < 0 ) {
+        ok = false;
+    }
+    f->sign = sign;
+    return( ok );
+}
 
 signed_16       CFCnvF16( cfloat *f )
 /***********************************/

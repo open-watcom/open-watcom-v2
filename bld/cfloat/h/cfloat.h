@@ -89,6 +89,8 @@ extern  bool        CFIsU32( cfloat *f );
 extern  bool        CFIsU64( cfloat *f );
 extern  bool        CFIs32( cfloat *f );
 extern  bool        CFIs64( cfloat *f );
+extern  bool        CFIsFloat( cfloat *f );
+extern  bool        CFIsDouble( cfloat *f );
 
 extern  bool        CFIsSize( cfloat *f, uint size );
 extern  bool        CFSignedSize( cfloat *f, uint size );
@@ -111,6 +113,7 @@ extern  cfloat      *CFSub( cfhandle h, cfloat *f1, cfloat *f2 );
 extern  void        CFNegate( cfloat *f );
 extern  int         CFCompare( cfloat *f1, cfloat *f2 );
 extern  int         CFTest( cfloat *f );
+extern  int         CFExp( cfloat *f );
 
 extern  void        CFInit( cfhandle h );
 extern  void        CFFini( cfhandle h );

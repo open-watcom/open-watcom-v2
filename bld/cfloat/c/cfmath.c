@@ -250,6 +250,12 @@ int     CFTest( cfloat *f )
     return( f->sign );
 }
 
+int     CFExp( cfloat *f )
+/************************/
+{
+    return( f->exp );
+}
+
 int     CFAccess( cfloat *f, int index )
 /**************************************/
 {
