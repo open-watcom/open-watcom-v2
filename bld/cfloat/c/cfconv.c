@@ -91,8 +91,8 @@ static struct STRUCT_cfloat( 11 )     MaxU32  = {
 };
 
 static struct STRUCT_cfloat( 20 )     MaxNegI64  = {
-    20,             /* exponent ten */
-    20,             /* mantissa length ten */
+    19,             /* exponent ten */
+    19,             /* mantissa length ten */
     0,              /* allocation length */
     -1,             /* negative */
     { '9','2','2','3','3','7','2','9','3','6','8','5','4','7','7','5','8','0','7',0 }
