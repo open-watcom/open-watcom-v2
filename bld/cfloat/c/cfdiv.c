@@ -139,7 +139,7 @@ cfloat  *CFDiv( cfhandle h, cfloat *f1, cfloat *f2 )
     div_t           d;
     char            ue[CF_MAX_PREC];
 
-    if( ! f2->sign ) {                          // Attempt to divide by zero.
+    if( f2->sign == 0 ) {                       // Attempt to divide by zero.
         result = CFAlloc( h, 1 );
         result->mant[0] = '1';
         result->sign    = 1;
@@ -253,10 +253,14 @@ cfloat  *CFDiv( cfhandle h, cfloat *f1, cfloat *f2 )
             }
         }
     }
-
-    CFFree( h, u );                         // Clean up the mess we made.
+    /*
+     * Clean up the mess we made.
+     */
+    CFFree( h, u );
     CFFree( h, v );
-    CFClean( result );                      // Clean up the number we made.
-
+    /*
+     * normalize result
+     */
+    CFClean( result );
     return( result );
 }

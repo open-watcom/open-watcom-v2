@@ -57,7 +57,10 @@ static  cfloat  *SDMul( cfhandle h, cfloat *f, int plyer, int fleft, int fexp, i
         resexp++;
     }
     CFDeposit( result, respos, sum % 10 );
-    result->sign = f->sign;          /* by convention*/
+    result->sign = f->sign;
+    /*
+     * normalize result
+     */
     CFClean( result );
     return( result );
 }

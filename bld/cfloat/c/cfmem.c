@@ -54,7 +54,7 @@ void    CFInit( cfhandle h )
 cfloat  *CFAlloc( cfhandle h, size_t size )
 /*****************************************/
 {
-    cfloat      *number;
+    cfloat      *result;
 
     if( size <= DOUBLE_DIGITS ) {
         size = FRLSIZE;
@@ -62,22 +62,25 @@ cfloat  *CFAlloc( cfhandle h, size_t size )
             /*
              * unhook it and return the first element
              */
-            number = h->head;
-            h->head = NEXT_BLOCK( number );
+            result = h->head;
+            h->head = NEXT_BLOCK( result );
         } else {
-            number = h->alloc( size );
+            result = h->alloc( size );
         }
     } else {
         size += CFLOAT_SIZE;
-        number = h->alloc( size );
+        result = h->alloc( size );
     }
-    number->sign = 0;
-    number->exp = 1;
-    number->len = 1;
-    number->alloc = size;
-    number->mant[0] = '0';
-    number->mant[1] = NULLCHAR;
-    return( number );
+    /*
+     * Init result to 0 (zero)
+     */
+    result->sign = 0;
+    result->exp = 1;
+    result->len = 1;
+    result->alloc = size;
+    result->mant[0] = '0';
+    result->mant[1] = NULLCHAR;
+    return( result );
 }
 
 

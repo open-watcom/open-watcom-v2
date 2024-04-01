@@ -143,6 +143,9 @@ static  cfloat  *CSSum( cfhandle h, cfloat *f1, cfloat *f2, int (*arith)( int, i
     }
     CFDeposit( result, length, carry );
     result->sign = f1->sign;
+    /*
+     * normalize result
+     */
     CFClean( result );
     return( result );
 }
@@ -260,7 +263,9 @@ void    CFDeposit( cfloat *f, int index, int data )
 }
 
 void    CFClean( cfloat *f )
-/**************************/
+/***************************
+ * normalize number data
+ */
 {
     int         headindex;
     char        *head;

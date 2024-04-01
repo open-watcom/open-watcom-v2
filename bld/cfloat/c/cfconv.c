@@ -248,6 +248,9 @@ static void     DoConvert( cfloat *f, const char *str )
     f->sign = sgn;
     f->len = len;
     f->exp = expon;
+    /*
+     * normalize f
+     */
     CFClean( f );
 }
 
@@ -360,6 +363,9 @@ static  cfloat  *CFCnvLongToF( cfhandle h, signed_32 data, bool is_signed )
     result->sign = sign;
     result->exp = len;
     result->len = len;
+    /*
+     * normalize result
+     */
     CFClean( result );
     return( result );
 }
