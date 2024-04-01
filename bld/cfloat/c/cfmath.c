@@ -49,31 +49,30 @@ static  int     Suber( int a, int b )
 }
 
 int     CFOrder( cfloat *f1, cfloat *f2 )
-/***************************************/
+/****************************************
+ * compare absolute value of f1 and f2
+ *
+ * return value
+ *
+ *      = 0     | f1 | = | f2 |
+ *      > 0     | f1 | > | f2 |
+ *      < 0     | f1 | < | f2 |
+ */
 {
-    int         index;
+    int         i;
     int         diff;
 
-    if( f1->exp > f2->exp )
-        return( 1 );
-    if( f1->exp < f2->exp )
-        return( -1 );
-    index = 0;
-    for(;;) {
-        if( index >= f1->len )
-            break;
-        if( index >= f2->len )
-            return( 1 );
-        diff = CFAccess( f1, index ) - CFAccess( f2, index );
-        if( diff < 0 )
-            return( -1 );
-        if( diff > 0 )
-            return( 1 );
-        index++;
+    diff = f1->exp - f2->exp;
+    if( diff == 0 ) {
+        diff = f1->len - f2->len;
+        for( i = 0; i < f1->len && i < f2->len; i++ ) {
+            if( f1->mant[i] != f2->mant[i] ) {
+                diff = (unsigned char)f1->mant[i] - (unsigned char)f2->mant[i];
+                break;
+            }
+        }
     }
-    if( index < f2->len )
-        return( -1 );
-    return( 0 );        /* | f1 | == | f2 |*/
+    return( diff );
 }
 
 static  int     Max( int a, int b )
@@ -164,13 +163,13 @@ cfloat  *CFAdd( cfhandle h, cfloat *f1, cfloat *f2 )
     case -2:                 /* different signs*/
     case  2:                 /* different signs*/
         ord = CFOrder( f1, f2 );
-        if( ord == -1 ) {
-            return( CSSum( h, f2, f1, &Suber ) );  /* | f1 | < | f2 |*/
-        } else if( ord == 1 ) {
-            return( CSSum( h, f1, f2, &Suber ) );  /* | f1 | > | f2 |*/
-        } else {
-            return( CFAlloc( h, 1 ) );
+        if( ord < 0 ) {
+            return( CSSum( h, f2, f1, &Suber ) );   /* | f1 | < | f2 | */
         }
+        if( ord > 0 ) {
+            return( CSSum( h, f1, f2, &Suber ) );   /* | f1 | > | f2 | */
+        }
+        return( CFAlloc( h, 1 ) );                  /* | f1 | = | f2 | */
     case -1:                 /* f2 is zero*/
     case  1:                 /* f2 is zero*/
         return( CFCopy( h, f1 ) );
@@ -190,15 +189,15 @@ cfloat  *CFSub( cfhandle h, cfloat *f1, cfloat *f2 )
     case -4:
     case  4:
         ord = CFOrder( f1, f2 );
-        if( ord == -1 ) {
-            result = CSSum( h, f2, f1, &Suber );        /* | f1 | < | f2 |*/
+        if( ord < 0 ) {
+            result = CSSum( h, f2, f1, &Suber );    /* | f1 | < | f2 | */
             CFNegate( result );
             return( result );
-        } else if( ord == 1 ) {
-            return( CSSum( h, f1, f2, &Suber ) );        /* | f1 | > | f2 |*/
-        } else {
-            return( CFAlloc( h, 1 ) );
         }
+        if( ord > 0 ) {
+            return( CSSum( h, f1, f2, &Suber ) );   /* | f1 | > | f2 | */
+        }
+        return( CFAlloc( h, 1 ) );                  /* | f1 | = | f2 | */
     case -3:                 /* f1 is zero*/
     case  3:                 /* f1 is zero*/
         result = CFCopy( h, f2 );
@@ -225,12 +224,20 @@ void    CFNegate( cfloat *f )
 int     CFCompare( cfloat *f1, cfloat *f2 )
 /*****************************************/
 {
+    int     cmp;
+
     if( f1->sign < f2->sign ) {
         return( -1 );
     } else if( f1->sign > f2->sign ) {
         return( 1 );
-    } else {
-        return( f1->sign * CFOrder( f1, f2 ) );
+    } else {                        /* f1 sign = f2 sign */
+        cmp = CFOrder( f1, f2 );
+        if( cmp == 0 )              /* | f1 | = | f2 | */
+            return( 0 );
+        if( cmp > 0 ) {             /* | f1 | > | f2 | */
+            return( f1->sign );
+        }
+        return( -1 * f1->sign );    /* | f1 | < | f2 | */
     }
 }
 

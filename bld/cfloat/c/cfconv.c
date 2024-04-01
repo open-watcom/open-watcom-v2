@@ -37,12 +37,12 @@
 #include "i64.h"
 
 
-#define _HiBitOn( x )   ( ( (x) & 0x80000000 ) != 0 )
+#define _HiBitOn( x )   (((x) & 0x80000000) != 0)
 #define I16DIGITS       5
 #define I32DIGITS       10
-#define I64DIGITS       20
+//#define I64DIGITS       21
 
-static struct STRUCT_cfloat( 4 )     MaxNegI8   = {
+static struct STRUCT_cfloat( 4 )    MaxNegI8 = {
     3,              /* exponent ten */
     3,              /* mantissa length ten */
     0,              /* allocation length */
@@ -50,7 +50,7 @@ static struct STRUCT_cfloat( 4 )     MaxNegI8   = {
     { '1','2','8',0 }
 };
 
-static struct STRUCT_cfloat( 4 )     MaxU8   = {
+static struct STRUCT_cfloat( 4 )    MaxU8 = {
     3,              /* exponent ten */
     3,              /* mantissa length ten */
     0,              /* allocation length */
@@ -58,7 +58,7 @@ static struct STRUCT_cfloat( 4 )     MaxU8   = {
     { '2','5','5',0 }
 };
 
-static struct STRUCT_cfloat( 6 )     MaxNegI16  = {
+static struct STRUCT_cfloat( 6 )    MaxNegI16 = {
     5,              /* exponent ten */
     5,              /* mantissa length ten */
     0,              /* allocation length */
@@ -66,7 +66,7 @@ static struct STRUCT_cfloat( 6 )     MaxNegI16  = {
     { '3','2','7','6','8',0 }
 };
 
-static struct STRUCT_cfloat( 6 )     MaxU16  = {
+static struct STRUCT_cfloat( 6 )    MaxU16 = {
     5,              /* exponent ten */
     5,              /* mantissa length ten */
     0,              /* allocation length */
@@ -74,7 +74,7 @@ static struct STRUCT_cfloat( 6 )     MaxU16  = {
     { '6','5','5','3','5',0 }
 };
 
-static struct STRUCT_cfloat( 11 )     MaxNegI32  = {
+static struct STRUCT_cfloat( 11 )   MaxNegI32 = {
     10,             /* exponent ten */
     10,             /* mantissa length ten */
     0,              /* allocation length */
@@ -82,7 +82,7 @@ static struct STRUCT_cfloat( 11 )     MaxNegI32  = {
     { '2','1','4','7','4','8','3','6','4','8',0 }
 };
 
-static struct STRUCT_cfloat( 11 )     MaxU32  = {
+static struct STRUCT_cfloat( 11 )   MaxU32 = {
     10,             /* exponent ten */
     10,             /* mantissa length ten */
     0,              /* allocation length */
@@ -90,7 +90,7 @@ static struct STRUCT_cfloat( 11 )     MaxU32  = {
     { '4','2','9','4','9','6','7','2','9','5',0 }
 };
 
-static struct STRUCT_cfloat( 20 )     MaxNegI64  = {
+static struct STRUCT_cfloat( 20 )   MaxNegI64 = {
     19,             /* exponent ten */
     19,             /* mantissa length ten */
     0,              /* allocation length */
@@ -98,7 +98,7 @@ static struct STRUCT_cfloat( 20 )     MaxNegI64  = {
     { '9','2','2','3','3','7','2','9','3','6','8','5','4','7','7','5','8','0','7',0 }
 };
 
-static struct STRUCT_cfloat( 21 )     MaxU64  = {
+static struct STRUCT_cfloat( 21 )   MaxU64 = {
     20,             /* exponent ten */
     20,             /* mantissa length ten */
     0,              /* allocation length */
@@ -109,7 +109,7 @@ static struct STRUCT_cfloat( 21 )     MaxU64  = {
 /*
  * this is MaxU32 + 1 - just don't want to calc it at runtime
  */
-static struct STRUCT_cfloat( 11 )     High64Mult  = {
+static struct STRUCT_cfloat( 11 )   High64Mult = {
     10,             /* exponent ten */
     10,             /* mantissa length ten */
     0,              /* allocation length */
@@ -117,17 +117,7 @@ static struct STRUCT_cfloat( 11 )     High64Mult  = {
     { '4','2','9','4','9','6','7','2','9','6',0 }
 };
 
-#if 0
-static struct STRUCT_cfloat( 4 )      MaxFS = {
-    39,             /* exponent ten */
-    3,              /* mantissa length ten */
-    0,              /* allocation length */
-    1,              /* positive */
-    { '3','3','7',0 }
-};
-#endif
-
-static  signed_64   CFGetDec64( const char *str )
+static signed_64    CFGetDec64( const char *str )
 /***********************************************/
 {
     signed_64   number;
@@ -144,7 +134,7 @@ static  signed_64   CFGetDec64( const char *str )
     return( number );
 }
 
-static  signed_32   CFGetDec32( const char *str )
+static signed_32    CFGetDec32( const char *str )
 /***********************************************/
 {
     signed_32   number;
@@ -181,8 +171,8 @@ char    *CFCnvFS( cfloat *f, char *buffer, int maxlen )
         *buffer++ = '-';
     }
     *buffer++ = f->mant[0];
-    *buffer++ = '.';                            /* don't forget decimal point!*/
-    memcpy( buffer, f->mant + 1, len );         /* copy mantissa*/
+    *buffer++ = '.';                        /* don't forget decimal point! */
+    memcpy( buffer, f->mant + 1, len );     /* copy mantissa */
     buffer += len;
     *buffer++ = 'E';
     if( f->exp > 0 ) {
@@ -201,15 +191,18 @@ char    *CFCnvFS( cfloat *f, char *buffer, int maxlen )
     return( buffer );
 }
 
-static  void    DoConvert( cfloat *f, const char *str )
-/*****************************************************/
+static void     DoConvert( cfloat *f, const char *str )
+/******************************************************
+ * Syntax accepted by this converter:
+ *
+ * {WS}*[[-|+]]  {0-9}+[.{0-9}*] or .{0-9}+  [[E|e][[-|+]]{0-9}+]
+ */
 {
     int         len;
-    char        *fptr;
     signed char sgn;
     int         expon;
 
-    for(;;) {
+    for( ;; ) {
         if( *str != ' ' )
             break;
         str++;
@@ -223,40 +216,24 @@ static  void    DoConvert( cfloat *f, const char *str )
     }
     expon = 0;
     len = 0;
-    fptr = f->mant;
-    if( _IsDigit( *str ) ) {
-        for(;;) {                /* scan before decimal point*/
-            *fptr++ = *str++;
-            len++;
-            expon++;
-            if( !_IsDigit( *str ) ) {
-                break;
-            }
-        }
-        if( *str == '.' ) {
-            str++;
-            for(;;) {            /* scan after decimal point*/
-                if( !_IsDigit( *str ) )
-                    break;
-                *fptr++ = *str++;
-                len++;
-            }
-        }
-    } else {
-        *fptr = NULLCHAR;
-        if( *str != '.' )
-            return;
-        ++str;
+    for( ;; ) {         /* scan before decimal point */
         if( !_IsDigit( *str ) )
-            return;
-        for(;;) {                /* scan after decimal point*/
-            *fptr++ = *str++;
-            len++;
-            if( !_IsDigit( *str ) ) {
+            break;
+        f->mant[len++] = *str++;
+        expon++;
+    }
+    if( *str == '.' ) {
+        str++;
+        for( ;; ) {     /* scan after decimal point */
+            if( !_IsDigit( *str ) )
                 break;
-            }
+            f->mant[len++] = *str++;
         }
     }
+    if( len == 0 ) {
+        return;
+    }
+    f->mant[len] = NULLCHAR;
     if( *str == 'E'
       || *str == 'e' ) {
         if( *++str == '-' ) {
@@ -268,23 +245,15 @@ static  void    DoConvert( cfloat *f, const char *str )
             expon += CFGetDec16( str );
         }
     }
-    *fptr = NULLCHAR;
     f->sign = sgn;
-    f->len = len;             /* fill in length*/
+    f->len = len;
     f->exp = expon;
     CFClean( f );
 }
 
 
 cfloat  *CFCnvSF( cfhandle h, const char *str )
-/**********************************************
- * Syntax accepted by this converter:
- *
- * { at least 0 blanks }  < - | + >
- *               { at least 1 digit } < . { at least 0 digits } >
- *       or      . { at least 1 digit }
- *               < E | e < - | + > { at least 1 digit } >
- */
+/*********************************************/
 {
     cfloat      *result;
 
@@ -464,7 +433,7 @@ cfloat  *CFCnvUF( cfhandle h, uint data )
     return( CFCnvLongToF( h, data, false ) );
 }
 
-static  bool CFIsType( cfloat *f, cfloat *maxval )
+static  bool CFIsIntType( cfloat *f, cfloat *maxval )
 /*************************************************
  * Assume 2-complement
  * if signed maxval is magnitude of smallest negative number
@@ -472,73 +441,74 @@ static  bool CFIsType( cfloat *f, cfloat *maxval )
 {
     int         ord;
 
-    if( f->exp <= 0                 /* < 1 or > maxval*/
+    if( f->exp <= 0                 /* < 1 or > maxval */
       || f->exp > maxval->exp )
         return( false );
-    if( f->sign == -1               /* signedness*/
+    if( f->sign == -1               /* signedness */
       && maxval->sign == 1 )
         return( false );
-    if( f->exp < f->len )                       /* has decimal pt*/
+    if( f->exp < f->len )           /* has decimal pt */
         return( false );
-    ord = CFOrder( f, maxval);                  /* compare mag*/
-    if( ord == 1 )                              /* too big*/
+    ord = CFOrder( f, maxval);      /* compare mag */
+    if( ord > 0 )                   /* | f | > | maxval |  too big */
         return( false );
     /*
      * can't have pos number equal to maxval if signed
      */
-    if( ord == 0
+    if( ord == 0                    /* | f | = | maxval | */
       && f->sign == 1
-      && maxval->sign == -1 )
+      && maxval->sign == -1 ) {
         return( false );
+    }
     return( true );
 }
 
 bool CFIsI8( cfloat *f )
 /**********************/
 {
-    return( CFIsType( f, (cfloat *)&MaxNegI8 ) );
+    return( CFIsIntType( f, (cfloat *)&MaxNegI8 ) );
 }
 
 bool CFIsI16( cfloat *f )
 /***********************/
 {
-    return( CFIsType( f, (cfloat *)&MaxNegI16 ) );
+    return( CFIsIntType( f, (cfloat *)&MaxNegI16 ) );
 }
 
 bool CFIsI32( cfloat *f )
 /***********************/
 {
-    return( CFIsType( f, (cfloat *)&MaxNegI32 ) );
+    return( CFIsIntType( f, (cfloat *)&MaxNegI32 ) );
 }
 
 bool CFIsI64( cfloat *f )
 /***********************/
 {
-    return( CFIsType( f, (cfloat *)&MaxNegI64 ) );
+    return( CFIsIntType( f, (cfloat *)&MaxNegI64 ) );
 }
 
 bool CFIsU8( cfloat *f )
 /**********************/
 {
-    return( CFIsType( f, (cfloat *)&MaxU8 ) );
+    return( CFIsIntType( f, (cfloat *)&MaxU8 ) );
 }
 
 bool CFIsU16( cfloat *f )
 /***********************/
 {
-    return( CFIsType( f, (cfloat *)&MaxU16 ) );
+    return( CFIsIntType( f, (cfloat *)&MaxU16 ) );
 }
 
 bool CFIsU32( cfloat *f )
 /***********************/
 {
-    return( CFIsType( f, (cfloat *)&MaxU32 ) );
+    return( CFIsIntType( f, (cfloat *)&MaxU32 ) );
 }
 
 bool CFIsU64( cfloat *f )
 /***********************/
 {
-    return( CFIsType( f, (cfloat *)&MaxU64 ) );
+    return( CFIsIntType( f, (cfloat *)&MaxU64 ) );
 }
 
 bool CFIs32( cfloat *f )
