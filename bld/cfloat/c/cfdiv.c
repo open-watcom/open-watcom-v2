@@ -99,8 +99,7 @@ static void expandCF( cfhandle h, cfloat **f, int scale )
     result = CFAlloc( h, result_len );
     memcpy( result, *f, CFLOAT_SIZE + len - 1 );
     while( len < result_len ) {
-        result->mant[len] = '0';
-        len++;
+        result->mant[len++] = '0';
     }
     result->mant[len] = NULLCHAR;
     result->len  = result_len;
@@ -122,13 +121,12 @@ static void roundupCF( cfloat *f )
             return;
         }
     }
-
     f->mant[0] = '1';
     f->exp += 1;
 }
 
 /*
- * CFDiv:  Computes  op1 / op2
+ * CFDiv:  Computes  f1 / f2
  */
 cfloat  *CFDiv( cfhandle h, cfloat *f1, cfloat *f2 )
 {
@@ -165,12 +163,11 @@ cfloat  *CFDiv( cfhandle h, cfloat *f1, cfloat *f2 )
     v = scalarMultiply( h, f2, scale );         // Extra digit added.
 
     if( v->len < 3 ) {                          // Divisor must have at least
-        expandCF( h, &v, 1 );                      // two digits (ignore leading 0)
+        expandCF( h, &v, 1 );                   // two digits (ignore leading 0)
     }
     if( v->len >= u->len ) {                    // Dividend must have more
-        expandCF( h, &u, v->len - u->len + 1 );    // digits than divisor.
+        expandCF( h, &u, v->len - u->len + 1 ); // digits than divisor.
     }
-
     /*
      * We now use the classical division algorithm described in Knuth,
      * _Seminumerical_Algorithms_, section 4.3.1.
@@ -180,25 +177,22 @@ cfloat  *CFDiv( cfhandle h, cfloat *f1, cfloat *f2 )
      * floor( uj.uj1 / v1 ).  According to Knuth, this initial approximation
      * is always greater than the real quotient digit, and off by at most two.
      */
-
     v1 = CFAccess( v, 1 );
     va = 10 * v1 + CFAccess( v, 2 );
 
     for( j = 0; j <= CF_MAX_PREC; j++ ) {
-
-        // Make initial approximation of the quotient digit.
-
+        /*
+         * Make initial approximation of the quotient digit.
+         */
         if( v1 == efGet( u, ue, j ) ) {
             qa = 9;
         } else {
             ua = efGet( u, ue, j ) * 100 + efGet( u, ue, j + 1 ) * 10 + efGet( u, ue, j + 2 );
             qa = ua / va;
         }
-
         /*
          * Replace (uj.uj1...ujn) with (uj.uj1..ujn) - qa * (v1.v2..vn)
          */
-
         cy = 0;
         for( i = v->len - 1; i >= 0; i-- ) {
             d = div( efGet( u, ue, i + j ) - qa * CFAccess( v, i ) + cy, 10 );
@@ -209,13 +203,11 @@ cfloat  *CFDiv( cfhandle h, cfloat *f1, cfloat *f2 )
             cy = d.quot;
             efSet( u, ue, i + j, d.rem );
         }
-
         /*
          * The above subtraction resulted in a negative number.  So qa was
          * in fact off by one.  Correct that, and add back to correct
          * (uj.uj1...ujn).
          */
-
         if( cy ) {
             qa--;
             cy = 0;
@@ -225,12 +217,10 @@ cfloat  *CFDiv( cfhandle h, cfloat *f1, cfloat *f2 )
                 cy = d.quot;
             }
         }
-
         /*
          * Set the real quotient digit, and do some rounding when maximum
          * precision is reached.  [Rounding is unbiased.]
          */
-
         if( j < CF_MAX_PREC ) {
             CFDeposit( result, j, qa );
             result->len++;

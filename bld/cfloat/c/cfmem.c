@@ -37,7 +37,7 @@
 #include "cfloati.h"
 
 #define DOUBLE_DIGITS   17
-#define FRLSIZE         ( CFLOAT_SIZE + DOUBLE_DIGITS )
+#define FRLSIZE         (CFLOAT_SIZE + DOUBLE_DIGITS)
 #define NEXT_BLOCK(x)   (((mem_blk *)(x))->next)
 
 typedef struct {

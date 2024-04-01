@@ -35,7 +35,7 @@
 
 
 static  cfloat  *SDMul( cfhandle h, cfloat *f, int plyer, int fleft, int fexp, int byexp )
-/***********************************************************************************************/
+/****************************************************************************************/
 {
     int         sum;
     int         exp;
@@ -66,7 +66,7 @@ static  cfloat  *SDMul( cfhandle h, cfloat *f, int plyer, int fleft, int fexp, i
 }
 
 cfloat  *CFMul( cfhandle h, cfloat *f1, cfloat *f2 )
-/*****************************************************/
+/**************************************************/
 {
     cfloat      *result;
     cfloat      *temp;
@@ -96,4 +96,3 @@ cfloat  *CFMul( cfhandle h, cfloat *f1, cfloat *f2 )
     }
     return( result );
 }
-

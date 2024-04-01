@@ -231,17 +231,20 @@ int     CFCompare( cfloat *f1, cfloat *f2 )
 
     if( f1->sign < f2->sign ) {
         return( -1 );
-    } else if( f1->sign > f2->sign ) {
-        return( 1 );
-    } else {                        /* f1 sign = f2 sign */
-        cmp = CFOrder( f1, f2 );
-        if( cmp == 0 )              /* | f1 | = | f2 | */
-            return( 0 );
-        if( cmp > 0 ) {             /* | f1 | > | f2 | */
-            return( f1->sign );
-        }
-        return( -1 * f1->sign );    /* | f1 | < | f2 | */
     }
+    if( f1->sign > f2->sign ) {
+        return( 1 );
+    }
+    /*
+     * f1 sign = f2 sign
+     */
+    cmp = CFOrder( f1, f2 );
+    if( cmp == 0 )              /* | f1 | = | f2 | */
+        return( 0 );
+    if( cmp > 0 ) {             /* | f1 | > | f2 | */
+        return( f1->sign );
+    }
+    return( -1 * f1->sign );    /* | f1 | < | f2 | */
 }
 
 int     CFTest( cfloat *f )

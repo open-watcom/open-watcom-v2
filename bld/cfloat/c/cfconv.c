@@ -280,13 +280,16 @@ static void     DoConvert( cfloat *f, const char *str )
         }
     }
     if( len == 0 ) {
+        /* return, no mantisa digit */
         return;
     }
     f->mant[len] = NULLCHAR;
     if( *str == 'E'
       || *str == 'e' ) {
-        if( *++str == '-' ) {
-            expon -= CFGetDec16( ++str );
+        str++;
+        if( *str == '-' ) {
+            str++;
+            expon -= CFGetDec16( str );
         } else {
             if( *str == '+' ) {
                 str++;
@@ -377,7 +380,7 @@ static cfloat   *CFCnvLongToF( cfhandle h, signed_32 data, bool is_signed )
     signed_8            sign;
     char                *digit;
     unsigned_32         dividend;
-    char                mant[I32DIGITS+1];
+    char                mant[I32DIGITS + 1];
 
     if( data == 0 )
         return( CFAlloc( h, 0 ) );
@@ -617,7 +620,6 @@ bool CFIsSize( cfloat *f, uint size )
     }
     return( false );
 }
-
 
 bool CFSignedSize( cfloat *f, uint size )
 /***************************************/
