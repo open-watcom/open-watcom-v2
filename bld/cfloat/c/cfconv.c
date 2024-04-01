@@ -95,7 +95,7 @@ char    *CFCnvFS( cfloat *f, char *buffer, int maxlen )
     }
     *buffer++ = f->mant[0];
     *buffer++ = '.';                            /* don't forget decimal point!*/
-    strcpy( buffer, f->mant + 1 );              /* copy mantissa*/
+    memcpy( buffer, f->mant + 1, len );         /* copy mantissa*/
     buffer += len;
     *buffer++ = 'E';
     if( f->exp > 0 ) {
