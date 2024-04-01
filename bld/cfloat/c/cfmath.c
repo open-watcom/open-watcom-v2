@@ -243,7 +243,7 @@ int     CFTest( cfloat *f )
 int     CFAccess( cfloat *f, int index )
 /**************************************/
 {
-    return( f->mant[index] );
+    return( f->mant[index] - '0' );
 }
 
 void    CFDeposit( cfloat *f, int index, int data )
