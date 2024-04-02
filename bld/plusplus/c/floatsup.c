@@ -72,8 +72,6 @@ static float_handle makeOK( float_handle f )
 float_handle CFCheckFloatLimit( float_handle f )
 /**********************************************/
 {
-    int sign;
-
     if( CFIsFloat( f ) )
         return( f );
     f = makeOK( f );
@@ -83,8 +81,6 @@ float_handle CFCheckFloatLimit( float_handle f )
 float_handle CFCheckDoubleLimit( float_handle f )
 /***********************************************/
 {
-    int sign;
-
     if( CFIsDouble( f ) )
         return( f );
     f = makeOK( f );
