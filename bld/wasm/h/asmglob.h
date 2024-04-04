@@ -112,7 +112,8 @@ enum {
     ASM,
     ERR,
     OBJ,
-    LST
+    LST,
+    CMD
 };
 #define FILE_TYPES      4
 

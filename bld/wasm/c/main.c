@@ -229,14 +229,14 @@ static void get_fname( char *token, int type )
  * fill in default object file name if it is null
  */
 {
-    char        name [_MAX_PATH ];
+    char        name[_MAX_PATH ];
     char        msgbuf[MAX_MESSAGE_SIZE];
     pgroup2     pg;
     pgroup2     def;
 
     /* get filename for source file */
 
-    if( type == ASM ) {
+    if( type == CMD ) {
         if( token == NULL ) {
             MsgGet( SOURCE_FILE, msgbuf );
             Fatal( MSG_CANNOT_OPEN_FILE, msgbuf );
@@ -244,14 +244,15 @@ static void get_fname( char *token, int type )
         if( AsmFiles.fname[ASM] != NULL ) {
             Fatal( MSG_TOO_MANY_FILES );
         }
-
         _splitpath2( token, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
         if( pg.ext[0] == '\0' ) {
             pg.ext = ASM_EXT;
         }
         _makepath( name, pg.drive, pg.dir, pg.fname, pg.ext );
         AsmFiles.fname[ASM] = AsmStrDup( name );
-
+    } else if( type == ASM ) {
+        _splitpath2( AsmFiles.fname[ASM], pg.buffer, &pg.drive,
+                         &pg.dir, &pg.fname, &pg.ext );
         _makepath( name, pg.drive, pg.dir, NULL, NULL );
         /*
          * add the source path to the include path
@@ -550,7 +551,7 @@ static int ProcOptions( OPT_STORAGE *data, const char *str )
                 switch_start = CmdScanAddr();
                 fname = NULL;
                 if( OPT_GET_FILE( &fname ) ) {
-                    get_fname( fname->data, ASM );
+                    get_fname( fname->data, CMD );
                     OPT_CLEAN_STRING( &fname );
                 }
             }
@@ -1090,14 +1091,14 @@ static void set_options( OPT_STORAGE *data )
     if( data->nc ) {
         SetStringOption( &Options.code_class, &(data->nc_value) );
     }
-    if( data->fr ) {
+    if( data->fr && data->fr_value != NULL ) {
         get_fname( data->fr_value->data, ERR );
     }
-    if( data->fl ) {
+    if( data->fl && data->fl_value != NULL ) {
         get_fname( data->fl_value->data, LST );
         Options.write_listing = true;
     }
-    if( data->fo ) {
+    if( data->fo && data->fo_value != NULL ) {
         get_fname( data->fo_value->data, OBJ );
     }
     if( data->fi ) {
@@ -1129,6 +1130,7 @@ static void do_init_stuff( char **cmdline )
     target_name = set_build_target( &data );
     set_options( &data );
     OPT_FINI( &data );
+    get_fname( NULL, ASM );
     add_env_include( target_name );
     AsmFree( target_name );
     set_cpu_mode();
