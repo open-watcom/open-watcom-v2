@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -65,12 +66,12 @@ void    TellAddress( label_handle lbl, offset addr )
 }
 
 
-void    TellDonePatch( label_handle lbl )
-/***************************************/
+void    TellDonePatches( label_handle lbl )
+/*****************************************/
 {
   optbegin
     _ValidLbl( lbl );
-    lbl->lbl.patch = NULL;
+    lbl->lbl.patches = NULL;
   optend
 }
 

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,7 +48,7 @@ static  label_handle DoAskForLabel( cg_sym_handle sym )
     Handles = new;
     new->lbl.sym     = sym;
     new->lbl.address = ADDR_UNKNOWN;
-    new->lbl.patch   = NULL;
+    new->lbl.patches = NULL;
     new->lbl.status  = 0;
     new->alias       = NULL;
     new->ins         = NULL;
@@ -157,15 +157,15 @@ offset  AskAddress( label_handle lbl )
 }
 
 
-pointer AskLblPatch( label_handle lbl )
-/*************************************/
+pointer AskLblPatches( label_handle lbl )
+/***************************************/
 {
   optbegin
     _ValidLbl( lbl );
-    if( lbl->lbl.patch == NULL ) {
-        lbl->lbl.patch = InitPatch();
+    if( lbl->lbl.patches == NULL ) {
+        lbl->lbl.patches = InitPatches();
     }
-    optreturn( lbl->lbl.patch );
+    optreturn( lbl->lbl.patches );
 }
 
 

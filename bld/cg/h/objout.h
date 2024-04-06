@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -59,7 +59,7 @@ extern long_offset  AskBigMaxSize( void );
 extern void         SetLocation( offset loc );
 extern void         SetBigLocation( long_offset loc );
 extern void         OutLabel( label_handle label );
-extern void         *InitPatch( void );
+extern void         *InitPatches( void );
 extern void         AbsPatch( abspatch_handle patch, offset lc );
 extern void         TellObjNewProc( cg_sym_handle proc );
 extern void         IncLocation( offset by );

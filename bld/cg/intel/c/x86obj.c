@@ -1354,7 +1354,7 @@ static  void    SetPatches( void )
 
     while( (tpatch = CurrSeg->obj->tpatches) != NULL ) {
         CurrSeg->obj->tpatches = tpatch->link;
-        lbl_patches = AskLblPatch( tpatch->lbl );
+        lbl_patches = AskLblPatches( tpatch->lbl );
         patch = allocOut( lbl_patches, 1 );
         patch->ref = AskObjHandle();
         patch->where = tpatch->patch.where;
@@ -2412,13 +2412,13 @@ void    OutLabel( label_handle lbl )
             }
         }
     }
-    lbl_patches = AskLblPatch( lbl );
+    lbl_patches = AskLblPatches( lbl );
     patch = lbl_patches->array;
     for( i = lbl_patches->used; i > 0; --i ) {
         DoPatch( patch++, lc );
     }
     KillArray( lbl_patches );
-    TellDonePatch( lbl );
+    TellDonePatches( lbl );
 }
 
 
@@ -2438,7 +2438,7 @@ void    AbsPatch( abspatch_handle patch_handle, offset lc )
 }
 
 
-void    *InitPatch( void )
+void    *InitPatches( void )
 /************************/
 {
     return( InitArray( sizeof( obj_patch ),  MODEST_PAT, INCREMENT_PAT ) );

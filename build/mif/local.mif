@@ -371,6 +371,9 @@ common_cflags_wng = -Wall -Wno-switch -Wno-missing-braces -Wno-parentheses -Wno-
 common_cflags_wng = -Wall -Wno-switch -Wno-missing-braces -Wno-parentheses
 ! endif
 common_cflags = $(common_cflags_wng)
+! ifdef %ASAN
+common_cflags += -fsanitize=address
+! endif
 
 common_ldflags_rel =
 common_ldflags_dbg =
@@ -378,6 +381,9 @@ common_ldflags_dbg =
 common_ldflags = $(common_ldflags_rel)
 ! else
 common_ldflags = $(common_ldflags_dbg)
+! endif
+! ifdef %ASAN
+common_ldflags += -fsanitize=address
 ! endif
 
 # Options for building Executable
@@ -433,15 +439,35 @@ cl_extra_libs = $(cl_extra_libs_gen)
 # bld settings
 ############################
 ! ifdef __CLANG_TOOLS__
+!  ifdef %OWCLANG
+bld_cc  = $(%OWCLANG) -pipe -c
+bld_ccl = $(noecho)$(%OWCLANG) -pipe
+bld_cl  = $(noecho)$(%OWCLANG) -pipe
+!  else
 bld_cc  = clang -pipe -c
-bld_cxx = clang++ -pipe -c
 bld_ccl = $(noecho)clang -pipe
 bld_cl  = $(noecho)clang -pipe
+!  endif
+!  ifdef %OWCLANGXX
+bld_cxx = $(%OWCLANGXX) -pipe -c
+!  else
+bld_cxx = clang++ -pipe -c
+!  endif
 ! else
+!  ifdef %OWGCC
+bld_cc  = $(%OWGCC) -pipe -c
+bld_ccl = $(noecho)$(%OWGCC) -pipe
+bld_cl  = $(noecho)$(%OWGCC) -pipe
+!  else
 bld_cc  = gcc -pipe -c
-bld_cxx = g++ -pipe -c
 bld_ccl = $(noecho)gcc -pipe
 bld_cl  = $(noecho)gcc -pipe
+!  endif
+!  ifdef %OWGCCXX
+bld_cxx = $(%OWGCCXX) -pipe -c
+!  else
+bld_cxx = g++ -pipe -c
+!  endif
 ! endif
 
 bld_ppflags_sys = $(common_ppflags)
@@ -514,13 +540,22 @@ bld_ldflags  = $(bld_cl_extra_libs_gen) $(bld_extra_ldflags) $(bld_ldflags_$(pro
 # standard settings
 ############################
 !  ifdef __CLANG_TOOLS__
+!   ifdef %OWCLANG
+cc   = $(noecho)$(%OWCLANG) -pipe -c
+cl   = $(noecho)$(%OWCLANG) -pipe
+!   else
 cc   = $(noecho)clang -pipe -c
-cxx  = $(noecho)clang++ -pipe -c
 cl   = $(noecho)clang -pipe
+!   endif
+!   ifdef %OWCLANGXX
+cxx  = $(noecho)$(%OWCLANGXX) -pipe -c
+!   else
+cxx  = $(noecho)clang++ -pipe -c
+!   endif
 !  else
 cc   = $(noecho)gcc -pipe -c
-cxx  = $(noecho)g++ -pipe -c
 cl   = $(noecho)gcc -pipe
+cxx  = $(noecho)g++ -pipe -c
 !  endif
 
 ppflags_sys = $(common_ppflags)
