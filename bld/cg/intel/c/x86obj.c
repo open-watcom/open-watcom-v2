@@ -1046,6 +1046,9 @@ static void finiImports( void )
 
 static omf_idx getImportHdl( void )
 {
+    if( ImportHdl > 0x7FFF - 1 ) {
+        FatalError( "OMF file too many external symbols" );
+    }
     return( ImportHdl++ );
 }
 
