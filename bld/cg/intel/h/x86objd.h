@@ -172,10 +172,10 @@ typedef enum {
     AP_HAVE_OFFSET          = 0x02
 } abspatch_flags;
 
-typedef struct abspatch {
-    struct abspatch         *link;
+typedef struct abs_patch {
+    struct abs_patch        *link;
     object                  *obj;
     obj_patch               patch;
     long_offset             value;
     abspatch_flags          flags;
-} abspatch;
+} abs_patch;

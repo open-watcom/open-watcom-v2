@@ -129,7 +129,7 @@ static  bool            GenStaticImports;
 static  omf_idx         ImportHdl;
 static  array_control   *Imports;
 static  array_control   *SegInfo;
-static  abspatch        *AbsPatches;
+static  abs_patch       *AbsPatches;
 static  segment_id      codeSegId = BACKSEGS;
 static  segment_id      dataSegId;
 static  segdef          *SegDefs;
@@ -1367,7 +1367,7 @@ static  void    SetPatches( void )
 static  void    SetAbsPatches( void )
 /***********************************/
 {
-    abspatch    *apatch;
+    abs_patch   *apatch;
     object      *obj;
 
     obj = CurrSeg->obj;
@@ -1970,7 +1970,7 @@ static  void    DoPatch( obj_patch *patch, offset lc )
 static  void    FiniAbsPatches( void )
 /************************************/
 {
-    abspatch    *apatch;
+    abs_patch   *apatch;
 
     while( (apatch = AbsPatches) != NULL ) {
         AbsPatches = apatch->link;
@@ -2112,10 +2112,10 @@ void    ObjFini( void )
 }
 
 
-static  void    FreeAbsPatch( abspatch *apatch )
-/*********************************************/
+static  void    FreeAbsPatch( abs_patch *apatch )
+/***********************************************/
 {
-    abspatch    **owner;
+    abs_patch   **owner;
 
     for( owner = &AbsPatches; *owner != apatch; ) {
         owner = &(*owner)->link;
@@ -2425,9 +2425,9 @@ void    OutLabel( label_handle lbl )
 void    AbsPatch( abspatch_handle patch_handle, offset lc )
 /*********************************************************/
 {
-    abspatch *apatch;
+    abs_patch   *apatch;
 
-    apatch = (abspatch *)patch_handle;
+    apatch = (abs_patch *)patch_handle;
     if( apatch->flags & AP_HAVE_OFFSET ) {
         DoPatch( &apatch->patch, lc );
         FreeAbsPatch( apatch );
@@ -2675,10 +2675,10 @@ void    OutPatch( label_handle lbl, patch_attr attr )
     tpatch->patch.attr = attr;
 }
 
-abspatch        *NewAbsPatch( void )
+abs_patch       *NewAbsPatch( void )
 /**********************************/
 {
-    abspatch    *apatch;
+    abs_patch   *apatch;
 
     apatch = CGAlloc( sizeof( *apatch ) );
     memset( apatch, 0, sizeof( *apatch ) );
@@ -2813,8 +2813,8 @@ void    OutDataLong( uint_32 value )
 }
 
 
-void    OutAbsPatch( abspatch *apatch, patch_attr attr )
-/******************************************************/
+void    OutAbsPatch( abs_patch *apatch, patch_attr attr )
+/*******************************************************/
 {
     long_offset value;
 
@@ -3118,15 +3118,15 @@ void    OutIBytes( byte pat, offset len )
         obj_data = &CurrSeg->obj->data;
 #if _TARGET & _TARG_80386
         if( _IsntTargetModel( CGSW_X86_EZ_OMF ) ) {
-            OutOffset( len, obj_data );          /* repeat count */
+            OutOffset( len, obj_data );         /* repeat count */
         } else {
-            OutShort( len, obj_data );           /* repeat count */
+            OutShort( len, obj_data );          /* repeat count */
         }
 #else
-        OutShort( len, obj_data );               /* repeat count */
+        OutShort( len, obj_data );              /* repeat count */
 #endif
-        OutShort( 0, obj_data );                 /* nesting count */
-        OutByte( 1, obj_data );                  /* pattern length */
+        OutShort( 0, obj_data );                /* nesting count */
+        OutByte( 1, obj_data );                 /* pattern length */
         OutByte( pat, obj_data );
         if( CurrSeg->comdat_label != NULL ) {
 #if _TARGET & _TARG_80386
