@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -175,7 +175,7 @@ typedef enum {
 typedef struct abspatch {
     struct abspatch         *link;
     object                  *obj;
-    obj_patch               pat;
+    obj_patch               patch;
     long_offset             value;
     abspatch_flags          flags;
 } abspatch;

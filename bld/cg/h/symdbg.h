@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -297,11 +297,11 @@ typedef struct {
 
 typedef struct block_patch {
     struct block_patch      *link;
-    dbg_patch               patch;
+    dbg_patch               dpatch;
 } block_patch;
 
 typedef struct name_entry {
-    dbg_patch               patch;
+    dbg_patch               dpatch;
     dbg_type                refno;
     dbg_type                scope;
     uint                    len;
@@ -311,7 +311,7 @@ typedef struct name_entry {
 typedef struct dbg_block {
     struct dbg_block        *parent;
     dbg_local               *locals;
-    block_patch             *patches;
+    block_patch             *bpatches;
     back_handle             end_lbl;
     uint_32                 start;
 } dbg_block;

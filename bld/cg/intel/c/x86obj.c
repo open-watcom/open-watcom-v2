@@ -476,23 +476,25 @@ static void *allocOut( array_control *dest, unsigned size )
 }
 
 
-static void *allocOutData( array_control *dest, unsigned size )
-/*************************************************************/
+static void *allocOutData( unsigned size )
+/****************************************/
 {
-    unsigned    need;
-    unsigned    i;
+    unsigned        need;
+    unsigned        i;
+    array_control   *obj_data;
 
     i = CurrSeg->location - CurrSeg->obj->start + CurrSeg->data_prefix_size;
     IncLocation( size );
     need = i + size;
-    if( dest->used < need ) {
-        if( need > dest->alloc ) {
-            ReallocArray( dest, need );
+    obj_data = &CurrSeg->obj->data;
+    if( obj_data->used < need ) {
+        if( need > obj_data->alloc ) {
+            ReallocArray( obj_data, need );
         }
-        dest->used = need;
+        obj_data->used = need;
     }
     SetMaxWritten();
-    return( (char *)dest->array + dest->entry * i );
+    return( (char *)obj_data->array + obj_data->entry * i );
 }
 
 
@@ -547,19 +549,21 @@ static  void    OutBuffer( const void *name, unsigned len, array_control *dest )
 static  void    DoASegDef( index_rec *rec, bool use_16 )
 /******************************************************/
 {
-    object      *obj;
-    omf_cmd     cmd;
+    object          *obj;
+    omf_cmd         cmd;
+    array_control   *obj_data;
 
     /* unused parameters */ (void)use_16;
 
     obj = CGAlloc( sizeof( object ) );
+    obj_data = &obj->data;
     rec->obj = obj;
     obj->index = rec->sidx;
     obj->start = rec->location;
-    obj->patches = NULL;
+    obj->tpatches = NULL;
     obj->gen_static_exports = false;
     obj->pending_line_number = 0;
-    FillArray( &obj->data, sizeof( byte ), MODEST_OBJ, INCREMENT_OBJ );
+    FillArray( obj_data, sizeof( byte ), MODEST_OBJ, INCREMENT_OBJ );
     FillArray( &obj->fixes, sizeof( byte ), NOMINAL_FIX, INCREMENT_FIX );
     if( rec->exec ) { /* try to bag all the memory we'll need now*/
         obj->exports = InitArray( sizeof( byte ), MODEST_EXP, INCREMENT_EXP );
@@ -569,23 +573,23 @@ static  void    DoASegDef( index_rec *rec, bool use_16 )
     obj->lines = NULL;
     obj->last_line = 0;
     obj->last_offset = 0;
-    OutByte( rec->attr, &obj->data );
+    OutByte( rec->attr, obj_data );
 #if _TARGET & _TARG_80386
-    OutOffset( 0, &obj->data );         /* segment size (for now) */
+    OutOffset( 0, obj_data );         /* segment size (for now) */
 #else  //SEG32DBG dwarf, codeview
     if( rec->attr & SEG_USE_32 ) {
-        OutLongOffset( 0, &obj->data ); /* segment size (for now) */
+        OutLongOffset( 0, obj_data ); /* segment size (for now) */
     } else {
-        OutOffset( 0, &obj->data );     /* segment size (for now) */
+        OutOffset( 0, obj_data );     /* segment size (for now) */
     }
 #endif
-    OutIdx( rec->nidx, &obj->data );    /* segment name index */
-    OutIdx( rec->cidx, &obj->data );    /* class name index */
-    OutIdx( _NIDX_NULL, &obj->data );   /* overlay name index */
+    OutIdx( rec->nidx, obj_data );    /* segment name index */
+    OutIdx( rec->cidx, obj_data );    /* class name index */
+    OutIdx( _NIDX_NULL, obj_data );   /* overlay name index */
 #if _TARGET & _TARG_80386
     if( _IsTargetModel( CGSW_X86_EZ_OMF ) ) {
         if( _IsntTargetModel( CGSW_X86_USE_32 ) || use_16 ) {
-            OutByte( 2, &obj->data );   /* to indicate USE16 EXECUTE/READ */
+            OutByte( 2, obj_data );   /* to indicate USE16 EXECUTE/READ */
         }
     }
 #endif
@@ -608,12 +612,12 @@ static  void    DoASegDef( index_rec *rec, bool use_16 )
         cmd = CMD_SEGDEF;
     }
 #endif
-    PutObjOMFRec( cmd, &obj->data );
+    PutObjOMFRec( cmd, obj_data );
     if( rec->exec ) {
-        OutShort( LINKER_COMMENT, &obj->data );
-        OutByte( LDIR_OPT_FAR_CALLS, &obj->data );
-        OutIdx( rec->sidx, &obj->data );
-        PutObjOMFRec( CMD_COMENT, &obj->data );
+        OutShort( LINKER_COMMENT, obj_data );
+        OutByte( LDIR_OPT_FAR_CALLS, obj_data );
+        OutIdx( rec->sidx, obj_data );
+        PutObjOMFRec( CMD_COMENT, obj_data );
     }
     rec->location = 0;
 }
@@ -1344,19 +1348,18 @@ static  void    EjectImports( void )
 static  void    SetPatches( void )
 /********************************/
 {
-    temp_patch          *curr_pat;
-    temp_patch          *next;
-    array_control       *ctl;
-    obj_patch           *pat;
+    temp_patch          *tpatch;
+    array_control       *lbl_patches;
+    obj_patch           *patch;
 
-    for( curr_pat = CurrSeg->obj->patches; curr_pat != NULL; curr_pat = next ) {
-        ctl = AskLblPatch( curr_pat->lbl );
-        pat = allocOut( ctl, 1 );
-        pat->ref = AskObjHandle();
-        pat->where = curr_pat->pat.where;
-        pat->attr = curr_pat->pat.attr;
-        next = curr_pat->link;
-        CGFree( curr_pat );
+    while( (tpatch = CurrSeg->obj->tpatches) != NULL ) {
+        CurrSeg->obj->tpatches = tpatch->link;
+        lbl_patches = AskLblPatch( tpatch->lbl );
+        patch = allocOut( lbl_patches, 1 );
+        patch->ref = AskObjHandle();
+        patch->where = tpatch->patch.where;
+        patch->attr = tpatch->patch.attr;
+        CGFree( tpatch );
     }
 }
 
@@ -1364,14 +1367,14 @@ static  void    SetPatches( void )
 static  void    SetAbsPatches( void )
 /***********************************/
 {
-    abspatch    *patch;
+    abspatch    *apatch;
     object      *obj;
 
     obj = CurrSeg->obj;
-    for( patch = AbsPatches; patch != NULL; patch = patch->link ) {
-        if( patch->pat.ref == INVALID_OBJHANDLE && patch->obj == obj ) {
-            patch->pat.ref = AskObjHandle();
-            patch->flags |= AP_HAVE_OFFSET;
+    for( apatch = AbsPatches; apatch != NULL; apatch = apatch->link ) {
+        if( apatch->patch.ref == INVALID_OBJHANDLE && apatch->obj == obj ) {
+            apatch->patch.ref = AskObjHandle();
+            apatch->flags |= AP_HAVE_OFFSET;
         }
     }
 }
@@ -1380,14 +1383,14 @@ static  void    SetAbsPatches( void )
 static void     EjectLEData( void )
 /*********************************/
 {
-    object      *obj;
-    omf_cmd     cmd;
+    array_control   *obj_data;
+    omf_cmd         cmd;
 
     EjectImports();
     if( CurrSeg->obj->data.used > CurrSeg->data_prefix_size ) {
         SetPatches();
         SetAbsPatches();
-        obj = CurrSeg->obj;
+        obj_data = &CurrSeg->obj->data;
         if( CurrSeg->comdat_label != NULL ) {
 #if _TARGET & _TARG_80386
             if( _IsntTargetModel( CGSW_X86_EZ_OMF ) ) {
@@ -1414,12 +1417,12 @@ static void     EjectLEData( void )
             }
 #endif
         }
-        PutObjOMFRec( cmd, &obj->data );
-        if( obj->fixes.used > 0 ) {
+        PutObjOMFRec( cmd, obj_data );
+        if( CurrSeg->obj->fixes.used > 0 ) {
             if( CurrSeg->data_ptr_in_code ) {
-                OutShort( LINKER_COMMENT, &obj->data );
-                OutByte( LDIR_OPT_UNSAFE, &obj->data );
-                PutObjOMFRec( CMD_COMENT, &obj->data );
+                OutShort( LINKER_COMMENT, obj_data );
+                OutByte( LDIR_OPT_UNSAFE, obj_data );
+                PutObjOMFRec( CMD_COMENT, obj_data );
             }
 #if _TARGET & _TARG_80386
             if( _IsntTargetModel( CGSW_X86_EZ_OMF ) ) {
@@ -1430,10 +1433,9 @@ static void     EjectLEData( void )
 #else
             cmd = CMD_FIXUPP;
 #endif
-            PutObjOMFRec( cmd, &obj->fixes );
+            PutObjOMFRec( cmd, &CurrSeg->obj->fixes );
         }
         CurrSeg->data_ptr_in_code = false;
-        obj->patches = NULL;
     }
 }
 
@@ -1458,7 +1460,7 @@ static omf_idx NeedComdatNidx( import_kind kind )
 void    OutSelect( bool starts )
 /******************************/
 {
-    object      *obj;
+    array_control   *obj_data;
 
     if( starts ) {
         selIdx = CurrSeg->sidx;
@@ -1466,22 +1468,22 @@ void    OutSelect( bool starts )
     } else if( selIdx != 0 ) {
         if( !CurrSeg->start_data_in_code ) {
             EjectLEData();
-            obj = CurrSeg->obj;
-            OutShort( DISASM_COMMENT, &obj->data );
+            obj_data = &CurrSeg->obj->data;
+            OutShort( DISASM_COMMENT, obj_data );
 #if _TARGET & _TARG_80386
-            OutByte( DDIR_SCAN_TABLE_32, &obj->data );
+            OutByte( DDIR_SCAN_TABLE_32, obj_data );
 #else
-            OutByte( DDIR_SCAN_TABLE, &obj->data );
+            OutByte( DDIR_SCAN_TABLE, obj_data );
 #endif
             if( CurrSeg->comdat_label != NULL ) {
-                OutIdx( 0, &obj->data );
-                OutIdx( NeedComdatNidx( NORMAL ), &obj->data );
+                OutIdx( 0, obj_data );
+                OutIdx( NeedComdatNidx( NORMAL ), obj_data );
             } else {
-                OutIdx( selIdx, &obj->data );
+                OutIdx( selIdx, obj_data );
             }
-            OutOffset( SelStart, &obj->data );
-            OutOffset( (offset)CurrSeg->location, &obj->data );
-            PutObjOMFRec( CMD_COMENT, &obj->data );
+            OutOffset( SelStart, obj_data );
+            OutOffset( (offset)CurrSeg->location, obj_data );
+            PutObjOMFRec( CMD_COMENT, obj_data );
         }
         selIdx = 0;
     }
@@ -1491,50 +1493,48 @@ void    OutSelect( bool starts )
 static  void    OutLEDataStart( bool iterated )
 /*********************************************/
 {
-    byte        flag;
-    index_rec   *rec;
-    object      *obj;
+    byte            flag;
+    array_control   *obj_data;
 
-    rec = CurrSeg;
-    obj = rec->obj;
-    if( obj->data.used == 0 ) {
-        if( rec->comdat_label != NULL ) {
+    obj_data = &CurrSeg->obj->data;
+    if( obj_data->used == 0 ) {
+        if( CurrSeg->comdat_label != NULL ) {
             flag = 0;
-            if( rec->location != 0 )
+            if( CurrSeg->location != 0 )
                 flag |= 1; /* continued */
             if( iterated )
                 flag |= 2;   /* LIDATA form */
-            if( (FEAttr( rec->comdat_symbol ) & FE_GLOBAL) == 0 ) {
+            if( (FEAttr( CurrSeg->comdat_symbol ) & FE_GLOBAL) == 0 ) {
                 flag |= 0x4;    /* local comdat */
             }
-            OutByte( flag, &obj->data );
-            OutByte( 0x10, &obj->data );
-            OutByte( 0, &obj->data );
-            OutOffset( (offset)rec->location, &obj->data );
-            OutIdx( 0, &obj->data );
-            if( rec->btype == BASE_GRP ) {
-                OutIdx( CurrSeg->base, &obj->data );   /* group index*/
+            OutByte( flag, obj_data );
+            OutByte( 0x10, obj_data );
+            OutByte( 0, obj_data );
+            OutOffset( (offset)CurrSeg->location, obj_data );
+            OutIdx( 0, obj_data );
+            if( CurrSeg->btype == BASE_GRP ) {
+                OutIdx( CurrSeg->base, obj_data );   /* group index*/
             } else {
-                OutIdx( 0, &obj->data );
+                OutIdx( 0, obj_data );
             }
-            OutIdx( rec->sidx, &obj->data );   /* segment index*/
-            OutIdx( NeedComdatNidx( NORMAL ), &obj->data );
+            OutIdx( CurrSeg->sidx, obj_data );   /* segment index*/
+            OutIdx( NeedComdatNidx( NORMAL ), obj_data );
         } else { // LEDATA
-            OutIdx( rec->sidx, &obj->data );
+            OutIdx( CurrSeg->sidx, obj_data );
 #if _TARGET & _TARG_80386
-            OutOffset( (offset)rec->location, &obj->data );
+            OutOffset( (offset)CurrSeg->location, obj_data );
 #else  //SEG32DBG dwarf, codeview
-            if( rec->attr & SEG_USE_32 ) {
-                OutLongOffset( rec->location, &obj->data );
+            if( CurrSeg->attr & SEG_USE_32 ) {
+                OutLongOffset( CurrSeg->location, obj_data );
             } else {
-                OutOffset( (offset)rec->location, &obj->data );
+                OutOffset( (offset)CurrSeg->location, obj_data );
             }
 #endif
         }
-        obj->start = rec->location;
-        rec->data_prefix_size = obj->data.used;
+        CurrSeg->obj->start = CurrSeg->location;
+        CurrSeg->data_prefix_size = obj_data->used;
     }
-    if( rec->start_data_in_code ) {
+    if( CurrSeg->start_data_in_code ) {
         OutSelect( true );
     }
 }
@@ -1931,37 +1931,37 @@ static void DoSegARange( offset *codesize, index_rec *rec )
     }
 }
 
-static  void    DoPatch( obj_patch *pat, offset lc )
-/**************************************************/
+static  void    DoPatch( obj_patch *patch, offset lc )
+/****************************************************/
 {
     uint_32     lword_val;
     uint_16     word_val;
     byte        byte_val;
 
-    if( pat->attr & LONG_PATCH ) {
-        if( pat->attr & ADD_PATCH ) {
-            GetFromObj( pat->ref, pat->where, (byte *)&lword_val, sizeof( lword_val ) );
+    if( patch->attr & LONG_PATCH ) {
+        if( patch->attr & ADD_PATCH ) {
+            GetFromObj( patch->ref, patch->where, (byte *)&lword_val, sizeof( lword_val ) );
             _TargetAddL( lword_val, lc );
         } else {
             lword_val = _TargetLongInt( lc );
         }
-        PatchObj( pat->ref, pat->where, (byte *)&lword_val, sizeof( lword_val ) );
-    } else if( pat->attr & WORD_PATCH ) {
-        if( pat->attr & ADD_PATCH ) {
-            GetFromObj( pat->ref, pat->where, (byte *)&word_val, sizeof( word_val ) );
+        PatchObj( patch->ref, patch->where, (byte *)&lword_val, sizeof( lword_val ) );
+    } else if( patch->attr & WORD_PATCH ) {
+        if( patch->attr & ADD_PATCH ) {
+            GetFromObj( patch->ref, patch->where, (byte *)&word_val, sizeof( word_val ) );
             _TargetAddW( word_val, lc );
         } else {
             word_val = _TargetShort( lc );
         }
-        PatchObj( pat->ref, pat->where, (byte *)&word_val, sizeof( word_val ) );
+        PatchObj( patch->ref, patch->where, (byte *)&word_val, sizeof( word_val ) );
     } else {
-        if( pat->attr & ADD_PATCH ) {
-            GetFromObj( pat->ref, pat->where, (byte *)&byte_val, sizeof( byte_val ) );
+        if( patch->attr & ADD_PATCH ) {
+            GetFromObj( patch->ref, patch->where, (byte *)&byte_val, sizeof( byte_val ) );
             byte_val += lc;
         } else {
             byte_val = lc;
         }
-        PatchObj( pat->ref, pat->where, (byte *)&byte_val, sizeof( byte_val ) );
+        PatchObj( patch->ref, patch->where, (byte *)&byte_val, sizeof( byte_val ) );
     }
 }
 
@@ -1970,13 +1970,12 @@ static  void    DoPatch( obj_patch *pat, offset lc )
 static  void    FiniAbsPatches( void )
 /************************************/
 {
-    abspatch    *patch;
-    abspatch    *next;
+    abspatch    *apatch;
 
-    for( patch = AbsPatches; patch != NULL; patch = next ) {
-        next = patch->link;
-        DoPatch( &patch->pat, (offset)patch->value );
-        CGFree( patch );
+    while( (apatch = AbsPatches) != NULL ) {
+        AbsPatches = apatch->link;
+        DoPatch( &apatch->patch, (offset)apatch->value );
+        CGFree( apatch );
     }
 }
 
@@ -2113,16 +2112,16 @@ void    ObjFini( void )
 }
 
 
-static  void    FreeAbsPatch( abspatch *patch )
+static  void    FreeAbsPatch( abspatch *apatch )
 /*********************************************/
 {
     abspatch    **owner;
 
-    for( owner = &AbsPatches; *owner != patch; ) {
+    for( owner = &AbsPatches; *owner != apatch; ) {
         owner = &(*owner)->link;
     }
     *owner = (*owner)->link;
-    CGFree( patch );
+    CGFree( apatch );
 }
 
 
@@ -2274,8 +2273,8 @@ static  void    ComdatData( label_handle lbl, cg_sym_handle sym )
 static void     OutVirtFuncRef( cg_sym_handle virt )
 /***********************************************/
 {
-    object      *obj;
-    omf_idx     extdef;
+    array_control   *obj_data;
+    omf_idx         extdef;
 
     if( virt == NULL ) {
         extdef = NOT_IMPORTED;
@@ -2283,42 +2282,42 @@ static void     OutVirtFuncRef( cg_sym_handle virt )
         extdef = GenImport( virt, false );
     }
     EjectLEData();
-    obj = CurrSeg->obj;
-    OutShort( LINKER_COMMENT, &obj->data );
-    OutByte( LDIR_VF_REFERENCE, &obj->data );
-    OutIdx( extdef, &obj->data );
+    obj_data = &CurrSeg->obj->data;
+    OutShort( LINKER_COMMENT, obj_data );
+    OutByte( LDIR_VF_REFERENCE, obj_data );
+    OutIdx( extdef, obj_data );
     if( CurrSeg->comdat_symbol != NULL ) {
-        OutIdx( 0, &obj->data );
-        OutIdx( NeedComdatNidx( NORMAL ), &obj->data );
+        OutIdx( 0, obj_data );
+        OutIdx( NeedComdatNidx( NORMAL ), obj_data );
     } else {
-        OutIdx( CurrSeg->sidx, &obj->data );
+        OutIdx( CurrSeg->sidx, obj_data );
     }
-    PutObjOMFRec( CMD_COMENT, &obj->data );
+    PutObjOMFRec( CMD_COMENT, obj_data );
 }
 
 
 void    OutDLLExport( uint words, cg_sym_handle sym )
 /***************************************************/
 {
-    object      *obj;
+    array_control   *obj_data;
 
     /* unused parameters */ (void)words;
 
     SetUpObj( false );
     EjectLEData();
-    obj = CurrSeg->obj;
-    OutShort( EXPORT_COMMENT, &obj->data );
-    OutByte( 2, &obj->data );
+    obj_data = &CurrSeg->obj->data;
+    OutShort( EXPORT_COMMENT, obj_data );
+    OutByte( 2, obj_data );
 #if _TARGET & _TARG_8086
-    OutByte( words, &obj->data );
+    OutByte( words, obj_data );
 #else
     // this should be 0 for everything except callgates to
     // 16-bit segments (from MS Knowledge Base)
-    OutByte( 0, &obj->data );
+    OutByte( 0, obj_data );
 #endif
-    OutObjectName( sym, &obj->data );
-    OutByte( 0, &obj->data );
-    PutObjOMFRec( CMD_COMENT, &obj->data );
+    OutObjectName( sym, obj_data );
+    OutByte( 0, obj_data );
+    PutObjOMFRec( CMD_COMENT, obj_data );
 }
 
 
@@ -2326,11 +2325,11 @@ void    OutLabel( label_handle lbl )
 /**********************************/
 {
     temp_patch          **owner;
-    temp_patch          *curr_pat;
-    array_control       *ctl;
-    obj_patch           *pat;
+    temp_patch          *tpatch;
+    array_control       *lbl_patches;
+    obj_patch           *patch;
     unsigned            i;
-    pointer             patptr;
+    pointer             patchptr;
     object              *obj;
     offset              lc;
     cg_sym_handle       sym;
@@ -2381,44 +2380,44 @@ void    OutLabel( label_handle lbl )
     for( i = SegInfo->used; i-- > 0; ) {
         obj = _ARRAYOF( SegInfo, index_rec )[i].obj;
         if( obj != NULL ) { /* twas flushed and not redefined*/
-            owner = &obj->patches;
+            owner = &obj->tpatches;
             for( ;; ) {
-                curr_pat = *owner;
-                if( curr_pat == NULL )
+                tpatch = *owner;
+                if( tpatch == NULL )
                     break;
-                if( curr_pat->lbl == lbl ) {
-                    patptr = &_ARRAYOF( &obj->data, byte )[curr_pat->pat.where];
-                    if( curr_pat->pat.attr & ADD_PATCH ) {
-                        if( curr_pat->pat.attr & LONG_PATCH ) {
-                            _TargetAddL( *(uint_32 *)patptr, lc );
-                        } else if( curr_pat->pat.attr & WORD_PATCH ) {
-                            _TargetAddW( *(uint_16 *)patptr, lc );
+                if( tpatch->lbl == lbl ) {
+                    patchptr = &_ARRAYOF( &obj->data, byte )[tpatch->patch.where];
+                    if( tpatch->patch.attr & ADD_PATCH ) {
+                        if( tpatch->patch.attr & LONG_PATCH ) {
+                            _TargetAddL( *(uint_32 *)patchptr, lc );
+                        } else if( tpatch->patch.attr & WORD_PATCH ) {
+                            _TargetAddW( *(uint_16 *)patchptr, lc );
                         } else {
-                            *(byte *)patptr += lc;
+                            *(byte *)patchptr += lc;
                         }
                     } else {
-                        if( curr_pat->pat.attr & LONG_PATCH ) {
-                            *(uint_32 *)patptr = _TargetLongInt( lc );
-                        } else if( curr_pat->pat.attr & WORD_PATCH ) {
-                            *(uint_16 *)patptr = _TargetShort( lc );
+                        if( tpatch->patch.attr & LONG_PATCH ) {
+                            *(uint_32 *)patchptr = _TargetLongInt( lc );
+                        } else if( tpatch->patch.attr & WORD_PATCH ) {
+                            *(uint_16 *)patchptr = _TargetShort( lc );
                         } else {
-                            *(byte *)patptr = lc;
+                            *(byte *)patchptr = lc;
                         }
                     }
-                    *owner = curr_pat->link;
-                    CGFree( curr_pat );
+                    *owner = tpatch->link;
+                    CGFree( tpatch );
                 } else {
-                    owner = &curr_pat->link;
+                    owner = &tpatch->link;
                 }
             }
         }
     }
-    ctl = AskLblPatch( lbl );
-    pat = ctl->array;
-    for( i = ctl->used; i > 0; --i ) {
-        DoPatch( pat++, lc );
+    lbl_patches = AskLblPatch( lbl );
+    patch = lbl_patches->array;
+    for( i = lbl_patches->used; i > 0; --i ) {
+        DoPatch( patch++, lc );
     }
-    KillArray( ctl );
+    KillArray( lbl_patches );
     TellDonePatch( lbl );
 }
 
@@ -2426,13 +2425,15 @@ void    OutLabel( label_handle lbl )
 void    AbsPatch( abspatch_handle patch_handle, offset lc )
 /*********************************************************/
 {
-    abspatch *patch = (abspatch *)patch_handle;
-    if( patch->flags & AP_HAVE_OFFSET ) {
-        DoPatch( &patch->pat, lc );
-        FreeAbsPatch( patch );
+    abspatch *apatch;
+
+    apatch = (abspatch *)patch_handle;
+    if( apatch->flags & AP_HAVE_OFFSET ) {
+        DoPatch( &apatch->patch, lc );
+        FreeAbsPatch( apatch );
     } else {
-        patch->value = lc;
-        patch->flags |= AP_HAVE_VALUE;
+        apatch->value = lc;
+        apatch->flags |= AP_HAVE_VALUE;
     }
 }
 
@@ -2661,31 +2662,29 @@ void    OutFPPatch( fp_patches i )
 void    OutPatch( label_handle lbl, patch_attr attr )
 /***************************************************/
 {
-    temp_patch  *pat;
-    object      *obj;
+    temp_patch  *tpatch;
 
-     /* careful, might be patching offset of seg:off*/
+    /* careful, might be patching offset of seg:off */
     CheckLEDataSize( 3 * sizeof( offset ), true );
-    pat = CGAlloc( sizeof( temp_patch ));
-    obj = CurrSeg->obj;
-    pat->link = obj->patches;
-    pat->lbl = lbl;
-    pat->pat.ref = INVALID_OBJHANDLE;
-    pat->pat.where = CurrSeg->location - obj->start + CurrSeg->data_prefix_size;
-    pat->pat.attr = attr;
-    obj->patches = pat;
+    tpatch = CGAlloc( sizeof( temp_patch ));
+    tpatch->link = CurrSeg->obj->tpatches;
+    CurrSeg->obj->tpatches = tpatch;
+    tpatch->lbl = lbl;
+    tpatch->patch.ref = INVALID_OBJHANDLE;
+    tpatch->patch.where = CurrSeg->location - CurrSeg->obj->start + CurrSeg->data_prefix_size;
+    tpatch->patch.attr = attr;
 }
 
 abspatch        *NewAbsPatch( void )
 /**********************************/
 {
-    abspatch    *new;
+    abspatch    *apatch;
 
-    new = CGAlloc( sizeof( *new ) );
-    memset( new, 0, sizeof( *new ) );
-    new->link = AbsPatches;
-    AbsPatches = new;
-    return( new );
+    apatch = CGAlloc( sizeof( *apatch ) );
+    memset( apatch, 0, sizeof( *apatch ) );
+    apatch->link = AbsPatches;
+    AbsPatches = apatch;
+    return( apatch );
 }
 
 
@@ -2793,7 +2792,7 @@ void    OutDataByte( byte value )
 {
     SetPendingLine();
     CheckLEDataSize( sizeof( byte ), true );
-    *(byte *)allocOutData( &CurrSeg->obj->data, sizeof( byte ) ) = value;
+    *(byte *)allocOutData( sizeof( byte ) ) = value;
 }
 
 void    OutDataShort( uint_16 value )
@@ -2801,7 +2800,7 @@ void    OutDataShort( uint_16 value )
 {
     SetPendingLine();
     CheckLEDataSize( sizeof( uint_16 ), true );
-    *(uint_16 *)allocOutData( &CurrSeg->obj->data, sizeof( uint_16 ) ) = _TargetShort( value );
+    *(uint_16 *)allocOutData( sizeof( uint_16 ) ) = _TargetShort( value );
 }
 
 
@@ -2810,26 +2809,24 @@ void    OutDataLong( uint_32 value )
 {
     SetPendingLine();
     CheckLEDataSize( sizeof( uint_32 ), true );
-    *(uint_32 *)allocOutData( &CurrSeg->obj->data, sizeof( uint_32 ) ) = _TargetLongInt( value );
+    *(uint_32 *)allocOutData( sizeof( uint_32 ) ) = _TargetLongInt( value );
 }
 
 
-void    OutAbsPatch( abspatch *patch, patch_attr attr )
-/*****************************************************/
+void    OutAbsPatch( abspatch *apatch, patch_attr attr )
+/******************************************************/
 {
-    object      *obj;
     long_offset value;
 
     CheckLEDataSize( 2 * sizeof( offset ), true );
-    if( patch->flags & AP_HAVE_VALUE ) {
-        value = patch->value;
-        FreeAbsPatch( patch );
+    if( apatch->flags & AP_HAVE_VALUE ) {
+        value = apatch->value;
+        FreeAbsPatch( apatch );
     } else {
-        obj = CurrSeg->obj;
-        patch->obj = obj;
-        patch->pat.ref = INVALID_OBJHANDLE;
-        patch->pat.where = CurrSeg->location - obj->start + CurrSeg->data_prefix_size;
-        patch->pat.attr = attr;
+        apatch->obj = CurrSeg->obj;
+        apatch->patch.ref = INVALID_OBJHANDLE;
+        apatch->patch.where = CurrSeg->location - CurrSeg->obj->start + CurrSeg->data_prefix_size;
+        apatch->patch.attr = attr;
         value = 0;
     }
     if( attr & LONG_PATCH ) {
@@ -3092,7 +3089,7 @@ void    OutDBytes( unsigned len, const byte *src )
         } else {
             n = len;
         }
-        memcpy( allocOutData( &CurrSeg->obj->data, n ), src, n );
+        memcpy( allocOutData( n ), src, n );
         src += n;
         len -= n;
         if( len == 0 )
@@ -3107,8 +3104,8 @@ void    OutDBytes( unsigned len, const byte *src )
 void    OutIBytes( byte pat, offset len )
 /***************************************/
 {
-    omf_cmd     cmd;
-    object      *obj;
+    omf_cmd         cmd;
+    array_control   *obj_data;
 
     SetPendingLine();
     if( len <= TRADEOFF ) {
@@ -3118,19 +3115,19 @@ void    OutIBytes( byte pat, offset len )
     } else {
         EjectLEData();
         OutLEDataStart( true );
-        obj = CurrSeg->obj;
+        obj_data = &CurrSeg->obj->data;
 #if _TARGET & _TARG_80386
         if( _IsntTargetModel( CGSW_X86_EZ_OMF ) ) {
-            OutOffset( len, &obj->data );          /* repeat count */
+            OutOffset( len, obj_data );          /* repeat count */
         } else {
-            OutShort( len, &obj->data );           /* repeat count */
+            OutShort( len, obj_data );           /* repeat count */
         }
 #else
-        OutShort( len, &obj->data );               /* repeat count */
+        OutShort( len, obj_data );               /* repeat count */
 #endif
-        OutShort( 0, &obj->data );                 /* nesting count */
-        OutByte( 1, &obj->data );                  /* pattern length */
-        OutByte( pat, &obj->data );
+        OutShort( 0, obj_data );                 /* nesting count */
+        OutByte( 1, obj_data );                  /* pattern length */
+        OutByte( pat, obj_data );
         if( CurrSeg->comdat_label != NULL ) {
 #if _TARGET & _TARG_80386
             if( _IsntTargetModel( CGSW_X86_EZ_OMF ) ) {
@@ -3152,7 +3149,7 @@ void    OutIBytes( byte pat, offset len )
             cmd = CMD_LIDATA;
 #endif
         }
-        PutObjOMFRec( cmd, &obj->data );
+        PutObjOMFRec( cmd, obj_data );
         IncLocation( len );
         SetMaxWritten();
     }

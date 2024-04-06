@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -539,8 +539,8 @@ void    CVDumpName( dbg_name name, dbg_type tipe )
             mod->attr.s = 0;
             mod->index = tipe;
             here = EndTypeString( out );
-            name->patch.segid = CVTypes;
-            name->patch.offset = 2 + here + offsetof(lf_modifier, f.index ) ;
+            name->dpatch.segid = CVTypes;
+            name->dpatch.offset = 2 + here + offsetof(lf_modifier, f.index ) ;
         }
     }
     name->refno = tipe;
@@ -552,9 +552,9 @@ void CVBackRefType( dbg_name name, dbg_type tipe )
     long_offset     here;
     segment_id      old_segid;
 
-    old_segid = SetOP( name->patch.segid );
+    old_segid = SetOP( name->dpatch.segid );
     here = AskBigLocation();
-    SetBigLocation( name->patch.offset );
+    SetBigLocation( name->dpatch.offset );
     DataShort( tipe );
     SetBigLocation( here );
     SetOP( old_segid );

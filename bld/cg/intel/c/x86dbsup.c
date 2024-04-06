@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -62,7 +62,7 @@ void    BuffEnd( segment_id segid )
     segment_id          old_segid;
     byte                *buff;
     type_def            *ptr_type;
-    dbg_patch           *save;
+    dbg_patch           *dpatch;
     uint                i;
     uint                last;
     uint                size;
@@ -89,9 +89,9 @@ void    BuffEnd( segment_id segid )
             buff += 2 + WORD_SIZE;
             break;
         case FIX_FORWARD:
-            save = CurrBuff->fix[i].p;
-            save->segid = segid;
-            save->offset = AskLocation();
+            dpatch = CurrBuff->fix[i].p;
+            dpatch->segid = segid;
+            dpatch->offset = AskLocation();
             break;
         }
     }

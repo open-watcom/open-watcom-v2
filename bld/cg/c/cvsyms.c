@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -687,7 +687,7 @@ void    CVBlkBeg( dbg_block *blk, offset lc )
 
 
     bpatch = CGAlloc( sizeof( block_patch ) );
-    blk->patches = bpatch;
+    blk->bpatches = bpatch;
     NewBuff( out, CVSyms );
     ptr = StartSym(  out, SG_BLOCK );
     ptr->pParent = 0;
@@ -698,7 +698,7 @@ void    CVBlkBeg( dbg_block *blk, offset lc )
     nm = out->ptr;     /* mark name */
     CVPutNullStr( out );
     EndSym( out );
-    dpatch = &blk->patches->patch;
+    dpatch = &blk->bpatches->dpatch;
     BuffPatchSet( CVSyms, dpatch );
     BuffWrite( out, &ptr->offset );
     sym = AskForLblSym( CurrProc->label );
@@ -718,7 +718,7 @@ void    CVBlkEnd( dbg_block *blk, offset lc )
     dbg_patch           *dpatch;
     cv_out              out[1];
 
-    dpatch = &blk->patches->patch;
+    dpatch = &blk->bpatches->dpatch;
     old_segid = SetOP( dpatch->segid );
     here = AskBigLocation();
     SetBigLocation( dpatch->offset + offsetof( s_block, f.length ) );
@@ -730,7 +730,7 @@ void    CVBlkEnd( dbg_block *blk, offset lc )
     StartSym(  out, SG_END );
     EndSym( out );
     buffEnd( out );
-    CGFree( blk->patches );
+    CGFree( blk->bpatches );
 }
 
 void    CVEpiBeg( dbg_rtn *rtn, offset lc )

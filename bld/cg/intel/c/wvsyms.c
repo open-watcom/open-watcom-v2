@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -63,12 +63,12 @@ static  void    DumpDbgBlkStart( dbg_block *blk, offset lc ) {
     segment_id  old_segid;
 
     old_segid = AskOP();
-    while( blk->patches != NULL ) {
-        bpatch = blk->patches;
-        blk->patches = bpatch->link;
-        SetOP( bpatch->patch.segid );
+    while( blk->bpatches != NULL ) {
+        bpatch = blk->bpatches;
+        blk->bpatches = bpatch->link;
+        SetOP( bpatch->dpatch.segid );
         off = AskLocation();
-        SetLocation( bpatch->patch.offset );
+        SetLocation( bpatch->dpatch.offset );
         DataShort( off );
         SetLocation( off );
         CGFree( bpatch );
@@ -89,9 +89,9 @@ static  void    DumpParentPtr( dbg_block *blk ) {
         BuffWord( 0 );
    } else {
         bpatch = CGAlloc( sizeof( block_patch ) );
-        bpatch->link = blk->patches;
-        blk->patches = bpatch;
-        BuffForward( &bpatch->patch );
+        bpatch->link = blk->bpatches;
+        blk->bpatches = bpatch;
+        BuffForward( &bpatch->dpatch );
     }
 }
 

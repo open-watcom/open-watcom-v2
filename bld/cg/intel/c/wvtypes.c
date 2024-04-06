@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -173,7 +173,7 @@ void    WVDumpName( dbg_name name, dbg_type tipe )
     if( _IsModel( CGSW_GEN_DBG_TYPES ) ) {
         BuffIndex( name->scope );
         if( tipe == DBG_FWD_TYPE ) {
-            BuffForward( &name->patch );
+            BuffForward( &name->dpatch );
         } else {
             BuffIndex( tipe );
         }
@@ -188,9 +188,9 @@ void WVBackRefType( dbg_name name, dbg_type tipe )
     offset      here;
     segment_id  old_segid;
 
-    old_segid = SetOP( name->patch.segid );
+    old_segid = SetOP( name->dpatch.segid );
     here = AskLocation();
-    SetLocation( name->patch.offset );
+    SetLocation( name->dpatch.offset );
     DataShort( 0x80 | (tipe >> 8) | (tipe << 8) );
     SetLocation( here );
     SetOP( old_segid );
