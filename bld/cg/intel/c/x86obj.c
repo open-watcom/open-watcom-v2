@@ -452,56 +452,72 @@ static array_control *InitArray( unsigned size, unsigned starting, unsigned incr
 }
 
 
-static  void    OutByte( byte value, array_control *dest )
-/********************************************************/
+static  void    SetMaxWritten( void )
+/***********************************/
+{
+    if( CurrSeg->max_written < CurrSeg->location ) {
+        CurrSeg->max_written = CurrSeg->location;
+    }
+}
+
+
+static void *allocOut( array_control *dest, unsigned size )
+/*********************************************************/
 {
     unsigned    need;
 
-    need = dest->used + 1;
+    need = dest->used + size;
     if( need > dest->alloc ) {
         ReallocArray( dest, need );
     }
-    _ARRAY( dest, byte ) = value;
+    size = dest->used;
     dest->used = need;
+    return( (char *)dest->array + dest->entry * size );
+}
+
+
+static void *allocOutData( array_control *dest, unsigned size )
+/*************************************************************/
+{
+    unsigned    need;
+    unsigned    i;
+
+    i = CurrSeg->location - CurrSeg->obj->start + CurrSeg->data_prefix_size;
+    IncLocation( size );
+    need = i + size;
+    if( dest->used < need ) {
+        if( need > dest->alloc ) {
+            ReallocArray( dest, need );
+        }
+        dest->used = need;
+    }
+    SetMaxWritten();
+    return( (char *)dest->array + dest->entry * i );
+}
+
+
+static  void    OutByte( byte value, array_control *dest )
+/********************************************************/
+{
+    *(byte *)allocOut( dest, sizeof( byte ) ) = value;
 }
 
 static  void    OutShort( uint_16 value, array_control *dest )
 /************************************************************/
 {
-    unsigned    need;
-
-    need = dest->used + sizeof( uint_16 );
-    if( need > dest->alloc ) {
-        ReallocArray( dest, need );
-    }
-    _ARRAY( dest, uint_16 ) = _TargetShort( value );
-    dest->used = need;
+    *(uint_16 *)allocOut( dest, sizeof( uint_16 ) ) = _TargetShort( value );
 }
 
 static  void    OutLongInt( uint_32 value, array_control *dest )
 /**************************************************************/
 {
-    unsigned    need;
-
-    need = dest->used + sizeof( uint_32 );
-    if( need > dest->alloc ) {
-        ReallocArray( dest, need );
-    }
-    _ARRAY( dest, uint_32 ) = _TargetLongInt( value );
-    dest->used = need;
+    *(uint_32 *)allocOut( dest, sizeof( uint_32 ) ) = _TargetLongInt( value );
 }
 
 static  void    OutOffset( offset value, array_control *dest )
 /************************************************************/
 {
-    unsigned    need;
-
-    need = dest->used + sizeof( offset );
-    if( need > dest->alloc ) {
-        ReallocArray( dest, need );
-    }
-    _ARRAY( dest, offset ) = _TargetOffset( value );
-    dest->used = need;
+    *(offset *)allocOut( dest, sizeof( offset ) ) = _TargetOffset( value );
 }
 
 #if _TARGET & _TARG_8086
@@ -509,14 +525,7 @@ static  void    OutOffset( offset value, array_control *dest )
 static  void    OutLongOffset( long_offset value, array_control *dest )
 /*********************************************************************/
 {
-    unsigned    need;
-
-    need = dest->used + sizeof( long_offset );
-    if( need > dest->alloc ) {
-        ReallocArray( dest, need );
-    }
-    _ARRAY( dest, long_offset ) = _TargetLongInt( value );
-    dest->used = need;
+    *(long_offset *)allocOut( dest, sizeof( long_offset ) ) = _TargetLongInt( value );
 }
 #endif
 
@@ -532,14 +541,7 @@ static  void    OutIdx( omf_idx value, array_control *dest )
 static  void    OutBuffer( const void *name, unsigned len, array_control *dest )
 /******************************************************************************/
 {
-    unsigned    need;
-
-    need = dest->used + len;
-    if( need > dest->alloc ) {
-        ReallocArray( dest, need );
-    }
-    _CopyTrans( name, &_ARRAY( dest, byte ), len );
-    dest->used = need;
+    _CopyTrans( name, allocOut( dest, len ), len );
 }
 
 static  void    DoASegDef( index_rec *rec, bool use_16 )
@@ -642,16 +644,11 @@ static  index_rec   *AllocNewSegRec( void )
 {
     index_rec   *rec;
     segment_id  old_segid = 0;
-    unsigned    need;
 
     if( CurrSeg != NULL ) {
         old_segid = CurrSeg->segid;
     }
-    need = SegInfo->used + 1;
-    if( need > SegInfo->alloc ) {
-        ReallocArray( SegInfo, need );
-    }
-    rec = &_ARRAYOF( SegInfo, index_rec )[SegInfo->used++];
+    rec = allocOut( SegInfo, 1 );
     if( CurrSeg != NULL ) {
         // CurrSeg might have moved on us
         CurrSeg = AskSegIndex( old_segid );
@@ -1348,15 +1345,10 @@ static  void    SetPatches( void )
     temp_patch          *next;
     array_control       *ctl;
     obj_patch           *pat;
-    unsigned            need;
 
     for( curr_pat = CurrSeg->obj->patches; curr_pat != NULL; curr_pat = next ) {
         ctl = AskLblPatch( curr_pat->lbl );
-        need = ctl->used + 1;
-        if( need > ctl->alloc ) {
-            ReallocArray( ctl, need );
-        }
-        pat = &_ARRAYOF( ctl, obj_patch )[ctl->used++];
+        pat = allocOut( ctl, 1 );
         pat->ref = AskObjHandle();
         pat->where = curr_pat->pat.where;
         pat->attr = curr_pat->pat.attr;
@@ -2507,19 +2499,13 @@ static void DoFix( omf_idx idx, bool rel, base_type base, fix_class class, omf_i
     object      *obj;
     index_rec   *rec;
     byte        b;
-    unsigned    need;
 
     b = rel ? LOCAT_REL : LOCAT_ABS;
     if( F_CLASS( class ) == F_PTR && CurrSeg->data_in_code ) {
         CurrSeg->data_ptr_in_code = true;
     }
     obj = CurrSeg->obj;
-    need = obj->fixes.used + sizeof( fixup );
-    if( need > obj->fixes.alloc ) {
-        ReallocArray( &obj->fixes, need );
-    }
-    cursor = &_ARRAY( &obj->fixes, fixup );
-    obj->fixes.used = need;
+    cursor = allocOut( &obj->fixes, sizeof( fixup ) );
     where = CurrSeg->location - obj->start;
     cursor->locatof = b + ( getOMFFixLoc( class ) << S_LOCAT_LOC ) + ( where >> 8 );
     cursor->fset = where;
@@ -2799,83 +2785,29 @@ static  void    SetPendingLine( void )
 }
 
 
-static  void    SetMaxWritten( void )
-/***********************************/
-{
-    if( CurrSeg->max_written < CurrSeg->location ) {
-        CurrSeg->max_written = CurrSeg->location;
-    }
-}
-
-
 void    OutDataByte( byte value )
 /*******************************/
 {
-    unsigned    i;
-    unsigned    need;
-    object      *obj;
-
     SetPendingLine();
     CheckLEDataSize( sizeof( byte ), true );
-    obj = CurrSeg->obj;
-    i = CurrSeg->location - obj->start + CurrSeg->data_prefix_size;
-    IncLocation( sizeof( byte ) );
-    need = i + sizeof( byte );
-    if( obj->data.used < need ) {
-        if( need > obj->data.alloc ) {
-            ReallocArray( &obj->data, need );
-        }
-        obj->data.used = need;
-    }
-    SetMaxWritten();
-    _ARRAYOF( &obj->data, byte )[i] = value;
+    *(byte *)allocOutData( &CurrSeg->obj->data, sizeof( byte ) ) = value;
 }
 
 void    OutDataShort( uint_16 value )
 /***********************************/
 {
-    unsigned    i;
-    unsigned    need;
-    object      *obj;
-
     SetPendingLine();
     CheckLEDataSize( sizeof( uint_16 ), true );
-    obj = CurrSeg->obj;
-    i = CurrSeg->location - obj->start + CurrSeg->data_prefix_size;
-    IncLocation( sizeof( uint_16 ) );
-    need = i + sizeof( uint_16 );
-    if( obj->data.used < need ) {
-        if( need > obj->data.alloc ) {
-            ReallocArray( &obj->data, need );
-        }
-        obj->data.used = need;
-    }
-    SetMaxWritten();
-    *(uint_16 *)&_ARRAYOF( &obj->data, byte )[i] = _TargetShort( value );
+    *(uint_16 *)allocOutData( &CurrSeg->obj->data, sizeof( uint_16 ) ) = _TargetShort( value );
 }
 
 
 void    OutDataLong( uint_32 value )
 /**********************************/
 {
-    unsigned    i;
-    unsigned    need;
-    object      *obj;
-
     SetPendingLine();
     CheckLEDataSize( sizeof( uint_32 ), true );
-    obj = CurrSeg->obj;
-    i = CurrSeg->location - obj->start + CurrSeg->data_prefix_size;
-    IncLocation( sizeof( uint_32 ) );
-    need = i + sizeof( uint_32 );
-    if( obj->data.used < need ) {
-        if( need > obj->data.alloc ) {
-            ReallocArray( &obj->data, need );
-        }
-        obj->data.used = need;
-    }
-    SetMaxWritten();
-    *(uint_32 *)&_ARRAYOF( &obj->data, byte )[i] = _TargetLongInt( value );
+    *(uint_32 *)allocOutData( &CurrSeg->obj->data, sizeof( uint_32 ) ) = _TargetLongInt( value );
 }
 
 
@@ -3145,40 +3077,25 @@ static  void    OutConcat( char *name1, char *name2, array_control *dest )
 void    OutDBytes( unsigned len, const byte *src )
 /************************************************/
 {
-    unsigned    i;
     unsigned    max;
     unsigned    n;
-    unsigned    need;
-    object      *obj;
 
     SetPendingLine();
     CheckLEDataSize( sizeof( byte ), true );
-    obj = CurrSeg->obj;
-    i = CurrSeg->location - obj->start + CurrSeg->data_prefix_size;
-    max = (BUFFSIZE - TOLERANCE) - i;
+    max = (BUFFSIZE - TOLERANCE) - ( CurrSeg->location - CurrSeg->obj->start + CurrSeg->data_prefix_size );
     while( len != 0 ) {
         if( len > max ) {
             n = max;
         } else {
             n = len;
         }
-        need = i + n;
-        if( obj->data.used < need ) {
-            if( need > obj->data.alloc ) {
-                ReallocArray( &obj->data, need );
-            }
-            obj->data.used = need;
-        }
-        IncLocation( n );
-        SetMaxWritten();
-        memcpy( &_ARRAYOF( &obj->data, byte )[i], src, n );
+        memcpy( allocOutData( &CurrSeg->obj->data, n ), src, n );
         src += n;
         len -= n;
         if( len == 0 )
             break;
         EjectLEData();
         OutLEDataStart( false );
-        i = CurrSeg->data_prefix_size;
         max = (BUFFSIZE - TOLERANCE);
     }
 }
