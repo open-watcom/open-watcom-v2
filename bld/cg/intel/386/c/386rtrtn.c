@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -288,9 +288,9 @@ pointer BEAuxInfo( pointer hdl, aux_class request )
             return( NULL );
         }
     case FEINF_CALL_CLASS:
-        return( FECALL_GEN_NONE );
+        return( (pointer)FECALL_GEN_NONE );
     case FEINF_CALL_CLASS_TARGET:
-        return( FECALL_X86_NONE );
+        return( (pointer)FECALL_X86_NONE );
     case FEINF_CALL_BYTES:
         return( hdl );
     default:
