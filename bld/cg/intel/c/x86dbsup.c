@@ -59,7 +59,6 @@ void    BuffStart( temp_buff *temp, uint def )
 void    BuffEnd( segment_id segid )
 /*********************************/
 {
-    segment_id          old_segid;
     byte                *buff;
     type_def            *ptr_type;
     dbg_patch           *dpatch;
@@ -68,35 +67,35 @@ void    BuffEnd( segment_id segid )
     uint                size;
 
     ptr_type = TypeAddress( TY_LONG_POINTER );
-    old_segid = SetOP( segid );
-    CurrBuff->buff[0] = CurrBuff->index;
-    buff = CurrBuff->buff;
-    last = 0;
-    for( i = 0; i < CurrBuff->fix_idx; ++i ) {
-        size = CurrBuff->fix[i].pos - last;
-        last = CurrBuff->fix[i].pos;
-        DataBytes( size, buff );
-        buff += size;
-        switch( CurrBuff->fix[i].type ) {
-        case FIX_SYMBOL:
-            FEPtr( CurrBuff->fix[i].p, ptr_type, 0 );
-            last += 2 + WORD_SIZE;
-            buff += 2 + WORD_SIZE;
-            break;
-        case FIX_BACKHANDLE:
-            DoBigBckPtr( CurrBuff->fix[i].p, *(offset *)buff );
-            last += 2 + WORD_SIZE;
-            buff += 2 + WORD_SIZE;
-            break;
-        case FIX_FORWARD:
-            dpatch = CurrBuff->fix[i].p;
-            dpatch->segid = segid;
-            dpatch->offset = AskLocation();
-            break;
+    PUSH_OP( segid );
+        CurrBuff->buff[0] = CurrBuff->index;
+        buff = CurrBuff->buff;
+        last = 0;
+        for( i = 0; i < CurrBuff->fix_idx; ++i ) {
+            size = CurrBuff->fix[i].pos - last;
+            last = CurrBuff->fix[i].pos;
+            DataBytes( size, buff );
+            buff += size;
+            switch( CurrBuff->fix[i].type ) {
+            case FIX_SYMBOL:
+                FEPtr( CurrBuff->fix[i].p, ptr_type, 0 );
+                last += 2 + WORD_SIZE;
+                buff += 2 + WORD_SIZE;
+                break;
+            case FIX_BACKHANDLE:
+                DoBigBckPtr( CurrBuff->fix[i].p, *(offset *)buff );
+                last += 2 + WORD_SIZE;
+                buff += 2 + WORD_SIZE;
+                break;
+            case FIX_FORWARD:
+                dpatch = CurrBuff->fix[i].p;
+                dpatch->segid = segid;
+                dpatch->offset = AskLocation();
+                break;
+            }
         }
-    }
-    DataBytes( CurrBuff->index - last, buff );
-    SetOP( old_segid );
+        DataBytes( CurrBuff->index - last, buff );
+    POP_OP();
 }
 
 

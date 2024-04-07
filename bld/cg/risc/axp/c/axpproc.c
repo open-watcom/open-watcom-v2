@@ -535,46 +535,43 @@ static  void    emitEpilog( stack_map *map )
 void    GenProlog( void )
 /***********************/
 {
-    segment_id          old_segid;
     label_handle        label;
 
-    old_segid = SetOP( AskCodeSeg() );
-    label = CurrProc->label;
-    if( _IsModel( CGSW_GEN_DBG_NUMBERS ) ) {
-        OutFileStart( HeadBlock->ins.head.line_num );
-    }
-    TellKeepLabel( label );
-    TellProcLabel( label );
-    CodeLabelLinenum( label, DepthAlign( PROC_ALIGN ), HeadBlock->ins.head.line_num );
-    if( _IsModel( CGSW_GEN_DBG_LOCALS ) ) {  // d1+ or d2
-        // DbgRtnBeg( CurrProc->targ.debug, lc );
-        EmitRtnBeg( /*label, HeadBlock->ins.head.line_num*/ );
-    }
-    // keep stack aligned
-    CurrProc->locals.size = _RoundUp( CurrProc->locals.size, REG_SIZE );
-    CurrProc->parms.base = 0;
-    CurrProc->parms.size = CurrProc->state.parm.offset;
-    initStackLayout( &CurrProc->targ.stack_map );
-    emitProlog( &CurrProc->targ.stack_map );
-    EmitProEnd();
-    SetupVarargsReg( &CurrProc->targ.stack_map );
-    CurrProc->targ.frame_size = frameSize( &CurrProc->targ.stack_map );
-    SetOP( old_segid );
+    PUSH_OP( AskCodeSeg() );
+        label = CurrProc->label;
+        if( _IsModel( CGSW_GEN_DBG_NUMBERS ) ) {
+            OutFileStart( HeadBlock->ins.head.line_num );
+        }
+        TellKeepLabel( label );
+        TellProcLabel( label );
+        CodeLabelLinenum( label, DepthAlign( PROC_ALIGN ), HeadBlock->ins.head.line_num );
+        if( _IsModel( CGSW_GEN_DBG_LOCALS ) ) {  // d1+ or d2
+            // DbgRtnBeg( CurrProc->targ.debug, lc );
+            EmitRtnBeg( /*label, HeadBlock->ins.head.line_num*/ );
+        }
+        // keep stack aligned
+        CurrProc->locals.size = _RoundUp( CurrProc->locals.size, REG_SIZE );
+        CurrProc->parms.base = 0;
+        CurrProc->parms.size = CurrProc->state.parm.offset;
+        initStackLayout( &CurrProc->targ.stack_map );
+        emitProlog( &CurrProc->targ.stack_map );
+        EmitProEnd();
+        SetupVarargsReg( &CurrProc->targ.stack_map );
+        CurrProc->targ.frame_size = frameSize( &CurrProc->targ.stack_map );
+    POP_OP();
 }
 
 
 void    GenEpilog( void )
 /***********************/
 {
-    segment_id      old_segid;
-
-    old_segid = SetOP( AskCodeSeg() );
-    EmitEpiBeg();
-    emitEpilog( &CurrProc->targ.stack_map );
-    GenReturn();
-    CurrProc->prolog_state |= PST_EPILOG_GENERATED;
-    EmitRtnEnd();
-    SetOP( old_segid );
+    PUSH_OP( AskCodeSeg() );
+        EmitEpiBeg();
+        emitEpilog( &CurrProc->targ.stack_map );
+        GenReturn();
+        CurrProc->prolog_state |= PST_EPILOG_GENERATED;
+        EmitRtnEnd();
+    POP_OP();
 }
 
 

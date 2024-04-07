@@ -234,22 +234,21 @@ void    WVRtnEnd( dbg_rtn *rtn, offset lc )
     cg_sym_handle       sym;
     dbg_type            tipe;
     offset              off;
-    segment_id          old_segid;
 
     off = 0;
     if( rtn->obj_type != DBG_NIL_TYPE ) {
         /* is a member function */
-        old_segid = SetOP( DbgLocals );
-        off = AskLocation();
-        BuffStart( &temp, SYM_CODE + CODE_MEMBER_SCOPE );
-        DumpParentPtr( rtn->blk );
-        BuffIndex( (uint) rtn->obj_type );
-        if( rtn->obj_loc != NULL ) {
-            BuffByte( rtn->obj_ptr_type ); /* 'this' pointer type */
-            LocDump( rtn->obj_loc );
-        }
-        BuffEnd( DbgLocals );
-        SetOP( old_segid );
+        PUSH_OP( DbgLocals );
+            off = AskLocation();
+            BuffStart( &temp, SYM_CODE + CODE_MEMBER_SCOPE );
+            DumpParentPtr( rtn->blk );
+            BuffIndex( (uint) rtn->obj_type );
+            if( rtn->obj_loc != NULL ) {
+                BuffByte( rtn->obj_ptr_type ); /* 'this' pointer type */
+                LocDump( rtn->obj_loc );
+            }
+            BuffEnd( DbgLocals );
+        POP_OP();
     }
     sym = AskForLblSym( CurrProc->label );
     tipe = FEDbgType( sym );

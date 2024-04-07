@@ -586,37 +586,36 @@ void    GenPushC( int_32 value )
 pointer GenFar16Thunk( pointer label, uint_16 parms_size, bool remove_parms )
 /***************************************************************************/
 {
-    segment_id  old_segid;
     pointer     code_32;
 
-    old_segid = SetOP( AskCode16Seg() );
-//    CodeLabel( label, DepthAlign( PROC_ALIGN ) );
-    code_32 = AskForNewLabel();
-    TellOptimizerByPassed();
-    SetUpObj( false );
-    OutLabel( label );
-    OutDataByte( 0xb9 );                /* mov cx,# */
-    OutDataShort( parms_size );
-    OutDataByte( 0x9a );
-    OutRTImport( RT_Far32Func, F_FAR16 );
-    OutDataShort( 0 );
-    OutDataShort( 0 );
-    if( remove_parms ) {
-        OutDataByte( 0xca );
+    PUSH_OP( AskCode16Seg() );
+//        CodeLabel( label, DepthAlign( PROC_ALIGN ) );
+        code_32 = AskForNewLabel();
+        TellOptimizerByPassed();
+        SetUpObj( false );
+        OutLabel( label );
+        OutDataByte( 0xb9 );                /* mov cx,# */
         OutDataShort( parms_size );
-    } else {
-        OutDataByte( 0xcb );
-        OutDataShort( 0 );              // padding
-    }
-    /*
-     * emit "reloc for offset of code_32 label"
-     */
-    SetUpObj( true );
-    TellKeepLabel( code_32 );
-    OutReloc( AskCodeSeg(), F_OFFSET, false );
-    OutLblPatch( code_32, F_OFFSET, 0 );
-    TellByPassOver();
-    SetOP( old_segid );
+        OutDataByte( 0x9a );
+        OutRTImport( RT_Far32Func, F_FAR16 );
+        OutDataShort( 0 );
+        OutDataShort( 0 );
+        if( remove_parms ) {
+            OutDataByte( 0xca );
+            OutDataShort( parms_size );
+        } else {
+            OutDataByte( 0xcb );
+            OutDataShort( 0 );              // padding
+        }
+        /*
+         * emit "reloc for offset of code_32 label"
+         */
+        SetUpObj( true );
+        TellKeepLabel( code_32 );
+        OutReloc( AskCodeSeg(), F_OFFSET, false );
+        OutLblPatch( code_32, F_OFFSET, 0 );
+        TellByPassOver();
+    POP_OP();
     return( code_32 );
 }
 
@@ -721,39 +720,38 @@ segment_id GenProfileData( char *fe_name, label_handle *data, label_handle *stac
  * generate P5 profiler code
  */
 {
-    segment_id      old_segid;
     segment_id      data_segid = (segment_id)(pointer_uint)FEAuxInfo( NULL, FEINF_P5_PROF_SEG );
 
-    old_segid = SetOP( data_segid );
-    TellOptimizerByPassed();
-    SetUpObj( true );
-    *data = AskForNewLabel();
-    OutLabel( *data );
-    OutDataByte( *fe_name );                    //flag
-    OutDataByte( 0 );
-    OutDataByte( 0 );
-    OutDataByte( 0 );
-    OutDataLong( 0 );                           //semaphore
-    if( stack == NULL ) {
-        OutDataLong( 0 );                       //stack
-    } else {
-        OutReloc( data_segid, F_OFFSET, false );  //caller
-        OutLblPatch( *stack, F_OFFSET, 0 );
-    }
-    OutDataLong( 0 );                           //esp
-    OutDataLong( 0 );                           //dynamic
-    OutDataLong( 0 );                           //lo_count
-    OutDataLong( 0 );                           //hi_count
-    OutDataLong( 0 );                           //lo_cycle
-    OutDataLong( 0 );                           //hi_cycle
-    OutDataLong( 0 );                           //lo_start_time
-    OutDataLong( 0 );                           //hi_start_time
-    OutReloc( AskCodeSeg(), F_OFFSET, false );  //caller
-    OutLblPatch( CurrProc->label, F_OFFSET, 0 );
-    OutDataLong( 0 );                           //call_ins
-    OutDataLong( 0 );                           //callee
-    TellByPassOver();
-    SetOP( old_segid );
+    PUSH_OP( data_segid );
+        TellOptimizerByPassed();
+        SetUpObj( true );
+        *data = AskForNewLabel();
+        OutLabel( *data );
+        OutDataByte( *fe_name );                    //flag
+        OutDataByte( 0 );
+        OutDataByte( 0 );
+        OutDataByte( 0 );
+        OutDataLong( 0 );                           //semaphore
+        if( stack == NULL ) {
+            OutDataLong( 0 );                       //stack
+        } else {
+            OutReloc( data_segid, F_OFFSET, false );  //caller
+            OutLblPatch( *stack, F_OFFSET, 0 );
+        }
+        OutDataLong( 0 );                           //esp
+        OutDataLong( 0 );                           //dynamic
+        OutDataLong( 0 );                           //lo_count
+        OutDataLong( 0 );                           //hi_count
+        OutDataLong( 0 );                           //lo_cycle
+        OutDataLong( 0 );                           //hi_cycle
+        OutDataLong( 0 );                           //lo_start_time
+        OutDataLong( 0 );                           //hi_start_time
+        OutReloc( AskCodeSeg(), F_OFFSET, false );  //caller
+        OutLblPatch( CurrProc->label, F_OFFSET, 0 );
+        OutDataLong( 0 );                           //call_ins
+        OutDataLong( 0 );                           //callee
+        TellByPassOver();
+    POP_OP();
     return( data_segid );
 }
 
@@ -908,7 +906,6 @@ void    Do4CXShift( instruction *ins, void (*rtn)(instruction *) )
 void StartBlockProfiling( block *blk )
 /************************************/
 {
-    segment_id          old_segid;
     segment_id          data_segid;
     label_handle        data;
 
@@ -920,24 +917,24 @@ void StartBlockProfiling( block *blk )
     if( blk->label == NULL )
         return;
     TellKeepLabel( blk->label );
-    old_segid = SetOP( data_segid );
-    TellOptimizerByPassed();
-    SetUpObj( true );
-    data = AskForNewLabel();
-    TellKeepLabel( data );
-    OutLabel( data );
-    OutDataByte( PROFILE_FLAG_BLOCK );          //flag
-    OutDataByte( 0 );                           //...
-    OutDataByte( 0 );                           //...
-    OutDataByte( 0 );                           //...
-    OutDataLong( 0 );                           //lo_count
-    OutDataLong( 0 );                           //hi_count
-    OutReloc( AskCodeSeg(), F_OFFSET, false );  //block
-    OutLblPatch( blk->label, F_OFFSET, 0 );
-    OutReloc( AskCodeSeg(), F_OFFSET, false );  //function
-    OutLblPatch( CurrProc->label, F_OFFSET, 0 );
-    TellByPassOver();
-    SetOP( old_segid );
+    PUSH_OP( data_segid );
+        TellOptimizerByPassed();
+        SetUpObj( true );
+        data = AskForNewLabel();
+        TellKeepLabel( data );
+        OutLabel( data );
+        OutDataByte( PROFILE_FLAG_BLOCK );          //flag
+        OutDataByte( 0 );                           //...
+        OutDataByte( 0 );                           //...
+        OutDataByte( 0 );                           //...
+        OutDataLong( 0 );                           //lo_count
+        OutDataLong( 0 );                           //hi_count
+        OutReloc( AskCodeSeg(), F_OFFSET, false );  //block
+        OutLblPatch( blk->label, F_OFFSET, 0 );
+        OutReloc( AskCodeSeg(), F_OFFSET, false );  //function
+        OutLblPatch( CurrProc->label, F_OFFSET, 0 );
+        TellByPassOver();
+    POP_OP();
     _Code;
     LayOpword( 0x0583 );                /* add L1+lo_count,1 */
     ILen += 4;

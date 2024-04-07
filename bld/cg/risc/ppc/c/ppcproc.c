@@ -451,68 +451,65 @@ static  void    emitEpilog( stack_map *map )
 void    GenProlog( void )
 /***********************/
 {
-    segment_id          old_segid;
     label_handle        label;
     offset              lc;
 
-    old_segid = SetOP( AskCodeSeg() );
-    lc = AskLocation();
-    CurrProc->targ.proc_start = lc;
-    label = CurrProc->label;
-    if( _IsModel( CGSW_GEN_DBG_NUMBERS ) ) {
-        OutFileStart( HeadBlock->ins.head.line_num );
-    }
-    OutTOCRec( label );
-    CodeLabel( label, DepthAlign( PROC_ALIGN ) );
-    if( _IsModel( CGSW_GEN_DBG_NUMBERS ) ) {
-        OutFuncStart( label, lc, HeadBlock->ins.head.line_num );
-    }
-    if( _IsModel( CGSW_GEN_DBG_LOCALS ) ) {  // d1+ or d2
-        DbgRtnBeg( CurrProc->targ.debug, lc );
-    }
-    // keep stack aligned
-    CurrProc->locals.size = _RoundUp( CurrProc->locals.size, 16 );
-    CurrProc->parms.base = 0;
-    CurrProc->parms.size = CurrProc->state.parm.offset;
-    CalcUsedRegs();
-    initStackLayout( &CurrProc->targ.stack_map );
-    CurrProc->targ.frame_size = frameSize( &CurrProc->targ.stack_map );
-    emitProlog( &CurrProc->targ.stack_map );
-    lc = AskLocation();
-    CurrProc->targ.pro_size = lc;
-    if( _IsModel( CGSW_GEN_DBG_LOCALS ) ) {  // d1+ or d2
-  //    DbgRetOffset( CurrProc->parms.base - CurrProc->targ.base_adjust
-  //                    - ret_size );
-        DbgProEnd( CurrProc->targ.debug, lc );
-    }
-    SetOP( old_segid );
+    PUSH_OP( AskCodeSeg() );
+        lc = AskLocation();
+        CurrProc->targ.proc_start = lc;
+        label = CurrProc->label;
+        if( _IsModel( CGSW_GEN_DBG_NUMBERS ) ) {
+            OutFileStart( HeadBlock->ins.head.line_num );
+        }
+        OutTOCRec( label );
+        CodeLabel( label, DepthAlign( PROC_ALIGN ) );
+        if( _IsModel( CGSW_GEN_DBG_NUMBERS ) ) {
+            OutFuncStart( label, lc, HeadBlock->ins.head.line_num );
+        }
+        if( _IsModel( CGSW_GEN_DBG_LOCALS ) ) {  // d1+ or d2
+            DbgRtnBeg( CurrProc->targ.debug, lc );
+        }
+        // keep stack aligned
+        CurrProc->locals.size = _RoundUp( CurrProc->locals.size, 16 );
+        CurrProc->parms.base = 0;
+        CurrProc->parms.size = CurrProc->state.parm.offset;
+        CalcUsedRegs();
+        initStackLayout( &CurrProc->targ.stack_map );
+        CurrProc->targ.frame_size = frameSize( &CurrProc->targ.stack_map );
+        emitProlog( &CurrProc->targ.stack_map );
+        lc = AskLocation();
+        CurrProc->targ.pro_size = lc;
+        if( _IsModel( CGSW_GEN_DBG_LOCALS ) ) {  // d1+ or d2
+//            DbgRetOffset( CurrProc->parms.base - CurrProc->targ.base_adjust - ret_size );
+            DbgProEnd( CurrProc->targ.debug, lc );
+        }
+    POP_OP();
 }
 
 
 void    GenEpilog( void )
 /***********************/
 {
-    segment_id          old_segid;
     offset              lc;
 
-    old_segid = SetOP( AskCodeSeg() );
-    if( _IsModel( CGSW_GEN_DBG_LOCALS ) ) { // d1+ or d2
+    PUSH_OP( AskCodeSeg() );
+        if( _IsModel( CGSW_GEN_DBG_LOCALS ) ) { // d1+ or d2
+            lc = AskLocation();
+            DbgEpiBeg( CurrProc->targ.debug, lc );
+        }
+        // Pop();
+        emitEpilog( &CurrProc->targ.stack_map );
+        GenReturn();
+        CurrProc->prolog_state |= PST_EPILOG_GENERATED;
         lc = AskLocation();
-        DbgEpiBeg( CurrProc->targ.debug, lc );
-    }
-    // Pop();
-    emitEpilog( &CurrProc->targ.stack_map );
-    GenReturn();
-    CurrProc->prolog_state |= PST_EPILOG_GENERATED;
-    lc = AskLocation();
-    if( _IsModel( CGSW_GEN_DBG_LOCALS ) ) { // d1+ or d2
-        DbgRtnEnd( CurrProc->targ.debug, lc );
-    }
-    if( _IsModel( CGSW_GEN_DBG_NUMBERS ) ) {
-        OutFuncEnd( lc );
-    }
-    OutPDataRec( CurrProc->label, CurrProc->targ.pro_size, lc );
-    SetOP( old_segid );
+        if( _IsModel( CGSW_GEN_DBG_LOCALS ) ) { // d1+ or d2
+            DbgRtnEnd( CurrProc->targ.debug, lc );
+        }
+        if( _IsModel( CGSW_GEN_DBG_NUMBERS ) ) {
+            OutFuncEnd( lc );
+        }
+        OutPDataRec( CurrProc->label, CurrProc->targ.pro_size, lc );
+    POP_OP();
 }
 
 

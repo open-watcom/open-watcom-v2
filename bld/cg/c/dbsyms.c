@@ -822,12 +822,10 @@ void    EmitEpiBeg( void )
 void    EmitRtnEnd( void )
 /************************/
 {
-    segment_id      old_segid;
-
     EmitDbg( OC_INFO_DBG_RTN_END, CurrProc->targ.debug );
-    old_segid = SetOP( AskCodeSeg() );
-    EmptyQueue();
-    SetOP( old_segid );
+    PUSH_OP( AskCodeSeg() );
+        EmptyQueue();
+    POP_OP();
 }
 
 

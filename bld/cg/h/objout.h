@@ -35,6 +35,9 @@
 
 #define OUTPUT_OBJECT_NAME(s,f,d,k) DoOutObjectName( s, (outputter_fn *)(f), (outputter_data)(d), k )
 
+#define PUSH_OP(s)  { segment_id old_segid; old_segid = ChangeOP(s)
+#define POP_OP()    SetOP( old_segid ); }
+
 typedef void        *outputter_data;
 typedef void        outputter_fn( const char *, outputter_data );
 
@@ -49,7 +52,8 @@ extern segment_id   AskBackSeg( void );
 extern segment_id   AskOP( void );
 extern segment_id   AskSegID( void *hdl, cg_class class );
 extern bool         AskSegIsBlank( segment_id segid );
-extern segment_id   SetOP( segment_id segid );
+extern segment_id   ChangeOP( segment_id segid );
+extern void         SetOP( segment_id segid );
 extern void         FlushOP( segment_id segid );
 extern bool         NeedBaseSet( void );
 extern offset       AskLocation( void );

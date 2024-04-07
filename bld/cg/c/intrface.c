@@ -287,10 +287,10 @@ segment_id _CGAPI   BESetSeg( segment_id segid )
 {
 #ifdef DEVBUILD
     EchoAPI( "BESetSeg( %x )", segid );
-    segid = SetOP( segid );
+    segid = ChangeOP( segid );
     return EchoAPIHexReturn( segid );
 #else
-    return( SetOP( segid ) );
+    return( ChangeOP( segid ) );
 #endif
 }
 

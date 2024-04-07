@@ -186,14 +186,13 @@ void WVBackRefType( dbg_name name, dbg_type tipe )
 /************************************************/
 {
     offset      here;
-    segment_id  old_segid;
 
-    old_segid = SetOP( name->dpatch.segid );
-    here = AskLocation();
-    SetLocation( name->dpatch.offset );
-    DataShort( 0x80 | (tipe >> 8) | (tipe << 8) );
-    SetLocation( here );
-    SetOP( old_segid );
+    PUSH_OP( name->dpatch.segid );
+        here = AskLocation();
+        SetLocation( name->dpatch.offset );
+        DataShort( 0x80 | (tipe >> 8) | (tipe << 8) );
+        SetLocation( here );
+    POP_OP();
 }
 
 dbg_type        WVCharBlock( uint_32 len )
@@ -626,16 +625,15 @@ void WVDmpCueInfo( long_offset where )
     cue_blk     *blk;
     cue_state   *curr;
     cue_state   *end;
-    segment_id  old_segid;
     offset      here;
 
 
-    old_segid = SetOP( CueInfoOffset.segid );
-    here = AskLocation();
-    SetLocation( CueInfoOffset.offset );
-    DataLong( where );  // current location in DbgTypes segment
-    SetLocation( here );
-    SetOP( old_segid );
+    PUSH_OP( CueInfoOffset.segid );
+        here = AskLocation();
+        SetLocation( CueInfoOffset.offset );
+        DataLong( where );  // current location in DbgTypes segment
+        SetLocation( here );
+    POP_OP();
     ctl = &LineInfo;
     blk = ctl->head;
     DataShort( ctl->count );  // number of entries

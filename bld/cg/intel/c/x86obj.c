@@ -643,20 +643,62 @@ static void OutGroup( omf_idx sidx, array_control *group_def, omf_idx *index_p )
     OutIdx( sidx, group_def );
 }
 
+segment_id  AskOP( void )
+/***********************/
+{
+    segment_id  segid;
+
+    if( CurrSeg == NULL ) {
+        segid = UNDEFSEG;
+    } else {
+        segid = CurrSeg->segid;
+    }
+    return( segid );
+}
+
+segment_id  ChangeOP( segment_id segid )
+/**************************************/
+{
+    segment_id  old_segid;
+
+    if( CurrSeg == NULL ) {
+        old_segid = UNDEFSEG;
+    } else {
+        old_segid = CurrSeg->segid;
+    }
+    if( segid == UNDEFSEG ) {
+        CurrSeg = NULL;
+    } else {
+        CurrSeg = AskSegIndex( segid );
+    }
+    return( old_segid );
+}
+
+void    SetOP( segment_id segid )
+/*******************************/
+{
+    if( segid == UNDEFSEG ) {
+        CurrSeg = NULL;
+    } else {
+        CurrSeg = AskSegIndex( segid );
+    }
+}
+
 static  index_rec   *AllocNewSegRec( void )
 /*****************************************/
 {
     index_rec   *rec;
-    segment_id  old_segid = 0;
+    segment_id  segid;
 
-    if( CurrSeg != NULL ) {
-        old_segid = CurrSeg->segid;
-    }
+    /*
+     * CurrSeg pointer might have moved on us by allocOut
+     * SegInfo can be moved in memory therefore we need
+     * to call AskOP before and SetOP after to refresh
+     * CurrSeg pointer
+     */
+    segid = AskOP();
     rec = allocOut( SegInfo, 1 );
-    if( CurrSeg != NULL ) {
-        // CurrSeg might have moved on us
-        CurrSeg = AskSegIndex( old_segid );
-    }
+    SetOP( segid );
     return( rec );
 }
 
@@ -1124,7 +1166,7 @@ void    ObjInit( void )
 
     dgroup_def = InitArray( sizeof( byte ), MODEST_INFO, INCREMENT_INFO );
     tgroup_def = InitArray( sizeof( byte ), MODEST_INFO, INCREMENT_INFO );
-    CurrSeg = NULL;
+    SetOP( UNDEFSEG );
     DoSegGrpNames( dgroup_def, tgroup_def );
     if( dgroup_def->used > 0 ) {
         FlushNames();
@@ -1145,7 +1187,7 @@ void    ObjInit( void )
     }
 #endif
     KillArray( dgroup_def );
-    CurrSeg = AskSegIndex( codeSegId );
+    SetOP( codeSegId );
     initImports();
     AbsPatches = NULL;
     if( _IsModel( CGSW_GEN_DBG_DF ) ) {
@@ -1165,38 +1207,6 @@ void    ObjInit( void )
 }
 
 
-segment_id  AskOP( void )
-/***********************/
-{
-    segment_id  segid;
-
-    if( CurrSeg == NULL ) {
-        segid = UNDEFSEG;
-    } else {
-        segid = CurrSeg->segid;
-    }
-    return( segid );
-}
-
-
-segment_id  SetOP( segment_id segid )
-/***********************************/
-{
-    segment_id  old_segid;
-
-    if( CurrSeg == NULL ) {
-        old_segid = UNDEFSEG;
-    } else {
-        old_segid = CurrSeg->segid;
-    }
-    if( segid == UNDEFSEG ) {
-        CurrSeg = NULL;
-    } else {
-        CurrSeg = AskSegIndex( segid );
-    }
-    return( old_segid );
-}
-
 offset  AskLocation( void )
 /*************************/
 {
@@ -1207,21 +1217,20 @@ void ChkDbgSegSize( offset max, bool typing )
 /*******************************************/
 {
     dbg_seg_info    *info;
-    segment_id      old_segid;
     long_offset     curr;
 
     info = DbgSegs;
     if( typing )
         info++;
-    old_segid = SetOP( *info->segid );
-    curr = (offset)CurrSeg->location;
-    if( curr >= max ) {
-        if( typing ) {
-            DbgTypeSize += curr;
+    PUSH_OP( *info->segid );
+        curr = (offset)CurrSeg->location;
+        if( curr >= max ) {
+            if( typing ) {
+                DbgTypeSize += curr;
+            }
+            *info->segid = DbgSegDef( info->seg_name, info->class_name, SEG_COMB_PRIVATE );
         }
-        *info->segid = DbgSegDef( info->seg_name, info->class_name, SEG_COMB_PRIVATE );
-    }
-    SetOP( old_segid );
+    POP_OP();
 }
 
 
@@ -1839,42 +1848,40 @@ static  void    FiniTarg( void )
 void    FlushOP( segment_id segid )
 /*********************************/
 {
-    segment_id  old_segid;
     index_rec   *rec;
 
-    old_segid = SetOP( segid );
-    if( segid == codeSegId ) {
-        DoEmptyQueue();
-    }
-    if( _IsModel( CGSW_GEN_DBG_DF ) ) {
-        rec = CurrSeg;
-        if( rec->exec || rec->cidx == _NIDX_DATA || rec->cidx == _NIDX_BSS ) {
-            if( rec->max_size != 0 ) {
-                DFSegRange();
+    PUSH_OP( segid );
+        if( segid == codeSegId ) {
+            DoEmptyQueue();
+        }
+        if( _IsModel( CGSW_GEN_DBG_DF ) ) {
+            rec = CurrSeg;
+            if( rec->exec || rec->cidx == _NIDX_DATA || rec->cidx == _NIDX_BSS ) {
+                if( rec->max_size != 0 ) {
+                    DFSegRange();
+                }
             }
         }
-    }
-    FiniTarg();
-    CurrSeg->obj = NULL;
-    SetOP( old_segid );
+        FiniTarg();
+        CurrSeg->obj = NULL;
+    POP_OP();
 }
 
 static void FiniWVTypes( void )
 /*****************************/
 {
-    segment_id   old_segid;
     long_offset  curr;
     dbg_seg_info *info;
 
     WVTypesEof();
     info = &DbgSegs[1];
-    old_segid = SetOP( *info->segid );
-    curr = (offset)CurrSeg->location;
-    curr += DbgTypeSize;
-    *info->segid = DbgSegDef( info->seg_name, info->class_name, SEG_COMB_PRIVATE );
-    SetOP( *info->segid );
-    WVDmpCueInfo( curr );
-    SetOP( old_segid );
+    PUSH_OP( *info->segid );
+        curr = (offset)CurrSeg->location;
+        curr += DbgTypeSize;
+        *info->segid = DbgSegDef( info->seg_name, info->class_name, SEG_COMB_PRIVATE );
+        SetOP( *info->segid );
+        WVDmpCueInfo( curr );
+    POP_OP();
 }
 
 static void FlushSelect( void )
@@ -1913,17 +1920,15 @@ static  void    NormalData( void )
 static void DoSegARange( offset *codesize, index_rec *rec )
 /*********************************************************/
 {
-    segment_id  old_segid;
-
     if( rec->exec || rec->cidx == _NIDX_DATA ||rec->cidx == _NIDX_BSS ) {
         if( rec->max_size != 0 ) {
-            old_segid = SetOP( rec->segid );
-            if( CurrSeg->comdat_symbol != NULL ) {
-                DFSymRange( rec->comdat_symbol, (offset)rec->comdat_size );
-            }
-            NormalData();
-            DFSegRange();
-            SetOP( old_segid );
+            PUSH_OP( rec->segid );
+                if( CurrSeg->comdat_symbol != NULL ) {
+                    DFSymRange( rec->comdat_symbol, (offset)rec->comdat_size );
+                }
+                NormalData();
+                DFSegRange();
+            POP_OP();
         }
         if( rec->exec ) {
             *codesize += rec->max_size + rec->total_comdat_size;
@@ -2049,6 +2054,9 @@ void    ObjFini( void )
         }
         WVObjFiniDbgInfo();
     }
+    /*
+     * Fini all segments.
+     */
     rec = SegInfo->array;
     for( i = 0; i < SegInfo->used; ++i ) {
         if( rec->obj != NULL ) {
@@ -2057,9 +2065,15 @@ void    ObjFini( void )
         }
         rec++;
     }
+    /*
+     * if 8087 is used then enable emit default 8087 import records.
+     */
     if( Used87 ) {
         (void)FEAuxInfo( NULL, FEINF_USED_8087 );
     }
+    /*
+     * Emit default import records.
+     */
     for( auto_import = NULL; (auto_import = FEAuxInfo( auto_import, FEINF_NEXT_IMPORT )) != NULL; ) {
         OutName( FEAuxInfo( auto_import, FEINF_IMPORT_NAME ), Imports );
         OutIdx( 0, Imports );           /* type index*/
@@ -2077,13 +2091,17 @@ void    ObjFini( void )
     if( Imports->used > 0 ) {
         PutObjOMFRec( CMD_EXTDEF, Imports );
     }
-    /* Emit default library search records. */
+    /*
+     * Emit default library search records.
+     */
     for( lib = NULL; (lib = FEAuxInfo( lib, FEINF_NEXT_LIBRARY )) != NULL; ) {
         OutShort( LIBNAME_COMMENT, Imports );
         OutString( (char *)FEAuxInfo( lib, FEINF_LIBRARY_NAME ), Imports );
         PutObjOMFRec( CMD_COMENT, Imports );
     }
-    /* Emit alias definition records. */
+    /*
+     * Emit alias definition records.
+     */
     for( alias = NULL; (alias = FEAuxInfo( alias, FEINF_NEXT_ALIAS )) != NULL; ) {
         char    *alias_name;
         char    *subst_name;
@@ -3220,63 +3238,60 @@ void    TellObjNewLabel( cg_sym_handle lbl )
 void    TellObjNewProc( cg_sym_handle proc )
 /******************************************/
 {
-    segment_id  old_segid;
     segment_id  proc_segid;
 
-
-    old_segid = SetOP( codeSegId );
-    proc_segid = FESegID( proc );
-    if( codeSegId != proc_segid ) {
-        if( _IsModel( CGSW_GEN_DBG_DF ) ) {
-            if( CurrSeg->comdat_symbol != NULL ) {
-                DFSymRange( CurrSeg->comdat_symbol, (offset)CurrSeg->comdat_size );
+    PUSH_OP( codeSegId );
+        proc_segid = FESegID( proc );
+        if( codeSegId != proc_segid ) {
+            if( _IsModel( CGSW_GEN_DBG_DF ) ) {
+                if( CurrSeg->comdat_symbol != NULL ) {
+                    DFSymRange( CurrSeg->comdat_symbol, (offset)CurrSeg->comdat_size );
+                }
+            }
+            if( CurrSeg->obj != NULL ) {
+                DoEmptyQueue();
+                FlushObject();
+            }
+            codeSegId = proc_segid;
+            SetOP( codeSegId );
+            CurrSeg->need_base_set = true;
+            if( !CurrSeg->exec ) {
+                Zoiks( ZOIKS_088 );
             }
         }
-        if( CurrSeg->obj != NULL ) {
+        if( FEAttr( proc ) & FE_COMMON ) {
             DoEmptyQueue();
-            FlushObject();
-        }
-        codeSegId = proc_segid;
-        SetOP( codeSegId );
-        CurrSeg->need_base_set = true;
-        if( !CurrSeg->exec ) {
-            Zoiks( ZOIKS_088 );
-        }
-    }
-    if( FEAttr( proc ) & FE_COMMON ) {
-        DoEmptyQueue();
-        if( _IsModel( CGSW_GEN_DBG_DF ) ) {
-            if( CurrSeg->comdat_symbol != NULL ) {
-                DFSymRange( CurrSeg->comdat_symbol, (offset)CurrSeg->comdat_size );
+            if( _IsModel( CGSW_GEN_DBG_DF ) ) {
+                if( CurrSeg->comdat_symbol != NULL ) {
+                    DFSymRange( CurrSeg->comdat_symbol, (offset)CurrSeg->comdat_size );
+                }
             }
-        }
-        CurrSeg->comdat_symbol = proc;
-        CurrSeg->prefix_comdat_state = PCS_NEED;
-    } else if( CurrSeg->comdat_symbol != NULL ) {
-        DoEmptyQueue();
-        SetUpObj( false );
-        if( _IsModel( CGSW_GEN_DBG_DF ) ) {
-            if( CurrSeg->comdat_symbol != NULL ) {
-                DFSymRange( CurrSeg->comdat_symbol, (offset)CurrSeg->comdat_size );
+            CurrSeg->comdat_symbol = proc;
+            CurrSeg->prefix_comdat_state = PCS_NEED;
+        } else if( CurrSeg->comdat_symbol != NULL ) {
+            DoEmptyQueue();
+            SetUpObj( false );
+            if( _IsModel( CGSW_GEN_DBG_DF ) ) {
+                if( CurrSeg->comdat_symbol != NULL ) {
+                    DFSymRange( CurrSeg->comdat_symbol, (offset)CurrSeg->comdat_size );
+                }
             }
+            NormalData();
         }
-        NormalData();
-    }
-    SetOP( old_segid );
+    POP_OP();
 }
 
 void     TellObjVirtFuncRef( void *cookie )
 /*****************************************/
 {
-    segment_id          old_segid;
     virt_func_ref_list  *new;
 
-    old_segid = SetOP( codeSegId );
-    new = CGAlloc( sizeof( virt_func_ref_list ) );
-    new->cookie = cookie;
-    new->next = CurrSeg->virt_func_refs;
-    CurrSeg->virt_func_refs = new;
-    SetOP( old_segid );
+    PUSH_OP( codeSegId );
+        new = CGAlloc( sizeof( virt_func_ref_list ) );
+        new->cookie = cookie;
+        new->next = CurrSeg->virt_func_refs;
+        CurrSeg->virt_func_refs = new;
+    POP_OP();
 }
 
 static bool     InlineFunction( cg_sym_handle sym )

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -206,7 +206,6 @@ name    *GenFloat( name *cons, type_class_def type_class )
 /********************************************************/
 {
     constant_defn       *defn;
-    segment_id          old_segid;
     name                *result;
 
     TellOptimizerByPassed();
@@ -217,12 +216,12 @@ name    *GenFloat( name *cons, type_class_def type_class )
     }
     if( defn->label == NULL ) {
         defn->label = AskForLabel( NULL );
-        old_segid = SetOP( AskBackSeg() );
-        AlignObject( 8 );
-        assert( ( AskLocation() & 0x07 ) == 0 );
-        OutLabel( defn->label );
-        DataBytes( TypeClassSize[type_class], &defn->value );
-        SetOP( old_segid );
+        PUSH_OP( AskBackSeg() );
+            AlignObject( 8 );
+            assert( ( AskLocation() & 0x07 ) == 0 );
+            OutLabel( defn->label );
+            DataBytes( TypeClassSize[type_class], &defn->value );
+        POP_OP();
 
     }
     result = AllocMemory( defn->label, 0, CG_LBL, type_class );

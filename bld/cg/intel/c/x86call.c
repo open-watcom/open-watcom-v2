@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -280,7 +280,6 @@ void    BGProcDecl( cg_sym_handle sym, type_def *tipe )
     hw_reg_set          reg;
     name                *temp;
     type_class_def      type_class;
-    segment_id          old_segid;
     label_handle        lbl;
 
     SaveTargetModel = TargetModel;
@@ -288,12 +287,12 @@ void    BGProcDecl( cg_sym_handle sym, type_def *tipe )
     if( tipe != TypeNone ) {
         if( type_class == XX ) {
             if( CurrProc->state.attr & ROUTINE_ALLOCS_RETURN ) {
-                old_segid = SetOP( AskBackSeg() );
-                lbl = AskForNewLabel();
-                DataLabel( lbl );
-                DGUBytes( tipe->length );
-                CurrProc->targ.return_points = (name *)SAllocMemory( lbl, 0, CG_LBL, TypeClass( tipe ), tipe->length );
-                SetOP( old_segid );
+                PUSH_OP( AskBackSeg() );
+                    lbl = AskForNewLabel();
+                    DataLabel( lbl );
+                    DGUBytes( tipe->length );
+                    CurrProc->targ.return_points = (name *)SAllocMemory( lbl, 0, CG_LBL, TypeClass( tipe ), tipe->length );
+                POP_OP();
             } else {
                 reg = CurrProc->state.return_reg;
                 if( HW_CEqual( reg, HW_EMPTY ) ) {

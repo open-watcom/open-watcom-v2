@@ -58,13 +58,12 @@ static    bool          IckyWicky;
 static  bool    FlushSomeOpt( pointer_uint size )
 /***********************************************/
 {
-    segment_id  old_segid;
     bool        freed;
 
     if( InOptimizer == 0 && HaveCodeSeg() ) {
-        old_segid = SetOP( AskCodeSeg() );
-        freed = ShrinkQueue( size );
-        SetOP( old_segid );
+        PUSH_OP( AskCodeSeg() );
+            freed = ShrinkQueue( size );
+        POP_OP();
         if( _IsntModel( CGSW_GEN_NO_OPTIMIZATION ) && !IckyWicky ) {
             IckyWicky = true;
             FEMessage( FEMSG_PEEPHOLE_FLUSHED, NULL );
