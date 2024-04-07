@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -771,6 +772,7 @@ static void dump_module_info( section_dbg_header *sdh )
     long            cpos;
     unsigned_16     index;
     mod_dbg_info    *tmi;
+    unsigned_8      len;
 
     total_bytes = sdh->gbl_offset - sdh->mod_offset;
     print_info_title( "Module" );
@@ -786,8 +788,9 @@ static void dump_module_info( section_dbg_header *sdh )
     for( bytes_read = 0; bytes_read < total_bytes; ) {
         Wlseek( cpos );
         Wread( Wbuff, sizeof( mod_dbg_info ) + 255 );
-        bytes_read += sizeof( mod_dbg_info ) + mi->name[0];
-        cpos += sizeof( mod_dbg_info ) + mi->name[0];
+        len = mi->name[0];
+        bytes_read += sizeof( mod_dbg_info ) + len;
+        cpos += sizeof( mod_dbg_info ) + len;
         Putdecl( index, 3 );
         Wdputs( ") Name:   ");
         Wdputname( mi->name );
@@ -810,7 +813,7 @@ static void dump_module_info( section_dbg_header *sdh )
         Wdputs( ", offset = " );
         Puthex( mi->di[DMND_LINES].info_off, 8 );
         Wdputslc( "H\n" );
-        memcpy( tmi, mi, sizeof( mod_dbg_info ) + mi->name[0] );
+        memcpy( tmi, mi, sizeof( mod_dbg_info ) + len );
         if( Debug_options & LOCALS ) {
             dump_locals( tmi );
         }
@@ -835,6 +838,7 @@ static void dump_global_info( section_dbg_header *sdh )
     unsigned_32 bytes_read;
     v3_gbl_info *gi;
     long        cpos;
+    unsigned_8  len;
 
     total_bytes = sdh->addr_offset - sdh->gbl_offset;
     print_info_title( "Global" );
@@ -844,8 +848,9 @@ static void dump_global_info( section_dbg_header *sdh )
     for( bytes_read = 0; bytes_read < total_bytes; ) {
         Wlseek( cpos );
         Wread( Wbuff, sizeof( v3_gbl_info ) + 255 );
-        bytes_read += sizeof( v3_gbl_info ) + (unsigned_8)gi->name[0];
-        cpos += sizeof( v3_gbl_info ) + (unsigned_8)gi->name[0];
+        len = gi->name[0];
+        bytes_read += sizeof( v3_gbl_info ) + len;
+        cpos += sizeof( v3_gbl_info ) + len;
         Wdputs( "  Name:  " );
         Wdputname( gi->name );
         Wdputslc( "\n" );
