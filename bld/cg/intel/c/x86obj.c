@@ -63,11 +63,11 @@
 #include "feprotos.h"
 
 
-#define _NIDX_NULL      1   // lname ""
-#define _NIDX_CODE      2   // lname "CODE"
-#define _NIDX_DATA      3   // lname "DATA"
-#define _NIDX_BSS       4   // lname "BSS"
-#define _NIDX_TLS       5   // lname "TLS"
+#define _NIDX_NULL      1   /* lname "" */
+#define _NIDX_CODE      2   /* lname "CODE" */
+#define _NIDX_DATA      3   /* lname "DATA" */
+#define _NIDX_BSS       4   /* lname "BSS" */
+#define _NIDX_TLS       5   /* lname "TLS" */
 
 #define MODEST_HDR      50
 #define INCREMENT_HDR   50
@@ -387,7 +387,9 @@ static  byte    SegmentAttr( byte align, seg_attr tipe, bool use_16 )
     } else {
         attr = SEG_ALGN_PAGE;
 #if 0
-    // align is a byte - how can it be bigger than 4k - BBB
+    /*
+     * align is a byte - how can it be bigger than 4k - BBB
+     */
   #if _TARGET & _TARG_80386
         if( _IsTargetModel( CGSW_X86_EZ_OMF ) ) {
             if( align > 256 ) {
@@ -523,7 +525,9 @@ static  void    OutOffset( offset value, array_control *dest )
 }
 
 #if _TARGET & _TARG_8086
-// 32bit debug seg support dwarf,codeview
+/*
+ * 32bit debug seg support dwarf, codeview
+ */
 static  void    OutLongOffset( long_offset value, array_control *dest )
 /*********************************************************************/
 {
@@ -546,6 +550,33 @@ static  void    OutBuffer( const void *name, unsigned len, array_control *dest )
     _CopyTrans( name, allocOut( dest, len ), len );
 }
 
+static object *InitTarg( index_rec *rec )
+/***************************************/
+{
+    object          *obj;
+
+    obj = CGAlloc( sizeof( object ) );
+    /*
+     * try to bag all the memory we'll need now
+     */
+    FillArray( &obj->data, sizeof( byte ), MODEST_OBJ, INCREMENT_OBJ );
+    FillArray( &obj->fixes, sizeof( byte ), NOMINAL_FIX, INCREMENT_FIX );
+    if( rec->exec ) {
+        obj->exports = InitArray( sizeof( byte ), MODEST_EXP, INCREMENT_EXP );
+    } else {
+        obj->exports = NULL;
+    }
+    obj->tpatches = NULL;
+    obj->gen_static_exports = false;
+    obj->pending_line_number = 0;
+    obj->lines = NULL;
+    obj->last_line = 0;
+    obj->last_offset = 0;
+    obj->index = rec->sidx;
+    obj->start = rec->location;
+    return( obj );
+}
+
 static  void    DoASegDef( index_rec *rec, bool use_16 )
 /******************************************************/
 {
@@ -555,41 +586,25 @@ static  void    DoASegDef( index_rec *rec, bool use_16 )
 
     /* unused parameters */ (void)use_16;
 
-    obj = CGAlloc( sizeof( object ) );
+    rec->obj = obj = InitTarg( rec );
     obj_data = &obj->data;
-    rec->obj = obj;
-    obj->index = rec->sidx;
-    obj->start = rec->location;
-    obj->tpatches = NULL;
-    obj->gen_static_exports = false;
-    obj->pending_line_number = 0;
-    FillArray( obj_data, sizeof( byte ), MODEST_OBJ, INCREMENT_OBJ );
-    FillArray( &obj->fixes, sizeof( byte ), NOMINAL_FIX, INCREMENT_FIX );
-    if( rec->exec ) { /* try to bag all the memory we'll need now*/
-        obj->exports = InitArray( sizeof( byte ), MODEST_EXP, INCREMENT_EXP );
-    } else {
-        obj->exports = NULL;
-    }
-    obj->lines = NULL;
-    obj->last_line = 0;
-    obj->last_offset = 0;
     OutByte( rec->attr, obj_data );
 #if _TARGET & _TARG_80386
-    OutOffset( 0, obj_data );         /* segment size (for now) */
-#else  //SEG32DBG dwarf, codeview
+    OutOffset( 0, obj_data );           /* segment size (for now) */
+#else /* SEG32DBG dwarf, codeview */
     if( rec->attr & SEG_USE_32 ) {
-        OutLongOffset( 0, obj_data ); /* segment size (for now) */
+        OutLongOffset( 0, obj_data );   /* segment size (for now) */
     } else {
-        OutOffset( 0, obj_data );     /* segment size (for now) */
+        OutOffset( 0, obj_data );       /* segment size (for now) */
     }
 #endif
-    OutIdx( rec->nidx, obj_data );    /* segment name index */
-    OutIdx( rec->cidx, obj_data );    /* class name index */
-    OutIdx( _NIDX_NULL, obj_data );   /* overlay name index */
+    OutIdx( rec->nidx, obj_data );      /* segment name index */
+    OutIdx( rec->cidx, obj_data );      /* class name index */
+    OutIdx( _NIDX_NULL, obj_data );     /* overlay name index */
 #if _TARGET & _TARG_80386
     if( _IsTargetModel( CGSW_X86_EZ_OMF ) ) {
         if( _IsntTargetModel( CGSW_X86_USE_32 ) || use_16 ) {
-            OutByte( 2, obj_data );   /* to indicate USE16 EXECUTE/READ */
+            OutByte( 2, obj_data );     /* to indicate USE16 EXECUTE/READ */
         }
     }
 #endif
@@ -604,7 +619,7 @@ static  void    DoASegDef( index_rec *rec, bool use_16 )
     } else {
         cmd = CMD_SEGDEF;
     }
-#else //SEG32DBG dwarf, codeview
+#else /* SEG32DBG dwarf, codeview */
     if( (rec->attr & SEG_USE_32)
       && _IsntTargetModel( CGSW_X86_EZ_OMF ) ) {
         cmd = CMD_SEGDEF32;
@@ -1004,11 +1019,11 @@ static  void    DoSegGrpNames( array_control *dgroup_def, array_control *tgroup_
     char        *dgroup;
     omf_idx     dgroup_idx;
 
-    GetNameIdx( "", "" );       // _NIDX_NULL
-    GetNameIdx( "CODE", "" );   // _NIDX_CODE
-    GetNameIdx( "DATA", "" );   // _NIDX_DATA
-    GetNameIdx( "BSS", "" );    // _NIDX_BSS
-    GetNameIdx( "TLS", "" );    // _NIDX_TLS
+    GetNameIdx( "", "" );       /* _NIDX_NULL */
+    GetNameIdx( "CODE", "" );   /* _NIDX_CODE */
+    GetNameIdx( "DATA", "" );   /* _NIDX_DATA */
+    GetNameIdx( "BSS", "" );    /* _NIDX_BSS */
+    GetNameIdx( "TLS", "" );    /* _NIDX_TLS */
 
 #if _TARGET & _TARG_80386
     if( _IsTargetModel( CGSW_X86_FLAT_MODEL )
@@ -1068,6 +1083,9 @@ static  void    KillStatic( array_control *arr )
 /**********************************************/
 {
     CGFree( arr->array );
+    arr->array = NULL;
+    arr->alloc = 0;
+    arr->used = 0;
 }
 
 static  void    KillArray( array_control *arr )
@@ -1092,7 +1110,7 @@ static void finiImports( void )
 
 static omf_idx getImportHdl( void )
 {
-    if( ImportHdl > 0x7FFF - 1 ) {
+    if( ImportHdl >= 0x7FFF ) {
         FatalError( "OMF file too many external symbols" );
     }
     return( ImportHdl++ );
@@ -1154,12 +1172,16 @@ void    ObjInit( void )
     }
     for( depend = NULL; (depend = FEAuxInfo( depend, FEINF_NEXT_DEPENDENCY )) != NULL; ) {
         OutShort( DEPENDENCY_COMMENT, names );
-        // OMF use dos time/date format
+        /*
+         * OMF use dos time/date format
+         */
         OutLongInt( _timet2dos( *(time_t *)FEAuxInfo( depend, FEINF_DEPENDENCY_TIMESTAMP ) ), names );
         OutName( FEAuxInfo( depend, FEINF_DEPENDENCY_NAME ), names );
         PutObjOMFRec( CMD_COMENT, names );
     }
-    /* mark end of dependancy list */
+    /*
+     * mark end of dependancy list
+     */
     OutShort( DEPENDENCY_COMMENT, names );
     PutObjOMFRec( CMD_COMENT, names );
     KillArray( names );
@@ -1194,7 +1216,7 @@ void    ObjInit( void )
         if( _IsModel( CGSW_GEN_DBG_LOCALS )
           || _IsModel( CGSW_GEN_DBG_TYPES ) ) {
             DFObjInitDbgInfo();
-#if 0 // save for JimR and linker
+#if 0 /* save for JimR and linker */
         } else if( _IsModel( CGSW_GEN_DBG_NUMBERS ) ) {
             DFObjLineInitDbgInfo();
 #endif
@@ -1417,7 +1439,7 @@ static void     EjectLEData( void )
             } else {
                 cmd = CMD_LEDATA;
             }
-#else //SEG32DBG dwarf, codeview
+#else /* SEG32DBG dwarf, codeview */
             if( (CurrSeg->attr & SEG_USE_32)
               && _IsntTargetModel( CGSW_X86_EZ_OMF ) ) {
                 cmd = CMD_LEDATA32;
@@ -1522,17 +1544,17 @@ static  void    OutLEDataStart( bool iterated )
             OutOffset( (offset)CurrSeg->location, obj_data );
             OutIdx( 0, obj_data );
             if( CurrSeg->btype == BASE_GRP ) {
-                OutIdx( CurrSeg->base, obj_data );   /* group index*/
+                OutIdx( CurrSeg->base, obj_data );  /* group index*/
             } else {
                 OutIdx( 0, obj_data );
             }
-            OutIdx( CurrSeg->sidx, obj_data );   /* segment index*/
+            OutIdx( CurrSeg->sidx, obj_data );      /* segment index*/
             OutIdx( NeedComdatNidx( NORMAL ), obj_data );
-        } else { // LEDATA
+        } else { /* LEDATA */
             OutIdx( CurrSeg->sidx, obj_data );
 #if _TARGET & _TARG_80386
             OutOffset( (offset)CurrSeg->location, obj_data );
-#else  //SEG32DBG dwarf, codeview
+#else /* SEG32DBG dwarf, codeview */
             if( CurrSeg->attr & SEG_USE_32 ) {
                 OutLongOffset( CurrSeg->location, obj_data );
             } else {
@@ -1811,7 +1833,7 @@ static  void    FiniTarg( void )
     rec = AskIndexRec( obj->index );
 #if _TARGET & _TARG_80386
     size.s = _TargetInt( rec->max_size );
-#else //SEG32DBG dwarf, codeview
+#else /* SEG32DBG dwarf, codeview */
     if( rec->attr & SEG_USE_32 ) {
         size.l = _TargetLongInt( rec->max_size );
     } else {
@@ -1829,7 +1851,7 @@ static  void    FiniTarg( void )
     } else {
 #if _TARGET & _TARG_80386
         PatchObj( obj->segfix, SEGDEF_SIZE, (byte *)&size.s, sizeof( offset ) );
-#else   //SEG32DBG dwarf, codeview
+#else /* SEG32DBG dwarf, codeview */
         if( rec->attr & SEG_USE_32 ) {
             PatchObj( obj->segfix, SEGDEF_SIZE, (byte *)&size.l, sizeof( long_offset ) );
         } else {
@@ -1992,12 +2014,12 @@ static  void    EndModule( void )
     omf_cmd       cmd;
     array_control tmp;
 
-    b = 0;                     /* non-main module, no start address*/
-//  There is a bug in MS's LINK386 program that causes it not to recognize a
-//  MODEND386 record in some situations. We can get around it by only outputing
-//  16-bit MODEND records. This causes us no pain, since we never need any
-//  features provided by the 32-bit form anyway. --- BJS
-//    PutObjOMFRec( CMD_MODEND/CMD_MODEND32 , &b, sizeof( byte ) );
+/*
+ * There is a bug in MS's LINK386 program that causes it not to recognize a
+ * MODEND386 record in some situations. We can get around it by only outputing
+ * 16-bit MODEND records. This causes us no pain, since we never need any
+ * features provided by the 32-bit form anyway.
+ */
 #if 0
  #if _TARGET & _TARG_80386
     if( _IsntTargetModel( CGSW_X86_EZ_OMF ) ) {
@@ -2011,6 +2033,7 @@ static  void    EndModule( void )
 #else
     cmd = CMD_MODEND;
 #endif
+    b = 0;                     /* non-main module, no start address*/
     tmp.used = sizeof( byte );
     tmp.array = &b;
     PutObjOMFRec( cmd, &tmp );
@@ -2041,7 +2064,7 @@ void    ObjFini( void )
                 rec++;
             }
             DFObjFiniDbgInfo( codesize );
-#if 0 //save for Jimr
+#if 0 /* save for Jimr */
         } else if( _IsModel( CGSW_GEN_DBG_NUMBERS ) ) {
             DFObjLineFini( );
 #endif
@@ -2329,8 +2352,10 @@ void    OutDLLExport( uint words, cg_sym_handle sym )
 #if _TARGET & _TARG_8086
     OutByte( words, obj_data );
 #else
-    // this should be 0 for everything except callgates to
-    // 16-bit segments (from MS Knowledge Base)
+    /*
+     * this should be 0 for everything except callgates to
+     * 16-bit segments (from MS Knowledge Base)
+     */
     OutByte( 0, obj_data );
 #endif
     OutObjectName( sym, obj_data );
@@ -2508,7 +2533,7 @@ static omf_fix_loc getOMFFixLoc( fix_class class )
     default:
         break;
     }
-    // error
+    /* error */
     return( 0 );
 }
 
@@ -3312,18 +3337,18 @@ segment_id      AskSegID( pointer hdl, cg_class class )
     switch( class ) {
     case CG_FE:
         if( InlineFunction( (cg_sym_handle)hdl ) ) {
-            return( codeSegId );    // AskCodeSeg()
+            return( codeSegId );    /* AskCodeSeg() */
         }
         return( FESegID( (cg_sym_handle)hdl ) );
     case CG_BACK:
         return( ((back_handle)hdl)->segid );
     case CG_TBL:
     case CG_VTB:
-        return( codeSegId );        // AskCodeSeg()
+        return( codeSegId );        /* AskCodeSeg() */
     case CG_CLB:
-        return( altCodeSegId );     // AskAltCodeSeg()
+        return( altCodeSegId );     /* AskAltCodeSeg() */
     default:
-        return( dataSegId );        // AskBackSeg()
+        return( dataSegId );        /* AskBackSeg() */
     }
 }
 
