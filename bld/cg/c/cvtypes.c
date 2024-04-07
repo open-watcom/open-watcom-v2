@@ -418,10 +418,10 @@ static char const RealNames[MAX_REAL_NAME][17] = {
 dbg_type    CVScalar( const char *name, cg_type tipe )
 /****************************************************/
 {
-    type_def          *tipe_addr;
-    int                length;
-    cv_primitive       index;
-    int                count;
+    const type_def      *tipe_addr;
+    int                 length;
+    cv_primitive        index;
+    int                 count;
 
     index.s = 0;  /* set bits to 0 */
     if( strcmp( name, "__segment" ) == 0 ) {
@@ -648,7 +648,7 @@ dbg_type    CVIndCharBlock( back_handle len, cg_type len_type, int off )
     ct_dimvaru      *dim;
     cv_primitive    index;
     lf_values       ret;
-    type_def        *tipe_addr;
+    const type_def  *tipe_addr;
 
     tipe_addr = TypeAddress( len_type );
     itipe = LFIntType( tipe_addr->length );
@@ -780,7 +780,7 @@ dbg_type    CVLocCharBlock( dbg_loc loc, cg_type len_type )
     cv_out          out[1];
     ct_dimvaru      *dim;
     lf_values       ret;
-    type_def        *tipe_addr;
+    const type_def  *tipe_addr;
     fold_leaf       tmp;
 
     tipe_addr = TypeAddress( len_type );
@@ -817,7 +817,7 @@ dbg_type    CVFtnArray( back_handle dims, cg_type lo_bound_tipe,
     cv_out          out[1];
     ct_dimvarlu     *dim;
     lf_values       ret;
-    type_def        *tipe_addr;
+    const type_def  *tipe_addr;
 
     /* unused parameters */ (void)num_elts_tipe;
 
@@ -884,13 +884,13 @@ static  lf_values   ArrayDimL( int_32 low, int_32 hi )
 static  dbg_type    CVDimVarLU( dbg_array ar )
 /********************************************/
 {
-    cv_out         out[1];
-    ct_dimvarlu    *var;
-    dbg_type       itipe;
-    dbg_type       symref[2];
-    type_def       *tipe_addr;
-    dim_any        *dim;
-    dim_any        *next;
+    cv_out          out[1];
+    ct_dimvarlu     *var;
+    dbg_type        itipe;
+    dbg_type        symref[2];
+    const type_def  *tipe_addr;
+    dim_any         *dim;
+    dim_any         *next;
 
     NewTypeString( out );
     var = StartType( out, LFG_DIMVARLU );
@@ -986,7 +986,7 @@ dbg_type   CVSubRange( int_32 lo, int_32 hi, dbg_type base )
 static  cv_ptrtype  PtrClass( cg_type ptr_type )
 /**********************************************/
 {
-    type_def        *tipe_addr;
+    const type_def  *tipe_addr;
     cv_ptrtype      ret = 0;
 
     tipe_addr = TypeAddress( ptr_type );
@@ -1373,7 +1373,7 @@ static cv_mprop WVCVMProp( uint kind )
 static   cv_vtshape   CVVTShape( cg_type ptr_type )
 /*************************************************/
 {
-    type_def        *tipe_addr;
+    const type_def  *tipe_addr;
     cv_vtshape      ret = 0;
 
     tipe_addr = TypeAddress( ptr_type );

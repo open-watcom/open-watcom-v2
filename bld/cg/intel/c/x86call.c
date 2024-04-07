@@ -274,8 +274,8 @@ an      BGCall( cn call, bool use_return, bool aux_inline )
 }
 
 
-void    BGProcDecl( cg_sym_handle sym, type_def *tipe )
-/*****************************************************/
+void    BGProcDecl( cg_sym_handle sym, const type_def *tipe )
+/***********************************************************/
 {
     hw_reg_set          reg;
     name                *temp;
@@ -313,8 +313,8 @@ void    BGProcDecl( cg_sym_handle sym, type_def *tipe )
 }
 
 
-name    *StReturn( an retval, type_def *tipe, instruction **pins )
-/****************************************************************/
+name    *StReturn( an retval, const type_def *tipe, instruction **pins )
+/**********************************************************************/
 {
     name        *retp;
     name        *ptr;
@@ -464,8 +464,8 @@ void    PostCall( cn call )
     /* unused parameters */ (void)call;
 }
 
-type_def    *PassParmType( cg_sym_handle func, type_def* tipe )
-/*************************************************************/
+const type_def  *PassParmType( cg_sym_handle func, const type_def *tipe )
+/***********************************************************************/
 {
     if( (call_class_target)(pointer_uint)FindAuxInfoSym( func, FEINF_CALL_CLASS_TARGET ) & FECALL_X86_FAR16_CALL )
         return( tipe );

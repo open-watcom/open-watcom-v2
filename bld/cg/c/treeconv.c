@@ -45,12 +45,12 @@
 #include "typemap.h"
 
 
-static  bool    DemoteTree( tn name, type_def *tipe, bool just_test ) {
-/*********************************************************************/
+static  bool    DemoteTree( tn name, const type_def *tipe, bool just_test ) {
+/***************************************************************************/
 
-    type_def    *frum;
-    bool        demote_this_node;
-    bool        can_demote;
+    const type_def  *frum;
+    bool            demote_this_node;
+    bool            can_demote;
 
     frum = name->tipe;
     can_demote = false;
@@ -129,8 +129,8 @@ static  bool    DemoteTree( tn name, type_def *tipe, bool just_test ) {
 }
 
 
-void    TGDemote( tn name, type_def *tipe )
-/*****************************************/
+void    TGDemote( tn name, const type_def *tipe )
+/***********************************************/
 {
     if( DemoteTree( name, tipe, true ) ) {
         DemoteTree( name, tipe, false );
@@ -138,8 +138,8 @@ void    TGDemote( tn name, type_def *tipe )
 }
 
 
-tn      FoldCnvRnd( cg_op op, tn name, type_def *to_tipe )
-/********************************************************/
+tn      FoldCnvRnd( cg_op op, tn name, const type_def *to_tipe )
+/**************************************************************/
 {
     tn              new;
     float_handle    cf;

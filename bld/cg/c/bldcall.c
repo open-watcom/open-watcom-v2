@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -67,7 +67,7 @@
 #include "feprotos.h"
 
 
-type_class_def  AddCallBlock( cg_sym_handle sym, type_def *tipe )
+type_class_def  AddCallBlock( cg_sym_handle sym, const type_def *tipe )
 /*********************************************************************
  * create the initial basic block for routine "sym", and call some
  * other initialization routines.
@@ -100,7 +100,7 @@ void    BGFiniCall( cn call )
 }
 
 
-cn      BGInitCall(an node,type_def *tipe,aux_handle aux)
+cn      BGInitCall( an node, const type_def *tipe, aux_handle aux )
 /******************************************************************
  * initialize a call node for a call to routine "node", with type
  * "tipe" and aux handle "aux". This also allocates the instruction
@@ -161,7 +161,7 @@ void    BGAddParm( cn call, an parm )
 }
 
 
-void    BGAutoDecl( cg_sym_handle sym, type_def *tipe )
+void    BGAutoDecl( cg_sym_handle sym, const type_def *tipe )
 /*************************************************************
  * declare an automatic variable with name "sym" and type "tipe". This
  * just creates the appropriate back end symbol table entry. (eg: N_TEMP)
@@ -204,7 +204,7 @@ static  instruction *DoParmDef( name *result, type_class_def type_class )
 #define BASE_ALIGNMENT  4
 #endif
 
-static  name    *DoAlphaParmDecl( hw_reg_set reg, cg_sym_handle sym, type_def *tipe, name *t2 )
+static  name    *DoAlphaParmDecl( hw_reg_set reg, cg_sym_handle sym, const type_def *tipe, name *t2 )
 /*********************************************************************************************
  * N.B.: This was too weird to be incorporated in routine below.
  * If we have a structure being passed by value on the Alpha, we start
@@ -265,7 +265,7 @@ static  name    *DoAlphaParmDecl( hw_reg_set reg, cg_sym_handle sym, type_def *t
 }
 #endif
 
-name    *DoParmDecl( cg_sym_handle sym, type_def *tipe, hw_reg_set reg )
+name    *DoParmDecl( cg_sym_handle sym, const type_def *tipe, hw_reg_set reg )
 /**************************************************************************
  * Declare a parameter of type "tipe" for the current routine. This
  * routine determines whether the parameter is coming in in a register
@@ -285,7 +285,7 @@ name    *DoParmDecl( cg_sym_handle sym, type_def *tipe, hw_reg_set reg )
     name                *temp;
     name                *parm_name;
     type_class_def      type_class;
-    type_def            *ptipe;
+    const type_def      *ptipe;
     bool                no_temp;
 
     ptipe = QParmType( AskForLblSym( CurrProc->label ), sym, tipe );
@@ -373,11 +373,11 @@ name    *DoParmDecl( cg_sym_handle sym, type_def *tipe, hw_reg_set reg )
 }
 
 
-void    BGParmDecl( cg_sym_handle sym, type_def *tipe )
-/*****************************************************/
+void    BGParmDecl( cg_sym_handle sym, const type_def *tipe )
+/***********************************************************/
 {
     hw_reg_set          reg;
-    type_def            *t;
+    const type_def      *t;
 
     t = QParmType( AskForLblSym( CurrProc->label ), sym, tipe );
     reg = ParmReg( TypeClass( t ), t->length, ParmAlignment( tipe ), &CurrProc->state );
@@ -621,7 +621,7 @@ void    ParmIns( pn parm, call_state *state )
 }
 
 
-void    BGZapBase( name *base, type_def *tipe )
+void    BGZapBase( name *base, const type_def *tipe )
 /********************************************************
  * for FORTRAN. Generate a NOP with result of base[temp], so that we
  * know that a pass by reference argument can be modified by the
@@ -645,7 +645,7 @@ void    BGZapBase( name *base, type_def *tipe )
 }
 
 
-void    BGReturn( an retval, type_def *tipe )
+void    BGReturn( an retval, const type_def *tipe )
 /******************************************************
  * generate the instructions to return the value 'retval', then
  * go off and call generate to optimize the whole routine and

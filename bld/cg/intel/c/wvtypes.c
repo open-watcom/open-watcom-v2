@@ -56,8 +56,8 @@ static dbg_patch        CueInfoOffset;
 static  byte    GetScalar( cg_type tipe ) {
 /*****************************************/
 
-    byte        scalar;
-    type_def    *tipe_addr;
+    byte            scalar;
+    const type_def  *tipe_addr;
 
     tipe_addr = TypeAddress( tipe );
     if( tipe_addr->refno == TY_DEFAULT ) {

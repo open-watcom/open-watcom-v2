@@ -389,7 +389,7 @@ name        *SelIdx( tbl_control *table, an node )
 }
 
 
-type_def        *SelNodeType( an node, bool is_signed )
+const type_def  *SelNodeType( an node, bool is_signed )
 /*****************************************************/
 {
     cg_type     unsigned_t;

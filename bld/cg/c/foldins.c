@@ -201,10 +201,10 @@ static  instruction    *FoldAbsolute( instruction *ins ) {
     opcnt           num_operands;
     name            *result;
     tn              fold;
-    type_def        *tipe;
-    type_def        *left_tipe;
-    type_def        *rite_tipe;
-    type_def        *fold_tipe;
+    const type_def  *tipe;
+    const type_def  *left_tipe;
+    const type_def  *rite_tipe;
+    const type_def  *fold_tipe;
     pointer         left;
     pointer         rite;
     name            *tmp;

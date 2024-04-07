@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,8 +42,8 @@ typedef enum {
 } type_class;
 
 typedef struct alias {
-        struct type_def     *tptr;
-        cg_type             refno;
+        const struct type_def   *tptr;
+        cg_type                 refno;
 } alias;
 
 typedef union type_alloc {
@@ -57,33 +57,33 @@ typedef struct type_list {
         type_class          format;
 } type_list;
 
-type_def *PTInteger;
-type_def *PTUnsigned;
-type_def *PTPointer;
-type_def *PTCodePointer;
+const type_def *PTInteger;
+const type_def *PTUnsigned;
+const type_def *PTPointer;
+const type_def *PTCodePointer;
 
-static    type_list     *TypeList;
+static type_list    *TypeList;
 
 
 /*                              refno           length  attributes */
 /*                              ======          ======  ========== */
 
-static type_def TUInt1      = {  TY_UINT_1,       1,      0 };
-static type_def TInt1       = {  TY_INT_1,        1,      TYPE_SIGNED };
-static type_def TUInt2      = {  TY_UINT_2,       2,      0 };
-static type_def TInt2       = {  TY_INT_2,        2,      TYPE_SIGNED };
-static type_def TUInt4      = {  TY_UINT_4,       4,      0 };
-static type_def TInt4       = {  TY_INT_4,        4,      TYPE_SIGNED };
-static type_def TUInt8      = {  TY_UINT_8,       8,      0 };
-static type_def TInt8       = {  TY_INT_8,        8,      TYPE_SIGNED };
-static type_def TSingle     = {  TY_SINGLE,       4,      TYPE_SIGNED + TYPE_FLOAT };
-static type_def TDouble     = {  TY_DOUBLE,       8,      TYPE_SIGNED + TYPE_FLOAT };
-static type_def TLongDouble = {  TY_LONG_DOUBLE,  10,     TYPE_SIGNED + TYPE_FLOAT };
-static type_def TBool       = {  TY_BOOLEAN,      0,      0 };
-static type_def TNull       = {  TY_DEFAULT,      0,      0 };
-static type_def TPascal     = {  TY_PROC_PARM,    4,      0 };
+static const type_def TUInt1      = {  TY_UINT_1,       1,      0 };
+static const type_def TInt1       = {  TY_INT_1,        1,      TYPE_SIGNED };
+static const type_def TUInt2      = {  TY_UINT_2,       2,      0 };
+static const type_def TInt2       = {  TY_INT_2,        2,      TYPE_SIGNED };
+static const type_def TUInt4      = {  TY_UINT_4,       4,      0 };
+static const type_def TInt4       = {  TY_INT_4,        4,      TYPE_SIGNED };
+static const type_def TUInt8      = {  TY_UINT_8,       8,      0 };
+static const type_def TInt8       = {  TY_INT_8,        8,      TYPE_SIGNED };
+static const type_def TSingle     = {  TY_SINGLE,       4,      TYPE_SIGNED + TYPE_FLOAT };
+static const type_def TDouble     = {  TY_DOUBLE,       8,      TYPE_SIGNED + TYPE_FLOAT };
+static const type_def TLongDouble = {  TY_LONG_DOUBLE,  10,     TYPE_SIGNED + TYPE_FLOAT };
+static const type_def TBool       = {  TY_BOOLEAN,      0,      0 };
+static const type_def TNull       = {  TY_DEFAULT,      0,      0 };
+static const type_def TPascal     = {  TY_PROC_PARM,    4,      0 };
 
-type_def        *TypeAddress( cg_type tipe )
+const type_def  *TypeAddress( cg_type tipe )
 /*******************************************
     given a type refno, "tipe" which is known to the front end, return a
     pointer to the appropriate "type_def".
@@ -161,20 +161,20 @@ type_length     TypeLength( cg_type tipe )
     Return the size of a given type "tipe".
 */
 {
-    type_def    *t;
+    const type_def  *t;
 
     t = TypeAddress( tipe );
     return( t->length );
 }
 
 
-type_def        *TypeAlias( cg_type define, cg_type existing )
+const type_def  *TypeAlias( cg_type define, cg_type existing )
 /*************************************************************
     cause refno "define" to become an alias for existing type "existing"
 */
 {
-    type_def    *t;
-    type_list   *list;
+    const type_def  *t;
+    type_list       *list;
 
     t = TypeAddress( existing );
     if( t->refno == TY_DEFAULT )
@@ -189,7 +189,7 @@ type_def        *TypeAlias( cg_type define, cg_type existing )
 }
 
 
-type_def        *TypeDef( cg_type refno, type_length length, type_length align )
+const type_def  *TypeDef( cg_type refno, type_length length, type_length align )
 /*******************************************************************************
     Define a structure/array type which will have handle "refno".  The
     type will occupy "length" bytes of storage.

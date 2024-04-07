@@ -119,7 +119,7 @@ static void CLISeek( dw_sectnum sect, dw_out_offset offset, int type )
 static void DoReloc( dw_sym_handle sym, dw_addr_offset disp )
 /***********************************************************/
 {
-    type_def            *ptr_type;
+    const type_def      *ptr_type;
 
     ptr_type = TypeAddress( TY_NEAR_POINTER );
     FEPtr( (cg_sym_handle)sym, ptr_type, disp );
@@ -135,7 +135,7 @@ static void DoSegReloc( dw_sym_handle sym )
 static void DoLblReloc( back_handle bck, int disp )
 /*************************************************/
 {
-    type_def        *ptr_type;
+    const type_def  *ptr_type;
     segment_id      segid;
 
     segid = AskSegID( bck, CG_BACK );
@@ -388,7 +388,7 @@ static  void    FiniLineSegBck( void )
 
 static int InitCU( dw_cu_info *cu )
 {
-    type_def        *tipe_addr;
+    const type_def  *tipe_addr;
 
     cu->source_filename = FEAuxInfo( NULL, FEINF_SOURCE_NAME );
     cu->directory = "";

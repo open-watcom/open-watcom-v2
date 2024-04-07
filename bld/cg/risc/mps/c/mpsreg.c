@@ -76,8 +76,8 @@ hw_reg_set SavedRegs( void )
 }
 
 
-type_class_def CallState( aux_handle aux, type_def *tipe, call_state *state )
-/***************************************************************************/
+type_class_def CallState( aux_handle aux, const type_def *tipe, call_state *state )
+/*********************************************************************************/
 {
     type_class_def      type_class;
     byte                i;
@@ -161,8 +161,8 @@ type_class_def CallState( aux_handle aux, type_def *tipe, call_state *state )
 }
 
 
-void UpdateReturn( call_state *state, type_def *tipe, type_class_def type_class, aux_handle aux )
-/***********************************************************************************************/
+void UpdateReturn( call_state *state, const type_def *tipe, type_class_def type_class, aux_handle aux )
+/*****************************************************************************************************/
 {
     /* unused parameters */ (void)tipe; (void)aux;
 

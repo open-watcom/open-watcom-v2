@@ -60,7 +60,7 @@ void    BuffEnd( segment_id segid )
 /*********************************/
 {
     byte                *buff;
-    type_def            *ptr_type;
+    const type_def      *ptr_type;
     dbg_patch           *dpatch;
     uint                i;
     uint                last;

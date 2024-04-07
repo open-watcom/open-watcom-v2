@@ -103,8 +103,8 @@ static char const CmpResult[REL_SIZE][CASE_SIZE] = {
 
 #define MAXSIZE         64      /* Must not be greater! */
 
-static int CmpType( type_def *tipe )
-/**********************************/
+static int CmpType( const type_def *tipe )
+/****************************************/
 /* Convert cg type to a value used by CheckCmpRange */
 {
     int     ret;
@@ -198,8 +198,8 @@ static cmp_result CheckCmpRange( cg_op op, int op_type, float_handle val )
     return( ret );
 }
 
-static int_32 CFConvertByType( float_handle cf, type_def *tipe )
-/**************************************************************/
+static int_32 CFConvertByType( float_handle cf, const type_def *tipe )
+/********************************************************************/
 {
     int_32      data;
 
@@ -239,8 +239,8 @@ static signed_64 CFGetInteger64Value( float_handle cf )
     return( value );
 }
 
-static  float_handle IntToCF( signed_64 value, type_def *tipe )
-/*********************************************************/
+static  float_handle IntToCF( signed_64 value, const type_def *tipe )
+/*******************************************************************/
 {
     signed_8    s8;
     unsigned_8  u8;
@@ -288,8 +288,8 @@ static  float_handle IntToCF( signed_64 value, type_def *tipe )
     }
 }
 
-static  tn      IntToType( int_32 value, type_def *tipe )
-/*******************************************************/
+static  tn      IntToType( int_32 value, const type_def *tipe )
+/*************************************************************/
 {
     signed_64   temp;
 
@@ -298,15 +298,15 @@ static  tn      IntToType( int_32 value, type_def *tipe )
 }
 
 
-static  tn      Int64ToType( signed_64 value, type_def *tipe )
-/************************************************************/
+static  tn      Int64ToType( signed_64 value, const type_def *tipe )
+/******************************************************************/
 {
     return( TGConst( IntToCF( value, tipe ), tipe ) );
 }
 
 
-static  tn      CFToType( float_handle cf, type_def *tipe )
-/*********************************************************/
+static  tn      CFToType( float_handle cf, const type_def *tipe )
+/***************************************************************/
 {
     tn          result;
 
@@ -341,7 +341,7 @@ int     GetLog2( uint_32 value )
 }
 
 
-tn      FoldTimes( tn left, tn rite, type_def *tipe )
+tn      FoldTimes( tn left, tn rite, const type_def *tipe )
 /***********************************************************/
 {
     tn              temp;
@@ -431,8 +431,8 @@ tn      FoldTimes( tn left, tn rite, type_def *tipe )
 }
 
 
-float_handle OkToNegate( float_handle value, type_def *tipe )
-/**********************************************************/
+float_handle OkToNegate( float_handle value, const type_def *tipe )
+/*****************************************************************/
 /* make sure we don't negate an unsigned and get out of range */
 /* for example -MAX_LONG is no longer an integer type */
 {
@@ -452,7 +452,7 @@ float_handle OkToNegate( float_handle value, type_def *tipe )
     return( NULL );
 }
 
-tn      FoldMinus( tn left, tn rite, type_def *tipe )
+tn      FoldMinus( tn left, tn rite, const type_def *tipe )
 /***********************************************************/
 {
     tn              fold;
@@ -497,7 +497,7 @@ tn      FoldMinus( tn left, tn rite, type_def *tipe )
 }
 
 
-static type_def *FixAddType( tn left, tn rite, type_def *tipe )
+static const type_def *FixAddType( tn left, tn rite, const type_def *tipe )
 {
     if( left->tipe != tipe ) {
         if( left->tipe == rite->tipe ) {
@@ -508,7 +508,7 @@ static type_def *FixAddType( tn left, tn rite, type_def *tipe )
 }
 
 
-tn      FoldPlus( tn left, tn rite, type_def *tipe )
+tn      FoldPlus( tn left, tn rite, const type_def *tipe )
 /**********************************************************/
 {
     tn              fold;
@@ -578,15 +578,15 @@ tn      FoldPlus( tn left, tn rite, type_def *tipe )
 }
 
 
-static  tn      Halve( tn left, type_def *tipe )
-/**********************************************/
+static  tn      Halve( tn left, const type_def *tipe )
+/****************************************************/
 {
 #define ONE_HALF "0.5"
 
     return( TGBinary( O_TIMES, left, TGConst( CFCnvSF( &cgh, ONE_HALF ), tipe ), tipe ) );
 }
 
-tn      FoldPow( tn left, tn rite, type_def *tipe )
+tn      FoldPow( tn left, tn rite, const type_def *tipe )
 /*********************************************************/
 {
     tn          fold;
@@ -608,7 +608,7 @@ tn      FoldPow( tn left, tn rite, type_def *tipe )
 }
 
 
-tn      FoldAnd( tn left, tn rite, type_def *tipe )
+tn      FoldAnd( tn left, tn rite, const type_def *tipe )
 /*********************************************************/
 {
     tn              fold;
@@ -660,7 +660,7 @@ tn      FoldAnd( tn left, tn rite, type_def *tipe )
 }
 
 
-tn      FoldOr( tn left, tn rite, type_def *tipe )
+tn      FoldOr( tn left, tn rite, const type_def *tipe )
 /********************************************************/
 {
     tn              fold;
@@ -712,7 +712,7 @@ tn      FoldOr( tn left, tn rite, type_def *tipe )
 }
 
 
-tn      FoldXor( tn left, tn rite, type_def *tipe )
+tn      FoldXor( tn left, tn rite, const type_def *tipe )
 /*********************************************************/
 {
     tn              fold;
@@ -766,7 +766,7 @@ tn      FoldXor( tn left, tn rite, type_def *tipe )
 }
 
 
-tn      FoldRShift( tn left, tn rite, type_def *tipe )
+tn      FoldRShift( tn left, tn rite, const type_def *tipe )
 /************************************************************/
 {
     tn              fold;
@@ -832,7 +832,7 @@ tn      FoldRShift( tn left, tn rite, type_def *tipe )
 }
 
 
-tn      FoldLShift( tn left, tn rite, type_def *tipe )
+tn      FoldLShift( tn left, tn rite, const type_def *tipe )
 /************************************************************/
 {
     tn              fold;
@@ -884,7 +884,7 @@ tn      FoldLShift( tn left, tn rite, type_def *tipe )
 }
 
 
-tn      FoldDiv( tn left, tn rite, type_def *tipe )
+tn      FoldDiv( tn left, tn rite, const type_def *tipe )
 /*********************************************************/
 {
     tn              fold;
@@ -980,7 +980,7 @@ tn      FoldDiv( tn left, tn rite, type_def *tipe )
 }
 
 
-tn      FoldMod( tn left, tn rite, type_def *tipe )
+tn      FoldMod( tn left, tn rite, const type_def *tipe )
 /*********************************************************/
 {
     tn              fold;
@@ -1090,7 +1090,7 @@ tn      FoldMod( tn left, tn rite, type_def *tipe )
 }
 
 
-tn      Fold1sComp( tn left, type_def *tipe )
+tn      Fold1sComp( tn left, const type_def *tipe )
 /***************************************************/
 {
     tn              new;
@@ -1108,7 +1108,7 @@ tn      Fold1sComp( tn left, type_def *tipe )
 }
 
 
-tn      FoldUMinus( tn left, type_def *tipe )
+tn      FoldUMinus( tn left, const type_def *tipe )
 /***************************************************/
 {
     tn              new;
@@ -1130,7 +1130,7 @@ tn      FoldUMinus( tn left, type_def *tipe )
 }
 
 
-tn      FoldSqrt( tn left, type_def *tipe )
+tn      FoldSqrt( tn left, const type_def *tipe )
 /*************************************************/
 {
     tn          fold;
@@ -1147,7 +1147,7 @@ tn      FoldSqrt( tn left, type_def *tipe )
 }
 
 
-tn      FoldLog( cg_op op, tn left, type_def *tipe )
+tn      FoldLog( cg_op op, tn left, const type_def *tipe )
 /**********************************************************/
 {
     tn          fold;
@@ -1292,7 +1292,7 @@ tn      FoldBitCompare( cg_op op, tn left, tn rite )
 }
 
 
-float_handle CnvCFToType( float_handle cf, type_def *tipe )
+float_handle CnvCFToType( float_handle cf, const type_def *tipe )
 /*****************************************************************/
 {
     if( (tipe->attr & TYPE_FLOAT) == 0 ) {
@@ -1363,7 +1363,7 @@ static bool IsObjectAddr( tn tree )
     return( false );
 }
 
-tn  FoldCompare( cg_op op, tn left, tn rite, type_def *tipe )
+tn  FoldCompare( cg_op op, tn left, tn rite, const type_def *tipe )
 /*******************************************************************/
 {
     int             compare;
@@ -1529,7 +1529,7 @@ static  bool    SimpleLeaf( tn tree )
 }
 
 
-tn      FoldPostGetsCompare( cg_op op, tn left, tn rite, type_def *tipe )
+tn      FoldPostGetsCompare( cg_op op, tn left, tn rite, const type_def *tipe )
 /*******************************************************************************/
 {
 //    tn              compare;
@@ -1619,7 +1619,7 @@ static  an Flip( an name, bool op_false, bool op_true )
 
 
 
-an FoldConsCompare( cg_op op, tn left, tn rite, type_def *tipe )
+an FoldConsCompare( cg_op op, tn left, tn rite, const type_def *tipe )
 /**********************************************************************/
 {
     tn              temp;

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,5 +30,5 @@
 ****************************************************************************/
 
 
-extern type_length      ParmAlignment( type_def *tipe );
+extern type_length      ParmAlignment( const type_def *tipe );
 extern hw_reg_set       ParmReg( type_class_def type_class, type_length len, type_length alignment, call_state *state );

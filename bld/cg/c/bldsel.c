@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -107,7 +107,7 @@ void    BGSelOther( sel_handle s_node, label_handle other )
 }
 
 
-static type_def         *SortTipe;
+static const type_def   *SortTipe;
 
 int SelCompare( int_32 lo1, int_32 lo2 )
 /**************************************/
@@ -230,8 +230,8 @@ cg_type SelType( uint_32 value_range )
 }
 
 
-static  type_def        *UnSignedIntTipe( type_def *tipe )
-/********************************************************/
+static const type_def   *UnSignedIntTipe( const type_def *tipe )
+/**************************************************************/
 {
     switch( tipe->length ) {
     case 1:
@@ -285,8 +285,8 @@ static  void    ScanBlock( tbl_control *table, an node, type_class_def type_clas
 }
 
 
-static  an      GenScanTable( an node, sel_handle s_node, type_def *tipe )
-/************************************************************************/
+static  an      GenScanTable( an node, sel_handle s_node, const type_def *tipe )
+/******************************************************************************/
 {
     an          lt;
     cg_type     value_type;
@@ -346,8 +346,8 @@ static  void    SelectBlock( tbl_control *table, an node, label_handle other )
 }
 
 
-static  an      GenSelTable( an node, sel_handle s_node, type_def *tipe )
-/***********************************************************************/
+static  an      GenSelTable( an node, sel_handle s_node, const type_def *tipe )
+/*****************************************************************************/
 {
     an          lt;
 
@@ -372,7 +372,7 @@ static  an      GenSelTable( an node, sel_handle s_node, type_def *tipe )
 }
 
 
-static  void    DoBinarySearch( an node, select_list *list, type_def *tipe,
+static  void    DoBinarySearch( an node, select_list *list, const type_def *tipe,
                                int lo, int hi, label_handle other,
                                int_32 lobound, int_32 hibound,
                                bool have_lobound, bool have_hibound )
@@ -480,8 +480,8 @@ static  void    DoBinarySearch( an node, select_list *list, type_def *tipe,
 }
 
 
-static  an      GenIfStmts( an node, sel_handle s_node, type_def *tipe )
-/**********************************************************************/
+static  an      GenIfStmts( an node, sel_handle s_node, const type_def *tipe )
+/****************************************************************************/
 {
     select_list *list;
     int         nodes;

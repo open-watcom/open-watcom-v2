@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -73,7 +73,7 @@ typedef enum {
 typedef struct address_name {
     an_formats              format;
     struct address_name     *link;
-    struct type_def         *tipe;
+    const struct type_def   *tipe;
     addr_class              class;
     addr_flags              flags;
     union {
@@ -112,7 +112,7 @@ typedef struct call_node {
         struct call_state       *state;
         struct address_name     *name;
         struct instruction      *ins;
-        struct type_def         *tipe;
+        const struct type_def   *tipe;
         struct parm_node        *parms;
 } call_node;
 

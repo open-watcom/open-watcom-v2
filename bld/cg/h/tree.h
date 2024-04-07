@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -80,7 +80,7 @@ typedef struct tree_node {
 #ifdef DEVBUILD
         use_info                useinfo;
 #endif
-        struct type_def         *tipe;
+        const struct type_def   *tipe;
         union {
             struct tree_node    *left;
             union name          *name;
@@ -91,7 +91,7 @@ typedef struct tree_node {
         uint                    kids;
         tn_class                class;
         tn_flags                flags;
-        struct type_def         *optipe;
+        const struct type_def   *optipe;
         union {
             struct {
                 cg_op               op;

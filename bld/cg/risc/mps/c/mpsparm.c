@@ -47,8 +47,8 @@
  * home locations on the stack for arguments passed in registers.
  */
 
-type_length     ParmAlignment( type_def *tipe )
-/*********************************************/
+type_length     ParmAlignment( const type_def *tipe )
+/***************************************************/
 {
     /* unused parameters */ (void)tipe;
 

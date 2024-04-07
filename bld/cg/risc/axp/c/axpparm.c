@@ -42,8 +42,8 @@
 #include "feprotos.h"
 
 
-type_length     ParmAlignment( type_def *tipe )
-/*********************************************/
+type_length     ParmAlignment( const type_def *tipe )
+/***************************************************/
 {
     /* unused parameters */ (void)tipe;
 

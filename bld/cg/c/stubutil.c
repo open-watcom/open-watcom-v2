@@ -318,8 +318,8 @@ char    *LToS( int_32 i )
 char    *Tipe( cg_type tipe )
 //===========================
 {
-    char        *res;
-    type_def    *t;
+    char            *res;
+    const type_def  *t;
 
     if( tipe >= TY_FIRST_FREE ) {
         VerTipe( tipe, NULL );
@@ -533,7 +533,7 @@ extern  void    VerOp( cg_op o, cg_op *l ) {
 extern  void    VerTipe( cg_type t, cg_type *l ) {
 //================================================
 
-    type_def    *a;
+    const type_def  *a;
 
     a = TypeAddress( t );
     if( a == NULL ) {

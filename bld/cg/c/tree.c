@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -167,7 +167,7 @@ tn  TGLeaf( an addr )
 }
 
 
-tn  TGBitMask( tn left, byte start, byte len, type_def *tipe )
+tn  TGBitMask( tn left, byte start, byte len, const type_def *tipe )
 /*********************************************************************
  * return a tree node for bits "start" for "len" selected from "left"
  * whose type is "tipe".  Takes and yields an lvalue.
@@ -191,7 +191,7 @@ tn  TGBitMask( tn left, byte start, byte len, type_def *tipe )
 }
 
 
-tn  TGNode( tn_class class, cg_op op, tn left, tn rite, type_def *tipe )
+tn  TGNode( tn_class class, cg_op op, tn left, tn rite, const type_def *tipe )
 /***********************************************************************
  * create a general node
  */
@@ -264,7 +264,7 @@ tn  TGCallback( cg_callback rtn, callback_handle ptr )
     return( node );
 }
 
-static  type_def    *ResultType( tn left, tn rite, type_def *tipe,
+static const type_def   *ResultType( tn left, tn rite, const type_def *tipe,
                      type_class_def *mat_type_class, bool demote_const )
 /***********************************************************************
  * What is the resulting type of "left" op "rite" given that the front
@@ -275,8 +275,8 @@ static  type_def    *ResultType( tn left, tn rite, type_def *tipe,
  */
 {
     tn              temp;
-    type_def        *ltipe;
-    type_def        *rtipe;
+    const type_def  *ltipe;
+    const type_def  *rtipe;
 
 #if _TARGET & 0
     if( tipe->length < WORD_SIZE ) {
@@ -360,7 +360,7 @@ static bool RHSLongPointer( tn rite )
 #endif
 
 
-tn  TGCompare( cg_op op, tn left, tn rite, type_def *tipe )
+tn  TGCompare( cg_op op, tn left, tn rite, const type_def *tipe )
 /******************************************************************
  * build a relational operator node
  */
@@ -466,14 +466,14 @@ static  unsigned_64    TGMask64( tn node )
 }
 
 
-tn  TGConvert( tn name, type_def *tipe )
+tn  TGConvert( tn name, const type_def *tipe )
 /***********************************************
  * convert "name" to "tipe".  This may require turning a short circuit
  * boolean expression into an integer 0 or 1.
  */
 {
-    type_def    *node_type;
-    tn          new;
+    const type_def  *node_type;
+    tn              new;
 
     node_type = name->tipe;
     new = name;
@@ -497,7 +497,7 @@ tn  TGConvert( tn name, type_def *tipe )
 }
 
 
-static  type_def  *BinResult( cg_op op, tn *l, tn *r, type_def *tipe, int commie )
+static const type_def   *BinResult( cg_op op, tn *l, tn *r, const type_def *tipe, int commie )
 /*********************************************************************************
  * Calculate the resulting type of a binary operation "l" op "r".  Tipe
  * is what the front end thinks is should be.  Sometimes we can do
@@ -509,10 +509,10 @@ static  type_def  *BinResult( cg_op op, tn *l, tn *r, type_def *tipe, int commie
  * cause PreGets gets confused.
  */
 {
-    tn          rite;
-    tn          left;
-    tn          temp;
-    type_def    *otipe;
+    tn              rite;
+    tn              left;
+    tn              temp;
+    const type_def  *otipe;
 
     /* unused parameters */ (void)commie;
 
@@ -710,7 +710,7 @@ static  type_def  *BinResult( cg_op op, tn *l, tn *r, type_def *tipe, int commie
 }
 
 
-static  tn  BinFold( cg_op op, tn left, tn rite, type_def *tipe )
+static  tn  BinFold( cg_op op, tn left, tn rite, const type_def *tipe )
 /****************************************************************
  * Try to fold "left" "op" "rite".  Return NULL if it is not possible,
  * a new tree node if it is possible (freeing "left" and "rite").
@@ -750,7 +750,7 @@ static  tn  BinFold( cg_op op, tn left, tn rite, type_def *tipe )
 }
 
 
-tn  TGBinary( cg_op op, tn left, tn rite, type_def *tipe )
+tn  TGBinary( cg_op op, tn left, tn rite, const type_def *tipe )
 /*********************************************************
  * build a binary operator tree node
  */
@@ -770,7 +770,7 @@ tn  TGBinary( cg_op op, tn left, tn rite, type_def *tipe )
 }
 
 
-tn  TGUnary( cg_op op, tn left, type_def *tipe )
+tn  TGUnary( cg_op op, tn left, const type_def *tipe )
 /***********************************************
  * build a unary operator tree node
  */
@@ -859,7 +859,7 @@ tn  TGUnary( cg_op op, tn left, type_def *tipe )
     return( new );
 }
 
-call_handle TGInitCall( tn left, type_def *tipe, cg_sym_handle sym )
+call_handle TGInitCall( tn left, const type_def *tipe, cg_sym_handle sym )
 /********************************************************************
  * Return a tree node for a call to "left".  TGAddParm may add parms to
  * the call node.  TGCall finalizes the call node.
@@ -876,7 +876,7 @@ call_handle TGInitCall( tn left, type_def *tipe, cg_sym_handle sym )
 }
 
 
-tn  TGAddParm( call_handle call, tn parm, type_def *tipe )
+tn  TGAddParm( call_handle call, tn parm, const type_def *tipe )
 /*********************************************************
  * see TGInitCall ^
  */
@@ -914,7 +914,7 @@ tn  TGCall( call_handle call )
 }
 
 
-tn  TGIndex( tn left, tn rite, type_def *tipe, type_def *ptipe )
+tn  TGIndex( tn left, tn rite, const type_def *tipe, const type_def *ptipe )
 /******************************************************************
  * return a tree for &left[rite].  "ptipe" is the pointer type of
  * "left".  "tipe" is the type of the object pointed to by "left".
@@ -939,13 +939,13 @@ tn  TGIndex( tn left, tn rite, type_def *tipe, type_def *ptipe )
 }
 
 
-tn  DoTGAssign( tn dst, tn src, type_def *tipe, tn_class class )
+tn  DoTGAssign( tn dst, tn src, const type_def *tipe, tn_class class )
 /***************************************************************
  * build dst = src
  */
 {
-    tn          node;
-    type_def    *node_tipe;
+    tn              node;
+    const type_def  *node_tipe;
 
     if( tipe->refno == TY_DEFAULT ) {
         tipe = src->tipe;
@@ -961,7 +961,7 @@ tn  DoTGAssign( tn dst, tn src, type_def *tipe, tn_class class )
 }
 
 
-tn  TGAssign( tn dst, tn src, type_def *tipe )
+tn  TGAssign( tn dst, tn src, const type_def *tipe )
 /*********************************************
  * build dst = src
  */
@@ -970,7 +970,7 @@ tn  TGAssign( tn dst, tn src, type_def *tipe )
 }
 
 
-tn  TGLVAssign( tn dst, tn src, type_def *tipe )
+tn  TGLVAssign( tn dst, tn src, const type_def *tipe )
 /***********************************************
  * build dst = src
  */
@@ -1049,7 +1049,7 @@ tn  TGTmpLeaf( an addr )
     return( TGReLeaf( addr ) );
 }
 
-tn  TGConst( float_handle cons, type_def *tipe )
+tn  TGConst( float_handle cons, const type_def *tipe )
 /*******************************************************
  * return a leaf node for "cons" (a cfloat pointer)
  */
@@ -1058,7 +1058,7 @@ tn  TGConst( float_handle cons, type_def *tipe )
 }
 
 
-tn  TName( name *name, type_def *tipe )
+tn  TName( name *name, const type_def *tipe )
 /**************************************
  * return a leaf node for "name"
  */
@@ -1099,7 +1099,7 @@ tn  TGDuplicate( tn node )
 }
 
 
-tn  DoTGPreGets( cg_op op, tn left, tn rite, type_def *tipe,
+tn  DoTGPreGets( cg_op op, tn left, tn rite, const type_def *tipe,
                  tn_class class, tn_class assn_class )
 /*******************************************************************
  * Build a node for left op= right.  We try to turn it into "left =
@@ -1110,12 +1110,12 @@ tn  DoTGPreGets( cg_op op, tn left, tn rite, type_def *tipe,
  * whether we are yielding the value before the operation.
  */
 {
-    tn          leftp;
-    tn          result;
-    tn          dupleft;
-    type_def    *optipe;
-    tn          l;
-    tn          r;
+    tn              leftp;
+    tn              result;
+    tn              dupleft;
+    const type_def  *optipe;
+    tn              l;
+    tn              r;
 
     switch( op ) {
     case O_DIV:
@@ -1187,21 +1187,21 @@ tn  DoTGPreGets( cg_op op, tn left, tn rite, type_def *tipe,
 }
 
 
-tn  TGPreGets( cg_op op, tn left, tn rite, type_def *tipe )
-/*********************************************************/
+tn  TGPreGets( cg_op op, tn left, tn rite, const type_def *tipe )
+/***************************************************************/
 {
     return( DoTGPreGets( op, left, rite, tipe, TN_PRE_GETS, TN_ASSIGN ) );
 }
 
 
-tn  TGLVPreGets( cg_op op, tn left, tn rite, type_def *tipe )
-/***********************************************************/
+tn  TGLVPreGets( cg_op op, tn left, tn rite, const type_def *tipe )
+/*****************************************************************/
 {
     return( DoTGPreGets( op, left, rite, tipe, TN_LV_PRE_GETS, TN_LV_ASSIGN ) );
 }
 
 
-tn  TGPostGets( cg_op op, tn left, tn rite, type_def *tipe )
+tn  TGPostGets( cg_op op, tn left, tn rite, const type_def *tipe )
 /*******************************************************************
  * node for left op= right, but yields the rvalue of left before the
  * assignment took place.  (for x++) Notice that "Post" refers to the
@@ -1221,7 +1221,7 @@ cg_type TGType( tn node )
 }
 
 
-tn  TGPatch( patch_handle patch, type_def *tipe )
+tn  TGPatch( patch_handle patch, const type_def *tipe )
 /************************************************
  * create a patch node for "hdl"
  */
@@ -1531,7 +1531,7 @@ static  name *TNFindBase( tn node )
     return( NULL );
 }
 
-an  TGen( tn node, type_def *tipe )
+an  TGen( tn node, const type_def *tipe )
 /******************************************
  * generate basic blocks (call BG routines) for "node"
  */
@@ -1551,7 +1551,7 @@ an  TGen( tn node, type_def *tipe )
 }
 
 
-an  TGReturn( tn node, type_def *tipe )
+an  TGReturn( tn node, const type_def *tipe )
 /**********************************************
  * make the current procedure return the value of "node"
  */
@@ -1662,9 +1662,9 @@ static  an  TNBitShift( an retv, tn node, bool already_masked )
  * we can leave the high order bits turned on.
  */
 {
-    type_def    *tipeu;
-    type_def    *tipes;
-    unsigned_64 mask;
+    const type_def  *tipeu;
+    const type_def  *tipes;
+    unsigned_64     mask;
 
     tipeu = node->tipe;
     switch( tipeu->length ) {
@@ -1800,7 +1800,7 @@ static  void    DoAnd64( an left, unsigned_64 mask, tn node )
               node->tipe, node->tipe ) );
 }
 
-static  an  TNBitOpGets( tn node, type_def *tipe, bool yield_before_op )
+static  an  TNBitOpGets( tn node, const type_def *tipe, bool yield_before_op )
 /***********************************************************************
  * Do a bit field assgnment, like a += b, or a = b or b++.  If
  * "yield_before_op" is true, we want to yield the value of the bit
@@ -2048,18 +2048,18 @@ an  TNUnary( tn node )
 }
 
 #if _TARGET_INTEL
-static an   MakeBased( an left, an rite, type_def *tipe )
+static an   MakeBased( an left, an rite, const type_def *tipe )
 /********************************************************
  * Create a far pointer from the ashes of a near pointer on the left
  * and a segment value on the right
  */
 {
-    an          temp;
-    an          seg_dest;
-    name        *temp_var;
-    type_def    *near_type;
-    type_def    *short_type;
-    an          seg;
+    an              temp;
+    an              seg_dest;
+    name            *temp_var;
+    const type_def  *near_type;
+    const type_def  *short_type;
+    an              seg;
 
     temp_var = BGNewTemp( tipe );
     temp = MakeTempAddr( temp_var );
@@ -2274,10 +2274,10 @@ static  void    MakeSPSafe( tn scan )
  * alloca in a parm list and other such nonsense.
  */
 {
-    tn          parmtn;
-    an          temp;
-    an          parman;
-    type_def    *tipe;
+    tn              parmtn;
+    an              temp;
+    an              parman;
+    const type_def  *tipe;
 
     for( ; scan != NULL; scan = scan->u2.t.rite ) {
         parmtn = scan->u.left;
@@ -2303,7 +2303,7 @@ static  an  TNCall( tn callhandle, bool ignore_return )
     cn              callnode;
     an              retv;
     an              parman;
-    type_def        *tipe;
+    const type_def  *tipe;
     bool            aux_inline;     /* ASM inline code */
     bool            call_inline;    /* C inline code */
     name            *base;
@@ -2416,7 +2416,7 @@ bool    TGIsAddress( void )
     return( IsAddress );
 }
 
-tn  TGQuestion( tn sel, tn left, tn rite, type_def *tipe )
+tn  TGQuestion( tn sel, tn left, tn rite, const type_def *tipe )
 /*********************************************************
  * sel ? left : rite
  */

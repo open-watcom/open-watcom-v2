@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -377,11 +377,11 @@ dbg_type _CGAPI DBArray( dbg_type idx, dbg_type base )
     return( ret );
 }
 
-dbg_array _CGAPI DBBegArray(  dbg_type base, cg_type tipe, bool is_col_major )
-/************************************************************************************/
+dbg_array _CGAPI DBBegArray( dbg_type base, cg_type tipe, bool is_col_major )
+/***************************************************************************/
 {
-    dbg_array   ar;
-//  type_def   *tipe_addr;
+    dbg_array       ar;
+//    const type_def  *tipe_addr;
 
     /* unused parameters */ (void)tipe;
 
@@ -510,8 +510,8 @@ dbg_type _CGAPI DBIntArray( uint_32 hi, dbg_type base )
 dbg_type _CGAPI DBIntArrayCG( cg_type tipe, uint_32 hi, dbg_type base )
 /*********************************************************************/
 {
-    dbg_type          ret;
-    type_def          *tipe_addr;
+    dbg_type        ret;
+    const type_def  *tipe_addr;
 
 #ifdef DEVBUILD
     EchoAPI( "DBIntArrayCG( %t, %i, %i )", tipe, hi, base );

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -100,8 +100,8 @@ an BGCall( cn call, bool use_return, bool aux_inline )
 }
 
 
-void BGProcDecl( cg_sym_handle sym, type_def *tipe )
-/**************************************************/
+void BGProcDecl( cg_sym_handle sym, const type_def *tipe )
+/********************************************************/
 {
     type_class_def      type_class;
     name                *temp;
@@ -130,8 +130,8 @@ void BGProcDecl( cg_sym_handle sym, type_def *tipe )
 }
 
 
-type_def *PassParmType( cg_sym_handle func, type_def* tipe )
-/**********************************************************/
+const type_def *PassParmType( cg_sym_handle func, const type_def *tipe )
+/**********************************************************************/
 {
     tipe = QParmType( func, NULL, tipe );
     return( tipe );
@@ -158,8 +158,8 @@ instruction *PushOneParm( instruction *ins, name *curr,
 }
 
 
-name *StReturn( an retval, type_def *tipe, instruction **pins )
-/*************************************************************/
+name *StReturn( an retval, const type_def *tipe, instruction **pins )
+/*******************************************************************/
 {
     name        *index;
 

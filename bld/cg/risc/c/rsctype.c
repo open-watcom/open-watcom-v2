@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,12 +40,12 @@
 /*                      refno           length  attributes */
 /*                      ======          ======  ========== */
 
-type_def TNearCP = { TY_NEAR_CODE_PTR,  4,      TYPE_POINTER + TYPE_CODE };
-type_def THugeCP = { TY_NEAR_CODE_PTR,  4,      TYPE_POINTER + TYPE_CODE };
-type_def TLongCP = { TY_NEAR_CODE_PTR,  4,      TYPE_POINTER + TYPE_CODE };
-type_def TNearP  = { TY_NEAR_POINTER,   4,      TYPE_POINTER };
-type_def THugeP  = { TY_NEAR_POINTER,   4,      TYPE_POINTER };
-type_def TLongP  = { TY_NEAR_POINTER,   4,      TYPE_POINTER };
+const type_def TNearCP = { TY_NEAR_CODE_PTR,  4,      TYPE_POINTER + TYPE_CODE };
+const type_def THugeCP = { TY_NEAR_CODE_PTR,  4,      TYPE_POINTER + TYPE_CODE };
+const type_def TLongCP = { TY_NEAR_CODE_PTR,  4,      TYPE_POINTER + TYPE_CODE };
+const type_def TNearP  = { TY_NEAR_POINTER,   4,      TYPE_POINTER };
+const type_def THugeP  = { TY_NEAR_POINTER,   4,      TYPE_POINTER };
+const type_def TLongP  = { TY_NEAR_POINTER,   4,      TYPE_POINTER };
 
 void    TargTypeInit( void )
 /**************************/

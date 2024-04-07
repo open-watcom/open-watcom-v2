@@ -79,10 +79,10 @@ extern void         DoEmptyQueue( void );
 extern void         DoAlignment( int len );
 extern bool         CodeHasAbsPatch( oc_entry *code );
 
-extern void         BackPtr( back_handle bck, segment_id segid, offset plus, type_def *tipe );
+extern void         BackPtr( back_handle bck, segment_id segid, offset plus, const type_def *tipe );
 extern void         BackPtrBase( back_handle bck, segment_id segid );
 extern void         BackPtrBigOffset( back_handle bck, segment_id segid, offset plus );
-extern void         FEPtr( cg_sym_handle sym, type_def *tipe, offset plus );
+extern void         FEPtr( cg_sym_handle sym, const type_def *tipe, offset plus );
 extern void         FEPtrBaseOffset( cg_sym_handle sym, offset plus );
 extern void         FEPtrBase( cg_sym_handle sym );
 

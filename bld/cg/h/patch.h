@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -57,8 +57,8 @@ typedef struct patch_info {
 } patch_info;
 
 extern  patch_handle    BGNewPatch( void );
-extern  cg_name         BGPatchNode( patch_handle patch, type_def *tipe );
+extern  cg_name         BGPatchNode( patch_handle patch, const type_def *tipe );
 extern  void            BGPatchInteger( patch_handle patch, int_32 value );
 extern  void            BGFiniPatch( patch_handle patch );
 extern  an              TNPatch( tn node );
-extern  tn              TGPatch( patch_handle patch, type_def *tipe );
+extern  tn              TGPatch( patch_handle patch, const type_def *tipe );

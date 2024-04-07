@@ -742,8 +742,8 @@ extern  dbg_type        DBIntArrayCG( cg_type tipe, uint_32 hi, dbg_type base )
 extern  array_list  *DBBegArray(  dbg_type base, cg_type tipe, bool is_col_major )
 /********************************************************************************/
 {
-    array_list *ar;
-    type_def   *tipe_addr;
+    array_list      *ar;
+    const type_def  *tipe_addr;
 
     Action( "DBBegArray( %l, %s, %d )", base, Tipe( tipe ),
                      is_col_major );

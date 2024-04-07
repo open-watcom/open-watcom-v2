@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -80,8 +80,8 @@ void    InitPPCParmState( call_state *state )
     state->parm.fr = FIRST_FLOAT_PARM_REG_IDX;
 }
 
-type_length     ParmAlignment( type_def *tipe )
-/*********************************************/
+type_length     ParmAlignment( const type_def *tipe )
+/***************************************************/
 {
     type_class_def      type_class;
 

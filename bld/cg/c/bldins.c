@@ -54,11 +54,11 @@
 #include "feprotos.h"
 
 
-static  type_def        *LastCmpType;
-static  uint_32         UnrollValue = 0;
+static const type_def   *LastCmpType;
+static uint_32          UnrollValue = 0;
 
-an      BGVarargsBasePtr( type_def *tipe )
-/****************************************/
+an      BGVarargsBasePtr( const type_def *tipe )
+/**********************************************/
 {
     an                  addr;
 
@@ -66,8 +66,8 @@ an      BGVarargsBasePtr( type_def *tipe )
     return( addr );
 }
 
-an      BGStackValue( type_def *tipe )
-/************************************/
+an      BGStackValue( const type_def *tipe )
+/******************************************/
 {
     an                  addr;
 
@@ -75,8 +75,8 @@ an      BGStackValue( type_def *tipe )
     return( addr );
 }
 
-an      BGInteger( int_32 value, type_def *tipe )
-/***********************************************/
+an      BGInteger( int_32 value, const type_def *tipe )
+/*****************************************************/
 {
     float_handle    cf;
 
@@ -88,8 +88,8 @@ an      BGInteger( int_32 value, type_def *tipe )
     return( MakeConst( cf, tipe ) );
 }
 
-an      BGInt64( signed_64 value, type_def *tipe )
-/************************************************/
+an      BGInt64( signed_64 value, const type_def *tipe )
+/******************************************************/
 {
     name   *cname;
 
@@ -101,22 +101,22 @@ an      BGInt64( signed_64 value, type_def *tipe )
     return( AddrName( cname, tipe ) );
 }
 
-an  BGFloat( const char *value, type_def *tipe )
-/**********************************************/
+an  BGFloat( const char *value, const type_def *tipe )
+/****************************************************/
 {
     return( MakeConst( CFCnvSF( &cgh, value ), tipe ) );
 }
 
 
-an      BGName( cg_class cl, pointer sym, type_def *tipe )
-/********************************************************/
+an      BGName( cg_class cl, pointer sym, const type_def *tipe )
+/**************************************************************/
 {
     return( MakeAddrName( cl, sym, tipe ) );
 }
 
 
-an      BGTempName( name *temp, type_def *tipe )
-/**********************************************/
+an      BGTempName( name *temp, const type_def *tipe )
+/****************************************************/
 {
     temp->v.usage |= USE_IN_ANOTHER_BLOCK;
     return( MakeTypeTempAddr( temp, tipe ) );
@@ -157,8 +157,8 @@ void    BGFiniLabel( label_handle lbl )
 }
 
 
-bool    NeedConvert( type_def *from, type_def *to )
-/*************************************************/
+bool    NeedConvert( const type_def *from, const type_def *to )
+/*************************************************************/
 {
     if( from == to )
         return( false );
@@ -176,8 +176,8 @@ bool    NeedConvert( type_def *from, type_def *to )
 }
 
 
-static  an Unary( cg_op op, an left, type_def *tipe )
-/***************************************************/
+static  an Unary( cg_op op, an left, const type_def *tipe )
+/*********************************************************/
 {
     instruction *ins;
     an          res;
@@ -190,8 +190,8 @@ static  an Unary( cg_op op, an left, type_def *tipe )
 }
 
 
-static  an      CnvRnd( an name, type_def *tipe, cg_op op ) {
-/***********************************************************/
+static  an      CnvRnd( an name, const type_def *tipe, cg_op op ) {
+/*****************************************************************/
 
     if( NeedConvert( name->tipe, tipe ) ) {
         name = Unary( op, name, tipe );
@@ -203,8 +203,8 @@ static  an      CnvRnd( an name, type_def *tipe, cg_op op ) {
 }
 
 
-name        *BGNewTemp( type_def *tipe )
-/**************************************/
+name        *BGNewTemp( const type_def *tipe )
+/********************************************/
 {
     name        *temp;
 
@@ -216,8 +216,8 @@ name        *BGNewTemp( type_def *tipe )
 }
 
 
-name        *BGGlobalTemp( type_def *tipe )
-/*****************************************/
+name        *BGGlobalTemp( const type_def *tipe )
+/***********************************************/
 {
     name        *temp;
 
@@ -227,8 +227,8 @@ name        *BGGlobalTemp( type_def *tipe )
 }
 
 
-static  an      FlowOut( an node, type_def *tipe ) {
-/**************************************************/
+static  an      FlowOut( an node, const type_def *tipe ) {
+/********************************************************/
 
     name                *temp;
     label_handle        lbl;
@@ -251,8 +251,8 @@ static  an      FlowOut( an node, type_def *tipe ) {
 }
 
 
-an      Arithmetic( an name, type_def *tipe )
-/*******************************************/
+an      Arithmetic( an name, const type_def *tipe )
+/*************************************************/
 {
     if( name->format == NF_BOOL ) {
         if( (tipe->attr & TYPE_FLOAT) != 0 || ( tipe->length > TypeInteger->length ) ) {
@@ -265,8 +265,8 @@ an      Arithmetic( an name, type_def *tipe )
     return( name );
 }
 
-an      BGCompare( cg_op op, an left, an rite, label_handle entry, type_def *tipe )
-/*********************************************************************************/
+an      BGCompare( cg_op op, an left, an rite, label_handle entry, const type_def *tipe )
+/***************************************************************************************/
 {
     an                  new;
     instruction         *ins;
@@ -472,8 +472,8 @@ uint_32 BGUnrollCount( uint_32 unroll_count )
 }
 
 
-an      BGUnary( cg_op op, an left, type_def *tipe )
-/**************************************************/
+an      BGUnary( cg_op op, an left, const type_def *tipe )
+/********************************************************/
 {
     an          new;
 
@@ -521,8 +521,8 @@ an      BGUnary( cg_op op, an left, type_def *tipe )
 }
 
 
-static  an      CheckType( an op, type_def *tipe ) {
-/**************************************************/
+static  an      CheckType( an op, const type_def *tipe ) {
+/********************************************************/
 
     if( op->format != NF_ADDR )
         return( op );
@@ -530,8 +530,8 @@ static  an      CheckType( an op, type_def *tipe ) {
 }
 
 
-an      BGBinary( cg_op op, an left, an rite, type_def *tipe, bool fold_addr )
-/****************************************************************************/
+an      BGBinary( cg_op op, an left, an rite, const type_def *tipe, bool fold_addr )
+/**********************************************************************************/
 {
     an          result;
     instruction *ins;
@@ -578,8 +578,8 @@ an      BGBinary( cg_op op, an left, an rite, type_def *tipe, bool fold_addr )
 
 
 
-an      BGOpGets( cg_op op, an left, an rite, type_def *tipe, type_def *optipe )
-/******************************************************************************/
+an      BGOpGets( cg_op op, an left, an rite, const type_def *tipe, const type_def *optipe )
+/******************************************************************************************/
 {
     an                  result;
     an                  leftp;
@@ -614,8 +614,8 @@ an      BGOpGets( cg_op op, an left, an rite, type_def *tipe, type_def *optipe )
 }
 
 
-an      BGConvert( an left, type_def *tipe )
-/******************************************/
+an      BGConvert( an left, const type_def *tipe )
+/************************************************/
 {
     an          new;
     type_attr   left_attr;
@@ -674,8 +674,8 @@ an      BGFlow( cg_op op, an left, an rite )
 }
 
 
-an      BGAssign( an dst, an src, type_def *tipe )
-/************************************************/
+an      BGAssign( an dst, an src, const type_def *tipe )
+/******************************************************/
 {
     an          res;
 

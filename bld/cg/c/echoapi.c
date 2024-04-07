@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -180,7 +180,7 @@ static void ErrExpectFound( handle_type expect, handle_type found )
 void verifyNotUserType   // VERIFY NOT A USER-DEFINED TYPE
     ( cg_type type )            // - that type
 {
-    type_def    *alias;
+    const type_def  *alias;
 
     // Check for aliased types
     alias = TypeAddress( type );

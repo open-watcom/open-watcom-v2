@@ -662,8 +662,8 @@ void _CGAPI     CGAutoDecl( cg_sym_handle sym, cg_type tipe )
 void _CGAPI     CGReturn( cg_name name, cg_type tipe )
 /****************************************************/
 {
-    type_def    *new_tipe;
-    an          retv;
+    const type_def  *new_tipe;
+    an              retv;
 
 #ifdef DEVBUILD
     EchoAPI( "CGReturn( %n, %t )\n\n", name, tipe );

@@ -293,8 +293,8 @@ static void     SymReloc( segment_id segid, cg_sym_handle sym, offset lc )
 static void LabelReloc( segment_id segid, back_handle bck, offset disp )
 /**********************************************************************/
 {
-    type_def    *ptr_type;
-    segment_id  bck_segid;
+    const type_def  *ptr_type;
+    segment_id      bck_segid;
 
     PUSH_OP( segid );
         bck_segid = AskSegID( bck, CG_BACK );

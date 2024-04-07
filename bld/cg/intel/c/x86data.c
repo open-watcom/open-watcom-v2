@@ -201,8 +201,8 @@ void    OutLblPatch( label_handle lbl, fix_class class, offset plus )
 }
 
 
-void    FEPtr( cg_sym_handle sym, type_def *tipe, offset plus )
-/*************************************************************/
+void    FEPtr( cg_sym_handle sym, const type_def *tipe, offset plus )
+/*******************************************************************/
 {
     fe_attr     attr;
     fix_class   class;
@@ -262,8 +262,8 @@ void    FEPtrBase( cg_sym_handle sym )
 }
 
 
-void    BackPtr( back_handle bck, segment_id segid, offset plus, type_def *tipe )
-/*******************************************************************************/
+void    BackPtr( back_handle bck, segment_id segid, offset plus, const type_def *tipe )
+/*************************************************************************************/
 {
     TellOptimizerByPassed();
     if( tipe->length != WORD_SIZE ) {

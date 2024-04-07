@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,5 +39,5 @@ extern  cost_val        ScanCost(sel_handle);
 extern  tbl_control     *MakeScanTab(select_list *,int_32,label_handle,cg_type,cg_type);
 extern  tbl_control     *MakeJmpTab(select_list *,int_32,int_32,label_handle);
 extern  name            *SelIdx(tbl_control *,an);
-extern  type_def        *SelNodeType(an,bool);
+extern  const type_def  *SelNodeType(an,bool);
 extern  void            MkSelOp( name *idx, type_class_def type_class );

@@ -146,8 +146,8 @@ static  byte    Idx[] = {
         5         /* CL_TEMP_OFFSET */
 };
 
-name    *Points( an addr, type_def *tipe )
-/****************************************/
+name    *Points( an addr, const type_def *tipe )
+/**********************************************/
 {
     type_class_def      type_class;
     type_length         size;
@@ -239,8 +239,8 @@ name    *Points( an addr, type_def *tipe )
 }
 
 
-an      AddrName( name *op, type_def *tipe )
-/******************************************/
+an      AddrName( name *op, const type_def *tipe )
+/************************************************/
 {
     an  addr;
 
@@ -325,8 +325,8 @@ static  void    AddIndex( an addr, name *index, name *addend ) {
 }
 
 
-bool    CypAddrPlus( an l_addr, an r_addr, type_def *tipe )
-/*********************************************************/
+bool    CypAddrPlus( an l_addr, an r_addr, const type_def *tipe )
+/***************************************************************/
 {
     mode_action action;
 
@@ -375,8 +375,8 @@ static        bool    AddToTypeLength( type_length x, type_length y ) {
 }
 
 
-an      AddrPlus( an l_addr, an r_addr, type_def *tipe )
-/******************************************************/
+an      AddrPlus( an l_addr, an r_addr, const type_def *tipe )
+/************************************************************/
 
 /*       Returns NULL if code needs to be generated*/
 {
@@ -522,8 +522,8 @@ static  bool    ShiftConst( an r_addr ) {
 }
 
 
-bool    CypAddrShift( an l_addr, an r_addr, type_def *tipe )
-/**********************************************************/
+bool    CypAddrShift( an l_addr, an r_addr, const type_def *tipe )
+/****************************************************************/
 {
     /* unused parameters */ (void)tipe;
 
@@ -557,8 +557,8 @@ static  bool    ShiftToTypeLength( type_length x, uint_16 y )
 }
 
 
-an      AddrShift( an l_addr, an r_addr, type_def *tipe )
-/*******************************************************/
+an      AddrShift( an l_addr, an r_addr, const type_def *tipe )
+/*************************************************************/
 
 /*       Returns NULL if code needs to be generated*/
 {

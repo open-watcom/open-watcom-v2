@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,29 +30,29 @@
 ****************************************************************************/
 
 extern  int             GetLog2( uint_32 value );
-extern  tn              FoldTimes( tn left, tn rite, type_def *tipe );
-extern  float_handle    OkToNegate( float_handle value, type_def *tipe );
-extern  tn      FoldMinus( tn left, tn rite, type_def *tipe );
-extern  tn      FoldPlus( tn left, tn rite, type_def *tipe );
-extern  tn      FoldPow( tn left, tn rite, type_def *tipe );
-extern  tn      FoldAnd( tn left, tn rite, type_def *tipe );
-extern  tn      FoldOr( tn left, tn rite, type_def *tipe );
-extern  tn      FoldXor( tn left, tn rite, type_def *tipe );
-extern  tn      FoldRShift( tn left, tn rite, type_def *tipe );
-extern  tn      FoldLShift( tn left, tn rite, type_def *tipe );
-extern  tn      FoldDiv( tn left, tn rite, type_def *tipe );
-extern  tn      FoldMod( tn left, tn rite, type_def *tipe );
-extern  tn      Fold1sComp( tn left, type_def *tipe );
-extern  tn      FoldUMinus( tn left, type_def *tipe );
-extern  tn      FoldSqrt( tn left, type_def *tipe );
-extern  tn      FoldLog( cg_op op, tn left, type_def *tipe );
+extern  tn              FoldTimes( tn left, tn rite, const type_def *tipe );
+extern  float_handle    OkToNegate( float_handle value, const type_def *tipe );
+extern  tn      FoldMinus( tn left, tn rite, const type_def *tipe );
+extern  tn      FoldPlus( tn left, tn rite, const type_def *tipe );
+extern  tn      FoldPow( tn left, tn rite, const type_def *tipe );
+extern  tn      FoldAnd( tn left, tn rite, const type_def *tipe );
+extern  tn      FoldOr( tn left, tn rite, const type_def *tipe );
+extern  tn      FoldXor( tn left, tn rite, const type_def *tipe );
+extern  tn      FoldRShift( tn left, tn rite, const type_def *tipe );
+extern  tn      FoldLShift( tn left, tn rite, const type_def *tipe );
+extern  tn      FoldDiv( tn left, tn rite, const type_def *tipe );
+extern  tn      FoldMod( tn left, tn rite, const type_def *tipe );
+extern  tn      Fold1sComp( tn left, const type_def *tipe );
+extern  tn      FoldUMinus( tn left, const type_def *tipe );
+extern  tn      FoldSqrt( tn left, const type_def *tipe );
+extern  tn      FoldLog( cg_op op, tn left, const type_def *tipe );
 extern  tn      FoldFlAnd( tn left, tn rite );
 extern  tn      FoldFlOr( tn left, tn rite );
 extern  tn      FoldFlNot( tn left );
 extern  tn      FoldBitCompare( cg_op op, tn left, tn rite );
-extern  float_handle CnvCFToType( float_handle cf, type_def *tipe );
-extern  tn      FoldCompare( cg_op op, tn left, tn rite, type_def *tipe );
-extern  tn      FoldPostGetsCompare( cg_op op, tn left, tn rite, type_def *tipe );
-extern  an      FoldConsCompare( cg_op op, tn left, tn rite, type_def *tipe );
+extern  float_handle CnvCFToType( float_handle cf, const type_def *tipe );
+extern  tn      FoldCompare( cg_op op, tn left, tn rite, const type_def *tipe );
+extern  tn      FoldPostGetsCompare( cg_op op, tn left, tn rite, const type_def *tipe );
+extern  an      FoldConsCompare( cg_op op, tn left, tn rite, const type_def *tipe );
 extern  bool    FoldIfTrue( tn left, label_handle lbl );
 extern  bool    FoldIfFalse( tn left, label_handle lbl );

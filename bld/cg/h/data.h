@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -52,16 +52,16 @@ extern  global_bit_set          MemoryBits;
 extern  type_class_def          ClassPointer;
 extern  bool                    BlockByBlock;
 extern  type_length             MaxStack;
-extern  type_def                *TypeBoolean;
-extern  type_def                *TypeInteger;
-extern  type_def                *TypeUnsigned;
-extern  type_def                *TypePtr;
-extern  type_def                *TypeNone;
-extern  type_def                *TypeProcParm;
-extern  type_def                *TypeNearInteger;
-extern  type_def                *TypeLongInteger;
-extern  type_def                *TypeLongLongInteger;
-extern  type_def                *TypeHugeInteger;
+extern  const type_def          *TypeBoolean;
+extern  const type_def          *TypeInteger;
+extern  const type_def          *TypeUnsigned;
+extern  const type_def          *TypePtr;
+extern  const type_def          *TypeNone;
+extern  const type_def          *TypeProcParm;
+extern  const type_def          *TypeNearInteger;
+extern  const type_def          *TypeLongInteger;
+extern  const type_def          *TypeLongLongInteger;
+extern  const type_def          *TypeHugeInteger;
 extern  hw_reg_set              GivenRegisters;
 extern  bool                    BlocksUnTrimmed;
 extern  an                      AddrList;

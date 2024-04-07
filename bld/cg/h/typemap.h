@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,6 +30,6 @@
 ****************************************************************************/
 
 
-extern  type_def        *TypeOfTypeClass( type_class_def type_class );
-extern  type_class_def  ReturnTypeClass( type_def *tipe, call_attributes attr );
-extern  type_class_def  TypeClass( type_def *tipe );
+extern const type_def   *TypeOfTypeClass( type_class_def type_class );
+extern type_class_def   ReturnTypeClass( const type_def *tipe, call_attributes attr );
+extern type_class_def   TypeClass( const type_def *tipe );

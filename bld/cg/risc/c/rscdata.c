@@ -106,8 +106,8 @@ void    IterBytes( offset len, byte pat )
     TellByPassOver();
 }
 
-void    BackPtr( back_handle bck, segment_id segid, offset plus, type_def *tipe )
-/*******************************************************************************/
+void    BackPtr( back_handle bck, segment_id segid, offset plus, const type_def *tipe )
+/*************************************************************************************/
 {
     /* unused parameters */ (void)segid; (void)tipe;
 
@@ -138,8 +138,8 @@ void    BackPtrBase( back_handle bck, segment_id segid )
     TellByPassOver();
 }
 
-void    FEPtr( cg_sym_handle sym, type_def *tipe, offset plus )
-/*************************************************************/
+void    FEPtr( cg_sym_handle sym, const type_def *tipe, offset plus )
+/*******************************************************************/
 {
     /* unused parameters */  (void)tipe;
 
