@@ -844,8 +844,8 @@ static void dump_global_info( section_dbg_header *sdh )
     for( bytes_read = 0; bytes_read < total_bytes; ) {
         Wlseek( cpos );
         Wread( Wbuff, sizeof( v3_gbl_info ) + 255 );
-        bytes_read += sizeof( v3_gbl_info ) + gi->name[0];
-        cpos += sizeof( v3_gbl_info ) + gi->name[0];
+        bytes_read += sizeof( v3_gbl_info ) + (unsigned_8)gi->name[0];
+        cpos += sizeof( v3_gbl_info ) + (unsigned_8)gi->name[0];
         Wdputs( "  Name:  " );
         Wdputname( gi->name );
         Wdputslc( "\n" );
