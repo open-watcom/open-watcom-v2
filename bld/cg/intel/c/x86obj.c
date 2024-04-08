@@ -561,11 +561,7 @@ static object *InitTarg( index_rec *rec )
      */
     FillArray( &obj->data, sizeof( byte ), MODEST_OBJ, INCREMENT_OBJ );
     FillArray( &obj->fixes, sizeof( byte ), NOMINAL_FIX, INCREMENT_FIX );
-    if( rec->exec ) {
-        obj->exports = InitArray( sizeof( byte ), MODEST_EXP, INCREMENT_EXP );
-    } else {
-        obj->exports = NULL;
-    }
+    FillArray( &obj->exports, sizeof( byte ), MODEST_EXP, INCREMENT_EXP );
     obj->tpatches = NULL;
     obj->gen_static_exports = false;
     obj->pending_line_number = 0;
@@ -1703,12 +1699,12 @@ static  void    GenComdef( void )
 static  void    EjectExports( void )
 /**********************************/
 {
-    object      *obj;
-    omf_cmd     cmd;
+    array_control   *obj_exports;
+    omf_cmd         cmd;
 
-    obj = CurrSeg->obj;
-    if( obj->exports != NULL && obj->exports->used > 0 ) {
-        if( obj->gen_static_exports ) {
+    obj_exports = &CurrSeg->obj->exports;
+    if( obj_exports->used > 0 ) {
+        if( CurrSeg->obj->gen_static_exports ) {
 #if _TARGET & _TARG_80386
             if( _IsntTargetModel( CGSW_X86_EZ_OMF ) ) {
                 cmd = CMD_LPUBDEF32;
@@ -1729,7 +1725,7 @@ static  void    EjectExports( void )
             cmd = CMD_PUBDEF;
 #endif
         }
-        PutObjOMFRec( cmd, obj->exports );
+        PutObjOMFRec( cmd, obj_exports );
     }
 }
 
@@ -1826,10 +1822,6 @@ static  void    FiniTarg( void )
 
     FlushObject();
     obj = CurrSeg->obj;
-    if( obj->exports != NULL ) {
-        KillArray( obj->exports );
-        obj->exports = NULL;
-    }
     rec = AskIndexRec( obj->index );
 #if _TARGET & _TARG_80386
     size.s = _TargetInt( rec->max_size );
@@ -1859,9 +1851,7 @@ static  void    FiniTarg( void )
         }
 #endif
     }
-    if( obj->exports != NULL ) {
-        KillArray( obj->exports );
-    }
+    KillStatic( &obj->exports );
     KillStatic( &obj->data );
     KillStatic( &obj->fixes );
     CGFree( obj );
@@ -2169,18 +2159,13 @@ static  void    FreeAbsPatch( abs_patch *apatch )
 static  void    OutExport( cg_sym_handle sym )
 /*****************************************/
 {
-    array_control       *exp;
+    array_control       *obj_exports;
     object              *obj;
     fe_attr             attr;
 
-
     obj = CurrSeg->obj;
-    exp = obj->exports;
-    if( exp == NULL ) {
-        exp = InitArray( sizeof( byte ), MODEST_EXP, INCREMENT_EXP );
-        obj->exports = exp;
-    }
-    if( obj->exports->used >= BUFFSIZE - TOLERANCE ) {
+    obj_exports = &obj->exports;
+    if( obj_exports->used >= BUFFSIZE - TOLERANCE ) {
         EjectExports();
     }
     attr = FEAttr( sym );
@@ -2196,21 +2181,21 @@ static  void    OutExport( cg_sym_handle sym )
             obj->gen_static_exports = true;
         }
     }
-    if( obj->exports->used == 0 ) {
+    if( obj_exports->used == 0 ) {
         if( CurrSeg->btype == BASE_GRP ) {
-            OutIdx( CurrSeg->base, exp );   /* group index*/
+            OutIdx( CurrSeg->base, obj_exports );   /* group index*/
         } else {
 #if _TARGET & _TARG_80386
-            OutIdx( FlatGIndex, exp );      /* will be 0 if we have none */
+            OutIdx( FlatGIndex, obj_exports );      /* will be 0 if we have none */
 #else
-            OutIdx( 0, exp );
+            OutIdx( 0, obj_exports );
 #endif
         }
-        OutIdx( obj->index, exp );          /* segment index*/
+        OutIdx( obj->index, obj_exports );          /* segment index*/
     }
-    OutObjectName( sym, exp );
-    OutOffset( (offset)CurrSeg->location, exp );
-    OutIdx( 0, exp );                       /* type index*/
+    OutObjectName( sym, obj_exports );
+    OutOffset( (offset)CurrSeg->location, obj_exports );
+    OutIdx( 0, obj_exports );                       /* type index*/
 }
 
 
@@ -3006,17 +2991,12 @@ void    OutRTImport( rt_class rtindex, fix_class class )
 void    OutBckExport( const char *name, bool is_export )
 /******************************************************/
 {
-    array_control       *exp;
+    array_control       *obj_exports;
     object              *obj;
 
-
     obj = CurrSeg->obj;
-    exp = obj->exports;
-    if( exp == NULL ) {
-        exp = InitArray( sizeof( byte ), MODEST_EXP, INCREMENT_EXP );
-        obj->exports = exp;
-    }
-    if( obj->exports->used >= BUFFSIZE - TOLERANCE ) {
+    obj_exports = &obj->exports;
+    if( obj_exports->used >= BUFFSIZE - TOLERANCE ) {
         EjectExports();
     }
     /* are we switching from global to statics or vis-versa */
@@ -3031,21 +3011,21 @@ void    OutBckExport( const char *name, bool is_export )
             obj->gen_static_exports = true;
         }
     }
-    if( obj->exports->used == 0 ) {
+    if( obj_exports->used == 0 ) {
         if( CurrSeg->btype == BASE_GRP ) {
-            OutIdx( CurrSeg->base, exp );   /* group index*/
+            OutIdx( CurrSeg->base, obj_exports );   /* group index*/
         } else {
 #if _TARGET & _TARG_80386
-            OutIdx( FlatGIndex, exp );      /* will be 0 if we have none */
+            OutIdx( FlatGIndex, obj_exports );      /* will be 0 if we have none */
 #else
-            OutIdx( 0, exp );
+            OutIdx( 0, obj_exports );
 #endif
         }
-        OutIdx( obj->index, exp );          /* segment index*/
+        OutIdx( obj->index, obj_exports );          /* segment index*/
     }
-    OutName( name, exp );
-    OutOffset( (offset)CurrSeg->location, exp );
-    OutIdx( 0, exp );                       /* type index*/
+    OutName( name, obj_exports );
+    OutOffset( (offset)CurrSeg->location, obj_exports );
+    OutIdx( 0, obj_exports );                       /* type index*/
 }
 
 void    OutBckImport( const char *name, back_handle bck, fix_class class )

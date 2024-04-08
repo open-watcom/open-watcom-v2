@@ -67,6 +67,17 @@
 #define RMR_MOD_DIR     5
 #define RMR_MOD_SIB     4
 
+static  hw_reg_set IndexTab[] = {
+    HW_D( HW_EAX ),
+    HW_D( HW_ECX ),
+    HW_D( HW_EDX ),
+    HW_D( HW_EBX ),
+    HW_D( HW_ESP ),
+    HW_D( HW_EBP ),
+    HW_D( HW_ESI ),
+    HW_D( HW_EDI )
+};
+
 
 static void OpndSizeIf( bool if_32 )
 /**********************************/
@@ -138,19 +149,6 @@ void    DoRepOp( instruction *ins )
         }
     }
 }
-
-
-static  hw_reg_set IndexTab[] = {
-    HW_D( HW_EAX ),
-    HW_D( HW_ECX ),
-    HW_D( HW_EDX ),
-    HW_D( HW_EBX ),
-    HW_D( HW_ESP ),
-    HW_D( HW_EBP ),
-    HW_D( HW_ESI ),
-    HW_D( HW_EDI )
-};
-
 
 static  void    Add32Displacement( int_32 val )
 /*********************************************/

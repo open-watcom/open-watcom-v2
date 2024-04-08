@@ -64,11 +64,11 @@ typedef struct temp_patch {
 } temp_patch;
 
 typedef struct object {
-        struct array_control    data;
-        struct array_control    fixes;
+        array_control           data;
+        array_control           fixes;
         temp_patch              *tpatches;
-        struct array_control    *exports;
-        struct array_control    *lines;
+        array_control           exports;
+        array_control           *lines;
         long_offset             start;
         objhandle               segfix;
         uint_16                 index;
