@@ -57,6 +57,11 @@
 #define DNA             0
 #define TAKEN           1
 
+typedef struct {
+    block       *first;
+    block       *last;
+} block_queue;
+
 typedef enum {
     ABORT = 0,          // Abort this particular path
     CONTINUE,           // Continue on as normal
@@ -229,11 +234,6 @@ static  void    BlocksSortedBy( bool (*bigger)( block *, block * ) )
     }
 }
 
-
-typedef struct {
-    block       *first;
-    block       *last;
-} block_queue;
 
 static  void    BQInit( block_queue *q ) {
 /****************************************/

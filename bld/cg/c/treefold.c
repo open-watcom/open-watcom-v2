@@ -342,7 +342,7 @@ int     GetLog2( uint_32 value )
 
 
 tn      FoldTimes( tn left, tn rite, const type_def *tipe )
-/***********************************************************/
+/*********************************************************/
 {
     tn              temp;
     tn              fold;
@@ -453,7 +453,7 @@ float_handle OkToNegate( float_handle value, const type_def *tipe )
 }
 
 tn      FoldMinus( tn left, tn rite, const type_def *tipe )
-/***********************************************************/
+/*********************************************************/
 {
     tn              fold;
     float_handle    lv;

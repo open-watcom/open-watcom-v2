@@ -49,7 +49,7 @@ static const cg_type  Types[] = {
 
 
 const type_def  *TypeOfTypeClass( type_class_def type_class )
-/*******************************************************/
+/***********************************************************/
 {
     return( TypeAddress( Types[type_class] ) );
 }

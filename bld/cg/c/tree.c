@@ -192,7 +192,7 @@ tn  TGBitMask( tn left, byte start, byte len, const type_def *tipe )
 
 
 tn  TGNode( tn_class class, cg_op op, tn left, tn rite, const type_def *tipe )
-/***********************************************************************
+/*****************************************************************************
  * create a general node
  */
 {
@@ -711,7 +711,7 @@ static const type_def   *BinResult( cg_op op, tn *l, tn *r, const type_def *tipe
 
 
 static  tn  BinFold( cg_op op, tn left, tn rite, const type_def *tipe )
-/****************************************************************
+/**********************************************************************
  * Try to fold "left" "op" "rite".  Return NULL if it is not possible,
  * a new tree node if it is possible (freeing "left" and "rite").
  */
@@ -751,7 +751,7 @@ static  tn  BinFold( cg_op op, tn left, tn rite, const type_def *tipe )
 
 
 tn  TGBinary( cg_op op, tn left, tn rite, const type_def *tipe )
-/*********************************************************
+/***************************************************************
  * build a binary operator tree node
  */
 {
@@ -771,7 +771,7 @@ tn  TGBinary( cg_op op, tn left, tn rite, const type_def *tipe )
 
 
 tn  TGUnary( cg_op op, tn left, const type_def *tipe )
-/***********************************************
+/*****************************************************
  * build a unary operator tree node
  */
 {
@@ -860,7 +860,7 @@ tn  TGUnary( cg_op op, tn left, const type_def *tipe )
 }
 
 call_handle TGInitCall( tn left, const type_def *tipe, cg_sym_handle sym )
-/********************************************************************
+/*************************************************************************
  * Return a tree node for a call to "left".  TGAddParm may add parms to
  * the call node.  TGCall finalizes the call node.
  */
@@ -877,7 +877,7 @@ call_handle TGInitCall( tn left, const type_def *tipe, cg_sym_handle sym )
 
 
 tn  TGAddParm( call_handle call, tn parm, const type_def *tipe )
-/*********************************************************
+/***************************************************************
  * see TGInitCall ^
  */
 {
@@ -915,7 +915,7 @@ tn  TGCall( call_handle call )
 
 
 tn  TGIndex( tn left, tn rite, const type_def *tipe, const type_def *ptipe )
-/******************************************************************
+/***************************************************************************
  * return a tree for &left[rite].  "ptipe" is the pointer type of
  * "left".  "tipe" is the type of the object pointed to by "left".
  * Resulting node is a pointer node.
@@ -940,7 +940,7 @@ tn  TGIndex( tn left, tn rite, const type_def *tipe, const type_def *ptipe )
 
 
 tn  DoTGAssign( tn dst, tn src, const type_def *tipe, tn_class class )
-/***************************************************************
+/*********************************************************************
  * build dst = src
  */
 {
@@ -962,7 +962,7 @@ tn  DoTGAssign( tn dst, tn src, const type_def *tipe, tn_class class )
 
 
 tn  TGAssign( tn dst, tn src, const type_def *tipe )
-/*********************************************
+/***************************************************
  * build dst = src
  */
 {
@@ -971,7 +971,7 @@ tn  TGAssign( tn dst, tn src, const type_def *tipe )
 
 
 tn  TGLVAssign( tn dst, tn src, const type_def *tipe )
-/***********************************************
+/*****************************************************
  * build dst = src
  */
 {
@@ -1059,7 +1059,7 @@ tn  TGConst( float_handle cons, const type_def *tipe )
 
 
 tn  TName( name *name, const type_def *tipe )
-/**************************************
+/********************************************
  * return a leaf node for "name"
  */
 {
@@ -1222,7 +1222,7 @@ cg_type TGType( tn node )
 
 
 tn  TGPatch( patch_handle patch, const type_def *tipe )
-/************************************************
+/******************************************************
  * create a patch node for "hdl"
  */
 {
@@ -2049,7 +2049,7 @@ an  TNUnary( tn node )
 
 #if _TARGET_INTEL
 static an   MakeBased( an left, an rite, const type_def *tipe )
-/********************************************************
+/**************************************************************
  * Create a far pointer from the ashes of a near pointer on the left
  * and a segment value on the right
  */
@@ -2417,7 +2417,7 @@ bool    TGIsAddress( void )
 }
 
 tn  TGQuestion( tn sel, tn left, tn rite, const type_def *tipe )
-/*********************************************************
+/***************************************************************
  * sel ? left : rite
  */
 {

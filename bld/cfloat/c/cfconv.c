@@ -283,7 +283,13 @@ static void     DoConvert( cfloat *f, const char *str )
         /* return, no mantisa digit */
         return;
     }
+    /*
+     * terminate mantisa digits
+     */
     f->mant[len] = NULLCHAR;
+    /*
+     * scan exponent if exists
+     */
     if( *str == 'E'
       || *str == 'e' ) {
         str++;
@@ -297,6 +303,9 @@ static void     DoConvert( cfloat *f, const char *str )
             expon += CFGetDec16( str );
         }
     }
+    /*
+     * update info in cfloat structure
+     */
     f->sign = sgn;
     f->len = len;
     f->exp = expon;
