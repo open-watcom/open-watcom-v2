@@ -78,7 +78,7 @@
  * identical cases, otherwise we give each pair explicitly.
  */
 
-static  uint_8  BinaryOpcodes4[][2][2] = {
+static const uint_8  BinaryOpcodes4[][2][2] = {
     _BinaryOpcode( 0x10, 0x00 ),                /* OP_ADD */
     _BinaryOpcode( 0x10, 0x00 ),                /* OP_EXT_ADD */
     _BinaryOpcode( 0x10, 0x09 ),                /* OP_SUB */
@@ -97,7 +97,7 @@ static  uint_8  BinaryOpcodes4[][2][2] = {
     _BinaryOpcode( 0x00, 0x00 ),                /* OP_FMOD */
 };
 
-static  uint_8  BinaryOpcodes8[][2][2] = {
+static const uint_8  BinaryOpcodes8[][2][2] = {
     _BinaryOpcode( 0x10, 0x20 ),                /* OP_ADD */
     _BinaryOpcode( 0x10, 0x20 ),                /* OP_EXT_ADD */
     _BinaryOpcode( 0x10, 0x29 ),                /* OP_SUB */
@@ -116,7 +116,7 @@ static  uint_8  BinaryOpcodes8[][2][2] = {
     _BinaryOpcode( 0x00, 0x00 ),                /* OP_FMOD */
 };
 
-static  uint_8  SetOpcodes[][2][2] = {
+static const uint_8  SetOpcodes[][2][2] = {
     _BinaryOpcode( 0x10, 0x2d ),                /* OP_SET_EQUAL */
     _BinaryOpcode( 0x00, 0x00 ),                /* OP_SET_NOT_EQUAL */
     _BinaryOpcode( 0x00, 0x00 ),                /* OP_SET_GREATER */
@@ -134,7 +134,7 @@ static  uint_8  SetOpcodes[][2][2] = {
  * enabling different trap bits on instructions.
  */
 
-static  uint_16 FloatingBinaryOpcodes[][2] = {
+static const uint_16 FloatingBinaryOpcodes[][2] = {
     { 0x080, 0x0a0 },           /* OP_ADD */
     { 0x080, 0x0a0 },           /* OP_EXT_ADD */
     { 0x581, 0x5a1 },           /* OP_SUB */
@@ -144,7 +144,7 @@ static  uint_16 FloatingBinaryOpcodes[][2] = {
     { 0x583, 0x5a3 },           /* OP_DIV */
 };
 
-static  uint_16 FloatingSetOpcodes[][1] = {
+static const uint_16 FloatingSetOpcodes[][1] = {
     { 0xa5 },                   /* OP_SET_EQUAL */
     { 0x00 },                   /* OP_SET_NOT_EQUAL */
     { 0x00 },                   /* OP_SET_GREATER */
@@ -153,7 +153,7 @@ static  uint_16 FloatingSetOpcodes[][1] = {
     { 0x00 },                   /* OP_SET_GREATER_EQUAL */
 };
 
-static  uint_8  AlphaByteOpcodes[][2] = {
+static const uint_8  AlphaByteOpcodes[][2] = {
     { 0x12, 0x06 },             /* OP_EXTRACT_LOW */
     { 0x12, 0x4a },             /* OP_EXTRACT_HIGH */
     { 0x12, 0x0b },             /* OP_INSERT_LOW */
@@ -172,7 +172,7 @@ static  uint_8  AlphaByteOpcodes[][2] = {
  * never be combined together.
  */
 
-static  uint_8  AlphaByteInsSizeBits[] = {
+static const uint_8  AlphaByteInsSizeBits[] = {
     0x00,                       /* U1 */
     0x00,                       /* I1 */
     0x10,                       /* U2 */
@@ -190,7 +190,7 @@ static  uint_8  AlphaByteInsSizeBits[] = {
 };
 
 #if 0
-static  uint_8  BranchOpcodes[][2] = {
+static const uint_8  BranchOpcodes[][2] = {
     { 0x39, 0x31 },             /* OP_CMP_EQUAL */
     { 0x3d, 0x35 },             /* OP_CMP_NOT_EQUAL */
     { 0x3f, 0x37 },             /* OP_CMP_GREATER */
@@ -200,7 +200,7 @@ static  uint_8  BranchOpcodes[][2] = {
 };
 #endif
 
-static  uint_8  loadOpcodes[] = {
+static const uint_8  loadOpcodes[] = {
     0x28,                       /* U1 */
     0x28,                       /* I1 */
     0x28,                       /* U2 */
@@ -216,7 +216,7 @@ static  uint_8  loadOpcodes[] = {
     0x23,                       /* FL */
 };
 
-static  uint_8  storeOpcodes[] = {
+static const uint_8  storeOpcodes[] = {
     0x00,                       /* U1 */
     0x00,                       /* I1 */
     0x00,                       /* U2 */
@@ -232,7 +232,7 @@ static  uint_8  storeOpcodes[] = {
     0x27,                       /* FL */
 };
 
-static uint_8 zapMask[] = {
+static const uint_8 zapMask[] = {
     0x00, 0x01, 0x03, 0x07, 0x0f, 0x1f, 0x3f, 0x7f, 0xff
 };
 
@@ -240,7 +240,7 @@ static uint_8 zapMask[] = {
  * Used for faking up a set of opcodes for an instruction when
  * including an exhaustive table would have been too painful.
  */
-static  uint_8  ScratchOpcodes[2];
+static uint_8   ScratchOpcodes[2];
 
 static axp_ins  ins_encoding = 0;
 
@@ -337,10 +337,10 @@ void    GenLOADS32( int_32 value, reg_idx reg )
     }
 }
 
-static  uint_8  *FindOpcodes( instruction *ins )
-/**********************************************/
+static const uint_8  *FindOpcodes( instruction *ins )
+/***************************************************/
 {
-    uint_8      *opcodes;
+    const uint_8    *opcodes;
 
     if( _OpIsBinary( ins->head.opcode ) ) {
         if( ins->type_class == U8 || ins->type_class == I8 ) {
@@ -354,12 +354,12 @@ static  uint_8  *FindOpcodes( instruction *ins )
         /*
          * WARNING: must use these values before calling FindOpcodes again
          */
-        opcodes = &ScratchOpcodes[0];
-        opcodes[0] = AlphaByteOpcodes[ins->head.opcode - FIRST_ALPHA_BYTE_INS][0];
-        opcodes[1] = AlphaByteOpcodes[ins->head.opcode - FIRST_ALPHA_BYTE_INS][1];
+        ScratchOpcodes[0] = AlphaByteOpcodes[ins->head.opcode - FIRST_ALPHA_BYTE_INS][0];
+        ScratchOpcodes[1] = AlphaByteOpcodes[ins->head.opcode - FIRST_ALPHA_BYTE_INS][1];
         if( ins->head.opcode != OP_ZAP && ins->head.opcode != OP_ZAP_NOT ) {
-            opcodes[1] |= AlphaByteInsSizeBits[ins->base_type_class];
+            ScratchOpcodes[1] |= AlphaByteInsSizeBits[ins->base_type_class];
         }
+        opcodes = &ScratchOpcodes[0];
     } else {
         opcodes = NULL;
         assert( 0 );
@@ -726,7 +726,7 @@ static  bool    encodeThreadDataRef( instruction *ins )
 static  void    Encode( instruction *ins )
 /****************************************/
 {
-    uint_8          *opcodes;
+    const uint_8    *opcodes;
     uint_16         function;
     reg_idx         reg_addr;
     reg_idx         reg_mem;

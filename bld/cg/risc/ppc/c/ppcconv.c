@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -162,14 +162,14 @@ typedef enum {
     #undef RT_MAP
 } conv_method;
 
-static const opcode_entry     *CvtAddr[] = {
+static const opcode_entry * const CvtAddr[] = {
     #define CVT_MAP(a) ctable_##a,
     CVTFUNC_MAPS
     #undef CVT_MAP
 };
 
 #if 0
-static  rt_class     RTRoutineTable[] = {
+static const rt_class     RTRoutineTable[] = {
     #define RT_MAP(a,b) b,
     RTFUNC_MAPS
     #undef RT_MAP
@@ -178,7 +178,7 @@ static  rt_class     RTRoutineTable[] = {
 
 #define __x__   BAD
 
-static  conv_method         CvtTable[] = {
+static const conv_method        CvtTable[] = {
 /*                               from                                                             */
 /*U1   I1     U2     I2     U4     I4     U8     I8     CP     PT     FS     FD     FL         to */
 OK,    OK,    C2TO1, C2TO1, C4TO1, C4TO1, CU4,   CI4,   C4TO1, C4TO1, CU4,   CU4,   CU4,    /* U1 */

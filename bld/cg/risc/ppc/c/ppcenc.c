@@ -87,7 +87,7 @@
  * identical cases, otherwise we give each pair explicitly.
  */
 
-static  gen_opcode  BinaryOpcodes[][2][2] = {
+static const gen_opcode  BinaryOpcodes[][2][2] = {
     _BinaryOpcode( 31, 266 ),           /* OP_ADD */
     _BinaryOpcode( 31, 266 ),           /* OP_EXT_ADD */
     _BinaryOpcode( 31, 8 ),             /* OP_SUB */
@@ -106,7 +106,7 @@ static  gen_opcode  BinaryOpcodes[][2][2] = {
     _BinaryOpcode( 0, 0 ),              /* OP_FMOD */
 };
 
-static  gen_opcode  FPOpcodes[][2] = {
+static const gen_opcode  FPOpcodes[][2] = {
     { 63, 21 },         /* OP_ADD */
     { 63, 21 },         /* OP_EXT_ADD */
     { 63, 20 },         /* OP_SUB */
@@ -125,7 +125,7 @@ static  gen_opcode  FPOpcodes[][2] = {
     { 0, 0 },           /* OP_FMOD */
 };
 
-static  gen_opcode  BinaryImmedOpcodes[] = {
+static const gen_opcode  BinaryImmedOpcodes[] = {
     14,                 /* OP_ADD */
     14,                 /* OP_EXT_ADD */
     8,                  /* OP_SUB */
@@ -144,7 +144,7 @@ static  gen_opcode  BinaryImmedOpcodes[] = {
     0,                  /* OP_FMOD */
 };
 
-static  gen_opcode  loadOpcodes[] = {
+static const gen_opcode  loadOpcodes[] = {
     34,                 /* U1 */
     34,                 /* I1 */
     40,                 /* U2 */
@@ -160,7 +160,7 @@ static  gen_opcode  loadOpcodes[] = {
     50,                 /* FL */
 };
 
-static  gen_opcode  storeOpcodes[] = {
+static const gen_opcode  storeOpcodes[] = {
     38,                 /* U1 */
     38,                 /* I1 */
     44,                 /* U2 */
@@ -176,7 +176,7 @@ static  gen_opcode  storeOpcodes[] = {
     54,                 /* FL */
 };
 
-static  gen_opcode  BranchOpcodes[][2] = {
+static const gen_opcode  BranchOpcodes[][2] = {
     /*
      * page 3-68 for a real description
      * BO     BI
@@ -189,7 +189,7 @@ static  gen_opcode  BranchOpcodes[][2] = {
     { INVERT, LT },     /* OP_CMP_GREATER_EQUAL */
 };
 
-static byte     Zeros[MAX_ALIGNMENT];
+static const byte       Zeros[MAX_ALIGNMENT];
 
 static ppc_ins  ins_encoding = 0;
 
@@ -235,10 +235,10 @@ void EmitInsReloc( void *ins, pointer sym, owl_reloc_type type )
 #endif
 }
 
-static  gen_opcode  *FindOpcodes( instruction *ins )
-/**************************************************/
+static const gen_opcode  *FindOpcodes( instruction *ins )
+/*******************************************************/
 {
-    gen_opcode      *opcodes;
+    const gen_opcode    *opcodes;
 
     if( _IsFloating( ins->type_class ) ) {
         opcodes = &FPOpcodes[ins->head.opcode - FIRST_BINARY_OP][0];
@@ -249,10 +249,10 @@ static  gen_opcode  *FindOpcodes( instruction *ins )
 }
 
 
-static  gen_opcode  *FindImmedOpcodes( instruction *ins )
-/*******************************************************/
+static const gen_opcode  *FindImmedOpcodes( instruction *ins )
+/************************************************************/
 {
-    gen_opcode      *opcodes;
+    const gen_opcode    *opcodes;
 
     opcodes = &BinaryImmedOpcodes[ins->head.opcode - FIRST_BINARY_OP];
     if( *opcodes == 0 ) {
@@ -616,7 +616,7 @@ static  void    Encode( instruction *ins )
     reg_idx             temp;
     gen_opcode          op1;
     gen_opcode          op2;
-    gen_opcode          *ops;
+    const gen_opcode    *ops;
     int_16              mem_offset;
     reg_idx             reg_mem;
 
@@ -925,7 +925,7 @@ void    GenJumpLabel( label_handle label )
 static void    GenJumpIf( instruction *ins, pointer label )
 /*********************************************************/
 {
-    gen_opcode  *ops;
+    const gen_opcode    *ops;
 
     ops = &BranchOpcodes[ins->head.opcode - FIRST_COMPARISON][0]; // fixme - floating point
     GenCONDBR( 16, ops[0], ops[1], label );

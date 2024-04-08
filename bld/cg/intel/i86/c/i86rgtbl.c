@@ -337,9 +337,10 @@ const op_regs RegList[] = {
 };
 
 static const reg_set_index   ClassSets[] = {
-/*       RL_ indicates that the class is already identified*/
-/*       (e.g. I1 already identified as U1*/
-/**/
+/********************************************
+ *  RL_ indicates that the class is already identified
+ *       (e.g. I1 already identified as U1
+ */
     RL_BYTE,                /* U1*/
     RL_,                    /* I1*/
     RL_WORD,                /* U2*/
@@ -355,7 +356,7 @@ static const reg_set_index   ClassSets[] = {
     RL_,                    /* FL*/
     RL_                     /* XX*/
 };
-static const hw_reg_set        *ParmSets[] = {
+static const hw_reg_set * const ParmSets[] = {
     ByteRegs,               /* U1*/
     ByteRegs,               /* I1*/
     WordRegs,               /* U2*/
@@ -371,7 +372,7 @@ static const hw_reg_set        *ParmSets[] = {
     __FP80BIT(Empty,QuadReg),/* FL*/
     Empty                   /* XX*/
 };
-static const hw_reg_set        *ParmSets8087[] = {
+static const hw_reg_set * const ParmSets8087[] = {
     ByteRegs,               /* U1*/
     ByteRegs,               /* I1*/
     WordRegs,               /* U2*/
@@ -452,13 +453,14 @@ static const reg_set_index   IndexSets[] = {
     RL_                     /* XX*/
 };
 
-/*       Information for register set intersections*/
-/*       if sets are of different classes*/
-/*               intersection is empty*/
-/*       } else {*/
-/*               intersection given in square matrix for class*/
-/*       }*/
-
+/*
+ *  Information for register set intersections
+ *  if sets are of different classes
+ *      intersection is empty
+ *  } else {
+ *      intersection given in square matrix for class
+ *  }
+ */
 #define INTERSECT_DEFS \
     pick( ONE_BYTE,   5, OneByteInter ) \
     pick( TWO_BYTE,   9, TwoByteInter ) \
@@ -501,14 +503,15 @@ static const reg_set_index   OneByteInter[] = {
     RL_AL,  RL_,    RL_CL,  RL_LOWBYTE, RL_LOWBYTE      /* LOWBYTE */
 };
 
-/* short forms used in this table*/
-/* - RL_WD == RL_WORD*/
-/* - RL_IX == RL_INDEX*/
-/* - RL_TI == RL_TEMP_INDEX*/
-/* - RL_2B == RL_TWOBYTE*/
-/* - RL_WS == RL_ANYWORD*/
-/* - RL_SG == RL_SEG*/
-
+/*
+ * short forms used in this table
+ * - RL_WD == RL_WORD
+ * - RL_IX == RL_INDEX
+ * - RL_TI == RL_TEMP_INDEX
+ * - RL_2B == RL_TWOBYTE
+ * - RL_WS == RL_ANYWORD
+ * - RL_SG == RL_SEG
+ */
 static const reg_set_index   TwoByteInter[] = {
 /* AX   CX     DX     WD     2B     IX     SG     TI     WS           */
 RL_AX, RL_,   RL_,   RL_AX, RL_AX, RL_,   RL_,   RL_,   RL_AX,  /* AX */

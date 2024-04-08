@@ -43,7 +43,7 @@
 #include "feprotos.h"
 
 
-static  hw_reg_set      floatRegs[] = {
+static const hw_reg_set     floatRegs[] = {
     HW_D_1( HW_F1 ),
     HW_D_1( HW_F2 ),
     HW_D_1( HW_F3 ),
@@ -60,7 +60,7 @@ static  hw_reg_set      floatRegs[] = {
     HW_D_1( HW_EMPTY )
 };
 
-static  hw_reg_set      scalarRegs[] = {
+static const hw_reg_set     scalarRegs[] = {
     HW_D_1( HW_D3 ),
     HW_D_1( HW_D4 ),
     HW_D_1( HW_D5 ),

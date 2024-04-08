@@ -82,7 +82,7 @@
  * identical cases, otherwise we give each pair explicitly.
  */
 
-static  uint_8  BinaryOpcodes4[][2][2] = {
+static const uint_8  BinaryOpcodes4[][2][2] = {
     _BinaryOpcode( 0x00, 0x21 ),                /* OP_ADD */
     _BinaryOpcode( 0x00, 0x21 ),                /* OP_EXT_ADD */
     _BinaryOpcode( 0x00, 0x23 ),                /* OP_SUB */
@@ -101,7 +101,7 @@ static  uint_8  BinaryOpcodes4[][2][2] = {
     _BinaryOpcode( 0x00, 0x00 ),                /* OP_FMOD */
 };
 
-static  uint_8  BinaryOpcodes8[][2][2] = {
+static const uint_8  BinaryOpcodes8[][2][2] = {
     _BinaryOpcode( 0x00, 0x21 ),                /* OP_ADD */
     _BinaryOpcode( 0x00, 0x21 ),                /* OP_EXT_ADD */
     _BinaryOpcode( 0x00, 0x23 ),                /* OP_SUB */
@@ -124,7 +124,7 @@ static  uint_8  BinaryOpcodes8[][2][2] = {
  * MIPS only has slt/sltu - every other operation needs to be
  * reduced to something else.
  */
-static  uint_8  SetOpcodes[][2][2] = {
+static const uint_8  SetOpcodes[][2][2] = {
     _BinaryOpcode( 0x00, 0x00 ),                /* OP_SET_EQUAL */
     _BinaryOpcode( 0x00, 0x00 ),                /* OP_SET_NOT_EQUAL */
     _BinaryOpcode( 0x00, 0x00 ),                /* OP_SET_GREATER */
@@ -133,7 +133,7 @@ static  uint_8  SetOpcodes[][2][2] = {
     _BinaryOpcode( 0x00, 0x00 ),                /* OP_SET_GREATER_EQUAL */
 };
 
-static  uint_8  BinaryImmedOpcodes[] = {
+static const uint_8  BinaryImmedOpcodes[] = {
     0x09,                           /* OP_ADD */
     0x09,                           /* OP_EXT_ADD */
     0x09,                           /* OP_SUB */
@@ -156,7 +156,7 @@ static  uint_8  BinaryImmedOpcodes[] = {
  * Note - 'reg SET_LESS_EQUAL imm' will be converted to 'reg SET_LESS (imm + 1)'
  * inside FindImmedOpcode. That's why the opcodes are the same as for SET_LESS.
  */
-static  uint_8  SetImmedOpcodes[][2] = {
+static const uint_8  SetImmedOpcodes[][2] = {
     _BinaryImmOpcode( 0x00 ),       /* OP_SET_EQUAL */
     _BinaryImmOpcode( 0x00 ),       /* OP_SET_NOT_EQUAL */
     _BinaryImmOpcode( 0x00 ),       /* OP_SET_GREATER */
@@ -174,7 +174,7 @@ static  uint_8  SetImmedOpcodes[][2] = {
  * enabling different trap bits on instructions.
  */
 
-static  uint_8 FloatingBinaryOpcodes[] = {
+static const uint_8 FloatingBinaryOpcodes[] = {
     0x00,                       /* OP_ADD */
     0x00,                       /* OP_EXT_ADD */
     0x01,                       /* OP_SUB */
@@ -184,7 +184,7 @@ static  uint_8 FloatingBinaryOpcodes[] = {
     0x03,                       /* OP_DIV */
 };
 
-static  uint_8 FloatingSetOpcodes[] = {
+static const uint_8 FloatingSetOpcodes[] = {
     0x32,                       /* OP_SET_EQUAL */
     0x32,                       /* OP_SET_NOT_EQUAL */
     0x36,                       /* OP_SET_GREATER */
@@ -193,7 +193,7 @@ static  uint_8 FloatingSetOpcodes[] = {
     0x34,                       /* OP_SET_GREATER_EQUAL */
 };
 
-static  uint_8  loadOpcodes[] = {
+static const uint_8  loadOpcodes[] = {
     0x24,                       /* U1 */
     0x20,                       /* I1 */
     0x25,                       /* U2 */
@@ -209,7 +209,7 @@ static  uint_8  loadOpcodes[] = {
     0x35,                       /* FL */
 };
 
-static  uint_8  storeOpcodes[] = {
+static const uint_8  storeOpcodes[] = {
     0x28,                       /* U1 */
     0x28,                       /* I1 */
     0x29,                       /* U2 */
@@ -296,12 +296,12 @@ void GenLOADS32( int_32 value, reg_idx reg )
 }
 
 
-static  uint_8  *FindOpcodes( instruction *ins )
-/***********************************************
+static const uint_8  *FindOpcodes( instruction *ins )
+/****************************************************
  * Look up the opcodes for a binary operator
  */
 {
-    uint_8      *opcodes;
+    const uint_8    *opcodes;
 
     if( _OpIsBinary( ins->head.opcode ) ) {
         if( ins->type_class == U8
@@ -830,7 +830,7 @@ static  bool    encodeThreadDataRef( instruction *ins )
 static  void Encode( instruction *ins )
 /*************************************/
 {
-    uint_8          *opcodes;
+    const uint_8    *opcodes;
     uint_8          opcode;
     uint_16         function;
     reg_idx         reg_addr;
