@@ -191,7 +191,7 @@ static RcStatus copyFont( FontInfo *info, FILE *fp, WResID *name,
     /*
      * add the font to the RES file directory
      */
-    SemAddResourceAndFree( name, WResIDFromNum( RESOURCE2INT( RT_FONT ) ), flags, loc );
+    SemAddResourceAndFree( name, WResIDFromNum( OS2_RT_FONT ), flags, loc );
 
     RESFREE( buffer );
 
@@ -414,7 +414,7 @@ void SemOS2WriteFontDir( void )
     loc.len = SemEndResource( loc.start );
 
     SemAddResourceAndFree( WResIDFromStr( FONT_DIR_NAME ),
-                WResIDFromNum( RESOURCE2INT( RT_FONTDIR ) ), FONT_DIR_FLAGS, loc );
+                WResIDFromNum( OS2_RT_FONTDIR ), FONT_DIR_FLAGS, loc );
 
     FreeFontDir( CurrResFile.FontDir );
     CurrResFile.FontDir = NULL;
