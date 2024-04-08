@@ -50,6 +50,34 @@
 #include "cgprotos.h"
 
 
+enum {
+    LOC_SYM,
+    LOC_CONST,
+    LOC_TEMP,
+    LOP_IND_2,
+    LOP_IND_4,
+    LOP_IND_ADDR_16,
+    LOP_IND_ADDR_32,
+    LOP_ZEB,
+    LOP_ZEW,
+    LOP_MK_FP,
+    LOP_POP,
+    LOP_XCHG,
+    LOP_ADD,
+    LOP_DUP
+};
+
+typedef struct location {
+        struct location         *next;
+        union {
+            t                   *be_sym;
+            cg_sym_handle       fe_sym;
+            unsigned            stk;
+            uint_32             val;
+        }                       u;
+        byte                    class;
+} location;
+
 extern  uint_16         TypeIdx;
 
 extern  char            *ACopyOf(const char *);
@@ -70,6 +98,34 @@ extern  void            DDefLabel(l *);
 extern  void            DRefLabel(l *);
 extern  void            Find(char *,pointer *,pointer );
 
+
+static fname_lst  *SrcFiles;
+
+static const char * const LopNames[] = {
+    "",
+    "",
+    "IND_2",
+    "IND_4",
+    "IND_A16",
+    "IND_A32",
+    "ZEB",
+    "ZEW",
+    "MK_FP",
+    "POP",
+    "XCHG",
+    "ADD",
+    "DUP"
+};
+
+static const char * const DBOpNames[] = {
+    "DB_OP_POINTS",
+    "DB_OP_ZEX",
+    "DB_OP_XCHG",
+    "DB_OP_MK_FP",
+    "DB_OP_ADD",
+    "DB_OP_DUP",
+    "DB_OP_POP"
+};
 
 
 void    DGAlign( uint algn )
@@ -234,57 +290,6 @@ extern  void    DGString( cchar_ptr s, uint len )
     }
     Put( ")%n",s );
 }
-enum {
-LOC_SYM,
-LOC_CONST,
-LOC_TEMP,
-LOP_IND_2,
-LOP_IND_4,
-LOP_IND_ADDR_16,
-LOP_IND_ADDR_32,
-LOP_ZEB,
-LOP_ZEW,
-LOP_MK_FP,
-LOP_POP,
-LOP_XCHG,
-LOP_ADD,
-LOP_DUP
-};
-static char *LopNames[] = {
-"",
-"",
-"IND_2",
-"IND_4",
-"IND_A16",
-"IND_A32",
-"ZEB",
-"ZEW",
-"MK_FP",
-"POP",
-"XCHG",
-"ADD",
-"DUP"
-};
-typedef struct location {
-        struct location         *next;
-        union {
-            t                   *be_sym;
-            cg_sym_handle       fe_sym;
-            unsigned            stk;
-            uint_32             val;
-        }                       u;
-        byte                    class;
-} location;
-static char *DBOpNames[] = {
-"DB_OP_POINTS",
-"DB_OP_ZEX",
-"DB_OP_XCHG",
-"DB_OP_MK_FP",
-"DB_OP_ADD",
-"DB_OP_DUP",
-"DB_OP_POP"
-};
-
 static char *DoLocation( char *str, dbg_loc loc ) {
 /*************************************************/
 
@@ -457,8 +462,6 @@ extern  void _CGAPI             DBLocFini( dbg_loc loc ) {
 
     Action( "DBLocFini( %p )%n", loc );
 }
-
-static fname_lst  *SrcFiles;
 
 static  void    SrcFileNoInit( void )
 /***********************************/
