@@ -54,7 +54,7 @@
 #include "_rscsplt.h"
 
 
-instruction *(* ReduceTab[])() = {
+instruction *(* const ReduceTab[])() = {
     #define _R_( x, f )     f
     #include "r.h"
     #undef _R_

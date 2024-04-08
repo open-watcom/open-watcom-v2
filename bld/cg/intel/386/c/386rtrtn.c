@@ -66,13 +66,13 @@ const rtn_info RTInfo[] = {
     #undef PICK
 };
 
-static  struct STRUCT_BYTE_SEQ( 2 ) Scn1 = {
+static const struct STRUCT_BYTE_SEQ( 2 ) Scn1 = {
      2, false,
     {0xF2,           /*       repne     */
      0xAE}           /*       scasb     */
 };
 
-static  struct STRUCT_BYTE_SEQ( 6 ) Scn1ES = {
+static const struct STRUCT_BYTE_SEQ( 6 ) Scn1ES = {
      6, false,
     {0x06,          /*      push    es  */
      0x0e,          /*      push    cs  */
@@ -82,13 +82,13 @@ static  struct STRUCT_BYTE_SEQ( 6 ) Scn1ES = {
      0x07}          /*      pop     es  */
 };
 
-static  struct STRUCT_BYTE_SEQ( 3 ) Scn2 = {    /* or Scn4 in USE16 */
+static const struct STRUCT_BYTE_SEQ( 3 ) Scn2 = {    /* or Scn4 in USE16 */
      3, false,
     {0xF2,          /*      repne       */
      0x66, 0xAF}    /*      scasw       */
 };
 
-static  struct STRUCT_BYTE_SEQ( 7 ) Scn2ES = {  /* or Scn4 in USE16 */
+static const struct STRUCT_BYTE_SEQ( 7 ) Scn2ES = {  /* or Scn4 in USE16 */
      7, false,
     {0x06,          /*      push    es  */
      0x0e,          /*      push    cs  */
@@ -98,13 +98,13 @@ static  struct STRUCT_BYTE_SEQ( 7 ) Scn2ES = {  /* or Scn4 in USE16 */
      0x07}          /*      pop     es  */
 };
 
-static  struct STRUCT_BYTE_SEQ( 2 ) Scn4 = {    /* or Scn2 in USE16 */
+static const struct STRUCT_BYTE_SEQ( 2 ) Scn4 = {    /* or Scn2 in USE16 */
      2, false,
     {0xF2,          /*      repne       */
      0xAF}          /*      scasd       */
 };
 
-static  struct STRUCT_BYTE_SEQ( 6 ) Scn4ES = {  /* or Scn2 in USE16 */
+static const struct STRUCT_BYTE_SEQ( 6 ) Scn4ES = {  /* or Scn2 in USE16 */
      6, false,
     {0x06,          /*      push    es  */
      0x0e,          /*      push    cs  */
@@ -262,27 +262,27 @@ pointer BEAuxInfo( pointer hdl, aux_class request )
         switch( FindRTLabel( hdl ) ) {
         case RT_SCAN1:
             if( _IsntTargetModel( CGSW_X86_FLAT_MODEL ) )
-                return( &Scn1ES );
-            return( &Scn1 );
+                return( (pointer)&Scn1ES );
+            return( (pointer)&Scn1 );
         case RT_SCAN2:
             if( _IsntTargetModel( CGSW_X86_USE_32 ) ) {
                 if( _IsntTargetModel( CGSW_X86_FLAT_MODEL ) )
-                    return( &Scn4ES );
-                return( &Scn4 );
+                    return( (pointer)&Scn4ES );
+                return( (pointer)&Scn4 );
             } else {
                 if( _IsntTargetModel( CGSW_X86_FLAT_MODEL ) )
-                    return( &Scn2ES );
-                return( &Scn2 );
+                    return( (pointer)&Scn2ES );
+                return( (pointer)&Scn2 );
             }
         case RT_SCAN4:
             if( _IsntTargetModel( CGSW_X86_USE_32 ) ) {
                 if( _IsntTargetModel( CGSW_X86_FLAT_MODEL ) )
-                    return( &Scn2ES );
-                return( &Scn2 );
+                    return( (pointer)&Scn2ES );
+                return( (pointer)&Scn2 );
             } else {
                 if( _IsntTargetModel( CGSW_X86_FLAT_MODEL ) )
-                    return( &Scn4ES );
-                return( &Scn4 );
+                    return( (pointer)&Scn4ES );
+                return( (pointer)&Scn4 );
             }
         default:
             return( NULL );

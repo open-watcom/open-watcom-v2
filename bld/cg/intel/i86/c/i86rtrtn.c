@@ -77,7 +77,7 @@ const rtn_info RTInfo[] = {
     #undef PICK
 };
 
-static  struct STRUCT_BYTE_SEQ( 6 ) Scn1 = {
+static const struct STRUCT_BYTE_SEQ( 6 ) Scn1 = {
      6, false,
     {0xF2,              /*      repne           */
      0xAE,              /*      scasb           */
@@ -85,13 +85,13 @@ static  struct STRUCT_BYTE_SEQ( 6 ) Scn1 = {
      0x89, 0xCF}        /*      mov     di,cx   */
 };
 
-static  struct STRUCT_BYTE_SEQ( 2 ) Scn2 = {
+static const struct STRUCT_BYTE_SEQ( 2 ) Scn2 = {
      2, false,
     {0xF2,              /*      repne           */
      0xAF}              /*      scasw           */
 };
 
-static  struct STRUCT_BYTE_SEQ( 18 ) Scn4 = {
+static const struct STRUCT_BYTE_SEQ( 18 ) Scn4 = {
      18, false,
     {0x83, 0xC7, 0x02,  /* L1:  add     d1,2    */
      0x49,              /* L2:  dec     cx      */
@@ -565,11 +565,11 @@ pointer BEAuxInfo( pointer hdl, aux_class request )
     case FEINF_AUX_LOOKUP:
         switch( FindRTLabel( hdl ) ) {
         case RT_SCAN1:
-            return( &Scn1 );
+            return( (pointer)&Scn1 );
         case RT_SCAN2:
-            return( &Scn2 );
+            return( (pointer)&Scn2 );
         case RT_SCAN4:
-            return( &Scn4 );
+            return( (pointer)&Scn4 );
         default:
             break;
         }

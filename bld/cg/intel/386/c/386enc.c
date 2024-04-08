@@ -67,7 +67,7 @@
 #define RMR_MOD_DIR     5
 #define RMR_MOD_SIB     4
 
-static  hw_reg_set IndexTab[] = {
+static const hw_reg_set IndexTab[] = {
     HW_D( HW_EAX ),
     HW_D( HW_ECX ),
     HW_D( HW_EDX ),

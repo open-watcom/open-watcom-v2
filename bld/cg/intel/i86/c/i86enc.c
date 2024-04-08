@@ -57,7 +57,7 @@
 #define RMR_MOD_IND     0x80
 
 
-static  hw_reg_set IndexTab[] = {
+static const hw_reg_set IndexTab[] = {
     HW_D_2( HW_BX, HW_SI ),
     HW_D_2( HW_BX, HW_DI ),
     HW_D_2( HW_BP, HW_SI ),

@@ -62,7 +62,7 @@
 #include "_x86half.h"
 
 
-instruction *(*ReduceTab[])( instruction * ) = {
+instruction *(* const ReduceTab[])( instruction * ) = {
     #define _R_( x, f )     f
     #include "r.h"
     #undef _R_

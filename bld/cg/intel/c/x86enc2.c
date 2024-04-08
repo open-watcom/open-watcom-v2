@@ -357,7 +357,7 @@ void    GenCall( instruction *ins )
     cg_sym_handle   sym;
     bool            imp;
     call_class      cclass;
-    byte_seq        *code;
+    const byte_seq  *code;
     label_handle    lbl;
     bool            far_call;
 
@@ -367,7 +367,7 @@ void    GenCall( instruction *ins )
     op = ins->operands[CALL_OP_ADDR];
     cclass = (call_class)(pointer_uint)FindAuxInfo( op, FEINF_CALL_CLASS );
     far_call = ( ((call_class_target)(pointer_uint)FindAuxInfo( op, FEINF_CALL_CLASS_TARGET ) & FECALL_X86_FAR_CALL) != 0 );
-    code = FindAuxInfo( op, FEINF_CALL_BYTES );
+    code = (const byte_seq *)FindAuxInfo( op, FEINF_CALL_BYTES );
     if( code != NULL ) {
         _Emit;
         if( code->relocs ) {

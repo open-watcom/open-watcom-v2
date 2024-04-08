@@ -86,7 +86,7 @@ type_class_def CallState( aux_handle aux, const type_def *tipe, call_state *stat
     hw_reg_set          *parm_dst;
     hw_reg_set          *pregs;
     call_class          cclass;
-    byte_seq            *code;
+    const byte_seq      *code;
     bool                aux_inline = false;
 
     state->unalterable = FixedRegs();
@@ -99,7 +99,7 @@ type_class_def CallState( aux_handle aux, const type_def *tipe, call_state *stat
     // to support more than a single calling convention, this will need
     // to change to work more like x86
     if( !AskIfRTLabel( CurrProc->label ) ) {
-        code = FEAuxInfo( aux, FEINF_CALL_BYTES );
+        code = (const byte_seq *)FEAuxInfo( aux, FEINF_CALL_BYTES );
         if( code != NULL ) {
             aux_inline = true;
         }

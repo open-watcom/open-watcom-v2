@@ -1164,14 +1164,14 @@ byte_seq_reloc *SortListReloc( byte_seq_reloc *relocs )
     return( SortList( relocs, offsetof( byte_seq_reloc, next ), relocBefore ) );
 }
 
-void    ObjEmitSeq( byte_seq *code )
-/**********************************/
+void    ObjEmitSeq( const byte_seq *code )
+/****************************************/
 {
     byte_seq_reloc      *curr;
     back_handle         back;
     type_length         loc;
     byte_seq_len        i;
-    void                *code_ptr;
+    const byte          *code_ptr;
     void                *ins_opcode;
     pointer             reloc_sym;
     owl_reloc_type      reloc_type;

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -193,8 +193,8 @@ static byte     Zeros[MAX_ALIGNMENT];
 
 static ppc_ins  ins_encoding = 0;
 
-void *InsRelocInit( void *ins )
-/*****************************/
+void *InsRelocInit( const byte *ins )
+/***********************************/
 {
     ins_encoding = *(ppc_ins *)ins;
     return( &ins_encoding );
@@ -206,10 +206,10 @@ void InsRelocAddSignedImmed( int disp )
     ins_encoding |= _SignedImmed( disp );
 }
 
-void *InsRelocNext( void *ins )
-/*****************************/
+const byte *InsRelocNext( const byte *ins )
+/***********************************/
 {
-    return( (ppc_ins *)ins + 1 );
+    return( (const byte *)( (ppc_ins *)ins + 1 ) );
 }
 
 void EmitInsReloc( void *ins, pointer sym, owl_reloc_type type )
@@ -393,13 +393,13 @@ static  void    doCall( instruction *ins )
 /****************************************/
 {
     call_class      cclass;
-    byte_seq        *code;
+    const byte_seq  *code;
     label_handle    lbl;
     name            *op;
 
     op = ins->operands[CALL_OP_ADDR];
     cclass = (call_class)(pointer_uint)FindAuxInfo( op, FEINF_CALL_CLASS );
-    code = FindAuxInfo( op, FEINF_CALL_BYTES );
+    code = (const byte_seq *)FindAuxInfo( op, FEINF_CALL_BYTES );
     if( code != NULL ) {
         _ObjEmitSeq( code );
         if( cclass & FECALL_GEN_ABORTS ) {
