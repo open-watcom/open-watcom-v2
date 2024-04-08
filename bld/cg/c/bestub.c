@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -63,7 +63,6 @@ extern void BEStart() {}
 extern void BEStop() {}
 extern void BEAbort() {}
 extern void BEFini() {}
-extern bool BEMoreMem(void) {return(0);}
 extern segment_id BESetSeg(segment_id _1) {return(0);}
 extern void BEDefSeg(segment_id _1,seg_attr _2,char * _3,uint _4) {}
 extern void BEFlushSeg(segment_id _1 ) {}

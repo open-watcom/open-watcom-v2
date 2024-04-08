@@ -417,13 +417,6 @@ extern  void    BEDefSeg( segment_id segid, seg_attr attr, const char *str, uint
     SegOk[segid] = true;
     Locs[segid] = 0;
 }
-extern  bool    BEMoreMem( void ) {
-//=================================
-
-    Action( "BEMoreMem() -> 0%n" );
-    return(false);
-}
-
 extern  uint_32 BEUnrollCount( uint_32 c ) {
 /**************************************************/
     return( c );

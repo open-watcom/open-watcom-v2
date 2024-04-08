@@ -262,12 +262,6 @@ void _CGAPI     BEFini( void )
     BEMemFini();
 }
 
-bool _CGAPI     BEMoreMem( void )
-/*******************************/
-{
-    return( _MemCheck( 1 ) );
-}
-
 segment_id _CGAPI   BEGetSeg( void )
 /**********************************/
 {
