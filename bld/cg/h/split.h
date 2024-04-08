@@ -32,10 +32,10 @@
 
 #define _IsSigned( type )       (Unsigned[type] != type)
 
-extern type_class_def   Unsigned[];
-extern type_class_def   Signed[];
-extern type_class_def   DoubleClass[];
-extern type_class_def   HalfClass[];
+extern const type_class_def     Unsigned[];
+extern const type_class_def     Signed[];
+extern const type_class_def     DoubleClass[];
+extern const type_class_def     HalfClass[];
 
 extern instruction *(* const ReduceTab[])( instruction * );
 

@@ -39,7 +39,7 @@
 #include "maptypes.h"
 
 
-static cg_type  Types[] = {
+static const cg_type  Types[] = {
     #define pick(e,t) t,
     #include "typcldef.h"
     #undef pick

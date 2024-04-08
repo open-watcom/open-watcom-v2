@@ -53,6 +53,25 @@
 /* BLK_BLOCK_VISITED is used in the sense of placed                 */
 /*                                                                  */
 
+#define NOT_TAKEN       -1
+#define DNA             0
+#define TAKEN           1
+
+typedef enum {
+    ABORT = 0,          // Abort this particular path
+    CONTINUE,           // Continue on as normal
+    STOP,               // Stop the entire flood down
+} flood_decision;
+
+typedef struct flood_info {
+    bool        post_dominates;
+    block       *dominator;
+} flood_info;
+
+typedef flood_decision (*flood_down_func)( block *, flood_info * );
+
+typedef int (*bp_heuristic)( block *, instruction * );
+
 static  source_line_number      DumpLineNum( source_line_number n,
                                              source_line_number last,
                                              bool label_line ) {
@@ -302,10 +321,6 @@ static  instruction     *FindCondition( block *blk ) {
     return( NULL );
 }
 
-#define NOT_TAKEN       -1
-#define DNA             0
-#define TAKEN           1
-
 static  int     PointerHeuristic( block *blk, instruction *cond ) {
 /*****************************************************************/
 
@@ -421,19 +436,6 @@ static  void    PushTargets( void *stack, block *blk ) {
         EdgeStackPush( stack, &blk->edge[i] );
     }
 }
-
-typedef enum {
-    ABORT = 0,          // Abort this particular path
-    CONTINUE,           // Continue on as normal
-    STOP,               // Stop the entire flood down
-} flood_decision;
-
-typedef struct flood_info {
-    bool        post_dominates;
-    block       *dominator;
-} flood_info;
-
-typedef flood_decision (*flood_down_func)( block *, flood_info * );
 
 static  void    FloodDown( block *from, flood_down_func func, void *parm )
 /************************************************************************/
@@ -680,9 +682,7 @@ static  int     ReturnHeuristic( block *blk, instruction *cond ) {
     return( prediction );
 }
 
-typedef int (*bp_heuristic)( block *, instruction * );
-
-static bp_heuristic     Heuristics[] = {
+static bp_heuristic const Heuristics[] = {
     PointerHeuristic,
     CallHeuristic,
     OpcodeHeuristic,
@@ -764,6 +764,7 @@ static  block   *BestFollower( block_queue *unplaced, block *blk ) {
             best = NULL;
             break;
         }
+        #undef _Munge
         break;
     case BLK_CALL_LABEL:
         for( curr = BQFirst( unplaced ); curr != NULL; curr = BQNext( unplaced, curr ) ) {

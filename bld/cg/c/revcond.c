@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,7 +35,7 @@
 #include "coderep.h"
 #include "revcond.h"
 
-static  opcode_defs     FlipBranch[] = {
+static const opcode_defs    FlipBranch[] = {
 /**************************************/
 
         OP_BIT_TEST_FALSE,      /* OP_BIT_TEST_TRUE */
@@ -47,7 +48,7 @@ static  opcode_defs     FlipBranch[] = {
         OP_CMP_LESS             /* OP_CMP_GREATER_EQUAL */
         };
 
-static  opcode_defs     RevBranch[] = {
+static const opcode_defs    RevBranch[] = {
 /*************************************/
 
         OP_BIT_TEST_TRUE,       /* OP_BIT_TEST_TRUE */

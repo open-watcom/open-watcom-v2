@@ -79,7 +79,7 @@ static  void    Control( cg_op op, tn node, label_handle lbl, bool gen );
 
 static  pointer *TreeFrl;
 
-static type_class_def BinMat[] = {
+static const type_class_def BinMat[] = {
 /*********************************
  * What is the result type of a binary operation
  *
@@ -265,7 +265,7 @@ tn  TGCallback( cg_callback rtn, callback_handle ptr )
 }
 
 static const type_def   *ResultType( tn left, tn rite, const type_def *tipe,
-                     type_class_def *mat_type_class, bool demote_const )
+                    const type_class_def *mat_type_class, bool demote_const )
 /***********************************************************************
  * What is the resulting type of "left" op "rite" given that the front
  * end says it should be "tipe" (T_DEFAULT if its not sure).

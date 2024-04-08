@@ -54,7 +54,7 @@ typedef union i32 {
     uint_32     u;
 } i32;
 
-static cg_op RevOpcode[] = {
+static const cg_op RevOpcode[] = {
     O_EQ,    /* O_EQ*/
     O_NE,    /* O_NE*/
     O_LT,    /* O_GT*/
@@ -94,7 +94,7 @@ enum  case_range {
     CASE_SIZE
 };
 
-static char const CmpResult[REL_SIZE][CASE_SIZE] = {
+static const char CmpResult[REL_SIZE][CASE_SIZE] = {
 //    c < a      c == a     c > b      c == b
     { CMP_FALSE, CMP_VOID , CMP_FALSE, CMP_VOID },  // x == c
     { CMP_FALSE, CMP_FALSE, CMP_TRUE , CMP_VOID },  // x < c

@@ -48,7 +48,7 @@
 #include "_split.h"
 
 
-type_class_def  HalfClass[] = {
+const type_class_def    HalfClass[] = {
     0,                  /* U1 */
     0,                  /* I1 */
     U1,                 /* U2 */
@@ -65,7 +65,7 @@ type_class_def  HalfClass[] = {
     U4                  /* XX */
 };
 
-type_class_def  DoubleClass[] = {
+const type_class_def    DoubleClass[] = {
 /*******************************/
 
     U2,                 /* U1 */
@@ -84,7 +84,7 @@ type_class_def  DoubleClass[] = {
     XX                  /* XX */
 };
 
-type_class_def  Unsigned[] = {
+const type_class_def    Unsigned[] = {
 /****************************/
 
     U1,                 /* U1 */
@@ -108,7 +108,7 @@ type_class_def  Unsigned[] = {
     XX                  /* XX */
 };
 
-type_class_def  Signed[] = {
+const type_class_def    Signed[] = {
 /**************************/
 
     I1,                 /* U1 */
