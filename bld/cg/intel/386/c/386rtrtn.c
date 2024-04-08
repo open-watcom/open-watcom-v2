@@ -58,7 +58,7 @@
  * If you add a new routine, add it to the debugger's symbol list
  * so the debugger can recognize it.
  */
-rtn_info RTInfo[] = {
+const rtn_info RTInfo[] = {
     #define PICK(e,name,op,class,left,right,result) {name, op, class, left, right, result},
     #define PICK1(e,name,op,class,left,right,result) __FP80BIT(PICK(e,name,op,class,left,right,result),)
     #include "_rtinfo.h"
@@ -138,7 +138,7 @@ const char  *AskRTName( rt_class rtindex )
             return( "IF@XFMOD" );
         }
     }
-    return( RTInfo[rtindex].nam );
+    return( RTInfo[rtindex].name );
 }
 
 

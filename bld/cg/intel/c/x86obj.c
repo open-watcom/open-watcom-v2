@@ -2355,7 +2355,6 @@ void    OutLabel( label_handle lbl )
     temp_patch          **owner;
     temp_patch          *tpatch;
     array_control       *lbl_patches;
-    obj_patch           *patch;
     unsigned            i;
     pointer             patchptr;
     object              *obj;
@@ -2441,9 +2440,8 @@ void    OutLabel( label_handle lbl )
         }
     }
     lbl_patches = AskLblPatches( lbl );
-    patch = lbl_patches->array;
-    for( i = lbl_patches->used; i > 0; --i ) {
-        DoPatch( patch++, lc );
+    for( i = 0; i < lbl_patches->used; i++ ) {
+        DoPatch( _ARRAYOF( lbl_patches, obj_patch ) + i, lc );
     }
     KillArray( lbl_patches );
     TellDonePatches( lbl );
@@ -2467,7 +2465,7 @@ void    AbsPatch( abspatch_handle patch_handle, offset lc )
 
 
 void    *InitPatches( void )
-/************************/
+/**************************/
 {
     return( InitArray( sizeof( obj_patch ),  MODEST_PAT, INCREMENT_PAT ) );
 }
@@ -2694,7 +2692,7 @@ void    OutPatch( label_handle lbl, patch_attr attr )
 
     /* careful, might be patching offset of seg:off */
     CheckLEDataSize( 3 * sizeof( offset ), true );
-    tpatch = CGAlloc( sizeof( temp_patch ));
+    tpatch = CGAlloc( sizeof( *tpatch ) );
     tpatch->link = CurrSeg->obj->tpatches;
     CurrSeg->obj->tpatches = tpatch;
     tpatch->lbl = lbl;
@@ -3124,8 +3122,8 @@ void    OutDBytes( unsigned len, const byte *src )
 }
 
 
-void    OutIBytes( byte pat, offset len )
-/***************************************/
+void    OutIBytes( byte pattern, offset len )
+/*******************************************/
 {
     omf_cmd         cmd;
     array_control   *obj_data;
@@ -3133,7 +3131,7 @@ void    OutIBytes( byte pat, offset len )
     SetPendingLine();
     if( len <= TRADEOFF ) {
         for( ; len != 0; --len ) {
-            OutDataByte( pat );
+            OutDataByte( pattern );
         }
     } else {
         EjectLEData();
@@ -3150,7 +3148,7 @@ void    OutIBytes( byte pat, offset len )
 #endif
         OutShort( 0, obj_data );                /* nesting count */
         OutByte( 1, obj_data );                 /* pattern length */
-        OutByte( pat, obj_data );
+        OutByte( pattern, obj_data );
         if( CurrSeg->comdat_label != NULL ) {
 #if _TARGET & _TARG_80386
             if( _IsntTargetModel( CGSW_X86_EZ_OMF ) ) {
