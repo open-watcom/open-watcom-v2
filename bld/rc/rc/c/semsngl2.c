@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -101,7 +101,7 @@ void SemOS2AddSingleLineResource( WResID *name, YYTOKENTYPE type,
 
                         firstIcon  = false;
                         id->IsName = false;
-                        id->ID.Num = 22;
+                        id->ID.Num = OS2_RT_DEFAULTICON;
                         start = SemCopyRawFileOnly( full_filename );
                         SemAddResourceFree( name, WResIDFromNum( OS2_RT_POINTER ), flags, start );
 

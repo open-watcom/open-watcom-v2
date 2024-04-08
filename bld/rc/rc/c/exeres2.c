@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -176,11 +176,12 @@ uint_32 ComputeOS2ResSegCount( WResDir dir )
         /*
          * RT_DEFAULTICON is not written into the executable, ignore
          */
-        if( typeinfo->TypeName.ID.Num != OS2_RT_DEFAULTICON ) {
+        if( typeinfo->TypeName.ID.Num == OS2_RT_DEFAULTICON ) {
+            continue;
+        }
+        ++num_res_segs;
+        for( length = langinfo->Length; length > 0x10000; length -= 0x10000 ) {
             ++num_res_segs;
-            for( length = langinfo->Length; length > 0x10000; length -= 0x10000 ) {
-                ++num_res_segs;
-            }
         }
     }
     return( num_res_segs );
