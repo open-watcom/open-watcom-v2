@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,9 +42,9 @@ typedef enum {
 
 
 typedef struct pccode_def {
-        gentype         low_gen;
-        gentype         width;
-        gen_opcode      *gen_opcode_table;
-        opcode_defs     *opcode_list;
-        code_flags      flags;
+        gentype             low_gen;
+        gentype             width;
+        const gen_opcode    *gen_opcode_table;
+        const opcode_defs   *opcode_list;
+        code_flags          flags;
 } pccode_def;

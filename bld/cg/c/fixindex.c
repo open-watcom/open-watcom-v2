@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,7 +42,7 @@
 #include "fixindex.h"
 
 
-static byte NumTab[LAST_OP - FIRST_OP + 1] = {
+static const byte NumTab[LAST_OP - FIRST_OP + 1] = {
 /*********************************************
     Give the number of operand for each opcode. Anything above this
     is probably a segment override tagging along for the ride.

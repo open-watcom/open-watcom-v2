@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,7 +37,7 @@
 #include "dumpref.h"
 
 
-static const char *OpcodeList[LAST_OP - FIRST_OP + 1] = {
+static const char * const OpcodeList[LAST_OP - FIRST_OP + 1] = {
     #define PICK(e,i,d1,d2,ot,pnum,attr)  ot,
     #define ONLY_INTERNAL_CGOPS
     #include "cgops.h"

@@ -50,7 +50,7 @@ struct lf_info {
      lf_values  code;
 } lf_info;
 
-static struct lf_info LFInfo[LFG_LAST] = {
+static const struct lf_info LFInfo[LFG_LAST] = {
     #define _LFMAC( n, N, c )    { sizeof( lf_##n ), c },
     #include "cv4types.h"
     #undef _LFMAC

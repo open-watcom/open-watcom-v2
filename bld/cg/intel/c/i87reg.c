@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -53,7 +53,7 @@
 
 static fp_patches   FPPatchType;
 
-static byte StackReq8087[LAST_IFUNC - FIRST_IFUNC + 1] = {
+static const byte StackReq8087[LAST_IFUNC - FIRST_IFUNC + 1] = {
 /*********************************************************
     how much stack over and above the parm
     does the operation require? NB: this number + number parms must be <= 4
@@ -106,7 +106,7 @@ static byte StackReq387[LAST_IFUNC - FIRST_IFUNC + 1] = {
     2         /* OP_TANH */
 };
 
-static  fp_patches SegPatchTab[] = {
+static const fp_patches SegPatchTab[] = {
     #define _SR_(h,f)   f,
     #include "x86sregs.h"
     #undef _SR_

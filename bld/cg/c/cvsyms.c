@@ -54,19 +54,33 @@
 #include "cgprotos.h"
 
 
+#define MAX_LANG 4
+
 struct sf_info {
     char       size;
     s_values   code;
 } sf_info;
 
+struct lang_map{
+     uint       lang;
+     char       name[10];
+};
+
 // global variables
 segment_id              CVSyms;
 segment_id              CVTypes;
 
-static struct sf_info SInfo[SG_LAST] = {
+static const struct sf_info SInfo[SG_LAST] = {
     #define SLMAC( n, N, c )    { sizeof( s_##n ), c },
     #include "cv4syms.h"
     #undef SLMAC
+};
+
+static const struct lang_map LangNames[MAX_LANG] = {
+    {LANG_C,       "C"},
+    {LANG_CPP,     "CPP"},
+    {LANG_FORTRAN, "FORTRAN"},
+    {LANG_FORTRAN, "FORTRAN77"},
 };
 
 static  void    NewBuff( cv_out *out, segment_id segid )
@@ -156,19 +170,6 @@ void    CVInitDbgInfo( void )
 {
     TypeIdx   = CV_FIRST_USER_TYPE - 1;
 }
-
-#define MAX_LANG 4
-struct lang_map{
-     uint       lang;
-     char       name[10];
-};
-
-static struct lang_map LangNames[MAX_LANG] = {
-    {LANG_C,       "C"},
-    {LANG_CPP,     "CPP"},
-    {LANG_FORTRAN, "FORTRAN"},
-    {LANG_FORTRAN, "FORTRAN77"},
-};
 
 static int SetLang( void )
 {

@@ -96,7 +96,7 @@
 
 type_length StackDepth;
 
-hw_reg_set   PushRegs[] = {
+const hw_reg_set PushRegs[] = {
     HW_D( HW_xAX ),
     HW_D( HW_xBX ),
     HW_D( HW_xCX ),

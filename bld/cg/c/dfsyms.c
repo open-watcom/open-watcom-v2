@@ -57,6 +57,23 @@
 
 #define DWARF_CU_REC_NO_PCLO_PCHI   1
 
+#define MAX_LANG    (sizeof( LangNames ) / sizeof( LangNames[0] ))
+
+typedef struct {
+    segment_id  segid;
+    long_offset offset;
+} big_patch_handle;
+
+typedef struct {
+    back_handle  bck;
+    int_32       disp;
+} loc_range;
+
+struct lang_map{
+     uint       lang;
+     char       name[10];
+};
+
 dw_client               Client;
 
 static short            CurrFNo;
@@ -66,6 +83,15 @@ static back_handle      Pc_Low;
 static back_handle      Comp_High;
 static back_handle      ARange;
 static sect_info        DwarfSegs[DW_DEBUG_MAX];
+
+static big_patch_handle UnitSize[1];
+
+static const struct lang_map LangNames[] = {
+    {DWLANG_C,       "C"},
+    {DWLANG_CPP,     "CPP"},
+    {DWLANG_FORTRAN, "FORTRAN"},
+    {DWLANG_FORTRAN, "FORTRAN77"},
+};
 
 static void CLIWrite( dw_sectnum sect, const void *block, size_t size )
 /*********************************************************************/
@@ -165,18 +191,6 @@ static void DoSectOffset( dw_sectnum sect )
     BackPtrBigOffset( bck, segid, pos );
 
 }
-
-typedef struct {
-    segment_id  segid;
-    long_offset offset;
-} big_patch_handle;
-
-static big_patch_handle UnitSize[1];
-
-typedef struct {
-    back_handle  bck;
-    int_32       disp;
-}loc_range;
 
 static void CLIReloc( dw_sectnum sect, dw_reloc_type reloc_type, ... )
 /********************************************************************/
@@ -302,20 +316,6 @@ void    DFInitDbgInfo( void )
     CcuDef = false;
     Client = NULL;
 }
-
-struct lang_map{
-     uint       lang;
-     char       name[10];
-};
-
-struct lang_map LangNames[] = {
-    {DWLANG_C,       "C"},
-    {DWLANG_CPP,     "CPP"},
-    {DWLANG_FORTRAN, "FORTRAN"},
-    {DWLANG_FORTRAN, "FORTRAN77"},
-};
-
-#define MAX_LANG    (sizeof( LangNames ) / sizeof( LangNames[0] ))
 
 static int SetLang( void )
 {

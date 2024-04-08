@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -181,7 +181,7 @@ typedef enum {
     BAD
 } conv_method;
 
-static const opcode_entry     *CvtAddr[] = {
+static const opcode_entry * const CvtAddr[] = {
     #define _C_( a )    ctable_##a,
     CONVERSIONS
     #undef _C_

@@ -302,8 +302,8 @@ static void     LayInitial( instruction *ins, gentype gen )
  * not for the faint of heart!
  */
 {
-    int         index;
-    pccode_def  *table;
+    int                 index;
+    const pccode_def    *table;
 
     table = PCCodeTable;
     for(;;) {
