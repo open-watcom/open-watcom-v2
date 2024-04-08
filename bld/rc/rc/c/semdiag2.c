@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -731,7 +731,7 @@ void SemOS2WriteDialogTemplate( WResID *name, ResMemFlags flags,
             ErrorHasOccured = true;
         } else {
             loc.len = SemEndResource( loc.start );
-            SemAddResourceFree( name, WResIDFromNum( OS2_RT_DIALOG ), flags, loc );
+            SemAddResourceAndFree( name, WResIDFromNum( OS2_RT_DIALOG ), flags, loc );
         }
         RESFREE( tmpl );
     }
@@ -845,7 +845,7 @@ void SemOS2AddDlgincResource( WResID *name, char *filename )
         ErrorHasOccured = true;
     } else {
         loc.len = SemEndResource( loc.start );
-        SemAddResourceFree( name, WResIDFromNum( OS2_RT_DLGINCLUDE ),
+        SemAddResourceAndFree( name, WResIDFromNum( OS2_RT_DLGINCLUDE ),
                         MEMFLAG_DISCARDABLE | MEMFLAG_MOVEABLE | MEMFLAG_PURE, loc );
     }
     RESFREE( filename );

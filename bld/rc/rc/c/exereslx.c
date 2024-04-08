@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -66,8 +66,9 @@ static bool addRes( LXResTable *res, WResDirWindow wind )
     WResTypeInfo    *typeinfo;
 
     typeinfo = WResGetTypeInfo( wind );
-
-    // RT_DEFAULTICON is not written into the executable, ignore
+    /*
+     * RT_DEFAULTICON is not written into the executable, ignore
+     */
     if( typeinfo->TypeName.ID.Num == OS2_RT_DEFAULTICON )
         return( false );
     /*

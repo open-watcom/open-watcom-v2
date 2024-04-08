@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -81,7 +81,7 @@ typedef struct IntMask {
 /**** Semantic global routines ****/
 extern SemOffset            SemStartResource( void );
 extern SemLength            SemEndResource( SemOffset start );
-extern void                 SemAddResourceFree( WResID *name, WResID *type,
+extern void                 SemAddResourceAndFree( WResID *name, WResID *type,
                                         ResMemFlags flags, ResLocation loc );
 extern void                 SemAddResource( WResID *name, WResID *type,
                                         ResMemFlags, ResLocation );

@@ -103,13 +103,13 @@ void SemOS2AddSingleLineResource( WResID *name, YYTOKENTYPE type,
                         id->IsName = false;
                         id->ID.Num = OS2_RT_DEFAULTICON;
                         start = SemCopyRawFileOnly( full_filename );
-                        SemAddResourceFree( name, WResIDFromNum( OS2_RT_POINTER ), flags, start );
+                        SemAddResourceAndFree( name, WResIDFromNum( OS2_RT_POINTER ), flags, start );
 
                         start = SemCopyRawFileOnly( full_filename );
-                        SemAddResourceFree( id, WResIDFromNum( OS2_RT_DEFAULTICON ), flagsMDP, start );
+                        SemAddResourceAndFree( id, WResIDFromNum( OS2_RT_DEFAULTICON ), flagsMDP, start );
                     } else {
                         start = SemCopyRawFileOnly( full_filename );
-                        SemAddResourceFree( name, WResIDFromNum( OS2_RT_POINTER ), flags, start );
+                        SemAddResourceAndFree( name, WResIDFromNum( OS2_RT_POINTER ), flags, start );
                     }
                     break;
                 case Y_BITMAP:
@@ -120,7 +120,7 @@ void SemOS2AddSingleLineResource( WResID *name, YYTOKENTYPE type,
                         flags = flagsMP;
                     }
                     start = SemCopyRawFileOnly( full_filename );
-                    SemAddResourceFree( name, WResIDFromNum( OS2_RT_BITMAP ), flags, start );
+                    SemAddResourceAndFree( name, WResIDFromNum( OS2_RT_BITMAP ), flags, start );
                     break;
                 case Y_FONT:
                     if( fullflags != NULL ) {
@@ -191,7 +191,7 @@ static RcStatus copyFont( FontInfo *info, FILE *fp, WResID *name,
     /*
      * add the font to the RES file directory
      */
-    SemAddResourceFree( name, WResIDFromNum( RESOURCE2INT( RT_FONT ) ), flags, loc );
+    SemAddResourceAndFree( name, WResIDFromNum( RESOURCE2INT( RT_FONT ) ), flags, loc );
 
     RESFREE( buffer );
 
@@ -413,7 +413,7 @@ void SemOS2WriteFontDir( void )
 
     loc.len = SemEndResource( loc.start );
 
-    SemAddResourceFree( WResIDFromStr( FONT_DIR_NAME ),
+    SemAddResourceAndFree( WResIDFromStr( FONT_DIR_NAME ),
                 WResIDFromNum( RESOURCE2INT( RT_FONTDIR ) ), FONT_DIR_FLAGS, loc );
 
     FreeFontDir( CurrResFile.FontDir );
