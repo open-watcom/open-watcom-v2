@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,7 +43,7 @@ static  void            DoData( oc_entry *instr );
 static  void            DoLabel( oc_handle *instr );
 static  void            DoRef( oc_handle *instr );
 
-static const char *CNames[] = {
+static const char * const CNames[] = {
     #define pick_class(x) #x ,
     #include "occlasss.h"
     #undef pick_class
@@ -52,7 +52,7 @@ static const char *CNames[] = {
 
 #if _TARGET_INTEL
 
-static const char *Conds[] = {
+static const char * const Conds[] = {
     "jo   ",
     "jno  ",
     "jb   ",
@@ -81,7 +81,7 @@ static  const char  *CondName( oc_jcond *oc ) {
 
 #else
 
-static const char *Conds[] = {
+static const char * const Conds[] = {
     "je   ",
     "jne  ",
     "je   ",
@@ -351,7 +351,7 @@ void    DumpLbl( label_handle lbl )
     DumpLiteral( "addr==" );
     Dump8h( lbl->lbl.address );
     DumpLiteral( ", patch==" );
-    DumpPtr( lbl->lbl.patch );
+    DumpPtr( lbl->lbl.patches );
     DumpChar( ' ' );
     if( _TstStatus( lbl, CODELABEL ) ) {
         DumpLiteral( "CODE " );

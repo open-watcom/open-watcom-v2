@@ -551,7 +551,7 @@ static const reg_set_index   OtherInter[] = {
     RL_
 };
 
-static const reg_set_index   *InterTable[] = {
+static const reg_set_index * const InterTable[] = {
     #define pick(e,w,l) l,
         INTERSECT_DEFS
     #undef pick

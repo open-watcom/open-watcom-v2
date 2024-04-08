@@ -115,7 +115,7 @@ void    DumpITab( instruction *ins )
 }
 
 
-static const char * ClassNames[] = {
+static const char * const ClassNames[] = {
 /**********************************/
 
     " U1 ",
@@ -463,7 +463,7 @@ void    DumpCond( instruction *ins, block *blk )
 }
 
 
-static const char * Usage[] = {
+static const char * const Usage[] = {
 /*****************************/
 
     "USE_IN_BLOCK, ",

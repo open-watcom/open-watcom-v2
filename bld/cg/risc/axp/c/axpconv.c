@@ -189,7 +189,7 @@ static const opcode_entry * const CvtAddr[] = {
 
 #define __x__   BAD
 
-static  conv_method         CvtTable[] = {
+static const conv_method        CvtTable[] = {
 /*                               from                                                                */
 /*U1    I1     U2     I2     U4     I4     U8     I8      CP     PT     FS     FD      FL         to */
 OK,    OK,    C2TO1, C2TO1, C4TO1, C4TO1, C8TO1, C8TO1,  C4TO1, C4TO1, CU4,   CU4,    CU4,     /* U1 */

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,7 +38,7 @@
 #include "dumpan.h"
 
 
-static const char *Classes[] = {
+static const char * const Classes[] = {
     "CL_ADDR_GLOBAL",
     "CL_ADDR_TEMP",
     "CL_POINTER",
@@ -52,7 +53,7 @@ static const char *Classes[] = {
 };
 
 
-static const char * Formats[] = {
+static const char * const Formats[] = {
     "NF_ADDR",
     "NF_NAME",
     "NF_CONS",

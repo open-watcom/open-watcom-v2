@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,7 +45,7 @@
 
 static  void            DumpSubTree( tn node, int indent );
 
-static const char *Ops[] = {
+static const char * const Ops[] = {
     #define STR(x) #x
     #define PICK(e,i,d1,d2,ot,pnum,attr)  STR(<O_##e>),
     #include "cgops.h"
@@ -53,12 +53,12 @@ static const char *Ops[] = {
     #undef STR
 };
 
-static const char * Null = { "" };
-static const char * LvEq = { "=(lv)" };
-static const char * Eq = { "=" };
-static const char * PostEq = { "=(post)" };
-static const char * Question = { "?" };
-static const char * Colon = { ":" };
+static const char * const Null = { "" };
+static const char * const LvEq = { "=(lv)" };
+static const char * const Eq = { "=" };
+static const char * const PostEq = { "=(post)" };
+static const char * const Question = { "?" };
+static const char * const Colon = { ":" };
 
 static  void    DumpIndent( int i ) {
 /***********************************/
