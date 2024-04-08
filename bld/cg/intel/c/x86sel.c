@@ -74,6 +74,16 @@
 #define MAX_COST        0x7FFFFFFFL
 #define MAX_IN_RANGE    (MAX_COST/1000) /* so no overflow */
 
+#if _TARGET & _TARG_8086
+    #define LONG_JUMP 5
+    #define SHORT_JUMP 2
+    static const byte CmpSize[] = { 0, 2, 3, 0, 9 };
+#elif _TARGET & _TARG_80386
+    #define LONG_JUMP 6
+    #define SHORT_JUMP 2
+    static const byte CmpSize[] = { 0, 2, 4, 0, 5 };
+#endif
+
 
 static cost_val Balance( int_32 size, int_32 time )
 /*************************************************/
@@ -154,16 +164,6 @@ cost_val JumpCost( sel_handle s_node )
     return( cost );
 }
 
-
-#if _TARGET & _TARG_8086
-    #define LONG_JUMP 5
-    #define SHORT_JUMP 2
-    static byte CmpSize[] = { 0, 2, 3, 0, 9 };
-#elif _TARGET & _TARG_80386
-    #define LONG_JUMP 6
-    #define SHORT_JUMP 2
-    static byte CmpSize[] = { 0, 2, 4, 0, 5 };
-#endif
 
 cost_val IfCost( sel_handle s_node, int entries )
 /***********************************************/

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,7 +39,7 @@
 #define         _____   NO
 #define         __X__   BAD
 
-table_def OpTable[(XX + 1) * (LAST_OP - FIRST_OP + 1)] = {
+const table_def OpTable[(XX + 1) * (LAST_OP - FIRST_OP + 1)] = {
 /*********************************************************
     for each opcode/type, indicate which generate table to use.
     See 386table.c

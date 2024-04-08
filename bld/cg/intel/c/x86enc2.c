@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -69,7 +69,7 @@ typedef enum {
     SIGNED_BOTH             /* always signed */
 } issigned;
 
-static byte UCondTable[] = {
+static const byte UCondTable[] = {
 /***************************
  * The 8086 code for an unsigned jmp
  */
@@ -83,7 +83,7 @@ static byte UCondTable[] = {
     3               /* OP_CMP_GREATER_EQUAL */
 };
 
-static byte SCondTable[] = {
+static const byte SCondTable[] = {
 /***************************
  * The 8086 code for a signed jmp
  */
@@ -97,7 +97,7 @@ static byte SCondTable[] = {
     13              /* OP_CMP_GREATER_EQUAL */
 };
 
-static byte rev_condition[] = {
+static const byte rev_condition[] = {
 /******************************
  * Reverse the sense of an 8086 jmp (ie: ja -> jbe)
  * i.e. XOR 1
@@ -105,7 +105,7 @@ static byte rev_condition[] = {
     1,0,3,2,5,4,7,6,9,8,11,10,13,12,15,14
 };
 
-static issigned signed_type[] = {
+static const issigned signed_type[] = {
 /********************************
  * What kind of a jump does the instruction need following it
  */

@@ -116,9 +116,9 @@ typedef struct virt_func_ref_list {
 } virt_func_ref_list;
 
 typedef struct dbg_seg_info {
-    segment_id  *segid;
-    const char  *seg_name;
-    const char  *class_name;
+    segment_id          *segid;
+    const char          *seg_name;
+    const char          *class_name;
 } dbg_seg_info;
 
 
@@ -163,19 +163,19 @@ static  omf_idx         NameIndex;
 static  lname_cache     *NameCache;
 static  lname_cache     *NameCacheDumped;
 
-static const char *FPPatchName[] = {
+static const char * const FPPatchName[] = {
     #define pick_fp(enum,name,alt_name,win,alt_win,others,alt_others) name,
     #include "fppatche.h"
     #undef pick_fp
 };
 
-static const char *FPPatchAltName[] = {
+static const char * const FPPatchAltName[] = {
     #define pick_fp(enum,name,alt_name,win,alt_win,others,alt_others) alt_name,
     #include "fppatche.h"
     #undef pick_fp
 };
 
-static struct dbg_seg_info DbgSegs[] = {
+static const struct dbg_seg_info DbgSegs[] = {
     { &DbgLocals, "$$SYMBOLS", "DEBSYM" },
     { &DbgTypes,  "$$TYPES",   "DEBTYP" },
 };
@@ -1234,8 +1234,8 @@ offset  AskLocation( void )
 void ChkDbgSegSize( offset max, bool typing )
 /*******************************************/
 {
-    dbg_seg_info    *info;
-    long_offset     curr;
+    const dbg_seg_info  *info;
+    long_offset         curr;
 
     info = DbgSegs;
     if( typing )
@@ -1882,8 +1882,8 @@ void    FlushOP( segment_id segid )
 static void FiniWVTypes( void )
 /*****************************/
 {
-    long_offset  curr;
-    dbg_seg_info *info;
+    long_offset         curr;
+    const dbg_seg_info  *info;
 
     WVTypesEof();
     info = &DbgSegs[1];
