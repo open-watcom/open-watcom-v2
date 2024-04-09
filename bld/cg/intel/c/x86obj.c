@@ -122,9 +122,6 @@ typedef struct dbg_seg_info {
 } dbg_seg_info;
 
 
-/* Forward ref's */
-static  void            DumpImportResolve( cg_sym_handle sym, omf_idx idx );
-
 static  bool            GenStaticImports;
 static  omf_idx         ImportHdl;
 static  array_control   Imports;
@@ -286,9 +283,9 @@ static void FlushNames( void )
 /****************************/
 {
     /*
-        don't want to allocate memory because we might be in a low memory
-        situation
-    */
+     * don't want to allocate memory because we might be in a low memory
+     * situation
+     */
     unsigned_8          buff[512];
     unsigned            len;
     lname_cache         *dmp;
@@ -441,10 +438,10 @@ static void FillArray( array_control *res, unsigned size, unsigned starting, uns
     res->inc = increment;
 }
 
-/* DO NOT call InitArray with size or starting value zero*/
-
 static array_control *InitArray( unsigned size, unsigned starting, unsigned increment )
-/*************************************************************************************/
+/**************************************************************************************
+ * DO NOT call InitArray with size or starting value zero
+ */
 {
     array_control       *res;
 
@@ -1086,7 +1083,7 @@ static  void    KillStatic( array_control *arr )
 static  void    KillArray( array_control *arr )
 /*********************************************/
 {
-    KillStatic( arr );
+    CGFree( arr->array );
     CGFree( arr );
 }
 
@@ -1640,8 +1637,10 @@ static  void    GenComdef( void )
         if( CurrSeg->max_written != 0 ) {
             Zoiks( ZOIKS_080 );
         }
-        /* have to eject any pending imports here or the ordering
-           gets messed up */
+        /*
+         * have to eject any pending imports here or the ordering
+         * gets messed up
+         */
         EjectImports();
         size = CurrSeg->comdat_size - CurrSeg->max_written;
         comdef = InitArray( sizeof( byte ), MODEST_EXP, INCREMENT_EXP );
@@ -1655,11 +1654,11 @@ static  void    GenComdef( void )
             OutByte( 1, comdef );              /* number of elements */
         }
         /*
-            Strictly speaking, this should be <= 0x80. However a number
-            of tools (including our own!) have problems with doing a
-            128 byte COMDEF size in 1 byte, so we'll waste some space
-            and use 2 bytes, but sleep much sounder at night.
-        */
+         * Strictly speaking, this should be <= 0x80. However a number
+         * of tools (including our own!) have problems with doing a
+         * 128 byte COMDEF size in 1 byte, so we'll waste some space
+         * and use 2 bytes, but sleep much sounder at night.
+         */
         if( size < 0x80 ) {
             count = 1;
             ind = 0;
@@ -1674,11 +1673,15 @@ static  void    GenComdef( void )
             ind = COMDEF_LEAF_4;
         }
         if( ind != 0 ) {
-            /* multi-byte indicator */
+            /*
+             * multi-byte indicator
+             */
             OutByte( ind, comdef );
         }
         do {
-            /* element size */
+            /*
+             * element size
+             */
             OutByte( (byte)size, comdef );
             size >>= 8;
             --count;
@@ -1697,11 +1700,9 @@ static  void    GenComdef( void )
 static  void    EjectExports( void )
 /**********************************/
 {
-    array_control   *obj_exports;
     omf_cmd         cmd;
 
-    obj_exports = &CurrSeg->obj->exports;
-    if( obj_exports->used > 0 ) {
+    if( CurrSeg->obj->exports.used > 0 ) {
         if( CurrSeg->obj->gen_static_exports ) {
 #if _TARGET & _TARG_80386
             if( _IsntTargetModel( CGSW_X86_EZ_OMF ) ) {
@@ -1723,7 +1724,7 @@ static  void    EjectExports( void )
             cmd = CMD_PUBDEF;
 #endif
         }
-        PutObjOMFRec( cmd, obj_exports );
+        PutObjOMFRec( cmd, &CurrSeg->obj->exports );
     }
 }
 
@@ -1788,17 +1789,14 @@ static  void    FlushObject( void )
 static  index_rec       *AskIndexRec( uint_16 sidx )
 /**************************************************/
 {
-    index_rec   *rec;
     unsigned    i;
 
-    rec = SegInfo.array;
     for( i = 0; i < SegInfo.used; ++i ) {
-        if( rec->sidx == sidx ) {
-            break;
+        if( _ARRAYOF( &SegInfo, index_rec )[i].sidx == sidx ) {
+            return( _ARRAYOF( &SegInfo, index_rec ) + i );
         }
-        rec++;
     }
-    return( rec );
+    return( NULL );
 }
 
 #if _TARGET & _TARG_8086
@@ -2002,12 +2000,12 @@ static  void    EndModule( void )
     omf_cmd       cmd;
     array_control tmp;
 
-/*
- * There is a bug in MS's LINK386 program that causes it not to recognize a
- * MODEND386 record in some situations. We can get around it by only outputing
- * 16-bit MODEND records. This causes us no pain, since we never need any
- * features provided by the 32-bit form anyway.
- */
+    /*
+     * There is a bug in MS's LINK386 program that causes it not to recognize a
+     * MODEND386 record in some situations. We can get around it by only outputing
+     * 16-bit MODEND records. This causes us no pain, since we never need any
+     * features provided by the 32-bit form anyway.
+     */
 #if 0
  #if _TARGET & _TARG_80386
     if( _IsntTargetModel( CGSW_X86_EZ_OMF ) ) {
@@ -2031,8 +2029,6 @@ static  void    EndModule( void )
 void    ObjFini( void )
 /*********************/
 {
-
-    index_rec   *rec;
     unsigned    i;
     pointer     auto_import;
     char        *lib;
@@ -2044,12 +2040,10 @@ void    ObjFini( void )
             offset  codesize;
 
             codesize = 0;
-            rec = SegInfo.array;
             for( i = 0; i < SegInfo.used; ++i ) {
-                if( rec->obj != NULL ) {
-                    DoSegARange( &codesize, rec );
+                if( _ARRAYOF( &SegInfo, index_rec )[i].obj != NULL ) {
+                    DoSegARange( &codesize, _ARRAYOF( &SegInfo, index_rec ) + i );
                 }
-                rec++;
             }
             DFObjFiniDbgInfo( codesize );
 #if 0 /* save for Jimr */
@@ -2068,13 +2062,11 @@ void    ObjFini( void )
     /*
      * Fini all segments.
      */
-    rec = SegInfo.array;
     for( i = 0; i < SegInfo.used; ++i ) {
-        if( rec->obj != NULL ) {
-            CurrSeg = rec;
+        if( _ARRAYOF( &SegInfo, index_rec )[i].obj != NULL ) {
+            CurrSeg = _ARRAYOF( &SegInfo, index_rec ) + i;
             FiniTarg();
         }
-        rec++;
     }
     /*
      * if 8087 is used then enable emit default 8087 import records.
@@ -2154,31 +2146,44 @@ static  void    FreeAbsPatch( abs_patch *apatch )
 }
 
 
+static void CheckExportSwitch( bool next_is_static )
+/**************************************************/
+{
+    /*
+     * are we switching from global to statics or vis-versa
+     */
+    if( CurrSeg->obj->gen_static_exports != next_is_static ) {
+        EjectExports();
+        CurrSeg->obj->gen_static_exports = next_is_static;
+    }
+}
+
+
+static  void    CheckImportSwitch( bool next_is_static )
+/******************************************************/
+{
+    /*
+     * are we switching from static imports to global or vis-versa
+     */
+    if( GenStaticImports != next_is_static ) {
+        EjectImports();
+        GenStaticImports = next_is_static;
+    }
+}
+
+
 static  void    OutExport( cg_sym_handle sym )
 /*****************************************/
 {
     array_control       *obj_exports;
     object              *obj;
-    fe_attr             attr;
 
     obj = CurrSeg->obj;
     obj_exports = &obj->exports;
     if( obj_exports->used >= BUFFSIZE - TOLERANCE ) {
         EjectExports();
     }
-    attr = FEAttr( sym );
-    /* are we switching from global to statics or vis-versa */
-    if( obj->gen_static_exports ) {
-        if( attr & FE_GLOBAL ) {
-            EjectExports();
-            obj->gen_static_exports = false;
-        }
-    } else {
-        if( (attr & FE_GLOBAL) == 0 ) {
-            EjectExports();
-            obj->gen_static_exports = true;
-        }
-    }
+    CheckExportSwitch( (FEAttr( sym ) & FE_GLOBAL) == 0 );
     if( obj_exports->used == 0 ) {
         if( CurrSeg->btype == BASE_GRP ) {
             OutIdx( CurrSeg->base, obj_exports );   /* group index*/
@@ -2194,23 +2199,6 @@ static  void    OutExport( cg_sym_handle sym )
     OutObjectName( sym, obj_exports );
     OutOffset( (offset)CurrSeg->location, obj_exports );
     OutIdx( 0, obj_exports );                       /* type index*/
-}
-
-
-static  void    CheckImportSwitch( bool next_is_static )
-/******************************************************/
-{
-    /* are we switching from static imports to global or vis-versa */
-    if( GenStaticImports ) {
-        if( !next_is_static ) {
-            EjectImports();
-        }
-    } else {
-        if( next_is_static ) {
-            EjectImports();
-        }
-    }
-    GenStaticImports = next_is_static;
 }
 
 
@@ -2234,12 +2222,63 @@ static import_handle _AskImportHandle( cg_sym_handle sym, bool alt_dllimp )
     }
 }
 
-static  omf_idx     GenImport( cg_sym_handle sym, bool alt_dllimp )
-/**************************************************************/
+static void GenImportResolve( cg_sym_handle sym, omf_idx idx, omf_idx def_idx )
+/*****************************************************************************/
+{
+    array_control       *cmt;
+    omf_idx             nidx;
+    pointer             cond;
+    import_type         type;
+
+    cmt = InitArray( sizeof( byte ), MODEST_HDR, INCREMENT_HDR );
+    type = (import_type)(pointer_uint)FEAuxInfo( sym, FEINF_IMPORT_TYPE );
+    switch( type ) {
+    case IMPORT_IS_LAZY:
+        OutShort( LAZY_EXTRN_COMMENT, cmt );
+        OutIdx( idx, cmt );
+        OutIdx( def_idx, cmt );
+        break;
+    case IMPORT_IS_WEAK:
+        OutShort( WEAK_EXTRN_COMMENT, cmt );
+        OutIdx( idx, cmt );
+        OutIdx( def_idx, cmt );
+        break;
+    case IMPORT_IS_CONDITIONAL_PURE:
+        OutShort( WEAK_EXTRN_COMMENT, cmt );
+        OutIdx( idx, cmt );
+        OutIdx( def_idx, cmt );
+        PutObjOMFRec( CMD_COMENT, cmt );
+        /* fall through */
+    case IMPORT_IS_CONDITIONAL:
+        OutShort( LINKER_COMMENT, cmt );
+        if( type == IMPORT_IS_CONDITIONAL ) {
+            OutByte( LDIR_VF_TABLE_DEF, cmt );
+        } else {
+            OutByte( LDIR_VF_PURE_DEF, cmt );
+        }
+        OutIdx( idx, cmt );
+        OutIdx( def_idx, cmt );
+        for( cond = FEAuxInfo( sym, FEINF_CONDITIONAL_IMPORT ); cond != NULL; cond = FEAuxInfo( cond, FEINF_NEXT_CONDITIONAL ) ) {
+            sym = FEAuxInfo( cond, FEINF_CONDITIONAL_SYMBOL );
+            OUTPUT_OBJECT_NAME( sym, GetSymLName, &nidx, NORMAL );
+            OutIdx( nidx, cmt );
+        }
+        FlushNames();
+        break;
+    }
+    PutObjOMFRec( CMD_COMENT, cmt );
+    KillArray( cmt );
+}
+
+
+static omf_idx  GenImport( cg_sym_handle sym, bool alt_dllimp )
+/*************************************************************/
 {
     omf_idx         imp_idx;
     fe_attr         attr;
     import_kind     kind;
+    cg_sym_handle   def_resolve;
+    omf_idx         def_idx;
 
     imp_idx = _AskImportHandle( sym, alt_dllimp );
     if( imp_idx == NOT_IMPORTED ) {
@@ -2259,7 +2298,12 @@ static  omf_idx     GenImport( cg_sym_handle sym, bool alt_dllimp )
         }
         OUTPUT_OBJECT_NAME( sym, OutName, &Imports, kind );
         OutIdx( 0, &Imports );           /* type index*/
-        DumpImportResolve( sym, imp_idx );
+        def_resolve = FEAuxInfo( sym, FEINF_DEFAULT_IMPORT_RESOLVE );
+        if( def_resolve != NULL && def_resolve != sym ) {
+            def_idx = GenImport( def_resolve, false );
+            EjectImports();
+            GenImportResolve( sym, imp_idx, def_idx );
+        }
     }
     return( imp_idx );
 }
@@ -2540,9 +2584,9 @@ static void DoFix( omf_idx idx, bool rel, base_type base, fix_class class, omf_i
     if( base != BASE_IMP ) {
         rec = AskIndexRec( sidx );
         /*
-           fixups to a code segment that is currently in COMDAT mode must be
-           done as imports relative to the comdat symbol.
-        */
+         * fixups to a code segment that is currently in COMDAT mode must be
+         * done as imports relative to the comdat symbol.
+         */
         if( rec->exec && rec->comdat_symbol != NULL ) {
             idx = GenImport( rec->comdat_symbol, false );
             base = BASE_IMP;
@@ -2863,62 +2907,6 @@ void    OutAbsPatch( abs_patch *apatch, patch_attr attr )
 }
 
 
-static void DumpImportResolve( cg_sym_handle sym, omf_idx idx )
-/**********************************************************/
-{
-    cg_sym_handle       def_resolve;
-    omf_idx             def_idx;
-    array_control       *cmt;
-    omf_idx             nidx;
-    pointer             cond;
-    import_type         type;
-
-    def_resolve = FEAuxInfo( sym, FEINF_DEFAULT_IMPORT_RESOLVE );
-    if( def_resolve != NULL && def_resolve != sym ) {
-        def_idx = GenImport( def_resolve, false );
-        EjectImports();
-        cmt = InitArray( sizeof( byte ), MODEST_HDR, INCREMENT_HDR );
-        type = (import_type)(pointer_uint)FEAuxInfo( sym, FEINF_IMPORT_TYPE );
-        switch( type ) {
-        case IMPORT_IS_LAZY:
-            OutShort( LAZY_EXTRN_COMMENT, cmt );
-            OutIdx( idx, cmt );
-            OutIdx( def_idx, cmt );
-            break;
-        case IMPORT_IS_WEAK:
-            OutShort( WEAK_EXTRN_COMMENT, cmt );
-            OutIdx( idx, cmt );
-            OutIdx( def_idx, cmt );
-            break;
-        case IMPORT_IS_CONDITIONAL_PURE:
-            OutShort( WEAK_EXTRN_COMMENT, cmt );
-            OutIdx( idx, cmt );
-            OutIdx( def_idx, cmt );
-            PutObjOMFRec( CMD_COMENT, cmt );
-            /* fall through */
-        case IMPORT_IS_CONDITIONAL:
-            OutShort( LINKER_COMMENT, cmt );
-            if( type == IMPORT_IS_CONDITIONAL ) {
-                OutByte( LDIR_VF_TABLE_DEF, cmt );
-            } else {
-                OutByte( LDIR_VF_PURE_DEF, cmt );
-            }
-            OutIdx( idx, cmt );
-            OutIdx( def_idx, cmt );
-            for( cond = FEAuxInfo( sym, FEINF_CONDITIONAL_IMPORT ); cond != NULL; cond = FEAuxInfo( cond, FEINF_NEXT_CONDITIONAL ) ) {
-                sym = FEAuxInfo( cond, FEINF_CONDITIONAL_SYMBOL );
-                OUTPUT_OBJECT_NAME( sym, GetSymLName, &nidx, NORMAL );
-                OutIdx( nidx, cmt );
-            }
-            FlushNames();
-            break;
-        }
-        PutObjOMFRec( CMD_COMENT, cmt );
-        KillArray( cmt );
-    }
-}
-
-
 void    OutReloc( segment_id segid, fix_class class, bool rel )
 /*************************************************************/
 {
@@ -2995,18 +2983,7 @@ void    OutBckExport( const char *name, bool is_export )
     if( obj_exports->used >= BUFFSIZE - TOLERANCE ) {
         EjectExports();
     }
-    /* are we switching from global to statics or vis-versa */
-    if( obj->gen_static_exports ) {
-        if( is_export ) {
-            EjectExports();
-            obj->gen_static_exports = false;
-        }
-    } else {
-        if( !is_export  ) {
-            EjectExports();
-            obj->gen_static_exports = true;
-        }
-    }
+    CheckExportSwitch( is_export );
     if( obj_exports->used == 0 ) {
         if( CurrSeg->btype == BASE_GRP ) {
             OutIdx( CurrSeg->base, obj_exports );   /* group index*/
