@@ -330,15 +330,12 @@ bool FreeObjCache( void )
 static  index_rec   *AskSegIndex( segment_id segid )
 /**************************************************/
 {
-    index_rec   *rec;
     unsigned    i;
 
-    rec = SegInfo.array;
     for( i = 0; i < SegInfo.used; ++i ) {
-        if( rec->segid == segid ) {
-            return( rec );
+        if( _ARRAYOF( &SegInfo, index_rec )[i].segid == segid ) {
+            return( _ARRAYOF( &SegInfo, index_rec ) + i );
         }
-        ++rec;
     }
     return( NULL );
 }
@@ -559,10 +556,10 @@ static object *InitTarg( index_rec *rec )
     FillArray( &obj->data, sizeof( byte ), MODEST_OBJ, INCREMENT_OBJ );
     FillArray( &obj->fixes, sizeof( byte ), NOMINAL_FIX, INCREMENT_FIX );
     FillArray( &obj->exports, sizeof( byte ), MODEST_EXP, INCREMENT_EXP );
+    obj->lines = NULL;
     obj->tpatches = NULL;
     obj->gen_static_exports = false;
     obj->pending_line_number = 0;
-    obj->lines = NULL;
     obj->last_line = 0;
     obj->last_offset = 0;
     obj->index = rec->sidx;
@@ -815,30 +812,47 @@ static void DoSegment( segdef *seg, array_control *dgroup_def, array_control *tg
     if( (seg->attr & EXEC) && CodeGroupGIdx != 0 ) {
         OutCGroup( rec->sidx, &rec->obj->data );
     }
-    CGFree( seg->str );
-    CGFree( seg );
 }
 
+static segdef *AllocSegDefs( const char *str )
+{
+    segdef  *seg;
+    segdef  **owner;
+
+    seg = CGAlloc( sizeof( segdef ) );
+    seg->next = NULL;
+    seg->str = CGAlloc( Length( str ) + 1 );
+    CopyStr( str, seg->str );
+    for( owner = &SegDefs; *owner != NULL; ) {
+        owner = &(*owner)->next;
+    }
+    *owner = seg;
+    return( seg );
+}
+
+static void DoSegDefsAndFree( array_control *dgroup_def, array_control *tgroup_def, bool use_16 )
+{
+    segdef  *seg;
+
+    while( (seg = SegDefs) != NULL ) {
+        SegDefs = seg->next;
+        DoSegment( seg, dgroup_def, tgroup_def, use_16 );
+        CGFree( seg->str );
+        CGFree( seg );
+    }
+}
 
 void    DefSegment( segment_id segid, seg_attr attr, const char *str, uint align, bool use_16 )
 /*********************************************************************************************/
 {
     segdef              *new;
-    segdef              **owner;
     segment_id          first_code_segid;
 
-    new = CGAlloc( sizeof( segdef ) );
+    new = AllocSegDefs( str );
     new->segid = segid;
     new->attr = attr;
     new->align = align;
-    new->str = CGAlloc( Length( str ) + 1 );
-    CopyStr( str, new->str );
-    for( owner = &SegDefs; *owner != NULL; ) {
-        owner = &(*owner)->next;
-    }
     first_code_segid = BACKSEGS;
-    *owner = new;
-    new->next = NULL;
     if( attr & EXEC ) {
         if( codeSegId == BACKSEGS ) {
             codeSegId = segid;
@@ -853,9 +867,13 @@ void    DefSegment( segment_id segid, seg_attr attr, const char *str, uint align
     if( attr & BACK ) {
         dataSegId = segid;
     }
-    if( NameIndex != 0 ) {    /* already dumped out segments*/
-        DoSegment( new, NULL, NULL, use_16 ); /* don't allow DGROUP after BEStart */
-        SegDefs = NULL;
+    if( NameIndex != 0 ) {
+        /*
+         * we are after BEStart processing
+         *
+         * don't use DGROUP for segments defined after BEStart
+         */
+        DoSegDefsAndFree( NULL, NULL, use_16 );
     }
     if( first_code_segid != BACKSEGS
       && _IsModel( CGSW_GEN_DBG_DF ) ) {
@@ -1006,8 +1024,6 @@ segment_id DbgSegDef( const char *seg_name, const char *seg_class, int seg_modif
 static  void    DoSegGrpNames( array_control *dgroup_def, array_control *tgroup_def )
 /***********************************************************************************/
 {
-    segdef      *seg;
-    segdef      *next;
     char        *dgroup;
     omf_idx     dgroup_idx;
 
@@ -1047,11 +1063,13 @@ static  void    DoSegGrpNames( array_control *dgroup_def, array_control *tgroup_
     }
     OutIdx( dgroup_idx, dgroup_def );
     FillArray( &SegInfo, sizeof( index_rec ), MODEST_INFO, INCREMENT_INFO );
-    for( seg = SegDefs; seg != NULL; seg = next ) {
-        next = seg->next;
-        DoSegment( seg, dgroup_def, tgroup_def, false );
-    }
-    SegDefs = NULL;
+    /*
+     * we are in BEStart processing
+     *
+     * define all default segments defined by front-end
+     * use DGROUP for these segments
+     */
+    DoSegDefsAndFree( dgroup_def, tgroup_def, false );
     if( _IsModel( CGSW_GEN_DBG_DF ) ) {
         if( _IsModel( CGSW_GEN_DBG_LOCALS )
           || _IsModel( CGSW_GEN_DBG_TYPES ) ) {
@@ -3046,28 +3064,6 @@ unsigned        SavePendingLine( unsigned new )
     CurrSeg->obj->pending_line_number = new;
     return( old );
 }
-
-
-/*%%     Utility routines for filling the buffer*/
-
-#if 0
-static  void    OutConcat( char *name1, char *name2, array_control *dest )
-/************************************************************************/
-{
-    unsigned    len1;
-    unsigned    len2;
-
-    len1 = Length( name1 );
-    len2 = Length( name2 );
-    NeedMore( dest, len1 + len2 + 1 );
-    _ARRAY( dest, char ) = len1 + len2;
-    dest->used++;
-    _CopyTrans( name1, &_ARRAY( dest, char ), len1 );
-    dest->used += len1;
-    _CopyTrans( name2, &_ARRAY( dest, char ), len2 );
-    dest->used += len2;
-}
-#endif
 
 
 void    OutDBytes( unsigned len, const byte *src )
