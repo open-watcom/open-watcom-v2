@@ -127,8 +127,8 @@ static  void            DumpImportResolve( cg_sym_handle sym, omf_idx idx );
 
 static  bool            GenStaticImports;
 static  omf_idx         ImportHdl;
-static  array_control   *Imports;
-static  array_control   *SegInfo;
+static  array_control   Imports;
+static  array_control   SegInfo;
 static  abs_patch       *AbsPatches;
 static  segment_id      codeSegId = BACKSEGS;
 static  segment_id      dataSegId;
@@ -336,8 +336,8 @@ static  index_rec   *AskSegIndex( segment_id segid )
     index_rec   *rec;
     unsigned    i;
 
-    rec = SegInfo->array;
-    for( i = 0; i < SegInfo->used; ++i ) {
+    rec = SegInfo.array;
+    for( i = 0; i < SegInfo.used; ++i ) {
         if( rec->segid == segid ) {
             return( rec );
         }
@@ -703,12 +703,11 @@ static  index_rec   *AllocNewSegRec( void )
 
     /*
      * CurrSeg pointer might have moved on us by allocOut
-     * SegInfo can be moved in memory therefore we need
-     * to call AskOP before and SetOP after to refresh
-     * CurrSeg pointer
+     * therefore we need to call AskOP before and SetOP after
+     * to refresh CurrSeg pointer
      */
     segid = AskOP();
-    rec = allocOut( SegInfo, 1 );
+    rec = allocOut( &SegInfo, 1 );
     SetOP( segid );
     return( rec );
 }
@@ -1050,7 +1049,7 @@ static  void    DoSegGrpNames( array_control *dgroup_def, array_control *tgroup_
         dgroup_idx = GetNameIdx( "DGROUP", "" );
     }
     OutIdx( dgroup_idx, dgroup_def );
-    SegInfo = InitArray( sizeof( index_rec ), MODEST_INFO, INCREMENT_INFO );
+    FillArray( &SegInfo, sizeof( index_rec ), MODEST_INFO, INCREMENT_INFO );
     for( seg = SegDefs; seg != NULL; seg = next ) {
         next = seg->next;
         DoSegment( seg, dgroup_def, tgroup_def, false );
@@ -1094,14 +1093,13 @@ static  void    KillArray( array_control *arr )
 static void initImports( void )
 {
     ImportHdl = IMPORT_BASE;
-    Imports = InitArray( sizeof( byte ), MODEST_IMP, INCREMENT_IMP );
+    FillArray( &Imports, sizeof( byte ), MODEST_IMP, INCREMENT_IMP );
     GenStaticImports = false;
 }
 
 static void finiImports( void )
 {
-    KillArray( Imports );
-    Imports = NULL;
+    KillStatic( &Imports );
 }
 
 static omf_idx getImportHdl( void )
@@ -1361,13 +1359,13 @@ static  void    EjectImports( void )
 {
     omf_cmd     cmd;
 
-    if( Imports->used > 0 ) {
+    if( Imports.used > 0 ) {
         if( GenStaticImports ) {
             cmd = CMD_LEXTDEF;
         } else {
             cmd = CMD_EXTDEF;
         }
-        PutObjOMFRec( cmd, Imports );
+        PutObjOMFRec( cmd, &Imports );
     }
 }
 
@@ -1606,7 +1604,7 @@ void    SetUpObj( bool is_data )
         EjectLEData();
         return;
     }
-    if( Imports->used >= BUFFSIZE - TOLERANCE ) {
+    if( Imports.used >= BUFFSIZE - TOLERANCE ) {
          EjectLEData();
          return;
     }
@@ -1793,8 +1791,8 @@ static  index_rec       *AskIndexRec( uint_16 sidx )
     index_rec   *rec;
     unsigned    i;
 
-    rec = SegInfo->array;
-    for( i = 0; i < SegInfo->used; ++i ) {
+    rec = SegInfo.array;
+    for( i = 0; i < SegInfo.used; ++i ) {
         if( rec->sidx == sidx ) {
             break;
         }
@@ -2046,8 +2044,8 @@ void    ObjFini( void )
             offset  codesize;
 
             codesize = 0;
-            rec = SegInfo->array;
-            for( i = 0; i < SegInfo->used; ++i ) {
+            rec = SegInfo.array;
+            for( i = 0; i < SegInfo.used; ++i ) {
                 if( rec->obj != NULL ) {
                     DoSegARange( &codesize, rec );
                 }
@@ -2070,8 +2068,8 @@ void    ObjFini( void )
     /*
      * Fini all segments.
      */
-    rec = SegInfo->array;
-    for( i = 0; i < SegInfo->used; ++i ) {
+    rec = SegInfo.array;
+    for( i = 0; i < SegInfo.used; ++i ) {
         if( rec->obj != NULL ) {
             CurrSeg = rec;
             FiniTarg();
@@ -2088,29 +2086,29 @@ void    ObjFini( void )
      * Emit default import records.
      */
     for( auto_import = NULL; (auto_import = FEAuxInfo( auto_import, FEINF_NEXT_IMPORT )) != NULL; ) {
-        OutName( FEAuxInfo( auto_import, FEINF_IMPORT_NAME ), Imports );
-        OutIdx( 0, Imports );           /* type index*/
-        if( Imports->used >= BUFFSIZE - TOLERANCE ) {
-            PutObjOMFRec( CMD_EXTDEF, Imports );
+        OutName( FEAuxInfo( auto_import, FEINF_IMPORT_NAME ), &Imports );
+        OutIdx( 0, &Imports );           /* type index*/
+        if( Imports.used >= BUFFSIZE - TOLERANCE ) {
+            PutObjOMFRec( CMD_EXTDEF, &Imports );
         }
     }
     for( auto_import = NULL; (auto_import = FEAuxInfo( auto_import, FEINF_NEXT_IMPORT_S )) != NULL; ) {
-        OutObjectName( FEAuxInfo( auto_import, FEINF_IMPORT_NAME_S ), Imports );
-        OutIdx( 0, Imports );           /* type index*/
-        if( Imports->used >= BUFFSIZE - TOLERANCE ) {
-            PutObjOMFRec( CMD_EXTDEF, Imports );
+        OutObjectName( FEAuxInfo( auto_import, FEINF_IMPORT_NAME_S ), &Imports );
+        OutIdx( 0, &Imports );           /* type index*/
+        if( Imports.used >= BUFFSIZE - TOLERANCE ) {
+            PutObjOMFRec( CMD_EXTDEF, &Imports );
         }
     }
-    if( Imports->used > 0 ) {
-        PutObjOMFRec( CMD_EXTDEF, Imports );
+    if( Imports.used > 0 ) {
+        PutObjOMFRec( CMD_EXTDEF, &Imports );
     }
     /*
      * Emit default library search records.
      */
     for( lib = NULL; (lib = FEAuxInfo( lib, FEINF_NEXT_LIBRARY )) != NULL; ) {
-        OutShort( LIBNAME_COMMENT, Imports );
-        OutString( (char *)FEAuxInfo( lib, FEINF_LIBRARY_NAME ), Imports );
-        PutObjOMFRec( CMD_COMENT, Imports );
+        OutShort( LIBNAME_COMMENT, &Imports );
+        OutString( (char *)FEAuxInfo( lib, FEINF_LIBRARY_NAME ), &Imports );
+        PutObjOMFRec( CMD_COMENT, &Imports );
     }
     /*
      * Emit alias definition records.
@@ -2121,20 +2119,20 @@ void    ObjFini( void )
 
         alias_name = FEAuxInfo( alias, FEINF_ALIAS_NAME );
         if( alias_name == NULL ) {
-            OutObjectName( FEAuxInfo( alias, FEINF_ALIAS_SYMBOL ), Imports );
+            OutObjectName( FEAuxInfo( alias, FEINF_ALIAS_SYMBOL ), &Imports );
         } else {
-            OutName( alias_name, Imports );
+            OutName( alias_name, &Imports );
         }
         subst_name = FEAuxInfo( alias, FEINF_ALIAS_SUBST_NAME );
         if( subst_name == NULL ) {
-            OutObjectName( FEAuxInfo( alias, FEINF_ALIAS_SUBST_SYMBOL ), Imports );
+            OutObjectName( FEAuxInfo( alias, FEINF_ALIAS_SUBST_SYMBOL ), &Imports );
         } else {
-            OutName( subst_name, Imports );
+            OutName( subst_name, &Imports );
         }
-        PutObjOMFRec( CMD_ALIAS, Imports );
+        PutObjOMFRec( CMD_ALIAS, &Imports );
     }
     finiImports();
-    KillArray( SegInfo );
+    KillStatic( &SegInfo );
     FiniAbsPatches();
     EndModule();
     CloseObj();
@@ -2259,8 +2257,8 @@ static  omf_idx     GenImport( cg_sym_handle sym, bool alt_dllimp )
                 kind = PIC_RW;
             }
         }
-        OUTPUT_OBJECT_NAME( sym, OutName, Imports, kind );
-        OutIdx( 0, Imports );           /* type index*/
+        OUTPUT_OBJECT_NAME( sym, OutName, &Imports, kind );
+        OutIdx( 0, &Imports );           /* type index*/
         DumpImportResolve( sym, imp_idx );
     }
     return( imp_idx );
@@ -2270,8 +2268,8 @@ static  omf_idx     GenImportComdat( void )
 /*****************************************/
 {
     CheckImportSwitch( (FEAttr( CurrSeg->comdat_symbol ) & FE_GLOBAL) == 0 );
-    OUTPUT_OBJECT_NAME( CurrSeg->comdat_symbol, OutName, Imports, SPECIAL );
-    OutIdx( 0, Imports );           /* type index*/
+    OUTPUT_OBJECT_NAME( CurrSeg->comdat_symbol, OutName, &Imports, SPECIAL );
+    OutIdx( 0, &Imports );           /* type index*/
     return( getImportHdl() );
 }
 
@@ -2404,8 +2402,8 @@ void    OutLabel( label_handle lbl )
     }
     lc = (offset)CurrSeg->location;
     TellAddress( lbl, lc );
-    for( i = SegInfo->used; i-- > 0; ) {
-        obj = _ARRAYOF( SegInfo, index_rec )[i].obj;
+    for( i = SegInfo.used; i-- > 0; ) {
+        obj = _ARRAYOF( &SegInfo, index_rec )[i].obj;
         if( obj != NULL ) { /* twas flushed and not redefined*/
             owner = &obj->tpatches;
             for( ;; ) {
@@ -2667,12 +2665,12 @@ void    OutFPPatch( fp_patches i )
             EjectImports();
             GenStaticImports = false;
         }
-        OutName( FPPatchName[i], Imports );
-        OutIdx( 0, Imports );                   /* type index*/
+        OutName( FPPatchName[i], &Imports );
+        OutIdx( 0, &Imports );                   /* type index*/
         if( FPPatchAltName[i] != NULL ) {
             getImportHdl();
-            OutName( FPPatchAltName[i], Imports );
-            OutIdx( 0, Imports );               /* type index*/
+            OutName( FPPatchAltName[i], &Imports );
+            OutIdx( 0, &Imports );               /* type index*/
         }
     }
     CheckLEDataSize( 2 * sizeof( offset ), true );
@@ -2973,8 +2971,8 @@ void    OutRTImportRel( rt_class rtindex, fix_class class, bool rel )
         imphdl = getImportHdl();
         CheckImportSwitch( false );
         TellRTHandle( rtindex, imphdl );
-        OutName( AskRTName( rtindex ), Imports );
-        OutIdx( 0, Imports );           /* type index*/
+        OutName( AskRTName( rtindex ), &Imports );
+        OutIdx( 0, &Imports );           /* type index*/
     }
     OutSpecialCommon( imphdl, class, rel );
 }
@@ -3036,8 +3034,8 @@ void    OutBckImport( const char *name, back_handle bck, fix_class class )
         idx = getImportHdl();
         CheckImportSwitch( false );
         bck->imp = idx;
-        OutName( name, Imports );
-        OutIdx( 0, Imports );               /* type index*/
+        OutName( name, &Imports );
+        OutIdx( 0, &Imports );               /* type index*/
     }
     OutSpecialCommon( idx, class, false );
 }
