@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,11 +33,15 @@
 #include "cvars.h"
 #include <limits.h>
 #include "i64.h"
+#include "roundmac.h"
 
-#define DATA_QUAD_SEG_SIZE      (32 * 1024)
-#define DATA_QUADS_PER_SEG      (DATA_QUAD_SEG_SIZE / sizeof( DATA_QUAD_LIST ))
 
-#define MAX_DATA_QUAD_SEGS (LARGEST_DATA_QUAD_INDEX / DATA_QUADS_PER_SEG + 1)
+#define DATA_QUAD_SEG_SIZE_DEF  _32K
+#define DATA_QUAD_MAX_INDEX_DEF 0xFFFFF
+
+#define DATA_QUAD_PER_SEG       (DATA_QUAD_SEG_SIZE_DEF / sizeof( DATA_QUAD_LIST ))
+#define DATA_QUAD_SEG_SIZE      (DATA_QUAD_PER_SEG * sizeof( DATA_QUAD_LIST ))
+#define DATA_QUAD_SEG_MAX       (DATA_QUAD_MAX_INDEX_DEF / DATA_QUAD_PER_SEG + 1)
 
 typedef enum {
     IS_VALUE,
@@ -101,7 +105,7 @@ static unsigned BitMask[] = {
     0xFFFFFFFF
 };
 
-static DATA_QUAD_LIST   *DataQuadSegs[MAX_DATA_QUAD_SEGS]; /* segments for data quads */
+static DATA_QUAD_LIST   *DataQuadSegs[DATA_QUAD_SEG_MAX]; /* segments for data quads */
 static DATA_QUAD_LIST   *CurDataQuad;
 static int              DataQuadSegIndex;
 static int              DataQuadIndex;
@@ -123,7 +127,7 @@ bool DataQuadsAvailable( void )
 
 void InitDataQuads( void )
 {
-    DataQuadIndex = DATA_QUADS_PER_SEG;
+    DataQuadIndex = DATA_QUAD_PER_SEG;
     DataQuadSegIndex = -1;
     memset( DataQuadSegs, 0, sizeof( DataQuadSegs ) );
     /*
@@ -139,7 +143,7 @@ void FreeDataQuads( void )
 {
     unsigned    i;
 
-    for( i = 0; i < MAX_DATA_QUAD_SEGS; i++ ) {
+    for( i = 0; i < DATA_QUAD_SEG_MAX; i++ ) {
         if( DataQuadSegs[i] == NULL )
             break;
         FEfree( DataQuadSegs[i] );
@@ -180,8 +184,8 @@ static DATA_QUAD_LIST *NewDataQuad( void )
     static DATA_QUAD_LIST   *DataQuadPtr;
     DATA_QUAD_LIST          *dql;
 
-    if( DataQuadIndex >= (DATA_QUADS_PER_SEG - 1) ) {
-        if( DataQuadSegIndex == MAX_DATA_QUAD_SEGS ) {
+    if( DataQuadIndex >= (DATA_QUAD_PER_SEG - 1) ) {
+        if( DataQuadSegIndex == DATA_QUAD_SEG_MAX ) {
             CErr1( ERR_INTERNAL_LIMIT_EXCEEDED );
             CSuicide();
         }
