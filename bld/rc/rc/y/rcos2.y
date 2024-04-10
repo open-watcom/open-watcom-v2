@@ -1448,33 +1448,33 @@ window-stmt
         {
             IntMask mask = {0};
             $$ = SemOS2SetWndData( $2, $4, $6, $8, mask, mask, $9, NULL );
-       }
+        }
     | Y_WINDOW cntl-text comma-opt cntl-id comma-opt size-info comma-opt
                 ctl-class-name presparam-list diag-control-section
         {
-           IntMask mask = {0};
-           IntMask mask2 = {0};
-           $$ = SemOS2SetWndData( $2, $4, $6, $8, mask, mask2, $9, $10 );
+            IntMask mask = {0};
+            IntMask mask2 = {0};
+            $$ = SemOS2SetWndData( $2, $4, $6, $8, mask, mask2, $9, $10 );
         }
     | Y_WINDOW cntl-text comma-opt cntl-id comma-opt size-info comma-opt
                 ctl-class-name comma-opt cntl-style presparam-list
         {
-           IntMask mask = {0};
+            IntMask mask = {0};
             $$ = SemOS2SetWndData( $2, $4, $6, $8, $10, mask, $11, NULL );
-       }
+        }
     | Y_WINDOW cntl-text comma-opt cntl-id comma-opt size-info comma-opt
                 ctl-class-name comma-opt cntl-style presparam-list
                 diag-control-section
         {
-           IntMask mask = {0};
+            IntMask mask = {0};
             $$ = SemOS2SetWndData( $2, $4, $6, $8, $10, mask, $11, $12 );
-       }
+        }
     | Y_WINDOW cntl-text comma-opt cntl-id comma-opt size-info comma-opt
       ctl-class-name comma-opt cntl-style comma-opt frame-style
       presparam-list diag-control-section
-      {
-       $$ = SemOS2SetWndData( $2, $4, $6, $8, $10, $12, $13, $14 );
-      }
+        {
+            $$ = SemOS2SetWndData( $2, $4, $6, $8, $10, $12, $13, $14 );
+        }
     ;
 
 dialog-or-frame
