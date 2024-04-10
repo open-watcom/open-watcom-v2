@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -70,8 +70,8 @@ extern unsigned __free_dos_tb( unsigned short );
     __value             [__eax] \
     __modify __exact    [__eax]
 
-char                    * const __lfn_rm_tb_linear = 0;
-unsigned short          const __lfn_rm_tb_segment = 0;
+char                    * __lfn_rm_tb_linear = 0;
+unsigned short          __lfn_rm_tb_segment = 0;
 
 static unsigned short   __lfn_rm_tb_selector = 0;
 
