@@ -74,7 +74,7 @@
 #include "rccore.h"
 
 
-static bool ResOS2WriteDlgTemplate( char *tmpldata, size_t size, FILE *fp )
+static bool WriteOS2DialogBoxItems( char *tmpldata, size_t size, FILE *fp )
 /*************************************************************************/
 {
     if( RESWRITE( fp, tmpldata, size ) != size ) {
@@ -85,10 +85,10 @@ static bool ResOS2WriteDlgTemplate( char *tmpldata, size_t size, FILE *fp )
     }
 }
 
-static void InitOS2DialogBoxHeader( DialogHeaderOS2 *header, uint_32 codepage )
-/*****************************************************************************/
+static void InitOS2DialogBoxHeader( DialogHeaderOS2 *header, uint_32 codepage, size_t size )
+/******************************************************************************************/
 {
-    header->Size             = 0;
+    header->Size             = DialogHeaderOS2_FILESIZE + size;
     header->Type             = 0;
     header->Codepage         = codepage;
     header->OffsetFirstTmpl  = 14;
@@ -557,7 +557,7 @@ static size_t SemOS2CalcControlSize( FullDiagCtrlListOS2 *ctrls )
     return( size );
 }
 
-static char *SemOS2BuildTemplateArray( char *ptr, FullDiagCtrlListOS2 *ctrls )
+static char *SemOS2BuildTemplateItemsArray( char *ptr, FullDiagCtrlListOS2 *ctrls )
 /****************************************************************************/
 {
     FullDialogBoxControlOS2     *ctrl;
@@ -603,7 +603,7 @@ static char *SemOS2BuildTemplateArray( char *ptr, FullDiagCtrlListOS2 *ctrls )
 
         ptr += sizeof( DialogTemplateItemOS2 );
         if( ctrl->children != NULL ) {   // Process all children
-            ptr = SemOS2BuildTemplateArray( ptr, ctrl->children );
+            ptr = SemOS2BuildTemplateItemsArray( ptr, ctrl->children );
             tmpl->cChildren = ctrl->children->numctrls;
         } else {
             tmpl->cChildren = 0;
@@ -614,7 +614,7 @@ static char *SemOS2BuildTemplateArray( char *ptr, FullDiagCtrlListOS2 *ctrls )
     return( ptr );
 }
 
-static char *SemOS2DumpTemplateData( char *base, char *ptr,
+static char *SemOS2DumpTemplateItemsData( char *base, char *ptr,
                                      FullDiagCtrlListOS2 *ctrls )
 /***************************************************************/
 {
@@ -634,7 +634,7 @@ static char *SemOS2DumpTemplateData( char *base, char *ptr,
          */
         if( (control->ClassID->Class & 0x80) == 0 ) {
             strcpy( ptr, control->ClassID->ClassName );
-            tmpl->offClassName = (uint_16)( ptr - base );
+            tmpl->offClassName = (uint_16)( ptr - base + DialogHeaderOS2_FILESIZE );
             ptr += tmpl->cchClassName + 1;
         }
         /*
@@ -642,7 +642,7 @@ static char *SemOS2DumpTemplateData( char *base, char *ptr,
          * even if no text is provided; it could be a buglet but we'll
          * do the same for compatibility.
          */
-        tmpl->offText = (uint_16)( ptr - base );
+        tmpl->offText = (uint_16)( ptr - base + DialogHeaderOS2_FILESIZE );
         if( control->Text != NULL ) {
             if( control->Text->ord.fFlag == 0xFF ) {
                 memcpy( ptr, control->Text->name, 3 );
@@ -658,24 +658,24 @@ static char *SemOS2DumpTemplateData( char *base, char *ptr,
         // Write out class data if provided
         if( control->ExtraBytes ) {
             memcpy( ptr, &ctrl->framectl, sizeof( uint_32 ) );
-            tmpl->offCtlData = (uint_16)( ptr - base );
+            tmpl->offCtlData = (uint_16)( ptr - base + DialogHeaderOS2_FILESIZE );
             ptr += control->ExtraBytes;
             // Write out class data if provided
             ptr += SemOS2DumpCtlData( ptr, ctrl->dataListHead );
         } else {
             if( ctrl->dataListHead != NULL ) {
-                tmpl->offCtlData = (uint_16)( ptr - base );
+                tmpl->offCtlData = (uint_16)( ptr - base + DialogHeaderOS2_FILESIZE );
                 ptr += SemOS2DumpCtlData( ptr, ctrl->dataListHead );
             }
         }
 
         if( ctrl->presParams != NULL ) {
-            tmpl->offPresParams = (uint_16)( ptr - base );
+            tmpl->offPresParams = (uint_16)( ptr - base + DialogHeaderOS2_FILESIZE );
             ptr += SemOS2DumpPresParams( ptr, ctrl->presParams );
         }
 
         if( ctrl->children != NULL ) {  // Process all children
-            ptr = SemOS2DumpTemplateData( base, ptr, ctrl->children );
+            ptr = SemOS2DumpTemplateItemsData( base, ptr, ctrl->children );
         }
     }
 
@@ -709,32 +709,32 @@ void SemOS2WriteDialogTemplate( WResID *name, ResMemFlags flags,
         // TODO: Error, template is too big
     }
 #endif
-    InitOS2DialogBoxHeader( &head, codepage );
-    head.Size = size + DialogHeaderOS2_FILESIZE;
+    InitOS2DialogBoxHeader( &head, codepage, size );
+
+    // Create the DLGTITEM array in memory
+    ptr = tmpl = RESALLOC( size );
+
+    ptr = SemOS2BuildTemplateItemsArray( ptr, ctrls );
+
+    // Dump all other data into memory and update the offsets
+    SemOS2DumpTemplateItemsData( tmpl, ptr, ctrls );
+
+    // Write the resource to file
+    loc.start = SemStartResource();
+
     error = WriteOS2DialogBoxHeader( &head, CurrResFile.fp );
     if( !error ) {
-        ptr = tmpl = RESALLOC( size );
-
-        // Create the DLGTITEM array in memory
-        ptr = SemOS2BuildTemplateArray( ptr, ctrls );
-
-        // Dump all other data into memory and update the offsets
-        SemOS2DumpTemplateData( ptr - DialogHeaderOS2_FILESIZE, ptr, ctrls );
-
-        // Write the resource to file
-        loc.start = SemStartResource();
-
-        error = ResOS2WriteDlgTemplate( tmpl, size, CurrResFile.fp );
-        if( error ) {
-            err_code = LastWresErr();
-            RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename, strerror( err_code )  );
-            ErrorHasOccured = true;
-        } else {
-            loc.len = SemEndResource( loc.start );
-            SemAddResourceAndFree( name, WResIDFromNum( OS2_RT_DIALOG ), flags, loc );
-        }
-        RESFREE( tmpl );
+        error = WriteOS2DialogBoxItems( tmpl, size, CurrResFile.fp );
     }
+    if( error ) {
+        err_code = LastWresErr();
+        RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename, strerror( err_code )  );
+        ErrorHasOccured = true;
+    } else {
+        loc.len = SemEndResource( loc.start );
+        SemAddResourceAndFree( name, WResIDFromNum( OS2_RT_DIALOG ), flags, loc );
+    }
+    RESFREE( tmpl );
     SemOS2FreeDiagCtrlList( ctrls );
 
 } /* SemOS2WriteDialogTemplate */
