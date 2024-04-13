@@ -1915,7 +1915,7 @@ void DoCompile( void )
                 GenSwitches |= CGSW_GEN_POSITION_INDEPENDANT;
             }
             cg_info = BEInit( GenSwitches, TargetSwitches, OptSize, ProcRevision );
-            if( cg_info.target != 0 || cg_info.version != 0 ) {
+            if( cg_info.revision != 0 || cg_info.target != 0 ) {
 #if _CPU == 386
                 if( TargetSwitches & (CGSW_X86_P5_PROFILING | CGSW_X86_NEW_P5_PROFILING) ) {
                     FunctionProfileSegId = AddSegName( "TI", "DATA", SEGTYPE_INITFINI );
