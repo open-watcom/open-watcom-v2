@@ -49,15 +49,15 @@ typedef union hdl_type {
 
 extern  cg_init_info    BEInit(cg_switches switches, cg_target_switches tg_switches,
                                uint size,proc_revision proc) {
-    cg_init_info        info;
-    info.version.is_large = true;
-    info.version.revision = II_REVISION;
+    cg_init_info        cg_info;
+
+    cg_info.revision = II_REVISION;
 #if _TARGET & _TARG_8086
-    info.version.target = II_TARG_8086;
+    cg_info.target = II_TARG_8086;
 #else
-    info.version.target = II_TARG_80386;
+    cg_info.target = II_TARG_80386;
 #endif
-    return( info );
+    return( cg_info );
 }
 extern void BEStart() {}
 extern void BEStop() {}

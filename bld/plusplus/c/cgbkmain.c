@@ -3143,11 +3143,11 @@ void CgBackEnd(                 // BACK-END CONTROLLER
     CtxSetCurrContext( CTX_CG_FUNC );
     if( BELoad( NULL ) ) {
         cg_info = BEInitCg( GenSwitches, TargetSwitches, OptSize, CpuSwitches );
-        if( !cg_info.success ) {
+        if( cg_info.revision == 0 && cg_info.target == 0 ) {
             CErr1( ERR_CODEGEN_CANT_INITIALIZE );
             CSuicide();
 #ifdef DEVBUILD
-        } else if( cg_info.version.revision != II_REVISION ) {
+        } else if( cg_info.revision != II_REVISION ) {
             CFatal( "Incorrect Code Generator version" );
 #endif
         } else {

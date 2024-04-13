@@ -121,7 +121,7 @@ cg_init_info _CGAPI     BEInitCg( cg_switches switches,
                                     proc_revision proc )
 /**************************************************************/
 {
-    cg_init_info        info;
+    cg_init_info        cg_info;
 
     OptForSize = (byte)optsize;
     CGProcessorVersion = proc; /* so _CPULevel works */
@@ -153,26 +153,25 @@ cg_init_info _CGAPI     BEInitCg( cg_switches switches,
     TypeInit();
     TInit();
     if( !CGOpenf() ) {
-        info.success = 0;
+        cg_info.revision = 0;
+        cg_info.target = 0;
     } else {
-        info.success = 1;
-        info.version.is_large = true;
+        cg_info.revision = II_REVISION;
 #if _TARGET & _TARG_8086
-        info.version.target = II_TARG_8086;
+        cg_info.target = II_TARG_8086;
 #elif _TARGET & _TARG_80386
-        info.version.target = II_TARG_80386;
+        cg_info.target = II_TARG_80386;
 #elif _TARGET & _TARG_370
-        info.version.target = II_TARG_370; /* NYI -- for now */
+        cg_info.target = II_TARG_370; /* NYI -- for now */
 #elif _TARGET & _TARG_AXP
-        info.version.target = II_TARG_AXP;
+        cg_info.target = II_TARG_AXP;
 #elif _TARGET & _TARG_PPC
-        info.version.target = II_TARG_PPC;
+        cg_info.target = II_TARG_PPC;
 #elif _TARGET & _TARG_MIPS
-        info.version.target = II_TARG_MIPS;
+        cg_info.target = II_TARG_MIPS;
 #endif
-        info.version.revision = II_REVISION;
     }
-    return( info );
+    return( cg_info );
 }
 
 cg_init_info _CGAPI     BEInit( cg_switches switches,

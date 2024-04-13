@@ -340,13 +340,9 @@ SET_WTK( proc, WTK_3167 );
 The return value structure is defined as follows:
 .np
 :XMP.
-typedef union   cg_init_info {
-  struct {
-    unsigned revision   : 10; /* contains II_REVISION */
-    unsigned target     : 5;  /* has II_TARG_??? */
-    unsigned is_large   : 1;  /* 1 if 16 bit host */
-  } version;
-  int     success;
+typedef struct    cg_init_info {
+    unsigned short    revision;    /* contains II_REVISION */
+    unsigned short    target;      /* has II_TARG_??? */
 } cg_init_info;
 
 enum {

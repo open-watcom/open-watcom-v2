@@ -204,13 +204,9 @@ typedef enum {
 #define DBG_NIL_TYPE    ((dbg_type)0)
 #define DBG_FWD_TYPE    ((dbg_type)-1)
 
-typedef union   cg_init_info {
-    struct {
-        unsigned revision   : 10;
-        unsigned target     : 5;
-        unsigned is_large   : 1;
-    } version;
-    int     success;
+typedef struct  cg_init_info {
+    unsigned short    revision;
+    unsigned short    target;
 } cg_init_info;
 
 enum {
@@ -229,16 +225,16 @@ enum {
 /*
     Front end should do
 
-    cg_init_info    info;
+    cg_init_info    cg_info;
 
-    info = BEInit(...);
-    if( info.success == 0 ) {
+    cg_info = BEInit(...);
+    if( cg_info.revision == 0 && cg_info.target == 0 ) {
         // The code generator didn't initialize! terminate (dnpg,dncthd)
     } else {
-        if( info.version.revision != II_REVISION ) {
+        if( cg_info.revision != II_REVISION ) {
            // crap out --- wrong version of code generator
        }
-       // look at info.version.is_large and info.version.target
+       // look at cg_info.target
     }
 
 */
