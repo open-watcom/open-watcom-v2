@@ -1895,7 +1895,7 @@ void DoCompile( void )
 {
     jmp_buf         *old_env;
     jmp_buf         env;
-    cg_init_info    cgi_info;
+    cg_init_info    cg_info;
 
     old_env = Environment;
     if( setjmp( env ) == 0 ) {
@@ -1914,8 +1914,8 @@ void DoCompile( void )
             if( CompFlags.rent ) {
                 GenSwitches |= CGSW_GEN_POSITION_INDEPENDANT;
             }
-            cgi_info = BEInit( GenSwitches, TargetSwitches, OptSize, ProcRevision );
-            if( cgi_info.success ) {
+            cg_info = BEInit( GenSwitches, TargetSwitches, OptSize, ProcRevision );
+            if( cg_info.target != 0 || cg_info.version != 0 ) {
 #if _CPU == 386
                 if( TargetSwitches & (CGSW_X86_P5_PROFILING | CGSW_X86_NEW_P5_PROFILING) ) {
                     FunctionProfileSegId = AddSegName( "TI", "DATA", SEGTYPE_INITFINI );
