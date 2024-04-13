@@ -347,21 +347,21 @@ static  void    CGStart( void )
         }
         cg_info = BEInit( cg_gen_opts, cg_target_opts, space_time, cpu );
 
-        if( cg_info.success != 0 ) {
-            if( ( cg_info.version.target == II_TARG_STUB ) ||
-                ( cg_info.version.target == II_TARG_CHECK ) ) {
+        if( cg_info.target != 0 || cg_info.revision != 0 ) {
+            if( ( cg_info.target == II_TARG_STUB ) ||
+                ( cg_info.target == II_TARG_CHECK ) ) {
                 InitCG();
 #if _CPU == 8086
-            } else if( cg_info.version.target == II_TARG_8086 ) {
+            } else if( cg_info.target == II_TARG_8086 ) {
                 InitCG();
 #elif _CPU == 386
-            } else if( cg_info.version.target == II_TARG_80386 ) {
+            } else if( cg_info.target == II_TARG_80386 ) {
                 InitCG();
 #elif _CPU == _AXP
-            } else if( cg_info.version.target == II_TARG_AXP ) {
+            } else if( cg_info.target == II_TARG_AXP ) {
                 InitCG();
 #elif _CPU == _PPC
-            } else if( cg_info.version.target == II_TARG_PPC ) {
+            } else if( cg_info.target == II_TARG_PPC ) {
                 InitCG();
 #else
     #error no or invalid target specified
