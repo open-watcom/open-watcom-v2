@@ -349,7 +349,7 @@ typedef struct symtab_entry {           /* SYMBOL TABLE structure */
         BACK_HANDLE     backinfo;
         id_hash_idx     hash;
         temp_handle     return_var;     /* for the .R symbol */
-    } info;
+    } u1;
     union {
         struct {
             target_ssize offset;

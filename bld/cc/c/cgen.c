@@ -163,10 +163,10 @@ static local_vars *ReleaseVars( SYM_HANDLE sym_list, local_vars *local_var_list 
 
 static void FreeSymBackInfo( SYMPTR sym, SYM_HANDLE sym_handle )
 {
-    if( sym->info.backinfo != NULL ) {
-        BEFiniBack( sym->info.backinfo );
-        BEFreeBack( sym->info.backinfo );
-        sym->info.backinfo = NULL;
+    if( sym->u1.backinfo != NULL ) {
+        BEFiniBack( sym->u1.backinfo );
+        BEFreeBack( sym->u1.backinfo );
+        sym->u1.backinfo = NULL;
         SymReplace( sym, sym_handle );
     }
 }
@@ -288,7 +288,7 @@ static void EndFunction( OPNODE *node )
     } else {                            // return value
         SymGet( &sym, node->u2.sym_handle );
         dtype = CGenType( sym.sym_type );
-        name = CGTempName( sym.info.return_var, dtype );
+        name = CGTempName( sym.u1.return_var, dtype );
         name = CGUnary( O_POINTS, name, dtype );
         CGReturn( name, ReturnType( dtype ) );
     }
@@ -313,7 +313,7 @@ static void ReturnExpression( OPNODE *node, cg_name expr )
 
     SymGet( &sym, node->u2.sym_handle );
     dtype = CGenType( sym.sym_type );
-    name = CGTempName( sym.info.return_var, dtype );
+    name = CGTempName( sym.u1.return_var, dtype );
     CGDone( CGAssign( name, expr, dtype ) );
 }
 
@@ -575,7 +575,7 @@ static cg_name PushSym( OPNODE *node )
         dtype = CGenType( typ );
     }
     if( sym.flags & SYM_FUNC_RETURN_VAR ) {
-        name = CGTempName( sym.info.return_var, dtype );
+        name = CGTempName( sym.u1.return_var, dtype );
     } else {
         name = CGFEName( (CGSYM_HANDLE)node->u2.sym_handle, dtype );
     }
@@ -606,7 +606,7 @@ static cg_name PushSymAddr( OPNODE *node )
         dtype = CGenType( typ );
     }
     if( sym.flags & SYM_FUNC_RETURN_VAR ) {
-        name = CGTempName( sym.info.return_var, dtype );
+        name = CGTempName( sym.u1.return_var, dtype );
     } else {
         name = CGFEName( (CGSYM_HANDLE)node->u2.sym_handle, dtype );
 #if 0
@@ -1110,7 +1110,7 @@ static void CDoAutoDecl( SYM_HANDLE sym_handle )
             }
             dtype = CGenType( typ );
             if( sym.flags & SYM_FUNC_RETURN_VAR ) {
-                sym.info.return_var = CGTemp( dtype );
+                sym.u1.return_var = CGTemp( dtype );
                 SymReplace( &sym, sym_handle );
             } else {
                 CGAutoDecl( (CGSYM_HANDLE)sym_handle, dtype );
@@ -1854,9 +1854,9 @@ static void FreeGblVars( SYM_HANDLE sym_handle )
 
     for( ; sym_handle != SYM_NULL; sym_handle = sym->handle ) {
         sym = SymGetPtr( sym_handle );
-        if( sym->info.backinfo != NULL ) {
-//            BEFiniBack( sym->info.backinfo );
-            BEFreeBack( sym->info.backinfo );
+        if( sym->u1.backinfo != NULL ) {
+//            BEFiniBack( sym->u1.backinfo );
+            BEFreeBack( sym->u1.backinfo );
         }
     }
 }
@@ -1871,8 +1871,8 @@ static void RelExtVars( SYM_HANDLE sym_handle )
             if( sym->attribs.stg_class == SC_EXTERN
               || sym->attribs.stg_class == SC_STATIC
               || sym->sym_type->decl_type == TYP_VOID ) {
-                if( sym->info.backinfo != NULL ) {
-                    BEFreeBack( sym->info.backinfo );
+                if( sym->u1.backinfo != NULL ) {
+                    BEFreeBack( sym->u1.backinfo );
                 }
             }
         }

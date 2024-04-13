@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -439,7 +439,7 @@ static void AddParms( void )
         new_sym_handle = SYM_NULL;
         parm->sym.flags |= SYM_DEFINED | SYM_ASSIGNED;
         parm->sym.attribs.is_parm = true;
-        hash = parm->sym.info.hash;
+        hash = parm->sym.u1.hash;
         if( parm->sym.name[0] == '\0' ) {
             /*
              * no name ==> ...
@@ -563,7 +563,7 @@ static void ChkParms( void )
             /*
              * make sure name not already defined in this SymLevel
              */
-            sym_handle = SymAdd( parm->sym.info.hash, &parm->sym );
+            sym_handle = SymAdd( parm->sym.u1.hash, &parm->sym );
             if( prev_parm == NULL ) {
                 CurFunc->u.func.parms = sym_handle;
             } else {

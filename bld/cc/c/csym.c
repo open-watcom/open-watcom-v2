@@ -452,7 +452,7 @@ SYM_HANDLE SymAdd( id_hash_idx hash, SYMPTR sym )
     NewSym();
     sym->level = (id_level_type)SymLevel;
     hsym = SymHash( sym, CURR_SYM_HANDLE() );
-    sym->info.hash = hash;
+    sym->u1.hash = hash;
     /*
      * add name to head of list
      */
@@ -482,7 +482,7 @@ SYM_HANDLE SymAddL0( id_hash_idx hash, SYMPTR new_sym )
     new_sym->level = 0;
     new_hsym = SymHash( new_sym, CURR_SYM_HANDLE() );
     new_hsym->next_sym = NULL;
-    new_sym->info.hash = hash;
+    new_sym->u1.hash = hash;
     hsym = HashTab[hash];
     if( hsym == NULL ) {
         HashTab[hash] = new_hsym;
@@ -924,7 +924,7 @@ static SYM_HASHPTR FreeSym( void )
              */
             sym.name = CPermAlloc( strlen( hsym->name ) + 1 );
             strcpy( sym.name, hsym->name );
-            sym.info.backinfo = NULL;
+            sym.u1.backinfo = NULL;
             SymReplace( &sym, hsym->handle );
         }
         SetErrLoc( &sym.src_loc );

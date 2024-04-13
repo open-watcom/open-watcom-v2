@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -690,7 +690,7 @@ void EmitSegLabels( void )
         if( useg->sym_handle != SYM_NULL ) {
             SymGet( &sym, useg->sym_handle );
             bck = BENewBack( (CGSYM_HANDLE)useg->sym_handle );
-            sym.info.backinfo = bck;
+            sym.u1.backinfo = bck;
             SymReplace( &sym, useg->sym_handle );
             BESetSeg( segid );
             DGLabel( bck );
@@ -708,7 +708,7 @@ void FiniSegLabels( void )
     for( useg = userSegments; useg != NULL; useg = useg->next ) {
         if( useg->sym_handle != SYM_NULL ) {
             SymGet( &sym, useg->sym_handle );
-            BEFiniBack( sym.info.backinfo );
+            BEFiniBack( sym.u1.backinfo );
         }
     }
 }
@@ -722,7 +722,7 @@ void FiniSegBacks( void )
     for( useg = userSegments; useg != NULL; useg = useg->next ) {
         if( useg->sym_handle != SYM_NULL ) {
             SymGet( &sym, useg->sym_handle );
-            BEFreeBack( sym.info.backinfo );
+            BEFreeBack( sym.u1.backinfo );
         }
     }
 }
@@ -912,11 +912,11 @@ BACK_HANDLE FEBack( CGSYM_HANDLE cgsym_handle )
     SYM_ENTRY           sym;
 
     symptr = SymGetPtr( sym_handle );
-    bck = symptr->info.backinfo;
+    bck = symptr->u1.backinfo;
     if( bck == NULL ) {
         bck = BENewBack( (CGSYM_HANDLE)sym_handle );
         SymGet( &sym, sym_handle );
-        sym.info.backinfo = bck;
+        sym.u1.backinfo = bck;
         SymReplace( &sym, sym_handle );
     }
     return( bck );

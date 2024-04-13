@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -133,7 +134,7 @@ SYM_NAMEPTR SymName( SYMPTR sym, SYM_HANDLE sym_handle )
         return( "char" );
     if( sym->name != NULL )
         return( sym->name );
-    hsym = HashTab[sym->info.hash];
+    hsym = HashTab[sym->u1.hash];
     while( hsym->handle != sym_handle )
         hsym = hsym->next_sym;
     return( hsym->name );
