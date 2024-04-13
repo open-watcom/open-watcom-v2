@@ -130,7 +130,7 @@ static  void    CGStart( void )
     cg_switches         cg_gen_opts;
     cg_target_switches  cg_target_opts;
     int                 space_time;
-    cg_init_info        info;
+    cg_init_info        cg_info;
     proc_revision       cpu;
 
     if( BELoad( NULL ) ) {
@@ -345,23 +345,23 @@ static  void    CGStart( void )
         } else if( CGOpts & CGOPT_DI_DWARF ) {
             cg_gen_opts |= CGSW_GEN_DBG_DF;
         }
-        info = BEInit( cg_gen_opts, cg_target_opts, space_time, cpu );
+        cg_info = BEInit( cg_gen_opts, cg_target_opts, space_time, cpu );
 
-        if( info.success != 0 ) {
-            if( ( info.version.target == II_TARG_STUB ) ||
-                ( info.version.target == II_TARG_CHECK ) ) {
+        if( cg_info.success != 0 ) {
+            if( ( cg_info.version.target == II_TARG_STUB ) ||
+                ( cg_info.version.target == II_TARG_CHECK ) ) {
                 InitCG();
 #if _CPU == 8086
-            } else if( info.version.target == II_TARG_8086 ) {
+            } else if( cg_info.version.target == II_TARG_8086 ) {
                 InitCG();
 #elif _CPU == 386
-            } else if( info.version.target == II_TARG_80386 ) {
+            } else if( cg_info.version.target == II_TARG_80386 ) {
                 InitCG();
 #elif _CPU == _AXP
-            } else if( info.version.target == II_TARG_AXP ) {
+            } else if( cg_info.version.target == II_TARG_AXP ) {
                 InitCG();
 #elif _CPU == _PPC
-            } else if( info.version.target == II_TARG_PPC ) {
+            } else if( cg_info.version.target == II_TARG_PPC ) {
                 InitCG();
 #else
     #error no or invalid target specified
