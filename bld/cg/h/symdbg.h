@@ -221,8 +221,8 @@ typedef struct dim_con {
     dbg_type    idx;
 } dim_con;
 
-typedef union dim_any {
-    union dim_any *next;
+typedef struct dim_any {
+    struct dim_any *next;
     enum {
         DIM_VAR,
         DIM_CON,
