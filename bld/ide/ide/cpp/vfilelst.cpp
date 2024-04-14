@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -51,6 +51,9 @@
 
 #include "clibext.h"
 
+
+/* Local Window callback functions prototypes */
+WINEXPORT UINT_PTR CALLBACK AddSrcDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 
 typedef struct {
     WString     *result;
