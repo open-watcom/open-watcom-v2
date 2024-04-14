@@ -530,7 +530,9 @@ void    CVDumpName( dbg_name name, dbg_type tipe )
     ct_modifier     *mod;
     long_offset     here;
 
-// we are going to loose the name so a fix is needed in the interface
+    /*
+     * we are going to loose the name so a fix is needed in the interface
+     */
     if( tipe == DBG_FWD_TYPE ) {
         NewTypeString( out );
         tipe = ++TypeIdx;
@@ -568,7 +570,9 @@ dbg_type    CVArray( dbg_type dims, dbg_type base )
     ct_dimarray     *array;
     dbg_type        ret;
 
-// Need the length to make things simple
+    /*
+     * Need the length to make things simple
+     */
     NewTypeString( out );
     ret = ++TypeIdx;
     array = StartType( out, LFG_DIMARRAY );
@@ -586,7 +590,9 @@ dbg_type    CVArraySize( offset size, uint_32 hi, dbg_type base )
     ct_array    *array;
     dbg_type    ret;
 
-// Need the length to make things simple
+    /*
+     * Need the length to make things simple
+     */
     NewTypeString( out );
     ret = ++TypeIdx;
     array = StartType( out, LFG_ARRAY );
@@ -855,7 +861,9 @@ dbg_type    CVIntArray( uint_32 hi, dbg_type base )
     dbg_type        ret;
     lf_values       dim;
 
-// Need the length to make things simple
+    /*
+     * Need the length to make things simple
+     */
     dim = ArrayDim( hi );
     NewTypeString( out );
     ret = ++TypeIdx;
@@ -870,7 +878,9 @@ dbg_type    CVIntArray( uint_32 hi, dbg_type base )
 
 
 static  lf_values   ArrayDimL( int_32 low, int_32 hi )
-/************ Make 1 dim array bound ****************/
+/*****************************************************
+ * Make 1 dim array bound
+ */
 {
     cv_out          out[1];
     ct_dimconlu     *dim;
@@ -898,7 +908,6 @@ static  dbg_type    CVDimVarLU( dbg_array ar )
     dbg_type        symref[2];
     const type_def  *tipe_addr;
     dim_any         *dim;
-    dim_any         *next;
 
     NewTypeString( out );
     var = StartType( out, LFG_DIMVARLU );
@@ -942,7 +951,6 @@ static  dbg_type    CVDimConLU( dbg_array ar )
     cv_out          out[1];
     ct_dimconlu     *con;
     dim_any         *dim;
-    dim_any         *next;
 
     NewTypeString( out );
     con = StartType( out, LFG_DIMCONLU );
@@ -1094,8 +1102,10 @@ static  dbg_type    CVBasedPtrK( cg_type ptr_type, dbg_type base,
 
     /* unused parameters */ (void)ptr_type;
 
-    //TODO: Need to do somthing about segments
-    //TODO: Need to do somthing about BasePtr
+    /*
+     * TODO: Need to do somthing about segments
+     * TODO: Need to do somthing about BasePtr
+     */
     NewTypeString( out );
     ret = ++TypeIdx;
 //    ptype = PtrClass( ptr_type );
@@ -1609,7 +1619,9 @@ static int  MkFlist( dbg_struct st )
 }
 
 static  field_any  *UnLinkMethod( field_any **owner, const char *name )
-/*** UnLink method with name  ****************************************/
+/**********************************************************************
+ * UnLink method with name
+ */
 {
     field_any    *curr;
 
