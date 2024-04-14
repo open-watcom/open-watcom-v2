@@ -96,7 +96,9 @@ static  void    *BuffInc( cv_out *out, int size )
 }
 
 static  void  *AlignBuff( cv_out *out )
-/*** round out->ptr up to align size ***/
+/**************************************
+ * round out->ptr up to align size
+ */
 {
     int     len;
 //    int     len4;
@@ -151,9 +153,11 @@ static  void    NewType( cv_out *out )
 }
 
 static  int  EndSub( cv_out *out )
-/*** write out a member of a subfield (don't write a length) ***/
-/* return length so it can be backpatched to list head       ***/
-/* reset buff to start **/
+/*********************************
+ * write out a member of a subfield (don't write a length)
+ * return length so it can be backpatched to list head
+ * reset buff to start
+ */
 {
     unsigned        len;
 //    long_offset     here;
@@ -199,7 +203,9 @@ void    CVEndType( cv_out *out )
 }
 
 static  void    PatchLen( long_offset where, u2 what )
-/********** back patch field list length ************/
+/*****************************************************
+ * back patch field list length
+ */
 {
     long_offset         here;
 
@@ -282,6 +288,7 @@ void CVPutINum( cv_out *out, int_32 num )
 /***************************************/
 {
     byte       *ptr;
+
 #define LC( what, to )   *((to *)&what)
     if( num >= 0 && num < 0x00008000 ) {
         *((u2*)out->ptr) = num;  /* out num as is */
@@ -314,6 +321,7 @@ void        CVPutINum64( cv_out *out, signed_64 val )
 /***************************************************/
 {
     byte       *ptr;
+
 #define LC( what, to )   *((to *)&what)
     if( val.u._32[I64HI32] == 0 || val.u._32[I64HI32] == -1 ) {
         CVPutINum( out, val.u._32[I64LO32] );
@@ -667,9 +675,9 @@ dbg_type    CVIndCharBlock( back_handle len, cg_type len_type, int off )
 
 typedef struct {
     union {
-      cg_sym_handle s;
-      name          *n;
-    } v;
+        cg_sym_handle   sym;
+        name            *name;
+    } u;
     int         o;
     enum {
         EXPR_NONE     = 0x00,
@@ -681,9 +689,9 @@ typedef struct {
 
 enum{ FOLD_EXPR = 10 };
 typedef struct {
-    fold_leaf *stk;
-    fold_leaf ops[FOLD_EXPR];
-    bool  error;
+    fold_leaf   *stk;
+    fold_leaf   ops[FOLD_EXPR];
+    bool        error;
 } fold_expr;
 
 static  void    DoLocFold( dbg_loc loc, fold_expr *what )
@@ -709,15 +717,15 @@ static  void    DoLocFold( dbg_loc loc, fold_expr *what )
     case LOC_BP_OFFSET:
         --stk;
         if( (loc->class & 0xf0) == LOC_BP_OFFSET ) {
-            stk[0].v.n  = loc->u.be_sym->v.symbol;
+            stk[0].u.name  = loc->u.be_sym->v.symbol;
             stk[0].state = EXPR_NAME;
             stk[0].o = 0;
         } else {
             if( loc->class == LOC_MEMORY ) {
-                stk[0].v.s = loc->u.fe_sym;
+                stk[0].u.sym = loc->u.fe_sym;
                 stk[0].state = EXPR_SYM;
             } else {
-                stk[0].v.s = 0;
+                stk[0].u.sym = 0;
                 disp = loc->u.val;
                 stk[0].o = disp;
                 stk[0].state = EXPR_NONE;
@@ -732,7 +740,7 @@ static  void    DoLocFold( dbg_loc loc, fold_expr *what )
                 return;
             }
             if( stk[1].state & EXPR_VAR ) {
-                stk[0].v = stk[1].v;
+                stk[0].u = stk[1].u;
                 stk[0].state |= stk[1].state;
             }
             stk[0].o += stk[1].o;
@@ -790,9 +798,9 @@ dbg_type    CVLocCharBlock( dbg_loc loc, cg_type len_type )
             NewTypeString( out );
             symref = ++TypeIdx;
             StartType( out, LFG_REFSYM );
-            CVOutLocal( out, tmp.v.n, tmp.o, itipe );
+            CVOutLocal( out, tmp.u.name, tmp.o, itipe );
         } else {
-            symref = OutBckSym( FEBack( tmp.v.s ), tmp.o, itipe );
+            symref = OutBckSym( FEBack( tmp.u.sym ), tmp.o, itipe );
         }
     } else {
         symref = OutBckCon( 1, itipe );
@@ -898,8 +906,8 @@ static  dbg_type    CVDimVarLU( dbg_array ar )
     var->index = LF_TINT4;
     tipe_addr = NULL;
     itipe = 0;
-    for( dim = ar->list; dim != NULL; dim = next ) {
-        next = dim->next;
+    while( (dim = ar->list) != NULL ) {
+        ar->list = dim->next;
         switch( dim->kind ) {
         case DIM_VAR:
             if( tipe_addr == NULL ) {
@@ -924,7 +932,6 @@ static  dbg_type    CVDimVarLU( dbg_array ar )
         PutFld2( out, symref[1] );
         CGFree( dim  );
     }
-    ar->list = NULL;
     EndTypeString( out );
     return( ++TypeIdx );
 }
@@ -941,8 +948,8 @@ static  dbg_type    CVDimConLU( dbg_array ar )
     con = StartType( out, LFG_DIMCONLU );
     con->rank = ar->num;
     con->index = LF_TINT4;
-    for( dim = ar->list; dim != NULL; dim = next ) {
-        next = dim->next;
+    while( (dim = ar->list) != NULL ) {
+        ar->list = dim->next;
         switch( dim->kind ) {
         case DIM_CON:
             PutFldSized( out, 4, dim->u.con.lo );
@@ -955,7 +962,6 @@ static  dbg_type    CVDimConLU( dbg_array ar )
         }
         CGFree( dim );
     }
-    ar->list = NULL;
     EndTypeString( out );
     return( ++TypeIdx );
 }
@@ -1676,13 +1682,9 @@ static int  FlistCount( field_any *field )
 dbg_type    CVEndStruct( dbg_struct st )
 /**************************************/
 {
-    lf_values        flisti;
-    lf_values        hd;
-    lf_values        vshape;
-    union {
-        ct_structure s;
-        ct_union     u;
-    }          *head;
+    lf_values       flisti;
+    lf_values       hd;
+    lf_values       vshape;
     int             count;
     cv_out          out[1];
 
@@ -1704,23 +1706,27 @@ dbg_type    CVEndStruct( dbg_struct st )
     flisti = ++TypeIdx;
     count = FlistCount( st->list );
     if( st->is_struct ) {
+        ct_structure *head;
+
         head = StartType( out, LFG_STRUCTURE );
-//      head->s.count  = st->num;
-        head->s.count  = count;
-        head->s.field = flisti;
-        head->s.property.s = 0;
-        head->s.property.f.cnested = st->is_cnested;
-        head->s.property.f.isnested = st->is_nested;
-        head->s.property.f.overops = SortMethods( st );
-        head->s.dList = 0;
-        head->s.vshape = vshape;
+//        head->count  = st->num;
+        head->count  = count;
+        head->field = flisti;
+        head->property.s = 0;
+        head->property.f.cnested = st->is_cnested;
+        head->property.f.isnested = st->is_nested;
+        head->property.f.overops = SortMethods( st );
+        head->dList = 0;
+        head->vshape = vshape;
     } else {
+        ct_union     *head;
+
         head = StartType( out, LFG_UNION );
-        head->u.count  = st->num;
-        head->u.field = flisti;
-        head->u.property.s = 0;
-        head->s.property.f.cnested = st->is_cnested;
-        head->s.property.f.isnested = st->is_nested;
+        head->count  = st->num;
+        head->field = flisti;
+        head->property.s = 0;
+        head->property.f.cnested = st->is_cnested;
+        head->property.f.isnested = st->is_nested;
     }
     CVPutINum( out, st->size );
     CVPutStr( out, st->name );
@@ -1805,10 +1811,6 @@ dbg_type    CVEndProc( dbg_proc pr )
     ct_arglist  *args;
     lf_values   arglist;
     cv_calls    call;
-    union{
-        ct_procedure *a_procedure;
-        ct_mfunction *a_mfunction;
-    }f;
     lf_values   proci;
     cv_out      out[1];
 
@@ -1834,29 +1836,33 @@ dbg_type    CVEndProc( dbg_proc pr )
     call = CV_GENERIC;
 #endif
     if( pr->cls != DBG_NIL_TYPE ) {
+        ct_mfunction *mfunction;
+
         if( pr->this == DBG_NIL_TYPE ) {
             pr->this = LF_TVOID;
         }
         NewTypeString( out );
         proci = ++TypeIdx;
-        f.a_mfunction = StartType( out, LFG_MFUNCTION );
-        f.a_mfunction->rvtype = pr->ret;
-        f.a_mfunction->class_idx = pr->cls;
-        f.a_mfunction->thisptr = pr->this;
-        f.a_mfunction->call = call;
-        f.a_mfunction->res = 0;
-        f.a_mfunction->parms = pr->num;
-        f.a_mfunction->arglist = arglist;
-        f.a_mfunction->thisadjust = 0; /* always zero for watcom */
+        mfunction = StartType( out, LFG_MFUNCTION );
+        mfunction->rvtype = pr->ret;
+        mfunction->class_idx = pr->cls;
+        mfunction->thisptr = pr->this;
+        mfunction->call = call;
+        mfunction->res = 0;
+        mfunction->parms = pr->num;
+        mfunction->arglist = arglist;
+        mfunction->thisadjust = 0; /* always zero for watcom */
     } else {
+        ct_procedure *procedure;
+
         NewTypeString( out );
         proci = ++TypeIdx;
-        f.a_procedure = StartType( out, LFG_PROCEDURE );
-        f.a_procedure->rvtype = pr->ret;
-        f.a_procedure->call = call;
-        f.a_procedure->res = 0;
-        f.a_procedure->parms = pr->num;
-        f.a_procedure->arglist = arglist;
+        procedure = StartType( out, LFG_PROCEDURE );
+        procedure->rvtype = pr->ret;
+        procedure->call = call;
+        procedure->res = 0;
+        procedure->parms = pr->num;
+        procedure->arglist = arglist;
     }
     EndTypeString( out );
     return( proci );
