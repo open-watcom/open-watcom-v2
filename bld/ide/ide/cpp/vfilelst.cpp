@@ -52,7 +52,8 @@
 #include "clibext.h"
 
 
-/* Local Window callback functions prototypes */
+/* Local Windows CALLBACK function prototypes */
+extern "C"
 WINEXPORT UINT_PTR CALLBACK AddSrcDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 
 typedef struct {

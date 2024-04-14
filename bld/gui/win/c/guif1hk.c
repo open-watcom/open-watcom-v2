@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2018-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2018-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,7 +36,7 @@
 #include "guixwind.h"
 
 
-/* Local Window callback functions prototypes */
+/* Local Windows callback functions prototypes */
 #ifdef __OS2_PM__
 int                     CALLBACK F1Proc( HAB hab, WPI_QMSG *qmsg, UINT fs );
 #else

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,17 +37,20 @@
 #include "wstrobjs.hpp"
 #include "wautodlg.hpp"
 #include "system.hpp"
+#include "winexprt.h"
 
-// This is an abortion.  It lets us get a Windows HWND from a gui_window *.
-// It assumes that a gui_window * points to a structure with the HWND as
-// its first element.  If the definition of a gui_window changes this
-// will break.  Other projects also do this.  Including guiwind.h to
-// get the proper definition of a gui_window is difficult because it would
-// require that we also include headers from several other places.
+/*
+ * This is an abortion.  It lets us get a Windows HWND from a gui_window *.
+ * It assumes that a gui_window * points to a structure with the HWND as
+ * its first element.  If the definition of a gui_window changes this
+ * will break.  Other projects also do this.  Including guiwind.h to
+ * get the proper definition of a gui_window is difficult because it would
+ * require that we also include headers from several other places.
+ */
 #define GET_HWND( x ) (*((HWND *)(x)))
 
 extern "C"
-int RCSAPI GetInputCB( rcsstring text, rcsstring title, char *buffer, int len, void *cookie )
+WINEXPORT int RCSAPI GetInputCB( rcsstring text, rcsstring title, char *buffer, int len, void *cookie )
 {
     WStringList         prompts;
     WStringList         input;
@@ -67,7 +70,7 @@ int RCSAPI GetInputCB( rcsstring text, rcsstring title, char *buffer, int len, v
 }
 
 extern "C"
-int RCSAPI DoBatchCB( rcsstring str, void *cookie ) {
+WINEXPORT int RCSAPI DoBatchCB( rcsstring str, void *cookie ) {
     VpeMain     *parent;
     WString     cmd( str );
 
