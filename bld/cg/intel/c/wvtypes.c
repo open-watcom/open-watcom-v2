@@ -299,16 +299,16 @@ dbg_type    WVSubRange( int_32 lo, int_32 hi, dbg_type base )
 static  void    ReverseDims( dbg_array ar )
 /*****************************************/
 {
-    dim_any   *curr;
-    dim_entry *next;
-    dim_entry *head;
+    dim_any     *curr;
+    dim_any     *next;
+    dim_any     *head;
 
     curr = ar->list;
     head = NULL;
     while( curr != NULL ) {
-        next = curr->entry.next;
-        curr->entry.next = NULL;
-        curr->entry.next = head;
+        next = curr->next;
+        curr->next = NULL;
+        curr->next = head;
         head = curr;
         curr = next;
     }
@@ -324,24 +324,21 @@ dbg_type    WVEndArray( dbg_array ar )
     dbg_type  sub;
 
 //  ReverseDims( ar );
-    for(;;) {
-        dim = ar->list;
-        if( dim == NULL )
-            break;
-        switch( dim->entry.kind ) {
+    while( (dim = ar->list) != NULL ) {
+        ar->list = dim->next;
+        switch( dim->kind ) {
         case DIM_CON:
-            sub = WVSubRange( dim->con.lo, dim->con.hi, dim->con.idx );
+            sub = WVSubRange( dim->u.con.lo, dim->u.con.hi, dim->u.con.idx );
             ret = WVArray( sub, ar->base );
             ar->base = ret;
             break;
         case DIM_VAR:
-            ret = WVFtnArray( dim->var.dims, dim->var.lo_bound_tipe,
-                     dim->var.num_elts_tipe, dim->var.off, ar->base );
+            ret = WVFtnArray( dim->u.var.dims, dim->u.var.lo_bound_tipe,
+                     dim->u.var.num_elts_tipe, dim->u.var.off, ar->base );
             ar->base = ret;
             break;
 
         }
-        ar->list = dim->entry.next;
         CGFree( dim  );
     }
     return( ret );

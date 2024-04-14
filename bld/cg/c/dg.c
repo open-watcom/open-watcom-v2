@@ -764,8 +764,8 @@ extern  array_list  *DBBegArray(  dbg_type base, cg_type tipe, bool is_col_major
 static  void    AddDim( array_list *ar, dim_any *dim )
 /****************************************************/
 {
-    dim_entry *curr;
-    dim_entry **owner;
+    dim_any *curr;
+    dim_any **owner;
 
     owner = &ar->list;
     for(;;) {
@@ -774,7 +774,7 @@ static  void    AddDim( array_list *ar, dim_any *dim )
             break;
         owner = &curr->next;
     }
-    dim->entry.next = NULL;
+    dim->next = NULL;
     *owner = dim;
     ar->num++;
 }
@@ -782,14 +782,14 @@ static  void    AddDim( array_list *ar, dim_any *dim )
 extern  void DBDimCon( array_list *ar, dbg_type idx, int_32 lo, int_32 hi )
 /*************************************************************************/
 {
-    dim_con *dim;
+    dim_any *dim;
 
     Action( "DBDimCon( %p %d, %l, %l, %d)%n", ar, idx, lo, hi );
     dim = CGAlloc(  sizeof( *dim ) );
-    dim->entry.kind = DIM_CON;
-    dim->lo = lo;
-    dim->hi = hi;
-    dim->idx = idx;
+    dim->kind = DIM_CON;
+    dim->u.con.lo = lo;
+    dim->u.con.hi = hi;
+    dim->u.con.idx = idx;
     AddDim( ar, dim );
 }
 
@@ -799,24 +799,23 @@ extern  void  DBDimVar( array_list *ar,
                         cg_type num_elts_tipe )
 /*********************************************/
 {
-    dim_var *dim;
+    dim_any *dim;
 
     Action( "DBDimVar" );
     Action( "( %p, %s, %s, %s, %d )%n", ar, Label( dims->lp ),
             Tipe( lo_bound_tipe ), Tipe( num_elts_tipe ), off );
     dim = CGAlloc( sizeof( *dim ) );
-    dim->entry.kind = DIM_VAR;
-    dim->dims = dims;
-    dim->off = off;
-    dim->lo_bound_tipe = lo_bound_tipe;
-    dim->num_elts_tipe = num_elts_tipe;
+    dim->kind = DIM_VAR;
+    dim->u.var.dims = dims;
+    dim->u.var.off = off;
+    dim->u.var.lo_bound_tipe = lo_bound_tipe;
+    dim->u.var.num_elts_tipe = num_elts_tipe;
     AddDim( ar, dim );
 }
 
-extern  dbg_type        DBEndArray( array_list  *ar ) {
-/*******************************************************/
-
-
+extern  dbg_type        DBEndArray( array_list  *ar )
+/***************************************************/
+{
     Action( "DBEndArray( %p )", ar );
     TypDbg( "(%d) array #dim == %d%n", ++TypeIdx, ar->num );
     CGFree( ar );

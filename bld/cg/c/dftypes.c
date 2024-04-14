@@ -271,30 +271,27 @@ dbg_type    DFEndArray( dbg_array ar )
     lo_tipe = DBG_NIL_TYPE;
     tipe_addr = NULL;
     count_tipe = DBG_NIL_TYPE;
-    for(;;) {
-        dim = ar->list;
-        if( dim == NULL )
-            break;
-        switch( dim->entry.kind ) {
+    while( (dim = ar->list) != NULL ) {
+        ar->list = dim->next;
+        switch( dim->kind ) {
         case DIM_CON:
-            info.index_type = dim->con.idx;
-            info.lo_data  = dim->con.lo;
-            info.hi_data  = dim->con.hi;
+            info.index_type = dim->u.con.idx;
+            info.lo_data  = dim->u.con.lo;
+            info.hi_data  = dim->u.con.hi;
             DWArrayDimension( Client, &info );
             break;
         case DIM_VAR:
             if( lo_tipe == DBG_NIL_TYPE ) {
-                tipe_addr = TypeAddress( dim->var.lo_bound_tipe );
-                lo_tipe = DFScalar( "", dim->var.lo_bound_tipe );
-                count_tipe = DFScalar( "",  dim->var.num_elts_tipe );
+                tipe_addr = TypeAddress( dim->u.var.lo_bound_tipe );
+                lo_tipe = DFScalar( "", dim->u.var.lo_bound_tipe );
+                count_tipe = DFScalar( "",  dim->u.var.num_elts_tipe );
             }
             varinfo.index_type = lo_tipe;
-            varinfo.lo_data  =  MKBckVar( dim->var.dims, dim->var.off, lo_tipe);
-            varinfo.count_data  = MKBckVar( dim->var.dims, dim->var.off + tipe_addr->length, count_tipe);
+            varinfo.lo_data  =  MKBckVar( dim->u.var.dims, dim->u.var.off, lo_tipe);
+            varinfo.count_data  = MKBckVar( dim->u.var.dims, dim->u.var.off + tipe_addr->length, count_tipe);
             DWArrayVarDim( Client, &varinfo );
             break;
         }
-        ar->list = dim->entry.next;
         CGFree( dim );
     }
     DWEndArray( Client );

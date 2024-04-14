@@ -208,34 +208,30 @@ typedef struct enum_list {
     unsigned    is_c      :1;
 } enum_list;
 
-typedef struct dim_entry{
-    union dim_any *next;
-    enum {
-        DIM_VAR,
-        DIM_CON,
-    }kind;
-}dim_entry;
-
-typedef struct{
-    dim_entry   entry;
+typedef struct dim_var {
     back_handle dims;
     int         off;
     cg_type     lo_bound_tipe;
     cg_type     num_elts_tipe;
-}dim_var;
+} dim_var;
 
-typedef struct{
-    dim_entry   entry;
+typedef struct dim_con {
     int_32      lo;
     int_32      hi;
     dbg_type    idx;
-}dim_con;
+} dim_con;
 
 typedef union dim_any {
-    dim_entry   entry;
-    dim_var     var;
-    dim_con     con;
-}dim_any;
+    union dim_any *next;
+    enum {
+        DIM_VAR,
+        DIM_CON,
+    } kind;
+    union {
+        dim_var     var;
+        dim_con     con;
+    } u;
+} dim_any;
 
 typedef struct array_list {
     dim_any         *list;

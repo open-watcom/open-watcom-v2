@@ -899,19 +899,19 @@ static  dbg_type    CVDimVarLU( dbg_array ar )
     tipe_addr = NULL;
     itipe = 0;
     for( dim = ar->list; dim != NULL; dim = next ) {
-        next = dim->entry.next;
-        switch( dim->entry.kind ) {
+        next = dim->next;
+        switch( dim->kind ) {
         case DIM_VAR:
             if( tipe_addr == NULL ) {
-                tipe_addr = TypeAddress( dim->var.lo_bound_tipe );
+                tipe_addr = TypeAddress( dim->u.var.lo_bound_tipe );
                 itipe = LFIntType( tipe_addr->length );
             }
-            symref[0] = OutBckSym( dim->var.dims, dim->var.off, itipe );
-            symref[1] = OutBckSym( dim->var.dims, dim->var.off + tipe_addr->length, itipe );
+            symref[0] = OutBckSym( dim->u.var.dims, dim->u.var.off, itipe );
+            symref[1] = OutBckSym( dim->u.var.dims, dim->u.var.off + tipe_addr->length, itipe );
             break;
         case DIM_CON:
-            symref[0] = OutBckCon( dim->con.lo, dim->con.idx );
-            symref[1] = OutBckCon( dim->con.hi, dim->con.idx );
+            symref[0] = OutBckCon( dim->u.con.lo, dim->u.con.idx );
+            symref[1] = OutBckCon( dim->u.con.hi, dim->u.con.idx );
             break;
         default:
             symref[0] = 0;
@@ -942,11 +942,11 @@ static  dbg_type    CVDimConLU( dbg_array ar )
     con->rank = ar->num;
     con->index = LF_TINT4;
     for( dim = ar->list; dim != NULL; dim = next ) {
-        next = dim->entry.next;
-        switch( dim->entry.kind ) {
+        next = dim->next;
+        switch( dim->kind ) {
         case DIM_CON:
-            PutFldSized( out, 4, dim->con.lo );
-            PutFldSized( out, 4, dim->con.hi );
+            PutFldSized( out, 4, dim->u.con.lo );
+            PutFldSized( out, 4, dim->u.con.hi );
             break;
         default:
             Zoiks( ZOIKS_106 ); /* bad pointer */
