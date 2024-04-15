@@ -252,7 +252,7 @@ void    ScoreAssign( score *scoreboard, int index, score_info *info )
 
         entry = ScoreList[index];
         if( entry->high != NO_INDEX && entry->low != NO_INDEX ) {
-            if( info->class = SC_N_CONSTANT ) {
+            if( info->class == SC_N_CONSTANT ) {
                 if( info->symbol.u.p != NULL )
                     return; /* relocatable const */
                 hi_off = info->offset >> ( entry->size * 4 );
