@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -142,13 +142,15 @@ static int copy_file( FILE *src, FILE *dst, unsigned long tocopy )
 /*
  * AddDataToEXE - tack data to end of an EXE
  */
-static void AddDataToEXE( char *exe, char *outexe, char *data, bind_size data_len, unsigned long tocopy )
+static void AddDataToEXE( char *exe, char *outexe, char *data, bind_size data_len, struct stat *fs )
 {
     FILE            *fp;
     FILE            *newfp;
     char            buff[sizeof( MAGIC_COOKIE ) + sizeof( bind_size )];
     int             rc;
+    unsigned long   tocopy;
 
+    tocopy = fs->st_size;
     /*
      * get files
      */
@@ -230,6 +232,9 @@ static void AddDataToEXE( char *exe, char *outexe, char *data, bind_size data_le
     copy_file( newfp, fp, tocopy );
     fclose( fp );
     fclose( newfp );
+#ifdef __UNIX__
+    chmod( outexe, fs->st_mode );
+#endif
 
 } /* AddDataToEXE */
 
@@ -463,7 +468,7 @@ int main( int argc, char *argv[] )
         free( buff2 );
         free( buff3 );
 
-        AddDataToEXE( path, outpath, data, data_len, fs.st_size );
+        AddDataToEXE( path, outpath, data, data_len, &fs );
 
         free( data );
     }
