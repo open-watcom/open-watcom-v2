@@ -78,14 +78,14 @@ typedef struct address_name {
     addr_flags              flags;
     union {
         struct {
-            union name      *base;
+            name            *base;
             type_length     alignment;
-            union name      *name;
-            union name      *index;
+            name            *name;
+            name            *index;
             type_length     offset;
         } n;
         struct {
-            union name          *base;
+            name                *base;
             type_length         alignment;
             struct instruction  *ins;
         } i;

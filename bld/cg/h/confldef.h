@@ -68,8 +68,8 @@ typedef enum {
 typedef struct reg_tree {
         struct reg_tree         *lo;
         struct reg_tree         *hi;
-        union name              *temp;
-        union name              *alt;
+        name                    *temp;
+        name                    *alt;
         hw_reg_set              *regs;
         hw_reg_set              chosen;
         type_length             size;
@@ -97,7 +97,7 @@ typedef struct possible_for_alias {
 typedef struct conflict_node {  /*  target independent */
         struct conflict_node    *next_conflict;
         struct conflict_node    *next_for_name;
-        union name              *name;
+        name                    *name;
         struct block            *start_block;
         struct reg_tree         *tree;
         save_def                savings;

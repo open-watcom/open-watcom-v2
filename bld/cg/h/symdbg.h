@@ -260,7 +260,7 @@ typedef struct proc_list {
 typedef struct location {
     struct location         *next;
     union {
-        union name          *be_sym;
+        name                *be_sym;
         cg_sym_handle       fe_sym;
         unsigned            ptr_type;
         unsigned            stk;

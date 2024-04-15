@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,10 +35,10 @@
 #include "_cg.h"
 #include "hwreg.h"
 #include "typclass.h"
-#include "addrname.h"
 #include "bckdef.h"
 #include "blocknum.h"
 #include "name.h"
+#include "addrname.h"
 #include "i87data.h"
 
 

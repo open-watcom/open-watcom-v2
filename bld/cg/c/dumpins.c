@@ -324,7 +324,7 @@ void DoDumpIInfo( instruction *ins, bool fp )
         DumpChar( ' ' );
         DumpChar( ins->stk_entry + '0' );
         DumpChar( ins->stk_exit + '0' );
-        DumpChar( ins->s.stk_depth + '0' );
+        DumpChar( ins->fp.u.stk_depth + '0' );
     } else {
         DumpLiteral( "     " );
     }

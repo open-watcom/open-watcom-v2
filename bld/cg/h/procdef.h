@@ -83,7 +83,7 @@ typedef struct proc_def {
     struct block        *head_block;
     struct block        *tail_block;
     struct proc_def     *next_proc;
-    union name          *names[N_CLASS_MAX];
+    name                *names[N_CLASS_MAX];
     struct block        *curr_block;
     pointer             frame_index;
     pointer             label;
@@ -93,7 +93,7 @@ typedef struct proc_def {
     bool                contains_call;
     level_depth         lex_level;
     prolog_state_def    prolog_state;
-    union name          *lasttemp;
-    union name          *dummy_index;
+    name                *lasttemp;
+    name                *dummy_index;
     instruction         *parms_list;
 } proc_def;

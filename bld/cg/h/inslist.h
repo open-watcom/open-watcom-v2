@@ -116,7 +116,7 @@ typedef struct instruction {
             struct instruction  *cse_link;
         } u1;
         struct register_name    *zap;
-        union name              *result;        /*  result location */
+        name                    *result;        /*  result location */
         instruction_id          id;
         type_class_def          type_class;
         type_class_def          base_type_class;
@@ -144,7 +144,7 @@ typedef struct instruction {
             } u;
         } fp;
         instruction_flags       ins_flags;
-        union name               *operands[1]; /*  operands */
+        name                    *operands[1]; /*  operands */
 } instruction;
 
 #define CALL_OP_USED            0

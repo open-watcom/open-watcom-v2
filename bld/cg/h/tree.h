@@ -83,7 +83,7 @@ typedef struct tree_node {
     const struct type_def   *tipe;
     union {
         struct tree_node    *left;
-        union name          *name;
+        name                *name;
         struct address_name *addr;
         void                *handle;
         cg_callback         callback;

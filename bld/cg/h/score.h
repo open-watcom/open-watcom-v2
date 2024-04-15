@@ -60,7 +60,7 @@ typedef enum {
 } score_name_class_def;
 
 typedef struct score_reg {
-    union name              *reg_name;
+    name                    *reg_name;
     hw_reg_set              reg;
     int                     low;        /*  index of low part of reg, if any */
     int                     high;       /*  index of high part of reg, if any */
@@ -73,12 +73,12 @@ typedef struct score_reg {
 
 typedef struct score_info {
     int_32                  offset;
-    union name              *base;      /*  indexed names only */
+    name                    *base;      /*  indexed names only */
     struct {
         union {
-                struct temp_name    *t;
-                struct var_name     *v;
-                void                *p;
+            struct temp_name    *t;
+            struct var_name     *v;
+            void                *p;
         } u;
     } symbol;
     int                     index_reg;  /*  indexed names only */
