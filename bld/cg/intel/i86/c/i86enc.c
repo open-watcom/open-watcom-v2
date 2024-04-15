@@ -183,7 +183,7 @@ void    Do4CXShift( instruction *ins, void (*rtn)(instruction *) )
     unsigned    shift;
 
     if( ins->operands[1]->n.class == N_CONSTANT ) {
-        shift = ins->operands[1]->c.lo.int_value;
+        shift = ins->operands[1]->c.lo.u.int_value;
         if( shift < 16 && OptForSize < 50 && ins->result->n.class == N_REGISTER ) {
             hreg = ins->result->r.reg;
             lreg = Low32Reg( hreg );
@@ -268,13 +268,13 @@ void    LayLeaRegOp( instruction *ins )
     Inst[RMR] |= DoIndex( left->r.reg );
     if( ins->head.opcode == OP_ADD ) {
         if( right->c.const_type == CONS_ABSOLUTE ) {
-            Inst[RMR] |= Displacement( right->c.lo.int_value, left->r.reg );
+            Inst[RMR] |= Displacement( right->c.lo.u.int_value, left->r.reg );
         } else {
             Inst[RMR] |= DISPW;
             DoRelocConst( right, U2 );
         }
     } else {
-        Inst[RMR] |= Displacement( -right->c.lo.int_value, left->r.reg );
+        Inst[RMR] |= Displacement( -right->c.lo.u.int_value, left->r.reg );
     }
 }
 
@@ -420,7 +420,7 @@ void    DoRelocConst( name *op, type_class_def type_class )
         DoSymRef( op->c.value, ((var_name *)op->c.value)->offset, false );
     } else if( op->c.const_type == CONS_SEGMENT ) {
         if( op->c.value == NULL ) {
-            DoSegRef( op->c.lo.int_value );
+            DoSegRef( op->c.lo.u.int_value );
         } else {
             DoSymRef( op->c.value, 0, true );
         }
@@ -571,7 +571,7 @@ void Pow2Div286( instruction *ins )
 {
     int         log2;
 
-    log2 = GetLog2( ins->operands[1]->c.lo.int_value );
+    log2 = GetLog2( ins->operands[1]->c.lo.u.int_value );
     switch( ins->type_class ) {
     case I1:
     case U1:
@@ -607,7 +607,7 @@ void    Pow2Div( instruction *ins )
 {
     int         log2;
 
-    log2 = GetLog2( ins->operands[1]->c.lo.int_value );
+    log2 = GetLog2( ins->operands[1]->c.lo.u.int_value );
     switch( ins->type_class ) {
     case I1:
     case U1:

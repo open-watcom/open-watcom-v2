@@ -432,7 +432,7 @@ instruction      *rCHANGESHIFT( instruction *ins )
 {
     int_32      shift_count;
 
-    shift_count = ins->operands[1]->c.lo.int_value;
+    shift_count = ins->operands[1]->c.lo.u.int_value;
     assert( shift_count >= 0 );
     ins->operands[1] = AllocS32Const( shift_count & ( ( WORD_SIZE * 8 ) - 1 ) );
     return( ins );
@@ -454,7 +454,7 @@ instruction      *rFIXSHIFT( instruction *ins )
      */
 #ifdef DEVBUILD
     assert( ins->operands[1]->n.class == N_CONSTANT );
-    shift_count = ins->operands[1]->c.lo.int_value;
+    shift_count = ins->operands[1]->c.lo.u.int_value;
     assert( shift_count >= REG_SIZE * 8 );
 #endif
     if( ins->head.opcode == OP_RSHIFT && Signed[ins->type_class] == ins->type_class ) {
@@ -611,7 +611,7 @@ instruction      *rDOUBLEHALF( instruction *ins )
     name                *name1;
 
     name1 = ins->operands[1];
-    name1 = AllocIntConst( name1->c.lo.int_value >> 1 );
+    name1 = AllocIntConst( name1->c.lo.u.int_value >> 1 );
     ins->operands[1] = name1;
     new_ins = MakeBinary( ins->head.opcode, ins->operands[0], name1, ins->result, ins->type_class );
     new_ins->table = ins->table;
@@ -789,7 +789,7 @@ instruction      *rNEGADD( instruction *ins )
 static  void    NegOp2( instruction *ins )
 /****************************************/
 {
-    ins->operands[1] = AllocConst( CFCnvI32F( &cgh, -ins->operands[1]->c.lo.int_value ) );
+    ins->operands[1] = AllocConst( CFCnvI32F( &cgh, -ins->operands[1]->c.lo.u.int_value ) );
 }
 
 

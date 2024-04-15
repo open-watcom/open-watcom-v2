@@ -58,7 +58,7 @@ static  bool    DemoteTree( tn name, const type_def *tipe, bool just_test ) {
     if( TypeClass( frum ) <= I4 ) {
         switch( name->class ) {
         case TN_UNARY: /* go left*/
-            switch( name->u2.t.op ) {
+            switch( name->u1.t.op ) {
             case O_UMINUS:
             case O_COMPLEMENT:
             case O_CONVERT:
@@ -75,7 +75,7 @@ static  bool    DemoteTree( tn name, const type_def *tipe, bool just_test ) {
             }
             break;
         case TN_BINARY: /* go left, right*/
-            switch( name->u2.t.op ) {
+            switch( name->u1.t.op ) {
 #if _TARGET_INTEL
             case O_CONVERT:
                  /* Based pointer junk */
@@ -83,7 +83,7 @@ static  bool    DemoteTree( tn name, const type_def *tipe, bool just_test ) {
             case O_DIV:
             case O_MOD:
                 if( name->u.left->tipe->length > tipe->length ||
-                    name->u2.t.rite->tipe->length > tipe->length )
+                    name->u1.t.rite->tipe->length > tipe->length )
                     break;
                 /* fall throught */
 #endif
@@ -98,18 +98,18 @@ static  bool    DemoteTree( tn name, const type_def *tipe, bool just_test ) {
                     break;
                 if( name->u.left->tipe->refno == TY_HUGE_POINTER )
                     break;
-                if( name->u2.t.rite->tipe->refno == TY_HUGE_POINTER )
+                if( name->u1.t.rite->tipe->refno == TY_HUGE_POINTER )
                     break;
                 can_demote = DemoteTree( name->u.left, tipe, just_test );
                 if( can_demote ) {
-                    can_demote = DemoteTree( name->u2.t.rite, tipe, just_test );
+                    can_demote = DemoteTree( name->u1.t.rite, tipe, just_test );
                 }
                 demote_this_node = true;
                 break;
             }
             break;
         case TN_COMMA:
-            can_demote = DemoteTree( name->u2.t.rite, tipe, just_test );
+            can_demote = DemoteTree( name->u1.t.rite, tipe, just_test );
             break;
         case TN_SIDE_EFFECT:
             can_demote = DemoteTree( name->u.left, tipe, just_test );

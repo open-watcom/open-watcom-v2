@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -103,7 +103,7 @@ void    BigLabel( void )
         ins = MakeNop();
     }
     ins->zap = (register_name *)AllocRegName( AllCacheRegs() );
-    ins->flags.nop_flags |= NOP_ZAP_INFO;
+    ins->flags.u.nop_flags |= NOP_ZAP_INFO;
     AddIns( ins );
 }
 

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -437,7 +437,7 @@ bool InsOrderDependant( instruction *ins_i, instruction *ins_j )
     if( _OpIsJump( ins_i->head.opcode ) )
         return( true );
     if( _OpIsCall( ins_i->head.opcode ) ) {
-        if( (ins_i->flags.call_flags & CALL_READS_NO_MEMORY) == 0
+        if( (ins_i->flags.u.call_flags & CALL_READS_NO_MEMORY) == 0
           && ins_j->result != NULL
           && _IsVisibleToCall( ins_i, ins_j->result, false ) )
             return( true );
@@ -775,7 +775,7 @@ static void FixIndexAdjust( instruction *adj, bool forward )
     opcnt       i;
     scale_typ   scale_adj;
 
-    bias = (type_length)adj->operands[1]->c.lo.int_value;
+    bias = (type_length)adj->operands[1]->c.lo.u.int_value;
     if( adj->head.opcode == OP_SUB )
         bias = -bias;
     if( forward )

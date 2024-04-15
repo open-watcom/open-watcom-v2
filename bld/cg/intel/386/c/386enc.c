@@ -364,7 +364,7 @@ static int_32   GetNextAddConstant( instruction *ins )
          * turn it into:
          *      LEA     EAX, 3[ECX+EDX]
          */
-        disp = neg * next->operands[1]->c.lo.int_value,
+        disp = neg * next->operands[1]->c.lo.u.int_value,
         DoNothing( next );
         break;
     }
@@ -390,7 +390,7 @@ void    LayLeaRegOp( instruction *ins )
     case OP_ADD:
         if( right->n.class == N_CONSTANT ) {
             if( right->c.const_type == CONS_ABSOLUTE ) {
-                EA( HW_EMPTY, left->r.reg, 0, neg * right->c.lo.int_value, NULL, true );
+                EA( HW_EMPTY, left->r.reg, 0, neg * right->c.lo.u.int_value, NULL, true );
             } else {
                 EA( HW_EMPTY, left->r.reg, 0, 0, right, true );
             }
@@ -400,7 +400,7 @@ void    LayLeaRegOp( instruction *ins )
         }
         break;
     case OP_MUL:
-        switch( right->c.lo.int_value ) {
+        switch( right->c.lo.u.int_value ) {
         case 3: scale = 1;  break;
         case 5: scale = 2;  break;
         case 9: scale = 3;  break;
@@ -410,7 +410,7 @@ void    LayLeaRegOp( instruction *ins )
         break;
     case OP_LSHIFT:
         disp = GetNextAddConstant( ins );   /* 2004-11-05  RomanT */
-        switch( right->c.lo.int_value ) {
+        switch( right->c.lo.u.int_value ) {
         case 1:
             if( _CPULevel( CPU_586 ) ) {
                 /*
@@ -422,7 +422,7 @@ void    LayLeaRegOp( instruction *ins )
             }
             /* fall through */
         default:
-            EA( HW_EMPTY, left->r.reg, (scale_typ)right->c.lo.int_value, disp, NULL, true );
+            EA( HW_EMPTY, left->r.reg, (scale_typ)right->c.lo.u.int_value, disp, NULL, true );
         }
         break;
     }
@@ -543,7 +543,7 @@ void    DoRelocConst( name *op, type_class_def type_class )
     } else if( op->c.const_type == CONS_SEGMENT ) {
         ILen += 2;
         if( op->c.value == NULL ) {
-            DoSegRef( (segment_id)op->c.lo.int_value );
+            DoSegRef( (segment_id)op->c.lo.u.int_value );
         } else {
             DoSymRef( op->c.value, 0, true );
         }
@@ -822,7 +822,7 @@ void    Pow2Div( instruction *ins )
     bool        if_32;
 
     if_32 = false;
-    log2 = GetLog2( ins->operands[1]->c.lo.int_value );
+    log2 = GetLog2( ins->operands[1]->c.lo.u.int_value );
     switch( ins->type_class ) {
     case I1:
     case U1:

@@ -132,7 +132,7 @@ block   *DupBlock( block *blk )
     return( copy );
 }
 
-#define COPY_PTR( x )   (x)->v.alter_ego
+#define COPY_PTR( x )   (x)->u2.alter_ego
 
 static  void    ClearCopyPtrs( block *tail )
 /******************************************/

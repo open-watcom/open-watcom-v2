@@ -129,7 +129,7 @@ static  void    Far16Parms( cn call )
     }
     lbl = RTLabel( rtindex );
     call->name->u.n.name = AllocMemory( lbl, 0, CG_LBL, WD );
-    call_ins->flags.call_flags |= CALL_FAR16 | CALL_POPS_PARMS;
+    call_ins->flags.u.call_flags |= CALL_FAR16 | CALL_POPS_PARMS;
     call_ins->operands[CALL_OP_USED] = AllocRegName( state->parm.used );
     call_ins->operands[CALL_OP_POPS] = AllocS32Const( 0 );
     call_ins->zap = &call_ins->operands[CALL_OP_USED]->r;
@@ -177,7 +177,7 @@ an      BGCall( cn call, bool use_return, bool aux_inline )
             }
             ret_ins = MakeUnary( OP_LA, result, ret_ptr, WD );
             HW_TurnOn( state->parm.used, state->return_reg );
-            call_ins->flags.call_flags |= CALL_RETURNS_STRUCT;
+            call_ins->flags.u.call_flags |= CALL_RETURNS_STRUCT;
         }
     }
     if( _IsTargetModel( CGSW_X86_FLOATING_DS )
@@ -191,7 +191,7 @@ an      BGCall( cn call, bool use_return, bool aux_inline )
     } else {
         if( AssgnParms( call, aux_inline ) ) {
             if( state->attr & ROUTINE_REMOVES_PARMS ) {
-                call_ins->flags.call_flags |= CALL_POPS_PARMS;
+                call_ins->flags.u.call_flags |= CALL_POPS_PARMS;
             }
         }
     }
@@ -201,25 +201,25 @@ an      BGCall( cn call, bool use_return, bool aux_inline )
          * a routine that never returns can not write any memory
          * as far as this routine is concerned
          */
-        call_ins->flags.call_flags |= CALL_WRITES_NO_MEMORY;
+        call_ins->flags.u.call_flags |= CALL_WRITES_NO_MEMORY;
     }
     if( state->attr & ROUTINE_READS_NO_MEMORY ) {
-        call_ins->flags.call_flags |= CALL_READS_NO_MEMORY;
+        call_ins->flags.u.call_flags |= CALL_READS_NO_MEMORY;
     }
     if( state->attr & ROUTINE_NEVER_RETURNS_ABORTS ) {
-        call_ins->flags.call_flags |= CALL_ABORTS;
+        call_ins->flags.u.call_flags |= CALL_ABORTS;
     }
     if( state->attr & ROUTINE_NEVER_RETURNS_NORETURN ) {
-        call_ins->flags.call_flags |= CALL_NORETURN;
+        call_ins->flags.u.call_flags |= CALL_NORETURN;
     }
     if( _RoutineIsInterrupt( state->attr ) ) {
-        call_ins->flags.call_flags |= CALL_INTERRUPT | CALL_POPS_PARMS;
+        call_ins->flags.u.call_flags |= CALL_INTERRUPT | CALL_POPS_PARMS;
     }
     if( state->attr & ROUTINE_NEEDS_BP_CHAIN ) {
-        call_ins->flags.call_flags |= CALL_NEEDS_BP_CHAIN;
+        call_ins->flags.u.call_flags |= CALL_NEEDS_BP_CHAIN;
     }
     if( !use_return ) {
-        call_ins->flags.call_flags |= CALL_IGNORES_RETURN;
+        call_ins->flags.u.call_flags |= CALL_IGNORES_RETURN;
     }
     if( call_ins->type_class == XX ) {
         reg_name = AllocRegName( state->return_reg );
@@ -240,9 +240,9 @@ an      BGCall( cn call, bool use_return, bool aux_inline )
                 AddIns( MakeUnary( OP_PUSH, ret_ptr, NULL, WD ) );
                 state->parm.offset += TypeClassSize[WD];
                 call_ins->operands[CALL_OP_POPS] =
-                        AllocS32Const( call_ins->operands[CALL_OP_POPS]->c.lo.int_value + TypeClassSize[WD] );
+                        AllocS32Const( call_ins->operands[CALL_OP_POPS]->c.lo.u.int_value + TypeClassSize[WD] );
                 if( state->attr & ROUTINE_REMOVES_PARMS ) {
-                    call_ins->flags.call_flags |= CALL_POPS_PARMS;
+                    call_ins->flags.u.call_flags |= CALL_POPS_PARMS;
                 }
             }
             AddCall( call_ins, call );

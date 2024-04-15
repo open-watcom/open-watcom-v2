@@ -130,8 +130,8 @@ name    *Addressable( name *cons, type_class_def type_class )
             return( GenFloat( cons, type_class ) );
         case U8:
         case I8:
-            buffer.u._32[I64LO32] = cons->c.lo.int_value;
-            buffer.u._32[I64HI32] = cons->c.hi.int_value;
+            buffer.u._32[I64LO32] = cons->c.lo.u.int_value;
+            buffer.u._32[I64HI32] = cons->c.hi.u.int_value;
             return( GenConstData( &buffer, type_class ) );
         default:
             Zoiks( ZOIKS_138 );

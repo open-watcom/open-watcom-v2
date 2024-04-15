@@ -69,7 +69,7 @@ static instruction  *DoReduce( instruction *ins, const opcode_entry *try, bool h
     if( has_index || ins->num_operands > OpcodeNumOperands( ins ) ) {
         ins = NeedIndex( ins );
     } else {
-        ins->t.index_needs = RL_;
+        ins->u2.index_needs = RL_;
     }
     return( ins );
 }

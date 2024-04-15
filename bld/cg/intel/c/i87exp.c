@@ -419,7 +419,7 @@ static  instruction     *ExpCall( instruction *ins )
     if( ins->result != NULL
      && ins->result->n.class == N_REGISTER
      && HW_CEqual( ins->result->r.reg, HW_ST0 ) ) {
-        if( ins->flags.call_flags & CALL_IGNORES_RETURN ) {
+        if( ins->flags.u.call_flags & CALL_IGNORES_RETURN ) {
             new_ins = SuffixFSTPRes( ins );
             new_ins->u.gen_table = RFST;
         }

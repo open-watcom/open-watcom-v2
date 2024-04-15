@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -364,7 +364,7 @@ static  void    BlockToCode( bool partly_done )
     }
     /* Kludge - need a pointer to the next block for CALL_LABEL - puke! */
     if( _IsBlkAttr( HeadBlock, BLK_CALL_LABEL ) ) {
-        HeadBlock->v.next = HeadBlock->next_block;
+        HeadBlock->u2.next = HeadBlock->next_block;
     }
     HeadBlock->next_block = NULL;
 

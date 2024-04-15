@@ -1280,7 +1280,7 @@ static  void    AddSWCons( opcode_defs op, name *opnd, type_class_def type_class
  */
 {
     if( opnd->c.const_type == CONS_ABSOLUTE ) {
-        AddSWData( op, opnd->c.lo.int_value, type_class );
+        AddSWData( op, opnd->c.lo.u.int_value, type_class );
     } else {
         switch( type_class ) {
         case U2:
@@ -1319,7 +1319,7 @@ void    AddWCons( name *op, type_class_def type_class )
  */
 {
     if( op->c.const_type == CONS_ABSOLUTE ) {
-        AddWData( op->c.lo.int_value, type_class );
+        AddWData( op->c.lo.u.int_value, type_class );
     } else  {
         switch( type_class ) {
         case U2:
@@ -1361,7 +1361,7 @@ static  void    AddSCons( name *op, type_class_def type_class )
  */
 {
     if( op->c.const_type == CONS_ABSOLUTE ) {
-        AddSData( op->c.lo.int_value, type_class );
+        AddSData( op->c.lo.u.int_value, type_class );
     } else {
         switch( type_class ) {
         case U2:
@@ -1437,7 +1437,7 @@ void    GFldMorC( name *what )
 {
     if( what->n.class == N_MEMORY || what->n.class == N_TEMP ) {
         GFldM( what );
-    } else if( what->c.lo.int_value == 0 ) {
+    } else if( what->c.lo.u.int_value == 0 ) {
         GFldz();
     } else {
         GFld1();
@@ -2035,7 +2035,7 @@ void    GenObjCode( instruction *ins )
                 break;
             }
             LayACRegOp( left );
-            if( OpcodeNumOperands( ins ) != 1 && right->c.lo.int_value == 2 ) {
+            if( OpcodeNumOperands( ins ) != 1 && right->c.lo.u.int_value == 2 ) {
                 /*
                  * never address
                  */
@@ -2047,7 +2047,7 @@ void    GenObjCode( instruction *ins )
             break;
         case G_R1:
             LayRMRegOp( left );
-            if( ins->num_operands != 1 && right->c.lo.int_value == 2 ) {
+            if( ins->num_operands != 1 && right->c.lo.u.int_value == 2 ) {
                 TransferIns();
                 if( opnd_size ) {
                     AddToTemp( M_OPND_SIZE );
@@ -2065,11 +2065,11 @@ void    GenObjCode( instruction *ins )
             break;
         case G_RNSHIFT:
             LayRMRegOp( left );
-            AddByte( (byte)right->c.lo.int_value ); /* never address */
+            AddByte( (byte)right->c.lo.u.int_value ); /* never address */
             break;
         case G_NSHIFT:
             LayModRM( left );
-            AddByte( (byte)right->c.lo.int_value ); /* never address */
+            AddByte( (byte)right->c.lo.u.int_value ); /* never address */
             break;
         case G_R2:
             LayRMRegOp( right );

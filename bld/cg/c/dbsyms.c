@@ -646,9 +646,9 @@ static  void    AddBlockInfo( dbg_block *blk, bool start )
     ins = MakeNop();
     ins->table = DbgInfo;
     ins->u.gen_table = ins->table;
-    ins->flags.nop_flags = NOP_DBGINFO;
+    ins->flags.u.nop_flags = NOP_DBGINFO;
     if( start )
-        ins->flags.nop_flags |= NOP_DBGINFO_START;
+        ins->flags.u.nop_flags |= NOP_DBGINFO_START;
     ins->operands[0] = (name *)blk;
     AddIns( ins );
 }
@@ -804,7 +804,7 @@ void    EmitProEnd( void )
 void    EmitDbgInfo( instruction *ins )
 /*************************************/
 {
-    if( ins->flags.nop_flags & NOP_DBGINFO_START ) {
+    if( ins->flags.u.nop_flags & NOP_DBGINFO_START ) {
         EmitDbg( OC_INFO_DBG_BLK_BEG, ins->operands[0] );
     } else {
         EmitDbg( OC_INFO_DBG_BLK_END, ins->operands[0] );

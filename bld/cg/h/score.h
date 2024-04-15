@@ -74,10 +74,12 @@ typedef struct score_reg {
 typedef struct score_info {
     int_32                  offset;
     union name              *base;      /*  indexed names only */
-    union {
-        struct temp_name    *t;
-        struct var_name     *v;
-        void                *p;
+    struct {
+        union {
+                struct temp_name    *t;
+                struct var_name     *v;
+                void                *p;
+        } u;
     } symbol;
     int                     index_reg;  /*  indexed names only */
     scale_typ               scale;      /*  indexed names only */

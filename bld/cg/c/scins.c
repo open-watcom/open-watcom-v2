@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -236,7 +236,7 @@ static  bool    TryRegOp( score *scoreboard, instruction *ins, name **opp )
         ScoreInfo( &info, op );
         if( info.class == SC_N_CONSTANT ) {
             if( _OpIsCondition( ins->head.opcode ) &&
-                info.symbol.p == NULL && info.offset == 0 ) {
+                info.symbol.u.p == NULL && info.offset == 0 ) {
                 /*
                  * don't change cmp x,0
                  */

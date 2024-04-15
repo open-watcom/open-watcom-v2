@@ -191,11 +191,11 @@ static  void    InitZero( void )
 /* since it will just set offset to 0 */
 {
     ScZero = ScAlloc( sizeof( score_info ) );
-    ScZero->class     = SC_N_CONSTANT;
-    ScZero->offset    = 0;
-    ScZero->symbol.p  = NULL;
-    ScZero->index_reg = NO_INDEX;
-    ScZero->base      = NULL;
+    ScZero->class       = SC_N_CONSTANT;
+    ScZero->offset      = 0;
+    ScZero->symbol.u.p  = NULL;
+    ScZero->index_reg   = NO_INDEX;
+    ScZero->base        = NULL;
 }
 
 

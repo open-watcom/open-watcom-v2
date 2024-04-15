@@ -37,24 +37,26 @@
 #include "types.h"
 
 typedef enum {
-        TYPE_DEFINITION,
-        TYPE_ALIAS
+    TYPE_DEFINITION,
+    TYPE_ALIAS
 } type_class;
 
 typedef struct alias {
-        const struct type_def   *tptr;
-        cg_type                 refno;
+    const struct type_def   *tptr;
+    cg_type                 refno;
 } alias;
 
-typedef union type_alloc {
+typedef struct type_alloc {
+    union {
         struct alias        alias;
         struct type_def     type_def;
+    } u;
 } type_alloc;
 
 typedef struct type_list {
-        union type_alloc    tipe;
-        struct type_list    *link;
-        type_class          format;
+    type_alloc          tipe;
+    struct type_list    *link;
+    type_class          format;
 } type_list;
 
 const type_def *PTInteger;
@@ -142,12 +144,12 @@ const type_def  *TypeAddress( cg_type tipe )
     default:
         for( list = TypeList; list != NULL; list = list->link ) {
             if( list->format == TYPE_DEFINITION ) {
-                if( list->tipe.type_def.refno == tipe ) {
-                    return( &list->tipe.type_def );
+                if( list->tipe.u.type_def.refno == tipe ) {
+                    return( &list->tipe.u.type_def );
                 }
             } else {    /* TYPE_ALIAS */
-                if( list->tipe.alias.refno == tipe ) {
-                    return( list->tipe.alias.tptr );
+                if( list->tipe.u.alias.refno == tipe ) {
+                    return( list->tipe.u.alias.tptr );
                 }
             }
         }
@@ -183,8 +185,8 @@ const type_def  *TypeAlias( cg_type define, cg_type existing )
     list->link = TypeList;
     TypeList = list;
     list->format = TYPE_ALIAS;
-    list->tipe.alias.refno = define;
-    list->tipe.alias.tptr  = t;
+    list->tipe.u.alias.refno = define;
+    list->tipe.u.alias.tptr  = t;
     return( t );
 }
 
@@ -203,13 +205,13 @@ const type_def  *TypeDef( cg_type refno, type_length length, type_length align )
     list->link = TypeList;
     TypeList = list;
     list->format = TYPE_DEFINITION;
-    list->tipe.type_def.refno  =  refno;
-    list->tipe.type_def.length = length;
-    list->tipe.type_def.attr   = 0;
+    list->tipe.u.type_def.refno  =  refno;
+    list->tipe.u.type_def.length = length;
+    list->tipe.u.type_def.attr   = 0;
 #if _TARGET_RISC
-    list->tipe.type_def.align  = align;
+    list->tipe.u.type_def.align  = align;
 #endif
-    return( &list->tipe.type_def );
+    return( &list->tipe.u.type_def );
 }
 
 

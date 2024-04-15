@@ -75,9 +75,11 @@
 
 #define MAX_BCK_INFO    1000    // number of bck_info's per carve block
 
-typedef union uback_info {
-    bck_info    bck;
-    union uback_info    *link;
+typedef struct uback_info {
+    union {
+        bck_info            bck;
+        struct uback_info   *link;
+    } u;
 } uback_info;
 
 typedef struct bck_info_block {
@@ -463,10 +465,10 @@ static void AllocMoreBckInfo( void )
         p = &carve_block->bck_infos[0];
         BckInfoHead = p;
         for( i = 0; i < (MAX_BCK_INFO - 1); i++ ) {
-            p->link = p + 1;
+            p->u.link = p + 1;
             ++p;
         }
-        p->link = NULL;
+        p->u.link = NULL;
     }
 }
 
@@ -494,8 +496,8 @@ back_handle _CGAPI      BENewBack( cg_sym_handle sym )
     if( BckInfoHead == NULL ) {
         AllocMoreBckInfo();
     }
-    bck = &BckInfoHead->bck;
-    BckInfoHead = BckInfoHead->link;
+    bck = &BckInfoHead->u.bck;
+    BckInfoHead = BckInfoHead->u.link;
     bck->lbl = AskForLabel( sym );
     bck->imp = NOT_IMPORTED;
     bck->imp_alt = NOT_IMPORTED;
@@ -530,11 +532,11 @@ void _CGAPI     BEFreeBack( back_handle bck )
     EchoAPI( "BEFreeBack( %L )\n", bck );
 #endif
     if( IS_REAL_BACK( bck ) ) {
-//      CGFree( bck );
+//        CGFree( bck );
         uback_info      *p;
 
         p = (uback_info *)bck;
-        p->link = BckInfoHead;
+        p->u.link = BckInfoHead;
         BckInfoHead = p;
     }
 }
@@ -1496,36 +1498,41 @@ void _CGAPI     DGInteger64( unsigned_64 value, cg_type tipe )
 /************************************************************/
 {
     type_length len;
-    union{
-        uint_32     vall;
-        unsigned_64 val;
-        byte        buff[8];
+    struct {
+        union {
+            uint_32     vall;
+            unsigned_64 val;
+            byte        buff[8];
+        } u;
     } data;
     byte        *form;
 
 #if ( ( _TARG_MEMORY & _TARG_LOW_FIRST ) == 0 ) == defined( __BIG_ENDIAN__ )
-    data.val = value;
+    data.u.val = value;
 #else
     {  // reverse them
-        union{
-            unsigned_64 val;
-            byte        buff[8];
-        }temp;
+        struct {
+            union {
+                unsigned_64 val;
+                byte        buff[8];
+            } u;
+        } temp;
         int  i;
-        temp.val = value;
+
+        temp.u.val = value;
         for( i = 0; i <= 7; ++i ) {
-            data.buff[i] = temp.buff[7 - i];
+            data.u.buff[i] = temp.u.buff[7 - i];
         }
     }
 #endif
 #ifdef DEVBUILD
 // fix this up when we get printf support for int64
     EchoAPI( "DGInteger64( %x %x, %t )\n"
-           , data.val.u._32[0]
-           , data.val.u._32[1]
+           , data.u.val.u._32[0]
+           , data.u.val.u._32[1]
            , tipe );
 #endif
-    form = data.buff;
+    form = data.u.buff;
     len = TypeLength( tipe );
     DGBytes( len, form );
 }

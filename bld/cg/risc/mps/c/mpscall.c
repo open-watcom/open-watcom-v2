@@ -65,16 +65,16 @@ an BGCall( cn call, bool use_return, bool aux_inline )
     state = call->state;
 
     if( state->attr & (ROUTINE_MODIFIES_NO_MEMORY | ROUTINE_NEVER_RETURNS_ABORTS | ROUTINE_NEVER_RETURNS_NORETURN) ) {
-        call_ins->flags.call_flags |= CALL_WRITES_NO_MEMORY;
+        call_ins->flags.u.call_flags |= CALL_WRITES_NO_MEMORY;
     }
     if( state->attr & ROUTINE_READS_NO_MEMORY ) {
-        call_ins->flags.call_flags |= CALL_READS_NO_MEMORY;
+        call_ins->flags.u.call_flags |= CALL_READS_NO_MEMORY;
     }
     if( state->attr & ROUTINE_IS_SETJMP ) {
-        call_ins->flags.call_flags |= CALL_IS_SETJMP;
+        call_ins->flags.u.call_flags |= CALL_IS_SETJMP;
     }
     if( !use_return ) {
-        call_ins->flags.call_flags |= CALL_IGNORES_RETURN;
+        call_ins->flags.u.call_flags |= CALL_IGNORES_RETURN;
     }
 
     result = BGNewTemp( call->tipe );

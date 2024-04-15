@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -299,7 +299,7 @@ void    SuffixIns( instruction *ins, instruction *suff )
         /*
          * get rid of the little bugger so it doesn't mess up our optimizing
          */
-        if( ins->flags.nop_flags & NOP_SOURCE_QUEUE ) {
+        if( ins->flags.u.nop_flags & NOP_SOURCE_QUEUE ) {
             /*
              * transfer the line_num info to the next instruction
              */

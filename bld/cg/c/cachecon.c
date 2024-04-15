@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -64,7 +64,7 @@ static  opcnt   CountOps( instruction *ins, name *cons )
     case OP_SUB:
         if( IsStackReg( ins->result ) ) {
             num_operands = 0;
-        } else if( cons->c.lo.int_value == 1 ) {
+        } else if( cons->c.lo.u.int_value == 1 ) {
             num_operands = 1;
         } else {
             num_operands = ins->num_operands;

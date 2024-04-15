@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -114,31 +114,35 @@ typedef struct instruction {
         union {
             struct instruction  *parm_list;
             struct instruction  *cse_link;
-        } u2;
+        } u1;
         struct register_name    *zap;
         union name              *result;        /*  result location */
         instruction_id          id;
         type_class_def          type_class;
         type_class_def          base_type_class;
         uint_16                 sequence;
-        union {
+        struct {
+            union {
                 byte            byte;
                 bool            bool_flag;
                 call_flags      call_flags;
                 nop_flags       nop_flags;
                 byte            zap_value;      /* for conversions on AXP */
+            } u;
         }                       flags;
         union {
             byte                index_needs;    /*  a.k.a. reg_set_index */
             byte                stk_max;
-        } t;
+        } u2;
         byte                    stk_entry;
         byte                    num_operands;
         byte                    stk_exit;
-        union {
-            byte                stk_extra;
-            byte                stk_depth;
-        }                       s;
+        struct {
+            union {
+                byte            stk_extra;
+                byte            stk_depth;
+            } u;
+        } fp;
         instruction_flags       ins_flags;
         union name               *operands[1]; /*  operands */
 } instruction;
@@ -153,9 +157,9 @@ typedef struct instruction {
 #define MAX_OPS_PER_INS 4
 #define INS_SIZE        ( offsetof( instruction, operands ) + MAX_OPS_PER_INS * sizeof( name * ) )
 
-#define _TrueIndex( i )              ( (i)->flags.byte & 0x0f )
-#define _FalseIndex( i )             ( ( (i)->flags.byte & 0xf0 ) >> 4 )
-#define _SetBlockIndex( i, t, f )    (i)->flags.byte = (t) | ( (f) << 4 )
+#define _TrueIndex( i )              ( (i)->flags.u.byte & 0x0f )
+#define _FalseIndex( i )             ( ( (i)->flags.u.byte & 0xf0 ) >> 4 )
+#define _SetBlockIndex( i, t, f )    (i)->flags.u.byte = (t) | ( (f) << 4 )
 
 #define _IsConvert( ins )            ( (ins)->head.opcode == OP_CONVERT || \
                                        (ins)->head.opcode == OP_ROUND )

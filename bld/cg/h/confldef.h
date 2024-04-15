@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -97,7 +97,7 @@ typedef struct possible_for_alias {
 typedef struct conflict_node {  /*  target independent */
         struct conflict_node    *next_conflict;
         struct conflict_node    *next_for_name;
-        union  name             *name;
+        union name              *name;
         struct block            *start_block;
         struct reg_tree         *tree;
         save_def                savings;

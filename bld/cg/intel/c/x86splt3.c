@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -114,7 +114,7 @@ void    DupSeg( instruction *ins, instruction *new_ins )
     if( new_ins->num_operands > OpcodeNumOperands( new_ins ) )
         return;
     new_ins->operands[new_ins->num_operands++] = ins->operands[ins->num_operands - 1];
-    new_ins->t.index_needs = ins->t.index_needs;
+    new_ins->u2.index_needs = ins->u2.index_needs;
 }
 
 

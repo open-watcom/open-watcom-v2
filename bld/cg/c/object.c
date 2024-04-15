@@ -127,7 +127,7 @@ void    GenObject( void )
             InitStackDepth( blk );
             for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
                 if( ins->head.opcode == OP_NOP
-                  && ( (ins->flags.nop_flags & NOP_SOURCE_QUEUE) || ins->flags.nop_flags == NOP_DBGINFO )) // an end block
+                  && ( (ins->flags.u.nop_flags & NOP_SOURCE_QUEUE) || ins->flags.u.nop_flags == NOP_DBGINFO )) // an end block
                 {
                     last_line = DumpLineNum(ins->head.line_num, last_line, true);
                 } else {
@@ -162,7 +162,7 @@ void    GenObject( void )
                 GenCallLabel( blk->edge[0].destination.u.blk );
                 if( BlockByBlock ) {
                     if( next_block == NULL ) {
-                        GenJumpLabel( blk->v.next->label );
+                        GenJumpLabel( blk->u2.next->label );
                     } else {
                         GenJumpLabel( next_block->label );
                     }
@@ -369,7 +369,7 @@ static  int     OpcodeHeuristic( block *blk, instruction *cond ) {
     case OP_CMP_LESS_EQUAL:
         if( op2->n.class == N_CONSTANT ) {
             if( op2->c.const_type == CONS_ABSOLUTE ) {
-                if( op2->c.lo.int_value == 0 ) {
+                if( op2->c.lo.u.int_value == 0 ) {
                     prediction = NOT_TAKEN;
                 }
             }
@@ -379,7 +379,7 @@ static  int     OpcodeHeuristic( block *blk, instruction *cond ) {
     case OP_CMP_GREATER_EQUAL:
         if( op2->n.class == N_CONSTANT ) {
             if( op2->c.const_type == CONS_ABSOLUTE ) {
-                if( op2->c.lo.int_value == 0 ) {
+                if( op2->c.lo.u.int_value == 0 ) {
                     prediction = TAKEN;
                 }
             }

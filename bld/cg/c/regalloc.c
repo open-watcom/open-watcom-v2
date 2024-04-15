@@ -126,7 +126,7 @@ static name *ReplIndex( instruction *ins, reg_tree *tree, name *x, name *reg )
 {
     name        *new_x;
 
-    ins->t.index_needs = RL_;
+    ins->u2.index_needs = RL_;
     reg = FindReg( tree, x->i.index, reg );
     new_x = ScaleIndex(reg, x->i.base, x->i.constant,
                         x->n.type_class, x->n.size, x->i.scale,
@@ -669,7 +669,7 @@ static bool StealsIdx( instruction *ins, hw_reg_set except, name *actual_op )
             is_result = true;
         }
     }
-    index_needs = RegSets[ins->t.index_needs];
+    index_needs = RegSets[ins->u2.index_needs];
     if( HW_CEqual( *index_needs, HW_EMPTY ) )
         return( false );
     for( ;; ) {

@@ -179,7 +179,7 @@ void    GenBlock( block_class class, int targets )
          * opcode (the AddIns code puts in line number automatically).
          */
         ins = MakeNop();
-        ins->flags.nop_flags |= NOP_SOURCE_QUEUE;
+        ins->flags.u.nop_flags |= NOP_SOURCE_QUEUE;
         AddIns( ins );
     }
     CurrBlock->prev_block = BlockList;

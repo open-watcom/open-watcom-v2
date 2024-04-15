@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -102,7 +102,7 @@ instruction     *NewIns( opcnt num )
     }
     new = AllocFrl( &InsFrl, INS_SIZE );
     new->head.state = INS_NEEDS_WORK;
-    new->t.index_needs = RL_;
+    new->u2.index_needs = RL_;
     new->num_operands = num;
     new->result = NULL;
     memset( &new->flags, 0, sizeof( new->flags ) );
@@ -111,7 +111,7 @@ instruction     *NewIns( opcnt num )
     new->sequence = 0;
     new->stk_entry = 0;
     new->stk_exit = 0;
-    new->s.stk_extra = 0;
+    new->fp.u.stk_extra = 0;
     for( num = MAX_OPS_PER_INS; num-- > 0; ) {
         new->operands[num] = NULL;
     }

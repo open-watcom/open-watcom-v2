@@ -841,7 +841,7 @@ static  void    Encode( instruction *ins )
         assert( ins->result->n.class == N_REGISTER );
         opcodes = FindOpcodes( ins );
         GenOPIMM8( opcodes[0], opcodes[1], _NameRegTrans( ins->operands[0] ),
-            (uint_8)ins->operands[1]->c.lo.int_value,
+            (uint_8)ins->operands[1]->c.lo.u.int_value,
             _NameRegTrans( ins->result ) );
         break;
     case G_BYTE_CONST:
@@ -851,7 +851,7 @@ static  void    Encode( instruction *ins )
         assert( ins->operands[0]->n.class == N_CONSTANT );
         assert( ins->result->n.class == N_REGISTER );
         GenOPIMM8( 0x10, 0x00, ZERO_REG_IDX,
-            (uint_8)ins->operands[0]->c.lo.int_value,
+            (uint_8)ins->operands[0]->c.lo.u.int_value,
             _NameRegTrans( ins->result ) );
         break;
     case G_MOVE:
@@ -867,12 +867,12 @@ static  void    Encode( instruction *ins )
     case G_ZAP:
         assert( ins->operands[0]->n.class == N_REGISTER );
         assert( ins->result->n.class == N_REGISTER );
-        assert( ins->flags.zap_value <= 8 );
+        assert( ins->flags.u.zap_value <= 8 );
         /*
          * generate a "ZAPNOT Ra,#i,Rb" instruction
          */
         GenOPIMM8( 0x12, 0x31, _NameRegTrans( ins->operands[0] ),
-            zapMask[ins->flags.zap_value],
+            zapMask[ins->flags.u.zap_value],
             _NameRegTrans( ins->result ) );
         break;
     case G_LEA_HIGH:
@@ -880,7 +880,7 @@ static  void    Encode( instruction *ins )
         assert( ins->operands[0]->c.const_type == CONS_HIGH_ADDR );
         assert( ins->result->n.class == N_REGISTER );
         GenMEMINS( 0x09, _NameRegTrans( ins->result ), ZERO_REG_IDX,
-            (int_16)ins->operands[0]->c.lo.int_value );
+            (int_16)ins->operands[0]->c.lo.u.int_value );
         break;
     case G_LEA:
         assert( ins->operands[0]->n.class == N_CONSTANT );
@@ -888,7 +888,7 @@ static  void    Encode( instruction *ins )
         switch( ins->operands[0]->c.const_type ) {
         case CONS_ABSOLUTE:
             GenMEMINS( 0x08, _NameRegTrans( ins->result ), ZERO_REG_IDX,
-                (int_16)ins->operands[0]->c.lo.int_value );
+                (int_16)ins->operands[0]->c.lo.u.int_value );
             break;
         case CONS_LOW_ADDR:
         case CONS_HIGH_ADDR:

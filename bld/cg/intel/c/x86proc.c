@@ -143,7 +143,7 @@ static  bool    ScanInstructions( void )
                     CurrProc->state.attr |= ROUTINE_NEEDS_PROLOG;
                     sp_constant = false;
                 }
-                if( ins->flags.call_flags & CALL_NEEDS_BP_CHAIN ) {
+                if( ins->flags.u.call_flags & CALL_NEEDS_BP_CHAIN ) {
                     CurrProc->state.attr |= ROUTINE_NEEDS_BP_CHAIN;
                 }
             }
@@ -1114,7 +1114,7 @@ void        AdjustStackDepth( instruction *ins )
             _Zoiks( ZOIKS_077 );
             return;
         }
-        adjust = op->c.lo.int_value;
+        adjust = op->c.lo.u.int_value;
         if( ins->head.opcode == OP_SUB ) {
             StackDepth += adjust;
         } else {
@@ -1129,10 +1129,10 @@ void        AdjustStackDepth( instruction *ins )
         break;
     case OP_CALL:
     case OP_CALL_INDIRECT:
-        if( ins->flags.call_flags & CALL_POPS_PARMS ) {
+        if( ins->flags.u.call_flags & CALL_POPS_PARMS ) {
             op = ins->operands[CALL_OP_POPS];
             if( op->n.class == N_CONSTANT ) {
-                StackDepth -= op->c.lo.int_value;
+                StackDepth -= op->c.lo.u.int_value;
             }
         }
     default:

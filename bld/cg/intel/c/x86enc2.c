@@ -361,7 +361,7 @@ void    GenCall( instruction *ins )
     label_handle    lbl;
     bool            far_call;
 
-    if( ins->flags.call_flags & CALL_INTERRUPT ) {
+    if( ins->flags.u.call_flags & CALL_INTERRUPT ) {
         Pushf();
     }
     op = ins->operands[CALL_OP_ADDR];
@@ -397,7 +397,7 @@ void    GenCall( instruction *ins )
             lbl = (label_handle)sym;
             imp = true;
         }
-        DoCall( lbl, imp, far_call, (ins->flags.call_flags & CALL_POPS_PARMS) != 0 );
+        DoCall( lbl, imp, far_call, (ins->flags.u.call_flags & CALL_POPS_PARMS) != 0 );
     }
     if( (cclass & (FECALL_GEN_ABORTS | FECALL_GEN_NORETURN))
       && _IsntTargetModel( CGSW_X86_NEW_P5_PROFILING ) ) {
@@ -415,16 +415,16 @@ void    GenCallIndirect( instruction *ins )
     gen_opcode      opcode;
     name            *op;
 
-    if( ins->flags.call_flags & CALL_INTERRUPT ) {
+    if( ins->flags.u.call_flags & CALL_INTERRUPT ) {
         Pushf();
     }
-    if( (ins->flags.call_flags & CALL_ABORTS)
+    if( (ins->flags.u.call_flags & CALL_ABORTS)
       && _IsntTargetModel( CGSW_X86_NEW_P5_PROFILING ) ) {
         occlass = OC_JMPI;
     } else {
         occlass = OC_CALLI;
     }
-    if( ins->flags.call_flags & CALL_POPS_PARMS ) {
+    if( ins->flags.u.call_flags & CALL_POPS_PARMS ) {
         occlass |= OC_ATTR_POP;
     }
     op = ins->operands[CALL_OP_ADDR];
@@ -438,7 +438,7 @@ void    GenCallIndirect( instruction *ins )
     LayOpword( opcode );
     LayModRM( op );
     _Emit;
-    if( (ins->flags.call_flags & CALL_NORETURN)
+    if( (ins->flags.u.call_flags & CALL_NORETURN)
       && _IsntTargetModel( CGSW_X86_NEW_P5_PROFILING ) ) {
         GenNoReturn();
     }
@@ -453,19 +453,19 @@ void    GenCallRegister( instruction *ins )
     name            *op;
     oc_class        occlass;
 
-    if( ins->flags.call_flags & CALL_INTERRUPT ) {
+    if( ins->flags.u.call_flags & CALL_INTERRUPT ) {
         Pushf();
     }
     op = ins->operands[CALL_OP_ADDR];
     occlass = OC_CALLI;
-    if( ins->flags.call_flags & CALL_POPS_PARMS ) {
+    if( ins->flags.u.call_flags & CALL_POPS_PARMS ) {
         occlass |= OC_ATTR_POP;
     }
     ReFormat( occlass );
     LayOpword( M_CJINEAR );
     LayRegRM( op->r.reg );
     _Emit;
-    if( (ins->flags.call_flags & CALL_NORETURN)
+    if( (ins->flags.u.call_flags & CALL_NORETURN)
       && _IsntTargetModel( CGSW_X86_NEW_P5_PROFILING ) ) {
         GenNoReturn();
     }

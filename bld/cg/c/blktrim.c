@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -307,7 +307,7 @@ static  void    JoinBlocks( block *jump, block *target )
      */
     nop = jump->ins.head.prev;
     if( nop->head.opcode == OP_NOP ) {
-        if( nop->flags.nop_flags & NOP_SOURCE_QUEUE ) {
+        if( nop->flags.u.nop_flags & NOP_SOURCE_QUEUE ) {
             /*
              * this nop is only here to hold source info so we just
              * attach the source info to the next instruction and
@@ -396,7 +396,7 @@ static  bool    DoBlockTrim( void )
                 target = blk->edge[0].destination.u.blk;
                 if( target != blk && !_IsBlkAttr( target, BLK_UNKNOWN_DESTINATION ) ) {
                     for( ins = blk->ins.head.next; ins->head.opcode == OP_NOP; ins = ins->head.next ) {
-                        if( ins->flags.nop_flags & (NOP_DBGINFO | NOP_DBGINFO_START) ) {
+                        if( ins->flags.u.nop_flags & (NOP_DBGINFO | NOP_DBGINFO_START) ) {
                             break;
                         }
                     }

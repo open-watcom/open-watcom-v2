@@ -436,7 +436,7 @@ void    AddCallIns( instruction *ins, cn call )
          * in a weird manner by Far16Parms and will not call data labels
          */
 #if _TARGET_INTEL
-        if( (attr & FE_PROC) == 0 && (ins->flags.call_flags & CALL_FAR16) == 0 ) {
+        if( (attr & FE_PROC) == 0 && (ins->flags.u.call_flags & CALL_FAR16) == 0 ) {
 #else
         if( (attr & FE_PROC) == 0 ) {
 #endif
@@ -640,7 +640,7 @@ void    BGZapBase( name *base, const type_def *tipe )
     if( DummyIndex == NULL )
         DummyIndex = AllocTemp( WD );
     ins->result = ScaleIndex( DummyIndex, base, 0, XX, tipe->length, 0, X_FAKE_BASE );
-    ins->flags.nop_flags |= NOP_ZAP_INFO;
+    ins->flags.u.nop_flags |= NOP_ZAP_INFO;
     AddIns( ins );
 }
 
@@ -701,7 +701,7 @@ void    BGReturn( an retval, const type_def *tipe )
         BGDone( retval );
     } else {
         ins->zap = &AllocRegName( CurrProc->state.return_reg )->r;
-        ins->flags.nop_flags |= NOP_ZAP_INFO;
+        ins->flags.u.nop_flags |= NOP_ZAP_INFO;
     }
     AddIns( ins );
     if( last_ins != NULL )

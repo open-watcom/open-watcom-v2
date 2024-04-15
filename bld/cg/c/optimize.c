@@ -291,7 +291,7 @@ void    AxeDeadCode( void )
     /*
      * Reuse field, it's useless for killed instruction
      */
-    #define _INS_KILL_LINK( ins )  ( ins )->u2.cse_link
+    #define _INS_KILL_LINK( ins )  ( ins )->u1.cse_link
 
     for(;;) {
         kill = NULL;

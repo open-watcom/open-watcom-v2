@@ -323,7 +323,7 @@ dbg_type    WVEndArray( dbg_array ar )
     dbg_type  ret = 0;
     dbg_type  sub;
 
-//  ReverseDims( ar );
+//    ReverseDims( ar );
     while( (dim = ar->list) != NULL ) {
         ar->list = dim->next;
         switch( dim->kind ) {

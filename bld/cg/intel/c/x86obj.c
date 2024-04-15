@@ -1826,42 +1826,35 @@ static  index_rec       *AskIndexRec( uint_16 sidx )
 static  void    FiniTarg( void )
 /******************************/
 {
-    union {
-        offset           s;
-        long_offset      l;
-    } size;
     byte        attr;
     index_rec   *rec;
     object      *obj;
+    offset      size_s;
+    long_offset size_l;
 
     FlushObject();
     obj = CurrSeg->obj;
     rec = AskIndexRec( obj->index );
-#if _TARGET & _TARG_80386
-    size.s = _TargetInt( rec->max_size );
-#else /* SEG32DBG dwarf, codeview */
-    if( rec->attr & SEG_USE_32 ) {
-        size.l = _TargetLongInt( rec->max_size );
-    } else {
-        size.s = _TargetInt( rec->max_size );
-    }
-#endif
+    size_l = rec->max_size;
     if( rec->exec ) {
-        CodeSize += rec->max_size + rec->total_comdat_size;
+        CodeSize += size_l + rec->total_comdat_size;
     } else if( rec->cidx == _NIDX_DATA ) {
-        DataSize += rec->max_size + rec->total_comdat_size;
+        DataSize += size_l + rec->total_comdat_size;
     }
     if( rec->big ) {
         attr = rec->attr | SEG_BIG;
-        PatchObj( obj->segfix, SEGDEF_ATTR, &attr, sizeof( byte ) );
+        PatchObj( obj->segfix, SEGDEF_ATTR, &attr, sizeof( attr ) );
     } else {
 #if _TARGET & _TARG_80386
-        PatchObj( obj->segfix, SEGDEF_SIZE, (byte *)&size.s, sizeof( offset ) );
+        size_s = _TargetInt( size_l );
+        PatchObj( obj->segfix, SEGDEF_SIZE, (byte *)&size_s, sizeof( size_s ) );
 #else /* SEG32DBG dwarf, codeview */
         if( rec->attr & SEG_USE_32 ) {
-            PatchObj( obj->segfix, SEGDEF_SIZE, (byte *)&size.l, sizeof( long_offset ) );
+            size_l = _TargetLongInt( size_l );
+            PatchObj( obj->segfix, SEGDEF_SIZE, (byte *)&size_l, sizeof( size_l ) );
         } else {
-            PatchObj( obj->segfix, SEGDEF_SIZE, (byte *)&size.s, sizeof( offset ) );
+            size_s = _TargetInt( size_l );
+            PatchObj( obj->segfix, SEGDEF_SIZE, (byte *)&size_s, sizeof( size_s ) );
         }
 #endif
     }

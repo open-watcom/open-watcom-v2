@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -63,7 +63,7 @@ instruction      *rCONSTLOAD( instruction *ins )
     assert( ins->operands[0]->c.const_type == CONS_ABSOLUTE );
 
     type_class = ins->type_class;
-    c = ins->operands[0]->c.lo.int_value;
+    c = ins->operands[0]->c.lo.u.int_value;
     high = ( c >> 16 ) & 0xffff;
     low = c & 0xffff;
     high_part = AllocAddrConst( NULL, high, CONS_HIGH_ADDR, type_class );
@@ -96,7 +96,7 @@ instruction     *rMOD2DIV( instruction *ins )
  * 64-bit regs or anything along those lines.
  */
 #define LONG_WORD           U8
-#define HIGH_WORD( x )      ((x)->c.hi.uint_value)
+#define HIGH_WORD( x )      ((x)->c.hi.u.uint_value)
 
 /* NB: The following routines are clones of their Intel counterparts
  * with all segment related junk stripped off.

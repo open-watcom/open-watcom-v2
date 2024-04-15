@@ -148,11 +148,11 @@ tn  TGLeaf( an addr )
     tn  node;
 
     node = NewTreeNode();
-    node->u2.t.base = NULL;
-    node->u2.t.alignment = 0;
-    node->u2.t.op = O_NOP;
+    node->u1.t.base = NULL;
+    node->u1.t.alignment = 0;
+    node->u1.t.op = O_NOP;
     node->u.addr = addr;
-    node->u2.t.rite = NULL;
+    node->u1.t.rite = NULL;
     node->kids = 0;
     node->tipe = addr->tipe;
     node->class = TN_LEAF;
@@ -179,12 +179,12 @@ tn  TGBitMask( tn left, byte start, byte len, const type_def *tipe )
     new->u.left = left;
     new->tipe = tipe;
 #if _TARGET & _TARG_370
-    new->u2.b.start = tipe->length * 8 - start - len;
+    new->u1.b.start = tipe->length * 8 - start - len;
 #else
-    new->u2.b.start = start;
+    new->u1.b.start = start;
 #endif
-    new->u2.b.len = len;
-    new->u2.b.is_signed = false;
+    new->u1.b.len = len;
+    new->u1.b.is_signed = false;
     new->kids = left->kids + 1;
     new->class = TN_BIT_LVALUE;
     return( new );
@@ -199,12 +199,12 @@ tn  TGNode( tn_class class, cg_op op, tn left, tn rite, const type_def *tipe )
     tn  node;
 
     node = NewTreeNode();
-    node->u2.t.base = NULL;
-    node->u2.t.alignment = 0;
+    node->u1.t.base = NULL;
+    node->u1.t.alignment = 0;
     node->class = class;
-    node->u2.t.op = op;
+    node->u1.t.op = op;
     node->u.left = left;
-    node->u2.t.rite = rite;
+    node->u1.t.rite = rite;
     node->tipe = tipe;
     node->kids = 0;
     if( rite != NULL && class != TN_PARM ) {
@@ -240,11 +240,11 @@ tn  TGHandle( void )
     tn  node;
 
     node = NewTreeNode();
-    node->u2.t.base = NULL;
-    node->u2.t.alignment = 0;
+    node->u1.t.base = NULL;
+    node->u1.t.alignment = 0;
     node->tipe = TypeAddress( TY_DEFAULT );
     node->class = TN_HANDLE;
-    node->u2.t.op = O_NOP;
+    node->u1.t.op = O_NOP;
     return( node );
 }
 
@@ -321,7 +321,7 @@ static const type_def   *ResultType( tn left, tn rite, const type_def *tipe,
         if( !CFSignedSize( rite->u.name->c.value, left->tipe->length ) ) {
             return( tipe );
         }
-        if( rite->u.name->c.lo.int_value < 0 )
+        if( rite->u.name->c.lo.u.int_value < 0 )
             return( tipe );
         if( (tipe->attr & TYPE_SIGNED) == 0 ) {
             return( tipe );
@@ -425,9 +425,9 @@ uint_32    TGMask32( tn node )
     uint        len;
     uint_32     bit;
 
-    len = node->u2.b.len;
+    len = node->u1.b.len;
     mask = 0;
-    bit = (uint_32)1 << node->u2.b.start;
+    bit = (uint_32)1 << node->u1.b.start;
     for( ;; ) {
         mask |= bit;
         bit <<= 1;
@@ -449,10 +449,10 @@ static  unsigned_64    TGMask64( tn node )
     unsigned_64     bit;
     unsigned_64     tmp;
 
-    len = node->u2.b.len;
+    len = node->u1.b.len;
     U32ToU64( 0, &mask );
     U32ToU64( 1, &tmp );
-    U64ShiftL( &tmp, node->u2.b.start, &bit );
+    U64ShiftL( &tmp, node->u1.b.start, &bit );
     for( ;; ) {
         U64Or( &mask, &bit, &tmp );
         mask = tmp;
@@ -799,7 +799,7 @@ tn  TGUnary( cg_op op, tn left, const type_def *tipe )
             new = left;
             new->class = TN_BIT_RVALUE;
             if( tipe->attr & TYPE_SIGNED ) {
-                new->u2.b.is_signed = true;
+                new->u1.b.is_signed = true;
             }
         }
         break;
@@ -893,13 +893,13 @@ tn  TGAddParm( call_handle call, tn parm, const type_def *tipe )
     parm = TGConvert( parm, tipe );
     new = TGNode( TN_PARM, O_NOP, parm, NULL, tipe );
     if( call->flags & TF_REVERSE ) {
-        new->u2.t.rite = call->u2.t.rite;
-        call->u2.t.rite = new;
+        new->u1.t.rite = call->u1.t.rite;
+        call->u1.t.rite = new;
     } else {
-        for( scan = call; scan->u2.t.rite != NULL; ) {
-            scan = scan->u2.t.rite;
+        for( scan = call; scan->u1.t.rite != NULL; ) {
+            scan = scan->u1.t.rite;
         }
-        scan->u2.t.rite = new;
+        scan->u1.t.rite = new;
     }
     return( call );
 }
@@ -995,7 +995,7 @@ bool    TGCanDuplicate( tn node )
     case TN_BINARY:
         if( !TGCanDuplicate( node->u.left ) )
             return( false );
-        if( !TGCanDuplicate( node->u2.t.rite ) )
+        if( !TGCanDuplicate( node->u1.t.rite ) )
             return( false );
         return( true );
     default:
@@ -1033,7 +1033,7 @@ tn  TGReLeaf( an addr )
 
     addr->flags |= FL_NEVER_STACK;
     node = TGLeaf( addr );
-    node->u2.t.base = addr->u.n.base;
+    node->u1.t.base = addr->u.n.base;
     return( node );
 }
 
@@ -1084,11 +1084,11 @@ tn  TGDuplicate( tn node )
             break;
         case TN_BIT_LVALUE:
         case TN_BIT_RVALUE:
-            new = TGBitMask( TGDuplicate( node->u.left ), node->u2.b.start, node->u2.b.len, node->tipe );
+            new = TGBitMask( TGDuplicate( node->u.left ), node->u1.b.start, node->u1.b.len, node->tipe );
             break;
         default:
-            new = TGNode( node->class, node->u2.t.op, TGDuplicate( node->u.left ),
-                    TGDuplicate( node->u2.t.rite ), node->tipe );
+            new = TGNode( node->class, node->u1.t.op, TGDuplicate( node->u.left ),
+                    TGDuplicate( node->u1.t.rite ), node->tipe );
             break;
         }
         new->class = node->class;
@@ -1166,7 +1166,7 @@ tn  DoTGPreGets( cg_op op, tn left, tn rite, const type_def *tipe,
     } else if( result->class == TN_BINARY
       && result->u.left == leftp
       && leftp->class == TN_UNARY
-      && leftp->u2.t.op == O_POINTS
+      && leftp->u1.t.op == O_POINTS
       && leftp->u.left == left ) {
         result->class = class;
         result->u.left = left;
@@ -1229,11 +1229,11 @@ tn  TGPatch( patch_handle patch, const type_def *tipe )
     tn  node;
 
     node = NewTreeNode();
-    node->u2.t.base = NULL;
-    node->u2.t.alignment = 0;
-    node->u2.t.op = O_NOP;
+    node->u1.t.base = NULL;
+    node->u1.t.alignment = 0;
+    node->u1.t.op = O_NOP;
     node->u.handle = patch;
-    node->u2.t.rite = NULL;
+    node->u1.t.rite = NULL;
     node->kids = 0;
     node->tipe = tipe;
     node->class = TN_PATCH;
@@ -1279,7 +1279,7 @@ tn  TGTrash( tn node )
 {
     node->flags &= ~TF_USED;
     if( node->class == TN_UNARY ) {
-        if( node->u2.t.op == O_POINTS ) {
+        if( node->u1.t.op == O_POINTS ) {
             node->u.left->flags &= ~TF_USED;
         }
     }
@@ -1301,7 +1301,7 @@ tn   TGAttr( tn node, cg_sym_attr attr )
         node->flags |= TF_CONSTANT;
         break;
     case CG_SYM_UNALIGNED:
-        node->u2.t.alignment = 1;
+        node->u1.t.alignment = 1;
         break;
     }
     return( node );
@@ -1314,7 +1314,7 @@ tn  TGAlign( tn node, uint align )
  * form.
  */
 {
-    node->u2.t.alignment = align;
+    node->u1.t.alignment = align;
     return( node );
 }
 
@@ -1457,8 +1457,8 @@ static  name *TNFindBase( tn node )
 
     if( node == NULL )
         return( NULL );
-    if( node->u2.t.base != NULL )
-        return( node->u2.t.base );
+    if( node->u1.t.base != NULL )
+        return( node->u1.t.base );
     switch( node->class ) {
     case TN_LEAF:
         return( TNGetLeafName( node ) );
@@ -1466,23 +1466,23 @@ static  name *TNFindBase( tn node )
     case TN_SIDE_EFFECT:
         if( (node->tipe->attr & TYPE_POINTER) == 0 )
             return( NULL );
-        op = SafeRecurseCG( (func_sr)TNFindBase, ( node->class == TN_COMMA ) ? node->u.left : node->u2.t.rite );
+        op = SafeRecurseCG( (func_sr)TNFindBase, ( node->class == TN_COMMA ) ? node->u.left : node->u1.t.rite );
         if( op != NULL )
             return( op );
         /* fall through */
     case TN_BINARY:
         // creating a based pointer via a binary convert - don't want a fake base
-        if( node->class == TN_BINARY && node->u2.t.op == O_CONVERT )
+        if( node->class == TN_BINARY && node->u1.t.op == O_CONVERT )
             return( NULL );
         /* fall through */
     case TN_LV_ASSIGN:
     case TN_LV_PRE_GETS:
         if( (node->tipe->attr & TYPE_POINTER) == 0 )
             return( NULL );
-        op = SafeRecurseCG( (func_sr)TNFindBase, node->u2.t.rite );
+        op = SafeRecurseCG( (func_sr)TNFindBase, node->u1.t.rite );
         if( op != NULL )
             return( op );
-        if( node->u2.t.op == O_CONVERT )
+        if( node->u1.t.op == O_CONVERT )
             return( NULL );
         if( node->class != TN_BINARY )
             return( NULL );
@@ -1490,7 +1490,7 @@ static  name *TNFindBase( tn node )
     case TN_UNARY:
         if( (node->tipe->attr & TYPE_POINTER) == 0 )
             return( NULL );
-        switch( node->u2.t.op ) {
+        switch( node->u1.t.op ) {
         case O_PTR_TO_NATIVE:
         case O_PTR_TO_FOREIGN:
         case O_CONVERT:
@@ -1500,16 +1500,16 @@ static  name *TNFindBase( tn node )
         }
         if( _IsntModel( CGSW_GEN_FORTRAN_ALIASING ) )
             return( NULL );
-        if( node->u2.t.op != O_POINTS )
+        if( node->u1.t.op != O_POINTS )
             return( NULL );
         switch( node->u.left->class ) {
         case TN_SIDE_EFFECT:
-            return( SafeRecurseCG( (func_sr)TNFindBase, node->u.left->u2.t.rite ) );
+            return( SafeRecurseCG( (func_sr)TNFindBase, node->u.left->u1.t.rite ) );
         case TN_COMMA:
             return( SafeRecurseCG( (func_sr)TNFindBase, node->u.left->u.left ) );
         case TN_LV_ASSIGN:
         case TN_LV_PRE_GETS:
-            return( SafeRecurseCG( (func_sr)TNFindBase, node->u.left->u2.t.rite ) );
+            return( SafeRecurseCG( (func_sr)TNFindBase, node->u.left->u1.t.rite ) );
         default:
             break;
         }
@@ -1579,7 +1579,7 @@ static  an  AddrGen( tn node )
     was_address = SetAddress( true );
     base = TNFindBase( node );
     flags = node->flags;
-    alignment = node->u2.t.alignment;
+    alignment = node->u1.t.alignment;
 #if _TARGET_RISC
     if( alignment == 0 ) {
         if( node->tipe->refno >= TY_FIRST_FREE ) {
@@ -1615,7 +1615,7 @@ static  an  TNCallback( tn node )
     callback_handle parm;
 
     rtn = node->u.left->u.callback;
-    parm = (callback_handle)node->u2.t.rite->u.handle;
+    parm = (callback_handle)node->u1.t.rite->u.handle;
     if( rtn != NULL ) {
 #ifdef DEVBUILD
         EchoAPICallBack( node, rtn, parm, "started\n\n" );
@@ -1626,7 +1626,7 @@ static  an  TNCallback( tn node )
 #endif
     }
     FreeTreeNode( node->u.left );
-    FreeTreeNode( node->u2.t.rite );
+    FreeTreeNode( node->u1.t.rite );
     return( BGInteger( 0, TypeAddress( TY_UINT_2 ) ) );
 }
 
@@ -1643,10 +1643,10 @@ an  TNFlow( tn node )
 
     rite = NULL;
     left = NotAddrGen( node->u.left );
-    if( node->u2.t.rite != NULL ) {
-        rite = NotAddrGen( node->u2.t.rite );
+    if( node->u1.t.rite != NULL ) {
+        rite = NotAddrGen( node->u1.t.rite );
     }
-    retv = BGFlow( node->u2.t.op, left, rite );
+    retv = BGFlow( node->u1.t.op, left, rite );
     return( retv );
 }
 
@@ -1691,18 +1691,18 @@ static  an  TNBitShift( an retv, tn node, bool already_masked )
     }
     mask = TGMask64( node );
 #ifdef JUST_USE_SHIFTS
-    if( !node->u2.b.is_signed && node->u2.b.start == 0 ) {
+    if( !node->u1.b.is_signed && node->u1.b.start == 0 ) {
         if( !already_masked ) {
             retv = BGBinary( O_AND, retv, Int64( mask ), tipeu, true );
         }
     } else {
-        retv = BGBinary( O_LSHIFT, retv, Int( 8*tipeu->length - node->u2.b.len - node->u2.b.start ), tipeu, true );
-        retv = BGBinary( O_RSHIFT, retv, Int( 8*tipeu->length - node->u2.b.len ), node->u2.b.is_signed ? tipes : tipeu, true );
+        retv = BGBinary( O_LSHIFT, retv, Int( 8*tipeu->length - node->u1.b.len - node->u1.b.start ), tipeu, true );
+        retv = BGBinary( O_RSHIFT, retv, Int( 8*tipeu->length - node->u1.b.len ), node->u1.b.is_signed ? tipes : tipeu, true );
     }
 #else
-    if( node->u2.b.is_signed ) {
-        retv = BGBinary( O_RSHIFT, retv, Int( node->u2.b.start ), tipeu, true );
-        U64ShiftR( &mask, node->u2.b.start, &mask );
+    if( node->u1.b.is_signed ) {
+        retv = BGBinary( O_RSHIFT, retv, Int( node->u1.b.start ), tipeu, true );
+        U64ShiftR( &mask, node->u1.b.start, &mask );
         retv = BGBinary( O_AND, retv, Int64( mask ), tipeu, true );
         U64ShiftR( &mask, 1, &mask );
         U64Not( &mask, &mask );
@@ -1756,9 +1756,9 @@ static  an  TNBitShift( an retv, tn node, bool already_masked )
             retv = BGBinary( O_MINUS, retv, Int64( mask ), tipes, true );
         }
     } else {
-        retv = BGBinary( O_RSHIFT, retv, Int( node->u2.b.start ), node->tipe, true );
-        if( !already_masked && ( node->tipe->length * 8 - node->u2.b.start - node->u2.b.len != 0 )) {
-            U64ShiftR( &mask, node->u2.b.start, &mask );
+        retv = BGBinary( O_RSHIFT, retv, Int( node->u1.b.start ), node->tipe, true );
+        if( !already_masked && ( node->tipe->length * 8 - node->u1.b.start - node->u1.b.len != 0 )) {
+            U64ShiftR( &mask, node->u1.b.start, &mask );
             retv = BGBinary( O_AND, retv, Int64( mask ), node->tipe, true );
         }
     }
@@ -1824,10 +1824,10 @@ static  an  TNBitOpGets( tn node, const type_def *tipe, bool yield_before_op )
     lhs = node->u.left;
     left = AddrGen( lhs->u.left );
     before_value = TNBitRVal( AddrCopy( left ), lhs );
-    rite = NotAddrGen( node->u2.t.rite );
-    if( node->u2.t.op != O_NOP ) {
+    rite = NotAddrGen( node->u1.t.rite );
+    if( node->u1.t.op != O_NOP ) {
         // convert everything - better safe than sorry
-        after_value = BGBinary( node->u2.t.op,
+        after_value = BGBinary( node->u1.t.op,
                 BGConvert( BGDuplicate( before_value ), tipe ),
                 BGConvert( rite, tipe ),
                 tipe, true );
@@ -1836,17 +1836,17 @@ static  an  TNBitOpGets( tn node, const type_def *tipe, bool yield_before_op )
     }
     after_value = BGConvert( after_value, node->tipe );
     mask = TGMask64( lhs );
-    shift = lhs->u2.b.start;
+    shift = lhs->u1.b.start;
     FreeTreeNode( lhs );
     U64ShiftR( &mask, shift, &shiftmask );  // shiftmask = mask >> shift;
     if( after_value->format == NF_CONS && after_value->class == CL_CONS2 ) {
-        retv = Int( shiftmask.u._32[I64LO32] & (uint_32)after_value->u.n.name->c.lo.int_value );
-        if( (uint_32)retv->u.n.name->c.lo.int_value != shiftmask.u._32[I64LO32] ) {
+        retv = Int( shiftmask.u._32[I64LO32] & (uint_32)after_value->u.n.name->c.lo.u.int_value );
+        if( (uint_32)retv->u.n.name->c.lo.u.int_value != shiftmask.u._32[I64LO32] ) {
             DoAnd( left, mask, node );
         }
-        if( retv->u.n.name->c.lo.int_value != 0 ) {
+        if( retv->u.n.name->c.lo.u.int_value != 0 ) {
             free_retv = retv;
-            retv = Int( retv->u.n.name->c.lo.int_value << shift );
+            retv = Int( retv->u.n.name->c.lo.u.int_value << shift );
             BGDone( free_retv );
             retv = BGOpGets( O_OR, left, retv, node->tipe, node->tipe );
         } else {
@@ -1885,11 +1885,11 @@ an  TNPostGets( tn node )
         retv = TNBitOpGets( node, node->tipe, true );
     } else {
         left = AddrGen( node->u.left );
-        rite = NotAddrGen( node->u2.t.rite );
+        rite = NotAddrGen( node->u1.t.rite );
         retv = MakeTempAddr( BGNewTemp( node->tipe ) );
         leftp = BGUnary( O_POINTS, AddrCopy( left ), node->tipe );
         retv = BGAssign( retv, leftp, node->tipe );
-        BGDone( BGOpGets( node->u2.t.op, left, rite, node->tipe, node->tipe ) );
+        BGDone( BGOpGets( node->u1.t.op, left, rite, node->tipe, node->tipe ) );
     }
     return( retv );
 }
@@ -1909,11 +1909,11 @@ an  TNPreGets( tn node )
     } else {
         retv = NULL;
         left = AddrGen( node->u.left );
-        rite = NotAddrGen( node->u2.t.rite );
+        rite = NotAddrGen( node->u1.t.rite );
         if( node->class == TN_LV_PRE_GETS ) {
             retv = BGCopy( left );
         }
-        left = BGOpGets( node->u2.t.op, left, rite, node->tipe, node->optipe );
+        left = BGOpGets( node->u1.t.op, left, rite, node->tipe, node->optipe );
         if( node->class == TN_LV_PRE_GETS ) {
             BGDone( left );
         } else {
@@ -1941,10 +1941,10 @@ static  an  TNBitAssign( tn node )
     uint_32     mask;
 
     lhs = node->u.left;
-    rhs = node->u2.t.rite;
+    rhs = node->u1.t.rite;
     if( rhs->class == TN_BIT_RVALUE
-      && rhs->u2.b.start == lhs->u2.b.start
-      && rhs->u2.b.len == lhs->u2.b.len
+      && rhs->u1.b.start == lhs->u1.b.start
+      && rhs->u1.b.len == lhs->u1.b.len
       && rhs->tipe->length == lhs->tipe->length ) {
         mask = TGMask32( lhs );
         left = AddrGen( lhs->u.left );
@@ -1976,7 +1976,7 @@ an  TNAssign( tn node )
         retv = TNBitAssign( node );
     } else {
         retv = NULL;
-        rite = NotAddrGen( node->u2.t.rite );
+        rite = NotAddrGen( node->u1.t.rite );
         left = AddrGen( node->u.left );
         if( node->class == TN_LV_ASSIGN ) {
             retv = BGCopy( left );
@@ -2003,16 +2003,16 @@ an  TNCompare( tn node )
     label_handle    entry;
 
     entry = BGGetEntry();
-    retv = FoldConsCompare( node->u2.t.op, node->u.left, node->u2.t.rite, node->u.left->tipe );
+    retv = FoldConsCompare( node->u1.t.op, node->u.left, node->u1.t.rite, node->u.left->tipe );
     if( retv == NULL ) {
-        if( node->u.left->kids >= node->u2.t.rite->kids ) {
+        if( node->u.left->kids >= node->u1.t.rite->kids ) {
             left = NotAddrGen( node->u.left );
-            rite = NotAddrGen( node->u2.t.rite );
+            rite = NotAddrGen( node->u1.t.rite );
         } else {
-            rite = NotAddrGen( node->u2.t.rite );
+            rite = NotAddrGen( node->u1.t.rite );
             left = NotAddrGen( node->u.left );
         }
-        retv = BGCompare( node->u2.t.op, left, rite, entry, left->tipe );
+        retv = BGCompare( node->u1.t.op, left, rite, entry, left->tipe );
     } else {
         retv = Boolean( Arithmetic( retv, TypeInteger ), entry );
     }
@@ -2029,16 +2029,16 @@ an  TNUnary( tn node )
     an      retv;
 
     retv = NULL;
-    if( node->u2.t.op == O_POINTS ) {
+    if( node->u1.t.op == O_POINTS ) {
        left = AddrGen( node->u.left );
-    } else if( node->u2.t.op == O_CONVERT ) {
+    } else if( node->u1.t.op == O_CONVERT ) {
         left = TreeGen( node->u.left );
         retv = BGConvert( left, node->tipe );
     } else {
         left = TreeGen( node->u.left );
     }
     if( retv == NULL ) {
-        retv = BGUnary( node->u2.t.op, left, node->tipe );
+        retv = BGUnary( node->u1.t.op, left, node->tipe );
     }
     retv->flags |= FL_STACKABLE;
     if( node->flags & TF_DEMOTED ) {
@@ -2107,18 +2107,18 @@ an  TNBinary( tn node )
     tn      folded;
     bool    was_address;
 
-    if( node->u.left->kids >= node->u2.t.rite->kids ) {
+    if( node->u.left->kids >= node->u1.t.rite->kids ) {
         left = TreeGen( node->u.left );
-        rite = TreeGen( node->u2.t.rite );
+        rite = TreeGen( node->u1.t.rite );
     } else {
-        rite = TreeGen( node->u2.t.rite );
+        rite = TreeGen( node->u1.t.rite );
         left = TreeGen( node->u.left );
     }
 
     // Ugly hack to make sure constants get folded
     l = TGLeaf( AddrCopy( left ) );
     r = TGLeaf( AddrCopy( rite ) );
-    folded = BinFold( node->u2.t.op, l, r, node->tipe );
+    folded = BinFold( node->u1.t.op, l, r, node->tipe );
     if( folded != NULL ) {
         BGDone( left );
         BGDone( rite );
@@ -2130,17 +2130,17 @@ an  TNBinary( tn node )
 
 #if _TARGET_INTEL
     /* based pointer junk */
-    if( node->u2.t.op == O_CONVERT ) {
+    if( node->u1.t.op == O_CONVERT ) {
         retv = MakeBased( left, rite, node->tipe );
     } else {
 #endif
         if( node->flags & TF_DEMOTED ) {
             was_address = SetAddress( false ); /* force it to be generated! */
-            retv = BGBinary( node->u2.t.op, left, rite, node->tipe, false );
+            retv = BGBinary( node->u1.t.op, left, rite, node->tipe, false );
             AddrDemote( retv );
             SetAddress( was_address );
         } else {
-            retv = BGBinary( node->u2.t.op, left, rite, node->tipe, true );
+            retv = BGBinary( node->u1.t.op, left, rite, node->tipe, true );
         }
 #if _TARGET_INTEL
     }
@@ -2157,13 +2157,13 @@ static  an  TNWarp( tn node )
     an      dst;
     an      src;
 
-    if( node->u.left->u2.t.rite != NULL ) {
-        BGDone( NotAddrGen( node->u.left->u2.t.rite ) );
+    if( node->u.left->u1.t.rite != NULL ) {
+        BGDone( NotAddrGen( node->u.left->u1.t.rite ) );
     }
     BGControl( O_INVOKE_LABEL, NULL, node->u.left->u.handle );
     FreeTreeNode( node->u.left );
     dst = MakeTempAddr( BGNewTemp( node->tipe ) );
-    src = NotAddrGen( node->u2.t.rite );
+    src = NotAddrGen( node->u1.t.rite );
     return( BGAssign( dst, src, node->tipe ) );
 }
 
@@ -2189,17 +2189,17 @@ static  an  TNQuestion( tn node )
     temp_var = BGNewTemp( node->tipe );
     temp_var->v.usage |= USE_IN_ANOTHER_BLOCK;
     temp = MakeTempAddr( temp_var );
-    retv = TreeGen( node->u2.t.rite->u.left );
+    retv = TreeGen( node->u1.t.rite->u.left );
     BGDone( BGAssign( AddrCopy( temp ), retv, node->tipe ) );
     BGControl( O_GOTO, NULL, around_lbl );
     BGControl( O_LABEL, NULL, false_lbl );
     BGFiniLabel( false_lbl );
-    retv = TreeGen( node->u2.t.rite->u2.t.rite );
+    retv = TreeGen( node->u1.t.rite->u1.t.rite );
     BGDone( BGAssign( AddrCopy( temp ), retv, node->tipe ) );
     BGControl( O_LABEL, NULL, around_lbl );
     BGFiniLabel( around_lbl );
     temp = BGUnary( O_POINTS, temp, node->tipe );
-    FreeTreeNode( node->u2.t.rite );
+    FreeTreeNode( node->u1.t.rite );
     temp->flags |= FL_STACKABLE;
     return( temp );
 }
@@ -2215,7 +2215,7 @@ static  bool    FunctionModifiesSP( tn call )
     hw_reg_set      *pregs;
     cg_sym_handle   sym;
 
-    sym = (cg_sym_handle)call->u.left->u2.t.rite;
+    sym = (cg_sym_handle)call->u.left->u1.t.rite;
     pregs = FindAuxInfoSym( sym, FEINF_SAVE_REGS );
     if( !HW_Ovlap( *pregs, StackReg() ) ) {
         return( true );
@@ -2244,16 +2244,16 @@ static  bool    ModifiesSP( tn node )
         if( FunctionModifiesSP( node ) )
             return( true );
         // or if any of it's parm nodes modifies SP
-        if( node->u2.t.rite != NULL && ModifiesSP( node->u2.t.rite ) )
+        if( node->u1.t.rite != NULL && ModifiesSP( node->u1.t.rite ) )
             return( true );
         break;
     case TN_UNARY:
-        if( node->u2.t.op == O_STACK_ALLOC )
+        if( node->u1.t.op == O_STACK_ALLOC )
             return( true );
         /* fall through */
     default:
-        if( node->u2.t.rite != NULL ) {
-            if( ModifiesSP( node->u2.t.rite ) ) {
+        if( node->u1.t.rite != NULL ) {
+            if( ModifiesSP( node->u1.t.rite ) ) {
                 return( true );
             }
         }
@@ -2279,7 +2279,7 @@ static  void    MakeSPSafe( tn scan )
     an              parman;
     const type_def  *tipe;
 
-    for( ; scan != NULL; scan = scan->u2.t.rite ) {
+    for( ; scan != NULL; scan = scan->u1.t.rite ) {
         parmtn = scan->u.left;
         if( ModifiesSP( parmtn ) ) {
             tipe = parmtn->tipe;
@@ -2315,7 +2315,7 @@ static  an  TNCall( tn callhandle, bool ignore_return )
 
     callnode = NULL;
     addr = callhandle->u.left; /* address to call*/
-    sym = (cg_sym_handle)addr->u2.t.rite;
+    sym = (cg_sym_handle)addr->u1.t.rite;
     aux = FEAuxInfo( sym, FEINF_AUX_LOOKUP );
     aux_inline = ( FEAuxInfo( aux, FEINF_CALL_BYTES ) != NULL );
     cclass = (call_class)(pointer_uint)FEAuxInfo( aux, FEINF_CALL_CLASS );
@@ -2327,16 +2327,16 @@ static  an  TNCall( tn callhandle, bool ignore_return )
     } else {
         callnode = BGInitCall( retv, callhandle->tipe, aux );
     }
-    MakeSPSafe( callhandle->u2.t.rite );
-    for( scan = callhandle->u2.t.rite; scan != NULL; scan = scan->u2.t.rite ) {
+    MakeSPSafe( callhandle->u1.t.rite );
+    for( scan = callhandle->u1.t.rite; scan != NULL; scan = scan->u1.t.rite ) {
         base = TNFindBase( scan->u.left );
         parmtn = scan->u.left;
         scan->u.name = base;
         if( cclass & FECALL_GEN_PARMS_BY_ADDRESS ) {
-            if( parmtn->class == TN_UNARY && parmtn->u2.t.op == O_POINTS ) {
+            if( parmtn->class == TN_UNARY && parmtn->u1.t.op == O_POINTS ) {
                 parman = AddrGen( parmtn->u.left );
                 parmtn->u.left = NULL;
-                parmtn->u2.t.rite = NULL;
+                parmtn->u1.t.rite = NULL;
                 BurnTree( parmtn );
             } else {
                 temp = MakeTempAddr( BGNewTemp( parmtn->tipe ) );
@@ -2382,10 +2382,10 @@ static  an  TNCall( tn callhandle, bool ignore_return )
     FreeTreeNode( addr );
     if( call_inline ) {
         retv = BGStopInline( callhandle, callhandle->tipe );
-        NodesToZap = callhandle->u2.t.rite;
+        NodesToZap = callhandle->u1.t.rite;
         TNZapParms();
     } else {
-        NodesToZap = callhandle->u2.t.rite;
+        NodesToZap = callhandle->u1.t.rite;
         retv = BGCall( callnode, (callhandle->flags & TF_USED) != 0, aux_inline );
         retv->flags |= FL_STACKABLE;
         BGFiniCall( callnode );
@@ -2401,7 +2401,7 @@ void    TNZapParms( void )
     tn      scan;
 
     for( scan = NodesToZap; scan != NULL; scan = next ) {
-        next = scan->u2.t.rite;
+        next = scan->u1.t.rite;
         BGZapBase( scan->u.name, scan->tipe );
         FreeTreeNode( scan );
     }
@@ -2452,13 +2452,13 @@ void    BurnTree( tn node )
     case TN_CALL:
         BurnTree( node->u.left->u.left );
         FreeTreeNode( node->u.left );
-        if( node->u2.t.rite != NULL ) {
-            BurnTree( node->u2.t.rite );
+        if( node->u1.t.rite != NULL ) {
+            BurnTree( node->u1.t.rite );
         }
         break;
     default:
-        if( node->u2.t.rite != NULL ) {
-            BurnTree( node->u2.t.rite );
+        if( node->u1.t.rite != NULL ) {
+            BurnTree( node->u1.t.rite );
         }
         if( node->u.left != NULL ) {
             BurnTree( node->u.left );
@@ -2518,11 +2518,11 @@ static  an DoTreeGen( tn node )
         break;
     case TN_COMMA:
         BGDone( NotAddrGen( node->u.left ) );
-        retv = TreeGen( node->u2.t.rite );
+        retv = TreeGen( node->u1.t.rite );
         break;
     case TN_SIDE_EFFECT:
         retv = TreeGen( node->u.left );
-        BGDone( NotAddrGen( node->u2.t.rite ) );
+        BGDone( NotAddrGen( node->u1.t.rite ) );
         break;
     case TN_BINARY:
         retv = TNBinary( node );

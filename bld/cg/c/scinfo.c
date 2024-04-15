@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,21 +37,25 @@
 #include "data.h"
 #include "utils.h"
 
-static  pointer SegConstSymbol;/*no other pointer points to here*/
-static  pointer HighAddrSymbol;/*ditto*/
-static  pointer HighAddrConst; /*ditto*/
 
+/*
+ * following 3 variables are used as unique addresses
+ * to indicate special type of relocatable constant
+ */
+static  pointer SegConstSymbol;
+static  pointer HighAddrSymbol;
+static  pointer HighAddrConst;
 
-static  bool    ScoreSame( score_info *x, score_info *y ) {
-/*********************************************************/
-
+static  bool    ScoreSame( score_info *x, score_info *y )
+/*******************************************************/
+{
     if( x->class != y->class )
         return( false );
     if( x->base != y->base )
         return( false );
     if( x->index_reg != y->index_reg )
         return( false );
-    if( x->class == SC_N_TEMP && x->symbol.t->v.id == y->symbol.t->v.id )
+    if( x->class == SC_N_TEMP && x->symbol.u.t->v.id == y->symbol.u.t->v.id )
         return( true );
     if( x->class == SC_N_VOLATILE )
         return( false );
@@ -59,18 +63,20 @@ static  bool    ScoreSame( score_info *x, score_info *y ) {
         return( false );
     if( x->class == SC_N_INDEXED && x->scale != y->scale )
         return( false );
-    if( x->symbol.p == y->symbol.p )
+    if( x->symbol.u.p == y->symbol.u.p )
         return( true );
     return( false );
 }
 
 
-static  bool    ScoreStomp( score_info *x, score_info *y ) {
-/**********************************************************/
-
+static  bool    ScoreStomp( score_info *x, score_info *y )
+/********************************************************/
+{
     score_info  *tmp;
 
-    /* get the 'free' index into x if there is one*/
+    /*
+     * get the 'free' index into x if there is one
+     */
     if( y->class == SC_N_INDEXED && y->base == NULL ) {
         tmp = x;
         x = y;
@@ -85,12 +91,14 @@ static  bool    ScoreStomp( score_info *x, score_info *y ) {
         case SC_N_INDEXED:
             return( true );
         case SC_N_TEMP:
-            if( y->symbol.v->usage & USE_ADDRESS )
+            if( y->symbol.u.v->usage & USE_ADDRESS )
                 return( true );
             return( false );
         }
     }
-    /* get the 'bound' index into x if there is one*/
+    /*
+     * get the 'bound' index into x if there is one
+     */
     if( y->class == SC_N_INDEXED ) {
         tmp = x;
         x = y;
@@ -100,14 +108,14 @@ static  bool    ScoreStomp( score_info *x, score_info *y ) {
         switch( y->class ) {
         case SC_N_TEMP:
             if( x->base->n.class == N_TEMP ) {
-                if( y->symbol.t->v.id == x->base->t.v.id ) {
+                if( y->symbol.u.t->v.id == x->base->t.v.id ) {
                     return( true );
                 }
             }
             break;
         case SC_N_MEMORY:
             if( x->base->n.class == N_MEMORY ) {
-                if( y->symbol.p == x->base->v.symbol ) {
+                if( y->symbol.u.p == x->base->v.symbol ) {
                     return( true );
                 }
             }
@@ -158,8 +166,10 @@ bool    ScoreEqual( score *scoreboard, int index, score_info *info )
         entry = ScoreList[index];
         if( entry->high == NO_INDEX || entry->low == NO_INDEX )
             return( false );
-            /*  See if low parts & high parts of register pair contain*/
-            /*  the right information*/
+        /*
+         * See if low parts & high parts of register pair contain
+         * the right information
+         */
         if( info->class == SC_N_CONSTANT )
             return( false );
         if( !ScoreLookup( &scoreboard[entry->low], info ) )
@@ -242,14 +252,14 @@ void    ScoreAssign( score *scoreboard, int index, score_info *info )
 
         entry = ScoreList[index];
         if( entry->high != NO_INDEX && entry->low != NO_INDEX ) {
-            if( info->class != SC_N_CONSTANT ) {
-                hi_off = info->offset + entry->size / 2;
-                lo_off = info->offset;
-            } else {
-                if( info->symbol.p != NULL )
-                    return; /* relocatable const*/
+            if( info->class = SC_N_CONSTANT ) {
+                if( info->symbol.u.p != NULL )
+                    return; /* relocatable const */
                 hi_off = info->offset >> ( entry->size * 4 );
                 lo_off = info->offset & ~( hi_off << ( entry->size * 4 ) );
+            } else {
+                hi_off = info->offset + entry->size / 2;
+                lo_off = info->offset;
             }
             offset = info->offset;
             info->offset = hi_off;
@@ -277,26 +287,26 @@ void    ScoreInfo( score_info *info, name *op )
     case N_CONSTANT:
         switch( op->c.const_type ) {
         case CONS_ABSOLUTE:
-            info->symbol.p = NULL;
-            info->offset = op->c.lo.int_value;
+            info->symbol.u.p = NULL;
+            info->offset = op->c.lo.u.int_value;
             break;
         case CONS_SEGMENT:
-            info->symbol.p = &SegConstSymbol;
-            info->offset = op->c.lo.int_value;
+            info->symbol.u.p = &SegConstSymbol;
+            info->offset = op->c.lo.u.int_value;
             break;
         case CONS_OFFSET:
         case CONS_ADDRESS:
-            info->symbol.p = op->c.value;
-            info->offset = op->c.lo.int_value;
+            info->symbol.u.p = op->c.value;
+            info->offset = op->c.lo.u.int_value;
             break;
         case CONS_HIGH_ADDR:
             /* FIXME: not sure what to do here */
             if( op->c.value != NULL ) {
-                info->symbol.p = &HighAddrSymbol;
+                info->symbol.u.p = &HighAddrSymbol;
                 info->offset = (int_32)(pointer_uint)op->c.value;
             } else {
-                info->symbol.p = &HighAddrConst;
-                info->offset = (int_32)op->c.lo.int_value;
+                info->symbol.u.p = &HighAddrConst;
+                info->offset = op->c.lo.u.int_value;
             }
             break;
         default:
@@ -308,21 +318,21 @@ void    ScoreInfo( score_info *info, name *op )
         if( op->v.usage & VAR_VOLATILE ) {
             info->class = SC_N_VOLATILE;
         }
-        info->symbol.t = &(op->t);
+        info->symbol.u.t = &(op->t);
         info->offset = op->v.offset;
         break;
     case N_MEMORY:
         if( op->v.usage & VAR_VOLATILE ) {
             info->class = SC_N_VOLATILE;
         }
-        info->symbol.p = op->v.symbol;
+        info->symbol.u.p = op->v.symbol;
         info->offset = op->v.offset;
         break;
     case N_INDEXED:
         if( op->i.index_flags & X_VOLATILE ) {
             info->class = SC_N_VOLATILE;
         }
-        info->symbol.p = NULL;
+        info->symbol.u.p = NULL;
         info->offset = op->i.constant;
         info->index_reg = op->i.index->r.reg_index;
         info->base = op->i.base;
@@ -339,7 +349,7 @@ bool    ScoreLAInfo( score_info *info, name *op )
     case N_TEMP:
     case N_MEMORY:
         info->class = SC_N_ADDRESS;
-        info->symbol.p = op;
+        info->symbol.u.p = op;
         info->offset = 0;
         info->index_reg = NO_INDEX;
         info->base = NULL;
@@ -360,29 +370,33 @@ void    ScoreKillInfo( score *scoreboard, name *op, score_info *info, hw_reg_set
     int         last_offset;
     int         i;
 
-
-    /*   Memory from info+offset up to (not including) info+last_offset*/
-    /*   has been overwritten*/
-
+    /*
+     * Memory from info+offset up to (not including) info+last_offset
+     * has been overwritten
+     */
     last_offset = info->offset + op->n.size;
     entry = ScoreList[0];
     for( i = ScoreCount; i > 0; --i ) {
         if( !HW_Subset( except, entry->reg ) ) {
             for( owner = scoreboard->list; (curr = *owner) != NULL; ) {
-                /*   Currently looking at memory from*/
-                /*   curr->info+offset to curr->info+offset+entry->size*/
-                /*   If the names 'info' and 'curr' match, then have an*/
-                /*   overlap if*/
-                /*       info.start < curr.end AND info.end > curr.start*/
-                /**/
-                /* e.g.  info       |-------|*/
-                /*       curr            |-----|*/
+                /*
+                 * Currently looking at memory
+                 * from curr->info+offset
+                 * to curr->info+offset+entry->size
+                 *
+                 * If the names 'info' and 'curr' match, then have an
+                 * overlap if
+                 *       info.start < curr.end AND info.end > curr.start
+                 *
+                 * e.g.  info       |-------|
+                 *       curr            |-----|
+                 */
 
 /* impossible!       if( info->base == op ) break;*/
                 if( !ScoreStomp( info, &curr->info ) ) {
                     if( ScoreSame( info, &curr->info )
                      && last_offset > curr->info.offset
-                     && info->offset < curr->info.offset+entry->size ) {
+                     && info->offset < curr->info.offset + entry->size ) {
                         *owner = curr->next;
                         FreeScListEntry( curr );
                         continue;
