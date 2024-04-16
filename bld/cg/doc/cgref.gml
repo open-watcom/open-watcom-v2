@@ -126,7 +126,7 @@ structure, defined below.
 .endnote
 .begnote $break $setptnt 2i
 .ix options
-.notehd1 Switch
+.notehd1 Generic Switch
 .notehd2 Definition
 .note CGSW_GEN_NO_OPTIMIZATION
 Turn off optimizations.
@@ -3468,7 +3468,7 @@ attributes for a routine.
 .note call_handle
 (void *) A handle to be used in CGInitCall, CGAddParm and CGCall.
 .note cg_init_info
-(union) The return value of BEInit.
+(struct) The return value of BEInit.
 .note cg_name
 (void *) A handle for a back end expression tree node.
 .note cg_op
