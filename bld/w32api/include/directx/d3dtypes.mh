@@ -63,8 +63,10 @@ typedef DWORD   D3DCOLORMODEL;
     (0xFF000000L | (((long)((p1) * 255)) << 16) | (((long)((p2) * 255)) << 8) | \
     (long)((p3) * 255))
 #define D3DRGBA( p1, p2, p3, p4) \
-    ((((long)((p4) * 255)) << 24) | (((long)((p1) * 255) << 16) | \
-    (((long)((p2) * 255) << 8) | (long)((p3) * 255))
+    ((((long)((p4) * 255)) << 24) | \
+     (((long)((p1) * 255)) << 16) | \
+     (((long)((p2) * 255)) << 8) | \
+      ((long)((p3) * 255)))
 
 /* Macros to manipulate RGB colors */
 #define RGB_GETRED( x )         (((x) >> 16) & 0x000000FFL)
