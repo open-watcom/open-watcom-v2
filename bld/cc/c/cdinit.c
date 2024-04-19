@@ -623,7 +623,8 @@ static void StorePointer( TYPEPTR typ, target_size size )
     if( typ->decl_type == TYP_POINTER ) {
         GenDataQuad( &dq, size );
     } else if( dq.type == QDT_STRING ) {
-        if( TypeSize( typ ) != DataPtrSize || CompFlags.strict_ANSI ) {
+        if( TypeSize( typ ) != DataPtrSize
+          || CompFlags.strict_ANSI ) {
             CErr1( ERR_INVALID_INITIALIZER );
         }
         GenDataQuad( &dq, size );
@@ -743,18 +744,21 @@ static void *DesignatedInit( TYPEPTR typ, TYPEPTR ctyp, void *field )
     target_size     offs;
     static bool     new_field = true;
 
-    if( !CompFlags.extensions_enabled && CHECK_STD( < , C99 ) ) {
+    if( !CompFlags.extensions_enabled
+      && CHECK_STD( < , C99 ) ) {
         return( field );
     }
 
-    if( CurToken != T_LEFT_BRACKET && CurToken != T_DOT ) {
+    if( CurToken != T_LEFT_BRACKET
+      && CurToken != T_DOT ) {
         new_field = true;
         return( field );
     }
     /*
      * if designator refers to outer type: back out
      */
-    if( typ != ctyp && new_field )
+    if( typ != ctyp
+      && new_field )
         return( NULL );
 
     new_field = false;
@@ -786,7 +790,8 @@ static void *DesignatedInit( TYPEPTR typ, TYPEPTR ctyp, void *field )
         NextToken();
     }
 
-    if( CurToken != T_LEFT_BRACKET && CurToken != T_DOT ) {
+    if( CurToken != T_LEFT_BRACKET
+      && CurToken != T_DOT ) {
         new_field = true;
         MustRecog( T_EQUAL );
     }
@@ -830,7 +835,8 @@ static void InitArray( TYPEPTR typ, TYPEPTR ctyp )
             break;
         if( m != n ) {
             elem_size = SizeOfArg( typ->object );
-            if( typ->u.array->unspecified_dim && m > array_size ) {
+            if( typ->u.array->unspecified_dim
+              && m > array_size ) {
                 RelSeekBytes( ( array_size - n ) * elem_size );
                 ZeroBytes( ( m - array_size ) * elem_size );
             } else {
@@ -857,7 +863,9 @@ static void InitArray( TYPEPTR typ, TYPEPTR ctyp )
             break;
         if( DesignatedInSubAggregate( typ->object->decl_type ) )
             continue;
-        if( n < array_size || typ == ctyp || typ->u.array->unspecified_dim ) {
+        if( n < array_size
+          || typ == ctyp
+          || typ->u.array->unspecified_dim ) {
             MustRecog( T_COMMA );
         }
         if( CurToken == T_RIGHT_BRACE ) {
@@ -899,7 +907,8 @@ static void InitStructUnion( TYPEPTR typ, TYPEPTR ctyp, FIELDPTR field )
         }
         ftyp = field->field_type;
         offset = field->offset + SizeOfArg( ftyp );
-        if( ftyp->decl_type == TYP_FIELD || ftyp->decl_type == TYP_UFIELD ) {
+        if( ftyp->decl_type == TYP_FIELD
+          || ftyp->decl_type == TYP_UFIELD ) {
             field = InitBitField( field );
         } else {
             InitSymData( ftyp, ctyp, 1 );
@@ -921,7 +930,8 @@ static void InitStructUnion( TYPEPTR typ, TYPEPTR ctyp, FIELDPTR field )
             break;
         if( DesignatedInSubAggregate( ftyp->decl_type ) )
             continue;
-        if( field != NULL || typ == ctyp ) {
+        if( field != NULL
+          || typ == ctyp ) {
             MustRecog( T_COMMA );
         }
         if( CurToken == T_RIGHT_BRACE ) {
@@ -966,7 +976,8 @@ void InitSymData( TYPEPTR typ, TYPEPTR ctyp, int level )
     token = CurToken;
     if( CurToken == T_LEFT_BRACE ) {
         NextToken();
-        if( CurToken == T_RIGHT_BRACE || CurToken == T_COMMA ) {
+        if( CurToken == T_RIGHT_BRACE
+          || CurToken == T_COMMA ) {
             CErr1( ERR_EMPTY_INITIALIZER_LIST );
         }
     }
@@ -1085,7 +1096,8 @@ static bool CharArray( TYPEPTR typ )
 {
     if( CurToken == T_STRING ) {
         SKIP_TYPEDEFS( typ );
-        if( typ->decl_type == TYP_CHAR || typ->decl_type == TYP_UCHAR ) {
+        if( typ->decl_type == TYP_CHAR
+          || typ->decl_type == TYP_UCHAR ) {
             return( true );
         }
     }
@@ -1097,7 +1109,8 @@ static bool WCharArray( TYPEPTR typ )
 {
     if( CurToken == T_STRING ) {
         SKIP_TYPEDEFS( typ );
-        if( typ->decl_type == TYP_SHORT || typ->decl_type == TYP_USHORT ) {
+        if( typ->decl_type == TYP_SHORT
+          || typ->decl_type == TYP_USHORT ) {
             return( true );
         }
     }
@@ -1285,7 +1298,8 @@ void StaticInit( SYMPTR sym, SYM_HANDLE sym_handle )
      * If innermost array had unspecified dimension, create new types whose
      * dimensions will be determined by number of initializers
      */
-    if( (typ != NULL) && typ->u.array->unspecified_dim ) {
+    if( (typ != NULL)
+      && typ->u.array->unspecified_dim ) {
         if( struct_typ == NULL ) {
             /*
              * Array was not inside struct
@@ -1586,7 +1600,8 @@ static void InitArrayVar( SYMPTR sym, SYM_HANDLE sym_handle, TYPEPTR typ )
                 MustRecog( T_COMMA );
                 if( CurToken == T_RIGHT_BRACE )
                     break;
-                if( n && i >= n ) {
+                if( n
+                  && i >= n ) {
                     CErr1( ERR_TOO_MANY_INITS );
                 }
             }
@@ -1637,7 +1652,8 @@ static void InitArrayVar( SYMPTR sym, SYM_HANDLE sym_handle, TYPEPTR typ )
                 MustRecog( T_COMMA );
                 if( CurToken == T_RIGHT_BRACE )
                     break;
-                if( n && i >= n ) {
+                if( n
+                  && i >= n ) {
                     CErr1( ERR_TOO_MANY_INITS );
                 }
             }
@@ -1665,7 +1681,8 @@ void VarDeclEquals( SYMPTR sym, SYM_HANDLE sym_handle )
 {
     TYPEPTR     typ;
 
-    if( SymLevel == 0 || sym->attribs.stg_class == SC_STATIC ) {
+    if( SymLevel == 0
+      || sym->attribs.stg_class == SC_STATIC ) {
         if( sym->flags & SYM_INITIALIZED ) {
             CErrSymName( ERR_VAR_ALREADY_INITIALIZED, sym, sym_handle );
         }
@@ -1681,16 +1698,19 @@ void VarDeclEquals( SYMPTR sym, SYM_HANDLE sym_handle )
         /*
          * check for { before checking for array, struct or union
          */
-        if( CurToken != T_LEFT_BRACE && typ->decl_type != TYP_ARRAY ) {
+        if( CurToken != T_LEFT_BRACE
+          && typ->decl_type != TYP_ARRAY ) {
             AddStmt( AsgnOp( VarLeaf( sym, sym_handle ), T_ASSIGN_LAST, CommaExpr() ) );
             sym->flags |= SYM_ASSIGNED;
         } else if( typ->decl_type == TYP_ARRAY ) {
-            if( CurToken == T_LEFT_BRACE && CompFlags.auto_agg_inits ) {
+            if( CurToken == T_LEFT_BRACE
+              && CompFlags.auto_agg_inits ) {
                 InitArrayVar( sym, sym_handle, typ );
             } else {
                 AggregateVarDeclEquals( sym, sym_handle );
             }
-        } else if( typ->decl_type == TYP_STRUCT || typ->decl_type == TYP_UNION ) {
+        } else if( typ->decl_type == TYP_STRUCT
+          || typ->decl_type == TYP_UNION ) {
             if( CurToken == T_LEFT_BRACE
               && CompFlags.auto_agg_inits
               && SimpleStruct( typ ) ) {
