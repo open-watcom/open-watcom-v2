@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -381,12 +381,11 @@ static TOKEN doScanFloat( bool hex )
           || c == '-' ) {
             c = WriteBufferCharNextChar( c );
         }
-        if( c < '0'
-          || c > '9' ) {
+        if( (CharSet[c] & C_DI) == 0 ) {
             token = T_BAD_TOKEN;
             BadTokenInfo = ERR_INVALID_FLOATING_POINT_CONSTANT;
         }
-        while( c >= '0' && c <= '9' ) {
+        while( CharSet[c] & C_DI ) {
             c = WriteBufferCharNextChar( c );
         }
     }
@@ -509,8 +508,7 @@ static TOKEN ScanPPDot( void )
     Buffer[0] = '.';
     TokenLen = 1;
     c = NextChar();
-    if( c >= '0'
-      && c <= '9' ) {
+    if( CharSet[c] & C_DI ) {
         Buffer[TokenLen++] = c;
         return( doScanPPNumber() );
     } else {
@@ -711,7 +709,7 @@ static TOKEN doScanNum( void )
              * if collecting tokens for macro preprocessor, allow 8 and 9
              * since the argument may be used in with # or ##.
              */
-            while( c >= '0' && c <= '9' ) {
+            while( CharSet[c] & C_DI ) {
                 digit_mask |= c;
                 c = WriteBufferCharNextChar( c );
             }
@@ -738,7 +736,7 @@ static TOKEN doScanNum( void )
         bad_token_type = ERR_INVALID_CONSTANT;
         con.form = CON_DEC;
         c = NextChar();
-        while( c >= '0' && c <= '9' ) {
+        while( CharSet[c] & C_DI ) {
             c = WriteBufferCharNextChar( c );
         }
         if( c == '.'
@@ -814,7 +812,7 @@ static TOKEN doScanNum( void )
         unsigned_32 value;
 
         value = 0;
-        while( c >= '0' && c <= '9' ) {
+        while( CharSet[c] & C_DI ) {
             value = value * 10 + c - '0';
             c = WriteBufferCharNextChar( c );
         }
