@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -733,7 +733,7 @@ extern void ChkCallParms( void )
 bool AssRangeChk( TYPEPTR typ1, TREEPTR opnd2 )
 {
     unsigned        high;
-    unsigned long   value;
+    unsigned        value;
     bool            sign;
 
     if( opnd2->op.opr == OPR_PUSHINT ) {
@@ -755,16 +755,16 @@ bool AssRangeChk( TYPEPTR typ1, TREEPTR opnd2 )
             if( opnd2->u.expr_type->decl_type == TYP_LONG64
               || opnd2->u.expr_type->decl_type == TYP_ULONG64 ) {
                 value = opnd2->op.u2.ulong64_value.u._32[I64HI32];
-                sign = ( value == 0xffffffffU );
-                if( value != 0
-                  && !sign ) {
+                if( value > 0
+                  && value < 0xffffffffU
+                  || ( (int)value < 0 ) != ( (int)opnd2->op.u2.ulong64_value.u._32[I64LO32] < 0 ) ) {
                     return( typ1->decl_type == TYP_LONG64 || typ1->decl_type == TYP_ULONG64 );
                 }
                 value = opnd2->op.u2.ulong64_value.u._32[I64LO32];
             } else {
-                sign = ( opnd2->op.u2.long_value < 0 );
                 value = opnd2->op.u2.ulong_value;
             }
+            sign = ( (int)value < 0 );
             switch( typ1->decl_type ) {
             case TYP_FIELD:
             case TYP_UFIELD:
@@ -781,7 +781,7 @@ bool AssRangeChk( TYPEPTR typ1, TREEPTR opnd2 )
                 break;
             case TYP_CHAR:
                 if( !sign && ( value > 127 )
-                  || sign && ( (long)value < -128 ) )
+                  || sign && ( (int)value < -128 ) )
                     return( false );
                 break;
             case TYP_UCHAR:
@@ -796,7 +796,7 @@ bool AssRangeChk( TYPEPTR typ1, TREEPTR opnd2 )
 #endif
             case TYP_SHORT:
                 if( !sign && ( value > 32767 )
-                  || sign && ( (long)value < -32768 ) )
+                  || sign && ( (int)value < -32768 ) )
                     return( false );
                 break;
 #if TARGET_INT == TARGET_SHORT
@@ -808,14 +808,6 @@ bool AssRangeChk( TYPEPTR typ1, TREEPTR opnd2 )
                         return( false );
                     }
                 }
-                break;
-#if TARGET_INT == TARGET_LONG
-            case TYP_INT:
-#endif
-            case TYP_LONG:
-                if( !sign && ( value > 2147483647 )
-                  || sign && ( (long)value < -2147483648 ) )
-                    return( false );
                 break;
             default:
                 break;
