@@ -817,13 +817,14 @@ static TOKEN doScanNum( void )
             c = WriteBufferCharNextChar( c );
         }
         if( value == 64 ) {
+            if( ov == CNV_32 ) {
+                Constant64.u._32[I64LO32] = Constant;
+                Constant64.u._32[I64HI32] = 0;
+            }
             if( con.suffix == SUFF_I ) {
                 ConstType = TYP_LONG64;
             } else {
                 ConstType = TYP_ULONG64;
-            }
-            if( ov == CNV_32 ) {
-                U32ToU64( Constant, &Constant64 );
             }
         } else if( value == 32 ) {
             if( con.suffix == SUFF_I ) {
@@ -856,9 +857,10 @@ static TOKEN doScanNum( void )
                 CWarn1( ERR_CONSTANT_TOO_BIG );
             }
         }
-    } else if( ov == CNV_32
-      && con.suffix != SUFF_LL
-      && con.suffix != SUFF_ULL ) {
+    } else if( ov == CNV_32 ) {
+        /*
+         * 32-bit value
+         */
         switch( con.suffix ) {
         case SUFF_NONE:
             if( Constant <= TARGET_INT_MAX ) {
@@ -867,65 +869,73 @@ static TOKEN doScanNum( void )
             } else if( Constant <= TARGET_UINT_MAX
               && con.form != CON_DEC ) {
                 ConstType = TYP_UINT;
-            } else if( Constant <= 0x7fffffffU ) {
+            } else if( Constant <= TARGET_LONG_MAX ) {
                 ConstType = TYP_LONG;
-            } else {
+            } else if( con.form != CON_DEC ) {
                 ConstType = TYP_ULONG;
-            }
 #else
             } else if( con.form != CON_DEC ) {
                 ConstType = TYP_UINT;
-            } else {
-                ConstType = TYP_ULONG;
-            }
 #endif
+            } else {
+                Constant64.u._32[I64LO32] = Constant;
+                Constant64.u._32[I64HI32] = 0;
+                ConstType = TYP_LONG64;
+            }
             break;
         case SUFF_L:
-            if( Constant <= 0x7FFFFFFFU ) {
+            if( Constant <= TARGET_LONG_MAX ) {
                 ConstType = TYP_LONG;
-            } else {
-                ConstType = TYP_ULONG;
+                break;
             }
+            if( con.form != CON_DEC ) {
+                ConstType = TYP_ULONG;
+                break;
+            }
+            /* fall through */
+        case SUFF_LL:
+            Constant64.u._32[I64LO32] = Constant;
+            Constant64.u._32[I64HI32] = 0;
+            ConstType = TYP_LONG64;
             break;
         case SUFF_U:
-            ConstType = TYP_UINT;
 #if TARGET_INT < TARGET_LONG
-            if( Constant > TARGET_UINT_MAX ) {
-                ConstType = TYP_ULONG;
+            if( Constant <= TARGET_UINT_MAX ) {
+                ConstType = TYP_UINT;
+                break;
             }
-#endif
+            /* fall through */
+#else
+            ConstType = TYP_UINT;
             break;
+#endif
         case SUFF_UL:
             ConstType = TYP_ULONG;
+            break;
+        case SUFF_ULL:
+            Constant64.u._32[I64LO32] = Constant;
+            Constant64.u._32[I64HI32] = 0;
+            ConstType = TYP_ULONG64;
             break;
         default:
             break;
         }
     } else {
+        /*
+         * 64-bit value
+         */
         switch( con.suffix ) {
         case SUFF_NONE:
-            ConstType = TYP_LONG64;
-            if( Constant64.u._32[I64HI32] & 0x80000000 ) {
-                ConstType = TYP_ULONG64;
-            }
-            break;
         case SUFF_L:
         case SUFF_LL:
-            if( ov == CNV_32 ) {
-                U32ToU64( Constant, &Constant64 );
-            }
-            if( Constant64.u._32[I64HI32] & 0x80000000 ) {
-                ConstType = TYP_ULONG64;
-            } else {
+            if( (Constant64.u._32[I64HI32] & 0x80000000) == 0 ) {
                 ConstType = TYP_LONG64;
+                break;
             }
-            break;
+            /* fall through */
         case SUFF_U:
         case SUFF_UL:
         case SUFF_ULL:
-            if( ov == CNV_32 ) {
-                U32ToU64( Constant, &Constant64 );
-            }
             ConstType = TYP_ULONG64;
             break;
         default:
