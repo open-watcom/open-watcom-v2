@@ -865,24 +865,14 @@ static TOKEN doScanNum( void )
         case SUFF_NONE:
             if( Constant <= TARGET_INT_MAX ) {
                 ConstType = TYP_INT;
-#if TARGET_INT < TARGET_LONG
-            } else if( Constant <= TARGET_UINT_MAX
+                break;
+            }
+            if( Constant <= TARGET_UINT_MAX
               && con.form != CON_DEC ) {
                 ConstType = TYP_UINT;
-            } else if( Constant <= TARGET_LONG_MAX ) {
-                ConstType = TYP_LONG;
-            } else if( con.form != CON_DEC ) {
-                ConstType = TYP_ULONG;
-#else
-            } else if( con.form != CON_DEC ) {
-                ConstType = TYP_UINT;
-#endif
-            } else {
-                Constant64.u._32[I64LO32] = Constant;
-                Constant64.u._32[I64HI32] = 0;
-                ConstType = TYP_LONG64;
+                break;
             }
-            break;
+            /* fall through */
         case SUFF_L:
             if( Constant <= TARGET_LONG_MAX ) {
                 ConstType = TYP_LONG;
