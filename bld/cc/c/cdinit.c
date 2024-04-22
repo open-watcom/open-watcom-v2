@@ -305,17 +305,37 @@ static void RelSeekBytes( target_ssize n )
     }
 }
 
-static void ChkConstant( uint64 *val, unsigned width )
+static void CheckBitfieldConstant( uint64 *val, unsigned width )
 {
-    uint64  max;
+    uint64      max;
 
+    /*
+     * max = ( 1 << width ) - 1;
+     */
+    max.u._32[I64LO32] = 1;
     max.u._32[I64HI32] = 0;
-    max.u._32[I64LO32] = ( 1U << width ) - 1U;
-    if( val->u._32[I64LO32] > max.u._32[I64LO32] ) {
-        if( (val->u._32[I64LO32] | (max.u._32[I64LO32] >> 1)) != ~0U ) {
+    U64ShiftL( &max, width, &max );
+    if( max.u._32[I64LO32] == 0 )
+        max.u._32[I64HI32]--;
+    max.u._32[I64LO32]--;
+    /*
+     * if( val > max )
+     */
+    if( val->u._32[I64HI32] > max.u._32[I64HI32]
+      || val->u._32[I64HI32] == max.u._32[I64HI32]
+      && val->u._32[I64LO32] > max.u._32[I64LO32] ) {
+        /*
+         * if( (val | ( max >> 1 )) != ~0U )
+         */
+        if( (val->u._32[I64HI32] | ( max.u._32[I64HI32] >> 1 )) != ~0U
+          || (val->u._32[I64LO32] | ( max.u._32[I64LO32] >> 1 ) | ( max.u._32[I64HI32] << 31 )) != ~0U ) {
             CWarn1( ERR_CONSTANT_TOO_BIG );
         }
     }
+    /*
+     * val &= max;
+     */
+    val->u._32[I64HI32] &= max.u._32[I64HI32];
     val->u._32[I64LO32] &= max.u._32[I64LO32];
 }
 
@@ -638,7 +658,7 @@ static FIELDPTR InitBitField( FIELDPTR field )
     TYPEPTR             typ;
     target_size         size;
     uint64              value64;
-    uint64              bit_value;
+    const_val           bit_value;
     target_size         offset;
     TOKEN               token;
     bool                is64bit;
@@ -651,26 +671,25 @@ static FIELDPTR InitBitField( FIELDPTR field )
     size = SizeOfArg( typ );
     dtype = typ->u.f.field_type;
     is64bit = ( dtype == TYP_LONG64 || dtype == TYP_ULONG64 );
-    U32ToU64( 0, &value64 );
+    value64.u._32[I64LO32] = 0;
+    value64.u._32[I64HI32] = 0;
     offset = field->offset;
     while( typ->decl_type == TYP_FIELD || typ->decl_type == TYP_UFIELD ) {
         if( CurToken != T_RIGHT_BRACE ) {
-            bit_value.u._32[I64LO32] = ConstExpr();
-            bit_value.u._32[I64HI32] = 0;
+            bit_value.value.u._32[I64LO32] = 0;
+            bit_value.value.u._32[I64HI32] = 0;
+            ConstExprAndType( &bit_value );
             if( typ->u.f.field_type == TYP_BOOL ) {
-                if( bit_value.u._32[I64LO32] != 0 ) {
-                    bit_value.u._32[I64LO32] = 1;
+                if( U64Test( &bit_value.value ) ) {
+                    bit_value.value.u._32[I64LO32] = 1;
+                    bit_value.value.u._32[I64HI32] = 0;
                 }
             } else {
-                ChkConstant( &bit_value, typ->u.f.field_width );
+                CheckBitfieldConstant( &bit_value.value, typ->u.f.field_width );
             }
-            if( is64bit ) {
-                U64ShiftL( &bit_value, typ->u.f.field_start, &bit_value );
-                value64.u._32[I64LO32] |= bit_value.u._32[I64LO32];
-                value64.u._32[I64HI32] |= bit_value.u._32[I64HI32];
-            } else {
-                value64.u._32[I64LO32] |= bit_value.u._32[I64LO32] << typ->u.f.field_start;
-            }
+            U64ShiftL( &bit_value.value, typ->u.f.field_start, &bit_value.value );
+            value64.u._32[I64LO32] |= bit_value.value.u._32[I64LO32];
+            value64.u._32[I64HI32] |= bit_value.value.u._32[I64HI32];
         }
         field = field->next_field;
         if( field == NULL || field->offset != offset )
