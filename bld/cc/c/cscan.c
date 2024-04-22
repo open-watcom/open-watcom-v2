@@ -867,8 +867,12 @@ static TOKEN doScanNum( void )
                 ConstType = TYP_INT;
                 break;
             }
+#if TARGET_INT < TARGET_LONG
             if( Constant <= TARGET_UINT_MAX
               && con.form != CON_DEC ) {
+#else
+            if( con.form != CON_DEC ) {
+#endif
                 ConstType = TYP_UINT;
                 break;
             }
