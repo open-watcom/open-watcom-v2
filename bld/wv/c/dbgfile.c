@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -68,7 +68,7 @@
 #define LOC_ESCAPE      '@'
 #define REMOTE_LOC      'r'
 #define LOCAL_LOC       'l'
-#define REMOTE_IND      0x8000
+#define REMOTE_IND      ((file_handle)0x8000)
 #define MAX_OPENS       100
 #define MAX_ERRORS      10
 
