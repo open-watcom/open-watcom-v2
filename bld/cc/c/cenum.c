@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -345,7 +345,7 @@ void FreeEnums( void )
 
     for( hash = 0; hash < ID_HASH_SIZE; hash++ ) {
         for( ; (esym = EnumTable[hash]) != NULL; EnumTable[hash] = esym->next_enum ) {
-            if( !ChkEqSymLevel( esym->parent ) ) {
+            if( !CheckEqSymLevel( esym->parent ) ) {
                 break;
             }
         }
@@ -362,7 +362,7 @@ void DumpEnumTable( void )
     puts( "ENUM TABLE DUMP" );
     for( hash = 0; hash < ID_HASH_SIZE; hash++ ) {
         for( esym = EnumTable[hash]; esym != NULL; esym = esym->next_enum ) {
-            if( ChkEqSymLevel( esym->parent ) ) {
+            if( CheckEqSymLevel( esym->parent ) ) {
                 printf( "%s = %lld\n", esym->name, esym->value.u._64[0] );
             }
         }

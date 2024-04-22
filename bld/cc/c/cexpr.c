@@ -1135,7 +1135,7 @@ static TREEPTR IncDec( TREEPTR tree, TOKEN opr )
     op_flags    volatile_flag;
 
     volatile_flag = tree->op.flags & OPFLAG_VOLATILE;
-    ChkConst( tree );
+    CheckConst( tree );
     tree = AddOp( tree, opr, IntLeaf( 1 ) );
     tree->op.flags |= volatile_flag;
     CompFlags.meaningless_stmt = false;
@@ -1294,7 +1294,7 @@ static TREEPTR GetExpr( void )
                 tree->op.u2.result_type = typ;
                 break;
             case TC_ASSIGNMENT:  /*  = += -= *= /= %= >>= <<= &= ^= |=  */
-                ChkConst( op1 );
+                CheckConst( op1 );
                 tree = AsgnOp( op1, Token[ExprLevel], tree );
                 CompFlags.meaningless_stmt = false;
                 CompFlags.useful_side_effect = true;
@@ -1924,7 +1924,7 @@ static void AddCallNode( TREEPTR tree )
     }
 }
 
-void ChkCallNode( TREEPTR tree )
+void CheckCallNode( TREEPTR tree )
 {
     call_list   **lnk;
     call_list   *curr;
@@ -1991,7 +1991,7 @@ static TREEPTR GenNextParm( TREEPTR tree, TYPEPTR **plistptr )
     }
     if( plist != NULL ) {  //do conversion from tree to parm type
         parm_typ = *plist;
-        ParmAsgnCheck( parm_typ, tree, ParmNum(), true );
+        CheckParmAssign( parm_typ, tree, ParmNum(), true );
         if( parm_typ != NULL ) {
             /*
              * skip typedefs, go into enum base

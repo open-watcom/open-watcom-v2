@@ -39,7 +39,7 @@
 
 static   void    ParmDeclList( void );
 static   void    AddParms( void );
-static   void    ChkParms( void );
+static   void    CheckParms( void );
 static   void    FuncDefn( SYMPTR );
 
 static   void    BeginFunc( void );
@@ -325,7 +325,7 @@ static void ParmDeclList( void )     /* process old style function definitions *
 
         for( ;; ) {
             if( CurToken == T_SEMI_COLON ) {
-                Chk_Struct_Union_Enum( typ );
+                Check_Struct_Union_Enum( typ );
             } else {
                 sym.name = NULL;
                 Declarator( &sym, info.mod, typ, state );
@@ -370,7 +370,7 @@ static void ParmDeclList( void )     /* process old style function definitions *
         CurFunc->flags |= SYM_OLD_STYLE_FUNC;
         AddParms();
     } else {
-        ChkParms();
+        CheckParms();
     }
     ParmList = NULL;
     if( VarParm( CurFunc ) ) {
@@ -395,7 +395,7 @@ static void ReverseParms( void )       /* reverse order of parms */
 }
 
 
-static void ChkProtoType( void )
+static void CheckProtoType( void )
 {
     TYPEPTR     ret1;
     TYPEPTR     ret2;
@@ -528,12 +528,12 @@ static void AddParms( void )
         MakeParmList( parmlist, ParmsToBeReversed( CurFunc->mods, NULL ) ) );
 
     if( PrevProtoType != NULL ) {
-        ChkProtoType();
+        CheckProtoType();
     }
 }
 
 
-static void ChkParms( void )
+static void CheckParms( void )
 {
     PARMPTR             parm;
     PARMPTR             prev_parm;

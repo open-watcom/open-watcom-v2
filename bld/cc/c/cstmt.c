@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -82,7 +82,7 @@ void StmtInit( void )
 }
 
 
-static void ChkStringLeaf( TREEPTR leaf )
+static void CheckStringLeaf( TREEPTR leaf )
 {
     if( leaf->op.opr == OPR_PUSHSTRING ) {
         leaf->op.u2.string_handle->ref_count++;
@@ -90,7 +90,7 @@ static void ChkStringLeaf( TREEPTR leaf )
 }
 
 
-static void ChkUseful( void )
+static void CheckUseful( void )
 {
     if( CompFlags.useful_side_effect ) {
         CWarn1( ERR_USEFUL_SIDE_EFFECT );
@@ -100,13 +100,13 @@ static void ChkUseful( void )
 }
 
 
-static void ChkStmtExpr( void )
+static void CheckStmtExpr( void )
 {
     TREEPTR     tree;
 
     tree = Expr();
     if( CompFlags.meaningless_stmt ) {
-        ChkUseful();
+        CheckUseful();
     }
     AddStmt( tree );
     if( CompFlags.pending_dead_code ) {
@@ -149,7 +149,7 @@ void SwitchPurge( void )
 
 void AddStmt( TREEPTR stmt )
 {
-    WalkExprTree( stmt, ChkStringLeaf, NoOp, NoOp, DoConstFold );
+    WalkExprTree( stmt, CheckStringLeaf, NoOp, NoOp, DoConstFold );
     stmt = ExprNode( NULL, OPR_STMT, stmt );
     stmt->op.u2.src_loc = SrcLoc;
     stmt->op.u1.unroll_count = UnrollCount;
@@ -384,7 +384,7 @@ static void ReturnStmt( SYM_HANDLE func_result_handle, struct return_info *info 
         func_type = CurFunc->sym_type->object;
         SKIP_TYPEDEFS( func_type );
         tree = RValue( Expr() );
-        ChkRetType( tree );
+        CheckRetType( tree );
         tree = FixupAss( tree, func_type );
         tree = ExprNode( NULL, OPR_RETURN, tree );
         tree->u.expr_type = func_type;
@@ -424,7 +424,7 @@ static void SetFuncReturnNode( TREEPTR tree )
 }
 
 
-static void ChkRetValue( void )
+static void CheckRetValue( void )
 {
     TYPEPTR     typ;
 
@@ -699,13 +699,13 @@ static void ForStmt( void )
             AddStmt( tree );
             BlockStack->gen_endblock = true;
             if( !LoopDecl( &BlockStack->sym_list ) ) {
-                ChkStmtExpr();      // no declarator, try init_expr
+                CheckStmtExpr();      // no declarator, try init_expr
             } else {
                 parsed_semi_colon = true;   // LoopDecl ate it up
             }
             tree->op.u2.sym_handle = BlockStack->sym_list;
         } else {
-            ChkStmtExpr();          // init_expr
+            CheckStmtExpr();          // init_expr
         }
     }
     if( !parsed_semi_colon ) {
@@ -724,7 +724,7 @@ static void ForStmt( void )
     if( CurToken != T_RIGHT_PAREN ) {
         BlockStack->inc_var = Expr();                   // save this
         if( CompFlags.meaningless_stmt ) {
-            ChkUseful();
+            CheckUseful();
         }
     }
     MustRecog( T_RIGHT_PAREN );
@@ -743,7 +743,7 @@ static void EndForStmt( void )
 
 static void StmtExpr( void )
 {
-    ChkStmtExpr();
+    CheckStmtExpr();
     if( ExpectingToken( T_SEMI_COLON ) ) {
         NextToken();
     }
@@ -1260,7 +1260,7 @@ void Statement( void )
                 SetErrLoc( &TokenLoc );
                 NextToken();    /* look ahead for else keyword */
                 if( CurToken != T_ELSE ) {
-                    ChkUseful();
+                    CheckUseful();
                 }
                 InitErrLoc();
                 break;
@@ -1433,7 +1433,7 @@ void Statement( void )
     }
     if( !return_info.with_expr ) {   /* no return values present */
         if( DeadCode == 0 && !CurFunc->attribs.naked ) {
-            ChkRetValue();
+            CheckRetValue();
         }
     } else if( !return_at_outer_level ) {
         if( DeadCode == 0 && !CurFunc->attribs.naked ) {

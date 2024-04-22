@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -120,7 +120,7 @@ static void PPFlush2EOL( void )
 }
 
 
-static void ChkEOL( void )
+static void CheckEOL( void )
 {
     if( CurToken != T_EOF ) {
         ExpectingToken( T_NULL );
@@ -137,7 +137,7 @@ static void WantEOL( void )
             }
         }
     } else {
-        ChkEOL();
+        CheckEOL();
     }
 }
 
@@ -195,7 +195,7 @@ static void PreProcStmt( void )
     }
 }
 
-TOKEN ChkControl( void )
+TOKEN CheckControl( void )
 {
     bool        lines_skipped;
     ppctl_t     old_ppctl;
@@ -586,7 +586,7 @@ static void CIfDef( void )
         IncLevel( false );
     }
     PPNextToken();
-    ChkEOL();
+    CheckEOL();
 }
 
 
@@ -607,7 +607,7 @@ static void CIfNDef( void )
         IncLevel( true );
     }
     PPNextToken();
-    ChkEOL();
+    CheckEOL();
 }
 
 
@@ -620,7 +620,7 @@ static void CIf( void )
     PPNextToken();
     value = PpConstExpr();
     IncLevel( value );
-    ChkEOL();
+    CheckEOL();
     PPCTL_DISABLE_MACROS();
     PPCTL_DISABLE_LEX_ERRORS();
 }
@@ -646,7 +646,7 @@ static void CElif( void )
              */
             if( CppStack->cpp_type == PRE_IF ) {
                 value = PpConstExpr();
-                ChkEOL();
+                CheckEOL();
                 if( value ) {
                     SkipLevel = NestLevel; /* start including else part */
                     CppStack->processing = true;
@@ -758,7 +758,7 @@ static void CUnDef( void )
     if( ExpectingToken( T_ID ) ) {
         MacroDel( Buffer );
         PPNextToken();
-        ChkEOL();
+        CheckEOL();
     }
 }
 
@@ -804,7 +804,7 @@ static void CLine( void )
                 }
             }
             PPNextToken();
-            ChkEOL();
+            CheckEOL();
         }
     }
     PPCTL_DISABLE_MACROS();

@@ -44,7 +44,7 @@ static void         GetFuncParmList( void );
 
 static segment_id   thread_segid = SEG_NULL;
 
-void Chk_Struct_Union_Enum( TYPEPTR typ )
+void Check_Struct_Union_Enum( TYPEPTR typ )
 {
     SKIP_DUMMY_TYPEDEFS( typ );
     switch( typ->decl_type ) {
@@ -140,7 +140,7 @@ static void CmpFuncDecls( SYMPTR new_sym, SYMPTR old_sym )
      * diagnostics for function, target=old and source=new
      */
     SetDiagType2( type_old->object, type_new->object );
-    if( !IdenticalType( type_new->object, type_old->object ) ) {
+    if( !CheckIdenticalType( type_new->object, type_old->object ) ) {
         TYPEPTR     ret_new, ret_old;
 
         /*
@@ -167,7 +167,7 @@ static void CmpFuncDecls( SYMPTR new_sym, SYMPTR old_sym )
     /*
      * check types of parms, including promotion
      */
-    ChkCompatibleFunction( type_old, type_new, true );
+    CheckCompatibleFunction( type_old, type_new, true );
 }
 
 
@@ -247,7 +247,7 @@ static SYM_HANDLE FuncDecl( SYMPTR sym, stg_classes stg_class, decl_state *state
              * previous prototype specified calling convention and later definition does
              * not, propagate the convention from the prototype
              */
-            if( (sym->mods & MASK_LANGUAGES) && !ChkCompatibleLanguage( sym->mods, old_sym.mods ) ) {
+            if( (sym->mods & MASK_LANGUAGES) && !CheckCompatibleLanguage( sym->mods, old_sym.mods ) ) {
                 CErr2p( ERR_MODIFIERS_DISAGREE, sym->name );
             }
             if( (sym->mods & FLAG_INLINE) != (old_sym.mods & FLAG_INLINE) ) {
@@ -414,10 +414,10 @@ static SYM_HANDLE VarDecl( SYMPTR sym, stg_classes stg_class, decl_state *state 
     old_sym_handle = SymLook( sym->u1.hash, sym->name );
     if( old_sym_handle != SYM_NULL ) {
         SymGet( &old_sym, old_sym_handle );
-        if( ChkEqSymLevel( &old_sym ) ) {
+        if( CheckEqSymLevel( &old_sym ) ) {
             SetDiagSymbol( &old_sym, old_sym_handle );
             if( old_sym.attribs.stg_class == SC_EXTERN && stg_class == SC_EXTERN ) {
-                if( ! IdenticalType( old_sym.sym_type, sym->sym_type ) ) {
+                if( ! CheckIdenticalType( old_sym.sym_type, sym->sym_type ) ) {
                     CErr2p( ERR_TYPE_DOES_NOT_AGREE, sym->name );
                 }
             } else if( old_sym.attribs.stg_class == SC_TYPEDEF ) {
@@ -432,7 +432,7 @@ static SYM_HANDLE VarDecl( SYMPTR sym, stg_classes stg_class, decl_state *state 
     if( old_sym_handle != SYM_NULL ) {
         SymGet( &old_sym, old_sym_handle );
         SetDiagSymbol( &old_sym, old_sym_handle );
-        if( ChkEqSymLevel( &old_sym ) || stg_class == SC_EXTERN ) {
+        if( CheckEqSymLevel( &old_sym ) || stg_class == SC_EXTERN ) {
             old_attrs = old_sym.mods;
             new_attrs = sym->mods;
 #if _INTEL_CPU
@@ -486,7 +486,7 @@ static SYM_HANDLE VarDecl( SYMPTR sym, stg_classes stg_class, decl_state *state 
         SetDiagSymbol( &old_sym, old_sym_handle );
         old_def = VerifyType( sym->sym_type, old_sym.sym_type, sym );
         SetDiagPop();
-        if( !old_def && ChkEqSymLevel( &old_sym ) ) {
+        if( !old_def && CheckEqSymLevel( &old_sym ) ) {
             /*
              * new symbol's type supersedes old type
              */
@@ -627,7 +627,7 @@ static SYM_HANDLE InitDeclarator( SYMPTR sym, decl_info const * const info, decl
                 otyp = old_sym.sym_type;        /* skip typedefs */
                 SKIP_TYPEDEFS( otyp );
                 if( old_sym.attribs.stg_class == SC_TYPEDEF &&
-                    ChkEqSymLevel( &old_sym ) && IdenticalType( typ, otyp ) ) {
+                    CheckEqSymLevel( &old_sym ) && CheckIdenticalType( typ, otyp ) ) {
                     return( SYM_NULL );        /* indicate already in symbol tab */
                 }
             }
@@ -784,7 +784,7 @@ bool DeclList( SYM_HANDLE *sym_head )
             }
             MustRecog( T_SEMI_COLON );
         } else {
-            Chk_Struct_Union_Enum( info.typ );
+            Check_Struct_Union_Enum( info.typ );
             NextToken();                /* skip over ';' */
         }
     }
@@ -860,7 +860,7 @@ bool LoopDecl( SYM_HANDLE *sym_head )
         }
         MustRecog( T_SEMI_COLON );
     } else {
-//        Chk_Struct_Union_Enum( info.typ );
+//        Check_Struct_Union_Enum( info.typ );
         NextToken();                /* skip over ';' */
     }
     return( true );    /* We found a declaration */

@@ -457,7 +457,7 @@ SYM_HANDLE SymAdd( id_hash_idx hash, SYMPTR sym )
      * add name to head of list
      */
     for( head = &HashTab[hash]; *head != NULL; head = &(*head)->next_sym ) {
-        if( ChkLtSymLevel( *head ) || ChkEqSymLevel( *head ) ) {
+        if( CheckLtSymLevel( *head ) || CheckEqSymLevel( *head ) ) {
             break;
         }
     }
@@ -576,7 +576,7 @@ SYM_HANDLE Sym0Look( id_hash_idx hash, const char *id )
 }
 
 
-static void ChkReference( SYMPTR sym, SYM_NAMEPTR name )
+static void CheckReference( SYMPTR sym, SYM_NAMEPTR name )
 {
     TYPEPTR     typ;
 
@@ -602,7 +602,7 @@ static void ChkReference( SYMPTR sym, SYM_NAMEPTR name )
 }
 
 
-static void ChkIncomplete( SYMPTR sym, SYM_NAMEPTR name )
+static void CheckIncomplete( SYMPTR sym, SYM_NAMEPTR name )
 {
     TYPEPTR     typ;
 
@@ -629,7 +629,7 @@ static void ChkIncomplete( SYMPTR sym, SYM_NAMEPTR name )
 }
 
 
-static void ChkDefined( SYMPTR sym, SYM_NAMEPTR name )
+static void CheckDefined( SYMPTR sym, SYM_NAMEPTR name )
 {
     if( sym->flags & SYM_DEFINED ) {
         if( sym->attribs.stg_class == SC_STATIC ) {
@@ -658,7 +658,7 @@ static void ChkDefined( SYMPTR sym, SYM_NAMEPTR name )
     }
 }
 
-static void ChkFunction( SYMPTR sym, SYM_NAMEPTR name )
+static void CheckFunction( SYMPTR sym, SYM_NAMEPTR name )
 {
 #if _INTEL_CPU
     if( sym->attribs.stg_class == SC_STATIC ) {
@@ -694,7 +694,7 @@ static  void InitExtName( struct xlist **where  )
     *where = NULL;
 }
 
-static void ChkExtName( struct xlist **link, SYMPTR sym, SYM_NAMEPTR name  )
+static void CheckExtName( struct xlist **link, SYMPTR sym, SYM_NAMEPTR name  )
 /***Restricted extern names i.e 8 char upper check *****/
 {
     struct xlist    *new, *curr;
@@ -810,7 +810,7 @@ static SYM_HASHPTR GetSymList( void )
     sym_list = NULL;
     for( hash = 0; hash < ID_HASH_SIZE; hash++ ) {
         for( hsym = HashTab[hash]; hsym != NULL; hsym = next_hsymptr ) {
-            if( !ChkEqSymLevel( hsym ) )
+            if( !CheckEqSymLevel( hsym ) )
                 break;
             next_hsymptr = hsym->next_sym;
             hsym->next_sym = sym_list;
@@ -911,7 +911,7 @@ static SYM_HASHPTR FreeSym( void )
                     /*
                      * FUNCTION
                      */
-                    ChkFunction( &sym, hsym->name );
+                    CheckFunction( &sym, hsym->name );
                 }
                 if( tail[bucket] == SYM_NULL ) {
                     tail[bucket] = hsym->handle;
@@ -928,11 +928,11 @@ static SYM_HASHPTR FreeSym( void )
             SymReplace( &sym, hsym->handle );
         }
         SetErrLoc( &sym.src_loc );
-        ChkIncomplete( &sym, hsym->name );
+        CheckIncomplete( &sym, hsym->name );
         if( SymLevel == 0 ) {
-            ChkDefined( &sym, hsym->name );
+            CheckDefined( &sym, hsym->name );
         } else {
-            ChkReference( &sym, hsym->name );
+            CheckReference( &sym, hsym->name );
             if( sym.attribs.stg_class == SC_STATIC && (sym.flags & SYM_FUNCTION) == 0 ) {
                 CurFuncNode->op.u2.func.flags &= ~FUNC_OK_TO_INLINE;
                 SymReplace( CurFunc, CurFuncHandle );

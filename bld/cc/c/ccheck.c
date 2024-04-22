@@ -110,11 +110,11 @@ static cmp_type InUnion( TYPEPTR typ1, TYPEPTR typ2, bool reversed )
         return( NO );
     for( field = typ1->u.tag->u.field_list; field != NULL; field = field->next_field ) {
         if( reversed ) {
-            if( IdenticalType( typ2, field->field_type ) ) {
+            if( CheckIdenticalType( typ2, field->field_type ) ) {
                 return( OK );
             }
         } else {
-            if( IdenticalType( field->field_type, typ2 ) ) {
+            if( CheckIdenticalType( field->field_type, typ2 ) ) {
                 return( OK );
             }
         }
@@ -122,7 +122,7 @@ static cmp_type InUnion( TYPEPTR typ1, TYPEPTR typ2, bool reversed )
     return( NO );
 }
 
-static bool ChkParmPromotion( TYPEPTR typ )
+static bool CheckParmPromotion( TYPEPTR typ )
 {
     SKIP_TYPEDEFS( typ );
     switch( typ->decl_type ) {
@@ -180,7 +180,7 @@ static cmp_type CompatibleStructs( TAGPTR tag1, TAGPTR tag2 )
         SKIP_TYPEDEFS( typ1 );
         typ2 = field2->field_type;
         SKIP_TYPEDEFS( typ2 );
-        if( !IdenticalType( typ1, typ2 ) ) {
+        if( !CheckIdenticalType( typ1, typ2 ) ) {
             if( ( typ1->decl_type == TYP_STRUCT && typ2->decl_type == TYP_STRUCT )
               || ( typ1->decl_type == TYP_UNION && typ2->decl_type == TYP_UNION ) ) {
                 if( CompatibleStructs( typ1->u.tag, typ2->u.tag ) != OK ) {
@@ -202,7 +202,7 @@ static cmp_type CompatibleStructs( TAGPTR tag1, TAGPTR tag2 )
     return( OK );
 }
 
-static typecheck_err ChkCompatibleFunctionParms( TYPEPTR typ1, TYPEPTR typ2, bool topLevelCheck )
+static typecheck_err CheckCompatibleFunctionParms( TYPEPTR typ1, TYPEPTR typ2, bool topLevelCheck )
 {
     TYPEPTR         *plist1;
     TYPEPTR         *plist2;
@@ -224,7 +224,7 @@ static typecheck_err ChkCompatibleFunctionParms( TYPEPTR typ1, TYPEPTR typ2, boo
                 if( p1->decl_type == TYP_DOT_DOT_DOT ) {
                     break;
                 }
-                if( !ChkParmPromotion( p1 ) ) {
+                if( !CheckParmPromotion( p1 ) ) {
                     if( topLevelCheck ) {
                         CErr2( ERR_PARM_TYPE_MISMATCH, parmno );
                     }
@@ -238,7 +238,7 @@ static typecheck_err ChkCompatibleFunctionParms( TYPEPTR typ1, TYPEPTR typ2, boo
                   || p2->decl_type == TYP_DOT_DOT_DOT ) {
                     break;
                 }
-                if( !IdenticalType( p1, p2 ) ) {
+                if( !CheckIdenticalType( p1, p2 ) ) {
                     if( topLevelCheck ) {
                         SetDiagType2( p1, p2 );
                         CErr2( ERR_PARM_TYPE_MISMATCH, parmno );
@@ -265,7 +265,7 @@ static typecheck_err ChkCompatibleFunctionParms( TYPEPTR typ1, TYPEPTR typ2, boo
     return( rc );
 }
 
-bool ChkCompatibleLanguage( type_modifiers typ1, type_modifiers typ2 )
+bool CheckCompatibleLanguage( type_modifiers typ1, type_modifiers typ2 )
 {
     typ1 &= MASK_LANGUAGES;
     typ2 &= MASK_LANGUAGES;
@@ -375,11 +375,11 @@ static cmp_type DoCompatibleType( TYPEPTR typ1, TYPEPTR typ2, int ptr_indir_leve
         if( typ1->decl_type == TYP_FUNCTION ) {
             typ1_flags = typ1->u.fn.decl_flags;
             typ2_flags = typ2->u.fn.decl_flags;
-            if( !ChkCompatibleLanguage( typ1_flags, typ2_flags ) ) {
+            if( !CheckCompatibleLanguage( typ1_flags, typ2_flags ) ) {
                 ret_val = NO;
-            } else if( ChkCompatibleFunctionParms( typ1, typ2, false ) != TCE_OK ) {
+            } else if( CheckCompatibleFunctionParms( typ1, typ2, false ) != TCE_OK ) {
                 ret_val = NO;
-            } else if( !IdenticalType( typ1->object, typ2->object ) ) {
+            } else if( !CheckIdenticalType( typ1->object, typ2->object ) ) {
                 ret_val = NO;
             }
         } else if( typ1->decl_type == TYP_STRUCT
@@ -432,20 +432,20 @@ static cmp_type DoCompatibleType( TYPEPTR typ1, TYPEPTR typ2, int ptr_indir_leve
     } else if( typ1->decl_type == TYP_ARRAY ) {
         TYPEPTR     typ = typ1->object;
 
-        if( !IdenticalType( typ, typ2 ) ) {
+        if( !CheckIdenticalType( typ, typ2 ) ) {
             ret_val = NO;
             SKIP_ARRAYS( typ );
-            if( IdenticalType( typ, typ2 ) ) {
+            if( CheckIdenticalType( typ, typ2 ) ) {
                 ret_val = PM;
             }
         }
     } else if( typ2->decl_type == TYP_ARRAY ) {
         TYPEPTR     typ = typ2->object;
 
-        if( !IdenticalType( typ, typ1 ) ) {
+        if( !CheckIdenticalType( typ, typ1 ) ) {
             ret_val = NO;
             SKIP_ARRAYS( typ );
-            if( IdenticalType( typ, typ1 ) ) {
+            if( CheckIdenticalType( typ, typ1 ) ) {
                 ret_val = PM;
             }
         }
@@ -641,7 +641,7 @@ static void CompareParms( TYPEPTR *master, TREEPTR parms, bool reverse )
         /*
          * check compatibility of parms
          */
-        ParmAsgnCheck( typ1, parm, parmno, false );
+        CheckParmAssign( typ1, parm, parmno, false );
         typ1 = *master++;
         if( typ1 != NULL
           && typ1->decl_type == TYP_DOT_DOT_DOT ) {
@@ -670,7 +670,7 @@ static void CompareParms( TYPEPTR *master, TREEPTR parms, bool reverse )
     }
 }
 
-extern void ChkCallParms( void )
+extern void CheckCallParms( void )
 /*******************************
  * Check parameters of function that were called before a prototype was seen
  */
@@ -730,7 +730,7 @@ extern void ChkCallParms( void )
     }
 }
 
-bool AssRangeChk( TYPEPTR typ1, TREEPTR opnd2 )
+bool CheckAssignRange( TYPEPTR typ1, TREEPTR opnd2 )
 {
     unsigned        high;
     unsigned        value;
@@ -845,7 +845,7 @@ static bool IsPointer( TYPEPTR typ )
     return( typ->decl_type == TYP_POINTER );
 }
 
-void ParmAsgnCheck( TYPEPTR typ1, TREEPTR opnd2, int parmno, bool asgn_check )
+void CheckParmAssign( TYPEPTR typ1, TREEPTR opnd2, int parmno, bool asgn_check )
 {
     TYPEPTR        typ2;
 
@@ -959,7 +959,7 @@ void ParmAsgnCheck( TYPEPTR typ1, TREEPTR opnd2, int parmno, bool asgn_check )
         }
     case OK:
         if( asgn_check ) {
-            if( !AssRangeChk( typ1, opnd2 ) ) {
+            if( !CheckAssignRange( typ1, opnd2 ) ) {
                 CWarnP1( parmno, ERR_CONSTANT_TOO_BIG );
             }
         }
@@ -968,7 +968,7 @@ void ParmAsgnCheck( TYPEPTR typ1, TREEPTR opnd2, int parmno, bool asgn_check )
     SetDiagPop();
 }
 
-void TernChk( TYPEPTR typ1, TYPEPTR typ2 )
+void CheckTernary( TYPEPTR typ1, TYPEPTR typ2 )
 {
     SetDiagType3( typ1, typ2, T_QUESTION );
     switch( CompatibleType( typ1, typ2, false, false ) ) {
@@ -1003,7 +1003,7 @@ void TernChk( TYPEPTR typ1, TYPEPTR typ2 )
     SetDiagPop();
 }
 
-void ChkRetType( TREEPTR tree )
+void CheckRetType( TREEPTR tree )
 {
     TYPEPTR     ret_type;
     TYPEPTR     func_type;
@@ -1022,7 +1022,7 @@ void ChkRetType( TREEPTR tree )
     /*
      * check that the types are compatible
      */
-    ParmAsgnCheck( func_type, tree, 0, true );
+    CheckParmAssign( func_type, tree, 0, true );
 }
 
 
@@ -1111,7 +1111,7 @@ static typecheck_err TypeCheck( TYPEPTR typ1, TYPEPTR typ2, SYMPTR sym )
             break;
         }
         if( typ1->decl_type == TYP_FUNCTION ) {
-            retcode = ChkCompatibleFunctionParms( typ1, typ2, false );
+            retcode = CheckCompatibleFunctionParms( typ1, typ2, false );
             if( retcode != TCE_OK )
                 return( retcode );
             if( typ1->object == NULL
@@ -1133,7 +1133,7 @@ static typecheck_err TypeCheck( TYPEPTR typ1, TYPEPTR typ2, SYMPTR sym )
     return( TCE_OK );                /* indicate types are identical */
 }
 
-bool IdenticalType( TYPEPTR typ1, TYPEPTR typ2 )
+bool CheckIdenticalType( TYPEPTR typ1, TYPEPTR typ2 )
 {
     typecheck_err   rc;
 
@@ -1161,8 +1161,8 @@ bool VerifyType( TYPEPTR new, TYPEPTR old, SYMPTR sym )
 }
 
 
-bool ChkCompatibleFunction( TYPEPTR typ1, TYPEPTR typ2, bool topLevelCheck )
+bool CheckCompatibleFunction( TYPEPTR typ1, TYPEPTR typ2, bool topLevelCheck )
 {
-    return( ChkCompatibleFunctionParms( typ1, typ2, topLevelCheck ) == TCE_OK );
+    return( CheckCompatibleFunctionParms( typ1, typ2, topLevelCheck ) == TCE_OK );
 }
 

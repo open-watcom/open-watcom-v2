@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -61,8 +61,8 @@
 #define MSGIDX_INVALID  (-1)
 #define IS_MSGIDX_INVALID(m)  ((int)(m) == MSGIDX_INVALID)
 
-#define ChkEqSymLevel(p)  ((p)->level == (id_level_type)SymLevel)
-#define ChkLtSymLevel(p)  ((p)->level < (id_level_type)SymLevel)
+#define CheckEqSymLevel(p)  ((p)->level == (id_level_type)SymLevel)
+#define CheckLtSymLevel(p)  ((p)->level < (id_level_type)SymLevel)
 
 /* Macros to skip all typedefs and arrive at the underlying type */
 #define SKIP_TYPEDEFS( typeptr )                    \
@@ -375,18 +375,18 @@ global TREEPTR      CurFuncNode;
 extern void         SetDBChar(int);
 
 /* ccheck.c */
-extern bool         ChkCompatibleFunction( TYPEPTR typ1, TYPEPTR typ2, bool topLevelCheck );
-extern bool         ChkCompatibleLanguage( type_modifiers typ1, type_modifiers typ2 );
-extern void         TernChk( TYPEPTR typ1, TYPEPTR typ2 );
-extern void         ChkCallParms( void );
-extern void         ChkRetType(TREEPTR);
-extern void         ChkConst(TREEPTR);
+extern bool         CheckCompatibleFunction( TYPEPTR typ1, TYPEPTR typ2, bool topLevelCheck );
+extern bool         CheckCompatibleLanguage( type_modifiers typ1, type_modifiers typ2 );
+extern void         CheckTernary( TYPEPTR typ1, TYPEPTR typ2 );
+extern void         CheckCallParms( void );
+extern void         CheckRetType(TREEPTR);
+extern void         CheckConst(TREEPTR);
 extern void         CompatiblePtrType( TYPEPTR, TYPEPTR, TOKEN );
-extern bool         IdenticalType( TYPEPTR, TYPEPTR );
+extern bool         CheckIdenticalType( TYPEPTR, TYPEPTR );
 extern bool         VerifyType( TYPEPTR, TYPEPTR, SYMPTR );
 extern TYPEPTR      SkipTypeFluff( TYPEPTR typ );
-extern bool         AssRangeChk( TYPEPTR typ1, TREEPTR opnd2 );
-extern void         ParmAsgnCheck( TYPEPTR typ1, TREEPTR opnd2, int parmno, bool asgn_check );
+extern bool         CheckAssignRange( TYPEPTR typ1, TREEPTR opnd2 );
+extern void         CheckParmAssign( TYPEPTR typ1, TREEPTR opnd2, int parmno, bool asgn_check );
 
 /* ccmain.c */
 extern void         FreeRDir( void );
@@ -443,7 +443,7 @@ extern void         EmitDBType( void );
 extern void         ParsePgm( void );
 extern bool         CheckFuncMain( const char *name );
 extern void         AdjParmType(SYMPTR sym);
-extern void         Chk_Struct_Union_Enum( TYPEPTR );
+extern void         Check_Struct_Union_Enum( TYPEPTR );
 extern void         Declarator( SYMPTR sym, type_modifiers mod, TYPEPTR typ, decl_state state );
 extern bool         DeclList(SYM_HANDLE *);
 extern FIELDPTR     FieldDecl( TYPEPTR typ, type_modifiers mod, decl_state state );
@@ -506,7 +506,7 @@ extern void         SetDiagPop( void );
 
 /* cexpr.c */
 extern void         ExprInit( void );
-extern void         ChkCallNode( TREEPTR tree );
+extern void         CheckCallNode( TREEPTR tree );
 extern TREEPTR      Expr( void );
 extern TREEPTR      AddrExpr( void );
 extern TREEPTR      BoolExpr(TREEPTR);
@@ -602,7 +602,7 @@ extern void         InsertReScanPragmaTokens( const char *pragma );
 extern void         InsertToken( TOKEN token, const char *str );
 
 /* cmac2.c */
-extern TOKEN        ChkControl( void );
+extern TOKEN        CheckControl( void );
 extern bool         MacroDel( const char *name );
 extern void         CppStackInit( void );
 extern void         CppStackFini( void );
@@ -672,7 +672,7 @@ extern int          PragRegNumIndex( const char *name, int max_reg );
 extern void         PragRegNameErr( const char *regname );
 extern hw_reg_set   *PragManyRegSets( void );
 extern TOKEN        PragRegSet( void );
-extern void         ChkPragmas( void );
+extern void         CheckPragmas( void );
 extern void         CreateAux( const char * );
 extern void         CreateAuxInlineFunc( bool too_many_bytes );
 extern void         SetCurrInfo( const char * );

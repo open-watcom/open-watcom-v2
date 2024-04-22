@@ -1769,7 +1769,7 @@ static TOKEN ScanNewline( void )
     SrcFileLoc = SrcFile->src_loc;
     if( PPControl & PPCTL_EOL )
         return( T_NULL );
-    return( ChkControl() );
+    return( CheckControl() );
 }
 
 static TOKEN ScanCarriageReturn( void )
