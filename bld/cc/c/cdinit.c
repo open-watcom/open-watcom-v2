@@ -70,41 +70,6 @@ typedef struct data_quad_list {
     struct data_quad_list   *next;
 } DATA_QUAD_LIST;
 
-static unsigned BitMask[] = {
-    0x00000001,
-    0x00000003,
-    0x00000007,
-    0x0000000F,
-    0x0000001F,
-    0x0000003F,
-    0x0000007F,
-    0x000000FF,
-    0x000001FF,
-    0x000003FF,
-    0x000007FF,
-    0x00000FFF,
-    0x00001FFF,
-    0x00003FFF,
-    0x00007FFF,
-    0x0000FFFF,
-    0x0001FFFF,
-    0x0003FFFF,
-    0x0007FFFF,
-    0x000FFFFF,
-    0x001FFFFF,
-    0x003FFFFF,
-    0x007FFFFF,
-    0x00FFFFFF,
-    0x01FFFFFF,
-    0x03FFFFFF,
-    0x07FFFFFF,
-    0x0FFFFFFF,
-    0x1FFFFFFF,
-    0x3FFFFFFF,
-    0x7FFFFFFF,
-    0xFFFFFFFF
-};
-
 static DATA_QUAD_LIST   *DataQuadSegs[DATA_QUAD_SEG_MAX]; /* segments for data quads */
 static DATA_QUAD_LIST   *CurDataQuad;
 static int              DataQuadSegIndex;
@@ -340,13 +305,18 @@ static void RelSeekBytes( target_ssize n )
     }
 }
 
-static void ChkConstant( unsigned value, unsigned max_value )
+static void ChkConstant( uint64 *val, unsigned width )
 {
-    if( value > max_value ) {
-        if( (value | (max_value >> 1)) != ~0U ) {
+    uint64  max;
+
+    max.u._32[I64HI32] = 0;
+    max.u._32[I64LO32] = ( 1U << width ) - 1U;
+    if( val->u._32[I64LO32] > max.u._32[I64LO32] ) {
+        if( (val->u._32[I64LO32] | (max.u._32[I64LO32] >> 1)) != ~0U ) {
             CWarn1( ERR_CONSTANT_TOO_BIG );
         }
     }
+    val->u._32[I64LO32] &= max.u._32[I64LO32];
 }
 
 static void StoreIValue( DATA_TYPE dtype, int value, target_size size )
@@ -668,8 +638,7 @@ static FIELDPTR InitBitField( FIELDPTR field )
     TYPEPTR             typ;
     target_size         size;
     uint64              value64;
-    uint64              tmp;
-    unsigned            bit_value;
+    uint64              bit_value;
     target_size         offset;
     TOKEN               token;
     bool                is64bit;
@@ -685,29 +654,26 @@ static FIELDPTR InitBitField( FIELDPTR field )
     U32ToU64( 0, &value64 );
     offset = field->offset;
     while( typ->decl_type == TYP_FIELD || typ->decl_type == TYP_UFIELD ) {
-        bit_value = 0;
-        if( CurToken != T_RIGHT_BRACE )
-            bit_value = ConstExpr();
-        if( typ->u.f.field_type == TYP_BOOL ) {
-            if( bit_value != 0 ) {
-                bit_value = 1;
+        if( CurToken != T_RIGHT_BRACE ) {
+            bit_value.u._32[I64LO32] = ConstExpr();
+            bit_value.u._32[I64HI32] = 0;
+            if( typ->u.f.field_type == TYP_BOOL ) {
+                if( bit_value.u._32[I64LO32] != 0 ) {
+                    bit_value.u._32[I64LO32] = 1;
+                }
+            } else {
+                ChkConstant( &bit_value, typ->u.f.field_width );
             }
-        } else {
-            ChkConstant( bit_value, BitMask[typ->u.f.field_width - 1] );
-            bit_value &= BitMask[typ->u.f.field_width - 1];
-        }
-        if( is64bit ) {
-            U32ToU64( bit_value, &tmp );
-            U64ShiftL( &tmp, typ->u.f.field_start, &tmp );
-            value64.u._32[I64LO32] |= tmp.u._32[I64LO32];
-            value64.u._32[I64HI32] |= tmp.u._32[I64HI32];
-        } else {
-            value64.u._32[I64LO32] |= bit_value << typ->u.f.field_start;
+            if( is64bit ) {
+                U64ShiftL( &bit_value, typ->u.f.field_start, &bit_value );
+                value64.u._32[I64LO32] |= bit_value.u._32[I64LO32];
+                value64.u._32[I64HI32] |= bit_value.u._32[I64HI32];
+            } else {
+                value64.u._32[I64LO32] |= bit_value.u._32[I64LO32] << typ->u.f.field_start;
+            }
         }
         field = field->next_field;
-        if( field == NULL )
-            break;
-        if( field->offset != offset )
+        if( field == NULL || field->offset != offset )
             break;    /* bit field done */
         typ = field->field_type;
         if( CurToken == T_EOF )
