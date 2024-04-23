@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -341,7 +341,7 @@ void LookForAlias( void )
         if( alias == NULL )
             break;
         ReplaceAlias( alias, word, endword );
-        *start |= 0x80;
+        *start |= '\x80';
     }
     for( alias = AliasList; !_null( *alias ); ++alias ) {
         *alias &= ~0x80;
