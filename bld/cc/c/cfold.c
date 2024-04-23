@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -956,10 +956,7 @@ void CastConstNode( TREEPTR leaf, TYPEPTR newtyp )
 static bool IsConstantZero( TREEPTR tree )
 {
     if( tree->op.opr == OPR_PUSHINT ) {
-        uint64      val64;
-
-        val64 = LongValue64( tree );
-        return( U64Test( &val64 ) == 0 );
+        return( CheckZeroConstant( tree ) );
     } else {
         FLOATVAL    *flt;
         char        *endptr;
@@ -1282,14 +1279,10 @@ static void CheckOpndValues( TREEPTR tree )
                     zero_divisor = true;
                 break;
             case SIGNED_INT64:
-            case UNSIGNED_INT64: {
-                uint64      right;
-
-                right = LongValue64( opnd );
-                if( U64Test( &right ) == 0 )
+            case UNSIGNED_INT64:
+                if( CheckZeroConstant( opnd ) )
                     zero_divisor = true;
                 break;
-                }
             case FLOATING:
                 /*
                  * Should we warn here? Floating-point division by zero is

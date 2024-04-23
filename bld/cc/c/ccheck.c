@@ -586,18 +586,6 @@ void CompatiblePtrType( TYPEPTR typ1, TYPEPTR typ2, TOKEN opr )
     SetDiagPop();
 }
 
-static bool IsNullConst( TREEPTR tree )
-{
-    bool    rc = false;
-
-    if( tree->op.opr == OPR_PUSHINT ) {
-        uint64  val64 = LongValue64( tree );
-
-        rc = ( U64Test( &val64 ) == 0 );
-    }
-    return( rc );
-}
-
 static TREEPTR reverse_parms_tree( TREEPTR parm )
 {
     TREEPTR     prev;
@@ -670,8 +658,8 @@ static void CompareParms( TYPEPTR *master, TREEPTR parms, bool reverse )
     }
 }
 
-extern void CheckCallParms( void )
-/*******************************
+void CheckCallParms( void )
+/**************************
  * Check parameters of function that were called before a prototype was seen
  */
 {
@@ -728,6 +716,25 @@ extern void CheckCallParms( void )
         }
         CMemFree( nextcall );
     }
+}
+
+bool CheckZeroConstant( TREEPTR tree )
+{
+    uint64  val64 = LongValue64( tree );
+
+    return( (val64.u._32[I64LO32] | val64.u._32[I64HI32]) == 0 );
+}
+
+bool CheckZero( TREEPTR tree )
+{
+    bool    rc = false;
+
+    if( tree->op.opr == OPR_PUSHINT ) {
+        uint64  val64 = LongValue64( tree );
+
+        rc = ( (val64.u._32[I64LO32] | val64.u._32[I64HI32]) == 0 );
+    }
+    return( rc );
 }
 
 bool CheckAssignRange( TYPEPTR typ1, TREEPTR opnd2 )
@@ -859,7 +866,7 @@ void CheckParmAssign( TYPEPTR typ1, TREEPTR opnd2, int parmno, bool asgn_check )
     typ2 = opnd2->u.expr_type;
 
     SetDiagType2( typ1, typ2 );
-    switch( CompatibleType( typ1, typ2, true, IsNullConst( opnd2 ) ) ) {
+    switch( CompatibleType( typ1, typ2, true, CheckZero( opnd2 ) ) ) {
     case NO:
         if( parmno ) {
             CErr2( ERR_PARM_TYPE_MISMATCH, parmno );

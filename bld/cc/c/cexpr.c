@@ -44,8 +44,6 @@
 #define TOKEN2BOOL(t)   ((bool)(t))
 #define BOOL2TOKEN(b)   ((TOKEN)(b))
 
-extern int64        LongValue64( TREEPTR leaf );
-
 call_list           *CallNodeList;
 
 static const struct mathfuncs {
@@ -2537,10 +2535,7 @@ TREEPTR BoolExpr( TREEPTR tree )
         if( DataTypeOf( TypeOf( tree ) ) > TYP_POINTER ) {
             CErr1( ERR_EXPR_MUST_BE_SCALAR );
         } else if( tree->op.opr == OPR_PUSHINT ) {
-            uint64      val64;
-
-            val64 = LongValue64( tree );
-            if( U64Test( &val64 ) != 0 ) {
+            if( !CheckZeroConstant( tree ) ) {
                 tree->op.u2.ulong_value = 1;
             }
             tree->op.u1.const_type = TYP_INT;
@@ -2658,10 +2653,7 @@ static TREEPTR TernOp( TREEPTR expr1, TREEPTR true_part, TREEPTR false_part )
         result_typ = TernType( true_part, false_part );
     }
     if( expr1->op.opr == OPR_PUSHINT ) {
-        uint64      val64;
-
-        val64 = LongValue64( expr1 );
-        if( U64Test( &val64 ) == 0 ) {
+        if( CheckZeroConstant( expr1 ) ) {
             FreeExprTree( true_part );
             tree = false_part;
         } else {

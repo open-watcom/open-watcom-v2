@@ -720,22 +720,6 @@ static int ReverseRelOp( int opr )
 }
 
 
-static bool IsZero( TREEPTR tree )
-{
-    bool    ret;
-
-    if( tree->op.opr == OPR_PUSHINT ) {
-        uint64      val64;
-
-        val64 = LongValue64( tree );
-        ret = ( U64Test( &val64 ) == 0 );
-    } else {
-        ret = false;
-    }
-    return( ret );
-}
-
-
 static TREEPTR BaseConv( TYPEPTR typ1, TREEPTR op2 )
 {
     TYPEPTR         typ2;
@@ -928,7 +912,7 @@ TREEPTR RelOp( TREEPTR op1, TOKEN opr, TREEPTR op2 )
          */
         if( opr != T_EQ && opr != T_NE ) {
             CWarn1( ERR_POINTER_TYPE_MISMATCH );
-        } else if( !IsZero( op1 ) && !IsZero( op2 ) ) {
+        } else if( !CheckZero( op1 ) && !CheckZero( op2 ) ) {
             CWarn1( ERR_NON_ZERO_CONST );
         }
         if( op2_type == TYP_POINTER ) {
@@ -1082,8 +1066,8 @@ static TREEPTR PtrSubtract( TREEPTR result, target_ssize size, DATA_TYPE result_
 }
 
 
-extern TREEPTR LCastAdj( TREEPTR tree )
-/**************************************
+TREEPTR LCastAdj( TREEPTR tree )
+/*******************************
  * Remove the OPR_CONVERT for lcast so it looks like an LVALUE
  */
 {
@@ -1399,7 +1383,9 @@ TREEPTR BinOp( TREEPTR op1, TOKEN opr, TREEPTR op2 )
         /*
          * if op2 is a constant, check to see if constant truncated
          */
-        CheckAssignRange( typ, op2 );
+        if( !CheckAssignRange( typ, op2 ) ) {
+            CWarn1( ERR_CONSTANT_TOO_BIG );
+        }
         /* fall through */
     case T_AND_EQUAL:
     case T_RSHIFT_EQUAL:
@@ -1671,7 +1657,7 @@ bool IsPtrConvSafe( TREEPTR src, TYPEPTR newtyp, TYPEPTR oldtyp )
      * If new type isn't smaller than old, assume conversion is safe.
      */
     if( TypeSize( newtyp ) < TypeSize( oldtyp ) ) {
-        is_safe = IsZero( src );
+        is_safe = CheckZero( src );
         /*
          * Determine target pointer base.
          */

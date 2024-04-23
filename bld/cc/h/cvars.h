@@ -380,11 +380,12 @@ extern bool         CheckCompatibleLanguage( type_modifiers typ1, type_modifiers
 extern void         CheckTernary( TYPEPTR typ1, TYPEPTR typ2 );
 extern void         CheckCallParms( void );
 extern void         CheckRetType(TREEPTR);
-extern void         CheckConst(TREEPTR);
 extern void         CompatiblePtrType( TYPEPTR, TYPEPTR, TOKEN );
 extern bool         CheckIdenticalType( TYPEPTR, TYPEPTR );
 extern bool         VerifyType( TYPEPTR, TYPEPTR, SYMPTR );
 extern TYPEPTR      SkipTypeFluff( TYPEPTR typ );
+extern bool         CheckZeroConstant( TREEPTR tree );
+extern bool         CheckZero( TREEPTR tree );
 extern bool         CheckAssignRange( TYPEPTR typ1, TREEPTR opnd2 );
 extern void         CheckParmAssign( TYPEPTR typ1, TREEPTR opnd2, int parmno, bool asgn_check );
 
@@ -617,6 +618,7 @@ extern TREEPTR      BinOp( TREEPTR, TOKEN, TREEPTR );
 extern bool         IsPtrConvSafe( TREEPTR, TYPEPTR, TYPEPTR );
 extern TREEPTR      CnvOp( TREEPTR, TYPEPTR, bool );
 extern TREEPTR      FlowOp( TREEPTR, opr_code, TREEPTR );
+extern void         CheckConst( TREEPTR );
 extern TREEPTR      IntOp( TREEPTR, TOKEN, TREEPTR );
 extern TREEPTR      RelOp( TREEPTR, TOKEN, TREEPTR );
 extern TREEPTR      ShiftOp( TREEPTR, TOKEN, TREEPTR );

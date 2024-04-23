@@ -676,20 +676,19 @@ static FIELDPTR InitBitField( FIELDPTR field )
     offset = field->offset;
     while( typ->decl_type == TYP_FIELD || typ->decl_type == TYP_UFIELD ) {
         if( CurToken != T_RIGHT_BRACE ) {
-            bit_value.value.u._32[I64LO32] = 0;
-            bit_value.value.u._32[I64HI32] = 0;
-            ConstExprAndType( &bit_value );
-            if( typ->u.f.field_type == TYP_BOOL ) {
-                if( U64Test( &bit_value.value ) ) {
-                    bit_value.value.u._32[I64LO32] = 1;
-                    bit_value.value.u._32[I64HI32] = 0;
+            if( ConstExprAndType( &bit_value ) ) {
+                if( typ->u.f.field_type == TYP_BOOL ) {
+                    if( U64Test( &bit_value.value ) ) {
+                        bit_value.value.u._32[I64LO32] = 1;
+                        bit_value.value.u._32[I64HI32] = 0;
+                    }
+                } else {
+                    CheckBitfieldConstant( &bit_value.value, typ->u.f.field_width );
                 }
-            } else {
-                CheckBitfieldConstant( &bit_value.value, typ->u.f.field_width );
+                U64ShiftL( &bit_value.value, typ->u.f.field_start, &bit_value.value );
+                value64.u._32[I64LO32] |= bit_value.value.u._32[I64LO32];
+                value64.u._32[I64HI32] |= bit_value.value.u._32[I64HI32];
             }
-            U64ShiftL( &bit_value.value, typ->u.f.field_start, &bit_value.value );
-            value64.u._32[I64LO32] |= bit_value.value.u._32[I64LO32];
-            value64.u._32[I64HI32] |= bit_value.value.u._32[I64HI32];
         }
         field = field->next_field;
         if( field == NULL || field->offset != offset )

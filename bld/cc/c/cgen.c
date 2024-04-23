@@ -2025,7 +2025,7 @@ cg_type CGenType( TYPEPTR typ )
 }
 
 
-extern cg_type PtrType( TYPEPTR typ, type_modifiers flags )
+cg_type PtrType( TYPEPTR typ, type_modifiers flags )
 {
     cg_type     dtype;
 

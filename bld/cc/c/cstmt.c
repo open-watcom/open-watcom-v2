@@ -699,13 +699,13 @@ static void ForStmt( void )
             AddStmt( tree );
             BlockStack->gen_endblock = true;
             if( !LoopDecl( &BlockStack->sym_list ) ) {
-                CheckStmtExpr();      // no declarator, try init_expr
+                CheckStmtExpr();    // no declarator, try init_expr
             } else {
                 parsed_semi_colon = true;   // LoopDecl ate it up
             }
             tree->op.u2.sym_handle = BlockStack->sym_list;
         } else {
-            CheckStmtExpr();          // init_expr
+            CheckStmtExpr();        // init_expr
         }
     }
     if( !parsed_semi_colon ) {
