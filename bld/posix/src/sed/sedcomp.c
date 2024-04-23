@@ -533,7 +533,7 @@ static char *recomp(
             /* invert bitmask if all-but needed */
             if( negclass ) {
                 for( i = 0; i < CHARSETSIZE; i++ ) {
-                    ep[i] ^= 0xFF;
+                    ep[i] ^= '\xFF';
                 }
             }
             ep[0] &= 0xFE;              /* never match ASCII 0 */
@@ -831,7 +831,7 @@ static char *rhscomp(
             if( c > bcount - 1 + '1' && c <= '9' ) /* check validity of pattern tag */
                 return( BAD );
             if( c >= '1' && c <= '9' ) {
-                c |= 0x80;          /* mark the good ones */
+                c |= '\x80';        /* mark the good ones */
             }
         } else if( c == delim ) {   /* found RE end, hooray... */
             *rhsp++ = '\0';         /* cap the expression string */
