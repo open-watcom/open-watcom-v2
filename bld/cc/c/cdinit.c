@@ -649,7 +649,7 @@ static FIELDPTR InitBitField( FIELDPTR field )
                         bit_value.value.u._32[I64HI32] = 0;
                     }
                 } else {
-                    if( CheckBitfieldConstant( &bit_value.value, typ->u.f.field_width, true ) ) {
+                    if( CheckAssignBitfield( &bit_value.value, typ->u.f.field_width, true ) ) {
                         CWarn1( ERR_CONSTANT_TOO_BIG );
                     }
                 }

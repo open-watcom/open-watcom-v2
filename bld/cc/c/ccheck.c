@@ -737,7 +737,7 @@ bool CheckZero( TREEPTR tree )
     return( rc );
 }
 
-bool CheckBitfieldConstant( uint64 *val, unsigned width, bool mask )
+bool CheckAssignBitfield( uint64 *val, unsigned width, bool mask )
 {
     uint64      max;
     bool        overflow;
