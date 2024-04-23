@@ -1032,6 +1032,7 @@ static target_size GetFields( TYPEPTR decl )
     bool                plain_int;
     decl_info           info;
     static field_level_stype struct_level = 0;
+    const_val           cval;
 
     struct_level++;
     prev_unqualified_type = TYP_VOID;   /* so it doesn't match 1st time */
@@ -1092,16 +1093,20 @@ static target_size GetFields( TYPEPTR decl )
                 }
                 CheckBitfieldType( typ );
                 NextToken();
-                width = ConstExpr();
-                if( width == 0 && field != NULL ) {
+                ConstExprAndType( &cval );
+                width = 0;
+                if( (cval.value.u._32[I64HI32] | cval.value.u._32[I64LO32]) == 0
+                  && field != NULL ) {
                     CErr1( ERR_WIDTH_0 );
-                }
-                if( (int)width < 0 ) {
+                } else if( (int)cval.value.u._32[I64HI32] < 0 ) {
                     CErr1( ERR_WIDTH_NEGATIVE );
-                    width = 0;
-                } else if( width > ( TARGET_BITFIELD * CHAR_BIT ) || width > bits_total ) {
+                } else if( cval.value.u._32[I64HI32] > 0
+                  || cval.value.u._32[I64LO32] > ( TARGET_BITFIELD * CHAR_BIT )
+                  || cval.value.u._32[I64LO32] > bits_total ) {
                     CErr1( ERR_FIELD_TOO_WIDE );
                     width = TARGET_BITFIELD * CHAR_BIT;
+                } else {
+                    width = cval.value.u._32[I64LO32];
                 }
                 if( width > bits_available || width == 0 ) {
                     scalar_size = TypeSize( typ );

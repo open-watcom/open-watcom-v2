@@ -1189,24 +1189,6 @@ bool ConstExprAndType( const_val *val )
     return( ret );
 }
 
-int ConstExpr( void )
-{
-    const_val   val;
-
-    ConstExprAndType( &val );
-    if( val.type == TYP_ULONG64 ) {
-        if( !U64IsI32( val.value ) ) {
-            CErr1( ERR_CONSTANT_TOO_BIG );
-        }
-    } else if( val.type == TYP_LONG64 ) {
-        if( !I64IsI32( val.value ) ) {
-            CErr1( ERR_CONSTANT_TOO_BIG );
-        }
-    }
-    return( I32FetchTrunc( val.value ) );
-}
-
-
 TREEPTR Expr( void )
 {
     Class[ExprLevel] = TC_START;

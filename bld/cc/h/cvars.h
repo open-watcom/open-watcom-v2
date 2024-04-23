@@ -512,7 +512,6 @@ extern TREEPTR      Expr( void );
 extern TREEPTR      AddrExpr( void );
 extern TREEPTR      BoolExpr(TREEPTR);
 extern TREEPTR      CommaExpr( void );
-extern int          ConstExpr( void );
 extern bool         ConstExprAndType(const_val *);
 extern TREEPTR      SingleExpr( void );
 extern TREEPTR      IntLeaf(target_int);
