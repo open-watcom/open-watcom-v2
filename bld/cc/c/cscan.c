@@ -2005,4 +2005,3 @@ void FiniPPScan( bool ppscan_mode )
         ScanFunc[SCAN_DOT] = ScanDot;
     }
 }
-
