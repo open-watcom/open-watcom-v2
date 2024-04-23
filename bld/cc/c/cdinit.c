@@ -305,40 +305,6 @@ static void RelSeekBytes( target_ssize n )
     }
 }
 
-static void CheckBitfieldConstant( uint64 *val, unsigned width )
-{
-    uint64      max;
-
-    /*
-     * max = ( 1 << width ) - 1;
-     */
-    max.u._32[I64LO32] = 1;
-    max.u._32[I64HI32] = 0;
-    U64ShiftL( &max, width, &max );
-    if( max.u._32[I64LO32] == 0 )
-        max.u._32[I64HI32]--;
-    max.u._32[I64LO32]--;
-    /*
-     * if( val > max )
-     */
-    if( val->u._32[I64HI32] > max.u._32[I64HI32]
-      || val->u._32[I64HI32] == max.u._32[I64HI32]
-      && val->u._32[I64LO32] > max.u._32[I64LO32] ) {
-        /*
-         * if( (val | ( max >> 1 )) != ~0U )
-         */
-        if( (val->u._32[I64HI32] | ( max.u._32[I64HI32] >> 1 )) != ~0U
-          || (val->u._32[I64LO32] | ( max.u._32[I64LO32] >> 1 ) | ( max.u._32[I64HI32] << 31 )) != ~0U ) {
-            CWarn1( ERR_CONSTANT_TOO_BIG );
-        }
-    }
-    /*
-     * val &= max;
-     */
-    val->u._32[I64HI32] &= max.u._32[I64HI32];
-    val->u._32[I64LO32] &= max.u._32[I64LO32];
-}
-
 static void StoreIValue( DATA_TYPE dtype, int value, target_size size )
 {
     static DATA_QUAD_LIST   *LastCurDataQuad;
@@ -678,12 +644,14 @@ static FIELDPTR InitBitField( FIELDPTR field )
         if( CurToken != T_RIGHT_BRACE ) {
             if( ConstExprAndType( &bit_value ) ) {
                 if( typ->u.f.field_type == TYP_BOOL ) {
-                    if( U64Test( &bit_value.value ) ) {
+                    if( bit_value.value.u._32[I64LO32] | bit_value.value.u._32[I64HI32] ) {
                         bit_value.value.u._32[I64LO32] = 1;
                         bit_value.value.u._32[I64HI32] = 0;
                     }
                 } else {
-                    CheckBitfieldConstant( &bit_value.value, typ->u.f.field_width );
+                    if( CheckBitfieldConstant( &bit_value.value, typ->u.f.field_width, true ) ) {
+                        CWarn1( ERR_CONSTANT_TOO_BIG );
+                    }
                 }
                 U64ShiftL( &bit_value.value, typ->u.f.field_start, &bit_value.value );
                 value64.u._32[I64LO32] |= bit_value.value.u._32[I64LO32];

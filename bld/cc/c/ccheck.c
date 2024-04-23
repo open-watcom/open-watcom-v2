@@ -737,6 +737,45 @@ bool CheckZero( TREEPTR tree )
     return( rc );
 }
 
+bool CheckBitfieldConstant( uint64 *val, unsigned width, bool mask )
+{
+    uint64      max;
+    bool        overflow;
+
+    overflow = false;
+    /*
+     * max = ( 1 << width ) - 1;
+     */
+    max.u._32[I64LO32] = 1;
+    max.u._32[I64HI32] = 0;
+    U64ShiftL( &max, width, &max );
+    if( max.u._32[I64LO32] == 0 )
+        max.u._32[I64HI32]--;
+    max.u._32[I64LO32]--;
+    /*
+     * if( val > max )
+     */
+    if( val->u._32[I64HI32] > max.u._32[I64HI32]
+      || val->u._32[I64HI32] == max.u._32[I64HI32]
+      && val->u._32[I64LO32] > max.u._32[I64LO32] ) {
+        /*
+         * if( (val | ( max >> 1 )) != ~0U )
+         */
+        if( (val->u._32[I64HI32] | ( max.u._32[I64HI32] >> 1 )) != ~0U
+          || (val->u._32[I64LO32] | ( max.u._32[I64LO32] >> 1 ) | ( max.u._32[I64HI32] << 31 )) != ~0U ) {
+            overflow = true;
+        }
+    }
+    if( mask ) {
+        /*
+         * if mask is true then val &= max;
+         */
+        val->u._32[I64HI32] &= max.u._32[I64HI32];
+        val->u._32[I64LO32] &= max.u._32[I64LO32];
+    }
+    return( overflow );
+}
+
 bool CheckAssignRange( TYPEPTR typ1, TREEPTR opnd2 )
 {
     unsigned        high;
