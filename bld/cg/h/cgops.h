@@ -149,37 +149,37 @@ PICK(  O_INTERNAL_33,      OP_BLOCK,             ,        STR2,  "BLOCK", 0,  0 
 
 /*  Flow operators -- call CGFlow() */
 
-PICK( FLOW_AND,            ,                  "&&",    STR1,         , 0,  0                     )
-PICK( FLOW_OR,             ,                  "||",    STR1,         , 0,  0                     )
-PICK( FLOW_OUT,            ,                  ,        STR2,         , 0,  0                     )
-PICK( FLOW_NOT,            ,                  "!",     STR1,         , 0,  0                     )
+PICK(  O_FLOW_AND,            ,                  "&&",    STR1,         , 0,  0                     )
+PICK(  O_FLOW_OR,             ,                  "||",    STR1,         , 0,  0                     )
+PICK(  O_FLOW_OUT,            ,                  ,        STR2,         , 0,  0                     )
+PICK(  O_FLOW_NOT,            ,                  "!",     STR1,         , 0,  0                     )
 
-PICK( POINTS,              ,                  "@",     STR1,         , 0,  0                     )   /* CGUnary() */
+PICK(  O_POINTS,              ,                  "@",     STR1,         , 0,  0                     )   /* CGUnary() */
 
 /* % Control operators -- call CGControl(),CGBigGoto(),CGBigLabel() */
 
-PICK( GOTO,                ,                  ,        STR2,         , 0,  0                     )
-PICK( BIG_GOTO,            ,                  ,        STR2,         , 0,  0                     )
-PICK( IF_TRUE,             ,                  ,        STR2,         , 0,  0                     )
-PICK( IF_FALSE,            ,                  ,        STR2,         , 0,  0                     )
-PICK( INVOKE_LABEL,        ,                  ,        STR2,         , 0,  0                     )
-PICK( LABEL,               ,                  ,        STR2,         , 0,  0                     )
-PICK( BIG_LABEL,           ,                  ,        STR2,         , 0,  0                     )
-PICK( LABEL_RETURN,        ,                  ,        STR2,         , 0,  0                     )
+PICK(  O_GOTO,                ,                  ,        STR2,         , 0,  0                     )
+PICK(  O_BIG_GOTO,            ,                  ,        STR2,         , 0,  0                     )
+PICK(  O_IF_TRUE,             ,                  ,        STR2,         , 0,  0                     )
+PICK(  O_IF_FALSE,            ,                  ,        STR2,         , 0,  0                     )
+PICK(  O_INVOKE_LABEL,        ,                  ,        STR2,         , 0,  0                     )
+PICK(  O_LABEL,               ,                  ,        STR2,         , 0,  0                     )
+PICK(  O_BIG_LABEL,           ,                  ,        STR2,         , 0,  0                     )
+PICK(  O_LABEL_RETURN,        ,                  ,        STR2,         , 0,  0                     )
 
-PICK( PROC,                ,                  ,        STR2,         , 0,  0                     )   /* CGProcDecl */
-PICK( PARM_DEF,            ,                  ,        STR2,         , 0,  0                     )   /* CGParmDecl */
-PICK( AUTO_DEF,            ,                  ,        STR2,         , 0,  0                     )   /* CGAutoDecl */
-PICK( COMMA,               ,                  ,        STR2,         , 0,  0                     )
+PICK(  O_PROC,                ,                  ,        STR2,         , 0,  0                     )   /* CGProcDecl */
+PICK(  O_PARM_DEF,            ,                  ,        STR2,         , 0,  0                     )   /* CGParmDecl */
+PICK(  O_AUTO_DEF,            ,                  ,        STR2,         , 0,  0                     )   /* CGAutoDecl */
+PICK(  O_COMMA,               ,                  ,        STR2,         , 0,  0                     )
 
-PICK( PASS_PROC_PARM,      ,                  ,        STR2,         , 0,  0                     )   /* CGPassPP */
-PICK( DEFN_PROC_PARM,      ,                  ,        STR2,         , 0,  0                     )   /* CGDeclPP */
-PICK( CALL_PROC_PARM,      ,                  ,        STR2,         , 0,  0                     )   /* CGCallPP */
+PICK(  O_PASS_PROC_PARM,      ,                  ,        STR2,         , 0,  0                     )   /* CGPassPP */
+PICK(  O_DEFN_PROC_PARM,      ,                  ,        STR2,         , 0,  0                     )   /* CGDeclPP */
+PICK(  O_CALL_PROC_PARM,      ,                  ,        STR2,         , 0,  0                     )   /* CGCallPP */
 
-PICK( PRE_GETS,            ,                  ,        STR2,         , 0,  0                     )   /* CGPreGets, CGLVPreGets */
-PICK( POST_GETS,           ,                  ,        STR2,         , 0,  0                     )   /* CGPostGets */
+PICK(  O_PRE_GETS,            ,                  ,        STR2,         , 0,  0                     )   /* CGPreGets, CGLVPreGets */
+PICK(  O_POST_GETS,           ,                  ,        STR2,         , 0,  0                     )   /* CGPostGets */
 
-PICK( SIDE_EFFECT,         ,                  ,        STR2,         , 0,  0                     )
+PICK(  O_SIDE_EFFECT,         ,                  ,        STR2,         , 0,  0                     )
 
 #endif
 
