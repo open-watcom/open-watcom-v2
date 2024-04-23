@@ -779,6 +779,7 @@ bool CheckAssignBits( uint64 *val, unsigned width, bool mask )
 bool CheckAssignRange( TYPEPTR typ1, TREEPTR opnd2 )
 {
     uint64          val64;
+    unsigned        width;
 
     if( opnd2->op.opr == OPR_PUSHINT ) {
         typ1 = SkipTypeFluff( typ1 );
@@ -797,20 +798,14 @@ bool CheckAssignRange( TYPEPTR typ1, TREEPTR opnd2 )
         switch( typ1->decl_type ) {
         case TYP_FIELD:
         case TYP_UFIELD:
-            if( CheckAssignBits( &val64, typ1->u.f.field_width, false ) ) {
-                return( false );
-            }
+            width = typ1->u.f.field_width;
             break;
         case TYP_BOOL:
-            if( CheckAssignBits( &val64, 1, false ) ) {
-                return( false );
-            }
+            width = 1;
             break;
         case TYP_CHAR:
         case TYP_UCHAR:
-            if( CheckAssignBits( &val64, 1 * CHAR_BIT, false ) ) {
-                return( false );
-            }
+            width = 1 * CHAR_BIT;
             break;
 #if TARGET_INT == TARGET_SHORT
         case TYP_INT:
@@ -818,9 +813,7 @@ bool CheckAssignRange( TYPEPTR typ1, TREEPTR opnd2 )
 #endif
         case TYP_SHORT:
         case TYP_USHORT:
-            if( CheckAssignBits( &val64, 2 * CHAR_BIT, false ) ) {
-                return( false );
-            }
+            width = 2 * CHAR_BIT;
             break;
 #if TARGET_INT == TARGET_LONG
         case TYP_INT:
@@ -828,10 +821,11 @@ bool CheckAssignRange( TYPEPTR typ1, TREEPTR opnd2 )
 #endif
         case TYP_LONG:
         case TYP_ULONG:
-            if( CheckAssignBits( &val64, 4 * CHAR_BIT, false ) ) {
-                return( false );
-            }
+            width = 4 * CHAR_BIT;
             break;
+        }
+        if( CheckAssignBits( &val64, width, false ) ) {
+            return( false );
         }
     } else if( opnd2->op.opr == OPR_PUSHFLOAT ) {
         if( typ1->decl_type == TYP_FLOAT ) {
@@ -1185,4 +1179,3 @@ bool CheckCompatibleFunction( TYPEPTR typ1, TYPEPTR typ2, bool topLevelCheck )
 {
     return( CheckCompatibleFunctionParms( typ1, typ2, topLevelCheck ) == TCE_OK );
 }
-
