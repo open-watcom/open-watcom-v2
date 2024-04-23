@@ -648,6 +648,7 @@ static cg_name DotOperator( cg_name op1, OPNODE *node, cg_name op2 )
 {
     TYPEPTR     typ;
     cg_name     name;
+    unsigned    width;
 
     /*
      * node->u2.result_type is the type of the data
@@ -656,8 +657,12 @@ static cg_name DotOperator( cg_name op1, OPNODE *node, cg_name op2 )
     name = CGBinary( O_PLUS, op1, op2, DataPointerType( node ) );
     typ = node->u2.result_type;
     if( typ->decl_type == TYP_FIELD || typ->decl_type == TYP_UFIELD ) {
-        name = CGBitMask( name, typ->u.f.field_start,
-                    typ->u.f.field_width, CGenType( typ ) );
+        if( typ->u.f.field_type == TYP_BOOL ) {
+            width = 1;
+        } else {
+            width = typ->u.f.field_width;
+        }
+        name = CGBitMask( name, typ->u.f.field_start, width, CGenType( typ ) );
     }
     if( node->flags & OPFLAG_UNALIGNED ) {
         name = CGAttr( name, CG_SYM_UNALIGNED );

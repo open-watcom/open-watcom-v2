@@ -197,20 +197,26 @@ void check_X5( struct X5 x5 )
 struct X6 {
     sbase   f0 : 20;
     sbase   f1 : 20;
-//    sbase   f2 : 40;  TODO - some other day
-//    sbase   f3 : 40;
+    slbase  f2 : 40;
+    slbase  f3 : 40;
 };
 
-struct X6 x6 = { 0xC0000, 0x90000 };
+struct X6 x6 = { 0xC0000, 0x90000, 0xC000000000, 0x9000000000 };
 
-long op_x6( struct X6 x6 )
+long op_x6_1( struct X6 x6 )
 {
     return( x6.f0 & x6.f1 );    // This was a problem in 16-bit
 }
 
+long long op_x6_2( struct X6 x6 )
+{
+    return( x6.f2 & x6.f3 );    // This was a problem in 16-bit
+}
+
 void check_X6( struct X6 x6 )
 {
-    if( op_x6( x6 ) != 0xFFF80000 ) fail(__LINE__);
+    if( op_x6_1( x6 ) != 0xFFF80000 ) fail(__LINE__);
+    if( op_x6_2( x6 ) != 0xFFFFFF8000000000 ) fail(__LINE__);
 }
 
 struct X7 {

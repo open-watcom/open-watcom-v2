@@ -737,7 +737,7 @@ bool CheckZero( TREEPTR tree )
     return( rc );
 }
 
-bool CheckAssignBitfield( uint64 *val, unsigned width, bool mask )
+bool CheckAssignBits( uint64 *val, unsigned width, bool mask )
 {
     uint64      max;
     bool        overflow;
@@ -778,86 +778,60 @@ bool CheckAssignBitfield( uint64 *val, unsigned width, bool mask )
 
 bool CheckAssignRange( TYPEPTR typ1, TREEPTR opnd2 )
 {
-    unsigned        high;
-    unsigned        value;
-    bool            sign;
+    uint64          val64;
 
     if( opnd2->op.opr == OPR_PUSHINT ) {
         typ1 = SkipTypeFluff( typ1 );
+        if( typ1->decl_type == TYP_LONG64
+          || typ1->decl_type == TYP_ULONG64 ) {
+            return( true );
+        }
+        if( opnd2->u.expr_type->decl_type == TYP_LONG64
+          || opnd2->u.expr_type->decl_type == TYP_ULONG64 ) {
+            val64.u._32[I64LO32] = opnd2->op.u2.ulong64_value.u._32[I64LO32];
+            val64.u._32[I64HI32] = opnd2->op.u2.ulong64_value.u._32[I64HI32];
+        } else {
+            val64.u._32[I64LO32] = opnd2->op.u2.ulong_value;
+            val64.u._32[I64HI32] = ( opnd2->op.u2.long_value < 0 ) ? -1 : 0;
+        }
         switch( typ1->decl_type ) {
         case TYP_FIELD:
         case TYP_UFIELD:
+            if( CheckAssignBits( &val64, typ1->u.f.field_width, false ) ) {
+                return( false );
+            }
+            break;
         case TYP_BOOL:
+            if( CheckAssignBits( &val64, 1, false ) ) {
+                return( false );
+            }
+            break;
         case TYP_CHAR:
         case TYP_UCHAR:
-        case TYP_SHORT:
-        case TYP_USHORT:
+            if( CheckAssignBits( &val64, 1 * CHAR_BIT, false ) ) {
+                return( false );
+            }
+            break;
+#if TARGET_INT == TARGET_SHORT
         case TYP_INT:
         case TYP_UINT:
+#endif
+        case TYP_SHORT:
+        case TYP_USHORT:
+            if( CheckAssignBits( &val64, 2 * CHAR_BIT, false ) ) {
+                return( false );
+            }
+            break;
+#if TARGET_INT == TARGET_LONG
+        case TYP_INT:
+        case TYP_UINT:
+#endif
         case TYP_LONG:
         case TYP_ULONG:
-        case TYP_LONG64:
-        case TYP_ULONG64:
-            if( opnd2->u.expr_type->decl_type == TYP_LONG64
-              || opnd2->u.expr_type->decl_type == TYP_ULONG64 ) {
-                value = opnd2->op.u2.ulong64_value.u._32[I64HI32];
-                if( value > 0
-                  && value < 0xffffffffU
-                  || ( (int)value < 0 ) != ( (int)opnd2->op.u2.ulong64_value.u._32[I64LO32] < 0 ) ) {
-                    return( typ1->decl_type == TYP_LONG64 || typ1->decl_type == TYP_ULONG64 );
-                }
-                value = opnd2->op.u2.ulong64_value.u._32[I64LO32];
-            } else {
-                value = opnd2->op.u2.ulong_value;
+            if( CheckAssignBits( &val64, 4 * CHAR_BIT, false ) ) {
+                return( false );
             }
-            sign = ( (int)value < 0 );
-            switch( typ1->decl_type ) {
-            case TYP_FIELD:
-            case TYP_UFIELD:
-                high = 0xffffffffU >> (TARGET_BITFIELD * CHAR_BIT - typ1->u.f.field_width);
-                if( value > high ) {
-                    if( (value | (high >> 1)) != ~0U ) {
-                        return( false );
-                    }
-                }
-                break;
-            case TYP_BOOL:
-                if( sign || value > 1 )
-                    return( false );
-                break;
-            case TYP_CHAR:
-                if( !sign && ( value > 127 )
-                  || sign && ( (int)value < -128 ) )
-                    return( false );
-                break;
-            case TYP_UCHAR:
-                if( value > 0xffU ) {
-                    if( (value | ( 0xffU >> 1 )) != ~0U ) {
-                        return( false );
-                    }
-                }
-                break;
-#if TARGET_INT == TARGET_SHORT
-            case TYP_INT:
-#endif
-            case TYP_SHORT:
-                if( !sign && ( value > 32767 )
-                  || sign && ( (int)value < -32768 ) )
-                    return( false );
-                break;
-#if TARGET_INT == TARGET_SHORT
-            case TYP_UINT:
-#endif
-            case TYP_USHORT:
-                if( value > 0xffffU ) {
-                    if( (value | (0xffffU >> 1)) != ~0U ) {
-                        return( false );
-                    }
-                }
-                break;
-            default:
-                break;
-            }
+            break;
         }
     } else if( opnd2->op.opr == OPR_PUSHFLOAT ) {
         if( typ1->decl_type == TYP_FLOAT ) {

@@ -56,7 +56,7 @@
 #define TARGET_LDIMAGINARY 10
 #define TARGET_BOOL     1
 #define TARGET_WCHAR    2
-#define TARGET_BITFIELD 4
+#define TARGET_BITFIELD 8
 
 #define TARGET_INT_MAX  32767
 #define TARGET_INT_MIN  (-32767-1)

@@ -386,7 +386,7 @@ extern bool         VerifyType( TYPEPTR, TYPEPTR, SYMPTR );
 extern TYPEPTR      SkipTypeFluff( TYPEPTR typ );
 extern bool         CheckZeroConstant( TREEPTR tree );
 extern bool         CheckZero( TREEPTR tree );
-extern bool         CheckAssignBitfield( uint64 *val, unsigned width, bool mask );
+extern bool         CheckAssignBits( uint64 *val, unsigned width, bool mask );
 extern bool         CheckAssignRange( TYPEPTR typ1, TREEPTR opnd2 );
 extern void         CheckParmAssign( TYPEPTR typ1, TREEPTR opnd2, int parmno, bool asgn_check );
 

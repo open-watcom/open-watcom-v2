@@ -629,6 +629,7 @@ static FIELDPTR InitBitField( FIELDPTR field )
     TOKEN               token;
     bool                is64bit;
     DATA_TYPE           dtype;
+    unsigned            width;
 
     token = CurToken;
     if( CurToken == T_LEFT_BRACE )
@@ -644,14 +645,12 @@ static FIELDPTR InitBitField( FIELDPTR field )
         if( CurToken != T_RIGHT_BRACE ) {
             if( ConstExprAndType( &bit_value ) ) {
                 if( typ->u.f.field_type == TYP_BOOL ) {
-                    if( bit_value.value.u._32[I64LO32] | bit_value.value.u._32[I64HI32] ) {
-                        bit_value.value.u._32[I64LO32] = 1;
-                        bit_value.value.u._32[I64HI32] = 0;
-                    }
+                    width = 1;
                 } else {
-                    if( CheckAssignBitfield( &bit_value.value, typ->u.f.field_width, true ) ) {
-                        CWarn1( ERR_CONSTANT_TOO_BIG );
-                    }
+                    width = typ->u.f.field_width;
+                }
+                if( CheckAssignBits( &bit_value.value, width, true ) ) {
+                    CWarn1( ERR_CONSTANT_TOO_BIG );
                 }
                 U64ShiftL( &bit_value.value, typ->u.f.field_start, &bit_value.value );
                 value64.u._32[I64LO32] |= bit_value.value.u._32[I64LO32];
