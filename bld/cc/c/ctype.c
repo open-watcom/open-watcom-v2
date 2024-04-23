@@ -1341,16 +1341,24 @@ static TYPEPTR ComplexDecl( DATA_TYPE decl_typ, bool packed )
 
 static void CheckBitfieldType( TYPEPTR typ )
 {
-    // skip typedefs
+    /*
+     * skip typedefs
+     */
     SKIP_TYPEDEFS( typ );
     if( CompFlags.extensions_enabled ) {
-        // go into enum base
+        /*
+         * go into enum base
+         */
         SKIP_ENUM( typ );
     }
     switch( typ->decl_type ) {
+    case TYP_BOOL:
+        if( !CompFlags.extensions_enabled && CHECK_STD( < , C99 ) ) {
+            break;
+        }
+        /* fall through */
     case TYP_INT:
     case TYP_UINT:
-    case TYP_BOOL:
         /*
          * ANSI C only allows int and unsigned [int]; C99 adds _Bool
          */
