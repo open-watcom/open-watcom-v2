@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,7 +34,7 @@
 #define OPCODES_H_INCLUDED
 
 typedef enum {
-    #define PICK(e,i,d1,d2,ot,pnum,attr)  OP_##i,
+    #define PICK(e,i,d1,d2,ot,pnum,attr)  i,
     #define ONLY_INTERNAL_CGOPS
     #include "cgops.h"
     #undef ONLY_INTERNAL_CGOPS

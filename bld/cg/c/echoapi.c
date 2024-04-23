@@ -263,7 +263,7 @@ void EchoAPI              // EchoAPI ROUTINE
 #define STR(x) #x
 #define STR1(x,y) x
 #define STR2(x,y) STR(y)
-#define PICK(e,i,d1,d2,ot,pnum,attr)  case O_##e: EchoAPIString( d2(d1,O_##e) ); break;
+#define PICK(e,i,d1,d2,ot,pnum,attr)  case e: EchoAPIString( d2(d1,e) ); break;
 #include "cgops.h"
 #undef PICK
 #undef STR2

@@ -693,10 +693,10 @@ typedef struct {
     } state;
 } fold_leaf;
 
-enum{ FOLD_EXPR = 10 };
+enum{ MAX_FOLD_EXPR = 10 };
 typedef struct {
     fold_leaf   *stk;
-    fold_leaf   ops[FOLD_EXPR];
+    fold_leaf   ops[MAX_FOLD_EXPR];
     bool        error;
 } fold_expr;
 
@@ -774,12 +774,12 @@ static bool FoldExpr( dbg_loc loc, fold_leaf *ret )
 {
     fold_expr      expr;
 
-    expr.stk = &expr.ops[FOLD_EXPR];
+    expr.stk = &expr.ops[MAX_FOLD_EXPR];
     expr.error = false;
     DoLocFold( loc, &expr );
     if( !expr.error ) {
-        if( expr.stk == &expr.ops[FOLD_EXPR - 1] ) {
-            *ret = expr.ops[FOLD_EXPR - 1];
+        if( expr.stk == &expr.ops[MAX_FOLD_EXPR - 1] ) {
+            *ret = expr.ops[MAX_FOLD_EXPR - 1];
             return( true );
         }
     }
@@ -1158,10 +1158,10 @@ typedef struct {
     bool indirect;
 } based_leaf;
 
-#define MAX_OP 2
+#define MAX_OPS 2
 typedef struct {
     based_leaf      *stk;
-    based_leaf      ops[MAX_OP];
+    based_leaf      ops[MAX_OPS];
     cg_sym_handle   sym;
     int             count;
     enum {
@@ -1191,7 +1191,7 @@ static  void    DoLocBase( dbg_loc loc, based_expr *what )
     switch( loc->class & 0xf0 ) {
     case LOC_CONSTANT:
     case LOC_BP_OFFSET:
-        if( what->count < MAX_OP ) {
+        if( what->count < MAX_OPS ) {
             ++what->count;
             --stk;
         } else {
@@ -1296,7 +1296,7 @@ dbg_type    CVBasedPtr( cg_type ptr_type, dbg_type base, dbg_loc loc_segment )
     uint           based_kind;
     dbg_type       ret;
 
-    expr.stk = &expr.ops[MAX_OP];
+    expr.stk = &expr.ops[MAX_OPS];
     expr.count = 0;
     expr.state = IS_NONE;
     expr.sym = NULL;;

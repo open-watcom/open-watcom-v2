@@ -448,7 +448,7 @@ extern  n       *CGCompare( cg_op o, n *l, n *r, cg_type t ) {
     VerNode(r);
     VerOp(o,CompareOps);
     Action( "( %s, %t, %t, %s )", Op(o), l, r, Tipe( t ) );
-    new = Binary(o,l,r,T_BOOLEAN);
+    new = Binary(o,l,r,TY_BOOLEAN);
     Action( " -> %t%n", new );
     return( new );
 }
@@ -466,7 +466,7 @@ extern  n       *CGFlow( cg_op o, n *l, n *r ) {
     }
     VerOp(o,FlowOps);
     Action( "( %s, %t, %t )", Op(o), l, r );
-    new = Binary(o,l,r,T_BOOLEAN);
+    new = Binary(o,l,r,TY_BOOLEAN);
     Action( " -> %t%n", new );
     return( new );
 }
@@ -947,7 +947,7 @@ extern  n       *CGWarp( n *b4, l *lb, n *af ) {
     VerNode( af );
     Action( "( %t, %s, %t )", b4, Label(lb), af );
     CRefLabel(lb);
-    r = Binary( OP_WARP,Binary( OP_JOIN,NULL,b4,T_DEFAULT ),af,af->t );
+    r = Binary( OP_WARP,Binary( OP_JOIN,NULL,b4,TY_DEFAULT ),af,af->t );
     r->l->l = (n*)lb;
     Action( " -> %t%n", r );
     return( r );

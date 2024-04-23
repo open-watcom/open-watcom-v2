@@ -47,7 +47,7 @@ static  void            DumpSubTree( tn node, int indent );
 
 static const char * const Ops[] = {
     #define STR(x) #x
-    #define PICK(e,i,d1,d2,ot,pnum,attr)  STR(<O_##e>),
+    #define PICK(e,i,d1,d2,ot,pnum,attr)  STR(<e>),
     #include "cgops.h"
     #undef PICK
     #undef STR
