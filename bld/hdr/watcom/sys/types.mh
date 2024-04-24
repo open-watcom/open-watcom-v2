@@ -38,6 +38,9 @@
 :include timer_t.sp
 :include clockidt.sp
 :include schedp.sp
+:segment LINUX | QNX | RDOS
+:include susecond.sp
+:endsegment
 :segment LINUX
 :include sem_t.sp
 :include pthread1.sp

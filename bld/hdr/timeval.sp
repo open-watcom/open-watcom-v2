@@ -1,13 +1,19 @@
 #ifndef _TIMEVAL_DEFINED
 #define _TIMEVAL_DEFINED
 
+:segment LINUX
+:include time_t.sp
+
+:endsegment
+:include susecond.sp
+
 struct timeval {
 :segment LINUX
     time_t      tv_sec;     /* seconds */
 :elsesegment 
     long        tv_sec;     /* seconds */
 :endsegment
-    long        tv_usec;    /* and microseconds */
+    suseconds_t tv_usec;    /* and microseconds */
 };
 
 /*

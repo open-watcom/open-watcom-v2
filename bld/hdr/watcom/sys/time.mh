@@ -20,15 +20,10 @@
 :endsegment
 
 :include fdset.sp
-
 :elsesegment
 :include pshpackl.sp
-
 :endsegment
-:segment LINUX
-:include time_t.sp
 
-:endsegment
 :include timeval.sp
 
 /*
