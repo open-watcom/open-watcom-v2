@@ -738,6 +738,12 @@ bool CheckZero( TREEPTR tree )
 }
 
 bool CheckAssignBits( uint64 *val, unsigned width, bool mask )
+/*************************************************************
+ * check if value of val fit into specified width bit-size
+ * if mask is true then value is AND by width bit-size mask
+ *
+ * return true if val value doesn't fit into width bit-size otherwise false
+ */
 {
     uint64      max;
     bool        overflow;
@@ -777,6 +783,11 @@ bool CheckAssignBits( uint64 *val, unsigned width, bool mask )
 }
 
 bool CheckAssignRange( TYPEPTR typ1, TREEPTR opnd2 )
+/*************************************************************
+ * check if value of opnd2 fit into target type of typ1
+ *
+ * return true if opnd2 value doesn't fit into typ1 otherwise false
+ */
 {
     uint64          val64;
     unsigned        width;
@@ -785,7 +796,7 @@ bool CheckAssignRange( TYPEPTR typ1, TREEPTR opnd2 )
         typ1 = SkipTypeFluff( typ1 );
         if( typ1->decl_type == TYP_LONG64
           || typ1->decl_type == TYP_ULONG64 ) {
-            return( true );
+            return( false );
         }
         if( opnd2->u.expr_type->decl_type == TYP_LONG64
           || opnd2->u.expr_type->decl_type == TYP_ULONG64 ) {
@@ -803,38 +814,23 @@ bool CheckAssignRange( TYPEPTR typ1, TREEPTR opnd2 )
         case TYP_BOOL:
             width = 1;
             break;
-        case TYP_CHAR:
-        case TYP_UCHAR:
-            width = 1 * CHAR_BIT;
-            break;
-#if TARGET_INT == TARGET_SHORT
-        case TYP_INT:
-        case TYP_UINT:
-#endif
-        case TYP_SHORT:
-        case TYP_USHORT:
-            width = 2 * CHAR_BIT;
-            break;
-#if TARGET_INT == TARGET_LONG
-        case TYP_INT:
-        case TYP_UINT:
-#endif
-        case TYP_LONG:
-        case TYP_ULONG:
-            width = 4 * CHAR_BIT;
+        default:
+            width = TypeSize( typ1 ) * CHAR_BIT;
+            if( width >= 64 )
+                return( false );
             break;
         }
         if( CheckAssignBits( &val64, width, false ) ) {
-            return( false );
+            return( true );
         }
     } else if( opnd2->op.opr == OPR_PUSHFLOAT ) {
         if( typ1->decl_type == TYP_FLOAT ) {
             if( atof( opnd2->op.u2.float_value->string ) > TARGET_FLT_MAX ) {
-                return( false );
+                return( true );
             }
         }
     }
-    return( true );
+    return( false );
 }
 
 static bool IsPtrtoFunc( TYPEPTR typ )
@@ -973,7 +969,7 @@ void CheckParmAssign( TYPEPTR typ1, TREEPTR opnd2, int parmno, bool asgn_check )
         }
     case OK:
         if( asgn_check ) {
-            if( !CheckAssignRange( typ1, opnd2 ) ) {
+            if( CheckAssignRange( typ1, opnd2 ) ) {
                 CWarnP1( parmno, ERR_CONSTANT_TOO_BIG );
             }
         }

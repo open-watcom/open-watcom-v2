@@ -1383,7 +1383,7 @@ TREEPTR BinOp( TREEPTR op1, TOKEN opr, TREEPTR op2 )
         /*
          * if op2 is a constant, check to see if constant truncated
          */
-        if( !CheckAssignRange( typ, op2 ) ) {
+        if( CheckAssignRange( typ, op2 ) ) {
             CWarn1( ERR_CONSTANT_TOO_BIG );
         }
         /* fall through */
