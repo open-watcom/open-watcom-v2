@@ -957,6 +957,10 @@ void GenCOptions( char **cmdline )
     OPT_STORAGE data;
 
     /*
+     * temporary disabled
+     */
+    WarnEnableDisable( false, ERR_CONSTANT_TOO_BIG );
+    /*
      * Add precision warning but disabled by default
      */
     WarnEnableDisable( false, ERR_LOSE_PRECISION );
