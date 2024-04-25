@@ -15,9 +15,8 @@ typedef struct {
     fd_mask fds_bits[FD_SETSIZE / __NFDBITS];
 } fd_set;
 
-/* We don't use `memset' because this would require a prototype and
- * the array isn't too big.
- */
+:: We don't use `memset' because this would require a prototype and
+:: the array isn't too big.
 #define FD_ZERO(__set) \
     do { \
         unsigned int __i; \
@@ -25,8 +24,8 @@ typedef struct {
         for(__i = 0; __i < sizeof(fd_set) / sizeof(fd_mask); ++__i) \
             __FDS_BITS(__arr)[__i] = 0; \
     } while( 0 )
-#define FD_SET(__d,__set)   (__FDS_BITS(__set)[__FDELT (__d)] |= __FDMASK(__d))
-#define FD_CLR(__d,__set)   (__FDS_BITS(__set)[__FDELT (__d)] &= ~__FDMASK(__d))
-#define FD_ISSET(__d,__set) (__FDS_BITS(__set)[__FDELT (__d)] & __FDMASK(__d))
+#define FD_SET(__d,__set)   (__FDS_BITS(__set)[__FDELT(__d)] |= __FDMASK(__d))
+#define FD_CLR(__d,__set)   (__FDS_BITS(__set)[__FDELT(__d)] &= ~__FDMASK(__d))
+#define FD_ISSET(__d,__set) (__FDS_BITS(__set)[__FDELT(__d)] & __FDMASK(__d))
 
 #endif  /* !_FDSET_DEFINED */

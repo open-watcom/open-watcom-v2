@@ -47,6 +47,8 @@ struct timezone {
 #define DST_TUR         9       /* Turkey */
 #define DST_AUSTALT     10      /* Australian style with shift in 1986 */
 
+:: implemented only for Linux
+:segment LINUX
 /*
  * Structure used by getitimer() and setitimer() system calls.
  */
@@ -59,13 +61,14 @@ struct itimerval {
 #define ITIMER_VIRTUAL  1       /* Timers run only when the process is executing. */
 #define ITIMER_PROF     2       /* Process or kernel on its behalf is executing. */
 
+_WCRTLINK extern int getitimer( int __which, struct itimerval *__value );
+_WCRTLINK extern int setitimer( int __which, const struct itimerval *__value, struct itimerval *__ovalue );
+:endsegment
 :segment LINUX | RDOS
 :include select.sp
 :endsegment
 _WCRTLINK extern int gettimeofday( struct timeval *__tv, struct timezone *__tz );
 _WCRTLINK extern int settimeofday( const struct timeval *__tv, const struct timezone *__tz );
-_WCRTLINK extern int getitimer( int __which, struct itimerval *__value );
-_WCRTLINK extern int setitimer( int __which, const struct itimerval *__value, struct itimerval *__ovalue );
 ::_WCRTLINK extern int adjtime( struct timeval *__itv, struct timeval *__otv );
 ::_WCRTLINK extern int utimes( char *__path, struct timeval *__tvp );
 

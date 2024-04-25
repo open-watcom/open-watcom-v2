@@ -323,6 +323,8 @@ h/sys/stat.h      : $(mh_dir)/sys/stat.mh $(sys_stat_deps)
 !else ifeq system rdos
 
 h/sys/wait.h      : $(mh_dir)/sys/wait.mh $(owhdr) $(cplus) ../wait.sp
+h/sys/select.h    : $(mh_dir)/sys/select.mh $(sys_select_deps)
+h/sys/time.h      : $(mh_dir)/sys/time.mh $(sys_time_deps)
 
 !else ifeq system linux
 
@@ -417,6 +419,7 @@ h/sys/qnxterm.h   : $(qnx_mh_dir)/sys/qnxterm.mh $(packll)
 h/sys/qnx_glob.h  : $(qnx_mh_dir)/sys/qnx_glob.mh $(packll)
 h/sys/sched.h     : $(qnx_mh_dir)/sys/sched.mh $(packll)
 h/sys/seginfo.h   : $(qnx_mh_dir)/sys/seginfo.mh $(packll)
+#h/sys/select.h    : $(qnx_mh_dir)/sys/select.mh $(packll)
 h/sys/sendmx.h    : $(qnx_mh_dir)/sys/sendmx.mh $(packll)
 h/sys/ser_msg.h   : $(qnx_mh_dir)/sys/ser_msg.mh $(packll)
 h/sys/sidinfo.h   : $(qnx_mh_dir)/sys/sidinfo.mh $(packll)
