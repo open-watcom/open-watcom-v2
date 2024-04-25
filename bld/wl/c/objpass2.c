@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -74,7 +74,11 @@ void ObjPass2( void )
 #ifdef _EXE
     }
 #endif
-    WriteUndefined();
+    PrintTracedSyms();
+    PrintUndefinedSyms();
+    if( LinkState & LS_UNDEFED_SYM_ERROR ) {
+        LinkState |= LS_LINK_ERROR;
+    }
 #ifdef _EXE
     if( FmtData.type & MK_OVERLAYS ) {
         OvlSetStartAddr();

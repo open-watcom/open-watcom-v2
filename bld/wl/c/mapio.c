@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -147,13 +147,13 @@ void MapInit( void )
     MapCol = 0;
     msg = MsgStrings[PRODUCT];
     BufWrite( msg, strlen( msg ) );
-    WriteMapNL( 1 );
+    WriteMapNL();
     msg = MsgStrings[COPYRIGHT];
     BufWrite( msg, strlen( msg ) );
-    WriteMapNL( 1 );
+    WriteMapNL();
     msg = MsgStrings[COPYRIGHT2];
     BufWrite( msg, strlen( msg ) );
-    WriteMapNL( 1 );
+    WriteMapNL();
     ptr = tim;
     ptr = PutDec( ptr, localt->tm_hour );
     *ptr++ = ':';
@@ -182,7 +182,8 @@ static void WriteBox( unsigned int msgnum )
     size_t      i;
 
     Msg_Get( msgnum, msg_buff );
-    WriteMapNL( 2 );
+    WriteMapNL();
+    WriteMapNL();
     box_buff[0] = '+';
     for( i = 2; i < strlen( msg_buff ); i++ ) {
         box_buff[i-1] = '-';
@@ -192,7 +193,7 @@ static void WriteBox( unsigned int msgnum )
     WriteMap( "%t24%s", "", box_buff );
     WriteMap( "%t24%s", "", msg_buff );
     WriteMap( "%t24%s", "", box_buff );
-    WriteMapNL( 1 );
+    WriteMapNL();
 }
 
 void WriteGroups( void )
@@ -204,13 +205,13 @@ void WriteGroups( void )
         WriteBox( MSG_MAP_BOX_GROUP );
         Msg_Write_Map( MSG_MAP_TITLE_GROUP_0 );
         Msg_Write_Map( MSG_MAP_TITLE_GROUP_1 );
-        WriteMapNL( 1 );
+        WriteMapNL();
         for( currgrp = Groups; currgrp != NULL; currgrp = currgrp->next_group ) {
             if( !currgrp->isautogrp ) { /* if not an autogroup */
                 WriteFormat( 0, "%s", currgrp->sym->name );
                 WriteFormat( 32, "%a", &currgrp->grp_addr );
                 WriteFormat( 53, "%h", currgrp->totalsize );
-                WriteMapNL( 1 );
+                WriteMapNL();
             }
         }
     }
@@ -230,7 +231,7 @@ static void WriteAbsSeg( void *_leader )
             WriteFormat( 40, "%a", &leader->seg_addr );
         }
         WriteFormat( 60, "%h", leader->size );
-        WriteMapNL( 1 );
+        WriteMapNL();
     }
 }
 
@@ -251,7 +252,7 @@ static void WriteNonAbsSeg( void *_seg )
             WriteFormat( 53, "%a", &seg->seg_addr );
         }
         WriteFormat( 69, "%h", seg->size );
-        WriteMapNL( 1 );
+        WriteMapNL();
     } else {
         Absolute_Seg = true;
     }
@@ -287,7 +288,7 @@ void WriteSegs( section *sect )
         WriteBox( MSG_MAP_BOX_SEGMENTS );
         Msg_Write_Map( MSG_MAP_TITLE_SEGMENTS_0 );
         Msg_Write_Map( MSG_MAP_TITLE_SEGMENTS_1 );
-        WriteMapNL( 1 );
+        WriteMapNL();
         count = 0;
         for( class = sect->classlist; class != NULL; class = class->next_class ) {
             if( (class->flags & CLASS_DEBUG_INFO) == 0 ) {
@@ -313,7 +314,7 @@ void WriteSegs( section *sect )
             WriteBox( MSG_MAP_BOX_ABS_SEG );
             Msg_Write_Map( MSG_MAP_TITLE_ABS_SEG_0 );
             Msg_Write_Map( MSG_MAP_TITLE_ABS_SEG_1 );
-            WriteMapNL( 1 );
+            WriteMapNL();
             for( i = 0; i < count; ++i ) {
                 WriteAbsSeg( segs[i].seg );
             }
@@ -331,10 +332,10 @@ void WritePubHead( void )
     if( MapFlags & MAP_STATICS ) {
         Msg_Write_Map( MSG_MAP_SYM_STATIC );
     }
-    WriteMapNL( 1 );
+    WriteMapNL();
     Msg_Write_Map( MSG_MAP_TITLE_MEMORY_MAP_0 );
     Msg_Write_Map( MSG_MAP_TITLE_MEMORY_MAP_1 );
-    WriteMapNL( 1 );
+    WriteMapNL();
 }
 
 void WritePubModHead( void )
@@ -365,10 +366,10 @@ static void WriteModSegHead( void )
     }
     Msg_Write_Map( MSG_MAP_32BIT_SEG );
     Msg_Write_Map( MSG_MAP_COMDAT );
-    WriteMapNL( 1 );
+    WriteMapNL();
     Msg_Write_Map( MSG_MAP_TITLE_MOD_SEG_0 );
     Msg_Write_Map( MSG_MAP_TITLE_MOD_SEG_1 );
-    WriteMapNL( 1 );
+    WriteMapNL();
 }
 
 static void WriteImports( void )
@@ -383,7 +384,7 @@ static void WriteImports( void )
             Msg_Write_Map( MSG_MAP_TITLE_IMP_SYM_2 );
             Msg_Write_Map( MSG_MAP_TITLE_IMP_SYM_3 );
         }
-        WriteMapNL( 1 );
+        WriteMapNL();
         XWriteImports();
     }
 }
@@ -429,7 +430,7 @@ static void WriteVerbSeg( void *_seg )
         WriteFormat( 53, "%a%c%c%c", &addr, star, see, bang );
     }
     WriteFormat( 70, "%h", seg->length );
-    WriteMapNL( 1 );
+    WriteMapNL();
 }
 
 static void WriteVerbMod( mod_entry *mod )
@@ -438,7 +439,7 @@ static void WriteVerbMod( mod_entry *mod )
     if( (mod->modinfo & MOD_NEED_PASS_2) && mod->segs != NULL ) {
         WriteFormat( 0, "%s", mod->name.u.ptr );
         if( strlen( mod->name.u.ptr ) > 15 )
-            WriteMapNL( 1 );
+            WriteMapNL();
         Ring2Walk( mod->segs, WriteVerbSeg );
     }
 }
@@ -485,7 +486,7 @@ static void dump_state( line_state_info *state )
     }
     state->col++;
     if( state->col == 4 ) {
-        WriteMapNL( 1 );
+        WriteMapNL();
         state->col = 0;
     }
 }
@@ -620,9 +621,9 @@ void WriteMapLines( void )
         }
         p++;
         while( *p != 0 ) {
-            WriteMapNL( 1 );
+            WriteMapNL();
             WriteMap( "Line numbers for %s", p );
-            WriteMapNL( 1 );
+            WriteMapNL();
             p += strlen( (char *)p ) + 1;
             p = SkipLEB128( p );
             p = SkipLEB128( p );
@@ -737,7 +738,7 @@ void WriteMapLines( void )
                 state.basic_block = false;
             }
         }
-        WriteMapNL( 1 );
+        WriteMapNL();
         _LnkFree( opcode_lengths );
     }
     _LnkFree( input );
@@ -765,8 +766,8 @@ static void AddSymRecList( symbol *sym, symrecinfo **head )
     }
 }
 
-void ProcUndefined( symbol *sym )
-/***************************************/
+void RecordUndefinedSym( symbol *sym )
+/************************************/
 {
     if( (LinkFlags & LF_UNDEFS_ARE_OK) == 0 )
         LinkState |= LS_LINK_ERROR;
@@ -774,15 +775,15 @@ void ProcUndefined( symbol *sym )
 }
 
 void RecordTracedSym( symbol *sym )
-/****************************************/
+/*********************************/
 {
     if( sym->mod != CurrMod ) {
         AddSymRecList( sym, &SymTraceList );
     }
 }
 
-static void PrintUndefined( void *_info )
-/***************************************/
+static void PrintUndefinedSym( void *_info )
+/*********************************************/
 {
     symrecinfo  *info = _info;
     mod_entry   *mod;
@@ -792,42 +793,49 @@ static void PrintUndefined( void *_info )
                                        info->sym );
     WriteFormat( 0, "%S", info->sym );
     WriteFormat( 32, "%s(%s)", mod->f.source->infile->name, mod->name );
-    WriteMapNL( 1 );
+    WriteMapNL();
 }
 
-static void PrintSymTrace( void *_info )
-/**************************************/
+static void PrintTracedSym( void *_info )
+/******************************************/
 {
     symrecinfo  *info = _info;
 
     LnkMsg( MAP+MSG_MOD_TRACE, "Ss", info->sym, info->mod->name );
 }
 
-void WriteUndefined( void )
-/*************************/
+void PrintUndefinedSyms( void )
+/*****************************/
 {
-    if( SymTraceList != NULL ) {
-        WriteBox( MSG_MAP_BOX_TRACE_SYM );
-        RingWalk( SymTraceList, PrintSymTrace );
-        WriteMapNL( 1 );
-    }
     if( UndefList != NULL ) {
         WriteBox( MSG_MAP_BOX_UNRES_REF );
         Msg_Write_Map( MSG_MAP_TITLE_UNRES_REF_0 );
         Msg_Write_Map( MSG_MAP_TITLE_UNRES_REF_1 );
-        WriteMapNL( 1 );
-        RingWalk( UndefList, PrintUndefined );
-    }
-    if( LinkState & LS_UNDEFED_SYM_ERROR ) {
-        LinkState |= LS_LINK_ERROR;
+        WriteMapNL();
+        RingWalk( UndefList, PrintUndefinedSym );
     }
 }
 
-void FreeUndefs( void )
+void PrintTracedSyms( void )
+/**************************/
+{
+    if( SymTraceList != NULL ) {
+        WriteBox( MSG_MAP_BOX_TRACE_SYM );
+        RingWalk( SymTraceList, PrintTracedSym );
+        WriteMapNL();
+    }
+}
+
+void FreeUndefinedSyms( void )
 /****************************/
 {
-    RingFree( &SymTraceList );
     RingFree( &UndefList );
+}
+
+void FreeTracedSyms( void )
+/*************************/
+{
+    RingFree( &SymTraceList );
 }
 
 static void Write32( char *s, unsigned_32 size )
@@ -895,7 +903,7 @@ void MapSizes( void )
     const char  *stubname;
 
     if( UndefList != NULL ) {
-        WriteMapNL( 1 );
+        WriteMapNL();
     }
     WriteImports();
     WriteLibsUsed();
@@ -955,16 +963,11 @@ void EndTime( void )
     }
 }
 
-void WriteMapNL( unsigned count )
-/**************************************/
+void WriteMapNL( void )
+/*********************/
 {
-    size_t      len;
-
     if( MapFlags & MAP_FLAG ) {
-        len = strlen( NLSeq );
-        while( count-- > 0 ) {
-            BufWrite( NLSeq, len );
-        }
+        BufWrite( NLSeq, strlen( NLSeq ) );
         MapCol = 0;
     }
 }
@@ -985,7 +988,7 @@ void DoWriteMap( const char *format, va_list args )
 {
     if( MapFlags & MAP_FLAG ) {
         MapPrint( format, args );
-        WriteMapNL( 1 );
+        WriteMapNL();
     }
 }
 

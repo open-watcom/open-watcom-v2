@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,14 +42,16 @@ extern void     WritePubModHead( void );
 extern void     WriteOvlHead( void );
 extern void     WriteModSegs( void );
 extern void     WriteMapLines( void );
-extern void     ProcUndefined( symbol * );
+extern void     RecordUndefinedSym( symbol * );
 extern void     RecordTracedSym( symbol * );
-extern void     WriteUndefined( void );
-extern void     FreeUndefs( void );
+extern void     PrintUndefinedSyms( void );
+extern void     PrintTracedSyms( void );
+extern void     FreeUndefinedSyms( void );
+extern void     FreeTracedSyms( void );
 extern void     WriteLibsUsed( void );
 extern void     MapSizes( void );
 extern void     EndTime( void );
-extern void     WriteMapNL( unsigned );
+extern void     WriteMapNL( void );
 extern void     DoWriteMap( const char *, va_list );
 extern void     WriteMap( const char *, ... );
 extern void     WriteFormat( size_t, const char *, ... );

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1824,7 +1824,7 @@ static void BuildReloc( save_fixup *save, target_spec *target, frame_spec *frame
             RecordTracedSym( target->u.sym );
         }
         if( (target->u.sym->info & SYM_DEFINED) == 0 ) {
-            ProcUndefined( target->u.sym );
+            RecordUndefinedSym( target->u.sym );
             return;
         }
         fix.fpp_type = GET_SYM_FPP( target->u.sym );

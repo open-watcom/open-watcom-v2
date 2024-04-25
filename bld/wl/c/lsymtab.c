@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1148,7 +1148,7 @@ void XReportSymAddr( symbol *sym )
         star = '*';
     }
     WriteSym( sym, star );
-    WriteMapNL( 1 );
+    WriteMapNL();
 }
 
 void XWriteImports( void )
@@ -1169,7 +1169,7 @@ void XWriteImports( void )
                     WriteFormat( 36, "%s", ImpModuleName( sym->p.import ) );
                 }
 #endif
-                WriteMapNL( 1 );
+                WriteMapNL();
             }
         }
     }
