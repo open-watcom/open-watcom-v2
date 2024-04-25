@@ -628,18 +628,6 @@ static void DefinePublics( void )
     FindFloatSyms();
 }
 
-void FiniMap( void )
-/*******************************/
-/* Finish map processing */
-{
-    if( MapFlags & MAP_FLAG ) {
-        if( MapFlags & MAP_LINES ) {
-            WriteMapLines();
-            StopMapBuffering();
-        }
-    }
-}
-
 void ProcPubs( mod_entry *head, section *sect )
 /****************************************************/
 {

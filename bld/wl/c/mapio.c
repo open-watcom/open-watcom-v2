@@ -129,7 +129,7 @@ void StopMapBuffering( void )
 }
 
 void MapInit( void )
-/*************************/
+/******************/
 {
     char                tim[8 + 1];
     char                dat[8 + 1];
@@ -172,6 +172,23 @@ void MapInit( void )
 
     LnkMsg( MAP+MSG_CREATED_ON, "12", dat, tim );
     StopMapBuffering();
+}
+
+void MapFini( void )
+/*******************
+ * Finish map processing
+ */
+{
+    if( MapFlags & MAP_FLAG ) {
+        if( MapFlags & MAP_LINES ) {
+            WriteMapLines();
+        }
+        StopMapBuffering();
+        if( MapFile != NIL_FHANDLE ) {
+            QClose( MapFile, MapFName );
+            MapFile = NIL_FHANDLE;
+        }
+    }
 }
 
 static void WriteBox( unsigned int msgnum )

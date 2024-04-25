@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -64,4 +64,3 @@ extern void     DoPubs( section * );
 extern void     SetSegFlags( xxx_seg_flags * );
 extern void     CalcSegSizes( void );
 extern void     ConvertToFrame( targ_addr *, segment, bool );
-extern void     FiniMap( void );

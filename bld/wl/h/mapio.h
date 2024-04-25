@@ -35,6 +35,7 @@ extern void     StartTime( void );
 extern void     StartMapBuffering( void );
 extern void     StopMapBuffering( void );
 extern void     MapInit( void );
+extern void     MapFini( void );
 extern void     WriteGroups( void );
 extern void     WriteSegs( section * );
 extern void     WritePubHead( void );

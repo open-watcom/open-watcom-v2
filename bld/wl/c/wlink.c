@@ -294,10 +294,6 @@ void InitSubSystems( void )
 static void CleanSubSystems( void )
 /*********************************/
 {
-    if( MapFile != NIL_FHANDLE ) {
-        QClose( MapFile, MapFName );
-        MapFile = NIL_FHANDLE;
-    }
     FreeOutFiles();
     _LnkFree( MapFName );
     BurnSystemList();
@@ -401,13 +397,13 @@ static void DoLink( const char *cmdline )
     CheckErr();
     InitLoadFile();
     ObjPass2();
-    FiniMap();
     CheckErr();
     FiniLoadFile();
     WritePermData();
     BuildImpLib();
     FiniEnvVars();
     EndTime();
+    MapFini();
 
     ignore_signal();
 }
