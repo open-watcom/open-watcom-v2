@@ -57,6 +57,8 @@
 #include "clibext.h"
 
 
+#define MAP_BUFFER_SIZE (16 * SECTOR_SIZE)
+
 typedef struct {
     unsigned_32         address;
     unsigned            file;
@@ -83,8 +85,8 @@ static size_t           MapCol;
 static time_t           StartT;
 static clock_t          ClockTicks;
 static bool             Absolute_Seg;
-static bool             Buffering;      // buffering on/off.
-static size_t           BufferSize;     // # of chars in buffer.
+static size_t           MapBufferSize;
+static char             *MapBuffer;
 
 void ResetMapIO( void )
 /****************************/
@@ -95,12 +97,11 @@ void ResetMapIO( void )
 }
 
 void StartTime( void )
-/***************************/
+/********************/
 {
     StartT = time( NULL );
     ClockTicks = clock();
 }
-
 
 static char *PutDec( char *ptr, unsigned num )
 /*********************************************/
@@ -110,22 +111,68 @@ static char *PutDec( char *ptr, unsigned num )
     return( ptr );
 }
 
-void StartMapBuffering( void )
-/***********************************/
+static void WriteMapDirect( const char *buffer, size_t len )
+/***********************************************************
+ * buffering the write to the map file
+ */
 {
-    Buffering = true;
-    BufferSize = 0;
+    size_t      size;
+
+    while( MapBufferSize + len >= MAP_BUFFER_SIZE ) {
+        size = MAP_BUFFER_SIZE - MapBufferSize;
+        memcpy( MapBuffer + MapBufferSize, buffer, size );
+        QWrite( MapFile, MapBuffer, MAP_BUFFER_SIZE, MapFName );
+        MapBufferSize = 0;
+        buffer += size;
+        len -= size;
+    }
+    if( len > 0 ) {
+        memcpy( MapBuffer + MapBufferSize, buffer, len );
+        MapBufferSize += len;
+    }
 }
 
-void StopMapBuffering( void )
-/**********************************/
-// flush buffer & shut buffering off.
+static void WriteMapDirectNL( void )
 {
-    if( BufferSize != 0 ) {
-        QWrite( MapFile, TokBuff, BufferSize, MapFName );
+    WriteMapDirect( NLSeq, strlen( NLSeq ) );
+    MapCol = 0;
+}
+
+static void WriteMapDirectString( const char *buffer, bool nl )
+/*************************************************************/
+{
+    WriteMapDirect( buffer, strlen( buffer ) );
+    if( nl ) {
+        WriteMapDirectNL();
     }
-    Buffering = false;
-    BufferSize = 0;
+}
+
+static void WriteMapMsgPrintf( int resourceid, ... )
+{
+    char        format[RESOURCE_MAX_SIZE];
+    va_list     args;
+    char        buff[MAX_MSG_SIZE];
+    size_t      len;
+
+    if( MapFlags & MAP_FLAG ) {
+        Msg_Get( resourceid, format );
+        va_start( args, resourceid );
+        len = DoFmtStr( buff, sizeof( buff ), format, args );
+        va_end( args );
+        WriteMapDirect( buff, len );
+        WriteMapDirectNL();
+    }
+}
+
+static void WriteMapMsg( int resourceid )
+{
+    char        buff[RESOURCE_MAX_SIZE];
+
+    if( MapFlags & MAP_FLAG ) {
+        Msg_Get( resourceid, buff );
+        WriteMapDirect( buff, strlen( buff ) );
+        WriteMapDirectNL();
+    }
 }
 
 void MapInit( void )
@@ -135,43 +182,35 @@ void MapInit( void )
     char                dat[8 + 1];
     char                *ptr;
     struct tm           *localt;
-    const char          *msg;
 
     Absolute_Seg = false;
-    Buffering = false;  // buffering on/off.
-    if( (MapFlags & MAP_FLAG) == 0 )
-        return;
-    MapFile = QOpenRW( MapFName );
-    StartMapBuffering();
-    localt = localtime( &StartT );
-    MapCol = 0;
-    msg = MsgStrings[PRODUCT];
-    BufWrite( msg, strlen( msg ) );
-    WriteMapNL();
-    msg = MsgStrings[COPYRIGHT];
-    BufWrite( msg, strlen( msg ) );
-    WriteMapNL();
-    msg = MsgStrings[COPYRIGHT2];
-    BufWrite( msg, strlen( msg ) );
-    WriteMapNL();
-    ptr = tim;
-    ptr = PutDec( ptr, localt->tm_hour );
-    *ptr++ = ':';
-    ptr = PutDec( ptr, localt->tm_min );
-    *ptr++ = ':';
-    ptr = PutDec( ptr, localt->tm_sec );
-    *ptr = '\0';
+    if( MapFlags & MAP_FLAG ) {
+        MapFile = QOpenRW( MapFName );
+        _LnkAlloc( MapBuffer, MAP_BUFFER_SIZE );
+        MapBufferSize = 0;
+        localt = localtime( &StartT );
+        MapCol = 0;
+        WriteMapDirectString( MsgStrings[PRODUCT], true );
+        WriteMapDirectString( MsgStrings[COPYRIGHT], true );
+        WriteMapDirectString( MsgStrings[COPYRIGHT2], true );
+        ptr = tim;
+        ptr = PutDec( ptr, localt->tm_hour );
+        *ptr++ = ':';
+        ptr = PutDec( ptr, localt->tm_min );
+        *ptr++ = ':';
+        ptr = PutDec( ptr, localt->tm_sec );
+        *ptr = '\0';
 
-    ptr = dat;
-    ptr = PutDec( ptr, localt->tm_year );
-    *ptr++ = '/';
-    ptr = PutDec( ptr, localt->tm_mon + 1 );
-    *ptr++ = '/';
-    ptr = PutDec( ptr, localt->tm_mday );
-    *ptr = '\0';
+        ptr = dat;
+        ptr = PutDec( ptr, localt->tm_year );
+        *ptr++ = '/';
+        ptr = PutDec( ptr, localt->tm_mon + 1 );
+        *ptr++ = '/';
+        ptr = PutDec( ptr, localt->tm_mday );
+        *ptr = '\0';
 
-    LnkMsg( MAP+MSG_CREATED_ON, "12", dat, tim );
-    StopMapBuffering();
+        LnkMsg( MAP+MSG_CREATED_ON, "12", dat, tim );
+    }
 }
 
 void MapFini( void )
@@ -183,11 +222,16 @@ void MapFini( void )
         if( MapFlags & MAP_LINES ) {
             WriteMapLines();
         }
-        StopMapBuffering();
+        if( MapBufferSize > 0 ) {
+            QWrite( MapFile, MapBuffer, MapBufferSize, MapFName );
+            MapBufferSize = 0;
+        }
         if( MapFile != NIL_FHANDLE ) {
             QClose( MapFile, MapFName );
             MapFile = NIL_FHANDLE;
         }
+        _LnkFree( MapBuffer );
+        MapBuffer = NULL;
     }
 }
 
@@ -220,8 +264,8 @@ void WriteGroups( void )
 
     if( Groups != NULL ) {
         WriteBox( MSG_MAP_BOX_GROUP );
-        Msg_Write_Map( MSG_MAP_TITLE_GROUP_0 );
-        Msg_Write_Map( MSG_MAP_TITLE_GROUP_1 );
+        WriteMapMsg( MSG_MAP_TITLE_GROUP_0 );
+        WriteMapMsg( MSG_MAP_TITLE_GROUP_1 );
         WriteMapNL();
         for( currgrp = Groups; currgrp != NULL; currgrp = currgrp->next_group ) {
             if( !currgrp->isautogrp ) { /* if not an autogroup */
@@ -303,8 +347,8 @@ void WriteSegs( section *sect )
 
     if( sect->classlist != NULL ) {
         WriteBox( MSG_MAP_BOX_SEGMENTS );
-        Msg_Write_Map( MSG_MAP_TITLE_SEGMENTS_0 );
-        Msg_Write_Map( MSG_MAP_TITLE_SEGMENTS_1 );
+        WriteMapMsg( MSG_MAP_TITLE_SEGMENTS_0 );
+        WriteMapMsg( MSG_MAP_TITLE_SEGMENTS_1 );
         WriteMapNL();
         count = 0;
         for( class = sect->classlist; class != NULL; class = class->next_class ) {
@@ -329,8 +373,8 @@ void WriteSegs( section *sect )
         }
         if( Absolute_Seg ) {
             WriteBox( MSG_MAP_BOX_ABS_SEG );
-            Msg_Write_Map( MSG_MAP_TITLE_ABS_SEG_0 );
-            Msg_Write_Map( MSG_MAP_TITLE_ABS_SEG_1 );
+            WriteMapMsg( MSG_MAP_TITLE_ABS_SEG_0 );
+            WriteMapMsg( MSG_MAP_TITLE_ABS_SEG_1 );
             WriteMapNL();
             for( i = 0; i < count; ++i ) {
                 WriteAbsSeg( segs[i].seg );
@@ -344,14 +388,14 @@ void WritePubHead( void )
 /******************************/
 {
     WriteBox( MSG_MAP_BOX_MEMORY_MAP );
-    Msg_Write_Map( MSG_MAP_UNREF_SYM );
-    Msg_Write_Map( MSG_MAP_REF_LOCAL_SYM );
+    WriteMapMsg( MSG_MAP_UNREF_SYM );
+    WriteMapMsg( MSG_MAP_REF_LOCAL_SYM );
     if( MapFlags & MAP_STATICS ) {
-        Msg_Write_Map( MSG_MAP_SYM_STATIC );
+        WriteMapMsg( MSG_MAP_SYM_STATIC );
     }
     WriteMapNL();
-    Msg_Write_Map( MSG_MAP_TITLE_MEMORY_MAP_0 );
-    Msg_Write_Map( MSG_MAP_TITLE_MEMORY_MAP_1 );
+    WriteMapMsg( MSG_MAP_TITLE_MEMORY_MAP_0 );
+    WriteMapMsg( MSG_MAP_TITLE_MEMORY_MAP_1 );
     WriteMapNL();
 }
 
@@ -365,7 +409,7 @@ void WritePubModHead( void )
     } else {
         MakeFileName( CurrMod->f.source->infile, full_name );
     }
-    Msg_Write_Map( MSG_MAP_DEFINING_MODULE, full_name, CurrMod->name.u.ptr );
+    WriteMapMsgPrintf( MSG_MAP_DEFINING_MODULE, full_name, CurrMod->name.u.ptr );
 }
 
 void WriteOvlHead( void )
@@ -379,13 +423,13 @@ static void WriteModSegHead( void )
 {
     WriteBox( MSG_MAP_BOX_MOD_SEG );
     if( Absolute_Seg ) {
-        Msg_Write_Map( MSG_MAP_ABS_ADDR );
+        WriteMapMsg( MSG_MAP_ABS_ADDR );
     }
-    Msg_Write_Map( MSG_MAP_32BIT_SEG );
-    Msg_Write_Map( MSG_MAP_COMDAT );
+    WriteMapMsg( MSG_MAP_32BIT_SEG );
+    WriteMapMsg( MSG_MAP_COMDAT );
     WriteMapNL();
-    Msg_Write_Map( MSG_MAP_TITLE_MOD_SEG_0 );
-    Msg_Write_Map( MSG_MAP_TITLE_MOD_SEG_1 );
+    WriteMapMsg( MSG_MAP_TITLE_MOD_SEG_0 );
+    WriteMapMsg( MSG_MAP_TITLE_MOD_SEG_1 );
     WriteMapNL();
 }
 
@@ -395,11 +439,11 @@ static void WriteImports( void )
     if( FmtData.type & (MK_NOVELL | MK_OS2 | MK_WIN_NE | MK_PE) ) {
         WriteBox( MSG_MAP_BOX_IMP_SYM );
         if( FmtData.type & (MK_NOVELL | MK_ELF) ) {
-            Msg_Write_Map( MSG_MAP_TITLE_IMP_SYM_0 );
-            Msg_Write_Map( MSG_MAP_TITLE_IMP_SYM_1 );
+            WriteMapMsg( MSG_MAP_TITLE_IMP_SYM_0 );
+            WriteMapMsg( MSG_MAP_TITLE_IMP_SYM_1 );
         } else {
-            Msg_Write_Map( MSG_MAP_TITLE_IMP_SYM_2 );
-            Msg_Write_Map( MSG_MAP_TITLE_IMP_SYM_3 );
+            WriteMapMsg( MSG_MAP_TITLE_IMP_SYM_2 );
+            WriteMapMsg( MSG_MAP_TITLE_IMP_SYM_3 );
         }
         WriteMapNL();
         XWriteImports();
@@ -487,18 +531,18 @@ static void dump_state( line_state_info *state )
     if( state->has_seg ) {
         if( state->is_32 ) {
             sprintf( str, "%5d %04Xh:%08Xh ", state->line, state->segment, state->address );
-            BufWrite( str, strlen( str ) );
+            WriteMapDirectString( str, false );
         } else {
             sprintf( str, "%5d %04Xh:%04Xh ", state->line, state->segment, state->address );
-            BufWrite( str, strlen( str ) );
+            WriteMapDirectString( str, false );
         }
     } else {
         if( state->is_32 ) {
             sprintf( str, "%6d %08Xh ", state->line, state->address );
-            BufWrite( str, strlen( str ) );
+            WriteMapDirectString( str, false );
         } else {
             sprintf( str, "%6d %04Xh ", state->line, state->address );
-            BufWrite( str, strlen( str ) );
+            WriteMapDirectString( str, false );
         }
     }
     state->col++;
@@ -826,8 +870,8 @@ void PrintUndefinedSyms( void )
 {
     if( UndefList != NULL ) {
         WriteBox( MSG_MAP_BOX_UNRES_REF );
-        Msg_Write_Map( MSG_MAP_TITLE_UNRES_REF_0 );
-        Msg_Write_Map( MSG_MAP_TITLE_UNRES_REF_1 );
+        WriteMapMsg( MSG_MAP_TITLE_UNRES_REF_0 );
+        WriteMapMsg( MSG_MAP_TITLE_UNRES_REF_1 );
         WriteMapNL();
         RingWalk( UndefList, PrintUndefinedSym );
     }
@@ -936,11 +980,11 @@ void MapSizes( void )
     }
 #endif
     if( (FmtData.type & MK_NOVELL) == 0 && ( !FmtData.dll || (FmtData.type & MK_PE) ) ) {
-        Msg_Write_Map( MSG_MAP_ENTRY_PT_ADDR, &StartInfo.addr );
+        WriteMapMsgPrintf( MSG_MAP_ENTRY_PT_ADDR, &StartInfo.addr );
     }
     stubname = getStubName();
     if( stubname != NULL ) {
-        Msg_Write_Map( MSG_MAP_STUB_FILE, stubname );
+        WriteMapMsgPrintf( MSG_MAP_STUB_FILE, stubname );
     }
 }
 
@@ -976,7 +1020,7 @@ void EndTime( void )
         *ptr++ = '.';
         ptr = PutDec( ptr, t );
         *ptr = '\0';
-        Msg_Write_Map( MSG_MAP_LINK_TIME, tim );
+        WriteMapMsgPrintf( MSG_MAP_LINK_TIME, tim );
     }
 }
 
@@ -984,39 +1028,24 @@ void WriteMapNL( void )
 /*********************/
 {
     if( MapFlags & MAP_FLAG ) {
-        BufWrite( NLSeq, strlen( NLSeq ) );
-        MapCol = 0;
-    }
-}
-
-static size_t MapPrint( const char *str, va_list args )
-/*****************************************************/
-{
-    char        buff[MAX_MSG_SIZE];
-    size_t      len;
-
-    len = DoFmtStr( buff, MAX_MSG_SIZE, str, args );
-    BufWrite( buff, len );
-    return( len );
-}
-
-void DoWriteMap( const char *format, va_list args )
-/*************************************************/
-{
-    if( MapFlags & MAP_FLAG ) {
-        MapPrint( format, args );
-        WriteMapNL();
+        WriteMapDirectNL();
     }
 }
 
 void WriteMap( const char *format, ... )
 /**************************************/
 {
-    va_list args;
+    va_list     args;
+    char        buff[MAX_MSG_SIZE];
+    size_t      len;
 
-    va_start( args, format );
-    DoWriteMap( format, args );
-    va_end( args );
+    if( MapFlags & MAP_FLAG ) {
+        va_start( args, format );
+        len = DoFmtStr( buff, sizeof( buff ), format, args );
+        va_end( args );
+        WriteMapDirect( buff, len );
+        WriteMapNL();
+    }
 }
 
 void WriteFormat( size_t col, const char *str, ... )
@@ -1025,6 +1054,8 @@ void WriteFormat( size_t col, const char *str, ... )
     va_list         args;
     size_t          num;
     static  char    Blanks[]={"                                      "};
+    char            buff[MAX_MSG_SIZE];
+    size_t          len;
 
     if( MapFlags & MAP_FLAG ) {
         num = 0;
@@ -1034,33 +1065,18 @@ void WriteFormat( size_t col, const char *str, ... )
             num = 1;
         }
         MapCol += num;
-        BufWrite( Blanks, num );
+        WriteMapDirect( Blanks, num );
         va_start( args, str );
-        MapCol += MapPrint( str, args );
+        len = DoFmtStr( buff, sizeof( buff ), str, args );
         va_end( args );
+        WriteMapDirect( buff, len );
+        MapCol += len;
     }
 }
 
-void BufWrite( const char *buffer, size_t len )
-/*********************************************/
-// write to the map file, buffering the write if buffering is on.
+void WriteMapDirect2Str( const char *s1, size_t len1, const char *s2, size_t len2 )
 {
-    size_t      diff;
-
-    if( Buffering ) {
-        if( BufferSize + len >= TokSize ) {
-            diff = BufferSize + len - TokSize;
-            memcpy( TokBuff+BufferSize, buffer, len - diff );
-            QWrite( MapFile, TokBuff, TokSize, MapFName );
-            BufferSize = diff;
-            if( diff > 0 ) {
-                memcpy( TokBuff, buffer + len - diff, diff );
-            }
-        } else {
-            memcpy( TokBuff + BufferSize, buffer, len );
-            BufferSize += len;
-        }
-    } else {
-        QWrite( MapFile, buffer, len, MapFName );
-    }
+    WriteMapDirect( s1, len1 );
+    WriteMapDirect( s2, len2 );
+    WriteMapDirectNL();
 }

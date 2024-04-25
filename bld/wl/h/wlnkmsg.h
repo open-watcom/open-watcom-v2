@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -57,5 +57,4 @@ extern void     ResetMsg( void );
 extern bool     Msg_Get( int resourceid, char *buffer );
 extern void     Msg_Do_Put_Args( char rc_buff[], MSG_ARG_LIST *, const char *, ... );
 extern void     Msg_Put_Args( char rc_buff[], MSG_ARG_LIST *, const char *, va_list );
-extern void     Msg_Write_Map( int resourceid, ... );
 extern bool     FiniMsg( void );

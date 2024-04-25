@@ -31,11 +31,10 @@
 ****************************************************************************/
 
 
-extern void     StartTime( void );
-extern void     StartMapBuffering( void );
-extern void     StopMapBuffering( void );
 extern void     MapInit( void );
 extern void     MapFini( void );
+extern void     StartTime( void );
+extern void     EndTime( void );
 extern void     WriteGroups( void );
 extern void     WriteSegs( section * );
 extern void     WritePubHead( void );
@@ -51,10 +50,8 @@ extern void     FreeUndefinedSyms( void );
 extern void     FreeTracedSyms( void );
 extern void     WriteLibsUsed( void );
 extern void     MapSizes( void );
-extern void     EndTime( void );
 extern void     WriteMapNL( void );
-extern void     DoWriteMap( const char *, va_list );
 extern void     WriteMap( const char *, ... );
 extern void     WriteFormat( size_t, const char *, ... );
-extern void     BufWrite( const char *, size_t );
 extern void     ResetMapIO( void );
+extern void     WriteMapDirect2Str( const char *s1, size_t len1, const char *s2, size_t len2 );

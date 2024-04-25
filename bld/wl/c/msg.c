@@ -458,9 +458,7 @@ static void MessageFini( unsigned num, char *buff, size_t len )
     }
     if( (num & OUT_MAP) && (MapFile != NIL_FHANDLE) ) {
         msgprefixlen = GetMsgPrefix( msgprefix, MAX_MSG_SIZE, num );
-        BufWrite( msgprefix, msgprefixlen );
-        BufWrite( buff, len );
-        WriteMapNL();
+        WriteMapDirect2Str( msgprefix, msgprefixlen, buff, len );
     }
     if( class == (FTL & CLASS_MSK) )
         Suicide();

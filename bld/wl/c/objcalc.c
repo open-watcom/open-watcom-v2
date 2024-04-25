@@ -596,7 +596,6 @@ static void DefinePublics( void )
 {
     DEBUG(( DBG_OLD, "DefinePublics()" ));
     if( MapFlags & MAP_FLAG ) {
-        StartMapBuffering();
         LnkMsg( INF+MSG_CREATE_MAP, NULL );
         WriteGroups();
         WriteMapNL();
@@ -620,9 +619,6 @@ static void DefinePublics( void )
     if( MapFlags & MAP_FLAG ) {
         if( MapFlags & MAP_VERBOSE ) {
             WriteModSegs();
-        }
-        if( (MapFlags & MAP_LINES) == 0 ) {
-            StopMapBuffering();
         }
     }
     FindFloatSyms();
