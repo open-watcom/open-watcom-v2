@@ -1,0 +1,46 @@
+/*
+ * sys/select.h POSIX [p]select functions with related defines & macros
+ *
+:include crwatcnt.sp
+ */
+#ifndef _SYS_SELECT_H_INCLUDED
+#define _SYS_SELECT_H_INCLUDED
+
+:include readonly.sp
+
+:include owrtlink.sp
+
+:include cpluspro.sp
+
+:segment LINUX | RDOS
+:segment LINUX
+:include lnxkpack.sp
+:elsesegment
+:include pshpackl.sp
+:endsegment
+
+:: Posix requires, that this belongs to sys/select.h and sys/time.h
+:: OpenWatcom had it previously only in sys/time.h
+
+:include fdset.sp
+
+:elsesegment
+:include pshpackl.sp
+
+:endsegment
+
+:segment LINUX
+:include time_t.sp
+:endsegment
+
+:include timeval.sp
+
+:segment LINUX | RDOS
+:include select.sp
+:endsegment
+
+:include poppack.sp
+
+:include cplusepi.sp
+
+#endif /* !_SYS_SELECT_H_INCLUDED */

@@ -289,7 +289,7 @@
 !inject h/sys/qnxterm.h                            hqnx
 !inject h/sys/resource.h                      hlnx
 !inject h/sys/seginfo.h                            hqnx
-!inject h/sys/select.h                             hqnx
+!inject h/sys/select.h                        hlnx hqnx hrdos
 !inject h/sys/sendfile.h                      hlnx
 !inject h/sys/sendmx.h                             hqnx
 !inject h/sys/ser_msg.h                            hqnx
