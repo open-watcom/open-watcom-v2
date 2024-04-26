@@ -351,7 +351,9 @@ void FiniLoadFile( void )
     OpenOutFiles();
     SetupImpLib();
     finiLoad();
-    WriteMapSizes();
+    if( MapFlags & MAP_FLAG ) {
+        WriteMapSizes();
+    }
     CloseOutFiles();
     DoCVPack();
 }

@@ -586,9 +586,7 @@ static void DefinePublics( void )
     DEBUG(( DBG_OLD, "DefinePublics()" ));
     if( MapFlags & MAP_FLAG ) {
         LnkMsg( INF+MSG_CREATE_MAP, NULL );
-        WriteMapGroups();
-        WriteMapSegs( Root );
-        WritePubHead();
+        WriteMapHead( Root );
     }
     WriteMapPubStart();
     ProcPubsSect( Root->mods, Root );

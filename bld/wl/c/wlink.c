@@ -248,7 +248,7 @@ static void ResetSubSystems( void )
     VirtMemInit();
     ResetMisc();
     ResetDBI();
-    ResetMapIO();
+    ResetWriteMapIO();
     ResetCmdAll();
 #ifdef _EXE
     ResetOverlaySupp();

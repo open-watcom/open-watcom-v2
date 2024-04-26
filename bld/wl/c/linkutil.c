@@ -98,7 +98,9 @@ void CheckErr( void )
 /**************************/
 {
     if( LinkState & ( LS_LINK_ERROR | LS_STOP_WORKING ) ) {
-        WriteMapLibsUsed();
+        if( MapFlags & MAP_FLAG ) {
+            WriteMapLibsUsed();
+        }
         Suicide();
     }
 }

@@ -456,9 +456,13 @@ static void MessageFini( unsigned num, char *buff, size_t len )
             WriteStdOutInfo( buff, num, CurrSymName );
         }
     }
-    if( (num & OUT_MAP) && (MapFile != NIL_FHANDLE) ) {
-        msgprefixlen = GetMsgPrefix( msgprefix, MAX_MSG_SIZE, num );
-        WriteMapDirect2Str( msgprefix, msgprefixlen, buff, len );
+    if( num & OUT_MAP ) {
+        if( (MapFlags & MAP_FLAG) && (MapFile != NIL_FHANDLE) ) {
+            msgprefixlen = GetMsgPrefix( msgprefix, MAX_MSG_SIZE, num );
+            WriteMap( msgprefix, msgprefixlen );
+            WriteMap( buff, len );
+            WriteMapNL();
+        }
     }
     if( class == (FTL & CLASS_MSK) )
         Suicide();

@@ -131,34 +131,25 @@ static void WriteVectors( void )
     targ_addr           addr;
     symbol              *sym;
 
-    WriteMapNL();
-    WriteMapNL();
-    WriteMapSymAddr( OverlayTable );
-    WriteMapSymAddr( OverlayTableEnd );
-    WriteMapSymAddr( OvlVecStart );
-    WriteMapSymAddr( OvlVecEnd );
-    WriteMapOvlHead();
-    n = 0;
-    for( vectnode = OvlVectors; vectnode != NULL; vectnode = vectnode->next ) {
-        OvlGetVecAddr( ++n, &addr );
-        sym = vectnode->sym;
-        WriteMap( "%a section %d : %S",
-                  &addr, sym->p.seg->u.leader->class->section->ovlref, sym );
+    if( MapFlags & MAP_FLAG ) {
+        WriteMapOvlHead( OverlayTable, OverlayTableEnd, OvlVecStart, OvlVecEnd );
+        n = 1;
+        for( vectnode = OvlVectors; vectnode != NULL; vectnode = vectnode->next ) {
+            OvlGetVecAddr( n++, &addr );
+            sym = vectnode->sym;
+            WriteMapPrintf( "%a section %d : %S",
+                &addr, sym->p.seg->u.leader->class->section->ovlref, sym );
+        }
     }
 }
 
 static void DoSecPubs( section *sec )
 /***********************************/
 {
-    WriteMapPubStart();
-    WriteMapNL();
-    WriteMapNL();
-    WriteMap( "Overlay section %d address %a", sec->ovlref, &sec->sect_addr );
-    WriteMap( "====================================" );
-    WriteMapSegs( sec );
     if( MapFlags & MAP_FLAG ) {
-        WritePubHead();
+        WriteMapOvlPubHead( sec );
     }
+    WriteMapPubStart();
     ProcPubsSect( sec->mods, sec );
     OvlProcPubsSect( sec );
     WriteMapPubEnd();
