@@ -96,13 +96,6 @@ void ResetMapIO( void )
     SymTraceList = NULL;
 }
 
-void StartTime( void )
-/********************/
-{
-    StartT = time( NULL );
-    ClockTicks = clock();
-}
-
 static char *PutDec( char *ptr, unsigned num )
 /*********************************************/
 {
@@ -172,66 +165,6 @@ static void WriteMapMsg( int resourceid )
         Msg_Get( resourceid, buff );
         WriteMapDirect( buff, strlen( buff ) );
         WriteMapDirectNL();
-    }
-}
-
-void MapInit( void )
-/******************/
-{
-    char                tim[8 + 1];
-    char                dat[8 + 1];
-    char                *ptr;
-    struct tm           *localt;
-
-    Absolute_Seg = false;
-    if( MapFlags & MAP_FLAG ) {
-        MapFile = QOpenRW( MapFName );
-        _LnkAlloc( MapBuffer, MAP_BUFFER_SIZE );
-        MapBufferSize = 0;
-        localt = localtime( &StartT );
-        MapCol = 0;
-        WriteMapDirectString( MsgStrings[PRODUCT], true );
-        WriteMapDirectString( MsgStrings[COPYRIGHT], true );
-        WriteMapDirectString( MsgStrings[COPYRIGHT2], true );
-        ptr = tim;
-        ptr = PutDec( ptr, localt->tm_hour );
-        *ptr++ = ':';
-        ptr = PutDec( ptr, localt->tm_min );
-        *ptr++ = ':';
-        ptr = PutDec( ptr, localt->tm_sec );
-        *ptr = '\0';
-
-        ptr = dat;
-        ptr = PutDec( ptr, localt->tm_year );
-        *ptr++ = '/';
-        ptr = PutDec( ptr, localt->tm_mon + 1 );
-        *ptr++ = '/';
-        ptr = PutDec( ptr, localt->tm_mday );
-        *ptr = '\0';
-
-        LnkMsg( MAP+MSG_CREATED_ON, "12", dat, tim );
-    }
-}
-
-void MapFini( void )
-/*******************
- * Finish map processing
- */
-{
-    if( MapFlags & MAP_FLAG ) {
-        if( MapFlags & MAP_LINES ) {
-            WriteMapLines();
-        }
-        if( MapBufferSize > 0 ) {
-            QWrite( MapFile, MapBuffer, MapBufferSize, MapFName );
-            MapBufferSize = 0;
-        }
-        if( MapFile != NIL_FHANDLE ) {
-            QClose( MapFile, MapFName );
-            MapFile = NIL_FHANDLE;
-        }
-        _LnkFree( MapBuffer );
-        MapBuffer = NULL;
     }
 }
 
@@ -988,42 +921,6 @@ void MapSizes( void )
     }
 }
 
-void EndTime( void )
-/*************************/
-{
-    char        *ptr;
-    signed_16   h;
-    signed_16   m;
-    signed_16   s;
-    signed_16   t;
-    char        tim[11 + 1];
-
-    if( MapFlags & MAP_FLAG ) {
-
-        ClockTicks = clock() - ClockTicks;
-        t = (unsigned_16)( ClockTicks % CLOCKS_PER_SEC );
-        ClockTicks /= CLOCKS_PER_SEC;
-        s = (unsigned_16)( ClockTicks % 60 );
-        ClockTicks /= 60;
-        m = (unsigned_16)( ClockTicks % 60 );
-        ClockTicks /= 60;
-        h = (unsigned_16)ClockTicks;
-
-        ptr = tim;
-        if( h > 0 ) {
-            ptr = PutDec( ptr, h );
-            *ptr++ = ':';
-        }
-        ptr = PutDec( ptr, m );
-        *ptr++ = ':';
-        ptr = PutDec( ptr, s );
-        *ptr++ = '.';
-        ptr = PutDec( ptr, t );
-        *ptr = '\0';
-        WriteMapMsgPrintf( MSG_MAP_LINK_TIME, tim );
-    }
-}
-
 void WriteMapNL( void )
 /*********************/
 {
@@ -1079,4 +976,107 @@ void WriteMapDirect2Str( const char *s1, size_t len1, const char *s2, size_t len
     WriteMapDirect( s1, len1 );
     WriteMapDirect( s2, len2 );
     WriteMapDirectNL();
+}
+
+void StartTime( void )
+/********************/
+{
+    StartT = time( NULL );
+    ClockTicks = clock();
+}
+
+void EndTime( void )
+/*************************/
+{
+    char        *ptr;
+    signed_16   h;
+    signed_16   m;
+    signed_16   s;
+    signed_16   t;
+    char        tim[11 + 1];
+
+    if( MapFlags & MAP_FLAG ) {
+
+        ClockTicks = clock() - ClockTicks;
+        t = (unsigned_16)( ClockTicks % CLOCKS_PER_SEC );
+        ClockTicks /= CLOCKS_PER_SEC;
+        s = (unsigned_16)( ClockTicks % 60 );
+        ClockTicks /= 60;
+        m = (unsigned_16)( ClockTicks % 60 );
+        ClockTicks /= 60;
+        h = (unsigned_16)ClockTicks;
+
+        ptr = tim;
+        if( h > 0 ) {
+            ptr = PutDec( ptr, h );
+            *ptr++ = ':';
+        }
+        ptr = PutDec( ptr, m );
+        *ptr++ = ':';
+        ptr = PutDec( ptr, s );
+        *ptr++ = '.';
+        ptr = PutDec( ptr, t );
+        *ptr = '\0';
+        WriteMapMsgPrintf( MSG_MAP_LINK_TIME, tim );
+    }
+}
+
+void MapInit( void )
+/******************/
+{
+    char                tim[8 + 1];
+    char                dat[8 + 1];
+    char                *ptr;
+    struct tm           *localt;
+
+    Absolute_Seg = false;
+    if( MapFlags & MAP_FLAG ) {
+        MapFile = QOpenRW( MapFName );
+        _LnkAlloc( MapBuffer, MAP_BUFFER_SIZE );
+        MapBufferSize = 0;
+        localt = localtime( &StartT );
+        MapCol = 0;
+        WriteMapDirectString( MsgStrings[PRODUCT], true );
+        WriteMapDirectString( MsgStrings[COPYRIGHT], true );
+        WriteMapDirectString( MsgStrings[COPYRIGHT2], true );
+        ptr = tim;
+        ptr = PutDec( ptr, localt->tm_hour );
+        *ptr++ = ':';
+        ptr = PutDec( ptr, localt->tm_min );
+        *ptr++ = ':';
+        ptr = PutDec( ptr, localt->tm_sec );
+        *ptr = '\0';
+
+        ptr = dat;
+        ptr = PutDec( ptr, localt->tm_year );
+        *ptr++ = '/';
+        ptr = PutDec( ptr, localt->tm_mon + 1 );
+        *ptr++ = '/';
+        ptr = PutDec( ptr, localt->tm_mday );
+        *ptr = '\0';
+
+        LnkMsg( MAP+MSG_CREATED_ON, "12", dat, tim );
+    }
+}
+
+void MapFini( void )
+/*******************
+ * Finish map processing
+ */
+{
+    if( MapFlags & MAP_FLAG ) {
+        if( MapFlags & MAP_LINES ) {
+            WriteMapLines();
+        }
+        if( MapBufferSize > 0 ) {
+            QWrite( MapFile, MapBuffer, MapBufferSize, MapFName );
+            MapBufferSize = 0;
+        }
+        if( MapFile != NIL_FHANDLE ) {
+            QClose( MapFile, MapFName );
+            MapFile = NIL_FHANDLE;
+        }
+        _LnkFree( MapBuffer );
+        MapBuffer = NULL;
+    }
 }
