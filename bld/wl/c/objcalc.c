@@ -84,14 +84,6 @@ typedef struct  {
 } grpaddrinfo;
 
 
-typedef struct {
-    symbol      **symarray;
-    section     *sect;
-    size_t      num;
-    boolbit     first   : 1;
-} pubdefinfo;
-
-
 static const struct {
     const char      *name;
     fix_fpp_type    win_fpp;
@@ -104,9 +96,6 @@ static const struct {
     #include "fppatche.h"
     #undef pick_fp
 };
-
-
-static unsigned long NumMapSyms;
 
 
 static bool CheckLxdataSeen( void *_seg, void *dummy )
@@ -597,20 +586,19 @@ static void DefinePublics( void )
     DEBUG(( DBG_OLD, "DefinePublics()" ));
     if( MapFlags & MAP_FLAG ) {
         LnkMsg( INF+MSG_CREATE_MAP, NULL );
-        WriteGroups();
-        WriteMapNL();
-        WriteSegs( Root );                       /* TAI */
+        WriteMapGroups();
+        WriteMapSegs( Root );
         WritePubHead();
     }
-    StartMapSort();
-    ProcPubs( Root->mods, Root );
+    WriteMapPubStart();
+    ProcPubsSect( Root->mods, Root );
 #ifdef _EXE
     if( FmtData.type & MK_OVERLAYS ) {
         OvlProcPubsSect( Root );
     }
 #endif
-    ProcPubs( LibModules, Root );
-    FinishMapSort();
+    ProcPubsSect( LibModules, Root );
+    WriteMapPubEnd();
 #ifdef _EXE
     if( FmtData.type & MK_OVERLAYS ) {
         OvlProcPubs();
@@ -618,98 +606,19 @@ static void DefinePublics( void )
 #endif
     if( MapFlags & MAP_FLAG ) {
         if( MapFlags & MAP_VERBOSE ) {
-            WriteModSegs();
+            WriteMapModulesSegments();
         }
     }
     FindFloatSyms();
 }
 
-void ProcPubs( mod_entry *head, section *sect )
+void ProcPubsSect( mod_entry *head, section *sect )
 /****************************************************/
 {
     for( CurrMod = head; CurrMod != NULL; CurrMod = CurrMod->n.next_mod ) {
-        DoPubs( sect );
+        DoPubsSect( sect );
     }
 }
-
-static int SymAddrCompare( const void *a, const void *b )
-/*******************************************************/
-{
-    symbol  *left;
-    symbol  *right;
-
-    left = *((symbol **)a);
-    right = *((symbol **)b);
-    if( left->addr.seg < right->addr.seg ) {
-        return( -1 );
-    } else if( left->addr.seg > right->addr.seg ) {
-        return( 1 );
-    } else {
-        if( left->addr.off < right->addr.off ) {
-            return( -1 );
-        } else if( left->addr.off > right->addr.off ) {
-            return( 1 );
-        }
-    }
-    return( 0 );
-}
-
-void StartMapSort( void )
-/******************************/
-{
-    NumMapSyms = 0;
-}
-
-static void WriteSymArray( symbol **symarray, size_t num )
-/********************************************************/
-{
-    if( MapFlags & MAP_ALPHA ) {
-        qsort( symarray, num, sizeof( symbol * ), SymAlphaCompare );
-    } else {
-        qsort( symarray, num, sizeof( symbol * ), SymAddrCompare );
-    }
-    do {
-        XReportSymAddr( *symarray );
-        symarray++;
-        num--;
-    } while( num > 0 );
-}
-
-void FinishMapSort( void )
-/*******************************/
-{
-    symbol      **symarray;
-    symbol      **currsym;
-    symbol      *sym;
-    bool        ok;
-
-    if( (MapFlags & MAP_GLOBAL) && ( NumMapSyms > 0 ) ) {
-        symarray = NULL;
-        if( NumMapSyms < ( UINT_MAX / sizeof( symbol * ) ) - 1 ) {
-            _LnkAlloc( symarray, NumMapSyms * sizeof( symbol * ) );
-        }
-        currsym = symarray;
-        ok = symarray != NULL;
-        for( sym = HeadSym; sym != NULL; sym = sym->link ) {
-            if( sym->info & SYM_MAP_GLOBAL ) {
-                sym->info &= ~SYM_MAP_GLOBAL;
-                if( ok ) {
-                    *currsym = sym;
-                    currsym++;
-                } else {
-                    XReportSymAddr( sym );
-                }
-            }
-        }
-        if( !ok ) {
-            LnkMsg( WRN+MSG_CANT_SORT_SYMBOLS, NULL );
-        } else {
-            WriteSymArray( symarray, NumMapSyms );
-            _LnkFree( symarray );
-        }
-    }
-}
-
 
 static bool DefPubSym( void *_pub, void *_info )
 /**********************************************/
@@ -741,27 +650,11 @@ static bool DefPubSym( void *_pub, void *_info )
             DBIGenGlobal( sym, info->sect );
         }
     }
-    if( (MapFlags & MAP_FLAG) && !SkipSymbol( sym ) ) {
-        if( info->first && (MapFlags & MAP_GLOBAL) == 0 ) {
-            WritePubModHead();
-            info->first = false;
-        }
-        if( MapFlags & MAP_SORT ) {
-            if( MapFlags & MAP_GLOBAL ) {
-                NumMapSyms++;
-                sym->info |= SYM_MAP_GLOBAL;
-            } else {
-                info->symarray[info->num] = sym;
-                info->num++;
-            }
-        } else {
-            XReportSymAddr( sym );
-        }
-    }
+    WriteMapPubEntry( info, sym );
     return( false );
 }
 
-void DoPubs( section *sect )
+void DoPubsSect( section *sect )
 /*********************************/
 /* Process public definitions for an object file. */
 {
@@ -771,23 +664,12 @@ void DoPubs( section *sect )
         && (CurrMod->modinfo & MOD_IMPORT_LIB) == 0 ) {
         DBIAddModule( CurrMod, sect );
     }
-    info.symarray = NULL;
-    if( (MapFlags & MAP_SORT)
-        && (MapFlags & MAP_GLOBAL) == 0
-        && ( CurrMod->publist != NULL ) ) {
-        _ChkAlloc( info.symarray,
-                        Ring2Count( CurrMod->publist ) * sizeof( symbol * ) );
-    }
     info.num = 0;
     info.first = true;
     info.sect = sect;
+    WriteMapPubSortStart( &info );
     Ring2Lookup( CurrMod->publist, DefPubSym, &info );
-    if( info.num > 0 ) {
-        WriteSymArray( info.symarray, info.num );
-    }
-    if( info.symarray != NULL ) {
-        _LnkFree( info.symarray );
-    }
+    WriteMapPubSortEnd( &info );
 }
 
 static void SetReadOnly( void *_seg )

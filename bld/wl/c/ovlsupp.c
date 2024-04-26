@@ -133,11 +133,11 @@ static void WriteVectors( void )
 
     WriteMapNL();
     WriteMapNL();
-    XReportSymAddr( OverlayTable );
-    XReportSymAddr( OverlayTableEnd );
-    XReportSymAddr( OvlVecStart );
-    XReportSymAddr( OvlVecEnd );
-    WriteOvlHead();
+    WriteMapSymAddr( OverlayTable );
+    WriteMapSymAddr( OverlayTableEnd );
+    WriteMapSymAddr( OvlVecStart );
+    WriteMapSymAddr( OvlVecEnd );
+    WriteMapOvlHead();
     n = 0;
     for( vectnode = OvlVectors; vectnode != NULL; vectnode = vectnode->next ) {
         OvlGetVecAddr( ++n, &addr );
@@ -150,25 +150,25 @@ static void WriteVectors( void )
 static void DoSecPubs( section *sec )
 /***********************************/
 {
+    WriteMapPubStart();
     WriteMapNL();
     WriteMapNL();
     WriteMap( "Overlay section %d address %a", sec->ovlref, &sec->sect_addr );
     WriteMap( "====================================" );
-    WriteSegs( sec );
-    StartMapSort();
+    WriteMapSegs( sec );
     if( MapFlags & MAP_FLAG ) {
         WritePubHead();
     }
-    ProcPubs( sec->mods, sec );
+    ProcPubsSect( sec->mods, sec );
     OvlProcPubsSect( sec );
-    FinishMapSort();
+    WriteMapPubEnd();
 }
 
 void OvlProcPubsSect( section *sec )
 /**********************************/
 {
     for( CurrMod = sec->u.dist_mods; CurrMod != NULL; CurrMod = CurrMod->x.next ) {
-        DoPubs( sec );
+        DoPubsSect( sec );
     }
 }
 

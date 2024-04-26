@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -251,8 +251,6 @@ extern symbol           *SymOp( sym_flags, const char *, size_t );
 extern void             ReportMultiple( symbol *, const char *, size_t );
 extern void             ReportUndefined( void );
 extern void             WriteCommunals( void );
-extern void             XReportSymAddr( symbol * );
-extern void             XWriteImports( void );
 extern symbol           *AddAltDef( symbol *, sym_info );
 extern symbol           *HashReplace( symbol * );
 extern void             PurgeSymbols( void );

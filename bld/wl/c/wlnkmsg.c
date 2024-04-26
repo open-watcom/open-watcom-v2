@@ -90,9 +90,9 @@ bool InitMsg( void )
     return( false );
 }
 
-bool Msg_Get( int resourceid, char *buffer )
+bool Msg_Get( int msgid, char *buffer )
 {
-    if( hInstance.status == 0 || WResLoadString( &hInstance, resourceid + MsgShift, (lpstr)buffer, RESOURCE_MAX_SIZE ) <= 0 ) {
+    if( hInstance.status == 0 || WResLoadString( &hInstance, msgid + MsgShift, (lpstr)buffer, RESOURCE_MAX_SIZE ) <= 0 ) {
         buffer[0] = '\0';
         return( false );
     }
