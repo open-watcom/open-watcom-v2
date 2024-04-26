@@ -31,26 +31,23 @@
 ****************************************************************************/
 
 
+extern void     ResetWriteMapIO( void );
 extern void     MapInit( void );
 extern void     MapFini( void );
 extern void     StartTime( void );
 extern void     EndTime( void );
-extern void     ResetWriteMapIO( void );
 extern void     WriteMapHead( section * );
-extern void     WriteMapOvlHead( symbol *, symbol *, symbol *, symbol * );
 extern void     WriteMapOvlPubHead( section *sec );
+extern void     WriteMapOvlVectHead( vect_state *VectState );
 extern void     WriteMapModulesSegments( void );
+extern void     WriteMapLibsUsed( void );
+extern void     WriteMapLnkMsg( const char *s1, size_t l1, const char *s2, size_t l2 );
 extern void     RecordUndefinedSym( symbol * );
 extern void     RecordTracedSym( symbol * );
 extern void     PrintUndefinedSyms( void );
 extern void     PrintTracedSyms( void );
 extern void     FreeUndefinedSyms( void );
 extern void     FreeTracedSyms( void );
-extern void     WriteMapLibsUsed( void );
-extern void     WriteMapSizes( void );
-extern void     WriteMap( const char *, size_t );
-extern void     WriteMapNL( void );
-extern void     WriteMapPrintf( const char *, ... );
 extern void     WriteMapPubStart( void );
 extern void     WriteMapPubEnd( void );
 extern void     WriteMapPubSortStart( pubdefinfo *info );

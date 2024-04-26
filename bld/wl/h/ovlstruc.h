@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,6 +37,14 @@ typedef struct vecnode {
     struct vecnode  *next;
     symbol          *sym;
 } vecnode;
+
+typedef struct vect_state {
+    symbol          *OverlayTable;      /* symbol entry for overlay table */
+    symbol          *OverlayTableEnd;   /* symbol entry for overlay table */
+    symbol          *OvlVecStart;       /* symbol entry for overlay vector start */
+    symbol          *OvlVecEnd;         /* symbol entry for overlay vector end */
+    vecnode         *OvlVectors;        /* point to overlay vector nodes */
+} vect_state;
 
 /*----------------------------------------------------------------------*/
 

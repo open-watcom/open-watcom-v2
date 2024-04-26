@@ -187,7 +187,8 @@ static size_t fmtAddr( char *dest, size_t len, targ_addr *addr, bool offs_32 )
     }
 #endif
     /* segmented formats 16:16 or 16:32 */
-    if( !offs_32 && (FmtData.type & (MK_DOS | MK_OS2_NE | MK_WIN_NE | MK_DOS16M | MK_QNX_16 | MK_RDOS_16)) ) {
+    if( !offs_32
+      && (FmtData.type & (MK_DOS | MK_OS2_NE | MK_WIN_NE | MK_DOS16M | MK_QNX_16 | MK_RDOS_16)) ) {
         return( FmtStr( dest, len, "%x:%x", addr->seg, (unsigned short)addr->off ) );
     } else {
         return( FmtStr( dest, len, "%x:%h", addr->seg, addr->off ) );
@@ -226,7 +227,8 @@ size_t DoFmtStr( char *buff, size_t len, const char *src, va_list args )
     dest = buff;
     for( ;; ) {
         ch = *src++;
-        if( ch == '\0' || len == 1 )
+        if( ch == '\0'
+          || len == 1 )
             break;
         if( ch != '%' ) {
             *dest++ = ch;
@@ -456,18 +458,17 @@ static void MessageFini( unsigned num, char *buff, size_t len )
             WriteStdOutInfo( buff, num, CurrSymName );
         }
     }
-    if( num & OUT_MAP ) {
-        if( (MapFlags & MAP_FLAG) && (MapFile != NIL_FHANDLE) ) {
-            msgprefixlen = GetMsgPrefix( msgprefix, MAX_MSG_SIZE, num );
-            WriteMap( msgprefix, msgprefixlen );
-            WriteMap( buff, len );
-            WriteMapNL();
-        }
+    if( (num & OUT_MAP)
+      && (MapFlags & MAP_FLAG)
+      && ( MapFile != NIL_FHANDLE ) ) {
+        msgprefixlen = GetMsgPrefix( msgprefix, MAX_MSG_SIZE, num );
+        WriteMapLnkMsg( msgprefix, msgprefixlen, buff, len );
     }
     if( class == (FTL & CLASS_MSK) )
         Suicide();
     /* yells are counted as errors for limits */
-    if(( class == (YELL & CLASS_MSK) ) || ( class >= (MILD_ERR & CLASS_MSK) )) {
+    if( ( class == (YELL & CLASS_MSK) )
+      || ( class >= (MILD_ERR & CLASS_MSK) ) ) {
         if( LinkFlags & LF_MAX_ERRORS_FLAG ) {
             MaxErrors--;
             if( MaxErrors == 0 ) {
@@ -549,7 +550,8 @@ void LnkMsg(
         FileOrder( rc_buff, which_file );
         len += FmtStr( buff + len, MAX_MSG_SIZE - len, rc_buff );
         if( num & LINE ) {
-            if( Token.how != SYSTEM && Token.how != ENVIRONMENT ) {
+            if( Token.how != SYSTEM
+              && Token.how != ENVIRONMENT ) {
                 Msg_Get( MSG_LINE, rc_buff );
                 Msg_Do_Put_Args( rc_buff, &MsgArgInfo, "d", Token.line );
                 len += FmtStr( buff + len, MAX_MSG_SIZE - len, rc_buff );
@@ -633,7 +635,8 @@ bool SkipSymbol( symbol * sym )
 {
     mangled_type art;
 
-    if( (sym->info & SYM_STATIC) && (MapFlags & MAP_STATICS) == 0 )
+    if( (sym->info & SYM_STATIC)
+      && (MapFlags & MAP_STATICS) == 0 )
         return( true );
     art = __is_mangled_internal( sym->name.u.ptr, strlen( sym->name.u.ptr ) );
     return( (MapFlags & MAP_ARTIFICIAL) == 0 && art == __MANGLED_INTERNAL );

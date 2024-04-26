@@ -115,8 +115,8 @@ static char *PutDec( char *ptr, unsigned num )
     return( ptr );
 }
 
-void WriteMap( const char *buffer, size_t len )
-/**********************************************
+static void WriteMap( const char *buffer, size_t len )
+/*****************************************************
  * buffering the write to the map file
  */
 {
@@ -136,8 +136,8 @@ void WriteMap( const char *buffer, size_t len )
     }
 }
 
-void WriteMapNL( void )
-/*********************/
+static void WriteMapNL( void )
+/****************************/
 {
     WriteMap( NLSeq, strlen( NLSeq ) );
     MapCol = 0;
@@ -175,6 +175,20 @@ static void WriteMapMsg( int msgid )
 
     Msg_Get( msgid, buff );
     WriteMap( buff, strlen( buff ) );
+    WriteMapNL();
+}
+
+static void WriteMapPrintf( const char *format, ... )
+/***************************************************/
+{
+    va_list     args;
+    char        buff[MAX_MSG_SIZE];
+    size_t      len;
+
+    va_start( args, format );
+    len = DoFmtStr( buff, sizeof( buff ), format, args );
+    va_end( args );
+    WriteMap( buff, len );
     WriteMapNL();
 }
 
@@ -424,17 +438,40 @@ static void WriteMapSymAddr( symbol *sym )
     WriteMapNL();
 }
 
-void WriteMapOvlHead( symbol *OverlayTable, symbol *OverlayTableEnd, symbol *OvlVecStart, symbol *OvlVecEnd )
-/***********************************************************************************************************/
+void WriteMapLnkMsg( const char *s1, size_t l1, const char *s2, size_t l2 )
+/**********************************************
+ * buffering the write to the map file
+ */
 {
+    WriteMap( s1, l1 );
+    WriteMap( s2, l2 );
     WriteMapNL();
-    WriteMapNL();
-    WriteMapSymAddr( OverlayTable );
-    WriteMapSymAddr( OverlayTableEnd );
-    WriteMapSymAddr( OvlVecStart );
-    WriteMapSymAddr( OvlVecEnd );
-    WriteMapBox( MSG_MAP_BOX_OVERLAY_VECTOR );
 }
+
+void WriteMapOvlVectHead( vect_state *VectState )
+/***********************************************/
+{
+    vecnode             *vectnode;
+    int                 n;
+    targ_addr           addr;
+    symbol              *sym;
+
+    WriteMapNL();
+    WriteMapNL();
+    WriteMapSymAddr( VectState->OverlayTable );
+    WriteMapSymAddr( VectState->OverlayTableEnd );
+    WriteMapSymAddr( VectState->OvlVecStart );
+    WriteMapSymAddr( VectState->OvlVecEnd );
+    WriteMapBox( MSG_MAP_BOX_OVERLAY_VECTOR );
+    n = 1;
+    for( vectnode = VectState->OvlVectors; vectnode != NULL; vectnode = vectnode->next ) {
+        OvlGetVecAddr( n++, &addr );
+        sym = vectnode->sym;
+        WriteMapPrintf( "%a section %d : %S",
+            &addr, sym->p.seg->u.leader->class->section->ovlref, sym );
+    }
+}
+
 
 void WriteMapOvlPubHead( section *sec )
 /*************************************/
@@ -504,8 +541,9 @@ static void WriteMapImportsHead( void )
 }
 
 static void WriteMapSegment( void *_seg )
-/***************************************/
-// NYI: completely broken for absolute segments
+/****************************************
+ * NYI: completely broken for absolute segments
+ */
 {
     segdata     *seg = _seg;
     char        star;
@@ -1009,8 +1047,8 @@ static const char *getStubName( void )
     return( NULL );
 }
 
-void WriteMapSizes( void )
-/*************************
+static void WriteMapSizes( void )
+/********************************
  * Write out code size to map file and print libraries used.
  */
 {
@@ -1043,20 +1081,6 @@ void WriteMapSizes( void )
     }
 }
 
-void WriteMapPrintf( const char *format, ... )
-/********************************************/
-{
-    va_list     args;
-    char        buff[MAX_MSG_SIZE];
-    size_t      len;
-
-    va_start( args, format );
-    len = DoFmtStr( buff, sizeof( buff ), format, args );
-    va_end( args );
-    WriteMap( buff, len );
-    WriteMapNL();
-}
-
 void StartTime( void )
 /********************/
 {
@@ -1067,37 +1091,7 @@ void StartTime( void )
 void EndTime( void )
 /******************/
 {
-    char        *ptr;
-    signed_16   h;
-    signed_16   m;
-    signed_16   s;
-    signed_16   t;
-    char        tim[11 + 1];
-
-    if( MapFlags & MAP_FLAG ) {
-
-        ClockTicks = clock() - ClockTicks;
-        t = (unsigned_16)( ClockTicks % CLOCKS_PER_SEC );
-        ClockTicks /= CLOCKS_PER_SEC;
-        s = (unsigned_16)( ClockTicks % 60 );
-        ClockTicks /= 60;
-        m = (unsigned_16)( ClockTicks % 60 );
-        ClockTicks /= 60;
-        h = (unsigned_16)ClockTicks;
-
-        ptr = tim;
-        if( h > 0 ) {
-            ptr = PutDec( ptr, h );
-            *ptr++ = ':';
-        }
-        ptr = PutDec( ptr, m );
-        *ptr++ = ':';
-        ptr = PutDec( ptr, s );
-        *ptr++ = '.';
-        ptr = PutDec( ptr, t );
-        *ptr = '\0';
-        WriteMapMsgPrintf( MSG_MAP_LINK_TIME, tim );
-    }
+    ClockTicks = clock() - ClockTicks;
 }
 
 void MapInit( void )
@@ -1143,10 +1137,42 @@ void MapFini( void )
  * Finish map processing
  */
 {
+    char        *ptr;
+    signed_16   h;
+    signed_16   m;
+    signed_16   s;
+    signed_16   t;
+    char        tim[11 + 1];
+
     if( MapFlags & MAP_FLAG ) {
+
+        WriteMapSizes();
+
+        t = (unsigned_16)( ClockTicks % CLOCKS_PER_SEC );
+        ClockTicks /= CLOCKS_PER_SEC;
+        s = (unsigned_16)( ClockTicks % 60 );
+        ClockTicks /= 60;
+        m = (unsigned_16)( ClockTicks % 60 );
+        ClockTicks /= 60;
+        h = (unsigned_16)ClockTicks;
+
+        ptr = tim;
+        if( h > 0 ) {
+            ptr = PutDec( ptr, h );
+            *ptr++ = ':';
+        }
+        ptr = PutDec( ptr, m );
+        *ptr++ = ':';
+        ptr = PutDec( ptr, s );
+        *ptr++ = '.';
+        ptr = PutDec( ptr, t );
+        *ptr = '\0';
+        WriteMapMsgPrintf( MSG_MAP_LINK_TIME, tim );
+
         if( MapFlags & MAP_LINES ) {
             WriteMapLines();
         }
+
         if( MapBufferSize > 0 ) {
             QWrite( MapFile, MapBuffer, MapBufferSize, MapFName );
             MapBufferSize = 0;
