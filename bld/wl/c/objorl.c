@@ -458,7 +458,7 @@ static orl_return DeclareSegment( orl_sec_handle sec )
     segdata                 *sdata;
     segnode                 *snode;
     const char              *name;
-    unsigned_32 _WCUNALIGNED *contents;
+    unsigned char           *contents;
     size_t                  len;
     orl_sec_flags           flags;
     orl_sec_type            type;
@@ -491,8 +491,18 @@ static orl_return DeclareSegment( orl_sec_handle sec )
             /*
              * .idata$4 it is an import by ordinal
              */
-            ORLSecGetContents( sec, (void *)&contents );
-            ImpOrdinal = *contents;
+            ORLSecGetContents( sec, &contents );
+            if( flags & ORL_SEC_FLAG_USE_64 ) {
+                uint_64 val;
+
+                memcpy( &val, contents, sizeof( val ) );
+                ImpOrdinal = (ordinal_t)val;
+            } else {
+                uint_32 val;
+
+                memcpy( &val, contents, sizeof( val ) );
+                ImpOrdinal = (ordinal_t)val;
+            }
         }
         sdata->isdead = true;
         sdata->isidata = true;
