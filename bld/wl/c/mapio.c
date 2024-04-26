@@ -83,6 +83,11 @@ typedef struct symrecinfo {
     mod_entry           *mod;
 } symrecinfo;
 
+typedef struct {
+    unsigned    idx;
+    seg_leader  *seg;
+} seg_info;
+
 static symrecinfo       *UndefList;
 static symrecinfo       *SymTraceList;
 static size_t           MapCol;
@@ -132,6 +137,7 @@ void WriteMap( const char *buffer, size_t len )
 }
 
 void WriteMapNL( void )
+/*********************/
 {
     WriteMap( NLSeq, strlen( NLSeq ) );
     MapCol = 0;
@@ -147,6 +153,7 @@ static void WriteMapString( const char *buffer, bool nl )
 }
 
 static void WriteMapMsgPrintf( int msgid, ... )
+/*********************************************/
 {
     char        format[RESOURCE_MAX_SIZE];
     va_list     args;
@@ -162,6 +169,7 @@ static void WriteMapMsgPrintf( int msgid, ... )
 }
 
 static void WriteMapMsg( int msgid )
+/**********************************/
 {
     char        buff[RESOURCE_MAX_SIZE];
 
@@ -182,9 +190,9 @@ static void WriteMapBox( int msgid )
     WriteMapNL();
     box_buff[0] = '+';
     for( i = 2; i < strlen( msg_buff ); i++ ) {
-        box_buff[i-1] = '-';
+        box_buff[i - 1] = '-';
     }
-    box_buff[i-1] = '+';
+    box_buff[i - 1] = '+';
     box_buff[i] = '\0';
     WriteMapPrintf( "%t24%s", "", box_buff );
     WriteMapPrintf( "%t24%s", "", msg_buff );
@@ -246,7 +254,8 @@ static void WriteMapAbsSeg( void *_leader )
     if( leader->info & SEG_ABSOLUTE ) {
         WriteMapColPrintf( 0, "%s", leader->segname );
         WriteMapColPrintf( 24, "%s", leader->class->name );
-        if( (FmtData.type & MK_16BIT) && (leader->info & USE_32) ) {
+        if( (FmtData.type & MK_16BIT)
+          && (leader->info & USE_32) ) {
             WriteMapColPrintf( 40, "%A", &leader->seg_addr );
         } else {
             WriteMapColPrintf( 40, "%a", &leader->seg_addr );
@@ -269,7 +278,8 @@ static void WriteMapNonAbsSeg( void *_seg )
         if( seg->group != NULL ) {
             WriteMapColPrintf( 38, "%s", seg->group->sym->name );
         }
-        if( (FmtData.type & MK_16BIT) && (seg->info & USE_32) ) {
+        if( (FmtData.type & MK_16BIT)
+          && (seg->info & USE_32) ) {
             WriteMapColPrintf( 53, "%A", &seg->seg_addr );
         } else {
             WriteMapColPrintf( 53, "%a", &seg->seg_addr );
@@ -278,11 +288,6 @@ static void WriteMapNonAbsSeg( void *_seg )
         WriteMapNL();
     }
 }
-
-typedef struct {
-    unsigned    idx;
-    seg_leader  *seg;
-} seg_info;
 
 static int cmp_seg( const void *a, const void *b )
 /************************************************/
@@ -387,7 +392,9 @@ static void WriteMapSym( symbol * sym, char star )
     if( sym->info & SYM_STATIC ) {
         star = 's';
     }
-    if( (FmtData.type & MK_16BIT) && ( sym->p.seg != NULL ) && ( sym->p.seg->bits == BITS_32 ) ) {
+    if( (FmtData.type & MK_16BIT)
+      && ( sym->p.seg != NULL )
+      && ( sym->p.seg->bits == BITS_32 ) ) {
         WriteMapColPrintf( 0, "%A%c", &sym->addr, star );
     } else {
         WriteMapColPrintf( 0, "%a%c", &sym->addr, star );
@@ -401,7 +408,9 @@ static void WriteMapSymAddr( symbol *sym )
     char                star;
 
     if( sym->info & SYM_REFERENCED ) {
-        if( IS_SYM_IMPORTED( sym ) || ((FmtData.type & MK_ELF) && IsSymElfImported( sym )) ) {
+        if( IS_SYM_IMPORTED( sym )
+          || ((FmtData.type & MK_ELF)
+          && IsSymElfImported( sym )) ) {
             star = 'i';
         } else {
             star = ' ';
@@ -459,9 +468,12 @@ static void WriteMapImports( void )
     symbol *    sym;
 
     for( sym = HeadSym; sym != NULL; sym = sym->link ) {
-        if( IS_SYM_IMPORTED( sym ) && sym->p.import != NULL ) {
-            if( (FmtData.type & MK_NOVELL) == 0 || sym->p.import != DUMMY_IMPORT_PTR ) {
-                if( sym->prefix != NULL && ( strlen( sym->prefix ) > 0 ) ) {
+        if( IS_SYM_IMPORTED( sym )
+          && sym->p.import != NULL ) {
+            if( (FmtData.type & MK_NOVELL) == 0
+              || sym->p.import != DUMMY_IMPORT_PTR ) {
+                if( sym->prefix != NULL
+                  && ( sym->prefix[0] != '\0' ) ) {
                     WriteMapColPrintf( 0, "%s@%s", sym->prefix, sym->name );
                 } else {
                     WriteMapColPrintf( 0, "%s", sym->name );
@@ -509,21 +521,9 @@ static void WriteMapSegment( void *_seg )
         return;
     WriteMapColPrintf( 16, "%s", leader->segname );
     WriteMapColPrintf( 38, "%s", leader->class->name );
-    if( leader->info & SEG_ABSOLUTE ) {
-        star = '*';
-    } else {
-        star = ' ';
-    }
-    if( seg->bits == BITS_32 ) {
-        bang = '!';
-    } else {
-        bang = ' ';
-    }
-    if( seg->iscdat ) {
-        see = 'c';
-    } else {
-        see = ' ';
-    }
+    star = ( leader->info & SEG_ABSOLUTE ) ? '*' : ' ';
+    bang = ( seg->bits == BITS_32 ) ? '!' : ' ';
+    see = ( seg->iscdat ) ? 'c' : ' ';
     addr = leader->seg_addr;
     addr.off += seg->a.delta;
     if( (FmtData.type & MK_16BIT) && ( seg->bits == BITS_32 ) ) {
@@ -535,8 +535,8 @@ static void WriteMapSegment( void *_seg )
     WriteMapNL();
 }
 
-static void WriteMapModule( mod_entry *mod )
-/******************************************/
+static void WriteMapModuleSegments( mod_entry *mod )
+/**************************************************/
 {
     if( (mod->modinfo & MOD_NEED_PASS_2) && mod->segs != NULL ) {
         WriteMapColPrintf( 0, "%s", mod->name.u.ptr );
@@ -550,10 +550,11 @@ void WriteMapModulesSegments( void )
 /**********************************/
 {
     WriteMapModulesSegmentsHead();
-    WalkMods( WriteMapModule );
+    WalkMods( WriteMapModuleSegments );
 }
 
-static void init_state( line_state_info *state, bool default_is_stmt )
+static void InitDwarfVMState( line_state_info *state, bool default_is_stmt )
+/**************************************************************************/
 {
     state->address = 0;
     state->segment = 0;
@@ -565,7 +566,8 @@ static void init_state( line_state_info *state, bool default_is_stmt )
     state->end_sequence = false;
 }
 
-static void dump_state( line_state_info *state )
+static void DumpDwarfVMState( line_state_info *state )
+/****************************************************/
 {
     char        str[40];
     const char  *fmt;
@@ -594,6 +596,7 @@ static void dump_state( line_state_info *state )
 }
 
 static unsigned_8 *DecodeULEB128( const unsigned_8 *input, unsigned_32 *value )
+/*****************************************************************************/
 {
     unsigned_32     result;
     unsigned        shift;
@@ -613,6 +616,7 @@ static unsigned_8 *DecodeULEB128( const unsigned_8 *input, unsigned_32 *value )
 }
 
 static unsigned_8 *DecodeSLEB128( const unsigned_8 *input, signed_32 *value )
+/***************************************************************************/
 {
     signed_32       result;
     unsigned        shift;
@@ -628,7 +632,8 @@ static unsigned_8 *DecodeSLEB128( const unsigned_8 *input, signed_32 *value )
             break;
         }
     }
-    if( ( shift < 32 ) && (byte & 0x40) ) {
+    if( ( shift < 32 )
+      && (byte & 0x40) ) {
         result |= - ( 1 << shift );
     }
     *value = result;
@@ -636,6 +641,7 @@ static unsigned_8 *DecodeSLEB128( const unsigned_8 *input, signed_32 *value )
 }
 
 static unsigned_8 *SkipLEB128( const unsigned_8 *input )
+/******************************************************/
 {
     unsigned_8      byte;
 
@@ -646,6 +652,7 @@ static unsigned_8 *SkipLEB128( const unsigned_8 *input )
 }
 
 static void WriteMapLines( void )
+/*******************************/
 {
     unsigned_8                  *input;
     virt_mem                    input_vm;
@@ -671,7 +678,8 @@ static void WriteMapLines( void )
     dw_lns                      value_lns;
 
     input_vm = DwarfGetLineInfo( &length );
-    if( input_vm == 0 || length == 0 )
+    if( input_vm == 0
+      || length == 0 )
        return;
 
     _ChkAlloc( input, length );
@@ -738,7 +746,7 @@ static void WriteMapLines( void )
         }
 
         p++;
-        init_state( &state, default_is_stmt );
+        InitDwarfVMState( &state, default_is_stmt );
         while( p - unit_base < unit_length ) {
             value_lns = *p++;
             if( value_lns == 0 ) {
@@ -748,7 +756,7 @@ static void WriteMapLines( void )
                 switch( value_lne ) {
                 case DW_LNE_end_sequence:
                     state.end_sequence = true;
-                    init_state( &state, default_is_stmt );
+                    InitDwarfVMState( &state, default_is_stmt );
                     p += op_len;
                     break;
                 case DW_LNE_set_address:
@@ -792,7 +800,7 @@ static void WriteMapLines( void )
             } else if( value_lns < opcode_base ) {
                 switch( value_lns ) {
                 case DW_LNS_copy:
-                    dump_state( &state );
+                    DumpDwarfVMState( &state );
                     state.basic_block = false;
                     break;
                 case DW_LNS_advance_pc:
@@ -835,7 +843,7 @@ static void WriteMapLines( void )
                 value = value_lns - opcode_base;
                 state.line += line_base + ( value % line_range );
                 state.address += ( value / line_range ) * min_instr;
-                dump_state( &state );
+                DumpDwarfVMState( &state );
                 state.basic_block = false;
             }
         }
@@ -1020,11 +1028,13 @@ void WriteMapSizes( void )
     WriteMapSize( MSG_MAP_STACK_SIZE, StackSize );
     WriteMapSize( MSG_MAP_MEM_SIZE, MemorySize() );
 #ifdef _EXE
-    if( (FmtData.type & MK_OVERLAYS) && FmtData.u.dos.dynamic ) {
+    if( (FmtData.type & MK_OVERLAYS)
+      && FmtData.u.dos.dynamic ) {
         WriteMapSize( MSG_MAP_OVL_SIZE, (unsigned long)OvlAreaSize * 16 );
     }
 #endif
-    if( (FmtData.type & MK_NOVELL) == 0 && ( !FmtData.dll || (FmtData.type & MK_PE) ) ) {
+    if( (FmtData.type & MK_NOVELL) == 0
+      && ( !FmtData.dll || (FmtData.type & MK_PE) ) ) {
         WriteMapMsgPrintf( MSG_MAP_ENTRY_PT_ADDR, &StartInfo.addr );
     }
     stubname = getStubName();
@@ -1202,7 +1212,8 @@ void WriteMapPubEnd( void )
     bool        ok;
 
     if( MapFlags & MAP_FLAG ) {
-        if( (MapFlags & MAP_GLOBAL) && ( NumMapSyms > 0 ) ) {
+        if( (MapFlags & MAP_GLOBAL)
+          && ( NumMapSyms > 0 ) ) {
             symarray = NULL;
             if( NumMapSyms < ( UINT_MAX / sizeof( symbol * ) ) - 1 ) {
                 _LnkAlloc( symarray, NumMapSyms * sizeof( symbol * ) );
@@ -1236,8 +1247,8 @@ void WriteMapPubSortStart( pubdefinfo *info )
     info->symarray = NULL;
     if( MapFlags & MAP_FLAG ) {
         if( (MapFlags & MAP_SORT)
-            && (MapFlags & MAP_GLOBAL) == 0
-            && ( CurrMod->publist != NULL ) ) {
+          && (MapFlags & MAP_GLOBAL) == 0
+          && ( CurrMod->publist != NULL ) ) {
             _ChkAlloc( info->symarray, Ring2Count( CurrMod->publist ) * sizeof( symbol * ) );
         }
     }
@@ -1258,6 +1269,7 @@ void WriteMapPubSortEnd( pubdefinfo *info )
 }
 
 void WriteMapPubEntry( pubdefinfo *info, symbol *sym )
+/****************************************************/
 {
     if( MapFlags & MAP_FLAG ) {
         if( !SkipSymbol( sym ) ) {
