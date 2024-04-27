@@ -78,7 +78,7 @@ STATIC const char * const directives[] = {   /* table must be lexically sorted *
  * EOL at the start of a line...
  * This is a slight optimization for the critical code in PreGetCHR().
  */
-STATIC char     atStartOfLine;  
+STATIC char     atStartOfLine;
 STATIC STRM_T   lastChar;
 STATIC bool     doingPreProc;   /* are we doing some preprocessing? */
 /*
@@ -757,34 +757,27 @@ STATIC void bangLoadDLL( void )
         FreeSafe( text );
         return;
     }
-    p = CmdGetFileName( p, &cmd_name, true );
+    /*
+     * command name is case-sensitive
+     */
+    p = SkipWS( CmdGetFileName( p, &cmd_name, false ) );
     if( *p == NULLCHAR ) {
         FreeSafe( text );
         return;
     }
-    p = SkipWS( p );
-    if( *p == NULLCHAR ) {
-        FreeSafe( text );
-        return;
-    }
-    p = CmdGetFileName( p, &dll_name, true );
-    if( *p == NULLCHAR ) {
-        OSLoadDLL( cmd_name, dll_name, NULL );
-        FreeSafe( text );
-        return;
-    }
-    ent_name = SkipWS( p );
+    /*
+     * DLL name is OS case-sensitive
+     */
+    ent_name = SkipWS( CmdGetFileName( p, &dll_name, true ) );
     if( *ent_name == NULLCHAR ) {
         OSLoadDLL( cmd_name, dll_name, NULL );
         FreeSafe( text );
         return;
     }
+    /*
+     * entry name is case-sensitive
+     */
     p = skipUntilWS( ent_name );
-    if( *p == NULLCHAR ) {
-        OSLoadDLL( cmd_name, dll_name, ent_name );
-        FreeSafe( text );
-        return;
-    }
     *p = NULLCHAR;
     OSLoadDLL( cmd_name, dll_name, ent_name );
     FreeSafe( text );
@@ -1141,7 +1134,7 @@ STRM_T PreGetCHR( void )
             }
             return( s );
         }
-        
+
         if( Glob.compat_nmake
           && s == MS_LINECONT_C ) {
             s = GetCHR();
@@ -1672,7 +1665,7 @@ STATIC void nextToken( void )
         /*
          * no more tokens
          */
-        currentToken.type = OP_ERROR;  
+        currentToken.type = OP_ERROR;
     }
 }
 

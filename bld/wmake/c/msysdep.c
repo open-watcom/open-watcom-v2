@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -286,7 +286,7 @@ DLL_CMD *OSFindDLL( char const *cmd_name )
     DLL_CMD     *n;
 
     for( n = dllCommandList; n != NULL; n = n->next ) {
-        if( 0 == stricmp( cmd_name, n->cmd_name ) ) {
+        if( 0 == strcmp( cmd_name, n->cmd_name ) ) {
             break;
         }
     }
@@ -338,10 +338,9 @@ STATIC void cleanDLLCmd( void )
 {
 #ifdef DLLS_IMPLEMENTED
     DLL_CMD     *n;
-    DLL_CMD     *temp;
 
-    n  = dllCommandList;
-    while( n != NULL ) {
+    while( (n = dllCommandList) != NULL ) {
+        dllCommandList = n->next;
         FreeSafe( (char *)n->cmd_name );
         if( n->inf.dll_name != NULL ) {
             FreeSafe( (char*) n->inf.dll_name );
@@ -349,9 +348,7 @@ STATIC void cleanDLLCmd( void )
         if( n->inf.ent_name != NULL ) {
             FreeSafe( (char *)n->inf.ent_name );
         }
-        temp = n;
-        n = n->next;
-        FreeSafe( temp );
+        FreeSafe( n );
     }
 #endif
 }
