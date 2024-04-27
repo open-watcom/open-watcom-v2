@@ -25,27 +25,58 @@
 *
 *  ========================================================================
 *
-* Description:  Varoius environment checks for the DOS debugger.
+* Description:  DOSEMU check for the DOS.
 *
 ****************************************************************************/
 
 
-extern byte EnhancedWinCheck( void );
-#pragma aux EnhancedWinCheck = \
-        "mov  ax,1600h" \
-        "int 2fh"       \
-    __parm      [] \
-    __value     [__al] \
-    __modify    [__ah]
+#include "realmod.h"
 
-extern unsigned DPMIVersion( void );
-#pragma aux DPMIVersion = \
-        "mov  ax,1687h" \
-        "int 2fh"       \
-        "test ax,ax"    \
-        "je short L1"   \
-        "xor  dx,dx"    \
-    "L1:"               \
+
+/*
+ * check text "$DOSEMU$" at 0xF000:0xFFE0
+ */
+extern int DOSEMUCheck( void );
+#ifdef _M_I86
+#pragma aux DOSEMUCheck = \
+        "push ds"           \
+        "mov  ax,0f000h"    \
+        "mov  ds,ax"        \
+        "mov  si,0ffe0h"    \
+        "lodsw"             \
+        "cmp  ax,'D$'"      \
+        "jne short L1"      \
+        "lodsw"             \
+        "cmp  ax,'SO'"      \
+        "jne short L1"      \
+        "lodsw"             \
+        "cmp  ax,'ME'"      \
+        "jne short L1"      \
+        "lodsw"             \
+        "cmp  ax,'$U'"      \
+    "L1: mov  ax,0"         \
+        "jne short L2"      \
+        "inc  ax"           \
+    "L2: pop  ds"           \
     __parm      [] \
-    __value     [__dx] \
-    __modify    [__ax __bx __cx __dx __si __es __di]
+    __value     [__ax] \
+    __modify    [__si]
+#else
+#pragma aux DOSEMUCheck = \
+        "push ds"           \
+        "mov  ax,_ExtenderRealModeSelector" \
+        "mov  ds,eax"       \
+        "mov  esi,0fffe0h"  \
+        "lodsd"             \
+        "cmp  eax,'SOD$'"   \
+        "jne short L1"      \
+        "lodsd"             \
+        "cmp  eax,'$UME'"   \
+    "L1: mov  eax,0"        \
+        "jne short L2"      \
+        "inc  eax"          \
+    "L2: pop  ds"           \
+    __parm      [] \
+    __value     [__eax] \
+    __modify    [__esi]
+#endif

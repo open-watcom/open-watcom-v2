@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -56,6 +56,7 @@
 #include "dbgpsp.h"
 #include "dospath.h"
 #include "drset.h"
+#include "dosemu.h"
 
 
 #define GET_LINEAR(s,o) (((dword)(s) << 4) + (o))
@@ -680,7 +681,8 @@ trap_retval TRAP_CORE( Prog_load )( void )
     TaskRegs.DS = psp;
     TaskRegs.ES = psp;
     if( TINY_OK( rc ) ) {
-        if( (Flags & F_NoOvlMgr) || !CheckOvl( parmblock.startcsip ) ) {
+        if( (Flags & F_NoOvlMgr)
+          || !CheckOvl( parmblock.startcsip ) ) {
             if( exe_type == EXE_TYPE_OS2 ) {
                 BoundAppLoading = true;
                 RunProg( &TaskRegs, &TaskRegs );
@@ -886,7 +888,8 @@ static bool SetDebugRegs( void )
             watch386 = true;
         }
     }
-    if( GotABadBreak && dr < 4 ) {
+    if( GotABadBreak
+      && dr < 4 ) {
         dr7 |= /* DR7_GE | */ DR7_LE;
         dr7 |= SetDRn( dr, BadBreak, DRLen( 1 ) | DR7_BINST );
         IsBreak[dr] = true;
@@ -947,7 +950,8 @@ static trap_elen ProgRun( bool step )
         TaskRegs.EFL |= INTR_TF;
     } else  {
         watch386 = SetDebugRegs();
-        if( WatchCount > 0 && !watch386 ) {
+        if( WatchCount > 0
+          && !watch386 ) {
             if( Flags & F_DRsOn ) {
                 SetWatch386( WatchCount, WatchPoints );
             } else {
