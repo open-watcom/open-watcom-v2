@@ -104,7 +104,8 @@
 #define CUPPER(c)               (((c) >= 'a') ? (c) - 'a' + 'A' : (c))
 
 #if defined( __DOS__ )
-    #define FIX_CHAR_OS(c,f)    (((c) == '/') ? '\\' : (cisalpha( (c) ) ? ((f) ? CUPPER(c) : CLOWER(c)) : (c)))
+//    #define FIX_CHAR_OS(c,f)    (((c) == '/') ? '\\' : (cisalpha( (c) ) ? ((f) ? CUPPER(c) : CLOWER(c)) : (c)))
+    #define FIX_CHAR_OS(c,f)    (((c) == '/') ? '\\' : ((f) && cisalpha((c)) ? CUPPER(c) : (c)))
 #elif defined( __OS2__ ) || defined( __NT__ ) || defined( __RDOS__ )
     #define FIX_CHAR_OS(c,f)    (((c) == '/') ? '\\' : (c))
 #else   /* __UNIX__ */
@@ -681,7 +682,7 @@ STATIC bool percentWrite( char *arg, enum write_type type )
         return( true );
     }
     /* handle File name */
-    p = CmdGetFileName( arg, &fn, true );
+    p = CmdGetFileName( arg, &fn, false );
     if( *p != NULLCHAR ) {
         if( !cisws( *p ) ) {
             switch( type ) {
@@ -754,7 +755,7 @@ STATIC bool percentErase( char *arg )
 
     ok = false;
     /* handle File name */
-    p = CmdGetFileName( arg, &fn, true );
+    p = CmdGetFileName( arg, &fn, false );
     if( *p != NULLCHAR && !cisws( *p ) ) {
         PrtMsg( ERR | SYNTAX_ERROR_IN, percentCmds[PER_ERASE] );
         PrtMsg( INF | PRNTSTR, "File" );
@@ -781,7 +782,7 @@ STATIC bool percentRename( char *arg )
     }
 
     /* Get first LFN */
-    p = CmdGetFileName( arg, &fn1, true );
+    p = CmdGetFileName( arg, &fn1, false );
     if( *p == NULLCHAR || !cisws( *p ) ) {
         PrtMsg( ERR | SYNTAX_ERROR_IN, percentCmds[PER_RENAME] );
         PrtMsg( INF | PRNTSTR, "First file" );
@@ -792,7 +793,7 @@ STATIC bool percentRename( char *arg )
     /* skip ws after first and before second file name */
     p = SkipWS( p );
     /* Get second LFN as well */
-    p = CmdGetFileName( p, &fn2, true );
+    p = CmdGetFileName( p, &fn2, false );
     if( *p != NULLCHAR && !cisws( *p ) ) {
         PrtMsg( ERR | SYNTAX_ERROR_IN, percentCmds[PER_RENAME] );
         return( false );
@@ -1696,7 +1697,7 @@ STATIC RET_T handleRM( char *cmd )
         /*
          * handle File name
          */
-        p = CmdGetFileName( p, &name, true );
+        p = CmdGetFileName( p, &name, false );
         *p = NULLCHAR;      /* terminate file name */
         if( !processRM( name, &flags ) ) {
             return( RET_ERROR );
@@ -1797,7 +1798,7 @@ STATIC RET_T handleMkdir( char *cmd )
     /*
      * handle File name
      */
-    p = CmdGetFileName( p, &path, true );
+    p = CmdGetFileName( p, &path, false );
     if( *p != NULLCHAR ) {
         return( handleMkdirSyntaxError() );
     }
@@ -1927,7 +1928,7 @@ STATIC RET_T handleCopy( char *arg )
      */
     p = arg + 4;
     p = SkipWS( p );
-    p = CmdGetFileName( p, &fn1, true );
+    p = CmdGetFileName( p, &fn1, false );
     if( *p == NULLCHAR || !cisws( *p ) ) {
         PrtMsg( ERR | SYNTAX_ERROR_IN, dosInternals[COM_COPY] );
         PrtMsg( INF | PRNTSTR, "First file" );
@@ -1942,7 +1943,7 @@ STATIC RET_T handleCopy( char *arg )
     /*
      * Get second LFN as well
      */
-    p = CmdGetFileName( p, &fn2, true );
+    p = CmdGetFileName( p, &fn2, false );
     if( *p != NULLCHAR && !cisws( *p ) ) {
         PrtMsg( ERR | SYNTAX_ERROR_IN, dosInternals[COM_COPY] );
         return( RET_ERROR );
@@ -1976,7 +1977,7 @@ STATIC RET_T handleRmdir( char *cmd )
     /*
      * handle File name
      */
-    p = CmdGetFileName( p, &path, true );
+    p = CmdGetFileName( p, &path, false );
     if( *p != NULLCHAR ) {
         PrtMsg( ERR | SYNTAX_ERROR_IN, dosInternals[COM_RMDIR] );
         return( RET_ERROR );
