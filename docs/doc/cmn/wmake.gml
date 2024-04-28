@@ -4506,8 +4506,6 @@ clear the screen
 start NT or OS/2 command processor
 .point command
 start DOS command processor
-.point copy
-copy or combine files, intercepted by &makcmdup
 .point ctty
 DOS redirect input/output to COM port
 .point d:
@@ -4831,21 +4829,6 @@ The "rmdir" command may be used to delete a directory.
 &maksname "rmdir" command is is simplified implementation of the POSIX "rmdir" command.
 It handles directory names consistently with other &maksname commands.
 .*
-.section copy command
-.*
-.np
-.ix 'copy' 'using &makname'
-The commands "copy" is intercepted by &maksname..
-It uses following syntax:
-.millust begin
-
-copy <source file> <destination file>
-
-.millust end
-The "copy" command may be used to copy a file.
-&maksname "copy" command is simplified implementation of DOS "copy" command.
-It handles file names consistently with other &maksname commands.
-.*
 .section &maksname internal commands
 .*
 .np
@@ -4858,6 +4841,9 @@ It handles file names consistently with other &maksname commands.
 .point
 .ix '&makcmdup internal commands' '%append'
 .id %append
+.point
+.ix '&makcmdup internal commands' '%copy'
+.id %copy
 .point
 .ix '&makcmdup internal commands' '%create'
 .id %create
@@ -4940,6 +4926,20 @@ where
 is a file specification and
 .id <text>
 is arbitrary text.
+.np
+The
+.id %copy
+internal command will copy a file.
+The command has the form:
+.millust begin
+%copy <from file> <to file>
+.millust end
+.pc
+where
+.id <from file>
+and
+.id <to file>
+are a file specification.
 .np
 The
 .id %ren
