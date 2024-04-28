@@ -65,6 +65,7 @@
 #include "cmdhelp.h"
 #include "library.h"
 #include "sysblock.h"
+#include "mapio.h"
 
 
 #ifdef BOOTSTRAP
@@ -257,11 +258,8 @@ void Burn( void )
  */
 {
     FreePaths();
-    if( MapFName != NULL ) {
-        _LnkFree( MapFName );
-        MapFName = NULL;
-    }
     FreeOutFiles();
+    MapFini();
     BurnUtils();
 }
 
@@ -379,32 +377,34 @@ void DoCmdFile( const char *fname )
         LnkMsg( FTL+MSG_NO_FILES_FOUND, NULL );
     }
     namelen = strlen( Name );
-    if( namelen > 0
-      && MapFlags & MAP_FLAG ) {
+    if( namelen > 0 ) {
         if( MapFName == NULL ) {
-            MapFName = FileName( Name, namelen, E_MAP, true );
+            if( MapFlags & MAP_FLAG ) {
+                MapFName = FileName( Name, namelen, E_MAP, true );
+            }
         }
-    } else {
+        if( SymFileName == NULL
+          && ( (CmdFlags & CF_SEPARATE_SYM)
+          || (FmtData.type & MK_COM)
+          && (LinkFlags & LF_ANY_DBI_FLAG)
+          || (FmtData.type & MK_ELF)
+          && (LinkFlags & (LF_OLD_DBI_FLAG | LF_CV_DBI_FLAG))
+          || (FmtData.type & MK_RAW)
+          && (LinkFlags & LF_ANY_DBI_FLAG) ) ) {
+            SymFileName = FileName( Name, namelen, E_SYM, true );
+        }
+        if( FmtData.implibname == NULL
+          && FmtData.make_implib ) {
+            if( FmtData.make_impfile ) {
+                extension = E_LBC;
+            } else {
+                extension = E_LIBRARY;
+            }
+            FmtData.implibname = FileName( Name, namelen, extension, true );
+        }
+    }
+    if( MapFName == NULL ) {
         MapFlags = 0;   // if main isn't set, don't set anything.
-    }
-    if( SymFileName == NULL
-      && ( (CmdFlags & CF_SEPARATE_SYM)
-      || (FmtData.type & MK_COM)
-      && (LinkFlags & LF_ANY_DBI_FLAG)
-      || (FmtData.type & MK_ELF)
-      && (LinkFlags & (LF_OLD_DBI_FLAG | LF_CV_DBI_FLAG))
-      || (FmtData.type & MK_RAW)
-      && (LinkFlags & LF_ANY_DBI_FLAG) ) ) {
-        SymFileName = FileName( Name, namelen, E_SYM, true );
-    }
-    if( FmtData.make_implib
-      && FmtData.implibname == NULL ) {
-        if( FmtData.make_impfile ) {
-            extension = E_LBC;
-        } else {
-            extension = E_LIBRARY;
-        }
-        FmtData.implibname = FileName( Name, namelen, extension, true );
     }
     CheckTraces();
     BurnUtils();
@@ -444,9 +444,9 @@ void SetFormat( void )
         OvlFillOutFilePtrs();       // fill in all unspecified outfile pointers.
     }
 #endif
-    if( MapFlags & MAP_FLAG ) {
-        LnkMsg( MAP+MSG_EXE_NAME, "s", Root->outfile->fname );
-        LnkMsg( MAP+MSG_CREATE_EXE, "f" );
+    if( MapFile != NULL ) {
+        WriteMapLnkMsg( MSG_EXE_NAME, "s", Root->outfile->fname );
+        WriteMapLnkMsg( MSG_CREATE_EXE, "f" );
     }
 #ifdef _QNX
     if( FmtData.type & MK_QNX ) {

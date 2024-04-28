@@ -74,7 +74,9 @@ void ObjPass2( void )
 #ifdef _EXE
     }
 #endif
-    PrintTracedSyms();
+    if( MapFile != NULL ) {
+        WriteMapTracedSyms();
+    }
     PrintUndefinedSyms();
     if( LinkState & LS_UNDEFED_SYM_ERROR ) {
         LinkState |= LS_LINK_ERROR;

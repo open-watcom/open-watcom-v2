@@ -1820,8 +1820,10 @@ static void BuildReloc( save_fixup *save, target_spec *target, frame_spec *frame
     fix.fpp_type = FPP_NONE;
 
     if( target->type == FIX_TARGET_EXT ) {
-        if( target->u.sym->info & SYM_TRACE ) {
-            RecordTracedSym( target->u.sym );
+        if( MapFile != NULL ) {
+            if( target->u.sym->info & SYM_TRACE ) {
+                WriteMapTracedSymRecord( target->u.sym );
+            }
         }
         if( (target->u.sym->info & SYM_DEFINED) == 0 ) {
             RecordUndefinedSym( target->u.sym );

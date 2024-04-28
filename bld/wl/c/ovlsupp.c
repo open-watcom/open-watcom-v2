@@ -124,7 +124,7 @@ void WalkAreas( OVL_AREA *ovl, void (*rtn)( section * ) )
 static void DoSecPubs( section *sec )
 /***********************************/
 {
-    if( MapFlags & MAP_FLAG ) {
+    if( MapFile != NULL ) {
         WriteMapOvlPubHead( sec );
     }
     WriteMapPubStart();
@@ -144,7 +144,7 @@ void OvlProcPubsSect( section *sec )
 void OvlProcPubs( void )
 /**********************/
 {
-    if( MapFlags & MAP_FLAG ) {
+    if( MapFile != NULL ) {
         WriteMapOvlVectHead( &VectState );
     }
     WalkAreas( Root->areas, DoSecPubs );

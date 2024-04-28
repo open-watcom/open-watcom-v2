@@ -94,15 +94,14 @@ static size_t           MapCol;
 static time_t           StartT;
 static clock_t          ClockTicks;
 static bool             Absolute_Seg;
-static size_t           MapBufferSize;
-static char             *MapBuffer;
-
 static unsigned long    NumMapSyms;
 
 void ResetWriteMapIO( void )
 /**************************/
 {
     MapFlags = 0;
+    MapFName = NULL;
+    MapFile = NULL;
     UndefList = NULL;
     SymTraceList = NULL;
 }
@@ -120,36 +119,24 @@ static void WriteMap( const char *buffer, size_t len )
  * buffering the write to the map file
  */
 {
-    size_t      size;
-
-    while( MapBufferSize + len >= MAP_BUFFER_SIZE ) {
-        size = MAP_BUFFER_SIZE - MapBufferSize;
-        memcpy( MapBuffer + MapBufferSize, buffer, size );
-        QWrite( MapFile, MapBuffer, MAP_BUFFER_SIZE, MapFName );
-        MapBufferSize = 0;
-        buffer += size;
-        len -= size;
-    }
     if( len > 0 ) {
-        memcpy( MapBuffer + MapBufferSize, buffer, len );
-        MapBufferSize += len;
+        if( fwrite( buffer, len, 1, MapFile ) == 0 ) {
+            LnkMsg( ERR+MSG_IO_PROBLEM, "12", MapFName, strerror( errno ) );
+        }
     }
 }
 
 static void WriteMapNL( void )
 /****************************/
 {
-    WriteMap( NLSeq, strlen( NLSeq ) );
+    WriteMap( "\n", 1 );
     MapCol = 0;
 }
 
-static void WriteMapString( const char *buffer, bool nl )
-/*******************************************************/
+static void WriteMapString( const char *buffer )
+/**********************************************/
 {
     WriteMap( buffer, strlen( buffer ) );
-    if( nl ) {
-        WriteMapNL();
-    }
 }
 
 static void WriteMapMsgPrintf( int msgid, ... )
@@ -316,7 +303,7 @@ static int cmp_seg( const void *a, const void *b )
 
 static void WriteMapSectSegs( section *sect )
 /********************************************
- * write segment info into mapfile
+ * write segment info into map file
  */
 {
     class_entry     *class;
@@ -438,13 +425,17 @@ static void WriteMapSymAddr( symbol *sym )
     WriteMapNL();
 }
 
-void WriteMapLnkMsg( const char *s1, size_t l1, const char *s2, size_t l2 )
-/**********************************************
- * buffering the write to the map file
+void WriteMapLnkMsgCallback( unsigned msgnum, const char *str, size_t len )
+/**************************************************************************
+ * write link message to the map file
  */
 {
-    WriteMap( s1, l1 );
-    WriteMap( s2, l2 );
+    char        msgprefix[MAX_MSG_SIZE];
+    size_t      msgprefixlen;
+
+    msgprefixlen = GetMsgPrefix( msgnum, msgprefix, MAX_MSG_SIZE );
+    WriteMap( msgprefix, msgprefixlen );
+    WriteMap( str, len );
     WriteMapNL();
 }
 
@@ -607,7 +598,6 @@ static void InitDwarfVMState( line_state_info *state, bool default_is_stmt )
 static void DumpDwarfVMState( line_state_info *state )
 /****************************************************/
 {
-    char        str[40];
     const char  *fmt;
 
     if( state->has_seg ) {
@@ -616,16 +606,15 @@ static void DumpDwarfVMState( line_state_info *state )
         } else {
             fmt = "%5d %04Xh:%04Xh ";
         }
-        sprintf( str, fmt, state->line, state->segment, state->address );
+        WriteMapPrintf( fmt, state->line, state->segment, state->address );
     } else {
         if( state->is_32 ) {
             fmt = "%6d %08Xh ";
         } else {
             fmt = "%6d %04Xh ";
         }
-        sprintf( str, fmt, state->line, state->address );
+        WriteMapPrintf( fmt, state->line, state->address );
     }
-    WriteMapString( str, false );
     state->col++;
     if( state->col == 4 ) {
         WriteMapNL();
@@ -921,14 +910,6 @@ void RecordUndefinedSym( symbol *sym )
     AddSymRecList( sym, &UndefList );
 }
 
-void RecordTracedSym( symbol *sym )
-/*********************************/
-{
-    if( sym->mod != CurrMod ) {
-        AddSymRecList( sym, &SymTraceList );
-    }
-}
-
 static void PrintUndefinedSym( void *_info )
 /******************************************/
 {
@@ -937,26 +918,18 @@ static void PrintUndefinedSym( void *_info )
 
     mod = info->mod;
     LnkMsg( YELL+MSG_UNDEF_SYM, "12S", mod->f.source->infile->name, mod->name, info->sym );
-    if( MapFlags & MAP_FLAG ) {
+    if( MapFile != NULL ) {
         WriteMapColPrintf( 0, "%S", info->sym );
         WriteMapColPrintf( 32, "%s(%s)", mod->f.source->infile->name, mod->name );
         WriteMapNL();
     }
 }
 
-static void PrintTracedSym( void *_info )
-/***************************************/
-{
-    symrecinfo  *info = _info;
-
-    LnkMsg( MAP+MSG_MOD_TRACE, "Ss", info->sym, info->mod->name );
-}
-
 void PrintUndefinedSyms( void )
 /*****************************/
 {
     if( UndefList != NULL ) {
-        if( MapFlags & MAP_FLAG ) {
+        if( MapFile != NULL ) {
             WriteMapBox( MSG_MAP_BOX_UNRES_REF );
             WriteMapMsg( MSG_MAP_TITLE_UNRES_REF_0 );
             WriteMapMsg( MSG_MAP_TITLE_UNRES_REF_1 );
@@ -966,30 +939,30 @@ void PrintUndefinedSyms( void )
     }
 }
 
-void PrintTracedSyms( void )
-/**************************/
+void WriteMapTracedSymRecord( symbol *sym )
+/*****************************************/
 {
-    if( SymTraceList != NULL ) {
-        if( MapFlags & MAP_FLAG ) {
-            WriteMapBox( MSG_MAP_BOX_TRACE_SYM );
-        }
-        RingWalk( SymTraceList, PrintTracedSym );
-        if( MapFlags & MAP_FLAG ) {
-            WriteMapNL();
-        }
+    if( sym->mod != CurrMod ) {
+        AddSymRecList( sym, &SymTraceList );
     }
 }
 
-void FreeUndefinedSyms( void )
-/****************************/
+static void WriteMapTracedSym( void *_info )
+/******************************************/
 {
-    RingFree( &UndefList );
+    symrecinfo  *info = _info;
+
+    WriteMapLnkMsg( MSG_MOD_TRACE, "Ss", info->sym, info->mod->name );
 }
 
-void FreeTracedSyms( void )
-/*************************/
+void WriteMapTracedSyms( void )
+/*****************************/
 {
-    RingFree( &SymTraceList );
+    if( SymTraceList != NULL ) {
+        WriteMapBox( MSG_MAP_BOX_TRACE_SYM );
+        RingWalk( SymTraceList, WriteMapTracedSym );
+        WriteMapNL();
+    }
 }
 
 static void WriteMapSize( int msgid, unsigned_32 size )
@@ -1104,14 +1077,21 @@ void MapInit( void )
 
     Absolute_Seg = false;
     if( MapFlags & MAP_FLAG ) {
-        MapFile = QOpenRW( MapFName );
-        _LnkAlloc( MapBuffer, MAP_BUFFER_SIZE );
-        MapBufferSize = 0;
+        MapFile = fopen( MapFName, "wt" );
+        if( MapFile == NULL ) {
+            MapFlags = 0;
+            LnkMsg( FTL+MSG_CANT_OPEN, "12", MapFName, strerror( errno ) );
+            return;
+        }
+        setvbuf( MapFile, NULL, _IOFBF, MAP_BUFFER_SIZE );
         localt = localtime( &StartT );
         MapCol = 0;
-        WriteMapString( MsgStrings[PRODUCT], true );
-        WriteMapString( MsgStrings[COPYRIGHT], true );
-        WriteMapString( MsgStrings[COPYRIGHT2], true );
+        WriteMapString( MsgStrings[PRODUCT] );
+        WriteMapNL();
+        WriteMapString( MsgStrings[COPYRIGHT] );
+        WriteMapNL();
+        WriteMapString( MsgStrings[COPYRIGHT2] );
+        WriteMapNL();
         ptr = tim;
         ptr = PutDec( ptr, localt->tm_hour );
         *ptr++ = ':';
@@ -1128,7 +1108,7 @@ void MapInit( void )
         ptr = PutDec( ptr, localt->tm_mday );
         *ptr = '\0';
 
-        LnkMsg( MAP+MSG_CREATED_ON, "12", dat, tim );
+        WriteMapLnkMsg( MSG_CREATED_ON, "12", dat, tim );
     }
 }
 
@@ -1144,7 +1124,7 @@ void MapFini( void )
     signed_16   t;
     char        tim[11 + 1];
 
-    if( MapFlags & MAP_FLAG ) {
+    if( MapFile != NULL ) {
 
         WriteMapSizes();
 
@@ -1173,17 +1153,20 @@ void MapFini( void )
             WriteMapLines();
         }
 
-        if( MapBufferSize > 0 ) {
-            QWrite( MapFile, MapBuffer, MapBufferSize, MapFName );
-            MapBufferSize = 0;
+        MapFlags = 0;
+
+        if( fclose( MapFile ) ) {
+            LnkMsg( ERR+MSG_IO_PROBLEM, "12", MapFName, strerror( errno ) );
         }
-        if( MapFile != NIL_FHANDLE ) {
-            QClose( MapFile, MapFName );
-            MapFile = NIL_FHANDLE;
+        MapFile = NULL;
+
+        if( MapFName != NULL ) {
+            _LnkFree( MapFName );
+            MapFName = NULL;
         }
-        _LnkFree( MapBuffer );
-        MapBuffer = NULL;
     }
+    RingFree( &SymTraceList );
+    RingFree( &UndefList );
 }
 
 static int SymAddrCompare( const void *a, const void *b )
@@ -1237,7 +1220,7 @@ void WriteMapPubEnd( void )
     symbol      *sym;
     bool        ok;
 
-    if( MapFlags & MAP_FLAG ) {
+    if( MapFile != NULL ) {
         if( (MapFlags & MAP_GLOBAL)
           && ( NumMapSyms > 0 ) ) {
             symarray = NULL;
@@ -1271,7 +1254,7 @@ void WriteMapPubSortStart( pubdefinfo *info )
 /*******************************************/
 {
     info->symarray = NULL;
-    if( MapFlags & MAP_FLAG ) {
+    if( MapFile != NULL ) {
         if( (MapFlags & MAP_SORT)
           && (MapFlags & MAP_GLOBAL) == 0
           && ( CurrMod->publist != NULL ) ) {
@@ -1283,7 +1266,7 @@ void WriteMapPubSortStart( pubdefinfo *info )
 void WriteMapPubSortEnd( pubdefinfo *info )
 /*****************************************/
 {
-    if( MapFlags & MAP_FLAG ) {
+    if( MapFile != NULL ) {
         if( info->num > 0 ) {
             WriteMapSymArray( info->symarray, info->num );
         }
@@ -1297,7 +1280,7 @@ void WriteMapPubSortEnd( pubdefinfo *info )
 void WriteMapPubEntry( pubdefinfo *info, symbol *sym )
 /****************************************************/
 {
-    if( MapFlags & MAP_FLAG ) {
+    if( MapFile != NULL ) {
         if( !SkipSymbol( sym ) ) {
             if( info->first
               && (MapFlags & MAP_GLOBAL) == 0 ) {

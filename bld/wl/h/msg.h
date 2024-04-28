@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -62,6 +62,7 @@ enum msg_num {
 
 extern size_t   FmtStr( char *, size_t, const char *, ... );
 extern size_t   DoFmtStr( char *, size_t, const char *, va_list );
+extern size_t   GetMsgPrefix( unsigned num, char *buff, size_t max_len );
 extern void     LnkMsg( unsigned, const char *, ... );
 extern void     Locator( const char *, const char *, unsigned );
 extern void     WLPrtBanner( void );

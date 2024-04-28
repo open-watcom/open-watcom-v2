@@ -31,23 +31,23 @@
 ****************************************************************************/
 
 
+#define WriteMapLnkMsg(m,...)   LnkMsg( MAP + m, __VA_ARGS__ )
+
 extern void     ResetWriteMapIO( void );
 extern void     MapInit( void );
 extern void     MapFini( void );
 extern void     StartTime( void );
 extern void     EndTime( void );
+extern void     RecordUndefinedSym( symbol * );
+extern void     PrintUndefinedSyms( void );
 extern void     WriteMapHead( section * );
 extern void     WriteMapOvlPubHead( section *sec );
 extern void     WriteMapOvlVectHead( vect_state *VectState );
 extern void     WriteMapModulesSegments( void );
 extern void     WriteMapLibsUsed( void );
-extern void     WriteMapLnkMsg( const char *s1, size_t l1, const char *s2, size_t l2 );
-extern void     RecordUndefinedSym( symbol * );
-extern void     RecordTracedSym( symbol * );
-extern void     PrintUndefinedSyms( void );
-extern void     PrintTracedSyms( void );
-extern void     FreeUndefinedSyms( void );
-extern void     FreeTracedSyms( void );
+extern void     WriteMapLnkMsgCallback( unsigned msgnum, const char *str, size_t len );
+extern void     WriteMapTracedSymRecord( symbol * );
+extern void     WriteMapTracedSyms( void );
 extern void     WriteMapPubStart( void );
 extern void     WriteMapPubEnd( void );
 extern void     WriteMapPubSortStart( pubdefinfo *info );

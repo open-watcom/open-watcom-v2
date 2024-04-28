@@ -586,6 +586,8 @@ static void DefinePublics( void )
     DEBUG(( DBG_OLD, "DefinePublics()" ));
     if( MapFlags & MAP_FLAG ) {
         LnkMsg( INF+MSG_CREATE_MAP, NULL );
+    }
+    if( MapFile != NULL ) {
         WriteMapHead( Root );
     }
     WriteMapPubStart();
@@ -602,7 +604,7 @@ static void DefinePublics( void )
         OvlProcPubs();
     }
 #endif
-    if( MapFlags & MAP_FLAG ) {
+    if( MapFile != NULL ) {
         if( MapFlags & MAP_VERBOSE ) {
             WriteMapModulesSegments();
         }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,11 +43,11 @@
 /* linker global variables */
 GLOB outfilelist    *OutFiles;      /* list of files which will be written to   */
 GLOB char           *MapFName;      /* name of map file                         */
-GLOB f_handle       MapFile;        /* handle of map file                       */
+GLOB FILE           *MapFile;       /* handle of map file                       */
+GLOB mapflag        MapFlags;       /* flags dealing with the map file          */
 GLOB targ_addr      StackAddr;      /* initial stack address                    */
 GLOB linkflag       LinkFlags;      /* flags to indicate presence of parms      */
 GLOB stateflag      LinkState;      /* flags to indicate linker state           */
-GLOB mapflag        MapFlags;       /* flags dealing with the map file          */
 GLOB file_list      *ObjLibFiles;   /* list of library files (for searching)    */
 GLOB mod_entry      *LibModules;    /* library modules (for processing)         */
 GLOB group_entry    *Groups;        /* pointer to defined groups                */

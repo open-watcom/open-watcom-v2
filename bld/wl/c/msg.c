@@ -417,8 +417,8 @@ unsigned CalcMsgNum( unsigned num )
     return( class * 1000 + (num & NUM_MSK) );
 }
 
-static size_t GetMsgPrefix( char *buff, size_t max_len, unsigned num )
-/********************************************************************/
+size_t GetMsgPrefix( unsigned num, char *buff, size_t max_len )
+/*************************************************************/
 {
     size_t      msgprefixlen;
     unsigned    class;
@@ -441,11 +441,8 @@ static size_t GetMsgPrefix( char *buff, size_t max_len, unsigned num )
 static void MessageFini( unsigned num, char *buff, size_t len )
 /*************************************************************/
 {
-    size_t      msgprefixlen;
     unsigned    class;
-    char        msgprefix[MAX_MSG_SIZE];
 
-    msgprefixlen = 0;
     class = num & CLASS_MSK;
     if( class >= (ERR & CLASS_MSK) ) {
         LinkState |= LS_LINK_ERROR;
@@ -458,14 +455,14 @@ static void MessageFini( unsigned num, char *buff, size_t len )
             WriteStdOutInfo( buff, num, CurrSymName );
         }
     }
-    if( (num & OUT_MAP)
-      && (MapFlags & MAP_FLAG)
-      && ( MapFile != NIL_FHANDLE ) ) {
-        msgprefixlen = GetMsgPrefix( msgprefix, MAX_MSG_SIZE, num );
-        WriteMapLnkMsg( msgprefix, msgprefixlen, buff, len );
+    if( num & OUT_MAP ) {
+        if( MapFile != NULL ) {
+            WriteMapLnkMsgCallback( num, buff, len );
+        }
     }
-    if( class == (FTL & CLASS_MSK) )
+    if( class == (FTL & CLASS_MSK) ) {
         Suicide();
+    }
     /* yells are counted as errors for limits */
     if( ( class == (YELL & CLASS_MSK) )
       || ( class >= (MILD_ERR & CLASS_MSK) ) ) {

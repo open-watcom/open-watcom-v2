@@ -1318,7 +1318,9 @@ void ConvertLazyRefs( void )
             WeldSyms( sym, defsym );
             sym->info |= SYM_WAS_LAZY;
             if( LinkFlags & LF_SHOW_DEAD ) {
-                LnkMsg( MAP+MSG_SYMBOL_DEAD, "S", sym );
+                if( MapFile != NULL ) {
+                    WriteMapLnkMsg( MSG_SYMBOL_DEAD, "S", sym );
+                }
             }
         }
     }

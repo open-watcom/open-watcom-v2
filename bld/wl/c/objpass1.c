@@ -348,7 +348,6 @@ void DoIncGroupDefs( void )
     grouptab = IncGroups;
     RingLookup( IncGroupDefs, DefIncGroup, &grouptab );
     RingFree( &IncGroupDefs );
-    IncGroupDefs = NULL;
 }
 
 void Set64BitMode( void )
