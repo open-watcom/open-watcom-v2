@@ -329,7 +329,7 @@ $(wikidir):
 .ps.pdf :
     !$(hc_pdf) -r600 $[@ $@
 !  ifdef wikidir
-    $(noecho)copy $^&.pdf $(wikidir)\$^&.pdf
+    $(noecho)%copy $^&.pdf $(wikidir)\$^&.pdf
 !  endif
 ! endif
 
@@ -363,8 +363,8 @@ $(wikidir):
 ! ifeq dotarget chm
 .htm.chm :
     @if not exist $^& mkdir $^&
-    @for %f in ($($^&_book_bmps)) do $(noecho)copy %f $^&
-    copy $^&.gh $^&/$^&.gh
+    @for %f in ($($^&_book_bmps)) do $(noecho)%copy %f $^&
+    %copy $^&.gh $^&/$^&.gh
     awk -f ../splithtm.awk -v dir=$^& $^&.htm
     awk -f ../makehha.awk $^&.htm >$^&/$^&.hha
     awk -f ../makehhc.awk $^&.htm >$^&/$^&.hhc
@@ -377,7 +377,7 @@ $(wikidir):
     -chmod +rw $@
 !   endif
     cd ..
-    copy $^&/$^&.chm $@
+    %copy $^&/$^&.chm $@
 !  else ifeq bld_os linux
     @%create $(wine_hc_batch)
     @%append $(wine_hc_batch) $(hc_hh) $^&/$^&.hhp
@@ -385,7 +385,7 @@ $(wikidir):
     -wine cmd /c $(wine_hc_batch)
 !  else
     -$(hc_hh) $^&/$^&.hhp
-    copy $^&/$^&.chm $^&.chm
+    %copy $^&/$^&.chm $^&.chm
 !  endif
 ! endif
 
@@ -393,12 +393,12 @@ $(wikidir):
 {$(root_books)}.gml.gh :
     @echo BOOK : $^&
 ! ifeq dotarget html
-    @for %f in ($($^&_book_bmps)) do $(noecho)copy %f .
+    @for %f in ($($^&_book_bmps)) do $(noecho)%copy %f .
 ! endif
     @%make compile_gml_to_xxx
 ! ifdef wikidir
-    $(noecho)copy $^&.htm $(wikidir)\$^&.html
-    @for %f in (*.bmp) do @if not exist $(wikidir)\%f $(noecho)copy %f $(wikidir)\%f
+    $(noecho)%copy $^&.htm $(wikidir)\$^&.html
+    @for %f in (*.bmp) do @if not exist $(wikidir)\%f $(noecho)%copy %f $(wikidir)\%f
 ! endif
 
 ####################################################

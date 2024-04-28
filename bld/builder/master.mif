@@ -63,7 +63,7 @@ $(build_dir)/$(%OWOBJDIR)/builder : builder.exe         # Remove .exe from worki
 !else
 $(build_dir)/$(%OWOBJDIR)/builder.exe : builder.exe
 !endif
-    copy $[@ $@
+    %copy $[@ $@
 !endif
 !endif
 

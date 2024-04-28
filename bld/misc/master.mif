@@ -10,7 +10,7 @@ misc_objs = &
     unicode.852
 
 $(misc_objs):
-    copy ../$@ $@
+    %copy ../$@ $@
 
 clean: .symbolic
     rm -f $(misc_objs)

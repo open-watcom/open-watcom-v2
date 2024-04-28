@@ -46,7 +46,7 @@ exetarg_objs = &
 # rc and others
 #
 proctab.c : ./maketab.exe ../h/ytab.h
-    $(noecho)copy $]@ ytab.h
+    $(noecho)%copy $]@ ytab.h
     @%make echo_execute
     $(noecho)$[@ > proctab.c
 
