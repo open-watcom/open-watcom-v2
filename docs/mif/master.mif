@@ -645,7 +645,11 @@ compile_hpj_win : .PROCEDURE
     @%append $*.hpj CONTENTS=table_of_contents
     @%append $*.hpj Title=$($^&_book_title) Help
     @%append $*.hpj COPYRIGHT=Copyright 2002-$(curr_year) Open Watcom Contributors, 1996 Sybase, Inc. and its subsidiaries. All rights reserved.
+!ifdef __UNIX__
+    @%append $*.hpj BMROOT=$($^&_book_bmroot:\=/)
+!else
     @%append $*.hpj BMROOT=$($^&_book_bmroot:/=\)
+!endif    
     @%append $*.hpj OLDKEYPHRASE=NO
     @%append $*.hpj ROOT=.
     @%append $*.hpj [Config]
