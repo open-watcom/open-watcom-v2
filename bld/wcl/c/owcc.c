@@ -161,6 +161,7 @@ static  bool        cpp_want_lines;         /* flag: want #lines output?        
 static  bool        cpp_keep_comments;      /* flag: keep comments in output?     */
 static  bool        cpp_encrypt_names;      /* flag: encrypt C++ names?           */
 static  char        *cpp_linewrap;          /* line length for cpp output         */
+static  bool        banner_printed=false;   /* banner not printed yet             */
 
 /*
  *  Static function prototypes
@@ -319,10 +320,9 @@ static etool tools_f77_arch[TARGET_ARCH_COUNT] = {
 
 static void print_banner( void )
 {
-    static bool printed = false;
 
-    if( !printed ) {
-        printed = true;
+    if( !banner_printed ) {
+        banner_printed = true;
         if( !Flags.be_quiet ) {
             puts(
                 banner1t( _TARGET_ " Compilers Driver Program" ) "\n"
@@ -832,6 +832,7 @@ static  int  ParseArgs( int argc, char **argv )
                 break;
             case 'q':
                 Flags.be_quiet = true;
+                banner_printed = true;  /* skip the banner */
                 break;
             case 'w':
                 Flags.windows = true;
