@@ -1221,32 +1221,30 @@ void WriteMapPubEnd( void )
     symbol      *sym;
     bool        ok;
 
-    if( MapFile != NULL ) {
-        if( (MapFlags & MAP_GLOBAL)
-          && ( NumMapSyms > 0 ) ) {
-            symarray = NULL;
-            if( NumMapSyms < ( UINT_MAX / sizeof( symbol * ) ) - 1 ) {
-                _LnkAlloc( symarray, NumMapSyms * sizeof( symbol * ) );
-            }
-            currsym = symarray;
-            ok = ( symarray != NULL );
-            for( sym = HeadSym; sym != NULL; sym = sym->link ) {
-                if( sym->info & SYM_MAP_GLOBAL ) {
-                    sym->info &= ~SYM_MAP_GLOBAL;
-                    if( ok ) {
-                        *currsym = sym;
-                        currsym++;
-                    } else {
-                        WriteMapSymAddr( sym );
-                    }
+    if( (MapFlags & MAP_GLOBAL)
+      && ( NumMapSyms > 0 ) ) {
+        symarray = NULL;
+        if( NumMapSyms < ( UINT_MAX / sizeof( symbol * ) ) - 1 ) {
+            _LnkAlloc( symarray, NumMapSyms * sizeof( symbol * ) );
+        }
+        currsym = symarray;
+        ok = ( symarray != NULL );
+        for( sym = HeadSym; sym != NULL; sym = sym->link ) {
+            if( sym->info & SYM_MAP_GLOBAL ) {
+                sym->info &= ~SYM_MAP_GLOBAL;
+                if( ok ) {
+                    *currsym = sym;
+                    currsym++;
+                } else {
+                    WriteMapSymAddr( sym );
                 }
             }
-            if( !ok ) {
-                LnkMsg( WRN+MSG_CANT_SORT_SYMBOLS, NULL );
-            } else {
-                WriteMapSymArray( symarray, NumMapSyms );
-                _LnkFree( symarray );
-            }
+        }
+        if( !ok ) {
+            LnkMsg( WRN+MSG_CANT_SORT_SYMBOLS, NULL );
+        } else {
+            WriteMapSymArray( symarray, NumMapSyms );
+            _LnkFree( symarray );
         }
     }
 }
@@ -1255,50 +1253,44 @@ void WriteMapPubSortStart( pubdefinfo *info )
 /*******************************************/
 {
     info->symarray = NULL;
-    if( MapFile != NULL ) {
-        if( (MapFlags & MAP_SORT)
-          && (MapFlags & MAP_GLOBAL) == 0
-          && ( CurrMod->publist != NULL ) ) {
-            _ChkAlloc( info->symarray, Ring2Count( CurrMod->publist ) * sizeof( symbol * ) );
-        }
+    if( (MapFlags & MAP_SORT)
+      && (MapFlags & MAP_GLOBAL) == 0
+      && ( CurrMod->publist != NULL ) ) {
+        _ChkAlloc( info->symarray, Ring2Count( CurrMod->publist ) * sizeof( symbol * ) );
     }
 }
 
 void WriteMapPubSortEnd( pubdefinfo *info )
 /*****************************************/
 {
-    if( MapFile != NULL ) {
-        if( info->num > 0 ) {
-            WriteMapSymArray( info->symarray, info->num );
-        }
-        if( info->symarray != NULL ) {
-            _LnkFree( info->symarray );
-            info->symarray = NULL;
-        }
+    if( info->num > 0 ) {
+        WriteMapSymArray( info->symarray, info->num );
+    }
+    if( info->symarray != NULL ) {
+        _LnkFree( info->symarray );
+        info->symarray = NULL;
     }
 }
 
 void WriteMapPubEntry( pubdefinfo *info, symbol *sym )
 /****************************************************/
 {
-    if( MapFile != NULL ) {
-        if( !SkipSymbol( sym ) ) {
-            if( info->first
-              && (MapFlags & MAP_GLOBAL) == 0 ) {
-                WriteMapPubModHead();
-                info->first = false;
-            }
-            if( MapFlags & MAP_SORT ) {
-                if( MapFlags & MAP_GLOBAL ) {
-                    NumMapSyms++;
-                    sym->info |= SYM_MAP_GLOBAL;
-                } else {
-                    info->symarray[info->num] = sym;
-                    info->num++;
-                }
+    if( !SkipSymbol( sym ) ) {
+        if( info->first
+          && (MapFlags & MAP_GLOBAL) == 0 ) {
+            WriteMapPubModHead();
+            info->first = false;
+        }
+        if( MapFlags & MAP_SORT ) {
+            if( MapFlags & MAP_GLOBAL ) {
+                NumMapSyms++;
+                sym->info |= SYM_MAP_GLOBAL;
             } else {
-                WriteMapSymAddr( sym );
+                info->symarray[info->num] = sym;
+                info->num++;
             }
+        } else {
+            WriteMapSymAddr( sym );
         }
     }
 }

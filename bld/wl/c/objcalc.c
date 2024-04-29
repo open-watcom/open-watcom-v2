@@ -589,8 +589,8 @@ static void DefinePublics( void )
     }
     if( MapFile != NULL ) {
         WriteMapHead( Root );
+        WriteMapPubStart();
     }
-    WriteMapPubStart();
     ProcPubsSect( Root->mods, Root );
 #ifdef _EXE
     if( FmtData.type & MK_OVERLAYS ) {
@@ -598,7 +598,9 @@ static void DefinePublics( void )
     }
 #endif
     ProcPubsSect( LibModules, Root );
-    WriteMapPubEnd();
+    if( MapFile != NULL ) {
+        WriteMapPubEnd();
+    }
 #ifdef _EXE
     if( FmtData.type & MK_OVERLAYS ) {
         OvlProcPubs();
@@ -650,7 +652,9 @@ static bool DefPubSym( void *_pub, void *_info )
             DBIGenGlobal( sym, info->sect );
         }
     }
-    WriteMapPubEntry( info, sym );
+    if( MapFile != NULL ) {
+        WriteMapPubEntry( info, sym );
+    }
     return( false );
 }
 
@@ -661,15 +665,19 @@ void DoPubsSect( section *sect )
     pubdefinfo  info;
 
     if( (CurrMod->modinfo & MOD_NEED_PASS_2)
-        && (CurrMod->modinfo & MOD_IMPORT_LIB) == 0 ) {
+      && (CurrMod->modinfo & MOD_IMPORT_LIB) == 0 ) {
         DBIAddModule( CurrMod, sect );
     }
     info.num = 0;
     info.first = true;
     info.sect = sect;
-    WriteMapPubSortStart( &info );
+    if( MapFile != NULL ) {
+        WriteMapPubSortStart( &info );
+    }
     Ring2Lookup( CurrMod->publist, DefPubSym, &info );
-    WriteMapPubSortEnd( &info );
+    if( MapFile != NULL ) {
+        WriteMapPubSortEnd( &info );
+    }
 }
 
 static void SetReadOnly( void *_seg )

@@ -126,11 +126,13 @@ static void DoSecPubs( section *sec )
 {
     if( MapFile != NULL ) {
         WriteMapOvlPubHead( sec );
+        WriteMapPubStart();
     }
-    WriteMapPubStart();
     ProcPubsSect( sec->mods, sec );
     OvlProcPubsSect( sec );
-    WriteMapPubEnd();
+    if( MapFile != NULL ) {
+        WriteMapPubEnd();
+    }
 }
 
 void OvlProcPubsSect( section *sec )
