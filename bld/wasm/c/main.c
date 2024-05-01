@@ -117,6 +117,13 @@ global_options Options = {
     true                // instructions optimization
 };
 
+static void usage_msg( void )
+/***************************/
+{
+    PrintfUsage();
+    exit( EXIT_ERROR );
+}
+
 static void BadCmdLine( int error_code )
 /***************************************
  * SIGNAL CMD-LINE ERROR
@@ -134,6 +141,8 @@ static void BadCmdLine( int error_code )
     strncpy( buffer, switch_start, len );
     buffer[len] = '\0';
     MsgPrintf1( error_code, buffer );
+    printf( "\n" );
+    exit( EXIT_ERROR );
 }
 
 // BAD CHAR DETECTED
@@ -251,6 +260,9 @@ static void get_fname( char *token, int type )
         _makepath( name, pg.drive, pg.dir, pg.fname, pg.ext );
         AsmFiles.fname[ASM] = AsmStrDup( name );
     } else if( type == ASM ) {
+        if( AsmFiles.fname[ASM] == NULL ) {
+            usage_msg();
+        }
         _splitpath2( AsmFiles.fname[ASM], pg.buffer, &pg.drive,
                          &pg.dir, &pg.fname, &pg.ext );
         _makepath( name, pg.drive, pg.dir, NULL, NULL );
@@ -330,13 +342,6 @@ static void get_fname( char *token, int type )
         }
         AsmFiles.fname[type] = AsmStrDup( name );
     }
-}
-
-static void usage_msg( void )
-/***************************/
-{
-    PrintfUsage();
-    exit( EXIT_ERROR );
 }
 
 static void add_env_include( const char *target_name )
@@ -545,7 +550,9 @@ static int ProcOptions( OPT_STORAGE *data, const char *str )
             }
             if( _IS_SWITCH_CHAR( ch ) ) {
                 switch_start = CmdScanAddr() - 1;
-                OPT_PROCESS( data );
+                if( OPT_PROCESS( data ) ) {
+                    BadCmdLineOption();
+                }
             } else {  /* collect file name */
                 CmdScanUngetChar();
                 switch_start = CmdScanAddr();
@@ -1109,7 +1116,7 @@ static void set_options( OPT_STORAGE *data )
 static void do_init_stuff( char **cmdline )
 /*****************************************/
 {
-    char        msgbuf[MAX_MESSAGE_SIZE];
+//    char        msgbuf[MAX_MESSAGE_SIZE];
     OPT_STORAGE data;
     char        *target_name;
 
@@ -1122,10 +1129,6 @@ static void do_init_stuff( char **cmdline )
     ProcOptions( &data, getenv( "WASM" ) );
     for( ; *cmdline != NULL; ++cmdline ) {
         ProcOptions( &data, *cmdline );
-    }
-    if( AsmFiles.fname[ASM] == NULL ) {
-        MsgGet( NO_FILENAME_SPECIFIED, msgbuf );
-        Fatal( MSG_CANNOT_OPEN_FILE, msgbuf );
     }
     target_name = set_build_target( &data );
     set_options( &data );
