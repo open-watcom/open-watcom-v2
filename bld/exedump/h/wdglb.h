@@ -49,12 +49,10 @@
 #include "lib.h"
 
 #define PERLINE                 16
-#define NUMLINE                 24
 #define LINE_LEN                78
 #define SLEN                    30
 #define STDOUT                  1
 #define BSIZE                   512
-#define MAX_SECTION_DATA        4096
 #define SELECTOR_FIX            0x02
 #define table( x )              { x, #x }
 #define MAX_BUFF                0xff00
