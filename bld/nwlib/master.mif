@@ -165,8 +165,8 @@ dlltarg_libs          = $(orl_lib)
 #
 !ifndef bootstrap
 dlltarg_libs         += $(wres_lib)
-dlltarg_res_version_nt_386 = version.res
-dlltarg_res_version_nt_x64 = version.res
+dlltarg_res_version_nt_386 = dllver.res
+dlltarg_res_version_nt_x64 = dllver.res
 dlltarg_res_wresui    = wresui.res
 !endif
 !include dlltarg.mif

@@ -96,8 +96,8 @@ dlltarg_libs += $(imp_libs)
 !ifeq dip_format dwarf
 dlltarg_libs += $(dwarfr_lib)
 !endif
-dlltarg_res_version_nt_386 = version.res
-dlltarg_res_version_nt_x64 = version.res
+dlltarg_res_version_nt_386 = dllver.res
+dlltarg_res_version_nt_x64 = dllver.res
 dlltarg_name = $(dllname)
 !include dlltarg.mif
 

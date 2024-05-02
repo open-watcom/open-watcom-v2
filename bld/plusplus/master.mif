@@ -164,8 +164,8 @@ exetarg_qnx_res       = usage.u
 dlltarg_prebuild_objs = $(dll_subdir) $(prebuild_objs)
 dlltarg_objs          = $(comp_objs_dll)
 dlltarg_libs          = $(asminline_lib) $(cg_libs)
-dlltarg_res_version_nt_386 = version.res
-dlltarg_res_version_nt_x64 = version.res
+dlltarg_res_version_nt_386 = dllver.res
+dlltarg_res_version_nt_x64 = dllver.res
 !include dlltarg.mif
 
 #

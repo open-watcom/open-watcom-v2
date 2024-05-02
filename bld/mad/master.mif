@@ -90,8 +90,8 @@ additional_clean += *$(dlltarg_ext)
 #
 dlltarg_prebuild_objs = $(dis_prereq)
 dlltarg_objs          = madimp.obj $(dis_objs) $(imp_objs)
-dlltarg_res_version_nt_386 = version.res
-dlltarg_res_version_nt_x64 = version.res
+dlltarg_res_version_nt_386 = dllver.res
+dlltarg_res_version_nt_x64 = dllver.res
 !include dlltarg.mif
 
 #

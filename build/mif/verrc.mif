@@ -1,17 +1,17 @@
-# Generate version.res and/or exever.res
+# Generate dllver.res and/or exever.res
 
 # Default names and values
 
 !ifndef verrc_dll_skel
-verrc_dll_skel = ../version.rc
+verrc_dll_skel = ../dllver.rc
 !endif
 
 !ifndef verrc_dll_int
-verrc_dll_int = version.grc
+verrc_dll_int = dllver.grc
 !endif
 
 !ifndef verrc_dll_out
-verrc_dll_out = version.res
+verrc_dll_out = dllver.res
 !endif
 
 !ifndef verrc_dll

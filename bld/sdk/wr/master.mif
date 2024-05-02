@@ -82,8 +82,8 @@ dlltarg_objs = wrmain.obj wrmem.obj wrmsg.obj wrfindt.obj wrtmpfil.obj &
     wrstubs.obj rcerrprt.obj &
     $(trmem_objs) $(dlltarg_objs_rc)
 dlltarg_libs = $(wres_lib) $(commonui_lib)
-dlltarg_res_version_nt_386 = version.res
-dlltarg_res_version_nt_x64 = version.res
+dlltarg_res_version_nt_386 = dllver.res
+dlltarg_res_version_nt_x64 = dllver.res
 dlltarg_res = $(proj_name).res
 !include dlltarg.mif
 

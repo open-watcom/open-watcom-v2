@@ -61,8 +61,8 @@ dlltarg_objs          = $(sys_object) &
     wclip.obj wisedit.obj weditsym.obj &
     $(cpp_objs) ppenv.obj
 dlltarg_libs = $(wres_lib) $(wr_lib) $(wpi_lib) $(commonui_lib)
-dlltarg_res_version_nt_386 = version.res
-dlltarg_res_version_nt_x64 = version.res
+dlltarg_res_version_nt_386 = dllver.res
+dlltarg_res_version_nt_x64 = dllver.res
 dlltarg_res           = $(proj_name).res
 !include dlltarg.mif
 
