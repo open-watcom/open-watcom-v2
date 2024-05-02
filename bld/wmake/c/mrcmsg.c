@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,11 +34,20 @@
 #if defined( __WATCOMC__ ) || !defined( __UNIX__ )
     #include <process.h>
 #endif
+#ifdef INCL_MSGTEXT
+#else
+  #ifdef __NT__
+    #include <windows.h>
+  #endif
+#endif
 #include "make.h"
 #include "mcache.h"
 #include "mrcmsg.h"
-#include "wressetr.h"
-#include "wresset2.h"
+#ifdef INCL_MSGTEXT
+#else
+    #include "wressetr.h"
+    #include "wresset2.h"
+#endif
 #include "wreslang.h"
 
 #include "clibext.h"
@@ -46,33 +55,35 @@
 
 #define ARRAY_SIZE(a)   (sizeof( a ) / sizeof( (a)[0] ))
 
-#ifdef BOOTSTRAP
-
-    static struct idstr { int id; char *s; } StringTable[] = {
-        #define pick(id,e,j)    {id, e},
-        #include "wmake.msg"
-        #include "usage.gh"
-        #undef pick
-    };
-
-    static int compar( const void *s1, const void *s2 )
-    {
-        return ((struct idstr *)s1)->id - ((struct idstr *)s2)->id;
-    }
-
+#ifdef INCL_MSGTEXT
+static struct idstr {
+    int     id;
+    char    *s;
+} StringTable[] = {
+    #define pick(id,e,j)    {id, e},
+    #include "wmake.msg"
+    #include "usage.gh"
+    #undef pick
+};
+#else
+static HANDLE_INFO  hInstance = { 0 };
 #endif
+static unsigned     MsgShift;
 
-#ifndef BOOTSTRAP
-
-static  HANDLE_INFO hInstance = { 0 };
-static  unsigned    MsgShift;
+#ifdef INCL_MSGTEXT
+static int compar( const void *s1, const void *s2 )
+{
+    return( ((struct idstr *)s1)->id - ((struct idstr *)s2)->id );
+}
 
 #endif
 
 bool MsgInit( void )
 /******************/
 {
-#ifndef BOOTSTRAP
+#ifdef INCL_MSGTEXT
+    return( true );
+#else
     static char     name[_MAX_PATH]; // static because address passed outside.
 
     hInstance.status = 0;
@@ -85,8 +96,6 @@ bool MsgInit( void )
     CloseResFile( &hInstance );
     puts( NO_RES_MESSAGE );
     return( false );
-#else
-    return( true );
 #endif
 }
 
@@ -94,7 +103,7 @@ bool MsgInit( void )
 bool MsgGet( int resourceid, char *buffer )
 /*****************************************/
 {
-#ifdef BOOTSTRAP
+#ifdef INCL_MSGTEXT
     struct idstr *s;
     struct idstr msgid;
 
@@ -132,7 +141,8 @@ void MsgGetTail( int resourceid, char *buffer )
 void MsgFini( void )
 /*************************/
 {
-#ifndef BOOTSTRAP
+#ifdef INCL_MSGTEXT
+#else
     CloseResFile( &hInstance );
 #endif
 }

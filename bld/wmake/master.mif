@@ -45,6 +45,9 @@ extra_cpp_flags += -DDLLS_IMPLEMENTED
 !ifdef cachestat
 extra_cpp_flags += -DCACHE_STATS
 !endif
+!ifdef bootstrap
+extra_cpp_flags += -DINCL_MSGTEXT
+!endif
 
 extra_cpp_flags_memory = $(trmem_cpp_flags)
 
