@@ -122,6 +122,8 @@ debug = 0
 !endif
 !endif
 
+ppflags_wres = -DUSE_WRESLIB
+
 ###################################
 # preprocessor definitions
 #
@@ -131,7 +133,7 @@ ppflags_debug = -DNDEBUG
 ppflags_debug = -DDEVBUILD
 !endif
 
-ppflags_common = -D_BLDVER=$(bld_ver_tool) -D_CYEAR=$(curr_year) $(ppflags_debug)
+ppflags_common = -D_BLDVER=$(bld_ver_tool) -D_CYEAR=$(curr_year) $(ppflags_debug) $(ppflags_wres)
 !ifdef bootstrap
 ppflags_common += -DBOOTSTRAP
 !endif
