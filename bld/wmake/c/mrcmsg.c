@@ -82,6 +82,7 @@ bool MsgInit( void )
 /******************/
 {
 #ifdef INCL_MSGTEXT
+    MsgShift = 0;
     return( true );
 #else
     static char     name[_MAX_PATH]; // static because address passed outside.
