@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,17 +40,24 @@
 #include <io.h>
 #include "watcom.h"
 #include "wpmsg.h"
-#include "wressetr.h"
-#include "wresset2.h"
+#ifdef USE_WRESLIB
+    #include "wressetr.h"
+    #include "wresset2.h"
+#else
+#endif
 
 #include "clibext.h"
 
 
+#ifdef USE_WRESLIB
 static  HANDLE_INFO     hInstance = { 0 };
+#else
+#endif
 
 bool MsgInit( char *fname )
 /*************************/
 {
+#ifdef USE_WRESLIB
     hInstance.status = 0;
     if( OpenResFile( &hInstance, fname ) ) {
         return( true );
@@ -58,18 +65,26 @@ bool MsgInit( char *fname )
     CloseResFile( &hInstance );
     puts( NO_RES_MESSAGE );
     return( false );
+#else
+#endif
 }
 
 void MsgGet( int resourceid, char *buffer )
 /*****************************************/
 {
+#ifdef USE_WRESLIB
     if( hInstance.status == 0 || WResLoadString( &hInstance, resourceid, (lpstr)buffer, MAX_RESOURCE_SIZE ) <= 0 ) {
         buffer[0] = '\0';
     }
+#else
+#endif
 }
 
 bool MsgFini( void )
 /******************/
 {
+#ifdef USE_WRESLIB
     return( CloseResFile( &hInstance ) );
+#else
+#endif
 }

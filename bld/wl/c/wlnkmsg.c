@@ -36,7 +36,7 @@
 #include <ctype.h>
 #include <sys/types.h>
 #ifdef __WATCOMC__
-#include <process.h>
+    #include <process.h>
 #endif
 #include "wio.h"
 #include "linkstd.h"
@@ -49,34 +49,41 @@
 #include "loadfile.h"
 #include "wreslang.h"
 #include "wressetr.h"
-#include "wresset2.h"
 #include "rcrtns.h"
 #include "wlnkmsg.h"
 #include "posixfp.h"
+#ifdef USE_WRESLIB
+    #include "wresset2.h"
+#else
+#endif
 
 #include "clibint.h"
 #include "clibext.h"
 
 
+#ifdef USE_WRESLIB
 static  HANDLE_INFO     hInstance = { 0 };
+#else
+#endif
 static  unsigned        MsgShift;
 
 bool InitMsg( void )
 {
+#ifdef USE_WRESLIB
     char        msg_buff[RESOURCE_MAX_SIZE];
-#if defined( IDE_PGM ) || !defined( __WATCOMC__ )
+  #if defined( IDE_PGM ) || !defined( __WATCOMC__ )
     char        imageName[_MAX_PATH];
-#else
+  #else
     char        *imageName;
-#endif
+  #endif
 
-#if defined( IDE_PGM )
+  #if defined( IDE_PGM )
     _cmdname( imageName );
-#elif !defined( __WATCOMC__ )
+  #elif !defined( __WATCOMC__ )
     get_dllname( imageName, sizeof( imageName ) );
-#else
+  #else
     imageName = _LpDllName;;
-#endif
+  #endif
     BannerPrinted = false;
     hInstance.status = 0;
     if( OpenResFile( &hInstance, imageName ) ) {
@@ -88,14 +95,19 @@ bool InitMsg( void )
     CloseResFile( &hInstance );
     WriteStdOutInfo( NO_RES_MESSAGE "\n", ERR, NULL );
     return( false );
+#else
+#endif
 }
 
 bool Msg_Get( int msgid, char *buffer )
 {
+#ifdef USE_WRESLIB
     if( hInstance.status == 0 || WResLoadString( &hInstance, msgid + MsgShift, (lpstr)buffer, RESOURCE_MAX_SIZE ) <= 0 ) {
         buffer[0] = '\0';
         return( false );
     }
+#else
+#endif
     return( true );
 }
 
@@ -169,7 +181,10 @@ void Msg_Put_Args(
 
 bool FiniMsg( void )
 {
+#ifdef USE_WRESLIB
     return( CloseResFile( &hInstance ) );
+#else
+#endif
 }
 
 FILE *res_open( const char *name, wres_open_mode omode )
@@ -239,6 +254,7 @@ size_t res_write( FILE *fp, const void *buf, size_t len )
 bool res_seek( FILE *fp, long amount, int where )
 /***********************************************/
 {
+#ifdef USE_WRESLIB
     if( fp == hInstance.fp ) {
         if( where == SEEK_SET ) {
             return( lseek( FP2POSIX( fp ), amount + WResFileShift, where ) == -1L );
@@ -246,6 +262,8 @@ bool res_seek( FILE *fp, long amount, int where )
             return( lseek( FP2POSIX( fp ), amount, where ) == -1L );
         }
     }
+#else
+#endif
 
     DbgAssert( where != SEEK_END );
     DbgAssert( !( where == SEEK_CUR && amount < 0 ) );
@@ -274,13 +292,16 @@ bool res_seek( FILE *fp, long amount, int where )
 long res_tell( FILE *fp )
 /***********************/
 {
+#ifdef USE_WRESLIB
     if( fp == hInstance.fp ) {
         return( lseek( FP2POSIX( fp ), 0, SEEK_CUR ) );
-    } else if( FP2POSIX( fp ) == Root->outfile->handle ) {
-        return( PosLoad() );
-    } else {
-        return( QPos( FP2POSIX( fp ) ) );
     }
+#else
+#endif
+    if( FP2POSIX( fp ) == Root->outfile->handle ) {
+        return( PosLoad() );
+    }
+    return( QPos( FP2POSIX( fp ) ) );
 }
 
 bool res_ioerr( FILE *fp, size_t rc )

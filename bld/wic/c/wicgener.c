@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,10 +39,13 @@
 #include <sys/types.h>
 #include "wic.h"
 #include "wio.h"
-#include "wressetr.h"
-#include "wresset2.h"
 #include "wreslang.h"
 #include "banner.h"
+#ifdef USE_WRESLIB
+    #include "wressetr.h"
+    #include "wresset2.h"
+#else
+#endif
 #ifdef TRMEM
     #include "trmem.h"
 #endif
@@ -51,7 +54,6 @@
 
 
 static int      _fileNum = 0;
-static unsigned MsgShift = 0;
 
 /*Forward declarations */
 void incDebugCount(void);
@@ -67,10 +69,15 @@ const char *FingerMsg[] = {
 
 /*--------------------- Resources --------------------------------*/
 
-static  HANDLE_INFO     hInstance = { 0 };
+#ifdef USE_WRESLIB
+static HANDLE_INFO      hInstance = { 0 };
+#else
+#endif
+static unsigned         MsgShift;
 
 void initWicResources( char * fname )
 {
+#ifdef USE_WRESLIB
     hInstance.status = 0;
     if( OpenResFile( &hInstance, fname ) ) {
         MsgShift = _WResLanguage() * MSG_LANG_SPACING;
@@ -79,20 +86,28 @@ void initWicResources( char * fname )
     CloseResFile( &hInstance );
     puts( NO_RES_MESSAGE );
     wicExit( -1 );
+#else
+#endif
 }
 
 bool getResStr( int resourceid, char *buffer )
 {
+#ifdef USE_WRESLIB
     if( hInstance.status == 0 || WResLoadString( &hInstance, resourceid + MsgShift, (lpstr)buffer, MAX_RESOURCE_SIZE ) <= 0 ) {
         buffer[0] = 0;
         return( false );
     }
+#else
+#endif
     return( true );
 }
 
 void zapWicResources(void)
 {
+#ifdef USE_WRESLIB
     CloseResFile( &hInstance );
+#else
+#endif
 }
 
 /*--------------------- Error reporting --------------------------*/

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,17 +42,18 @@
 #endif
 #if defined(__WINDOWS__)
     #include <windows.h>
-#else
-    #include "bool.h"
-    #include "wressetr.h"
-    #include "wresset2.h"
 #endif
+#include "bool.h"
 #include "banner.h"
 #include "sample.h"
 #include "smpstuff.h"
 #include "wreslang.h"
 #include "wmsg.h"
 #include "pathgrp2.h"
+#if !defined(__WINDOWS__)
+    #include "wressetr.h"
+    #include "wresset2.h"
+#endif
 
 #include "clibext.h"
 

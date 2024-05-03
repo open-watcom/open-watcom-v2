@@ -44,13 +44,13 @@
 #include "make.h"
 #include "mcache.h"
 #include "mrcmsg.h"
+#include "wreslang.h"
 #ifdef INCL_MSGTEXT
 #elif defined( USE_WRESLIB )
     #include "wressetr.h"
     #include "wresset2.h"
 #else
 #endif
-#include "wreslang.h"
 
 #include "clibext.h"
 

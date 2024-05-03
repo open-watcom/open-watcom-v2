@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,12 +32,15 @@
 
 #include "ftnstd.h"
 #include <ctype.h>
-#include "wressetr.h"
-#include "wresset2.h"
 #include "wreslang.h"
 #include "cioconst.h"
 #include "wfc.rh"
 #include "errutil.h"
+#ifdef USE_WRESLIB
+    #include "wressetr.h"
+    #include "wresset2.h"
+#else
+#endif
 
 
 #define MAX_SUBSTITUTABLE_ARGS  8
@@ -49,27 +52,39 @@ typedef union msg_arg {
     long                i;
 } msg_arg;
 
+#ifdef USE_WRESLIB
 static  HANDLE_INFO     hInstance = { 0 };
+#else
+#endif
 static  unsigned        MsgShift;
 
 static bool LoadMsg( unsigned int msg, char *buffer, int buff_size )
 {
+#ifdef USE_WRESLIB
     return( hInstance.status && ( WResLoadString( &hInstance, MSG_RC_BASE + msg + MsgShift, buffer, buff_size ) > 0 ) );
+#else
+#endif
 }
 
 void ErrorInit( const char *pgm_name )
 {
+#ifdef USE_WRESLIB
     hInstance.status = 0;
     if( OpenResFile( &hInstance, pgm_name ) ) {
         MsgShift = _WResLanguage() * MSG_LANG_SPACING;
         return;
     }
     CloseResFile( &hInstance );
+#else
+#endif
 }
 
 void ErrorFini( void )
 {
+#ifdef USE_WRESLIB
     CloseResFile( &hInstance );
+#else
+#endif
 }
 
 static void OrderArgs( const char *msg, msg_arg *ordered_args, va_list args )

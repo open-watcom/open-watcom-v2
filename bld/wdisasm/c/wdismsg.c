@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,19 +38,26 @@
 #include <process.h>
 #include "disasm.h"
 #include "wdismsg.h"
-#include "wressetr.h"
-#include "wreslang.h"
+#ifdef USE_WRESLIB
+    #include "wressetr.h"
+    #include "wreslang.h"
+#else
+#endif
 
 #include "clibext.h"
 
 
+#ifdef USE_WRESLIB
 static  HANDLE_INFO     hInstance = { 0 };
+#else
+#endif
 static  unsigned        MsgShift;
 
 #define EXE_EXT         ".exe"
 
 bool MsgInit( void )
 {
+#ifdef USE_WRESLIB
     char        name[_MAX_PATH];
 
     hInstance.status = 0;
@@ -63,14 +70,19 @@ bool MsgInit( void )
     CloseResFile( &hInstance );
     puts( NO_RES_MESSAGE );
     return( false );
+#else
+#endif
 }
 
 bool MsgGet( int resourceid, char *buffer )
 {
+#ifdef USE_WRESLIB
     if( hInstance.status == 0 || WResLoadString( &hInstance, resourceid + MsgShift, (lpstr)buffer, MAX_RESOURCE_SIZE ) <= 0 ) {
         buffer[0] = NULLCHAR;
         return( false );
     }
+#else
+#endif
     return( true );
 }
 
@@ -121,7 +133,10 @@ and add a waitforkey() function.
 
 void MsgFini( void )
 {
+#ifdef USE_WRESLIB
     CloseResFile( &hInstance );
+#else
+#endif
 }
 
 void MsgSubStr( char *strptr, char *para, char specifier )
