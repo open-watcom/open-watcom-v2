@@ -38,6 +38,9 @@
     #define MSG_AS_BASE         1
     #define MSG_USAGE_BASE      100
 #else
+    #define MSG_LANG_SPACING    13000
+    #define MSG_AS_BASE         1
+    #define MSG_USAGE_BASE      100
 #endif
 
 #if defined( _STANDALONE_ )

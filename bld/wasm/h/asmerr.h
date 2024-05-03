@@ -85,6 +85,9 @@ extern void MsgPutUsage( void );
 extern void MsgSubStr( char *, char *, char );
 extern void MsgChgeSpec( char *strptr, char specifier );
 #else
+extern void MsgPutUsage( void );
+extern void MsgSubStr( char *, char *, char );
+extern void MsgChgeSpec( char *strptr, char specifier );
 #endif
 
 #endif  /* _STANDALONE_ */

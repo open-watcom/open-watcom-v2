@@ -55,6 +55,7 @@
 #ifdef USE_WRESLIB
     #include "wresset2.h"
 #else
+    #include <windows.h>
 #endif
 
 #include "clibint.h"
@@ -64,8 +65,9 @@
 #ifdef USE_WRESLIB
 static  HANDLE_INFO     hInstance = { 0 };
 #else
+static HINSTANCE        hInstance;
 #endif
-static  unsigned        MsgShift;
+static  unsigned        msgShift;
 
 bool InitMsg( void )
 {
@@ -87,7 +89,7 @@ bool InitMsg( void )
     BannerPrinted = false;
     hInstance.status = 0;
     if( OpenResFile( &hInstance, imageName ) ) {
-        MsgShift = _WResLanguage() * MSG_LANG_SPACING;
+        msgShift = _WResLanguage() * MSG_LANG_SPACING;
         if( Msg_Get( MSG_GENERAL_HELP_0, msg_buff ) ) {
             return( true );
         }
@@ -96,17 +98,24 @@ bool InitMsg( void )
     WriteStdOutInfo( NO_RES_MESSAGE "\n", ERR, NULL );
     return( false );
 #else
+    hInstance = GetModuleHandle( NULL );
+    msgShift = _WResLanguage() * MSG_LANG_SPACING;
+    return( true );
 #endif
 }
 
 bool Msg_Get( int msgid, char *buffer )
 {
 #ifdef USE_WRESLIB
-    if( hInstance.status == 0 || WResLoadString( &hInstance, msgid + MsgShift, (lpstr)buffer, RESOURCE_MAX_SIZE ) <= 0 ) {
+    if( hInstance.status == 0 || WResLoadString( &hInstance, msgid + msgShift, (lpstr)buffer, RESOURCE_MAX_SIZE ) <= 0 ) {
         buffer[0] = '\0';
         return( false );
     }
 #else
+    if( LoadString( hInstance, msgid + msgShift, buffer, RESOURCE_MAX_SIZE ) <= 0 ) {
+        buffer[0] = '\0';
+        return( false );
+    }
 #endif
     return( true );
 }
@@ -184,6 +193,7 @@ bool FiniMsg( void )
 #ifdef USE_WRESLIB
     return( CloseResFile( &hInstance ) );
 #else
+    return( CloseHandle( hInstance ) );
 #endif
 }
 

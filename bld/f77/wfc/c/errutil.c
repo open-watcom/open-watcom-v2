@@ -40,6 +40,7 @@
     #include "wressetr.h"
     #include "wresset2.h"
 #else
+    #include <windows.h>
 #endif
 
 
@@ -53,16 +54,18 @@ typedef union msg_arg {
 } msg_arg;
 
 #ifdef USE_WRESLIB
-static  HANDLE_INFO     hInstance = { 0 };
+static HANDLE_INFO      hInstance = { 0 };
 #else
+static HINSTANCE        hInstance;
 #endif
-static  unsigned        MsgShift;
+static unsigned         msgShift;
 
 static bool LoadMsg( unsigned int msg, char *buffer, int buff_size )
 {
 #ifdef USE_WRESLIB
-    return( hInstance.status && ( WResLoadString( &hInstance, MSG_RC_BASE + msg + MsgShift, buffer, buff_size ) > 0 ) );
+    return( hInstance.status && ( WResLoadString( &hInstance, MSG_RC_BASE + msg + msgShift, buffer, buff_size ) > 0 ) );
 #else
+    return( LoadString( hInstance, MSG_RC_BASE + msg + msgShift, buffer, buff_size ) > 0 );
 #endif
 }
 
@@ -71,11 +74,14 @@ void ErrorInit( const char *pgm_name )
 #ifdef USE_WRESLIB
     hInstance.status = 0;
     if( OpenResFile( &hInstance, pgm_name ) ) {
-        MsgShift = _WResLanguage() * MSG_LANG_SPACING;
+        msgShift = _WResLanguage() * MSG_LANG_SPACING;
         return;
     }
     CloseResFile( &hInstance );
 #else
+    hInstance = GetModuleHandle( NULL );
+    msgShift = _WResLanguage() * MSG_LANG_SPACING;
+    return( true );
 #endif
 }
 
@@ -84,6 +90,7 @@ void ErrorFini( void )
 #ifdef USE_WRESLIB
     CloseResFile( &hInstance );
 #else
+    CloseHandle( hInstance );
 #endif
 }
 

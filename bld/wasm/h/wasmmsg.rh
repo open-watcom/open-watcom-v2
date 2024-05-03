@@ -37,6 +37,8 @@
     // WASM
     #define MSG_LANG_SPACING    13000
   #else
+    // WASM
+    #define MSG_LANG_SPACING    13000
   #endif
 #elif defined( INCL_MSGTEXT )
     // WCC or WPP, must be assigned dynamicaly
@@ -44,6 +46,8 @@
     // WFC
     #define MSG_LANG_SPACING    13000
 #else
+    // WFC
+    #define MSG_LANG_SPACING    13000
 #endif
 
 #if defined( _STANDALONE_ )
@@ -55,6 +59,10 @@
     #define MSG_WASM_BASE       200
     #define MSG_USAGE_BASE      600
   #else
+    // WASM
+    #define MSG_SHARE_BASE      1
+    #define MSG_WASM_BASE       200
+    #define MSG_USAGE_BASE      600
   #endif
 #elif defined( INCL_MSGTEXT )
     // WCC or WPP
@@ -63,6 +71,8 @@
     // WFC
     #define MSG_SHARE_BASE      12000
 #else
+    // WFC
+    #define MSG_SHARE_BASE      12000
 #endif
 
 #include "wasmcmsg.grh"

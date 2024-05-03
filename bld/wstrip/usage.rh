@@ -35,5 +35,6 @@
 #elif defined( USE_WRESLIB )
     #define MSG_USAGE_BASE     100
 #else
+    #define MSG_USAGE_BASE     100
 #endif
 

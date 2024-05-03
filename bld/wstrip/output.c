@@ -46,6 +46,7 @@
     #include "wressetr.h"
     #include "wresset2.h"
 #else
+    #include <windows.h>
 #endif
 
 #include "clibext.h"
@@ -61,21 +62,26 @@ static char *StringTable[] = {
     #undef pick
 };
 #elif defined( USE_WRESLIB )
-static  HANDLE_INFO     hInstance = { 0 };
+static HANDLE_INFO      hInstance = { 0 };
 #else
+static HINSTANCE        hInstance;
 #endif
-static  unsigned        MsgShift;
+static unsigned         msgShift;
 
 static bool Msg_Get( int resourceid, char *buffer )
 {
 #if defined( INCL_MSGTEXT )
     strcpy( buffer, StringTable[resourceid] );
 #elif defined( USE_WRESLIB )
-    if( hInstance.status == 0 || WResLoadString( &hInstance, resourceid + MsgShift, (lpstr)buffer, RESOURCE_MAX_SIZE ) <= 0 ) {
+    if( hInstance.status == 0 || WResLoadString( &hInstance, resourceid + msgShift, (lpstr)buffer, RESOURCE_MAX_SIZE ) <= 0 ) {
         buffer[0] = '\0';
         return( false );
     }
 #else
+    if( LoadString( hInstance, resourceid + msgShift, buffer, RESOURCE_MAX_SIZE ) <= 0 ) {
+        buffer[0] = '\0';
+        return( false );
+    }
 #endif
     return( true );
 }
@@ -83,14 +89,14 @@ static bool Msg_Get( int resourceid, char *buffer )
 bool Msg_Init( void )
 {
 #if defined( INCL_MSGTEXT )
-    MsgShift = 0;
+    msgShift = 0;
     return( true );
 #elif defined( USE_WRESLIB )
     char        name[_MAX_PATH];
 
     hInstance.status = 0;
     if( _cmdname( name ) != NULL && OpenResFile( &hInstance, name ) ) {
-        MsgShift = _WResLanguage() * MSG_LANG_SPACING;
+        msgShift = _WResLanguage() * MSG_LANG_SPACING;
         if( Msg_Get( MSG_USAGE_BASE, name ) ) {
             return( true );
         }
@@ -99,6 +105,9 @@ bool Msg_Init( void )
     puts( NO_RES_MESSAGE );
     return( false );
 #else
+    hInstance = GetModuleHandle( NULL );
+    msgShift = _WResLanguage() * MSG_LANG_SPACING;
+    return( true );
 #endif
 }
 
@@ -110,6 +119,7 @@ bool Msg_Fini( void )
 #elif defined( USE_WRESLIB )
     return( CloseResFile( &hInstance ) );
 #else
+    return( CloseHandle( hInstance ) );
 #endif
 }
 

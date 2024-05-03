@@ -37,6 +37,8 @@
     #define MSG_LANG_SPACING    13000
     #define MSG_RC_BASE         100
 #else
+    #define MSG_LANG_SPACING    13000
+    #define MSG_RC_BASE         100
 #endif
 
 #include "rcmsg.grh"

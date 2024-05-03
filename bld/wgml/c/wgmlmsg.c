@@ -38,16 +38,18 @@
     #include "wressetr.h"
     #include "wresset2.h"
 #else
+    #include <windows.h>
 #endif
 
 #include "clibext.h"
 
 
 #ifdef USE_WRESLIB
-HANDLE_INFO hInstance;
+static HANDLE_INFO  hInstance = { 0 };
 #else
+static HINSTANCE    hInstance;
 #endif
-static unsigned MsgShift;               // 0 = english, 1000 for japanese
+static unsigned     msgShift;               // 0 = english, 1000 for japanese
 
 
 /***************************************************************************/
@@ -61,7 +63,7 @@ bool init_msgs( void )
 
     hInstance.status = 0;
     if( _cmdname( fname ) != NULL && OpenResFile( &hInstance, fname ) ) {
-        MsgShift = _WResLanguage() * MSG_LANG_SPACING;
+        msgShift = _WResLanguage() * MSG_LANG_SPACING;
         if( get_msg( ERR_DUMMY, fname, sizeof( fname ) ) ) {
             return( true );
         }
@@ -71,6 +73,9 @@ bool init_msgs( void )
     g_suicide();
     return( false );
 #else
+    hInstance = GetModuleHandle( NULL );
+    msgShift = _WResLanguage() * MSG_LANG_SPACING;
+    return( true );
 #endif
 }
 
@@ -82,11 +87,15 @@ bool init_msgs( void )
 bool get_msg( msg_ids resid, char *buff, size_t buff_len )
 {
 #ifdef USE_WRESLIB
-    if( hInstance.status == 0 || WResLoadString( &hInstance, resid + MsgShift, buff, (int)buff_len ) <= 0 ) {
+    if( hInstance.status == 0 || WResLoadString( &hInstance, resid + msgShift, buff, (int)buff_len ) <= 0 ) {
         buff[0] = '\0';
         return( false );
     }
 #else
+    if( LoadString( hInstance, resid + msgShift, buff, (int)buff_len ) <= 0 ) {
+        buff[0] = '\0';
+        return( false );
+    }
 #endif
     return( true );
 }
@@ -100,5 +109,6 @@ void fini_msgs( void )
 #ifdef USE_WRESLIB
     CloseResFile( &hInstance );
 #else
+    CloseHandle( hInstance );
 #endif
 }

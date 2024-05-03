@@ -40,6 +40,7 @@
     #include "wressetr.h"
     #include "wresset2.h"
 #else
+    #include <windows.h>
 #endif
 
 #include "clibext.h"
@@ -67,8 +68,9 @@ static char *asMessages[] = {
 #elif defined( USE_WRESLIB )
 static HANDLE_INFO      hInstance = {0};
 #else
+static HINSTANCE        hInstance;
 #endif
-static unsigned         msgShift = 0;
+static unsigned         msgShift;
 
 #if defined( _STANDALONE_ )
 bool AsMsgInit( void )
@@ -104,6 +106,9 @@ bool AsMsgInit( void )
     puts( NO_RES_MESSAGE );
     return( false );
  #else
+    hInstance = GetModuleHandle( NULL );
+    msgShift = _WResLanguage() * MSG_LANG_SPACING;
+    return( true );
  #endif
 }
 
@@ -114,6 +119,7 @@ void AsMsgFini( void )
  #elif defined( USE_WRESLIB )
     CloseResFile( &hInstance );
  #else
+    CloseHandle( hInstance );
  #endif
 }
 #endif
@@ -129,6 +135,10 @@ bool AsMsgGet( int resourceid, char *buffer )
         return( false );
     }
 #else
+    if( LoadString( hInstance, resourceid + msgShift, buffer, MAX_RESOURCE_SIZE ) <= 0 ) {
+        buffer[0] = '\0';
+        return( false );
+    }
 #endif
     return( true );
 }

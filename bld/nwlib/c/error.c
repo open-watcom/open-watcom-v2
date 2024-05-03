@@ -40,6 +40,7 @@
     #include "wressetr.h"
     #include "wresset2.h"
 #else
+    #include <windows.h>
 #endif
 
 #include "clibint.h"
@@ -57,13 +58,14 @@ static const char * const msg_text_array[] = {
 #elif defined( USE_WRESLIB )
 static HANDLE_INFO      hInstance = { 0 };
 #else
+static HINSTANCE        hInstance;
 #endif
-static unsigned         MsgShift;
+static unsigned         msgShift;
 
 void InitMsg( void )
 {
 #if defined( INCL_MSGTEXT )
-    MsgShift = 0;
+    msgShift = 0;
 #elif defined( USE_WRESLIB )
   #if defined( IDE_PGM ) || !defined( __WATCOMC__ )
     char    imageName[_MAX_PATH];
@@ -80,12 +82,15 @@ void InitMsg( void )
   #endif
     hInstance.status = 0;
     if( OpenResFile( &hInstance, imageName ) ) {
-        MsgShift = _WResLanguage() * MSG_LANG_SPACING;
+        msgShift = _WResLanguage() * MSG_LANG_SPACING;
         return;
     }
     CloseResFile( &hInstance );
     FatalResError( NO_RES_MESSAGE "\n" );
 #else
+    hInstance = GetModuleHandle( NULL );
+    msgShift = _WResLanguage() * MSG_LANG_SPACING;
+    return( true );
 #endif
 }
 
@@ -94,10 +99,13 @@ void MsgGet( int msgid, char *buffer )
 #if defined( INCL_MSGTEXT )
     strcpy( buffer, msg_text_array[msgid] );
 #elif defined( USE_WRESLIB )
-    if( hInstance.status == 0 || WResLoadString( &hInstance, msgid + MsgShift, (lpstr)buffer, MAX_ERROR_SIZE ) <= 0 ) {
+    if( hInstance.status == 0 || WResLoadString( &hInstance, msgid + msgShift, (lpstr)buffer, MAX_ERROR_SIZE ) <= 0 ) {
         buffer[0] = '\0';
     }
 #else
+    if( LoadString( hInstance, msgid + msgShift, buffer, MAX_ERROR_SIZE ) <= 0 ) {
+        buffer[0] = '\0';
+    }
 #endif
 }
 
@@ -109,6 +117,9 @@ void FiniMsg( void )
         longjmp( Env, 1 );
     }
 #else
+    if( !CloseHandle( hInstance ) ) {
+        longjmp( Env, 1 );
+    }
 #endif
 }
 

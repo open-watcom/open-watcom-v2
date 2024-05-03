@@ -45,6 +45,7 @@
     #include "wressetr.h"
     #include "wresset2.h"
 #else
+    #include <windows.h>
 #endif
 #ifdef TRMEM
     #include "trmem.h"
@@ -72,32 +73,40 @@ const char *FingerMsg[] = {
 #ifdef USE_WRESLIB
 static HANDLE_INFO      hInstance = { 0 };
 #else
+static HINSTANCE        hInstance;
 #endif
-static unsigned         MsgShift;
+static unsigned         msgShift;
 
 void initWicResources( char * fname )
 {
 #ifdef USE_WRESLIB
     hInstance.status = 0;
     if( OpenResFile( &hInstance, fname ) ) {
-        MsgShift = _WResLanguage() * MSG_LANG_SPACING;
+        msgShift = _WResLanguage() * MSG_LANG_SPACING;
         return;
     }
     CloseResFile( &hInstance );
     puts( NO_RES_MESSAGE );
     wicExit( -1 );
 #else
+    hInstance = GetModuleHandle( NULL );
+    msgShift = _WResLanguage() * MSG_LANG_SPACING;
+    return( true );
 #endif
 }
 
 bool getResStr( int resourceid, char *buffer )
 {
 #ifdef USE_WRESLIB
-    if( hInstance.status == 0 || WResLoadString( &hInstance, resourceid + MsgShift, (lpstr)buffer, MAX_RESOURCE_SIZE ) <= 0 ) {
+    if( hInstance.status == 0 || WResLoadString( &hInstance, resourceid + msgShift, (lpstr)buffer, MAX_RESOURCE_SIZE ) <= 0 ) {
         buffer[0] = 0;
         return( false );
     }
 #else
+    if( LoadString( hInstance, resourceid + msgShift, buffer, MAX_RESOURCE_SIZE ) <= 0 ) {
+        buffer[0] = 0;
+        return( false );
+    }
 #endif
     return( true );
 }
@@ -107,6 +116,7 @@ void zapWicResources(void)
 #ifdef USE_WRESLIB
     CloseResFile( &hInstance );
 #else
+    CloseHandle( hInstance );
 #endif
 }
 

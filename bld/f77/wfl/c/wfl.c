@@ -60,6 +60,7 @@
     #include "wressetr.h"
     #include "wresset2.h"
 #else
+    #include <windows.h>
 #endif
 
 #include "clibint.h"
@@ -214,10 +215,11 @@ static  char    *StackSize = NULL;      // stack size
 static  int     DebugFlag;              // debugging flag
 
 #ifdef USE_WRESLIB
-static  HANDLE_INFO     hInstance = { 0 };
+static HANDLE_INFO      hInstance = { 0 };
 #else
+static HINSTANCE        hInstance;
 #endif
-static  unsigned        MsgShift;
+static unsigned         msgShift;
 
 static bool LoadMsg( unsigned msg, char *buffer, int buff_size )
 /***************************************************************
@@ -225,8 +227,9 @@ static bool LoadMsg( unsigned msg, char *buffer, int buff_size )
  */
 {
 #ifdef USE_WRESLIB
-    return( hInstance.status && ( WResLoadString( &hInstance, msg + MsgShift, buffer, buff_size ) > 0 ) );
+    return( hInstance.status && ( WResLoadString( &hInstance, msg + msgShift, buffer, buff_size ) > 0 ) );
 #else
+    return( LoadString( hInstance, msg + msgShift, buffer, buff_size ) > 0 );
 #endif
 }
 
@@ -252,11 +255,14 @@ static void ErrorInit( const char *pgm_name )
 #ifdef USE_WRESLIB
     hInstance.status = 0;
     if( OpenResFile( &hInstance, pgm_name ) ) {
-        MsgShift = _WResLanguage() * MSG_LANG_SPACING;
+        msgShift = _WResLanguage() * MSG_LANG_SPACING;
         return;
     }
     CloseResFile( &hInstance );
 #else
+    hInstance = GetModuleHandle( NULL );
+    msgShift = _WResLanguage() * MSG_LANG_SPACING;
+    return( true );
 #endif
 }
 
@@ -266,6 +272,7 @@ static void ErrorFini( void )
 #ifdef USE_WRESLIB
     CloseResFile( &hInstance );
 #else
+    CloseHandle( hInstance );
 #endif
 }
 

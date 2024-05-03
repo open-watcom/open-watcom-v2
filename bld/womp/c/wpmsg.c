@@ -44,14 +44,16 @@
     #include "wressetr.h"
     #include "wresset2.h"
 #else
+    #include <windows.h>
 #endif
 
 #include "clibext.h"
 
 
 #ifdef USE_WRESLIB
-static  HANDLE_INFO     hInstance = { 0 };
+static HANDLE_INFO      hInstance = { 0 };
 #else
+static HINSTANCE        hInstance;
 #endif
 
 bool MsgInit( char *fname )
@@ -66,6 +68,8 @@ bool MsgInit( char *fname )
     puts( NO_RES_MESSAGE );
     return( false );
 #else
+    hInstance = GetModuleHandle( NULL );
+    return( true );
 #endif
 }
 
@@ -77,6 +81,9 @@ void MsgGet( int resourceid, char *buffer )
         buffer[0] = '\0';
     }
 #else
+    if( LoadString( hInstance, resourceid, buffer, MAX_RESOURCE_SIZE ) <= 0 ) {
+        buffer[0] = '\0';
+    }
 #endif
 }
 
@@ -86,5 +93,6 @@ bool MsgFini( void )
 #ifdef USE_WRESLIB
     return( CloseResFile( &hInstance ) );
 #else
+    return( CloseHandle( hInstance ) );
 #endif
 }

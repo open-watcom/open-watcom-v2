@@ -41,6 +41,7 @@
     #include "wressetr.h"
     #include "wresset2.h"
 #else
+    #include <windows.h>
 #endif
 #include "banner.h"
 //#include "wasmmsg.h"
@@ -64,10 +65,11 @@ static const char *txtmsgs[] = {
     #undef pick
 };
 #elif defined( USE_WRESLIB )
-static  HANDLE_INFO     hInstance = { 0 };
+static HANDLE_INFO      hInstance = { 0 };
 #else
+static HINSTANCE        hInstance;
 #endif
-static  unsigned        MsgShift;
+static unsigned         msgShift;
 
 static const char *FingerMsg[] = {
     banner1w( "x86 Assembler", _WASM_VERSION_ ),
@@ -135,14 +137,14 @@ void MsgPrintf1( unsigned resourceid, const char *token )
 bool MsgInit( void )
 {
 #if defined( INCL_MSGTEXT )
-    MsgShift = 0;
+    msgShift = 0;
     return( true );
 #elif defined( USE_WRESLIB )
     char        name[_MAX_PATH];
 
     hInstance.status = 0;
     if( _cmdname( name ) != NULL && OpenResFile( &hInstance, name ) ) {
-        MsgShift = _WResLanguage() * MSG_LANG_SPACING;
+        msgShift = _WResLanguage() * MSG_LANG_SPACING;
         if( MsgGet( MSG_USAGE_BASE, name ) ) {
             return( true );
         }
@@ -151,6 +153,9 @@ bool MsgInit( void )
     puts( NO_RES_MESSAGE );
     return( false );
 #else
+    hInstance = GetModuleHandle( NULL );
+    msgShift = _WResLanguage() * MSG_LANG_SPACING;
+    return( true );
 #endif
 }
 
@@ -160,6 +165,7 @@ void MsgFini( void )
 #elif defined( USE_WRESLIB )
     CloseResFile( &hInstance );
 #else
+    CloseHandle( hInstance );
 #endif
 }
 
@@ -169,11 +175,15 @@ bool MsgGet( unsigned id, char *buffer )
     strncpy( buffer, txtmsgs[id], MAX_MESSAGE_SIZE - 1 );
     buffer[MAX_MESSAGE_SIZE - 1] = '\0';
 #elif defined( USE_WRESLIB )
-    if( hInstance.status == 0 || WResLoadString( &hInstance, id + MsgShift, (lpstr)buffer, MAX_MESSAGE_SIZE ) <= 0 ) {
+    if( hInstance.status == 0 || WResLoadString( &hInstance, id + msgShift, (lpstr)buffer, MAX_MESSAGE_SIZE ) <= 0 ) {
         buffer[0] = '\0';
         return( false );
     }
 #else
+    if( LoadString( hInstance, id + msgShift, buffer, MAX_MESSAGE_SIZE ) <= 0 ) {
+        buffer[0] = '\0';
+        return( false );
+    }
 #endif
     return( true );
 }
