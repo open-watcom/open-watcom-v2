@@ -78,4 +78,4 @@ $(proj_name).exe : $(exetarg_res_version_$(host_os)_$(host_cpu)) $(__MAKEFILES__
 #
 # rc and others
 #
-!include verrc.mif
+!include ntverrc.mif

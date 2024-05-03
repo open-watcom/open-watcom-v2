@@ -205,7 +205,7 @@ dlltarg_res_version_nt_x64 = dllver.res
 #
 verrc_exe = $(exetarg_name)
 verrc_dll = $(dlltarg_name)
-!include verrc.mif
+!include ntverrc.mif
 
 rc_defines    = -D_STANDALONE_ $(parser_defines)
 

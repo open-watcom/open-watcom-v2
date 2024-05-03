@@ -70,7 +70,7 @@ exetarg_res_wresui    = wresui.res
 # rc and others
 #
 verrc_exe = $(exetarg_name)
-!include verrc.mif
+!include ntverrc.mif
 
 rcui_inc_dirs = -I. -I.. -I"$(f77wfc_dir)/h" -I"$(f77_dir)/h" &
     $(asminline_inc_dirs) -I"$(comp_cfg_dir)/h" -I"$(fe_misc_dir)/h"

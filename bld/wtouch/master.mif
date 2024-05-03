@@ -40,7 +40,7 @@ exetarg_qnx_res       = usage.u
 #
 # rc and others
 #
-!include verrc.mif
+!include ntverrc.mif
 
 wresui.res : ../wtouch.rc ../wtouch.msg usage.gh msg.grh $(__MAKEFILES__)
     @%make echo_rc

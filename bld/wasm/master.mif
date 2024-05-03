@@ -111,7 +111,7 @@ exetarg_name       = wasm
 #
 # rc and others
 #
-!include verrc.mif
+!include ntverrc.mif
 
 rcui_inc_dirs  = -I. -I"../h"
 

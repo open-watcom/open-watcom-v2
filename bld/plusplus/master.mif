@@ -173,7 +173,7 @@ dlltarg_res_version_nt_x64 = dllver.res
 #
 verrc_dll = $(dlltarg_name)
 verrc_exe = $(exetarg_name)
-!include verrc.mif
+!include ntverrc.mif
 
 ./intlbin.exe: $(fe_misc_dir)/c/intlbin.c
     @%make echo_bldccl

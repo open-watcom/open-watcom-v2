@@ -126,7 +126,7 @@ exetarg_name          = wbrw
 # rc and others
 #
 verrc_exe = $(exetarg_name)
-!include verrc.mif
+!include ntverrc.mif
 
 rc_inc_dirs = -I"../res/bmp" -I"../res/dlg" -I"../res/cur" -I"../res" -I"../h"
 

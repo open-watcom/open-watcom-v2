@@ -98,7 +98,7 @@ exetarg_name = test
 #
 # rc and others
 #
-!include verrc.mif
+!include ntverrc.mif
 
 rc_inc_dirs = -I"$(wrc_dir)/h" #$(wres_inc_dirs) -I"$(wrc_dir)/h" $(commonui_inc_dirs)
 

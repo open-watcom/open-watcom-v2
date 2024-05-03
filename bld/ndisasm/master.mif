@@ -82,7 +82,7 @@ exetarg_qnx_res       = usage.u
 #
 # rc and others
 #
-!include verrc.mif
+!include ntverrc.mif
 
 rcui_inc_dirs = -I"../stand/h" -I"../stand"
 

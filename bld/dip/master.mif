@@ -105,4 +105,4 @@ dlltarg_name = $(dllname)
 # rc and others
 #
 verrc_dll = $(dllname)
-!include verrc.mif
+!include ntverrc.mif

@@ -67,7 +67,7 @@ exetarg_res_version_nt_x64 = exever.res
 #
 #verrc_exe = $(proj_name)
 verrc_exe_skel = $(wcl_dir)/exever.rc
-!include verrc.mif
+!include ntverrc.mif
 
 !ifdef owcc_specs
 $(owcc_specs): $(wlink_dir)/lnk/specs.sp $(__MAKEFILES__)

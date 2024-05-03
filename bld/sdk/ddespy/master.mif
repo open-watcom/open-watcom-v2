@@ -64,7 +64,7 @@ exetarg_nt_manif_x64  = ntmanif.res
 #
 # rc and others
 #
-!include verrc.mif
+!include ntverrc.mif
 
 rc_inc_dirs = $(commonui_inc_dirs) $(wpi_inc_dirs)
 

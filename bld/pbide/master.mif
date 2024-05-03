@@ -30,7 +30,7 @@ exetarg_res  = $(name).res
 #
 # rc and others
 #
-!include verrc.mif
+!include ntverrc.mif
 
 $(name).res : ../dlldbg.rc ../debugger.ico $(__MAKEFILES__)
     @%make echo_rc

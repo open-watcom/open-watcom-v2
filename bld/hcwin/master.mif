@@ -62,4 +62,4 @@ exetarg_res_version_nt_x64 = exever.res
 #
 # rc and others
 #
-!include verrc.mif
+!include ntverrc.mif

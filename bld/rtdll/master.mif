@@ -119,7 +119,7 @@ dlltarg_name          = $(dllname)
 #
 verrc_dll_skel = ../verinfo.rc
 verrc_dll      = $(dllname)
-!include verrc.mif
+!include ntverrc.mif
 
 $(dllname).lbc : $(dllname).dll $(rtdll_dir)/proclbc.awk $(static_objs)
     @%make echo_awk

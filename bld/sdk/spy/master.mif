@@ -100,7 +100,7 @@ dlltarg_name          = $(dllname)
 #
 # rc and others
 #
-!include verrc.mif
+!include ntverrc.mif
 
 rc_inc_dirs = -I"../res" $(commonui_inc_dirs) $(wpi_inc_dirs)
 

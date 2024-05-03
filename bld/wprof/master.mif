@@ -91,7 +91,7 @@ exetarg_qnx_res       = usage.u
 #
 # rc and others
 #
-!include verrc.mif
+!include ntverrc.mif
 
 #
 # rcflags

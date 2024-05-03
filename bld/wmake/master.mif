@@ -104,7 +104,7 @@ exetarg_name          = wmk
 #
 # rc and others
 #
-!include verrc.mif
+!include ntverrc.mif
 
 wsplice_opts_linux = -kUNIX
 wsplice_opts_qnx   = -kUNIX

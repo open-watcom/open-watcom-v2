@@ -92,7 +92,7 @@ exetarg_res           = $(proj_name).res
 #
 # rc and others
 #
-!include verrc.mif
+!include ntverrc.mif
 
 ide_rc_inc_dirs = -I"../res/$(target_$(host_os))" -I"../res"
 

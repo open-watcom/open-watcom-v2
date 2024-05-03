@@ -52,4 +52,4 @@ dlltarg_name    = wedit
 # rc and others
 #
 verrc_dll = weditviw
-!include verrc.mif
+!include ntverrc.mif

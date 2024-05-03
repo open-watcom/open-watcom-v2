@@ -69,7 +69,7 @@ dlltarg_res           = $(proj_name).res
 #
 # rc and others
 #
-!include verrc.mif
+!include ntverrc.mif
 
 rc_inc_dirs = -I"../res" -I"../../res" -I"../../h" $(commonui_inc_dirs)
 

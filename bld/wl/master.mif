@@ -123,7 +123,7 @@ dlltarg_res_version_nt_x64 = dllver.res
 #
 verrc_exe = $(exetarg_name)
 verrc_dll = $(dlltarg_name)
-!include verrc.mif
+!include ntverrc.mif
 
 rcui_inc_dirs = -I. -I"$(wlink_dir)/h" -I"$(wrc_dir)/h"
 

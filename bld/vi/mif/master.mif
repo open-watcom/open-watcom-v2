@@ -83,7 +83,7 @@ exetarg_name          = $(name)
 #
 # rc and others
 #
-!include verrc.mif
+!include ntverrc.mif
 
 $(name).res : $(vi_dir)/res/viw.rc $(__MAKEFILES__) $(vi_autodepends)
     @%make echo_rc

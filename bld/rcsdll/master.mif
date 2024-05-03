@@ -67,5 +67,5 @@ libtarg_name = rcsdll
 #
 # rc and others
 #
-!include verrc.mif
+!include ntverrc.mif
 

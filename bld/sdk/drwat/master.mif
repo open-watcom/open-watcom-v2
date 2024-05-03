@@ -101,7 +101,7 @@ exetarg_nt_manif_x64  = ntmanif.res
 #
 # rc and others
 #
-!include verrc.mif
+!include ntverrc.mif
 
 rc_inc_dirs = -I"../res/$(host_os)" -I"../res" -I"../$(host_os)" -I"$(dig_dir)/h" $(commonui_inc_dirs)
 

@@ -163,7 +163,7 @@ dlltarg_name          = $(dlltarg_name)
 #
 verrc_dll = $(dllname)
 verrc_exe = $(exename)
-!include verrc.mif
+!include ntverrc.mif
 
 !ifeq target_cpu axp
 

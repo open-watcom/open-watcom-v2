@@ -176,7 +176,7 @@ dlltarg_res_wresui    = wresui.res
 #
 verrc_exe = $(exetarg_name)
 verrc_dll = $(dlltarg_name)
-!include verrc.mif
+!include ntverrc.mif
 
 wresui.res : ../wlib.rc ../wlib.msg msg.grh $(__MAKEFILES__)
     @%make echo_rc

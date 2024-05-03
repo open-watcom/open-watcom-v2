@@ -56,7 +56,7 @@ exetarg_res_version_nt_386 = exever.res
 exetarg_res_version_nt_x64 = exever.res
 
 !include exetarg.mif
-!include verrc.mif
+!include ntverrc.mif
 
 #optencod_enc_linux = -utf8
 optencod_targets = $(target_cpu) $(host_os)

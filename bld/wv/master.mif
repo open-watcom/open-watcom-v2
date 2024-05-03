@@ -191,7 +191,7 @@ rc_inc_dirs = -I. -I"../../res/$(target_$(host_os))" $(wv_res_inc_dirs) &
 rcui_inc_dirs = -I. $(wv_res_inc_dirs) &
     -I"../../h" $(aui_rc_inc_dirs) $(gui_rc_inc_dirs) -I"$(dig_dir)/h"
 
-!include verrc.mif
+!include ntverrc.mif
 
 !ifeq sys_windowed 1
 

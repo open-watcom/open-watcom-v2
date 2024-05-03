@@ -176,7 +176,7 @@ rc_cpp_dos = $(rc_cpp_dos_$(target)_$(host_cpu))
 !endif
 
 verrc_exe = $(exetarg_name)
-!include verrc.mif
+!include ntverrc.mif
 
 rcui_inc_dirs = -I"../h"
 
