@@ -35,18 +35,20 @@
     #include <process.h>
 #endif
 #ifdef INCL_MSGTEXT
-#else
+#elif defined( USE_WRESLIB )
   #ifdef __NT__
     #include <windows.h>
   #endif
+#else
 #endif
 #include "make.h"
 #include "mcache.h"
 #include "mrcmsg.h"
 #ifdef INCL_MSGTEXT
-#else
+#elif defined( USE_WRESLIB )
     #include "wressetr.h"
     #include "wresset2.h"
+#else
 #endif
 #include "wreslang.h"
 
@@ -65,8 +67,9 @@ static struct idstr {
     #include "usage.gh"
     #undef pick
 };
-#else
+#elif defined( USE_WRESLIB )
 static HANDLE_INFO  hInstance = { 0 };
+#else
 #endif
 static unsigned     MsgShift;
 
@@ -75,7 +78,6 @@ static int compar( const void *s1, const void *s2 )
 {
     return( ((struct idstr *)s1)->id - ((struct idstr *)s2)->id );
 }
-
 #endif
 
 bool MsgInit( void )
@@ -84,7 +86,7 @@ bool MsgInit( void )
 #ifdef INCL_MSGTEXT
     MsgShift = 0;
     return( true );
-#else
+#elif defined( USE_WRESLIB )
     static char     name[_MAX_PATH]; // static because address passed outside.
 
     hInstance.status = 0;
@@ -97,6 +99,7 @@ bool MsgInit( void )
     CloseResFile( &hInstance );
     puts( NO_RES_MESSAGE );
     return( false );
+#else
 #endif
 }
 
@@ -115,11 +118,12 @@ bool MsgGet( int resourceid, char *buffer )
         return( false );
     }
     strcpy( buffer, s->s );
-#else
+#elif defined( USE_WRESLIB )
     if( hInstance.status == 0 || WResLoadString( &hInstance, resourceid + MsgShift, (lpstr)buffer, MAX_RESOURCE_SIZE ) <= 0 ) {
         buffer[0] = NULLCHAR;
         return( false );
     }
+#else
 #endif
     return( true );
 }
@@ -143,7 +147,8 @@ void MsgFini( void )
 /*************************/
 {
 #ifdef INCL_MSGTEXT
-#else
+#elif defined( USE_WRESLIB )
     CloseResFile( &hInstance );
+#else
 #endif
 }

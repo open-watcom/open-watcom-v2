@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,20 +32,16 @@
 
 
 #if defined( INCL_MSGTEXT )
-
-#define MSG_AS_BASE         0
-
+    #define MSG_AS_BASE         0
+#elif defined( USE_WRESLIB )
+    #define MSG_LANG_SPACING    13000
+    #define MSG_AS_BASE         1
+    #define MSG_USAGE_BASE      100
 #else
-
-#define MSG_LANG_SPACING    13000
-
-#define MSG_AS_BASE         1
-#define MSG_USAGE_BASE      100
-
 #endif
 
 #if defined( _STANDALONE_ )
-#include "msg.grh"
+    #include "msg.grh"
 #else
-#include "asi_msg.grh"
+    #include "asi_msg.grh"
 #endif

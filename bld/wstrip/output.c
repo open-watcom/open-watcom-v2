@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,12 +34,19 @@
 #include <stdlib.h>
 #include <stdio.h>
 #ifdef __WATCOMC__
-#include <process.h>
+    #include <process.h>
 #endif
 #include "watcom.h"
 #include "wstrip.h"
 #include "banner.h"
 #include "usage.h"
+#include "wreslang.h"
+#if defined( INCL_MSGTEXT )
+#elif defined( USE_WRESLIB )
+    #include "wressetr.h"
+    #include "wresset2.h"
+#else
+#endif
 
 #include "clibext.h"
 
@@ -47,34 +54,28 @@
 #define RESOURCE_MAX_SIZE       128
 
 #if defined( INCL_MSGTEXT )
-
 static char *StringTable[] = {
     #define pick(c,e,j) e,
     #include "wstrip.msg"
     #include "usage.gh"
     #undef pick
 };
-
-#else
-
-#include "wressetr.h"
-#include "wresset2.h"
-#include "wreslang.h"
-
+#elif defined( USE_WRESLIB )
 static  HANDLE_INFO     hInstance = { 0 };
-static  unsigned        MsgShift;
-
+#else
 #endif
+static  unsigned        MsgShift;
 
 static bool Msg_Get( int resourceid, char *buffer )
 {
 #if defined( INCL_MSGTEXT )
     strcpy( buffer, StringTable[resourceid] );
-#else
+#elif defined( USE_WRESLIB )
     if( hInstance.status == 0 || WResLoadString( &hInstance, resourceid + MsgShift, (lpstr)buffer, RESOURCE_MAX_SIZE ) <= 0 ) {
         buffer[0] = '\0';
         return( false );
     }
+#else
 #endif
     return( true );
 }
@@ -82,8 +83,9 @@ static bool Msg_Get( int resourceid, char *buffer )
 bool Msg_Init( void )
 {
 #if defined( INCL_MSGTEXT )
+    MsgShift = 0;
     return( true );
-#else
+#elif defined( USE_WRESLIB )
     char        name[_MAX_PATH];
 
     hInstance.status = 0;
@@ -96,6 +98,7 @@ bool Msg_Init( void )
     CloseResFile( &hInstance );
     puts( NO_RES_MESSAGE );
     return( false );
+#else
 #endif
 }
 
@@ -104,8 +107,9 @@ bool Msg_Fini( void )
 {
 #if defined( INCL_MSGTEXT )
     return( true );
-#else
+#elif defined( USE_WRESLIB )
     return( CloseResFile( &hInstance ) );
+#else
 #endif
 }
 

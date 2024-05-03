@@ -32,12 +32,21 @@
 
 #include "wlib.h"
 #ifdef __WATCOMC__
-#include <process.h>
+    #include <process.h>
 #endif
+#include "wreslang.h"
+#if defined( INCL_MSGTEXT )
+#elif defined( USE_WRESLIB )
+    #include "wressetr.h"
+    #include "wresset2.h"
+#else
+#endif
+
+#include "clibint.h"
+#include "clibext.h"
 
 
 #if defined( INCL_MSGTEXT )
-
 static const char * const msg_text_array[] = {
     #define pick(c,e,j) e,
     #include "wlib.msg"
@@ -45,44 +54,30 @@ static const char * const msg_text_array[] = {
     #include "usagea.gh"
     #undef pick
 };
-
-void InitMsg( void ) {}
-
-void MsgGet( int msgid, char *buffer )
-{
-    strcpy( buffer, msg_text_array[msgid] );
-}
-
-void FiniMsg( void ) {}
-
+#elif defined( USE_WRESLIB )
+static HANDLE_INFO      hInstance = { 0 };
 #else
-
-#include "wressetr.h"
-#include "wresset2.h"
-#include "wreslang.h"
-
-#include "clibint.h"
-#include "clibext.h"
-
-
-static  HANDLE_INFO     hInstance = { 0 };
-static  unsigned        MsgShift;
+#endif
+static unsigned         MsgShift;
 
 void InitMsg( void )
 {
-#if defined( IDE_PGM ) || !defined( __WATCOMC__ )
+#if defined( INCL_MSGTEXT )
+    MsgShift = 0;
+#elif defined( USE_WRESLIB )
+  #if defined( IDE_PGM ) || !defined( __WATCOMC__ )
     char    imageName[_MAX_PATH];
-#else
+  #else
     char    *imageName;
-#endif
+  #endif
 
-#if defined( IDE_PGM )
+  #if defined( IDE_PGM )
     _cmdname( imageName );
-#elif !defined( __WATCOMC__ )
+  #elif !defined( __WATCOMC__ )
     get_dllname( imageName, sizeof( imageName ) );
-#else
+  #else
     imageName = _LpDllName;
-#endif
+  #endif
     hInstance.status = 0;
     if( OpenResFile( &hInstance, imageName ) ) {
         MsgShift = _WResLanguage() * MSG_LANG_SPACING;
@@ -90,19 +85,30 @@ void InitMsg( void )
     }
     CloseResFile( &hInstance );
     FatalResError( NO_RES_MESSAGE "\n" );
+#else
+#endif
 }
 
 void MsgGet( int msgid, char *buffer )
 {
+#if defined( INCL_MSGTEXT )
+    strcpy( buffer, msg_text_array[msgid] );
+#elif defined( USE_WRESLIB )
     if( hInstance.status == 0 || WResLoadString( &hInstance, msgid + MsgShift, (lpstr)buffer, MAX_ERROR_SIZE ) <= 0 ) {
         buffer[0] = '\0';
     }
+#else
+#endif
 }
 
 void FiniMsg( void )
 {
+#if defined( INCL_MSGTEXT )
+#elif defined( USE_WRESLIB )
     if( !CloseResFile( &hInstance ) ) {
         longjmp( Env, 1 );
     }
-}
+#else
 #endif
+}
+

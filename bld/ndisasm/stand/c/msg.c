@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,19 +36,26 @@
     #include <process.h>
 #endif
 #include "bool.h"
-#include "wressetr.h"
-#include "wresset2.h"
 #include "wreslang.h"
 #include "msg.h"
+#if defined( USE_WRESLIB )
+    #include "wressetr.h"
+    #include "wresset2.h"
+#else
+#endif
 
 #include "clibext.h"
 
 
+#if defined( USE_WRESLIB )
 static HANDLE_INFO      hInstance = {0};
+#else
+#endif
 static unsigned         MsgShift;
 
 bool MsgInit( void )
 {
+#if defined( USE_WRESLIB )
     char            name[_MAX_PATH];
 
     hInstance.status = 0;
@@ -61,18 +68,26 @@ bool MsgInit( void )
     CloseResFile( &hInstance );
     puts( NO_RES_MESSAGE );
     return( false );
+#else
+#endif
 }
 
 bool MsgGet( int resourceid, char *buffer )
 {
+#if defined( USE_WRESLIB )
     if( hInstance.status == 0 || WResLoadString( &hInstance, resourceid + MsgShift, (lpstr)buffer, MAX_RESOURCE_SIZE ) <= 0 ) {
         buffer[0] = '\0';
         return( false );
     }
+#else
+#endif
     return( true );
 }
 
 void MsgFini( void )
 {
+#if defined( USE_WRESLIB )
     CloseResFile( &hInstance );
+#else
+#endif
 }

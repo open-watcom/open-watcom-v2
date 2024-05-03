@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,7 +33,14 @@
 
 #include "asmglob.h"
 #ifdef __WATCOMC__
-  #include <process.h>
+    #include <process.h>
+#endif
+#include "wreslang.h"
+#if defined( INCL_MSGTEXT )
+#elif defined( USE_WRESLIB )
+    #include "wressetr.h"
+    #include "wresset2.h"
+#else
 #endif
 #include "banner.h"
 //#include "wasmmsg.h"
@@ -49,7 +56,6 @@ enum {
 };
 
 #if defined( INCL_MSGTEXT )
-
 static const char *txtmsgs[] = {
     #define pick(num,etext,jtext) {etext},
     #include "wasmc.msg"
@@ -57,17 +63,11 @@ static const char *txtmsgs[] = {
     #include "usage.gh"
     #undef pick
 };
-
-#else
-
-#include "wressetr.h"
-#include "wresset2.h"
-#include "wreslang.h"
-
+#elif defined( USE_WRESLIB )
 static  HANDLE_INFO     hInstance = { 0 };
-static  unsigned        MsgShift;
-
+#else
 #endif
+static  unsigned        MsgShift;
 
 static const char *FingerMsg[] = {
     banner1w( "x86 Assembler", _WASM_VERSION_ ),
@@ -134,7 +134,10 @@ void MsgPrintf1( unsigned resourceid, const char *token )
 
 bool MsgInit( void )
 {
-#if !defined( INCL_MSGTEXT )
+#if defined( INCL_MSGTEXT )
+    MsgShift = 0;
+    return( true );
+#elif defined( USE_WRESLIB )
     char        name[_MAX_PATH];
 
     hInstance.status = 0;
@@ -148,14 +151,15 @@ bool MsgInit( void )
     puts( NO_RES_MESSAGE );
     return( false );
 #else
-    return( true );
 #endif
 }
 
 void MsgFini( void )
 {
-#if !defined( INCL_MSGTEXT )
+#if defined( INCL_MSGTEXT )
+#elif defined( USE_WRESLIB )
     CloseResFile( &hInstance );
+#else
 #endif
 }
 
@@ -164,11 +168,12 @@ bool MsgGet( unsigned id, char *buffer )
 #if defined( INCL_MSGTEXT )
     strncpy( buffer, txtmsgs[id], MAX_MESSAGE_SIZE - 1 );
     buffer[MAX_MESSAGE_SIZE - 1] = '\0';
-#else
+#elif defined( USE_WRESLIB )
     if( hInstance.status == 0 || WResLoadString( &hInstance, id + MsgShift, (lpstr)buffer, MAX_MESSAGE_SIZE ) <= 0 ) {
         buffer[0] = '\0';
         return( false );
     }
+#else
 #endif
     return( true );
 }
