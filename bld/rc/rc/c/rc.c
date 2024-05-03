@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -49,8 +49,6 @@
 #include "rccore.h"
 
 
-extern HANDLE_INFO  hInstance;
-
 WResSetRtns(res_open,res_close,res_read,res_write,res_seek,res_tell,res_ioerr,RcMemAlloc,RcMemFree);
 
 void InitGlobs( void )
@@ -61,7 +59,7 @@ void InitGlobs( void )
     memset( &Pass2Info, 0, sizeof( RcPass2Info ) );
     ErrorHasOccured = false;
     memset( CharSetLen, 0, sizeof( CharSetLen ) );
-    memset( &hInstance, 0, sizeof( HANDLE_INFO ) );
+    ResetRcMsgs();
     Layer0InitStatics();
     SemanticInitStatics();
     SemanticInitStaticsWIN();

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,6 +39,7 @@
 #include "rclayer0.h"
 #include "rccore.h"
 #include "rcrtns.h"
+#include "rcldstr.h"
 
 #include "clibext.h"
 
@@ -90,10 +91,7 @@ typedef struct RcFileEntry {
     RcBuffer    *Buffer;        // If NULL, entry is a normal file (not used yet)
 } RcFileEntry;
 
-HANDLE_INFO     hInstance;
-
-bool            RcIoNoBuffer = false;
-
+static bool             RcIoNoBuffer = false;
 static FILE             *openFileList[MAX_OPEN_FILES];
 static RcFileEntry      RcFileList[RC_MAX_FILES];
 
@@ -309,7 +307,7 @@ size_t res_read( FILE *fp, void *in_buff, size_t size )
     int             i;
     size_t          bytes_added;        /* return value of FillRcBuffer */
 
-    if( hInstance.fp == fp ) {
+    if( CheckRcMsgsFile( fp ) ) {
         return( fread( in_buff, 1, size, fp ) );
     }
     i = RcFindIndex( fp );
@@ -360,7 +358,7 @@ bool res_seek( FILE *fp, long amount, int where )
     int             diff;
     int             i;
 
-    if( hInstance.fp == fp ) {
+    if( CheckRcMsgsFile( fp ) ) {
         if( where == SEEK_SET ) {
             return( fseek( fp, amount + WResFileShift, SEEK_SET ) != 0 );
         }
@@ -450,7 +448,7 @@ long res_tell( FILE *fp )
     RcBuffer    *buff;
     int         i;
 
-    if( hInstance.fp == fp ) {
+    if( CheckRcMsgsFile( fp ) ) {
         return( ftell( fp ) );
     }
     i = RcFindIndex( fp );
@@ -487,4 +485,15 @@ void Layer0InitStatics( void )
     for( i = 0; i < MAX_OPEN_FILES; i++ ) {
         openFileList[i] = NULL;
     }
+}
+
+bool OpenRcMsgsFile( PHANDLE_INFO hinfo, const char *filename )
+/*************************************************************/
+{
+    bool    rc;
+
+    RcIoNoBuffer = true;
+    rc = OpenResFile( hinfo, filename );
+    RcIoNoBuffer = false;
+    return( rc );
 }

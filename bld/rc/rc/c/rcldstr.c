@@ -50,13 +50,6 @@
 
 
 #if defined( INCL_MSGTEXT )
-#elif defined( USE_WRESLIB )
-extern HANDLE_INFO  hInstance;
-extern bool         RcIoNoBuffer;
-#else
-#endif
-
-#if defined( INCL_MSGTEXT )
 static const char * const StringTable[] = {
     #define pick(c,e,j) e,
     #include "rc.msg"
@@ -64,6 +57,7 @@ static const char * const StringTable[] = {
     #undef pick
 };
 #elif defined( USE_WRESLIB )
+static HANDLE_INFO  hInstance = { 0 };
 #else
 #endif
 static unsigned     MsgShift;
@@ -79,7 +73,6 @@ bool InitRcMsgs( void )
      * otherwise WResLoadString return 0 (error)
      */
     char        testbuf[2];
-    bool        ok;
   #if defined( IDE_PGM ) || !defined( __WATCOMC__ )
     char        imageName[_MAX_PATH];
   #else
@@ -99,10 +92,7 @@ bool InitRcMsgs( void )
      * that the resource information starts at offset 0
      */
     hInstance.status = 0;
-    RcIoNoBuffer = true;
-    ok = OpenResFile( &hInstance, imageName );
-    RcIoNoBuffer = false;
-    if( ok ) {
+    if( OpenRcMsgsFile( &hInstance, imageName ) ) {
         MsgShift = _WResLanguage() * MSG_LANG_SPACING;
         if( GetRcMsg( MSG_USAGE_BASE, testbuf, sizeof( testbuf ) ) ) {
             return( true );
@@ -140,3 +130,25 @@ void FiniRcMsgs( void )
 #endif
 }
 
+void ResetRcMsgs( void )
+{
+#if defined( INCL_MSGTEXT )
+#elif defined( USE_WRESLIB )
+    memset( &hInstance, 0, sizeof( HANDLE_INFO ) );
+#else
+#endif
+}
+
+bool CheckRcMsgsFile( FILE *fp )
+{
+    /* unused parameters */ (void)fp;
+
+#if defined( INCL_MSGTEXT )
+#elif defined( USE_WRESLIB )
+    if( hInstance.fp == fp ) {
+        return( true );
+    }
+#else
+#endif
+    return( false );
+}
