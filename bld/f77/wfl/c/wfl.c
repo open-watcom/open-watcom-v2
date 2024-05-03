@@ -238,15 +238,12 @@ static char *GetMsg( unsigned msg )
  * Build error message.
  */
 {
-#ifdef USE_WRESLIB
     static char    msg_buf[ERR_BUFF_SIZE];
 
     if( !LoadMsg( msg, msg_buf, ERR_BUFF_SIZE - 1 ) ) {
         msg_buf[0] = '\0';
     }
     return( msg_buf );
-#else
-#endif
 }
 
 static void ErrorInit( const char *pgm_name )
@@ -260,9 +257,10 @@ static void ErrorInit( const char *pgm_name )
     }
     CloseResFile( &hInstance );
 #else
+    /* unused parameters */ (void)pgm_name;
+
     hInstance = GetModuleHandle( NULL );
     msgShift = _WResLanguage() * MSG_LANG_SPACING;
-    return( true );
 #endif
 }
 

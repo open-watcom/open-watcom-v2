@@ -90,7 +90,6 @@ void InitMsg( void )
 #else
     hInstance = GetModuleHandle( NULL );
     msgShift = _WResLanguage() * MSG_LANG_SPACING;
-    return( true );
 #endif
 }
 

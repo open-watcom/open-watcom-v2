@@ -79,9 +79,10 @@ void ErrorInit( const char *pgm_name )
     }
     CloseResFile( &hInstance );
 #else
+    /* unused parameters */ (void)pgm_name;
+
     hInstance = GetModuleHandle( NULL );
     msgShift = _WResLanguage() * MSG_LANG_SPACING;
-    return( true );
 #endif
 }
 
