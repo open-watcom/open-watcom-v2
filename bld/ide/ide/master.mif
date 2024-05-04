@@ -28,8 +28,6 @@ additional_clean = $(docs_host_dir)/ide.gh
 !include $(commonui_dir)/client.mif
 !include $(wpi_dir)/client.mif
 
-!include wres.mif
-
 !include ../objects.mif
 
 #

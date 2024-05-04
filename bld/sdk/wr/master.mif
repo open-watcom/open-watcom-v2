@@ -23,7 +23,6 @@ additional_clean = *.grh *.grc $(win_yacc_file).h $(win_yacc_file).c
 !include defrule.mif
 !include deftarg.mif
 !include dllbase.mif
-!include wres.mif
 !include trmem.mif
 
 !include $(commonui_dir)/client.mif

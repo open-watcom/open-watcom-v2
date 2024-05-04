@@ -10,8 +10,6 @@ wgml_research_autodepends = .AUTODEPEND
 !include defrule.mif
 !include deftarg.mif
 
-!include wres.mif
-
 !include ../../wgmlobjs.mif
 
 #

@@ -8,8 +8,6 @@ additional_clean = *.gh *.grh *.grc
 !include defrule.mif
 !include deftarg.mif
 
-!include wres.mif
-
 #
 # cflags
 #

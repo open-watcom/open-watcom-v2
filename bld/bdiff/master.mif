@@ -28,7 +28,6 @@ defrule_key = bdiff
 extra_cpp_bdiff_flags = -DBDIFF
 !include defrule.mif
 !include deftarg.mif
-!include wres.mif
 
 #
 # cflags

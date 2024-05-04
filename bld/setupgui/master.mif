@@ -18,7 +18,6 @@ additional_clean = *.i *.rex setup.inf *.grc
 !include defrule.mif
 !include deftarg.mif
 !include win386.mif
-!include wres.mif
 !include trmem.mif
 
 !include $(gui_dir)/client.mif
