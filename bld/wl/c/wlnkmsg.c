@@ -63,11 +63,11 @@
 
 
 #ifdef USE_WRESLIB
-static  HANDLE_INFO     hInstance = { 0 };
+static HANDLE_INFO      hInstance = { 0 };
 #else
 static HINSTANCE        hInstance;
 #endif
-static  unsigned        msgShift;
+static unsigned         msgShift;
 
 bool InitMsg( void )
 {

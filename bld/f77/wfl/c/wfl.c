@@ -37,15 +37,15 @@
 #include <ctype.h>
 #include <errno.h>
 #ifdef __UNIX__
-  #include <dirent.h>
+    #include <dirent.h>
 #else
-  #include <direct.h>
+    #include <direct.h>
 #endif
 #if defined( __WATCOMC__ ) || !defined( __UNIX__ )
-#include <process.h>
+    #include <process.h>
 #endif
 #if defined( __WATCOMC__ ) || defined( __UNIX__ )
-#include <fnmatch.h>
+    #include <fnmatch.h>
 #endif
 #include "switch.h"
 #include "bool.h"

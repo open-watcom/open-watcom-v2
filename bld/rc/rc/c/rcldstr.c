@@ -146,6 +146,7 @@ void ResetRcMsgs( void )
 #elif defined( USE_WRESLIB )
     memset( &hInstance, 0, sizeof( HANDLE_INFO ) );
 #else
+    hInstance = NULL;
 #endif
 }
 

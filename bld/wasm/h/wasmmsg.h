@@ -50,6 +50,8 @@ enum {
     #include "../h/wasms.msg"
     #undef pick
 };
+  #elif defined( USE_WRESLIB )
+  #else
   #endif
 #endif
 
@@ -64,5 +66,7 @@ enum {
     #include "../h/wasmc.msg"
     #undef pick
 };
+  #elif defined( USE_WRESLIB )
+  #else
   #endif
 #endif
