@@ -707,6 +707,8 @@ bld_ldflags     =
 ##############################################################################
 
 cpp             = $(noecho)*wcpp $(bldver_cppflags)
+cpp0            = $(cpp) -zk0
+cppu8           = $(cpp) -zku8
 
 echo_optencod : .PROCEDURE .EXPLICIT
 !ifeq verbose 0

@@ -122,7 +122,20 @@ debug = 0
 !endif
 !endif
 
+!ifndef wreslib
+#wreslib_win = 0
+#wreslib_nt  = 0
+#wreslib_os2 = 0
+!ifdef wreslib_$(host_os)
+wreslib = $(wreslib_$(host_os))
+!else
+wreslib = 1
+!endif
+!endif
+
+!ifeq wreslib 1
 ppflags_wres = -DUSE_WRESLIB
+!endif
 
 ###################################
 # preprocessor definitions
@@ -772,13 +785,16 @@ rc_cppflags     = $(rc_cpp_$(host_os)) $(rc_cpp_$(host_cpu))
 
 rc_flags_all    = -xb -r
 
+proj_rc_flags   = $(extra_rc_flags) $(extra_rc_flags_$(host_os))
+
+!ifeq wreslib 1
+rc_flags        = $(rc_flags_all) -bt=windows $(proj_rc_flags)
+!else
 rc_flags_nt     = -bt=nt
 rc_flags_win    = -bt=windows
 rc_flags_os2    = -bt=os2
-
-proj_rc_flags   = $(extra_rc_flags) $(extra_rc_flags_$(host_os))
-
 rc_flags        = $(rc_flags_all) $(rc_flags_$(host_os)) $(proj_rc_flags)
+!endif
 
 rc_ui_encoding  = -zk0
 
@@ -809,23 +825,25 @@ rc_ui_inc_path  = $(rcui_inc_dirs) $(rcui_inc_dirs_$(host_os)) $(inc_dirs_sys_wi
 # special RC invoke macros:
 #
 
-!ifdef bootstrap
-rcui            = $(noecho)*bwrc -q $(ppflags_common) $(rc_cppflags) $(rc_flags_all) -bt=windows $(rc_ui_flags) $[@ -fo=$@ $(rc_ui_inc_path)
-!else ifndef __WATCOM_TOOLS__
-rcui            = $(noecho)*bwrc -q $(ppflags_common) $(rc_cppflags) $(rc_flags_all) -bt=windows $(rc_ui_flags) $[@ -fo=$@ $(rc_ui_inc_path)
-!else
-rcui            = $(noecho)*bwrc -q $(ppflags_common) $(rc_cppflags) $(rc_flags_all) -x -bt=windows $(rc_ui_flags) $[@ -fo=$@ $(rc_ui_inc_path)
-!endif
-
-!ifdef bootstrap
-rcui8           = $(noecho)*bwrc -q $(ppflags_common) $(rc_cppflags) $(rc_flags_all) -bt=windows $(rc_ui8_flags) $[@ -fo=$@ $(rc_ui_inc_path)
-!else ifndef __WATCOM_TOOLS__
-rcui8           = $(noecho)*bwrc -q $(ppflags_common) $(rc_cppflags) $(rc_flags_all) -bt=windows $(rc_ui8_flags) $[@ -fo=$@ $(rc_ui_inc_path)
-!else
-rcui8           = $(noecho)*bwrc -q $(ppflags_common) $(rc_cppflags) $(rc_flags_all) -x -bt=windows $(rc_ui8_flags) $[@ -fo=$@ $(rc_ui_inc_path)
-!endif
-
 rc              = $(noecho)*bwrc -q
+rc0             = $(rc) -zk0
+rcu8            = $(rc) $(rc_ui8_flags)
+
+!ifdef bootstrap
+rcui            = $(rc0) $(ppflags_common) $(rc_cppflags) $(rc_flags_all) -bt=windows $[@ -fo=$@ $(rc_ui_inc_path)
+!else ifndef __WATCOM_TOOLS__
+rcui            = $(rc0) $(ppflags_common) $(rc_cppflags) $(rc_flags_all) -bt=windows $[@ -fo=$@ $(rc_ui_inc_path)
+!else
+rcui            = $(rc0) $(ppflags_common) $(rc_cppflags) $(rc_flags_all) -x -bt=windows $[@ -fo=$@ $(rc_ui_inc_path)
+!endif
+
+!ifdef bootstrap
+rcui8           = $(rcu8) $(ppflags_common) $(rc_cppflags) $(rc_flags_all) -bt=windows $[@ -fo=$@ $(rc_ui_inc_path)
+!else ifndef __WATCOM_TOOLS__
+rcui8           = $(rcu8) $(ppflags_common) $(rc_cppflags) $(rc_flags_all) -bt=windows $[@ -fo=$@ $(rc_ui_inc_path)
+!else
+rcui8           = $(rcu8) $(ppflags_common) $(rc_cppflags) $(rc_flags_all) -x -bt=windows $[@ -fo=$@ $(rc_ui_inc_path)
+!endif
 
 #####################################
 # GLOBAL MACROS SETINGS FOR OW TOOLS
@@ -874,6 +892,10 @@ wstrip  = $(noecho)bwstrip
 wbind   = $(noecho)bwbind
 
 !include local.mif
+
+!ifeq wreslib 1
+!include wres.mif
+!endif
 
 bind_res : .PROCEDURE .EXPLICIT
 !ifeq verbose 0
