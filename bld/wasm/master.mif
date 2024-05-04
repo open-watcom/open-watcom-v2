@@ -14,7 +14,6 @@ additional_clean = *.gh *.grh *.grc *.gc
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
-!include wres.mif
 !include trmem.mif
 !include $(wasm_dir)/client.mif
 

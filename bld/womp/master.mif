@@ -9,7 +9,6 @@ womp_trmem = 1
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
-!include wres.mif
 !include trmem.mif
 
 #

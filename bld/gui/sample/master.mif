@@ -16,8 +16,6 @@ guisample_autodepends = .AUTODEPEND
 !include $(gui_dir)/client.mif
 !include $(ui_dir)/client.mif
 
-!include wres.mif
-
 #
 # cflags
 #

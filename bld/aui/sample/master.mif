@@ -12,7 +12,6 @@ proj_name = auisample
 !include $(aui_dir)/client.mif
 !include $(gui_dir)/client.mif
 !include $(ui_dir)/client.mif
-!include wres.mif
 
 #
 # cflags

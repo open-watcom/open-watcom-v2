@@ -26,7 +26,6 @@ extra_cpp_lib_flags += -fh=lib.pch
 !include defrule.mif
 !include deftarg.mif
 !include trmem.mif
-!include wres.mif
 
 !include $(owl_dir)/client.mif
 !include $(cpp_dir)/client.mif

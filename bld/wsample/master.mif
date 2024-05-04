@@ -27,9 +27,6 @@ dig_arch = $(host_cpu)
 
 !include $(dig_dir)/digcli.mif
 
-!ifneq target win
-!include wres.mif
-!endif
 !include tools.mif
 
 #

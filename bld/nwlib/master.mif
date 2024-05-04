@@ -29,7 +29,6 @@ additional_clean = *.gh *.grh *.grc *.gc
 !ifdef bootstrap
 !include $(orl_dir)/orlobjs.mif
 !else
-!include wres.mif
 !include $(orl_dir)/client.mif
 !endif
 
