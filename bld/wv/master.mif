@@ -159,15 +159,13 @@ exetarg_name          = $(wv_engine_noui)
 exetarg_prebuild_objs = litdef.gh usage.gh
 exetarg_objs          = $(engine_objs) fingmsg.obj $(ui_objs)
 exetarg_libs          = $(aui_lib) $(gui_lib) $(ui_lib) $(wres_lib)
-exetarg_res_version_nt_386 = exever.res
-exetarg_res_version_nt_x64 = exever.res
+exetarg_nt_version    = exever.res
 !ifeq sys_windowed 1
 exetarg_res           = $(proj_name).res
 !else
 exetarg_res_wresui    = wresui.res
 !endif
-exetarg_nt_manif_386  = ntmanif.res
-exetarg_nt_manif_x64  = ntmanif.res
+exetarg_nt_manif      = ntmanif.res
 exetarg_qnx_res       = usage.u
 exetarg_name          = $(name)
 #exetarg_ext           = .exe
@@ -192,6 +190,8 @@ rcui_inc_dirs = -I. $(wv_res_inc_dirs) &
     -I"../../h" $(aui_rc_inc_dirs) $(gui_rc_inc_dirs) -I"$(dig_dir)/h"
 
 !include ntverrc.mif
+ntmanif_path = ../../res
+!include ntmanif.mif
 
 !ifeq sys_windowed 1
 
@@ -439,10 +439,6 @@ wvuidll.res : ../../res/wvuidll.rc litdef.gh $(__MAKEFILES__) .autodepend
 wresui.res : ../../res/wvui.rc $(rcfiles) usage.gh usagej.gh $(__MAKEFILES__) .autodepend
     @%make echo_rc
     $(rcui) -ad
-
-ntmanif.res : ../../res/ntmanif.rc
-    @%make echo_rc
-    $(rc) $(ppflags_common) $(rc_cppflags) $(rc_flags) -I"../../res" $(inc_dirs_sys_nt) $< -fo=$@
 
 litdefm.tmp : $(res_strings_dir)/menu.str $(__MAKEFILES__)
     @%make echo_cpp

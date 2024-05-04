@@ -142,4 +142,3 @@ bool AsMsgGet( int resourceid, char *buffer )
 #endif
     return( true );
 }
-

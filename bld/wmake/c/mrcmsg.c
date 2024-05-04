@@ -80,6 +80,8 @@ static int compar( const void *s1, const void *s2 )
 {
     return( ((struct idstr *)s1)->id - ((struct idstr *)s2)->id );
 }
+#elif defined( USE_WRESLIB )
+#else
 #endif
 
 bool MsgInit( void )

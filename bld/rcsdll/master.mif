@@ -51,8 +51,7 @@ objs_ntx64  = mkssi.obj objcycle.obj
 # DLL
 #
 dlltarg_objs = rcsdll.obj inifile.obj $(objs_$(objs_subdir)) $(extra_objs)
-dlltarg_res_version_nt_386 = dllver.res
-dlltarg_res_version_nt_x64 = dllver.res
+dlltarg_nt_version = dllver.res
 dlltarg_name = rcsdll
 !include dlltarg.mif
 !else

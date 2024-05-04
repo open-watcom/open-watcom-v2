@@ -49,8 +49,7 @@ exetarg_objs_tag = element.obj text.obj entity.obj punct.obj whtspc.obj word.obj
     title.obj ul.obj warning.obj xmp.obj
 exetarg_objs = main.obj compiler.obj document.obj env.obj ipfbuff.obj ipffile.obj &
     lexer.obj $(exetarg_objs_obj) $(exetarg_objs_tag)
-exetarg_res_version_nt_386 = exever.res
-exetarg_res_version_nt_x64 = exever.res
+exetarg_nt_version = exever.res
 
 !ifdef __WATCOM_TOOLS__
 
@@ -58,15 +57,15 @@ exetarg_res_version_nt_x64 = exever.res
 
 !else ifdef __UNIX__
 
-$(proj_name).exe : $(exetarg_res_version_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
+$(proj_name).exe : $(exetarg_$(host_os)_version) $(__MAKEFILES__)
     ../configure
     make -f Makefile wipfc
     mv wipfc $@
-!ifdef exetarg_res_version_$(host_os)_$(host_cpu)
+!ifdef exetarg_$(host_os)_version
 !ifeq verbose 0
     @echo bind res $@ ver
 !endif
-    $(noecho)*bwrc -q -k $(exetarg_res_version_$(host_os)_$(host_cpu)) $@
+    $(noecho)*bwrc -q -k $(exetarg_$(host_os)_version) $@
 !endif
 
 !else

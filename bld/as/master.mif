@@ -171,8 +171,7 @@ all : $(all_as) .symbolic
 exetarg_prebuild_objs = $(subdir_stand) msg.grh usage.gh
 exetarg_objs = $(as_objs)
 exetarg_libs = $(owl_lib) $(wres_lib)
-exetarg_res_version_nt_386 = exever.res
-exetarg_res_version_nt_x64 = exever.res
+exetarg_nt_version = exever.res
 exetarg_res_wresui = wresui.res
 !include exetarg.mif
 

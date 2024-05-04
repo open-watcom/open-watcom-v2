@@ -10,7 +10,7 @@
 # dlltarg_opts                  extra OW wlink directive or options used to link DLL
 # dlltarg_export                list of files containing symbols to export from DLL
 # dlltarg_res                   native resource file added to DLL
-# dlltarg_res_version_nt_<cpu>  native version info resource file added to DLL
+# dlltarg_nt_version            native version info resource file added to DLL
 # dlltarg_res_wresui            string resource file (Windows 3.x format) added to DLL
 #
 # All resource macros are include in dependant list
@@ -22,7 +22,7 @@ dlltarg_name = $(proj_name)
 dlltarg_ext = .dll
 !endif
 $(dlltarg_name)$(dlltarg_ext) : $+$(dlltarg_prebuild_objs) $(dlltarg_objs) $(dlltarg_libs)$- &
-        $(dlltarg_res_version_$(host_os)_$(host_cpu)) $(dlltarg_res_wresui) $+$(dlltarg_res) &
+        $(dlltarg_$(host_os)_version) $(dlltarg_res_wresui) $+$(dlltarg_res) &
         $(dlltarg_export)$- $(__MAKEFILES__)
     @%make echo_cl
 !ifndef __WATCOM_TOOLS__
@@ -38,19 +38,19 @@ $(dlltarg_name)$(dlltarg_ext) : $+$(dlltarg_prebuild_objs) $(dlltarg_objs) $(dll
 # add resources to DLL
 #########################
 # native .res
-!ifdef dlltarg_res_version_$(host_os)_$(host_cpu)
+!ifdef dlltarg_$(host_os)_version
 !ifdef dlltarg_res
 # version + application
 !ifeq verbose 0
     @echo bind res $@ ver+appl
 !endif
-    $(rcbind) -q -k $+$(dlltarg_res)$- $@ -fr=$(dlltarg_res_version_$(host_os)_$(host_cpu))
+    $(rcbind) -q -k $+$(dlltarg_res)$- $@ -fr=$(dlltarg_$(host_os)_version)
 !else
 # version only
 !ifeq verbose 0
     @echo bind res $@ ver
 !endif
-    $(rcbind) -q -k $(dlltarg_res_version_$(host_os)_$(host_cpu)) $@
+    $(rcbind) -q -k $(dlltarg_$(host_os)_version) $@
 !endif
 !else ifdef dlltarg_res
 # application only

@@ -58,8 +58,7 @@ exetarg_objs          = clcommon.obj $(trmem_objs) wcl.obj
 exetarg_prebuild_objs = usage.gh $(owcc_specs)
 exetarg_objs          = clcommon.obj $(trmem_objs) owcc.obj getopt.obj argvenv.obj argvstr.obj
 !endif
-exetarg_res_version_nt_386 = exever.res
-exetarg_res_version_nt_x64 = exever.res
+exetarg_nt_version    = exever.res
 !include exetarg.mif
 
 #

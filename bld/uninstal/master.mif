@@ -30,25 +30,20 @@ inc_dirs = -I. -I".." $(commonui_inc_dirs)
 exetarg_prebuild_objs = rcstr.grh
 exetarg_objs          = uninstal.obj
 exetarg_libs          = $(commonui_lib)
-exetarg_res_version_nt_386  = exever.res
-exetarg_res_version_nt_x64  = exever.res
+exetarg_nt_version    = exever.res
 exetarg_res           = $(proj_name).res
-exetarg_nt_manif_386  = ntmanif.res
-exetarg_nt_manif_x64  = ntmanif.res
+exetarg_nt_manif      = ntmanif.res
 !include exetarg.mif
 
 #
 # rc and others
 #
 !include ntverrc.mif
+!include ntmanif.mif
 
 $(proj_name).res : ../uninstal.rc $(__MAKEFILES__) .AUTODEPEND
     @%make echo_rc
     $(rc) $(ppflags_common) $(rc_cppflags) $(rc_flags) -ad -zku8 $(inc_path) $[@ -fo=$@
-
-ntmanif.res : ../ntmanif.rc
-    @%make echo_rc
-    $(rc) $(ppflags_common) $(rc_cppflags) $(rc_flags) -I.. $(inc_dirs_sys_nt) $< -fo=$@
 
 rcstr.grh : rcstrmsg.gh $(__MAKEFILES__)
     @%make echo_awk

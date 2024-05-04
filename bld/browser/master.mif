@@ -110,11 +110,9 @@ exetarg_prebuild_objs = $(docs_host_dir)/wbrw.gh
 exetarg_objs          = $(objs) $(objs_dbg)
 exetarg_libs_dos      = $(ui_lib)
 exetarg_libs          = $(gui_lib) $(exetarg_libs_$(host_os)) $(dwarfr_lib) $(wclass_lib)
-exetarg_res_version_nt_386 = exever.res
-exetarg_res_version_nt_x64 = exever.res
+exetarg_nt_version    = exever.res
 exetarg_res           = $(exetarg_name).res
-exetarg_nt_manif_386  = ntmanif.res
-exetarg_nt_manif_x64  = ntmanif.res
+exetarg_nt_manif      = ntmanif.res
 exetarg_name          = wbrw
 !include exetarg.mif
 !ifdef gen_browser_file
@@ -127,6 +125,8 @@ exetarg_name          = wbrw
 #
 verrc_exe = $(exetarg_name)
 !include ntverrc.mif
+ntmanif_path = ../res
+!include ntmanif.mif
 
 rc_inc_dirs = -I"../res/bmp" -I"../res/dlg" -I"../res/cur" -I"../res" -I"../h"
 
@@ -139,10 +139,6 @@ $(exetarg_name).res : ../res/wbrw.rc
     @%make echo_rc
     $(rc) $(ppflags_common) $(rc_cppflags) $(rc_flags) -I"../res/ico" $(rc_inc_path) $< -fo=$@
 !endif
-
-ntmanif.res : ../res/ntmanif.rc
-    @%make echo_rc
-    $(rc) $(ppflags_common) $(rc_cppflags) $(rc_flags) -I"../res" $(inc_dirs_sys_nt) $< -fo=$@
 
 curr_dir=$+$(%__CWD__)$-
 

@@ -45,8 +45,7 @@ all : bpatch.exe bdiff.exe bpcmt.exe bplevel.exe bdump.exe wpatch.exe wcpatch.ex
 #
 # EXE's
 #
-exetarg_nt_manif_386 = ntmanif.res
-exetarg_nt_manif_x64 = ntmanif.res
+exetarg_nt_manif    = ntmanif.res
 
 #
 # BCMT
@@ -140,6 +139,8 @@ exetarg_name        = bdiff
 #
 # rc and others
 #
+!include ntmanif.mif
+
 rcui_inc_dirs = -I..
 
 ppusage.gh : ../gml/optionsp.gml $(__MAKEFILES__)
@@ -169,9 +170,3 @@ bdiff.res : ../bpatch.rc ../h/bpatch.h dusage.gh
 wpatch.res wcpatch.res : ../bpatch.rc ../h/bpatch.h
     @%make echo_rc
     $(rcui8)
-
-!ifdef exetarg_$(host_os)_manif_$(host_cpu)
-$(exetarg_$(host_os)_manif_$(host_cpu)) : ../ntmanif.rc .EXPLICIT
-    @%make echo_rc
-    $(rc) $(ppflags_common) $(rc_cppflags) $(rc_flags) -I.. $(inc_dirs_sys_nt) -I"$(watcom_dir)/h" $< -fo=$@
-!endif
