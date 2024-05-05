@@ -179,7 +179,7 @@ ntverrc_dll = $(dlltarg_name)
 
 wresui.res : ../wlib.rc ../wlib.msg msg.grh $(__MAKEFILES__)
     @%make echo_rc
-    $(rcui8)
+    $(rcu8j) $(ppflags_common) $(rc_cppflags) $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
 msg.grh :  ../wlib.msg $(__MAKEFILES__)
     @%make echo_awk

@@ -72,11 +72,11 @@ exetarg_res_wresui = wresui.res
 #
 # rc and others
 #
-rcui_inc_dirs = -I. -I.. -I"../h" -I"$(wrc_dir)/h"
+rc_inc_dirs = -I. -I.. -I"../h" -I"$(wrc_dir)/h"
 
 wresui.res : ../h/$(proj_name).rc
     @%make echo_rc
-    $(rcui8)
+    $(rcu8j) $(ppflags_common) $(rc_cppflags) $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
 wompmsg.gh : ../womp.msg
     @%make echo_awk

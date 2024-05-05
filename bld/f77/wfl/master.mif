@@ -61,11 +61,11 @@ exetarg_res_wresui    = wresui.res
 ntverrc_exe = $(exetarg_name)
 !include ntverrc.mif
 
-rcui_inc_dirs = -I. -I"$(f77wfl_dir)" -I"$(f77_dir)/h" -I"$(comp_cfg_dir)/h"
+rc_inc_dirs = -I. -I"$(f77wfl_dir)" -I"$(f77_dir)/h" -I"$(comp_cfg_dir)/h"
 
 wresui.res : $(f77wfl_dir)/h/wfl.rc wflmsgs.gh wflmsgs.grh
     @%make echo_rc
-    $(rcui8)
+    $(rcu8j) $(ppflags_common) $(rc_cppflags) $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
 #msgencod_enc_linux = -utf8
 

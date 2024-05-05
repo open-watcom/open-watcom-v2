@@ -107,11 +107,11 @@ rc_inc_dirs = -I"../res/$(host_os)" -I"../res" -I"../$(host_os)" -I"$(dig_dir)/h
 !ifeq host_os win
 $(proj_name).res : ../res/$(host_os)/drwatcom.rc .AUTODEPEND
     @%make echo_rc
-    $(rc) $(ppflags_common) $(rc_cppflags) $(rc_ui8_flags) $(rc_flags) -ad $(cppflags) $(rc_inc_path) $[@ -fo=$@
+    $(rcu8j) $(ppflags_common) $(rc_cppflags) -ad $(rc_flags) $(cppflags) $(rc_inc_path) $[@ -fo=$@
 !else
 $(proj_name).res : ../res/$(host_os)/drnt.rc $(ntmanif_dep) .AUTODEPEND
     @%make echo_rc
-    $(rc) $(ppflags_common) $(rc_cppflags) $(rc_ui8_flags) $(rc_flags) -ad $(cppflags) $(rc_inc_path) $(ntmanif_inc_dirs) $[@ -fo=$@
+    $(rcu8j) $(ppflags_common) $(rc_cppflags) -ad $(rc_flags) $(cppflags) $(rc_inc_path) $(ntmanif_inc_dirs) $[@ -fo=$@
 !endif
 
 rcstr.grh : rcstrmsg.gh
@@ -120,4 +120,4 @@ rcstr.grh : rcstrmsg.gh
 
 rcstrmsg.gh : ../res/$(host_os)/drwatcom.msg
     @%make echo_cpp
-    $(cpp) $(ppflags_common) $(rc_cppflags) $(cppflags) $(rc_ui8_flags) -I"$(dig_dir)/h" $(commonui_inc_dirs) -o$@ $[@
+    $(cppu8) $(ppflags_common) $(rc_cppflags) $(cppflags) -I"$(dig_dir)/h" $(commonui_inc_dirs) -o$@ $[@

@@ -192,17 +192,17 @@ ntverrc_exe = $(exetarg_name)
 
 wresui.res : $(as_dir)/h/as.rc msg.grh usage.gh $(ntverrc_exe_dep) $(__MAKEFILES__)
     @%make echo_rc
-    $(rcui8) $(cppflags) -D_STANDALONE_
+    $(rcu8j) $(ppflags_common) $(rc_cppflags) -D_STANDALONE_ $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
 msg.grh : $(as_dir)/h/as.msg $(__MAKEFILES__)
     @%make echo_cpp
-    $(cpp) $(ppflags_common) $(rc_cppflags) $(cppflags) -D_STANDALONE_ -zku8 -omsg.tmp $[@
+    $(cppu8) $(ppflags_common) $(rc_cppflags) $(cppflags) -D_STANDALONE_ -omsg.tmp $[@
     @%make echo_awk
     $(noecho)*awk -v base=MSG_AS_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. msg.tmp
 
 asi_msg.grh : $(as_dir)/h/as.msg $(__MAKEFILES__)
     @%make echo_cpp
-    $(cpp) $(ppflags_common) $(rc_cppflags) $(cppflags) -zku8 -oasi_msg.tmp $[@
+    $(cppu8) $(ppflags_common) $(rc_cppflags) $(cppflags) -oasi_msg.tmp $[@
     @%make echo_awk
     $(noecho)*awk -v base=MSG_AS_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. asi_msg.tmp
 

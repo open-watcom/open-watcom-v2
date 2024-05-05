@@ -43,11 +43,11 @@ exetarg_res_wresui = wresui.res
 #
 # rc and others
 #
-rcui_inc_dirs = -I"../res" -I"../h"
+rc_inc_dirs = -I"../res" -I"../h"
 
 wresui.res: ../res/wic.rc usagee.gh usagej.gh #../res/messages.rc
     @%make echo_rc
-    $(rcui)
+    $(rcj) $(ppflags_common) $(rc_cppflags) $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
 usagee.gh:  ../res/usage.sp
     @%make echo_wsplice

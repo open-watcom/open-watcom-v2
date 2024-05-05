@@ -211,7 +211,7 @@ rc_defines    = -D_STANDALONE_ $(parser_defines)
 
 wresui.res : ../rc.rc rcmsg.grh .AUTODEPEND
     @%make echo_rc
-    $(rcui8) -ad $(rc_defines)
+    $(rcu8j) $(ppflags_common) $(rc_cppflags) $(rc_defines) -ad $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
 win_yacc_options = -b $(win_yacc_prefix) -d -dd -db -de
 os2_yacc_options = -b $(os2_yacc_prefix) -d -dd -db -de

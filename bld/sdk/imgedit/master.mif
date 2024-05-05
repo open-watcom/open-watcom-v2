@@ -90,16 +90,16 @@ rc_inc_dirs = -I"../res" $(commonui_inc_dirs) -Ih
 !ifeq host_os os2
 $(proj_name).res : ../res/os2/wimgedit.rc rcstr.grh $(__MAKEFILES__)
     @%make echo_rc
-    $(rc) $(ppflags_common) $(rc_cppflags) $(rc_ui8_flags) $(rc_flags) -ad -I"../res/os2" $(cppflags) $(rc_inc_path) $[@ -fo=$@
+    $(rcu8j) $(ppflags_common) $(rc_cppflags) -ad $(rc_flags) -I"../res/os2" $(cppflags) $(rc_inc_path) $[@ -fo=$@
 !else
 $(proj_name).res : ../res/wimgedit.rc rcstr.grh $(ntmanif_dep) $(__MAKEFILES__)
     @%make echo_rc
-    $(rc) $(ppflags_common) $(rc_cppflags) $(rc_ui8_flags) $(rc_flags) -ad $(cppflags) $(rc_inc_path) $(ntmanif_inc_dirs) $[@ -fo=$@
+    $(rcu8j) $(ppflags_common) $(rc_cppflags) -ad $(rc_flags) $(cppflags) $(rc_inc_path) $(ntmanif_inc_dirs) $[@ -fo=$@
 !endif
 
 rcstrmsg.gh : ../res/wimgedit.msg $(__MAKEFILES__)
     @%make echo_cpp
-    $(cpp) $(ppflags_common) $(rc_cppflags) $(rc_ui8_flags) -o$@ $[@
+    $(cppu8) $(ppflags_common) $(rc_cppflags) -o$@ $[@
 
 rcstr.grh : rcstrmsg.gh $(__MAKEFILES__)
     @%make echo_awk

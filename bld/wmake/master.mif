@@ -112,7 +112,7 @@ wsplice_opts_osx   = -kUNIX
 
 wresui.res : ../h/wmake.rc ../h/mrcmsg.h usage.gh usagej.gh $(__MAKEFILES__)
     @%make echo_rc
-    $(rcui8)
+    $(rcu8j) $(ppflags_common) $(rc_cppflags) $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
 usage.gh : ../h/usage.sp $(__MAKEFILES__)
     @%make echo_wsplice

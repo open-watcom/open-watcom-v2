@@ -140,7 +140,7 @@ exetarg_name        = bdiff
 #
 !include ntmanif.mif
 
-rcui_inc_dirs = -I..
+rc_inc_dirs = -I..
 
 ppusage.gh : ../gml/optionsp.gml $(__MAKEFILES__)
     @%make echo_optencod
@@ -156,16 +156,16 @@ dusage.gh : ../gml/optionsi.gml $(__MAKEFILES__)
 
 bpatch.res : ../bpatch.rc ../h/bpatch.h ppusage.gh $(ntmanif_dep)
     @%make echo_rc
-    $(rcui8) -DBPATCH $(ntmanif_inc_dirs)
+    $(rcu8j) $(ppflags_common) $(rc_cppflags) -DBPATCH $(rc_flags) $(rc_inc_path) $(ntmanif_inc_dirs) $[@ -fo=$@
 
 bdump.res : ../bpatch.rc ../h/bpatch.h pdusage.gh $(ntmanif_dep)
     @%make echo_rc
-    $(rcui8) -DBDUMP $(ntmanif_inc_dirs)
+    $(rcu8j) $(ppflags_common) $(rc_cppflags) -DBDUMP $(rc_flags) $(rc_inc_path) $(ntmanif_inc_dirs) $[@ -fo=$@
 
 bdiff.res : ../bpatch.rc ../h/bpatch.h dusage.gh $(ntmanif_dep)
     @%make echo_rc
-    $(rcui8) -DBDIFF $(ntmanif_inc_dirs)
+    $(rcu8j) $(ppflags_common) $(rc_cppflags) -DBDIFF $(rc_flags) $(rc_inc_path) $(ntmanif_inc_dirs) $[@ -fo=$@
 
 wpatch.res wcpatch.res : ../bpatch.rc ../h/bpatch.h $(ntmanif_dep)
     @%make echo_rc
-    $(rcui8) $(ntmanif_inc_dirs)
+    $(rcu8j) $(ppflags_common) $(rc_cppflags) $(rc_flags) $(rc_inc_path) $(ntmanif_inc_dirs) $[@ -fo=$@

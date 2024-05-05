@@ -71,13 +71,12 @@ sample_rc_inc_dirs = -I"../res/win" -I"../res" -I"../h"
 !endif
 
 rc_inc_dirs = -I. $(sample_rc_inc_dirs) $(gui_rc_inc_dirs)  $(commonui_inc_dirs)
-rcui_inc_dirs = -I. $(sample_rc_inc_dirs) $(gui_rc_inc_dirs) $(commonui_inc_dirs)
 
 samplepm.res : ../res/samplepm.rc ../res/samplepm.dlg
-        $(rc) $(ppflags_common) $(rc_cppflags) $(rc_flags) -ad $(rc_inc_path) $[@ -fo=$@
+    $(rc) $(ppflags_common) $(rc_cppflags) -ad $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
 sample.res : ../res/sample.rc ../res/sample.dlg
-        $(rc) $(ppflags_common) $(rc_cppflags) -DWINRC $(rc_flags) -ad $(rc_inc_path) $[@ -fo=$@
+    $(rc) $(ppflags_common) $(rc_cppflags) -DWINRC -ad $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
 wresui.res : ../res/sample.rc ../res/sample.dlg
-        $(rcui) -ad
+    $(rcj) $(ppflags_common) $(rc_cppflags) -ad $(rc_flags) $(rc_inc_path) $[@ -fo=$@

@@ -372,7 +372,7 @@ $(statname).lib: $(static_objs) $(__MAKEFILES__)
 
 $(dllname).res: ../h/owf.rc $(ntverrc_dll_dep) $(__MAKEFILES__) .AUTODEPEND
     @%make echo_rc
-    $(rc) $(ppflags_common) $(rc_cppflags) $(rc_flags) -ad -zk0 $(inc_path) -I"../include" $[@ -fo=$@
+    $(rcj) $(ppflags_common) $(rc_cppflags) -ad $(rc_flags) $(inc_path) -I"../include" $[@ -fo=$@
 
 .sp.gsp:
     @%make echo_awk

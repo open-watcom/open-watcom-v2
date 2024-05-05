@@ -47,14 +47,14 @@ exetarg_name = $(exename)x
 #
 # rc and others
 #
-rcui_inc_dirs = -I. -I..
+rc_inc_dirs = -I. -I..
 
 ntverrc_exe = $(exename)
 !include ntverrc.mif
 
 wresui.res : ../wstrip.rc msg.grh usage.gh $(__MAKEFILES__)
     @%make echo_rc
-    $(rcui8) -ad
+    $(rcu8j) $(ppflags_common) $(rc_cppflags) -ad $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
 msg.grh : ../wstrip.msg $(__MAKEFILES__)
     @%make echo_awk

@@ -69,7 +69,7 @@ rc_inc_dirs = $(commonui_inc_dirs) $(wpi_inc_dirs)
 
 $(proj_name).res : ../res/wddespy.rc $(ntmanif_dep) .AUTODEPEND $(__MAKEFILES__)
     @%make echo_rc
-    $(rc) $(ppflags_common) $(rc_cppflags) $(rc_ui8_flags) $(rc_flags) -ad $(rc_inc_path) $(ntmanif_inc_dirs) $[@ -fo=$@
+    $(rcu8j) $(ppflags_common) $(rc_cppflags) -ad $(rc_flags) $(rc_inc_path) $(ntmanif_inc_dirs) $[@ -fo=$@
 
 rcstr.grh : rcstrmsg.gh $(__MAKEFILES__)
     @%make echo_awk
@@ -77,4 +77,4 @@ rcstr.grh : rcstrmsg.gh $(__MAKEFILES__)
 
 rcstrmsg.gh : ../res/ddespy.msg $(__MAKEFILES__)
     @%make echo_cpp
-    $(cpp) $(ppflags_common) $(rc_cppflags) $(rc_ui8_flags) $(rc_ui_flags) -o$@ $[@
+    $(cppu8) $(ppflags_common) $(rc_cppflags) $(rc_flags) -o$@ $[@

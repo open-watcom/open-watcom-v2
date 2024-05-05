@@ -111,11 +111,11 @@ exetarg_name       = wasm
 #
 !include ntverrc.mif
 
-rcui_inc_dirs  = -I. -I"../h"
+rc_inc_dirs  = -I. -I"../h"
 
 wresui.res : ../h/wasm.rc usage.gh wasmcmsg.grh wasmsmsg.grh $(__MAKEFILES__)
     @%make echo_rc
-    $(rcui8) -D_STANDALONE_
+    $(rcu8j) $(ppflags_common) $(rc_cppflags) -D_STANDALONE_ $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
 wasmsmsg.grh : ../h/wasms.msg $(__MAKEFILES__)
     @%make echo_awk

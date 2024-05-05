@@ -78,11 +78,11 @@ rc_inc_dirs = -I"../res" $(commonui_inc_dirs) $(dis_includes)
 
 $(proj_name).res : ../res/wheapwlk.rc .AUTODEPEND
     @%make echo_rc
-    $(rc) $(ppflags_common) $(rc_cppflags) $(rc_ui8_flags) $(rc_flags) -ad $(rc_inc_path) $[@ -fo=$@
+    $(rcu8j) $(ppflags_common) $(rc_cppflags) -ad $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
 rcstrmsg.gh : ../res/heapwalk.msg
     @%make echo_cpp
-    $(cpp) $(ppflags_common) $(rc_cppflags) $(rc_ui8_flags) -o$@ $[@
+    $(cppu8) $(ppflags_common) $(rc_cppflags) -o$@ $[@
 
 rcstr.grh : rcstrmsg.gh
     @%make echo_awk

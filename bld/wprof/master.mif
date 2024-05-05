@@ -107,15 +107,14 @@ wprof_rc_inc_dirs = -I"../res/os2" -I"../res" -I"../h"
 wprof_rc_inc_dirs = -I"../res/win" -I"../res" -I"../h"
 !endif
 rc_inc_dirs = -I. $(wprof_rc_inc_dirs) $(aui_rc_inc_dirs) $(gui_rc_inc_dirs)
-rcui_inc_dirs = $(wprof_rc_inc_dirs) $(aui_rc_inc_dirs) $(gui_rc_inc_dirs)
 
 $(proj_name).res : ../res/wprofgui.rc $(rcfiles) $(__MAKEFILES__) .AUTODEPEND
     @%make echo_rc
-    $(rc) $(ppflags_common) $(rc_cppflags) $(rc_flags) -ad $(rc_inc_path) $(ntmanif_inc_dirs) $[@ -fo=$@
+    $(rc) $(ppflags_common) $(rc_cppflags) -ad $(rc_flags) $(rc_inc_path) $(ntmanif_inc_dirs) $[@ -fo=$@
 
 wresui.res : ../res/wprofui.rc $(rcfiles) $(__MAKEFILES__) .AUTODEPEND
     @%make echo_rc
-    $(rcui) -ad $(ntmanif_inc_dirs)
+    $(rcj) $(ppflags_common) $(rc_cppflags) -ad $(rc_flags) $(rc_inc_path) $(ntmanif_inc_dirs) $[@ -fo=$@
 
 usage.u : ../h/usage.sp $(__MAKEFILES__)
     @%make echo_wsplice

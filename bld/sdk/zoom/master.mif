@@ -69,11 +69,11 @@ rc_inc_dirs = -I"../res" $(commonui_inc_dirs)
 
 $(proj_name).res : ../res/wzoom.rc $(ntmanif_dep) $(__MAKEFILES__) .AUTODEPEND
     @%make echo_rc
-    $(rc) $(ppflags_common) $(rc_cppflags) $(rc_ui8_flags) $(rc_flags) -ad $(rc_inc_path) $(ntmanif_inc_dirs) $[@ -fo=$@
+    $(rcu8j) $(ppflags_common) $(rc_cppflags) -ad $(rc_flags) $(rc_inc_path) $(ntmanif_inc_dirs) $[@ -fo=$@
 
 $(proj_name)j.res : ../res/wzoom.rc $(ntmanif_dep) $(__MAKEFILES__) .AUTODEPEND
     @%make echo_rc
-    $(rc) $(ppflags_common) $(rc_cppflags) -DJAPANESE $(rc_ui8_flags) $(rc_flags) -ad -I"../res/kanji" $(rc_inc_path) $(ntmanif_inc_dirs) $[@ -fo=$@
+    $(rcu8j) $(ppflags_common) $(rc_cppflags) -DJAPANESE -ad $(rc_flags) -I"../res/kanji" $(rc_inc_path) $(ntmanif_inc_dirs) $[@ -fo=$@
 
 rcstr.grh : rcstrmsg.gh $(__MAKEFILES__)
     @%make echo_awk
@@ -81,4 +81,4 @@ rcstr.grh : rcstrmsg.gh $(__MAKEFILES__)
 
 rcstrmsg.gh : ../res/wzoom.msg $(__MAKEFILES__)
     @%make echo_cpp
-    $(cpp) $(ppflags_common) $(rc_cppflags) $(rc_ui8_flags) -o$@ $[@
+    $(cppu8) $(ppflags_common) $(rc_cppflags) -o$@ $[@

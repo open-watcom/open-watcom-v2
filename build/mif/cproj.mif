@@ -801,17 +801,6 @@ rc_host_os = win
 !endif
 rc_flags        = $(rc_flags_all) $(rc_flags_$(rc_host_os)) $(proj_rc_flags)
 
-rc_ui_encoding  = -zk0
-
-!ifdef rcui8_utf8_$(host_os)
-rc_ui8_encoding = -zku8
-!else
-rc_ui8_encoding = -zku0
-!endif
-
-rc_ui_flags     = $(rc_ui_encoding)
-rc_ui8_flags    = $(rc_ui8_encoding)
-
 #
 # Include path macros:
 #
@@ -824,31 +813,26 @@ rc_inc_path     = $(rc_inc_dirs) $(rc_inc_dirs_$(host_os)) $(inc_dirs_sys) $(rc_
 rc_inc_path     = $(rc_inc_dirs) $(rc_inc_dirs_$(host_os)) $(rc_inc_dirs_all)
 !endif
 
-rc_ui_inc_path  = $(rcui_inc_dirs) $(rcui_inc_dirs_$(host_os)) $(inc_dirs_sys_win) $(rc_inc_dirs_all)
-
 #
 # special RC invoke macros:
 #
 
-rc              = $(noecho)*bwrc -q
-rc0             = $(rc) -zk0
-rcu8            = $(rc) $(rc_ui8_flags)
-
-!ifdef bootstrap
-rcui            = $(rc0) $(ppflags_common) $(rc_cppflags) $(rc_flags_all) -bt=windows $[@ -fo=$@ $(rc_ui_inc_path)
-!else ifndef __WATCOM_TOOLS__
-rcui            = $(rc0) $(ppflags_common) $(rc_cppflags) $(rc_flags_all) -bt=windows $[@ -fo=$@ $(rc_ui_inc_path)
+!ifdef rcui8_utf8_$(host_os)
+rcu8_encoding = -zku8
 !else
-rcui            = $(rc0) $(ppflags_common) $(rc_cppflags) $(rc_flags_all) -x -bt=windows $[@ -fo=$@ $(rc_ui_inc_path)
+rcu8_encoding = -zku0
 !endif
 
-!ifdef bootstrap
-rcui8           = $(rcu8) $(ppflags_common) $(rc_cppflags) $(rc_flags_all) -bt=windows $[@ -fo=$@ $(rc_ui_inc_path)
-!else ifndef __WATCOM_TOOLS__
-rcui8           = $(rcu8) $(ppflags_common) $(rc_cppflags) $(rc_flags_all) -bt=windows $[@ -fo=$@ $(rc_ui_inc_path)
-!else
-rcui8           = $(rcu8) $(ppflags_common) $(rc_cppflags) $(rc_flags_all) -x -bt=windows $[@ -fo=$@ $(rc_ui_inc_path)
+!ifndef bootstrap
+!ifdef __WATCOM_TOOLS__
+rc_ignore_env = -x
 !endif
+!endif
+
+rc              = $(noecho)*bwrc $(rc_ignore_env) -q
+rcj             = $(rc) -zk0
+rcu8            = $(rc) $(rcu8_encoding)
+rcu8j           = $(rc) $(rcu8_encoding)
 
 #####################################
 # GLOBAL MACROS SETINGS FOR OW TOOLS

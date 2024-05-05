@@ -42,7 +42,7 @@ exetarg_res           = $(proj_name).res
 
 $(proj_name).res : ../uninstal.rc $(ntmanif_dep) $(__MAKEFILES__) .AUTODEPEND
     @%make echo_rc
-    $(rc) $(ppflags_common) $(rc_cppflags) $(rc_flags) -ad -zku8 $(inc_path) $(ntmanif_inc_dirs) $[@ -fo=$@
+    $(rcu8) $(ppflags_common) $(rc_cppflags) -ad $(rc_flags) $(inc_path) $(ntmanif_inc_dirs) $[@ -fo=$@
 
 rcstr.grh : rcstrmsg.gh $(__MAKEFILES__)
     @%make echo_awk
@@ -50,4 +50,4 @@ rcstr.grh : rcstrmsg.gh $(__MAKEFILES__)
 
 rcstrmsg.gh : $(uninstal_dir)/uninstal.msg $(__MAKEFILES__)
     @%make echo_cpp
-    $(cpp) $(ppflags_common) $(rc_cppflags) -zku8 $(inc_path) -o$@ $[@
+    $(cppu8) $(ppflags_common) $(rc_cppflags) $(inc_path) -o$@ $[@

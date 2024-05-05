@@ -110,4 +110,4 @@ uistr.grh : uistrmsg.gh
 
 uistrmsg.gh : ../res/commonui.msg
     @%make echo_cpp
-    $(cpp) $(ppflags_common) $(rc_cppflags) $(rc_ui8_flags) -I"../h" -o$@ $[@
+    $(cppu8) $(ppflags_common) $(rc_cppflags) -I"../h" -o$@ $[@

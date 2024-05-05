@@ -115,8 +115,6 @@ lflags_dos_386 = sys pharlap ext opt nodefaultlibs, maxdata=0 runtime maxreal=10
 # explicit rules
 #################
 
-rcui_inc_dirs = -I"../h"
-
 #
 # names
 #
@@ -175,19 +173,19 @@ rc_cpp_dos = $(rc_cpp_dos_$(target)_$(host_cpu))
 ntverrc_exe = $(exetarg_name)
 !include ntverrc.mif
 
-rcui_inc_dirs = -I"../h"
+rc_inc_dirs = -I"../h"
 
 $(proj_name).res : ../h/wsamplew.rc ../h/wsampres.rc ../h/wsamplew.ico ../h/wsample.rc ../h/wmsg.h ../h/wsample.msg usage.gh $(__MAKEFILES__)
     @%make echo_rc
-    $(rcui8) -30
+    $(rcu8j) $(ppflags_common) $(rc_cppflags) -30 $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
 wresui.res : ../h/wsample.rc ../h/wmsg.h ../h/wsample.msg usage.gh $(__MAKEFILES__)
     @%make echo_rc
-    $(rcui8)
+    $(rcu8j) $(ppflags_common) $(rc_cppflags) $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
 wsample.gh : ../h/wsample.msg $(__MAKEFILES__)
     @%make echo_cpp
-    $(cpp) $(ppflags_common) $(rc_cppflags) $(cppflags) -zku8 -o$^. $[@
+    $(cppu8) $(ppflags_common) $(rc_cppflags) $(cppflags) -o$^. $[@
 
 wsample.grh : wsample.gh $(__MAKEFILES__)
     @%make echo_awk
@@ -195,7 +193,7 @@ wsample.grh : wsample.gh $(__MAKEFILES__)
 
 except.gh : ../h/except.msg $(__MAKEFILES__)
     @%make echo_cpp
-    $(cpp) $(ppflags_common) $(rc_cppflags) $(cppflags) -zku8 -o$^. $[@
+    $(cppu8) $(ppflags_common) $(rc_cppflags) $(cppflags) -o$^. $[@
 
 except.grh : except.gh $(__MAKEFILES__)
     @%make echo_awk

@@ -186,9 +186,6 @@ libtarg_name          = wd
 rc_inc_dirs = -I. -I"../../res/$(target_$(host_os))" $(wv_res_inc_dirs) &
     -I"../../h" $(aui_rc_inc_dirs) $(gui_rc_inc_dirs) -I"$(dig_dir)/h"
 
-rcui_inc_dirs = -I. $(wv_res_inc_dirs) &
-    -I"../../h" $(aui_rc_inc_dirs) $(gui_rc_inc_dirs) -I"$(dig_dir)/h"
-
 !include ntverrc.mif
 ntmanif_path = ../../res
 !include ntmanif.mif
@@ -418,39 +415,39 @@ rcfiles = &
 
 $(proj_name).res : ../../res/wvpm.rc $(bitmaps) $(rcfiles) $(__MAKEFILES__) .autodepend
     @%make echo_rc
-    $(rc) $(ppflags_common) $(rc_cppflags) $(rc_flags) -ad $(rc_inc_path) $[@ -fo=$@
+    $(rc) $(ppflags_common) $(rc_cppflags) -ad $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
 $(proj_name)j.res : ../../res/wvpm.rc $(bitmaps) $(rcfiles) $(__MAKEFILES__) .autodepend
     @%make echo_rc
-    $(rc) $(ppflags_common) $(rc_cppflags) -DJAPANESE $(rc_flags) -ad $(rc_inc_path) $[@ -fo=$@
+    $(rc) $(ppflags_common) $(rc_cppflags) -DJAPANESE -ad $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
 !else
 
 $(proj_name).res : ../../res/wvwin.rc $(bitmaps) $(rcfiles) $(__MAKEFILES__) .autodepend
     @%make echo_rc
-    $(rc) $(ppflags_common) $(rc_cppflags) $(rc_flags) -ad $(rc_inc_path) $[@ -fo=$@
+    $(rc) $(ppflags_common) $(rc_cppflags) -ad $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
 !endif
 
 wvuidll.res : ../../res/wvuidll.rc litdef.gh $(__MAKEFILES__) .autodepend
     @%make echo_rc
-    $(rc) $(ppflags_common) $(rc_cppflags) $(rc_flags) -ad $(rc_inc_path) $[@ -fo=$@
+    $(rc) $(ppflags_common) $(rc_cppflags) -ad $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
 wresui.res : ../../res/wvui.rc $(rcfiles) usage.gh usagej.gh $(__MAKEFILES__) .autodepend
     @%make echo_rc
-    $(rcui) -ad
+    $(rcj) $(ppflags_common) $(rc_cppflags) -ad $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
 litdefm.tmp : $(res_strings_dir)/menu.str $(__MAKEFILES__)
     @%make echo_cpp
-    $(cpp) $(ppflags_common) $(rc_cppflags) $(rc_ui_flags) $(rc_ui_inc_path) -o$@ $[@
+    $(cpp) $(ppflags_common) $(rc_cppflags) $(rc_flags) $(rc_inc_path) -o$@ $[@
 
 litdefs1.tmp : ../../res/wdeng.str $(__MAKEFILES__)
     @%make echo_cpp
-    $(cpp) $(ppflags_common) $(rc_cppflags) $(rc_ui_flags) -I"$(dig_dir)/h" -I"$(watcom_dir)/h" -o$@ $[@
+    $(cpp) $(ppflags_common) $(rc_cppflags) $(rc_flags) -I"$(dig_dir)/h" -I"$(watcom_dir)/h" -o$@ $[@
 
 litdefs2.tmp : $(res_strings_dir)/wddui.str $(__MAKEFILES__)
     @%make echo_cpp
-    $(cpp) $(ppflags_common) $(rc_cppflags) $(rc_ui_flags) -I"$(dig_dir)/h" -I"$(watcom_dir)/h" -o$@ $[@
+    $(cpp) $(ppflags_common) $(rc_cppflags) $(rc_flags) -I"$(dig_dir)/h" -I"$(watcom_dir)/h" -o$@ $[@
 
 litdef.gh : litdefs1.tmp litdefs2.tmp litdefm.tmp $(__MAKEFILES__)
     @%create $@

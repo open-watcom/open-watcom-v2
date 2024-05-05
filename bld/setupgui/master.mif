@@ -171,7 +171,6 @@ depend_res_win = ../res/win/setup.ico ../res/win/disk.ico
 depend_res = ../h/setup.h $(gui_dir)/h/gui.rc $(depend_res_$(host_os))
 
 rc_inc_dirs = -I"../res/$(host_os)" -I"../res" $(gui_rc_inc_dirs)
-rcui_inc_dirs = $(gui_rc_inc_dirs)
 
 !include ntverrc.mif
 ntmanif_path = ../res/nt
@@ -180,21 +179,21 @@ ntmanif_path = ../res/nt
 # UI resources
 wresui.res : ../res/setupui.rc $(depend_res) $(__MAKEFILES__)
     @%make echo_rc
-    $(rcui) $(ntmanif_inc_dirs)
+    $(rcj) $(ppflags_common) $(rc_cppflags) $(rc_flags) $(rc_inc_path) $(ntmanif_inc_dirs) $[@ -fo=$@
 
 # GUI resources
 csetup.res : ../res/$(host_os)/setup.rc $(depend_res) ../res/wcc.bmp $(__MAKEFILES__)
     @%make echo_rc
-    $(rc) $(ppflags_common) $(rc_cppflags) -DCSETUP $(rc_ui8_encoding) $(rc_flags) $(rc_inc_path) $(ntmanif_inc_dirs) $[@ -fo=$@
+    $(rcu8) $(ppflags_common) $(rc_cppflags) -DCSETUP $(rc_flags) $(rc_inc_path) $(ntmanif_inc_dirs) $[@ -fo=$@
 
 jcsetup.res : ../res/$(host_os)/setup.rc $(depend_res) ../res/wcc.bmp $(__MAKEFILES__)
     @%make echo_rc
-    $(rc) $(ppflags_common) $(rc_cppflags) -DJCSETUP -DJAPANESE $(rc_ui8_encoding) $(rc_flags) -zk0 $(rc_inc_path) $(ntmanif_inc_dirs) $[@ -fo=$@
+    $(rcu8j) $(ppflags_common) $(rc_cppflags) -DJCSETUP -DJAPANESE $(rc_flags) $(rc_inc_path) $(ntmanif_inc_dirs) $[@ -fo=$@
 
 f77setup.res : ../res/$(host_os)/setup.rc $(depend_res) ../res/f77.bmp $(__MAKEFILES__)
     @%make echo_rc
-    $(rc) $(ppflags_common) $(rc_cppflags) -DF77SETUP $(rc_ui8_encoding) $(rc_flags) $(rc_inc_path) $(ntmanif_inc_dirs) $[@ -fo=$@
+    $(rcu8) $(ppflags_common) $(rc_cppflags) -DF77SETUP $(rc_flags) $(rc_inc_path) $(ntmanif_inc_dirs) $[@ -fo=$@
 
 jfsetup.res : ../res/$(host_os)/setup.rc $(depend_res) ../res/f77.bmp $(__MAKEFILES__)
     @%make echo_rc
-    $(rc) $(ppflags_common) $(rc_cppflags) -DJFSETUP -DJAPANESE $(rc_ui8_encoding) $(rc_flags) -zk0 $(rc_inc_path) $(ntmanif_inc_dirs) $[@ -fo=$@
+    $(rcu8j) $(ppflags_common) $(rc_cppflags) -DJFSETUP -DJAPANESE $(rc_flags) $(rc_inc_path) $(ntmanif_inc_dirs) $[@ -fo=$@
