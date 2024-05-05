@@ -351,7 +351,7 @@ $(intname).lib: $(objs) $(__MAKEFILES__)
     @rm tmp2.gdf
     @rm tmp3.gdf
 
-verrc_dll = $(dllname)
+ntverrc_dll = $(dllname)
 !include ntverrc.mif
 
 extra_l_flags_dll = export @export.gdf

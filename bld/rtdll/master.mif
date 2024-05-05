@@ -113,8 +113,8 @@ dlltarg_name          = $(dllname)
 #
 # rc and others
 #
-verrc_dll_skel = ../verinfo.rc
-verrc_dll      = $(dllname)
+ntverrc_dll_skel = ../verinfo.rc
+ntverrc_dll      = $(dllname)
 !include ntverrc.mif
 
 $(dllname).lbc : $(dllname).dll $(rtdll_dir)/proclbc.awk $(static_objs)

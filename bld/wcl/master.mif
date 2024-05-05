@@ -64,8 +64,8 @@ exetarg_nt_version    = exever.res
 #
 # rc and others
 #
-#verrc_exe = $(proj_name)
-verrc_exe_skel = $(wcl_dir)/exever.rc
+#ntverrc_exe = $(proj_name)
+ntverrc_exe_skel = $(wcl_dir)/exever.rc
 !include ntverrc.mif
 
 !ifdef owcc_specs

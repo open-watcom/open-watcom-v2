@@ -123,7 +123,7 @@ exetarg_name          = wbrw
 #
 # rc and others
 #
-verrc_exe = $(exetarg_name)
+ntverrc_exe = $(exetarg_name)
 !include ntverrc.mif
 ntmanif_path = ../res
 !include ntmanif.mif

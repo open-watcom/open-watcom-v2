@@ -159,8 +159,8 @@ dlltarg_name          = $(dlltarg_name)
 #
 # rc and others
 #
-verrc_dll = $(dllname)
-verrc_exe = $(exename)
+ntverrc_dll = $(dllname)
+ntverrc_exe = $(exename)
 !include ntverrc.mif
 
 !ifeq target_cpu axp

@@ -119,8 +119,8 @@ dlltarg_nt_version    = dllver.res
 #
 # rc and others
 #
-verrc_exe = $(exetarg_name)
-verrc_dll = $(dlltarg_name)
+ntverrc_exe = $(exetarg_name)
+ntverrc_dll = $(dlltarg_name)
 !include ntverrc.mif
 
 rcui_inc_dirs = -I. -I"$(wlink_dir)/h" -I"$(wrc_dir)/h"

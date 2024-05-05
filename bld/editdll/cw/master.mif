@@ -52,5 +52,5 @@ dlltarg_name = wedit
 #
 # rc and others
 #
-verrc_dll = weditcw
+ntverrc_dll = weditcw
 !include ntverrc.mif

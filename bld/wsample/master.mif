@@ -171,7 +171,7 @@ rc_cpp_dos_pls_386 = -D__PHARLAP__
 rc_cpp_dos = $(rc_cpp_dos_$(target)_$(host_cpu))
 !endif
 
-verrc_exe = $(exetarg_name)
+ntverrc_exe = $(exetarg_name)
 !include ntverrc.mif
 
 rcui_inc_dirs = -I"../h"

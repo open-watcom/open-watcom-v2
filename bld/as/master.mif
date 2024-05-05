@@ -185,7 +185,7 @@ libtarg_name = asinline
 #
 # rc and others
 #
-verrc_exe = $(exetarg_name)
+ntverrc_exe = $(exetarg_name)
 !include ntverrc.mif
 
 wresui.res : $(as_dir)/h/as.rc msg.grh usage.gh $(__MAKEFILES__)

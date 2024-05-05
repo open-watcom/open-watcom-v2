@@ -48,7 +48,7 @@ exetarg_name = $(exename)x
 #
 rcui_inc_dirs = -I. -I..
 
-verrc_exe = $(exename)
+ntverrc_exe = $(exename)
 !include ntverrc.mif
 
 wresui.res : ../wstrip.rc msg.grh usage.gh $(__MAKEFILES__)

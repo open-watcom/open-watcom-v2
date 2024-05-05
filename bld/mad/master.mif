@@ -62,7 +62,7 @@ extra_l_flags_dll_nt_axp  = op dosseg
 #
 dlltarg_name = mad$(dig_arch)
 
-verrc_dll = $(dlltarg_name)
+ntverrc_dll = $(dlltarg_name)
 !include ntverrc.mif
 
 dlltarg_ext_os2_386   = .d32

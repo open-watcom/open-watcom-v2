@@ -57,7 +57,7 @@ exetarg_res_wresui    = wresui.res
 #
 # rc and others
 #
-verrc_exe = $(exetarg_name)
+ntverrc_exe = $(exetarg_name)
 !include ntverrc.mif
 
 rcui_inc_dirs = -I. -I"$(f77wfl_dir)" -I"$(f77_dir)/h" -I"$(comp_cfg_dir)/h"
