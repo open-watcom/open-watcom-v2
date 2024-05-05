@@ -30,6 +30,8 @@ additional_clean = $(docs_host_dir)/ide.gh
 
 !include ../objects.mif
 
+!include wres.mif
+
 #
 # cflags
 #
@@ -79,7 +81,7 @@ extra_l_flags   = op eliminate op description 'Open Watcom IDE'
 exetarg_prebuild_objs = $(docs_host_dir)/ide.gh
 !endif
 exetarg_objs          = $(objs)
-exetarg_libs          = $(idelib_lib) $(wclass_lib) $(gui_lib) $(wres_lib)
+exetarg_libs          = $(idelib_lib) $(wclass_lib) $(gui_lib)
 exetarg_nt_version    = exever.res
 exetarg_nt_manif      = ntmanif.res
 exetarg_res           = $(proj_name).res

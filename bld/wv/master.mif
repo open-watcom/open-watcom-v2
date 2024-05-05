@@ -6,6 +6,14 @@ tree_depth = 4
 
 proj_name = wv
 
+!ifndef wv_autodepends
+wv_autodepends = .AUTODEPEND
+!endif
+
+wv_trmem = 1
+
+wv_dos_extender = dos4g	#causeway
+
 !ifeq sys_windowed 1
 name_os2i86    = wdw16
 !else
@@ -21,14 +29,6 @@ name = wdw
 name = wd
 !endif
 
-!ifndef wv_autodepends
-wv_autodepends = .AUTODEPEND
-!endif
-
-wv_trmem = 1
-
-wv_dos_extender = dos4g	#causeway
-
 additional_clean = *.gh *.grc
 !ifdef gui_os2pm
 additional_clean += *.dlg
@@ -37,6 +37,7 @@ additional_clean += *.dlg
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
+!include wres.mif
 !include trmem.mif
 
 dig_arch = all

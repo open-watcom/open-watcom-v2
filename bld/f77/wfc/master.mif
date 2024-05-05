@@ -6,9 +6,11 @@ proj_name = wfc
 wfc_autodepends = .AUTODEPEND
 !endif
 
-additional_clean = *.gh *.grh *.grc
-
 wfc_trmem = 1
+
+wfc_wreslib = 1
+
+additional_clean = *.gh *.grh *.grc
 
 exename_i86 = wfc
 exename_386 = wfc386

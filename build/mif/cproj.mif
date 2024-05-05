@@ -122,11 +122,14 @@ debug = 0
 !endif
 !endif
 
-!ifndef wreslib
-#wreslib_win = 0
-#wreslib_nt  = 0
+wreslib_win = 0
+wreslib_nt  = 0
 #wreslib_os2 = 0
-!ifdef wreslib_$(host_os)
+
+!ifndef wreslib
+!ifndef $(proj_name)_wreslib
+wreslib = 0
+!else ifdef wreslib_$(host_os)
 wreslib = $(wreslib_$(host_os))
 !else
 wreslib = 1

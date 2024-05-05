@@ -11,6 +11,8 @@ wmake_autodepends = .AUTODEPEND
 
 wmake_trmem = 1
 
+wmake_wreslib = 1
+
 # DOS code will not fit in 64k with /d2
 #!ifeq host_os dos
 #!ifeq host_cpu i86
@@ -24,6 +26,7 @@ additional_clean = *.gh *.grc
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
+!include wres.mif
 !include trmem.mif
 
 !include $(orl_dir)/client.mif
@@ -90,9 +93,8 @@ extra_l_flags_dos_386 = opt stack=8k
 exetarg_prebuild_objs = isarray.gh usage.gh usagej.gh
 exetarg_objs          = $(objs)
 !ifeq host_cpu i86
-exetarg_libs          = $(wres_lib)
 !else
-exetarg_libs          = $(wres_lib) $(orl_lib)
+exetarg_libs          = $(orl_lib)
 !endif
 exetarg_nt_version    = exever.res
 exetarg_res_wresui    = wresui.res

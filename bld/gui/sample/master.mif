@@ -16,6 +16,8 @@ guisample_autodepends = .AUTODEPEND
 !include $(gui_dir)/client.mif
 !include $(ui_dir)/client.mif
 
+!include wres.mif
+
 #
 # cflags
 #
@@ -35,7 +37,7 @@ extra_l_flags_win = import DEATH GDI.121 import RESURRECTION GDI.122
 # EXE's
 #
 exetarg_objs       = sample.obj dlgstat.obj dlgdynam.obj dlgtest.obj sampdef.obj
-exetarg_libs       = $(gui_lib) $(ui_lib) $(wres_lib)
+exetarg_libs       = $(gui_lib) $(ui_lib)
 exetarg_name       = sample
 !ifeq sys_windowed 1
 !ifeq host_os os2

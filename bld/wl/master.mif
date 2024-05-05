@@ -11,6 +11,8 @@ wlink_autodepends = .AUTODEPEND
 
 wlink_trmem = 1
 
+wlink_wreslib = 1
+
 # Base DLL name needs to be 8 chars or less on OS/2, argh! Additionally,
 # internal module name may be required to match file name on some platforms.
 !ifdef bootstrap
@@ -92,9 +94,9 @@ exetarg_libs          = $(dlltarg_name).lib
 exetarg_prebuild_objs = $(extra_link_res_$(host_os)) rcmsg.grh
 exetarg_objs          = $(comp_objs_exe)
 !ifdef no_orl
-exetarg_libs          = $(wres_lib) $(dwarfw_lib)
+exetarg_libs          = $(dwarfw_lib)
 !else
-exetarg_libs          = $(wres_lib) $(dwarfw_lib) $(orl_lib)
+exetarg_libs          = $(dwarfw_lib) $(orl_lib)
 !endif
 exetarg_res_wresui    = wresui.res
 !endif
@@ -108,9 +110,9 @@ exetarg_qnx_res       = usage.u
 dlltarg_prebuild_objs = $(dll_subdir) rcmsg.grh
 dlltarg_objs          = $(comp_objs_dll)
 !ifdef no_orl
-dlltarg_libs          = $(wres_lib) $(dwarfw_lib)
+dlltarg_libs          = $(dwarfw_lib)
 !else
-dlltarg_libs          = $(wres_lib) $(dwarfw_lib) $(orl_lib)
+dlltarg_libs          = $(dwarfw_lib) $(orl_lib)
 !endif
 dlltarg_res_wresui    = wresui.res
 dlltarg_nt_version    = dllver.res

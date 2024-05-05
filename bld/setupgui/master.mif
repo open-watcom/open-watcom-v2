@@ -18,6 +18,7 @@ additional_clean = *.i *.rex setup.inf *.grc
 !include defrule.mif
 !include deftarg.mif
 !include win386.mif
+!include wres.mif
 !include trmem.mif
 
 !include $(gui_dir)/client.mif
@@ -113,11 +114,11 @@ objs += loadfind.obj
 
 !ifneq sys_windowed 1
 
-libs_dos   = $(ui_lib) $(wres_lib)
-libs_linux = $(ui_lib) $(wres_lib)
-libs_nt    = $(ui_lib) $(wres_lib)
-libs_os2   = $(ui_lib) $(wres_lib)
-libs_osx   = $(ui_lib) $(wres_lib)
+libs_dos   = $(ui_lib)
+libs_linux = $(ui_lib)
+libs_nt    = $(ui_lib)
+libs_os2   = $(ui_lib)
+libs_osx   = $(ui_lib)
 
 !endif
 

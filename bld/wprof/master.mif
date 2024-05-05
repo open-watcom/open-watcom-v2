@@ -9,6 +9,7 @@ additional_clean = *.grc
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
+!include wres.mif
 !include trmem.mif
 
 !include $(aui_dir)/client.mif
@@ -74,7 +75,7 @@ extra_ldflags = -ldl
 #
 exetarg_prebuild_objs = $(extra_link_res_$(host_os)) $(resfile)
 exetarg_objs          = $(objs) $(sys_objs)
-exetarg_libs          = $(aui_lib) $(gui_lib) $(ui_lib) $(wres_lib) $(sys_libs)
+exetarg_libs          = $(aui_lib) $(gui_lib) $(ui_lib) $(sys_libs)
 exetarg_nt_version    = exever.res
 !ifeq sys_windowed 1
 exetarg_res           = $(proj_name).res

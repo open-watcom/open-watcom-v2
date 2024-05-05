@@ -2,6 +2,8 @@ proj_name = bdiff
 
 bdiff_autodepend = .AUTODEPENDS
 
+bdiff_wreslib = 1
+
 additional_clean = *.gh
 
 subdir_wcpatch  = wcpatch

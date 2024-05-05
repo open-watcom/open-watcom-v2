@@ -2,6 +2,8 @@ proj_name = wtouch
 
 wtouch_autodepends = .AUTODEPEND
 
+wtouch_wreslib = 1
+
 additional_clean = *.gh *.grh *.grc
 
 !include cproj.mif

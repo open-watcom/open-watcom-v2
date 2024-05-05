@@ -6,6 +6,8 @@ wdis_autodepends = .AUTODEPEND
 
 wdis_trmem = 1
 
+wdis_wreslib = 1
+
 additional_clean = *.gh *.grh *.grc
 
 !include cproj.mif

@@ -8,6 +8,10 @@ wrc_autodepends = .AUTODEPEND
 
 wrc_trmem = 1
 
+!ifndef bootstrap
+wrc_wreslib = 1
+!endif
+
 # Base DLL name needs to be 8 chars or less on OS/2, argh! Additionally,
 # internal module name may be required to match file name on some platforms.
 !ifdef bootstrap
@@ -175,7 +179,6 @@ exetarg_libs          = $(dlltarg_name).lib
 !else
 exetarg_prebuild_objs = $(misc_objs) $(prebuild_objs)
 exetarg_objs          = $(objs_exe)
-exetarg_libs          = $(wres_lib)
 !ifndef bootstrap
 exetarg_qnx_res       = usage.u
 exetarg_res_wresui    = wresui.res
@@ -191,7 +194,6 @@ exetarg_nt_version    = exever.res
 #
 dlltarg_prebuild_objs = $(dll_subdir) $(prebuild_objs)
 dlltarg_objs          = $(objs_dll)
-dlltarg_libs          = $(wres_lib)
 !ifndef bootstrap
 dlltarg_res_wresui    = wresui.res
 !endif

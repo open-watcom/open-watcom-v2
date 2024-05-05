@@ -20,6 +20,7 @@ additional_clean = *.grh
 !include $(wpi_dir)/client.mif
 !include $(ui_dir)/client.mif
 
+!include wres.mif
 !include trmem.mif
 
 #

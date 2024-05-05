@@ -2,6 +2,8 @@ proj_name = wstrip
 
 wstrip_autodepends = .AUTODEPEND
 
+wstrip_wreslib = 1
+
 additional_clean = *.gh *.grh *.grc
 
 !include cproj.mif

@@ -15,6 +15,7 @@ additional_clean = *.gh *.grh *.grc
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
+!include wres.mif
 !include trmem.mif
 
 !include $(commonui_dir)/client.mif
@@ -72,7 +73,7 @@ exetarg_objs = &
     errors.obj imgutil.obj &
     $(exetarg_objs_$(target_$(host_os)))
 exetarg_libs_win      = $(wr_lib)
-exetarg_libs          = $(wres_lib) $(wpi_lib) $(commonui_lib) $(exetarg_libs_$(target_$(host_os)))
+exetarg_libs          = $(wpi_lib) $(commonui_lib) $(exetarg_libs_$(target_$(host_os)))
 exetarg_nt_version    = exever.res
 exetarg_res           = $(proj_name).res
 exetarg_nt_manif      = ntmanif.res

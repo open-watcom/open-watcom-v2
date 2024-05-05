@@ -7,6 +7,10 @@ wlib_autodepends = .AUTODEPEND
 
 wlib_trmem = 1
 
+!ifndef bootstrap
+wlib_wreslib = 1
+!endif
+
 # Base DLL name needs to be 8 chars or less on OS/2, argh! Additionally,
 # internal module name may be required to match file name on some platforms.
 !ifdef bootstrap
@@ -143,7 +147,6 @@ exetarg_libs          = $(orl_lib)
 !ifndef bootstrap
 exetarg_nt_version    = exever.res
 !ifndef wlib_dll
-exetarg_libs         += $(wres_lib)
 exetarg_res_wresui    = wresui.res
 !endif
 !endif
@@ -162,7 +165,6 @@ dlltarg_libs          = $(orl_lib)
 # resources can be used during regular build only
 #
 !ifndef bootstrap
-dlltarg_libs         += $(wres_lib)
 dlltarg_nt_version    = dllver.res
 dlltarg_res_wresui    = wresui.res
 !endif
