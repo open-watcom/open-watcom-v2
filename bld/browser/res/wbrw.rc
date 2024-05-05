@@ -2,6 +2,10 @@
 #include "icons.h"
 #include "hotspots.h"
 
+#ifdef __NT__
+#include "ntmanif.rc"
+#endif
+
 WBRWIcon        ICON "wbr.ico"
 GBList          ICON "gblist.ico"
 GBTree          ICON "gbtree.ico"

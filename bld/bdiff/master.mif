@@ -46,7 +46,6 @@ all : bpatch.exe bdiff.exe bpcmt.exe bplevel.exe bdump.exe wpatch.exe wcpatch.ex
 #
 # EXE's
 #
-exetarg_nt_manif    = ntmanif.res
 
 #
 # BCMT
@@ -62,7 +61,6 @@ exetarg_objs        = bplevel.obj
 exetarg_name        = bplevel
 !include exetarg.mif
 
-exetarg_libs        = $(wres_lib)
 #
 # WCPATCH. Create patch.
 #
@@ -156,18 +154,18 @@ dusage.gh : ../gml/optionsi.gml $(__MAKEFILES__)
     @%make echo_optencod
     $(noecho)*optencod -q -rc=MSG_USAGE_BASE -utf8 $(optencod_opt_$(host_os)) $[@ . . $@ .
 
-bpatch.res : ../bpatch.rc ../h/bpatch.h ppusage.gh
+bpatch.res : ../bpatch.rc ../h/bpatch.h ppusage.gh $(ntmanif_dep)
     @%make echo_rc
-    $(rcui8) -DBPATCH
+    $(rcui8) -DBPATCH $(ntmanif_inc_dirs)
 
-bdump.res : ../bpatch.rc ../h/bpatch.h pdusage.gh
+bdump.res : ../bpatch.rc ../h/bpatch.h pdusage.gh $(ntmanif_dep)
     @%make echo_rc
-    $(rcui8) -DBDUMP
+    $(rcui8) -DBDUMP $(ntmanif_inc_dirs)
 
-bdiff.res : ../bpatch.rc ../h/bpatch.h dusage.gh
+bdiff.res : ../bpatch.rc ../h/bpatch.h dusage.gh $(ntmanif_dep)
     @%make echo_rc
-    $(rcui8) -DBDIFF
+    $(rcui8) -DBDIFF $(ntmanif_inc_dirs)
 
-wpatch.res wcpatch.res : ../bpatch.rc ../h/bpatch.h
+wpatch.res wcpatch.res : ../bpatch.rc ../h/bpatch.h $(ntmanif_dep)
     @%make echo_rc
-    $(rcui8)
+    $(rcui8) $(ntmanif_inc_dirs)

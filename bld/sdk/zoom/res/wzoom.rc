@@ -10,6 +10,10 @@
 
 #define FIRST_COPYRIGHT_YEAR 1994
 
+#ifdef __NT__
+#include "ntmanif.rc"
+#endif
+
 "APPLICON" ICON "zoom.ico"
 
 #ifdef JAPANESE

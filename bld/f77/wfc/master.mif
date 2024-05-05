@@ -61,7 +61,7 @@ extra_a_flags_axp = -oc
 #
 exetarg_prebuild_objs = $(asminline_deps) usage.gh wfcmsgs.gh code$(target_cpu).gh
 exetarg_objs          = $(fobjs) $(trmem_objs) $(trmemcvr_objs)
-exetarg_libs          = $(asminline_lib) $(cg_libs) $(wres_lib)
+exetarg_libs          = $(asminline_lib) $(cg_libs)
 exetarg_nt_version    = exever.res
 exetarg_res_wresui    = wresui.res
 !include exetarg.mif

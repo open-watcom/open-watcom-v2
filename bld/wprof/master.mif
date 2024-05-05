@@ -82,7 +82,6 @@ exetarg_res           = $(proj_name).res
 !else
 exetarg_res_wresui    = wresui.res
 !endif
-exetarg_nt_manif      = ntmanif.res
 exetarg_qnx_res       = usage.u
 !include exetarg.mif
 
@@ -100,7 +99,7 @@ rcfiles = &
     $(gui_dir)/h/gui.rc &
     $(gui_dir)/h/gui.msg &
     $(aui_dir)/res/aui.rc &
-    $(aui_dialogs)
+    $(aui_dialogs) $(ntmanif_dep)
 
 !ifdef gui_os2pm
 wprof_rc_inc_dirs = -I"../res/os2" -I"../res" -I"../h"
@@ -112,11 +111,11 @@ rcui_inc_dirs = $(wprof_rc_inc_dirs) $(aui_rc_inc_dirs) $(gui_rc_inc_dirs)
 
 $(proj_name).res : ../res/wprofgui.rc $(rcfiles) $(__MAKEFILES__) .AUTODEPEND
     @%make echo_rc
-    $(rc) $(ppflags_common) $(rc_cppflags) $(rc_flags) -ad $(rc_inc_path) $[@ -fo=$@
+    $(rc) $(ppflags_common) $(rc_cppflags) $(rc_flags) -ad $(rc_inc_path) $(ntmanif_inc_dirs) $[@ -fo=$@
 
 wresui.res : ../res/wprofui.rc $(rcfiles) $(__MAKEFILES__) .AUTODEPEND
     @%make echo_rc
-    $(rcui) -ad
+    $(rcui) -ad $(ntmanif_inc_dirs)
 
 usage.u : ../h/usage.sp $(__MAKEFILES__)
     @%make echo_wsplice

@@ -51,7 +51,6 @@ exetarg_name = $(exename_$(target_cpu))
 #
 exetarg_prebuild_objs = wflmsgs.grh usage.gh
 exetarg_objs = wfl.obj $(trmem_objs)
-exetarg_libs          = $(wres_lib)
 exetarg_nt_version    = exever.res
 exetarg_res_wresui    = wresui.res
 !include exetarg.mif

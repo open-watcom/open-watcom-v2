@@ -154,7 +154,7 @@ exetarg_objs          = $(exetarg_objs_$(target)_$(host_cpu)) sample.obj sampdat
 exetarg_libs_pls      = $(plsdir)/wdos32.lib $(plsdir)/wdosx32.lib
 exetarg_libs_rsi      = $(rsilib_lib)
 exetarg_libs_win      = $(windbg_lib)
-exetarg_libs          = $(wres_lib) $(exetarg_libs_$(target))
+exetarg_libs          = $(exetarg_libs_$(target))
 exetarg_nt_version    = exever.res
 !ifeq host_os win
 exetarg_res           = $(proj_name).res

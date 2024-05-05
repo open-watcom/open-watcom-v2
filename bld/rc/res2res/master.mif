@@ -38,5 +38,4 @@ exetarg_objs = &
     res2res.obj &
     w2mres.obj &
     trmemcvr.obj $(trmem_objs)
-exetarg_libs = $(wres_lib)
 !include exetarg.mif

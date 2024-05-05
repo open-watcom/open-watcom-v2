@@ -22,6 +22,10 @@
 
 #define FIRST_COPYRIGHT_YEAR 1989
 
+#ifdef __NT__
+#include "ntmanif.rc"
+#endif
+
 /*
  * hold this order of ICONS
  * it defines icons index in executable

@@ -2,7 +2,9 @@ proj_name = wstrip
 
 wstrip_autodepends = .AUTODEPEND
 
+!ifndef bootstrap
 wstrip_wreslib = 1
+!endif
 
 additional_clean = *.gh *.grh *.grc
 
@@ -35,9 +37,6 @@ exename = wstrip
 #
 exetarg_prebuild_objs = msg.grh usage.gh
 exetarg_objs = strip.obj output.obj
-!ifndef bootstrap
-exetarg_libs = $(wres_lib)
-!endif
 exetarg_nt_version = exever.res
 !ifndef bootstrap
 exetarg_res_wresui = wresui.res

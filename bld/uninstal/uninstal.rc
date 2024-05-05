@@ -4,6 +4,10 @@
 
 #include "progress.dlg"
 
+#ifdef __NT__
+#include "ntmanif.rc"
+#endif
+
 STRINGTABLE
 BEGIN
     #define pick(c,e) c, [ e ]

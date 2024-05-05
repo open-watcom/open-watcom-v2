@@ -171,7 +171,7 @@ all : $(all_as) .symbolic
 #
 exetarg_prebuild_objs = $(subdir_stand) msg.grh usage.gh
 exetarg_objs = $(as_objs)
-exetarg_libs = $(owl_lib) $(wres_lib)
+exetarg_libs = $(owl_lib)
 exetarg_nt_version = exever.res
 exetarg_res_wresui = wresui.res
 !include exetarg.mif
@@ -190,7 +190,7 @@ libtarg_name = asinline
 ntverrc_exe = $(exetarg_name)
 !include ntverrc.mif
 
-wresui.res : $(as_dir)/h/as.rc msg.grh usage.gh $(__MAKEFILES__)
+wresui.res : $(as_dir)/h/as.rc msg.grh usage.gh $(ntverrc_exe_dep) $(__MAKEFILES__)
     @%make echo_rc
     $(rcui8) $(cppflags) -D_STANDALONE_
 

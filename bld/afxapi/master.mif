@@ -358,7 +358,6 @@ extra_l_flags_dll = export @export.gdf
 
 dlltarg_libs = $(intname).lib
 dlltarg_res = $(dllname).res
-dlltarg_nt_version = dllver.res
 dlltarg_objs = $(dynamic_objs)
 dlltarg_name = $(dllname)
 !include dlltarg.mif
@@ -371,7 +370,7 @@ $(statname).lib: $(static_objs) $(__MAKEFILES__)
     @%make echo_lib
     $(librarian) $(libflags) $(static_objs)
 
-$(dllname).res: ../h/owf.rc $(__MAKEFILES__) .AUTODEPEND
+$(dllname).res: ../h/owf.rc $(ntverrc_dll_dep) $(__MAKEFILES__) .AUTODEPEND
     @%make echo_rc
     $(rc) $(ppflags_common) $(rc_cppflags) $(rc_flags) -ad -zk0 $(inc_path) -I"../include" $[@ -fo=$@
 

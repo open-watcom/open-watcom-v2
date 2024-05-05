@@ -7,6 +7,10 @@
 
 #define FIRST_COPYRIGHT_YEAR 1984
 
+#ifdef __NT__
+#include "ntmanif.rc"
+#endif
+
 STRINGTABLE
 BEGIN
     #define pick(c,e) c, [ e ]

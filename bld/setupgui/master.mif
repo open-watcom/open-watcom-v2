@@ -134,7 +134,6 @@ libs = $(gui_lib) $(libs_$(host_os)) $(libs_$(objs_subdir)) ../ziplib/$(objs_sub
 exetarg_objs          = $(objs)
 exetarg_libs          = $(libs)
 exetarg_nt_version    = exever.res
-exetarg_nt_manif      = ntmanif.res
 
 exetarg_res_wresui    = wresui.res
 exetarg_name          = setup
@@ -167,7 +166,7 @@ extra_rc_flags_nt  = -D_WINNT
 !ifeq sys_windowed 1
 depend_res_os2 = ../res/os2/setup.ico
 !endif
-depend_res_nt  = ../res/nt/setup.ico ../res/nt/disk.ico
+depend_res_nt  = ../res/nt/setup.ico ../res/nt/disk.ico $(ntmanif_dep)
 depend_res_win = ../res/win/setup.ico ../res/win/disk.ico
 depend_res = ../h/setup.h $(gui_dir)/h/gui.rc $(depend_res_$(host_os))
 
@@ -181,21 +180,21 @@ ntmanif_path = ../res/nt
 # UI resources
 wresui.res : ../res/setupui.rc $(depend_res) $(__MAKEFILES__)
     @%make echo_rc
-    $(rcui)
+    $(rcui) $(ntmanif_inc_dirs)
 
 # GUI resources
 csetup.res : ../res/$(host_os)/setup.rc $(depend_res) ../res/wcc.bmp $(__MAKEFILES__)
     @%make echo_rc
-    $(rc) $(ppflags_common) $(rc_cppflags) -DCSETUP $(rc_ui8_encoding) $(rc_flags) $(rc_inc_path) $[@ -fo=$@
+    $(rc) $(ppflags_common) $(rc_cppflags) -DCSETUP $(rc_ui8_encoding) $(rc_flags) $(rc_inc_path) $(ntmanif_inc_dirs) $[@ -fo=$@
 
 jcsetup.res : ../res/$(host_os)/setup.rc $(depend_res) ../res/wcc.bmp $(__MAKEFILES__)
     @%make echo_rc
-    $(rc) $(ppflags_common) $(rc_cppflags) -DJCSETUP -DJAPANESE $(rc_ui8_encoding) $(rc_flags) -zk0 $(rc_inc_path) $[@ -fo=$@
+    $(rc) $(ppflags_common) $(rc_cppflags) -DJCSETUP -DJAPANESE $(rc_ui8_encoding) $(rc_flags) -zk0 $(rc_inc_path) $(ntmanif_inc_dirs) $[@ -fo=$@
 
 f77setup.res : ../res/$(host_os)/setup.rc $(depend_res) ../res/f77.bmp $(__MAKEFILES__)
     @%make echo_rc
-    $(rc) $(ppflags_common) $(rc_cppflags) -DF77SETUP $(rc_ui8_encoding) $(rc_flags) $(rc_inc_path) $[@ -fo=$@
+    $(rc) $(ppflags_common) $(rc_cppflags) -DF77SETUP $(rc_ui8_encoding) $(rc_flags) $(rc_inc_path) $(ntmanif_inc_dirs) $[@ -fo=$@
 
 jfsetup.res : ../res/$(host_os)/setup.rc $(depend_res) ../res/f77.bmp $(__MAKEFILES__)
     @%make echo_rc
-    $(rc) $(ppflags_common) $(rc_cppflags) -DJFSETUP -DJAPANESE $(rc_ui8_encoding) $(rc_flags) -zk0 $(rc_inc_path) $[@ -fo=$@
+    $(rc) $(ppflags_common) $(rc_cppflags) -DJFSETUP -DJAPANESE $(rc_ui8_encoding) $(rc_flags) -zk0 $(rc_inc_path) $(ntmanif_inc_dirs) $[@ -fo=$@

@@ -2,6 +2,10 @@
 #include "newproj.h"
 #include "rcstr.grh"
 
+#ifdef __NT__
+#include "ntmanif.rc"
+#endif
+
 STRINGTABLE
 BEGIN
     #define pick(c,e,j) c, [ e ]

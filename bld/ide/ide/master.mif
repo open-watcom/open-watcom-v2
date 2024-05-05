@@ -83,7 +83,6 @@ exetarg_prebuild_objs = $(docs_host_dir)/ide.gh
 exetarg_objs          = $(objs)
 exetarg_libs          = $(idelib_lib) $(wclass_lib) $(gui_lib)
 exetarg_nt_version    = exever.res
-exetarg_nt_manif      = ntmanif.res
 exetarg_res           = $(proj_name).res
 !include exetarg.mif
 
@@ -98,9 +97,9 @@ ide_rc_inc_dirs = -I"../res/$(target_$(host_os))" -I"../res"
 
 rc_inc_dirs = $(ide_rc_inc_dirs) $(gui_rc_inc_dirs)
 
-$(exetarg_res) : ../res/$(target_$(host_os))/ide.rc $(gui_dir)/h/gui.rc
+$(exetarg_res) : ../res/$(target_$(host_os))/ide.rc $(gui_dir)/h/gui.rc $(ntmanif_dep)
     @%make echo_rc
-    $(rc) $(ppflags_common) $(rc_cppflags) $(rc_ui8_encoding) $(rc_flags) $(rc_inc_path) $[@ -fo=$@
+    $(rc) $(ppflags_common) $(rc_cppflags) $(rc_ui8_encoding) $(rc_flags) $(rc_inc_path) $(ntmanif_inc_dirs) $[@ -fo=$@
 
 curr_dir=$+$(%__CWD__)$-
 

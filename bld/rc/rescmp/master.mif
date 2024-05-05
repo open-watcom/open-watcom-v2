@@ -39,5 +39,4 @@ exetarg_objs = &
     param.obj &
     rescmp.obj &
     trmemcvr.obj $(trmem_objs)
-exetarg_libs = $(wres_lib)
 !include exetarg.mif

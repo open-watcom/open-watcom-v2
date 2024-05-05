@@ -23,7 +23,6 @@ exetarg_prebuild_objs = rcstr.grh
 exetarg_objs          = appwiz.obj errmsg.obj projtype.obj
 exetarg_libs          = $(gui_lib)
 exetarg_res           = $(proj_name).res
-exetarg_nt_manif      = ntmanif.res
 !include exetarg.mif
 
 #
@@ -34,9 +33,9 @@ ntmanif_path = ../h
 
 rc_inc_dirs = -I"../h"
 
-$(proj_name).res : ../h/appwiz.rc .AUTODEPEND
+$(proj_name).res : ../h/appwiz.rc $(ntmanif_dep) .AUTODEPEND
     @%make echo_rc
-    $(rc) $(ppflags_common) $(rc_cppflags) $(rc_flags) -ad $(rc_inc_path) $]@ -fo=$@
+    $(rc) $(ppflags_common) $(rc_cppflags) $(rc_flags) -ad $(rc_inc_path) $(ntmanif_inc_dirs) $]@ -fo=$@
 
 rcstr.grh : ../h/appwiz.msg
     @%make echo_awk

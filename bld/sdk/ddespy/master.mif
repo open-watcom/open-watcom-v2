@@ -48,7 +48,6 @@ exetarg_objs          = dde.obj ddeproc.obj ddeglob.obj ddemsg.obj ddebox.obj &
 exetarg_libs          = $(wpi_lib) $(commonui_lib)
 exetarg_nt_version    = exever.res
 exetarg_res           = $(proj_name).res
-exetarg_nt_manif      = ntmanif.res
 !include exetarg.mif
 
 #!ifeq host_cpu axp
@@ -68,9 +67,9 @@ ntmanif_path = ../res
 
 rc_inc_dirs = $(commonui_inc_dirs) $(wpi_inc_dirs)
 
-$(proj_name).res : ../res/wddespy.rc .AUTODEPEND $(__MAKEFILES__)
+$(proj_name).res : ../res/wddespy.rc $(ntmanif_dep) .AUTODEPEND $(__MAKEFILES__)
     @%make echo_rc
-    $(rc) $(ppflags_common) $(rc_cppflags) $(rc_ui8_flags) $(rc_flags) -ad -I"../res" $(rc_inc_path) $[@ -fo=$@
+    $(rc) $(ppflags_common) $(rc_cppflags) $(rc_ui8_flags) $(rc_flags) -ad $(rc_inc_path) $(ntmanif_inc_dirs) $[@ -fo=$@
 
 rcstr.grh : rcstrmsg.gh $(__MAKEFILES__)
     @%make echo_awk

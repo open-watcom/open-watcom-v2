@@ -74,7 +74,6 @@ exetarg_nt_version    = exever.res
 !ifeq sys_windowed 1
 exetarg_res           = $(name).res
 !endif
-exetarg_nt_manif      = ntmanif.res
 exetarg_name          = $(name)
 !include exetarg.mif
 
@@ -85,9 +84,9 @@ exetarg_name          = $(name)
 ntmanif_path = ../res
 !include ntmanif.mif
 
-$(name).res : $(vi_dir)/res/viw.rc $(__MAKEFILES__) $(vi_autodepends)
+$(name).res : $(vi_dir)/res/viw.rc $(ntmanif_dep) $(__MAKEFILES__) $(vi_autodepends)
     @%make echo_rc
-    $(rc) $(ppflags_common) $(rc_cppflags) $(rc_ui8_flags) $(rc_flags) -ad $(rc_inc_path) $[@ -fo=$@
+    $(rc) $(ppflags_common) $(rc_cppflags) $(rc_ui8_flags) $(rc_flags) -ad $(rc_inc_path) $(ntmanif_inc_dirs) $[@ -fo=$@
 
 rcstr.grh : rcstrmsg.gh $(__MAKEFILES__)
     @%make echo_awk

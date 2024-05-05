@@ -83,7 +83,6 @@ exetarg_libs = &
     $(wresedit_dir)/wstring/$(objs_subdir)/wstring.lib
 exetarg_nt_version    = exever.res
 exetarg_res           = $(proj_name).res
-exetarg_nt_manif      = ntmanif.res
 !include exetarg.mif
 
 # rc and others
@@ -93,9 +92,9 @@ ntmanif_path = ../res
 
 rc_inc_dirs = -I"../res" $(commonui_inc_dirs)
 
-$(proj_name).res : ../res/wre.rc $(__MAKEFILES__) .AUTODEPEND
+$(proj_name).res : ../res/wre.rc $(ntmanif_dep) $(__MAKEFILES__) .AUTODEPEND
     @%make echo_rc
-    $(rc) $(ppflags_common) $(rc_cppflags) $(rc_ui8_flags) $(rc_flags) -ad $(rc_inc_path) $[@ -fo=$@
+    $(rc) $(ppflags_common) $(rc_cppflags) $(rc_ui8_flags) $(rc_flags) -ad $(rc_inc_path) $(ntmanif_inc_dirs) $[@ -fo=$@
 
 rcstrmsg.gh : ../res/wre.msg $(__MAKEFILES__)
     @%make echo_cpp

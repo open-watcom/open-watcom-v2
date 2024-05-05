@@ -3,6 +3,10 @@
 #include <windows.h>
 #include "resource.rh"
 
+#ifdef __NT__
+#include "ntmanif.rc"
+#endif
+
 ApplIcon    ICON     PRELOAD FIXED setup.ico
 ICN_DISK    ICON     PRELOAD FIXED disk.ico
 

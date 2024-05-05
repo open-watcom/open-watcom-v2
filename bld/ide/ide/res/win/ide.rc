@@ -4,6 +4,10 @@
 #include "ide.rh"
 #include "gui.rc"
 
+#ifdef __NT__
+#include "ntmanif.rc"
+#endif
+
 B_newproj       BITMAP  newproj.bmp
 B_openproj      BITMAP  openproj.bmp
 B_saveproj      BITMAP  saveproj.bmp
