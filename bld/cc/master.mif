@@ -141,7 +141,6 @@ exetarg_prebuild_objs = $(prebuild_objs)
 exetarg_objs          = $(comp_objs_exe)
 exetarg_libs          = $(asminline_lib) $(cg_libs)
 !endif
-exetarg_nt_version    = exever.res
 exetarg_qnx_res       = usage.u
 exetarg_name          = $(exetarg_name)
 !include exetarg.mif
@@ -152,7 +151,6 @@ exetarg_name          = $(exetarg_name)
 dlltarg_prebuild_objs = $(dll_subdir) $(prebuild_objs)
 dlltarg_objs          = $(comp_objs_dll)
 dlltarg_libs          = $(asminline_lib) $(cg_libs)
-dlltarg_nt_version    = dllver.res
 dlltarg_name          = $(dlltarg_name)
 !include dlltarg.mif
 

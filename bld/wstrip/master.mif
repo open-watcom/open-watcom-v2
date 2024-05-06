@@ -39,7 +39,7 @@ exetarg_prebuild_objs = msg.grh usage.gh
 exetarg_objs = strip.obj output.obj
 exetarg_nt_version = exever.res
 !ifndef bootstrap
-exetarg_res_wresui = wresui.res
+exetarg_res = wresexe.res
 !endif
 exetarg_name = $(exename)x
 !include exetarg.mif
@@ -52,7 +52,7 @@ rc_inc_dirs = -I. -I..
 ntverrc_exe = $(exename)
 !include ntverrc.mif
 
-wresui.res : ../wstrip.rc msg.grh usage.gh $(__MAKEFILES__)
+wresexe.res : ../wstrip.rc msg.grh usage.gh $(__MAKEFILES__)
     @%make echo_rc
     $(rcu8j) $(ppflags_common) $(rc_cppflags) -ad $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 

@@ -71,7 +71,7 @@ exetarg_objs = &
     $(subdir_wcpatch)/wcptchio.obj &
     $(subdir_wcpatch)/wcpatch.obj &
     $(subdir_wcpatch)/diff.obj
-exetarg_res_wresui  = wcpatch.res
+exetarg_res         = wcpatch.res
 exetarg_name        = wcpatch
 !include exetarg.mif
 
@@ -87,7 +87,7 @@ exetarg_objs = &
     $(subdir_wpatch)/wpatchio.obj &
     $(subdir_wpatch)/wpatch.obj &
     $(subdir_wpatch)/bpatch.obj
-exetarg_res_wresui  = wpatch.res
+exetarg_res         = wpatch.res
 exetarg_name        = wpatch
 !include exetarg.mif
 
@@ -103,7 +103,7 @@ exetarg_objs = &
     $(subdir_bpatch)/oldfile.obj &
     $(subdir_bpatch)/patchio.obj &
     $(subdir_bpatch)/patmain.obj
-exetarg_res_wresui  = bpatch.res
+exetarg_res         = bpatch.res
 exetarg_name        = bpatch
 !include exetarg.mif
 
@@ -118,7 +118,7 @@ exetarg_objs = &
     $(subdir_bdump)/oldfile.obj &
     $(subdir_bdump)/patchio.obj &
     $(subdir_bdump)/patmain.obj
-exetarg_res_wresui  = bdump.res
+exetarg_res         = bdump.res
 exetarg_name        = bdump
 !include exetarg.mif
 
@@ -131,7 +131,7 @@ exetarg_objs = &
     $(subdir_bdiff)/diff.obj &
     $(subdir_bdiff)/dopatch.obj &
     $(subdir_bdiff)/msg.obj
-exetarg_res_wresui  = bdiff.res
+exetarg_res         = bdiff.res
 exetarg_name        = bdiff
 !include exetarg.mif
 

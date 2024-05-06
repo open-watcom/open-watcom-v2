@@ -82,7 +82,6 @@ dlltarg_objs = wrmain.obj wrmem.obj wrmsg.obj wrfindt.obj wrtmpfil.obj &
     wrstubs.obj rcerrprt.obj &
     $(trmem_objs) $(dlltarg_objs_rc)
 dlltarg_libs = $(commonui_lib)
-dlltarg_nt_version = dllver.res
 dlltarg_res = $(proj_name).res
 !include dlltarg.mif
 
@@ -101,7 +100,7 @@ exetarg_name = test
 
 rc_inc_dirs = -I"$(wrc_dir)/h" #$(wres_inc_dirs) -I"$(wrc_dir)/h" $(commonui_inc_dirs)
 
-$(proj_name).res: ../res/wr.rc $(__MAKEFILES__) .AUTODEPEND
+$(proj_name).res: ../res/wr.rc $(ntverrc_dll_dep) $(__MAKEFILES__) .AUTODEPEND
     @%make echo_rc
     $(rcj) $(ppflags_common) $(rc_cppflags) -ad $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 

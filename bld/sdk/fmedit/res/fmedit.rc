@@ -2,6 +2,10 @@
 #include "fmdlgs.rh"
 #include "fmmenu.rh"
 
+#ifdef __NT__
+#include "dllver.grc"
+#endif
+
 FMEDIT ICON "fmedit.ico"
 
 SetupMenu MENU

@@ -1,3 +1,38 @@
 /* UTF-8 encoding, ¥ */
 
+#ifdef RESGUI
+
+#ifdef __OS2__
+#include <os2.h>
+#else
+#include <windows.h>
+#endif
+
+#include "rcdef.rh"
 #include "aui.rc"
+
+#ifdef __NT__
+#include "ntmanif.rc"
+#endif
+
+#ifdef __NT__
+#include "exever.grc"
+#endif
+
+#ifdef __OS2__
+
+ICON 1          "prof_i.ico"
+ICON WPROF_ICON "prof_i.ico"
+
+#else
+
+ApplIcon icon "prof_i.ico"
+
+#endif
+
+#else
+
+#include "wresdefn.h"
+#include "aui.rc"
+
+#endif

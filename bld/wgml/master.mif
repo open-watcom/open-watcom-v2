@@ -47,7 +47,7 @@ extra_c_flags_gmemory = $(trmem_cover_cflags)
 exetarg_prebuild_objs = wgmlmsgs.gh wgmlmsge.gh
 exetarg_objs          = $(objs)
 exetarg_libs          = $(wres_lib)
-exetarg_res_wresui    = wresui.res
+exetarg_res           = wresexe.res
 !include exetarg.mif
 
 #
@@ -55,7 +55,7 @@ exetarg_res_wresui    = wresui.res
 #
 msgfiles = ../h/wgmlerr.msg ../h/wgml.msg
 
-wresui.res : ../h/wgml.rc wgmlmsgs.gh ../h/wgmlmsg.h $(msgfiles) $(__MAKEFILES__)
+wresexe.res : ../h/wgml.rc wgmlmsgs.gh ../h/wgmlmsg.h $(msgfiles) $(__MAKEFILES__)
     @%make echo_rc
     $(rcu8j) $(ppflags_common) $(rc_cppflags) $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 

@@ -61,7 +61,6 @@ dlltarg_objs          = $(sys_object) &
     wclip.obj wisedit.obj weditsym.obj &
     $(cpp_objs) ppenv.obj
 dlltarg_libs = $(wr_lib) $(wpi_lib) $(commonui_lib)
-dlltarg_nt_version    = dllver.res
 dlltarg_res           = $(proj_name).res
 !include dlltarg.mif
 
@@ -72,7 +71,7 @@ dlltarg_res           = $(proj_name).res
 
 rc_inc_dirs = -I"../res" -I"../../res" -I"../../h" $(commonui_inc_dirs)
 
-$(proj_name).res: ../res/$(proj_name).rc $(__MAKEFILES__) .AUTODEPEND
+$(proj_name).res: ../res/$(proj_name).rc $(ntverrc_dll_dep) $(__MAKEFILES__) .AUTODEPEND
     @%make echo_rc
     $(rcu8j) $(ppflags_common) $(rc_cppflags) -ad $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 

@@ -40,7 +40,6 @@ all: weditviw.dll wedit.dll .SYMBOLIC
 # DLL's
 #
 dlltarg_objs    = weditviw.obj
-dlltarg_nt_version = dllver.res
 !include dlltarg.mif
 
 dlltarg_opts    = opt implib

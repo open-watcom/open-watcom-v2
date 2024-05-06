@@ -66,7 +66,7 @@ exetarg_objs = &
     wpmsg.obj       &
     $(trmem_objs)
 exetarg_libs       = $(wres_lib)
-exetarg_res_wresui = wresui.res
+exetarg_res        = wresexe.res
 !include exetarg.mif
 
 #
@@ -74,7 +74,7 @@ exetarg_res_wresui = wresui.res
 #
 rc_inc_dirs = -I. -I.. -I"../h" -I"$(wrc_dir)/h"
 
-wresui.res : ../h/$(proj_name).rc
+wresexe.res : ../h/$(proj_name).rc
     @%make echo_rc
     $(rcu8j) $(ppflags_common) $(rc_cppflags) $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 

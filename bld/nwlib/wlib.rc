@@ -4,6 +4,14 @@
 #include "usage.rh"
 #include "wreslang.rh"
 
+#ifdef __NT__
+#ifdef RESDLL
+#include "dllver.grc"
+#else
+#include "exever.grc"
+#endif
+#endif
+
 STRINGTABLE
 BEGIN
     #define pick(c,e,j) (c + RLE_ENGLISH * MSG_LANG_SPACING), [ e ]

@@ -48,9 +48,9 @@ exetarg_res        = sample.res
 !include exetarg.mif
 !undef exetarg_res
 !else
-exetarg_res_wresui = wresui.res
+exetarg_res        = wresexe.res
 !include exetarg.mif
-!undef exetarg_res_wresui
+!undef exetarg_res
 !endif
 
 exetarg_objs       = pmsample.obj dlgstat.obj dlgdynam.obj dlgtest.obj sampdef.obj
@@ -78,5 +78,5 @@ samplepm.res : ../res/samplepm.rc ../res/samplepm.dlg
 sample.res : ../res/sample.rc ../res/sample.dlg
     $(rc) $(ppflags_common) $(rc_cppflags) -DWINRC -ad $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
-wresui.res : ../res/sample.rc ../res/sample.dlg
+wresexe.res : ../res/sample.rc ../res/sample.dlg
     $(rcj) $(ppflags_common) $(rc_cppflags) -ad $(rc_flags) $(rc_inc_path) $[@ -fo=$@

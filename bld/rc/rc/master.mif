@@ -181,11 +181,8 @@ exetarg_prebuild_objs = $(misc_objs) $(prebuild_objs)
 exetarg_objs          = $(objs_exe)
 !ifndef bootstrap
 exetarg_qnx_res       = usage.u
-exetarg_res_wresui    = wresui.res
+exetarg_res           = wresexe.res
 !endif
-!endif
-!ifndef bootstrap
-exetarg_nt_version    = exever.res
 !endif
 !include exetarg.mif
 
@@ -195,9 +192,8 @@ exetarg_nt_version    = exever.res
 dlltarg_prebuild_objs = $(dll_subdir) $(prebuild_objs)
 dlltarg_objs          = $(objs_dll)
 !ifndef bootstrap
-dlltarg_res_wresui    = wresui.res
+dlltarg_res           = wresdll.res
 !endif
-dlltarg_nt_version    = dllver.res
 !include dlltarg.mif
 
 #
@@ -209,9 +205,13 @@ ntverrc_dll = $(dlltarg_name)
 
 rc_defines    = -D_STANDALONE_ $(parser_defines)
 
-wresui.res : ../rc.rc rcmsg.grh .AUTODEPEND
+wresexe.res : ../rc.rc $(ntverrc_exe_dep) rcmsg.grh .AUTODEPEND
     @%make echo_rc
     $(rcu8j) $(ppflags_common) $(rc_cppflags) $(rc_defines) -ad $(rc_flags) $(rc_inc_path) $[@ -fo=$@
+
+wresdll.res : ../rc.rc $(ntverrc_dll_dep) rcmsg.grh .AUTODEPEND
+    @%make echo_rc
+    $(rcu8j) $(ppflags_common) $(rc_cppflags) -DRESDLL $(rc_defines) -ad $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
 win_yacc_options = -b $(win_yacc_prefix) -d -dd -db -de
 os2_yacc_options = -b $(os2_yacc_prefix) -d -dd -db -de

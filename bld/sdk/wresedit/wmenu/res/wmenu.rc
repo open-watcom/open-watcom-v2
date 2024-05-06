@@ -7,6 +7,10 @@
 
 #define FIRST_COPYRIGHT_YEAR 2002
 
+#ifdef __NT__
+#include "dllver.grc"
+#endif
+
 #include "sysindep.rc"
 
 "WMenuAccelTable" ACCELERATORS

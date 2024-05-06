@@ -163,7 +163,7 @@ exetarg_nt_version    = exever.res
 !ifeq sys_windowed 1
 exetarg_res           = $(proj_name).res
 !else
-exetarg_res_wresui    = wresui.res
+exetarg_res           = wresexe.res
 !endif
 exetarg_nt_manif      = ntmanif.res
 exetarg_qnx_res       = usage.u
@@ -433,7 +433,7 @@ wvuidll.res : ../../res/wvuidll.rc litdef.gh $(__MAKEFILES__) .autodepend
     @%make echo_rc
     $(rc) $(ppflags_common) $(rc_cppflags) -ad $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
-wresui.res : ../../res/wvui.rc $(rcfiles) usage.gh usagej.gh $(__MAKEFILES__) .autodepend
+wresexe.res : ../../res/wvui.rc $(rcfiles) usage.gh usagej.gh $(__MAKEFILES__) .autodepend
     @%make echo_rc
     $(rcj) $(ppflags_common) $(rc_cppflags) -ad $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 

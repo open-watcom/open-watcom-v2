@@ -90,7 +90,6 @@ additional_clean += *$(dlltarg_ext)
 #
 dlltarg_prebuild_objs = $(dis_prereq)
 dlltarg_objs          = madimp.obj $(dis_objs) $(imp_objs)
-dlltarg_nt_version    = dllver.res
 !include dlltarg.mif
 
 #

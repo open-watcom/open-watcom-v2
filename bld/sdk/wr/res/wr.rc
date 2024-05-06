@@ -10,6 +10,10 @@
 #include "addsym.rh"
 #include "wrmsg.rh"
 
+#ifdef __NT__
+#include "dllver.grc"
+#endif
+
 STRINGTABLE
 BEGIN
     #define pick(c,e,j) c, [ e ]

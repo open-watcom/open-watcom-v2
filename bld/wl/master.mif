@@ -86,6 +86,12 @@ extra_l_flags_dll_os2 = initinstance terminstance op modname='$(dlltarg_name)'
 #
 # EXE
 #
+!ifdef no_orl
+wlink_libs            = $(dwarfw_lib)
+!else
+wlink_libs            = $(dwarfw_lib) $(orl_lib)
+!endif
+
 !ifdef wlink_dll
 exetarg_prebuild_objs = $(extra_link_res_$(host_os)) $(dlltarg_name).dll
 exetarg_objs          = $(comp_objs_drv)
@@ -93,14 +99,9 @@ exetarg_libs          = $(dlltarg_name).lib
 !else
 exetarg_prebuild_objs = $(extra_link_res_$(host_os)) rcmsg.grh
 exetarg_objs          = $(comp_objs_exe)
-!ifdef no_orl
-exetarg_libs          = $(dwarfw_lib)
-!else
-exetarg_libs          = $(dwarfw_lib) $(orl_lib)
+exetarg_libs          = $(wlink_libs)
 !endif
-exetarg_res_wresui    = wresui.res
-!endif
-exetarg_nt_version    = exever.res
+exetarg_res           = wresexe.res
 exetarg_qnx_res       = usage.u
 !include exetarg.mif
 
@@ -109,13 +110,8 @@ exetarg_qnx_res       = usage.u
 #
 dlltarg_prebuild_objs = $(dll_subdir) rcmsg.grh
 dlltarg_objs          = $(comp_objs_dll)
-!ifdef no_orl
-dlltarg_libs          = $(dwarfw_lib)
-!else
-dlltarg_libs          = $(dwarfw_lib) $(orl_lib)
-!endif
-dlltarg_res_wresui    = wresui.res
-dlltarg_nt_version    = dllver.res
+dlltarg_libs          = $(wlink_libs)
+dlltarg_res           = wresdll.res
 !include dlltarg.mif
 
 #
@@ -125,13 +121,25 @@ ntverrc_exe = $(exetarg_name)
 ntverrc_dll = $(dlltarg_name)
 !include ntverrc.mif
 
+#if 0
+res_objs_exe = $(ntverrc_exe_dep)
+res_objs_drv = $(ntverrc_exe_dep)
+res_objs_dll = $(ntverrc_dll_dep)
+#endif
+
 rc_inc_dirs = -I. -I"$(wlink_dir)/h" -I"$(wrc_dir)/h"
 
-wresui.res : $(wlink_dir)/h/wlink.rc rcmsg.grh $(wlink_dir)/h/wlink.msg &
+wresexe.res : $(wlink_dir)/h/wlink.rc $(ntverrc_exe_dep) rcmsg.grh $(wlink_dir)/h/wlink.msg &
             $(wlink_dir)/h/lnkerror.rc $(wlink_dir)/h/wlnkmsg.h &
 	    $(wlink_dir)/h/lnkerror.msg $(__MAKEFILES__)
     @%make echo_rc
     $(rcu8j) $(ppflags_common) $(rc_cppflags) $(rc_flags) $(rc_inc_path) $[@ -fo=$@
+
+wresdll.res : $(wlink_dir)/h/wlink.rc $(ntverrc_dll_dep) rcmsg.grh $(wlink_dir)/h/wlink.msg &
+            $(wlink_dir)/h/lnkerror.rc $(wlink_dir)/h/wlnkmsg.h &
+	    $(wlink_dir)/h/lnkerror.msg $(__MAKEFILES__)
+    @%make echo_rc
+    $(rcu8j) $(ppflags_common) $(rc_cppflags) -DRESDLL $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
 rcmsg.grh : $(wrc_dir)/h/rc.msg $(__MAKEFILES__)
     @%make echo_awk

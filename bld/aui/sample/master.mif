@@ -36,8 +36,8 @@ exetarg_libs = $(aui_lib) $(gui_lib) $(ui_lib)
 exetarg_res = app.res
 #exetarg_res = appj.res
 !else
-exetarg_res_wresui = wresui.res
-#exetarg_res_wresui = wresuij.res
+exetarg_res = wresexe.res
+#exetarg_res = wresexej.res
 !endif
 exetarg_name = app
 !include exetarg.mif
@@ -75,10 +75,10 @@ appj.res : ../res/app.rc $(rcfiles)
     @%make echo_rc
     $(rcj) $(ppflags_common) $(rc_cppflags) -DJAPANESE $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
-wresui.res : ../res/appui.rc ../res/app.rc $(rcfiles)
+wresexe.res : ../res/appui.rc ../res/app.rc $(rcfiles)
     @%make echo_rc
     $(rc) $(ppflags_common) $(rc_cppflags) $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
-wresuij.res : ../res/appui.rc ../res/app.rc $(rcfiles)
+wresexej.res : ../res/appui.rc ../res/app.rc $(rcfiles)
     @%make echo_rc
     $(rcj) $(ppflags_common) $(rc_cppflags) -DJAPANESE $(rc_flags) $(rc_inc_path) $[@ -fo=$@

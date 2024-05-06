@@ -157,7 +157,7 @@ exetarg_nt_version    = exever.res
 !ifeq host_os win
 exetarg_res           = $(proj_name).res
 !else
-exetarg_res_wresui    = wresui.res
+exetarg_res           = wresexe.res
 !endif
 !include exetarg.mif
 
@@ -179,7 +179,7 @@ $(proj_name).res : ../h/wsamplew.rc ../h/wsampres.rc ../h/wsamplew.ico ../h/wsam
     @%make echo_rc
     $(rcu8j) $(ppflags_common) $(rc_cppflags) -30 $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
-wresui.res : ../h/wsample.rc ../h/wmsg.h ../h/wsample.msg usage.gh $(__MAKEFILES__)
+wresexe.res : ../h/wsample.rc ../h/wmsg.h ../h/wsample.msg usage.gh $(__MAKEFILES__)
     @%make echo_rc
     $(rcu8j) $(ppflags_common) $(rc_cppflags) $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 

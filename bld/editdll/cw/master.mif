@@ -42,7 +42,6 @@ all: weditcw.dll wedit.dll .SYMBOLIC
 # DLL's
 #
 dlltarg_objs = weditcw.obj
-dlltarg_nt_version = dllver.res
 !include dlltarg.mif
 
 dlltarg_opts = opt implib
