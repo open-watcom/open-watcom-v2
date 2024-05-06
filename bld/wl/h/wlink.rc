@@ -7,8 +7,8 @@
 #include "wlnkmsg.rh"
 #include "wreslang.rh"
 
-#ifdef __NT__
-#ifdef RESDLL
+#if defined( __NT__ ) && defined( RESX_NTVER )
+#ifdef RESX_DLL
 #include "dllver.grc"
 #else
 #include "exever.grc"

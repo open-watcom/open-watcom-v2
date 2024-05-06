@@ -11,11 +11,11 @@
 
 #define FIRST_COPYRIGHT_YEAR 1994
 
-#ifdef __NT__
+#if defined( __NT__ ) && defined( RESX_NTMANIF )
 #include "ntmanif.rc"
 #endif
 
-#ifdef __NT__
+#if defined( __NT__ ) && defined( RESX_NTVER )
 #include "exever.grc"
 #endif
 

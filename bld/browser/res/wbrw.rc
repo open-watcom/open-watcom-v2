@@ -2,11 +2,11 @@
 #include "icons.h"
 #include "hotspots.h"
 
-#ifdef __NT__
+#if defined( __NT__ ) && defined( RESX_NTMANIF )
 #include "ntmanif.rc"
 #endif
 
-#ifdef __NT__
+#if defined( __NT__ ) && defined( RESX_NTVER )
 #include "exever.grc"
 #endif
 

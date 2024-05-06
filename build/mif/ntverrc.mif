@@ -4,6 +4,8 @@
 
 # Default names and values
 
+ntverrc_def = -DRESX_NTVER
+
 !ifndef ntverrc_path
 ntverrc_path = ..
 !endif

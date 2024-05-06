@@ -187,6 +187,7 @@ libtarg_name          = wd
 rc_inc_dirs = -I. -I"../../res/$(target_$(host_os))" $(wv_res_inc_dirs) &
     -I"../../h" $(aui_rc_inc_dirs) $(gui_rc_inc_dirs) -I"$(dig_dir)/h"
 
+ntverrc_path = ../../res
 !include ntverrc.mif
 ntmanif_path = ../../res
 !include ntmanif.mif

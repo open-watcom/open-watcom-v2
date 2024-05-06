@@ -3,7 +3,7 @@
 #include "wasmmsg.rh"
 #include "wreslang.rh"
 
-#ifdef __NT__
+#if defined( __NT__ ) && defined( RESX_NTVER )
 #include "exever.grc"
 #endif
 

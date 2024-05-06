@@ -10,7 +10,7 @@
 #include "addsym.rh"
 #include "wrmsg.rh"
 
-#ifdef __NT__
+#if defined( __NT__ ) && defined( RESX_NTVER )
 #include "dllver.grc"
 #endif
 

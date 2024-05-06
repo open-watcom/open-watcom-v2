@@ -1,22 +1,22 @@
-!if defined( __OS2__ )
+#if defined( __OS2__ )
     #include <os2.h>
-!else
+#else
     #include <windows.h>
-!endif
+#endif
 #include "banner.h"
 #include "wv.rc"
 
-!if defined( __OS2__ )
+#if defined( __OS2__ )
     #define RC_ITEM(a,b,c)  a b c
-!else
+#else
     #define RC_ITEM(a,b,c)  b a c
-!endif
+#endif
 
-!if defined( __OS2__ )
+#if defined( __OS2__ )
 RC_ITEM( ICON, 1, "zapant.ico" )
-!else
+#else
 RC_ITEM( ICON, ApplIcon, "zapant.ico" )
-!endif
+#endif
 RC_ITEM( ICON, ICON_MAIN, "zapant.ico" )
 RC_ITEM( ICON, ICON_FPU, "8087.ico" )
 RC_ITEM( ICON, ICON_ASM, "asm.ico" )
@@ -25,11 +25,11 @@ RC_ITEM( ICON, ICON_CALL, "call.ico" )
 RC_ITEM( ICON, ICON_EXE, "exe.ico" )
 RC_ITEM( ICON, ICON_FUNC, "func.ico" )
 RC_ITEM( ICON, ICON_GLOB, "glob.ico" )
-!if defined( __OS2__ )
+#if defined( __OS2__ )
 RC_ITEM( ICON, ICON_ACL, "hot.ico" )
-!else
+#else
 RC_ITEM( ICON, ICON_HOT, "hot.ico" )
-!endif
+#endif
 RC_ITEM( ICON, ICON_IO, "io.ico" )
 RC_ITEM( ICON, ICON_LOG, "log.ico" )
 RC_ITEM( ICON, ICON_MEM, "mem.ico" )
