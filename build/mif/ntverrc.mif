@@ -4,8 +4,12 @@
 
 # Default names and values
 
+!ifndef ntverrc_path
+ntverrc_path = ..
+!endif
+
 !ifndef ntverrc_dll_skel
-ntverrc_dll_skel = ../dllver.rc
+ntverrc_dll_skel = $(ntverrc_path)/dllver.rc
 !endif
 
 !ifndef ntverrc_dll_dep
@@ -21,7 +25,7 @@ ntverrc_dll = $(proj_name)
 !endif
 
 !ifndef ntverrc_exe_skel
-ntverrc_exe_skel = ../exever.rc
+ntverrc_exe_skel = $(ntverrc_path)/exever.rc
 !endif
 
 !ifndef ntverrc_exe_dep
@@ -39,8 +43,6 @@ ntverrc_exe = $(proj_name)
 !ifndef patch_level
 patch_level = 0
 !endif
-
-ntverrc_inc_path = $(extra_ntverrc_inc_path) $(inc_dirs_sys) -I"$(watcom_dir)/h"
 
 $(ntverrc_exe_dep): $(ntverrc_exe_skel) .EXPLICIT
     @%make echo_genverrc

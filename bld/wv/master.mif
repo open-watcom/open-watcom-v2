@@ -81,11 +81,11 @@ inc_dirs = -I.  -Ih -I"../h" -I"../../h" $(wv_res_inc_dirs) -I"$(dig_dir)/h" &
     $(hlpview_inc_dirs) $(wpi_inc_dirs) $(commonui_inc_dirs)
 !ifeq sys_rtdll 1
 !else
-!ifeq sys_windowed 1
+! ifeq sys_windowed 1
 inc_dirs += -I"$(gui_dir)/win/h"
-!else
+! else
 inc_dirs += -I"$(gui_dir)/ui/h"
-!endif
+! endif
 !endif
 !if "$(host_os)" == "linux" || "$(host_os)" == "bsd" || "$(host_os)" == "osx" || "$(host_os)" == "haiku"
 inc_dirs += -I"$(ncurses_dir)/h"
@@ -152,18 +152,18 @@ extra_l_flags_rdos =
 exetarg_prebuild_objs = litdef.gh
 exetarg_objs          = $(wv_drv_objs)
 exetarg_libs          = wd.lib
-exetarg_res           = wvuidll.res
+exetarg_res           = wresdll.res
 exetarg_name          = $(wv_engine_noui)
 !include exetarg.mif
 !else
 exetarg_prebuild_objs = litdef.gh usage.gh
 exetarg_objs          = $(engine_objs) fingmsg.obj $(ui_objs)
 exetarg_libs          = $(aui_lib) $(gui_lib) $(ui_lib) $(wres_lib)
-!ifeq sys_windowed 1
+! ifeq sys_windowed 1
 exetarg_res           = $(proj_name).res
-!else
+! else
 exetarg_res           = wresexe.res
-!endif
+! endif
 exetarg_nt_manif      = ntmanif.res
 exetarg_qnx_res       = usage.u
 exetarg_name          = $(name)
@@ -428,11 +428,11 @@ $(proj_name).res : ../../res/wvwin.rc $(bitmaps) $(rcfiles) $(__MAKEFILES__) .au
 
 !endif
 
-wvuidll.res : ../../res/wvuidll.rc litdef.gh $(__MAKEFILES__) .autodepend
+wresdll.res : ../../res/wvuidll.rc litdef.gh $(__MAKEFILES__) .autodepend
     @%make echo_rc
     $(rc) $(ppflags_common) $(rc_cppflags) -ad $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
-wresexe.res : ../../res/wvui.rc $(rcfiles) usage.gh usagej.gh $(__MAKEFILES__) .autodepend
+wresexe.res : ../../res/wvuiexe.rc $(rcfiles) usage.gh usagej.gh $(__MAKEFILES__) .autodepend
     @%make echo_rc
     $(rcj) $(ppflags_common) $(rc_cppflags) -ad $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 

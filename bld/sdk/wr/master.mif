@@ -96,6 +96,7 @@ exetarg_name = test
 #
 # rc and others
 #
+ntverrc_path = ../res
 !include ntverrc.mif
 
 rc_inc_dirs = -I"$(wrc_dir)/h" #$(wres_inc_dirs) -I"$(wrc_dir)/h" $(commonui_inc_dirs)

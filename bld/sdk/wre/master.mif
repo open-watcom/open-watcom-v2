@@ -85,6 +85,7 @@ exetarg_res           = $(proj_name).res
 !include exetarg.mif
 
 # rc and others
+ntverrc_path = ../res
 !include ntverrc.mif
 ntmanif_path = ../res
 !include ntmanif.mif

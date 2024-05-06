@@ -171,6 +171,7 @@ depend_res = ../h/setup.h $(gui_dir)/h/gui.rc $(depend_res_$(host_os))
 
 rc_inc_dirs = -I"../res/$(host_os)" -I"../res" $(gui_rc_inc_dirs)
 
+ntverrc_path = ../res/nt
 !include ntverrc.mif
 ntmanif_path = ../res/nt
 !include ntmanif.mif

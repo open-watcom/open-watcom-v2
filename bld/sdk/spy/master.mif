@@ -96,6 +96,7 @@ dlltarg_name          = $(dllname)
 #
 # rc and others
 #
+ntverrc_path = ../res
 !include ntverrc.mif
 ntmanif_path = ../res
 !include ntmanif.mif
