@@ -1,6 +1,6 @@
 /* UTF-8 encoding, ¥ */
 
-#ifdef RESGUI
+#ifdef RESX_GUI
 
 #ifdef __OS2__
 #include <os2.h>

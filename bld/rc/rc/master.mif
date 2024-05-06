@@ -203,7 +203,7 @@ ntverrc_exe = $(exetarg_name)
 ntverrc_dll = $(dlltarg_name)
 !include ntverrc.mif
 
-rc_defines    = -D_STANDALONE_ $(parser_defines)
+rc_defines    = -D_STANDALONE_ $(parser_defines) $(ntverrc_def)
 
 wresexe.res : ../rc.rc $(ntverrc_exe_dep) rcmsg.grh .AUTODEPEND
     @%make echo_rc
@@ -211,7 +211,7 @@ wresexe.res : ../rc.rc $(ntverrc_exe_dep) rcmsg.grh .AUTODEPEND
 
 wresdll.res : ../rc.rc $(ntverrc_dll_dep) rcmsg.grh .AUTODEPEND
     @%make echo_rc
-    $(rcu8j) $(ppflags_common) $(rc_cppflags) -DRESDLL $(rc_defines) -ad $(rc_flags) $(rc_inc_path) $[@ -fo=$@
+    $(rcu8j) $(ppflags_common) $(rc_cppflags) $(rc_defines) -DRESX_DLL -ad $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
 win_yacc_options = -b $(win_yacc_prefix) -d -dd -db -de
 os2_yacc_options = -b $(os2_yacc_prefix) -d -dd -db -de

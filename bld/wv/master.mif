@@ -413,6 +413,14 @@ rcfiles = &
     ../../h/dlgasync.rh &
     $(wv_dialogs)
 
+
+!ifdef wv_engine_noui
+    -DRESX_ENG
+!else ifeq sys_windowed 1
+    -DRESX_GUI
+!else
+!endif
+
 !ifeq host_os os2
 
 $(proj_name).res : ../../res/wvgui.rc $(bitmaps) $(rcfiles) $(__MAKEFILES__) .autodepend
@@ -438,6 +446,16 @@ wresdll.res : ../../res/wvuidll.rc litdef.gh $(__MAKEFILES__) .autodepend
 wresexe.res : ../../res/wvuiexe.rc $(rcfiles) usage.gh usagej.gh $(__MAKEFILES__) .autodepend
     @%make echo_rc
     $(rcj) $(ppflags_common) $(rc_cppflags) -ad $(rc_flags) $(rc_inc_path) $[@ -fo=$@
+
+wres.res : ../../res/wvwres.rc
+!ifdef wv_engine_noui
+    rc_wres_type = -DRESX_ENG
+!else ifeq sys_windowed 1
+    rc_wres_type = -DRESX_GUI
+!else
+!endif
+    @%make echo_rc
+    $(rc) $(ppflags_common) $(rc_cppflags) $(rc_wres_type) -ad $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
 litdefm.tmp : $(res_strings_dir)/menu.str $(__MAKEFILES__)
     @%make echo_cpp

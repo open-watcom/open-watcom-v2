@@ -1,4 +1,4 @@
-#ifdef RESGUI
+#ifdef RESX_GUI
   #ifdef __OS2__
     #include <os2.h>
   #else
@@ -12,20 +12,20 @@
 #include "aui.rc"
 
 #ifdef JAPANESE
-  #if defined( RESGUI ) && defined( __OS2__ )
+  #if defined( __OS2__ ) && defined( RESX_GUI )
     #include "japoptn2.dlg"
   #else
     #include "japoptn.dlg"
   #endif
 #else
-  #if defined( RESGUI ) && defined( __OS2__ )
+  #if defined( __OS2__ ) && defined( RESX_GUI )
     #include "dlgoptn2.dlg"
   #else
     #include "dlgoptn.dlg"
   #endif
 #endif
 
-#ifdef RESGUI
+#ifdef RESX_GUI
 
 #include "rcdefs.h"
 
