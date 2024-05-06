@@ -414,17 +414,17 @@ rcfiles = &
 
 !ifeq host_os os2
 
-$(proj_name).res : ../../res/wvpm.rc $(bitmaps) $(rcfiles) $(__MAKEFILES__) .autodepend
+$(proj_name).res : ../../res/wvgui.rc $(bitmaps) $(rcfiles) $(__MAKEFILES__) .autodepend
     @%make echo_rc
     $(rc) $(ppflags_common) $(rc_cppflags) -ad $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
-$(proj_name)j.res : ../../res/wvpm.rc $(bitmaps) $(rcfiles) $(__MAKEFILES__) .autodepend
+$(proj_name)j.res : ../../res/wvgui.rc $(bitmaps) $(rcfiles) $(__MAKEFILES__) .autodepend
     @%make echo_rc
     $(rc) $(ppflags_common) $(rc_cppflags) -DJAPANESE -ad $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
 !else
 
-$(proj_name).res : ../../res/wvwin.rc $(bitmaps) $(rcfiles) $(__MAKEFILES__) .autodepend
+$(proj_name).res : ../../res/wvgui.rc $(bitmaps) $(rcfiles) $(__MAKEFILES__) .autodepend
     @%make echo_rc
     $(rc) $(ppflags_common) $(rc_cppflags) -ad $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
