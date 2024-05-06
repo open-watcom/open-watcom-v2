@@ -96,6 +96,9 @@ dlltarg_libs += $(imp_libs)
 !ifeq dip_format dwarf
 dlltarg_libs += $(dwarfr_lib)
 !endif
+!ifdef ntverrc_dll_out
+dlltarg_res = $(ntverrc_dll_out)
+!endif
 dlltarg_name = $(dllname)
 !include dlltarg.mif
 

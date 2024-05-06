@@ -55,6 +55,9 @@ exetarg_objs = &
     dumphll.obj &
     coff.obj &
     leb128rd.obj
+!ifdef ntverrc_exe_out
+exetarg_res = $(ntverrc_exe_out)
+!endif
 !include exetarg.mif
 
 #

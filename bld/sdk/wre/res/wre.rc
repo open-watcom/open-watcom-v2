@@ -11,6 +11,10 @@
 #include "ntmanif.rc"
 #endif
 
+#ifdef __NT__
+#include "exever.grc"
+#endif
+
 STRINGTABLE
 BEGIN
     #define pick(c,e) c, [ e ]

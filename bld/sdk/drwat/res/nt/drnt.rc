@@ -33,6 +33,10 @@
 #include "ntmanif.rc"
 #endif
 
+#ifdef __NT__
+#include "exever.grc"
+#endif
+
 "APPLICON" ICON "drwatcom.ico"
 "ERRICON" ICON "err.ico"
 

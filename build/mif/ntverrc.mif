@@ -46,19 +46,17 @@ $(ntverrc_exe_dep): $(ntverrc_exe_skel) .EXPLICIT
     @%make echo_genverrc
     $(noecho)genverrc $]@ $@ $$ $(ntverrc_exe) $(patch_level)
 
-$(ntverrc_exe_out): $(ntverrc_exe_skel) .EXPLICIT
-    $(noecho)genverrc $]@ $(ntverrc_exe_dep) $$ $(ntverrc_exe) $(patch_level)
+$(ntverrc_exe_out) : $(ntverrc_exe_dep) .EXPLICIT
     @%make echo_rc
-    $(rc) $(ppflags_common) $(rc_cppflags) $(rc_flags) $(ntverrc_inc_path) $(ntverrc_exe_dep) -fo=$@
+    $(rc) $(ppflags_common) $(rc_cppflags) $(rc_flags) $[@ -fo=$@
 
 $(ntverrc_dll_dep): $(ntverrc_dll_skel) .EXPLICIT
     @%make echo_genverrc
     $(noecho)genverrc $]@ $@ $$ $(ntverrc_dll) $(patch_level)
 
-$(ntverrc_dll_out): $(ntverrc_dll_skel) .EXPLICIT
-    $(noecho)genverrc $]@ $(ntverrc_dll_dep) $$ $(ntverrc_dll) $(patch_level)
+$(ntverrc_dll_out) : $(ntverrc_dll_dep) .EXPLICIT
     @%make echo_rc
-    $(rc) $(ppflags_common) $(rc_cppflags) $(rc_flags) $(ntverrc_inc_path) $(ntverrc_dll_dep) -fo=$@
+    $(rc) $(ppflags_common) $(rc_cppflags) $(rc_flags) $[@ -fo=$@
 
 #
 # Macros to bind version resource (for PE images)

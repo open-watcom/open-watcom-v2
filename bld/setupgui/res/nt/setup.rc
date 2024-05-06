@@ -7,6 +7,10 @@
 #include "ntmanif.rc"
 #endif
 
+#ifdef __NT__
+#include "exever.grc"
+#endif
+
 ApplIcon    ICON     PRELOAD FIXED setup.ico
 ICN_DISK    ICON     PRELOAD FIXED disk.ico
 

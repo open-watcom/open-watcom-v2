@@ -90,6 +90,9 @@ additional_clean += *$(dlltarg_ext)
 #
 dlltarg_prebuild_objs = $(dis_prereq)
 dlltarg_objs          = madimp.obj $(dis_objs) $(imp_objs)
+!ifdef ntverrc_dll_out
+dlltarg_res = $(ntverrc_dll_out)
+!endif
 !include dlltarg.mif
 
 #

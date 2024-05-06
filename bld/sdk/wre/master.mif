@@ -91,7 +91,7 @@ ntmanif_path = ../res
 
 rc_inc_dirs = -I"../res" $(commonui_inc_dirs)
 
-$(proj_name).res : ../res/wre.rc $(ntmanif_dep) $(__MAKEFILES__) .AUTODEPEND
+$(proj_name).res : ../res/wre.rc $(ntverrc_exe_dep) $(ntmanif_dep) $(__MAKEFILES__) .AUTODEPEND
     @%make echo_rc
     $(rcu8j) $(ppflags_common) $(rc_cppflags) -ad $(rc_flags) $(rc_inc_path) $(ntmanif_inc_dirs) $[@ -fo=$@
 

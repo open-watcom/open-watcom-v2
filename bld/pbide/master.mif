@@ -32,6 +32,6 @@ exetarg_res  = $(name).res
 #
 !include ntverrc.mif
 
-$(name).res : ../dlldbg.rc ../debugger.ico $(__MAKEFILES__)
+$(name).res : ../dlldbg.rc $(ntverrc_exe_dep) ../debugger.ico $(__MAKEFILES__)
     @%make echo_rc
     $(rc) $(ppflags_common) $(rc_cppflags) $(rc_flags) $[@ -fo=$@

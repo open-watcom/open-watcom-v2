@@ -55,6 +55,9 @@ exetarg_objs = &
     compress.obj &
     parsing.obj &
     $(trmem_objs)
+!ifdef ntverrc_exe_out
+exetarg_res = $(ntverrc_exe_out)
+!endif
 !include exetarg.mif
 
 #

@@ -109,7 +109,7 @@ wsplice_opts_linux = -kUNIX
 wsplice_opts_qnx   = -kUNIX
 wsplice_opts_osx   = -kUNIX
 
-wresexe.res : ../h/wmake.rc ../h/mrcmsg.h usage.gh usagej.gh $(__MAKEFILES__)
+wresexe.res : ../h/wmake.rc $(ntverrc_exe_dep) ../h/mrcmsg.h usage.gh usagej.gh $(__MAKEFILES__)
     @%make echo_rc
     $(rcu8j) $(ppflags_common) $(rc_cppflags) $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 

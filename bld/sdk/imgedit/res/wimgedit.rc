@@ -15,6 +15,10 @@
 #include "ntmanif.rc"
 #endif
 
+#ifdef __NT__
+#include "exever.grc"
+#endif
+
 "APPLICON"      ICON    "wimgedit.ico"
 "APPLBITMAP"    BITMAP  "wimgedit.bmp"
 

@@ -83,7 +83,7 @@ exetarg_name          = $(name)
 ntmanif_path = ../res
 !include ntmanif.mif
 
-$(name).res : $(vi_dir)/res/viw.rc $(ntmanif_dep) $(__MAKEFILES__) $(vi_autodepends)
+$(name).res : $(vi_dir)/res/viw.rc $(ntverrc_exe_dep) $(ntmanif_dep) $(__MAKEFILES__) $(vi_autodepends)
     @%make echo_rc
     $(rcu8j) $(ppflags_common) $(rc_cppflags) -ad $(rc_flags) $(rc_inc_path) $(ntmanif_inc_dirs) $[@ -fo=$@
 

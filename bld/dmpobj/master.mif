@@ -26,6 +26,9 @@ exetarg_objs = &
     objread.obj &
     output.obj &
     process.obj
+!ifdef ntverrc_exe_out
+exetarg_res = $(ntverrc_exe_out)
+!endif
 !include exetarg.mif
 
 #

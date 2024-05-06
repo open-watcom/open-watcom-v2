@@ -52,6 +52,9 @@ exetarg_objs = main.obj compiler.obj document.obj env.obj ipfbuff.obj ipffile.ob
 
 !ifdef __WATCOM_TOOLS__
 
+!ifdef ntverrc_exe_out
+exetarg_res = $(ntverrc_exe_out)
+!endif
 !include exetarg.mif
 
 !else ifdef __UNIX__
@@ -60,15 +63,18 @@ $(proj_name).exe : $(exetarg_$(host_os)_version) $(__MAKEFILES__)
     ../configure
     make -f Makefile wipfc
     mv wipfc $@
-!ifdef exetarg_$(host_os)_version
+!ifdef ntverrc_exe_dep
 !ifeq verbose 0
     @echo bind res $@ ver
 !endif
-    $(noecho)*bwrc -q -k $(exetarg_$(host_os)_version) $@
+    $(noecho)*bwrc -q -k $(ntverrc_exe_dep) $@
 !endif
 
 !else
 
+!ifdef ntverrc_exe_out
+exetarg_res = $(ntverrc_exe_out)
+!endif
 !include exetarg.mif
 
 !endif

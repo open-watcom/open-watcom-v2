@@ -106,6 +106,9 @@ dlltarg_opts          = alias __HugeValue_br=__HugeValue, __IsTable_br=__IsTable
 dlltarg_opts          = alias _HugeValue_br=_HugeValue, _IsTable_br=_IsTable
 !endif
 !endif
+!ifdef ntverrc_dll_out
+dlltarg_res = $(ntverrc_dll_out)
+!endif
 dlltarg_name          = $(dllname)
 !include dlltarg.mif
 

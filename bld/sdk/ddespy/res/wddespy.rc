@@ -15,6 +15,10 @@
 #include "ntmanif.rc"
 #endif
 
+#ifdef __NT__
+#include "exever.grc"
+#endif
+
 "APPLICON" ICON "ddespy.ico"
 
 "CONV"    BITMAP "conv.bmp"

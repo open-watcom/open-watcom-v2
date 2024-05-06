@@ -165,7 +165,7 @@ extra_rc_flags_nt  = -D_WINNT
 !ifeq sys_windowed 1
 depend_res_os2 = ../res/os2/setup.ico
 !endif
-depend_res_nt  = ../res/nt/setup.ico ../res/nt/disk.ico $(ntmanif_dep)
+depend_res_nt  = $(ntverrc_exe_dep) $(ntmanif_dep) ../res/nt/setup.ico ../res/nt/disk.ico
 depend_res_win = ../res/win/setup.ico ../res/win/disk.ico
 depend_res = ../h/setup.h $(gui_dir)/h/gui.rc $(depend_res_$(host_os))
 

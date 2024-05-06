@@ -108,7 +108,7 @@ $(proj_name).res : ../res/$(host_os)/drwatcom.rc .AUTODEPEND
     @%make echo_rc
     $(rcu8j) $(ppflags_common) $(rc_cppflags) -ad $(rc_flags) $(cppflags) $(rc_inc_path) $[@ -fo=$@
 !else
-$(proj_name).res : ../res/$(host_os)/drnt.rc $(ntmanif_dep) .AUTODEPEND
+$(proj_name).res : ../res/$(host_os)/drnt.rc $(ntverrc_exe_dep) $(ntmanif_dep) .AUTODEPEND
     @%make echo_rc
     $(rcu8j) $(ppflags_common) $(rc_cppflags) -ad $(rc_flags) $(cppflags) $(rc_inc_path) $(ntmanif_inc_dirs) $[@ -fo=$@
 !endif

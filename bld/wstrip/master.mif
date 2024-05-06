@@ -51,7 +51,7 @@ rc_inc_dirs = -I. -I..
 ntverrc_exe = $(exename)
 !include ntverrc.mif
 
-wresexe.res : ../wstrip.rc msg.grh usage.gh $(__MAKEFILES__)
+wresexe.res : ../wstrip.rc $(ntverrc_exe_dep) msg.grh usage.gh $(__MAKEFILES__)
     @%make echo_rc
     $(rcu8j) $(ppflags_common) $(rc_cppflags) -ad $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 

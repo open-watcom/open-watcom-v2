@@ -6,6 +6,10 @@
 #include "ntmanif.rc"
 #endif
 
+#ifdef __NT__
+#include "exever.grc"
+#endif
+
 WBRWIcon        ICON "wbr.ico"
 GBList          ICON "gblist.ico"
 GBTree          ICON "gbtree.ico"

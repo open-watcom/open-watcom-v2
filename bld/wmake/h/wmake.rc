@@ -22,6 +22,10 @@
 #include "mrcmsg.rh"
 #include "wreslang.rh"
 
+#ifdef __NT__
+#include "exever.grc"
+#endif
+
 STRINGTABLE
 BEGIN
 

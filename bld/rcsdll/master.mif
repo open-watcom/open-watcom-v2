@@ -51,6 +51,9 @@ objs_ntx64  = mkssi.obj objcycle.obj
 # DLL
 #
 dlltarg_objs = rcsdll.obj inifile.obj $(objs_$(objs_subdir)) $(extra_objs)
+!ifdef ntverrc_dll_out
+dlltarg_res = $(ntverrc_dll_out)
+!endif
 dlltarg_name = rcsdll
 !include dlltarg.mif
 !else
@@ -66,4 +69,3 @@ libtarg_name = rcsdll
 # rc and others
 #
 !include ntverrc.mif
-

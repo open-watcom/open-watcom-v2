@@ -41,6 +41,10 @@ all: weditcw.dll wedit.dll .SYMBOLIC
 #
 # DLL's
 #
+!ifdef ntverrc_dll_out
+dlltarg_res = $(ntverrc_dll_out)
+!endif
+
 dlltarg_objs = weditcw.obj
 !include dlltarg.mif
 

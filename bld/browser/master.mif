@@ -133,7 +133,7 @@ $(exetarg_name).res : ../res/wbrwpm.rc
     @%make echo_rc
     $(rc) $(ppflags_common) $(rc_cppflags) $(rc_flags) -I"../res/ico_pm" $(rc_inc_path) $< -fo=$@
 !else
-$(exetarg_name).res : ../res/wbrw.rc $(ntmanif_dep) $(ntverrc_exe_dep)
+$(exetarg_name).res : ../res/wbrw.rc $(ntverrc_exe_dep) $(ntmanif_dep)
     @%make echo_rc
     $(rc) $(ppflags_common) $(rc_cppflags) $(rc_flags) -I"../res/ico" $(rc_inc_path) $(ntmanif_inc_dirs) $< -fo=$@
 !endif

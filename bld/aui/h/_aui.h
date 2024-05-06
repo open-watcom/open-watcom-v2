@@ -34,7 +34,7 @@
 #define __AUI_H_INCLUDED
 
 #include "aui.h"
-#include "auistr.h"
+#include "aui.rh"
 
 #define WNDEVENT( w, e, p )     (w)->info->event( w, e, p )
 

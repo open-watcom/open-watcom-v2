@@ -112,7 +112,7 @@ exetarg_name       = wasm
 
 rc_inc_dirs  = -I. -I"../h"
 
-wresexe.res : ../h/wasm.rc usage.gh wasmcmsg.grh wasmsmsg.grh $(__MAKEFILES__)
+wresexe.res : ../h/wasm.rc $(ntverrc_exe_dep) usage.gh wasmcmsg.grh wasmsmsg.grh $(__MAKEFILES__)
     @%make echo_rc
     $(rcu8j) $(ppflags_common) $(rc_cppflags) -D_STANDALONE_ $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 

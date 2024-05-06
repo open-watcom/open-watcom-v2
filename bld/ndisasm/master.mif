@@ -85,7 +85,7 @@ exetarg_qnx_res       = usage.u
 
 rc_inc_dirs = -I"../stand/h" -I"../stand"
 
-wresexe.res : $(disasm_dir)/stand/h/wdis.rc usage.gh msg.grh $(__MAKEFILES__)
+wresexe.res : $(disasm_dir)/stand/h/wdis.rc $(ntverrc_exe_dep) usage.gh msg.grh $(__MAKEFILES__)
     @%make echo_rc
     $(rcu8j) $(ppflags_common) $(rc_cppflags) $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 

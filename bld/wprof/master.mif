@@ -73,7 +73,7 @@ extra_ldflags = -ldl
 #
 # EXE
 #
-exetarg_prebuild_objs = wprof.res $(extra_link_res_$(host_os)) $(resfile)
+exetarg_prebuild_objs = $(extra_link_res_$(host_os)) $(resfile)
 exetarg_objs          = $(objs) $(sys_objs)
 exetarg_libs          = $(aui_lib) $(gui_lib) $(ui_lib) $(sys_libs)
 exetarg_res           = $(proj_name).res
@@ -94,7 +94,7 @@ rcfiles = &
     $(gui_dir)/h/gui.rc &
     $(gui_dir)/h/gui.msg &
     $(aui_dir)/res/aui.rc &
-    $(aui_dialogs) $(ntmanif_dep)
+    $(aui_dialogs)
 
 !ifeq sys_windowed 1
 extra_rc_flags_os2 = -I"../res/os2" -I"../res" -I"../h" -DRESGUI
@@ -104,7 +104,7 @@ extra_rc_flags_nt  = -I"../res/win" -I"../res" -I"../h" -DRESGUI
 
 rc_inc_dirs = -I. $(wprof_rc_inc_dirs) $(aui_rc_inc_dirs) $(gui_rc_inc_dirs)
 
-$(proj_name).res : ../res/wprof.rc $(rcfiles) $(ntverrc_exe_dep) $(__MAKEFILES__) .AUTODEPEND
+$(proj_name).res : ../res/wprof.rc $(ntverrc_exe_dep) $(ntmanif_dep) $(rcfiles) $(__MAKEFILES__) .AUTODEPEND
     @%make echo_rc
     $(rcj) $(ppflags_common) $(rc_cppflags) -ad $(rc_flags) $(rc_inc_path) $(ntmanif_inc_dirs) $[@ -fo=$@
 

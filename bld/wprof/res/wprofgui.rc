@@ -13,6 +13,10 @@
 #include "ntmanif.rc"
 #endif
 
+#ifdef __NT__
+#include "exever.grc"
+#endif
+
 #ifdef __OS2__
 
 ICON 1          "prof_i.ico"

@@ -91,7 +91,7 @@ $(proj_name).res : ../res/os2/wimgedit.rc rcstr.grh $(__MAKEFILES__)
     @%make echo_rc
     $(rcu8j) $(ppflags_common) $(rc_cppflags) -ad $(rc_flags) -I"../res/os2" $(cppflags) $(rc_inc_path) $[@ -fo=$@
 !else
-$(proj_name).res : ../res/wimgedit.rc rcstr.grh $(ntmanif_dep) $(__MAKEFILES__)
+$(proj_name).res : ../res/wimgedit.rc $(ntverrc_exe_dep) $(ntmanif_dep) rcstr.grh $(__MAKEFILES__)
     @%make echo_rc
     $(rcu8j) $(ppflags_common) $(rc_cppflags) -ad $(rc_flags) $(cppflags) $(rc_inc_path) $(ntmanif_inc_dirs) $[@ -fo=$@
 !endif

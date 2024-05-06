@@ -26,6 +26,10 @@
 #include "ntmanif.rc"
 #endif
 
+#ifdef __NT__
+#include "exever.grc"
+#endif
+
 /*
  * hold this order of ICONS
  * it defines icons index in executable
