@@ -81,7 +81,6 @@ exetarg_libs = &
     $(wresedit_dir)/waccel/$(objs_subdir)/wacc.lib &
     $(wresedit_dir)/wmenu/$(objs_subdir)/wmenu.lib &
     $(wresedit_dir)/wstring/$(objs_subdir)/wstring.lib
-exetarg_nt_version    = exever.res
 exetarg_res           = $(proj_name).res
 !include exetarg.mif
 

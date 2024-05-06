@@ -55,7 +55,6 @@ exetarg_objs = &
     dumphll.obj &
     coff.obj &
     leb128rd.obj
-exetarg_nt_version = exever.res
 !include exetarg.mif
 
 #

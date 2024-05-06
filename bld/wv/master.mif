@@ -159,7 +159,6 @@ exetarg_name          = $(wv_engine_noui)
 exetarg_prebuild_objs = litdef.gh usage.gh
 exetarg_objs          = $(engine_objs) fingmsg.obj $(ui_objs)
 exetarg_libs          = $(aui_lib) $(gui_lib) $(ui_lib) $(wres_lib)
-exetarg_nt_version    = exever.res
 !ifeq sys_windowed 1
 exetarg_res           = $(proj_name).res
 !else
@@ -439,15 +438,15 @@ wresexe.res : ../../res/wvui.rc $(rcfiles) usage.gh usagej.gh $(__MAKEFILES__) .
 
 litdefm.tmp : $(res_strings_dir)/menu.str $(__MAKEFILES__)
     @%make echo_cpp
-    $(cpp) $(ppflags_common) $(rc_cppflags) $(rc_flags) $(rc_inc_path) -o$@ $[@
+    $(cpp) $(ppflags_common) $(rc_cppflags) $(rc_inc_path) -o$@ $[@
 
 litdefs1.tmp : ../../res/wdeng.str $(__MAKEFILES__)
     @%make echo_cpp
-    $(cpp) $(ppflags_common) $(rc_cppflags) $(rc_flags) -I"$(dig_dir)/h" -I"$(watcom_dir)/h" -o$@ $[@
+    $(cpp) $(ppflags_common) $(rc_cppflags) -I"$(dig_dir)/h" -I"$(watcom_dir)/h" -o$@ $[@
 
 litdefs2.tmp : $(res_strings_dir)/wddui.str $(__MAKEFILES__)
     @%make echo_cpp
-    $(cpp) $(ppflags_common) $(rc_cppflags) $(rc_flags) -I"$(dig_dir)/h" -I"$(watcom_dir)/h" -o$@ $[@
+    $(cpp) $(ppflags_common) $(rc_cppflags) -I"$(dig_dir)/h" -I"$(watcom_dir)/h" -o$@ $[@
 
 litdef.gh : litdefs1.tmp litdefs2.tmp litdefm.tmp $(__MAKEFILES__)
     @%create $@

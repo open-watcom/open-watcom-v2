@@ -46,7 +46,6 @@ exetarg_prebuild_objs = rcstr.grh
 exetarg_objs          = dde.obj ddeproc.obj ddeglob.obj ddemsg.obj ddebox.obj &
     ddetrack.obj ddeflter.obj ddecfg.obj ddemisc.obj ddetool.obj ddemem.obj
 exetarg_libs          = $(wpi_lib) $(commonui_lib)
-exetarg_nt_version    = exever.res
 exetarg_res           = $(proj_name).res
 !include exetarg.mif
 
@@ -77,4 +76,4 @@ rcstr.grh : rcstrmsg.gh $(__MAKEFILES__)
 
 rcstrmsg.gh : ../res/ddespy.msg $(__MAKEFILES__)
     @%make echo_cpp
-    $(cppu8) $(ppflags_common) $(rc_cppflags) $(rc_flags) -o$@ $[@
+    $(cppu8) $(ppflags_common) $(rc_cppflags) -o$@ $[@

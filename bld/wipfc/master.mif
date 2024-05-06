@@ -49,7 +49,6 @@ exetarg_objs_tag = element.obj text.obj entity.obj punct.obj whtspc.obj word.obj
     title.obj ul.obj warning.obj xmp.obj
 exetarg_objs = main.obj compiler.obj document.obj env.obj ipfbuff.obj ipffile.obj &
     lexer.obj $(exetarg_objs_obj) $(exetarg_objs_tag)
-exetarg_nt_version = exever.res
 
 !ifdef __WATCOM_TOOLS__
 

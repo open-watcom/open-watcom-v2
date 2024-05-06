@@ -81,4 +81,4 @@ wdpmhelp.res: ../h/pmhelp.rc ../h/wdpmhelp.rh
 
 _err.gh : $(trap_dir)/h/trapmsg.h $(trap_dir)/h/trap.msg
     @%make echo_cpp
-    $(cpp) $(ppflags_common) $(rc_cppflags) $(rc_flags) -I"$(trap_dir)/h" -I"$(watcom_dir)/h" -o$@ $[@
+    $(cpp) $(ppflags_common) $(rc_cppflags) -I"$(trap_dir)/h" -I"$(watcom_dir)/h" -o$@ $[@

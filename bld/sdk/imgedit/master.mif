@@ -74,7 +74,6 @@ exetarg_objs = &
     $(exetarg_objs_$(target_$(host_os)))
 exetarg_libs_win      = $(wr_lib)
 exetarg_libs          = $(wpi_lib) $(commonui_lib) $(exetarg_libs_$(target_$(host_os)))
-exetarg_nt_version    = exever.res
 exetarg_res           = $(proj_name).res
 !include exetarg.mif
 

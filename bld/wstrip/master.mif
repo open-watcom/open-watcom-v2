@@ -37,7 +37,6 @@ exename = wstrip
 #
 exetarg_prebuild_objs = msg.grh usage.gh
 exetarg_objs = strip.obj output.obj
-exetarg_nt_version = exever.res
 !ifndef bootstrap
 exetarg_res = wresexe.res
 !endif

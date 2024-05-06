@@ -55,7 +55,6 @@ exetarg_objs = &
     compress.obj &
     parsing.obj &
     $(trmem_objs)
-exetarg_nt_version = exever.res
 !include exetarg.mif
 
 #

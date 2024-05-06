@@ -70,7 +70,6 @@ $(bind_compiled) : $(bind_compiled:./=../dat/) $(__MAKEFILES__)
 exetarg_prebuild_objs = $(special) $(other) $(videps)
 exetarg_objs          = $(objsroot) $(objinit) $(objs)
 exetarg_libs          = $(libs)
-exetarg_nt_version    = exever.res
 !ifeq sys_windowed 1
 exetarg_res           = $(name).res
 !endif

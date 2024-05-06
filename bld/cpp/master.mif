@@ -45,4 +45,3 @@ exetarg_name = testpp
 exetarg_objs = dumpmac.obj ppdmpmac.obj $(common_objs)
 exetarg_name = dumpmac
 !include exetarg.mif
-

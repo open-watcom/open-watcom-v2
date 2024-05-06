@@ -102,7 +102,7 @@ rc_inc_dirs = -I"$(wrc_dir)/h" #$(wres_inc_dirs) -I"$(wrc_dir)/h" $(commonui_inc
 
 $(proj_name).res: ../res/wr.rc $(ntverrc_dll_dep) $(__MAKEFILES__) .AUTODEPEND
     @%make echo_rc
-    $(rcj) $(ppflags_common) $(rc_cppflags) -ad $(rc_flags) $(rc_inc_path) $[@ -fo=$@
+    $(rcu8j) $(ppflags_common) $(rc_cppflags) -ad $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
 rcmsg.grh :  $(wrc_dir)/h/rc.msg $(__MAKEFILES__)
     @%make echo_awk

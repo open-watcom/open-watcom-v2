@@ -110,7 +110,6 @@ exetarg_prebuild_objs = $(docs_host_dir)/wbrw.gh
 exetarg_objs          = $(objs) $(objs_dbg)
 exetarg_libs_dos      = $(ui_lib)
 exetarg_libs          = $(gui_lib) $(exetarg_libs_$(host_os)) $(dwarfr_lib) $(wclass_lib)
-exetarg_nt_version    = exever.res
 exetarg_res           = $(exetarg_name).res
 exetarg_name          = wbrw
 !include exetarg.mif

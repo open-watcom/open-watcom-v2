@@ -91,7 +91,6 @@ exetarg_objs = &
     disasm.obj drwatmem.obj $(exetarg_objs_$(host_os)) &
     dipcli.obj digcli.obj $(dip_objs)
 exetarg_libs          = $(commonui_lib)
-exetarg_nt_version    = exever.res
 exetarg_res           = $(proj_name).res
 !include exetarg.mif
 

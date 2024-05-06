@@ -46,7 +46,6 @@ exetarg_objs = &
     zmconfig.obj &
     zmmem.obj
 exetarg_libs          = $(commonui_lib)
-exetarg_nt_version    = exever.res
 
 # EXE English
 exetarg_name          = $(proj_name)

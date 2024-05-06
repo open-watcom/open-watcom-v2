@@ -26,7 +26,6 @@ exetarg_objs = &
     objread.obj &
     output.obj &
     process.obj
-exetarg_nt_version = exever.res
 !include exetarg.mif
 
 #

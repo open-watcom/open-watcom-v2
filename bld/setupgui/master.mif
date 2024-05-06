@@ -133,7 +133,6 @@ libs = $(gui_lib) $(libs_$(host_os)) $(libs_$(objs_subdir)) ../ziplib/$(objs_sub
 #
 exetarg_objs          = $(objs)
 exetarg_libs          = $(libs)
-exetarg_nt_version    = exever.res
 
 exetarg_res           = wresexe.res
 exetarg_name          = setup

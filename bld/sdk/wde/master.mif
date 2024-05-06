@@ -88,7 +88,6 @@ exetarg_objs = &
     $(objs_$(host_os))
 exetarg_libs          = $(fmedit_dir)/$(objs_subdir)/fmedit.lib &
     $(wr_lib) $(wpi_lib) $(commonui_lib)
-exetarg_nt_version    = exever.res
 exetarg_res           = $(proj_name).res
 !include exetarg.mif
 
