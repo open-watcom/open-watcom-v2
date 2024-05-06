@@ -4,6 +4,8 @@ proj_name = wsample
 wsample_autodepends = .AUTODEPEND
 !endif
 
+wsample_wreslib = 1
+
 !ifndef target
 target = $(host_os)
 !endif

@@ -8,6 +8,8 @@ setupgui_nodoslfn = 1
 
 setupgui_trmem = 1
 
+setupgui_wreslib = 1
+
 setupgui_dos_extender = causeway
 
 .ERROR:
