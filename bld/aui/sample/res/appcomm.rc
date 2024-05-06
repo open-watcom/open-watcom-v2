@@ -1,7 +1,0 @@
-#include "aui.rc"
-#include "dlgoptn.rh"
-#ifdef JAPANESE
-#include "japoptn.dlg"
-#else
-#include "dlgoptn.dlg"
-#endif

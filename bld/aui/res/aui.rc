@@ -1,7 +1,19 @@
 #include "gui.rc"
+#include "aui.rh"
 #include "dlgrx.rh"
 #include "dlgsrch.rh"
-#include "auistr.rc"
+
+STRINGTABLE
+BEGIN
+#ifdef JAPANESE
+    #define pick( a,b,c )   a, [ c ]
+#else
+    #define pick( a,b,c )   a, [ b ]
+#endif
+    #include "aui.msg"
+    #undef pick
+END
+
 #ifdef JAPANESE
 #include "japrx.dlg"
 #include "japsrch.dlg"

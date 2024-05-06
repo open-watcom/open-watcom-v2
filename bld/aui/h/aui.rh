@@ -33,4 +33,4 @@
 
 #define AUI_LITERAL_BASE 400
 
-#include "auistr.grh"
+#include "aui.grh"
