@@ -161,7 +161,6 @@ exetarg_objs          = $(engine_objs) fingmsg.obj $(ui_objs)
 exetarg_libs          = $(aui_lib) $(gui_lib) $(ui_lib)
 exetarg_qnx_res       = usage.u
 exetarg_name          = $(name)
-#exetarg_ext           = .exe
 !endif
 exetarg_res           = $(proj_name).res
 !include exetarg.mif
