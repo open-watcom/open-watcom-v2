@@ -261,7 +261,6 @@ int GUIXMain( int argc, char *argv[],
               WPI_INST inst, WPI_INST hPrevInstance, LPSTR lpCmdLine,
               int nShowCmd )
 {
-    bool        ok;
     int         ret;
     bool        register_done;
 
@@ -282,29 +281,17 @@ int GUIXMain( int argc, char *argv[],
     _wpi_setwpiinst( inst, 0, &GUIMainHInst );
     memcpy( &GUIResHInst, &GUIMainHInst, sizeof( WPI_INST ) ) ;
 
-    ok = true;
-
     GUISetWindowClassName();
 
-    ok = GUIFirstCrack();       /* user replaceable stub function */
-
-    if( ok ) {
-        if( !register_done ) {
-            ok = SetupClass();
+    if( GUIFirstCrack() ) {         /* user replaceable stub function */
+        if( register_done || SetupClass() ) {
+            if( GUILoadStrInit( argv[0] ) ) {
+                if( GUIInitInternalStringTable() ) {
+                    GUIInitGUIMenuHint();
+                    GUImain();
+                }
+            }
         }
-    }
-
-    if( ok ) {
-        ok = GUILoadStrInit( argv[0] );
-    }
-
-    if( ok ) {
-        ok = GUIInitInternalStringTable();
-    }
-
-    if( ok ) {
-        GUIInitGUIMenuHint();
-        GUImain();
     }
 
     if( GUIGetFront() == NULL && !Posted ) {  /* no windows created */
