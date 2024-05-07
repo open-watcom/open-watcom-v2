@@ -189,6 +189,8 @@ libtarg_name = asinline
 ntverrc_exe = $(exetarg_name)
 !include ntverrc.mif
 
+extra_rc_flags_nt = $(ntverrc_def) $(ntverrc_inc_dirs)
+
 wresexe.res : $(as_dir)/h/as.rc $(ntverrc_exe_dep) msg.grh usage.gh $(__MAKEFILES__)
     @%make echo_rc
     $(rcu8j) $(ppflags_common) $(rc_cppflags) -D_STANDALONE_ $(rc_flags) $(rc_inc_path) $[@ -fo=$@

@@ -167,6 +167,8 @@ ntverrc_dll = $(dllname)
 ntverrc_exe = $(exename)
 !include ntverrc.mif
 
+extra_rc_flags_nt = $(ntverrc_dep) $(ntverrc_inc_dirs)
+
 !ifeq target_cpu axp
 
 codeaxp.gh :

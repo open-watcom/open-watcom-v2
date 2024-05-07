@@ -74,6 +74,8 @@ ntverrc_exe = $(exetarg_name)
 rc_inc_dirs = -I. -I.. -I"$(f77wfc_dir)/h" -I"$(f77_dir)/h" &
     $(asminline_inc_dirs) -I"$(comp_cfg_dir)/h" -I"$(fe_misc_dir)/h"
 
+extra_rc_flags_nt = $(ntverrc_dep) $(ntverrc_inc_dirs)
+
 wresexe.res : $(f77wfc_dir)/h/wfc.rc $(ntverrc_exe_dep) $(f77wfc_dir)/h/wfc.rh
     @%make echo_rc
     $(rcu8j) $(ppflags_common) $(rc_cppflags) $(rc_flags) $(rc_inc_path) $[@ -fo=$@

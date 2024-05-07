@@ -128,7 +128,8 @@ res_objs_dll = $(ntverrc_dll_dep)
 #endif
 
 rc_inc_dirs = -I. -I"$(wlink_dir)/h" -I"$(wrc_dir)/h"
-extra_rc_flags = $(ntverrc_def)
+
+extra_rc_flags_nt = $(ntverrc_def) $(ntverrc_inc_dirs)
 
 wresexe.res : $(wlink_dir)/h/wlink.rc $(ntverrc_exe_dep) rcmsg.grh $(wlink_dir)/h/wlink.msg &
             $(wlink_dir)/h/lnkerror.rc $(wlink_dir)/h/wlnkmsg.h &

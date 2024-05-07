@@ -128,6 +128,8 @@ ntmanif_path = ../res
 
 rc_inc_dirs = -I"../res/bmp" -I"../res/dlg" -I"../res/cur" -I"../res" -I"../h"
 
+extra_rc_flags_nt = $(ntmanif_def) $(ntverrc_def) $(ntmanif_inc_dirs) $(ntverrc_inc_dirs)
+
 !ifeq host_os os2
 $(exetarg_name).res : ../res/wbrwpm.rc
     @%make echo_rc
@@ -135,7 +137,7 @@ $(exetarg_name).res : ../res/wbrwpm.rc
 !else
 $(exetarg_name).res : ../res/wbrw.rc $(ntverrc_exe_dep) $(ntmanif_dep)
     @%make echo_rc
-    $(rc) $(ppflags_common) $(rc_cppflags) $(rc_flags) -I"../res/ico" $(rc_inc_path) $(ntmanif_inc_dirs) $< -fo=$@
+    $(rc) $(ppflags_common) $(rc_cppflags) $(rc_flags) -I"../res/ico" $(rc_inc_path) $< -fo=$@
 !endif
 
 curr_dir=$+$(%__CWD__)$-

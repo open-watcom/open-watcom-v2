@@ -65,13 +65,13 @@ rcfiles = &
     $(rcfiles_$(host_os))
 
 !ifeq sys_windowed 1
-extra_rc_flags =  -DRESX_GUI
+extra_rc_flags = -DRESX_GUI
 !endif
 
 app.res : ../res/app.rc $(rcfiles)
     @%make echo_rc
-    $(rc) $(ppflags_common) $(rc_cppflags) $(rc_flags) $(rc_inc_path) $(proj_rc_flags) $[@ -fo=$@
+    $(rc) $(ppflags_common) $(rc_cppflags) $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
 appj.res : ../res/app.rc $(rcfiles)
     @%make echo_rc
-    $(rcj) $(ppflags_common) $(rc_cppflags) -DJAPANESE $(rc_flags) $(rc_inc_path) $(proj_rc_flags) $[@ -fo=$@
+    $(rcj) $(ppflags_common) $(rc_cppflags) -DJAPANESE $(rc_flags) $(rc_inc_path) $[@ -fo=$@

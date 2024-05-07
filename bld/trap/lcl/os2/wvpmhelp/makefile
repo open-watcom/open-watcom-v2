@@ -77,7 +77,7 @@ exetarg_name = wdpmhelp
 #
 wdpmhelp.res: ../h/pmhelp.rc ../h/wdpmhelp.rh
     @%make echo_rc
-    $(rc) $(ppflags_common) $(rc_cppflags) $(rc_flags) $(inc_path) $[@ -fo=$@
+    $(rc) $(ppflags_common) $(rc_cppflags) $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
 _err.gh : $(trap_dir)/h/trapmsg.h $(trap_dir)/h/trap.msg
     @%make echo_cpp

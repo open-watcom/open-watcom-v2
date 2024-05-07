@@ -160,10 +160,6 @@ exetarg_name          = jf77setup
 #
 # rc and others
 #
-extra_rc_flags     = -r
-extra_rc_flags_win = -30 -D_WIN
-extra_rc_flags_nt  = -D_WINNT
-
 !ifeq sys_windowed 1
 depend_res_os2 = ../res/os2/setup.ico
 !endif
@@ -171,31 +167,37 @@ depend_res_nt  = $(ntverrc_exe_dep) $(ntmanif_dep) ../res/nt/setup.ico ../res/nt
 depend_res_win = ../res/win/setup.ico ../res/win/disk.ico
 depend_res = ../h/setup.h $(gui_dir)/h/gui.rc $(depend_res_$(host_os))
 
-rc_inc_dirs = -I"../res/$(host_os)" -I"../res" $(gui_rc_inc_dirs)
-
 ntverrc_path = ../res/nt
 !include ntverrc.mif
 ntmanif_path = ../res/nt
 !include ntmanif.mif
 
+rc_inc_dirs = -I"../res/$(host_os)" -I"../res" $(gui_rc_inc_dirs)
+
+!ifeq sys_windowed 1
+extra_rc_flags = -DRESX_GUI
+!endif
+extra_rc_flags_win = -30
+extra_rc_flags_nt  = $(ntmanif_def) $(ntverrc_def) $(ntmanif_inc_dirs) $(ntverrc_inc_dirs)
+
 # UI resources
-wresexe.res : ../res/setupui.rc $(depend_res) $(__MAKEFILES__)
+wresexe.res : ../res/setup.rc $(depend_res) $(__MAKEFILES__)
     @%make echo_rc
-    $(rcj) $(ppflags_common) $(rc_cppflags) $(rc_flags) $(rc_inc_path) $(ntmanif_inc_dirs) $[@ -fo=$@
+    $(rcj) $(ppflags_common) $(rc_cppflags) $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
 # GUI resources
-csetup.res : ../res/$(host_os)/setup.rc $(depend_res) ../res/wcc.bmp $(__MAKEFILES__)
+csetup.res : ../res/setup.rc $(depend_res) ../res/wcc.bmp $(__MAKEFILES__)
     @%make echo_rc
-    $(rcu8) $(ppflags_common) $(rc_cppflags) -DCSETUP $(rc_flags) $(rc_inc_path) $(ntmanif_inc_dirs) $[@ -fo=$@
+    $(rcu8) $(ppflags_common) $(rc_cppflags) -DCSETUP $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
-jcsetup.res : ../res/$(host_os)/setup.rc $(depend_res) ../res/wcc.bmp $(__MAKEFILES__)
+jcsetup.res : ../res/setup.rc $(depend_res) ../res/wcc.bmp $(__MAKEFILES__)
     @%make echo_rc
-    $(rcu8j) $(ppflags_common) $(rc_cppflags) -DJCSETUP -DJAPANESE $(rc_flags) $(rc_inc_path) $(ntmanif_inc_dirs) $[@ -fo=$@
+    $(rcu8j) $(ppflags_common) $(rc_cppflags) -DJCSETUP -DJAPANESE $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
-f77setup.res : ../res/$(host_os)/setup.rc $(depend_res) ../res/f77.bmp $(__MAKEFILES__)
+f77setup.res : ../res/setup.rc $(depend_res) ../res/f77.bmp $(__MAKEFILES__)
     @%make echo_rc
-    $(rcu8) $(ppflags_common) $(rc_cppflags) -DF77SETUP $(rc_flags) $(rc_inc_path) $(ntmanif_inc_dirs) $[@ -fo=$@
+    $(rcu8) $(ppflags_common) $(rc_cppflags) -DF77SETUP $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
-jfsetup.res : ../res/$(host_os)/setup.rc $(depend_res) ../res/f77.bmp $(__MAKEFILES__)
+jfsetup.res : ../res/setup.rc $(depend_res) ../res/f77.bmp $(__MAKEFILES__)
     @%make echo_rc
-    $(rcu8j) $(ppflags_common) $(rc_cppflags) -DJFSETUP -DJAPANESE $(rc_flags) $(rc_inc_path) $(ntmanif_inc_dirs) $[@ -fo=$@
+    $(rcu8j) $(ppflags_common) $(rc_cppflags) -DJFSETUP -DJAPANESE $(rc_flags) $(rc_inc_path) $[@ -fo=$@

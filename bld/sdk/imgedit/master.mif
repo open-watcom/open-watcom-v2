@@ -87,6 +87,8 @@ ntmanif_path = ../res
 
 rc_inc_dirs = -I"../res" $(commonui_inc_dirs) -Ih
 
+extra_rc_flags_nt = $(ntmanif_def) $(ntverrc_def) $(ntmanif_inc_dirs) $(ntverrc_inc_dirs)
+
 !ifeq host_os os2
 $(proj_name).res : ../res/os2/wimgedit.rc rcstr.grh $(__MAKEFILES__)
     @%make echo_rc
@@ -94,7 +96,7 @@ $(proj_name).res : ../res/os2/wimgedit.rc rcstr.grh $(__MAKEFILES__)
 !else
 $(proj_name).res : ../res/wimgedit.rc $(ntverrc_exe_dep) $(ntmanif_dep) rcstr.grh $(__MAKEFILES__)
     @%make echo_rc
-    $(rcu8j) $(ppflags_common) $(rc_cppflags) -ad $(rc_flags) $(cppflags) $(rc_inc_path) $(ntmanif_inc_dirs) $[@ -fo=$@
+    $(rcu8j) $(ppflags_common) $(rc_cppflags) -ad $(rc_flags) $(cppflags) $(rc_inc_path) $[@ -fo=$@
 !endif
 
 rcstrmsg.gh : ../res/wimgedit.msg $(__MAKEFILES__)

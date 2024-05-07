@@ -166,7 +166,6 @@ exetarg_res           = $(proj_name).res
 ! else
 exetarg_res           = wresexe.res
 ! endif
-exetarg_nt_manif      = ntmanif.res
 exetarg_qnx_res       = usage.u
 exetarg_name          = $(name)
 #exetarg_ext           = .exe
@@ -421,6 +420,8 @@ rcfiles = &
 !else
 !endif
 
+extra_rc_flags_nt = $(ntmanif_def) $(ntverrc_def) $(ntmanif_inc_dirs) $(ntverrc_inc_dirs)
+
 !ifeq host_os os2
 
 $(proj_name).res : ../../res/wvgui.rc $(bitmaps) $(rcfiles) $(__MAKEFILES__) .autodepend
@@ -433,21 +434,21 @@ $(proj_name)j.res : ../../res/wvgui.rc $(bitmaps) $(rcfiles) $(__MAKEFILES__) .a
 
 !else
 
-$(proj_name).res : ../../res/wvgui.rc $(bitmaps) $(rcfiles) $(__MAKEFILES__) .autodepend
+$(proj_name).res : ../../res/wvgui.rc $(ntmanif_dep) $(ntverrc_dep) $(bitmaps) $(rcfiles) $(__MAKEFILES__) .autodepend
     @%make echo_rc
     $(rc) $(ppflags_common) $(rc_cppflags) -ad $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
 !endif
 
-wresdll.res : ../../res/wvuidll.rc litdef.gh $(__MAKEFILES__) .autodepend
+wresdll.res : ../../res/wvuidll.rc $(ntmanif_dep) $(ntverrc_dep) litdef.gh $(__MAKEFILES__) .autodepend
     @%make echo_rc
     $(rc) $(ppflags_common) $(rc_cppflags) -ad $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
-wresexe.res : ../../res/wvuiexe.rc $(rcfiles) usage.gh usagej.gh $(__MAKEFILES__) .autodepend
+wresexe.res : ../../res/wvuiexe.rc $(ntmanif_dep) $(ntverrc_dep) $(rcfiles) usage.gh usagej.gh $(__MAKEFILES__) .autodepend
     @%make echo_rc
     $(rcj) $(ppflags_common) $(rc_cppflags) -ad $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
-wres.res : ../../res/wvwres.rc
+wres.res : ../../res/wvwres.rc $(ntmanif_dep) $(ntverrc_dep)
 !ifdef wv_engine_noui
     rc_wres_type = -DRESX_ENG
 !else ifeq sys_windowed 1

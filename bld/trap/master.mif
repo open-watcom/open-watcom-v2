@@ -310,7 +310,7 @@ libtarg_name = dbgstr
 !ifdef resource_file
 $(resource_file) : $(trap_dir)/common/servw.rc
     @%make echo_rc
-    $(rcu8j) $(ppflags_common) $(rc_cppflags) $(rc_flags) $(inc_path) $[@ -fo=$@
+    $(rcu8j) $(ppflags_common) $(rc_cppflags) $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 !endif
 
 inc_subdir_nwsdk_nlm5 = &

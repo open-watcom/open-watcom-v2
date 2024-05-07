@@ -1,0 +1,32 @@
+/* UTF-8 encoding, ¥ */
+
+#if defined( RESX_GUI )
+  #if defined( __OS2__ )
+    #include <os2.h>
+  #else
+    #include <windows.h>
+  #endif
+#endif
+
+#include "gui.rc"
+#if defined( RESX_GUI )
+    #include "resource.rh"
+    #include "splash.rc"
+#endif
+
+#if defined( RESX_GUI )
+  #if defined( __OS2__ )
+    #define ICON_SETUP  1
+    ICON ICON_SETUP     "setup.ico"
+  #else
+    ApplIcon    ICON    PRELOAD FIXED setup.ico
+    ICN_DISK    ICON    PRELOAD FIXED disk.ico
+  #endif
+#endif
+
+#if defined( __NT__ ) && defined( RESX_NTMANIF )
+#include "ntmanif.rc"
+#endif
+#if defined( __NT__ ) && defined( RESX_NTVER )
+#include "exever.grc"
+#endif

@@ -75,6 +75,8 @@ ntverrc_path = ../res
 
 rc_inc_dirs = -I"../res" -I"../dev"
 
+extra_rc_flags_nt = $(ntverrc_def) $(ntverrc_def)
+
 extra_rc_flags_win = -30
 
 $(proj_name).res: ../res/fmedit.rc $(ntverrc_dll_dep) $(__MAKEFILES__) .AUTODEPEND
