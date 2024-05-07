@@ -1,10 +1,4 @@
-#if defined( __OS2__ )
-    #include <os2.h>
-#else
-    #include <windows.h>
-#endif
-#include "banner.h"
-#include "wv.rc"
+#include "rcdef.rh"
 
 #if defined( __OS2__ )
     #define RC_ITEM(a,b,c)  a b c

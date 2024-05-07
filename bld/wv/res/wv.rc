@@ -1,4 +1,33 @@
-#include "aui.rc"
-#include "dialogs.rc"
+#if defined( RESX_ENG )
+#elif defined( RESX_GUI )
+  #if defined( __OS2__ )
+    #include <os2.h>
+  #else
+    #include <windows.h>
+  #endif
+#else
+    #include "wresdefn.h"
+    #include "wreslang.rh"
+#endif
+
+#include "banner.h"
 #include "strings.rc"
-#include "rcdef.rh"
+
+#if defined( RESX_ENG )
+#elif defined( RESX_GUI )
+    #include "aui.rc"
+    #include "dialogs.rc"
+    #include "wvgui.rc"
+#else
+    #include "aui.rc"
+    #include "dialogs.rc"
+    #include "wvusage.rc"
+#endif
+
+#if defined( __NT__ ) && defined( RESX_NTMANIF )
+    #include "ntmanif.rc"
+#endif
+
+#if defined( __NT__ ) && defined( RESX_NTVER )
+    #include "exever.grc"
+#endif

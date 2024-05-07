@@ -1,0 +1,5 @@
+/*
+ * !TODO need setup Japanese globaly for AUI/GUI application 
+ * this is temporary workaround
+ */
+#define MSG_LANG_SPACING        13000
