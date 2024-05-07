@@ -27,6 +27,7 @@ additional_clean = $(docs_host_dir)/ide.gh
 !include $(gui_dir)/client.mif
 !include $(commonui_dir)/client.mif
 !include $(wpi_dir)/client.mif
+!include $(rcsdll_dir)/client.mif
 
 !include ../objects.mif
 
@@ -44,7 +45,7 @@ c_path_win  = $(batch_dir)/dos;$(batch_dir)/os2
 
 inc_dirs_win = -I"$(batch_dir)/dos"
 inc_dirs = -I"../h" $(wclass_inc_dirs) $(idelib_inc_dirs) $(gui_inc_dirs) $(commonui_inc_dirs) &
-    $(wpi_inc_dirs) -I"$(docs_host_dir)" -I"$(editdll_dir)" -I"$(rcsdll_dir)" -I"$(batch_dir)/h"
+    $(wpi_inc_dirs) -I"$(docs_host_dir)" -I"$(editdll_dir)" $(rcsdll_inc_dirs) -I"$(batch_dir)/h"
 
 extra_cpp_flags     = -DGUI_IS_GUI
 !ifeq nowgml 1
