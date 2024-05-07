@@ -85,6 +85,7 @@ exetarg_qnx_res       = usage.u
 #
 # rc and others
 #
+ntverrc_path = ../res
 !include ntverrc.mif
 ntmanif_path = ../res
 !include ntmanif.mif

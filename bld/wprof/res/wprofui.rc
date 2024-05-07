@@ -1,4 +1,0 @@
-/* UTF-8 encoding, ¥ */
-
-#include "wresdefn.h"
-#include "wprof.rc"

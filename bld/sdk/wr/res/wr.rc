@@ -10,10 +10,6 @@
 #include "addsym.rh"
 #include "wrmsg.rh"
 
-#if defined( __NT__ ) && defined( RESX_NTVER )
-#include "dllver.grc"
-#endif
-
 STRINGTABLE
 BEGIN
     #define pick(c,e,j) c, [ e ]
@@ -29,3 +25,7 @@ END
 #include "memflags.dlg"
 #include "editsym.dlg"
 #include "addsym.dlg"
+
+#if defined( __NT__ ) && defined( RESX_NTVER )
+    #include "dllver.grc"
+#endif

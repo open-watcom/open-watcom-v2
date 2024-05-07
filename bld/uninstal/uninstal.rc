@@ -4,14 +4,6 @@
 
 #include "progress.dlg"
 
-#if defined( __NT__ ) && defined( RESX_NTMANIF )
-#include "ntmanif.rc"
-#endif
-
-#if defined( __NT__ ) && defined( RESX_NTVER )
-#include "exever.grc"
-#endif
-
 STRINGTABLE
 BEGIN
     #define pick(c,e) c, [ e ]
@@ -22,3 +14,11 @@ BEGIN
 END
 
 "APPLICON" ICON DISCARDABLE "uninstal.ico"
+
+#if defined( __NT__ ) && defined( RESX_NTMANIF )
+    #include "ntmanif.rc"
+#endif
+
+#if defined( __NT__ ) && defined( RESX_NTVER )
+    #include "exever.grc"
+#endif

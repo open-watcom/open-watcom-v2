@@ -67,7 +67,7 @@ exetarg_res           = $(ntverrc_exe_out)
 # rc and others
 #
 #ntverrc_exe = $(proj_name)
-ntverrc_exe_skel = $(wcl_dir)/exever.rc
+ntverrc_path = ../../h
 !include ntverrc.mif
 
 !ifdef owcc_specs

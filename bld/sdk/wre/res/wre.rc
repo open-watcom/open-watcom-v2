@@ -7,14 +7,6 @@
 
 #define FIRST_COPYRIGHT_YEAR 1984
 
-#if defined( __NT__ ) && defined( RESX_NTMANIF )
-#include "ntmanif.rc"
-#endif
-
-#if defined( __NT__ ) && defined( RESX_NTVER )
-#include "exever.grc"
-#endif
-
 STRINGTABLE
 BEGIN
     #define pick(c,e) c, [ e ]
@@ -92,3 +84,11 @@ END
 #include "res.dlg"
 
 #include "about.dlg"
+
+#if defined( __NT__ ) && defined( RESX_NTMANIF )
+    #include "ntmanif.rc"
+#endif
+
+#if defined( __NT__ ) && defined( RESX_NTVER )
+    #include "exever.grc"
+#endif

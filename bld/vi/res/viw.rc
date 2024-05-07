@@ -22,14 +22,6 @@
 
 #define FIRST_COPYRIGHT_YEAR 1989
 
-#if defined( __NT__ ) && defined( RESX_NTMANIF )
-#include "ntmanif.rc"
-#endif
-
-#if defined( __NT__ ) && defined( RESX_NTVER )
-#include "exever.grc"
-#endif
-
 /*
  * hold this order of ICONS
  * it defines icons index in executable
@@ -104,3 +96,11 @@ END
 #include "setfs.dlg"
 #include "setscr.dlg"
 #include "setgen.dlg"
+
+#if defined( __NT__ ) && defined( RESX_NTMANIF )
+    #include "ntmanif.rc"
+#endif
+
+#if defined( __NT__ ) && defined( RESX_NTVER )
+    #include "exever.grc"
+#endif

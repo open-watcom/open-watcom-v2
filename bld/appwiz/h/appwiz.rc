@@ -2,10 +2,6 @@
 #include "newproj.h"
 #include "rcstr.grh"
 
-#if defined( __NT__ ) && defined( RESX_NTMANIF )
-#include "ntmanif.rc"
-#endif
-
 STRINGTABLE
 BEGIN
     #define pick(c,e,j) c, [ e ]
@@ -17,3 +13,6 @@ END
 
 #include "newproj.dlg"
 
+#if defined( __NT__ ) && defined( RESX_NTMANIF )
+    #include "ntmanif.rc"
+#endif

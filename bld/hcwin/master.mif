@@ -63,4 +63,5 @@ exetarg_res = $(ntverrc_exe_out)
 #
 # rc and others
 #
+ntverrc_path = ../h
 !include ntverrc.mif

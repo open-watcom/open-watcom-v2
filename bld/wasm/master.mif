@@ -108,6 +108,7 @@ exetarg_name       = wasm
 #
 # rc and others
 #
+ntverrc_path = ../h
 !include ntverrc.mif
 
 rc_inc_dirs  = -I. -I"../h"

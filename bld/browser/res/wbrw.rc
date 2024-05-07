@@ -2,14 +2,6 @@
 #include "icons.h"
 #include "hotspots.h"
 
-#if defined( __NT__ ) && defined( RESX_NTMANIF )
-#include "ntmanif.rc"
-#endif
-
-#if defined( __NT__ ) && defined( RESX_NTVER )
-#include "exever.grc"
-#endif
-
 WBRWIcon        ICON "wbr.ico"
 GBList          ICON "gblist.ico"
 GBTree          ICON "gbtree.ico"
@@ -76,3 +68,11 @@ EditorHotUp          BITMAP "edit0.bmp"
 EditorHotDown        BITMAP "edit1.bmp"
 
 SplashPage          BITMAP "brow_s.bmp"
+
+#if defined( __NT__ ) && defined( RESX_NTMANIF )
+    #include "ntmanif.rc"
+#endif
+
+#if defined( __NT__ ) && defined( RESX_NTVER )
+    #include "exever.grc"
+#endif

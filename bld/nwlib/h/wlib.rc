@@ -4,14 +4,6 @@
 #include "usage.rh"
 #include "wreslang.rh"
 
-#if defined( __NT__ ) && defined( RESX_NTVER )
-#ifdef RESX_DLL
-#include "dllver.grc"
-#else
-#include "exever.grc"
-#endif
-#endif
-
 STRINGTABLE
 BEGIN
     #define pick(c,e,j) (c + RLE_ENGLISH * MSG_LANG_SPACING), [ e ]
@@ -30,3 +22,11 @@ BEGIN
 
     #undef pick
 END
+
+#if defined( __NT__ ) && defined( RESX_NTVER )
+  #ifdef RESX_DLL
+    #include "dllver.grc"
+  #else
+    #include "exever.grc"
+  #endif
+#endif

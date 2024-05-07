@@ -1,13 +1,5 @@
 #include "litdef.h"
 
-#if defined( __NT__ ) && defined( RESX_NTMANIF )
-#include "ntmanif.rc"
-#endif
-
-#if defined( __NT__ ) && defined( RESX_NTVER )
-#include "exever.grc"
-#endif
-
 STRINGTABLE
 BEGIN
   #ifdef JAPANESE
@@ -30,3 +22,11 @@ BEGIN
 
     #undef pick
 END
+
+#if defined( __NT__ ) && defined( RESX_NTMANIF )
+    #include "ntmanif.rc"
+#endif
+
+#if defined( __NT__ ) && defined( RESX_NTVER )
+    #include "exever.grc"
+#endif

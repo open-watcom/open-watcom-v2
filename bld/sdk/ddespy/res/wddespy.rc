@@ -11,14 +11,6 @@
 
 #define FIRST_COPYRIGHT_YEAR 1994
 
-#if defined( __NT__ ) && defined( RESX_NTMANIF )
-#include "ntmanif.rc"
-#endif
-
-#if defined( __NT__ ) && defined( RESX_NTVER )
-#include "exever.grc"
-#endif
-
 "APPLICON" ICON "ddespy.ico"
 
 "CONV"    BITMAP "conv.bmp"
@@ -54,3 +46,11 @@ END
 #include "alias.rc"
 #include "mark.rc"
 #include "about.dlg"
+
+#if defined( __NT__ ) && defined( RESX_NTMANIF )
+    #include "ntmanif.rc"
+#endif
+
+#if defined( __NT__ ) && defined( RESX_NTVER )
+    #include "exever.grc"
+#endif

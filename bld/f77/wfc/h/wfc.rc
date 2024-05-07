@@ -4,10 +4,6 @@
 #include "wreslang.rh"
 #include "wfc.rh"
 
-#if defined( __NT__ ) && defined( RESX_NTVER )
-#include "exever.grc"
-#endif
-
 STRINGTABLE
 BEGIN
     #define pick(c,e,j) (c + MSG_RC_BASE + RLE_ENGLISH * MSG_LANG_SPACING), [ e ]
@@ -30,3 +26,7 @@ BEGIN
 
     #undef pick
 END
+
+#if defined( __NT__ ) && defined( RESX_NTVER )
+    #include "exever.grc"
+#endif

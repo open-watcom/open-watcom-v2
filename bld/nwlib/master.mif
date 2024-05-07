@@ -173,19 +173,20 @@ dlltarg_res           = wresdll.res
 #
 ntverrc_exe = $(exetarg_name)
 ntverrc_dll = $(dlltarg_name)
+ntverrc_path = ../h
 !include ntverrc.mif
 
 extra_rc_flags_nt = $(ntverrc_def) $(ntverrc_inc_dirs)
 
-wresexe.res : ../wlib.rc $(ntverrc_exe_dep) ../wlib.msg msg.grh $(__MAKEFILES__)
+wresexe.res : ../h/wlib.rc $(ntverrc_exe_dep) ../h/wlib.msg msg.grh $(__MAKEFILES__)
     @%make echo_rc
     $(rcu8j) $(ppflags_common) $(rc_cppflags) $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
-wresdll.res : ../wlib.rc $(ntverrc_dll_dep) ../wlib.msg msg.grh $(__MAKEFILES__)
+wresdll.res : ../h/wlib.rc $(ntverrc_dll_dep) ../h/wlib.msg msg.grh $(__MAKEFILES__)
     @%make echo_rc
     $(rcu8j) $(ppflags_common) $(rc_cppflags) -DRESX_DLL $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
-msg.grh :  ../wlib.msg $(__MAKEFILES__)
+msg.grh :  ../h/wlib.msg $(__MAKEFILES__)
     @%make echo_awk
     $(noecho)*awk -v base=MSG_RC_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@
 

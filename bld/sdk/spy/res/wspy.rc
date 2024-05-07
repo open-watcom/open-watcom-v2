@@ -8,14 +8,6 @@
 
 #define FIRST_COPYRIGHT_YEAR 1993
 
-#if defined( __NT__ ) && defined( RESX_NTMANIF )
-#include "ntmanif.rc"
-#endif
-
-#if defined( __NT__ ) && defined( RESX_NTVER )
-#include "exever.grc"
-#endif
-
 "APPLICON"    ICON    "spy.ico"
 "WINPICKICON" ICON    "winpick.ico"
 "MAGNIFY"     BITMAP  "magnify.bmp"
@@ -110,3 +102,11 @@ END
 #include "log.rc"
 #include "mark.rc"
 #include "about.dlg"
+
+#if defined( __NT__ ) && defined( RESX_NTMANIF )
+    #include "ntmanif.rc"
+#endif
+
+#if defined( __NT__ ) && defined( RESX_NTVER )
+    #include "exever.grc"
+#endif

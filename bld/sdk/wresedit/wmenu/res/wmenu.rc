@@ -7,10 +7,6 @@
 
 #define FIRST_COPYRIGHT_YEAR 2002
 
-#if defined( __NT__ ) && defined( RESX_NTVER )
-#include "dllver.grc"
-#endif
-
 #include "sysindep.rc"
 
 "WMenuAccelTable" ACCELERATORS
@@ -63,3 +59,7 @@ END
 
 #include "menuedit.dlg"
 #include "about.dlg"
+
+#if defined( __NT__ ) && defined( RESX_NTVER )
+    #include "dllver.grc"
+#endif
