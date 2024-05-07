@@ -238,7 +238,6 @@ HMQ             GUIPMmq;        /* debugger needs access to this */
 
 int GUIXMain( int argc, char *argv[] )
 {
-    bool        ok;
     int         ret;
     bool        register_done;
     HAB         inst;
