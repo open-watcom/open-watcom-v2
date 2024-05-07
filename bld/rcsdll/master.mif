@@ -15,9 +15,9 @@ additional_clean = *.grc
 #
 # cflags
 #
-.cpp : ..;../mkssi;../ocycle
+.cpp : ../cpp;../mkssi;../ocycle
 
-inc_dirs = -I..
+inc_dirs = -I"../h"
 
 !ifdef sys_dll
 extra_cpp_flags = -D_RCSDLL_
@@ -68,4 +68,5 @@ libtarg_name = rcsdll
 #
 # rc and others
 #
+ntverrc_path = ../h
 !include ntverrc.mif

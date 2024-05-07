@@ -352,6 +352,7 @@ $(intname).lib: $(objs) $(__MAKEFILES__)
     @rm tmp3.gdf
 
 ntverrc_dll = $(dllname)
+ntverrc_path = ../h
 !include ntverrc.mif
 
 extra_l_flags_dll = export @export.gdf

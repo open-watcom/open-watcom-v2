@@ -172,6 +172,7 @@ rc_cpp_dos = $(rc_cpp_dos_$(target)_$(host_cpu))
 !endif
 
 ntverrc_exe = $(exetarg_name)
+ntverrc_path = ../h
 !include ntverrc.mif
 
 rc_inc_dirs = -I"../h"

@@ -15,9 +15,9 @@ additional_clean = *.gh *.grh *.grc
 #
 # cflags
 #
-.c : ..;$(watcom_dir)/c
+.c : ../c;$(watcom_dir)/c
 
-inc_dirs = -I. -I.. -I"$(dip_dir)/watcom/h"
+inc_dirs = -I. -I"../h" -I"$(dip_dir)/watcom/h"
 
 !ifdef bootstrap
 extra_cpp_flags = -DINCL_MSGTEXT
@@ -47,17 +47,18 @@ exetarg_name = $(exename)x
 # rc and others
 #
 ntverrc_exe = $(exename)
+ntverrc_path = ../h
 !include ntverrc.mif
 
-rc_inc_dirs = -I. -I..
+rc_inc_dirs = -I. -I"../h"
 
 extra_rc_flags_nt = $(ntverrc_def) $(ntverrc_inc_dirs)
 
-wresexe.res : ../wstrip.rc $(ntverrc_exe_dep) msg.grh usage.gh $(__MAKEFILES__)
+wresexe.res : ../h/wstrip.rc $(ntverrc_exe_dep) msg.grh usage.gh $(__MAKEFILES__)
     @%make echo_rc
     $(rcu8j) $(ppflags_common) $(rc_cppflags) -ad $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
-msg.grh : ../wstrip.msg $(__MAKEFILES__)
+msg.grh : ../h/wstrip.msg $(__MAKEFILES__)
     @%make echo_awk
     $(noecho)*awk -v base=MSG_RC_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@
 
@@ -69,6 +70,6 @@ optencod_targets = $(host_os)
 optencod_targets += dbg
 !endif
 
-usage.gh $(exetarg_$(host_os)_res) : ../options.gml $(__MAKEFILES__)
+usage.gh $(exetarg_$(host_os)_res) : ../h/options.gml $(__MAKEFILES__)
     @%make echo_optencod
     $(noecho)*optencod -q -rc=MSG_USAGE_BASE -utf8 $(optencod_opt_$(host_os)) $[@ . . $@ . $(optencod_targets)

@@ -36,12 +36,16 @@ exetarg_res           = $(proj_name).res
 #
 # rc and others
 #
+ntverrc_path = ../res
 !include ntverrc.mif
+ntmanif_path = ../res
 !include ntmanif.mif
+
+rc_inc_dirs = -I"../res"
 
 extra_rc_flags_nt = $(ntmanif_def) $(ntverrc_def) $(ntmanif_inc_dirs) $(ntverrc_inc_dirs)
 
-$(proj_name).res : ../uninstal.rc $(ntverrc_exe_dep) $(ntmanif_dep) $(__MAKEFILES__) .AUTODEPEND
+$(proj_name).res : ../res/uninstal.rc $(ntverrc_exe_dep) $(ntmanif_dep) $(__MAKEFILES__) .AUTODEPEND
     @%make echo_rc
     $(rcu8) $(ppflags_common) $(rc_cppflags) -ad $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
@@ -49,6 +53,6 @@ rcstr.grh : rcstrmsg.gh $(__MAKEFILES__)
     @%make echo_awk
     $(noecho)*awk -f $(build_dir)/msgtoh.awk -v OUTFILE=$^. $[@
 
-rcstrmsg.gh : $(uninstal_dir)/uninstal.msg $(__MAKEFILES__)
+rcstrmsg.gh : ../res/uninstal.msg $(__MAKEFILES__)
     @%make echo_cpp
     $(cppu8) $(ppflags_common) $(rc_cppflags) $(rc_inc_path) -o$@ $[@

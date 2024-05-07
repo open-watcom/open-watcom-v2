@@ -1,4 +1,4 @@
-rcsdll_inc_dirs = -I"$(rcsdll_dir)"
+rcsdll_inc_dirs = -I"$(rcsdll_dir)/h"
 !ifndef win386
 rcsdll_lib = $(rcsdll_dir)/$(objs_subdir)/rcsdll.lib
 !endif
