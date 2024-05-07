@@ -41,7 +41,7 @@ ntverrc_path = ../res
 ntmanif_path = ../res
 !include ntmanif.mif
 
-rc_inc_dirs = -I"../res"
+rc_inc_dirs = -I"../res" -I".."
 
 extra_rc_flags_nt = $(ntmanif_def) $(ntverrc_def) $(ntmanif_inc_dirs) $(ntverrc_inc_dirs)
 
