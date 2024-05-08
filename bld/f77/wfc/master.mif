@@ -62,7 +62,7 @@ extra_a_flags_axp = -oc
 exetarg_prebuild_objs = $(asminline_deps) usage.gh wfcmsgs.gh code$(target_cpu).gh
 exetarg_objs          = $(fobjs) $(trmem_objs) $(trmemcvr_objs)
 exetarg_libs          = $(asminline_lib) $(cg_libs)
-exetarg_res           = wresexe.res
+exetarg_res           = $(proj_name).res
 !include exetarg.mif
 
 #
@@ -76,7 +76,7 @@ rc_inc_dirs = -I. -I.. -I"$(f77wfc_dir)/h" -I"$(f77_dir)/h" &
 
 extra_rc_flags_nt = $(ntverrc_dep) $(ntverrc_inc_dirs)
 
-wresexe.res : $(f77wfc_dir)/h/wfc.rc $(ntverrc_exe_dep) $(f77wfc_dir)/h/wfc.rh
+$(proj_name).res : $(f77wfc_dir)/h/wfc.rc $(ntverrc_exe_dep) $(f77wfc_dir)/h/wfc.rh
     @%make echo_rc
     $(rcu8j) $(ppflags_common) $(rc_cppflags) $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 

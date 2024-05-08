@@ -136,10 +136,9 @@ libs = $(gui_lib) $(libs_$(host_os)) $(libs_$(objs_subdir)) ../ziplib/$(objs_sub
 exetarg_objs          = $(objs)
 exetarg_libs          = $(libs)
 
-exetarg_res           = wresexe.res
+exetarg_res           = setup.res
 exetarg_name          = setup
 !include exetarg.mif
-!undef exetarg_res
 
 exetarg_res           = csetup.res
 exetarg_name          = csetup
@@ -181,7 +180,7 @@ extra_rc_flags_win = -30
 extra_rc_flags_nt  = $(ntmanif_def) $(ntverrc_def) $(ntmanif_inc_dirs) $(ntverrc_inc_dirs)
 
 # UI resources
-wresexe.res : ../res/setup.rc $(depend_res) $(__MAKEFILES__)
+setup.res : ../res/setup.rc $(depend_res) $(__MAKEFILES__)
     @%make echo_rc
     $(rcj) $(ppflags_common) $(rc_cppflags) $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 

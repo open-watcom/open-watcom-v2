@@ -30,7 +30,7 @@ extra_l_flags_dos = opt stack=4k
 #
 exetarg_prebuild_objs = usage.gh msg.grh
 exetarg_objs          = touch.obj dtparse.obj wtmsg.obj
-exetarg_res           = wresexe.res
+exetarg_res           = $(proj_name).res
 exetarg_qnx_res       = usage.u
 !include exetarg.mif
 
@@ -42,7 +42,7 @@ ntverrc_path = ../h
 
 extra_rc_flags_nt = $(ntverrc_def) $(ntverrc_inc_dirs)
 
-wresexe.res : ../h/wtouch.rc $(ntverrc_exe_dep) ../h/wtouch.msg usage.gh msg.grh $(__MAKEFILES__)
+$(proj_name).res : ../h/wtouch.rc $(ntverrc_exe_dep) ../h/wtouch.msg usage.gh msg.grh $(__MAKEFILES__)
     @%make echo_rc
     $(rcu8j) $(ppflags_common) $(rc_cppflags) $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 

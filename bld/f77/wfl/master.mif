@@ -51,7 +51,7 @@ exetarg_name = $(exename_$(target_cpu))
 #
 exetarg_prebuild_objs = wflmsgs.grh usage.gh
 exetarg_objs = wfl.obj $(trmem_objs)
-exetarg_res           = wresexe.res
+exetarg_res = $(proj_name).res
 !include exetarg.mif
 
 #
@@ -64,7 +64,7 @@ rc_inc_dirs = -I. -I"$(f77wfl_dir)" -I"$(f77_dir)/h" -I"$(comp_cfg_dir)/h"
 
 extra_rc_flags_nt = $(ntverrc_dep) $(ntverrc_inc_dirs)
 
-wresexe.res : $(f77wfl_dir)/h/wfl.rc $(ntverrc_exe_dep) wflmsgs.gh wflmsgs.grh
+$(proj_name).res : $(f77wfl_dir)/h/wfl.rc $(ntverrc_exe_dep) wflmsgs.gh wflmsgs.grh
     @%make echo_rc
     $(rcu8j) $(ppflags_common) $(rc_cppflags) $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 

@@ -74,7 +74,7 @@ exetarg_objs = &
     demangle.obj &
     $(trmem_objs)
 exetarg_libs          = $(orl_lib)
-exetarg_res           = wresexe.res
+exetarg_res           = $(proj_name).res
 exetarg_qnx_res       = usage.u
 !include exetarg.mif
 
@@ -86,7 +86,7 @@ ntverrc_path = ../stand/h
 
 rc_inc_dirs = -I"../stand/h" -I"../stand"
 
-wresexe.res : $(disasm_dir)/stand/h/wdis.rc $(ntverrc_exe_dep) usage.gh msg.grh $(__MAKEFILES__)
+$(proj_name).res : $(disasm_dir)/stand/h/wdis.rc $(ntverrc_exe_dep) usage.gh msg.grh $(__MAKEFILES__)
     @%make echo_rc
     $(rcu8j) $(ppflags_common) $(rc_cppflags) $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 

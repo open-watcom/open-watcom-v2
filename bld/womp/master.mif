@@ -65,7 +65,7 @@ exetarg_objs = &
     wat2can1.obj    &
     wpmsg.obj       &
     $(trmem_objs)
-exetarg_res        = wresexe.res
+exetarg_res        = $(proj_name).res
 !include exetarg.mif
 
 #
@@ -73,7 +73,7 @@ exetarg_res        = wresexe.res
 #
 rc_inc_dirs = -I. -I.. -I"../h" -I"$(wrc_dir)/h"
 
-wresexe.res : ../h/$(proj_name).rc
+$(proj_name).res : ../h/$(proj_name).rc
     @%make echo_rc
     $(rcu8j) $(ppflags_common) $(rc_cppflags) $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 

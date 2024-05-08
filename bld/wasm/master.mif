@@ -96,13 +96,13 @@ exetarg_objs = &
     omfgenio.obj &
     $(trmem_objs)
 
-exetarg_res        = wresexe.res
-exetarg_qnx_res    = usage.u
 !ifdef bootstrap
 exetarg_name       = bwasm
 !else
 exetarg_name       = wasm
 !endif
+exetarg_qnx_res    = usage.u
+exetarg_res        = $(proj_name).res
 !include exetarg.mif
 
 #
@@ -115,7 +115,7 @@ rc_inc_dirs  = -I. -I"../h"
 
 extra_rc_flags_nt = $(ntverrc_def) $(ntverrc_inc_dirs)
 
-wresexe.res : ../h/wasm.rc $(ntverrc_exe_dep) usage.gh wasmcmsg.grh wasmsmsg.grh $(__MAKEFILES__)
+$(proj_name).res : ../h/wasm.rc $(ntverrc_exe_dep) usage.gh wasmcmsg.grh wasmsmsg.grh $(__MAKEFILES__)
     @%make echo_rc
     $(rcu8j) $(ppflags_common) $(rc_cppflags) -D_STANDALONE_ $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 

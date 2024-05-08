@@ -76,7 +76,7 @@ nwgml : cfcheck.exe cfparse.exe copparse.exe &
 # EXE's
 #
 exetarg_prebuild_objs = wgmlmsge.gh wgmlmsgs.gh
-exetarg_res  = wresexe.res
+exetarg_res  = research.res
 
 exetarg_objs = $(cfc_objs)
 exetarg_name = cfcheck
@@ -105,7 +105,7 @@ exetarg_name = outcheck
 #
 # rc and others
 #
-wresexe.res : ../../h/wgml.rc wgmlmsgs.gh ../../h/wgml.msg ../../h/wgmlmsg.h ../../h/wgmlerr.msg
+research.res : ../../h/wgml.rc wgmlmsgs.gh ../../h/wgml.msg ../../h/wgmlmsg.h ../../h/wgmlerr.msg
     @%make echo_rc
     $(rcu8j) $(ppflags_common) $(rc_cppflags) $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 

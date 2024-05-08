@@ -8,9 +8,9 @@ sys_windowed = 1
 ide_autodepends = .autodepend
 !endif
 
-target_os2 = os2
-target_nt  = win
-target_win = win
+ide_rc_host_os2 = os2
+ide_rc_host_nt  = win
+ide_rc_host_win = win
 
 docs_host_dir = $(docs_dir)/$(host_os)
 
@@ -94,13 +94,11 @@ ntverrc_path = ../res/win
 ntmanif_path = ../res/win
 !include ntmanif.mif
 
-ide_rc_inc_dirs = -I"../res/$(target_$(host_os))" -I"../res"
-
-rc_inc_dirs = $(ide_rc_inc_dirs) $(gui_rc_inc_dirs)
+rc_inc_dirs = -I"../res/$(ide_rc_host_$(host_os))" -I"../res" $(gui_rc_inc_dirs)
 
 extra_rc_flags_nt = $(ntmanif_def) $(ntverrc_dep) $(ntmanif_inc_dirs) $(ntverrc_inc_dirs)
 
-$(proj_name).res : ../res/$(target_$(host_os))/ide.rc $(gui_dir)/h/gui.rc $(ntmanif_dep)
+$(proj_name).res : ../res/$(ide_rc_host_$(host_os))/ide.rc $(gui_dir)/h/gui.rc $(ntmanif_dep)
     @%make echo_rc
     $(rcu8j) $(ppflags_common) $(rc_cppflags) $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 

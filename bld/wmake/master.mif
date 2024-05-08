@@ -96,7 +96,7 @@ exetarg_objs          = $(objs)
 !else
 exetarg_libs          = $(orl_lib)
 !endif
-exetarg_res           = wresexe.res
+exetarg_res           = $(proj_name).res
 exetarg_name          = wmk
 !include exetarg.mif
 
@@ -112,7 +112,7 @@ wsplice_opts_linux = -kUNIX
 wsplice_opts_qnx   = -kUNIX
 wsplice_opts_osx   = -kUNIX
 
-wresexe.res : ../h/wmake.rc $(ntverrc_exe_dep) ../h/mrcmsg.h usage.gh usagej.gh $(__MAKEFILES__)
+$(proj_name).res : ../h/wmake.rc $(ntverrc_exe_dep) ../h/mrcmsg.h usage.gh usagej.gh $(__MAKEFILES__)
     @%make echo_rc
     $(rcu8j) $(ppflags_common) $(rc_cppflags) $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 

@@ -31,23 +31,19 @@ $(dlltarg_name)$(dlltarg_ext) : $+$(dlltarg_prebuild_objs) $(dlltarg_objs) $(dll
     @for %e in ($+$(dlltarg_export)$-) do $(noecho)%append $^&.lnd export { @%e }
     $(linker) name $@ @$^&.lnd
 !endif
+!ifdef dlltarg_res
 #########################
 # add resources to DLL
 #########################
-# native .res
-!ifeq wreslib 0
-! ifdef dlltarg_res
-# application only
+! ifeq wreslib 0
+# native .res for application
 !  ifeq verbose 0
     @echo bind res $@ appl
 !  endif
     $(rcbind) -q -k $+$(dlltarg_res)$- $@
-! endif
-#########################
-# Windows 3.x resources
-!else
-! ifdef dlltarg_res
-# string resource only
+! else
+# string resource only with wreslib
+# Windows 3.x resources format
 !  ifeq verbose 0
     @echo bind res $@ wreslib
 !  endif

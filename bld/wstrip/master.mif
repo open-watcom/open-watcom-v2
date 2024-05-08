@@ -38,7 +38,7 @@ exename = wstrip
 exetarg_prebuild_objs = msg.grh usage.gh
 exetarg_objs = strip.obj output.obj
 !ifndef bootstrap
-exetarg_res = wresexe.res
+exetarg_res = $(proj_name).res
 !endif
 exetarg_name = $(exename)x
 !include exetarg.mif
@@ -54,7 +54,7 @@ rc_inc_dirs = -I. -I"../h"
 
 extra_rc_flags_nt = $(ntverrc_def) $(ntverrc_inc_dirs)
 
-wresexe.res : ../h/wstrip.rc $(ntverrc_exe_dep) msg.grh usage.gh $(__MAKEFILES__)
+$(proj_name).res : ../h/wstrip.rc $(ntverrc_exe_dep) msg.grh usage.gh $(__MAKEFILES__)
     @%make echo_rc
     $(rcu8j) $(ppflags_common) $(rc_cppflags) -ad $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 

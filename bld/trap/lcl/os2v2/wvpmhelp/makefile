@@ -63,7 +63,7 @@ dlltarg_name = wdpmhook
 #
 exetarg_prebuild_objs = _err.gh _jerr.gh
 exetarg_objs = pmhelp.obj
-exetarg_res = wdpmhelp.res
+exetarg_res = $(proj_name).res
 exetarg_name = wdpmhelp
 !include exetarg.mif
 
@@ -72,7 +72,7 @@ exetarg_name = wdpmhelp
 #
 rc_inc_dirs = -I"$(trap_dir)/h"
 
-wdpmhelp.res: ../h/pmhelp.rc ../h/wdpmhelp.rh
+$(proj_name).res: ../h/pmhelp.rc ../h/wdpmhelp.rh
     @%make echo_rc
     $(rc) $(ppflags_common) $(rc_cppflags) $(rc_flags) $(rc_inc_path) -fo=$@ $[@
 

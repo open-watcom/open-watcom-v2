@@ -36,7 +36,7 @@ extra_c_flags_wicgener = $(trmem_cover_cflags)
 # EXE
 #
 exetarg_objs = $(objs)
-exetarg_res = wresexe.res
+exetarg_res = $(proj_name).res
 !include exetarg.mif
 
 #
@@ -44,7 +44,7 @@ exetarg_res = wresexe.res
 #
 rc_inc_dirs = -I"../res" -I"../h"
 
-wresexe.res: ../res/wic.rc usagee.gh usagej.gh #../res/messages.rc
+$(proj_name).res: ../res/wic.rc usagee.gh usagej.gh #../res/messages.rc
     @%make echo_rc
     $(rcj) $(ppflags_common) $(rc_cppflags) $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 

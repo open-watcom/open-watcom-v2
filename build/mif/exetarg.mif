@@ -85,23 +85,19 @@ $(exetarg_name)$(exetarg_ext) : $+$(exetarg_prebuild_objs) $(exetarg_qnx_res_obj
 # extender, no .res
     $(wbind) $(lname) -n $(wbind_quiet) -s $(win386ldr)
 ! endif
+!else ifdef exetarg_res
 ###############################
-# add native resources
+# add resources to EXE
 ###############################
-!else ifeq wreslib 0
-! ifdef exetarg_res
-# application only
+! ifeq wreslib 0
+# native .res for application
 !  ifeq verbose 0
     @echo bind res $@ appl
 !  endif
     $(rcbind) -q -k $+$(exetarg_res)$- $@
-! endif
-###############################
-# add Windows 3.x resources
-###############################
-!else
-! ifdef exetarg_res
-# string resource only
+! else
+# string resource only with wreslib
+# Windows 3.x resources format
 !  ifeq verbose 0
     @echo bind res $@ wreslib
 !  endif
