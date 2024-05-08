@@ -36,7 +36,6 @@ extra_c_flags_wicgener = $(trmem_cover_cflags)
 # EXE
 #
 exetarg_objs = $(objs)
-exetarg_libs = $(wres_lib)
 exetarg_res = wresexe.res
 !include exetarg.mif
 

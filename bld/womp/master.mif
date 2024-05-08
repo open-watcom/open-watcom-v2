@@ -65,7 +65,6 @@ exetarg_objs = &
     wat2can1.obj    &
     wpmsg.obj       &
     $(trmem_objs)
-exetarg_libs       = $(wres_lib)
 exetarg_res        = wresexe.res
 !include exetarg.mif
 

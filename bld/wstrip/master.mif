@@ -63,7 +63,7 @@ msg.grh : ../h/wstrip.msg $(__MAKEFILES__)
     $(noecho)*awk -v base=MSG_RC_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@
 
 !ifdef exetarg_qnx_res
-optencod_opt_qnx    = -u=$(exetarg_qnx_res)
+optencod_opt_qnx = -u=$(exetarg_qnx_res)
 !endif
 optencod_targets = $(host_os)
 !ifeq debug 2

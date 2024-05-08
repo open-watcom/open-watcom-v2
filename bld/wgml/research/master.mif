@@ -76,7 +76,6 @@ nwgml : cfcheck.exe cfparse.exe copparse.exe &
 # EXE's
 #
 exetarg_prebuild_objs = wgmlmsge.gh wgmlmsgs.gh
-exetarg_libs = $(wres_lib)
 exetarg_res  = wresexe.res
 
 exetarg_objs = $(cfc_objs)
