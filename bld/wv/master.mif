@@ -16,7 +16,7 @@ wv_wreslib = 1
 
 wv_dos_extender = dos4g	#causeway
 
-!ifeq sys_windowed 1
+!ifdef sys_windowed
 name_os2i86    = wdw16
 !else
 name_os2i86    = wd16
@@ -25,7 +25,7 @@ name_wini86    = wdc
 
 !ifdef name_$(host_os)$(host_cpu)
 name = $(name_$(host_os)$(host_cpu))
-!else ifeq sys_windowed 1
+!else ifdef sys_windowed
 name = wdw
 !else
 name = wd
@@ -83,7 +83,7 @@ inc_dirs = -I.  -Ih -I"../h" -I"../../h" $(wv_res_inc_dirs) -I"$(dig_dir)/h" &
     $(hlpview_inc_dirs) $(wpi_inc_dirs) $(commonui_inc_dirs)
 !ifeq sys_rtdll 1
 !else
-! ifeq sys_windowed 1
+! ifdef sys_windowed
 inc_dirs += -I"$(gui_dir)/win/h"
 ! else
 inc_dirs += -I"$(gui_dir)/ui/h"
@@ -100,7 +100,7 @@ extra_cpp_flags += -D__NOUI__
 !ifeq debug 2
 extra_cpp_flags += -DAUI_DBG
 !endif
-!ifeq sys_windowed 1
+!ifdef sys_windowed
 extra_cpp_flags    += -DGUI_IS_GUI -DUI_GUI
 extra_cpp_flags_os2 = -D__OS2_PM__
 !endif
@@ -110,7 +110,7 @@ extra_cpp_flags_dynmem = $(trmem_cpp_flags)
 
 extra_c_flags_win = -zW -zc
 extra_c_flags_qnx = -I"$(clib_dir)/h"
-!ifeq sys_windowed 1
+!ifdef sys_windowed
 extra_c_flags_os2_i86 = -zc -zu
 !else
 extra_c_flags_os2_i86 = -zc
@@ -128,14 +128,14 @@ extra_c_flags_dynmem = $(trmem_cover_cflags)
 #
 lflags_win_i86 += memory font
 
-!ifeq sys_windowed 1
+!ifdef sys_windowed
 extra_l_flags_win_i86 = op stack=12K, heap=15K import DEATH GDI.121 import RESURRECTION GDI.122
 !else
 extra_l_flags_win_i86 = op stack=15K, heap=10K, align=512
 !endif
 # NB: DOS4GOPTIONS export is disabled due to incompatibility with DOS/4G 2.x
 extra_l_flags_dos = op stack=24k #export DOS4GOPTIONS=_DOS4GOPTIONS
-!ifeq sys_windowed 1
+!ifdef sys_windowed
 extra_l_flags_os2_i86 = op stack=19k, newfile
 extra_l_flags_os2_386 = imp WinThreadAssocQueue PMMERGE.5398
 !else
@@ -184,7 +184,7 @@ ntverrc_path = ../../res
 ntmanif_path = ../../res
 !include ntmanif.mif
 
-!ifeq sys_windowed 1
+!ifdef sys_windowed
 
 bitmaps_os2 = &
     ../../res/os2/zapant.ico &
@@ -408,7 +408,7 @@ rcfiles = &
 
 !ifdef wv_engine_noui
 extra_rc_flags = -DRESX_ENG
-!else ifeq sys_windowed 1
+!else ifdef sys_windowed
 extra_rc_flags = -DRESX_GUI
 !else
 !endif
@@ -417,7 +417,7 @@ extra_rc_flags_nt = $(ntmanif_def) $(ntverrc_def) $(ntmanif_inc_dirs) $(ntverrc_
 
 !ifdef wv_engine_noui
 $(proj_name).res : ../../res/wv.rc $(ntmanif_dep) $(ntverrc_exe_dep) litdef.gh $(__MAKEFILES__) .autodepend
-!else ifeq sys_windowed 1
+!else ifdef sys_windowed
 $(proj_name)j.res : ../../res/wv.rc $(ntmanif_dep) $(ntverrc_exe_dep) $(bitmaps) $(rcfiles) $(__MAKEFILES__) .autodepend
     @%make echo_rc
     $(rc) $(ppflags_common) $(rc_cppflags) -DJAPANESE -ad $(rc_flags) $(rc_inc_path) $[@ -fo=$@

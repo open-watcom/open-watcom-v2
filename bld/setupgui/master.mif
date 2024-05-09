@@ -37,7 +37,7 @@ additional_clean = *.i *.rex setup.inf *.grc
 inc_dirs  = -I"../h" $(ui_inc_dirs) $(wpi_inc_dirs) $(gui_inc_dirs) $(gui_inc_dirs_internal) $(commonui_inc_dirs) &
     $(wpi_inc_dirs) $(hlpview_inc_dirs) -I"$(libzip_dir)/lib" -I"$(zlib_dir)"
 
-!ifeq sys_windowed 1
+!ifdef sys_windowed
 extra_cpp_flags     = -DGUI_IS_GUI
 extra_cpp_flags_os2 = -D__OS2_PM__
 !endif
@@ -71,7 +71,7 @@ extra_l_flags_win_i86 = option manyautodata, stack=20K, heap=10K &
 # explicit rules
 ##################
 
-!ifeq sys_windowed 1
+!ifdef sys_windowed
 all : csetup.exe f77setup.exe .SYMBOLIC
 !else
 all : setup.exe .SYMBOLIC
@@ -110,18 +110,18 @@ mem_objs = &
 objs += $(i_$(host_os)) $(i_$(objs_subdir)) $(mem_objs)
 
 # custom version of resource finder
-!ifneq sys_windowed 1
+!ifdef sys_windowed
+!else
 objs += loadfind.obj
 !endif
 
-!ifneq sys_windowed 1
-
+!ifdef sys_windowed
+!else
 libs_dos   = $(ui_lib)
 libs_linux = $(ui_lib)
 libs_nt    = $(ui_lib)
 libs_os2   = $(ui_lib)
 libs_osx   = $(ui_lib)
-
 !endif
 
 !ifeq host_cpu i86
@@ -159,7 +159,7 @@ exetarg_name          = jf77setup
 #
 # rc and others
 #
-!ifeq sys_windowed 1
+!ifdef sys_windowed
 depend_res_os2 = ../res/os2/setup.ico
 !endif
 depend_res_nt  = $(ntverrc_exe_dep) $(ntmanif_dep) ../res/nt/setup.ico ../res/nt/disk.ico
@@ -173,7 +173,7 @@ ntmanif_path = ../res/nt
 
 rc_inc_dirs = -I"../res/$(host_os)" -I"../res" $(gui_rc_inc_dirs)
 
-!ifeq sys_windowed 1
+!ifdef sys_windowed
 extra_rc_flags = -DRESX_GUI
 !endif
 extra_rc_flags_win = -30

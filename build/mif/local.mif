@@ -166,7 +166,7 @@ cl_extra_libs_gen = $(watcom_dir)/$(bin_subdir)/clibext.lib
 cl_extra_libs_dll = $(watcom_dir)/$(bin_subdir)/clibexts.lib
 ! endif
 
-! ifeq sys_dll 1
+! ifdef sys_dll
 cl_extra_objs = $(cl_extra_objs_dll)
 cl_extra_libs = $(cl_extra_libs_dll)
 ! else
@@ -196,7 +196,7 @@ bld_cl_extra_objs_dll =
 bld_cl_extra_libs_gen = $(watcom_dir)/$(bin_subdir)/clibext.lib
 bld_cl_extra_libs_dll = $(watcom_dir)/$(bin_subdir)/clibexts.lib
 
-! ifeq sys_dll 1
+! ifdef sys_dll
 bld_cl_extra_objs = $(bld_cl_extra_objs_dll)
 bld_cl_extra_libs = $(bld_cl_extra_libs_dll)
 ! else
@@ -278,9 +278,9 @@ ldflags_gen  = $(cl_extra_libs_gen) $(ldflags_gen_all) $(extra_ldflags) $(bld_ld
 ldflags_dll  = $(cl_extra_libs_dll) $(ldflags_gen_all) $(extra_ldflags_dll) $(bld_ldflags_dll_$(proj_type))
 ldflags_wind = $(cl_extra_libs_gen) $(ldflags_gen_all) -SUBSYSTEM:WINDOWS $(extra_ldflags) $(bld_ldflags_$(proj_type))
 
-!  ifeq sys_dll 1
+!  ifdef sys_dll
 ldflags = $(ldflags_dll)
-!  else ifeq sys_windowed 1
+!  else ifdef sys_windowed
 ldflags = $(ldflags_wind)
 !  else
 ldflags = $(ldflags_gen)
@@ -428,7 +428,7 @@ cl_extra_libs_gen = $(watcom_dir)/$(bin_subdir)/clibext.lib
 cl_extra_libs_dll = $(watcom_dir)/$(bin_subdir)/clibexts.lib
 ! endif
 
-! ifeq sys_dll 1
+! ifdef sys_dll
 cl_extra_objs = $(cl_extra_objs_dll)
 cl_extra_libs = $(cl_extra_libs_dll)
 ! else
@@ -477,7 +477,7 @@ bld_cl_extra_objs_dll =
 bld_cl_extra_libs_gen = $(watcom_dir)/$(bin_subdir)/clibext.lib
 bld_cl_extra_libs_dll = $(watcom_dir)/$(bin_subdir)/clibexts.lib
 
-! ifeq sys_dll 1
+! ifdef sys_dll
 bld_cl_extra_objs = $(bld_cl_extra_objs_dll)
 bld_cl_extra_libs = $(bld_cl_extra_libs_dll)
 ! else
@@ -591,9 +591,9 @@ ldflags_gen  = $(cl_extra_libs_gen) $(extra_ldflags) $(bld_ldflags_$(proj_type))
 ldflags_dll  = $(cl_extra_libs_dll) $(extra_ldflags_dll) $(bld_ldflags_dll_$(proj_type))
 ldflags_wind = $(ldflags_gen)
 
-!  ifeq sys_dll 1
+!  ifdef sys_dll
 ldflags = $(ldflags_dll)
-!  else ifeq sys_windowed 1
+!  else ifdef sys_windowed
 ldflags = $(ldflags_wind)
 !  else
 ldflags = $(ldflags_gen)

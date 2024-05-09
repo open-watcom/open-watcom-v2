@@ -1,6 +1,6 @@
 proj_name = vi
 
-!ifeq sys_windowed 1
+!ifdef sys_windowed
 name = viw
 !else
 name = vi
@@ -70,7 +70,7 @@ $(bind_compiled) : $(bind_compiled:./=../dat/) $(__MAKEFILES__)
 exetarg_prebuild_objs = $(special) $(other) $(videps)
 exetarg_objs          = $(objsroot) $(objinit) $(objs)
 exetarg_libs          = $(libs)
-!ifeq sys_windowed 1
+!ifdef sys_windowed
 exetarg_res           = $(name).res
 !endif
 exetarg_name          = $(name)

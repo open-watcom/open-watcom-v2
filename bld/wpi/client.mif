@@ -1,4 +1,4 @@
-!ifeq sys_windowed 1
+!ifdef sys_windowed
 wpi_inc_dirs = -I"$(wpi_dir)/h"
 wpi_lib = $(wpi_dir)/$(objs_subdir)/wpi.lib
 !endif

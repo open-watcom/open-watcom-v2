@@ -21,14 +21,14 @@ suppress_zc = 1
 inc_dirs = -I. -I"../h"
 
 extra_cpp_flags =
-!ifeq sys_dll 1
+!ifdef sys_dll
 extra_cpp_flags += -D__DLL__
 !endif
 extra_cpp_flags_pbmem    = $(trmem_cpp_flags)
 extra_cpp_flags_trmemcvr = $(trmem_cpp_flags)
 
 extra_c_flags =
-!ifeq sys_dll 1
+!ifdef sys_dll
 extra_c_flags_win = -zw -zu
 !else
 extra_c_flags_win = -zW
@@ -57,7 +57,7 @@ objs += &
     wig.obj &
     $(trmemcvr_objs) $(trmem_objs)
 
-!ifeq sys_dll 1
+!ifdef sys_dll
 #
 # DLL
 #

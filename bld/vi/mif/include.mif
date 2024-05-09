@@ -3,7 +3,7 @@ inc_dirs = -I. -I"$(vi_dir)/h" $(rcsdll_inc_dirs) $(ui_inc_dirs) &
 
 winstuff = -I"$(vi_dir)/win/ctl" -I"$(ideact_dir)" $(wpi_inc_dirs) $(commonui_inc_dirs)
 
-!ifeq sys_windowed 1
+!ifdef sys_windowed
 inc_dirs_nt  = -I"$(vi_dir)/win" $(winstuff)
 inc_dirs_win = -I"$(vi_dir)/win" $(winstuff)
 inc_dirs_os2 = -I"$(vi_dir)/pm" $(winstuff)

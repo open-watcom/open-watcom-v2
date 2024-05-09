@@ -1,4 +1,4 @@
-!ifeq sys_windowed 1
+!ifdef sys_windowed
 !ifeq host_os os2
 aui_os2pm = 1
 !endif

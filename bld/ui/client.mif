@@ -1,4 +1,5 @@
-!ifneq sys_windowed 1
+!ifdef sys_windowed
+!else
 ui_os_linux = unix
 ui_os_bsd   = unix
 ui_os_nov   = nlm

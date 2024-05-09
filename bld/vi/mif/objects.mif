@@ -57,7 +57,7 @@ objsize = &
     selrgn.obj cstatus.obj help.obj &
     readstr.obj tab_e_c.obj gencfg.obj fts.obj
 
-!ifeq sys_windowed 1
+!ifdef sys_windowed
 !ifeq host_os os2
 !include $(vi_dir)/pm/pm.mif
 !else

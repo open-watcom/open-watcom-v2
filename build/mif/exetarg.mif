@@ -33,6 +33,7 @@ exetarg_qnx_res_opt = opt resource=$(exetarg_qnx_res)
 ! undef exetarg_qnx_res_obj
 ! undef exetarg_qnx_res_opt
 !endif
+
 !ifeq host_os osx
 # now unsupported on OSX
 # not clear what is running on OSX by default

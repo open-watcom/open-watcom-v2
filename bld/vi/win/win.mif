@@ -29,7 +29,7 @@ rc_deps = &
     ../res/nodrop.cur ../res/dropft.cur ../res/dropss.cur &
     $(commonui_dir)/h/about.dlg $(rc_ctl_deps)
 
-!ifeq sys_windowed 1
+!ifdef sys_windowed
 other = $(name).res
 ! ifeq host_os nt
 extraobjs += spawn.obj getspcmd.obj

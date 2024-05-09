@@ -1,4 +1,5 @@
-!ifneq sys_windowed 1
+!ifdef sys_windowed
+!else
 hlpview_objs =	  &
     help.obj      &
     vvscroll.obj  &

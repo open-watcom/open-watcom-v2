@@ -124,7 +124,7 @@ debug = 0
 
 wreslib_win = 0
 wreslib_nt  = 0
-!ifeq sys_windowed 1
+!ifdef sys_windowed
 wreslib_os2 = 0
 !endif
 
@@ -450,7 +450,7 @@ cflags_rtdll_os2  = -br
 # generic application macros
 
 # windowed application macros
-!ifeq sys_windowed 1
+!ifdef sys_windowed
 #cflags_wind_nt   = -bg
 #cflags_wind_win  = -bg
 #cflags_wind_os2  = -bg
@@ -863,11 +863,11 @@ librarian       = $(noecho)$(librarian_$(host_cpu)) -q
 as              = $(noecho)$(as_$(host_cpu)) -q $(as_outfmt_$(host_os)$(host_cpu))
 
 # current project setup
-!ifeq sys_dll 1
+!ifdef sys_dll
 cflags  = $(cflags_dll)
 clflags = $(clflags_dll)
 lflags  = $(lflags_dll)
-!else ifeq sys_windowed 1
+!else ifdef sys_windowed
 cflags  = $(cflags_wind)
 clflags = $(clflags_wind)
 lflags  = $(lflags_wind)

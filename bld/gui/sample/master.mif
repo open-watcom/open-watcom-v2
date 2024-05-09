@@ -29,7 +29,8 @@ inc_dirs = -I. -I"../h" $(gui_inc_dirs) -I"$(gui_dir)/$(gui_type)/h"
 # lflags
 #
 extra_l_flags_nov = import @$(nwoss_dir)/common/imp/ownwos.imp
-!ifneq sys_windowed 1
+!ifdef sys_windowed
+!else
 extra_l_flags_win = import DEATH GDI.121 import RESURRECTION GDI.122
 !endif
 
@@ -39,7 +40,7 @@ extra_l_flags_win = import DEATH GDI.121 import RESURRECTION GDI.122
 exetarg_objs       = sample.obj dlgstat.obj dlgdynam.obj dlgtest.obj sampdef.obj
 exetarg_libs       = $(gui_lib) $(ui_lib)
 exetarg_name       = sample
-!ifeq sys_windowed 1
+!ifdef sys_windowed
 !ifeq host_os os2
 exetarg_res        = samplepm.res
 !else

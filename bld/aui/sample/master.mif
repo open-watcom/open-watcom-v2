@@ -64,7 +64,7 @@ rcfiles = &
     ../res/stop2.bmp &
     $(rcfiles_$(host_os))
 
-!ifeq sys_windowed 1
+!ifdef sys_windowed
 extra_rc_flags = -DRESX_GUI
 !endif
 

@@ -1,4 +1,4 @@
-!ifeq sys_windowed 1
+!ifdef sys_windowed
 commonui_inc_dirs = -I"$(commonui_dir)/$(objs_subdir)" -I"$(commonui_dir)/h" -I"$(commonui_dir)/res"
 commonui_lib = $(commonui_dir)/$(objs_subdir)/commonui.lib
 commonui_str_def = $(commonui_dir)/$(objs_subdir)/uistr.grh
