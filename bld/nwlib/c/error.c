@@ -112,12 +112,8 @@ void FiniMsg( void )
 {
 #if defined( INCL_MSGTEXT )
 #elif defined( USE_WRESLIB )
-    if( !CloseResFile( &hInstance ) ) {
-        longjmp( Env, 1 );
-    }
+    CloseResFile( &hInstance );
 #else
-    if( !CloseHandle( hInstance ) ) {
-        longjmp( Env, 1 );
-    }
+    CloseHandle( hInstance );
 #endif
 }
