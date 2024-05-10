@@ -33,16 +33,16 @@ inc_dirs = -I"../h" -I"$(pmake_dir)" -I"$(posix_dir)/h"
 
 .c : ../c;$(pmake_dir);$(posix_dir)/misc;$(watcom_dir)/c;$(trmem_dir)
 
-sys_dos  = sysdos.obj
-sys_nt   = sysnt.obj
-sys_os2  = sysos2.obj
-!ifdef sys_$(host_os)
-sys_objs = $(sys_$(host_os))
+builder_sys_objs_dos  = sysdos.obj
+builder_sys_objs_nt   = sysnt.obj
+builder_sys_objs_os2  = sysos2.obj
+!ifdef builder_sys_objs_$(host_os)
+builder_sys_objs = $(builder_sys_objs_$(host_os))
 !else
-sys_objs = sysposix.obj
+builder_sys_objs = sysposix.obj
 !endif
 
-builder_objs = builder.obj utils.obj $(sys_objs) runit.obj pmake.obj $(bld_cl_extra_objs_gen) $(trmem_objs)
+builder_objs = builder.obj utils.obj $(builder_sys_objs) runit.obj pmake.obj $(bld_cl_extra_objs_gen) $(trmem_objs)
 sweep_objs   = sweep.obj $(bld_cl_extra_objs_gen)
 wsplice_objs = wsplice.obj $(bld_cl_extra_objs_gen)
 diff_objs    = diff.obj $(bld_cl_extra_objs_gen)

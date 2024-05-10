@@ -9,7 +9,7 @@ cfloat_lib = $(cfloat_dir)/$(objs_subdir)/cf.lib
 # CFLOAT run-time DLL used
 #
 cfloat_lib = $(cfloat_dir)/$(objs_subdir).rtd/cf.lib
-!else ifeq $(proj_name)_dll 1
+!else ifdef $(proj_name)_dll
 #
 # CFLOAT DLL used
 #

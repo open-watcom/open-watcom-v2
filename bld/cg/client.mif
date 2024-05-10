@@ -12,7 +12,7 @@ obj_dir = $(objs_subdir)
 obj_dir = $(objs_subdir).cgd
 !else ifeq $(proj_name)_rtdll 1
 obj_dir = $(objs_subdir).rtd
-!else ifeq $(proj_name)_dll 1
+!else ifdef $(proj_name)_dll
 obj_dir = $(objs_subdir).dll
 !else ifdef debug_cg
 obj_dir = $(objs_subdir).dbg

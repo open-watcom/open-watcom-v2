@@ -61,7 +61,7 @@ $(bin_subdir) : .EXPLICIT
 inc_dirs  = -I. -I.. -I"../../h" $(cg_inc_dirs) $(asminline_inc_dirs) $(cpp_inc_dirs) $(dwarfw_inc_dirs) -I"$(comp_cfg_dir)/h" -I"$(fe_misc_dir)/h"
 
 extra_cpp_flags = -DINCL_MSGTEXT
-!ifneq cc_dll 1
+!ifndef cc_dll
 extra_cpp_flags += -DIDE_PGM
 !endif
 !ifeq dll_cg 1
@@ -76,7 +76,7 @@ extra_cpp_flags += -DAS_DEBUG_DUMP
 !endif
 
 extra_cpp_flags_cmsg     = -D__msg_file_prefix=$(intname)
-!ifeq cc_dll 1
+!ifdef cc_dll
 ! ifeq host_os dos
 extra_cpp_flags_ideentry = -DCAUSEWAY
 ! endif

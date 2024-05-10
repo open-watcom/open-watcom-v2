@@ -9,7 +9,7 @@ asminline_lib = $(as_dir)/$(target_cpu)/$(objs_subdir)/asinline.lib
 # AS in-line run-time DLL used
 #
 asminline_lib = $(as_dir)/$(target_cpu)/$(objs_subdir).rtd/asinline.lib
-!else ifeq $(proj_name)_dll 1
+!else ifdef $(proj_name)_dll
 #
 # AS in-line DLL used
 #

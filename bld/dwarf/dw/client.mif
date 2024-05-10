@@ -9,7 +9,7 @@ dwarfw_lib = $(dwarfw_dir)/$(objs_subdir)/dwarfw.lib
 # DWARF run-time DLL used
 #
 dwarfw_lib = $(dwarfw_dir)/$(objs_subdir).rtd/dwarfw.lib
-!else ifeq $(proj_name)_dll 1
+!else ifdef $(proj_name)_dll
 #
 # DWARF DLL used
 #

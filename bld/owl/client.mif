@@ -9,7 +9,7 @@ owl_lib = $(owl_dir)/$(objs_subdir)/owl.lib
 # OWL run-time DLL used
 #
 owl_lib = $(owl_dir)/$(objs_subdir).rtd/owl.lib
-!else ifeq $(proj_name)_dll 1
+!else ifdef $(proj_name)_dll
 #
 # OWL DLL used
 #
