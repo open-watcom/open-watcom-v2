@@ -17,7 +17,7 @@ additional_clean = *.int y.out ytab.* *.mbr *.gh *.grh *.grc *.gc
 !include deftarg.mif
 !include trmem.mif
 
-!include $(cg_dir)/fe.mif
+!include $(cg_dir)/client.mif
 !include $(cpp_dir)/client.mif
 !include asclient.mif
 !include $(cfloat_dir)/client.mif
