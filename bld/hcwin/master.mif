@@ -54,7 +54,6 @@ exetarg_objs = &
     bmx.obj &
     compress.obj &
     parsing.obj &
-    pathlist.obj &
     $(trmem_objs)
 !ifdef ntverrc_exe_out
 exetarg_res = $(ntverrc_exe_out)
