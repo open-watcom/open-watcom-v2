@@ -47,7 +47,7 @@ $(bin_subdir) : .EXPLICIT
 !include trmem.mif
 
 # CODEGEN stuff
-!include $(cg_dir)/mif/fe.mif
+!include $(cg_dir)/fe.mif
 !include $(cpp_dir)/client.mif
 !include asclient.mif
 

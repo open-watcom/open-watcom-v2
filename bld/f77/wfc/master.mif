@@ -23,7 +23,7 @@ exetarg_name = $(exename_$(target_cpu))
 !include deftarg.mif
 !include trmem.mif
 
-!include $(cg_dir)/mif/fe.mif
+!include $(cg_dir)/fe.mif
 !include asclient.mif
 !include $(cfloat_dir)/client.mif
 
