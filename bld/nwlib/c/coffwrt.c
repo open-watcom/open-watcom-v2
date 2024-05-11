@@ -153,11 +153,11 @@ static unsigned AddCoffSymbol( coff_lib_file *c_file, signed_16 sec_num, name_le
 
     sym = c_file->symbols + c_file->header.num_symbols;
     if( symName->len > COFF_SYM_NAME_LEN ) {
-        sym->name.non_name.zeros = 0;
-        sym->name.non_name.offset = c_file->string_table_size + 4;
+        sym->name.u.non_name.zeros = 0;
+        sym->name.u.non_name.offset = c_file->string_table_size + 4;
         AddCoffString( c_file, symName );
     } else {
-        strncpy( sym->name.name_string, symName->name, COFF_SYM_NAME_LEN );
+        strncpy( sym->name.u.name_string, symName->name, COFF_SYM_NAME_LEN );
     }
     sym->value = value;
     sym->sec_num = sec_num; /* 1-based, 0 is special value */

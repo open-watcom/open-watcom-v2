@@ -184,11 +184,11 @@ static coff_quantity AddCoffSymbol( coff_lib_file *c_file, signed_16 sec_num, co
     sym = c_file->symbols + c_file->header.num_symbols;
     len = strlen( name );
     if( len > COFF_SYM_NAME_LEN ) {
-        sym->name.non_name.zeros = 0;
-        sym->name.non_name.offset = c_file->string_table_size + 4;
+        sym->name.u.non_name.zeros = 0;
+        sym->name.u.non_name.offset = c_file->string_table_size + 4;
         AddCoffString( c_file, name, len );
     } else {
-        strncpy( sym->name.name_string, name, COFF_SYM_NAME_LEN );
+        strncpy( sym->name.u.name_string, name, COFF_SYM_NAME_LEN );
     }
     sym->value = value;
     sym->sec_num = sec_num; /* 1-based, 0 is special value */

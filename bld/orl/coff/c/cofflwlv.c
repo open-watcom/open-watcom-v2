@@ -62,20 +62,20 @@ orl_return CoffCreateSymbolHandles( coff_file_handle file_hnd )
         current->coff_file_hnd = file_hnd;
         current->has_bf = false;
         current->symbol = (coff_symbol *)( file_hnd->symbol_table->contents + sizeof( coff_symbol ) * i );
-        if( current->symbol->name.non_name.zeros == 0 ) {
-            current->name = (char *)( file_hnd->string_table->contents + current->symbol->name.non_name.offset - sizeof( coff_sec_size ) );
+        if( current->symbol->name.u.non_name.zeros == 0 ) {
+            current->name = (char *)( file_hnd->string_table->contents + current->symbol->name.u.non_name.offset - sizeof( coff_sec_size ) );
             current->name_alloced = false;
         } else {
             char    buff[COFF_SYM_NAME_LEN + 1];
 
-            strncpy( buff, current->symbol->name.name_string, COFF_SYM_NAME_LEN );
+            strncpy( buff, current->symbol->name.u.name_string, COFF_SYM_NAME_LEN );
             buff[COFF_SYM_NAME_LEN] = '\0';
             if( strlen( buff ) == COFF_SYM_NAME_LEN ) {
                 current->name = _ClientAlloc( file_hnd, COFF_SYM_NAME_LEN + 1 );
                 strcpy( current->name, buff );
                 current->name_alloced = true;
             } else {
-                current->name = current->symbol->name.name_string;
+                current->name = current->symbol->name.u.name_string;
                 current->name_alloced = false;
             }
         }

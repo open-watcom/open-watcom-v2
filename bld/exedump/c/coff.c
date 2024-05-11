@@ -133,8 +133,6 @@ static void dmp_symtab( unsigned long offset, unsigned long num_syms )
     unsigned_32     strsize;
     unsigned_32     symidx;
     unsigned        num_aux;
-    char            *name;
-    char            buff[9];
     int             i;
 
     if( num_syms == 0 ) {
@@ -157,17 +155,8 @@ static void dmp_symtab( unsigned long offset, unsigned long num_syms )
     } else {
         strtab = NULL;
     }
-    buff[8] = '\0';
     Wdputs( "Idx  Value    Sec  Type Class # Aux Name\n" );
     for( symidx = 0; symidx < num_syms; symidx++ ) {
-        if( symtab->name.non_name.zeros == 0 ) {
-            name = strtab + symtab->name.non_name.offset - 4;
-        } else if( symtab->name.name_string[8] == '\0' ) {
-            name = symtab->name.name_string;
-        } else {
-            memcpy( buff, symtab->name.name_string, 8 );
-            name = buff;
-        }
         Puthex( symidx + 1, 4 );
         Wdputs( " " );
         Puthex( symtab->value, 8 );
@@ -180,7 +169,15 @@ static void dmp_symtab( unsigned long offset, unsigned long num_syms )
         Wdputs( "    " );
         Putdec( symtab->num_aux );
         Wdputs( "     " );
-        Wdputslc( name );
+        if( symtab->name.u.non_name.zeros == 0 ) {
+            Wdputslc( strtab + symtab->name.u.non_name.offset - 4 );
+        } else {
+            char    buff[COFF_SYM_NAME_LEN + 1];
+
+            strncpy( buff, symtab->name.u.name_string, COFF_SYM_NAME_LEN );
+            buff[COFF_SYM_NAME_LEN] = '\0';
+            Wdputslc( buff );
+        }
         num_aux = symtab->num_aux;
         symtab++;
         Wdputslc( "\n" );

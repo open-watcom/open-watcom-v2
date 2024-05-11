@@ -72,10 +72,6 @@ typedef struct {
 
 #define COFF_SYM_NAME_LEN 8
 
-/*
- * typedef struct _IMAGE_SYMBOL in WINNT.H
- */
-
 typedef struct {
     union {
         char            name_string[COFF_SYM_NAME_LEN];
@@ -83,7 +79,15 @@ typedef struct {
             uint_32     zeros;
             uint_32     offset;
         } non_name;
-    } name;
+    } u;
+} coff_sym_name;
+
+/*
+ * typedef struct _IMAGE_SYMBOL in WINNT.H
+ */
+
+typedef struct {
+    coff_sym_name       name;
     uint_32             value;
     signed_16           sec_num;    /* 1-based */
     uint_16             type;
@@ -94,13 +98,7 @@ typedef struct {
 #define COFF_SYM_SIZE sizeof(coff_symbol)
 
 typedef struct {
-    union {
-        char            name_string[COFF_SYM_NAME_LEN];
-        struct {
-            uint_32     zeros;
-            uint_32     offset;
-        } non_name;
-    } name;
+    coff_sym_name       name;
     uint_32             value;
     signed_32           sec_num;    /* 1-based */
     uint_16             type;
