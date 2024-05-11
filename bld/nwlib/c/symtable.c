@@ -1019,6 +1019,7 @@ void AddObjectSymbols( libfile io, long offset, arch_header *arch )
     CurrFile->inlib = FindInLib( io );
     ObjWalkSymList( ofile, CurrFile );
     CloseORLLibFile( ofile );
+    MemFree( ofile );
 }
 
 void OmfMKImport( arch_header *arch, importType type,

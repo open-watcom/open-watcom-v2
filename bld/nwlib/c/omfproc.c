@@ -169,10 +169,9 @@ static void FreeCommonBlk( void )
 {
     common_blk          *tmpblk;
 
-    while( CurrCommonBlk != NULL ) {
-        tmpblk = CurrCommonBlk->next;
-        MemFree( CurrCommonBlk );
-        CurrCommonBlk = tmpblk;
+    while( (tmpblk = CurrCommonBlk) != NULL ) {
+        CurrCommonBlk = tmpblk->next;
+        MemFree( tmpblk );
     }
 }
 
@@ -377,12 +376,11 @@ static void getalias( void )
 static void FreeLNames( void )
 /****************************/
 {
-    lname           *next;
+    lname           *tmp;
 
-    while( LNames != NULL ) {
-        next = LNames->next;
-        MemFree( LNames );
-        LNames = next;
+    while( (tmp = LNames) != NULL ) {
+        LNames = tmp->next;
+        MemFree( tmp );
     }
 }
 

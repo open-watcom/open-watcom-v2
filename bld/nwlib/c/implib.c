@@ -191,6 +191,7 @@ static bool elfAddImport( libfile io, long header_offset, arch_header *arch )
     arch->name = arch->ffname;
 
     CloseORLObjFile( ofile );
+    MemFree( ofile );
     return( true );
 }
 
@@ -444,6 +445,7 @@ static void peAddImport( libfile io, long header_offset, arch_header *arch )
     }
 
     CloseORLObjFile( ofile );
+    MemFree( ofile );
 }
 
 

@@ -152,16 +152,14 @@ static void DoCloseORLObjFile( obj_file *ofile )
 /**********************************************/
 {
     buf_list    *list;
-    buf_list    *next;
 
     if( ofile->orl != NULL ) {
         ORLFileFini( ofile->orl );
     }
-    for( list = ofile->buflist; list != NULL; list = next ) {
-        next = list->next;
+    while( (list = ofile->buflist) != NULL ) {
+        ofile->buflist = list->next;
         MemFree( list );
     }
-    MemFree( ofile );
 }
 
 void CloseORLObjFile( obj_file *ofile )
