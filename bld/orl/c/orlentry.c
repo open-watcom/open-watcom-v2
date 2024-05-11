@@ -224,11 +224,20 @@ orl_file_format ORLFileIdentify( orl_handle orl_hnd, FILE *fp )
         }
     }
 
+    /*
+     * check COFF object image
+     */
     if( checkPEMachine( *(unsigned_16 *)magic ) ) {
         return( ORL_COFF );
     }
     /*
-     * Is it PE?
+     * check COFF import library
+     */
+    if( magic[0] == 0 && magic[1] == 0 && magic[2] == 0xFF && magic[3] == 0xFF ) {
+        return( ORL_COFF );
+    }
+    /*
+     * check PE executable image
      */
     if( magic[0] == 'M' && magic[1] == 'Z' ) {
         bool    ok;
