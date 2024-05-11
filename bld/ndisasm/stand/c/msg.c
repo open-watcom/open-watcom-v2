@@ -98,6 +98,5 @@ void MsgFini( void )
 #if defined( USE_WRESLIB )
     CloseResFile( &hInstance );
 #else
-    CloseHandle( hInstance );
 #endif
 }

@@ -136,7 +136,6 @@ void MsgFini( void )
 #ifdef USE_WRESLIB
     CloseResFile( &hInstance );
 #else
-    CloseHandle( hInstance );
 #endif
 }
 

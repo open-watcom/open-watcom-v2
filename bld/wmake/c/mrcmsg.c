@@ -161,6 +161,5 @@ void MsgFini( void )
 #elif defined( USE_WRESLIB )
     CloseResFile( &hInstance );
 #else
-    CloseHandle( hInstance );
 #endif
 }

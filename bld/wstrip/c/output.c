@@ -119,7 +119,7 @@ bool Msg_Fini( void )
 #elif defined( USE_WRESLIB )
     return( CloseResFile( &hInstance ) );
 #else
-    return( CloseHandle( hInstance ) );
+    return( true );
 #endif
 }
 

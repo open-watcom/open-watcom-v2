@@ -193,7 +193,7 @@ bool FiniMsg( void )
 #ifdef USE_WRESLIB
     return( CloseResFile( &hInstance ) );
 #else
-    return( CloseHandle( hInstance ) );
+    return( true );
 #endif
 }
 
