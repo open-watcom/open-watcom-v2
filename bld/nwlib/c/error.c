@@ -88,7 +88,15 @@ void InitMsg( void )
     CloseResFile( &hInstance );
     FatalResError( NO_RES_MESSAGE "\n" );
 #else
+  #if defined( IDE_PGM )
     hInstance = GetModuleHandle( NULL );
+  #elif !defined( __WATCOMC__ )
+    char    imageName[_MAX_PATH];
+    get_dllname( imageName, sizeof( imageName ) );
+    hInstance = GetModuleHandle( imageName );
+  #else
+    hInstance = GetModuleHandle( _LpDllName );
+  #endif
     msgShift = _WResLanguage() * MSG_LANG_SPACING;
 #endif
 }
