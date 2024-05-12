@@ -7,7 +7,7 @@ track_flags_i86 = -D_TRACK -of+
 track_flags_386 = -D_TRACK -of+
 track_flags_axp = -D_TRACK
 
-!ifeq cg_trmem 1
+!ifdef cg_trmem
 extra_c_flags_memmgt    = $(track_flags_$(host_cpu))
 extra_c_flags_trmem     = $(track_flags_$(host_cpu))
 !endif

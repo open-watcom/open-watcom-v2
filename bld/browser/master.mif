@@ -44,7 +44,7 @@ extra_cpp_flags = -DNOPERSIST
 !ifeq debug 2
 extra_cpp_flags += -DDEBUG -DDEBUG_ASSERT -DDEBUGTREE
 !endif
-!ifeq use_virtmem 1
+!ifdef use_virtmem
 extra_cpp_flags += -DUSE_VIRTMEM
 !endif
 !ifdef nowgml

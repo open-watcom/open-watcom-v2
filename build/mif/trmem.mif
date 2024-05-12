@@ -3,7 +3,7 @@ inc_dirs_trmem = -I"$(trmem_dir)"
 trmem_cflag_i86 = -of+
 trmem_cflag_386 = -of+
 !endif
-!ifeq $(proj_name)_trmem 1
+!ifdef $(proj_name)_trmem
 !ifneq debug 0
 trmem_cpp_flags = -DTRMEM
 trmem_cover_cflags = $(trmem_cflag_$(host_cpu))

@@ -34,7 +34,7 @@ bsd_objs   = $(unix_objs)
 osx_objs   = $(unix_objs)
 haiku_objs = $(unix_objs)
 
-!ifeq cg_trmem 1
+!ifdef cg_trmem
 mem_objs = &
     memmgt.obj &
     trmem.obj
