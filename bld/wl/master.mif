@@ -56,7 +56,7 @@ extra_cpp_flags = -DINSIDE_WLINK
 !ifdef DLLS_IMPLEMENTED
 extra_cpp_flags += -DDLLS_IMPLEMENTED
 !endif
-!ifeq use_virtmem 1
+!ifdef use_virtmem
 extra_cpp_flags += -DUSE_VIRTMEM
 !endif
 !ifndef wlink_dll

@@ -23,7 +23,7 @@ sys_dll = 1
 
 inc_dirs = -I"$(dwarfr_dir)/h"
 
-!ifeq use_virtmem 1
+!ifdef use_virtmem
 extra_cpp_flags = -DUSE_VIRTMEM
 !endif
 
@@ -40,7 +40,7 @@ extra_c_flags_drsearch = -I"$(posix_dir)/h"
 #
 # LIB
 #
-!ifeq use_virtmem 1
+!ifdef use_virtmem
 libtarg_objs_virt = virtmem.obj
 !else
 libtarg_objs_virt = virtstub.obj

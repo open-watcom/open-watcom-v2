@@ -24,10 +24,6 @@ dig_arch = $(host_cpu)
 !include $(dig_dir)/dipcli.mif
 !include $(dig_dir)/madcli.mif
 
-!ifndef drwatcom_95
-drwatcom_95 = 0
-!endif
-
 common_dir = ../../common
 
 #
@@ -38,7 +34,7 @@ common_dir = ../../common
 inc_dirs = -I. -I"../$(host_os)" -I"../h" -I"$(dig_dir)/h" $(dis_includes) $(commonui_inc_dirs)
 
 extra_cpp_flags = $(dig_arch_cpp_flags) -DBLDVER=$(bld_ver)
-!ifeq drwatcom_95 1
+!ifdef drwatcom_95
 extra_cpp_flags += -DCHICAGO
 !endif
 
@@ -59,7 +55,7 @@ extra_c_flags_axp =
 #
 extra_l_flags = option quiet name $(proj_name).exe
 
-!ifeq drwatcom_95 1
+!ifdef drwatcom_95
 extra_l_flags_nt = lib th32.lib
 !endif
 extra_l_flags_nt_axp = op start=WinMainCRTStartup ref WinMainCRTStartup
@@ -78,7 +74,7 @@ exetarg_objs_nt       = global.obj param.obj procctl.obj memory.obj &
     pefile.obj autoget.obj lddips.obj memwndcd.obj &
     madrtn.obj madsys1.obj regstr.obj reglist.obj bitman.obj &
     strcnv.obj regcrt.obj $(mad_objs) i64.obj
-!ifeq drwatcom_95 1
+!ifdef drwatcom_95
 exetarg_objs_nt      += reg95.obj
 !else
 exetarg_objs_nt      += reg.obj
