@@ -110,7 +110,7 @@ static int ORLSeek( FILE *fp, long pos, int where )
     return( 0 );
 }
 
-void InitObjORL( void )
+void InitORLObj( void )
 /*********************/
 {
     ORLSetFuncs( orl_cli_funcs, ORLRead, ORLSeek, ChkLAlloc, LFree );
@@ -119,7 +119,7 @@ void InitObjORL( void )
     ReadCacheList = NULL;
 }
 
-void ObjORLFini( void )
+void FiniORLObj( void )
 /*********************/
 {
     ORLFini( ORLHandle );

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,8 +31,8 @@
 ****************************************************************************/
 
 
-extern void             InitObjORL( void );
-extern void             ObjORLFini( void );
+extern void             InitORLObj( void );
+extern void             FiniORLObj( void );
 extern bool             IsORL( file_list *, unsigned long );
 extern void             ORLSkipObj( file_list *, unsigned long * );
 extern unsigned long    ORLPass1( void );

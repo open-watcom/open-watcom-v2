@@ -290,7 +290,7 @@ void InitSubSystems( void )
     InitTokBuff();
     InitSpillFile();
     InitSym();
-    InitObjORL();
+    InitORLObj();
     InitCmdFile();
 }
 
