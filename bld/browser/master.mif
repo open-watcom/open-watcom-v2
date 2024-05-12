@@ -110,7 +110,7 @@ exetarg_prebuild_objs = $(docs_host_dir)/wbrw.gh
 exetarg_objs          = $(objs) $(objs_dbg)
 exetarg_libs_dos      = $(ui_lib)
 exetarg_libs          = $(gui_lib) $(exetarg_libs_$(host_os)) $(dwarfr_lib) $(wclass_lib)
-exetarg_res           = $(exetarg_name).res
+exetarg_res           = $(proj_name).res
 exetarg_name          = wbrw
 !include exetarg.mif
 !ifdef gen_browser_file
@@ -132,11 +132,11 @@ rc_inc_dirs = -I"../res/bmp" -I"../res/dlg" -I"../res/cur" -I"../res" -I"../h"
 extra_rc_flags_nt = $(ntmanif_def) $(ntverrc_def) $(ntmanif_inc_dirs) $(ntverrc_inc_dirs)
 
 !ifeq host_os os2
-$(exetarg_name).res : ../res/wbrwpm.rc
+$(proj_name).res : ../res/wbrwpm.rc
     @%make echo_rc
     $(rc) $(ppflags_common) $(rc_cppflags) $(rc_flags) -I"../res/ico_pm" $(rc_inc_path) $< -fo=$@
 !else
-$(exetarg_name).res : ../res/wbrw.rc $(ntverrc_exe_dep) $(ntmanif_dep)
+$(proj_name).res : ../res/wbrw.rc $(ntverrc_exe_dep) $(ntmanif_dep)
     @%make echo_rc
     $(rc) $(ppflags_common) $(rc_cppflags) $(rc_flags) -I"../res/ico" $(rc_inc_path) $< -fo=$@
 !endif
