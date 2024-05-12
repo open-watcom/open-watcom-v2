@@ -53,7 +53,7 @@ extra_cpp_flags = -DINCL_MSGTEXT
 !ifndef plusplus_dll
 extra_cpp_flags += -DIDE_PGM
 !endif
-!ifeq dll_cg 1
+!ifdef dll_cg
 extra_cpp_flags += -D_CGDLL
 !endif
 extra_cppflags_axp = -DAS_ALPHA

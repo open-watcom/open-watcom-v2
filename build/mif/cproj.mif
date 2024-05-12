@@ -176,14 +176,7 @@ ppflags_win32ver = -DWINVER=0x400 -D_WIN32_IE=0x300
 !endif
 
 !ifdef $(proj_name)_rtdll
-!ifeq $(proj_name)_rtdll 1
-sys_rtdll       = 1
-!else
-sys_rtdll       = 0
-!endif
-!endif
-!ifndef sys_rtdll
-sys_rtdll       = 0
+sys_rtdll = 1
 !endif
 
 !ifndef debugfmt
@@ -441,7 +434,7 @@ cflags_rdosdev  = -bt=rdosdev -bm -zu
 cflags_nov      = -bt=netware
 cflags_linux    = -bt=linux
 
-!ifeq sys_rtdll 1
+!ifdef sys_rtdll
 cflags_rtdll_nt   = -br
 cflags_rtdll_win  = -br
 cflags_rtdll_os2  = -br

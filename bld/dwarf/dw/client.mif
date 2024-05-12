@@ -4,7 +4,7 @@
 
 !ifdef bootstrap
 dwarfw_lib = $(dwarfw_dir)/$(objs_subdir)/dwarfw.lib
-!else ifeq $(proj_name)_rtdll 1
+!else ifdef $(proj_name)_rtdll
 #
 # DWARF run-time DLL used
 #

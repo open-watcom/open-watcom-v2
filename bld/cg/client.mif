@@ -8,9 +8,9 @@
 
 !ifdef bootstrap
 obj_dir = $(objs_subdir)
-!else ifeq dll_cg 1
+!else ifdef dll_cg
 obj_dir = $(objs_subdir).cgd
-!else ifeq $(proj_name)_rtdll 1
+!else ifdef $(proj_name)_rtdll
 obj_dir = $(objs_subdir).rtd
 !else ifdef $(proj_name)_dll
 obj_dir = $(objs_subdir).dll
@@ -38,7 +38,7 @@ i_path_mps   = -I"$(cg_dir)/risc/mps/h" -I"$(cg_dir)/risc/h"
 
 o_dir  = $(o_dir_$(target_cpu))
 i_path = $(i_path_$(target_cpu)) -I"$(cg_dir)/h"
-!ifeq dll_cg 1
+!ifdef dll_cg
 i_path += -I"$(o_dir_$(target_cpu))"
 !endif
 
@@ -51,7 +51,7 @@ use_owl_lib_i86   = 0
 cg_inc_dirs = $(i_path)
 
 cg_objs =
-!ifeq dll_cg 1
+!ifdef dll_cg
 cg_libs = &
     $(o_dir)/cgdllcli.lib &
     $(dwarfw_lib)

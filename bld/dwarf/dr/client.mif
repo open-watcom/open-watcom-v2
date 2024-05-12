@@ -16,7 +16,7 @@ dwarfr_lib = $(dwarfr_dir)/$(objs_subdir)/dwarfr.lib
 #
 # DWARF run-time DLL used
 #
-!ifeq $(proj_name)_rtdll 1
+!ifdef $(proj_name)_rtdll
 !endif
 
 #

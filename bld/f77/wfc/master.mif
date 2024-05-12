@@ -39,7 +39,7 @@ inc_dirs= -I. -I.. -I"$(f77wfc_dir)/h" -I"$(f77_dir)/h" &
     $(asminline_inc_dirs) -I"$(clib_dir)/h" -I"$(lib_misc_dir)/h"
 
 extra_cpp_flags =
-!ifeq dll_cg 1
+!ifdef dll_cg
 extra_cpp_flags += -D_CGDLL
 !endif
 

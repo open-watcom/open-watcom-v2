@@ -40,7 +40,7 @@ wres_dir_linux386   = linux386/$(name_model_386)
 wres_dir_rdos386    = rdos386/$(name_model_386)
 wres_dir_os2386     = os2386/$(name_model_386)
 wres_dir_win386     = win386/$(name_model_386)
-!ifeq $(proj_name)_rtdll 1
+!ifdef $(proj_name)_rtdll
 wres_dir_nt386      = nt386.dll/$(name_model_386)
 !else
 wres_dir_nt386      = nt386/$(name_model_386)
