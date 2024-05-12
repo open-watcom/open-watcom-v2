@@ -9,7 +9,7 @@ browser_trmem = 1
 docs_host_dir = $(docs_dir)/$(host_os)
 
 additional_clean = *.grc
-!ifneq nowgml 1
+!ifndef nowgml
 additional_clean += $(docs_host_dir)/wbrw.gh
 !endif
 
@@ -47,7 +47,7 @@ extra_cpp_flags += -DDEBUG -DDEBUG_ASSERT -DDEBUGTREE
 !ifeq use_virtmem 1
 extra_cpp_flags += -DUSE_VIRTMEM
 !endif
-!ifeq nowgml 1
+!ifdef nowgml
 extra_cpp_flags += -DNOWGML
 !endif
 
@@ -104,7 +104,7 @@ objs_dbg  = debuglog.obj
 #
 # EXE
 #
-!ifneq nowgml 1
+!ifndef nowgml
 exetarg_prebuild_objs = $(docs_host_dir)/wbrw.gh
 !endif
 exetarg_objs          = $(objs) $(objs_dbg)
