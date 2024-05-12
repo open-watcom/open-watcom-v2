@@ -97,7 +97,7 @@ void InitORLObj( void )
 
     ORLHnd = ORLInit( &orl_cli_funcs );
     if( ORLHnd == NULL ) {
-        longjmp( Env , 1 );
+        longjmp( Env, 1 );
     }
 }
 
@@ -125,8 +125,11 @@ static obj_file *DoOpenORLObjFile( libfile io, long offset, const char *name )
             FatalError( ERR_CANT_OPEN, name, strerror( errno ) );
         }
         break;
-
-    default: // case ORL_UNRECOGNIZED_FORMAT:
+    case ORL_OMF:
+    default:
+        /*
+         * unrecognized or ORL unused format
+         */
         ofile->orl = NULL;
         break;
     }
