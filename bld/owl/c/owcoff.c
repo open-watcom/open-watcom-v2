@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -230,7 +230,7 @@ static void formatSectionName( owl_section_handle section, char *buffer ) {
     count = strlen( section->name->text );
     if( count <= 8 ){
         memcpy( buffer, section->name->text, count );
-    }else{
+    } else {
 #endif
         name_offset = _OWLStringIndexToCOFFStringIndex( OWLStringOffset( section->name ) );
         buffer[ 0 ] = '/';
