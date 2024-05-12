@@ -270,7 +270,7 @@ static int DataImpLibInit( coff_file_handle coff_file_hnd )
 
 static int DataImpLibFini( coff_file_handle coff_file_hnd )
 {
-    if( coff_file_hnd->implib_data == NULL ) {
+    if( coff_file_hnd->implib_data != NULL ) {
         _ClientFree( coff_file_hnd, coff_file_hnd->implib_data );
         coff_file_hnd->implib_data = NULL;
     }
