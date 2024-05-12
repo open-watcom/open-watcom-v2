@@ -14,7 +14,7 @@ ide_rc_host_win = win
 
 docs_host_dir = $(docs_dir)/$(host_os)
 
-!ifneq nowgml 1
+!ifndef nowgml
 additional_clean = $(docs_host_dir)/ide.gh
 !endif
 
@@ -48,7 +48,7 @@ inc_dirs = -I"../h" $(wclass_inc_dirs) $(idelib_inc_dirs) $(gui_inc_dirs) $(comm
     $(wpi_inc_dirs) -I"$(docs_host_dir)" -I"$(editdll_dir)" $(rcsdll_inc_dirs) -I"$(batch_dir)/h"
 
 extra_cpp_flags     = -DGUI_IS_GUI
-!ifeq nowgml 1
+!ifdef nowgml
 extra_cpp_flags     += -DNOWGML
 !endif
 extra_cpp_flags_os2 = -D__OS2_PM__
@@ -78,7 +78,7 @@ extra_l_flags   = op eliminate op description 'Open Watcom IDE'
 #
 # EXE
 #
-!ifneq nowgml 1
+!ifndef nowgml
 exetarg_prebuild_objs = $(docs_host_dir)/ide.gh
 !endif
 exetarg_objs          = $(objs)

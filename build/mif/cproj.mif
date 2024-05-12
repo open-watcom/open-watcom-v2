@@ -129,16 +129,18 @@ wreslib_os2 = 0
 !endif
 
 !ifndef wreslib
-!ifndef $(proj_name)_wreslib
-wreslib = 0
-!else ifdef wreslib_$(host_os)
-wreslib = $(wreslib_$(host_os))
-!else
+! ifdef $(proj_name)_wreslib
+!  ifdef wreslib_$(host_os)
+!   ifeq wreslib_$(host_os) 1
 wreslib = 1
-!endif
+!   endif
+!  else
+wreslib = 1
+!  endif
+! endif
 !endif
 
-!ifeq wreslib 1
+!ifdef wreslib
 ppflags_wres = -DUSE_WRESLIB
 !endif
 
@@ -192,14 +194,7 @@ debugfmt = dwarf
 !endif
 
 !ifdef $(proj_name)_nomapfile
-!ifeq $(proj_name)_nomapfile 1
-nomapfile   = 1
-!else
-nomapfile   = 0
-!endif
-!endif
-!ifndef nomapfile
-nomapfile   = 0
+nomapfile = 1
 !endif
 
 !ifdef $(proj_name)_dos_extender
@@ -261,7 +256,7 @@ mode_clflags   += -"op symf"
 !endif
 !endif
 
-!ifeq nomapfile 0
+!ifndef nomapfile
 mode_lflags    += op map
 mode_clflags   += -fm
 !endif
@@ -789,7 +784,7 @@ rc_flags_nt     = -bt=nt
 rc_flags_win    = -bt=windows
 rc_flags_os2    = -bt=os2
 
-!ifeq wreslib 1
+!ifdef wreslib
 rc_host_os = win
 !else ifdef rc_flags_$(host_os)
 rc_host_os = $(host_os)
@@ -879,7 +874,7 @@ wbind   = $(noecho)bwbind
 
 !include local.mif
 
-!ifeq wreslib 1
+!ifdef wreslib
 !include wres.mif
 !endif
 

@@ -1,7 +1,7 @@
 !ifeq system windows
 default_windowing = 1
 !endif
-!ifeq default_windowing 1
+!ifdef default_windowing
 def_windowing = -DDEFWIN
 !endif
 

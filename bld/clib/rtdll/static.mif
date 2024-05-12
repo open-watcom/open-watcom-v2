@@ -1,5 +1,5 @@
 static_objs = $+ &
-!ifeq default_windowing 1
+!ifdef default_windowing
     $(clib_dir)/defwin/library/$(__cifx__)/dinitwin.obj &
 !else
     $(clib_dir)/defwin/library/$(__cifx__)/nodefwin.obj &

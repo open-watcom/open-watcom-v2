@@ -1,4 +1,4 @@
-!ifeq default_windowing 1
+!ifdef default_windowing
 
 #                       d16 d32 dpm nt  nta ntm ntp nvc nvl o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
 #=======================================================================================================
@@ -42,7 +42,7 @@
 
 !include ../../../../objlist.mif
 
-!ifeq default_windowing 1
+!ifdef default_windowing
 #                       d16 d32 dpm nt  nta ntm ntp nvc nvl o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
 #=======================================================================================================
 !inject dinitwin.obj                nt  nta ntm ntp             o32
