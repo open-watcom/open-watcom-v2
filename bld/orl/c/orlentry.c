@@ -132,21 +132,18 @@ static int checkPE( orl_handle orl_hnd, FILE *fp )
         if( buffer != NULL ) {
             pos1 += 4;
             ne_header_off = *(unsigned_32 *)buffer;
-            ORL_FUNCS_FREE( LCL_ORL_HND( orl_hnd ), buffer );
             pos2 = ne_header_off - pos1 - 4;
             if( ORL_FUNCS_SEEK( LCL_ORL_HND( orl_hnd ), fp, pos2, SEEK_CUR ) == 0 ) {
                 buffer = ORL_FUNCS_READ( LCL_ORL_HND( orl_hnd ), fp, 4 );
                 if( buffer != NULL ) {
                     pos2 += 4;
                     rc = ( buffer[0] == 'P' && buffer[1] == 'E' && buffer[2] == '\0' && buffer[3] == '\0' );
-                    ORL_FUNCS_FREE( LCL_ORL_HND( orl_hnd ), buffer );
                     if( rc ) {
                         rc = 0;
                         buffer = ORL_FUNCS_READ( LCL_ORL_HND( orl_hnd ), fp, 4 );
                         if( buffer != NULL ) {
                             pos2 += 4;
                             rc = checkPEMachine( buffer );
-                            ORL_FUNCS_FREE( LCL_ORL_HND( orl_hnd ), buffer );
                         }
                     }
                 }
@@ -210,7 +207,6 @@ static int checkOMF( orl_handle orl_hnd, FILE *fp, unsigned char *magic )
                  */
                 rc = 1;
             }
-            ORL_FUNCS_FREE( LCL_ORL_HND( orl_hnd ), buffer );
             if( ORL_FUNCS_SEEK( LCL_ORL_HND( orl_hnd ), fp, SEEK_POSBACK( pos ), SEEK_CUR ) ) {
                 rc = -1;
             }
@@ -260,10 +256,6 @@ orl_file_format ORLFileIdentify( orl_handle orl_hnd, FILE *fp )
                 ret_format = ORL_COFF;
             }
         }
-        /*
-         * free magic before return
-         */
-        ORL_FUNCS_FREE( LCL_ORL_HND( orl_hnd ), magic );
         /*
          * seek to beginning of object before return
          */
