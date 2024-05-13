@@ -36,6 +36,7 @@ verbose       = 0
 nowgml = 1
 !endif
 !endif
+!endif
 
 noecho = @
 !ifneq verbose 0
