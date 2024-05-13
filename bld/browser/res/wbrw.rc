@@ -1,73 +1,77 @@
-#include <windows.h>
-#include "icons.h"
-#include "hotspots.h"
+#if defined( __OS2__ )
+    #define RC_ITEM(a,b,c)  a b c
+#else
+    #define RC_ITEM(a,b,c)  b a c
+    #include <windows.h>
+#endif
+#include "wbrw.rh"
 
-WBRWIcon        ICON "wbr.ico"
-GBList          ICON "gblist.ico"
-GBTree          ICON "gbtree.ico"
-GBOutline       ICON "gbstruc.ico"
-DTFuncIcon      ICON "dtfunc.ico"
-DTClassIcon     ICON "dtclass.ico"
-DTEnumIcon      ICON "dtenum.ico"
-DTTypedefIcon   ICON "dttype.ico"
-DTVarIcon       ICON "dtvar.ico"
-DTMacroIcon     ICON "dtmacro.ico"
-DTLabelIcon     ICON "dtlabel.ico"
-DTSourceRefs    ICON "dtrefs.ico"
-DTSymbolRefs    ICON "dtuses.ico"
+RC_ITEM( ICON, WBRWIcon,              "wbr.ico" )
+RC_ITEM( ICON, GBList,                "gblist.ico" )
+RC_ITEM( ICON, GBTree,                "gbtree.ico" )
+RC_ITEM( ICON, GBOutline,             "gbstruc.ico" )
+RC_ITEM( ICON, DTFuncIcon,            "dtfunc.ico" )
+RC_ITEM( ICON, DTClassIcon,           "dtclass.ico" )
+RC_ITEM( ICON, DTEnumIcon,            "dtenum.ico" )
+RC_ITEM( ICON, DTTypedefIcon,         "dttype.ico" )
+RC_ITEM( ICON, DTVarIcon,             "dtvar.ico" )
+RC_ITEM( ICON, DTMacroIcon,           "dtmacro.ico" )
+RC_ITEM( ICON, DTLabelIcon,           "dtlabel.ico" )
+RC_ITEM( ICON, DTSourceRefs,          "dtrefs.ico" )
+RC_ITEM( ICON, DTSymbolRefs,          "dtuses.ico" )
 
-InvalidHotSpot      BITMAP "invalid.bmp"
-CheckBoxUncheckedU  BITMAP "checkbx0.bmp"
-CheckBoxUncheckedD  BITMAP "checkbx1.bmp"
-CheckBoxCheckedU    BITMAP "checkbx2.bmp"
-CheckBoxCheckedD    BITMAP "checkbx3.bmp"
+RC_ITEM( BITMAP, InvalidHotSpot,        "invalid.bmp" )
+RC_ITEM( BITMAP, CheckBoxUncheckedU,    "checkbx0.bmp" )
+RC_ITEM( BITMAP, CheckBoxUncheckedD,    "checkbx1.bmp" )
+RC_ITEM( BITMAP, CheckBoxCheckedU,      "checkbx2.bmp" )
+RC_ITEM( BITMAP, CheckBoxCheckedD,      "checkbx3.bmp" )
 
-FunctionOpenUp      BITMAP "func2.bmp"
-FunctionOpenDown    BITMAP "func3.bmp"
-FunctionClosedUp    BITMAP "func0.bmp"
-FunctionClosedDown  BITMAP "func1.bmp"
+RC_ITEM( BITMAP, FunctionOpenUp,        "func2.bmp" )
+RC_ITEM( BITMAP, FunctionOpenDown,      "func3.bmp" )
+RC_ITEM( BITMAP, FunctionClosedUp,      "func0.bmp" )
+RC_ITEM( BITMAP, FunctionClosedDown,    "func1.bmp" )
 
-ClassOpenUp         BITMAP "class2.bmp"
-ClassOpenDown       BITMAP "class3.bmp"
-ClassClosedUp       BITMAP "class0.bmp"
-ClassClosedDown     BITMAP "class1.bmp"
+RC_ITEM( BITMAP, ClassOpenUp,           "class2.bmp" )
+RC_ITEM( BITMAP, ClassOpenDown,         "class3.bmp" )
+RC_ITEM( BITMAP, ClassClosedUp,         "class0.bmp" )
+RC_ITEM( BITMAP, ClassClosedDown,       "class1.bmp" )
 
-EnumOpenUp          BITMAP "enum2.bmp"
-EnumOpenDown        BITMAP "enum3.bmp"
-EnumClosedUp        BITMAP "enum0.bmp"
-EnumClosedDown      BITMAP "enum1.bmp"
+RC_ITEM( BITMAP, EnumOpenUp,            "enum2.bmp" )
+RC_ITEM( BITMAP, EnumOpenDown,          "enum3.bmp" )
+RC_ITEM( BITMAP, EnumClosedUp,          "enum0.bmp" )
+RC_ITEM( BITMAP, EnumClosedDown,        "enum1.bmp" )
 
-TypedefOpenUp       BITMAP "type2.bmp"
-TypedefOpenDown     BITMAP "type3.bmp"
-TypedefClosedUp     BITMAP "type0.bmp"
-TypedefClosedDown   BITMAP "type1.bmp"
+RC_ITEM( BITMAP, TypedefOpenUp,         "type2.bmp" )
+RC_ITEM( BITMAP, TypedefOpenDown,       "type3.bmp" )
+RC_ITEM( BITMAP, TypedefClosedUp,       "type0.bmp" )
+RC_ITEM( BITMAP, TypedefClosedDown,     "type1.bmp" )
 
-VariableOpenUp      BITMAP "var2.bmp"
-VariableOpenDown    BITMAP "var3.bmp"
-VariableClosedUp    BITMAP "var0.bmp"
-VariableClosedDown  BITMAP "var1.bmp"
+RC_ITEM( BITMAP, VariableOpenUp,        "var2.bmp" )
+RC_ITEM( BITMAP, VariableOpenDown,      "var3.bmp" )
+RC_ITEM( BITMAP, VariableClosedUp,      "var0.bmp" )
+RC_ITEM( BITMAP, VariableClosedDown,    "var1.bmp" )
 
-MacroOpenUp         BITMAP "macro2.bmp"
-MacroOpenDown       BITMAP "macro3.bmp"
-MacroClosedUp       BITMAP "macro0.bmp"
-MacroClosedDown     BITMAP "macro1.bmp"
+RC_ITEM( BITMAP, MacroOpenUp,           "macro2.bmp" )
+RC_ITEM( BITMAP, MacroOpenDown,         "macro3.bmp" )
+RC_ITEM( BITMAP, MacroClosedUp,         "macro0.bmp" )
+RC_ITEM( BITMAP, MacroClosedDown,       "macro1.bmp" )
 
-LabelOpenUp         BITMAP "label2.bmp"
-LabelOpenDown       BITMAP "label3.bmp"
-LabelClosedUp       BITMAP "label0.bmp"
-LabelClosedDown     BITMAP "label1.bmp"
+RC_ITEM( BITMAP, LabelOpenUp,           "label2.bmp" )
+RC_ITEM( BITMAP, LabelOpenDown,         "label3.bmp" )
+RC_ITEM( BITMAP, LabelClosedUp,         "label0.bmp" )
+RC_ITEM( BITMAP, LabelClosedDown,       "label1.bmp" )
 
-OutlineLeafUp        BITMAP "olleaf0.bmp"
-OutlineLeafDown      BITMAP "olleaf1.bmp"
-OutlineCollapsedUp   BITMAP "olcoll0.bmp"
-OutlineCollapsedDown BITMAP "olcoll1.bmp"
-OutlineExpandedUp    BITMAP "olexpn0.bmp"
-OutlineExpandedDown  BITMAP "olexpn1.bmp"
+RC_ITEM( BITMAP, OutlineLeafUp,         "olleaf0.bmp" )
+RC_ITEM( BITMAP, OutlineLeafDown,       "olleaf1.bmp" )
+RC_ITEM( BITMAP, OutlineCollapsedUp,    "olcoll0.bmp" )
+RC_ITEM( BITMAP, OutlineCollapsedDown,  "olcoll1.bmp" )
+RC_ITEM( BITMAP, OutlineExpandedUp,     "olexpn0.bmp" )
+RC_ITEM( BITMAP, OutlineExpandedDown,   "olexpn1.bmp" )
 
-EditorHotUp          BITMAP "edit0.bmp"
-EditorHotDown        BITMAP "edit1.bmp"
+RC_ITEM( BITMAP, EditorHotUp,           "edit0.bmp" )
+RC_ITEM( BITMAP, EditorHotDown,         "edit1.bmp" )
 
-SplashPage          BITMAP "brow_s.bmp"
+RC_ITEM( BITMAP, SplashPage,            "brow_s.bmp" )
 
 #if defined( __NT__ ) && defined( RESX_NTMANIF )
     #include "ntmanif.rc"
