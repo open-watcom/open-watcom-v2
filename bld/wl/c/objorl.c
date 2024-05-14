@@ -161,14 +161,12 @@ static void ClearCachedData( file_list *list )
 /********************************************/
 {
     readcache   *cache;
-    readcache   *next;
 
-    for( cache = ReadCacheList; cache != NULL; cache = next ) {
-        next = cache->next;
+    while( (cache = ReadCacheList) != NULL ) {
+        ReadCacheList = cache->next;
         CacheFree( list, cache->data );
         _LnkFree( cache );
     }
-    ReadCacheList = NULL;
 }
 
 bool IsORL( file_list *list, unsigned long loc )
