@@ -1,8 +1,5 @@
 !ifdef sys_windowed
 gui_type = win
-!ifeq host_os os2
-gui_os2pm = pm
-!endif
 !else
 gui_type = ui
 !endif

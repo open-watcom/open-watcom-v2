@@ -4,10 +4,16 @@ proj_name = aui
 aui_autodepends = .AUTODEPEND
 !endif
 
+!ifdef sys_windowed
+!ifeq host_os os2
+aui_os2pm = 1
+!endif
+!endif
+
 suppress_zc = 1
 
 additional_clean = *.grh
-!ifdef gui_os2pm
+!ifdef aui_os2pm
 additional_clean += *.dlg
 !endif
 
@@ -39,7 +45,7 @@ extra_c_flags_win_386 = -zw
 #
 # objects
 #
-!ifdef gui_os2pm
+!ifdef aui_os2pm
 
 aui_dialogs = &
     dlgrx.dlg &
@@ -129,7 +135,7 @@ libtarg_objs = &
 #
 # rc and others
 #
-!ifdef gui_os2pm
+!ifdef aui_os2pm
 
 dlg_opts  = -font=10.Helv
 dlgj_opts =

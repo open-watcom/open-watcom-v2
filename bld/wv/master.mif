@@ -17,6 +17,12 @@ wv_wreslib = 1
 wv_dos_extender = dos4g	#causeway
 
 !ifdef sys_windowed
+!ifeq host_os os2
+wv_os2pm = 1
+!endif
+!endif
+
+!ifdef sys_windowed
 name_os2i86    = wdw16
 !else
 name_os2i86    = wd16
@@ -32,7 +38,7 @@ name = wd
 !endif
 
 additional_clean = *.gh *.grc
-!ifdef gui_os2pm
+!ifdef wv_os2pm
 additional_clean += *.dlg
 !endif
 
@@ -72,7 +78,7 @@ res_strings_dir = h
 !else
 res_strings_dir = ../../res/strings
 !endif
-!ifdef gui_os2pm
+!ifdef wv_os2pm
 wv_res_inc_dirs = -I"$(res_strings_dir)" -I"../../res"
 !else
 wv_res_inc_dirs = -I"../../res/dlgs" -I"$(res_strings_dir)" -I"../../res"
@@ -276,7 +282,7 @@ bitmaps = &
 
 !endif
 
-!ifdef gui_os2pm
+!ifdef wv_os2pm
 
 wv_dialogs = &
     dlgayn.dlg &

@@ -1,18 +1,16 @@
-!ifdef sys_windowed
-!ifeq host_os os2
-aui_os2pm = 1
-!endif
-!endif
 !ifdef bootstrap
 aui_path = $(aui_dir)/$(objs_subdir)
 !else ifdef sys_windowed
 aui_path = $(aui_dir)/$(objs_subdir).gui
+! ifeq host_os os2
+aui_aui_os2pm = 1
+! endif
 !else
 aui_path = $(aui_dir)/$(objs_subdir)
 !endif
 aui_inc_dirs = -I"$(aui_path)" -I"$(aui_dir)/h"
 aui_lib = $(aui_path)/aui.lib
-!ifdef aui_os2pm
+!ifdef aui_aui_os2pm
 aui_dialogs = &
     $(aui_path)/dlgrx.dlg &
     $(aui_path)/dlgsrch.dlg &
