@@ -34,7 +34,7 @@
 
 #ifdef DEFINE_RC_STRINGS
 
-#include "guimsgs.h"
+#include "gui.rh"
 
 #define LIT( sym )      (_LIT_GUI_##sym)
 

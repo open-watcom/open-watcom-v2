@@ -1,3 +1,5 @@
+/* UTF-8 encoding, ¥ */
+
 #include "guipick.rh"
 #include "dlgamb.rh"
 #include "dlgayn.rh"

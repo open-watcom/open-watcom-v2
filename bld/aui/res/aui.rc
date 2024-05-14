@@ -1,7 +1,6 @@
+/* UTF-8 encoding, ¥ */
+
 #include "gui.rc"
-#include "aui.rh"
-#include "dlgrx.rh"
-#include "dlgsrch.rh"
 
 STRINGTABLE
 BEGIN

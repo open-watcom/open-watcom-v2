@@ -11,21 +11,27 @@ aui_path = $(aui_dir)/$(objs_subdir)
 aui_inc_dirs = -I"$(aui_path)" -I"$(aui_dir)/h"
 aui_lib = $(aui_path)/aui.lib
 !ifdef aui_aui_os2pm
-aui_dialogs = &
+aui_aui_dialogs = &
     $(aui_path)/dlgrx.dlg &
     $(aui_path)/dlgsrch.dlg &
     $(aui_path)/dlgsrcha.dlg &
     $(aui_path)/japrx.dlg &
     $(aui_path)/japsrch.dlg &
     $(aui_path)/japsrcha.dlg
-aui_rc_inc_dirs = -I"$(aui_path)" -I"$(aui_dir)/res" -I"$(aui_dir)/h"
+aui_rc_inc_dirs = -I"$(aui_path)" -I"$(aui_dir)/res" -I"$(aui_dir)/h" $(gui_rc_inc_dirs)
 !else
-aui_dialogs = &
+aui_aui_dialogs = &
     $(aui_dir)/res/dlgs/dlgrx.dlg &
     $(aui_dir)/res/dlgs/dlgsrch.dlg &
     $(aui_dir)/res/dlgs/dlgsrcha.dlg &
     $(aui_dir)/res/dlgs/japrx.dlg &
     $(aui_dir)/res/dlgs/japsrch.dlg &
     $(aui_dir)/res/dlgs/japsrcha.dlg
-aui_rc_inc_dirs = -I"$(aui_path)" -I"$(aui_dir)/res/dlgs" -I"$(aui_dir)/res" -I"$(aui_dir)/h"
+aui_rc_inc_dirs = -I"$(aui_path)" -I"$(aui_dir)/res/dlgs" -I"$(aui_dir)/res" -I"$(aui_dir)/h" $(gui_rc_inc_dirs)
 !endif
+aui_rc_depends = &
+    $(aui_dir)/res/aui.rc &
+    $(aui_dir)/res/aui.msg &
+    $(aui_dir)/h/aui.rh &
+    $(aui_aui_dialogs) &
+    $(gui_rc_depends)

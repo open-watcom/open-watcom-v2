@@ -7,6 +7,8 @@ name = sample
 guisample_autodepends = .AUTODEPEND
 !endif
 
+guisample_wreslib = 1
+
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
@@ -16,7 +18,7 @@ guisample_autodepends = .AUTODEPEND
 !include $(gui_dir)/client.mif
 !include $(ui_dir)/client.mif
 
-!include wres.mif
+#!include wres.mif
 
 #
 # cflags
@@ -40,19 +42,8 @@ extra_l_flags_win = import DEATH GDI.121 import RESURRECTION GDI.122
 exetarg_objs       = sample.obj dlgstat.obj dlgdynam.obj dlgtest.obj sampdef.obj
 exetarg_libs       = $(gui_lib) $(ui_lib)
 exetarg_name       = sample
-!ifdef sys_windowed
-!ifeq host_os os2
-exetarg_res        = samplepm.res
-!else
 exetarg_res        = sample.res
-!endif
 !include exetarg.mif
-!undef exetarg_res
-!else
-exetarg_res        = wresexe.res
-!include exetarg.mif
-!undef exetarg_res
-!endif
 
 exetarg_objs       = pmsample.obj dlgstat.obj dlgdynam.obj dlgtest.obj sampdef.obj
 exetarg_name       = pmsample
@@ -66,18 +57,42 @@ exetarg_name       = samp2
 # rc and others
 #
 !ifdef gui_os2pm
-sample_rc_inc_dirs = -I"../res/pm" -I"../res" -I"../h"
+rc_inc_dirs = -I. -I"../res/pm" -I"../res" -I"../h"
+guisamples_rc_depends = & 
+    ../res/pm/sample.dlg &
+    ../res/pm/dlg.ico &
+    ../res/pm/main.ico &
+    ../res/pm/win1.ico &
+    ../res/pm/win2.ico &
+    ../res/pm/win3.ico
 !else
-sample_rc_inc_dirs = -I"../res/win" -I"../res" -I"../h"
+rc_inc_dirs = -I. -I"../res/win" -I"../res" -I"../h"
+guisamples_rc_depends = &
+    ../res/win/sample.dlg &
+    ../res/win/dlg.ico &
+    ../res/win/main.ico &
+    ../res/win/win1.ico &
+    ../res/win/win2.ico &
+    ../res/win/win3.ico &
+    ../res/sample.men
 !endif
 
-rc_inc_dirs = -I. $(sample_rc_inc_dirs) $(gui_rc_inc_dirs)  $(commonui_inc_dirs)
+rc_inc_dirs += $(gui_rc_inc_dirs)  $(commonui_inc_dirs)
+guisamples_rc_depends += &
+    ../res/change.bmp &
+    ../res/five.bmp &
+    ../res/four.bmp &
+    ../res/max.bmp &
+    ../res/min.bmp &
+    ../res/one.bmp &
+    ../res/resize.bmp &
+    ../res/restore.bmp &
+    ../res/three.bmp &
+    ../res/two.bmp
 
-samplepm.res : ../res/samplepm.rc ../res/samplepm.dlg
-    $(rc) $(ppflags_common) $(rc_cppflags) -ad $(rc_flags) $(rc_inc_path) $[@ -fo=$@
+!ifdef sys_windowed
+extra_rc_flags = -DRESX_GUI
+!endif
 
-sample.res : ../res/sample.rc ../res/sample.dlg
-    $(rc) $(ppflags_common) $(rc_cppflags) -DWINRC -ad $(rc_flags) $(rc_inc_path) $[@ -fo=$@
-
-wresexe.res : ../res/sample.rc ../res/sample.dlg
-    $(rcj) $(ppflags_common) $(rc_cppflags) -ad $(rc_flags) $(rc_inc_path) $[@ -fo=$@
+sample.res : ../res/sample.rc $(guisamples_rc_depends) $(gui_rc_depends)
+    $(rcu8) $(ppflags_common) $(rc_cppflags) -ad $(rc_flags) $(rc_inc_path) $[@ -fo=$@

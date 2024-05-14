@@ -9,12 +9,12 @@
     #define RC_ITEM(a,b,c)  b a c
   #endif
 #endif
-
-#include "gui.rc"
+#include "gui.rh"
 #if defined( RESX_GUI )
     #include "resource.rh"
 #endif
 
+#include "gui.rc"
 #if defined( RESX_GUI )
   #if defined( __OS2__ )
     RC_ITEM( ICON, 1, "setup.ico" )

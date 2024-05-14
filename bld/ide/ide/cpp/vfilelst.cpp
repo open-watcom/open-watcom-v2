@@ -41,7 +41,7 @@
 #include <direct.h>
 #define INCLUDE_COMMDLG_H
 #include <wwindows.h>
-#include "getfile.h"
+#include "getfile.rh"
 #include "wstring.hpp"
 #include "wstrlist.hpp"
 #include "wfilenam.hpp"

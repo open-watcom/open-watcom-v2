@@ -33,8 +33,6 @@
 #include "_aui.h"
 #include "guidlg.h"
 #include "wndregx.h"
-#include "dlgrx.rh"
-#include "dlgsrch.rh"
 #include <string.h>
 
 

@@ -11,6 +11,8 @@
   #endif
 
     #include "rcdef.rh"
+    #include "aui.rh"
+
     #include "aui.rc"
 
   #ifdef __OS2__
@@ -23,6 +25,8 @@
 #else
 
     #include "wresdefn.h"
+    #include "aui.rh"
+
     #include "aui.rc"
 
 #endif

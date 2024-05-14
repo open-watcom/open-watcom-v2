@@ -1,3 +1,5 @@
+/* UTF-8 encoding, ¥ */
+
 DLGTEMPLATE DLG_OPTIONS
 BEGIN
     DIALOG "Options", DLG_OPTIONS, 4, 55, 197, 164, WS_VISIBLE

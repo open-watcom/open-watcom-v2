@@ -1,7 +1,5 @@
 /* UTF-8 encoding, ¥ */
 
-#include "guimsgs.h"
-
 STRINGTABLE
 BEGIN
   #ifdef JAPANESE

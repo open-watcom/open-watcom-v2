@@ -1,3 +1,5 @@
+/* UTF-8 encoding, ¥ */
+
 #ifdef RESX_GUI
   #ifdef __OS2__
     #include <os2.h>
@@ -8,6 +10,7 @@
     #include "wresdefn.h"
 #endif
 #include "dlgoptn.rh"
+#include "aui.rh"
 
 #include "aui.rc"
 

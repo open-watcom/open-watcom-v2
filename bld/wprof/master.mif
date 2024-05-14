@@ -93,13 +93,7 @@ ntmanif_path = ../res
 #
 # rcflags
 #
-rcfiles = &
-    $(gui_dir)/h/gui.rc &
-    $(gui_dir)/h/gui.msg &
-    $(aui_dir)/res/aui.rc &
-    $(aui_dialogs)
-
-rc_inc_dirs = -I. $(wprof_rc_inc_dirs) $(aui_rc_inc_dirs) $(gui_rc_inc_dirs)
+rc_inc_dirs = -I. $(wprof_rc_inc_dirs) $(aui_rc_inc_dirs)
 
 extra_rc_flags = $(ntmanif_def) $(ntverrc_def) $(ntmanif_inc_dirs) $(ntverrc_inc_dirs)
 
@@ -109,9 +103,9 @@ extra_rc_flags_win = -I"../res/win" -I"../res" -I"../h" -DRESX_GUI
 extra_rc_flags_nt  = -I"../res/win" -I"../res" -I"../h" -DRESX_GUI
 !endif
 
-$(proj_name).res : ../res/wprof.rc $(ntverrc_exe_dep) $(ntmanif_dep) $(rcfiles) $(__MAKEFILES__) .AUTODEPEND
+$(proj_name).res : ../res/wprof.rc $(ntverrc_exe_dep) $(ntmanif_dep) $(aui_rc_depends) $(__MAKEFILES__) .AUTODEPEND
     @%make echo_rc
-    $(rcj) $(ppflags_common) $(rc_cppflags) -ad $(rc_flags) $(rc_inc_path) $[@ -fo=$@
+    $(rcu8) $(ppflags_common) $(rc_cppflags) -ad $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
 usage.u : ../h/usage.sp $(__MAKEFILES__)
     @%make echo_wsplice

@@ -1,6 +1,7 @@
 # Generate dllver.res and/or exever.res
 
-!ifeq host_os nt
+!ifndef bootstrap
+! ifeq host_os nt
 
 # Default names and values
 
@@ -67,4 +68,5 @@ echo_genverrc : .PROCEDURE .EXPLICIT
     @echo genverrc $@
 !endif
 
+! endif
 !endif

@@ -1,8 +1,10 @@
-!ifeq host_os nt
-!ifndef ntmanif_path
+!ifndef bootstrap
+! ifeq host_os nt
+!  ifndef ntmanif_path
 ntmanif_path = ..
-!endif
+!  endif
 ntmanif_dep = $(ntmanif_path)/appmanif.xml
 ntmanif_inc_dirs = -I"$(ntmanif_path)"
 ntmanif_def = -DRESX_NTMANIF
+! endif
 !endif

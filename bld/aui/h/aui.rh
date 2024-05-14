@@ -33,4 +33,7 @@
 
 #define AUI_LITERAL_BASE 400
 
+#include "gui.rh"
 #include "aui.grh"
+#include "dlgrx.rh"
+#include "dlgsrch.rh"

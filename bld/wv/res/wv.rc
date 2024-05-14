@@ -1,3 +1,5 @@
+/* UTF-8 encoding, ¥ */
+
 #if defined( RESX_ENG )
 #elif defined( RESX_GUI )
   #if defined( __OS2__ )
@@ -5,12 +7,14 @@
   #else
     #include <windows.h>
   #endif
+    #include "aui.rh"
 #else
     #include "wresdefn.h"
     #include "wreslang.rh"
+    #include "aui.rh"
 #endif
-
 #include "banner.h"
+
 #include "strings.rc"
 
 #if defined( RESX_ENG )

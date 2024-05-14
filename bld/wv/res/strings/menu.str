@@ -1,3 +1,5 @@
+/* UTF-8 encoding, ¥ */
+
 #define MENU_STR( sym, menu, japanese_menu, help, japanese_help ) \
         pick( sym, menu, japanese_menu ) \
         pick( HELP_##sym, help, japanese_help )

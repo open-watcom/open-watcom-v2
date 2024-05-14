@@ -1,3 +1,5 @@
+/* UTF-8 encoding, ¥ */
+
 #define PRODUCT_NAME    banner1t( "Debugger" ) STR_BITNESS
 
 pick( First_UI_Message,

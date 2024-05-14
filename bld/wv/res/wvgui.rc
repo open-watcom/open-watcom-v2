@@ -1,3 +1,5 @@
+/* UTF-8 encoding, ¥ */
+
 #include "rcdef.rh"
 
 #if defined( __OS2__ )
