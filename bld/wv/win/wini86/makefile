@@ -1,4 +1,4 @@
-#pmake: build os_win cpu_i86
+#pmake: nobuild os_win cpu_i86
 #
 # Open Watcom Debugger makefile for Windows
 #
