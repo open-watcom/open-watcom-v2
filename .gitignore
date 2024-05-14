@@ -133,8 +133,8 @@
 /bld/as/*/*/*_in.re
 /bld/as/*/*/*lexyy.c
 #
-/bld/aui/os2386.pm/*.dlg
-/bld/aui/os2i86.pm/*.dlg
+/bld/aui/os2386.gui/*.dlg
+/bld/aui/os2i86.gui/*.dlg
 #
 /bld/awk/*/proctab.c
 !/bld/awk/c/proctab.c
