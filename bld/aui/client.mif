@@ -5,8 +5,8 @@ aui_os2pm = 1
 !endif
 !ifdef bootstrap
 aui_path = $(aui_dir)/$(objs_subdir)
-!else ifdef aui_os2pm
-aui_path = $(aui_dir)/$(objs_subdir).pm
+!else ifdef sys_windowed
+aui_path = $(aui_dir)/$(objs_subdir).gui
 !else
 aui_path = $(aui_dir)/$(objs_subdir)
 !endif
