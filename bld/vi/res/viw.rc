@@ -22,11 +22,11 @@
 
 #define FIRST_COPYRIGHT_YEAR 1989
 
-/*
+/*************************************************************************
  * hold this order of ICONS
  * it defines icons index in executable
  * this index is used for file extensions association by OW installer
- */
+ *************************************************************************/
 APPLICON        ICON    viw.ico         /* 0 */
 WATCOMICON      ICON    watcom.ico      /* 1 */
 IDI_CFILE       ICON    cfile.ico       /* 2    used by installer */
@@ -42,6 +42,7 @@ IDI_RCFILE      ICON    rcfile.ico      /* 11   used by installer */
 IDI_RHFILE      ICON    rhfile.ico      /* 12   used by installer */
 IDI_LIBFILE     ICON    libfile.ico     /* 13   used by installer */
 IDI_AWKFILE     ICON    awkfile.ico     /* 14   used by installer */
+/*************************************************************************/
 
 BUTTONPATTERN   BITMAP  button.bmp
 SAVE            BITMAP  save.bmp
