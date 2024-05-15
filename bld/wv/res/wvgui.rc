@@ -1,6 +1,6 @@
 /* UTF-8 encoding, ¥ */
 
-#include "rcdef.rh"
+#include "wv.rh"
 
 #if defined( __OS2__ )
     #define RC_ITEM(a,b,c)  a b c
