@@ -55,7 +55,6 @@
     #define INCL_DOSMISC
     #include <os2.h>
 #elif defined(__NT__)
-    #define WIN32_LEAN_AND_MEAN
     #include <windows.h>
 #elif defined(__RDOS__)
     #include "rdos.h"

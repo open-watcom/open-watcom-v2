@@ -29,7 +29,6 @@
 ****************************************************************************/
 
 
-#define WIN32_LEAN_AND_MEAN
 #include "commonui.h"
 #include <shellapi.h>
 #include <shlobj.h>

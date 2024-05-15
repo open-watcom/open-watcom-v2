@@ -169,12 +169,12 @@ ppflags_sys =
 # Now it is setup to 0x400
 # to be OK for Windows 95 and Windows NT
 #
-!ifndef bootstrap
-!ifdef $(proj_name)_win32ver
+!ifdef bootstrap
+ppflags_win32ver = -DWIN32_LEAN_AND_MEAN
+!else ifdef $(proj_name)_win32ver
 ppflags_win32ver = $($(proj_name)_win32ver)
 !else
-ppflags_win32ver = -DWINVER=0x400 -D_WIN32_IE=0x300
-!endif
+ppflags_win32ver = -DWINVER=0x400 -D_WIN32_IE=0x300 -DWIN32_LEAN_AND_MEAN
 !endif
 
 !ifdef $(proj_name)_rtdll

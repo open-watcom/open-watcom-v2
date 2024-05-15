@@ -112,9 +112,6 @@
         #error unrecognized processor for OS2
     #endif
 #elif defined(__NT__)
-    #if !defined(WIN32_LEAN_AND_MEAN) && !defined(WIN32_NICE_AND_FAT)
-        #define WIN32_LEAN_AND_MEAN
-    #endif
     #define __PROTECT_MODE__
     #if defined( _M_IX86 ) && !defined( _M_I86 )
         #define __NT_386__

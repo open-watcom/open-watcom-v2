@@ -97,7 +97,7 @@ bld_lib = $(noecho)lib -nologo -out:$@
 ############################
 common_ppflags      = -D__FLAT__ -D_CRT_SECURE_NO_WARNINGS -D_CRT_NONSTDC_NO_WARNINGS -D_STATIC_CPPLIB
 
-common_cppflags_nt  = -D__NT__
+common_cppflags_nt  = -D__NT__ -DWIN32_LEAN_AND_MEAN
 
 common_cppflags_x64 =
 
@@ -684,7 +684,8 @@ bld_debug_cflags  = -s-ox
 bld_debug_cflags  = -d2
 ! endif
 
-bld_cppflags    =
+common_cppflags_nt = -DWIN32_LEAN_AND_MEAN
+bld_cppflags    = $(common_cppflags_$(bld_os))
 
 # options for source compilation only
 bld_cflags      = $(bld_cc_sys) $(bld_debug_cflags)$(bld_watcom_common_cflags)-j-fo=.obj $(bld_incs)

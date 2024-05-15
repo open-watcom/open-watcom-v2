@@ -32,7 +32,6 @@
 
 #include <ctype.h>
 #if defined( __NT__ ) && defined( GUI_IS_GUI )
-    #define WIN32_LEAN_AND_MEAN
     #include <windows.h>
 #endif
 #include "dbgdefn.h"

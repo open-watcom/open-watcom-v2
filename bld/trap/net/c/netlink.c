@@ -41,7 +41,6 @@
     #define _FAR
   #endif
 #elif defined( __NT__ )
-    #define WIN32_LEAN_AND_MEAN
     #include <windows.h>
     #include "bool.h"
     #define _FAR
