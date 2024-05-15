@@ -33,7 +33,7 @@
 
 #include "sample.h"
 #include "dlgstat.h"
-#include "samprc.rh"
+#include "sample.rh"
 
 
 #if hot_spots

@@ -12,7 +12,7 @@
     #include "wresdefn.h"
 #endif
 
-#include "samprc.rh"
+#include "sample.rh"
 #include "gui.rh"
 
 #include "gui.rc"

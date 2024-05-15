@@ -30,6 +30,11 @@
 ****************************************************************************/
 
 
+#define DLG_TEST1       100
+#define DLG_TEST2       101
+#define DLG_1           200
+#define DLG_2           201
+
 #define ApplIcon        1024
 #define MINIMIZE        1025
 #define MAXIMIZE        1026
