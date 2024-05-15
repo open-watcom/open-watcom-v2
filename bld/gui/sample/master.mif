@@ -38,18 +38,19 @@ extra_l_flags_win = import DEATH GDI.121 import RESURRECTION GDI.122
 #
 # EXE's
 #
-exetarg_objs       = sample.obj dlgstat.obj dlgdynam.obj dlgtest.obj sampdef.obj
+exetarg_objs       = dlgstat.obj dlgdynam.obj dlgtest.obj sampdef.obj
+!ifeq host_os os2
+! ifdef sys_windowed
+exetarg_objs       += pmsample.obj
+! else
+exetarg_objs       += samp2.obj
+! endif
+!else
+exetarg_objs       += sample.obj
+!endif
 exetarg_libs       = $(gui_lib) $(ui_lib)
 exetarg_name       = sample
 exetarg_res        = sample.res
-!include exetarg.mif
-
-exetarg_objs       = pmsample.obj dlgstat.obj dlgdynam.obj dlgtest.obj sampdef.obj
-exetarg_name       = pmsample
-!include exetarg.mif
-
-exetarg_objs       = samp2.obj dlgstat.obj dlgdynam.obj dlgtest.obj sampdef.obj
-exetarg_name       = samp2
 !include exetarg.mif
 
 #
