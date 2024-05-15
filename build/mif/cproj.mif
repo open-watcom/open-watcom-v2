@@ -170,12 +170,13 @@ ppflags_sys =
 # to be OK for Windows 95 and Windows NT
 #
 !ifdef bootstrap
-ppflags_win32ver = -DWIN32_LEAN_AND_MEAN
+cppflags_win32ver = -DWIN32_LEAN_AND_MEAN
 !else ifdef $(proj_name)_win32ver
-ppflags_win32ver = $($(proj_name)_win32ver)
+cppflags_win32ver = $($(proj_name)_win32ver)
 !else
-ppflags_win32ver = -DWINVER=0x400 -D_WIN32_IE=0x300 -DWIN32_LEAN_AND_MEAN
+cppflags_win32ver = -DWINVER=0x400 -D_WIN32_IE=0x300 -DWIN32_LEAN_AND_MEAN
 !endif
+#appflags_win32ver =
 
 !ifdef $(proj_name)_rtdll
 sys_rtdll = 1
@@ -400,7 +401,7 @@ checkstack_dll_i86 = -s
 !endif
 
 cppflags_dos    = $(cppflags_doslfn) $(cppflags_dospc98)
-cppflags_nt     = $(ppflags_win32ver)
+cppflags_nt     = $(cppflags_win32ver)
 cppflags_win    = -DSTRICT
 
 ##########################
@@ -761,7 +762,7 @@ rc_cpp_bsd      = -D__BSD__ -D__UNIX__
 rc_cpp_dos      = -D__DOS__
 rc_cpp_linux    = -D__LINUX__ -D__UNIX__
 rc_cpp_nov      = -D__NETWARE__
-rc_cpp_nt       = -D__NT__ -D_WIN32 $(ppflags_win32ver)
+rc_cpp_nt       = -D__NT__ -D_WIN32 $(cppflags_win32ver)
 rc_cpp_os2      = -D__OS2__
 rc_cpp_osx      = -D__OSX__ -D__UNIX__
 rc_cpp_qnx      = -D__QNX__ -D__UNIX__

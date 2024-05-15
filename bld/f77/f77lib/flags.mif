@@ -14,7 +14,7 @@ f77lib_cpp_msdos       = -D__WATCOM_LFN__
 f77lib_cpp_netware     = -D_NETWARE_CLIB
 f77lib_cpp_windows     = -DSTRICT
 f77lib_cpp_windows_386 = -D__CALL21__
-f77lib_cpp_winnt       = $(ppflags_win32ver)
+f77lib_cpp_winnt       = $(cppflags_win32ver)
 f77lib_cpp_winnt_axp   = -DWIN32 -D_WIN32
 f77lib_cpp_winnt_ppc   = -DWIN32 -D_WIN32
 
@@ -34,7 +34,7 @@ f77lib_app_flags += -d__DLL__
 !endif
 
 f77lib_app_msdos      = -D__WATCOM_LFN__
-f77lib_app_winnt      = $(ppflags_win32ver)
+#f77lib_app_winnt      = $(appflags_win32ver)
 f77lib_app_winnt_axp  = -dWIN32 -d_WIN32
 f77lib_app_winnt_ppc  = -dWIN32 -d_WIN32
 

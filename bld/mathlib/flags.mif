@@ -1,7 +1,7 @@
 mlib_cpp_flags_windows  = -DSTRICT
-mlib_cpp_flags_winnt    = $(ppflags_win32ver)
+mlib_cpp_flags_winnt    = $(cppflags_win32ver)
 
-mlib_app_flags_winnt    = $(ppflags_win32ver)
+#mlib_app_flags_winnt    = $(appflags_win32ver)
 mlib_app_flags_286      = -DPDIV -D_BUILDING_MATHLIB
 mlib_app_flags_287      = -DPDIV
 mlib_app_flags_386      = -DPDIV -D_BUILDING_MATHLIB

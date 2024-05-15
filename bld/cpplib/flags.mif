@@ -137,7 +137,7 @@ plib_cpp_flags += -D__USE_RW
 !ifeq system windows
 plib_cpp_flags += -DSTRICT
 !else ifeq system winnt
-plib_cpp_flags += $(ppflags_win32ver)
+plib_cpp_flags += $(cppflags_win32ver)
 !ifeq processor axp
 plib_cpp_flags += -DWIN32 -D_WIN32
 !else ifeq processor ppc
@@ -154,7 +154,7 @@ plib_app_flags =
 plib_app_flags += -D__MT__
 !endif
 !ifeq system winnt
-plib_app_flags += $(ppflags_win32ver)
+#plib_app_flags += $(appflags_win32ver)
 !endif
 
 ##########################

@@ -22,7 +22,7 @@ clib_cpp_flags += -D__SHARE__ -DIN_SLIB -D_NO_SLIB
 
 clib_cpp_flags_windows     = -DSTRICT $(def_windowing)
 clib_cpp_flags_windows_386 = -D__CALL21__
-clib_cpp_flags_winnt       = $(ppflags_win32ver) $(def_windowing)
+clib_cpp_flags_winnt       = $(cppflags_win32ver) $(def_windowing)
 clib_cpp_flags_winnt_axp   = -DWIN32 -D_WIN32
 clib_cpp_flags_winnt_mps   = -DWIN32 -D_WIN32
 clib_cpp_flags_winnt_ppc   = -DWIN32 -D_WIN32
@@ -61,7 +61,7 @@ clib_app_flags_nw_clibl   = -D_NETWARE_CLIB -D_THIN_LIB
 clib_app_flags_nw_libc    = -D_NETWARE_LIBC
 clib_app_flags_nw_libcl   = -D_NETWARE_LIBC -D_THIN_LIB
 clib_app_flags_windows    = -DSTRICT
-clib_app_flags_winnt      = $(ppflags_win32ver)
+#clib_app_flags_winnt      = $(appflags_win32ver)
 
 clib_app_flags = $(clib_app_flags) $(clib_app_flags_$(system)) $(clib_app_flags_$(system)_$(processor))
 
