@@ -56,8 +56,6 @@ dig_arch = all
 !include $(dig_dir)/trpcli.mif
 
 !include $(aui_dir)/client.mif
-!include $(gui_dir)/client.mif
-!include $(ui_dir)/client.mif
 !include $(hlpview_dir)/client.mif
 !include $(wpi_dir)/client.mif
 !include $(commonui_dir)/client.mif
@@ -84,16 +82,11 @@ wv_res_inc_dirs = -I"$(res_strings_dir)" -I"../../res"
 wv_res_inc_dirs = -I"../../res/dlgs" -I"$(res_strings_dir)" -I"../../res"
 !endif
 
-inc_dirs = -I.  -Ih -I"../h" -I"../../h" $(wv_res_inc_dirs) -I"$(dig_dir)/h" &
-    $(aui_inc_dirs) $(gui_inc_dirs) $(ui_inc_dirs) $(ui_extra_inc_dirs) &
-    $(hlpview_inc_dirs) $(wpi_inc_dirs) $(commonui_inc_dirs)
+inc_dirs = -I.  -Ih -I"../h" -I"../../h" $(wv_res_inc_dirs) -I"$(dig_dir)/h" $(aui_inc_dirs) &
+	$(ui_inc_dirs_internal) $(hlpview_inc_dirs) $(wpi_inc_dirs) $(commonui_inc_dirs)
 !ifdef sys_rtdll
 !else
-! ifdef sys_windowed
-inc_dirs += -I"$(gui_dir)/win/h"
-! else
-inc_dirs += -I"$(gui_dir)/ui/h"
-! endif
+inc_dirs += $(gui_inc_dirs_internal)
 !endif
 !if "$(host_os)" == "linux" || "$(host_os)" == "bsd" || "$(host_os)" == "osx" || "$(host_os)" == "haiku"
 inc_dirs += -I"$(ncurses_dir)/h"

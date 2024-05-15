@@ -1,5 +1,5 @@
 inc_dirs = -I. -I"$(vi_dir)/h" $(rcsdll_inc_dirs) $(ui_inc_dirs) &
-    $(ui_extra_inc_dirs) -I"$(posix_dir)/h"
+    $(ui_inc_dirs_internal) -I"$(posix_dir)/h"
 
 winstuff = -I"$(vi_dir)/win/ctl" -I"$(ideact_dir)" $(wpi_inc_dirs) $(commonui_inc_dirs)
 

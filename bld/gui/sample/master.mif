@@ -16,7 +16,6 @@ guisample_wreslib = 1
 
 !include $(commonui_dir)/client.mif
 !include $(gui_dir)/client.mif
-!include $(ui_dir)/client.mif
 
 #!include wres.mif
 
@@ -25,7 +24,7 @@ guisample_wreslib = 1
 #
 .c: ../c;$(os_source_dir);$(os_extra_dir)
 
-inc_dirs = -I. -I"../h" $(gui_inc_dirs) -I"$(gui_dir)/$(gui_type)/h"
+inc_dirs = -I. -I"../h" $(gui_inc_dirs) $(gui_inc_dirs_internal)
 
 #
 # lflags

@@ -21,14 +21,14 @@ additional_clean += *.dlg
 !include defrule.mif
 !include deftarg.mif
 
-!include $(gui_dir)/client.mif
+!include $(aui_dir)/client.mif
 
 #
 # cflags
 #
 .c: .;../c;$(posix_dir)/misc
 
-inc_dirs = -I. -I"../h" $(gui_inc_dirs) -I"$(posix_dir)/h"
+inc_dirs = -I. -I"../h" $(aui_inc_dirs) -I"$(posix_dir)/h"
 
 extra_c_flags_i86 = -zc
 extra_c_flags_nov = -4s -ot

@@ -25,7 +25,6 @@ sys_windowed = 1
 !include $(dwarfr_dir)/client.mif
 !include $(wclass_dir)/client.mif
 !include $(gui_dir)/client.mif
-!include $(ui_dir)/client.mif
 !include tools.mif
 
 !include ../template.mif

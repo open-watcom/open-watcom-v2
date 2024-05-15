@@ -5,24 +5,24 @@ ui_os_bsd   = unix
 ui_os_nov   = nlm
 ui_os_osx   = unix
 ui_os_haiku = unix
-!ifdef ui_os_$(host_os)
+! ifdef ui_os_$(host_os)
 ui_os = $(ui_os_$(host_os))
-!else
+! else
 ui_os = $(host_os)
-!endif
-ui_extra_inc_dirs_dos   = -I"$(ui_dir)/dos/h"
-#ui_extra_inc_dirs_nlm   = -I"$(ui_dir)/nlm/h"
-ui_extra_inc_dirs_nt    = -I"$(ui_dir)/nt/h"
-#ui_extra_inc_dirs_os2   = -I"$(ui_dir)/os2/h"
-ui_extra_inc_dirs_qnx   = -I"$(ui_dir)/qnx/h" -I"$(ui_dir)/unix/h"
-ui_extra_inc_dirs_win   = -I"$(ui_dir)/win/h"
-ui_extra_inc_dirs_unix  = -I"$(ui_dir)/unix/h"
-!ifeq ui_os unix
+! endif
+ui_inc_dirs_internal_dos   = -I"$(ui_dir)/dos/h"
+#ui_inc_dirs_internal_nlm   = -I"$(ui_dir)/nlm/h"
+ui_inc_dirs_internal_nt    = -I"$(ui_dir)/nt/h"
+#ui_inc_dirs_internal_os2   = -I"$(ui_dir)/os2/h"
+ui_inc_dirs_internal_qnx   = -I"$(ui_dir)/qnx/h" -I"$(ui_dir)/unix/h"
+ui_inc_dirs_internal_win   = -I"$(ui_dir)/win/h"
+ui_inc_dirs_internal_unix  = -I"$(ui_dir)/unix/h"
+! ifeq ui_os unix
 ui_inc_dirs = -I"$(ui_dir)/h" -I"$(ncurses_dir)/h"
 ui_lib = $(ui_dir)/$(ui_os)/$(objs_subdir)/ui.lib $(ncurses_dir)/$(objs_subdir)/ncurses.lib
-!else
+! else
 ui_inc_dirs = -I"$(ui_dir)/h"
 ui_lib = $(ui_dir)/$(ui_os)/$(objs_subdir)/ui.lib
-!endif
-ui_extra_inc_dirs = $(ui_extra_inc_dirs_$(ui_os))
+! endif
+ui_inc_dirs_internal = $(ui_inc_dirs_internal_$(ui_os))
 !endif

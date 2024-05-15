@@ -15,8 +15,6 @@ additional_clean = *.grc
 !include trmem.mif
 
 !include $(aui_dir)/client.mif
-!include $(gui_dir)/client.mif
-!include $(ui_dir)/client.mif
 !include $(hlpview_dir)/client.mif
 !include $(wpi_dir)/client.mif
 !include $(commonui_dir)/client.mif
@@ -34,7 +32,7 @@ dig_arch = all
 #
 .c : ../c;$(dig_srcs);$(watcom_dir)/c;$(trmem_dir)
 
-inc_dirs = -I"../h" -I"$(wsample_dir)/h" $(aui_inc_dirs) $(gui_inc_dirs) $(ui_inc_dirs) &
+inc_dirs = -I"../h" -I"$(wsample_dir)/h" $(aui_inc_dirs) &
     $(commonui_inc_dirs) $(wpi_inc_dirs) $(hlpview_inc_dirs) -I"$(dig_dir)/h"
 
 extra_cpp_flags = $(dig_arch_cpp_flags) -DBLDVER=$(bld_ver)

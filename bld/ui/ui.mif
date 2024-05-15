@@ -13,7 +13,7 @@ ui_autodepends = .autodepend
 !include deftarg.mif
 !include trmem.mif
 
-!include ../../client.mif       # define ui_os macro
+!include $(ui_dir)/client.mif       # define ui_os macro
 
 #
 # cflags

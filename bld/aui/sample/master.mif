@@ -12,8 +12,6 @@ auisample_wreslib = 1
 !include win386.mif
 
 !include $(aui_dir)/client.mif
-!include $(gui_dir)/client.mif
-!include $(ui_dir)/client.mif
 
 !include wres.mif
 
@@ -22,7 +20,7 @@ auisample_wreslib = 1
 #
 .c: ../c
 
-inc_dirs = -I"../h" $(aui_inc_dirs) $(gui_inc_dirs) $(ui_inc_dirs)
+inc_dirs = -I"../h" $(aui_inc_dirs)
 
 # explicit rules
 #################
