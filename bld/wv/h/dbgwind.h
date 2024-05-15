@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,7 +35,7 @@
 #include "dbglit.h"
 #include "dbgmenu.h"
 #include "dlgbutn.h"
-#include "dbgicon.h"
+
 
 #define WND_MENU_ALLOCATED      GUI_STYLE_MENU_UTIL_2
 

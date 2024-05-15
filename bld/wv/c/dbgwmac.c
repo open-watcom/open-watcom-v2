@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,7 +36,6 @@
 #include "dbgdefn.h"
 #include "dbgdata.h"
 #include "dbgwind.h"
-#include "dbgadget.h"
 #include "guidlg.h"
 #include "sortlist.h"
 #include "dbgerr.h"
@@ -53,6 +52,7 @@
 #include "wndmenu.h"
 #include "menudef.h"
 #include "dbgmisc.h"
+#include "dbgicon.h"
 
 
 #define TITLE_SIZE      2

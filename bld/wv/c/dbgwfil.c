@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,7 +34,7 @@
 #include "srcmgt.h"
 #include "dbgdata.h"
 #include "dbgwind.h"
-#include "dbgadget.h"
+#include "gadgets.h"
 #include "dbgerr.h"
 #include "dbgitem.h"
 #include "dbgstk.h"
@@ -60,6 +60,7 @@
 #include "dbgwglob.h"
 #include "dbgwinsp.h"
 #include "menudef.h"
+#include "dbgicon.h"
 
 
 #define MAX_LINE_LEN    255 // must not wrap a gui_ord

@@ -32,10 +32,11 @@
 
 #include "dbgdefn.h"
 #include "dbgwind.h"
-#include "wv.rh"
 #include "dbgwtool.h"
 #include "dbginit.h"
 #include "menudef.h"
+#include "dbgicon.h"
+#include "wv.rh"
 
 
 static gui_toolbar_struct ToolBar[] = {

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,7 +36,7 @@
 #include "dbgdata.h"
 #include "dbgwind.h"
 #include "mempiece.h"
-#include "dbgadget.h"
+#include "gadgets.h"
 #include "mad.h"
 #include "memtypes.h"
 #include "dbgitem.h"
@@ -49,6 +49,7 @@
 #include "dbgwglob.h"
 #include "dbgwio.h"
 #include "menudef.h"
+#include "dbgicon.h"
 
 
 #define PIECE_TYPE( x )     ((x) - MENU_IO_FIRST_TYPE)

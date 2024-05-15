@@ -31,36 +31,32 @@
 ****************************************************************************/
 
 
-#include "wv.rh"
-#ifdef DEFINE_ICONS
-#define DEFICON( x, y, z ) gui_resource x = { y, z };
-#else
-#define DEFICON( x, y, z ) extern gui_resource x;
-#endif
+#define DEFICONS \
+pick( MainIcon,      ICON_MAIN,      "" ) \
+pick( AsmIcon,       ICON_ASM,       "Asm" ) \
+pick( BrkIcon,       ICON_BRK,       "Brk" ) \
+pick( CallIcon,      ICON_CALL,      "Call" ) \
+pick( FPUIcon,       ICON_FPU,       "FPU" ) \
+pick( MMXIcon,       ICON_REG,       "MMX" ) \
+pick( XMMIcon,       ICON_REG,       "XMM" ) \
+pick( FuncIcon,      ICON_FUNC,      "Func" ) \
+pick( GlobIcon,      ICON_GLOB,      "Glob" ) \
+pick( AclIcon,       ICON_ACL,       "Accl" ) \
+pick( ImgIcon,       ICON_EXE,       "EXE" ) \
+pick( IOIcon,        ICON_IO,        "IO" ) \
+pick( LogIcon,       ICON_LOG,       "Log" ) \
+pick( MemIcon,       ICON_MEM,       "Mem" ) \
+pick( ModIcon,       ICON_MOD,       "Mod" ) \
+pick( RegIcon,       ICON_REG,       "Reg" ) \
+pick( RepIcon,       ICON_REPL,      "Repl" ) \
+pick( SrcIcon,       ICON_SRC,       "Src" ) \
+pick( SrchIcon,      ICON_SRCH,      "Srch" ) \
+pick( StkIcon,       ICON_MEM,       "Stk" ) \
+pick( TrdIcon,       ICON_THRD,      "Thrd" ) \
+pick( VarIcon,       ICON_VAR,       "Var" ) \
+pick( LocIcon,       ICON_LOC,       "Loc" ) \
+pick( WatIcon,       ICON_WAT,       "Wtch" )
 
-DEFICON( MainIcon,      ICON_MAIN,      "" )
-DEFICON( AsmIcon,       ICON_ASM,       "Asm" )
-DEFICON( BrkIcon,       ICON_BRK,       "Brk" )
-DEFICON( CallIcon,      ICON_CALL,      "Call" )
-DEFICON( FPUIcon,       ICON_FPU,       "FPU" )
-DEFICON( MMXIcon,       ICON_REG,       "MMX" )
-DEFICON( XMMIcon,       ICON_REG,       "XMM" )
-DEFICON( FuncIcon,      ICON_FUNC,      "Func" )
-DEFICON( GlobIcon,      ICON_GLOB,      "Glob" )
-DEFICON( AclIcon,       ICON_ACL,       "Accl" )
-DEFICON( ImgIcon,       ICON_EXE,       "EXE" )
-DEFICON( IOIcon,        ICON_IO,        "IO" )
-DEFICON( LogIcon,       ICON_LOG,       "Log" )
-DEFICON( MemIcon,       ICON_MEM,       "Mem" )
-DEFICON( ModIcon,       ICON_MOD,       "Mod" )
-DEFICON( RegIcon,       ICON_REG,       "Reg" )
-DEFICON( RepIcon,       ICON_REPL,      "Repl" )
-DEFICON( SrcIcon,       ICON_SRC,       "Src" )
-DEFICON( SrchIcon,      ICON_SRCH,      "Srch" )
-DEFICON( StkIcon,       ICON_MEM,       "Stk" )
-DEFICON( TrdIcon,       ICON_THRD,      "Thrd" )
-DEFICON( VarIcon,       ICON_VAR,       "Var" )
-DEFICON( LocIcon,       ICON_LOC,       "Loc" )
-DEFICON( WatIcon,       ICON_WAT,       "Wtch" )
-#undef DEFICON
-#undef DEFINE_ICONS
+#define pick( x, y, z ) extern gui_resource x;
+    DEFICONS
+#undef pick

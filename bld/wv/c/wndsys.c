@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,7 +38,7 @@
 #include "dbgdata.h"
 #include "dbgwind.h"
 #include "dbgerr.h"
-#include "dbgadget.h"
+#include "gadgets.h"
 #include "dbghook.h"
 #include "dbgio.h"
 #include "dbgscrn.h"
@@ -65,6 +65,7 @@
 #include "dbgwpain.h"
 #include "dbginit.h"
 #include "menudef.h"
+#include "wv.rh"
 
 
 static void             WndBadCmd( a_window );
@@ -72,16 +73,16 @@ static void             WndBadCmd( a_window );
 char *WndGadgetHint[] =
 {
     #define pick( a,b,c,d,e,f ) f,
-    #include "gadgets.h"
+        GADGETS
     #undef pick
 };
 
 gui_resource WndGadgetArray[] = {
     #define pick( a,b,c,d,e,f ) { b, d },
-    #include "gadgets.h"
+        GADGETS
     #undef pick
     #define pick( a,b,c,d,e,f ) { c, e },
-    #include "gadgets.h"
+        GADGETS
     #undef pick
     { BITMAP_SPLASH, "splash" },
 };
@@ -127,7 +128,7 @@ int         MaxGadgetLength;
 static const char WindowNameTab[] =
 {
     #define pick(t,p)   t "\0"
-    WINDOW_DEFS
+        WINDOW_DEFS
     #undef pick
 };
 
@@ -141,7 +142,7 @@ static void ToWndChooseNew( a_window wnd )
 static void (* const WndJmpTab[])( a_window ) =
 {
     #define pick(t,p)   p,
-    WINDOW_DEFS
+        WINDOW_DEFS
     #undef pick
 };
 
