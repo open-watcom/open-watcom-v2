@@ -34,5 +34,8 @@ aui_rc_depends = &
     $(aui_dir)/res/aui.rc &
     $(aui_dir)/res/aui.msg &
     $(aui_dir)/h/aui.rh &
+    $(aui_path)/aui.grh &
+    $(aui_dir)/h/dlgrx.rh &
+    $(aui_dir)/h/dlgsrch.rh &
     $(aui_aui_dialogs) &
     $(gui_rc_depends)
