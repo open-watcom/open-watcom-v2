@@ -1,7 +1,6 @@
 /* UTF-8 encoding, ¥ */
 
 #ifdef RESX_GUI
-
   #ifdef __OS2__
     #include <os2.h>
     #define RC_ITEM(a,b,c)  a b c
@@ -9,26 +8,21 @@
     #include <windows.h>
     #define RC_ITEM(a,b,c)  b a c
   #endif
+#else
+    #include "wresdefn.h"
+#endif
+#include "wprof.rh"
+#include "aui.rh"
 
-    #include "rcdef.rh"
-    #include "aui.rh"
+#include "aui.rc"
 
-    #include "aui.rc"
-
+#ifdef RESX_GUI
   #ifdef __OS2__
     RC_ITEM( ICON, 1,           "prof_i.ico" )
     RC_ITEM( ICON, WPROF_ICON,  "prof_i.ico" )
   #else
     RC_ITEM( ICON, ApplIcon,    "prof_i.ico" )
   #endif
-
-#else
-
-    #include "wresdefn.h"
-    #include "aui.rh"
-
-    #include "aui.rc"
-
 #endif
 
 #if defined( __NT__ ) && defined( RESX_NTMANIF )
