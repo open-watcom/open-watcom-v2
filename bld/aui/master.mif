@@ -158,4 +158,4 @@ japsrcha.dlg : ../res/dlgs/japsrcha.dlg
 
 aui.grh : ../res/aui.msg
     @%make echo_awk
-    $(noecho)*awk -v base=AUI_LITERAL_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@
+    $(noecho)*awk -v prefix=AUI_LITERAL_ -v base=AUI_LITERAL_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@

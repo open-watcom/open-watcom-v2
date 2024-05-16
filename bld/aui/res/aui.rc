@@ -5,9 +5,9 @@
 STRINGTABLE
 BEGIN
 #ifdef JAPANESE
-    #define pick( a,b,c )   a, [ c ]
+    #define pick( a,b,c )   AUI_LITERAL_ ##a, [ c ]
 #else
-    #define pick( a,b,c )   a, [ b ]
+    #define pick( a,b,c )   AUI_LITERAL_ ##a, [ b ]
 #endif
     #include "aui.msg"
     #undef pick

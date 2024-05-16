@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -93,7 +93,7 @@ void    WndSayMatchMode( a_window wnd )
     char                *match;
     size_t              match_len;
 
-    match = WndLoadString( LITERAL_Match_Mode );
+    match = WndLoadString( LIT( Match_Mode ) );
     match_len = strlen( match );
     if( WndSwitchOn( wnd, WSW_CHOOSING ) ) {
         sofar_buff = alloca( match_len + MAX_KEY_SIZE + 1 );
