@@ -71,25 +71,11 @@ target_nt  = win
 #
 .c: ../c;../../c;$(aui_dir)/c;$(dig_srcs);$(watcom_dir)/c;$(trmem_dir)
 
-!ifdef wv_engine_noui
-res_strings_dir = h
-!else
-res_strings_dir = ../../res/strings
-!endif
-!ifdef wv_os2pm
-wv_res_inc_dirs = -I"$(res_strings_dir)" -I"../../res"
-!else
-wv_res_inc_dirs = -I"../../res/dlgs" -I"$(res_strings_dir)" -I"../../res"
-!endif
-
-inc_dirs = -I.  -Ih -I"../h" -I"../../h" $(wv_res_inc_dirs) -I"$(dig_dir)/h" $(aui_inc_dirs) &
+inc_dirs = -I.  -Ih -I"../h" -I"../../h" -I"../../res" -I"$(dig_dir)/h" $(aui_inc_dirs) &
 	$(ui_inc_dirs_internal) $(hlpview_inc_dirs) $(wpi_inc_dirs) $(commonui_inc_dirs)
 !ifdef sys_rtdll
 !else
 inc_dirs += $(gui_inc_dirs_internal)
-!endif
-!if "$(host_os)" == "linux" || "$(host_os)" == "bsd" || "$(host_os)" == "osx" || "$(host_os)" == "haiku"
-inc_dirs += -I"$(ncurses_dir)/h"
 !endif
 
 extra_cpp_flags = $(dig_arch_cpp_flags) -DBLDVER=$(bld_ver)
@@ -107,6 +93,7 @@ extra_cpp_flags_nt = -DENABLE_TRAP_LOGGING
 
 extra_cpp_flags_dynmem = $(trmem_cpp_flags)
 
+extra_c_flags = -fh
 extra_c_flags_win = -zW -zc
 extra_c_flags_qnx = -I"$(clib_dir)/h"
 !ifdef sys_windowed
@@ -175,7 +162,12 @@ libtarg_name          = wd
 #
 # rc and others
 #
-rc_inc_dirs = -I. -I"../../res/$(target_$(host_os))" $(wv_res_inc_dirs) &
+!ifeq host_os os2
+target_rc_inc_dirs = -I"../../res/os2"
+!else
+target_rc_inc_dirs = -I"../../res/win"
+!endif
+rc_inc_dirs = -I. $(target_rc_inc_dirs) -I"../../res" -I"../../res/dlg" &
     -I"../../h" $(aui_rc_inc_dirs) -I"$(dig_dir)/h"
 
 ntverrc_path = ../../res
@@ -424,7 +416,7 @@ $(proj_name).res : ../../res/wv.rc $(ntmanif_dep) $(ntverrc_exe_dep) $(rcfiles) 
     @%make echo_rc
     $(rcu8) $(ppflags_common) $(rc_cppflags) -ad $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
-litdefm.tmp : $(res_strings_dir)/menu.str $(__MAKEFILES__)
+litdefm.tmp : ../../res/menu.str $(__MAKEFILES__)
     @%make echo_cpp
     $(cpp) $(ppflags_common) $(rc_cppflags) $(rc_inc_path) -o$@ $[@
 
@@ -432,7 +424,7 @@ litdefs1.tmp : ../../res/wdeng.str $(__MAKEFILES__)
     @%make echo_cpp
     $(cpp) $(ppflags_common) $(rc_cppflags) -I"$(dig_dir)/h" -I"$(watcom_dir)/h" -o$@ $[@
 
-litdefs2.tmp : $(res_strings_dir)/wddui.str $(__MAKEFILES__)
+litdefs2.tmp : ../../res/wddui.str $(__MAKEFILES__)
     @%make echo_cpp
     $(cpp) $(ppflags_common) $(rc_cppflags) -I"$(dig_dir)/h" -I"$(watcom_dir)/h" -o$@ $[@
 

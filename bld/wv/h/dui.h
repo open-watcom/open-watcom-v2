@@ -30,8 +30,6 @@
 ****************************************************************************/
 
 
-typedef unsigned    dui_res_id;
-
 extern void     DUIUpdate( update_flags flags );
 extern void     DUIStatusText( const char *text );
 extern void     DUIMsgBox( const char *text );
