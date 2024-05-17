@@ -167,7 +167,7 @@ target_rc_inc_dirs = -I"../../res/os2"
 !else
 target_rc_inc_dirs = -I"../../res/win"
 !endif
-rc_inc_dirs = -I. $(target_rc_inc_dirs) -I"../../res" -I"../../res/dlg" &
+rc_inc_dirs = -I. $(target_rc_inc_dirs) -I"../../res" -I"../../res/dlgs" &
     -I"../../h" $(aui_rc_inc_dirs) -I"$(dig_dir)/h"
 
 ntverrc_path = ../../res
