@@ -21,11 +21,7 @@ RC_ITEM( ICON, ICON_CALL, "call.ico" )
 RC_ITEM( ICON, ICON_EXE,  "exe.ico" )
 RC_ITEM( ICON, ICON_FUNC, "func.ico" )
 RC_ITEM( ICON, ICON_GLOB, "glob.ico" )
-#if defined( __OS2__ )
 RC_ITEM( ICON, ICON_ACL,  "hot.ico" )
-#else
-RC_ITEM( ICON, ICON_HOT,  "hot.ico" )
-#endif
 RC_ITEM( ICON, ICON_IO,   "io.ico" )
 RC_ITEM( ICON, ICON_LOG,  "log.ico" )
 RC_ITEM( ICON, ICON_MEM,  "mem.ico" )

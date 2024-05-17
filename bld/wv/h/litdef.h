@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,11 +31,19 @@
 ****************************************************************************/
 
 
-#include "wdmsgdef.h"
-#include "litdef.gh"
+#include "wv.rh"
+#include "liteng.gh"
 
 #define LIT_ENG( x ) _LIT_DBG_ENG_##x
 #define LITREF_ENG( x ) &LIT_ENG( x )
 
+#ifndef __NOUI__
+#include "litdui.gh"
+#include "litmenu.gh"
+
 #define LIT_DUI( x ) _LIT_DBG_DUI_##x
 #define LITREF_DUI( x ) &LIT_DUI( x )
+
+#define LIT_MENU( x ) _LIT_DBG_MENU_##x
+#define LITREF_MENU( x ) &LIT_MENU( x )
+#endif

@@ -38,7 +38,6 @@
 #include "dbgio.h"
 #include "dbgmem.h"
 #include "dui.h"
-#include "wdmsgdef.h"
 #include "dbgscrn.h"
 #include "trpld.h"
 #include "strutil.h"
@@ -47,6 +46,7 @@
 #include "dbglkup.h"
 #include "dbgerr.h"
 #include "litwd.h"
+#include "wv.rh"
 
 
 #define MIN_MEM_SIZE    (500UL*1024)

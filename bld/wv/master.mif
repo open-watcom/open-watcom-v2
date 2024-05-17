@@ -137,12 +137,12 @@ extra_l_flags_rdos =
 # EXE
 #
 !ifdef wv_engine_noui
-exetarg_prebuild_objs = litdef.gh
+exetarg_prebuild_objs = liteng.gh usage.gh usagej.gh
 exetarg_objs          = $(wv_drv_objs)
 exetarg_libs          = wd.lib
 exetarg_name          = $(wv_engine_noui)
 !else
-exetarg_prebuild_objs = litdef.gh usage.gh
+exetarg_prebuild_objs = liteng.gh litdui.gh litmenu.gh usage.gh usagej.gh
 exetarg_objs          = $(engine_objs) fingmsg.obj $(ui_objs)
 exetarg_libs          = $(aui_lib) $(gui_lib) $(ui_lib)
 exetarg_qnx_res       = usage.u
@@ -154,7 +154,7 @@ exetarg_res           = $(proj_name).res
 #
 # LIB
 #
-libtarg_prebuild_objs = litdef.gh usage.gh
+libtarg_prebuild_objs = liteng.gh usage.gh usagej.gh
 libtarg_objs          = $(engine_objs)
 libtarg_name          = wd
 !include libtarg.mif
@@ -374,10 +374,11 @@ wv_dialogs = &
 
 !endif
 
-rcfiles = &
+!ifdef wv_engine_noui
+rcfiles = liteng.gh usage.gh usagej.gh
+!else
+rcfiles = liteng.gh litdui.gh litmenu.gh usage.gh usagej.gh &
     ../../res/dialogs.rc &
-    ../../res/strings.rc &
-    litdef.gh &
     ../../h/dlgamb.rh &
     ../../h/dlgayn.rh &
     ../../h/dlgstk.rh &
@@ -391,7 +392,7 @@ rcfiles = &
     ../../h/dlgstk.rh &
     ../../h/dlgasync.rh &
     $(wv_dialogs)
-
+!endif
 
 !ifdef wv_engine_noui
 extra_rc_flags = -DRESX_ENG
@@ -403,7 +404,7 @@ extra_rc_flags = -DRESX_GUI
 extra_rc_flags_nt = $(ntmanif_def) $(ntverrc_def) $(ntmanif_inc_dirs) $(ntverrc_inc_dirs)
 
 !ifdef wv_engine_noui
-$(proj_name).res : ../../res/wv.rc $(ntmanif_dep) $(ntverrc_exe_dep) litdef.gh $(aui_rc_depends) $(__MAKEFILES__) .autodepend
+$(proj_name).res : ../../res/wv.rc $(ntmanif_dep) $(ntverrc_exe_dep) $(rcfiles) $(aui_rc_depends) $(__MAKEFILES__) .autodepend
 !else ifdef sys_windowed
 $(proj_name)j.res : ../../res/wv.rc $(ntmanif_dep) $(ntverrc_exe_dep) $(bitmaps) $(rcfiles) $(aui_rc_depends) $(__MAKEFILES__) .autodepend
     @%make echo_rc
@@ -416,24 +417,32 @@ $(proj_name).res : ../../res/wv.rc $(ntmanif_dep) $(ntverrc_exe_dep) $(rcfiles) 
     @%make echo_rc
     $(rcu8) $(ppflags_common) $(rc_cppflags) -ad $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
-litdefm.tmp : ../../res/menu.str $(__MAKEFILES__)
+litmenu.tmp : ../../res/wdmenu.str $(__MAKEFILES__)
     @%make echo_cpp
     $(cpp) $(ppflags_common) $(rc_cppflags) $(rc_inc_path) -o$@ $[@
 
-litdefs1.tmp : ../../res/wdeng.str $(__MAKEFILES__)
+liteng.tmp : ../../res/wdeng.str $(__MAKEFILES__)
     @%make echo_cpp
     $(cpp) $(ppflags_common) $(rc_cppflags) -I"$(dig_dir)/h" -I"$(watcom_dir)/h" -o$@ $[@
 
-litdefs2.tmp : ../../res/wddui.str $(__MAKEFILES__)
+litdui.tmp : ../../res/wddui.str $(__MAKEFILES__)
     @%make echo_cpp
     $(cpp) $(ppflags_common) $(rc_cppflags) -I"$(dig_dir)/h" -I"$(watcom_dir)/h" -o$@ $[@
 
-litdef.gh : litdefs1.tmp litdefs2.tmp litdefm.tmp $(__MAKEFILES__)
+litmenu.gh : litmenu.tmp $(__MAKEFILES__)
     @%create $@
     @%make echo_awk
-    $(noecho)*awk -v prefix=DBG_ENG_LITERAL_ -v base=DBG_ENG_BASE -f $(build_dir)/makemsg2.awk -v OUTFILE=$^. litdefs1.tmp
-    $(noecho)*awk -v prefix=DBG_DUI_LITERAL_ -v base=DBG_DUI_BASE -f $(build_dir)/makemsg2.awk -v OUTFILE=$^. litdefs2.tmp
-    $(noecho)*awk -v prefix=DBG_DUI_MENU_ -v base=DBG_MENU_BASE -f $(build_dir)/makemsg2.awk -v OUTFILE=$^. litdefm.tmp
+    $(noecho)*awk -v prefix=DBG_DUI_MENU_ -v base=DBG_MENU_BASE -f $(build_dir)/makemsg2.awk -v OUTFILE=$^. litmenu.tmp
+
+liteng.gh : liteng.tmp $(__MAKEFILES__)
+    @%create $@
+    @%make echo_awk
+    $(noecho)*awk -v prefix=DBG_ENG_LITERAL_ -v base=DBG_ENG_BASE -f $(build_dir)/makemsg2.awk -v OUTFILE=$^. liteng.tmp
+
+litdui.gh : litdui.tmp $(__MAKEFILES__)
+    @%create $@
+    @%make echo_awk
+    $(noecho)*awk -v prefix=DBG_DUI_LITERAL_ -v base=DBG_DUI_BASE -f $(build_dir)/makemsg2.awk -v OUTFILE=$^. litdui.tmp
 
 !ifeq debug 2
 wsplice_keys = -kHIDDEN
