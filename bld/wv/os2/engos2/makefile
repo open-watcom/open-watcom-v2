@@ -8,6 +8,6 @@ host_cpu = 386
 
 wv_engine_noui = dve
 
-wv_drv_objs = stubdb.obj
+wv_drv_objs = stubdb.obj stublit.obj
 
 !include ../../master.mif

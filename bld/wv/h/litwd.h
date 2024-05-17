@@ -25,22 +25,19 @@
 *
 *  ========================================================================
 *
-* Description:  Debugger literal initialization and termination.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
 
-#include "litwd.h"
+typedef unsigned    dui_res_id;
 
-
-void InitLiterals( void )
-{
-    DUIInitLiterals();      /* must be first */
-    InitEngineLiterals();
-}
-
-void FiniLiterals( void )
-{
-    FiniEngineLiterals();
-    DUIFiniLiterals();      /* must be last */
-}
+extern void     InitLiterals( void );
+extern void     FiniLiterals( void );
+extern void     InitEngineLiterals( void );
+extern void     FiniEngineLiterals( void );
+extern void     DUIInitLiterals( void );
+extern void     DUIFiniLiterals( void );
+extern char     *DUILoadString( dui_res_id id );
+extern void     DUIFreeString( void * );

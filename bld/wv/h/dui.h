@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -55,8 +56,6 @@ extern int      DUIScreenSizeY( void );
 extern void     DUIRedrawSources( void );
 extern void     DUIErrorBox( const char *buff );
 extern void     DUIArrowCursor( void );
-extern char     *DUILoadString( dui_res_id id );
-extern void     DUIFreeString( void * );
 extern bool     DUIAskIfAsynchOk( void );
 extern void     DUIFlushKeys( void );
 extern void     DUIPlayDead( bool );
@@ -67,8 +66,6 @@ extern void     DUIProcPendingPaint(void);
 extern bool     DUIInfoRelease( void );
 extern void     DUIEnterCriticalSection( void );
 extern void     DUIExitCriticalSection( void );
-extern void     DUIInitLiterals( void );
-extern void     DUIFiniLiterals( void );
 extern bool     DUIIsDBCS( void );
 extern size_t   DUIEnvLkup( const char *name, char *buff, size_t buff_len );
 extern void     DUIDirty( void );

@@ -31,47 +31,91 @@
 ****************************************************************************/
 
 
-#include "dbgdefn.h"
-#include "dbgdata.h"
-#include "dbgmem.h"
-#include "dui.h"
-#include "banner.h"
-#include "litdef.h"
-#include "litwd.h"
-#include "aui.h"
-
-
-#ifdef JAPANESE
-  #define pick(c,e,j) LITSTR( c, j )
+#include <string.h>
+#include <process.h>
+#ifdef __OS2__
+    #include <os2.h>
 #else
-  #define pick(c,e,j) LITSTR( c, e )
+    #include <windows.h>
+#endif
+#include "dbgdefn.h"
+#include "dbgmem.h"
+#include "wreslang.h"
+#include "reslang.rh"
+#include "litwd.h"
+#if defined( USE_WRESLIB )
+    #include "wressetr.h"
+    #include "wresset2.h"
 #endif
 
-#define LITSTR( x, y ) char *LIT_DUI( x );
-#include "wddui.str"
-#undef LITSTR
 
-void DUIInitLiterals( void )
+#if defined( USE_WRESLIB )
+static HANDLE_INFO      hInstance = { 0 };
+#endif
+static unsigned         msgShift;
+
+static void InitMsg( void )
 {
-    #define LITSTR( x, y ) LIT_DUI( x ) = DUILoadString( DBG_DUI_LITERAL_##x );
-    #include "wddui.str"
-    #undef LITSTR
+#if defined( USE_WRESLIB )
+    char        name[_MAX_PATH];
+
+    hInstance.status = 0;
+    if( _cmdname( name ) != NULL && OpenResFile( &hInstance, name ) ) {
+        msgShift = _WResLanguage() * MSG_LANG_SPACING;
+        return;
+    }
+    CloseResFile( &hInstance );
+#endif
+    msgShift = _WResLanguage() * MSG_LANG_SPACING;
 }
 
-void DUIFiniLiterals( void )
+static void FiniMsg( void )
 {
-    #define LITSTR( x, y ) DUIFreeString( LIT_DUI( x ) );
-    #include "wddui.str"
-    #undef LITSTR
+#if defined( USE_WRESLIB )
+    CloseResFile( &hInstance );
+#endif
 }
-#undef pick
 
 char *DUILoadString( dui_res_id id )
 {
-    return( WndLoadString( id ) );
+    char        buffer[256];
+    char        *ret;
+    int         len;
+
+#if defined( USE_WRESLIB )
+    if( hInstance.status == 0 || WResLoadString( &hInstance, id + msgShift, buffer, sizeof( buffer ) ) <= 0 ) {
+        buffer[0] = '\0';
+        return( NULL );
+    }
+    len = strlen( buffer ) + 1;
+#else
+  #ifdef __OS2__
+    len = WinLoadString( 0, NULLHANDLE, id + msgShift, sizeof( buffer ), buffer );
+  #else
+    len = LoadString( GetModuleHandle( NULL ), id + msgShift, buffer, sizeof( buffer ) );
+  #endif
+    if( len <= 0 ) {
+        buffer[0] = '\0';
+        return( NULL );
+    }
+    buffer[len++] = NULLCHAR;
+#endif
+    ret = DbgAlloc( len );
+    strcpy( ret, buffer );
+    return( ret );
 }
 
 void DUIFreeString( void *ptr )
 {
-    WndFree( ptr );
+    DbgFree( ptr );
+}
+
+void DUIInitLiterals( void )
+{
+    InitMsg();
+}
+
+void DUIFiniLiterals( void )
+{
+    FiniMsg();
 }
