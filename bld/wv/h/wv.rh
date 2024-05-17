@@ -30,6 +30,8 @@
 *
 ****************************************************************************/
 
+
+#if defined( GUI_IS_GUI ) || defined( RESX_GUI )
 #define BITMAP_SPLASH           1001
 #define BITMAP_CLOSEBMP         1002
 #define BITMAP_READ1            1003
@@ -79,6 +81,7 @@
 #define BITMAP_ICLOSE2          1047
 #define BITMAP_BPOINTS1         1048
 #define BITMAP_BPOINTS2         1049
+#define BITMAPID(b)             (b)
 
 #define ICON_FPU                2000
 #define ICON_ASM                2001
@@ -101,3 +104,8 @@
 #define ICON_MAIN               2018
 #define ICON_LOC                2019
 #define ICON_WAT                2020
+#define ICONID(i)               (i)
+#else
+#define BITMAPID(b)             0
+#define ICONID(i)               0
+#endif

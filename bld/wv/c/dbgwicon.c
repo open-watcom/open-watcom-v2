@@ -37,6 +37,6 @@
 #include "wv.rh"
 
 
-#define pick( x, y, z ) gui_resource x = { y, z };
+#define pick( x, y, z ) gui_resource x = { ICONID( y ), z };
     DEFICONS
 #undef pick

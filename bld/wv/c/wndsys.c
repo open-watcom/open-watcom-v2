@@ -78,13 +78,13 @@ char *WndGadgetHint[] =
 };
 
 gui_resource WndGadgetArray[] = {
-    #define pick( a,b,c,d,e,f ) { b, d },
+    #define pick( a,b,c,d,e,f ) { BITMAPID( b ), d },
         GADGETS
     #undef pick
-    #define pick( a,b,c,d,e,f ) { c, e },
+    #define pick( a,b,c,d,e,f ) { BITMAPID( c ), e },
         GADGETS
     #undef pick
-    { BITMAP_SPLASH, "splash" },
+    { BITMAPID( BITMAP_SPLASH ), "splash" },
 };
 
 int         WndGadgetHintSize = ArraySize( WndGadgetHint );
