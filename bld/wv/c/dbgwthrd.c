@@ -43,6 +43,8 @@
 #include "dbgwglob.h"
 #include "menudef.h"
 #include "dbgicon.h"
+#include "liteng.h"
+#include "litdui.h"
 
 
 // gud enuf for now

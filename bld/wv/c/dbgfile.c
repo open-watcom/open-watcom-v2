@@ -39,7 +39,7 @@
 #include "dbgdefn.h"
 #if !defined( BUILD_RFX )
     #include "dbgdata.h"
-    #include "dbglit.h"
+    #include "liteng.h"
     #include "dui.h"
 #else
     #include "rfxdata.h"

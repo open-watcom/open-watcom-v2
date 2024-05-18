@@ -61,6 +61,8 @@
 #include "dbgwinsp.h"
 #include "menudef.h"
 #include "dbgicon.h"
+#include "liteng.h"
+#include "litdui.h"
 
 
 #define MAX_LINE_LEN    255 // must not wrap a gui_ord

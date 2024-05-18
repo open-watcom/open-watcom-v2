@@ -34,7 +34,7 @@
 #define BACKWARDS
 #include "dbgdefn.h"
 #include "dbgdata.h"
-#include "dbglit.h"
+#include "liteng.h"
 #include "dbgio.h"
 #include "dbgmem.h"
 #include "dui.h"
@@ -45,8 +45,9 @@
 #include "dbgprog.h"
 #include "dbglkup.h"
 #include "dbgerr.h"
-#include "litwd.h"
+#include "dbglit.h"
 #include "wv.rh"
+#include "dbgname.h"
 
 
 #define MIN_MEM_SIZE    (500UL*1024)

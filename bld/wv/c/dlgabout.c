@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,9 +38,11 @@
 #include "strutil.h"
 #include "fingmsg.h"
 #include "dlgabout.h"
+#include "liteng.h"
+#include "litdui.h"
 
 
-#define AboutSize	GetAboutSizeText()
+#define AboutSize       GetAboutSizeText()
 
 void    DlgAbout( void )
 {

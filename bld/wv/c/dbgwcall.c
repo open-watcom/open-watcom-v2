@@ -49,6 +49,7 @@
 #include "dlgbreak.h"
 #include "menudef.h"
 #include "dbgicon.h"
+#include "litdui.h"
 
 
 enum {

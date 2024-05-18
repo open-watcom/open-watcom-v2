@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,6 +40,7 @@
 #include "wndsys.h"
 #include "dlgscomp.h"
 #include "modcomp.h"
+#include "litdui.h"
 
 
 static const char *ModGetName( const void *data_handle, int item )

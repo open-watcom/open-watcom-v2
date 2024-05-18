@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -72,6 +72,8 @@
 #include "dlgcmd.h"
 #include "dlgwind.h"
 #include "menudef.h"
+#include "liteng.h"
+#include "litdui.h"
 
 
 static gui_menu_struct FileMenu[] = {
@@ -351,8 +353,8 @@ static void FreeLabels( gui_menu_items *menus )
         FreeLabels( &menus->menu[i].child );
         if( menus->menu[i].style & WND_MENU_ALLOCATED ) {
             menus->menu[i].style &= ~WND_MENU_ALLOCATED;
-            WndFree( (void *)menus->menu[i].label );
-            WndFree( (void *)menus->menu[i].hinttext );
+//            WndFree( (void *)menus->menu[i].label );
+//            WndFree( (void *)menus->menu[i].hinttext );
         }
     }
 }
@@ -365,8 +367,10 @@ static void LoadLabels( gui_menu_items *menus )
     for( i = 0; i < menus->num_items; i++ ) {
         LoadLabels( &menus->menu[i].child );
         if( (menus->menu[i].style & (GUI_STYLE_MENU_SEPARATOR | WND_MENU_ALLOCATED)) == 0 ) {
-            menus->menu[i].label = WndLoadString( (gui_res_id)(pointer_uint)menus->menu[i].label );
-            menus->menu[i].hinttext = WndLoadString( (gui_res_id)(pointer_uint)menus->menu[i].hinttext );
+//            menus->menu[i].label = WndLoadString( (gui_res_id)(pointer_uint)menus->menu[i].label );
+//            menus->menu[i].hinttext = WndLoadString( (gui_res_id)(pointer_uint)menus->menu[i].hinttext );
+            menus->menu[i].label = *(char **)menus->menu[i].label;
+            menus->menu[i].hinttext = *(char **)menus->menu[i].hinttext;
             menus->menu[i].style |= WND_MENU_ALLOCATED;
         }
     }

@@ -52,6 +52,7 @@
 #include "dbgchopt.h"
 #include "menudef.h"
 #include "dbgicon.h"
+#include "litdui.h"
 
 
 #define WndFunc( wnd )  ( (func_window*)WndExtra( wnd ) )

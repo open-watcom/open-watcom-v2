@@ -62,6 +62,8 @@
 #include "dipinter.h"
 #include "menudef.h"
 #include "dbgicon.h"
+#include "liteng.h"
+#include "litdui.h"
 
 
 #define WndVar( wnd )       ((var_window *)WndExtra( wnd ))

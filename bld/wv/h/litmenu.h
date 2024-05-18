@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,5 +31,11 @@
 ****************************************************************************/
 
 
-extern void InitEngineLiterals( void );
-extern void FiniEngineLiterals( void );
+#include "litmenu.gh"
+
+#define LIT_MENU( x ) _LIT_DBG_MENU_##x
+#define LITREF_MENU( x ) ((char *)&LIT_MENU( x ))
+
+#define pick(c,e,j) extern char *LIT_MENU( c );
+#include "wdmenu.str"
+#undef pick

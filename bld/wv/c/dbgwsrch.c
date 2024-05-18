@@ -46,6 +46,8 @@
 #include "dbgwsrch.h"
 #include "menudef.h"
 #include "dbgicon.h"
+#include "liteng.h"
+#include "litdui.h"
 
 
 #define WndSrch( wnd ) ( (srch_window *)WndExtra( wnd ) )

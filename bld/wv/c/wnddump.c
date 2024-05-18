@@ -41,6 +41,7 @@
 #include "dlgfile.h"
 #include "wndsys.h"
 #include "wnddump.h"
+#include "liteng.h"
 
 
 typedef void WRITERTN( file_handle, const char * );

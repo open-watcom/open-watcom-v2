@@ -42,15 +42,15 @@
 #define TOOL(a,b,c) { "", BITMAPID( BITMAP_ ##a ), MENU_TOOL_ ##b, MENU_LIT( HELP_ ##c ), MENU_LIT( TIP_ ##c ) }
 
 static gui_toolbar_struct ToolBar[] = {
-    TOOL( GO, GO, XGo ),
-    TOOL( OVER, TRACE_OVER, XOver ),
-    TOOL( INTO, STEP_INTO, XInto ),
+    TOOL( GO,     GO,               XGo ),
+    TOOL( OVER,   TRACE_OVER,       XOver ),
+    TOOL( INTO,   STEP_INTO,        XInto ),
     TOOL( RETURN, RETURN_TO_CALLER, XReturn ),
-    TOOL( BACK, UNDO, XUndo ),
-    TOOL( FOR, REDO, XRedo ),
-    TOOL( UP, UP_STACK, UXnwind_Stack ),
-    TOOL( DOWN, DOWN_STACK, RXewind_Stack ),
-    TOOL( HOME, HOME, XHome )
+    TOOL( BACK,   UNDO,             XUndo ),
+    TOOL( FOR,    REDO,             XRedo ),
+    TOOL( UP,     UP_STACK,         UXnwind_Stack ),
+    TOOL( DOWN,   DOWN_STACK,       RXewind_Stack ),
+    TOOL( HOME,   HOME,             XHome ),
 };
 
 #undef TOOL

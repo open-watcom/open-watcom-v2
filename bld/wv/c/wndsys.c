@@ -65,6 +65,8 @@
 #include "dbgwpain.h"
 #include "dbginit.h"
 #include "menudef.h"
+#include "liteng.h"
+#include "litdui.h"
 #include "wv.rh"
 
 

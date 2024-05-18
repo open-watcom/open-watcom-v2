@@ -42,6 +42,7 @@
 #include "dbgwglob.h"
 #include "wndmenu.h"
 #include "dbgicon.h"
+#include "litdui.h"
 
 
 #define MAX_DLG_LINES 30000U

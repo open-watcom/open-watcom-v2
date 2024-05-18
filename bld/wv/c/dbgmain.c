@@ -33,7 +33,7 @@
 #include "dbgdefn.h"
 #include "dbgdata.h"
 #include "dbgerr.h"
-#include "dbglit.h"
+#include "liteng.h"
 #include "wspawn.h"
 #include "dui.h"
 #include "strutil.h"
@@ -73,7 +73,7 @@
 #include "dbgwintr.h"
 #include "dbgcapt.h"
 #include "dbgwset1.h"
-#include "litwd.h"
+#include "dbglit.h"
 
 
 // This list of extern functions is in alphabetic order.:

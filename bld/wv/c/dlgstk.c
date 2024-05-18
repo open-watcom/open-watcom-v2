@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,6 +38,8 @@
 #include "guidlg.h"
 #include "dlgstk.h"
 #include "dbgreg.h"
+#include "liteng.h"
+#include "litdui.h"
 
 
 static bool StkOrHistoryGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )

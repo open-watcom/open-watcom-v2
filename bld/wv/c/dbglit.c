@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include "litwd.h"
+#include "dbglit.h"
 
 
 void InitLiterals( void )

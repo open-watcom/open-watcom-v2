@@ -45,6 +45,7 @@
 #include "dlgfile.h"
 #include "menudef.h"
 #include "dbgicon.h"
+#include "litdui.h"
 
 
 #define TITLE_SIZE      2

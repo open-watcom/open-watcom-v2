@@ -31,13 +31,11 @@
 ****************************************************************************/
 
 
-typedef unsigned    dui_res_id;
+#include "litdui.gh"
 
-extern void     InitLiterals( void );
-extern void     FiniLiterals( void );
-extern void     InitEngineLiterals( void );
-extern void     FiniEngineLiterals( void );
-extern void     DUIInitLiterals( void );
-extern void     DUIFiniLiterals( void );
-extern char     *DUILoadString( dui_res_id id );
-extern void     DUIFreeString( void * );
+#define LIT_DUI( x ) _LIT_DBG_DUI_##x
+#define LITREF_DUI( x ) &LIT_DUI( x )
+
+#define pick(c,e,j) extern char *LIT_DUI( c );
+#include "wddui.str"
+#undef pick

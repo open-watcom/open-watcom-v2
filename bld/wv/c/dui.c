@@ -65,6 +65,8 @@
 #include "fingmsg.h"
 #include "dlgnewp.h"
 #include "dbgicon.h"
+#include "liteng.h"
+#include "litdui.h"
 
 
 extern void             InitPaint( void );

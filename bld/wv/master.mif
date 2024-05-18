@@ -93,7 +93,6 @@ extra_cpp_flags_nt = -DENABLE_TRAP_LOGGING
 
 extra_cpp_flags_dynmem = $(trmem_cpp_flags)
 
-extra_c_flags = -fh
 extra_c_flags_win = -zW -zc
 extra_c_flags_qnx = -I"$(clib_dir)/h"
 !ifdef sys_windowed
@@ -404,15 +403,15 @@ extra_rc_flags = -DRESX_GUI
 extra_rc_flags_nt = $(ntmanif_def) $(ntverrc_def) $(ntmanif_inc_dirs) $(ntverrc_inc_dirs)
 
 !ifdef wv_engine_noui
-$(proj_name).res : ../../res/wv.rc $(ntmanif_dep) $(ntverrc_exe_dep) $(rcfiles) $(aui_rc_depends) $(__MAKEFILES__) .autodepend
+$(proj_name).res : ../../res/wv.rc $(rcfiles) $(ntmanif_dep) $(ntverrc_exe_dep) $(aui_rc_depends) $(__MAKEFILES__) .autodepend
 !else ifdef sys_windowed
-$(proj_name)j.res : ../../res/wv.rc $(ntmanif_dep) $(ntverrc_exe_dep) $(bitmaps) $(rcfiles) $(aui_rc_depends) $(__MAKEFILES__) .autodepend
+$(proj_name)j.res : ../../res/wv.rc $(bitmaps) $(rcfiles) $(ntmanif_dep) $(ntverrc_exe_dep) $(aui_rc_depends) $(__MAKEFILES__) .autodepend
     @%make echo_rc
     $(rcu8j) $(ppflags_common) $(rc_cppflags) -DJAPANESE -ad $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
-$(proj_name).res : ../../res/wv.rc $(ntmanif_dep) $(ntverrc_exe_dep) $(bitmaps) $(rcfiles) $(aui_rc_depends) $(__MAKEFILES__) .autodepend
+$(proj_name).res : ../../res/wv.rc $(bitmaps) $(rcfiles) $(ntmanif_dep) $(ntverrc_exe_dep) $(aui_rc_depends) $(__MAKEFILES__) .autodepend
 !else
-$(proj_name).res : ../../res/wv.rc $(ntmanif_dep) $(ntverrc_exe_dep) $(rcfiles) usage.gh usagej.gh $(aui_rc_depends) $(__MAKEFILES__) .autodepend
+$(proj_name).res : ../../res/wv.rc $(rcfiles) $(ntmanif_dep) $(ntverrc_exe_dep) $(aui_rc_depends) $(__MAKEFILES__) .autodepend
 !endif
     @%make echo_rc
     $(rcu8) $(ppflags_common) $(rc_cppflags) -ad $(rc_flags) $(rc_inc_path) $[@ -fo=$@

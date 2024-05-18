@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,7 +33,7 @@
 #include <stddef.h>
 #include "dbgdefn.h"
 #include "dbgdata.h"
-#include "dbglit.h"
+#include "liteng.h"
 #include "dbgmem.h"
 #include "dbgerr.h"
 #include "dbgtback.h"
@@ -64,6 +64,7 @@
 #include "addarith.h"
 #include "dbgevent.h"
 #include "dbgupdt.h"
+
 
 #define MAX_DELTA_BITS  8
 #define MAX_DELTA_BYTES ((1 << MAX_DELTA_BITS) - 1)

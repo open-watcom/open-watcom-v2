@@ -31,36 +31,25 @@
 ****************************************************************************/
 
 
-#include "dbgdefn.h"
-#include "dbgdata.h"
-#include "dbgmem.h"
-#include "dui.h"
-#include "litdef.h"
-#include "litwdeng.h"
-#include "litwd.h"
+#include "wv.rh"
+#include "liteng.h"
+#include "dbglit.h"
 
 
-#ifdef JAPANESE
-  #define pick(c,e,j) LITSTR( c, j )
-#else
-  #define pick(c,e,j) LITSTR( c, e )
-#endif
-
-#define LITSTR( x, y ) char *LIT_ENG( x );
+#define pick(c,e,j)     char *LIT_ENG( c );
 #include "wdeng.str"
-#undef LITSTR
+#undef pick
 
 void InitEngineLiterals( void )
 {
-    #define LITSTR( x, y ) LIT_ENG( x ) = DUILoadString( DBG_ENG_LITERAL_##x );
+    #define pick(c,e,j)     LIT_ENG( c ) = DUILoadString( DBG_ENG_LITERAL_##c );
     #include "wdeng.str"
-    #undef LITSTR
+    #undef pick
 }
 
 void FiniEngineLiterals( void )
 {
-    #define LITSTR( x, y ) DUIFreeString( LIT_ENG( x ) );
+    #define pick(c,e,j)     DUIFreeString( LIT_ENG( c ) );
     #include "wdeng.str"
-    #undef LITSTR
+    #undef pick
 }
-#undef pick

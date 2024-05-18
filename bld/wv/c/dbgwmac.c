@@ -53,6 +53,8 @@
 #include "menudef.h"
 #include "dbgmisc.h"
 #include "dbgicon.h"
+#include "liteng.h"
+#include "litdui.h"
 
 
 #define TITLE_SIZE      2

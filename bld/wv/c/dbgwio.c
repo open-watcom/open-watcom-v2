@@ -50,6 +50,8 @@
 #include "dbgwio.h"
 #include "menudef.h"
 #include "dbgicon.h"
+#include "liteng.h"
+#include "litdui.h"
 
 
 #define PIECE_TYPE( x )     ((x) - MENU_IO_FIRST_TYPE)

@@ -60,6 +60,8 @@
 #include "dbgwmem.h"
 #include "menudef.h"
 #include "dbgicon.h"
+#include "liteng.h"
+#include "litdui.h"
 
 
 #define TITLE_SIZE      1

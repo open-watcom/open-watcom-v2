@@ -43,6 +43,7 @@
 #include "dlgbreak.h"
 #include "menudef.h"
 #include "dbgicon.h"
+#include "litdui.h"
 
 
 #define WndBreak( wnd ) ( (break_window *)WndExtra( wnd ) )

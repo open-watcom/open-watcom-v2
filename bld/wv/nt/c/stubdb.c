@@ -36,7 +36,7 @@
 #include <windows.h>
 #include "srcmgt.h"
 #include "dbgdata.h"
-#include "dbglit.h"
+#include "liteng.h"
 #include "mad.h"
 #include "dui.h"
 #include "dbgvar.h"

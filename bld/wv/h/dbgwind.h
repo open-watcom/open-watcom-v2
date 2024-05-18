@@ -32,7 +32,6 @@
 
 
 #include "aui.h"
-#include "dbglit.h"
 #include "dbgmenu.h"
 #include "dlgbutn.h"
 

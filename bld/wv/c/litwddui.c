@@ -36,35 +36,40 @@
 #include "dbgmem.h"
 #include "dui.h"
 #include "banner.h"
-#include "litdef.h"
-#include "litwd.h"
+#include "litdui.h"
+#include "litmenu.h"
+#include "dbglit.h"
 #include "aui.h"
+#include "wv.rh"
 
 
-#ifdef JAPANESE
-  #define pick(c,e,j) LITSTR( c, j )
-#else
-  #define pick(c,e,j) LITSTR( c, e )
-#endif
-
-#define LITSTR( x, y ) char *LIT_DUI( x );
+#define pick(c,e,j)     char *LIT_DUI( c );
 #include "wddui.str"
-#undef LITSTR
+#undef pick
+
+#define pick(c,e,j)     char *LIT_MENU( c );
+#include "wdmenu.str"
+#undef pick
 
 void DUIInitLiterals( void )
 {
-    #define LITSTR( x, y ) LIT_DUI( x ) = DUILoadString( DBG_DUI_LITERAL_##x );
+    #define pick(c,e,j)     LIT_DUI( c ) = DUILoadString( DBG_DUI_LITERAL_##c );
     #include "wddui.str"
-    #undef LITSTR
+    #undef pick
+    #define pick(c,e,j)     LIT_MENU( c ) = DUILoadString( DBG_DUI_MENU_##c );
+    #include "wdmenu.str"
+    #undef pick
 }
 
 void DUIFiniLiterals( void )
 {
-    #define LITSTR( x, y ) DUIFreeString( LIT_DUI( x ) );
+    #define pick(c,e,j)     DUIFreeString( LIT_MENU( c ) );
+    #include "wdmenu.str"
+    #undef pick
+    #define pick(c,e,j)     DUIFreeString( LIT_DUI( c ) );
     #include "wddui.str"
-    #undef LITSTR
+    #undef pick
 }
-#undef pick
 
 char *DUILoadString( dui_res_id id )
 {

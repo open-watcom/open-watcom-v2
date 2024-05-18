@@ -67,6 +67,7 @@
 #include "dbgchopt.h"
 #include "menudef.h"
 #include "dbgicon.h"
+#include "litdui.h"
 
 
 #define AVG_INS_SIZE    7

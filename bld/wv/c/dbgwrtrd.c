@@ -42,6 +42,8 @@
 #include "dbgwrtrd.h"
 #include "menudef.h"
 #include "dbgicon.h"
+#include "liteng.h"
+#include "litdui.h"
 
 
 #define RUN_THREAD_INFO_TYPE_NONE       0

@@ -31,19 +31,11 @@
 ****************************************************************************/
 
 
-#include "wv.rh"
 #include "liteng.gh"
 
 #define LIT_ENG( x ) _LIT_DBG_ENG_##x
 #define LITREF_ENG( x ) &LIT_ENG( x )
 
-#ifndef __NOUI__
-#include "litdui.gh"
-#include "litmenu.gh"
-
-#define LIT_DUI( x ) _LIT_DBG_DUI_##x
-#define LITREF_DUI( x ) &LIT_DUI( x )
-
-#define LIT_MENU( x ) _LIT_DBG_MENU_##x
-#define LITREF_MENU( x ) &LIT_MENU( x )
-#endif
+#define pick(c,e,j) extern char *LIT_ENG( c );
+#include "wdeng.str"
+#undef pick

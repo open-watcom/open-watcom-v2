@@ -42,7 +42,7 @@
 #include "dbgmem.h"
 #include "wreslang.h"
 #include "reslang.rh"
-#include "litwd.h"
+#include "dbglit.h"
 #if defined( USE_WRESLIB )
     #include "wressetr.h"
     #include "wresset2.h"
