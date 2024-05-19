@@ -32,10 +32,8 @@
 
 #include <stdio.h>
 #include "app.h"
+#include "dlgoptn.h"
 
-
-
-extern int DlgOptions( void );
 
 extern void Password( const char *, char *, unsigned );
 

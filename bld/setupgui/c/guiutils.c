@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -271,7 +271,7 @@ bool SetupPreInit( int argc, char **argv )
 #endif
 
     /* Cancel button may be wider in other languages */
-    NominalButtonWidth = strlen( LIT( Cancel ) ) + 5;
+    NominalButtonWidth = strlen( LIT_GUI( Cancel ) ) + 5;
 
     /* Initialize enough of the GUI lib to let us show message boxes etc. */
     GUIWndInit( 300 /* ms */, GUI_PLAIN ); // 300 uS mouse dbl click rate, no char remapping

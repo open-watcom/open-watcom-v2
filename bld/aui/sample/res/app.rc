@@ -9,8 +9,8 @@
 #else
     #include "wresdefn.h"
 #endif
-#include "dlgoptn.rh"
 #include "aui.rh"
+#include "sample.rh"
 
 #include "aui.rc"
 
@@ -30,7 +30,7 @@
 
 #ifdef RESX_GUI
 
-#include "rcdefs.h"
+#include "sample.rh"
 
 #ifdef __OS2__
 #define RC_ITEM(a,b,c) a b c

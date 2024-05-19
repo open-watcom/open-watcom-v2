@@ -31,9 +31,12 @@
 ****************************************************************************/
 
 
-#define AUI_LITERAL_BASE        400
+/*
+ *      GUI_LITERAL_BASE    1       +67
+ */
+#define AUI_LITERAL_BASE    200     // +7
 
-#define LIT_AUI(s)              AUI_LITERAL_##s
+#define LIT_AUI(s)          AUI_LITERAL_ ##s
 
 #include "gui.rh"
 #include "aui.grh"

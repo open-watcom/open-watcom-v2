@@ -31,6 +31,11 @@
 ****************************************************************************/
 
 
-#define GUI_LITERAL_BASE 1
+/*
+ * This setup Japanese globaly for AUI/GUI application (Samples, WPROF, WD)
+ */
+#define MSG_LANG_SPACING    16000
+
+#define GUI_LITERAL_BASE    1
 
 #include "guimsgs.grh"

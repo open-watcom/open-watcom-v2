@@ -30,8 +30,10 @@
 ****************************************************************************/
 
 
+#include "sample.rh"
 #include "app.h"
 #include "dlgoptn.h"
+
 
 typedef struct dlg_window_set {
     bool        cancel;

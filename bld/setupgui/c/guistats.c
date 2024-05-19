@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -371,7 +371,7 @@ static bool OpenStatusWindow( const char *title )
     GUIGetClientRect( StatusWnd, &StatusRect );
 
     Cancel.parent = StatusWnd;
-    Cancel.text = LIT( Cancel );
+    Cancel.text = LIT_GUI( Cancel );
     Cancel.rect.height = 7 * CharSize.y / 4;
     Cancel.rect.width = (strlen( Cancel.text ) + 4) * CharSize.x;
     Cancel.rect.x = (StatusRect.width - Cancel.rect.width) / 2;
