@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,11 +37,11 @@
 
 #include "gui.rh"
 
-#define LIT( sym )      (_LIT_GUI_##sym)
+#define LIT_GUI( sym )  (_LIT_GUI_##sym)
 
 #define LITSTR( sym, val )
 
-#define pick(c,e,j)     extern const char *LIT( c );
+#define pick(c,e,j)     extern const char *LIT_GUI( c );
 #include "gui.msg"
 #undef pick
 
@@ -49,10 +50,10 @@ extern bool GUIFiniInternalStringTable( void );
 
 #else
 
-#define LIT( sym )      (_Literal_##sym)
+#define LIT_GUI( sym )  (_Literal_##sym)
 
 #ifdef DEFINE_STRINGS
-#define LITSTR( sym, val ) const char LIT( sym )[] = val;
+#define LITSTR( sym, val ) const char LIT_GUI( sym )[] = val;
 #else
 #ifdef _M_I86
     #ifdef __MEDIUM__
@@ -63,7 +64,7 @@ extern bool GUIFiniInternalStringTable( void );
 #else
     #define MAKEFAR
 #endif
-#define LITSTR( sym, val ) extern const char MAKEFAR LIT( sym )[sizeof( val )];
+#define LITSTR( sym, val ) extern const char MAKEFAR LIT_GUI( sym )[sizeof( val )];
 #endif
 
 #ifdef JAPANESE

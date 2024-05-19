@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -125,28 +125,28 @@ static void InitMessageControls( void )
     for( j = 0; j < GUI_ARRAY_SIZE( MessageControls ); j++ ) {
         switch( MessageControls[j].type ) {
         case CTLT_ABORT:
-            MessageControls[j].ctl_info.text = LIT( XAbort );
+            MessageControls[j].ctl_info.text = LIT_GUI( XAbort );
             break;
         case CTLT_CANCEL:
-            MessageControls[j].ctl_info.text = LIT( Cancel );
+            MessageControls[j].ctl_info.text = LIT_GUI( Cancel );
             break;
         case CTLT_IGNORE:
-            MessageControls[j].ctl_info.text = LIT( XIgnore );
+            MessageControls[j].ctl_info.text = LIT_GUI( XIgnore );
             break;
         case CTLT_NO:
-            MessageControls[j].ctl_info.text = LIT( XNo );
+            MessageControls[j].ctl_info.text = LIT_GUI( XNo );
             break;
         case CTLT_OK:
-            MessageControls[j].ctl_info.text = LIT( OK );
+            MessageControls[j].ctl_info.text = LIT_GUI( OK );
             break;
         case CTLT_RETRY:
-            MessageControls[j].ctl_info.text = LIT( XRetry );
+            MessageControls[j].ctl_info.text = LIT_GUI( XRetry );
             break;
         case CTLT_YES:
-            MessageControls[j].ctl_info.text = LIT( XYes );
+            MessageControls[j].ctl_info.text = LIT_GUI( XYes );
             break;
         case CTLT_STOP:
-            MessageControls[j].ctl_info.text = LIT( Stop_Bang );
+            MessageControls[j].ctl_info.text = LIT_GUI( Stop_Bang );
             break;
         default:
             break;

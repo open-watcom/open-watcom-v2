@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -142,7 +142,7 @@ static void GUIDrawTextBitmapRGB( gui_window *wnd, const char *text,
         brush = _wpi_createsolidbrush( colour );
         pen = _wpi_createpen( PS_SOLID, 1, colour );
         if( pen == WPI_NULL ) {
-            GUIError(LIT( Pen_Failed ));
+            GUIError( LIT_GUI( Pen_Failed ) );
         }
         old_brush = _wpi_selectbrush( wnd->hdc, brush );
         old_pen = _wpi_selectpen( wnd->hdc, pen );

@@ -164,10 +164,10 @@ bool    WndSearch( a_window wnd, bool from_top, int direction )
     rx = WndCompileRX( wnd->searchitem );
     if( rx == NULL )
         return( false );
-    not_found = WndLoadString( LIT( Not_Found ) );
-    top_of_window = WndLoadString( LIT( Top_Of_Window ) );
-    end_of_window = WndLoadString( LIT( End_Of_Window ) );
-    search_wrapped = WndLoadString( LIT( Search_Wrapped ) );
+    not_found = WndLoadString( LIT_AUI( Not_Found ) );
+    top_of_window = WndLoadString( LIT_AUI( Top_Of_Window ) );
+    end_of_window = WndLoadString( LIT_AUI( End_Of_Window ) );
+    search_wrapped = WndLoadString( LIT_AUI( Search_Wrapped ) );
     wrap = false;
     starting_pos.piece = 0;
     starting_pos.colidx = ( direction > 0 ) ? -1 : WND_MAX_COLIDX;

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -165,10 +165,10 @@ gui_message_return GUIAPI GUIGetNewVal( const char *title, const char *old, char
     GetNew[EDIT_IDX].rect.width = disp_length;
     GetNew[EDIT_IDX].text = old;
 
-    GetNew[CANCEL_IDX].text = LIT( Cancel );
+    GetNew[CANCEL_IDX].text = LIT_GUI( Cancel );
     GetNew[CANCEL_IDX].rect.x = cols - ( ( cols / 2 - BUTTON_WIDTH ) / 2 ) - BUTTON_WIDTH;
 
-    GetNew[OK_IDX].text = LIT( OK );
+    GetNew[OK_IDX].text = LIT_GUI( OK );
     GetNew[OK_IDX].rect.x = ( cols / 2 ) - ( ( cols / 2 - BUTTON_WIDTH ) / 2 ) - BUTTON_WIDTH;
 
     GUIDlgOpen( title, NUM_ROWS, cols, GetNew, GUI_ARRAY_SIZE( GetNew ), &GetNewValGUIEventProc, &info );

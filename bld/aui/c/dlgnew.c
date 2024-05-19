@@ -129,8 +129,8 @@ bool    DlgNew( const char *title, char *buff, size_t buff_len )
 {
     bool        rc;
 
-    Controls[OK_IDX].text = WndLoadString( LIT( New_OK ) );
-    Controls[CANCEL_IDX].text = WndLoadString( LIT( New_Cancel ) );
+    Controls[OK_IDX].text = WndLoadString( LIT_AUI( New_OK ) );
+    Controls[CANCEL_IDX].text = WndLoadString( LIT_AUI( New_Cancel ) );
     rc = DlgNewWithCtl( title, buff, buff_len, Controls, ArraySize( Controls ), dlgNewGUIEventProc, DLG_SIZE_DATA );
     WndFree( (void *)Controls[OK_IDX].text );
     WndFree( (void *)Controls[CANCEL_IDX].text );

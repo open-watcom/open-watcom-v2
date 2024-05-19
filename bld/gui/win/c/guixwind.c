@@ -318,7 +318,7 @@ int GUIXMain( int argc, char *argv[],
 static void ShowWnd( HWND hwnd )
 {
     if( hwnd == NULLHANDLE ) {
-        GUIError( LIT( Open_Failed ) );
+        GUIError( LIT_GUI( Open_Failed ) );
     } else {
         _wpi_showwindow( hwnd, SW_SHOWNORMAL );
         _wpi_updatewindow( hwnd );

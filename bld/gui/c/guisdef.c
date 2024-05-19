@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,6 +34,6 @@
 #include "guiwind.h"
 #include "guistr.h"
 
-#define pick( x, y, z ) const char *LIT( x );
+#define pick( x, y, z ) const char *LIT_GUI( x );
 #include "gui.msg"
 #undef pick

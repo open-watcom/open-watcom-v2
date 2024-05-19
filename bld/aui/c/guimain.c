@@ -545,7 +545,7 @@ gui_mcursor_handle WndHourCursor( void )
 {
     if( !GUIIsGUI() ) {
         if( BusyString == NULL ) {
-            BusyString = WndLoadString( LIT( Busy ) );
+            BusyString = WndLoadString( LIT_AUI( Busy ) );
         }
         WndInternalStatusText( BusyString );
     }

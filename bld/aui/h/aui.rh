@@ -33,7 +33,7 @@
 
 #define AUI_LITERAL_BASE        400
 
-#define LIT(s)		AUI_LITERAL_ ##s
+#define LIT_AUI(s)              AUI_LITERAL_##s
 
 #include "gui.rh"
 #include "aui.grh"

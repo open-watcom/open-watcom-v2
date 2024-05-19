@@ -93,7 +93,7 @@ void    WndSayMatchMode( a_window wnd )
     char                *match;
     size_t              match_len;
 
-    match = WndLoadString( LIT( Match_Mode ) );
+    match = WndLoadString( LIT_AUI( Match_Mode ) );
     match_len = strlen( match );
     if( WndSwitchOn( wnd, WSW_CHOOSING ) ) {
         sofar_buff = alloca( match_len + MAX_KEY_SIZE + 1 );

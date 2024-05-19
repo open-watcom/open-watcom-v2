@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -54,7 +54,7 @@ bool GUISetEditText( an_edit_control *edit_control, char const *text, bool is_GU
     size_t      fillerLength;
     char        *new;
 
-    filler = ( text == NULL ) ? LIT( Empty ) : text;
+    filler = ( text == NULL ) ? LIT_GUI( Empty ) : text;
     fillerLength = strlen( filler );
     if( is_GUI_data ) {
         new = GUIMemAlloc( fillerLength + 1 );

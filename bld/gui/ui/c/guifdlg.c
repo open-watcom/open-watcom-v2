@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -189,15 +189,15 @@ static bool     ControlsInitialized = false;
 
 static void InitDlgControls( void )
 {
-    dlgControls[FILENAME_TITLE_IDX].text = LIT( File_Name_Colon );
-    dlgControls[DIRECTORIES_TITLE_IDX].text = LIT( Directories_Colon );
-    dlgControls[EDIT_IDX].text = LIT( Empty );
-    dlgControls[DIR_NAME_IDX].text = LIT( Empty );
-    dlgControls[OK_IDX].text = LIT( OK );
-    dlgControls[CANCEL_IDX].text = LIT( Cancel );
-    dlgControls[FILE_TYPES_TITLE_IDX].text = LIT( List_Files_of_Type_Colon );
+    dlgControls[FILENAME_TITLE_IDX].text = LIT_GUI( File_Name_Colon );
+    dlgControls[DIRECTORIES_TITLE_IDX].text = LIT_GUI( Directories_Colon );
+    dlgControls[EDIT_IDX].text = LIT_GUI( Empty );
+    dlgControls[DIR_NAME_IDX].text = LIT_GUI( Empty );
+    dlgControls[OK_IDX].text = LIT_GUI( OK );
+    dlgControls[CANCEL_IDX].text = LIT_GUI( Cancel );
+    dlgControls[FILE_TYPES_TITLE_IDX].text = LIT_GUI( List_Files_of_Type_Colon );
 #if !defined( __UNIX__ ) && !defined( __NETWARE__ )
-    dlgControls[DRIVES_TITLE_IDX].text = LIT( Drives_Colon );
+    dlgControls[DRIVES_TITLE_IDX].text = LIT_GUI( Drives_Colon );
 #endif
 }
 
@@ -878,7 +878,7 @@ static process_rc processFileName( gui_window *wnd )
         if( !rc && (dlg->currOFN->flags & FN_OVERWRITEPROMPT) ) {
             buff = alloca( strlen( txt ) + 100 );
             strcpy( buff, txt );
-            strcat( buff, LIT( File_Exists_Replace ) );
+            strcat( buff, LIT_GUI( File_Exists_Replace ) );
             rc = GUIDisplayMessage( wnd, buff, dlg->currOFN->title, GUI_YES_NO );
             if( rc == GUI_RET_NO ) {
                 return( PROCESS_FALSE );

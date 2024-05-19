@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -55,10 +55,10 @@ static gui_menu_items menu_GUIHint = GUI_MENU_ARRAY( GUIHint );
 
 void GUIInitGUIMenuHint( void )
 {
-    GUIHint[GUI_MENU_IDX( GUI_CHANGE_FONT )].label = LIT( Change_XFont_ );
-    GUIHint[GUI_MENU_IDX( GUI_CHANGE_FONT )].hinttext = LIT( Change_Font_for_this_window  );
-    GUIHint[GUI_MENU_IDX( GUI_FIX_TOOLBAR )].label = LIT( XFix_Tool_Bar );
-    GUIHint[GUI_MENU_IDX( GUI_FIX_TOOLBAR )].hinttext = LIT( Make_Tool_Bar_Fixed );
+    GUIHint[GUI_MENU_IDX( GUI_CHANGE_FONT )].label = LIT_GUI( Change_XFont_ );
+    GUIHint[GUI_MENU_IDX( GUI_CHANGE_FONT )].hinttext = LIT_GUI( Change_Font_for_this_window  );
+    GUIHint[GUI_MENU_IDX( GUI_FIX_TOOLBAR )].label = LIT_GUI( XFix_Tool_Bar );
+    GUIHint[GUI_MENU_IDX( GUI_FIX_TOOLBAR )].hinttext = LIT_GUI( Make_Tool_Bar_Fixed );
 }
 
 void GUIAppendSystemMenuItem( HMENU hsysmenu, int menu_idx )
@@ -674,9 +674,9 @@ bool GUIAddToSystemMenu( gui_window *wnd, HWND hwnd, const gui_menu_items *menus
         num_items = _wpi_getmenuitemcount( hsysmenu );
 #ifndef __OS2_PM__
         ModifyMenu( hsysmenu, num_items - 1, MF_STRING | MF_BYPOSITION | MF_GRAYED,
-                    SC_NEXTWINDOW, LIT( NexXt ) ); // add \tCtrl+F6" );
+                    SC_NEXTWINDOW, LIT_GUI( NexXt ) ); // add \tCtrl+F6" );
         ModifyMenu( hsysmenu, num_items - 3, MF_STRING | MF_BYPOSITION | MF_ENABLED,
-                    SC_CLOSE, LIT( XClose ) ); // add \tctrl+f4" );
+                    SC_CLOSE, LIT_GUI( XClose ) ); // add \tctrl+f4" );
 #endif
     }
     if( (style & GUI_CLOSEABLE) == 0 ) {
