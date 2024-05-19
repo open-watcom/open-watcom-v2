@@ -30,8 +30,6 @@
 
 #ifdef RESX_GUI
 
-#include "sample.rh"
-
 #ifdef __OS2__
 #define RC_ITEM(a,b,c) a b c
 #else
