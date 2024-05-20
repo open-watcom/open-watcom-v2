@@ -113,16 +113,16 @@ static gui_menu_struct HelpMenu[] = {
 };
 
 static gui_menu_struct DbgMainMenu[] = {
-    MENU_CASCADE( MENU_MAIN_FILE, MainMenuFile, FileMenu )
-    MENU_CASCADE( MENU_MAIN_RUN, MainMenuRun, RunMenu )
-    MENU_CASCADE( MENU_MAIN_BREAK, MainMenuBreak, BreakMenu )
-    MENU_CASCADE( MENU_MAIN_CODE, MainMenuCode, CodeMenu )
-    MENU_CASCADE( MENU_MAIN_DATA, MainMenuData, DataMenu )
-    MENU_CASCADE( MENU_MAIN_UNDO, MainMenuUndo, UndoMenu )
-    MENU_CASCADE( MENU_MAIN_SEARCH, MainMenuSearch, SearchMenu )
-    MENU_CASCADE( MENU_MAIN_WINDOW, MainMenuWindow, WindowMenu )
-    MENU_CASCADE_DUMMY( MENU_MAIN_ACTION, MainMenuAction )
-    MENU_CASCADE( MENU_MAIN_HELP, MainMenuHelp, HelpMenu )
+    MENU_CASCADE( MENU_MAIN_FILE, MainMenuXFile, FileMenu )
+    MENU_CASCADE( MENU_MAIN_RUN, MainMenuXRun, RunMenu )
+    MENU_CASCADE( MENU_MAIN_BREAK, MainMenuXBreak, BreakMenu )
+    MENU_CASCADE( MENU_MAIN_CODE, MainMenuXCode, CodeMenu )
+    MENU_CASCADE( MENU_MAIN_DATA, MainMenuXData, DataMenu )
+    MENU_CASCADE( MENU_MAIN_UNDO, MainMenuXUndo, UndoMenu )
+    MENU_CASCADE( MENU_MAIN_SEARCH, MainMenuXSearch, SearchMenu )
+    MENU_CASCADE( MENU_MAIN_WINDOW, MainMenuXWindow, WindowMenu )
+    MENU_CASCADE_DUMMY( MENU_MAIN_ACTION, MainMenuXAction )
+    MENU_CASCADE( MENU_MAIN_HELP, MainMenuXHelp, HelpMenu )
 };
 
 gui_menu_items  WndMainMenu = GUI_MENU_ARRAY( DbgMainMenu );

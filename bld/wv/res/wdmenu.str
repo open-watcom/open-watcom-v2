@@ -8,7 +8,7 @@
         pick( HELP_##sym, help, japanese_help ) \
         pick( TIP_##sym, tip, japanese_tip )
 
-MENU_STR( MainMenuWindow,
+MENU_STR( MainMenuXWindow,
         "&Window",
         "j&Window",
         "Arrange window layouts.",
@@ -44,7 +44,7 @@ MENU_STR( XAccelerator,
         "Show a list of all accelerators.",
         "jShow a list of all accelerators." )
 
-MENU_STR( MainMenuFile,
+MENU_STR( MainMenuXFile,
         "&File",
         "j&File",
         "Perform file operations.",
@@ -105,7 +105,7 @@ MENU_STR( EXxit,
         "Exit from the debugger.",
         "jExit from the debugger." )
 
-MENU_STR( MainMenuSearch,
+MENU_STR( MainMenuXSearch,
         "&Search",
         "j&Search",
         "Search windows and modules.",
@@ -136,7 +136,7 @@ MENU_STR( XMatch,
         "Match lines using keyboard input.",
         "jMatch lines using keyboard input." )
 
-MENU_STR( MainMenuRun,
+MENU_STR( MainMenuXRun,
         "&Run",
         "j&Run",
         "Control program execution.",
@@ -199,7 +199,7 @@ MENU_STR( RestXore_,
         "Restore event replay information from a file.",
         "jRestore event replay information from a file." )
 
-MENU_STR( MainMenuBreak,
+MENU_STR( MainMenuXBreak,
         "&Break",
         "j&Break",
         "Break point operations.",
@@ -260,7 +260,7 @@ MENU_STR( XRestore_,
         "Restore all break points from a file.",
         "jRestore all break points from a file." )
 
-MENU_STR( MainMenuCode,
+MENU_STR( MainMenuXCode,
         "&Code",
         "j&Code",
         "Open a new code window.",
@@ -306,7 +306,7 @@ MENU_STR( XReplay,
         "Show the program execution replay window.",
         "jShow the program execution replay window." )
 
-MENU_STR( MainMenuData,
+MENU_STR( MainMenuXData,
         "&Data",
         "j&Data",
         "Open a new data window.",
@@ -372,7 +372,7 @@ MENU_STR( LXog,
         "Show the debugging log window.",
         "jShow the debugging log window." )
 
-MENU_STR( MainMenuUndo,
+MENU_STR( MainMenuXUndo,
         "&Undo",
         "j&Undo",
         "Browse through the execution history.",
@@ -406,13 +406,13 @@ TIP_MENU_STR( RXewind_Stack,
               "Rewind Stack",
               "jRewind Stack" )
 
-MENU_STR( MainMenuAction,
+MENU_STR( MainMenuXAction,
         "&Action",
         "j&Action",
         "Perform a window specific action.",
         "jPerform a window specific action." )
 
-MENU_STR( MainMenuHelp,
+MENU_STR( MainMenuXHelp,
         "&Help",
         "j&Help",
         "Display Open Watcom Debugger help.",
