@@ -32,7 +32,7 @@ dig_arch = all
 #
 .c : ../c;$(dig_srcs);$(watcom_dir)/c;$(trmem_dir)
 
-inc_dirs = -I"../h" -I"$(wsample_dir)/h" $(aui_inc_dirs) &
+inc_dirs = -I"../h" -I"$(wsample_dir)/h" $(cli_aui_inc_dirs) &
     $(commonui_inc_dirs) $(wpi_inc_dirs) $(hlpview_inc_dirs) -I"$(dig_dir)/h"
 
 extra_cpp_flags = $(dig_arch_cpp_flags) -DBLDVER=$(bld_ver)
@@ -75,7 +75,7 @@ extra_ldflags = -ldl
 #
 exetarg_prebuild_objs = $(extra_link_res_$(host_os)) $(resfile)
 exetarg_objs          = $(objs) $(sys_objs)
-exetarg_libs          = $(aui_lib) $(gui_lib) $(cli_ui_lib) $(sys_libs)
+exetarg_libs          = $(cli_aui_lib) $(cli_gui_lib) $(cli_ui_lib) $(sys_libs)
 exetarg_res           = $(proj_name).res
 exetarg_qnx_res       = usage.u
 !include exetarg.mif
@@ -91,7 +91,7 @@ ntmanif_path = ../res
 #
 # rcflags
 #
-rc_inc_dirs = -I. $(wprof_rc_inc_dirs) $(aui_rc_inc_dirs)
+rc_inc_dirs = -I. $(wprof_rc_inc_dirs) $(cli_aui_rc_inc_dirs)
 
 extra_rc_flags = $(ntmanif_def) $(ntverrc_def) $(ntmanif_inc_dirs) $(ntverrc_inc_dirs)
 
@@ -101,7 +101,7 @@ extra_rc_flags_win = -I"../res/win" -I"../res" -I"../h" -DRESX_GUI
 extra_rc_flags_nt  = -I"../res/win" -I"../res" -I"../h" -DRESX_GUI
 !endif
 
-$(proj_name).res : ../res/wprof.rc $(ntverrc_exe_dep) $(ntmanif_dep) $(aui_rc_depends) $(__MAKEFILES__) .AUTODEPEND
+$(proj_name).res : ../res/wprof.rc $(ntverrc_exe_dep) $(ntmanif_dep) $(cli_aui_rc_depends) $(__MAKEFILES__) .AUTODEPEND
     @%make echo_rc
     $(rcu8) $(ppflags_common) $(rc_cppflags) -ad $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 

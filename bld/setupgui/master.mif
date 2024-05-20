@@ -33,7 +33,7 @@ additional_clean = *.i *.rex setup.inf *.grc
 #
 .c : ../c;$(trmem_dir)
 
-inc_dirs  = -I"../h" $(wpi_inc_dirs) $(gui_inc_dirs) $(gui_inc_dirs_internal) $(commonui_inc_dirs) &
+inc_dirs  = -I"../h" $(wpi_inc_dirs) $(cli_gui_inc_dirs) $(cli_gui_inc_dirs_internal) $(commonui_inc_dirs) &
     $(wpi_inc_dirs) $(hlpview_inc_dirs) -I"$(libzip_dir)/lib" -I"$(zlib_dir)"
 
 !ifdef sys_windowed
@@ -124,9 +124,9 @@ libs_osx   = $(cli_ui_lib)
 !endif
 
 !ifeq host_cpu i86
-libs = $(gui_lib) $(libs_$(host_os)) $(libs_$(objs_subdir))
+libs = $(cli_gui_lib) $(libs_$(host_os)) $(libs_$(objs_subdir))
 !else
-libs = $(gui_lib) $(libs_$(host_os)) $(libs_$(objs_subdir)) ../ziplib/$(objs_subdir)/ziplib.lib ../zlib/$(objs_subdir)/zlib.lib
+libs = $(cli_gui_lib) $(libs_$(host_os)) $(libs_$(objs_subdir)) ../ziplib/$(objs_subdir)/ziplib.lib ../zlib/$(objs_subdir)/zlib.lib
 !endif
 
 #
@@ -170,7 +170,7 @@ ntverrc_path = ../res/nt
 ntmanif_path = ../res/nt
 !include ntmanif.mif
 
-rc_inc_dirs = -I"../res/$(host_os)" -I"../res" $(gui_rc_inc_dirs)
+rc_inc_dirs = -I"../res/$(host_os)" -I"../res" $(cli_gui_rc_inc_dirs)
 
 !ifdef sys_windowed
 extra_rc_flags = -DRESX_GUI
@@ -179,23 +179,23 @@ extra_rc_flags_win = -30
 extra_rc_flags_nt  = $(ntmanif_def) $(ntverrc_def) $(ntmanif_inc_dirs) $(ntverrc_inc_dirs)
 
 # UI resources
-setup.res : ../res/setup.rc $(depend_res) $(gui_rc_depends) $(__MAKEFILES__)
+setup.res : ../res/setup.rc $(depend_res) $(cli_gui_rc_depends) $(__MAKEFILES__)
     @%make echo_rc
     $(rcu8j) $(ppflags_common) $(rc_cppflags) $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
 # GUI resources
-csetup.res : ../res/setup.rc $(depend_res) ../res/wcc.bmp $(gui_rc_depends) $(__MAKEFILES__)
+csetup.res : ../res/setup.rc $(depend_res) ../res/wcc.bmp $(cli_gui_rc_depends) $(__MAKEFILES__)
     @%make echo_rc
     $(rcu8) $(ppflags_common) $(rc_cppflags) -DCSETUP $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
-jcsetup.res : ../res/setup.rc $(depend_res) ../res/wcc.bmp $(gui_rc_depends) $(__MAKEFILES__)
+jcsetup.res : ../res/setup.rc $(depend_res) ../res/wcc.bmp $(cli_gui_rc_depends) $(__MAKEFILES__)
     @%make echo_rc
     $(rcu8j) $(ppflags_common) $(rc_cppflags) -DJCSETUP -DJAPANESE $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
-f77setup.res : ../res/setup.rc $(depend_res) ../res/f77.bmp $(gui_rc_depends) $(__MAKEFILES__)
+f77setup.res : ../res/setup.rc $(depend_res) ../res/f77.bmp $(cli_gui_rc_depends) $(__MAKEFILES__)
     @%make echo_rc
     $(rcu8) $(ppflags_common) $(rc_cppflags) -DF77SETUP $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
-jfsetup.res : ../res/setup.rc $(depend_res) ../res/f77.bmp $(gui_rc_depends) $(__MAKEFILES__)
+jfsetup.res : ../res/setup.rc $(depend_res) ../res/f77.bmp $(cli_gui_rc_depends) $(__MAKEFILES__)
     @%make echo_rc
     $(rcu8j) $(ppflags_common) $(rc_cppflags) -DJFSETUP -DJAPANESE $(rc_flags) $(rc_inc_path) $[@ -fo=$@

@@ -20,7 +20,7 @@ auisample_wreslib = 1
 #
 .c: ../c
 
-inc_dirs = -I"../h" $(aui_inc_dirs)
+inc_dirs = -I"../h" $(cli_aui_inc_dirs)
 
 # explicit rules
 #################
@@ -31,7 +31,7 @@ inc_dirs = -I"../h" $(aui_inc_dirs)
 exetarg_objs = app.obj util.obj window1.obj window2.obj window3.obj &
     window4.obj window5.obj window6.obj window7.obj window8.obj &
     menus.obj appcolor.obj dlgcmd.obj dlgoptn.obj password.obj
-exetarg_libs = $(aui_lib) $(gui_lib) $(cli_ui_lib)
+exetarg_libs = $(cli_aui_lib) $(cli_gui_lib) $(cli_ui_lib)
 exetarg_res = app.res
 #exetarg_res = appj.res
 exetarg_name = app
@@ -40,7 +40,7 @@ exetarg_name = app
 #
 # rc and others
 #
-rc_inc_dirs = -I"../res" -I"../h" $(aui_rc_inc_dirs)
+rc_inc_dirs = -I"../res" -I"../h" $(cli_aui_rc_inc_dirs)
 
 rcfiles_os2 = ../res/dlgoptn2.dlg ../res/dui2.ico ../res/word2.ico
 rcfiles_win = ../res/dlgoptn.dlg ../res/japoptn.dlg ../res/dui.ico ../res/words.ico
@@ -58,7 +58,7 @@ rcfiles = &
     ../res/stop1.bmp &
     ../res/stop2.bmp &
     $(rcfiles_$(host_os)) &
-    $(aui_rc_depends)
+    $(cli_aui_rc_depends)
 
 !ifdef sys_windowed
 extra_rc_flags = -DRESX_GUI

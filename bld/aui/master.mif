@@ -28,7 +28,7 @@ additional_clean += *.dlg
 #
 .c: .;../c;$(posix_dir)/misc
 
-inc_dirs = -I. -I"../h" $(aui_inc_dirs) -I"$(posix_dir)/h"
+inc_dirs = -I. -I"../h" $(cli_aui_inc_dirs) -I"$(posix_dir)/h"
 
 extra_c_flags_i86 = -zc
 extra_c_flags_nov = -4s -ot

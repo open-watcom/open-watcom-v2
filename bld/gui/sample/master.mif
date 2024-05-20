@@ -9,6 +9,12 @@ guisample_autodepends = .AUTODEPEND
 
 guisample_wreslib = 1
 
+!ifdef sys_windowed
+!ifeq host_od os2
+gui_os2pm = 1
+!endif
+!endif
+
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
@@ -24,7 +30,7 @@ guisample_wreslib = 1
 #
 .c: ../c;$(os_source_dir);$(os_extra_dir)
 
-inc_dirs = -I. -I"../h" $(gui_inc_dirs) $(gui_inc_dirs_internal)
+inc_dirs = -I. -I"../h" $(cli_gui_inc_dirs) $(cli_gui_inc_dirs_internal)
 
 #
 # lflags
@@ -48,7 +54,7 @@ exetarg_objs       += samp2.obj
 !else
 exetarg_objs       += sample.obj
 !endif
-exetarg_libs       = $(gui_lib) $(cli_ui_lib)
+exetarg_libs       = $(cli_gui_lib) $(cli_ui_lib)
 exetarg_name       = sample
 exetarg_res        = sample.res
 !include exetarg.mif
@@ -77,7 +83,7 @@ guisamples_rc_depends = &
     ../res/sample.men
 !endif
 
-rc_inc_dirs += $(gui_rc_inc_dirs)  $(commonui_inc_dirs)
+rc_inc_dirs += $(cli_gui_rc_inc_dirs)  $(commonui_inc_dirs)
 guisamples_rc_depends += &
     ../res/change.bmp &
     ../res/five.bmp &
@@ -94,5 +100,5 @@ guisamples_rc_depends += &
 extra_rc_flags = -DRESX_GUI
 !endif
 
-sample.res : ../res/sample.rc $(guisamples_rc_depends) $(gui_rc_depends)
+sample.res : ../res/sample.rc $(guisamples_rc_depends) $(cli_gui_rc_depends)
     $(rcu8) $(ppflags_common) $(rc_cppflags) -ad $(rc_flags) $(rc_inc_path) $[@ -fo=$@

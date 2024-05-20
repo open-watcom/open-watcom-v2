@@ -28,7 +28,7 @@ additional_clean = *.grh
 #
 .c: ../c;../../c;$(hlpview_dir)/c;$(trmem_dir)
 
-inc_dirs = $(gui_inc_dirs) $(gui_inc_dirs_internal) -I"$(hlpview_dir)/h" $(commonui_inc_dirs) &
+inc_dirs = $(cli_gui_inc_dirs) $(cli_gui_inc_dirs_internal) -I"$(hlpview_dir)/h" $(commonui_inc_dirs) &
     $(wpi_inc_dirs) $(wres_inc_dirs)
 
 !ifdef sys_windowed

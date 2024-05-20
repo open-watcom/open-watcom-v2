@@ -1,25 +1,25 @@
 !include $(gui_dir)/client.mif
 !ifdef bootstrap
-aui_path = $(aui_dir)/$(objs_subdir)
+cli_aui_path = $(aui_dir)/$(objs_subdir)
 !else ifdef sys_windowed
-aui_path = $(aui_dir)/$(objs_subdir).gui
+cli_aui_path = $(aui_dir)/$(objs_subdir).gui
 ! ifeq host_os os2
 aui_aui_os2pm = 1
 ! endif
 !else
-aui_path = $(aui_dir)/$(objs_subdir)
+cli_aui_path = $(aui_dir)/$(objs_subdir)
 !endif
-aui_inc_dirs = -I"$(aui_path)" -I"$(aui_dir)/h" $(gui_inc_dirs)
-aui_lib = $(aui_path)/aui.lib
+cli_aui_inc_dirs = -I"$(cli_aui_path)" -I"$(aui_dir)/h" $(cli_gui_inc_dirs)
+cli_aui_lib = $(cli_aui_path)/aui.lib
 !ifdef aui_aui_os2pm
 aui_aui_dialogs = &
-    $(aui_path)/dlgrx.dlg &
-    $(aui_path)/dlgsrch.dlg &
-    $(aui_path)/dlgsrcha.dlg &
-    $(aui_path)/japrx.dlg &
-    $(aui_path)/japsrch.dlg &
-    $(aui_path)/japsrcha.dlg
-aui_rc_inc_dirs = -I"$(aui_path)" -I"$(aui_dir)/res" -I"$(aui_dir)/h" $(gui_rc_inc_dirs)
+    $(cli_aui_path)/dlgrx.dlg &
+    $(cli_aui_path)/dlgsrch.dlg &
+    $(cli_aui_path)/dlgsrcha.dlg &
+    $(cli_aui_path)/japrx.dlg &
+    $(cli_aui_path)/japsrch.dlg &
+    $(cli_aui_path)/japsrcha.dlg
+cli_aui_rc_inc_dirs = -I"$(cli_aui_path)" -I"$(aui_dir)/res" -I"$(aui_dir)/h" $(cli_gui_rc_inc_dirs)
 !else
 aui_aui_dialogs = &
     $(aui_dir)/res/dlgs/dlgrx.dlg &
@@ -28,14 +28,14 @@ aui_aui_dialogs = &
     $(aui_dir)/res/dlgs/japrx.dlg &
     $(aui_dir)/res/dlgs/japsrch.dlg &
     $(aui_dir)/res/dlgs/japsrcha.dlg
-aui_rc_inc_dirs = -I"$(aui_path)" -I"$(aui_dir)/res/dlgs" -I"$(aui_dir)/res" -I"$(aui_dir)/h" $(gui_rc_inc_dirs)
+cli_aui_rc_inc_dirs = -I"$(cli_aui_path)" -I"$(aui_dir)/res/dlgs" -I"$(aui_dir)/res" -I"$(aui_dir)/h" $(cli_gui_rc_inc_dirs)
 !endif
-aui_rc_depends = &
+cli_aui_rc_depends = &
     $(aui_dir)/res/aui.rc &
     $(aui_dir)/res/aui.msg &
     $(aui_dir)/h/aui.rh &
-    $(aui_path)/aui.grh &
+    $(cli_aui_path)/aui.grh &
     $(aui_dir)/h/dlgrx.rh &
     $(aui_dir)/h/dlgsrch.rh &
     $(aui_aui_dialogs) &
-    $(gui_rc_depends)
+    $(cli_gui_rc_depends)

@@ -11,7 +11,7 @@ proj_name = appwiz
 #
 .c : ../c
 
-inc_dirs = -I. -I"../h" $(gui_inc_dirs)
+inc_dirs = -I. -I"../h" $(cli_gui_inc_dirs)
 
 # explicit rules
 #################
@@ -21,7 +21,7 @@ inc_dirs = -I. -I"../h" $(gui_inc_dirs)
 #
 exetarg_prebuild_objs = rcstr.grh
 exetarg_objs          = appwiz.obj errmsg.obj projtype.obj
-exetarg_libs          = $(gui_lib)
+exetarg_libs          = $(cli_gui_lib)
 exetarg_res           = $(proj_name).res
 !include exetarg.mif
 
