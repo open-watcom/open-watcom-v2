@@ -15,10 +15,11 @@ set PROJDIR=<CWD>
 
 [ BLOCK <BLDRULE> rel cprel ]
 #============================
-    <CCCMD> os2386/exedmp.exe  "<OWRELROOT>/binp/"
-    <CCCMD> nt386/exedmp.exe   "<OWRELROOT>/binnt/"
-
-    <CCCMD> ntx64/exedmp.exe   "<OWRELROOT>/binnt64/"
+    <CCCMD> os2386/exedmp.exe   "<OWRELROOT>/binp/"
+    <CCCMD> nt386/exedmp.exe    "<OWRELROOT>/binnt/"
+    <CCCMD> ntx64/exedmp.exe    "<OWRELROOT>/binnt64/"
+    <CCCMD> linux386/exedmp.exe "<OWRELROOT>/binl/exedmp"
+    <CCCMD> linuxx64/exedmp.exe "<OWRELROOT>/binl64/exedmp"
 
 [ BLOCK . . ]
 

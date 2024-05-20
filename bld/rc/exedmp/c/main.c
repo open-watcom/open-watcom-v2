@@ -35,7 +35,7 @@
 #include "format.h"
 
 
-void main( int argc, char *argv[] ) {
+int main( int argc, char *argv[] ) {
     Parameters          param;
     ExeFile             exeFile;
     bool                ret;
@@ -68,5 +68,7 @@ void main( int argc, char *argv[] ) {
                                     0 );
     }
     freeAllResources( &exeFile );
+
+    return 0;
 }
 
