@@ -22,7 +22,7 @@ extra_cpp_flags = -DINSIDE_VI
 !ifdef sys_windowed
 extra_cpp_flags += -DNOUSE3D -D__WIN__
 !else
-!ifeq ui_os unix
+!ifeq cli_ui_os unix
 !ifneq debug 0
 extra_cpp_flags += -DTRACE
 !endif

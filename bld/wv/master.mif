@@ -72,7 +72,7 @@ target_nt  = win
 .c: ../c;../../c;$(aui_dir)/c;$(dig_srcs);$(watcom_dir)/c;$(trmem_dir)
 
 inc_dirs = -I.  -Ih -I"../h" -I"../../h" -I"../../res" -I"$(dig_dir)/h" $(aui_inc_dirs) &
-	$(ui_inc_dirs_internal) $(hlpview_inc_dirs) $(wpi_inc_dirs) $(commonui_inc_dirs)
+	$(cli_ui_inc_dirs_internal) $(hlpview_inc_dirs) $(wpi_inc_dirs) $(commonui_inc_dirs)
 !ifdef sys_rtdll
 !else
 inc_dirs += $(gui_inc_dirs_internal)
@@ -143,7 +143,7 @@ exetarg_name          = $(wv_engine_noui)
 !else
 exetarg_prebuild_objs = liteng.gh litdui.gh litmenu.gh usage.gh usagej.gh
 exetarg_objs          = $(engine_objs) fingmsg.obj $(ui_objs)
-exetarg_libs          = $(aui_lib) $(gui_lib) $(ui_lib)
+exetarg_libs          = $(aui_lib) $(gui_lib) $(cli_ui_lib)
 exetarg_qnx_res       = usage.u
 exetarg_name          = $(name)
 !endif

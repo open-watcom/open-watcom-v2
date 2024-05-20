@@ -48,7 +48,7 @@ exetarg_objs       += samp2.obj
 !else
 exetarg_objs       += sample.obj
 !endif
-exetarg_libs       = $(gui_lib) $(ui_lib)
+exetarg_libs       = $(gui_lib) $(cli_ui_lib)
 exetarg_name       = sample
 exetarg_res        = sample.res
 !include exetarg.mif

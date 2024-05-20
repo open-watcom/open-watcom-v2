@@ -13,14 +13,14 @@ ui_autodepends = .autodepend
 !include deftarg.mif
 !include trmem.mif
 
-!include $(ui_dir)/client.mif       # define ui_os macro
+!include $(ui_dir)/client.mif       # define cli_ui_os macro
 
 #
 # cflags
 #
 .c: ../c;../../c;$(extra_cdir);$(trmem_dir)
 
-inc_dirs = -I"../h" $(ui_inc_dirs)
+inc_dirs = -I"../h" $(cli_ui_inc_dirs)
 inc_dirs_dos = -I"$(clib_dir)/mbyte/h"
 inc_dirs_nov = -I"$(watcom_nw40_h)" -I"$(lib_misc_dir)/h"
 inc_dirs_qnx = -I. -I"../../unix/h"
@@ -106,8 +106,8 @@ common_objs = &
 !inject uivirt.obj                        qnx  unix
 
 # host os specific files definition check
-!ifndef $(ui_os)
-!error Host OS $$($(ui_os)) is unset. Review and correct ui/client.mif make file!
+!ifndef $(cli_ui_os)
+!error Host OS $$($(cli_ui_os)) is unset. Review and correct ui/client.mif make file!
 !endif
 
 #
@@ -116,7 +116,7 @@ common_objs = &
 !ifdef sample
 exetarg_prebuild_objs = ui.lib
 exetarg_objs = sample.obj sampdial.obj
-exetarg_libs = $(ui_lib)
+exetarg_libs = $(cli_ui_lib)
 exetarg_name = sample
 !include exetarg.mif
 !endif
@@ -124,7 +124,7 @@ exetarg_name = sample
 #
 # LIB
 #
-libtarg_objs = $(common_objs) $(trmem_objs) $($(ui_os))
+libtarg_objs = $(common_objs) $(trmem_objs) $($(cli_ui_os))
 !include  libtarg.mif
 
 #
@@ -139,4 +139,4 @@ conesc.gh : ./buildesc.exe ../tix/qnx.tix
 
 ./buildesc.exe : ../c/buildesc.c ../../unix/c/_doparse.c
     @%make echo_bldccl
-    $(bld_ccl) $(ppflags_common) $(ppflags_autodep) $(bld_ppflags_sys) -DBUILDDESC $(bld_cppflags) $[@ -I"../h" -I"../../unix/c" -I"../../unix/h" $(ui_inc_dirs) $(bld_cclflags) $(bld_ldflags)
+    $(bld_ccl) $(ppflags_common) $(ppflags_autodep) $(bld_ppflags_sys) -DBUILDDESC $(bld_cppflags) $[@ -I"../h" -I"../../unix/c" -I"../../unix/h" $(cli_ui_inc_dirs) $(bld_cclflags) $(bld_ldflags)

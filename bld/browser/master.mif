@@ -107,7 +107,7 @@ objs_dbg  = debuglog.obj
 exetarg_prebuild_objs = $(docs_host_dir)/wbrw.gh
 !endif
 exetarg_objs          = $(objs) $(objs_dbg)
-exetarg_libs_dos      = $(ui_lib)
+exetarg_libs_dos      = $(cli_ui_lib)
 exetarg_libs          = $(gui_lib) $(exetarg_libs_$(host_os)) $(dwarfr_lib) $(wclass_lib)
 exetarg_res           = $(proj_name).res
 exetarg_name          = wbrw

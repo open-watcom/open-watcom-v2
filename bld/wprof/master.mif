@@ -75,7 +75,7 @@ extra_ldflags = -ldl
 #
 exetarg_prebuild_objs = $(extra_link_res_$(host_os)) $(resfile)
 exetarg_objs          = $(objs) $(sys_objs)
-exetarg_libs          = $(aui_lib) $(gui_lib) $(ui_lib) $(sys_libs)
+exetarg_libs          = $(aui_lib) $(gui_lib) $(cli_ui_lib) $(sys_libs)
 exetarg_res           = $(proj_name).res
 exetarg_qnx_res       = usage.u
 !include exetarg.mif

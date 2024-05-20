@@ -116,11 +116,11 @@ objs += loadfind.obj
 
 !ifdef sys_windowed
 !else
-libs_dos   = $(ui_lib)
-libs_linux = $(ui_lib)
-libs_nt    = $(ui_lib)
-libs_os2   = $(ui_lib)
-libs_osx   = $(ui_lib)
+libs_dos   = $(cli_ui_lib)
+libs_linux = $(cli_ui_lib)
+libs_nt    = $(cli_ui_lib)
+libs_os2   = $(cli_ui_lib)
+libs_osx   = $(cli_ui_lib)
 !endif
 
 !ifeq host_cpu i86

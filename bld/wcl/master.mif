@@ -93,6 +93,6 @@ optencod_targets = $(target_cpu) $(host_os)
 optencod_targets += dbg
 !endif
 
-usage.gh $(exetarg_$(host_os)_res) : $(optencod_src) $(__MAKEFILES__)
+usage.gh : $(optencod_src) $(__MAKEFILES__)
     @%make echo_optencod
     $(noecho)*optencod -q $(optencod_opt) $(optencod_opt_$(host_os)) $[@ . . $@ . $(optencod_targets)
