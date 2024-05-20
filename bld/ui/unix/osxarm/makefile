@@ -3,4 +3,4 @@
 host_os  = osx
 host_cpu = arm
 
-!include ../../ui.mif
+!include ../../master.mif

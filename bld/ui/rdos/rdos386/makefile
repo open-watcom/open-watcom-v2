@@ -2,4 +2,4 @@
 host_cpu = 386
 host_os  = rdos
 
-!include ../../ui.mif
+!include ../../master.mif

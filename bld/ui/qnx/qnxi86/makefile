@@ -7,4 +7,4 @@ memory_model_i86 = l
 
 extra_cdir = ../../unix/c
 
-!include ../../ui.mif
+!include ../../master.mif
