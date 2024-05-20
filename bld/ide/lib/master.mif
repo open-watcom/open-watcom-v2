@@ -12,13 +12,14 @@ idelib_autodepends = .AUTODEPEND
 !include deftarg.mif
 
 !include $(wclass_dir)/client.mif
+!include $(idelib_dir)/client.mif
 
 #
 # cflags
 #
 .cpp : ../cpp
 
-inc_dirs = -I. -I"../h" $(wclass_inc_dirs) -I"$(lib_misc_dir)/h"
+inc_dirs = -I. $(cli_idelib_inc_dirs) $(cli_wclass_inc_dirs) -I"$(lib_misc_dir)/h"
 
 !ifdef __WATCOM_TOOLS__
 extra_c_flags_i86 = -zc -zm

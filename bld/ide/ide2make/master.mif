@@ -19,7 +19,7 @@ ide2make_autodepends = .AUTODEPEND
 #
 .cpp: ../cpp
 
-inc_dirs = -I"../h" $(idelib_inc_dirs) $(wclass_inc_dirs)
+inc_dirs = -I"../h" $(cli_idelib_inc_dirs) $(cli_wclass_inc_dirs)
 
 # explicit rules
 #################
@@ -28,5 +28,5 @@ inc_dirs = -I"../h" $(idelib_inc_dirs) $(wclass_inc_dirs)
 # EXE
 #
 exetarg_objs = ide2make.obj
-exetarg_libs = $(idelib_lib) $(wclass_lib)
+exetarg_libs = $(cli_idelib_lib) $(cli_wclass_lib)
 !include exetarg.mif

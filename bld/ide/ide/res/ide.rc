@@ -6,12 +6,10 @@
 #else
     #define RC_ITEM(a,b,c) b a c
     #include <windows.h>
-    #include "getfile.rh"
 #endif
-#include "gui.rh"
 #include "ide.rh"
 
-#include "gui.rc"
+#include "wclass.rc"
 
 RC_ITEM( BITMAP, B_newproj,         "newproj.bmp" )
 RC_ITEM( BITMAP, B_openproj,        "openproj.bmp" )

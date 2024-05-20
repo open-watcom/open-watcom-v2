@@ -11,12 +11,13 @@ target_win = win
 !include defrule.mif
 !include deftarg.mif
 
+!include $(wclass_dir)/client.mif
 #
 # cflags
 #
 .cpp : $(wclass_dir)/$(target_$(host_os))/cpp;$(wclass_dir)/cpp
 
-inc_dirs = -I"$(wclass_dir)/$(target_$(host_os))/hpp" -I"$(wclass_dir)/hpp" -I"$(gui_dir)/h"
+inc_dirs = $(cli_wclass_inc_dirs)
 
 extra_c_flags_i86 = -zc -zm
 

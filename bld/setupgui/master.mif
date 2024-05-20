@@ -34,7 +34,7 @@ additional_clean = *.i *.rex setup.inf *.grc
 .c : ../c;$(trmem_dir)
 
 inc_dirs  = -I"../h" $(wpi_inc_dirs) $(cli_gui_inc_dirs) $(cli_gui_inc_dirs_internal) $(commonui_inc_dirs) &
-    $(wpi_inc_dirs) $(hlpview_inc_dirs) -I"$(libzip_dir)/lib" -I"$(zlib_dir)"
+    $(wpi_inc_dirs) $(cli_hlpview_inc_dirs) -I"$(libzip_dir)/lib" -I"$(zlib_dir)"
 
 !ifdef sys_windowed
 extra_cpp_flags     = -DGUI_IS_GUI
