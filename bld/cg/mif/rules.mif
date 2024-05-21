@@ -12,7 +12,7 @@ extra_c_flags_memmgt    = $(track_flags_$(host_cpu))
 extra_c_flags_trmem     = $(track_flags_$(host_cpu))
 !endif
 
-inc_dirs = -I. $(inc_dirs_targ) -I"$(cg_dir)/h" $(cfloat_inc_dirs) $(dwarfw_inc_dirs) -I"$(comp_cfg_dir)/h"
+inc_dirs = -I. $(inc_dirs_targ) -I"$(cg_dir)/h" $(cfloat_inc_dirs) $(cli_dwarfw_inc_dirs) -I"$(comp_cfg_dir)/h"
 
 .c: $(src_path);$(watcom_dir)/c;$(trmem_dir)
 .asm: $(asm_path)

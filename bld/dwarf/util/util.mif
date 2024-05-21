@@ -14,6 +14,7 @@ dwarfutil_trmem = 1
 !include trmem.mif
 
 !include $(orl_dir)/client.mif
+!include $(dwarfr_dir)/client.mif
 !include $(dwarfw_dir)/client.mif
 
 #
@@ -21,7 +22,7 @@ dwarfutil_trmem = 1
 #
 .c: ../c;$(trmem_dir)
 
-inc_dirs = -I"$(dwarfr_dir)/h" -I"$(dwarfw_dir)/h" -I"$(orl_dir)/h" -I"../h"
+inc_dirs = $(cli_dwarfr_inc_dirs) $(cli_dwarfw_inc_dirs) -I"$(orl_dir)/h" -I"../h"
 
 extra_cpp_flags_trmemcvr = $(trmem_cpp_flags)
 extra_cpp_flags_dwdump   = $(trmem_cpp_flags)
@@ -45,6 +46,6 @@ exetarg_name = dwdump
 # EXE
 #
 exetarg_objs = testcli.obj testtest.obj testdump.obj
-exetarg_libs = $(dwarfw_lib)
+exetarg_libs = $(cli_dwarfw_lib)
 exetarg_name = testcli
 !include exetarg.mif

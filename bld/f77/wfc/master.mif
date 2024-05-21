@@ -35,7 +35,7 @@ exetarg_name = $(exename_$(target_cpu))
 .c: $(f77wfc_dir)/c;$(asminline_c);$(trmem_dir);$(watcom_dir)/c;$(fe_misc_dir)/h
 
 inc_dirs= -I. -I.. -I"$(f77wfc_dir)/h" -I"$(f77_dir)/h" &
-    $(cg_inc_dirs) $(dwarfw_inc_dirs) $(cfloat_inc_dirs) -I"$(comp_cfg_dir)/h" -I"$(fe_misc_dir)/h" &
+    $(cg_inc_dirs) $(cli_dwarfw_inc_dirs) $(cfloat_inc_dirs) -I"$(comp_cfg_dir)/h" -I"$(fe_misc_dir)/h" &
     $(asminline_inc_dirs) -I"$(clib_dir)/h" -I"$(lib_misc_dir)/h"
 
 extra_cpp_flags =

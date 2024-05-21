@@ -49,7 +49,7 @@ additional_clean = *.grh *.grc
 #
 .c: $(wlink_dir)/c;$(wrc_dir)/c;$(lib_misc_dir)/c;$(watcom_dir)/c;$(trmem_dir)
 
-inc_dirs = -I. -I"$(wlink_dir)/h" $(dwarfw_inc_dirs) -I"$(orl_dir)/h" -I"$(wrc_dir)/h" &
+inc_dirs = -I. -I"$(wlink_dir)/h" $(cli_dwarfw_inc_dirs) -I"$(orl_dir)/h" -I"$(wrc_dir)/h" &
     $(wres_inc_dirs) -I"$(lib_misc_dir)/h" -I"$(watcom_dir)/c"
 
 extra_cpp_flags = -DINSIDE_WLINK
@@ -87,9 +87,9 @@ extra_l_flags_dll_os2 = initinstance terminstance op modname='$(dlltarg_name)'
 # EXE
 #
 !ifdef no_orl
-wlink_libs            = $(dwarfw_lib)
+wlink_libs            = $(cli_dwarfw_lib)
 !else
-wlink_libs            = $(dwarfw_lib) $(orl_lib)
+wlink_libs            = $(cli_dwarfw_lib) $(orl_lib)
 !endif
 
 !ifdef wlink_dll

@@ -54,7 +54,7 @@ cg_objs =
 !ifdef dll_cg
 cg_libs = &
     $(o_dir)/cgdllcli.lib &
-    $(dwarfw_lib)
+    $(cli_dwarfw_lib)
 !else ifeq use_owl_lib_$(target_cpu) 1
 ! ifeq debug_cg 1
 cg_objs = $(owl_debug_objs)
@@ -64,11 +64,11 @@ cg_libs = &
     $(o_dir)/$(cg_target_host_name).lib &
     $(owl_lib) &
     $(cfloat_lib) &
-    $(dwarfw_lib)
+    $(cli_dwarfw_lib)
 !else
 cg_libs = &
     $(o_dir)/cg$(target_cpu).lib &
     $(o_dir)/$(cg_target_host_name).lib &
     $(cfloat_lib) &
-    $(dwarfw_lib)
+    $(cli_dwarfw_lib)
 !endif

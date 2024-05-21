@@ -13,9 +13,9 @@ additional_clean = *.grc
 additional_clean += $(docs_host_dir)/wbrw.gh
 !endif
 
-.extensions: .gpp
-
 sys_windowed = 1
+
+.extensions: .gpp
 
 !include cproj.mif
 !include defrule.mif
@@ -36,7 +36,7 @@ sys_windowed = 1
 .gpp: ../gen
 
 inc_dirs = -I"../h" -I"../brg/h" -I"../gen" $(cli_wclass_inc_dirs) -I"$(docs_host_dir)" &
-    $(dwarfr_inc_dirs) -I"$(posix_dir)/h" -I"$(editdll_dir)"
+    $(cli_dwarfr_inc_dirs) -I"$(posix_dir)/h" -I"$(editdll_dir)"
 
 extra_cpp_flags = -DNOPERSIST
 !ifeq debug 2
@@ -107,7 +107,7 @@ exetarg_prebuild_objs = $(docs_host_dir)/wbrw.gh
 !endif
 exetarg_objs          = $(objs) $(objs_dbg)
 exetarg_libs_dos      = $(cli_ui_lib)
-exetarg_libs          = $(cli_gui_lib) $(exetarg_libs_$(host_os)) $(dwarfr_lib) $(cli_wclass_lib)
+exetarg_libs          = $(cli_gui_lib) $(exetarg_libs_$(host_os)) $(cli_dwarfr_lib) $(cli_wclass_lib)
 exetarg_res           = $(proj_name).res
 exetarg_name          = wbrw
 !include exetarg.mif

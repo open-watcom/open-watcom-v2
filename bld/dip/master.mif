@@ -36,7 +36,7 @@ additional_clean = *.grc
 #
 .c: ../c;../../c;$(lib_misc_dir)/c;$(extra_srcs)
 
-inc_dirs = -I"../h" $(dwarfr_inc_dirs) -I"$(lib_misc_dir)/h" $(extra_incs) -I"$(dig_dir)/h"
+inc_dirs = -I"../h" $(cli_dwarfr_inc_dirs) -I"$(lib_misc_dir)/h" $(extra_incs) -I"$(dig_dir)/h"
 
 extra_cpp_flags = -DINSIDE_DIP $(extra_cppflags)
 
@@ -94,7 +94,7 @@ dlltarg_objs += $(imp_objs_watcom)
 dlltarg_libs += $(imp_libs)
 !endif
 !ifeq dip_format dwarf
-dlltarg_libs += $(dwarfr_lib)
+dlltarg_libs += $(cli_dwarfr_lib)
 !endif
 !ifdef ntverrc_dll_out
 dlltarg_res = $(ntverrc_dll_out)

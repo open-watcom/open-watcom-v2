@@ -11,13 +11,15 @@ merge_trmem = 1
 !include deftarg.mif
 !include trmem.mif
 
+!include $(dwarfr_dir)/client.mif
+
 #
 # cflags
 #
 .c: ../cpp;$(trmem_dir)
 .cpp: ../cpp;$(browser_dir)/cpp
 
-inc_dirs = -I"../h" -I"$(browser_dir)/h" -I"$(dwarfr_dir)/h" -I"$(posix_dir)/h"
+inc_dirs = -I"../h" -I"$(browser_dir)/h" $(cli_dwarfr_inc_dirs) -I"$(posix_dir)/h"
 
 extra_cpp_flags     = -DSTANDALONE_MERGER
 !ifeq debug 2
