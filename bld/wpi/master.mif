@@ -6,6 +6,8 @@ wpi_autodepends = .AUTODEPEND
 
 wpi_nofpu = 1
 
+sys_windowed = 1
+
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
