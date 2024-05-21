@@ -1,2 +1,5 @@
-cli_idelib_inc_dirs = -I"$(idelib_dir)/h"
+!include $(wclass_dir)/client.mif
+cli_idelib_inc_dirs = -I"$(idelib_dir)/h" $(cli_wclass_inc_dirs)
 cli_idelib_lib = $(idelib_dir)/$(objs_subdir)/ide.lib
+cli_idelib_rc_inc_dirs = $(cli_wclass_rc_inc_dirs)
+cli_idelib_rc_depends = $(cli_wclass_rc_depends)
