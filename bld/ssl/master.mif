@@ -1,6 +1,6 @@
 proj_name = ssl
 
-ssl_autodepends = .autodepend
+ssl_autodepends = .AUTODEPEND
 
 !include cproj.mif
 !include defrule.mif

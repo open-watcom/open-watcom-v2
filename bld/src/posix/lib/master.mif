@@ -1,5 +1,5 @@
 proj_name            = util_lib
-util_lib_autodepends = .autodepend
+util_lib_autodepends = .AUTODEPEND
 
 !include cproj.mif
 !include defrule.mif

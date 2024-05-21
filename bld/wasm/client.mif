@@ -16,7 +16,7 @@ cli_asminline_objs = &
 cli_asminline_lib =
 cli_asminline_deps = asmops.gh asmopsd.gh wasmcmsg.grh
 cli_asminline_rc_inc_dirs = -I"$(wasm_dir)/h"
-cli_asminline_rc_depends = wasmcmsg.grh
+cli_asminline_rc_deps = wasmcmsg.grh
 
 !ifeq proj_name wasm
 wasm_client_extra_files = $(wasm_dir)/fullops.tok

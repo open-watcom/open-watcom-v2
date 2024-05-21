@@ -18,17 +18,17 @@ alt_error = 00
 .src: $(wasmtest_dir)/inline
 .asm: $(wasmtest_dir)/inline
 
-test : .symbolic start start_test $($(arch)_inline_objs) test_set_result
+test : .SYMBOLIC start start_test $($(arch)_inline_objs) test_set_result
     $(noecho)%make common_set_result_check
 
 check_result : .procedure
     -diff -b error.out error.chk
 
-test_set_result : .symbolic
+test_set_result : .SYMBOLIC
     -@%write error.out OK
     -chk_exec -d exec.out >>error.out
 
-start_test : .symbolic
+start_test : .SYMBOLIC
 !ifndef $(arch)_inline_objs
     @%append $(%ERROR_FILE) PASS decoding
 !endif

@@ -2,7 +2,7 @@ tree_depth = 4
 
 proj_name = cc
 
-cc_autodepends = .autodepend
+cc_autodepends = .AUTODEPEND
 
 #
 # names
@@ -125,7 +125,7 @@ prebuild_objs = &
     $(bin_intname)01.int
 
 !ifndef bootstrap
-all: $(bin_subdir) $(exetarg_name).exe .symbolic
+all: $(bin_subdir) $(exetarg_name).exe .SYMBOLIC
 !endif
 
 #
@@ -167,7 +167,7 @@ ntverrc_dll = $(dllname)
 ntverrc_exe = $(exename)
 !include ntverrc.mif
 
-extra_rc_flags_nt = $(ntverrc_dep) $(ntverrc_inc_dirs)
+extra_rc_flags_nt = $(ntverrc_deps) $(ntverrc_inc_dirs)
 
 !ifeq target_cpu axp
 

@@ -1,5 +1,5 @@
 proj_name       = owl
-owl_autodepends = .autodepend
+owl_autodepends = .AUTODEPEND
 
 !include cproj.mif
 !include defrule.mif

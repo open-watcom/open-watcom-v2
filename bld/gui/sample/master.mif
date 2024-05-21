@@ -59,7 +59,7 @@ exetarg_res        = sample.res
 #
 !ifdef guisample_os2pm
 rc_inc_dirs = -I. -I"../res/pm" -I"../res" -I"../h"
-guisamples_rc_depends1 = ../res/pm/sample.dlg &
+guisamples_rc_deps1 = ../res/pm/sample.dlg &
     ../res/pm/dlg.ico &
     ../res/pm/main.ico &
     ../res/pm/win1.ico &
@@ -67,7 +67,7 @@ guisamples_rc_depends1 = ../res/pm/sample.dlg &
     ../res/pm/win3.ico
 !else
 rc_inc_dirs = -I. -I"../res/win" -I"../res" -I"../h"
-guisamples_rc_depends1 = ../res/win/sample.dlg &
+guisamples_rc_deps1 = ../res/win/sample.dlg &
     ../res/win/dlg.ico &
     ../res/win/main.ico &
     ../res/win/win1.ico &
@@ -77,8 +77,8 @@ guisamples_rc_depends1 = ../res/win/sample.dlg &
 !endif
 
 rc_inc_dirs += $(cli_gui_rc_inc_dirs)  $(commonui_inc_dirs)
-guisamples_rc_depends = &
-    $(guisamples_rc_depends1) &
+guisamples_rc_deps = &
+    $(guisamples_rc_deps1) &
     ../res/change.bmp &
     ../res/five.bmp &
     ../res/four.bmp &
@@ -94,5 +94,5 @@ guisamples_rc_depends = &
 extra_rc_flags = -DRESX_GUI
 !endif
 
-sample.res : ../res/sample.rc $(guisamples_rc_depends) $(cli_gui_rc_depends)
+sample.res : ../res/sample.rc $(guisamples_rc_deps) $(cli_gui_rc_deps)
     $(rcu8) $(ppflags_common) $(rc_cppflags) -ad $(rc_flags) $(rc_inc_path) $[@ -fo=$@

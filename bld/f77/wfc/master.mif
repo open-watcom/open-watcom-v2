@@ -74,9 +74,9 @@ ntverrc_exe = $(exetarg_name)
 rc_inc_dirs = -I. -I.. -I"$(f77wfc_dir)/h" -I"$(f77_dir)/h" &
     $(cli_asminline_rc_inc_dirs) -I"$(comp_cfg_dir)/h" -I"$(fe_misc_dir)/h"
 
-extra_rc_flags_nt = $(ntverrc_dep) $(ntverrc_inc_dirs)
+extra_rc_flags_nt = $(ntverrc_deps) $(ntverrc_inc_dirs)
 
-$(proj_name).res : $(f77wfc_dir)/h/wfc.rc $(ntverrc_exe_dep) $(f77wfc_dir)/h/wfc.rh $(cli_asminline_rc_depends)
+$(proj_name).res : $(f77wfc_dir)/h/wfc.rc $(ntverrc_exe_deps) $(f77wfc_dir)/h/wfc.rh $(cli_asminline_rc_deps)
     @%make echo_rc
     $(rcu8j) $(ppflags_common) $(rc_cppflags) $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 

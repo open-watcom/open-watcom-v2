@@ -1,7 +1,7 @@
 proj_name = whc
 proj_type = cxx
 
-whc_autodepends = .autodepend
+whc_autodepends = .AUTODEPEND
 
 whc_trmem = 1
 

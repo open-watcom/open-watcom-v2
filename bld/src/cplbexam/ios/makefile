@@ -10,7 +10,7 @@ RDBUF.EXE       RDSTATE.EXE     WIDTH.EXE       SETF.EXE        UNSETF.EXE   &
 EXCEPT.EXE      TIE.EXE         IWORD.EXE       PWORD.EXE       INIT.EXE     &
 CONSTRBU.EXE   BITALLOC.EXE
 
-all : $(exes) .symbolic
+all : $(exes) .SYMBOLIC
 
 .cpp.exe :
     wcl $[@ -xs

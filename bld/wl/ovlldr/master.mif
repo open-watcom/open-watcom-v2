@@ -1,7 +1,7 @@
 tree_depth = 4
 
 proj_name = ovlldr
-ovlldr_autodepends = .autodepend
+ovlldr_autodepends = .AUTODEPEND
 ovlldr_distrib_lib = 1
 
 sobjs = sovlret.obj sovlmain.obj sovldbg.obj ovlstd.obj ovlshare.obj
@@ -65,10 +65,10 @@ extra_a_flags_movlmain = -DOVL_WHOOSH -DOVL_MULTITHREAD
 extra_a_flags_sovlret  = -DOVL_SMALL
 extra_a_flags_lovlret  =
 
-wovl : .symbolic wovl.lib wmovl.lib
+wovl : .SYMBOLIC wovl.lib wmovl.lib
     @%null
 
-all : .symbolic wovl dovl.lib dovls.lib dovll.lib dovln.lib dovlmt.lib
+all : .SYMBOLIC wovl dovl.lib dovls.lib dovll.lib dovln.lib dovlmt.lib
     @%null
 
 wovl.lib : lovlldr.obj sovlldr.obj novlldr.obj &

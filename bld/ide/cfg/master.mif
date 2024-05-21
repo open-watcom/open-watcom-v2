@@ -21,7 +21,7 @@ objs = &
 
 .sp : ..
 
-all: $(objs) .symbolic
+all: $(objs) .SYMBOLIC
 
 wsplice_opts_linux = -k FOR_LINUX
 wsplice_opts_nt    = -k FOR_NT
@@ -35,5 +35,5 @@ wsplice_opts_x64   = -k FOR_X64
     @%make echo_wsplice
     $(noecho)*wsplice $(wsplice_opts_$(host_os)) $(wsplice_opts_$(host_cpu)) $[@ $@
 
-clean : .symbolic
+clean : .SYMBOLIC
     rm -f *.cfg

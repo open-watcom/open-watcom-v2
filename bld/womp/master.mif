@@ -1,7 +1,7 @@
 proj_name = womp
 
 !ifndef womp_autodepends
-womp_autodepends = .autodepend
+womp_autodepends = .AUTODEPEND
 !endif
 
 womp_trmem = 1

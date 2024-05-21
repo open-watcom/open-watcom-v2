@@ -24,7 +24,7 @@ stack_axp=opt stack=8k
 
 opt_link = FILE tbitset.obj
 
-test : .symbolic start test.lnk tbitset.obj bitset.$(exe)
+test : .SYMBOLIC start test.lnk tbitset.obj bitset.$(exe)
     $(noecho)%make common_set_result
 
 clean : .procedure

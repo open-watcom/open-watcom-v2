@@ -86,7 +86,7 @@ ntverrc_path = ../stand/h
 
 rc_inc_dirs = -I"../stand/h" -I"../stand"
 
-$(proj_name).res : $(disasm_dir)/stand/h/wdis.rc $(ntverrc_exe_dep) usage.gh msg.grh $(__MAKEFILES__)
+$(proj_name).res : $(disasm_dir)/stand/h/wdis.rc $(ntverrc_exe_deps) usage.gh msg.grh $(__MAKEFILES__)
     @%make echo_rc
     $(rcu8j) $(ppflags_common) $(rc_cppflags) $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 

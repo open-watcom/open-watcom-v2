@@ -1,6 +1,6 @@
 proj_name = bdiff
 
-bdiff_autodepend = .AUTODEPENDS
+bdiff_autodepend = .AUTODEPEND
 
 bdiff_wreslib = 1
 
@@ -157,18 +157,18 @@ dusage.gh : ../gml/optionsi.gml $(__MAKEFILES__)
     @%make echo_optencod
     $(noecho)*optencod -q -rc=MSG_USAGE_BASE -utf8 $(optencod_opt_$(host_os)) $[@ . . $@ .
 
-bpatch.res : ../h/bpatch.rc ../h/bpatch.h ppusage.gh $(ntmanif_dep)
+bpatch.res : ../h/bpatch.rc ../h/bpatch.h ppusage.gh $(ntmanif_deps)
     @%make echo_rc
     $(rcu8j) $(ppflags_common) $(rc_cppflags) -DBPATCH $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
-bdump.res : ../h/bpatch.rc ../h/bpatch.h pdusage.gh $(ntmanif_dep)
+bdump.res : ../h/bpatch.rc ../h/bpatch.h pdusage.gh $(ntmanif_deps)
     @%make echo_rc
     $(rcu8j) $(ppflags_common) $(rc_cppflags) -DBDUMP $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
-bdiff.res : ../h/bpatch.rc ../h/bpatch.h dusage.gh $(ntmanif_dep)
+bdiff.res : ../h/bpatch.rc ../h/bpatch.h dusage.gh $(ntmanif_deps)
     @%make echo_rc
     $(rcu8j) $(ppflags_common) $(rc_cppflags) -DBDIFF $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
-wpatch.res wcpatch.res : ../h/bpatch.rc ../h/bpatch.h $(ntmanif_dep)
+wpatch.res wcpatch.res : ../h/bpatch.rc ../h/bpatch.h $(ntmanif_deps)
     @%make echo_rc
     $(rcu8j) $(ppflags_common) $(rc_cppflags) $(rc_flags) $(rc_inc_path) $[@ -fo=$@

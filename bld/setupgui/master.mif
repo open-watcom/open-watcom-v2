@@ -161,7 +161,7 @@ exetarg_name          = jf77setup
 !ifdef sys_windowed
 depend_res_os2 = ../res/os2/setup.ico
 !endif
-depend_res_nt  = $(ntverrc_exe_dep) $(ntmanif_dep) ../res/nt/setup.ico ../res/nt/disk.ico
+depend_res_nt  = $(ntverrc_exe_deps) $(ntmanif_deps) ../res/nt/setup.ico ../res/nt/disk.ico
 depend_res_win = ../res/win/setup.ico ../res/win/disk.ico
 depend_res = ../h/setup.h $(depend_res_$(host_os))
 
@@ -179,23 +179,23 @@ extra_rc_flags_win = -30
 extra_rc_flags_nt  = $(ntmanif_def) $(ntverrc_def) $(ntmanif_inc_dirs) $(ntverrc_inc_dirs)
 
 # UI resources
-setup.res : ../res/setup.rc $(depend_res) $(cli_gui_rc_depends) $(__MAKEFILES__)
+setup.res : ../res/setup.rc $(depend_res) $(cli_gui_rc_deps) $(__MAKEFILES__)
     @%make echo_rc
     $(rcu8j) $(ppflags_common) $(rc_cppflags) $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
 # GUI resources
-csetup.res : ../res/setup.rc $(depend_res) ../res/wcc.bmp $(cli_gui_rc_depends) $(__MAKEFILES__)
+csetup.res : ../res/setup.rc $(depend_res) ../res/wcc.bmp $(cli_gui_rc_deps) $(__MAKEFILES__)
     @%make echo_rc
     $(rcu8) $(ppflags_common) $(rc_cppflags) -DCSETUP $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
-jcsetup.res : ../res/setup.rc $(depend_res) ../res/wcc.bmp $(cli_gui_rc_depends) $(__MAKEFILES__)
+jcsetup.res : ../res/setup.rc $(depend_res) ../res/wcc.bmp $(cli_gui_rc_deps) $(__MAKEFILES__)
     @%make echo_rc
     $(rcu8j) $(ppflags_common) $(rc_cppflags) -DJCSETUP -DJAPANESE $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
-f77setup.res : ../res/setup.rc $(depend_res) ../res/f77.bmp $(cli_gui_rc_depends) $(__MAKEFILES__)
+f77setup.res : ../res/setup.rc $(depend_res) ../res/f77.bmp $(cli_gui_rc_deps) $(__MAKEFILES__)
     @%make echo_rc
     $(rcu8) $(ppflags_common) $(rc_cppflags) -DF77SETUP $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
-jfsetup.res : ../res/setup.rc $(depend_res) ../res/f77.bmp $(cli_gui_rc_depends) $(__MAKEFILES__)
+jfsetup.res : ../res/setup.rc $(depend_res) ../res/f77.bmp $(cli_gui_rc_deps) $(__MAKEFILES__)
     @%make echo_rc
     $(rcu8j) $(ppflags_common) $(rc_cppflags) -DJFSETUP -DJAPANESE $(rc_flags) $(rc_inc_path) $[@ -fo=$@

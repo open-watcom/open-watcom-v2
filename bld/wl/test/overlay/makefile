@@ -15,7 +15,7 @@ extra_c_flags = -s $(%COPTIONS)
 
 OBJS = main.obj ovl1.obj ovl2.obj ovl3.obj
 
-all : dmain.exe lmain.exe smain.exe .symbolic
+all : dmain.exe lmain.exe smain.exe .SYMBOLIC
 
 dmain.exe : .always
     rm -f *.obj

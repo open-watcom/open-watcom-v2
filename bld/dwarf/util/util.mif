@@ -32,7 +32,7 @@ extra_c_flags_trmemcvr   = $(trmem_cover_cflags)
 # explicit rules
 #################
 
-all: dwdump.exe testcli.exe .symbolic
+all: dwdump.exe testcli.exe .SYMBOLIC
 
 #
 # EXE

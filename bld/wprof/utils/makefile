@@ -10,7 +10,7 @@ proj_name = utils
 
 .c: .
 
-all : smpsync.exe mergehlp.exe smpmt.exe .symbolic
+all : smpsync.exe mergehlp.exe smpmt.exe .SYMBOLIC
     @%null
 
 .c.exe :

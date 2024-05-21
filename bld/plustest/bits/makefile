@@ -22,7 +22,7 @@ stack_386=opt stack=8k
 stack_i86=opt stack=4k
 stack_axp=opt stack=8k
 
-test : .symbolic start test.lnk tbits.$(exe)
+test : .SYMBOLIC start test.lnk tbits.$(exe)
     $(noecho)%make common_set_result
 
 clean : .procedure

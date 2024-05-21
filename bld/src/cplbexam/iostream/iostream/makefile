@@ -4,7 +4,7 @@
 
 exes = CONIOS.exe   CONBUF.exe   DESTRUCT.exe   EQIOSTRM.exe    EQSTRMBU.exe
 
-all : $(exes) .symbolic
+all : $(exes) .SYMBOLIC
 
 .cpp.exe :
     wcl $[@

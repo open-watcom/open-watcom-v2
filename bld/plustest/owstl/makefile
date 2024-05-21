@@ -106,16 +106,16 @@ opt_mmwindef += -3
 # the main target to run the test suite
 
 !ifeq arch i86
-test : .symbolic start
+test : .SYMBOLIC start
     $(noecho)%append $(log_file) PASS $(%__CWD__)
     @%make clean
 !else
-test : .symbolic start test.lnk $(exes)
+test : .SYMBOLIC start test.lnk $(exes)
     $(noecho)%make common_set_result_display
 !endif
 
 # this is my laziness bit...
-$(names) : test.lnk .symbolic
+$(names) : test.lnk .SYMBOLIC
     @%make $^*.obj
     @%make set_path_wlink
     @%make echo_link
@@ -126,7 +126,7 @@ $(names) : test.lnk .symbolic
     @echo PASS
 
 !ifdef __OS2__
-mmwindef.$(exe): .symbolic
+mmwindef.$(exe): .SYMBOLIC
     @%append $(%ERROR_FILE) ----------$^*----------
 !endif
 

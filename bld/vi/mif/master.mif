@@ -86,7 +86,7 @@ ntmanif_path = ../res
 
 extra_rc_flags_nt = $(ntmanif_def) $(ntverrc_def) $(ntmanif_inc_dirs) $(ntverrc_inc_dirs)
 
-$(name).res : $(vi_dir)/res/viw.rc $(ntverrc_exe_dep) $(ntmanif_dep) $(__MAKEFILES__) $(vi_autodepends)
+$(name).res : $(vi_dir)/res/viw.rc $(ntverrc_exe_deps) $(ntmanif_deps) $(__MAKEFILES__) $(vi_autodepends)
     @%make echo_rc
     $(rcu8j) $(ppflags_common) $(rc_cppflags) -ad $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 

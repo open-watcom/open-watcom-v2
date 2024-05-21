@@ -10,10 +10,10 @@ target_cpu = jvm
 srv = jvm
 which = SERVER
 
-dall : .symbolic d wdebug.zip
+dall : .SYMBOLIC d wdebug.zip
     @%null
 
-wall : .symbolic w wdebug.zip
+wall : .SYMBOLIC w wdebug.zip
     @%null
 
 sun/tools/debug :

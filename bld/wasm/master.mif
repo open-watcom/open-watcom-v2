@@ -115,7 +115,7 @@ rc_inc_dirs  = -I. -I"../h"
 
 extra_rc_flags_nt = $(ntverrc_def) $(ntverrc_inc_dirs)
 
-$(proj_name).res : ../h/wasm.rc $(ntverrc_exe_dep) usage.gh wasmcmsg.grh wasmsmsg.grh $(__MAKEFILES__)
+$(proj_name).res : ../h/wasm.rc $(ntverrc_exe_deps) usage.gh wasmcmsg.grh wasmsmsg.grh $(__MAKEFILES__)
     @%make echo_rc
     $(rcu8j) $(ppflags_common) $(rc_cppflags) -D_STANDALONE_ $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 

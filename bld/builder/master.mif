@@ -1,6 +1,6 @@
 proj_name = builder
 
-builder_autodepends = .autodepend
+builder_autodepends = .AUTODEPEND
 
 builder_trmem = 1
 

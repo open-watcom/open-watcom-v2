@@ -1,7 +1,7 @@
 proj_name = wipfc
 proj_type = cxx
 
-wipfc_autodepends = .autodepend
+wipfc_autodepends = .AUTODEPEND
 
 additional_clean = *.grc
 
@@ -67,7 +67,7 @@ $(proj_name).exe : $(exetarg_$(host_os)_version) $(__MAKEFILES__)
 !ifeq verbose 0
     @echo bind res $@ ver
 !endif
-    $(noecho)*bwrc -q -k $(ntverrc_exe_dep) $@
+    $(noecho)*bwrc -q -k $(ntverrc_exe_deps) $@
 !endif
 
 !else

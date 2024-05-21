@@ -2,7 +2,7 @@ tree_depth = 4
 
 proj_name = mkdisk
 
-mkdisk_autodepends = .autodepend
+mkdisk_autodepends = .AUTODEPEND
 
 mkdisk_trmem = 1
 

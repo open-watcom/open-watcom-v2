@@ -1,6 +1,6 @@
 proj_name = wclass
 
-wclass_autodepends = .autodepend
+wclass_autodepends = .AUTODEPEND
 
 target_dos = dos
 target_nt  = win

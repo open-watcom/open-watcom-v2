@@ -7,7 +7,7 @@ host_cpu = 386
 
 proj_name = dbgport
 
-dbgport_autodepends = .autodepend
+dbgport_autodepends = .AUTODEPEND
 
 additional_clean = dbgport.sys
 

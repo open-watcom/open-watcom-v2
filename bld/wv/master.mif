@@ -403,15 +403,15 @@ extra_rc_flags = -DRESX_GUI
 extra_rc_flags_nt = $(ntmanif_def) $(ntverrc_def) $(ntmanif_inc_dirs) $(ntverrc_inc_dirs)
 
 !ifdef wv_engine_noui
-$(proj_name).res : ../../res/wv.rc $(rcfiles) $(ntmanif_dep) $(ntverrc_exe_dep) $(cli_aui_rc_depends) $(__MAKEFILES__) .autodepend
+$(proj_name).res : ../../res/wv.rc $(rcfiles) $(ntmanif_deps) $(ntverrc_exe_deps) $(cli_aui_rc_deps) $(__MAKEFILES__) .AUTODEPEND
 !else ifdef sys_windowed
-$(proj_name)j.res : ../../res/wv.rc $(bitmaps) $(rcfiles) $(ntmanif_dep) $(ntverrc_exe_dep) $(cli_aui_rc_depends) $(__MAKEFILES__) .autodepend
+$(proj_name)j.res : ../../res/wv.rc $(bitmaps) $(rcfiles) $(ntmanif_deps) $(ntverrc_exe_deps) $(cli_aui_rc_deps) $(__MAKEFILES__) .AUTODEPEND
     @%make echo_rc
     $(rcu8j) $(ppflags_common) $(rc_cppflags) -DJAPANESE -ad $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
-$(proj_name).res : ../../res/wv.rc $(bitmaps) $(rcfiles) $(ntmanif_dep) $(ntverrc_exe_dep) $(cli_aui_rc_depends) $(__MAKEFILES__) .autodepend
+$(proj_name).res : ../../res/wv.rc $(bitmaps) $(rcfiles) $(ntmanif_deps) $(ntverrc_exe_deps) $(cli_aui_rc_deps) $(__MAKEFILES__) .AUTODEPEND
 !else
-$(proj_name).res : ../../res/wv.rc $(rcfiles) $(ntmanif_dep) $(ntverrc_exe_dep) $(cli_aui_rc_depends) $(__MAKEFILES__) .autodepend
+$(proj_name).res : ../../res/wv.rc $(rcfiles) $(ntmanif_deps) $(ntverrc_exe_deps) $(cli_aui_rc_deps) $(__MAKEFILES__) .AUTODEPEND
 !endif
     @%make echo_rc
     $(rcu8) $(ppflags_common) $(rc_cppflags) -ad $(rc_flags) $(rc_inc_path) $[@ -fo=$@

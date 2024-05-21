@@ -2,7 +2,7 @@
 
 proj_name = afxapi
 
-afxapi_autodepends  = .autodepend
+afxapi_autodepends  = .AUTODEPEND
 
 !ifeq lib_debug 1
 afxapi_debug = 1
@@ -373,7 +373,7 @@ $(statname).lib: $(static_objs) $(__MAKEFILES__)
     @%make echo_lib
     $(librarian) $(libflags) $(static_objs)
 
-$(dllname).res: ../h/owf.rc $(ntverrc_dll_dep) $(__MAKEFILES__) .AUTODEPEND
+$(dllname).res: ../h/owf.rc $(ntverrc_dll_deps) $(__MAKEFILES__) .AUTODEPEND
     @%make echo_rc
     $(rcj) $(ppflags_common) $(rc_cppflags) -ad $(rc_flags) $(rc_inc_path) -I"../include" $[@ -fo=$@
 

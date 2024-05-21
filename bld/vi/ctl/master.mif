@@ -3,7 +3,7 @@ tree_depth = 4
 proj_name = victl
 
 !ifndef vicomp_autodepends
-victl_autodepends = .autodepend
+victl_autodepends = .AUTODEPEND
 !endif
 
 !include cproj.mif

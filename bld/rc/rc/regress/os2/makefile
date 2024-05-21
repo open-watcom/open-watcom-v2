@@ -21,8 +21,8 @@ RESFILES = &
     $(RC) $(RCFLAGS) $<
     cmp $@ $*.rez
 
-test : $(RESFILES) .symbolic
+test : $(RESFILES) .SYMBOLIC
     @echo Test passed
 
-clean : .symbolic
+clean : .SYMBOLIC
     rm -f *.res

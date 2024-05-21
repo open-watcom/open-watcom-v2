@@ -2,7 +2,7 @@ tree_depth = 5
 
 proj_name = trap2txt
 
-trap2txt_autodepends = .autodepend
+trap2txt_autodepends = .AUTODEPEND
 
 !include cproj.mif
 !include defrule.mif

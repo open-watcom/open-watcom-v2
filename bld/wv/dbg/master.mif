@@ -36,11 +36,11 @@ objs = &
 
 .sp : ..
 
-all: $(objs) .symbolic
+all: $(objs) .SYMBOLIC
 
 .sp.dbg:
     @%make echo_wsplice
     $(noecho)*wsplice $< $@
 
-clean : .symbolic
+clean : .SYMBOLIC
     rm -f *.dbg

@@ -5,7 +5,7 @@ proj_name = ide
 sys_windowed = 1
 
 !ifndef ide_autodepends
-ide_autodepends = .autodepend
+ide_autodepends = .AUTODEPEND
 !endif
 
 ide_rc_host_os2 = os2
@@ -96,7 +96,7 @@ rc_inc_dirs = -I"../res/$(ide_rc_host_$(host_os))" -I"../res" $(cli_idelib_rc_in
 
 extra_rc_flags_nt = $(ntmanif_def) $(ntmanif_inc_dirs) $(ntverrc_inc_dirs)
 
-$(proj_name).res : ../res/ide.rc $(ntmanif_dep) $(ntverrc_dep) $(cli_idelib_rc_depends)
+$(proj_name).res : ../res/ide.rc $(ntmanif_deps) $(ntverrc_deps) $(cli_idelib_rc_deps)
     @%make echo_rc
     $(rcu8j) $(ppflags_common) $(rc_cppflags) $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 

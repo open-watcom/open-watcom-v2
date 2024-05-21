@@ -17,8 +17,8 @@ $(LNK) : makefile
     #@%append $(LNK) system nt_win
     @for %i in ($(OBJS)) do @%append $(LNK) file %i
 
-.cpp.obj : .autodepend
+.cpp.obj : .AUTODEPEND
     $(CC) $(CFLAGS) $[*
 
-clean : .symbolic
+clean : .SYMBOLIC
     rm -f *.obj *.err *.exe *.lnk *.res *.pch

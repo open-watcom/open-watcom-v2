@@ -112,7 +112,7 @@ wsplice_opts_linux = -kUNIX
 wsplice_opts_qnx   = -kUNIX
 wsplice_opts_osx   = -kUNIX
 
-$(proj_name).res : ../h/wmake.rc $(ntverrc_exe_dep) ../h/mrcmsg.h usage.gh usagej.gh $(__MAKEFILES__)
+$(proj_name).res : ../h/wmake.rc $(ntverrc_exe_deps) ../h/mrcmsg.h usage.gh usagej.gh $(__MAKEFILES__)
     @%make echo_rc
     $(rcu8j) $(ppflags_common) $(rc_cppflags) $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
@@ -143,19 +143,19 @@ chkmsg :
     comm -3 chkmsg.1 chkmsg.3 | tee chkmsg
     rm chkmsg.?
 
-strip : .symbolic
+strip : .SYMBOLIC
     @%make echo_bindres
     $(wstrip) /q $(exetarg_name).exe $(exetarg_name)s.exe >nul
     ls -l *.exe
 
-deps : .symbolic
+deps : .SYMBOLIC
     cd ../c
     ../support/mmk >../makedeps.mif
 
-do : .symbolic
+do : .SYMBOLIC
     wmake -h -n | sed -f ../mkdo.sed >do.bat
 
-test : $(exetarg_name).exe .always .symbolic
+test : $(exetarg_name).exe .always .SYMBOLIC
 curr_dir=$+$(%__CWD__)$-
     cd ../regress
 !ifdef __UNIX__

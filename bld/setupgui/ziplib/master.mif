@@ -2,7 +2,7 @@ tree_depth = 4
 
 proj_name       = ziplib
 
-ziplib_autodepends = .autodepend
+ziplib_autodepends = .AUTODEPEND
 
 ziplib_nofpu = 1
 

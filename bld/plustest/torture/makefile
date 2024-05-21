@@ -31,10 +31,10 @@ opt_link = LIB tort.lib
 
 exes = dim2arr.$(exe) mdarrtst.$(exe)
 
-test : .symbolic start test.lnk tort.lib $(exes) test_set_result
+test : .SYMBOLIC start test.lnk tort.lib $(exes) test_set_result
     $(noecho)%make common_set_result
 
-test_set_result : .symbolic
+test_set_result : .SYMBOLIC
     cat output.out >>$(%ERROR_FILE)
 
 tort.lib : tort.lbc $(objs)

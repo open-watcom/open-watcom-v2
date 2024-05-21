@@ -90,7 +90,7 @@ extra_a_flags_qnx = -D_QNX
 # explicit rules
 #################
 
-all: graphi.lib graphi2.lib .symbolic
+all: graphi.lib graphi2.lib .SYMBOLIC
 
 common_objs = &
     $(_subdir_)sqrtf.obj &

@@ -12,7 +12,7 @@ objs_nt  = idepbnt.cfg
 
 .sp: $(idecfg_dir)
 
-all: $(objs) $(objs_$(host_os)) .symbolic
+all: $(objs) $(objs_$(host_os)) .SYMBOLIC
 
 wsplice_opts_nt  = -k FOR_NT -k C_FOR_PB
 wsplice_opts_win = -k FOR_WIN -k C_FOR_PB
@@ -29,5 +29,5 @@ pbide.cfg : ide.sp
     @%make echo_wsplice
     $(noecho)*wsplice $(wsplice_opts_$(host_os)) $[@ $@
 
-clean : .symbolic
+clean : .SYMBOLIC
     rm -f *.cfg

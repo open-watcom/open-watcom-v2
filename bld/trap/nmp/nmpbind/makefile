@@ -44,9 +44,9 @@ default_targ    = d
 
 first : $(default_targ)
 
-w : nmpbind.exe .symbolic
+w : nmpbind.exe .SYMBOLIC
 
-d : dnmpbind.exe .symbolic
+d : dnmpbind.exe .SYMBOLIC
 
 #
 # EXE's

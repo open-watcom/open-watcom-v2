@@ -58,7 +58,7 @@ rcfiles = &
     ../res/stop1.bmp &
     ../res/stop2.bmp &
     $(rcfiles_$(host_os)) &
-    $(cli_aui_rc_depends)
+    $(cli_aui_rc_deps)
 
 !ifdef sys_windowed
 extra_rc_flags = -DRESX_GUI

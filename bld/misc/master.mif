@@ -12,5 +12,5 @@ misc_objs = &
 $(misc_objs):
     %copy ../$@ $@
 
-clean: .symbolic
+clean: .SYMBOLIC
     rm -f $(misc_objs)

@@ -1,6 +1,6 @@
 proj_name = w16api
 
-w16api_autodepends = .autodepend
+w16api_autodepends = .AUTODEPEND
 w16api_distrib_lib = 1
 
 .EXTENSIONS : .lbc .gsp .sp .def .mh

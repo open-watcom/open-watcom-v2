@@ -5,7 +5,7 @@
 
 exes = char.exe charlen.exe
 
-all : $(exes) .symbolic
+all : $(exes) .SYMBOLIC
 
 .cpp.exe :
     wcl $[@

@@ -10,7 +10,7 @@ objs = ap1.obj ap2.obj ap3.obj
 .c.obj:
     %write $@ wcc386 $[* -zq
 
-app : app.exe .symbolic
+app : app.exe .SYMBOLIC
     @%null
 
 app.lnk : makefile

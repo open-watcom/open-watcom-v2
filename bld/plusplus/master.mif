@@ -2,7 +2,7 @@ tree_depth = 4
 
 proj_name = plusplus
 
-plusplus_autodepends = .autodepend
+plusplus_autodepends = .AUTODEPEND
 
 # Important! The C++ compiler modifies string literals
 #suppress_zc = 1

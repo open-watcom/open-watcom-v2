@@ -41,8 +41,8 @@ msgstrm.dos : makefile $(objs)
 .cpp.obj:
     $(comp286plus) $[* $(compiler)
 
-reference : .symbolic
+reference : .SYMBOLIC
     cp msgstrm.exe $(plusplus_dir)/bin
 
-global : .symbolic
+global : .SYMBOLIC
     @rm -f *.obj *.exe *.exp *.err

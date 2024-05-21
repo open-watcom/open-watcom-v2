@@ -2,7 +2,7 @@ tree_depth = 4
 
 proj_name = objread
 
-objread_autodepends = .autodepend
+objread_autodepends = .AUTODEPEND
 
 objread_trmem = 1
 

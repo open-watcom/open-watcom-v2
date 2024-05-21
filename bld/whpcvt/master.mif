@@ -5,7 +5,7 @@
 
 proj_name = whpcvt
 
-whpcvt_autodepends = .autodepend
+whpcvt_autodepends = .AUTODEPEND
 
 !include cproj.mif
 !include defrule.mif

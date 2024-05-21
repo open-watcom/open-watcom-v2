@@ -1,6 +1,6 @@
 proj_name = cvpack
 
-cvpack_autodepends = .autodepend
+cvpack_autodepends = .AUTODEPEND
 
 !include cproj.mif
 !include defrule.mif

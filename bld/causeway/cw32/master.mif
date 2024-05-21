@@ -25,7 +25,7 @@ extra_l_flags = op verbose, statics
 # explicit rules
 #################
 
-all : cwstub.exe cwdstub.exe .symbolic
+all : cwstub.exe cwdstub.exe .SYMBOLIC
 
 #
 # EXE

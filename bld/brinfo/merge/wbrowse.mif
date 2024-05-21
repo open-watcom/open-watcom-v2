@@ -59,9 +59,9 @@ cpps = &
     types.cpp &
     usage.cpp
 
-all: .symbolic wbrowse.dll
+all: .SYMBOLIC wbrowse.dll
 
-browse: .symbolic
+browse: .SYMBOLIC
     wcpp386d wpch.cpp -fbi=ft-zs-zq-fhd-fh=wpchbrm.pch-i="$(incpath)" -d_WIN32 -dWIN32 -d_DBCS
     @for %i in ($(cpps)) do wcpp386d %i -fbi=ft-zs-zq-fhd-fh=wpchbrm.pch-i="$(incpath)" -d_WIN32 -dWIN32 -d_DBCS
 
@@ -69,7 +69,7 @@ WRes.res : ../res/WRes.rc
     wrc $[@ -fo=WRes.res -bt=nt -ad -r -d_DEBUG -d__WATCOMC__ -q -i="$(lexlib_dir)/wclass/rc;$(incpath)"
 
 lnk=wbrowse.lnk
-wbrowse.dll: $(objs) WRes.res makefile .autodepend
+wbrowse.dll: $(objs) WRes.res makefile .AUTODEPEND
     @%write $(lnk) op Quiet,Map $(debug_lnk_opts)
     @%append $(lnk) op osname='Windows NT' format windows nt dll
     @%append $(lnk) $(debug_link_opts)
@@ -83,7 +83,7 @@ wbrowse.dll: $(objs) WRes.res makefile .autodepend
     wlib -q -n wbrowse +wbrowse.dll
 #    @newer wbrowse.dll \bin\wbrowse.dll "^copy &f $#f > nul"
 
-clean: .symbolic
+clean: .SYMBOLIC
     @if exist *.obj del *.obj
     @if exist *.lnk del *.lnk
     @if exist *.ilk del *.ilk

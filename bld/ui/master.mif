@@ -6,7 +6,7 @@ ui_nodoslfn = 1
 
 ui_trmem = 1
 
-ui_autodepends = .autodepend
+ui_autodepends = .AUTODEPEND
 
 !include cproj.mif
 !include defrule.mif

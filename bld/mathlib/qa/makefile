@@ -145,9 +145,9 @@ exes = &
     lnx_fpir.exe lnx_fpcr.exe &
     lnx_fpis.exe lnx_fpcs.exe
 
-tests : .symbolic $(exes)
+tests : .SYMBOLIC $(exes)
 
-all : .symbolic $(exes)
+all : .SYMBOLIC $(exes)
 
 do1_fpis.exe : $(mathtest)
     $(cc_i86) $[@ $(tiny_opts) -dFIRSTHALF -ms -fpi -bt=dos

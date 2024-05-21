@@ -8,8 +8,8 @@
 .obj.exe:
     wlink form dos DEBUG line OPTION quiet NAME $@ FILE $[@
 
-all : .symbolic testtiny.exe testdir.exe
+all : .SYMBOLIC testtiny.exe testdir.exe
     @%null
 
-global : .symbolic
+global : .SYMBOLIC
     rm -f *.?bj *.ex?

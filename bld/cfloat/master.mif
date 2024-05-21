@@ -1,6 +1,6 @@
 proj_name       = cf
 
-cf_autodepends = .autodepend
+cf_autodepends = .AUTODEPEND
 
 !include cproj.mif
 !include defrule.mif

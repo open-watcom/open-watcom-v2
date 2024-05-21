@@ -7,7 +7,7 @@ tree_depth = 5
 
 .c : ../../c
 
-all : $(libname).lib .symbolic
+all : $(libname).lib .SYMBOLIC
     @%null
 
 $(libname).lib : $(objs) $(libs) $(__MAKEFILES__)

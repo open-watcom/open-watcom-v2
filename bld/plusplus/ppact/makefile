@@ -48,7 +48,7 @@ ppact.exe : makefile ppact.lnk ppact.obj ppact.lib
     wlink @ppact.lnk name ppact file ppact
 
 
-global: .symbolic
+global: .SYMBOLIC
     -del *.err
     -del *.exe
     -del *.obj

@@ -35,7 +35,7 @@ rc_inc_dirs = -I"../h"
 
 extra_rc_flags_nt = $(ntmanif_def) $(ntmanif_inc_dirs)
 
-$(proj_name).res : ../h/appwiz.rc $(ntmanif_dep) .AUTODEPEND
+$(proj_name).res : ../h/appwiz.rc $(ntmanif_deps) .AUTODEPEND
     @%make echo_rc
     $(rc) $(ppflags_common) $(rc_cppflags) -ad $(rc_flags) $(rc_inc_path) $]@ -fo=$@
 

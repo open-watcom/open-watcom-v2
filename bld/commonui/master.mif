@@ -5,7 +5,7 @@ name = commonui
 !endif
 
 !ifndef commonui_autodepends
-commonui_autodepends = .autodepend
+commonui_autodepends = .AUTODEPEND
 !endif
 
 sys_windowed = 1

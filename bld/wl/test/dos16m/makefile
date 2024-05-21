@@ -28,7 +28,7 @@ wsamprsi.exe : ctest.c
     wcc -zq $(D16INC) ctest.c
     wlink op quiet, map name $@ sys dos16m f ctest op stub=wstubq.exe
 
-clean : .symbolic
+clean : .SYMBOLIC
     @rm -f *.obj
     @rm -f *.exp
     @rm -f *.exe

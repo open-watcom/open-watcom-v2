@@ -35,7 +35,7 @@ LFLAGS += debug all
 # Pseudotargets
 #
 
-help: .symbolic
+help: .SYMBOLIC
     @echo.
     @echo Open Watcom Sample WPS Class makefile
     @echo.
@@ -46,15 +46,15 @@ help: .symbolic
     @echo  deinstall - removes the test object and deinstalls the WPS class DLL
     @echo  clean     - executes deinstall and removes compiled files
 
-all: owobject.dll .symbolic
+all: owobject.dll .SYMBOLIC
 
-install: all .symbolic
+install: all .SYMBOLIC
     -@call run install
 
-deinstall: .symbolic
+deinstall: .SYMBOLIC
     -@call run deinstall
 
-clean : .symbolic
+clean : .SYMBOLIC
     @echo cleaning up
     -@call run deinstall -q
     @rm -f *.obj *.dll owobject.h *.ih *.err *.res *.map

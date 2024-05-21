@@ -30,7 +30,7 @@ aui_aui_dialogs = &
     $(aui_dir)/res/dlgs/japsrcha.dlg
 cli_aui_rc_inc_dirs = -I"$(cli_aui_path)" -I"$(aui_dir)/res/dlgs" -I"$(aui_dir)/res" -I"$(aui_dir)/h" $(cli_gui_rc_inc_dirs)
 !endif
-cli_aui_rc_depends = &
+cli_aui_rc_deps = &
     $(aui_dir)/res/aui.rc &
     $(aui_dir)/res/aui.msg &
     $(aui_dir)/h/aui.rh &
@@ -38,4 +38,4 @@ cli_aui_rc_depends = &
     $(aui_dir)/h/dlgrx.rh &
     $(aui_dir)/h/dlgsrch.rh &
     $(aui_aui_dialogs) &
-    $(cli_gui_rc_depends)
+    $(cli_gui_rc_deps)

@@ -59,7 +59,7 @@ objs =  &
     string.obj  &
     time.obj
 
-test : .symbolic start $(objs)
+test : .SYMBOLIC start $(objs)
     $(noecho)%append $(log_file) PASS $(%__CWD__)
     @%make clean
 

@@ -2,7 +2,7 @@ tree_depth = 4
 
 proj_name = merge
 
-merge_autodepends = .autodepend
+merge_autodepends = .AUTODEPEND
 
 merge_trmem = 1
 

@@ -25,11 +25,11 @@ objs = &
     pvcs_co.$(ext_objs) &
     pvcs_ci.$(ext_objs)
 
-all: $(objs) .symbolic
+all: $(objs) .SYMBOLIC
 
 .sp.bat .sp.cmd :
     @%make echo_wsplice
     $(noecho)*wsplice -k $(host_os) -k $(host_cpu) $[@ $@
 
-clean: .symbolic
+clean: .SYMBOLIC
     rm -f *.bat *.cmd

@@ -1,7 +1,7 @@
 proj_name = awk
 
 !ifndef awk_autodepends
-awk_autodepends = .autodepend
+awk_autodepends = .AUTODEPEND
 !endif
 
 !include cproj.mif

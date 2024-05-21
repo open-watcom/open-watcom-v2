@@ -1,6 +1,6 @@
 proj_name = parsedlg
 
-parsedlg_autodepends = .autodepend
+parsedlg_autodepends = .AUTODEPEND
 
 !include cproj.mif
 !include defrule.mif

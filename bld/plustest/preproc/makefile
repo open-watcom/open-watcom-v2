@@ -47,10 +47,10 @@ all_tests = &
     pp17.i1 &
 
 
-test : .symbolic start start_test $(all_tests)
+test : .SYMBOLIC start start_test $(all_tests)
     $(noecho)%make common_set_result
 
-start_test : .symbolic
+start_test : .SYMBOLIC
     $(noecho)%make gen_input
 
 zap_output : .procedure

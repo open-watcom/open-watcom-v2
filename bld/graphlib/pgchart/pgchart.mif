@@ -63,7 +63,7 @@ extra_c_flags_win = -zW
 # explicit rules
 #################
 
-all : chart.lib chart2.lib .symbolic
+all : chart.lib chart2.lib .SYMBOLIC
 
 template = &
     $(_subdir_)pgancom.obj &

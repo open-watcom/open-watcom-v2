@@ -101,7 +101,7 @@ extra_rc_flags_win = -I"../res/win" -I"../res" -I"../h" -DRESX_GUI
 extra_rc_flags_nt  = -I"../res/win" -I"../res" -I"../h" -DRESX_GUI
 !endif
 
-$(proj_name).res : ../res/wprof.rc $(ntverrc_exe_dep) $(ntmanif_dep) $(cli_aui_rc_depends) $(__MAKEFILES__) .AUTODEPEND
+$(proj_name).res : ../res/wprof.rc $(ntverrc_exe_deps) $(ntmanif_deps) $(cli_aui_rc_deps) $(__MAKEFILES__) .AUTODEPEND
     @%make echo_rc
     $(rcu8) $(ppflags_common) $(rc_cppflags) -ad $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 

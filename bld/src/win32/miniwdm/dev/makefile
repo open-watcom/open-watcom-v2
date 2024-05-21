@@ -13,7 +13,7 @@ CFLAGS += -d1 -hc
 
 OBJS = wdmdev.obj
 
-.c.obj : .autodepend
+.c.obj : .AUTODEPEND
     $(CC) $(CFLAGS) $(INCS) $<
 
 boxdev.sys : $(OBJS) $(__MAKEFILES__) boxdev.res
@@ -31,7 +31,7 @@ boxdev.sys : $(OBJS) $(__MAKEFILES__) boxdev.res
 boxdev.res : boxdev.rc
     $(RC) $(RCFLAGS) $(INCS) $<
 
-clean : .symbolic
+clean : .SYMBOLIC
     @rm -f *.sys
     @rm -f *.sym
     @rm -f *.obj

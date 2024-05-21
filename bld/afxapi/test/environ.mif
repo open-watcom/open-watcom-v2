@@ -103,10 +103,10 @@ host_cpu = $(arch)
 !  endif
 !endif
 
-first_target : .symbolic start test
+first_target : .SYMBOLIC start test
     @%null
 
-start : .symbolic
+start : .SYMBOLIC
 !ifdef dll_loaded
     @echo using !loaddll $(dll_$(arch))
 !endif
@@ -114,7 +114,7 @@ start : .symbolic
     @cdsay >> $(log_file)
     %append $(log_file) TEST $(arch)/$(alt_error)
 
-clean : .symbolic global
+clean : .SYMBOLIC global
     @%null
 
 common_clean : .procedure

@@ -1,5 +1,5 @@
 proj_name = femisc
-femisc_autodepends = .autodepend
+femisc_autodepends = .AUTODEPEND
 
 !include cproj.mif
 !include defrule.mif
@@ -9,7 +9,7 @@ bld_extra_incs = -I"../h"
 
 .c: ../c
 
-all: optencod.exe msgencod.exe findhash.exe .symbolic
+all: optencod.exe msgencod.exe findhash.exe .SYMBOLIC
 
 .c.exe :
     @%make echo_bldccl

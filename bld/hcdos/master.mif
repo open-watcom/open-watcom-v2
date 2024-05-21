@@ -1,6 +1,6 @@
 proj_name = hcdos
 
-hcdos_autodepends = .autodepend
+hcdos_autodepends = .AUTODEPEND
 
 hcdos_trmem = 1
 

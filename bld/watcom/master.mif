@@ -1,6 +1,6 @@
 proj_name = watcom
 
-watcom_autodepends = .autodepend
+watcom_autodepends = .AUTODEPEND
 
 !include cproj.mif
 !include deftarg.mif
@@ -13,7 +13,7 @@ inc_dirs = -I"../h"
 libs = clibext.lib clibexts.lib
 !endif
 
-all: $(libs) .symbolic
+all: $(libs) .SYMBOLIC
 
 clibext.lib : clibext.obj
     @%make echo_lib

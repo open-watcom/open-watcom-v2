@@ -7,7 +7,7 @@ tree_depth = 4
 proj_name = mad
 
 !ifndef mad_autodepends
-mad_autodepends = .autodepend
+mad_autodepends = .AUTODEPEND
 !endif
 
 mad_nofpu = 1

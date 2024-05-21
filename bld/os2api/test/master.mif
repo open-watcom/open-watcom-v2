@@ -1,7 +1,7 @@
 proj_name = os2apitest
-os2apitest_autodepends = .autodepend
+os2apitest_autodepends = .AUTODEPEND
 
-all : testc.exe testpp.exe .symbolic
+all : testc.exe testpp.exe .SYMBOLIC
 
 !include cproj.mif
 !include defrule.mif

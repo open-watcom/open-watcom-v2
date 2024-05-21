@@ -16,7 +16,7 @@ primes.exe : $(objs) primes.res $(__makefiles__)
 .for.obj
     wfc386 $[* /nowarn /d1 /ox /explicit
 
-clean: .symbolic
+clean: .SYMBOLIC
         @if exist *.exe del *.exe
         @if exist *.map del *.map
         @if exist *.sym del *.sym

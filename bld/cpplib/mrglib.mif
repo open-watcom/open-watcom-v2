@@ -8,7 +8,7 @@ additional_clean = *.gdf
 
 !include $(cpplib_dir)/libs.mif
 
-libs : .symbolic $(target_lib) $(target_lib_x)
+libs : .SYMBOLIC $(target_lib) $(target_lib_x)
     @%null
 
 $(target_lib) : $(libs) $(__MAKEFILES__)

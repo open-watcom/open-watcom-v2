@@ -44,7 +44,7 @@ qnx_mh_dir = ../quantum
 .EXTENSIONS
 .EXTENSIONS : . .h .hpp .cnv .gsp .sp .mh .mhp
 
-all : $($(system)_dirs) $($(system)_files) .symbolic
+all : $($(system)_dirs) $($(system)_files) .SYMBOLIC
     @%null
 
 .mh: $($(system)_mh_dir);$(mh_dir)

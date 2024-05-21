@@ -46,7 +46,7 @@ libdirs = $(stdlibdir)
 libdirs += $(altlibdir)
 !endif
 
-all : $(libdirs) $(libs) $(commands) .symbolic
+all : $(libdirs) $(libs) $(commands) .SYMBOLIC
     @%null
 
 !ifdef alt_posixlib
@@ -69,12 +69,12 @@ wmake_opts += bootstrap=$(bootstrap)
 wmake_opts += debug=$(debug)
 !endif
 
-$(commands) : .symbolic $(__MAKEFILES__)
+$(commands) : .SYMBOLIC $(__MAKEFILES__)
     $(noecho)!$(nested_wmake) -h $(wmake_opts) -f "../src/$@/makefile"
 
 curr_dir=$+$(%__CWD__)$-
 
-clean : .symbolic
+clean : .SYMBOLIC
     cd $(subdir_stdlib)
     @%make killobjs
     cd "$(curr_dir)"
@@ -91,6 +91,6 @@ killobjs : .PROCEDURE .EXPLICIT
 
 !else
 
-clean : .symbolic
+clean : .SYMBOLIC
 
 !endif

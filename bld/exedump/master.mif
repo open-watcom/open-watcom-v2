@@ -1,6 +1,6 @@
 proj_name = wdump
 
-wdump_autodepends = .autodepend
+wdump_autodepends = .AUTODEPEND
 
 additional_clean = *.grc
 

@@ -6,7 +6,7 @@ tree_depth = 4
 
 proj_name = dip
 
-dip_autodepends = .autodepend
+dip_autodepends = .AUTODEPEND
 
 dip_nofpu = 1
 

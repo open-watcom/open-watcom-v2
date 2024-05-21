@@ -7,7 +7,7 @@ host_os  = win
 
 proj_name = wint32
 
-wint32_autodepends = .autodepend
+wint32_autodepends = .AUTODEPEND
 
 sys_dll = 1
 

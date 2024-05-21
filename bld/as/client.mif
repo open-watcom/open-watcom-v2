@@ -27,4 +27,4 @@ cli_asminline_inc_dirs = -I"$(as_dir)/h"
 cli_asminline_deps =
 cli_asminline_objs =
 cli_asminline_rc_inc_dirs =
-cli_asminline_rc_depends =
+cli_asminline_rc_deps =

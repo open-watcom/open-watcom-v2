@@ -2,7 +2,7 @@ tree_depth = 4
 
 proj_name = fmedit
 
-fmedit_autodepends = .autodepend
+fmedit_autodepends = .AUTODEPEND
 
 sys_dll = 1
 
@@ -79,6 +79,6 @@ extra_rc_flags_nt = $(ntverrc_def) $(ntverrc_def)
 
 extra_rc_flags_win = -30
 
-$(proj_name).res: ../res/fmedit.rc $(ntverrc_dll_dep) $(__MAKEFILES__) .AUTODEPEND
+$(proj_name).res: ../res/fmedit.rc $(ntverrc_dll_deps) $(__MAKEFILES__) .AUTODEPEND
     @%make echo_rc
     $(rc) $(ppflags_common) $(rc_cppflags) $(rc_flags) $(rc_inc_path) $[@ -fo=$@

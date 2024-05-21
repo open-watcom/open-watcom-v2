@@ -68,7 +68,7 @@ catfaxp.lnk : makefile
     @%append $@ DEBUG  codeview
 
 
-global: .symbolic
+global: .SYMBOLIC
     -del *.err
     -del *.exe
     -del *.dbj
