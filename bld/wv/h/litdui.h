@@ -33,9 +33,9 @@
 
 #include "litdui.gh"
 
-#define LIT_DUI( x ) _LIT_DBG_DUI_##x
-#define LITREF_DUI( x ) &LIT_DUI( x )
+#define LIT_DUI(x)      _LIT_DBG_DUI_##x
+#define LITREF_DUI(x)   &LIT_DUI( x )
 
-#define pick(c,e,j) extern char *LIT_DUI( c );
+#define pick(c,e,j)     extern char *LIT_DUI( c );
 #include "wddui.gh"
 #undef pick

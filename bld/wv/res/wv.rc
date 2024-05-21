@@ -14,6 +14,11 @@
 #endif
 #include "wv.rh"
 #include "banner.h"
+#include "liteng.gh"
+#if !defined( RESX_ENG )
+    #include "litdui.gh"
+    #include "litmenu.gh"
+#endif
 
 #if !defined( RESX_ENG )
     #include "aui.rc"
@@ -97,6 +102,48 @@
  #endif
 #endif
 
+STRINGTABLE
+BEGIN
+    /*
+     * English strings
+     */
+    #define pick(c,e,j) (DBG_ENG_LITERAL_##c + RLE_ENGLISH * MSG_LANG_SPACING), [ e ]
+    #include "wdeng.gh"
+    #undef pick
+#if !defined( RESX_ENG )
+    #define pick(c,e,j) (DBG_DUI_LITERAL_##c + RLE_ENGLISH * MSG_LANG_SPACING), [ e ]
+    #include "wddui.gh"
+    #undef pick
+    #define pick(c,e,j) (DBG_DUI_MENU_##c + RLE_ENGLISH * MSG_LANG_SPACING), [ e ]
+    #include "wdmenu.gh"
+    #undef pick
+  #if !defined( RESX_GUI )
+    #define pick(c,e,j) (c + RLE_ENGLISH * MSG_LANG_SPACING), [ e ]
+    #include "usage.gh"
+    #undef pick
+  #endif
+#endif
+    /*
+     * Japanese strings
+     */
+    #define pick(c,e,j) (DBG_ENG_LITERAL_##c + RLE_JAPANESE * MSG_LANG_SPACING), [ j ]
+    #include "wdeng.gh"
+    #undef pick
+#if !defined( RESX_ENG )
+    #define pick(c,e,j) (DBG_DUI_LITERAL_##c + RLE_JAPANESE * MSG_LANG_SPACING), [ j ]
+    #include "wddui.gh"
+    #undef pick
+    #define pick(c,e,j) (DBG_DUI_MENU_##c + RLE_JAPANESE * MSG_LANG_SPACING), [ j ]
+    #include "wdmenu.gh"
+    #undef pick
+  #if !defined( RESX_GUI )
+    #define pick(c,e,j) (c + RLE_JAPANESE * MSG_LANG_SPACING), [ j ]
+    #include "usagej.gh"
+    #undef pick
+  #endif
+#endif
+END
+
 #if defined( __NT__ ) && defined( RESX_NTMANIF )
     #include "ntmanif.rc"
 #endif
@@ -104,39 +151,3 @@
 #if defined( __NT__ ) && defined( RESX_NTVER )
     #include "exever.grc"
 #endif
-
-STRINGTABLE
-BEGIN
-  #ifdef JAPANESE
-    #define pick(c,e,j) LITSTR( c, j )
-  #else
-    #define pick(c,e,j) LITSTR( c, e )
-  #endif
-    #include "liteng.gh"
-    #define LITSTR( x, y ) DBG_ENG_LITERAL_##x, [ y ]
-    #include "wdeng.str"
-    #undef LITSTR
-#if !defined( RESX_ENG )
-    #include "litdui.gh"
-    #define LITSTR( x, y ) DBG_DUI_LITERAL_##x, [ y ]
-    #include "wddui.str"
-    #undef LITSTR
-
-    #include "litmenu.gh"
-    #define LITSTR( x, y ) DBG_DUI_MENU_##x, [ y ]
-    #include "wdmenu.str"
-    #undef LITSTR
-
-    #undef pick
-
-  #if !defined( RESX_GUI )
-    #define pick(c,e,j) (c + RLE_ENGLISH * MSG_LANG_SPACING), [ e ]
-    #include "usage.gh"
-    #undef pick
-
-    #define pick(c,e,j) (c + RLE_JAPANESE * MSG_LANG_SPACING), [ j ]
-    #include "usagej.gh"
-    #undef pick
-  #endif
-#endif
-END

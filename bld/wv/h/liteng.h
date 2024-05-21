@@ -33,9 +33,9 @@
 
 #include "liteng.gh"
 
-#define LIT_ENG( x ) _LIT_DBG_ENG_##x
-#define LITREF_ENG( x ) &LIT_ENG( x )
+#define LIT_ENG(x)      _LIT_DBG_ENG_##x
+#define LITREF_ENG(x)   &LIT_ENG( x )
 
-#define pick(c,e,j) extern char *LIT_ENG( c );
+#define pick(c,e,j)     extern char *LIT_ENG( c );
 #include "wdeng.gh"
 #undef pick

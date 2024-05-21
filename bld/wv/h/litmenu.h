@@ -33,9 +33,9 @@
 
 #include "litmenu.gh"
 
-#define LIT_MENU( x ) _LIT_DBG_MENU_##x
-#define LITREF_MENU( x ) ((char *)&LIT_MENU( x ))
+#define LIT_MENU(x)     _LIT_DBG_MENU_##x
+#define LITREF_MENU(x)  ((char *)&LIT_MENU( x ))
 
-#define pick(c,e,j) extern char *LIT_MENU( c );
+#define pick(c,e,j)     extern char *LIT_MENU( c );
 #include "wdmenu.gh"
 #undef pick
