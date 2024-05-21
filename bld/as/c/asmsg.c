@@ -34,12 +34,15 @@
 #include "wreslang.h"
 #ifdef INCL_MSGTEXT
 #elif defined( USE_WRESLIB )
-  #ifdef __WATCOMC__
+  #if defined( __WATCOMC__ )
     #include <process.h>
   #endif
     #include "wressetr.h"
     #include "wresset2.h"
 #else
+  #if defined( __WATCOMC__ )
+    #include <process.h>
+  #endif
     #include <windows.h>
 #endif
 
@@ -127,6 +130,7 @@ bool AsMsgGet( int resourceid, char *buffer )
 //*******************************************
 {
 #ifdef INCL_MSGTEXT
+//    strcpy( buffer, asMessages[resourceid + msgShift] );
     strcpy( buffer, asMessages[resourceid + msgShift] );
 #elif defined( USE_WRESLIB )
     if( hInstance.status == 0 || WResLoadString( &hInstance, resourceid + msgShift, (lpstr)buffer, MAX_RESOURCE_SIZE ) <= 0 ) {
