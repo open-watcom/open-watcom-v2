@@ -11,9 +11,8 @@
 #else
     #include "wresdefn.h"
 #endif
-
-#include "sample.rh"
 #include "gui.rh"
+#include "sample.rh"
 
 #include "gui.rc"
 

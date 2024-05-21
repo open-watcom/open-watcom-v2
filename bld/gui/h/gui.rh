@@ -31,6 +31,9 @@
 ****************************************************************************/
 
 
+#include "wreslang.rh"
+
+
 /*
  * This setup Japanese globaly for AUI/GUI application (Samples, WPROF, WD)
  */

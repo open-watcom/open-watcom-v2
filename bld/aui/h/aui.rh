@@ -31,6 +31,9 @@
 ****************************************************************************/
 
 
+#include "gui.rh"
+
+
 /*
  *      GUI_LITERAL_BASE    1       +67
  */
@@ -38,7 +41,6 @@
 
 #define LIT_AUI(s)          AUI_LITERAL_ ##s
 
-#include "gui.rh"
 #include "aui.grh"
 #include "dlgrx.rh"
 #include "dlgsrch.rh"
