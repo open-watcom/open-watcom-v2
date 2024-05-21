@@ -125,12 +125,12 @@ ntverrc_path = ../res
 ntmanif_path = ../res
 !include ntmanif.mif
 
-rc_inc_dirs = -I"../res/bmp" -I"../res/dlg" -I"../res/cur" -I"../res" -I"../h" -I"../res/ico"
+rc_inc_dirs = -I"../res/bmp" -I"../res/dlg" -I"../res/cur" -I"../res" -I"../h" -I"../res/ico" $(cli_wclass_rc_inc_dirs)
 
 extra_rc_flags_nt = $(ntmanif_def) $(ntverrc_def) $(ntmanif_inc_dirs) $(ntverrc_inc_dirs)
 extra_rc_flags_os2 = -I"../res/ico_pm"
 
-$(proj_name).res : ../res/wbrw.rc $(ntverrc_exe_dep) $(ntmanif_dep)
+$(proj_name).res : ../res/wbrw.rc $(ntverrc_exe_dep) $(ntmanif_dep) $(cli_wclass_rc_depends)
     @%make echo_rc
     $(rc) $(ppflags_common) $(rc_cppflags) $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
