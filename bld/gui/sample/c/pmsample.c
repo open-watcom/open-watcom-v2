@@ -43,7 +43,7 @@ bool MainWndGUIEventProc( gui_window *wnd, gui_event gui_ev, void *param )
     return( true );
 }
 
-static gui_create_info Parent = {
+gui_create_info Parent = {
     "Sample Application",
     { 250, 250, 500, 500 },
     GUI_HSCROLL | GUI_VSCROLL,
