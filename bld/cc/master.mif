@@ -56,9 +56,9 @@ $(bin_subdir) : .EXPLICIT
 #
 # cflags
 #
-.c: ../../c;$(asminline_c);$(fe_misc_dir)/c;$(cpp_c_dirs);$(watcom_dir)/c
+.c: ../../c;$(cli_asminline_c);$(fe_misc_dir)/c;$(cpp_c_dirs);$(watcom_dir)/c
 
-inc_dirs  = -I. -I.. -I"../../h" $(cg_inc_dirs) $(asminline_inc_dirs) $(cpp_inc_dirs) $(cli_dwarfw_inc_dirs) -I"$(comp_cfg_dir)/h" -I"$(fe_misc_dir)/h"
+inc_dirs  = -I. -I.. -I"../../h" $(cli_cg_inc_dirs) $(cli_asminline_inc_dirs) $(cli_owl_inc_dirs) $(cpp_inc_dirs) $(cli_dwarfw_inc_dirs) -I"$(comp_cfg_dir)/h" -I"$(fe_misc_dir)/h"
 
 extra_cpp_flags = -DINCL_MSGTEXT
 !ifndef cc_dll
@@ -120,7 +120,7 @@ prebuild_objs = &
     weights.gh &
     keywords.gh &
     cmdlnprs.gh &
-    $(asminline_deps) &
+    $(cli_asminline_deps) &
     code$(target_cpu).gh &
     $(bin_intname)01.int
 
@@ -139,7 +139,7 @@ exetarg_libs          = $(dlltarg_name).lib $(exetarg_libs_$(host_os))
 !else
 exetarg_prebuild_objs = $(prebuild_objs)
 exetarg_objs          = $(comp_objs_exe)
-exetarg_libs          = $(asminline_lib) $(cg_libs)
+exetarg_libs          = $(cli_asminline_lib) $(cli_cg_libs)
 !endif
 exetarg_qnx_res       = usage.u
 !ifdef ntverrc_exe_out
@@ -153,7 +153,7 @@ exetarg_name          = $(exetarg_name)
 #
 dlltarg_prebuild_objs = $(dll_subdir) $(prebuild_objs)
 dlltarg_objs          = $(comp_objs_dll)
-dlltarg_libs          = $(asminline_lib) $(cg_libs)
+dlltarg_libs          = $(cli_asminline_lib) $(cli_cg_libs)
 !ifdef ntverrc_dll_out
 dlltarg_res           = $(ntverrc_dll_out)
 !endif

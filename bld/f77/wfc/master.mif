@@ -32,11 +32,11 @@ exetarg_name = $(exename_$(target_cpu))
 #
 # cflags
 #
-.c: $(f77wfc_dir)/c;$(asminline_c);$(trmem_dir);$(watcom_dir)/c;$(fe_misc_dir)/h
+.c: $(f77wfc_dir)/c;$(cli_asminline_c);$(trmem_dir);$(watcom_dir)/c;$(fe_misc_dir)/h
 
 inc_dirs= -I. -I.. -I"$(f77wfc_dir)/h" -I"$(f77_dir)/h" &
-    $(cg_inc_dirs) $(cli_dwarfw_inc_dirs) $(cfloat_inc_dirs) -I"$(comp_cfg_dir)/h" -I"$(fe_misc_dir)/h" &
-    $(asminline_inc_dirs) -I"$(clib_dir)/h" -I"$(lib_misc_dir)/h"
+    $(cli_cg_inc_dirs) $(cli_dwarfw_inc_dirs) $(cli_cfloat_inc_dirs) -I"$(comp_cfg_dir)/h" -I"$(fe_misc_dir)/h" &
+    $(cli_asminline_inc_dirs) $(cli_owl_inc_dirs) -I"$(clib_dir)/h" -I"$(lib_misc_dir)/h"
 
 extra_cpp_flags =
 !ifdef dll_cg
@@ -59,9 +59,9 @@ extra_a_flags_axp = -oc
 #
 # EXE
 #
-exetarg_prebuild_objs = $(asminline_deps) usage.gh wfcmsgs.gh code$(target_cpu).gh
+exetarg_prebuild_objs = $(cli_asminline_deps) usage.gh wfcmsgs.gh code$(target_cpu).gh
 exetarg_objs          = $(fobjs) $(trmem_objs) $(trmemcvr_objs)
-exetarg_libs          = $(asminline_lib) $(cg_libs)
+exetarg_libs          = $(cli_asminline_lib) $(cli_cg_libs)
 exetarg_res           = $(proj_name).res
 !include exetarg.mif
 
@@ -72,11 +72,11 @@ ntverrc_exe = $(exetarg_name)
 !include ntverrc.mif
 
 rc_inc_dirs = -I. -I.. -I"$(f77wfc_dir)/h" -I"$(f77_dir)/h" &
-    $(asminline_inc_dirs) -I"$(comp_cfg_dir)/h" -I"$(fe_misc_dir)/h"
+    $(cli_asminline_rc_inc_dirs) -I"$(comp_cfg_dir)/h" -I"$(fe_misc_dir)/h"
 
 extra_rc_flags_nt = $(ntverrc_dep) $(ntverrc_inc_dirs)
 
-$(proj_name).res : $(f77wfc_dir)/h/wfc.rc $(ntverrc_exe_dep) $(f77wfc_dir)/h/wfc.rh
+$(proj_name).res : $(f77wfc_dir)/h/wfc.rc $(ntverrc_exe_dep) $(f77wfc_dir)/h/wfc.rh $(cli_asminline_rc_depends)
     @%make echo_rc
     $(rcu8j) $(ppflags_common) $(rc_cppflags) $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 

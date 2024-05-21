@@ -186,7 +186,7 @@ tdovl1 += &
     wf77aux.obj &
     asmalloc.obj &
     asmmsg.obj &
-    $(asminline_objs)
+    $(cli_asminline_objs)
 
 tdovl2 = &
     fccall.obj &
@@ -247,7 +247,7 @@ dbfiles = &
 
 # code generator extra files
 
-dbfiles += $(cg_objs)
+dbfiles += $(cli_cg_objs)
 
 # platform specific files
 

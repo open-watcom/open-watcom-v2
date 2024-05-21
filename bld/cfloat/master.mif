@@ -6,12 +6,14 @@ cf_autodepends = .autodepend
 !include defrule.mif
 !include deftarg.mif
 
+!include $(cfloat_dir)/client.mif
+
 #
 # cflags
 #
 .c: $(cfloat_dir)/c
 
-inc_dirs = -I"../h"
+inc_dirs = $(cli_cfloat_inc_dirs)
 
 # explicit rules
 #################

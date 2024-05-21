@@ -20,6 +20,6 @@ risc_objs = &
         rscqueue.obj
 
 src_path        = $(cg_dir)/$(target_cls)/$(target_cpu)/c;$(cg_dir)/$(target_cls)/c
-inc_dirs_targ   = -I"$(cg_dir)/$(target_cls)/$(target_cpu)/h" -I"$(cg_dir)/$(target_cls)/h" -I"$(owl_dir)/h"
+inc_dirs_targ   = -I"$(cg_dir)/$(target_cls)/$(target_cpu)/h" -I"$(cg_dir)/$(target_cls)/h" $(cli_owl_inc_dirs)
 
 !include $(cg_dir)/mif/master.mif

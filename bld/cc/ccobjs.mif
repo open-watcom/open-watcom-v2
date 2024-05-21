@@ -102,7 +102,7 @@ cc_objs_ppc   = $(_subdir_)cmdlnrsc.obj $(_subdir_)cpragppc.obj $(_subdir_)pragp
 cc_objs_mps   = $(_subdir_)cmdlnrsc.obj $(_subdir_)cpragmps.obj $(_subdir_)pragmips.obj
 cc_objs_sparc = $(_subdir_)cmdlnrsc.obj $(_subdir_)cpragspc.obj $(_subdir_)pragspc.obj $(_subdir_)stubspc.obj
 
-cc_template = $(common_objs) $(cc_debug_objs) $(asminline_objs) $(cg_objs) $(cc_objs_$(target_cpu))
+cc_template = $(common_objs) $(cc_debug_objs) $(cli_asminline_objs) $(cli_cg_objs) $(cc_objs_$(target_cpu))
 
 comp_objs_drv = $(drv_objs)
 _subdir_ = $(dll_subdir)/
