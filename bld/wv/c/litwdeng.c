@@ -37,19 +37,19 @@
 
 
 #define pick(c,e,j)     char *LIT_ENG( c );
-#include "wdeng.str"
+#include "wdeng.gh"
 #undef pick
 
 void InitEngineLiterals( void )
 {
     #define pick(c,e,j)     LIT_ENG( c ) = DUILoadString( DBG_ENG_LITERAL_##c );
-    #include "wdeng.str"
+    #include "wdeng.gh"
     #undef pick
 }
 
 void FiniEngineLiterals( void )
 {
     #define pick(c,e,j)     DUIFreeString( LIT_ENG( c ) );
-    #include "wdeng.str"
+    #include "wdeng.gh"
     #undef pick
 }

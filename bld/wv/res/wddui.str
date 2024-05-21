@@ -68,15 +68,15 @@ pick( Macro_Type,
        "Action type",
        "jAction type" )
 
-pick( mac_popup_menu,
+pick( Mac_PopupMenu,
         "Popup Menu",
         "jPopup Menu" )
 
-pick( mac_main_menu,
+pick( Mac_MainMenu,
         "Main Menu",
         "jMain Menu" )
 
-pick( mac_command_string,
+pick( Mac_CommandString,
         "Command",
         "jCommand" )
 

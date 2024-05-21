@@ -12,13 +12,8 @@
 #else
     #include "wresdefn.h"
 #endif
-#include "wreslang.rh"
-#include "reslang.rh"
 #include "wv.rh"
 #include "banner.h"
-#if !defined( RESX_ENG )
-    #include "aui.rh"
-#endif
 
 #if !defined( RESX_ENG )
     #include "aui.rc"

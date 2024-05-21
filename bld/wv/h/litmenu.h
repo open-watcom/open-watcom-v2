@@ -37,5 +37,5 @@
 #define LITREF_MENU( x ) ((char *)&LIT_MENU( x ))
 
 #define pick(c,e,j) extern char *LIT_MENU( c );
-#include "wdmenu.str"
+#include "wdmenu.gh"
 #undef pick

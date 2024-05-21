@@ -88,9 +88,9 @@ static char **WndDisplayNames[] = {
 };
 
 static char **WhatList[] = {
-    LITREF_DUI( mac_popup_menu ),
-    LITREF_DUI( mac_main_menu ),
-    LITREF_DUI( mac_command_string ),
+    LITREF_DUI( Mac_PopupMenu ),
+    LITREF_DUI( Mac_MainMenu ),
+    LITREF_DUI( Mac_CommandString ),
 };
 
 static char **Titles[] = {

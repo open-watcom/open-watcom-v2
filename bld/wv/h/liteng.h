@@ -37,5 +37,5 @@
 #define LITREF_ENG( x ) &LIT_ENG( x )
 
 #define pick(c,e,j) extern char *LIT_ENG( c );
-#include "wdeng.str"
+#include "wdeng.gh"
 #undef pick

@@ -37,5 +37,5 @@
 #define LITREF_DUI( x ) &LIT_DUI( x )
 
 #define pick(c,e,j) extern char *LIT_DUI( c );
-#include "wddui.str"
+#include "wddui.gh"
 #undef pick

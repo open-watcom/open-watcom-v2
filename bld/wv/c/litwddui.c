@@ -44,30 +44,30 @@
 
 
 #define pick(c,e,j)     char *LIT_DUI( c );
-#include "wddui.str"
+#include "wddui.gh"
 #undef pick
 
 #define pick(c,e,j)     char *LIT_MENU( c );
-#include "wdmenu.str"
+#include "wdmenu.gh"
 #undef pick
 
 void DUIInitLiterals( void )
 {
     #define pick(c,e,j)     LIT_DUI( c ) = DUILoadString( DBG_DUI_LITERAL_##c );
-    #include "wddui.str"
+    #include "wddui.gh"
     #undef pick
     #define pick(c,e,j)     LIT_MENU( c ) = DUILoadString( DBG_DUI_MENU_##c );
-    #include "wdmenu.str"
+    #include "wdmenu.gh"
     #undef pick
 }
 
 void DUIFiniLiterals( void )
 {
     #define pick(c,e,j)     DUIFreeString( LIT_MENU( c ) );
-    #include "wdmenu.str"
+    #include "wdmenu.gh"
     #undef pick
     #define pick(c,e,j)     DUIFreeString( LIT_DUI( c ) );
-    #include "wddui.str"
+    #include "wddui.gh"
     #undef pick
 }
 

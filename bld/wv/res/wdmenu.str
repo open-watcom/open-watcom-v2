@@ -1043,3 +1043,6 @@ MENU_STR( DisableBreak,
         "",
         "Disable this breakpoint.",
         "jDisable this breakpoint." )
+
+#undef MENU_STR
+#undef TIP_MENU_STR
