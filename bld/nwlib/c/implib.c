@@ -181,9 +181,8 @@ static bool elfAddImport( libfile io, long header_offset, arch_header *arch )
     ORLSecGetContents( string_sec, (unsigned_8 **)&strings );
 
     arch->ffname = arch->name;
-    dllName.name = TrimPath( arch->name );
+    dllName.name = arch->name = dll_name = DupStr( TrimPath( arch->name ) );
     dllName.len = strlen( dllName.name );
-    dllName.name = arch->name = dll_name = strcpy( MemAlloc( dllName.len + 1 ), dllName.name );
 
     ElfMKImport( arch, ELF, export_size, &dllName, strings, export_table, sym_table, processor );
 
