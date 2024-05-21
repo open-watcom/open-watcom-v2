@@ -38,7 +38,7 @@
 #include "guidlg.h"
 #include "guistr.h"
 #include "setupinf.h"
-#include "resource.rh"
+#include "setup.rh"
 #include "banner.h"
 #include "genvbl.h"
 #include "utils.h"

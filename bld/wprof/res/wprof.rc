@@ -11,8 +11,8 @@
 #else
     #include "wresdefn.h"
 #endif
-#include "wprof.rh"
 #include "aui.rh"
+#include "wprof.rh"
 
 #include "aui.rc"
 

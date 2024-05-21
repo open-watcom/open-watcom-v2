@@ -6,7 +6,7 @@
     #include <os2.h>
   #else
     #define RC_ITEM(a,b,c) b a c
-//    #include <windows.h>
+    #include <windows.h>
   #endif
 #else
     #include "wresdefn.h"

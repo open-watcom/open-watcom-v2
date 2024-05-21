@@ -54,5 +54,5 @@
 
 #define CLOSEBMP        1040
 
-#define STRMSG1         1041
-#define STRMSG2         1042
+#define STRMSG1         10001
+#define STRMSG2         10002

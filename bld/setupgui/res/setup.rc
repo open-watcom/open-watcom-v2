@@ -10,9 +10,7 @@
   #endif
 #endif
 #include "gui.rh"
-#if defined( RESX_GUI )
-    #include "resource.rh"
-#endif
+#include "setup.rh"
 
 #include "gui.rc"
 #if defined( RESX_GUI )

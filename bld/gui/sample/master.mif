@@ -10,8 +10,8 @@ guisample_autodepends = .AUTODEPEND
 guisample_wreslib = 1
 
 !ifdef sys_windowed
-!ifeq host_od os2
-gui_os2pm = 1
+!ifeq host_os os2
+guisample_os2pm = 1
 !endif
 !endif
 
@@ -44,15 +44,10 @@ extra_l_flags_win = import DEATH GDI.121 import RESURRECTION GDI.122
 #
 # EXE's
 #
-exetarg_objs       = dlgstat.obj dlgdynam.obj dlgtest.obj sampdef.obj
-!ifeq host_os os2
-! ifdef sys_windowed
-exetarg_objs       += pmsample.obj
-! else
-exetarg_objs       += samp2.obj
-! endif
+!ifdef guisample_os2pm
+exetarg_objs       = pmsample.obj
 !else
-exetarg_objs       += sample.obj
+exetarg_objs       = dlgstat.obj dlgdynam.obj dlgtest.obj sampdef.obj sample.obj
 !endif
 exetarg_libs       = $(cli_gui_lib) $(cli_ui_lib)
 exetarg_name       = sample
@@ -62,10 +57,9 @@ exetarg_res        = sample.res
 #
 # rc and others
 #
-!ifdef gui_os2pm
+!ifdef guisample_os2pm
 rc_inc_dirs = -I. -I"../res/pm" -I"../res" -I"../h"
-guisamples_rc_depends = & 
-    ../res/pm/sample.dlg &
+guisamples_rc_depends1 = ../res/pm/sample.dlg &
     ../res/pm/dlg.ico &
     ../res/pm/main.ico &
     ../res/pm/win1.ico &
@@ -73,8 +67,7 @@ guisamples_rc_depends = &
     ../res/pm/win3.ico
 !else
 rc_inc_dirs = -I. -I"../res/win" -I"../res" -I"../h"
-guisamples_rc_depends = &
-    ../res/win/sample.dlg &
+guisamples_rc_depends1 = ../res/win/sample.dlg &
     ../res/win/dlg.ico &
     ../res/win/main.ico &
     ../res/win/win1.ico &
@@ -84,7 +77,8 @@ guisamples_rc_depends = &
 !endif
 
 rc_inc_dirs += $(cli_gui_rc_inc_dirs)  $(commonui_inc_dirs)
-guisamples_rc_depends += &
+guisamples_rc_depends = &
+    $(guisamples_rc_depends1) &
     ../res/change.bmp &
     ../res/five.bmp &
     ../res/four.bmp &
