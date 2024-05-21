@@ -47,8 +47,8 @@ extra_a_v2_flags = -DVERSION2
 
 inc_dirs = -I. -I"$(graphlib_dir)/h" -I"$(mathlib_dir)/h"
 inc_dirs_dos = -I"$(clib_dir)/mbyte/h"
-inc_dirs_os2 = -I"$(clib_dir)/h" -I"$(clib_dir)/defwin/h" -I"$(lib_misc_dir)/h" -I"$(wpi_dir)/h"
-inc_dirs_win = -I"$(clib_dir)/h" -I"$(clib_dir)/defwin/h" -I"$(lib_misc_dir)/h" -I"$(wpi_dir)/h"
+inc_dirs_os2 = -I"$(clib_dir)/h" -I"$(clib_dir)/defwin/h" -I"$(lib_misc_dir)/h" $(cli_wpi_inc_dirs)
+inc_dirs_win = -I"$(clib_dir)/h" -I"$(clib_dir)/defwin/h" -I"$(lib_misc_dir)/h" $(cli_wpi_inc_dirs)
 
 extra_cpp_flags = $(supervga_support) -D_FARD=
 

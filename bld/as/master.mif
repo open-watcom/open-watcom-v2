@@ -55,9 +55,9 @@ asi_lex_out     = asilexyy
 # cflags
 #################
 
-.c: $(as_dir)/$(target_cpu)/c;$(as_dir)/c;$(trmem_dir);$(cpp_c_dirs);$(watcom_dir)/c
+.c: $(as_dir)/$(target_cpu)/c;$(as_dir)/c;$(trmem_dir);$(cli_cpp_c_dirs);$(watcom_dir)/c
 
-inc_dirs = -I. -I"$(as_dir)/$(target_cpu)/h" -I"$(as_dir)/h" $(cli_owl_inc_dirs) $(cpp_inc_dirs) -I"$(fe_misc_dir)/h"
+inc_dirs = -I. -I"$(as_dir)/$(target_cpu)/h" -I"$(as_dir)/h" $(cli_owl_inc_dirs) $(cli_cpp_inc_dirs) -I"$(fe_misc_dir)/h"
 
 extra_cppflags_axp = -DAS_ALPHA
 extra_cppflags_mps = -DAS_MIPS
@@ -127,7 +127,7 @@ as_stand_objs = &
     $(_subdir_)obj.obj &
     $(_subdir_)sections.obj &
     $(_subdir_)options.obj &
-    $(cpp_objs) &
+    $(cli_cpp_objs) &
     $(_subdir_)ppenv.obj &
     $(_subdir_)ppmem.obj &
     $(_subdir_)trmemcvr.obj &

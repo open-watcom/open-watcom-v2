@@ -15,7 +15,7 @@ objread_trmem = 1
 
 .c: ../c;$(trmem_dir)
 
-inc_dirs = -I"$(orl_dir)/h" -I"$(orl_dir)/elf/h" -I"$(orl_dir)/coff/h" -I"$(watcom_dir)/h"
+inc_dirs = $(cli_orl_inc_dirs) $(cli_orl_inc_dirs_internal)
 
 extra_cpp_flags_test      = $(trmem_cpp_flags)
 extra_cpp_flags_trmemcvr  = $(trmem_cpp_flags)
@@ -23,6 +23,6 @@ extra_cpp_flags_trmemcvr  = $(trmem_cpp_flags)
 extra_c_flags_trmemcvr    = $(trmem_cover_cflags)
 
 exetarg_objs = test.obj trmemcvr.obj $(trmem_objs)
-exetarg_libs = $(orl_lib)
+exetarg_libs = $(cli_orl_lib)
 
 !include exetarg.mif

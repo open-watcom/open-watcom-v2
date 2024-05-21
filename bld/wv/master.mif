@@ -72,7 +72,7 @@ target_nt  = win
 .c: ../c;../../c;$(aui_dir)/c;$(dig_srcs);$(watcom_dir)/c;$(trmem_dir)
 
 inc_dirs = -I.  -Ih -I"../h" -I"../../h" -I"../../res" -I"$(dig_dir)/h" $(cli_aui_inc_dirs) &
-	$(cli_ui_inc_dirs_internal) $(cli_hlpview_inc_dirs) $(wpi_inc_dirs) $(commonui_inc_dirs)
+	$(cli_ui_inc_dirs_internal) $(cli_hlpview_inc_dirs) $(cli_wpi_inc_dirs) $(commonui_inc_dirs)
 !ifdef sys_rtdll
 !else
 inc_dirs += $(cli_gui_inc_dirs_internal)

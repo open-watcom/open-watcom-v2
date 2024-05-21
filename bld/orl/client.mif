@@ -3,15 +3,18 @@
 #
 
 !ifdef bootstrap
-orl_lib = $(orl_dir)/$(objs_subdir)/orl.lib
+cli_orl_lib = $(orl_dir)/$(objs_subdir)/orl.lib
 !else ifdef $(proj_name)_rtdll
 #
 # ORL run-time DLL used
 #
-orl_lib = $(orl_dir)/$(objs_subdir).dll/orl.lib
+cli_orl_lib = $(orl_dir)/$(objs_subdir).dll/orl.lib
 !else
 #
 # ORL library used
 #
-orl_lib = $(orl_dir)/$(objs_subdir)/orl.lib
+cli_orl_lib = $(orl_dir)/$(objs_subdir)/orl.lib
 !endif
+cli_orl_inc_dirs = -I"$(orl_dir)/h"
+cli_orl_inc_dirs_internal = -I"$(orl_dir)/elf/h" -I"$(orl_dir)/coff/h" -I"$(orl_dir)/omf/h"
+cli_orl_c_dirs = $(orl_dir)/c;$(orl_dir)/elf/c;$(orl_dir)/coff/c;$(orl_dir)/omf/c

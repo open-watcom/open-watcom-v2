@@ -11,9 +11,9 @@ ssl_autodepends = .AUTODEPEND
 #
 # cflags
 #
-.c: ../c;$(cpp_c_dirs);$(watcom_dir)/c
+.c: ../c;$(cli_cpp_c_dirs);$(watcom_dir)/c
 
-inc_dirs = -I"../h" $(cpp_inc_dirs)
+inc_dirs = -I"../h" $(cli_cpp_inc_dirs)
 
 # explicit rules
 #################
@@ -27,5 +27,5 @@ exetarg_objs = &
     sslrule.obj     &
     sslsym.obj      &
     sslgen.obj      &
-    $(cpp_objs) ppenv.obj ppmem.obj
+    $(cli_cpp_objs) ppenv.obj ppmem.obj
 !include exetarg.mif

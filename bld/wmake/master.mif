@@ -38,7 +38,7 @@ additional_clean = *.gh *.grc
 #
 .c : ../c;$(watcom_dir)/c;$(trmem_dir)
 
-inc_dirs = -I. -I"$(wmake_dir)/h" -I"$(orl_dir)/h"
+inc_dirs = -I. -I"$(wmake_dir)/h" $(cli_orl_inc_dirs)
 
 extra_cpp_flags =
 !ifdef DLLS_IMPLEMENTED
@@ -94,7 +94,7 @@ exetarg_prebuild_objs = isarray.gh usage.gh usagej.gh
 exetarg_objs          = $(objs)
 !ifeq host_cpu i86
 !else
-exetarg_libs          = $(orl_lib)
+exetarg_libs          = $(cli_orl_lib)
 !endif
 exetarg_res           = $(proj_name).res
 exetarg_name          = wmk

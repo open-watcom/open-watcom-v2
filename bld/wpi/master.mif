@@ -10,12 +10,14 @@ wpi_nofpu = 1
 !include defrule.mif
 !include deftarg.mif
 
+!include $(wpi_dir)/client.mif
+
 #
 # cflags
 #
 .c : ../c
 
-inc_dirs = -I"../h"
+inc_dirs = $(cli_wpi_inc_dirs)
 
 !ifeq wpitest yes
 extra_cpp_flags_os2 = -D_WPI_TEST_

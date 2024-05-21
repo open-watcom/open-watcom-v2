@@ -29,7 +29,7 @@ additional_clean = *.grh
 .c: ../c;../../c;$(hlpview_dir)/c;$(trmem_dir)
 
 inc_dirs = $(cli_gui_inc_dirs) $(cli_gui_inc_dirs_internal) $(cli_hlpview_inc_dirs) $(commonui_inc_dirs) &
-    $(wpi_inc_dirs) $(wres_inc_dirs)
+    $(cli_wpi_inc_dirs) $(wres_inc_dirs)
 
 !ifdef sys_windowed
 extra_cpp_flags     = -DGUI_IS_GUI
@@ -100,7 +100,7 @@ mem_objs = &
     guimem.obj     &
     $(trmem_objs)
 libtarg_objs = $(common_objs) $(mem_objs) $(sysobjs)
-libtarg_libs = $(wpi_lib) $(commonui_lib)
+libtarg_libs = $(cli_wpi_lib) $(commonui_lib)
 !include libtarg.mif
 
 #

@@ -30,29 +30,22 @@ additional_clean = *.gh *.grh *.grc *.gc
 !include dllbase.mif
 !include trmem.mif
 
-!ifdef bootstrap
-!include $(orl_dir)/orlobjs.mif
-!else
 !include $(orl_dir)/client.mif
-!endif
 
 #
 # cflags
 #
+!ifdef bootstrap
+!include $(orl_dir)/orlobjs.mif
+.c: ../c;$(lib_misc_dir)/c;$(fe_misc_dir)/c;$(watcom_dir)/c;$(trmem_dir);$(cli_orl_c_dirs)
+inc_dirs =  -I. -I.. -I"../h" $(cli_orl_inc_dirs) -I"$(lib_misc_dir)/h" -I"$(fe_misc_dir)/h" $(cli_orl_inc_dirs_internal)
+extra_cpp_flags = -DINSIDE_WLIB -DINCL_MSGTEXT
+!else
 .c: ../c;$(lib_misc_dir)/c;$(fe_misc_dir)/c;$(watcom_dir)/c;$(trmem_dir)
-!ifdef bootstrap
-.c: $(orl_dir)/c;$(orl_dir)/elf/c;$(orl_dir)/coff/c;$(orl_dir)/omf/c;
-!endif
-
-inc_dirs =  -I. -I.. -I"../h" -I"$(orl_dir)/h" -I"$(lib_misc_dir)/h" -I"$(fe_misc_dir)/h"
-!ifdef bootstrap
-inc_dirs += -I"$(orl_dir)/elf/h" -I"$(orl_dir)/coff/h" -I"$(orl_dir)/omf/h"
-!endif
-
+inc_dirs =  -I. -I.. -I"../h" $(cli_orl_inc_dirs) -I"$(lib_misc_dir)/h" -I"$(fe_misc_dir)/h"
 extra_cpp_flags = -DINSIDE_WLIB
-!ifdef bootstrap
-extra_cpp_flags += -DINCL_MSGTEXT
 !endif
+
 !ifndef wlib_dll
 extra_cpp_flags += -DIDE_PGM
 !endif
@@ -110,7 +103,7 @@ common_objs = &
     $(trmem_objs)
 
 !ifdef bootstrap
-wlib_orl_objs = $(orl_objs)
+wlib_orl_objs = $(cli_orl_objs)
 !endif
 
 dll_objs_nt  = $(dll_subdir)/ntdll.obj
@@ -137,7 +130,7 @@ exetarg_libs          = $(dlltarg_name).lib
 exetarg_prebuild_objs = $(prebuild_objs)
 exetarg_objs          = $(exe_objs)
 !ifndef bootstrap
-exetarg_libs          = $(orl_lib)
+exetarg_libs          = $(cli_orl_lib)
 !endif
 !endif
 #
@@ -157,7 +150,7 @@ exetarg_res           = wresexe.res
 dlltarg_prebuild_objs = $(dll_subdir) $(prebuild_objs)
 dlltarg_objs          = $(dll_objs)
 !ifndef bootstrap
-dlltarg_libs          = $(orl_lib)
+dlltarg_libs          = $(cli_orl_lib)
 !endif
 #
 # Resource compiler is not available for librarian bootstrap build

@@ -43,9 +43,9 @@ additional_clean = *.gh *.grh *.grc *.gc $(os2_yacc_file).* $(win_yacc_file).* *
 #
 # cflags
 #
-.c : .;../c;$(cpp_c_dirs);$(fe_misc_dir)/c;$(trmem_dir);$(watcom_dir)/c
+.c : .;../c;$(cli_cpp_c_dirs);$(fe_misc_dir)/c;$(trmem_dir);$(watcom_dir)/c
 
-inc_dirs = -I. -I"../h" $(wres_inc_dirs) -I"$(fe_misc_dir)/h" $(cpp_inc_dirs)
+inc_dirs = -I. -I"../h" $(wres_inc_dirs) -I"$(fe_misc_dir)/h" $(cli_cpp_inc_dirs)
 
 parser_defines = -DYYDEBUG -DSCANDEBUG
 
@@ -139,7 +139,7 @@ common_objs = &
     $(_subdir_)rcspawn.obj &
     $(_subdir_)cmdlnprs.obj &
     $(_subdir_)cmdscan.obj &
-    $(cpp_objs)
+    $(cli_cpp_objs)
 
 misc_objs = &
     1250.uni &

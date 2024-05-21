@@ -30,7 +30,7 @@ additional_clean = *.gh *.grh *.grc
 #
 .c: ../c;$(commonui_dir)/c
 
-inc_dirs = -I. -I"../h" $(commonui_inc_dirs) $(wpi_inc_dirs)
+inc_dirs = -I. -I"../h" $(commonui_inc_dirs) $(cli_wpi_inc_dirs)
 
 extra_cpp_flags_nt = -DNOUSE3D
 
@@ -81,7 +81,7 @@ exetarg_objs = &
     spysel.obj &
     spymem.obj &
     $(exetarg_objs_$(host_os))
-exetarg_libs          = $(dllname).lib $(wpi_lib) $(commonui_lib)
+exetarg_libs          = $(dllname).lib $(cli_wpi_lib) $(commonui_lib)
 exetarg_res           = $(proj_name).res
 !include exetarg.mif
 
@@ -101,7 +101,7 @@ ntverrc_path = ../res
 ntmanif_path = ../res
 !include ntmanif.mif
 
-rc_inc_dirs = -I"../res" $(commonui_inc_dirs) $(wpi_inc_dirs)
+rc_inc_dirs = -I"../res" $(commonui_inc_dirs) $(cli_wpi_inc_dirs)
 
 extra_rc_flags_nt = $(ntmanif_def) $(ntverrc_def) $(ntmanif_inc_dirs) $(ntverrc_inc_dirs)
 
