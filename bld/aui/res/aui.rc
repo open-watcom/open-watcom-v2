@@ -4,11 +4,10 @@
 
 STRINGTABLE
 BEGIN
-#ifdef JAPANESE
-    #define pick( a,b,c )   AUI_LITERAL_ ##a, [ c ]
-#else
-    #define pick( a,b,c )   AUI_LITERAL_ ##a, [ b ]
-#endif
+    #define pick(c,e,j) (AUI_LITERAL_##c + RLE_ENGLISH * MSG_LANG_SPACING), [ e ]
+    #include "aui.msg"
+    #undef pick
+    #define pick(c,e,j) (AUI_LITERAL_##c + RLE_JAPANESE * MSG_LANG_SPACING), [ j ]
     #include "aui.msg"
     #undef pick
 END
