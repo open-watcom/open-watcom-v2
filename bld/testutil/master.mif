@@ -10,12 +10,10 @@ testutil_autodepends = .AUTODEPEND
 !include defrule.mif
 !include deftarg.mif
 
-bld_extra_incs = -I"../h"
-
 .c: ../c
 
 all: chk_exec.exe chktest.exe catfile.exe .SYMBOLIC
 
 .c.exe :
     @%make echo_bldccl
-    $(bld_ccl) $(ppflags_common) $(ppflags_autodep) $(bld_ppflags_sys) $(bld_cppflags) $(bld_cclflags) $< $(bld_ldflags)
+    $(bld_ccl) $(ppflags_common) $(ppflags_autodep) $(bld_ppflags_sys) $(bld_cppflags) $(bld_cclflags) -I"../h" $< $(bld_ldflags)
