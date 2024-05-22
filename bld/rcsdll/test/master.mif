@@ -13,7 +13,7 @@ rcstest_autodepends = .AUTODEPEND
 #
 .c : ..
 
-inc_dirs = -I.. $(rcsdll_inc_dirs)
+inc_dirs = -I.. $(cli_rcsdll_inc_dirs)
 
 # explicit rules
 #################
@@ -22,7 +22,7 @@ inc_dirs = -I.. $(rcsdll_inc_dirs)
 # EXE
 #
 exetarg_objs = rcstest.obj
-exetarg_libs = $(rcsdll_lib)
+exetarg_libs = $(cli_rcsdll_lib)
 exetarg_res = $(proj_name).res
 !include exetarg.mif
 

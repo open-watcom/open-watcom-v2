@@ -43,7 +43,7 @@ c_path_win  = $(batch_dir)/dos;$(batch_dir)/os2
 
 inc_dirs_win = -I"$(batch_dir)/dos"
 inc_dirs = -I"../h" $(cli_idelib_inc_dirs) $(cli_commonui_inc_dirs) &
-    $(cli_wpi_inc_dirs) -I"$(docs_host_dir)" -I"$(editdll_dir)" $(rcsdll_inc_dirs) -I"$(batch_dir)/h"
+    $(cli_wpi_inc_dirs) -I"$(docs_host_dir)" -I"$(editdll_dir)" $(cli_rcsdll_inc_dirs) -I"$(batch_dir)/h"
 
 extra_cpp_flags     = -DGUI_IS_GUI
 !ifdef nowgml
