@@ -23,7 +23,7 @@ additional_clean = *.gh *.grh *.grc
 #
 .c: ../c;../../c;$(cli_cpp_c_dirs);$(watcom_dir)/c
 
-inc_dirs = -I. -I"../h" -I"../../h" $(wr_inc_dirs) $(cli_wres_inc_dirs) $(cli_cpp_inc_dirs) &
+inc_dirs = -I. -I"../h" -I"../../h" $(cli_wr_inc_dirs) $(cli_wres_inc_dirs) $(cli_cpp_inc_dirs) &
     $(cli_wpi_inc_dirs) $(cli_commonui_inc_dirs)
 
 extra_cpp_flags     = -DWRESEDLL
@@ -60,7 +60,7 @@ dlltarg_objs          = $(sys_object) &
     wselft.obj wrename.obj wwait.obj wmemf.obj wcopystr.obj &
     wclip.obj wisedit.obj weditsym.obj &
     $(cli_cpp_objs) ppenv.obj
-dlltarg_libs = $(wr_lib) $(cli_wpi_lib) $(cli_commonui_lib)
+dlltarg_libs = $(cli_wr_lib) $(cli_wpi_lib) $(cli_commonui_lib)
 dlltarg_res           = $(proj_name).res
 !include dlltarg.mif
 

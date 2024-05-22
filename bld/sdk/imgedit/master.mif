@@ -34,7 +34,7 @@ target_nt  = win
 #
 .c : c;../c
 
-inc_dirs  = -I. -Ih -I"../h" $(cli_wres_inc_dirs) $(wr_inc_dirs) -I"$(wre_dir)/h" $(cli_commonui_inc_dirs) $(cli_wpi_inc_dirs)
+inc_dirs  = -I. -Ih -I"../h" $(cli_wres_inc_dirs) $(cli_wr_inc_dirs) -I"$(wre_dir)/h" $(cli_commonui_inc_dirs) $(cli_wpi_inc_dirs)
 
 extra_cpp_flags     = -DGUI_IS_GUI
 !ifdef wpitest
@@ -72,7 +72,7 @@ exetarg_objs = &
     trnsform.obj hinttext.obj iemem.obj closeall.obj bits.obj &
     errors.obj imgutil.obj &
     $(exetarg_objs_$(target_$(host_os)))
-exetarg_libs_win      = $(wr_lib)
+exetarg_libs_win      = $(cli_wr_lib)
 exetarg_libs          = $(cli_wpi_lib) $(cli_commonui_lib) $(exetarg_libs_$(target_$(host_os)))
 exetarg_res           = $(proj_name).res
 !include exetarg.mif

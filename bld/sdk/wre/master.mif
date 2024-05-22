@@ -30,7 +30,7 @@ additional_clean = *.gh *.grh *.grc
 #
 .c : ../c;$(cli_cpp_c_dirs);$(trmem_dir);$(watcom_dir)/c
 
-inc_dirs  = -I. -I"../h" -I"$(wresedit_dir)/h" $(wr_inc_dirs) $(cli_wres_inc_dirs) &
+inc_dirs  = -I. -I"../h" -I"$(wresedit_dir)/h" $(cli_wr_inc_dirs) $(cli_wres_inc_dirs) &
     $(cli_cpp_inc_dirs) $(cli_commonui_inc_dirs) $(cli_wpi_inc_dirs)
 
 extra_cpp_flags     = -DWREDLL
@@ -77,7 +77,7 @@ exetarg_objs = &
     $(cli_cpp_objs) ppenv.obj &
     $(trmem_objs) $(trmemcvr_objs)
 exetarg_libs = &
-    $(cli_commonui_lib) $(wr_lib) $(cli_wpi_lib) &
+    $(cli_commonui_lib) $(cli_wr_lib) $(cli_wpi_lib) &
     $(wresedit_dir)/waccel/$(objs_subdir)/wacc.lib &
     $(wresedit_dir)/wmenu/$(objs_subdir)/wmenu.lib &
     $(wresedit_dir)/wstring/$(objs_subdir)/wstring.lib
