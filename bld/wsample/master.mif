@@ -48,7 +48,7 @@ inc_dirs = -I. -I"../h" -I"$(nwoss_dir)/common/h" -I"$(nwoss_dir)/nw4/h" -I"$(di
 !else ifeq target win
 inc_dirs = -I. -I"../h" $(windbg_inc_dirs) -I"$(dig_dir)/h"
 !else ifeq target rsi
-inc_dirs = -I. -I"../h" $(rsilib_inc_dirs) -I"$(dig_dir)/h"
+inc_dirs = -I. -I"../h" $(cli_rsilib_inc_dirs) -I"$(dig_dir)/h"
 !else ifeq target pls
 inc_dirs = -I. -I"../h" -I"$(plsdir)" -I"$(dig_dir)/h"
 !else ifeq target linux
@@ -152,7 +152,7 @@ exetarg_objs_linux_ppc  = samplnx.obj sysio.obj io.obj sysinit.obj sampexe.obj l
 exetarg_objs_linux_x64  = samplnx.obj sysio.obj io.obj sysinit.obj sampexe.obj lnxutl.obj
 exetarg_objs          = $(exetarg_objs_$(target)_$(host_cpu)) sample.obj sampdata.obj wmsg.obj output.obj
 exetarg_libs_pls      = $(plsdir)/wdos32.lib $(plsdir)/wdosx32.lib
-exetarg_libs_rsi      = $(rsilib_lib)
+exetarg_libs_rsi      = $(cli_rsilib_lib)
 exetarg_libs_win      = $(windbg_lib)
 exetarg_libs          = $(exetarg_libs_$(target))
 !ifeq host_os win
