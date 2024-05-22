@@ -1,3 +1,4 @@
-wr_path = $(wr_dir)/$(objs_subdir)
-wr_lib = $(wr_path)/wr.lib
-wr_inc_dirs = -I"$(wr_path)" -I"$(wr_dir)/h" -I"$(wr_dir)/res"
+cli_wr_path = $(wr_dir)/$(objs_subdir)
+cli_wr_lib = $(cli_wr_path)/wr.lib
+cli_wr_inc_dirs = -I"$(cli_wr_path)" -I"$(wr_dir)/h"
+cli_wr_rc_inc_dirs = -I"$(cli_wr_path)" -I"$(wr_dir)/res" -I"$(wr_dir)/h"
