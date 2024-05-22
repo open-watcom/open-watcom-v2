@@ -171,7 +171,7 @@ void MsgFini( void )
 bool MsgGet( unsigned id, char *buffer )
 {
 #if defined( INCL_MSGTEXT )
-    strncpy( buffer, txtmsgs[id], MAX_MESSAGE_SIZE - 1 );
+    strncpy( buffer, txtmsgs[id + MsgShift], MAX_MESSAGE_SIZE - 1 );
     buffer[MAX_MESSAGE_SIZE - 1] = '\0';
 #elif defined( USE_WRESLIB )
     if( hInstance.status == 0 || WResLoadString( &hInstance, id + msgShift, (lpstr)buffer, MAX_MESSAGE_SIZE ) <= 0 ) {
