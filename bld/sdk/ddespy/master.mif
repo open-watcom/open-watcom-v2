@@ -23,7 +23,7 @@ additional_clean = *.gh *.grh *.grc
 #
 .c: ../c;$(commonui_dir)/c
 
-inc_dirs  = -I. -I"../h" $(commonui_inc_dirs) $(cli_wpi_inc_dirs)
+inc_dirs  = -I. -I"../h" $(cli_commonui_inc_dirs) $(cli_wpi_inc_dirs)
 
 extra_cpp_flags_nt = -DNOUSE3D
 
@@ -45,7 +45,7 @@ extra_l_flags_win = option stack=7k option heapsize=2k lib ddeml.lib, commdlg.li
 exetarg_prebuild_objs = rcstr.grh
 exetarg_objs          = dde.obj ddeproc.obj ddeglob.obj ddemsg.obj ddebox.obj &
     ddetrack.obj ddeflter.obj ddecfg.obj ddemisc.obj ddetool.obj ddemem.obj
-exetarg_libs          = $(cli_wpi_lib) $(commonui_lib)
+exetarg_libs          = $(cli_wpi_lib) $(cli_commonui_lib)
 exetarg_res           = $(proj_name).res
 !include exetarg.mif
 
@@ -65,7 +65,7 @@ ntverrc_path = ../res
 ntmanif_path = ../res
 !include ntmanif.mif
 
-rc_inc_dirs = $(commonui_inc_dirs) $(cli_wpi_inc_dirs)
+rc_inc_dirs = $(cli_commonui_rc_inc_dirs) $(cli_wpi_inc_dirs)
 
 extra_rc_flags_nt = $(ntmanif_def) $(ntverrc_def) $(ntmanif_inc_dirs) $(ntverrc_inc_dirs)
 

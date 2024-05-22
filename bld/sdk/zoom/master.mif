@@ -22,7 +22,7 @@ additional_clean = *.gh *.grh *.grc
 #
 .c: ../c;$(commonui_dir)/c
 
-inc_dirs = -I. -I"../h" $(commonui_inc_dirs)
+inc_dirs = -I. -I"../h" $(cli_commonui_inc_dirs)
 
 extra_cpp_flags_nt = -DNOUSE3D
 
@@ -45,7 +45,7 @@ exetarg_objs = &
     zmscreen.obj &
     zmconfig.obj &
     zmmem.obj
-exetarg_libs          = $(commonui_lib)
+exetarg_libs          = $(cli_commonui_lib)
 
 # EXE English
 exetarg_name          = $(proj_name)
@@ -65,7 +65,7 @@ ntverrc_path = ../res
 ntmanif_path = ../res
 !include ntmanif.mif
 
-rc_inc_dirs = -I"../res" $(commonui_inc_dirs)
+rc_inc_dirs = -I"../res" $(cli_commonui_rc_inc_dirs)
 
 extra_rc_flags_nt = $(ntmanif_def) $(ntverrc_def) $(ntmanif_inc_dirs) $(ntverrc_inc_dirs)
 

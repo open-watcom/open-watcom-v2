@@ -34,7 +34,7 @@ target_nt  = win
 #
 .c : c;../c
 
-inc_dirs  = -I. -Ih -I"../h" $(cli_wres_inc_dirs) $(wr_inc_dirs) -I"$(wre_dir)/h" $(commonui_inc_dirs) $(cli_wpi_inc_dirs)
+inc_dirs  = -I. -Ih -I"../h" $(cli_wres_inc_dirs) $(wr_inc_dirs) -I"$(wre_dir)/h" $(cli_commonui_inc_dirs) $(cli_wpi_inc_dirs)
 
 extra_cpp_flags     = -DGUI_IS_GUI
 !ifdef wpitest
@@ -73,7 +73,7 @@ exetarg_objs = &
     errors.obj imgutil.obj &
     $(exetarg_objs_$(target_$(host_os)))
 exetarg_libs_win      = $(wr_lib)
-exetarg_libs          = $(cli_wpi_lib) $(commonui_lib) $(exetarg_libs_$(target_$(host_os)))
+exetarg_libs          = $(cli_wpi_lib) $(cli_commonui_lib) $(exetarg_libs_$(target_$(host_os)))
 exetarg_res           = $(proj_name).res
 !include exetarg.mif
 
@@ -85,7 +85,7 @@ ntverrc_path = ../res
 ntmanif_path = ../res
 !include ntmanif.mif
 
-rc_inc_dirs = -I"../res" $(commonui_inc_dirs) -Ih
+rc_inc_dirs = -I"../res" $(cli_commonui_rc_inc_dirs) -Ih
 
 extra_rc_flags_nt = $(ntmanif_def) $(ntverrc_def) $(ntmanif_inc_dirs) $(ntverrc_inc_dirs)
 

@@ -76,7 +76,7 @@ guisamples_rc_deps1 = ../res/win/sample.dlg &
     ../res/sample.men
 !endif
 
-rc_inc_dirs += $(cli_gui_rc_inc_dirs)  $(commonui_inc_dirs)
+rc_inc_dirs += $(cli_gui_rc_inc_dirs)  $(cli_commonui_rc_inc_dirs)
 guisamples_rc_deps = &
     $(guisamples_rc_deps1) &
     ../res/change.bmp &

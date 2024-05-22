@@ -33,7 +33,7 @@ additional_clean = *.grh *.grc $(win_yacc_file).h $(win_yacc_file).c
 #
 .c:   ../c;$(trmem_dir);$(wrc_dir)/c;$(watcom_dir)/c
 
-inc_dirs = -I. -I"../h" $(cli_wres_inc_dirs) -I"$(wrc_dir)/h" $(commonui_inc_dirs)
+inc_dirs = -I. -I"../h" $(cli_wres_inc_dirs) -I"$(wrc_dir)/h" $(cli_commonui_inc_dirs)
 
 extra_cpp_flags   = -DINSIDE_WR
 
@@ -81,7 +81,7 @@ dlltarg_objs = wrmain.obj wrmem.obj wrmsg.obj wrfindt.obj wrtmpfil.obj &
     wrrnames.obj wrhash.obj wredit.obj wrutil.obj &
     wrstubs.obj rcerrprt.obj &
     $(trmem_objs) $(dlltarg_objs_rc)
-dlltarg_libs = $(commonui_lib)
+dlltarg_libs = $(cli_commonui_lib)
 dlltarg_res = $(proj_name).res
 !include dlltarg.mif
 
@@ -99,7 +99,7 @@ exetarg_name = test
 ntverrc_path = ../res
 !include ntverrc.mif
 
-rc_inc_dirs = -I"$(wrc_dir)/h" #$(cli_wres_inc_dirs) -I"$(wrc_dir)/h" $(commonui_inc_dirs)
+rc_inc_dirs = -I"$(wrc_dir)/h" #$(cli_wres_inc_dirs) -I"$(wrc_dir)/h" $(cli_commonui_rc_inc_dirs)
 
 extra_rc_flags_nt = $(ntverrc_def) $(ntverrc_inc_dirs)
 

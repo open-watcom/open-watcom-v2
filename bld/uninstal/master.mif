@@ -19,7 +19,7 @@ additional_clean = *.gh *.grh *.grc
 #
 .c: $(uninstal_dir)
 
-inc_dirs = -I. -I".." $(commonui_inc_dirs)
+inc_dirs = -I. -I".." $(cli_commonui_inc_dirs)
 
 # explicit rules
 #################
@@ -29,7 +29,7 @@ inc_dirs = -I. -I".." $(commonui_inc_dirs)
 #
 exetarg_prebuild_objs = rcstr.grh
 exetarg_objs          = uninstal.obj
-exetarg_libs          = $(commonui_lib)
+exetarg_libs          = $(cli_commonui_lib)
 exetarg_res           = $(proj_name).res
 !include exetarg.mif
 

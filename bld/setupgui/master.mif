@@ -33,7 +33,7 @@ additional_clean = *.i *.rex setup.inf *.grc
 #
 .c : ../c;$(trmem_dir)
 
-inc_dirs  = -I"../h" $(cli_wpi_inc_dirs) $(cli_gui_inc_dirs) $(cli_gui_inc_dirs_internal) $(commonui_inc_dirs) &
+inc_dirs  = -I"../h" $(cli_wpi_inc_dirs) $(cli_gui_inc_dirs) $(cli_gui_inc_dirs_internal) $(cli_commonui_inc_dirs) &
     $(cli_hlpview_inc_dirs) -I"$(libzip_dir)/lib" -I"$(zlib_dir)"
 
 !ifdef sys_windowed

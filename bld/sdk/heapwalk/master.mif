@@ -23,7 +23,7 @@ additional_clean = *.gh *.grh
 #
 .c   : ../c;$(dis_srcs);$(commonui_dir)/c
 
-inc_dirs = -I. -I"../h" $(commonui_inc_dirs) $(dis_includes)
+inc_dirs = -I. -I"../h" $(cli_commonui_inc_dirs) $(dis_includes)
 
 extra_cpp_flags_ldstr = -dSPECIAL_STRING_LOADING
 
@@ -67,14 +67,14 @@ exetarg_objs = &
     hwldstr.obj &
     hwmem.obj &
     $(dis_objs)
-exetarg_libs          = $(commonui_lib)
+exetarg_libs          = $(cli_commonui_lib)
 exetarg_res           = $(proj_name).res
 !include exetarg.mif
 
 #
 # rc and others
 #
-rc_inc_dirs = -I"../res" $(commonui_inc_dirs) $(dis_includes)
+rc_inc_dirs = -I"../res" $(cli_commonui_rc_inc_dirs) $(dis_includes)
 
 $(proj_name).res : ../res/wheapwlk.rc .AUTODEPEND
     @%make echo_rc
