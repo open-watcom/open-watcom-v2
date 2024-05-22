@@ -60,9 +60,9 @@ wres_dir_osxarm     = osxarm/$(name_model_arm)
 wres_dir_osxa64     = osxa64/$(name_model_a64)
 
 !ifdef bootstrap
-wres_lib = $(wres_dir)/$(objs_subdir)/wres.lib
+cli_wres_lib = $(wres_dir)/$(objs_subdir)/wres.lib
 !else
-wres_lib = $(wres_dir)/$(wres_dir_$(objs_subdir))/wres.lib
+cli_wres_lib = $(wres_dir)/$(wres_dir_$(objs_subdir))/wres.lib
 !endif
 
-wres_inc_dirs = -I"$(wres_dir)/h"
+cli_wres_inc_dirs = -I"$(wres_dir)/h"

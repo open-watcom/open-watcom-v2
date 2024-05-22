@@ -44,13 +44,13 @@ exetarg_qnx_res_opt = opt resource=$(exetarg_qnx_res)
 objcopy = objcopy
 !endif
 $(exetarg_name)$(exetarg_ext) : $+$(exetarg_prebuild_objs) $(exetarg_qnx_res_obj) &
-        $(exetarg_objs) $(exetarg_libs) $(wres_lib) $(exetarg_res)$- $(__MAKEFILES__)
+        $(exetarg_objs) $(exetarg_libs) $(cli_wres_lib) $(exetarg_res)$- $(__MAKEFILES__)
     @%make echo_cl
 !ifndef __WATCOM_TOOLS__
 ! ifdef bootstrap
-    $(bld_cl) $(bld_clflags) $+$(exetarg_objs) $(exetarg_libs) $(wres_lib)$- $(bld_ldflags)
+    $(bld_cl) $(bld_clflags) $+$(exetarg_objs) $(exetarg_libs) $(cli_wres_lib)$- $(bld_ldflags)
 ! else
-    $(cl) $(clflags) $+$(exetarg_objs) $(exetarg_libs) $(wres_lib)$- $(ldflags)
+    $(cl) $(clflags) $+$(exetarg_objs) $(exetarg_libs) $(cli_wres_lib)$- $(ldflags)
 ! endif
 ! ifeq host_os osx
 # now unsupported on OSX
@@ -65,7 +65,7 @@ $(exetarg_name)$(exetarg_ext) : $+$(exetarg_prebuild_objs) $(exetarg_qnx_res_obj
 !else
     $(noecho)%write $^&.lnk $(lflags) $+$(exetarg_opts) $(exetarg_qnx_res_opt)$-
     @for %f in ($+$(exetarg_objs)$-) do @%append $^&.lnk file %f
-    @for %l in ($+$(exetarg_libs) $(wres_lib)$-) do $(noecho)%append $^&.lnk library %l
+    @for %l in ($+$(exetarg_libs) $(cli_wres_lib)$-) do $(noecho)%append $^&.lnk library %l
 ! ifdef win386
     $(linker) name $(lname) @$^&.lnk
 ! else

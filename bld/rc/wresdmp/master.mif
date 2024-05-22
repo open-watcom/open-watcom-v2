@@ -17,7 +17,7 @@ wresdmp_trmem = 1
 #
 .c: ../c;$(trmem_dir);$(watcom_dir)/c
 
-inc_dirs = -I"../h" $(wres_inc_dirs)
+inc_dirs = -I"../h" $(cli_wres_inc_dirs)
 
 extra_cpp_flags_trmemcvr = $(trmem_cpp_flags)
 

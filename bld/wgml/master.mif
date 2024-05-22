@@ -27,7 +27,7 @@ wgml_trmem = 1
 #
 .c: ../c;$(watcom_dir)/c;$(trmem_dir)
 
-inc_dirs = -I. -I"../h" $(wres_inc_dirs)
+inc_dirs = -I. -I"../h" $(cli_wres_inc_dirs)
 
 extra_cpp_flags_gmemory = $(trmem_cpp_flags)
 

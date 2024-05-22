@@ -24,6 +24,7 @@ memory_model_386 = $(model)
 !include defrule.mif
 !include deftarg.mif
 
+!include wres.mif
 !include $(wres_dir)/wrobjs.mif
 
 #
@@ -31,7 +32,7 @@ memory_model_386 = $(model)
 #
 .c : $(wres_dir)/c
 
-inc_dirs = -I"$(wres_dir)/h"
+inc_dirs = $(cli_wres_inc_dirs)
 
 !ifeq convention stack
 extra_c_flags_386 = -3s

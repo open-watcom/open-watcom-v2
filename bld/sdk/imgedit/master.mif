@@ -34,7 +34,7 @@ target_nt  = win
 #
 .c : c;../c
 
-inc_dirs  = -I. -Ih -I"../h" $(wres_inc_dirs) $(wr_inc_dirs) -I"$(wre_dir)/h" $(commonui_inc_dirs) $(cli_wpi_inc_dirs)
+inc_dirs  = -I. -Ih -I"../h" $(cli_wres_inc_dirs) $(wr_inc_dirs) -I"$(wre_dir)/h" $(commonui_inc_dirs) $(cli_wpi_inc_dirs)
 
 extra_cpp_flags     = -DGUI_IS_GUI
 !ifdef wpitest

@@ -50,7 +50,7 @@ additional_clean = *.grh *.grc
 .c: $(wlink_dir)/c;$(wrc_dir)/c;$(lib_misc_dir)/c;$(watcom_dir)/c;$(trmem_dir)
 
 inc_dirs = -I. -I"$(wlink_dir)/h" $(cli_dwarfw_inc_dirs) $(cli_orl_inc_dirs) -I"$(wrc_dir)/h" &
-    $(wres_inc_dirs) -I"$(lib_misc_dir)/h" -I"$(watcom_dir)/c"
+    $(cli_wres_inc_dirs) -I"$(lib_misc_dir)/h" -I"$(watcom_dir)/c"
 
 extra_cpp_flags = -DINSIDE_WLINK
 !ifdef DLLS_IMPLEMENTED
