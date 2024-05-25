@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -550,7 +550,7 @@ void SetDialogFont()
 
     if( !GetVariableBoolVal( "IsJapanese" ) ) {
         fontstr = GUIGetFontInfo( MainWnd );
-        GetLogFontFromString( &lf, fontstr );
+        GetFontFromString( &lf, fontstr );
 //      following line removed - has no effect on line spacing, it only
 //      causes the dialog boxes to be too narrow in Win 4.0
 //      lf.lfHeight = (lf.lfHeight * 8)/12;
@@ -567,7 +567,7 @@ void SetDialogFont()
         lf.lfWeight = FW_BOLD;
   #endif
         strcpy(lf.lfFaceName, "MS Sans Serif");
-        GetFontFormatString( &lf, dlgfont );
+        SetFontToString( &lf, dlgfont );
         GUISetFontInfo( MainWnd, dlgfont );
         GUIMemFree( fontstr );
     }

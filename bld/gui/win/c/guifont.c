@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -148,7 +148,7 @@ static char *GetFontInfo( LOGFONT *lf )
 {
     char                buff[MAX_STR];
 
-    GetFontFormatString( lf, buff );
+    SetFontToString( lf, buff );
     return( GUIStrDup( buff, NULL ) );
 }
 #endif
@@ -181,7 +181,7 @@ char * GUIAPI GUIGetFontFromUser( char *fontinfo )
 
     font = NULLHANDLE;
     if( fontinfo != NULL ) {
-        GetLogFontFromString( &lf, fontinfo );
+        GetFontFromString( &lf, fontinfo );
         font = CreateFontIndirect( &lf );
         fontinfo = NULL;
     }
@@ -207,7 +207,7 @@ bool GUIAPI GUISetFontInfo( gui_window *wnd, char *fontinfo )
     if( fontinfo == NULL ) {
         return( false );
     }
-    GetLogFontFromString( &lf, fontinfo );
+    GetFontFromString( &lf, fontinfo );
     font = CreateFontIndirect( &lf );
     if( font == NULL ) {
         return( false );

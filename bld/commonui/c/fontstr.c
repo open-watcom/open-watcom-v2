@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,9 +40,9 @@ static char     *outFmtString = "%d %d %d %d %d %d %d %d %d %d %d %d %d \"%s\"";
 static char     *inFmtString = "%d %d %d %d %d %d %d %d %d %d %d %d %d %[^\0]";
 
 /*
- * GetLogFontFromString - get a logical font from a string
+ * GetFontFromString - get a logical font from a string
  */
-bool GetLogFontFromString( LOGFONT *l, char *data )
+bool GetFontFromString( LOGFONT *l, char *data )
 {
     int num;
     size_t i;
@@ -79,16 +80,16 @@ bool GetLogFontFromString( LOGFONT *l, char *data )
     }
     return( true );
 
-} /* GetLogFontFromString */
+} /* GetFontFromString */
 
 /*
- * GetFontFormatString
+ * SetFontToString
  */
-void GetFontFormatString( LOGFONT *lf, char *str )
+void SetFontToString( LOGFONT *lf, char *str )
 {
     wsprintf( str, outFmtString, lf->lfHeight, lf->lfWidth, lf->lfEscapement,
               lf->lfOrientation, lf->lfWeight, lf->lfItalic, lf->lfUnderline,
               lf->lfStrikeOut, lf->lfCharSet, lf->lfOutPrecision, lf->lfClipPrecision,
               lf->lfQuality, lf->lfPitchAndFamily, lf->lfFaceName );
 
-} /* GetFontFormatString */
+} /* SetFontToString */
