@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2024-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -59,14 +59,14 @@ static bool mbcs2unicode( const char *src, LPWSTR *dest, int *len )
         return( false );
     }
 
-    new = MemAlloc( len1 * sizeof( WCHAR ) );
+    new = CUIMemAlloc( len1 * sizeof( WCHAR ) );
     if( new == NULL ) {
         return( false );
     }
 
     len2 = MultiByteToWideChar( CP_OEMCP, MB_ERR_INVALID_CHARS, src, -1, new, len1 );
     if( len2 != len1 ) {
-        MemFree( new );
+        CUIMemFree( new );
         return( false );
     }
 
@@ -91,7 +91,7 @@ static bool createFontInfoData( const char *facename, WORD pointsize, BYTE **fid
 
 #ifdef __WINDOWS__
     slen = strlen( facename ) + 1;
-    data = (BYTE *)MemAlloc( sizeof( WORD ) + slen );
+    data = (BYTE *)CUIMemAlloc( sizeof( WORD ) + slen );
     if( data != NULL ) {
         *(WORD *)data = pointsize;
         memcpy( data + sizeof( WORD ), facename, slen );
@@ -100,7 +100,7 @@ static bool createFontInfoData( const char *facename, WORD pointsize, BYTE **fid
     data = NULL;
     if( mbcs2unicode( facename, &uni_facename, &slen ) ) {
         slen *= sizeof( WCHAR );
-        data = (BYTE *)MemAlloc( sizeof( WORD ) + slen );
+        data = (BYTE *)CUIMemAlloc( sizeof( WORD ) + slen );
         if( data != NULL ) {
             *(WORD *)data = pointsize;
             memcpy( data + sizeof( WORD ), uni_facename, slen );
@@ -230,7 +230,7 @@ static bool getSystemFontFaceName( char **facename, WORD *pointsize )
         return( false );
     }
 
-    *facename = (char *)MemAlloc( strlen( lf.lfFaceName ) + 1 );
+    *facename = (char *)CUIMemAlloc( strlen( lf.lfFaceName ) + 1 );
     if( *facename == NULL ) {
         return( false );
     }
@@ -380,7 +380,7 @@ bool JDialogInit( void )
 void JDialogFini( void )
 {
     if( JFontInfo != NULL ) {
-        MemFree( JFontInfo );
+        CUIMemFree( JFontInfo );
         JFontInfo = NULL;
         JFontInfoLen = 0;
     }

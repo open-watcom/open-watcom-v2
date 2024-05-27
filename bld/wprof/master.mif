@@ -17,7 +17,6 @@ additional_clean = *.grc
 !include $(aui_dir)/client.mif
 !include $(hlpview_dir)/client.mif
 !include $(wpi_dir)/client.mif
-!include $(commonui_dir)/client.mif
 
 dig_arch = all
 
@@ -33,7 +32,7 @@ dig_arch = all
 .c : ../c;$(dig_srcs);$(watcom_dir)/c;$(trmem_dir)
 
 inc_dirs = -I"../h" -I"$(wsample_dir)/h" $(cli_aui_inc_dirs) &
-    $(cli_commonui_inc_dirs) $(cli_wpi_inc_dirs) $(cli_hlpview_inc_dirs) -I"$(dig_dir)/h"
+    $(cli_wpi_inc_dirs) $(cli_hlpview_inc_dirs) -I"$(dig_dir)/h"
 
 extra_cpp_flags = $(dig_arch_cpp_flags) -DBLDVER=$(bld_ver)
 !ifdef sys_windowed

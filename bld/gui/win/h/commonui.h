@@ -25,7 +25,8 @@
 *
 *  ========================================================================
 *
-* Description:  Precompiled header for commonui.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
@@ -45,9 +46,10 @@
     #define OEMRESOURCE
     #include <wwindows.h>
 #endif
-#include "cguimem.h"
+#include "guimem.h"
 
 
-#define CUIMemAlloc(s)	     MemAlloc(s)
-#define CUIMemFree(p)        MemFree(p)
-#define CUIMemRealloc(p,s)	 MemRealloc(p,s)
+#define CUIMemAlloc(s)      GUIMemAlloc(s)
+#define CUIMemFree(p)       GUIMemFree(p)
+#define CUIMemRealloc(p,s)  GUIMemRealloc(p,s)
+

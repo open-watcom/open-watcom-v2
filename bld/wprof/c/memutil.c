@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,11 +37,7 @@
 #include "msg.h"
 #include "guimem.h"
 #if defined( GUI_IS_GUI )
-    #include "cguimem.h"
     #include "wpimem.h"
-    #ifdef __OS2_PM__
-        #include "os2mem.h"
-    #endif
 #else
     #include "stdui.h"
     #include "helpmem.h"
@@ -203,55 +199,7 @@ void *GUIMemAlloc( size_t size )
     }
     return( mem );
 }
-#ifdef __OS2_PM__
-void *PMmalloc( size_t size )
-{
-    void    *mem;
-
-    for( ;; ) {
-#ifdef TRMEM
-        profMemCheck( "ProfTryAlloc" );
-        mem = _trmem_alloc( size, _trmem_guess_who(), WPMemHandle );
-#else
-        mem = malloc( size );
-#endif
-        if( mem != NULL )
-            break;
-        if( DIPMoreMem( size ) == DS_FAIL ) {
-            break;
-        }
-    }
-
-    if( mem == NULL ) {
-        fatal( LIT( Memfull ) );
-    }
-    return( mem );
-}
-#endif
 #if defined( GUI_IS_GUI )
-void *MemAlloc( size_t size )
-{
-    void    *mem;
-
-    for( ;; ) {
-#ifdef TRMEM
-        profMemCheck( "ProfTryAlloc" );
-        mem = _trmem_alloc( size, _trmem_guess_who(), WPMemHandle );
-#else
-        mem = malloc( size );
-#endif
-        if( mem != NULL )
-            break;
-        if( DIPMoreMem( size ) == DS_FAIL ) {
-            break;
-        }
-    }
-
-    if( mem == NULL ) {
-        fatal( LIT( Memfull ) );
-    }
-    return( mem );
-}
 void * _wpi_malloc( size_t size )
 {
     void    *mem;
@@ -371,27 +319,7 @@ void GUIMemFree( void *ptr )
     free( ptr );
 #endif
 }
-#ifdef __OS2_PM__
-void PMfree( void *ptr )
-{
-#ifdef TRMEM
-    profMemCheck( "ProfFree" );
-    _trmem_free( ptr, _trmem_guess_who(), WPMemHandle );
-#else
-    free( ptr );
-#endif
-}
-#endif
 #if defined( GUI_IS_GUI )
-void MemFree( void *ptr )
-{
-#ifdef TRMEM
-    profMemCheck( "ProfFree" );
-    _trmem_free( ptr, _trmem_guess_who(), WPMemHandle );
-#else
-    free( ptr );
-#endif
-}
 void _wpi_free( void *ptr )
 {
 #ifdef TRMEM
@@ -482,54 +410,8 @@ void *GUIMemRealloc( void *ptr, size_t new_size )
     }
     return( new );
 }
-#ifdef __OS2_PM__
-void *PMrealloc( void *ptr, size_t new_size )
-{
-    void    *new;
-
-    for( ;; ) {
-#ifdef TRMEM
-        profMemCheck( "ProfTryRealloc" );
-        new = _trmem_realloc( ptr, new_size, _trmem_guess_who(), WPMemHandle );
-#else
-        new = realloc( ptr, new_size );
-#endif
-        if( new != NULL )
-            break;
-        if( DIPMoreMem( new_size ) == DS_FAIL ) {
-            break;
-        }
-    }
-    if( new == NULL ) {
-        fatal( LIT( Memfull_Realloc  ));
-    }
-    return( new );
-}
-#endif
 #if defined( GUI_IS_GUI )
 void * _wpi_realloc( void *ptr, size_t new_size )
-{
-    void    *new;
-
-    for( ;; ) {
-#ifdef TRMEM
-        profMemCheck( "ProfTryRealloc" );
-        new = _trmem_realloc( ptr, new_size, _trmem_guess_who(), WPMemHandle );
-#else
-        new = realloc( ptr, new_size );
-#endif
-        if( new != NULL )
-            break;
-        if( DIPMoreMem( new_size ) == DS_FAIL ) {
-            break;
-        }
-    }
-    if( new == NULL ) {
-        fatal( LIT( Memfull_Realloc  ));
-    }
-    return( new );
-}
-void *MemRealloc( void *ptr, size_t new_size )
 {
     void    *new;
 

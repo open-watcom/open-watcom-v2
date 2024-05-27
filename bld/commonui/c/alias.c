@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -80,7 +80,7 @@ void InitAliasHdl( AliasHdl *hdl,
                    void (*updatefn)( ULONG_PTR, char *, char *, void * ),
                    void *userdata )
 {
-    *hdl = MemAlloc( sizeof( AliasList ) );
+    *hdl = CUIMemAlloc( sizeof( AliasList ) );
     (*hdl)->data = NULL;
     (*hdl)->userdata = userdata;
     (*hdl)->updatefn = updatefn;
@@ -118,7 +118,7 @@ void AddAlias( AliasHdl hdl, char *text, ULONG_PTR id )
 
     cur = findAlias( hdl, id );
     if( cur == NULL ) {
-        cur = MemAlloc( sizeof( AnAlias ) );
+        cur = CUIMemAlloc( sizeof( AnAlias ) );
         cur->id = id;
         insertAlias( hdl, cur );
         if( hdl->updatefn != NULL ) {
@@ -128,10 +128,10 @@ void AddAlias( AliasHdl hdl, char *text, ULONG_PTR id )
         if( hdl->updatefn != NULL ) {
             hdl->updatefn( id, text, cur->name, hdl->userdata );
         }
-        MemFree( cur->name );
+        CUIMemFree( cur->name );
     }
     len = strlen( text ) + 1;
-    cur->name = MemAlloc( len );
+    cur->name = CUIMemAlloc( len );
     strcpy( cur->name, text );
 
 } /* AddAlias */
@@ -149,10 +149,10 @@ void FreeAlias( AliasHdl hdl )
 
     for( cur = hdl->data; cur != NULL; cur = next ) {
         next = cur->next;
-        MemFree( cur->name );
-        MemFree( cur );
+        CUIMemFree( cur->name );
+        CUIMemFree( cur );
     }
-    MemFree( hdl );
+    CUIMemFree( hdl );
 
 } /* FreeAlias */
 
@@ -259,7 +259,7 @@ INT_PTR CALLBACK AliasDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
                     break;
                 }
                 len = SendDlgItemMessage( hwnd, ALIAS_TEXT, WM_GETTEXTLENGTH, 0, 0 );
-                alias = MemAlloc( len + 1 );
+                alias = CUIMemAlloc( len + 1 );
                 len = SendDlgItemMessage( hwnd, ALIAS_TEXT, WM_GETTEXT, len + 1, (LPARAM)(LPSTR)alias );
                 /* check for spaces */
                 endptr = alias;
@@ -272,7 +272,7 @@ INT_PTR CALLBACK AliasDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
                 }
                 if( *endptr != '\0' ) {
                     RCMessageBox( hwnd, ALIAS_NO_SPACES_ALLOWED, "", MB_OK );
-                    MemFree( alias );
+                    CUIMemFree( alias );
                     break;
                 }
                 realend = '\0'; /* truncate trailing spaces */
@@ -282,10 +282,10 @@ INT_PTR CALLBACK AliasDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
                 } else {
                     RCsprintf( msgbuf, ALIAS_NO_DUPLICATES_ALLOWED, alias, cur->id );
                     MessageBox( hwnd, msgbuf, "", MB_OK );
-                    MemFree( alias );
+                    CUIMemFree( alias );
                     break;
                 }
-                MemFree( alias );
+                CUIMemFree( alias );
                 EndDialog( hwnd, cmd );
                 break;
             case IDCANCEL:

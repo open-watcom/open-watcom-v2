@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -77,7 +77,7 @@ LRESULT CALLBACK PushWinProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam 
         SendMessage( info->parent, WM_COMMAND, info->id, 0L );
         break;
     case WM_DESTROY:
-        MemFree( info );
+        CUIMemFree( info );
         break;
     default:
         return( DefWindowProc( hwnd, msg, wparam, lparam ) );
@@ -117,7 +117,7 @@ HWND CreatePushWin( HWND parent, char *txt, int id, HFONT font, HANDLE inst )
     size_t              len;
 
     len = strlen( txt ) + 1;
-    info = MemAlloc( sizeof( PushWinInfo ) + len );
+    info = CUIMemAlloc( sizeof( PushWinInfo ) + len );
     info->id = id;
     info->font = font;
     info->parent = parent;

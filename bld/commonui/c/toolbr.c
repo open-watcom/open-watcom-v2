@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -377,7 +377,7 @@ toolbar *ToolBarInit( HWND parent )
     btnColor = CLR_PALEGRAY;
 #endif
 
-    bar = (toolbar *)MemAlloc( sizeof( toolbar ) );
+    bar = (toolbar *)CUIMemAlloc( sizeof( toolbar ) );
     if ( bar ) {
         memset( bar, 0, sizeof( toolbar ) );
         bar->border_width = 1;
@@ -457,12 +457,12 @@ void ToolBarDestroy ( toolbar *bar )
 #endif
         for( curr = bar->tool_list; curr != NULL; curr = next ) {
             next = curr->next;
-            MemFree( curr );
+            CUIMemFree( curr );
         }
         if( bar->bgbrush != WPI_NULL ) {
             _wpi_deletebrush( bar->bgbrush );
         }
-        MemFree( bar );
+        CUIMemFree( bar );
     }
 
 } /* ToolBarDestroy */
@@ -500,7 +500,7 @@ void ToolBarAddItem( toolbar *bar, TOOLITEMINFO *info )
     TOOLINFO    ti;
 #endif
 
-    t = (tool *)MemAlloc( sizeof( tool ) );
+    t = (tool *)CUIMemAlloc( sizeof( tool ) );
     if( info->flags & ITEM_BLANK ) {
         t->u.blank_space = info->u.blank_space;
     } else {
