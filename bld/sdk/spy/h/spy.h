@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,7 +44,6 @@
 
 #include "jdlg.h"
 #include "font.h"
-#include "cguimem.h"
 #include "savelbox.h"
 #include "ctl3dcvr.h"
 #ifdef __NT__

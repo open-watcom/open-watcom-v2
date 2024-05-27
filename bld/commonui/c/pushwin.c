@@ -35,7 +35,6 @@
 #include "watcom.h"
 #include "wpi.h"
 #include "bool.h"
-#include "cguimem.h"
 #include "pushwin.h"
 
 

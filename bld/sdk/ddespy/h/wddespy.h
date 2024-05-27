@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,7 +36,6 @@
 #include <ddeml.h>
 #include <dde.h>
 #include "bool.h"
-#include "cguimem.h"
 #include "font.h"
 #include "srchmsg.h"
 #include "log.h"

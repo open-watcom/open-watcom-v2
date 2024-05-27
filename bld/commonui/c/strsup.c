@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,8 +34,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdarg.h>
-#include "cguimem.h"
 #include "ldstr.h"
+
 
 /* No string to be loaded can be more than LDSTR_MAX_STR_LEN bytes long. */
 #define LDSTR_MAX_STR_LEN       500

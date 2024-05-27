@@ -36,7 +36,6 @@
 #include <ctype.h>
 #include <stdio.h>
 #include "bool.h"
-#include "cguimem.h"
 #include "alias.h"
 #ifndef NOUSE3D
     #include "ctl3dcvr.h"

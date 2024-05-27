@@ -35,7 +35,6 @@
 #include <stdlib.h>
 #include "bool.h"
 #include "wpi.h"
-#include "cguimem.h"
 #include "_windlg.h"
 #include "jdlg.h"
 

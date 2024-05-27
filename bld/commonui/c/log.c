@@ -40,7 +40,6 @@
 #include "bool.h"
 #include "watcom.h"
 #include "log.h"
-#include "cguimem.h"
 #ifndef NOUSE3D
     #include "ctl3dcvr.h"
 #endif

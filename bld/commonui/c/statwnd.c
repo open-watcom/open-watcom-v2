@@ -36,7 +36,6 @@
 #include <string.h>
 #include "bool.h"
 #include "statwnd.h"
-#include "cguimem.h"
 #include "loadcc.h"
 #include "wclbproc.h"
 #ifdef __NT__

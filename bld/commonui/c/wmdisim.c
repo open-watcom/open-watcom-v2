@@ -33,10 +33,8 @@
 #include "commonui.h"
 #include <string.h>
 #include <stdio.h>
-
 #include "bool.h"
 #include "wmdisim.h"
-#include "cguimem.h"
 
 
 #define MAX_STR         256

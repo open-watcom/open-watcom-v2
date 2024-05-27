@@ -41,7 +41,6 @@
 #include "bool.h"
 #include "palette.h"
 #include "bitmap.h"
-#include "cguimem.h"
 
 #include "clibext.h"
 

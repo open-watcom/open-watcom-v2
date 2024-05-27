@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,7 +45,6 @@
 #include "wpi.h"
 #include "font.h"
 #include "segmem.h"
-#include "cguimem.h"
 #include "dlgmod.h"
 #include "descript.h"
 #include "savelbox.h"

@@ -33,11 +33,7 @@
 #include "guiwind.h"
 #include <stdlib.h>
 #include "guimem.h"
-#include "cguimem.h"
 #include "wpimem.h"
-#if defined( __OS2_PM__ )
-    #include "os2mem.h"
-#endif
 #ifdef TRMEM
     #include "trmem.h"
 #endif
@@ -127,18 +123,6 @@ void *GUIMemAlloc( size_t size )
     return( malloc( size ) );
 #endif
 }
-void *MemAlloc( size_t size )
-{
-    void        *ptr;
-
-#ifdef TRMEM
-    ptr = _trmem_alloc( size, _trmem_guess_who(), GUIMemHandle );
-#else
-    ptr = malloc( size );
-#endif
-    memset( ptr, 0, size );
-    return( ptr );
-}
 void * _wpi_malloc( size_t size )
 {
 #ifdef TRMEM
@@ -147,16 +131,6 @@ void * _wpi_malloc( size_t size )
     return( malloc( size ) );
 #endif
 }
-#ifdef __OS2_PM__
-void *PMmalloc( size_t size )
-{
-#ifdef TRMEM
-    return( _trmem_alloc( size, _trmem_guess_who(), GUIMemHandle ) );
-#else
-    return( malloc( size ) );
-#endif
-}
-#endif
 
 /*
  * Free functions
@@ -164,14 +138,6 @@ void *PMmalloc( size_t size )
 
 void GUIMemFree( void *ptr )
 /**************************/
-{
-#ifdef TRMEM
-    _trmem_free( ptr, _trmem_guess_who(), GUIMemHandle );
-#else
-    free( ptr );
-#endif
-}
-void MemFree( void *ptr )
 {
 #ifdef TRMEM
     _trmem_free( ptr, _trmem_guess_who(), GUIMemHandle );
@@ -187,16 +153,6 @@ void _wpi_free( void *ptr )
     free( ptr );
 #endif
 }
-#ifdef __OS2_PM__
-void PMfree( void *ptr )
-{
-#ifdef TRMEM
-    _trmem_free( ptr, _trmem_guess_who(), GUIMemHandle );
-#else
-    free( ptr );
-#endif
-}
-#endif
 
 /*
  * Realloc functions
@@ -219,21 +175,4 @@ void * _wpi_realloc( void *ptr, size_t size )
     return( realloc( ptr, size ) );
 #endif
 }
-void *MemRealloc( void *ptr, size_t size )
-{
-#ifdef TRMEM
-    return( _trmem_realloc( ptr, size, _trmem_guess_who(), GUIMemHandle ) );
-#else
-    return( realloc( ptr, size ) );
-#endif
-}
-#ifdef __OS2_PM__
-void *PMrealloc( void *ptr, size_t size )
-{
-#ifdef TRMEM
-    return( _trmem_realloc( ptr, size, _trmem_guess_who(), GUIMemHandle ) );
-#else
-    return( realloc( ptr, size ) );
-#endif
-}
-#endif
+

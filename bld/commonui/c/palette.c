@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2024-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,8 +32,8 @@
 
 #include "commonui.h"
 #include <stdlib.h>
-#include "cguimem.h"
 #include "palette.h"
+
 
 /*
  * CreateDIBPalette - create a palette for a bitmap
