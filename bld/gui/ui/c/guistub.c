@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -72,6 +72,11 @@ char * GUIAPI GUIGetFontFromUser( char *fontinfo )
     /* unused parameters */ (void)fontinfo;
 
     return( NULL );
+}
+
+void GUIAPI GUIChangeCurrentFont( gui_window *wnd, char *facename, int bold )
+{
+    /* unused parameters */ (void)wnd; (void)facename; (void)bold;
 }
 
 gui_mcursor_handle GUIAPI GUISetMouseCursor( gui_mcursor_type type )

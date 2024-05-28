@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -701,6 +701,7 @@ extern char     * GUIAPI GUIGetFontInfo( gui_window *wnd );
 extern bool     GUIAPI GUISetFontInfo( gui_window *wnd, char *fontinfo );
 extern bool     GUIAPI GUISetSystemFont( gui_window *wnd, bool fixed );
 extern char     * GUIAPI GUIGetFontFromUser( char *fontinfo );
+extern void     GUIAPI GUIChangeCurrentFont( gui_window *wnd, char *facename, int bold );
 
 /* Painting functions */
 

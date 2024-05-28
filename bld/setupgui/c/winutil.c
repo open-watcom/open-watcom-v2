@@ -40,9 +40,6 @@
 #include "wio.h"
 #include "watcom.h"
 #include "setup.h"
-#if defined( GUI_IS_GUI ) && ( defined( __NT__ ) || defined( __WINDOWS__ ) )
-    #include "fontstr.h"
-#endif
 #include "setupinf.h"
 #include "utils.h"
 #include "genvbl.h"
@@ -537,39 +534,20 @@ void WriteProfileStrings( bool uninstall )
     VbufFree( &app_name );
 }
 
-void SetDialogFont()
+void SetDialogFont( void )
 {
 #if (defined( __NT__ ) || defined( __WINDOWS__ )) && defined( GUI_IS_GUI )
-
-    char            *fontstr;
-    LOGFONT         lf;
-    char            dlgfont[100];
-  #if defined( __NT__ ) && !defined( _M_X64 )
-    DWORD   ver;
-  #endif
-
     if( !GetVariableBoolVal( "IsJapanese" ) ) {
-        fontstr = GUIGetFontInfo( MainWnd );
-        GetFontFromString( &lf, fontstr );
-//      following line removed - has no effect on line spacing, it only
-//      causes the dialog boxes to be too narrow in Win 4.0
-//      lf.lfHeight = (lf.lfHeight * 8)/12;
   #if defined( __NT__ ) && defined( _M_X64 )
-        lf.lfWeight = FW_NORMAL;
+        GUIChangeCurrentFont( MainWnd, "MS Sans Serif", false );
   #elif defined( __NT__ )
+    	DWORD   ver;
+
         ver = GetVersion();
-        if( ver < 0x80000000 && LOBYTE( LOWORD( ver ) ) >= 4 ) {
-            lf.lfWeight = FW_NORMAL;
-        } else {
-            lf.lfWeight = FW_BOLD;
-        }
+        GUIChangeCurrentFont( MainWnd, "MS Sans Serif", ( ver >= 0x80000000 || LOBYTE( LOWORD( ver ) ) < 4 ) );
   #else
-        lf.lfWeight = FW_BOLD;
+        GUIChangeCurrentFont( MainWnd, "MS Sans Serif", true );
   #endif
-        strcpy(lf.lfFaceName, "MS Sans Serif");
-        SetFontToString( &lf, dlgfont );
-        GUISetFontInfo( MainWnd, dlgfont );
-        GUIMemFree( fontstr );
     }
 #endif
 }
