@@ -52,7 +52,5 @@
 #define MAIN            1038
 #define DLG             1039
 
-#define CLOSEBMP        1040
-
 #define STRMSG1         10001
 #define STRMSG2         10002

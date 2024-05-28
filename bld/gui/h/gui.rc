@@ -1,5 +1,11 @@
 /* UTF-8 encoding, ¥ */
 
+#ifdef RESX_GUI
+#ifndef __OS2__
+CLOSEBMP    BITMAP      "closebmp.bmp"
+#endif
+#endif
+
 STRINGTABLE
 BEGIN
     #define pick(c,e,j) (GUI_LITERAL_##c + RLE_ENGLISH * MSG_LANG_SPACING), [ e ]

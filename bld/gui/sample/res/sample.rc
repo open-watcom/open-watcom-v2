@@ -31,8 +31,6 @@ END
 
 #ifdef RESX_GUI
 
-RC_ITEM( BITMAP, CLOSEBMP,      "closebmp.bmp" )
-
 RC_ITEM( BITMAP, MINIMIZE,      "min.bmp" )
 RC_ITEM( BITMAP, MAXIMIZE,      "max.bmp" )
 RC_ITEM( BITMAP, RESTORE,       "restore.bmp" )

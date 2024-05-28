@@ -220,7 +220,6 @@ bitmaps_win = &
 bitmaps = &
     $(bitmaps_$(target_$(host_os))) &
     ../../res/splash.bmp &
-    ../../res/closebmp.bmp &
     ../../res/read1.bmp &
     ../../res/read2.bmp &
     ../../res/write1.bmp &
