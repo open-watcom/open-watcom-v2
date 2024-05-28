@@ -285,6 +285,13 @@
 :usage. set error limit number
 :jusage. set error limit number
 
+:option. fe
+:internal.
+:file.
+:optional.
+:usage. set error file name
+:jusage. エラーファイル名を指定します
+
 :option. fi
 :file.
 :usage. force <file> to be included
@@ -341,7 +348,7 @@
 :usage. inline 80x87 instructions
 :jusage. inline 80x87 instructions
 
-:option. fr fe
+:option. fr
 :file.
 :optional.
 :usage. set error file name

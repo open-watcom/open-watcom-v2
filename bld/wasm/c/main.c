@@ -1098,6 +1098,9 @@ static void set_options( OPT_STORAGE *data )
     if( data->nc ) {
         SetStringOption( &Options.code_class, &(data->nc_value) );
     }
+    if( data->fe && data->fe_value != NULL ) {
+        get_fname( data->fe_value->data, ERR );
+    }
     if( data->fr && data->fr_value != NULL ) {
         get_fname( data->fr_value->data, ERR );
     }
