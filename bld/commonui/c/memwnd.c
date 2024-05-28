@@ -1305,7 +1305,7 @@ HWND DispMem( HANDLE instance, HWND parent, WORD seg, bool isdpmi )
             return( NULLHANDLE );
         }
     }
-    info = MemAlloc( sizeof( MemWndInfo ) );
+    info = CUIMemAlloc( sizeof( MemWndInfo ) );
     if( info == NULL ) {
         RCMessageBox( parent, MWND_CANT_DISP_MEM_WND, MemConfigInfo.appname, MB_OK | MB_ICONHAND | MB_SYSTEMMODAL );
         return( NULLHANDLE );
