@@ -127,6 +127,10 @@ ntmanif_path = ../res
 
 rc_inc_dirs = -I"../res/bmp" -I"../res/dlg" -I"../res/cur" -I"../res" -I"../h" -I"../res/ico" $(cli_wclass_rc_inc_dirs)
 
+!ifdef sys_windowed
+extra_rc_flags = -DRESX_GUI
+!endif
+
 extra_rc_flags_nt = $(ntmanif_def) $(ntverrc_def) $(ntmanif_inc_dirs) $(ntverrc_inc_dirs)
 extra_rc_flags_os2 = -I"../res/ico_pm"
 
