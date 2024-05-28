@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,12 +47,10 @@
     #define NOCOMM
     #include <wwindows.h>   /* NULL value */
 #endif
-
 #include "gui.h"
 #include "wpi.h"
 #include "guiwpi.h"
 #include "guitypes.h"
-#include "commonui.h"
 #include "toolbr.h"
 #include "guihint.h"
 

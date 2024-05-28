@@ -77,12 +77,9 @@ static BITMAPINFO *readDIBInfo( FILE *fp )
             return( NULL );
         }
         fread( bm, bitmap_size, 1, fp );
+        return( bm );
     }
-    else {
-        return( (BITMAPINFO*) header );
-    }
-
-    return( bm );
+    return( (BITMAPINFO*) header );
 
 } /* readDIBInfo */
 

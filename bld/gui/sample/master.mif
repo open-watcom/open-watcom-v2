@@ -20,7 +20,6 @@ guisample_os2pm = 1
 !include deftarg.mif
 !include win386.mif
 
-!include $(commonui_dir)/client.mif
 !include $(gui_dir)/client.mif
 
 #!include wres.mif
@@ -76,7 +75,7 @@ guisamples_rc_deps1 = ../res/win/sample.dlg &
     ../res/sample.men
 !endif
 
-rc_inc_dirs += $(cli_gui_rc_inc_dirs)  $(cli_commonui_rc_inc_dirs)
+rc_inc_dirs += $(cli_gui_rc_inc_dirs)
 guisamples_rc_deps = &
     $(guisamples_rc_deps1) &
     ../res/change.bmp &

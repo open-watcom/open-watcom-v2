@@ -74,7 +74,7 @@ char *AllocRCString( msg_id id )
     if( len < 0 )
         len = 0;
     tmpBuf[len++] = '\0';
-    ret = MemAlloc( len );
+    ret = CUIMemAlloc( len );
     if( ret != NULL ) {
         memcpy( ret, tmpBuf, len );
     }
@@ -102,7 +102,7 @@ int CopyRCString( msg_id id, char *buf, int bufsize )
  */
 void FreeRCString( char *str )
 {
-    MemFree( str );
+    CUIMemFree( str );
 }
 
 /*
