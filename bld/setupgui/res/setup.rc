@@ -9,7 +9,6 @@
     #define RC_ITEM(a,b,c)  b a c
   #endif
 #endif
-#include "gui.rh"
 #include "setup.rh"
 
 #include "gui.rc"

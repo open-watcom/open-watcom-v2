@@ -34,6 +34,8 @@
 #ifndef __WBRWIMG_RH__
 #define __WBRWIMG_RH__
 
+#include "wclass.rh"
+
 #define InvalidHotSpot         1
 #define CheckBoxUncheckedU     2
 #define CheckBoxUncheckedD     3

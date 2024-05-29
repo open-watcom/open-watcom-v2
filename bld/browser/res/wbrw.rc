@@ -4,7 +4,6 @@
     #define RC_ITEM(a,b,c)  b a c
     #include <windows.h>
 #endif
-#include "wclass.rh"
 #include "wbrw.rh"
 
 #include "wclass.rc"
