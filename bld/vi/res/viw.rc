@@ -60,7 +60,6 @@ PREVFILE        BITMAP  prevfile.bmp
 FILES           BITMAP  files.bmp
 HAMMER          BITMAP  hammer.bmp
 NEW             BITMAP  new.bmp
-CLOSEBMP        BITMAP  closebmp.bmp
 BMATCH          BITMAP  bmatch.bmp
 DROPCLR         CURSOR  dropclr.cur
 DROPFT          CURSOR  dropft.cur

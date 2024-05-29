@@ -45,7 +45,6 @@
 
 #if defined( GUI_IS_GUI ) || defined( RESX_GUI )
 #define BITMAP_SPLASH       1001
-#define BITMAP_CLOSEBMP     1002
 #define BITMAP_READ1        1003
 #define BITMAP_READ2        1004
 #define BITMAP_WRITE1       1005
