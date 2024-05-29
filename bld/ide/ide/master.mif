@@ -93,6 +93,10 @@ ntmanif_path = ../res/win
 
 rc_inc_dirs = -I"../res/$(ide_rc_host_$(host_os))" -I"../res" $(cli_idelib_rc_inc_dirs)
 
+!ifdef sys_windowed
+extra_rc_flags = -DRESX_GUI
+!endif
+
 extra_rc_flags_nt = $(ntmanif_def) $(ntmanif_inc_dirs) $(ntverrc_inc_dirs)
 
 $(proj_name).res : ../res/ide.rc $(ntmanif_deps) $(ntverrc_deps) $(cli_idelib_rc_deps)
