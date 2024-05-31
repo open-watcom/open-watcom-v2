@@ -35,6 +35,7 @@
 #ifdef _STANDALONE_
 #include <setjmp.h>
 #include "banner.h"
+#include "options.h"
 #else
 #include "asinline.h"
 #endif

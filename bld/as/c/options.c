@@ -36,6 +36,7 @@
 #include "preproc.h"
 #include "banner.h"
 #include "iopath.h"
+#include "options.h"
 
 
 as_flags        AsOptions = 0;
