@@ -2273,13 +2273,10 @@ void ModuleFini( void )
 static void get_module_name( void )
 /*********************************/
 {
-    pgroup2     pg;
     char        *p;
     int         c;
 
-    /**/myassert( AsmFiles.fname[ASM] != NULL );
-    _splitpath2( AsmFiles.fname[ASM], pg.buffer, NULL, NULL, &pg.fname, NULL );
-    ModuleInfo.name = AsmStrDup( pg.fname );
+    ModuleInfo.name = AsmStrDup( ModuleName );
     for( p = ModuleInfo.name; (c = *(unsigned char *)p) != '\0'; ++p ) {
         if( !IS_VALID_ID_CHAR( c ) ) {
             /*

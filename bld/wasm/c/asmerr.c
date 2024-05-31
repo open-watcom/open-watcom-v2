@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -167,7 +167,7 @@ static void PrtMsg1( char *prefix, unsigned msgnum, va_list args1, va_list args2
     PrintBanner();
     if( AsmFiles.file[ERR] == NULL ) {
         if( AsmFiles.fname[ERR] != NULL ) {
-            AsmFiles.file[ERR] = fopen( AsmFiles.fname[ERR], "w" );
+            AsmFiles.file[ERR] = fopen( CreateFileName( AsmFiles.fname[ERR], ERR_EXT, false ), "w" );
         }
     }
     PutMsg( stderr, prefix, msgnum, args1 );
@@ -182,7 +182,7 @@ void DelErrFile( void )
 /*********************/
 {
     // fixme if( CompFlags.errout_redirected ) return;
-    remove( AsmFiles.fname[ERR] );
+    remove( CreateFileName( AsmFiles.fname[ERR], ERR_EXT, false ) );
 }
 
 void LstMsg( const char *format, ... )
@@ -190,7 +190,7 @@ void LstMsg( const char *format, ... )
 {
     va_list     args;
 
-    if( AsmFiles.file[LST] ) {
+    if( AsmFiles.file[LST] != NULL ) {
         va_start( args, format );
         vfprintf( AsmFiles.file[LST], format, args );
         va_end( args );
@@ -201,7 +201,7 @@ void OpenLstFile( void )
 /**********************/
 {
     if( AsmFiles.fname[LST] != NULL && Options.write_listing ) {
-        AsmFiles.file[LST] = fopen( AsmFiles.fname[LST], "w" );
+        AsmFiles.file[LST] = fopen( CreateFileName( AsmFiles.fname[LST], LST_EXT, false ), "w" );
     }
 }
 

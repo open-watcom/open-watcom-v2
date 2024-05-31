@@ -58,6 +58,7 @@ extern void             Fatal( unsigned msg, ... );
 extern void             DelErrFile( void );
 
 File_Info               AsmFiles;       // files information
+char                    *ModuleName = NULL;
 
 struct  option {
     char        *option;
@@ -231,9 +232,36 @@ static void add_constant( const char *string, bool underscored )
     }
 }
 
-static void get_fname( char *token, int type )
-/********************************************/
-/*
+char *CreateFileName( const char *template, const char *ext, bool forceext )
+/**************************************************************************/
+{
+    pgroup2     pg;
+    bool        use_defaults;
+    static char filename_buff[_MAX_PATH];
+
+    use_defaults = ( template == NULL );
+    if( use_defaults )
+        template = AsmFiles.fname[ASM];
+    _splitpath2( template, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
+    if( use_defaults ) {
+        /*
+         * default object file goes in current directory
+         */
+        pg.drive = "";
+        pg.dir = "";
+    }
+    if( pg.fname[0] == '\0' || pg.fname[0] == '*' ) {
+        pg.fname = ModuleName;
+    }
+    if( !forceext && pg.ext[0] != '\0' && !use_defaults ) {
+        ext = pg.ext;
+    }
+    _makepath( filename_buff, pg.drive, pg.dir, pg.fname, ext );
+    return( filename_buff );
+}
+
+static void srcFileName( char *token )
+/*************************************
  * figure out the source file name & store it in AsmFiles
  * fill in default object file name if it is null
  */
@@ -241,115 +269,39 @@ static void get_fname( char *token, int type )
     char        name[_MAX_PATH ];
     char        msgbuf[MAX_MESSAGE_SIZE];
     pgroup2     pg;
-    pgroup2     def;
 
     /* get filename for source file */
 
-    if( type == CMD ) {
-        if( token == NULL ) {
-            MsgGet( SOURCE_FILE, msgbuf );
-            Fatal( MSG_CANNOT_OPEN_FILE, msgbuf );
-        }
-        if( AsmFiles.fname[ASM] != NULL ) {
-            Fatal( MSG_TOO_MANY_FILES );
-        }
-        _splitpath2( token, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
-        if( pg.ext[0] == '\0' ) {
-            pg.ext = ASM_EXT;
-        }
-        _makepath( name, pg.drive, pg.dir, pg.fname, pg.ext );
-        AsmFiles.fname[ASM] = AsmStrDup( name );
-    } else if( type == ASM ) {
-        if( AsmFiles.fname[ASM] == NULL ) {
-            usage_msg();
-        }
-        _splitpath2( AsmFiles.fname[ASM], pg.buffer, &pg.drive,
-                         &pg.dir, &pg.fname, &pg.ext );
-        _makepath( name, pg.drive, pg.dir, NULL, NULL );
-        /*
-         * add the source path to the include path
-         * as first item on the include path list
-         */
-        AddItemToIncludePath( name, NULL );
-
-        if( AsmFiles.fname[OBJ] == NULL ) {
-            /* set up default object and error filename */
-            pg.ext = OBJ_EXT;
-            _makepath( name, NULL, NULL, pg.fname, pg.ext );
-        } else {
-            _splitpath2( AsmFiles.fname[OBJ], def.buffer, &def.drive,
-                         &def.dir, &def.fname, &def.ext );
-            if( def.fname[0] == NULLC )
-                def.fname = pg.fname;
-            if( def.ext[0] == NULLC )
-                def.ext = OBJ_EXT;
-
-            _makepath( name, def.drive, def.dir, def.fname, def.ext );
-            AsmFree( AsmFiles.fname[OBJ] );
-        }
-        AsmFiles.fname[OBJ] = AsmStrDup( name );
-
-        if( AsmFiles.fname[ERR] == NULL ) {
-            pg.ext = ERR_EXT;
-            _makepath( name, NULL, NULL, pg.fname, pg.ext );
-        } else {
-            _splitpath2( AsmFiles.fname[ERR], def.buffer, &def.drive,
-                         &def.dir, &def.fname, &def.ext );
-            if( def.fname[0] == NULLC )
-                def.fname = pg.fname;
-            if( def.ext[0] == NULLC )
-                def.ext = ERR_EXT;
-            _makepath( name, def.drive, def.dir, def.fname, def.ext );
-            AsmFree( AsmFiles.fname[ERR] );
-        }
-        AsmFiles.fname[ERR] = AsmStrDup( name );
-
-        if( AsmFiles.fname[LST] == NULL ) {
-            pg.ext = LST_EXT;
-            _makepath( name, NULL, NULL, pg.fname, pg.ext );
-        } else {
-            _splitpath2( AsmFiles.fname[LST], def.buffer, &def.drive,
-                         &def.dir, &def.fname, &def.ext );
-            if( def.fname[0] == NULLC )
-                def.fname = pg.fname;
-            if( def.ext[0] == NULLC )
-                def.ext = LST_EXT;
-            _makepath( name, def.drive, def.dir, def.fname, def.ext );
-            AsmFree( AsmFiles.fname[LST] );
-        }
-        AsmFiles.fname[LST] = AsmStrDup( name );
-
-    } else {
-        /* get filename for object, error, or listing file */
-        _splitpath2( token, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
-        if( AsmFiles.fname[ASM] != NULL ) {
-            _splitpath2( AsmFiles.fname[ASM], def.buffer, &def.drive,
-                         &def.dir, &def.fname, &def.ext );
-            if( pg.fname[0] == NULLC ) {
-                pg.fname = def.fname;
-            }
-        }
-        if( pg.ext[0] == NULLC ) {
-            switch( type ) {
-            case ERR:   pg.ext = ERR_EXT;  break;
-            case LST:   pg.ext = LST_EXT;  break;
-            case OBJ:   pg.ext = OBJ_EXT;  break;
-            }
-        }
-        _makepath( name, pg.drive, pg.dir, pg.fname, pg.ext );
-        if( AsmFiles.fname[type] != NULL ) {
-            AsmFree( AsmFiles.fname[type] );
-        }
-        AsmFiles.fname[type] = AsmStrDup( name );
+    if( token == NULL ) {
+        MsgGet( SOURCE_FILE, msgbuf );
+        Fatal( MSG_CANNOT_OPEN_FILE, msgbuf );
     }
+    if( AsmFiles.fname[ASM] != NULL ) {
+        Fatal( MSG_TOO_MANY_FILES );
+    }
+    _splitpath2( token, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
+    if( pg.ext[0] == '\0' ) {
+        pg.ext = ASM_EXT;
+    }
+    ModuleName = AsmStrDup( pg.fname );
+    _makepath( name, pg.drive, pg.dir, pg.fname, pg.ext );
+    AsmFiles.fname[ASM] = AsmStrDup( name );
 }
 
-static void add_env_include( const char *target_name )
-/****************************************************/
+static void add_include( const char *target_name, const char *src )
+/*****************************************************************/
 {
-    char        buff[128];
+    char        buff[_MAX_PATH];
+    pgroup2     pg;
     const char  *env;
 
+    _splitpath2( src, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
+    _makepath( buff, pg.drive, pg.dir, NULL, NULL );
+    /*
+     * add the source path to the include path
+     * as first item on the include path list
+     */
+    AddItemToIncludePath( buff, NULL );
     /*
      * add OS_include to the include path
      * as last items on the list
@@ -394,6 +346,7 @@ static void main_init( void )
         AsmFiles.file[i] = NULL;
         AsmFiles.fname[i] = NULL;
     }
+    AsmFiles.fname[ERR] = AsmStrDup( "*" );
     ObjRecInit();
 }
 
@@ -558,7 +511,7 @@ static int ProcOptions( OPT_STORAGE *data, const char *str )
                 switch_start = CmdScanAddr();
                 fname = NULL;
                 if( OPT_GET_FILE( &fname ) ) {
-                    get_fname( fname->data, CMD );
+                    srcFileName( fname->data );
                     OPT_CLEAN_STRING( &fname );
                 }
             }
@@ -1099,17 +1052,23 @@ static void set_options( OPT_STORAGE *data )
         SetStringOption( &Options.code_class, &(data->nc_value) );
     }
     if( data->fe && data->fe_value != NULL ) {
-        get_fname( data->fe_value->data, ERR );
+        AsmFree( AsmFiles.fname[ERR] );
+        AsmFiles.fname[ERR] = AsmStrDup( data->fe_value->data );
     }
-    if( data->fr && data->fr_value != NULL ) {
-        get_fname( data->fr_value->data, ERR );
+    if( data->fr ) {
+        AsmFree( AsmFiles.fname[ERR] );
+        if( data->fr_value != NULL ) {
+            AsmFiles.fname[ERR] = AsmStrDup( data->fr_value->data );
+        } else {
+            AsmFiles.fname[ERR] = NULL;
+        }
     }
     if( data->fl && data->fl_value != NULL ) {
-        get_fname( data->fl_value->data, LST );
+        AsmFiles.fname[LST] = AsmStrDup( data->fl_value->data );
         Options.write_listing = true;
     }
     if( data->fo && data->fo_value != NULL ) {
-        get_fname( data->fo_value->data, OBJ );
+        AsmFiles.fname[OBJ] = AsmStrDup( data->fo_value->data );
     }
     if( data->fi ) {
         SetStringOption( &ForceInclude, &(data->fi_value) );
@@ -1136,8 +1095,10 @@ static void do_init_stuff( char **cmdline )
     target_name = set_build_target( &data );
     set_options( &data );
     OPT_FINI( &data );
-    get_fname( NULL, ASM );
-    add_env_include( target_name );
+    if( AsmFiles.fname[ASM] == NULL ) {
+        usage_msg();
+    }
+    add_include( target_name, AsmFiles.fname[ASM] );
     AsmFree( target_name );
     set_cpu_mode();
     set_fpu_mode();

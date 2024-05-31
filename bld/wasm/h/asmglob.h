@@ -123,6 +123,7 @@ typedef struct {
 } File_Info;    // Information about the source and object files
 
 extern File_Info        AsmFiles;   // files information
+extern char             *ModuleName;
 
 #define ASM_EXT "asm"
 #define ERR_EXT "err"
@@ -195,6 +196,8 @@ typedef struct global_vars{
 } global_vars;
 
 extern global_vars Globals;
+
+extern char *CreateFileName( const char *template, const char *ext, bool forceext );
 
 #endif
 
