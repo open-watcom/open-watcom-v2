@@ -57,6 +57,9 @@ int main( int argc, char **argv )
 //*******************************
 {
     static char *fname;
+    OPT_STORAGE data;
+    OPT_STRING  *files;
+    OPT_STRING  *src;
 
 #ifndef __WATCOMC__
     _argv = argv;
@@ -71,24 +74,25 @@ int main( int argc, char **argv )
         Usage();
     } else {
         PP_Init( '#', PPSPEC_AS );
-        if( OptionsInit( --argc, ++argv ) ) {
+        OPT_INIT( &data );
+        files = NULL;
+        if( OptionsInit( --argc, ++argv, &data, &files ) ) {
             Banner();
             if( _IsOption( PRINT_HELP ) ) {
                 Usage();
-            } else if( *argv == NULL ) {
+            } else if( files == NULL ) {
                 AsOutMessage( stderr, AS_MSG_ERROR );
                 AsOutMessage( stderr, NO_FILENAME_SPECIFIED );
                 fputc( '\n', stderr );
             } else {
-                OptionsPPInclude();
-                while( *argv != NULL ) {
-                    fname = MakeAsmFilename( *argv );
-                    argv++;
+                OptionsPPInclude( &data );
+                for( src = files; src != NULL; src = src->next ) {
+                    fname = MakeAsmFilename( src->data );
                     if( PP_FileInit( fname, PPFLAG_ASM_COMMENT | PPFLAG_EMIT_LINE | PPFLAG_TRUNCATE_FILE_NAME ) != 0 ) {
                         AsOutMessage( stderr, UNABLE_TO_OPEN, fname );
                         fputc( '\n', stderr );
                     } else {
-                        OptionsPPDefine();
+                        OptionsPPDefine( &data );
                         SymInit();
                         InsInit();
                         DirInit();
@@ -112,7 +116,7 @@ int main( int argc, char **argv )
                         DirFini();
                         InsFini();
                         SymFini();
-                        if( *argv != NULL ) {
+                        if( src->next != NULL ) {
                             PP_MacrosFini();
                             PP_MacrosInit();
                         }
@@ -121,7 +125,9 @@ int main( int argc, char **argv )
                 }
             }
         }
+        OPT_CLEAN_STRING( &files );
         OptionsFini();
+        OPT_FINI( &data );
         PP_Fini();
     }
     AsMsgFini();

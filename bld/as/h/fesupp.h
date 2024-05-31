@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,33 +31,21 @@
 ****************************************************************************/
 
 
-#include "cmdlnprs.gh"
-#include "cmdlnprs.h"
-#include "cmdscan.h"
+// FESUPP.H -- front-end independent support
+//
+// This provides macro definitions for the front-end independent support
+//
+//
+#ifndef __FESUPP_H__
+#define __FESUPP_H__
+
+#include <string.h>
+#include "asmem.h"
 
 
-typedef enum {
-    EMPTY               = 0x0000,
-    OBJ_COFF            = 0x0001,
-    OBJ_ELF             = 0x0002,
-    BE_QUIET            = 0x0004,
-    PRINT_HELP          = 0x0008,
-    WARNING_ERROR       = 0x0010,
-    DUMP_PARSE_TREE     = 0x0100,
-    DUMP_INS_TABLE      = 0x0200,
-    DUMP_SYMBOL_TABLE   = 0x0400,
-    DUMP_INSTRUCTIONS   = 0x0800,
-    DUMP_LEXER_BUFFER   = 0x1000,
-    DUMP_DEBUG_MSGS     = 0x2000
-} as_flags;
+// MACRO DEFINITIONS
 
-#define _SetOption( x )         ( AsOptions |= (x) )
-#define _UnsetOption( x )       ( AsOptions &= ~(x) )
-#define _IsOption( x )          ( ( AsOptions & (x) ) != EMPTY )
+#define _MemoryAllocate( size )     MemAlloc( size )
+#define _MemoryFree( ptr )          MemFree( ptr )
 
-extern as_flags AsOptions;
-
-extern bool     OptionsInit( int argc, char **argv, OPT_STORAGE *data, OPT_STRING **files );
-extern void     OptionsFini( void );
-extern void     OptionsPPDefine( OPT_STORAGE *data );
-extern void     OptionsPPInclude( OPT_STORAGE *data );
+#endif

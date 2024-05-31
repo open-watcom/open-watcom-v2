@@ -41,61 +41,130 @@
 
 as_flags        AsOptions = 0;
 
-static char     **ppDefines = NULL;
-static int      maxNumPredefines;
+static const char   *switch_start = "";
 
-static bool optionsPredefine( const char *str ) {
-//***********************************************
-// Sets up an array of define strings for PP_Define later on when it's init'ed.
+static void BadCmdLine( int error_code )
+/***************************************
+ * SIGNAL CMD-LINE ERROR
+ */
+{
+    char        buffer[128];
+    size_t      len;
 
-    static unsigned     idx;
-    unsigned            i;
-    size_t              length;
-    const char          *s;
-    bool                got_equal, got_macro;
-
-    if( *str == '\0' )
-        return( false );
-    if( ppDefines == NULL ) {
-        length = maxNumPredefines * sizeof( char * );
-        ppDefines = MemAlloc( length );
-        memset( ppDefines, 0, length );
-        idx = 0;
-    } else {
-        ++idx;
+    CmdScanChar();
+    while( !CmdScanSwEnd() ) {
+        CmdScanChar();
     }
-    ppDefines[idx] = MemAlloc( strlen( str ) + 1 );
-    got_equal = false;
-    got_macro = false;
-    s = str;
-    i = 0;
-    for( ;; ) {
-        if( *s == '=' ) {
-            if( got_equal
-              || !got_macro ) {
-                return( false );
-            }
-            got_equal = true;
-            ppDefines[idx][i] = ' ';
-        } else {
-            got_macro = true;
-            ppDefines[idx][i] = *s;
-            if( *s == '\0' ) {
-                break;
-            }
-        }
-        ++i;
-        ++s;
-    }
-    return( true );
+    len = CmdScanAddr() - switch_start;
+    if( len > sizeof( buffer ) - 1 )
+        len = sizeof( buffer ) - 1;
+    strncpy( buffer, switch_start, len );
+    buffer[len] = '\0';
+    Banner();
+    AsOutMessage( stderr, AS_MSG_ERROR );
+    AsOutMessage( stderr, error_code, buffer );
+    fputc( '\n', stderr );
 }
 
-void OptionsPPDefine( void )
-//**************************
+// BAD CHAR DETECTED
+void BadCmdLineChar( void )
 {
-    unsigned    idx = 0;
-    char        *str;
+    BadCmdLine( INVALID_OPTION );
+}
+// BAD ID DETECTED
+void BadCmdLineId( void )
+{
+    BadCmdLine( INVALID_OPTION );
+}
+// BAD NUMBER DETECTED
+void BadCmdLineNumber( void )
+{
+    BadCmdLine( INVALID_OPTION );
+}
+// BAD PATH DETECTED
+void BadCmdLinePath( void )
+{
+    BadCmdLine( INVALID_OPTION );
+}
+// BAD FILE DETECTED
+void BadCmdLineFile( void )
+{
+    BadCmdLine( INVALID_OPTION );
+}
+// BAD TEXT DETECTED
+void BadCmdLineOption( void )
+{
+    BadCmdLine( INVALID_OPTION );
+}
 
+static char *ReadIndirectFile( char *name )
+/*****************************************/
+{
+    char        *env;
+    char        *str;
+    FILE        *fp;
+    size_t      len;
+    char        ch;
+
+    env = NULL;
+    fp = fopen( name, "rb" );
+    if( fp != NULL ) {
+        fseek( fp, 0, SEEK_END );
+        len = ftell( fp );
+        fseek( fp, 0, SEEK_SET );
+        env = MemAlloc( len + 1 );
+        len = fread( env, 1, len, fp );
+        env[len] = '\0';
+        fclose( fp );
+        // zip through characters changing \r, \n etc into ' '
+        for( str = env; *str != '\0'; ++str ) {
+            ch = *str;
+            if( ch == '\r' || ch == '\n' ) {
+                *str = ' ';
+            }
+#if !defined(__UNIX__)
+            if( ch == 0x1A ) {      // if end of file
+                *str = '\0';        // - mark end of str
+                break;
+            }
+#endif
+        }
+    }
+    return( env );
+}
+
+static bool scanDefine( OPT_STRING **h )
+/**************************************/
+{
+    char        *m;
+    char        *p;
+
+    if( OPT_GET_FILE( h ) ) {
+        m = (*h)->data;
+        p = strchr( m, '=' );
+        if( p != NULL ) {
+            *p = ' ';
+        } else {
+            *h = MemRealloc( *h, sizeof( **h ) + strlen( m ) + 2 );
+            strcat( (*h)->data, " 1" );
+        }
+        return( true );
+    }
+    return( false );
+}
+
+static void ppDefine( OPT_STRING *s )
+//***********************************
+{
+    if( s->next != NULL ) {
+        ppDefine( s->next );
+    }
+    PP_Define( s->data );
+}
+
+void OptionsPPDefine( OPT_STORAGE *data )
+//***************************************
+{
 #ifdef AS_ALPHA
     PP_Define( "__WASAXP__ " _MACROSTR( _BLDVER ) );
 #elif defined( AS_PPC )
@@ -103,182 +172,203 @@ void OptionsPPDefine( void )
 #elif defined( AS_MIPS )
     PP_Define( "__WASMPS__ " _MACROSTR( _BLDVER ) );
 #endif
-    if( ppDefines == NULL )
-        return;
-    str = ppDefines[idx++];
-    while( str != NULL ) {
-        PP_Define( str );
-        str = ppDefines[idx++];
+    if( data->d ) {
+        ppDefine( data->d_value );
     }
 }
 
-void OptionsPPInclude( void )
-//***************************
+static void ppInclude( OPT_STRING *s )
+//***********************************
+{
+    if( s->next != NULL ) {
+        ppInclude( s->next );
+    }
+    PP_IncludePathAdd( PPINCLUDE_USR, s->data );
+}
+
+void OptionsPPInclude( OPT_STORAGE *data )
+//****************************************
 {
     PP_IncludePathAdd( PPINCLUDE_SYS, PP_GetEnv( "INCLUDE" ) );
+    if( data->i ) {
+        ppInclude( data->i_value );
+    }
+}
+
+#include "cmdlnprs.gc"
+
+static int ProcOptions( OPT_STORAGE *data, const char *str, OPT_STRING **files )
+/******************************************************************************/
+{
+#define MAX_NESTING 32
+    const char  *save[MAX_NESTING];
+    char        *buffers[MAX_NESTING];
+    int         level;
+    int         ch;
+    OPT_STRING  *fname;
+    const char  *penv;
+    char        *ptr;
+
+    if( str != NULL ) {
+        level = -1;
+        CmdScanInit( str );
+        for( ;; ) {
+            CmdScanSkipWhiteSpace();
+            ch = CmdScanChar();
+            if( ch == '@' ) {
+                switch_start = CmdScanAddr() - 1;
+                CmdScanSkipWhiteSpace();
+                fname = NULL;
+                if( OPT_GET_FILE( &fname ) ) {
+                    penv = NULL;
+                    level++;
+                    if( level < MAX_NESTING ) {
+                        ptr = NULL;
+                        penv = getenv( fname->data );
+                        if( penv == NULL ) {
+                            ptr = ReadIndirectFile( fname->data );
+                            penv = ptr;
+                        }
+                        if( penv != NULL ) {
+                            save[level] = CmdScanInit( penv );
+                            buffers[level] = ptr;
+                        }
+                    }
+                    if( penv == NULL ) {
+                        level--;
+                    }
+                    OPT_CLEAN_STRING( &fname );
+                }
+                continue;
+            }
+            if( ch == '\0' ) {
+                if( level < 0 )
+                    break;
+                MemFree( buffers[level] );
+                CmdScanInit( save[level] );
+                level--;
+                continue;
+            }
+            if( _IS_SWITCH_CHAR( ch ) ) {
+                switch_start = CmdScanAddr() - 1;
+                OPT_PROCESS( data );
+            } else {  /* collect file name */
+                CmdScanUngetChar();
+                switch_start = CmdScanAddr();
+                OPT_GET_FILE( files );
+            }
+        }
+    }
+    return( 0 );
+#undef MAX_NESTING
 }
 
 void OptionsFini( void )
 //**********************
 {
-    unsigned    idx = 0;
-    char        *str;
-
-    if( ppDefines != NULL ) {
-        while( (str = ppDefines[idx++]) != NULL ) {
-            MemFree( str );
-        }
-        MemFree( ppDefines );
-    }
 }
 
-bool OptionsInit( int argc, char **argv )
-//***************************************
-{
-    char        *s;
 
-    maxNumPredefines = argc + 1; // extra null at the end
-    while( *argv ) {
-        if( argv[0][0] == '-'
-          || argv[0][0] == '/' ) {
-            s = &argv[0][2];
-            switch( argv[0][1] ) {
-            case 'b':
-            case 'B':
-                // ignore the -bt=NT crap
-                break;
-            case 'd':
-            case 'D':
-                if( isdigit( *s ) ) {
-                    DebugLevel = strtoul( s, &s, 10 );
-                } else if( !optionsPredefine( s ) ) {
-                    goto errInvalid;
-                }
-                break;
-            case 'e':
-                if( *s == '\0' )
-                    goto errInvalid;
-                ErrorLimit = strtoul( s, &s, 10 );
-                if( *s != '\0' )
-                    goto errInvalid;
-                break;
-            case 'f':
-            case 'F':
-                switch( *s ) {
-                case 'o':
-                    ++s;
-                    if( *s == '=' )
-                        ++s;
-                    if( *s == '\0' )
-                        goto errInvalid;
-                    ObjSetObjFile( s );
-                    break;
-                case 'r':
-                    ++s;
-                    if( *s == '=' )
-                        ++s;
-                    break;
-                default:
-                    goto errInvalid;
-                }
-                break;
-            case 'h':
-            case '?':
-                _SetOption( PRINT_HELP );
-                break;
-            case 'i':
-            case 'I':
-                if( *s == '=' )
-                    ++s;
-                if( *s != '\0' ) {
-                    PP_IncludePathAdd( PPINCLUDE_USR, s );
-                }
-                break;
-            case 'o':
-                switch( *s ) {
-                case 'c':
-                    _UnsetOption( OBJ_ELF );
-                    _SetOption( OBJ_COFF );
-                    break;
-                case 'e': // ELF
-                    _UnsetOption( OBJ_COFF );
-                    _SetOption( OBJ_ELF );
-                    break;
-                default:
-                    goto errInvalid;
-                }
-                if( *++s != '\0' )
-                    goto errInvalid;
-                break;
-            case 'q':
-                _SetOption( BE_QUIET );
-                break;
-            case 'w':
-                if( isdigit( *s ) ) {
-                    WarningLevel = strtoul( s, &s, 10 );
-                } else {
-                    switch( *s ) {
-                    case 'e':
-                        _SetOption( WARNING_ERROR );
-                        break;
-                    default:
-                        goto errInvalid;
-                    }
-                }
-                break;
-            case 'z':
-                switch( *s ) {
-                case 'q':
-                    _SetOption( BE_QUIET );
-                    break;
-                default:
-                    goto errInvalid;
-                }
-                break;
-#ifdef AS_DEBUG_DUMP
-            case 'v':
-                while( *s ) {
-                    switch( *s ) {
-                    case 'p':
-                        _SetOption( DUMP_PARSE_TREE );
-                        break;
-                    case 't':
-                        _SetOption( DUMP_INS_TABLE );
-                        break;
-                    case 'i':
-                        _SetOption( DUMP_INSTRUCTIONS );
-                        break;
-                    case 's':
-                        _SetOption( DUMP_SYMBOL_TABLE );
-                        break;
-                    case 'l':
-                        _SetOption( DUMP_LEXER_BUFFER );
-                        break;
-                    case 'd':
-                        _SetOption( DUMP_DEBUG_MSGS );
-                        break;
-                    default:
-                        goto errInvalid;
-                    }
-                    s++;
-                }
-                break;
-#endif
-            default:
-            errInvalid:
-                Banner();
-                AsOutMessage( stderr, AS_MSG_ERROR );
-                AsOutMessage( stderr, INVALID_OPTION, *argv );
-                fputc( '\n', stderr );
-                return( false );
-                break;
-            }
-            memcpy( argv, argv+1, sizeof( *argv ) * argc );
-        } else {
-            argv++;
-        }
-        argc--;
-        maxNumPredefines--;
+bool OptionsInit( int argc, char **argv, OPT_STORAGE *data, OPT_STRING **files )
+//******************************************************************************
+{
+    int         i;
+
+    for( i = 0; i < argc; i++ ) {
+        ProcOptions( data, argv[i], files );
     }
+    if( data->_question ) {
+        _SetOption( PRINT_HELP );
+    }
+    switch( data->debug ) {
+    case OPT_ENUM_debug_d0:
+        DebugLevel = 0;
+        break;
+    case OPT_ENUM_debug_d1:
+        DebugLevel = 1;
+        break;
+    case OPT_ENUM_debug_d2:
+        DebugLevel = 2;
+        break;
+    case OPT_ENUM_debug_d3:
+        DebugLevel = 3;
+        break;
+    case OPT_ENUM_debug_default:
+    default:
+        break;
+    }
+    switch( data->format ) {
+    case OPT_ENUM_format_oc:
+        _UnsetOption( OBJ_ELF );
+        _SetOption( OBJ_COFF );
+        break;
+    case OPT_ENUM_format_oe:
+        _SetOption( OBJ_ELF );
+        _UnsetOption( OBJ_COFF );
+        break;
+    case OPT_ENUM_format_default:
+    default:
+        break;
+    }
+    switch( data->warn ) {
+    case OPT_ENUM_warn_w0:
+        WarningLevel = 0;
+        break;
+    case OPT_ENUM_warn_w1:
+        WarningLevel = 1;
+        break;
+    case OPT_ENUM_warn_w2:
+        WarningLevel = 2;
+        break;
+    case OPT_ENUM_warn_w3:
+        WarningLevel = 3;
+        break;
+    case OPT_ENUM_warn_w4:
+        WarningLevel = 4;
+        break;
+    case OPT_ENUM_warn_default:
+    default:
+        break;
+    }
+    if( data->we ) {
+        _SetOption( WARNING_ERROR );
+    }
+    if( data->e ) {
+        ErrorLimit = data->e_value;
+    }
+    if( data->q || data->zq ) {
+        _SetOption( BE_QUIET );
+    }
+    if( data->fo ) {
+        ObjSetObjFile( data->fo_value->data );
+    }
+    if( data->fr ) {
+        // data->fr_value;
+    }
+#ifdef AS_DEBUG_DUMP
+    switch( data->dump
+    case OPT_ENUM_dump_vi:
+        _SetOption( DUMP_INSTRUCTIONS );
+        break;
+    case OPT_ENUM_dump_vp:
+        _SetOption( DUMP_PARSE_TREE );
+        break;
+    case OPT_ENUM_dump_vt:
+        _SetOption( DUMP_INS_TABLE );
+        break;
+    case OPT_ENUM_dump_vs:
+        _SetOption( DUMP_SYMBOL_TABLE );
+        break;
+    case OPT_ENUM_dump_vl:
+        _SetOption( DUMP_LEXER_BUFFER );
+        break;
+    case OPT_ENUM_dump_vd:
+        _SetOption( DUMP_DEBUG_MSGS );
+        break;
+    case OPT_ENUM_dump_default:
+    default:
+        break;
+    }
+#endif
     return( true );
 }
