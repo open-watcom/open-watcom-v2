@@ -118,7 +118,7 @@
 :ntarget. bsd linux osx qnx haiku
 
 
-:chain. o v
+:chain. v
 
 :option. ? h
 :usage. print this message
@@ -127,6 +127,26 @@
 :nochain.
 :special. scanDefine <name>[=text]
 :usage. define text macro
+
+:option. d0
+:enumerate. debug
+:internal.
+:usage. debug level 0
+
+:option. d1
+:enumerate. debug
+:internal.
+:usage. debug level 1
+
+:option. d2
+:enumerate. debug
+:internal.
+:usage. debug level 2
+
+:option. d3
+:enumerate. debug
+:internal.
+:usage. debug level 3
 
 :option. e
 :number.
@@ -145,39 +165,54 @@
 :path.
 :usage. set include path
 
+:usagegroup. 1
+:usage. Output object file format
+
 :option. oc
 :enumerate. format
-:usage. COFF object file format
+:group. 1
+:usage. COFF format
 
 :option. oe
 :enumerate. format
-:usage. ELF object file format
+:group. 1
+:usage. ELF format
 
 :option. q
 :internal.
 :usage. operate quietly
 
-:usagechain. . v
+:usagegroup. 2
 :usage. Debug verbose output
 
 :option. vi
 :internal.
+:enumerate. dump
+:group. 2
 :usage. view instruction
 
 :option. vl
 :internal.
+:enumerate. dump
+:group. 2
 :usage. view lex buffer
 
 :option. vp
 :internal.
+:enumerate. dump
+:group. 2
 :usage. view parse
 
 :option. vs
 :internal.
+:enumerate. dump
+:group. 2
 :usage. view symbols
 
 :option. vt
 :internal.
+:enumerate. dump
+:group. 2
 :usage. view ins table
 
 :option. we

@@ -112,6 +112,12 @@ void OptionsPPDefine( void )
     }
 }
 
+void OptionsPPInclude( void )
+//***************************
+{
+    PP_IncludePathAdd( PPINCLUDE_SYS, PP_GetEnv( "INCLUDE" ) );
+}
+
 void OptionsFini( void )
 //**********************
 {

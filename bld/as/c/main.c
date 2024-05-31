@@ -81,7 +81,7 @@ int main( int argc, char **argv )
                 AsOutMessage( stderr, NO_FILENAME_SPECIFIED );
                 fputc( '\n', stderr );
             }
-            PP_IncludePathAdd( PPINCLUDE_SYS, PP_GetEnv( "INCLUDE" ) );
+            OptionsPPInclude();
             while( *argv != NULL ) {
                 fname = MakeAsmFilename( *argv );
                 argv++;
