@@ -123,8 +123,14 @@
 :option. ? h
 :usage. print this message
 
+:option. bt
+:id. . <os>
+:optional.
+:internal.
+:usage. set the build target to <os>
+:jusage. set the build target to <os>
+
 :option. d
-:nochain.
 :special. scanDefine <name>[=text]
 :usage. define text macro
 
@@ -159,6 +165,7 @@
 :option. fr
 :file.
 :optional.
+:internal.
 :usage. set error file name
 
 :option. i
@@ -186,37 +193,63 @@
 :usage. Debug verbose output
 
 :option. vi
-:internal.
 :enumerate. dump
 :group. 2
+:internal.
 :usage. view instruction
 
 :option. vl
-:internal.
 :enumerate. dump
 :group. 2
+:internal.
 :usage. view lex buffer
 
 :option. vp
-:internal.
 :enumerate. dump
 :group. 2
+:internal.
 :usage. view parse
 
 :option. vs
-:internal.
 :enumerate. dump
 :group. 2
+:internal.
 :usage. view symbols
 
 :option. vt
-:internal.
 :enumerate. dump
 :group. 2
+:internal.
 :usage. view ins table
 
 :option. we
 :usage. treat all warnings as errors
 
+:option. w0
+:enumerate. warn
+:internal.
+:usage. set warning level 0
+
+:option. w1
+:enumerate. warn
+:internal.
+:usage. set warning level 1
+
+:option. w2
+:enumerate. warn
+:internal.
+:usage. set warning level 2
+
+:option. w3
+:enumerate. warn
+:internal.
+:usage. set warning level 3
+
+:option. w4
+:enumerate. warn
+:internal.
+:usage. set warning level 4
+
 :option. zq
 :usage. operate quietly
+
