@@ -96,6 +96,13 @@ void OptionsPPDefine( void )
     unsigned    idx = 0;
     char        *str;
 
+#ifdef AS_ALPHA
+    PP_Define( "__WASAXP__ " _MACROSTR( _BLDVER ) );
+#elif defined( AS_PPC )
+    PP_Define( "__WASPPC__ " _MACROSTR( _BLDVER ) );
+#elif defined( AS_MIPS )
+    PP_Define( "__WASMPS__ " _MACROSTR( _BLDVER ) );
+#endif
     if( ppDefines == NULL )
         return;
     str = ppDefines[idx++];
@@ -124,17 +131,7 @@ bool OptionsInit( int argc, char **argv )
 {
     char        *s;
 
-#ifdef AS_ALPHA
-    s = "__WASAXP__=" _MACROSTR( _BLDVER );
-#elif defined( AS_PPC )
-    s = "__WASPPC__=" _MACROSTR( _BLDVER );
-#elif defined( AS_MIPS )
-    s = "__WASMPS__=" _MACROSTR( _BLDVER );
-#endif
-    maxNumPredefines = argc + 2; // version macro and extra null at the end
-    if( !optionsPredefine( s ) )
-        goto errInvalid;
-
+    maxNumPredefines = argc + 1; // extra null at the end
     while( *argv ) {
         if( argv[0][0] == '-'
           || argv[0][0] == '/' ) {
