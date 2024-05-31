@@ -169,6 +169,11 @@ bool OptionsInit( int argc, char **argv )
                         goto errInvalid;
                     ObjSetObjFile( s );
                     break;
+                case 'r':
+                    ++s;
+                    if( *s == '=' )
+                        ++s;
+                    break;
                 default:
                     goto errInvalid;
                 }

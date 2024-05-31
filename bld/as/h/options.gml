@@ -136,21 +136,25 @@
 :file.
 :usage. set output filename (applies to the first asm_file)
 
+:option. fr
+:file.
+:optional.
+:usage. set error file name
+
 :option. i
 :path.
 :usage. set include path
 
 :option. oc
-:path.
 :enumerate. format
 :usage. COFF object file format
 
 :option. oe
-:path.
 :enumerate. format
 :usage. ELF object file format
 
 :option. q
+:internal.
 :usage. operate quietly
 
 :usagechain. . v
