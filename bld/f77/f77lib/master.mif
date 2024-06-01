@@ -71,8 +71,8 @@ errmsg.grc errgrp.gc errcod.gh: $(f77_dir)/h/error.msg
 jerrmsg.grc:  $(f77_dir)/h/error.msg
     errsrc $[@ jo r
 
-rc_inc_dirs = -I. -I.. -I"$(f77lib_dir)/h" -I"$(f77_dir)/h" $(cli_asminline_rc_inc_dirs) -I"$(comp_cfg_dir)/h" -I"$(fe_misc_dir)/h"
+rc_inc_dirs = -I. -I.. -I"$(f77lib_dir)/h" -I"$(f77_dir)/h" -I"$(comp_cfg_dir)/h" -I"$(fe_misc_dir)/h"
 
-errmsg.res : $(f77lib_dir)/h/errmsg.rc errmsg.grc jerrmsg.grc $(f77_dir)/h/errcod.h errcod.gh $(cli_asminline_rc_deps)
+errmsg.res : $(f77lib_dir)/h/errmsg.rc errmsg.grc jerrmsg.grc $(f77_dir)/h/errcod.h errcod.gh
     @%make echo_rc
     $(rcu8j) $(ppflags_common) $(rc_cppflags) $(rc_flags) $(rc_inc_path) $[@ -fo=$@
