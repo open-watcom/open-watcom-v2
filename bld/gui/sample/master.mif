@@ -48,7 +48,7 @@ exetarg_objs       = pmsample.obj
 !else
 exetarg_objs       = dlgstat.obj dlgdynam.obj dlgtest.obj sampdef.obj sample.obj
 !endif
-exetarg_libs       = $(cli_gui_lib) $(cli_ui_lib)
+exetarg_libs       = $(cli_gui_libs)
 exetarg_name       = sample
 exetarg_res        = sample.res
 !include exetarg.mif

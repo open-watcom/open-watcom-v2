@@ -9,7 +9,7 @@ extra_inc_dirs = -I"$(lib_misc_dir)/h" $(cli_orl_inc_dirs)
 !ifdef target_cpu
 exetarg_prebuild_objs = cmdlnprs.gc
 exetarg_objs = deffile.obj lib.obj message.obj translat.obj demangle.obj dlltool.obj fuzzy.obj hash.obj parse.obj $(mstools_objs)
-exetarg_libs = $(cli_orl_lib)
+exetarg_libs = $(cli_orl_libs)
 !else
 exetarg_objs = libstub.obj $(mstools_stub_obj) $(mstools_objs)
 !endif

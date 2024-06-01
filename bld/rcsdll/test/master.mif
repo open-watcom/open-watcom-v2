@@ -22,7 +22,7 @@ inc_dirs = -I.. $(cli_rcsdll_inc_dirs)
 # EXE
 #
 exetarg_objs = rcstest.obj
-exetarg_libs = $(cli_rcsdll_lib)
+exetarg_libs = $(cli_rcsdll_libs)
 exetarg_res = $(proj_name).res
 !include exetarg.mif
 

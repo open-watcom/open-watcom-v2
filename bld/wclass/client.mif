@@ -6,5 +6,4 @@ wclass_wclass_inc_dirs_win   = -I"$(wclass_dir)/win/hpp"
 cli_wclass_inc_dirs = $(wclass_wclass_inc_dirs_$(host_os)) -I"$(wclass_dir)/hpp" $(cli_gui_inc_dirs)
 cli_wclass_rc_inc_dirs = -I"$(wclass_dir)/hpp" $(cli_gui_rc_inc_dirs)
 cli_wclass_rc_deps = $(wclass_dir)/hpp/wclass.rc $(wclass_dir)/hpp/wclass.rh $(cli_gui_rc_deps)
-
-cli_wclass_lib = $(wclass_dir)/$(objs_subdir)/wclass.lib
+cli_wclass_libs = $(wclass_dir)/$(objs_subdir)/wclass.lib $(cli_gui_libs)

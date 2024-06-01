@@ -116,7 +116,7 @@ common_objs = &
 !ifdef sample
 exetarg_prebuild_objs = ui.lib
 exetarg_objs = sample.obj sampdial.obj
-exetarg_libs = $(cli_ui_lib)
+exetarg_libs = $(cli_ui_libs)
 exetarg_name = sample
 !include exetarg.mif
 !endif

@@ -45,7 +45,7 @@ exetarg_objs = &
     zmscreen.obj &
     zmconfig.obj &
     zmmem.obj
-exetarg_libs          = $(cli_commonui_lib)
+exetarg_libs          = $(cli_commonui_libs)
 
 # EXE English
 exetarg_name          = $(proj_name)

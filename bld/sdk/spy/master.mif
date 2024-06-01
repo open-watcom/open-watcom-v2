@@ -81,7 +81,7 @@ exetarg_objs = &
     spysel.obj &
     spymem.obj &
     $(exetarg_objs_$(host_os))
-exetarg_libs          = $(dllname).lib $(cli_wpi_lib) $(cli_commonui_lib)
+exetarg_libs          = $(dllname).lib $(cli_wpi_libs) $(cli_commonui_libs)
 exetarg_res           = $(proj_name).res
 !include exetarg.mif
 

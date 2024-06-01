@@ -73,7 +73,7 @@ exetarg_objs = &
     $(dis_objs) &
     demangle.obj &
     $(trmem_objs)
-exetarg_libs          = $(cli_orl_lib)
+exetarg_libs          = $(cli_orl_libs)
 exetarg_res           = $(proj_name).res
 exetarg_qnx_res       = usage.u
 !include exetarg.mif

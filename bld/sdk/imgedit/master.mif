@@ -72,8 +72,8 @@ exetarg_objs = &
     trnsform.obj hinttext.obj iemem.obj closeall.obj bits.obj &
     errors.obj imgutil.obj &
     $(exetarg_objs_$(target_$(host_os)))
-exetarg_libs_win      = $(cli_wr_lib)
-exetarg_libs          = $(cli_wpi_lib) $(cli_commonui_lib) $(exetarg_libs_$(target_$(host_os)))
+exetarg_libs_win      = $(cli_wr_libs)
+exetarg_libs          = $(cli_wpi_libs) $(cli_commonui_libs) $(exetarg_libs_$(target_$(host_os)))
 exetarg_res           = $(proj_name).res
 !include exetarg.mif
 

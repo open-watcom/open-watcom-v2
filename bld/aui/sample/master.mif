@@ -31,7 +31,7 @@ inc_dirs = -I"../h" $(cli_aui_inc_dirs)
 exetarg_objs = app.obj util.obj window1.obj window2.obj window3.obj &
     window4.obj window5.obj window6.obj window7.obj window8.obj &
     menus.obj appcolor.obj dlgcmd.obj dlgoptn.obj password.obj
-exetarg_libs = $(cli_aui_lib) $(cli_gui_lib) $(cli_ui_lib)
+exetarg_libs = $(cli_aui_libs)
 exetarg_res = app.res
 #exetarg_res = appj.res
 exetarg_name = app

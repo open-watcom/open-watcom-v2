@@ -82,7 +82,7 @@ dlltarg_objs = wrmain.obj wrmem.obj wrmsg.obj wrfindt.obj wrtmpfil.obj &
     wrrnames.obj wrhash.obj wredit.obj wrutil.obj &
     wrstubs.obj rcerrprt.obj &
     $(trmem_objs) $(dlltarg_objs_rc)
-dlltarg_libs = $(cli_commonui_lib)
+dlltarg_libs = $(cli_commonui_libs)
 dlltarg_res = $(proj_name).res
 !include dlltarg.mif
 

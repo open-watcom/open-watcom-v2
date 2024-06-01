@@ -1,4 +1,4 @@
-libs = $(cli_commonui_lib) $(cli_wpi_lib) $(cli_ui_lib) $(cli_rcsdll_lib)
+libs = $(cli_commonui_libs) $(cli_wpi_libs) $(cli_ui_libs) $(cli_rcsdll_libs)
 
 extra_l_flags_os2_386 = op stack=64k
 extra_l_flags_os2_i86 = op newfiles,stack=2k

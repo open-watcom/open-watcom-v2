@@ -139,7 +139,7 @@ exetarg_libs          = $(dlltarg_name).lib $(exetarg_libs_$(host_os))
 !else
 exetarg_prebuild_objs = $(prebuild_objs)
 exetarg_objs          = $(comp_objs_exe)
-exetarg_libs          = $(cli_asminline_lib) $(cli_cg_libs)
+exetarg_libs          = $(cli_asminline_libs) $(cli_cg_libs)
 !endif
 exetarg_qnx_res       = usage.u
 !ifdef ntverrc_exe_out
@@ -153,7 +153,7 @@ exetarg_name          = $(exetarg_name)
 #
 dlltarg_prebuild_objs = $(dll_subdir) $(prebuild_objs)
 dlltarg_objs          = $(comp_objs_dll)
-dlltarg_libs          = $(cli_asminline_lib) $(cli_cg_libs)
+dlltarg_libs          = $(cli_asminline_libs) $(cli_cg_libs)
 !ifdef ntverrc_dll_out
 dlltarg_res           = $(ntverrc_dll_out)
 !endif

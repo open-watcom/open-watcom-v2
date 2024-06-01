@@ -67,7 +67,7 @@ exetarg_objs = &
     hwldstr.obj &
     hwmem.obj &
     $(dis_objs)
-exetarg_libs          = $(cli_commonui_lib)
+exetarg_libs          = $(cli_commonui_libs)
 exetarg_res           = $(proj_name).res
 !include exetarg.mif
 

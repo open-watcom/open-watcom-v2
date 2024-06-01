@@ -94,7 +94,7 @@ dlltarg_objs += $(imp_objs_watcom)
 dlltarg_libs += $(imp_libs)
 !endif
 !ifeq dip_format dwarf
-dlltarg_libs += $(cli_dwarfr_lib)
+dlltarg_libs += $(cli_dwarfr_libs)
 !endif
 !ifdef ntverrc_dll_out
 dlltarg_res = $(ntverrc_dll_out)

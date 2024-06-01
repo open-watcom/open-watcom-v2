@@ -94,7 +94,7 @@ exetarg_prebuild_objs = isarray.gh usage.gh usagej.gh
 exetarg_objs          = $(objs)
 !ifeq host_cpu i86
 !else
-exetarg_libs          = $(cli_orl_lib)
+exetarg_libs          = $(cli_orl_libs)
 !endif
 exetarg_res           = $(proj_name).res
 exetarg_name          = wmk

@@ -130,7 +130,7 @@ exetarg_libs          = $(dlltarg_name).lib
 exetarg_prebuild_objs = $(prebuild_objs)
 exetarg_objs          = $(exe_objs)
 !ifndef bootstrap
-exetarg_libs          = $(cli_orl_lib)
+exetarg_libs          = $(cli_orl_libs)
 !endif
 !endif
 #
@@ -150,7 +150,7 @@ exetarg_res           = wresexe.res
 dlltarg_prebuild_objs = $(dll_subdir) $(prebuild_objs)
 dlltarg_objs          = $(dll_objs)
 !ifndef bootstrap
-dlltarg_libs          = $(cli_orl_lib)
+dlltarg_libs          = $(cli_orl_libs)
 !endif
 #
 # Resource compiler is not available for librarian bootstrap build

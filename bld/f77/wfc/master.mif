@@ -25,7 +25,6 @@ exetarg_name = $(exename_$(target_cpu))
 
 !include $(cg_dir)/client.mif
 !include asclient.mif
-!include $(cfloat_dir)/client.mif
 
 !include $(f77wfc_dir)/files.mif
 
@@ -61,7 +60,7 @@ extra_a_flags_axp = -oc
 #
 exetarg_prebuild_objs = $(cli_asminline_deps) usage.gh wfcmsgs.gh code$(target_cpu).gh
 exetarg_objs          = $(fobjs) $(trmem_objs) $(trmemcvr_objs)
-exetarg_libs          = $(cli_asminline_lib) $(cli_cg_libs)
+exetarg_libs          = $(cli_asminline_libs) $(cli_cg_libs)
 exetarg_res           = $(proj_name).res
 !include exetarg.mif
 

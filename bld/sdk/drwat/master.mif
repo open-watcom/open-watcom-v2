@@ -86,7 +86,7 @@ exetarg_objs = &
     drwatcom.obj sym.obj profile.obj fault.obj &
     disasm.obj drwatmem.obj $(exetarg_objs_$(host_os)) &
     dipcli.obj digcli.obj $(dip_objs)
-exetarg_libs          = $(cli_commonui_lib)
+exetarg_libs          = $(cli_commonui_libs)
 exetarg_res           = $(proj_name).res
 !include exetarg.mif
 

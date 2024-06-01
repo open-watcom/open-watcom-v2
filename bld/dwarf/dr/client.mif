@@ -11,7 +11,7 @@
 #
 # DWARF library
 #
-cli_dwarfr_lib = $(dwarfr_dir)/$(objs_subdir)/dwarfr.lib
+cli_dwarfr_libs = $(dwarfr_dir)/$(objs_subdir)/dwarfr.lib
 
 #
 # DWARF run-time DLL used

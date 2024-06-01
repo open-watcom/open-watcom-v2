@@ -38,7 +38,7 @@ all: dwdump.exe testcli.exe .SYMBOLIC
 # EXE
 #
 exetarg_objs = dwdump.obj testdump.obj trmemcvr.obj $(trmem_objs)
-exetarg_libs = $(cli_orl_lib)
+exetarg_libs = $(cli_orl_libs)
 exetarg_name = dwdump
 !include exetarg.mif
 
@@ -46,6 +46,6 @@ exetarg_name = dwdump
 # EXE
 #
 exetarg_objs = testcli.obj testtest.obj testdump.obj
-exetarg_libs = $(cli_dwarfw_lib)
+exetarg_libs = $(cli_dwarfw_libs)
 exetarg_name = testcli
 !include exetarg.mif

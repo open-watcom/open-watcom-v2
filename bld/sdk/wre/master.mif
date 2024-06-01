@@ -77,7 +77,7 @@ exetarg_objs = &
     $(cli_cpp_objs) ppenv.obj &
     $(trmem_objs) $(trmemcvr_objs)
 exetarg_libs = &
-    $(cli_commonui_lib) $(cli_wr_lib) $(cli_wpi_lib) &
+    $(cli_commonui_libs) $(cli_wr_libs) $(cli_wpi_libs) &
     $(wresedit_dir)/waccel/$(objs_subdir)/wacc.lib &
     $(wresedit_dir)/wmenu/$(objs_subdir)/wmenu.lib &
     $(wresedit_dir)/wstring/$(objs_subdir)/wstring.lib

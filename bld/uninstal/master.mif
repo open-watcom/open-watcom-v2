@@ -29,7 +29,7 @@ inc_dirs = -I. -I".." $(cli_commonui_inc_dirs)
 #
 exetarg_prebuild_objs = rcstr.grh
 exetarg_objs          = uninstal.obj
-exetarg_libs          = $(cli_commonui_lib)
+exetarg_libs          = $(cli_commonui_libs)
 exetarg_res           = $(proj_name).res
 !include exetarg.mif
 

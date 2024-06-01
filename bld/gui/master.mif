@@ -99,7 +99,7 @@ mem_objs = &
     guimem.obj     &
     $(trmem_objs)
 libtarg_objs = $(common_objs) $(mem_objs) $(sysobjs)
-libtarg_libs = $(cli_wpi_lib)
+libtarg_libs = $(cli_wpi_libs)
 !include libtarg.mif
 
 #

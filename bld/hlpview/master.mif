@@ -38,5 +38,5 @@ exetarg_objs = &
     $(cli_hlpview_objs) &
     helpmem.obj &
     $(trmem_objs) $(trmemcvr_objs)
-exetarg_libs = $(cli_ui_lib)
+exetarg_libs = $(cli_ui_libs)
 !include exetarg.mif

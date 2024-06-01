@@ -113,19 +113,10 @@ objs += $(i_$(host_os)) $(i_$(objs_subdir)) $(mem_objs)
 objs += loadfind.obj
 !endif
 
-!ifdef sys_windowed
-!else
-libs_dos   = $(cli_ui_lib)
-libs_linux = $(cli_ui_lib)
-libs_nt    = $(cli_ui_lib)
-libs_os2   = $(cli_ui_lib)
-libs_osx   = $(cli_ui_lib)
-!endif
-
 !ifeq host_cpu i86
-libs = $(cli_gui_lib) $(libs_$(host_os)) $(libs_$(objs_subdir))
+libs = $(cli_gui_libs) $(libs_$(host_os)) $(libs_$(objs_subdir))
 !else
-libs = $(cli_gui_lib) $(libs_$(host_os)) $(libs_$(objs_subdir)) ../ziplib/$(objs_subdir)/ziplib.lib ../zlib/$(objs_subdir)/zlib.lib
+libs = $(cli_gui_libs) $(libs_$(host_os)) $(libs_$(objs_subdir)) ../ziplib/$(objs_subdir)/ziplib.lib ../zlib/$(objs_subdir)/zlib.lib
 !endif
 
 #

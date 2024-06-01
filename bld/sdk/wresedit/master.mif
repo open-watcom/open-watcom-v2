@@ -60,7 +60,7 @@ dlltarg_objs          = $(sys_object) &
     wselft.obj wrename.obj wwait.obj wmemf.obj wcopystr.obj &
     wclip.obj wisedit.obj weditsym.obj &
     $(cli_cpp_objs) ppenv.obj
-dlltarg_libs = $(cli_wr_lib) $(cli_wpi_lib) $(cli_commonui_lib)
+dlltarg_libs = $(cli_wr_libs) $(cli_wpi_libs) $(cli_commonui_libs)
 dlltarg_res           = $(proj_name).res
 !include dlltarg.mif
 

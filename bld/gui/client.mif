@@ -1,12 +1,12 @@
+!include $(ui_dir)/client.mif
 !ifdef sys_windowed
 gui_gui_type = win
 !else
-! include $(ui_dir)/client.mif
 gui_gui_type = ui
 !endif
 cli_gui_path = $(gui_dir)/$(gui_gui_type)/$(objs_subdir)
 cli_gui_inc_dirs = -I"$(cli_gui_path)" -I"$(gui_dir)/h" $(cli_ui_inc_dirs)
 cli_gui_inc_dirs_internal = -I"$(gui_dir)/$(gui_gui_type)/h"
+cli_gui_libs = $(cli_gui_path)/gui.lib $(cli_ui_libs)
 cli_gui_rc_inc_dirs = -I"$(cli_gui_path)" -I"$(gui_dir)/h"
-cli_gui_lib = $(cli_gui_path)/gui.lib
 cli_gui_rc_deps = $(gui_dir)/h/gui.rc $(gui_dir)/h/gui.rh $(gui_dir)/h/closebmp.bmp $(cli_gui_path)/guimsgs.grh

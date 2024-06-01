@@ -87,9 +87,9 @@ extra_l_flags_dll_os2 = initinstance terminstance op modname='$(dlltarg_name)'
 # EXE
 #
 !ifdef no_orl
-wlink_libs            = $(cli_dwarfw_lib)
+wlink_libs            = $(cli_dwarfw_libs)
 !else
-wlink_libs            = $(cli_dwarfw_lib) $(cli_orl_lib)
+wlink_libs            = $(cli_dwarfw_libs) $(cli_orl_libs)
 !endif
 
 !ifdef wlink_dll

@@ -23,6 +23,6 @@ extra_cpp_flags_trmemcvr  = $(trmem_cpp_flags)
 extra_c_flags_trmemcvr    = $(trmem_cover_cflags)
 
 exetarg_objs = test.obj trmemcvr.obj $(trmem_objs)
-exetarg_libs = $(cli_orl_lib)
+exetarg_libs = $(cli_orl_libs)
 
 !include exetarg.mif

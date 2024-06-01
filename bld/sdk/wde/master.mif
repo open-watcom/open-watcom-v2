@@ -87,7 +87,7 @@ exetarg_objs = &
     $(cli_cpp_objs) ppenv.obj &
     $(objs_$(host_os))
 exetarg_libs          = $(fmedit_dir)/$(objs_subdir)/fmedit.lib &
-    $(cli_wr_lib) $(cli_wpi_lib) $(cli_commonui_lib)
+    $(cli_wr_libs) $(cli_wpi_libs) $(cli_commonui_libs)
 exetarg_res           = $(proj_name).res
 !include exetarg.mif
 

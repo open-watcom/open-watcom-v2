@@ -154,8 +154,8 @@ asi_test_objs = asitest.obj trmemcvr.obj $+$(trmem_objs)$-
 #
 !ifdef test_inline_as
 
-asinline.exe : $(asi_test_objs) $(cli_asminline_lib) $(cli_owl_lib) $(__MAKEFILES__)
-    $(cl) $(clflags) $(asi_test_objs) $(cli_asminline_lib) $(cli_owl_lib) $(ldflags)
+asinline.exe : $(asi_test_objs) $(cli_asminline_libs) $(cli_owl_libs) $(__MAKEFILES__)
+    $(cl) $(clflags) $(asi_test_objs) $(cli_asminline_libs) $(cli_owl_libs) $(ldflags)
 
 !endif
 
@@ -174,7 +174,7 @@ all : $(all_as) .SYMBOLIC
 #
 exetarg_prebuild_objs = $(subdir_stand) msg.grh usage.gh cmdlnprs.gh
 exetarg_objs = $(as_objs)
-exetarg_libs = $(cli_owl_lib)
+exetarg_libs = $(cli_owl_libs)
 exetarg_res = $(proj_name).res
 !include exetarg.mif
 

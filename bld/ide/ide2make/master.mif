@@ -27,5 +27,5 @@ inc_dirs = -I"../h" $(cli_idelib_inc_dirs)
 # EXE
 #
 exetarg_objs = ide2make.obj
-exetarg_libs = $(cli_idelib_lib) $(cli_wclass_lib)
+exetarg_libs = $(cli_idelib_libs)
 !include exetarg.mif
