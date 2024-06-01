@@ -310,25 +310,8 @@ bool OptionsInit( int argc, char **argv, OPT_STORAGE *data, OPT_STRING **files )
     default:
         break;
     }
-    switch( data->warn ) {
-    case OPT_ENUM_warn_w0:
-        WarningLevel = 0;
-        break;
-    case OPT_ENUM_warn_w1:
-        WarningLevel = 1;
-        break;
-    case OPT_ENUM_warn_w2:
-        WarningLevel = 2;
-        break;
-    case OPT_ENUM_warn_w3:
-        WarningLevel = 3;
-        break;
-    case OPT_ENUM_warn_w4:
-        WarningLevel = 4;
-        break;
-    case OPT_ENUM_warn_default:
-    default:
-        break;
+    if( data->w ) {
+        WarningLevel = data->w_value;
     }
     if( data->we ) {
         _SetOption( WARNING_ERROR );

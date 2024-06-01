@@ -225,30 +225,10 @@
 :option. we
 :usage. treat all warnings as errors
 
-:option. w0
-:enumerate. warn
+:option. w
+:number.
 :internal.
-:usage. set warning level 0
-
-:option. w1
-:enumerate. warn
-:internal.
-:usage. set warning level 1
-
-:option. w2
-:enumerate. warn
-:internal.
-:usage. set warning level 2
-
-:option. w3
-:enumerate. warn
-:internal.
-:usage. set warning level 3
-
-:option. w4
-:enumerate. warn
-:internal.
-:usage. set warning level 4
+:usage. set warning level
 
 :option. zq
 :usage. operate quietly

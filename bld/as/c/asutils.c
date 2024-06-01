@@ -77,7 +77,6 @@ typedef enum {
 
 extern int      CurrLineno;
 extern char     *CurrFilename;
-extern FILE     *ErrorFile;
 extern jmp_buf  AsmParse;
 
 unsigned        ErrorLimit = 20;        // default error limit
