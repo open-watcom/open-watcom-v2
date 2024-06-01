@@ -20,14 +20,14 @@ dlltarg_name = $(proj_name)
 dlltarg_ext = .dll
 !endif
 $(dlltarg_name)$(dlltarg_ext) : $+$(dlltarg_prebuild_objs) $(dlltarg_objs) $(dlltarg_libs) &
-        $(cli_wres_lib) $(dlltarg_res) $(dlltarg_export)$- $(__MAKEFILES__)
+        $(cli_wres_libs) $(dlltarg_res) $(dlltarg_export)$- $(__MAKEFILES__)
     @%make echo_cl
 !ifndef __WATCOM_TOOLS__
-    $(cl) $(clflags_dll) $+$(dlltarg_objs) $(dlltarg_libs) $(cli_wres_lib)$- $(ldflags_dll)
+    $(cl) $(clflags_dll) $+$(dlltarg_objs) $(dlltarg_libs) $(cli_wres_libs)$- $(ldflags_dll)
 !else
     $(noecho)%write $^&.lnd $(lflags_dll) $+$(dlltarg_opts)$-
     @for %f in ($+$(dlltarg_objs)$-) do @%append $^&.lnd file %f
-    @for %l in ($+$(dlltarg_libs) $(cli_wres_lib)$-) do $(noecho)%append $^&.lnd library %l
+    @for %l in ($+$(dlltarg_libs) $(cli_wres_libs)$-) do $(noecho)%append $^&.lnd library %l
     @for %e in ($+$(dlltarg_export)$-) do $(noecho)%append $^&.lnd export { @%e }
     $(linker) name $@ @$^&.lnd
 !endif
