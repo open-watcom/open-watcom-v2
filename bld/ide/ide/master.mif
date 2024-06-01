@@ -79,7 +79,7 @@ extra_l_flags   = op eliminate op description 'Open Watcom IDE'
 exetarg_prebuild_objs = $(docs_host_dir)/ide.gh
 !endif
 exetarg_objs          = $(objs)
-exetarg_libs          = $(cli_idelib_libs)
+exetarg_libs          = $(cli_idelib_libs) $(cli_gui_libs)
 exetarg_res           = $(proj_name).res
 !include exetarg.mif
 
