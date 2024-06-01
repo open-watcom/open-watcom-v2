@@ -42,9 +42,9 @@ intname     = wpp$(target_cpu)
 #
 # cflags
 #
-.c: ../../c;$(cli_asminline_c);$(fe_misc_dir)/c;$(brinfo_dir)/c;$(cpp_dir)/c;$(trmem_dir);$(watcom_dir)/c
+.c: ../../c;$(cli_asminline_c);$(fe_misc_dir)/c;$(brinfo_dir)/c;$(trmem_dir);$(watcom_dir)/c
 
-inc_dirs = -I. -I.. -I"../../h" $(cli_cg_inc_dirs) $(cli_asminline_inc_dirs) $(cli_owl_inc_dirs) -I"$(cpp_dir)/h" $(cli_dwarfw_inc_dirs) &
+inc_dirs = -I. -I.. -I"../../h" $(cli_cg_inc_dirs) $(cli_asminline_inc_dirs) $(cli_owl_inc_dirs) $(cli_dwarfw_inc_dirs) &
     $(cli_cfloat_inc_dirs) -I"$(cc_dir)/h" -I"$(comp_cfg_dir)/h" -I"$(fe_misc_dir)/h" -I"$(brinfo_dir)/h"
 
 extra_cpp_flags = -DINCL_MSGTEXT

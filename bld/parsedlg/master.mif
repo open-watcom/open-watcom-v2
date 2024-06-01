@@ -11,7 +11,7 @@ parsedlg_autodepends = .AUTODEPEND
 #
 .c: ../c
 
-inc_dirs = -I"../h" -I"$(watcom_dir)/h"
+inc_dirs = -I"../h"
 
 # explicit rules
 #################
