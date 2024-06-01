@@ -15,7 +15,7 @@ which = SERVER
 
 extra_objs = rsiacc.obj
 extra_incs = $(cli_rsilib_inc_dirs)
-extra_libs = $(cli_rsilib_lib)
+extra_libs = $(cli_rsilib_libs)
 
 extra_c_flags = -zu
 
