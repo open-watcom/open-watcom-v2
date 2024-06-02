@@ -831,14 +831,14 @@ static FIELDPTR NewField( FIELDPTR new_field, TYPEPTR decl )
 
 
 static TYPEPTR EnumFieldType( TYPEPTR ftyp, bool plain_int,
-                    bitfield_width start, bitfield_width width )
+                    bitfield_width bits_start, bitfield_width bits_width )
 {
     TYPEPTR     typ;
     DATA_TYPE   data_type;
 
     typ = TypeNode( TYP_FIELD, NULL );
-    typ->u.f.field_start = start;
-    typ->u.f.field_width = width;
+    typ->u.f.field_start = bits_start;
+    typ->u.f.field_width = bits_width;
     if( plain_int ) {
         data_type = TYP_INT;    /* default to signed bit fields */
     } else {
@@ -1025,7 +1025,7 @@ static target_size GetFields( TYPEPTR decl )
     unsigned            bits_total;
     target_size         struct_size;
     target_size         next_offset;
-    unsigned            width;
+    unsigned            bits_width;
     align_type          worst_alignment;
     DATA_TYPE           unqualified_type;
     DATA_TYPE           prev_unqualified_type;
@@ -1094,7 +1094,7 @@ static target_size GetFields( TYPEPTR decl )
                 CheckBitfieldType( typ );
                 NextToken();
                 ConstExprAndType( &cval );
-                width = 0;
+                bits_width = 0;
                 if( (cval.value.u._32[I64HI32] | cval.value.u._32[I64LO32]) == 0
                   && field != NULL ) {
                     CErr1( ERR_WIDTH_0 );
@@ -1104,18 +1104,18 @@ static target_size GetFields( TYPEPTR decl )
                   || cval.value.u._32[I64LO32] > ( TARGET_BITFIELD * CHAR_BIT )
                   || cval.value.u._32[I64LO32] > bits_total ) {
                     CErr1( ERR_FIELD_TOO_WIDE );
-                    width = TARGET_BITFIELD * CHAR_BIT;
+                    bits_width = TARGET_BITFIELD * CHAR_BIT;
                 } else {
-                    width = cval.value.u._32[I64LO32];
+                    bits_width = cval.value.u._32[I64LO32];
                 }
-                if( width > bits_available || width == 0 ) {
+                if( bits_width > bits_available || bits_width == 0 ) {
                     scalar_size = TypeSize( typ );
                     if( bits_available != bits_total ) {
                         /*
                          * some bits have been used; abandon this unit
                          */
                         next_offset += bits_total / CHAR_BIT;
-                    } else if( width == 0 ) {
+                    } else if( bits_width == 0 ) {
                         /*
                          * no bits have been used; align to base type
                          */
@@ -1128,9 +1128,9 @@ static target_size GetFields( TYPEPTR decl )
                     field->offset = next_offset;
                     field->field_type = EnumFieldType( typ, plain_int,
                               (bitfield_width)( bits_total - bits_available ),
-                              (bitfield_width)width );
+                              (bitfield_width)bits_width );
                 }
-                bits_available -= width;
+                bits_available -= bits_width;
             } else {
                 if( bits_available != bits_total ) { //changed from bit field to non
                     next_offset += bits_total / CHAR_BIT;
