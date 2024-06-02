@@ -1396,10 +1396,11 @@ static void InitStructUnionVar( SYMPTR sym, SYM_HANDLE sym_handle, int index, TY
             MustRecog( T_RIGHT_BRACE );
         if( CurToken == T_EOF )
             break;
-        if( field->next_field == NULL )
-            break;
         if( CurToken != T_RIGHT_BRACE ) {
             MustRecog( T_COMMA );
+        }
+        if( field->next_field == NULL ) {
+            break;
         }
     }
 }
