@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -25,47 +25,12 @@
 *
 *  ========================================================================
 *
-* Description:  Editor configuration header.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
 
-#ifndef __CONTROL_INCLUDED__
-#define __CONTROL_INCLUDED__
-
-#if defined( VICOMP )
-    #define _FAR
-    #define _NEAR
-#elif defined( _M_I86 )
-    #define _FAR    __far
-    #define _NEAR   __near
-#elif defined( __DOS__ )
-  #if defined( PHARLAP )
-    #define _FAR    __far
-    #define _NEAR
-  #elif defined( DOS4G ) || defined( CAUSEWAY )
-    #define _FAR
-    #define _NEAR
-  #endif
-#else
-    #define _FAR
-    #define _NEAR
-#endif
-
-#ifndef __WIN__
-  #if defined( __OS2__ ) || defined( __UNIX__ ) || defined( __NT__ )
-    #define __VIO__
-  #endif
-#endif
-
-#if defined( __WATCOMC__ ) && !defined( __AXP__ ) && !defined( __PPC__ ) && !defined( __MIPS__ )
-  #define VI_RCS  1
-#endif
-
-#ifdef __UNIX__
-  #define FILE_CMP      strcmp
-#else
-  #define FILE_CMP      stricmp
-#endif
-
+#if defined( PHARLAP )
+extern void UpdateDOSClock( void );
 #endif
