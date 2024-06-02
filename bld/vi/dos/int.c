@@ -45,27 +45,6 @@
     #define _FAR_   __far
 #endif
 
-#if defined( PHARLAP )
-typedef struct {
-    void __far  *prot;
-    void        *real;
-} int_vect_32;
-
-static int_vect_32      old1c;
-static int_vect_32      old1b;
-static int_vect_32      old23;
-static int_vect_32      old24;
-#else
-static void (__interrupt _FAR_ *oldInt1c)( void );
-static void (__interrupt _FAR_ *oldInt1b)( void );
-static void (__interrupt _FAR_ *oldInt23)( void );
-static void (__interrupt _FAR_ *oldInt24)( void );
-#endif
-
-static char_info    _FAR *ClockStart = NULL;
-static char         tSec1, tSec2, tMin1, tMin2, tHour1, tHour2;
-static char         cTick1 = 18, cTick2 = 5;
-
 void __int24_handler( void );
 #if defined( _M_I86 )
 #pragma aux __int24_handler = \
@@ -77,7 +56,40 @@ void __int24_handler( void );
         "iretd"
 #endif
 
-static void _FAR_ HandleInt24( void )
+typedef struct tick_time {
+    char_info   _FAR *ClockStart;
+    char        tSec1;
+    char        tSec2;
+    char        tMin1;
+    char        tMin2;
+    char        tHour1;
+    char        tHour2;
+} tick_time;
+
+#if defined( PHARLAP )
+typedef struct {
+    void __far  *prot;
+    void        *real;
+} int_vect_32;
+
+static int_vect_32      old1c;
+static int_vect_32      old1b;
+static int_vect_32      old23;
+static int_vect_32      old24;
+
+static bool             noTimer;
+#else
+static void (__interrupt _FAR_ *oldInt1c)( void );
+static void (__interrupt _FAR_ *oldInt1b)( void );
+static void (__interrupt _FAR_ *oldInt23)( void );
+static void (__interrupt _FAR_ *oldInt24)( void );
+#endif
+
+static tick_time    tTick;
+static char         cTick1 = 18;
+static char         cTick2 = 5;
+
+static __declspec( naked) void _FAR_ HandleInt24( void )
 {
     __int24_handler();
 }
@@ -85,21 +97,18 @@ static void _FAR_ HandleInt24( void )
 /*
  * drawClock - draw the clock
  */
-static void drawClock( void )
+static void drawClock( tick_time *clk, bool seconds )
 {
-    if( EditFlags.ClockActive && EditFlags.Clock ) {
-        if( EditFlags.DisplaySeconds ) {
-            ClockStart[7].cinfo_char = tSec2;
-            ClockStart[6].cinfo_char = tSec1;
-            ClockStart[5].cinfo_char = ':';
-        }
-        ClockStart[4].cinfo_char = tMin2;
-        ClockStart[3].cinfo_char = tMin1;
-        ClockStart[2].cinfo_char = ':';
-        ClockStart[1].cinfo_char = tHour2;
-        ClockStart[0].cinfo_char = tHour1;
+    if( seconds ) {
+        clk->ClockStart[7].cinfo_char = clk->tSec2;
+        clk->ClockStart[6].cinfo_char = clk->tSec1;
+        clk->ClockStart[5].cinfo_char = ':';
     }
-
+    clk->ClockStart[4].cinfo_char = clk->tMin2;
+    clk->ClockStart[3].cinfo_char = clk->tMin1;
+    clk->ClockStart[2].cinfo_char = ':';
+    clk->ClockStart[1].cinfo_char = clk->tHour2;
+    clk->ClockStart[0].cinfo_char = clk->tHour1;
 } /* drawClock */
 
 /*
@@ -117,30 +126,32 @@ static void __interrupt handleInt1c( void )
         } else {
             cTick1 = 18;
         }
-        tSec2++;
-        if( tSec2 > '9' ) {
-            tSec2 = '0';
-            tSec1++;
-            if( tSec1 > '5' ) {
-                tSec1 = '0';
-                tMin2++;
-                if( tMin2 > '9' ) {
-                    tMin2 = '0';
-                    tMin1++;
-                    if( tMin1 > '5' ) {
-                        tMin1 = '0';
-                        tHour2++;
-                        if( tHour2 > '9' ) {
-                            tHour2 = '0';
-                            tHour1++;
-                        } else if( tHour2 == '4' && tHour1 == '2' ) {
-                            tHour2 = tHour1 = '0';
+        tTick.tSec2++;
+        if( tTick.tSec2 > '9' ) {
+            tTick.tSec2 = '0';
+            tTick.tSec1++;
+            if( tTick.tSec1 > '5' ) {
+                tTick.tSec1 = '0';
+                tTick.tMin2++;
+                if( tTick.tMin2 > '9' ) {
+                    tTick.tMin2 = '0';
+                    tTick.tMin1++;
+                    if( tTick.tMin1 > '5' ) {
+                        tTick.tMin1 = '0';
+                        tTick.tHour2++;
+                        if( tTick.tHour2 > '9' ) {
+                            tTick.tHour2 = '0';
+                            tTick.tHour1++;
+                        } else if( tTick.tHour2 == '4' && tTick.tHour1 == '2' ) {
+                            tTick.tHour2 = tTick.tHour1 = '0';
                         }
                     }
                 }
             }
         }
-        drawClock();
+        if( EditFlags.ClockActive && EditFlags.Clock ) {
+            drawClock( &tTick, EditFlags.DisplaySeconds );
+        }
     }
     if( EditFlags.ClockActive && EditFlags.SpinningOurWheels && EditFlags.Spinning ) {
         SpinLoc->cinfo_char = SpinData[SpinCount];
@@ -176,18 +187,16 @@ static void setClockTime( void )
     char        date[128];
 
     GetDateTimeString( date );
-    tSec1 = date[DATE_LEN - 2];
-    tSec2 = date[DATE_LEN - 1];
-    tMin1 = date[DATE_LEN - 5];
-    tMin2 = date[DATE_LEN - 4];
-    tHour1 = date[DATE_LEN - 8];
-    tHour2 = date[DATE_LEN - 7];
+    tTick.tSec1 = date[DATE_LEN - 2];
+    tTick.tSec2 = date[DATE_LEN - 1];
+    tTick.tMin1 = date[DATE_LEN - 5];
+    tTick.tMin2 = date[DATE_LEN - 4];
+    tTick.tHour1 = date[DATE_LEN - 8];
+    tTick.tHour2 = date[DATE_LEN - 7];
 
 } /* setClockTime */
 
 #if defined( PHARLAP )
-
-static bool     noTimer;
 
 /*
  * UpdateDOSClock - update the clock, if we couldn't hook timer interrupts
@@ -199,7 +208,9 @@ void UpdateDOSClock( void )
     }
     setClockTime();
     ClockTicks++;
-    drawClock();
+    if( EditFlags.ClockActive && EditFlags.Clock ) {
+        drawClock( &tTick, EditFlags.DisplaySeconds );
+    }
 
 } /* UpdateDOSClock */
 
@@ -333,6 +344,6 @@ void RestoreInterrupts( void )
  */
 void GetClockStart( void )
 {
-    ClockStart = &Scrn[EditVars.ClockX + EditVars.ClockY * EditVars.WindMaxWidth];
+    tTick.ClockStart = &Scrn[EditVars.ClockX + EditVars.ClockY * EditVars.WindMaxWidth];
 
 } /* GetClockStart */
