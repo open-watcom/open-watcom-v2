@@ -465,7 +465,7 @@ pick( MSG_PHAR_HELP_1,  "commands valid for the Phar Lap executable formats only
 pick( MSG_PHAR_HELP_2,  " " ,
                         " " )
 pick( MSG_PHAR_HELP_3,  "form      ::= \"PHARlap\" [\"EXTended\" | \"REX\" | \"SEGmented\"]" ,
-                        "form      ::= \"PHARlap\" [\"EXTended\" | \"REX\"]" )
+                        "form      ::= \"PHARlap\" [\"EXTended\" | \"REX\" | \"SEGmented\"]" )
 pick( MSG_PHAR_HELP_4,  "directive ::= \"RUntime\"     runoption{\",\"runoption}" ,
                         "directive ::= \"RUntime\"     runoption{\",\"runoption}" )
 pick( MSG_PHAR_HELP_5,  "option    ::= \"MAXData=\"n | \"MINData=\"n | \"OFFset=\"n | \"STUB=\"stub_name" ,
