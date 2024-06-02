@@ -36,6 +36,7 @@
 #include <setjmp.h>
 #include "win.h"
 
+
 static volatile int     exit_thread;
 static char_info        _FAR *ClockStart = NULL;
 
