@@ -62,8 +62,9 @@ static void (__interrupt _FAR_ *oldInt23)( void );
 static void (__interrupt _FAR_ *oldInt24)( void );
 #endif
 
-static char tSec1, tSec2, tMin1, tMin2, tHour1, tHour2;
-static char cTick1 = 18, cTick2 = 5;
+static char_info    _FAR *ClockStart = NULL;
+static char         tSec1, tSec2, tMin1, tMin2, tHour1, tHour2;
+static char         cTick1 = 18, cTick2 = 5;
 
 void __int24_handler( void );
 #if defined( _M_I86 )
@@ -326,3 +327,12 @@ void RestoreInterrupts( void )
     _enable();
 
 } /* RestoreInterrupts */
+
+/*
+ * GetClockStart - get clock start position
+ */
+void GetClockStart( void )
+{
+    ClockStart = &Scrn[EditVars.ClockX + EditVars.ClockY * EditVars.WindMaxWidth];
+
+} /* GetClockStart */

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,6 +38,18 @@
 #define INCL_DOSPROCESS
 #include <os2.h>
 
+
+#if defined(_M_I86)
+#define TSTACK_SIZE     2048
+static unsigned char    __far thread_stack[TSTACK_SIZE];
+#else
+#define TSTACK_SIZE     10240
+#endif
+
+static volatile int     exitThread;
+static TID              timerTID;
+static char_info        _FAR *ClockStart = NULL;
+
 static void BrkHandler( int sig_num )
 {
     sig_num = sig_num;
@@ -48,15 +60,6 @@ static void BrkHandler( int sig_num )
     }
     KeyAdd( VI_KEY( CTRL_C ) );
 }
-
-static volatile int     exitThread;
-
-#if defined(_M_I86)
-#define TSTACK_SIZE     2048
-static unsigned char    __far thread_stack[TSTACK_SIZE];
-#else
-#define TSTACK_SIZE     10240
-#endif
 
 static void TimerThread( void )
 {
@@ -98,8 +101,6 @@ static void TimerThread( void )
     // never return
 }
 
-static TID timerTID;
-
 void SetInterrupts( void )
 {
     signal( SIGINT, BrkHandler );
@@ -126,3 +127,12 @@ void RestoreInterrupts( void )
     signal( SIGINT, SIG_DFL );
     signal( SIGBREAK, SIG_DFL );
 }
+
+/*
+ * GetClockStart - get clock start position
+ */
+void GetClockStart( void )
+{
+    ClockStart = &Scrn[EditVars.ClockX + EditVars.ClockY * EditVars.WindMaxWidth];
+
+} /* GetClockStart */

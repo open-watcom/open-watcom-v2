@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,6 +37,7 @@
 #include "win.h"
 
 static volatile int     exit_thread;
+static char_info        _FAR *ClockStart = NULL;
 
 static DWORD WINAPI TimerThread( LPVOID param )
 {
@@ -106,3 +108,12 @@ void RestoreInterrupts( void )
     exit_thread = true;
     SetConsoleCtrlHandler( BreakHandler, FALSE );
 }
+
+/*
+ * GetClockStart - get clock start position
+ */
+void GetClockStart( void )
+{
+    ClockStart = &Scrn[EditVars.ClockX + EditVars.ClockY * EditVars.WindMaxWidth];
+
+} /* GetClockStart */
