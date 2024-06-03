@@ -48,11 +48,19 @@ end
 system begin pharlap
 :segment Pspecs
     ARCH i386 -bt=dos
-:: FIXME: need -ez to generate Easy OMF-386?
 :elsesegment Pwlsystem
     libpath '%WATCOM%/lib386'
     libpath '%WATCOM%/lib386/dos'
     format phar ^
+:endsegment
+end
+system begin pharlapext
+:segment Pspecs
+    ARCH i386 -bt=dos
+:elsesegment Pwlsystem
+    libpath '%WATCOM%/lib386'
+    libpath '%WATCOM%/lib386/dos'
+    format phar ext ^
 :endsegment
 end
 system begin x32r
