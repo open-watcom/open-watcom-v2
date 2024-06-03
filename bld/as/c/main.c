@@ -74,6 +74,9 @@ int main( int argc, char **argv )
         Usage();
     } else {
         PP_Init( '#', PPSPEC_AS );
+        /* Default for backwards compatibility: Use an error file. */
+        _SetOption( USE_ERROR_FILE );
+        ObjSetErrorTemplate( "" );
         OPT_INIT( &data );
         files = NULL;
         if( OptionsInit( --argc, ++argv, &data, &files ) ) {

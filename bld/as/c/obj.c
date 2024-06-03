@@ -53,6 +53,7 @@ owl_file_handle         OwlFile;
 
 FILE                    *ErrorFile;
 static char             errorFilename[ _MAX_PATH2 ];
+static char             errorTemplate[ _MAX_PATH2 ];
 
 static bool             objectDefined = false;
 static FILE             *objFP;
@@ -75,6 +76,14 @@ struct asm_label {
 typedef struct asm_label *label_list;
 
 static label_list       labelList = NULL;       // The list of pending labels
+
+
+void ObjSetErrorTemplate( char *template_name )
+//*********************************************
+{
+    strncpy( errorTemplate, template_name, _MAX_PATH2 -1 );
+    errorTemplate[ _MAX_PATH2 -1 ] = '\0';
+}
 
 void ObjSetObjFile( char *obj_name )
 //**********************************
@@ -152,7 +161,19 @@ bool ObjInit( char *fname )
         fputc( '\n', stderr );
         return( false );
     }
-    ErrorFile = fopen( errorFilename, "wt" );
+
+    if ( _IsOption( USE_ERROR_FILE ) ) {
+        _splitpath2( errorTemplate, pg2.buffer, &pg2.drive, &pg2.dir, &pg2.fname, &pg2.ext );
+        if( pg2.ext[0] == '\0' ) {
+            pg2.ext = ".err";
+        }
+        if( pg2.fname[0] == '\0' || pg2.fname[0] == '*' ) {
+            pg2.fname = pg1.fname;
+        }
+        _makepath( errorFilename, pg2.drive, pg2.dir, pg2.fname, pg2.ext );
+        ErrorFile = fopen( errorFilename, "wt" );
+    }
+
     OwlHandle = OWLInit( &funcs, OBJ_OWL_CPU );
     if( _IsOption( OBJ_COFF ) ) {
         obj_format = OWL_FORMAT_COFF;
@@ -508,13 +529,18 @@ void ObjFini( void )
     ObjFlushLabels();       // In case there're still pending labels
     OWLFileFini( OwlFile );
     fclose( objFP );
-    fclose( ErrorFile );
+    if( ErrorFile != NULL ) {
+        fclose( ErrorFile );
+        ErrorFile = NULL;
+    }
     if( ErrorsExceeding( 0 )
       || ( _IsOption( WARNING_ERROR ) && WarningsExceeding( 0 ) ) ) {
         remove( objName );
         ExitStatus = EXIT_FAILURE;
     } else if( !WarningsExceeding( 0 ) ) {
-        remove( errorFilename );
+        if ( _IsOption( USE_ERROR_FILE ) ) {
+            remove( errorFilename );
+        }
     }
     OWLFini( OwlHandle );
     SectionFini();

@@ -326,7 +326,13 @@ bool OptionsInit( int argc, char **argv, OPT_STORAGE *data, OPT_STRING **files )
         ObjSetObjFile( data->fo_value->data );
     }
     if( data->fr ) {
-        // data->fr_value;
+        if( data->fr_value != NULL ) {
+            _SetOption( USE_ERROR_FILE );
+            ObjSetErrorTemplate( data->fr_value->data );
+        } else {
+            /* "-fr" without argument: disable the error report file */
+            _UnsetOption( USE_ERROR_FILE );
+        }
     }
 #ifdef AS_DEBUG_DUMP
     switch( data->dump

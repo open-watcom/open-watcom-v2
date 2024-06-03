@@ -48,7 +48,8 @@ typedef enum {
     DUMP_SYMBOL_TABLE   = 0x0400,
     DUMP_INSTRUCTIONS   = 0x0800,
     DUMP_LEXER_BUFFER   = 0x1000,
-    DUMP_DEBUG_MSGS     = 0x2000
+    DUMP_DEBUG_MSGS     = 0x2000,
+    USE_ERROR_FILE      = 0x4000
 } as_flags;
 
 #define _SetOption( x )         ( AsOptions |= (x) )

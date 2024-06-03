@@ -165,7 +165,6 @@
 :option. fr
 :file.
 :optional.
-:internal.
 :usage. set error file name
 
 :option. i

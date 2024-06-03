@@ -42,6 +42,7 @@ typedef enum {
 
 extern owl_section_handle       CurrentSection;
 
+extern void ObjSetErrorTemplate( char *template_name );
 extern void ObjSetObjFile( char *obj_name );
 extern void ObjSwitchSection( reserved_section );
 extern bool ObjInit( char *file_name );
