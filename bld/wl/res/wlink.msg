@@ -46,50 +46,13 @@ pick( MSG_IOERRLIST_7,          "disk full" ,
                                 "ディスクが一杯です" )
 pick( MSG_PRESS_KEY,            "press any key to continue" ,
                                 "続行するために何かキーを押して下さい" )
-pick( MSG_FILE_TYPES_0,         "OS/2" ,
-                                "OS/2" )
-pick( MSG_FILE_TYPES_1,         "OS/2 linear" ,
-                                "OS/2 リニア" )
-pick( MSG_FILE_TYPES_2,         "OS/2 linear extended" ,
-                                "OS/2 リニア拡張" )
-pick( MSG_FILE_TYPES_3,         "Windows" ,
-                                "Windows" )
-pick( MSG_FILE_TYPES_4,         "PE" ,
-                                "PE" )
-pick( MSG_FILE_TYPES_5,         "DOS" ,
-                                "DOS" )
-pick( MSG_FILE_TYPES_6,         "DOS .COM" ,
-                                "DOS .COM" )
-pick( MSG_FILE_TYPES_7,         "DOS overlayed" ,
-                                "DOS オーバレイ" )
-pick( MSG_FILE_TYPES_8,         "Novell Netware" ,
-                                "Novell Netware" )
-pick( MSG_FILE_TYPES_9,         "QNX" ,
-                                "QNX" )
-pick( MSG_FILE_TYPES_10,        "Phar Lap simple" ,
-                                "Phar Lap シンプル" )
-pick( MSG_FILE_TYPES_11,        "Phar Lap extended" ,
-                                "Phar Lap 拡張" )
-pick( MSG_FILE_TYPES_12,        "Phar Lap relocatable" ,
-                                "Phar Lap リロケータブル" )
-pick( MSG_FILE_TYPES_13,        "Phar Lap segmented" ,
-                                "Phar Lap セグメント" )
-pick( MSG_FILE_TYPES_14,        "QNX 386" ,
-                                "QNX 386" )
-pick( MSG_FILE_TYPES_15,        "ELF" ,
-                                "ELF" )
-pick( MSG_FILE_TYPES_16,        "Windows VxD" ,
-                                "Windows VxD" )
-pick( MSG_FILE_TYPES_17,        "DOS/16M" ,
-                                "DOS/16M" )
-pick( MSG_FILE_TYPES_18,        "ZDOS" ,
-                                "ZDOS" )
-pick( MSG_FILE_TYPES_19,        "RAW Binary Image" ,
-                                "Raw" )
-pick( MSG_FILE_TYPES_20,        "RDOS" ,
-                                "RDOS" )
-pick( MSG_FILE_TYPES_21,        "RDOS 16-bit" ,
-                                "RDOS 16-bit" )
+
+
+#define pick1(a,b,c,d)   pick( MSG_FILE_TYPES_##a, c, d )
+FORMATS()
+#undef pick1
+
+
 pick( MSG_CREATE_TYPE_DLL,      "dynamic link library" ,
                                 "ダイナミック・リンク・ライブラリ" )
 pick( MSG_CREATE_TYPE_EXE,      "executable" ,

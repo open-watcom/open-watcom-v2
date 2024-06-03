@@ -4,6 +4,7 @@
 /*                          WLINK RESOURCE FILE                          */
 /*************************************************************************/
 
+#include "_formats.h"
 #include "wlnkmsg.rh"
 #include "wreslang.rh"
 

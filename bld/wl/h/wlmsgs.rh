@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -233,38 +233,42 @@
 #define    MSG_IOERRLIST_7                      249 + MSG_BASE
 #define    MSG_PRESS_KEY                        250 + MSG_BASE
 
-#define    MSG_FILE_TYPES_0                     251 + MSG_BASE  /* OS/2 NE */
-#define    MSG_FILE_TYPES_1                     252 + MSG_BASE  /* OS/2 LE */
-#define    MSG_FILE_TYPES_2                     253 + MSG_BASE  /* OS/2 LX */
-#define    MSG_FILE_TYPES_3                     254 + MSG_BASE  /* Windows NE */
-#define    MSG_FILE_TYPES_4                     255 + MSG_BASE  /* NT PE */
-#define    MSG_FILE_TYPES_5                     256 + MSG_BASE  /* DOS EXE */
-#define    MSG_FILE_TYPES_6                     257 + MSG_BASE  /* DOS COM */
-#define    MSG_FILE_TYPES_7                     258 + MSG_BASE  /* DOS Overlay */
-#define    MSG_FILE_TYPES_8                     259 + MSG_BASE  /* Netware */
-#define    MSG_FILE_TYPES_9                     260 + MSG_BASE  /* QNX 16-bit */
-#define    MSG_FILE_TYPES_10                    261 + MSG_BASE  /* Pharlap */
-#define    MSG_FILE_TYPES_11                    262 + MSG_BASE  /* Pharlap */
-#define    MSG_FILE_TYPES_12                    263 + MSG_BASE  /* Pharlap */
-#define    MSG_FILE_TYPES_13                    264 + MSG_BASE  /* Pharlap */
-#define    MSG_FILE_TYPES_14                    265 + MSG_BASE  /* QNX 32-bit */
-#define    MSG_FILE_TYPES_15                    266 + MSG_BASE  /* ELF */
-#define    MSG_FILE_TYPES_16                    267 + MSG_BASE  /* Windows VXD */
-#define    MSG_FILE_TYPES_17                    268 + MSG_BASE  /* DOS 16m */
-#define    MSG_FILE_TYPES_18                    269 + MSG_BASE  /* ZDOS */
-#define    MSG_FILE_TYPES_19                    270 + MSG_BASE  /* RAW */
-#define    MSG_FILE_TYPES_20                    271 + MSG_BASE  /* RDOS flat */
-#define    MSG_FILE_TYPES_21                    272 + MSG_BASE  /* RDOS 16-bit */
-#define    MSG_FILE_TYPES_22                    273 + MSG_BASE  /* unused bit 22 */
-#define    MSG_FILE_TYPES_23                    274 + MSG_BASE  /* unused bit 23 */
-#define    MSG_FILE_TYPES_24                    275 + MSG_BASE  /* unused bit 24 */
-#define    MSG_FILE_TYPES_25                    276 + MSG_BASE  /* unused bit 25 */
-#define    MSG_FILE_TYPES_26                    277 + MSG_BASE  /* unused bit 26 */
-#define    MSG_FILE_TYPES_27                    278 + MSG_BASE  /* unused bit 27 */
-#define    MSG_FILE_TYPES_28                    279 + MSG_BASE  /* unused bit 28 */
-#define    MSG_FILE_TYPES_29                    280 + MSG_BASE  /* unused bit 29 */
-#define    MSG_FILE_TYPES_30                    281 + MSG_BASE  /* unused bit 30 */
-#define    MSG_FILE_TYPES_31                    282 + MSG_BASE  /* unused bit 31 */
+/*
+ * executable formats reserved range 0-31 (see wlnkmsg.rh)
+ */
+#define    MSG_FILE_TYPES_0                     251 + MSG_BASE
+#define    MSG_FILE_TYPES_1                     252 + MSG_BASE
+#define    MSG_FILE_TYPES_2                     253 + MSG_BASE
+#define    MSG_FILE_TYPES_3                     254 + MSG_BASE
+#define    MSG_FILE_TYPES_4                     255 + MSG_BASE
+#define    MSG_FILE_TYPES_5                     256 + MSG_BASE
+#define    MSG_FILE_TYPES_6                     257 + MSG_BASE
+#define    MSG_FILE_TYPES_7                     258 + MSG_BASE
+#define    MSG_FILE_TYPES_8                     259 + MSG_BASE
+#define    MSG_FILE_TYPES_9                     260 + MSG_BASE
+#define    MSG_FILE_TYPES_10                    261 + MSG_BASE
+#define    MSG_FILE_TYPES_11                    262 + MSG_BASE
+#define    MSG_FILE_TYPES_12                    263 + MSG_BASE
+#define    MSG_FILE_TYPES_13                    264 + MSG_BASE
+#define    MSG_FILE_TYPES_14                    265 + MSG_BASE
+#define    MSG_FILE_TYPES_15                    266 + MSG_BASE
+#define    MSG_FILE_TYPES_16                    267 + MSG_BASE
+#define    MSG_FILE_TYPES_17                    268 + MSG_BASE
+#define    MSG_FILE_TYPES_18                    269 + MSG_BASE
+#define    MSG_FILE_TYPES_19                    270 + MSG_BASE
+#define    MSG_FILE_TYPES_20                    271 + MSG_BASE
+#define    MSG_FILE_TYPES_21                    272 + MSG_BASE
+#define    MSG_FILE_TYPES_22                    273 + MSG_BASE
+#define    MSG_FILE_TYPES_23                    274 + MSG_BASE
+#define    MSG_FILE_TYPES_24                    275 + MSG_BASE
+#define    MSG_FILE_TYPES_25                    276 + MSG_BASE
+#define    MSG_FILE_TYPES_26                    277 + MSG_BASE
+#define    MSG_FILE_TYPES_27                    278 + MSG_BASE
+#define    MSG_FILE_TYPES_28                    279 + MSG_BASE
+#define    MSG_FILE_TYPES_29                    280 + MSG_BASE
+#define    MSG_FILE_TYPES_30                    281 + MSG_BASE
+#define    MSG_FILE_TYPES_31                    282 + MSG_BASE
+
 #define    MSG_CREATE_TYPE_DLL                  283 + MSG_BASE
 #define    MSG_CREATE_TYPE_EXE                  284 + MSG_BASE
 #define    MSG_IS_A_EXE                         285 + MSG_BASE

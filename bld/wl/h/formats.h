@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,31 +30,13 @@
 ****************************************************************************/
 
 
+#include "_formats.h"
 
 typedef enum {          // there is a corresp. table in MSG.C
-    MK_OS2_NE           = CONSTU32( 0x00000001 ),
-    MK_OS2_LE           = CONSTU32( 0x00000002 ),
-    MK_OS2_LX           = CONSTU32( 0x00000004 ),
-    MK_WIN_NE           = CONSTU32( 0x00000008 ),
-    MK_PE               = CONSTU32( 0x00000010 ),
-    MK_DOS_EXE          = CONSTU32( 0x00000020 ),
-    MK_COM              = CONSTU32( 0x00000040 ),
-    MK_OVERLAYS         = CONSTU32( 0x00000080 ),
-    MK_NOVELL           = CONSTU32( 0x00000100 ),
-    MK_QNX_16           = CONSTU32( 0x00000200 ),   // POSIX QNX, not ICON QNX
-    MK_PHAR_SIMPLE      = CONSTU32( 0x00000400 ),
-    MK_PHAR_FLAT        = CONSTU32( 0x00000800 ),
-    MK_PHAR_REX         = CONSTU32( 0x00001000 ),
-    MK_PHAR_MULTISEG    = CONSTU32( 0x00002000 ),
-    MK_QNX_FLAT         = CONSTU32( 0x00004000 ),
-    MK_ELF              = CONSTU32( 0x00008000 ),
-    MK_WIN_VXD          = CONSTU32( 0x00010000 ),
-    MK_DOS16M           = CONSTU32( 0x00020000 ),
-    MK_ZDOS             = CONSTU32( 0x00040000 ),
-    MK_RAW              = CONSTU32( 0x00080000 ),
-    MK_RDOS_32          = CONSTU32( 0x00100000 ),
-    MK_RDOS_16          = CONSTU32( 0x00200000 ),
-    MK_ALL              = CONSTU32( 0x003FFFFF ),
+    #define pick1(a,b,c,d)   b = CONSTU32( 1 << a ),
+    FORMATS()
+    #undef pick1
+    MK_ALL              = CONSTU32( (1 << 22) - 1 ),
 } exe_format;
 
 #define MK_DOS          (MK_OVERLAYS | MK_DOS_EXE | MK_COM)
