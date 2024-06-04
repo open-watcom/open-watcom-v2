@@ -223,15 +223,15 @@ static sym_file *NewSymFile( arch_header *arch, file_type obj_type )
     sfile->next = NULL;
     sfile->impsym = NULL;
     sfile->inlib_offset = 0;
-    sfile->full_name = DupStr( arch->name );
+    sfile->full_name = MemDupStr( arch->name );
     if( Options.trim_path ) {
-        sfile->arch.name = DupStr( TrimPath( arch->name ) );
+        sfile->arch.name = MemDupStr( TrimPath( arch->name ) );
     } else {
-        sfile->arch.name = DupStr( arch->name );
+        sfile->arch.name = MemDupStr( arch->name );
     }
     sfile->name_length = strlen( sfile->arch.name );
     if( arch->ffname != NULL ) {
-        sfile->arch.ffname = DupStr( arch->ffname );
+        sfile->arch.ffname = MemDupStr( arch->ffname );
         sfile->ffname_length = strlen( sfile->arch.ffname );
     } else {
         sfile->ffname_length = 0;
@@ -322,7 +322,7 @@ static void SortSymbols( void )
             if( sfile->arch.ffname == NULL ) {
                 sfile->arch.ffname = sfile->arch.name;
                 sfile->ffname_length = strlen( sfile->arch.ffname );
-                sfile->arch.name = DupStr( TrimPath( sfile->arch.ffname ) );
+                sfile->arch.name = MemDupStr( TrimPath( sfile->arch.ffname ) );
                 sfile->name_length = strlen( sfile->arch.name );
             }
             name_length = sfile->name_length;
@@ -1034,11 +1034,11 @@ void OmfMKImport( arch_header *arch, importType type,
     Options.omf_found = true;
     CurrFile = NewSymFile( arch, WL_FTYPE_OMF );
     impsym = MemAlloc( sizeof( import_sym ) );
-    impsym->dllName.name = DupStr( dllName->name );
+    impsym->dllName.name = MemDupStr( dllName->name );
     impsym->dllName.len = dllName->len;
     impsym->u.omf_coff.ordinal = ordinal;
-    impsym->u.omf_coff.symName = DupStr( symName );
-    impsym->u.omf_coff.exportedName = DupStr( exportedName );
+    impsym->u.omf_coff.symName = MemDupStr( symName );
+    impsym->u.omf_coff.exportedName = MemDupStr( exportedName );
     impsym->type = type;
     impsym->processor = processor;
     CurrFile->impsym = impsym;
@@ -1060,10 +1060,10 @@ void CoffMKImport( arch_header *arch, importType type,
     impsym = MemAlloc( sizeof( import_sym ) );
     impsym->type = type;
     impsym->u.omf_coff.ordinal = ordinal;
-    impsym->dllName.name = DupStr( dllName->name );
+    impsym->dllName.name = MemDupStr( dllName->name );
     impsym->dllName.len = dllName->len;
-    impsym->u.omf_coff.symName = DupStr( symName );
-    impsym->u.omf_coff.exportedName = DupStr( exportedName );
+    impsym->u.omf_coff.symName = MemDupStr( symName );
+    impsym->u.omf_coff.exportedName = MemDupStr( exportedName );
     impsym->processor = processor;
     CurrFile->impsym = impsym;
     CurrFile->arch.size = CoffImportSize( impsym );
@@ -1098,7 +1098,7 @@ void ElfMKImport( arch_header *arch, importType type, long export_size,
     CurrFile = NewSymFile( arch, WL_FTYPE_ELF );
     impsym = MemAlloc( sizeof( import_sym ) );
     impsym->type = type;
-    impsym->dllName.name = DupStr( dllName->name );
+    impsym->dllName.name = MemDupStr( dllName->name );
     impsym->dllName.len = dllName->len;
     impsym->u.elf.numsyms = 0;
     impsym->processor = processor;
@@ -1108,7 +1108,7 @@ void ElfMKImport( arch_header *arch, importType type, long export_size,
     for( i = 0; i < export_size; i++ ) {
         if( export_table[i].exp_symbol ) {
             elfimp = MemAlloc( sizeof( elf_import_sym ) );
-            elfimp->sym.name = DupStr( strings + sym_table[export_table[i].exp_symbol].st_name );
+            elfimp->sym.name = MemDupStr( strings + sym_table[export_table[i].exp_symbol].st_name );
             elfimp->sym.len = strlen( elfimp->sym.name );
             elfimp->ordinal = export_table[i].exp_ordinal;
             if( type == ELF ) {
@@ -1301,7 +1301,7 @@ static void ListContentsWlib( void )
     }
 
     if( Options.list_file == NULL ) {
-        Options.list_file = DupStr( MakeListName() );
+        Options.list_file = MemDupStr( MakeListName() );
     }
     if( Options.list_file[0] != '\0' ) {
         fp = fopen( Options.list_file, "w" );

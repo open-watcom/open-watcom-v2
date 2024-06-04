@@ -144,7 +144,7 @@ void SetOptionsAr( OPT_STORAGE_A *data )
             if( !Options.list_contents ) {
                 /* Default action: List the input lib */
                 Options.list_contents = true;
-                Options.list_file = DupStr( "" );
+                Options.list_file = MemDupStr( "" );
             }
         }
     }

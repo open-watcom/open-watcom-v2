@@ -233,7 +233,7 @@ static const char *getWlibModeInfo( void )
     env = WlibGetEnv( AR_MODE_ENV );
     if( env != NULL ) {
         Options.ar = true;
-        Options.ar_name = DupStr( env );
+        Options.ar_name = MemDupStr( env );
         for( s = Options.ar_name; *s != '\0'; s++ ) {
             *s = tolower( *(unsigned char *)s );
         }

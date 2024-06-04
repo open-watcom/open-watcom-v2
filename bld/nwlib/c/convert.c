@@ -119,7 +119,7 @@ char *GetFFName( arch_header *arch )
     name = NULL;
     if( arch->ffnametab != NULL
       && arch->nextffname != NULL ) {
-        name = DupStr( arch->nextffname );
+        name = MemDupStr( arch->nextffname );
         arch->nextffname += strlen( name ) + 1;
         if( arch->nextffname >= arch->lastffname
           || ( arch->nextffname[0] == '\n'

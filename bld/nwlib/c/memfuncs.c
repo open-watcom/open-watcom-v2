@@ -61,7 +61,6 @@ void InitMem( void )
 #endif
 }
 
-
 void *MemAlloc( size_t size )
 /***************************/
 {
@@ -125,17 +124,8 @@ void wres_free( void *ptr )
 #endif
 }
 
-void FiniMem( void )
-/******************/
-{
-#ifdef TRMEM
-    _trmem_prt_usage( TRMemHandle );
-    _trmem_close( TRMemHandle );
-#endif
-}
-
-char *DupStr( const char *str )
-/*****************************/
+char *MemDupStr( const char *str )
+/********************************/
 {
     char *ptr;
 
@@ -146,3 +136,12 @@ char *DupStr( const char *str )
     return( ptr );
 }
 
+void FiniMem( void )
+/******************/
+{
+#ifdef TRMEM
+    _trmem_prt_usage( TRMemHandle );
+    _trmem_prt_list_ex( TRMemHandle, 100 );
+    _trmem_close( TRMemHandle );
+#endif
+}

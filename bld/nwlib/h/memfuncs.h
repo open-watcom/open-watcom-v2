@@ -35,8 +35,7 @@ extern void InitMem( void );
 extern void MemPrtList( void );
 extern void FiniMem( void );
 
-extern void *MemRealloc( void *ptr, size_t size );
 extern void *MemAlloc( size_t size );
 extern void MemFree( void *ptr );
-extern char *DupStr( const char * );
-
+extern void *MemRealloc( void *ptr, size_t size );
+extern char *MemDupStr( const char * );

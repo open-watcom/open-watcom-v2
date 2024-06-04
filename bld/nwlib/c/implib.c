@@ -181,7 +181,7 @@ static bool elfAddImport( libfile io, long header_offset, arch_header *arch )
     ORLSecGetContents( string_sec, (unsigned_8 **)&strings );
 
     arch->ffname = arch->name;
-    dllName.name = arch->name = dll_name = DupStr( TrimPath( arch->name ) );
+    dllName.name = arch->name = dll_name = MemDupStr( TrimPath( arch->name ) );
     dllName.len = strlen( dllName.name );
 
     ElfMKImport( arch, ELF, export_size, &dllName, strings, export_table, sym_table, processor );
@@ -503,7 +503,7 @@ void ProcessImportWlib( const char *name )
     char            *dll_name;
     unsigned        sym_len;
 
-    p = namecopy = DupStr( name );
+    p = namecopy = MemDupStr( name );
 
     symName = GetImportString( &p, name );
     if( *p == '\0'

@@ -90,7 +90,7 @@ libfile LibOpen( const char *name, bool write_to )
     fileList = io;
     io->write_to = write_to;
     io->fp = fp;
-    io->name = DupStr( name );
+    io->name = MemDupStr( name );
     io->buf_size = 0;
     io->buf_pos = 0;
     fseek( fp, 0, SEEK_END );

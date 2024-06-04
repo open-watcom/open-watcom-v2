@@ -93,7 +93,7 @@ libfile NewArchLibOpen( arch_header *arch, const char *filename )
     if( stat( filename, &buf ) == -1 ) {
         FatalError( ERR_CANT_FIND, filename );
     }
-    arch->name = DupStr( filename );
+    arch->name = MemDupStr( filename );
     arch->ffname = NULL;
     arch->date = buf.st_mtime;
     arch->uid = buf.st_uid;
