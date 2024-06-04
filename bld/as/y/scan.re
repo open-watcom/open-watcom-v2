@@ -4,6 +4,7 @@
 #include "asparser.h"
 #ifdef _STANDALONE_
 #include "preproc.h"
+#include "options.h"
 #endif
 
 #define BSIZE           8192

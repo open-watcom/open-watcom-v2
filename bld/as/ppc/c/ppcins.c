@@ -31,6 +31,9 @@
 ****************************************************************************/
 
 #include "as.h"
+#ifdef _STANDALONE_
+#include "options.h"
+#endif
 
 
 #define MAX_NAME_LEN    20      /* maximum length of a PPC instruction mnemonic */
