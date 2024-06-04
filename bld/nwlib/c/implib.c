@@ -466,9 +466,10 @@ static void peAddImport( libfile io, long header_offset, const arch_header *arch
 static char *GetImportString( char **rawpntr, const char *original )
 {
     bool    quote = false;
-    char    *raw  = *rawpntr;
+    char    *raw;
     char    *result;
 
+    raw = *rawpntr;
     if( *raw == '\'' ) {
         quote = true;
         ++raw;
@@ -476,7 +477,7 @@ static char *GetImportString( char **rawpntr, const char *original )
 
     result = raw;
 
-    while( *raw && (quote || (*raw != '.')) ) {
+    while( *raw != '\0' && (quote || (*raw != '.')) ) {
         if( quote
           && (*raw == '\'') ) {
             quote  = false;
