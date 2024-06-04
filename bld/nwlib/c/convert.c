@@ -203,7 +203,7 @@ static void PutARValueMode( char *element, uint_32 value, ar_len desired_len )
     }
 }
 
-void CreateARHeader( ar_header *ar, arch_header * arch )
+void CreateARHeader( ar_header *ar, const arch_header *arch )
 {
     PutARName( ar->name, arch->name );
     PutARValue( ar->date, arch->date, AR_DATE_LEN );

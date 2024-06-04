@@ -37,14 +37,14 @@
 #include "clibext.h"
 
 
-static void SkipObject( libfile io, arch_header *arch )
+static void SkipObject( libfile io, const arch_header *arch )
 {
     if( arch->libtype == WL_LTYPE_OMF ) {
         OmfSkipObject( io );
     }
 }
 
-static void CopyObj( libfile src, libfile dst, arch_header *arch )
+static void CopyObj( libfile src, libfile dst, const arch_header *arch )
 {
     if( arch->libtype == WL_LTYPE_OMF ) {
         OmfExtract( src, dst );
@@ -53,7 +53,7 @@ static void CopyObj( libfile src, libfile dst, arch_header *arch )
     }
 }
 
-static void ExtractObj( libfile src, const char *name, arch_header *arch, const char *newname )
+static void ExtractObj( libfile src, const char *name, const arch_header *arch, const char *newname )
 {
     long        pos;
     libfile     dst;
@@ -71,7 +71,7 @@ static void ExtractObj( libfile src, const char *name, arch_header *arch, const 
     }
 }
 
-static void ProcessOneObject( libfile io, arch_header *arch )
+static void ProcessOneObject( libfile io, const arch_header *arch )
 {
     lib_cmd  *cmd;
     bool      deleted;
@@ -115,12 +115,12 @@ static void ProcessOneObject( libfile io, arch_header *arch )
     }
 }
 
-static void AddOneObject( libfile io, arch_header *arch )
+static void AddOneObject( libfile io, const arch_header *arch )
 {
     AddObjectSymbols( io, LibTell( io ), arch );
 }
 
-static void DelOneObject( libfile io, arch_header *arch )
+static void DelOneObject( libfile io, const arch_header *arch )
 {
     RemoveObjectSymbols( arch );
     SkipObject( io, arch );

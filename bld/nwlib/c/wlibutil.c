@@ -71,7 +71,7 @@ int SymbolNameCmp( const char *s1, const char *s2)
     }
 }
 
-void GetFileContents( libfile io, arch_header *arch, char **contents )
+void GetFileContents( libfile io, const arch_header *arch, char **contents )
 {
     size_t  size;
 

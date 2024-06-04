@@ -128,7 +128,7 @@ static orl_sec_handle FindSec( obj_file *ofile, const char *name )
     return( found_sec_handle );
 }
 
-static bool elfAddImport( libfile io, long header_offset, arch_header *arch )
+static bool elfAddImport( libfile io, long header_offset, const arch_header *arch )
 {
     obj_file        *ofile;
     orl_sec_handle  sym_sec;
@@ -143,6 +143,7 @@ static bool elfAddImport( libfile io, long header_offset, arch_header *arch )
     name_len        dllName;
     Elf32_Word      ElfMagic;
     char            *dll_name;
+    arch_header     tmp_arch;
 
     LibSeek( io, header_offset, SEEK_SET );
     if( LibRead( io, &ElfMagic, sizeof( ElfMagic ) ) != sizeof( ElfMagic ) ) {
@@ -180,21 +181,20 @@ static bool elfAddImport( libfile io, long header_offset, arch_header *arch )
     string_sec = ORLSecGetStringTable( sym_sec );
     ORLSecGetContents( string_sec, (unsigned_8 **)&strings );
 
-    arch->ffname = arch->name;
-    dllName.name = arch->name = dll_name = MemDupStr( TrimPath( arch->name ) );
+    tmp_arch.ffname = arch->name;
+    dllName.name = tmp_arch.name = dll_name = MemDupStr( TrimPath( arch->name ) );
     dllName.len = strlen( dllName.name );
 
-    ElfMKImport( arch, ELF, export_size, &dllName, strings, export_table, sym_table, processor );
+    ElfMKImport( &tmp_arch, ELF, export_size, &dllName, strings, export_table, sym_table, processor );
 
     MemFree( dll_name );
-    arch->name = arch->ffname;
 
     CloseORLObjFile( ofile );
     MemFree( ofile );
     return( true );
 }
 
-static void importOs2Table( libfile io, arch_header *arch, name_len *dllName, bool coff_obj, importType type, unsigned length )
+static void importOs2Table( libfile io, const arch_header *arch, name_len *dllName, bool coff_obj, importType type, unsigned length )
 {
     unsigned_16 ordinal;
     char        sym_name[256];  /* maximum name len is 255 characters */
@@ -229,7 +229,7 @@ static void importOs2Table( libfile io, arch_header *arch, name_len *dllName, bo
     }
 }
 
-static void os2AddImport( libfile io, long header_offset, arch_header *arch )
+static void os2AddImport( libfile io, long header_offset, const arch_header *arch )
 {
     os2_exe_header  os2_header;
     char            dll_name[256];  /* maximum name len is 255 characters */
@@ -270,7 +270,7 @@ static void AddSym2( name_len *n1, const char *n2, symbol_strength strength, uns
     MemFree( sym_name );
 }
 
-static void coffAddImportOverhead( arch_header *arch, name_len *dllName, processor_type processor )
+static void coffAddImportOverhead( const arch_header *arch, name_len *dllName, processor_type processor )
 {
     char        *buffer;
     char        *mod_name;
@@ -290,7 +290,7 @@ static void coffAddImportOverhead( arch_header *arch, name_len *dllName, process
     MemFree( mod_name );
 }
 
-static void os2FlatAddImport( libfile io, long header_offset, arch_header *arch )
+static void os2FlatAddImport( libfile io, long header_offset, const arch_header *arch )
 {
     os2_flat_header os2_header;
     char            dll_name[256];  /* maximum name len is 255 characters */
@@ -317,7 +317,7 @@ static void os2FlatAddImport( libfile io, long header_offset, arch_header *arch 
     }
 }
 
-static bool nlmAddImport( libfile io, long header_offset, arch_header *arch )
+static bool nlmAddImport( libfile io, long header_offset, const arch_header *arch )
 {
     nlm_header  nlm;
     char        dll_name[256];  /* maximum name len is 255 characters */
@@ -347,7 +347,7 @@ static bool nlmAddImport( libfile io, long header_offset, arch_header *arch )
     return( true );
 }
 
-static void peAddImport( libfile io, long header_offset, arch_header *arch )
+static void peAddImport( libfile io, long header_offset, const arch_header *arch )
 {
     obj_file        *ofile;
     orl_sec_handle  export_sec;
@@ -364,6 +364,7 @@ static void peAddImport( libfile io, long header_offset, arch_header *arch )
     importType      type;
     bool            coff_obj;
     long            adjust;
+    arch_header     tmp_arch;
 
     LibSeek( io, header_offset, SEEK_SET );
     if( Options.libtype == WL_LTYPE_MLIB ) {
@@ -420,22 +421,23 @@ static void peAddImport( libfile io, long header_offset, arch_header *arch )
     ord_table = (Coff32_EOrd *)(edata + export_header->OrdTableRVA - export_base.u._32[I64LO32] + adjust);
     ordinal_base = export_header->ordBase;
 
-    arch->name = edata + export_header->nameRVA - export_base.u._32[I64LO32] + adjust;
-    arch->ffname = NULL;
-    dllName.name = arch->name;
+    tmp_arch = *arch;
+    tmp_arch.name = edata + export_header->nameRVA - export_base.u._32[I64LO32] + adjust;
+    tmp_arch.ffname = NULL;
+    dllName.name = tmp_arch.name;
     dllName.len = strlen( dllName.name );
 
     if( coff_obj ) {
-        coffAddImportOverhead( arch, &dllName, processor );
+        coffAddImportOverhead( &tmp_arch, &dllName, processor );
     }
     for( i = 0; i < export_header->numNamePointer; i++ ) {
         sym_name = &(edata[name_table[i] - export_base.u._32[I64LO32] + adjust]);
         if( coff_obj ) {
-            CoffMKImport( arch, ORDINAL, ord_table[i] + ordinal_base, &dllName, sym_name, NULL, processor );
+            CoffMKImport( &tmp_arch, ORDINAL, ord_table[i] + ordinal_base, &dllName, sym_name, NULL, processor );
             AddSym2( &str_coff_imp_prefix, sym_name, SYM_WEAK, 0 );
         } else {
             type = Options.r_ordinal ? ORDINAL : NAMED;
-            OmfMKImport( arch, type, ord_table[i] + ordinal_base, &dllName, sym_name, NULL, WL_PROC_X86 );
+            OmfMKImport( &tmp_arch, type, ord_table[i] + ordinal_base, &dllName, sym_name, NULL, WL_PROC_X86 );
 //            AddSym2( &str_coff_imp_prefix, sym_name, SYM_WEAK, 0 );
         }
         if( processor == WL_PROC_PPC ) {
@@ -1049,7 +1051,7 @@ void ElfWriteImport( libfile io, sym_file *sfile )
     }
 }
 
-bool AddImport( libfile io, arch_header *arch )
+bool AddImport( libfile io, const arch_header *arch )
 {
     unsigned_32     ne_header_off;
     long            header_offset;

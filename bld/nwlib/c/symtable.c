@@ -211,8 +211,8 @@ static void RemoveFromHashTable( sym_entry *sym )
 }
 
 
-static sym_file *NewSymFile( arch_header *arch, file_type obj_type )
-/******************************************************************/
+static sym_file *NewSymFile( const arch_header *arch, file_type obj_type )
+/************************************************************************/
 {
     sym_file    *sfile;
 
@@ -251,8 +251,8 @@ static int CompSyms( const void *ap, const void *bp )
     return( strcmp( a->name, b->name ) );
 }
 
-static void WriteFileHeader( libfile io, arch_header *arch )
-/**********************************************************/
+static void WriteFileHeader( libfile io, const arch_header *arch )
+/****************************************************************/
 {
     ar_header   ar;
 
@@ -943,8 +943,8 @@ void DumpHashTable( void )
 #endif /* DEVBUILD */
 
 
-bool RemoveObjectSymbols( arch_header *arch )
-/*******************************************/
+bool RemoveObjectSymbols( const arch_header *arch )
+/*************************************************/
 {
     sym_file    *sfile;
     sym_file    *sfile_prev;
@@ -983,8 +983,8 @@ bool RemoveObjectSymbols( arch_header *arch )
     return( false );
 }
 
-void AddObjectSymbols( libfile io, long offset, arch_header *arch )
-/*****************************************************************/
+void AddObjectSymbols( libfile io, long offset, const arch_header *arch )
+/***********************************************************************/
 {
     obj_file    *ofile;
     file_type   obj_type;
@@ -1022,7 +1022,7 @@ void AddObjectSymbols( libfile io, long offset, arch_header *arch )
     MemFree( ofile );
 }
 
-void OmfMKImport( arch_header *arch, importType type,
+void OmfMKImport( const arch_header *arch, importType type,
                   long ordinal, name_len *dllName, const char *symName,
                   const char *exportedName, processor_type processor )
 {
@@ -1046,7 +1046,7 @@ void OmfMKImport( arch_header *arch, importType type,
     AddSym( symName, SYM_STRONG, 0 );
 }
 
-void CoffMKImport( arch_header *arch, importType type,
+void CoffMKImport( const arch_header *arch, importType type,
                    long ordinal, name_len *dllName, const char *symName,
                    const char *exportedName, processor_type processor )
 {
@@ -1079,7 +1079,7 @@ void CoffMKImport( arch_header *arch, importType type,
     }
 }
 
-void ElfMKImport( arch_header *arch, importType type, long export_size,
+void ElfMKImport( const arch_header *arch, importType type, long export_size,
                   name_len *dllName, const char *strings, Elf32_Export *export_table,
                   Elf32_Sym *sym_table, processor_type processor )
 {

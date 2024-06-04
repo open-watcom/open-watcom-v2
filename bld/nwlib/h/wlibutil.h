@@ -42,7 +42,7 @@ WL_PROCS
 WL_FTYPES
 #undef WL_FTYPE
 
-extern void     GetFileContents( libfile io, arch_header *arch, char **contents );
+extern void     GetFileContents( libfile io, const arch_header *arch, char **contents );
 extern void     Copy( libfile src, libfile dst, file_offset size );
 extern char     *MakeObjOutputName( const char *src, const char *new );
 extern char     *MakeListName( void );

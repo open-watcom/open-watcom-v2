@@ -65,10 +65,10 @@ typedef unsigned_16     Coff32_EOrd;
 extern unsigned char    ElfBase[];
 extern char             ElfOSInfo[];
 
-extern bool     AddImport( libfile io, arch_header *arch );
-extern void     OmfMKImport( arch_header *, importType, long, name_len *, const char *, const char *, processor_type );
-extern void     CoffMKImport( arch_header *, importType, long, name_len *, const char *, const char *, processor_type );
-extern void     ElfMKImport( arch_header *, importType, long, name_len *, const char *, Elf32_Export *, Elf32_Sym *, processor_type );
+extern bool     AddImport( libfile io, const arch_header *arch );
+extern void     OmfMKImport( const arch_header *, importType, long, name_len *, const char *, const char *, processor_type );
+extern void     CoffMKImport( const arch_header *, importType, long, name_len *, const char *, const char *, processor_type );
+extern void     ElfMKImport( const arch_header *, importType, long, name_len *, const char *, Elf32_Export *, Elf32_Sym *, processor_type );
 extern size_t   CoffImportSize( import_sym *impsym );
 extern size_t   ElfImportSize( import_sym *impsym );
 extern void     CoffWriteImport( libfile, sym_file *, bool );
