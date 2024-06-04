@@ -192,6 +192,12 @@
 :usagegroup. 2
 :usage. Debug verbose output
 
+:option. vd
+:enumerate. dump
+:group. 2
+:internal.
+:usage. view debug messages
+
 :option. vi
 :enumerate. dump
 :group. 2
