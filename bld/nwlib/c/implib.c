@@ -708,8 +708,6 @@ void ProcessImportWlib( const char *name )
     arch.mode = AR_S_IFREG | (AR_S_IRUSR | AR_S_IWUSR | AR_S_IRGRP | AR_S_IWGRP | AR_S_IROTH | AR_S_IWOTH);
     arch.size = 0;
     arch.libtype = WL_LTYPE_NONE;
-    arch.fnametab = NULL;
-    arch.ffnametab = NULL;
 
     dllName.name = dll_name;
     dllName.len = strlen( dll_name );

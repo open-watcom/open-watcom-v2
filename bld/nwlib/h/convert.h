@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,7 +31,7 @@
 ****************************************************************************/
 
 
-extern char *GetARName( libfile io, ar_header *header, arch_header *arch );
-extern char *GetFFName( arch_header *arch );
+extern char *GetARName( libfile io, ar_header *header, arch_dict *dict );
+extern char *GetFFName( arch_dict *dict );
 extern void GetARHeaderValues( ar_header *header, arch_header * arch );
 extern void CreateARHeader( ar_header *ar, arch_header * arch );

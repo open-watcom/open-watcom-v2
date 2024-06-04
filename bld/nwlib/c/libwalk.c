@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2024-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,20 +39,20 @@
 #include "clibext.h"
 
 
-static void AllocFNameTab( libfile io, arch_header *arch )
-/********************************************************/
+static void AllocFNameTab( libfile io, arch_header *arch, arch_dict *dict )
+/*************************************************************************/
 {
-    MemFree( arch->fnametab );
-    GetFileContents( io, arch, &arch->fnametab );
+    MemFree( dict->fnametab );
+    GetFileContents( io, arch, &dict->fnametab );
 }
 
-static void AllocFFNameTab( libfile io, arch_header *arch )
-/*********************************************************/
+static void AllocFFNameTab( libfile io, arch_header *arch, arch_dict *dict )
+/**************************************************************************/
 {
-    MemFree( arch->ffnametab );
-    GetFileContents( io, arch, &arch->ffnametab );
-    arch->nextffname = arch->ffnametab;
-    arch->lastffname = arch->nextffname + arch->size;
+    MemFree( dict->ffnametab );
+    GetFileContents( io, arch, &dict->ffnametab );
+    dict->nextffname = dict->ffnametab;
+    dict->lastffname = dict->nextffname + arch->size;
 }
 
 
@@ -100,11 +100,12 @@ void LibWalk( libfile io, arch_header *arch, libwalk_fn *rtn )
     } else {
         ar_header       ar;
         size_t          bytes_read;
+        arch_dict       dict;
 //        int             dict_count;
 
 //        dict_count = 0;
-        arch->fnametab = NULL;
-        arch->ffnametab = NULL;
+        dict.fnametab = NULL;
+        dict.ffnametab = NULL;
         while( (bytes_read = LibRead( io, &ar, AR_HEADER_SIZE )) != 0 ) {
             if( bytes_read != AR_HEADER_SIZE ) {
                 BadLibrary( io );
@@ -130,14 +131,14 @@ void LibWalk( libfile io, arch_header *arch, libwalk_fn *rtn )
             } else if( ar.name[0] == '/'
               && ar.name[1] == '/'
               && ar.name[2] == ' ' ) {
-                AllocFNameTab( io, arch );
+                AllocFNameTab( io, arch, &dict );
             } else if( ar.name[0] == '/'
               && ar.name[1] == '/'
               && ar.name[2] == '/' ) {
-                AllocFFNameTab( io, arch );
+                AllocFFNameTab( io, arch, &dict );
             } else {
-                arch->name = GetARName( io, &ar, arch );
-                arch->ffname = GetFFName( arch );
+                arch->name = GetARName( io, &ar, &dict );
+                arch->ffname = GetFFName( &dict );
                 rtn( io, arch );
                 MemFree( arch->name );
                 MemFree( arch->ffname );
@@ -145,8 +146,8 @@ void LibWalk( libfile io, arch_header *arch, libwalk_fn *rtn )
             pos += __ROUND_UP_SIZE_EVEN( arch->size );
             LibSeek( io, pos, SEEK_SET );
         }
-        MemFree( arch->fnametab );
-        MemFree( arch->ffnametab );
+        MemFree( dict.fnametab );
+        MemFree( dict.ffnametab );
     }
     arch->name = oldname;
 }

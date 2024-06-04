@@ -101,8 +101,6 @@ libfile NewArchLibOpen( arch_header *arch, const char *filename )
     arch->mode = buf.st_mode;
     arch->size = buf.st_size;
     arch->libtype = WL_LTYPE_NONE;
-    arch->fnametab = NULL;
-    arch->ffnametab = NULL;
     return( LibOpen( filename, LIBOPEN_READ ) );
 }
 

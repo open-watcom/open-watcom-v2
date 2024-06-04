@@ -81,8 +81,8 @@ static size_t   ARstrlen( const char * str )
     return( c - str );
 }
 
-char *GetARName( libfile io, ar_header *header, arch_header *arch )
-/*****************************************************************/
+char *GetARName( libfile io, ar_header *header, arch_dict *dict )
+/***************************************************************/
 {
     char        buffer[AR_NAME_LEN + 1];
     char        *buf;
@@ -91,7 +91,7 @@ char *GetARName( libfile io, ar_header *header, arch_header *arch )
 
     if( header->name[0] == '/' ) {
         len = GetARNumeric( header->name + 1, AR_NAME_LEN - 1 );
-        buf = arch->fnametab + len;
+        buf = dict->fnametab + len;
     } else if( header->name[0] == '#'
       && header->name[1] == '1'
       && header->name[2] == '/') {
@@ -111,20 +111,20 @@ char *GetARName( libfile io, ar_header *header, arch_header *arch )
     return( name );
 }
 
-char *GetFFName( arch_header *arch )
-/**********************************/
+char *GetFFName( arch_dict *dict )
+/********************************/
 {
     char        *name;
 
     name = NULL;
-    if( arch->ffnametab != NULL
-      && arch->nextffname != NULL ) {
-        name = MemDupStr( arch->nextffname );
-        arch->nextffname += strlen( name ) + 1;
-        if( arch->nextffname >= arch->lastffname
-          || ( arch->nextffname[0] == '\n'
-          && arch->nextffname + 1 >= arch->lastffname ) ) {
-            arch->nextffname = NULL;
+    if( dict->ffnametab != NULL
+      && dict->nextffname != NULL ) {
+        name = MemDupStr( dict->nextffname );
+        dict->nextffname += strlen( name ) + 1;
+        if( dict->nextffname >= dict->lastffname
+          || ( dict->nextffname[0] == '\n'
+          && dict->nextffname + 1 >= dict->lastffname ) ) {
+            dict->nextffname = NULL;
         }
     }
     return( name );
