@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -420,7 +420,7 @@ static void enumInstructions( ins_enum_method method, void (*func)( qualifier_fl
 #if defined( _STANDALONE_ ) && defined( AS_DEBUG_DUMP )
 static char *itStrings[] = {
     #define PICK( a, b, c, d, e ) #a,
-    #include "mipsfmt.inc"
+    #include "_mipsfmt.h"
     #undef PICK
 };
 
