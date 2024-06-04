@@ -8,7 +8,7 @@ was_trmem = 1
 
 was_wreslib = 1
 
-additional_clean = *.c *.h *.re *.y *.gh *.grh *.grc
+additional_clean = *.c *.h *.re *.y *.gh *.gc *.grh *.grc
 
 !include cproj.mif
 !include defrule.mif
