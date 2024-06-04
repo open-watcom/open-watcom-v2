@@ -329,7 +329,7 @@ bool OptionsInit( int argc, char **argv, OPT_STORAGE *data, OPT_STRING **files )
         // data->fr_value;
     }
 #ifdef AS_DEBUG_DUMP
-    switch( data->dump
+    switch( data->dump ) {
     case OPT_ENUM_dump_vi:
         _SetOption( DUMP_INSTRUCTIONS );
         break;
