@@ -218,12 +218,17 @@ static sym_file *NewSymFile( const arch_header *arch, file_type obj_type )
 
     sfile = MemAlloc( sizeof( sym_file ) );
     sfile->obj_type = obj_type;
-    sfile->arch = *arch;
     sfile->first = NULL;
     sfile->next = NULL;
     sfile->impsym = NULL;
     sfile->inlib_offset = 0;
     sfile->full_name = MemDupStr( arch->name );
+    sfile->arch.date = arch->date;
+    sfile->arch.uid = arch->uid;
+    sfile->arch.gid = arch->gid;
+    sfile->arch.mode = arch->mode;
+    sfile->arch.size = arch->size;
+    sfile->arch.libtype = arch->libtype;
     if( Options.trim_path ) {
         sfile->arch.name = MemDupStr( TrimPath( arch->name ) );
     } else {
@@ -234,6 +239,7 @@ static sym_file *NewSymFile( const arch_header *arch, file_type obj_type )
         sfile->arch.ffname = MemDupStr( arch->ffname );
         sfile->ffname_length = strlen( sfile->arch.ffname );
     } else {
+        sfile->arch.ffname = NULL;
         sfile->ffname_length = 0;
     }
     *(FileTable.add_to) = sfile;

@@ -201,7 +201,7 @@ static void ProcessLibOrObj( const char *filename, objproc obj, libwalk_fn *proc
     } else {
         LibClose( io );
     }
-//    FreeNewArch( &arch ); temporary fix until AddImport processing will be fixed
+    FreeNewArch( &arch );
 }
 
 static void WalkInputLib( void )

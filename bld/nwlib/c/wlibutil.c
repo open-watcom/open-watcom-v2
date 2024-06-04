@@ -104,7 +104,7 @@ libfile NewArchLibOpen( arch_header *arch, const char *filename )
     return( LibOpen( filename, LIBOPEN_READ ) );
 }
 
-void FreeNewArch( arch_header *arch )
+void FreeNewArch( const arch_header *arch )
 {
     MemFree( arch->name );
 }

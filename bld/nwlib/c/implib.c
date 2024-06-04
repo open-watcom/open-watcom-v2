@@ -181,9 +181,17 @@ static bool elfAddImport( libfile io, long header_offset, const arch_header *arc
     string_sec = ORLSecGetStringTable( sym_sec );
     ORLSecGetContents( string_sec, (unsigned_8 **)&strings );
 
-    tmp_arch.ffname = arch->name;
-    dllName.name = tmp_arch.name = dll_name = MemDupStr( TrimPath( arch->name ) );
+    tmp_arch.date = arch->date;
+    tmp_arch.uid = arch->uid;
+    tmp_arch.gid = arch->gid;
+    tmp_arch.mode = arch->mode;
+    tmp_arch.size = arch->size;
+    tmp_arch.libtype = arch->libtype;
+
+    dllName.name = dll_name = MemDupStr( TrimPath( arch->name ) );
     dllName.len = strlen( dllName.name );
+    tmp_arch.name = dll_name;
+    tmp_arch.ffname = NULL;
 
     ElfMKImport( &tmp_arch, ELF, export_size, &dllName, strings, export_table, sym_table, processor );
 
@@ -421,11 +429,16 @@ static void peAddImport( libfile io, long header_offset, const arch_header *arch
     ord_table = (Coff32_EOrd *)(edata + export_header->OrdTableRVA - export_base.u._32[I64LO32] + adjust);
     ordinal_base = export_header->ordBase;
 
-    tmp_arch = *arch;
-    tmp_arch.name = edata + export_header->nameRVA - export_base.u._32[I64LO32] + adjust;
-    tmp_arch.ffname = NULL;
-    dllName.name = tmp_arch.name;
+    tmp_arch.date = arch->date;
+    tmp_arch.uid = arch->uid;
+    tmp_arch.gid = arch->gid;
+    tmp_arch.mode = arch->mode;
+    tmp_arch.size = arch->size;
+    tmp_arch.libtype = arch->libtype;
+
+    dllName.name = tmp_arch.name = edata + export_header->nameRVA - export_base.u._32[I64LO32] + adjust;
     dllName.len = strlen( dllName.name );
+    tmp_arch.ffname = NULL;
 
     if( coff_obj ) {
         coffAddImportOverhead( &tmp_arch, &dllName, processor );

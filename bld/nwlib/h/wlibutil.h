@@ -52,7 +52,7 @@ extern bool     IsSameModuleCase( const char *a, const char *b, int cmp_mode );
 extern int      SymbolNameCmp( const char *s1, const char *s2);
 extern bool     IsExt( const char *a, const char *b );
 extern libfile  NewArchLibOpen( arch_header *arch, const char *filename );
-extern void     FreeNewArch( arch_header *arch );
+extern void     FreeNewArch( const arch_header *arch );
 extern void     DefaultExtension( char *name, const char *def_ext );
 extern char     *TrimPath( const char * );
 extern void     TrimPathInPlace( char * );

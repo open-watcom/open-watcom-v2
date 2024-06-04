@@ -81,8 +81,8 @@ static size_t   ARstrlen( const char * str )
     return( c - str );
 }
 
-char *GetARName( libfile io, ar_header *header, arch_dict *dict )
-/***************************************************************/
+char *GetARName( libfile io, const ar_header *header, arch_dict *dict )
+/*********************************************************************/
 {
     char        buffer[AR_NAME_LEN + 1];
     char        *buf;
@@ -147,7 +147,7 @@ static void GetARValue( const char *element, ar_len len, char delimiter, char *b
     buffer[len] = '\0';
 }
 
-void GetARHeaderValues( ar_header *header, arch_header * arch )
+void GetARHeaderValues( const ar_header *header, arch_header *arch )
 {
     arch->date = GetARNumeric( header->date, AR_DATE_LEN );
     arch->uid = GetARNumeric( header->uid, AR_UID_LEN );
@@ -156,7 +156,7 @@ void GetARHeaderValues( ar_header *header, arch_header * arch )
     arch->size = GetARNumeric( header->size, AR_SIZE_LEN );
 }
 
-static void PutARPadding( char * element, ar_len current_len, ar_len desired_len )
+static void PutARPadding( char *element, ar_len current_len, ar_len desired_len )
 {
     ar_len      loop;
 

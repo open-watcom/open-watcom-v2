@@ -31,7 +31,7 @@
 ****************************************************************************/
 
 
-extern char *GetARName( libfile io, ar_header *header, arch_dict *dict );
+extern char *GetARName( libfile io, const ar_header *header, arch_dict *dict );
 extern char *GetFFName( arch_dict *dict );
-extern void GetARHeaderValues( ar_header *header, arch_header *arch );
+extern void GetARHeaderValues( const ar_header *header, arch_header *arch );
 extern void CreateARHeader( ar_header *ar, const arch_header *arch );
