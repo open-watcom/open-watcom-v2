@@ -75,13 +75,13 @@ static void *ORLObjAlloc( size_t size )
 {
     if( size == 0 )
         size = 1;
-    return( MemAllocGlobal( size ) );
+    return( MemAlloc( size ) );
 }
 
 static void ORLObjFree( void *ptr )
 /*********************************/
 {
-    MemFreeGlobal( ptr );
+    MemFree( ptr );
 }
 
 void FiniORLObj( void )

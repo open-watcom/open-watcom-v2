@@ -192,7 +192,7 @@ void AddCommand( operation ops )
     if( src != NULL ) {
         len = strlen( src->data );
         if( len > 0 ) {
-            cmd = MemAllocGlobal( sizeof( lib_cmd ) + len );
+            cmd = MemAlloc( sizeof( lib_cmd ) + len );
             strncpy( cmd->name, src->data, len );
             cmd->name[len] = '\0';
             cmd->fname = NULL;
@@ -220,7 +220,7 @@ static void FreeCommands( void )
 
     while( (cmd = CmdList) != NULL ) {
         CmdList = cmd->next;
-        MemFreeGlobal( cmd );
+        MemFree( cmd );
     }
     CmdListEnd = &CmdList;
 }

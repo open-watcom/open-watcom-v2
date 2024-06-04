@@ -51,8 +51,8 @@ void FiniLibIo( void )
     while( (io = fileList) != NULL ) {
         fileList = io->next;
         fclose( io->fp );
-        MemFreeGlobal( io->name );
-        MemFreeGlobal( io );
+        MemFree( io->name );
+        MemFree( io );
     }
 }
 
@@ -78,9 +78,9 @@ libfile LibOpen( const char *name, bool write_to )
         FatalError( ERR_CANT_OPEN, name, strerror( errno ) );
     }
     if( write_to ) {
-        io = MemAllocGlobal( sizeof( *io ) + WRITE_FILE_BUFFER_SIZE - 1);
+        io = MemAlloc( sizeof( *io ) + WRITE_FILE_BUFFER_SIZE - 1);
     } else {
-        io = MemAllocGlobal( sizeof( *io ) + READ_FILE_BUFFER_SIZE - 1);
+        io = MemAlloc( sizeof( *io ) + READ_FILE_BUFFER_SIZE - 1);
     }
     io->next = fileList;
     io->prev = NULL;
@@ -90,7 +90,7 @@ libfile LibOpen( const char *name, bool write_to )
     fileList = io;
     io->write_to = write_to;
     io->fp = fp;
-    io->name = DupStrGlobal( name );
+    io->name = DupStr( name );
     io->buf_size = 0;
     io->buf_pos = 0;
     fseek( fp, 0, SEEK_END );
@@ -261,8 +261,8 @@ void LibClose( libfile io )
     if( io->prev != NULL ) {
         io->prev->next = io->next;
     }
-    MemFreeGlobal( io->name );
-    MemFreeGlobal( io );
+    MemFree( io->name );
+    MemFree( io );
 }
 
 void LibSeek( libfile io, long where, int whence )

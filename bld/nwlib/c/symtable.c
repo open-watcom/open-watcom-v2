@@ -67,7 +67,7 @@ void InitFileTab( void )
     FileTable.first = NULL;
     FileTable.add_to = &FileTable.first;
     SortedSymbols = NULL;
-    HashTable = MemAllocGlobal( HASH_SIZE * sizeof( HashTable[0] ) );
+    HashTable = MemAlloc( HASH_SIZE * sizeof( HashTable[0] ) );
     memset( HashTable, 0, HASH_SIZE * sizeof( HashTable[0] ) );
 }
 
@@ -80,11 +80,11 @@ static void FiniSymFile( sym_file *sfile )
 
     for( sym = sfile->first; sym != NULL; sym = next_sym ) {
         next_sym = sym->next;
-        MemFreeGlobal( sym );
+        MemFree( sym );
     }
-    MemFreeGlobal( sfile->full_name );
-    MemFreeGlobal( sfile->arch.name );
-    MemFreeGlobal( sfile->arch.ffname );
+    MemFree( sfile->full_name );
+    MemFree( sfile->arch.name );
+    MemFree( sfile->arch.ffname );
     if( sfile->impsym != NULL ) {
         switch( sfile->impsym->type ) {
         case ELF:
@@ -92,19 +92,19 @@ static void FiniSymFile( sym_file *sfile )
             for( elfimp = sfile->impsym->u.elf.symlist; elfimp != NULL;
                          elfimp = sfile->impsym->u.elf.symlist ) {
                 sfile->impsym->u.elf.symlist = elfimp->next;
-                MemFreeGlobal( (void *)elfimp->sym.name );
-                MemFreeGlobal( elfimp );
+                MemFree( (void *)elfimp->sym.name );
+                MemFree( elfimp );
             }
             break;
         default:
-            MemFreeGlobal( sfile->impsym->u.omf_coff.symName );
-            MemFreeGlobal( sfile->impsym->u.omf_coff.exportedName );
+            MemFree( sfile->impsym->u.omf_coff.symName );
+            MemFree( sfile->impsym->u.omf_coff.exportedName );
             break;
         }
-        MemFreeGlobal( (void *)sfile->impsym->dllName.name );
-        MemFreeGlobal( sfile->impsym );
+        MemFree( (void *)sfile->impsym->dllName.name );
+        MemFree( sfile->impsym );
     }
-    MemFreeGlobal( sfile );
+    MemFree( sfile );
 }
 
 
@@ -155,10 +155,10 @@ void FiniFileTab( void )
     }
     FileTable.add_to = &FileTable.first;
     if( SortedSymbols != NULL ) {
-        MemFreeGlobal( SortedSymbols );
+        MemFree( SortedSymbols );
         SortedSymbols = NULL;
     }
-    MemFreeGlobal( HashTable );
+    MemFree( HashTable );
     HashTable = NULL;
 }
 
@@ -216,22 +216,22 @@ static sym_file *NewSymFile( arch_header *arch, file_type obj_type )
 {
     sym_file    *sfile;
 
-    sfile = MemAllocGlobal( sizeof( sym_file ) );
+    sfile = MemAlloc( sizeof( sym_file ) );
     sfile->obj_type = obj_type;
     sfile->arch = *arch;
     sfile->first = NULL;
     sfile->next = NULL;
     sfile->impsym = NULL;
     sfile->inlib_offset = 0;
-    sfile->full_name = DupStrGlobal( arch->name );
+    sfile->full_name = DupStr( arch->name );
     if( Options.trim_path ) {
-        sfile->arch.name = DupStrGlobal( TrimPath( arch->name ) );
+        sfile->arch.name = DupStr( TrimPath( arch->name ) );
     } else {
-        sfile->arch.name = DupStrGlobal( arch->name );
+        sfile->arch.name = DupStr( arch->name );
     }
     sfile->name_length = strlen( sfile->arch.name );
     if( arch->ffname != NULL ) {
-        sfile->arch.ffname = DupStrGlobal( arch->ffname );
+        sfile->arch.ffname = DupStr( arch->ffname );
         sfile->ffname_length = strlen( sfile->arch.ffname );
     } else {
         sfile->ffname_length = 0;
@@ -322,7 +322,7 @@ static void SortSymbols( void )
             if( sfile->arch.ffname == NULL ) {
                 sfile->arch.ffname = sfile->arch.name;
                 sfile->ffname_length = strlen( sfile->arch.ffname );
-                sfile->arch.name = DupStrGlobal( TrimPath( sfile->arch.ffname ) );
+                sfile->arch.name = DupStr( TrimPath( sfile->arch.ffname ) );
                 sfile->name_length = strlen( sfile->arch.name );
             }
             name_length = sfile->name_length;
@@ -344,7 +344,7 @@ static void SortSymbols( void )
             Warning( ERR_NO_SYMBOLS );
         }
     } else {
-        SortedSymbols = MemAllocGlobal( NumSymbols * sizeof( SortedSymbols[0] ) );
+        SortedSymbols = MemAlloc( NumSymbols * sizeof( SortedSymbols[0] ) );
     }
 
     sym_curr = SortedSymbols;
@@ -861,7 +861,7 @@ void AddSym( const char *name, symbol_strength strength, unsigned char info )
                     owner = &(*owner)->hash_next;
                 }
                 *owner = hash_sym->hash_next;
-                MemFreeGlobal( hash_sym );
+                MemFree( hash_sym );
                 break; //db
             } else if( strength == hash_sym->strength ) {
                 if( strength == SYM_STRONG ) {
@@ -873,7 +873,7 @@ void AddSym( const char *name, symbol_strength strength, unsigned char info )
             return;
         }
     }
-    hash_sym = MemAllocGlobal( sizeof( sym_entry ) + namelen );
+    hash_sym = MemAlloc( sizeof( sym_entry ) + namelen );
     hash_sym->len = namelen;
     hash_sym->strength = strength;
     hash_sym->info = info;
@@ -1033,12 +1033,12 @@ void OmfMKImport( arch_header *arch, importType type,
     }
     Options.omf_found = true;
     CurrFile = NewSymFile( arch, WL_FTYPE_OMF );
-    impsym = MemAllocGlobal( sizeof( import_sym ) );
-    impsym->dllName.name = DupStrGlobal( dllName->name );
+    impsym = MemAlloc( sizeof( import_sym ) );
+    impsym->dllName.name = DupStr( dllName->name );
     impsym->dllName.len = dllName->len;
     impsym->u.omf_coff.ordinal = ordinal;
-    impsym->u.omf_coff.symName = DupStrGlobal( symName );
-    impsym->u.omf_coff.exportedName = DupStrGlobal( exportedName );
+    impsym->u.omf_coff.symName = DupStr( symName );
+    impsym->u.omf_coff.exportedName = DupStr( exportedName );
     impsym->type = type;
     impsym->processor = processor;
     CurrFile->impsym = impsym;
@@ -1057,13 +1057,13 @@ void CoffMKImport( arch_header *arch, importType type,
     }
     Options.coff_found = true;
     CurrFile = NewSymFile( arch, WL_FTYPE_COFF );
-    impsym = MemAllocGlobal( sizeof( import_sym ) );
+    impsym = MemAlloc( sizeof( import_sym ) );
     impsym->type = type;
     impsym->u.omf_coff.ordinal = ordinal;
-    impsym->dllName.name = DupStrGlobal( dllName->name );
+    impsym->dllName.name = DupStr( dllName->name );
     impsym->dllName.len = dllName->len;
-    impsym->u.omf_coff.symName = DupStrGlobal( symName );
-    impsym->u.omf_coff.exportedName = DupStrGlobal( exportedName );
+    impsym->u.omf_coff.symName = DupStr( symName );
+    impsym->u.omf_coff.exportedName = DupStr( exportedName );
     impsym->processor = processor;
     CurrFile->impsym = impsym;
     CurrFile->arch.size = CoffImportSize( impsym );
@@ -1096,9 +1096,9 @@ void ElfMKImport( arch_header *arch, importType type, long export_size,
     }
     Options.elf_found = true;
     CurrFile = NewSymFile( arch, WL_FTYPE_ELF );
-    impsym = MemAllocGlobal( sizeof( import_sym ) );
+    impsym = MemAlloc( sizeof( import_sym ) );
     impsym->type = type;
-    impsym->dllName.name = DupStrGlobal( dllName->name );
+    impsym->dllName.name = DupStr( dllName->name );
     impsym->dllName.len = dllName->len;
     impsym->u.elf.numsyms = 0;
     impsym->processor = processor;
@@ -1107,8 +1107,8 @@ void ElfMKImport( arch_header *arch, importType type, long export_size,
     pelfimp = &(impsym->u.elf.symlist);
     for( i = 0; i < export_size; i++ ) {
         if( export_table[i].exp_symbol ) {
-            elfimp = MemAllocGlobal( sizeof( elf_import_sym ) );
-            elfimp->sym.name = DupStrGlobal( strings + sym_table[export_table[i].exp_symbol].st_name );
+            elfimp = MemAlloc( sizeof( elf_import_sym ) );
+            elfimp->sym.name = DupStr( strings + sym_table[export_table[i].exp_symbol].st_name );
             elfimp->sym.len = strlen( elfimp->sym.name );
             elfimp->ordinal = export_table[i].exp_ordinal;
             if( type == ELF ) {

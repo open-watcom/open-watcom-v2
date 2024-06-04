@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2024-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,7 +42,7 @@ void AddInputLib( libfile io )
 {
     input_lib   *new;
 
-    new = MemAllocGlobal( sizeof( *new ) + strlen( io->name ) );
+    new = MemAlloc( sizeof( *new ) + strlen( io->name ) );
     new->next = InputLibs;
     InputLibs = new;
     new->io = io;
@@ -88,7 +88,7 @@ void FiniInputLibs( void )
         if( curr->io != NULL ) {
             LibClose( curr->io );
         }
-        MemFreeGlobal( curr );
+        MemFree( curr );
     }
 }
 
