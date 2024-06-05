@@ -90,7 +90,7 @@ $(exetarg_name)$(exetarg_ext) : $+$(exetarg_prebuild_objs) $(exetarg_qnx_res_obj
 ###############################
 # add resources to EXE
 ###############################
-! ifndef wreslib
+! ifndef wreslib_incl
 # native .res for application
 !  ifeq verbose 0
     @echo bind res $@ appl

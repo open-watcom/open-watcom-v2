@@ -140,7 +140,38 @@ wreslib = 1
 ! endif
 !endif
 
+
+!ifndef wreslib_incl
+! ifdef $(proj_name)_wreslib_incl
+wreslib_incl = 1
+! endif
+!endif
+wreslib_cli_text_win = 0
+wreslib_cli_text_nt  = 0
+wreslib_cli_text_os2 = 1
+!ifdef sys_windowed
+wreslib_cli_gui_win = 0
+wreslib_cli_gui_nt  = 0
+wreslib_cli_gui_os2 = 0
+!else
+wreslib_cli_gui_win = 1
+wreslib_cli_gui_nt  = 1
+wreslib_cli_gui_os2 = 1
+!endif
+!ifndef wreslib
+! ifdef $(proj_name)_wreslib_cli
+!  ifdef wreslib_cli_$($(proj_name)_wreslib_cli)_$(host_os)
+!   ifeq wreslib_cli_$($(proj_name)_wreslib_cli)_$(host_os) 1
+wreslib = 1
+!   endif
+!  else
+wreslib = 1
+!  endif
+! endif
+!endif
+
 !ifdef wreslib
+wreslib_incl = 1
 ppflags_wres = -DUSE_WRESLIB
 !endif
 
@@ -875,7 +906,7 @@ wbind   = $(noecho)bwbind
 
 !include local.mif
 
-!ifdef wreslib
+!ifdef wreslib_incl
 !include wres.mif
 !endif
 
