@@ -153,8 +153,8 @@ static bool scanDefine( OPT_STRING **h )
     return( false );
 }
 
-static void ppDefine( OPT_STRING *s )
-//***********************************
+static void ppDefine( const OPT_STRING *s )
+//*****************************************
 {
     if( s->next != NULL ) {
         ppDefine( s->next );
@@ -177,8 +177,8 @@ void OptionsPPDefine( OPT_STORAGE *data )
     }
 }
 
-static void ppInclude( OPT_STRING *s )
-//***********************************
+static void ppInclude( const OPT_STRING *s )
+//******************************************
 {
     if( s->next != NULL ) {
         ppInclude( s->next );
@@ -325,8 +325,16 @@ bool OptionsInit( int argc, char **argv, OPT_STORAGE *data, OPT_STRING **files )
     if( data->fo ) {
         ObjSetObjFile( data->fo_value->data );
     }
-    if( data->fr ) {
-        // data->fr_value;
+    if( !data->fr ) {
+        /*
+         * if not -fr option is defined
+         * then create default "*"
+         */
+        data->fr_value = MemAlloc( sizeof( OPT_STRING ) + 1 );
+        data->fr_value->data[0] = '*';
+        data->fr_value->data[1] = '\0';
+        data->fr_value->next = NULL;
+        data->fr = true;
     }
 #ifdef AS_DEBUG_DUMP
     switch( data->dump ) {
