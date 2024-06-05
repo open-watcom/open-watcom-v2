@@ -56,7 +56,8 @@ int PP_MBCharLen( const char *p )
 int main( int argc, char **argv )
 //*******************************
 {
-    static char *fname;
+    char        *fname;
+    char        *err_file;
     OPT_STORAGE data;
     OPT_STRING  *files;
     OPT_STRING  *src;
@@ -96,7 +97,11 @@ int main( int argc, char **argv )
                         SymInit();
                         InsInit();
                         DirInit();
-                        if( ObjInit( fname ) ) {
+                        err_file = NULL;
+                        if( data.fr_value != NULL ) {
+                            err_file = data.fr_value->data;
+                        }
+                        if( ObjInit( fname, err_file ) ) {
                             if( setjmp( AsmParse ) == 0 ) {
                                 ErrorCountsReset();
                                 DoReport = true;
