@@ -122,6 +122,12 @@ debug = 0
 !endif
 !endif
 
+!ifndef wreslib_incl
+! ifdef $(proj_name)_wreslib_incl
+wreslib_incl = 1
+! endif
+!endif
+
 wreslib_win = 0
 wreslib_nt  = 0
 !ifdef sys_windowed
@@ -134,33 +140,22 @@ wreslib_os2 = 0
 !   ifeq wreslib_$(host_os) 1
 wreslib_cli = 1
 !   else
-wreslib_cli = 0
+#wreslib_cli = 0
 !   endif
 !  else
 wreslib_cli = 1
 !  endif
 ! else
-wreslib_cli = 0
+#wreslib_cli = 0
 ! endif
 !endif
 
-
-!ifndef wreslib_incl
-! ifdef $(proj_name)_wreslib_incl
-wreslib_incl = 1
-! endif
-!endif
 wreslib_cli_text_win = 0
 wreslib_cli_text_nt  = 0
-wreslib_cli_text_os2 = 1
 !ifdef sys_windowed
 wreslib_cli_gui_win = 0
 wreslib_cli_gui_nt  = 0
 wreslib_cli_gui_os2 = 0
-!else
-wreslib_cli_gui_win = 1
-wreslib_cli_gui_nt  = 1
-wreslib_cli_gui_os2 = 1
 !endif
 !ifndef wreslib_cli
 ! ifdef $(proj_name)_wreslib_cli

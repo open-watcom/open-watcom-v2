@@ -91,17 +91,17 @@ $(exetarg_name)$(exetarg_ext) : $+$(exetarg_prebuild_objs) $(exetarg_qnx_res_obj
 # add resources to EXE
 ###############################
 ! ifeq wreslib_cli 1
-# native .res for application
-!  ifeq verbose 0
-    @echo bind res $@ appl
-!  endif
-    $(rcbind) -q -k $+$(exetarg_res)$- $@
-! else
 # string resource only with wreslib
 # Windows 3.x resources format
 !  ifeq verbose 0
     @echo bind res $@ wreslib
 !  endif
     $(wstrip) -q -a -r $@ . $+$(exetarg_res)$-
+! else
+# native .res for application
+!  ifeq verbose 0
+    @echo bind res $@ appl
+!  endif
+    $(rcbind) -q -k $+$(exetarg_res)$- $@
 ! endif
 !endif

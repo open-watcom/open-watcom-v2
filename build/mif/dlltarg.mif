@@ -36,17 +36,17 @@ $(dlltarg_name)$(dlltarg_ext) : $+$(dlltarg_prebuild_objs) $(dlltarg_objs) $(dll
 # add resources to DLL
 #########################
 ! ifeq wreslib_cli 1
-# native .res for application
-!  ifeq verbose 0
-    @echo bind res $@ appl
-!  endif
-    $(rcbind) -q -k $+$(dlltarg_res)$- $@
-! else
 # string resource only with wreslib
 # Windows 3.x resources format
 !  ifeq verbose 0
     @echo bind res $@ wreslib
 !  endif
     $(wstrip) -q -a -r $@ . $(dlltarg_res)
+! else
+# native .res for application
+!  ifeq verbose 0
+    @echo bind res $@ appl
+!  endif
+    $(rcbind) -q -k $+$(dlltarg_res)$- $@
 ! endif
 !endif
