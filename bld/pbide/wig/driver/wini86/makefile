@@ -14,30 +14,32 @@ driver = driver
 dobj = driver.obj
 
 driver.exe : $(dobj) driver.res $(name).lib
-        $(noecho)%create $^&.lnk
-        @%append $^&.lnk debug all
-        @%append $^&.lnk sys windows
-        @%append $^&.lnk op map
-        @%append $^&.lnk libr $(name).lib
-        @for %i in ($(dobj)) do @%append $^&.lnk file obj\%i
-        wlink name $@ @$^&.lnk
-        @%make bind_res
+    $(noecho)%create $^&.lnk
+    @%append $^&.lnk debug all
+    @%append $^&.lnk sys windows
+    @%append $^&.lnk op map
+    @%append $^&.lnk libr $(name).lib
+    @for %i in ($(dobj)) do @%append $^&.lnk file obj\%i
+    wlink name $@ @$^&.lnk
+!ifeq verbose 0
+    @echo bind res $@
+!endif
+    $(rcbind) -q -k $^&.res $@
 
 $(name).lib: ..\owindll\$(name).dll
-        wtouch $@
-        rm $@
-        wlib $@ +$[@
-        copy $[@
-
+    wtouch $@
+    rm $@
+    wlib $@ +$[@
+    %copy $[@
 
 driver.res : driver.rc driver.dlg
-        $(rc) $(ppflags_common) $(rc_cppflags) $(rc_flags) driver.rc -fo=$@
+    $(rc) $(ppflags_common) $(rc_cppflags) $(rc_flags) driver.rc -fo=$@
 
 driver.obj : driver.c
-        wcc $[* -bt=windows  -d2 -zW -zq -zq -fpc -w4 -ml -fo=obj\.obj
+    wcc $[* -bt=windows  -d2 -zW -zq -zq -fpc -w4 -ml -fo=obj\.obj
 
 .obj : obj
 .c : .
 
 .c.obj :
-        wcc $[* $(cflags)
+    wcc $[* $(cflags)

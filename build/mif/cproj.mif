@@ -918,18 +918,6 @@ wbind   = $(noecho)bwbind
 !include wres.mif
 !endif
 
-bind_res : .PROCEDURE .EXPLICIT
-!ifeq verbose 0
-    @echo bind res $@
-!endif
-    $(rcbind) -q -k $^&.res $@
-
-bind_res_wresui : .PROCEDURE .EXPLICIT
-!ifeq verbose 0
-    @echo bind wresui $@
-!endif
-    $(wstrip) -q -a -r $@ . wresui.res
-
 echo_as : .PROCEDURE .EXPLICIT
 !ifeq verbose 0
     @echo as $@

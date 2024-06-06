@@ -297,7 +297,10 @@ $(target) : $(extra_link_res_$(host_os)) $(objs) $(libs) $(resource_file) $(extr
     $(linker) @$^&.lnk
 !endif
 !ifdef resource_file
-    @%make bind_res
+! ifeq verbose 0
+    @echo bind res $@
+! endif
+    $(rcbind) -q -k $^&.res $@
 !endif
 !ifdef extra_cmds
     $(extra_cmds)
