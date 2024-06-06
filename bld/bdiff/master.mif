@@ -2,7 +2,7 @@ proj_name = bdiff
 
 bdiff_autodepend = .AUTODEPEND
 
-bdiff_wreslib = 1
+bdiff_wreslib_cli = text
 
 additional_clean = *.gh
 

@@ -2,7 +2,7 @@ proj_name = wtouch
 
 wtouch_autodepends = .AUTODEPEND
 
-wtouch_wreslib = 1
+wtouch_wreslib_cli = text
 
 additional_clean = *.gh *.grh *.grc
 

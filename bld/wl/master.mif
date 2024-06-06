@@ -11,7 +11,8 @@ wlink_autodepends = .AUTODEPEND
 
 wlink_trmem = 1
 
-wlink_wreslib = 1
+wlink_wreslib_cli = text
+wlink_wreslib_incl = 1
 
 # Base DLL name needs to be 8 chars or less on OS/2, argh! Additionally,
 # internal module name may be required to match file name on some platforms.
@@ -36,7 +37,6 @@ additional_clean = *.grh *.grc
 !include dllrule.mif
 !include deftarg.mif
 !include dllbase.mif
-!include wres.mif
 !include trmem.mif
 
 !include $(orl_dir)/client.mif

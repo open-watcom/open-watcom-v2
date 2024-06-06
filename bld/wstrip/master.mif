@@ -3,7 +3,7 @@ proj_name = wstrip
 wstrip_autodepends = .AUTODEPEND
 
 !ifndef bootstrap
-wstrip_wreslib = 1
+wstrip_wreslib_cli = text
 !endif
 
 additional_clean = *.gh *.grh *.grc
