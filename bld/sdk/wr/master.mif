@@ -8,6 +8,9 @@ wr_autodepends = .AUTODEPEND
 
 wr_trmem = 1
 
+wr_wreslib_cli = gui
+wr_wreslib_incl = 1
+
 memory_model_i86 = l
 
 sys_windowed = 1
@@ -23,7 +26,6 @@ additional_clean = *.grh *.grc $(win_yacc_file).h $(win_yacc_file).c
 !include defrule.mif
 !include deftarg.mif
 !include dllbase.mif
-!include wres.mif
 !include trmem.mif
 
 !include $(wr_dir)/client.mif

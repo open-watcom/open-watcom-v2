@@ -6,6 +6,9 @@ proj_name = wimgedit
 wimgedit_autodepends = .AUTODEPEND
 !endif
 
+wimgedit_wreslib_cli = gui
+wimgedit_wreslib_incl = 1
+
 sys_windowed = 1
 
 memory_model_i86 = l
@@ -15,7 +18,6 @@ additional_clean = *.gh *.grh *.grc
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
-!include wres.mif
 !include trmem.mif
 
 !include $(commonui_dir)/client.mif
