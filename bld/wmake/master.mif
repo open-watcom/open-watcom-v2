@@ -11,7 +11,8 @@ wmake_autodepends = .AUTODEPEND
 
 wmake_trmem = 1
 
-wmake_wreslib = 1
+wmake_wreslib_cli = text
+wmake_wreslib_incl = 1
 
 # DOS code will not fit in 64k with /d2
 #!ifeq host_os dos
@@ -26,7 +27,6 @@ additional_clean = *.gh *.grc
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
-!include wres.mif
 !include trmem.mif
 
 !include $(orl_dir)/client.mif

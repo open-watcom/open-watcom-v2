@@ -8,7 +8,7 @@ wfl_autodepends = .AUTODEPEND
 
 wfl_trmem = 1
 
-wfl_wreslib = 1
+wfl_wreslib_cli = text
 
 additional_clean = *.gh *.grh *.grc
 

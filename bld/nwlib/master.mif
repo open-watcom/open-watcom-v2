@@ -8,7 +8,7 @@ wlib_autodepends = .AUTODEPEND
 wlib_trmem = 1
 
 !ifndef bootstrap
-wlib_wreslib = 1
+wlib_wreslib_cli = text
 !endif
 
 # Base DLL name needs to be 8 chars or less on OS/2, argh! Additionally,

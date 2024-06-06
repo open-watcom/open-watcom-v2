@@ -9,8 +9,9 @@ wrc_autodepends = .AUTODEPEND
 wrc_trmem = 1
 
 !ifndef bootstrap
-wrc_wreslib = 1
+wrc_wreslib_cli = text
 !endif
+wrc_wreslib_incl = 1
 
 # Base DLL name needs to be 8 chars or less on OS/2, argh! Additionally,
 # internal module name may be required to match file name on some platforms.
@@ -36,7 +37,6 @@ additional_clean = *.gh *.grh *.grc *.gc $(os2_yacc_file).* $(win_yacc_file).* *
 !include dllbase.mif
 !include deftarg.mif
 !include trmem.mif
-!include wres.mif
 
 !include $(cpp_dir)/client.mif
 

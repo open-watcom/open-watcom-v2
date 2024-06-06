@@ -8,7 +8,7 @@ wasm_nofpu = 1
 
 wasm_trmem = 1
 
-wasm_wreslib = 1
+wasm_wreslib_cli = text
 
 # Extra files to delete on clean
 additional_clean = *.gh *.grh *.grc *.gc

@@ -6,7 +6,7 @@ wdis_autodepends = .AUTODEPEND
 
 wdis_trmem = 1
 
-wdis_wreslib = 1
+wdis_wreslib_cli = text
 
 additional_clean = *.gh *.grh *.grc
 
