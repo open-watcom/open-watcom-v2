@@ -4,7 +4,7 @@ tree_depth = 4
 
 proj_name = auisample
 
-auisample_wreslib = 1
+auisample_wreslib_cli = gui
 
 !include cproj.mif
 !include defrule.mif
@@ -12,8 +12,6 @@ auisample_wreslib = 1
 !include win386.mif
 
 !include $(aui_dir)/client.mif
-
-!include wres.mif
 
 #
 # cflags

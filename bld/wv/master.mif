@@ -12,7 +12,7 @@ wv_autodepends = .AUTODEPEND
 
 wv_trmem = 1
 
-wv_wreslib = 1
+wv_wreslib_cli = gui
 
 wv_dos_extender = dos4g	#causeway
 
@@ -45,7 +45,6 @@ additional_clean += *.dlg
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
-!include wres.mif
 !include trmem.mif
 
 dig_arch = all

@@ -10,6 +10,8 @@ gui_trmem = 1
 gui_autodepends = .AUTODEPEND
 !endif
 
+gui_wreslib_cli = gui
+
 additional_clean = *.grh
 
 !include cproj.mif
@@ -19,7 +21,6 @@ additional_clean = *.grh
 !include $(gui_dir)/client.mif
 !include $(wpi_dir)/client.mif
 
-!include wres.mif
 !include trmem.mif
 
 #

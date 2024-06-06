@@ -8,6 +8,9 @@ sys_windowed = 1
 ide_autodepends = .AUTODEPEND
 !endif
 
+ide_wreslib_cli = gui
+ide_wreslib_incl = 1
+
 ide_rc_host_os2 = os2
 ide_rc_host_nt  = win
 ide_rc_host_win = win
@@ -27,8 +30,6 @@ additional_clean = $(docs_host_dir)/ide.gh
 !include $(rcsdll_dir)/client.mif
 
 !include ../objects.mif
-
-!include wres.mif
 
 #
 # cflags

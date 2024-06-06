@@ -8,7 +8,7 @@ setupgui_nodoslfn = 1
 
 setupgui_trmem = 1
 
-setupgui_wreslib = 1
+setupgui_wreslib_cli = gui
 
 setupgui_dos_extender = causeway
 
@@ -20,7 +20,6 @@ additional_clean = *.i *.rex setup.inf *.grc
 !include defrule.mif
 !include deftarg.mif
 !include win386.mif
-!include wres.mif
 !include trmem.mif
 
 !include $(gui_dir)/client.mif

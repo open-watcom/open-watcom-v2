@@ -4,7 +4,7 @@ proj_name = wsample
 wsample_autodepends = .AUTODEPEND
 !endif
 
-wsample_wreslib = 1
+wsample_wreslib_cli = text
 
 !ifndef target
 target = $(host_os)
@@ -29,7 +29,6 @@ dig_arch = $(host_cpu)
 
 !include $(dig_dir)/digcli.mif
 
-!include wres.mif
 !include tools.mif
 
 #

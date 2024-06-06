@@ -7,7 +7,7 @@ name = sample
 guisample_autodepends = .AUTODEPEND
 !endif
 
-guisample_wreslib = 1
+guisample_wreslib_cli = gui
 
 !ifdef sys_windowed
 !ifeq host_os os2
@@ -21,8 +21,6 @@ guisample_os2pm = 1
 !include win386.mif
 
 !include $(gui_dir)/client.mif
-
-#!include wres.mif
 
 #
 # cflags

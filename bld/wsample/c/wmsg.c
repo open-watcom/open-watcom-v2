@@ -40,7 +40,7 @@
 #ifdef __WATCOMC__
     #include <process.h>
 #endif
-#if defined(__WINDOWS__)
+#if defined(__WINDOWS__) || defined(__NT__)
     #include <windows.h>
 #endif
 #include "bool.h"
@@ -50,7 +50,8 @@
 #include "wreslang.h"
 #include "wmsg.h"
 #include "pathgrp2.h"
-#if !defined(__WINDOWS__)
+#if defined(__WINDOWS__)
+#elif defined( USE_WRESLIB )
     #include "wressetr.h"
     #include "wresset2.h"
 #endif
@@ -88,14 +89,10 @@ char FAR_PTR            *MsgExcArray[MSG_EXC_COUNT];
 
 static char FAR_PTR     *MsgUsageArray[MSG_USAGE_COUNT];
 
-#if !defined(__WINDOWS__)
-static HANDLE_INFO      hInstance = { 0 };
-#endif
-
-#if defined(__WINDOWS__)
+#if defined(__WINDOWS__) || !defined( USE_WRESLIB )
 static bool MsgReadErrArray( HINSTANCE inst, char FAR_PTR **array, int min, int count )
 #else
-static bool MsgReadErrArray( char FAR_PTR **array, int min, int count )
+static bool MsgReadErrArray( HANDLE_INFO *inst, char FAR_PTR **array, int min, int count )
 #endif
 {
     int         i;
@@ -104,10 +101,10 @@ static bool MsgReadErrArray( char FAR_PTR **array, int min, int count )
 
     msg_shift = _WResLanguage() * MSG_LANG_SPACING;
     for( i = 0; i < count; i++ ) {
-#if defined(__WINDOWS__)
+#if defined(__WINDOWS__) || !defined( USE_WRESLIB )
         if( LoadString( inst, min + i + msg_shift, (LPSTR)buffer, sizeof( buffer ) ) <= 0 ) {
 #else
-        if( WResLoadString( &hInstance, min + i + msg_shift, (lpstr)buffer, sizeof( buffer ) ) <= 0 ) {
+        if( WResLoadString( inst, min + i + msg_shift, (lpstr)buffer, sizeof( buffer ) ) <= 0 ) {
 #endif
             if( i == 0 )
                 return( false );
@@ -127,17 +124,24 @@ static bool MsgReadErrArray( char FAR_PTR **array, int min, int count )
 
 #if defined(__WINDOWS__)
 bool MsgInit( HINSTANCE inst )
-#else
-bool MsgInit( void )
-#endif
 {
-#if defined(__WINDOWS__)
     MsgReadErrArray( inst, MsgArray, MSG_RC_BASE, MSG_RC_COUNT );
     MsgReadErrArray( inst, MsgUsageArray, MSG_USAGE_BASE, MSG_USAGE_COUNT );
     return( true );
+}
+#elif !defined( USE_WRESLIB )
+bool MsgInit( void )
+{
+    MsgReadErrArray( GetModuleHandle( NULL ), MsgArray, MSG_RC_BASE, MSG_RC_COUNT );
+    MsgReadErrArray( GetModuleHandle( NULL ), MsgUsageArray, MSG_USAGE_BASE, MSG_USAGE_COUNT );
+    return( true );
+}
 #else
-    char        buffer[_MAX_PATH];
-    bool        rc;
+bool MsgInit( void )
+{
+    char            buffer[_MAX_PATH];
+    bool            rc;
+    HANDLE_INFO     hInstance;
 
     hInstance.status = 0;
     if( _cmdname( buffer ) != NULL ) {
@@ -155,11 +159,11 @@ bool MsgInit( void )
         }
   #endif
         if( rc ) {
-            MsgReadErrArray( MsgArray, MSG_RC_BASE, MSG_RC_COUNT );
-            MsgReadErrArray( MsgUsageArray, MSG_USAGE_BASE, MSG_USAGE_COUNT );
-#if defined( __DOS4G__ ) || defined( __PHARLAP__ )
-            MsgReadErrArray( MsgExcArray, MSG_EXC_BASE, MSG_EXC_COUNT );
-#endif
+            MsgReadErrArray( &hInstance, MsgArray, MSG_RC_BASE, MSG_RC_COUNT );
+            MsgReadErrArray( &hInstance, MsgUsageArray, MSG_USAGE_BASE, MSG_USAGE_COUNT );
+  #if defined( __DOS4G__ ) || defined( __PHARLAP__ )
+            MsgReadErrArray( &hInstance, MsgExcArray, MSG_EXC_BASE, MSG_EXC_COUNT );
+  #endif
             CloseResFile( &hInstance );
             return( true );
         }
@@ -167,8 +171,8 @@ bool MsgInit( void )
     CloseResFile( &hInstance );
     puts( NO_RES_MESSAGE );
     return( false );
-#endif
 }
+#endif
 
 void MsgFini( void )
 {
