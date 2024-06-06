@@ -128,15 +128,19 @@ wreslib_nt  = 0
 wreslib_os2 = 0
 !endif
 
-!ifndef wreslib
+!ifndef wreslib_cli
 ! ifdef $(proj_name)_wreslib
 !  ifdef wreslib_$(host_os)
 !   ifeq wreslib_$(host_os) 1
-wreslib = 1
+wreslib_cli = 1
+!   else
+wreslib_cli = 0
 !   endif
 !  else
-wreslib = 1
+wreslib_cli = 1
 !  endif
+! else
+wreslib_cli = 0
 ! endif
 !endif
 
@@ -158,19 +162,23 @@ wreslib_cli_gui_win = 1
 wreslib_cli_gui_nt  = 1
 wreslib_cli_gui_os2 = 1
 !endif
-!ifndef wreslib
+!ifndef wreslib_cli
 ! ifdef $(proj_name)_wreslib_cli
 !  ifdef wreslib_cli_$($(proj_name)_wreslib_cli)_$(host_os)
 !   ifeq wreslib_cli_$($(proj_name)_wreslib_cli)_$(host_os) 1
-wreslib = 1
+wreslib_cli = 1
+!   else
+wreslib_cli = 0
 !   endif
 !  else
-wreslib = 1
+wreslib_cli = 1
 !  endif
+! else
+wreslib_cli = 0
 ! endif
 !endif
 
-!ifdef wreslib
+!ifeq wreslib_cli 1
 wreslib_incl = 1
 ppflags_wres = -DUSE_WRESLIB
 !endif
@@ -816,7 +824,7 @@ rc_flags_nt     = -bt=nt
 rc_flags_win    = -bt=windows
 rc_flags_os2    = -bt=os2
 
-!ifdef wreslib
+!ifeq wreslib_cli 1
 rc_host_os = win
 !else ifdef rc_flags_$(host_os)
 rc_host_os = $(host_os)

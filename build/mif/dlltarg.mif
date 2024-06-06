@@ -35,7 +35,7 @@ $(dlltarg_name)$(dlltarg_ext) : $+$(dlltarg_prebuild_objs) $(dlltarg_objs) $(dll
 #########################
 # add resources to DLL
 #########################
-! ifndef wreslib_incl
+! ifeq wreslib_cli 1
 # native .res for application
 !  ifeq verbose 0
     @echo bind res $@ appl
