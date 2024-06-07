@@ -415,15 +415,15 @@ $(proj_name).res : ../../res/wv.rc $(rcfiles) $(ntmanif_deps) $(ntverrc_exe_deps
 
 wdeng.gh : ../../res/wdeng.str $(__MAKEFILES__)
     @%make echo_cpp
-    $(cpp) $(ppflags_common) $(rc_cppflags) -I"$(dig_dir)/h" -I"$(watcom_dir)/h" -o$@ $[@
+    $(cppu8) $(ppflags_common) $(rc_cppflags) -I"$(dig_dir)/h" -I"$(watcom_dir)/h" -o$@ $[@
 
 wddui.gh : ../../res/wddui.str $(__MAKEFILES__)
     @%make echo_cpp
-    $(cpp) $(ppflags_common) $(rc_cppflags) -I"$(dig_dir)/h" -I"$(watcom_dir)/h" -o$@ $[@
+    $(cppu8) $(ppflags_common) $(rc_cppflags) -I"$(dig_dir)/h" -I"$(watcom_dir)/h" -o$@ $[@
 
 wdmenu.gh : ../../res/wdmenu.str $(__MAKEFILES__)
     @%make echo_cpp
-    $(cpp) $(ppflags_common) $(rc_cppflags) $(rc_inc_path) -o$@ $[@
+    $(cppu8) $(ppflags_common) $(rc_cppflags) $(rc_inc_path) -o$@ $[@
 
 litmenu.gh : wdmenu.gh $(__MAKEFILES__)
     @%create $@
