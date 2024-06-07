@@ -47,37 +47,30 @@ on the host platform (DOS, OS/2, Win32). The common variables are:
  - LIB       - points to directories containing library files; note that
                Open Watcom linker is able to locate Open Watcom runtime
                libraries without this variable
- - ...HELP   - points to the directory on the CDROM drive where help files
-               are located. This may minimize hard disk space requirements
+ - ...HELP   - points to the directory where help files are located.
+               Note this is not needed if the help files are installed on
+               the hard disk.
 
 DOS specifics
 
  - PATH      - only needs to point to the binw directory
- - WWINHELP  - points to the directory on the CDROM drive where help files
-               are located. This minimizes hard disk space. Note this is not
-               needed if the help files are installed on the hard disk
+ - WWINHELP  - points to the directory where help files are located.
 
 Win16 specifics
 
  - PATH      - only needs to point to the binw directory
- - WWINHELP  - points to the directory on the CDROM drive where help files
-               are located. This minimizes hard disk space. Note this is not
-               needed if the help files are installed on the hard disk
+ - WWINHELP  - points to the directory where help files are located.
 
 Win32 specifics
 
  - PATH      - must point to binnt and binw directories, in that order
- - WWINHELP  - points to the directory on the CDROM drive where help files
-               are located. This minimizes hard disk space. Note this is not
-               needed if the help files are installed on the hard disk
+ - WWINHELP  - points to the directory where help files are located.
 
 Win64 specifics
 
  - PATH      - must point to binnt64 and binnt directories, in that order
- - WHTMLHELP - points to the directory on the CDROM drive where Windows html
-               help files are located. This minimizes hard disk space.
-               Note this is not needed if the help files are installed on
-               the hard disk.
+ - WHTMLHELP - points to the directory where Windows html help files are
+               located.
 
 OS/2 specifics
 
@@ -94,10 +87,12 @@ OS/2 specifics
 Linux 32-bit specifics
 
  - PATH      - must point to binl directory
+ - WWINHELP  - points to the directory where help files are located.
 
 Linux 64-bit specifics
 
  - PATH      - must point to binl64 and binl directory, in that order
+ - WWINHELP  - points to the directory where help files are located.
 
 These environment variables can be either set up in your startup files (which
 is the most convenient method if Open Watcom is the only compiler you use)
@@ -125,7 +120,7 @@ SET EDPATH=%WATCOM%\EDDAT
 SET INCLUDE=%WATCOM%\H
 :endsegment
 REM SET LIB=
-REM SET WWINHELP=D:\BINW
+REM SET WWINHELP=%WATCOM%\BINW
 ---------------------------------------------------------------------------
 
 Win16 BAT file:
@@ -138,7 +133,7 @@ SET EDPATH=%WATCOM%\EDDAT
 SET INCLUDE=%WATCOM%\H;%WATCOM%\H\WIN
 :endsegment
 REM SET LIB=
-REM SET WWINHELP=D:\BINW
+REM SET WWINHELP=%WATCOM%\BINW
 ---------------------------------------------------------------------------
 
 Win32 BAT file:
@@ -151,7 +146,7 @@ SET EDPATH=%WATCOM%\EDDAT
 SET INCLUDE=%WATCOM%\H;%WATCOM%\H\NT
 :endsegment
 REM SET LIB=
-REM SET WWINHELP=D:\BINW
+REM SET WWINHELP=%WATCOM%\BINNT
 ---------------------------------------------------------------------------
 
 Win64 BAT file:
@@ -164,7 +159,7 @@ SET EDPATH=%WATCOM%\EDDAT
 SET INCLUDE=%WATCOM%\H;%WATCOM%\H\NT
 :endsegment
 REM SET LIB=
-REM SET WHTMLHELP=D:\BINNT\HELP
+REM SET WHTMLHELP=%WATCOM%\BINNT\HELP
 ---------------------------------------------------------------------------
 
 OS/2 CMD file:
@@ -191,6 +186,7 @@ export EDPATH=$WATCOM/eddat
 export INCLUDE=$WATCOM/lh
 :endsegment
 #export LIB=
+#export WWINHELP=%WATCOM%/binw
 ---------------------------------------------------------------------------
 
 Linux 64-bit shell script:
@@ -202,4 +198,5 @@ export EDPATH=$WATCOM/eddat
 export INCLUDE=$WATCOM/lh
 :endsegment
 #export LIB=
+#export WWINHELP=%WATCOM%/binw
 ---------------------------------------------------------------------------

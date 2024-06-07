@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -2697,7 +2697,6 @@ bool InitInfo( const VBUF *inf_name, const VBUF *src_path )
     int                 ret;
 
     SetVariableByName_vbuf( "SrcDir", src_path );
-    SetVariableByName_vbuf( "SrcDir2", src_path );
 //    VbufSplitpath( inf_name, drive, dir, NULL, NULL );
 
     ret = SimInit( inf_name );

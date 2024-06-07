@@ -22,8 +22,8 @@ check_box=os2_helpfiles,,\
         //1"&OS/2 ホスト・ヘルプファイル"\
         //-1
 check_box=whelp_helpfiles,,\
-        //0"&DOS Hosted Help Files"\
-        //1"&DOS ホスト・ヘルプファイル"\
+        //0"&Character mode Help Files"\
+        //1"&Character mode Help Files"\
         //-1
 check_box=pdf_helpfiles,,\
         //0"&PDF Help Files"\
