@@ -1,5 +1,15 @@
 proj_name = vi
 
+!ifndef vi_autodepends
+vi_autodepends = .AUTODEPEND
+!endif
+
+vi_ntmanif = ../res
+
+vi_trmem = 1
+
+vi_dos_extender = causeway
+
 !ifdef sys_windowed
 name = viw
 !else
@@ -10,14 +20,6 @@ name = vi
 name = viw32
 !endif
 !endif
-
-!ifndef vi_autodepends
-vi_autodepends = .AUTODEPEND
-!endif
-
-vi_trmem = 1
-
-vi_dos_extender = causeway
 
 edbind = bedbind
 
@@ -81,12 +83,10 @@ exetarg_name          = $(name)
 #
 ntverrc_path = ../res
 !include ntverrc.mif
-ntmanif_path = ../res
-!include ntmanif.mif
 
-extra_rc_flags_nt = $(ntmanif_def) $(ntverrc_def) $(ntmanif_inc_dirs) $(ntverrc_inc_dirs)
+extra_rc_flags_nt = $(ntverrc_def) $(ntverrc_inc_dirs)
 
-$(name).res : $(vi_dir)/res/viw.rc $(ntverrc_exe_deps) $(ntmanif_deps) $(__MAKEFILES__) $(vi_autodepends)
+$(name).res : $(vi_dir)/res/viw.rc $(ntverrc_exe_deps) $(__MAKEFILES__) $(vi_autodepends)
     @%make echo_rc
     $(rcu8j) $(ppflags_common) $(rc_cppflags) -ad $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 

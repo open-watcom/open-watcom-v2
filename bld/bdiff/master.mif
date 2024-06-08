@@ -4,6 +4,8 @@ bdiff_autodepend = .AUTODEPEND
 
 bdiff_wreslib_cli = text
 
+bdiff_ntmanif = ../h
+
 additional_clean = *.gh
 
 subdir_wcpatch  = wcpatch
@@ -138,12 +140,7 @@ exetarg_name        = bdiff
 #
 # rc and others
 #
-ntmanif_path = ../h
-!include ntmanif.mif
-
 rc_inc_dirs = -I..
-
-extra_rc_flags_nt = $(ntmanif_def) $(ntmanif_inc_dirs)
 
 ppusage.gh : ../gml/optionsp.gml $(__MAKEFILES__)
     @%make echo_optencod
@@ -157,18 +154,18 @@ dusage.gh : ../gml/optionsi.gml $(__MAKEFILES__)
     @%make echo_optencod
     $(noecho)*optencod -q -rc=MSG_USAGE_BASE -utf8 $(optencod_opt_$(host_os)) $[@ . . $@ .
 
-bpatch.res : ../h/bpatch.rc ../h/bpatch.h ppusage.gh $(ntmanif_deps)
+bpatch.res : ../h/bpatch.rc ../h/bpatch.h ppusage.gh
     @%make echo_rc
     $(rcu8j) $(ppflags_common) $(rc_cppflags) -DBPATCH $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
-bdump.res : ../h/bpatch.rc ../h/bpatch.h pdusage.gh $(ntmanif_deps)
+bdump.res : ../h/bpatch.rc ../h/bpatch.h pdusage.gh
     @%make echo_rc
     $(rcu8j) $(ppflags_common) $(rc_cppflags) -DBDUMP $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
-bdiff.res : ../h/bpatch.rc ../h/bpatch.h dusage.gh $(ntmanif_deps)
+bdiff.res : ../h/bpatch.rc ../h/bpatch.h dusage.gh
     @%make echo_rc
     $(rcu8j) $(ppflags_common) $(rc_cppflags) -DBDIFF $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
-wpatch.res wcpatch.res : ../h/bpatch.rc ../h/bpatch.h $(ntmanif_deps)
+wpatch.res wcpatch.res : ../h/bpatch.rc ../h/bpatch.h
     @%make echo_rc
     $(rcu8j) $(ppflags_common) $(rc_cppflags) $(rc_flags) $(rc_inc_path) $[@ -fo=$@

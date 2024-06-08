@@ -1,5 +1,7 @@
 proj_name = appwiz
 
+appwiz_ntmanif = ../h
+
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
@@ -28,14 +30,9 @@ exetarg_res           = $(proj_name).res
 #
 # rc and others
 #
-ntmanif_path = ../h
-!include ntmanif.mif
-
 rc_inc_dirs = -I"../h"
 
-extra_rc_flags_nt = $(ntmanif_def) $(ntmanif_inc_dirs)
-
-$(proj_name).res : ../h/appwiz.rc $(ntmanif_deps) .AUTODEPEND
+$(proj_name).res : ../h/appwiz.rc .AUTODEPEND
     @%make echo_rc
     $(rc) $(ppflags_common) $(rc_cppflags) -ad $(rc_flags) $(rc_inc_path) $]@ -fo=$@
 

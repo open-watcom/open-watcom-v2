@@ -2,11 +2,13 @@ tree_depth = 4
 
 proj_name = drwatcom
 
-sys_windowed = 1
-
 !ifndef drwatcom_autodepends
 drwatcom_autodepends = .AUTODEPEND
 !endif
+
+drwatcom_ntmanif = ../res/nt
+
+sys_windowed = 1
 
 additional_clean = *.gh *.grh *.grc
 
@@ -95,19 +97,17 @@ exetarg_res           = $(proj_name).res
 #
 ntverrc_path = ../res/nt
 !include ntverrc.mif
-ntmanif_path = ../res/nt
-!include ntmanif.mif
 
 rc_inc_dirs = -I"../res/$(host_os)" -I"../res" -I"../$(host_os)" -I"$(dig_dir)/h" $(cli_commonui_rc_inc_dirs)
 
-extra_rc_flags_nt = $(ntmanif_def) $(ntverrc_def) $(ntmanif_inc_dirs) $(ntverrc_inc_dirs)
+extra_rc_flags_nt = $(ntverrc_def) $(ntverrc_inc_dirs)
 
 !ifeq host_os win
 $(proj_name).res : ../res/$(host_os)/drwatcom.rc .AUTODEPEND
     @%make echo_rc
     $(rcu8j) $(ppflags_common) $(rc_cppflags) -ad $(rc_flags) $(cppflags) $(rc_inc_path) $[@ -fo=$@
 !else
-$(proj_name).res : ../res/$(host_os)/drnt.rc $(ntverrc_exe_deps) $(ntmanif_deps) .AUTODEPEND
+$(proj_name).res : ../res/$(host_os)/drnt.rc $(ntverrc_exe_deps) .AUTODEPEND
     @%make echo_rc
     $(rcu8j) $(ppflags_common) $(rc_cppflags) -ad $(rc_flags) $(cppflags) $(rc_inc_path) $[@ -fo=$@
 !endif

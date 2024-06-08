@@ -891,6 +891,12 @@ wbind   = $(noecho)bwbind
 !include wres.mif
 !endif
 
+!ifeq host_os nt
+! ifdef $(proj_name)_ntmanif
+!include ntmanif.mif
+! endif
+!endif
+
 echo_as : .PROCEDURE .EXPLICIT
 !ifeq verbose 0
     @echo as $@

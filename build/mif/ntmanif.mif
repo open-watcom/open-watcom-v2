@@ -1,10 +1,9 @@
 !ifndef bootstrap
-! ifeq host_os nt
-!  ifndef ntmanif_path
-ntmanif_path = ..
-!  endif
-ntmanif_deps = $(ntmanif_path)/appmanif.xml
-ntmanif_inc_dirs = -I"$(ntmanif_path)"
-ntmanif_def = -DRESX_NTMANIF
-! endif
+ntmanif_res = ntmanif.res
+ntmanif_link = resource $(ntmanif_res)
+
+$(ntmanif_res) : $($(proj_name)_ntmanif)/ntmanif.rc $($(proj_name)_ntmanif)/appmanif.xml .EXPLICIT
+    @%make echo_rc
+    $(rc) -zku8 -D_BLDVER=$(bld_ver_tool) -D_CYEAR=$(curr_year) $(rc_cppflags) $(rc_flags_all) -bt=nt -I"$($(proj_name)_ntmanif)" $(inc_dirs_lang) $(inc_dirs_sys_nt) $[@ -fo=$@
+
 !endif

@@ -4,6 +4,8 @@ proj_name = browser
 browser_autodepends = .AUTODEPEND
 !endif
 
+browser_ntmanif = ../res
+
 browser_trmem = 1
 
 docs_host_dir = $(docs_dir)/$(host_os)
@@ -121,8 +123,6 @@ exetarg_name          = wbrw
 ntverrc_exe = $(exetarg_name)
 ntverrc_path = ../res
 !include ntverrc.mif
-ntmanif_path = ../res
-!include ntmanif.mif
 
 rc_inc_dirs = -I"../res/bmp" -I"../res/dlg" -I"../res/cur" -I"../res" -I"../h" -I"../res/ico" $(cli_wclass_rc_inc_dirs)
 
@@ -130,10 +130,10 @@ rc_inc_dirs = -I"../res/bmp" -I"../res/dlg" -I"../res/cur" -I"../res" -I"../h" -
 extra_rc_flags = -DRESX_GUI
 !endif
 
-extra_rc_flags_nt = $(ntmanif_def) $(ntverrc_def) $(ntmanif_inc_dirs) $(ntverrc_inc_dirs)
+extra_rc_flags_nt = $(ntverrc_def) $(ntverrc_inc_dirs)
 extra_rc_flags_os2 = -I"../res/ico_pm"
 
-$(proj_name).res : ../res/wbrw.rc $(ntverrc_exe_deps) $(ntmanif_deps) $(cli_wclass_rc_deps)
+$(proj_name).res : ../res/wbrw.rc $(ntverrc_exe_deps) $(cli_wclass_rc_deps)
     @%make echo_rc
     $(rc) $(ppflags_common) $(rc_cppflags) $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 

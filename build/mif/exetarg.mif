@@ -33,6 +33,13 @@ exetarg_qnx_res_link = opt resource=$(exetarg_qnx_res)
 ! undef exetarg_qnx_res_obj
 ! undef exetarg_qnx_res_link
 !endif
+!ifdef ntmanif_res
+exetarg_nt_res_obj = $(ntmanif_res)
+exetarg_nt_res_link = $(ntmanif_link)
+!else
+! undef exetarg_nt_res_obj
+! undef exetarg_nt_res_link
+!endif
 
 !ifeq host_os osx
 # now unsupported on OSX
@@ -43,7 +50,7 @@ exetarg_qnx_res_link = opt resource=$(exetarg_qnx_res)
 !else
 objcopy = objcopy
 !endif
-$(exetarg_name)$(exetarg_ext) : $+$(exetarg_prebuild_objs) $(exetarg_qnx_res_obj) &
+$(exetarg_name)$(exetarg_ext) : $+$(exetarg_prebuild_objs) $(exetarg_$(host_os)_res_obj) &
         $(exetarg_objs) $(exetarg_libs) $(cli_wres_libs) $(exetarg_res)$- $(__MAKEFILES__)
     @%make echo_cl
 !ifndef __WATCOM_TOOLS__
@@ -63,7 +70,7 @@ $(exetarg_name)$(exetarg_ext) : $+$(exetarg_prebuild_objs) $(exetarg_qnx_res_obj
 !  endif
 ! endif
 !else
-    $(noecho)%write $^&.lnk $(lflags) $+$(exetarg_opts) $(exetarg_qnx_res_link)$-
+    $(noecho)%write $^&.lnk $(lflags) $+$(exetarg_opts) $(exetarg_$(host_os)_res_link)$-
     @for %f in ($+$(exetarg_objs)$-) do @%append $^&.lnk file %f
     @for %l in ($+$(exetarg_libs) $(cli_wres_libs)$-) do $(noecho)%append $^&.lnk library %l
 ! ifdef win386
