@@ -11,16 +11,8 @@ ntverrc_def = -DRESX_NTVER
 ntverrc_path = ..
 !endif
 
-!ifndef ntverrc_dll_skel
-ntverrc_dll_skel = $(ntverrc_path)/dllver.rc
-!endif
-
 !ifndef ntverrc_dll
 ntverrc_dll = $(proj_name)
-!endif
-
-!ifndef ntverrc_exe_skel
-ntverrc_exe_skel = $(ntverrc_path)/exever.rc
 !endif
 
 !ifndef ntverrc_exe
@@ -39,7 +31,7 @@ ntverrc_exe_deps = $(ntverrc_exe_dep)
 patch_level = 0
 !endif
 
-$(ntverrc_exe_dep): $(ntverrc_exe_skel) .EXPLICIT
+$(ntverrc_exe_dep): $(ntverrc_path)/exever.rc .EXPLICIT
     @%make echo_genverrc
     $(noecho)genverrc $]@ $@ $$ $(ntverrc_exe) $(patch_level)
 
@@ -47,7 +39,7 @@ $(ntverrc_exe_out) : $(ntverrc_exe_deps) .EXPLICIT
     @%make echo_rc
     $(rc) $(ppflags_common) $(rc_cppflags) $(rc_flags) $(inc_dirs_sys) -I"$(watcom_dir)/h" $[@ -fo=$@
 
-$(ntverrc_dll_dep): $(ntverrc_dll_skel) .EXPLICIT
+$(ntverrc_dll_dep): $(ntverrc_path)/dllver.rc .EXPLICIT
     @%make echo_genverrc
     $(noecho)genverrc $]@ $@ $$ $(ntverrc_dll) $(patch_level)
 

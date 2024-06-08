@@ -115,7 +115,6 @@ dlltarg_name          = $(dllname)
 #
 # rc and others
 #
-ntverrc_dll_skel = ../verinfo.rc
 ntverrc_dll      = $(dllname)
 !include ntverrc.mif
 
