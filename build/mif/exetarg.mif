@@ -26,12 +26,12 @@ additional_clean_qnx = $(exetarg_qnx_res)
 ! ifdef __WATCOM_TOOLS__
 !  ifeq host_os qnx
 exetarg_qnx_res_obj = $(exetarg_qnx_res)
-exetarg_qnx_res_opt = opt resource=$(exetarg_qnx_res)
+exetarg_qnx_res_link = opt resource=$(exetarg_qnx_res)
 !  endif
 ! endif
 !else
 ! undef exetarg_qnx_res_obj
-! undef exetarg_qnx_res_opt
+! undef exetarg_qnx_res_link
 !endif
 
 !ifeq host_os osx
@@ -63,7 +63,7 @@ $(exetarg_name)$(exetarg_ext) : $+$(exetarg_prebuild_objs) $(exetarg_qnx_res_obj
 !  endif
 ! endif
 !else
-    $(noecho)%write $^&.lnk $(lflags) $+$(exetarg_opts) $(exetarg_qnx_res_opt)$-
+    $(noecho)%write $^&.lnk $(lflags) $+$(exetarg_opts) $(exetarg_qnx_res_link)$-
     @for %f in ($+$(exetarg_objs)$-) do @%append $^&.lnk file %f
     @for %l in ($+$(exetarg_libs) $(cli_wres_libs)$-) do $(noecho)%append $^&.lnk library %l
 ! ifdef win386
