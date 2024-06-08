@@ -127,10 +127,6 @@ END
 #include "about.dlg"
 #include "splash.dlg"
 
-#if defined( __NT__ ) && defined( RESX_NTMANIF )
-    #include "ntmanif.rc"
-#endif
-
 #if defined( __NT__ ) && defined( RESX_NTVER )
     #include "exever.grc"
 #endif

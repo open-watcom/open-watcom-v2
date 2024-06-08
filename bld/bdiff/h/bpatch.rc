@@ -35,7 +35,3 @@ BEGIN
 
     #undef pick
 END
-
-#if defined( __NT__ ) && defined( RESX_NTMANIF )
-    #include "ntmanif.rc"
-#endif

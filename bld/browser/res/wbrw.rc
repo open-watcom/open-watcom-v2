@@ -75,10 +75,6 @@ RC_ITEM( BITMAP, EditorHotDown,         "edit1.bmp" )
 
 RC_ITEM( BITMAP, SplashPage,            "brow_s.bmp" )
 
-#if defined( __NT__ ) && defined( RESX_NTMANIF )
-    #include "ntmanif.rc"
-#endif
-
 #if defined( __NT__ ) && defined( RESX_NTVER )
     #include "exever.grc"
 #endif

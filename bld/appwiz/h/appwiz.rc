@@ -12,7 +12,3 @@ BEGIN
 END
 
 #include "newproj.dlg"
-
-#if defined( __NT__ ) && defined( RESX_NTMANIF )
-    #include "ntmanif.rc"
-#endif

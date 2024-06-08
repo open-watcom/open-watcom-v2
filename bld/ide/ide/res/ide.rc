@@ -49,8 +49,4 @@ RC_ITEM( ICON, I_MsgLog,    "msglog.ico" )  /* 2 */
   #ifdef __NT__
     #include "getfile9.dlg"
   #endif
-
-  #if defined( __NT__ ) && defined( RESX_NTMANIF )
-    #include "ntmanif.rc"
-  #endif
 #endif

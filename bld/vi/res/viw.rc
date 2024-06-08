@@ -97,10 +97,6 @@ END
 #include "setscr.dlg"
 #include "setgen.dlg"
 
-#if defined( __NT__ ) && defined( RESX_NTMANIF )
-    #include "ntmanif.rc"
-#endif
-
 #if defined( __NT__ ) && defined( RESX_NTVER )
     #include "exever.grc"
 #endif
