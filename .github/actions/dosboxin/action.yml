@@ -23,5 +23,5 @@ runs:
     shell: bash
   - if: inputs.hostos == 'osx'
     name: Install DOSBOX-X
-    run: brew install --cask dosbox-x
+    run: brew install dosbox-x
     shell: bash
