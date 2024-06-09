@@ -21,8 +21,10 @@ dlltarg_name = $(proj_name)
 dlltarg_ext = .dll
 !endif
 !undef ntverrc_res
-!ifndef dlltarg_no_ntverrc
+!ifdef ntverrc_dll_res
+! ifndef dlltarg_no_ntverrc
 ntverrc_res = $(ntverrc_dll_res)
+! endif
 !endif
 $(dlltarg_name)$(dlltarg_ext) : $+$(dlltarg_prebuild_objs) $(dlltarg_objs) $(dlltarg_libs) &
   $(cli_wres_libs) $(dlltarg_res) $(ntverrc_res) $(dlltarg_export)$- $(__MAKEFILES__)
