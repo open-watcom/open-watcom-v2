@@ -20,7 +20,7 @@ dlltarg_name = $(proj_name)
 dlltarg_ext = .dll
 !endif
 $(dlltarg_name)$(dlltarg_ext) : $+$(dlltarg_prebuild_objs) $(dlltarg_objs) $(dlltarg_libs) &
-        $(cli_wres_libs) $(dlltarg_res) $(dlltarg_export)$- $(__MAKEFILES__)
+  $(cli_wres_libs) $(dlltarg_res) $(ntverrc_dll_res) $(dlltarg_export)$- $(__MAKEFILES__)
     @%make echo_cl
 !ifndef __WATCOM_TOOLS__
     $(cl) $(clflags_dll) $+$(dlltarg_objs) $(dlltarg_libs) $(cli_wres_libs)$- $(ldflags_dll)
@@ -31,22 +31,50 @@ $(dlltarg_name)$(dlltarg_ext) : $+$(dlltarg_prebuild_objs) $(dlltarg_objs) $(dll
     @for %e in ($+$(dlltarg_export)$-) do $(noecho)%append $^&.lnd export { @%e }
     $(linker) name $@ @$^&.lnd
 !endif
-!ifdef dlltarg_res
-#########################
+############################################
 # add resources to DLL
-#########################
+############################################
+# get list of OS native resources
+# for wrc
+###########################
+!undef dlltarg_res_wrc
+!ifdef dlltarg_res
 ! ifeq wreslib_cli 1
-# string resource only with wreslib
+!  ifdef ntverrc_dll_res
+dlltarg_res_wrc = $(ntverrc_dll_res)
+!  else
+#dlltarg_res_wrc =
+!  endif
+! else
+!  ifdef ntverrc_dll_res
+dlltarg_res_wrc = $(dlltarg_res) -fr=$(ntverrc_dll_res)
+!  else
+dlltarg_res_wrc = $(dlltarg_res)
+!  endif
+! endif
+!else ifdef ntverrc_dll_res
+dlltarg_res_wrc = $(ntverrc_dll_res)
+!else
+#dlltarg_res_wrc =
+!endif
+############################################
+# add OS native resources to DLL by wrc
+############################################
+!ifdef dlltarg_res_wrc
+! ifeq verbose 0
+    @echo bind res $@ appl
+! endif
+    $(rcbind) -q -k $+$(dlltarg_res_wrc)$- $@
+!endif
+############################################
+# add resources for wres library by wstrip
 # Windows 3.x resources format
+############################################
+!ifdef dlltarg_res
+! ifeq wreslib_cli 1
 !  ifeq verbose 0
     @echo bind res $@ wreslib
 !  endif
-    $(wstrip) -q -a -r $@ . $(dlltarg_res)
-! else
-# native .res for application
-!  ifeq verbose 0
-    @echo bind res $@ appl
-!  endif
-    $(rcbind) -q -k $+$(dlltarg_res)$- $@
+    $(wstrip) -q -a -r $@ . $+$(dlltarg_res)$-
 ! endif
 !endif
