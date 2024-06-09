@@ -184,7 +184,6 @@ exetarg_libs          = $(dlltarg_name).lib
 exetarg_prebuild_objs = $(misc_objs) $(prebuild_objs)
 exetarg_objs          = $(objs_exe)
 !ifndef bootstrap
-exetarg_qnx_res       = usage.u
 exetarg_res           = wresexe.res
 !endif
 !endif
@@ -239,17 +238,14 @@ rcmsg.grh : ../h/rc.msg
 $(misc_objs):
     cat ../$@ >$@
 
-!ifdef exetarg_qnx_res
-optencod_opt_qnx = -u=$(exetarg_qnx_res)
-!endif
 optencod_targets = $(host_os)
 !ifeq debug 2
 optencod_targets += dbg
 !endif
 
-cmdlnprs.gh cmdlnprs.gc usage.gh $(exetarg_$(host_os)_res) : ../h/options.gml $(__MAKEFILES__)
+cmdlnprs.gh cmdlnprs.gc usage.gh : ../h/options.gml $(__MAKEFILES__)
     @%make echo_optencod
-    $(noecho)*optencod -q -rc=MSG_USAGE_BASE -utf8 $(optencod_opt_$(host_os)) $[@ cmdlnprs.gh cmdlnprs.gc $@ . $(optencod_targets)
+    $(optencod) -rc=MSG_USAGE_BASE -utf8 $(optencod_opt_$(host_os)) $[@ cmdlnprs.gh cmdlnprs.gc $@ . $(optencod_targets)
 
 ./cvttable.exe: ../c/cvttable.c $(__MAKEFILES__)
     @%make echo_bldccl

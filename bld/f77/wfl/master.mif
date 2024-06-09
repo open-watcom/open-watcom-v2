@@ -75,16 +75,14 @@ wflmsgs.gh wflmsgs.grh : $(f77wfl_dir)/gml/wflmsgs.gml
 
 
 # optencod options and targets for various hosts
-!ifdef exetarg_qnx_res
-optencod_opt_qnx    = -u=$(exetarg_qnx_res)
-!endif
 #optencod_enc_linux  = -utf8
+
 optencod_targets_i86 = targ2
 optencod_targets = $(target_cpu) $(host_os) targ1 $(optencod_targets_$(target_cpu))
 !ifeq debug 2
 optencod_targets += dbg
 !endif
 
-usage.gh $(exetarg_$(host_os)_res) : $(f77_dir)/gml/options.gml $(__MAKEFILES__)
+usage.gh : $(f77_dir)/gml/options.gml $(__MAKEFILES__)
     @%make echo_optencod
-    $(noecho)*optencod -q -rc=MSG_USAGE_BASE -utf8 $(optencod_opt_$(host_os)) $[@ . . $@ . $(optencod_targets)
+    $(optencod) -rc=MSG_USAGE_BASE -utf8 $(optencod_opt_$(host_os)) $[@ . . $@ . $(optencod_targets)

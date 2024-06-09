@@ -13,6 +13,8 @@ wlib_trmem = 1
 wlib_wreslib_cli = text
 !endif
 
+wlib_qnx_usage = 1
+
 # Base DLL name needs to be 8 chars or less on OS/2, argh! Additionally,
 # internal module name may be required to match file name on some platforms.
 !ifdef bootstrap
@@ -180,19 +182,16 @@ msg.grh :  ../h/wlib.msg $(__MAKEFILES__)
     @%make echo_awk
     $(noecho)*awk -v base=MSG_RC_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@
 
-!ifdef exetarg_qnx_res
-optencod_opt_qnx    = -u=$(exetarg_qnx_res)
-!endif
 optencod_targets = $(host_os)
 !ifeq debug 2
 optencod_targets += dbg
 !endif
 
-usagew.gh $(exetarg_qnx_res) : ../optionsw.gml $(__MAKEFILES__)
+usagew.gh $(qnx_usage) : ../optionsw.gml $(__MAKEFILES__)
     @%make echo_optencod
-    $(noecho)*optencod -q -rc=MSG_USAGE_WLIB_BASE -x=_W -utf8 $(optencod_opt_$(host_os)) $[@ cmdlprsw.gh cmdlprsw.gc $@ cmdlnprs.gh $(optencod_targets)
+    $(optencod) -rc=MSG_USAGE_WLIB_BASE -x=_W -utf8 $(optencod_opt_$(host_os)) $[@ cmdlprsw.gh cmdlprsw.gc $@ cmdlnprs.gh $(optencod_targets)
 
 usagea.gh : ../optionsa.gml $(__MAKEFILES__)
     @%make echo_optencod
-    $(noecho)*optencod -q -p -x=_B -utf8 $[@ cmdlprsb.gh cmdlprsb.gc . . $(optencod_targets)
-    $(noecho)*optencod -q -rc=MSG_USAGE_AR_BASE -x=_A -utf8 $[@ cmdlprsa.gh cmdlprsa.gc $@ cmdlnprs.gh targ1 $(optencod_targets)
+    $(optencod) -p -x=_B -utf8 $[@ cmdlprsb.gh cmdlprsb.gc . . $(optencod_targets)
+    $(optencod) -rc=MSG_USAGE_AR_BASE -x=_A -utf8 $[@ cmdlprsa.gh cmdlprsa.gc $@ cmdlnprs.gh targ1 $(optencod_targets)

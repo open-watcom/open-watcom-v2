@@ -12,6 +12,8 @@ wfc_trmem = 1
 
 wfc_wreslib_cli = text
 
+wfc_qnx_usage = 1
+
 additional_clean = *.gh *.grh *.grc
 
 exename_i86 = wfc
@@ -122,15 +124,13 @@ wfcmsgs.gh wfcmsgs.grh wfcgrps.gh wfcattrs.gh : $(f77wfc_dir)/gml/wfcmsgs.gml
     $(noecho)*msgencod -q -s -ip -rc=MSG_LANG_BASE -utf8 $(msgencod_enc_$(host_os)) $[@ wfcmsgs.gh wfcmsgs.grh wfcgrps.gh wfcattrs.gh
 
 # .gh options and targets for various hosts
-!ifdef exetarg_qnx_res
-optencod_opt_qnx    = -u=$(exetarg_qnx_res)
-!endif
 #optencod_enc_linux  = -utf8
+
 optencod_targets = $(target_cpu) $(host_os)
 !ifeq debug 2
 optencod_targets += dbg
 !endif
 
-usage.gh $(exetarg_$(host_os)_res) : $(f77_dir)/gml/options.gml $(__MAKEFILES__)
+usage.gh $(qnx_usage) : $(f77_dir)/gml/options.gml $(__MAKEFILES__)
     @%make echo_optencod
-    $(noecho)*optencod -q -rc=MSG_USAGE_BASE -utf8 $(optencod_opt_$(host_os)) $[@ . . $@ . $(optencod_targets)
+    $(optencod) -rc=MSG_USAGE_BASE -utf8 $(optencod_opt_$(host_os)) $[@ . . $@ . $(optencod_targets)

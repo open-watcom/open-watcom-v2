@@ -8,6 +8,8 @@ wstrip_ntverrc = ../h
 wstrip_wreslib_cli = text
 !endif
 
+wstrip_qnx_usage = 1
+
 additional_clean = *.gh *.grh *.grc
 
 !ifdef bootstrap
@@ -59,14 +61,11 @@ msg.grh : ../h/wstrip.msg $(__MAKEFILES__)
     @%make echo_awk
     $(noecho)*awk -v base=MSG_RC_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@
 
-!ifdef exetarg_qnx_res
-optencod_opt_qnx = -u=$(exetarg_qnx_res)
-!endif
 optencod_targets = $(host_os)
 !ifeq debug 2
 optencod_targets += dbg
 !endif
 
-usage.gh $(exetarg_$(host_os)_res) : ../h/options.gml $(__MAKEFILES__)
+usage.gh $(qnx_usage) : ../h/options.gml $(__MAKEFILES__)
     @%make echo_optencod
-    $(noecho)*optencod -q -rc=MSG_USAGE_BASE -utf8 $(optencod_opt_$(host_os)) $[@ . . $@ . $(optencod_targets)
+    $(optencod) -rc=MSG_USAGE_BASE -utf8 $(optencod_opt_$(host_os)) $[@ . . $@ . $(optencod_targets)

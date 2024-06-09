@@ -12,6 +12,8 @@ wasm_trmem = 1
 
 wasm_wreslib_cli = text
 
+wasm_qnx_usage = 1
+
 # Extra files to delete on clean
 additional_clean = *.gh *.grh *.grc *.gc
 
@@ -103,7 +105,6 @@ exetarg_name       = bwasm
 !else
 exetarg_name       = wasm
 !endif
-exetarg_qnx_res    = usage.u
 exetarg_res        = $(proj_name).res
 !include exetarg.mif
 
@@ -120,14 +121,11 @@ wasmsmsg.grh : ../h/wasms.msg $(__MAKEFILES__)
     @%make echo_awk
     $(noecho)*awk -v base=MSG_WASM_BASE -f "$(build_dir)/makemsg.awk" -v OUTFILE=$^. $[@
 
-!ifdef exetarg_qnx_res
-optencod_opt_qnx    = -u=$(exetarg_qnx_res)
-!endif
 optencod_targets = $(host_os)
 !ifeq debug 2
 optencod_targets += dbg
 !endif
 
-cmdlnprs.gh cmdlnprs.gc usage.gh $(exetarg_$(host_os)_res) : ../h/options.gml $(__MAKEFILES__)
+cmdlnprs.gh cmdlnprs.gc usage.gh $(qnx_usage) : ../h/options.gml $(__MAKEFILES__)
     @%make echo_optencod
-    $(noecho)*optencod -q -rc=MSG_USAGE_BASE -utf8 $(optencod_opt_$(host_os)) $[@ cmdlnprs.gh cmdlnprs.gc $@ . $(optencod_targets)
+    $(optencod) -rc=MSG_USAGE_BASE -utf8 $(optencod_opt_$(host_os)) $[@ cmdlnprs.gh cmdlnprs.gc $@ . $(optencod_targets)

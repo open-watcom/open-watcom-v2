@@ -6,6 +6,8 @@ cc_autodepends = .AUTODEPEND
 
 cc_ntverrc = ..
 
+cc_qnx_usage = 1
+
 #
 # names
 #
@@ -144,7 +146,6 @@ exetarg_prebuild_objs = $(prebuild_objs)
 exetarg_objs          = $(comp_objs_exe)
 exetarg_libs          = $(cli_asminline_libs) $(cli_cg_libs)
 !endif
-exetarg_qnx_res       = usage.u
 exetarg_name          = $(exetarg_name)
 !include exetarg.mif
 
@@ -217,15 +218,13 @@ weights.gh keywords.gh : $(key_objs)
     $(noecho)findhash -q -e ",OPR_NOP,-1" $(key_objs)
 
 # optencod options and targets for various hosts
-!ifdef exetarg_qnx_res
-optencod_opt_qnx    = -u=$(exetarg_qnx_res)
-!endif
 #optencod_enc_linux  = -utf8
+
 optencod_targets = $(target_cpu) $(host_os)
 !ifeq debug 2
 optencod_targets += dbg
 !endif
 
-cmdlnprs.gh cmdlnprs.gc usage.gh usage01.int $(exetarg_$(host_os)_res): ../../gml/options.gml
+cmdlnprs.gh cmdlnprs.gc usage.gh usage01.int $(qnx_usage): ../../gml/options.gml
     @%make echo_optencod
-    $(noecho)*optencod -q -i -n $(optencod_opt_$(host_os)) $(optencod_enc_$(host_os)) $]@ cmdlnprs.gh cmdlnprs.gc usage.gh . $(optencod_targets)
+    $(optencod) -i -n $(optencod_opt_$(host_os)) $(optencod_enc_$(host_os)) $]@ cmdlnprs.gh cmdlnprs.gc usage.gh . $(optencod_targets)

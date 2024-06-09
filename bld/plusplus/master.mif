@@ -6,6 +6,8 @@ plusplus_autodepends = .AUTODEPEND
 
 plusplus_ntverrc = ..
 
+plusplus_qnx_usage = 1
+
 # Important! The C++ compiler modifies string literals
 #suppress_zc = 1
 
@@ -155,7 +157,6 @@ exetarg_prebuild_objs = $(prebuild_objs)
 exetarg_objs          = $(comp_objs_exe)
 exetarg_libs          = $(cli_asminline_libs) $(cli_cg_libs)
 !endif
-exetarg_qnx_res       = usage.u
 !include exetarg.mif
 
 #
@@ -213,18 +214,16 @@ ytab.c ytab.h : ../../y/plusplus.y ../../c/yydriver.c
     diff y.out ../../y/plusplus.chk
 
 # optencod options and targets for various hosts
-!ifdef exetarg_qnx_res
-optencod_opt_qnx    = -u=$(exetarg_qnx_res)
-!endif
 #optencod_enc_linux  = -utf8
+
 optencod_targets = $(target_cpu) $(host_os)
 !ifeq debug 2
 optencod_targets += dbg
 !endif
 
-cmdlnprs.gh cmdlnprs.gc cmdlnusg.gh usage01.int $(exetarg_qnx_res) : ../../gml/options.gml
+cmdlnprs.gh cmdlnprs.gc cmdlnusg.gh usage01.int $(qnx_usage) : ../../gml/options.gml
     @%make echo_optencod
-    $(noecho)*optencod -q -i -n $(optencod_opt_$(host_os)) $(optencod_enc_$(host_os)) $[@ cmdlnprs.gh cmdlnprs.gc cmdlnusg.gh . $(optencod_targets)
+    $(optencod) -i -n $(optencod_opt_$(host_os)) $(optencod_enc_$(host_os)) $[@ cmdlnprs.gh cmdlnprs.gc cmdlnusg.gh . $(optencod_targets)
 
 ./icmask.exe : ../../c/icmask.c
     @%make echo_bldccl

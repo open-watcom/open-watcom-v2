@@ -8,6 +8,8 @@ wsample_ntverrc = ../h
 
 wsample_wreslib_cli = text
 
+wsample_qnx_usage = 1
+
 !ifndef target
 target = $(host_os)
 !endif
@@ -207,14 +209,11 @@ nversion.tmp: ./mknver.exe $(__MAKEFILES__)
     @%make echo_execute
     $(noecho)$[@ $@
 
-!ifdef exetarg_qnx_res
-optencod_opt_qnx    = -u=$(exetarg_qnx_res)
-!endif
 optencod_targets = $(target)
 !ifeq debug 2
 optencod_targets += dbg
 !endif
 
-usage.gh $(exetarg_$(host_os)_res) : ../h/options.gml $(__MAKEFILES__)
+usage.gh $(qnx_usage) : ../h/options.gml $(__MAKEFILES__)
     @%make echo_optencod
-    $(noecho)*optencod -q -rc=MSG_USAGE_BASE -utf8 $(optencod_opt_$(host_os)) $[@ . . $@ . $(optencod_targets)
+    $(optencod) -rc=MSG_USAGE_BASE -utf8 $(optencod_opt_$(host_os)) $[@ . . $@ . $(optencod_targets)

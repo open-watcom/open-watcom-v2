@@ -254,15 +254,13 @@ $(asi_lex_out).c : scani_in.re $(__MAKEFILES__)
     $(noecho)re2c $(lex_flags) $[@ > $@
 
 # optencod options and targets for various hosts
-!ifdef exetarg_qnx_res
-optencod_opt_qnx    = -u=$(exetarg_qnx_res)
-!endif
 #optencod_enc_linux  = -utf8
+
 optencod_targets = $(target_cpu) $(host_os)
 !ifeq debug 2
 optencod_targets += dbg
 !endif
 
-cmdlnprs.gh cmdlnprs.gc usage.gh $(exetarg_$(host_os)_res) : ../../h/options.gml $(__MAKEFILES__)
+cmdlnprs.gh cmdlnprs.gc usage.gh : ../../h/options.gml $(__MAKEFILES__)
     @%make echo_optencod
-    $(noecho)*optencod -q -rc=MSG_USAGE_BASE -utf8 $(optencod_opt_$(host_os)) $[@ cmdlnprs.gh cmdlnprs.gc usage.gh . $(optencod_targets)
+    $(optencod) -rc=MSG_USAGE_BASE -utf8 $(optencod_opt_$(host_os)) $[@ cmdlnprs.gh cmdlnprs.gc usage.gh . $(optencod_targets)
