@@ -102,11 +102,14 @@ msg.grh : ../stand/wdis.msg $(__MAKEFILES__)
     @%make echo_awk
     $(noecho)*awk -v base=WDIS_LITERAL_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@
 
+# optencod options and targets for various hosts
+#optencod_enc_linux  = -utf8
+
 optencod_targets = $(host_os)
 !ifeq debug 2
 optencod_targets += dbg
 !endif
 
-usage.gh $(qnx_usage): ../stand/options.gml $(__MAKEFILES__)
+usage.gh $(qnx_usage) : ../stand/options.gml $(__MAKEFILES__)
     @%make echo_optencod
     $(optencod) -rc=MSG_USAGE_BASE -utf8 $(optencod_opt_$(host_os)) $[@ . . $@ . $(optencod_targets)

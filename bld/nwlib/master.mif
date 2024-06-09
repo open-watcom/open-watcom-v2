@@ -182,6 +182,9 @@ msg.grh :  ../h/wlib.msg $(__MAKEFILES__)
     @%make echo_awk
     $(noecho)*awk -v base=MSG_RC_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@
 
+# optencod options and targets for various hosts
+#optencod_enc_linux  = -utf8
+
 optencod_targets = $(host_os)
 !ifeq debug 2
 optencod_targets += dbg

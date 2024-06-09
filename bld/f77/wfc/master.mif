@@ -123,7 +123,7 @@ wfcmsgs.gh wfcmsgs.grh wfcgrps.gh wfcattrs.gh : $(f77wfc_dir)/gml/wfcmsgs.gml
     @%make echo_msgencod
     $(noecho)*msgencod -q -s -ip -rc=MSG_LANG_BASE -utf8 $(msgencod_enc_$(host_os)) $[@ wfcmsgs.gh wfcmsgs.grh wfcgrps.gh wfcattrs.gh
 
-# .gh options and targets for various hosts
+# optencod options and targets for various hosts
 #optencod_enc_linux  = -utf8
 
 optencod_targets = $(target_cpu) $(host_os)

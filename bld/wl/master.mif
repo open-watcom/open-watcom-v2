@@ -16,6 +16,8 @@ wlink_trmem = 1
 wlink_wreslib_cli = text
 wlink_wreslib_incl = 1
 
+wlink_qnx_usage = 1
+
 # Base DLL name needs to be 8 chars or less on OS/2, argh! Additionally,
 # internal module name may be required to match file name on some platforms.
 !ifdef bootstrap
@@ -106,7 +108,6 @@ exetarg_objs          = $(comp_objs_exe)
 exetarg_libs          = $(wlink_libs)
 !endif
 exetarg_res           = wresexe.res
-exetarg_qnx_res       = usage.u
 !include exetarg.mif
 
 #
@@ -137,6 +138,8 @@ rcmsg.grh : $(wrc_dir)/h/rc.msg $(__MAKEFILES__)
     @%make echo_awk
     $(noecho)*awk -v base=MSG_RC_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@
 
-usage.u : $(wlink_dir)/h/usage.sp $(__MAKEFILES__)
+!ifdef qnx_usage
+$(qnx_usage) : $(wlink_dir)/h/usage.sp $(__MAKEFILES__)
     @%make echo_wsplice
     $(noecho)*wsplice -u $[@ $@
+!endif

@@ -19,6 +19,8 @@ wv_wreslib_cli = gui
 
 wv_dos_extender = dos4g	#causeway
 
+wv_qnx_usage = 1
+
 !ifdef sys_windowed
 !ifeq host_os os2
 wv_os2pm = 1
@@ -145,7 +147,6 @@ exetarg_name          = $(wv_engine_noui)
 exetarg_prebuild_objs = liteng.gh litdui.gh litmenu.gh usage.gh usagej.gh
 exetarg_objs          = $(engine_objs) fingmsg.obj $(ui_objs)
 exetarg_libs          = $(cli_aui_libs)
-exetarg_qnx_res       = usage.u
 exetarg_name          = $(name)
 !endif
 exetarg_res           = $(proj_name).res
@@ -448,6 +449,8 @@ usagej.gh : ../../h/usage.sp $(__MAKEFILES__)
     @%make echo_wsplice
     $(noecho)*wsplice -kJAPANESE -k$(host_os) $(wsplice_keys) -t8 -f "pick((MSG_USAGE_BASE+%$#%+), \"\", \"%s\")" $[@ $@
 
-usage.u : ../../h/usage.sp $(__MAKEFILES__)
+!ifdef qnx_usage
+$(qnx_usage) : ../../h/usage.sp $(__MAKEFILES__)
     @%make echo_wsplice
     $(noecho)*wsplice -u -kENGLISH -k$(host_os) -kLINKRES $[@ $@
+!endif

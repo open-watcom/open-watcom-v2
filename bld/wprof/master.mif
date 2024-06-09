@@ -9,6 +9,8 @@ wprof_trmem = 1
 
 wprof_wreslib_cli = gui
 
+wprof_qnx_usage = 1
+
 additional_clean = *.grc
 
 !include cproj.mif
@@ -78,7 +80,6 @@ exetarg_prebuild_objs = $(extra_link_res_$(host_os)) $(resfile)
 exetarg_objs          = $(objs) $(sys_objs)
 exetarg_libs          = $(cli_aui_libs) $(sys_libs)
 exetarg_res           = $(proj_name).res
-exetarg_qnx_res       = usage.u
 !include exetarg.mif
 
 #
@@ -99,6 +100,8 @@ $(proj_name).res : ../res/wprof.rc $(cli_aui_rc_deps) $(__MAKEFILES__) .AUTODEPE
     @%make echo_rc
     $(rcu8) $(ppflags_common) $(rc_cppflags) -ad $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
-usage.u : ../h/usage.sp $(__MAKEFILES__)
+!ifdef qnx_usage
+$(qnx_usage) : ../h/usage.sp $(__MAKEFILES__)
     @%make echo_wsplice
     $(noecho)*wsplice -u $[@ $@
+!endif
