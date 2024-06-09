@@ -43,6 +43,8 @@
 *.grh
 # generated .sp source file (wsplice)
 *.gsp
+# generated .u source file (QNX usage help)
+*.gu
 *.i
 *.i0
 *.i1
