@@ -52,11 +52,7 @@ inc_dirs = -I. -I"../../h" -I"../../../h" -I"$(fe_misc_dir)/h" $(extra_inc_dirs)
 
 all: $(bin_subdir) $(exetarg_name).exe .SYMBOLIC
 
-!ifdef ntverrc_exe_out
-exetarg_res = $(ntverrc_exe_out)
-!endif
 !include exetarg.mif
-!include ntverrc.mif
 
 #optencod_enc_linux = -utf8
 optencod_targets = $(target_cpu) $(host_os)
