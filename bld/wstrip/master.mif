@@ -2,11 +2,20 @@ proj_name = wstrip
 
 wstrip_autodepends = .AUTODEPEND
 
+wstrip_ntverrc = ../h
+
 !ifndef bootstrap
 wstrip_wreslib_cli = text
 !endif
 
 additional_clean = *.gh *.grh *.grc
+
+!ifdef bootstrap
+exename = bwstrip
+!else
+exename = wstrip
+!endif
+ntverrc_exe = $(exename)
 
 !include cproj.mif
 !include defrule.mif
@@ -26,12 +35,6 @@ extra_cpp_flags = -DINCL_MSGTEXT
 # explicit rules
 #################
 
-!ifdef bootstrap
-exename = bwstrip
-!else
-exename = wstrip
-!endif
-
 #
 # EXE
 #
@@ -46,15 +49,9 @@ exetarg_name = $(exename)x
 #
 # rc and others
 #
-ntverrc_exe = $(exename)
-ntverrc_path = ../h
-!include ntverrc.mif
-
 rc_inc_dirs = -I. -I"../h"
 
-extra_rc_flags_nt = $(ntverrc_def) $(ntverrc_inc_dirs)
-
-$(proj_name).res : ../h/wstrip.rc $(ntverrc_exe_deps) msg.grh usage.gh $(__MAKEFILES__)
+$(proj_name).res : ../h/wstrip.rc msg.grh usage.gh $(__MAKEFILES__)
     @%make echo_rc
     $(rcu8j) $(ppflags_common) $(rc_cppflags) -ad $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 

@@ -6,4 +6,6 @@ target_cpu = ppc
 clppc_autodepends = .AUTODEPEND
 !endif
 
+clppc_ntverrc = ..
+
 !include ../../cl.mif

@@ -2,6 +2,8 @@ proj_name = wdump
 
 wdump_autodepends = .AUTODEPEND
 
+wdump_ntverrc = ../h
+
 additional_clean = *.grc
 
 !include cproj.mif
@@ -55,13 +57,8 @@ exetarg_objs = &
     dumphll.obj &
     coff.obj &
     leb128rd.obj
-!ifdef ntverrc_exe_out
-exetarg_res = $(ntverrc_exe_out)
-!endif
 !include exetarg.mif
 
 #
 # rc and others
 #
-ntverrc_path = ../h
-!include ntverrc.mif

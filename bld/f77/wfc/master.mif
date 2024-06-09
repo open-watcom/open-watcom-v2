@@ -6,6 +6,8 @@ proj_name = wfc
 wfc_autodepends = .AUTODEPEND
 !endif
 
+wfc_ntverrc = ..
+
 wfc_trmem = 1
 
 wfc_wreslib_cli = text
@@ -17,6 +19,8 @@ exename_386 = wfc386
 exename_axp = wfcaxp
 exename_ppc = wfcppc
 exetarg_name = $(exename_$(target_cpu))
+
+ntverrc_exe = $(exetarg_name)
 
 !include cproj.mif
 !include defrule.mif
@@ -67,15 +71,10 @@ exetarg_res           = $(proj_name).res
 #
 # rc and others
 #
-ntverrc_exe = $(exetarg_name)
-!include ntverrc.mif
-
 rc_inc_dirs = -I. -I.. -I"$(f77wfc_dir)/h" -I"$(f77_dir)/h" &
     $(cli_asminline_rc_inc_dirs) -I"$(comp_cfg_dir)/h" -I"$(fe_misc_dir)/h"
 
-extra_rc_flags_nt = $(ntverrc_deps) $(ntverrc_inc_dirs)
-
-$(proj_name).res : $(f77wfc_dir)/h/wfc.rc $(ntverrc_exe_deps) $(f77wfc_dir)/h/wfc.rh $(cli_asminline_rc_deps)
+$(proj_name).res : $(f77wfc_dir)/h/wfc.rc $(f77wfc_dir)/h/wfc.rh $(cli_asminline_rc_deps)
     @%make echo_rc
     $(rcu8j) $(ppflags_common) $(rc_cppflags) $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 

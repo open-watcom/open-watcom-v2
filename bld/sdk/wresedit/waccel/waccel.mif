@@ -6,6 +6,8 @@ proj_name = wacc
 wacc_autodepends = .AUTODEPEND
 !endif
 
+wacc_ntverrc = ../res
+
 wacc_wreslib_cli = gui
 wacc_wreslib_incl = 1
 

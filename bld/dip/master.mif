@@ -8,6 +8,8 @@ proj_name = dip
 
 dip_autodepends = .AUTODEPEND
 
+dip_ntverrc = ..
+
 dip_nofpu = 1
 
 !ifneq host_os win
@@ -18,9 +20,10 @@ dip_nocheckstack = 1
 sys_dll = 1
 !endif
 
-dllname = $(dip_format)
-
 additional_clean = *.grc
+
+dllname = $(dip_format)
+ntverrc_dll = $(dllname)
 
 !include cproj.mif
 !include defrule.mif
@@ -96,14 +99,9 @@ dlltarg_libs += $(imp_libs)
 !ifeq dip_format dwarf
 dlltarg_libs += $(cli_dwarfr_libs)
 !endif
-!ifdef ntverrc_dll_out
-dlltarg_res = $(ntverrc_dll_out)
-!endif
 dlltarg_name = $(dllname)
 !include dlltarg.mif
 
 #
 # rc and others
 #
-ntverrc_dll = $(dllname)
-!include ntverrc.mif

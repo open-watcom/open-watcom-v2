@@ -10,6 +10,8 @@ proj_name = mad
 mad_autodepends = .AUTODEPEND
 !endif
 
+mad_ntverrc = ..
+
 mad_nofpu = 1
 
 !ifneq host_os win
@@ -21,6 +23,10 @@ sys_dll = 1
 !endif
 
 additional_clean = *.gh *.grc
+
+dlltarg_name = mad$(dig_arch)
+
+ntverrc_dll = $(dlltarg_name)
 
 !include cproj.mif
 !include defrule.mif
@@ -60,11 +66,6 @@ extra_l_flags_dll_nt_axp  = op dosseg
 #
 # names
 #
-dlltarg_name = mad$(dig_arch)
-
-ntverrc_dll = $(dlltarg_name)
-!include ntverrc.mif
-
 dlltarg_ext_os2_386   = .d32
 dlltarg_ext_qnx_386   = .mad
 dlltarg_ext_linux_386 = .mad

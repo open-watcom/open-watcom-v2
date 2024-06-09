@@ -4,6 +4,8 @@ proj_name = fmedit
 
 fmedit_autodepends = .AUTODEPEND
 
+fmedit_ntverrc = ../res
+
 sys_dll = 1
 
 suppress_bd = 1
@@ -70,15 +72,10 @@ dlltarg_res           = $(proj_name).res
 #
 # rc and others
 #
-ntverrc_path = ../res
-!include ntverrc.mif
-
 rc_inc_dirs = -I"../res" -I"../dev"
-
-extra_rc_flags_nt = $(ntverrc_def) $(ntverrc_def)
 
 extra_rc_flags_win = -30
 
-$(proj_name).res: ../res/fmedit.rc $(ntverrc_dll_deps) $(__MAKEFILES__) .AUTODEPEND
+$(proj_name).res: ../res/fmedit.rc $(__MAKEFILES__) .AUTODEPEND
     @%make echo_rc
     $(rc) $(ppflags_common) $(rc_cppflags) $(rc_flags) $(rc_inc_path) $[@ -fo=$@

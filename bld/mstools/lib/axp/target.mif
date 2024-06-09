@@ -6,4 +6,6 @@ target_cpu = axp
 libaxp_autodepends = .AUTODEPEND
 !endif
 
+libaxp_ntverrc = ..
+
 !include ../../lib.mif

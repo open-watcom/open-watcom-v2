@@ -5,6 +5,8 @@ proj_name       = wlib
 wlib_autodepends = .AUTODEPEND
 !endif
 
+wlib_ntverrc = ../h
+
 wlib_trmem = 1
 
 !ifndef bootstrap
@@ -20,6 +22,8 @@ dlltarg_name = bwlibd
 exetarg_name = wlib
 dlltarg_name = wlibd
 !endif
+ntverrc_exe = $(exetarg_name)
+ntverrc_dll = $(dlltarg_name)
 
 additional_clean = *.gh *.grh *.grc *.gc
 
@@ -164,18 +168,11 @@ dlltarg_res           = wresdll.res
 #
 # rc and others
 #
-ntverrc_exe = $(exetarg_name)
-ntverrc_dll = $(dlltarg_name)
-ntverrc_path = ../h
-!include ntverrc.mif
-
-extra_rc_flags_nt = $(ntverrc_def) $(ntverrc_inc_dirs)
-
-wresexe.res : ../h/wlib.rc $(ntverrc_exe_deps) ../h/wlib.msg msg.grh $(__MAKEFILES__)
+wresexe.res : ../h/wlib.rc ../h/wlib.msg msg.grh $(__MAKEFILES__)
     @%make echo_rc
     $(rcu8j) $(ppflags_common) $(rc_cppflags) $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
-wresdll.res : ../h/wlib.rc $(ntverrc_dll_deps) ../h/wlib.msg msg.grh $(__MAKEFILES__)
+wresdll.res : ../h/wlib.rc ../h/wlib.msg msg.grh $(__MAKEFILES__)
     @%make echo_rc
     $(rcu8j) $(ppflags_common) $(rc_cppflags) -DRESX_DLL $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 

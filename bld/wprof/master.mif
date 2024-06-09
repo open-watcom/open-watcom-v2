@@ -3,6 +3,7 @@ proj_name = wprof
 wprof_autodepends = .AUTODEPEND
 
 wprof_ntmanif = ../res
+wprof_ntverrc = ../res
 
 wprof_trmem = 1
 
@@ -83,15 +84,10 @@ exetarg_qnx_res       = usage.u
 #
 # rc and others
 #
-ntverrc_path = ../res
-!include ntverrc.mif
-
 #
 # rcflags
 #
 rc_inc_dirs = -I. $(wprof_rc_inc_dirs) $(cli_aui_rc_inc_dirs)
-
-extra_rc_flags = $(ntverrc_def) $(ntverrc_inc_dirs)
 
 !ifdef sys_windowed
 extra_rc_flags_os2 = -I"../res/os2" -I"../res" -I"../h" -DRESX_GUI
@@ -99,7 +95,7 @@ extra_rc_flags_win = -I"../res/win" -I"../res" -I"../h" -DRESX_GUI
 extra_rc_flags_nt  = -I"../res/win" -I"../res" -I"../h" -DRESX_GUI
 !endif
 
-$(proj_name).res : ../res/wprof.rc $(ntverrc_exe_deps) $(cli_aui_rc_deps) $(__MAKEFILES__) .AUTODEPEND
+$(proj_name).res : ../res/wprof.rc $(cli_aui_rc_deps) $(__MAKEFILES__) .AUTODEPEND
     @%make echo_rc
     $(rcu8) $(ppflags_common) $(rc_cppflags) -ad $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 

@@ -6,4 +6,6 @@ target_cpu = ppc
 linkppc_autodepends = .AUTODEPEND
 !endif
 
+linkppc_ntverrc = ..
+
 !include ../../link.mif

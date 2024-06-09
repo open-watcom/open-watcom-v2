@@ -11,6 +11,7 @@ wv_autodepends = .AUTODEPEND
 !endif
 
 wv_ntmanif = ../../res
+wv_ntverrc = ../../res
 
 wv_trmem = 1
 
@@ -168,9 +169,6 @@ target_rc_inc_dirs = -I"../../res/win"
 !endif
 rc_inc_dirs = -I. $(target_rc_inc_dirs) -I"../../res" -I"../../res/dlgs" &
     -I"../../h" $(cli_aui_rc_inc_dirs) -I"$(dig_dir)/h"
-
-ntverrc_path = ../../res
-!include ntverrc.mif
 
 !ifdef sys_windowed
 
@@ -397,18 +395,16 @@ extra_rc_flags = -DRESX_GUI
 !else
 !endif
 
-extra_rc_flags_nt = $(ntverrc_def) $(ntverrc_inc_dirs)
-
 !ifdef wv_engine_noui
-$(proj_name).res : ../../res/wv.rc $(rcfiles) $(ntverrc_exe_deps) $(cli_aui_rc_deps) $(__MAKEFILES__) .AUTODEPEND
+$(proj_name).res : ../../res/wv.rc $(rcfiles) $(cli_aui_rc_deps) $(__MAKEFILES__) .AUTODEPEND
 !else ifdef sys_windowed
-$(proj_name)j.res : ../../res/wv.rc $(bitmaps) $(rcfiles) $(ntverrc_exe_deps) $(cli_aui_rc_deps) $(__MAKEFILES__) .AUTODEPEND
+$(proj_name)j.res : ../../res/wv.rc $(bitmaps) $(rcfiles) $(cli_aui_rc_deps) $(__MAKEFILES__) .AUTODEPEND
     @%make echo_rc
     $(rcu8j) $(ppflags_common) $(rc_cppflags) -DJAPANESE -ad $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
-$(proj_name).res : ../../res/wv.rc $(bitmaps) $(rcfiles) $(ntverrc_exe_deps) $(cli_aui_rc_deps) $(__MAKEFILES__) .AUTODEPEND
+$(proj_name).res : ../../res/wv.rc $(bitmaps) $(rcfiles) $(cli_aui_rc_deps) $(__MAKEFILES__) .AUTODEPEND
 !else
-$(proj_name).res : ../../res/wv.rc $(rcfiles) $(ntverrc_exe_deps) $(cli_aui_rc_deps) $(__MAKEFILES__) .AUTODEPEND
+$(proj_name).res : ../../res/wv.rc $(rcfiles) $(cli_aui_rc_deps) $(__MAKEFILES__) .AUTODEPEND
 !endif
     @%make echo_rc
     $(rcu8) $(ppflags_common) $(rc_cppflags) -ad $(rc_flags) $(rc_inc_path) $[@ -fo=$@

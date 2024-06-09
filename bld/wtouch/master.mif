@@ -2,6 +2,8 @@ proj_name = wtouch
 
 wtouch_autodepends = .AUTODEPEND
 
+wtouch_ntverrc = ../h
+
 wtouch_wreslib_cli = text
 
 additional_clean = *.gh *.grh *.grc
@@ -37,12 +39,7 @@ exetarg_qnx_res       = usage.u
 #
 # rc and others
 #
-ntverrc_path = ../h
-!include ntverrc.mif
-
-extra_rc_flags_nt = $(ntverrc_def) $(ntverrc_inc_dirs)
-
-$(proj_name).res : ../h/wtouch.rc $(ntverrc_exe_deps) ../h/wtouch.msg usage.gh msg.grh $(__MAKEFILES__)
+$(proj_name).res : ../h/wtouch.rc ../h/wtouch.msg usage.gh msg.grh $(__MAKEFILES__)
     @%make echo_rc
     $(rcu8j) $(ppflags_common) $(rc_cppflags) $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 

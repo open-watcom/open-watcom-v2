@@ -1,8 +1,6 @@
-!ifndef bootstrap
 ntmanif_res = ntmanif.res
 
 $(ntmanif_res) : $($(proj_name)_ntmanif)/ntmanif.rc $($(proj_name)_ntmanif)/appmanif.xml .EXPLICIT
     @%make echo_rc
-    $(rc) -zku8 -D_BLDVER=$(bld_ver_tool) -D_CYEAR=$(curr_year) $(rc_cppflags) $(rc_flags_all) -bt=nt -I"$($(proj_name)_ntmanif)" $(inc_dirs_lang) $(inc_dirs_sys_nt) $[@ -fo=$@
+    $(rc) -zku8 $(ppflags_common_sys) $(rc_cppflags) $(rc_flags_sys) -I"$($(proj_name)_ntmanif)" $(inc_dirs_sys) $[@ -fo=$@
 
-!endif

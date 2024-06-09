@@ -6,6 +6,8 @@ proj_name = wrc
 wrc_autodepends = .AUTODEPEND
 !endif
 
+wrc_ntverrc = ..
+
 wrc_trmem = 1
 
 !ifndef bootstrap
@@ -22,6 +24,8 @@ dlltarg_name = bwrcd
 exetarg_name = wrc
 dlltarg_name = wrcd
 !endif
+ntverrc_exe = $(exetarg_name)
+ntverrc_dll = $(dlltarg_name)
 
 win_yacc_prefix = winy
 os2_yacc_prefix = os2y
@@ -199,17 +203,13 @@ dlltarg_res           = wresdll.res
 #
 # rc and others
 #
-ntverrc_exe = $(exetarg_name)
-ntverrc_dll = $(dlltarg_name)
-!include ntverrc.mif
+rc_defines    = -D_STANDALONE_ $(parser_defines)
 
-rc_defines    = -D_STANDALONE_ $(parser_defines) $(ntverrc_def)
-
-wresexe.res : ../rc.rc $(ntverrc_exe_deps) rcmsg.grh .AUTODEPEND
+wresexe.res : ../rc.rc rcmsg.grh .AUTODEPEND
     @%make echo_rc
     $(rcu8j) $(ppflags_common) $(rc_cppflags) $(rc_defines) -ad $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
-wresdll.res : ../rc.rc $(ntverrc_dll_deps) rcmsg.grh .AUTODEPEND
+wresdll.res : ../rc.rc rcmsg.grh .AUTODEPEND
     @%make echo_rc
     $(rcu8j) $(ppflags_common) $(rc_cppflags) $(rc_defines) -DRESX_DLL -ad $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 

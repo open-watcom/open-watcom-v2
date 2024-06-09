@@ -6,9 +6,11 @@ proj_name = wclaxp
 wclaxp_autodepends = .AUTODEPEND
 !endif
 
-target_cpu = axp
+wclaxp_ntverrc = ../../h
 
 wclaxp_trmem = 1
+
+target_cpu = axp
 
 extra_cpp_flags = -DWCLAXP
 

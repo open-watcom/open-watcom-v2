@@ -9,6 +9,8 @@ proj_name = wlink
 wlink_autodepends = .AUTODEPEND
 !endif
 
+wlink_ntverrc = ../res
+
 wlink_trmem = 1
 
 wlink_wreslib_cli = text
@@ -23,6 +25,8 @@ dlltarg_name = bwlinkd
 exetarg_name = wlink
 dlltarg_name = wlinkd
 !endif
+ntverrc_exe = $(exetarg_name)
+ntverrc_dll = $(dlltarg_name)
 
 # get rid of the -zc
 suppress_zc = 1
@@ -117,27 +121,14 @@ dlltarg_res           = wresdll.res
 #
 # rc and others
 #
-ntverrc_exe = $(exetarg_name)
-ntverrc_dll = $(dlltarg_name)
-ntverrc_path = ../res
-!include ntverrc.mif
-
-#if 0
-res_objs_exe = $(ntverrc_exe_deps)
-res_objs_drv = $(ntverrc_exe_deps)
-res_objs_dll = $(ntverrc_dll_deps)
-#endif
-
 rc_inc_dirs = -I. -I"$(wlink_dir)/h" -I"$(wrc_dir)/h"
 
-extra_rc_flags_nt = $(ntverrc_def) $(ntverrc_inc_dirs)
-
-wresexe.res : $(wlink_dir)/res/wlink.rc $(ntverrc_exe_deps) rcmsg.grh $(wlink_dir)/res/wlink.msg &
+wresexe.res : $(wlink_dir)/res/wlink.rc rcmsg.grh $(wlink_dir)/res/wlink.msg &
             $(wlink_dir)/h/wlnkmsg.h $(wlink_dir)/res/lnkerror.msg $(__MAKEFILES__)
     @%make echo_rc
     $(rcu8j) $(ppflags_common) $(rc_cppflags) $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
-wresdll.res : $(wlink_dir)/res/wlink.rc $(ntverrc_dll_deps) rcmsg.grh $(wlink_dir)/res/wlink.msg &
+wresdll.res : $(wlink_dir)/res/wlink.rc rcmsg.grh $(wlink_dir)/res/wlink.msg &
             $(wlink_dir)/h/wlnkmsg.h $(wlink_dir)/res/lnkerror.msg $(__MAKEFILES__)
     @%make echo_rc
     $(rcu8j) $(ppflags_common) $(rc_cppflags) -DRESX_DLL $(rc_flags) $(rc_inc_path) $[@ -fo=$@

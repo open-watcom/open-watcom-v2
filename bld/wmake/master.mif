@@ -9,6 +9,8 @@ proj_name   = wmake
 wmake_autodepends = .AUTODEPEND
 !endif
 
+wmake_ntverrc = ../h
+
 wmake_trmem = 1
 
 wmake_wreslib_cli = text
@@ -103,16 +105,11 @@ exetarg_name          = wmk
 #
 # rc and others
 #
-ntverrc_path = ../h
-!include ntverrc.mif
-
-extra_rc_flags_nt = $(ntverrc_def) $(ntverrc_inc_dirs)
-
 wsplice_opts_linux = -kUNIX
 wsplice_opts_qnx   = -kUNIX
 wsplice_opts_osx   = -kUNIX
 
-$(proj_name).res : ../h/wmake.rc $(ntverrc_exe_deps) ../h/mrcmsg.h usage.gh usagej.gh $(__MAKEFILES__)
+$(proj_name).res : ../h/wmake.rc ../h/mrcmsg.h usage.gh usagej.gh $(__MAKEFILES__)
     @%make echo_rc
     $(rcu8j) $(ppflags_common) $(rc_cppflags) $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 

@@ -4,4 +4,6 @@ proj_name = cl
 cl_autodepends = .AUTODEPEND
 !endif
 
+cl_ntverrc = ..
+
 !include ../../cl.mif

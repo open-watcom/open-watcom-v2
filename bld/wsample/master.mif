@@ -4,6 +4,8 @@ proj_name = wsample
 wsample_autodepends = .AUTODEPEND
 !endif
 
+wsample_ntverrc = ../h
+
 wsample_wreslib_cli = text
 
 !ifndef target
@@ -15,6 +17,20 @@ memory_model_i86 = c
 !endif
 
 additional_clean = *.gh *.grh *.grc
+
+#
+# names
+#
+exetarg_name_os2_i86   = wsampos2
+exetarg_name_pls_386   = wsamppls
+exetarg_name_rsi_i86   = wsamprsi
+exetarg_name_win_i86   = wsamplew
+!ifdef exetarg_name_$(target)_$(host_cpu)
+exetarg_name = $(exetarg_name_$(target)_$(host_cpu))
+!else
+exetarg_name = wsample
+!endif
+ntverrc_exe = $(exetarg_name)
 
 !include cproj.mif
 !include defrule.mif
@@ -117,19 +133,6 @@ lflags_dos_386 = sys pharlap ext opt nodefaultlibs, maxdata=0 runtime maxreal=10
 #################
 
 #
-# names
-#
-exetarg_name_os2_i86   = wsampos2
-exetarg_name_pls_386   = wsamppls
-exetarg_name_rsi_i86   = wsamprsi
-exetarg_name_win_i86   = wsamplew
-!ifdef exetarg_name_$(target)_$(host_cpu)
-exetarg_name = $(exetarg_name_$(target)_$(host_cpu))
-!else
-exetarg_name = wsample
-!endif
-
-#
 # EXE
 #
 exetarg_prebuild_objs_nov = nversion.tmp
@@ -170,13 +173,7 @@ rc_cpp_dos_pls_386 = -D__PHARLAP__
 rc_cpp_dos = $(rc_cpp_dos_$(target)_$(host_cpu))
 !endif
 
-ntverrc_exe = $(exetarg_name)
-ntverrc_path = ../h
-!include ntverrc.mif
-
 rc_inc_dirs = -I"../h"
-
-extra_rc_flags_nt = $(ntverrc_def) $(ntverrc_inc_dirs)
 
 $(proj_name).res : ../h/wsamplew.rc ../h/wsampres.rc ../h/wsamplew.ico ../h/wsample.rc ../h/wmsg.h ../h/wsample.msg usage.gh $(__MAKEFILES__)
     @%make echo_rc

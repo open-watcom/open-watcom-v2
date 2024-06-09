@@ -58,18 +58,11 @@ exetarg_objs          = clcommon.obj $(trmem_objs) wcl.obj
 exetarg_prebuild_objs = usage.gh $(owcc_specs)
 exetarg_objs          = clcommon.obj $(trmem_objs) owcc.obj getopt.obj argvenv.obj argvstr.obj
 !endif
-!ifdef ntverrc_exe_out
-exetarg_res           = $(ntverrc_exe_out)
-!endif
 !include exetarg.mif
 
 #
 # rc and others
 #
-#ntverrc_exe = $(proj_name)
-ntverrc_path = ../../h
-!include ntverrc.mif
-
 !ifdef owcc_specs
 $(owcc_specs): $(wlink_dir)/lnk/specs.sp $(__MAKEFILES__)
     @%make echo_wsplice

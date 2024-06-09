@@ -4,4 +4,6 @@ proj_name = link
 link_autodepends = .AUTODEPEND
 !endif
 
+link_ntverrc = ..
+
 !include ../../link.mif

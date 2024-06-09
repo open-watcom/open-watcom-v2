@@ -6,4 +6,6 @@ target_cpu = axp
 linkaxp_autodepends = .AUTODEPEND
 !endif
 
+linkaxp_ntverrc = ..
+
 !include ../../link.mif

@@ -2,16 +2,17 @@ tree_depth = 4
 
 proj_name = ide
 
-sys_windowed = 1
-
 !ifndef ide_autodepends
 ide_autodepends = .AUTODEPEND
 !endif
 
 ide_ntmanif = ../res/win
+ide_ntverrc = ../res/win
 
 ide_wreslib_cli = gui
 ide_wreslib_incl = 1
+
+sys_windowed = 1
 
 ide_rc_host_os2 = os2
 ide_rc_host_nt  = win
@@ -89,18 +90,13 @@ exetarg_res           = $(proj_name).res
 #
 # rc and others
 #
-ntverrc_path = ../res/win
-!include ntverrc.mif
-
 rc_inc_dirs = -I"../res/$(ide_rc_host_$(host_os))" -I"../res" $(cli_idelib_rc_inc_dirs)
 
 !ifdef sys_windowed
 extra_rc_flags = -DRESX_GUI
 !endif
 
-extra_rc_flags_nt = $(ntverrc_def) $(ntverrc_inc_dirs)
-
-$(proj_name).res : ../res/ide.rc $(ntverrc_deps) $(cli_idelib_rc_deps)
+$(proj_name).res : ../res/ide.rc $(cli_idelib_rc_deps)
     @%make echo_rc
     $(rcu8j) $(ppflags_common) $(rc_cppflags) $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 

@@ -6,6 +6,8 @@ proj_name = wmenu
 wmenu_autodepends = .AUTODEPEND
 !endif
 
+wmenu_ntverrc = ../res
+
 wmenu_wreslib_cli = gui
 wmenu_wreslib_incl = 1
 

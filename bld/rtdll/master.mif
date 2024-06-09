@@ -2,6 +2,8 @@ proj_name = rtdll
 
 rtdll_autodepends = .AUTODEPEND
 
+rtdll_ntverrc = ..
+
 additional_clean = *.ilb *.grc
 
 rtdll_host_cpu_086=i86
@@ -42,13 +44,14 @@ br_suffix=0
 patch_level=0
 !endif
 
+!include $(rtdll_dir)/dllname.mif
+ntverrc_dll = $(dllname)
+
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
 !include dllbase.mif
 !include libsubdi.mif
-
-!include $(rtdll_dir)/dllname.mif
 
 !include ../objs.mif
 
@@ -106,18 +109,12 @@ dlltarg_opts          = alias __HugeValue_br=__HugeValue, __IsTable_br=__IsTable
 dlltarg_opts          = alias _HugeValue_br=_HugeValue, _IsTable_br=_IsTable
 !endif
 !endif
-!ifdef ntverrc_dll_out
-dlltarg_res = $(ntverrc_dll_out)
-!endif
 dlltarg_name          = $(dllname)
 !include dlltarg.mif
 
 #
 # rc and others
 #
-ntverrc_dll      = $(dllname)
-!include ntverrc.mif
-
 $(dllname).lbc : $(dllname).dll $(rtdll_dir)/proclbc.awk $(static_objs)
     @%make echo_awk
     $(noecho)*awk -f $(rtdll_dir)/proclbc.awk -v OS=$(host_os) -v BR=$(br_suffix) -v "LSTFILE=$(rtdll_dir:\=/)/brfunc.dat" -v OUTFILE=$^. $(dllname).ilb

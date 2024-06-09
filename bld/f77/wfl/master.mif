@@ -6,11 +6,15 @@ proj_name = wfl
 wfl_autodepends = .AUTODEPEND
 !endif
 
+wfl_ntverrc = ..
+
 wfl_trmem = 1
 
 wfl_wreslib_cli = text
 
 additional_clean = *.gh *.grh *.grc
+
+ntverrc_exe = $(exetarg_name)
 
 !include cproj.mif
 !include defrule.mif
@@ -57,14 +61,9 @@ exetarg_res = $(proj_name).res
 #
 # rc and others
 #
-ntverrc_exe = $(exetarg_name)
-!include ntverrc.mif
-
 rc_inc_dirs = -I. -I"$(f77wfl_dir)" -I"$(f77_dir)/h" -I"$(comp_cfg_dir)/h"
 
-extra_rc_flags_nt = $(ntverrc_deps) $(ntverrc_inc_dirs)
-
-$(proj_name).res : $(f77wfl_dir)/h/wfl.rc $(ntverrc_exe_deps) wflmsgs.gh wflmsgs.grh
+$(proj_name).res : $(f77wfl_dir)/h/wfl.rc wflmsgs.gh wflmsgs.grh
     @%make echo_rc
     $(rcu8j) $(ppflags_common) $(rc_cppflags) $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 

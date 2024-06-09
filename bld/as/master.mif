@@ -4,11 +4,21 @@ proj_name = was
 was_autodepends = .AUTODEPEND
 !endif
 
+was_ntverrc = ..
+
 was_trmem = 1
 
 was_wreslib_cli = text
 
 additional_clean = *.c *.h *.re *.y *.gh *.gc *.grh *.grc
+
+!ifdef bootstrap
+exetarg_name = bwas$(target_cpu)
+!else
+exetarg_name = was$(target_cpu)
+!endif
+
+ntverrc_exe = $(exetarg_name)
 
 !include cproj.mif
 !include defrule.mif
@@ -91,15 +101,6 @@ extra_c_flags_cmdlnprs = $(incl_file_opts)fesupp.h
 
 # explicit rules
 #################
-
-#
-# names
-#
-!ifdef bootstrap
-exetarg_name = bwas$(target_cpu)
-!else
-exetarg_name = was$(target_cpu)
-!endif
 
 #
 # objects
@@ -189,9 +190,6 @@ libtarg_name = asinline
 #
 # rc and others
 #
-ntverrc_exe = $(exetarg_name)
-!include ntverrc.mif
-
 extra_rc_flags_nt = $(ntverrc_def) $(ntverrc_inc_dirs)
 
 $(proj_name).res : $(as_dir)/h/as.rc $(ntverrc_exe_deps) msg.grh usage.gh $(__MAKEFILES__)

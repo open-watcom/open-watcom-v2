@@ -4,23 +4,13 @@ proj_name = plusplus
 
 plusplus_autodepends = .AUTODEPEND
 
+plusplus_ntverrc = ..
+
 # Important! The C++ compiler modifies string literals
 #suppress_zc = 1
 
 # Extra files to delete on clean
 additional_clean = *.int y.out ytab.* *.mbr *.gh *.grh *.grc *.gc
-
-!include cproj.mif
-!include defrule.mif
-!include dllrule.mif
-!include dllbase.mif
-!include deftarg.mif
-!include trmem.mif
-
-!include $(cg_dir)/client.mif
-!include asclient.mif
-
-!include ../../ppobjs.mif
 
 #
 # names
@@ -38,6 +28,20 @@ dlltarg_name = wppd$(target_cpu)
 exetarg_name +=$(target_cpu)
 !endif
 intname     = wpp$(target_cpu)
+ntverrc_dll = $(dlltarg_name)
+ntverrc_exe = $(exetarg_name)
+
+!include cproj.mif
+!include defrule.mif
+!include dllrule.mif
+!include dllbase.mif
+!include deftarg.mif
+!include trmem.mif
+
+!include $(cg_dir)/client.mif
+!include asclient.mif
+
+!include ../../ppobjs.mif
 
 #
 # cflags
@@ -152,9 +156,6 @@ exetarg_objs          = $(comp_objs_exe)
 exetarg_libs          = $(cli_asminline_libs) $(cli_cg_libs)
 !endif
 exetarg_qnx_res       = usage.u
-!ifdef ntverrc_exe_out
-exetarg_res           = $(ntverrc_exe_out)
-!endif
 !include exetarg.mif
 
 #
@@ -163,18 +164,11 @@ exetarg_res           = $(ntverrc_exe_out)
 dlltarg_prebuild_objs = $(dll_subdir) $(prebuild_objs)
 dlltarg_objs          = $(comp_objs_dll)
 dlltarg_libs          = $(cli_asminline_libs) $(cli_cg_libs)
-!ifdef ntverrc_dll_out
-dlltarg_res           = $(ntverrc_dll_out)
-!endif
 !include dlltarg.mif
 
 #
 # rc and others
 #
-ntverrc_dll = $(dlltarg_name)
-ntverrc_exe = $(exetarg_name)
-!include ntverrc.mif
-
 ./intlbin.exe: $(fe_misc_dir)/c/intlbin.c
     @%make echo_bldccl
     $(bld_ccl) $(ppflags_common) $(ppflags_autodep) $(bld_ppflags_sys) $(bld_cppflags) $[@ $(bld_cclflags) -I"$(fe_misc_dir)/h" $(bld_ldflags)

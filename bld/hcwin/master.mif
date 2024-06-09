@@ -3,6 +3,8 @@ proj_type = cxx
 
 whc_autodepends = .AUTODEPEND
 
+whc_ntverrc = ../h
+
 whc_trmem = 1
 
 additional_clean = *.grc
@@ -55,13 +57,8 @@ exetarg_objs = &
     compress.obj &
     parsing.obj &
     $(trmem_objs)
-!ifdef ntverrc_exe_out
-exetarg_res = $(ntverrc_exe_out)
-!endif
 !include exetarg.mif
 
 #
 # rc and others
 #
-ntverrc_path = ../h
-!include ntverrc.mif

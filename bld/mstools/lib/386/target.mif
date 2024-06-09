@@ -6,4 +6,6 @@ target_cpu = 386
 lib386_autodepends = .AUTODEPEND
 !endif
 
+lib386_ntverrc = ..
+
 !include ../../lib.mif

@@ -4,4 +4,6 @@ proj_name = lib
 lib_autodepends = .AUTODEPEND
 !endif
 
+lib_ntverrc = ..
+
 !include ../../lib.mif

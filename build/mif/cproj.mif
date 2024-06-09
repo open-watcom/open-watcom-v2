@@ -165,7 +165,9 @@ ppflags_debug = -DNDEBUG
 ppflags_debug = -DDEVBUILD
 !endif
 
-ppflags_common = -D_BLDVER=$(bld_ver_tool) -D_CYEAR=$(curr_year) $(ppflags_debug) $(ppflags_wres)
+ppflags_common_sys = -D_BLDVER=$(bld_ver_tool) -D_CYEAR=$(curr_year) $(ppflags_debug)
+
+ppflags_common = $(ppflags_common_sys) $(ppflags_wres)
 !ifdef bootstrap
 ppflags_common += -DBOOTSTRAP
 !endif
@@ -804,6 +806,7 @@ rc_host_os = $(host_os)
 !else
 rc_host_os = win
 !endif
+rc_flags_sys    = $(rc_flags_all) $(rc_flags_$(host_os)) $(proj_rc_flags)
 rc_flags        = $(rc_flags_all) $(rc_flags_$(rc_host_os)) $(proj_rc_flags)
 
 #
@@ -891,9 +894,14 @@ wbind   = $(noecho)bwbind
 !include wres.mif
 !endif
 
-!ifeq host_os nt
-! ifdef $(proj_name)_ntmanif
+!ifndef bootstrap
+! ifeq host_os nt
+!  ifdef $(proj_name)_ntmanif
 !include ntmanif.mif
+!  endif
+!  ifdef $(proj_name)_ntverrc
+!include ntverrc.mif
+!  endif
 ! endif
 !endif
 

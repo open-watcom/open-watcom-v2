@@ -5,6 +5,7 @@ vi_autodepends = .AUTODEPEND
 !endif
 
 vi_ntmanif = ../res
+vi_ntverrc = ../res
 
 vi_trmem = 1
 
@@ -81,12 +82,7 @@ exetarg_name          = $(name)
 #
 # rc and others
 #
-ntverrc_path = ../res
-!include ntverrc.mif
-
-extra_rc_flags_nt = $(ntverrc_def) $(ntverrc_inc_dirs)
-
-$(name).res : $(vi_dir)/res/viw.rc $(ntverrc_exe_deps) $(__MAKEFILES__) $(vi_autodepends)
+$(name).res : $(vi_dir)/res/viw.rc $(__MAKEFILES__) $(vi_autodepends)
     @%make echo_rc
     $(rcu8j) $(ppflags_common) $(rc_cppflags) -ad $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 

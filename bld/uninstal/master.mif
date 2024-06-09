@@ -5,6 +5,7 @@ uninstal_autodepends = .AUTODEPEND
 !endif
 
 uninstal_ntmanif = ../res
+uninstal_ntverrc = ../res
 
 sys_windowed = 1
 
@@ -38,14 +39,9 @@ exetarg_res           = $(proj_name).res
 #
 # rc and others
 #
-ntverrc_path = ../res
-!include ntverrc.mif
-
 rc_inc_dirs = -I"../res" -I".."
 
-extra_rc_flags_nt = $(ntverrc_def) $(ntverrc_inc_dirs)
-
-$(proj_name).res : ../res/uninstal.rc $(ntverrc_exe_deps) $(__MAKEFILES__) .AUTODEPEND
+$(proj_name).res : ../res/uninstal.rc $(__MAKEFILES__) .AUTODEPEND
     @%make echo_rc
     $(rcu8) $(ppflags_common) $(rc_cppflags) -ad $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
