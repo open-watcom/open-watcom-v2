@@ -21,17 +21,11 @@ additional_clean_sys = *$(exetarg_ext)
 !else
 exetarg_ext = .exe
 !endif
-!ifdef exetarg_qnx_res
-additional_clean_qnx = $(exetarg_qnx_res)
-! ifdef __WATCOM_TOOLS__
-!  ifeq host_os qnx
-exetarg_qnx_res_obj = $(exetarg_qnx_res)
-exetarg_qnx_res_link = opt resource=$(exetarg_qnx_res)
-!  endif
-! endif
-!else
-! undef exetarg_qnx_res_obj
-! undef exetarg_qnx_res_link
+!undef exetarg_qnx_res_obj
+!undef exetarg_qnx_res_link
+!ifdef qnx_usage
+exetarg_qnx_res_obj = $(qnx_usage)
+exetarg_qnx_res_link = opt resource=$(qnx_usage)
 !endif
 !ifeq host_os osx
 # now unsupported on OSX

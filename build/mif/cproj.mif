@@ -837,7 +837,7 @@ rc_ignore_env = -x
 !endif
 !endif
 
-rc              = $(noecho)*bwrc $(rc_ignore_env) -q
+rc              = $(noecho)*bwrc -q $(rc_ignore_env)
 rcj             = $(rc) -zk0
 rcu8            = $(rc) $(rcu8_encoding)
 rcu8j           = $(rc) $(rcu8_encoding)
@@ -903,7 +903,16 @@ wbind   = $(noecho)bwbind
 !include ntverrc.mif
 !  endif
 ! endif
+! ifeq host_os qnx
+!  ifdef $(proj_name)_qnx_usage
+qnx_usage = usage.gu
+optencod_sys_qnx = -u=$(qnx_usage)
+additional_clean_qnx = $(qnx_usage) 
+!  endif
+! endif
 !endif
+
+optencod = $(noecho)*optencod -q $(optencod_sys_$(host_os))
 
 echo_as : .PROCEDURE .EXPLICIT
 !ifeq verbose 0

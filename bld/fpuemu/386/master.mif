@@ -4,6 +4,7 @@ proj_name = emu386
 
 emu386_autodepends = .AUTODEPEND
 emu386_distrib_lib = 1
+emu386_qnx_usage = 1
 
 !include cproj.mif
 !include defrule.mif
@@ -18,7 +19,7 @@ extra_cpp_flags_qnx = -DQNX
 
 extra_c_flags = -fpc
 extra_c_flags_dos = -zl -zls
-extra_c_flags_qnx = -oais-w3 -I"$(new_qnx_h)"
+extra_c_flags_qnx = -oais -w3
 extra_c_flags_qnxemu87 = -i"$(clib_dir)/startup/h" -I"$(clib_dir)/h" -I"$(lib_misc_dir)/h" -i"$(comp_cfg_dir)/h"
 extra_c_flags_fpeqnx = -I"$(clib_dir)/h"
 
@@ -44,14 +45,15 @@ extra_a_flags_emu387 = -I"../inc" -I"$(fpuemu_dir)/inc" -I"$(mathlib_dir)/h"
 # EXE
 #
 exetarg_objs     = qnxemu87.obj emu387.obj fpeqnx.obj
-exetarg_qnx_res  = usage.u
 exetarg_opts     = opt priv=0, long
 exetarg_name     = emu387
 !include exetarg.mif
 
-usage.u : $(fpuemu_dir)/usage.sp
+!ifdef qnx_usage
+$(qnx_usage) : $(fpuemu_dir)/usage.sp
     @%make echo_wsplice
     $(noecho)*wsplice -u $< $@
+!endif
 
 !else ifdef stub
 
