@@ -1,6 +1,5 @@
 !ifndef bootstrap
 ntmanif_res = ntmanif.res
-ntmanif_link = resource $(ntmanif_res)
 
 $(ntmanif_res) : $($(proj_name)_ntmanif)/ntmanif.rc $($(proj_name)_ntmanif)/appmanif.xml .EXPLICIT
     @%make echo_rc

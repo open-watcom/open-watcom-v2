@@ -33,14 +33,6 @@ exetarg_qnx_res_link = opt resource=$(exetarg_qnx_res)
 ! undef exetarg_qnx_res_obj
 ! undef exetarg_qnx_res_link
 !endif
-!ifdef ntmanif_res
-exetarg_nt_res_obj = $(ntmanif_res)
-exetarg_nt_res_link = $(ntmanif_link)
-!else
-! undef exetarg_nt_res_obj
-! undef exetarg_nt_res_link
-!endif
-
 !ifeq host_os osx
 # now unsupported on OSX
 # not clear what is running on OSX by default
@@ -50,8 +42,8 @@ exetarg_nt_res_link = $(ntmanif_link)
 !else
 objcopy = objcopy
 !endif
-$(exetarg_name)$(exetarg_ext) : $+$(exetarg_prebuild_objs) $(exetarg_$(host_os)_res_obj) &
-        $(exetarg_objs) $(exetarg_libs) $(cli_wres_libs) $(exetarg_res)$- $(__MAKEFILES__)
+$(exetarg_name)$(exetarg_ext) : $+$(exetarg_prebuild_objs) $(exetarg_qnx_res_obj) &
+        $(exetarg_objs) $(exetarg_libs) $(cli_wres_libs) $(exetarg_res) $(ntmanif_res)$- $(__MAKEFILES__)
     @%make echo_cl
 !ifndef __WATCOM_TOOLS__
 ! ifdef bootstrap
@@ -70,7 +62,7 @@ $(exetarg_name)$(exetarg_ext) : $+$(exetarg_prebuild_objs) $(exetarg_$(host_os)_
 !  endif
 ! endif
 !else
-    $(noecho)%write $^&.lnk $(lflags) $+$(exetarg_opts) $(exetarg_$(host_os)_res_link)$-
+    $(noecho)%write $^&.lnk $(lflags) $+$(exetarg_opts) $(exetarg_qnx_res_link)$-
     @for %f in ($+$(exetarg_objs)$-) do @%append $^&.lnk file %f
     @for %l in ($+$(exetarg_libs) $(cli_wres_libs)$-) do $(noecho)%append $^&.lnk library %l
 ! ifdef win386
@@ -79,36 +71,65 @@ $(exetarg_name)$(exetarg_ext) : $+$(exetarg_prebuild_objs) $(exetarg_$(host_os)_
     $(linker) name $@ @$^&.lnk
 ! endif
 !endif
-###############################
-# add WIN386 extender and .res
-###############################
+#####################################
+# add resources to EXE
+#####################################
+# get list of resources for wrc
+###########################
+!undef exetarg_res_wrc
+!ifdef exetarg_res
+! ifeq wreslib_cli 1
+!  ifdef ntmanif_res
+exetarg_res_wrc = $(ntmanif_res)
+!  else
+#exetarg_res_wrc =
+!  endif
+! else
+!  ifdef ntmanif_res
+exetarg_res_wrc = $(exetarg_res) -fr=$(ntmanif_res)
+!  else
+exetarg_res_wrc = $(exetarg_res)
+!  endif
+! endif
+!else
+! ifdef ntmanif_res
+exetarg_res_wrc = $(ntmanif_res)
+! else
+#exetarg_res_wrc =
+! endif
+!endif
+#####################################
+# add WIN386 extender and resources
+#####################################
 !ifdef win386
-! ifdef exetarg_res
+! ifdef exetarg_res_wrc
 # extender + application .res
 !  ifeq verbose 0
     @echo wbind $(win386ldr) $@
 !  endif
-    $(wbind) $(lname) $(wbind_quiet) -s $(win386ldr) -R $(wbind_quiet) -k $+$(exetarg_res)$- $@
+    $(wbind) $(lname) $(wbind_quiet) -s $(win386ldr) -R $(wbind_quiet) -k $+$(exetarg_res_wrc)$- $@
 ! else
 # extender, no .res
     $(wbind) $(lname) -n $(wbind_quiet) -s $(win386ldr)
 ! endif
-!else ifdef exetarg_res
-###############################
-# add resources to EXE
-###############################
-! ifeq wreslib_cli 1
-# string resource only with wreslib
+#####################################
+# add OS native resources to EXE
+#####################################
+!else ifdef exetarg_res_wrc
+!  ifeq verbose 0
+    @echo bind res $@ appl
+!  endif
+    $(rcbind) -q -k $+$(exetarg_res_wrc)$- $@
+!endif
+#####################################
+# handle resources for wres library
 # Windows 3.x resources format
+#####################################
+!ifdef exetarg_res
+! ifeq wreslib_cli 1
 !  ifeq verbose 0
     @echo bind res $@ wreslib
 !  endif
     $(wstrip) -q -a -r $@ . $+$(exetarg_res)$-
-! else
-# native .res for application
-!  ifeq verbose 0
-    @echo bind res $@ appl
-!  endif
-    $(rcbind) -q -k $+$(exetarg_res)$- $@
 ! endif
 !endif
