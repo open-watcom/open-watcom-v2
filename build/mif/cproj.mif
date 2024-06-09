@@ -884,7 +884,7 @@ lflags  = $(lflags_gen)
 # options for include source code file
 incl_file_opts  = -fi
 
-rcbind  = $(noecho)*bwrc
+rcbind  = $(noecho)*bwrc -q -k
 wstrip  = $(noecho)bwstrip
 wbind   = $(noecho)bwbind
 

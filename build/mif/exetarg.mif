@@ -140,7 +140,7 @@ exetarg_res_wrc = $(ntverrc_exe_res)
 ! ifeq verbose 0
     @echo bind res $@ appl
 ! endif
-    $(rcbind) -q -k $+$(exetarg_res_wrc)$- $@
+    $(rcbind) $+$(exetarg_res_wrc)$- $@
 !endif
 ############################################
 # add resources for wres library by wstrip

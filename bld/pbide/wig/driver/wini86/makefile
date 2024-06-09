@@ -24,7 +24,7 @@ driver.exe : $(dobj) driver.res $(name).lib
 !ifeq verbose 0
     @echo bind res $@
 !endif
-    $(rcbind) -q -k $^&.res $@
+    $(rcbind) $^&.res $@
 
 $(name).lib: ..\owindll\$(name).dll
     wtouch $@

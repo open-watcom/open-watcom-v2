@@ -300,7 +300,7 @@ $(target) : $(extra_link_res_$(host_os)) $(objs) $(libs) $(resource_file) $(extr
 ! ifeq verbose 0
     @echo bind res $@
 ! endif
-    $(rcbind) -q -k $^&.res $@
+    $(rcbind) $^&.res $@
 !endif
 !ifdef extra_cmds
     $(extra_cmds)

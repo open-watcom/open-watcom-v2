@@ -71,7 +71,7 @@ dlltarg_res_wrc = $(ntverrc_res)
 ! ifeq verbose 0
     @echo bind res $@ appl
 ! endif
-    $(rcbind) -q -k $+$(dlltarg_res_wrc)$- $@
+    $(rcbind) $+$(dlltarg_res_wrc)$- $@
 !endif
 ############################################
 # add resources for wres library by wstrip
