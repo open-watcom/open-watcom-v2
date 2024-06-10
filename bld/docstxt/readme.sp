@@ -190,7 +190,7 @@ export EDPATH=$WATCOM/eddat
 export INCLUDE=$WATCOM/lh
 :endsegment
 #export LIB=
-#export WWINHELP=%WATCOM%/binw
+#export WWINHELP=$WATCOM/binw
 ---------------------------------------------------------------------------
 
 Linux 64-bit shell script:
@@ -202,5 +202,5 @@ export EDPATH=$WATCOM/eddat
 export INCLUDE=$WATCOM/lh
 :endsegment
 #export LIB=
-#export WWINHELP=%WATCOM%/binw
+#export WWINHELP=$WATCOM/binw
 ---------------------------------------------------------------------------
