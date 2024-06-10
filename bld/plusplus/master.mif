@@ -4,6 +4,8 @@ proj_name = plusplus
 
 plusplus_autodepends = .AUTODEPEND
 
+plusplus_wreslib_cli = incl_msgtext
+
 plusplus_ntverrc = ..
 
 plusplus_qnx_usage = 1
@@ -53,7 +55,7 @@ ntverrc_exe = $(exetarg_name)
 inc_dirs = -I. -I.. -I"../../h" $(cli_cg_inc_dirs) $(cli_asminline_inc_dirs) $(cli_owl_inc_dirs) $(cli_dwarfw_inc_dirs) &
     $(cli_cfloat_inc_dirs) -I"$(cc_dir)/h" -I"$(comp_cfg_dir)/h" -I"$(fe_misc_dir)/h" -I"$(brinfo_dir)/h"
 
-extra_cpp_flags = -DINCL_MSGTEXT
+extra_cpp_flags =
 !ifndef plusplus_dll
 extra_cpp_flags += -DIDE_PGM
 !endif

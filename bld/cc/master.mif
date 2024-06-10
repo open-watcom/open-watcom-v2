@@ -4,6 +4,8 @@ proj_name = cc
 
 cc_autodepends = .AUTODEPEND
 
+cc_wreslib_cli = incl_msgtext
+
 cc_ntverrc = ..
 
 cc_qnx_usage = 1
@@ -65,7 +67,7 @@ $(bin_subdir) : .EXPLICIT
 
 inc_dirs  = -I. -I.. -I"../../h" $(cli_cg_inc_dirs) $(cli_asminline_inc_dirs) $(cli_owl_inc_dirs) $(cli_dwarfw_inc_dirs) -I"$(comp_cfg_dir)/h" -I"$(fe_misc_dir)/h"
 
-extra_cpp_flags = -DINCL_MSGTEXT
+extra_cpp_flags =
 !ifndef cc_dll
 extra_cpp_flags += -DIDE_PGM
 !endif

@@ -13,8 +13,12 @@ wmake_ntverrc = ../h
 
 wmake_trmem = 1
 
+!ifdef bootstrap
+wmake_wreslib_cli = incl_msgtext
+!else
 wmake_wreslib_cli = text
 wmake_wreslib_incl = 1
+!endif
 
 # DOS code will not fit in 64k with /d2
 #!ifeq host_os dos
@@ -48,9 +52,6 @@ extra_cpp_flags += -DDLLS_IMPLEMENTED
 !endif
 !ifdef cachestat
 extra_cpp_flags += -DCACHE_STATS
-!endif
-!ifdef bootstrap
-extra_cpp_flags += -DINCL_MSGTEXT
 !endif
 
 extra_cpp_flags_memory = $(trmem_cpp_flags)

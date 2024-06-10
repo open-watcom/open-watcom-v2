@@ -128,30 +128,36 @@ wreslib_incl = 1
 ! endif
 !endif
 
+!ifeq $(proj_name)_wreslib_cli incl_msgtext
+wreslib_cli = 0
+!endif
+
+!ifndef wreslib_cli
 wreslib_cli_text_win = 0
 wreslib_cli_text_nt  = 0
-!ifdef sys_windowed
+! ifdef sys_windowed
 wreslib_cli_gui_win = 0
 wreslib_cli_gui_nt  = 0
 wreslib_cli_gui_os2 = 0
-!endif
-!ifndef wreslib_cli
+! endif
 ! ifdef $(proj_name)_wreslib_cli
 !  ifdef wreslib_cli_$($(proj_name)_wreslib_cli)_$(host_os)
 !   ifeq wreslib_cli_$($(proj_name)_wreslib_cli)_$(host_os) 1
 wreslib_cli = 1
 !   else
-wreslib_cli = 0
+wreslib_cli = 2
 !   endif
 !  else
 wreslib_cli = 1
 !  endif
 ! else
-wreslib_cli = 0
+wreslib_cli = 2
 ! endif
 !endif
 
-!ifeq wreslib_cli 1
+!ifeq wreslib_cli 0
+ppflags_wres = -DINCL_MSGTEXT
+!else ifeq wreslib_cli 1
 wreslib_incl = 1
 ppflags_wres = -DUSE_WRESLIB
 !endif

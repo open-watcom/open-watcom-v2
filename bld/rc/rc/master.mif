@@ -10,7 +10,9 @@ wrc_ntverrc = ..
 
 wrc_trmem = 1
 
-!ifndef bootstrap
+!ifdef bootstrap
+wrc_wreslib_cli = incl_msgtext
+!else
 wrc_wreslib_cli = text
 !endif
 wrc_wreslib_incl = 1
@@ -54,9 +56,6 @@ inc_dirs = -I. -I"../h" $(cli_wres_inc_dirs) -I"$(fe_misc_dir)/h" $(cli_cpp_inc_
 parser_defines = -DYYDEBUG -DSCANDEBUG
 
 extra_cpp_flags   = -D_STANDALONE_ $(parser_defines)
-!ifdef bootstrap
-extra_cpp_flags   += -DINCL_MSGTEXT
-!endif
 !ifndef wrc_dll
 extra_cpp_flags   += -DIDE_PGM
 !endif

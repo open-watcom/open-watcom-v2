@@ -10,6 +10,7 @@ wasm_nofpu = 1
 
 wasm_trmem = 1
 
+#wasm_wreslib_cli = incl_msgtext
 wasm_wreslib_cli = text
 
 wasm_qnx_usage = 1
@@ -31,7 +32,6 @@ additional_clean = *.gh *.grh *.grc *.gc
 inc_dirs  = -I. -I"../h" -I"$(fe_misc_dir)/h"
 
 extra_cpp_flags =-D_STANDALONE_
-#extra_cpp_flags += -DINCL_MSGTEXT
 !ifeq debug 2
 extra_cpp_flags += -DDEBUG_OUT
 !endif

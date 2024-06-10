@@ -9,7 +9,9 @@ wlib_ntverrc = ../h
 
 wlib_trmem = 1
 
-!ifndef bootstrap
+!ifdef bootstrap
+wlib_wreslib_cli = incl_msgtext
+!else
 wlib_wreslib_cli = text
 !endif
 
@@ -45,13 +47,12 @@ additional_clean = *.gh *.grh *.grc *.gc
 !include $(orl_dir)/orlobjs.mif
 .c: ../c;$(lib_misc_dir)/c;$(fe_misc_dir)/c;$(watcom_dir)/c;$(trmem_dir);$(cli_orl_c_dirs)
 inc_dirs =  -I. -I.. -I"../h" $(cli_orl_inc_dirs) -I"$(lib_misc_dir)/h" -I"$(fe_misc_dir)/h" $(cli_orl_inc_dirs_internal)
-extra_cpp_flags = -DINSIDE_WLIB -DINCL_MSGTEXT
 !else
 .c: ../c;$(lib_misc_dir)/c;$(fe_misc_dir)/c;$(watcom_dir)/c;$(trmem_dir)
 inc_dirs =  -I. -I.. -I"../h" $(cli_orl_inc_dirs) -I"$(lib_misc_dir)/h" -I"$(fe_misc_dir)/h"
-extra_cpp_flags = -DINSIDE_WLIB
 !endif
 
+extra_cpp_flags = -DINSIDE_WLIB
 !ifndef wlib_dll
 extra_cpp_flags += -DIDE_PGM
 !endif
