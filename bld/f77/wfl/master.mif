@@ -65,7 +65,7 @@ rc_inc_dirs = -I. -I"$(f77wfl_dir)" -I"$(f77_dir)/h" -I"$(comp_cfg_dir)/h"
 
 $(proj_name).res : $(f77wfl_dir)/h/wfl.rc wflmsgs.gh wflmsgs.grh
     @%make echo_rc
-    $(rcu8j) $(ppflags_common) $(rc_cppflags) $(rc_flags) $(rc_inc_path) $[@ -fo=$@
+    $(rcu8j) $(ppflags_common) $(ppflags_wreslib) $(rc_cppflags) $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
 #msgencod_enc_linux = -utf8
 

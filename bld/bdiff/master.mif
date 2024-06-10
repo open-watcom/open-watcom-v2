@@ -18,18 +18,23 @@ subdir_bdiff    = bdiff
 !include defrule.mif
 defrule_key = wcpatch
 extra_cpp_wcpatch_flags = -DBDIFF -D_WPATCH
+ppflags_wcpatch_wreslib = $(ppflags_wreslib)
 !include defrule.mif
 defrule_key = wpatch
 extra_cpp_wpatch_flags = -D_WPATCH -DBPATCH
+ppflags_wpatch_wreslib = $(ppflags_wreslib)
 !include defrule.mif
 defrule_key = bpatch
 extra_cpp_bpatch_flags = -D_WPATCH -DBPATCH
+ppflags_bpatch_wreslib = $(ppflags_wreslib)
 !include defrule.mif
 defrule_key = bdump
 extra_cpp_bdump_flags = -DBDUMP
+ppflags_bdump_wreslib = $(ppflags_wreslib)
 !include defrule.mif
 defrule_key = bdiff
 extra_cpp_bdiff_flags = -DBDIFF
+ppflags_bdiff_wreslib = $(ppflags_wreslib)
 !include defrule.mif
 !include deftarg.mif
 
@@ -156,16 +161,16 @@ dusage.gh : ../gml/optionsi.gml $(__MAKEFILES__)
 
 bpatch.res : ../h/bpatch.rc ../h/bpatch.h ppusage.gh
     @%make echo_rc
-    $(rcu8j) $(ppflags_common) $(rc_cppflags) -DBPATCH $(rc_flags) $(rc_inc_path) $[@ -fo=$@
+    $(rcu8j) $(ppflags_common) $(ppflags_wreslib) $(rc_cppflags) -DBPATCH $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
 bdump.res : ../h/bpatch.rc ../h/bpatch.h pdusage.gh
     @%make echo_rc
-    $(rcu8j) $(ppflags_common) $(rc_cppflags) -DBDUMP $(rc_flags) $(rc_inc_path) $[@ -fo=$@
+    $(rcu8j) $(ppflags_common) $(ppflags_wreslib) $(rc_cppflags) -DBDUMP $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
 bdiff.res : ../h/bpatch.rc ../h/bpatch.h dusage.gh
     @%make echo_rc
-    $(rcu8j) $(ppflags_common) $(rc_cppflags) -DBDIFF $(rc_flags) $(rc_inc_path) $[@ -fo=$@
+    $(rcu8j) $(ppflags_common) $(ppflags_wreslib) $(rc_cppflags) -DBDIFF $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
 wpatch.res wcpatch.res : ../h/bpatch.rc ../h/bpatch.h
     @%make echo_rc
-    $(rcu8j) $(ppflags_common) $(rc_cppflags) $(rc_flags) $(rc_inc_path) $[@ -fo=$@
+    $(rcu8j) $(ppflags_common) $(ppflags_wreslib) $(rc_cppflags) $(rc_flags) $(rc_inc_path) $[@ -fo=$@

@@ -2,5 +2,5 @@ ntmanif_res = ntmanif.res
 
 $(ntmanif_res) : $($(proj_name)_ntmanif)/ntmanif.rc $($(proj_name)_ntmanif)/appmanif.xml .EXPLICIT
     @%make echo_rc
-    $(rc) -zku8 $(ppflags_common_sys) $(rc_cppflags) $(rc_flags_sys) -I"$($(proj_name)_ntmanif)" $(inc_dirs_sys) $[@ -fo=$@
+    $(rc) -zku8 $(ppflags_common) $(rc_cppflags) $(rc_flags_sys) -I"$($(proj_name)_ntmanif)" $(inc_dirs_sys) $[@ -fo=$@
 

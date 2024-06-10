@@ -92,4 +92,4 @@ extra_rc_flags = -DRESX_GUI
 !endif
 
 sample.res : ../res/sample.rc $(guisamples_rc_deps) $(cli_gui_rc_deps)
-    $(rcu8) $(ppflags_common) $(rc_cppflags) -ad $(rc_flags) $(rc_inc_path) $[@ -fo=$@
+    $(rcu8) $(ppflags_common) $(ppflags_wreslib) $(rc_cppflags) -ad $(rc_flags) $(rc_inc_path) $[@ -fo=$@

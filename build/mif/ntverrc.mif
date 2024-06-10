@@ -28,7 +28,7 @@ $(ntverrc_exe_dep): $($(proj_name)_ntverrc)/exever.rc .EXPLICIT
 
 $(ntverrc_exe_res) : $(ntverrc_exe_deps) .EXPLICIT
     @%make echo_rc
-    $(rc) -zku8 $(ppflags_common_sys) $(rc_cppflags) $(rc_flags_sys) -I"$($(proj_name)_ntverrc)" $(inc_dirs_sys) -I"$(watcom_dir)/h" $[@ -fo=$@
+    $(rc) -zku8 $(ppflags_common) $(rc_cppflags) $(rc_flags_sys) -I"$($(proj_name)_ntverrc)" $(inc_dirs_sys) -I"$(watcom_dir)/h" $[@ -fo=$@
 
 $(ntverrc_dll_dep): $($(proj_name)_ntverrc)/dllver.rc .EXPLICIT
     @%make echo_genverrc
@@ -36,7 +36,7 @@ $(ntverrc_dll_dep): $($(proj_name)_ntverrc)/dllver.rc .EXPLICIT
 
 $(ntverrc_dll_res) : $(ntverrc_dll_deps) .EXPLICIT
     @%make echo_rc
-    $(rc) -zku8 $(ppflags_common_sys) $(rc_cppflags) $(rc_flags_sys) -I"$($(proj_name)_ntverrc)" $(inc_dirs_sys) -I"$(watcom_dir)/h" $[@ -fo=$@
+    $(rc) -zku8 $(ppflags_common) $(rc_cppflags) $(rc_flags_sys) -I"$($(proj_name)_ntverrc)" $(inc_dirs_sys) -I"$(watcom_dir)/h" $[@ -fo=$@
 
 echo_genverrc : .PROCEDURE .EXPLICIT
 !ifeq verbose 0

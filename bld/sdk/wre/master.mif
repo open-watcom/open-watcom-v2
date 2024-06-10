@@ -94,11 +94,11 @@ rc_inc_dirs = -I"../res" $(cli_commonui_rc_inc_dirs)
 
 $(proj_name).res : ../res/wre.rc $(__MAKEFILES__) .AUTODEPEND
     @%make echo_rc
-    $(rcu8j) $(ppflags_common) $(rc_cppflags) -ad $(rc_flags) $(rc_inc_path) $[@ -fo=$@
+    $(rcu8j) $(ppflags_common) $(ppflags_wreslib) $(rc_cppflags) -ad $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
 rcstrmsg.gh : ../res/wre.msg $(__MAKEFILES__)
     @%make echo_cpp
-    $(cppu8) $(ppflags_common) $(rc_cppflags) -o$@ $[@
+    $(cppu8) $(ppflags_common) $(ppflags_wreslib) $(rc_cppflags) -o$@ $[@
 
 rcstr.grh : rcstrmsg.gh $(__MAKEFILES__)
     @%make echo_awk

@@ -78,7 +78,7 @@ rc_inc_dirs = -I. -I.. -I"$(f77wfc_dir)/h" -I"$(f77_dir)/h" &
 
 $(proj_name).res : $(f77wfc_dir)/h/wfc.rc $(f77wfc_dir)/h/wfc.rh $(cli_asminline_rc_deps)
     @%make echo_rc
-    $(rcu8j) $(ppflags_common) $(rc_cppflags) $(rc_flags) $(rc_inc_path) $[@ -fo=$@
+    $(rcu8j) $(ppflags_common) $(ppflags_wreslib) $(rc_cppflags) $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
 #msgencod_enc_linux = -utf8
 
@@ -117,7 +117,7 @@ xcode$(target_cpu).tmp: $(f77wfc_dir)/a/code$(target_cpu).asm
 
 ./mkcode.exe: mkcode.c
     @%make echo_bldccl
-    $(bld_ccl) $(ppflags_common) $(ppflags_autodep) $(bld_ppflags_sys) $(bld_cppflags) $[@ $(bld_cclflags) $(bld_ldflags)
+    $(bld_ccl) $(ppflags_common) $(ppflags_wreslib) $(ppflags_autodep) $(bld_ppflags_sys) $(bld_cppflags) $[@ $(bld_cclflags) $(bld_ldflags)
 
 wfcmsgs.gh wfcmsgs.grh wfcgrps.gh wfcattrs.gh : $(f77wfc_dir)/gml/wfcmsgs.gml
     @%make echo_msgencod

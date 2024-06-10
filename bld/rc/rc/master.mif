@@ -205,11 +205,11 @@ rc_defines    = -D_STANDALONE_ $(parser_defines)
 
 wresexe.res : ../rc.rc rcmsg.grh .AUTODEPEND
     @%make echo_rc
-    $(rcu8j) $(ppflags_common) $(rc_cppflags) $(rc_defines) -ad $(rc_flags) $(rc_inc_path) $[@ -fo=$@
+    $(rcu8j) $(ppflags_common) $(ppflags_wreslib) $(rc_cppflags) $(rc_defines) -ad $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
 wresdll.res : ../rc.rc rcmsg.grh .AUTODEPEND
     @%make echo_rc
-    $(rcu8j) $(ppflags_common) $(rc_cppflags) $(rc_defines) -DRESX_DLL -ad $(rc_flags) $(rc_inc_path) $[@ -fo=$@
+    $(rcu8j) $(ppflags_common) $(ppflags_wreslib) $(rc_cppflags) $(rc_defines) -DRESX_DLL -ad $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
 win_yacc_options = -b $(win_yacc_prefix) -d -dd -db -de
 os2_yacc_options = -b $(os2_yacc_prefix) -d -dd -db -de
@@ -248,7 +248,7 @@ cmdlnprs.gh cmdlnprs.gc usage.gh : ../h/options.gml $(__MAKEFILES__)
 
 ./cvttable.exe: ../c/cvttable.c $(__MAKEFILES__)
     @%make echo_bldccl
-    $(bld_ccl) $(ppflags_common) $(ppflags_autodep) $(bld_ppflags_sys) -D_STANDALONE_ $(bld_cppflags) $[@ -I"../h" $(bld_cclflags) $(bld_ldflags)
+    $(bld_ccl) $(ppflags_common) $(ppflags_wreslib) $(ppflags_autodep) $(bld_ppflags_sys) -D_STANDALONE_ $(bld_cppflags) $[@ -I"../h" $(bld_cclflags) $(bld_ldflags)
 
 to932.uni : ./cvttable.exe $(__MAKEFILES__)
     $[@ $@

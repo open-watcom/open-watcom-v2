@@ -28,13 +28,14 @@ extra_cpp_stand_flags = -D_STANDALONE_
 !ifdef __WATCOM_TOOLS__
 extra_cpp_stand_flags += -fh=stand.pch
 !endif
+ppflags_stand_wreslib = $(ppflags_wreslib)
 !include defrule.mif
 defrule_key = lib
 subdir_lib = lib
-extra_cpp_lib_flags = -DINCL_MSGTEXT
 !ifdef __WATCOM_TOOLS__
-extra_cpp_lib_flags += -fh=lib.pch
+extra_cpp_lib_flags = -fh=lib.pch
 !endif
+ppflags_lib_wreslib = -DINCL_MSGTEXT
 !include defrule.mif
 !include deftarg.mif
 !include trmem.mif
@@ -194,17 +195,17 @@ extra_rc_flags_nt = $(ntverrc_def) $(ntverrc_inc_dirs)
 
 $(proj_name).res : $(as_dir)/h/as.rc $(ntverrc_exe_deps) msg.grh usage.gh $(__MAKEFILES__)
     @%make echo_rc
-    $(rcu8j) $(ppflags_common) $(rc_cppflags) -D_STANDALONE_ $(rc_flags) $(rc_inc_path) $[@ -fo=$@
+    $(rcu8j) $(ppflags_common) $(ppflags_wreslib) $(rc_cppflags) -D_STANDALONE_ $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
 msg.grh : $(as_dir)/h/as.msg $(__MAKEFILES__)
     @%make echo_cpp
-    $(cppu8) $(ppflags_common) $(rc_cppflags) $(cppflags) -D_STANDALONE_ -omsg.tmp $[@
+    $(cppu8) $(ppflags_common) $(ppflags_wreslib) $(rc_cppflags) $(cppflags) -D_STANDALONE_ -omsg.tmp $[@
     @%make echo_awk
     $(noecho)*awk -v base=MSG_AS_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. msg.tmp
 
 asi_msg.grh : $(as_dir)/h/as.msg $(__MAKEFILES__)
     @%make echo_cpp
-    $(cppu8) $(ppflags_common) $(rc_cppflags) $(cppflags) -oasi_msg.tmp $[@
+    $(cppu8) $(ppflags_common) $(ppflags_wreslib) $(rc_cppflags) $(cppflags) -oasi_msg.tmp $[@
     @%make echo_awk
     $(noecho)*awk -v base=MSG_AS_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. asi_msg.tmp
 

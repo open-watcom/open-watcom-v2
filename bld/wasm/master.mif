@@ -115,7 +115,7 @@ rc_inc_dirs  = -I. -I"../h"
 
 $(proj_name).res : ../h/wasm.rc usage.gh wasmcmsg.grh wasmsmsg.grh $(__MAKEFILES__)
     @%make echo_rc
-    $(rcu8j) $(ppflags_common) $(rc_cppflags) -D_STANDALONE_ $(rc_flags) $(rc_inc_path) $[@ -fo=$@
+    $(rcu8j) $(ppflags_common) $(ppflags_wreslib) $(rc_cppflags) -D_STANDALONE_ $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
 wasmsmsg.grh : ../h/wasms.msg $(__MAKEFILES__)
     @%make echo_awk

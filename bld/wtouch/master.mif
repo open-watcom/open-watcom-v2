@@ -42,7 +42,7 @@ exetarg_res           = $(proj_name).res
 #
 $(proj_name).res : ../h/wtouch.rc ../h/wtouch.msg usage.gh msg.grh $(__MAKEFILES__)
     @%make echo_rc
-    $(rcu8j) $(ppflags_common) $(rc_cppflags) $(rc_flags) $(rc_inc_path) $[@ -fo=$@
+    $(rcu8j) $(ppflags_common) $(ppflags_wreslib) $(rc_cppflags) $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
 msg.grh : ../h/wtouch.msg $(__MAKEFILES__)
     @%make echo_awk

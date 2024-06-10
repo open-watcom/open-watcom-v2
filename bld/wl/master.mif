@@ -127,12 +127,12 @@ rc_inc_dirs = -I. -I"$(wlink_dir)/h" -I"$(wrc_dir)/h"
 wresexe.res : $(wlink_dir)/res/wlink.rc rcmsg.grh $(wlink_dir)/res/wlink.msg &
             $(wlink_dir)/h/wlnkmsg.h $(wlink_dir)/res/lnkerror.msg $(__MAKEFILES__)
     @%make echo_rc
-    $(rcu8j) $(ppflags_common) $(rc_cppflags) $(rc_flags) $(rc_inc_path) $[@ -fo=$@
+    $(rcu8j) $(ppflags_common) $(ppflags_wreslib) $(rc_cppflags) $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
 wresdll.res : $(wlink_dir)/res/wlink.rc rcmsg.grh $(wlink_dir)/res/wlink.msg &
             $(wlink_dir)/h/wlnkmsg.h $(wlink_dir)/res/lnkerror.msg $(__MAKEFILES__)
     @%make echo_rc
-    $(rcu8j) $(ppflags_common) $(rc_cppflags) -DRESX_DLL $(rc_flags) $(rc_inc_path) $[@ -fo=$@
+    $(rcu8j) $(ppflags_common) $(ppflags_wreslib) $(rc_cppflags) -DRESX_DLL $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
 rcmsg.grh : $(wrc_dir)/h/rc.msg $(__MAKEFILES__)
     @%make echo_awk

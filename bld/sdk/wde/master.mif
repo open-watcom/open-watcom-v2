@@ -103,7 +103,7 @@ rc_inc_dirs = -I"../res" -I"$(fmedit_dir)/dev" $(cli_commonui_rc_inc_dirs)
 
 $(proj_name).res: ../res/wde.rc $(__MAKEFILES__) .AUTODEPEND
     @%make echo_rc
-    $(rcu8j) $(ppflags_common) $(rc_cppflags) -ad $(rc_flags) $(cppflags) $(rc_inc_path) $[@ -fo=$@
+    $(rcu8j) $(ppflags_common) $(ppflags_wreslib) $(rc_cppflags) -ad $(rc_flags) $(cppflags) $(rc_inc_path) $[@ -fo=$@
 
 rcstr.grh: rcstrmsg.gh $(__MAKEFILES__)
     @%make echo_awk
@@ -111,4 +111,4 @@ rcstr.grh: rcstrmsg.gh $(__MAKEFILES__)
 
 rcstrmsg.gh : ../res/wde.msg $(__MAKEFILES__)
     @%make echo_cpp
-    $(cppu8) $(ppflags_common) $(rc_cppflags) -o$@ $[@
+    $(cppu8) $(ppflags_common) $(ppflags_wreslib) $(rc_cppflags) -o$@ $[@

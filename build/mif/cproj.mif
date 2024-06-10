@@ -156,10 +156,10 @@ wreslib_cli = 2
 !endif
 
 !ifeq wreslib_cli 0
-ppflags_wres = -DINCL_MSGTEXT
+ppflags_wreslib = -DINCL_MSGTEXT
 !else ifeq wreslib_cli 1
 wreslib_incl = 1
-ppflags_wres = -DUSE_WRESLIB
+ppflags_wreslib = -DUSE_WRESLIB
 !endif
 
 ###################################
@@ -171,9 +171,7 @@ ppflags_debug = -DNDEBUG
 ppflags_debug = -DDEVBUILD
 !endif
 
-ppflags_common_sys = -D_BLDVER=$(bld_ver_tool) -D_CYEAR=$(curr_year) $(ppflags_debug)
-
-ppflags_common = $(ppflags_common_sys) $(ppflags_wres)
+ppflags_common = -D_BLDVER=$(bld_ver_tool) -D_CYEAR=$(curr_year) $(ppflags_debug)
 !ifdef bootstrap
 ppflags_common += -DBOOTSTRAP
 !endif

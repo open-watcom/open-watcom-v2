@@ -53,7 +53,7 @@ rc_inc_dirs = -I. -I"../h"
 
 $(proj_name).res : ../h/wstrip.rc msg.grh usage.gh $(__MAKEFILES__)
     @%make echo_rc
-    $(rcu8j) $(ppflags_common) $(rc_cppflags) -ad $(rc_flags) $(rc_inc_path) $[@ -fo=$@
+    $(rcu8j) $(ppflags_common) $(ppflags_wreslib) $(rc_cppflags) -ad $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
 msg.grh : ../h/wstrip.msg $(__MAKEFILES__)
     @%make echo_awk

@@ -173,11 +173,11 @@ dlltarg_res           = wresdll.res
 #
 wresexe.res : ../h/wlib.rc ../h/wlib.msg msg.grh $(__MAKEFILES__)
     @%make echo_rc
-    $(rcu8j) $(ppflags_common) $(rc_cppflags) $(rc_flags) $(rc_inc_path) $[@ -fo=$@
+    $(rcu8j) $(ppflags_common) $(ppflags_wreslib) $(rc_cppflags) $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
 wresdll.res : ../h/wlib.rc ../h/wlib.msg msg.grh $(__MAKEFILES__)
     @%make echo_rc
-    $(rcu8j) $(ppflags_common) $(rc_cppflags) -DRESX_DLL $(rc_flags) $(rc_inc_path) $[@ -fo=$@
+    $(rcu8j) $(ppflags_common) $(ppflags_wreslib) $(rc_cppflags) -DRESX_DLL $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
 msg.grh :  ../h/wlib.msg $(__MAKEFILES__)
     @%make echo_awk

@@ -98,7 +98,7 @@ extra_rc_flags_nt  = -I"../res/win" -I"../res" -I"../h" -DRESX_GUI
 
 $(proj_name).res : ../res/wprof.rc $(cli_aui_rc_deps) $(__MAKEFILES__) .AUTODEPEND
     @%make echo_rc
-    $(rcu8) $(ppflags_common) $(rc_cppflags) -ad $(rc_flags) $(rc_inc_path) $[@ -fo=$@
+    $(rcu8) $(ppflags_common) $(ppflags_wreslib) $(rc_cppflags) -ad $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
 !ifdef qnx_usage
 $(qnx_usage) : ../h/usage.sp $(__MAKEFILES__)

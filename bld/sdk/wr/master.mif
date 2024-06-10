@@ -105,7 +105,7 @@ rc_inc_dirs = $(cli_wr_rc_inc_dirs) -I"$(wrc_dir)/h" #$(cli_wres_inc_dirs) -I"$(
 
 $(proj_name).res: ../res/wr.rc $(__MAKEFILES__) .AUTODEPEND
     @%make echo_rc
-    $(rcu8j) $(ppflags_common) $(rc_cppflags) -ad $(rc_flags) $(rc_inc_path) $[@ -fo=$@
+    $(rcu8j) $(ppflags_common) $(ppflags_wreslib) $(rc_cppflags) -ad $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
 rcmsg.grh :  $(wrc_dir)/h/rc.msg $(__MAKEFILES__)
     @%make echo_awk

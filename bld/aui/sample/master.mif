@@ -64,8 +64,8 @@ extra_rc_flags = -DRESX_GUI
 
 app.res : ../res/app.rc $(rcfiles)
     @%make echo_rc
-    $(rcu8) $(ppflags_common) $(rc_cppflags) $(rc_flags) $(rc_inc_path) $[@ -fo=$@
+    $(rcu8) $(ppflags_common) $(ppflags_wreslib) $(rc_cppflags) $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
 appj.res : ../res/app.rc $(rcfiles)
     @%make echo_rc
-    $(rcu8j) $(ppflags_common) $(rc_cppflags) -DJAPANESE $(rc_flags) $(rc_inc_path) $[@ -fo=$@
+    $(rcu8j) $(ppflags_common) $(ppflags_wreslib) $(rc_cppflags) -DJAPANESE $(rc_flags) $(rc_inc_path) $[@ -fo=$@
