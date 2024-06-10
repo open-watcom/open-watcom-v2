@@ -174,7 +174,7 @@ dlltarg_libs          = $(cli_asminline_libs) $(cli_cg_libs)
 #
 ./intlbin.exe: $(fe_misc_dir)/c/intlbin.c
     @%make echo_bldccl
-    $(bld_ccl) $(ppflags_common) $(ppflags_wreslib) $(ppflags_autodep) $(bld_ppflags_sys) $(bld_cppflags) $[@ $(bld_cclflags) -I"$(fe_misc_dir)/h" $(bld_ldflags)
+    $(bld_ccl) $(ppflags_common) $(ppflags_autodep) $(bld_ppflags_sys) $(bld_cppflags) $[@ $(bld_cclflags) -I"$(fe_misc_dir)/h" $(bld_ldflags)
 
 $(intname)01.int : ./intlbin.exe errors01.int usage01.int
     $[@ $(intname)
@@ -191,7 +191,7 @@ keywords.gh weights.gh : ../../hash/plusplus.key ../../hash/pc.key
 
 ./umktable.exe: ../../c/umktable.c xlat.gh
     @%make echo_bldccl
-    $(bld_ccl) $(ppflags_common) $(ppflags_wreslib) $(ppflags_autodep) $(bld_ppflags_sys) $(bld_cppflags) $[@ $(bld_cclflags) -I. -I"../../h" $(bld_ldflags)
+    $(bld_ccl) $(ppflags_common) $(ppflags_autodep) $(bld_ppflags_sys) $(bld_cppflags) $[@ $(bld_cclflags) -I. -I"../../h" $(bld_ldflags)
 
 yylex.gh : ./umktable.exe
     @%make echo_execute
@@ -199,7 +199,7 @@ yylex.gh : ./umktable.exe
 
 ./mktrans.exe: ../../c/mktrans.c
     @%make echo_bldccl
-    $(bld_ccl) $(ppflags_common) $(ppflags_wreslib) $(ppflags_autodep) $(bld_ppflags_sys) $(bld_cppflags) $[@ $(bld_cclflags) $(bld_ldflags)
+    $(bld_ccl) $(ppflags_common) $(ppflags_autodep) $(bld_ppflags_sys) $(bld_cppflags) $[@ $(bld_cclflags) $(bld_ldflags)
 
 xlat.gh : ./mktrans.exe ../../h/ctokens.h keywords.gh ytab.h
     @%make echo_execute
@@ -229,7 +229,7 @@ cmdlnprs.gh cmdlnprs.gc cmdlnusg.gh usage01.int $(qnx_usage) : ../../gml/options
 
 ./icmask.exe : ../../c/icmask.c
     @%make echo_bldccl
-    $(bld_ccl) $(ppflags_common) $(ppflags_wreslib) $(ppflags_autodep) $(bld_ppflags_sys) $(bld_cppflags) $[@ $(bld_cclflags) -I"../../h" $(bld_ldflags)
+    $(bld_ccl) $(ppflags_common) $(ppflags_autodep) $(bld_ppflags_sys) $(bld_cppflags) $[@ $(bld_cclflags) -I"../../h" $(bld_ldflags)
 
 ic_mask.gh : ./icmask.exe ../../h/ic.h ../../c/dwarf.c ../../c/cgbkcgrf.c ../../c/cgio.c ../../c/brmwrite.c
     @%make echo_execute
@@ -269,4 +269,4 @@ xcode$(target_cpu).tmp: $(cc_dir)/a/code$(target_cpu).asm
 
 ./mkcode.exe: mkcode.c
     @%make echo_bldccl
-    $(bld_ccl) $(ppflags_common) $(ppflags_wreslib) $(ppflags_autodep) $(bld_ppflags_sys) $(bld_cppflags) $[@ $(bld_cclflags) $(bld_ldflags)
+    $(bld_ccl) $(ppflags_common) $(ppflags_autodep) $(bld_ppflags_sys) $(bld_cppflags) $[@ $(bld_cclflags) $(bld_ldflags)

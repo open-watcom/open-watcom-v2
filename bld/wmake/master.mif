@@ -128,7 +128,7 @@ isarray.gh : ./cretype.exe $(__MAKEFILES__)
 
 ./cretype.exe : cretype.c $(__MAKEFILES__)
     @%make echo_bldccl
-    $(bld_ccl) $(ppflags_common) $(ppflags_wreslib) $(ppflags_autodep) $(bld_ppflags_sys) $(bld_cppflags) $[@ $(bld_cclflags) $(bld_ldflags)
+    $(bld_ccl) $(ppflags_common) $(ppflags_autodep) $(bld_ppflags_sys) $(bld_cppflags) $[@ $(bld_cclflags) $(bld_ldflags)
 
 # special targets
 ##################

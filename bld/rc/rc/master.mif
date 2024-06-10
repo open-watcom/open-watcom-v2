@@ -248,7 +248,7 @@ cmdlnprs.gh cmdlnprs.gc usage.gh : ../h/options.gml $(__MAKEFILES__)
 
 ./cvttable.exe: ../c/cvttable.c $(__MAKEFILES__)
     @%make echo_bldccl
-    $(bld_ccl) $(ppflags_common) $(ppflags_wreslib) $(ppflags_autodep) $(bld_ppflags_sys) -D_STANDALONE_ $(bld_cppflags) $[@ -I"../h" $(bld_cclflags) $(bld_ldflags)
+    $(bld_ccl) $(ppflags_common) $(ppflags_autodep) $(bld_ppflags_sys) -D_STANDALONE_ $(bld_cppflags) $[@ -I"../h" $(bld_cclflags) $(bld_ldflags)
 
 to932.uni : ./cvttable.exe $(__MAKEFILES__)
     $[@ $@
