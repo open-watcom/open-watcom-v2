@@ -22,6 +22,8 @@ ntverrc_exe = $(exetarg_name)
 
 !include cproj.mif
 !include defrule.mif
+###########################
+# standalone objects rules
 defrule_key = stand
 subdir_stand = stand
 extra_cpp_stand_flags = -D_STANDALONE_
@@ -30,6 +32,8 @@ extra_cpp_stand_flags += -fh=stand.pch
 !endif
 ppflags_stand_wreslib = $(ppflags_wreslib)
 !include defrule.mif
+###########################
+# inline objects rules
 defrule_key = lib
 subdir_lib = lib
 !ifdef __WATCOM_TOOLS__
@@ -37,6 +41,7 @@ extra_cpp_lib_flags = -fh=lib.pch
 !endif
 ppflags_lib_wreslib = -DINCL_MSGTEXT
 !include defrule.mif
+###########################
 !include deftarg.mif
 !include trmem.mif
 
@@ -155,30 +160,20 @@ asi_test_objs = asitest.obj trmemcvr.obj $+$(trmem_objs)$-
 # TEST
 #
 !ifdef test_inline_as
-
-asinline.exe : $(asi_test_objs) $(cli_asminline_libs) $(cli_owl_libs) $(__MAKEFILES__)
+asinline.exe : $(cli_asminline_libs) $(asi_test_objs) $(cli_owl_libs) $(__MAKEFILES__)
     $(cl) $(clflags) $(asi_test_objs) $(cli_asminline_libs) $(cli_owl_libs) $(ldflags)
-
 !endif
-
-all_as =
-!ifndef no_asi_lib
-all_as += asinline.lib
-!endif
-!ifndef no_standalone
-all_as += $(exetarg_name).exe
-!endif
-
-all : $(all_as) .SYMBOLIC
 
 #
 # EXE
 #
-exetarg_prebuild_objs = $(subdir_stand) msg.grh usage.gh cmdlnprs.gh
+!ifndef lib_only
+exetarg_prebuild_objs = asinline.lib $(subdir_stand) msg.grh usage.gh cmdlnprs.gh
 exetarg_objs = $(as_objs)
 exetarg_libs = $(cli_owl_libs)
 exetarg_res = $(proj_name).res
 !include exetarg.mif
+!endif
 
 #
 # LIB
@@ -205,7 +200,7 @@ msg.grh : $(as_dir)/h/as.msg $(__MAKEFILES__)
 
 asi_msg.grh : $(as_dir)/h/as.msg $(__MAKEFILES__)
     @%make echo_cpp
-    $(cppu8) $(ppflags_common) $(ppflags_wreslib) $(rc_cppflags) $(cppflags) -oasi_msg.tmp $[@
+    $(cppu8) $(ppflags_common) $(ppflags_lib_wreslib) $(rc_cppflags) $(cppflags) -oasi_msg.tmp $[@
     @%make echo_awk
     $(noecho)*awk -v base=MSG_AS_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. asi_msg.tmp
 
