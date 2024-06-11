@@ -29,8 +29,6 @@ and the answers to these questions.
 The following topics are discussed:
 .begbull $compact
 .bull
-How do I determine my current patch level?
-.bull
 How do I convert to &cmpname?
 .bull
 What should I know about optimization?
