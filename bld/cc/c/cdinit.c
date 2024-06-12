@@ -657,13 +657,12 @@ static void ResetBitField( uint64 *val64, unsigned start, unsigned width )
     val64->u._32[I64LO32] &= ~mask.u._32[I64LO32];
 }
 
-static FIELDPTR InitBitField( FIELDPTR field )
+static void InitBitField( FIELDPTR field )
 {
     TYPEPTR             typ;
     target_size         size;
     uint64              value64;
     const_val           bit_value;
-    target_size         offset;
     TOKEN               token;
     bool                is64bit;
     DATA_TYPE           dtype;
@@ -677,34 +676,20 @@ static FIELDPTR InitBitField( FIELDPTR field )
     dtype = typ->u.f.field_type;
     is64bit = ( dtype == TYP_LONG64 || dtype == TYP_ULONG64 );
     LoadBitField( &value64 );
-    offset = field->offset;
-    while( typ->decl_type == TYP_FIELD || typ->decl_type == TYP_UFIELD ) {
-        if( typ->u.f.field_type == TYP_BOOL ) {
-            width = 1;
-        } else {
-            width = typ->u.f.field_width;
-        }
-        ResetBitField( &value64, typ->u.f.field_start, width );
-        if( CurToken != T_RIGHT_BRACE ) {
-            if( ConstExprAndType( &bit_value ) ) {
-                if( CheckAssignBits( &bit_value.value, width, true ) ) {
-                    CWarn1( ERR_CONSTANT_TOO_BIG );
-                }
-                U64ShiftL( &bit_value.value, typ->u.f.field_start, &bit_value.value );
-                value64.u._32[I64LO32] |= bit_value.value.u._32[I64LO32];
-                value64.u._32[I64HI32] |= bit_value.value.u._32[I64HI32];
+    if( typ->u.f.field_type == TYP_BOOL ) {
+        width = 1;
+    } else {
+        width = typ->u.f.field_width;
+    }
+    ResetBitField( &value64, typ->u.f.field_start, width );
+    if( CurToken != T_RIGHT_BRACE ) {
+        if( ConstExprAndType( &bit_value ) ) {
+            if( CheckAssignBits( &bit_value.value, width, true ) ) {
+                CWarn1( ERR_CONSTANT_TOO_BIG );
             }
-        }
-        if( CurToken == T_EOF )
-            break;
-        field = field->next_field;
-        if( field == NULL || field->offset != offset )
-            break;    /* bit field done */
-        typ = field->field_type;
-        if( CurToken != T_RIGHT_BRACE ) {
-            MustRecog( T_COMMA );
-        } else if( token != T_LEFT_BRACE ) {
-            break;
+            U64ShiftL( &bit_value.value, typ->u.f.field_start, &bit_value.value );
+            value64.u._32[I64LO32] |= bit_value.value.u._32[I64LO32];
+            value64.u._32[I64HI32] |= bit_value.value.u._32[I64HI32];
         }
     }
     if( is64bit ) {
@@ -717,7 +702,6 @@ static FIELDPTR InitBitField( FIELDPTR field )
             NextToken();
         MustRecog( T_RIGHT_BRACE );
     }
-    return( field );
 }
 
 
@@ -900,11 +884,11 @@ static void InitStructUnion( TYPEPTR typ, TYPEPTR ctyp, FIELDPTR field )
         offset = field->offset + SizeOfArg( ftyp );
         if( ftyp->decl_type == TYP_FIELD
           || ftyp->decl_type == TYP_UFIELD ) {
-            field = InitBitField( field );
+            InitBitField( field );
         } else {
             InitSymData( ftyp, ctyp, 1 );
-            field = field->next_field;
         }
+        field = field->next_field;
         if( typ->decl_type == TYP_UNION ) {
             if( offset < n ) {
                 ZeroBytes( n - offset );    /* pad the rest */
