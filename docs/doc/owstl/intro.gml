@@ -59,7 +59,7 @@ Some Benchmarks can be found in :PATH.bench/owstl.
 When updating OWSTL remember to do all the following steps:
 :UL.
 :LI.check out latest source
-:LI.run regresion tests, if broken fix or complain on "GitHub issues" at &owurl1. .
+:LI.run regresion tests, if broken fix or complain on "GitHub issues" at &owurl./issues. .
 :LI.update source
 :LI.update regresion tests
 :LI.update this document

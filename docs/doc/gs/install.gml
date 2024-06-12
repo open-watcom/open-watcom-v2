@@ -4,7 +4,7 @@
 The package contains the following components:
 .begbull $compact
 .bull
-.us &product CD-ROM
+.us &product installer image
 .bull
 .us This manual
 .endbull
@@ -23,8 +23,6 @@ An 80386 or higher processor
 &minram of memory
 .bull
 Hard disk with enough space available to install the components you require.
-.bull
-A CD-ROM disk drive
 .endbull
 .np
 .ix 'software requirements'

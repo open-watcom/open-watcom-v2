@@ -213,8 +213,8 @@ designed.
 Although a significant amount of testing has gone into this product,
 you may encounter errors in the software or documentation.
 Technical support is provided on an informal basis through the
-"Open Watcom Discord Channel" at &owurl2. or by "GitHub issues"
-at &owurl1. . Please visit &owurl. for more information.
+"Open Watcom Discord Channel" at &owurl1. or by "GitHub issues"
+at &owurl./issues. . Please visit &owurl. for more information.
 .*
 .beglevel
 .*
@@ -246,11 +246,11 @@ The following are ways to contact technical support.
 .*
 .note Open Watcom Discord Channel
 The easiest way to get support is through the "Open Watcom Discord Channel"
-at &owurl2. .
+at &owurl1. .
 .*
 .note World Wide Web
 You can also submit bug reports or enhancement requests through the
-bug tracking on "GitHub issues" at &owurl1. .
+bug tracking on "GitHub issues" at &owurl./issues. .
 .*
 .endnote
 .np

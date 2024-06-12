@@ -527,10 +527,8 @@ prepare_wgml_opts : .PROCEDURE
     @%append $(wgml_optfile) ( setsymbol dotarget $(wgml_target)
 #   OW web site URL
     @%append $(wgml_optfile) ( setsymbol owurl https://github.com/open-watcom/open-watcom-v2
-#   OW bug tracking site URL
-    @%append $(wgml_optfile) ( setsymbol owurl1 https://github.com/open-watcom/open-watcom-v2/issues
 #   OW Discord Channel site URL
-    @%append $(wgml_optfile) ( setsymbol owurl2 https://discord.com/channels/922934435744206908
+    @%append $(wgml_optfile) ( setsymbol owurl1 https://discord.com/channels/922934435744206908
 
 #---------------------------------------
 # settings for Post Script documentation
