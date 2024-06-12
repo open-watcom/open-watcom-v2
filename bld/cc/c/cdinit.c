@@ -630,7 +630,7 @@ static void LoadBitField( uint64 *val64 )
     dqp = &CurDataQuad->next->dq;
     if( dqp->type == QDT_CONSTANT )
         return;
-    if( CurDataQuad->size == TARGET_LONG64 ) {
+    if( CurDataQuad->next->size == TARGET_LONG64 ) {
         val64->u._32[I64LO32] = dqp->u.long64.u._32[I64LO32];
         val64->u._32[I64HI32] = dqp->u.long64.u._32[I64HI32];
     } else {
