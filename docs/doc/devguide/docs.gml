@@ -272,7 +272,7 @@ want PostScript for printing and we want another form for generation
 of online help. This second form is a non-printable form that is
 suitable for post-processing to turn it into IPF for the OS/2 IPF
 compiler, RTF for the WinHelp tools, special Watcom-defined format
-for use with a DOS-based help tool (WHELP) or the ever-popular HTML.
+for use with a character mode help tool (WHELP) or the ever-popular HTML.
 .np
 If you are a programmer, and that is likely, you'll be somewhat comfortable
 with the whole process of turning ASCII text into documentation. WGML is

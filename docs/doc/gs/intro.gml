@@ -103,6 +103,8 @@ Windows NT/2000/XP upto Windows 11
 32-bit OS/2
 .bull
 Novell NLMs
+.bull
+Linux 32/64-bit Intel CPU
 .endbull
 .endnote
 .point Cross-Platform Development Tools

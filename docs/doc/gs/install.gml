@@ -39,6 +39,8 @@ Microsoft Windows 95 or higher
 Microsoft Windows NT version 3.1 or higher
 .bull
 IBM OS/2 2.1 or higher
+.bull
+Linux 32/64-bit with Kernel 3.x or higher
 .endbull
 .np
 .*
