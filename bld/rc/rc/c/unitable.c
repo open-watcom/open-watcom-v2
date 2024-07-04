@@ -151,7 +151,7 @@ static size_t UTF8StringToMultiByte( size_t len, const char *str, char *buf )
                         ret++;
                     }
                 }
-                u = (char)p->s;
+                u = (unsigned char)p->s;
             }
         }
         if( ret < len ) {
@@ -174,7 +174,7 @@ static size_t UTF8StringToCP1252( size_t len, const char *str, char *buf )
     size_t          ret;
     unsigned short  u;
     size_t          i;
-    char            c;
+    unsigned char   c;
 
     ret = 0;
     for( i = 0; i < len; i++ ) {
@@ -184,7 +184,7 @@ static size_t UTF8StringToCP1252( size_t len, const char *str, char *buf )
             /*
              * UNICODE to CP1252
              */
-            c = (char)unicode_to_latin1( u );
+            c = (unsigned char)unicode_to_latin1( u );
             if( c != 0 ) {
                 u = c;
             }
