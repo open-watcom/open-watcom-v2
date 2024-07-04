@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -952,7 +952,7 @@ static void output_section_ib( section_def *section )
 
             // output the label and the break
             label = p;
-            label_len = len + 1;
+            label_len = len;
             p += len + 1;
 
             // find the length of the link context
@@ -971,7 +971,7 @@ static void output_section_ib( section_def *section )
             if( ctx == NULL && ch != IB_HLINK_BREAK ) {
                 warning_msg( "Link to nonexistent context", line );
                 printf( "For topic=%s\n", topic );
-                whp_fwrite( Out_file, label, 1, label_len - 1 );
+                whp_fwrite( Out_file, label, 1, label_len );
             } else {
                 // now we start writing the hyper-link
                 if( Hyperlink_Braces ) {
@@ -979,7 +979,7 @@ static void output_section_ib( section_def *section )
                 } else {
                     whp_fprintf( Out_file, IB_HLINK_STR );
                 }
-                whp_fwrite( Out_file, label, 1, label_len );
+                whp_fwrite( Out_file, label, 1, label_len + 1 );
                 if( ctx != NULL ) {
                     str_out_ib( ctx->title );
                 } else {
