@@ -44,13 +44,39 @@
     #define NATIVE_ENDIAN   1
 #endif
 
-static  const_string_table elf_exe_msg[] = {
+static  const_string_table elf_header_msg[] = {
+    "1class (1==32-bit objects, 2==64-bit objs)   = ",
+    "1data  (1==little-endian, 2==big-endian)     = ",
+    "1version                                     = ",
+    "1OS/ABI type (0==unspecified)                = ",
+    "1ABI version (0==unspecified)                = ",
+    NULL
+};
+
+static  const_string_table elf32_exe_msg[] = {
     "2file type (i.e. object, executable file)    = ",
     "2required architecture                       = ",
     "4version of the file                         = ",
     "4program entry point                         = ",
     "4program header offset                       = ",
     "4section header offset                       = ",
+    "4processor specific flags                    = ",
+    "2ELF header size                             = ",
+    "2program header entry size                   = ",
+    "2number of program header entries            = ",
+    "2section header entry size                   = ",
+    "2number of section header entries            = ",
+    "2section name string table index             = ",
+    NULL
+};
+
+static  const_string_table elf64_exe_msg[] = {
+    "2file type (i.e. object, executable file)    = ",
+    "2required architecture                       = ",
+    "4version of the file                         = ",
+    "8program entry point                         = ",
+    "8program header offset                       = ",
+    "8section header offset                       = ",
     "4processor specific flags                    = ",
     "2ELF header size                             = ",
     "2program header entry size                   = ",
@@ -418,24 +444,24 @@ static void set_dwarf( unsigned_32 start )
     unsigned_32     sections[DR_DEBUG_NUM_SECTS];
 
     // grab the string table, if it exists
-    if( !Elf_head.e_shstrndx ) {
+    if( !Elf_head.elf32.e_shstrndx ) {
         return; // no strings no dwarf
     }
-    if( Elf_head.e_shnum == 0 ) {
+    if( Elf_head.elf32.e_shnum == 0 ) {
         return; // no sections no dwarf
     }
     memset( sections, 0, DR_DEBUG_NUM_SECTS * sizeof( unsigned_32 ) );
     memset( sectsizes, 0, DR_DEBUG_NUM_SECTS * sizeof( unsigned_32 ) );
-    offset = Elf_head.e_shoff
-           + Elf_head.e_shstrndx * Elf_head.e_shentsize+start;
+    offset = Elf_head.elf32.e_shoff
+           + Elf_head.elf32.e_shstrndx * Elf_head.elf32.e_shentsize+start;
     Wlseek( offset );
     Wread( &elf_sec, sizeof( Elf32_Shdr ) );
     swap_shdr( &elf_sec );
     string_table = Wmalloc( elf_sec.sh_size );
     Wlseek( elf_sec.sh_offset + start );
     Wread( string_table, elf_sec.sh_size );
-    for( i = 0; i < Elf_head.e_shnum; i++ ) {
-        Wlseek( Elf_head.e_shoff + i * Elf_head.e_shentsize + start );
+    for( i = 0; i < Elf_head.elf32.e_shnum; i++ ) {
+        Wlseek( Elf_head.elf32.e_shoff + i * Elf_head.elf32.e_shentsize + start );
         Wread( &elf_sec, sizeof( Elf32_Shdr ) );
         swap_shdr( &elf_sec );
         if( elf_sec.sh_type == SHT_PROGBITS ) {
@@ -532,9 +558,9 @@ static void dmp_prog_sec( unsigned_32 start )
     if( Options_dmp & DEBUG_INFO ) {
         set_dwarf( start );
     }
-    if( Elf_head.e_shstrndx ) {
-        offset = Elf_head.e_shoff
-               + Elf_head.e_shstrndx * Elf_head.e_shentsize+start;
+    if( Elf_head.elf32.e_shstrndx ) {
+        offset = Elf_head.elf32.e_shoff
+               + Elf_head.elf32.e_shstrndx * Elf_head.elf32.e_shentsize+start;
         Wlseek( offset );
         Wread( &elf_sec, sizeof( Elf32_Shdr ) );
         swap_shdr( &elf_sec );
@@ -544,10 +570,10 @@ static void dmp_prog_sec( unsigned_32 start )
     } else {
         string_table = NULL;
     }
-    if( Elf_head.e_phnum ) {
+    if( Elf_head.elf32.e_phnum ) {
         Banner( "ELF Program Header" );
-        offset = Elf_head.e_phoff + start;
-        for( i = 0; i < Elf_head.e_phnum; i++ ) {
+        offset = Elf_head.elf32.e_phoff + start;
+        for( i = 0; i < Elf_head.elf32.e_phnum; i++ ) {
             Wdputs( "                Program Header #" );
             Putdec( i + 1 );
             Wdputslc( "\n" );
@@ -575,10 +601,10 @@ static void dmp_prog_sec( unsigned_32 start )
             Wdputslc( "\n" );
         }
     }
-    if( Elf_head.e_shnum ) {
+    if( Elf_head.elf32.e_shnum ) {
         Banner( "ELF Section Header" );
-        offset = Elf_head.e_shoff+start;
-        for( i = 0; i < Elf_head.e_shnum; i++ ) {
+        offset = Elf_head.elf32.e_shoff+start;
+        for( i = 0; i < Elf_head.elf32.e_shnum; i++ ) {
             Wlseek( offset );
             Wread( &elf_sec, sizeof( Elf32_Shdr ) );
             swap_shdr( &elf_sec );
@@ -608,8 +634,8 @@ static void dmp_prog_sec( unsigned_32 start )
 
                     Wdputs( "relocation information for section #" );
                     Putdec( elf_sec.sh_info );
-                    Wlseek( Elf_head.e_shoff + start +
-                            Elf_head.e_shentsize * elf_sec.sh_info );
+                    Wlseek( Elf_head.elf32.e_shoff + start +
+                            Elf_head.elf32.e_shentsize * elf_sec.sh_info );
                     Wread( &rel_sec, sizeof( Elf32_Shdr ) );
                     swap_shdr( &rel_sec );
                     if( string_table != NULL ) {
@@ -670,7 +696,7 @@ static void dmp_prog_sec( unsigned_32 start )
                 }
             }
             Wdputslc( "\n" );
-            offset +=  Elf_head.e_shentsize;
+            offset +=  Elf_head.elf32.e_shentsize;
         }
     }
     if( Options_dmp & DEBUG_INFO ) {
@@ -732,9 +758,18 @@ bool Dmp_lib_head( void )
 bool Dmp_elf_header( unsigned long start )
 /****************************************/
 {
+    const unsigned char *data = (const unsigned char *) &Elf_head;
+    int elf_dump_width = 4;
+
     Wread( &Elf_head, sizeof( Elf32_Ehdr ) );
     if( memcmp( Elf_head.e_ident, ELF_SIGNATURE, ELF_SIGNATURE_LEN ) ) {
         return( false );
+    }
+
+    if( IS_ELF64( Elf_head ) ) {
+        elf_dump_width = 8;
+        Wlseek( start );
+        Wread( &Elf_head, sizeof( Elf64_Ehdr ) );
     }
     Banner( "ELF Header" );
     if( start != 0 ) {
@@ -742,39 +777,55 @@ bool Dmp_elf_header( unsigned long start )
         Puthex( start, 8 );
         Wdputslc( "\n" );
     }
-    Wdputs( "class (1==32-bit objects, 2==64-bit objs)   =       " );
-    Puthex( Elf_head.e_ident[EI_CLASS], 2 );
-    Wdputslc( "H\ndata  (1==little-endian, 2==big-endian)     =       " );
-    Puthex( Elf_head.e_ident[EI_DATA], 2 );
-    Wdputslc( "H\nversion                                     =       " );
-    Puthex( Elf_head.e_ident[EI_VERSION], 2 );
-    Wdputslc( "H\nOS/ABI type (0==unspecified)                =       " );
-    Puthex( Elf_head.e_ident[EI_OSABI], 2 );
-    Wdputslc( "H\nABI version (0==unspecified)                =       " );
-    Puthex( Elf_head.e_ident[EI_ABIVERSION], 2 );
-    Wdputslc( "H\n" );
+
+    Dump_header( data + ELF_SIGNATURE_LEN, elf_header_msg, elf_dump_width );
+
     if( Elf_head.e_ident[EI_DATA] != NATIVE_ENDIAN ) {
         Byte_swap = true;
 
-        /* Byte swap ELF header */
-        SWAP_16( Elf_head.e_type );
-        SWAP_16( Elf_head.e_machine );
-        SWAP_32( Elf_head.e_version );
-        SWAP_32( Elf_head.e_entry );
-        SWAP_32( Elf_head.e_phoff );
-        SWAP_32( Elf_head.e_shoff );
-        SWAP_32( Elf_head.e_flags );
-        SWAP_16( Elf_head.e_ehsize );
-        SWAP_16( Elf_head.e_phentsize );
-        SWAP_16( Elf_head.e_phnum );
-        SWAP_16( Elf_head.e_shentsize );
-        SWAP_16( Elf_head.e_shnum );
-        SWAP_16( Elf_head.e_shstrndx );
+        /* Byte swap identical ELF header parts */
+        SWAP_16( Elf_head.elf32.e_type );
+        SWAP_16( Elf_head.elf32.e_machine );
+        SWAP_32( Elf_head.elf32.e_version );
+
+        if( IS_ELF64( Elf_head ) ) {
+            /* Byte swap the rest of the ELF64 header */
+            /* Do not use "SWAP_64" here. That fails to compile */
+            SCONV_SWAP_64( Elf_head.elf64.e_entry );
+            SCONV_SWAP_64( Elf_head.elf64.e_phoff );
+            SCONV_SWAP_64( Elf_head.elf64.e_shoff );
+            SWAP_32( Elf_head.elf64.e_flags );
+            SWAP_16( Elf_head.elf64.e_ehsize );
+            SWAP_16( Elf_head.elf64.e_phentsize );
+            SWAP_16( Elf_head.elf64.e_phnum );
+            SWAP_16( Elf_head.elf64.e_shentsize );
+            SWAP_16( Elf_head.elf64.e_shnum );
+            SWAP_16( Elf_head.elf64.e_shstrndx );
+        } else {
+            /* Byte swap the rest of the ELF32 header */
+            SWAP_32( Elf_head.elf32.e_entry );
+            SWAP_32( Elf_head.elf32.e_phoff );
+            SWAP_32( Elf_head.elf32.e_shoff );
+            SWAP_32( Elf_head.elf32.e_flags );
+            SWAP_16( Elf_head.elf32.e_ehsize );
+            SWAP_16( Elf_head.elf32.e_phentsize );
+            SWAP_16( Elf_head.elf32.e_phnum );
+            SWAP_16( Elf_head.elf32.e_shentsize );
+            SWAP_16( Elf_head.elf32.e_shnum );
+            SWAP_16( Elf_head.elf32.e_shstrndx );
+        }
     }
-    dmp_hdr_type( Elf_head.e_type );
-    Dump_header( &Elf_head.e_type, elf_exe_msg, 4 );
+    dmp_hdr_type( Elf_head.elf32.e_type );
+    if( IS_ELF64( Elf_head ) ) {
+        Dump_header( &Elf_head.elf64.e_type, elf64_exe_msg, elf_dump_width );
+    } else {
+        Dump_header( &Elf_head.elf32.e_type, elf32_exe_msg, elf_dump_width );
+    }
+
     Wdputslc( "\n" );
-    dmp_prog_sec( start );
+    if( IS_ELF32( Elf_head ) ) {
+        dmp_prog_sec( start );
+    }
     return( true );
 }
 
