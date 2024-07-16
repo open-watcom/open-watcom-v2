@@ -44,13 +44,39 @@
     #define NATIVE_ENDIAN   1
 #endif
 
-static  const_string_table elf_exe_msg[] = {
+static  const_string_table elf_header_msg[] = {
+    "1class (1==32-bit objects, 2==64-bit objs)   = ",
+    "1data  (1==little-endian, 2==big-endian)     = ",
+    "1version                                     = ",
+    "1OS/ABI type (0==unspecified)                = ",
+    "1ABI version (0==unspecified)                = ",
+    NULL
+};
+
+static  const_string_table elf32_exe_msg[] = {
     "2file type (i.e. object, executable file)    = ",
     "2required architecture                       = ",
     "4version of the file                         = ",
     "4program entry point                         = ",
     "4program header offset                       = ",
     "4section header offset                       = ",
+    "4processor specific flags                    = ",
+    "2ELF header size                             = ",
+    "2program header entry size                   = ",
+    "2number of program header entries            = ",
+    "2section header entry size                   = ",
+    "2number of section header entries            = ",
+    "2section name string table index             = ",
+    NULL
+};
+
+static  const_string_table elf64_exe_msg[] = {
+    "2file type (i.e. object, executable file)    = ",
+    "2required architecture                       = ",
+    "4version of the file                         = ",
+    "8program entry point                         = ",
+    "8program header offset                       = ",
+    "8section header offset                       = ",
     "4processor specific flags                    = ",
     "2ELF header size                             = ",
     "2program header entry size                   = ",
@@ -732,9 +758,18 @@ bool Dmp_lib_head( void )
 bool Dmp_elf_header( unsigned long start )
 /****************************************/
 {
+    const unsigned char *data = (const unsigned char *) &Elf_head;
+    int elf_dump_width = 4;
+
     Wread( &Elf_head, sizeof( Elf32_Ehdr ) );
     if( memcmp( Elf_head.e_ident, ELF_SIGNATURE, ELF_SIGNATURE_LEN ) ) {
         return( false );
+    }
+
+    if( IS_ELF64( Elf_head ) ) {
+        elf_dump_width = 8;
+        Wlseek( start );
+        Wread( &Elf_head, sizeof( Elf64_Ehdr ) );
     }
     Banner( "ELF Header" );
     if( start != 0 ) {
@@ -742,39 +777,55 @@ bool Dmp_elf_header( unsigned long start )
         Puthex( start, 8 );
         Wdputslc( "\n" );
     }
-    Wdputs( "class (1==32-bit objects, 2==64-bit objs)   =       " );
-    Puthex( Elf_head.e_ident[EI_CLASS], 2 );
-    Wdputslc( "H\ndata  (1==little-endian, 2==big-endian)     =       " );
-    Puthex( Elf_head.e_ident[EI_DATA], 2 );
-    Wdputslc( "H\nversion                                     =       " );
-    Puthex( Elf_head.e_ident[EI_VERSION], 2 );
-    Wdputslc( "H\nOS/ABI type (0==unspecified)                =       " );
-    Puthex( Elf_head.e_ident[EI_OSABI], 2 );
-    Wdputslc( "H\nABI version (0==unspecified)                =       " );
-    Puthex( Elf_head.e_ident[EI_ABIVERSION], 2 );
-    Wdputslc( "H\n" );
+
+    Dump_header( data + ELF_SIGNATURE_LEN, elf_header_msg, elf_dump_width );
+
     if( Elf_head.e_ident[EI_DATA] != NATIVE_ENDIAN ) {
         Byte_swap = true;
 
-        /* Byte swap ELF header */
+        /* Byte swap identical ELF header parts */
         SWAP_16( Elf_head.elf32.e_type );
         SWAP_16( Elf_head.elf32.e_machine );
         SWAP_32( Elf_head.elf32.e_version );
-        SWAP_32( Elf_head.elf32.e_entry );
-        SWAP_32( Elf_head.elf32.e_phoff );
-        SWAP_32( Elf_head.elf32.e_shoff );
-        SWAP_32( Elf_head.elf32.e_flags );
-        SWAP_16( Elf_head.elf32.e_ehsize );
-        SWAP_16( Elf_head.elf32.e_phentsize );
-        SWAP_16( Elf_head.elf32.e_phnum );
-        SWAP_16( Elf_head.elf32.e_shentsize );
-        SWAP_16( Elf_head.elf32.e_shnum );
-        SWAP_16( Elf_head.elf32.e_shstrndx );
+
+        if( IS_ELF64( Elf_head ) ) {
+            /* Byte swap the rest of the ELF64 header */
+            /* Do not use "SWAP_64" here. That fails to compile */
+            SCONV_SWAP_64( Elf_head.elf64.e_entry );
+            SCONV_SWAP_64( Elf_head.elf64.e_phoff );
+            SCONV_SWAP_64( Elf_head.elf64.e_shoff );
+            SWAP_32( Elf_head.elf64.e_flags );
+            SWAP_16( Elf_head.elf64.e_ehsize );
+            SWAP_16( Elf_head.elf64.e_phentsize );
+            SWAP_16( Elf_head.elf64.e_phnum );
+            SWAP_16( Elf_head.elf64.e_shentsize );
+            SWAP_16( Elf_head.elf64.e_shnum );
+            SWAP_16( Elf_head.elf64.e_shstrndx );
+        } else {
+            /* Byte swap the rest of the ELF32 header */
+            SWAP_32( Elf_head.elf32.e_entry );
+            SWAP_32( Elf_head.elf32.e_phoff );
+            SWAP_32( Elf_head.elf32.e_shoff );
+            SWAP_32( Elf_head.elf32.e_flags );
+            SWAP_16( Elf_head.elf32.e_ehsize );
+            SWAP_16( Elf_head.elf32.e_phentsize );
+            SWAP_16( Elf_head.elf32.e_phnum );
+            SWAP_16( Elf_head.elf32.e_shentsize );
+            SWAP_16( Elf_head.elf32.e_shnum );
+            SWAP_16( Elf_head.elf32.e_shstrndx );
+        }
     }
     dmp_hdr_type( Elf_head.elf32.e_type );
-    Dump_header( &Elf_head.elf32.e_type, elf_exe_msg, 4 );
+    if( IS_ELF64( Elf_head ) ) {
+        Dump_header( &Elf_head.elf64.e_type, elf64_exe_msg, elf_dump_width );
+    } else {
+        Dump_header( &Elf_head.elf32.e_type, elf32_exe_msg, elf_dump_width );
+    }
+
     Wdputslc( "\n" );
-    dmp_prog_sec( start );
+    if( IS_ELF32( Elf_head ) ) {
+        dmp_prog_sec( start );
+    }
     return( true );
 }
 
