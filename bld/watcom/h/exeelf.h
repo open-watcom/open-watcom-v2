@@ -1083,4 +1083,19 @@ typedef struct {
     Elf32_Word  lib_name;
 } Elf32_Library;
 
+
+// typedefs/structs/unions and macros to better manage Elf32 / Elf64 differences
+
+typedef union {
+    unsigned_8  e_ident[EI_NIDENT];
+    Elf32_Ehdr  elf32;
+    Elf64_Ehdr  elf64;
+} Elfxx_Ehdr;
+
+#define ELF32(x)    (x).elf32
+#define ELF64(x)    (x).elf64
+
+#define IS_ELF32(x) ((x).e_ident[EI_CLASS] == ELFCLASS32)
+#define IS_ELF64(x) ((x).e_ident[EI_CLASS] == ELFCLASS64)
+
 #endif // _EXEELF_H_INCLUDED_

@@ -58,7 +58,7 @@ struct segment_record   *Int_seg_tab;
 char                    **Int_mod_ref_tab;
 unsigned_16             Segspec;
 unsigned long           Hexoff;
-Elf32_Ehdr              Elf_head;
+Elfxx_Ehdr              Elf_head;
 lmf_header              Qnx_head;
 extended_header         Phar_ext_head;
 simple_header           Phar_head;
