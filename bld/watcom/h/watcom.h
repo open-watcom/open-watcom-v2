@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -221,9 +221,11 @@
 #if defined( __BIG_ENDIAN__ )
     #define SCONV_LE_64(w)  (w).u._64[0] = SWAPNC_64((w).u._64[0])
     #define SCONV_BE_64(w)
+    #define SCONV_SWAP_64   SCONV_LE_64
 #else
     #define SCONV_LE_64(w)
     #define SCONV_BE_64(w)  (w).u._64[0] = SWAPNC_64((w).u._64[0])
+    #define SCONV_SWAP_64   SCONV_BE_64
 #endif
 
 #if !defined(__sun__) && !defined(sun) && !defined(__sgi) && !defined(__hppa) && !defined(_AIX) && !defined(__alpha) && !defined(_TYPES_H_) && !defined(_SYS_TYPES_H)
