@@ -73,7 +73,7 @@ endif
 
         extrn   __DOSseg__          : byte
 
-DGROUP  group _NULL,AFX_NULL,_DATA,CONST,STRINGS,DATA,BCSD,XIB,XI,XIE,YIB,YI,YIE,_BSS,STACK
+DGROUP  group _NULL,AFX_NULL,_DATA,CONST,CONST2,DATA,BCSD,XIB,XI,XIE,YIB,YI,YIE,_BSS,STACK
 
 ife _MODEL and _BIG_CODE
 
@@ -171,8 +171,8 @@ _DATA   ends
 CONST   segment word public 'DATA'
 CONST   ends
 
-STRINGS segment word public 'DATA'
-STRINGS ends
+CONST2  segment word public 'DATA'
+CONST2  ends
 
 DATA    segment word public 'DATA'
 DATA    ends

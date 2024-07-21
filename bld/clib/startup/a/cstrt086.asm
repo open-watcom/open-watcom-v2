@@ -2,7 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
-;* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+;* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -61,9 +61,9 @@ FLG_LFN     equ 100h
 
 
 if _MODEL and _TINY
- DGROUP group _TEXT,CONST,STRINGS,_DATA,DATA,XIB,XI,XIE,YIB,YI,YIE,_BSS
+ DGROUP group _TEXT,CONST,CONST2,_DATA,DATA,XIB,XI,XIE,YIB,YI,YIE,_BSS
 else
- DGROUP group _NULL,_AFTERNULL,CONST,STRINGS,_DATA,DATA,XIB,XI,XIE,YIB,YI,YIE,_BSS,STACK
+ DGROUP group _NULL,_AFTERNULL,CONST,CONST2,_DATA,DATA,XIB,XI,XIE,YIB,YI,YIE,_BSS,STACK
 endif
 
 if ( _MODEL and ( _TINY or _BIG_CODE )) eq 0
@@ -124,8 +124,8 @@ endif
 CONST   segment word public 'DATA'
 CONST   ends
 
-STRINGS segment word public 'DATA'
-STRINGS ends
+CONST2  segment word public 'DATA'
+CONST2  ends
 
 _DATA   segment word public 'DATA'
 

@@ -42,7 +42,7 @@
 include langenv.inc
 include xinit.inc
 
-DGROUP group _NULL,_DATA,CONST,STRINGS,DATA,XIB,XI,XIE,YIB,YI,YIE,_BSS
+DGROUP group _NULL,_DATA,CONST,CONST2,DATA,XIB,XI,XIE,YIB,YI,YIE,_BSS
 
 public  pLocalHeap
 public  pAtomTable
@@ -73,8 +73,8 @@ DATA    ends
 CONST   segment word public 'DATA'
 CONST   ends
 
-STRINGS segment word public 'DATA'
-STRINGS ends
+CONST2  segment word public 'DATA'
+CONST2  ends
 
 _NULL   segment para public 'BEGDATA'
         public  __nullarea

@@ -2,7 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
-;* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+;* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -133,14 +133,14 @@ _AFTERNULL ends
 CONST   segment word public 'DATA'
 CONST   ends
 
-_DATA    segment dword public 'DATA'
+_DATA   segment dword public 'DATA'
 
 __D16Infoseg   dw       0020h   ; DOS/4G kernel segment
 __x386_zero_base_selector dw 0  ; base 0 selector for X-32VM
 
         public  __D16Infoseg
         public  __x386_zero_base_selector
-_DATA    ends
+_DATA   ends
 
 
 DATA    segment word public 'DATA'
