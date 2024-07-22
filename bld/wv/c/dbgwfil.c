@@ -458,7 +458,7 @@ static  bool    FileGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_lin
         return( true );
     case PIECE_SOURCE:
         line->text = TxtBuff;
-        line->extent = WND_MAX_EXTEND;
+        line->extent = WND_NO_EXTENT;
         if( curr )
             line->attr = WND_STANDOUT;
         if( file->mod != NO_MOD ) {

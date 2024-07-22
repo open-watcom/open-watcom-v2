@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -114,7 +114,7 @@ void GUIAPI GUISetVScrollRange( gui_window *wnd, gui_ord range )
 
 gui_ord GUIAPI GUIGetHScrollRange( gui_window *wnd )
 {
-    return( GUIScreenToScaleH( GUIGetScrollRange( wnd, SB_HORZ ) ) );
+    return( GUIScaleFromScreenH( GUIGetScrollRange( wnd, SB_HORZ ) ) );
 }
 
 /*
@@ -123,7 +123,7 @@ gui_ord GUIAPI GUIGetHScrollRange( gui_window *wnd )
 
 gui_ord GUIAPI GUIGetVScrollRange( gui_window *wnd )
 {
-    return( GUIScreenToScaleV( GUIGetScrollRange( wnd, SB_VERT ) ) );
+    return( GUIScaleFromScreenV( GUIGetScrollRange( wnd, SB_VERT ) ) );
 }
 
 /*
@@ -135,8 +135,8 @@ gui_text_ord GUIAPI GUIGetVScrollRangeRows( gui_window *wnd )
     guix_ord    range;
 
     range = GUIGetScrollRange( wnd, SB_VERT );
-    if( range == GUI_NO_ROW ) {
-        return( GUI_TEXT_NO_ROW );
+    if( range == GUI_NO_RANGE ) {
+        return( GUI_TEXT_NO_RANGE );
     } else {
         return( GUIToTextY( range, wnd ) );
     }
@@ -151,8 +151,8 @@ gui_text_ord GUIAPI GUIGetHScrollRangeCols( gui_window *wnd )
     guix_ord    range;
 
     range = GUIGetScrollRange( wnd, SB_HORZ );
-    if( range == GUI_NO_COLUMN ) {
-        return( GUI_TEXT_NO_COLUMN );
+    if( range == GUI_NO_RANGE ) {
+        return( GUI_TEXT_NO_RANGE );
     } else {
         return( GUIToTextX( range, wnd ) );
     }

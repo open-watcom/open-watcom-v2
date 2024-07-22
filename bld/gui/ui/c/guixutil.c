@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2018-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2018-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -344,8 +344,8 @@ void GUIMakeRelative( gui_window *wnd, const guix_point *scr_point, gui_point *p
     if( GUI_DO_VSCROLL( wnd ) ) {
         scr_y += wnd->vgadget->pos;
     }
-    point->x = GUIScreenToScaleH( scr_x );
-    point->y = GUIScreenToScaleV( scr_y );
+    point->x = GUIScaleFromScreenH( scr_x );
+    point->y = GUIScaleFromScreenV( scr_y );
 }
 
 /*

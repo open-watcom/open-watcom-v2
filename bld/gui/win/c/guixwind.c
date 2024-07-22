@@ -692,8 +692,8 @@ void GUIResizeBackground( gui_window *wnd, bool force_msg )
     if( force_msg && (wnd->flags & SENT_INIT) ) {
         gui_coord   size;
 
-        size.x = GUIScreenToScaleH( right - left );
-        size.y = GUIScreenToScaleV( bottom - top );
+        size.x = GUIScaleFromScreenH( right - left );
+        size.y = GUIScaleFromScreenV( bottom - top );
         GUIEVENT( wnd, GUI_RESIZE, &size );
     }
 }
@@ -742,8 +742,8 @@ void GUIDoResize( gui_window *wnd, HWND hwnd, const guix_coord *scr_size )
     if( wnd->flags & SENT_INIT ) {
         gui_coord   size;
 
-        size.x = GUIScreenToScaleH( scr_size->x );
-        size.y = GUIScreenToScaleV( scr_size->y );
+        size.x = GUIScaleFromScreenH( scr_size->x );
+        size.y = GUIScaleFromScreenV( scr_size->y );
         GUIEVENT( wnd, GUI_RESIZE, &size );
     }
     GUIInvalidatePaintHandles( wnd );
@@ -1146,8 +1146,8 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, W
     case WM_MOUSEMOVE:
         wpi_point.x = GET_WM_MOUSEMOVE_POSX( wparam, lparam );
         wpi_point.y = GET_WM_MOUSEMOVE_POSY( wparam, lparam );
-        point.x = GUIScreenToScaleH( wpi_point.x );
-        point.y = GUIScreenToScaleV( wpi_point.y );
+        point.x = GUIScaleFromScreenH( wpi_point.x );
+        point.y = GUIScaleFromScreenV( wpi_point.y );
         if( ( wpi_point.x != prev_wpi_point.x ) || ( wpi_point.y != prev_wpi_point.y ) ) {
             prev_wpi_point.x = wpi_point.x;
             prev_wpi_point.y = wpi_point.y;

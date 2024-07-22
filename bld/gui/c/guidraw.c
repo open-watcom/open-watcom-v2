@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,13 +46,13 @@ void GUIAPI GUIDrawText( gui_window *wnd, const char *text, size_t length,
     GUIGetTextMetrics( wnd, &metrics );
     pos.x = indent;
     pos.y = row * metrics.avg.y;
-    GUIXDrawText( wnd, text, length, &pos, attr, GUI_NO_COLUMN, false );
+    GUIXDrawText( wnd, text, length, &pos, attr, GUI_NO_EXTENT, false );
 }
 
 void GUIAPI GUIDrawTextPos( gui_window *wnd, const char *text, size_t length,
                             const gui_coord *pos, gui_attr attr )
 {
-    GUIXDrawText( wnd, text, length, pos, attr, GUI_NO_COLUMN, false );
+    GUIXDrawText( wnd, text, length, pos, attr, GUI_NO_EXTENT, false );
 }
 
 /*
@@ -88,13 +88,13 @@ void GUIAPI GUIDrawTextRGB( gui_window *wnd, const char *text, size_t length,
     GUIGetTextMetrics( wnd, &metrics );
     pos.x = indent;
     pos.y = row * metrics.avg.y;
-    GUIXDrawTextRGB( wnd, text, length, &pos, fore, back, GUI_NO_COLUMN, false );
+    GUIXDrawTextRGB( wnd, text, length, &pos, fore, back, GUI_NO_EXTENT, false );
 }
 
 void GUIAPI GUIDrawTextPosRGB( gui_window *wnd, const char *text, size_t length,
                                const gui_coord *pos, gui_rgb fore, gui_rgb back )
 {
-    GUIXDrawTextRGB( wnd, text, length, pos, fore, back, GUI_NO_COLUMN, false );
+    GUIXDrawTextRGB( wnd, text, length, pos, fore, back, GUI_NO_EXTENT, false );
 }
 
 /*

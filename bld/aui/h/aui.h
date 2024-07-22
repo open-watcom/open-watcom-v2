@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -147,7 +147,7 @@ typedef struct wnd_line_piece {
     const char  *text;                  // default ""
     wnd_attr    attr;                   // default WND_PLAIN
     gui_ord     indent;                 // default 0
-    gui_ord     extent;                 // default WND_NO_EXTEND
+    gui_ord     extent;                 // default WND_NO_EXTENT
     unsigned    tabstop         : 1;    // default on
     unsigned    static_text     : 1;    // default off
     unsigned    hot             : 1;    // default off
@@ -165,8 +165,7 @@ typedef struct wnd_line_piece {
     const char  *hint;                  // set for Hint Text
 } wnd_line_piece;
 
-#define WND_NO_EXTEND   0
-#define WND_MAX_EXTEND  GUI_NO_COLUMN
+#define WND_NO_EXTENT   GUI_NO_EXTENT
 
 typedef struct wnd_create_struct {
     struct wnd_info     *info;

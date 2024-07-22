@@ -168,9 +168,9 @@ static bool StatusGUIEventProc( gui_window *gui, gui_event gui_ev, void *parm )
             }
             msg = GetVariableStrVal( Messages[MsgLine0] );
             GUIDrawTextExtent( gui, msg, strlen( msg ), LINE0_ROW,
-                               LINE0_COL * CharSize.x, WND_STATUS_TEXT, GUI_NO_COLUMN );
+                               LINE0_COL * CharSize.x, WND_STATUS_TEXT, GUI_NO_EXTENT );
             GUIDrawTextExtent( gui, StatusLine1, strlen( StatusLine1 ), LINE1_ROW,
-                               LINE1_COL * CharSize.x, WND_STATUS_TEXT, GUI_NO_COLUMN );
+                               LINE1_COL * CharSize.x, WND_STATUS_TEXT, GUI_NO_EXTENT );
 #if !defined( GUI_IS_GUI )
             {
                 int         len1, len2;

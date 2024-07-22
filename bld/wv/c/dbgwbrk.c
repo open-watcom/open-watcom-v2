@@ -217,7 +217,7 @@ static  bool    BrkGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line
         return( true );
     case PIECE_ADDR:
         line->indent = wndbreak->addr_indent;
-        line->extent = WND_MAX_EXTEND;
+        line->extent = WND_NO_EXTENT;
         line->tabstop = true;
         GetBPAddr( bp, TxtBuff );
         return( true );

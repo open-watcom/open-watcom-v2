@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -78,8 +78,8 @@ bool GUIAPI GUIGetCursorPos( gui_window *wnd, gui_point *point )
     if( GUI_DO_VSCROLL( wnd ) ) {
         scr_y += wnd->vgadget->pos;
     }
-    point->x = GUIScreenToScaleH( scr_x );
-    point->y = GUIScreenToScaleV( scr_y );
+    point->x = GUIScaleFromScreenH( scr_x );
+    point->y = GUIScaleFromScreenV( scr_y );
     return( true );
 }
 

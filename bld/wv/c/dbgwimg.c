@@ -216,7 +216,7 @@ static  bool    ImgGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line
     } else {
         line->tabstop = false;
         line->use_prev_attr = true;
-        line->extent = WND_MAX_EXTEND;
+        line->extent = WND_NO_EXTENT;
         image = ImgGetImage( row );
         if( image == NULL )
             return( false );

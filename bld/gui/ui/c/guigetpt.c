@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,7 +43,7 @@ void GUIAPI GUIGetPoint( gui_window *wnd, gui_ord extentx, gui_text_ord row, gui
     /* unused parameters */ (void)wnd;
 
     if( point != NULL ) {
-        point->x = GUIScreenToScaleH( GUIScaleToScreenH( extentx ) );
-        point->y = GUIScreenToScaleV( row );
+        point->x = GUIScaleFromScreenH( GUIScaleToScreenH( extentx ) );
+        point->y = GUIScaleFromScreenV( row );
     }
 }

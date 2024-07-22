@@ -337,8 +337,8 @@ WPI_DLGRESULT CALLBACK GUIDialogDlgProc( HWND hwnd, WPI_MSG message, WPI_PARAM1 
             scr_size.x = _wpi_getwmsizex( wparam, lparam );
             scr_size.y = _wpi_getwmsizey( wparam, lparam );
             GUISetRowCol( wnd, &scr_size );
-            size.x = GUIScreenToScaleH( scr_size.x );
-            size.y = GUIScreenToScaleV( scr_size.y );
+            size.x = GUIScaleFromScreenH( scr_size.x );
+            size.y = GUIScaleFromScreenV( scr_size.y );
             GUIEVENT( wnd, GUI_RESIZE, &size );
         }
         break;

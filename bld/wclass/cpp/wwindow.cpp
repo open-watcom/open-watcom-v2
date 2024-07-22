@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -892,10 +892,10 @@ void WEXPORT WWindow::resized( int, int )
     //updateAutosize();
 }
 
-void WEXPORT WWindow::size( WOrdinal w, WOrdinal h )
+void WEXPORT WWindow::size( WOrdinal width, WOrdinal high )
 {
-    _autosize.w( w );
-    _autosize.h( h );
+    _autosize.w( width );
+    _autosize.h( high );
     autosize();
 }
 
@@ -1115,13 +1115,13 @@ bool WEXPORT WWindow::rightBttnUp( int x, int y, WMouseKeyFlags flags )
 }
 
 
-void WEXPORT WWindow::setScrollRange( WScrollBar sb, int maxr )
-/*************************************************************/
+void WEXPORT WWindow::setScrollRange( WScrollBar sb, int maxRange )
+/*****************************************************************/
 {
     if( sb == WScrollBarVertical ) {
-        GUISetVScrollRange( _handle, maxr );
+        GUISetVScrollRange( _handle, maxRange );
     } else {
-        GUISetHScrollRange( _handle, maxr );
+        GUISetHScrollRange( _handle, maxRange );
     }
 }
 
@@ -1159,13 +1159,13 @@ int  WEXPORT WWindow::getScrollPos( WScrollBar sb )
 }
 
 
-void WEXPORT WWindow::setScrollTextRange( WScrollBar sb, int maxr )
-/*****************************************************************/
+void WEXPORT WWindow::setScrollTextRange( WScrollBar sb, int maxRange )
+/*********************************************************************/
 {
     if( sb == WScrollBarVertical ) {
-        GUISetVScrollRangeRows( _handle, maxr );
+        GUISetVScrollRangeRows( _handle, maxRange );
     } else {
-        GUISetHScrollRangeCols( _handle, maxr );
+        GUISetHScrollRangeCols( _handle, maxRange );
     }
 }
 

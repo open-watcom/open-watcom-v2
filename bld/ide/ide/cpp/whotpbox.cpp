@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -96,19 +96,19 @@ void WEXPORT WHotPickBox::fillBox()
     }
     _tags= new void *[jcount];
     _tagsCount = jcount;
-    int maxWid = 0;
+    int maxWidth = 0;
     int j = 0;
     for( i=0; i<icount; i++ ) {
         if( (((*_model)[i])->*_gincluded)() ) {
             _tags[j] = (*_model)[i];
             WString s; name( j, s );
-            int wid = getTextExtentX( s );
-            if( wid > maxWid )
-                maxWid = wid;
+            int width = getTextExtentX( s );
+            if( width > maxWidth )
+                maxWidth = width;
             j += 1;
         }
     }
-    _tagsWidth = maxWid;
+    _tagsWidth = maxWidth;
     reset();
 }
 

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -49,5 +49,5 @@ void GUIAPI GUIGetAbsRect( gui_window *wnd, gui_rect *rect )
     scr_rect.s_height = _wpi_getheightrect( wpi_rect );
     scr_rect.s_x = left;
     scr_rect.s_y = _wpi_cvtc_y_plus1( HWND_DESKTOP, top );
-    GUIScreenToScaleRect( &scr_rect, rect );
+    GUIScaleFromScreenRect( &scr_rect, rect );
 }

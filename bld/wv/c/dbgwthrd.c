@@ -196,7 +196,7 @@ static bool    TrdGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_
             return( false );
         line->tabstop = false;
         line->use_prev_attr = true;
-        line->extent = WND_MAX_EXTEND;
+        line->extent = WND_NO_EXTENT;
         switch( piece ) {
         case PIECE_ID:
             line->tabstop = true;

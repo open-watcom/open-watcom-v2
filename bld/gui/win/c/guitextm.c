@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,10 +39,10 @@
 
 void GUISetMetrics( gui_text_metrics *metrics, WPI_TEXTMETRIC *tm )
 {
-    metrics->avg.x = GUIScreenToScaleH( AVGXCHAR( *tm ) );
-    metrics->avg.y = GUIScreenToScaleV( AVGYCHAR( *tm ) );
-    metrics->max.x = GUIScreenToScaleH( MAXXCHAR( *tm ) );
-    metrics->max.y = GUIScreenToScaleV( MAXYCHAR( *tm ) );
+    metrics->avg.x = GUIScaleFromScreenH( AVGXCHAR( *tm ) );
+    metrics->avg.y = GUIScaleFromScreenV( AVGYCHAR( *tm ) );
+    metrics->max.x = GUIScaleFromScreenH( MAXXCHAR( *tm ) );
+    metrics->max.y = GUIScaleFromScreenV( MAXYCHAR( *tm ) );
 }
 
 void GUIAPI GUIGetTextMetrics( gui_window *wnd, gui_text_metrics *metrics )

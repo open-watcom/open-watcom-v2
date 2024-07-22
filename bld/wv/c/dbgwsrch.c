@@ -270,7 +270,7 @@ static  bool    SrchGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_lin
         DIPModName( found->mod, TxtBuff, TXT_LEN );
         line->text = TxtBuff;
         line->indent = MaxGadgetLength;
-        line->extent = WND_MAX_EXTEND;
+        line->extent = WND_NO_EXTENT;
         return( true );
     case PIECE_SOURCE:
         line->indent = MaxGadgetLength;

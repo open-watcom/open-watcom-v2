@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,7 +40,7 @@ WPI_TEXTMETRIC GUItm;
 
 void GUIClientToScaleRect( const guix_rect *client, gui_rect *rect )
 {
-    GUIScreenToScaleRect( client, rect );
+    GUIScaleFromScreenRect( client, rect );
 }
 
 /*

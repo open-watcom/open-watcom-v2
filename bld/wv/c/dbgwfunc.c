@@ -203,7 +203,7 @@ static  bool    FuncGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_lin
     case PIECE_NAME:
         line->indent = MaxGadgetLength;
         line->text = TxtBuff;
-        line->extent = WND_MAX_EXTEND;
+        line->extent = WND_NO_EXTENT;
         FuncGetSourceName( wnd, row );
         return( true );
     case PIECE_DEMANGLED:

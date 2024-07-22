@@ -36,10 +36,10 @@
  * gui project use 3 types of coordinates
  *
  * 1. gui_ord
- *    it is API graphical coordinate type (int)
+ *    it is public API graphical coordinate type (int)
  *
  * 2. gui_text_ord
- *    it is API text coordinate type (unsigned short)
+ *    it is public API text coordinate type (unsigned short)
  *
  * 3. guix_ord
  *    it is internal signed coordinate type which depend on API type

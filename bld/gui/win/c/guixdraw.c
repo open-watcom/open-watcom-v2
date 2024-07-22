@@ -128,7 +128,7 @@ static void GUIDrawTextBitmapRGB( gui_window *wnd, const char *text,
 
     if( draw_extent ) {
         /* blanks out some portion of rest of the line */
-        if( extentx != GUI_NO_COLUMN ) {
+        if( extentx != GUI_NO_EXTENT ) {
             right = nDrawX + GUIScaleToScreenX( extentx );
         }
     } else {
@@ -191,7 +191,7 @@ void GUIDrawBitmapAttr( gui_window *wnd, const guix_coord *size, const gui_coord
     fore = GUIGetFore( wnd, attr );
     back = GUIGetBack( wnd, attr );
 
-    GUIDrawTextBitmapRGB( wnd, NULL, size->x, size->y, pos, fore, back, GUI_NO_COLUMN, false, hotspot_no );
+    GUIDrawTextBitmapRGB( wnd, NULL, size->x, size->y, pos, fore, back, GUI_NO_EXTENT, false, hotspot_no );
 }
 
 void GUIXDrawText( gui_window *wnd, const char *text, size_t length, const gui_coord *pos,

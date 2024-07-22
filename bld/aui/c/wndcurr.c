@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -79,7 +79,7 @@ bool    WndSetPoint( a_window wnd, void *parm, bool exact,
         indent.y = 0;
         GUITruncToPixel( &indent );
         line.indent = indent.x;
-        if( line.tabstop && ( line.extent == WND_MAX_EXTEND || line.master_tabstop ) ) { // nyi ??
+        if( line.tabstop && ( line.extent == WND_NO_EXTENT || line.master_tabstop ) ) { // nyi ??
             if( last_extended_tab_piece == WND_NO_PIECE ) {
                 last_extended_tab_piece = piece;
                 last_extended_tab_colidx = WndLastCharColIdx( &line );
@@ -111,7 +111,7 @@ bool    WndSetPoint( a_window wnd, void *parm, bool exact,
             gui_text_ord    text_pos;
 
             text_pos = GUIGetStringPos( wnd->gui, line.indent, line.text, point.x );
-            if( text_pos != GUI_TEXT_NO_COLUMN ) { // clicked within this piece
+            if( text_pos != GUI_TEXT_NO_POS ) { // clicked within this piece
                 colidx = (wnd_colidx)text_pos;
                 if( !doing_select && last_extended_tab_piece != WND_NO_PIECE ) {
                     spot->piece = last_extended_tab_piece;
@@ -126,7 +126,7 @@ bool    WndSetPoint( a_window wnd, void *parm, bool exact,
                 spot->row = row;
                 spot->colidx = WndCharColIdx( line.text, colidx );
                 return( true );
-            } else if( line.extent == WND_MAX_EXTEND || line.master_tabstop || !exact ) { // nyi ??
+            } else if( line.extent == WND_NO_EXTENT || line.master_tabstop || !exact ) { // nyi ??
                 // clicked to right of this hunk -- remember it
                 last_piece = piece;
                 last_colidx = WndLastCharColIdx( &line );

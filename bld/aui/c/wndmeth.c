@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -262,7 +262,7 @@ bool WndGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *lin
     line->static_text = false;
     line->tabstop = true;
     line->hot = false;
-    line->extent = WND_NO_EXTEND;
+    line->extent = WND_NO_EXTENT;
     line->master_tabstop = false;
     line->underline = false;
     line->draw_bar = false;

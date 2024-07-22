@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -139,27 +139,27 @@ static bool W4GetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piec
             line->tabstop = true;
             itoa( row, buff, 10 );
             line->text = buff;
-            line->extent = WND_MAX_EXTEND;
+            line->extent = WND_NO_EXTENT;
             return( true );
         case 1:
             line->tabstop = false;
             line->use_prev_attr = true;
             line->text = "";
-            line->extent = WND_MAX_EXTEND;
+            line->extent = WND_NO_EXTENT;
             line->indent = 1000;
             return( true );
         case 2:
             line->tabstop = false;
             line->use_prev_attr = true;
             line->text = Stuff[row];
-            line->extent = WND_MAX_EXTEND;
+            line->extent = WND_NO_EXTENT;
             line->indent = 2000;
             return( true );
         case 3:
             line->tabstop = false;
             line->use_prev_attr = true;
             line->text = "";
-            line->extent = WND_MAX_EXTEND;
+            line->extent = WND_NO_EXTENT;
             line->indent = 3000;
             return( true );
         default:

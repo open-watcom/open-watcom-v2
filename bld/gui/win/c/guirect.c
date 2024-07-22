@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,8 +45,8 @@ void DoGetRelRect( HWND hwnd, const WPI_RECT *wpi_rect, gui_rect *rect, bool isp
     WPI_RECTDIM left, top, right, bottom;
 
     _wpi_getrectvalues( *wpi_rect, &left, &top, &right, &bottom );
-    rect->width = GUIScreenToScaleH( right - left );
-    rect->height = GUIScreenToScaleV( bottom - top );
+    rect->width = GUIScaleFromScreenH( right - left );
+    rect->height = GUIScaleFromScreenV( bottom - top );
 
     pos.x = left;
 #ifdef __OS2_PM__
@@ -59,11 +59,11 @@ void DoGetRelRect( HWND hwnd, const WPI_RECT *wpi_rect, gui_rect *rect, bool isp
         _wpi_getclientrect( parent, &parent_wpi_rect );
         _wpi_mapwindowpoints( parent, HWND_DESKTOP, (WPI_LPPOINT)&parent_wpi_rect, 2 );
         _wpi_getrectvalues( parent_wpi_rect, &left, &top, &right, &bottom );
-        rect->x = GUIScreenToScaleH( pos.x - left );
-        rect->y = GUIScreenToScaleV( _wpi_cvth_y( pos.y - top, bottom - top ) );
+        rect->x = GUIScaleFromScreenH( pos.x - left );
+        rect->y = GUIScaleFromScreenV( _wpi_cvth_y( pos.y - top, bottom - top ) );
     } else {
-        rect->x = GUIScreenToScaleX( pos.x );
-        rect->y = GUIScreenToScaleY( _wpi_cvts_y( pos.y ) );
+        rect->x = GUIScaleFromScreenX( pos.x );
+        rect->y = GUIScaleFromScreenY( _wpi_cvts_y( pos.y ) );
     }
 }
 

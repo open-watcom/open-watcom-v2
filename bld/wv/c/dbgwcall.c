@@ -121,7 +121,7 @@ static  bool    CallGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_lin
     chain = GetCallChain( &call->tb, row );
     if( chain == NULL )
         return( false );
-    line->extent = WND_MAX_EXTEND;
+    line->extent = WND_NO_EXTENT;
     switch( piece ) {
     case PIECE_SYMBOL:
         StrCopyDst( ":", StrCopyDst( chain->symbol, TxtBuff ) );
