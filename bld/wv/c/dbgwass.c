@@ -728,7 +728,7 @@ static  bool    AsmGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line
     switch( piece ) {
     case PIECE_BREAK:
         line->tabstop = false;
-        line->extent = WND_NO_EXTEND;
+        line->extent = WND_NO_EXTENT;
         if( src_line == 0 )
             FileBreakGadget( wnd, line, curr, FindBreak( addr ) );
         break;
