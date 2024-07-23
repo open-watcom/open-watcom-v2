@@ -302,7 +302,7 @@ extern bool                 DlgNew( const char *title, char *buff, size_t buff_l
 extern bool                 DlgNewWithCtl( const char *title, char *buff, size_t buff_len, gui_control_info *controls, int num_controls,
                                             GUICALLBACK *gui_call_back, gui_text_ord rows, gui_text_ord cols, gui_text_ord max_cols );
 extern void                 DlgOpen( const char *title, gui_text_ord, gui_text_ord, gui_control_info *, int, GUICALLBACK *, void * );
-extern void                 ResDlgOpen( GUICALLBACK *, void *, int dlg_id );
+extern void                 DlgOpenRes( GUICALLBACK *, void *, int dlg_id );
 extern int                  DlgGetFileName( open_file_name *ofn );
 extern bool                 DlgFileBrowse( char *title, char *filter, char *path, unsigned len, fn_flags flags );
 extern int                  DlgSearch( a_window wnd, void *history );

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -134,6 +134,6 @@ bool    DlgOptSet( void )
     dlg_window_set      optset;
 
     optset.cancel = true;
-    ResDlgOpen( OptSetGUIEventProc, &optset, DIALOG_OPTION );
+    DlgOpenRes( OptSetGUIEventProc, &optset, DIALOG_OPTION );
     return( !optset.cancel );
 }

@@ -143,6 +143,6 @@ bool    DlgWndSet( void )
     dlg_window_set      wndset;
 
     wndset.cancel = true;
-    ResDlgOpen( WndSetGUIEventProc, &wndset, DIALOG_WIND );
+    DlgOpenRes( WndSetGUIEventProc, &wndset, DIALOG_WIND );
     return( !wndset.cancel );
 }

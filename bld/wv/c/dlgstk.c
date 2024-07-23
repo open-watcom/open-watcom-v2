@@ -72,7 +72,7 @@ static bool DoStackOrHistory( int dlg_id )
     gui_ctl_id  resp;
 
     resp = CTL_STK_CANCEL;
-    ResDlgOpen( StkOrHistoryGUIEventProc, &resp, dlg_id );
+    DlgOpenRes( StkOrHistoryGUIEventProc, &resp, dlg_id );
     switch( resp ) {
     case CTL_STK_CANCEL:
         _SwitchOn( SW_EXECUTE_ABORTED );

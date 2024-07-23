@@ -171,5 +171,5 @@ void DlgList( const char *title, void (*clear)(void), void (*add)(const char *,u
     dlg.next = next;
     dlg.name = name;
     dlg.title = DupStr( title );
-    ResDlgOpen( SourceGUIEventProc, &dlg, DIALOG_LIST );
+    DlgOpenRes( SourceGUIEventProc, &dlg, DIALOG_LIST );
 }

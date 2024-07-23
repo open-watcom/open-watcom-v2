@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -100,7 +100,7 @@ static gui_create_info ResDialog = {
     NULL                            // Menu Resource
 };
 
-void ResDlgOpen( GUICALLBACK *gui_call_back, void *extra, int dlg_id )
+void DlgOpenRes( GUICALLBACK *gui_call_back, void *extra, int dlg_id )
 {
     ResDialog.parent = DlgOpenGetGUIParent();
     dlgGUIEventProcs[Nested + 1] = gui_call_back;

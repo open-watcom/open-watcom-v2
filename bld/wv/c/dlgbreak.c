@@ -353,7 +353,7 @@ bool DlgBreak( address addr )
     }
     dlg.tmpbp = *bp;
     CnvULongDec( bp->index, StrCopyDst( " ", StrCopyDst( LIT_DUI( DlgBreak ), TxtBuff ) ), TXT_LEN );
-    ResDlgOpen( BrkGUIEventProc, &dlg, DIALOG_BREAK );
+    DlgOpenRes( BrkGUIEventProc, &dlg, DIALOG_BREAK );
     SetRecord( true );
     return( !dlg.cancel );
 }

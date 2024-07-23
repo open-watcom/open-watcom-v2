@@ -97,6 +97,6 @@ static bool AsyncGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
 
 unsigned DlgAsyncRun( void )
 {
-    ResDlgOpen( AsyncGUIEventProc, 0, DIALOG_ASYNC_RUN );
+    DlgOpenRes( AsyncGUIEventProc, 0, DIALOG_ASYNC_RUN );
     return( dlg.cond );
 }

@@ -105,7 +105,7 @@ bool    DlgVarExpand( dlg_var_expand *pvarx )
     varx.start = pvarx->start;
     varx.end = pvarx->end;
     varx.cancel = true;
-    ResDlgOpen( VarGUIEventProc, &varx, DIALOG_VARX );
+    DlgOpenRes( VarGUIEventProc, &varx, DIALOG_VARX );
     if( varx.cancel )
         return( false );
     pvarx->start = varx.start;

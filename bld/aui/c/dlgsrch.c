@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -235,7 +236,7 @@ static bool SrchGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
             GUICloseDialog( gui );
             return( true );
         case CTL_SRCH_EDIT_RX:
-            ResDlgOpen( &RXGUIEventProc, NULL, DIALOG_RX );
+            DlgOpenRes( &RXGUIEventProc, NULL, DIALOG_RX );
             return( true );
         case CTL_SRCH_PREV:
             dlg->direction = -1;
@@ -268,7 +269,7 @@ static int DoDlgSearch( a_window wnd, void *history, bool want_prev )
     dlg->case_ignore = SrchIgnoreCase;
     dlg->use_rx = SrchRX;
     dlg->history = history;
-    ResDlgOpen( &SrchGUIEventProc, dlg, want_prev ? DIALOG_SEARCH : DIALOG_SEARCH_ALL );
+    DlgOpenRes( &SrchGUIEventProc, dlg, want_prev ? DIALOG_SEARCH : DIALOG_SEARCH_ALL );
     direction = dlg->direction;
     SrchRX = dlg->use_rx;
     SrchIgnoreCase = dlg->case_ignore;
