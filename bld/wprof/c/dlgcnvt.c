@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -184,6 +184,7 @@ STATIC void dlgBrowseFmtFile( gui_window *gui )
 
 
 
+STATIC GUICALLBACK progGUIEventProc;
 STATIC bool progGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
 /****************************************************************************/
 {

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -137,6 +137,10 @@ WCLASS WControl;
 
 typedef void (WObject::*cbw)( WWindow *w );
 typedef bool (WObject::*bcbk)( gui_key k );
+
+extern "C" ENUMCALLBACK EnumChildProc;
+extern "C" CONTRENUMCALLBACK EnumControlProc;
+extern "C" GUICALLBACK WinGUIEventProc;
 
 WCLASS WWindow : public WObject {
 private:
