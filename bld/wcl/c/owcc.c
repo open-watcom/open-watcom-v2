@@ -627,28 +627,28 @@ static char *posix_library( const char *s )
     if( s == NULL ) {
         return( NULL );
     }
-    if( strcmp( s, "c" ) {
+    if( strcmp( s, "c" ) == 0 ) {
         return( "" );
     }
-    if( strcmp( s, "l" ) {
+    if( strcmp( s, "l" ) == 0 ) {
         return( "" );
     }
-    if( strcmp( s, "pthread" ) {
+    if( strcmp( s, "pthread" ) == 0 ) {
         return( "" );
     }
-    if( strcmp( s, "m" ) {
+    if( strcmp( s, "m" ) == 0 ) {
         return( "" );
     }
-    if( strcmp( s, "rt" ) {
+    if( strcmp( s, "rt" ) == 0 ) {
         return( "" );
     }
-    if( strcmp( s, "trace" ) {
+    if( strcmp( s, "trace" ) == 0 ) {
         return( "" );
     }
-    if( strcmp( s, "xnet" ) {
+    if( strcmp( s, "xnet" ) == 0 ) {
         return( "" );
     }
-    if( strcmp( s, "y" ) {
+    if( strcmp( s, "y" ) == 0 ) {
         return( "" );
     }
     return( NULL );
