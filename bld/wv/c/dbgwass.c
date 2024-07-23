@@ -377,7 +377,7 @@ bool    AsmIsTracking( a_window wnd )
 }
 #endif
 
-static  void    AsmModify( a_window wnd, wnd_row row, wnd_piece piece )
+static  void    AUIAPICALLBACK AsmModify( a_window wnd, wnd_row row, wnd_piece piece )
 {
     asm_window  *asw;
     address     addr;
@@ -397,7 +397,7 @@ static  void    AsmModify( a_window wnd, wnd_row row, wnd_piece piece )
 }
 
 
-static void AsmNotify( a_window wnd, wnd_row row, wnd_piece piece )
+static void AUIAPICALLBACK AsmNotify( a_window wnd, wnd_row row, wnd_piece piece )
 {
     asm_window  *asw;
     address     addr;
@@ -433,7 +433,7 @@ bool AsmOpenGadget( a_window wnd, wnd_line_piece *line, mod_handle mod )
 }
 
 
-static void     AsmMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
+static void     AUIAPICALLBACK AsmMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
 {
     address     addr;
     asm_window  *asw;
@@ -564,7 +564,7 @@ static void     AsmMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece
 }
 
 
-static int AsmScroll( a_window wnd, int lines )
+static int AUIAPICALLBACK AsmScroll( a_window wnd, int lines )
 {
     address             addr;
     int                 moved;
@@ -613,7 +613,7 @@ static int AsmScroll( a_window wnd, int lines )
 }
 
 
-static  void    AsmBegPaint( a_window wnd, wnd_row row, int num )
+static  void    AUIAPICALLBACK AsmBegPaint( a_window wnd, wnd_row row, int num )
 {
     asm_window  *asw;
 
@@ -624,7 +624,7 @@ static  void    AsmBegPaint( a_window wnd, wnd_row row, int num )
 }
 
 
-static  void    AsmEndPaint( a_window wnd, wnd_row row, int num )
+static  void    AUIAPICALLBACK AsmEndPaint( a_window wnd, wnd_row row, int num )
 {
     /* unused parameters */ (void)wnd; (void)row; (void)num;
 
@@ -658,7 +658,7 @@ static void AsmNewSource( asm_window *asw, cue_handle *cueh )
     }
 }
 
-static  bool    AsmGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
+static  bool    AUIAPICALLBACK AsmGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
 {
     address     addr;
     asm_window  *asw;
@@ -899,7 +899,7 @@ static  void    AsmNewIP( a_window wnd )
     }
 }
 
-static void     AsmRefresh( a_window wnd )
+static void     AUIAPICALLBACK AsmRefresh( a_window wnd )
 {
     asm_window          *asw;
     unsigned            new_size;
@@ -994,7 +994,7 @@ static  void    AsmInit( a_window wnd )
     WndZapped( wnd );
 }
 
-static bool AsmWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
+static bool AUIAPICALLBACK AsmWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
 {
     asm_window  *asw;
 
@@ -1045,7 +1045,7 @@ void AsmChangeOptions( void )
     WndForAllClass( WND_ASSEMBLY, DoAsmChangeOptions );
 }
 
-static bool ChkUpdate( void )
+static bool AUIAPICALLBACK ChkUpdate( void )
 {
     return( UpdateFlags & (UP_MAD_CHANGE | UP_SYM_CHANGE | UP_NEW_PROGRAM | UP_NEW_SRC | UP_STACKPOS_CHANGE
             | UP_CSIP_CHANGE | UP_BREAK_CHANGE | UP_RADIX_CHANGE | UP_ASM_RESIZE) );
@@ -1099,7 +1099,7 @@ a_window DoWndAsmOpen( address addr, bool track )
 }
 
 
-a_window WndAsmOpen( void )
+a_window AUIAPICALLBACK WndAsmOpen( void )
 {
     address     addr;
 

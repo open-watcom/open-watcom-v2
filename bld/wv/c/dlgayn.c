@@ -46,7 +46,7 @@ typedef struct {
     unsigned long   mult;
 } dlg_ayn;
 
-static bool AynGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
+static bool GUIAPICALLBACK AynGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
 {
     dlg_ayn     *ayn;
     gui_ctl_id  id;

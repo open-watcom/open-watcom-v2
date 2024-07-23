@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,6 +36,6 @@ extern void     MemSetFollow( a_window wnd, char *follow );
 extern void     InitMemWindow( void );
 extern void     FiniMemWindow( void );
 extern a_window DoWndMemOpen( address addr, mad_type_handle mth );
-extern a_window WndMemOpen( void );
-extern a_window WndStkOpen( void );
+extern a_window AUIAPICALLBACK WndMemOpen( void );
+extern a_window AUIAPICALLBACK WndStkOpen( void );
 extern a_window DoWndBinOpen( const char *title, file_handle fh );

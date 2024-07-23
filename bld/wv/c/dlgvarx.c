@@ -64,7 +64,7 @@ static void SetDlgStatus( dlg_var_expand *varx, gui_window *gui )
 }
 
 
-static bool VarGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
+static bool GUIAPICALLBACK VarGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
 {
     gui_ctl_id      id;
     dlg_var_expand  *varx;

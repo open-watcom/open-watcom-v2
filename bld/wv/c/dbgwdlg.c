@@ -145,7 +145,7 @@ static bool WndDlgTxtAttr( const char *buff, wnd_attr_wv wndattr )
 }
 
 
-static wnd_row DlgNumRows( a_window wnd )
+static wnd_row AUIAPICALLBACK DlgNumRows( a_window wnd )
 {
     /* unused parameters */ (void)wnd;
 
@@ -153,7 +153,7 @@ static wnd_row DlgNumRows( a_window wnd )
 }
 
 
-static void DlgRefresh( a_window wnd )
+static void AUIAPICALLBACK DlgRefresh( a_window wnd )
 {
     if( DlgLines > 0 )
         WndMoveCurrent( wnd, DlgLines - 1, 0 );
@@ -168,7 +168,7 @@ bool WndDlgTxt( const char *buff )
 }
 
 
-static  bool    DlgGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
+static  bool    AUIAPICALLBACK DlgGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
 {
     int         i;
     dlg_entry   *curr;
@@ -202,7 +202,7 @@ void WndDlgFini( void )
     }
 }
 
-static bool DlgWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
+static bool AUIAPICALLBACK DlgWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
 {
     /* unused parameters */ (void)parm;
 
@@ -225,7 +225,7 @@ static bool DlgWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
     return( false );
 }
 
-static bool ChkUpdate( void )
+static bool AUIAPICALLBACK ChkUpdate( void )
 {
     return( UpdateFlags & UP_DLG_WRITTEN );
 }
@@ -247,7 +247,7 @@ wnd_info LogInfo = {
 };
 
 
-a_window WndDlgOpen( void )
+a_window AUIAPICALLBACK WndDlgOpen( void )
 {
     if( WndDlg != NULL )
         WndClose( WndDlg );

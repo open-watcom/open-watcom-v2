@@ -227,7 +227,7 @@ static bool RegResize( a_window wnd )
 }
 
 
-static wnd_row RegNumRows( a_window wnd )
+static wnd_row AUIAPICALLBACK RegNumRows( a_window wnd )
 {
     return( WndReg( wnd )->rows );
 }
@@ -246,7 +246,7 @@ static int GetRegIdx( reg_window *reg, wnd_row row, wnd_piece piece )
 }
 
 
-static const char *RegValueName( const void *data_handle, int item )
+static const char * GUIAPICALLBACK RegValueName( const void *data_handle, int item )
 {
     mad_modify_list const *possible = (mad_modify_list const *)data_handle + item;
     size_t          buff_len;
@@ -261,7 +261,7 @@ static const char *RegValueName( const void *data_handle, int item )
     return( TxtBuff );
 }
 
-static  void    RegModify( a_window wnd, wnd_row row, wnd_piece piece )
+static  void    AUIAPICALLBACK RegModify( a_window wnd, wnd_row row, wnd_piece piece )
 {
     int                     i;
     item_mach               value;
@@ -316,7 +316,7 @@ static  void    RegModify( a_window wnd, wnd_row row, wnd_piece piece )
     NewCurrRadix( old_radix );
 }
 
-static void     RegMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
+static void     AUIAPICALLBACK RegMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
 {
     reg_window              *reg = WndReg( wnd );
     int                     i;
@@ -358,7 +358,7 @@ static void     RegMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece
 }
 
 
-static  bool    RegGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
+static  bool    AUIAPICALLBACK RegGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
 {
     int                 column;
     int                 i;
@@ -408,7 +408,7 @@ static  bool    RegGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line
 }
 
 
-static void     RegRefresh( a_window wnd )
+static void     AUIAPICALLBACK RegRefresh( a_window wnd )
 {
     int                 row,rows;
     int                 reg_num;
@@ -442,7 +442,7 @@ static void     RegRefresh( a_window wnd )
     }
 }
 
-static bool RegWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
+static bool AUIAPICALLBACK RegWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
 {
     reg_window          *reg = WndReg( wnd );
 
@@ -471,7 +471,7 @@ static bool RegWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
     return( false );
 }
 
-static bool ChkUpdate( void )
+static bool AUIAPICALLBACK ChkUpdate( void )
 {
     return( UpdateFlags & (UP_MAD_CHANGE | UP_REG_CHANGE | UP_REG_RESIZE) );
 }

@@ -50,7 +50,7 @@ static char             prog[UTIL_LEN];
 static char             args[UTIL_LEN];
 
 
-static bool ProgGUIEventProc( gui_window * gui, gui_event gui_ev, void * param )
+static bool GUIAPICALLBACK ProgGUIEventProc( gui_window * gui, gui_event gui_ev, void * param )
 {
     gui_ctl_id          id;
     dlg_new_prog        *dlg;

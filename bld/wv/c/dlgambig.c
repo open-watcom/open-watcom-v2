@@ -45,7 +45,7 @@
 #include "dbglkup.h"
 
 
-static bool SymPick( const char *text, GUIPICKCALLBACK *pick_call_back, int *choice )
+static bool AUIAPICALLBACK SymPick( const char *text, GUIPICKCALLBACK *pick_call_back, int *choice )
 {
     dlg_pick    dlg;
 
@@ -60,7 +60,7 @@ static bool SymPick( const char *text, GUIPICKCALLBACK *pick_call_back, int *cho
     return( true );
 }
 
-static const char *SymPickText( const void *data_handle, int item )
+static const char * GUIAPICALLBACK SymPickText( const void *data_handle, int item )
 {
     sym_list            *sym;
     unsigned            len;

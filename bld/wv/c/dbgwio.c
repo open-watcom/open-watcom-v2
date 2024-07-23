@@ -85,7 +85,7 @@ static gui_menu_struct IOMenu[] = {
     #include "menuio.h"
 };
 
-static wnd_row IONumRows( a_window wnd )
+static wnd_row AUIAPICALLBACK IONumRows( a_window wnd )
 {
     return( WndIO( wnd )->num_rows );
 }
@@ -105,7 +105,7 @@ static void IOAddNewAddr( a_window wnd, address *addr, int type )
     curr->value_known = false;
 }
 
-static void     IOMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
+static void     AUIAPICALLBACK IOMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
 {
     io_window   *io = WndIO( wnd );
     address     addr;
@@ -186,7 +186,7 @@ static void     IOMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece 
 }
 
 
-static void     IOModify( a_window wnd, wnd_row row, wnd_piece piece )
+static void     AUIAPICALLBACK IOModify( a_window wnd, wnd_row row, wnd_piece piece )
 {
     if( row < 0 ) {
         IOMenuItem( wnd, MENU_IO_NEW_ADDRESS, row, piece );
@@ -207,7 +207,7 @@ static void     IOModify( a_window wnd, wnd_row row, wnd_piece piece )
     }
 }
 
-static  bool    IOGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
+static  bool    AUIAPICALLBACK IOGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
 {
     io_window   *io = WndIO( wnd );
 //    bool        ret;
@@ -254,7 +254,7 @@ static  bool    IOGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_
 }
 
 
-static void     IORefresh( a_window wnd )
+static void     AUIAPICALLBACK IORefresh( a_window wnd )
 {
     WndNoSelect( wnd );
     WndSetRepaint( wnd );
@@ -297,7 +297,7 @@ void FiniIOWindow( void )
     MemFiniTypes( &IOData );
 }
 
-static bool IOWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
+static bool AUIAPICALLBACK IOWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
 {
     io_window   *io = WndIO( wnd );
 
@@ -317,7 +317,7 @@ static bool IOWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
     return( false );
 }
 
-static bool ChkUpdate( void )
+static bool AUIAPICALLBACK ChkUpdate( void )
 {
     return( UpdateFlags & UP_RADIX_CHANGE );
 }
@@ -373,7 +373,7 @@ a_window DoWndIOOpen( address *addr, mad_type_handle mth )
     return( DbgWndCreate( LIT_DUI( WindowIO_Ports ), &IOInfo, WND_IO, io, &IOIcon ) );
 }
 
-a_window WndIOOpen( void )
+a_window AUIAPICALLBACK WndIOOpen( void )
 {
     io_window   *io;
     a_window    wnd;

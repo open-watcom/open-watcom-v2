@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,8 +36,8 @@
 
 extern bool         WndVarAdd( a_window wnd, const char *name, unsigned len, bool expand );
 extern bool         VarInfoRelease( void );
-extern a_window     WndVarOpen( void );
-extern a_window     WndWatOpen( void );
-extern a_window     WndLclOpen( void );
-extern a_window     WndFSVOpen( void );
+extern a_window     AUIAPICALLBACK WndVarOpen( void );
+extern a_window     AUIAPICALLBACK WndWatOpen( void );
+extern a_window     AUIAPICALLBACK WndLclOpen( void );
+extern a_window     AUIAPICALLBACK WndFSVOpen( void );
 extern var_node     *VarGetDisplayPiece( var_info *i, wnd_row row, wnd_piece piece, int *pdepth, int *pinherit );

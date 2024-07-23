@@ -93,7 +93,7 @@ static gui_menu_struct SrchMenu[] = {
     #include "menusrch.h"
 };
 
-static wnd_row SrchNumRows( a_window wnd )
+static wnd_row AUIAPICALLBACK SrchNumRows( a_window wnd )
 {
     return( WndSrch( wnd )->num_rows );
 }
@@ -228,7 +228,7 @@ static void     SrchInit( a_window wnd )
 }
 
 
-static void SrchMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
+static void AUIAPICALLBACK SrchMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
 {
     srch_window *srch = WndSrch( wnd );
     a_window    new;
@@ -252,7 +252,7 @@ static void SrchMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece pi
 }
 
 
-static  bool    SrchGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
+static  bool    AUIAPICALLBACK SrchGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
 {
     srch_window *srch = WndSrch( wnd );
     found_item  *found;
@@ -288,7 +288,7 @@ static  bool    SrchGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_lin
 
 
 
-static void     SrchRefresh( a_window wnd )
+static void     AUIAPICALLBACK SrchRefresh( a_window wnd )
 {
     srch_window *srch = WndSrch( wnd );
     found_item  *found;
@@ -308,7 +308,7 @@ static void     SrchRefresh( a_window wnd )
 }
 
 
-static bool SrchWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
+static bool AUIAPICALLBACK SrchWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
 {
     srch_window *srch = WndSrch( wnd );
 
@@ -329,7 +329,7 @@ static bool SrchWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
     return( false );
 }
 
-static bool ChkUpdate( void )
+static bool AUIAPICALLBACK ChkUpdate( void )
 {
     return( UpdateFlags & (UP_SYMBOLS_LOST | UP_OPEN_CHANGE) );
 }

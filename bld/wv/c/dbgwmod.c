@@ -77,7 +77,7 @@ static gui_menu_struct ModMenu[] = {
     #include "menumod.h"
 };
 
-static wnd_row ModNumRows( a_window wnd )
+static wnd_row AUIAPICALLBACK ModNumRows( a_window wnd )
 {
     return( ModListNumRows( ModList( WndMod( wnd ) ) ) );
 }
@@ -119,7 +119,7 @@ static void     ModInit( a_window wnd )
     ModCalcIndent( wnd );
 }
 
-static void     ModMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
+static void     AUIAPICALLBACK ModMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
 {
     address     addr;
     mod_handle  handle;
@@ -178,7 +178,7 @@ static void     ModMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece
 }
 
 
-static void     ModModify( a_window wnd, wnd_row row, wnd_piece piece )
+static void     AUIAPICALLBACK ModModify( a_window wnd, wnd_row row, wnd_piece piece )
 {
     if( piece == PIECE_SOURCE ) {
         if( ModHasSourceInfo( ModListMod( ModList( WndMod( wnd ) ), row ) ) ) {
@@ -194,7 +194,7 @@ static void     ModModify( a_window wnd, wnd_row row, wnd_piece piece )
 }
 
 
-static  bool    ModGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
+static  bool    AUIAPICALLBACK ModGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
 {
     mod_handle  handle;
     mod_window  *mod = WndMod( wnd );
@@ -254,7 +254,7 @@ void ModNewHandle( a_window wnd, mod_handle handle )
     ModSetCurrent( wnd );
 }
 
-static void     ModRefresh( a_window wnd )
+static void     AUIAPICALLBACK ModRefresh( a_window wnd )
 {
     int         i;
     mod_window  *mod = WndMod( wnd );
@@ -282,7 +282,7 @@ static void ModSetOptions( a_window wnd )
     ModInit( wnd );
 }
 
-static bool ModWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
+static bool AUIAPICALLBACK ModWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
 {
     mod_window  *mod = WndMod( wnd );
 
@@ -313,7 +313,7 @@ void ModChangeOptions( void )
     WndForAllClass( WND_MODULES, ModSetOptions );
 }
 
-static bool ChkUpdate( void )
+static bool AUIAPICALLBACK ChkUpdate( void )
 {
     return( UpdateFlags & (UP_SYM_CHANGE | UP_OPEN_CHANGE | UP_CSIP_CHANGE | UP_STACKPOS_CHANGE) );
 }
@@ -343,7 +343,7 @@ a_window DoWndModOpen( mod_handle handle )
     return( DbgWndCreate( LIT_DUI( WindowModules ), &ModInfo, WND_MODULES, mod, &ModIcon ) );
 }
 
-a_window WndModOpen( void )
+a_window AUIAPICALLBACK WndModOpen( void )
 {
     return( DoWndModOpen( NO_MOD ) );
 }

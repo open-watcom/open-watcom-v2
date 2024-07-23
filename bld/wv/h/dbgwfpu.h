@@ -31,4 +31,4 @@
 ****************************************************************************/
 
 
-extern a_window WndFPUOpen( void );
+extern a_window AUIAPICALLBACK WndFPUOpen( void );

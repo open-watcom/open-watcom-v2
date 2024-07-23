@@ -64,7 +64,7 @@ void AsyncNotify( void )
     }
 }
 
-static bool AsyncGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
+static bool GUIAPICALLBACK AsyncGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
 {
     gui_ctl_id      id;
 

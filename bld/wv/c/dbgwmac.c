@@ -106,7 +106,7 @@ static gui_menu_struct MacMenu[] = {
     #include "menumac.h"
 };
 
-static const char *WndGetName( const void *data_handle, int item )
+static const char * GUIAPICALLBACK WndGetName( const void *data_handle, int item )
 {
     return( *((const char ***)data_handle)[item] );
 }
@@ -169,7 +169,7 @@ static void MacChangeMac( a_window wnd, wnd_macro *mac, gui_key key, wnd_class_w
     WndNewCurrent( wnd, i, PIECE_KEY );
 }
 
-static void     MacModify( a_window wnd, wnd_row row, wnd_piece piece );
+static void     AUIAPICALLBACK MacModify( a_window wnd, wnd_row row, wnd_piece piece );
 
 static bool MacModWhat( a_window wnd, wnd_row row )
 {
@@ -244,7 +244,7 @@ bool MacKeyHit( a_window wnd, gui_key key )
     }
 }
 
-static bool MacPopupClicked( a_window wnd, gui_ctl_id id )
+static bool AUIAPICALLBACK MacPopupClicked( a_window wnd, gui_ctl_id id )
 {
     char                *p;
     gui_ctl_id          main_id;
@@ -352,7 +352,7 @@ static void MacModCmd( a_window wnd, wnd_row row )
 }
 
 
-static void     MacModify( a_window wnd, wnd_row row, wnd_piece piece )
+static void     AUIAPICALLBACK MacModify( a_window wnd, wnd_row row, wnd_piece piece )
 {
     wnd_macro   *mac;
 
@@ -382,7 +382,7 @@ static void     MacModify( a_window wnd, wnd_row row, wnd_piece piece )
 #define TDDBG "tdkeys.dbg"
 #define WDDBG "wdkeys.dbg"
 
-static void     MacMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
+static void     AUIAPICALLBACK MacMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
 {
     wnd_macro           *mac;
     mac_window          *wndmac;
@@ -437,7 +437,7 @@ static void     MacMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece
     }
 }
 
-static wnd_row MacNumRows( a_window wnd )
+static wnd_row AUIAPICALLBACK MacNumRows( a_window wnd )
 {
     wnd_macro   *mac;
     wnd_row     count;
@@ -451,7 +451,7 @@ static wnd_row MacNumRows( a_window wnd )
     return( count );
 }
 
-static  bool MacGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
+static  bool AUIAPICALLBACK MacGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
 {
     wnd_macro           *mac;
     cmd_list            *cmds;
@@ -597,14 +597,14 @@ static void MacReSize( a_window wnd )
     Indents[PIECE_TEXT] = Indents[PIECE_WHAT] + max_size[PIECE_WHAT] + 2 * WndAvgCharX( wnd );
 }
 
-static void     MacRefresh( a_window wnd )
+static void     AUIAPICALLBACK MacRefresh( a_window wnd )
 {
     MacReSize( wnd );
     WndNoSelect( wnd );
     WndSetRepaint( wnd );
 }
 
-static bool MacWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
+static bool AUIAPICALLBACK MacWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
 {
     mac_window  *wndmac = WndMac( wnd );
 
@@ -629,7 +629,7 @@ static bool MacWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
     return( false );
 }
 
-static bool ChkUpdate( void )
+static bool AUIAPICALLBACK ChkUpdate( void )
 {
     return( UpdateFlags & UP_MACRO_CHANGE );
 }
@@ -650,7 +650,7 @@ wnd_info MacInfo = {
     PopUp( MacMenu )
 };
 
-a_window WndMacOpen( void )
+a_window AUIAPICALLBACK WndMacOpen( void )
 {
     mac_window  *wndmac;
 

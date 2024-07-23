@@ -31,4 +31,4 @@
 ****************************************************************************/
 
 
-extern a_window WndRegOpen( void );
+extern a_window AUIAPICALLBACK WndRegOpen( void );

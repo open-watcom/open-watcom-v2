@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,4 +33,4 @@
 
 extern void     ModNewHandle( a_window wnd, mod_handle handle );
 extern a_window DoWndModOpen( mod_handle handle );
-extern a_window WndModOpen( void );
+extern a_window AUIAPICALLBACK WndModOpen( void );

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,4 +36,4 @@ extern void     InitIOWindow( void );
 extern void     FiniIOWindow( void );
 extern void     IONewAddr( a_window wnd, address *addr, int type );
 extern a_window DoWndIOOpen( address *addr, mad_type_handle mth );
-extern a_window WndIOOpen( void );
+extern a_window AUIAPICALLBACK WndIOOpen( void );

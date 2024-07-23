@@ -30,5 +30,5 @@
 
 
 extern void     InitRunThreadInfo( void );
-extern a_window WndRunTrdOpen( void );
+extern a_window AUIAPICALLBACK WndRunTrdOpen( void );
 extern void     RunThreadNotify( void );
