@@ -139,7 +139,7 @@ static gui_colour_set MainColours[] = {
 #endif
 };
 
-static bool MainSetupWndGUIEventProc( gui_window *gui, gui_event gui_ev, void *parm )
+static bool GUIAPICALLBACK MainSetupWndGUIEventProc( gui_window *gui, gui_event gui_ev, void *parm )
 {
     int                 i;
 
