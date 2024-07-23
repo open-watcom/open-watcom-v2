@@ -39,6 +39,9 @@
 #include "guifdlg.h"
 
 
+#define AUIAPI              /* public API */
+#define AUIAPICALLBACK      /* public callback */
+
 #define SAVE_SIZE           512
 
 #define GUI_KEY_IS_ASCII(x) ((x) < 256)
@@ -255,23 +258,23 @@ typedef struct _a_window {
     wnd_rect                dirty[1];
 } *a_window;
 
-typedef bool        (WNDCALLBACK)( a_window, gui_event, void * );
-typedef void        (WNDREFRESH)( a_window );
-typedef void        (WNDMENU)( a_window, gui_ctl_id id, wnd_row, wnd_piece );
-typedef void        (WNDMODIFY)( a_window, wnd_row, wnd_piece );
-typedef int         (WNDSCROLL)( a_window, int );
-typedef wnd_row     (WNDNUMROWS)( a_window );
-typedef wnd_row     (WNDNEXTROW)( a_window, wnd_row, int );
-typedef bool        (WNDGETLINE)( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece * );
-typedef void        (WNDNOTIFY)( a_window wnd, wnd_row row, wnd_piece piece );
-typedef void        (WNDBEGPAINT)( a_window wnd, wnd_row row, int num );
-typedef void        (WNDENDPAINT)( a_window wnd, wnd_row row, int num );
-typedef bool        (WNDCHKUPDATE)( void );
-typedef a_window    (WNDOPEN)( void );
-typedef a_window    (WNDCREATE)( char *, struct wnd_info *, wnd_class, void * );
-typedef void        (WNDCLOSE)( a_window );
-typedef bool        (WNDPICKER)( const char *, GUIPICKCALLBACK *, int * );
-typedef bool        (WNDCLICKHOOK)( a_window wnd, gui_ctl_id id );
+typedef bool        (AUIAPICALLBACK WNDCALLBACK)( a_window, gui_event, void * );
+typedef void        (AUIAPICALLBACK WNDREFRESH)( a_window );
+typedef void        (AUIAPICALLBACK WNDMENU)( a_window, gui_ctl_id id, wnd_row, wnd_piece );
+typedef void        (AUIAPICALLBACK WNDMODIFY)( a_window, wnd_row, wnd_piece );
+typedef int         (AUIAPICALLBACK WNDSCROLL)( a_window, int );
+typedef wnd_row     (AUIAPICALLBACK WNDNUMROWS)( a_window );
+typedef wnd_row     (AUIAPICALLBACK WNDNEXTROW)( a_window, wnd_row, int );
+typedef bool        (AUIAPICALLBACK WNDGETLINE)( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece * );
+typedef void        (AUIAPICALLBACK WNDNOTIFY)( a_window wnd, wnd_row row, wnd_piece piece );
+typedef void        (AUIAPICALLBACK WNDBEGPAINT)( a_window wnd, wnd_row row, int num );
+typedef void        (AUIAPICALLBACK WNDENDPAINT)( a_window wnd, wnd_row row, int num );
+typedef bool        (AUIAPICALLBACK WNDCHKUPDATE)( void );
+typedef a_window    (AUIAPICALLBACK WNDOPEN)( void );
+typedef a_window    (AUIAPICALLBACK WNDCREATE)( char *, struct wnd_info *, wnd_class, void * );
+typedef void        (AUIAPICALLBACK WNDCLOSE)( a_window );
+typedef bool        (AUIAPICALLBACK WNDPICKER)( const char *, GUIPICKCALLBACK *, int * );
+typedef bool        (AUIAPICALLBACK WNDCLICKHOOK)( a_window wnd, gui_ctl_id id );
 
 typedef struct wnd_info {
     WNDCALLBACK             *event;

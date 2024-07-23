@@ -50,7 +50,7 @@ static void SetDlgStatus( gui_window *gui )
 }
 
 
-static bool OptSetGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
+static bool GUIAPICALLBACK OptSetGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
 {
     gui_ctl_id      id;
     dlg_window_set  *optset;

@@ -77,7 +77,7 @@ extern bool             WndKeyEscape( a_window );
 extern bool             WndKeyRubOut( a_window );
 extern bool             WndKeyChoose( a_window, int ch );
 extern void             WndSayMatchMode( a_window );
-extern a_window         WndNoOpen( void );
+extern a_window         AUIAPICALLBACK WndNoOpen( void );
 extern int              WndNextId( void );
 extern void             WndFreeId( int i );
 extern bool             WndPieceIsHot( a_window wnd, wnd_row row, wnd_piece piece );

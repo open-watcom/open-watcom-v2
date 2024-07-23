@@ -84,7 +84,7 @@ static void DoCmd( char *cmd )
 }
 
 
-static bool CmdGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
+static bool GUIAPICALLBACK CmdGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
 {
     gui_ctl_id  id;
     char        *text;

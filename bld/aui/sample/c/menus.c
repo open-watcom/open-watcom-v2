@@ -104,7 +104,7 @@ char *PickList[] = { "one", "two", "three", "four" };
 
 static char             FileBrowsed[_MAX_PATH] = "e:\\f\\setup.dbg";
 
-static const char *FmtNum( const void *data_handle, int item )
+static const char * GUIAPICALLBACK FmtNum( const void *data_handle, int item )
 {
     static char buff[20];
 
