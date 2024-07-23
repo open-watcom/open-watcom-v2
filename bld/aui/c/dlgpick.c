@@ -70,7 +70,7 @@ bool DlgPickWithRtn( const char *title, const void *data_handle, int def_item, G
     return( DlgPickWithRtn2( title, data_handle, def_item, getstring, num_items, doDlgPick, choice ) );
 }
 
-static PICKDLGOPEN DlgPickText;
+static GUIPICKGETTEXT DlgPickText;
 static const char *DlgPickText( const void *data_handle, int item )
 {
     return( ((const char **)data_handle)[item] );
