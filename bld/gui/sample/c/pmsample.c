@@ -36,13 +36,6 @@
 
 static  gui_rect        Scale           = { 0, 0, 1000, 1000 };
 
-bool MainWndGUIEventProc( gui_window *wnd, gui_event gui_ev, void *param )
-{
-    /* unused parameters */ (void)wnd; (void)gui_ev; (void)param;
-
-    return( true );
-}
-
 gui_create_info Parent = {
     "Sample Application",
     { 250, 250, 500, 500 },
@@ -70,6 +63,13 @@ static gui_create_info Child = {
     NULL,                           // Icon
     NULL                            // Menu Resource
 };
+
+bool GUIAPICALLBACK MainWndGUIEventProc( gui_window *wnd, gui_event gui_ev, void *param )
+{
+    /* unused parameters */ (void)wnd; (void)gui_ev; (void)param;
+
+    return( true );
+}
 
 void GUIAPI GUImain( void )
 {

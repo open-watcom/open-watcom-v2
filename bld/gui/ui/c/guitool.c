@@ -106,7 +106,7 @@ static bool FixToolbar( gui_window *wnd )
     return( GUIXCreateFixedToolbar( parent_wnd ) );
 }
 
-static bool ToolbarGUIEventProc( gui_window *wnd, gui_event gui_ev, void *param )
+static bool GUIAPICALLBACK ToolbarGUIEventProc( gui_window *wnd, gui_event gui_ev, void *param )
 {
     gui_ctl_id  id;
 

@@ -438,8 +438,7 @@ void MDIDelete( gui_window *wnd )
  * DlgInit -- callback function for GUIEnumChildWindows to fill list box
  *            with names of MDI windows
  */
-
-static void DlgInit( gui_window *wnd, void *param )
+static void GUIAPICALLBACK DlgInit( gui_window *wnd, void *param )
 {
     char        buffer[MAX_LENGTH];
     dlg_init    *info;
@@ -461,15 +460,14 @@ static void DlgInit( gui_window *wnd, void *param )
  * DlgCount -- callback function for GUIEnumChildWindows to count the number
  *             of MDI child windows
  */
-
-static void DlgCount( gui_window *wnd, void *param )
+static void GUIAPICALLBACK DlgCount( gui_window *wnd, void *param )
 {
     /* unused parameters */ (void)param; (void)wnd;
 
     TotalWindows++;
 }
 
-static void IconCount( gui_window *wnd, void *param )
+static void GUIAPICALLBACK IconCount( gui_window *wnd, void *param )
 {
     /* unused parameters */ (void)param;
 
@@ -499,8 +497,7 @@ int GUIGetNumIconicWindows( void )
 /*
  * PickInit -- callback procedure to GUIDlgPick function
  */
-
-static void PickInit( gui_window *wnd, gui_ctl_id list_id )
+static void GUIAPICALLBACK PickInit( gui_window *wnd, gui_ctl_id list_id )
 {
     gui_window  *root;
     int         num_windows;

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,7 +35,8 @@
 #include "dlgstat.h"
 #include "dlgdynam.h"
 
-static GUICALLBACK DynamicDialogWndGUIEventProc;
+
+static bool GUIAPICALLBACK DynamicDialogWndGUIEventProc( gui_window *wnd, gui_event gui_ev, void *param );
 
 static  const char  *LongText = "inserted_really_long_piece_of_text";
 
@@ -53,12 +54,12 @@ static gui_create_info DialogControl = {
     NULL                            // Menu Resource
 };
 
-static const char *ListBoxFunc( const void *data_handle, int item )
+static const char * GUIAPICALLBACK ListBoxFunc( const void *data_handle, int item )
 {
     return( ((const char **)data_handle)[item] );
 }
 
-static void ContrCallBack( gui_window *wnd, gui_ctl_id id, void *param )
+static void GUIAPICALLBACK ContrCallBack( gui_window *wnd, gui_ctl_id id, void *param )
 {
     int                 i;
     int                 *num;

@@ -125,8 +125,7 @@ bool GUIAPI GUIDlgPickWithRtn( const char *title, GUIPICKCALLBACK *pickinit, PIC
     return( true );
 }
 
-static PICKDLGOPEN doGUIDlgOpen;
-static void doGUIDlgOpen( const char *title, gui_text_ord rows, gui_text_ord cols, gui_control_info *controls_info, int num_controls, GUICALLBACK *gui_call_back, void *extra )
+static void GUIAPICALLBACK doGUIDlgOpen( const char *title, gui_text_ord rows, gui_text_ord cols, gui_control_info *controls_info, int num_controls, GUICALLBACK *gui_call_back, void *extra )
 {
     GUIDlgOpen( title, rows, cols, controls_info, num_controls, gui_call_back, extra );
 }

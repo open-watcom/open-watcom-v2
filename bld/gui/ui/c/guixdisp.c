@@ -157,8 +157,7 @@ static void InitMessageControls( void )
 /*
  * DisplayMessageGUIEventProc - callback function for dialog box
  */
-
-static bool DisplayMessageGUIEventProc( gui_window *wnd, gui_event gui_ev, void *param )
+static bool GUIAPICALLBACK DisplayMessageGUIEventProc( gui_window *wnd, gui_event gui_ev, void *param )
 {
     gui_message_return *ret;
     gui_ctl_id          id;

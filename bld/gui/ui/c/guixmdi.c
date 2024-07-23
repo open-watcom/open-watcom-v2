@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -61,7 +61,7 @@ typedef struct {
     int         prev_pos_y;
 } tile_info;
 
-static void TileWindows( gui_window *wnd, void *param )
+static void GUIAPICALLBACK TileWindows( gui_window *wnd, void *param )
 {
     tile_info   *info;
     gui_rect    rect;
@@ -205,7 +205,7 @@ static void Tile( gui_window *root, int num_windows, const gui_rect *rect,
     GUIEnumChildWindows( root, &TileWindows, &info );
 }
 
-static void CascadeWindows( gui_window *wnd, void *param )
+static void GUIAPICALLBACK CascadeWindows( gui_window *wnd, void *param )
 {
     cascade_info        *info;
     gui_rect            rect;
@@ -284,7 +284,7 @@ static void Arrange( ui_event ui_ev )
     }
 }
 
-static void ArrangeIcons( gui_window *wnd, void *param )
+static void GUIAPICALLBACK ArrangeIcons( gui_window *wnd, void *param )
 {
     int         *num;
     SAREA       new;
