@@ -184,8 +184,7 @@ STATIC void dlgBrowseFmtFile( gui_window *gui )
 
 
 
-STATIC GUICALLBACK progGUIEventProc;
-STATIC bool progGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
+STATIC bool GUIAPICALLBACK progGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
 /****************************************************************************/
 {
     gui_ctl_id      id;
