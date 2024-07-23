@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -52,18 +53,24 @@ bool DlgPickWithRtn2( const char *title, const void *data_handle, int def_item, 
     return( pickfn( title, &PickInit, choice ) );
 }
 
-
-static bool DoDlgPick( const char *title, GUIPICKCALLBACK *pickinit, int *choice )
+static PICKDLGOPEN doDlgOpen;
+static void doDlgOpen( const char *title, gui_text_ord rows, gui_text_ord cols, gui_control_info *ctl, int num_controls, GUICALLBACK *gui_call_back, void *extra )
 {
-    return( GUIDlgPickWithRtn( title, pickinit, DlgOpen, choice ) );
+    DlgOpen( title, rows, cols, ctl, num_controls, gui_call_back, extra );
 }
 
+static WNDPICKER doDlgPick;
+static bool doDlgPick( const char *title, GUIPICKCALLBACK *pickinit, int *choice )
+{
+    return( GUIDlgPickWithRtn( title, pickinit, doDlgOpen, choice ) );
+}
 
 bool DlgPickWithRtn( const char *title, const void *data_handle, int def_item, GUIPICKGETTEXT *getstring, int num_items, int *choice )
 {
-    return( DlgPickWithRtn2( title, data_handle, def_item, getstring, num_items, DoDlgPick, choice ) );
+    return( DlgPickWithRtn2( title, data_handle, def_item, getstring, num_items, doDlgPick, choice ) );
 }
 
+static PICKDLGOPEN DlgPickText;
 static const char *DlgPickText( const void *data_handle, int item )
 {
     return( ((const char **)data_handle)[item] );
