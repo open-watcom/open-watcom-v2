@@ -72,12 +72,12 @@ static gui_menu_struct CallMenu[] = {
     #include "menucall.h"
 };
 
-static wnd_row AUIAPICALLBACK CallNumRows( a_window wnd )
+static wnd_row AUICALLBACK CallNumRows( a_window wnd )
 {
     return( WndCall( wnd )->tb.curr->total_depth );
 }
 
-static void     AUIAPICALLBACK CallMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
+static void     AUICALLBACK CallMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
 {
     call_chain  *chain;
     call_window *call = WndCall( wnd );
@@ -113,7 +113,7 @@ static void     AUIAPICALLBACK CallMenuItem( a_window wnd, gui_ctl_id id, wnd_ro
     }
 }
 
-static  bool    AUIAPICALLBACK CallGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
+static  bool    AUICALLBACK CallGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
 {
     call_chain  *chain;
     call_window *call = WndCall( wnd );
@@ -186,7 +186,7 @@ static void CallScrollPos( a_window wnd )
 }
 
 
-static void AUIAPICALLBACK CallRefresh( a_window wnd )
+static void AUICALLBACK CallRefresh( a_window wnd )
 {
 
     if( UpdateFlags & (UP_RADIX_CHANGE | UP_SYM_CHANGE | UP_CSIP_CHANGE) ) {
@@ -205,7 +205,7 @@ static void CallClose( a_window wnd )
 }
 
 
-static bool AUIAPICALLBACK CallWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
+static bool AUICALLBACK CallWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
 {
     call_window *call = WndCall( wnd );
 
@@ -227,7 +227,7 @@ static bool AUIAPICALLBACK CallWndEventProc( a_window wnd, gui_event gui_ev, voi
 }
 
 
-static bool AUIAPICALLBACK ChkUpdate( void )
+static bool AUICALLBACK ChkUpdate( void )
 {
     return( UpdateFlags & (UP_RADIX_CHANGE | UP_SYM_CHANGE | UP_CSIP_CHANGE | UP_STACKPOS_CHANGE) );
 }
@@ -248,7 +248,7 @@ wnd_info CallInfo = {
     PopUp( CallMenu )
 };
 
-a_window AUIAPICALLBACK WndCallOpen( void )
+a_window AUICALLBACK WndCallOpen( void )
 {
     call_window *call;
 

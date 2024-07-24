@@ -264,7 +264,7 @@ static char *Stuff[] =
 
 static wnd_row TheSize = ArraySize( Stuff );
 
-static void AUIAPICALLBACK W3MenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
+static void AUICALLBACK W3MenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
 {
     row=row;piece=piece;
     switch( id ) {
@@ -278,19 +278,19 @@ static void AUIAPICALLBACK W3MenuItem( a_window wnd, gui_ctl_id id, wnd_row row,
     }
 }
 
-static void AUIAPICALLBACK W3Modify( a_window wnd, wnd_row row, wnd_piece piece )
+static void AUICALLBACK W3Modify( a_window wnd, wnd_row row, wnd_piece piece )
 {
     W3MenuItem( wnd, 0, row, piece );
 }
 
 
-static wnd_row AUIAPICALLBACK W3NumRows( a_window wnd )
+static wnd_row AUICALLBACK W3NumRows( a_window wnd )
 {
     wnd=wnd;
     return( TheSize );
 }
 
-static bool AUIAPICALLBACK W3GetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
+static bool AUICALLBACK W3GetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
 {
     wnd=wnd;
     if( row >= TheSize )
@@ -304,7 +304,7 @@ static bool AUIAPICALLBACK W3GetLine( a_window wnd, wnd_row row, wnd_piece piece
 }
 
 
-static void AUIAPICALLBACK W3Refresh( a_window wnd )
+static void AUICALLBACK W3Refresh( a_window wnd )
 {
     WndSetRepaint( wnd );
 }

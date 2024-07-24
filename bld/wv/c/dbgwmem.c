@@ -270,7 +270,7 @@ static void MemSetStartAddr( a_window wnd, address addr, bool new_home )
     MemGetContents( wnd, false );
 }
 
-static  void AUIAPICALLBACK MemRefresh( a_window wnd )
+static  void AUICALLBACK MemRefresh( a_window wnd )
 {
     mem_window  *mem;
 
@@ -409,7 +409,7 @@ static  void    MemUpdateCursor( a_window wnd )
 }
 
 
-static  void    AUIAPICALLBACK MemModify( a_window wnd, wnd_row row, wnd_piece piece )
+static  void    AUICALLBACK MemModify( a_window wnd, wnd_row row, wnd_piece piece )
 {
     address     addr;
     union {
@@ -635,7 +635,7 @@ static bool GetBuff( mem_window *mem, unsigned long offset, char *buff, size_t s
     }
 }
 
-static  bool    AUIAPICALLBACK MemGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
+static  bool    AUICALLBACK MemGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
 {
     char            buff[16];
     unsigned long   offset;
@@ -779,7 +779,7 @@ static void MemResize( a_window wnd )
     MemRefresh( wnd );
 }
 
-static void     AUIAPICALLBACK MemMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
+static void     AUICALLBACK MemMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
 {
     mem_window  *mem;
 
@@ -867,14 +867,14 @@ static void     AUIAPICALLBACK MemMenuItem( a_window wnd, gui_ctl_id id, wnd_row
     }
 }
 
-static  void AUIAPICALLBACK StkRefresh( a_window wnd )
+static  void AUICALLBACK StkRefresh( a_window wnd )
 {
     MemSetStartAddr( wnd, Context.stack, true );
     WndZapped( wnd );
 }
 
 
-static  int     AUIAPICALLBACK MemScroll( a_window wnd, int lines )
+static  int     AUICALLBACK MemScroll( a_window wnd, int lines )
 {
     int             tomove;
     unsigned long   offset;
@@ -948,7 +948,7 @@ void FiniMemWindow( void )
     MemFiniTypes( &MemData );
 }
 
-static bool AUIAPICALLBACK MemWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
+static bool AUICALLBACK MemWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
 {
     mem_window      *mem;
     int             i;
@@ -1011,17 +1011,17 @@ static bool AUIAPICALLBACK MemWndEventProc( a_window wnd, gui_event gui_ev, void
     return( false );
 }
 
-static bool AUIAPICALLBACK ChkUpdateBin( void )
+static bool AUICALLBACK ChkUpdateBin( void )
 {
     return( UpdateFlags & UP_RADIX_CHANGE );
 }
 
-static bool AUIAPICALLBACK ChkUpdateMem( void )
+static bool AUICALLBACK ChkUpdateMem( void )
 {
     return( UpdateFlags & (UP_RADIX_CHANGE | UP_MEM_CHANGE | UP_SYM_CHANGE | UP_NEW_PROGRAM) );
 }
 
-static bool AUIAPICALLBACK ChkUpdateStk( void )
+static bool AUICALLBACK ChkUpdateStk( void )
 {
     return( UpdateFlags & (UP_RADIX_CHANGE | UP_MEM_CHANGE | UP_STACKPOS_CHANGE | UP_REG_CHANGE | UP_SYM_CHANGE | UP_NEW_PROGRAM) );
 }
@@ -1092,13 +1092,13 @@ a_window        DoWndMemOpen( address addr, mad_type_handle mth )
     return( wnd );
 }
 
-a_window        AUIAPICALLBACK WndMemOpen( void )
+a_window        AUICALLBACK WndMemOpen( void )
 {
     return( DoWndMemOpen( NilAddr, MAD_NIL_TYPE_HANDLE ) );
 }
 
 
-a_window        AUIAPICALLBACK WndStkOpen( void )
+a_window        AUICALLBACK WndStkOpen( void )
 {
     a_window    wnd;
     mem_window  *mem;

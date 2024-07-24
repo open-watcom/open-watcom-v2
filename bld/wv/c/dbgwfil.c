@@ -195,7 +195,7 @@ static void GotoLine( a_window wnd )
 }
 
 
-static void     AUIAPICALLBACK FileMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
+static void     AUICALLBACK FileMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
 {
     address     addr;
     mod_handle  mod;
@@ -329,7 +329,7 @@ static void FilePos( a_window wnd, int pos )
 }
 
 
-static int AUIAPICALLBACK FileScroll( a_window wnd, int lines )
+static int AUICALLBACK FileScroll( a_window wnd, int lines )
 {
     int         old_top;
 
@@ -339,7 +339,7 @@ static int AUIAPICALLBACK FileScroll( a_window wnd, int lines )
 }
 
 
-static  void    AUIAPICALLBACK FileModify( a_window wnd, wnd_row row, wnd_piece piece )
+static  void    AUICALLBACK FileModify( a_window wnd, wnd_row row, wnd_piece piece )
 {
     file_window *file = WndFile( wnd );
     address     addr;
@@ -371,7 +371,7 @@ static void FileSetDotAddr( a_window wnd, address addr )
     }
 }
 
-static void AUIAPICALLBACK FileNotify( a_window wnd, wnd_row row, wnd_piece piece )
+static void AUICALLBACK FileNotify( a_window wnd, wnd_row row, wnd_piece piece )
 {
     file_window *file = WndFile( wnd );
     address     addr;
@@ -426,7 +426,7 @@ void FileBreakGadget( a_window wnd, wnd_line_piece *line, bool curr, brkp *bp )
 }
 
 
-static  bool    AUIAPICALLBACK FileGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
+static  bool    AUICALLBACK FileGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
 {
     size_t      len;
     file_window *file = WndFile( wnd );
@@ -746,7 +746,7 @@ static void ClearSrcFile( file_window *file )
     }
 }
 
-static void AUIAPICALLBACK FileRefresh( a_window wnd )
+static void AUICALLBACK FileRefresh( a_window wnd )
 {
     file_window *file = WndFile( wnd );
     address     dotaddr;
@@ -781,7 +781,7 @@ static void AUIAPICALLBACK FileRefresh( a_window wnd )
 }
 
 
-static bool AUIAPICALLBACK FileWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
+static bool AUICALLBACK FileWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
 {
     file_window *file = WndFile( wnd );
 
@@ -822,7 +822,7 @@ static bool AUIAPICALLBACK FileWndEventProc( a_window wnd, gui_event gui_ev, voi
     return( false );
 }
 
-static bool AUIAPICALLBACK ChkUpdate( void )
+static bool AUICALLBACK ChkUpdate( void )
 {
     return( UpdateFlags & (UP_NEW_SRC | UP_SYM_CHANGE | UP_CSIP_CHANGE | UP_STACKPOS_CHANGE | UP_BREAK_CHANGE) );
 }
@@ -925,7 +925,7 @@ a_window DoWndSrcOpen( cue_handle *cueh, bool track )
 }
 
 
-a_window AUIAPICALLBACK WndSrcOpen( void )
+a_window AUICALLBACK WndSrcOpen( void )
 {
     mod_handle  mod;
     address     addr;

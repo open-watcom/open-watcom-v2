@@ -97,7 +97,7 @@ static thread_state     *GetThreadRow( wnd_row row )
     return( thd );
 }
 
-static wnd_row AUIAPICALLBACK RunTrdNumRows( a_window wnd )
+static wnd_row AUICALLBACK RunTrdNumRows( a_window wnd )
 {
     thread_state    *thd;
     wnd_row         num;
@@ -110,7 +110,7 @@ static wnd_row AUIAPICALLBACK RunTrdNumRows( a_window wnd )
     return( num );
 }
 
-static bool AUIAPICALLBACK RunTrdWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
+static bool AUICALLBACK RunTrdWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
 {
     /* unused parameters */ (void)parm;
 
@@ -125,7 +125,7 @@ static bool AUIAPICALLBACK RunTrdWndEventProc( a_window wnd, gui_event gui_ev, v
     return( false );
 }
 
-static void     AUIAPICALLBACK RunTrdMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
+static void     AUICALLBACK RunTrdMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
 {
     thread_state        *thd = GetThreadRow( row );
 
@@ -176,7 +176,7 @@ static void     AUIAPICALLBACK RunTrdMenuItem( a_window wnd, gui_ctl_id id, wnd_
     DbgUpdate( UP_THREAD_STATE );
 }
 
-static void AUIAPICALLBACK RunTrdRefresh( a_window wnd )
+static void AUICALLBACK RunTrdRefresh( a_window wnd )
 {
     thread_state    *thd;
     wnd_row         row;
@@ -193,7 +193,7 @@ static void AUIAPICALLBACK RunTrdRefresh( a_window wnd )
     WndSetRepaint( wnd );
 }
 
-static bool    AUIAPICALLBACK RunTrdGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
+static bool    AUICALLBACK RunTrdGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
 {
     thread_state        *thd = GetThreadRow( row );
 
@@ -281,7 +281,7 @@ static bool    AUIAPICALLBACK RunTrdGetLine( a_window wnd, wnd_row row, wnd_piec
     return( false );
 }
 
-static bool AUIAPICALLBACK ChkUpdate( void )
+static bool AUICALLBACK ChkUpdate( void )
 {
     return( UpdateFlags & UP_THREAD_STATE );
 }
@@ -303,7 +303,7 @@ wnd_info RunTrdInfo = {
 };
 
 
-a_window AUIAPICALLBACK WndRunTrdOpen( void )
+a_window AUICALLBACK WndRunTrdOpen( void )
 {
     return( DbgTitleWndCreate( LIT_DUI( WindowThreads ), &RunTrdInfo, WND_RUN_THREAD, NULL, &TrdIcon, TITLE_SIZE, true ) );
 }

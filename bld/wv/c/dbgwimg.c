@@ -109,7 +109,7 @@ static void     ImgInit( a_window wnd )
     WndZapped( wnd );
 }
 
-static void     AUIAPICALLBACK ImgMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
+static void     AUICALLBACK ImgMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
 {
     image_entry *image;
     char        *new_name;
@@ -167,7 +167,7 @@ static void     AUIAPICALLBACK ImgMenuItem( a_window wnd, gui_ctl_id id, wnd_row
     }
 }
 
-static wnd_row AUIAPICALLBACK ImgNumRows( a_window wnd )
+static wnd_row AUICALLBACK ImgNumRows( a_window wnd )
 {
     image_entry *image;
     wnd_row     count;
@@ -181,7 +181,7 @@ static wnd_row AUIAPICALLBACK ImgNumRows( a_window wnd )
     return( count );
 }
 
-static  bool    AUIAPICALLBACK ImgGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
+static  bool    AUICALLBACK ImgGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
 {
     image_entry         *image;
 
@@ -241,13 +241,13 @@ static  bool    AUIAPICALLBACK ImgGetLine( a_window wnd, wnd_row row, wnd_piece 
     return( false );
 }
 
-static void     AUIAPICALLBACK ImgRefresh( a_window wnd )
+static void     AUICALLBACK ImgRefresh( a_window wnd )
 {
     ImgInit( wnd );
 }
 
 
-static bool AUIAPICALLBACK ImgWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
+static bool AUICALLBACK ImgWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
 {
     /* unused parameters */ (void)parm;
 
@@ -264,7 +264,7 @@ static bool AUIAPICALLBACK ImgWndEventProc( a_window wnd, gui_event gui_ev, void
     return( false );
 }
 
-static bool AUIAPICALLBACK ChkUpdate( void )
+static bool AUICALLBACK ChkUpdate( void )
 {
     return( UpdateFlags & UP_SYM_CHANGE );
 }
@@ -285,7 +285,7 @@ wnd_info ImgInfo = {
     PopUp( ImgMenu )
 };
 
-a_window AUIAPICALLBACK WndImgOpen( void )
+a_window AUICALLBACK WndImgOpen( void )
 {
     return( DbgTitleWndCreate( LIT_DUI( WindowImages ), &ImgInfo, WND_IMAGE, NULL, &ImgIcon, TITLE_SIZE, true ) );
 }

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,4 +35,4 @@
 extern wnd_macro    *MacFindMac( gui_key key, wnd_class_wv wndclass );
 #endif
 extern bool         MacKeyHit( a_window wnd, gui_key key );
-extern a_window     AUIAPICALLBACK WndMacOpen( void );
+extern a_window     AUICALLBACK WndMacOpen( void );

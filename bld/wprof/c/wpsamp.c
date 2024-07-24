@@ -64,9 +64,9 @@ STATIC bool             sampleProcTopStatus( a_window, wnd_row, wnd_piece, wnd_l
 STATIC bool             sampleProcBotStatus( a_window, wnd_row, wnd_piece, wnd_line_piece * );
 STATIC bool             sampleProcStatus( a_window, wnd_row, wnd_piece, wnd_line_piece * );
 STATIC bool             sampleProcOverview( a_window, wnd_row, wnd_piece, wnd_line_piece * );
-STATIC bool             AUIAPICALLBACK sampleWndEventProc( a_window, gui_event, void * );
+STATIC bool             AUICALLBACK sampleWndEventProc( a_window, gui_event, void * );
 STATIC bool             sampleSetLine( a_window, wnd_row, wnd_piece, wnd_line_piece * );
-STATIC bool             AUIAPICALLBACK sampleGetLine( a_window, wnd_row, wnd_piece, wnd_line_piece * );
+STATIC bool             AUICALLBACK sampleGetLine( a_window, wnd_row, wnd_piece, wnd_line_piece * );
 STATIC int              simageDetailLine( a_window, wnd_row, bool );
 STATIC int              smodDetailLine( a_window, wnd_row, bool );
 STATIC int              sfileDetailLine( a_window, wnd_row, bool );
@@ -74,8 +74,8 @@ STATIC int              srtnDetailLine( a_window, wnd_row, bool );
 STATIC int              ssrcDetailLine( a_window, wnd_row, bool );
 STATIC int              sasmDetailLine( a_window, wnd_row, bool );
 STATIC int              srtnOpenDetail( sio_data *, bool );
-STATIC void             AUIAPICALLBACK sampleRefresh( a_window );
-//STATIC void             AUIAPICALLBACK sampleMenuItem( a_window, gui_ctl_id id, wnd_row, wnd_piece );
+STATIC void             AUICALLBACK sampleRefresh( a_window );
+//STATIC void             AUICALLBACK sampleMenuItem( a_window, gui_ctl_id id, wnd_row, wnd_piece );
 STATIC void             sampFixDirtyCurr( a_window );
 STATIC bool             simageGetLine( a_window, wnd_row );
 STATIC bool             smodGetLine( a_window, wnd_row );
@@ -286,8 +286,8 @@ static void WPBackOut( a_window wnd )
 }
 
 
-STATIC void AUIAPICALLBACK sampleMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
-/****************************************************************************************************/
+STATIC void AUICALLBACK sampleMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
+/*************************************************************************************************/
 {
     sio_data *      curr_sio;
     int             sort_type;
@@ -459,8 +459,8 @@ STATIC void sampleOpenMainImage( void )
 
 
 
-STATIC bool AUIAPICALLBACK sampleWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
-/*****************************************************************************************/
+STATIC bool AUICALLBACK sampleWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
+/**************************************************************************************/
 {
     sio_data        *curr_sio;
 
@@ -498,8 +498,8 @@ STATIC bool AUIAPICALLBACK sampleWndEventProc( a_window wnd, gui_event gui_ev, v
 
 
 
-STATIC bool AUIAPICALLBACK sampleGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
-/**********************************************************************************************************/
+STATIC bool AUICALLBACK sampleGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
+/*******************************************************************************************************/
 {
     sio_data        *curr_sio;
 
@@ -1444,8 +1444,8 @@ STATIC int sasmDetailLine( a_window wnd, wnd_row row, bool multi_level )
 
 
 
-STATIC void AUIAPICALLBACK sampleRefresh( a_window wnd )
-/******************************************************/
+STATIC void AUICALLBACK sampleRefresh( a_window wnd )
+/***************************************************/
 {
     WndZapped( wnd );
 }

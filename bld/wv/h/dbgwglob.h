@@ -33,4 +33,4 @@
 
 extern void     GlobNewMod( a_window wnd, mod_handle mod );
 extern a_window DoWndGlobOpen( mod_handle mod );
-extern a_window AUIAPICALLBACK WndGlobOpen( void );
+extern a_window AUICALLBACK WndGlobOpen( void );

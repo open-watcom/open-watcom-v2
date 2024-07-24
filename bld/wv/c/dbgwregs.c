@@ -46,7 +46,7 @@ void RegChangeOptions( void )
     WndForAllClass( WND_REGISTER, MadRegChangeOptions );
 }
 
-a_window AUIAPICALLBACK WndRegOpen( void )
+a_window AUICALLBACK WndRegOpen( void )
 {
     return( WndMadRegOpen( MTK_INTEGER, WND_REGISTER, &RegIcon ) );
 }

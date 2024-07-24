@@ -36,8 +36,8 @@
 
 extern bool         WndVarAdd( a_window wnd, const char *name, unsigned len, bool expand );
 extern bool         VarInfoRelease( void );
-extern a_window     AUIAPICALLBACK WndVarOpen( void );
-extern a_window     AUIAPICALLBACK WndWatOpen( void );
-extern a_window     AUIAPICALLBACK WndLclOpen( void );
-extern a_window     AUIAPICALLBACK WndFSVOpen( void );
+extern a_window     AUICALLBACK WndVarOpen( void );
+extern a_window     AUICALLBACK WndWatOpen( void );
+extern a_window     AUICALLBACK WndLclOpen( void );
+extern a_window     AUICALLBACK WndFSVOpen( void );
 extern var_node     *VarGetDisplayPiece( var_info *i, wnd_row row, wnd_piece piece, int *pdepth, int *pinherit );

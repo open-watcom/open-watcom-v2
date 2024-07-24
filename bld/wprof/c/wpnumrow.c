@@ -150,8 +150,8 @@ static SAMPLEROWRTNS * overviewRowRtns[] = {
 };
 
 
-wnd_row AUIAPICALLBACK SampleNumRows( a_window wnd )
-/**************************************************/
+wnd_row AUICALLBACK SampleNumRows( a_window wnd )
+/***********************************************/
 {
     sio_data *      curr_sio;
 

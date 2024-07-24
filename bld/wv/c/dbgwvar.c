@@ -170,12 +170,12 @@ bool    WndVarAdd( a_window wnd, const char *name, unsigned len, bool expand )
 }
 
 
-static wnd_row AUIAPICALLBACK VarNumRows( a_window wnd )
+static wnd_row AUICALLBACK VarNumRows( a_window wnd )
 {
     return( VarRowTotal( WndVarInfo( wnd ) ) );
 }
 
-static  void    AUIAPICALLBACK VarModify( a_window wnd, wnd_row row, wnd_piece piece )
+static  void    AUICALLBACK VarModify( a_window wnd, wnd_row row, wnd_piece piece )
 {
     var_node            *v;
     type_kind           class;
@@ -392,7 +392,7 @@ static void VarInitPopup( a_window wnd, var_window *var, var_node *v )
 }
 
 
-static void AUIAPICALLBACK VarMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
+static void AUICALLBACK VarMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
 {
     var_node            *v;
     dlg_var_expand      varx;
@@ -638,7 +638,7 @@ static void FmtName( var_window *var, var_node *v, wnd_line_piece *line,
     var->i.name_end_row = row;
 }
 
-static  bool    AUIAPICALLBACK VarGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
+static  bool    AUICALLBACK VarGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
 {
     var_window  *var = WndVar( wnd );
     var_node    *v;
@@ -825,7 +825,7 @@ static bool VarInfoWndRefresh( var_type vtype, var_info *i, address *addr, a_win
     return( repaint );
 }
 
-static  void    AUIAPICALLBACK VarBegPaint( a_window wnd, wnd_row row, int num )
+static  void    AUICALLBACK VarBegPaint( a_window wnd, wnd_row row, int num )
 {
     var_window  *var = WndVar( wnd );
 
@@ -835,7 +835,7 @@ static  void    AUIAPICALLBACK VarBegPaint( a_window wnd, wnd_row row, int num )
 }
 
 
-static  void    AUIAPICALLBACK VarEndPaint( a_window wnd, wnd_row row, int num )
+static  void    AUICALLBACK VarEndPaint( a_window wnd, wnd_row row, int num )
 {
     var_window  *var = WndVar( wnd );
 
@@ -900,7 +900,7 @@ static void VarWndRefreshVisible( var_info *i, int top, int rows, VARDIRTRTN *di
     VarOldErrState();
 }
 
-static  void AUIAPICALLBACK VarRefresh( a_window wnd )
+static  void AUICALLBACK VarRefresh( a_window wnd )
 {
     var_window  *var = WndVar( wnd );
     address     addr;
@@ -933,7 +933,7 @@ static  void AUIAPICALLBACK VarRefresh( a_window wnd )
 }
 
 
-static bool AUIAPICALLBACK VarWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
+static bool AUICALLBACK VarWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
 {
     var_window  *var = WndVar( wnd );
     gui_ord     old_width;
@@ -1048,7 +1048,7 @@ void VarChangeOptions( void )
     VarWndDoAll( DoVarChangeOptions );
 }
 
-static bool AUIAPICALLBACK ChkUpdate( void )
+static bool AUICALLBACK ChkUpdate( void )
 {
     return( UpdateFlags & (UP_VAR_DISPLAY | UP_MEM_CHANGE | UP_STACKPOS_CHANGE | UP_CSIP_CHANGE | UP_REG_CHANGE | UP_RADIX_CHANGE | UP_SYM_CHANGE) );
 }
@@ -1082,22 +1082,22 @@ static  a_window        DoWndVarOpen( var_type vtype )
     return( wnd );
 }
 
-a_window AUIAPICALLBACK WndVarOpen( void )
+a_window AUICALLBACK WndVarOpen( void )
 {
     return( DoWndVarOpen( VAR_VARIABLE ) );
 }
 
-a_window AUIAPICALLBACK WndWatOpen( void )
+a_window AUICALLBACK WndWatOpen( void )
 {
     return( DoWndVarOpen( VAR_WATCH ) );
 }
 
-a_window AUIAPICALLBACK WndLclOpen( void )
+a_window AUICALLBACK WndLclOpen( void )
 {
     return( DoWndVarOpen( VAR_LOCALS ) );
 }
 
-a_window AUIAPICALLBACK WndFSVOpen( void )
+a_window AUICALLBACK WndFSVOpen( void )
 {
     return( DoWndVarOpen( VAR_FILESCOPE ) );
 }

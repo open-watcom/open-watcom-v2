@@ -33,4 +33,4 @@
 
 extern void     ModNewHandle( a_window wnd, mod_handle handle );
 extern a_window DoWndModOpen( mod_handle handle );
-extern a_window AUIAPICALLBACK WndModOpen( void );
+extern a_window AUICALLBACK WndModOpen( void );

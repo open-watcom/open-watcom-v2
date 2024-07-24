@@ -30,4 +30,4 @@
 ****************************************************************************/
 
 
-extern wnd_row AUIAPICALLBACK SampleNumRows( a_window wnd );
+extern wnd_row AUICALLBACK SampleNumRows( a_window wnd );

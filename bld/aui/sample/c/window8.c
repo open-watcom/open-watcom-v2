@@ -36,13 +36,13 @@
 
 #define NUM_ROWS 50
 
-static wnd_row AUIAPICALLBACK W8NumRows( a_window wnd )
+static wnd_row AUICALLBACK W8NumRows( a_window wnd )
 {
     wnd=wnd;
     return( NUM_ROWS );
 }
 
-static bool    AUIAPICALLBACK W8GetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
+static bool    AUICALLBACK W8GetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
 {
     wnd=wnd;
 
@@ -58,7 +58,7 @@ static bool    AUIAPICALLBACK W8GetLine( a_window wnd, wnd_row row, wnd_piece pi
 }
 
 
-static void    AUIAPICALLBACK W8Refresh( a_window wnd )
+static void    AUICALLBACK W8Refresh( a_window wnd )
 {
     WndSetRepaint( wnd );
 }

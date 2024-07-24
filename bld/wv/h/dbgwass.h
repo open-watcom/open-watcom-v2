@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,4 +40,4 @@ extern bool     AsmIsTracking( a_window wnd );
 #endif
 extern bool     AsmOpenGadget( a_window wnd, wnd_line_piece *line, mod_handle mod );
 extern a_window DoWndAsmOpen( address addr, bool track );
-extern a_window AUIAPICALLBACK WndAsmOpen( void );
+extern a_window AUICALLBACK WndAsmOpen( void );

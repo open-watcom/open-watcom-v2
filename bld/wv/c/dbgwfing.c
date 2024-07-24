@@ -65,7 +65,7 @@ void FingClose( void )
 }
 
 
-static wnd_row AUIAPICALLBACK FingNumRows( a_window wnd )
+static wnd_row AUICALLBACK FingNumRows( a_window wnd )
 {
     /* unused parameters */ (void)wnd;
 
@@ -73,7 +73,7 @@ static wnd_row AUIAPICALLBACK FingNumRows( a_window wnd )
 }
 
 
-static  bool    AUIAPICALLBACK FingGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
+static  bool    AUICALLBACK FingGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
 {
     if( piece != 0 )
         return( false );
@@ -102,7 +102,7 @@ static  bool    AUIAPICALLBACK FingGetLine( a_window wnd, wnd_row row, wnd_piece
     return( true );
 }
 
-static bool AUIAPICALLBACK FingWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
+static bool AUICALLBACK FingWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
 {
     gui_colour_set      *colours;
 

@@ -77,7 +77,7 @@ static gui_menu_struct FuncMenu[] = {
     #include "menufunc.h"
 };
 
-static  void    AUIAPICALLBACK FuncModify( a_window wnd, wnd_row row, wnd_piece piece )
+static  void    AUICALLBACK FuncModify( a_window wnd, wnd_row row, wnd_piece piece )
 {
     address     addr;
     func_window *func = WndFunc( wnd );
@@ -112,7 +112,7 @@ static void FuncGetSourceName( a_window wnd, int row )
     NameListName( NameList( func ), row, TxtBuff, SNT_QUALIFIED );
 }
 
-static wnd_row AUIAPICALLBACK FuncNumRows( a_window wnd )
+static wnd_row AUICALLBACK FuncNumRows( a_window wnd )
 {
     return( NameListNumRows( NameList( WndFunc( wnd ) ) ) );
 }
@@ -150,7 +150,7 @@ static void FuncNewOptions( a_window wnd )
     WndZapped( wnd );
 }
 
-static void     AUIAPICALLBACK FuncMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
+static void     AUICALLBACK FuncMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
 {
     address     addr;
     func_window *func = WndFunc( wnd );
@@ -188,7 +188,7 @@ static void     AUIAPICALLBACK FuncMenuItem( a_window wnd, gui_ctl_id id, wnd_ro
 }
 
 
-static  bool    AUIAPICALLBACK FuncGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
+static  bool    AUICALLBACK FuncGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
 {
     address     addr;
     func_window *func = WndFunc( wnd );
@@ -229,7 +229,7 @@ void    FuncNewMod( a_window wnd, mod_handle mod )
 }
 
 
-static void AUIAPICALLBACK FuncRefresh( a_window wnd )
+static void AUICALLBACK FuncRefresh( a_window wnd )
 {
     func_window *func = WndFunc( wnd );
     mod_handle  mod;
@@ -265,7 +265,7 @@ static void FuncSetOptions( a_window wnd )
     FuncNewOptions( wnd );
 }
 
-static bool AUIAPICALLBACK FuncWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
+static bool AUICALLBACK FuncWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
 {
     func_window *func = WndFunc( wnd );
 
@@ -295,7 +295,7 @@ void FuncChangeOptions( void )
     WndForAllClass( WND_GBLFUNCTIONS, FuncSetOptions );
 }
 
-static bool AUIAPICALLBACK ChkUpdate( void )
+static bool AUICALLBACK ChkUpdate( void )
 {
     return( UpdateFlags & (UP_SYM_CHANGE | UP_BREAK_CHANGE | UP_CODE_ADDR_CHANGE) );
 }
@@ -339,12 +339,12 @@ a_window DoWndFuncOpen( bool is_global, mod_handle mod )
     return( DbgWndCreate( title, &FuncInfo, wndclass, func, &FuncIcon ) );
 }
 
-a_window AUIAPICALLBACK WndFuncOpen( void )
+a_window AUICALLBACK WndFuncOpen( void )
 {
     return( DoWndFuncOpen( false, NO_MOD ) );
 }
 
-a_window AUIAPICALLBACK WndGblFuncOpen( void )
+a_window AUICALLBACK WndGblFuncOpen( void )
 {
     return( DoWndFuncOpen( true, NO_MOD ) );
 }

@@ -105,7 +105,7 @@ static event_record *RepGetEvent( int row )
 }
 
 
-static wnd_row AUIAPICALLBACK RepNumRows( a_window wnd )
+static wnd_row AUICALLBACK RepNumRows( a_window wnd )
 {
     wnd_row             count;
     event_record        *ev;
@@ -120,7 +120,7 @@ static wnd_row AUIAPICALLBACK RepNumRows( a_window wnd )
 }
 
 
-static void AUIAPICALLBACK RepRefresh( a_window wnd )
+static void AUICALLBACK RepRefresh( a_window wnd )
 {
     event_record        *ev;
     gui_ord             extent, max_addr, max_cue;
@@ -159,7 +159,7 @@ static void AUIAPICALLBACK RepRefresh( a_window wnd )
 }
 
 
-static void AUIAPICALLBACK RepMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
+static void AUICALLBACK RepMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
 {
     event_record        *ev;
 
@@ -190,7 +190,7 @@ static void AUIAPICALLBACK RepMenuItem( a_window wnd, gui_ctl_id id, wnd_row row
 }
 
 
-static  bool    AUIAPICALLBACK RepGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
+static  bool    AUICALLBACK RepGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
 {
     event_record        *ev;
 
@@ -221,7 +221,7 @@ static  bool    AUIAPICALLBACK RepGetLine( a_window wnd, wnd_row row, wnd_piece 
 }
 
 
-static bool AUIAPICALLBACK RepWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
+static bool AUICALLBACK RepWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
 {
     /* unused parameters */ (void)parm;
 
@@ -233,7 +233,7 @@ static bool AUIAPICALLBACK RepWndEventProc( a_window wnd, gui_event gui_ev, void
     return( false );
 }
 
-static bool AUIAPICALLBACK ChkUpdate( void )
+static bool AUICALLBACK ChkUpdate( void )
 {
     return( UpdateFlags & UP_EVENT_CHANGE );
 }
@@ -255,7 +255,7 @@ wnd_info RepInfo = {
 };
 
 
-a_window AUIAPICALLBACK WndRepOpen( void )
+a_window AUICALLBACK WndRepOpen( void )
 {
     return( DbgWndCreate( LIT_DUI( WindowReplay ), &RepInfo, WND_REPLAY, NULL, &RepIcon ) );
 }

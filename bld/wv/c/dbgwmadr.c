@@ -227,7 +227,7 @@ static bool RegResize( a_window wnd )
 }
 
 
-static wnd_row AUIAPICALLBACK RegNumRows( a_window wnd )
+static wnd_row AUICALLBACK RegNumRows( a_window wnd )
 {
     return( WndReg( wnd )->rows );
 }
@@ -261,7 +261,7 @@ static const char * GUICALLBACK RegValueName( const void *data_handle, int item 
     return( TxtBuff );
 }
 
-static  void    AUIAPICALLBACK RegModify( a_window wnd, wnd_row row, wnd_piece piece )
+static  void    AUICALLBACK RegModify( a_window wnd, wnd_row row, wnd_piece piece )
 {
     int                     i;
     item_mach               value;
@@ -316,7 +316,7 @@ static  void    AUIAPICALLBACK RegModify( a_window wnd, wnd_row row, wnd_piece p
     NewCurrRadix( old_radix );
 }
 
-static void     AUIAPICALLBACK RegMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
+static void     AUICALLBACK RegMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
 {
     reg_window              *reg = WndReg( wnd );
     int                     i;
@@ -358,7 +358,7 @@ static void     AUIAPICALLBACK RegMenuItem( a_window wnd, gui_ctl_id id, wnd_row
 }
 
 
-static  bool    AUIAPICALLBACK RegGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
+static  bool    AUICALLBACK RegGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
 {
     int                 column;
     int                 i;
@@ -408,7 +408,7 @@ static  bool    AUIAPICALLBACK RegGetLine( a_window wnd, wnd_row row, wnd_piece 
 }
 
 
-static void     AUIAPICALLBACK RegRefresh( a_window wnd )
+static void     AUICALLBACK RegRefresh( a_window wnd )
 {
     int                 row,rows;
     int                 reg_num;
@@ -442,7 +442,7 @@ static void     AUIAPICALLBACK RegRefresh( a_window wnd )
     }
 }
 
-static bool AUIAPICALLBACK RegWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
+static bool AUICALLBACK RegWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
 {
     reg_window          *reg = WndReg( wnd );
 
@@ -471,7 +471,7 @@ static bool AUIAPICALLBACK RegWndEventProc( a_window wnd, gui_event gui_ev, void
     return( false );
 }
 
-static bool AUIAPICALLBACK ChkUpdate( void )
+static bool AUICALLBACK ChkUpdate( void )
 {
     return( UpdateFlags & (UP_MAD_CHANGE | UP_REG_CHANGE | UP_REG_RESIZE) );
 }

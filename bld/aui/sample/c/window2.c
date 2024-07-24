@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -64,7 +64,7 @@ static gui_menu_struct W2AltPopUp[] = {
     { "&Top",       MENU_W2_TOP,    GUI_STYLE_MENU_ENABLED },
 };
 
-static void AUIAPICALLBACK Pos( a_window wnd, int pos )
+static void AUICALLBACK Pos( a_window wnd, int pos )
 {
     w2_struct   *w2 = (w2_struct *)WndExtra( wnd );
     int         last;
@@ -79,7 +79,7 @@ static void AUIAPICALLBACK Pos( a_window wnd, int pos )
 }
 
 
-static int AUIAPICALLBACK W2Scroll( a_window wnd, int lines )
+static int AUICALLBACK W2Scroll( a_window wnd, int lines )
 {
     w2_struct   *w2 = (w2_struct *)WndExtra( wnd );
     int         old_top;
@@ -91,7 +91,7 @@ static int AUIAPICALLBACK W2Scroll( a_window wnd, int lines )
 }
 
 
-static void AUIAPICALLBACK W2Modify( a_window wnd, wnd_row row, wnd_piece piece )
+static void AUICALLBACK W2Modify( a_window wnd, wnd_row row, wnd_piece piece )
 {
     w2_struct   *w2 = (w2_struct *)WndExtra( wnd );
 
@@ -107,7 +107,7 @@ static void AUIAPICALLBACK W2Modify( a_window wnd, wnd_row row, wnd_piece piece 
 }
 
 
-static wnd_row AUIAPICALLBACK W2NextRow( a_window wnd, wnd_row row, int inc )
+static wnd_row AUICALLBACK W2NextRow( a_window wnd, wnd_row row, int inc )
 {
     wnd_row     new;
     w2_struct   *w2 = (w2_struct *)WndExtra( wnd );
@@ -137,7 +137,7 @@ static wnd_row AUIAPICALLBACK W2NextRow( a_window wnd, wnd_row row, int inc )
 }
 
 
-static void     AUIAPICALLBACK W2MenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
+static void     AUICALLBACK W2MenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
 {
 
     char        buff[80];
@@ -173,7 +173,7 @@ static void     AUIAPICALLBACK W2MenuItem( a_window wnd, gui_ctl_id id, wnd_row 
     }
 }
 
-static bool AUIAPICALLBACK W2GetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
+static bool AUICALLBACK W2GetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
 {
     w2_struct   *w2 = (w2_struct *)WndExtra( wnd );
 
@@ -207,7 +207,7 @@ static bool AUIAPICALLBACK W2GetLine( a_window wnd, wnd_row row, wnd_piece piece
 }
 
 
-static void AUIAPICALLBACK W2Refresh( a_window wnd )
+static void AUICALLBACK W2Refresh( a_window wnd )
 {
     WndSetRepaint( wnd );
 }
@@ -217,7 +217,7 @@ static int WordCompare( char **a, char **b )
     return( stricmp( *a, *b ) );
 }
 
-static bool AUIAPICALLBACK W2WndEventProc( a_window wnd, gui_event gui_ev, void *parm )
+static bool AUICALLBACK W2WndEventProc( a_window wnd, gui_event gui_ev, void *parm )
 {
     w2_struct   *w2 = (w2_struct *)WndExtra( wnd );
 
@@ -246,7 +246,7 @@ static bool AUIAPICALLBACK W2WndEventProc( a_window wnd, gui_event gui_ev, void 
     return( false );
 }
 
-static bool AUIAPICALLBACK ChkUpdate( void )
+static bool AUICALLBACK ChkUpdate( void )
 {
     return( WndUpdateFlags & EV_UPDATE_2 );
 }

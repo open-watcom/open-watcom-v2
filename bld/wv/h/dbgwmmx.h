@@ -31,4 +31,4 @@
 ****************************************************************************/
 
 
-extern a_window AUIAPICALLBACK WndMMXOpen( void );
+extern a_window AUICALLBACK WndMMXOpen( void );
