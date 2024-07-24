@@ -111,6 +111,9 @@ static bool DlgHistoryKey( gui_window *gui, void *param, int edit, int list )
     gui_key     key;
 
     GUI_GET_KEY_CONTROL( param, id, key );
+
+    /* unused variable */ (void)id;
+
     switch( key ) {
     case GUI_KEY_UP:
         MoveCursor( gui, edit, list, -1 );

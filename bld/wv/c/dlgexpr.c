@@ -176,12 +176,17 @@ bool    DlgModName( const char *title, mod_handle *mod )
     return( DlgGetItemWithRtn( new, EXPR_LEN, title, mod, DlgScanModName, DlgNewWithMod ) );
 }
 
+static bool doDlgNew( const char *title, char *buff, size_t buff_len )
+{
+    return( DlgNew( title, buff, buff_len ) );
+}
+
 bool DlgString( const char *title, char *buff )
 {
     char        new[EXPR_LEN];
 
     new[0] = NULLCHAR;
-    return( DlgGetItemWithRtn( new, EXPR_LEN, title, buff, DlgScanString, DlgNew ) );
+    return( DlgGetItemWithRtn( new, EXPR_LEN, title, buff, DlgScanString, doDlgNew ) );
 }
 
 bool DlgMadTypeExpr( const char *title, item_mach *value, mad_type_handle mth )

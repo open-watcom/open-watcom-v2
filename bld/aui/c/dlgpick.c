@@ -68,12 +68,12 @@ bool DlgPickWithRtn( const char *title, const void *data_handle, int def_item, G
     return( DlgPickWithRtn2( title, data_handle, def_item, getstring, num_items, doDlgPick, choice ) );
 }
 
-static const char * GUIAPICALLBACK DlgPickText( const void *data_handle, int item )
+static const char * GUIAPICALLBACK doDlgPickText( const void *data_handle, int item )
 {
     return( ((const char **)data_handle)[item] );
 }
 
 bool DlgPick( const char *title, const void *data_handle, int def_item, int num_items, int *choice )
 {
-    return( DlgPickWithRtn( title, data_handle, def_item, DlgPickText, num_items, choice ) );
+    return( DlgPickWithRtn( title, data_handle, def_item, doDlgPickText, num_items, choice ) );
 }
