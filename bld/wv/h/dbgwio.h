@@ -36,4 +36,4 @@ extern void     InitIOWindow( void );
 extern void     FiniIOWindow( void );
 extern void     IONewAddr( a_window wnd, address *addr, int type );
 extern a_window DoWndIOOpen( address *addr, mad_type_handle mth );
-extern a_window AUICALLBACK WndIOOpen( void );
+extern a_window WndIOOpen( void );

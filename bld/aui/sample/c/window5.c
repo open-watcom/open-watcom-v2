@@ -38,7 +38,7 @@
 #define NUM_ROWS        60
 
 
-static int AUICALLBACK W5Scroll( a_window wnd, int lines )
+static int WNDCALLBACK W5Scroll( a_window wnd, int lines )
 {
     int         old_top;
     int         new_top;
@@ -56,7 +56,7 @@ static int AUICALLBACK W5Scroll( a_window wnd, int lines )
 }
 
 
-static bool    AUICALLBACK W5GetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
+static bool    WNDCALLBACK W5GetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
 {
     static char buff[20];
 
@@ -76,7 +76,7 @@ static bool    AUICALLBACK W5GetLine( a_window wnd, wnd_row row, wnd_piece piece
 }
 
 
-static void AUICALLBACK W5Refresh( a_window wnd )
+static void WNDCALLBACK W5Refresh( a_window wnd )
 {
     WndSetRepaint( wnd );
 }

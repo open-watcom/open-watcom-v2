@@ -50,66 +50,66 @@ wnd_info NoInfo = {
     NoPopUp
 };
 
-bool AUICALLBACK NoGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
+bool WNDCALLBACK NoGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
 {
     /* unused parameters */ (void)wnd; (void)row; (void)piece; (void)line;
 
     return( false );
 }
 
-void AUICALLBACK NoModify( a_window wnd, wnd_row row, wnd_piece piece )
+void WNDCALLBACK NoModify( a_window wnd, wnd_row row, wnd_piece piece )
 {
     /* unused parameters */ (void)wnd; (void)row; (void)piece;
 }
 
-void AUICALLBACK NoNotify( a_window wnd, wnd_row row, wnd_piece piece )
+void WNDCALLBACK NoNotify( a_window wnd, wnd_row row, wnd_piece piece )
 {
     /* unused parameters */ (void)wnd; (void)row; (void)piece;
 }
 
-void    AUICALLBACK NoBegPaint( a_window wnd, wnd_row row, int num )
+void WNDCALLBACK NoBegPaint( a_window wnd, wnd_row row, int num )
 {
     /* unused parameters */ (void)wnd; (void)row; (void)num;
 }
 
-void    AUICALLBACK NoEndPaint( a_window wnd, wnd_row row, int num )
+void WNDCALLBACK NoEndPaint( a_window wnd, wnd_row row, int num )
 {
     /* unused parameters */ (void)wnd; (void)row; (void)num;
 }
 
-void AUICALLBACK NoRefresh( a_window wnd )
+void WNDCALLBACK NoRefresh( a_window wnd )
 {
     WndSetRepaint( wnd );
 }
 
-void AUICALLBACK NoMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
+void WNDCALLBACK NoMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
 {
     /* unused parameters */ (void)wnd; (void)id; (void)row; (void)piece;
 }
 
 
-int AUICALLBACK NoVScroll( a_window wnd, int lines )
+int WNDCALLBACK NoVScroll( a_window wnd, int lines )
 {
     /* unused parameters */ (void)wnd; (void)lines;
 
     return( 0 );
 }
 
-wnd_row AUICALLBACK NoNumRows( a_window wnd )
+wnd_row WNDCALLBACK NoNumRows( a_window wnd )
 {
     /* unused parameters */ (void)wnd;
 
     return( -1 );
 }
 
-wnd_row AUICALLBACK NoNextRow( a_window wnd, wnd_row row, int inc )
+wnd_row WNDCALLBACK NoNextRow( a_window wnd, wnd_row row, int inc )
 {
     /* unused parameters */ (void)wnd;
 
     return( row + inc );
 }
 
-bool AUICALLBACK NoWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
+bool WNDCALLBACK NoWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
 {
     /* unused parameters */ (void)wnd; (void)parm;
 

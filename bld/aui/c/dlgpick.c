@@ -58,7 +58,7 @@ static void GUICALLBACK doDlgOpen( const char *title, gui_text_ord rows, gui_tex
     DlgOpen( title, rows, cols, ctl, num_controls, gui_call_back, extra );
 }
 
-static bool AUICALLBACK doDlgPick( const char *title, GUIPICKCALLBACK *pickinit, int *choice )
+static bool WNDCALLBACK doDlgPick( const char *title, GUIPICKCALLBACK *pickinit, int *choice )
 {
     return( GUIDlgPickWithRtn( title, pickinit, doDlgOpen, choice ) );
 }

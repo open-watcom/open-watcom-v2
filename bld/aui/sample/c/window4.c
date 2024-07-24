@@ -82,13 +82,13 @@ static char * Stuff[] = {
 
 #define SIZE ArraySize( Stuff )
 
-static wnd_row AUICALLBACK W4NumRows( a_window wnd )
+static wnd_row WNDCALLBACK W4NumRows( a_window wnd )
 {
     wnd=wnd;
     return( SIZE );
 }
 
-static void    AUICALLBACK W4Modify( a_window wnd, wnd_row row, wnd_piece piece )
+static void    WNDCALLBACK W4Modify( a_window wnd, wnd_row row, wnd_piece piece )
 {
     wnd=wnd;piece=piece;
     if( row < 0 ) {
@@ -107,7 +107,7 @@ static char UiMapChar[] = { 0xC6, 0xEA, 0xC7, 0xD0,
                                         0xDF, 0xDC, 0xFD, 0xF5, 0 };
 #endif
 
-static bool AUICALLBACK W4GetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
+static bool WNDCALLBACK W4GetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
 {
     static char buff[20];
 
@@ -170,12 +170,12 @@ static bool AUICALLBACK W4GetLine( a_window wnd, wnd_row row, wnd_piece piece, w
 }
 
 
-static void AUICALLBACK W4Refresh( a_window wnd )
+static void WNDCALLBACK W4Refresh( a_window wnd )
 {
     WndSetRepaint( wnd );
 }
 
-static void AUICALLBACK W4MenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
+static void WNDCALLBACK W4MenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
 {
 
     row=row;piece=piece;

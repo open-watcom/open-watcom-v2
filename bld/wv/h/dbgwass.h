@@ -40,4 +40,4 @@ extern bool     AsmIsTracking( a_window wnd );
 #endif
 extern bool     AsmOpenGadget( a_window wnd, wnd_line_piece *line, mod_handle mod );
 extern a_window DoWndAsmOpen( address addr, bool track );
-extern a_window AUICALLBACK WndAsmOpen( void );
+extern a_window WndAsmOpen( void );

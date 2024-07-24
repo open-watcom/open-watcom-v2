@@ -76,7 +76,7 @@ static a_window     aboutWindow = NULL;
 static bool         aboutOn = true;
 
 
-STATIC wnd_row AUICALLBACK AboutNumRows( a_window wnd )
+STATIC wnd_row WNDCALLBACK AboutNumRows( a_window wnd )
 /*****************************************************/
 {
     wnd_row     rows;
@@ -94,7 +94,7 @@ STATIC wnd_row AUICALLBACK AboutNumRows( a_window wnd )
 }
 
 
-STATIC bool AUICALLBACK aboutGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
+STATIC bool WNDCALLBACK aboutGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
 /******************************************************************************************************/
 {
 //    gui_coord           size;
@@ -120,7 +120,7 @@ STATIC bool AUICALLBACK aboutGetLine( a_window wnd, wnd_row row, wnd_piece piece
 }
 
 
-STATIC bool AUICALLBACK aboutWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
+STATIC bool WNDCALLBACK aboutWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
 /*************************************************************************************/
 {
     /* unused parameters */ (void)wnd; (void)parm;

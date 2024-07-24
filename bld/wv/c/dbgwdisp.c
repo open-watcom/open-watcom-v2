@@ -598,7 +598,7 @@ wnd_class_wv ReqWndName( void )
     return( (wnd_class_wv)cmd );
 }
 
-a_window AUICALLBACK WndNoOpen( void )
+a_window WndNoOpen( void )
 {
     return( NULL );
 }

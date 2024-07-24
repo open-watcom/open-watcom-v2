@@ -71,7 +71,7 @@ typedef enum {
 #define NUM_WNDCLS      WND_CURRENT
 #define NUM_WNDCLS_ALL  WND_NUM_CLASSES
 
-typedef a_window        AUICALLBACK wnd_open( void );
+typedef a_window        wnd_open( void );
 
 #define pick( a,b,c,d,e,f ) extern wnd_info d;
 #include "wndnames.h"

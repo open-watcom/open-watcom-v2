@@ -47,7 +47,7 @@ void MMXChangeOptions( void )
     WndForAllClass( WND_MMX, MadRegChangeOptions );
 }
 
-a_window AUICALLBACK WndMMXOpen( void )
+a_window WndMMXOpen( void )
 {
     const mad_reg_set_data      *rsd;
 

@@ -42,13 +42,13 @@ static char * Stuff[] = {
         "Line 5",
 };
 
-static wnd_row AUICALLBACK W6NumRows( a_window wnd )
+static wnd_row WNDCALLBACK W6NumRows( a_window wnd )
 {
     wnd=wnd;
     return( ArraySize( Stuff ) );
 }
 
-static bool    AUICALLBACK W6GetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
+static bool    WNDCALLBACK W6GetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
 {
     wnd=wnd;
     if( row >= ArraySize( Stuff ) )
@@ -60,7 +60,7 @@ static bool    AUICALLBACK W6GetLine( a_window wnd, wnd_row row, wnd_piece piece
 }
 
 
-static void    AUICALLBACK W6Refresh( a_window wnd )
+static void    WNDCALLBACK W6Refresh( a_window wnd )
 {
     WndSetRepaint( wnd );
 }

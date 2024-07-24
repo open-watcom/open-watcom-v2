@@ -80,7 +80,7 @@ static thread_state     *GetThreadRow( wnd_row row )
     return( thd );
 }
 
-static wnd_row AUICALLBACK TrdNumRows( a_window wnd )
+static wnd_row WNDCALLBACK TrdNumRows( a_window wnd )
 {
     thread_state    *thd;
     wnd_row         num;
@@ -93,7 +93,7 @@ static wnd_row AUICALLBACK TrdNumRows( a_window wnd )
     return( num );
 }
 
-static void AUICALLBACK TrdMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
+static void WNDCALLBACK TrdMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
 {
     thread_state        *thd = GetThreadRow( row );
 
@@ -143,7 +143,7 @@ static void AUICALLBACK TrdMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, w
 }
 
 
-static void AUICALLBACK TrdRefresh( a_window wnd )
+static void WNDCALLBACK TrdRefresh( a_window wnd )
 {
     thread_state    *thd;
     wnd_row         row;
@@ -161,7 +161,7 @@ static void AUICALLBACK TrdRefresh( a_window wnd )
 }
 
 
-static bool    AUICALLBACK TrdGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
+static bool    WNDCALLBACK TrdGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
 {
     thread_state        *thd = GetThreadRow( row );
 
@@ -250,7 +250,7 @@ static bool    AUICALLBACK TrdGetLine( a_window wnd, wnd_row row, wnd_piece piec
 }
 
 
-static bool AUICALLBACK ChkUpdate( void )
+static bool WNDCALLBACK ChkUpdate( void )
 {
     return( UpdateFlags & UP_THREAD_STATE );
 }
@@ -271,7 +271,7 @@ wnd_info TrdInfo = {
     PopUp( TrdMenu ),
 };
 
-a_window AUICALLBACK WndTrdOpen( void )
+a_window WndTrdOpen( void )
 {
     return( DbgWndCreateTitle( LIT_DUI( WindowThreads ), &TrdInfo, WND_THREAD, NULL, &TrdIcon, TITLE_SIZE, true ) );
 }

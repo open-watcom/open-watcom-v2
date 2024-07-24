@@ -47,7 +47,7 @@ void FPUChangeOptions( void )
     WndForAllClass( WND_FPU, MadRegChangeOptions );
 }
 
-a_window AUICALLBACK WndFPUOpen( void )
+a_window WndFPUOpen( void )
 {
     const mad_reg_set_data      *rsd;
 

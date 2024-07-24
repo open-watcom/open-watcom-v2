@@ -47,7 +47,7 @@ void XMMChangeOptions( void )
     WndForAllClass( WND_XMM, MadRegChangeOptions );
 }
 
-a_window AUICALLBACK WndXMMOpen( void )
+a_window WndXMMOpen( void )
 {
     const mad_reg_set_data      *rsd;
 

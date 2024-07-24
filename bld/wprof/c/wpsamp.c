@@ -446,7 +446,7 @@ STATIC void setDisplay( a_window wnd, sio_data * curr_sio, bool do_top )
 }
 
 
-STATIC void AUICALLBACK sampleMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
+STATIC void WNDCALLBACK sampleMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
 /*************************************************************************************************/
 {
     sio_data *      curr_sio;
@@ -1302,7 +1302,7 @@ STATIC void sampFixDirtyCurr( a_window wnd )
 
 
 
-STATIC void AUICALLBACK sampleRefresh( a_window wnd )
+STATIC void WNDCALLBACK sampleRefresh( a_window wnd )
 /***************************************************/
 {
     WndZapped( wnd );
@@ -1351,7 +1351,7 @@ static SAMPLEGETRTNS * sampleGetRtns[] = {
 
 
 
-STATIC bool AUICALLBACK sampleGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
+STATIC bool WNDCALLBACK sampleGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
 /*******************************************************************************************************/
 {
     sio_data        *curr_sio;
@@ -1376,7 +1376,7 @@ STATIC bool AUICALLBACK sampleGetLine( a_window wnd, wnd_row row, wnd_piece piec
 
 
 
-STATIC bool AUICALLBACK sampleWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
+STATIC bool WNDCALLBACK sampleWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
 /**************************************************************************************/
 {
     sio_data        *curr_sio;

@@ -78,7 +78,7 @@ static  void    GlobInit( a_window wnd )
     WndSetKeyPiece( wnd, PIECE_NAME );
 }
 
-static void     AUICALLBACK GlobMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
+static void     WNDCALLBACK GlobMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
 {
     glob_window *glob = WndGlob( wnd );
     address     addr;
@@ -114,12 +114,12 @@ static void     AUICALLBACK GlobMenuItem( a_window wnd, gui_ctl_id id, wnd_row r
 }
 
 
-static wnd_row AUICALLBACK GlobNumRows( a_window wnd )
+static wnd_row WNDCALLBACK GlobNumRows( a_window wnd )
 {
     return( NameListNumRows( NameList( WndGlob( wnd ) ) ) );
 }
 
-static bool    AUICALLBACK GlobGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
+static bool    WNDCALLBACK GlobGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
 {
     glob_window *glob = WndGlob( wnd );
 
@@ -146,7 +146,7 @@ void GlobNewMod( a_window wnd, mod_handle mod )
 }
 
 
-static void    AUICALLBACK GlobRefresh( a_window wnd )
+static void    WNDCALLBACK GlobRefresh( a_window wnd )
 {
     if( UpdateFlags & UP_SYM_CHANGE ) {
         GlobInit( wnd );
@@ -161,7 +161,7 @@ static void GlobSetOptions( a_window wnd )
     GlobInit( wnd );
 }
 
-static bool AUICALLBACK GlobWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
+static bool WNDCALLBACK GlobWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
 {
     glob_window *glob = WndGlob( wnd );
 
@@ -185,7 +185,7 @@ void GlobChangeOptions( void )
     WndForAllClass( WND_GLOBALS, GlobSetOptions );
 }
 
-static bool AUICALLBACK ChkUpdate( void )
+static bool WNDCALLBACK ChkUpdate( void )
 {
     return( UpdateFlags & UP_SYM_CHANGE );
 }
@@ -215,7 +215,7 @@ a_window DoWndGlobOpen( mod_handle mod )
     return( DbgWndCreate( LIT_DUI( WindowGlobals ), &GlobInfo, WND_GLOBALS, glob, &GlobIcon ) );
 }
 
-a_window AUICALLBACK WndGlobOpen( void )
+a_window WndGlobOpen( void )
 {
     return( DoWndGlobOpen( NO_MOD ) );
 }

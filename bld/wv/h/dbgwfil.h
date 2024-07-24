@@ -47,5 +47,5 @@ extern a_window SrcWndFind( a_window wnd, address addr, bool track );
 extern bool     SrcHasFileOpen( a_window wnd );
 extern a_window DoWndFileOpen( const char *name, void *viewhndl, cue_handle *cueh, bool track, bool erase, wnd_class_wv wndclass );
 extern a_window DoWndSrcOpen( cue_handle *cueh, bool track );
-extern a_window AUICALLBACK WndSrcOpen( void );
+extern a_window WndSrcOpen( void );
 extern void     ProcView( void );

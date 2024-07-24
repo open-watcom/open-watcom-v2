@@ -36,13 +36,13 @@
 
 #define NUM_ROWS 5000
 
-static wnd_row AUICALLBACK W7NumRows( a_window wnd )
+static wnd_row WNDCALLBACK W7NumRows( a_window wnd )
 {
     wnd=wnd;
     return( NUM_ROWS );
 }
 
-static bool    AUICALLBACK W7GetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
+static bool    WNDCALLBACK W7GetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
 {
     static char buff[20];
 
@@ -58,7 +58,7 @@ static bool    AUICALLBACK W7GetLine( a_window wnd, wnd_row row, wnd_piece piece
 }
 
 
-static void    AUICALLBACK W7Refresh( a_window wnd )
+static void    WNDCALLBACK W7Refresh( a_window wnd )
 {
     WndSetRepaint( wnd );
 }

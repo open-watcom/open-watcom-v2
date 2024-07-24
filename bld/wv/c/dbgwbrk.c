@@ -85,7 +85,7 @@ static brkp     *BrkGetBP( int row )
     return( bp );
 }
 
-static void     AUICALLBACK BrkMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
+static void     WNDCALLBACK BrkMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
 {
     brkp        *bp;
 
@@ -138,7 +138,7 @@ static void     AUICALLBACK BrkMenuItem( a_window wnd, gui_ctl_id id, wnd_row ro
     }
 }
 
-static void     AUICALLBACK BrkModify( a_window wnd, wnd_row row, wnd_piece piece )
+static void     WNDCALLBACK BrkModify( a_window wnd, wnd_row row, wnd_piece piece )
 {
     brkp        *bp;
 
@@ -168,7 +168,7 @@ static void     AUICALLBACK BrkModify( a_window wnd, wnd_row row, wnd_piece piec
     }
 }
 
-static wnd_row AUICALLBACK BrkNumRows( a_window wnd )
+static wnd_row WNDCALLBACK BrkNumRows( a_window wnd )
 {
     brkp        *bp;
     wnd_row     count;
@@ -182,7 +182,7 @@ static wnd_row AUICALLBACK BrkNumRows( a_window wnd )
     return( count );
 }
 
-static  bool    AUICALLBACK BrkGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
+static  bool    WNDCALLBACK BrkGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
 {
     brkp                *bp;
     break_window        *wndbreak;
@@ -268,7 +268,7 @@ static void     BrkInit( a_window wnd )
 }
 
 
-static void     AUICALLBACK BrkRefresh( a_window wnd )
+static void     WNDCALLBACK BrkRefresh( a_window wnd )
 {
     brkp        *bp;
     int         row;
@@ -303,7 +303,7 @@ static void     AUICALLBACK BrkRefresh( a_window wnd )
 }
 
 
-static bool AUICALLBACK BrkWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
+static bool WNDCALLBACK BrkWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
 {
     break_window        *wndbreak = WndBreak( wnd );
 
@@ -324,7 +324,7 @@ static bool AUICALLBACK BrkWndEventProc( a_window wnd, gui_event gui_ev, void *p
     return( false );
 }
 
-static bool AUICALLBACK ChkUpdate( void )
+static bool WNDCALLBACK ChkUpdate( void )
 {
     return( UpdateFlags & (UP_MEM_CHANGE | UP_RADIX_CHANGE | UP_SYM_CHANGE | UP_BREAK_CHANGE | UP_OPEN_CHANGE) );
 }
@@ -345,7 +345,7 @@ wnd_info BrkInfo = {
     PopUp( BrkMenu )
 };
 
-a_window AUICALLBACK WndBrkOpen( void )
+a_window WndBrkOpen( void )
 {
     a_window            wnd;
     break_window        *brkw;

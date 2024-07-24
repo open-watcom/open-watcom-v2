@@ -58,7 +58,7 @@ typedef struct {
     unsigned    align : 1;
 } w1_window;
 
-static void AUICALLBACK W1MenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
+static void WNDCALLBACK W1MenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
 {
     w1_window   *w1 = (w1_window *)WndExtra( wnd );
     char        buff[80];
@@ -97,14 +97,14 @@ static void AUICALLBACK W1MenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wn
     }
 }
 
-static wnd_row AUICALLBACK W1NumRows( a_window wnd )
+static wnd_row WNDCALLBACK W1NumRows( a_window wnd )
 {
     w1_window   *w1 = (w1_window *)WndExtra( wnd );
 
     return( w1->num_rows );
 }
 
-static void AUICALLBACK W1Modify( a_window wnd, wnd_row row, wnd_piece piece )
+static void WNDCALLBACK W1Modify( a_window wnd, wnd_row row, wnd_piece piece )
 {
     w1_window   *w1 = (w1_window *)WndExtra( wnd );
 
@@ -115,7 +115,7 @@ static void AUICALLBACK W1Modify( a_window wnd, wnd_row row, wnd_piece piece )
 }
 
 
-static bool    AUICALLBACK W1GetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
+static bool    WNDCALLBACK W1GetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
 {
     w1_window   *w1 = (w1_window *)WndExtra( wnd );
     int         i;
@@ -159,12 +159,12 @@ static bool    AUICALLBACK W1GetLine( a_window wnd, wnd_row row, wnd_piece piece
 }
 
 
-static void    AUICALLBACK W1Refresh( a_window wnd )
+static void    WNDCALLBACK W1Refresh( a_window wnd )
 {
     WndSetRepaint( wnd );
 }
 
-static void     AUICALLBACK W1Fini( a_window wnd )
+static void     WNDCALLBACK W1Fini( a_window wnd )
 {
     w1_window   *w1 = (w1_window *)WndExtra( wnd );
     int         num_rows;
@@ -206,7 +206,7 @@ static bool W1Init( a_window wnd )
     return( true );
 }
 
-static bool AUICALLBACK W1WndEventProc( a_window wnd, gui_event gui_ev, void *parm )
+static bool WNDCALLBACK W1WndEventProc( a_window wnd, gui_event gui_ev, void *parm )
 {
     parm=parm;
     switch( gui_ev ) {
@@ -224,7 +224,7 @@ static bool AUICALLBACK W1WndEventProc( a_window wnd, gui_event gui_ev, void *pa
     return( false );
 }
 
-static bool AUICALLBACK ChkUpdate( void )
+static bool WNDCALLBACK ChkUpdate( void )
 {
     return( WndUpdateFlags & EV_UPDATE_1 );
 }
