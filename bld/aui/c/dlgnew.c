@@ -72,7 +72,7 @@ static gui_control_info Controls[] = {
     #undef pick_p4id
 };
 
-static bool GUIAPICALLBACK dlgNewGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
+static bool GUICALLBACK dlgNewGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
 {
     gui_ctl_id  id;
     dlgnew_ctl  *dlgnew;

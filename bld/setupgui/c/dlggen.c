@@ -528,8 +528,8 @@ static void UpdateControlVisibility( gui_window *gui, a_dialog_header *dlg, bool
     }
 }
 
-static bool GUIAPICALLBACK GenericGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
-/**********************************************************************************************/
+static bool GUICALLBACK GenericGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
+/*******************************************************************************************/
 {
 #if defined( GUI_IS_GUI )
     static bool         first_time = true;

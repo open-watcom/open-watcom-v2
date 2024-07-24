@@ -246,7 +246,7 @@ static int GetRegIdx( reg_window *reg, wnd_row row, wnd_piece piece )
 }
 
 
-static const char * GUIAPICALLBACK RegValueName( const void *data_handle, int item )
+static const char * GUICALLBACK RegValueName( const void *data_handle, int item )
 {
     mad_modify_list const *possible = (mad_modify_list const *)data_handle + item;
     size_t          buff_len;

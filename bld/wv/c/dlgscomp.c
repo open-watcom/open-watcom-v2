@@ -45,7 +45,7 @@
 
 static name_list *SortedNames;
 
-static const char * GUIAPICALLBACK SymGetName( const void *data_handle, int item )
+static const char * GUICALLBACK SymGetName( const void *data_handle, int item )
 {
     item += *(const int *)data_handle;
     if( item >= NameListNumRows( SortedNames ) )

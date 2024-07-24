@@ -190,8 +190,8 @@ STATIC void setDlgDefaults( gui_window * gui )
 
 
 
-STATIC bool GUIAPICALLBACK optsGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
-/*******************************************************************************************/
+STATIC bool GUICALLBACK optsGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
+/****************************************************************************************/
 {
     gui_ctl_id      id;
 

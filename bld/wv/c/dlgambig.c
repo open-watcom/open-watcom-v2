@@ -60,7 +60,7 @@ static bool AUIAPICALLBACK SymPick( const char *text, GUIPICKCALLBACK *pick_call
     return( true );
 }
 
-static const char * GUIAPICALLBACK SymPickText( const void *data_handle, int item )
+static const char * GUICALLBACK SymPickText( const void *data_handle, int item )
 {
     sym_list            *sym;
     unsigned            len;

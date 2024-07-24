@@ -124,7 +124,7 @@ static bool DlgHistoryKey( gui_window *gui, void *param, int edit, int list )
     }
 }
 
-static bool GUIAPICALLBACK CmdGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
+static bool GUICALLBACK CmdGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
 {
     dlg_command *dlg;
     char        *text;

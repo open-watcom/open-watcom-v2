@@ -36,7 +36,7 @@
 
 
 #define GUIAPI                  /* public API */
-#define GUIAPICALLBACK          /* public callback */
+#define GUICALLBACK             /* public callback */
 
 #define GUI_LAST_INTERNAL_MSG   255
 
@@ -475,14 +475,14 @@ typedef struct gui_control_info {
     gui_ctl_id              id;
 } gui_control_info;
 
-typedef bool (GUIAPICALLBACK GUIEVCALLBACK)( gui_window *wnd, gui_event gui_ev, void *param );
-typedef void (GUIAPICALLBACK ENUMCALLBACK)( gui_window *wnd, void *param );
-typedef void (GUIAPICALLBACK CONTRENUMCALLBACK)( gui_window *parent_wnd, gui_ctl_id id, void *param );
-typedef void (GUIAPICALLBACK GUIPICKCALLBACK)( gui_window *wnd, gui_ctl_id id );
-typedef void (GUIAPICALLBACK PICKDLGOPEN)( const char *title, gui_text_ord rows, gui_text_ord cols,
+typedef bool (GUICALLBACK GUIEVCALLBACK)( gui_window *wnd, gui_event gui_ev, void *param );
+typedef void (GUICALLBACK ENUMCALLBACK)( gui_window *wnd, void *param );
+typedef void (GUICALLBACK CONTRENUMCALLBACK)( gui_window *parent_wnd, gui_ctl_id id, void *param );
+typedef void (GUICALLBACK GUIPICKCALLBACK)( gui_window *wnd, gui_ctl_id id );
+typedef void (GUICALLBACK PICKDLGOPEN)( const char *title, gui_text_ord rows, gui_text_ord cols,
                              gui_control_info *controls_info, int num_controls,
                              GUIEVCALLBACK *gui_call_back, void *extra );
-typedef const char *(GUIAPICALLBACK GUIPICKGETTEXT)( const void *data_handle, int item );
+typedef const char *(GUICALLBACK GUIPICKGETTEXT)( const void *data_handle, int item );
 
 typedef struct gui_create_info {
     const char          *title;

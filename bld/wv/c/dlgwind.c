@@ -105,7 +105,7 @@ static void SetDlgStatus( gui_window *gui )
 }
 
 
-static bool GUIAPICALLBACK WndSetGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
+static bool GUICALLBACK WndSetGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
 {
     gui_ctl_id      id;
     dlg_window_set  *wndset;

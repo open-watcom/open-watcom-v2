@@ -151,7 +151,7 @@ static  void    SetRXStatus( gui_window *gui )
 }
 
 
-static bool GUIAPICALLBACK RXGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
+static bool GUICALLBACK RXGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
 {
     gui_ctl_id  id;
 
@@ -211,7 +211,7 @@ static void     SetDlgStatus( gui_window *gui, dlg_search *dlg )
 }
 
 
-static bool GUIAPICALLBACK SrchGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
+static bool GUICALLBACK SrchGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
 {
     gui_ctl_id  id;
     dlg_search  *dlg;

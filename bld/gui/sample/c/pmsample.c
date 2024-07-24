@@ -64,7 +64,7 @@ static gui_create_info Child = {
     NULL                            // Menu Resource
 };
 
-bool GUIAPICALLBACK MainWndGUIEventProc( gui_window *wnd, gui_event gui_ev, void *param )
+bool GUICALLBACK MainWndGUIEventProc( gui_window *wnd, gui_event gui_ev, void *param )
 {
     /* unused parameters */ (void)wnd; (void)gui_ev; (void)param;
 

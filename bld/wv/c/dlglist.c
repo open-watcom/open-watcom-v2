@@ -82,7 +82,7 @@ static void AddText( gui_window *gui, char *add )
     }
 }
 
-static bool GUIAPICALLBACK SourceGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
+static bool GUICALLBACK SourceGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
 {
     gui_ctl_id  id;
     void        *curr;

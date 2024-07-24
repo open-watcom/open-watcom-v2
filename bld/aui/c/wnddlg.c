@@ -43,7 +43,7 @@ static gui_window       *Parents[MAX_DLG_NESTS];
 static GUIEVCALLBACK    *dlgGUIEventProcs[MAX_DLG_NESTS];
 static int              Nested = -1;
 
-static bool GUIAPICALLBACK dlgOpenGUIEventProc( gui_window *gui, gui_event gui_ev, void *parm )
+static bool GUICALLBACK dlgOpenGUIEventProc( gui_window *gui, gui_event gui_ev, void *parm )
 {
     bool                rc;
     gui_mcursor_handle  old_cursor;

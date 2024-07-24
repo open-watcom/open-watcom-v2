@@ -307,15 +307,15 @@ bool WEXPORT WWindow::processMsg( gui_event gui_ev, void *parm )
     return( false );
 }
 
-extern "C" void GUIAPICALLBACK EnumChildProc( gui_window *hwin, void * )
-/**********************************************************************/
+extern "C" void GUICALLBACK EnumChildProc( gui_window *hwin, void * )
+/*******************************************************************/
 {
     WWindow *win = (WWindow*)GUIGetExtra( hwin );
     win->autosize();
 }
 
-extern "C" void GUIAPICALLBACK EnumControlProc( gui_window *hwin, WControlId id, void * )
-/***************************************************************************************/
+extern "C" void GUICALLBACK EnumControlProc( gui_window *hwin, WControlId id, void * )
+/************************************************************************************/
 {
     WWindow *win = (WWindow*)GUIGetExtra( hwin );
     WControl* control = win->getControl( id );

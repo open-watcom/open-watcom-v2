@@ -62,7 +62,7 @@ static void InitColourNames( void )
 
 static gui_colour InitColour;
 
-static void GUIAPICALLBACK PickColour( gui_window *wnd, gui_ctl_id list_id )
+static void GUICALLBACK PickColour( gui_window *wnd, gui_ctl_id list_id )
 {
     int i;
 

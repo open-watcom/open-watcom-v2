@@ -88,7 +88,7 @@ typedef struct ret_info {
 /*
  * GetNewValGUIEventProc - call back routine for the GetNewVal dialog
  */
-static bool GUIAPICALLBACK GetNewValGUIEventProc( gui_window *wnd, gui_event gui_ev, void *param )
+static bool GUICALLBACK GetNewValGUIEventProc( gui_window *wnd, gui_event gui_ev, void *param )
 {
     gui_ctl_id  id;
     ret_info    *info;

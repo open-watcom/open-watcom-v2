@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -69,7 +69,7 @@ static gui_control_info Controls[] = {
     #undef pick_p4id
 };
 
-static bool GUIAPICALLBACK passwordGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
+static bool GUICALLBACK passwordGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
 {
     gui_ctl_id  id;
     dlgnew_ctl  *dlgnew;

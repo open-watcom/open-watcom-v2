@@ -1029,7 +1029,7 @@ static void InitTextList( gui_window *wnd, gui_ctl_id id, const char **text_list
 /*
  * GetFileNameGUIEventProc - event handler for GetFileName dialog
  */
-static bool GUIAPICALLBACK GetFileNameGUIEventProc( gui_window *wnd, gui_event gui_ev, void *param )
+static bool GUICALLBACK GetFileNameGUIEventProc( gui_window *wnd, gui_event gui_ev, void *param )
 {
     gui_ctl_id  id;
     int         sel;

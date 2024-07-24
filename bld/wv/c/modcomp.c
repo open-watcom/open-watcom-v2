@@ -43,7 +43,7 @@
 #include "litdui.h"
 
 
-static const char * GUIAPICALLBACK ModGetName( const void *data_handle, int item )
+static const char * GUICALLBACK ModGetName( const void *data_handle, int item )
 {
     const module_list *list = data_handle;
 

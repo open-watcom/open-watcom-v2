@@ -42,7 +42,7 @@
 #include "litdui.h"
 
 
-static bool GUIAPICALLBACK StkOrHistoryGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
+static bool GUICALLBACK StkOrHistoryGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
 {
     gui_ctl_id  id;
     gui_ctl_id  *resp;

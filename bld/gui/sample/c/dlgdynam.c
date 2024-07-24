@@ -36,7 +36,7 @@
 #include "dlgdynam.h"
 
 
-static bool GUIAPICALLBACK DynamicDialogWndGUIEventProc( gui_window *wnd, gui_event gui_ev, void *param );
+static bool GUICALLBACK DynamicDialogWndGUIEventProc( gui_window *wnd, gui_event gui_ev, void *param );
 
 static  const char  *LongText = "inserted_really_long_piece_of_text";
 
@@ -54,12 +54,12 @@ static gui_create_info DialogControl = {
     NULL                            // Menu Resource
 };
 
-static const char * GUIAPICALLBACK ListBoxFunc( const void *data_handle, int item )
+static const char * GUICALLBACK ListBoxFunc( const void *data_handle, int item )
 {
     return( ((const char **)data_handle)[item] );
 }
 
-static void GUIAPICALLBACK ContrCallBack( gui_window *wnd, gui_ctl_id id, void *param )
+static void GUICALLBACK ContrCallBack( gui_window *wnd, gui_ctl_id id, void *param )
 {
     int                 i;
     int                 *num;

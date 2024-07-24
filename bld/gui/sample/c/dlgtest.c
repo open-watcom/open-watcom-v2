@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,8 +39,8 @@
 #include "wresdefn.h"
 
 
-static bool GUIAPICALLBACK TestDialogWndGUIEventProc( gui_window *wnd, gui_event gui_ev, void *param );
-static bool GUIAPICALLBACK DummyWndGUIEventProc( gui_window *wnd, gui_event gui_ev, void *param );
+static bool GUICALLBACK TestDialogWndGUIEventProc( gui_window *wnd, gui_event gui_ev, void *param );
+static bool GUICALLBACK DummyWndGUIEventProc( gui_window *wnd, gui_event gui_ev, void *param );
 
 static gui_create_info DialogControl = {
     "Test Dialog Box",              // Title
@@ -74,7 +74,7 @@ static gui_create_info ResDialog = {
  * TestDialogWndGUIEventProc
  */
 
-static bool GUIAPICALLBACK TestDialogWndGUIEventProc( gui_window *wnd, gui_event gui_ev, void *param )
+static bool GUICALLBACK TestDialogWndGUIEventProc( gui_window *wnd, gui_event gui_ev, void *param )
 {
     gui_ctl_id  id;
     char        *new;
@@ -226,7 +226,7 @@ void TestDialogCreate( gui_window *parent_wnd )
     }
 }
 
-static bool GUIAPICALLBACK DummyWndGUIEventProc( gui_window *wnd, gui_event gui_ev, void *param )
+static bool GUICALLBACK DummyWndGUIEventProc( gui_window *wnd, gui_event gui_ev, void *param )
 {
     /* unused parameters */ (void)wnd; (void)gui_ev; (void)param;
 

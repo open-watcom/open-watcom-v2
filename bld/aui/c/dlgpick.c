@@ -38,7 +38,7 @@ static const void       *_data_handle;
 static GUIPICKGETTEXT   *_getstring;
 static int              _num_items;
 
-static void GUIAPICALLBACK PickInit( gui_window *gui, gui_ctl_id list_id )
+static void GUICALLBACK PickInit( gui_window *gui, gui_ctl_id list_id )
 {
     GUIAddTextList( gui, list_id, _num_items, _data_handle, _getstring );
     GUISetCurrSelect( gui, list_id, _def_item );
@@ -53,7 +53,7 @@ bool DlgPickWithRtn2( const char *title, const void *data_handle, int def_item, 
     return( pickfn( title, &PickInit, choice ) );
 }
 
-static void GUIAPICALLBACK doDlgOpen( const char *title, gui_text_ord rows, gui_text_ord cols, gui_control_info *ctl, int num_controls, GUIEVCALLBACK *gui_call_back, void *extra )
+static void GUICALLBACK doDlgOpen( const char *title, gui_text_ord rows, gui_text_ord cols, gui_control_info *ctl, int num_controls, GUIEVCALLBACK *gui_call_back, void *extra )
 {
     DlgOpen( title, rows, cols, ctl, num_controls, gui_call_back, extra );
 }
@@ -68,7 +68,7 @@ bool DlgPickWithRtn( const char *title, const void *data_handle, int def_item, G
     return( DlgPickWithRtn2( title, data_handle, def_item, getstring, num_items, doDlgPick, choice ) );
 }
 
-static const char * GUIAPICALLBACK doDlgPickText( const void *data_handle, int item )
+static const char * GUICALLBACK doDlgPickText( const void *data_handle, int item )
 {
     return( ((const char **)data_handle)[item] );
 }

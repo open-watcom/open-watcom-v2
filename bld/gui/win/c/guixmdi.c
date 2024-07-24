@@ -347,7 +347,7 @@ void GUIXMDIInit( void )
     GUISetIsMDIChildWindow( &IsMDIChildWindow );
 }
 
-static void GUIAPICALLBACK GUIInternalCascadeWindows( gui_window *wnd, void *param )
+static void GUICALLBACK GUIInternalCascadeWindows( gui_window *wnd, void *param )
 {
     cascade_info        *info;
     gui_rect            rect;

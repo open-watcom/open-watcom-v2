@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -64,7 +64,7 @@ void AsyncNotify( void )
     }
 }
 
-static bool GUIAPICALLBACK AsyncGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
+static bool GUICALLBACK AsyncGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
 {
     gui_ctl_id      id;
 

@@ -52,7 +52,7 @@
 
 #define ERROR_STYLE MB_OK | MB_ICONEXCLAMATION
 
-static void GUIAPICALLBACK MaxChild( gui_window *wnd, void *param )
+static void GUICALLBACK MaxChild( gui_window *wnd, void *param )
 {
     param = param;
     if( _wpi_iszoomed( wnd->hwnd_frame ) ) {

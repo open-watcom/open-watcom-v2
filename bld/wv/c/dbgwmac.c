@@ -106,7 +106,7 @@ static gui_menu_struct MacMenu[] = {
     #include "menumac.h"
 };
 
-static const char * GUIAPICALLBACK WndGetName( const void *data_handle, int item )
+static const char * GUICALLBACK WndGetName( const void *data_handle, int item )
 {
     return( *((const char ***)data_handle)[item] );
 }

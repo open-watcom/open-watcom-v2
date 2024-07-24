@@ -144,8 +144,8 @@ static gui_colour_set StatusColours[] = {
 #endif
 };
 
-static bool GUIAPICALLBACK StatusGUIEventProc( gui_window *gui, gui_event gui_ev, void *parm )
-/********************************************************************************************/
+static bool GUICALLBACK StatusGUIEventProc( gui_window *gui, gui_event gui_ev, void *parm )
+/*****************************************************************************************/
 {
     static bool         button_pressed = false;
     gui_ctl_id          id;
