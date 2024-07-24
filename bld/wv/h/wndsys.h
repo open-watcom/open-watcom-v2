@@ -62,7 +62,7 @@ extern void     WndFlushKeys( void );
 extern void     WndMsgBox( const char *msg );
 extern void     WndInfoBox( const char *msg );
 extern void     WndSetOpenNoShow( void );
-extern a_window DbgTitleWndCreate( const char *title, wnd_info *wndinfo, wnd_class_wv wndclass, void *extra, gui_resource *icon, int title_rows, bool vdrag );
+extern a_window DbgWndCreateTitle( const char *title, wnd_info *wndinfo, wnd_class_wv wndclass, void *extra, gui_resource *icon, int title_rows, bool vdrag );
 extern a_window DbgWndCreate( const char *title, wnd_info *info, wnd_class_wv wndclass, void *extra, gui_resource *icon );
 extern void     WndRXError( int num );
 #if defined( GUI_IS_GUI )

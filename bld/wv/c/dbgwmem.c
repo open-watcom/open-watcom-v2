@@ -1088,7 +1088,7 @@ a_window        DoWndMemOpen( address addr, mad_type_handle mth )
     mem->stack = false;
     mem->init_mth = mth;
     mem->piece_type = MemByteType;
-    wnd = DbgTitleWndCreate( MemGetTitle( mem ), &MemInfo, WND_MEMORY, mem, &MemIcon, TITLE_SIZE, false );
+    wnd = DbgWndCreateTitle( MemGetTitle( mem ), &MemInfo, WND_MEMORY, mem, &MemIcon, TITLE_SIZE, false );
     return( wnd );
 }
 
@@ -1109,7 +1109,7 @@ a_window        AUICALLBACK WndStkOpen( void )
     mem->init_mth = GetMADTypeHandleDefaultAt( Context.stack, MTK_INTEGER );
     mem->file = false;
     mem->stack = true;
-    wnd = DbgTitleWndCreate( LIT_DUI( WindowStack ), &StkInfo, WND_STACK, mem, &StkIcon, TITLE_SIZE, false );
+    wnd = DbgWndCreateTitle( LIT_DUI( WindowStack ), &StkInfo, WND_STACK, mem, &StkIcon, TITLE_SIZE, false );
     return( wnd );
 }
 
@@ -1125,6 +1125,6 @@ a_window        DoWndBinOpen( const char *title, file_handle fh )
     mem->init_mth = MAD_NIL_TYPE_HANDLE;
     mem->piece_type = MemByteType;
     mem->u.f.fh = fh;
-    wnd = DbgTitleWndCreate( title, &BinInfo, WND_BINARY, mem, &MemIcon, TITLE_SIZE, false );
+    wnd = DbgWndCreateTitle( title, &BinInfo, WND_BINARY, mem, &MemIcon, TITLE_SIZE, false );
     return( wnd );
 }

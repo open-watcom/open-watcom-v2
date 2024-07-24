@@ -597,3 +597,8 @@ wnd_class_wv ReqWndName( void )
         Error( ERR_LOC, LIT_DUI( ERR_BAD_WIND_NAME ) );
     return( (wnd_class_wv)cmd );
 }
+
+a_window AUICALLBACK WndNoOpen( void )
+{
+    return( NULL );
+}

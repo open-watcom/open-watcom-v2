@@ -305,7 +305,7 @@ wnd_info RunTrdInfo = {
 
 a_window AUICALLBACK WndRunTrdOpen( void )
 {
-    return( DbgTitleWndCreate( LIT_DUI( WindowThreads ), &RunTrdInfo, WND_RUN_THREAD, NULL, &TrdIcon, TITLE_SIZE, true ) );
+    return( DbgWndCreateTitle( LIT_DUI( WindowThreads ), &RunTrdInfo, WND_RUN_THREAD, NULL, &TrdIcon, TITLE_SIZE, true ) );
 }
 
 void RunThreadNotify( void )

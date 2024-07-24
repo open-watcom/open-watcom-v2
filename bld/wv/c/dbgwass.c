@@ -1085,7 +1085,7 @@ a_window DoWndAsmOpen( address addr, bool track )
     asw->cache_addr = NilAddr;
     asw->dotaddr = NilAddr;
     asw->last_width = 0;
-    wnd = DbgTitleWndCreate( LIT_DUI( WindowAssembly ), &AsmInfo, WND_ASSEMBLY, asw, &AsmIcon, TITLE_SIZE, false );
+    wnd = DbgWndCreateTitle( LIT_DUI( WindowAssembly ), &AsmInfo, WND_ASSEMBLY, asw, &AsmIcon, TITLE_SIZE, false );
     if( wnd == NULL )
         return( wnd );
     asw->track = track;

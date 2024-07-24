@@ -258,7 +258,8 @@ typedef struct _a_window {
     wnd_rect                dirty[1];
 } *a_window;
 
-typedef bool        (AUICALLBACK WNDCALLBACK)( a_window, gui_event, void * );
+/* window callback functions */
+typedef bool        (AUICALLBACK WNDEVCALLBACK)( a_window, gui_event, void * );
 typedef void        (AUICALLBACK WNDREFRESH)( a_window );
 typedef void        (AUICALLBACK WNDMENU)( a_window, gui_ctl_id id, wnd_row, wnd_piece );
 typedef void        (AUICALLBACK WNDMODIFY)( a_window, wnd_row, wnd_piece );
@@ -270,14 +271,16 @@ typedef void        (AUICALLBACK WNDNOTIFY)( a_window wnd, wnd_row row, wnd_piec
 typedef void        (AUICALLBACK WNDBEGPAINT)( a_window wnd, wnd_row row, int num );
 typedef void        (AUICALLBACK WNDENDPAINT)( a_window wnd, wnd_row row, int num );
 typedef bool        (AUICALLBACK WNDCHKUPDATE)( void );
-typedef a_window    (AUICALLBACK WNDOPEN)( void );
-typedef a_window    (AUICALLBACK WNDCREATE)( char *, struct wnd_info *, wnd_class, void * );
-typedef void        (AUICALLBACK WNDCLOSE)( a_window );
+/* special callback functions */
 typedef bool        (AUICALLBACK WNDPICKER)( const char *, GUIPICKCALLBACK *, int * );
 typedef bool        (AUICALLBACK WNDCLICKHOOK)( a_window wnd, gui_ctl_id id );
+/* not used as callback functions */
+//typedef a_window    (AUICALLBACK WNDOPEN)( void );
+//typedef a_window    (AUICALLBACK WNDCREATE)( char *, struct wnd_info *, wnd_class, void * );
+//typedef void        (AUICALLBACK WNDCLOSE)( a_window );
 
 typedef struct wnd_info {
-    WNDCALLBACK             *event;
+    WNDEVCALLBACK           *event;
     WNDREFRESH              *refresh;
     WNDGETLINE              *getline;
     WNDMENU                 *menuitem;
@@ -359,7 +362,7 @@ extern void                 WndToFront( a_window );   // won't restore an icon!
 
 extern void                 WndCurrToGUIPoint( a_window wnd, gui_point *point );
 
-extern WNDCREATE            WndCreate;
+extern a_window             WndCreate( char *, struct wnd_info *, wnd_class, void * );
 extern void                 WndInitCreateStruct( wnd_create_struct * );
 extern a_window             WndCreateWithStruct( wnd_create_struct * );
 extern a_window             WndCreateWithStructAndMenuRes( wnd_create_struct *, res_name_or_id menu_id );
@@ -378,7 +381,7 @@ extern a_window             WndNext( a_window );
 
 extern wnd_info             NoInfo;
 
-extern WNDCALLBACK          NoWndEventProc;
+extern WNDEVCALLBACK        NoWndEventProc;
 extern WNDREFRESH           NoRefresh;
 extern WNDGETLINE           NoGetLine;
 extern WNDMENU              NoMenuItem;

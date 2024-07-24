@@ -50,11 +50,6 @@ wnd_info NoInfo = {
     NoPopUp
 };
 
-a_window AUICALLBACK WndNoOpen( void )
-{
-    return( NULL );
-}
-
 bool AUICALLBACK NoGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
 {
     /* unused parameters */ (void)wnd; (void)row; (void)piece; (void)line;

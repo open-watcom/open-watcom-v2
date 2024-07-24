@@ -71,11 +71,13 @@ typedef enum {
 #define NUM_WNDCLS      WND_CURRENT
 #define NUM_WNDCLS_ALL  WND_NUM_CLASSES
 
+typedef a_window        AUICALLBACK wnd_open( void );
+
 #define pick( a,b,c,d,e,f ) extern wnd_info d;
 #include "wndnames.h"
 #undef pick
 
-#define pick( a,b,c,d,e,f ) extern WNDOPEN c;
+#define pick( a,b,c,d,e,f ) extern wnd_open c;
 #include "wndnames.h"
 #undef pick
 
@@ -110,7 +112,9 @@ extern void         WndCodeBrk( address, bool );
 
 extern void         WndDoInput( void );
 
-extern WNDOPEN      *WndOpenTab[];
+extern wnd_open     WndNoOpen;
+
+extern wnd_open     *WndOpenTab[];
 extern const char   WndNameTab[];
 extern wnd_macro    *WndMacroList;
 

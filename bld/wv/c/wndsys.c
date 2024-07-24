@@ -534,7 +534,7 @@ void WndSetOpenNoShow( void )
     _SwitchOn( SW_OPEN_NO_SHOW );
 }
 
-a_window DbgTitleWndCreate( const char *title, wnd_info *wndinfo,
+a_window DbgWndCreateTitle( const char *title, wnd_info *wndinfo,
                                     wnd_class_wv wndclass, void *extra,
                                     gui_resource *icon,
                                     int title_rows, bool vdrag )
@@ -607,7 +607,7 @@ a_window DbgTitleWndCreate( const char *title, wnd_info *wndinfo,
 a_window DbgWndCreate( const char *title, wnd_info *info,
                                wnd_class_wv wndclass, void *extra, gui_resource *icon )
 {
-    return( DbgTitleWndCreate( title, info, wndclass, extra, icon, 0, true ) );
+    return( DbgWndCreateTitle( title, info, wndclass, extra, icon, 0, true ) );
 }
 
 static char **RXErrTxt[] = {
