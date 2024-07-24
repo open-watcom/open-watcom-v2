@@ -53,7 +53,7 @@ bool DlgPickWithRtn2( const char *title, const void *data_handle, int def_item, 
     return( pickfn( title, &PickInit, choice ) );
 }
 
-static void GUIAPICALLBACK doDlgOpen( const char *title, gui_text_ord rows, gui_text_ord cols, gui_control_info *ctl, int num_controls, GUICALLBACK *gui_call_back, void *extra )
+static void GUIAPICALLBACK doDlgOpen( const char *title, gui_text_ord rows, gui_text_ord cols, gui_control_info *ctl, int num_controls, GUIEVCALLBACK *gui_call_back, void *extra )
 {
     DlgOpen( title, rows, cols, ctl, num_controls, gui_call_back, extra );
 }

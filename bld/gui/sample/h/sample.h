@@ -76,11 +76,11 @@ typedef struct {
     disp_entry      *display;
 } out_info;
 
-extern GUICALLBACK     MainWndGUIEventProc;
-extern GUICALLBACK     ControlWndGUIEventProc;
-extern GUICALLBACK     Child1WndGUIEventProc;
-extern GUICALLBACK     Child2WndGUIEventProc;
-extern GUICALLBACK     Child3WndGUIEventProc;
+extern GUIEVCALLBACK     MainWndGUIEventProc;
+extern GUIEVCALLBACK     ControlWndGUIEventProc;
+extern GUIEVCALLBACK     Child1WndGUIEventProc;
+extern GUIEVCALLBACK     Child2WndGUIEventProc;
+extern GUIEVCALLBACK     Child3WndGUIEventProc;
 
 enum {
     MENU_STATIC_DIALOG,

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -155,7 +155,7 @@ static void DlgSetSize( gui_window *parent_wnd, gui_create_info *dlg_info, gui_t
 
 static void doDlgOpen( gui_window *parent_wnd, const char *title, gui_text_ord rows, gui_text_ord cols,
                      gui_control_info *controls_info, int num_controls,
-                     GUICALLBACK *gui_call_back, void *extra, bool sys )
+                     GUIEVCALLBACK *gui_call_back, void *extra, bool sys )
 {
     gui_coord           charuse;
     gui_coord           charspace;
@@ -192,21 +192,21 @@ void GUIAPI GUISetModalDlgs( bool modal )
 }
 
 void GUIAPI GUIDlgOpen( const char *title, gui_text_ord rows, gui_text_ord cols, gui_control_info *controls_info,
-                 int num_controls, GUICALLBACK *gui_call_back, void *extra )
+                 int num_controls, GUIEVCALLBACK *gui_call_back, void *extra )
 {
     doDlgOpen( NULL, title, rows, cols, controls_info, num_controls, gui_call_back, extra, false );
 }
 
 void GUIAPI GUIModalDlgOpen( gui_window *parent_wnd, const char *title, gui_text_ord rows, gui_text_ord cols,
                       gui_control_info *controls_info, int num_controls,
-                      GUICALLBACK *gui_call_back, void *extra )
+                      GUIEVCALLBACK *gui_call_back, void *extra )
 {
     doDlgOpen( parent_wnd, title, rows, cols, controls_info, num_controls, gui_call_back, extra, false );
 }
 
 void GUIAPI GUISysModalDlgOpen( const char *title, gui_text_ord rows, gui_text_ord cols,
                          gui_control_info *controls_info, int num_controls,
-                         GUICALLBACK *gui_call_back, void *extra )
+                         GUIEVCALLBACK *gui_call_back, void *extra )
 {
     doDlgOpen( NULL, title, rows, cols, controls_info, num_controls, gui_call_back, extra, true );
 }

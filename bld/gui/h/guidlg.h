@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -135,10 +135,10 @@
       id }
 
 extern void GUIAPI  GUIDlgOpen( const char *title, gui_text_ord rows, gui_text_ord cols, gui_control_info *controls_info,
-                        int num_controls, GUICALLBACK *gui_call_back, void *extra );
+                        int num_controls, GUIEVCALLBACK *gui_call_back, void *extra );
 
 extern void GUIAPI  GUIModalDlgOpen( gui_window *parent, const char *title, gui_text_ord rows, gui_text_ord cols,
-                        gui_control_info *controls_info, int num_controls, GUICALLBACK *gui_call_back, void *extra );
+                        gui_control_info *controls_info, int num_controls, GUIEVCALLBACK *gui_call_back, void *extra );
 
 extern void GUIAPI  GUISysModalDlgOpen( const char *title, gui_text_ord rows, gui_text_ord cols,
-                        gui_control_info *controls_info, int num_controls, GUICALLBACK *gui_call_back, void *extra );
+                        gui_control_info *controls_info, int num_controls, GUIEVCALLBACK *gui_call_back, void *extra );

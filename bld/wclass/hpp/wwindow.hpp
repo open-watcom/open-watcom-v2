@@ -140,7 +140,7 @@ typedef bool (WObject::*bcbk)( gui_key k );
 
 extern "C" ENUMCALLBACK EnumChildProc;
 extern "C" CONTRENUMCALLBACK EnumControlProc;
-extern "C" GUICALLBACK WinGUIEventProc;
+extern "C" GUIEVCALLBACK WinGUIEventProc;
 
 WCLASS WWindow : public WObject {
 private:

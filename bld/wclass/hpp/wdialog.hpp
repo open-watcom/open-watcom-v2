@@ -36,7 +36,7 @@
 
 #include "wwindow.hpp"
 
-extern "C" GUICALLBACK DlgGUIEventProc;
+extern "C" GUIEVCALLBACK DlgGUIEventProc;
 
 WCLASS WDialog : public WWindow {
     public:

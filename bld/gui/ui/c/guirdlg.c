@@ -413,7 +413,7 @@ static gui_create_info *DialogBoxHeader2GUI( DialogBoxHeader *hdr )
     return( dlg_info );
 }
 
-bool GUICreateDialogFromRes( res_name_or_id dlg_id, gui_window *parent_wnd, GUICALLBACK *gui_call_back, void *extra )
+bool GUICreateDialogFromRes( res_name_or_id dlg_id, gui_window *parent_wnd, GUIEVCALLBACK *gui_call_back, void *extra )
 {
     DialogBoxHeader     *hdr;
     DialogBoxControl    *cntls;

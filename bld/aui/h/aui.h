@@ -303,9 +303,9 @@ extern bool                 DlgPickWithRtn2( const char *title, const void *data
 extern bool                 DlgPick( const char *title, const void *data_handle, int def_item, int num_items, int *choice );
 extern bool                 DlgNew( const char *title, char *buff, size_t buff_len );
 extern bool                 DlgNewWithCtl( const char *title, char *buff, size_t buff_len, gui_control_info *controls, int num_controls,
-                                            GUICALLBACK *gui_call_back, gui_text_ord rows, gui_text_ord cols, gui_text_ord max_cols );
-extern void                 DlgOpen( const char *title, gui_text_ord, gui_text_ord, gui_control_info *, int, GUICALLBACK *, void * );
-extern void                 DlgOpenRes( GUICALLBACK *, void *, int dlg_id );
+                                            GUIEVCALLBACK *gui_call_back, gui_text_ord rows, gui_text_ord cols, gui_text_ord max_cols );
+extern void                 DlgOpen( const char *title, gui_text_ord, gui_text_ord, gui_control_info *, int, GUIEVCALLBACK *, void * );
+extern void                 DlgOpenRes( GUIEVCALLBACK *, void *, int dlg_id );
 extern int                  DlgGetFileName( open_file_name *ofn );
 extern bool                 DlgFileBrowse( char *title, char *filter, char *path, unsigned len, fn_flags flags );
 extern int                  DlgSearch( a_window wnd, void *history );
@@ -368,7 +368,7 @@ extern bool                 WndInit( char *title );
 extern bool                 WndInitWithMenuRes( char *title, res_name_or_id menu_id );
 extern bool                 WndFini( void );
 extern bool                 WndMainMenuProc( a_window, gui_ctl_id id );
-extern GUICALLBACK          WndMainGUIEventProc;
+extern GUIEVCALLBACK        WndMainGUIEventProc;
 extern void                 WndSetSrchItem( a_window wnd, const char *expr );
 extern bool                 WndSearch( a_window, bool, int );
 extern void                 WndInitNumRows( a_window );

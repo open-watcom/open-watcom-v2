@@ -150,7 +150,7 @@ struct gui_window {
     gui_text_ord        num_cols;
     unsigned            hscroll_range;
     unsigned            vscroll_range;
-    GUICALLBACK         *gui_call_back;
+    GUIEVCALLBACK       *gui_call_back;
     void                *extra;
     HWND                status;
     int                 num_items;

@@ -108,7 +108,7 @@ static bool GUIAPICALLBACK dlgNewGUIEventProc( gui_window *gui, gui_event gui_ev
 }
 
 bool    DlgNewWithCtl( const char *title, char *buff, size_t buff_len, gui_control_info *controls,
-                    int num_controls, GUICALLBACK *gui_call_back, gui_text_ord rows, gui_text_ord cols, gui_text_ord max_cols )
+                    int num_controls, GUIEVCALLBACK *gui_call_back, gui_text_ord rows, gui_text_ord cols, gui_text_ord max_cols )
 {
     dlgnew_ctl  dlgnew;
     int         len;

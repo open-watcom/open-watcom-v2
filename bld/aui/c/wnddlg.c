@@ -40,7 +40,7 @@
 #define MAX_DLG_NESTS   5
 
 static gui_window       *Parents[MAX_DLG_NESTS];
-static GUICALLBACK      *dlgGUIEventProcs[MAX_DLG_NESTS];
+static GUIEVCALLBACK    *dlgGUIEventProcs[MAX_DLG_NESTS];
 static int              Nested = -1;
 
 static bool GUIAPICALLBACK dlgOpenGUIEventProc( gui_window *gui, gui_event gui_ev, void *parm )
@@ -77,7 +77,7 @@ gui_window *DlgOpenGetGUIParent( void )
 
 void DlgOpen( const char *title, gui_text_ord rows, gui_text_ord cols,
                      gui_control_info *ctl, int num_controls,
-                     GUICALLBACK *gui_call_back, void *extra )
+                     GUIEVCALLBACK *gui_call_back, void *extra )
 {
     gui_window  *parent;
 
@@ -100,7 +100,7 @@ static gui_create_info ResDialog = {
     NULL                            // Menu Resource
 };
 
-void DlgOpenRes( GUICALLBACK *gui_call_back, void *extra, int dlg_id )
+void DlgOpenRes( GUIEVCALLBACK *gui_call_back, void *extra, int dlg_id )
 {
     ResDialog.parent = DlgOpenGetGUIParent();
     dlgGUIEventProcs[Nested + 1] = gui_call_back;

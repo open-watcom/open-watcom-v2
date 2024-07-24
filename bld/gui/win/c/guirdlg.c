@@ -201,7 +201,7 @@ bool GUIInsertResDialogControls( gui_window *wnd )
     return( true );
 }
 
-bool GUICreateDialogFromRes( res_name_or_id dlg_id, gui_window *parent_wnd, GUICALLBACK *gui_call_back, void *extra )
+bool GUICreateDialogFromRes( res_name_or_id dlg_id, gui_window *parent_wnd, GUIEVCALLBACK *gui_call_back, void *extra )
 {
     WPI_DLGPROC     dlgproc;
     HWND            parent_hwnd;

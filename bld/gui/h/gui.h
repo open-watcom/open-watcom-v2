@@ -475,13 +475,13 @@ typedef struct gui_control_info {
     gui_ctl_id              id;
 } gui_control_info;
 
-typedef bool (GUIAPICALLBACK GUICALLBACK)( gui_window *wnd, gui_event gui_ev, void *param );
+typedef bool (GUIAPICALLBACK GUIEVCALLBACK)( gui_window *wnd, gui_event gui_ev, void *param );
 typedef void (GUIAPICALLBACK ENUMCALLBACK)( gui_window *wnd, void *param );
 typedef void (GUIAPICALLBACK CONTRENUMCALLBACK)( gui_window *parent_wnd, gui_ctl_id id, void *param );
 typedef void (GUIAPICALLBACK GUIPICKCALLBACK)( gui_window *wnd, gui_ctl_id id );
 typedef void (GUIAPICALLBACK PICKDLGOPEN)( const char *title, gui_text_ord rows, gui_text_ord cols,
                              gui_control_info *controls_info, int num_controls,
-                             GUICALLBACK *gui_call_back, void *extra );
+                             GUIEVCALLBACK *gui_call_back, void *extra );
 typedef const char *(GUIAPICALLBACK GUIPICKGETTEXT)( const void *data_handle, int item );
 
 typedef struct gui_create_info {
@@ -492,7 +492,7 @@ typedef struct gui_create_info {
     gui_window          *parent;
     gui_menu_items      menus;
     gui_colour_items    colours;
-    GUICALLBACK         *gui_call_back;
+    GUIEVCALLBACK       *gui_call_back;
     void                *extra;
     gui_resource        *icon;
     res_name_or_id      resource_menu;
