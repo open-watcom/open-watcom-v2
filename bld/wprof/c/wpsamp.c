@@ -58,34 +58,6 @@
 #include "wpdata.h"
 
 
-STATIC void *           sampleCreateWin( void );
-STATIC void             sampleOpenMainImage( void );
-STATIC bool             sampleProcTopStatus( a_window, wnd_row, wnd_piece, wnd_line_piece * );
-STATIC bool             sampleProcBotStatus( a_window, wnd_row, wnd_piece, wnd_line_piece * );
-STATIC bool             sampleProcStatus( a_window, wnd_row, wnd_piece, wnd_line_piece * );
-STATIC bool             sampleProcOverview( a_window, wnd_row, wnd_piece, wnd_line_piece * );
-STATIC bool             AUICALLBACK sampleWndEventProc( a_window, gui_event, void * );
-STATIC bool             sampleSetLine( a_window, wnd_row, wnd_piece, wnd_line_piece * );
-STATIC bool             AUICALLBACK sampleGetLine( a_window, wnd_row, wnd_piece, wnd_line_piece * );
-STATIC int              simageDetailLine( a_window, wnd_row, bool );
-STATIC int              smodDetailLine( a_window, wnd_row, bool );
-STATIC int              sfileDetailLine( a_window, wnd_row, bool );
-STATIC int              srtnDetailLine( a_window, wnd_row, bool );
-STATIC int              ssrcDetailLine( a_window, wnd_row, bool );
-STATIC int              sasmDetailLine( a_window, wnd_row, bool );
-STATIC int              srtnOpenDetail( sio_data *, bool );
-STATIC void             AUICALLBACK sampleRefresh( a_window );
-//STATIC void             AUICALLBACK sampleMenuItem( a_window, gui_ctl_id id, wnd_row, wnd_piece );
-STATIC void             sampFixDirtyCurr( a_window );
-STATIC bool             simageGetLine( a_window, wnd_row );
-STATIC bool             smodGetLine( a_window, wnd_row );
-STATIC bool             sfileGetLine( a_window, wnd_row );
-STATIC bool             srtnGetLine( a_window, wnd_row );
-STATIC bool             ssrcGetLine( a_window, wnd_row );
-STATIC bool             sasmGetLine( a_window, wnd_row );
-STATIC void             gatherSort( sio_data * );
-STATIC void             setDisplay( a_window, sio_data *, bool );
-
 typedef bool (SAMPLEGETRTNS)( a_window wnd, wnd_row row );
 typedef int (SAMPLEDETAILRTNS)( a_window wnd, wnd_row row, bool multi_level );
 
@@ -137,24 +109,6 @@ static char * statusHeaders[] = {
     LIT( Assembler_Instructions ),
 };
 
-static SAMPLEGETRTNS * sampleGetRtns[] = {
-    &simageGetLine,
-    &smodGetLine,
-    &sfileGetLine,
-    &srtnGetLine,
-    &ssrcGetLine,
-    &sasmGetLine,
-};
-
-static SAMPLEDETAILRTNS * overviewDetailRtns[] = {
-    &simageDetailLine,
-    &smodDetailLine,
-    &sfileDetailLine,
-    &srtnDetailLine,
-    &ssrcDetailLine,
-    &sasmDetailLine,
-};
-
 static gui_menu_struct graphBarMenu[] = {
     { "&Stretch",       MENU_SAMP_BAR_MAX_TIME, GUI_STYLE_MENU_ENABLED, "Stretch the largest value to the edge of the window" },
     { "&Absolute Bars", MENU_SAMP_ABS,          GUI_STYLE_MENU_ENABLED, "Show Absolute Graph Bars" },
@@ -193,6 +147,198 @@ static bool         relGraphBar;
 static char         relData[30];
 static char         absData[30];
 static char         lineData[96];
+
+
+
+STATIC void gatherSort( sio_data * curr_sio )
+/*******************************************/
+{
+    GatherCurrent( curr_sio );
+    SortCurrent( curr_sio );
+}
+
+
+
+STATIC int ssrcDetailLine( a_window wnd, wnd_row row, bool multi_level )
+/**********************************************************************/
+{
+    sio_data        *curr_sio;
+    wp_asmfile      *asm_file;
+    int             top_line;
+
+    curr_sio = WndExtra( wnd );
+    asm_file = WPAsmOpen( curr_sio, row+1, multi_level );
+    if( asm_file == NULL ) {
+        return( row );
+    }
+    curr_sio->level_open++;
+    curr_sio->asm_file = asm_file;
+    top_line = asm_file->entry_line - WndRows( wnd ) / 2;
+    if( top_line >= 0 ) {
+        WndSetTop( wnd, top_line );
+    }
+    return( asm_file->entry_line );
+}
+
+
+
+STATIC int sasmDetailLine( a_window wnd, wnd_row row, bool multi_level )
+/**********************************************************************/
+{
+    /* unused parameters */ (void)wnd; (void)multi_level;
+
+    Ring();
+    return( row );
+}
+
+
+
+STATIC int simageDetailLine( a_window wnd, wnd_row row, bool multi_level )
+/************************************************************************/
+{
+    sio_data        *curr_sio;
+    image_info      *image;
+
+    curr_sio = WndExtra( wnd );
+    image = SImageGetImage( wnd, row );
+    if( image == NULL ) {
+        if( !multi_level ) {
+            Ring();
+        }
+        return( row );
+    }
+    if( image->exe_not_found ) {
+        if( !multi_level ) {
+            ErrorMsg( LIT( Exe_Not_Found ), image->name );
+        }
+        return( row );
+    }
+    if( image->dip_handle == NO_MOD ) {
+        if( !multi_level ) {
+            ErrorMsg( LIT( No_Symbol_Info ), image->name );
+        }
+        return( row );
+    }
+    if( image->exe_changed ) {
+        if( !multi_level ) {
+            ErrorMsg( LIT( Exe_Has_Changed ), image->name );
+            image->exe_changed = false;
+        }
+    }
+    curr_sio->level_open++;
+    curr_sio->curr_image = image;
+    gatherSort( curr_sio );
+    return( 0 );
+}
+
+
+
+STATIC int smodDetailLine( a_window wnd, wnd_row row, bool multi_level )
+/**********************************************************************/
+{
+    sio_data        *curr_sio;
+    mod_info        *mod;
+
+    curr_sio = WndExtra( wnd );
+    mod = SModGetModule( wnd, row );
+    if( mod->agg_count == 0 && mod->file_count == 2 ) {
+        if( !multi_level ) {
+            ErrorMsg( LIT( No_Symbol_Info ), mod->name );
+        }
+        return( row );
+    }
+    curr_sio->level_open++;
+    curr_sio->curr_mod = mod;
+    gatherSort( curr_sio );
+    return( 0 );
+}
+
+
+
+STATIC int sfileDetailLine( a_window wnd, wnd_row row, bool multi_level )
+/***********************************************************************/
+{
+    sio_data        *curr_sio;
+    file_info       *curr_file;
+
+    curr_sio = WndExtra( wnd );
+    curr_file = SFileGetFile( wnd, row );
+    if( curr_file->rtn_count == 0 ) {
+        if( !multi_level ) {
+            ErrorMsg( LIT( No_Routine_Names ), curr_file->name );
+        }
+        return( row );
+    }
+    curr_sio->level_open++;
+    curr_sio->curr_file = curr_file;
+    gatherSort( curr_sio );
+    return( 0 );
+}
+
+
+STATIC int srtnOpenDetail( sio_data *curr_sio, bool go_down )
+/***********************************************************/
+{
+    a_window        wnd;
+    wp_srcfile      *src_file;
+    int             line;
+    int             top_line;
+
+    wnd = curr_sio->sample_window;
+    src_file = curr_sio->src_file;
+    if( src_file == NULL ) {
+        src_file = WPSourceOpen( curr_sio, true );
+        if( src_file == NULL ) {
+            if( go_down ) {
+                curr_sio->level_open = LEVEL_ROUTINE;
+                line = ssrcDetailLine( wnd, 0, true );
+                if( curr_sio->level_open == LEVEL_ROUTINE ) {
+                    curr_sio->level_open = LEVEL_FILE;
+                }
+                return( line );
+            }
+            curr_sio->level_open = LEVEL_FILE;
+            return( 0 );
+        }
+    }
+    curr_sio->level_open = LEVEL_ROUTINE;
+    line = src_file->samp_line;
+    if( line < 1 ) {
+        line = src_file->rtn_line;
+    }
+    top_line = line - 1 - WndRows( wnd ) / 2;
+    if( top_line >= 0 ) {
+        WndSetTop( wnd, top_line );
+    }
+    return( line-1 );
+}
+
+
+
+STATIC int srtnDetailLine( a_window wnd, wnd_row row, bool multi_level )
+/**********************************************************************/
+{
+    sio_data        *curr_sio;
+    rtn_info        *curr_rtn;
+    int             line;
+
+    /* unused parameters */ (void)multi_level;
+
+    curr_sio = WndExtra( wnd );
+    curr_rtn = SRtnGetRoutine( wnd, row );
+    curr_sio->curr_rtn = curr_rtn;
+    line = srtnOpenDetail( curr_sio, true );
+    return( line );
+}
+
+static SAMPLEDETAILRTNS * overviewDetailRtns[] = {
+    &simageDetailLine,
+    &smodDetailLine,
+    &sfileDetailLine,
+    &srtnDetailLine,
+    &ssrcDetailLine,
+    &sasmDetailLine,
+};
 
 
 static void WPZoomIn( a_window wnd, int row )
@@ -286,6 +432,20 @@ static void WPBackOut( a_window wnd )
 }
 
 
+
+STATIC void setDisplay( a_window wnd, sio_data * curr_sio, bool do_top )
+/**********************************************************************/
+{
+    curr_sio->curr_proc_row = -WND_MAX_ROW;
+    curr_sio->curr_display_row = -WND_MAX_ROW;
+    if( do_top ) {
+        WndSetTop( wnd, 0 );
+        WndNewCurrent( wnd, 0, PIECE_DETAIL_NAME );
+    }
+    WndDirty( wnd );
+}
+
+
 STATIC void AUICALLBACK sampleMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
 /*************************************************************************************************/
 {
@@ -371,69 +531,6 @@ STATIC void AUICALLBACK sampleMenuItem( a_window wnd, gui_ctl_id id, wnd_row row
 }
 
 
-static wnd_info     WPSampleInfo = {
-    sampleWndEventProc,
-    sampleRefresh,
-    sampleGetLine,
-    sampleMenuItem,
-    NoVScroll,
-    NoBegPaint,
-    NoEndPaint,
-    WndFirstMenuItem,
-    SampleNumRows,
-    NoNextRow,
-    NoNotify,
-    NoChkUpdate,
-    PopUp( sampleMenu )
-};
-
-
-
-void WPSampleOpen( void )
-/***********************/
-{
-    if( CurrSIOData->sample_window == NULL ) {
-        CurrSIOData->sample_window = sampleCreateWin();
-        if( CurrSIOData->sample_window != NULL ) {
-            sampleOpenMainImage();
-            WndSetThumb( CurrSIOData->sample_window );
-        }
-    }
-    if( CurrSIOData->sample_window != NULL ) {
-        WndToFront( CurrSIOData->sample_window );
-        WndShowWindow( CurrSIOData->sample_window );
-        WPSetRowHeight( CurrSIOData->sample_window );
-    }
-}
-
-
-
-STATIC void *sampleCreateWin( void )
-/**********************************/
-{
-    a_window            wnd;
-    wnd_create_struct   info;
-    char                title[512];
-
-    WndInitCreateStruct( &info );
-    sprintf( title, LIT( Sample_Data ), CurrSIOData->samp_file_name );
-    info.title = title;
-    info.info = &WPSampleInfo;
-    info.extra = CurrSIOData;
-//    info.colour = GetWndColours( class );
-    info.title_rows = STATUS_ROW + 1;
-    info.style |= GUI_INIT_INVISIBLE;
-    wnd = WndCreateWithStruct( &info );
-    if( wnd == NULL )
-        return( wnd );
-//    WndSetFontInfo( wnd, GetWndFont( wnd ) );
-//-//    WndSetSysFont( wnd, true );
-    WndClrSwitches( wnd, WSW_MUST_CLICK_ON_PIECE | WSW_ONLY_MODIFY_TABSTOP );
-    WndSetSwitches( wnd, WSW_RBUTTON_CHANGE_CURR );
-    return( wnd );
-}
-
-
 
 STATIC void sampleOpenMainImage( void )
 /*************************************/
@@ -455,70 +552,6 @@ STATIC void sampleOpenMainImage( void )
     }
     WndNewCurrent( CurrSIOData->sample_window, 0, PIECE_DETAIL_NAME );
     WndDirty( CurrSIOData->sample_window );
-}
-
-
-
-STATIC bool AUICALLBACK sampleWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
-/**************************************************************************************/
-{
-    sio_data        *curr_sio;
-
-    /* unused parameters */ (void)parm;
-
-    switch( gui_ev ) {
-    case GUI_INIT_WINDOW:
-        return( true );
-    case GUI_FONT_CHANGED:
-        WPSetRowHeight( wnd );
-        return( true );
-    case GUI_RESIZE:
-        WPAdjustRowHeight( wnd, false );
-        return( true );
-    case GUI_NOW_ACTIVE:
-        curr_sio = WndExtra( wnd );
-        curr_sio->curr_proc_row = -WND_MAX_ROW;
-        curr_sio->curr_display_row = -WND_MAX_ROW;
-        WPDipSetProc( curr_sio->dip_process );
-        SetCurrentMAD( curr_sio->config.arch );
-        CurrSIOData = curr_sio;
-        return( true );
-    case GUI_NO_EVENT:
-        sampFixDirtyCurr( wnd );
-        return( true );
-    case GUI_DESTROY:
-        curr_sio = WndExtra( wnd );
-        if( curr_sio != NULL ) {
-            ClearSample( curr_sio );
-        }
-        return( true );
-    }
-    return( false );
-}
-
-
-
-STATIC bool AUICALLBACK sampleGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
-/*******************************************************************************************************/
-{
-    sio_data        *curr_sio;
-
-    if( row <= -4  ) {
-        return( sampleProcOverview( wnd, row, piece, line ) );
-    }
-    if( row == -3 ) {
-        return( sampleProcTopStatus( wnd, row, piece, line ) );
-    }
-    if( row == -2  ) {
-        return( sampleProcStatus( wnd, row, piece, line ) );
-    }
-    if( row == -1 ) {
-        return( sampleProcBotStatus( wnd, row, piece, line ) );
-    }
-    curr_sio = WndExtra( wnd );
-    if( !sampleGetRtns[curr_sio->level_open]( wnd, row ) )
-        return( false );
-    return( sampleSetLine( wnd, row, piece, line ) );
 }
 
 
@@ -1269,181 +1302,6 @@ STATIC void sampFixDirtyCurr( a_window wnd )
 
 
 
-STATIC int simageDetailLine( a_window wnd, wnd_row row, bool multi_level )
-/************************************************************************/
-{
-    sio_data        *curr_sio;
-    image_info      *image;
-
-    curr_sio = WndExtra( wnd );
-    image = SImageGetImage( wnd, row );
-    if( image == NULL ) {
-        if( !multi_level ) {
-            Ring();
-        }
-        return( row );
-    }
-    if( image->exe_not_found ) {
-        if( !multi_level ) {
-            ErrorMsg( LIT( Exe_Not_Found ), image->name );
-        }
-        return( row );
-    }
-    if( image->dip_handle == NO_MOD ) {
-        if( !multi_level ) {
-            ErrorMsg( LIT( No_Symbol_Info ), image->name );
-        }
-        return( row );
-    }
-    if( image->exe_changed ) {
-        if( !multi_level ) {
-            ErrorMsg( LIT( Exe_Has_Changed ), image->name );
-            image->exe_changed = false;
-        }
-    }
-    curr_sio->level_open++;
-    curr_sio->curr_image = image;
-    gatherSort( curr_sio );
-    return( 0 );
-}
-
-
-
-STATIC int smodDetailLine( a_window wnd, wnd_row row, bool multi_level )
-/**********************************************************************/
-{
-    sio_data        *curr_sio;
-    mod_info        *mod;
-
-    curr_sio = WndExtra( wnd );
-    mod = SModGetModule( wnd, row );
-    if( mod->agg_count == 0 && mod->file_count == 2 ) {
-        if( !multi_level ) {
-            ErrorMsg( LIT( No_Symbol_Info ), mod->name );
-        }
-        return( row );
-    }
-    curr_sio->level_open++;
-    curr_sio->curr_mod = mod;
-    gatherSort( curr_sio );
-    return( 0 );
-}
-
-
-
-STATIC int sfileDetailLine( a_window wnd, wnd_row row, bool multi_level )
-/***********************************************************************/
-{
-    sio_data        *curr_sio;
-    file_info       *curr_file;
-
-    curr_sio = WndExtra( wnd );
-    curr_file = SFileGetFile( wnd, row );
-    if( curr_file->rtn_count == 0 ) {
-        if( !multi_level ) {
-            ErrorMsg( LIT( No_Routine_Names ), curr_file->name );
-        }
-        return( row );
-    }
-    curr_sio->level_open++;
-    curr_sio->curr_file = curr_file;
-    gatherSort( curr_sio );
-    return( 0 );
-}
-
-
-
-STATIC int srtnDetailLine( a_window wnd, wnd_row row, bool multi_level )
-/**********************************************************************/
-{
-    sio_data        *curr_sio;
-    rtn_info        *curr_rtn;
-    int             line;
-
-    /* unused parameters */ (void)multi_level;
-
-    curr_sio = WndExtra( wnd );
-    curr_rtn = SRtnGetRoutine( wnd, row );
-    curr_sio->curr_rtn = curr_rtn;
-    line = srtnOpenDetail( curr_sio, true );
-    return( line );
-}
-
-
-
-STATIC int srtnOpenDetail( sio_data *curr_sio, bool go_down )
-/***********************************************************/
-{
-    a_window        wnd;
-    wp_srcfile      *src_file;
-    int             line;
-    int             top_line;
-
-    wnd = curr_sio->sample_window;
-    src_file = curr_sio->src_file;
-    if( src_file == NULL ) {
-        src_file = WPSourceOpen( curr_sio, true );
-        if( src_file == NULL ) {
-            if( go_down ) {
-                curr_sio->level_open = LEVEL_ROUTINE;
-                line = ssrcDetailLine( wnd, 0, true );
-                if( curr_sio->level_open == LEVEL_ROUTINE ) {
-                    curr_sio->level_open = LEVEL_FILE;
-                }
-                return( line );
-            }
-            curr_sio->level_open = LEVEL_FILE;
-            return( 0 );
-        }
-    }
-    curr_sio->level_open = LEVEL_ROUTINE;
-    line = src_file->samp_line;
-    if( line < 1 ) {
-        line = src_file->rtn_line;
-    }
-    top_line = line - 1 - WndRows( wnd ) / 2;
-    if( top_line >= 0 ) {
-        WndSetTop( wnd, top_line );
-    }
-    return( line-1 );
-}
-
-
-
-STATIC int ssrcDetailLine( a_window wnd, wnd_row row, bool multi_level )
-/**********************************************************************/
-{
-    sio_data        *curr_sio;
-    wp_asmfile      *asm_file;
-    int             top_line;
-
-    curr_sio = WndExtra( wnd );
-    asm_file = WPAsmOpen( curr_sio, row+1, multi_level );
-    if( asm_file == NULL ) {
-        return( row );
-    }
-    curr_sio->level_open++;
-    curr_sio->asm_file = asm_file;
-    top_line = asm_file->entry_line - WndRows( wnd ) / 2;
-    if( top_line >= 0 ) {
-        WndSetTop( wnd, top_line );
-    }
-    return( asm_file->entry_line );
-}
-
-
-
-STATIC int sasmDetailLine( a_window wnd, wnd_row row, bool multi_level )
-/**********************************************************************/
-{
-    /* unused parameters */ (void)wnd; (void)multi_level;
-
-    Ring();
-    return( row );
-}
-
-
-
 STATIC void AUICALLBACK sampleRefresh( a_window wnd )
 /***************************************************/
 {
@@ -1482,25 +1340,138 @@ void WPFindDoPopUp( a_window wnd, gui_ctl_id id )
     WPDoPopUp( wnd, gui_menu );
 }
 
+static SAMPLEGETRTNS * sampleGetRtns[] = {
+    &simageGetLine,
+    &smodGetLine,
+    &sfileGetLine,
+    &srtnGetLine,
+    &ssrcGetLine,
+    &sasmGetLine,
+};
 
 
-STATIC void gatherSort( sio_data * curr_sio )
-/*******************************************/
+
+STATIC bool AUICALLBACK sampleGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
+/*******************************************************************************************************/
 {
-    GatherCurrent( curr_sio );
-    SortCurrent( curr_sio );
+    sio_data        *curr_sio;
+
+    if( row <= -4  ) {
+        return( sampleProcOverview( wnd, row, piece, line ) );
+    }
+    if( row == -3 ) {
+        return( sampleProcTopStatus( wnd, row, piece, line ) );
+    }
+    if( row == -2  ) {
+        return( sampleProcStatus( wnd, row, piece, line ) );
+    }
+    if( row == -1 ) {
+        return( sampleProcBotStatus( wnd, row, piece, line ) );
+    }
+    curr_sio = WndExtra( wnd );
+    if( !sampleGetRtns[curr_sio->level_open]( wnd, row ) )
+        return( false );
+    return( sampleSetLine( wnd, row, piece, line ) );
 }
 
 
 
-STATIC void setDisplay( a_window wnd, sio_data * curr_sio, bool do_top )
-/**********************************************************************/
+STATIC bool AUICALLBACK sampleWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
+/**************************************************************************************/
 {
-    curr_sio->curr_proc_row = -WND_MAX_ROW;
-    curr_sio->curr_display_row = -WND_MAX_ROW;
-    if( do_top ) {
-        WndSetTop( wnd, 0 );
-        WndNewCurrent( wnd, 0, PIECE_DETAIL_NAME );
+    sio_data        *curr_sio;
+
+    /* unused parameters */ (void)parm;
+
+    switch( gui_ev ) {
+    case GUI_INIT_WINDOW:
+        return( true );
+    case GUI_FONT_CHANGED:
+        WPSetRowHeight( wnd );
+        return( true );
+    case GUI_RESIZE:
+        WPAdjustRowHeight( wnd, false );
+        return( true );
+    case GUI_NOW_ACTIVE:
+        curr_sio = WndExtra( wnd );
+        curr_sio->curr_proc_row = -WND_MAX_ROW;
+        curr_sio->curr_display_row = -WND_MAX_ROW;
+        WPDipSetProc( curr_sio->dip_process );
+        SetCurrentMAD( curr_sio->config.arch );
+        CurrSIOData = curr_sio;
+        return( true );
+    case GUI_NO_EVENT:
+        sampFixDirtyCurr( wnd );
+        return( true );
+    case GUI_DESTROY:
+        curr_sio = WndExtra( wnd );
+        if( curr_sio != NULL ) {
+            ClearSample( curr_sio );
+        }
+        return( true );
     }
-    WndDirty( wnd );
+    return( false );
+}
+
+
+static wnd_info     WPSampleInfo = {
+    sampleWndEventProc,
+    sampleRefresh,
+    sampleGetLine,
+    sampleMenuItem,
+    NoVScroll,
+    NoBegPaint,
+    NoEndPaint,
+    WndFirstMenuItem,
+    SampleNumRows,
+    NoNextRow,
+    NoNotify,
+    NoChkUpdate,
+    PopUp( sampleMenu )
+};
+
+
+
+STATIC void *sampleCreateWin( void )
+/**********************************/
+{
+    a_window            wnd;
+    wnd_create_struct   info;
+    char                title[512];
+
+    WndInitCreateStruct( &info );
+    sprintf( title, LIT( Sample_Data ), CurrSIOData->samp_file_name );
+    info.title = title;
+    info.info = &WPSampleInfo;
+    info.extra = CurrSIOData;
+//    info.colour = GetWndColours( class );
+    info.title_rows = STATUS_ROW + 1;
+    info.style |= GUI_INIT_INVISIBLE;
+    wnd = WndCreateWithStruct( &info );
+    if( wnd == NULL )
+        return( wnd );
+//    WndSetFontInfo( wnd, GetWndFont( wnd ) );
+//-//    WndSetSysFont( wnd, true );
+    WndClrSwitches( wnd, WSW_MUST_CLICK_ON_PIECE | WSW_ONLY_MODIFY_TABSTOP );
+    WndSetSwitches( wnd, WSW_RBUTTON_CHANGE_CURR );
+    return( wnd );
+}
+
+
+
+void WPSampleOpen( void )
+/***********************/
+{
+    if( CurrSIOData->sample_window == NULL ) {
+        CurrSIOData->sample_window = sampleCreateWin();
+        if( CurrSIOData->sample_window != NULL ) {
+            sampleOpenMainImage();
+            WndSetThumb( CurrSIOData->sample_window );
+        }
+    }
+    if( CurrSIOData->sample_window != NULL ) {
+        WndToFront( CurrSIOData->sample_window );
+        WndShowWindow( CurrSIOData->sample_window );
+        WPSetRowHeight( CurrSIOData->sample_window );
+    }
 }
