@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,5 +33,5 @@
 
 #ifndef _GUIDOSCR_H_
 #define _GUIDOSCR_H_
-extern void GUIDoScroll( gui_window *wnd, int row_col, int bar );
+extern void GUIDoScroll( gui_window *wnd, int change, int bar );
 #endif // _GUIDOSCR_H_

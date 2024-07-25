@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -152,17 +152,17 @@ void GUIAPI GUIDoHScrollClip( gui_window *wnd, int cols, int start, int end )
     DoScroll( wnd, 0, cols, start, end, true );
 }
 
-void GUIDoScroll( gui_window *wnd, int row_col, int bar )
+void GUIDoScroll( gui_window *wnd, int change, int bar )
 {
     int         rows;
     int         cols;
 
-    rows = 0;
-    cols = 0;
     if( bar == SB_HORZ ) {
-        cols = row_col;
+        rows = 0;
+        cols = change;
     } else {
-        rows = row_col;
+        rows = change;
+        cols = 0;
     }
     DoScroll( wnd, rows, cols, -1, -1, false );
 }

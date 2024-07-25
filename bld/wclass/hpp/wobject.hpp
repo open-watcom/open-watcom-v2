@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,6 +44,13 @@
 #else
     #define WFAR
     #define _WEXPORT
+#endif
+
+#define __STR(x)        #x
+#if defined( BOOTSTRAP )
+#define DISABLE_MSG(x)  _Pragma( __STR( disable_message( ## x ## ) ) )
+#else
+#define DISABLE_MSG(x)  _Pragma( __STR( disable_message( ## P ## x ## ) ) )
 #endif
 
 #define WEXPORT

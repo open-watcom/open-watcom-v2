@@ -283,7 +283,7 @@ void WEXPORT WWindow::drawTextExtent( const WPoint &p,
 
 void WEXPORT WWindow::drawTextExtent( const WPoint &p, const char *str,
                                       Color fg, Color bg, int extent )
-/***************************************************ppp***************/
+/*********************************************************************/
 {
     drawTextExtent( p, str, strlen( str ), fg, bg, extent );
 }

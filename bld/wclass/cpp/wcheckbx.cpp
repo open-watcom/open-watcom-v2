@@ -84,11 +84,7 @@ void WThreeState::setCheckState( WCheckState3 state ) {
 
 #ifdef __WATCOMC__
 // Complain about defining trivial destructor inside class
-#if !defined( BOOTSTRAP )
-#pragma disable_message( P656 )
-#else
-#pragma disable_message( 656 )
-#endif
+DISABLE_MSG( 656 )
 #endif
 
 WEXPORT WCheckBox::~WCheckBox() {

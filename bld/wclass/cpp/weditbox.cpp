@@ -111,13 +111,8 @@ int WEXPORT WEdit::getSelectBounds( int *first, int *last ) {
 
 #ifdef __WATCOMC__
 // Complain about defining trivial destructor inside class
-#if !defined( BOOTSTRAP )
-#pragma disable_message( P656 )
-#pragma disable_message( P657 )
-#else
-#pragma disable_message( 656 )
-#pragma disable_message( 657 )
-#endif
+DISABLE_MSG( 656 )
+DISABLE_MSG( 657 )
 #endif
 
 WEXPORT WEditBox::~WEditBox() {

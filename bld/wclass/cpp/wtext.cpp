@@ -52,11 +52,7 @@ WEXPORT WText::WText( WStatDialog* parent, WControlId id,
 
 #ifdef __WATCOMC__
 // Complain about defining trivial destructor inside class
-#if !defined( BOOTSTRAP )
-#pragma disable_message( P656 )
-#else
-#pragma disable_message( 656 )
-#endif
+DISABLE_MSG( 656 )
 #endif
 
 WEXPORT WText::~WText() {
