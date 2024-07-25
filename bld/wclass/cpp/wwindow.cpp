@@ -332,9 +332,8 @@ void WWindow::enumChildren()
     GUIEnumControls( _handle, EnumControlProc, NULL );
 }
 
-
-extern "C" bool WinGUIEventProc( gui_window *hwin, gui_event gui_ev, void *parm )
-/*******************************************************************************/
+extern "C" bool GUICALLBACK WinGUIEventProc( gui_window *hwin, gui_event gui_ev, void *parm )
+/*******************************************************************************************/
 {
     WWindow* win = (WWindow *)GUIGetExtra( hwin );
     if( gui_ev == GUI_INIT_WINDOW ) {

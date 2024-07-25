@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -51,9 +52,9 @@ extern  void            InitGUI( coordinate_system, gui_ord, gui_ord, gui_rect *
                                         \
     static a *AppInstance;              \
                                         \
-    void wclassmain() {                 \
-    /************/                      \
-                                        \
+    void wclassmain()                   \
+    /***************/                   \
+    {                                   \
         gui_rect        screen;         \
                                         \
         InitGUI( c, w, h, &screen );    \
@@ -61,9 +62,9 @@ extern  void            InitGUI( coordinate_system, gui_ord, gui_ord, gui_rect *
         AppInstance = new a;            \
     }                                   \
                                         \
-    extern "C" bool GUIDeath() {        \
-    /**************************/        \
-                                        \
+    extern "C" bool GUIAPI GUIDeath()   \
+    /*******************************/   \
+    {                                   \
         delete AppInstance;             \
         return( true );                 \
     }

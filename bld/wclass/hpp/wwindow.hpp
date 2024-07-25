@@ -138,10 +138,6 @@ WCLASS WControl;
 typedef void (WObject::*cbw)( WWindow *w );
 typedef bool (WObject::*bcbk)( gui_key k );
 
-extern "C" ENUMCALLBACK EnumChildProc;
-extern "C" CONTRENUMCALLBACK EnumControlProc;
-extern "C" GUIEVCALLBACK WinGUIEventProc;
-
 WCLASS WWindow : public WObject {
 private:
     virtual bool reallyClose( void ) { return( true ); }
