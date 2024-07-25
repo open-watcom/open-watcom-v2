@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,7 +43,11 @@ WEXPORT WProcessInfo::WProcessInfo() {
 
 #ifdef __WATCOMC__
 // Complain about defining trivial destructor inside class
-DISABLE_MSG( 657 )
+#if !defined( BOOTSTRAP )
+#pragma disable_message( P657 )
+#else
+#pragma disable_message( 657 )
+#endif
 #endif
 
 WEXPORT WProcessInfo::~WProcessInfo() {
