@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,7 +39,7 @@
 #include "clibext.h"
 
 
-int DlgGetFileName( open_file_name *ofn )
+int WNDAPI DlgGetFileName( open_file_name *ofn )
 {
     int         rc;
     a_window    wnd;
@@ -51,7 +51,7 @@ int DlgGetFileName( open_file_name *ofn )
     return( rc );
 }
 
-bool DlgFileBrowse( char *title, char *filter, char *path, unsigned len, fn_flags flags )
+bool WNDAPI DlgFileBrowse( char *title, char *filter, char *path, unsigned len, fn_flags flags )
 {
     open_file_name      ofn;
     char                fname[_MAX_PATH];

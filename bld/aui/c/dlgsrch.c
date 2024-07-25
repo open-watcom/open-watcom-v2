@@ -285,13 +285,13 @@ static int DoDlgSearch( a_window wnd, void *history, bool want_prev )
     return( direction );
 }
 
-int DlgSearch( a_window wnd, void *history )
+int WNDAPI DlgSearch( a_window wnd, void *history )
 {
     return( DoDlgSearch( wnd, history, true ) );
 }
 
 
-bool DlgSearchAll( char **expr, void *history )
+bool WNDAPI DlgSearchAll( char **expr, void *history )
 {
     int         direction;
 

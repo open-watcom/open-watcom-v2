@@ -75,7 +75,7 @@ gui_window *DlgOpenGetGUIParent( void )
     return( ( Nested == -1 ) ? WndMain->gui : Parents[Nested] );
 }
 
-void DlgOpen( const char *title, gui_text_ord rows, gui_text_ord cols,
+void WNDAPI DlgOpen( const char *title, gui_text_ord rows, gui_text_ord cols,
                      gui_control_info *ctl, int num_controls,
                      GUIEVCALLBACK *gui_call_back, void *extra )
 {
@@ -100,7 +100,7 @@ static gui_create_info ResDialog = {
     NULL                            // Menu Resource
 };
 
-void DlgOpenRes( GUIEVCALLBACK *gui_call_back, void *extra, int dlg_id )
+void WNDAPI DlgOpenRes( GUIEVCALLBACK *gui_call_back, void *extra, int dlg_id )
 {
     ResDialog.parent = DlgOpenGetGUIParent();
     dlgGUIEventProcs[Nested + 1] = gui_call_back;

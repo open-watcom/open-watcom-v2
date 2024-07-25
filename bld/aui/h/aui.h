@@ -301,20 +301,18 @@ typedef struct {
     bool        cancel;
 } dlgnew_ctl;
 
-extern bool                 DlgPickWithRtn( const char *title, const void *data_handle, int def_item, GUIPICKGETTEXT *getstring, int num_items, int *choice );
-extern bool                 DlgPickWithRtn2( const char *title, const void *data_handle, int def_item, GUIPICKGETTEXT *getstring, int num_items, WNDPICKER *pickfn, int *choice );
-extern bool                 DlgPick( const char *title, const void *data_handle, int def_item, int num_items, int *choice );
-extern bool                 DlgNew( const char *title, char *buff, size_t buff_len );
-extern bool                 DlgNewWithCtl( const char *title, char *buff, size_t buff_len, gui_control_info *controls, int num_controls,
+extern bool                 WNDAPI DlgPickWithRtn( const char *title, const void *data_handle, int def_item, GUIPICKGETTEXT *getstring, int num_items, int *choice );
+extern bool                 WNDAPI DlgPickWithRtn2( const char *title, const void *data_handle, int def_item, GUIPICKGETTEXT *getstring, int num_items, WNDPICKER *pickfn, int *choice );
+extern bool                 WNDAPI DlgPick( const char *title, const void *data_handle, int def_item, int num_items, int *choice );
+extern bool                 WNDAPI DlgNew( const char *title, char *buff, size_t buff_len );
+extern bool                 WNDAPI DlgNewWithCtl( const char *title, char *buff, size_t buff_len, gui_control_info *controls, int num_controls,
                                             GUIEVCALLBACK *gui_call_back, gui_text_ord rows, gui_text_ord cols, gui_text_ord max_cols );
-extern void                 DlgOpen( const char *title, gui_text_ord, gui_text_ord, gui_control_info *, int, GUIEVCALLBACK *, void * );
-extern void                 DlgOpenRes( GUIEVCALLBACK *, void *, int dlg_id );
-extern int                  DlgGetFileName( open_file_name *ofn );
-extern bool                 DlgFileBrowse( char *title, char *filter, char *path, unsigned len, fn_flags flags );
-extern int                  DlgSearch( a_window wnd, void *history );
-extern bool                 DlgSearchAll( char **expr, void *history );
-
-extern a_window             WndMain;
+extern void                 WNDAPI DlgOpen( const char *title, gui_text_ord, gui_text_ord, gui_control_info *, int, GUIEVCALLBACK *, void * );
+extern void                 WNDAPI DlgOpenRes( GUIEVCALLBACK *, void *, int dlg_id );
+extern int                  WNDAPI DlgGetFileName( open_file_name *ofn );
+extern bool                 WNDAPI DlgFileBrowse( char *title, char *filter, char *path, unsigned len, fn_flags flags );
+extern int                  WNDAPI DlgSearch( a_window wnd, void *history );
+extern bool                 WNDAPI DlgSearchAll( char **expr, void *history );
 
 //extern a_window             WndFindOwner( a_window );
 //extern a_window             WndFirst( void );
@@ -378,6 +376,8 @@ extern void                 WndInitNumRows( a_window );
 extern void                 WndRXError( int );
 
 extern a_window             WndNext( a_window );
+
+extern a_window             WndMain;
 
 extern wnd_info             NoInfo;
 

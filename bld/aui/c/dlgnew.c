@@ -107,7 +107,7 @@ static bool GUICALLBACK dlgNewGUIEventProc( gui_window *gui, gui_event gui_ev, v
     return( false );
 }
 
-bool    DlgNewWithCtl( const char *title, char *buff, size_t buff_len, gui_control_info *controls,
+bool    WNDAPI DlgNewWithCtl( const char *title, char *buff, size_t buff_len, gui_control_info *controls,
                     int num_controls, GUIEVCALLBACK *gui_call_back, gui_text_ord rows, gui_text_ord cols, gui_text_ord max_cols )
 {
     dlgnew_ctl  dlgnew;
@@ -125,7 +125,7 @@ bool    DlgNewWithCtl( const char *title, char *buff, size_t buff_len, gui_contr
     return( !dlgnew.cancel );
 }
 
-bool    DlgNew( const char *title, char *buff, size_t buff_len )
+bool    WNDAPI DlgNew( const char *title, char *buff, size_t buff_len )
 {
     bool        rc;
 
