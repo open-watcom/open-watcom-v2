@@ -1139,7 +1139,7 @@ int GUIGetFileName( gui_window *wnd, open_file_name *ofn )
         getcwd( olddir, sizeof( olddir ) );
         goToDir( wnd, ofn->initial_dir );
 
-        GUIModalDlgOpen( wnd, ofn->title, DLG_FILE_ROWS, DLG_FILE_COLS,
+        GUIDlgOpenModal( wnd, ofn->title, DLG_FILE_ROWS, DLG_FILE_COLS,
                     dlgControls, GUI_ARRAY_SIZE( dlgControls ), &GetFileNameGUIEventProc, &dlg );
 
         if( (ofn->flags & FN_CHANGEDIR) == 0 ) {

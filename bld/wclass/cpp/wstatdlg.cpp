@@ -100,7 +100,7 @@ void WStatDialog::doDialog( WWindow *parent ) {
     create_info.extra = this;
     create_info.icon = NULL;
 
-    GUICreateResDialog( &create_info, _dialog_id );
+    GUICreateDialogRes( &create_info, _dialog_id );
 }
 
 void WEXPORT WStatDialog::getCtrlText( WControlId id, WString & str ) {

@@ -886,8 +886,8 @@ extern bool     GUIAPI GUIDlgPickWithRtn( const char *title, GUIPICKCALLBACK *pi
 /* Dialog Functions */
 
 extern bool     GUIAPI GUICreateDialog( gui_create_info *dlg_info, int num_controls, gui_control_info *controls_info );
-extern bool     GUIAPI GUICreateSysModalDialog( gui_create_info *dlg_info, int num_controls, gui_control_info *controls_info );
-extern bool     GUIAPI GUICreateResDialog( gui_create_info *dlg_info, res_name_or_id dlg_id );
+extern bool     GUIAPI GUICreateDialogSysModal( gui_create_info *dlg_info, int num_controls, gui_control_info *controls_info );
+extern bool     GUIAPI GUICreateDialogRes( gui_create_info *dlg_info, res_name_or_id dlg_id );
 extern void     GUIAPI GUICloseDialog( gui_window *wnd );
 extern void     GUIAPI GUISetModalDlgs( bool );
 

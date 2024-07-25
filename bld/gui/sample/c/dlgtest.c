@@ -255,5 +255,5 @@ void ResDialogCreate( gui_window *parent_wnd )
     }
 
     ResDialog.parent = parent_wnd;
-    GUICreateResDialog( &ResDialog, dlg_id );
+    GUICreateDialogRes( &ResDialog, dlg_id );
 }

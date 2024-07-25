@@ -83,7 +83,7 @@ void WNDAPI DlgOpen( const char *title, gui_text_ord rows, gui_text_ord cols,
 
     parent = DlgOpenGetGUIParent();
     dlgGUIEventProcs[Nested + 1] = gui_call_back;
-    GUIModalDlgOpen( parent, title, rows, cols, ctl, num_controls, dlgOpenGUIEventProc, extra );
+    GUIDlgOpenModal( parent, title, rows, cols, ctl, num_controls, dlgOpenGUIEventProc, extra );
 }
 
 static gui_create_info ResDialog = {
@@ -105,5 +105,5 @@ void WNDAPI DlgOpenRes( GUIEVCALLBACK *gui_call_back, void *extra, int dlg_id )
     ResDialog.parent = DlgOpenGetGUIParent();
     dlgGUIEventProcs[Nested + 1] = gui_call_back;
     ResDialog.extra = extra;
-    GUICreateResDialog( &ResDialog, MAKEINTRESOURCE( dlg_id ) );
+    GUICreateDialogRes( &ResDialog, MAKEINTRESOURCE( dlg_id ) );
 }

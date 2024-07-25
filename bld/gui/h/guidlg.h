@@ -137,8 +137,8 @@
 extern void GUIAPI  GUIDlgOpen( const char *title, gui_text_ord rows, gui_text_ord cols, gui_control_info *controls_info,
                         int num_controls, GUIEVCALLBACK *gui_call_back, void *extra );
 
-extern void GUIAPI  GUIModalDlgOpen( gui_window *parent, const char *title, gui_text_ord rows, gui_text_ord cols,
+extern void GUIAPI  GUIDlgOpenModal( gui_window *parent, const char *title, gui_text_ord rows, gui_text_ord cols,
                         gui_control_info *controls_info, int num_controls, GUIEVCALLBACK *gui_call_back, void *extra );
 
-extern void GUIAPI  GUISysModalDlgOpen( const char *title, gui_text_ord rows, gui_text_ord cols,
+extern void GUIAPI  GUIDlgOpenSysModal( const char *title, gui_text_ord rows, gui_text_ord cols,
                         gui_control_info *controls_info, int num_controls, GUIEVCALLBACK *gui_call_back, void *extra );

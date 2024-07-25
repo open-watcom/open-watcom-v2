@@ -871,7 +871,7 @@ dlg_state GenericDialog( gui_window *parent, a_dialog_header *dlg )
     }
 
     GUIRefresh();
-    GUIModalDlgOpen( parent == NULL ? MainWnd : parent, VbufString( &title ), height, width,
+    GUIDlgOpenModal( parent == NULL ? MainWnd : parent, VbufString( &title ), height, width,
                      dlg->controls, dlg->num_controls,
                      &GenericGUIEventProc, &result );
     ResetDriveInfo();
