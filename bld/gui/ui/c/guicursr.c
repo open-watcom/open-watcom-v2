@@ -71,7 +71,7 @@ bool GUIAPI GUIGetCursorPos( gui_window *wnd, gui_point *point )
         return( false );
     }
     scr_x = wnd->vs.cursor_col - wnd->use.col;
-    scr_y = wnd->vs.cursor_row - wnd->use.col;
+    scr_y = wnd->vs.cursor_row - wnd->use.row;
     if( GUI_DO_HSCROLL( wnd ) ) {
         scr_x += wnd->hgadget->pos;
     }
