@@ -69,9 +69,11 @@ void WHotSpotList::adjustScrollBars()
     if( cnt > getRows() ) {
         scrollrows = cnt;
     }
+    /* vertical scroll and position is in character units */
     setScrollTextRange( WScrollBarVertical, scrollrows );
     setScrollTextPos( WScrollBarVertical, _topIndex );
-    setScrollTextRange( WScrollBarHorizontal, width() );
+    /* horizontal scroll is in graphical units */
+    setScrollRange( WScrollBarHorizontal, width() );
 }
 
 void WHotSpotList::resized( WOrdinal w, WOrdinal h )
@@ -95,7 +97,7 @@ bool WHotSpotList::paint()
     int offset;
     int maxRows = numDirtyRows() + _topIndex + firstDirtyRow();
     int numElem = count();
-    int extent;
+    int extentx;
     WRect r;
 
     getClientRect( r );
@@ -118,15 +120,13 @@ bool WHotSpotList::paint()
         } else {
             offset = 0;
         }
-        extent = r.w();
-        if( width() > extent )
-            extent = width();
+        extentx = r.w();
+        if( extentx < width() )
+            extentx = width();
         if( i == _selected ) {
-            drawTextExtent( i - _topIndex, offset, str, WPaintAttrMenuActive,
-                            extent );
+            drawTextExtent( i - _topIndex, offset, str, WPaintAttrMenuActive, extentx );
         } else {
-            drawTextExtent( i - _topIndex, offset, str, WPaintAttrControlBackground,
-                            extent );
+            drawTextExtent( i - _topIndex, offset, str, WPaintAttrControlBackground, extentx );
         }
     }
 

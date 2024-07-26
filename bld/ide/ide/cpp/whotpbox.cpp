@@ -38,7 +38,7 @@
 
 WEXPORT WHotPickBox::WHotPickBox( WPickList &plist, cbs gname, icb gindex, bcb gincluded,
         WWindow *win, const WRect& r, WHotSpots* hs )
-/********************************************/
+/****************************************************/
     : WHotSpotList( win, r, NULL, hs )
     , WView( &plist )
     , _gname( gname )
@@ -59,7 +59,7 @@ WEXPORT WHotPickBox::~WHotPickBox()
 }
 
 void WEXPORT WHotPickBox::name( int index, WString &str )
-/******************************************************/
+/*******************************************************/
 {
     if( _gname != NULL ) {
         (((WObject*)_tags[index])->*_gname)( str );
@@ -77,7 +77,7 @@ bool WHotPickBox::gettingFocus( WWindow * )
 }
 
 void WEXPORT WHotPickBox::fillBox()
-/********************************/
+/*********************************/
 {
     int i;
 
@@ -122,7 +122,7 @@ void* WEXPORT WHotPickBox::tagPtr( int index )
 }
 
 void WEXPORT WHotPickBox::setTagPtr( int index, void* ptr )
-/********************************************/
+/*********************************************************/
 {
     if( _tags && index < _tagsCount ) {
         _tags[index] = ptr;
@@ -130,7 +130,7 @@ void WEXPORT WHotPickBox::setTagPtr( int index, void* ptr )
 }
 
 void * WEXPORT WHotPickBox::selectedTagPtr()
-/*****************************************/
+/******************************************/
 {
     int index = selected();
     if( index >= 0 ) {
@@ -152,7 +152,7 @@ void WEXPORT WHotPickBox::selectSameTag( void* tag )
 
 
 void WEXPORT WHotPickBox::updateView()
-/***********************************/
+/************************************/
 {
     if( _model ) {
         int top = topIndex();
@@ -173,13 +173,13 @@ void WEXPORT WHotPickBox::updateView()
 
 
 void WEXPORT WHotPickBox::modelGone()
-/**********************************/
+/***********************************/
 {
     reset();
 }
 
 int WEXPORT WHotPickBox::count()
-/********************************************/
+/******************************/
 {
     if( _model ) {
         return( _tagsCount );
@@ -188,13 +188,13 @@ int WEXPORT WHotPickBox::count()
 }
 
 void WEXPORT WHotPickBox::setTopIndex( int top )
-/********************************************/
+/**********************************************/
 {
     performScroll( top, true );
 }
 
 const char * WEXPORT WHotPickBox::getString( int index )
-/********************************************/
+/******************************************************/
 {
     static WString n;
     name( index, n );
@@ -207,7 +207,7 @@ int WEXPORT WHotPickBox::getHotOffset( int /*index*/ )
 }
 
 int WEXPORT WHotPickBox::getHotSpot( int index, bool /*pressed*/ )
-/********************************************/
+/****************************************************************/
 {
     if( _gindex ) {
         return( (((WObject*)_tags[index])->*_gindex)() );
