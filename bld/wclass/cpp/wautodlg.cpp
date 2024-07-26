@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -59,18 +59,6 @@ WEXPORT WAutoDialog::WAutoDialog( WWindow *parent, const char *text,
 }
 
 
-void WAutoDialog::updateExtents( const char *t, int *w, int *h ) {
-/****************************************************************/
-
-    if( getTextExtentX( t ) > *w ) {
-        *w = getTextExtentX( t );
-    }
-    if( getTextExtentY( t ) > *h ) {
-        *h = getTextExtentY( t );
-    }
-}
-
-
 void WAutoDialog::initialize() {
 /******************************/
 
@@ -88,7 +76,7 @@ void WAutoDialog::initialize() {
     int t_h = 0;
     int icount = _prompts->count();
     for( i = 0; i < icount; i++ ) {
-        updateExtents( _prompts->cStringAt( i ), &t_w, &t_h );
+        updateTextExtents( _prompts->cStringAt( i ), &t_w, &t_h );
     }
 
     int b_w = 50 * avg.x() / 4;

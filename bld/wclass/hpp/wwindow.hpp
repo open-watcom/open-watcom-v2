@@ -296,6 +296,7 @@ public:
     virtual int WEXPORT getTextExtentY( const char *text ) {
         return( GUIGetExtentY( _handle, text ) );
     }
+    virtual void WEXPORT updateTextExtents( const char *text, gui_ord *extentx, gui_ord *extenty );
     virtual void displayFloatingPopup( WPopupMenu * );
     virtual WOrdinal WEXPORT frameWidth( void ) {
         return( WSystemMetrics::frameWidth() );

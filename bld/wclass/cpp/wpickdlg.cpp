@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -52,18 +52,6 @@ WEXPORT WPickDialog::WPickDialog( WPickList& list, cbs getname,
 }
 
 
-void WPickDialog::updateExtents( const char *t, int *w, int *h ) {
-/****************************************************************/
-
-    if( getTextExtentX( t ) > *w ) {
-        *w = getTextExtentX( t );
-    }
-    if( getTextExtentY( t ) > *h ) {
-        *h = getTextExtentY( t );
-    }
-}
-
-
 void WPickDialog::initialize() {
 /******************************/
 
@@ -76,7 +64,7 @@ void WPickDialog::initialize() {
 
     int w = 0;
     int h = 0;
-    updateExtents( _promptText, &w, &h );
+    updateTextExtents( _promptText, &w, &h );
     w += avg.x() / 2;
     h += avg.y() / 2;
     _prompt = new WText( this, WRect( x, y, w, h ), _promptText );
@@ -96,8 +84,8 @@ void WPickDialog::initialize() {
 
     w = 0;
     h = 0;
-    updateExtents( CancelText, &w, &h );
-    updateExtents( OKText, &w, &h );
+    updateTextExtents( CancelText, &w, &h );
+    updateTextExtents( OKText, &w, &h );
     w += avg.x() * 2;
     h += avg.y() / 2;
 

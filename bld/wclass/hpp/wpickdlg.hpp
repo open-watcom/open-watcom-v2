@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -50,7 +51,6 @@ WCLASS WPickDialog  : public WDialog {
         int WEXPORT pickOne( const char *prompt="Prompt" );
     private:
         void initialize( void );
-        void updateExtents( const char *, int *, int * );
     private:
         const char      *_promptText;
         WText*          _prompt;

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,18 +45,6 @@ WEXPORT WEditDialog::WEditDialog( WWindow* parent, const char* text )
     , _reply( NULL ) {
 /********************/
 
-}
-
-
-void WEditDialog::updateExtents( const char *t, int *w, int *h ) {
-/****************************************************************/
-
-    if( getTextExtentX( t ) > *w ) {
-        *w = getTextExtentX( t );
-    }
-    if( getTextExtentY( t ) > *h ) {
-        *h = getTextExtentY( t );
-    }
 }
 
 

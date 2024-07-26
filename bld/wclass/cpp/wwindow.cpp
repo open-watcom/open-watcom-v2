@@ -1351,3 +1351,18 @@ void WWindow::hookF1Key( bool set )
         GUIUnHookF1();
     }
 }
+
+void WEXPORT WWindow::updateTextExtents( const char *text, gui_ord *extentx, gui_ord *extenty )
+/*********************************************************************************************/
+{
+    gui_ord tmp;
+
+    tmp = GUIGetExtentX( _handle, text, strlen( text ) );
+    if( *extentx < tmp ) {
+        *extentx = tmp;
+    }
+    tmp = GUIGetExtentY( _handle, text );
+    if( *extenty < tmp ) {
+        *extenty = tmp;
+    }
+}
