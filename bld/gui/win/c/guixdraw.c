@@ -78,6 +78,7 @@ static void GUIDrawTextBitmapRGB( gui_window *wnd, const char *text,
     size_t      num_chars;
     WPI_RECT    wpi_rect;
     guix_ord    hscroll_pos;
+    guix_ord    vscroll_pos;
     WPI_COLOUR  colour;
     WPI_RECTDIM left, top, right, bottom;
     WPI_RECTDIM paint_left, paint_top, paint_right, paint_bottom;
@@ -114,16 +115,15 @@ static void GUIDrawTextBitmapRGB( gui_window *wnd, const char *text,
     top = paint_top / height * height;
     bottom = ( paint_bottom + height - 1 ) / height * height;
 
+    hscroll_pos = 0;
     if( GUI_DO_HSCROLL( wnd ) ) {
         hscroll_pos = GUIGetScrollPos( wnd, SB_HORZ );
-    } else {
-        hscroll_pos = 0;
     }
-
-    nDrawY = GUIScaleToScreenV( pos->y );
+    vscroll_pos = 0;
     if( GUI_DO_VSCROLL( wnd ) ) {
-        nDrawY -= GUIGetScrollPos( wnd, SB_VERT );
+        vscroll_pos = GUIGetScrollPos( wnd, SB_VERT );
     }
+    nDrawY = GUIScaleToScreenV( pos->y ) - vscroll_pos;
     nDrawX = left + GUIScaleToScreenH( pos->x ) - hscroll_pos;
 
     if( draw_extent ) {

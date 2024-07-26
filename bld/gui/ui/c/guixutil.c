@@ -378,7 +378,7 @@ bool GUIInArea( ORD row, ORD col, SAREA *area )
 void GUIDirtyArea( gui_window *wnd, SAREA *area )
 {
     wnd->flags |= CONTENTS_INVALID;
-    GUIWndRfrshArea( wnd, area );
+    GUIWndRefreshArea( wnd, area );
     uirefresh();
 }
 

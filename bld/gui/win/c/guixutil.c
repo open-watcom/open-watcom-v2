@@ -538,11 +538,7 @@ void GUISetScrollRange( gui_window *wnd, int bar, int min, int max, bool redraw 
 {
     if( ChangeScrollRange( wnd, bar, max - min ) ) {
         _wpi_setscrollrange( GUIGetParentFrameHWND( wnd ), bar, min, max, ( redraw ) ? TRUE : FALSE );
-        if( bar == SB_HORZ ) {
-            GUIRedrawScroll( wnd, SB_HORZ, redraw );
-        } else {
-            GUIRedrawScroll( wnd, SB_VERT, redraw );
-        }
+        GUIRedrawScroll( wnd, bar, redraw );
     }
 }
 

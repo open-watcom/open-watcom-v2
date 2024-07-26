@@ -348,12 +348,11 @@ static void DoSetScroll( gui_window *wnd, int bar, bool range_set,
         if( !chars ) {
             *p_range = range + screen_size;
         }
-        GUISetScrollRange( wnd, bar, 0, range, true );
     } else {
         range = screen_size + GUIGetScrollPos( wnd, bar );
         *p_range = range + screen_size;
-        GUISetScrollRange( wnd, bar, 0, range, true );
     }
+    GUISetScrollRange( wnd, bar, 0, range, true );
 }
 
 /*
